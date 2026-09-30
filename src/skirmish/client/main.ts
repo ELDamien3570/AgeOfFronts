@@ -32,6 +32,8 @@ import { AGE_NAMES, AGES, type Age } from "../domain/Definitions";
 
 import { ControlGroups } from "./ControlGroups";
 
+import { CampLossPresentation } from "./CampLossPresentation";
+
 import {
   CONSTRUCTION,
   hotkeyAction,
@@ -105,7 +107,11 @@ const element = <T extends HTMLElement>(id: string) =>
 
 const canvas = element<HTMLCanvasElement>("battlefield");
 
-const renderer = new Renderer(canvas);
+const campLoss = new CampLossPresentation();
+
+const renderer = new Renderer(canvas, campLoss);
+
+let campLossLabels: { playerId: number; label: HTMLElement }[] = [];
 
 const groups = new ControlGroups();
 
@@ -209,6 +215,10 @@ async function start(): Promise<void> {
   worker = undefined;
 
   snapshot = undefined;
+
+  campLoss.reset();
+
+  campLossLabels = [];
 
   paused = false;
 
@@ -453,10 +463,35 @@ function updateHud(): void {
 
       const troops = squads.reduce((sum, s) => sum + s.troops, 0);
 
-      return `<div data-player="${p.id}" class="rival ${p.eliminated ? "eliminated" : ""}"><div class="rival-name"><i style="background:${COLORS[p.id]}"></i><strong>${p.name}</strong><span>${p.kind === "tribe" ? "TRIBE" : p.ai ? "AI" : "YOU"}</span></div><div class="rival-stats"><b>${format(troops)}</b> troops · ${squads.length}${p.kind === "tribe" ? `/${squadCap(p)}` : ""} squads</div><div class="rival-land">${snapshot!.expansion ? AGE_NAMES[AGES.indexOf(snapshot!.expansion.progression[p.id].age)] + " · " : ""}${format(p.land)} land${p.eliminated ? " · eliminated" : snapshot!.owners[p.base] !== p.id ? " · camp lost" : ""}</div></div>`;
+      const campOpacity = campLoss.opacity(p.id);
+
+      const campNotice =
+        campOpacity > 0
+          ? `<span data-camp-loss="${p.id}" style="opacity:${campOpacity}"> · camp lost</span>`
+          : "";
+
+      return `<div data-player="${p.id}" class="rival ${p.eliminated ? "eliminated" : ""}"><div class="rival-name"><i style="background:${COLORS[p.id]}"></i><strong>${p.name}</strong><span>${p.kind === "tribe" ? "TRIBE" : p.ai ? "AI" : "YOU"}</span></div><div class="rival-stats"><b>${format(troops)}</b> troops · ${squads.length}${p.kind === "tribe" ? `/${squadCap(p)}` : ""} squads</div><div class="rival-land">${snapshot!.expansion ? AGE_NAMES[AGES.indexOf(snapshot!.expansion.progression[p.id].age)] + " · " : ""}${format(p.land)} land${p.eliminated ? " · eliminated" : campNotice}</div></div>`;
     })
 
     .join("");
+
+  campLossLabels = Array.from(
+    element("roster").querySelectorAll<HTMLElement>("[data-camp-loss]"),
+    (label) => ({ playerId: Number(label.dataset.campLoss), label }),
+  );
+}
+
+function updateCampLossLabels(now: number): void {
+  if (!campLossLabels.length) return;
+  campLossLabels = campLossLabels.filter(({ playerId, label }) => {
+    const opacity = campLoss.opacity(playerId, now);
+    if (opacity === 0) {
+      label.remove();
+      return false;
+    }
+    label.style.opacity = String(opacity);
+    return true;
+  });
 }
 
 function updateTerrainHover(): void {
@@ -1451,7 +1486,7 @@ document.addEventListener("keydown", (event) => {
 });
 
 function frame(now: number): void {
-  renderer.draw(now, speed, paused);
+  if (renderer.draw(now, speed, paused)) updateCampLossLabels(now);
 
   requestAnimationFrame(frame);
 }

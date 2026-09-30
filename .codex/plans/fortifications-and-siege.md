@@ -9,6 +9,7 @@ Related plans: [technology](tech-tree-and-cultures.md), [strategic resources](st
 AI integration is required in the same optimization/army push. The [AI defensive construction plan](<optimization and ai improvement/ai-defensive-construction.md>) specifies protected-site selection, complete tower/link/gate quotes, staged construction, access checks, supporting forces, repairs and Modern counters. AI uses these shared fortification rules; it cannot invent free walls or alternate gate/navigation permissions.
 
 - Add a placeable defence building that is a tower.
+- Towers automatically shoot arrows at hostile ground troops passing within their legal firing range. They do not target ships, aircraft, strategic missiles, civilian traders or allied/friendly troops.
 - Placing another tower close enough creates a wall between towers.
 - Players can use the links to enclose cities and other sites.
 - Towers/walls are unlocked and improved through the technology tree through Early Modern. Modern adds gun nests and trenches as its replacement defensive tier; existing older walls remain usable without automatic conversion.
@@ -44,6 +45,7 @@ Towers and wall segments are domain entities with stable IDs, owner, constructio
 A placement preview should show:
 
 - Valid tower position and its cost/time.
+- Arrow weapon range and usable hostile-ground firing coverage, distinct from the wall connection preview.
 - Eligible nearby towers and the wall segments that would be created.
 - Any blocked connection, terrain restriction, or extra wall cost.
 - Whether the intended enclosure remains accessible.
@@ -53,6 +55,22 @@ Only compatible, completed, same-owner towers create usable links. Connections s
 Do not blindly connect every tower within range. Dense automatic links can cut across a city, trap traders, or generate unintended overlapping walls. Recommend automatic candidate links with clear preview and a way to choose or disable individual links; that UI detail needs agreement.
 
 Tower and connecting-wall construction must have a defined payment rule. A free unbounded wall based only on tower placement can favour the longest possible segments. Proposed cost is tower cost plus length/material-based wall cost, reserved/spent consistently with the placement command. Exact pricing is open.
+
+## Tower arrow attacks
+
+Arrow attacks are a confirmed tower capability bundled into each existing tower unlock, not an additional technology. A completed living tower automatically acquires eligible hostile ground combat units in range and fires on its own simulation-tick reload schedule. Retained older towers keep their original definition/weapon after faction age advancement; new Modern defences remain gun nests/trenches rather than an automatic tower conversion.
+
+Author a ranged arrow attack profile per tower tier: damage, range, reload, accuracy, target tags, projectile speed/size and any penetration/bonuses. Arrows normally have zero blast radius as a proposal. Apply the target's Ranged Armour/cover through the shared combat policy. Damage and reload are not inferred from a wall's integrity, a defence slowdown or the arrow animation. Exact values, ammunition/crew rules and firing-over-wall/elevation policy remain open; this note grants no new garrison or weapon-production requirement implicitly.
+
+Use the existing spatial index and a deterministic bounded target policy, proposed nearest eligible threat with stable-ID ties. Recheck hostility, target domain, range and firing eligibility at the appropriate fire/impact stages. Construction, destruction, capture and treaty changes invalidate attacks; they do not reset reload to grant extra shots. No attacks while incomplete or destroyed, and no automatic replenishment of tower health from firing.
+
+Share a defensive-weapon execution path with gun nests, using definition-specific profiles and source state rather than copying a separate AI-only damage loop. Firing/impact belongs to the domain; snapshots and animations display committed events. Use domain-qualified source identity so a tower ID cannot award damage XP or conquest credit to an unrelated squad with the same numeric ID. Tower promotion is not introduced by this rule.
+
+Firing-origin and obstruction need deliberate integration. Current `Fortifications.clear` tests the starting tile, while tower tiles are themselves blocked; applying it unchanged would make a tower block its own arrows. Exclude the source's own footprint through the shared weapon-origin policy while retaining terrain/other-barrier checks. Whether elevated tower arrows clear attached walls needs an explicit shared height/arc policy; do not bypass all friendly walls or all barriers just to enable fire. Placement previews and AI scoring must use the same legal firing result.
+
+For AI layouts, score marginal usable arrow coverage over approaches, crossings and gates alongside wall delay, supporting troops and real cost. Range circles alone cannot prove a shot is legal or that several towers add useful coverage. Siege remains an efficient counter, and armour must keep obsolete arrows from becoming an unscaled answer to every later ground unit.
+
+Validate moving enemies entering/leaving range, armour/cover, blocked and self-origin paths, paired/overlapping towers, incomplete/destroyed/captured towers, treaty expiry/betrayal, reload preservation, target death, source attribution, retained older towers and bounded work across many AI layouts. Ground-only targeting must reject ships, aircraft, strategic projectiles and civilians even when nearby.
 
 ## Enclosures need gates and navigation
 

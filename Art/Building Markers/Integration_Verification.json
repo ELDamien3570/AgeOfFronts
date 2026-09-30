@@ -1,5 +1,5 @@
 {
-  "passed": true,
+  "browserPassed": true,
   "browserChecks": [
     {
       "check": "all 21 markers loaded using game rendering resource",

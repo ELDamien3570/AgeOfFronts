@@ -125,6 +125,8 @@ Domain snapshots own membership and legal capabilities; ViewModels format eligib
 
 ## Modern defence and launcher cards
 
+Tower cards and placement previews show the tower's own arrow attack, range, reload, accuracy/penetration where authored, and Ground troops only target label, alongside integrity and wall links. Distinguish legal firing coverage from a simple range circle and wall-link range. Display incomplete/disabled firing state and retained older tower tier; faction age does not silently upgrade its weapon. Use the shared [tower policy](fortifications-and-siege.md#tower-arrow-attacks), with ViewModels formatting domain readiness and committed firing events.
+
 The Modern build palette exposes gun nests/trenches under Fortifications after Combined Arms, retaining inspection of existing older walls. Anti-air vehicles appear as a labelled support choice in the military recruitment palette, with Aircraft only displayed as their target role. Do not place them behind a requirement to own aircraft or label them Missile defence.
 
 Strategic Weapons exposes the fixed MIRV building and mobile MIRV unit as distinct choices. Their left cards separate launcher construction/recruitment, stored/required payload, launch eligibility and cooldown; the mobile card also shows movement/deployment state once those policies are authored. A researched unlock does not mean a launcher already has a free missile. Launch controls require explicit target preview and command validation, without copying the selection Upgrade action into an instant attack.

@@ -15,6 +15,7 @@ import {
 import { buildingArtworkId } from "./ArtworkCatalog";
 import { BuildingArtwork } from "./BuildingArtwork";
 import { BuildingMarkers } from "./BuildingMarkers";
+import { CampLossPresentation } from "./CampLossPresentation";
 import { EraArtwork } from "./EraArtwork";
 import { COLORS } from "./FactionColors";
 import { FormationArtwork } from "./FormationArtwork";
@@ -109,7 +110,10 @@ export class Renderer {
   selectionBox?: { x1: number; y1: number; x2: number; y2: number };
   marker?: { x: number; y: number; until: number; attack: boolean };
 
-  constructor(readonly canvas: HTMLCanvasElement) {
+  constructor(
+    readonly canvas: HTMLCanvasElement,
+    private readonly campLoss = new CampLossPresentation(),
+  ) {
     this.ctx = canvas.getContext("2d")!;
     this.strategic = new StrategicSprites(canvas);
     this.resizeObserver = new ResizeObserver(() => this.resize());
@@ -132,6 +136,7 @@ export class Renderer {
     this.currentSquads.clear();
     this.presentation.reset();
     this.traderPresentation.reset();
+    this.campLoss.reset();
     this.animationClock.reset();
     this.selected.clear();
     this.selectedShips.clear();
@@ -168,6 +173,7 @@ export class Renderer {
     this.presentation.update(snapshot);
     this.traderPresentation.update(snapshot);
     this.receivedAt = performance.now();
+    this.campLoss.update(snapshot, this.receivedAt);
     this.animationClock.update(snapshot.tick, this.receivedAt);
     for (const id of this.selected)
       if (
@@ -568,10 +574,19 @@ export class Renderer {
       ctx.textAlign = "center";
       ctx.lineWidth = 4;
       ctx.strokeStyle = "#10212bcc";
-      const name = `${player.name}${owner !== player.id ? " · camp lost" : ""}`;
-      ctx.strokeText(name, p.x, p.y - 16);
+      ctx.strokeText(player.name, p.x, p.y - 16);
       ctx.fillStyle = "#eaf0ec";
-      ctx.fillText(name, p.x, p.y - 16);
+      ctx.fillText(player.name, p.x, p.y - 16);
+      const campOpacity = this.campLoss.opacity(player.id, now);
+      if (campOpacity > 0) {
+        ctx.save();
+        ctx.globalAlpha *= campOpacity;
+        ctx.textAlign = "left";
+        const x = p.x + ctx.measureText(player.name).width / 2;
+        ctx.strokeText(" · camp lost", x, p.y - 16);
+        ctx.fillText(" · camp lost", x, p.y - 16);
+        ctx.restore();
+      }
     }
 
     // Buildings, including placement ghosts, are a layer beneath mobile units.

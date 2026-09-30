@@ -26,3 +26,9 @@ node build-markers.cjs "C:/path/to/sharp"
 These are native SVG designs extending the project's black-on-white marker style; image generation was not used. All sizes use the same geometry, and there are no age variants.
 
 Run the game's Vite server and open `/Art/Building%20Markers/Building_Marker_Preview.html` to inspect all icons through the actual `BuildingMarkers` rendering resource. Change faction color, marker size or ground and filter by building name.
+
+## Verification
+
+The production Vite bundle and six existing marker/tint tests pass. All 21 icons were checked in the browser preview; the live game was inspected at distant zoom. `Integration_Verification.json` records those checks and both saved screenshots.
+
+The default whole-project TypeScript check currently reports four existing `Array.at` library errors in `tests/skirmish/AllianceFeed.test.ts` at lines 80, 91, 97 and 111. Type checking passes when run with `--lib ES2022,DOM`. No compiler configuration or unrelated test source was changed.

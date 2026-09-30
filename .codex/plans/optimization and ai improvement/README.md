@@ -9,6 +9,7 @@ This folder records the investigation and proposed work for more AI factions, mo
 - Scale priorities are more AI factions, more tribes, and larger tribal armies.
 - Improve AI recruitment, army construction, and conquest.
 - Smart defensive construction is required in this same push: connected tower/wall layouts around important assets, preserved gates/trade/reinforcement access, and appropriate Modern trenches, gun nests, anti-air and missile defence where legally unlocked.
+- Towers automatically fire arrows at hostile ground combat troops only. AI layouts score legal usable arrow coverage as well as barrier delay; this is a new confirmed weapon capability, not current runtime proof.
 - Allow profiles that favour warfare, economic growth, betrayal, or defending allies.
 - The user is open to tribes developing if the result is feasible and interesting. The stages and thresholds below are proposals, not approved numerical rules.
 - A tribe that defeats a human player or nation can graduate to a full AI nation. Terminal conquest credit, not camp capture alone, is the proposed integration boundary; ordinary settlement development remains an additional proposed path.

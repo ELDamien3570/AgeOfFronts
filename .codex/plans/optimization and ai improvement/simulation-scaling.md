@@ -54,9 +54,11 @@ Avoid reissuing nearly identical orders on each think cycle. Retain an operation
 
 Dense local avoidance remains a separate scaling concern demonstrated by older stress fixtures. Profile neighbour count, candidate velocity tests, corridor density, and allocations. Keep swept collision safety and narrow-passage rules. Blindly truncating neighbours, reducing physics for off-camera armies, or changing movement based on renderer budgets is not acceptable.
 
-## Snapshot and presentation work
+## Defensive planning work
 
 The required [defensive construction planner](ai-defensive-construction.md) must use dirty own-asset/structure/topology regions and a bounded shortlist of candidate layouts. Cache marginal coverage and access checks by relevant revisions; do not scan every frontier tile for every AI each tick. Qualify simultaneous tower/link/gate construction and breach-triggered army rerouting alongside ordinary movement. Defence planning budget and construction concurrency are explicit tuning values, not permission to alter combat or path legality under load.
+
+## Snapshot and presentation work
 
 The encoder's current tile delta detection scans the full map at every publication. Record dirty owner/claim/progress tiles or regions from authoritative mutations and emit each changed tile once per publication, including resets, surrender/inheritance, and restored state.
 

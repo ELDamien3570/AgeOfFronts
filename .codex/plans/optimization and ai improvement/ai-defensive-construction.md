@@ -6,6 +6,8 @@ Status: required scope for the optimization/AI/army push; contracts and tuning b
 
 The user explicitly included smart defensive building in this push, including connected tower/wall layouts around important sites and appropriate Modern trenches, gun nests, anti-air and missile defence where unlocked. This is a delivery requirement, not a later optional AI feature.
 
+Towers also automatically shoot arrows at hostile ground troops, as confirmed by the user. Layout planning must consider useful arrow coverage and legal firing paths together with wall/gate geometry. Ships, aircraft, strategic projectiles, civilians and allied/friendly troops are not tower targets.
+
 Defence planning must share the economy planner, researched capabilities, terrain/navigation rules, enemy knowledge, personality profiles and army operations. All actual construction, gate conversion, repair and recruitment use the same validated commands and real costs as human players. Independent allied ownership still prohibits construction on an ally's land or commandeering its structures.
 
 The AI should protect valuable assets and usable approaches, preserve trade and reinforcement access, and adapt to observed threats. It should not place one building of every type near its original base or wall every captured tile. No new paid technology node is added by this planning feature; the catalogue remains 85 nodes.
@@ -23,7 +25,7 @@ These observations are from static source inspection, not runtime qualification 
 | [Fortifications.towerPlan](../../../src/skirmish/domain/Fortifications.ts) | Chooses up to two nearby completed same-owner/same-age towers within 12 tiles, with a fixed cardinal L-shaped path and extra length-based gold cost. Links are created when the new tower is built; the inspected `step` does not independently add missing links when two initially unfinished towers later complete. Construction sequencing therefore matters. These distances/prices are existing values, not accepted new tuning. |
 | [Fortifications gates / blocking](../../../src/skirmish/domain/Fortifications.ts) | Gate conversion requires a completed owned barrier and costs gold. The inspected blocker considers positive barrier health without excluding construction time. A plan must preserve access during intermediate construction, not only after its final gate is ready. |
 | [Building definitions](../../../src/skirmish/content/Buildings.ts) | Tower access is age-specific; new Modern towers are unavailable while old walls remain. Modern gun nests/trenches and missile defence have researched gates and authored costs. Current source places missile defence under Combined Arms, while its final design placement remains open in the Modern plan. |
-| [Battle cover / gun nests / interception](../../../src/skirmish/domain/Battle.ts) | Trenches cover eligible nearby owned infantry; nests require range and a clear firing path; missile defence intercepts specified strategic projectile families under its cooldown. Towers must not be scored as automatic gun damage merely because they are called defensive buildings. |
+| [Battle cover / gun nests / interception](../../../src/skirmish/domain/Battle.ts) | Trenches cover eligible nearby owned infantry; nests require range and a clear firing path; missile defence intercepts specified strategic projectile families under its cooldown. The inspected loop has no tower arrow attack yet; the new confirmed capability must be integrated and evaluated from its actual profile rather than assumed already implemented. |
 
 Three direct architectural risks follow: simultaneously placing a whole ring can leave disconnected towers; nearest-tower links can create unwanted barriers; and a nest behind a solid wall can lack a legal firing path. A count or distance heuristic cannot solve these cases.
 
@@ -65,7 +67,7 @@ Threat summaries retain separate ground assault, siege/artillery, cavalry/vehicl
 | Situation | Proposed preferred responses / checks |
 | --- | --- |
 | Early exposed city or producer | Affordable entrance/approach protection and a real local force; do not spend the opening city/barracks/replacement budget on an unnecessary full enclosure. |
-| Repeated ground attacks through a useful narrow approach | Reachable tower-linked barriers, gate access and supporting ranged/field forces. Score delay and frontage control, not imaginary tower DPS. |
+| Repeated ground attacks through a useful narrow approach | Reachable arrow-firing towers, linked barriers, gate access and supporting field forces. Score legal arrow coverage, reload/armour matchup, delay and frontage control rather than a range circle or unsupported DPS. |
 | Broad open frontier | Protect key districts, keep a mobile reserve and improve routes. A continuous map-wide wall is usually poor value and expensive to plan. |
 | Observed siege/artillery | Counter-siege/mobile disruption, dispersion and fallback positions; repairing a wall faster than it is shelled is not automatically sensible. |
 | Modern infantry/vehicle assault | Occupied trenches, nests with useful firing paths and appropriate ground counters/mobile reserve. Preserve existing walls when useful; do not auto-convert them. |
@@ -96,6 +98,14 @@ The tower planner currently does not explicitly check ownership of every interme
 Reserve troop staging outside pending walls and move only the AI's own units through ordinary orders before placing obstructed segments. It cannot force allied/enemy troops out of a footprint. Site ownership loss, capture of an anchor, changed topology or a newly blocked route invalidates pending stages; completed legal structures remain real assets.
 
 Mixed-age towers need explicit legal compatibility. Do not overwrite old anchors or force free tier conversion. Gate access, close control, allied passages, tower attacks and wall upgrade/repair policy still follow the open decisions in the fortification plan. If explicit link selection or compound wall/gate construction is needed, design it as a shared player-facing domain capability, not an AI exception.
+
+## Tower fire coverage
+
+Use the shared [tower attack policy](../fortifications-and-siege.md): tier-authored ranged arrows, automatic hostile-ground targeting, real reload and target armour/cover, valid origin and obstruction checks. A useful approach screen combines walls that guide/delay enemies with legal overlapping fire and supporting forces. Avoid counting two towers behind the same obstruction as two effective firing lanes.
+
+Score diminishing/marginal coverage by approach and expected threat, not every tile inside a circle. Retained older towers use older profiles, so their arrows may be poor value against later armour even when their walls still channel movement. No automatic aircraft/ship/missile targeting is acquired by advancing or by selecting an anti-air-defence goal.
+
+The current tower's own blocked tile requires explicit weapon-origin handling before attacks are usable. Firing over attached walls/elevation remains a shared fortification rule to settle; AI cannot invent an obstruction exception. Do not mark a site operational until its completed structures, real attack readiness, access and support satisfy the layout's actual purpose.
 
 ## Modern positions and actual supporting forces
 
@@ -152,6 +162,7 @@ Required scenarios:
 - Irregular coast, tight owned land, bridge approach, nearby neutral/enemy land, disconnected region and crowded existing structures.
 - Siege breach, anchor capture/destruction and damaged wall: repair/replan/fallback without free regeneration, duplicate barriers or command spam.
 - Nests with blocked fire paths and trenches with no garrison: correctly reduced usefulness and a real supporting-force assignment.
+- Arrow towers covering passing hostile ground troops: useful marginal coverage, correct reload/armour, legal source/obstruction handling, no fire while incomplete/destroyed, and no targeting ships/aircraft/projectiles/civilians/allies.
 - Aircraft-only threat versus strategic-missile threat versus mixed/saturating attack: choose distinct legal counters and honour cooldowns.
 - Modern with retained old walls; inaccurate/slow-firing Early Modern defenders; depleted/larger mixed-tier squads and manual/automatic army tactics.
 - Guardian ally defence, betrayal exposure and a developing tribe: no allied-land construction, research bypass or free materials.

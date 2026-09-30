@@ -32,9 +32,11 @@ Loyalty and assistance are independent: a loyal faction may honour non-aggressio
 
 Preset names, public disclosure, and player customization are proposals. Use a stable profile ID and rules/content version. Any sampled variation is seeded at match creation; do not reroll a faction's loyalty every decision cycle.
 
-## Relationship memory
+## Defensive construction
 
 Smart [defensive construction](ai-defensive-construction.md) is required in this push and consumes these same motivations. Builder protects production, Warlord secures selected staging/home approaches, Guardian maintains useful defensive/reinforcement routes, and Opportunist weighs fort exposure before betrayal. A proposed fortification-preference weight adjusts discretionary spending; every profile still checks legal access and actual threats. Guardian building remains limited to its own land under independent allied ownership.
+
+## Relationship memory
 
 Keep a bounded observer-to-faction relationship record: treaty history, observed aggression, honoured aid, abandonment, observed betrayal, delivery/trade interests where permitted, and last relevant event tick. The subjective trust score belongs to AI reasoning; the authoritative alliance state belongs to Diplomacy.
 

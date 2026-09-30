@@ -68,6 +68,7 @@ These documents specify planned behaviour and balance hypotheses. They do not es
 42. Squad capacity grows with its unit tier; older troops stay smaller until explicitly upgraded. Additional squad HP is the primary size benefit. Armour reduces incoming damage, independently of attack/reload cadence.
 43. Pre-Modern gunpowder is fairly inaccurate; Early Modern firearms also reload slowly. Accuracy, armour, HP and reload require separate tuning.
 44. Include smart AI defensive building in this same push: connected tower/wall layouts around important sites, plus appropriate Modern trenches, gun nests, anti-air and missile defence where unlocked. Use shared legal placement/cost rules and preserve city/port trade and reinforcement access.
+45. Towers automatically fire arrows at passing hostile ground troops in legal range. Ships, aircraft, strategic projectiles, civilian traders and friendly/allied units are not eligible. Tower weapons are bundled into existing tower unlocks; exact combat values and firing-over-wall rules remain open.
 
 Medieval plague events are under consideration. Their adoption, reserve/fielded casualty scope, timings, spread and mitigation remain open; see [manpower and city upgrades](<optimization and ai improvement/manpower-and-city-upgrades.md>).
 
