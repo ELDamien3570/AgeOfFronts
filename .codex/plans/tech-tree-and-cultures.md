@@ -19,8 +19,8 @@ The current Age of Fronts skirmish is the implementation target. The inherited O
 - `src/skirmish/Simulation.ts` validates commands and advances gameplay. It currently grants camp/territory income and passive building income. Buildings change owner when their tile is captured.
 - `src/skirmish/client/SkirmishViewModel.ts` derives presentation from snapshots. The research and trade interfaces should extend that separation.
 - The art contains recurring melee, ranged, cavalry, transport, warship, city, factory, port, barracks, archery, and stables icons for all seven ages.
-- Additional art includes mines and siege facilities from Bronze Age onward, an Early Modern armory, a Modern arms factory, oil wells/rigs, and a Modern military airstrip. Air gameplay is not yet specified by this plan.
-- Land animation metadata currently exists through Early Medieval. Static later-age icons do not establish equivalent animation or gameplay support.
+- Additional art includes mines/siege facilities from Bronze onward, blacksmiths from Bronze through Late Medieval, an Early Modern Armory, a Modern Arms Factory, oil well/rig, military airstrip, fighter/bomber and strategic payload/silo art. Aviation and strategic weapons are confirmed Modern unlocks; their combat contracts remain to be authored.
+- Land animation metadata currently exists through Early Modern; Modern land units have static art. All seven ages have ship metadata, six have land-trader metadata, and roads begin at Bronze. See the dated full art audit rather than treating the earlier snapshot as current.
 
 These observations are source inspection, not runtime validation.
 
@@ -38,7 +38,9 @@ These observations are source inspection, not runtime validation.
 - Start with three melee units and no buildings, with enough cash for a city and barracks.
 - Upgrade existing troops explicitly through their selected unit card on the left.
 - Add strategic resources, with horses first and mine/factory/rig production as specified in the resource plan.
-- Blacksmiths and arms factories consume strategic materials to produce weapons required for troops; commercial cargo is separate.
+- Blacksmiths and arms factories consume strategic materials to produce weapons required for post-Stone troops; Stone troops are exempt and commercial cargo is separate.
+- Older unlocked troop definitions remain recruitable without the current age's material, retaining their original weapon requirements.
+- Mounted cavalry always costs horses; tanks require manufactured armament, steel, oil and reserves instead of horses.
 - Towers, linked walls, and siege weapons in every age belong in the authored research content.
 
 ## Starting technologies
@@ -74,66 +76,19 @@ Completion uses the technologies in the culture's resolved tree for the specifie
 
 Keep all three trees independently completable. A port or army may need supporting infrastructure to operate, but requiring Economic research to finish Warfare or Naval would covertly force a third tree into the advancement rule.
 
-Proposed catch-up rule: each later-age foundation requires that tree's previous-age final technology as well as the appropriate empire age. An unfinished tree can be completed after the empire advances, but its missing tiers cannot be skipped. New-age availability does not automatically upgrade units or buildings in the unfinished tree.
+Proposed catch-up rule: each later-age foundation requires completion of that tree's previous-age nodes as well as the appropriate empire age. The final technology proves completion in the usual four-node graph; Classical Warfare also requires the separate Bronze Armies node. An unfinished tree can be completed after the empire advances, but its missing tiers cannot be skipped. New-age availability does not automatically upgrade units or buildings in the unfinished tree.
 
-## Stone Age default tree draft
+## Complete authored base tree
 
-The opening is building-free; see the pacing plan for the construction/bootstrap guarantee. Basic factory production generates traders automatically. This revised draft replaces the old city-recruited Barter Networks model and makes mining, fortifications, and siege available early.
+[The complete base catalogue](base-tech-tree.md) now replaces the earlier Stone/Bronze sketches and seven-age theme roadmap. It contains every counted technology, prerequisite, cost/time proposal, exact unit/producer placement, retained older recipes, horse/cargo/road progression and the full gold budget. [The age-by-age map](base-tech-tree-map.md) plots the same catalogue. [The art audit](base-tech-tree-art-audit.md) records all nine art categories and missing content.
 
-| Tree     | Technology         | Prerequisites                    | Proposed effect                                                                                          |
-| -------- | ------------------ | -------------------------------- | -------------------------------------------------------------------------------------------------------- |
-| Warfare  | Flint Weapons      | Starting grant                   | Basic infantry/barracks and early weapon-workshop capability; later recruits require produced equipment. |
-| Warfare  | Spear Throwing     | Flint Weapons                    | Ranged building and spear-thrower capability.                                                            |
-| Warfare  | Horsemanship       | Flint Weapons                    | Earliest horse-resource capability; stables, horse-node collection, and mounted cavalry costing horses.  |
-| Warfare  | Field Engineering  | Spear Throwing and Horsemanship  | First towers, linked walls, and independently usable Stone Age siege.                                    |
-| Economic | Settlements        | Starting grant                   | City construction and basic reserve-production capability.                                               |
-| Economic | Craft Workshops    | Settlements                      | Factory/workshop goods production and automatically generated free land traders.                         |
-| Economic | Stone Mining       | Settlements                      | Early mine construction and stone extraction.                                                            |
-| Economic | Goods Handling     | Craft Workshops and Stone Mining | Better cargo capacity/multi-stop logistics; Economic completion.                                         |
-| Naval    | Shorecraft         | No technology prerequisite       | Ports; research does not require owning coast.                                                           |
-| Naval    | Cargo Canoes       | Shorecraft                       | Civilian sea trade capability and separate military transport capability.                                |
-| Naval    | War Canoes         | Shorecraft                       | Initial warship capability.                                                                              |
-| Naval    | Coastal Navigation | Cargo Canoes and War Canoes      | Better sailing/navigation; Naval completion.                                                             |
+Four nodes per tree per age remain the usual structure, with the confirmed Bronze Armies addition as a fifth Warfare node: 85 counted technologies, two free starting grants and 83 paid purchases. Complete all five Bronze Warfare nodes for that tree to qualify. Economic owns raw extraction/refining, general production/reserves and commerce; Warfare owns equipment producers/patterns, combat definitions, armies, charges, fortifications/siege, and Modern aviation/strategic weapons; Naval owns ports and vessel/sea-transport/commerce capabilities. Building/operational dependencies are distinct from research edges.
 
-All twelve node names/effect groupings remain content proposals. Four-node tree size is retained; composites such as Field Engineering explicitly grant multiple related capabilities rather than secretly adding paid prerequisite nodes.
+The latest decisions settle horse ordering and tanks: Horsemanship is earliest horse access without forcing mining to depend on Warfare; tanks consume a manufactured armament item as well as steel, oil and reserves. Basic naval powder arrives in Late Medieval to match cannon-equipped ship art, with handheld infantry firearms and larger powder manufacture in Early Modern. The new Organ Gun/Bombard art is also placed in the Late Medieval powder tier as a content proposal.
 
-Horses are the first resource unlock. Whether Horsemanship is a global prerequisite for other resource technologies is awaiting the user's choice; the current graph leaves that connection unresolved rather than silently adding a cross-tree dependency.
+The Modern Warfare draft bundles Modern Armaments, Combined Arms, Military Aviation and Strategic Weapons. Combined Arms includes marksmen/tanks/artillery, gun nests/trenches and aircraft-only anti-air vehicles. Strategic Weapons includes ICBM/hydrogen payloads and fixed/mobile MIRV launchers. Older walls remain usable; advancing does not convert them. These capability bundles stay within four counted nodes; missile defence is separate and its placement/rules are still open. [Modern rules](modern-defences-and-strategic-weapons.md) distinguish cover, aircraft targeting, launchers and payloads; art availability does not establish their combat or production balance.
 
-Civilian sea traders are generated through factory production with a navigable port launch arrangement, rather than recruited as military transports. Foreign and allied deliveries are baseline commerce policies, not a separate fourth tree.
-
-## Bronze Age default tree draft
-
-Under the proposed catch-up rule, every foundation additionally requires Bronze empire age and the corresponding Stone Age final technology.
-
-| Tree     | Foundation                                                         | Branch A                                 | Branch B                                             | Final technology                                              |
-| -------- | ------------------------------------------------------------------ | ---------------------------------------- | ---------------------------------------------------- | ------------------------------------------------------------- |
-| Warfare  | Bronze Equipment: blacksmith capability and bronze weapon patterns | Archery: new ranged definition/equipment | Mounted Warfare: better mounted definition/equipment | Defence Engineering: stronger towers/walls and Bronze siege   |
-| Economic | Bronze Metallurgy                                                  | Urban Production: factory output         | Market Organisation: trade efficiency                | Administration: supply/logistics/reserves                     |
-| Naval    | Planked Hulls                                                      | Sailing: propulsion/speed                | Reinforced Warships: naval combat                    | Cargo Handling: distinct trade and transport capacity effects |
-
-Branch A and Branch B require their foundation; the final node requires both. Bronze Metallurgy enables the relevant raw extraction/refining capability; mines do not extract finished bronze. Material-dependent use and gold-only research are separate eligibility checks.
-
-## Seven-age content roadmap
-
-Themes for four technologies per tree follow. Exact effects, prerequisites, research costs, material recipes, and unit refits are not all authored yet.
-
-| Age            | Naval                                                                       | Warfare                                                                               | Economic                                                                        |
-| -------------- | --------------------------------------------------------------------------- | ------------------------------------------------------------------------------------- | ------------------------------------------------------------------------------- |
-| Stone Age      | Shorecraft, cargo canoes, war canoes, coastal navigation                    | Flint weapons, spear throwing, horsemanship, field engineering with walls/siege       | Settlements, craft workshops, stone mining, goods handling                      |
-| Bronze Age     | Planked hulls, sailing, reinforced warships, cargo handling                 | Bronze equipment, archery, mounted warfare, defence engineering with siege            | Bronze metallurgy, urban production, market organisation, administration        |
-| Classical Age  | Shipyards, transport fleets, galley warfare, naval logistics                | Professional infantry, ranged drill, cavalry tactics, masonry/catapult engineering    | Ironworking, roads, commercial networks, husbandry/supply organisation          |
-| Early Medieval | Improved hulls, seafaring, coastal raiding, landing logistics               | Iron equipment, trained archers, armoured cavalry, improved walls/siege               | Agricultural organisation, workshops, stable breeding, market logistics         |
-| Late Medieval  | Cargo vessels, fighting galleys, improved rigging, boarding tactics         | Steel equipment, crossbows, heavy cavalry, strong walls/trebuchet engineering         | Steelmaking, guild production, commercial banking, urban administration         |
-| Early Modern   | Ocean navigation, ocean transports, broadside artillery, fleet coordination | Firearms, volley tactics, mounted pistols, gunpowder fortifications/cannon            | Gunpowder production, manufactories, commercial finance, military provisioning  |
-| Modern         | Powered vessels, modern transports, naval weapons, fleet sensors            | Rifle infantry, precision weapons, armoured vehicles, modern fortifications/artillery | Oil extraction/rigs, industrialisation, mechanised logistics, mass mobilisation |
-
-Proposed ownership of research effects: Economic owns extraction/refining, general production efficiency, reserve growth, and commerce. Warfare owns blacksmith/arms-factory access, weapon patterns, combat definitions, mounted capability, tactical upgrades, and fortification/siege capabilities. Naval owns vessel unlocks, maritime movement/cargo capabilities, transport, and combat. Authored producer and weapon effects fit into the same progression slots; they must not secretly add extra completion nodes.
-
-Stable output rises through researched effects; horses remain a real recruitment cost for mounted definitions. Tank definitions use their own resource recipes.
-
-The art moves directly from Early Modern to Modern. Industrialisation can be an early Modern technology; a separate Industrial Age is an additional content decision.
-
-Strategic resources, refining, and weapon recipes are new domain content. Research and age advancement still use gold. Troop recruitment requires produced weapons and mounted cavalry also costs horses. Building material costs and refit recipes remain to be agreed.
+The artwork goes directly from Early Modern to Modern; this plan introduces no eighth Industrial Age. Troops/ships retain their actual authored definitions after empire advancement. Existing troops refit explicitly from the left card and reset promotion to recruit on successful refit. [Combat and promotion rules](combat-and-promotions.md) define the new stats/charge direction.
 
 ## Research and advancement proposals
 
@@ -155,7 +110,7 @@ A strategic resource production bottleneck can constrain deployment without chan
 
 Use a shared framework with declarative culture differences. A culture can replace technologies and unit definitions, adjust selected costs/effects, or deliberately alter prerequisites within a valid tree. Avoid copying the whole default tree or scattering culture-name checks through gameplay code.
 
-Each counted tree should initially retain four technology slots. Replacement technologies have their own stable IDs and explicit resolved prerequisites. Slot identity is a progression-balancing aid, not a hard-coded technology name.
+Each culture should preserve the default counted workload: four slots in each tree except five in Bronze Warfare, including an Armies-equivalent organizational capability. Replacement technologies have their own stable IDs and explicit resolved prerequisites. Slot identity is a progression-balancing aid, not a hard-coded technology name. Use the authored set of nodes when checking completion; do not hard-code four research purchases.
 
 Deleting a technology must not accidentally shorten a culture's advancement workload. Adding a required unique technology must not accidentally lengthen it. Deliberate starting grants or gold/time discounts are allowed design advantages and need to be budgeted accordingly.
 
@@ -177,7 +132,7 @@ Separate unit line identity from a particular age/culture unit definition. Lines
 
 Use era-appropriate building names: the Stone Age factory art is a craft workshop; later versions can be manufactories or industrial factories. Shared production behaviour does not require exposing internal generic type names to players.
 
-Existing troops require an explicit upgrade action in the selected unit card on the left. Research grants eligibility; it does not automatically refit existing formations. The card presents the researched target, its agreed gold/equipment/horse requirements, and unavailable reason. Recruitment requires produced weapons; the equipment recipe for refitting an existing unit still needs agreement. Exact refit duration, location, movement/combat restrictions, cancellation, and health/order preservation are open; see the pacing/opening plan. New recruits use an explicitly chosen unlocked definition.
+Existing troops require an explicit upgrade action in the selected unit card on the left. Research grants eligibility; it does not automatically refit existing formations. The card presents the researched target, its agreed gold/equipment/horse requirements, and unavailable reason. Post-Stone troop recruitment requires produced weapons, while Stone troop recipes are exempt. Tanks additionally require manufactured armament, steel, oil and reserves. Equipment quantities for refitting an existing unit still need agreement; successful age refits reset promotion to recruit. Exact refit duration, location, movement/combat restrictions, cancellation, and health/order preservation are open; see the pacing/opening plan. New recruits use an explicitly chosen unlocked definition, including retained older-age choices. Validate the selected definition's recipe instead of replacing its costs with the current empire age's material requirements.
 
 ## MVVM and domain boundaries
 
@@ -214,4 +169,4 @@ Trader generation is free but output, cargo, active actors, and replacement are 
 
 Evaluate whether Economic becomes compulsory in practice and whether allied trade accelerates the intended hour beyond recognition. Validate material access and late oil without granting new tiers invisibly on age advancement.
 
-Implementation checks must cover startup grants and the building-free three-melee opening, exactly-once spending, research/advancement timers, every choice of two trees, catch-up prerequisites, culture substitutions, left-card upgrades, resource costs/production, deliveries/capture, linked barriers/gates, betrayal, and AI parity. Static checks do not establish playtest balance.
+Implementation checks must cover startup grants and the building-free three-melee opening, exactly-once spending, research/advancement timers, every choice of two trees, catch-up prerequisites, culture substitutions, left-card upgrades, resource costs/production, Stone weapon exemption, older-tier recruitment during newer-material shortages, mounted horse costs, tank steel/oil costs, deliveries/capture, linked barriers/gates, betrayal, and AI parity. Static checks do not establish playtest balance.

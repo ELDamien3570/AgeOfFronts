@@ -1,0 +1,518 @@
+{
+  "schemaVersion": 1,
+  "generationMethod": "built-in image_gen",
+  "created": "2026-09-30",
+  "useCase": "stylized-concept",
+  "transparentBackground": true,
+  "commonStyle": "Use case: stylized-concept. Asset type: ONE production terrain-decoration sprite atlas for a painted historical top-down RTS, a new asset. Create a square image containing EXACTLY FOUR equal square cells in an exact 2 by 2 layout. There are NO drawn grid lines. Each cell contains ONE compact isolated natural accent cluster centered inside it, with generous fully transparent empty margins of at least 15 percent on ALL four sides of each cell. Nothing crosses cell boundaries. Camera is orthographic, straight vertically down from the sky; show tops of plants and rocks, not front views or isometric views. Cohesive hand-painted miniature terrain art: restrained broad readable silhouettes, painterly brushwork, soft natural texture, muted earthy colors, warm highlights, subtle neutral short contact shadows with upper-left light. Designed to remain readable at 24 to 40 pixels wide in the actual game; avoid tiny busy detail. These are small accents over a separately rendered ground surface, NOT ground tiles, NOT miniature dioramas or whole landscapes. A little organic earth at the very center is acceptable but no large dirt discs, no square opaque panels, no huge ground plates. Background genuinely transparent with clean alpha, including all gutters and outer margins. No text, no labels, no frame, no watermark, no people, no animals, no buildings, no UI, no cartoon black outlines. Keep all four sprites consistent in camera and lighting. Cell contents in exact reading order: ",
+  "atlases": [
+    {
+      "id": "temperate-woodland",
+      "name": "Temperate woodland",
+      "file": "temperate-woodland/starter-atlas-v2.png",
+      "groundPreview": "#7f9458",
+      "items": [
+        {
+          "id": "dense-canopy",
+          "description": "A compact grove of three overlapping deciduous broadleaf trees, moss and olive green rounded canopies, asymmetrical natural silhouette",
+          "widthCells": 2.1,
+          "role": "canopy",
+          "column": 0,
+          "row": 0
+        },
+        {
+          "id": "open-canopy",
+          "description": "Two small separated broadleaf trees and one sapling, light grassy gaps and compact footprint",
+          "widthCells": 2.1,
+          "role": "canopy",
+          "column": 1,
+          "row": 0
+        },
+        {
+          "id": "understory",
+          "description": "Low ferns and small leafy woodland shrubs, scattered leaf litter, muted green",
+          "widthCells": 1.05,
+          "role": "understory",
+          "column": 0,
+          "row": 1
+        },
+        {
+          "id": "mossy-stones",
+          "description": "A low cluster of warm-grey mossy stones with a little low foliage",
+          "widthCells": 1.7,
+          "role": "rock",
+          "column": 1,
+          "row": 1
+        }
+      ],
+      "prompt": "CRITICAL ATLAS PACKING: This is a sprite sheet, not a collage. Each of the four object groups must be SMALL. Its complete silhouette and shadow must fit inside a square no larger than 45 percent of its own quadrant's width and height. Put group centers at exactly (25%,25%), (75%,25%), (25%,75%), and (75%,75%) of the whole canvas. Maintain a VERY LARGE uninterrupted fully transparent cross-shaped gutter between all four groups and generous outer transparent margins. The small four clusters together should occupy less than one third of the canvas. Never enlarge a cluster to fill a quadrant. Do not let any branch, leaf, stone or shadow touch the invisible midpoint lines. Silhouette separation and padding have priority over maximizing detail. Use case: stylized-concept. Asset type: ONE production terrain-decoration sprite atlas for a painted historical top-down RTS, a new asset. Create a square image containing EXACTLY FOUR equal square cells in an exact 2 by 2 layout. There are NO drawn grid lines. Each cell contains ONE compact isolated natural accent cluster centered inside it, with generous fully transparent empty margins of at least 15 percent on ALL four sides of each cell. Nothing crosses cell boundaries. Camera is orthographic, straight vertically down from the sky; show tops of plants and rocks, not front views or isometric views. Cohesive hand-painted miniature terrain art: restrained broad readable silhouettes, painterly brushwork, soft natural texture, muted earthy colors, warm highlights, subtle neutral short contact shadows with upper-left light. Designed to remain readable at 24 to 40 pixels wide in the actual game; avoid tiny busy detail. These are small accents over a separately rendered ground surface, NOT ground tiles, NOT miniature dioramas or whole landscapes. A little organic earth at the very center is acceptable but no large dirt discs, no square opaque panels, no huge ground plates. Background genuinely transparent with clean alpha, including all gutters and outer margins. No text, no labels, no frame, no watermark, no people, no animals, no buildings, no UI, no cartoon black outlines. Keep all four sprites consistent in camera and lighting. Cell contents in exact reading order: TOP LEFT: A compact grove of three overlapping deciduous broadleaf trees, moss and olive green rounded canopies, asymmetrical natural silhouette. TOP RIGHT: Two small separated broadleaf trees and one sapling, light grassy gaps and compact footprint. BOTTOM LEFT: Low ferns and small leafy woodland shrubs, scattered leaf litter, muted green. BOTTOM RIGHT: A low cluster of warm-grey mossy stones with a little low foliage.",
+      "previousCandidate": {
+        "file": "temperate-woodland/starter-atlas-v1.png",
+        "status": "rejected; visible content crosses midpoint",
+        "prompt": "Use case: stylized-concept. Asset type: ONE production terrain-decoration sprite atlas for a painted historical top-down RTS, a new asset. Create a square image containing EXACTLY FOUR equal square cells in an exact 2 by 2 layout. There are NO drawn grid lines. Each cell contains ONE compact isolated natural accent cluster centered inside it, with generous fully transparent empty margins of at least 15 percent on ALL four sides of each cell. Nothing crosses cell boundaries. Camera is orthographic, straight vertically down from the sky; show tops of plants and rocks, not front views or isometric views. Cohesive hand-painted miniature terrain art: restrained broad readable silhouettes, painterly brushwork, soft natural texture, muted earthy colors, warm highlights, subtle neutral short contact shadows with upper-left light. Designed to remain readable at 24 to 40 pixels wide in the actual game; avoid tiny busy detail. These are small accents over a separately rendered ground surface, NOT ground tiles, NOT miniature dioramas or whole landscapes. A little organic earth at the very center is acceptable but no large dirt discs, no square opaque panels, no huge ground plates. Background genuinely transparent with clean alpha, including all gutters and outer margins. No text, no labels, no frame, no watermark, no people, no animals, no buildings, no UI, no cartoon black outlines. Keep all four sprites consistent in camera and lighting. Cell contents in exact reading order: TOP LEFT: A compact grove of three overlapping deciduous broadleaf trees, moss and olive green rounded canopies, asymmetrical natural silhouette. TOP RIGHT: Two small separated broadleaf trees and one sapling, light grassy gaps and compact footprint. BOTTOM LEFT: Low ferns and small leafy woodland shrubs, scattered leaf litter, muted green. BOTTOM RIGHT: A low cluster of warm-grey mossy stones with a little low foliage."
+      }
+    },
+    {
+      "id": "boreal-conifer",
+      "name": "Boreal forest",
+      "file": "boreal-conifer/starter-atlas-v1.png",
+      "groundPreview": "#627954",
+      "items": [
+        {
+          "id": "dense-conifers",
+          "description": "A compact cluster of three spruce and pine trees, their pointed radial canopies seen vertically from above, deep muted green",
+          "widthCells": 2.1,
+          "role": "canopy",
+          "column": 0,
+          "row": 0
+        },
+        {
+          "id": "open-conifers",
+          "description": "Two smaller conifers with a lichen and needle-litter gap between them",
+          "widthCells": 2.1,
+          "role": "canopy",
+          "column": 1,
+          "row": 0
+        },
+        {
+          "id": "lichen-shrubs",
+          "description": "Low cool sage shrubs, moss and pale lichen with a few tiny fern shapes",
+          "widthCells": 1.05,
+          "role": "understory",
+          "column": 0,
+          "row": 1
+        },
+        {
+          "id": "granite-stones",
+          "description": "Low angular grey granite boulders with moss and a little pale lichen",
+          "widthCells": 1.7,
+          "role": "rock",
+          "column": 1,
+          "row": 1
+        }
+      ],
+      "prompt": "Use case: stylized-concept. Asset type: ONE production terrain-decoration sprite atlas for a painted historical top-down RTS, a new asset. Create a square image containing EXACTLY FOUR equal square cells in an exact 2 by 2 layout. There are NO drawn grid lines. Each cell contains ONE compact isolated natural accent cluster centered inside it, with generous fully transparent empty margins of at least 15 percent on ALL four sides of each cell. Nothing crosses cell boundaries. Camera is orthographic, straight vertically down from the sky; show tops of plants and rocks, not front views or isometric views. Cohesive hand-painted miniature terrain art: restrained broad readable silhouettes, painterly brushwork, soft natural texture, muted earthy colors, warm highlights, subtle neutral short contact shadows with upper-left light. Designed to remain readable at 24 to 40 pixels wide in the actual game; avoid tiny busy detail. These are small accents over a separately rendered ground surface, NOT ground tiles, NOT miniature dioramas or whole landscapes. A little organic earth at the very center is acceptable but no large dirt discs, no square opaque panels, no huge ground plates. Background genuinely transparent with clean alpha, including all gutters and outer margins. No text, no labels, no frame, no watermark, no people, no animals, no buildings, no UI, no cartoon black outlines. Keep all four sprites consistent in camera and lighting. Cell contents in exact reading order: TOP LEFT: A compact cluster of three spruce and pine trees, their pointed radial canopies seen vertically from above, deep muted green. TOP RIGHT: Two smaller conifers with a lichen and needle-litter gap between them. BOTTOM LEFT: Low cool sage shrubs, moss and pale lichen with a few tiny fern shapes. BOTTOM RIGHT: Low angular grey granite boulders with moss and a little pale lichen."
+    },
+    {
+      "id": "tropical-moist",
+      "name": "Tropical moist forest",
+      "file": "tropical-moist/starter-atlas-v2.png",
+      "groundPreview": "#547950",
+      "items": [
+        {
+          "id": "dense-rainforest",
+          "description": "A compact interlocking trio of lush broadleaf rainforest canopies, varied large leaf masses in jade and olive greens",
+          "widthCells": 2.1,
+          "role": "canopy",
+          "column": 0,
+          "row": 0
+        },
+        {
+          "id": "open-rainforest",
+          "description": "Two compact tropical tree canopies with varied rounded crowns and a small open gap, no stereotypical palm plantation",
+          "widthCells": 2.1,
+          "role": "canopy",
+          "column": 1,
+          "row": 0
+        },
+        {
+          "id": "broadleaf-understory",
+          "description": "Low tropical broadleaf understory, small ferns and a few broad banana-like leaves in muted greens",
+          "widthCells": 1.05,
+          "role": "understory",
+          "column": 0,
+          "row": 1
+        },
+        {
+          "id": "humid-rocks",
+          "description": "A small low grey-brown stone outcrop with soft moss and ferns",
+          "widthCells": 1.7,
+          "role": "rock",
+          "column": 1,
+          "row": 1
+        }
+      ],
+      "prompt": "CRITICAL ATLAS PACKING: This is a sprite sheet, not a collage. Each of the four object groups must be SMALL. Its complete silhouette and shadow must fit inside a square no larger than 45 percent of its own quadrant's width and height. Put group centers at exactly (25%,25%), (75%,25%), (25%,75%), and (75%,75%) of the whole canvas. Maintain a VERY LARGE uninterrupted fully transparent cross-shaped gutter between all four groups and generous outer transparent margins. The small four clusters together should occupy less than one third of the canvas. Never enlarge a cluster to fill a quadrant. Do not let any branch, leaf, stone or shadow touch the invisible midpoint lines. Silhouette separation and padding have priority over maximizing detail. Use case: stylized-concept. Asset type: ONE production terrain-decoration sprite atlas for a painted historical top-down RTS, a new asset. Create a square image containing EXACTLY FOUR equal square cells in an exact 2 by 2 layout. There are NO drawn grid lines. Each cell contains ONE compact isolated natural accent cluster centered inside it, with generous fully transparent empty margins of at least 15 percent on ALL four sides of each cell. Nothing crosses cell boundaries. Camera is orthographic, straight vertically down from the sky; show tops of plants and rocks, not front views or isometric views. Cohesive hand-painted miniature terrain art: restrained broad readable silhouettes, painterly brushwork, soft natural texture, muted earthy colors, warm highlights, subtle neutral short contact shadows with upper-left light. Designed to remain readable at 24 to 40 pixels wide in the actual game; avoid tiny busy detail. These are small accents over a separately rendered ground surface, NOT ground tiles, NOT miniature dioramas or whole landscapes. A little organic earth at the very center is acceptable but no large dirt discs, no square opaque panels, no huge ground plates. Background genuinely transparent with clean alpha, including all gutters and outer margins. No text, no labels, no frame, no watermark, no people, no animals, no buildings, no UI, no cartoon black outlines. Keep all four sprites consistent in camera and lighting. Cell contents in exact reading order: TOP LEFT: A compact interlocking trio of lush broadleaf rainforest canopies, varied large leaf masses in jade and olive greens. TOP RIGHT: Two compact tropical tree canopies with varied rounded crowns and a small open gap, no stereotypical palm plantation. BOTTOM LEFT: Low tropical broadleaf understory, small ferns and a few broad banana-like leaves in muted greens. BOTTOM RIGHT: A small low grey-brown stone outcrop with soft moss and ferns.",
+      "previousCandidate": {
+        "file": "tropical-moist/starter-atlas-v1.png",
+        "status": "rejected; visible content crosses midpoint",
+        "prompt": "Use case: stylized-concept. Asset type: ONE production terrain-decoration sprite atlas for a painted historical top-down RTS, a new asset. Create a square image containing EXACTLY FOUR equal square cells in an exact 2 by 2 layout. There are NO drawn grid lines. Each cell contains ONE compact isolated natural accent cluster centered inside it, with generous fully transparent empty margins of at least 15 percent on ALL four sides of each cell. Nothing crosses cell boundaries. Camera is orthographic, straight vertically down from the sky; show tops of plants and rocks, not front views or isometric views. Cohesive hand-painted miniature terrain art: restrained broad readable silhouettes, painterly brushwork, soft natural texture, muted earthy colors, warm highlights, subtle neutral short contact shadows with upper-left light. Designed to remain readable at 24 to 40 pixels wide in the actual game; avoid tiny busy detail. These are small accents over a separately rendered ground surface, NOT ground tiles, NOT miniature dioramas or whole landscapes. A little organic earth at the very center is acceptable but no large dirt discs, no square opaque panels, no huge ground plates. Background genuinely transparent with clean alpha, including all gutters and outer margins. No text, no labels, no frame, no watermark, no people, no animals, no buildings, no UI, no cartoon black outlines. Keep all four sprites consistent in camera and lighting. Cell contents in exact reading order: TOP LEFT: A compact interlocking trio of lush broadleaf rainforest canopies, varied large leaf masses in jade and olive greens. TOP RIGHT: Two compact tropical tree canopies with varied rounded crowns and a small open gap, no stereotypical palm plantation. BOTTOM LEFT: Low tropical broadleaf understory, small ferns and a few broad banana-like leaves in muted greens. BOTTOM RIGHT: A small low grey-brown stone outcrop with soft moss and ferns."
+      }
+    },
+    {
+      "id": "mediterranean-scrub",
+      "name": "Mediterranean scrub",
+      "file": "mediterranean-scrub/starter-atlas-v1.png",
+      "groundPreview": "#96906c",
+      "items": [
+        {
+          "id": "evergreen-grove",
+          "description": "A compact trio of small Mediterranean evergreen trees, rounded olive-grey green canopies, dry natural woodland",
+          "widthCells": 2.1,
+          "role": "canopy",
+          "column": 0,
+          "row": 0
+        },
+        {
+          "id": "open-pine",
+          "description": "Two low Mediterranean umbrella-pine canopies seen straight from above, open sun-dry spacing",
+          "widthCells": 2.1,
+          "role": "canopy",
+          "column": 1,
+          "row": 0
+        },
+        {
+          "id": "maquis-shrubs",
+          "description": "Low Mediterranean maquis scrub, sage green rounded shrubs and sparse straw grass, no flowers dominating",
+          "widthCells": 1.05,
+          "role": "understory",
+          "column": 0,
+          "row": 1
+        },
+        {
+          "id": "limestone-stones",
+          "description": "A low pale warm limestone cluster surrounded by sparse dry grass",
+          "widthCells": 1.7,
+          "role": "rock",
+          "column": 1,
+          "row": 1
+        }
+      ],
+      "prompt": "Use case: stylized-concept. Asset type: ONE production terrain-decoration sprite atlas for a painted historical top-down RTS, a new asset. Create a square image containing EXACTLY FOUR equal square cells in an exact 2 by 2 layout. There are NO drawn grid lines. Each cell contains ONE compact isolated natural accent cluster centered inside it, with generous fully transparent empty margins of at least 15 percent on ALL four sides of each cell. Nothing crosses cell boundaries. Camera is orthographic, straight vertically down from the sky; show tops of plants and rocks, not front views or isometric views. Cohesive hand-painted miniature terrain art: restrained broad readable silhouettes, painterly brushwork, soft natural texture, muted earthy colors, warm highlights, subtle neutral short contact shadows with upper-left light. Designed to remain readable at 24 to 40 pixels wide in the actual game; avoid tiny busy detail. These are small accents over a separately rendered ground surface, NOT ground tiles, NOT miniature dioramas or whole landscapes. A little organic earth at the very center is acceptable but no large dirt discs, no square opaque panels, no huge ground plates. Background genuinely transparent with clean alpha, including all gutters and outer margins. No text, no labels, no frame, no watermark, no people, no animals, no buildings, no UI, no cartoon black outlines. Keep all four sprites consistent in camera and lighting. Cell contents in exact reading order: TOP LEFT: A compact trio of small Mediterranean evergreen trees, rounded olive-grey green canopies, dry natural woodland. TOP RIGHT: Two low Mediterranean umbrella-pine canopies seen straight from above, open sun-dry spacing. BOTTOM LEFT: Low Mediterranean maquis scrub, sage green rounded shrubs and sparse straw grass, no flowers dominating. BOTTOM RIGHT: A low pale warm limestone cluster surrounded by sparse dry grass."
+    },
+    {
+      "id": "grassland-steppe",
+      "name": "Temperate grassland and steppe",
+      "file": "grassland-steppe/starter-atlas-v1.png",
+      "groundPreview": "#a09e6c",
+      "items": [
+        {
+          "id": "green-grasses",
+          "description": "A compact irregular patch of varied low temperate grasses with subtle green and straw tones",
+          "widthCells": 1.05,
+          "role": "ground-detail",
+          "column": 0,
+          "row": 0
+        },
+        {
+          "id": "dry-tussocks",
+          "description": "Sparse dry straw-gold grass tussocks with small spaces between, low and readable",
+          "widthCells": 1.05,
+          "role": "ground-detail",
+          "column": 1,
+          "row": 0
+        },
+        {
+          "id": "steppe-shrubs",
+          "description": "A few low grey-sage steppe shrubs mixed with short grasses, no trees",
+          "widthCells": 1.05,
+          "role": "understory",
+          "column": 0,
+          "row": 1
+        },
+        {
+          "id": "steppe-stones",
+          "description": "A low cluster of weathered brown-grey stones with very sparse grasses",
+          "widthCells": 1.7,
+          "role": "rock",
+          "column": 1,
+          "row": 1
+        }
+      ],
+      "prompt": "Use case: stylized-concept. Asset type: ONE production terrain-decoration sprite atlas for a painted historical top-down RTS, a new asset. Create a square image containing EXACTLY FOUR equal square cells in an exact 2 by 2 layout. There are NO drawn grid lines. Each cell contains ONE compact isolated natural accent cluster centered inside it, with generous fully transparent empty margins of at least 15 percent on ALL four sides of each cell. Nothing crosses cell boundaries. Camera is orthographic, straight vertically down from the sky; show tops of plants and rocks, not front views or isometric views. Cohesive hand-painted miniature terrain art: restrained broad readable silhouettes, painterly brushwork, soft natural texture, muted earthy colors, warm highlights, subtle neutral short contact shadows with upper-left light. Designed to remain readable at 24 to 40 pixels wide in the actual game; avoid tiny busy detail. These are small accents over a separately rendered ground surface, NOT ground tiles, NOT miniature dioramas or whole landscapes. A little organic earth at the very center is acceptable but no large dirt discs, no square opaque panels, no huge ground plates. Background genuinely transparent with clean alpha, including all gutters and outer margins. No text, no labels, no frame, no watermark, no people, no animals, no buildings, no UI, no cartoon black outlines. Keep all four sprites consistent in camera and lighting. Cell contents in exact reading order: TOP LEFT: A compact irregular patch of varied low temperate grasses with subtle green and straw tones. TOP RIGHT: Sparse dry straw-gold grass tussocks with small spaces between, low and readable. BOTTOM LEFT: A few low grey-sage steppe shrubs mixed with short grasses, no trees. BOTTOM RIGHT: A low cluster of weathered brown-grey stones with very sparse grasses."
+    },
+    {
+      "id": "savanna-dry-woodland",
+      "name": "Savanna and dry woodland",
+      "file": "savanna-dry-woodland/starter-atlas-v2.png",
+      "groundPreview": "#aaa174",
+      "items": [
+        {
+          "id": "acacia-grove",
+          "description": "Three compact umbrella-shaped acacia canopies seen strictly from above, muted dusty green crowns, dry straw details below",
+          "widthCells": 2.1,
+          "role": "canopy",
+          "column": 0,
+          "row": 0
+        },
+        {
+          "id": "open-acacias",
+          "description": "Two small sparse acacia canopies with broad transparent gaps, no tall visible trunks",
+          "widthCells": 2.1,
+          "role": "canopy",
+          "column": 1,
+          "row": 0
+        },
+        {
+          "id": "savanna-grasses",
+          "description": "Sparse golden savanna grass tufts and low thorn scrub, top down and subdued",
+          "widthCells": 1.05,
+          "role": "ground-detail",
+          "column": 0,
+          "row": 1
+        },
+        {
+          "id": "savanna-rocks",
+          "description": "Low warm ochre-brown rock cluster, sparse dry grasses and a tiny thorn shrub",
+          "widthCells": 1.7,
+          "role": "rock",
+          "column": 1,
+          "row": 1
+        }
+      ],
+      "prompt": "CRITICAL ATLAS PACKING: This is a sprite sheet, not a collage. Each of the four object groups must be SMALL. Its complete silhouette and shadow must fit inside a square no larger than 45 percent of its own quadrant's width and height. Put group centers at exactly (25%,25%), (75%,25%), (25%,75%), and (75%,75%) of the whole canvas. Maintain a VERY LARGE uninterrupted fully transparent cross-shaped gutter between all four groups and generous outer transparent margins. The small four clusters together should occupy less than one third of the canvas. Never enlarge a cluster to fill a quadrant. Do not let any branch, leaf, stone or shadow touch the invisible midpoint lines. Silhouette separation and padding have priority over maximizing detail. Use case: stylized-concept. Asset type: ONE production terrain-decoration sprite atlas for a painted historical top-down RTS, a new asset. Create a square image containing EXACTLY FOUR equal square cells in an exact 2 by 2 layout. There are NO drawn grid lines. Each cell contains ONE compact isolated natural accent cluster centered inside it, with generous fully transparent empty margins of at least 15 percent on ALL four sides of each cell. Nothing crosses cell boundaries. Camera is orthographic, straight vertically down from the sky; show tops of plants and rocks, not front views or isometric views. Cohesive hand-painted miniature terrain art: restrained broad readable silhouettes, painterly brushwork, soft natural texture, muted earthy colors, warm highlights, subtle neutral short contact shadows with upper-left light. Designed to remain readable at 24 to 40 pixels wide in the actual game; avoid tiny busy detail. These are small accents over a separately rendered ground surface, NOT ground tiles, NOT miniature dioramas or whole landscapes. A little organic earth at the very center is acceptable but no large dirt discs, no square opaque panels, no huge ground plates. Background genuinely transparent with clean alpha, including all gutters and outer margins. No text, no labels, no frame, no watermark, no people, no animals, no buildings, no UI, no cartoon black outlines. Keep all four sprites consistent in camera and lighting. Cell contents in exact reading order: TOP LEFT: Three compact umbrella-shaped acacia canopies seen strictly from above, muted dusty green crowns, dry straw details below. TOP RIGHT: Two small sparse acacia canopies with broad transparent gaps, no tall visible trunks. BOTTOM LEFT: Sparse golden savanna grass tufts and low thorn scrub, top down and subdued. BOTTOM RIGHT: Low warm ochre-brown rock cluster, sparse dry grasses and a tiny thorn shrub.",
+      "previousCandidate": {
+        "file": "savanna-dry-woodland/starter-atlas-v1.png",
+        "status": "not selected; padding below library minimum",
+        "prompt": "Use case: stylized-concept. Asset type: ONE production terrain-decoration sprite atlas for a painted historical top-down RTS, a new asset. Create a square image containing EXACTLY FOUR equal square cells in an exact 2 by 2 layout. There are NO drawn grid lines. Each cell contains ONE compact isolated natural accent cluster centered inside it, with generous fully transparent empty margins of at least 15 percent on ALL four sides of each cell. Nothing crosses cell boundaries. Camera is orthographic, straight vertically down from the sky; show tops of plants and rocks, not front views or isometric views. Cohesive hand-painted miniature terrain art: restrained broad readable silhouettes, painterly brushwork, soft natural texture, muted earthy colors, warm highlights, subtle neutral short contact shadows with upper-left light. Designed to remain readable at 24 to 40 pixels wide in the actual game; avoid tiny busy detail. These are small accents over a separately rendered ground surface, NOT ground tiles, NOT miniature dioramas or whole landscapes. A little organic earth at the very center is acceptable but no large dirt discs, no square opaque panels, no huge ground plates. Background genuinely transparent with clean alpha, including all gutters and outer margins. No text, no labels, no frame, no watermark, no people, no animals, no buildings, no UI, no cartoon black outlines. Keep all four sprites consistent in camera and lighting. Cell contents in exact reading order: TOP LEFT: Three compact umbrella-shaped acacia canopies seen strictly from above, muted dusty green crowns, dry straw details below. TOP RIGHT: Two small sparse acacia canopies with broad transparent gaps, no tall visible trunks. BOTTOM LEFT: Sparse golden savanna grass tufts and low thorn scrub, top down and subdued. BOTTOM RIGHT: Low warm ochre-brown rock cluster, sparse dry grasses and a tiny thorn shrub."
+      }
+    },
+    {
+      "id": "desert-xeric",
+      "name": "Desert and xeric scrub",
+      "file": "desert-xeric/starter-atlas-v1.png",
+      "groundPreview": "#c7b185",
+      "items": [
+        {
+          "id": "sand-ripple",
+          "description": "A small organic patch of low pale sand ripples, soft shallow relief, no tall dunes or square sand tile",
+          "widthCells": 1.7,
+          "role": "ground-detail",
+          "column": 0,
+          "row": 0
+        },
+        {
+          "id": "desert-shrubs",
+          "description": "A few tiny xeric shrubs and brittle straw grasses, muted grey-sage, no cacti, no palms",
+          "widthCells": 1.05,
+          "role": "understory",
+          "column": 1,
+          "row": 0
+        },
+        {
+          "id": "sandstone-outcrop",
+          "description": "A compact low eroded sandstone outcrop, warm ochre and dusty buff, overhead shape",
+          "widthCells": 1.7,
+          "role": "rock",
+          "column": 0,
+          "row": 1
+        },
+        {
+          "id": "gravel-stones",
+          "description": "Sparse dark weathered desert stones with sandy dust in irregular compact grouping, no plants required",
+          "widthCells": 1.3,
+          "role": "rock",
+          "column": 1,
+          "row": 1
+        }
+      ],
+      "prompt": "CRITICAL ATLAS PACKING: This is a sprite sheet, not a collage. Each of the four object groups must be SMALL. Its complete silhouette and shadow must fit inside a square no larger than 45 percent of its own quadrant's width and height. Put group centers at exactly (25%,25%), (75%,25%), (25%,75%), and (75%,75%) of the whole canvas. Maintain a VERY LARGE uninterrupted fully transparent cross-shaped gutter between all four groups and generous outer transparent margins. The small four clusters together should occupy less than one third of the canvas. Never enlarge a cluster to fill a quadrant. Do not let any branch, leaf, stone or shadow touch the invisible midpoint lines. Silhouette separation and padding have priority over maximizing detail. Use case: stylized-concept. Asset type: ONE production terrain-decoration sprite atlas for a painted historical top-down RTS, a new asset. Create a square image containing EXACTLY FOUR equal square cells in an exact 2 by 2 layout. There are NO drawn grid lines. Each cell contains ONE compact isolated natural accent cluster centered inside it, with generous fully transparent empty margins of at least 15 percent on ALL four sides of each cell. Nothing crosses cell boundaries. Camera is orthographic, straight vertically down from the sky; show tops of plants and rocks, not front views or isometric views. Cohesive hand-painted miniature terrain art: restrained broad readable silhouettes, painterly brushwork, soft natural texture, muted earthy colors, warm highlights, subtle neutral short contact shadows with upper-left light. Designed to remain readable at 24 to 40 pixels wide in the actual game; avoid tiny busy detail. These are small accents over a separately rendered ground surface, NOT ground tiles, NOT miniature dioramas or whole landscapes. A little organic earth at the very center is acceptable but no large dirt discs, no square opaque panels, no huge ground plates. Background genuinely transparent with clean alpha, including all gutters and outer margins. No text, no labels, no frame, no watermark, no people, no animals, no buildings, no UI, no cartoon black outlines. Keep all four sprites consistent in camera and lighting. Cell contents in exact reading order: TOP LEFT: A small organic patch of low pale sand ripples, soft shallow relief, no tall dunes or square sand tile. TOP RIGHT: A few tiny xeric shrubs and brittle straw grasses, muted grey-sage, no cacti, no palms. BOTTOM LEFT: A compact low eroded sandstone outcrop, warm ochre and dusty buff, overhead shape. BOTTOM RIGHT: Sparse dark weathered desert stones with sandy dust in irregular compact grouping, no plants required."
+    },
+    {
+      "id": "wetland-riparian",
+      "name": "Wetland and riverbank",
+      "file": "wetland-riparian/starter-atlas-v1.png",
+      "groundPreview": "#7b8870",
+      "items": [
+        {
+          "id": "reeds",
+          "description": "A small irregular clump of reeds and cattail-like stalks viewed from directly above, muted olive greens and tan tips",
+          "widthCells": 1.05,
+          "role": "wetland",
+          "column": 0,
+          "row": 0
+        },
+        {
+          "id": "willow-grove",
+          "description": "Two compact willow-like riparian tree canopies, cool grey-green leaves and irregular crowns",
+          "widthCells": 2.1,
+          "role": "canopy",
+          "column": 1,
+          "row": 0
+        },
+        {
+          "id": "marsh-grasses",
+          "description": "A low clump of sedges and marsh grasses with a tiny organic muddy base, no square water tile",
+          "widthCells": 1.05,
+          "role": "wetland",
+          "column": 0,
+          "row": 1
+        },
+        {
+          "id": "river-stones",
+          "description": "A few low smooth rounded river stones with sparse reeds, no baked blue water",
+          "widthCells": 1.7,
+          "role": "rock",
+          "column": 1,
+          "row": 1
+        }
+      ],
+      "prompt": "CRITICAL ATLAS PACKING: This is a sprite sheet, not a collage. Each of the four object groups must be SMALL. Its complete silhouette and shadow must fit inside a square no larger than 45 percent of its own quadrant's width and height. Put group centers at exactly (25%,25%), (75%,25%), (25%,75%), and (75%,75%) of the whole canvas. Maintain a VERY LARGE uninterrupted fully transparent cross-shaped gutter between all four groups and generous outer transparent margins. The small four clusters together should occupy less than one third of the canvas. Never enlarge a cluster to fill a quadrant. Do not let any branch, leaf, stone or shadow touch the invisible midpoint lines. Silhouette separation and padding have priority over maximizing detail. Use case: stylized-concept. Asset type: ONE production terrain-decoration sprite atlas for a painted historical top-down RTS, a new asset. Create a square image containing EXACTLY FOUR equal square cells in an exact 2 by 2 layout. There are NO drawn grid lines. Each cell contains ONE compact isolated natural accent cluster centered inside it, with generous fully transparent empty margins of at least 15 percent on ALL four sides of each cell. Nothing crosses cell boundaries. Camera is orthographic, straight vertically down from the sky; show tops of plants and rocks, not front views or isometric views. Cohesive hand-painted miniature terrain art: restrained broad readable silhouettes, painterly brushwork, soft natural texture, muted earthy colors, warm highlights, subtle neutral short contact shadows with upper-left light. Designed to remain readable at 24 to 40 pixels wide in the actual game; avoid tiny busy detail. These are small accents over a separately rendered ground surface, NOT ground tiles, NOT miniature dioramas or whole landscapes. A little organic earth at the very center is acceptable but no large dirt discs, no square opaque panels, no huge ground plates. Background genuinely transparent with clean alpha, including all gutters and outer margins. No text, no labels, no frame, no watermark, no people, no animals, no buildings, no UI, no cartoon black outlines. Keep all four sprites consistent in camera and lighting. Cell contents in exact reading order: TOP LEFT: A small irregular clump of reeds and cattail-like stalks viewed from directly above, muted olive greens and tan tips. TOP RIGHT: Two compact willow-like riparian tree canopies, cool grey-green leaves and irregular crowns. BOTTOM LEFT: A low clump of sedges and marsh grasses with a tiny organic muddy base, no square water tile. BOTTOM RIGHT: A few low smooth rounded river stones with sparse reeds, no baked blue water."
+    },
+    {
+      "id": "alpine",
+      "name": "Alpine and montane terrain",
+      "file": "alpine/starter-atlas-v1.png",
+      "groundPreview": "#99998d",
+      "items": [
+        {
+          "id": "alpine-scree",
+          "description": "A compact low angular grey scree cluster with a few larger stones, rugged but flat overhead",
+          "widthCells": 1.7,
+          "role": "rock",
+          "column": 0,
+          "row": 0
+        },
+        {
+          "id": "dwarf-pine",
+          "description": "A small low clump of dwarf mountain pine shrubs in cool subdued green",
+          "widthCells": 1.3,
+          "role": "understory",
+          "column": 1,
+          "row": 0
+        },
+        {
+          "id": "alpine-grasses",
+          "description": "Tiny low alpine grasses and cushion plants between small grey stones",
+          "widthCells": 1.05,
+          "role": "ground-detail",
+          "column": 0,
+          "row": 1
+        },
+        {
+          "id": "snow-rocks",
+          "description": "Low rugged grey boulders with restrained patches of white snow on their tops, viewed strictly overhead",
+          "widthCells": 1.7,
+          "role": "rock",
+          "column": 1,
+          "row": 1
+        }
+      ],
+      "prompt": "CRITICAL ATLAS PACKING: This is a sprite sheet, not a collage. Each of the four object groups must be SMALL. Its complete silhouette and shadow must fit inside a square no larger than 45 percent of its own quadrant's width and height. Put group centers at exactly (25%,25%), (75%,25%), (25%,75%), and (75%,75%) of the whole canvas. Maintain a VERY LARGE uninterrupted fully transparent cross-shaped gutter between all four groups and generous outer transparent margins. The small four clusters together should occupy less than one third of the canvas. Never enlarge a cluster to fill a quadrant. Do not let any branch, leaf, stone or shadow touch the invisible midpoint lines. Silhouette separation and padding have priority over maximizing detail. Use case: stylized-concept. Asset type: ONE production terrain-decoration sprite atlas for a painted historical top-down RTS, a new asset. Create a square image containing EXACTLY FOUR equal square cells in an exact 2 by 2 layout. There are NO drawn grid lines. Each cell contains ONE compact isolated natural accent cluster centered inside it, with generous fully transparent empty margins of at least 15 percent on ALL four sides of each cell. Nothing crosses cell boundaries. Camera is orthographic, straight vertically down from the sky; show tops of plants and rocks, not front views or isometric views. Cohesive hand-painted miniature terrain art: restrained broad readable silhouettes, painterly brushwork, soft natural texture, muted earthy colors, warm highlights, subtle neutral short contact shadows with upper-left light. Designed to remain readable at 24 to 40 pixels wide in the actual game; avoid tiny busy detail. These are small accents over a separately rendered ground surface, NOT ground tiles, NOT miniature dioramas or whole landscapes. A little organic earth at the very center is acceptable but no large dirt discs, no square opaque panels, no huge ground plates. Background genuinely transparent with clean alpha, including all gutters and outer margins. No text, no labels, no frame, no watermark, no people, no animals, no buildings, no UI, no cartoon black outlines. Keep all four sprites consistent in camera and lighting. Cell contents in exact reading order: TOP LEFT: A compact low angular grey scree cluster with a few larger stones, rugged but flat overhead. TOP RIGHT: A small low clump of dwarf mountain pine shrubs in cool subdued green. BOTTOM LEFT: Tiny low alpine grasses and cushion plants between small grey stones. BOTTOM RIGHT: Low rugged grey boulders with restrained patches of white snow on their tops, viewed strictly overhead."
+    },
+    {
+      "id": "tundra",
+      "name": "Tundra",
+      "file": "tundra/starter-atlas-v1.png",
+      "groundPreview": "#95988b",
+      "items": [
+        {
+          "id": "moss-lichen",
+          "description": "A low irregular mat of pale grey lichen and muted moss, organic broken silhouette, no trees",
+          "widthCells": 1.05,
+          "role": "ground-detail",
+          "column": 0,
+          "row": 0
+        },
+        {
+          "id": "dwarf-shrubs",
+          "description": "A small cluster of low dwarf shrubs, tiny grey-sage leaf masses and russet stems, no trees",
+          "widthCells": 1.05,
+          "role": "understory",
+          "column": 1,
+          "row": 0
+        },
+        {
+          "id": "tundra-stones",
+          "description": "Low flat frost-weathered grey stones with pale lichen",
+          "widthCells": 1.7,
+          "role": "rock",
+          "column": 0,
+          "row": 1
+        },
+        {
+          "id": "snow-tussocks",
+          "description": "Low pale grass tussocks, tiny exposed stones and broken snow patches, no trees",
+          "widthCells": 1.3,
+          "role": "ground-detail",
+          "column": 1,
+          "row": 1
+        }
+      ],
+      "prompt": "CRITICAL ATLAS PACKING: This is a sprite sheet, not a collage. Each of the four object groups must be SMALL. Its complete silhouette and shadow must fit inside a square no larger than 45 percent of its own quadrant's width and height. Put group centers at exactly (25%,25%), (75%,25%), (25%,75%), and (75%,75%) of the whole canvas. Maintain a VERY LARGE uninterrupted fully transparent cross-shaped gutter between all four groups and generous outer transparent margins. The small four clusters together should occupy less than one third of the canvas. Never enlarge a cluster to fill a quadrant. Do not let any branch, leaf, stone or shadow touch the invisible midpoint lines. Silhouette separation and padding have priority over maximizing detail. Use case: stylized-concept. Asset type: ONE production terrain-decoration sprite atlas for a painted historical top-down RTS, a new asset. Create a square image containing EXACTLY FOUR equal square cells in an exact 2 by 2 layout. There are NO drawn grid lines. Each cell contains ONE compact isolated natural accent cluster centered inside it, with generous fully transparent empty margins of at least 15 percent on ALL four sides of each cell. Nothing crosses cell boundaries. Camera is orthographic, straight vertically down from the sky; show tops of plants and rocks, not front views or isometric views. Cohesive hand-painted miniature terrain art: restrained broad readable silhouettes, painterly brushwork, soft natural texture, muted earthy colors, warm highlights, subtle neutral short contact shadows with upper-left light. Designed to remain readable at 24 to 40 pixels wide in the actual game; avoid tiny busy detail. These are small accents over a separately rendered ground surface, NOT ground tiles, NOT miniature dioramas or whole landscapes. A little organic earth at the very center is acceptable but no large dirt discs, no square opaque panels, no huge ground plates. Background genuinely transparent with clean alpha, including all gutters and outer margins. No text, no labels, no frame, no watermark, no people, no animals, no buildings, no UI, no cartoon black outlines. Keep all four sprites consistent in camera and lighting. Cell contents in exact reading order: TOP LEFT: A low irregular mat of pale grey lichen and muted moss, organic broken silhouette, no trees. TOP RIGHT: A small cluster of low dwarf shrubs, tiny grey-sage leaf masses and russet stems, no trees. BOTTOM LEFT: Low flat frost-weathered grey stones with pale lichen. BOTTOM RIGHT: Low pale grass tussocks, tiny exposed stones and broken snow patches, no trees."
+    },
+    {
+      "id": "coastal",
+      "name": "Coastal accents",
+      "file": "coastal/starter-atlas-v1.png",
+      "groundPreview": "#beb17f",
+      "items": [
+        {
+          "id": "beach-grasses",
+          "description": "A small irregular cluster of pale beach grass and low coastal scrub on a tiny natural sand base",
+          "widthCells": 1.05,
+          "role": "shore",
+          "column": 0,
+          "row": 0
+        },
+        {
+          "id": "shore-rocks",
+          "description": "A low cluster of rounded warm-grey shoreline rocks, no ocean painted around it",
+          "widthCells": 1.7,
+          "role": "shore",
+          "column": 1,
+          "row": 0
+        },
+        {
+          "id": "dune-ripples",
+          "description": "A small patch of low wind-shaped sandy dune ripples with one tiny beach-grass tuft, no high dune mound",
+          "widthCells": 1.7,
+          "role": "shore",
+          "column": 0,
+          "row": 1
+        },
+        {
+          "id": "mangrove-canopies",
+          "description": "A compact pair of mangrove tree canopies seen strictly from above with only subtle dark exposed root details, no baked water",
+          "widthCells": 2.1,
+          "role": "canopy",
+          "column": 1,
+          "row": 1
+        }
+      ],
+      "prompt": "CRITICAL ATLAS PACKING: This is a sprite sheet, not a collage. Each of the four object groups must be SMALL. Its complete silhouette and shadow must fit inside a square no larger than 45 percent of its own quadrant's width and height. Put group centers at exactly (25%,25%), (75%,25%), (25%,75%), and (75%,75%) of the whole canvas. Maintain a VERY LARGE uninterrupted fully transparent cross-shaped gutter between all four groups and generous outer transparent margins. The small four clusters together should occupy less than one third of the canvas. Never enlarge a cluster to fill a quadrant. Do not let any branch, leaf, stone or shadow touch the invisible midpoint lines. Silhouette separation and padding have priority over maximizing detail. Use case: stylized-concept. Asset type: ONE production terrain-decoration sprite atlas for a painted historical top-down RTS, a new asset. Create a square image containing EXACTLY FOUR equal square cells in an exact 2 by 2 layout. There are NO drawn grid lines. Each cell contains ONE compact isolated natural accent cluster centered inside it, with generous fully transparent empty margins of at least 15 percent on ALL four sides of each cell. Nothing crosses cell boundaries. Camera is orthographic, straight vertically down from the sky; show tops of plants and rocks, not front views or isometric views. Cohesive hand-painted miniature terrain art: restrained broad readable silhouettes, painterly brushwork, soft natural texture, muted earthy colors, warm highlights, subtle neutral short contact shadows with upper-left light. Designed to remain readable at 24 to 40 pixels wide in the actual game; avoid tiny busy detail. These are small accents over a separately rendered ground surface, NOT ground tiles, NOT miniature dioramas or whole landscapes. A little organic earth at the very center is acceptable but no large dirt discs, no square opaque panels, no huge ground plates. Background genuinely transparent with clean alpha, including all gutters and outer margins. No text, no labels, no frame, no watermark, no people, no animals, no buildings, no UI, no cartoon black outlines. Keep all four sprites consistent in camera and lighting. Cell contents in exact reading order: TOP LEFT: A small irregular cluster of pale beach grass and low coastal scrub on a tiny natural sand base. TOP RIGHT: A low cluster of rounded warm-grey shoreline rocks, no ocean painted around it. BOTTOM LEFT: A small patch of low wind-shaped sandy dune ripples with one tiny beach-grass tuft, no high dune mound. BOTTOM RIGHT: A compact pair of mangrove tree canopies seen strictly from above with only subtle dark exposed root details, no baked water."
+    },
+    {
+      "id": "polar-ice",
+      "name": "Polar ice and snow",
+      "file": "polar-ice/starter-atlas-v1.png",
+      "groundPreview": "#cbd4d5",
+      "items": [
+        {
+          "id": "snow-ridges",
+          "description": "A low small cluster of softly wind-carved snow ridges with muted cool shadows",
+          "widthCells": 1.7,
+          "role": "ground-detail",
+          "column": 0,
+          "row": 0
+        },
+        {
+          "id": "blue-ice",
+          "description": "A small irregular patch of pale blue-grey glacier ice with subtle fissures, flat top down, no tall iceberg",
+          "widthCells": 1.7,
+          "role": "ground-detail",
+          "column": 1,
+          "row": 0
+        },
+        {
+          "id": "exposed-rocks",
+          "description": "A compact low cluster of dark polar exposed rocks with small patches of snow",
+          "widthCells": 1.7,
+          "role": "rock",
+          "column": 0,
+          "row": 1
+        },
+        {
+          "id": "broken-ice",
+          "description": "A few low flat irregular pale ice fragments grouped sparsely, no baked ocean or water",
+          "widthCells": 1.7,
+          "role": "shore",
+          "column": 1,
+          "row": 1
+        }
+      ],
+      "prompt": "CRITICAL ATLAS PACKING: This is a sprite sheet, not a collage. Each of the four object groups must be SMALL. Its complete silhouette and shadow must fit inside a square no larger than 45 percent of its own quadrant's width and height. Put group centers at exactly (25%,25%), (75%,25%), (25%,75%), and (75%,75%) of the whole canvas. Maintain a VERY LARGE uninterrupted fully transparent cross-shaped gutter between all four groups and generous outer transparent margins. The small four clusters together should occupy less than one third of the canvas. Never enlarge a cluster to fill a quadrant. Do not let any branch, leaf, stone or shadow touch the invisible midpoint lines. Silhouette separation and padding have priority over maximizing detail. Use case: stylized-concept. Asset type: ONE production terrain-decoration sprite atlas for a painted historical top-down RTS, a new asset. Create a square image containing EXACTLY FOUR equal square cells in an exact 2 by 2 layout. There are NO drawn grid lines. Each cell contains ONE compact isolated natural accent cluster centered inside it, with generous fully transparent empty margins of at least 15 percent on ALL four sides of each cell. Nothing crosses cell boundaries. Camera is orthographic, straight vertically down from the sky; show tops of plants and rocks, not front views or isometric views. Cohesive hand-painted miniature terrain art: restrained broad readable silhouettes, painterly brushwork, soft natural texture, muted earthy colors, warm highlights, subtle neutral short contact shadows with upper-left light. Designed to remain readable at 24 to 40 pixels wide in the actual game; avoid tiny busy detail. These are small accents over a separately rendered ground surface, NOT ground tiles, NOT miniature dioramas or whole landscapes. A little organic earth at the very center is acceptable but no large dirt discs, no square opaque panels, no huge ground plates. Background genuinely transparent with clean alpha, including all gutters and outer margins. No text, no labels, no frame, no watermark, no people, no animals, no buildings, no UI, no cartoon black outlines. Keep all four sprites consistent in camera and lighting. Cell contents in exact reading order: TOP LEFT: A low small cluster of softly wind-carved snow ridges with muted cool shadows. TOP RIGHT: A small irregular patch of pale blue-grey glacier ice with subtle fissures, flat top down, no tall iceberg. BOTTOM LEFT: A compact low cluster of dark polar exposed rocks with small patches of snow. BOTTOM RIGHT: A few low flat irregular pale ice fragments grouped sparsely, no baked ocean or water."
+    }
+  ],
+  "packingRevision": "CRITICAL ATLAS PACKING: This is a sprite sheet, not a collage. Each of the four object groups must be SMALL. Its complete silhouette and shadow must fit inside a square no larger than 45 percent of its own quadrant's width and height. Put group centers at exactly (25%,25%), (75%,25%), (25%,75%), and (75%,75%) of the whole canvas. Maintain a VERY LARGE uninterrupted fully transparent cross-shaped gutter between all four groups and generous outer transparent margins. The small four clusters together should occupy less than one third of the canvas. Never enlarge a cluster to fill a quadrant. Do not let any branch, leaf, stone or shadow touch the invisible midpoint lines. Silhouette separation and padding have priority over maximizing detail. "
+}

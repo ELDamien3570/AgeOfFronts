@@ -1,0 +1,75 @@
+{
+  "schemaVersion": 1,
+  "ageCount": 6,
+  "tilesPerAge": 16,
+  "roadTileCount": 96,
+  "tileSize": 256,
+  "worldFootprintCells": 1,
+  "connectionBits": {
+    "N": 1,
+    "E": 2,
+    "S": 4,
+    "W": 8
+  },
+  "ground": "Ground.png",
+  "groundSourceSha256": "9e6e76ffa50ffac319395162da2193033ffc2705210a1c22be5634085650d010",
+  "connectionDirections": "cardinal only, as requested",
+  "ages": [
+    {
+      "age": "BronzeAge",
+      "ageLabel": "Bronze Age",
+      "surface": "Packed dirt",
+      "metadata": "BronzeAge/tiles.json",
+      "atlas": "BronzeAge/Road_Atlas.png",
+      "paddedAtlas": "BronzeAge/Road_Atlas_Padded.png",
+      "example": "BronzeAge/Route_Example.png"
+    },
+    {
+      "age": "ClassicalAge",
+      "ageLabel": "Classical Age",
+      "surface": "Compacted gravel",
+      "metadata": "ClassicalAge/tiles.json",
+      "atlas": "ClassicalAge/Road_Atlas.png",
+      "paddedAtlas": "ClassicalAge/Road_Atlas_Padded.png",
+      "example": "ClassicalAge/Route_Example.png"
+    },
+    {
+      "age": "EarlyMedieval",
+      "ageLabel": "Early Medieval",
+      "surface": "Rough stone paving",
+      "metadata": "EarlyMedieval/tiles.json",
+      "atlas": "EarlyMedieval/Road_Atlas.png",
+      "paddedAtlas": "EarlyMedieval/Road_Atlas_Padded.png",
+      "example": "EarlyMedieval/Route_Example.png"
+    },
+    {
+      "age": "LateMedieval",
+      "ageLabel": "Late Medieval",
+      "surface": "Cobblestones",
+      "metadata": "LateMedieval/tiles.json",
+      "atlas": "LateMedieval/Road_Atlas.png",
+      "paddedAtlas": "LateMedieval/Road_Atlas_Padded.png",
+      "example": "LateMedieval/Route_Example.png"
+    },
+    {
+      "age": "EarlyModern",
+      "ageLabel": "Early Modern",
+      "surface": "Dressed stone paving",
+      "metadata": "EarlyModern/tiles.json",
+      "atlas": "EarlyModern/Road_Atlas.png",
+      "paddedAtlas": "EarlyModern/Road_Atlas_Padded.png",
+      "example": "EarlyModern/Route_Example.png"
+    },
+    {
+      "age": "Modern",
+      "ageLabel": "Modern",
+      "surface": "Asphalt",
+      "metadata": "Modern/tiles.json",
+      "atlas": "Modern/Road_Atlas.png",
+      "paddedAtlas": "Modern/Road_Atlas_Padded.png",
+      "example": "Modern/Route_Example.png"
+    }
+  ],
+  "preview": "Road_Tile_Preview.html",
+  "status": "artwork-only; renderer and trade-route simulation integration unverified"
+}

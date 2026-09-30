@@ -1,4 +1,4 @@
-import { GameMapImpl } from "../core/game/GameMap";
+import { createSkirmishMap } from "./Elevation";
 import type { WorkerRequest, WorkerResponse } from "./Protocol";
 import { TICKS_PER_SECOND } from "./Protocol";
 import { Skirmish } from "./Simulation";
@@ -29,6 +29,7 @@ function publish(): void {
     volleys: match.volleys,
     winner: match.winner,
     combatTicks: match.combatTicks,
+    expansion: match.expansion?.snapshot(),
   });
   self.postMessage(
     { type: "state", packet, paused, speed } satisfies WorkerResponse,
@@ -42,11 +43,12 @@ self.onmessage = (event: MessageEvent<WorkerRequest>) => {
     if (message.type === "start") {
       clearInterval(timer);
       paused = false;
-      const map = new GameMapImpl(
+      const map = createSkirmishMap(
         message.width,
         message.height,
         message.terrain,
-        0,
+        message.elevation,
+        message.forest,
       );
       match = new Skirmish(map, message.options);
       encoder = new SnapshotEncoder();

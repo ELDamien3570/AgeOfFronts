@@ -1,4 +1,14 @@
 import type { GameMap } from "../core/game/GameMap";
+import type { ElevationData } from "./Elevation";
+import type { EnvironmentProfile } from "./Environment";
+import type { ForestData } from "./Forest";
+import type { MapGeography } from "./Geography";
+import type {
+  Age,
+  ChargeState,
+  ExpansionSnapshot,
+  RefitJob,
+} from "./domain/Definitions";
 
 export const FIXED = 256;
 export const TICKS_PER_SECOND = 20;
@@ -19,18 +29,95 @@ export type Order =
   | { type: "attack"; targetId: number };
 
 export type Command =
-  | { type: "recruit"; playerId: number; buildingId: number }
+  | {
+      type: "refit-ships";
+      playerId: number;
+      shipIds: number[];
+      definitionId: string;
+    }
+  | {
+      type: "naval-attack";
+      playerId: number;
+      shipIds: number[];
+      targetId: number;
+    }
+  | { type: "research"; playerId: number; technologyId: string }
+  | { type: "advance-age"; playerId: number }
+  | { type: "produce"; playerId: number; buildingId: number; recipeId: string }
+  | {
+      type: "refit";
+      playerId: number;
+      squadIds: number[];
+      definitionId: string;
+    }
+  | {
+      type: "charge";
+      playerId: number;
+      squadIds: number[];
+      x: number;
+      y: number;
+      targetId?: number;
+    }
+  | {
+      type: "attack-structure";
+      playerId: number;
+      squadIds: number[];
+      buildingId?: number;
+      barrierId?: number;
+    }
+  | {
+      type: "alliance";
+      playerId: number;
+      otherId: number;
+      action: "offer" | "accept" | "reject" | "renew" | "break";
+    }
+  | { type: "gate"; playerId: number; barrierId: number; tile: number }
+  | {
+      type: "repair";
+      playerId: number;
+      buildingId?: number;
+      barrierId?: number;
+    }
+  | {
+      type: "recruit-aircraft";
+      playerId: number;
+      buildingId: number;
+      definitionId: "fighter" | "bomber";
+    }
+  | {
+      type: "sortie";
+      playerId: number;
+      aircraftIds: number[];
+      x: number;
+      y: number;
+    }
+  | {
+      type: "launch";
+      playerId: number;
+      launcherId: number;
+      payload: "icbm" | "hydrogen" | "mirv";
+      x: number;
+      y: number;
+    }
+  | {
+      type: "recruit";
+      playerId: number;
+      buildingId: number;
+      definitionId?: string;
+    }
   | {
       type: "build";
       playerId: number;
       buildingType: BuildingType;
       tile: number;
+      age?: Age;
     }
   | {
       type: "recruit-ship";
       playerId: number;
       buildingId: number;
       shipType: ShipType;
+      definitionId?: string;
     }
   | {
       type: "sail";
@@ -71,12 +158,22 @@ export interface Squad {
   fighting: boolean;
   // The simulation's chosen attack target; taking damage alone is not an attack.
   combatTargetId: number | null;
+  definitionId?: string;
+  xp?: number;
+  nextAttackTick?: number;
+  lastAttackTick?: number;
+  refit?: RefitJob | null;
+  charge?: ChargeState | null;
+  chargeReadyTick?: number;
+  deploymentTicks?: number;
+  structureTarget?: { buildingId?: number; barrierId?: number } | null;
 }
 
 export interface Player {
   id: number;
   name: string;
   ai: boolean;
+  kind: "regular" | "tribe";
   base: number;
   reserves: number;
   gold: number;
@@ -93,7 +190,22 @@ export type BuildingType =
   | "stables"
   | "city"
   | "factory"
-  | "port";
+  | "port"
+  | "mine"
+  | "blacksmith"
+  | "armory"
+  | "arms-factory"
+  | "siege-workshop"
+  | "depot"
+  | "tower"
+  | "airstrip"
+  | "oil-well"
+  | "oil-rig"
+  | "gun-nest"
+  | "trench"
+  | "missile-silo"
+  | "mirv-launcher"
+  | "missile-defence";
 export type ShipType = "transport" | "warship";
 
 export interface Building {
@@ -102,6 +214,11 @@ export interface Building {
   type: BuildingType;
   tile: number;
   remainingTicks: number;
+  age?: Age;
+  health?: number;
+  maxHealth?: number;
+  nextAttackTick?: number;
+  launchReadyTick?: number;
 }
 
 export interface Ship {
@@ -117,6 +234,12 @@ export interface Ship {
   nextPathIndex: number;
   fighting: boolean;
   boarding: BoardingMeeting | null;
+  definitionId?: string;
+  nextAttackTick?: number;
+  xp?: number;
+  refit?: RefitJob | null;
+  attackTargetId?: number | null;
+  lastPlanTick?: number;
 }
 
 export interface BoardingMeeting {
@@ -151,7 +274,10 @@ export interface MatchOptions {
   seed: number;
   aiCount: number;
   runAi?: boolean;
+  tribes?: boolean;
   territoryIncomeScale?: number;
+  ruleset?: "sandbox-v1" | "ages-v1";
+  victoryMode?: "solo" | "allied";
 }
 
 export interface Snapshot {
@@ -173,6 +299,7 @@ export interface Snapshot {
   volleys: ArcherVolley[];
   // Transport hint for presentation caches. Omitted by ordinary domain snapshots.
   changedTiles?: Uint32Array;
+  expansion?: ExpansionSnapshot;
 }
 
 export interface SnapshotPacket {
@@ -190,6 +317,25 @@ export interface SnapshotPacket {
   volleys: ArcherVolley[];
   winner: number | null;
   combatTicks: number;
+  expansion?: ExpansionSnapshot;
+  squadDetails?: {
+    id: number;
+    definitionId?: string;
+    xp?: number;
+    nextAttackTick?: number;
+    refit?: RefitJob | null;
+    charge?: ChargeState | null;
+    chargeReadyTick?: number;
+    structureTarget?: Squad["structureTarget"];
+  }[];
+  buildingDetails?: {
+    id: number;
+    age?: Age;
+    health?: number;
+    maxHealth?: number;
+    nextAttackTick?: number;
+    launchReadyTick?: number;
+  }[];
 }
 
 export type WorkerRequest =
@@ -198,6 +344,8 @@ export type WorkerRequest =
       width: number;
       height: number;
       terrain: Uint8Array;
+      elevation?: ElevationData;
+      forest?: ForestData;
       options: MatchOptions;
     }
   | { type: "command"; command: Command }
@@ -214,4 +362,9 @@ export interface LoadedMap {
   terrain: Uint8Array;
   name: string;
   territoryIncomeScale: number;
+  elevation?: ElevationData;
+  forest?: ForestData;
+  environment?: EnvironmentProfile;
+  geography?: MapGeography;
+  attribution?: { label: string; url: string };
 }

@@ -97,6 +97,14 @@ export class HierarchicalPaths {
     this.parent = new Int32Array(size);
     this.seen = new Uint32Array(size);
     this.closed = new Uint32Array(size);
+    topology.onCostsChanged((tiles) => {
+      // Cover changes alter travel cost, not connectivity. Retire crossing
+      // trees only in the touched clusters; boundary costs are read live.
+      const changed = new Set(tiles.map((tile) => this.cluster(tile)));
+      for (const cluster of changed)
+        for (const portal of this.clusters[cluster].portals)
+          this.portals[portal].tree = undefined;
+    });
   }
   private cluster(tile: number): number {
     const map = this.topology.map;

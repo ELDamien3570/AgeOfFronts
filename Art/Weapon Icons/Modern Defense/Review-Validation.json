@@ -1,0 +1,16 @@
+{
+  "status": "passed",
+  "review": "Modern-Defense-Review.html",
+  "browser": "Codex in-app browser",
+  "observations": {
+    "allPreviewImagesLoaded": 21,
+    "previewDimensionsVerified": [1254, 627, 314],
+    "mirvFiringDemo": "completed",
+    "humveeFiringDemo": "completed",
+    "browserErrorsDuringPlayback": 0,
+    "defaultGallery": "four asset cards: three vehicles and one silo; firing demo collapsed",
+    "sourceArtLinks": "verified directory paths",
+    "visualChecks": ["overhead roofs and vehicle silhouettes", "north-facing firing", "three forward-separated MIRV warheads", "four distinct overhead impact effects"]
+  },
+  "scope": "Local art-review browser verification; no game-engine runtime claim."
+}

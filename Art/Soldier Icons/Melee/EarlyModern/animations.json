@@ -289,17 +289,17 @@
       ],
       "poseSequence": [
         1,
-        1,
         2,
-        2,
+        3,
         3,
         4,
         5,
         6,
+        7,
         1,
         1
       ],
-      "distinctPoseCount": 6,
+      "distinctPoseCount": 7,
       "firingEffect": {
         "type": "muzzle-smoke",
         "frames": [
@@ -308,14 +308,27 @@
           7,
           8
         ],
-        "description": "Five individual muzzle bursts expand and fade while guns remain visible. Smoke and a brief muzzle flash are baked into the transparent artwork."
+        "description": "All five guns aim forward before five muzzle flashes and smoke puffs; smoke expands and fades as guns recover. Effects are baked into transparent artwork."
       },
-      "timingNote": "Repeated pose indices are intentional frame holds."
+      "timingNote": "Repeated pose indices are intentional frame holds.",
+      "aimFrames": [
+        3,
+        4
+      ],
+      "raiseFrame": 2,
+      "fireFrame": 5,
+      "recoveryFrames": [
+        6,
+        7,
+        8,
+        9,
+        10
+      ]
     }
   },
   "timingNote": "Suggested playback rates describe visual clips only. Simulation movement and attack timing must remain authoritative.",
   "integrationStatus": "artwork-only; not connected to game renderer",
   "firearmCount": 5,
   "shortGunCount": 5,
-  "attackRole": "All five infantry shoulder, fire and recoil with their short broad-bore guns, including the full front rank."
+  "attackRole": "All five shooters visibly rotate and raise their guns forward, hold aim before firing, recoil and return to ready."
 }

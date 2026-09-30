@@ -1,0 +1,60 @@
+{
+  "generator": "built-in image_gen",
+  "key": "ModernHowitzer",
+  "label": "Modern howitzer",
+  "category": "Siege Weapons",
+  "age": "Modern",
+  "crew": 4,
+  "mechanism": "modernhowitzer",
+  "description": "One modern towed field howitzer in olive drab steel: long barrel pointing north with compact muzzle brake, visible rectangular top of breech and recoil housing, two rugged rubber tire top bands beside the axle, two split trails spread toward the south in a wide V, small top-visible controls and rear spades. No tank hull or tracked self-propelled vehicle. Exactly FOUR small modern crew in olive drab uniforms, round steel helmet crowns and webbing around the breech and sides, one of them holding a shell near the breech. No front-view gun shield elevation. Keep sturdy realistic machinery without tiny illegible mechanical clutter.",
+  "jobs": [
+    {
+      "key": "ModernHowitzer",
+      "label": "Modern howitzer",
+      "category": "Siege Weapons",
+      "age": "Modern",
+      "crew": 4,
+      "mechanism": "modernhowitzer",
+      "description": "One modern towed field howitzer in olive drab steel: long barrel pointing north with compact muzzle brake, visible rectangular top of breech and recoil housing, two rugged rubber tire top bands beside the axle, two split trails spread toward the south in a wide V, small top-visible controls and rear spades. No tank hull or tracked self-propelled vehicle. Exactly FOUR small modern crew in olive drab uniforms, round steel helmet crowns and webbing around the breech and sides, one of them holding a shell near the breech. No front-view gun shield elevation. Keep sturdy realistic machinery without tiny illegible mechanical clutter.",
+      "clip": "Idle",
+      "prompt": "Use case: stylized-concept.\nAsset type: Top-down RTS unit animation sprite atlas for Age of Fronts.\nProduce a square 1254 x 1254 RGBA image with exactly FOUR sprites in a precise 2 by 2 grid, read left to right then the next row. Each of the four equal 627 x 627 cells contains ONE complete weapon with its crew. The four sprites are consecutive animation poses of the SAME unit, not different designs.\nCamera is a strict vertical overhead orthographic view, optical axis exactly perpendicular to the ground, pitch -90 degrees. This is an overhead battlefield sprite, with no horizon or ground patch. Only horizontal weapon tops, helmet crowns, hair crowns, shoulders, forearms and shoes are visible. Crew faces, chest fronts and vertical torso fronts are invisible. Large vertical weapon walls, upright wheel circular side faces, wheels' spoke discs, human faces, angled human portraits or standing facades must never appear.\nEvery weapon aims at the TOP of its cell, perfectly vertical along the screen Y axis. Top of each crew member's head seen from above, bodies arranged realistically around the weapon. Exactly the same number of crew with matching clothing in all four frames. No rotating camera or changing design.\nMaterials: crisp polished hand-painted RTS art, natural weathered timber grain, iron or bronze fitting textures, readable outlines, realistic proportions, restrained short contact shadows directly beneath forms. Clean alpha silhouette. Moderate detail readable at small game scale.\nGrid/framing: Machine center and crew arrangement remain at exactly the same coordinates in all four equal cells. Complete silhouette fits inside each cell with at least 50 pixels of fully empty transparent margin on each side, including poles, crew, weapon muzzle and loose effects. Clear transparent gutters through the center lines. No tile borders, labels, numbers, UI, watermark or checkerboard/white/black painted background. Alpha outside subjects is actually transparent.\nImportant overhead geometry: Upright carriage wheels are viewed only as narrow elongated top tire/rim bands beside the axle, never as upright circular discs with spokes. Raised beams show their top surfaces. Canopy roofs occlude supports. The output must read as a straight-down game map sprite, not a miniature photographed at an angle.\nInput image is ONLY the strict overhead camera and painted style reference. Use the specified new howitzer design and crew. UNIT: One modern towed field howitzer in olive drab steel: long barrel pointing north with compact muzzle brake, visible rectangular top of breech and recoil housing, two rugged rubber tire top bands beside the axle, two split trails spread toward the south in a wide V, small top-visible controls and rear spades. No tank hull or tracked self-propelled vehicle. Exactly FOUR small modern crew in olive drab uniforms, round steel helmet crowns and webbing around the breech and sides, one of them holding a shell near the breech. No front-view gun shield elevation. Keep sturdy realistic machinery without tiny illegible mechanical clutter.\nANIMATION: Four subtle IDLE breathing keyframes. Completely identical fixed machinery in each cell; tiny crew breathing and hand movements only. Frame 1 neutral, frame 2 inhale, frame 3 settle, frame 4 neutral. Same crew and uniforms in every cell. No firing or smoke.",
+      "references": [
+        "C:\\Users\\Damien\\.codex\\generated_images\\01a0f0f0-cfa7-76e0-959a-347e83e7ded2\\exec-b53e40c3-e2ba-4600-8e0f-50416743f44a.png"
+      ],
+      "source": "C:\\Users\\Damien\\.codex\\generated_images\\01a0f0f0-cfa7-76e0-959a-347e83e7ded2\\exec-5131f9a9-a3e0-4c8b-8a61-1fbb879ab15e.png"
+    },
+    {
+      "key": "ModernHowitzer",
+      "label": "Modern howitzer",
+      "category": "Siege Weapons",
+      "age": "Modern",
+      "crew": 4,
+      "mechanism": "modernhowitzer",
+      "description": "One modern towed field howitzer in olive drab steel: long barrel pointing north with compact muzzle brake, visible rectangular top of breech and recoil housing, two rugged rubber tire top bands beside the axle, two split trails spread toward the south in a wide V, small top-visible controls and rear spades. No tank hull or tracked self-propelled vehicle. Exactly FOUR small modern crew in olive drab uniforms, round steel helmet crowns and webbing around the breech and sides, one of them holding a shell near the breech. No front-view gun shield elevation. Keep sturdy realistic machinery without tiny illegible mechanical clutter.",
+      "clip": "Movement",
+      "prompt": "Use case: precise-object-edit. Produce a corrected MOVEMENT atlas for this exact modern howitzer and FOUR olive drab helmeted crew, keeping its materials, long barrel with muzzle brake, recoil housing, two rubber tire top bands, scale and strict straight-down orthographic camera. Genuine transparent background, 1254 x 1254, exactly FOUR equal 627 x 627 cells.\nTRANSPORT MECHANISM CORRECTION: the two long split trails must be FOLDED INWARD together toward the SOUTH centerline behind the breech, as a narrow parallel closed pair, not spread in a wide deployed firing V. Their spade ends are raised for towing and their two ends are adjacent near the center SOUTH; do not drag them wide apart along the ground. The gun itself still aims NORTH. Show the same recognizable olive steel howitzer in this compact travel configuration in all four movement poses.\nFOUR crew remain directly overhead: two flank the axle and push at the outer carriage handles, two are near the south folded trails guiding the tow end. They alternate left step, passing step, right step, passing step. Leaning shoulders and hand grip changes, helmet crowns only, no faces or front-view portraits. Rigid gun carriage, tires, folded trails and barrel have the exact same shape, scale and coordinates in all four cells. The unit does not translate across a cell; the game supplies its world movement.\nAt least 35px transparent margin around every complete group. Clear center gutters. No firing, flashes, smoke, new vehicle, ground patch, tile lines, labels, numbers or watermark.",
+      "references": [
+        "C:\\Users\\Damien\\.codex\\generated_images\\01a0f0f0-cfa7-76e0-959a-347e83e7ded2\\exec-ba903585-2017-4439-9f35-5cb9f3bf20b8.png",
+        "C:\\Users\\Damien\\.codex\\generated_images\\01a0f0f0-cfa7-76e0-959a-347e83e7ded2\\exec-5131f9a9-a3e0-4c8b-8a61-1fbb879ab15e.png"
+      ],
+      "source": "C:\\Users\\Damien\\.codex\\generated_images\\01a0f0f0-cfa7-76e0-959a-347e83e7ded2\\exec-435ac1c2-524d-48e6-95b7-bf6d09a2a523.png",
+      "previousSource": "C:\\Users\\Damien\\.codex\\generated_images\\01a0f0f0-cfa7-76e0-959a-347e83e7ded2\\exec-ba903585-2017-4439-9f35-5cb9f3bf20b8.png",
+      "correction": "folded split trails for transport"
+    },
+    {
+      "key": "ModernHowitzer",
+      "label": "Modern howitzer",
+      "category": "Siege Weapons",
+      "age": "Modern",
+      "crew": 4,
+      "mechanism": "modernhowitzer",
+      "description": "One modern towed field howitzer in olive drab steel: long barrel pointing north with compact muzzle brake, visible rectangular top of breech and recoil housing, two rugged rubber tire top bands beside the axle, two split trails spread toward the south in a wide V, small top-visible controls and rear spades. No tank hull or tracked self-propelled vehicle. Exactly FOUR small modern crew in olive drab uniforms, round steel helmet crowns and webbing around the breech and sides, one of them holding a shell near the breech. No front-view gun shield elevation. Keep sturdy realistic machinery without tiny illegible mechanical clutter.",
+      "clip": "Attack",
+      "prompt": "Use case: precise-object-edit.\nInput image is a 2x2 atlas of the exact weapon unit with its crew. Make a new animation atlas by changing ONLY the action poses. Preserve that same unit identity, palette, uniforms, detailed painted texture, strict vertical overhead camera, 1254 x 1254 image and exactly FOUR equal 627 x 627 cells.\nKeep the rigid chassis, wheel bands, tripod or base footprint at the SAME SCALE AND COORDINATES in all four cells. Do not zoom, change proportion, shift the whole sprite or redraw it as another machine. Only the specified mechanical components and crew joints move. The camera stays pitch -90 degrees; faces and wheel side discs remain invisible. All weapons still face straight NORTH.\nFour consecutive poses are read left to right then the next row. Each weapon and crew is complete within its cell. Keep clear transparent gutters and at least 25 pixels of alpha margin. Small projectiles, flashes and smoke stay fully inside the same cell. Gun muzzle flashes are TINY, at most about 20 pixels across; smoke puffs at most about 35 pixels across, placed close to the muzzle. Never fill a cell with smoke or paint across a grid boundary.\nGenuine transparency around subjects; no tile lines, labels, numbers, background, watermark, ground tile or big explosion.\nUnit: Modern howitzer, Modern, exactly 4 crew.\nAction: Attack.\nFrame 1 long olive drab modern howitzer ready, four crew around the breech, split trails planted south. Frame 2 compact north muzzle flash, barrel slides a little SOUTH inside its fixed recoil housing while chassis, tire bands and split trails stay still. Frame 3 slight pale smoke at the muzzle and one crew member brings a shell to the breech. Frame 4 barrel returns forward, smoke clears, crew ready. Preserve the same barrel, muzzle brake, breech and V-shaped split trails. No tank, shell explosion or large surrounding blast.",
+      "references": [
+        "C:\\Users\\Damien\\.codex\\generated_images\\01a0f0f0-cfa7-76e0-959a-347e83e7ded2\\exec-5131f9a9-a3e0-4c8b-8a61-1fbb879ab15e.png"
+      ],
+      "source": "C:\\Users\\Damien\\.codex\\generated_images\\01a0f0f0-cfa7-76e0-959a-347e83e7ded2\\exec-936256ef-3924-4b66-9806-ca8cff18456c.png"
+    }
+  ]
+}

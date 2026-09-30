@@ -87,7 +87,7 @@ export class UnitPresentation {
         angle,
         kind: squad.kind,
         clip,
-        startedAt:
+        startedAt: clip==="attack"&&squad.lastAttackTick!==undefined?squad.lastAttackTick:
           old?.clip === clip &&
           (clip !== "attack" || old.targetId === target?.id)
             ? old.startedAt

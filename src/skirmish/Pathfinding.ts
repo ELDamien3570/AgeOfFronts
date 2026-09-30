@@ -19,6 +19,7 @@ class TilePaths {
   constructor(
     protected readonly map: GameMap,
     private readonly water = false,
+    prepare = true,
   ) {
     const size = map.width() * map.height();
     this.topology = new PathTopology(map, water);
@@ -52,8 +53,12 @@ class TilePaths {
     this.largestComponent = largest.sort((a, b) => a - b);
     if (size > 65_536) {
       this.hierarchy = new HierarchicalPaths(this.topology);
-      this.hierarchy.prepare();
+      if (prepare) this.hierarchy.prepare();
     }
+  }
+
+  prepare(): void {
+    this.hierarchy?.prepare();
   }
 
   walkable(tile: number): boolean {
@@ -76,12 +81,30 @@ class TilePaths {
     if (!this.connected(start, goal) || blocked?.(goal)) return null;
     if (
       this.hierarchy &&
-      !blocked &&
       Math.abs(this.map.x(start) - this.map.x(goal)) +
         Math.abs(this.map.y(start) - this.map.y(goal)) >
         48
-    )
-      return this.hierarchy.find(start, goal);
+    ) {
+      const route = this.hierarchy.find(start, goal);
+      if (
+        !blocked ||
+        (route &&
+          [start, ...route].every(
+            (t, i, list) =>
+              !blocked(t) &&
+              (!i ||
+                this.map.x(t) === this.map.x(list[i - 1]) ||
+                this.map.y(t) === this.map.y(list[i - 1]) ||
+                (!blocked(
+                  this.map.ref(this.map.x(t), this.map.y(list[i - 1])),
+                ) &&
+                  !blocked(
+                    this.map.ref(this.map.x(list[i - 1]), this.map.y(t)),
+                  ))),
+          ))
+      )
+        return route;
+    }
     return this.findExact(start, goal, blocked);
   }
 
@@ -144,6 +167,9 @@ class TilePaths {
 }
 
 export class LandPaths extends TilePaths {
+  constructor(map: GameMap, prepare = true) {
+    super(map, false, prepare);
+  }
   get largestLand(): number[] {
     return this.largestComponent;
   }
@@ -153,6 +179,7 @@ export class LandPaths extends TilePaths {
     starts: number[],
     goals: number[],
     center: number,
+    blocked?: (tile: number) => boolean,
   ): (number[] | null)[] {
     if (starts.length === 1) return [this.find(starts[0], goals[0])];
     const cx =
@@ -165,7 +192,7 @@ export class LandPaths extends TilePaths {
           (this.map.y(a) - cy) ** 2 -
           ((this.map.x(b) - cx) ** 2 + (this.map.y(b) - cy) ** 2) || a - b,
     )[0];
-    const path = this.find(anchor, center);
+    const path = this.find(anchor, center, blocked);
     if (!path) return starts.map(() => null);
     const spine = [anchor, ...path];
     const closest = (tile: number) => {
@@ -181,9 +208,9 @@ export class LandPaths extends TilePaths {
     return starts.map((start, i) => {
       const join = closest(start),
         leave = closest(goals[i]);
-      if (leave <= join) return this.find(start, goals[i]);
-      const head = this.find(start, spine[join]),
-        tail = this.find(spine[leave], goals[i]);
+      if (leave <= join) return this.find(start, goals[i], blocked);
+      const head = this.find(start, spine[join], blocked),
+        tail = this.find(spine[leave], goals[i], blocked);
       if (!head || !tail) return null;
       return [...head, ...spine.slice(join + 1, leave + 1), ...tail];
     });

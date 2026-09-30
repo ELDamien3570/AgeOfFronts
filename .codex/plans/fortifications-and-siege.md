@@ -9,7 +9,7 @@ Related plans: [technology](tech-tree-and-cultures.md), [strategic resources](st
 - Add a placeable defence building that is a tower.
 - Placing another tower close enough creates a wall between towers.
 - Players can use the links to enclose cities and other sites.
-- Towers/walls are unlocked and improved through the technology tree.
+- Towers/walls are unlocked and improved through the technology tree through Early Modern. Modern adds gun nests and trenches as its replacement defensive tier; existing older walls remain usable without automatic conversion.
 - Ordinary troops can destroy fortifications slowly.
 - Siege weapons exist in every age and breach defences more efficiently without requiring infantry to perform the damage.
 - Betrayal makes the betrayer's walls weaker and territory easier for enemies to capture.
@@ -20,7 +20,22 @@ OpenFront has a Defence Post and configuration for defensive effects. It is a us
 
 The current skirmish exposes DefenceZone movement slowdowns. A slowdown is not a wall: the new system must represent barriers in navigation, attack eligibility, and capture. Painting connecting lines over the map would be a presentation-only implementation and would fail the requested behaviour.
 
-## Tower-link model proposed
+## Existing wall kit and researched tiers
+
+The user confirmed the kit's Stone/Bronze/Classical mapping. These are existing counted unlocks, not additional technologies:
+
+| Age            | Technology                    | Verified art family                                                       |
+| -------------- | ----------------------------- | ------------------------------------------------------------------------- |
+| Stone          | S-W4 Field Engineering        | Art/Terrain/Wall Kit/Palisades                                            |
+| Bronze         | B-W4 Fortified Settlements    | Art/Terrain/Wall Kit/StoneWalls                                           |
+| Classical      | C-W4 Masonry Engineering      | Art/Terrain/Wall Kit/MassiveStoneWalls                                    |
+| Early Medieval | EMed-W4 Trebuchet Engineering | Wall upgrade remains planned; a distinct tier is not present in this kit. |
+
+The [kit guide](<../../Art/Terrain/Wall Kit/README.md>) specifies sixteen cardinal masks per tier, an independent tower sprite, one-cell footprint and matching centre pivots. The wall is rendered first and the tower over it. Its connection masks describe presentation; the authoritative wall graph still defines blocking/construction/cost.
+
+Art supports cardinal segments only. A proposed tower connection must resolve into an authored valid cardinal path or require additional art; do not stretch/rotate these tiles to imply unprovided diagonal spans. Cross-tier transition sprites and gates are not included. Do not infer a free tower entity from a corner decoration or make mixed-tier connectors seamless without a defined transition.
+
+## Tower-link model proposed for the wall ages
 
 Towers and wall segments are domain entities with stable IDs, owner, construction state, material/tier, and integrity. A segment references two towers and a defined footprint between them. The renderer observes that footprint; it does not invent the connection.
 
@@ -65,23 +80,31 @@ The old ordinary-building tile-capture rule cannot be applied uncritically to in
 
 Automatic tower fire is not specified by the user. If towers attack, author their target types, range, attack rate, and allied exclusions. Do not assume every era tower has OpenFront's weapon behaviour.
 
+## Modern gun nests and trenches
+
+Gun nests and trenches are the confirmed replacement for new Modern walls; proposed placement is M-W2 Combined Arms. Older walls remain separate usable entities with their existing blocking/gate rules. Empire advancement neither destroys them nor changes their definitions. Availability of new older-tier wall construction, repair and explicit refits remains a lifecycle policy to settle.
+
+A trench is a defensive position with authored cover, occupancy, access and damage rules. It must not inherit wall impassability merely because it occupies the same research role. Whether troops, traders and vehicles can cross or enter it needs an explicit movement policy. Proposed gun nests are fixed defensive weapon positions with independent targeting and attack profiles; firing arcs, crew requirements, joining trenches, capture and destruction are still to be authored.
+
+Recommend shared construction/ownership/integrity services with separate Barrier, CoverPosition and DefensiveWeapon capabilities. Shared navigation queries consume the actual obstacle policy; combat queries the actual cover/weapon policy. Do not implement this by giving the existing wall entity a new Modern texture. [The Modern plan](modern-defences-and-strategic-weapons.md) records anti-air and MIRV integration alongside these defences.
+
 ## Research and resource progression proposal
 
 Fortifications and siege belong principally in Warfare; Economic supplies extraction/refining/production improvements. Research prerequisites must still preserve the two-tree advancement condition.
 
-| Age            | Fortification direction                  | Siege direction       | Material direction                                   |
-| -------------- | ---------------------------------------- | --------------------- | ---------------------------------------------------- |
-| Stone          | Wooden watchtowers and palisade links    | Field/battering ram   | Timber abstracted initially; stone where available   |
-| Bronze         | Reinforced towers and stronger links     | Reinforced ram        | Stone and bronze fittings                            |
-| Classical      | Masonry towers and walls                 | Catapult              | Stone and iron fittings                              |
-| Early Medieval | Improved masonry and gates               | Improved ram/catapult | Stone and iron                                       |
-| Late Medieval  | Stronger walls and defensive engineering | Trebuchet             | Stone and steel components                           |
-| Early Modern   | Gunpowder-era fortifications             | Cannon                | Stone, steel, and gunpowder                          |
-| Modern         | Modern defence positions/barriers        | Modern artillery      | Steel, gunpowder/munitions, and oil where applicable |
+| Age            | Fortification direction                  | Siege direction               | Material direction                                   |
+| -------------- | ---------------------------------------- | ----------------------------- | ---------------------------------------------------- |
+| Stone          | Wooden watchtowers and palisade links    | Field/battering ram           | Timber abstracted initially; stone where available   |
+| Bronze         | Stone walls and round towers             | Battering ram / assault tower | Stone and bronze fittings                            |
+| Classical      | Massive stone walls and square bastions  | Mangonel / heavy Onager       | Stone and iron fittings                              |
+| Early Medieval | Improved masonry and gates               | Ballista / Trebuchet          | Stone and iron                                       |
+| Late Medieval  | Stronger walls and defensive engineering | Organ Gun / Bombard           | Stone, steel, early gunpowder                        |
+| Early Modern   | Gunpowder-era fortifications             | Field cannon / Early Howitzer | Stone, steel, and gunpowder                          |
+| Modern         | Gun nests and trenches                   | Modern Howitzer               | Steel, gunpowder/munitions, and oil where applicable |
 
-These are proposed gameplay themes, not historical claims or completed art contracts. Existing siege facility art begins at Bronze; Stone siege and the tower/wall/gate assets require additional art.
+These are proposed gameplay themes, not historical claims or completed art contracts. Existing siege facility art begins at Bronze. The newly delivered Weapon Icons pack supplies twelve post-Stone field-artillery/siege animation proposals, including assault towers, catapults, trebuchets and gunpowder pieces. Stone siege still needs art. Stone/Bronze/Classical wall/tower art now exists; gates, construction/breach states and later wall tiers remain outstanding. Modern gun-nest/trench art is announced and unverified. See [the current art audit](base-tech-tree-art-audit.md) for exact placement; this does not establish runtime weapon or assault-tower behaviour.
 
-For the four-node Stone Warfare draft, replace Warband Organisation with Field Engineering to unlock the first tower/wall and siege capabilities. This avoids adding required nodes accidentally while giving every age access to a siege answer. A larger Warfare tree is still possible if four nodes prove too compressed; that must be a deliberate progression rebalance.
+The four-node Stone Warfare draft uses Field Engineering for the first tower/wall/gate and siege capabilities. Later ages bundle field-artillery capabilities with the ranged branch and dedicated siege with the final Warfare node. This gives every age a siege answer within the proposed advancement workload. If four nodes prove too compressed, a larger tree requires a deliberate progression rebalance.
 
 ## Betrayal weakness
 
@@ -89,10 +112,10 @@ The alliance plan specifies the OpenFront timing baseline: a 30-second betrayal 
 
 Apply wall weakness as a temporary combat modifier, not by halving current stored integrity. Once the status expires, normal resistance returns without healing damage already sustained. Towers are not automatically included in the wall-specific penalty unless that scope is agreed.
 
-The penalty must apply to all affected walls owned by the betrayer, including ones built during the window. It is not local to the clicked tower or the former ally's border.
+The penalty must apply to all affected walls owned by the betrayer, including retained older walls in Modern and ones built during the window. Gun nests/trenches have no automatically inherited wall penalty: whether betrayal reduces their protection or effectiveness needs explicit agreement. It is not local to the clicked tower or the former ally's border.
 
 ## Validation and review
 
-Validate placement/link determinism, invalid crossings, dense tower layouts, gate access, enclosed trader routes, allied protection, both types of destruction, navigation invalidation, capture through barriers, repairs, and temporary betrayal modifiers.
+Validate placement/link determinism, invalid crossings, dense tower layouts, gate access, enclosed trader routes, allied protection, both types of destruction, navigation invalidation, capture through barriers, repairs, temporary betrayal modifiers, retained walls after Modern advancement, trench crossing/cover/occupancy and gun-nest targeting.
 
 Playtest ordinary-troop breach time against same-age siege and the logistics cost of enclosing a city. No invulnerable wall, free instant repair, or unavoidable trader enclosure should survive review.

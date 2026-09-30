@@ -1,0 +1,658 @@
+{
+  "schemaVersion": 1,
+  "status": "animation-proposal",
+  "key": "MIRVCarrier",
+  "label": "MIRV carrier missile",
+  "age": "Modern",
+  "type": "projectile",
+  "camera": "vertical-overhead-orthographic",
+  "facing": "screen-up",
+  "directionCount": 1,
+  "frameSize": {
+    "width": 627,
+    "height": 627
+  },
+  "pivot": {
+    "x": 313.5,
+    "y": 313.5
+  },
+  "normalizedPivot": {
+    "x": 0.5,
+    "y": 0.5
+  },
+  "alpha": "straight",
+  "textureLimit": 4096,
+  "frameOrder": "row-major, then next sheet",
+  "animations": {
+    "flight": {
+      "frameCount": 12,
+      "sourceKeyframeCount": 4,
+      "suggestedFramesPerSecond": 12,
+      "loop": true,
+      "durationMs": 1000,
+      "preview": "Flight-Preview.webp",
+      "once": null,
+      "previewPauseMs": 0,
+      "files": [
+        "Flight-Sheet_00.png"
+      ],
+      "sheets": [
+        {
+          "file": "Flight-Sheet_00.png",
+          "width": 3762,
+          "height": 1254,
+          "columns": 6,
+          "rows": 2,
+          "firstFrame": 0,
+          "frameCount": 12
+        }
+      ],
+      "frames": [
+        {
+          "index": 0,
+          "keyframe": 0,
+          "file": "Frames/Flight_000.png",
+          "width": 627,
+          "height": 627,
+          "durationMs": 83,
+          "sha256": "d8cb86eaf746091ab5aa2ce0076922afd702889b931f20d10de8cf10ea935b47",
+          "sheet": "Flight-Sheet_00.png",
+          "x": 0,
+          "y": 0
+        },
+        {
+          "index": 1,
+          "keyframe": 0,
+          "file": "Frames/Flight_001.png",
+          "width": 627,
+          "height": 627,
+          "durationMs": 84,
+          "sha256": "d8cb86eaf746091ab5aa2ce0076922afd702889b931f20d10de8cf10ea935b47",
+          "sheet": "Flight-Sheet_00.png",
+          "x": 627,
+          "y": 0
+        },
+        {
+          "index": 2,
+          "keyframe": 0,
+          "file": "Frames/Flight_002.png",
+          "width": 627,
+          "height": 627,
+          "durationMs": 83,
+          "sha256": "d8cb86eaf746091ab5aa2ce0076922afd702889b931f20d10de8cf10ea935b47",
+          "sheet": "Flight-Sheet_00.png",
+          "x": 1254,
+          "y": 0
+        },
+        {
+          "index": 3,
+          "keyframe": 1,
+          "file": "Frames/Flight_003.png",
+          "width": 627,
+          "height": 627,
+          "durationMs": 83,
+          "sha256": "1f7334b0c70f23b98e64c1a8dd1adb27bbffc78e22cb51bdd41eb1af868ddb36",
+          "sheet": "Flight-Sheet_00.png",
+          "x": 1881,
+          "y": 0
+        },
+        {
+          "index": 4,
+          "keyframe": 1,
+          "file": "Frames/Flight_004.png",
+          "width": 627,
+          "height": 627,
+          "durationMs": 84,
+          "sha256": "1f7334b0c70f23b98e64c1a8dd1adb27bbffc78e22cb51bdd41eb1af868ddb36",
+          "sheet": "Flight-Sheet_00.png",
+          "x": 2508,
+          "y": 0
+        },
+        {
+          "index": 5,
+          "keyframe": 1,
+          "file": "Frames/Flight_005.png",
+          "width": 627,
+          "height": 627,
+          "durationMs": 83,
+          "sha256": "1f7334b0c70f23b98e64c1a8dd1adb27bbffc78e22cb51bdd41eb1af868ddb36",
+          "sheet": "Flight-Sheet_00.png",
+          "x": 3135,
+          "y": 0
+        },
+        {
+          "index": 6,
+          "keyframe": 2,
+          "file": "Frames/Flight_006.png",
+          "width": 627,
+          "height": 627,
+          "durationMs": 83,
+          "sha256": "73b806395c0ff377be09fec424e822d246b049926161df0235a838d35c09d62a",
+          "sheet": "Flight-Sheet_00.png",
+          "x": 0,
+          "y": 627
+        },
+        {
+          "index": 7,
+          "keyframe": 2,
+          "file": "Frames/Flight_007.png",
+          "width": 627,
+          "height": 627,
+          "durationMs": 84,
+          "sha256": "73b806395c0ff377be09fec424e822d246b049926161df0235a838d35c09d62a",
+          "sheet": "Flight-Sheet_00.png",
+          "x": 627,
+          "y": 627
+        },
+        {
+          "index": 8,
+          "keyframe": 2,
+          "file": "Frames/Flight_008.png",
+          "width": 627,
+          "height": 627,
+          "durationMs": 83,
+          "sha256": "73b806395c0ff377be09fec424e822d246b049926161df0235a838d35c09d62a",
+          "sheet": "Flight-Sheet_00.png",
+          "x": 1254,
+          "y": 627
+        },
+        {
+          "index": 9,
+          "keyframe": 3,
+          "file": "Frames/Flight_009.png",
+          "width": 627,
+          "height": 627,
+          "durationMs": 83,
+          "sha256": "76bbf3d780b26357ffc9435bfe1b80338ec24a8ceebf17510f6296064a2ac667",
+          "sheet": "Flight-Sheet_00.png",
+          "x": 1881,
+          "y": 627
+        },
+        {
+          "index": 10,
+          "keyframe": 3,
+          "file": "Frames/Flight_010.png",
+          "width": 627,
+          "height": 627,
+          "durationMs": 84,
+          "sha256": "76bbf3d780b26357ffc9435bfe1b80338ec24a8ceebf17510f6296064a2ac667",
+          "sheet": "Flight-Sheet_00.png",
+          "x": 2508,
+          "y": 627
+        },
+        {
+          "index": 11,
+          "keyframe": 3,
+          "file": "Frames/Flight_011.png",
+          "width": 627,
+          "height": 627,
+          "durationMs": 83,
+          "sha256": "76bbf3d780b26357ffc9435bfe1b80338ec24a8ceebf17510f6296064a2ac667",
+          "sheet": "Flight-Sheet_00.png",
+          "x": 3135,
+          "y": 627
+        }
+      ],
+      "events": [],
+      "sourceArt": [
+        "SourceArt/FlightFramed.png"
+      ],
+      "interpolation": "held painted poses"
+    },
+    "separation": {
+      "frameCount": 16,
+      "sourceKeyframeCount": 4,
+      "suggestedFramesPerSecond": 12,
+      "loop": false,
+      "durationMs": 1333,
+      "preview": "Separation-Preview.webp",
+      "once": "Separation-OneShot.webp",
+      "previewPauseMs": 900,
+      "files": [
+        "Separation-Sheet_00.png"
+      ],
+      "sheets": [
+        {
+          "file": "Separation-Sheet_00.png",
+          "width": 3762,
+          "height": 1881,
+          "columns": 6,
+          "rows": 3,
+          "firstFrame": 0,
+          "frameCount": 16
+        }
+      ],
+      "frames": [
+        {
+          "index": 0,
+          "keyframe": 0,
+          "file": "Frames/Separation_000.png",
+          "width": 627,
+          "height": 627,
+          "durationMs": 83,
+          "sha256": "3fab9bab0e2ddd0f141cd771fb07a3b20bac9767a5c0bf9810e0db69803318fc",
+          "sheet": "Separation-Sheet_00.png",
+          "x": 0,
+          "y": 0
+        },
+        {
+          "index": 1,
+          "keyframe": 0,
+          "file": "Frames/Separation_001.png",
+          "width": 627,
+          "height": 627,
+          "durationMs": 84,
+          "sha256": "3fab9bab0e2ddd0f141cd771fb07a3b20bac9767a5c0bf9810e0db69803318fc",
+          "sheet": "Separation-Sheet_00.png",
+          "x": 627,
+          "y": 0
+        },
+        {
+          "index": 2,
+          "keyframe": 0,
+          "file": "Frames/Separation_002.png",
+          "width": 627,
+          "height": 627,
+          "durationMs": 83,
+          "sha256": "3fab9bab0e2ddd0f141cd771fb07a3b20bac9767a5c0bf9810e0db69803318fc",
+          "sheet": "Separation-Sheet_00.png",
+          "x": 1254,
+          "y": 0
+        },
+        {
+          "index": 3,
+          "keyframe": 0,
+          "file": "Frames/Separation_003.png",
+          "width": 627,
+          "height": 627,
+          "durationMs": 83,
+          "sha256": "3fab9bab0e2ddd0f141cd771fb07a3b20bac9767a5c0bf9810e0db69803318fc",
+          "sheet": "Separation-Sheet_00.png",
+          "x": 1881,
+          "y": 0
+        },
+        {
+          "index": 4,
+          "keyframe": 1,
+          "file": "Frames/Separation_004.png",
+          "width": 627,
+          "height": 627,
+          "durationMs": 84,
+          "sha256": "2e9b20bc991fce31836b29548a37ced150b65e8adaa0a66f2a6ad3f3d116b245",
+          "sheet": "Separation-Sheet_00.png",
+          "x": 2508,
+          "y": 0
+        },
+        {
+          "index": 5,
+          "keyframe": 1,
+          "file": "Frames/Separation_005.png",
+          "width": 627,
+          "height": 627,
+          "durationMs": 83,
+          "sha256": "2e9b20bc991fce31836b29548a37ced150b65e8adaa0a66f2a6ad3f3d116b245",
+          "sheet": "Separation-Sheet_00.png",
+          "x": 3135,
+          "y": 0
+        },
+        {
+          "index": 6,
+          "keyframe": 1,
+          "file": "Frames/Separation_006.png",
+          "width": 627,
+          "height": 627,
+          "durationMs": 83,
+          "sha256": "2e9b20bc991fce31836b29548a37ced150b65e8adaa0a66f2a6ad3f3d116b245",
+          "sheet": "Separation-Sheet_00.png",
+          "x": 0,
+          "y": 627
+        },
+        {
+          "index": 7,
+          "keyframe": 1,
+          "file": "Frames/Separation_007.png",
+          "width": 627,
+          "height": 627,
+          "durationMs": 84,
+          "sha256": "2e9b20bc991fce31836b29548a37ced150b65e8adaa0a66f2a6ad3f3d116b245",
+          "sheet": "Separation-Sheet_00.png",
+          "x": 627,
+          "y": 627
+        },
+        {
+          "index": 8,
+          "keyframe": 2,
+          "file": "Frames/Separation_008.png",
+          "width": 627,
+          "height": 627,
+          "durationMs": 83,
+          "sha256": "ed830e0fdd0c088c9e2b526d32900b6b6246c4f5ebcd9bf18e0bc56a0f274604",
+          "sheet": "Separation-Sheet_00.png",
+          "x": 1254,
+          "y": 627
+        },
+        {
+          "index": 9,
+          "keyframe": 2,
+          "file": "Frames/Separation_009.png",
+          "width": 627,
+          "height": 627,
+          "durationMs": 83,
+          "sha256": "ed830e0fdd0c088c9e2b526d32900b6b6246c4f5ebcd9bf18e0bc56a0f274604",
+          "sheet": "Separation-Sheet_00.png",
+          "x": 1881,
+          "y": 627
+        },
+        {
+          "index": 10,
+          "keyframe": 2,
+          "file": "Frames/Separation_010.png",
+          "width": 627,
+          "height": 627,
+          "durationMs": 84,
+          "sha256": "ed830e0fdd0c088c9e2b526d32900b6b6246c4f5ebcd9bf18e0bc56a0f274604",
+          "sheet": "Separation-Sheet_00.png",
+          "x": 2508,
+          "y": 627
+        },
+        {
+          "index": 11,
+          "keyframe": 2,
+          "file": "Frames/Separation_011.png",
+          "width": 627,
+          "height": 627,
+          "durationMs": 83,
+          "sha256": "ed830e0fdd0c088c9e2b526d32900b6b6246c4f5ebcd9bf18e0bc56a0f274604",
+          "sheet": "Separation-Sheet_00.png",
+          "x": 3135,
+          "y": 627
+        },
+        {
+          "index": 12,
+          "keyframe": 3,
+          "file": "Frames/Separation_012.png",
+          "width": 627,
+          "height": 627,
+          "durationMs": 83,
+          "sha256": "101b16e38377bce53304244111a6a6dbeee3b459bc3be27a40127f8970fce812",
+          "sheet": "Separation-Sheet_00.png",
+          "x": 0,
+          "y": 1254
+        },
+        {
+          "index": 13,
+          "keyframe": 3,
+          "file": "Frames/Separation_013.png",
+          "width": 627,
+          "height": 627,
+          "durationMs": 84,
+          "sha256": "101b16e38377bce53304244111a6a6dbeee3b459bc3be27a40127f8970fce812",
+          "sheet": "Separation-Sheet_00.png",
+          "x": 627,
+          "y": 1254
+        },
+        {
+          "index": 14,
+          "keyframe": 3,
+          "file": "Frames/Separation_014.png",
+          "width": 627,
+          "height": 627,
+          "durationMs": 83,
+          "sha256": "101b16e38377bce53304244111a6a6dbeee3b459bc3be27a40127f8970fce812",
+          "sheet": "Separation-Sheet_00.png",
+          "x": 1254,
+          "y": 1254
+        },
+        {
+          "index": 15,
+          "keyframe": 3,
+          "file": "Frames/Separation_015.png",
+          "width": 627,
+          "height": 627,
+          "durationMs": 83,
+          "sha256": "101b16e38377bce53304244111a6a6dbeee3b459bc3be27a40127f8970fce812",
+          "sheet": "Separation-Sheet_00.png",
+          "x": 1881,
+          "y": 1254
+        }
+      ],
+      "events": [
+        {
+          "frame": 8,
+          "timeMs": 667,
+          "name": "release_three_warheads",
+          "spawnAsset": "MIRVWarhead",
+          "count": 3,
+          "headingOffsetsDegrees": [
+            -35,
+            0,
+            35
+          ]
+        }
+      ],
+      "sourceArt": [
+        "SourceArt/Separation.png"
+      ],
+      "interpolation": "held painted poses"
+    }
+  },
+  "sourceAudit": {
+    "FlightFramed": {
+      "file": "SourceArt/FlightFramed.png",
+      "audit": [
+        {
+          "index": 0,
+          "rect": {
+            "left": 0,
+            "top": 0,
+            "width": 627,
+            "height": 627
+          },
+          "bounds": [
+            274,
+            128,
+            369,
+            584
+          ],
+          "edgeAlpha": 0,
+          "maxAlpha": 255,
+          "anchor": [
+            321.03913074647363,
+            353.0777297123242
+          ]
+        },
+        {
+          "index": 1,
+          "rect": {
+            "left": 627,
+            "top": 0,
+            "width": 627,
+            "height": 627
+          },
+          "bounds": [
+            258,
+            128,
+            354,
+            595
+          ],
+          "edgeAlpha": 0,
+          "maxAlpha": 255,
+          "anchor": [
+            306.53774384259543,
+            364.2542732796554
+          ]
+        },
+        {
+          "index": 2,
+          "rect": {
+            "left": 0,
+            "top": 627,
+            "width": 627,
+            "height": 627
+          },
+          "bounds": [
+            274,
+            86,
+            371,
+            530
+          ],
+          "edgeAlpha": 0,
+          "maxAlpha": 255,
+          "anchor": [
+            323.1483395106583,
+            306.6822743814965
+          ]
+        },
+        {
+          "index": 3,
+          "rect": {
+            "left": 627,
+            "top": 627,
+            "width": 627,
+            "height": 627
+          },
+          "bounds": [
+            260,
+            86,
+            355,
+            553
+          ],
+          "edgeAlpha": 0,
+          "maxAlpha": 255,
+          "anchor": [
+            306.63354587264695,
+            321.1183808451086
+          ]
+        }
+      ],
+      "grid": {
+        "columns": 2,
+        "rows": 2,
+        "xBoundaries": [
+          0,
+          627,
+          1254
+        ],
+        "yBoundaries": [
+          0,
+          627,
+          1254
+        ]
+      }
+    },
+    "Separation": {
+      "file": "SourceArt/Separation.png",
+      "audit": [
+        {
+          "index": 0,
+          "rect": {
+            "left": 0,
+            "top": 0,
+            "width": 627,
+            "height": 625
+          },
+          "bounds": [
+            252,
+            33,
+            381,
+            588
+          ],
+          "edgeAlpha": 1,
+          "maxAlpha": 255,
+          "anchor": [
+            315.318873182775,
+            309.48043241672434
+          ]
+        },
+        {
+          "index": 1,
+          "rect": {
+            "left": 627,
+            "top": 0,
+            "width": 627,
+            "height": 625
+          },
+          "bounds": [
+            248,
+            129,
+            379,
+            590
+          ],
+          "edgeAlpha": 1,
+          "maxAlpha": 255,
+          "anchor": [
+            312.1822490052138,
+            341.4210703469511
+          ]
+        },
+        {
+          "index": 2,
+          "rect": {
+            "left": 0,
+            "top": 625,
+            "width": 627,
+            "height": 629
+          },
+          "bounds": [
+            156,
+            44,
+            473,
+            587
+          ],
+          "edgeAlpha": 0,
+          "maxAlpha": 255,
+          "anchor": [
+            315.1132632843596,
+            298.82871038587166
+          ]
+        },
+        {
+          "index": 3,
+          "rect": {
+            "left": 627,
+            "top": 625,
+            "width": 627,
+            "height": 629
+          },
+          "bounds": [
+            112,
+            25,
+            516,
+            586
+          ],
+          "edgeAlpha": 1,
+          "maxAlpha": 255,
+          "anchor": [
+            312.06688728475535,
+            292.6150026405149
+          ]
+        }
+      ],
+      "grid": {
+        "columns": 2,
+        "rows": 2,
+        "xBoundaries": [
+          0,
+          627,
+          1254
+        ],
+        "yBoundaries": [
+          0,
+          625,
+          1254
+        ]
+      }
+    }
+  },
+  "links": {
+    "warhead": "MIRVWarhead"
+  },
+  "notes": [],
+  "packaging": {
+    "generator": "built-in image_gen",
+    "alignment": "fixed source cell centers; no per-frame mass recentering",
+    "rigidInterpolation": "none; painted poses held at explicit timings",
+    "effectsInterpolation": "premultiplied-alpha blending of 16 painted poses",
+    "movement": "in place; game supplies world translation"
+  }
+}

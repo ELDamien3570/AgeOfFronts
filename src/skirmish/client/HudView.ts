@@ -1,6 +1,9 @@
+import { AGES } from "../domain/Definitions";
 import { BUILDING_RULES, SHIP_RULES } from "../Rules";
+import { buildingArtworkId, buildingPreviewArtworkId } from "./ArtworkCatalog";
 import { STONE_AGE_BUILDINGS } from "./BuildingArtwork";
 import { CONSTRUCTION, LAND_RECRUITMENT, NAVAL_RECRUITMENT } from "./Controls";
+import { eraPortrait } from "./EraArtwork";
 import { HudViewModel, type HudCard, type HudKind } from "./HudViewModel";
 import { UNIT_ANIMATIONS } from "./UnitAnimation";
 
@@ -44,12 +47,36 @@ const escape = (text: string) =>
         c
       ]!,
   );
-function icon(kind: HudKind) {
+export function icon(kind: HudKind, definitionId?: string) {
+  const fallback = [
+    "infantry",
+    "archer",
+    "cavalry",
+    "transport",
+    "warship",
+  ].includes(kind)
+    ? `stoneage-${kind}`
+    : `building-stoneage-${kind}`;
+  let artworkId = definitionId ?? fallback;
+  if (kind in BUILDING_RULES) {
+    const age =
+      AGES.find((a) => artworkId.startsWith(`building-${a.toLowerCase()}-`)) ??
+      "StoneAge";
+    artworkId =
+      (definitionId
+        ? buildingArtworkId(kind as keyof typeof BUILDING_RULES, age)
+        : buildingPreviewArtworkId(kind as keyof typeof BUILDING_RULES, age)) ??
+      artworkId;
+  }
+  const portrait = eraPortrait(artworkId);
+  if (portrait) return `<img class="hud-art" src="${portrait}" alt="">`;
   if (kind === "infantry" || kind === "archer" || kind === "cavalry") {
     const grid = UNIT_ANIMATIONS[kind].grid;
     return `<span class="hud-art sprite" style="background-image:url('${icons[kind]}');background-size:${grid.columns * 100}% ${grid.rows * 100}%" aria-hidden="true"></span>`;
   }
-  return `<img class="hud-art" src="${icons[kind]}" alt="">`;
+  return icons[kind]
+    ? `<img class="hud-art" src="${icons[kind]}" alt="">`
+    : `<span class="command-symbol">${BUILDING_RULES[kind as keyof typeof BUILDING_RULES]?.glyph ?? "?"}</span>`;
 }
 function action(
   id: string,
@@ -92,7 +119,7 @@ export function hudMarkup(): string {
 }
 function cardMarkup(card: HudCard) {
   const content = card.compact ?? card;
-  return `<div class="tooltip-heading">${card.kind ? `<div class="tooltip-art">${icon(card.kind)}</div>` : ""}<div><h3>${escape(card.title)}</h3><p>${escape(card.subtitle)}</p></div></div>${card.meter ? `<div class="tooltip-strength">${escape(card.meter.label)} · ${fmt(card.meter.value)} / ${fmt(card.meter.max)}</div>` : ""}<dl class="stat-list">${content.stats.map((s) => `<dt>${escape(s.label)}</dt><dd>${escape(s.value)}</dd>`).join("")}</dl><p class="card-description">${escape(content.description)}</p>${card.status ? `<div class="tooltip-status">${escape(card.status)}</div>` : ""}`;
+  return `<div class="tooltip-heading">${card.kind ? `<div class="tooltip-art">${icon(card.kind, card.definitionId)}</div>` : ""}<div><h3>${escape(card.title)}</h3><p>${escape(card.subtitle)}</p></div></div>${card.meter ? `<div class="tooltip-strength">${escape(card.meter.label)} · ${fmt(card.meter.value)} / ${fmt(card.meter.max)}</div>` : ""}<dl class="stat-list">${content.stats.map((s) => `<dt>${escape(s.label)}</dt><dd>${escape(s.value)}</dd>`).join("")}</dl><p class="card-description">${escape(content.description)}</p>${card.status ? `<div class="tooltip-status">${escape(card.status)}</div>` : ""}`;
 }
 
 export class HudView {
@@ -104,6 +131,9 @@ export class HudView {
   private hoveredAnchor?: HTMLElement;
   private focusedAnchor?: HTMLElement;
   private selectionFingerprint = "";
+  get inspectedRef(): string | null {
+    return this.focusedRef;
+  }
   private readonly healthCells = new Map<
     string,
     { track: HTMLElement; fill: HTMLElement }
@@ -231,14 +261,17 @@ export class HudView {
       this.el("selection-label").textContent = "MIXED SELECTION";
       this.el("mixed-title").textContent =
         `${selection.entities.length} units selected`;
-      if (refs !== this.membership) {
+      const membership = selection.entities
+        .map((e) => `${e.ref}:${e.definitionId}`)
+        .join(",");
+      if (membership !== this.membership) {
         this.el("selection-cells").innerHTML = selection.entities
           .map(
             (e) =>
-              `<button class="selection-cell" data-entity="${e.ref}" data-hud-tip="entity:${e.ref}" aria-label="Inspect ${escape(e.title)}">${icon(e.kind)}<span>${e.category === "building" ? "Building" : `#${e.ref.split(":")[1]}`}</span><i class="cell-health"><b></b></i></button>`,
+              `<button class="selection-cell" data-entity="${e.ref}" data-hud-tip="entity:${e.ref}" aria-label="Inspect ${escape(e.title)}">${icon(e.kind, e.definitionId)}<span>${e.category === "building" ? "Building" : `#${e.ref.split(":")[1]}`}</span><i class="cell-health"><b></b></i></button>`,
           )
           .join("");
-        this.membership = refs;
+        this.membership = membership;
         this.healthCells.clear();
         for (const cell of this.el(
           "selection-cells",
@@ -262,9 +295,12 @@ export class HudView {
           : card.category === "building"
             ? "BUILDING DETAILS"
             : "UNIT DETAILS";
-      if (this.portraitKind !== card.kind) {
-        this.el("selection-portrait").innerHTML = icon(card.kind);
-        this.portraitKind = card.kind;
+      if (this.portraitKind !== (card.definitionId ?? card.kind)) {
+        this.el("selection-portrait").innerHTML = icon(
+          card.kind,
+          card.definitionId,
+        );
+        this.portraitKind = (card.definitionId ?? card.kind) as HudKind;
       }
       this.el("selection-title").textContent = card.title;
       this.el("selection-subtitle").textContent = card.subtitle;
@@ -276,7 +312,7 @@ export class HudView {
           0,
           Math.min(100, (card.meter.value / card.meter.max) * 100),
         );
-        const construction = card.category === "building";
+        const construction = card.meter.label === "Construction";
         this.el("meter-value").textContent = construction
           ? `${fmt(percent)}%`
           : `${fmt(card.meter.value)} / ${fmt(card.meter.max)}`;

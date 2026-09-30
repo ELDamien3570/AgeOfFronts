@@ -214,6 +214,7 @@ describe("land squad skirmish", () => {
     const match = create();
     const player = match.players[0];
     match.owners[player.base] = 2;
+    match.buildings[0].playerId = 2;
     expect(
       match.applyCommand({
         type: "recruit",

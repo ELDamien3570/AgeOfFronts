@@ -1,0 +1,52 @@
+{
+  "schemaVersion": 1,
+  "name": "Heightmap Test 1",
+  "minimum": -450,
+  "maximum": 7819,
+  "seaLevel": 0,
+  "source": {
+    "file": "41_509_30_586_7_8192_4096_16bit (6).png",
+    "sha256": "45bb5bc8b9aa8f740ecc3308666e93390a10d0be7447cdb9ba2c4ca585f9fb7c",
+    "width": 8192,
+    "height": 4096,
+    "url": "https://manticorp.github.io/unrealheightmap/#latitude/41.508545159505786/longitude/30.58607442197581/zoom/4/outputzoom/7/width/8192/height/4096/outputformat/png16"
+  },
+  "normalization": {
+    "mode": "regular",
+    "from": -450,
+    "to": 7819,
+    "range": 65536
+  },
+  "terrainThresholds": {
+    "highland": 600,
+    "mountain": 1800
+  },
+  "sampling": "area-majority land/water; average height within winning surface; ties water",
+  "waterRule": "calibrated sea level, not an independently verified water mask",
+  "variants": {
+    "250": {
+      "width": 250,
+      "height": 125,
+      "landCells": 23544,
+      "seaCode": 3566,
+      "heightMinimum": -450.0,
+      "heightMaximum": 5099.94384765625
+    },
+    "500": {
+      "width": 500,
+      "height": 250,
+      "landCells": 94143,
+      "seaCode": 3566,
+      "heightMinimum": -450.0,
+      "heightMaximum": 5617.25927734375
+    },
+    "1000": {
+      "width": 1000,
+      "height": 500,
+      "landCells": 376589,
+      "seaCode": 3566,
+      "heightMinimum": -450.0,
+      "heightMaximum": 6172.9375
+    }
+  }
+}

@@ -10,10 +10,20 @@ import {
   SHIP_RULES,
   SQUAD_RULES,
 } from "../Rules";
+import { UNIT, VESSEL } from "../content/Units";
+import { promotionLevel } from "../domain/Combat";
+import { AGE_NAMES, AGES, type UnitDefinition } from "../domain/Definitions";
+import { unitEffects, vesselEffects } from "../domain/ResearchEffects";
 import { CONSTRUCTION, LAND_RECRUITMENT, NAVAL_RECRUITMENT } from "./Controls";
+import { EmpireViewModel } from "./EmpireViewModel";
 import { SkirmishViewModel } from "./SkirmishViewModel";
 
-export type HudKind = BuildingType | SquadType | ShipType;
+export type HudKind =
+  | BuildingType
+  | SquadType
+  | ShipType
+  | "fighter"
+  | "bomber";
 export interface HudStat {
   label: string;
   value: string;
@@ -24,6 +34,8 @@ export interface HudCard {
   kind?: HudKind;
   stats: HudStat[];
   description: string;
+  definitionId?: string;
+  groupKey?: string;
   compact?: { stats: HudStat[]; description: string };
   status?: string;
   meter?: { label: string; value: number; max: number };
@@ -33,7 +45,7 @@ export interface SelectedEntity extends HudCard {
   kind: HudKind;
   playerId: number;
   count: number;
-  category: "squad" | "ship" | "building";
+  category: "squad" | "ship" | "building" | "aircraft";
 }
 export type SelectionCard =
   | { mode: "empty"; entities: SelectedEntity[] }
@@ -167,15 +179,123 @@ const shipCards: Record<ShipType, HudCard> = {
   transport: createShipCard("transport"),
   warship: createShipCard("warship"),
 };
-const buildingCards: Record<BuildingType, HudCard> = {
-  city: createBuildingCard("city"),
-  factory: createBuildingCard("factory"),
-  port: createBuildingCard("port"),
-  barracks: createBuildingCard("barracks"),
-  archery: createBuildingCard("archery"),
-  stables: createBuildingCard("stables"),
-};
+const buildingCards = Object.fromEntries(
+  (Object.keys(BUILDING_RULES) as BuildingType[]).map((type) => [
+    type,
+    createBuildingCard(type),
+  ]),
+) as Record<BuildingType, HudCard>;
 
+function unitCard(unit: UnitDefinition, xp = 0): HudCard {
+  const a = unit.attack,
+    level = promotionLevel(xp),
+    bonus = [0, 0.03, 0.06, 0.1, 0.13, 0.16, 0.2][level - 1];
+  const stats = [
+    stat("Melee Armour", `${unit.meleeArmour / 100}%`),
+    stat("Ranged Armour", `${unit.rangedArmour / 100}%`),
+    stat(
+      "Melee Attack",
+      a.channel === "melee" ? fmt(Math.floor(a.damage * (1 + bonus))) : "—",
+    ),
+    stat(
+      "Ranged Attack",
+      a.channel === "ranged" ? fmt(Math.floor(a.damage * (1 + bonus))) : "—",
+    ),
+    stat("Range", `${fmt(a.range / FIXED)} cells`),
+    stat(
+      "Reload Time",
+      `${a.reloadTicks / 20}s · ${(a.reloadTicks * a.movingReloadPercent) / 2000}s moving`,
+    ),
+    stat("Speed", `${unit.speedPercent}% · terrain applies`),
+    stat(
+      "Bonuses",
+      Object.entries(a.bonuses)
+        .map(([tag, n]) => `+${n} vs ${tag}`)
+        .join(", ") || "None",
+    ),
+    stat(
+      "Bonus resistance",
+      Object.entries(unit.bonusResistance)
+        .map(([tag, n]) => `${n} vs ${tag}`)
+        .join(", ") || "None",
+    ),
+    stat(
+      "Projectile Size",
+      a.projectile
+        ? `${fmt(a.projectile.diameter / FIXED)} cell diameter`
+        : "Not applicable",
+    ),
+    stat(
+      "Blast Radius",
+      a.projectile
+        ? `${fmt(a.projectile.blastRadius / FIXED)} cells`
+        : "Not applicable",
+    ),
+    ...(unit.charge
+      ? [
+          stat("Charge Speed", `${unit.charge.speedPercent}%`),
+          stat("Charge Damage", String(unit.charge.damage)),
+          stat("Charge Reload Time", `${unit.charge.cooldownTicks / 20}s`),
+        ]
+      : []),
+  ];
+  return {
+    title: unit.name,
+    subtitle: `${AGE_NAMES[AGES.indexOf(unit.age)]} · ${unit.role}`,
+    kind: unit.line,
+    definitionId: unit.id,
+    groupKey: `${unit.id}:${level}`,
+    stats,
+    description: unit.placeholder
+      ? "Temporary presentation · authoritative stats shown above."
+      : "Damage is per attack at full strength. Armour protects the base channel; target bonuses have separate resistance.",
+    compact: {
+      stats: [
+        stat("Cost", `${unit.cost.gold ?? 0} gold · 1,000 reserves`),
+        stat(
+          "Supplies",
+          Object.entries(unit.cost.items ?? {})
+            .map(([id, n]) => `${n} ${id.replace("equipment:", "")}`)
+            .join(", ") || "None",
+        ),
+        ...stats.filter((s) =>
+          ["Range", "Reload Time", "Bonuses"].includes(s.label),
+        ),
+      ],
+      description: "Recruit from a matching completed building of this tier.",
+    },
+  };
+}
+function vesselCard(
+  id: string,
+  research: readonly string[] = [],
+): HudCard | undefined {
+  const base = VESSEL.get(id);
+  if (!base || base.kind === "trade") return;
+  const v = vesselEffects(base, research);
+  return {
+    title: v.name,
+    subtitle: AGE_NAMES[AGES.indexOf(v.age)],
+    kind: v.kind as ShipType,
+    definitionId: id,
+    groupKey: id,
+    description: "Construction requires the matching researched port tier.",
+    stats: [
+      stat("Recruitment", `${v.cost.gold} gold`),
+      stat(
+        "Supplies",
+        Object.entries(v.cost.items ?? {})
+          .map(([id, n]) => `${n} ${id}`)
+          .join(", ") || "None",
+      ),
+      stat("Hull health", String(v.health)),
+      stat("Capacity", `${v.capacity} whole squads`),
+      stat("Range", `${(v.attack?.range ?? 0) / FIXED} cells`),
+      stat("Attack", String(v.attack?.damage ?? 0)),
+      stat("Reload", `${(v.attack?.reloadTicks ?? 0) / 20}s`),
+    ],
+  };
+}
 // HUD projections only observe domain rules and snapshots. Focused inspection
 // belongs to the view and never changes the selected army or its commands.
 export class HudViewModel {
@@ -189,7 +309,21 @@ export class HudViewModel {
       const kind = land?.kind ?? naval!.kind;
       const choice = this.game.recruitment(kind);
       return {
-        ...(land ? squadCards[land.kind] : shipCards[naval!.kind]),
+        ...(choice.definitionId
+          ? land
+            ? unitCard(
+                unitEffects(
+                  UNIT.get(choice.definitionId)!,
+                  this.game.state.expansion!.progression[1].completed,
+                ),
+              )
+            : vesselCard(
+                choice.definitionId,
+                this.game.state.expansion!.progression[1].completed,
+              )!
+          : land
+            ? squadCards[land.kind]
+            : shipCards[naval!.kind]),
         status:
           choice.reason ||
           `Ready · ${BUILDING_RULES[choice.building!.type].name} #${choice.building!.id}`,
@@ -197,14 +331,39 @@ export class HudViewModel {
     }
     if (build) {
       const rule = BUILDING_RULES[build.kind];
+      const choice = this.game.state.expansion
+        ? new EmpireViewModel(this.game.state, this.game.selection).buildChoice(
+            build.kind,
+          )
+        : undefined;
       return {
         ...buildingCards[build.kind],
+        ...(choice
+          ? {
+              stats: [
+                stat("Cost", `${choice.cost?.gold ?? "—"} gold`),
+                stat(
+                  "Materials",
+                  Object.entries(choice.cost?.items ?? {})
+                    .map(([id, n]) => `${n} ${id}`)
+                    .join(", ") || "None",
+                ),
+              ],
+              description:
+                build.kind === "factory"
+                  ? "Makes finite commercial goods and strategic recipes; delivery earns gold."
+                  : build.kind === "port"
+                    ? "Fleet construction and trade endpoint; no passive gold."
+                    : buildingCards[build.kind].description,
+            }
+          : {}),
         status:
           this.game.state.winner !== null || this.game.player.eliminated
             ? "Skirmish finished"
-            : this.game.player.gold < rule.cost
-              ? "Not enough gold"
-              : "Choose a location on friendly land",
+            : (choice?.reason ??
+              (this.game.player.gold < rule.cost
+                ? "Not enough gold"
+                : "Choose a location on friendly land")),
       };
     }
     if (id === "replenish")
@@ -247,29 +406,56 @@ export class HudViewModel {
   get entities(): SelectedEntity[] {
     const { state, selection } = this.game;
     const squads: SelectedEntity[] = this.game.selectedSquads.map((s) => ({
-      ...squadCards[s.kind],
+      ...(s.definitionId
+        ? unitCard(
+            unitEffects(
+              UNIT.get(s.definitionId)!,
+              state.expansion!.progression[s.playerId].completed,
+            ),
+            s.xp,
+          )
+        : squadCards[s.kind]),
       ref: `squad:${s.id}`,
       kind: s.kind,
       category: "squad",
       playerId: s.playerId,
       count: 1,
-      title: `${SQUAD_RULES[s.kind].name} #${s.id}`,
+      title: `${UNIT.get(s.definitionId ?? "")?.name ?? SQUAD_RULES[s.kind].name} #${s.id}`,
       subtitle: "1 squad selected",
       meter: { label: "Troop strength", value: s.troops, max: SQUAD_TROOPS },
-      status: s.fighting
-        ? "In combat"
-        : s.order.type === "board"
-          ? "Meeting transport"
-          : s.order.type === "replenish"
-            ? "Replenishing"
-            : s.order.type === "attack"
-              ? "Attack order"
-              : s.order.type === "move"
-                ? "Moving"
-                : "Holding",
+      status: s.refit
+        ? `Refitting · ${Math.ceil(s.refit.remainingTicks / 20)}s`
+        : s.charge
+          ? `Charge · ${s.charge.phase}`
+          : s.fighting
+            ? "In combat"
+            : s.order.type === "board"
+              ? "Meeting transport"
+              : s.order.type === "replenish"
+                ? "Replenishing"
+                : s.order.type === "attack"
+                  ? "Attack order"
+                  : s.order.type === "move"
+                    ? "Moving"
+                    : "Holding",
       stats: [
         stat("Queued orders", String(s.queuedOrders.length)),
-        ...squadCards[s.kind].stats.filter(
+        ...(s.definitionId
+          ? [
+              ...unitCard(
+                unitEffects(
+                  UNIT.get(s.definitionId)!,
+                  state.expansion!.progression[s.playerId].completed,
+                ),
+                s.xp,
+              ).stats,
+              stat(
+                "Promotion",
+                `${"★".repeat(promotionLevel(s.xp ?? 0))} · ${s.xp ?? 0} XP`,
+              ),
+            ]
+          : squadCards[s.kind].stats
+        ).filter(
           (v) => v.label !== "Recruitment" && v.label !== "Full strength",
         ),
       ],
@@ -277,33 +463,56 @@ export class HudViewModel {
     const ships: SelectedEntity[] = state.ships
       .filter((s) => s.playerId === 1 && selection.selectedShips.has(s.id))
       .map((s) => ({
-        ...shipCards[s.kind],
+        ...(s.definitionId
+          ? vesselCard(
+              s.definitionId,
+              state.expansion!.progression[s.playerId].completed,
+            )!
+          : shipCards[s.kind]),
         ref: `ship:${s.id}`,
         kind: s.kind,
         category: "ship",
         playerId: s.playerId,
         count: 1,
-        title: `${SHIP_RULES[s.kind].name} #${s.id}`,
+        title: `${VESSEL.get(s.definitionId ?? "")?.name ?? SHIP_RULES[s.kind].name} #${s.id}`,
         subtitle: "1 ship selected",
         meter: {
           label: "Hull health",
           value: s.health,
-          max: SHIP_RULES[s.kind].health,
+          max:
+            VESSEL.get(s.definitionId ?? "")?.health ??
+            SHIP_RULES[s.kind].health,
         },
-        status: s.fighting
-          ? "In combat"
-          : s.boarding
-            ? "Meeting squads"
-            : s.destination !== null
-              ? "Sailing"
-              : "Holding",
+        status: s.refit
+          ? `Refitting · ${Math.ceil(s.refit.remainingTicks / 20)} sec`
+          : s.fighting
+            ? "In combat"
+            : s.boarding
+              ? "Meeting squads"
+              : s.destination !== null
+                ? "Sailing"
+                : "Holding",
         stats: [
           stat(
             "Squads aboard",
             String(state.squads.filter((u) => u.embarkedOn === s.id).length),
           ),
           stat("Queued waypoints", String(s.waypoints.length)),
-          ...shipCards[s.kind].stats.filter(
+          ...(s.definitionId
+            ? [
+                stat(
+                  "Promotion",
+                  `${"★".repeat(promotionLevel(s.xp ?? 0))} · ${s.xp ?? 0} XP`,
+                ),
+              ]
+            : []),
+          ...(s.definitionId
+            ? vesselCard(
+                s.definitionId,
+                state.expansion!.progression[s.playerId].completed,
+              )!.stats
+            : shipCards[s.kind].stats
+          ).filter(
             (v) => v.label !== "Recruitment" && v.label !== "Hull health",
           ),
         ],
@@ -327,6 +536,9 @@ export class HudViewModel {
             ...buildingCards[b.type],
             ref: `building:${b.id}`,
             kind: b.type,
+            definitionId: b.age
+              ? `building-${b.age.toLowerCase()}-${b.type}`
+              : undefined,
             category: "building",
             playerId: b.playerId,
             count: stack.length,
@@ -369,6 +581,45 @@ export class HudViewModel {
             status: remaining
               ? `${Math.ceil(remaining / TICKS_PER_SECOND)} sec until ${stack.length > 1 ? "all copies are ready" : "ready"}`
               : "Ready",
+            ...(state.expansion
+              ? {
+                  stats: [
+                    stat("Age", AGE_NAMES[AGES.indexOf(b.age ?? "StoneAge")]),
+                    stat("Buildings", `${completed}/${stack.length} ready`),
+                    ...(b.type === "city"
+                      ? [
+                          stat(
+                            "Reserve income",
+                            `+${stack.filter((b) => !b.remainingTicks).reduce((sum, b) => sum + 40 * (1 + AGES.indexOf(b.age ?? "StoneAge")), 0)} / sec`,
+                          ),
+                        ]
+                      : b.type === "factory"
+                        ? [
+                            stat(
+                              "Economy",
+                              "Commercial goods · gold paid on delivery",
+                            ),
+                          ]
+                        : b.type === "port"
+                          ? [
+                              stat(
+                                "Role",
+                                "Fleet construction and trade endpoint",
+                              ),
+                            ]
+                          : []),
+                  ],
+                }
+              : {}),
+            ...(b.health !== undefined && !remaining
+              ? {
+                  meter: {
+                    label: "Building health",
+                    value: stack.reduce((sum, b) => sum + (b.health ?? 0), 0),
+                    max: stack.reduce((sum, b) => sum + (b.maxHealth ?? 0), 0),
+                  },
+                }
+              : {}),
             ...(remaining
               ? {
                   meter: {
@@ -381,7 +632,34 @@ export class HudViewModel {
           },
         ]
       : [];
-    return [...squads, ...ships, ...buildings];
+    const aircraft: SelectedEntity[] = (state.expansion?.aircraft ?? [])
+      .filter((a) => a.playerId === 1 && selection.selectedAircraft?.has(a.id))
+      .map((a) => ({
+        ref: `aircraft:${a.id}`,
+        kind: a.definitionId,
+        definitionId: a.definitionId,
+        category: "aircraft",
+        playerId: a.playerId,
+        count: 1,
+        title: `${a.definitionId === "fighter" ? "Fighter" : "Bomber"} #${a.id}`,
+        subtitle: "1 aircraft selected",
+        status: a.state,
+        meter: { label: "Aircraft health", value: a.health, max: 1000 },
+        stats: [
+          stat("Fuel", `${Math.ceil(a.fuelTicks / 20)}s`),
+          stat("Airfield", `#${a.airfieldId}`),
+          stat(
+            "Role",
+            a.definitionId === "fighter"
+              ? "Air-to-air · 200 damage / 2s · 8 cells"
+              : "Ground bomb · 2,500 base + 2,000 structure bonus",
+          ),
+          stat("Orders", "Right click or Sortie · automatic return"),
+        ],
+        description:
+          "Ready aircraft take sortie orders. Flights use finite fuel and return to their own airfield.",
+      }));
+    return [...squads, ...ships, ...aircraft, ...buildings];
   }
 
   selectionCard(
@@ -407,7 +685,10 @@ export class HudViewModel {
     const first = entities[0];
     if (
       entities.every(
-        (e) => e.kind === first.kind && e.category === first.category,
+        (e) =>
+          e.kind === first.kind &&
+          e.category === first.category &&
+          e.groupKey === first.groupKey,
       )
     ) {
       const value = entities.reduce((sum, e) => sum + (e.meter?.value ?? 0), 0);
@@ -420,10 +701,7 @@ export class HudViewModel {
           ...first,
           ref: "group",
           count: entities.length,
-          title:
-            first.category === "ship"
-              ? SHIP_RULES[first.kind as ShipType].name
-              : SQUAD_RULES[first.kind as SquadType].name,
+          title: first.title.replace(/ #\d+$/, ""),
           subtitle: `${entities.length} ${first.category === "ship" ? "ships" : "squads"} selected`,
           meter: { label: first.meter!.label, value, max },
           status: statuses.size === 1 ? first.status : "Multiple orders",

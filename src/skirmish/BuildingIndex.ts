@@ -1,6 +1,7 @@
 import type { GameMap } from "../core/game/GameMap";
 import type { Building } from "./Protocol";
 import { BUILDING_RULES } from "./Rules";
+const EMPTY_BUILDINGS: readonly Building[] = Object.freeze([]);
 
 // Derived domain index. The simulation remains the owner of every independent
 // building, its cost, construction timer and capture lifecycle.
@@ -43,7 +44,7 @@ export class BuildingIndex {
     income.gold += BUILDING_RULES[building.type].goldIncome;
   }
   at(tile: number): readonly Building[] {
-    return this.tiles.get(tile) ?? [];
+    return this.tiles.get(tile) ?? EMPTY_BUILDINGS;
   }
   production(owner: number) {
     return this.income.get(owner) ?? { reserves: 0, gold: 0 };

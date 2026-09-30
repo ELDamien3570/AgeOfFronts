@@ -67,10 +67,10 @@ export function animationFrame(
 }
 
 export function squadSpriteSize(scale: number, troops: number): number {
-  // Match the visible city artwork: roughly two cells, capped near its 44px
-  // interior. Distant art switches to a formation symbol instead of inflating.
+  // Keep the two-cell projection at ordinary zoom. Detailed squads can now
+  // grow 25% beyond their old 44px cap for readability at close zoom.
   return (
-    Math.min(44, scale * 2) *
+    Math.min(55, scale * 2) *
     (0.8 + (0.2 * Math.max(0, Math.min(1_000, troops))) / 1_000)
   );
 }

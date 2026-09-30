@@ -13,19 +13,19 @@ describe("map symbol readability", () => {
     });
     expect(buildingSymbol(20, true, "barracks")).toMatchObject({
       artwork: true,
-      size: 40,
     });
+    expect(buildingSymbol(20, true, "barracks").size).toBeCloseTo(43.4);
     expect(buildingSymbol(20, false, "barracks")).toMatchObject({
       artwork: false,
       size: 18,
     });
     for (const scale of [14, 20, 40]) {
       const symbol = buildingSymbol(scale, true, "barracks");
-      expect(symbol.size).toBeLessThanOrEqual(44);
+      expect(symbol.size).toBeLessThanOrEqual(47.8 + 1e-10);
       expect(symbol.inset).toBeGreaterThan(0);
       expect(symbol.size - symbol.inset * 2).toBeGreaterThan(0);
     }
-    expect(buildingSymbol(20, true, "city").size).toBeCloseTo(46);
+    expect(buildingSymbol(20, true, "city").size).toBeCloseTo(52);
     expect(buildingSymbol(2, true, "city").size).toBe(18);
   });
   it("keeps distant glyph pads opaque and only makes them transparent once artwork appears", () => {
@@ -57,14 +57,19 @@ describe("map symbol readability", () => {
     );
     expect(near.artwork).toBe(true);
     expect(near.width / 20).toBe(2);
-    for (const scale of [14, 20, 40]) {
+    for (const scale of [14, 20, 22]) {
       const city = buildingSymbol(scale, true, "city");
       const squad = squadSymbol(scale, 1_000, true);
       expect(squad.artwork).toBe(true);
-      expect(Math.abs(squad.width - (city.size - city.inset * 2))).toBeLessThan(
-        3,
-      );
+      // Cities now have the requested additional 15% artwork enlargement.
+      expect(
+        Math.abs(squad.width - (city.size - city.inset * 2) / 1.15),
+      ).toBeLessThan(3);
     }
+    const close = squadSymbol(96, 1_000, true);
+    expect(close.width).toBe(55);
+    expect(close.hitRadius).toBeGreaterThan(close.underlayRadius);
+    expect(close.viewRadius).toBeGreaterThan(close.hitRadius);
     const frameCornerRadius = Math.hypot(
       near.width / SPRITE_FOOTPRINT / 2,
       near.height / SPRITE_FOOTPRINT / 2,

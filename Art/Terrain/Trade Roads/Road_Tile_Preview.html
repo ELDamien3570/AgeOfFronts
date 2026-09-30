@@ -1,0 +1,151 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width,initial-scale=1">
+  <title>Trade Route Roads</title>
+  <style>
+    :root { color-scheme: dark; font-family: system-ui,sans-serif; background: #141d19; color: #edf1e9; }
+    * { box-sizing: border-box; }
+    body { margin: 0; padding: 24px; }
+    main { max-width: 1140px; margin: auto; }
+    .heading { display: flex; justify-content: space-between; align-items: center; gap: 18px; margin-bottom: 18px; }
+    h1 { font-size: 27px; margin: 0 0 5px; letter-spacing: -.6px; font-weight: 650; }
+    .subtitle { margin: 0; color: #b6c4b9; font-size: 14px; }
+    .badge { border: 1px solid #5c6850; border-radius: 20px; padding: 7px 12px; color: #d3c28e; font-size: 12px; white-space: nowrap; }
+    .age-tabs { display: flex; flex-wrap: wrap; gap: 8px; margin-bottom: 16px; }
+    button,select { font: inherit; font-size: 13px; cursor: pointer; color: #eff1e8; background: #334439; border: 1px solid #526759; border-radius: 7px; padding: 7px 12px; }
+    button:hover { background: #475e4e; }
+    .age-tabs [aria-selected=true] { background: #d3b879; color: #1d281e; border-color: #d3b879; font-weight: 700; }
+    button:focus-visible,select:focus-visible,input:focus-visible,a:focus-visible { outline: 2px solid #a4ddd0; outline-offset: 3px; }
+    .toolbar { display: flex; flex-wrap: wrap; align-items: center; gap: 18px; background: #25352b; border: 1px solid #3d5142; border-radius: 12px; padding: 12px 14px; margin-bottom: 18px; }
+    label { display: inline-flex; align-items: center; gap: 7px; color: #c5d2c7; font-size: 13px; }
+    input { accent-color: #d3b879; }
+    .grid { display: grid; grid-template-columns: repeat(3,minmax(0,1fr)); gap: 14px; }
+    .large .grid { grid-template-columns: repeat(2,minmax(0,1fr)); }
+    .single-age .grid { grid-template-columns: 1fr; }
+    article { background: #24332a; border: 1px solid #405746; border-radius: 12px; overflow: hidden; }
+    article header { padding: 11px 14px; border-bottom: 1px solid #405746; }
+    article h2 { margin: 0 0 4px; font-size: 14px; font-weight: 600; }
+    .description { color: #c8bd99; font-size: 12px; }
+    .stage { display: flex; justify-content: flex-start; align-items: center; min-height: 250px; background: #1d2c22; padding: 12px; overflow: auto; }
+    canvas { display: block; flex-shrink: 0; margin: auto; }
+    article footer { display: flex; justify-content: space-between; gap: 8px; padding: 8px 14px; color: #aabfb0; font-size: 11px; }
+    a { color: #ddc58f; text-decoration: none; }
+    a:hover { text-decoration: underline; }
+    #status { color: #b6c4b9; font-size: 13px; margin: 18px 0 10px; }
+    .review-links { display: flex; flex-wrap: wrap; gap: 20px; font-size: 12px; }
+    .note { font-size: 12px; color: #a6bba9; margin: 0 0 12px; }
+    @media (max-width:760px) { body { padding: 15px; } .badge { display: none; } .grid { grid-template-columns: repeat(2,minmax(0,1fr)); } .large .grid { grid-template-columns: 1fr; } }
+    @media (max-width:540px) { .grid { grid-template-columns: 1fr; } }
+  </style>
+</head>
+<body>
+  <main>
+    <header class="heading">
+      <div><h1 id="review-title">Trade Route Roads · All Ages</h1><p class="subtitle">Dirt tracks → stone and cobbles → modern asphalt</p></div>
+      <div class="badge" id="road-count">6 ages · 96 connected tiles</div>
+    </header>
+    <nav class="age-tabs" id="ages" role="tablist" aria-label="Road age"></nav>
+    <div class="toolbar">
+      <label>View <select id="view"><option value="routes">Connected routes</option><option value="tiles">All 16 pieces</option></select></label>
+      <label>Cell size <select id="size"><option value="16">16 px</option><option value="24">24 px</option><option value="32" selected>32 px</option><option value="48">48 px</option><option value="64">64 px</option><option value="128">128 px</option><option value="256">256 px</option></select></label>
+      <label><input id="grid" type="checkbox">Show cell boundaries</label>
+      <button id="reset" type="button">Reset view</button>
+    </div>
+    <section id="age-panel" role="tabpanel" aria-busy="true"><div class="grid" id="roads"></div></section>
+    <p id="status" role="status">Loading road sets…</p>
+    <p class="note">Full square ground tiles · north / east / south / west connections · matching road width in every age</p>
+    <p class="review-links"><a href="../../Trader%20Icons/Trader_Animation_Preview.html">Trader animations ↗</a><a href="../../Ship%20Icons/Ship_Animation_Preview.html">Ship animations ↗</a><a href="Road_Tile_Manifest.json" target="_blank" rel="noopener">Asset manifest ↗</a><a href="README.md" target="_blank" rel="noopener">Tile guide ↗</a></p>
+  </main>
+  <script>
+    // Review-only MVVM. The catalog describes art; this page has no game state.
+    const assetModel = {
+      ages: [], ground: null, layout: null, version: Date.now(),
+      async json(path) {
+        const response = await fetch(`${path}?review=${this.version}`);
+        if (!response.ok) throw new Error(`${path} unavailable (${response.status})`);
+        return response.json();
+      },
+      async image(path) {
+        const image = new Image(); image.src = `${path}?review=${this.version}`; await image.decode(); return image;
+      },
+      async initialize() {
+        const manifest = await this.json('Road_Tile_Manifest.json');
+        [this.ground,this.layout] = await Promise.all([this.image(manifest.ground),this.json('review-layout.json')]);
+        this.ages = await Promise.all(manifest.ages.map(async asset => {
+          const [metadata,image] = await Promise.all([this.json(asset.metadata),this.image(asset.atlas)]);
+          if (metadata.tileSize!==256 || metadata.tiles.length!==16 || image.naturalWidth!==1024 || image.naturalHeight!==1024) throw new Error(`Invalid road set: ${asset.ageLabel}`);
+          return {...asset,metadata,image};
+        }));
+        return manifest;
+      },
+    };
+    const review = { selection: 'Overview', view: 'routes', cellSize: 32, grid: false };
+    const elements = Object.fromEntries(['roads','ages','age-panel','status','review-title','view','size','grid'].map(id => [id,document.getElementById(id)]));
+    const canvasView = {
+      draw(canvas,asset) {
+        const size = review.cellSize, routes = review.view==='routes';
+        const columns = routes ? assetModel.layout.width : 4, rows = routes ? assetModel.layout.height : 4;
+        canvas.width = columns*size; canvas.height = rows*size; canvas.style.width = `${canvas.width}px`; canvas.style.height = `${canvas.height}px`;
+        const ctx = canvas.getContext('2d'); ctx.imageSmoothingEnabled = true;
+        for (let y=0;y<rows;y++) for (let x=0;x<columns;x++) {
+          const mask = routes ? assetModel.layout.cells[y][x] : y*4+x;
+          if (mask===null) { ctx.drawImage(assetModel.ground,x*size,y*size,size,size); continue; }
+          const {rect} = asset.metadata.tiles[mask];
+          ctx.drawImage(asset.image,rect.x,rect.y,rect.width,rect.height,x*size,y*size,size,size);
+        }
+        if (review.grid) {
+          ctx.strokeStyle = 'rgba(245,231,185,.40)'; ctx.lineWidth = 1; ctx.beginPath();
+          for (let x=0;x<=columns;x++) { ctx.moveTo(x*size+.5,0); ctx.lineTo(x*size+.5,canvas.height); }
+          for (let y=0;y<=rows;y++) { ctx.moveTo(0,y*size+.5); ctx.lineTo(canvas.width,y*size+.5); }
+          ctx.stroke();
+        }
+      },
+      card(asset) {
+        const article = document.createElement('article'), header = document.createElement('header');
+        const title = document.createElement('h2'); title.textContent = asset.ageLabel;
+        const description = document.createElement('div'); description.className = 'description'; description.textContent = asset.surface; header.append(title,description);
+        const stage = document.createElement('div'); stage.className = 'stage';
+        const canvas = document.createElement('canvas'); canvas.setAttribute('aria-label',`${asset.ageLabel} ${review.view==='routes' ? 'connected route example' : 'sixteen road pieces'}`); stage.append(canvas);
+        const footer = document.createElement('footer'), link = document.createElement('a'), count = document.createElement('span');
+        link.href = asset.atlas; link.textContent = 'Road atlas ↗'; link.target = '_blank'; link.rel = 'noopener';
+        count.textContent = '16 pieces · full ground'; footer.append(link,count); article.append(header,stage,footer); elements.roads.append(article);
+        this.draw(canvas,asset);
+      },
+    };
+    function render() {
+      const overview = review.selection==='Overview';
+      const ages = overview ? assetModel.ages : assetModel.ages.filter(age => age.age===review.selection);
+      document.body.classList.toggle('single-age',!overview);
+      document.body.classList.toggle('large',review.cellSize>32);
+      const label = overview ? 'All Ages' : ages[0].ageLabel;
+      elements['review-title'].textContent = `Trade Route Roads · ${label}`; document.title = `Trade Route Roads · ${label}`;
+      elements['age-panel'].setAttribute('aria-labelledby',`tab-${review.selection}`);
+      for (const tab of elements.ages.children) { const active = tab.dataset.age===review.selection; tab.setAttribute('aria-selected',String(active)); tab.tabIndex = active ? 0 : -1; }
+      elements.roads.replaceChildren(); for (const age of ages) canvasView.card(age);
+      elements.status.textContent = `${ages.length} / ${ages.length} road sets loaded · ${review.view==='routes' ? 'Connected route examples' : 'All 16 connection patterns'} · ${review.cellSize} px per cell`;
+    }
+    function selectAge(age,updateLocation=true) { review.selection = age; if (updateLocation) history.replaceState(null,'',`#${age}`); render(); }
+    elements.view.addEventListener('change',() => { review.view = elements.view.value; render(); });
+    elements.size.addEventListener('change',() => { review.cellSize = Number(elements.size.value); render(); });
+    elements.grid.addEventListener('change',() => { review.grid = elements.grid.checked; render(); });
+    document.getElementById('reset').addEventListener('click',() => { review.view = 'routes'; review.cellSize = 32; review.grid = false; elements.view.value = 'routes'; elements.size.value = '32'; elements.grid.checked = false; selectAge('Overview'); });
+    elements.ages.addEventListener('keydown',event => {
+      const tabs = [...elements.ages.children]; let index = tabs.indexOf(document.activeElement);
+      if (index<0 || !['ArrowRight','ArrowLeft','Home','End'].includes(event.key)) return;
+      event.preventDefault(); index = event.key==='Home' ? 0 : event.key==='End' ? tabs.length-1 : (index+(event.key==='ArrowRight' ? 1 : -1)+tabs.length)%tabs.length;
+      tabs[index].focus(); selectAge(tabs[index].dataset.age);
+    });
+    window.addEventListener('hashchange',() => { const requested = location.hash.slice(1); selectAge(assetModel.ages.some(age => age.age===requested) ? requested : 'Overview',false); });
+    assetModel.initialize().then(manifest => {
+      document.getElementById('road-count').textContent = `${manifest.ageCount} ages · ${manifest.roadTileCount} connected tiles`;
+      for (const [age,label] of [['Overview','All ages'],...assetModel.ages.map(asset => [asset.age,asset.ageLabel])]) {
+        const tab = document.createElement('button'); tab.type = 'button'; tab.id = `tab-${age}`; tab.dataset.age = age; tab.textContent = label; tab.setAttribute('role','tab'); tab.setAttribute('aria-controls','age-panel'); tab.addEventListener('click',() => selectAge(age)); elements.ages.append(tab);
+      }
+      const requested = location.hash.slice(1); selectAge(assetModel.ages.some(age => age.age===requested) ? requested : 'Overview',false);
+      elements['age-panel'].setAttribute('aria-busy','false');
+    }).catch(error => { elements.status.textContent = `Could not load roads: ${error.message}`; elements['age-panel'].setAttribute('aria-busy','false'); });
+  </script>
+</body>
+</html>

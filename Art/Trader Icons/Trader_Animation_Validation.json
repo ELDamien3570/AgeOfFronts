@@ -1,0 +1,1069 @@
+{
+  "schemaVersion": 1,
+  "traderCount": 6,
+  "primaryClipCount": 12,
+  "sixAgesComplete": true,
+  "assetContractsPassed": true,
+  "sourcesPreserved": true,
+  "sources": [
+    {
+      "file": "generated/Trader_BronzeAge.png",
+      "unchanged": true
+    },
+    {
+      "file": "generated/Trader_ClassicalAge.png",
+      "unchanged": true
+    },
+    {
+      "file": "generated/Trader_EarlyMedieval.png",
+      "unchanged": true
+    },
+    {
+      "file": "generated/Trader_LateMedieval.png",
+      "unchanged": true
+    },
+    {
+      "file": "generated/Trader_EarlyModern.png",
+      "unchanged": true
+    },
+    {
+      "file": "generated/Trader_Modern.png",
+      "unchanged": true
+    }
+  ],
+  "existingArtFileCount": 536,
+  "existingArtUnchanged": false,
+  "existingArtChanges": [
+    "Soldier Icons/EarlyModern_Animation_Validation.json",
+    "Soldier Icons/Ranged/EarlyModern/animations.json",
+    "Soldier Icons/Ranged/EarlyModern/Attack.png",
+    "Soldier Icons/Melee/EarlyModern/animations.json",
+    "Soldier Icons/Melee/EarlyModern/Attack.png",
+    "Soldier Icons/Cavalry/EarlyModern/animations.json",
+    "Soldier Icons/Cavalry/EarlyModern/Attack.png"
+  ],
+  "existingArtAuditNote": "Existing art fingerprints are diagnostic. Soldier animation files changed after the baseline was captured during production. The trader build writes only Trader Icons, and those external changes were left untouched.",
+  "clips": [
+    {
+      "file": "BronzeAge/Idle.png",
+      "dimensionsCorrect": true,
+      "transparentRGBA": true,
+      "nonemptyFrames": 10,
+      "distinctFrames": 10,
+      "eightPixelGuardClear": true,
+      "metadataCorrect": true,
+      "loopSeamComparable": true,
+      "adjacentFrameDifferences": [
+        0.26611,
+        0.1302,
+        0.38117,
+        0.21343,
+        0.31298,
+        0.26605,
+        0.13001,
+        0.35678,
+        0.18136,
+        0.31209
+      ],
+      "frameBounds": [
+        [
+          165,
+          77,
+          359,
+          444
+        ],
+        [
+          165,
+          77,
+          359,
+          444
+        ],
+        [
+          165,
+          77,
+          359,
+          444
+        ],
+        [
+          165,
+          77,
+          359,
+          444
+        ],
+        [
+          165,
+          77,
+          359,
+          444
+        ],
+        [
+          165,
+          77,
+          359,
+          444
+        ],
+        [
+          165,
+          77,
+          359,
+          444
+        ],
+        [
+          165,
+          77,
+          359,
+          444
+        ],
+        [
+          165,
+          77,
+          359,
+          444
+        ],
+        [
+          165,
+          77,
+          359,
+          444
+        ]
+      ],
+      "passed": true
+    },
+    {
+      "file": "BronzeAge/Travel.png",
+      "dimensionsCorrect": true,
+      "transparentRGBA": true,
+      "nonemptyFrames": 10,
+      "distinctFrames": 10,
+      "eightPixelGuardClear": true,
+      "metadataCorrect": true,
+      "loopSeamComparable": true,
+      "adjacentFrameDifferences": [
+        1.55229,
+        0.7411,
+        1.6606,
+        0.88208,
+        1.61372,
+        1.56512,
+        0.74828,
+        1.65609,
+        0.86737,
+        1.60126
+      ],
+      "frameBounds": [
+        [
+          165,
+          77,
+          359,
+          444
+        ],
+        [
+          165,
+          78,
+          359,
+          444
+        ],
+        [
+          165,
+          78,
+          359,
+          444
+        ],
+        [
+          165,
+          77,
+          359,
+          444
+        ],
+        [
+          165,
+          77,
+          359,
+          444
+        ],
+        [
+          165,
+          77,
+          359,
+          444
+        ],
+        [
+          165,
+          78,
+          359,
+          444
+        ],
+        [
+          165,
+          78,
+          359,
+          444
+        ],
+        [
+          165,
+          77,
+          359,
+          444
+        ],
+        [
+          165,
+          77,
+          359,
+          444
+        ]
+      ],
+      "passed": true
+    },
+    {
+      "file": "ClassicalAge/Idle.png",
+      "dimensionsCorrect": true,
+      "transparentRGBA": true,
+      "nonemptyFrames": 10,
+      "distinctFrames": 10,
+      "eightPixelGuardClear": true,
+      "metadataCorrect": true,
+      "loopSeamComparable": true,
+      "adjacentFrameDifferences": [
+        0.39226,
+        0.28473,
+        0.44293,
+        0.29791,
+        0.34625,
+        0.39181,
+        0.29389,
+        0.42346,
+        0.26924,
+        0.35154
+      ],
+      "frameBounds": [
+        [
+          72,
+          75,
+          434,
+          441
+        ],
+        [
+          72,
+          75,
+          434,
+          441
+        ],
+        [
+          72,
+          75,
+          434,
+          441
+        ],
+        [
+          72,
+          75,
+          434,
+          441
+        ],
+        [
+          72,
+          75,
+          434,
+          441
+        ],
+        [
+          72,
+          75,
+          434,
+          441
+        ],
+        [
+          72,
+          75,
+          434,
+          441
+        ],
+        [
+          72,
+          75,
+          434,
+          441
+        ],
+        [
+          72,
+          75,
+          434,
+          441
+        ],
+        [
+          72,
+          75,
+          434,
+          441
+        ]
+      ],
+      "passed": true
+    },
+    {
+      "file": "ClassicalAge/Travel.png",
+      "dimensionsCorrect": true,
+      "transparentRGBA": true,
+      "nonemptyFrames": 10,
+      "distinctFrames": 10,
+      "eightPixelGuardClear": true,
+      "metadataCorrect": true,
+      "loopSeamComparable": true,
+      "adjacentFrameDifferences": [
+        1.488,
+        1.01356,
+        1.60334,
+        0.95555,
+        1.3845,
+        1.47529,
+        1.02619,
+        1.58506,
+        0.93697,
+        1.408
+      ],
+      "frameBounds": [
+        [
+          72,
+          75,
+          434,
+          441
+        ],
+        [
+          72,
+          75,
+          434,
+          441
+        ],
+        [
+          72,
+          75,
+          434,
+          441
+        ],
+        [
+          72,
+          75,
+          434,
+          441
+        ],
+        [
+          72,
+          75,
+          434,
+          441
+        ],
+        [
+          72,
+          75,
+          434,
+          441
+        ],
+        [
+          72,
+          75,
+          434,
+          441
+        ],
+        [
+          72,
+          75,
+          434,
+          441
+        ],
+        [
+          72,
+          75,
+          434,
+          441
+        ],
+        [
+          72,
+          75,
+          434,
+          441
+        ]
+      ],
+      "passed": true
+    },
+    {
+      "file": "EarlyMedieval/Idle.png",
+      "dimensionsCorrect": true,
+      "transparentRGBA": true,
+      "nonemptyFrames": 10,
+      "distinctFrames": 10,
+      "eightPixelGuardClear": true,
+      "metadataCorrect": true,
+      "loopSeamComparable": true,
+      "adjacentFrameDifferences": [
+        0.37076,
+        0.28151,
+        0.33007,
+        0.31581,
+        0.25983,
+        0.36874,
+        0.27628,
+        0.33226,
+        0.32204,
+        0.26958
+      ],
+      "frameBounds": [
+        [
+          107,
+          65,
+          417,
+          435
+        ],
+        [
+          107,
+          65,
+          417,
+          435
+        ],
+        [
+          107,
+          65,
+          417,
+          435
+        ],
+        [
+          107,
+          65,
+          417,
+          435
+        ],
+        [
+          107,
+          65,
+          417,
+          434
+        ],
+        [
+          107,
+          65,
+          417,
+          434
+        ],
+        [
+          107,
+          65,
+          417,
+          434
+        ],
+        [
+          107,
+          65,
+          417,
+          435
+        ],
+        [
+          107,
+          65,
+          417,
+          435
+        ],
+        [
+          107,
+          65,
+          417,
+          435
+        ]
+      ],
+      "passed": true
+    },
+    {
+      "file": "EarlyMedieval/Travel.png",
+      "dimensionsCorrect": true,
+      "transparentRGBA": true,
+      "nonemptyFrames": 10,
+      "distinctFrames": 10,
+      "eightPixelGuardClear": true,
+      "metadataCorrect": true,
+      "loopSeamComparable": true,
+      "adjacentFrameDifferences": [
+        1.72172,
+        1.2414,
+        1.39312,
+        1.34118,
+        1.09147,
+        1.66406,
+        1.23055,
+        1.45101,
+        1.36354,
+        1.17586
+      ],
+      "frameBounds": [
+        [
+          107,
+          65,
+          417,
+          437
+        ],
+        [
+          107,
+          65,
+          417,
+          437
+        ],
+        [
+          107,
+          65,
+          417,
+          436
+        ],
+        [
+          107,
+          65,
+          417,
+          433
+        ],
+        [
+          107,
+          65,
+          417,
+          431
+        ],
+        [
+          107,
+          65,
+          417,
+          431
+        ],
+        [
+          107,
+          65,
+          417,
+          431
+        ],
+        [
+          107,
+          65,
+          417,
+          433
+        ],
+        [
+          107,
+          65,
+          417,
+          436
+        ],
+        [
+          107,
+          65,
+          417,
+          437
+        ]
+      ],
+      "passed": true
+    },
+    {
+      "file": "LateMedieval/Idle.png",
+      "dimensionsCorrect": true,
+      "transparentRGBA": true,
+      "nonemptyFrames": 10,
+      "distinctFrames": 10,
+      "eightPixelGuardClear": true,
+      "metadataCorrect": true,
+      "loopSeamComparable": true,
+      "adjacentFrameDifferences": [
+        0.25521,
+        0.23059,
+        0.23226,
+        0.23298,
+        0.23051,
+        0.22899,
+        0.23188,
+        0.24831,
+        0.24718,
+        0.26784
+      ],
+      "frameBounds": [
+        [
+          101,
+          76,
+          400,
+          436
+        ],
+        [
+          101,
+          76,
+          400,
+          436
+        ],
+        [
+          101,
+          76,
+          400,
+          436
+        ],
+        [
+          101,
+          76,
+          400,
+          436
+        ],
+        [
+          101,
+          76,
+          400,
+          436
+        ],
+        [
+          101,
+          76,
+          400,
+          436
+        ],
+        [
+          101,
+          76,
+          400,
+          436
+        ],
+        [
+          101,
+          76,
+          400,
+          436
+        ],
+        [
+          101,
+          76,
+          400,
+          436
+        ],
+        [
+          101,
+          76,
+          400,
+          436
+        ]
+      ],
+      "passed": true
+    },
+    {
+      "file": "LateMedieval/Travel.png",
+      "dimensionsCorrect": true,
+      "transparentRGBA": true,
+      "nonemptyFrames": 10,
+      "distinctFrames": 10,
+      "eightPixelGuardClear": true,
+      "metadataCorrect": true,
+      "loopSeamComparable": true,
+      "adjacentFrameDifferences": [
+        1.04254,
+        0.98999,
+        0.9707,
+        0.98155,
+        0.97648,
+        0.93973,
+        1.02443,
+        1.06803,
+        1.01246,
+        1.10747
+      ],
+      "frameBounds": [
+        [
+          101,
+          76,
+          400,
+          434
+        ],
+        [
+          101,
+          76,
+          400,
+          433
+        ],
+        [
+          101,
+          76,
+          400,
+          433
+        ],
+        [
+          101,
+          76,
+          400,
+          434
+        ],
+        [
+          101,
+          76,
+          400,
+          436
+        ],
+        [
+          101,
+          76,
+          400,
+          438
+        ],
+        [
+          101,
+          76,
+          400,
+          438
+        ],
+        [
+          101,
+          76,
+          400,
+          438
+        ],
+        [
+          101,
+          76,
+          400,
+          438
+        ],
+        [
+          101,
+          76,
+          400,
+          436
+        ]
+      ],
+      "passed": true
+    },
+    {
+      "file": "EarlyModern/Idle.png",
+      "dimensionsCorrect": true,
+      "transparentRGBA": true,
+      "nonemptyFrames": 10,
+      "distinctFrames": 10,
+      "eightPixelGuardClear": true,
+      "metadataCorrect": true,
+      "loopSeamComparable": true,
+      "adjacentFrameDifferences": [
+        0.27141,
+        0.30154,
+        0.26986,
+        0.2966,
+        0.2942,
+        0.28926,
+        0.31159,
+        0.30427,
+        0.30915,
+        0.27799
+      ],
+      "frameBounds": [
+        [
+          128,
+          76,
+          394,
+          436
+        ],
+        [
+          128,
+          76,
+          394,
+          436
+        ],
+        [
+          128,
+          76,
+          394,
+          436
+        ],
+        [
+          128,
+          76,
+          394,
+          436
+        ],
+        [
+          128,
+          76,
+          394,
+          436
+        ],
+        [
+          128,
+          76,
+          394,
+          436
+        ],
+        [
+          128,
+          76,
+          394,
+          436
+        ],
+        [
+          128,
+          76,
+          394,
+          436
+        ],
+        [
+          128,
+          76,
+          394,
+          436
+        ],
+        [
+          128,
+          76,
+          394,
+          436
+        ]
+      ],
+      "passed": true
+    },
+    {
+      "file": "EarlyModern/Travel.png",
+      "dimensionsCorrect": true,
+      "transparentRGBA": true,
+      "nonemptyFrames": 10,
+      "distinctFrames": 10,
+      "eightPixelGuardClear": true,
+      "metadataCorrect": true,
+      "loopSeamComparable": true,
+      "adjacentFrameDifferences": [
+        1.12068,
+        1.36598,
+        1.16053,
+        1.28941,
+        1.2031,
+        1.17928,
+        1.46666,
+        1.26774,
+        1.27538,
+        1.17923
+      ],
+      "frameBounds": [
+        [
+          128,
+          76,
+          394,
+          436
+        ],
+        [
+          128,
+          76,
+          394,
+          436
+        ],
+        [
+          128,
+          76,
+          394,
+          436
+        ],
+        [
+          128,
+          76,
+          394,
+          436
+        ],
+        [
+          128,
+          76,
+          394,
+          436
+        ],
+        [
+          128,
+          76,
+          394,
+          436
+        ],
+        [
+          128,
+          76,
+          394,
+          436
+        ],
+        [
+          128,
+          76,
+          394,
+          436
+        ],
+        [
+          128,
+          76,
+          394,
+          436
+        ],
+        [
+          128,
+          76,
+          394,
+          436
+        ]
+      ],
+      "passed": true
+    },
+    {
+      "file": "Modern/Idle.png",
+      "dimensionsCorrect": true,
+      "transparentRGBA": true,
+      "nonemptyFrames": 10,
+      "distinctFrames": 10,
+      "eightPixelGuardClear": true,
+      "metadataCorrect": true,
+      "loopSeamComparable": true,
+      "adjacentFrameDifferences": [
+        0.15613,
+        0.13864,
+        0.2979,
+        0.17514,
+        0.13508,
+        0.17616,
+        0.15236,
+        0.2417,
+        0.11346,
+        0.13557
+      ],
+      "frameBounds": [
+        [
+          189,
+          76,
+          333,
+          436
+        ],
+        [
+          189,
+          77,
+          333,
+          436
+        ],
+        [
+          189,
+          76,
+          333,
+          436
+        ],
+        [
+          189,
+          76,
+          333,
+          436
+        ],
+        [
+          189,
+          76,
+          333,
+          436
+        ],
+        [
+          189,
+          76,
+          333,
+          436
+        ],
+        [
+          189,
+          76,
+          333,
+          436
+        ],
+        [
+          189,
+          76,
+          333,
+          436
+        ],
+        [
+          189,
+          76,
+          333,
+          436
+        ],
+        [
+          189,
+          76,
+          333,
+          436
+        ]
+      ],
+      "passed": true
+    },
+    {
+      "file": "Modern/Travel.png",
+      "dimensionsCorrect": true,
+      "transparentRGBA": true,
+      "nonemptyFrames": 10,
+      "distinctFrames": 10,
+      "eightPixelGuardClear": true,
+      "metadataCorrect": true,
+      "loopSeamComparable": true,
+      "adjacentFrameDifferences": [
+        0.69022,
+        0.50681,
+        0.94706,
+        0.46328,
+        0.66892,
+        0.72545,
+        0.51931,
+        0.91775,
+        0.44512,
+        0.67892
+      ],
+      "frameBounds": [
+        [
+          189,
+          76,
+          333,
+          436
+        ],
+        [
+          189,
+          77,
+          333,
+          436
+        ],
+        [
+          189,
+          77,
+          333,
+          436
+        ],
+        [
+          189,
+          76,
+          333,
+          436
+        ],
+        [
+          189,
+          76,
+          333,
+          436
+        ],
+        [
+          189,
+          76,
+          333,
+          436
+        ],
+        [
+          189,
+          77,
+          333,
+          436
+        ],
+        [
+          189,
+          77,
+          333,
+          436
+        ],
+        [
+          189,
+          76,
+          333,
+          436
+        ],
+        [
+          189,
+          76,
+          333,
+          436
+        ]
+      ],
+      "passed": true
+    }
+  ],
+  "visualReview": "Automated checks cover sprite contracts and loop boundaries. Visual review covers silhouettes, member counts, drawbars, walking motion and caravan spacing. Game integration is unverified."
+}

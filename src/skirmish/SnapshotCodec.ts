@@ -6,19 +6,13 @@ import type {
   SnapshotPacket,
   SquadType,
 } from "./Protocol";
+import { BUILDING_RULES } from "./Rules";
 
 const SQUAD_STRIDE = 14,
   ORDER_STRIDE = 6,
   BUILDING_STRIDE = 5;
 const SQUAD_TYPES: SquadType[] = ["infantry", "archer", "cavalry"];
-const BUILDING_TYPES: BuildingType[] = [
-  "barracks",
-  "archery",
-  "stables",
-  "city",
-  "factory",
-  "port",
-];
+const BUILDING_TYPES = Object.keys(BUILDING_RULES) as BuildingType[];
 const ORDER_TYPES: Order["type"][] = [
   "hold",
   "replenish",
@@ -56,6 +50,7 @@ function readOrder(input: Int32Array, at: number): Order {
 // Worker adapter: only presentation fields leave the authoritative domain.
 // Numeric buffers are transferred; ownership/construction changes are deltas.
 export class SnapshotEncoder {
+  private previousRoadRevision = -1;
   private previousTiles?: Uint32Array;
   private readonly buildings = new Map<
     number,
@@ -153,6 +148,16 @@ export class SnapshotEncoder {
         removed.push(id);
         this.buildings.delete(id);
       }
+    const expansion = source.expansion
+      ? {
+          ...source.expansion,
+          roads:
+            reset || this.previousRoadRevision !== source.expansion.roadRevision
+              ? source.expansion.roads
+              : undefined,
+        }
+      : undefined;
+    this.previousRoadRevision = source.expansion?.roadRevision ?? -1;
     return {
       reset,
       tick: source.tick,
@@ -164,6 +169,31 @@ export class SnapshotEncoder {
       buildingChanges: new Int32Array(changed),
       removedBuildings: new Int32Array(removed),
       players: source.players.map((p) => ({ ...p })),
+      expansion,
+      squadDetails: source.expansion
+        ? source.squads.map((s) => ({
+            id: s.id,
+            definitionId: s.definitionId,
+            xp: s.xp,
+            deploymentTicks: s.deploymentTicks,
+            nextAttackTick: s.nextAttackTick,
+            lastAttackTick: s.lastAttackTick,
+            refit: s.refit,
+            charge: s.charge,
+            chargeReadyTick: s.chargeReadyTick,
+            structureTarget: s.structureTarget,
+          }))
+        : undefined,
+      buildingDetails: source.expansion
+        ? source.buildings.map((b) => ({
+            id: b.id,
+            age: b.age,
+            health: b.health,
+            maxHealth: b.maxHealth,
+            nextAttackTick: b.nextAttackTick,
+            launchReadyTick: b.launchReadyTick,
+          }))
+        : undefined,
       ships: source.ships.map((s) => ({
         id: s.id,
         playerId: s.playerId,
@@ -177,6 +207,12 @@ export class SnapshotEncoder {
         boarding: s.boarding
           ? { ...s.boarding, squadIds: [...s.boarding.squadIds] }
           : null,
+        definitionId: s.definitionId,
+        xp: s.xp,
+        refit: s.refit,
+        attackTargetId: s.attackTargetId,
+        lastPlanTick: s.lastPlanTick,
+        nextAttackTick: s.nextAttackTick,
       })),
       volleys: source.volleys.map((v) => ({ ...v })),
       winner: source.winner,
@@ -196,12 +232,14 @@ export function snapshotTransfers(packet: SnapshotPacket): ArrayBuffer[] {
 }
 
 export class SnapshotDecoder {
+  private roads: Uint32Array = new Uint32Array();
   private owners = new Uint8Array();
   private claims = new Uint8Array();
   private progress = new Uint8Array();
   private readonly buildings = new Map<number, Building>();
   decode(packet: SnapshotPacket): Snapshot {
     if (packet.reset) {
+      this.roads = new Uint32Array();
       const size = packet.width * packet.height;
       this.owners = new Uint8Array(size);
       this.claims = new Uint8Array(size);
@@ -259,6 +297,11 @@ export class SnapshotDecoder {
         queuedOrders,
       });
     }
+    const details = new Map(packet.squadDetails?.map((s) => [s.id, s]));
+    for (const s of squads) Object.assign(s, details.get(s.id));
+    for (const b of packet.buildingDetails ?? [])
+      Object.assign(this.buildings.get(b.id) ?? {}, b);
+    if (packet.expansion?.roads) this.roads = packet.expansion.roads;
     return {
       tick: packet.tick,
       width: packet.width,
@@ -274,6 +317,9 @@ export class SnapshotDecoder {
       volleys: packet.volleys,
       winner: packet.winner,
       combatTicks: packet.combatTicks,
+      expansion: packet.expansion
+        ? { ...packet.expansion, roads: this.roads }
+        : undefined,
     };
   }
 }

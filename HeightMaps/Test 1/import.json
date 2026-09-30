@@ -1,0 +1,16 @@
+{
+  "name": "Heightmap Test 1",
+  "source": "41_509_30_586_7_8192_4096_16bit (6).png",
+  "sourceSha256": "45bb5bc8b9aa8f740ecc3308666e93390a10d0be7447cdb9ba2c4ca585f9fb7c",
+  "sourceUrl": "https://manticorp.github.io/unrealheightmap/#latitude/41.508545159505786/longitude/30.58607442197581/zoom/4/outputzoom/7/width/8192/height/4096/outputformat/png16",
+  "normalization": {
+    "mode": "regular",
+    "from": -450,
+    "to": 7819,
+    "range": 65536
+  },
+  "seaLevel": 0,
+  "terrainThresholds": { "highland": 600, "mountain": 1800 },
+  "sizes": [250, 500, 1000],
+  "output": "resources/maps/heightmap-test1"
+}

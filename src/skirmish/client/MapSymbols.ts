@@ -1,9 +1,11 @@
+import { buildingFootprintCells } from "../BuildingFootprint";
 import type { BuildingType } from "../Protocol";
 import {
   MAX_MELEE_LUNGE_RATIO,
   SPRITE_FOOTPRINT,
   squadSpriteSize,
 } from "./UnitAnimation";
+export { buildingFootprintCells } from "../BuildingFootprint";
 
 // Presentation budgets are independent of terrain collision and weapon range.
 const SQUAD_ART_MIN_PIXELS = 28;
@@ -50,10 +52,32 @@ export function buildingSymbol(
   type: BuildingType,
   selected = false,
 ) {
-  const enlargement = type === "city" ? 1.15 : 1;
+  const enlargement = buildingFootprintCells(type) / 2;
   const projectedSize = scale * 2 * enlargement;
   const size = Math.min(44 * enlargement, projectedSize);
   const artwork = hasArtwork && size >= BUILDING_ART_MIN_PIXELS;
   const backdropAlpha = artwork ? (selected ? 0.2 : 0) : 0.9;
-  return { artwork, size: artwork ? size : 18, inset: 3, backdropAlpha };
+  const inset = 3;
+  // Enlarge the drawn art, preserving the inset and distant glyph threshold.
+  // Terrain clearing and placement footprints remain domain-owned.
+  const artScale = type === "city" ? 1.15 : 1.1;
+  return {
+    artwork,
+    size: artwork ? (size - inset * 2) * artScale + inset * 2 : 18,
+    inset,
+    backdropAlpha,
+  };
+}
+
+export function traderSymbol(scale: number, hasArtwork: boolean) {
+  // Traders retain their own budget when soldier readability is adjusted.
+  const size = Math.min(44, scale * 2);
+  const artwork = hasArtwork && size >= SQUAD_ART_MIN_PIXELS;
+  return {
+    artwork,
+    size: artwork ? size : Math.max(6, Math.min(12, size)),
+    viewRadius: artwork
+      ? (size / SPRITE_FOOTPRINT) * Math.SQRT1_2
+      : Math.max(6, Math.min(12, size)) * Math.SQRT1_2,
+  };
 }

@@ -57,16 +57,18 @@ describe("authored sprite animation contract", () => {
     expect(animationFrame("archer", "attack", 50)).toBe(9);
     expect(animationFrame("infantry", "attack", 24, true)).toBe(2);
   });
-  it("keeps illustrated squads near city size without inflating distant art", () => {
-    for (const zoom of [1, 5, 12, 40])
+  it("lets close-zoom squads grow for readability without inflating distant art", () => {
+    for (const zoom of [1, 5, 12, 22, 32, 48, 96])
       for (const troops of [1, 500, 1000]) {
         expect(squadSpriteSize(zoom, troops) / zoom).toBeLessThanOrEqual(2);
-        expect(squadSpriteSize(zoom, troops)).toBeLessThanOrEqual(44);
+        expect(squadSpriteSize(zoom, troops)).toBeLessThanOrEqual(55);
         expect(squadSpriteSize(zoom, troops)).toBeGreaterThan(0);
       }
     expect(squadSpriteSize(12, 1_000)).toBe(24);
     expect(squadSpriteSize(1, 1_000)).toBe(2);
-    expect(squadSpriteSize(40, 1_000)).toBe(44);
+    expect(squadSpriteSize(22, 1_000)).toBe(44);
+    expect(squadSpriteSize(40, 1_000)).toBe(55);
+    expect(squadSpriteSize(96, 1_000)).toBe(55);
     expect(squadSpriteSize(12, 500)).toBeCloseTo(21.6);
   });
 });

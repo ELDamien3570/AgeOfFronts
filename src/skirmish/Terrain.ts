@@ -1,15 +1,28 @@
 import { TerrainType } from "../core/game/Game";
 import type { GameMap } from "../core/game/GameMap";
 import { GameMapImpl } from "../core/game/GameMap";
+import { createSkirmishMap } from "./Elevation";
+import { EnvironmentProfile } from "./Environment";
+import { forestOf } from "./Forest";
+import { generateForestCover } from "./ForestGeneration";
+import { loadHeightmap } from "./HeightmapMap";
 import type { LoadedMap } from "./Protocol";
 
 export const MAPS = [
   { id: "world", name: "World · land skirmish" },
   { id: "fourislands", name: "Four Islands · one island" },
   { id: "thebox", name: "Training Square" },
+  { id: "heightmap-test1", name: "Heightmap · Test 1" },
 ] as const;
 
 export function terrainSpeed(map: GameMap, tile: number): number {
+  return Math.round(
+    baseTerrainSpeed(map, tile) *
+      (1 - 0.4 * (forestOf(map)?.coverAt(tile) ?? 0)),
+  );
+}
+
+export function baseTerrainSpeed(map: GameMap, tile: number): number {
   switch (map.terrainType(tile)) {
     case TerrainType.Plains:
       return 56;
@@ -23,9 +36,29 @@ export function terrainSpeed(map: GameMap, tile: number): number {
 }
 
 export async function loadMap(id: string, worldSize = 500): Promise<LoadedMap> {
+  const loaded = await loadBareMap(id, worldSize);
+  const environment =
+    loaded.environment ?? new EnvironmentProfile(loaded.map, loaded.geography);
+  const forest = generateForestCover(loaded.map, environment);
+  return {
+    ...loaded,
+    map: createSkirmishMap(
+      loaded.map.width(),
+      loaded.map.height(),
+      loaded.terrain,
+      loaded.elevation,
+      forest,
+    ),
+    forest,
+    environment,
+  };
+}
+
+async function loadBareMap(id: string, worldSize: number): Promise<LoadedMap> {
   if (!MAPS.some((m) => m.id === id)) throw new Error("Unknown map");
   if (![250, 500, 1000].includes(worldSize))
     throw new Error("Unknown world size");
+  if (id === "heightmap-test1") return loadHeightmap(worldSize);
   const variant = id === "world" && worldSize === 1000 ? "map4x" : "map16x";
   const [manifestResponse, binaryResponse] = await Promise.all([
     fetch(`/maps/${id}/manifest.json`),

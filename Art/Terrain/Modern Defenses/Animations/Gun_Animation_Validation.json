@@ -1,0 +1,15 @@
+{
+  "passed": true,
+  "checks": {
+    "clips": 16,
+    "frames": 672,
+    "layerCompositions": 672,
+    "fixedPitFrames": 672,
+    "unclippedFrames": 672,
+    "correctMuzzleEvents": 120,
+    "sourceFilesPreserved": 26,
+    "loopMotionChecks": 16
+  },
+  "failures": [],
+  "scope": "Animation asset and timing contracts; no weapon-model certification or game combat/runtime integration."
+}

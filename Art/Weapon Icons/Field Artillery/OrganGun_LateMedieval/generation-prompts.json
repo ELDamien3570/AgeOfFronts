@@ -1,0 +1,59 @@
+{
+  "generator": "built-in image_gen",
+  "key": "OrganGun",
+  "label": "Organ gun",
+  "category": "Field Artillery",
+  "age": "LateMedieval",
+  "crew": 3,
+  "mechanism": "organ",
+  "description": "Late medieval organ gun with FIVE iron barrels lying parallel to the ground in a shallow north-facing fan, mounted on a broad oak two-wheel carriage with iron straps and a short south trail. Exactly THREE blue-and-cream gambeson crew in steel kettle helmets at the sides and rear. Long barrel top surfaces with edge-on muzzle tips; no upward-facing bore openings.",
+  "jobs": [
+    {
+      "key": "OrganGun",
+      "label": "Organ gun",
+      "category": "Field Artillery",
+      "age": "LateMedieval",
+      "crew": 3,
+      "mechanism": "organ",
+      "description": "Late medieval organ gun with FIVE iron barrels lying parallel to the ground in a shallow north-facing fan, mounted on a broad oak two-wheel carriage with iron straps and a short south trail. Exactly THREE blue-and-cream gambeson crew in steel kettle helmets at the sides and rear. Long barrel top surfaces with edge-on muzzle tips; no upward-facing bore openings.",
+      "clip": "Idle",
+      "prompt": "Use case: precise-object-edit. Correct all four sprites in this organ gun animation atlas. Keep the exact same painted oak carriage, narrow overhead wheel rims, dark iron fittings and THREE late medieval blue-and-cream crew with steel helmet crowns. Strict straight-down orthographic RTS camera. Canvas 1254 x 1254, exactly four equal 627 x 627 cells, genuine transparent background and at least 40px clear margin inside each cell.\nReplace the seven steeply upward-tilted tubes with exactly SEVEN longer iron barrels laid HORIZONTALLY, PARALLEL TO THE GROUND, aimed forward toward screen NORTH. Their breeches are mounted near one another at the rear SOUTH on a broad oak mounting rack; their front tips spread farther apart in a SHALLOW FAN across the NORTH edge. Center barrel points north, three left barrels progressively splay northwest by 5, 10 and 15 degrees, three right barrels splay northeast by 5, 10 and 15 degrees. All seven tubes stay in the horizontal ground plane, zero vertical elevation. From this overhead view we see long cylinder TOP surfaces and tiny edge-on muzzle lips at the forward tips; NO round black upward-facing bore holes. The forward muzzle row is wider than the rear breech row. Make each complete barrel coherent from breech to tip. No vertical pipes, chimneys or cannons sticking toward the viewer.\nFour IDLE breathing poses, same fixed fan of seven horizontal barrels and carriage in every cell. Only subtle crew hand/shoulder adjustments. No smoke or flash. Keep the unchanged short carriage trail south and crew at its sides/rear, clear of the firing arcs. No text, backgrounds, grid lines or watermark.",
+      "references": [
+        "C:\\Users\\Damien\\.codex\\generated_images\\01a0f0f0-cfa7-76e0-959a-347e83e7ded2\\exec-1a16bd0b-abeb-4ea4-8934-0ea2da357fe8.png"
+      ],
+      "source": "C:\\Users\\Damien\\.codex\\generated_images\\01a0f0f0-cfa7-76e0-959a-347e83e7ded2\\exec-bb0bf241-3266-4653-9016-b5e2a7afe64f.png",
+      "previousSource": "C:\\Users\\Damien\\.codex\\generated_images\\01a0f0f0-cfa7-76e0-959a-347e83e7ded2\\exec-1a16bd0b-abeb-4ea4-8934-0ea2da357fe8.png",
+      "correction": "seven ground-parallel barrels spread in a shallow north-facing fan"
+    },
+    {
+      "key": "OrganGun",
+      "label": "Organ gun",
+      "category": "Field Artillery",
+      "age": "LateMedieval",
+      "crew": 3,
+      "mechanism": "organ",
+      "description": "Late medieval organ gun with FIVE iron barrels lying parallel to the ground in a shallow north-facing fan, mounted on a broad oak two-wheel carriage with iron straps and a short south trail. Exactly THREE blue-and-cream gambeson crew in steel kettle helmets at the sides and rear. Long barrel top surfaces with edge-on muzzle tips; no upward-facing bore openings.",
+      "clip": "Movement",
+      "references": [
+        "C:\\Users\\Damien\\.codex\\generated_images\\01a0f0f0-cfa7-76e0-959a-347e83e7ded2\\exec-bb0bf241-3266-4653-9016-b5e2a7afe64f.png"
+      ],
+      "prompt": "Use case: precise-object-edit.\nInput image is a 2x2 atlas of the exact weapon unit with its crew. Make a new animation atlas by changing ONLY the action poses. Preserve that same unit identity, palette, uniforms, detailed painted texture, strict vertical overhead camera, 1254 x 1254 image and exactly FOUR equal 627 x 627 cells.\nKeep the rigid chassis, wheel bands, tripod or base footprint at the SAME SCALE AND COORDINATES in all four cells. Do not zoom, change proportion, shift the whole sprite or redraw it as another machine. Only the specified mechanical components and crew joints move. The camera stays pitch -90 degrees; faces and wheel side discs remain invisible. All weapons still face straight NORTH.\nFour consecutive poses are read left to right then the next row. Each weapon and crew is complete within its cell. Keep clear transparent gutters and at least 25 pixels of alpha margin. Small projectiles, flashes and smoke stay fully inside the same cell. Gun muzzle flashes are TINY, at most about 20 pixels across; smoke puffs at most about 35 pixels across, placed close to the muzzle. Never fill a cell with smoke or paint across a grid boundary.\nGenuine transparency around subjects; no tile lines, labels, numbers, background, watermark, ground tile or big explosion.\nUnit: Organ gun, LateMedieval, exactly THREE crew. The supplied corrected fan has exactly FIVE barrels; retain all five, same angles, same length, laid parallel to the ground and aimed screen-forward. This source supersedes the earlier upward-tilted seven tubes.\nAction: Movement.\nFour successive in-place marching/pushing poses. All equipment stays aimed north and centered, with the weapon's rigid shape unchanged. Crew lean forward and push or pull its existing rails and handles. Frame 1 left foot forward/right back; frame 2 passing step with elbows adjusting; frame 3 right foot forward/left back; frame 4 passing step returning to frame 1. Crew clothing, helmets and positions stay consistent. The complete unit does NOT translate across the atlas cell: world movement will be supplied by the game. Upright wheel tread top bands shift subtly without revealing side-view discs. No firing, flash or smoke.",
+      "source": "C:\\Users\\Damien\\.codex\\generated_images\\01a0f0f0-cfa7-76e0-959a-347e83e7ded2\\exec-2e30730f-eaf4-4d4c-8e1a-1a4749f52049.png"
+    },
+    {
+      "key": "OrganGun",
+      "label": "Organ gun",
+      "category": "Field Artillery",
+      "age": "LateMedieval",
+      "crew": 3,
+      "mechanism": "organ",
+      "description": "Late medieval organ gun with FIVE iron barrels lying parallel to the ground in a shallow north-facing fan, mounted on a broad oak two-wheel carriage with iron straps and a short south trail. Exactly THREE blue-and-cream gambeson crew in steel kettle helmets at the sides and rear. Long barrel top surfaces with edge-on muzzle tips; no upward-facing bore openings.",
+      "clip": "Attack",
+      "references": [
+        "C:\\Users\\Damien\\.codex\\generated_images\\01a0f0f0-cfa7-76e0-959a-347e83e7ded2\\exec-bb0bf241-3266-4653-9016-b5e2a7afe64f.png"
+      ],
+      "prompt": "Use case: precise-object-edit.\nInput image is a 2x2 atlas of the exact weapon unit with its crew. Make a new animation atlas by changing ONLY the action poses. Preserve that same unit identity, palette, uniforms, detailed painted texture, strict vertical overhead camera, 1254 x 1254 image and exactly FOUR equal 627 x 627 cells.\nKeep the rigid chassis, wheel bands, tripod or base footprint at the SAME SCALE AND COORDINATES in all four cells. Do not zoom, change proportion, shift the whole sprite or redraw it as another machine. Only the specified mechanical components and crew joints move. The camera stays pitch -90 degrees; faces and wheel side discs remain invisible. All weapons still face straight NORTH.\nFour consecutive poses are read left to right then the next row. Each weapon and crew is complete within its cell. Keep clear transparent gutters and at least 25 pixels of alpha margin. Small projectiles, flashes and smoke stay fully inside the same cell. Gun muzzle flashes are TINY, at most about 20 pixels across; smoke puffs at most about 35 pixels across, placed close to the muzzle. Never fill a cell with smoke or paint across a grid boundary.\nGenuine transparency around subjects; no tile lines, labels, numbers, background, watermark, ground tile or big explosion.\nUnit: Organ gun, LateMedieval, exactly THREE crew. The supplied corrected fan has exactly FIVE barrels; retain all five, same angles, same length, laid parallel to the ground and aimed screen-forward. This source supersedes the earlier upward-tilted seven tubes.\nAction: Attack.\nFrame 1 five horizontal fanned iron barrels ready, center points north and the outer pair point slightly northwest/northeast. Frame 2 three tiny staggered flashes at those forward tips follow each barrel's horizontal aim; barrel fan, mounting rack and wheels remain fixed. Frame 3 tiny pale powder wisps drift just forward while the three crew lean to reload. Frame 4 smoke clears and crew settle. Exactly FIVE separate barrels remain unchanged in the same shallow fan in all cells, with no upward bore openings or barrel elevation.",
+      "source": "C:\\Users\\Damien\\.codex\\generated_images\\01a0f0f0-cfa7-76e0-959a-347e83e7ded2\\exec-5f4436d5-d104-41cc-9972-dd8e586cc564.png"
+    }
+  ]
+}

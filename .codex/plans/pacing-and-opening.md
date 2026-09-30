@@ -14,7 +14,12 @@ Related plans: [technology](tech-tree-and-cultures.md), [trade](trade-and-econom
 - Existing troops are upgraded by selecting them and using the unit card on the left.
 - Traders are generated automatically by factories without a recruitment charge.
 - Delivery trade replaces passive port income.
-- Blacksmiths and arms factories turn strategic materials into weapons required for troop recruitment; commercial cargo is separate.
+- Blacksmiths and arms factories turn strategic materials into weapons required for post-Stone troop recruitment; Stone troops are exempt and commercial cargo is separate.
+- Older unlocked troops remain available without the current age's resource/metal and keep their original weapon requirements.
+- Mounted cavalry requires horses at every mounted tier; tanks require manufactured armament, steel, oil and reserves instead.
+- Slow early growth of troop reserves/manpower. City research unlocks paid upgrades for individual cities, and Classical is the first substantial city-driven growth breakpoint.
+
+The detailed [manpower and city upgrade plan](<optimization and ai improvement/manpower-and-city-upgrades.md>) records candidate rates and opening-bank review. The user is considering Medieval plagues; their adoption and effects remain open. This does not introduce a separate civilian population simulation.
 
 The hour is a progression/balance target, not a mandatory sixty-minute match timeout. Early victories remain possible. Reaching Modern is not identical to finishing every Modern technology or catching up an unfinished third tree.
 
@@ -34,9 +39,9 @@ All values below are starting balance proposals. Only the one-hour target and th
 
 The six advancement fees total 955,000 gold and the six advancement timers total 315 seconds. These timers are included in the arrival targets, not added after them.
 
-Four technologies per tree per age gives 84 nodes across seven ages. With two startup grants, full completion entails 82 research purchases. That is more work than the minimum two-tree advancement route: 48 counted nodes across the first six ages, with up to two of those already granted at startup.
+Four technologies per tree per age plus the confirmed fifth Bronze Warfare technology, Armies, gives 85 nodes across seven ages. With two startup grants, full completion entails 83 research purchases. The minimum two-tree advancement route covers 48 counted nodes across the first six ages if Bronze uses Naval/Economic, or 49 if it uses Warfare, with up to two already granted at startup.
 
-Research can overlap across trees. Propose early individual research around 20-35 seconds, rising toward 45-75 seconds late; actual gold prices and all node durations still need a budget pass. Keep room for construction, fighting, resource acquisition, delivery travel, and unit refits. Do not force the hour target by making every technology a long idle timer.
+Research can overlap across trees. [The full base catalogue](base-tech-tree.md) assigns gold/time proposals to all 85 nodes: Stone paid research 25-45 seconds, increasing toward 75-120 seconds in Modern. With Armies provisionally 7,000 gold/45 seconds, full research plus advances costs 3,119,000 gold before construction/combat expenses. The ideal complete timer floor remains about 33m05s if Bronze Naval/Economic enable advancement while the extra Warfare research overlaps its 45-second timer; choosing Warfare for Bronze eligibility adds 45 seconds. Keep room for construction, fighting, resource acquisition, delivery travel and unit refits; do not force the hour through idle timers.
 
 ## Economy scale must change coherently
 
@@ -67,13 +72,17 @@ Starting gold must be at least the current configured city cost plus barracks co
 
 Three melee units refers to three game combat entities. Their troops per formation and starting reserve balance still belong to the balance pass; do not silently turn the instruction into three individual people or retain the old four-unit opening.
 
-A spawn marker or ownership anchor is not a constructed building. Review the current camp-based elimination rule for this new opening so a player is not eliminated merely because no building exists yet.
+Slower growth also requires reviewing the starting reserve bank. The inspected 12,000 initial manpower budget leaves 9,000 after three 1,000-strength starting formations; that allows nine additional recruits before new growth. Candidate rates and a smaller leftover bank are proposals in the manpower plan, not confirmed values. Research/age advancement never automatically increases output from an existing unupgraded city.
+
+A spawn marker or ownership anchor is not a constructed building. Review the current elimination rule for this new opening so a player is not eliminated merely because no building exists yet.
+
+Reproduced September 30: losing all three starting formations with no buildings eliminates the faction and automatically hands its still-owned territory to the killer, despite usable land, reserves and construction funds. The user accepted survival while usable owned territory permits rebuilding: an army wipe alone must not cause elimination/annexation. See [defeat and territory inheritance](<optimization and ai improvement/defeat-and-territory-inheritance.md>) for evidence and the still-open terminal control/surrender rule. Correct source before treating an opening army wipe as conquest; an AI budget fix or free starting building is not sufficient.
 
 Avoid an economy deadlock: the player must be able to establish goods production after spending on the required city and barracks. Proposed bootstrap options are modest baseline income independent of buildings, a larger construction buffer, or an initially affordable factory. Choose one coherent setup during the numerical pass; do not claim it is already settled.
 
-Horses are the first resource unlock and Stone extraction follows early in the design. Strict research ordering is still to be settled. The first city/barracks cannot demand mined materials that the player has no means to obtain. Recommend gold-only opening structures or an explicit starting material allowance. New strategic-resource costs need this same bootstrap check.
+Horses are earliest available; the user confirmed mining stays independent of Horsemanship. Stone extraction remains early in the design. The first city/barracks cannot demand mined materials that the player has no means to obtain. Recommend gold-only opening structures or an explicit starting material allowance. New strategic-resource costs need this same bootstrap check.
 
-The weapon chain adds another startup constraint: a barracks alone cannot recruit replacements without equipment. Budget the first blacksmith/basic equipment recipe and its inputs alongside the first commercial factory. Starter weapon stocks versus an immediately viable basic-weapon recipe remains open; the three starting units are granted without constructing a producer.
+Stone Age replacements do not require manufactured weapons, so the opening infantry loop does not need a blacksmith or starter weapon inventory. Mounted Stone recruits still require horses. Budget weapon producers and material supply for the first post-Stone forces alongside age advancement and commercial development.
 
 ## Research and troop upgrades are separate
 
@@ -83,9 +92,9 @@ Selecting troops opens their left unit card. The card shows the available upgrad
 
 Propose a visible per-unit refit job for substantial changes. Validate ownership, technology, materials, funds, and upgrade compatibility atomically. Keep health/casualties, identity, and orders according to an explicit refit policy; no free full healing or duplicate resource spending.
 
-Unit-upgrade prices, refit duration, whether units must stop or visit a building, and mixed-selection handling remain open. New troops require produced weapons, and cavalry recruitment additionally spends horses. Weapon quantities, equipment spending for existing-unit refits, and whether a mounted equipment refit needs additional horses are separate recipe decisions.
+Unit-upgrade prices, refit duration, whether units must stop or visit a building, and mixed-selection handling remain open. Stone troops are exempt from manufactured weapons; post-Stone troops retain their own weapon requirements. Older unlocked troops remain recruitable when current-age materials are unavailable. Mounted cavalry recruitment additionally spends horses. Weapon quantities, equipment spending for existing-unit refits, and whether a mounted equipment refit needs additional horses are separate recipe decisions.
 
-The Modern armour definition must not consume horses just because it develops from the cavalry line. Horse-to-vehicle conversion needs an explicit available upgrade and material/production rule.
+Tank recruitment requires reserves, manufactured armament, steel and oil rather than horses, as confirmed. Older mounted units still need horses after the player reaches Modern. Horse-to-vehicle conversion remains an explicit researched refit with its own agreed recipe. Every successfully age-refitted formation resets promotion to recruit; research alone leaves its current experience intact.
 
 ## Balance acceptance
 

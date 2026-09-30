@@ -1,4 +1,5 @@
 import type { GameMap } from "../core/game/GameMap";
+import { forestOf } from "./Forest";
 import { terrainSpeed } from "./Terrain";
 
 const DIAGONALS = [
@@ -12,6 +13,7 @@ const DIAGONALS = [
 export class PathTopology {
   private readonly cardinal: Uint8Array;
   private readonly diagonal: Uint8Array;
+  private readonly listeners = new Set<(tiles: readonly number[]) => void>();
   constructor(
     readonly map: GameMap,
     readonly water: boolean,
@@ -20,11 +22,23 @@ export class PathTopology {
     this.cardinal = new Uint8Array(size);
     this.diagonal = new Uint8Array(size);
     for (let tile = 0; tile < size; tile++) {
-      if (!this.walkable(tile)) continue;
-      const speed = water ? 56 : terrainSpeed(map, tile);
-      this.cardinal[tile] = water ? 10 : Math.ceil(560 / speed);
-      this.diagonal[tile] = Math.ceil(792 / speed);
+      this.updateCost(tile);
     }
+    if (!water)
+      forestOf(map)?.onChange((tiles) => {
+        for (const tile of tiles) this.updateCost(tile);
+        for (const listener of this.listeners) listener(tiles);
+      });
+  }
+  private updateCost(tile: number): void {
+    if (!this.walkable(tile)) return;
+    const speed = this.water ? 56 : terrainSpeed(this.map, tile);
+    this.cardinal[tile] = this.water ? 10 : Math.ceil(560 / speed);
+    this.diagonal[tile] = Math.ceil(792 / speed);
+  }
+  onCostsChanged(listener: (tiles: readonly number[]) => void): () => void {
+    this.listeners.add(listener);
+    return () => this.listeners.delete(listener);
   }
   walkable(tile: number): boolean {
     return (

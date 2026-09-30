@@ -18,9 +18,13 @@ export function constructionRejection(
   if (
     !Number.isInteger(tile) ||
     !map.isValidRef(tile) ||
-    !map.isLand(tile) ||
+    (type === "oil-rig" ? !map.isWater(tile) : !map.isLand(tile)) ||
     map.isImpassable(tile) ||
-    owners[tile] !== player.id
+    (type === "oil-rig"
+      ? !map
+          .neighbors(tile)
+          .some((t) => map.isLand(t) && owners[t] === player.id)
+      : owners[tile] !== player.id)
   )
     return "Buildings need passable friendly land";
   if (type === "port" && !map.neighbors(tile).some((n) => map.isWater(n)))

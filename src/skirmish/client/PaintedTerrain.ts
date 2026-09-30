@@ -1,12 +1,21 @@
 import { TerrainType } from "../../core/game/Game";
 import type { GameMap } from "../../core/game/GameMap";
+import { elevationOf } from "../Elevation";
+import type { EnvironmentProfile } from "../Environment";
+import { forestOf } from "../Forest";
+import type { MapGeography } from "../Geography";
+import type { Building } from "../Protocol";
+import { TerrainArtwork } from "./TerrainArtwork";
+import {
+  TERRAIN_CHUNK_CELLS,
+  TerrainDecorations,
+  type TerrainBounds,
+} from "./TerrainDecorations";
+import { TerrainEnvironment } from "./TerrainEnvironment";
+import { terrainHash as hash, terrainNoise as noise } from "./TerrainNoise";
 
-const CHUNK = 64;
+const CHUNK = TERRAIN_CHUNK_CELLS;
 const PIXEL_BUDGET = 12_000_000;
-const ATLAS = new URL(
-  "../../../Art/Terrain/painted-accents.png",
-  import.meta.url,
-).href;
 const PALETTES = {
   plains: [127, 148, 88],
   hills: [146, 140, 98],
@@ -16,67 +25,78 @@ const PALETTES = {
   coast: [190, 177, 127],
 };
 
-function hash(x: number, y: number): number {
-  let n = Math.imul(x ^ 0x3d45, 0x45d9f3b) ^ Math.imul(y ^ 0x1567, 0x27d4eb2d);
-  n = Math.imul(n ^ (n >>> 16), 0x45d9f3b);
-  return (n >>> 0) / 0xffffffff;
-}
-function noise(x: number, y: number, size: number): number {
-  const xx = Math.floor(x / size),
-    yy = Math.floor(y / size),
-    u = x / size - xx,
-    v = y / size - yy;
-  const sx = u * u * (3 - 2 * u),
-    sy = v * v * (3 - 2 * v);
-  return (
-    (hash(xx, yy) * (1 - sx) + hash(xx + 1, yy) * sx) * (1 - sy) +
-    (hash(xx, yy + 1) * (1 - sx) + hash(xx + 1, yy + 1) * sx) * sy
-  );
-}
 export function paintedCell(
   map: GameMap,
   tile: number,
-): { color: string; decoration: number | null } {
+  relief?: Int8Array,
+  environment?: TerrainEnvironment,
+): { color: string } {
   const x = map.x(tile),
-    y = map.y(tile),
-    type = map.terrainType(tile);
-  const neighbors = map.neighbors(tile);
-  const coast = map.isLand(tile) && neighbors.some((t) => map.isWater(t));
-  const shallow = map.isWater(tile) && neighbors.some((t) => map.isLand(t));
-  let base = coast
-    ? PALETTES.coast
-    : shallow
-      ? PALETTES.shallow
-      : type === TerrainType.Plains
-        ? PALETTES.plains
-        : type === TerrainType.Highland
-          ? PALETTES.hills
-          : type === TerrainType.Mountain
-            ? PALETTES.mountains
-            : PALETTES.ocean;
-  const forest =
-    noise(x, y, 24) > 0.55 && type === TerrainType.Plains && !coast;
-  if (forest) base = [104, 130, 79];
-  const shade = (noise(x, y, 9) - 0.5) * 16 + (noise(x, y, 3) - 0.5) * 5;
+    y = map.y(tile);
+  let base: readonly number[];
+  if (environment) base = environment.colorAt(tile);
+  else {
+    const type = map.terrainType(tile),
+      neighbors = map.neighbors(tile),
+      coast = map.isLand(tile) && neighbors.some((t) => map.isWater(t)),
+      shallow = map.isWater(tile) && neighbors.some((t) => map.isLand(t));
+    base = coast
+      ? PALETTES.coast
+      : shallow
+        ? PALETTES.shallow
+        : type === TerrainType.Plains
+          ? PALETTES.plains
+          : type === TerrainType.Highland
+            ? PALETTES.hills
+            : type === TerrainType.Mountain
+              ? PALETTES.mountains
+              : PALETTES.ocean;
+    if (noise(x, y, 24) > 0.55 && type === TerrainType.Plains && !coast)
+      base = [104, 130, 79];
+  }
+  const shade =
+    (noise(x, y, 9) - 0.5) * 16 +
+    (noise(x, y, 3) - 0.5) * 5 +
+    (relief?.[tile] ?? 0);
   return {
     color: `rgb(${base.map((value) => Math.round(value + shade)).join(",")})`,
-    decoration:
-      coast || map.isWater(tile)
-        ? null
-        : type === TerrainType.Mountain || type === TerrainType.Highland
-          ? 1
-          : forest
-            ? noise(x, y, 60) > 0.58
-              ? 3
-              : 0
-            : 2,
   };
 }
 
-// Disposable presentation chunks. Neither visual forests nor camera LOD can
-// alter the map's domain terrain, passability, or travel speed.
+export function terrainRelief(map: GameMap): Int8Array | undefined {
+  const elevation = elevationOf(map);
+  if (!elevation) return undefined;
+  const shades = new Int8Array(map.width() * map.height());
+  const sample = (x: number, y: number) => {
+    const tile = map.ref(
+      Math.max(0, Math.min(map.width() - 1, x)),
+      Math.max(0, Math.min(map.height() - 1, y)),
+    );
+    return map.isLand(tile) ? elevation.heightAt(tile) : elevation.seaLevel;
+  };
+  for (let y = 0; y < map.height(); y++)
+    for (let x = 0; x < map.width(); x++) {
+      const tile = map.ref(x, y);
+      if (!map.isLand(tile)) continue;
+      // Fixed upper-left light with deliberate visual relief exaggeration.
+      // This disposable shade is independent of route costs and elevation data.
+      const gradient =
+        sample(x + 1, y) -
+        sample(x - 1, y) +
+        sample(x, y + 1) -
+        sample(x, y - 1);
+      shades[tile] = Math.round(Math.max(-26, Math.min(26, gradient / 40)));
+    }
+  return shades;
+}
+
+// Disposable presentation chunks read shared cover; camera LOD cannot change
+// passability or travel speed. Ground clearance is mirrored from snapshots.
 export class PaintedTerrain {
-  private readonly atlas = new Image();
+  private readonly artwork: TerrainArtwork;
+  private readonly environment: TerrainEnvironment;
+  private readonly decorations: TerrainDecorations;
+  private readonly relief?: Int8Array;
   private readonly cache = new Map<
     string,
     {
@@ -88,12 +108,53 @@ export class PaintedTerrain {
     }
   >();
   private pixels = 0;
-  constructor(private readonly map: GameMap) {
-    this.atlas.onload = () => {
+  constructor(
+    private readonly map: GameMap,
+    geography?: MapGeography,
+    environment?: EnvironmentProfile,
+  ) {
+    this.relief = terrainRelief(map);
+    this.environment = new TerrainEnvironment(map, geography, environment);
+    this.decorations = new TerrainDecorations(map, this.environment);
+    this.artwork = new TerrainArtwork(this.decorations.families, () => {
       this.cache.clear();
       this.pixels = 0;
-    };
-    this.atlas.src = ATLAS;
+    });
+  }
+  updateBuildings(buildings: readonly Pick<Building, "tile" | "type">[]): void {
+    for (const tile of forestOf(this.map)?.updateBuildings(
+      this.map,
+      buildings,
+    ) ?? [])
+      this.invalidate({
+        left: this.map.x(tile),
+        top: this.map.y(tile),
+        right: this.map.x(tile) + 1,
+        bottom: this.map.y(tile) + 1,
+      });
+    for (const bounds of this.decorations.updateBuildings(buildings))
+      this.invalidate(bounds);
+  }
+  private invalidate(bounds: TerrainBounds): void {
+    // Include the shared one-cell gutter, all LODs, and the entire image's
+    // transparent padding. Adjacent chunks lose the same accent together.
+    for (
+      let cy = Math.floor((bounds.top - 1) / CHUNK);
+      cy <= Math.floor((bounds.bottom + 1) / CHUNK);
+      cy++
+    )
+      for (
+        let cx = Math.floor((bounds.left - 1) / CHUNK);
+        cx <= Math.floor((bounds.right + 1) / CHUNK);
+        cx++
+      )
+        for (const detail of [1, 4, 8, 16]) {
+          const key = `${cx}:${cy}:${detail}`,
+            entry = this.cache.get(key);
+          if (!entry) continue;
+          this.pixels -= entry.canvas.width * entry.canvas.height;
+          this.cache.delete(key);
+        }
   }
   private chunk(cx: number, cy: number, detail: number) {
     const key = `${cx}:${cy}:${detail}`;
@@ -116,60 +177,51 @@ export class PaintedTerrain {
     ctx.scale(detail, detail);
     for (let yy = y; yy < y + height; yy++)
       for (let xx = x; xx < x + width; xx++) {
-        const cell = paintedCell(this.map, this.map.ref(xx, yy));
+        const cell = paintedCell(
+          this.map,
+          this.map.ref(xx, yy),
+          this.relief,
+          this.environment,
+        );
         ctx.fillStyle = cell.color;
         ctx.fillRect(xx - x, yy - y, 1, 1);
       }
-    if (detail > 1 && this.atlas.complete && this.atlas.naturalWidth) {
+    if (detail > 1) {
       // Include decoration anchors beyond a chunk edge so adjacent chunks share
       // the same artwork, with no seams or dependence on camera position.
       ctx.imageSmoothingEnabled = true;
-      const cellWidth = this.atlas.naturalWidth / 2,
-        cellHeight = this.atlas.naturalHeight / 2;
-      for (let yy = Math.floor((y - 8) / 8) * 8; yy < y + height + 8; yy += 8)
-        for (
-          let xx = Math.floor((x - 8) / 8) * 8;
-          xx < x + width + 8;
-          xx += 8
-        ) {
-          const px = xx + 2 + hash(xx, yy) * 4,
-            py = yy + 2 + hash(yy, xx) * 4;
-          if (!this.map.isValidCoord(Math.floor(px), Math.floor(py))) continue;
-          const tile = this.map.ref(Math.floor(px), Math.floor(py)),
-            cell = paintedCell(this.map, tile);
-          if (
-            cell.decoration === null ||
-            (cell.decoration === 2 && hash(xx + 19, yy) < 0.8)
-          )
-            continue;
-          let inland = true;
-          for (const dx of [-3, 0, 3])
-            for (const dy of [-3, 0, 3])
-              if (
-                !this.map.isValidCoord(
-                  Math.floor(px) + dx,
-                  Math.floor(py) + dy,
-                ) ||
-                !this.map.isLand(
-                  this.map.ref(Math.floor(px) + dx, Math.floor(py) + dy),
-                )
-              )
-                inland = false;
-          if (!inland) continue;
-          const size = cell.decoration === 2 ? 1.05 : 2.1;
-          ctx.globalAlpha = cell.decoration === 2 ? 0.45 : 0.76;
-          ctx.drawImage(
-            this.atlas,
-            (cell.decoration % 2) * cellWidth,
-            Math.floor(cell.decoration / 2) * cellHeight,
-            cellWidth,
-            cellHeight,
-            px - x - size / 2,
-            py - y - size / 2,
-            size,
-            size,
-          );
-        }
+      const accents = Array.from(
+        this.decorations.visible({
+          left: x,
+          top: y,
+          right: x + width,
+          bottom: y + height,
+        }),
+      ).sort(
+        (a, b) =>
+          Number(a.accent.role === "canopy") -
+            Number(b.accent.role === "canopy") ||
+          a.y - b.y ||
+          a.id - b.id,
+      );
+      for (const placed of accents) {
+        const image = this.artwork.get(placed.accent.family);
+        if (!image) continue;
+        const source = placed.accent.sourceRect,
+          bounds = placed.imageBounds;
+        ctx.globalAlpha = placed.accent.role === "canopy" ? 0.98 : 0.7;
+        ctx.drawImage(
+          image,
+          source[0],
+          source[1],
+          source[2],
+          source[3],
+          bounds.left - x,
+          bounds.top - y,
+          bounds.right - bounds.left,
+          bounds.bottom - bounds.top,
+        );
+      }
       ctx.globalAlpha = 1;
       // Restrained strokes give water a painted surface at tactical zoom.
       ctx.strokeStyle = "#b3dbe520";
@@ -207,7 +259,7 @@ export class PaintedTerrain {
     width: number,
     height: number,
   ) {
-    const detail = scale >= 5 ? 8 : scale >= 2 ? 4 : 1;
+    const detail = scale >= 12 ? 16 : scale >= 5 ? 8 : scale >= 2 ? 4 : 1;
     const left = Math.max(0, Math.floor(-offsetX / scale / CHUNK)),
       right = Math.min(
         Math.ceil(this.map.width() / CHUNK) - 1,

@@ -9,15 +9,18 @@ export class SpatialGrid<T extends WorldPoint> {
   private readonly allocated: T[][] = [];
   private readonly columns: number;
   private readonly rows: number;
+  private readonly partitions: (number | undefined)[];
 
   constructor(
     width: number,
     height: number,
     private readonly cellSize: number,
+    private readonly partition?: (item: T) => number,
   ) {
     this.columns = Math.ceil(width / cellSize);
     this.rows = Math.ceil(height / cellSize);
     this.buckets = new Array(this.columns * this.rows);
+    this.partitions = this.partition ? new Array(this.buckets.length) : [];
   }
 
   rebuild(items: Iterable<T>): void {
@@ -34,6 +37,14 @@ export class SpatialGrid<T extends WorldPoint> {
       this.buckets[key] = bucket = [];
       this.allocated.push(bucket);
     }
+    if (this.partition) {
+      const owner = this.partition(item);
+      this.partitions[key] = !bucket.length
+        ? owner
+        : this.partitions[key] === owner
+          ? owner
+          : -1;
+    }
     bucket.push(item);
   }
 
@@ -46,7 +57,13 @@ export class SpatialGrid<T extends WorldPoint> {
     if (index >= 0) bucket!.splice(index, 1);
   }
 
-  query(x: number, y: number, radius: number, result: T[]): void {
+  query(
+    x: number,
+    y: number,
+    radius: number,
+    result: T[],
+    excludedPartition?: number,
+  ): void {
     result.length = 0;
     const left = Math.max(0, Math.floor((x - radius) / this.cellSize));
     const right = Math.min(
@@ -60,9 +77,20 @@ export class SpatialGrid<T extends WorldPoint> {
     );
     for (let cy = top; cy <= bottom; cy++)
       for (let cx = left; cx <= right; cx++) {
-        const bucket = this.buckets[cx + cy * this.columns];
+        const key = cx + cy * this.columns;
+        if (
+          excludedPartition !== undefined &&
+          this.partitions[key] === excludedPartition
+        )
+          continue;
+        const bucket = this.buckets[key];
         if (bucket)
           for (const item of bucket) {
+            if (
+              excludedPartition !== undefined &&
+              this.partition?.(item) === excludedPartition
+            )
+              continue;
             const dx = item.x - x,
               dy = item.y - y;
             if (dx * dx + dy * dy <= radius * radius) result.push(item);

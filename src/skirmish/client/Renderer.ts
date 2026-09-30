@@ -1,4 +1,9 @@
 import type { GameMap } from "../../core/game/GameMap";
+import { UNIT, VESSEL } from "../content/Units";
+import { promotionLevel } from "../domain/Combat";
+import { unitEffects } from "../domain/ResearchEffects";
+import type { EnvironmentProfile } from "../Environment";
+import type { MapGeography } from "../Geography";
 import type { BuildingType, ShipType, Snapshot, SquadType } from "../Protocol";
 import { CAPTURE_RADIUS, FIXED } from "../Protocol";
 import {
@@ -7,39 +12,28 @@ import {
   SHIP_RULES,
   SQUAD_RULES,
 } from "../Rules";
+import { buildingArtworkId } from "./ArtworkCatalog";
 import { BuildingArtwork } from "./BuildingArtwork";
+import { BuildingMarkers } from "./BuildingMarkers";
+import { EraArtwork } from "./EraArtwork";
+import { COLORS } from "./FactionColors";
 import { FormationArtwork } from "./FormationArtwork";
-import { buildingSymbol, shipSymbol, squadSymbol } from "./MapSymbols";
+import {
+  buildingSymbol,
+  shipSymbol,
+  squadSymbol,
+  traderSymbol,
+} from "./MapSymbols";
 import { PaintedTerrain } from "./PaintedTerrain";
+import { RoadArtwork } from "./RoadArtwork";
 import { StrategicSprites } from "./StrategicSprites";
 import { TerritoryLayer } from "./TerritoryLayer";
+import { TraderPresentation } from "./TraderPresentation";
 import { PresentationClock, squadSpriteSize } from "./UnitAnimation";
 import { UnitArtwork } from "./UnitArtwork";
 import { UnitPresentation, visibleInViewport } from "./UnitPresentation";
+export { COLORS } from "./FactionColors";
 
-export const COLORS = [
-  "#667e77",
-  "#62d5cc",
-  "#ee776b",
-  "#edbb62",
-  "#b39aeb",
-  "#96c776",
-  "#e39abd",
-  "#6599e8",
-  "#b5805e",
-  "#bec5df",
-  "#59b9f0",
-  "#c94452",
-  "#b8bf59",
-  "#e7dbc1",
-  "#3f7ea8",
-  "#e89c7c",
-  "#caa52f",
-  "#cd73dc",
-  "#a3b5bd",
-  "#ef8e36",
-  "#4b9664",
-];
 const RGB = COLORS.map((color) => [
   parseInt(color.slice(1, 3), 16),
   parseInt(color.slice(3, 5), 16),
@@ -54,10 +48,17 @@ const BUILDING_PAD_COLORS = new Map(
 const SELECTED_UNIT_COLOR = "#c4ff36";
 
 export class Renderer {
-  private readonly artwork = new UnitArtwork();
+  private readonly eraArtwork = new EraArtwork();
+  private readonly roadArtwork = new RoadArtwork();
+  private legacyArtwork?: UnitArtwork;
+  private get artwork(): UnitArtwork {
+    return (this.legacyArtwork ??= new UnitArtwork());
+  }
   private readonly buildingArtwork = new BuildingArtwork();
+  private readonly buildingMarkers = new BuildingMarkers();
   private readonly formationArtwork = new FormationArtwork();
   private readonly presentation = new UnitPresentation();
+  private readonly traderPresentation = new TraderPresentation();
   private readonly animationClock = new PresentationClock();
   private readonly ctx: CanvasRenderingContext2D;
   private readonly strategic: StrategicSprites;
@@ -69,6 +70,7 @@ export class Renderer {
     remainingTicks: number;
   }[] = [];
   private snapshot?: Snapshot;
+  private occupiedBuildingTiles = new Set<number>();
   private previous?: Snapshot;
   private previousSquads = new Map<number, Snapshot["squads"][number]>();
   private currentSquads = new Map<number, Snapshot["squads"][number]>();
@@ -86,6 +88,21 @@ export class Renderer {
   private resizeObserver: ResizeObserver;
   selected = new Set<number>();
   selectedShips = new Set<number>();
+  selectedAircraft = new Set<number>();
+  aircraftAt(x: number, y: number): number | null {
+    let best: number | null = null,
+      distance = 15 ** 2;
+    for (const a of this.snapshot?.expansion?.aircraft ?? []) {
+      if (a.playerId !== 1) continue;
+      const p = this.screen(a.x / FIXED, a.y / FIXED),
+        d = (p.x - x) ** 2 + (p.y - y) ** 2;
+      if (d < distance) {
+        distance = d;
+        best = a.id;
+      }
+    }
+    return best;
+  }
   selectedBuilding: number | null = null;
   placement?: { tile: number; type: BuildingType; friendly: boolean };
   buildSites: number[] = [];
@@ -100,9 +117,13 @@ export class Renderer {
     this.resize();
   }
 
-  setMap(map: GameMap): void {
+  setMap(
+    map: GameMap,
+    geography?: MapGeography,
+    environment?: EnvironmentProfile,
+  ): void {
     this.map = map;
-    this.ground = new PaintedTerrain(map);
+    this.ground = new PaintedTerrain(map, geography, environment);
     this.territory = new TerritoryLayer(map.width(), map.height(), RGB);
     this.buildingStacks = [];
     this.snapshot = undefined;
@@ -110,9 +131,11 @@ export class Renderer {
     this.previousSquads.clear();
     this.currentSquads.clear();
     this.presentation.reset();
+    this.traderPresentation.reset();
     this.animationClock.reset();
     this.selected.clear();
     this.selectedShips.clear();
+    this.selectedAircraft.clear();
     this.selectedBuilding = null;
     this.placement = undefined;
     this.buildSites = [];
@@ -134,7 +157,16 @@ export class Renderer {
           (this.cargoCounts.get(squad.embarkedOn) ?? 0) + 1,
         );
     this.snapshot = snapshot;
+    this.occupiedBuildingTiles = new Set(snapshot.buildings.map((b) => b.tile));
+    for (const id of this.selectedAircraft)
+      if (
+        !snapshot.expansion?.aircraft.some(
+          (a) => a.id === id && a.playerId === 1,
+        )
+      )
+        this.selectedAircraft.delete(id);
     this.presentation.update(snapshot);
+    this.traderPresentation.update(snapshot);
     this.receivedAt = performance.now();
     this.animationClock.update(snapshot.tick, this.receivedAt);
     for (const id of this.selected)
@@ -167,6 +199,9 @@ export class Renderer {
       );
     }
     this.buildingStacks = Array.from(stacks.values());
+    this.ground!.updateBuildings(
+      this.buildingStacks.map((stack) => stack.building),
+    );
   }
 
   private resize(): void {
@@ -203,7 +238,7 @@ export class Renderer {
   zoom(amount: number, x: number, y: number): void {
     const tileX = (x - this.offsetX) / this.scale,
       tileY = (y - this.offsetY) / this.scale;
-    this.scale = Math.max(this.fitScale, Math.min(48, this.scale * amount));
+    this.scale = Math.max(this.fitScale, Math.min(96, this.scale * amount));
     this.offsetX = x - tileX * this.scale;
     this.offsetY = y - tileY * this.scale;
   }
@@ -246,7 +281,9 @@ export class Renderer {
       const { hitRadius } = squadSymbol(
         this.scale,
         squad.troops,
-        !!this.artwork.get(squad.kind),
+        !!(squad.definitionId
+          ? this.eraArtwork.get(squad.definitionId)
+          : this.artwork.get(squad.kind)),
       );
       if (d <= hitRadius ** 2 && d < distance) {
         distance = d;
@@ -269,8 +306,13 @@ export class Renderer {
           s.kind === kind &&
           visibleInViewport(
             this.screen(s.x / FIXED, s.y / FIXED),
-            squadSymbol(this.scale, s.troops, !!this.artwork.get(s.kind))
-              .viewRadius,
+            squadSymbol(
+              this.scale,
+              s.troops,
+              !!(s.definitionId
+                ? this.eraArtwork.get(s.definitionId)
+                : this.artwork.get(s.kind)),
+            ).viewRadius,
             this.width,
             this.height,
           ),
@@ -309,7 +351,11 @@ export class Renderer {
       const half =
         buildingSymbol(
           this.scale,
-          !!this.buildingArtwork.get(building.type),
+          !!(building.age
+            ? this.eraArtwork.get(
+                buildingArtworkId(building.type, building.age) ?? "",
+              )
+            : this.buildingArtwork.get(building.type)),
           building.type,
         ).size / 2;
       if (
@@ -331,20 +377,28 @@ export class Renderer {
     selected: boolean,
     remainingTicks: number,
     ghost = false,
+    definitionId?: string,
+    elapsedTicks = 0,
   ): number {
     const ctx = this.ctx;
-    const image = this.buildingArtwork.get(type);
+    const era = definitionId
+      ? this.eraArtwork.get(definitionId, "idle", elapsedTicks)
+      : undefined;
+    const image = definitionId ? era?.source : this.buildingArtwork.get(type);
     const { artwork, size, inset, backdropAlpha } = buildingSymbol(
       this.scale,
       !!image,
       type,
       selected,
     );
+    const marker = artwork
+      ? undefined
+      : this.buildingMarkers.get(type, color, size, window.devicePixelRatio);
     ctx.save();
     ctx.strokeStyle = selected ? "#fff" : color;
     ctx.lineWidth = selected ? 2.5 : 1.5;
     ctx.setLineDash(remainingTicks || ghost ? [3, 2] : []);
-    if (backdropAlpha) {
+    if (backdropAlpha && !marker) {
       ctx.globalAlpha = backdropAlpha;
       ctx.fillStyle = artwork
         ? (BUILDING_PAD_COLORS.get(color) ?? color)
@@ -352,29 +406,39 @@ export class Renderer {
       ctx.fillRect(p.x - size / 2, p.y - size / 2, size, size);
       ctx.globalAlpha = 1;
     }
-    // Distant glyphs need a solid pad; detailed art only adds one on selection.
-    if (selected || ghost || !artwork)
-      ctx.strokeRect(p.x - size / 2, p.y - size / 2, size, size);
     if (artwork && image) {
       ctx.globalAlpha = ghost ? 0.65 : remainingTicks ? 0.55 : 1;
       ctx.imageSmoothingEnabled = true;
       ctx.drawImage(
         image,
+        era?.x ?? 0,
+        era?.y ?? 0,
+        era?.width ?? (image as HTMLImageElement).naturalWidth,
+        era?.height ?? (image as HTMLImageElement).naturalHeight,
         p.x - size / 2 + inset,
         p.y - size / 2 + inset,
         size - inset * 2,
         size - inset * 2,
       );
       ctx.globalAlpha = 1;
-    } else {
-      ctx.fillStyle = color;
-      ctx.font = "bold 11px system-ui";
-      ctx.textAlign = "center";
-      ctx.strokeStyle = "#10212b";
-      ctx.lineWidth = 3;
-      ctx.strokeText(BUILDING_RULES[type].glyph, p.x, p.y + 4);
-      ctx.fillText(BUILDING_RULES[type].glyph, p.x, p.y + 4);
+    } else if (marker) {
+      ctx.globalAlpha = ghost ? 0.65 : remainingTicks ? 0.55 : 1;
+      ctx.imageSmoothingEnabled = true;
+      ctx.drawImage(
+        marker.source,
+        marker.x,
+        marker.y,
+        marker.width,
+        marker.height,
+        p.x - size / 2,
+        p.y - size / 2,
+        size,
+        size,
+      );
+      ctx.globalAlpha = 1;
     }
+    if (selected || ghost || (!artwork && !marker))
+      ctx.strokeRect(p.x - size / 2, p.y - size / 2, size, size);
     if (remainingTicks) {
       const fraction = 1 - remainingTicks / BUILDING_RULES[type].ticks;
       ctx.fillStyle = "#10212b";
@@ -429,6 +493,35 @@ export class Renderer {
       this.width,
       this.height,
     );
+    if (this.scale >= 2) {
+      const roads = snapshot.expansion?.roads;
+      for (let i = 0; roads && i < roads.length; i += 3) {
+        const tile = roads[i];
+        if (this.occupiedBuildingTiles.has(tile)) continue;
+        const p = this.screen(this.map.x(tile), this.map.y(tile));
+        if (
+          p.x + this.scale < 0 ||
+          p.y + this.scale < 0 ||
+          p.x > this.width ||
+          p.y > this.height
+        )
+          continue;
+        const image = this.roadArtwork.frame(roads[i + 1]);
+        if (!image) continue;
+        const mask = roads[i + 2];
+        ctx.drawImage(
+          image,
+          (mask % 4) * 260 + 2,
+          Math.floor(mask / 4) * 260 + 2,
+          256,
+          256,
+          p.x,
+          p.y,
+          this.scale,
+          this.scale,
+        );
+      }
+    }
     this.territory!.draw(
       ctx,
       this.scale,
@@ -502,6 +595,11 @@ export class Renderer {
         COLORS[building.playerId],
         selected,
         remainingTicks,
+        false,
+        building.age
+          ? buildingArtworkId(building.type, building.age)
+          : undefined,
+        snapshot.tick,
       );
       if (count > 1) {
         ctx.font = "bold 10px system-ui";
@@ -553,6 +651,30 @@ export class Renderer {
       speed,
       paused || snapshot.winner !== null,
     );
+    if (snapshot.expansion) {
+      for (const wall of snapshot.expansion.barriers) {
+        ctx.fillStyle = COLORS[wall.playerId] + "dd";
+        for (const tile of wall.tiles) {
+          const p = this.screen(this.map.x(tile) + 0.5, this.map.y(tile) + 0.5);
+          if (!visibleInViewport(p, this.scale, this.width, this.height))
+            continue;
+          ctx.fillStyle = tile === wall.gateTile ? "#f2d49a" : "#514f49";
+          ctx.fillRect(
+            p.x - this.scale * 0.44,
+            p.y - this.scale * 0.44,
+            this.scale * 0.88,
+            this.scale * 0.88,
+          );
+          ctx.strokeStyle = COLORS[wall.playerId];
+          ctx.strokeRect(
+            p.x - this.scale * 0.44,
+            p.y - this.scale * 0.44,
+            this.scale * 0.88,
+            this.scale * 0.88,
+          );
+        }
+      }
+    }
     const renderedSquads = snapshot.squads
       .filter((squad) => squad.embarkedOn === null)
       .map((squad) => {
@@ -565,7 +687,9 @@ export class Renderer {
         const symbol = squadSymbol(
           this.scale,
           squad.troops,
-          !!this.artwork.get(squad.kind),
+          !!(squad.definitionId
+            ? this.eraArtwork.get(squad.definitionId)
+            : this.artwork.get(squad.kind)),
         );
         if (
           !visibleInViewport(
@@ -579,13 +703,26 @@ export class Renderer {
           )
         )
           return undefined;
-        const image = symbol.artwork
-          ? this.artwork.get(
-              squad.kind,
-              this.presentation.animation(squad.id, visualTick),
-            )
+        const definition = squad.definitionId
+          ? UNIT.get(squad.definitionId)
           : undefined;
-        return { squad, p, selected, symbol, image };
+        const lastAttack = squad.lastAttackTick ?? -Infinity,
+          attackAge = visualTick - lastAttack;
+        const clip =
+          attackAge < 20 ? "attack" : squad.moved ? "running" : "idle";
+        const image = symbol.artwork
+          ? squad.definitionId
+            ? this.eraArtwork.get(
+                squad.definitionId,
+                clip,
+                clip === "attack" ? attackAge : visualTick,
+              )
+            : this.artwork.get(
+                squad.kind,
+                this.presentation.animation(squad.id, visualTick),
+              )
+          : undefined;
+        return { squad, p, selected, symbol, image, definition };
       })
       .filter(
         (entry): entry is NonNullable<typeof entry> => entry !== undefined,
@@ -593,10 +730,20 @@ export class Renderer {
     // All ground indicators precede every soldier, regardless of unit order.
     for (const { squad, p, selected, symbol, image } of renderedSquads) {
       if (
-        squad.kind === "archer" &&
+        (squad.definitionId
+          ? UNIT.get(squad.definitionId)!.attack.channel === "ranged"
+          : squad.kind === "archer") &&
         (selected || (squad.fighting && symbol.artwork))
       ) {
-        const range = (SQUAD_RULES.archer.range / FIXED) * this.scale;
+        const unit = squad.definitionId
+          ? unitEffects(
+              UNIT.get(squad.definitionId)!,
+              snapshot.expansion!.progression[squad.playerId].completed,
+            )
+          : undefined;
+        const range =
+          ((unit?.attack.range ?? SQUAD_RULES.archer.range) / FIXED) *
+          this.scale;
         ctx.beginPath();
         ctx.arc(p.x, p.y, range, 0, Math.PI * 2);
         ctx.fillStyle = selected ? "#ffd47705" : "#ffd47702";
@@ -671,20 +818,66 @@ export class Renderer {
         ctx.stroke();
       }
     }
-    for (const { squad, p, selected, symbol, image } of renderedSquads) {
+    for (const {
+      squad,
+      p,
+      selected,
+      symbol,
+      image,
+      definition,
+    } of renderedSquads) {
+      if (
+        definition &&
+        !["frontline", "ranged", "mounted"].includes(definition.role)
+      ) {
+        ctx.font = "bold 9px system-ui";
+        ctx.textAlign = "center";
+        ctx.fillStyle = COLORS[squad.playerId];
+        ctx.fillText(
+          definition.role === "anti-air"
+            ? "AA"
+            : definition.role === "launcher"
+              ? "M"
+              : definition.role === "siege"
+                ? "S"
+                : "A",
+          p.x,
+          p.y - symbol.height / 2 - 4,
+        );
+      }
+      if (selected && (squad.xp ?? 0) > 0) {
+        ctx.font = "8px system-ui";
+        ctx.textAlign = "center";
+        ctx.fillStyle = "#f4d87d";
+        ctx.fillText(
+          "★".repeat(promotionLevel(squad.xp ?? 0)),
+          p.x,
+          p.y - symbol.height / 2 - 12,
+        );
+      }
       const radius = 4 + (2 * squad.troops) / 1_000;
       const spriteSize = this.spriteSize(squad.troops);
       if (image) {
-        const lunge = this.presentation.meleeLunge(
-          squad.id,
-          visualTick,
-          this.scale,
-          spriteSize,
-        );
+        const lunge =
+          definition &&
+          (definition.attack.channel !== "melee" ||
+            visualTick - (squad.lastAttackTick ?? 0) > 20)
+            ? { x: 0, y: 0 }
+            : this.presentation.meleeLunge(
+                squad.id,
+                visualTick,
+                this.scale,
+                spriteSize,
+              );
         ctx.imageSmoothingEnabled = true;
         ctx.save();
         ctx.translate(p.x + lunge.x, p.y + lunge.y);
-        ctx.rotate(this.presentation.angle(squad.id));
+        ctx.rotate(
+          this.presentation.angle(squad.id) +
+            (squad.definitionId
+              ? this.eraArtwork.facing(squad.definitionId)
+              : 0),
+        );
         const extent = spriteSize * image.extent;
         ctx.drawImage(
           image.source,
@@ -838,7 +1031,14 @@ export class Renderer {
     for (const ship of snapshot.ships) {
       const p = this.screen(ship.x / FIXED, ship.y / FIXED);
       if (!visibleInViewport(p, 60, this.width, this.height)) continue;
-      const rules = SHIP_RULES[ship.kind];
+      const vessel = VESSEL.get(ship.definitionId ?? "");
+      const rules = vessel
+        ? {
+            ...SHIP_RULES[ship.kind],
+            health: vessel.health,
+            capacity: vessel.capacity,
+          }
+        : SHIP_RULES[ship.kind];
       const selected = this.selectedShips.has(ship.id);
       const formation = this.formationArtwork.get(
         ship.kind,
@@ -880,7 +1080,43 @@ export class Renderer {
           from = goal;
         }
       }
-      if (symbol.formation && formation) {
+      const shipArt =
+        ship.definitionId && this.scale >= 12
+          ? this.eraArtwork.get(
+              ship.definitionId,
+              ship.fighting
+                ? "attack"
+                : ship.destination !== null
+                  ? "running"
+                  : "idle",
+              visualTick,
+            )
+          : undefined;
+      if (shipArt) {
+        ctx.save();
+        ctx.translate(p.x, p.y);
+        ctx.rotate(this.presentation.shipAngle(ship.id));
+        const size = Math.min(50, this.scale * 2.4) * shipArt.extent;
+        ctx.imageSmoothingEnabled = true;
+        ctx.drawImage(
+          shipArt.source,
+          shipArt.x,
+          shipArt.y,
+          shipArt.width,
+          shipArt.height,
+          -size / 2,
+          -size / 2,
+          size,
+          size,
+        );
+        if (selected) {
+          ctx.strokeStyle = SELECTED_UNIT_COLOR;
+          ctx.beginPath();
+          ctx.arc(0, 0, size * 0.38, 0, Math.PI * 2);
+          ctx.stroke();
+        }
+        ctx.restore();
+      } else if (symbol.formation && formation) {
         const batched = this.strategic.add(
           ship.kind,
           formation,
@@ -957,10 +1193,170 @@ export class Renderer {
       ctx.textAlign = "center";
       ctx.strokeStyle = "#10212b";
       ctx.lineWidth = 3;
-      const label = `${ship.health} HP${ship.kind === "transport" ? ` · ${cargo}/4` : ""}${ship.boarding ? " · meeting" : ""}${ship.fighting ? " ⚔" : ""}`;
+      const label = `${ship.health} HP${ship.kind === "transport" ? ` · ${cargo}/${rules.capacity ?? 4}` : ""}${ship.boarding ? " · meeting" : ""}${ship.fighting ? " ⚔" : ""}`;
       ctx.strokeText(label, p.x, p.y + 22);
       ctx.fillStyle = "#eaf3ef";
       ctx.fillText(label, p.x, p.y + 22);
+    }
+    if (snapshot.expansion) {
+      for (const deposit of snapshot.expansion.deposits)
+        if (this.scale >= 3 && !this.occupiedBuildingTiles.has(deposit.tile)) {
+          const p = this.screen(
+            this.map.x(deposit.tile) + 0.5,
+            this.map.y(deposit.tile) + 0.5,
+          );
+          if (!visibleInViewport(p, 8, this.width, this.height)) continue;
+          ctx.fillStyle = "#18272dbb";
+          ctx.fillRect(p.x - 5, p.y - 5, 10, 10);
+          ctx.fillStyle =
+            deposit.resource === "horses"
+              ? "#e5cca6"
+              : deposit.resource === "oil"
+                ? "#121319"
+                : "#8da2af";
+          ctx.beginPath();
+          ctx.arc(p.x, p.y, 3, 0, Math.PI * 2);
+          ctx.fill();
+          if (this.scale >= 10) {
+            ctx.font = "9px system-ui";
+            ctx.fillStyle = "#e4ebdf";
+            ctx.textAlign = "center";
+            ctx.fillText(deposit.resource, p.x, p.y - 8);
+          }
+        }
+      for (const actor of snapshot.expansion.traders) {
+        const pose = this.traderPresentation.pose(actor.id, visualTick, blend);
+        if (!pose) continue;
+        const p = this.screen(pose.x / FIXED, pose.y / FIXED);
+        const projected = traderSymbol(this.scale, true);
+        if (
+          !visibleInViewport(p, projected.viewRadius, this.width, this.height)
+        )
+          continue;
+        const art = projected.artwork
+          ? (this.eraArtwork.get(
+              actor.definitionId,
+              pose.clip,
+              pose.elapsedTicks,
+            ) ??
+            this.eraArtwork.get(actor.definitionId, "idle", pose.elapsedTicks))
+          : undefined;
+        const symbol = traderSymbol(this.scale, !!art);
+        ctx.save();
+        ctx.globalAlpha = 0.85;
+        if (art) {
+          const size = symbol.size * art.extent;
+          ctx.imageSmoothingEnabled = true;
+          ctx.translate(p.x, p.y);
+          ctx.rotate(pose.angle + this.eraArtwork.facing(actor.definitionId));
+          ctx.drawImage(
+            art.source,
+            art.x,
+            art.y,
+            art.width,
+            art.height,
+            -size * art.pivotX,
+            -size * art.pivotY,
+            size,
+            size,
+          );
+        } else {
+          ctx.fillStyle = COLORS[actor.playerId];
+          ctx.fillRect(
+            p.x - symbol.size / 2,
+            p.y - symbol.size / 2,
+            symbol.size,
+            symbol.size,
+          );
+          ctx.fillStyle = "#10212b";
+          ctx.font = "8px system-ui";
+          ctx.textAlign = "center";
+          ctx.fillText("$", p.x, p.y + 3);
+        }
+        ctx.restore();
+      }
+      for (const projectile of snapshot.expansion.projectiles) {
+        if (
+          (projectile.kind === "mirv" || projectile.damage === 0) &&
+          projectile.impacted
+        )
+          continue;
+        const p = this.screen(projectile.x / FIXED, projectile.y / FIXED);
+        ctx.beginPath();
+        ctx.arc(
+          p.x,
+          p.y,
+          projectile.impacted
+            ? Math.max(3, (projectile.blastRadius / FIXED) * this.scale)
+            : Math.max(2, (projectile.diameter / FIXED) * this.scale),
+          0,
+          Math.PI * 2,
+        );
+        ctx.fillStyle = projectile.impacted ? "#ffb45544" : "#ffdd99";
+        ctx.fill();
+        if (projectile.impacted) {
+          ctx.strokeStyle = "#eab16a88";
+          ctx.stroke();
+        }
+      }
+      for (const aircraft of snapshot.expansion.aircraft) {
+        const p = this.screen(aircraft.x / FIXED, aircraft.y / FIXED);
+        if (
+          p.x < -24 ||
+          p.y < -24 ||
+          p.x > this.width + 24 ||
+          p.y > this.height + 24
+        )
+          continue;
+        ctx.save();
+        ctx.translate(p.x, p.y);
+        if (aircraft.target)
+          ctx.rotate(
+            Math.atan2(
+              aircraft.target.y - aircraft.y,
+              aircraft.target.x - aircraft.x,
+            ) +
+              Math.PI / 2,
+          );
+        ctx.beginPath();
+        ctx.moveTo(0, -9);
+        ctx.lineTo(8, 7);
+        ctx.lineTo(0, 3);
+        ctx.lineTo(-8, 7);
+        ctx.closePath();
+        const frame =
+          this.scale >= 5
+            ? this.eraArtwork.get(aircraft.definitionId)
+            : undefined;
+        if (frame)
+          ctx.drawImage(
+            frame.source,
+            frame.x,
+            frame.y,
+            frame.width,
+            frame.height,
+            -14,
+            -14,
+            28,
+            28,
+          );
+        else {
+          ctx.fillStyle = COLORS[aircraft.playerId];
+          ctx.fill();
+        }
+        ctx.strokeStyle = this.selectedAircraft.has(aircraft.id)
+          ? SELECTED_UNIT_COLOR
+          : "#152a35";
+        ctx.stroke();
+        ctx.restore();
+        ctx.font = "8px system-ui";
+        ctx.fillStyle = "#fff";
+        ctx.fillText(
+          aircraft.definitionId === "fighter" ? "F" : "B",
+          p.x,
+          p.y + 15,
+        );
+      }
     }
     // These are simulation-issued volleys, not a second damage calculation.
     for (const volley of snapshot.volleys) {

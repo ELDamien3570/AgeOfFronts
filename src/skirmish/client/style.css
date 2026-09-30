@@ -18,7 +18,7 @@ body {
 #app {
   height: 100dvh;
   display: grid;
-  grid-template-rows: auto minmax(0, 1fr) auto;
+  grid-template-rows: auto auto minmax(0, 1fr) auto;
   overflow: hidden;
 }
 button,
@@ -1097,5 +1097,538 @@ footer span:last-child {
   .placement-hint {
     top: 42px;
     max-width: 90%;
+  }
+}
+
+.resource-strip {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  padding: 6px 18px;
+  background: #132833;
+  border-bottom: 1px solid var(--line);
+  min-height: 42px;
+  font-size: 11px;
+  flex-wrap: wrap;
+}
+#treasury,
+#strategic-stocks {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  flex-wrap: wrap;
+}
+#strategic-stocks {
+  flex: 1;
+}
+#strategic-stocks span {
+  display: flex;
+  gap: 6px;
+  color: #a9bfc1;
+}
+#strategic-stocks b {
+  color: #f2dda5;
+}
+#empire-age {
+  color: var(--teal);
+  font-weight: 700;
+}
+.empire-panel {
+  position: absolute;
+  z-index: 35;
+  top: 50px;
+  right: 20px;
+  width: min(820px, calc(100% - 40px));
+  max-height: calc(100% - var(--dock-height) - 70px);
+  background: #112630f5;
+  border: 1px solid #719a9e;
+  border-radius: 10px;
+  box-shadow: 0 15px 60px #0009;
+  display: flex;
+  flex-direction: column;
+  overflow: hidden;
+}
+.empire-panel[hidden] {
+  display: none;
+}
+.empire-panel > header {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: 10px 16px;
+  border-bottom: 1px solid var(--line);
+}
+.empire-panel h2 {
+  font-size: 17px;
+  margin: 0;
+}
+#empire-content {
+  padding: 14px 16px;
+  overflow: auto;
+  font-size: 12px;
+  min-height: 0;
+}
+#empire-content h3 {
+  font-size: 13px;
+  color: #b7dace;
+  margin: 14px 0 8px;
+}
+#empire-panel-footer {
+  padding: 12px 16px;
+  border-top: 1px solid var(--line);
+  font-size: 12px;
+  background: #152e38;
+}
+#empire-panel-footer:empty {
+  display: none;
+}
+.age-navigation,
+.build-palette,
+.support-choices,
+.tier-choices {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 6px;
+}
+.age-navigation button {
+  flex: 1;
+}
+.tech-columns {
+  display: grid;
+  grid-template-columns: repeat(3, minmax(0, 1fr));
+  gap: 12px;
+}
+.tech-node {
+  width: 100%;
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
+  text-align: left;
+  margin: 6px 0;
+  min-height: 90px;
+  overflow-wrap: anywhere;
+}
+.tech-node small {
+  color: #aac1c7;
+}
+.tech-node span {
+  font-size: 10px;
+  color: #e8ce91;
+}
+.tech-node.complete {
+  border-color: #73ac85;
+  background: #244037;
+}
+.tech-node.researching {
+  border-color: #d7be78;
+}
+.technology-detail {
+  padding: 12px;
+  background: #0c202a;
+  border: 1px solid var(--line);
+  border-radius: 6px;
+}
+.technology-detail button {
+  display: block;
+  margin-top: 12px;
+}
+.inventory-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(130px, 1fr));
+  gap: 6px;
+}
+.inventory-grid span {
+  padding: 8px;
+  background: #233b46;
+  display: flex;
+  justify-content: space-between;
+  gap: 10px;
+}
+.tier-choices label {
+  flex-direction: column;
+  align-items: flex-start;
+}
+.build-palette button {
+  width: calc(25% - 6px);
+  min-width: 130px;
+}
+.build-palette small,
+.producer small {
+  display: block;
+  color: #abc0c5;
+  margin-top: 4px;
+}
+.producer {
+  margin: 6px 0;
+  padding: 8px;
+  border: 1px solid var(--line);
+}
+.producer button {
+  margin: 5px 4px 0 0;
+}
+.shipment {
+  color: #a8bec5;
+  font-size: 11px;
+  padding: 4px 0;
+}
+.refit-actions {
+  padding: 10px;
+  border-top: 1px solid var(--line);
+  font-size: 11px;
+}
+.refit-actions small {
+  display: block;
+  margin-top: 5px;
+  color: #c0cfcf;
+}
+@media (max-width: 800px) {
+  .resource-strip {
+    gap: 6px;
+    padding: 6px 10px;
+  }
+  .empire-panel {
+    right: 8px;
+    width: calc(100% - 16px);
+    top: 35px;
+  }
+  .tech-columns {
+    gap: 6px;
+  }
+  .tech-node {
+    font-size: 10px;
+    padding: 6px;
+  }
+  .build-palette button {
+    width: calc(50% - 6px);
+  }
+  .topbar {
+    flex-wrap: wrap;
+  }
+}
+
+.build-choice {
+  display: flex;
+  flex-direction: column;
+  width: calc(25% - 6px);
+  min-width: 130px;
+  gap: 4px;
+}
+.build-palette .build-choice button {
+  width: 100%;
+}
+.build-choice select {
+  max-width: 100%;
+}
+
+/* Compact command dock: each category owns its horizontal scroll area. */
+.command-dock {
+  bottom: 3px;
+  width: min(1080px, calc(100% - 16px));
+  padding: 0 8px;
+}
+.resource-row {
+  min-height: 27px;
+  padding: 3px 4px;
+  gap: 18px;
+}
+.resource-row .resource strong {
+  font-size: 12px;
+}
+.resource-row .resource > span:last-child {
+  font-size: 8px;
+}
+.command-row {
+  gap: 7px;
+  padding: 5px 0;
+}
+.command-category {
+  flex: 1 1 155px;
+  min-width: 0;
+  padding-right: 7px;
+}
+.command-category.ships {
+  flex: 0 0 99px;
+}
+.command-category.orders {
+  flex: 0 0 147px;
+}
+.command-category.troops {
+  flex-basis: 200px;
+}
+.command-category h3 {
+  height: 22px;
+  margin-bottom: 3px;
+  font-size: 8px;
+}
+.category-actions {
+  overflow-x: auto;
+  overflow-y: hidden;
+  max-width: 100%;
+  padding-bottom: 3px;
+  scrollbar-width: thin;
+  scrollbar-color: #50717d #142a34;
+}
+.dock-extra {
+  display: contents;
+}
+.action-slot {
+  flex: 0 0 auto;
+}
+.hud-action {
+  width: 46px;
+  height: 52px;
+  padding: 3px 1px;
+}
+.hud-action .hud-art {
+  width: 32px;
+  height: 32px;
+  flex-shrink: 0;
+}
+.hud-action:disabled {
+  opacity: 0.62;
+}
+.hud-action:disabled .hud-art {
+  filter: saturate(0.55);
+}
+.hud-action .command-symbol {
+  font-size: 21px;
+  height: 30px;
+}
+.action-name {
+  font-size: 8px;
+  max-width: 44px;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+.dock-utility {
+  padding: 3px 0;
+  min-height: 24px;
+  gap: 6px;
+}
+.dock-utility > button {
+  font-size: 9px;
+  padding: 3px 6px;
+}
+.control-groups {
+  gap: 3px;
+}
+.control-groups button {
+  padding: 3px 5px;
+  min-width: 27px;
+  height: 21px;
+}
+.group-help {
+  font-size: 8px;
+}
+.troops-heading {
+  display: flex;
+  align-items: center;
+  flex-wrap: wrap;
+  gap: 10px;
+  min-height: 22px;
+  margin-bottom: 3px;
+}
+.troops-heading h3 {
+  flex: 0 0 auto;
+  height: auto;
+  margin: 0;
+}
+.dock-tier {
+  display: flex;
+  gap: 6px;
+  align-items: center;
+}
+.dock-tier select {
+  width: 78px;
+  padding: 2px;
+  font-size: 9px;
+  height: 22px;
+}
+.dock-tier label {
+  font-size: 8px;
+  display: flex;
+  gap: 2px;
+  align-items: center;
+  white-space: nowrap;
+}
+.dock-tier input {
+  width: 11px;
+  height: 11px;
+  margin: 0;
+  accent-color: #8fd6b5;
+}
+.empire-panel {
+  width: min(580px, calc(100% - 24px));
+}
+.tech-columns {
+  gap: 7px;
+}
+.tech-node {
+  min-height: 78px;
+  padding: 8px;
+  font-size: 11px;
+}
+.age-navigation {
+  gap: 3px;
+}
+.age-navigation button {
+  padding: 5px 3px;
+  font-size: 9px;
+}
+.technology-detail {
+  padding: 9px;
+}
+.resource-strip {
+  gap: 10px;
+  min-height: 43px;
+  padding: 4px 14px;
+}
+#strategic-stocks {
+  display: flex;
+  gap: 5px;
+  flex: 1;
+  min-width: 0;
+  align-items: center;
+}
+.stock-group {
+  position: relative;
+  min-width: 0;
+}
+.stock-group summary {
+  list-style: none;
+  display: flex;
+  align-items: center;
+  gap: 5px;
+  cursor: pointer;
+  padding: 5px 6px;
+  border: 1px solid #66859355;
+  border-radius: 4px;
+  font-size: 9px;
+  white-space: nowrap;
+}
+.stock-group summary::-webkit-details-marker {
+  display: none;
+}
+.stock-group summary svg {
+  width: 18px;
+  height: 18px;
+  fill: #9bbfbb55;
+  stroke: #b9d4cb;
+  stroke-width: 1.5;
+}
+.stock-group summary b {
+  color: #e6e5c5;
+}
+.stock-items {
+  position: absolute;
+  top: calc(100% + 5px);
+  left: 0;
+  min-width: 210px;
+  max-height: 260px;
+  overflow: auto;
+  background: #122b35fa;
+  border: 1px solid #6a939d;
+  padding: 10px;
+  border-radius: 5px;
+  z-index: 10;
+  font-size: 11px;
+}
+.stock-items span {
+  display: flex;
+  justify-content: space-between;
+  gap: 16px;
+  padding: 4px;
+}
+.empire-hud-tip {
+  position: fixed;
+  max-width: 245px;
+  padding: 10px;
+  white-space: pre-line;
+  font-size: 11px;
+  line-height: 1.5;
+  z-index: 30;
+  pointer-events: none;
+  border-radius: 6px;
+}
+.match-feed {
+  position: absolute;
+  right: 8px;
+  bottom: calc(var(--dock-height) + 9px);
+  width: 260px;
+  border-radius: 5px;
+  z-index: 3;
+  font-size: 10px;
+}
+.match-feed header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  padding: 4px 8px;
+  color: #a5c3c5;
+}
+.match-feed header button {
+  padding: 1px 7px;
+}
+#match-feed-log {
+  max-height: 125px;
+  overflow-y: auto;
+  scrollbar-width: thin;
+}
+.feed-event {
+  display: flex;
+  gap: 6px;
+  align-items: start;
+  padding: 6px 8px;
+  border-top: 1px solid #4d737833;
+}
+.feed-event time {
+  color: #82a4ac;
+  font-variant-numeric: tabular-nums;
+  flex-shrink: 0;
+}
+.feed-event span {
+  flex: 1;
+}
+.feed-event button {
+  padding: 2px 4px;
+  font-size: 9px;
+}
+.rival[data-player] {
+  cursor: pointer;
+}
+.rival[data-player]:hover {
+  background: #355362;
+}
+.selection-card {
+  max-height: calc(100% - var(--dock-height) - 100px);
+  overflow-y: auto;
+}
+@media (max-width: 1250px) {
+  .stock-group summary span {
+    display: none;
+  }
+  .command-dock {
+    width: calc(100% - 16px);
+  }
+}
+@media (max-width: 900px) {
+  .command-row {
+    overflow-x: auto;
+  }
+  .command-category {
+    flex: 0 0 135px;
+  }
+  .command-category.troops {
+    flex-basis: 200px;
+  }
+  .resource-strip {
+    flex-wrap: wrap;
+  }
+  #strategic-stocks {
+    order: 3;
+    flex-basis: 100%;
+  }
+  .match-feed {
+    width: 220px;
   }
 }
