@@ -1,0 +1,175 @@
+{
+  "checks": "Dimensions, RGBA transparency, ten frame slots, distinct pose counts including holds, transparent guards, visible padding, hashes, original and previous-age preservation.",
+  "visualReview": "Reviewed whole squads in the browser: five visible units in each group, straight overhead camera, consistent held firearms, visible firing effects on all five shooters including the front rank, and smoke expansion followed by faint recovery wisps. Idle and movement scale corrected and inspected.",
+  "integrationStatus": "Artwork-only; not connected to game renderer.",
+  "preservationChecks": {
+    "originalStillIconsUnchanged": 21,
+    "approvedEarlierAgeSheetsUnchanged": 45
+  },
+  "sheets": [
+    {
+      "file": "Melee\\EarlyModern\\Idle.png",
+      "size": [
+        2560,
+        1024
+      ],
+      "mode": "RGBA",
+      "alphaExtrema": [
+        0,
+        255
+      ],
+      "distinctFrames": 10,
+      "minimumVisiblePaddingPx": 80,
+      "max8PxGuardAlpha": 0,
+      "sha256": "e278fa00a5e810943a38c1164abcbc49c7f8afafb8d6c44e245cd11ab7ea5e9a"
+    },
+    {
+      "file": "Melee\\EarlyModern\\Running.png",
+      "size": [
+        2560,
+        1024
+      ],
+      "mode": "RGBA",
+      "alphaExtrema": [
+        0,
+        255
+      ],
+      "distinctFrames": 10,
+      "minimumVisiblePaddingPx": 84,
+      "max8PxGuardAlpha": 0,
+      "sha256": "e2901aa248b55629a5a423d3cee054fedaa2a3850866b84a86fab4b300f4843a"
+    },
+    {
+      "file": "Melee\\EarlyModern\\Attack.png",
+      "size": [
+        2560,
+        1024
+      ],
+      "mode": "RGBA",
+      "alphaExtrema": [
+        0,
+        255
+      ],
+      "distinctFrames": 6,
+      "minimumVisiblePaddingPx": 24,
+      "max8PxGuardAlpha": 0,
+      "sha256": "0467609d8814bf35be7e6e2900703a669a693922f0c99fc9205d703bad022511"
+    },
+    {
+      "file": "Ranged\\EarlyModern\\Idle.png",
+      "size": [
+        2560,
+        1024
+      ],
+      "mode": "RGBA",
+      "alphaExtrema": [
+        0,
+        255
+      ],
+      "distinctFrames": 10,
+      "minimumVisiblePaddingPx": 84,
+      "max8PxGuardAlpha": 0,
+      "sha256": "ae3467532228463aae9b00e213f517a84caa01d509fb86046d074eb506b1549f"
+    },
+    {
+      "file": "Ranged\\EarlyModern\\Running.png",
+      "size": [
+        2560,
+        1024
+      ],
+      "mode": "RGBA",
+      "alphaExtrema": [
+        0,
+        255
+      ],
+      "distinctFrames": 10,
+      "minimumVisiblePaddingPx": 71,
+      "max8PxGuardAlpha": 0,
+      "sha256": "f92b664635620d210f6c4a15b68bcca987c1b7f920c76c557ff8d68f7e1a4012"
+    },
+    {
+      "file": "Ranged\\EarlyModern\\Attack.png",
+      "size": [
+        2560,
+        1024
+      ],
+      "mode": "RGBA",
+      "alphaExtrema": [
+        0,
+        255
+      ],
+      "distinctFrames": 6,
+      "minimumVisiblePaddingPx": 25,
+      "max8PxGuardAlpha": 0,
+      "sha256": "86bf9fb45e25e891ca2a9ae2cc3e9db23787430f3c3aec596fd14f0c56cc1a13"
+    },
+    {
+      "file": "Cavalry\\EarlyModern\\Idle.png",
+      "size": [
+        2560,
+        1024
+      ],
+      "mode": "RGBA",
+      "alphaExtrema": [
+        0,
+        255
+      ],
+      "distinctFrames": 3,
+      "minimumVisiblePaddingPx": 36,
+      "max8PxGuardAlpha": 0,
+      "sha256": "cfeead7347aac9b0de1c6a98af9574f078dc4ba22c45e1fa6908305c801e308c"
+    },
+    {
+      "file": "Cavalry\\EarlyModern\\Running.png",
+      "size": [
+        2560,
+        1024
+      ],
+      "mode": "RGBA",
+      "alphaExtrema": [
+        0,
+        255
+      ],
+      "distinctFrames": 4,
+      "minimumVisiblePaddingPx": 24,
+      "max8PxGuardAlpha": 0,
+      "sha256": "657ae635829e6cec4cb9d06b24405a9f63bd724b5d9438b6fc557a86d9840e91"
+    },
+    {
+      "file": "Cavalry\\EarlyModern\\Attack.png",
+      "size": [
+        2560,
+        1024
+      ],
+      "mode": "RGBA",
+      "alphaExtrema": [
+        0,
+        255
+      ],
+      "distinctFrames": 6,
+      "minimumVisiblePaddingPx": 30,
+      "max8PxGuardAlpha": 0,
+      "sha256": "3e73a35320864d68297f6bc6332fdb4c77f23327e81375314be670dc3405e6bb"
+    }
+  ],
+  "browserReview": {
+    "url": "http://127.0.0.1:9007/StoneAge_Animation_Preview.html#EarlyModern",
+    "reviewedUtc": "2026-09-30T11:59:55.9751417Z",
+    "sheetsLoaded": 9,
+    "inspectedFrames": [
+      1,
+      5,
+      6,
+      8
+    ],
+    "ageTabs": 6,
+    "keyboardNavigation": "ArrowLeft to Late Medieval; Home to Stone Age; End to Early Modern verified.",
+    "hashSelectionSurvivesReload": true,
+    "leftPlaying": true,
+    "screenshots": [
+      "C:/Users/Damien/.codex/visualizations/2026/09/30/01a0f03e-fce7-71f0-ae83-67f86e8e8794/EarlyModern_Full_Animation_Review.png",
+      "C:/Users/Damien/.codex/visualizations/2026/09/30/01a0f03e-fce7-71f0-ae83-67f86e8e8794/EarlyModern_Smoke_Review.png",
+      "C:/Users/Damien/.codex/visualizations/2026/09/30/01a0f03e-fce7-71f0-ae83-67f86e8e8794/EarlyModern_Smoke_Fade_Review.png"
+    ]
+  }
+}

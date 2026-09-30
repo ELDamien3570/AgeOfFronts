@@ -1,0 +1,151 @@
+{
+  "checks": "Dimensions, RGBA transparency, ten distinct frames, eight-pixel transparent frame guards, visible padding, file hashes.",
+  "visualReview": "Approved final sheets reviewed in the animated preview.",
+  "integrationStatus": "Artwork-only; game renderer unchanged.",
+  "sheets": [
+    {
+      "file": "Melee\\StoneAge\\Idle.png",
+      "size": [
+        2560,
+        1024
+      ],
+      "mode": "RGBA",
+      "alphaExtrema": [
+        0,
+        255
+      ],
+      "distinctFrames": 10,
+      "minimumVisiblePaddingPx": 48,
+      "max8PxGuardAlpha": 0,
+      "sha256": "76e7401788fd40d7e462b9ac2db08f0bfa92f9f3d37ed80e73e5748575a32392"
+    },
+    {
+      "file": "Melee\\StoneAge\\Running.png",
+      "size": [
+        2560,
+        1024
+      ],
+      "mode": "RGBA",
+      "alphaExtrema": [
+        0,
+        255
+      ],
+      "distinctFrames": 10,
+      "minimumVisiblePaddingPx": 38,
+      "max8PxGuardAlpha": 0,
+      "sha256": "3dc3070f11b4deaa38947c68d7ef2f6d4f822bcb2bef40afb31ef479108ad4f8"
+    },
+    {
+      "file": "Melee\\StoneAge\\Attack.png",
+      "size": [
+        2560,
+        1024
+      ],
+      "mode": "RGBA",
+      "alphaExtrema": [
+        0,
+        255
+      ],
+      "distinctFrames": 10,
+      "minimumVisiblePaddingPx": 20,
+      "max8PxGuardAlpha": 0,
+      "sha256": "8069459fba1fd1f2c78ad0ef093766905d532dd036e8d645770e0b09378754b1"
+    },
+    {
+      "file": "Ranged\\StoneAge\\Idle.png",
+      "size": [
+        2560,
+        1024
+      ],
+      "mode": "RGBA",
+      "alphaExtrema": [
+        0,
+        255
+      ],
+      "distinctFrames": 10,
+      "minimumVisiblePaddingPx": 20,
+      "max8PxGuardAlpha": 0,
+      "sha256": "c9741ccf0b4b702251749b3362cc866dbe74291ec544c966d3236340bca33c05"
+    },
+    {
+      "file": "Ranged\\StoneAge\\Running.png",
+      "size": [
+        2560,
+        1024
+      ],
+      "mode": "RGBA",
+      "alphaExtrema": [
+        0,
+        255
+      ],
+      "distinctFrames": 10,
+      "minimumVisiblePaddingPx": 20,
+      "max8PxGuardAlpha": 0,
+      "sha256": "848b1c8fcf23f3fe5dd2fe7ed7b55dee1950934f285ab7a0d302a34b886e5ef6"
+    },
+    {
+      "file": "Ranged\\StoneAge\\Attack.png",
+      "size": [
+        2560,
+        1024
+      ],
+      "mode": "RGBA",
+      "alphaExtrema": [
+        0,
+        255
+      ],
+      "distinctFrames": 10,
+      "minimumVisiblePaddingPx": 20,
+      "max8PxGuardAlpha": 0,
+      "sha256": "02ae0b88d41e5a98d699150093e327ea65627966145e4ccff8733f9a016228e4"
+    },
+    {
+      "file": "Cavalry\\StoneAge\\Idle.png",
+      "size": [
+        2560,
+        1024
+      ],
+      "mode": "RGBA",
+      "alphaExtrema": [
+        0,
+        255
+      ],
+      "distinctFrames": 10,
+      "minimumVisiblePaddingPx": 58,
+      "max8PxGuardAlpha": 0,
+      "sha256": "abdda252196d8bea86828ded722e91aa234a81fcd92168aa075d8cc23d3992bd"
+    },
+    {
+      "file": "Cavalry\\StoneAge\\Running.png",
+      "size": [
+        2560,
+        1024
+      ],
+      "mode": "RGBA",
+      "alphaExtrema": [
+        0,
+        255
+      ],
+      "distinctFrames": 10,
+      "minimumVisiblePaddingPx": 34,
+      "max8PxGuardAlpha": 0,
+      "sha256": "6af13ef5dbb2a807ebe8b9242a7f23b2d5b193621c289d1a9335173c72fee147"
+    },
+    {
+      "file": "Cavalry\\StoneAge\\Attack.png",
+      "size": [
+        2560,
+        1024
+      ],
+      "mode": "RGBA",
+      "alphaExtrema": [
+        0,
+        255
+      ],
+      "distinctFrames": 10,
+      "minimumVisiblePaddingPx": 45,
+      "max8PxGuardAlpha": 0,
+      "sha256": "a5240f943c75822237dbe9c242f43d7b2ae5a8812ec9a82a5f94e35956deae37"
+    }
+  ]
+}

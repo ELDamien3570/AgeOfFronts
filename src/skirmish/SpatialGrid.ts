@@ -1,0 +1,113 @@
+// A domain index in world coordinates. Camera position and zoom never enter it.
+export interface WorldPoint {
+  x: number;
+  y: number;
+}
+
+export class SpatialGrid<T extends WorldPoint> {
+  private readonly buckets: (T[] | undefined)[];
+  private readonly allocated: T[][] = [];
+  private readonly columns: number;
+  private readonly rows: number;
+
+  constructor(
+    width: number,
+    height: number,
+    private readonly cellSize: number,
+  ) {
+    this.columns = Math.ceil(width / cellSize);
+    this.rows = Math.ceil(height / cellSize);
+    this.buckets = new Array(this.columns * this.rows);
+  }
+
+  rebuild(items: Iterable<T>): void {
+    for (const bucket of this.allocated) bucket.length = 0;
+    for (const item of items) this.insert(item);
+  }
+
+  insert(item: T): void {
+    const key =
+      Math.floor(item.x / this.cellSize) +
+      Math.floor(item.y / this.cellSize) * this.columns;
+    let bucket = this.buckets[key];
+    if (!bucket) {
+      this.buckets[key] = bucket = [];
+      this.allocated.push(bucket);
+    }
+    bucket.push(item);
+  }
+
+  remove(item: T): void {
+    const key =
+      Math.floor(item.x / this.cellSize) +
+      Math.floor(item.y / this.cellSize) * this.columns;
+    const bucket = this.buckets[key];
+    const index = bucket?.indexOf(item) ?? -1;
+    if (index >= 0) bucket!.splice(index, 1);
+  }
+
+  query(x: number, y: number, radius: number, result: T[]): void {
+    result.length = 0;
+    const left = Math.max(0, Math.floor((x - radius) / this.cellSize));
+    const right = Math.min(
+      this.columns - 1,
+      Math.floor((x + radius) / this.cellSize),
+    );
+    const top = Math.max(0, Math.floor((y - radius) / this.cellSize));
+    const bottom = Math.min(
+      this.rows - 1,
+      Math.floor((y + radius) / this.cellSize),
+    );
+    for (let cy = top; cy <= bottom; cy++)
+      for (let cx = left; cx <= right; cx++) {
+        const bucket = this.buckets[cx + cy * this.columns];
+        if (bucket)
+          for (const item of bucket) {
+            const dx = item.x - x,
+              dy = item.y - y;
+            if (dx * dx + dy * dy <= radius * radius) result.push(item);
+          }
+      }
+  }
+
+  nearest(x: number, y: number, accept: (item: T) => boolean): T | undefined {
+    const cx = Math.floor(x / this.cellSize),
+      cy = Math.floor(y / this.cellSize);
+    let best: T | undefined,
+      distance = Infinity;
+    for (let ring = 0; ring < Math.max(this.columns, this.rows); ring++) {
+      const left = Math.max(0, cx - ring),
+        right = Math.min(this.columns - 1, cx + ring);
+      const top = Math.max(0, cy - ring),
+        bottom = Math.min(this.rows - 1, cy + ring);
+      for (let by = top; by <= bottom; by++) {
+        // Visit the ring boundary only, in the same row order as a full scan.
+        // Rescanning its interior would make distant nearest queries cubic.
+        const edgeRow = Math.abs(by - cy) === ring;
+        const start = edgeRow ? left : cx - ring;
+        const end = edgeRow ? right : cx + ring;
+        const stride = edgeRow ? 1 : 2 * ring;
+        for (let bx = start; bx <= end; bx += stride) {
+          if (bx < 0 || bx >= this.columns) continue;
+          for (const item of this.buckets[bx + by * this.columns] ?? []) {
+            if (!accept(item)) continue;
+            const d = (item.x - x) ** 2 + (item.y - y) ** 2;
+            if (d < distance) {
+              distance = d;
+              best = item;
+            }
+          }
+        }
+      }
+      // Distance to the closest unvisited cell: no better result can lie beyond.
+      const edge = Math.min(
+        left > 0 ? x - left * this.cellSize : Infinity,
+        right < this.columns - 1 ? (right + 1) * this.cellSize - x : Infinity,
+        top > 0 ? y - top * this.cellSize : Infinity,
+        bottom < this.rows - 1 ? (bottom + 1) * this.cellSize - y : Infinity,
+      );
+      if (distance <= edge * edge || edge === Infinity) return best;
+    }
+    return best;
+  }
+}

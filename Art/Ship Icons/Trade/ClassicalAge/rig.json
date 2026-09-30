@@ -1,0 +1,72 @@
+{
+  "schemaVersion": 1,
+  "sourceSize": {
+    "width": 1254,
+    "height": 1254
+  },
+  "source": "Trade/Trade_ClassicalAge.png",
+  "sourceSha256": "ece59878db8352d0dbf6e5bcf1050008d700ad691c3f647400606c73e2aaba88",
+  "frameSize": {
+    "width": 512,
+    "height": 512
+  },
+  "sourceToFrame": {
+    "scale": 0.3349282296650718,
+    "offset": [
+      46,
+      46
+    ]
+  },
+  "hullInterior": [],
+  "layers": [
+    {
+      "name": "cloth-01",
+      "polygon": [
+        [
+          357.64,
+          460.442
+        ],
+        [
+          607.477,
+          460.442
+        ],
+        [
+          607.477,
+          560.377
+        ],
+        [
+          418.711,
+          551.123
+        ]
+      ],
+      "amplitude": 11.104,
+      "kind": "cloth",
+      "file": "layers/cloth-01.png"
+    },
+    {
+      "name": "cloth-02",
+      "polygon": [
+        [
+          646.341,
+          460.442
+        ],
+        [
+          892.477,
+          460.442
+        ],
+        [
+          835.107,
+          551.123
+        ],
+        [
+          646.341,
+          560.377
+        ]
+      ],
+      "amplitude": 11.104,
+      "kind": "cloth",
+      "file": "layers/cloth-02.png"
+    }
+  ],
+  "notes": "Masks and original painted pixels are retained. Cloth pins, oar pivots, cannon recoil and optional effects are art presentation only."
+}

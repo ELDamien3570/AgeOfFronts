@@ -1,0 +1,846 @@
+{
+  "age": "EarlyMedieval",
+  "mode": "Built-in image_gen tool",
+  "guideConstructionPrompts": [
+    {
+      "category": "Melee",
+      "prompt": "Use case: image-to-image stylized game sprite. Input 1 is the original Early Medieval identity and equipment reference. Input 2 is ONLY the approved camera and painted outline style reference, not its era or costume. Create ONE complete squad in a single square transparent PNG, NOT a sheet. Exact vertical 90-degree overhead orthographic view, looking straight down helmet CROWNS, tops of shoulders and backs, no eye-level faces, no isometric tilt. Facing screen bottom. Five members in fixed two-rear/three-front formation. Original colourful detailed hand-painted game-icon style and bold dark edges, warm diffuse lighting. Keep every weapon visibly connected to the correct gripping hand, no intersecting shafts through forearms. Spacious clear transparent margins around ALL equipment, squad occupies central 65 percent including weapon tips. No floor, scene, ground shadow, labels, text, grid, outlines of cells or effects. EXACTLY FIVE men, FIVE steel one-handed swords and FIVE ROUND WOODEN SHIELDS with dark steel rims and central steel bosses, NOT Greek crested helmets. All have riveted steel conical nasal helmets, chainmail, brown leather bracers, boots, wool cloaks and belts. Rear-left dark red cloak and red/cream segmented round shield; rear-right olive-green cloak and blue/wood round shield; front-left blue cloak and blue/cream round shield; front-middle brown cloak and red/cream round shield; front-right ochre cloak and blue/wood round shield. Each identity preserved. Rear-left/front-left/front-middle sword in viewer-LEFT hand, shield viewer-RIGHT; rear-right/front-right sword viewer-RIGHT, shield viewer-LEFT. Every man has exactly one sword and one shield; folded shield forearm grips shield rear strap, never another sword. Ready idle stance, blades point diagonally downscreen next to their own outer sword arm, all five whole swords visible outside bodies and separate from neighbours. Full five shields are required, especially front-left and front-right.",
+      "references": [
+        "C:/Users/Damien/Documents/GitHub/AgeOfFronts/AgeOfFronts/Art/Soldier Icons/Melee/Melee_EarlyMedieval.png",
+        "C:/Users/Damien/Documents/GitHub/AgeOfFronts/AgeOfFronts/Art/Soldier Icons/Melee/ClassicalAge/Idle.png"
+      ]
+    },
+    {
+      "category": "Ranged",
+      "prompt": "Use case: image-to-image stylized game sprite. Input 1 is the original Early Medieval identity and equipment reference. Input 2 is ONLY the approved camera and painted outline style reference, not its era or costume. Create ONE complete squad in a single square transparent PNG, NOT a sheet. Exact vertical 90-degree overhead orthographic view, looking straight down helmet CROWNS, tops of shoulders and backs, no eye-level faces, no isometric tilt. Facing screen bottom. Five members in fixed two-rear/three-front formation. Original colourful detailed hand-painted game-icon style and bold dark edges, warm diffuse lighting. Keep every weapon visibly connected to the correct gripping hand, no intersecting shafts through forearms. Spacious clear transparent margins around ALL equipment, squad occupies central 65 percent including weapon tips. No floor, scene, ground shadow, labels, text, grid, outlines of cells or effects. EXACTLY FIVE EARLY MEDIEVAL BOWMEN, five continuous wooden longbows with visible strings, five quivers. Riveted steel nasal helmets without crests, wool cloaks, boots and leather bracers. Rear-left green tunic/brown cloak; rear-right cream tunic/red cloak; front-left light blue tunic/green cloak; front-middle chainmail/blue cloak; front-right brown tunic/olive cloak. Original colour identities and equipment. Normalize all to face screen bottom: ALL FIVE bow-gripping arms anatomical LEFT = viewer-RIGHT, ALL FIVE drawing/nocking arms anatomical RIGHT = viewer-LEFT. Same ownership in future frames. Ready stance with longbows held diagonally before each owner, softly curved continuous wooden stave, string connects tips, one arrow lightly nocked facing downscreen, no full draw. Their elbows and bow shafts remain outside forearms, no spear or sword. Arrow feathers in quiver peek above back of each shoulder. Bow and nocked arrow tips fully contained in generous margins.",
+      "references": [
+        "C:/Users/Damien/Documents/GitHub/AgeOfFronts/AgeOfFronts/Art/Soldier Icons/Ranged/Ranged_EarlyMedieval.png",
+        "C:/Users/Damien/Documents/GitHub/AgeOfFronts/AgeOfFronts/Art/Soldier Icons/Ranged/ClassicalAge/Idle.png"
+      ]
+    },
+    {
+      "category": "Cavalry",
+      "prompt": "Use case: image-to-image stylized game sprite. Input 1 is the original Early Medieval identity and equipment reference. Input 2 is ONLY the approved camera and painted outline style reference, not its era or costume. Create ONE complete squad in a single square transparent PNG, NOT a sheet. Exact vertical 90-degree overhead orthographic view, looking straight down helmet CROWNS, tops of shoulders and backs, no eye-level faces, no isometric tilt. Facing screen bottom. Five members in fixed two-rear/three-front formation. Original colourful detailed hand-painted game-icon style and bold dark edges, warm diffuse lighting. Keep every weapon visibly connected to the correct gripping hand, no intersecting shafts through forearms. Spacious clear transparent margins around ALL equipment, squad occupies central 65 percent including weapon tips. No floor, scene, ground shadow, labels, text, grid, outlines of cells or effects. EXACTLY FIVE mounted spearmen and FIVE horses, two rear and three front. FOUR kite shields, front-middle leader has NO shield and holds his ONE spear in TWO hands. FIVE long ash-wood spears with small leaf-shaped iron tips, no swords or extra weapons. All riders chainmail, conical steel nasal helms except front-middle flat-topped closed steel helmet and steel pauldrons/cream surcoat/red cape. Rear-left blue cloak/blue GOLD LION kite shield/bay horse black mane; rear-right red cloak/red WHITE CROSS kite shield/cream-grey horse black mane; front-left green cloak/green pale botanical cross kite shield/bay black mane; front-middle red cape/NO SHIELD/dark charcoal horse black mane white forehead blaze; front-right yellow cloak/blue yellow diagonal-banded kite shield/bay black mane. Reins secure, boots beside saddles. Four shield riders hold spear in viewer-LEFT hand except front-right viewer-RIGHT; shield opposite. Spears held comfortably ready FORWARD and DOWNscreen outside neck, shaft above same-side shoulder, elbow bent gripping shaft at midpoint; not vertical upright spikes and not poking through arms or horses. Front-middle two hands grip continuous spear across forward saddle space, shaft runs diagonally from his upper viewer-left shoulder past viewer-right side of his horse muzzle to downscreen-right tip. All five iron spear tips visible with wide clear margins. Horse backs/tails upscreen and crowns dominate the image; don't change to frontal portrait camera.",
+      "references": [
+        "C:/Users/Damien/Documents/GitHub/AgeOfFronts/AgeOfFronts/Art/Soldier Icons/Cavalry/Cav_EarlyMedieval.png",
+        "C:/Users/Damien/Documents/GitHub/AgeOfFronts/AgeOfFronts/Art/Soldier Icons/Cavalry/StoneAge/Idle.png"
+      ]
+    }
+  ],
+  "camera": "Straight overhead; every full squad faces screen-bottom",
+  "originalStillIconsPreserved": true,
+  "previousAgesPreserved": true,
+  "productionFolders": [
+    "Melee/EarlyMedieval",
+    "Ranged/EarlyMedieval",
+    "Cavalry/EarlyMedieval"
+  ],
+  "atlas": {
+    "size": [
+      2560,
+      1024
+    ],
+    "grid": [
+      5,
+      2
+    ],
+    "frameSize": [
+      512,
+      512
+    ],
+    "frames": 10,
+    "pivot": [
+      256,
+      256
+    ],
+    "format": "PNG RGBA"
+  },
+  "assembly": "Selected whole-squad poses cropped from transparent sources, registered to rear helmet crowns, uniformly resized, and packed. No painted pixels edited with scripts.",
+  "selectionNotes": [
+    "Infantry idle: eight complete groups from the irregular source layout; partial rightmost group excluded.",
+    "Bowmen idle: eight complete groups; clipped source slots 5 and 10 excluded.",
+    "Repeated pose indices in metadata are intentional holds.",
+    "Three infantry idle crops use inspected rear-helmet coordinates to avoid matching identical front helmets.",
+    "Cavalry: five horses and riders, five spears, four kite shields; front-centre leader has one spear and his spare hand on reins."
+  ],
+  "generationPrompts": [
+    {
+      "id": "earlymedieval-Melee-Guide",
+      "category": "Melee",
+      "state": "Guide",
+      "frame": null,
+      "rawOutput": "C:\\Users\\Damien\\.codex\\generated_images\\01a0f03e-fce7-71f0-ae83-67f86e8e8794\\exec-70120120-03ff-4c99-9a72-ec0c4e3ab002.png",
+      "prompt": "Use case: image-to-image stylized game sprite. Input 1 is the original Early Medieval identity and equipment reference. Input 2 is ONLY the approved camera and painted outline style reference, not its era or costume. Create ONE complete squad in a single square transparent PNG, NOT a sheet. Exact vertical 90-degree overhead orthographic view, looking straight down helmet CROWNS, tops of shoulders and backs, no eye-level faces, no isometric tilt. Facing screen bottom. Five members in fixed two-rear/three-front formation. Original colourful detailed hand-painted game-icon style and bold dark edges, warm diffuse lighting. Keep every weapon visibly connected to the correct gripping hand, no intersecting shafts through forearms. Spacious clear transparent margins around ALL equipment, squad occupies central 65 percent including weapon tips. No floor, scene, ground shadow, labels, text, grid, outlines of cells or effects. EXACTLY FIVE men, FIVE steel one-handed swords and FIVE ROUND WOODEN SHIELDS with dark steel rims and central steel bosses, NOT Greek crested helmets. All have riveted steel conical nasal helmets, chainmail, brown leather bracers, boots, wool cloaks and belts. Rear-left dark red cloak and red/cream segmented round shield; rear-right olive-green cloak and blue/wood round shield; front-left blue cloak and blue/cream round shield; front-middle brown cloak and red/cream round shield; front-right ochre cloak and blue/wood round shield. Each identity preserved. Rear-left/front-left/front-middle sword in viewer-LEFT hand, shield viewer-RIGHT; rear-right/front-right sword viewer-RIGHT, shield viewer-LEFT. Every man has exactly one sword and one shield; folded shield forearm grips shield rear strap, never another sword. Ready idle stance, blades point diagonally downscreen next to their own outer sword arm, all five whole swords visible outside bodies and separate from neighbours. Full five shields are required, especially front-left and front-right.",
+      "references": [
+        "C:/Users/Damien/Documents/GitHub/AgeOfFronts/AgeOfFronts/Art/Soldier Icons/Melee/Melee_EarlyMedieval.png",
+        "C:/Users/Damien/Documents/GitHub/AgeOfFronts/AgeOfFronts/Art/Soldier Icons/Melee/ClassicalAge/Idle.png"
+      ]
+    },
+    {
+      "id": "earlymedieval-Melee-Idle",
+      "category": "Melee",
+      "state": "Idle",
+      "frame": null,
+      "rawOutput": "C:\\Users\\Damien\\.codex\\generated_images\\01a0f03e-fce7-71f0-ae83-67f86e8e8794\\exec-a092a04b-f790-49b5-b045-efdcb4f799be.png",
+      "prompt": "Use case: precise-object-edit. Input 1 is PRIMARY accepted overhead squad guide. Preserve exact five identities, formation, scale, outfits and equipment. Exactly FIVE nasal-helmet/chainmail men, FIVE continuously held steel swords, FIVE round wooden boss shields. Rear-left red cloak/red cream shield; rear-right olive cloak/blue wood shield; front-left blue cloak/blue cream shield; front-middle brown cloak/red cream shield; front-right ochre cloak/blue wood shield. Use EXACT guide's established grips: sword arms viewerLEFT for rear-left and all three front men, viewerRIGHT for rear-right. Shield straps attached to the other arm. NO lost shields, extra swords, swapped grips or disappearing blades. Strict SAME straight 90 degree overhead camera down helmet crowns/shoulders, no camera tilt or faces toward viewer, all face screenBOTTOM. Transparent RGBA, no floor/grid/text/shadow/effects. Create a IDLE sprite atlas of TEN sequential full-group frames, exactly FIVE columns and TWO rows of equal SQUARE cells. Intended final 2560x1024, each cell512x512. Left-to-right, next row. Put ONE complete FIVE-man squad in EACH cell. Each full squad plus weapon tips stays within CENTRAL65percent of its OWN square, with large empty transparent gaps separating ALL cells including outer right column. Do NOT stretch squad to fill cell or clip swords/bows at border. Fixed formation centre and character size, loopable ten poses. Calm breathing, small five-person shoulder rise/fall, soft cape and wrist settling, tiny natural weight shifts; all weapons continuously ready. No strike or walking. Frame 10 transitions smoothly back into frame 1.",
+      "references": [
+        "C:\\Users\\Damien\\.codex\\generated_images\\01a0f03e-fce7-71f0-ae83-67f86e8e8794\\exec-70120120-03ff-4c99-9a72-ec0c4e3ab002.png"
+      ]
+    },
+    {
+      "id": "earlymedieval-Melee-Running",
+      "category": "Melee",
+      "state": "Running",
+      "frame": null,
+      "rawOutput": "C:\\Users\\Damien\\.codex\\generated_images\\01a0f03e-fce7-71f0-ae83-67f86e8e8794\\exec-a178272c-3714-4dca-a407-9383155dbc02.png",
+      "prompt": "Use case: precise-object-edit. Input 1 is PRIMARY accepted overhead squad guide. Preserve exact five identities, formation, scale, outfits and equipment. Exactly FIVE nasal-helmet/chainmail men, FIVE continuously held steel swords, FIVE round wooden boss shields. Rear-left red cloak/red cream shield; rear-right olive cloak/blue wood shield; front-left blue cloak/blue cream shield; front-middle brown cloak/red cream shield; front-right ochre cloak/blue wood shield. Use EXACT guide's established grips: sword arms viewerLEFT for rear-left and all three front men, viewerRIGHT for rear-right. Shield straps attached to the other arm. NO lost shields, extra swords, swapped grips or disappearing blades. Strict SAME straight 90 degree overhead camera down helmet crowns/shoulders, no camera tilt or faces toward viewer, all face screenBOTTOM. Transparent RGBA, no floor/grid/text/shadow/effects. Create a RUNNING sprite atlas of TEN sequential full-group frames, exactly FIVE columns and TWO rows of equal SQUARE cells. Intended final 2560x1024, each cell512x512. Left-to-right, next row. Put ONE complete FIVE-man squad in EACH cell. Each full squad plus weapon tips stays within CENTRAL65percent of its OWN square, with large empty transparent gaps separating ALL cells including outer right column. Do NOT stretch squad to fill cell or clip swords/bows at border. Fixed formation centre and character size, loopable ten poses. Clear alternating RUNNING gait for ALL FIVE men including front left, front middle and front right. Boots alternate screen-down forward reach and screen-up tuck behind body; bent knees visible beside tunic. Arms holding weapons stay ready, shoulders bob and wool capes flutter. Frame sequence left-forward, transition, right-forward, transition, repeating to close into first stride. Do not merely translate an unchanged standing pose. Keep feet connected, bodies and formation rooted.",
+      "references": [
+        "C:\\Users\\Damien\\.codex\\generated_images\\01a0f03e-fce7-71f0-ae83-67f86e8e8794\\exec-70120120-03ff-4c99-9a72-ec0c4e3ab002.png"
+      ]
+    },
+    {
+      "id": "earlymedieval-Melee-Attack-F3-Final",
+      "category": "Melee",
+      "state": "Attack",
+      "frame": "F3-Final",
+      "rawOutput": "C:\\Users\\Damien\\.codex\\generated_images\\01a0f03e-fce7-71f0-ae83-67f86e8e8794\\exec-324541d7-27bd-4f0e-bb06-835847c77264.png",
+      "prompt": "Use case: precise-object-edit. Input1 edit target is overhead windup sprite. Input2 guide shows correct arm ownership. Correct ONLY upper-right GREEN-CLOAK man's raised sword POSITION. In target his sword is incorrectly located in the INNER GAP BETWEEN the two rear men's heads. ERASE THAT sword and its inner raised hand, restoring that inner arm folded across his own waist behind BLUE/WOOD shield. Paint his ONE raised sword and bent sword arm on the FAR OUTER RIGHT SIDE OF THE ENTIRE IMAGE, to the RIGHT of his blue shield and helmet, into currently-empty transparent space. His helmet stays near x=875,y=420 in 1254 square. His OUTER RIGHT shoulder x=1025,y=345 connects naturally to bent elbow and gripping hand near x=1090,y=300. Complete single steel blade points toward x=1160,y=135. The sword hand and FULL blade MUST be on right edge, NOT left of his helmet; no sword in gap between rear heads. Same sword guard style. This is the same outer arm which holds his ready sword in input2, lifted for backswing. One true sword total for green-cloak man. Keep other FOUR raised swords/men, all FIVE round shields, clothing, exact helmet positions/formation/scale, full overhead camera and transparency unchanged. NO extra swords. Make sure rightmost blade tip has transparent margin. Do not just rotate his body and leave sword in inner gap.",
+      "references": [
+        "C:\\Users\\Damien\\.codex\\generated_images\\01a0f03e-fce7-71f0-ae83-67f86e8e8794\\exec-7e6f4519-532a-476b-a913-e537ab3fb111.png",
+        "C:\\Users\\Damien\\.codex\\generated_images\\01a0f03e-fce7-71f0-ae83-67f86e8e8794\\exec-70120120-03ff-4c99-9a72-ec0c4e3ab002.png"
+      ]
+    },
+    {
+      "id": "earlymedieval-Melee-Attack-F5-Fixed",
+      "category": "Melee",
+      "state": "Attack",
+      "frame": "F5-Fixed",
+      "rawOutput": "C:\\Users\\Damien\\.codex\\generated_images\\01a0f03e-fce7-71f0-ae83-67f86e8e8794\\exec-780b493d-c27d-4428-b0dd-a07aee6883e1.png",
+      "prompt": "Use case: precise-object-edit. Input1 is single five-man FORWARD STRIKE pose edit target, Input2 equipment grip guide only. Fix ONLY the REAR-RIGHT olive/green cloak man's EXTRA sword-hilt-looking object in his INNER viewerLEFT hand below his belt, sticking toward front-middle brown cloak. REMOVE the inner extra gold sword hilt/blade entirely. His inner viewerLEFT arm is the SHIELD arm: fold forearm naturally across own waist and place hand gripping behind the same blue/wood round shield, fingers unobtrusive, no weapon. KEEP his ONE true full steel sword in OUTER viewerRIGHT hand extending forward/downscreen-right EXACTLY as it is. All other FOUR men, their swords/shields, front-middle full forward reach and blade, capes, helmets, scale, fixed formation, overhead camera and margins EXACTLY unchanged. Final exactly FIVE steel swords, FIVE round boss shields, one sword per man. Transparent RGBA, no other edits or added parts.",
+      "references": [
+        "C:/Users/Damien/.codex/generated_images/01a0f03e-fce7-71f0-ae83-67f86e8e8794/exec-a70a567c-36df-4423-8807-4e914fa5f03f.png",
+        "C:\\Users\\Damien\\.codex\\generated_images\\01a0f03e-fce7-71f0-ae83-67f86e8e8794\\exec-70120120-03ff-4c99-9a72-ec0c4e3ab002.png"
+      ]
+    },
+    {
+      "id": "earlymedieval-Melee-Attack-F7",
+      "category": "Melee",
+      "state": "Attack",
+      "frame": "F7",
+      "rawOutput": "C:\\Users\\Damien\\.codex\\generated_images\\01a0f03e-fce7-71f0-ae83-67f86e8e8794\\exec-198c1f3e-b8cc-4a5a-afe1-bef16ef31b69.png",
+      "prompt": "Use case: precise-object-edit. Input 1 is PRIMARY accepted overhead squad guide. Preserve exact five identities, formation, scale, outfits and equipment. Exactly FIVE nasal-helmet/chainmail men, FIVE continuously held steel swords, FIVE round wooden boss shields. Rear-left red cloak/red cream shield; rear-right olive cloak/blue wood shield; front-left blue cloak/blue cream shield; front-middle brown cloak/red cream shield; front-right ochre cloak/blue wood shield. Use EXACT guide's established grips: sword arms viewerLEFT for rear-left and all three front men, viewerRIGHT for rear-right. Shield straps attached to the other arm. NO lost shields, extra swords, swapped grips or disappearing blades. Strict SAME straight 90 degree overhead camera down helmet crowns/shoulders, no camera tilt or faces toward viewer, all face screenBOTTOM. Transparent RGBA, no floor/grid/text/shadow/effects. Output ONE square key-pose sprite of complete squad ONLY, not atlas. Keep ALL weapon tips within wide transparent 8 percent margin on all four sides. Same character dimensions and anchored helmet positions as guide. FOLLOW-THROUGH. ALL FIVE arms continue their sword cuts LOW and OUTWARD/forward, swords diagonally screen-down toward their own outer sword side with arm extension visibly past body; front-middle blade is low in front, full continuous steel tip present. Bodies lean forward a little, shields remain held in opposite arms. No new or vanished equipment.",
+      "references": [
+        "C:\\Users\\Damien\\.codex\\generated_images\\01a0f03e-fce7-71f0-ae83-67f86e8e8794\\exec-70120120-03ff-4c99-9a72-ec0c4e3ab002.png"
+      ]
+    },
+    {
+      "id": "earlymedieval-Ranged-Guide",
+      "category": "Ranged",
+      "state": "Guide",
+      "frame": null,
+      "rawOutput": "C:\\Users\\Damien\\.codex\\generated_images\\01a0f03e-fce7-71f0-ae83-67f86e8e8794\\exec-1469d881-5502-496d-8190-8b08885eca3f.png",
+      "prompt": "Use case: image-to-image stylized game sprite. Input 1 is the original Early Medieval identity and equipment reference. Input 2 is ONLY the approved camera and painted outline style reference, not its era or costume. Create ONE complete squad in a single square transparent PNG, NOT a sheet. Exact vertical 90-degree overhead orthographic view, looking straight down helmet CROWNS, tops of shoulders and backs, no eye-level faces, no isometric tilt. Facing screen bottom. Five members in fixed two-rear/three-front formation. Original colourful detailed hand-painted game-icon style and bold dark edges, warm diffuse lighting. Keep every weapon visibly connected to the correct gripping hand, no intersecting shafts through forearms. Spacious clear transparent margins around ALL equipment, squad occupies central 65 percent including weapon tips. No floor, scene, ground shadow, labels, text, grid, outlines of cells or effects. EXACTLY FIVE EARLY MEDIEVAL BOWMEN, five continuous wooden longbows with visible strings, five quivers. Riveted steel nasal helmets without crests, wool cloaks, boots and leather bracers. Rear-left green tunic/brown cloak; rear-right cream tunic/red cloak; front-left light blue tunic/green cloak; front-middle chainmail/blue cloak; front-right brown tunic/olive cloak. Original colour identities and equipment. Normalize all to face screen bottom: ALL FIVE bow-gripping arms anatomical LEFT = viewer-RIGHT, ALL FIVE drawing/nocking arms anatomical RIGHT = viewer-LEFT. Same ownership in future frames. Ready stance with longbows held diagonally before each owner, softly curved continuous wooden stave, string connects tips, one arrow lightly nocked facing downscreen, no full draw. Their elbows and bow shafts remain outside forearms, no spear or sword. Arrow feathers in quiver peek above back of each shoulder. Bow and nocked arrow tips fully contained in generous margins.",
+      "references": [
+        "C:/Users/Damien/Documents/GitHub/AgeOfFronts/AgeOfFronts/Art/Soldier Icons/Ranged/Ranged_EarlyMedieval.png",
+        "C:/Users/Damien/Documents/GitHub/AgeOfFronts/AgeOfFronts/Art/Soldier Icons/Ranged/ClassicalAge/Idle.png"
+      ]
+    },
+    {
+      "id": "earlymedieval-Ranged-Idle",
+      "category": "Ranged",
+      "state": "Idle",
+      "frame": null,
+      "rawOutput": "C:\\Users\\Damien\\.codex\\generated_images\\01a0f03e-fce7-71f0-ae83-67f86e8e8794\\exec-a9a6256b-bfbf-4519-b8e1-ae32deef80d7.png",
+      "prompt": "Use case: precise-object-edit. Input 1 is PRIMARY accepted overhead squad guide. Preserve exact five identities, formation, scale, outfits and equipment. Exactly FIVE nasal-helmet medieval bowmen, FIVE continuous curved wooden longbows/strings and FIVE quivers. Rear-left green tunic/brown cloak; rear-right cream/red cloak; front-left light blue/green cloak; front-middle chainmail/blue cloak; front-right brown/olive cloak. ALL FIVE bow gripping arms anatomical LEFT=viewerRIGHT, drawing arms anatomical RIGHT=viewerLEFT. Preserve same ownership throughout, continuous bowstring reaches both tips, no shafts piercing arms. Strict SAME straight 90 degree overhead camera down helmet crowns/shoulders, no camera tilt or faces toward viewer, all face screenBOTTOM. Transparent RGBA, no floor/grid/text/shadow/effects. Create a IDLE sprite atlas of TEN sequential full-group frames, exactly FIVE columns and TWO rows of equal SQUARE cells. Intended final 2560x1024, each cell512x512. Left-to-right, next row. Put ONE complete FIVE-man squad in EACH cell. Each full squad plus weapon tips stays within CENTRAL65percent of its OWN square, with large empty transparent gaps separating ALL cells including outer right column. Do NOT stretch squad to fill cell or clip swords/bows at border. Fixed formation centre and character size, loopable ten poses. Calm breathing, small five-person shoulder rise/fall, soft cape and wrist settling, tiny natural weight shifts; all weapons continuously ready. No strike or walking. Frame 10 transitions smoothly back into frame 1.",
+      "references": [
+        "C:\\Users\\Damien\\.codex\\generated_images\\01a0f03e-fce7-71f0-ae83-67f86e8e8794\\exec-1469d881-5502-496d-8190-8b08885eca3f.png"
+      ]
+    },
+    {
+      "id": "earlymedieval-Ranged-Running",
+      "category": "Ranged",
+      "state": "Running",
+      "frame": null,
+      "rawOutput": "C:\\Users\\Damien\\.codex\\generated_images\\01a0f03e-fce7-71f0-ae83-67f86e8e8794\\exec-34aa0fc3-7c96-403b-b766-06307af87acc.png",
+      "prompt": "Use case: precise-object-edit. Input 1 is PRIMARY accepted overhead squad guide. Preserve exact five identities, formation, scale, outfits and equipment. Exactly FIVE nasal-helmet medieval bowmen, FIVE continuous curved wooden longbows/strings and FIVE quivers. Rear-left green tunic/brown cloak; rear-right cream/red cloak; front-left light blue/green cloak; front-middle chainmail/blue cloak; front-right brown/olive cloak. ALL FIVE bow gripping arms anatomical LEFT=viewerRIGHT, drawing arms anatomical RIGHT=viewerLEFT. Preserve same ownership throughout, continuous bowstring reaches both tips, no shafts piercing arms. Strict SAME straight 90 degree overhead camera down helmet crowns/shoulders, no camera tilt or faces toward viewer, all face screenBOTTOM. Transparent RGBA, no floor/grid/text/shadow/effects. Create a RUNNING sprite atlas of TEN sequential full-group frames, exactly FIVE columns and TWO rows of equal SQUARE cells. Intended final 2560x1024, each cell512x512. Left-to-right, next row. Put ONE complete FIVE-man squad in EACH cell. Each full squad plus weapon tips stays within CENTRAL65percent of its OWN square, with large empty transparent gaps separating ALL cells including outer right column. Do NOT stretch squad to fill cell or clip swords/bows at border. Fixed formation centre and character size, loopable ten poses. Clear alternating RUNNING gait for ALL FIVE men including front left, front middle and front right. Boots alternate screen-down forward reach and screen-up tuck behind body; bent knees visible beside tunic. Arms holding weapons stay ready, shoulders bob and wool capes flutter. Frame sequence left-forward, transition, right-forward, transition, repeating to close into first stride. Do not merely translate an unchanged standing pose. Keep feet connected, bodies and formation rooted.",
+      "references": [
+        "C:\\Users\\Damien\\.codex\\generated_images\\01a0f03e-fce7-71f0-ae83-67f86e8e8794\\exec-1469d881-5502-496d-8190-8b08885eca3f.png"
+      ]
+    },
+    {
+      "id": "earlymedieval-Ranged-Attack-F3",
+      "category": "Ranged",
+      "state": "Attack",
+      "frame": "F3",
+      "rawOutput": "C:\\Users\\Damien\\.codex\\generated_images\\01a0f03e-fce7-71f0-ae83-67f86e8e8794\\exec-b9a32028-5054-4846-beb0-ebc23a4df406.png",
+      "prompt": "Use case: precise-object-edit. Input 1 is PRIMARY accepted overhead squad guide. Preserve exact five identities, formation, scale, outfits and equipment. Exactly FIVE nasal-helmet medieval bowmen, FIVE continuous curved wooden longbows/strings and FIVE quivers. Rear-left green tunic/brown cloak; rear-right cream/red cloak; front-left light blue/green cloak; front-middle chainmail/blue cloak; front-right brown/olive cloak. ALL FIVE bow gripping arms anatomical LEFT=viewerRIGHT, drawing arms anatomical RIGHT=viewerLEFT. Preserve same ownership throughout, continuous bowstring reaches both tips, no shafts piercing arms. Strict SAME straight 90 degree overhead camera down helmet crowns/shoulders, no camera tilt or faces toward viewer, all face screenBOTTOM. Transparent RGBA, no floor/grid/text/shadow/effects. Output ONE square key-pose sprite of complete squad ONLY, not atlas. Keep ALL weapon tips within wide transparent 8 percent margin on all four sides. Same character dimensions and anchored helmet positions as guide. FULL DRAW. ALL FIVE archers extend bow arms downscreen in front of their own shoulders. ALL FIVE drawing arms pull the ONE nocked arrow and string back to anatomical RIGHT shoulder/viewerLEFT beside helmet, bent elbow upscreen. Bows flex with a distinct taut V string and one continuous arrow pointing screenbottom. All THREE front archers perform same complete draw as rear. Fingers pinch nock, arrows and bow tips intact.",
+      "references": [
+        "C:\\Users\\Damien\\.codex\\generated_images\\01a0f03e-fce7-71f0-ae83-67f86e8e8794\\exec-1469d881-5502-496d-8190-8b08885eca3f.png"
+      ]
+    },
+    {
+      "id": "earlymedieval-Ranged-Attack-F5",
+      "category": "Ranged",
+      "state": "Attack",
+      "frame": "F5",
+      "rawOutput": "C:\\Users\\Damien\\.codex\\generated_images\\01a0f03e-fce7-71f0-ae83-67f86e8e8794\\exec-25dc2016-14cc-40e1-9590-0466f42e019f.png",
+      "prompt": "Use case: precise-object-edit. Input 1 is PRIMARY accepted overhead squad guide. Preserve exact five identities, formation, scale, outfits and equipment. Exactly FIVE nasal-helmet medieval bowmen, FIVE continuous curved wooden longbows/strings and FIVE quivers. Rear-left green tunic/brown cloak; rear-right cream/red cloak; front-left light blue/green cloak; front-middle chainmail/blue cloak; front-right brown/olive cloak. ALL FIVE bow gripping arms anatomical LEFT=viewerRIGHT, drawing arms anatomical RIGHT=viewerLEFT. Preserve same ownership throughout, continuous bowstring reaches both tips, no shafts piercing arms. Strict SAME straight 90 degree overhead camera down helmet crowns/shoulders, no camera tilt or faces toward viewer, all face screenBOTTOM. Transparent RGBA, no floor/grid/text/shadow/effects. Output ONE square key-pose sprite of complete squad ONLY, not atlas. Keep ALL weapon tips within wide transparent 8 percent margin on all four sides. Same character dimensions and anchored helmet positions as guide. RELEASE. ALL FIVE archers keep bow-gripping arms extended FORWARD/DOWNscreen, continuous empty bows spring gently straighter. Drawing fingers OPEN and drawing hands recoil beside their OWN helmet on viewerLEFT shoulder. The arrows have JUST LEFT and are no longer held, so draw hands now empty. Every front and rear archer visibly releases, no idle front row. Bow hands never swap or disappear. Do not add separate flying arrows or detached bow fragments.",
+      "references": [
+        "C:\\Users\\Damien\\.codex\\generated_images\\01a0f03e-fce7-71f0-ae83-67f86e8e8794\\exec-1469d881-5502-496d-8190-8b08885eca3f.png"
+      ]
+    },
+    {
+      "id": "earlymedieval-Ranged-Attack-F7",
+      "category": "Ranged",
+      "state": "Attack",
+      "frame": "F7",
+      "rawOutput": "C:\\Users\\Damien\\.codex\\generated_images\\01a0f03e-fce7-71f0-ae83-67f86e8e8794\\exec-f5da4b0c-5dfb-4c12-8369-34b0b20a6626.png",
+      "prompt": "Use case: precise-object-edit. Input 1 is PRIMARY accepted overhead squad guide. Preserve exact five identities, formation, scale, outfits and equipment. Exactly FIVE nasal-helmet medieval bowmen, FIVE continuous curved wooden longbows/strings and FIVE quivers. Rear-left green tunic/brown cloak; rear-right cream/red cloak; front-left light blue/green cloak; front-middle chainmail/blue cloak; front-right brown/olive cloak. ALL FIVE bow gripping arms anatomical LEFT=viewerRIGHT, drawing arms anatomical RIGHT=viewerLEFT. Preserve same ownership throughout, continuous bowstring reaches both tips, no shafts piercing arms. Strict SAME straight 90 degree overhead camera down helmet crowns/shoulders, no camera tilt or faces toward viewer, all face screenBOTTOM. Transparent RGBA, no floor/grid/text/shadow/effects. Output ONE square key-pose sprite of complete squad ONLY, not atlas. Keep ALL weapon tips within wide transparent 8 percent margin on all four sides. Same character dimensions and anchored helmet positions as guide. FOLLOW-THROUGH. ALL FIVE empty drawing hands continue natural recoil slightly UPSCREEN and viewerLEFT of their own helmet, fingers open. Bow arms stay extended FORWARD/DOWNscreen and gently settle, continuous bow and string still held in original gripping hand. Empty nocks, no ready arrow yet, all five participating. Clear whole-arm motion, not only moving arrow art.",
+      "references": [
+        "C:\\Users\\Damien\\.codex\\generated_images\\01a0f03e-fce7-71f0-ae83-67f86e8e8794\\exec-1469d881-5502-496d-8190-8b08885eca3f.png"
+      ]
+    },
+    {
+      "id": "earlymedieval-Cavalry-Guide-Final",
+      "category": "Cavalry",
+      "state": "Guide",
+      "frame": null,
+      "rawOutput": "C:\\Users\\Damien\\.codex\\generated_images\\01a0f03e-fce7-71f0-ae83-67f86e8e8794\\exec-0b426483-0330-4f6d-8b78-f32c26f3102b.png",
+      "prompt": "Use case: precise-object-edit. Make ONE tiny targeted repair in this SINGLE five-horse overhead sprite. The FRONT-RIGHT YELLOW-CLOAK rider's long spear has a small EXTRA upward-pointing steel triangle on its UPPER butt end just LEFT of his helmet, above his spear hand. REMOVE ONLY THAT UPPER EXTRA STEEL TIP. Replace the triangle with a short plain blunt wooden butt end continuous with the same brown shaft. KEEP his large LOWER DOWNscreen steel spearhead below the horse muzzle, the whole shaft, gripping hand, shield, rider and horse exactly unchanged. His spear must have exactly ONE steel spearhead, at lower forward end; upper butt end plain wood. All other FOUR complete spears, all five horses/riders, four kite shields, centre rider shield-free, helmet crowns, clothing/horse colours, overhead camera and transparent margins unchanged. No new parts, no shift, no mirroring or equipment additions. Transparent RGBA.",
+      "references": [
+        "C:\\Users\\Damien\\.codex\\generated_images\\01a0f03e-fce7-71f0-ae83-67f86e8e8794\\exec-a4c2114d-97a3-4d93-934b-ce85bfe5b8bd.png"
+      ]
+    },
+    {
+      "id": "earlymedieval-Cavalry-Idle-B",
+      "category": "Cavalry",
+      "state": "Idle",
+      "frame": "B",
+      "rawOutput": "C:\\Users\\Damien\\.codex\\generated_images\\01a0f03e-fce7-71f0-ae83-67f86e8e8794\\exec-a919a6eb-75af-4756-be6d-ca6a41d049de.png",
+      "prompt": "Use case: precise-object-edit. Input is PRIMARY accepted EARLY MEDIEVAL overhead cavalry squad guide. Output ONE complete squad single SQUARE frame, not an atlas. Exact SAME five horses and five riders, two-rear three-front formation. Same straight 90-degree overhead camera looking down helmet crowns, shoulder tops, horse backs/man es, all facing screenBOTTOM. Preserve identities: rear-left blue cloak/blue goldlion kite shield/bay horse; rear-right red cloak/red whitecross kite shield/creamgrey horse; front-left green cloak/green pale botanical kite shield/bay; front-middle closed-steel-helmet leader, steel pauldrons/cream surcoat/red cape, NO SHIELD/dark charcoal horse; front-right yellow cloak/blue yellowstripe kite shield/bay. Black manes, forehead blazes, fur saddle covers and leather tack match guide. FIVE complete wooden spears, each with exactly ONE steel leaf point at LOWER/FORWARD end and plain blunt wooden butt at upper end; never two tips. FOUR shields total, same attached arms as guide. Keep guide's normalized spear grips on same viewerLEFT arms, each shield supported by other arm; leader spear in one hand and spare hand stays on reins. Every shaft passes ABOVE and OUTSIDE its gripping arm and its own horse neck, never through body, no extra fragments. Front-right spear stays clear beside viewerLEFT side of his own horse with complete lower point. Centre leader spear stays diagonal to downscreenRIGHT beside his own horse, continuous shaft. Anchor rider crowns and saddles to same formation, consistent scale. Whole squad and ALL spear tips inside generous clear 8percent transparent margins, shrink entire group a little if needed, don't crop spear points. Transparent RGBA, no background, shadows, grid, text, effects or motion blur. IDLE inhale. All five riders lift shoulders very slightly, spear hands and four shields steady. All five horses ears twitch and shoulders expand subtly, tails settle left and cloaks lift a little. Feet at rest. Only calm breathing/weight shift, don't run or strike.",
+      "references": [
+        "C:\\Users\\Damien\\.codex\\generated_images\\01a0f03e-fce7-71f0-ae83-67f86e8e8794\\exec-0b426483-0330-4f6d-8b78-f32c26f3102b.png"
+      ]
+    },
+    {
+      "id": "earlymedieval-Cavalry-Idle-C-Fixed",
+      "category": "Cavalry",
+      "state": "Idle",
+      "frame": "C-Fixed",
+      "rawOutput": "C:\\Users\\Damien\\.codex\\generated_images\\01a0f03e-fce7-71f0-ae83-67f86e8e8794\\exec-f36299f7-91b4-4b3f-80e9-6e637d4f66a4.png",
+      "prompt": "Use case: precise-object-edit. Input is one overhead cavalry idle pose. Remove ONLY the TWO EXTRA black bushy tail tufts hanging at the LOWER-RIGHT sides of the FRONT-LEFT bay horse and FRONT-RIGHT yellow-cloak rider's bay horse. Front-left extra tuft is just right of its lower neck/muzzle next to centre horse left saddle. Front-right extra tuft hangs right of its lower neck/muzzle beside yellow cape below rider. Those are duplicate tails; replace those isolated wrong lower-side tufts with transparent background, keep adjacent cape/boots/horse outline intact. KEEP all FIVE actual correct horse tails above their rumps at UPSCREEN tops of all five horse backs, including front-left and front-right actual upscreen tails. Exact five horses, five riders, FIVE complete tipped spears and four kite shields unchanged. Keep all other pixels/colours/pose/camera/formation/scale, centre leader spear and reins. No new parts, no motion, no extra tails. Transparent RGBA.",
+      "references": [
+        "C:/Users/Damien/.codex/generated_images/01a0f03e-fce7-71f0-ae83-67f86e8e8794/exec-747c2514-d6b3-4ac8-8f41-a2106a42e956.png"
+      ]
+    },
+    {
+      "id": "earlymedieval-Cavalry-Running-A",
+      "category": "Cavalry",
+      "state": "Running",
+      "frame": "A",
+      "rawOutput": "C:\\Users\\Damien\\.codex\\generated_images\\01a0f03e-fce7-71f0-ae83-67f86e8e8794\\exec-4b4ddeae-27a4-42e3-89da-4034cff9b4e2.png",
+      "prompt": "Use case: precise-object-edit. Input is PRIMARY accepted EARLY MEDIEVAL overhead cavalry squad guide. Output ONE complete squad single SQUARE frame, not an atlas. Exact SAME five horses and five riders, two-rear three-front formation. Same straight 90-degree overhead camera looking down helmet crowns, shoulder tops, horse backs/man es, all facing screenBOTTOM. Preserve identities: rear-left blue cloak/blue goldlion kite shield/bay horse; rear-right red cloak/red whitecross kite shield/creamgrey horse; front-left green cloak/green pale botanical kite shield/bay; front-middle closed-steel-helmet leader, steel pauldrons/cream surcoat/red cape, NO SHIELD/dark charcoal horse; front-right yellow cloak/blue yellowstripe kite shield/bay. Black manes, forehead blazes, fur saddle covers and leather tack match guide. FIVE complete wooden spears, each with exactly ONE steel leaf point at LOWER/FORWARD end and plain blunt wooden butt at upper end; never two tips. FOUR shields total, same attached arms as guide. Keep guide's normalized spear grips on same viewerLEFT arms, each shield supported by other arm; leader spear in one hand and spare hand stays on reins. Every shaft passes ABOVE and OUTSIDE its gripping arm and its own horse neck, never through body, no extra fragments. Front-right spear stays clear beside viewerLEFT side of his own horse with complete lower point. Centre leader spear stays diagonal to downscreenRIGHT beside his own horse, continuous shaft. Anchor rider crowns and saddles to same formation, consistent scale. Whole squad and ALL spear tips inside generous clear 8percent transparent margins, shrink entire group a little if needed, don't crop spear points. Transparent RGBA, no background, shadows, grid, text, effects or motion blur. RUN gallop forward reach. All FIVE horses extend BOTH attached forelegs forward/DOWNscreen at either side of own neck, hoof tips slightly beyond muzzle. Two anatomical slender legs, one slightly leading, elbows/knees under chest, NOT rider boots. Riders rise a little in saddles, capes stream upscreen and tails straight. Spears continuously held ready, iron tips intact.",
+      "references": [
+        "C:\\Users\\Damien\\.codex\\generated_images\\01a0f03e-fce7-71f0-ae83-67f86e8e8794\\exec-0b426483-0330-4f6d-8b78-f32c26f3102b.png"
+      ]
+    },
+    {
+      "id": "earlymedieval-Cavalry-Running-B",
+      "category": "Cavalry",
+      "state": "Running",
+      "frame": "B",
+      "rawOutput": "C:\\Users\\Damien\\.codex\\generated_images\\01a0f03e-fce7-71f0-ae83-67f86e8e8794\\exec-c5168f95-2754-492d-b0d2-055090dc564f.png",
+      "prompt": "Use case: precise-object-edit. Input is PRIMARY accepted EARLY MEDIEVAL overhead cavalry squad guide. Output ONE complete squad single SQUARE frame, not an atlas. Exact SAME five horses and five riders, two-rear three-front formation. Same straight 90-degree overhead camera looking down helmet crowns, shoulder tops, horse backs/man es, all facing screenBOTTOM. Preserve identities: rear-left blue cloak/blue goldlion kite shield/bay horse; rear-right red cloak/red whitecross kite shield/creamgrey horse; front-left green cloak/green pale botanical kite shield/bay; front-middle closed-steel-helmet leader, steel pauldrons/cream surcoat/red cape, NO SHIELD/dark charcoal horse; front-right yellow cloak/blue yellowstripe kite shield/bay. Black manes, forehead blazes, fur saddle covers and leather tack match guide. FIVE complete wooden spears, each with exactly ONE steel leaf point at LOWER/FORWARD end and plain blunt wooden butt at upper end; never two tips. FOUR shields total, same attached arms as guide. Keep guide's normalized spear grips on same viewerLEFT arms, each shield supported by other arm; leader spear in one hand and spare hand stays on reins. Every shaft passes ABOVE and OUTSIDE its gripping arm and its own horse neck, never through body, no extra fragments. Front-right spear stays clear beside viewerLEFT side of his own horse with complete lower point. Centre leader spear stays diagonal to downscreenRIGHT beside his own horse, continuous shaft. Anchor rider crowns and saddles to same formation, consistent scale. Whole squad and ALL spear tips inside generous clear 8percent transparent margins, shrink entire group a little if needed, don't crop spear points. Transparent RGBA, no background, shadows, grid, text, effects or motion blur. RUN planted left reach. All FIVE horses plant anatomical LEFT foreleg (viewerRIGHT facing downscreen) extended beyond muzzle, other leg folds/tucks beside viewerLEFT neck. Show one long reaching hoof and one shorter bent hoof on opposite sides with knees attached to chest. Riders settle a little, horseheads bob, tails flick left, capes flutter. Not standing.",
+      "references": [
+        "C:\\Users\\Damien\\.codex\\generated_images\\01a0f03e-fce7-71f0-ae83-67f86e8e8794\\exec-0b426483-0330-4f6d-8b78-f32c26f3102b.png"
+      ]
+    },
+    {
+      "id": "earlymedieval-Cavalry-Running-C",
+      "category": "Cavalry",
+      "state": "Running",
+      "frame": "C",
+      "rawOutput": "C:\\Users\\Damien\\.codex\\generated_images\\01a0f03e-fce7-71f0-ae83-67f86e8e8794\\exec-ef2b53b0-4cd5-4a66-88ba-3eaf7f8ee86d.png",
+      "prompt": "Use case: precise-object-edit. Input is PRIMARY accepted EARLY MEDIEVAL overhead cavalry squad guide. Output ONE complete squad single SQUARE frame, not an atlas. Exact SAME five horses and five riders, two-rear three-front formation. Same straight 90-degree overhead camera looking down helmet crowns, shoulder tops, horse backs/man es, all facing screenBOTTOM. Preserve identities: rear-left blue cloak/blue goldlion kite shield/bay horse; rear-right red cloak/red whitecross kite shield/creamgrey horse; front-left green cloak/green pale botanical kite shield/bay; front-middle closed-steel-helmet leader, steel pauldrons/cream surcoat/red cape, NO SHIELD/dark charcoal horse; front-right yellow cloak/blue yellowstripe kite shield/bay. Black manes, forehead blazes, fur saddle covers and leather tack match guide. FIVE complete wooden spears, each with exactly ONE steel leaf point at LOWER/FORWARD end and plain blunt wooden butt at upper end; never two tips. FOUR shields total, same attached arms as guide. Keep guide's normalized spear grips on same viewerLEFT arms, each shield supported by other arm; leader spear in one hand and spare hand stays on reins. Every shaft passes ABOVE and OUTSIDE its gripping arm and its own horse neck, never through body, no extra fragments. Front-right spear stays clear beside viewerLEFT side of his own horse with complete lower point. Centre leader spear stays diagonal to downscreenRIGHT beside his own horse, continuous shaft. Anchor rider crowns and saddles to same formation, consistent scale. Whole squad and ALL spear tips inside generous clear 8percent transparent margins, shrink entire group a little if needed, don't crop spear points. Transparent RGBA, no background, shadows, grid, text, effects or motion blur. RUN gathered suspension. All FIVE horses pull BOTH anatomical forelegs up with bent knees and tucked hooves visible near the SIDE of lower neck/cheeks rather than below muzzle. Horseheads lift and necks shorten subtly, rider shoulders rise, manes/capes/tails flick right. No static standing leg retained. Each hoof joins anatomically to its horse.",
+      "references": [
+        "C:\\Users\\Damien\\.codex\\generated_images\\01a0f03e-fce7-71f0-ae83-67f86e8e8794\\exec-0b426483-0330-4f6d-8b78-f32c26f3102b.png"
+      ]
+    },
+    {
+      "id": "earlymedieval-Cavalry-Running-D",
+      "category": "Cavalry",
+      "state": "Running",
+      "frame": "D",
+      "rawOutput": "C:\\Users\\Damien\\.codex\\generated_images\\01a0f03e-fce7-71f0-ae83-67f86e8e8794\\exec-f654b790-3fbf-4a92-8e96-bd0d14294197.png",
+      "prompt": "Use case: precise-object-edit. Input is PRIMARY accepted EARLY MEDIEVAL overhead cavalry squad guide. Output ONE complete squad single SQUARE frame, not an atlas. Exact SAME five horses and five riders, two-rear three-front formation. Same straight 90-degree overhead camera looking down helmet crowns, shoulder tops, horse backs/man es, all facing screenBOTTOM. Preserve identities: rear-left blue cloak/blue goldlion kite shield/bay horse; rear-right red cloak/red whitecross kite shield/creamgrey horse; front-left green cloak/green pale botanical kite shield/bay; front-middle closed-steel-helmet leader, steel pauldrons/cream surcoat/red cape, NO SHIELD/dark charcoal horse; front-right yellow cloak/blue yellowstripe kite shield/bay. Black manes, forehead blazes, fur saddle covers and leather tack match guide. FIVE complete wooden spears, each with exactly ONE steel leaf point at LOWER/FORWARD end and plain blunt wooden butt at upper end; never two tips. FOUR shields total, same attached arms as guide. Keep guide's normalized spear grips on same viewerLEFT arms, each shield supported by other arm; leader spear in one hand and spare hand stays on reins. Every shaft passes ABOVE and OUTSIDE its gripping arm and its own horse neck, never through body, no extra fragments. Front-right spear stays clear beside viewerLEFT side of his own horse with complete lower point. Centre leader spear stays diagonal to downscreenRIGHT beside his own horse, continuous shaft. Anchor rider crowns and saddles to same formation, consistent scale. Whole squad and ALL spear tips inside generous clear 8percent transparent margins, shrink entire group a little if needed, don't crop spear points. Transparent RGBA, no background, shadows, grid, text, effects or motion blur. RUN opposite planted reach. All FIVE horses plant anatomical RIGHT foreleg (viewerLEFT facing downscreen) extended beyond muzzle, other leg tucks short near viewerRIGHT neck. Opposite stride from frameB, visible attached knees/forelegs/hooves, riders rebound and capes flick upward, tails straighten. All five horses must stride including leader and front-right.",
+      "references": [
+        "C:\\Users\\Damien\\.codex\\generated_images\\01a0f03e-fce7-71f0-ae83-67f86e8e8794\\exec-0b426483-0330-4f6d-8b78-f32c26f3102b.png"
+      ]
+    },
+    {
+      "id": "earlymedieval-Cavalry-Attack-F3-Fixed",
+      "category": "Cavalry",
+      "state": "Attack",
+      "frame": 3,
+      "rawOutput": "C:\\Users\\Damien\\.codex\\generated_images\\01a0f03e-fce7-71f0-ae83-67f86e8e8794\\exec-0920749e-42f6-4cc3-8e3b-e04679317ae8.png",
+      "prompt": "Use case: precise-object-edit\nAsset type: single Early Medieval mounted-spearmen squad animation pose, transparent RGBA.\nInput images: Image 1 is the edit target (attack wind-up); image 2 is the supporting character/equipment reference.\nChange ONLY the FRONT CENTRE mounted leader's spear arm and weapon in image 1. The current centre rider incorrectly has TWO spears. Remove the raised spear pointing down to the viewer LEFT and its raised arm completely. Rebuild this rider's VIEWER LEFT armored arm in a bent, retracted attack-windup pose, hand near his left shoulder. This same hand must grip his ONE diagonal wooden spear, with its ONE iron tip pointing forward diagonally toward the LOWER RIGHT, as in image 2. The blunt wooden butt is behind/above that left hand, the shaft runs continuously from the hand diagonally across the horse neck toward the lower-right iron point. The viewer RIGHT hand rests on the reins, holding no spear. There must be no second staff, no second iron spearhead, no extra arm. Windup hand around x535,y760 and forward spearhead around x815,y1060 in the 1254x1254 canvas; these approximate positions describe the intended diagonal, not visible text.\nPreserve the centre rider's red cape, cream surcoat, silver armor, closed flat helmet and dark horse. Preserve ALL FOUR other riders and horses, their raised spear arms, their four kite shields, spear tips, poses, spacing, painted line style and strict straight overhead camera exactly. Final count: FIVE riders, FIVE horses, FIVE single spears, FOUR shields. Centre leader has no shield. All five horse tails remain at the upper rumps. Full squad faces screen-bottom. Genuine transparent background, no ground or text, all extremities fully in frame.",
+      "references": [
+        "C:\\Users\\Damien\\.codex\\generated_images\\01a0f03e-fce7-71f0-ae83-67f86e8e8794\\exec-0e2978fc-64fb-48fc-b295-85e889c5f04b.png",
+        "C:\\Users\\Damien\\.codex\\generated_images\\01a0f03e-fce7-71f0-ae83-67f86e8e8794\\exec-0b426483-0330-4f6d-8b78-f32c26f3102b.png"
+      ]
+    },
+    {
+      "id": "earlymedieval-Cavalry-Attack-F5",
+      "category": "Cavalry",
+      "state": "Attack",
+      "frame": "F5",
+      "rawOutput": "C:\\Users\\Damien\\.codex\\generated_images\\01a0f03e-fce7-71f0-ae83-67f86e8e8794\\exec-1de9935f-b832-4a28-aa40-0bb6d6e0c146.png",
+      "prompt": "Use case: precise-object-edit. Input is PRIMARY accepted EARLY MEDIEVAL overhead cavalry squad guide. Output ONE complete squad single SQUARE frame, not an atlas. Exact SAME five horses and five riders, two-rear three-front formation. Same straight 90-degree overhead camera looking down helmet crowns, shoulder tops, horse backs/man es, all facing screenBOTTOM. Preserve identities: rear-left blue cloak/blue goldlion kite shield/bay horse; rear-right red cloak/red whitecross kite shield/creamgrey horse; front-left green cloak/green pale botanical kite shield/bay; front-middle closed-steel-helmet leader, steel pauldrons/cream surcoat/red cape, NO SHIELD/dark charcoal horse; front-right yellow cloak/blue yellowstripe kite shield/bay. Black manes, forehead blazes, fur saddle covers and leather tack match guide. FIVE complete wooden spears, each with exactly ONE steel leaf point at LOWER/FORWARD end and plain blunt wooden butt at upper end; never two tips. FOUR shields total, same attached arms as guide. Keep guide's normalized spear grips on same viewerLEFT arms, each shield supported by other arm; leader spear in one hand and spare hand stays on reins. Every shaft passes ABOVE and OUTSIDE its gripping arm and its own horse neck, never through body, no extra fragments. Front-right spear stays clear beside viewerLEFT side of his own horse with complete lower point. Centre leader spear stays diagonal to downscreenRIGHT beside his own horse, continuous shaft. Anchor rider crowns and saddles to same formation, consistent scale. Whole squad and ALL spear tips inside generous clear 8percent transparent margins, shrink entire group a little if needed, don't crop spear points. Transparent RGBA, no background, shadows, grid, text, effects or motion blur. ATTACK full forward THRUST. ALL FIVE riders extend spear shoulders/elbows and gripping fists strongly FORWARD/DOWNscreen, sending their full continuous steel-tipped spears far forward toward unseen enemy below screen. Four ordinary rider points travel downscreen past own horse muzzle in clear side lanes, not through horse neck. Especially FRONT-MIDDLE leader: left spear arm visibly reaches forward across saddle toward viewerRIGHT side, elbow opens, his diagonal spear tip thrusts far downscreenRIGHT beyond own muzzle; spare hand still reins. Front-left and FRONT-RIGHT also fully extend their own arms and spears. All five points present, shafts connected to SAME gripping hands, four shields still attached, no inactive front rank.",
+      "references": [
+        "C:\\Users\\Damien\\.codex\\generated_images\\01a0f03e-fce7-71f0-ae83-67f86e8e8794\\exec-0b426483-0330-4f6d-8b78-f32c26f3102b.png"
+      ]
+    },
+    {
+      "id": "earlymedieval-Cavalry-Attack-F7",
+      "category": "Cavalry",
+      "state": "Attack",
+      "frame": "F7",
+      "rawOutput": "C:\\Users\\Damien\\.codex\\generated_images\\01a0f03e-fce7-71f0-ae83-67f86e8e8794\\exec-11765a65-4039-4608-80a5-7e3292869094.png",
+      "prompt": "Use case: precise-object-edit. Input is PRIMARY accepted EARLY MEDIEVAL overhead cavalry squad guide. Output ONE complete squad single SQUARE frame, not an atlas. Exact SAME five horses and five riders, two-rear three-front formation. Same straight 90-degree overhead camera looking down helmet crowns, shoulder tops, horse backs/man es, all facing screenBOTTOM. Preserve identities: rear-left blue cloak/blue goldlion kite shield/bay horse; rear-right red cloak/red whitecross kite shield/creamgrey horse; front-left green cloak/green pale botanical kite shield/bay; front-middle closed-steel-helmet leader, steel pauldrons/cream surcoat/red cape, NO SHIELD/dark charcoal horse; front-right yellow cloak/blue yellowstripe kite shield/bay. Black manes, forehead blazes, fur saddle covers and leather tack match guide. FIVE complete wooden spears, each with exactly ONE steel leaf point at LOWER/FORWARD end and plain blunt wooden butt at upper end; never two tips. FOUR shields total, same attached arms as guide. Keep guide's normalized spear grips on same viewerLEFT arms, each shield supported by other arm; leader spear in one hand and spare hand stays on reins. Every shaft passes ABOVE and OUTSIDE its gripping arm and its own horse neck, never through body, no extra fragments. Front-right spear stays clear beside viewerLEFT side of his own horse with complete lower point. Centre leader spear stays diagonal to downscreenRIGHT beside his own horse, continuous shaft. Anchor rider crowns and saddles to same formation, consistent scale. Whole squad and ALL spear tips inside generous clear 8percent transparent margins, shrink entire group a little if needed, don't crop spear points. Transparent RGBA, no background, shadows, grid, text, effects or motion blur. ATTACK follow-through/early recovery. ALL FIVE riders hold a clear forward extended spear position briefly then begin retracting fists a little, elbows still more open than idle, full wood shafts and iron points remain visibly downscreen in front of own horses. Centre leader clearly holds diagonal downscreenRIGHT thrust with spare hand on reins; front-right forward point and whole spear remain attached. Bodies lean forward and slowly settle, four shields braced. Keep horses anchored, no point swaps or disappearing spears.",
+      "references": [
+        "C:\\Users\\Damien\\.codex\\generated_images\\01a0f03e-fce7-71f0-ae83-67f86e8e8794\\exec-0b426483-0330-4f6d-8b78-f32c26f3102b.png"
+      ]
+    }
+  ],
+  "frameSelections": [
+    {
+      "category": "Melee",
+      "state": "Idle",
+      "referencePath": "C:\\Users\\Damien\\.codex\\generated_images\\01a0f03e-fce7-71f0-ae83-67f86e8e8794\\exec-70120120-03ff-4c99-9a72-ec0c4e3ab002.png",
+      "poseSequence": [
+        1,
+        2,
+        3,
+        4,
+        4,
+        5,
+        6,
+        7,
+        8,
+        1
+      ],
+      "frames": [
+        {
+          "rawPath": "C:\\Users\\Damien\\.codex\\generated_images\\01a0f03e-fce7-71f0-ae83-67f86e8e8794\\exec-a092a04b-f790-49b5-b045-efdcb4f799be.png",
+          "sourceIndex": 0,
+          "sourceRect": [
+            0,
+            0,
+            470,
+            408
+          ]
+        },
+        {
+          "rawPath": "C:\\Users\\Damien\\.codex\\generated_images\\01a0f03e-fce7-71f0-ae83-67f86e8e8794\\exec-a092a04b-f790-49b5-b045-efdcb4f799be.png",
+          "sourceIndex": 1,
+          "sourceRect": [
+            470,
+            0,
+            428,
+            408
+          ]
+        },
+        {
+          "rawPath": "C:\\Users\\Damien\\.codex\\generated_images\\01a0f03e-fce7-71f0-ae83-67f86e8e8794\\exec-a092a04b-f790-49b5-b045-efdcb4f799be.png",
+          "sourceIndex": 2,
+          "sourceRect": [
+            898,
+            0,
+            418,
+            408
+          ]
+        },
+        {
+          "rawPath": "C:\\Users\\Damien\\.codex\\generated_images\\01a0f03e-fce7-71f0-ae83-67f86e8e8794\\exec-a092a04b-f790-49b5-b045-efdcb4f799be.png",
+          "sourceIndex": 3,
+          "sourceRect": [
+            1316,
+            0,
+            412,
+            408
+          ]
+        },
+        {
+          "rawPath": "C:\\Users\\Damien\\.codex\\generated_images\\01a0f03e-fce7-71f0-ae83-67f86e8e8794\\exec-a092a04b-f790-49b5-b045-efdcb4f799be.png",
+          "sourceIndex": 3,
+          "sourceRect": [
+            1316,
+            0,
+            412,
+            408
+          ]
+        },
+        {
+          "rawPath": "C:\\Users\\Damien\\.codex\\generated_images\\01a0f03e-fce7-71f0-ae83-67f86e8e8794\\exec-a092a04b-f790-49b5-b045-efdcb4f799be.png",
+          "sourceIndex": 4,
+          "sourceRect": [
+            0,
+            408,
+            474,
+            385
+          ],
+          "registrationCentre": [
+            255.75,
+            191.125
+          ]
+        },
+        {
+          "rawPath": "C:\\Users\\Damien\\.codex\\generated_images\\01a0f03e-fce7-71f0-ae83-67f86e8e8794\\exec-a092a04b-f790-49b5-b045-efdcb4f799be.png",
+          "sourceIndex": 5,
+          "sourceRect": [
+            474,
+            408,
+            427,
+            385
+          ]
+        },
+        {
+          "rawPath": "C:\\Users\\Damien\\.codex\\generated_images\\01a0f03e-fce7-71f0-ae83-67f86e8e8794\\exec-a092a04b-f790-49b5-b045-efdcb4f799be.png",
+          "sourceIndex": 6,
+          "sourceRect": [
+            901,
+            408,
+            424,
+            385
+          ],
+          "registrationCentre": [
+            211.25,
+            191.125
+          ]
+        },
+        {
+          "rawPath": "C:\\Users\\Damien\\.codex\\generated_images\\01a0f03e-fce7-71f0-ae83-67f86e8e8794\\exec-a092a04b-f790-49b5-b045-efdcb4f799be.png",
+          "sourceIndex": 7,
+          "sourceRect": [
+            1325,
+            408,
+            658,
+            385
+          ],
+          "registrationCentre": [
+            223.75,
+            190.625
+          ]
+        },
+        {
+          "rawPath": "C:\\Users\\Damien\\.codex\\generated_images\\01a0f03e-fce7-71f0-ae83-67f86e8e8794\\exec-a092a04b-f790-49b5-b045-efdcb4f799be.png",
+          "sourceIndex": 0,
+          "sourceRect": [
+            0,
+            0,
+            470,
+            408
+          ]
+        }
+      ]
+    },
+    {
+      "category": "Melee",
+      "state": "Running",
+      "rawPath": "C:\\Users\\Damien\\.codex\\generated_images\\01a0f03e-fce7-71f0-ae83-67f86e8e8794\\exec-a178272c-3714-4dca-a407-9383155dbc02.png"
+    },
+    {
+      "category": "Melee",
+      "state": "Attack",
+      "poseSequence": [
+        1,
+        2,
+        3,
+        3,
+        4,
+        4,
+        5,
+        6,
+        7,
+        1
+      ],
+      "frames": [
+        {
+          "rawPath": "C:\\Users\\Damien\\.codex\\generated_images\\01a0f03e-fce7-71f0-ae83-67f86e8e8794\\exec-a092a04b-f790-49b5-b045-efdcb4f799be.png",
+          "sourceIndex": 0,
+          "sourceRect": [
+            0,
+            0,
+            470,
+            408
+          ]
+        },
+        {
+          "rawPath": "C:\\Users\\Damien\\.codex\\generated_images\\01a0f03e-fce7-71f0-ae83-67f86e8e8794\\exec-a092a04b-f790-49b5-b045-efdcb4f799be.png",
+          "sourceIndex": 1,
+          "sourceRect": [
+            470,
+            0,
+            428,
+            408
+          ]
+        },
+        {
+          "rawPath": "C:\\Users\\Damien\\.codex\\generated_images\\01a0f03e-fce7-71f0-ae83-67f86e8e8794\\exec-324541d7-27bd-4f0e-bb06-835847c77264.png",
+          "single": true
+        },
+        {
+          "rawPath": "C:\\Users\\Damien\\.codex\\generated_images\\01a0f03e-fce7-71f0-ae83-67f86e8e8794\\exec-324541d7-27bd-4f0e-bb06-835847c77264.png",
+          "single": true
+        },
+        {
+          "rawPath": "C:\\Users\\Damien\\.codex\\generated_images\\01a0f03e-fce7-71f0-ae83-67f86e8e8794\\exec-780b493d-c27d-4428-b0dd-a07aee6883e1.png",
+          "single": true
+        },
+        {
+          "rawPath": "C:\\Users\\Damien\\.codex\\generated_images\\01a0f03e-fce7-71f0-ae83-67f86e8e8794\\exec-780b493d-c27d-4428-b0dd-a07aee6883e1.png",
+          "single": true
+        },
+        {
+          "rawPath": "C:\\Users\\Damien\\.codex\\generated_images\\01a0f03e-fce7-71f0-ae83-67f86e8e8794\\exec-198c1f3e-b8cc-4a5a-afe1-bef16ef31b69.png",
+          "single": true
+        },
+        {
+          "rawPath": "C:\\Users\\Damien\\.codex\\generated_images\\01a0f03e-fce7-71f0-ae83-67f86e8e8794\\exec-a092a04b-f790-49b5-b045-efdcb4f799be.png",
+          "sourceIndex": 6,
+          "sourceRect": [
+            901,
+            408,
+            424,
+            385
+          ],
+          "registrationCentre": [
+            211.25,
+            191.125
+          ]
+        },
+        {
+          "rawPath": "C:\\Users\\Damien\\.codex\\generated_images\\01a0f03e-fce7-71f0-ae83-67f86e8e8794\\exec-a092a04b-f790-49b5-b045-efdcb4f799be.png",
+          "sourceIndex": 7,
+          "sourceRect": [
+            1325,
+            408,
+            658,
+            385
+          ],
+          "registrationCentre": [
+            223.75,
+            190.625
+          ]
+        },
+        {
+          "rawPath": "C:\\Users\\Damien\\.codex\\generated_images\\01a0f03e-fce7-71f0-ae83-67f86e8e8794\\exec-a092a04b-f790-49b5-b045-efdcb4f799be.png",
+          "sourceIndex": 0,
+          "sourceRect": [
+            0,
+            0,
+            470,
+            408
+          ]
+        }
+      ]
+    },
+    {
+      "category": "Ranged",
+      "state": "Idle",
+      "referencePath": "C:\\Users\\Damien\\.codex\\generated_images\\01a0f03e-fce7-71f0-ae83-67f86e8e8794\\exec-1469d881-5502-496d-8190-8b08885eca3f.png",
+      "poseSequence": [
+        1,
+        2,
+        3,
+        4,
+        4,
+        5,
+        6,
+        7,
+        8,
+        1
+      ],
+      "frames": [
+        {
+          "rawPath": "C:\\Users\\Damien\\.codex\\generated_images\\01a0f03e-fce7-71f0-ae83-67f86e8e8794\\exec-a9a6256b-bfbf-4519-b8e1-ae32deef80d7.png",
+          "sourceIndex": 0
+        },
+        {
+          "rawPath": "C:\\Users\\Damien\\.codex\\generated_images\\01a0f03e-fce7-71f0-ae83-67f86e8e8794\\exec-a9a6256b-bfbf-4519-b8e1-ae32deef80d7.png",
+          "sourceIndex": 1
+        },
+        {
+          "rawPath": "C:\\Users\\Damien\\.codex\\generated_images\\01a0f03e-fce7-71f0-ae83-67f86e8e8794\\exec-a9a6256b-bfbf-4519-b8e1-ae32deef80d7.png",
+          "sourceIndex": 2
+        },
+        {
+          "rawPath": "C:\\Users\\Damien\\.codex\\generated_images\\01a0f03e-fce7-71f0-ae83-67f86e8e8794\\exec-a9a6256b-bfbf-4519-b8e1-ae32deef80d7.png",
+          "sourceIndex": 3
+        },
+        {
+          "rawPath": "C:\\Users\\Damien\\.codex\\generated_images\\01a0f03e-fce7-71f0-ae83-67f86e8e8794\\exec-a9a6256b-bfbf-4519-b8e1-ae32deef80d7.png",
+          "sourceIndex": 3
+        },
+        {
+          "rawPath": "C:\\Users\\Damien\\.codex\\generated_images\\01a0f03e-fce7-71f0-ae83-67f86e8e8794\\exec-a9a6256b-bfbf-4519-b8e1-ae32deef80d7.png",
+          "sourceIndex": 5
+        },
+        {
+          "rawPath": "C:\\Users\\Damien\\.codex\\generated_images\\01a0f03e-fce7-71f0-ae83-67f86e8e8794\\exec-a9a6256b-bfbf-4519-b8e1-ae32deef80d7.png",
+          "sourceIndex": 6
+        },
+        {
+          "rawPath": "C:\\Users\\Damien\\.codex\\generated_images\\01a0f03e-fce7-71f0-ae83-67f86e8e8794\\exec-a9a6256b-bfbf-4519-b8e1-ae32deef80d7.png",
+          "sourceIndex": 7
+        },
+        {
+          "rawPath": "C:\\Users\\Damien\\.codex\\generated_images\\01a0f03e-fce7-71f0-ae83-67f86e8e8794\\exec-a9a6256b-bfbf-4519-b8e1-ae32deef80d7.png",
+          "sourceIndex": 8
+        },
+        {
+          "rawPath": "C:\\Users\\Damien\\.codex\\generated_images\\01a0f03e-fce7-71f0-ae83-67f86e8e8794\\exec-a9a6256b-bfbf-4519-b8e1-ae32deef80d7.png",
+          "sourceIndex": 0
+        }
+      ]
+    },
+    {
+      "category": "Ranged",
+      "state": "Running",
+      "rawPath": "C:\\Users\\Damien\\.codex\\generated_images\\01a0f03e-fce7-71f0-ae83-67f86e8e8794\\exec-34aa0fc3-7c96-403b-b766-06307af87acc.png"
+    },
+    {
+      "category": "Ranged",
+      "state": "Attack",
+      "poseSequence": [
+        1,
+        2,
+        3,
+        3,
+        4,
+        4,
+        5,
+        6,
+        7,
+        1
+      ],
+      "frames": [
+        {
+          "rawPath": "C:\\Users\\Damien\\.codex\\generated_images\\01a0f03e-fce7-71f0-ae83-67f86e8e8794\\exec-a9a6256b-bfbf-4519-b8e1-ae32deef80d7.png",
+          "sourceIndex": 0
+        },
+        {
+          "rawPath": "C:\\Users\\Damien\\.codex\\generated_images\\01a0f03e-fce7-71f0-ae83-67f86e8e8794\\exec-a9a6256b-bfbf-4519-b8e1-ae32deef80d7.png",
+          "sourceIndex": 1
+        },
+        {
+          "rawPath": "C:\\Users\\Damien\\.codex\\generated_images\\01a0f03e-fce7-71f0-ae83-67f86e8e8794\\exec-b9a32028-5054-4846-beb0-ebc23a4df406.png",
+          "single": true
+        },
+        {
+          "rawPath": "C:\\Users\\Damien\\.codex\\generated_images\\01a0f03e-fce7-71f0-ae83-67f86e8e8794\\exec-b9a32028-5054-4846-beb0-ebc23a4df406.png",
+          "single": true
+        },
+        {
+          "rawPath": "C:\\Users\\Damien\\.codex\\generated_images\\01a0f03e-fce7-71f0-ae83-67f86e8e8794\\exec-25dc2016-14cc-40e1-9590-0466f42e019f.png",
+          "single": true
+        },
+        {
+          "rawPath": "C:\\Users\\Damien\\.codex\\generated_images\\01a0f03e-fce7-71f0-ae83-67f86e8e8794\\exec-25dc2016-14cc-40e1-9590-0466f42e019f.png",
+          "single": true
+        },
+        {
+          "rawPath": "C:\\Users\\Damien\\.codex\\generated_images\\01a0f03e-fce7-71f0-ae83-67f86e8e8794\\exec-f5da4b0c-5dfb-4c12-8369-34b0b20a6626.png",
+          "single": true
+        },
+        {
+          "rawPath": "C:\\Users\\Damien\\.codex\\generated_images\\01a0f03e-fce7-71f0-ae83-67f86e8e8794\\exec-a9a6256b-bfbf-4519-b8e1-ae32deef80d7.png",
+          "sourceIndex": 7
+        },
+        {
+          "rawPath": "C:\\Users\\Damien\\.codex\\generated_images\\01a0f03e-fce7-71f0-ae83-67f86e8e8794\\exec-a9a6256b-bfbf-4519-b8e1-ae32deef80d7.png",
+          "sourceIndex": 8
+        },
+        {
+          "rawPath": "C:\\Users\\Damien\\.codex\\generated_images\\01a0f03e-fce7-71f0-ae83-67f86e8e8794\\exec-a9a6256b-bfbf-4519-b8e1-ae32deef80d7.png",
+          "sourceIndex": 0
+        }
+      ]
+    },
+    {
+      "category": "Cavalry",
+      "state": "Idle",
+      "referencePath": "C:\\Users\\Damien\\.codex\\generated_images\\01a0f03e-fce7-71f0-ae83-67f86e8e8794\\exec-0b426483-0330-4f6d-8b78-f32c26f3102b.png",
+      "poseSequence": [
+        1,
+        1,
+        2,
+        2,
+        3,
+        3,
+        2,
+        2,
+        1,
+        1
+      ],
+      "frames": [
+        {
+          "rawPath": "C:\\Users\\Damien\\.codex\\generated_images\\01a0f03e-fce7-71f0-ae83-67f86e8e8794\\exec-0b426483-0330-4f6d-8b78-f32c26f3102b.png",
+          "single": true
+        },
+        {
+          "rawPath": "C:\\Users\\Damien\\.codex\\generated_images\\01a0f03e-fce7-71f0-ae83-67f86e8e8794\\exec-0b426483-0330-4f6d-8b78-f32c26f3102b.png",
+          "single": true
+        },
+        {
+          "rawPath": "C:\\Users\\Damien\\.codex\\generated_images\\01a0f03e-fce7-71f0-ae83-67f86e8e8794\\exec-a919a6eb-75af-4756-be6d-ca6a41d049de.png",
+          "single": true
+        },
+        {
+          "rawPath": "C:\\Users\\Damien\\.codex\\generated_images\\01a0f03e-fce7-71f0-ae83-67f86e8e8794\\exec-a919a6eb-75af-4756-be6d-ca6a41d049de.png",
+          "single": true
+        },
+        {
+          "rawPath": "C:\\Users\\Damien\\.codex\\generated_images\\01a0f03e-fce7-71f0-ae83-67f86e8e8794\\exec-f36299f7-91b4-4b3f-80e9-6e637d4f66a4.png",
+          "single": true
+        },
+        {
+          "rawPath": "C:\\Users\\Damien\\.codex\\generated_images\\01a0f03e-fce7-71f0-ae83-67f86e8e8794\\exec-f36299f7-91b4-4b3f-80e9-6e637d4f66a4.png",
+          "single": true
+        },
+        {
+          "rawPath": "C:\\Users\\Damien\\.codex\\generated_images\\01a0f03e-fce7-71f0-ae83-67f86e8e8794\\exec-a919a6eb-75af-4756-be6d-ca6a41d049de.png",
+          "single": true
+        },
+        {
+          "rawPath": "C:\\Users\\Damien\\.codex\\generated_images\\01a0f03e-fce7-71f0-ae83-67f86e8e8794\\exec-a919a6eb-75af-4756-be6d-ca6a41d049de.png",
+          "single": true
+        },
+        {
+          "rawPath": "C:\\Users\\Damien\\.codex\\generated_images\\01a0f03e-fce7-71f0-ae83-67f86e8e8794\\exec-0b426483-0330-4f6d-8b78-f32c26f3102b.png",
+          "single": true
+        },
+        {
+          "rawPath": "C:\\Users\\Damien\\.codex\\generated_images\\01a0f03e-fce7-71f0-ae83-67f86e8e8794\\exec-0b426483-0330-4f6d-8b78-f32c26f3102b.png",
+          "single": true
+        }
+      ]
+    },
+    {
+      "category": "Cavalry",
+      "state": "Running",
+      "poseSequence": [
+        1,
+        1,
+        2,
+        2,
+        3,
+        3,
+        4,
+        4,
+        4,
+        1
+      ],
+      "frames": [
+        {
+          "rawPath": "C:\\Users\\Damien\\.codex\\generated_images\\01a0f03e-fce7-71f0-ae83-67f86e8e8794\\exec-4b4ddeae-27a4-42e3-89da-4034cff9b4e2.png",
+          "single": true
+        },
+        {
+          "rawPath": "C:\\Users\\Damien\\.codex\\generated_images\\01a0f03e-fce7-71f0-ae83-67f86e8e8794\\exec-4b4ddeae-27a4-42e3-89da-4034cff9b4e2.png",
+          "single": true
+        },
+        {
+          "rawPath": "C:\\Users\\Damien\\.codex\\generated_images\\01a0f03e-fce7-71f0-ae83-67f86e8e8794\\exec-c5168f95-2754-492d-b0d2-055090dc564f.png",
+          "single": true
+        },
+        {
+          "rawPath": "C:\\Users\\Damien\\.codex\\generated_images\\01a0f03e-fce7-71f0-ae83-67f86e8e8794\\exec-c5168f95-2754-492d-b0d2-055090dc564f.png",
+          "single": true
+        },
+        {
+          "rawPath": "C:\\Users\\Damien\\.codex\\generated_images\\01a0f03e-fce7-71f0-ae83-67f86e8e8794\\exec-ef2b53b0-4cd5-4a66-88ba-3eaf7f8ee86d.png",
+          "single": true
+        },
+        {
+          "rawPath": "C:\\Users\\Damien\\.codex\\generated_images\\01a0f03e-fce7-71f0-ae83-67f86e8e8794\\exec-ef2b53b0-4cd5-4a66-88ba-3eaf7f8ee86d.png",
+          "single": true
+        },
+        {
+          "rawPath": "C:\\Users\\Damien\\.codex\\generated_images\\01a0f03e-fce7-71f0-ae83-67f86e8e8794\\exec-f654b790-3fbf-4a92-8e96-bd0d14294197.png",
+          "single": true
+        },
+        {
+          "rawPath": "C:\\Users\\Damien\\.codex\\generated_images\\01a0f03e-fce7-71f0-ae83-67f86e8e8794\\exec-f654b790-3fbf-4a92-8e96-bd0d14294197.png",
+          "single": true
+        },
+        {
+          "rawPath": "C:\\Users\\Damien\\.codex\\generated_images\\01a0f03e-fce7-71f0-ae83-67f86e8e8794\\exec-f654b790-3fbf-4a92-8e96-bd0d14294197.png",
+          "single": true
+        },
+        {
+          "rawPath": "C:\\Users\\Damien\\.codex\\generated_images\\01a0f03e-fce7-71f0-ae83-67f86e8e8794\\exec-4b4ddeae-27a4-42e3-89da-4034cff9b4e2.png",
+          "single": true
+        }
+      ]
+    },
+    {
+      "category": "Cavalry",
+      "state": "Attack",
+      "poseSequence": [
+        1,
+        2,
+        3,
+        3,
+        4,
+        4,
+        5,
+        6,
+        2,
+        1
+      ],
+      "frames": [
+        {
+          "rawPath": "C:\\Users\\Damien\\.codex\\generated_images\\01a0f03e-fce7-71f0-ae83-67f86e8e8794\\exec-0b426483-0330-4f6d-8b78-f32c26f3102b.png",
+          "single": true
+        },
+        {
+          "rawPath": "C:\\Users\\Damien\\.codex\\generated_images\\01a0f03e-fce7-71f0-ae83-67f86e8e8794\\exec-a919a6eb-75af-4756-be6d-ca6a41d049de.png",
+          "single": true
+        },
+        {
+          "rawPath": "C:\\Users\\Damien\\.codex\\generated_images\\01a0f03e-fce7-71f0-ae83-67f86e8e8794\\exec-0920749e-42f6-4cc3-8e3b-e04679317ae8.png",
+          "single": true
+        },
+        {
+          "rawPath": "C:\\Users\\Damien\\.codex\\generated_images\\01a0f03e-fce7-71f0-ae83-67f86e8e8794\\exec-0920749e-42f6-4cc3-8e3b-e04679317ae8.png",
+          "single": true
+        },
+        {
+          "rawPath": "C:\\Users\\Damien\\.codex\\generated_images\\01a0f03e-fce7-71f0-ae83-67f86e8e8794\\exec-1de9935f-b832-4a28-aa40-0bb6d6e0c146.png",
+          "single": true
+        },
+        {
+          "rawPath": "C:\\Users\\Damien\\.codex\\generated_images\\01a0f03e-fce7-71f0-ae83-67f86e8e8794\\exec-1de9935f-b832-4a28-aa40-0bb6d6e0c146.png",
+          "single": true
+        },
+        {
+          "rawPath": "C:\\Users\\Damien\\.codex\\generated_images\\01a0f03e-fce7-71f0-ae83-67f86e8e8794\\exec-11765a65-4039-4608-80a5-7e3292869094.png",
+          "single": true
+        },
+        {
+          "rawPath": "C:\\Users\\Damien\\.codex\\generated_images\\01a0f03e-fce7-71f0-ae83-67f86e8e8794\\exec-f36299f7-91b4-4b3f-80e9-6e637d4f66a4.png",
+          "single": true
+        },
+        {
+          "rawPath": "C:\\Users\\Damien\\.codex\\generated_images\\01a0f03e-fce7-71f0-ae83-67f86e8e8794\\exec-a919a6eb-75af-4756-be6d-ca6a41d049de.png",
+          "single": true
+        },
+        {
+          "rawPath": "C:\\Users\\Damien\\.codex\\generated_images\\01a0f03e-fce7-71f0-ae83-67f86e8e8794\\exec-0b426483-0330-4f6d-8b78-f32c26f3102b.png",
+          "single": true
+        }
+      ]
+    }
+  ]
+}

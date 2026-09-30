@@ -1,0 +1,581 @@
+{
+  "shipCount": 21,
+  "clipCount": 49,
+  "ageChecks": [
+    {
+      "age": "Stone Age · Ship Animation Review",
+      "cards": [
+        {
+          "canvas": [
+            "512",
+            "512"
+          ],
+          "frame": "Frame 2 / 10 · 8 fps",
+          "motion": "Idle",
+          "sheet": "Warships/StoneAge/Idle.png?review=1790768763816",
+          "unit": "Warship"
+        },
+        {
+          "canvas": [
+            "512",
+            "512"
+          ],
+          "frame": "Frame 3 / 10 · 12 fps",
+          "motion": "Sailing",
+          "sheet": "Warships/StoneAge/Sailing.png?review=1790768763816",
+          "unit": "Warship"
+        },
+        {
+          "canvas": [
+            "512",
+            "512"
+          ],
+          "frame": "Frame 3 / 10 · 10 fps",
+          "motion": "Attack",
+          "sheet": "Warships/StoneAge/Attack.png?review=1790768763816",
+          "unit": "Warship"
+        },
+        {
+          "canvas": [
+            "512",
+            "512"
+          ],
+          "frame": "Frame 2 / 10 · 8 fps",
+          "motion": "Idle",
+          "sheet": "Transport/StoneAge/Idle.png?review=1790768763816",
+          "unit": "Transport"
+        },
+        {
+          "canvas": [
+            "512",
+            "512"
+          ],
+          "frame": "Frame 3 / 10 · 12 fps",
+          "motion": "Sailing",
+          "sheet": "Transport/StoneAge/Sailing.png?review=1790768763816",
+          "unit": "Transport"
+        },
+        {
+          "canvas": [
+            "512",
+            "512"
+          ],
+          "frame": "Frame 2 / 10 · 8 fps",
+          "motion": "Idle",
+          "sheet": "Trade/StoneAge/Idle.png?review=1790768763816",
+          "unit": "Trade ship"
+        },
+        {
+          "canvas": [
+            "512",
+            "512"
+          ],
+          "frame": "Frame 3 / 10 · 12 fps",
+          "motion": "Sailing",
+          "sheet": "Trade/StoneAge/Sailing.png?review=1790768763816",
+          "unit": "Trade ship"
+        }
+      ],
+      "status": "All 7 Stone Age clips loaded. Pause and step through frames, or check motion at 24–32 px. Attacks repeat for review when enabled."
+    },
+    {
+      "age": "Bronze Age · Ship Animation Review",
+      "cards": [
+        {
+          "canvas": [
+            "512",
+            "512"
+          ],
+          "frame": "Frame 3 / 10 · 8 fps",
+          "motion": "Idle",
+          "sheet": "Warships/BronzeAge/Idle.png?review=1790768763816",
+          "unit": "Warship"
+        },
+        {
+          "canvas": [
+            "512",
+            "512"
+          ],
+          "frame": "Frame 5 / 10 · 12 fps",
+          "motion": "Sailing",
+          "sheet": "Warships/BronzeAge/Sailing.png?review=1790768763816",
+          "unit": "Warship"
+        },
+        {
+          "canvas": [
+            "512",
+            "512"
+          ],
+          "frame": "Frame 4 / 10 · 10 fps",
+          "motion": "Attack",
+          "sheet": "Warships/BronzeAge/Attack.png?review=1790768763816",
+          "unit": "Warship"
+        },
+        {
+          "canvas": [
+            "512",
+            "512"
+          ],
+          "frame": "Frame 3 / 10 · 8 fps",
+          "motion": "Idle",
+          "sheet": "Transport/BronzeAge/Idle.png?review=1790768763816",
+          "unit": "Transport"
+        },
+        {
+          "canvas": [
+            "512",
+            "512"
+          ],
+          "frame": "Frame 5 / 10 · 12 fps",
+          "motion": "Sailing",
+          "sheet": "Transport/BronzeAge/Sailing.png?review=1790768763816",
+          "unit": "Transport"
+        },
+        {
+          "canvas": [
+            "512",
+            "512"
+          ],
+          "frame": "Frame 3 / 10 · 8 fps",
+          "motion": "Idle",
+          "sheet": "Trade/BronzeAge/Idle.png?review=1790768763816",
+          "unit": "Trade ship"
+        },
+        {
+          "canvas": [
+            "512",
+            "512"
+          ],
+          "frame": "Frame 5 / 10 · 12 fps",
+          "motion": "Sailing",
+          "sheet": "Trade/BronzeAge/Sailing.png?review=1790768763816",
+          "unit": "Trade ship"
+        }
+      ],
+      "status": "All 7 Bronze Age clips loaded. Pause and step through frames, or check motion at 24–32 px. Attacks repeat for review when enabled."
+    },
+    {
+      "age": "Classical Age · Ship Animation Review",
+      "cards": [
+        {
+          "canvas": [
+            "512",
+            "512"
+          ],
+          "frame": "Frame 3 / 10 · 8 fps",
+          "motion": "Idle",
+          "sheet": "Warships/ClassicalAge/Idle.png?review=1790768763816",
+          "unit": "Warship"
+        },
+        {
+          "canvas": [
+            "512",
+            "512"
+          ],
+          "frame": "Frame 5 / 10 · 12 fps",
+          "motion": "Sailing",
+          "sheet": "Warships/ClassicalAge/Sailing.png?review=1790768763816",
+          "unit": "Warship"
+        },
+        {
+          "canvas": [
+            "512",
+            "512"
+          ],
+          "frame": "Frame 4 / 10 · 10 fps",
+          "motion": "Attack",
+          "sheet": "Warships/ClassicalAge/Attack.png?review=1790768763816",
+          "unit": "Warship"
+        },
+        {
+          "canvas": [
+            "512",
+            "512"
+          ],
+          "frame": "Frame 3 / 10 · 8 fps",
+          "motion": "Idle",
+          "sheet": "Transport/ClassicalAge/Idle.png?review=1790768763816",
+          "unit": "Transport"
+        },
+        {
+          "canvas": [
+            "512",
+            "512"
+          ],
+          "frame": "Frame 5 / 10 · 12 fps",
+          "motion": "Sailing",
+          "sheet": "Transport/ClassicalAge/Sailing.png?review=1790768763816",
+          "unit": "Transport"
+        },
+        {
+          "canvas": [
+            "512",
+            "512"
+          ],
+          "frame": "Frame 3 / 10 · 8 fps",
+          "motion": "Idle",
+          "sheet": "Trade/ClassicalAge/Idle.png?review=1790768763816",
+          "unit": "Trade ship"
+        },
+        {
+          "canvas": [
+            "512",
+            "512"
+          ],
+          "frame": "Frame 5 / 10 · 12 fps",
+          "motion": "Sailing",
+          "sheet": "Trade/ClassicalAge/Sailing.png?review=1790768763816",
+          "unit": "Trade ship"
+        }
+      ],
+      "status": "All 7 Classical Age clips loaded. Pause and step through frames, or check motion at 24–32 px. Attacks repeat for review when enabled."
+    },
+    {
+      "age": "Early Medieval · Ship Animation Review",
+      "cards": [
+        {
+          "canvas": [
+            "512",
+            "512"
+          ],
+          "frame": "Frame 3 / 10 · 8 fps",
+          "motion": "Idle",
+          "sheet": "Warships/EarlyMedieval/Idle.png?review=1790768763816",
+          "unit": "Warship"
+        },
+        {
+          "canvas": [
+            "512",
+            "512"
+          ],
+          "frame": "Frame 5 / 10 · 12 fps",
+          "motion": "Sailing",
+          "sheet": "Warships/EarlyMedieval/Sailing.png?review=1790768763816",
+          "unit": "Warship"
+        },
+        {
+          "canvas": [
+            "512",
+            "512"
+          ],
+          "frame": "Frame 4 / 10 · 10 fps",
+          "motion": "Attack",
+          "sheet": "Warships/EarlyMedieval/Attack.png?review=1790768763816",
+          "unit": "Warship"
+        },
+        {
+          "canvas": [
+            "512",
+            "512"
+          ],
+          "frame": "Frame 3 / 10 · 8 fps",
+          "motion": "Idle",
+          "sheet": "Transport/EarlyMedieval/Idle.png?review=1790768763816",
+          "unit": "Transport"
+        },
+        {
+          "canvas": [
+            "512",
+            "512"
+          ],
+          "frame": "Frame 5 / 10 · 12 fps",
+          "motion": "Sailing",
+          "sheet": "Transport/EarlyMedieval/Sailing.png?review=1790768763816",
+          "unit": "Transport"
+        },
+        {
+          "canvas": [
+            "512",
+            "512"
+          ],
+          "frame": "Frame 3 / 10 · 8 fps",
+          "motion": "Idle",
+          "sheet": "Trade/EarlyMedieval/Idle.png?review=1790768763816",
+          "unit": "Trade ship"
+        },
+        {
+          "canvas": [
+            "512",
+            "512"
+          ],
+          "frame": "Frame 5 / 10 · 12 fps",
+          "motion": "Sailing",
+          "sheet": "Trade/EarlyMedieval/Sailing.png?review=1790768763816",
+          "unit": "Trade ship"
+        }
+      ],
+      "status": "All 7 Early Medieval clips loaded. Pause and step through frames, or check motion at 24–32 px. Attacks repeat for review when enabled."
+    },
+    {
+      "age": "Late Medieval · Ship Animation Review",
+      "cards": [
+        {
+          "canvas": [
+            "512",
+            "512"
+          ],
+          "frame": "Frame 3 / 10 · 8 fps",
+          "motion": "Idle",
+          "sheet": "Warships/LateMedieval/Idle.png?review=1790768763816",
+          "unit": "Warship"
+        },
+        {
+          "canvas": [
+            "512",
+            "512"
+          ],
+          "frame": "Frame 4 / 10 · 12 fps",
+          "motion": "Sailing",
+          "sheet": "Warships/LateMedieval/Sailing.png?review=1790768763816",
+          "unit": "Warship"
+        },
+        {
+          "canvas": [
+            "512",
+            "512"
+          ],
+          "frame": "Frame 4 / 10 · 10 fps",
+          "motion": "Attack",
+          "sheet": "Warships/LateMedieval/Attack.png?review=1790768763816",
+          "unit": "Warship"
+        },
+        {
+          "canvas": [
+            "512",
+            "512"
+          ],
+          "frame": "Frame 3 / 10 · 8 fps",
+          "motion": "Idle",
+          "sheet": "Transport/LateMedieval/Idle.png?review=1790768763816",
+          "unit": "Transport"
+        },
+        {
+          "canvas": [
+            "512",
+            "512"
+          ],
+          "frame": "Frame 4 / 10 · 12 fps",
+          "motion": "Sailing",
+          "sheet": "Transport/LateMedieval/Sailing.png?review=1790768763816",
+          "unit": "Transport"
+        },
+        {
+          "canvas": [
+            "512",
+            "512"
+          ],
+          "frame": "Frame 3 / 10 · 8 fps",
+          "motion": "Idle",
+          "sheet": "Trade/LateMedieval/Idle.png?review=1790768763816",
+          "unit": "Trade ship"
+        },
+        {
+          "canvas": [
+            "512",
+            "512"
+          ],
+          "frame": "Frame 4 / 10 · 12 fps",
+          "motion": "Sailing",
+          "sheet": "Trade/LateMedieval/Sailing.png?review=1790768763816",
+          "unit": "Trade ship"
+        }
+      ],
+      "status": "All 7 Late Medieval clips loaded. Pause and step through frames, or check motion at 24–32 px. Attacks repeat for review when enabled."
+    },
+    {
+      "age": "Early Modern · Ship Animation Review",
+      "cards": [
+        {
+          "canvas": [
+            "512",
+            "512"
+          ],
+          "frame": "Frame 3 / 10 · 8 fps",
+          "motion": "Idle",
+          "sheet": "Warships/EarlyModern/Idle.png?review=1790768763816",
+          "unit": "Warship"
+        },
+        {
+          "canvas": [
+            "512",
+            "512"
+          ],
+          "frame": "Frame 5 / 10 · 12 fps",
+          "motion": "Sailing",
+          "sheet": "Warships/EarlyModern/Sailing.png?review=1790768763816",
+          "unit": "Warship"
+        },
+        {
+          "canvas": [
+            "512",
+            "512"
+          ],
+          "frame": "Frame 4 / 10 · 10 fps",
+          "motion": "Attack",
+          "sheet": "Warships/EarlyModern/Attack.png?review=1790768763816",
+          "unit": "Warship"
+        },
+        {
+          "canvas": [
+            "512",
+            "512"
+          ],
+          "frame": "Frame 3 / 10 · 8 fps",
+          "motion": "Idle",
+          "sheet": "Transport/EarlyModern/Idle.png?review=1790768763816",
+          "unit": "Transport"
+        },
+        {
+          "canvas": [
+            "512",
+            "512"
+          ],
+          "frame": "Frame 5 / 10 · 12 fps",
+          "motion": "Sailing",
+          "sheet": "Transport/EarlyModern/Sailing.png?review=1790768763816",
+          "unit": "Transport"
+        },
+        {
+          "canvas": [
+            "512",
+            "512"
+          ],
+          "frame": "Frame 3 / 10 · 8 fps",
+          "motion": "Idle",
+          "sheet": "Trade/EarlyModern/Idle.png?review=1790768763816",
+          "unit": "Trade ship"
+        },
+        {
+          "canvas": [
+            "512",
+            "512"
+          ],
+          "frame": "Frame 5 / 10 · 12 fps",
+          "motion": "Sailing",
+          "sheet": "Trade/EarlyModern/Sailing.png?review=1790768763816",
+          "unit": "Trade ship"
+        }
+      ],
+      "status": "All 7 Early Modern clips loaded. Pause and step through frames, or check motion at 24–32 px. Attacks repeat for review when enabled."
+    },
+    {
+      "age": "Modern · Ship Animation Review",
+      "cards": [
+        {
+          "canvas": [
+            "512",
+            "512"
+          ],
+          "frame": "Frame 3 / 10 · 8 fps",
+          "motion": "Idle",
+          "sheet": "Warships/Modern/Idle.png?review=1790768763816",
+          "unit": "Warship"
+        },
+        {
+          "canvas": [
+            "512",
+            "512"
+          ],
+          "frame": "Frame 4 / 10 · 12 fps",
+          "motion": "Sailing",
+          "sheet": "Warships/Modern/Sailing.png?review=1790768763816",
+          "unit": "Warship"
+        },
+        {
+          "canvas": [
+            "512",
+            "512"
+          ],
+          "frame": "Frame 4 / 10 · 10 fps",
+          "motion": "Attack",
+          "sheet": "Warships/Modern/Attack.png?review=1790768763816",
+          "unit": "Warship"
+        },
+        {
+          "canvas": [
+            "512",
+            "512"
+          ],
+          "frame": "Frame 3 / 10 · 8 fps",
+          "motion": "Idle",
+          "sheet": "Transport/Modern/Idle.png?review=1790768763816",
+          "unit": "Transport"
+        },
+        {
+          "canvas": [
+            "512",
+            "512"
+          ],
+          "frame": "Frame 4 / 10 · 12 fps",
+          "motion": "Sailing",
+          "sheet": "Transport/Modern/Sailing.png?review=1790768763816",
+          "unit": "Transport"
+        },
+        {
+          "canvas": [
+            "512",
+            "512"
+          ],
+          "frame": "Frame 3 / 10 · 8 fps",
+          "motion": "Idle",
+          "sheet": "Trade/Modern/Idle.png?review=1790768763816",
+          "unit": "Trade ship"
+        },
+        {
+          "canvas": [
+            "512",
+            "512"
+          ],
+          "frame": "Frame 4 / 10 · 12 fps",
+          "motion": "Sailing",
+          "sheet": "Trade/Modern/Sailing.png?review=1790768763816",
+          "unit": "Trade ship"
+        }
+      ],
+      "status": "All 7 Modern clips loaded. Pause and step through frames, or check motion at 24–32 px. Attacks repeat for review when enabled."
+    }
+  ],
+  "frameStepping": {
+    "last": [
+      "Frame 10 / 10 · 8 fps",
+      "Frame 10 / 10 · 12 fps",
+      "Frame 10 / 10 · 10 fps",
+      "Frame 10 / 10 · 8 fps",
+      "Frame 10 / 10 · 12 fps",
+      "Frame 10 / 10 · 8 fps",
+      "Frame 10 / 10 · 12 fps"
+    ],
+    "nextWrap": [
+      "Frame 1 / 10 · 8 fps",
+      "Frame 1 / 10 · 12 fps",
+      "Frame 1 / 10 · 10 fps",
+      "Frame 1 / 10 · 8 fps",
+      "Frame 1 / 10 · 12 fps",
+      "Frame 1 / 10 · 8 fps",
+      "Frame 1 / 10 · 12 fps"
+    ]
+  },
+  "sizeChecks": {
+    "at32": [
+      32,
+      32,
+      32,
+      32,
+      32,
+      32,
+      32
+    ],
+    "at512": [
+      512,
+      512,
+      512,
+      512,
+      512,
+      512,
+      512
+    ]
+  },
+  "selectedAge": "EarlyModern",
+  "playing": true,
+  "notes": "Live browser checks of all seven age tabs; each loads warship, transport and trade clips. Original attack assets and playback logic remain unchanged."
+}

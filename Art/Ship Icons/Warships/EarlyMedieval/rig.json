@@ -1,0 +1,373 @@
+{
+  "schemaVersion": 1,
+  "sourceSize": {
+    "width": 1254,
+    "height": 1254
+  },
+  "source": "Warships/Warship_EarlyMedieval.png",
+  "sourceSha256": "bcbdd7c0af137027d71dd2fa3965deacdf8650e24b66b9610160029b8eaa98ec",
+  "frameSize": {
+    "width": 512,
+    "height": 512
+  },
+  "sourceToFrame": {
+    "scale": 0.3349282296650718,
+    "offset": [
+      46,
+      46
+    ]
+  },
+  "hullInterior": [
+    [
+      626,
+      146
+    ],
+    [
+      666,
+      220
+    ],
+    [
+      697,
+      347
+    ],
+    [
+      716,
+      690
+    ],
+    [
+      700,
+      883
+    ],
+    [
+      675,
+      986
+    ],
+    [
+      626,
+      1060
+    ],
+    [
+      578,
+      986
+    ],
+    [
+      552,
+      883
+    ],
+    [
+      536,
+      690
+    ],
+    [
+      555,
+      347
+    ],
+    [
+      586,
+      220
+    ]
+  ],
+  "layers": [
+    {
+      "name": "oar-port-01",
+      "pivot": [
+        512,
+        332.1153646333909
+      ],
+      "side": "port",
+      "amplitude": 12,
+      "tip": [
+        393.7353878852285,
+        394.83634431455897
+      ],
+      "file": "layers/oar-port-01.png"
+    },
+    {
+      "name": "oar-port-02",
+      "pivot": [
+        512,
+        391.16358759745424
+      ],
+      "side": "port",
+      "amplitude": 12,
+      "tip": [
+        393.3898635477583,
+        443.31481481481484
+      ],
+      "file": "layers/oar-port-02.png"
+    },
+    {
+      "name": "oar-port-03",
+      "pivot": [
+        512,
+        436.0772008929304
+      ],
+      "side": "port",
+      "amplitude": 12,
+      "tip": [
+        391.6978494623656,
+        507.39784946236557
+      ],
+      "file": "layers/oar-port-03.png"
+    },
+    {
+      "name": "oar-port-04",
+      "pivot": [
+        512,
+        488.3010847720296
+      ],
+      "side": "port",
+      "amplitude": 12,
+      "tip": [
+        389.2400857449089,
+        571.7588424437299
+      ],
+      "file": "layers/oar-port-04.png"
+    },
+    {
+      "name": "oar-port-05",
+      "pivot": [
+        512,
+        554.1933240309941
+      ],
+      "side": "port",
+      "amplitude": 12,
+      "tip": [
+        389.01444788441694,
+        629.6635706914344
+      ],
+      "file": "layers/oar-port-05.png"
+    },
+    {
+      "name": "oar-port-06",
+      "pivot": [
+        512,
+        620.2976038882591
+      ],
+      "side": "port",
+      "amplitude": 12,
+      "tip": [
+        390.426638917794,
+        690.5421436004162
+      ],
+      "file": "layers/oar-port-06.png"
+    },
+    {
+      "name": "oar-port-07",
+      "pivot": [
+        512,
+        690.910800247198
+      ],
+      "side": "port",
+      "amplitude": 12,
+      "tip": [
+        391.5605749486653,
+        756.9712525667351
+      ],
+      "file": "layers/oar-port-07.png"
+    },
+    {
+      "name": "oar-port-08",
+      "pivot": [
+        512,
+        751.7177845993319
+      ],
+      "side": "port",
+      "amplitude": 12,
+      "tip": [
+        392.55498458376155,
+        821.9804727646455
+      ],
+      "file": "layers/oar-port-08.png"
+    },
+    {
+      "name": "oar-port-09",
+      "pivot": [
+        512,
+        820.0264003117775
+      ],
+      "side": "port",
+      "amplitude": 12,
+      "tip": [
+        395.241308793456,
+        883.7433537832311
+      ],
+      "file": "layers/oar-port-09.png"
+    },
+    {
+      "name": "oar-starboard-01",
+      "pivot": [
+        740,
+        333.0987785081833
+      ],
+      "side": "starboard",
+      "amplitude": 12,
+      "tip": [
+        858.1197860962567,
+        395.0887700534759
+      ],
+      "file": "layers/oar-starboard-01.png"
+    },
+    {
+      "name": "oar-starboard-02",
+      "pivot": [
+        740,
+        390.23661362746964
+      ],
+      "side": "starboard",
+      "amplitude": 12,
+      "tip": [
+        858.261208576998,
+        443.4200779727096
+      ],
+      "file": "layers/oar-starboard-02.png"
+    },
+    {
+      "name": "oar-starboard-03",
+      "pivot": [
+        740,
+        438.6201148420014
+      ],
+      "side": "starboard",
+      "amplitude": 12,
+      "tip": [
+        859.8495092693566,
+        507.5627044711014
+      ],
+      "file": "layers/oar-starboard-03.png"
+    },
+    {
+      "name": "oar-starboard-04",
+      "pivot": [
+        740,
+        489.6134110740732
+      ],
+      "side": "starboard",
+      "amplitude": 12,
+      "tip": [
+        862.4754634678299,
+        572.0763358778626
+      ],
+      "file": "layers/oar-starboard-04.png"
+    },
+    {
+      "name": "oar-starboard-05",
+      "pivot": [
+        740,
+        552.0392585652796
+      ],
+      "side": "starboard",
+      "amplitude": 12,
+      "tip": [
+        862.5491631799163,
+        630.3713389121339
+      ],
+      "file": "layers/oar-starboard-05.png"
+    },
+    {
+      "name": "oar-starboard-06",
+      "pivot": [
+        740,
+        620.8329202725196
+      ],
+      "side": "starboard",
+      "amplitude": 12,
+      "tip": [
+        861.4620976116303,
+        691.0706126687435
+      ],
+      "file": "layers/oar-starboard-06.png"
+    },
+    {
+      "name": "oar-starboard-07",
+      "pivot": [
+        740,
+        691.5398335145021
+      ],
+      "side": "starboard",
+      "amplitude": 12,
+      "tip": [
+        859.9309623430962,
+        757.0554393305439
+      ],
+      "file": "layers/oar-starboard-07.png"
+    },
+    {
+      "name": "oar-starboard-08",
+      "pivot": [
+        740,
+        752.1404073353012
+      ],
+      "side": "starboard",
+      "amplitude": 12,
+      "tip": [
+        859.2447916666666,
+        822.0322916666667
+      ],
+      "file": "layers/oar-starboard-08.png"
+    },
+    {
+      "name": "oar-starboard-09",
+      "pivot": [
+        740,
+        819.540168568665
+      ],
+      "side": "starboard",
+      "amplitude": 12,
+      "tip": [
+        856.4235897435898,
+        883.7466666666667
+      ],
+      "file": "layers/oar-starboard-09.png"
+    },
+    {
+      "name": "cloth-01",
+      "polygon": [
+        [
+          432,
+          475
+        ],
+        [
+          610,
+          477
+        ],
+        [
+          610,
+          678
+        ],
+        [
+          491,
+          647
+        ]
+      ],
+      "amplitude": 14,
+      "kind": "cloth",
+      "file": "layers/cloth-01.png"
+    },
+    {
+      "name": "cloth-02",
+      "polygon": [
+        [
+          642,
+          477
+        ],
+        [
+          819,
+          475
+        ],
+        [
+          761,
+          647
+        ],
+        [
+          642,
+          678
+        ]
+      ],
+      "amplitude": 14,
+      "kind": "cloth",
+      "file": "layers/cloth-02.png"
+    }
+  ],
+  "notes": "Masks and original painted pixels are retained. Cloth pins, oar pivots, cannon recoil and optional effects are art presentation only."
+}

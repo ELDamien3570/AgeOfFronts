@@ -1,0 +1,765 @@
+{
+  "age": "ClassicalAge",
+  "mode": "Built-in image generation with original still icon and accepted overhead pose references",
+  "packing": "Deterministic source-frame selection, cropping of outer blank canvas, uniform scaling and registration into 512px frame slots. No programmatic painting or weapon repair.",
+  "camera": "vertical-overhead-orthographic",
+  "notes": "Five characters per squad. Attack windup, strike or release, follow-through and recovery apply to all five. Repeated poses provide intentional holds; poseSequence in each animations.json records them.",
+  "selectedSources": [
+    {
+      "key": "classical-Melee-Guide-Fixed",
+      "category": "Melee",
+      "state": "Guide",
+      "source": "C:\\Users\\Damien\\.codex\\generated_images\\01a0f03e-fce7-71f0-ae83-67f86e8e8794\\exec-69516dbb-7714-455f-885c-45dd8ce2fbca.png",
+      "prompt": "Use case: precise-object-edit. Fix ONLY the REAR-RIGHT WHITE-CREST/BLUE-CLOAK infantryman's extra sword in this SINGLE overhead five-man squad sprite. He currently has TWO swords. REMOVE the small EXTRA steel blade held in his VIEWER-LEFT hand, pointing into gap above front-centre redcrest. KEEP his outer VIEWER-RIGHT sword exactly asis. His viewerLEFT forearm should fold acrosswaist to grip backstrap of his BLUE bronze-rimmed shield; fingertipsconnectedtohandbehindshield, no secondblade there. Final exact FIVE steel swords total, ONE perman, FIVE shields total, ONE perman. All4othermen/steelblades/shields/crests/poses/colors/formation/camera andwide transparentmargins unchanged. Frontleft swordviewerLEFT,frontcentre swordviewerLEFT,frontright swordviewerRIGHT; redshieldsopposite. Same90degreeoverheadcrowns/noeyes, paintedoutlines, fullRGBA transparency, no background, grid, text or extras.",
+      "references": [
+        "C:\\Users\\Damien\\.codex\\generated_images\\01a0f03e-fce7-71f0-ae83-67f86e8e8794\\exec-7b25d164-41d4-4099-9d0d-daedbd2a06fc.png"
+      ]
+    },
+    {
+      "key": "classical-Melee-Idle",
+      "category": "Melee",
+      "state": "Idle",
+      "source": "C:\\Users\\Damien\\.codex\\generated_images\\01a0f03e-fce7-71f0-ae83-67f86e8e8794\\exec-789f015c-5cee-4e4b-b1f3-9c740fcb7435.png",
+      "prompt": "Use case: precise-object-edit. Input1 is PRIMARY Classical overhead sword-and-shield squad reference. EXACTLY FIVE men, exactlyFIVE steel swords and FIVE bronze-rimmed shields, onepairperperson. Same2rear3front formation,crowns, scale,clothes,equipment. Rearleft REDcrest/redcape; rearright WHITEcrest/BLUEcape white-blue tunic; allfront REDcrests/redcape white-red tunics. Rearleft/frontleft/frontcentre swords anatomicalRIGHT(viewerLEFT), shieldsopposite; rearright/frontright swords anatomicalLEFT(viewerRIGHT), shieldsopposite. Rearright ONLY ONEsword inouterviewerRIGHThand; otherforearmfoldedacrosswaistgripsbackstrapofBLUEshield. Allother4REDshieldsgoldLambda. Camera EXACT90degree verticaloverhead,crown/shouldertops,noeyes,isometric,frontportraits. Warm detailedpaintedboldoutlines/goldbronze/greysteel. No extra blades,no disappearing weapons orweapons piercingarm/shield/neighbor. TransparentRGBA,wideempty4sidemargins/no floor/shadows/text/grid/effects. IDLE ATLAS:tenchronologicalbreathing/weightshiftposes,exactly5columns2rows squarecells/intended2560x1024,lefttorightnextrow. ENTIRE5man+5sword+5shieldgroup INEVERYcell, CENTRAL65percentfootprintwithlargeempty4sidemarginsinclweapons. Calmshoulder/wrist/cape/crestbreathing,allfivefeetsmallweightshift; swordsreadydownscreen besideOWNouterarm andshieldssecure. Noattack/run. Fixedformationroot, bodydimensions, seamless10to1. Copy complete equipmentfromguide, especiallyfrontleft/frontrightshields.",
+      "references": [
+        "C:\\Users\\Damien\\.codex\\generated_images\\01a0f03e-fce7-71f0-ae83-67f86e8e8794\\exec-69516dbb-7714-455f-885c-45dd8ce2fbca.png"
+      ]
+    },
+    {
+      "key": "classical-Melee-Running",
+      "category": "Melee",
+      "state": "Running",
+      "source": "C:\\Users\\Damien\\.codex\\generated_images\\01a0f03e-fce7-71f0-ae83-67f86e8e8794\\exec-8b1c7734-4a46-417f-8b56-273ddec79666.png",
+      "prompt": "Use case: precise-object-edit. Input1 is PRIMARY Classical overhead sword-and-shield squad reference. EXACTLY FIVE men, exactlyFIVE steel swords and FIVE bronze-rimmed shields, onepairperperson. Same2rear3front formation,crowns, scale,clothes,equipment. Rearleft REDcrest/redcape; rearright WHITEcrest/BLUEcape white-blue tunic; allfront REDcrests/redcape white-red tunics. Rearleft/frontleft/frontcentre swords anatomicalRIGHT(viewerLEFT), shieldsopposite; rearright/frontright swords anatomicalLEFT(viewerRIGHT), shieldsopposite. Rearright ONLY ONEsword inouterviewerRIGHThand; otherforearmfoldedacrosswaistgripsbackstrapofBLUEshield. Allother4REDshieldsgoldLambda. Camera EXACT90degree verticaloverhead,crown/shouldertops,noeyes,isometric,frontportraits. Warm detailedpaintedboldoutlines/goldbronze/greysteel. No extra blades,no disappearing weapons orweapons piercingarm/shield/neighbor. TransparentRGBA,wideempty4sidemargins/no floor/shadows/text/grid/effects. RUNNING ATLAS:tenchronologicalin-placeRUNphases,exactly5columns2rows squarecells/intended2560x1024,lefttorightnextrow. ENTIRE5man+5sword+5shieldgroup INEVERYcell,CENTRAL65percentfootprintwideempty4sidemarginsincludingblades. ALL FIVE alternatefoot/legextension andhelmet/shoulderbob, cloak/crestflutter. Swordhandsstayfirmatreadydownscreenbesideownouterarm, shieldsstrappedoppositeforearmbounceonlyslightly, noattacks. Fixedroot, bodydimensions, camera; seamless10to1. Never losefrontleft/frontrightshields.",
+      "references": [
+        "C:\\Users\\Damien\\.codex\\generated_images\\01a0f03e-fce7-71f0-ae83-67f86e8e8794\\exec-69516dbb-7714-455f-885c-45dd8ce2fbca.png"
+      ]
+    },
+    {
+      "key": "classical-Melee-Attack-F3",
+      "category": "Melee",
+      "state": "Attack",
+      "frame": 3,
+      "source": "C:\\Users\\Damien\\.codex\\generated_images\\01a0f03e-fce7-71f0-ae83-67f86e8e8794\\exec-fb43684e-6a22-4c0c-8935-908d0658e75c.png",
+      "prompt": "Use case: precise-object-edit. Input1 is PRIMARY Classical overhead sword-and-shield squad reference. EXACTLY FIVE men, exactlyFIVE steel swords and FIVE bronze-rimmed shields, onepairperperson. Same2rear3front formation,crowns, scale,clothes,equipment. Rearleft REDcrest/redcape; rearright WHITEcrest/BLUEcape white-blue tunic; allfront REDcrests/redcape white-red tunics. Rearleft/frontleft/frontcentre swords anatomicalRIGHT(viewerLEFT), shieldsopposite; rearright/frontright swords anatomicalLEFT(viewerRIGHT), shieldsopposite. Rearright ONLY ONEsword inouterviewerRIGHThand; otherforearmfoldedacrosswaistgripsbackstrapofBLUEshield. Allother4REDshieldsgoldLambda. Camera EXACT90degree verticaloverhead,crown/shouldertops,noeyes,isometric,frontportraits. Warm detailedpaintedboldoutlines/goldbronze/greysteel. No extra blades,no disappearing weapons orweapons piercingarm/shield/neighbor. TransparentRGBA,wideempty4sidemargins/no floor/shadows/text/grid/effects. SINGLE whole-squad attackkey sprite, ONEimageNOatlas. WIND-UP:ALL FIVE swordarmsrise backUPscreen/outward alongsideownshoulder. SteelbladespointUPscreen, clearcontinuousfist/hilt/blade. Frontleft/frontcentre/frontright raiseandwindup exactlylikebacktwo. Sameownhand, shieldskeptoppositearm atfrontguard, FIVEshields visible/secure. Slighttorsoleanback, crownsnotfrontportraits. Nooneatidle. ENTIREfivegroupwithinCENTRAL70percentofsquarecanvas, wideclearmarginsinclblade tips; body/helmetsame sizesasreference.",
+      "references": [
+        "C:\\Users\\Damien\\.codex\\generated_images\\01a0f03e-fce7-71f0-ae83-67f86e8e8794\\exec-69516dbb-7714-455f-885c-45dd8ce2fbca.png"
+      ]
+    },
+    {
+      "key": "classical-Melee-Attack-F5",
+      "category": "Melee",
+      "state": "Attack",
+      "frame": 5,
+      "source": "C:\\Users\\Damien\\.codex\\generated_images\\01a0f03e-fce7-71f0-ae83-67f86e8e8794\\exec-f0152c78-221c-4633-9b01-3f45b4053dfa.png",
+      "prompt": "Use case: precise-object-edit. Input1 is PRIMARY Classical overhead sword-and-shield squad reference. EXACTLY FIVE men, exactlyFIVE steel swords and FIVE bronze-rimmed shields, onepairperperson. Same2rear3front formation,crowns, scale,clothes,equipment. Rearleft REDcrest/redcape; rearright WHITEcrest/BLUEcape white-blue tunic; allfront REDcrests/redcape white-red tunics. Rearleft/frontleft/frontcentre swords anatomicalRIGHT(viewerLEFT), shieldsopposite; rearright/frontright swords anatomicalLEFT(viewerRIGHT), shieldsopposite. Rearright ONLY ONEsword inouterviewerRIGHThand; otherforearmfoldedacrosswaistgripsbackstrapofBLUEshield. Allother4REDshieldsgoldLambda. Camera EXACT90degree verticaloverhead,crown/shouldertops,noeyes,isometric,frontportraits. Warm detailedpaintedboldoutlines/goldbronze/greysteel. No extra blades,no disappearing weapons orweapons piercingarm/shield/neighbor. TransparentRGBA,wideempty4sidemargins/no floor/shadows/text/grid/effects. SINGLE whole-squad attackkey sprite, ONEimageNOatlas. FULL FORWARD DOWNWARD CUT/IMPACT: ALL FIVE swing ownSword DOWNscreenandFORWARD witharmextendedoutsideownbody, steelbladepastfistandforwardofownfeet. ThreeviewERLEFTswordarmsandtwoviewERRIGHTswordarms remaincorrect. Frontcentre MUSTextendSwordarmandbladeasthebackmen, frontleft/frontRightalsocompletecut, nostaticfrontsoldiers. Bladefullyvisiblewithconnectedhilt/fingers, avoidownshieldandneighbors. AllfiveshieldsfirmoppositeownSwordarm; smallforwardtorsolean. No disappearingweapontofakemotion. ENTIREfivegroupwithinCENTRAL70percentofsquarecanvas, wideclearmarginsinclblade tips; body/helmetsame sizesasreference.",
+      "references": [
+        "C:\\Users\\Damien\\.codex\\generated_images\\01a0f03e-fce7-71f0-ae83-67f86e8e8794\\exec-69516dbb-7714-455f-885c-45dd8ce2fbca.png"
+      ]
+    },
+    {
+      "key": "classical-Melee-Attack-F7",
+      "category": "Melee",
+      "state": "Attack",
+      "frame": 7,
+      "source": "C:\\Users\\Damien\\.codex\\generated_images\\01a0f03e-fce7-71f0-ae83-67f86e8e8794\\exec-12335f49-d532-499b-b616-9435642563d5.png",
+      "prompt": "Use case: precise-object-edit. Input1 is PRIMARY Classical overhead sword-and-shield squad reference. EXACTLY FIVE men, exactlyFIVE steel swords and FIVE bronze-rimmed shields, onepairperperson. Same2rear3front formation,crowns, scale,clothes,equipment. Rearleft REDcrest/redcape; rearright WHITEcrest/BLUEcape white-blue tunic; allfront REDcrests/redcape white-red tunics. Rearleft/frontleft/frontcentre swords anatomicalRIGHT(viewerLEFT), shieldsopposite; rearright/frontright swords anatomicalLEFT(viewerRIGHT), shieldsopposite. Rearright ONLY ONEsword inouterviewerRIGHThand; otherforearmfoldedacrosswaistgripsbackstrapofBLUEshield. Allother4REDshieldsgoldLambda. Camera EXACT90degree verticaloverhead,crown/shouldertops,noeyes,isometric,frontportraits. Warm detailedpaintedboldoutlines/goldbronze/greysteel. No extra blades,no disappearing weapons orweapons piercingarm/shield/neighbor. TransparentRGBA,wideempty4sidemargins/no floor/shadows/text/grid/effects. SINGLE whole-squad attackkey sprite, ONEimageNOatlas. FOLLOW-THROUGH:ALL FIVE finishthecut withownSwordarmLOWandOUTWARDtowardsbottom-left orbottom-right ofownbodyaccordingtooriginalhand, steelbladeheldlowforwardcontinuously. Everyfrontandrearman visiblyfollowsthroughratherthanidling. Shieldkeptfirmoppositearm, crounpositiononlysmalltorsolean,sameformationroot. No switchedhands or extra sword. ENTIREfivegroupwithinCENTRAL70percentofsquarecanvas, wideclearmarginsinclblade tips; body/helmetsame sizesasreference.",
+      "references": [
+        "C:\\Users\\Damien\\.codex\\generated_images\\01a0f03e-fce7-71f0-ae83-67f86e8e8794\\exec-69516dbb-7714-455f-885c-45dd8ce2fbca.png"
+      ]
+    },
+    {
+      "key": "classical-Ranged-Idle",
+      "category": "Ranged",
+      "state": "Idle",
+      "source": "C:\\Users\\Damien\\.codex\\generated_images\\01a0f03e-fce7-71f0-ae83-67f86e8e8794\\exec-dda9f759-1638-43f1-bf04-4a26b18c3edd.png",
+      "prompt": "Use case: stylized-concept. Asset: transparent 2D RTS full-squad IDLE animation sprite atlas. Image1 ORIGINAL CLASSICAL icon supplies identities, clothing and equipment; image2 APPROVED earlier-age atlas supplies camera and painting quality ONLY. Convert Classical group to exact90degree VERTICAL OVERHEAD orthographic camera looking straight at crown tops, shoulder tops and upper equipment surfaces. ALL face screenBOTTOM. No visible eyes/faces, no isometric/3quarter tilt. Warm detailed painted cartoon, strong clean dark outlines, metallic bronze armour and steel blades asoriginal.\nExactly TEN frames in FIVE columns TWO rows with square cells, left-to-right then nextrow. ENTIRE FIVE-member squad in EVERY cell, original2rear/3front formation, fixed root, same identity, body size, equipment and holding hands throughout. Each full squad inside CENTRAL65PERCENT of its cell with generous completely empty margin on all4edges evenweapons. Do not fillcelltoborder. No member clipping or neighboringcell contact. True transparentRGBA, no floor/ground/shadows/grid/text/numbers/effects. Ten small breathing/weightshift phases, slight cape/crestmotion, securelyheld readyweapons, no attacks. Seamless10to1.\nExactly FIVE helmeted Classical ARCHERS with one recurved wooden bow and backquiver each. Rearleft REDcrest redcloak white-red tunic scale armour; rearright BLUEcrest bluecloak whiteblue tunic; frontleft WHITEcrest bluecloak whiteblue tunic; frontcentre REDcrest redcloak whitered tunic scale armour; frontright WHITEcrest bluecloak whiteblue tunic. Bronze crown-domes, sandals/leathergreaves, whitearrowfletchings. ALL five bow grip in anatomicalLEFT hand (=VIEWER-RIGHT when facingbottom), drawing/nocking hand anatomicalRIGHT (=VIEWER-LEFT). One continuous recurved wooden bow perman, ONE thinstring and ONE relaxed nockedarrow supported by clear fingers. Low-tension readycarry slightly downscreen, bowstring NOT drawn. No bow/arrow piercingarms, no extra weapon, no switched grip between clips. Clearbow centre-grip in viewer-right hand, curved limbs extend outward around fist; relaxed viewer-left fingers touchstring/arrow.",
+      "references": [
+        "C:/Users/Damien/Documents/GitHub/AgeOfFronts/AgeOfFronts/Art/Soldier Icons/Ranged/Range_ClassicalAge.png",
+        "C:/Users/Damien/Documents/GitHub/AgeOfFronts/AgeOfFronts/Art/Soldier Icons/Ranged/BronzeAge/Idle.png"
+      ]
+    },
+    {
+      "key": "classical-Ranged-Running",
+      "category": "Ranged",
+      "state": "Running",
+      "source": "C:\\Users\\Damien\\.codex\\generated_images\\01a0f03e-fce7-71f0-ae83-67f86e8e8794\\exec-b79cfba5-7716-47fe-ade8-9e0a167798af.png",
+      "prompt": "Use case: stylized-concept. Transparent fullsquad Classical archer RUNNING atlas. Input1 EXACT overhead equipment/anatomy/grip/identity pose; input2 originaldesignONLY. Preserve FIVE helmetedarchers2rear3front: redrearleft,bluerearright,whitefrontleft,redfrontcentre,whitefrontright crestcolors,redblueclothes asreference,backquivers. ALL bowgrip anatomicalLEFT(viewerRIGHT), nockinghand anatomicalRIGHT(viewerLEFT). ONEcontinuouscurvedbow,one relaxed nockedarrow,string perman; no extra bow or arrowthrougharm. Ten chronological in-place RUN phases, exactly5columns2rows squarecells, intended2560x1024. ALL FIVE visibly alternate feet/legs and shoulderbob, robes/crests flutter lightly; grippingarmremainsfirm, readybowNOTdrawn,noattack, fullbodyfacingBOTTOM. Rootstationary, helmetcrowns/cameraEXACT90degree overhead, nofaces/isometric. Each COMPLETE5unitgroup fits CENTRALLY within65percent ofowncell with WIDEemptytransparent4sidemargins, no clipping or touchingneighbors. Left-to-right,nextrow,10to1seamless, nofloor/shadows/labels/grid/extras.",
+      "references": [
+        "C:/Users/Damien/.codex/visualizations/2026/09/30/01a0f03e-fce7-71f0-ae83-67f86e8e8794/classical-work/Ranged-Guide.png",
+        "C:/Users/Damien/Documents/GitHub/AgeOfFronts/AgeOfFronts/Art/Soldier Icons/Ranged/Range_ClassicalAge.png"
+      ]
+    },
+    {
+      "key": "classical-Ranged-Attack-F3",
+      "category": "Ranged",
+      "state": "Attack",
+      "frame": 3,
+      "source": "C:\\Users\\Damien\\.codex\\generated_images\\01a0f03e-fce7-71f0-ae83-67f86e8e8794\\exec-57dc8675-db5b-4b26-b90f-d7bf9f3eed33.png",
+      "prompt": "Use case: stylized-concept. SINGLE whole-squad Classical archer key sprite, ONEimageNOatlas. Input1 primary camera, anatomy,equipment,identityreference; input2 originalclothingreference. Exactly FIVE fullhelmetedarchers2rear3front, RED/BLUErearcrests, WHITE/RED/WHITEfrontcrests,allclothandquiversunchanged. Exact90degree OVERHEAD,roundcrownstops, shoulder tops, feetbelow, nofaces/isometric. Fixedformation andbody/helmet scale. ALL FIVE fully draw their bows. AnatomicalLEFTbowarm(own viewerRIGHT shoulder) extends forward DOWNscreen with hand gripping EXACTcentre of woodenbow; anatomicalRIGHTdrawingarm(viewerLEFT) bendsup/back with drawinghand besideownhelmet, pullingstringandnockedarrow. One taut V-string, arrowshafts pointDOWNscreen, curved bowlimbs visible. This is finalaimbefore release, arrowstillnocked inALLfive. Every frontman draws justlike rearmen; nobowhandswaps. Samewarmpaintedstrongoutlines/goldmetal. Fullgroupcentral68percent ofsquarewithgenerouscleartransparent marginsall4sidesinclbows/hands, no clipping. TrueRGBA, no ground/shadows/grid/labels/effects/extraunits.",
+      "references": [
+        "C:/Users/Damien/.codex/visualizations/2026/09/30/01a0f03e-fce7-71f0-ae83-67f86e8e8794/classical-work/Ranged-Guide.png",
+        "C:/Users/Damien/Documents/GitHub/AgeOfFronts/AgeOfFronts/Art/Soldier Icons/Ranged/Range_ClassicalAge.png"
+      ]
+    },
+    {
+      "key": "classical-Ranged-Attack-F5",
+      "category": "Ranged",
+      "state": "Attack",
+      "frame": 5,
+      "source": "C:\\Users\\Damien\\.codex\\generated_images\\01a0f03e-fce7-71f0-ae83-67f86e8e8794\\exec-ba251fbc-8d0d-4fe7-aaad-a45ac8d81528.png",
+      "prompt": "Use case: stylized-concept. SINGLE whole-squad Classical archer key sprite, ONEimageNOatlas. Input1 primary camera, anatomy,equipment,identityreference; input2 originalclothingreference. Exactly FIVE fullhelmetedarchers2rear3front, RED/BLUErearcrests, WHITE/RED/WHITEfrontcrests,allclothandquiversunchanged. Exact90degree OVERHEAD,roundcrownstops, shoulder tops, feetbelow, nofaces/isometric. Fixedformation andbody/helmet scale. ALL FIVE RELEASE simultaneously. Same anatomicalLEFTbowgrippingarm from viewerRIGHTshoulder extendsforwardDOWNscreen; drawingRIGHTarm(viewerLEFT) hand OPENS besideownhelmet, fingers clearlyempty afterlettingstringgo. Arrowhasleftbow and isNOTdrawn asheld or hoveringprojectile. ONE emptybowperman, thin relaxedstring. Allfivefrontandrear mustopen drawinghand, no staticfrontsoldiers, nohand swaps or vanishingbows. Keep bowgrippingarm connected toown viewerRIGHTshoulder evenifforearmcrossesbody. Samewarmpaintedstrongoutlines/goldmetal. Fullgroupcentral68percent ofsquarewithgenerouscleartransparent marginsall4sidesinclbows/hands, no clipping. TrueRGBA, no ground/shadows/grid/labels/effects/extraunits.",
+      "references": [
+        "C:/Users/Damien/.codex/visualizations/2026/09/30/01a0f03e-fce7-71f0-ae83-67f86e8e8794/classical-work/Ranged-Guide.png",
+        "C:/Users/Damien/Documents/GitHub/AgeOfFronts/AgeOfFronts/Art/Soldier Icons/Ranged/Range_ClassicalAge.png"
+      ]
+    },
+    {
+      "key": "classical-Ranged-Attack-F7",
+      "category": "Ranged",
+      "state": "Attack",
+      "frame": 7,
+      "source": "C:\\Users\\Damien\\.codex\\generated_images\\01a0f03e-fce7-71f0-ae83-67f86e8e8794\\exec-8a08ba4c-132f-446d-a279-5f0b2a030c53.png",
+      "prompt": "Use case: stylized-concept. SINGLE whole-squad Classical archer key sprite, ONEimageNOatlas. Input1 primary camera, anatomy,equipment,identityreference; input2 originalclothingreference. Exactly FIVE fullhelmetedarchers2rear3front, RED/BLUErearcrests, WHITE/RED/WHITEfrontcrests,allclothandquiversunchanged. Exact90degree OVERHEAD,roundcrownstops, shoulder tops, feetbelow, nofaces/isometric. Fixedformation andbody/helmet scale. ALL FIVE have post-release FOLLOW-THROUGH. Same anatomicalLEFTbowgrippingarm from ownviewerRIGHTshoulder still holds emptybow extendeddownscreen, ONEcontinuouswoodenbow/string. RIGHTdrawinghand(viewerLEFT) remains OPEN and moves furtherup-left besidehead, elbowfollowsthrough; noarrowinbow yet. EVERYfrontandrearman finishes release, nohand swapping, bow hand neveropens. Calm smalllean/breath/robe settle, arrowsreturn onlyduringlaterreadyframes. Samewarmpaintedstrongoutlines/goldmetal. Fullgroupcentral68percent ofsquarewithgenerouscleartransparent marginsall4sidesinclbows/hands, no clipping. TrueRGBA, no ground/shadows/grid/labels/effects/extraunits.",
+      "references": [
+        "C:/Users/Damien/.codex/visualizations/2026/09/30/01a0f03e-fce7-71f0-ae83-67f86e8e8794/classical-work/Ranged-Guide.png",
+        "C:/Users/Damien/Documents/GitHub/AgeOfFronts/AgeOfFronts/Art/Soldier Icons/Ranged/Range_ClassicalAge.png"
+      ]
+    },
+    {
+      "key": "classical-Cavalry-Guide",
+      "category": "Cavalry",
+      "state": "Guide",
+      "source": "C:\\Users\\Damien\\.codex\\generated_images\\01a0f03e-fce7-71f0-ae83-67f86e8e8794\\exec-4963a771-cb0d-4cb5-b0c5-5e9ba89a6523.png",
+      "prompt": "Use case: stylized-concept. SINGLE whole-group Classical cavalry sprite, NO atlas, ONE image. Image1 original equipment/identity reference; image2 new overhead Classical cavalry reference. EXACTLY FIVE riders on FIVE horses in2rear3front formation facing screenBOTTOM, same colors/crests/shields asreference. Exactly FIVE cavalry = FIVE separate riders on FIVE horses,2rear3front. Rearleft redcrest redcape bronze scales on BAY blackmane; rearright WHITEcrest redcape bronze armour on PALOMINO cream mane; frontleft REDcrest redcape SILVER mail on BAY blackmane; frontcentre REDcrest fullbronzehelmet redcape bronzescales on WHITEGREY blackmane; frontright BLACKcrest redcape bronze armour on DARKBROWN blackmane. Steel leaf sword perrider, round bronze-edged shields: rearleft darkblue; rearright BLUE goldsun; frontleft RED whitehorse; frontcentre gold with RED Lambda; frontright BLUE goldlaurel. Sword grip VIEWER-LEFT for4riders exceptfront-right VIEWER-RIGHT; shield onoppositearm, reins secured. Show fullhorse BACKS fromabove, rump/tail behindrider UPscreen, saddle underpelvis, neck/muzzle DOWNscreen, anatomicalhooves belowbody orside\u2014not behindriderheads. Riderroundcrowns, shoulder/cape tops, nofaces/noseguardportrait. No lances/chariots. Gentle breathing/tail/ear/wristmotion with swordcontinuouslyheld, horsefeetquiet. Shields tilted oval upper surfaces visible fromabove, notfulluprightfront disks.\nCamera exactly90degree directlyoverhead, lookingat helmetDOMES andTOPSofshoulders, fullhorsebacks andcapes/saddles fromabove. Horsebacks elongated with rump/tail behindridersupscreen and neck/muzzle downscreen; NO faces/eyes, nofrontportraithelmetview, no3/4isometric. Riders remainseated, five STEEL swords held securely in samehands, readyguard blade slightlyforward/outward besideownarm; onlyfront-right uses viewerRIGHTswordarm,other4viewerLEFT. Clear spearlessswords distinctfromshield, 5shields inclbluegoldlaurelfront-right. Warm painted thickoutlinedart. Comfortably spaced2x3formation, allmembersinsideCENTRAL70percent ofsquarecanvas, wide emptytransparentpadding onALL4sides. Entireall5rider+horsegroup notclipped anywhere; no labels, shadows, ground, grid or extra units. Calm neutralready.",
+      "references": [
+        "C:/Users/Damien/Documents/GitHub/AgeOfFronts/AgeOfFronts/Art/Soldier Icons/Cavalry/Cav_ClassicalAge.png",
+        "C:\\Users\\Damien\\.codex\\generated_images\\01a0f03e-fce7-71f0-ae83-67f86e8e8794\\exec-f7236da2-b551-4471-8483-5846da81f0bc.png"
+      ]
+    },
+    {
+      "key": "classical-Cavalry-Idle-F2",
+      "category": "Cavalry",
+      "state": "Idle",
+      "frame": 2,
+      "source": "C:\\Users\\Damien\\.codex\\generated_images\\01a0f03e-fce7-71f0-ae83-67f86e8e8794\\exec-1b107703-711d-4b88-b5bf-b46e8d433025.png",
+      "prompt": "Use case: precise-object-edit. Input1 primary EXACT Classical mounted squad camera/anatomy/equipment/identity reference. ExactlyFIVE riders onFIVEhorses in2rear3front facingDOWNscreen. Exactly FIVE cavalry = FIVE separate riders on FIVE horses,2rear3front. Rearleft redcrest redcape bronze scales on BAY blackmane; rearright WHITEcrest redcape bronze armour on PALOMINO cream mane; frontleft REDcrest redcape SILVER mail on BAY blackmane; frontcentre REDcrest fullbronzehelmet redcape bronzescales on WHITEGREY blackmane; frontright BLACKcrest redcape bronze armour on DARKBROWN blackmane. Steel leaf sword perrider, round bronze-edged shields: rearleft darkblue; rearright BLUE goldsun; frontleft RED whitehorse; frontcentre gold with RED Lambda; frontright BLUE goldlaurel. Sword grip VIEWER-LEFT for4riders exceptfront-right VIEWER-RIGHT; shield onoppositearm, reins secured. Show fullhorse BACKS fromabove, rump/tail behindrider UPscreen, saddle underpelvis, neck/muzzle DOWNscreen, anatomicalhooves belowbody orside\u2014not behindriderheads. Riderroundcrowns, shoulder/cape tops, nofaces/noseguardportrait. No lances/chariots. Gentle breathing/tail/ear/wristmotion with swordcontinuouslyheld, horsefeetquiet. Shields tilted oval upper surfaces visible fromabove, notfulluprightfront disks.\nPreserveeverycrest/horsecolour/shieldemblem and swordhand frominput1:4swordsVIEWERLEFT,onlyfront-rightVIEWERRIGHT. True90degreeoverhead oncrowns,horsebacks,saddle/capes, nofrontface,isometrictilt,chariot,spear,extraunits. Paintedstrongblackoutlines/bronze/steelart. TransparentRGBA, nofloor/ground/shadows/labels/grid. WIDEclear4sidemargins, nothingclipped. SINGLE whole-squad sprite, ONEimageNOatlas. INHALE:allfive riders veryslightly liftshoulders andchests,horsebacksoftbreathnecksraise1smallamount,earsandtailsgentlyshift, capes/crestsraisefractionally. Horselegsquiet,ridersseated,swordssecureatready. Samebody/horse sizes, groupcentres andformation. Entiregroupcentral70percentofsquarecanvas.",
+      "references": [
+        "C:\\Users\\Damien\\.codex\\generated_images\\01a0f03e-fce7-71f0-ae83-67f86e8e8794\\exec-4963a771-cb0d-4cb5-b0c5-5e9ba89a6523.png"
+      ]
+    },
+    {
+      "key": "classical-Cavalry-Idle-F3",
+      "category": "Cavalry",
+      "state": "Idle",
+      "frame": 3,
+      "source": "C:\\Users\\Damien\\.codex\\generated_images\\01a0f03e-fce7-71f0-ae83-67f86e8e8794\\exec-c2d63f3d-1408-42c4-98a5-c7445654dab2.png",
+      "prompt": "Use case: precise-object-edit. Input1 primary EXACT Classical mounted squad camera/anatomy/equipment/identity reference. ExactlyFIVE riders onFIVEhorses in2rear3front facingDOWNscreen. Exactly FIVE cavalry = FIVE separate riders on FIVE horses,2rear3front. Rearleft redcrest redcape bronze scales on BAY blackmane; rearright WHITEcrest redcape bronze armour on PALOMINO cream mane; frontleft REDcrest redcape SILVER mail on BAY blackmane; frontcentre REDcrest fullbronzehelmet redcape bronzescales on WHITEGREY blackmane; frontright BLACKcrest redcape bronze armour on DARKBROWN blackmane. Steel leaf sword perrider, round bronze-edged shields: rearleft darkblue; rearright BLUE goldsun; frontleft RED whitehorse; frontcentre gold with RED Lambda; frontright BLUE goldlaurel. Sword grip VIEWER-LEFT for4riders exceptfront-right VIEWER-RIGHT; shield onoppositearm, reins secured. Show fullhorse BACKS fromabove, rump/tail behindrider UPscreen, saddle underpelvis, neck/muzzle DOWNscreen, anatomicalhooves belowbody orside\u2014not behindriderheads. Riderroundcrowns, shoulder/cape tops, nofaces/noseguardportrait. No lances/chariots. Gentle breathing/tail/ear/wristmotion with swordcontinuouslyheld, horsefeetquiet. Shields tilted oval upper surfaces visible fromabove, notfulluprightfront disks.\nPreserveeverycrest/horsecolour/shieldemblem and swordhand frominput1:4swordsVIEWERLEFT,onlyfront-rightVIEWERRIGHT. True90degreeoverhead oncrowns,horsebacks,saddle/capes, nofrontface,isometrictilt,chariot,spear,extraunits. Paintedstrongblackoutlines/bronze/steelart. TransparentRGBA, nofloor/ground/shadows/labels/grid. WIDEclear4sidemargins, nothingclipped. SINGLE whole-squad sprite, ONEimageNOatlas. PEAKBREATH/WEIGHTSHIFT:allfive riders shoulders relaxslightlyforward andcrests/capesgentlysettle, horsesexhaleandsmallear/tailswayoppositephase, legsquiet. Swordsstayinreadygripswithsmallwristshift, allfive shieldsunchanged. Samebody/horse sizes, groupcentres andformation. Entiregroupcentral70percentofsquarecanvas.",
+      "references": [
+        "C:\\Users\\Damien\\.codex\\generated_images\\01a0f03e-fce7-71f0-ae83-67f86e8e8794\\exec-4963a771-cb0d-4cb5-b0c5-5e9ba89a6523.png"
+      ]
+    },
+    {
+      "key": "classical-Cavalry-Running-A",
+      "category": "Cavalry",
+      "state": "Running",
+      "frame": "A",
+      "source": "C:\\Users\\Damien\\.codex\\generated_images\\01a0f03e-fce7-71f0-ae83-67f86e8e8794\\exec-7dabf77d-c1b1-4d52-8a80-366fbc9f12e3.png",
+      "prompt": "Edit the reference into ONE animation key pose of the EXACT SAME complete Classical Age cavalry squad: five horses with five riders, two in back and three in front. Square transparent background, one squad only, generous 8 percent clear border on every side. Keep the strict straight overhead camera looking down helmet crowns, shoulders, horse backs and manes; all facing screen bottom. Preserve all five shields, all five steel swords gripped in exactly the existing hands, all red cloaks, helmet crest colours and horse coat colours. Only front-right rider has sword viewer-right; other four viewer-left. Keep all horse bodies and rider positions anchored to the existing formation. IMPORTANT: actual HORSE RUN animation, not standing bob. Clearly show pairs of slender horse forelegs and hooves beside and below the neck, pointing toward screen bottom in overhead foreshortening. Rider boots remain seated by saddle, never mistaken for hooves. Hooves must stay attached through visible anatomical legs; no floating hooves, extra horses or extra riders. Move ALL FIVE horses including front middle, front left and front right. Early forward reach. ALL FIVE horses stretch BOTH forelegs downscreen on either side of each neck toward the direction of travel, one leg slightly ahead of the other. Long but foreshortened overhead forelegs emerge under the horse chest, distinct from rider boots. Both hoof tips clearly visible below the muzzle, slightly spread left-right. Rider shoulders lift subtly, capes stream upscreen; tails align upward.",
+      "references": [
+        "C:\\Users\\Damien\\.codex\\generated_images\\01a0f03e-fce7-71f0-ae83-67f86e8e8794\\exec-4963a771-cb0d-4cb5-b0c5-5e9ba89a6523.png"
+      ]
+    },
+    {
+      "key": "classical-Cavalry-Running-B",
+      "category": "Cavalry",
+      "state": "Running",
+      "frame": "B",
+      "source": "C:\\Users\\Damien\\.codex\\generated_images\\01a0f03e-fce7-71f0-ae83-67f86e8e8794\\exec-86b7514e-c706-494f-9e44-349eec4d0cb3.png",
+      "prompt": "Edit the reference into ONE animation key pose of the EXACT SAME complete Classical Age cavalry squad: five horses with five riders, two in back and three in front. Square transparent background, one squad only, generous 8 percent clear border on every side. Keep the strict straight overhead camera looking down helmet crowns, shoulders, horse backs and manes; all facing screen bottom. Preserve all five shields, all five steel swords gripped in exactly the existing hands, all red cloaks, helmet crest colours and horse coat colours. Only front-right rider has sword viewer-right; other four viewer-left. Keep all horse bodies and rider positions anchored to the existing formation. IMPORTANT: actual HORSE RUN animation, not standing bob. Clearly show pairs of slender horse forelegs and hooves beside and below the neck, pointing toward screen bottom in overhead foreshortening. Rider boots remain seated by saddle, never mistaken for hooves. Hooves must stay attached through visible anatomical legs; no floating hooves, extra horses or extra riders. Move ALL FIVE horses including front middle, front left and front right. Late planted reach. ALL FIVE horses plant the anatomical LEFT foreleg (viewer RIGHT while facing screen bottom) straight downscreen reaching beyond the muzzle, and fold the other foreleg under the chest to the viewer LEFT side of the neck. Show one extended hoof and one bent shorter hoof, legs anatomically attached. Small shoulder drop, horse neck extends a little, tails flick viewer left.",
+      "references": [
+        "C:\\Users\\Damien\\.codex\\generated_images\\01a0f03e-fce7-71f0-ae83-67f86e8e8794\\exec-4963a771-cb0d-4cb5-b0c5-5e9ba89a6523.png"
+      ]
+    },
+    {
+      "key": "classical-Cavalry-Running-C",
+      "category": "Cavalry",
+      "state": "Running",
+      "frame": "C",
+      "source": "C:\\Users\\Damien\\.codex\\generated_images\\01a0f03e-fce7-71f0-ae83-67f86e8e8794\\exec-d63bbc96-93be-4746-9ed7-7c86ce2707f6.png",
+      "prompt": "Edit the reference into ONE animation key pose of the EXACT SAME complete Classical Age cavalry squad: five horses with five riders, two in back and three in front. Square transparent background, one squad only, generous 8 percent clear border on every side. Keep the strict straight overhead camera looking down helmet crowns, shoulders, horse backs and manes; all facing screen bottom. Preserve all five shields, all five steel swords gripped in exactly the existing hands, all red cloaks, helmet crest colours and horse coat colours. Only front-right rider has sword viewer-right; other four viewer-left. Keep all horse bodies and rider positions anchored to the existing formation. IMPORTANT: actual HORSE RUN animation, not standing bob. Clearly show pairs of slender horse forelegs and hooves beside and below the neck, pointing toward screen bottom in overhead foreshortening. Rider boots remain seated by saddle, never mistaken for hooves. Hooves must stay attached through visible anatomical legs; no floating hooves, extra horses or extra riders. Move ALL FIVE horses including front middle, front left and front right. Gathered suspension. ALL FIVE horses draw BOTH forelegs UP and BACK with bent knees, clearly visible as tucked slender paired legs on either side of the lower neck, hoof tips near the cheek instead of below muzzle. Do NOT copy the standing leg. Horse head lifts and neck shortens subtly, riders settle slightly, capes and tails flick viewer right.",
+      "references": [
+        "C:\\Users\\Damien\\.codex\\generated_images\\01a0f03e-fce7-71f0-ae83-67f86e8e8794\\exec-4963a771-cb0d-4cb5-b0c5-5e9ba89a6523.png"
+      ]
+    },
+    {
+      "key": "classical-Cavalry-Running-D",
+      "category": "Cavalry",
+      "state": "Running",
+      "frame": "D",
+      "source": "C:\\Users\\Damien\\.codex\\generated_images\\01a0f03e-fce7-71f0-ae83-67f86e8e8794\\exec-1a9258e8-14b3-4fd3-bd3c-1f5e692a3e0a.png",
+      "prompt": "Edit the reference into ONE animation key pose of the EXACT SAME complete Classical Age cavalry squad: five horses with five riders, two in back and three in front. Square transparent background, one squad only, generous 8 percent clear border on every side. Keep the strict straight overhead camera looking down helmet crowns, shoulders, horse backs and manes; all facing screen bottom. Preserve all five shields, all five steel swords gripped in exactly the existing hands, all red cloaks, helmet crest colours and horse coat colours. Only front-right rider has sword viewer-right; other four viewer-left. Keep all horse bodies and rider positions anchored to the existing formation. IMPORTANT: actual HORSE RUN animation, not standing bob. Clearly show pairs of slender horse forelegs and hooves beside and below the neck, pointing toward screen bottom in overhead foreshortening. Rider boots remain seated by saddle, never mistaken for hooves. Hooves must stay attached through visible anatomical legs; no floating hooves, extra horses or extra riders. Move ALL FIVE horses including front middle, front left and front right. Opposite planted reach. ALL FIVE horses plant the anatomical RIGHT foreleg (viewer LEFT while facing screen bottom) straight downscreen reaching beyond the muzzle, and fold the other foreleg under chest toward viewer RIGHT side of neck. Show opposite extended hoof and shorter bent hoof. Shoulders rebound, red capes stream upscreen, ears forward.",
+      "references": [
+        "C:\\Users\\Damien\\.codex\\generated_images\\01a0f03e-fce7-71f0-ae83-67f86e8e8794\\exec-4963a771-cb0d-4cb5-b0c5-5e9ba89a6523.png"
+      ]
+    },
+    {
+      "key": "classical-Cavalry-Attack-F3",
+      "category": "Cavalry",
+      "state": "Attack",
+      "frame": 3,
+      "source": "C:\\Users\\Damien\\.codex\\generated_images\\01a0f03e-fce7-71f0-ae83-67f86e8e8794\\exec-1e4e151c-bf28-4451-b95c-bb0d2f97dadc.png",
+      "prompt": "Use case: precise-object-edit. Input1 primary EXACT Classical mounted squad camera/anatomy/equipment/identity reference. ExactlyFIVE riders onFIVEhorses in2rear3front facingDOWNscreen. Exactly FIVE cavalry = FIVE separate riders on FIVE horses,2rear3front. Rearleft redcrest redcape bronze scales on BAY blackmane; rearright WHITEcrest redcape bronze armour on PALOMINO cream mane; frontleft REDcrest redcape SILVER mail on BAY blackmane; frontcentre REDcrest fullbronzehelmet redcape bronzescales on WHITEGREY blackmane; frontright BLACKcrest redcape bronze armour on DARKBROWN blackmane. Steel leaf sword perrider, round bronze-edged shields: rearleft darkblue; rearright BLUE goldsun; frontleft RED whitehorse; frontcentre gold with RED Lambda; frontright BLUE goldlaurel. Sword grip VIEWER-LEFT for4riders exceptfront-right VIEWER-RIGHT; shield onoppositearm, reins secured. Show fullhorse BACKS fromabove, rump/tail behindrider UPscreen, saddle underpelvis, neck/muzzle DOWNscreen, anatomicalhooves belowbody orside\u2014not behindriderheads. Riderroundcrowns, shoulder/cape tops, nofaces/noseguardportrait. No lances/chariots. Gentle breathing/tail/ear/wristmotion with swordcontinuouslyheld, horsefeetquiet. Shields tilted oval upper surfaces visible fromabove, notfulluprightfront disks.\nPreserveeverycrest/horsecolour/shieldemblem and swordhand frominput1:4swordsVIEWERLEFT,onlyfront-rightVIEWERRIGHT. True90degreeoverhead oncrowns,horsebacks,saddle/capes, nofrontface,isometrictilt,chariot,spear,extraunits. Paintedstrongblackoutlines/bronze/steelart. TransparentRGBA, nofloor/ground/shadows/labels/grid. WIDEclear4sidemargins, nothingclipped. SINGLE whole-squad attackkey sprite, ONEimageNOatlas. WIND-UP: ALL FIVE riders independentlyraise their own swordarms backUPscreen/outward besideownshoulder. Steelblade pointsUPscreen, fullyvisible incontinuousfist/hilt; front-centre must liftbladeasclearlyasrearmen. Shieldstaysstrappedoppositearm, reinssecured; nohand switch. Riderheads/shouldersslighttorsoleanupscreen, seated. Preserveallfive horse/ridercentres andbody scale. Entiregroupcentral68percentofsquarewithwideclearmarginsinclraisedblade/hooves.",
+      "references": [
+        "C:\\Users\\Damien\\.codex\\generated_images\\01a0f03e-fce7-71f0-ae83-67f86e8e8794\\exec-4963a771-cb0d-4cb5-b0c5-5e9ba89a6523.png"
+      ]
+    },
+    {
+      "key": "classical-Cavalry-Attack-F5",
+      "category": "Cavalry",
+      "state": "Attack",
+      "frame": 5,
+      "source": "C:\\Users\\Damien\\.codex\\generated_images\\01a0f03e-fce7-71f0-ae83-67f86e8e8794\\exec-77ba004c-403c-4f3a-bb03-468af44c0394.png",
+      "prompt": "Use case: precise-object-edit. Input1 primary EXACT Classical mounted squad camera/anatomy/equipment/identity reference. ExactlyFIVE riders onFIVEhorses in2rear3front facingDOWNscreen. Exactly FIVE cavalry = FIVE separate riders on FIVE horses,2rear3front. Rearleft redcrest redcape bronze scales on BAY blackmane; rearright WHITEcrest redcape bronze armour on PALOMINO cream mane; frontleft REDcrest redcape SILVER mail on BAY blackmane; frontcentre REDcrest fullbronzehelmet redcape bronzescales on WHITEGREY blackmane; frontright BLACKcrest redcape bronze armour on DARKBROWN blackmane. Steel leaf sword perrider, round bronze-edged shields: rearleft darkblue; rearright BLUE goldsun; frontleft RED whitehorse; frontcentre gold with RED Lambda; frontright BLUE goldlaurel. Sword grip VIEWER-LEFT for4riders exceptfront-right VIEWER-RIGHT; shield onoppositearm, reins secured. Show fullhorse BACKS fromabove, rump/tail behindrider UPscreen, saddle underpelvis, neck/muzzle DOWNscreen, anatomicalhooves belowbody orside\u2014not behindriderheads. Riderroundcrowns, shoulder/cape tops, nofaces/noseguardportrait. No lances/chariots. Gentle breathing/tail/ear/wristmotion with swordcontinuouslyheld, horsefeetquiet. Shields tilted oval upper surfaces visible fromabove, notfulluprightfront disks.\nPreserveeverycrest/horsecolour/shieldemblem and swordhand frominput1:4swordsVIEWERLEFT,onlyfront-rightVIEWERRIGHT. True90degreeoverhead oncrowns,horsebacks,saddle/capes, nofrontface,isometrictilt,chariot,spear,extraunits. Paintedstrongblackoutlines/bronze/steelart. TransparentRGBA, nofloor/ground/shadows/labels/grid. WIDEclear4sidemargins, nothingclipped. SINGLE whole-squad attackkey sprite, ONEimageNOatlas. FULL FORWARD CUT/IMPACT: ALL FIVE riders SWING DOWN andFORWARD towardsBOTTOMofscreen, own swordhand extended besideOUTERsideofownhorse'sneck. Allsteelblades pointdownscreenbeyondownfist withvisibleedge andtip. Swordarm4viewerLEFT,front-rightVIEWERRIGHT. Frontleft,frontcentre,frontright performthe SAMEcompletecut asreartwo, nostaticfrontmen. Continuous shoulder/elbow/wrist/hilt/blade; nevereraseweapon tofakeattack. Shieldsoppositearmheldfirm, horsesquiet. Bladeoutsideownhorsebody, notthroughmuzzle. Preserveallfive horse/ridercentres andbody scale. Entiregroupcentral68percentofsquarewithwideclearmarginsinclraisedblade/hooves.",
+      "references": [
+        "C:\\Users\\Damien\\.codex\\generated_images\\01a0f03e-fce7-71f0-ae83-67f86e8e8794\\exec-4963a771-cb0d-4cb5-b0c5-5e9ba89a6523.png"
+      ]
+    },
+    {
+      "key": "classical-Cavalry-Attack-F7",
+      "category": "Cavalry",
+      "state": "Attack",
+      "frame": 7,
+      "source": "C:\\Users\\Damien\\.codex\\generated_images\\01a0f03e-fce7-71f0-ae83-67f86e8e8794\\exec-98dcc387-2ea7-4f9a-90a5-96e8a22b73a6.png",
+      "prompt": "Use case: precise-object-edit. Input1 primary EXACT Classical mounted squad camera/anatomy/equipment/identity reference. ExactlyFIVE riders onFIVEhorses in2rear3front facingDOWNscreen. Exactly FIVE cavalry = FIVE separate riders on FIVE horses,2rear3front. Rearleft redcrest redcape bronze scales on BAY blackmane; rearright WHITEcrest redcape bronze armour on PALOMINO cream mane; frontleft REDcrest redcape SILVER mail on BAY blackmane; frontcentre REDcrest fullbronzehelmet redcape bronzescales on WHITEGREY blackmane; frontright BLACKcrest redcape bronze armour on DARKBROWN blackmane. Steel leaf sword perrider, round bronze-edged shields: rearleft darkblue; rearright BLUE goldsun; frontleft RED whitehorse; frontcentre gold with RED Lambda; frontright BLUE goldlaurel. Sword grip VIEWER-LEFT for4riders exceptfront-right VIEWER-RIGHT; shield onoppositearm, reins secured. Show fullhorse BACKS fromabove, rump/tail behindrider UPscreen, saddle underpelvis, neck/muzzle DOWNscreen, anatomicalhooves belowbody orside\u2014not behindriderheads. Riderroundcrowns, shoulder/cape tops, nofaces/noseguardportrait. No lances/chariots. Gentle breathing/tail/ear/wristmotion with swordcontinuouslyheld, horsefeetquiet. Shields tilted oval upper surfaces visible fromabove, notfulluprightfront disks.\nPreserveeverycrest/horsecolour/shieldemblem and swordhand frominput1:4swordsVIEWERLEFT,onlyfront-rightVIEWERRIGHT. True90degreeoverhead oncrowns,horsebacks,saddle/capes, nofrontface,isometrictilt,chariot,spear,extraunits. Paintedstrongblackoutlines/bronze/steelart. TransparentRGBA, nofloor/ground/shadows/labels/grid. WIDEclear4sidemargins, nothingclipped. SINGLE whole-squad attackkey sprite, ONEimageNOatlas. FOLLOW-THROUGH: ALL FIVE riders finishcut with own swordarm lowDOWNscreen andoutward besidehorse'scheek, steelbladeheldatlowforwardangle. Swordhand continuouslysame, allfive front/rear clearlycompletefollow-through, notreturntoneutralyet. Torso/handssettleslightly, shieldoppositearm/reinssecured. No disappearingweapon, noarm-throughshield/horse. Preserveallfive horse/ridercentres andbody scale. Entiregroupcentral68percentofsquarewithwideclearmarginsinclraisedblade/hooves.",
+      "references": [
+        "C:\\Users\\Damien\\.codex\\generated_images\\01a0f03e-fce7-71f0-ae83-67f86e8e8794\\exec-4963a771-cb0d-4cb5-b0c5-5e9ba89a6523.png"
+      ]
+    }
+  ],
+  "frameSelections": [
+    {
+      "category": "Melee",
+      "state": "Idle",
+      "poseSequence": [
+        1,
+        2,
+        3,
+        4,
+        4,
+        5,
+        6,
+        7,
+        8,
+        1
+      ],
+      "frames": [
+        {
+          "rawPath": "C:\\Users\\Damien\\.codex\\generated_images\\01a0f03e-fce7-71f0-ae83-67f86e8e8794\\exec-789f015c-5cee-4e4b-b1f3-9c740fcb7435.png",
+          "sourceIndex": 0
+        },
+        {
+          "rawPath": "C:\\Users\\Damien\\.codex\\generated_images\\01a0f03e-fce7-71f0-ae83-67f86e8e8794\\exec-789f015c-5cee-4e4b-b1f3-9c740fcb7435.png",
+          "sourceIndex": 1
+        },
+        {
+          "rawPath": "C:\\Users\\Damien\\.codex\\generated_images\\01a0f03e-fce7-71f0-ae83-67f86e8e8794\\exec-789f015c-5cee-4e4b-b1f3-9c740fcb7435.png",
+          "sourceIndex": 2
+        },
+        {
+          "rawPath": "C:\\Users\\Damien\\.codex\\generated_images\\01a0f03e-fce7-71f0-ae83-67f86e8e8794\\exec-789f015c-5cee-4e4b-b1f3-9c740fcb7435.png",
+          "sourceIndex": 3
+        },
+        {
+          "rawPath": "C:\\Users\\Damien\\.codex\\generated_images\\01a0f03e-fce7-71f0-ae83-67f86e8e8794\\exec-789f015c-5cee-4e4b-b1f3-9c740fcb7435.png",
+          "sourceIndex": 3
+        },
+        {
+          "rawPath": "C:\\Users\\Damien\\.codex\\generated_images\\01a0f03e-fce7-71f0-ae83-67f86e8e8794\\exec-789f015c-5cee-4e4b-b1f3-9c740fcb7435.png",
+          "sourceIndex": 5
+        },
+        {
+          "rawPath": "C:\\Users\\Damien\\.codex\\generated_images\\01a0f03e-fce7-71f0-ae83-67f86e8e8794\\exec-789f015c-5cee-4e4b-b1f3-9c740fcb7435.png",
+          "sourceIndex": 6
+        },
+        {
+          "rawPath": "C:\\Users\\Damien\\.codex\\generated_images\\01a0f03e-fce7-71f0-ae83-67f86e8e8794\\exec-789f015c-5cee-4e4b-b1f3-9c740fcb7435.png",
+          "sourceIndex": 7
+        },
+        {
+          "rawPath": "C:\\Users\\Damien\\.codex\\generated_images\\01a0f03e-fce7-71f0-ae83-67f86e8e8794\\exec-789f015c-5cee-4e4b-b1f3-9c740fcb7435.png",
+          "sourceIndex": 8
+        },
+        {
+          "rawPath": "C:\\Users\\Damien\\.codex\\generated_images\\01a0f03e-fce7-71f0-ae83-67f86e8e8794\\exec-789f015c-5cee-4e4b-b1f3-9c740fcb7435.png",
+          "sourceIndex": 0
+        }
+      ]
+    },
+    {
+      "category": "Melee",
+      "state": "Running",
+      "poseSequence": [
+        1,
+        2,
+        3,
+        4,
+        5,
+        6,
+        7,
+        8,
+        9,
+        10
+      ],
+      "frames": [
+        {
+          "rawPath": "C:\\Users\\Damien\\.codex\\generated_images\\01a0f03e-fce7-71f0-ae83-67f86e8e8794\\exec-8b1c7734-4a46-417f-8b56-273ddec79666.png",
+          "sourceIndex": 0
+        },
+        {
+          "rawPath": "C:\\Users\\Damien\\.codex\\generated_images\\01a0f03e-fce7-71f0-ae83-67f86e8e8794\\exec-8b1c7734-4a46-417f-8b56-273ddec79666.png",
+          "sourceIndex": 1
+        },
+        {
+          "rawPath": "C:\\Users\\Damien\\.codex\\generated_images\\01a0f03e-fce7-71f0-ae83-67f86e8e8794\\exec-8b1c7734-4a46-417f-8b56-273ddec79666.png",
+          "sourceIndex": 2
+        },
+        {
+          "rawPath": "C:\\Users\\Damien\\.codex\\generated_images\\01a0f03e-fce7-71f0-ae83-67f86e8e8794\\exec-8b1c7734-4a46-417f-8b56-273ddec79666.png",
+          "sourceIndex": 3
+        },
+        {
+          "rawPath": "C:\\Users\\Damien\\.codex\\generated_images\\01a0f03e-fce7-71f0-ae83-67f86e8e8794\\exec-8b1c7734-4a46-417f-8b56-273ddec79666.png",
+          "sourceIndex": 4
+        },
+        {
+          "rawPath": "C:\\Users\\Damien\\.codex\\generated_images\\01a0f03e-fce7-71f0-ae83-67f86e8e8794\\exec-8b1c7734-4a46-417f-8b56-273ddec79666.png",
+          "sourceIndex": 5
+        },
+        {
+          "rawPath": "C:\\Users\\Damien\\.codex\\generated_images\\01a0f03e-fce7-71f0-ae83-67f86e8e8794\\exec-8b1c7734-4a46-417f-8b56-273ddec79666.png",
+          "sourceIndex": 6
+        },
+        {
+          "rawPath": "C:\\Users\\Damien\\.codex\\generated_images\\01a0f03e-fce7-71f0-ae83-67f86e8e8794\\exec-8b1c7734-4a46-417f-8b56-273ddec79666.png",
+          "sourceIndex": 7
+        },
+        {
+          "rawPath": "C:\\Users\\Damien\\.codex\\generated_images\\01a0f03e-fce7-71f0-ae83-67f86e8e8794\\exec-8b1c7734-4a46-417f-8b56-273ddec79666.png",
+          "sourceIndex": 8
+        },
+        {
+          "rawPath": "C:\\Users\\Damien\\.codex\\generated_images\\01a0f03e-fce7-71f0-ae83-67f86e8e8794\\exec-8b1c7734-4a46-417f-8b56-273ddec79666.png",
+          "sourceIndex": 9
+        }
+      ]
+    },
+    {
+      "category": "Melee",
+      "state": "Attack",
+      "poseSequence": [
+        1,
+        2,
+        3,
+        3,
+        4,
+        4,
+        5,
+        6,
+        7,
+        1
+      ],
+      "frames": [
+        {
+          "rawPath": "C:\\Users\\Damien\\.codex\\generated_images\\01a0f03e-fce7-71f0-ae83-67f86e8e8794\\exec-789f015c-5cee-4e4b-b1f3-9c740fcb7435.png",
+          "sourceIndex": 0
+        },
+        {
+          "rawPath": "C:\\Users\\Damien\\.codex\\generated_images\\01a0f03e-fce7-71f0-ae83-67f86e8e8794\\exec-789f015c-5cee-4e4b-b1f3-9c740fcb7435.png",
+          "sourceIndex": 1
+        },
+        {
+          "rawPath": "C:\\Users\\Damien\\.codex\\generated_images\\01a0f03e-fce7-71f0-ae83-67f86e8e8794\\exec-fb43684e-6a22-4c0c-8935-908d0658e75c.png",
+          "single": true
+        },
+        {
+          "rawPath": "C:\\Users\\Damien\\.codex\\generated_images\\01a0f03e-fce7-71f0-ae83-67f86e8e8794\\exec-fb43684e-6a22-4c0c-8935-908d0658e75c.png",
+          "single": true
+        },
+        {
+          "rawPath": "C:\\Users\\Damien\\.codex\\generated_images\\01a0f03e-fce7-71f0-ae83-67f86e8e8794\\exec-f0152c78-221c-4633-9b01-3f45b4053dfa.png",
+          "single": true
+        },
+        {
+          "rawPath": "C:\\Users\\Damien\\.codex\\generated_images\\01a0f03e-fce7-71f0-ae83-67f86e8e8794\\exec-f0152c78-221c-4633-9b01-3f45b4053dfa.png",
+          "single": true
+        },
+        {
+          "rawPath": "C:\\Users\\Damien\\.codex\\generated_images\\01a0f03e-fce7-71f0-ae83-67f86e8e8794\\exec-12335f49-d532-499b-b616-9435642563d5.png",
+          "single": true
+        },
+        {
+          "rawPath": "C:\\Users\\Damien\\.codex\\generated_images\\01a0f03e-fce7-71f0-ae83-67f86e8e8794\\exec-789f015c-5cee-4e4b-b1f3-9c740fcb7435.png",
+          "sourceIndex": 7
+        },
+        {
+          "rawPath": "C:\\Users\\Damien\\.codex\\generated_images\\01a0f03e-fce7-71f0-ae83-67f86e8e8794\\exec-789f015c-5cee-4e4b-b1f3-9c740fcb7435.png",
+          "sourceIndex": 8
+        },
+        {
+          "rawPath": "C:\\Users\\Damien\\.codex\\generated_images\\01a0f03e-fce7-71f0-ae83-67f86e8e8794\\exec-789f015c-5cee-4e4b-b1f3-9c740fcb7435.png",
+          "sourceIndex": 0
+        }
+      ]
+    },
+    {
+      "category": "Ranged",
+      "state": "Idle",
+      "poseSequence": [
+        1,
+        2,
+        3,
+        4,
+        5,
+        6,
+        7,
+        8,
+        9,
+        10
+      ],
+      "frames": [
+        {
+          "rawPath": "C:\\Users\\Damien\\.codex\\generated_images\\01a0f03e-fce7-71f0-ae83-67f86e8e8794\\exec-dda9f759-1638-43f1-bf04-4a26b18c3edd.png",
+          "sourceIndex": 0
+        },
+        {
+          "rawPath": "C:\\Users\\Damien\\.codex\\generated_images\\01a0f03e-fce7-71f0-ae83-67f86e8e8794\\exec-dda9f759-1638-43f1-bf04-4a26b18c3edd.png",
+          "sourceIndex": 1
+        },
+        {
+          "rawPath": "C:\\Users\\Damien\\.codex\\generated_images\\01a0f03e-fce7-71f0-ae83-67f86e8e8794\\exec-dda9f759-1638-43f1-bf04-4a26b18c3edd.png",
+          "sourceIndex": 2
+        },
+        {
+          "rawPath": "C:\\Users\\Damien\\.codex\\generated_images\\01a0f03e-fce7-71f0-ae83-67f86e8e8794\\exec-dda9f759-1638-43f1-bf04-4a26b18c3edd.png",
+          "sourceIndex": 3
+        },
+        {
+          "rawPath": "C:\\Users\\Damien\\.codex\\generated_images\\01a0f03e-fce7-71f0-ae83-67f86e8e8794\\exec-dda9f759-1638-43f1-bf04-4a26b18c3edd.png",
+          "sourceIndex": 4
+        },
+        {
+          "rawPath": "C:\\Users\\Damien\\.codex\\generated_images\\01a0f03e-fce7-71f0-ae83-67f86e8e8794\\exec-dda9f759-1638-43f1-bf04-4a26b18c3edd.png",
+          "sourceIndex": 5
+        },
+        {
+          "rawPath": "C:\\Users\\Damien\\.codex\\generated_images\\01a0f03e-fce7-71f0-ae83-67f86e8e8794\\exec-dda9f759-1638-43f1-bf04-4a26b18c3edd.png",
+          "sourceIndex": 6
+        },
+        {
+          "rawPath": "C:\\Users\\Damien\\.codex\\generated_images\\01a0f03e-fce7-71f0-ae83-67f86e8e8794\\exec-dda9f759-1638-43f1-bf04-4a26b18c3edd.png",
+          "sourceIndex": 7
+        },
+        {
+          "rawPath": "C:\\Users\\Damien\\.codex\\generated_images\\01a0f03e-fce7-71f0-ae83-67f86e8e8794\\exec-dda9f759-1638-43f1-bf04-4a26b18c3edd.png",
+          "sourceIndex": 8
+        },
+        {
+          "rawPath": "C:\\Users\\Damien\\.codex\\generated_images\\01a0f03e-fce7-71f0-ae83-67f86e8e8794\\exec-dda9f759-1638-43f1-bf04-4a26b18c3edd.png",
+          "sourceIndex": 9
+        }
+      ]
+    },
+    {
+      "category": "Ranged",
+      "state": "Running",
+      "poseSequence": [
+        1,
+        2,
+        3,
+        4,
+        5,
+        6,
+        7,
+        8,
+        9,
+        10
+      ],
+      "frames": [
+        {
+          "rawPath": "C:\\Users\\Damien\\.codex\\generated_images\\01a0f03e-fce7-71f0-ae83-67f86e8e8794\\exec-b79cfba5-7716-47fe-ade8-9e0a167798af.png",
+          "sourceIndex": 0
+        },
+        {
+          "rawPath": "C:\\Users\\Damien\\.codex\\generated_images\\01a0f03e-fce7-71f0-ae83-67f86e8e8794\\exec-b79cfba5-7716-47fe-ade8-9e0a167798af.png",
+          "sourceIndex": 1
+        },
+        {
+          "rawPath": "C:\\Users\\Damien\\.codex\\generated_images\\01a0f03e-fce7-71f0-ae83-67f86e8e8794\\exec-b79cfba5-7716-47fe-ade8-9e0a167798af.png",
+          "sourceIndex": 2
+        },
+        {
+          "rawPath": "C:\\Users\\Damien\\.codex\\generated_images\\01a0f03e-fce7-71f0-ae83-67f86e8e8794\\exec-b79cfba5-7716-47fe-ade8-9e0a167798af.png",
+          "sourceIndex": 3
+        },
+        {
+          "rawPath": "C:\\Users\\Damien\\.codex\\generated_images\\01a0f03e-fce7-71f0-ae83-67f86e8e8794\\exec-b79cfba5-7716-47fe-ade8-9e0a167798af.png",
+          "sourceIndex": 4
+        },
+        {
+          "rawPath": "C:\\Users\\Damien\\.codex\\generated_images\\01a0f03e-fce7-71f0-ae83-67f86e8e8794\\exec-b79cfba5-7716-47fe-ade8-9e0a167798af.png",
+          "sourceIndex": 5
+        },
+        {
+          "rawPath": "C:\\Users\\Damien\\.codex\\generated_images\\01a0f03e-fce7-71f0-ae83-67f86e8e8794\\exec-b79cfba5-7716-47fe-ade8-9e0a167798af.png",
+          "sourceIndex": 6
+        },
+        {
+          "rawPath": "C:\\Users\\Damien\\.codex\\generated_images\\01a0f03e-fce7-71f0-ae83-67f86e8e8794\\exec-b79cfba5-7716-47fe-ade8-9e0a167798af.png",
+          "sourceIndex": 7
+        },
+        {
+          "rawPath": "C:\\Users\\Damien\\.codex\\generated_images\\01a0f03e-fce7-71f0-ae83-67f86e8e8794\\exec-b79cfba5-7716-47fe-ade8-9e0a167798af.png",
+          "sourceIndex": 8
+        },
+        {
+          "rawPath": "C:\\Users\\Damien\\.codex\\generated_images\\01a0f03e-fce7-71f0-ae83-67f86e8e8794\\exec-b79cfba5-7716-47fe-ade8-9e0a167798af.png",
+          "sourceIndex": 9
+        }
+      ]
+    },
+    {
+      "category": "Ranged",
+      "state": "Attack",
+      "poseSequence": [
+        1,
+        2,
+        3,
+        3,
+        4,
+        4,
+        5,
+        6,
+        7,
+        8
+      ],
+      "frames": [
+        {
+          "rawPath": "C:\\Users\\Damien\\.codex\\generated_images\\01a0f03e-fce7-71f0-ae83-67f86e8e8794\\exec-dda9f759-1638-43f1-bf04-4a26b18c3edd.png",
+          "sourceIndex": 0
+        },
+        {
+          "rawPath": "C:\\Users\\Damien\\.codex\\generated_images\\01a0f03e-fce7-71f0-ae83-67f86e8e8794\\exec-dda9f759-1638-43f1-bf04-4a26b18c3edd.png",
+          "sourceIndex": 1
+        },
+        {
+          "rawPath": "C:\\Users\\Damien\\.codex\\generated_images\\01a0f03e-fce7-71f0-ae83-67f86e8e8794\\exec-57dc8675-db5b-4b26-b90f-d7bf9f3eed33.png",
+          "single": true
+        },
+        {
+          "rawPath": "C:\\Users\\Damien\\.codex\\generated_images\\01a0f03e-fce7-71f0-ae83-67f86e8e8794\\exec-57dc8675-db5b-4b26-b90f-d7bf9f3eed33.png",
+          "single": true
+        },
+        {
+          "rawPath": "C:\\Users\\Damien\\.codex\\generated_images\\01a0f03e-fce7-71f0-ae83-67f86e8e8794\\exec-ba251fbc-8d0d-4fe7-aaad-a45ac8d81528.png",
+          "single": true
+        },
+        {
+          "rawPath": "C:\\Users\\Damien\\.codex\\generated_images\\01a0f03e-fce7-71f0-ae83-67f86e8e8794\\exec-ba251fbc-8d0d-4fe7-aaad-a45ac8d81528.png",
+          "single": true
+        },
+        {
+          "rawPath": "C:\\Users\\Damien\\.codex\\generated_images\\01a0f03e-fce7-71f0-ae83-67f86e8e8794\\exec-8a08ba4c-132f-446d-a279-5f0b2a030c53.png",
+          "single": true
+        },
+        {
+          "rawPath": "C:\\Users\\Damien\\.codex\\generated_images\\01a0f03e-fce7-71f0-ae83-67f86e8e8794\\exec-dda9f759-1638-43f1-bf04-4a26b18c3edd.png",
+          "sourceIndex": 7
+        },
+        {
+          "rawPath": "C:\\Users\\Damien\\.codex\\generated_images\\01a0f03e-fce7-71f0-ae83-67f86e8e8794\\exec-dda9f759-1638-43f1-bf04-4a26b18c3edd.png",
+          "sourceIndex": 8
+        },
+        {
+          "rawPath": "C:\\Users\\Damien\\.codex\\generated_images\\01a0f03e-fce7-71f0-ae83-67f86e8e8794\\exec-dda9f759-1638-43f1-bf04-4a26b18c3edd.png",
+          "sourceIndex": 9
+        }
+      ]
+    },
+    {
+      "category": "Cavalry",
+      "state": "Idle",
+      "poseSequence": [
+        1,
+        1,
+        2,
+        2,
+        3,
+        3,
+        2,
+        2,
+        1,
+        1
+      ],
+      "frames": [
+        {
+          "rawPath": "C:\\Users\\Damien\\.codex\\generated_images\\01a0f03e-fce7-71f0-ae83-67f86e8e8794\\exec-4963a771-cb0d-4cb5-b0c5-5e9ba89a6523.png",
+          "single": true
+        },
+        {
+          "rawPath": "C:\\Users\\Damien\\.codex\\generated_images\\01a0f03e-fce7-71f0-ae83-67f86e8e8794\\exec-4963a771-cb0d-4cb5-b0c5-5e9ba89a6523.png",
+          "single": true
+        },
+        {
+          "rawPath": "C:\\Users\\Damien\\.codex\\generated_images\\01a0f03e-fce7-71f0-ae83-67f86e8e8794\\exec-1b107703-711d-4b88-b5bf-b46e8d433025.png",
+          "single": true
+        },
+        {
+          "rawPath": "C:\\Users\\Damien\\.codex\\generated_images\\01a0f03e-fce7-71f0-ae83-67f86e8e8794\\exec-1b107703-711d-4b88-b5bf-b46e8d433025.png",
+          "single": true
+        },
+        {
+          "rawPath": "C:\\Users\\Damien\\.codex\\generated_images\\01a0f03e-fce7-71f0-ae83-67f86e8e8794\\exec-c2d63f3d-1408-42c4-98a5-c7445654dab2.png",
+          "single": true
+        },
+        {
+          "rawPath": "C:\\Users\\Damien\\.codex\\generated_images\\01a0f03e-fce7-71f0-ae83-67f86e8e8794\\exec-c2d63f3d-1408-42c4-98a5-c7445654dab2.png",
+          "single": true
+        },
+        {
+          "rawPath": "C:\\Users\\Damien\\.codex\\generated_images\\01a0f03e-fce7-71f0-ae83-67f86e8e8794\\exec-1b107703-711d-4b88-b5bf-b46e8d433025.png",
+          "single": true
+        },
+        {
+          "rawPath": "C:\\Users\\Damien\\.codex\\generated_images\\01a0f03e-fce7-71f0-ae83-67f86e8e8794\\exec-1b107703-711d-4b88-b5bf-b46e8d433025.png",
+          "single": true
+        },
+        {
+          "rawPath": "C:\\Users\\Damien\\.codex\\generated_images\\01a0f03e-fce7-71f0-ae83-67f86e8e8794\\exec-4963a771-cb0d-4cb5-b0c5-5e9ba89a6523.png",
+          "single": true
+        },
+        {
+          "rawPath": "C:\\Users\\Damien\\.codex\\generated_images\\01a0f03e-fce7-71f0-ae83-67f86e8e8794\\exec-4963a771-cb0d-4cb5-b0c5-5e9ba89a6523.png",
+          "single": true
+        }
+      ]
+    },
+    {
+      "category": "Cavalry",
+      "state": "Running",
+      "poseSequence": [
+        1,
+        1,
+        2,
+        2,
+        3,
+        3,
+        4,
+        4,
+        4,
+        1
+      ],
+      "frames": [
+        {
+          "rawPath": "C:\\Users\\Damien\\.codex\\generated_images\\01a0f03e-fce7-71f0-ae83-67f86e8e8794\\exec-7dabf77d-c1b1-4d52-8a80-366fbc9f12e3.png",
+          "single": true
+        },
+        {
+          "rawPath": "C:\\Users\\Damien\\.codex\\generated_images\\01a0f03e-fce7-71f0-ae83-67f86e8e8794\\exec-7dabf77d-c1b1-4d52-8a80-366fbc9f12e3.png",
+          "single": true
+        },
+        {
+          "rawPath": "C:\\Users\\Damien\\.codex\\generated_images\\01a0f03e-fce7-71f0-ae83-67f86e8e8794\\exec-86b7514e-c706-494f-9e44-349eec4d0cb3.png",
+          "single": true
+        },
+        {
+          "rawPath": "C:\\Users\\Damien\\.codex\\generated_images\\01a0f03e-fce7-71f0-ae83-67f86e8e8794\\exec-86b7514e-c706-494f-9e44-349eec4d0cb3.png",
+          "single": true
+        },
+        {
+          "rawPath": "C:\\Users\\Damien\\.codex\\generated_images\\01a0f03e-fce7-71f0-ae83-67f86e8e8794\\exec-d63bbc96-93be-4746-9ed7-7c86ce2707f6.png",
+          "single": true
+        },
+        {
+          "rawPath": "C:\\Users\\Damien\\.codex\\generated_images\\01a0f03e-fce7-71f0-ae83-67f86e8e8794\\exec-d63bbc96-93be-4746-9ed7-7c86ce2707f6.png",
+          "single": true
+        },
+        {
+          "rawPath": "C:\\Users\\Damien\\.codex\\generated_images\\01a0f03e-fce7-71f0-ae83-67f86e8e8794\\exec-1a9258e8-14b3-4fd3-bd3c-1f5e692a3e0a.png",
+          "single": true
+        },
+        {
+          "rawPath": "C:\\Users\\Damien\\.codex\\generated_images\\01a0f03e-fce7-71f0-ae83-67f86e8e8794\\exec-1a9258e8-14b3-4fd3-bd3c-1f5e692a3e0a.png",
+          "single": true
+        },
+        {
+          "rawPath": "C:\\Users\\Damien\\.codex\\generated_images\\01a0f03e-fce7-71f0-ae83-67f86e8e8794\\exec-1a9258e8-14b3-4fd3-bd3c-1f5e692a3e0a.png",
+          "single": true
+        },
+        {
+          "rawPath": "C:\\Users\\Damien\\.codex\\generated_images\\01a0f03e-fce7-71f0-ae83-67f86e8e8794\\exec-7dabf77d-c1b1-4d52-8a80-366fbc9f12e3.png",
+          "single": true
+        }
+      ]
+    },
+    {
+      "category": "Cavalry",
+      "state": "Attack",
+      "poseSequence": [
+        1,
+        2,
+        3,
+        3,
+        4,
+        4,
+        5,
+        6,
+        2,
+        1
+      ],
+      "frames": [
+        {
+          "rawPath": "C:\\Users\\Damien\\.codex\\generated_images\\01a0f03e-fce7-71f0-ae83-67f86e8e8794\\exec-4963a771-cb0d-4cb5-b0c5-5e9ba89a6523.png",
+          "single": true
+        },
+        {
+          "rawPath": "C:\\Users\\Damien\\.codex\\generated_images\\01a0f03e-fce7-71f0-ae83-67f86e8e8794\\exec-1b107703-711d-4b88-b5bf-b46e8d433025.png",
+          "single": true
+        },
+        {
+          "rawPath": "C:\\Users\\Damien\\.codex\\generated_images\\01a0f03e-fce7-71f0-ae83-67f86e8e8794\\exec-1e4e151c-bf28-4451-b95c-bb0d2f97dadc.png",
+          "single": true
+        },
+        {
+          "rawPath": "C:\\Users\\Damien\\.codex\\generated_images\\01a0f03e-fce7-71f0-ae83-67f86e8e8794\\exec-1e4e151c-bf28-4451-b95c-bb0d2f97dadc.png",
+          "single": true
+        },
+        {
+          "rawPath": "C:\\Users\\Damien\\.codex\\generated_images\\01a0f03e-fce7-71f0-ae83-67f86e8e8794\\exec-77ba004c-403c-4f3a-bb03-468af44c0394.png",
+          "single": true
+        },
+        {
+          "rawPath": "C:\\Users\\Damien\\.codex\\generated_images\\01a0f03e-fce7-71f0-ae83-67f86e8e8794\\exec-77ba004c-403c-4f3a-bb03-468af44c0394.png",
+          "single": true
+        },
+        {
+          "rawPath": "C:\\Users\\Damien\\.codex\\generated_images\\01a0f03e-fce7-71f0-ae83-67f86e8e8794\\exec-98dcc387-2ea7-4f9a-90a5-96e8a22b73a6.png",
+          "single": true
+        },
+        {
+          "rawPath": "C:\\Users\\Damien\\.codex\\generated_images\\01a0f03e-fce7-71f0-ae83-67f86e8e8794\\exec-c2d63f3d-1408-42c4-98a5-c7445654dab2.png",
+          "single": true
+        },
+        {
+          "rawPath": "C:\\Users\\Damien\\.codex\\generated_images\\01a0f03e-fce7-71f0-ae83-67f86e8e8794\\exec-1b107703-711d-4b88-b5bf-b46e8d433025.png",
+          "single": true
+        },
+        {
+          "rawPath": "C:\\Users\\Damien\\.codex\\generated_images\\01a0f03e-fce7-71f0-ae83-67f86e8e8794\\exec-4963a771-cb0d-4cb5-b0c5-5e9ba89a6523.png",
+          "single": true
+        }
+      ]
+    }
+  ],
+  "selectionNote": "Infantry idle source slots 5 and 10 excluded for incomplete swords; complete idle slots supply intentional holds and attack recovery. Cavalry running uses four clearly alternating gallop poses. Only selected packed PNGs are present in each unit folder."
+}

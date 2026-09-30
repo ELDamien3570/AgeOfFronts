@@ -1,0 +1,775 @@
+{
+  "age": "EarlyModern",
+  "mode": "Built-in image_gen tool",
+  "camera": "Straight overhead; full squads face screen-bottom",
+  "originalStillIconsPreserved": true,
+  "previousAgesPreserved": true,
+  "productionFolders": [
+    "Melee/EarlyModern",
+    "Ranged/EarlyModern",
+    "Cavalry/EarlyModern"
+  ],
+  "atlas": {
+    "size": [
+      2560,
+      1024
+    ],
+    "grid": [
+      5,
+      2
+    ],
+    "frameSize": [
+      512,
+      512
+    ],
+    "frames": 10,
+    "pivot": [
+      256,
+      256
+    ],
+    "format": "PNG RGBA"
+  },
+  "assembly": "Whole-squad source poses cropped at transparent gutters, registered against rear crowns, uniformly resized and packed with consistent pivots. No painted pixels edited with scripts.",
+  "selectionNotes": [
+    "Five unique troop identities and continuously held firearms preserved in every frame, including every front-rank member.",
+    "All three Attack clips: ready holds, five-person aim, five muzzle flashes/smoke bursts, five expanding plumes, fading wisps, nearly dissolved smoke and return to ready.",
+    "Smoke has transparent edges and is baked into the attack artwork; every whole plume remains inside its own frame.",
+    "Musketeer guide's duplicated front-left barrel removed using built-in editing.",
+    "Musketeer idle atlas rebuilt with transparent gutters to restore complete groups and muzzle tips.",
+    "Infantry idle packing density adjusted after browser inspection to match movement and attack scale. Attack recovery ends on the same clean guide pose to avoid scale jumps.",
+    "Repeated pose indices are intentional frame holds. Running remains the movement clip; metadata playback rates do not control simulation timing."
+  ],
+  "guideConstructionPrompts": [
+    {
+      "category": "Melee",
+      "prompt": "Use case: precise-object-edit. Asset: stylized strategy game squad sprite. Input 1 is PRIMARY original Early Modern unit identity/equipment reference. Input 2 is ONLY the approved straight overhead camera and painted-outline style reference, not its era or costume. Make ONE complete squad on a square transparent RGBA canvas, NOT an atlas. TRUE straight-down 90 degree vertical orthographic camera looking down crown TOPS, shoulders, backs, no face or eyes visible, NO isometric tilt. All face screenBOTTOM, exactly two rear and three front. Detailed hand-painted game icon finish with bold clean dark edges and diffuse warm light. Maintain recognisable original individual colour identities. Keep all equipment completely visible within CENTRAL65percent; generous transparent room around gun muzzles for later smoke. No scene/floor/ground shadow/text/grid/effects. Fixed ready idle stance, NO smoke yet. Exactly FIVE early modern short-gun infantry and FIVE stock-mounted SHORT broad-bore firearms, one per man, not swords. Rear-left RED coat, cream collar/cuffs, pointed steel morion with RED plume; rear-right BLUE coat, cream cuffs, brown broadbrim hat cream band BLUE plume; front-left RED coat, brown broadbrim cream band WHITE plume; front-middle BLUE coat brown broadbrim cream band RED plume; front-right RED coat pointed steel morion NO plume. Brown leather crossbelts/pouches, dark blue trousers and brown boots, brown gloves. Original wooden full gun stocks, short thick black-steel barrels and brass muzzle bands, open circular muzzles facing downscreen, not long slim muskets. ALL five guns normalized consistent: viewerLEFT hand grips trigger/wrist of stock near torso, viewerRIGHT hand supports WOOD fore-end, both hands on ONE continuous gun. Butt seated near anatomical right shoulder, barrel angles slightly downscreenLEFT beside each owner's left knee, 5 fully visible muzzles outside troop silhouettes. Elbows bend naturally, no barrel through forearm or any other body. Do not add swords, shields, bayonets or gun supports. Hats/helmets seen as crown tops with faces completely hidden.",
+      "references": [
+        "C:/Users/Damien/Documents/GitHub/AgeOfFronts/AgeOfFronts/Art/Soldier Icons/Melee/Melee_EarlyModern.png",
+        "C:/Users/Damien/Documents/GitHub/AgeOfFronts/AgeOfFronts/Art/Soldier Icons/Melee/LateMedieval/Idle.png"
+      ]
+    },
+    {
+      "category": "Ranged",
+      "prompt": "Use case: precise-object-edit. Asset: stylized strategy game squad sprite. Input 1 is PRIMARY original Early Modern unit identity/equipment reference. Input 2 is ONLY the approved straight overhead camera and painted-outline style reference, not its era or costume. Make ONE complete squad on a square transparent RGBA canvas, NOT an atlas. TRUE straight-down 90 degree vertical orthographic camera looking down crown TOPS, shoulders, backs, no face or eyes visible, NO isometric tilt. All face screenBOTTOM, exactly two rear and three front. Detailed hand-painted game icon finish with bold clean dark edges and diffuse warm light. Maintain recognisable original individual colour identities. Keep all equipment completely visible within CENTRAL65percent; generous transparent room around gun muzzles for later smoke. No scene/floor/ground shadow/text/grid/effects. Fixed ready idle stance, NO smoke yet. Exactly FIVE musketeers with FIVE LONG slim early modern wooden-stock steel-barrel flintlock muskets, no bayonets, one musket each. Rear-left OCHRE/yellow coat BLUE cuffs, riveted steel pointed morion NO plume; rear-right BLUE coat RED cuffs/lapels black broadbrim RED feather; front-left BLUE coat CREAM cuffs, black broadbrim BLUE band WHITE feather; front-middle RED coat CREAM cuffs, black broadbrim WHITE feather; front-right BLUE coat CREAM cuffs, BLACK TRICORNE gold rim NO feather. Preserve brown leather crossbelts/pouches, cream/beige trousers, brown knee boots. Bare hands. ALL trigger hands viewerLEFT near butt/lock at shoulder, ALL support hands viewerRIGHT grip wooden fore-end ahead of lock. ONE continuous musket with attached flintlock/steel barrel/brass barrel bands per man. Butt seated near anatomical right shoulder, all five barrel muzzles angle slightly downscreenLEFT outside owner's silhouette, not into neighbour. Every whole barrel and round open muzzle visible with generous bottom margins. Musket shafts must not poke through arms or torsos; nothing floating. No pistols, swords, shields or extra weapons. Hats seen directly overhead, faces completely hidden.",
+      "references": [
+        "C:/Users/Damien/Documents/GitHub/AgeOfFronts/AgeOfFronts/Art/Soldier Icons/Ranged/Ranged_EarlyModern.png",
+        "C:/Users/Damien/Documents/GitHub/AgeOfFronts/AgeOfFronts/Art/Soldier Icons/Ranged/LateMedieval/Idle.png"
+      ]
+    },
+    {
+      "category": "Cavalry",
+      "prompt": "Use case: precise-object-edit. Asset: stylized strategy game squad sprite. Input 1 is PRIMARY original Early Modern unit identity/equipment reference. Input 2 is ONLY the approved straight overhead camera and painted-outline style reference, not its era or costume. Make ONE complete squad on a square transparent RGBA canvas, NOT an atlas. TRUE straight-down 90 degree vertical orthographic camera looking down crown TOPS, shoulders, backs, no face or eyes visible, NO isometric tilt. All face screenBOTTOM, exactly two rear and three front. Detailed hand-painted game icon finish with bold clean dark edges and diffuse warm light. Maintain recognisable original individual colour identities. Keep all equipment completely visible within CENTRAL65percent; generous transparent room around gun muzzles for later smoke. No scene/floor/ground shadow/text/grid/effects. Fixed ready idle stance, NO smoke yet. Exactly FIVE mounted pistoliers, FIVE horses and FIVE single flintlock pistols with gold lock fittings and short silver barrels. NO shields, lances or drawn sabres. Visible curved sabre scabbards remain sheathed beside saddle hips. Rear-left red/gold braided coat, brown fur hat WHITE plume, leopard-trim red cape, BAY horse white forehead blaze; rear-right steel/gold helmet RED/WHITE tall plume, steel cuirass red sleeves, leopard pelt blue cape, CREAM horse black mane; front-left BLUE coat cream collar brown cuirass, broadbrim black hat RED/WHITE plume, red sash/cape, BAY horse white blaze; front-middle red/gold braided coat leopard fur trim brown fur hat RED plume, CHARCOAL-GREY horse white blaze; front-right OCHRE/yellow coat brown cuirass BLUE cape, steel/gold helmet BLUE/WHITE plume, dark BAY horse white blaze. Gold tack, gold stirrups and matching red/blue tassels. Horse backs and natural BLACK tails upscreen, necks/muzzles downscreen, camera looks straight down crowns/saddles/spines. Keep coloured helmet plumes distinct from natural black horse tails. ALL five pistol hands viewerLEFT, non-gun hand viewerRIGHT maintains reins, exactly one pistol per rider. Pistol forearm bent ready with continuous hand-gripped barrel aiming diagonally downscreenLEFT outside same-side horse neck, not upright toward camera and not touching another horse. No duplicated pistols or disembodied gun hands. Whole horse bodies, five riders, tack, all muzzles and feather tips fully contained in transparent margins.",
+      "references": [
+        "C:/Users/Damien/Documents/GitHub/AgeOfFronts/AgeOfFronts/Art/Soldier Icons/Cavalry/Cav_EarlyModern.png",
+        "C:/Users/Damien/Documents/GitHub/AgeOfFronts/AgeOfFronts/Art/Soldier Icons/Cavalry/LateMedieval/Idle.png"
+      ]
+    }
+  ],
+  "generationPrompts": [
+    {
+      "id": "earlymodern-Melee-Guide",
+      "category": "Melee",
+      "state": "Guide",
+      "rawOutput": "C:\\Users\\Damien\\.codex\\generated_images\\01a0f03e-fce7-71f0-ae83-67f86e8e8794\\exec-6da19068-4afd-4b0e-892b-0e54bb66f1ad.png",
+      "usedInFinal": true,
+      "prompt": "Use case: precise-object-edit. Asset: stylized strategy game squad sprite. Input 1 is PRIMARY original Early Modern unit identity/equipment reference. Input 2 is ONLY the approved straight overhead camera and painted-outline style reference, not its era or costume. Make ONE complete squad on a square transparent RGBA canvas, NOT an atlas. TRUE straight-down 90 degree vertical orthographic camera looking down crown TOPS, shoulders, backs, no face or eyes visible, NO isometric tilt. All face screenBOTTOM, exactly two rear and three front. Detailed hand-painted game icon finish with bold clean dark edges and diffuse warm light. Maintain recognisable original individual colour identities. Keep all equipment completely visible within CENTRAL65percent; generous transparent room around gun muzzles for later smoke. No scene/floor/ground shadow/text/grid/effects. Fixed ready idle stance, NO smoke yet. Exactly FIVE early modern short-gun infantry and FIVE stock-mounted SHORT broad-bore firearms, one per man, not swords. Rear-left RED coat, cream collar/cuffs, pointed steel morion with RED plume; rear-right BLUE coat, cream cuffs, brown broadbrim hat cream band BLUE plume; front-left RED coat, brown broadbrim cream band WHITE plume; front-middle BLUE coat brown broadbrim cream band RED plume; front-right RED coat pointed steel morion NO plume. Brown leather crossbelts/pouches, dark blue trousers and brown boots, brown gloves. Original wooden full gun stocks, short thick black-steel barrels and brass muzzle bands, open circular muzzles facing downscreen, not long slim muskets. ALL five guns normalized consistent: viewerLEFT hand grips trigger/wrist of stock near torso, viewerRIGHT hand supports WOOD fore-end, both hands on ONE continuous gun. Butt seated near anatomical right shoulder, barrel angles slightly downscreenLEFT beside each owner's left knee, 5 fully visible muzzles outside troop silhouettes. Elbows bend naturally, no barrel through forearm or any other body. Do not add swords, shields, bayonets or gun supports. Hats/helmets seen as crown tops with faces completely hidden.",
+      "references": [
+        "C:/Users/Damien/Documents/GitHub/AgeOfFronts/AgeOfFronts/Art/Soldier Icons/Melee/Melee_EarlyModern.png",
+        "C:/Users/Damien/Documents/GitHub/AgeOfFronts/AgeOfFronts/Art/Soldier Icons/Melee/LateMedieval/Idle.png"
+      ]
+    },
+    {
+      "id": "earlymodern-Ranged-Guide",
+      "category": "Ranged",
+      "state": "Guide",
+      "rawOutput": "C:\\Users\\Damien\\.codex\\generated_images\\01a0f03e-fce7-71f0-ae83-67f86e8e8794\\exec-fe805191-5534-4dd7-8d5f-8e0838b2b9a6.png",
+      "usedInFinal": false,
+      "prompt": "Use case: precise-object-edit. Asset: stylized strategy game squad sprite. Input 1 is PRIMARY original Early Modern unit identity/equipment reference. Input 2 is ONLY the approved straight overhead camera and painted-outline style reference, not its era or costume. Make ONE complete squad on a square transparent RGBA canvas, NOT an atlas. TRUE straight-down 90 degree vertical orthographic camera looking down crown TOPS, shoulders, backs, no face or eyes visible, NO isometric tilt. All face screenBOTTOM, exactly two rear and three front. Detailed hand-painted game icon finish with bold clean dark edges and diffuse warm light. Maintain recognisable original individual colour identities. Keep all equipment completely visible within CENTRAL65percent; generous transparent room around gun muzzles for later smoke. No scene/floor/ground shadow/text/grid/effects. Fixed ready idle stance, NO smoke yet. Exactly FIVE musketeers with FIVE LONG slim early modern wooden-stock steel-barrel flintlock muskets, no bayonets, one musket each. Rear-left OCHRE/yellow coat BLUE cuffs, riveted steel pointed morion NO plume; rear-right BLUE coat RED cuffs/lapels black broadbrim RED feather; front-left BLUE coat CREAM cuffs, black broadbrim BLUE band WHITE feather; front-middle RED coat CREAM cuffs, black broadbrim WHITE feather; front-right BLUE coat CREAM cuffs, BLACK TRICORNE gold rim NO feather. Preserve brown leather crossbelts/pouches, cream/beige trousers, brown knee boots. Bare hands. ALL trigger hands viewerLEFT near butt/lock at shoulder, ALL support hands viewerRIGHT grip wooden fore-end ahead of lock. ONE continuous musket with attached flintlock/steel barrel/brass barrel bands per man. Butt seated near anatomical right shoulder, all five barrel muzzles angle slightly downscreenLEFT outside owner's silhouette, not into neighbour. Every whole barrel and round open muzzle visible with generous bottom margins. Musket shafts must not poke through arms or torsos; nothing floating. No pistols, swords, shields or extra weapons. Hats seen directly overhead, faces completely hidden.",
+      "references": [
+        "C:/Users/Damien/Documents/GitHub/AgeOfFronts/AgeOfFronts/Art/Soldier Icons/Ranged/Ranged_EarlyModern.png",
+        "C:/Users/Damien/Documents/GitHub/AgeOfFronts/AgeOfFronts/Art/Soldier Icons/Ranged/LateMedieval/Idle.png"
+      ]
+    },
+    {
+      "id": "earlymodern-Cavalry-Guide",
+      "category": "Cavalry",
+      "state": "Guide",
+      "rawOutput": "C:\\Users\\Damien\\.codex\\generated_images\\01a0f03e-fce7-71f0-ae83-67f86e8e8794\\exec-70877b35-502b-4772-b5eb-ef06bb460448.png",
+      "usedInFinal": true,
+      "prompt": "Use case: precise-object-edit. Asset: stylized strategy game squad sprite. Input 1 is PRIMARY original Early Modern unit identity/equipment reference. Input 2 is ONLY the approved straight overhead camera and painted-outline style reference, not its era or costume. Make ONE complete squad on a square transparent RGBA canvas, NOT an atlas. TRUE straight-down 90 degree vertical orthographic camera looking down crown TOPS, shoulders, backs, no face or eyes visible, NO isometric tilt. All face screenBOTTOM, exactly two rear and three front. Detailed hand-painted game icon finish with bold clean dark edges and diffuse warm light. Maintain recognisable original individual colour identities. Keep all equipment completely visible within CENTRAL65percent; generous transparent room around gun muzzles for later smoke. No scene/floor/ground shadow/text/grid/effects. Fixed ready idle stance, NO smoke yet. Exactly FIVE mounted pistoliers, FIVE horses and FIVE single flintlock pistols with gold lock fittings and short silver barrels. NO shields, lances or drawn sabres. Visible curved sabre scabbards remain sheathed beside saddle hips. Rear-left red/gold braided coat, brown fur hat WHITE plume, leopard-trim red cape, BAY horse white forehead blaze; rear-right steel/gold helmet RED/WHITE tall plume, steel cuirass red sleeves, leopard pelt blue cape, CREAM horse black mane; front-left BLUE coat cream collar brown cuirass, broadbrim black hat RED/WHITE plume, red sash/cape, BAY horse white blaze; front-middle red/gold braided coat leopard fur trim brown fur hat RED plume, CHARCOAL-GREY horse white blaze; front-right OCHRE/yellow coat brown cuirass BLUE cape, steel/gold helmet BLUE/WHITE plume, dark BAY horse white blaze. Gold tack, gold stirrups and matching red/blue tassels. Horse backs and natural BLACK tails upscreen, necks/muzzles downscreen, camera looks straight down crowns/saddles/spines. Keep coloured helmet plumes distinct from natural black horse tails. ALL five pistol hands viewerLEFT, non-gun hand viewerRIGHT maintains reins, exactly one pistol per rider. Pistol forearm bent ready with continuous hand-gripped barrel aiming diagonally downscreenLEFT outside same-side horse neck, not upright toward camera and not touching another horse. No duplicated pistols or disembodied gun hands. Whole horse bodies, five riders, tack, all muzzles and feather tips fully contained in transparent margins.",
+      "references": [
+        "C:/Users/Damien/Documents/GitHub/AgeOfFronts/AgeOfFronts/Art/Soldier Icons/Cavalry/Cav_EarlyModern.png",
+        "C:/Users/Damien/Documents/GitHub/AgeOfFronts/AgeOfFronts/Art/Soldier Icons/Cavalry/LateMedieval/Idle.png"
+      ]
+    },
+    {
+      "id": "earlymodern-Melee-Idle",
+      "category": "Melee",
+      "state": "Idle",
+      "rawOutput": "C:\\Users\\Damien\\.codex\\generated_images\\01a0f03e-fce7-71f0-ae83-67f86e8e8794\\exec-d34ebbb8-d888-4029-a43e-e50bf458debf.png",
+      "usedInFinal": true,
+      "prompt": "Use case: precise-object-edit. PRIMARY input is accepted overhead squad guide. Preserve those five identities, formation, proportions, original clean detailed painted sprite style and equipment. EXACTLY FIVE short-gun infantry, FIVE wooden-stock SHORT thick steel broad-bore firearms with brass muzzle bands, one gun per man and continuous TWO-hand grips. ViewerLEFT hand at trigger/wrist of stock, viewerRIGHT on wooden fore-end. Barrels angle downscreenRIGHT as established in guide, no duplicated barrels, no gun support rods or bayonets. Rear-left red morion RED feather; rear-right blue coat brown hat BLUE feather; front-left red coat brown hat WHITE feather; front-middle blue coat brown hat RED feather; front-right red coat steel morion no feather. Cream collars/cuffs, brown gloves/crossbelts/pouches, blue trousers, brown boots. TRUE vertical overhead camera, crown tops hide faces, screenBOTTOM facing. Transparent RGBA with no floor/text/grid/ground shadow. No gun disappears, forks into branches, swaps owners or pierces a forearm. Create a TEN-frame animation atlas, exact FIVE columns by TWO rows of equal SQUARE cells, row-major order. Each cell contains ONE full FIVE-man squad. Keep squad and gun tips within central 65percent of its own cell. Wide CONTINUOUS transparent gutters between every column and row. Never touch or clip cell borders. Fixed roots and character scale across frames. Looping idle breathing: all five subtle shoulder rise/fall, small wrist/gun settling, gentle feather motion and balanced weight shifts. Feet stay planted. Guns always ready with both hands. NO firing, flash or smoke.",
+      "references": [
+        "C:\\Users\\Damien\\.codex\\generated_images\\01a0f03e-fce7-71f0-ae83-67f86e8e8794\\exec-6da19068-4afd-4b0e-892b-0e54bb66f1ad.png"
+      ]
+    },
+    {
+      "id": "earlymodern-Melee-Running",
+      "category": "Melee",
+      "state": "Running",
+      "rawOutput": "C:\\Users\\Damien\\.codex\\generated_images\\01a0f03e-fce7-71f0-ae83-67f86e8e8794\\exec-84c3e087-943b-491a-a310-f321bcae72ab.png",
+      "usedInFinal": true,
+      "prompt": "Use case: precise-object-edit. PRIMARY input is accepted overhead squad guide. Preserve those five identities, formation, proportions, original clean detailed painted sprite style and equipment. EXACTLY FIVE short-gun infantry, FIVE wooden-stock SHORT thick steel broad-bore firearms with brass muzzle bands, one gun per man and continuous TWO-hand grips. ViewerLEFT hand at trigger/wrist of stock, viewerRIGHT on wooden fore-end. Barrels angle downscreenRIGHT as established in guide, no duplicated barrels, no gun support rods or bayonets. Rear-left red morion RED feather; rear-right blue coat brown hat BLUE feather; front-left red coat brown hat WHITE feather; front-middle blue coat brown hat RED feather; front-right red coat steel morion no feather. Cream collars/cuffs, brown gloves/crossbelts/pouches, blue trousers, brown boots. TRUE vertical overhead camera, crown tops hide faces, screenBOTTOM facing. Transparent RGBA with no floor/text/grid/ground shadow. No gun disappears, forks into branches, swaps owners or pierces a forearm. Create a TEN-frame animation atlas, exact FIVE columns by TWO rows of equal SQUARE cells, row-major order. Each cell contains ONE full FIVE-man squad. Keep squad and gun tips within central 65percent of its own cell. Wide CONTINUOUS transparent gutters between every column and row. Never touch or clip cell borders. Fixed roots and character scale across frames. Looping forward RUN in place: ALL FIVE men alternate left/right planted boots and raised bent knees over ten frames. Obvious stride at fronts as well as rear. Slight torso bounce and feather lag, no sliding formation. Carry firearms ready in both hands, lock/barrel always outside arms. Don't invent a third foot. NO smoke or firing.",
+      "references": [
+        "C:\\Users\\Damien\\.codex\\generated_images\\01a0f03e-fce7-71f0-ae83-67f86e8e8794\\exec-6da19068-4afd-4b0e-892b-0e54bb66f1ad.png"
+      ]
+    },
+    {
+      "id": "earlymodern-Melee-Attack-F3",
+      "category": "Melee",
+      "state": "Attack-F3",
+      "rawOutput": "C:\\Users\\Damien\\.codex\\generated_images\\01a0f03e-fce7-71f0-ae83-67f86e8e8794\\exec-67227e31-1e78-4224-9098-1612a1c4986b.png",
+      "usedInFinal": true,
+      "prompt": "Use case: precise-object-edit. PRIMARY input is accepted overhead squad guide. Preserve those five identities, formation, proportions, original clean detailed painted sprite style and equipment. EXACTLY FIVE short-gun infantry, FIVE wooden-stock SHORT thick steel broad-bore firearms with brass muzzle bands, one gun per man and continuous TWO-hand grips. ViewerLEFT hand at trigger/wrist of stock, viewerRIGHT on wooden fore-end. Barrels angle downscreenRIGHT as established in guide, no duplicated barrels, no gun support rods or bayonets. Rear-left red morion RED feather; rear-right blue coat brown hat BLUE feather; front-left red coat brown hat WHITE feather; front-middle blue coat brown hat RED feather; front-right red coat steel morion no feather. Cream collars/cuffs, brown gloves/crossbelts/pouches, blue trousers, brown boots. TRUE vertical overhead camera, crown tops hide faces, screenBOTTOM facing. Transparent RGBA with no floor/text/grid/ground shadow. No gun disappears, forks into branches, swaps owners or pierces a forearm. Create ONE full squad in ONE square transparent image, NOT an atlas. Keep every man, weapon, muzzle and any smoke fully inside generous transparent margins. Fixed same formation roots, same hat/head scale as guide. PRE-FIRE AIM pose. ALL FIVE including front-middle and entire front rank shoulder their ONE gun and push muzzle forward/downscreenRIGHT about 60 source pixels by opening support elbows, leaning minutely forward with stock at shoulder. Every muzzle intact and visible. Shoulder/arm action clearly changes from idle, no detached weapon. NO flame or smoke yet.",
+      "references": [
+        "C:\\Users\\Damien\\.codex\\generated_images\\01a0f03e-fce7-71f0-ae83-67f86e8e8794\\exec-6da19068-4afd-4b0e-892b-0e54bb66f1ad.png"
+      ]
+    },
+    {
+      "id": "earlymodern-Melee-Attack-F5",
+      "category": "Melee",
+      "state": "Attack-F5",
+      "rawOutput": "C:\\Users\\Damien\\.codex\\generated_images\\01a0f03e-fce7-71f0-ae83-67f86e8e8794\\exec-4c32f48f-b9e5-4138-867c-d98524a0f9bf.png",
+      "usedInFinal": true,
+      "prompt": "Use case: precise-object-edit. PRIMARY input is accepted overhead squad guide. Preserve those five identities, formation, proportions, original clean detailed painted sprite style and equipment. EXACTLY FIVE short-gun infantry, FIVE wooden-stock SHORT thick steel broad-bore firearms with brass muzzle bands, one gun per man and continuous TWO-hand grips. ViewerLEFT hand at trigger/wrist of stock, viewerRIGHT on wooden fore-end. Barrels angle downscreenRIGHT as established in guide, no duplicated barrels, no gun support rods or bayonets. Rear-left red morion RED feather; rear-right blue coat brown hat BLUE feather; front-left red coat brown hat WHITE feather; front-middle blue coat brown hat RED feather; front-right red coat steel morion no feather. Cream collars/cuffs, brown gloves/crossbelts/pouches, blue trousers, brown boots. TRUE vertical overhead camera, crown tops hide faces, screenBOTTOM facing. Transparent RGBA with no floor/text/grid/ground shadow. No gun disappears, forks into branches, swaps owners or pierces a forearm. Create ONE full squad in ONE square transparent image, NOT an atlas. Keep every man, weapon, muzzle and any smoke fully inside generous transparent margins. Fixed same formation roots, same hat/head scale as guide. FIRING instant. ALL FIVE including all front men shoulder and fire their ONE gun together, guns extended downscreenRIGHT about 60 source pixels relative to idle, stock kicked back slightly with small five-person shoulder recoil. Exactly FIVE muzzle effects: a tiny yellow-orange flash and compact white-grey black-powder puff connected to the open MUZZLE at BARREL TIP of EACH gun, never at lock or hand. Puffs small enough not to cover hands, barrels, faces/hats, neighbours or boots. Smoke has soft translucent edges, no dark outline, no opaque white circles, true transparent alpha. Weapons remain full connected hand-gripped guns visible underneath; no long continuous flames or explosions. Enough transparent padding for smoke.",
+      "references": [
+        "C:\\Users\\Damien\\.codex\\generated_images\\01a0f03e-fce7-71f0-ae83-67f86e8e8794\\exec-6da19068-4afd-4b0e-892b-0e54bb66f1ad.png"
+      ]
+    },
+    {
+      "id": "earlymodern-Melee-Attack-F6",
+      "category": "Melee",
+      "state": "Attack-F6",
+      "rawOutput": "C:\\Users\\Damien\\.codex\\generated_images\\01a0f03e-fce7-71f0-ae83-67f86e8e8794\\exec-00b732d2-0919-4517-b33b-98b9833ee5e9.png",
+      "usedInFinal": true,
+      "prompt": "Use case: precise-object-edit. PRIMARY input is accepted overhead squad guide. Preserve those five identities, formation, proportions, original clean detailed painted sprite style and equipment. EXACTLY FIVE short-gun infantry, FIVE wooden-stock SHORT thick steel broad-bore firearms with brass muzzle bands, one gun per man and continuous TWO-hand grips. ViewerLEFT hand at trigger/wrist of stock, viewerRIGHT on wooden fore-end. Barrels angle downscreenRIGHT as established in guide, no duplicated barrels, no gun support rods or bayonets. Rear-left red morion RED feather; rear-right blue coat brown hat BLUE feather; front-left red coat brown hat WHITE feather; front-middle blue coat brown hat RED feather; front-right red coat steel morion no feather. Cream collars/cuffs, brown gloves/crossbelts/pouches, blue trousers, brown boots. TRUE vertical overhead camera, crown tops hide faces, screenBOTTOM facing. Transparent RGBA with no floor/text/grid/ground shadow. No gun disappears, forks into branches, swaps owners or pierces a forearm. Create ONE full squad in ONE square transparent image, NOT an atlas. Keep every man, weapon, muzzle and any smoke fully inside generous transparent margins. Fixed same formation roots, same hat/head scale as guide. One beat AFTER FIRING. ALL FIVE recoil from their shouldered guns, shoulders leaned back minutely and gun stocks settled backward 15 pixels; same five guns extended/pointing downscreenRIGHT. FIVE separate white-grey muzzle smoke puffs each visibly rooted at its own open barrel tip and drifting farther downscreenRIGHT. Expand each into a small irregular fluffy translucent plume, compact core near muzzle and wisps beyond, about 85px long in this source. NO orange flash remains. Do not cover weapon grips or full troop bodies, every hat and all five guns clearly visible, translucent smoke edges on real alpha. NO explosions or fire.",
+      "references": [
+        "C:\\Users\\Damien\\.codex\\generated_images\\01a0f03e-fce7-71f0-ae83-67f86e8e8794\\exec-6da19068-4afd-4b0e-892b-0e54bb66f1ad.png"
+      ]
+    },
+    {
+      "id": "earlymodern-Melee-Attack-F7",
+      "category": "Melee",
+      "state": "Attack-F7",
+      "rawOutput": "C:\\Users\\Damien\\.codex\\generated_images\\01a0f03e-fce7-71f0-ae83-67f86e8e8794\\exec-0ed10e10-b270-4a03-8740-993c42d33320.png",
+      "usedInFinal": true,
+      "prompt": "Use case: precise-object-edit. PRIMARY input is accepted overhead squad guide. Preserve those five identities, formation, proportions, original clean detailed painted sprite style and equipment. EXACTLY FIVE short-gun infantry, FIVE wooden-stock SHORT thick steel broad-bore firearms with brass muzzle bands, one gun per man and continuous TWO-hand grips. ViewerLEFT hand at trigger/wrist of stock, viewerRIGHT on wooden fore-end. Barrels angle downscreenRIGHT as established in guide, no duplicated barrels, no gun support rods or bayonets. Rear-left red morion RED feather; rear-right blue coat brown hat BLUE feather; front-left red coat brown hat WHITE feather; front-middle blue coat brown hat RED feather; front-right red coat steel morion no feather. Cream collars/cuffs, brown gloves/crossbelts/pouches, blue trousers, brown boots. TRUE vertical overhead camera, crown tops hide faces, screenBOTTOM facing. Transparent RGBA with no floor/text/grid/ground shadow. No gun disappears, forks into branches, swaps owners or pierces a forearm. Create ONE full squad in ONE square transparent image, NOT an atlas. Keep every man, weapon, muzzle and any smoke fully inside generous transparent margins. Fixed same formation roots, same hat/head scale as guide. Firing RECOVERY. ALL FIVE ease stocks slightly down from shoulder, both grips continuous and support elbows bend back toward ready position. Exactly FIVE fading white-grey muzzle smoke trails extend downscreenRIGHT from each own barrel tip. Smoke more diffuse and partially transparent than firing burst, thin broken curling wisps about 90px long, no dense opaque balls. Each source belongs to ONE gun. All five men, hats, gun barrels and forearms remain clearly readable. NO muzzle flash or flame.",
+      "references": [
+        "C:\\Users\\Damien\\.codex\\generated_images\\01a0f03e-fce7-71f0-ae83-67f86e8e8794\\exec-6da19068-4afd-4b0e-892b-0e54bb66f1ad.png"
+      ]
+    },
+    {
+      "id": "earlymodern-Melee-Attack-F8",
+      "category": "Melee",
+      "state": "Attack-F8",
+      "rawOutput": "C:\\Users\\Damien\\.codex\\generated_images\\01a0f03e-fce7-71f0-ae83-67f86e8e8794\\exec-fd638f0e-e254-4dd0-a1bf-7dd0b421b6a5.png",
+      "usedInFinal": true,
+      "prompt": "Use case: precise-object-edit. PRIMARY input is accepted overhead squad guide. Preserve those five identities, formation, proportions, original clean detailed painted sprite style and equipment. EXACTLY FIVE short-gun infantry, FIVE wooden-stock SHORT thick steel broad-bore firearms with brass muzzle bands, one gun per man and continuous TWO-hand grips. ViewerLEFT hand at trigger/wrist of stock, viewerRIGHT on wooden fore-end. Barrels angle downscreenRIGHT as established in guide, no duplicated barrels, no gun support rods or bayonets. Rear-left red morion RED feather; rear-right blue coat brown hat BLUE feather; front-left red coat brown hat WHITE feather; front-middle blue coat brown hat RED feather; front-right red coat steel morion no feather. Cream collars/cuffs, brown gloves/crossbelts/pouches, blue trousers, brown boots. TRUE vertical overhead camera, crown tops hide faces, screenBOTTOM facing. Transparent RGBA with no floor/text/grid/ground shadow. No gun disappears, forks into branches, swaps owners or pierces a forearm. Create ONE full squad in ONE square transparent image, NOT an atlas. Keep every man, weapon, muzzle and any smoke fully inside generous transparent margins. Fixed same formation roots, same hat/head scale as guide. Late firing RECOVERY. ALL FIVE nearly return their shouldered guns to original two-hand ready pose with modest shoulder settling. Exactly FIVE very faint semi-transparent grey wisps just beyond each own downscreenRIGHT muzzle, almost dissipated and thinner than smoke cloud; no flash, no big opaque clouds. Arms, five guns and all troops completely visible and continuous. No new gun, no hands changing ownership.",
+      "references": [
+        "C:\\Users\\Damien\\.codex\\generated_images\\01a0f03e-fce7-71f0-ae83-67f86e8e8794\\exec-6da19068-4afd-4b0e-892b-0e54bb66f1ad.png"
+      ]
+    },
+    {
+      "id": "earlymodern-Ranged-Idle",
+      "category": "Ranged",
+      "state": "Idle",
+      "rawOutput": "C:\\Users\\Damien\\.codex\\generated_images\\01a0f03e-fce7-71f0-ae83-67f86e8e8794\\exec-513b8335-848e-4b2e-9d42-5dcfbffb8988.png",
+      "usedInFinal": false,
+      "prompt": "Use case: precise-object-edit. PRIMARY input is corrected overhead squad guide. EXACTLY FIVE early modern musketeers and FIVE SINGLE long wooden-stock flintlock muskets with thin steel barrels/brass bands. All five muskets point diagonally downscreenRIGHT as corrected guide, each a single continuous barrel, no forked branches or spare support poles. ViewerLEFT bare hand at trigger/stock near shoulder, viewerRIGHT bare hand grips wooden fore-end. Rear-left OCHRE coat BLUE cuffs pointed steel morion; rear-right BLUE coat RED cuffs/lapels black broadbrim RED feather; front-left BLUE coat CREAM cuffs black broadbrim BLUE band WHITE feather; front-middle RED coat CREAM cuffs black broadbrim WHITE feather; front-right BLUE coat CREAM cuffs BLACK goldrim TRICORNE with NO plume. Beige trousers, brown boots/crossbelts/pouches. Preserve exact five identities, formation and detailed original painted sprite finish. TRUE vertical overhead crown-top camera, faces hidden, all face screenBOTTOM. Transparent RGBA, no floor/ground shadow/text/grid. Every firearm remains connected to both gripping hands, never through forearms or torso; no duplicate guns, missing barrels, bayonets, swords or shields. TEN-frame 5-column x 2-row animation atlas, equal square cells in row-major order. EXACTLY ONE complete FIVE-man group in EACH cell. Central65percent occupancy, exceptionally WIDE CONTINUOUS transparent gutters between every column and row and outer borders. All five barrels/muzzles fully inside their own cell. Fixed group roots/character scale across ten frames. Looping IDLE, gentle all-five breathing/shoulder/wrist settling and feathers sway. Boots planted, five guns held two-handed ready, no aim/recoil/firing/smoke.",
+      "references": [
+        "C:\\Users\\Damien\\.codex\\generated_images\\01a0f03e-fce7-71f0-ae83-67f86e8e8794\\exec-1895ce98-5d38-4ed0-a179-c2b970919054.png"
+      ]
+    },
+    {
+      "id": "earlymodern-Ranged-Running",
+      "category": "Ranged",
+      "state": "Running",
+      "rawOutput": "C:\\Users\\Damien\\.codex\\generated_images\\01a0f03e-fce7-71f0-ae83-67f86e8e8794\\exec-f326fc0b-3133-4588-a131-4b4481a23918.png",
+      "usedInFinal": true,
+      "prompt": "Use case: precise-object-edit. PRIMARY input is corrected overhead squad guide. EXACTLY FIVE early modern musketeers and FIVE SINGLE long wooden-stock flintlock muskets with thin steel barrels/brass bands. All five muskets point diagonally downscreenRIGHT as corrected guide, each a single continuous barrel, no forked branches or spare support poles. ViewerLEFT bare hand at trigger/stock near shoulder, viewerRIGHT bare hand grips wooden fore-end. Rear-left OCHRE coat BLUE cuffs pointed steel morion; rear-right BLUE coat RED cuffs/lapels black broadbrim RED feather; front-left BLUE coat CREAM cuffs black broadbrim BLUE band WHITE feather; front-middle RED coat CREAM cuffs black broadbrim WHITE feather; front-right BLUE coat CREAM cuffs BLACK goldrim TRICORNE with NO plume. Beige trousers, brown boots/crossbelts/pouches. Preserve exact five identities, formation and detailed original painted sprite finish. TRUE vertical overhead crown-top camera, faces hidden, all face screenBOTTOM. Transparent RGBA, no floor/ground shadow/text/grid. Every firearm remains connected to both gripping hands, never through forearms or torso; no duplicate guns, missing barrels, bayonets, swords or shields. TEN-frame 5-column x 2-row animation atlas, equal square cells in row-major order. EXACTLY ONE complete FIVE-man group in EACH cell. Central65percent occupancy, exceptionally WIDE CONTINUOUS transparent gutters between every column and row and outer borders. All five barrels/muzzles fully inside their own cell. Fixed group roots/character scale across ten frames. Looping forward RUN in place. ALL FIVE men alternate extended planted left/right boots and lifted opposite knees with clear 10-frame stride and little body bounce; full front trio moves, not only rear. Feathers/pouches follow movement. Two hands hold every continuous musket ready, no barrel through forearm, only two attached legs per man. Formation fixed and no guns firing or smoke.",
+      "references": [
+        "C:\\Users\\Damien\\.codex\\generated_images\\01a0f03e-fce7-71f0-ae83-67f86e8e8794\\exec-1895ce98-5d38-4ed0-a179-c2b970919054.png"
+      ]
+    },
+    {
+      "id": "earlymodern-Ranged-Attack-F3",
+      "category": "Ranged",
+      "state": "Attack-F3",
+      "rawOutput": "C:\\Users\\Damien\\.codex\\generated_images\\01a0f03e-fce7-71f0-ae83-67f86e8e8794\\exec-476f7679-39d5-4247-9903-e60ad1b725b7.png",
+      "usedInFinal": true,
+      "prompt": "Use case: precise-object-edit. PRIMARY input is corrected overhead squad guide. EXACTLY FIVE early modern musketeers and FIVE SINGLE long wooden-stock flintlock muskets with thin steel barrels/brass bands. All five muskets point diagonally downscreenRIGHT as corrected guide, each a single continuous barrel, no forked branches or spare support poles. ViewerLEFT bare hand at trigger/stock near shoulder, viewerRIGHT bare hand grips wooden fore-end. Rear-left OCHRE coat BLUE cuffs pointed steel morion; rear-right BLUE coat RED cuffs/lapels black broadbrim RED feather; front-left BLUE coat CREAM cuffs black broadbrim BLUE band WHITE feather; front-middle RED coat CREAM cuffs black broadbrim WHITE feather; front-right BLUE coat CREAM cuffs BLACK goldrim TRICORNE with NO plume. Beige trousers, brown boots/crossbelts/pouches. Preserve exact five identities, formation and detailed original painted sprite finish. TRUE vertical overhead crown-top camera, faces hidden, all face screenBOTTOM. Transparent RGBA, no floor/ground shadow/text/grid. Every firearm remains connected to both gripping hands, never through forearms or torso; no duplicate guns, missing barrels, bayonets, swords or shields. ONE complete full five-man squad in ONE square transparent PNG, NOT an atlas. Maintain guide formation proportions and head size throughout. Generous transparent margins around ALL hats, boots, muzzles and smoke. If space needed for smoke, uniformly reframe the ENTIRE squad smaller as one group, never individual members; nothing touches or gets clipped by canvas borders. PRE-FIRE AIM. ALL FIVE including whole front trio shoulder their muskets and extend support forearms/muzzles forward downscreenRIGHT about 45 source pixels, stocks tight at anatomical right shoulder, slight forward body lean. All five intact single barrels fully visible clear of other men. Small but visible aim action, no smoke/flash/recoil yet.",
+      "references": [
+        "C:\\Users\\Damien\\.codex\\generated_images\\01a0f03e-fce7-71f0-ae83-67f86e8e8794\\exec-1895ce98-5d38-4ed0-a179-c2b970919054.png"
+      ]
+    },
+    {
+      "id": "earlymodern-Ranged-Attack-F5",
+      "category": "Ranged",
+      "state": "Attack-F5",
+      "rawOutput": "C:\\Users\\Damien\\.codex\\generated_images\\01a0f03e-fce7-71f0-ae83-67f86e8e8794\\exec-f3aeb213-26de-408f-9e30-5bdcab3f3128.png",
+      "usedInFinal": true,
+      "prompt": "Use case: precise-object-edit. PRIMARY input is corrected overhead squad guide. EXACTLY FIVE early modern musketeers and FIVE SINGLE long wooden-stock flintlock muskets with thin steel barrels/brass bands. All five muskets point diagonally downscreenRIGHT as corrected guide, each a single continuous barrel, no forked branches or spare support poles. ViewerLEFT bare hand at trigger/stock near shoulder, viewerRIGHT bare hand grips wooden fore-end. Rear-left OCHRE coat BLUE cuffs pointed steel morion; rear-right BLUE coat RED cuffs/lapels black broadbrim RED feather; front-left BLUE coat CREAM cuffs black broadbrim BLUE band WHITE feather; front-middle RED coat CREAM cuffs black broadbrim WHITE feather; front-right BLUE coat CREAM cuffs BLACK goldrim TRICORNE with NO plume. Beige trousers, brown boots/crossbelts/pouches. Preserve exact five identities, formation and detailed original painted sprite finish. TRUE vertical overhead crown-top camera, faces hidden, all face screenBOTTOM. Transparent RGBA, no floor/ground shadow/text/grid. Every firearm remains connected to both gripping hands, never through forearms or torso; no duplicate guns, missing barrels, bayonets, swords or shields. ONE complete full five-man squad in ONE square transparent PNG, NOT an atlas. Maintain guide formation proportions and head size throughout. Generous transparent margins around ALL hats, boots, muzzles and smoke. If space needed for smoke, uniformly reframe the ENTIRE squad smaller as one group, never individual members; nothing touches or gets clipped by canvas borders. FIRING instant. ALL FIVE including front-middle and both front neighbours shoulder and discharge their ONE musket together. Guns extend downscreenRIGHT slightly from idle, arms remain holding stocks/fore-ends, five shoulders recoil subtly. EXACTLY FIVE tiny yelloworange muzzle flashes and compact WHITEGREY black-powder smoke puffs, each rooted at its own gun's OPEN BARREL TIP farthest from stock, not from lock/hand/body. Visible clear 5 puffs with soft partially transparent edges. All five hats/men/hands/guns readable through and behind smoke. Keep individual plumes modest, no continuous flames/fireballs, no opaque white circles. Transparent surrounding background and no clipped smoke.",
+      "references": [
+        "C:\\Users\\Damien\\.codex\\generated_images\\01a0f03e-fce7-71f0-ae83-67f86e8e8794\\exec-1895ce98-5d38-4ed0-a179-c2b970919054.png"
+      ]
+    },
+    {
+      "id": "earlymodern-Ranged-Attack-F6",
+      "category": "Ranged",
+      "state": "Attack-F6",
+      "rawOutput": "C:\\Users\\Damien\\.codex\\generated_images\\01a0f03e-fce7-71f0-ae83-67f86e8e8794\\exec-7bb3cd7f-0b1f-4d7e-996e-cfebef8ca2e2.png",
+      "usedInFinal": true,
+      "prompt": "Use case: precise-object-edit. PRIMARY input is corrected overhead squad guide. EXACTLY FIVE early modern musketeers and FIVE SINGLE long wooden-stock flintlock muskets with thin steel barrels/brass bands. All five muskets point diagonally downscreenRIGHT as corrected guide, each a single continuous barrel, no forked branches or spare support poles. ViewerLEFT bare hand at trigger/stock near shoulder, viewerRIGHT bare hand grips wooden fore-end. Rear-left OCHRE coat BLUE cuffs pointed steel morion; rear-right BLUE coat RED cuffs/lapels black broadbrim RED feather; front-left BLUE coat CREAM cuffs black broadbrim BLUE band WHITE feather; front-middle RED coat CREAM cuffs black broadbrim WHITE feather; front-right BLUE coat CREAM cuffs BLACK goldrim TRICORNE with NO plume. Beige trousers, brown boots/crossbelts/pouches. Preserve exact five identities, formation and detailed original painted sprite finish. TRUE vertical overhead crown-top camera, faces hidden, all face screenBOTTOM. Transparent RGBA, no floor/ground shadow/text/grid. Every firearm remains connected to both gripping hands, never through forearms or torso; no duplicate guns, missing barrels, bayonets, swords or shields. ONE complete full five-man squad in ONE square transparent PNG, NOT an atlas. Maintain guide formation proportions and head size throughout. Generous transparent margins around ALL hats, boots, muzzles and smoke. If space needed for smoke, uniformly reframe the ENTIRE squad smaller as one group, never individual members; nothing touches or gets clipped by canvas borders. Immediately AFTER FIRING. ALL FIVE shouldered muskets recoil 15px backward with shoulder settling, support arms keep grip. FIVE white-grey muzzle plumes expand forward/downscreenRIGHT from five open tips into irregular translucent puffs about 75px source-length, little soft core at muzzle with feathering wisps drifting forward. NO flash/flames. All five men and single gun barrels clearly remain visible, no giant cloud hiding half group. Include full smoke within transparent padded bounds, no clipped mist at corners.",
+      "references": [
+        "C:\\Users\\Damien\\.codex\\generated_images\\01a0f03e-fce7-71f0-ae83-67f86e8e8794\\exec-1895ce98-5d38-4ed0-a179-c2b970919054.png"
+      ]
+    },
+    {
+      "id": "earlymodern-Ranged-Attack-F7",
+      "category": "Ranged",
+      "state": "Attack-F7",
+      "rawOutput": "C:\\Users\\Damien\\.codex\\generated_images\\01a0f03e-fce7-71f0-ae83-67f86e8e8794\\exec-56f2a0a7-9da5-4d72-a365-461654851108.png",
+      "usedInFinal": true,
+      "prompt": "Use case: precise-object-edit. PRIMARY input is corrected overhead squad guide. EXACTLY FIVE early modern musketeers and FIVE SINGLE long wooden-stock flintlock muskets with thin steel barrels/brass bands. All five muskets point diagonally downscreenRIGHT as corrected guide, each a single continuous barrel, no forked branches or spare support poles. ViewerLEFT bare hand at trigger/stock near shoulder, viewerRIGHT bare hand grips wooden fore-end. Rear-left OCHRE coat BLUE cuffs pointed steel morion; rear-right BLUE coat RED cuffs/lapels black broadbrim RED feather; front-left BLUE coat CREAM cuffs black broadbrim BLUE band WHITE feather; front-middle RED coat CREAM cuffs black broadbrim WHITE feather; front-right BLUE coat CREAM cuffs BLACK goldrim TRICORNE with NO plume. Beige trousers, brown boots/crossbelts/pouches. Preserve exact five identities, formation and detailed original painted sprite finish. TRUE vertical overhead crown-top camera, faces hidden, all face screenBOTTOM. Transparent RGBA, no floor/ground shadow/text/grid. Every firearm remains connected to both gripping hands, never through forearms or torso; no duplicate guns, missing barrels, bayonets, swords or shields. ONE complete full five-man squad in ONE square transparent PNG, NOT an atlas. Maintain guide formation proportions and head size throughout. Generous transparent margins around ALL hats, boots, muzzles and smoke. If space needed for smoke, uniformly reframe the ENTIRE squad smaller as one group, never individual members; nothing touches or gets clipped by canvas borders. Firing RECOVERY. All FIVE support elbows fold minutely toward ready, stocks lower a little while continuously gripped by two hands. FIVE more diffuse whitegrey smoke trails dissipate diagonally downscreenRIGHT just beyond each own muzzle, thinner/fainter broken curls than firing plume, about 80px source-length. Every trail sourced from barrel TIP not body. Smoke is translucent and must NOT hide guns, hands, boots or hats. No flash, flames, missing gun or extra barrel.",
+      "references": [
+        "C:\\Users\\Damien\\.codex\\generated_images\\01a0f03e-fce7-71f0-ae83-67f86e8e8794\\exec-1895ce98-5d38-4ed0-a179-c2b970919054.png"
+      ]
+    },
+    {
+      "id": "earlymodern-Ranged-Attack-F8",
+      "category": "Ranged",
+      "state": "Attack-F8",
+      "rawOutput": "C:\\Users\\Damien\\.codex\\generated_images\\01a0f03e-fce7-71f0-ae83-67f86e8e8794\\exec-7d592bc3-87f6-443c-a28d-cb90d1814c2a.png",
+      "usedInFinal": true,
+      "prompt": "Use case: precise-object-edit. PRIMARY input is corrected overhead squad guide. EXACTLY FIVE early modern musketeers and FIVE SINGLE long wooden-stock flintlock muskets with thin steel barrels/brass bands. All five muskets point diagonally downscreenRIGHT as corrected guide, each a single continuous barrel, no forked branches or spare support poles. ViewerLEFT bare hand at trigger/stock near shoulder, viewerRIGHT bare hand grips wooden fore-end. Rear-left OCHRE coat BLUE cuffs pointed steel morion; rear-right BLUE coat RED cuffs/lapels black broadbrim RED feather; front-left BLUE coat CREAM cuffs black broadbrim BLUE band WHITE feather; front-middle RED coat CREAM cuffs black broadbrim WHITE feather; front-right BLUE coat CREAM cuffs BLACK goldrim TRICORNE with NO plume. Beige trousers, brown boots/crossbelts/pouches. Preserve exact five identities, formation and detailed original painted sprite finish. TRUE vertical overhead crown-top camera, faces hidden, all face screenBOTTOM. Transparent RGBA, no floor/ground shadow/text/grid. Every firearm remains connected to both gripping hands, never through forearms or torso; no duplicate guns, missing barrels, bayonets, swords or shields. ONE complete full five-man squad in ONE square transparent PNG, NOT an atlas. Maintain guide formation proportions and head size throughout. Generous transparent margins around ALL hats, boots, muzzles and smoke. If space needed for smoke, uniformly reframe the ENTIRE squad smaller as one group, never individual members; nothing touches or gets clipped by canvas borders. Late firing RECOVERY. ALL FIVE almost return to guide's two-hand ready hold, shoulders settle. Exactly FIVE very faint thin grey-white wisps drifting just beyond each gun's downscreenRIGHT tip, nearly dissolved with high transparency, no opaque puff/core and no flash. Whole formation/colours/gun lengths/owner grips remain exact. Plenty of alpha padding including FR muzzle smoke.",
+      "references": [
+        "C:\\Users\\Damien\\.codex\\generated_images\\01a0f03e-fce7-71f0-ae83-67f86e8e8794\\exec-1895ce98-5d38-4ed0-a179-c2b970919054.png"
+      ]
+    },
+    {
+      "id": "earlymodern-Cavalry-Idle-B",
+      "category": "Cavalry",
+      "state": "Idle-B",
+      "rawOutput": "C:\\Users\\Damien\\.codex\\generated_images\\01a0f03e-fce7-71f0-ae83-67f86e8e8794\\exec-02ec4cd6-c92b-427b-8ae1-5fbc75080c1d.png",
+      "usedInFinal": true,
+      "prompt": "Use case: precise-object-edit. PRIMARY input is accepted overhead mounted squad guide. ONE full squad in a square transparent canvas, NOT an atlas. EXACTLY FIVE horse-mounted pistoliers, FIVE single short flintlock pistols and FIVE horses. All gun hands viewerLEFT, all viewerRIGHT hands on reins. Five sheathed curved sabres stay sheathed, not used for attack. TRUE same vertical overhead camera straight down crowns and saddles, all face screenBOTTOM, no visible faces or perspective tilt. Fixed formation and hat/head size, two rear/three front. Rear-left RED coat brown fur hat WHITE plume BAY horse white blaze; rear-right steel/gold helmet REDWHITE plume cuirass/leopard blue cape CREAM horse blackmane; front-left BLUE coat brown cuirass black broadbrim REDWHITE plume BAY whiteblaze; front-middle REDgold braided coat leopardfur brownfurhat REDplume CHARCOALGREY horse whiteblaze; front-right OCHREcoat browncuirass steelgoldhelmet BLUEWHITEplume darkBAY whiteblaze. Matching gold tack/redblue tassels/scabbards, exact original colours and props. All five NATURAL BLACK horse rump tails distinct from coloured hat PLUMES. Keep one hand-gripped gun per rider aiming diagonally downscreenLEFT outside their own horse neck, no weapon through arms/horses. Horse spines, muzzle-heads and saddles whole. Wide transparent padding on all sides, every hoof/feather/pistol muzzle/tail stays inside canvas. No floor, text, grids, ground shadow or effects. Small IDLE inhale: five shoulders rise slightly, wrists subtly settle while holding pistols and reins, cloaks/plumes and BLACK horse tails fan slightly to viewerRIGHT. Horse legs stay grounded. Guns don't aim or fire. Keep exact five horse body placements.",
+      "references": [
+        "C:\\Users\\Damien\\.codex\\generated_images\\01a0f03e-fce7-71f0-ae83-67f86e8e8794\\exec-70877b35-502b-4772-b5eb-ef06bb460448.png"
+      ]
+    },
+    {
+      "id": "earlymodern-Cavalry-Idle-C",
+      "category": "Cavalry",
+      "state": "Idle-C",
+      "rawOutput": "C:\\Users\\Damien\\.codex\\generated_images\\01a0f03e-fce7-71f0-ae83-67f86e8e8794\\exec-841cd942-158a-4a3f-924b-38587fb0d33a.png",
+      "usedInFinal": true,
+      "prompt": "Use case: precise-object-edit. PRIMARY input is accepted overhead mounted squad guide. ONE full squad in a square transparent canvas, NOT an atlas. EXACTLY FIVE horse-mounted pistoliers, FIVE single short flintlock pistols and FIVE horses. All gun hands viewerLEFT, all viewerRIGHT hands on reins. Five sheathed curved sabres stay sheathed, not used for attack. TRUE same vertical overhead camera straight down crowns and saddles, all face screenBOTTOM, no visible faces or perspective tilt. Fixed formation and hat/head size, two rear/three front. Rear-left RED coat brown fur hat WHITE plume BAY horse white blaze; rear-right steel/gold helmet REDWHITE plume cuirass/leopard blue cape CREAM horse blackmane; front-left BLUE coat brown cuirass black broadbrim REDWHITE plume BAY whiteblaze; front-middle REDgold braided coat leopardfur brownfurhat REDplume CHARCOALGREY horse whiteblaze; front-right OCHREcoat browncuirass steelgoldhelmet BLUEWHITEplume darkBAY whiteblaze. Matching gold tack/redblue tassels/scabbards, exact original colours and props. All five NATURAL BLACK horse rump tails distinct from coloured hat PLUMES. Keep one hand-gripped gun per rider aiming diagonally downscreenLEFT outside their own horse neck, no weapon through arms/horses. Horse spines, muzzle-heads and saddles whole. Wide transparent padding on all sides, every hoof/feather/pistol muzzle/tail stays inside canvas. No floor, text, grids, ground shadow or effects. IDLE exhale: all five shoulders lower slightly and pistol elbows gently bend, horses minutely shift grounded weight, cloaks/plumes and BLACK horse tails relax/fan slightly viewerLEFT. Every pistol continuously held and no muzzle smoke. Fixed formation.",
+      "references": [
+        "C:\\Users\\Damien\\.codex\\generated_images\\01a0f03e-fce7-71f0-ae83-67f86e8e8794\\exec-70877b35-502b-4772-b5eb-ef06bb460448.png"
+      ]
+    },
+    {
+      "id": "earlymodern-Cavalry-Running-A",
+      "category": "Cavalry",
+      "state": "Running-A",
+      "rawOutput": "C:\\Users\\Damien\\.codex\\generated_images\\01a0f03e-fce7-71f0-ae83-67f86e8e8794\\exec-710a11da-c7a9-4936-8446-02321c4eed9f.png",
+      "usedInFinal": true,
+      "prompt": "Use case: precise-object-edit. PRIMARY input is accepted overhead mounted squad guide. ONE full squad in a square transparent canvas, NOT an atlas. EXACTLY FIVE horse-mounted pistoliers, FIVE single short flintlock pistols and FIVE horses. All gun hands viewerLEFT, all viewerRIGHT hands on reins. Five sheathed curved sabres stay sheathed, not used for attack. TRUE same vertical overhead camera straight down crowns and saddles, all face screenBOTTOM, no visible faces or perspective tilt. Fixed formation and hat/head size, two rear/three front. Rear-left RED coat brown fur hat WHITE plume BAY horse white blaze; rear-right steel/gold helmet REDWHITE plume cuirass/leopard blue cape CREAM horse blackmane; front-left BLUE coat brown cuirass black broadbrim REDWHITE plume BAY whiteblaze; front-middle REDgold braided coat leopardfur brownfurhat REDplume CHARCOALGREY horse whiteblaze; front-right OCHREcoat browncuirass steelgoldhelmet BLUEWHITEplume darkBAY whiteblaze. Matching gold tack/redblue tassels/scabbards, exact original colours and props. All five NATURAL BLACK horse rump tails distinct from coloured hat PLUMES. Keep one hand-gripped gun per rider aiming diagonally downscreenLEFT outside their own horse neck, no weapon through arms/horses. Horse spines, muzzle-heads and saddles whole. Wide transparent padding on all sides, every hoof/feather/pistol muzzle/tail stays inside canvas. No floor, text, grids, ground shadow or effects. RUN gallop in place pose A. ALL FIVE horses enter an extended forward stride: front forelegs visible below chest toward screenBOTTOM, hindlegs push under rump. Each horse has only four attached legs, hidden legs stay occluded. Riders balanced over saddles, all five pistols gripped beside necks and reins secured, feathers/cloaks lift slightly. Different pose than idle, every horse including all front three moves. No firing/smoke.",
+      "references": [
+        "C:\\Users\\Damien\\.codex\\generated_images\\01a0f03e-fce7-71f0-ae83-67f86e8e8794\\exec-70877b35-502b-4772-b5eb-ef06bb460448.png"
+      ]
+    },
+    {
+      "id": "earlymodern-Cavalry-Running-B",
+      "category": "Cavalry",
+      "state": "Running-B",
+      "rawOutput": "C:\\Users\\Damien\\.codex\\generated_images\\01a0f03e-fce7-71f0-ae83-67f86e8e8794\\exec-03cd983c-f2bc-4003-88ca-cebacb130ab0.png",
+      "usedInFinal": true,
+      "prompt": "Use case: precise-object-edit. PRIMARY input is accepted overhead mounted squad guide. ONE full squad in a square transparent canvas, NOT an atlas. EXACTLY FIVE horse-mounted pistoliers, FIVE single short flintlock pistols and FIVE horses. All gun hands viewerLEFT, all viewerRIGHT hands on reins. Five sheathed curved sabres stay sheathed, not used for attack. TRUE same vertical overhead camera straight down crowns and saddles, all face screenBOTTOM, no visible faces or perspective tilt. Fixed formation and hat/head size, two rear/three front. Rear-left RED coat brown fur hat WHITE plume BAY horse white blaze; rear-right steel/gold helmet REDWHITE plume cuirass/leopard blue cape CREAM horse blackmane; front-left BLUE coat brown cuirass black broadbrim REDWHITE plume BAY whiteblaze; front-middle REDgold braided coat leopardfur brownfurhat REDplume CHARCOALGREY horse whiteblaze; front-right OCHREcoat browncuirass steelgoldhelmet BLUEWHITEplume darkBAY whiteblaze. Matching gold tack/redblue tassels/scabbards, exact original colours and props. All five NATURAL BLACK horse rump tails distinct from coloured hat PLUMES. Keep one hand-gripped gun per rider aiming diagonally downscreenLEFT outside their own horse neck, no weapon through arms/horses. Horse spines, muzzle-heads and saddles whole. Wide transparent padding on all sides, every hoof/feather/pistol muzzle/tail stays inside canvas. No floor, text, grids, ground shadow or effects. RUN gallop in place pose B. ALL FIVE horses extend viewerRIGHT foreleg/hoof downscreen while viewerLEFT foreleg folds back under chest; diagonal hindleg passes beneath body. Only four attached legs per horse, no extra floating hooves. All five riders bounce subtly upward, knees beside saddle, feet in stirrups, pistols continuously held ready beside neck. Capes/tails trail. No firing/smoke.",
+      "references": [
+        "C:\\Users\\Damien\\.codex\\generated_images\\01a0f03e-fce7-71f0-ae83-67f86e8e8794\\exec-70877b35-502b-4772-b5eb-ef06bb460448.png"
+      ]
+    },
+    {
+      "id": "earlymodern-Cavalry-Running-C",
+      "category": "Cavalry",
+      "state": "Running-C",
+      "rawOutput": "C:\\Users\\Damien\\.codex\\generated_images\\01a0f03e-fce7-71f0-ae83-67f86e8e8794\\exec-afabcd73-a5e8-4460-ae93-3e6613167a0d.png",
+      "usedInFinal": true,
+      "prompt": "Use case: precise-object-edit. PRIMARY input is accepted overhead mounted squad guide. ONE full squad in a square transparent canvas, NOT an atlas. EXACTLY FIVE horse-mounted pistoliers, FIVE single short flintlock pistols and FIVE horses. All gun hands viewerLEFT, all viewerRIGHT hands on reins. Five sheathed curved sabres stay sheathed, not used for attack. TRUE same vertical overhead camera straight down crowns and saddles, all face screenBOTTOM, no visible faces or perspective tilt. Fixed formation and hat/head size, two rear/three front. Rear-left RED coat brown fur hat WHITE plume BAY horse white blaze; rear-right steel/gold helmet REDWHITE plume cuirass/leopard blue cape CREAM horse blackmane; front-left BLUE coat brown cuirass black broadbrim REDWHITE plume BAY whiteblaze; front-middle REDgold braided coat leopardfur brownfurhat REDplume CHARCOALGREY horse whiteblaze; front-right OCHREcoat browncuirass steelgoldhelmet BLUEWHITEplume darkBAY whiteblaze. Matching gold tack/redblue tassels/scabbards, exact original colours and props. All five NATURAL BLACK horse rump tails distinct from coloured hat PLUMES. Keep one hand-gripped gun per rider aiming diagonally downscreenLEFT outside their own horse neck, no weapon through arms/horses. Horse spines, muzzle-heads and saddles whole. Wide transparent padding on all sides, every hoof/feather/pistol muzzle/tail stays inside canvas. No floor, text, grids, ground shadow or effects. RUN gathered suspension pose C. ALL FIVE horses draw BOTH forelegs back bent beneath chest, two front hooves tucked instead of extended; hindlegs gather under body. Riders settle slightly into saddles, all five bodies/arms move a little. Keep exactly four attached horse legs, no disembodied feet, original stirrup boots remain distinguishable from hooves. Five pistol grips continuous, horse head/body placements fixed. No smoke.",
+      "references": [
+        "C:\\Users\\Damien\\.codex\\generated_images\\01a0f03e-fce7-71f0-ae83-67f86e8e8794\\exec-70877b35-502b-4772-b5eb-ef06bb460448.png"
+      ]
+    },
+    {
+      "id": "earlymodern-Cavalry-Running-D",
+      "category": "Cavalry",
+      "state": "Running-D",
+      "rawOutput": "C:\\Users\\Damien\\.codex\\generated_images\\01a0f03e-fce7-71f0-ae83-67f86e8e8794\\exec-dfa16b8a-0beb-4af8-9dd6-16fbdbceb098.png",
+      "usedInFinal": true,
+      "prompt": "Use case: precise-object-edit. PRIMARY input is accepted overhead mounted squad guide. ONE full squad in a square transparent canvas, NOT an atlas. EXACTLY FIVE horse-mounted pistoliers, FIVE single short flintlock pistols and FIVE horses. All gun hands viewerLEFT, all viewerRIGHT hands on reins. Five sheathed curved sabres stay sheathed, not used for attack. TRUE same vertical overhead camera straight down crowns and saddles, all face screenBOTTOM, no visible faces or perspective tilt. Fixed formation and hat/head size, two rear/three front. Rear-left RED coat brown fur hat WHITE plume BAY horse white blaze; rear-right steel/gold helmet REDWHITE plume cuirass/leopard blue cape CREAM horse blackmane; front-left BLUE coat brown cuirass black broadbrim REDWHITE plume BAY whiteblaze; front-middle REDgold braided coat leopardfur brownfurhat REDplume CHARCOALGREY horse whiteblaze; front-right OCHREcoat browncuirass steelgoldhelmet BLUEWHITEplume darkBAY whiteblaze. Matching gold tack/redblue tassels/scabbards, exact original colours and props. All five NATURAL BLACK horse rump tails distinct from coloured hat PLUMES. Keep one hand-gripped gun per rider aiming diagonally downscreenLEFT outside their own horse neck, no weapon through arms/horses. Horse spines, muzzle-heads and saddles whole. Wide transparent padding on all sides, every hoof/feather/pistol muzzle/tail stays inside canvas. No floor, text, grids, ground shadow or effects. RUN opposite stride pose D. ALL FIVE horses extend viewerLEFT foreleg/hoof downscreen while viewerRIGHT foreleg folds back under chest; opposite diagonal hindleg passes. Only four attached legs per horse, no extra toes/hooves. Riders bob slightly down into saddles, capes/plumes/tails flutter oppositely, feet in stirrups. All five men still hold ONE pistol each and their other hand reins. No smoke or firing.",
+      "references": [
+        "C:\\Users\\Damien\\.codex\\generated_images\\01a0f03e-fce7-71f0-ae83-67f86e8e8794\\exec-70877b35-502b-4772-b5eb-ef06bb460448.png"
+      ]
+    },
+    {
+      "id": "earlymodern-Cavalry-Attack-F3",
+      "category": "Cavalry",
+      "state": "Attack-F3",
+      "rawOutput": "C:\\Users\\Damien\\.codex\\generated_images\\01a0f03e-fce7-71f0-ae83-67f86e8e8794\\exec-893595f3-4e4d-4e86-812a-d9327cb5ff76.png",
+      "usedInFinal": true,
+      "prompt": "Use case: precise-object-edit. PRIMARY input is accepted overhead mounted squad guide. ONE full squad in ONE square transparent PNG, NOT an atlas. EXACTLY FIVE horse-mounted pistoliers, FIVE single short silver-barrel flintlock pistols with gold fittings, FIVE horses. All gun hands viewerLEFT; all viewerRIGHT hands keep reins. Curved sabres stay sheathed beside saddles, never drawn. TRUE same vertical overhead camera straight down crown tops/saddles/spines, all face screenBOTTOM, no visible faces or perspective tilt. Fixed formation/head and horse scale, two rear/three front. Rear-left RED braided coat brown furhat WHITE plume BAY horse white blaze; rear-right steelgoldhelmet REDWHITEplume cuirass/redarms leopard bluecape CREAM horse blackmane; front-left BLUE coat browncuirass broadbrim REDWHITEplume BAY horse whiteblaze; front-middle REDgold braidedcoat leopardfur brownfurhat REDplume CHARCOALGREY horse whiteblaze; front-right OCHRE coat browncuirass steelgoldhelmet BLUEWHITEplume darkBAY horse whiteblaze. Original gold tack/scabbards/stirrupboots, redblue tassels preserved. FIVE natural BLACK horse rump tails remain black, separate from coloured helmet feathers. Exactly ONE continuously hand-gripped pistol for EVERY rider. No gun through arm or horse, no disappearing/duplicated weapons. All five complete horses/men and every feather/pistol muzzle/hoof/tail/smoke within generous transparent margins, reframe whole group uniformly if needed to fit smoke. No floor/text/grid/ground shadow. PRE-FIRE AIM pose. ALL FIVE riders including ALL THREE front riders extend viewerLEFT pistol forearm forward downscreenLEFT, straighten elbow and advance pistol muzzle about 80 source pixels beyond guide ready pose, outboard beside OWN horse's neck, NOT aiming into neighbouring horse. Small balanced shoulder lean forward. Five riders' other hands hold reins continuously. ALL FIVE single intact gun muzzles fully visible. Horse feet remain grounded. NO smoke or muzzleflash yet.",
+      "references": [
+        "C:\\Users\\Damien\\.codex\\generated_images\\01a0f03e-fce7-71f0-ae83-67f86e8e8794\\exec-70877b35-502b-4772-b5eb-ef06bb460448.png"
+      ]
+    },
+    {
+      "id": "earlymodern-Cavalry-Attack-F5",
+      "category": "Cavalry",
+      "state": "Attack-F5",
+      "rawOutput": "C:\\Users\\Damien\\.codex\\generated_images\\01a0f03e-fce7-71f0-ae83-67f86e8e8794\\exec-03351b58-9c6d-40c5-bc9c-b9502c31509e.png",
+      "usedInFinal": true,
+      "prompt": "Use case: precise-object-edit. PRIMARY input is accepted overhead mounted squad guide. ONE full squad in ONE square transparent PNG, NOT an atlas. EXACTLY FIVE horse-mounted pistoliers, FIVE single short silver-barrel flintlock pistols with gold fittings, FIVE horses. All gun hands viewerLEFT; all viewerRIGHT hands keep reins. Curved sabres stay sheathed beside saddles, never drawn. TRUE same vertical overhead camera straight down crown tops/saddles/spines, all face screenBOTTOM, no visible faces or perspective tilt. Fixed formation/head and horse scale, two rear/three front. Rear-left RED braided coat brown furhat WHITE plume BAY horse white blaze; rear-right steelgoldhelmet REDWHITEplume cuirass/redarms leopard bluecape CREAM horse blackmane; front-left BLUE coat browncuirass broadbrim REDWHITEplume BAY horse whiteblaze; front-middle REDgold braidedcoat leopardfur brownfurhat REDplume CHARCOALGREY horse whiteblaze; front-right OCHRE coat browncuirass steelgoldhelmet BLUEWHITEplume darkBAY horse whiteblaze. Original gold tack/scabbards/stirrupboots, redblue tassels preserved. FIVE natural BLACK horse rump tails remain black, separate from coloured helmet feathers. Exactly ONE continuously hand-gripped pistol for EVERY rider. No gun through arm or horse, no disappearing/duplicated weapons. All five complete horses/men and every feather/pistol muzzle/hoof/tail/smoke within generous transparent margins, reframe whole group uniformly if needed to fit smoke. No floor/text/grid/ground shadow. FIRING instant. ALL FIVE including front-middle and both front riders extend their ONE pistol downscreenLEFT beside own horse neck and fire together; elbows straightened, gun arm full reach, tiny wrist/shoulder recoil, other hand stays on reins. EXACTLY FIVE small yelloworange muzzle flashes and compact WHITEGREY black-powder puffs emerge from each pistol's OPEN BARREL TIP furthest from grip. Effects not at lock/hand/horse. Smoke soft and partly translucent, modest plume downscreenLEFT from each own muzzle, all five horses, riders, pistols and rein hands remain readable. No long flames, huge explosions or opaque white balls. All five separate muzzle puffs clearly required, including front centre.",
+      "references": [
+        "C:\\Users\\Damien\\.codex\\generated_images\\01a0f03e-fce7-71f0-ae83-67f86e8e8794\\exec-70877b35-502b-4772-b5eb-ef06bb460448.png"
+      ]
+    },
+    {
+      "id": "earlymodern-Cavalry-Attack-F6",
+      "category": "Cavalry",
+      "state": "Attack-F6",
+      "rawOutput": "C:\\Users\\Damien\\.codex\\generated_images\\01a0f03e-fce7-71f0-ae83-67f86e8e8794\\exec-6477f498-4647-4fd5-89c6-d0fce2c195c3.png",
+      "usedInFinal": true,
+      "prompt": "Use case: precise-object-edit. PRIMARY input is accepted overhead mounted squad guide. ONE full squad in ONE square transparent PNG, NOT an atlas. EXACTLY FIVE horse-mounted pistoliers, FIVE single short silver-barrel flintlock pistols with gold fittings, FIVE horses. All gun hands viewerLEFT; all viewerRIGHT hands keep reins. Curved sabres stay sheathed beside saddles, never drawn. TRUE same vertical overhead camera straight down crown tops/saddles/spines, all face screenBOTTOM, no visible faces or perspective tilt. Fixed formation/head and horse scale, two rear/three front. Rear-left RED braided coat brown furhat WHITE plume BAY horse white blaze; rear-right steelgoldhelmet REDWHITEplume cuirass/redarms leopard bluecape CREAM horse blackmane; front-left BLUE coat browncuirass broadbrim REDWHITEplume BAY horse whiteblaze; front-middle REDgold braidedcoat leopardfur brownfurhat REDplume CHARCOALGREY horse whiteblaze; front-right OCHRE coat browncuirass steelgoldhelmet BLUEWHITEplume darkBAY horse whiteblaze. Original gold tack/scabbards/stirrupboots, redblue tassels preserved. FIVE natural BLACK horse rump tails remain black, separate from coloured helmet feathers. Exactly ONE continuously hand-gripped pistol for EVERY rider. No gun through arm or horse, no disappearing/duplicated weapons. All five complete horses/men and every feather/pistol muzzle/hoof/tail/smoke within generous transparent margins, reframe whole group uniformly if needed to fit smoke. No floor/text/grid/ground shadow. One beat AFTER FIRING. ALL FIVE pistols extended downscreenLEFT outside own horse neck; recoil bends gun wrists/elbows back about 15 source pixels and shoulders settle, other rein hands unchanged. EXACTLY FIVE expanding whitegrey smoke puffs rooted at five open pistol tips, drifting farther downscreenLEFT in irregular translucent clouds about 70 source pixels long. Soft fading alpha edges, no orangeflash/flame. Five hats/riders/horses and all five complete pistol grips/barrels visible, no merged cloud obscuring troop bodies, full smoke fits padded bounds.",
+      "references": [
+        "C:\\Users\\Damien\\.codex\\generated_images\\01a0f03e-fce7-71f0-ae83-67f86e8e8794\\exec-70877b35-502b-4772-b5eb-ef06bb460448.png"
+      ]
+    },
+    {
+      "id": "earlymodern-Cavalry-Attack-F7",
+      "category": "Cavalry",
+      "state": "Attack-F7",
+      "rawOutput": "C:\\Users\\Damien\\.codex\\generated_images\\01a0f03e-fce7-71f0-ae83-67f86e8e8794\\exec-ae15f04f-079b-4305-bf35-1a0a9b28f894.png",
+      "usedInFinal": true,
+      "prompt": "Use case: precise-object-edit. PRIMARY input is accepted overhead mounted squad guide. ONE full squad in ONE square transparent PNG, NOT an atlas. EXACTLY FIVE horse-mounted pistoliers, FIVE single short silver-barrel flintlock pistols with gold fittings, FIVE horses. All gun hands viewerLEFT; all viewerRIGHT hands keep reins. Curved sabres stay sheathed beside saddles, never drawn. TRUE same vertical overhead camera straight down crown tops/saddles/spines, all face screenBOTTOM, no visible faces or perspective tilt. Fixed formation/head and horse scale, two rear/three front. Rear-left RED braided coat brown furhat WHITE plume BAY horse white blaze; rear-right steelgoldhelmet REDWHITEplume cuirass/redarms leopard bluecape CREAM horse blackmane; front-left BLUE coat browncuirass broadbrim REDWHITEplume BAY horse whiteblaze; front-middle REDgold braidedcoat leopardfur brownfurhat REDplume CHARCOALGREY horse whiteblaze; front-right OCHRE coat browncuirass steelgoldhelmet BLUEWHITEplume darkBAY horse whiteblaze. Original gold tack/scabbards/stirrupboots, redblue tassels preserved. FIVE natural BLACK horse rump tails remain black, separate from coloured helmet feathers. Exactly ONE continuously hand-gripped pistol for EVERY rider. No gun through arm or horse, no disappearing/duplicated weapons. All five complete horses/men and every feather/pistol muzzle/hoof/tail/smoke within generous transparent margins, reframe whole group uniformly if needed to fit smoke. No floor/text/grid/ground shadow. Firing RECOVERY. ALL FIVE pistol elbows fold partway back toward ready, every gun remains continuously held downscreenLEFT; other hands keep reins. FIVE more diffuse fading smoke trails beyond own pistol tips, thin pale greywhite broken wisps curling/drifting downscreenLEFT about 80 source pixels, softer/thinner than just-fired puff. No muzzleflash/fire and no opaque smoke balls. All five whole horses/riders, gun grips and barrels remain clearly legible. Don't change helmet plumes into black tails.",
+      "references": [
+        "C:\\Users\\Damien\\.codex\\generated_images\\01a0f03e-fce7-71f0-ae83-67f86e8e8794\\exec-70877b35-502b-4772-b5eb-ef06bb460448.png"
+      ]
+    },
+    {
+      "id": "earlymodern-Cavalry-Attack-F8",
+      "category": "Cavalry",
+      "state": "Attack-F8",
+      "rawOutput": "C:\\Users\\Damien\\.codex\\generated_images\\01a0f03e-fce7-71f0-ae83-67f86e8e8794\\exec-9fde9d62-4aab-4df5-8b2d-9ffc97a887c0.png",
+      "usedInFinal": true,
+      "prompt": "Use case: precise-object-edit. PRIMARY input is accepted overhead mounted squad guide. ONE full squad in ONE square transparent PNG, NOT an atlas. EXACTLY FIVE horse-mounted pistoliers, FIVE single short silver-barrel flintlock pistols with gold fittings, FIVE horses. All gun hands viewerLEFT; all viewerRIGHT hands keep reins. Curved sabres stay sheathed beside saddles, never drawn. TRUE same vertical overhead camera straight down crown tops/saddles/spines, all face screenBOTTOM, no visible faces or perspective tilt. Fixed formation/head and horse scale, two rear/three front. Rear-left RED braided coat brown furhat WHITE plume BAY horse white blaze; rear-right steelgoldhelmet REDWHITEplume cuirass/redarms leopard bluecape CREAM horse blackmane; front-left BLUE coat browncuirass broadbrim REDWHITEplume BAY horse whiteblaze; front-middle REDgold braidedcoat leopardfur brownfurhat REDplume CHARCOALGREY horse whiteblaze; front-right OCHRE coat browncuirass steelgoldhelmet BLUEWHITEplume darkBAY horse whiteblaze. Original gold tack/scabbards/stirrupboots, redblue tassels preserved. FIVE natural BLACK horse rump tails remain black, separate from coloured helmet feathers. Exactly ONE continuously hand-gripped pistol for EVERY rider. No gun through arm or horse, no disappearing/duplicated weapons. All five complete horses/men and every feather/pistol muzzle/hoof/tail/smoke within generous transparent margins, reframe whole group uniformly if needed to fit smoke. No floor/text/grid/ground shadow. Late firing RECOVERY. ALL FIVE gun arms nearly return to the original slightly bent ready position, pistols still outside left side of own horse neck. Exactly FIVE very faint wispy pale grey-white smoke residues beyond five muzzle tips, almost fully dissolved, high transparency, no dense cores or flash/flame. Rider shoulders/cloaks settle. Rein grips, horse locations, tack, five natural black tails and coloured head feathers remain exact. No missed front-middle shooter.",
+      "references": [
+        "C:\\Users\\Damien\\.codex\\generated_images\\01a0f03e-fce7-71f0-ae83-67f86e8e8794\\exec-70877b35-502b-4772-b5eb-ef06bb460448.png"
+      ]
+    },
+    {
+      "id": "earlymodern-Ranged-Guide-Fixed",
+      "category": "Ranged",
+      "state": "Guide-Fixed",
+      "rawOutput": "C:\\Users\\Damien\\.codex\\generated_images\\01a0f03e-fce7-71f0-ae83-67f86e8e8794\\exec-1895ce98-5d38-4ed0-a179-c2b970919054.png",
+      "usedInFinal": true,
+      "prompt": "Use case: precise-object-edit. Edit ONLY the front-left BLUE-coated, WHITE-plumed musketeer's firearm and its hand grip. He currently has a forked doubled barrel: one branches down-left, the other down-right. Remove the ENTIRE extra down-left barrel/stock spur. He must have EXACTLY ONE continuous musket from trigger/stock at his viewerLEFT hand through the WOODEN fore-end in his viewerRIGHT support hand into the existing single down-RIGHT long steel barrel and round muzzle. Keep that correct down-right barrel, one flintlock, one stock and two grips. No empty extra barrel or detached fingers. All five now have exactly ONE musket each, FIVE barrels total. Preserve all other four men, original five hats/helmets/feathers, colours, costumes, exact camera straight overhead, formation, image scale, positions and transparent margins. No muzzle smoke yet. Do not change any other troop, add any gun or rotate camera.",
+      "references": [
+        "C:\\Users\\Damien\\.codex\\generated_images\\01a0f03e-fce7-71f0-ae83-67f86e8e8794\\exec-fe805191-5534-4dd7-8d5f-8e0838b2b9a6.png"
+      ]
+    },
+    {
+      "id": "earlymodern-Ranged-Idle-Fixed",
+      "category": "Ranged",
+      "state": "Idle-Fixed",
+      "rawOutput": "C:\\Users\\Damien\\.codex\\generated_images\\01a0f03e-fce7-71f0-ae83-67f86e8e8794\\exec-b8c6f2c2-73c0-4826-937c-b65ff732cac8.png",
+      "usedInFinal": true,
+      "prompt": "Use case: precise-object-edit. Rebuild INPUT1 idle atlas spacing only. INPUT2 is definitive five-man overhead guide and equipment reference. Required WIDE landscape canvas aspect ratio 5:2, exact FIVE columns and TWO rows of equal SQUARE cells, ten complete sequential idle squads. The old atlas crowds cells and clips rightmost gun tips. REDUCE each WHOLE FIVE-man squad to about 65percent of its own cell width and height, with LARGE continuous TRANSPARENT gutters between EVERY column and row and outer edge. Fixed consistent formation/character scale per cell, no squad touches any cell edge. FIVE original musketeers and exactly FIVE ONE-barrel long muskets in EVERY cell, all five barrels downscreenRIGHT in consistent two-hand grips, no forked double guns. Original ochre morion rear-left, blue red-feather rear-right, blue white-feather front-left, red white-feather front-middle, blue goldrim tricorne front-right. Same guide identities, hat colours/feathers, beige trousers, brown boots and original painted finish. TRUE SAME straight 90 degree overhead camera, crowns hide faces. Ten subtle all-five breathing/shoulder/wrist/feather idle frames, feet planted, NO smoke or firing. Real transparent background, no text, grid lines, sheet labels, floors, shadows. Include all ten full squads and all 50 single gun muzzles fully contained with wide empty padding.",
+      "references": [
+        "C:\\Users\\Damien\\.codex\\generated_images\\01a0f03e-fce7-71f0-ae83-67f86e8e8794\\exec-513b8335-848e-4b2e-9d42-5dcfbffb8988.png",
+        "C:\\Users\\Damien\\.codex\\generated_images\\01a0f03e-fce7-71f0-ae83-67f86e8e8794\\exec-1895ce98-5d38-4ed0-a179-c2b970919054.png"
+      ]
+    }
+  ],
+  "frameSelections": [
+    {
+      "category": "Melee",
+      "state": "Idle",
+      "rawPath": "C:\\Users\\Damien\\.codex\\generated_images\\01a0f03e-fce7-71f0-ae83-67f86e8e8794\\exec-d34ebbb8-d888-4029-a43e-e50bf458debf.png",
+      "referencePath": "C:\\Users\\Damien\\.codex\\generated_images\\01a0f03e-fce7-71f0-ae83-67f86e8e8794\\exec-6da19068-4afd-4b0e-892b-0e54bb66f1ad.png",
+      "poseSequence": [
+        1,
+        2,
+        3,
+        4,
+        5,
+        6,
+        7,
+        8,
+        9,
+        10
+      ],
+      "densityOverride": 0.99
+    },
+    {
+      "category": "Melee",
+      "state": "Running",
+      "rawPath": "C:\\Users\\Damien\\.codex\\generated_images\\01a0f03e-fce7-71f0-ae83-67f86e8e8794\\exec-84c3e087-943b-491a-a310-f321bcae72ab.png",
+      "referencePath": "C:\\Users\\Damien\\.codex\\generated_images\\01a0f03e-fce7-71f0-ae83-67f86e8e8794\\exec-6da19068-4afd-4b0e-892b-0e54bb66f1ad.png",
+      "poseSequence": [
+        1,
+        2,
+        3,
+        4,
+        5,
+        6,
+        7,
+        8,
+        9,
+        10
+      ]
+    },
+    {
+      "category": "Melee",
+      "state": "Attack",
+      "referencePath": "C:\\Users\\Damien\\.codex\\generated_images\\01a0f03e-fce7-71f0-ae83-67f86e8e8794\\exec-6da19068-4afd-4b0e-892b-0e54bb66f1ad.png",
+      "poseSequence": [
+        1,
+        1,
+        2,
+        2,
+        3,
+        4,
+        5,
+        6,
+        1,
+        1
+      ],
+      "frames": [
+        {
+          "rawPath": "C:\\Users\\Damien\\.codex\\generated_images\\01a0f03e-fce7-71f0-ae83-67f86e8e8794\\exec-6da19068-4afd-4b0e-892b-0e54bb66f1ad.png",
+          "single": true
+        },
+        {
+          "rawPath": "C:\\Users\\Damien\\.codex\\generated_images\\01a0f03e-fce7-71f0-ae83-67f86e8e8794\\exec-6da19068-4afd-4b0e-892b-0e54bb66f1ad.png",
+          "single": true
+        },
+        {
+          "rawPath": "C:\\Users\\Damien\\.codex\\generated_images\\01a0f03e-fce7-71f0-ae83-67f86e8e8794\\exec-67227e31-1e78-4224-9098-1612a1c4986b.png",
+          "single": true
+        },
+        {
+          "rawPath": "C:\\Users\\Damien\\.codex\\generated_images\\01a0f03e-fce7-71f0-ae83-67f86e8e8794\\exec-67227e31-1e78-4224-9098-1612a1c4986b.png",
+          "single": true
+        },
+        {
+          "rawPath": "C:\\Users\\Damien\\.codex\\generated_images\\01a0f03e-fce7-71f0-ae83-67f86e8e8794\\exec-4c32f48f-b9e5-4138-867c-d98524a0f9bf.png",
+          "single": true
+        },
+        {
+          "rawPath": "C:\\Users\\Damien\\.codex\\generated_images\\01a0f03e-fce7-71f0-ae83-67f86e8e8794\\exec-00b732d2-0919-4517-b33b-98b9833ee5e9.png",
+          "single": true
+        },
+        {
+          "rawPath": "C:\\Users\\Damien\\.codex\\generated_images\\01a0f03e-fce7-71f0-ae83-67f86e8e8794\\exec-0ed10e10-b270-4a03-8740-993c42d33320.png",
+          "single": true
+        },
+        {
+          "rawPath": "C:\\Users\\Damien\\.codex\\generated_images\\01a0f03e-fce7-71f0-ae83-67f86e8e8794\\exec-fd638f0e-e254-4dd0-a1bf-7dd0b421b6a5.png",
+          "single": true
+        },
+        {
+          "rawPath": "C:\\Users\\Damien\\.codex\\generated_images\\01a0f03e-fce7-71f0-ae83-67f86e8e8794\\exec-6da19068-4afd-4b0e-892b-0e54bb66f1ad.png",
+          "single": true
+        },
+        {
+          "rawPath": "C:\\Users\\Damien\\.codex\\generated_images\\01a0f03e-fce7-71f0-ae83-67f86e8e8794\\exec-6da19068-4afd-4b0e-892b-0e54bb66f1ad.png",
+          "single": true
+        }
+      ]
+    },
+    {
+      "category": "Ranged",
+      "state": "Idle",
+      "rawPath": "C:\\Users\\Damien\\.codex\\generated_images\\01a0f03e-fce7-71f0-ae83-67f86e8e8794\\exec-b8c6f2c2-73c0-4826-937c-b65ff732cac8.png",
+      "referencePath": "C:\\Users\\Damien\\.codex\\generated_images\\01a0f03e-fce7-71f0-ae83-67f86e8e8794\\exec-1895ce98-5d38-4ed0-a179-c2b970919054.png",
+      "poseSequence": [
+        1,
+        2,
+        3,
+        4,
+        5,
+        6,
+        7,
+        8,
+        9,
+        10
+      ],
+      "densityOverride": 0.94
+    },
+    {
+      "category": "Ranged",
+      "state": "Running",
+      "rawPath": "C:\\Users\\Damien\\.codex\\generated_images\\01a0f03e-fce7-71f0-ae83-67f86e8e8794\\exec-f326fc0b-3133-4588-a131-4b4481a23918.png",
+      "referencePath": "C:\\Users\\Damien\\.codex\\generated_images\\01a0f03e-fce7-71f0-ae83-67f86e8e8794\\exec-1895ce98-5d38-4ed0-a179-c2b970919054.png",
+      "poseSequence": [
+        1,
+        2,
+        3,
+        4,
+        5,
+        6,
+        7,
+        8,
+        9,
+        10
+      ]
+    },
+    {
+      "category": "Ranged",
+      "state": "Attack",
+      "referencePath": "C:\\Users\\Damien\\.codex\\generated_images\\01a0f03e-fce7-71f0-ae83-67f86e8e8794\\exec-1895ce98-5d38-4ed0-a179-c2b970919054.png",
+      "poseSequence": [
+        1,
+        1,
+        2,
+        2,
+        3,
+        4,
+        5,
+        6,
+        1,
+        1
+      ],
+      "frames": [
+        {
+          "rawPath": "C:\\Users\\Damien\\.codex\\generated_images\\01a0f03e-fce7-71f0-ae83-67f86e8e8794\\exec-1895ce98-5d38-4ed0-a179-c2b970919054.png",
+          "single": true
+        },
+        {
+          "rawPath": "C:\\Users\\Damien\\.codex\\generated_images\\01a0f03e-fce7-71f0-ae83-67f86e8e8794\\exec-1895ce98-5d38-4ed0-a179-c2b970919054.png",
+          "single": true
+        },
+        {
+          "rawPath": "C:\\Users\\Damien\\.codex\\generated_images\\01a0f03e-fce7-71f0-ae83-67f86e8e8794\\exec-476f7679-39d5-4247-9903-e60ad1b725b7.png",
+          "single": true
+        },
+        {
+          "rawPath": "C:\\Users\\Damien\\.codex\\generated_images\\01a0f03e-fce7-71f0-ae83-67f86e8e8794\\exec-476f7679-39d5-4247-9903-e60ad1b725b7.png",
+          "single": true
+        },
+        {
+          "rawPath": "C:\\Users\\Damien\\.codex\\generated_images\\01a0f03e-fce7-71f0-ae83-67f86e8e8794\\exec-f3aeb213-26de-408f-9e30-5bdcab3f3128.png",
+          "single": true
+        },
+        {
+          "rawPath": "C:\\Users\\Damien\\.codex\\generated_images\\01a0f03e-fce7-71f0-ae83-67f86e8e8794\\exec-7bb3cd7f-0b1f-4d7e-996e-cfebef8ca2e2.png",
+          "single": true
+        },
+        {
+          "rawPath": "C:\\Users\\Damien\\.codex\\generated_images\\01a0f03e-fce7-71f0-ae83-67f86e8e8794\\exec-56f2a0a7-9da5-4d72-a365-461654851108.png",
+          "single": true
+        },
+        {
+          "rawPath": "C:\\Users\\Damien\\.codex\\generated_images\\01a0f03e-fce7-71f0-ae83-67f86e8e8794\\exec-7d592bc3-87f6-443c-a28d-cb90d1814c2a.png",
+          "single": true
+        },
+        {
+          "rawPath": "C:\\Users\\Damien\\.codex\\generated_images\\01a0f03e-fce7-71f0-ae83-67f86e8e8794\\exec-1895ce98-5d38-4ed0-a179-c2b970919054.png",
+          "single": true
+        },
+        {
+          "rawPath": "C:\\Users\\Damien\\.codex\\generated_images\\01a0f03e-fce7-71f0-ae83-67f86e8e8794\\exec-1895ce98-5d38-4ed0-a179-c2b970919054.png",
+          "single": true
+        }
+      ]
+    },
+    {
+      "category": "Cavalry",
+      "state": "Idle",
+      "referencePath": "C:\\Users\\Damien\\.codex\\generated_images\\01a0f03e-fce7-71f0-ae83-67f86e8e8794\\exec-70877b35-502b-4772-b5eb-ef06bb460448.png",
+      "poseSequence": [
+        1,
+        1,
+        2,
+        2,
+        3,
+        3,
+        2,
+        2,
+        1,
+        1
+      ],
+      "frames": [
+        {
+          "rawPath": "C:\\Users\\Damien\\.codex\\generated_images\\01a0f03e-fce7-71f0-ae83-67f86e8e8794\\exec-70877b35-502b-4772-b5eb-ef06bb460448.png",
+          "single": true
+        },
+        {
+          "rawPath": "C:\\Users\\Damien\\.codex\\generated_images\\01a0f03e-fce7-71f0-ae83-67f86e8e8794\\exec-70877b35-502b-4772-b5eb-ef06bb460448.png",
+          "single": true
+        },
+        {
+          "rawPath": "C:\\Users\\Damien\\.codex\\generated_images\\01a0f03e-fce7-71f0-ae83-67f86e8e8794\\exec-02ec4cd6-c92b-427b-8ae1-5fbc75080c1d.png",
+          "single": true
+        },
+        {
+          "rawPath": "C:\\Users\\Damien\\.codex\\generated_images\\01a0f03e-fce7-71f0-ae83-67f86e8e8794\\exec-02ec4cd6-c92b-427b-8ae1-5fbc75080c1d.png",
+          "single": true
+        },
+        {
+          "rawPath": "C:\\Users\\Damien\\.codex\\generated_images\\01a0f03e-fce7-71f0-ae83-67f86e8e8794\\exec-841cd942-158a-4a3f-924b-38587fb0d33a.png",
+          "single": true
+        },
+        {
+          "rawPath": "C:\\Users\\Damien\\.codex\\generated_images\\01a0f03e-fce7-71f0-ae83-67f86e8e8794\\exec-841cd942-158a-4a3f-924b-38587fb0d33a.png",
+          "single": true
+        },
+        {
+          "rawPath": "C:\\Users\\Damien\\.codex\\generated_images\\01a0f03e-fce7-71f0-ae83-67f86e8e8794\\exec-02ec4cd6-c92b-427b-8ae1-5fbc75080c1d.png",
+          "single": true
+        },
+        {
+          "rawPath": "C:\\Users\\Damien\\.codex\\generated_images\\01a0f03e-fce7-71f0-ae83-67f86e8e8794\\exec-02ec4cd6-c92b-427b-8ae1-5fbc75080c1d.png",
+          "single": true
+        },
+        {
+          "rawPath": "C:\\Users\\Damien\\.codex\\generated_images\\01a0f03e-fce7-71f0-ae83-67f86e8e8794\\exec-70877b35-502b-4772-b5eb-ef06bb460448.png",
+          "single": true
+        },
+        {
+          "rawPath": "C:\\Users\\Damien\\.codex\\generated_images\\01a0f03e-fce7-71f0-ae83-67f86e8e8794\\exec-70877b35-502b-4772-b5eb-ef06bb460448.png",
+          "single": true
+        }
+      ]
+    },
+    {
+      "category": "Cavalry",
+      "state": "Running",
+      "referencePath": "C:\\Users\\Damien\\.codex\\generated_images\\01a0f03e-fce7-71f0-ae83-67f86e8e8794\\exec-70877b35-502b-4772-b5eb-ef06bb460448.png",
+      "poseSequence": [
+        1,
+        1,
+        2,
+        2,
+        3,
+        3,
+        4,
+        4,
+        4,
+        1
+      ],
+      "frames": [
+        {
+          "rawPath": "C:\\Users\\Damien\\.codex\\generated_images\\01a0f03e-fce7-71f0-ae83-67f86e8e8794\\exec-710a11da-c7a9-4936-8446-02321c4eed9f.png",
+          "single": true
+        },
+        {
+          "rawPath": "C:\\Users\\Damien\\.codex\\generated_images\\01a0f03e-fce7-71f0-ae83-67f86e8e8794\\exec-710a11da-c7a9-4936-8446-02321c4eed9f.png",
+          "single": true
+        },
+        {
+          "rawPath": "C:\\Users\\Damien\\.codex\\generated_images\\01a0f03e-fce7-71f0-ae83-67f86e8e8794\\exec-03cd983c-f2bc-4003-88ca-cebacb130ab0.png",
+          "single": true
+        },
+        {
+          "rawPath": "C:\\Users\\Damien\\.codex\\generated_images\\01a0f03e-fce7-71f0-ae83-67f86e8e8794\\exec-03cd983c-f2bc-4003-88ca-cebacb130ab0.png",
+          "single": true
+        },
+        {
+          "rawPath": "C:\\Users\\Damien\\.codex\\generated_images\\01a0f03e-fce7-71f0-ae83-67f86e8e8794\\exec-afabcd73-a5e8-4460-ae93-3e6613167a0d.png",
+          "single": true
+        },
+        {
+          "rawPath": "C:\\Users\\Damien\\.codex\\generated_images\\01a0f03e-fce7-71f0-ae83-67f86e8e8794\\exec-afabcd73-a5e8-4460-ae93-3e6613167a0d.png",
+          "single": true
+        },
+        {
+          "rawPath": "C:\\Users\\Damien\\.codex\\generated_images\\01a0f03e-fce7-71f0-ae83-67f86e8e8794\\exec-dfa16b8a-0beb-4af8-9dd6-16fbdbceb098.png",
+          "single": true
+        },
+        {
+          "rawPath": "C:\\Users\\Damien\\.codex\\generated_images\\01a0f03e-fce7-71f0-ae83-67f86e8e8794\\exec-dfa16b8a-0beb-4af8-9dd6-16fbdbceb098.png",
+          "single": true
+        },
+        {
+          "rawPath": "C:\\Users\\Damien\\.codex\\generated_images\\01a0f03e-fce7-71f0-ae83-67f86e8e8794\\exec-dfa16b8a-0beb-4af8-9dd6-16fbdbceb098.png",
+          "single": true
+        },
+        {
+          "rawPath": "C:\\Users\\Damien\\.codex\\generated_images\\01a0f03e-fce7-71f0-ae83-67f86e8e8794\\exec-710a11da-c7a9-4936-8446-02321c4eed9f.png",
+          "single": true
+        }
+      ]
+    },
+    {
+      "category": "Cavalry",
+      "state": "Attack",
+      "referencePath": "C:\\Users\\Damien\\.codex\\generated_images\\01a0f03e-fce7-71f0-ae83-67f86e8e8794\\exec-70877b35-502b-4772-b5eb-ef06bb460448.png",
+      "poseSequence": [
+        1,
+        1,
+        2,
+        2,
+        3,
+        4,
+        5,
+        6,
+        1,
+        1
+      ],
+      "frames": [
+        {
+          "rawPath": "C:\\Users\\Damien\\.codex\\generated_images\\01a0f03e-fce7-71f0-ae83-67f86e8e8794\\exec-70877b35-502b-4772-b5eb-ef06bb460448.png",
+          "single": true
+        },
+        {
+          "rawPath": "C:\\Users\\Damien\\.codex\\generated_images\\01a0f03e-fce7-71f0-ae83-67f86e8e8794\\exec-70877b35-502b-4772-b5eb-ef06bb460448.png",
+          "single": true
+        },
+        {
+          "rawPath": "C:\\Users\\Damien\\.codex\\generated_images\\01a0f03e-fce7-71f0-ae83-67f86e8e8794\\exec-893595f3-4e4d-4e86-812a-d9327cb5ff76.png",
+          "single": true
+        },
+        {
+          "rawPath": "C:\\Users\\Damien\\.codex\\generated_images\\01a0f03e-fce7-71f0-ae83-67f86e8e8794\\exec-893595f3-4e4d-4e86-812a-d9327cb5ff76.png",
+          "single": true
+        },
+        {
+          "rawPath": "C:\\Users\\Damien\\.codex\\generated_images\\01a0f03e-fce7-71f0-ae83-67f86e8e8794\\exec-03351b58-9c6d-40c5-bc9c-b9502c31509e.png",
+          "single": true
+        },
+        {
+          "rawPath": "C:\\Users\\Damien\\.codex\\generated_images\\01a0f03e-fce7-71f0-ae83-67f86e8e8794\\exec-6477f498-4647-4fd5-89c6-d0fce2c195c3.png",
+          "single": true
+        },
+        {
+          "rawPath": "C:\\Users\\Damien\\.codex\\generated_images\\01a0f03e-fce7-71f0-ae83-67f86e8e8794\\exec-ae15f04f-079b-4305-bf35-1a0a9b28f894.png",
+          "single": true
+        },
+        {
+          "rawPath": "C:\\Users\\Damien\\.codex\\generated_images\\01a0f03e-fce7-71f0-ae83-67f86e8e8794\\exec-9fde9d62-4aab-4df5-8b2d-9ffc97a887c0.png",
+          "single": true
+        },
+        {
+          "rawPath": "C:\\Users\\Damien\\.codex\\generated_images\\01a0f03e-fce7-71f0-ae83-67f86e8e8794\\exec-70877b35-502b-4772-b5eb-ef06bb460448.png",
+          "single": true
+        },
+        {
+          "rawPath": "C:\\Users\\Damien\\.codex\\generated_images\\01a0f03e-fce7-71f0-ae83-67f86e8e8794\\exec-70877b35-502b-4772-b5eb-ef06bb460448.png",
+          "single": true
+        }
+      ]
+    }
+  ]
+}

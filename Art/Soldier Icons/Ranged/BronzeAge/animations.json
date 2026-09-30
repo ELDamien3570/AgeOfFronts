@@ -1,0 +1,284 @@
+{
+  "schemaVersion": 1,
+  "unit": "Bronze archers",
+  "age": "BronzeAge",
+  "category": "Ranged",
+  "groupMemberCount": 5,
+  "camera": "vertical-overhead-orthographic",
+  "facing": "screen-down",
+  "frameSize": {
+    "width": 512,
+    "height": 512
+  },
+  "sheetSize": {
+    "width": 2560,
+    "height": 1024
+  },
+  "grid": {
+    "columns": 5,
+    "rows": 2
+  },
+  "frameOrder": "left-to-right-then-next-row",
+  "pivot": {
+    "x": 256,
+    "y": 256
+  },
+  "normalizedPivot": {
+    "x": 0.5,
+    "y": 0.5
+  },
+  "animations": {
+    "idle": {
+      "file": "Idle.png",
+      "frameCount": 10,
+      "suggestedFramesPerSecond": 8,
+      "loop": true,
+      "frames": [
+        {
+          "index": 0,
+          "x": 0,
+          "y": 0,
+          "width": 512,
+          "height": 512
+        },
+        {
+          "index": 1,
+          "x": 512,
+          "y": 0,
+          "width": 512,
+          "height": 512
+        },
+        {
+          "index": 2,
+          "x": 1024,
+          "y": 0,
+          "width": 512,
+          "height": 512
+        },
+        {
+          "index": 3,
+          "x": 1536,
+          "y": 0,
+          "width": 512,
+          "height": 512
+        },
+        {
+          "index": 4,
+          "x": 2048,
+          "y": 0,
+          "width": 512,
+          "height": 512
+        },
+        {
+          "index": 5,
+          "x": 0,
+          "y": 512,
+          "width": 512,
+          "height": 512
+        },
+        {
+          "index": 6,
+          "x": 512,
+          "y": 512,
+          "width": 512,
+          "height": 512
+        },
+        {
+          "index": 7,
+          "x": 1024,
+          "y": 512,
+          "width": 512,
+          "height": 512
+        },
+        {
+          "index": 8,
+          "x": 1536,
+          "y": 512,
+          "width": 512,
+          "height": 512
+        },
+        {
+          "index": 9,
+          "x": 2048,
+          "y": 512,
+          "width": 512,
+          "height": 512
+        }
+      ],
+      "distinctPoseCount": 10
+    },
+    "running": {
+      "file": "Running.png",
+      "frameCount": 10,
+      "suggestedFramesPerSecond": 12,
+      "loop": true,
+      "frames": [
+        {
+          "index": 0,
+          "x": 0,
+          "y": 0,
+          "width": 512,
+          "height": 512
+        },
+        {
+          "index": 1,
+          "x": 512,
+          "y": 0,
+          "width": 512,
+          "height": 512
+        },
+        {
+          "index": 2,
+          "x": 1024,
+          "y": 0,
+          "width": 512,
+          "height": 512
+        },
+        {
+          "index": 3,
+          "x": 1536,
+          "y": 0,
+          "width": 512,
+          "height": 512
+        },
+        {
+          "index": 4,
+          "x": 2048,
+          "y": 0,
+          "width": 512,
+          "height": 512
+        },
+        {
+          "index": 5,
+          "x": 0,
+          "y": 512,
+          "width": 512,
+          "height": 512
+        },
+        {
+          "index": 6,
+          "x": 512,
+          "y": 512,
+          "width": 512,
+          "height": 512
+        },
+        {
+          "index": 7,
+          "x": 1024,
+          "y": 512,
+          "width": 512,
+          "height": 512
+        },
+        {
+          "index": 8,
+          "x": 1536,
+          "y": 512,
+          "width": 512,
+          "height": 512
+        },
+        {
+          "index": 9,
+          "x": 2048,
+          "y": 512,
+          "width": 512,
+          "height": 512
+        }
+      ],
+      "poseSequence": [
+        1,
+        2,
+        3,
+        4,
+        4,
+        5,
+        6,
+        7,
+        8,
+        8
+      ],
+      "timingNote": "Repeated pose indices are intentional frame holds.",
+      "distinctPoseCount": 8
+    },
+    "attack": {
+      "file": "Attack.png",
+      "frameCount": 10,
+      "suggestedFramesPerSecond": 10,
+      "loop": false,
+      "frames": [
+        {
+          "index": 0,
+          "x": 0,
+          "y": 0,
+          "width": 512,
+          "height": 512
+        },
+        {
+          "index": 1,
+          "x": 512,
+          "y": 0,
+          "width": 512,
+          "height": 512
+        },
+        {
+          "index": 2,
+          "x": 1024,
+          "y": 0,
+          "width": 512,
+          "height": 512
+        },
+        {
+          "index": 3,
+          "x": 1536,
+          "y": 0,
+          "width": 512,
+          "height": 512
+        },
+        {
+          "index": 4,
+          "x": 2048,
+          "y": 0,
+          "width": 512,
+          "height": 512
+        },
+        {
+          "index": 5,
+          "x": 0,
+          "y": 512,
+          "width": 512,
+          "height": 512
+        },
+        {
+          "index": 6,
+          "x": 512,
+          "y": 512,
+          "width": 512,
+          "height": 512
+        },
+        {
+          "index": 7,
+          "x": 1024,
+          "y": 512,
+          "width": 512,
+          "height": 512
+        },
+        {
+          "index": 8,
+          "x": 1536,
+          "y": 512,
+          "width": 512,
+          "height": 512
+        },
+        {
+          "index": 9,
+          "x": 2048,
+          "y": 512,
+          "width": 512,
+          "height": 512
+        }
+      ],
+      "distinctPoseCount": 10
+    }
+  },
+  "timingNote": "Suggested playback rates describe visual clips only. Simulation movement and attack timing must remain authoritative.",
+  "integrationStatus": "artwork-only; not connected to game renderer"
+}

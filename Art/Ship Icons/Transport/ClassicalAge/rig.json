@@ -1,0 +1,129 @@
+{
+  "schemaVersion": 1,
+  "sourceSize": {
+    "width": 1254,
+    "height": 1254
+  },
+  "source": "Transport/Transport_ClassicalAge.png",
+  "sourceSha256": "ff59956a9da0bf89ca807dad3911f44e7028864b006f5fe4caf4aa7d43f6b4d7",
+  "frameSize": {
+    "width": 512,
+    "height": 512
+  },
+  "sourceToFrame": {
+    "scale": 0.3349282296650718,
+    "offset": [
+      46,
+      46
+    ]
+  },
+  "hullInterior": [
+    [
+      627,
+      142
+    ],
+    [
+      700,
+      253
+    ],
+    [
+      753,
+      413
+    ],
+    [
+      791,
+      667
+    ],
+    [
+      773,
+      866
+    ],
+    [
+      727,
+      1023
+    ],
+    [
+      650,
+      1080
+    ],
+    [
+      626,
+      1108
+    ],
+    [
+      603,
+      1080
+    ],
+    [
+      526,
+      1023
+    ],
+    [
+      480,
+      866
+    ],
+    [
+      462,
+      667
+    ],
+    [
+      501,
+      413
+    ],
+    [
+      553,
+      253
+    ]
+  ],
+  "layers": [
+    {
+      "name": "cloth-01",
+      "polygon": [
+        [
+          376,
+          533
+        ],
+        [
+          610,
+          532
+        ],
+        [
+          610,
+          604
+        ],
+        [
+          417,
+          593
+        ]
+      ],
+      "amplitude": 10,
+      "kind": "cloth",
+      "file": "layers/cloth-01.png"
+    },
+    {
+      "name": "cloth-02",
+      "polygon": [
+        [
+          644,
+          532
+        ],
+        [
+          881,
+          533
+        ],
+        [
+          839,
+          593
+        ],
+        [
+          644,
+          604
+        ]
+      ],
+      "amplitude": 10,
+      "kind": "cloth",
+      "file": "layers/cloth-02.png"
+    }
+  ],
+  "notes": "Masks and original painted pixels are retained. Cloth pins, oar pivots, cannon recoil and optional effects are art presentation only."
+}

@@ -1,0 +1,59 @@
+import type { BuildingType } from "../Protocol";
+import {
+  MAX_MELEE_LUNGE_RATIO,
+  SPRITE_FOOTPRINT,
+  squadSpriteSize,
+} from "./UnitAnimation";
+
+// Presentation budgets are independent of terrain collision and weapon range.
+const SQUAD_ART_MIN_PIXELS = 28;
+const BUILDING_ART_MIN_PIXELS = 28;
+
+export function squadSymbol(
+  scale: number,
+  troops: number,
+  hasArtwork: boolean,
+) {
+  const size = squadSpriteSize(scale, troops);
+  const artwork = hasArtwork && size >= SQUAD_ART_MIN_PIXELS;
+  const width = artwork ? size : Math.max(6, Math.min(28, size));
+  const height = artwork ? size : (width * 240) / 448;
+  // Hug the standing troop formation; weapon swings extend beyond the pad.
+  // Keep selection and viewport bounds independent of this cosmetic circle.
+  const underlayRadius = artwork ? size * 0.35 + 1 : 0;
+  return {
+    artwork,
+    width,
+    height,
+    underlayRadius,
+    hitRadius: artwork
+      ? size * Math.SQRT1_2 + 1.5
+      : Math.hypot(width / 2, (height * 128) / 240),
+    viewRadius: artwork
+      ? (size / SPRITE_FOOTPRINT) * Math.SQRT1_2 + size * MAX_MELEE_LUNGE_RATIO
+      : Math.hypot(width / 2, (height * 128) / 240),
+  };
+}
+
+export function shipSymbol(scale: number, hasFormationArtwork: boolean) {
+  const formation = hasFormationArtwork && scale * 2 < SQUAD_ART_MIN_PIXELS;
+  const height = formation ? Math.max(8, Math.min(28, scale * 3)) : 22;
+  const width = formation ? (height * 224) / 464 : 16;
+  // Include the authored pivot's slight offset from the graphic's midpoint.
+  const radius = formation ? Math.hypot(width / 2, (height * 240) / 464) : 15;
+  return { formation, width, height, hitRadius: radius, viewRadius: radius };
+}
+
+export function buildingSymbol(
+  scale: number,
+  hasArtwork: boolean,
+  type: BuildingType,
+  selected = false,
+) {
+  const enlargement = type === "city" ? 1.15 : 1;
+  const projectedSize = scale * 2 * enlargement;
+  const size = Math.min(44 * enlargement, projectedSize);
+  const artwork = hasArtwork && size >= BUILDING_ART_MIN_PIXELS;
+  const backdropAlpha = artwork ? (selected ? 0.2 : 0) : 0.9;
+  return { artwork, size: artwork ? size : 18, inset: 3, backdropAlpha };
+}
