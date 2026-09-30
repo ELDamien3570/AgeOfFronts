@@ -24,6 +24,8 @@ Modern Warfare is now a large bundle. Its four-node count preserves the current 
 
 ## Defences need different capabilities
 
+Required AI integration: [defensive construction](<optimization and ai improvement/ai-defensive-construction.md>) chooses useful occupied trenches and nests with legal firing paths, assigns mobile anti-air, and places separate missile defence around worthwhile assets. Counter choice, construction budget, garrison and interception capacity must be planned together. Current source gates missile defence under Combined Arms; final design placement and interception tuning remain open rather than becoming implicitly approved through this AI task.
+
 Keep reusable construction, ownership, integrity and capture services. Distinguish an impassable Barrier from a CoverPosition and a DefensiveWeapon. An older wall can remain a barrier in a Modern match while a newly constructed trench follows its own crossing and occupancy policy.
 
 Proposed trenches protect eligible occupying formations through a contextual cover modifier. Exact cover strength, capacity, entry/exit, vehicle/trader crossing, suppressive effects and blast vulnerability remain open. Their rendered footprint must follow a domain placement definition, not create navigation implicitly.

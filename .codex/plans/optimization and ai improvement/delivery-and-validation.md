@@ -92,6 +92,7 @@ First reproduce today's supported settings. Then use experimental increases afte
 | Development | Minor tribes only, mixed developing tribes, and many established nations. |
 | Map | 250 x 125 where placement permits, 500 x 250, 1000 x 500, and representative imported terrain. |
 | Economy | Opening, mature producers/trade, disrupted routes, and resource-driven reconfiguration. |
+| Defensive planning | Exposed starts, staged connected enclosures/gates, contested approaches, breaches/repair, Modern mixed threats, and many factions constructing simultaneously. |
 | Combat | Open march, crowded front, narrow passages, dense walls, fleet/landing, and Modern aircraft/missiles. |
 | Speed | Normal first; 2x/4x only where those modes are to be supported. |
 

@@ -6,6 +6,8 @@ Related plans: [technology](tech-tree-and-cultures.md), [strategic resources](st
 
 ## Confirmed direction
 
+AI integration is required in the same optimization/army push. The [AI defensive construction plan](<optimization and ai improvement/ai-defensive-construction.md>) specifies protected-site selection, complete tower/link/gate quotes, staged construction, access checks, supporting forces, repairs and Modern counters. AI uses these shared fortification rules; it cannot invent free walls or alternate gate/navigation permissions.
+
 - Add a placeable defence building that is a tower.
 - Placing another tower close enough creates a wall between towers.
 - Players can use the links to enclose cities and other sites.

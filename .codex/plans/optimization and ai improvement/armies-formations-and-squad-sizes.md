@@ -151,6 +151,8 @@ ViewModels resolve membership/capacity, eligibility, costs, status, tactics and 
 
 ## AI, force queries and scaling
 
+Smart [defensive construction](ai-defensive-construction.md) is required in this same push. Army demand includes real trench/nest support, gate frontage, breach response, reinforcement/retreat access and mobile aircraft defence. Share commitments and researched capabilities with the construction planner; neither an empty enclosure nor an unassigned anti-air vehicle counts as a protected objective. Manual/automatic army orders retain the same authority and membership contracts.
+
 The shared AI planner recruits against researched army caps and actual squad costs, with role demand expressed in both formation count and manpower strength. It compares depleted large squads and full smaller squads using their real definitions. It reserves forces for defence/reinforcement instead of filling every army solely because capacity exists.
 
 An AI can maintain strategic operation assignments before Bronze, but cannot receive organized-column bonuses or unlocked army tactics before researching Armies. Automatic player tactics and nation/tribe tactics use the same legal commands, observations, routes, cooldowns and costs. Profiles affect risk/priority, not physical capabilities or free formations.

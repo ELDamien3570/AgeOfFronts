@@ -56,6 +56,8 @@ Dense local avoidance remains a separate scaling concern demonstrated by older s
 
 ## Snapshot and presentation work
 
+The required [defensive construction planner](ai-defensive-construction.md) must use dirty own-asset/structure/topology regions and a bounded shortlist of candidate layouts. Cache marginal coverage and access checks by relevant revisions; do not scan every frontier tile for every AI each tick. Qualify simultaneous tower/link/gate construction and breach-triggered army rerouting alongside ordinary movement. Defence planning budget and construction concurrency are explicit tuning values, not permission to alter combat or path legality under load.
+
 The encoder's current tile delta detection scans the full map at every publication. Record dirty owner/claim/progress tiles or regions from authoritative mutations and emit each changed tile once per publication, including resets, surrender/inheritance, and restored state.
 
 Coalesce command-triggered publication with the tick's publication where latency permits. A rejected command should not require serializing an unchanged world. Version expanded progression, inventories, trade, barriers, aircraft, and effects so unchanged data does not require full object-graph copying each tick.
