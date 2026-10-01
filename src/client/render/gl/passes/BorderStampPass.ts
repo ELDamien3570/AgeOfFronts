@@ -171,12 +171,12 @@ export class BorderStampPass {
       gl.bindTexture(gl.TEXTURE_2D, this.defenseCoverageTex);
     }
     gl.uniform1i(this.uCoastClip, this.coastClip ? 1 : 0);
-    if (this.coastClip) {
-      gl.activeTexture(gl.TEXTURE5);
-      gl.bindTexture(gl.TEXTURE_2D, this.fieldsTex);
-      gl.activeTexture(gl.TEXTURE6);
-      gl.bindTexture(gl.TEXTURE_2D, this.noiseTex);
-    }
+    // Always bind (or unbind): a sampler2D left pointing at a unit that still
+    // holds another pass's integer texture is a GL sampler-type mismatch.
+    gl.activeTexture(gl.TEXTURE5);
+    gl.bindTexture(gl.TEXTURE_2D, this.coastClip ? this.fieldsTex : null);
+    gl.activeTexture(gl.TEXTURE6);
+    gl.bindTexture(gl.TEXTURE_2D, this.coastClip ? this.noiseTex : null);
 
     gl.bindVertexArray(this.vao);
     gl.drawArrays(gl.TRIANGLES, 0, 6);
