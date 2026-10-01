@@ -80,6 +80,11 @@ class TilePaths {
     this.hierarchy?.prepare();
   }
 
+  /** Incremental form of `prepare()`; see HierarchicalPaths.warm. */
+  warm(count: number): boolean {
+    return this.hierarchy?.warm(count) ?? true;
+  }
+
   /** Deterministic search effort so far; budgets use this, never wall time. */
   get work(): number {
     return this.exactWork + this.replayedWork + (this.hierarchy?.work ?? 0);
@@ -287,7 +292,7 @@ export class LandPaths extends TilePaths {
 }
 
 export class WaterPaths extends TilePaths {
-  constructor(map: GameMap) {
-    super(map, true);
+  constructor(map: GameMap, prepare = true) {
+    super(map, true, prepare);
   }
 }

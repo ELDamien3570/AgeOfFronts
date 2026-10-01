@@ -217,6 +217,23 @@ export class HierarchicalPaths {
   prepare(): void {
     for (let id = 0; id < this.portals.length; id++) this.crossing(id);
   }
+  private warmCursor = 0;
+  /**
+   * Builds up to `count` missing crossing trees from where the last call ended.
+   * Trees are pure functions of tile costs and are rebuilt lazily when a query
+   * needs one, so warming only moves cost out of ordinary ticks: it never changes
+   * a route or the deterministic work counter. Returns true once every portal
+   * has been visited.
+   */
+  warm(count: number): boolean {
+    while (count > 0 && this.warmCursor < this.portals.length) {
+      const portal = this.portals[this.warmCursor++];
+      if (portal.tree) continue;
+      this.crossing(this.warmCursor - 1);
+      count--;
+    }
+    return this.warmCursor >= this.portals.length;
+  }
   private append(
     tree: LocalTree,
     cluster: Cluster,

@@ -101,6 +101,8 @@ import { terrainSpeed } from "./Terrain";
 const STARTING_TROOPS = 12_000;
 const BASE_RADIUS = 6;
 const ROUTE_EFFORT_LIMIT = 20_000;
+// Crossing trees built per tick until every portal has one (land, then water).
+const PATH_WARM_TREES = 6;
 
 // Fixed-step, integer-position simulation. Browser timing and rendering never
 // determine gameplay. Human and AI players enter through applyCommand().
@@ -185,6 +187,7 @@ export class Skirmish {
       ? (tile) => forts.blocked(tile, playerId)
       : undefined;
   }
+  private pathsWarm = false;
   private drainRoutes(): void {
     this.routeWork.drain(24, {
       read: () => this.paths.work,
@@ -233,7 +236,7 @@ export class Skirmish {
     this.progress = new Uint8Array(size);
     this.pressure = new Uint8Array(size);
     this.paths = new LandPaths(map, false);
-    this.waterPaths = new WaterPaths(map);
+    this.waterPaths = new WaterPaths(map, false);
     this.formations = new Formations(map, this.paths);
     this.avoidance = new LocalAvoidance(map);
     this.passageTraffic = new PassageTraffic(map, this.paths);
@@ -297,7 +300,8 @@ export class Skirmish {
         options.technologySpeed,
       );
     this.createPlayers();
-    this.paths.prepare();
+    // Crossing trees are built a few per tick instead of all at construction
+    // (about 5 s on a 1000 x 1000 map); queries build any they need first.
   }
 
   private createPlayers(): void {
@@ -1647,6 +1651,10 @@ export class Skirmish {
   step(): void {
     if (this.winner !== null) return;
     this.tick++;
+    if (!this.pathsWarm)
+      this.pathsWarm =
+        this.paths.warm(PATH_WARM_TREES) &&
+        this.waterPaths.warm(PATH_WARM_TREES);
     this.tickSquads = new Map(this.squads.map((s) => [s.id, s]));
     while (
       this.volleys.length &&
