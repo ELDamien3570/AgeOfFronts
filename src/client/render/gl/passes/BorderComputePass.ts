@@ -47,6 +47,9 @@ export class BorderComputePass {
   private uMapSize: WebGLUniformLocation;
   private uHighlightOwner: WebGLUniformLocation;
   private uHighlightThicken: WebGLUniformLocation;
+  private uCoastalBorders: WebGLUniformLocation;
+  private terrainBytesTex: WebGLTexture | null = null;
+  private coastalBorders = true;
 
   private highlightOwner = 0;
   /**
@@ -87,10 +90,16 @@ export class BorderComputePass {
       "uHighlightThicken",
     )!;
 
+    this.uCoastalBorders = gl.getUniformLocation(
+      this.program,
+      "uCoastalBorders",
+    )!;
+
     // Texture unit binding
     gl.useProgram(this.program);
     gl.uniform1i(gl.getUniformLocation(this.program, "uTileTex"), 0);
     gl.uniform1i(gl.getUniformLocation(this.program, "uRelationTex"), 1);
+    gl.uniform1i(gl.getUniformLocation(this.program, "uTerrainBytes"), 2);
 
     // --- Relationship texture (R8UI, RELATION_TEX_SIZE × RELATION_TEX_SIZE) ---
     this.relationTex = createTexture2D(gl, {
@@ -145,6 +154,26 @@ export class BorderComputePass {
   }
 
   private _tileTex: WebGLTexture;
+
+  /**
+   * Choose whether owned tiles next to water get a border. `terrainBytesTex`
+   * is the shared R8UI terrain texture (used to tell water from unowned
+   * land); without it the legacy behaviour (water is a border) is kept.
+   * Recomputes all borders when the choice changes.
+   */
+  setCoastalBorders(
+    coastal: boolean,
+    terrainBytesTex: WebGLTexture | null,
+  ): void {
+    const effective = coastal || !terrainBytesTex;
+    const changed =
+      effective !== this.coastalBorders ||
+      terrainBytesTex !== this.terrainBytesTex;
+    this.coastalBorders = effective;
+    this.terrainBytesTex = terrainBytesTex;
+    this.scatter.setCoastalBorders(coastal, terrainBytesTex);
+    if (changed) this.globalDirty = true;
+  }
 
   /** Set the highlighted player's ownerID (0 = no highlight). */
   setHighlightOwner(ownerID: number): void {
@@ -237,11 +266,14 @@ export class BorderComputePass {
       gl.uniform2f(this.uMapSize, this.mapW, this.mapH);
       gl.uniform1ui(this.uHighlightOwner, this.highlightOwner);
       gl.uniform1i(this.uHighlightThicken, Math.floor(mo.highlightThicken));
+      gl.uniform1i(this.uCoastalBorders, this.coastalBorders ? 1 : 0);
 
       gl.activeTexture(gl.TEXTURE0);
       gl.bindTexture(gl.TEXTURE_2D, this._tileTex);
       gl.activeTexture(gl.TEXTURE1);
       gl.bindTexture(gl.TEXTURE_2D, this.relationTex);
+      gl.activeTexture(gl.TEXTURE2);
+      gl.bindTexture(gl.TEXTURE_2D, this.terrainBytesTex);
 
       gl.bindVertexArray(this.vao);
       gl.drawArrays(gl.TRIANGLES, 0, 6);

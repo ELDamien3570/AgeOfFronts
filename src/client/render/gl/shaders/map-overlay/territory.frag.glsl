@@ -14,7 +14,9 @@ uniform int uShowPatterns;
 uniform int uIsTeamMode;          // 1 = teams (tint skin by team color), 0 = FFA (raw skin colors)
 const float SKIN_DIM = 1024.0;    // atlas cell size in tiles — must match SkinAtlasArray.SKIN_DIM
 
-uniform vec2 uMapSize;
+// #include coast
+
+uniform int uCoastClip;           // 1 = clip fill to the stylized coastline
 uniform int uAltView;
 uniform float uStaleNukeBase;
 uniform float uStaleNukeVariation;
@@ -38,11 +40,19 @@ void main() {
   if (tc.x < 0 || tc.y < 0 || tc.x >= int(uMapSize.x) || tc.y >= int(uMapSize.y))
     discard;
 
+  // Fetched in uniform control flow (derivative-based mip selection), before
+  // any per-pixel discard. Must match the terrain pass's coastline.
+  float coastD = uCoastClip != 0 ? coastDistance(vWorldPos) : -1.0;
+
   uint raw = texelFetch(uTileTex, tc, 0).r;
   uint owner = raw & uint(OWNER_MASK);
   bool fallout = (raw & (1u << FALLOUT_BIT)) != 0u;
 
   if (owner == 0u && !fallout) discard;
+
+  // Follow the smooth, wobbled coastline the terrain pass draws instead of
+  // square tiles poking into the sea.
+  if (uCoastClip != 0 && coastD > 0.0) discard;
 
   // --- Stale-nuke ground (any fallout tile, owned or not) ---
   // Renders for owned tiles too so the player's territory color can't bleed

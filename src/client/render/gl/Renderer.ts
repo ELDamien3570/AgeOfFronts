@@ -489,6 +489,7 @@ export class GPURenderer {
     this.borderStampPass.setDefenseCoverageTex(
       this.defenseCoveragePass.getCoverageTex(),
     );
+    this.applyTerrainStyleToPasses();
 
     // --- Fallout bloom (needs tileTex, heatManager) ---
     this.bloomPass = new FalloutBloomPass(
@@ -1010,8 +1011,30 @@ export class GPURenderer {
    * settings change needs this explicit rebuild.
    */
   rebuildTerrain(): void {
-    this.terrainPass.setStyle(terrainStyleFromSettings(this.settings.terrain));
+    this.applyTerrainStyleToPasses();
     this.terrainPass.setTerrainColors(this.terrainColorOverrides());
+  }
+
+  /**
+   * Push the uniform-only terrain settings (stylized look, coast clipping,
+   * coastal borders) to every pass that depends on them. Cheap; safe to call
+   * live whenever `settings.terrain` changes.
+   */
+  applyTerrainStyleToPasses(): void {
+    const t = this.settings.terrain;
+    this.terrainPass.setStyle(terrainStyleFromSettings(t));
+    // Fill/stamp clipping only makes sense with the stylized coastline.
+    this.territoryPass.setCoastClip(
+      t.stylized,
+      this.terrainPass.fields,
+      this.terrainPass.noise,
+    );
+    this.borderStampPass.setCoastClip(
+      t.stylized,
+      this.terrainPass.fields,
+      this.terrainPass.noise,
+    );
+    this.borderPass.setCoastalBorders(t.coastalBorders, this.terrainBytesTex);
   }
 
   /** Terrain bake colours/flags from the current `settings.terrain`. */

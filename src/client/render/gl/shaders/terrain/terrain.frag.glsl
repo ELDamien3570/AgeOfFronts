@@ -75,24 +75,30 @@ void main() {
     fragColor = vec4(tex.rgb, 1.0);
     return;
   }
+
+  // All implicit-derivative fetches happen here, in uniform control flow;
+  // branches below use textureGrad/textureLod with these derivatives.
+  vec2 w = vUV * uMapSize;
+  vec2 dwx = dFdx(w);
+  vec2 dwy = dFdy(w);
+  vec4 nFine = coastNoise(w);
+  vec2 fields = coastFields(w);
+  // Low-frequency sample shared by water patches and land macro variation /
+  // dirt patches (B = brightness, R = ~10 tile blobs).
+  vec4 nMacro = texture(uNoise, w / 160.0 + vec2(0.31, 0.17));
+
   // Impassable renders as the background colour, untouched.
   if (tex.a < 0.25) {
     fragColor = vec4(tex.rgb, 1.0);
     return;
   }
 
-  vec2 w = vUV * uMapSize;
-  vec4 nFine = coastNoise(w);
-  vec2 fields = coastFields(w);
   float d = coastWobble(coastDecode(fields.r), nFine);
   float t = uAnimate > 0.5 ? uTime : 0.0;
   float zf = smoothstep(uZoomFadeStart, uZoomFadeEnd, uZoom);
   bool landTexel = tex.a < 0.75;
 
   vec3 col = tex.rgb;
-  // Low-frequency sample shared by water patches and land macro variation /
-  // dirt patches (B = brightness, R = ~10 tile blobs).
-  vec4 nMacro = texture(uNoise, w / 160.0 + vec2(0.31, 0.17));
 
   if (d >= 0.0) {
     // Turquoise shallows -> deep over 6 tiles; beyond that keep the
@@ -105,8 +111,8 @@ void main() {
     col *= 1.0 + (nMacro.b - 0.5) * 0.09;
 
     // Ripples: two noise samples scrolling in different directions.
-    vec4 n1 = texture(uNoise, w * 0.020 + t * vec2(0.010, 0.006));
-    vec4 n2 = texture(uNoise, w * 0.035 + t * vec2(-0.008, 0.012));
+    vec4 n1 = textureGrad(uNoise, w * 0.020 + t * vec2(0.010, 0.006), dwx * 0.020, dwy * 0.020);
+    vec4 n2 = textureGrad(uNoise, w * 0.035 + t * vec2(-0.008, 0.012), dwx * 0.035, dwy * 0.035);
     col *= 1.0 + (n1.g + n2.r - 1.0) * 2.0 * uRipple * zf;
 
     // Foam: broken-up line at the waterline plus waves rolling to shore.

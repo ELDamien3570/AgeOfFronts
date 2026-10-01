@@ -14,11 +14,17 @@
 
 import type { RenderSettings } from "../RenderSettings";
 import { getPaletteSize } from "../utils/ColorUtils";
-import { createMapQuad, createProgram, shaderSrc } from "../utils/GlUtils";
+import {
+  createMapQuad,
+  createProgram,
+  shaderInclude,
+  shaderSrc,
+} from "../utils/GlUtils";
 import { FALLOUT_BIT, OWNER_MASK, TILE_DEFINES } from "../utils/TileCodec";
 
 import overlayVertSrc from "../shaders/map-overlay/overlay.vert.glsl?raw";
 import territoryFragSrc from "../shaders/map-overlay/territory.frag.glsl?raw";
+import coastSrc from "../shaders/terrain/coast.glsl?raw";
 import { TileScatterPass } from "./TileScatterPass";
 
 export class TerritoryPass {
@@ -56,6 +62,11 @@ export class TerritoryPass {
   private skinAnchorTex: WebGLTexture;
   private defenseCoverageTex: WebGLTexture | null = null;
   private borderTex: WebGLTexture | null = null;
+  // Terrain fields + noise (shared with TerrainPass) for coastline clipping.
+  private fieldsTex: WebGLTexture | null = null;
+  private noiseTex: WebGLTexture | null = null;
+  private coastClip = false;
+  private uCoastClip: WebGLUniformLocation | null = null;
   private affiliationTex: WebGLTexture | null = null;
 
   private altView = false;
@@ -138,7 +149,7 @@ export class TerritoryPass {
     this.program = createProgram(
       gl,
       overlayVertSrc,
-      shaderSrc(territoryFragSrc, {
+      shaderSrc(shaderInclude(territoryFragSrc, "coast", coastSrc), {
         PALETTE_SIZE: getPaletteSize(),
         ...TILE_DEFINES,
       }),
@@ -194,6 +205,9 @@ export class TerritoryPass {
     gl.uniform1i(gl.getUniformLocation(this.program, "uDefenseCoverageTex"), 7);
     gl.uniform1i(gl.getUniformLocation(this.program, "uBorderTex"), 8);
     gl.uniform1i(gl.getUniformLocation(this.program, "uAffiliation"), 9);
+    gl.uniform1i(gl.getUniformLocation(this.program, "uFields"), 10);
+    gl.uniform1i(gl.getUniformLocation(this.program, "uNoise"), 11);
+    this.uCoastClip = gl.getUniformLocation(this.program, "uCoastClip");
 
     this.vao = createMapQuad(gl, mapW, mapH);
 
@@ -411,6 +425,20 @@ export class TerritoryPass {
     this.borderTex = tex;
   }
 
+  /**
+   * Terrain fields + noise textures and whether to clip the fill to the
+   * stylized coastline (only meaningful when the terrain pass is stylized).
+   */
+  setCoastClip(
+    enabled: boolean,
+    fields: WebGLTexture | null,
+    noise: WebGLTexture | null,
+  ): void {
+    this.coastClip = enabled && !!fields && !!noise;
+    this.fieldsTex = fields;
+    this.noiseTex = noise;
+  }
+
   /** Affiliation palette (row 0 = border/relation colors) for the alt-view fill. */
   setAffiliationTex(tex: WebGLTexture): void {
     this.affiliationTex = tex;
@@ -473,6 +501,13 @@ export class TerritoryPass {
     if (this.affiliationTex) {
       gl.activeTexture(gl.TEXTURE9);
       gl.bindTexture(gl.TEXTURE_2D, this.affiliationTex);
+    }
+    gl.uniform1i(this.uCoastClip, this.coastClip ? 1 : 0);
+    if (this.coastClip) {
+      gl.activeTexture(gl.TEXTURE10);
+      gl.bindTexture(gl.TEXTURE_2D, this.fieldsTex);
+      gl.activeTexture(gl.TEXTURE11);
+      gl.bindTexture(gl.TEXTURE_2D, this.noiseTex);
     }
 
     gl.bindVertexArray(this.vao);
