@@ -113,33 +113,46 @@ export class ShoreRoutes {
     reachesDestination: boolean,
     blocked?: (tile: number) => boolean,
   ): ShoreLeg | null {
-    const departures = [...departuresInput].sort(
-      (a, b) =>
-        this.map.manhattanDist(origin, a.landTile) +
-          this.map.manhattanDist(a.waterTile, destination) -
-          this.map.manhattanDist(origin, b.landTile) -
-          this.map.manhattanDist(b.waterTile, destination) ||
-        a.landTile - b.landTile,
-    );
-    const arrivals = [...arrivalsInput].sort(
-      (a, b) =>
-        this.map.manhattanDist(a.landTile, destination) -
-          this.map.manhattanDist(b.landTile, destination) ||
-        a.landTile - b.landTile,
-    );
+    // Sort keys are computed once per edge, not inside the comparator. Order is
+    // identical: by combined distance, then land tile.
+    const departures = departuresInput
+      .map((edge) => ({
+        edge,
+        key:
+          this.map.manhattanDist(origin, edge.landTile) +
+          this.map.manhattanDist(edge.waterTile, destination),
+      }))
+      .sort((a, b) => a.key - b.key || a.edge.landTile - b.edge.landTile)
+      .map(({ edge }) => edge);
+    const arrivals = arrivalsInput
+      .map((edge) => ({
+        edge,
+        key: this.map.manhattanDist(edge.landTile, destination),
+      }))
+      .sort((a, b) => a.key - b.key || a.edge.landTile - b.edge.landTile)
+      .map(({ edge }) => edge);
+    // With no obstacle a land route exists exactly when the tiles share a
+    // component, so reachability needs no search. Obstructed searches are
+    // remembered per arrival: they do not depend on the departure.
+    const reaches = (from: number, to: number) =>
+      blocked
+        ? this.land.find(from, to, blocked) !== null
+        : this.land.connected(from, to);
+    const arrivalReaches = new Map<number, boolean>();
     for (const start of departures) {
-      if (
-        blocked?.(start.landTile) ||
-        this.land.find(origin, start.landTile, blocked) === null
-      )
+      if (blocked?.(start.landTile) || !reaches(origin, start.landTile))
         continue;
       for (const end of arrivals) {
         if (blocked?.(end.landTile)) continue;
-        if (
-          reachesDestination &&
-          this.land.find(end.landTile, destination, blocked) === null
-        )
-          continue;
+        if (reachesDestination) {
+          let ok = arrivalReaches.get(end.landTile);
+          if (ok === undefined)
+            arrivalReaches.set(
+              end.landTile,
+              (ok = reaches(end.landTile, destination)),
+            );
+          if (!ok) continue;
+        }
         const path = this.water.find(start.waterTile, end.waterTile);
         if (path !== null)
           return { departure: start, arrival: end, waterPath: path };

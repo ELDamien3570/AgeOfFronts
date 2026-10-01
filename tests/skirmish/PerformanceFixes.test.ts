@@ -291,3 +291,54 @@ describe("derived ownership sets", () => {
     expect(restored.checkpoint()).toEqual(original.checkpoint());
   }, 60_000);
 });
+
+describe("component reachability matches route search", () => {
+  it("finds a route for every sampled pair that shares a component", () => {
+    const width = 160,
+      height = 120;
+    const next = sequence(99);
+    const data = new Uint8Array(width * height).fill(133);
+    // Scatter water blobs so the land splits into narrow passages and pockets.
+    for (let blob = 0; blob < 90; blob++) {
+      const cx = Math.floor(next() * width),
+        cy = Math.floor(next() * height),
+        radius = 3 + Math.floor(next() * 7);
+      for (
+        let y = Math.max(0, cy - radius);
+        y < Math.min(height, cy + radius);
+        y++
+      )
+        for (
+          let x = Math.max(0, cx - radius);
+          x < Math.min(width, cx + radius);
+          x++
+        )
+          if ((x - cx) ** 2 + (y - cy) ** 2 <= radius * radius)
+            data[y * width + x] = 0;
+    }
+    const map = new GameMapImpl(
+      width,
+      height,
+      data,
+      data.filter((t) => t & 128).length,
+    );
+    const land = new LandPaths(map);
+    const tiles: number[] = [];
+    for (let tile = 0; tile < width * height; tile++)
+      if (land.walkable(tile)) tiles.push(tile);
+    let connectedPairs = 0;
+    for (let i = 0; i < 600; i++) {
+      const a = tiles[Math.floor(next() * tiles.length)],
+        b = tiles[Math.floor(next() * tiles.length)];
+      if (!land.connected(a, b)) {
+        expect(land.find(a, b)).toBeNull();
+        continue;
+      }
+      connectedPairs++;
+      const route = land.find(a, b);
+      expect(route).not.toBeNull();
+      expect(a === b ? [] : route!.slice(-1)).toEqual(a === b ? [] : [b]);
+    }
+    expect(connectedPairs).toBeGreaterThan(100);
+  });
+});
