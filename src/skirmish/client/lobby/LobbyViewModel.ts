@@ -5,6 +5,7 @@ import {
 } from "../../lobby/EmpireProfile";
 import {
   defaultLobbySettings,
+  migrateLobbySettings,
   LobbyDirectory,
   type CustomLobby,
   type LobbySettings,
@@ -307,7 +308,7 @@ export class LobbyViewModel {
           {
             ...room,
             owner: validProfile(room.owner),
-            settings: {
+            settings: migrateLobbySettings({
               ...room.settings,
               // Earlier version-1 previews predate resource controls. Only an
               // absent value gets the original 1× rule; invalid values fail validation.
@@ -322,7 +323,7 @@ export class LobbyViewModel {
                 room.settings.resourceOutput === undefined
                   ? 1
                   : room.settings.resourceOutput,
-            },
+            }),
           },
           true,
         );
@@ -358,9 +359,7 @@ export class LobbyViewModel {
   }
 
   get aiCount(): number {
-    return this.rules.fillVacanciesWithAi
-      ? this.rules.slots - this.humanCount
-      : 0;
+    return this.rules.aiCount;
   }
 
   get countdown(): string {
@@ -415,7 +414,7 @@ export class LobbyViewModel {
         ? "Match starts are closed while the executor and recovery checks are being installed. Your room remains open."
         : "The server owns the roster and timer. Disconnected guests have 60 seconds to reconnect.";
     if (this.phase === "complete")
-      return `${this.humans} human seats + ${this.aiCount} AI seats. No online match has started.`;
+      return `${this.humans} humans + ${this.aiCount} AI opponents + ${this.rules.tribeCount} tribes. No online match has started.`;
     if (this.phase === "countdown")
       return `This sample timer ends at ${this.rules.countdownSeconds} seconds, or when all ${this.rules.slots} human seats are filled.`;
     return `Add sample players to reach ${this.rules.minimumHumans} humans. These seats are only a preview.`;
@@ -443,13 +442,20 @@ export class LobbyViewModel {
                 ? "You"
                 : "Connected"
               : "zzz · reconnecting"
-            : this.rules.fillVacanciesWithAi
-              ? "AI fills on start"
-              : "Stays vacant",
+            : "Open human seat",
         };
       });
-    return Array.from({ length: this.rules.slots }, (_, index) => {
+    // A finished preview lists the AI opponents after the human seats.
+    const aiSeats = this.phase === "complete" ? this.rules.aiCount : 0;
+    return Array.from({ length: this.rules.slots + aiSeats }, (_, index) => {
       const number = String(index + 1).padStart(2, "0");
+      if (index >= this.rules.slots)
+        return {
+          number,
+          kind: "ai",
+          name: "AI opponent",
+          detail: "Joins on start",
+        };
       if (index === 0)
         return {
           number,
@@ -464,20 +470,11 @@ export class LobbyViewModel {
           name: `Sample player ${number}`,
           detail: "Simulated human",
         };
-      if (this.phase === "complete" && this.rules.fillVacanciesWithAi)
-        return {
-          number,
-          kind: "ai",
-          name: "AI opponent",
-          detail: "Vacancy filled",
-        };
       return {
         number,
         kind: "open",
         name: "Open seat",
-        detail: this.rules.fillVacanciesWithAi
-          ? "AI fills on start"
-          : "Stays vacant",
+        detail: "Open human seat",
       };
     });
   }

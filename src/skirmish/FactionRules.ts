@@ -12,7 +12,37 @@ export const AGE_SQUAD_CAPS: Readonly<Record<Age, number>> = {
   Modern: 200,
 };
 
-export const MAX_TRIBES = 40;
+// Base faction counts per map size (longest edge). Lobbies may adjust each count
+// by FACTION_COUNT_ADJUSTMENT; the large map's upper bounds set the global caps.
+export const WORLD_FACTION_DEFAULTS = Object.freeze({
+  250: Object.freeze({ aiCount: 8, tribeCount: 20 }),
+  500: Object.freeze({ aiCount: 12, tribeCount: 30 }),
+  1000: Object.freeze({ aiCount: 16, tribeCount: 40 }),
+});
+export type FactionWorldSize = keyof typeof WORLD_FACTION_DEFAULTS;
+export const FACTION_COUNT_ADJUSTMENT = 5;
+export const MAX_HUMAN_PLAYERS = 20;
+export const MAX_AI_OPPONENTS =
+  WORLD_FACTION_DEFAULTS[1000].aiCount + FACTION_COUNT_ADJUSTMENT;
+export const MAX_TRIBES =
+  WORLD_FACTION_DEFAULTS[1000].tribeCount + FACTION_COUNT_ADJUSTMENT;
+/** Humans + AI + tribes; owner IDs share a byte with the 255 contested marker. */
+export const MAX_PLAYER_ID = MAX_HUMAN_PLAYERS + MAX_AI_OPPONENTS + MAX_TRIBES;
+
+export function factionDefaults(worldSize: FactionWorldSize) {
+  return WORLD_FACTION_DEFAULTS[worldSize];
+}
+/** Allowed lobby range for `aiCount` or `tribeCount` at a map size. */
+export function factionCountRange(
+  worldSize: FactionWorldSize,
+  kind: "aiCount" | "tribeCount",
+): { min: number; max: number } {
+  const base = WORLD_FACTION_DEFAULTS[worldSize][kind];
+  return {
+    min: Math.max(0, base - FACTION_COUNT_ADJUSTMENT),
+    max: base + FACTION_COUNT_ADJUSTMENT,
+  };
+}
 export const TRIBE_STARTING_SQUADS = 5;
 export const TRIBE_SQUAD_CAP = 10;
 export const TRIBE_BASE_RADIUS = 3;
@@ -31,9 +61,21 @@ export function canPromoteTribe(
     player.land * 100 >= landCells * TRIBE_PROMOTION_PERCENT
   );
 }
+/** Default tribe count for a map, from its longest edge. */
 export function tribeCountFor(width: number, height: number): number {
   const extent = Math.max(width, height);
-  return extent <= 375 ? 20 : extent <= 750 ? 30 : MAX_TRIBES;
+  return WORLD_FACTION_DEFAULTS[
+    extent <= 375 ? 250 : extent <= 750 ? 500 : 1000
+  ].tribeCount;
+}
+/** Tribes a match deploys: the explicit count, else the map default. */
+export function matchTribeCount(
+  options: { tribes?: boolean; tribeCount?: number },
+  width: number,
+  height: number,
+): number {
+  if (!options.tribes) return 0;
+  return options.tribeCount ?? tribeCountFor(width, height);
 }
 
 export function squadCap(player: Pick<Player, "kind">, age?: Age): number {

@@ -18,7 +18,8 @@ export const FIXED = 256;
 export const TICKS_PER_SECOND = 20;
 export const SQUAD_TROOPS = 1_000;
 export const MAX_SQUADS = 200;
-export const MAX_FACTIONS = 20;
+/** Regular factions (humans + AI) a match may hold; tribes are counted separately. */
+export const MAX_FACTIONS = 41;
 export const CAPTURE_RADIUS = 3;
 export const CAPTURE_TICKS = 30;
 export const MELEE_RANGE = 384;
@@ -327,6 +328,8 @@ export interface MatchOptions {
   alliances?: boolean;
   runAi?: boolean;
   tribes?: boolean;
+  /** Tribes to deploy when `tribes` is set; defaults to the map size's base. */
+  tribeCount?: number;
   territoryIncomeScale?: number;
   ruleset?: "sandbox-v1" | "ages-v1";
   victoryMode?: "solo" | "allied";

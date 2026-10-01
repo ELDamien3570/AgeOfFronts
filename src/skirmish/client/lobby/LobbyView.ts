@@ -1,10 +1,17 @@
+import {
+  factionCountRange,
+  factionDefaults,
+  MAX_HUMAN_PLAYERS,
+  type FactionWorldSize,
+} from "../../FactionRules";
 import { MAX_EMPIRE_NAME_LENGTH } from "../../lobby/EmpireProfile";
 import {
   CUSTOM_LOBBY_LIMIT,
-  RESOURCE_MULTIPLIERS,
   defaultLobbySettings,
+  RESOURCE_MULTIPLIERS,
   type CustomLobby,
 } from "../../lobby/LobbyDirectory";
+import { FRIENDS_MATCH_RULES } from "../../lobby/LobbyRules";
 import { empireFlag } from "./FlagCatalog";
 import type { LobbyViewModel } from "./LobbyViewModel";
 import { lobbyMapDimensions, type LobbyMapCard } from "./MapCatalog";
@@ -38,6 +45,21 @@ const e = (value: string) =>
       ]!,
   );
 const arrow = '<span aria-hidden="true">↗</span>';
+
+/** min/max/value attributes for a faction-count input at a map size. */
+export function factionInputRange(
+  worldSize: FactionWorldSize,
+  kind: "aiCount" | "tribeCount",
+): string {
+  const { min, max } = factionCountRange(worldSize, kind);
+  return `min="${min}" max="${max}" value="${factionDefaults(worldSize)[kind]}"`;
+}
+export function factionHint(worldSize: FactionWorldSize): string {
+  const base = factionDefaults(worldSize),
+    ai = factionCountRange(worldSize, "aiCount"),
+    tribes = factionCountRange(worldSize, "tribeCount");
+  return `This map size starts with ${base.aiCount} AI opponents and ${base.tribeCount} tribes. Adjust each by up to 5 (AI ${ai.min}–${ai.max}, tribes ${tribes.min}–${tribes.max}). Humans join on top of these.`;
+}
 const compass = `<svg viewBox="0 0 40 40" aria-hidden="true"><path d="M20 3 28 28 20 23 12 28Z"/><path d="M20 23v14M3 20h9m16 0h9"/></svg>`;
 
 function flag(
@@ -66,8 +88,8 @@ function roomCard(
   return `<article class="directory-card" ${room ? `data-custom-id="${room.id}"` : `data-default="${map.id}"`}>
     <a class="directory-map" ${preview} aria-label="${online ? "Join" : "Preview"} ${e(title)} lobby"><img src="${map.image}" alt="${map.name} terrain overview" width="500" height="250" loading="lazy" /><span>${room ? "CUSTOM" : "DEFAULT"}</span></a>
     <div class="directory-card-copy"><h3>${e(title)}</h3><p class="room-owner">${room ? `${flag(room.owner.flagCode, room.owner.name, "owner-flag")}<span>${e(room.owner.name)}</span>` : map.terrain}</p>
-      <div class="directory-human-count" aria-label="${humans ?? "Unknown"} connected humans out of ${settings.slots} slots"><strong>${humans ?? "—"}<small> / ${settings.slots}</small></strong><span>${online ? "HUMANS IN LOBBY" : "HUMANS · LOCAL PREVIEW"}</span></div>
-      <p class="directory-meta">${settings.slots} slots <span>·</span> ${settings.countdownSeconds}s timer <span>·</span> ${settings.alliances ? "Alliances allowed" : "Free for all"}</p>
+      <div class="directory-human-count" aria-label="${humans ?? "Unknown"} connected humans out of ${settings.slots} seats"><strong>${humans ?? "—"}<small> / ${settings.slots}</small></strong><span>${online ? "HUMANS IN LOBBY" : "HUMANS · LOCAL PREVIEW"}</span></div>
+      <p class="directory-meta">${settings.slots} human seats <span>·</span> ${settings.aiCount} AI <span>·</span> ${settings.tribeCount} tribes <span>·</span> ${settings.countdownSeconds}s timer <span>·</span> ${settings.alliances ? "Alliances allowed" : "Free for all"}</p>
       <div class="directory-card-actions"><a class="lobby-button brass" ${preview}>${online ? "Join lobby" : "Preview lobby"} ${arrow}</a>${room && (!online || vm?.canCloseRoom(room.id)) ? `<button class="close-room" data-remove-room="${room.id}" aria-label="Close ${e(title)} lobby">Close</button>` : `<a class="quiet-link" href="/skirmish/index.html?map=${map.id}" aria-label="Play ${map.name} vs AI">Play vs AI →</a>`}</div>
     </div>
   </article>`;
@@ -84,7 +106,7 @@ function footer(sourceUrl?: string): string {
 function rules(vm: LobbyViewModel): string {
   const r = vm.rules;
   const dimensions = lobbyMapDimensions(vm.selectedMap, r.worldSize);
-  return `<dl class="match-rules"><div><dt>Mode</dt><dd>Free for all</dd></div><div><dt>Faction slots</dt><dd>${r.slots}</dd></div><div><dt>Start timer</dt><dd>${r.countdownSeconds}s</dd></div><div><dt>Minimum humans</dt><dd>${r.minimumHumans}</dd></div><div><dt>Empty slots</dt><dd>${r.fillVacanciesWithAi ? "Filled by AI" : "Remain vacant"}</dd></div><div><dt>Alliances</dt><dd>${r.alliances ? "Allowed" : "Disabled"}</dd></div><div><dt>Victory</dt><dd>${r.victory === "allied" ? "Allied conquest" : "Solo conquest"}</dd></div><div><dt>Map size</dt><dd>${dimensions.width}×${dimensions.height}</dd></div><div><dt>Technology speed</dt><dd>${r.technologySpeed}×</dd></div><div><dt>Resource density</dt><dd>${r.resourceDensity}×</dd></div><div><dt>Deposit output</dt><dd>${r.resourceOutput}×</dd></div></dl>`;
+  return `<dl class="match-rules"><div><dt>Mode</dt><dd>Free for all</dd></div><div><dt>Human seats</dt><dd>${r.slots}</dd></div><div><dt>AI opponents</dt><dd>${r.aiCount}</dd></div><div><dt>Tribes</dt><dd>${r.tribeCount}</dd></div><div><dt>Start timer</dt><dd>${r.countdownSeconds}s</dd></div><div><dt>Minimum humans</dt><dd>${r.minimumHumans}</dd></div><div><dt>Alliances</dt><dd>${r.alliances ? "Allowed" : "Disabled"}</dd></div><div><dt>Victory</dt><dd>${r.victory === "allied" ? "Allied conquest" : "Solo conquest"}</dd></div><div><dt>Map size</dt><dd>${dimensions.width}×${dimensions.height}</dd></div><div><dt>Technology speed</dt><dd>${r.technologySpeed}×</dd></div><div><dt>Resource density</dt><dd>${r.resourceDensity}×</dd></div><div><dt>Deposit output</dt><dd>${r.resourceOutput}×</dd></div></dl>`;
 }
 
 function home(vm: LobbyViewModel): string {
@@ -105,7 +127,7 @@ function lobby(vm: LobbyViewModel): string {
   const map = vm.selectedMap;
   return `<main id="main-content" class="room-page"><a class="back-link" href="#" data-home>← All lobbies</a><div class="preview-notice"><span class="planned-label">${vm.online ? "ONLINE LOBBY" : "LOCAL PREVIEW"}</span><p>${vm.online ? "Your guest identity reserves one seat. You have 60 seconds to reconnect after a disconnect." : "This lobby is a demonstration. Sample players are simulated; online joining is not available yet."}</p></div>
     <div class="room-heading"><div><p class="overline">${map.name.toUpperCase()} / ${vm.online ? "LOBBY" : "LOBBY PREVIEW"}</p><h1>${e(vm.roomTitle)}</h1><p>${map.terrain} · ${vm.rules.alliances ? "Alliances allowed" : "Free for all"}</p></div><div class="room-capacity"><strong data-human-count>${vm.humanCount} <span>/ ${vm.rules.slots}</span></strong><span>${vm.online ? "connected humans" : "human seats in preview"}</span></div></div>
-    ${vm.queuePosition ? `<p class="room-queue-note">This room is waiting at display queue position ${vm.queuePosition}. You can review its preview while it waits.</p>` : ""}<div class="room-columns"><section class="room-roster" aria-labelledby="roster-title"><div class="panel-heading"><h2 id="roster-title">The war room</h2><span>${vm.rules.slots} FACTION SLOTS</span></div><div class="countdown-panel" data-phase="${vm.phase}"><div><span class="overline">${vm.online ? "LIVE LOBBY" : "LOBBY FLOW PREVIEW"}</span><h3 data-status role="status">${e(vm.status)}</h3><p data-status-detail>${e(vm.statusDetail)}</p></div><div class="countdown-clock"><strong data-countdown>${vm.countdown}</strong><span>${vm.rules.countdownSeconds}-second timer</span></div></div>${vm.online ? `<div class="start-vote-panel"><button id="vote-start" class="lobby-button brass" data-vote-start ${vm.canVoteToStart ? "" : "disabled"}>${vm.hasVotedToStart ? "Voted to start" : "Vote to start"}</button><div><strong>${vm.startVotes} / ${vm.humanCount} humans voted</strong><p>Start early when every connected human votes (even with 1 human). Available match capacity required.</p></div></div>` : ""}<div class="roster-legend"><span><i class="legend-you"></i>Your empire</span><span><i class="legend-human"></i>${vm.online ? "Player" : "Sample player"}</span><span><i class="legend-open"></i>${vm.rules.fillVacanciesWithAi ? "Vacant / AI on start" : "Vacant seat"}</span></div><ol class="seat-grid" aria-label="${vm.online ? "Lobby faction seats" : "Preview faction seats"}">${seatMarkup(vm)}</ol><div class="preview-controls" ${vm.online ? "hidden" : ""}><span>TRY THE LOBBY FLOW</span><div><button id="add-sample" class="lobby-button outline" data-add ${vm.canAddSample ? "" : "disabled"}>+ Add sample player</button><button id="remove-sample" class="lobby-button subtle" data-remove ${vm.canRemoveSample ? "" : "disabled"}>Remove sample</button><button id="reset-preview" class="lobby-button subtle" data-reset>Reset preview</button></div></div></section>
+    ${vm.queuePosition ? `<p class="room-queue-note">This room is waiting at display queue position ${vm.queuePosition}. You can review its preview while it waits.</p>` : ""}<div class="room-columns"><section class="room-roster" aria-labelledby="roster-title"><div class="panel-heading"><h2 id="roster-title">The war room</h2><span>${vm.rules.slots} FACTION SLOTS</span></div><div class="countdown-panel" data-phase="${vm.phase}"><div><span class="overline">${vm.online ? "LIVE LOBBY" : "LOBBY FLOW PREVIEW"}</span><h3 data-status role="status">${e(vm.status)}</h3><p data-status-detail>${e(vm.statusDetail)}</p></div><div class="countdown-clock"><strong data-countdown>${vm.countdown}</strong><span>${vm.rules.countdownSeconds}-second timer</span></div></div>${vm.online ? `<div class="start-vote-panel"><button id="vote-start" class="lobby-button brass" data-vote-start ${vm.canVoteToStart ? "" : "disabled"}>${vm.hasVotedToStart ? "Voted to start" : "Vote to start"}</button><div><strong>${vm.startVotes} / ${vm.humanCount} humans voted</strong><p>Start early when every connected human votes (even with 1 human). Available match capacity required.</p></div></div>` : ""}<div class="roster-legend"><span><i class="legend-you"></i>Your empire</span><span><i class="legend-human"></i>${vm.online ? "Player" : "Sample player"}</span><span><i class="legend-open"></i>Open human seat</span></div><ol class="seat-grid" aria-label="${vm.online ? "Lobby faction seats" : "Preview faction seats"}">${seatMarkup(vm)}</ol><div class="preview-controls" ${vm.online ? "hidden" : ""}><span>TRY THE LOBBY FLOW</span><div><button id="add-sample" class="lobby-button outline" data-add ${vm.canAddSample ? "" : "disabled"}>+ Add sample player</button><button id="remove-sample" class="lobby-button subtle" data-remove ${vm.canRemoveSample ? "" : "disabled"}>Remove sample</button><button id="reset-preview" class="lobby-button subtle" data-reset>Reset preview</button></div></div></section>
     <aside class="room-sidebar" aria-label="Selected battlefield and rules"><div class="room-map"><img src="${map.image}" alt="${map.name} terrain overview" width="500" height="250" /><div><span class="overline">SELECTED BATTLEFIELD</span><h2>${map.name}</h2><p>${map.description}</p><small>${map.imageCredit}</small></div></div><div class="room-rules"><p class="overline">${vm.online ? "MATCH RULES" : "PREVIEW MATCH RULES"}</p>${rules(vm)}<p class="room-rule-note">${vm.online ? "The timer starts at the minimum connected human count and resets below it. A room can also start early when all connected humans vote (including 1 human). A match also requires reserved fallback capacity." : "The sample timer starts at the minimum human count and resets below it. The coordinator will enforce the real start rules when connected."}</p></div><div class="room-play"><a class="lobby-button brass" href="${vm.skirmishHref}">Play this map vs AI ${arrow}</a><p>Launches the existing local game with 3 AI opponents and its own match settings. Online matches use this lobby’s rules. AI practice uses its own settings.</p></div></aside></div>
   </main>`;
 }
@@ -120,7 +142,7 @@ function seatMarkup(vm: LobbyViewModel): string {
 }
 
 function createDialog(vm: LobbyViewModel): string {
-  return `<dialog id="lobby-dialog" class="directory-dialog" aria-labelledby="dialog-title"><form id="create-room"><div class="dialog-heading"><div><p class="overline">CUSTOM WAR ROOM</p><h2 id="dialog-title">Create a lobby</h2></div><button type="button" class="dialog-close" data-close-dialog aria-label="Close create lobby dialog">×</button></div><p class="dialog-description">${vm.online ? "Create a shared lobby with your chosen rules." : "Create a local preview, then try its roster and start rules."}</p><label>Lobby name<input name="title" value="${e(vm.profile.name)}'s lobby" maxlength="40" required /></label><label>Battlefield<select name="mapId">${vm.maps.map((map) => `<option value="${map.id}">${map.name}</option>`).join("")}</select></label><div class="settings-row three"><label>Total slots<input name="slots" type="number" min="2" max="20" value="20" required /></label><label>Minimum humans<input name="minimumHumans" type="number" min="1" max="20" value="2" required /></label><label>Start timer (seconds)<input name="countdownSeconds" type="number" min="15" max="300" value="60" required /></label></div><div class="settings-row"><label>Map size<select name="worldSize"><option value="250">250 cells · longest edge</option><option value="500" selected>500 cells · longest edge</option><option value="1000">1000 cells · longest edge</option></select></label><label>Technology speed<select name="technologySpeed"><option value="1">1×</option><option value="2">2×</option><option value="3">3×</option></select></label></div><p class="settings-hint">Map size sets the longest edge. Each map retains its original proportions.</p><div class="settings-row"><label>Resource density<select name="resourceDensity" aria-describedby="resource-settings-hint">${RESOURCE_MULTIPLIERS.map((value) => `<option value="${value}">${value}×${value === 1 ? " · Normal" : ""}</option>`).join("")}</select></label><label>Deposit output<select name="resourceOutput" aria-describedby="resource-settings-hint">${RESOURCE_MULTIPLIERS.map((value) => `<option value="${value}">${value}×${value === 1 ? " · Normal" : ""}</option>`).join("")}</select></label></div><p id="resource-settings-hint" class="settings-hint">Density adds more deposit locations. Output increases extraction from each deposit. These rules apply to every faction.</p><div class="settings-row"><label>Alliances<select name="alliances"><option value="disabled">Disabled</option><option value="allowed">Allowed</option></select></label><label>Victory<select name="victory"><option value="solo">Solo conquest</option><option value="allied">Allied conquest</option></select></label></div><label class="checkbox-label"><input name="fillVacanciesWithAi" type="checkbox" checked /> AI fills vacant faction slots when the timer ends</label><div class="queue-opt-in"><p>${vm.directory.full ? "All three custom display spaces are occupied." : "There is a custom display space available."}</p><label class="checkbox-label"><input name="willingToWait" type="checkbox" /> If full, put my lobby in the waiting queue</label></div><p class="dialog-error" role="alert" hidden></p><div class="dialog-actions"><button type="button" class="lobby-button subtle" data-close-dialog>Cancel</button><button class="lobby-button brass" type="submit">${vm.directory.full ? "Create / join queue" : "Create lobby"} ${arrow}</button></div></form></dialog>`;
+  return `<dialog id="lobby-dialog" class="directory-dialog" aria-labelledby="dialog-title"><form id="create-room"><div class="dialog-heading"><div><p class="overline">CUSTOM WAR ROOM</p><h2 id="dialog-title">Create a lobby</h2></div><button type="button" class="dialog-close" data-close-dialog aria-label="Close create lobby dialog">×</button></div><p class="dialog-description">${vm.online ? "Create a shared lobby with your chosen rules." : "Create a local preview, then try its roster and start rules."}</p><label>Lobby name<input name="title" value="${e(vm.profile.name)}'s lobby" maxlength="40" required /></label><label>Battlefield<select name="mapId">${vm.maps.map((map) => `<option value="${map.id}">${map.name}</option>`).join("")}</select></label><div class="settings-row three"><label>Human seats<input name="slots" type="number" min="2" max="${MAX_HUMAN_PLAYERS}" value="${FRIENDS_MATCH_RULES.slots}" required /></label><label>Minimum humans<input name="minimumHumans" type="number" min="1" max="20" value="2" required /></label><label>Start timer (seconds)<input name="countdownSeconds" type="number" min="15" max="300" value="60" required /></label></div><div class="settings-row"><label>Map size<select name="worldSize"><option value="250">250 cells · longest edge</option><option value="500" selected>500 cells · longest edge</option><option value="1000">1000 cells · longest edge</option></select></label><label>Technology speed<select name="technologySpeed"><option value="1">1×</option><option value="2">2×</option><option value="3">3×</option></select></label></div><p class="settings-hint">Map size sets the longest edge. Each map retains its original proportions.</p><div class="settings-row"><label>AI opponents<input name="aiCount" type="number" ${factionInputRange(500, "aiCount")} required /></label><label>Tribes<input name="tribeCount" type="number" ${factionInputRange(500, "tribeCount")} required /></label></div><p id="faction-settings-hint" class="settings-hint">${factionHint(500)}</p><div class="settings-row"><label>Resource density<select name="resourceDensity" aria-describedby="resource-settings-hint">${RESOURCE_MULTIPLIERS.map((value) => `<option value="${value}">${value}×${value === 1 ? " · Normal" : ""}</option>`).join("")}</select></label><label>Deposit output<select name="resourceOutput" aria-describedby="resource-settings-hint">${RESOURCE_MULTIPLIERS.map((value) => `<option value="${value}">${value}×${value === 1 ? " · Normal" : ""}</option>`).join("")}</select></label></div><p id="resource-settings-hint" class="settings-hint">Density adds more deposit locations. Output increases extraction from each deposit. These rules apply to every faction.</p><div class="settings-row"><label>Alliances<select name="alliances"><option value="disabled">Disabled</option><option value="allowed">Allowed</option></select></label><label>Victory<select name="victory"><option value="solo">Solo conquest</option><option value="allied">Allied conquest</option></select></label></div><div class="queue-opt-in"><p>${vm.directory.full ? "All three custom display spaces are occupied." : "There is a custom display space available."}</p><label class="checkbox-label"><input name="willingToWait" type="checkbox" /> If full, put my lobby in the waiting queue</label></div><p class="dialog-error" role="alert" hidden></p><div class="dialog-actions"><button type="button" class="lobby-button subtle" data-close-dialog>Cancel</button><button class="lobby-button brass" type="submit">${vm.directory.full ? "Create / join queue" : "Create lobby"} ${arrow}</button></div></form></dialog>`;
 }
 
 function flagResults(vm: LobbyViewModel): string {
@@ -189,6 +211,27 @@ export class LobbyView {
       if (!(input instanceof HTMLInputElement)) return;
       if (input.id === "empire-name") this.actions.draftName(input.value);
       if (input.id === "flag-search") this.actions.searchFlags(input.value);
+    });
+    // Each map size has its own base AI/tribe counts and ±5 range.
+    root.addEventListener("change", (event) => {
+      const select = event.target;
+      if (
+        !(select instanceof HTMLSelectElement) ||
+        select.name !== "worldSize" ||
+        select.form?.id !== "create-room"
+      )
+        return;
+      const worldSize = Number(select.value) as FactionWorldSize;
+      for (const kind of ["aiCount", "tribeCount"] as const) {
+        const input = select.form.elements.namedItem(kind);
+        if (!(input instanceof HTMLInputElement)) continue;
+        const { min, max } = factionCountRange(worldSize, kind);
+        input.min = String(min);
+        input.max = String(max);
+        input.value = String(factionDefaults(worldSize)[kind]);
+      }
+      const hint = select.form.querySelector("#faction-settings-hint");
+      if (hint) hint.textContent = factionHint(worldSize);
     });
   }
 

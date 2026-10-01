@@ -17,7 +17,8 @@ import type {
   WorkerResponse,
 } from "../Protocol";
 
-import { FIXED, MAX_FACTIONS, TICKS_PER_SECOND } from "../Protocol";
+import { MAX_AI_OPPONENTS } from "../FactionRules";
+import { FIXED, TICKS_PER_SECOND } from "../Protocol";
 
 import { BUILDING_RULES } from "../Rules";
 
@@ -65,6 +66,7 @@ import { ArmyViewModel } from "./ArmyViewModel";
 import { HudViewModel } from "./HudViewModel";
 import { OrderGesture } from "./OrderGesture";
 
+import { assignFactionColors } from "./FactionColors";
 import { COLORS, Renderer } from "./Renderer";
 
 import { SkirmishViewModel } from "./SkirmishViewModel";
@@ -83,7 +85,7 @@ document.querySelector<HTMLDivElement>("#app")!.innerHTML = `
     <div class="brand"><a class="brand-mark" href="/" aria-label="Return to main lobby">AF</a><div><h1>Age of Fronts</h1><p>Local AI skirmish</p></div></div>
 
     <div class="match-settings"><label>Battlefield<select id="map">${MAPS.map((m) => `<option value="${m.id}">${m.name}</option>`).join("")}</select></label><label>Opponents<select id="opponents">${Array.from(
-      { length: MAX_FACTIONS - 1 },
+      { length: MAX_AI_OPPONENTS },
 
       (_, i) => i + 1,
     )
@@ -488,6 +490,7 @@ async function start(): Promise<void> {
       element<HTMLButtonElement>("pause").disabled = false;
 
       snapshot = decoder.decode(message.packet);
+      assignFactionColors(snapshot.players);
       snapshot.localPlayerId=localPlayerId;
 
       placementIndex!.rebuild(snapshot.buildings);

@@ -1,4 +1,10 @@
 import { z } from "zod";
+import {
+  MAX_AI_OPPONENTS,
+  MAX_HUMAN_PLAYERS,
+  MAX_PLAYER_ID,
+  MAX_TRIBES,
+} from "../FactionRules";
 import type { MatchOptions, SpawnState } from "../Protocol";
 import type { LobbySettings } from "../lobby/LobbyDirectory";
 import type { EncodedState } from "./StateCodec";
@@ -32,11 +38,13 @@ const settings = z
   .object({
     mapId: z.enum(["heightmap-test1", "africa", "amazon-river"]),
     mode: z.literal("free-for-all"),
-    slots: z.number().int().min(2).max(20),
-    minimumHumans: z.number().int().min(1).max(20),
+    slots: z.number().int().min(2).max(MAX_HUMAN_PLAYERS),
+    minimumHumans: z.number().int().min(1).max(MAX_HUMAN_PLAYERS),
     countdownSeconds: z.number().int().min(15).max(300),
-    fillVacanciesWithAi: z.boolean(),
     worldSize: z.union([z.literal(250), z.literal(500), z.literal(1000)]),
+    // Exact per-size ranges are enforced by validateLobbySettings.
+    aiCount: z.number().int().min(0).max(MAX_AI_OPPONENTS),
+    tribeCount: z.number().int().min(0).max(MAX_TRIBES),
     technologySpeed: z.union([z.literal(1), z.literal(2), z.literal(3)]),
     resourceDensity: z.union([
       z.literal(1),
@@ -112,7 +120,7 @@ export const clientMessageSchema = z.discriminatedUnion("type", [
                 reserves: z.number().int().safe(),
               }),
             )
-            .max(20),
+            .max(MAX_PLAYER_ID),
           rejectedCommands: z
             .array(
               z.object({

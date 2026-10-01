@@ -1,8 +1,20 @@
-import { MAX_TRIBES } from "../FactionRules";
+import { MAX_PLAYER_ID, MAX_TRIBES } from "../FactionRules";
+import type { Player } from "../Protocol";
 
 function tribeColor(index: number): string {
-  const hue = ((index * 137.508 + 35) % 360) / 60,
-    chroma = 0.3,
+  return paletteColor(index, 35, 0.3, 0.35);
+}
+// Regular factions past the 20 hand-picked colors: brighter, distinct hues.
+function regularColor(index: number): string {
+  return paletteColor(index, 10, 0.55, 0.25);
+}
+function paletteColor(
+  index: number,
+  hueOffset: number,
+  chroma: number,
+  lift: number,
+): string {
+  const hue = ((index * 137.508 + hueOffset) % 360) / 60,
     intermediate = chroma * (1 - Math.abs((hue % 2) - 1)),
     channels =
       hue < 1
@@ -18,7 +30,7 @@ function tribeColor(index: number): string {
                 : [chroma, 0, intermediate];
   return `#${channels
     .map((channel) =>
-      Math.round((channel + 0.35) * 255)
+      Math.round((channel + lift) * 255)
         .toString(16)
         .padStart(2, "0"),
     )
@@ -49,5 +61,33 @@ export const COLORS = [
   "#a3b5bd",
   "#ef8e36",
   "#4b9664",
-  ...Array.from({ length: MAX_TRIBES }, (_, index) => tribeColor(index)),
+  ...Array.from({ length: MAX_PLAYER_ID - 20 }, (_, index) =>
+    tribeColor(index % MAX_TRIBES),
+  ),
 ];
+const HAND_PICKED_REGULAR = COLORS.slice(1, 21);
+let assignedRoster = "";
+
+/**
+ * Colors by faction kind, by player ID. Regular factions take the hand-picked
+ * palette in order, then generated bright colors; tribes take the subdued
+ * palette in order. Updates COLORS in place so every renderer lookup by ID
+ * stays a plain array read. Cheap to call per snapshot.
+ */
+export function assignFactionColors(
+  players: readonly Pick<Player, "id" | "kind">[],
+): void {
+  // Keyed by IDs only: a promoted tribe keeps the color it started with.
+  const roster = players.map((p) => p.id).join(",");
+  if (roster === assignedRoster) return;
+  assignedRoster = roster;
+  let regular = 0,
+    tribe = 0;
+  for (const player of [...players].sort((a, b) => a.id - b.id))
+    COLORS[player.id] =
+      player.kind === "tribe"
+        ? tribeColor(tribe++)
+        : regular < HAND_PICKED_REGULAR.length
+          ? HAND_PICKED_REGULAR[regular++]
+          : regularColor(regular++ - HAND_PICKED_REGULAR.length);
+}

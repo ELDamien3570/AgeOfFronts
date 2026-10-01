@@ -69,7 +69,6 @@ describe("online room lifecycle", () => {
       {
         ...rules,
         minimumHumans: 1,
-        fillVacanciesWithAi: true,
       },
       false,
       0,

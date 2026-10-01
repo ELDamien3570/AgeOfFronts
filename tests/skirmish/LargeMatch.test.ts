@@ -1,10 +1,12 @@
 import fs from "node:fs";
 import { describe, expect, it } from "vitest";
 import { GameMapImpl } from "../../src/core/game/GameMap";
-import { FIXED, MAX_FACTIONS, MAX_SQUADS } from "../../src/skirmish/Protocol";
+import { assignFactionColors } from "../../src/skirmish/client/FactionColors";
+import { COLORS } from "../../src/skirmish/client/Renderer";
+import { MAX_AI_OPPONENTS, MAX_TRIBES } from "../../src/skirmish/FactionRules";
+import { FIXED, MAX_SQUADS } from "../../src/skirmish/Protocol";
 import { Skirmish } from "../../src/skirmish/Simulation";
 import { SpatialGrid } from "../../src/skirmish/SpatialGrid";
-import { COLORS } from "../../src/skirmish/client/Renderer";
 
 describe("large match domain", () => {
   it.each(["world", "thebox"])(
@@ -29,7 +31,7 @@ describe("large match domain", () => {
             ];
       const match = new Skirmish(new GameMapImpl(width, height, terrain, 0), {
         seed: 42,
-        aiCount: MAX_FACTIONS - 1,
+        aiCount: 19,
       });
       expect(match.players).toHaveLength(20);
       expect(new Set(match.players.map((p) => p.name)).size).toBe(20);
@@ -91,9 +93,30 @@ describe("large match domain", () => {
       () =>
         new Skirmish(new GameMapImpl(100, 100, data, data.length), {
           seed: 42,
-          aiCount: 20,
+          aiCount: MAX_AI_OPPONENTS + 1,
         }),
-    ).toThrow(/19/);
+    ).toThrow(/21/);
+  });
+
+  it("gives every faction a color at the largest roster: 20 humans, 21 AI and 45 tribes", () => {
+    const data = new Uint8Array(1000 * 500).fill(133);
+    const match = new Skirmish(new GameMapImpl(1000, 500, data, data.length), {
+      seed: 42,
+      aiCount: MAX_AI_OPPONENTS,
+      humanNames: Array.from({ length: 20 }, (_, i) => `Human ${i + 1}`),
+      tribes: true,
+      tribeCount: MAX_TRIBES,
+      ruleset: "ages-v1",
+    });
+    expect(match.players).toHaveLength(86);
+    assignFactionColors(match.players);
+    const colors = match.players.map((p) => COLORS[p.id]);
+    expect(colors.every((color) => /^#[0-9a-f]{6}$/u.test(color))).toBe(true);
+    // Regular factions, including those past the 20 hand-picked colors, are
+    // distinct from each other; tribes use the subdued palette.
+    const regular = match.players.filter((p) => p.kind === "regular");
+    expect(new Set(regular.map((p) => COLORS[p.id])).size).toBe(41);
+    expect(new Set(colors).size).toBe(86);
   });
 });
 

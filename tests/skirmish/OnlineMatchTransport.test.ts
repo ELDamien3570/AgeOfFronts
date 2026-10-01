@@ -105,8 +105,7 @@ it("connects two authenticated players through lobby start, shared updates and h
       type: "create",
       title: "Friends",
       settings: {
-        ...defaultLobbySettings("heightmap-test1"),
-        worldSize: 250,
+        ...defaultLobbySettings("heightmap-test1", 250),
         countdownSeconds: 15,
       },
       willingToWait: false,

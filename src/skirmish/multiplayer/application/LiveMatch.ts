@@ -43,10 +43,10 @@ export class LiveMatch {
     this.options = {
       seed: Math.floor(Math.random() * 0x7fffffff),
       humanNames: reservation.members.map((member) => member.profile.name),
-      aiCount: settings.fillVacanciesWithAi
-        ? settings.slots - reservation.members.length
-        : 0,
-      tribes: false,
+      // Lobby counts are absolute: humans plus these AI opponents and tribes.
+      aiCount: settings.aiCount,
+      tribes: settings.tribeCount > 0,
+      tribeCount: settings.tribeCount,
       ruleset: "ages-v1" as const,
       victoryMode: settings.victory,
       technologySpeed: settings.technologySpeed,

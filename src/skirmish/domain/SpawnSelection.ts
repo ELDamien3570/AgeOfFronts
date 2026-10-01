@@ -1,6 +1,6 @@
 import type { GameMap } from "../../core/game/GameMap";
 import { PseudoRandom } from "../../core/PseudoRandom";
-import { TRIBE_BASE_RADIUS, tribeCountFor } from "../FactionRules";
+import { TRIBE_BASE_RADIUS, matchTribeCount } from "../FactionRules";
 import { LandPaths } from "../Pathfinding";
 import type { MatchOptions, SpawnState } from "../Protocol";
 import { StartingPositions } from "../StartingPositions";
@@ -129,13 +129,13 @@ export class SpawnSelection {
       try {
         for (let i = 0; i < this.humanCount + this.options.aiCount; i++)
           bases[i] ??= placement.next(CAMP_RADIUS);
-        if (this.options.tribes)
-          for (
-            let i = 0;
-            i < tribeCountFor(this.map.width(), this.map.height());
-            i++
-          )
-            bases.push(placement.next(TRIBE_BASE_RADIUS));
+        const tribes = matchTribeCount(
+          this.options,
+          this.map.width(),
+          this.map.height(),
+        );
+        for (let i = 0; i < tribes; i++)
+          bases.push(placement.next(TRIBE_BASE_RADIUS));
         return bases;
       } catch (failure) {
         error = failure;

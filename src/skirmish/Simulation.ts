@@ -33,7 +33,10 @@ import {
   TRIBE_INTERCEPT_RANGE,
   TRIBE_PURSUIT_RANGE,
   TRIBE_STARTING_SQUADS,
-  tribeCountFor,
+  matchTribeCount,
+  MAX_AI_OPPONENTS,
+  MAX_HUMAN_PLAYERS,
+  MAX_TRIBES,
 } from "./FactionRules";
 import { forestOf } from "./Forest";
 import { Formations } from "./Formations";
@@ -211,16 +214,24 @@ export class Skirmish {
   ) {
     this.territoryAbsorption = new TerritoryAbsorption(map);
     const humanCount = options.humanNames?.length ?? 1;
-    if (humanCount < 1 || humanCount > MAX_FACTIONS || options.humanNames?.some(name => typeof name !== "string" || !name.trim() || Array.from(name).length > 20))
+    if (humanCount < 1 || humanCount > MAX_HUMAN_PLAYERS || options.humanNames?.some(name => typeof name !== "string" || !name.trim() || Array.from(name).length > 20))
       throw new Error("Invalid human faction roster");
     if (
       !Number.isInteger(options.aiCount) ||
       options.aiCount < (options.humanNames ? 0 : 1) ||
+      options.aiCount > MAX_AI_OPPONENTS ||
       options.aiCount + humanCount > MAX_FACTIONS
     )
       throw new Error(
-        `Choose between one and ${MAX_FACTIONS - 1} AI opponents`,
+        `Choose between one and ${MAX_AI_OPPONENTS} AI opponents`,
       );
+    if (
+      options.tribeCount !== undefined &&
+      (!Number.isInteger(options.tribeCount) ||
+        options.tribeCount < 0 ||
+        options.tribeCount > MAX_TRIBES)
+    )
+      throw new Error(`Choose between 0 and ${MAX_TRIBES} tribes`);
     if (!Number.isInteger(options.seed)) throw new Error("Invalid match seed");
     if (
       options.territoryIncomeScale !== undefined &&
@@ -320,7 +331,11 @@ export class Skirmish {
       );
     });
     if (this.options.tribes) {
-      const count = tribeCountFor(this.map.width(), this.map.height());
+      const count = matchTribeCount(
+        this.options,
+        this.map.width(),
+        this.map.height(),
+      );
       for (let index = 0; index < count; index++) {
         const faction = roster.take("tribe");
         this.deployPlayer(

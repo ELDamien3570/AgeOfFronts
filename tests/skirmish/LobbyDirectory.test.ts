@@ -11,7 +11,9 @@ import {
 import {
   defaultLobbySettings,
   LobbyDirectory,
+  migrateLobbySettings,
   validateLobbySettings,
+  type LobbySettings,
 } from "../../src/skirmish/lobby/LobbyDirectory";
 
 const room = (id: string) => ({
@@ -66,9 +68,75 @@ describe("custom lobby holder and waiting queue", () => {
         },
         false,
       ),
-    ).toThrow("20 total");
+    ).toThrow("20 human seats");
     expect(directory.visible).toHaveLength(1);
     expect(directory.queue).toHaveLength(0);
+  });
+
+  it("uses each map size's base AI and tribe counts and allows ±5", () => {
+    const cases = [
+      [250, 8, 20],
+      [500, 12, 30],
+      [1000, 16, 40],
+    ] as const;
+    for (const [worldSize, aiCount, tribeCount] of cases) {
+      const base = defaultLobbySettings("africa", worldSize);
+      expect(base).toMatchObject({ worldSize, aiCount, tribeCount });
+      expect(validateLobbySettings(base)).toMatchObject({
+        aiCount,
+        tribeCount,
+      });
+      for (const delta of [-5, 5])
+        expect(
+          validateLobbySettings({
+            ...base,
+            aiCount: aiCount + delta,
+            tribeCount: tribeCount + delta,
+          }),
+        ).toMatchObject({ aiCount: aiCount + delta });
+      expect(() =>
+        validateLobbySettings({ ...base, aiCount: aiCount + 6 }),
+      ).toThrow("AI opponents");
+      expect(() =>
+        validateLobbySettings({ ...base, aiCount: aiCount - 6 }),
+      ).toThrow("AI opponents");
+      expect(() =>
+        validateLobbySettings({ ...base, tribeCount: tribeCount + 6 }),
+      ).toThrow("tribes");
+      expect(() =>
+        validateLobbySettings({ ...base, tribeCount: tribeCount - 6 }),
+      ).toThrow("tribes");
+    }
+    // The large map's upper bounds are the global maximum.
+    expect(
+      validateLobbySettings({
+        ...defaultLobbySettings("africa", 1000),
+        aiCount: 21,
+        tribeCount: 45,
+      }),
+    ).toMatchObject({ aiCount: 21, tribeCount: 45 });
+  });
+
+  it("brings rooms saved before AI and tribe counts up to the base for their size", () => {
+    const older: Record<string, unknown> = {
+      ...defaultLobbySettings("africa", 1000),
+    };
+    delete older.aiCount;
+    delete older.tribeCount;
+    const migrated = migrateLobbySettings({
+      ...older,
+      fillVacanciesWithAi: true,
+    } as unknown as LobbySettings);
+    expect(migrated).toMatchObject({ aiCount: 16, tribeCount: 40 });
+    expect(migrated).not.toHaveProperty("fillVacanciesWithAi");
+    expect(() =>
+      validateLobbySettings(
+        migrateLobbySettings({
+          ...older,
+          aiCount: null,
+        } as unknown as LobbySettings),
+      ),
+    ).toThrow("AI opponents");
   });
 
   it("enforces consistent minimum humans, timer bounds, and alliance victory", () => {
@@ -108,7 +176,7 @@ describe("custom lobby holder and waiting queue", () => {
 });
 
 describe("custom settings and empire identity in preview", () => {
-  it("runs custom capacity/timer/minimum settings and leaves seats empty when AI is disabled", () => {
+  it("runs custom capacity/timer/minimum settings with the lowest AI count for the map size", () => {
     const vm = new LobbyViewModel();
     vm.createRoom(
       "custom",
@@ -118,7 +186,7 @@ describe("custom settings and empire identity in preview", () => {
         slots: 4,
         minimumHumans: 1,
         countdownSeconds: 15,
-        fillVacanciesWithAi: false,
+        aiCount: 7,
       },
       false,
     );
@@ -128,8 +196,9 @@ describe("custom settings and empire identity in preview", () => {
     vm.tick(16_000);
     expect(vm.phase).toBe("complete");
     expect(vm.humanCount).toBe(1);
-    expect(vm.aiCount).toBe(0);
+    expect(vm.aiCount).toBe(7);
     expect(vm.seats.filter((seat) => seat.kind === "open")).toHaveLength(3);
+    expect(vm.seats.filter((seat) => seat.kind === "ai")).toHaveLength(7);
   });
 
   it("allows review of a queued room while keeping it out of the custom holder", () => {

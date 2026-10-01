@@ -1,5 +1,5 @@
 import { describe, expect, it } from "vitest";
-import { MAX_FACTIONS } from "../../src/skirmish/Protocol";
+import { MAX_HUMAN_PLAYERS } from "../../src/skirmish/FactionRules";
 import { LobbyViewModel } from "../../src/skirmish/client/lobby/LobbyViewModel";
 
 describe("local lobby preview", () => {
@@ -37,14 +37,17 @@ describe("local lobby preview", () => {
       "africa",
       "amazon-river",
     ]);
-    expect(vm.rules.slots).toBe(MAX_FACTIONS);
+    expect(vm.rules.slots).toBe(MAX_HUMAN_PLAYERS);
+    // Base lobbies use the 500-cell defaults: 12 AI opponents and 30 tribes.
+    expect(vm.rules.aiCount).toBe(12);
+    expect(vm.rules.tribeCount).toBe(30);
     expect(vm.showLobby("<script>")).toBe(false);
     expect(vm.page).toBe("home");
     expect(vm.showLobby("heightmap-test1")).toBe(true);
     expect(vm.skirmishHref).toBe("/skirmish/index.html?map=heightmap-test1");
   });
 
-  it("waits for two humans, then fills only vacancies when the timer ends", () => {
+  it("waits for two humans, then adds the map size's AI opponents when the timer ends", () => {
     const vm = new LobbyViewModel();
     vm.showLobby("heightmap-test1");
     expect(vm.tick(1_000_000)).toBe(false);
@@ -58,8 +61,8 @@ describe("local lobby preview", () => {
     vm.tick(61_000);
     expect(vm.phase).toBe("complete");
     expect(vm.humanCount).toBe(2);
-    expect(vm.aiCount).toBe(18);
-    expect(vm.seats.filter((seat) => seat.kind === "ai")).toHaveLength(18);
+    expect(vm.aiCount).toBe(12);
+    expect(vm.seats.filter((seat) => seat.kind === "ai")).toHaveLength(12);
     expect(vm.addSample(62_000)).toBe(false);
     expect(vm.removeSample()).toBe(false);
   });
@@ -73,7 +76,7 @@ describe("local lobby preview", () => {
     vm.tick(60_000);
     expect(vm.phase).toBe("complete");
     expect(vm.humanCount).toBe(3);
-    expect(vm.aiCount).toBe(17);
+    expect(vm.aiCount).toBe(12);
   });
 
   it("cancels a countdown below the minimum and restarts a full minute", () => {
@@ -90,14 +93,14 @@ describe("local lobby preview", () => {
     expect(vm.countdown).toBe("0:55");
   });
 
-  it("freezes at 20 humans without adding another 20 AI factions", () => {
+  it("freezes at 20 humans and still adds the base AI opponents", () => {
     const vm = new LobbyViewModel();
     vm.showLobby("africa");
     for (let i = 0; i < 30; i++) vm.addSample(0);
     expect(vm.phase).toBe("complete");
-    expect(vm.seats).toHaveLength(20);
+    expect(vm.seats).toHaveLength(32);
     expect(vm.humanCount).toBe(20);
-    expect(vm.aiCount).toBe(0);
+    expect(vm.aiCount).toBe(12);
     expect(vm.countdown).toBe("0:00");
   });
 

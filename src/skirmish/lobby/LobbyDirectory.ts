@@ -1,3 +1,8 @@
+import {
+  factionCountRange,
+  factionDefaults,
+  MAX_HUMAN_PLAYERS,
+} from "../FactionRules";
 import { createEmpireProfile, type EmpireProfile } from "./EmpireProfile";
 import {
   FRIENDS_MATCH_RULES,
@@ -13,11 +18,15 @@ export type ResourceMultiplier = (typeof RESOURCE_MULTIPLIERS)[number];
 export interface LobbySettings {
   readonly mapId: LobbyMapId;
   readonly mode: "free-for-all";
+  /** Human seats. */
   readonly slots: number;
   readonly minimumHumans: number;
   readonly countdownSeconds: number;
-  readonly fillVacanciesWithAi: boolean;
   readonly worldSize: 250 | 500 | 1000;
+  /** Regular AI opponents, added to the humans. Base by map size, ±5. */
+  readonly aiCount: number;
+  /** Minor tribes. Base by map size, ±5. */
+  readonly tribeCount: number;
   readonly technologySpeed: 1 | 2 | 3;
   readonly resourceDensity: ResourceMultiplier;
   readonly resourceOutput: ResourceMultiplier;
@@ -25,11 +34,15 @@ export interface LobbySettings {
   readonly victory: "solo" | "allied";
 }
 
-export function defaultLobbySettings(mapId: LobbyMapId): LobbySettings {
+export function defaultLobbySettings(
+  mapId: LobbyMapId,
+  worldSize: LobbySettings["worldSize"] = 500,
+): LobbySettings {
   return Object.freeze({
     ...FRIENDS_MATCH_RULES,
     mapId,
-    worldSize: 500,
+    worldSize,
+    ...factionDefaults(worldSize),
     technologySpeed: 1,
     resourceDensity: 1,
     resourceOutput: 1,
@@ -44,16 +57,16 @@ export function validateLobbySettings(settings: LobbySettings): LobbySettings {
   if (
     !Number.isInteger(settings.slots) ||
     settings.slots < 2 ||
-    settings.slots > 20
+    settings.slots > MAX_HUMAN_PLAYERS
   )
-    throw new Error("Choose between 2 and 20 total faction slots.");
+    throw new Error(`Choose between 2 and ${MAX_HUMAN_PLAYERS} human seats.`);
   if (
     !Number.isInteger(settings.minimumHumans) ||
     settings.minimumHumans < 1 ||
     settings.minimumHumans > settings.slots
   )
     throw new Error(
-      "Minimum humans must be between 1 and the number of faction slots.",
+      "Minimum humans must be between 1 and the number of human seats.",
     );
   if (
     !Number.isInteger(settings.countdownSeconds) ||
@@ -66,6 +79,20 @@ export function validateLobbySettings(settings: LobbySettings): LobbySettings {
     ![1, 2, 3].includes(settings.technologySpeed)
   )
     throw new Error("Choose a supported world size and technology speed.");
+  for (const [kind, label] of [
+    ["aiCount", "AI opponents"],
+    ["tribeCount", "tribes"],
+  ] as const) {
+    const { min, max } = factionCountRange(settings.worldSize, kind);
+    if (
+      !Number.isInteger(settings[kind]) ||
+      settings[kind] < min ||
+      settings[kind] > max
+    )
+      throw new Error(
+        `Choose between ${min} and ${max} ${label} for this map size.`,
+      );
+  }
   if (
     !RESOURCE_MULTIPLIERS.includes(settings.resourceDensity) ||
     !RESOURCE_MULTIPLIERS.includes(settings.resourceOutput)
@@ -73,11 +100,8 @@ export function validateLobbySettings(settings: LobbySettings): LobbySettings {
     throw new Error(
       "Resource density and deposit output must be 1×, 2×, 3× or 5×.",
     );
-  if (
-    typeof settings.fillVacanciesWithAi !== "boolean" ||
-    typeof settings.alliances !== "boolean"
-  )
-    throw new Error("Choose the AI and alliance rules.");
+  if (typeof settings.alliances !== "boolean")
+    throw new Error("Choose the alliance rules.");
   if (
     !["solo", "allied"].includes(settings.victory) ||
     (settings.victory === "allied" && !settings.alliances)
@@ -86,6 +110,22 @@ export function validateLobbySettings(settings: LobbySettings): LobbySettings {
   return Object.freeze({ ...settings });
 }
 
+/**
+ * Brings settings saved before AI and tribe counts existed up to date. Only an
+ * absent count gets the map size's base; any other invalid value still fails
+ * validation. The retired "AI fills vacancies" flag is dropped.
+ */
+export function migrateLobbySettings(saved: LobbySettings): LobbySettings {
+  const settings: Record<string, unknown> = { ...saved };
+  delete settings.fillVacanciesWithAi;
+  if ([250, 500, 1000].includes(saved.worldSize)) {
+    const defaults = factionDefaults(saved.worldSize);
+    if (settings.aiCount === undefined) settings.aiCount = defaults.aiCount;
+    if (settings.tribeCount === undefined)
+      settings.tribeCount = defaults.tribeCount;
+  }
+  return settings as unknown as LobbySettings;
+}
 export interface CustomLobby {
   readonly id: string;
   readonly title: string;

@@ -4,6 +4,7 @@ import {
 } from "../../lobby/EmpireProfile";
 import {
   defaultLobbySettings,
+  migrateLobbySettings,
   validateLobbySettings,
   type LobbySettings,
 } from "../../lobby/LobbyDirectory";
@@ -61,6 +62,9 @@ export class RoomCoordinator {
       : { version: 1, rooms: [], reservations: [], nextSequence: 1 };
     if (this.state.version !== 1)
       throw new Error("Unsupported coordinator state.");
+    // Rooms saved before AI and tribe counts existed gain their map size's base.
+    for (const room of [...this.state.rooms, ...this.state.reservations])
+      room.settings = migrateLobbySettings(room.settings);
     for (const mapId of LOBBY_MAP_IDS) {
       if (!this.state.rooms.some((room) => room.id === `default-${mapId}`)) {
         this.state.rooms.push({
