@@ -29,7 +29,11 @@ not know about the commit pipeline described in section 2.
    and restores it. At minute 5–8 on Africa that is roughly 55–80 ms on the host
    and about 60–70 ms mean (85–100 ms p95) on the server per 200 ms commit, and
    about 75% of the upload is one derived structure (`ownedTiles`).
-5. **Tick spikes become game-time slowdown**, because the next batch is only
+5. **World size 1000 is viable only with the same fixes plus a cost-based route
+   budget.** Africa 1000 ticks are acceptable on average through minute 8 but have
+   100–240 ms `RouteWork` spikes and 250–570 ms naval-planning spikes, host upload
+   reaches ~1.45 MB/s by minute 6, and construction takes 6.8 s.
+6. **Tick spikes become game-time slowdown**, because the next batch is only
    issued after the previous commit is verified (section 2). Fix the tails and the
    commit cost together or the game will visibly run slow.
 
@@ -150,7 +154,55 @@ World size 1000 on Africa (1,000,000 cells): `new Skirmish()` takes **6.8 s**
 (RSS 336 MB, 444 MB after one minute). First-minute ticks are fine (mean 4.2 ms).
 The lobby offers `worldSize: 1000` for every map.
 
-### 3.5 What I could not or did not measure
+### 3.5 World size 1000 (Africa 1000 × 1000, 1,000,000 cells)
+
+Required by decision D2 (section 6), so measured separately. Same method, 8
+simulated minutes (commit pipeline: 6).
+
+| Minute | Squads | Traders | Mean (unpatched) | p99 | Max | > 50 ms | Mean (1a+2a+2b) | p99 | Max |
+| -----: | -----: | ------: | ---------------: | --: | --: | ------: | --------------: | --: | --: |
+|      2 |    165 |       0 |              7.9 |  26 | 617 |       6 |             7.0 |  27 | 566 |
+|      4 |    209 |       0 |             11.1 | 123 | 365 |      16 |             9.7 | 124 | 506 |
+|      6 |    247 |       1 |             13.5 | 131 | 398 |      19 |            11.1 | 140 | 360 |
+|      8 |    291 |       4 |             17.4 | 158 | 495 |      13 |            13.2 | 139 | 429 |
+
+State hashes identical to unpatched through minute 8. Trade has barely started at
+minute 8 (4 traders); on 500-size maps the trade blow-up arrived at minutes 6–9
+once 20–30 traders existed, so **expect the 1000-size trade cost to appear later
+and then be worse**: paths are twice as long. That part is extrapolation, not
+measurement; run the harness to minute 15 before trusting any 1000 number.
+
+What dominates the tails at 1000 (profile of the patched run):
+
+- **`RouteWork.drain` is the top slow-tick source: 74 of 94 slow ticks, 29.6 s in
+  total.** A single drain costs 100–240 ms, because the budget is 24 route _jobs_
+  per tick and a job on a 1000-wide map is a long-distance query.
+- **Naval and shore transport planning runs unbounded synchronous path queries
+  inside `thinkAi`** (`thinkNavy → applyCommand → ShoreTransport.preferredLeg →
+ShoreRoutes.firstLeg/between → find`). It caused the 566 ms and 256 ms ticks at
+  minute 2 and was 1.3 s of 2.4 s of AI time in a 3-minute profile. This path is
+  new on `main` and sits outside `RouteWork`.
+
+Commit pipeline at 1000 (per 4-tick commit):
+
+| Minute | Host `checkpoint()` | Host `encodeState` | Upload | Server decode | Server `restore` | Server p95 total | Broadcast / client |
+| -----: | ------------------: | -----------------: | -----: | ------------: | ---------------: | ---------------: | -----------------: |
+|      2 |             13.1 ms |            60.8 ms | 118 KB |       63.7 ms |          24.2 ms |           183 ms |              30 KB |
+|      4 |             14.8 ms |            68.5 ms | 205 KB |       67.0 ms |          30.2 ms |           199 ms |              33 KB |
+|      6 |             18.8 ms |            88.8 ms | 290 KB |       74.0 ms |          30.7 ms |           159 ms |              35 KB |
+
+At minute 6 the upload is about 1.45 MB/s (11.6 Mbit/s) from a player's home
+connection, and it was still growing about 40 KB per minute. Server verification
+alone is 80–100% of a 200 ms cycle at p95 here. Other 1000-size facts:
+
+- `new Skirmish()` takes **6.8 s** and 336 MB (section 3.4).
+- The **first baseline for a joining client** costs ~1.04 s of encode and a 2 MB
+  packet at 1000 (`baseline()` runs once per qualifying guest in
+  `LiveMatch.qualify`), so 20 players joining is on the order of 20 s of serialized
+  server work unless the baseline is cached per committed tick. At 500 it is the
+  247 ms first-sample figure above.
+
+### 3.6 What I could not or did not measure
 
 - AI-only games. The AI never builds towers, walls or aircraft, so those costs are
   invisible here (section 4, WS3).
@@ -236,6 +288,13 @@ repeated `map.x/map.y` division in `estimate`. Try micro-optimizations first
 stronger heuristic (landmarks) if needed. Target about 2×. Landmark distances need
 the same cost-revision invalidation as 1a.
 
+**1g. Put ShoreTransport/ShoreRoutes queries behind the same cache and budget.
+New on `main`, measured at 1000.** `ShoreTransport.preferredLeg` and
+`ShoreRoutes.firstLeg/between` call `paths.find` synchronously from AI naval
+thinking and from `applyCommand`, outside `RouteWork`. They need the route result
+cache (1c) and a per-tick cost budget; at minimum, spread AI naval thinking across
+ticks the way `thinkProgression` already staggers by player id.
+
 **1f. Budget route work by cost, not job count. Behavior change.**
 `routeWork.drain(24)` (`Simulation.step`) runs 24 route _jobs_ per tick whatever
 they cost. At roughly 1–3 ms per query on large maps that alone is a 24–70 ms
@@ -293,6 +352,13 @@ to 64 times per trade load. Fixes, in order:
 
 ### WS4. Commit pipeline (the multiplayer hot path)
 
+Decision D3 keeps player hosting, so the host's CPU and uplink are the binding
+constraints, not the server's. Treat 4a–4e as launch blockers for world size 1000,
+not optimizations: ~1.45 MB/s of upload at minute 6 exceeds many home uplinks and
+keeps growing. Also **cache the baseline per committed tick** so joins and
+reconnects do not each pay ~1 s of encode at 1000 (`LiveMatch.baseline` currently
+asks the executor to build one per guest).
+
 **4a. Drop `pressure` from the checkpoint. Exact. Trivial.**
 `Simulation.capture()` calls `pressure.fill(0)` before any read; no reader exists
 outside `capture()`. Remove it from `checkpoint()` and from the length check in
@@ -337,13 +403,24 @@ Allow the host to start the next batch while the server verifies the previous
 one. It hides verify and download time from game time, but needs rollback if a
 commit is rejected. Do not start it before the cycle is measured.
 
-### WS5. Load time and map size
+### WS5. Load time and map size (required: world size 1000 stays)
 
-`new Skirmish()` on Africa 1000 × 1000 is 6.8 s and 336 MB. Every host worker
-pays it, the server pays it per match, and a handover pays a decode on top. Either
-hide `worldSize: 1000` in the lobby until this is fixed, or make the static work
-(component labelling, hierarchy preparation, forest and resource fields) cacheable
-per map and size so it is paid once per process, not per match.
+`new Skirmish()` on Africa 1000 × 1000 is 6.8 s and 336 MB, paid by every host
+worker, by the server per match, and again by `initialize` timing in
+`multiplayerHostWorker`. Work, in order:
+
+1. Profile the constructor (component labelling in `TilePaths`, hierarchy
+   `prepare()` computing every portal tree, forest and resource fields,
+   `CoastIndex`) and find the biggest share; this was not profiled.
+2. Compute the static, per-map-and-size products once and cache them (per process
+   on the server; IndexedDB or a derived asset in the browser), then construct
+   matches from the cache. These products depend only on terrain and are shared by
+   every faction layout.
+3. Make hierarchy preparation lazy per cluster (portal trees are already memoized
+   lazily in `crossing()`), trading load time for a few extra early queries.
+4. Show load progress in the lobby so a 7 s construction is not read as a hang.
+   Measure RSS at 20 factions late game: 444 MB after one minute is the floor, not
+   the ceiling.
 
 ### WS6. Client presentation (secondary now)
 
@@ -368,35 +445,46 @@ fixes; it cannot host a late-game match today.
 
 ## 5. Sequencing and gates
 
-| Phase                  | Work                                              | Gate                                                                                                                   |
-| ---------------------- | ------------------------------------------------- | ---------------------------------------------------------------------------------------------------------------------- |
-| 0                      | WS0 harness and goldens                           | Goldens pass on `main`; baselines recorded                                                                             |
-| 1 (exact, quick)       | 1a, 2a, 2b (incl. skipping empty Trade grids), 4a | Goldens unchanged. Africa 500 minute 10 mean ≤ 25 ms (measured 23.4 for the first three)                               |
-| 2 (decisions D1 taken) | 1b, 1c, 1d, 1f, 4b                                | Tick p99 < 50 ms and max < 100 ms through minute 12 on all three maps at 500 (proposed target, not yet shown feasible) |
-| 3 (protocol)           | 4c, 4d, 4e                                        | Upload ≤ 60 KB p95 at minute 10; host commit CPU ≤ 25 ms; server verify ≤ 25 ms p95; game-time ratio ≥ 0.98            |
-| 4                      | 1e, WS3, WS5, WS6, WS7, 4f                        | Per-item, using the harness                                                                                            |
+| Phase                  | Work                                              | Gate                                                                                                                     |
+| ---------------------- | ------------------------------------------------- | ------------------------------------------------------------------------------------------------------------------------ |
+| 0                      | WS0 harness and goldens                           | Goldens pass on `main`; baselines recorded                                                                               |
+| 1 (exact, quick)       | 1a, 2a, 2b (incl. skipping empty Trade grids), 4a | Goldens unchanged. Africa 500 minute 10 mean ≤ 25 ms (measured 23.4 for the first three)                                 |
+| 2 (decisions D1 taken) | 1b, 1c, 1d, 1f, 4b                                | Tick p99 < 50 ms and max < 100 ms through minute 12 on all three maps at 500 (proposed target, not yet shown feasible)   |
+| 3 (protocol)           | 4c, 4d, 4e                                        | Upload ≤ 60 KB p95 at minute 10; host commit CPU ≤ 25 ms; server verify ≤ 25 ms p95; game-time ratio ≥ 0.98              |
+| 3b (world size 1000)   | 1f, 1g, WS5, baseline cache                       | Africa 1000, minute 15: tick p99 < 50 ms, max < 100 ms; constructor ≤ 2 s; join baseline ≤ 100 ms (all proposed targets) |
+| 4                      | 1e, WS3, WS6, WS7, 4f                             | Per-item, using the harness                                                                                              |
 
 Run phase 1 now: it is small, exact and needs no decisions. Phases 2 and 3 are
 independent enough to run in parallel by different people once WS0 exists.
 
-## 6. Decisions needed
+## 6. Decisions
 
-- **D1. Behavior changes before launch.** Are you willing to change gameplay-visible
-  behavior now (hierarchy on mid-size maps, canonical `ownedTiles` order,
-  cost-based route budget, trade ordering ties) in exchange for tick stability? No
-  public matches or replays exist yet, so this is cheapest before launch. After
-  launch each one needs a rules revision. Recommendation: yes, and add an explicit
-  `rulesRevision` to the match manifest at the same time.
-- **D2. `worldSize` 1000.** Hide it in the lobby until WS5, or accept the load time?
-- **D3. Who runs the simulation.** Verification currently costs the server about
-  as much as running the ticks would (decode + restore ≈ 65 ms vs about 60 ms of sim
-  per commit at minute 8 after the three fixes), it does not check simulation
-  correctness, and it needs a 1+ MB/s host upload. A server-run simulation
-  broadcasting the existing shared delta snapshot would cost the server the sim plus
-  about 0.5 ms of encoding, and removes the host trust and bandwidth problems, at
-  the price of server CPU per match. I would not decide this until 4c numbers
-  exist, but it should be decided deliberately, not by default.
-- **D4. Pipelining** (4f): needed, or is a ≥ 0.98 game-time ratio after 4c enough?
+Taken:
+
+- **D1. Behavior changes before launch: yes, all of them.** Hierarchy on mid-size
+  maps (1b), canonical `ownedTiles` order (4b), cost-based route budget (1f/1g) and
+  deterministic trade ordering ties are approved. Do them together with an explicit
+  `rulesRevision` in the match manifest, and regenerate the golden hashes once,
+  deliberately, with the reason recorded in the PR.
+- **D2. World size 1000 stays supported.** It is a first-class target: it gets its
+  own gates in section 5 and its own baseline in WS0. It is not hidden or
+  deprioritized.
+- **D3. Players host, because the server is too small.** Accepted. Consequences
+  this plan now assumes: the host's CPU and upload are the constraints (WS4 is a
+  blocker for 1000); host election should use a measured capability that includes
+  serialization and upload, not 12 early ticks (4e); the server stays a verifier
+  and fallback only. The trust issue from section 2 remains: a player-host can
+  alter the non-economic world. Cheap mitigations to consider later: have the
+  server re-simulate a random sample of batches, or compare a second client's
+  state hash. Neither is in scope now.
+
+Still open:
+
+- **D4. Pipelining** (4f): needed, or is a game-time ratio ≥ 0.98 after delta
+  commits enough? Decide after 4c numbers.
+- **D5. Minimum host spec.** With player hosting and 1000-size maps, should the
+  lobby refuse or warn when no connected player qualifies, instead of silently
+  falling back to the server executor that cannot carry a late-game match?
 
 ## 7. Reproducing the numbers
 
