@@ -24,13 +24,13 @@ describe("minor tribes", () => {
     const baseline = match(3, false, false),
       game = match(3, false),
       tribes = game.players.filter((p) => p.kind === "tribe");
-    expect(tribes).toHaveLength(10);
+    expect(tribes).toHaveLength(20);
     expect(
       match(1, false).players.filter((p) => p.kind === "tribe"),
-    ).toHaveLength(10);
+    ).toHaveLength(20);
     expect(
       [250, 500, 1000].map((width) => tribeCountFor(width, width / 2)),
-    ).toEqual([10, 20, 40]);
+    ).toEqual([20, 30, 40]);
     expect(
       game.players.filter((p) => p.kind === "regular").map((p) => p.base),
     ).toEqual(baseline.players.map((p) => p.base));

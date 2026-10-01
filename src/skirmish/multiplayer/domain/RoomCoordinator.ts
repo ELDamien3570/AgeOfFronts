@@ -256,10 +256,11 @@ export class RoomCoordinator {
       this.updateCountdown(room, now);
       const connected = room.members.filter((member) => member.connected);
       const ready =
-        connected.length >= room.settings.minimumHumans &&
-        (connected.length === room.settings.slots ||
-          connected.every((member) => member.votedToStart === true) ||
-          (room.deadline !== undefined && now >= room.deadline));
+        (connected.length >= 1 &&
+          connected.every((member) => member.votedToStart === true)) ||
+        (connected.length >= room.settings.minimumHumans &&
+          (connected.length === room.settings.slots ||
+            (room.deadline !== undefined && now >= room.deadline)));
       if (room.listing === "queued" || !ready) continue;
       if (this.state.reservations.length >= this.matchCapacity) {
         room.capacityWaiting = true;

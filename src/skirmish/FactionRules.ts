@@ -33,7 +33,7 @@ export function canPromoteTribe(
 }
 export function tribeCountFor(width: number, height: number): number {
   const extent = Math.max(width, height);
-  return extent <= 375 ? 10 : extent <= 750 ? 20 : MAX_TRIBES;
+  return extent <= 375 ? 20 : extent <= 750 ? 30 : MAX_TRIBES;
 }
 
 export function squadCap(player: Pick<Player, "kind">, age?: Age): number {

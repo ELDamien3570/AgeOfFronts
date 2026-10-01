@@ -6,7 +6,11 @@ import { computeRuntimeBuild } from "./src/skirmish/multiplayer/infrastructure/R
 let buildOutDir = path.resolve("build/skirmish");
 
 export default defineConfig({
-  define: { "import.meta.env.VITE_SKIRMISH_RUNTIME_ID": JSON.stringify(computeRuntimeBuild()) },
+  define: {
+    "import.meta.env.VITE_SKIRMISH_RUNTIME_ID": JSON.stringify(
+      computeRuntimeBuild(),
+    ),
+  },
   publicDir: "resources",
   resolve: { tsconfigPaths: true },
   plugins: [
@@ -17,21 +21,36 @@ export default defineConfig({
       },
       configureServer(server) {
         server.middlewares.use((req, res, next) => {
-          if (req.url?.split("?")[0] !== "/") {
-            next();
+          const rawUrl = req.url?.split("?")[0] ?? "";
+          if (rawUrl === "/") {
+            const html = fs.readFileSync(
+              path.resolve("skirmish/home.html"),
+              "utf8",
+            );
+            server
+              .transformIndexHtml("/", html)
+              .then((output) => {
+                res.setHeader("Content-Type", "text/html");
+                res.end(output);
+              })
+              .catch(next);
             return;
           }
-          const html = fs.readFileSync(
-            path.resolve("skirmish/home.html"),
-            "utf8",
-          );
-          server
-            .transformIndexHtml("/", html)
-            .then((output) => {
-              res.setHeader("Content-Type", "text/html");
-              res.end(output);
-            })
-            .catch(next);
+          const relPath = rawUrl.replace(/^\/+/, "");
+          if (["robots.txt", "sitemap.xml", "ads.txt"].includes(relPath)) {
+            const filePath = path.resolve("resources/public", relPath);
+            if (fs.existsSync(filePath)) {
+              res.setHeader(
+                "Content-Type",
+                relPath.endsWith(".xml")
+                  ? "application/xml; charset=utf-8"
+                  : "text/plain; charset=utf-8",
+              );
+              res.end(fs.readFileSync(filePath));
+              return;
+            }
+          }
+          next();
         });
       },
       // Publish the homepage at / and retain the game at /skirmish/index.html.
@@ -39,6 +58,20 @@ export default defineConfig({
         const nested = path.join(buildOutDir, "skirmish/home.html");
         if (fs.existsSync(nested))
           fs.copyFileSync(nested, path.join(buildOutDir, "index.html"));
+
+        const publicFiles = [
+          "robots.txt",
+          "sitemap.xml",
+          "ads.txt",
+          "privacy-policy.html",
+          "terms-of-service.html",
+        ];
+        for (const file of publicFiles) {
+          const src = path.resolve("resources/public", file);
+          if (fs.existsSync(src)) {
+            fs.copyFileSync(src, path.join(buildOutDir, file));
+          }
+        }
       },
     },
   ],

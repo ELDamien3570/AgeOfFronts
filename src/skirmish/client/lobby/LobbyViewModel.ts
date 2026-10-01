@@ -392,9 +392,12 @@ export class LobbyViewModel {
       if (!this.connected) return "Reconnecting to the lobby server";
       if (this.onlineRoom?.capacityWaiting) return "Waiting for match capacity";
       if (this.queuePosition) return "Waiting for a display space";
-      return this.phase === "countdown"
-        ? "Match countdown"
-        : `Waiting for ${this.rules.minimumHumans} humans`;
+      if (this.phase === "countdown") return "Match countdown";
+      if (this.hasVotedToStart && this.startVotes === this.humanCount)
+        return "Starting match…";
+      if (this.startVotes > 0)
+        return `${this.startVotes}/${this.humanCount} voted · Waiting for ${this.rules.minimumHumans} humans`;
+      return `Waiting for ${this.rules.minimumHumans} humans`;
     }
     if (this.phase === "complete") return "Roster preview ready";
     if (this.phase === "countdown") return "Preview countdown running";

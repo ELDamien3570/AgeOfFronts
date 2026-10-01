@@ -10,14 +10,24 @@ describe("online room lifecycle", () => {
     const rooms = new RoomCoordinator(0, 1);
     const id = "default-africa";
     rooms.join(id, "a", profile("A"), 0);
+    rooms.join(id, "b", profile("B"), 0);
     rooms.voteToStart(id, "a");
-    expect(rooms.advance(1)).toHaveLength(0); // Minimum humans still applies.
-    rooms.join(id, "b", profile("B"), 2);
-    expect(rooms.advance(3)).toHaveLength(0); // A new arrival has not voted.
+    expect(rooms.advance(1)).toHaveLength(0); // A second connected human has not voted.
     expect(() => rooms.voteToStart(id, "outsider")).toThrow(/Join/);
     rooms.voteToStart(id, "b");
     rooms.voteToStart(id, "b"); // Repeated votes do not create additional votes.
-    expect(rooms.advance(4)).toHaveLength(1);
+    expect(rooms.advance(2)).toHaveLength(1);
+  });
+  it("allows a lobby to start with 1 human if that human votes to start", () => {
+    const rooms = new RoomCoordinator(0, 1);
+    const id = "default-africa";
+    rooms.join(id, "solo", profile("Solo Player"), 0);
+    expect(rooms.advance(1)).toHaveLength(0); // Does not start automatically without vote
+    rooms.voteToStart(id, "solo");
+    const started = rooms.advance(2);
+    expect(started).toHaveLength(1);
+    expect(started[0].members).toHaveLength(1);
+    expect(started[0].members[0].guestId).toBe("solo");
   });
   it("clears departed votes and requires a returning player to vote again", () => {
     const rooms = new RoomCoordinator(0, 1);
