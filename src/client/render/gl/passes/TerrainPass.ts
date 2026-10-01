@@ -22,6 +22,10 @@ import {
   createTexture2D,
   shaderSrc,
 } from "../utils/GlUtils";
+import {
+  bakeTerrainFields,
+  bakeTerrainFieldsRect,
+} from "../utils/TerrainFields";
 
 // ---------------------------------------------------------------------------
 // TerrainPass
@@ -30,6 +34,8 @@ import {
 export class TerrainPass {
   private program: WebGLProgram;
   private tex: WebGLTexture;
+  // RG8 LINEAR "fields" texture: R = signed coast distance, G = elevation.
+  private fieldsTex: WebGLTexture;
   private vao: WebGLVertexArrayObject;
   private uCamera: WebGLUniformLocation;
   private mapW: number;
@@ -72,7 +78,22 @@ export class TerrainPass {
       filter: gl.NEAREST, // pixel-crisp at all zoom levels
     });
 
+    this.fieldsTex = createTexture2D(gl, {
+      width: mapW,
+      height: mapH,
+      internalFormat: gl.RG8,
+      format: gl.RG,
+      type: gl.UNSIGNED_BYTE,
+      data: bakeTerrainFields(terrainBytes, mapW, mapH),
+      filter: gl.LINEAR,
+    });
+
     this.vao = createMapQuad(gl, mapW, mapH);
+  }
+
+  /** The RG8 fields texture (R coast distance, G elevation), LINEAR. */
+  get fields(): WebGLTexture {
+    return this.fieldsTex;
   }
 
   /**
@@ -82,6 +103,7 @@ export class TerrainPass {
   setTerrainColors(terrainColors?: TerrainColorOverrides): void {
     this.terrainColors = terrainColors;
     const gl = this.gl;
+    const terrain = this.terrainSource();
     gl.bindTexture(gl.TEXTURE_2D, this.tex);
     gl.pixelStorei(gl.UNPACK_ALIGNMENT, 1);
     gl.texSubImage2D(
@@ -93,12 +115,19 @@ export class TerrainPass {
       this.mapH,
       gl.RGBA,
       gl.UNSIGNED_BYTE,
-      buildTerrainRGBA(
-        this.terrainSource(),
-        this.mapW,
-        this.mapH,
-        terrainColors,
-      ),
+      buildTerrainRGBA(terrain, this.mapW, this.mapH, terrainColors),
+    );
+    gl.bindTexture(gl.TEXTURE_2D, this.fieldsTex);
+    gl.texSubImage2D(
+      gl.TEXTURE_2D,
+      0,
+      0,
+      0,
+      this.mapW,
+      this.mapH,
+      gl.RG,
+      gl.UNSIGNED_BYTE,
+      bakeTerrainFields(terrain, this.mapW, this.mapH),
     );
   }
 
@@ -143,6 +172,46 @@ export class TerrainPass {
       );
       offset += count;
     }
+    this.updateFields(rects, bytes);
+  }
+
+  /**
+   * Recompute the fields texture around each changed rect (padded by
+   * FIELD_PAD) from the current terrain and re-upload just that region.
+   */
+  private updateFields(rects: readonly TerrainRect[], bytes: Uint8Array): void {
+    const gl = this.gl;
+    // Current full-map terrain (already reflects the conversions in `bytes`
+    // in the live game; the overlay below makes that independent of the
+    // provider so padded neighbours of one rect see another rect's change).
+    const terrain = this.terrainSource();
+    let offset = 0;
+    for (const r of rects) {
+      for (let y = 0; y < r.h; y++) {
+        const dst = (r.y + y) * this.mapW + r.x;
+        for (let x = 0; x < r.w; x++) {
+          const b = bytes[offset + y * r.w + x];
+          if (terrain[dst + x] !== b) terrain[dst + x] = b;
+        }
+      }
+      offset += r.w * r.h;
+    }
+    gl.bindTexture(gl.TEXTURE_2D, this.fieldsTex);
+    gl.pixelStorei(gl.UNPACK_ALIGNMENT, 1);
+    for (const r of rects) {
+      const upd = bakeTerrainFieldsRect(terrain, this.mapW, this.mapH, r);
+      gl.texSubImage2D(
+        gl.TEXTURE_2D,
+        0,
+        upd.x,
+        upd.y,
+        upd.w,
+        upd.h,
+        gl.RG,
+        gl.UNSIGNED_BYTE,
+        upd.data,
+      );
+    }
   }
 
   /** Render the terrain. Call with depth test disabled, no blending. */
@@ -162,6 +231,7 @@ export class TerrainPass {
     const gl = this.gl;
     gl.deleteProgram(this.program);
     gl.deleteTexture(this.tex);
+    gl.deleteTexture(this.fieldsTex);
     // VAO + buffer leak is acceptable on dispose (context is being destroyed)
   }
 }
