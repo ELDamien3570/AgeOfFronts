@@ -176,8 +176,18 @@ export class Supply {
   setProduction(
     player: Player,
     building: Building | undefined,
-    recipeId: string,
+    recipeId: string | null,
   ): string | null {
+    if (recipeId === null) {
+      if (
+        !building ||
+        building.playerId !== player.id ||
+        building.remainingTicks
+      )
+        return "Select a completed friendly producer";
+      this.selectedRecipes.delete(building.id);
+      return null; // An already paid batch still finishes normally.
+    }
     const recipe = PRODUCTION_RECIPES.find((r) => r.id === recipeId);
     const rejection = productionRejection(
       player.id,

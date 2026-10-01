@@ -286,7 +286,7 @@ export class EmpireHudView {
             "build",
             type,
             choice.reason,
-            `${choice.age ? AGE_NAMES[AGES.indexOf(choice.age)] : "Research required"} · ${choice.cost?.gold ?? 0} gold\n${Object.entries(
+            `${choice.age ? AGE_NAMES[AGES.indexOf(choice.age)] : "Unavailable"} · ${choice.cost?.gold ?? 0} gold\nResearch: ${choice.requiredTechnology ?? "Unavailable"}\n${Object.entries(
               choice.cost?.items ?? {},
             )
               .map(([id, n]) => `${n} ${vm.itemName(id)}`)
@@ -319,7 +319,7 @@ export class EmpireHudView {
           "support",
           u.id,
           quote.reason,
-          `${u.cost.gold ?? 0} gold · 1,000 reserves\n${Object.entries(
+          `${u.cost.gold ?? 0} gold · 1,000 reserves\nResearch: ${vm.technologyName(u.technologyId)}\nBuilding: ${BUILDING_RULES[u.building].name} · ${AGE_NAMES[AGES.indexOf(u.age)]} or later\n${Object.entries(
             u.cost.items ?? {},
           )
             .map(([id, n]) => `${n} ${vm.itemName(id)}`)
@@ -345,7 +345,7 @@ export class EmpireHudView {
             "aircraft",
             kind,
             q.reason,
-            "5,000 gold · 1,000 reserves · 1 airframe · 20 oil\n1,000 HP · 60s fuel · 6 per airfield / 32 per faction",
+            "5,000 gold · 1,000 reserves · 1 airframe · 20 oil\nResearch: Military Aviation\nBuilding: completed Military airstrip with a free slot\n1,000 HP · 60s fuel · 6 per airfield / 32 per faction",
             kind,
           );
         })
@@ -365,7 +365,7 @@ export class EmpireHudView {
             "launch",
             payload,
             q.reason,
-            `10,000 gold · 1 ${payload.toUpperCase()} payload\n36s flight · 60s launcher reload${payload === "mirv" ? " · 4 warheads" : ""}`,
+            `10,000 gold · 1 ${payload.toUpperCase()} payload\nResearch: Strategic Weapons\nLauncher: ${payload === "mirv" ? "MIRV launch complex or deployed mobile launcher" : "Missile silo"}\n36s flight · 60s launcher reload${payload === "mirv" ? " · 4 warheads" : ""}`,
             payload,
           );
         })
@@ -417,6 +417,8 @@ export class EmpireHudView {
           ? `${name(event.actorId)} reached ${AGE_NAMES[AGES.indexOf(event.age!)]}`
           : event.kind === "conquest"
             ? `${name(event.actorId)} defeated ${name(event.otherId)}`
+            : event.kind === "promotion"
+              ? `${name(event.actorId)} became a full nation${event.otherId ? ` and inherited research from ${name(event.otherId)}` : ""}`
             : `${name(event.actorId)} ${{ offer: "offered an alliance to", accept: "formed an alliance with", reject: "declined an alliance with", renew: "requested alliance renewal with", break: "broke the alliance with", expire: "ended its alliance with" }[event.action!]} ${name(event.otherId)}`;
       const item = document.createElement("div");
       item.className = "feed-event";

@@ -25,6 +25,7 @@ export class ArmyView {
   ) {
     this.strip = document.createElement("section");
     this.strip.className = "army-list hud-surface";
+    this.strip.hidden = true;
     this.strip.setAttribute("aria-label", "Your armies");
     this.strip.innerHTML =
       '<button class="text-button" data-create>Create army</button><span data-list></span><select aria-label="Army to join" data-join></select><button class="text-button" data-add>Add selected</button><button class="text-button" data-detach>Detach selected</button>';
@@ -113,7 +114,11 @@ export class ArmyView {
   }
   update(vm: ArmyViewModel): void {
     this.vm = vm;
-    this.strip.hidden = !vm.state.expansion;
+    this.strip.hidden = !vm.capacity;
+    if (this.strip.hidden) {
+      this.card.hidden = true;
+      return;
+    }
     const create =
       this.strip.querySelector<HTMLButtonElement>("[data-create]")!;
     create.disabled = !!vm.createReason;

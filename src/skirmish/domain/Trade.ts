@@ -1,4 +1,5 @@
 import type { GameMap } from "../../core/game/GameMap";
+import { technologyAt } from "../content/Technology";
 import { VESSELS } from "../content/Units";
 import type { LandPaths, WaterPaths } from "../Pathfinding";
 import type { Building, Player, Ship, Squad } from "../Protocol";
@@ -258,6 +259,10 @@ export class Trade {
             this.progression.states[factory.playerId].completed,
           ),
           age = AGES[index];
+        const overland = this.progression.has(
+          factory.playerId,
+          technologyAt("StoneAge", "economic", 4).id,
+        );
         const merchant = VESSELS.filter(
           (v) =>
             v.kind === "trade" &&
@@ -289,6 +294,9 @@ export class Trade {
             .find((t) => this.world.waterPaths.walkable(t));
         const naval = water !== undefined,
           origin = naval ? water : factory.tile;
+        // Land and water trade have independent research gates. A researched
+        // canoe without a reachable port must not silently create a land trader.
+        if (!naval && !overland) continue;
         const actor: TradeActor = {
           id: this.world.allocateId(),
           playerId: factory.playerId,

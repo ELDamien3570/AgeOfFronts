@@ -6,10 +6,12 @@ import { FIXED } from "../Protocol";
 import { SpatialGrid } from "../SpatialGrid";
 import {
   attackInterval,
+  attackStrength,
   damageAmount,
   defenceOf,
   effectiveDamageShares,
   scaledAttack,
+  type Defence,
 } from "./Combat";
 import type {
   Aircraft,
@@ -175,6 +177,7 @@ export class Battle {
       x: number;
       y: number;
       domain?: CombatSourceKind;
+      attackScale?: number;
       originTile?: number;
     },
     target: Position,
@@ -191,6 +194,7 @@ export class Battle {
       playerId: source.playerId,
       sourceId: source.id,
       sourceKind: source.domain ?? "squad",
+      attackScale: source.attackScale,
       definitionId,
       originTile: source.originTile,
       fromX: source.x,
@@ -223,8 +227,28 @@ export class Battle {
     });
     return true;
   }
-  private scaled(s: Squad, profile: AttackProfile): AttackProfile {
-    return scaledAttack(profile, s.troops, 1000, s.xp);
+  private volley(
+    source: {
+      id: number;
+      playerId: number;
+      x: number;
+      y: number;
+      definitionId?: string;
+    },
+    target: Position,
+  ): void {
+    if (this.world.volleys.length >= 4096) return;
+    this.world.volleys.push({
+      id: this.world.allocateId(),
+      tick: this.world.tick,
+      squadId: source.id,
+      definitionId: source.definitionId,
+      playerId: source.playerId,
+      fromX: source.x,
+      fromY: source.y,
+      toX: target.x,
+      toY: target.y,
+    });
   }
   private contribution(
     map: Contributions,
@@ -403,6 +427,7 @@ export class Battle {
           );
           target.health -= hit;
           squad.xp = Math.min(20000, (squad.xp ?? 0) + hit);
+          this.volley(squad, target);
           squad.lastAttackTick = tick;
           squad.nextAttackTick = tick + attackInterval(profile, squad.moved);
           squad.fighting = true;
@@ -451,21 +476,23 @@ export class Battle {
       squad.lastAttackTick = tick;
       squad.nextAttackTick = tick + attackInterval(profile, squad.moved);
       if (profile.projectile) {
-        const scaled = this.scaled(squad, profile);
-        this.fire(squad, target, scaled, scaled.damage);
+        const weapon = scaledAttack(profile, 1000, 1000, squad.xp);
+        this.fire(
+          {
+            ...squad,
+            attackScale: attackStrength(squad.troops, 1000),
+          },
+          target,
+          weapon,
+          weapon.damage,
+          "shell",
+          undefined,
+          0,
+          squad.definitionId,
+        );
         continue;
       }
-      if (profile.channel === "ranged" && this.world.volleys.length < 4096)
-        this.world.volleys.push({
-          id: this.world.allocateId(),
-          tick,
-          squadId: squad.id,
-          playerId: squad.playerId,
-          fromX: squad.x,
-          fromY: squad.y,
-          toX: target.x,
-          toY: target.y,
-        });
+      if (profile.channel === "ranged") this.volley(squad, target);
       const hit = damageAmount(
         profile,
         defenceOf(this.definition(target), this.cover(target)),
@@ -503,6 +530,15 @@ export class Battle {
           );
           damage.add(target.id, b.playerId, hit);
           this.contribution(contributions, target.id, b.id, hit, "building");
+          this.volley(
+            {
+              ...p,
+              id: b.id,
+              playerId: b.playerId,
+              definitionId: "modern-gun-nest",
+            },
+            target,
+          );
           b.nextAttackTick = tick + GUN_NEST_ATTACK.reloadTicks;
         }
       }
@@ -558,10 +594,20 @@ export class Battle {
     squad.nextAttackTick =
       this.world.tick + attackInterval(profile, squad.moved);
     if (profile.projectile) {
-      const scaled = this.scaled(squad, profile);
-      this.fire(squad, p, scaled, scaled.damage);
+      const weapon = scaledAttack(profile, 1000, 1000, squad.xp);
+      this.fire(
+        { ...squad, attackScale: attackStrength(squad.troops, 1000) },
+        p,
+        weapon,
+        weapon.damage,
+        "shell",
+        undefined,
+        0,
+        squad.definitionId,
+      );
       return;
     }
+    if (profile.channel === "ranged") this.volley(squad, p);
     let hit = damageAmount(
       profile,
       {
@@ -583,6 +629,8 @@ export class Battle {
       contributions: Contributions = new Map();
     for (const p of [...this.projectiles].sort((a, b) => a.id - b.id)) {
       if (p.impacted) continue;
+      const hitDamage = (attack: AttackProfile, defence: Defence) =>
+        damageAmount(attack, defence, 1000, 0, 1000, p.attackScale);
       const progress = Math.min(1, (tick - p.tick) / (p.impactTick - p.tick)),
         old = { x: p.x, y: p.y };
       p.x = Math.round(p.fromX + (p.toX - p.fromX) * progress);
@@ -785,7 +833,7 @@ export class Battle {
           directHit &&
           this.diplomacy.hostile(directHit.playerId, p.playerId)
         ) {
-          const hit = damageAmount(
+          const hit = hitDamage(
             {
               channel: p.channel,
               damage: p.damage,
@@ -818,7 +866,7 @@ export class Battle {
             p.sourceKind,
           );
         } else if (directStructure) {
-          let hit = damageAmount(
+          let hit = hitDamage(
             {
               channel: p.channel,
               damage: p.damage,
@@ -893,7 +941,7 @@ export class Battle {
         .slice(0, 64)) {
         const hit = Math.min(
           budget,
-          damageAmount(
+          hitDamage(
             scaled(target),
             defenceOf(this.definition(target), this.cover(target)),
           ),
@@ -915,7 +963,7 @@ export class Battle {
         .slice(0, 64)) {
         const hit = Math.min(
           budget,
-          damageAmount(scaled(target), {
+          hitDamage(scaled(target), {
             tags: ["ship"],
             meleeArmour: 1000,
             rangedArmour: 2000,
@@ -949,7 +997,7 @@ export class Battle {
         const b = this.structureById.get(body.id)!;
         const hit = Math.min(
           budget,
-          damageAmount(scaled(this.position(b)), STRUCTURE_DEFENCE),
+          hitDamage(scaled(this.position(b)), STRUCTURE_DEFENCE),
         );
         this.structuralHit(b, p.playerId, p.sourceId, hit, p.sourceKind);
         budget -= hit;
@@ -971,7 +1019,7 @@ export class Battle {
         ) {
           const hit = Math.min(
             budget,
-            damageAmount(profile, {
+            hitDamage(profile, {
               ...STRUCTURE_DEFENCE,
               tags: ["structure", "wall"],
             }) * (this.diplomacy.state.betrayal[wall.playerId] ? 2 : 1),

@@ -21,6 +21,7 @@ export const AGE_NAMES = [
 ];
 export const TREES = ["naval", "warfare", "economic"] as const;
 export type Tree = (typeof TREES)[number];
+export type TechnologySpeed = 1 | 2 | 3;
 export type TargetTag =
   | "infantry"
   | "ranged"
@@ -131,6 +132,7 @@ export interface UnitDefinition {
   building: BuildingType;
   tags: readonly TargetTag[];
   speedPercent: number;
+  armourKind: "points" | "percentage";
   meleeArmour: number;
   rangedArmour: number;
   bonusResistance: Partial<Record<TargetTag, number>>;
@@ -139,6 +141,7 @@ export interface UnitDefinition {
   cost: Cost;
   equipment?: string;
   canCapture: boolean;
+  undefendedCaptureTicks?: number;
   placeholder?: boolean;
 }
 export interface VesselDefinition {
@@ -243,7 +246,6 @@ export interface Barrier {
   tiles: number[];
   health: number;
   maxHealth: number;
-  gateTile: number | null;
   remainingTicks: number;
 }
 export type CombatSourceKind = "squad" | "ship" | "building" | "aircraft";
@@ -252,6 +254,7 @@ export interface Projectile {
   playerId: number;
   sourceId: number;
   sourceKind: CombatSourceKind;
+  attackScale?: number;
   definitionId?: string;
   originTile?: number;
   x: number;
@@ -291,6 +294,8 @@ export interface ExpansionSnapshot {
   armies: Army[];
   rulesetId: string;
   contentHash: string;
+  technologySpeed: TechnologySpeed;
+  fortificationRevision: number;
   events: MatchEvent[];
   roadRevision: number;
   roads?: Uint32Array;
@@ -344,7 +349,7 @@ export interface MatchEvent {
   tick: number;
   actorId: number;
   otherId?: number;
-  kind: "age" | "conquest" | "diplomacy";
+  kind: "age" | "conquest" | "diplomacy" | "promotion";
   age?: Age;
   action?: "offer" | "accept" | "reject" | "renew" | "break" | "expire";
 }

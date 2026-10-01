@@ -488,7 +488,7 @@ describe("allied protection and fortifications", () => {
     expect(t.playerId).toBe(b.id);
     expect(a.eliminated).toBe(false);
   });
-  it("an intact wall blocks both sides and a gate permits only owners and allies", () => {
+  it("intact walls let owners and allies cross every tile while blocking enemies", () => {
     const m = make(),
       e = m.expansion!,
       a = building(m, "tower", 20 * 96 + 20),
@@ -500,13 +500,31 @@ describe("allied protection and fortifications", () => {
     e.fortifications.step(1, m.buildings);
     const w = e.fortifications.barriers[0],
       tile = w.tiles[0];
-    expect(e.fortifications.blocked(tile, 1)).toBe(true);
+    expect(w.tiles.every((t) => !e.fortifications.blocked(t, 1))).toBe(true);
+    expect(e.fortifications.blocked(a.tile, 1)).toBe(false);
     expect(e.fortifications.blocked(tile, 2)).toBe(true);
-    expect(
-      m.applyCommand({ type: "gate", playerId: 1, barrierId: w.id, tile }),
-    ).toBeNull();
-    expect(e.fortifications.blocked(tile, 1)).toBe(false);
+    m.applyCommand({
+      type: "alliance",
+      playerId: 1,
+      otherId: 2,
+      action: "offer",
+    });
+    m.applyCommand({
+      type: "alliance",
+      playerId: 2,
+      otherId: 1,
+      action: "accept",
+    });
+    expect(w.tiles.every((t) => !e.fortifications.blocked(t, 2))).toBe(true);
+    expect(e.fortifications.blocked(a.tile, 2)).toBe(false);
+    m.applyCommand({
+      type: "alliance",
+      playerId: 2,
+      otherId: 1,
+      action: "break",
+    });
     expect(e.fortifications.blocked(tile, 2)).toBe(true);
+    expect(e.fortifications.blocked(a.tile, 2)).toBe(true);
     w.health = 0;
     expect(e.fortifications.blocked(tile, 2)).toBe(false);
   });

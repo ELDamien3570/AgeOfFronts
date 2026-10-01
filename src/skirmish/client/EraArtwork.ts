@@ -22,7 +22,8 @@ export class EraArtwork {
       const image = new Image();
       image.decoding = "async";
       image.onload = () => this.images.set(file, image);
-      image.src = url(file);
+      const source = url(file);
+      if (source) image.src = source;
     }
     return this.images.get(file);
   }
@@ -57,7 +58,23 @@ export class EraArtwork {
     const animation = asset.clips?.[actual] ?? asset.clips?.idle;
     if (!animation) return;
     const image = this.load(animation.file);
-    if (!image) return;
+    if (!image) {
+      // A failed or loading animation must not permanently force formation-only
+      // rendering when the same unit has a valid authored portrait.
+      const poster = asset.poster && this.load(asset.poster);
+      return poster
+        ? {
+            source: poster,
+            x: 0,
+            y: 0,
+            width: 128,
+            height: 128,
+            pivotX: 0.5,
+            pivotY: 0.5,
+            extent: 4 / 3,
+          }
+        : undefined;
+    }
     const phase = Math.max(0, Math.floor((elapsedTicks * animation.fps) / 20)),
       frame = animation.loop
         ? phase % animation.frames

@@ -1,0 +1,40 @@
+{
+  "name": "Africa",
+  "source": "-18_147_30_234_7_4096_4096_16bit.png",
+  "sourceSha256": "f17298f68ca97481195f1d7bb03f81f8e51f0f3e65c88513d63bb17fb6df8656",
+  "sourceUrl": "https://manticorp.github.io/unrealheightmap/#latitude/-18.14719246327394/longitude/30.234323909710497/zoom/3/outputzoom/7/width/4096/height/4096/outputformat/png16",
+  "normalization": {
+    "mode": "regular",
+    "from": -450,
+    "to": 2577,
+    "range": 65536
+  },
+  "seaLevel": 0,
+  "terrainThresholds": {
+    "highland": 600,
+    "mountain": 1800
+  },
+  "sizes": [
+    250,
+    500,
+    1000
+  ],
+  "output": "resources/maps/africa",
+  "albedo": {
+    "source": "-18_146_30_234_7_4096_4096_albedo_imagery.png",
+    "sourceSha256": "2035968a09f02a5afd554fc2d50a97877b9fb380ae26302f90c69857fd89d498",
+    "registration": "same-footprint",
+    "smoothingCellsAt500": 1.4,
+    "greenSensitivity": 1.1
+  },
+  "rivers": {
+    "source": "rivers.geojson",
+    "sourceSha256": "438d2d8e4154ca94c014770d8a40f349d82160e9f1500d93859564852d906483",
+    "widthCellsAt500": 1,
+    "widthCellsBySize": {
+      "250": 1,
+      "500": 2,
+      "1000": 3
+    }
+  }
+}

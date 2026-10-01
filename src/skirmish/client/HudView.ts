@@ -6,6 +6,7 @@ import { STONE_AGE_BUILDINGS } from "./BuildingArtwork";
 import { CONSTRUCTION, LAND_RECRUITMENT, NAVAL_RECRUITMENT } from "./Controls";
 import { eraPortrait } from "./EraArtwork";
 import { HudViewModel, type HudCard, type HudKind } from "./HudViewModel";
+import { HudDrawerViewModel } from "./HudDrawerViewModel";
 import { promotionUrl } from "./PromotionArtwork";
 import { resourceIcon } from "./ResourceIcon";
 import { UNIT_ANIMATIONS } from "./UnitAnimation";
@@ -114,13 +115,14 @@ export function hudMarkup(): string {
       <div id="naval-orders" class="naval-orders" hidden><span id="ship-selection"></span><button id="load">Meet & board</button><button id="unload">Unload at coast</button></div>
     </aside>
     <section class="command-dock hud-surface" aria-label="Resources and commands">
-      <div class="resource-row"><div class="resource gold-resource"><span class="resource-symbol" aria-hidden="true">◈</span><span>Gold<strong id="gold">—</strong></span></div><div class="resource"><span>Troops in field<strong id="troop-total">—</strong></span></div><div class="resource"><span>Reserve troops<strong id="reserves">—</strong></span></div><div class="resource small-resource"><span>Squads<strong id="squad-count">—</strong></span></div><div class="resource small-resource"><span>Land<strong id="land">—</strong></span></div><div class="resource small-resource"><span>Lost<strong id="losses">—</strong></span></div><span class="dock-age">STONE AGE</span></div>
-      <div class="command-row"><div class="command-category economy"><h3>Economy</h3><div class="category-actions">${buildings(true)}</div></div><div class="command-category military"><h3>Military buildings</h3><div class="category-actions">${buildings(false)}</div></div><div class="command-category troops"><h3>Troops</h3><div class="category-actions">${LAND_RECRUITMENT.map((a) => action(`recruit-${a.kind}`, a.label, a.key, a.kind)).join("")}</div></div><div class="command-category ships"><h3>Ships</h3><div class="category-actions">${NAVAL_RECRUITMENT.map((a) => action(a.kind, SHIP_RULES[a.kind].name, a.key, a.kind)).join("")}</div></div><div class="command-category orders"><h3>Orders</h3><div class="category-actions">${action("replenish", "Replenish", "R", undefined, "+")}${action("hold", "Hold", "X", undefined, "■")}${action("all", "Select all", "Ctrl A", undefined, "▦")}</div></div></div>
+      <div class="resource-row"><div class="resource gold-resource"><span class="resource-symbol" aria-hidden="true">◈</span><span>Gold<strong id="gold">—</strong></span></div><div class="resource"><span>Troops in field<strong id="troop-total">—</strong></span></div><div class="resource"><span>Reserve troops<strong id="reserves">—</strong></span></div><div class="resource small-resource"><span>Squads<strong id="squad-count">—</strong></span></div><div class="resource small-resource"><span>Land<strong id="land">—</strong></span></div><div class="resource small-resource"><span>Lost<strong id="losses">—</strong></span></div><button type="button" class="dock-age" aria-controls="hud-command-sections" aria-expanded="true" aria-pressed="false">STONE AGE</button></div>
+      <div id="hud-command-sections" class="command-row"><div class="command-category economy"><h3>Economy</h3><div class="category-actions">${buildings(true)}</div></div><div class="command-category military"><h3>Military buildings</h3><div class="category-actions">${buildings(false)}</div></div><div class="command-category troops"><h3>Troops</h3><div class="category-actions">${LAND_RECRUITMENT.map((a) => action(`recruit-${a.kind}`, a.label, a.key, a.kind)).join("")}</div></div><div class="command-category ships"><h3>Ships</h3><div class="category-actions">${NAVAL_RECRUITMENT.map((a) => action(a.kind, SHIP_RULES[a.kind].name, a.key, a.kind)).join("")}</div></div><div class="command-category orders"><h3>Orders</h3><div class="category-actions">${action("replenish", "Replenish", "R", undefined, "+")}${action("hold", "Hold", "X", undefined, "■")}${action("all", "Select all", "Ctrl A", undefined, "▦")}</div></div></div>
       <div class="dock-utility"><div class="control-groups"><span>Groups</span>${[1, 2, 3, 4, 5, 6, 7, 8, 9, 0].map((d) => `<button id="group-${d}" aria-label="Control group ${d}"><b>${d}</b><small>0</small></button>`).join("")}</div><span class="group-help">Shift adds · Ctrl replaces</span><button id="controls-toggle" aria-expanded="false">Controls <span>?</span></button><button id="roster-toggle" aria-expanded="false">Factions</button></div>
     </section>
     <section id="controls-popover" class="hud-popover hud-surface" aria-label="Game controls" hidden><div class="popover-heading"><h2>Battlefield controls</h2><button data-close="controls-popover" aria-label="Close controls">×</button></div><dl class="stat-list"><dt>Left click / drag</dt><dd>Select units</dd><dt>Shift + select</dt><dd>Add units</dd><dt>Double click</dt><dd>Select visible units of type</dd><dt>Right click</dt><dd>Move / attack / board</dd><dt>Shift + right click</dt><dd>Queue waypoints</dd><dt>1–0</dt><dd>Recall control group</dd><dt>Shift + 1–0</dt><dd>Add to control group</dd><dt>Ctrl + 1–0</dt><dd>Replace / clear group</dd><dt>Wheel / middle drag</dt><dd>Zoom / pan</dd><dt>Space</dt><dd>Pause / resume</dd><dt>Home</dt><dd>Fit battlefield</dd><dt>Escape</dt><dd>Cancel placement / inspection</dd></dl><p class="card-description">Recruit and construction keys are shown on every command button. R replenishes eligible squads; X holds units; Ctrl A selects all land squads.</p><a href="/age-of-fronts-source.zip" download>Download corresponding source</a></section>
     <section id="roster-popover" class="hud-popover hud-surface" aria-label="Factions" hidden><div class="popover-heading"><h2>Factions & territory</h2><button data-close="roster-popover" aria-label="Close factions">×</button></div><div id="roster"></div></section>
-    <div id="hud-tooltip" class="hud-tooltip hud-surface" role="tooltip" hidden></div>`;
+    <div id="hud-tooltip" class="hud-tooltip hud-surface" role="tooltip" hidden></div>
+    <div id="deposit-tooltip" class="hud-tooltip compact-tooltip hud-surface" role="tooltip" hidden></div>`;
 }
 function cardMarkup(card: HudCard) {
   const content = card.compact ?? card;
@@ -128,6 +130,7 @@ function cardMarkup(card: HudCard) {
 }
 
 export class HudView {
+  private readonly drawer = new HudDrawerViewModel();
   private vm?: HudViewModel;
   private focusedRef: string | null = null;
   private membership = "";
@@ -135,6 +138,7 @@ export class HudView {
   private tooltipAnchor?: HTMLElement;
   private hoveredAnchor?: HTMLElement;
   private focusedAnchor?: HTMLElement;
+  private depositHover?: { id: number; x: number; y: number };
   private selectionFingerprint = "";
   get inspectedRef(): string | null {
     return this.focusedRef;
@@ -147,6 +151,34 @@ export class HudView {
     private readonly root: HTMLElement,
     onDockResize: (height: number) => void = () => {},
   ) {
+    root.querySelector(".dock-age")!.addEventListener("click", () => {
+      this.drawer.toggleMode();
+      this.renderDrawer();
+    });
+    this.renderDrawer();
+    root.querySelector(".command-dock")!.addEventListener(
+      "wheel",
+      (event) => {
+        const wheel = event as WheelEvent;
+        const section = (wheel.target as HTMLElement).closest<HTMLElement>(
+          ".category-actions",
+        );
+        if (!section || section.scrollWidth <= section.clientWidth) return;
+        const delta =
+          Math.abs(wheel.deltaX) > Math.abs(wheel.deltaY)
+            ? wheel.deltaX
+            : wheel.deltaY;
+        const scale =
+          wheel.deltaMode === 1
+            ? 16
+            : wheel.deltaMode === 2
+              ? section.clientWidth
+              : 1;
+        section.scrollLeft += delta * scale;
+        wheel.preventDefault();
+      },
+      { passive: false },
+    );
     this.el("selection-back").addEventListener("click", () =>
       this.closeInspection(),
     );
@@ -218,6 +250,26 @@ export class HudView {
   private el(id: string) {
     return this.root.querySelector<HTMLElement>(`#${id}`)!;
   }
+  setBuildingPlacement(active: boolean): void {
+    this.drawer.setPlacement(active);
+    this.renderDrawer();
+  }
+  private renderDrawer(): void {
+    const dock = this.root.querySelector<HTMLElement>(".command-dock")!;
+    const button = dock.querySelector<HTMLButtonElement>(".dock-age")!;
+    const commands = dock.querySelector<HTMLElement>(".command-row")!;
+    commands.hidden = !this.drawer.expanded;
+    dock.dataset.hudMode = this.drawer.dynamic ? "dynamic" : "always";
+    button.setAttribute("aria-expanded", String(this.drawer.expanded));
+    button.setAttribute("aria-pressed", String(this.drawer.dynamic));
+    button.title = this.drawer.dynamic
+      ? "Dynamic HUD: opens during building placement. Click to keep it always open."
+      : "HUD always open. Click to use dynamic mode.";
+    if (commands.hidden) {
+      if (this.tooltipAnchor && commands.contains(this.tooltipAnchor)) this.hideTooltip();
+      this.hoveredAnchor = this.focusedAnchor = undefined;
+    }
+  }
   reset() {
     this.vm = undefined;
     this.focusedRef = null;
@@ -226,6 +278,7 @@ export class HudView {
     this.healthCells.clear();
     this.el("selection-card").hidden = true;
     this.hideTooltip();
+    this.hoverDeposit(null);
   }
   closeInspection() {
     this.focusedRef = null;
@@ -247,6 +300,22 @@ export class HudView {
     }
     this.renderSelection();
     this.renderTooltip();
+    this.renderDepositTooltip();
+  }
+  hoverDeposit(id: number | null, point?: { x: number; y: number }): void {
+    this.depositHover = id !== null && point ? { id, ...point } : undefined;
+    this.renderDepositTooltip();
+  }
+  private renderDepositTooltip(): void {
+    const hover = this.depositHover,
+      card = hover && this.vm?.depositCard(hover.id),
+      tooltip = this.el("deposit-tooltip");
+    tooltip.hidden = !card;
+    if (!hover || !card) return;
+    const markup = cardMarkup(card);
+    if (tooltip.innerHTML !== markup) tooltip.innerHTML = markup;
+    tooltip.style.left = `${Math.max(10, Math.min(window.innerWidth - tooltip.offsetWidth - 10, hover.x + 16))}px`;
+    tooltip.style.top = `${Math.max(10, Math.min(window.innerHeight - tooltip.offsetHeight - 10, hover.y + 16))}px`;
   }
   private renderSelection() {
     if (!this.vm) return;
@@ -299,7 +368,11 @@ export class HudView {
           ? "SELECTED GROUP"
           : card.category === "building"
             ? "BUILDING DETAILS"
-            : "UNIT DETAILS";
+            : card.category === "resource"
+              ? "RESOURCE DETAILS"
+              : card.playerId !== 1
+                ? "ENEMY UNIT DETAILS"
+                : "UNIT DETAILS";
       if (this.portraitKind !== (card.definitionId ?? card.kind)) {
         this.el("selection-portrait").innerHTML = icon(
           card.kind,

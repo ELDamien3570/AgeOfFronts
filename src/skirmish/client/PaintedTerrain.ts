@@ -72,7 +72,9 @@ export function terrainRelief(map: GameMap): Int8Array | undefined {
       Math.max(0, Math.min(map.width() - 1, x)),
       Math.max(0, Math.min(map.height() - 1, y)),
     );
-    return map.isLand(tile) ? elevation.heightAt(tile) : elevation.seaLevel;
+    // Inland river channels retain their calibrated bed elevation. Flattening
+    // all water to sea level would invent cliffs along high inland banks.
+    return Math.max(elevation.seaLevel, elevation.heightAt(tile));
   };
   for (let y = 0; y < map.height(); y++)
     for (let x = 0; x < map.width(); x++) {

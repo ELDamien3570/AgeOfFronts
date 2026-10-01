@@ -181,7 +181,7 @@ export class LandPaths extends TilePaths {
     center: number,
     blocked?: (tile: number) => boolean,
   ): (number[] | null)[] {
-    if (starts.length === 1) return [this.find(starts[0], goals[0])];
+    if (starts.length === 1) return [this.find(starts[0], goals[0], blocked)];
     const cx =
       starts.reduce((sum, tile) => sum + this.map.x(tile), 0) / starts.length;
     const cy =

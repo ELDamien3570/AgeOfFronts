@@ -95,6 +95,7 @@ label {
   gap: 10px;
 }
 .brand-mark {
+  text-decoration: none;
   width: 32px;
   height: 32px;
   border: 1px solid #81c6b6;
@@ -123,6 +124,9 @@ h1 {
 }
 .time-controls {
   margin-left: auto;
+}
+.match-settings {
+  flex-wrap: wrap;
 }
 #clock {
   font-variant-numeric: tabular-nums;
@@ -258,6 +262,16 @@ kbd {
   justify-content: space-between;
   gap: 7px;
   padding: 9px 0 8px;
+}
+.command-row[hidden] {
+  display: none;
+}
+.dock-age::after {
+  content: " · Open";
+  letter-spacing: normal;
+}
+[data-hud-mode="dynamic"] .dock-age::after {
+  content: " · Dynamic";
 }
 .command-category {
   border-right: 1px solid var(--line);
@@ -1365,10 +1379,31 @@ footer span:last-child {
   padding-right: 7px;
 }
 .command-category.ships {
-  flex: 0 0 99px;
+  flex: 0 0 112px;
 }
 .command-category.orders {
-  flex: 0 0 147px;
+  flex: 0 0 104px;
+}
+.command-category.orders .category-actions {
+  display: grid;
+  grid-template-columns: repeat(2, 44px);
+  gap: 4px;
+  overflow-x: hidden;
+}
+.command-category.orders .hud-action {
+  width: 44px;
+  height: 25px;
+}
+.command-category.orders .command-symbol {
+  display: none;
+}
+.command-category.orders .action-name {
+  bottom: 2px;
+  font-size: 7px;
+}
+.command-category.orders .hud-action > kbd {
+  top: 1px;
+  font-size: 7px;
 }
 .command-category.troops {
   flex-basis: 200px;
@@ -1417,6 +1452,19 @@ footer span:last-child {
   max-width: 44px;
   overflow: hidden;
   text-overflow: ellipsis;
+  position: absolute;
+  left: 1px;
+  right: 1px;
+  bottom: 6px;
+  line-height: 11px;
+  z-index: 1;
+  pointer-events: none;
+  text-shadow:
+    -1px -1px 0 #000,
+    1px -1px 0 #000,
+    -1px 1px 0 #000,
+    1px 1px 0 #000,
+    0 1px 3px #000;
 }
 .dock-utility {
   padding: 3px 0;
@@ -1498,6 +1546,77 @@ footer span:last-child {
 }
 .technology-drawer {
   width: min(660px, calc(100% - 24px));
+  height: calc(100% - var(--dock-height) - 24px);
+}
+.technology-drawer #empire-content {
+  display: flex;
+  flex-direction: column;
+  flex: 1;
+  gap: 8px;
+  padding: 8px 12px;
+  overflow: hidden;
+}
+.technology-browser {
+  display: flex;
+  flex-direction: column;
+  flex: 1;
+  gap: 8px;
+  min-height: 0;
+}
+.technology-browser > nav {
+  flex-shrink: 0;
+}
+.technology-tree-scroll {
+  flex: 1;
+  min-height: 0;
+  overflow: auto;
+  scrollbar-gutter: stable;
+}
+#empire-content .technology-tree h3 {
+  margin-top: 0;
+}
+.technology-drawer .technology-detail {
+  flex-shrink: 0;
+  padding: 8px;
+}
+.technology-detail-header {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 8px;
+}
+#empire-content .technology-detail-header h3 {
+  min-width: 0;
+  margin: 0;
+  overflow-wrap: anywhere;
+}
+.technology-detail-header button {
+  flex-shrink: 0;
+  margin: 0;
+  font-size: 11px;
+}
+.technology-detail-body {
+  max-height: clamp(48px, 10vh, 100px);
+  overflow: auto;
+  line-height: 1.4;
+}
+.technology-detail-body p {
+  margin: 6px 0;
+}
+.technology-drawer #empire-panel-footer {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 8px;
+  flex-shrink: 0;
+  font-size: 10px;
+}
+.technology-drawer #empire-panel-footer > button {
+  flex-shrink: 0;
+  font-size: 10px;
+}
+.technology-progress {
+  min-width: 0;
 }
 .tree-navigation {
   display: none;
@@ -1526,8 +1645,8 @@ footer span:last-child {
   display: grid;
   position: relative;
   grid-template-columns: repeat(2, minmax(0, 1fr));
-  grid-template-rows: repeat(var(--tree-rows), 64px);
-  gap: 14px 8px;
+  grid-template-rows: repeat(var(--tree-rows), var(--tree-node-height));
+  gap: var(--tree-row-gap) 8px;
   padding: 0 6%;
 }
 .tech-graph > svg {
@@ -1551,13 +1670,28 @@ footer span:last-child {
   z-index: 1;
   margin: 0;
   min-height: 0;
+  min-width: 0;
   padding: 6px;
   gap: 3px;
   font-size: 11px;
-  overflow-wrap: normal;
+  white-space: normal;
+  overflow-wrap: anywhere;
+  overflow: hidden;
+  line-height: 1.15;
+  align-items: stretch;
+}
+.tech-graph .tech-node > b,
+.tech-graph .tech-node > small {
+  display: -webkit-box;
+  -webkit-box-orient: vertical;
+  -webkit-line-clamp: 3;
+  overflow: hidden;
+  min-width: 0;
+  flex-shrink: 0;
 }
 .tech-graph .tech-node small {
   font-size: 10px;
+  -webkit-line-clamp: 2;
 }
 .tech-graph .tech-node[aria-pressed="true"] {
   outline: 2px solid var(--gold);
@@ -1569,16 +1703,23 @@ footer span:last-child {
 .technology-detail > p {
   line-height: 1.45;
 }
-@media (max-width: 1000px) {
+@media (max-width: 1000px), (max-height: 820px) {
   #app .empire-panel.technology-drawer,
   #app[data-ui-age] .empire-panel.technology-drawer {
     position: fixed;
     top: 12px;
     right: 12px;
+    height: calc(100dvh - 36px);
     max-height: calc(100dvh - 36px);
   }
+}
+@media (max-width: 1000px) {
   .technology-drawer {
     width: min(440px, calc(100% - 16px));
+    height: calc(100dvh - 36px);
+  }
+  .technology-drawer #empire-panel-footer {
+    flex-wrap: wrap;
   }
   .tree-navigation {
     display: flex;
@@ -1666,11 +1807,23 @@ footer span:last-child {
   pointer-events: none;
   border-radius: 6px;
 }
+.battlefield:has(.match-feed) {
+  --match-feed-width: 260px;
+}
+.battlefield:has(.match-feed) .command-dock {
+  left: auto;
+  right: max(calc(50% - 625px), calc(var(--match-feed-width) + 16px));
+  transform: none;
+  width: min(1250px, calc(100% - var(--match-feed-width) - 24px));
+}
+.battlefield:has(.match-feed) .dock-utility {
+  flex-wrap: wrap;
+}
 .match-feed {
   position: absolute;
   right: 8px;
-  bottom: calc(var(--dock-height) + 9px);
-  width: 260px;
+  bottom: 6px;
+  width: var(--match-feed-width);
   border-radius: 5px;
   z-index: 3;
   font-size: 10px;
@@ -1744,8 +1897,20 @@ footer span:last-child {
     order: 3;
     flex-basis: 100%;
   }
-  .match-feed {
-    width: 220px;
+  .battlefield:has(.match-feed) {
+    --match-feed-width: 220px;
+  }
+}
+@media (max-width: 600px) {
+  .battlefield:has(.match-feed) {
+    --match-feed-width: clamp(140px, 36vw, 220px);
+  }
+  .battlefield:has(.match-feed) .command-row {
+    display: flex;
+  }
+  .battlefield:has(.match-feed) .resource-row,
+  .battlefield:has(.match-feed) .control-groups {
+    flex-wrap: wrap;
   }
 }
 

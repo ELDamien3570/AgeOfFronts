@@ -20,7 +20,7 @@ export const STARTING_TECHNOLOGIES = [
   technologyAt("StoneAge", "economic", 1).id,
 ];
 export const ADVANCES = [
-  { gold: 50_000, ticks: 800 },
+  { gold: 3_000, ticks: 2000 },
   { gold: 75_000, ticks: 900 },
   { gold: 110_000, ticks: 1000 },
   { gold: 160_000, ticks: 1100 },

@@ -1,8 +1,9 @@
 # Website launch and multiplayer setup
 
 Use this checklist after the AgeOfFronts project is uploaded to GitHub. Publish
-the existing browser game as a Render Static Site first. Then add an authoritative
-multiplayer backend and connect the lobby and game interface to it.
+the existing browser game as a Render Static Site first. Multiplayer will use an
+elected client host, a server coordinator and economy ledger, paused host migration,
+and server fallback. The detailed architecture is in [MultiplayerPlan.md](MultiplayerPlan.md).
 
 The current skirmish runs against AI in the player's browser. Hosting it on a
 website makes that mode publicly playable; it does not synchronize matches between
@@ -69,16 +70,22 @@ Wait for Render to report a successful deployment, then open the actual
 `https://...onrender.com` URL shown by the new Static Site.
 
 Check that the game page loads, a match starts, the simulation worker runs, artwork
-appears, and movement, recruitment, construction, and combat respond. Try World,
-Four Islands, and Heightmap · Test 1. Click **Corresponding source** and confirm
+appears, and movement, recruitment, construction, and combat respond. Try
+Mediterranean and Africa at each supported resolution. Click **Corresponding source** and confirm
 that the GitHub revision opens.
 
 Use the browser console and Network panel if the page is blank or stuck loading.
 Missing JavaScript, worker, map, or image files must be fixed before connecting
 the custom domain. DNS settings cannot fix an incomplete game build.
 
-The current local page still includes the existing local skirmish controls and
-map list. The three-card map selection and online lobby are future multiplayer work.
+The frontend now includes a lobby holder, up to three featured default map cards
+rotating every 60 seconds, three custom
+display spaces with an opt-in queue, empire name/flag customization and local
+room previews, including separate resource density and deposit output presets.
+The working AI game remains at `/skirmish/index.html`; online lobby
+sessions are future multiplayer work. The UI scope, remaining feature decisions,
+and review checklist are in [LobbyPagePlan.md](LobbyPagePlan.md). These frontend
+changes require their own reviewed deployment after the initial static launch.
 
 ## Connect ageoffronts.com
 
@@ -119,19 +126,28 @@ backend has its own build, start command, health checks, and deployment policy.
 
 ## Confirmed multiplayer behavior
 
-| Requirement         | First release                           |
-| ------------------- | --------------------------------------- |
-| Maps shown          | World, Four Islands, Heightmap · Test 1 |
-| Mode                | Free for all                            |
-| Total faction slots | 20                                      |
-| Minimum humans      | 2                                       |
-| Countdown duration  | 60 seconds                              |
-| Match starts        | Human lobby fills or countdown expires  |
-| Unfilled slots      | AI fills them when the roster is frozen |
+| Requirement          | Default lobby preset                                        |
+| -------------------- | ----------------------------------------------------------- |
+| Maps shown           | Mediterranean and Africa                                    |
+| Mode                 | Free for all                                                |
+| Total faction slots  | 20                                                          |
+| Minimum humans       | 2                                                           |
+| Countdown duration   | 60 seconds                                                  |
+| Match starts         | Human lobby fills or countdown expires                      |
+| Unfilled slots       | AI fills them when the roster is frozen                     |
+| Match executor       | One suitable connected client hosts                         |
+| Host disconnect      | Pause, select a replacement, then resume                    |
+| No valid client host | Resume the same match on the server                         |
+| Gold/reserve checks  | Server-owned ledger; no direct edits or unpaid spending     |
+| World-event trust    | Trust the host's world events for casual games with friends |
 
-Two humans start with 18 AI opponents. Twenty humans start with no AI replacements.
-This is not 20 humans plus another 20 AI. Optional tribes must not silently exceed
-the total faction count.
+These are the default map-room settings: two humans start with 18 AI opponents;
+twenty humans start with no AI replacements. Custom lobbies have configurable
+capacity, minimum humans, timer, AI policy, size, technology speed and in-match
+alliances with solo/allied victory. The homepage rotates up to three default map cards beside
+at most three custom listings, with an opt-in waiting queue and empire name/flag
+customization. See [LobbyPagePlan.md](LobbyPagePlan.md) for the local preview.
+Optional tribes must not silently exceed the configured faction count.
 
 The intended flow is **pick a map > join its lobby > wait for players/countdown >
 load the agreed match > play**. The server must choose and freeze the actual roster,
@@ -139,88 +155,114 @@ map settings, seed, and start; browsers display those decisions.
 
 ## Implement multiplayer in this order
 
-1. **Introduce player identity and a transport port.** The client currently assumes
-   the human is player 1 in several views, view models, selection helpers, and
-   renderer paths. Replace those assumptions with the session's faction ID. Retain
-   local play through a worker adapter and add a network adapter for online play.
+1. **Introduce identity and execution ports.** Replace the client's implicit
+   player-1 identity with the session's faction. Preserve local play and reuse
+   the same domain in client-host and Node-fallback adapters. Presentation consumes
+   a transport port through view models.
 
-2. **Run a two-human match on an authoritative server.** Reuse `Skirmish` as the
-   gameplay domain in a Node match worker. Both browsers submit commands to that
-   worker and render its snapshots. The server owns AI, resources, movement,
-   construction, combat, research, elimination, and victory. The inherited
-   OpenFront server is a different turn/intent relay; `start:server` does not
-   connect the skirmish simulation automatically.
+2. **Build complete recovery first.** Presentation snapshots cannot resume a
+   simulation. Preserve RNG, AI, orders, queued work, timers, expansion state,
+   command cursors and ledger version. Prove equivalent continuation in a fresh
+   browser worker and a Node worker, with a bounded journal/replay contract.
 
-3. **Define and secure the wire protocol.** Add versioned messages, validated
-   command payloads, command sequence IDs, acknowledgements, snapshot baselines,
-   and full resets. Bind each connection to its faction on the server; never trust
-   a submitted `playerId`. Enforce ownership, numeric bounds, rates, message sizes,
-   and bounded queues. Typed-array worker messages need deliberate serialization
-   before they can cross a WebSocket.
+3. **Build the coordinator, ledger and protocol.** The server binds factions,
+   orders commands, grants one host epoch/lease, checks economy transactions and
+   stores recovery data. Clients cannot submit arbitrary balances or prices.
+   Use shared rules for gold/reserves, deduplicate income/spending, and commit
+   world outcomes with their ledger effects. Add versioned messages, reset
+   snapshots, authenticated ingress and bounded queues.
 
-4. **Implement the lobby domain and its MVVM interface.** Add the three map cards,
-   lobby membership, roster display, countdown, and connection/loading states.
-   Serialize joins and starts so simultaneous arrivals cannot take the same seat
-   or start duplicate matches. Freeze the roster once, fill AI vacancies, and use
-   a loading/readiness barrier before playable ticks begin. The view model projects
-   lobby state; it does not authorize starts or assign factions.
+   The user chose to trust host world events. These checks catch direct balance
+   edits and unpaid spending; they cannot prove a plausible capture or trade
+   delivery actually happened. That limitation is accepted for games with friends.
 
-5. **Implement reconnect and host recovery.** A returning player must regain the
-   same faction and receive a valid snapshot baseline. Handle duplicate tabs,
-   sequence gaps, slow clients, heartbeats, and reconnect backoff. Define what
-   happens when someone disconnects. A server restart needs a complete domain
-   checkpoint and recovery log, or an explicitly limited cancellation policy.
-   The current presentation snapshot is not a complete saved match.
+4. **Run a two-human client-hosted match.** Select a qualifying browser and run
+   `Skirmish` in its worker. Relay commands/snapshots through the coordinator
+   over WSS. The host player's commands use the same ingress as everyone else's.
+   The host executes AI and world rules; fallback runs the same domain in Node.
+   OpenFront's inherited `start:server` does not implement this automatically.
+   WebRTC remains an optional later optimization.
 
-6. **Prove capacity for 20 factions.** Test two humans plus 18 AI, mixed rosters,
-   and 20 humans on all three maps. Measure tick lag, CPU, memory, bandwidth,
-   snapshot pressure, and long-match behavior. Then determine how many matches a
-   host can admit. The repository's recorded full-population trials already miss
-   the 20-tick target, so reliable capacity is unfinished work, not something a
-   lobby page or a WebSocket library will solve.
+5. **Implement paused migration and server fallback.** On host loss or lease
+   expiry, freeze at the last committed boundary and reject the old host epoch.
+   Restore on another qualifying client, or a reserved server worker if none
+   qualifies. Resync clients and resume once without catch-up income or duplicate
+   orders. The former host rejoins as a participant. If fallback is unexpectedly
+   exhausted, remain visibly paused rather than restart or silently slow gameplay.
 
-7. **Deploy the backend and complete operational checks.** Keep the frontend
-   static and add a separate Render Web Service using HTTPS/WSS. Bind its listener
-   to `0.0.0.0` and Render's `PORT`. Choose its compute plan from benchmarks. Add
-   health/readiness checks, logs, metrics, admission limits, cleanup, and a deliberate
-   deployment/recovery policy before a public playtest.
+6. **Connect the lobby domain and MVVM interface.** Connect the existing local
+   holder/customization preview to server directory sessions, custom-room creation,
+   the three-space listing queue, validated settings and real membership. Serialize
+   creation/promotion/join/start, freeze the manifest once and fill configured AI
+   vacancies. Add loading, eligibility, hosting, pause, migration, fallback and
+   reconnect states. Participant reconnect restores the original faction; it is
+   distinct from changing the match executor. Names/flags never prove ownership.
 
-DDD and MVVM remain the architecture: domain aggregates own lobby and game rules;
-application services orchestrate sessions, matches, clocks, and recovery;
-infrastructure provides sockets, storage, and workers; view models project
-read-only state. Network callbacks and page components must not become new places
-to implement gameplay rules.
+7. **Prove 20-faction and fallback capacity.** Test two humans plus 18 AI, mixed
+   rosters and 20 humans on all maps. Measure tick CPU, host rendering contention,
+   upload/relay traffic, checkpoint cost and recovery duration. Exercise simultaneous
+   host losses and server-fallback concurrency. Existing full-population trials
+   miss the tick target, so moving execution to a client does not establish capacity.
 
-## Decisions to settle before their implementation
+8. **Deploy and test coordinator recovery.** Keep the frontend static. Add a
+   separate Render Web Service, sharing HTTP/WSS on `0.0.0.0` and `PORT`. Size it
+   from relay, ledger, storage and fallback benchmarks. Recover host epochs,
+   checkpoints and ledgers consistently after restart/deploy before resuming.
+   Add metrics, readiness checks, bounded admission and cleanup; then playtest
+   with friends.
 
-I recommend starting the countdown when the second human joins, resetting it if
-the connected human count drops below two, and freezing immediately at 20 humans.
-The 60-second duration and two-human minimum are confirmed; those reset/start
-semantics still need explicit agreement.
+DDD and MVVM remain the architecture: domain aggregates own lobby, host assignment,
+economy and game rules. Application services orchestrate execution and recovery;
+infrastructure provides sockets, storage and workers; view models project state.
+Network callbacks and pages must not become new places to implement gameplay rules.
 
-We also need to choose the launch map size, loading timeout, disconnect grace and
-AI takeover behavior, guest sessions versus accounts, mid-match admission policy,
-whether temporary alliances are allowed in free for all, result persistence, and
-the host-restart recovery guarantee. The detailed plan distinguishes recommendations
-from confirmed requirements: [MultiplayerPlan.md](MultiplayerPlan.md).
+## Decisions to settle before implementation
+
+The client host, pause/replacement, server fallback and lightweight economy ledger
+trusting host world events are confirmed. Other policies remain proposals:
+
+- Start the countdown when the second human joins and reset below two before freeze.
+- Initial world size, loading timeout, host consent/qualification thresholds,
+  heartbeat/lease timeout and bounded election window.
+- Checkpoint/commit cadence, journal replay contract, maximum recovery duration
+  and simultaneous fallback reservations.
+- Paused-command handling, participant disconnect grace/AI takeover and minimum
+  humans after the match has already started.
+- Guest sessions versus accounts, invitations/access controls, mid-match admission,
+  default-room temporary alliances, result persistence and coordinator-restart recovery target.
+- Custom listing leases, per-owner limits, fairness, queued-room admission and
+  listing release/expiry policy; production settings ranges and default-room routing.
+- Visible pause, retry and eventual cancellation behavior if fallback capacity
+  is unexpectedly unavailable.
+
+The detailed plan separates these recommendations from confirmed requirements:
+[MultiplayerPlan.md](MultiplayerPlan.md).
 
 ## Hosting traps to avoid
 
-Render's free backend sleeps after 15 minutes without inbound traffic and takes
-about a minute to wake. It is suitable for a disposable prototype; I recommend
-a continuously available paid backend for the intended public lobby service.
-There is no need to buy a larger plan until benchmark results establish what
-the match simulation needs.
+Client hosting removes normal server simulation work; WSS relay, storage, economy
+checks and fallback still need resources. Checkpoint traffic and a host also rendering
+the game must be included in benchmarks. Do not assume a lightweight coordinator
+can run every fallback or that client hosting necessarily reduces latency.
 
-Do not enable multiple backend instances before designing match ownership and
-routing. Render assigns new WebSocket connections, including reconnects, to random
-instances. A shared lobby directory and one authoritative owner per match are
-needed; autoscaling alone cannot reconnect someone to their original game.
+Render's free backend sleeps after idle periods, takes about a minute to wake and
+can restart. Free hosting is an option for friends' trials if interruptions are
+accepted; a continuously available coordinator is preferable for reliable migration.
+Choose compute from measured fallback demand.
 
-Do not silently lower gameplay limits, slow the simulation, or let renderer budgets
-change movement to conceal server overload. Agree on any gameplay-cap change and
-validate it explicitly. Keep 500 × 250 as the proposed starting map size until
-benchmarks justify another size.
+Do not enable multiple coordinator instances before designing shared match routing
+and fenced ownership. New/reconnecting Render WebSockets can reach different
+instances. Every accepted match still needs one coordinator owner and one executor.
+
+Do not use presentation snapshots as complete saves, replay a purchase twice,
+accept an old host's epoch, or grant income for wall-clock time spent paused.
+Server-ledger checks do not independently prove host-reported income sources.
+
+Do not silently lower gameplay limits or simulation speed to conceal overload.
+Keep 500 cells on the longest edge as the proposed starting size until benchmarks
+justify another size. Mediterranean is 500×250; square Africa is 500×500, so host
+budgets must use the actual cell count. New maps await the sequential visual
+review described in [MapReview.md](MapReview.md) before deployment.
 
 ## References
 

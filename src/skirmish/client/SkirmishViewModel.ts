@@ -1,8 +1,10 @@
+import { squadCap } from "../FactionRules";
 import type { ShipType, Snapshot, SquadType } from "../Protocol";
-import { FIXED, MAX_SQUADS, SQUAD_TROOPS } from "../Protocol";
+import { FIXED, SQUAD_TROOPS } from "../Protocol";
 import { BUILDING_RULES, MAX_SHIPS, SHIP_RULES } from "../Rules";
+import { TECHNOLOGY } from "../content/Technology";
 import { UNIT, UNITS, VESSEL, VESSELS } from "../content/Units";
-import { AGES, type Age } from "../domain/Definitions";
+import { AGE_NAMES, AGES, type Age } from "../domain/Definitions";
 import { costRejection } from "../domain/Supply";
 
 export interface SelectionState {
@@ -11,6 +13,7 @@ export interface SelectionState {
   selectedBuilding: number | null;
   selectedAircraft?: Set<number>;
   selectedDeposit?: number | null;
+  inspectedSquadId?: number | null;
 }
 
 // Presentation state derives from a read-only domain snapshot. No recruitment,
@@ -30,9 +33,24 @@ export class SkirmishViewModel {
   get ownSquads() {
     return this.state.squads.filter((s) => s.playerId === 1);
   }
+  get squadCapacity() {
+    return squadCap(
+      this.player,
+      this.state.expansion?.progression[this.player.id]?.age,
+    );
+  }
   get selectedSquads() {
     return this.ownSquads.filter(
       (s) => s.embarkedOn === null && this.selection.selected.has(s.id),
+    );
+  }
+  get inspectedSquad() {
+    return this.state.squads.find(
+      (s) =>
+        s.id === this.selection.inspectedSquadId &&
+        s.playerId !== 1 &&
+        s.troops > 0 &&
+        s.embarkedOn === null,
     );
   }
   get building() {
@@ -64,11 +82,13 @@ export class SkirmishViewModel {
         )
         .slice()
         .reverse();
+      if (this.building)
+        for (const candidate of candidates) {
+          const quote = this.recruitmentQuote(kind, candidate.id, true);
+          if (quote.enabled) return quote;
+        }
       for (const candidate of candidates) {
-        const quote = new SkirmishViewModel(this.state, this.selection, {
-          ...this.choices,
-          [kind]: candidate.id,
-        }).recruitment(kind);
+        const quote = this.recruitmentQuote(kind, candidate.id);
         if (quote.enabled) return quote;
       }
       const latest = candidates.find((u) =>
@@ -76,12 +96,20 @@ export class SkirmishViewModel {
           u.technologyId,
         ),
       );
-      return new SkirmishViewModel(this.state, this.selection, {
-        ...this.choices,
-        [kind]: latest?.id ?? `stoneage-${kind}`,
-      }).recruitment(kind);
+      return this.recruitmentQuote(kind, latest?.id ?? `stoneage-${kind}`);
     }
-    const definitionId = this.choices[kind] ?? `stoneage-${kind}`;
+    return this.recruitmentQuote(
+      kind,
+      this.choices[kind] ?? `stoneage-${kind}`,
+    );
+  }
+
+  private recruitmentQuote(
+    kind: SquadType | ShipType,
+    definitionId: string,
+    selectedOnly = false,
+  ) {
+    const naval = kind === "transport" || kind === "warship";
     const landDefinition =
       this.state.expansion && !naval ? UNIT.get(definitionId) : undefined;
     const vesselDefinition =
@@ -109,6 +137,7 @@ export class SkirmishViewModel {
       .filter(
         (b) =>
           b.playerId === 1 &&
+          (!selectedOnly || b.id === this.selection.selectedBuilding) &&
           this.state.owners[b.tile] === 1 &&
           b.remainingTicks === 0 &&
           (naval
@@ -119,7 +148,13 @@ export class SkirmishViewModel {
           (!definition ||
             AGES.indexOf(b.age ?? "StoneAge") >= AGES.indexOf(definition.age)),
       )
-      .sort((a, b) => distance(a.tile) - distance(b.tile) || a.id - b.id)[0];
+      .sort(
+        (a, b) =>
+          Number(b.id === this.selection.selectedBuilding) -
+            Number(a.id === this.selection.selectedBuilding) ||
+          distance(a.tile) - distance(b.tile) ||
+          a.id - b.id,
+      )[0];
     let reason = "";
     if (this.player.eliminated || this.state.winner !== null)
       reason = "Skirmish finished";
@@ -130,11 +165,11 @@ export class SkirmishViewModel {
           definition.technologyId,
         ))
     )
-      reason = "Research this unit's technology first";
+      reason = definition
+        ? `Requires research: ${TECHNOLOGY.get(definition.technologyId)?.name ?? definition.technologyId}`
+        : "Unit definition unavailable";
     else if (!building)
-      reason = naval
-        ? "Needs a completed friendly port"
-        : `Needs a completed friendly ${kind === "infantry" ? "barracks" : kind === "archer" ? "archery range" : "stables"}`;
+      reason = `Needs a completed friendly ${BUILDING_RULES[landDefinition?.building ?? (naval ? "port" : kind === "infantry" ? "barracks" : kind === "archer" ? "archery" : "stables")].name.toLowerCase()}${definition ? ` (${AGE_NAMES[AGES.indexOf(definition.age)]} or later)` : ""}`;
     else if (naval && this.player.gold < SHIP_RULES[kind].cost)
       reason = "Not enough gold";
     else if (!naval && this.player.reserves < SQUAD_TROOPS)
@@ -144,7 +179,7 @@ export class SkirmishViewModel {
       this.state.ships.filter((s) => s.playerId === 1).length >= MAX_SHIPS
     )
       reason = "Fleet limit reached";
-    else if (!naval && this.ownSquads.length >= MAX_SQUADS)
+    else if (!naval && this.ownSquads.length >= this.squadCapacity)
       reason = "Squad limit reached";
     if (!reason && definition)
       reason =

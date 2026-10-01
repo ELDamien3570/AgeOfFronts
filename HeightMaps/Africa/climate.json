@@ -1,0 +1,13 @@
+{
+  "description": "Africa review 1: authored approximate southern-African biomes. Elevation is calibrated from the supplied heightmap. No aligned albedo, mountain mask or measured climate data was supplied. Broad geographic regions guide plausible terrain and object families.",
+  "regions": [
+    { "name": "Namib coastal desert", "latitude": -24, "longitude": 15, "latitudeRadius": 9, "longitudeRadius": 3.2, "minimumMoisture": 0, "maximumMoisture": 0.18, "woodlandBias": 0 },
+    { "name": "Kalahari dry interior", "latitude": -24, "longitude": 23, "latitudeRadius": 7, "longitudeRadius": 7, "minimumMoisture": 0, "maximumMoisture": 0.28, "woodlandBias": 0 },
+    { "name": "Cape scrub", "latitude": -33.5, "longitude": 20, "latitudeRadius": 3, "longitudeRadius": 5, "minimumMoisture": 0.42, "maximumMoisture": 0.53, "woodlandBias": 0.02 },
+    { "name": "Congo woodland and rainforest", "latitude": -4, "longitude": 21, "latitudeRadius": 8, "longitudeRadius": 9, "minimumMoisture": 0.84, "woodlandBias": 0.14 },
+    { "name": "Zambezi and miombo woodland", "latitude": -12, "longitude": 28, "latitudeRadius": 7, "longitudeRadius": 7, "minimumMoisture": 0.57, "woodlandBias": 0.07 },
+    { "name": "Eastern coastal woodland", "latitude": -19, "longitude": 36, "latitudeRadius": 9, "longitudeRadius": 3.5, "minimumMoisture": 0.72, "woodlandBias": 0.09 },
+    { "name": "Madagascar eastern humid belt", "latitude": -19, "longitude": 48.3, "latitudeRadius": 7, "longitudeRadius": 2.7, "minimumMoisture": 0.86, "woodlandBias": 0.14 },
+    { "name": "Madagascar southwest dry woodland", "latitude": -23, "longitude": 44.3, "latitudeRadius": 4.5, "longitudeRadius": 2.8, "minimumMoisture": 0, "maximumMoisture": 0.42, "woodlandBias": 0 }
+  ]
+}

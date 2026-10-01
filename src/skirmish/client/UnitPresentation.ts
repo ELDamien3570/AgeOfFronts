@@ -6,6 +6,7 @@ import {
   ARCHER_STATIONARY_CHARGE,
 } from "../Rules";
 import { squadRadius } from "../SquadGeometry";
+import { ARTWORK_CATALOG } from "./ArtworkCatalog";
 import {
   animationFrame,
   meleeLungeRatio,
@@ -20,6 +21,10 @@ interface UnitState {
   y: number;
   embarkedOn: number | null;
   angle: number;
+  attackAngle?: number;
+  shotAngle?: number;
+  shotTick: number;
+  shotRecoveryTicks: number;
   kind: SquadType;
   clip: AnimationClip;
   startedAt: number;
@@ -50,6 +55,43 @@ export class UnitPresentation {
   update(snapshot: Snapshot): void {
     const live = new Set<number>();
     const byId = new Map(snapshot.squads.map((s) => [s.id, s]));
+    const buildings = new Map(snapshot.buildings.map((b) => [b.id, b]));
+    const barriers = new Map(
+      (snapshot.expansion?.barriers ?? []).map((b) => [b.id, b]),
+    );
+    const shots = new Map<
+      number,
+      {
+        tick: number;
+        id: number;
+        toX: number;
+        toY: number;
+        fromX: number;
+        fromY: number;
+      }
+    >();
+    const observeShot = (
+      id: number,
+      shot: {
+        tick: number;
+        id: number;
+        toX: number;
+        toY: number;
+        fromX: number;
+        fromY: number;
+      },
+    ) => {
+      const previous = shots.get(id);
+      if (
+        !previous ||
+        shot.tick > previous.tick ||
+        (shot.tick === previous.tick && shot.id > previous.id)
+      )
+        shots.set(id, shot);
+    };
+    for (const shot of snapshot.volleys) observeShot(shot.squadId, shot);
+    for (const shot of snapshot.expansion?.projectiles ?? [])
+      if (shot.sourceKind === "squad") observeShot(shot.sourceId, shot);
     for (const squad of snapshot.squads) {
       live.add(squad.id);
       const old = this.units.get(squad.id);
@@ -66,14 +108,45 @@ export class UnitPresentation {
           ? byId.get(squad.combatTargetId ?? -1)
           : undefined;
       const target = candidate?.embarkedOn === null ? candidate : undefined;
+      let aim: { x: number; y: number } | undefined = target;
+      const structure = squad.structureTarget;
+      const building = buildings.get(structure?.buildingId ?? -1);
+      const barrier = barriers.get(structure?.barrierId ?? -1);
+      const point = (tile: number) => ({
+        x: ((tile % snapshot.width) + 0.5) * FIXED,
+        y: (Math.floor(tile / snapshot.width) + 0.5) * FIXED,
+      });
+      if (squad.fighting && building && (building.health ?? 1) > 0)
+        aim = point(building.tile);
+      else if (squad.fighting && barrier && barrier.health > 0) {
+        const tile = barrier.tiles.reduce<number | undefined>(
+          (nearest, tile) => {
+            if (nearest === undefined) return tile;
+            const a = point(tile),
+              b = point(nearest);
+            return (a.x - squad.x) ** 2 + (a.y - squad.y) ** 2 <
+              (b.x - squad.x) ** 2 + (b.y - squad.y) ** 2
+              ? tile
+              : nearest;
+          },
+          undefined,
+        );
+        if (tile !== undefined) aim = point(tile);
+      }
+      const shot = shots.get(squad.id);
+      const attackAngle =
+        aim && (aim.x !== squad.x || aim.y !== squad.y)
+          ? Math.atan2(aim.y - squad.y, aim.x - squad.x) - Math.PI / 2
+          : old?.attackAngle;
+      const attackClip =
+        ARTWORK_CATALOG[squad.definitionId ?? ""]?.clips?.attack;
       if (
-        target &&
+        aim &&
         !squad.moved &&
         squad.embarkedOn === null &&
-        (target.x !== squad.x || target.y !== squad.y)
+        (aim.x !== squad.x || aim.y !== squad.y)
       )
-        angle =
-          Math.atan2(target.y - squad.y, target.x - squad.x) - Math.PI / 2;
+        angle = attackAngle ?? angle;
       const clip: AnimationClip =
         target && squad.kind !== "archer"
           ? "attack"
@@ -85,13 +158,26 @@ export class UnitPresentation {
         y: squad.y,
         embarkedOn: squad.embarkedOn,
         angle,
+        attackAngle,
+        shotAngle: shot
+          ? Math.atan2(shot.toY - shot.fromY, shot.toX - shot.fromX) -
+            Math.PI / 2
+          : old?.shotAngle,
+        shotTick: shot?.tick ?? old?.shotTick ?? -Infinity,
+        shotRecoveryTicks: attackClip
+          ? ((attackClip.frames - Math.min(5, attackClip.frames - 1)) *
+              TICKS_PER_SECOND) /
+            attackClip.fps
+          : 0,
         kind: squad.kind,
         clip,
-        startedAt: clip==="attack"&&squad.lastAttackTick!==undefined?squad.lastAttackTick:
-          old?.clip === clip &&
-          (clip !== "attack" || old.targetId === target?.id)
-            ? old.startedAt
-            : snapshot.tick,
+        startedAt:
+          clip === "attack" && squad.lastAttackTick !== undefined
+            ? squad.lastAttackTick
+            : old?.clip === clip &&
+                (clip !== "attack" || old.targetId === target?.id)
+              ? old.startedAt
+              : snapshot.tick,
         tick: snapshot.tick,
         charge: squad.firingCharge,
         moved: squad.moved,
@@ -145,6 +231,17 @@ export class UnitPresentation {
 
   angle(id: number): number {
     return this.units.get(id)?.angle ?? 0;
+  }
+
+  firingAngle(id: number, tick = Infinity): number {
+    const unit = this.units.get(id);
+    if (
+      unit?.shotAngle !== undefined &&
+      tick >= unit.shotTick &&
+      tick < unit.shotTick + unit.shotRecoveryTicks
+    )
+      return unit.shotAngle;
+    return unit?.attackAngle ?? unit?.angle ?? 0;
   }
 
   shipAngle(id: number): number {

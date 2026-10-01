@@ -55,6 +55,8 @@ export interface ArmyWorld {
   ): void;
   setArmyAttack(squad: Squad, targetId: number): void;
   setArmyHold(squad: Squad): void;
+  transportArmy(squads: Squad[], tile: number): string | null;
+  preferArmyTransport(squads: Squad[], tile: number): boolean;
 }
 interface March {
   deployment?: {
@@ -319,9 +321,22 @@ export class Armies {
     if (
       members.some(
         (s) => !this.world.paths.connected(pointTile(this.world.map, s), tile),
-      )
-    )
-      return "Army members cannot reach that destination; detach or regroup them";
+      ) || (order.type === "move" && this.world.preferArmyTransport(members,tile))
+    ) {
+      if (order.type !== "move") return "Use a move order to transport the army across water";
+      if (append && army.order.type !== "hold") {
+        if (army.queuedOrders.length >= MAX_QUEUED_ORDERS) return "Army order queue is full";
+        army.queuedOrders.push({...order}); return null;
+      }
+      const result = this.world.transportArmy(members,tile);
+      if (result === null) {
+        this.stop(army);
+        army.manual = true;
+        army.reason = "Crossing water";
+        this.externalActions.add(army.id);
+      }
+      return result;
+    }
     const objective = tilePoint(this.world.map, tile);
     const leader = [...members].sort(
       (a, b) =>

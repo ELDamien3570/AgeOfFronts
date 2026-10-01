@@ -10,7 +10,11 @@ import {
   SHIP_RULES,
   SQUAD_RULES,
 } from "../Rules";
+import { buildingTechnology } from "../content/Buildings";
 import { GUN_NEST_ATTACK, TRENCH_COVER } from "../content/Defences";
+import { cityReserveIncome } from "../content/Economy";
+import { resourceTechnology } from "../content/Resources";
+import { TECHNOLOGY } from "../content/Technology";
 import { UNIT, VESSEL } from "../content/Units";
 import { promotionLevel, scaledAttack, XP_THRESHOLDS } from "../domain/Combat";
 import {
@@ -202,8 +206,19 @@ const buildingCards = Object.fromEntries(
 function unitCard(unit: UnitDefinition, xp = 0): HudCard {
   const a = scaledAttack(unit.attack, 1000, 1000, xp);
   const stats = [
-    stat("Melee Armour", `${unit.meleeArmour / 100}%`),
-    stat("Ranged Armour", `${unit.rangedArmour / 100}%`),
+    stat("Unit age", AGE_NAMES[AGES.indexOf(unit.age)]),
+    stat(
+      "Melee Armour",
+      unit.armourKind === "points"
+        ? `${unit.meleeArmour} points`
+        : `${unit.meleeArmour / 100}%`,
+    ),
+    stat(
+      "Ranged Armour",
+      unit.armourKind === "points"
+        ? `${unit.rangedArmour} points`
+        : `${unit.rangedArmour / 100}%`,
+    ),
     stat("Melee Attack", a.channel === "melee" ? fmt(a.damage) : "—"),
     stat("Ranged Attack", a.channel === "ranged" ? fmt(a.damage) : "—"),
     stat("Range", `${fmt(a.range / FIXED)} cells`),
@@ -213,6 +228,14 @@ function unitCard(unit: UnitDefinition, xp = 0): HudCard {
       `${a.reloadTicks / 20}s · ${(a.reloadTicks * a.movingReloadPercent) / 2000}s moving`,
     ),
     stat("Speed", `${unit.speedPercent}% · terrain applies`),
+    stat(
+      "Occupation",
+      unit.undefendedCaptureTicks
+        ? `${unit.undefendedCaptureTicks / 20}s undefended · nearby enemies prevent fast capture`
+        : unit.canCapture
+          ? "Normal local capture"
+          : "Cannot capture land",
+    ),
     stat(
       "Bonuses",
       Object.entries(a.bonuses)
@@ -257,6 +280,14 @@ function unitCard(unit: UnitDefinition, xp = 0): HudCard {
       : "Damage is per attack at full strength. Armour protects the base channel; target bonuses have separate resistance.",
     compact: {
       stats: [
+        stat(
+          "Research",
+          TECHNOLOGY.get(unit.technologyId)?.name ?? unit.technologyId,
+        ),
+        stat(
+          "Building",
+          `${BUILDING_RULES[unit.building].name} · ${AGE_NAMES[AGES.indexOf(unit.age)]} or later`,
+        ),
         stat("Cost", `${unit.cost.gold ?? 0} gold · 1,000 reserves`),
         stat(
           "Supplies",
@@ -291,6 +322,8 @@ function vesselCard(
     groupKey: `${id}:${promotionLevel(xp)}`,
     description: "Construction requires the matching researched port tier.",
     stats: [
+      stat("Research", TECHNOLOGY.get(v.technologyId)?.name ?? v.technologyId),
+      stat("Building", `Port · ${AGE_NAMES[AGES.indexOf(v.age)]} or later`),
       stat("Recruitment", `${v.cost.gold} gold`),
       stat(
         "Supplies",
@@ -351,6 +384,16 @@ export class HudViewModel {
         ...(choice
           ? {
               stats: [
+                ...(choice.age
+                  ? [
+                      stat(
+                        "Research",
+                        TECHNOLOGY.get(
+                          buildingTechnology(build.kind, choice.age)!,
+                        )?.name ?? "Unavailable",
+                      ),
+                    ]
+                  : []),
                 stat("Cost", `${choice.cost?.gold ?? "—"} gold`),
                 stat(
                   "Materials",
@@ -413,9 +456,66 @@ export class HudViewModel {
     return undefined;
   }
 
+  depositCard(id: number): SelectedEntity | undefined {
+    const { state, selection } = this.game;
+    const deposit = state.expansion?.deposits.find((d) => d.id === id);
+    if (!deposit || !state.expansion) return;
+    const empire = new EmpireViewModel(state, selection);
+    if (!empire.resources.depositVisible(deposit.resource)) return;
+    const technology = resourceTechnology(deposit.resource),
+      researched = empire.has(technology.id),
+      branch = technology.tree[0].toUpperCase() + technology.tree.slice(1),
+      research = stat(
+        "Research node",
+        `${technology.name} · ${AGE_NAMES[AGES.indexOf(technology.age)]} · ${branch}`,
+      ),
+      extraction = stat(
+        "Extraction",
+        deposit.resource === "horses"
+          ? "Own this deposit"
+          : deposit.resource === "oil"
+            ? "Own this deposit and build an oil well / offshore rig"
+            : "Own this deposit and build a mine",
+      );
+    return {
+      ref: `deposit:${deposit.id}`,
+      kind: deposit.resource,
+      category: "resource",
+      playerId: deposit.owner,
+      count: 1,
+      title: `${deposit.resource.replace(/([a-z])([A-Z])/g, "$1 $2")} deposit`,
+      subtitle: deposit.owner
+        ? (state.players.find((p) => p.id === deposit.owner)?.name ?? "Owned")
+        : "Unclaimed",
+      status: researched
+        ? `Research complete: ${technology.name}`
+        : `Requires research: ${technology.name}`,
+      description:
+        "Own this deposit, complete its research, and meet the extraction requirements to collect it.",
+      stats: [
+        research,
+        extraction,
+        stat("Base yield", `${deposit.yieldPerSecond} / sec before upgrades`),
+        stat(
+          "Stock",
+          deposit.owner === 1
+            ? fmt(state.expansion.inventories[1][deposit.resource] ?? 0)
+            : "Foreign inventory hidden",
+        ),
+      ],
+      compact: {
+        stats: [research, extraction],
+        description: `${deposit.yieldPerSecond} / sec before upgrades`,
+      },
+    };
+  }
+
   get entities(): SelectedEntity[] {
     const { state, selection } = this.game;
-    const squads: SelectedEntity[] = this.game.selectedSquads.map((s) => ({
+    const inspected = this.game.inspectedSquad;
+    const squads: SelectedEntity[] = (
+      inspected ? [inspected] : this.game.selectedSquads
+    ).map((s) => ({
       ...(s.definitionId
         ? unitCard(
             unitEffects(
@@ -431,7 +531,10 @@ export class HudViewModel {
       playerId: s.playerId,
       count: 1,
       title: `${UNIT.get(s.definitionId ?? "")?.name ?? SQUAD_RULES[s.kind].name} #${s.id}`,
-      subtitle: "1 squad selected",
+      subtitle:
+        s.playerId === 1
+          ? "1 squad selected"
+          : `${state.players.find((p) => p.id === s.playerId)?.name ?? "Enemy"} · ${AGE_NAMES[AGES.indexOf(UNIT.get(s.definitionId ?? "")?.age ?? "StoneAge")]} · read only`,
       meter: { label: "Troop strength", value: s.troops, max: SQUAD_TROOPS },
       status: s.refit
         ? `Refitting · ${Math.ceil(s.refit.remainingTicks / 20)}s`
@@ -456,6 +559,16 @@ export class HudViewModel {
           }
         : undefined,
       stats: [
+        ...(state.expansion
+          ? [
+              stat(
+                "Faction age",
+                AGE_NAMES[
+                  AGES.indexOf(state.expansion.progression[s.playerId].age)
+                ],
+              ),
+            ]
+          : []),
         stat("Queued orders", String(s.queuedOrders.length)),
         ...(s.definitionId
           ? [
@@ -477,6 +590,7 @@ export class HudViewModel {
         ),
       ],
     }));
+    if (inspected) return squads;
     const ships: SelectedEntity[] = state.ships
       .filter((s) => s.playerId === 1 && selection.selectedShips.has(s.id))
       .map((s) => ({
@@ -610,7 +724,7 @@ export class HudViewModel {
                       ? [
                           stat(
                             "Reserve income",
-                            `+${stack.filter((b) => !b.remainingTicks).reduce((sum, b) => sum + 40 * (1 + AGES.indexOf(b.age ?? "StoneAge")), 0)} / sec`,
+                            `+${stack.filter((b) => !b.remainingTicks).reduce((sum, b) => sum + cityReserveIncome(b.age ?? "StoneAge"), 0)} / sec`,
                           ),
                         ]
                       : b.type === "factory"
@@ -679,52 +793,12 @@ export class HudViewModel {
         description:
           "Ready aircraft take sortie orders. Flights use finite fuel and return to their own airfield.",
       }));
-    const deposit = state.expansion?.deposits.find(
-      (d) => d.id === selection.selectedDeposit,
-    );
-    const visible =
-      deposit &&
-      new EmpireViewModel(state, selection).resources.depositVisible(
-        deposit.resource,
-      );
-    const deposits: SelectedEntity[] = visible
-      ? [
-          {
-            ref: `deposit:${deposit!.id}`,
-            kind: deposit!.resource,
-            category: "resource",
-            playerId: deposit!.owner,
-            count: 1,
-            title: `${deposit!.resource.replace(/([a-z])([A-Z])/g, "$1 $2")} deposit`,
-            subtitle: deposit!.owner
-              ? (state.players.find((p) => p.id === deposit!.owner)?.name ??
-                "Owned")
-              : "Unclaimed",
-            description:
-              "Capture its tile to control the deposit. Extraction requires the matching research and producer.",
-            stats: [
-              stat(
-                "Base yield",
-                `${deposit!.yieldPerSecond} / sec before upgrades`,
-              ),
-              stat(
-                "Extraction",
-                deposit!.resource === "horses"
-                  ? "Owned deposit and Horsemanship"
-                  : deposit!.resource === "oil"
-                    ? "Owned deposit and oil well / offshore rig"
-                    : "Owned deposit and mine",
-              ),
-              stat(
-                "Stock",
-                deposit!.owner === 1
-                  ? fmt(state.expansion!.inventories[1][deposit!.resource] ?? 0)
-                  : "Foreign inventory hidden",
-              ),
-            ],
-          },
-        ]
-      : [];
+    const deposit =
+      selection.selectedDeposit === null ||
+      selection.selectedDeposit === undefined
+        ? undefined
+        : this.depositCard(selection.selectedDeposit);
+    const deposits = deposit ? [deposit] : [];
     return [...squads, ...ships, ...aircraft, ...buildings, ...deposits];
   }
 

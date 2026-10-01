@@ -5,6 +5,7 @@ const urls = import.meta.glob<string>(
 );
 export class RoadArtwork {
   private images = new Map<number, HTMLImageElement>();
+  constructor(private readonly ready: () => void = () => {}) {}
   frame(age: number): HTMLImageElement | undefined {
     const image = this.images.get(age);
     if (image) return image.complete && image.naturalWidth ? image : undefined;
@@ -14,8 +15,9 @@ export class RoadArtwork {
       ];
     if (!url) return;
     const next = new Image();
-    next.src = url;
+    next.onload = this.ready;
     this.images.set(age, next);
-    return undefined;
+    next.src = url;
+    return next.complete && next.naturalWidth ? next : undefined;
   }
 }

@@ -34,8 +34,35 @@ export class TerrainEnvironment {
   colorAt(tile: number): readonly number[] {
     if (this.map.isWater(tile))
       return this.profile.shallow(tile) ? [77, 128, 143] : [48, 91, 116];
-    const base = FAMILY_COLORS.get(this.familyAt(tile))!,
-      cover = this.coverAt(tile);
+    const family = this.familyAt(tile);
+    let base: readonly number[] = FAMILY_COLORS.get(family)!;
+    const aridity = this.profile.aridityAt(tile),
+      vegetation = this.profile.vegetationAt(tile);
+    if (
+      aridity !== undefined &&
+      vegetation !== undefined &&
+      !["alpine", "polar-ice", "tundra", "coastal"].includes(family)
+    ) {
+      const grass = FAMILY_COLORS.get("grassland-steppe")!,
+        desert = FAMILY_COLORS.get("desert-xeric")!,
+        forest = FAMILY_COLORS.get(
+          Math.abs(this.latitudeAt(tile)) < 25
+            ? "tropical-moist"
+            : family === "boreal-conifer"
+              ? "boreal-conifer"
+              : "temperate-woodland",
+        )!;
+      // Continuous evidence gives gentle ground-color transitions. Semantic
+      // families still select objects; raw albedo imagery is never drawn here.
+      const dry = grass.map(
+        (value, channel) => value * (1 - aridity) + desert[channel] * aridity,
+      );
+      const green = Math.min(1, vegetation * (1 - aridity));
+      base = dry.map(
+        (value, channel) => value * (1 - green) + forest[channel] * green,
+      );
+    }
+    const cover = this.coverAt(tile);
     return base.map(
       (value, channel) => value * (1 - cover * (channel === 1 ? 0.22 : 0.3)),
     );

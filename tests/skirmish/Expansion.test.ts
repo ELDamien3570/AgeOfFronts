@@ -913,7 +913,7 @@ describe("naval transport and combat", () => {
         shipId: ship.id,
         squadIds: selected.map((s) => s.id),
       }),
-    ).toMatch(/four/);
+    ).toMatch(/4 squads/);
     expect(selected.every((s) => s.embarkedOn === null)).toBe(true);
   });
 

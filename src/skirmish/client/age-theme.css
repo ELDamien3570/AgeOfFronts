@@ -261,6 +261,59 @@
 #app[data-ui-age] .empire-panel > header {
   flex-shrink: 0;
 }
+#app[data-ui-age] .army-list {
+  --age-border: 2px;
+}
+#app[data-ui-age] .empire-panel.diplomacy-drawer {
+  width: min(350px, calc(100% - 24px));
+  height: min(520px, calc(100% - 24px));
+  max-height: calc(100% - 24px);
+  background:
+    linear-gradient(145deg, #ffffff08, #0003) padding-box,
+    linear-gradient(
+      color-mix(in srgb, var(--diplomacy-color) 28%, #11171b),
+      color-mix(in srgb, var(--diplomacy-color) 16%, #11171b)
+    ) padding-box,
+    var(--diplomacy-texture) 0 0 / 150px 150px border-box;
+  color: #f4ede0;
+  --line: color-mix(in srgb, var(--diplomacy-rim) 55%, transparent);
+}
+.diplomacy-drawer #empire-content {
+  flex: 1;
+  line-height: 1.65;
+  overflow-wrap: anywhere;
+}
+.diplomacy-drawer #empire-content p {
+  margin: 12px 0;
+}
+.diplomacy-drawer #empire-content button {
+  display: block;
+  width: 100%;
+  margin: 8px 0;
+  white-space: normal;
+}
+.diplomacy-kind {
+  font-size: 10px;
+  font-weight: 700;
+  letter-spacing: 0.12em;
+  text-transform: uppercase;
+}
+#app[data-ui-age] .diplomacy-drawer #empire-content .diplomacy-identity h3 {
+  font: bold 23px/1.25 Georgia, "Times New Roman", serif;
+  letter-spacing: 0.025em;
+  margin: 5px 0 16px;
+  text-shadow: 0 1px 2px #000, 0 0 5px #0008;
+  color: inherit;
+}
+.diplomacy-identity[data-faction-kind="tribe"] {
+  color: #ff9a91;
+}
+.diplomacy-identity[data-faction-kind="nation"] {
+  color: #f4ce77;
+}
+.diplomacy-identity[data-faction-kind="player"] {
+  color: #a9ded7;
+}
 #app[data-ui-age] .inventory-grid span {
   background: color-mix(in srgb, var(--age-panel) 80%, var(--age-rim));
   border: 1px solid var(--age-edge);

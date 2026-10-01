@@ -8,7 +8,7 @@ export class Fortifications {
   version = 0;
   private readonly tileIndex = new Map<number, Barrier[]>();
   private nextId = 1;
-  private towers = new Set<number>();
+  private towers = new Map<number, Set<number>>();
   private readonly repairs = new Map<
     string,
     { owner: number; remaining: number }
@@ -21,13 +21,10 @@ export class Fortifications {
     return !!(this.tileIndex.size || this.towers.size);
   }
   blocked(tile: number, owner: number): boolean {
-    return (
-      this.towers.has(tile) ||
-      (this.tileIndex.get(tile) ?? []).some(
-        (w) =>
-          w.health > 0 &&
-          !(w.gateTile === tile && this.diplomacy.allied(w.playerId, owner)),
-      )
+    for (const towerOwner of this.towers.get(tile) ?? [])
+      if (!this.diplomacy.allied(towerOwner, owner)) return true;
+    return (this.tileIndex.get(tile) ?? []).some(
+      (w) => w.health > 0 && !this.diplomacy.allied(w.playerId, owner),
     );
   }
   private reindex(): void {
@@ -206,28 +203,10 @@ export class Fortifications {
         tiles: link.tiles,
         health,
         maxHealth: health,
-        gateTile: null,
         remainingTicks: tower.remainingTicks,
       });
     }
     this.reindex();
-  }
-  gate(player: Player, id: number, tile: number): string | null {
-    const wall = this.barriers.find((w) => w.id === id);
-    if (
-      !wall ||
-      wall.health <= 0 ||
-      wall.playerId !== player.id ||
-      !wall.tiles.includes(tile) ||
-      wall.remainingTicks ||
-      wall.gateTile === tile
-    )
-      return "Choose a completed owned wall segment";
-    if (player.gold < 250) return "Gate conversion needs 250 gold";
-    player.gold -= 250;
-    wall.gateTile = tile;
-    this.reindex();
-    return null;
   }
   repair(
     player: Player,
@@ -250,14 +229,25 @@ export class Fortifications {
   step(tick: number, buildings: readonly Building[]): void {
     const byId = new Map(buildings.map((b) => [b.id, b]));
     let dirty = false;
-    const towers = buildings
-      .filter((b) => b.type === "tower" && (b.health ?? 1) > 0)
-      .map((b) => b.tile);
+    const towers = new Map<number, Set<number>>();
+    for (const b of buildings) {
+      if (b.type !== "tower" || (b.health ?? 1) <= 0) continue;
+      let owners = towers.get(b.tile);
+      if (!owners) towers.set(b.tile, (owners = new Set()));
+      owners.add(b.playerId);
+    }
     if (
-      towers.length !== this.towers.size ||
-      towers.some((t) => !this.towers.has(t))
+      towers.size !== this.towers.size ||
+      [...towers].some(([tile, owners]) => {
+        const previous = this.towers.get(tile);
+        return (
+          !previous ||
+          previous.size !== owners.size ||
+          [...owners].some((owner) => !previous.has(owner))
+        );
+      })
     ) {
-      this.towers = new Set(towers);
+      this.towers = towers;
       dirty = true;
     }
     for (const wall of this.barriers) {

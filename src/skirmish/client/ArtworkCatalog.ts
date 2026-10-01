@@ -15,10 +15,17 @@ export interface ArtworkAsset {
   facing?: string;
   clips?: Record<string, ArtworkClip>;
 }
-export const ARTWORK_CATALOG: Readonly<Record<string, ArtworkAsset>> = manifest;
+export const ARTWORK_CATALOG: Readonly<Record<string, ArtworkAsset>> = {
+  ...manifest,
+  // Approved substitutions for missing Stone Age workshop and trader art.
+  // Entity ages, research unlocks, and construction remain domain-owned.
+  "building-stoneage-siege-workshop":
+    manifest["building-bronzeage-siege-workshop"],
+  "stoneage-trader": manifest["bronzeage-trader"],
+};
 
-// Actual entities never borrow artwork from a future age. Later towers retain
-// the latest authored wall-kit tier; this is a presentation choice only.
+// Resolve authored tiers and the explicit workshop substitution above. Later
+// towers retain the latest authored wall-kit tier; presentation only.
 export function buildingArtworkId(
   type: BuildingType,
   age: Age,

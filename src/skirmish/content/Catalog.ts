@@ -1,9 +1,14 @@
+import { AGE_SQUAD_CAPS, TRIBE_PROMOTION_PERCENT } from "../FactionRules";
 import { BUILDING_RULES } from "../Rules";
 import { MAX_ARMOUR, PROMOTION_ATTACK, XP_THRESHOLDS } from "../domain/Combat";
 import { RESOURCES } from "../domain/Definitions";
 import { PRODUCTION_RECIPES } from "../domain/Supply";
+import { TERRITORY_ABSORPTION } from "../domain/TerritoryAbsorption";
+import { AI_PERSONALITIES } from "./AiPersonalities";
 import { ARMY_CAPS } from "./Armies";
 import { GUN_NEST_ATTACK, TRENCH_COVER } from "./Defences";
+import { RESERVE_GROWTH, STARTING_AGE_TROOPS } from "./Economy";
+import { FACTIONS } from "./Factions";
 import {
   ADVANCES,
   STARTING_TECHNOLOGIES,
@@ -85,4 +90,10 @@ export const CONTENT_HASH = hash({
   combatRevision: 3,
   armyCaps: ARMY_CAPS,
   defences: { gunNest: GUN_NEST_ATTACK, trench: TRENCH_COVER },
+  factions: FACTIONS,
+  aiPersonalities: AI_PERSONALITIES,
+  squadCaps: AGE_SQUAD_CAPS,
+  territoryAbsorption: TERRITORY_ABSORPTION,
+  tribePromotion: { percent: TRIBE_PROMOTION_PERCENT, conquestInheritance: 1 },
+  economy: { reserves: RESERVE_GROWTH, startingTroops: STARTING_AGE_TROOPS },
 });

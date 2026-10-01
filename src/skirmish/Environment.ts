@@ -1,6 +1,7 @@
 import { TerrainType } from "../core/game/Game";
 import type { GameMap } from "../core/game/GameMap";
 import { elevationOf, type ElevationField } from "./Elevation";
+import type { EnvironmentData } from "./EnvironmentData";
 import { latitudeAt, type MapGeography } from "./Geography";
 import { climateInfluence, type ClimateRegion } from "./RegionalClimate";
 import { terrainNoise } from "./TerrainNoise";
@@ -54,8 +55,8 @@ export function approximateFamily(
   return climate.moisture < 0.48 ? "grassland-steppe" : "temperate-woodland";
 }
 
-// Deterministic provisional environmental inputs for forest map generation.
-// No image metadata or rendering state participates in these estimates.
+// Shared environmental inputs use baked albedo fields when supplied, with a
+// procedural fallback. Runtime image colors and camera state never own the data.
 export class EnvironmentProfile {
   private readonly families: Uint8Array;
   private readonly moisture: Uint8Array;
@@ -63,12 +64,24 @@ export class EnvironmentProfile {
   private readonly latitude: Float32Array;
   private readonly woodlandBias: Uint8Array;
   private readonly heights?: ElevationField;
+  private readonly vegetation?: Uint8Array;
+  private readonly aridity?: Uint8Array;
   constructor(
     private readonly map: GameMap,
     geography?: MapGeography,
     regions: readonly ClimateRegion[] = [],
+    data?: EnvironmentData,
   ) {
     const size = map.width() * map.height();
+    if (
+      data &&
+      [data.moisture, data.vegetation, data.aridity].some(
+        (field) => !(field instanceof Uint8Array) || field.length !== size,
+      )
+    )
+      throw new Error("Invalid map environment inputs");
+    this.vegetation = data?.vegetation.slice();
+    this.aridity = data?.aridity.slice();
     this.families = new Uint8Array(size);
     this.moisture = new Uint8Array(size);
     this.coastDistance = new Uint8Array(size).fill(255);
@@ -118,8 +131,12 @@ export class EnvironmentProfile {
                 Math.min(16, this.coastDistance[tile]) * 0.004,
             ),
           );
-        let moisture = proceduralMoisture,
-          woodlandBias = 0;
+        const baseMoisture = data
+          ? data.moisture[tile] / 255
+          : proceduralMoisture;
+        let moisture = baseMoisture,
+          woodlandBias = 0,
+          moistureCeiling = 1;
         if (geography) {
           const longitude =
             (geography.west +
@@ -135,24 +152,37 @@ export class EnvironmentProfile {
             // Combine overlapping regions by maximum, never accumulating them.
             moisture = Math.max(
               moisture,
-              proceduralMoisture +
-                Math.max(0, region.minimumMoisture - proceduralMoisture) *
-                  influence,
+              baseMoisture +
+                Math.max(0, region.minimumMoisture - baseMoisture) * influence,
             );
+            if (region.maximumMoisture !== undefined)
+              moistureCeiling = Math.min(
+                moistureCeiling,
+                1 - (1 - region.maximumMoisture) * influence,
+              );
             woodlandBias = Math.max(
               woodlandBias,
               region.woodlandBias * influence,
             );
           }
         }
+        moisture = Math.min(moisture, moistureCeiling);
         this.woodlandBias[tile] = Math.round(woodlandBias * 255);
         this.moisture[tile] = Math.round(moisture * 255);
-        const family = approximateFamily({
+        let family = approximateFamily({
           latitude,
           height: this.heightAt(tile),
           moisture,
           coastDistance: this.coastDistance[tile],
         });
+        // Color evidence can identify dry ground outside a latitude-only desert
+        // band. Elevation/cold/coastal families retain their independent authority.
+        if (
+          this.aridity &&
+          this.aridity[tile] / 255 > 0.72 &&
+          !["alpine", "polar-ice", "tundra", "coastal"].includes(family)
+        )
+          family = "desert-xeric";
         this.families[tile] = ENVIRONMENT_FAMILIES.indexOf(family);
       }
     }
@@ -165,6 +195,12 @@ export class EnvironmentProfile {
   }
   woodlandBiasAt(tile: number): number {
     return this.woodlandBias[tile] / 255;
+  }
+  vegetationAt(tile: number): number | undefined {
+    return this.vegetation ? this.vegetation[tile] / 255 : undefined;
+  }
+  aridityAt(tile: number): number | undefined {
+    return this.aridity ? this.aridity[tile] / 255 : undefined;
   }
   latitudeAt(tile: number): number {
     return this.latitude[this.map.y(tile)];

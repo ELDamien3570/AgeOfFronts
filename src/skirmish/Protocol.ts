@@ -1,6 +1,7 @@
 import type { GameMap } from "../core/game/GameMap";
 import type { ElevationData } from "./Elevation";
 import type { EnvironmentProfile } from "./Environment";
+import type { EnvironmentData } from "./EnvironmentData";
 import type { ForestData } from "./Forest";
 import type { MapGeography } from "./Geography";
 import type {
@@ -9,6 +10,7 @@ import type {
   ChargeState,
   ExpansionSnapshot,
   RefitJob,
+  TechnologySpeed,
 } from "./domain/Definitions";
 
 export const FIXED = 256;
@@ -61,7 +63,12 @@ export type Command =
     }
   | { type: "research"; playerId: number; technologyId: string }
   | { type: "advance-age"; playerId: number }
-  | { type: "produce"; playerId: number; buildingId: number; recipeId: string }
+  | {
+      type: "produce";
+      playerId: number;
+      buildingId: number;
+      recipeId: string | null;
+    }
   | {
       type: "refit";
       playerId: number;
@@ -89,7 +96,6 @@ export type Command =
       otherId: number;
       action: "offer" | "accept" | "reject" | "renew" | "break";
     }
-  | { type: "gate"; playerId: number; barrierId: number; tile: number }
   | {
       type: "repair";
       playerId: number;
@@ -190,6 +196,8 @@ export interface Squad {
 export interface Player {
   id: number;
   name: string;
+  factionId?: string;
+  personalityId?: import("./domain/AiPersonality").AiPersonalityId;
   ai: boolean;
   kind: "regular" | "tribe";
   base: number;
@@ -252,6 +260,15 @@ export interface Ship {
   nextPathIndex: number;
   fighting: boolean;
   boarding: BoardingMeeting | null;
+  // Domain-owned temporary voyage; these vessels cannot become a free navy.
+  shoreTransfer?: {
+    destinationTile: number;
+    landingTile: number;
+    waterPath: number[];
+    capacity: number;
+    phase: "boarding" | "sailing" | "landing";
+    queued: { squadId: number; orders: Order[] }[];
+  };
   definitionId?: string;
   nextAttackTick?: number;
   xp?: number;
@@ -272,6 +289,7 @@ export interface ArcherVolley {
   id: number;
   tick: number;
   squadId: number;
+  definitionId?: string;
   playerId: number;
   fromX: number;
   fromY: number;
@@ -296,6 +314,7 @@ export interface MatchOptions {
   territoryIncomeScale?: number;
   ruleset?: "sandbox-v1" | "ages-v1";
   victoryMode?: "solo" | "allied";
+  technologySpeed?: TechnologySpeed;
 }
 
 export interface Snapshot {
@@ -307,7 +326,9 @@ export interface Snapshot {
   progress: Uint8Array;
   players: Player[];
   buildings: Building[];
-  ships: Omit<Ship, "path" | "nextPathIndex">[];
+  ships: (Omit<Ship, "path" | "nextPathIndex" | "shoreTransfer"> & {
+    shoreTransfer?: Pick<NonNullable<Ship["shoreTransfer"]>, "capacity" | "phase" | "destinationTile" | "landingTile">;
+  })[];
   squads: Omit<
     Squad,
     "path" | "nextPathIndex" | "plannedTile" | "lastPlanTick"
@@ -383,6 +404,7 @@ export interface LoadedMap {
   elevation?: ElevationData;
   forest?: ForestData;
   environment?: EnvironmentProfile;
+  environmentData?: EnvironmentData;
   geography?: MapGeography;
   attribution?: { label: string; url: string };
 }

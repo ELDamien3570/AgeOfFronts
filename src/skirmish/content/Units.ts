@@ -93,7 +93,11 @@ const profile = (
   targets: ground,
 });
 for (const [index, age] of AGES.entries()) {
-  const factor = 1.3 ** index;
+  const factor = 1.5 ** index;
+  // Authored tier equipment, not a hidden age-gap damage multiplier. Increasing
+  // attack and flat armour together keeps contemporary battles from becoming
+  // exponentially faster while obsolete weapons struggle against new armour.
+  const protection = [0, 0.48, 0.64, 0.74, 0.8, 0.84, 0.88][index];
   for (const [line, slot, names] of [
     ["infantry", 1, frontline],
     ["archer", 2, ranged],
@@ -104,9 +108,15 @@ for (const [index, age] of AGES.entries()) {
     const firearm = index >= 5;
     const attack =
       line === "archer"
-        ? profile("ranged", Math.round(35 * factor), 6 + index * 0.5, 2, {
-            mounted: Math.round(12 * factor),
-          })
+        ? profile(
+            "ranged",
+            Math.round((firearm ? 114 : 35) * factor),
+            firearm ? 12 + index - 5 : 6 + index * 0.5,
+            2,
+            {
+              mounted: Math.round(12 * factor),
+            },
+          )
         : line === "infantry"
           ? profile(
               firearm ? "ranged" : "melee",
@@ -163,11 +173,21 @@ for (const [index, age] of AGES.entries()) {
           : line === "archer"
             ? 90
             : 100,
-      meleeArmour: Math.min(5500, index * 650 + (vehicle ? 1500 : 0)),
-      rangedArmour: Math.min(6500, index * 650 + (vehicle ? 2000 : 0)),
-      bonusResistance: vehicle ? { mounted: 9999 } : {},
+      armourKind: "points",
+      meleeArmour: Math.round(120 * factor * protection),
+      rangedArmour: Math.round((firearm ? 120 : 35) * factor * protection),
+      bonusResistance: {
+        infantry: Math.round(10 * (factor - 1)),
+        ranged: Math.round(12 * (factor - 1)),
+        mounted: Math.round(15 * (factor - 1)),
+      },
       attack,
       cost: {
+        gold: (line === "infantry"
+          ? [100, 200, 350, 600, 1000, 1800, 3000]
+          : line === "archer"
+            ? [150, 300, 500, 850, 1400, 2300, 4000]
+            : [250, 450, 750, 1200, 2000, 3200, 5000])[index],
         reserves: 1000,
         items: mounted
           ? { horses: index === 1 ? 40 : 20 }
@@ -216,7 +236,7 @@ for (const [index, age] of AGES.entries()) {
       id = `${age.toLowerCase()}-${field ? "field-support" : "siege"}`;
     const attack = profile(
       contact ? "melee" : "ranged",
-      Math.round((field ? 70 : 90) * factor),
+      Math.round((contact ? (field ? 70 : 90) : field ? 160 : 240) * factor),
       contact ? 1.5 : field ? 8 : 11,
       contact ? 2 : field ? 4 : 6,
       {
@@ -248,13 +268,15 @@ for (const [index, age] of AGES.entries()) {
       ).id,
       building: "siege-workshop",
       tags: ["siege"],
-      speedPercent: contact ? 65 : 55,
-      meleeArmour: 1000,
-      rangedArmour: 1500,
+      speedPercent: contact ? 25 : 55,
+      armourKind: "points",
+      meleeArmour: Math.round(10 * factor),
+      rangedArmour: Math.round(15 * factor),
       bonusResistance: {},
       attack,
       cost: { gold: 500 + index * 500, reserves: 1000 },
-      canCapture: false,
+      canCapture: contact,
+      ...(contact ? { undefendedCaptureTicks: 4 } : {}),
       placeholder: index === 0,
     };
     addEquipment(unit, index);
@@ -276,8 +298,9 @@ for (const [role, name, targets] of [
     building: "depot",
     tags: ["vehicle"],
     speedPercent: 90,
-    meleeArmour: 2500,
-    rangedArmour: 3000,
+    armourKind: "points",
+    meleeArmour: 700,
+    rangedArmour: 900,
     bonusResistance: {},
     attack: {
       ...profile("ranged", role === "anti-air" ? 150 : 0, 12, 2),
@@ -298,6 +321,7 @@ export function defaultUnit(
   return UNIT.get(`${age.toLowerCase()}-${line}`)!;
 }
 export const VESSELS: VesselDefinition[] = [];
+export const TRANSPORT_CAPACITIES = [10, 12, 14, 16, 18, 20, 25] as const;
 for (const [index, age] of AGES.entries())
   for (const kind of ["transport", "warship", "trade"] as const) {
     const slot = kind === "warship" ? 3 : kind === "trade" || index > 1 ? 2 : 1;
@@ -319,7 +343,7 @@ for (const [index, age] of AGES.entries())
       speed: (kind === "warship" ? 55 : 70) + index * 6,
       capacity:
         kind === "transport"
-          ? 4 + index
+          ? TRANSPORT_CAPACITIES[index]
           : kind === "trade"
             ? 20 + index * 10
             : 0,

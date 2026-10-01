@@ -1,7 +1,8 @@
 # Expanded skirmish
 
-World defaults to 500 × 250 terrain cells. The match controls also offer the
-classic 250 × 125 and large 1000 × 500 variants. Movement speed remains measured
+Imported maps default to 500 cells on their longest edge and preserve source
+proportions. Mediterranean offers 250×125, 500×250 and 1000×500; Africa offers
+250×250, 500×500 and 1000×1000. Movement speed remains measured
 in terrain cells per simulation tick, so a larger battlefield means longer
 journeys. Territory income is divided by the world's area relative to the
 classic map; camp income and each building's normal benefit are unchanged.
@@ -72,14 +73,14 @@ generation tool. Its prompt is saved beside it. No TWK third-party terrain
 textures were redistributed. The runtime and new terrain art are included in
 the corresponding-source archive.
 
-## Imported heightmap test
+## Imported heightmaps
 
-Select **Heightmap · Test 1** in Battlefield and choose the desired World size.
+Select **Mediterranean** in Battlefield and choose the desired World size.
 The 8192 × 4096 source is baked into 250 × 125, 500 × 250, and 1000 × 500 variants.
 The PNG stays unchanged. Browser loading uses small terrain-byte and calibrated
 Float32 elevation assets, rather than decoding 33 million source pixels.
 
-`HeightMaps/Test 1/import.json` records the source hash, generator URL, Regular
+`HeightMaps/Mediterranean/import.json` records the source hash, generator URL, Regular
 normalization bounds supplied by the user (-450 to 7819 metres), and provisional
 terrain thresholds. Manticorp's Regular implementation scales to 65536, so height
 is recovered as `-450 + sample / 65536 * 8269`; sea level corresponds to sample 3566. Source samples at or below that code are water candidates. Averaging only
@@ -104,6 +105,10 @@ Sea-level thresholding is not a water mask: below-sea-level dry land may become
 water, while lakes above sea level and rivers may be absent. The source also has
 visible block artefacts near the Caspian region. Importing preserves those source
 limitations. Accurate hydrology will need an independently aligned water mask.
+Africa's current review supplements sea-level classification with geographically
+registered Natural Earth major river lines; see `MapReview.md` for provenance,
+gameplay widths and remaining lake/stream limitations. Calibrated heights remain
+unchanged when inland river cells become water.
 The generator's Regular upper endpoint can wrap to zero when written as a u16;
 majority-area sampling limits isolated bad-pixel effects, without repairing or
 resaving the original heightmap. Heights are calibrated from the reported export
@@ -113,7 +118,7 @@ To rebake after verifying new source settings:
 
 ```text
 python -m pip install -r scripts/heightmap-requirements.txt
-python scripts/importSkirmishHeightmap.py "HeightMaps/Test 1/import.json"
+python scripts/importSkirmishHeightmap.py "HeightMaps/Mediterranean/import.json"
 python -m unittest discover -s tests -p heightmap_import_test.py
 ```
 
@@ -126,7 +131,7 @@ baked map assets.
 
 The approved 48-sprite Earth library replaces the original four-accent atlas in
 the skirmish. The heightmap export's Mercator footprint supplies latitude;
-elevation, procedural moisture, and coast proximity guide approximate biome
+elevation, baked albedo moisture where available, procedural fallback, and coast proximity guide approximate biome
 placement. Other maps use a temperate baseline until their projection is known.
 These are provisional environment rules, not measured rainfall, forest coverage,
 or hydrology. Original PNGs, elevation samples, and terrain bytes stay unchanged.
@@ -142,11 +147,20 @@ limitations, and future real-biome import contract.
 
 ## Continuous forests
 
-Heightmap Test 1 has a blended western-European vegetation profile, authored in
+Mediterranean has a blended western-European vegetation profile, authored in
 `resources/maps/heightmap-test1/climate.json`: Germany, France and northern Spain
 receive greener woodland ground and more continuous stands. This profile is
 approximate; it preserves the calibrated height field and does not alter other
 maps. Mountain eligibility and open clearings still apply.
+
+The Mediterranean demonstration now also bakes its registered colored satellite
+image into smooth moisture, vegetation and aridity fields. Green/brown gradients
+guide continuous ground colors and shared forest cover; biome families guide
+terrain accents. This is approximate color interpretation, with height and water
+authority preserved. Africa uses its supplied satellite albedo with an Africa-only
+1.1 green sensitivity review setting; Mediterranean retains its original settings.
+The converter, registration limits and map approval queue are documented
+in `docs/MapReview.md`.
 
 `EnvironmentProfile` supplies approximate latitude/elevation/moisture/coast
 inputs. `ForestGeneration` builds a deterministic byte-per-cell cover field:
@@ -217,6 +231,29 @@ comparing every candidate with every earlier camp. It places regular camps
 first, then tribes, preserves non-overlapping initial land and reports insufficient
 space explicitly. Every owner ID has a presentation color. The new startup
 and AI checks do not establish 30 FPS at maximum population.
+
+## Automatic shore transport
+
+Cargo Canoes unlocks free temporary transports from any reachable shore, without
+a port. A normal land move order coordinates approach, embarkation, real water
+navigation, landing and onward movement. Transport hull research supplies
+10 / 12 / 14 / 16 / 18 / 20 / 25 whole-squad capacity; larger selections split
+into groups. Age advancement alone does not unlock a hull. Port-built permanent
+transports use the same base capacities but retain their purchase/port rules.
+
+`ShoreRoutes` owns static land/water component connectivity and coast candidates.
+`ShoreTransport` owns transfer phases and atomic route planning. `Skirmish`
+provides existing physical movement, boarding, landing, combat and formation
+placement; the renderer consumes phase/capacity projections. No MVVM/DDD
+exception or parallel movement simulation is introduced. Internal routes/queues
+are excluded from presentation snapshots. A future recovery checkpoint must
+include these authoritative states rather than using presentation snapshots.
+
+Temporary transports cannot be manually sailed, stopped, refitted or reused.
+They disappear after landing, remain vulnerable during the voyage and preserve
+queued squad moves and army membership. Dynamic blocked/occupied landing areas
+wait for safe placement. Candidate land/water travel costs allow faster river
+crossings even with connected banks, without claiming globally optimal routing.
 
 ## Conquest and territory inheritance
 

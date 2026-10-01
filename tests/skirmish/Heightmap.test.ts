@@ -36,17 +36,80 @@ function load(size = 250) {
       heights.byteOffset,
       heights.byteOffset + heights.length,
     ),
+    manifest.environment
+      ? new Uint8Array(fs.readFileSync(`${root}/${size}.environment.bin`))
+      : undefined,
   );
 }
 
 describe("calibrated heightmap terrain", () => {
+  it("loads matching baked color fields at every resolution, with greener Europe and a drier Sahara", () => {
+    for (const size of [250, 500, 1000]) {
+      const loaded = load(size);
+      expect(loaded.environmentData!.moisture.length).toBe(
+        loaded.terrain.length,
+      );
+      expect(loaded.environmentData!.vegetation.length).toBe(
+        loaded.terrain.length,
+      );
+      expect(loaded.environmentData!.aridity.length).toBe(
+        loaded.terrain.length,
+      );
+    }
+    const loaded = load(500),
+      geography = loaded.geography!,
+      profile = loaded.environment!;
+    if (geography.projection !== "web-mercator")
+      throw new Error("Expected Earth geography");
+    const europe = { vegetation: 0, aridity: 0, count: 0 };
+    const sahara = { vegetation: 0, aridity: 0, count: 0 };
+    for (let tile = 0; tile < loaded.terrain.length; tile++) {
+      if (!loaded.map.isLand(tile)) continue;
+      const latitude = latitudeAt(
+        geography,
+        (loaded.map.y(tile) + 0.5) / loaded.map.height(),
+      );
+      const longitude =
+        (geography.west +
+          (geography.east - geography.west) *
+            ((loaded.map.x(tile) + 0.5) / loaded.map.width())) *
+          360 -
+        180;
+      const sample =
+        latitude > 45 && latitude < 49 && longitude > -2 && longitude < 5
+          ? europe
+          : latitude > 24 && latitude < 30 && longitude > 0 && longitude < 10
+            ? sahara
+            : undefined;
+      if (!sample) continue;
+      sample.vegetation += profile.vegetationAt(tile)!;
+      sample.aridity += profile.aridityAt(tile)!;
+      sample.count++;
+    }
+    expect(europe.count).toBeGreaterThan(30);
+    expect(sahara.count).toBeGreaterThan(30);
+    expect(europe.vegetation / europe.count).toBeGreaterThan(
+      sahara.vegetation / sahara.count + 0.2,
+    );
+    expect(sahara.aridity / sahara.count).toBeGreaterThan(
+      europe.aridity / europe.count + 0.2,
+    );
+  });
+
   it("greens the Test 1 western-European profile with more woodland, preserving heights and distant regions", () => {
     const loaded = load(500),
-      baseline = new EnvironmentProfile(loaded.map, loaded.geography),
+      baseline = new EnvironmentProfile(
+        loaded.map,
+        loaded.geography,
+        [],
+        loaded.environmentData,
+      ),
       adjusted = loaded.environment!,
       before = generateForestCover(loaded.map, baseline).cover,
       after = generateForestCover(loaded.map, adjusted).cover,
       geography = loaded.geography!;
+    if (geography.projection !== "web-mercator")
+      throw new Error("Expected Earth geography");
     const regions = [
       { west: -3, east: 5, south: 44, north: 49 },
       { west: 7, east: 14, south: 49, north: 54 },
@@ -106,6 +169,7 @@ describe("calibrated heightmap terrain", () => {
     const loaded = load(),
       field = elevationOf(loaded.map)!;
     let water = 0,
+      inlandWater = 0,
       fractional = false,
       aboveSea = false;
     for (let tile = 0; tile < loaded.terrain.length; tile++) {
@@ -113,11 +177,12 @@ describe("calibrated heightmap terrain", () => {
       fractional ||= value !== Math.trunc(value);
       if (loaded.map.isWater(tile)) {
         water++;
-        expect(value).toBeLessThanOrEqual(0);
+        if (value > 0) inlandWater++;
         aboveSea ||= value > -450;
       } else expect(value).toBeGreaterThan(0);
     }
     expect(water).toBeGreaterThan(5000);
+    expect(inlandWater).toBeGreaterThan(30);
     expect(aboveSea).toBe(true);
     expect(fractional).toBe(true);
     expect(field.minimum).toBe(-450);

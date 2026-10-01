@@ -7,17 +7,21 @@ import type { EnvironmentProfile } from "../Environment";
 import type { MapGeography } from "../Geography";
 import type { BuildingType, ShipType, Snapshot, SquadType } from "../Protocol";
 import { CAPTURE_RADIUS, FIXED } from "../Protocol";
-import {
-  ARCHER_ARROW_TICKS,
-  BUILDING_RULES,
-  SHIP_RULES,
-  SQUAD_RULES,
-} from "../Rules";
+import { BUILDING_RULES, SHIP_RULES, SQUAD_RULES } from "../Rules";
 import { ownerUiAge } from "./AgeUiTheme";
 import { buildingArtworkId } from "./ArtworkCatalog";
 import { BuildingArtwork } from "./BuildingArtwork";
 import { BuildingMarkers } from "./BuildingMarkers";
 import { CampLossPresentation } from "./CampLossPresentation";
+import { CombatEffectsView } from "./CombatEffectsView";
+import {
+  combatTargets,
+  impactSize,
+  shellVisual,
+  squadArtworkPose,
+  volleyVisual,
+  type TargetMarker,
+} from "./CombatEffectsViewModel";
 import { EraArtwork } from "./EraArtwork";
 import { COLORS } from "./FactionColors";
 import { FormationArtwork } from "./FormationArtwork";
@@ -31,13 +35,16 @@ import {
 import { PaintedTerrain } from "./PaintedTerrain";
 import { PromotionArtwork } from "./PromotionArtwork";
 import { ResourceViewModel } from "./ResourceViewModel";
-import { RoadArtwork } from "./RoadArtwork";
+import { RoadLayer } from "./RoadLayer";
 import { StrategicSprites } from "./StrategicSprites";
+import { ownsCamp, TerritoryLabelViewModel } from "./TerritoryLabelViewModel";
 import { TerritoryLayer } from "./TerritoryLayer";
 import { TraderPresentation } from "./TraderPresentation";
 import { PresentationClock, squadSpriteSize } from "./UnitAnimation";
 import { UnitArtwork } from "./UnitArtwork";
 import { UnitPresentation, visibleInViewport } from "./UnitPresentation";
+import { WallArtwork, type WallFrame } from "./WallArtwork";
+import { WallPresentation } from "./WallPresentation";
 export { COLORS } from "./FactionColors";
 
 const RGB = COLORS.map((color) => [
@@ -55,9 +62,13 @@ const SELECTED_UNIT_COLOR = "#c4ff36";
 
 export class Renderer {
   private readonly eraArtwork = new EraArtwork();
-  private readonly roadArtwork = new RoadArtwork();
+  private roads?: RoadLayer;
+  private readonly wallArtwork = new WallArtwork();
+  private readonly walls = new WallPresentation();
   private readonly promotionArtwork = new PromotionArtwork();
   private readonly impacts = new ImpactPresentation();
+  private readonly combatEffects = new CombatEffectsView();
+  private combatMarkers: TargetMarker[] = [];
   private legacyArtwork?: UnitArtwork;
   private get artwork(): UnitArtwork {
     return (this.legacyArtwork ??= new UnitArtwork());
@@ -72,10 +83,13 @@ export class Renderer {
   private readonly strategic: StrategicSprites;
   private ground?: PaintedTerrain;
   private territory?: TerritoryLayer;
+  private territoryLabels?: TerritoryLabelViewModel;
   private buildingStacks: {
     building: Snapshot["buildings"][number];
     count: number;
     remainingTicks: number;
+    health: number;
+    maxHealth: number;
   }[] = [];
   private snapshot?: Snapshot;
   private resources?: ResourceViewModel;
@@ -122,6 +136,7 @@ export class Renderer {
     return best;
   }
   selectedBuilding: number | null = null;
+  inspectedSquadId: number | null = null;
   selectedDeposit: number | null = null;
   placement?: { tile: number; type: BuildingType; friendly: boolean };
   buildSites: number[] = [];
@@ -145,9 +160,15 @@ export class Renderer {
     environment?: EnvironmentProfile,
   ): void {
     this.map = map;
+    this.roads = new RoadLayer(map);
     this.ground = new PaintedTerrain(map, geography, environment);
     this.territory = new TerritoryLayer(map.width(), map.height(), RGB);
+    this.territoryLabels = new TerritoryLabelViewModel(
+      map.width(),
+      map.height(),
+    );
     this.buildingStacks = [];
+    this.walls.reset();
     this.snapshot = undefined;
     this.resources = undefined;
     this.previous = undefined;
@@ -155,6 +176,7 @@ export class Renderer {
     this.currentSquads.clear();
     this.presentation.reset();
     this.impacts.reset();
+    this.combatMarkers = [];
     this.traderPresentation.reset();
     this.campLoss.reset();
     this.animationClock.reset();
@@ -162,6 +184,7 @@ export class Renderer {
     this.selectedShips.clear();
     this.selectedAircraft.clear();
     this.selectedBuilding = null;
+    this.inspectedSquadId = null;
     this.selectedDeposit = null;
     this.placement = undefined;
     this.buildSites = [];
@@ -175,6 +198,7 @@ export class Renderer {
     this.previous = this.snapshot;
     this.previousSquads = this.currentSquads;
     this.currentSquads = new Map(snapshot.squads.map((s) => [s.id, s]));
+    this.combatMarkers = combatTargets(snapshot);
     this.cargoCounts.clear();
     for (const squad of snapshot.squads)
       if (squad.embarkedOn !== null)
@@ -183,6 +207,8 @@ export class Renderer {
           (this.cargoCounts.get(squad.embarkedOn) ?? 0) + 1,
         );
     this.snapshot = snapshot;
+    this.roads!.update(snapshot);
+    this.walls.update(snapshot);
     this.impacts.update(snapshot.expansion?.projectiles ?? [], snapshot.tick);
     this.resources = snapshot.expansion
       ? new ResourceViewModel(
@@ -213,20 +239,34 @@ export class Renderer {
       if (!snapshot.ships.some((s) => s.id === id && s.playerId === 1))
         this.selectedShips.delete(id);
     this.territory!.update(snapshot);
+    this.territoryLabels!.update(snapshot);
     const stacks = new Map<
       string,
       {
         building: Snapshot["buildings"][number];
         count: number;
         remainingTicks: number;
+        health: number;
+        maxHealth: number;
       }
     >();
     for (const building of snapshot.buildings) {
       const key = `${building.tile}:${building.type}`;
       let stack = stacks.get(key);
       if (!stack)
-        stacks.set(key, (stack = { building, count: 0, remainingTicks: 0 }));
+        stacks.set(
+          key,
+          (stack = {
+            building,
+            count: 0,
+            remainingTicks: 0,
+            health: 0,
+            maxHealth: 0,
+          }),
+        );
       stack.count++;
+      stack.health += building.health ?? 0;
+      stack.maxHealth += building.maxHealth ?? 0;
       stack.remainingTicks = Math.max(
         stack.remainingTicks,
         building.remainingTicks,
@@ -388,15 +428,17 @@ export class Renderer {
       );
       const d = (p.x - x) ** 2 + (p.y - y) ** 2;
       const half =
-        buildingSymbol(
-          this.scale,
-          !!(building.age
-            ? this.eraArtwork.get(
-                buildingArtworkId(building.type, building.age) ?? "",
-              )
-            : this.buildingArtwork.get(building.type)),
-          building.type,
-        ).size / 2;
+        building.type === "tower"
+          ? Math.max(6, this.scale / 2)
+          : buildingSymbol(
+              this.scale,
+              !!(building.age
+                ? this.eraArtwork.get(
+                    buildingArtworkId(building.type, building.age) ?? "",
+                  )
+                : this.buildingArtwork.get(building.type)),
+              building.type,
+            ).size / 2;
       if (
         Math.abs(p.x - x) <= half &&
         Math.abs(p.y - y) <= half &&
@@ -428,6 +470,51 @@ export class Renderer {
       }
     }
     return nearest;
+  }
+
+  private drawTerritoryNames(): void {
+    const ctx = this.ctx;
+    for (const label of this.territoryLabels!.labels) {
+      const p = this.screen(label.x, label.y);
+      const width = label.width * this.scale * 0.86;
+      const height = label.height * this.scale;
+      const radius = Math.hypot(width, height) / 2;
+      if (!visibleInViewport(p, radius, this.width, this.height)) continue;
+      const letters = Array.from(label.name.toLocaleUpperCase());
+      let font = Math.min(64, height * 0.42, width / (letters.length * 0.9));
+      if (font < 7) continue;
+      ctx.save();
+      ctx.translate(p.x, p.y);
+      ctx.rotate(label.angle);
+      ctx.font = `600 ${font}px Georgia, Cambria, serif`;
+      let advances = letters.map((letter) => ctx.measureText(letter).width);
+      let inkWidth = advances.reduce((sum, advance) => sum + advance, 0);
+      if (inkWidth > width) {
+        font *= width / inkWidth;
+        ctx.font = `600 ${font}px Georgia, Cambria, serif`;
+        advances = letters.map((letter) => ctx.measureText(letter).width);
+        inkWidth = advances.reduce((sum, advance) => sum + advance, 0);
+      }
+      // Track letters across the available interior, without distorting glyphs.
+      const spacing =
+        letters.length > 1
+          ? Math.min(font * 0.7, (width - inkWidth) / (letters.length - 1))
+          : 0;
+      let x = -(inkWidth + spacing * (letters.length - 1)) / 2;
+      ctx.textAlign = "left";
+      ctx.textBaseline = "middle";
+      ctx.lineJoin = "round";
+      ctx.lineWidth = Math.max(1.2, font * 0.05);
+      ctx.globalAlpha = 0.8;
+      ctx.strokeStyle = "#eee9ce";
+      ctx.fillStyle = "#20332b";
+      for (let i = 0; i < letters.length; i++) {
+        ctx.strokeText(letters[i], x, 0);
+        ctx.fillText(letters[i], x, 0);
+        x += advances[i] + spacing;
+      }
+      ctx.restore();
+    }
   }
 
   private drawBuilding(
@@ -517,6 +604,70 @@ export class Renderer {
     return size;
   }
 
+  private drawWallFrame(frame: WallFrame, tile: number): void {
+    const x = this.map!.x(tile),
+      y = this.map!.y(tile),
+      start = this.screen(x, y),
+      end = this.screen(x + 1, y + 1),
+      left = Math.round(start.x),
+      top = Math.round(start.y);
+    this.ctx.drawImage(
+      frame.source,
+      frame.x,
+      frame.y,
+      frame.width,
+      frame.height,
+      left,
+      top,
+      Math.max(1, Math.round(end.x) - left),
+      Math.max(1, Math.round(end.y) - top),
+    );
+  }
+  private drawTower(
+    tile: number,
+    age: Age,
+    color: string,
+    selected: boolean,
+    remainingTicks: number,
+    ghost = false,
+  ): number {
+    const p = this.screen(this.map!.x(tile) + 0.5, this.map!.y(tile) + 0.5),
+      size = this.scale,
+      ctx = this.ctx;
+    ctx.save();
+    if (selected || ghost) {
+      ctx.fillStyle = BUILDING_PAD_COLORS.get(color) ?? color;
+      ctx.globalAlpha = 0.2;
+      ctx.fillRect(p.x - size / 2, p.y - size / 2, size, size);
+      ctx.globalAlpha = 1;
+    }
+    const frame = this.wallArtwork.tower(age);
+    if (frame) {
+      ctx.globalAlpha = ghost ? 0.65 : remainingTicks ? 0.55 : 1;
+      ctx.imageSmoothingEnabled = true;
+      this.drawWallFrame(frame, tile);
+      ctx.globalAlpha = 1;
+    }
+    if (selected || ghost) {
+      ctx.strokeStyle = selected ? "#fff" : color;
+      ctx.lineWidth = 1.5;
+      ctx.setLineDash(ghost ? [3, 2] : []);
+      ctx.strokeRect(p.x - size / 2, p.y - size / 2, size, size);
+    }
+    if (remainingTicks) {
+      const fraction = Math.max(
+        0,
+        1 - remainingTicks / BUILDING_RULES.tower.ticks,
+      );
+      ctx.fillStyle = "#10212b";
+      ctx.fillRect(p.x - size / 2, p.y + size / 2 + 2, size, 3);
+      ctx.fillStyle = color;
+      ctx.fillRect(p.x - size / 2, p.y + size / 2 + 2, size * fraction, 3);
+    }
+    ctx.restore();
+    return size;
+  }
+
   shipAt(x: number, y: number): number | null {
     for (const ship of this.snapshot?.ships ?? []) {
       const p = this.screen(ship.x / FIXED, ship.y / FIXED);
@@ -560,35 +711,14 @@ export class Renderer {
       this.width,
       this.height,
     );
-    if (this.scale >= 2) {
-      const roads = snapshot.expansion?.roads;
-      for (let i = 0; roads && i < roads.length; i += 3) {
-        const tile = roads[i];
-        if (this.occupiedBuildingTiles.has(tile)) continue;
-        const p = this.screen(this.map.x(tile), this.map.y(tile));
-        if (
-          p.x + this.scale < 0 ||
-          p.y + this.scale < 0 ||
-          p.x > this.width ||
-          p.y > this.height
-        )
-          continue;
-        const image = this.roadArtwork.frame(roads[i + 1]);
-        if (!image) continue;
-        const mask = roads[i + 2];
-        ctx.drawImage(
-          image,
-          (mask % 4) * 260 + 2,
-          Math.floor(mask / 4) * 260 + 2,
-          256,
-          256,
-          p.x,
-          p.y,
-          this.scale,
-          this.scale,
-        );
-      }
-    }
+    this.roads!.draw(
+      ctx,
+      this.scale,
+      this.offsetX,
+      this.offsetY,
+      this.width,
+      this.height,
+    );
     this.territory!.draw(
       ctx,
       this.scale,
@@ -597,6 +727,8 @@ export class Renderer {
       this.width,
       this.height,
     );
+    this.territoryLabels!.advance(now);
+    this.drawTerritoryNames();
     ctx.strokeStyle = "#b4c6cf26";
     ctx.lineWidth = 1;
     ctx.strokeRect(
@@ -615,47 +747,63 @@ export class Renderer {
     }
 
     for (const player of snapshot.players) {
+      if (player.eliminated) continue;
       const p = this.screen(
         this.map.x(player.base) + 0.5,
         this.map.y(player.base) + 0.5,
       );
-      const owner = snapshot.owners[player.base];
-      ctx.fillStyle = COLORS[owner || player.id];
-      ctx.strokeStyle = "#10212b";
-      ctx.lineWidth = 2;
-      ctx.fillRect(p.x - 6, p.y - 6, 12, 12);
-      ctx.strokeRect(p.x - 6, p.y - 6, 12, 12);
-      ctx.beginPath();
-      ctx.moveTo(p.x, p.y - 10);
-      ctx.lineTo(p.x + 4, p.y - 6);
-      ctx.lineTo(p.x - 4, p.y - 6);
-      ctx.closePath();
-      ctx.fill();
-      ctx.font = "600 11px system-ui";
-      ctx.textAlign = "center";
-      ctx.lineWidth = 4;
-      ctx.strokeStyle = "#10212bcc";
-      ctx.strokeText(player.name, p.x, p.y - 16);
-      ctx.fillStyle = "#eaf0ec";
-      ctx.fillText(player.name, p.x, p.y - 16);
+      if (ownsCamp(snapshot, player)) {
+        ctx.fillStyle = COLORS[player.id];
+        ctx.strokeStyle = "#10212b";
+        ctx.lineWidth = 2;
+        ctx.fillRect(p.x - 6, p.y - 6, 12, 12);
+        ctx.strokeRect(p.x - 6, p.y - 6, 12, 12);
+        ctx.beginPath();
+        ctx.moveTo(p.x, p.y - 10);
+        ctx.lineTo(p.x + 4, p.y - 6);
+        ctx.lineTo(p.x - 4, p.y - 6);
+        ctx.closePath();
+        ctx.fill();
+      }
       const campOpacity = this.campLoss.opacity(player.id, now);
       if (campOpacity > 0) {
         ctx.save();
         ctx.globalAlpha *= campOpacity;
-        ctx.textAlign = "left";
-        const x = p.x + ctx.measureText(player.name).width / 2;
-        ctx.strokeText(" · camp lost", x, p.y - 16);
-        ctx.fillText(" · camp lost", x, p.y - 16);
+        ctx.font = "600 11px system-ui";
+        ctx.textAlign = "center";
+        ctx.lineWidth = 4;
+        ctx.strokeStyle = "#10212bcc";
+        ctx.fillStyle = "#eaf0ec";
+        ctx.strokeText(`${player.name} · camp lost`, p.x, p.y - 16);
+        ctx.fillText(`${player.name} · camp lost`, p.x, p.y - 16);
         ctx.restore();
       }
     }
+
+    // Walls share a one-cell footprint with their towers, below buildings and
+    // mobile units. Padded atlas rectangles preserve adjoining edge pixels.
+    ctx.save();
+    for (const wall of this.walls.tiles) {
+      const p = this.screen(
+        this.map.x(wall.tile) + 0.5,
+        this.map.y(wall.tile) + 0.5,
+      );
+      if (!visibleInViewport(p, this.scale, this.width, this.height)) continue;
+      const frame = this.wallArtwork.frame(wall.age, wall.mask, wall.gate);
+      if (!frame) continue;
+      ctx.imageSmoothingEnabled = true;
+      ctx.globalAlpha = wall.constructing ? 0.55 : 1;
+      this.drawWallFrame(frame, wall.tile);
+    }
+    ctx.restore();
 
     // Buildings, including placement ghosts, are a layer beneath mobile units.
     const selectedBuilding =
       this.selectedBuilding === null
         ? undefined
         : snapshot.buildings.find((b) => b.id === this.selectedBuilding);
-    for (const { building, count, remainingTicks } of this.buildingStacks) {
+    for (const { building, count, remainingTicks, health, maxHealth } of this
+      .buildingStacks) {
       const p = this.screen(
         this.map.x(building.tile) + 0.5,
         this.map.y(building.tile) + 0.5,
@@ -665,19 +813,28 @@ export class Renderer {
       const selected =
         selectedBuilding?.tile === building.tile &&
         selectedBuilding?.type === building.type;
-      const size = this.drawBuilding(
-        building.type,
-        p,
-        COLORS[building.playerId],
-        selected,
-        remainingTicks,
-        false,
-        building.age
-          ? buildingArtworkId(building.type, building.age)
-          : undefined,
-        snapshot.tick,
-        ownerUiAge(snapshot, building.playerId),
-      );
+      const size =
+        building.type === "tower"
+          ? this.drawTower(
+              building.tile,
+              building.age ?? "StoneAge",
+              COLORS[building.playerId],
+              selected,
+              remainingTicks,
+            )
+          : this.drawBuilding(
+              building.type,
+              p,
+              COLORS[building.playerId],
+              selected,
+              remainingTicks,
+              false,
+              building.age
+                ? buildingArtworkId(building.type, building.age)
+                : undefined,
+              snapshot.tick,
+              ownerUiAge(snapshot, building.playerId),
+            );
       if (count > 1) {
         ctx.font = "bold 10px system-ui";
         ctx.textAlign = "center";
@@ -688,6 +845,16 @@ export class Renderer {
         ctx.fillStyle = COLORS[building.playerId];
         ctx.fillText(badge, p.x + size / 3, p.y - size / 2 + 5);
       }
+      if (maxHealth > 0 && (selected || health < maxHealth)) {
+        const width = Math.max(18, Math.min(48, size));
+        const fraction = Math.max(0, Math.min(1, health / maxHealth));
+        const y = p.y - size / 2 - 7;
+        ctx.fillStyle = "#10212bea";
+        ctx.fillRect(p.x - width / 2 - 1, y - 1, width + 2, 5);
+        ctx.fillStyle =
+          fraction > 0.5 ? "#8ed081" : fraction > 0.25 ? "#e2bd66" : "#e77966";
+        ctx.fillRect(p.x - width / 2, y, width * fraction, 3);
+      }
       if (selected || this.scale >= 14) {
         const label =
           rules.name +
@@ -695,11 +862,14 @@ export class Renderer {
           (remainingTicks ? ` · ${Math.ceil(remainingTicks / 20)}s` : "");
         ctx.font = "600 10px system-ui";
         ctx.textAlign = "center";
+        ctx.textBaseline = "top";
         ctx.lineWidth = 3;
         ctx.strokeStyle = "#10212bd9";
-        ctx.strokeText(label, p.x, p.y + size / 2 + 17);
+        const labelY = p.y + size / 2 + 3 + (remainingTicks ? 6 : 0);
+        ctx.strokeText(label, p.x, labelY);
         ctx.fillStyle = "#f0f6ef";
-        ctx.fillText(label, p.x, p.y + size / 2 + 17);
+        ctx.fillText(label, p.x, labelY);
+        ctx.textBaseline = "alphabetic";
       }
     }
     if (this.placement) {
@@ -707,17 +877,27 @@ export class Renderer {
         this.map.x(this.placement.tile) + 0.5,
         this.map.y(this.placement.tile) + 0.5,
       );
-      this.drawBuilding(
-        this.placement.type,
-        p,
-        this.placement.friendly ? "#a0ffe0" : "#ff8f84",
-        false,
-        0,
-        true,
-        undefined,
-        0,
-        ownerUiAge(snapshot, 1),
-      );
+      if (this.placement.type === "tower")
+        this.drawTower(
+          this.placement.tile,
+          ownerUiAge(snapshot, 1) ?? "StoneAge",
+          this.placement.friendly ? "#a0ffe0" : "#ff8f84",
+          false,
+          0,
+          true,
+        );
+      else
+        this.drawBuilding(
+          this.placement.type,
+          p,
+          this.placement.friendly ? "#a0ffe0" : "#ff8f84",
+          false,
+          0,
+          true,
+          undefined,
+          0,
+          ownerUiAge(snapshot, 1),
+        );
     }
 
     const previousById = this.previousSquads;
@@ -731,29 +911,10 @@ export class Renderer {
       speed,
       paused || snapshot.winner !== null,
     );
-    if (snapshot.expansion) {
-      for (const wall of snapshot.expansion.barriers) {
-        ctx.fillStyle = COLORS[wall.playerId] + "dd";
-        for (const tile of wall.tiles) {
-          const p = this.screen(this.map.x(tile) + 0.5, this.map.y(tile) + 0.5);
-          if (!visibleInViewport(p, this.scale, this.width, this.height))
-            continue;
-          ctx.fillStyle = tile === wall.gateTile ? "#f2d49a" : "#514f49";
-          ctx.fillRect(
-            p.x - this.scale * 0.44,
-            p.y - this.scale * 0.44,
-            this.scale * 0.88,
-            this.scale * 0.88,
-          );
-          ctx.strokeStyle = COLORS[wall.playerId];
-          ctx.strokeRect(
-            p.x - this.scale * 0.44,
-            p.y - this.scale * 0.44,
-            this.scale * 0.88,
-            this.scale * 0.88,
-          );
-        }
-      }
+    for (const target of this.combatMarkers) {
+      const p = this.screen(target.x / FIXED, target.y / FIXED);
+      if (visibleInViewport(p, 24, this.width, this.height))
+        this.combatEffects.target(ctx, target, p, visualTick);
     }
     const renderedSquads = snapshot.squads
       .filter((squad) => squad.embarkedOn === null)
@@ -763,14 +924,16 @@ export class Renderer {
           (old.x + (squad.x - old.x) * blend) / FIXED,
           (old.y + (squad.y - old.y) * blend) / FIXED,
         );
-        const selected = this.selected.has(squad.id);
-        const symbol = squadSymbol(
-          this.scale,
-          squad.troops,
-          !!(squad.definitionId
-            ? this.eraArtwork.get(squad.definitionId)
-            : this.artwork.get(squad.kind)),
-        );
+        const selected =
+          this.selected.has(squad.id) || this.inspectedSquadId === squad.id;
+        const pose = squadArtworkPose(squad, visualTick);
+        const activeImage = squad.definitionId
+          ? this.eraArtwork.get(squad.definitionId, pose.clip, pose.elapsed)
+          : this.artwork.get(
+              squad.kind,
+              this.presentation.animation(squad.id, visualTick),
+            );
+        const symbol = squadSymbol(this.scale, squad.troops, !!activeImage);
         if (
           !visibleInViewport(
             p,
@@ -786,22 +949,7 @@ export class Renderer {
         const definition = squad.definitionId
           ? UNIT.get(squad.definitionId)
           : undefined;
-        const lastAttack = squad.lastAttackTick ?? -Infinity,
-          attackAge = visualTick - lastAttack;
-        const clip =
-          attackAge < 20 ? "attack" : squad.moved ? "running" : "idle";
-        const image = symbol.artwork
-          ? squad.definitionId
-            ? this.eraArtwork.get(
-                squad.definitionId,
-                clip,
-                clip === "attack" ? attackAge : visualTick,
-              )
-            : this.artwork.get(
-                squad.kind,
-                this.presentation.animation(squad.id, visualTick),
-              )
-          : undefined;
+        const image = symbol.artwork ? activeImage : undefined;
         return { squad, p, selected, symbol, image, definition };
       })
       .filter(
@@ -959,7 +1107,9 @@ export class Renderer {
         ctx.save();
         ctx.translate(p.x + lunge.x, p.y + lunge.y);
         ctx.rotate(
-          this.presentation.angle(squad.id) +
+          (squadArtworkPose(squad, visualTick).clip === "attack"
+            ? this.presentation.firingAngle(squad.id, visualTick)
+            : this.presentation.angle(squad.id)) +
             (squad.definitionId
               ? this.eraArtwork.facing(squad.definitionId)
               : 0),
@@ -995,7 +1145,9 @@ export class Renderer {
           this.strategic.available ? "#ffffff" : COLORS[squad.playerId],
         );
         const angle =
-          this.presentation.angle(squad.id) + (formation ? Math.PI : 0);
+          (squadArtworkPose(squad, visualTick).clip === "attack"
+            ? this.presentation.firingAngle(squad.id, visualTick)
+            : this.presentation.angle(squad.id)) + (formation ? Math.PI : 0);
         const batched =
           formation &&
           this.strategic.add(
@@ -1093,15 +1245,25 @@ export class Renderer {
           );
         }
       }
-      if (squad.fighting && squad.kind !== "archer") {
-        ctx.strokeStyle = "#ffdeb0";
-        ctx.lineWidth = 1.5;
-        ctx.beginPath();
-        ctx.moveTo(p.x - 3, p.y - 3);
-        ctx.lineTo(p.x + 3, p.y + 3);
-        ctx.moveTo(p.x + 3, p.y - 3);
-        ctx.lineTo(p.x - 3, p.y + 3);
-        ctx.stroke();
+      if (
+        squad.fighting &&
+        (definition
+          ? definition.attack.channel === "melee"
+          : squad.kind !== "archer")
+      ) {
+        const target = this.currentSquads.get(squad.combatTargetId ?? -1);
+        if (target) {
+          const contact = this.screen(
+            (squad.x + target.x) / (2 * FIXED),
+            (squad.y + target.y) / (2 * FIXED),
+          );
+          this.combatEffects.melee(
+            ctx,
+            contact,
+            visualTick - (squad.lastAttackTick ?? -Infinity),
+            squad.id,
+          );
+        }
       }
       if (image || selected || this.scale >= 14) {
         ctx.font = "600 10px system-ui";
@@ -1279,7 +1441,7 @@ export class Renderer {
       ctx.textAlign = "center";
       ctx.strokeStyle = "#10212b";
       ctx.lineWidth = 3;
-      const label = `${ship.health} HP${ship.kind === "transport" ? ` · ${cargo}/${rules.capacity ?? 4}` : ""}${ship.boarding ? " · meeting" : ""}${ship.fighting ? " ⚔" : ""}`;
+      const label = `${ship.health} HP${ship.kind === "transport" ? ` · ${cargo}/${ship.shoreTransfer?.capacity ?? rules.capacity ?? 4}` : ""}${ship.shoreTransfer ? ` · ${ship.shoreTransfer.phase}` : ship.boarding ? " · meeting" : ""}${ship.fighting ? " ⚔" : ""}`;
       ctx.strokeText(label, p.x, p.y + 22);
       ctx.fillStyle = "#eaf3ef";
       ctx.fillText(label, p.x, p.y + 22);
@@ -1378,13 +1540,25 @@ export class Renderer {
           projectile.impacted
         )
           continue;
-        const p = this.screen(projectile.x / FIXED, projectile.y / FIXED);
+        const pose = shellVisual(
+          projectile,
+          visualTick,
+          this.screen(projectile.fromX / FIXED, projectile.fromY / FIXED),
+          this.screen(projectile.toX / FIXED, projectile.toY / FIXED),
+          this.spriteSize(1000),
+        );
+        const p = projectile.impacted
+          ? this.screen(projectile.x / FIXED, projectile.y / FIXED)
+          : pose;
+        if (!visibleInViewport(p, 32, this.width, this.height)) continue;
         const artworkId =
           projectile.kind === "mirv"
             ? "mirv"
             : projectile.kind === "warhead"
               ? "mirv-warhead"
-              : undefined;
+              : projectile.kind === "icbm"
+                ? "icbm"
+                : undefined;
         const frame =
           artworkId && !projectile.impacted
             ? this.eraArtwork.get(
@@ -1394,6 +1568,7 @@ export class Renderer {
               )
             : undefined;
         if (frame) {
+          this.combatEffects.projectile(ctx, "rocket", p, pose.angle, 4, 0.5);
           const size = Math.max(
             12,
             (projectile.diameter / FIXED) * this.scale * 2,
@@ -1424,26 +1599,30 @@ export class Renderer {
           continue;
         }
         if (projectile.impacted && impactIds.has(projectile.id)) continue;
-        ctx.beginPath();
-        ctx.arc(
-          p.x,
-          p.y,
-          projectile.impacted
-            ? Math.max(3, (projectile.blastRadius / FIXED) * this.scale)
-            : Math.max(2, (projectile.diameter / FIXED) * this.scale),
-          0,
-          Math.PI * 2,
-        );
-        ctx.fillStyle = projectile.impacted ? "#ffb45544" : "#ffdd99";
-        ctx.fill();
-        if (projectile.impacted) {
-          ctx.strokeStyle = "#eab16a88";
-          ctx.stroke();
+        if (!projectile.impacted) {
+          this.combatEffects.projectile(
+            ctx,
+            pose.style,
+            p,
+            pose.angle,
+            Math.max(3, ((projectile.diameter / FIXED) * this.scale) / 2),
+          );
+        } else {
+          ctx.beginPath();
+          ctx.arc(
+            p.x,
+            p.y,
+            Math.max(3, (projectile.blastRadius / FIXED) * this.scale),
+            0,
+            Math.PI * 2,
+          );
+          ctx.fillStyle = "#ffb45544";
+          ctx.fill();
         }
       }
       for (const impact of impactVisuals) {
         const p = this.screen(impact.x / FIXED, impact.y / FIXED),
-          size = Math.max(12, (impact.radius / FIXED) * this.scale * 2);
+          size = impactSize(impact.artworkId, impact.radius, this.scale);
         if (!visibleInViewport(p, size / 2, this.width, this.height)) continue;
         const frame = this.eraArtwork.get(
           impact.artworkId,
@@ -1554,49 +1733,40 @@ export class Renderer {
       ctx.textAlign = "center";
       ctx.fillText(String(army.memberIds.length), p.x + 2, p.y + 10);
     }
-    // These are simulation-issued volleys, not a second damage calculation.
+    // Released visual volleys never calculate or apply casualties.
     for (const volley of snapshot.volleys) {
-      const age = visualTick - volley.tick;
-      if (age < 0 || age >= ARCHER_ARROW_TICKS) continue;
-      const progress = age / ARCHER_ARROW_TICKS;
-      const from = this.screen(volley.fromX / FIXED, volley.fromY / FIXED);
-      const to = this.screen(volley.toX / FIXED, volley.toY / FIXED);
-      const lift = Math.min(14, Math.hypot(to.x - from.x, to.y - from.y) / 5);
-      const distance = Math.hypot(to.x - from.x, to.y - from.y) || 1;
-      const normalX = -(to.y - from.y) / distance,
-        normalY = (to.x - from.x) / distance;
-      const angle = Math.atan2(
-        to.y - from.y - Math.cos(progress * Math.PI) * Math.PI * lift,
-        to.x - from.x,
+      const from = this.screen(volley.fromX / FIXED, volley.fromY / FIXED),
+        to = this.screen(volley.toX / FIXED, volley.toY / FIXED);
+      if (
+        !visibleInViewport(from, 80, this.width, this.height) &&
+        !visibleInViewport(to, 80, this.width, this.height)
+      )
+        continue;
+      const visual = volleyVisual(
+        volley,
+        visualTick,
+        from,
+        to,
+        this.spriteSize(1000),
       );
-      // Five simultaneous visual projectiles share this one domain volley.
-      for (let index = -2; index <= 2; index++) {
-        const spread = index * 4;
-        const x = from.x + (to.x - from.x) * progress + normalX * spread;
-        const y =
-          from.y +
-          (to.y - from.y) * progress +
-          normalY * spread -
-          Math.sin(progress * Math.PI) * lift;
-        ctx.save();
-        ctx.translate(x, y);
-        ctx.rotate(angle);
-        ctx.strokeStyle = "#fff0bd";
-        ctx.lineWidth = 1.5;
-        ctx.beginPath();
-        ctx.moveTo(-9, 0);
-        ctx.lineTo(3, 0);
-        ctx.moveTo(-1, -2);
-        ctx.lineTo(3, 0);
-        ctx.lineTo(-1, 2);
-        ctx.stroke();
-        ctx.restore();
-      }
-      ctx.beginPath();
-      ctx.arc(from.x, from.y, 9 * (1 - progress), 0, Math.PI * 2);
-      ctx.strokeStyle = `rgba(255,220,136,${1 - progress})`;
-      ctx.lineWidth = 1.5;
-      ctx.stroke();
+      if (!visual) continue;
+      for (const point of visual.points)
+        this.combatEffects.projectile(
+          ctx,
+          visual.style,
+          point,
+          point.angle,
+          4,
+          visual.style === "bullet" ? 1 - visual.progress * 0.5 : 1,
+        );
+      if (visual.style === "bullet")
+        for (const emitter of visual.emitters)
+          this.combatEffects.muzzle(
+            ctx,
+            emitter,
+            visual.progress,
+            Math.atan2(to.y - from.y, to.x - from.x),
+          );
     }
     if (this.marker && now < this.marker.until) {
       const p = this.screen(this.marker.x, this.marker.y);

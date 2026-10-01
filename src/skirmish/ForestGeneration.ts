@@ -53,7 +53,12 @@ export function generateForestCover(
         clearing = smooth(0.62, 0.78, terrainNoise(wx - 421, wy + 239, 7)),
         moisture = Math.min(1, 0.65 + environment.moistureAt(tile) * 0.55);
       cover[tile] = Math.round(
-        255 * maximum * stand * (1 - clearing) * moisture,
+        255 *
+          maximum *
+          stand *
+          (1 - clearing) *
+          moisture *
+          (environment.vegetationAt(tile) ?? 1),
       );
     }
   return { cover };

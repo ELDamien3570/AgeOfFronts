@@ -16,6 +16,7 @@ import { AGE_NAMES, AGES, TREES, type Age } from "../domain/Definitions";
 import {
   advanceRejection,
   researchRejection,
+  researchTerms,
   treeCompletion,
 } from "../domain/Progression";
 import {
@@ -24,6 +25,7 @@ import {
   productionRejection,
   productionTicks,
 } from "../domain/Supply";
+import { FactionViewModel } from "./FactionViewModel";
 import { ResourceViewModel } from "./ResourceViewModel";
 import { SkirmishViewModel, type SelectionState } from "./SkirmishViewModel";
 export class EmpireViewModel {
@@ -46,6 +48,9 @@ export class EmpireViewModel {
   get progression() {
     return this.expansion.progression[1];
   }
+  get technologySpeed() {
+    return this.expansion.technologySpeed;
+  }
   get inventory() {
     return this.expansion.inventories[1];
   }
@@ -58,6 +63,8 @@ export class EmpireViewModel {
     if (!player || !progression) return null;
     return {
       player,
+      identity: new FactionViewModel(player),
+      age: progression.age,
       ageName: AGE_NAMES[AGES.indexOf(progression.age)],
       advancementSeconds: progression.advancement
         ? Math.ceil(progression.advancement.remainingTicks / 20)
@@ -70,9 +77,15 @@ export class EmpireViewModel {
   nodes(age: Age) {
     return TECHNOLOGIES.filter((t) => t.age === age).map((t) => ({
       ...t,
+      ...researchTerms(t, this.technologySpeed),
       completed: this.has(t.id),
       researching: this.progression.research[t.tree]?.technologyId === t.id,
-      reason: researchRejection(this.progression, this.player.gold, t.id),
+      reason: researchRejection(
+        this.progression,
+        this.player.gold,
+        t.id,
+        this.technologySpeed,
+      ),
     }));
   }
   get summary() {
@@ -82,10 +95,15 @@ export class EmpireViewModel {
     ).join(" · ");
   }
   get advance() {
-    const cost = ADVANCES[AGES.indexOf(this.progression.age)];
+    const definition = ADVANCES[AGES.indexOf(this.progression.age)],
+      cost = definition && researchTerms(definition, this.technologySpeed);
     return {
       cost,
-      reason: advanceRejection(this.progression, this.player.gold),
+      reason: advanceRejection(
+        this.progression,
+        this.player.gold,
+        this.technologySpeed,
+      ),
     };
   }
   units(line?: SquadType) {
@@ -113,7 +131,11 @@ export class EmpireViewModel {
   }
   buildChoice(type: BuildingType, age = this.buildingAge(type)) {
     if (!age)
-      return { reason: "Research required", age: undefined, cost: undefined };
+      return {
+        reason: this.buildingResearchRequirement(type),
+        age: undefined,
+        cost: undefined,
+      };
     const cost = buildingCost(type, age);
     return {
       age,
@@ -121,15 +143,25 @@ export class EmpireViewModel {
       reason: costRejection(this.player, this.inventory, cost),
     };
   }
+  private buildingResearchRequirement(type: BuildingType): string {
+    const age = AGES.find((a) => buildingTechnology(type, a));
+    const id = age && buildingTechnology(type, age);
+    return id
+      ? `Requires research: ${this.technologyName(id)} (${AGE_NAMES[AGES.indexOf(age!)]})`
+      : "Building unavailable";
+  }
   buildingPreview(type: BuildingType) {
     const unlocked = this.buildingAge(type);
     const age = unlocked ?? AGES.find((a) => buildingTechnology(type, a));
     return {
       age,
       cost: age ? buildingCost(type, age) : undefined,
+      requiredTechnology: age
+        ? this.technologyName(buildingTechnology(type, age)!)
+        : undefined,
       reason: unlocked
         ? this.buildChoice(type, unlocked).reason
-        : "Research required",
+        : this.buildingResearchRequirement(type),
     };
   }
   get producers() {

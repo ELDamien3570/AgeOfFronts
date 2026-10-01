@@ -168,7 +168,6 @@ describe("swept projectile contacts", () => {
       health: 2000,
       maxHealth: 2000,
       remainingTicks: 0,
-      gateTile: null,
     });
     // Completed live towers keep the linked barrier active during indexing.
     for (const [id, x] of [

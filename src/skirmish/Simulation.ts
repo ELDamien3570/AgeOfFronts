@@ -2,13 +2,28 @@ import type { GameMap } from "../core/game/GameMap";
 import { PseudoRandom } from "../core/PseudoRandom";
 import { BuildingIndex } from "./BuildingIndex";
 import { CoastIndex } from "./CoastIndex";
+import { shoreTransportCapacity, shoreTransportDefinition } from "./content/ShoreTransport";
+import { ShoreRoutes } from "./domain/ShoreRoutes";
+import { ShoreTransport } from "./domain/ShoreTransport";
 import { ConquestCredit, DamageLedger } from "./Conquest";
 import { constructionRejection } from "./Construction";
 import { defaultUnit, UNIT, VESSEL } from "./content/Units";
+import { STARTING_AGE_TROOPS, baseReserveIncome, cityReserveIncome } from "./content/Economy";
+import { personalityOf } from "./content/AiPersonalities";
+import { FACTIONS } from "./content/Factions";
+import {
+  buildingPriority,
+  recruitmentOrder,
+  type AiPersonalityId,
+} from "./domain/AiPersonality";
+import { FactionRoster } from "./domain/FactionRoster";
+import { canPromoteTribe } from "./FactionRules";
 import { damageAmount, scaledAttack } from "./domain/Combat";
 import { commandRejection } from "./domain/CommandPolicy";
 import { AGES, type Age } from "./domain/Definitions";
 import { Expansion } from "./domain/Expansion";
+import { Occupation } from "./domain/Occupation";
+import { TerritoryAbsorption } from "./domain/TerritoryAbsorption";
 import { costRejection, spend } from "./domain/Supply";
 import {
   squadCap,
@@ -82,27 +97,6 @@ import { terrainSpeed } from "./Terrain";
 
 const STARTING_TROOPS = 12_000;
 const BASE_RADIUS = 6;
-const AI_NAMES = [
-  "Red Stone",
-  "Amber Vale",
-  "Violet Reach",
-  "Jade Coast",
-  "Rose March",
-  "Cobalt Ridge",
-  "Copper Bay",
-  "Pale Summit",
-  "Azure Plain",
-  "Scarlet Dunes",
-  "Olive Reach",
-  "Ivory Coast",
-  "Blue River",
-  "Coral Grove",
-  "Gold Highlands",
-  "Lilac Hills",
-  "Silver Vale",
-  "Orange Isles",
-  "Deep Forest",
-];
 
 // Fixed-step, integer-position simulation. Browser timing and rendering never
 // determine gameplay. Human and AI players enter through applyCommand().
@@ -129,6 +123,8 @@ export class Skirmish {
   private readonly random: PseudoRandom;
   private readonly pressure: Uint8Array;
   private readonly activeClaims = new Set<number>();
+  private readonly occupation = new Occupation();
+  private readonly territoryAbsorption: TerritoryAbsorption;
   private readonly ownedTiles = new Map<number, Set<number>>();
   private readonly formations: Formations;
   private readonly avoidance: LocalAvoidance;
@@ -138,6 +134,7 @@ export class Skirmish {
   private readonly heldSpatial: SpatialGrid<Squad>;
   private readonly buildingIndex: BuildingIndex;
   private readonly coast: CoastIndex;
+  private readonly shoreTransport: ShoreTransport;
   private readonly routeWork = new RouteWork();
   private readonly localDetours: LocalDetours;
   private readonly homeTerritory: HomeTerritory;
@@ -152,6 +149,7 @@ export class Skirmish {
     readonly map: GameMap,
     readonly options: MatchOptions,
   ) {
+    this.territoryAbsorption = new TerritoryAbsorption(map);
     if (
       !Number.isInteger(options.aiCount) ||
       options.aiCount < 1 ||
@@ -198,15 +196,51 @@ export class Skirmish {
     );
     this.buildingIndex = new BuildingIndex(map);
     this.coast = new CoastIndex(map, this.paths, this.waterPaths);
+    this.shoreTransport = new ShoreTransport({
+      map, paths: this.paths, squads: this.squads, ships: this.ships,
+      blocked: (tile, playerId) => this.expansion?.fortifications.blocked(tile, playerId) ?? false,
+      slots: (tile, squads, reserved, radius, blocked) => this.formations.plan(tile,
+        squads.map(squad => ({squad,origin:squad})),reserved,radius,undefined,blocked),
+      activate: (squad, order, path) => this.activateOrder(squad, order, path),
+      launch: (playerId, definition, tile) => {
+        const ship: Ship = {id:this.nextId++,playerId,kind:"transport",...tilePoint(map,tile),
+          health:definition.health,definitionId:definition.id,destination:null,waypoints:[],path:[],
+          nextPathIndex:0,fighting:false,boarding:null};
+        this.ships.push(ship); return ship;
+      },
+      unload: (ship,tile) => this.unload(this.player(ship.playerId)!,ship.id,tile),
+      resume: (squad,tile) => {
+        const completed = this.expansion?.progression.states[squad.playerId]?.completed ?? [];
+        const definition = shoreTransportDefinition(completed);
+        if (!this.paths.connected(this.tileOf(squad),tile) || (definition && this.shoreTransport.useful(squad,tile,definition))) {
+          if (definition && this.shoreTransport.start(squad.playerId,[squad],tile,definition,shoreTransportCapacity(completed),true) === null) return;
+        } else {
+          const blocked = (t:number) => this.expansion?.fortifications.blocked(t,squad.playerId) ?? false;
+          const slots = this.formations.plan(tile,[{squad,origin:squad}],this.squads,undefined,undefined,blocked);
+          const point = slots?.get(squad.id);
+          const path = point ? this.paths.find(this.tileOf(squad),pointTile(map,point),blocked) : null;
+          if (point && path !== null) {
+            this.activateOrder(squad,{type:"move",tile:pointTile(map,point),...point},path); return;
+          }
+        }
+        this.activateOrder(squad,{type:"hold"});
+      },
+    }, new ShoreRoutes(map,this.paths,this.waterPaths,this.coast));
     if (this.paths.largestLand.length < (options.aiCount + 1) * 80)
       throw new Error("This map does not have enough connected land");
     if (options.ruleset === "ages-v1")
-      this.expansion = new Expansion(this, options.seed, options.victoryMode);
+      this.expansion = new Expansion(
+        this,
+        options.seed,
+        options.victoryMode,
+        options.technologySpeed,
+      );
     this.createPlayers();
     this.paths.prepare();
   }
 
   private createPlayers(): void {
+    const roster = new FactionRoster(this.options.seed, FACTIONS);
     const candidates = this.paths.largestLand.filter((tile) => {
       const x = this.map.x(tile),
         y = this.map.y(tile);
@@ -226,22 +260,29 @@ export class Skirmish {
       bases.push(placement.next(BASE_RADIUS));
     }
     bases.forEach((base, index) => {
+      const faction = index === 0 ? null : roster.take("regular");
       this.deployPlayer(
         base,
         index + 1,
         "regular",
-        index === 0 ? "You" : AI_NAMES[index - 1],
+        faction?.identity.name ?? "You",
+        faction?.identity.id,
+        faction?.personalityId,
       );
     });
     if (this.options.tribes) {
       const count = tribeCountFor(this.map.width(), this.map.height());
-      for (let index = 0; index < count; index++)
+      for (let index = 0; index < count; index++) {
+        const faction = roster.take("tribe");
         this.deployPlayer(
           placement.next(TRIBE_BASE_RADIUS),
           bases.length + index + 1,
           "tribe",
-          `Tribe ${index + 1}`,
+          faction.identity.name,
+          faction.identity.id,
+          faction.personalityId,
         );
+      }
     }
   }
 
@@ -250,14 +291,17 @@ export class Skirmish {
     id: number,
     kind: Player["kind"],
     name: string,
+    factionId?: string,
+    personalityId?: AiPersonalityId,
   ): void {
     const player: Player = {
       id,
       name,
+      ...(factionId ? { factionId, personalityId } : {}),
       ai: id !== 1,
       kind,
       base,
-      reserves: STARTING_TROOPS,
+      reserves: this.expansion && kind === "regular" ? STARTING_AGE_TROOPS : STARTING_TROOPS,
       gold: STARTING_GOLD,
       land: 0,
       losses: 0,
@@ -328,6 +372,9 @@ export class Skirmish {
     if (this.players[id - 1]?.id === id) return this.players[id - 1];
     return this.players.find((p) => p.id === id);
   }
+  squadCapacity(player: Player): number {
+    return squadCap(player, this.expansion?.progression.states[player.id]?.age);
+  }
   squad(id: number): Squad | undefined {
     if (this.tickSquads) return this.tickSquads.get(id);
     return this.squads.find((s) => s.id === id);
@@ -345,6 +392,9 @@ export class Skirmish {
     const player = this.player(command.playerId);
     if (!player || player.eliminated || this.winner !== null)
       return "This player cannot issue orders";
+    const shipIds = "shipIds" in command ? command.shipIds : "shipId" in command ? [command.shipId] : [];
+    if (shipIds.some(id => this.ships.some(s => s.id === id && s.shoreTransfer)))
+      return "Shore transports complete their crossing automatically";
     if (
       player.kind === "tribe" &&
       (command.type === "build" || command.type === "recruit-ship")
@@ -447,6 +497,21 @@ export class Skirmish {
     }
     if (order.type === "move" && !this.paths.walkable(order.tile))
       return "Choose passable land. Use a transport to cross water.";
+    const transportCompleted = this.expansion?.progression.states[player.id]?.completed ?? [];
+    const transportDefinition = shoreTransportDefinition(transportCompleted);
+    if (order.type === "move" && selected.some(s => !this.paths.connected(this.tileOf(s!),order.tile) ||
+      (transportDefinition && this.shoreTransport.useful(s!,order.tile,transportDefinition)))) {
+      const completed = this.expansion?.progression.states[player.id]?.completed ?? [];
+      const definition = shoreTransportDefinition(completed);
+      if (!definition) return "Research Cargo Canoes to cross water automatically";
+      if (append && selected.some(s => s!.order.type !== "hold")) {
+        for (const squad of selected as Squad[]) squad.queuedOrders.push({...order});
+        return null;
+      }
+      const result = this.shoreTransport.start(player.id,selected as Squad[],order.tile,definition,shoreTransportCapacity(completed));
+      if (result === null) this.expansion?.armies.observeOrder(command.squadIds);
+      return result;
+    }
     if (
       order.type === "replenish" &&
       selected.some((s) => this.owners[this.tileOf(s!)] !== player.id)
@@ -554,7 +619,12 @@ export class Skirmish {
             ? (t) => this.expansion!.fortifications.blocked(t, squad.playerId)
             : undefined,
         );
-        if (path === null) continue;
+        if (path === null) {
+          const completed = this.expansion?.progression.states[squad.playerId]?.completed ?? [];
+          const definition = shoreTransportDefinition(completed);
+          if (definition && this.shoreTransport.start(squad.playerId,[squad],order.tile,definition,shoreTransportCapacity(completed),true) === null) return;
+          continue;
+        }
         this.activateOrder(squad, order, path);
         return;
       }
@@ -606,9 +676,9 @@ export class Skirmish {
       return "Recruitment needs 1,000 reserve troops";
     if (
       this.squads.filter((s) => s.playerId === player.id).length >=
-      squadCap(player)
+      this.squadCapacity(player)
     )
-      return `You have reached the ${squadCap(player)}-squad limit for this faction`;
+      return `You have reached the ${this.squadCapacity(player)}-squad limit for this faction`;
     const candidates: number[] = [];
     this.eachInRadius(building.tile, BASE_RADIUS - 1, (tile) => {
       if (
@@ -1049,15 +1119,17 @@ export class Skirmish {
             a.id - b.id,
         );
       let free =
-        (this.expansion
+        (ship.shoreTransfer?.capacity ?? (this.expansion
           ? this.expansion.vessel(ship).capacity
-          : SHIP_RULES.transport.capacity) -
+          : SHIP_RULES.transport.capacity)) -
         this.squads.filter((s) => s.embarkedOn === ship.id).length;
       for (const squad of ready) {
         if (free > 0) {
           if (
-            this.owners[meeting.landTile] !== ship.playerId ||
-            this.owners[this.tileOf(squad)] !== ship.playerId
+            !this.paths.connected(meeting.landTile,this.tileOf(squad)) ||
+            this.expansion?.fortifications.blocked(this.tileOf(squad),ship.playerId) ||
+            (!ship.shoreTransfer && (this.owners[meeting.landTile] !== ship.playerId ||
+            this.owners[this.tileOf(squad)] !== ship.playerId))
           )
             continue;
           this.embark(squad, ship);
@@ -1083,6 +1155,8 @@ export class Skirmish {
   }
 
   private embark(squad: Squad, ship: Ship): void {
+    const queued = ship.shoreTransfer?.queued.find(q => q.squadId === squad.id);
+    if (queued && squad.queuedOrders.length) queued.orders.push(...squad.queuedOrders);
     squad.embarkedOn = ship.id;
     squad.queuedOrders = [];
     squad.firingCharge = 0;
@@ -1119,7 +1193,7 @@ export class Skirmish {
         ? this.expansion.vessel(ship).capacity
         : SHIP_RULES.transport.capacity)
     )
-      return "A transport carries up to four squads";
+      return `This transport carries up to ${this.expansion ? this.expansion.vessel(ship).capacity : SHIP_RULES.transport.capacity} squads`;
     if (
       selected.some(
         (s) =>
@@ -1154,6 +1228,8 @@ export class Skirmish {
       cargo.map((squad) => ({ squad, origin: ship })),
       this.squads,
       3 * FIXED,
+      undefined,
+      this.expansion ? (t) => this.expansion!.fortifications.blocked(t,ship.playerId) : undefined,
     );
     if (!slots) return "There is no room for the squads on this landing coast";
     cargo.forEach((squad) => {
@@ -1417,6 +1493,7 @@ export class Skirmish {
     for (const building of this.buildings)
       if (building.remainingTicks > 0) building.remainingTicks--;
     this.buildingIndex.rebuild(this.buildings);
+    this.promoteTribes();
     this.expansion?.beforeStep();
     this.produceReserves();
     if (this.options.runAi !== false) {
@@ -1498,7 +1575,20 @@ export class Skirmish {
       }
     this.replenish();
     this.capture();
+    for (const pocket of this.territoryAbsorption.step(
+      this.tick, this.owners,
+      (tile) => this.buildingsAt(tile).length > 0,
+      (owner, recipient) => this.hostile(owner, recipient),
+    )) {
+      for (const tile of pocket.tiles) {
+        this.changeOwner(tile, pocket.recipient);
+        this.progress[tile] = 0;
+        this.claims[tile] = 0;
+        this.activeClaims.delete(tile);
+      }
+    }
     this.processBoarding();
+    this.shoreTransport.step();
     this.checkWinner();
     this.expansion?.armies.reconcile();
     this.tickSquads = undefined;
@@ -1517,9 +1607,9 @@ export class Skirmish {
           0,
           Math.min(
             200000 - player.reserves,
-            40 +
+            (player.kind === "tribe" ? 40 : baseReserveIncome(this.expansion.progression.states[player.id].age)) +
               cities.reduce(
-                (n, b) => n + 40 * (AGES.indexOf(b.age ?? "StoneAge") + 1),
+                (n, b) => n + cityReserveIncome(b.age ?? "StoneAge"),
                 0,
               ),
           ),
@@ -1663,6 +1753,18 @@ export class Skirmish {
   setArmyHold(squad: Squad): void {
     if (squad.order.type !== "hold")
       this.activateOrder(squad, { type: "hold" });
+  }
+  transportArmy(squads: Squad[], tile: number): string | null {
+    const playerId = squads[0].playerId;
+    const completed = this.expansion?.progression.states[playerId]?.completed ?? [];
+    const definition = shoreTransportDefinition(completed);
+    if (!definition) return "Research Cargo Canoes to cross water automatically";
+    return this.shoreTransport.start(playerId,squads,tile,definition,shoreTransportCapacity(completed));
+  }
+  preferArmyTransport(squads: Squad[], tile: number): boolean {
+    const completed = this.expansion?.progression.states[squads[0].playerId]?.completed ?? [];
+    const definition = shoreTransportDefinition(completed);
+    return !!definition && squads.some(squad=>this.shoreTransport.useful(squad,tile,definition));
   }
 
   private moveDestination(order: Extract<Order, { type: "move" }>): WorldPoint {
@@ -2099,11 +2201,26 @@ export class Skirmish {
 
   private capture(): void {
     this.pressure.fill(0);
+    const accelerated = new Map<number, number>();
+    this.buildingIndex.ensure(this.buildings);
     for (const squad of this.squads) {
       if (squad.embarkedOn !== null) continue;
-      if (this.expansion && !this.expansion.unit(squad).canCapture) continue;
+      const definition = this.expansion?.unit(squad);
+      if (definition && !definition.canCapture) continue;
       const position = this.tileOf(squad),
         component = this.paths.component[position];
+      const captureTicks =
+        definition?.undefendedCaptureTicks &&
+        !this.occupation.resisted(
+          squad,
+          position,
+          this.map,
+          this.spatial,
+          this.buildingIndex,
+          this.expansion!.diplomacy,
+        )
+          ? definition.undefendedCaptureTicks
+          : undefined;
       this.eachInRadius(position, CAPTURE_RADIUS, (tile) => {
         if (
           this.paths.component[tile] !== component ||
@@ -2113,6 +2230,11 @@ export class Skirmish {
         const previous = this.pressure[tile];
         this.pressure[tile] =
           previous === 0 || previous === squad.playerId ? squad.playerId : 255;
+        if (captureTicks)
+          accelerated.set(
+            tile,
+            Math.min(accelerated.get(tile) ?? Infinity, captureTicks),
+          );
         if (squad.playerId !== this.owners[tile]) this.activeClaims.add(tile);
       });
     }
@@ -2135,9 +2257,10 @@ export class Skirmish {
       this.progress[tile]++;
       if (
         this.progress[tile] >=
-        (this.expansion?.diplomacy.state.betrayal[this.owners[tile]]
-          ? Math.ceil(CAPTURE_TICKS * 0.8)
-          : CAPTURE_TICKS)
+        (accelerated.get(tile) ??
+          (this.expansion?.diplomacy.state.betrayal[this.owners[tile]]
+            ? Math.ceil(CAPTURE_TICKS * 0.8)
+            : CAPTURE_TICKS))
       ) {
         this.changeOwner(tile, claimant);
         this.progress[tile] = 0;
@@ -2162,6 +2285,7 @@ export class Skirmish {
     }
     if (old) this.player(old)!.land--;
     this.owners[tile] = id;
+    this.territoryAbsorption.changed(tile);
     if (id) this.player(id)!.land++;
     this.buildingIndex.ensure(this.buildings);
     const buildings = this.buildingIndex.at(tile);
@@ -2197,23 +2321,25 @@ export class Skirmish {
     const nearby: Squad[] = [];
     for (const player of this.players) {
       if (!player.ai || player.eliminated) continue;
+      const personality = personalityOf(player);
       const develop = this.tick % 60 === player.id % 60;
       if (develop && player.kind === "regular") this.developAi(player);
       let own = armies.get(player.id) ?? [];
       if (
         develop &&
         this.squads.filter((s) => s.playerId === player.id).length <
-          squadCap(player) &&
+          this.squadCapacity(player) &&
         player.reserves >= SQUAD_TROOPS &&
-        own.length < squadCap(player)
+        own.length < this.squadCapacity(player)
       ) {
+        const lines = recruitmentOrder(personality, {
+          infantry: own.filter((s) => s.kind === "infantry").length,
+          archer: own.filter((s) => s.kind === "archer").length,
+          cavalry: own.filter((s) => s.kind === "cavalry").length,
+        });
         if (this.expansion) {
-          const lines = ["infantry", "archer", "cavalry"] as const;
-          for (let offset = 0; offset < 3; offset++) {
-            const choice = this.expansion.recruitment(
-              player,
-              lines[(Math.floor(this.tick / 60) + offset) % 3],
-            );
+          for (const line of lines) {
+            const choice = this.expansion.recruitment(player, line);
             if (
               choice &&
               this.applyCommand({
@@ -2232,12 +2358,16 @@ export class Skirmish {
               !b.remainingTicks &&
               BUILDING_RULES[b.type].squad,
           );
-          if (recruiters.length)
+          const recruiter = lines
+            .map((line) =>
+              recruiters.find((b) => BUILDING_RULES[b.type].squad === line),
+            )
+            .find(Boolean);
+          if (recruiter)
             this.applyCommand({
               type: "recruit",
               playerId: player.id,
-              buildingId:
-                recruiters[this.random.nextInt(0, recruiters.length)].id,
+              buildingId: recruiter.id,
             });
         }
         own = this.squads.filter(
@@ -2253,9 +2383,11 @@ export class Skirmish {
           this.owners,
           this.tick,
         ),
-        homeRadius = Math.max(
-          18,
-          Math.round(Math.min(this.map.width(), this.map.height()) * 0.06),
+        homeRadius = Math.round(
+          (Math.max(
+            18,
+            Math.round(Math.min(this.map.width(), this.map.height()) * 0.06),
+          ) * personality.homeRadiusPercent) / 100,
         ),
         homeNeedsLand = frontier.some(
           (tile) =>
@@ -2272,6 +2404,7 @@ export class Skirmish {
         if ((this.tick + squad.id) % 15 !== 1) continue;
         if (
           squad.refit ||
+          this.expansion?.modernization.holds(squad.id) ||
           squad.charge ||
           squad.structureTarget ||
           (squad.definitionId &&
@@ -2286,7 +2419,9 @@ export class Skirmish {
             !target ||
             (this.owners[this.tileOf(target)] !== player.id &&
               this.distanceSquared(squad, target) >
-                (TRIBE_PURSUIT_RANGE * FIXED) ** 2)
+                (Math.round(
+                  (TRIBE_PURSUIT_RANGE * personality.interceptRange) / 20,
+                ) * FIXED) ** 2)
           )
             this.applyCommand({
               type: "order",
@@ -2305,7 +2440,10 @@ export class Skirmish {
           if (
             player.kind === "tribe" &&
             this.owners[enemyTile] !== player.id &&
-            d > (TRIBE_INTERCEPT_RANGE * FIXED) ** 2
+            d >
+              (Math.round(
+                (TRIBE_INTERCEPT_RANGE * personality.interceptRange) / 20,
+              ) * FIXED) ** 2
           )
             continue;
           if (d < distance || (d === distance && enemy.id < nearest!.id)) {
@@ -2315,7 +2453,7 @@ export class Skirmish {
         }
         if (
           this.owners[current] === player.id &&
-          squad.troops < 650 &&
+          squad.troops < personality.replenishBelow &&
           (!nearest || distance > (12 * FIXED) ** 2)
         ) {
           if (squad.order.type !== "replenish")
@@ -2328,7 +2466,7 @@ export class Skirmish {
           continue;
         }
         // Meet nearby invaders with actual squads, using the same attack order.
-        if (nearest && distance < (20 * FIXED) ** 2) {
+        if (nearest && distance < (personality.interceptRange * FIXED) ** 2) {
           if (
             squad.order.type !== "attack" ||
             squad.order.targetId !== nearest.id
@@ -2350,9 +2488,9 @@ export class Skirmish {
           player.kind === "regular" &&
           enemyPlayers.length &&
           !homeNeedsLand &&
-          own.length >= 8 &&
-          i % 4 === 0 &&
-          this.tick > 60 * TICKS_PER_SECOND
+          own.length >= personality.minimumRaidSquads &&
+          i % 8 < personality.raidSlots &&
+          this.tick > personality.raidAfterTicks
         ) {
           const enemy = enemyPlayers.reduce((a, b) =>
             this.map.euclideanDistSquared(current, a.base) <
@@ -2362,8 +2500,8 @@ export class Skirmish {
           );
           goal = this.formationTile(
             enemy.base,
-            Math.floor(i / 4),
-            Math.ceil(own.length / 4),
+            Math.floor(i / 8) * personality.raidSlots + i % 8,
+            Math.ceil(own.length / 8) * personality.raidSlots,
           );
           raidCenter = enemy.base;
           // Do not sit forever on captured enemy camps.
@@ -2446,14 +2584,14 @@ export class Skirmish {
   private developAi(player: Player): void {
     if (this.expansion) return;
     const own = this.buildings.filter((b) => b.playerId === player.id);
-    for (const type of [
+    for (const type of buildingPriority(personalityOf(player), [
       "archery",
       "stables",
       "city",
       "factory",
       "port",
       "barracks",
-    ] as BuildingType[]) {
+    ])) {
       if (own.some((b) => b.type === type)) continue;
       let tile: number | undefined,
         distance = Infinity;
@@ -2621,6 +2759,16 @@ export class Skirmish {
     }
   }
 
+  private promoteTribes(): void {
+    for (const player of this.players) {
+      if (!canPromoteTribe(player, this.map.numLandTiles())) continue;
+      // Progression already exists for every faction. Reclassify in place so
+      // all authoritative AI policies activate without replacing any state.
+      player.kind = "regular";
+      this.expansion?.announce({ kind: "promotion", actorId: player.id });
+    }
+  }
+
   private checkWinner(): void {
     const armies = new Set([
         ...this.squads.map((s) => s.playerId),
@@ -2643,8 +2791,16 @@ export class Skirmish {
     const eliminated = new Set(
       this.players.filter((p) => p.eliminated).map((p) => p.id),
     );
+    const inheritors = new Map<number, number>();
     for (const player of defeated) {
       const beneficiary = this.conquest.beneficiary(player.id, eliminated);
+      if (
+        player.ai && player.kind === "regular" &&
+        this.player(beneficiary)?.kind === "tribe" && this.expansion
+      ) {
+        this.expansion.progression.inheritCompleted(beneficiary, player.id);
+        inheritors.set(beneficiary, player.id);
+      }
       if (
         player.kind === "regular" &&
         this.player(beneficiary)?.kind === "regular"
@@ -2668,6 +2824,14 @@ export class Skirmish {
         if (this.defenseZones[i].playerId === player.id)
           this.defenseZones.splice(i, 1);
     }
+    for (const [id, donorId] of inheritors) {
+      this.player(id)!.kind = "regular";
+      this.expansion!.announce({
+        kind: "promotion", actorId: id, otherId: donorId,
+        age: this.expansion!.progression.states[id].age,
+      });
+    }
+    this.promoteTribes();
     const survivors = this.players.filter((p) => !p.eliminated);
     if (survivors.length === 1) this.winner = survivors[0].id;
     else if (survivors.length === 0) this.winner = 0;
@@ -2751,6 +2915,10 @@ export class Skirmish {
         boarding: s.boarding
           ? { ...s.boarding, squadIds: [...s.boarding.squadIds] }
           : null,
+        shoreTransfer: s.shoreTransfer ? {
+          capacity:s.shoreTransfer.capacity,phase:s.shoreTransfer.phase,
+          destinationTile:s.shoreTransfer.destinationTile,landingTile:s.shoreTransfer.landingTile,
+        } : undefined,
       })),
       squads: this.squads.map(
         ({

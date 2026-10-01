@@ -5,7 +5,8 @@ import type { AttackProfile } from "../domain/Definitions";
 // are still an open design decision; a tower does not borrow a mobile weapon.
 export const GUN_NEST_ATTACK: AttackProfile = {
   channel: "ranged",
-  damage: 180,
+  // A Modern emplacement must penetrate contemporary point armour.
+  damage: 1500,
   range: 7 * FIXED,
   reloadTicks: 20,
   movingReloadPercent: 100,

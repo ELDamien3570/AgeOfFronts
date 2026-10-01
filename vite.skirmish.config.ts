@@ -20,7 +20,7 @@ export default defineConfig({
             return;
           }
           const html = fs.readFileSync(
-            path.resolve("skirmish/index.html"),
+            path.resolve("skirmish/home.html"),
             "utf8",
           );
           server
@@ -32,9 +32,9 @@ export default defineConfig({
             .catch(next);
         });
       },
-      // Vite's Rollup input lives in a subdirectory; publish a normal root page.
+      // Publish the homepage at / and retain the game at /skirmish/index.html.
       closeBundle() {
-        const nested = path.join(buildOutDir, "skirmish/index.html");
+        const nested = path.join(buildOutDir, "skirmish/home.html");
         if (fs.existsSync(nested))
           fs.copyFileSync(nested, path.join(buildOutDir, "index.html"));
       },
@@ -44,7 +44,13 @@ export default defineConfig({
   preview: { host: "127.0.0.1", port: 9000, strictPort: true },
   build: {
     outDir: "build/skirmish",
-    rollupOptions: { input: "skirmish/index.html" },
+    rollupOptions: {
+      input: {
+        home: "skirmish/home.html",
+        game: "skirmish/index.html",
+        troops: "skirmish/troops.html",
+      },
+    },
   },
   test: { environment: "node", include: ["tests/skirmish/**/*.test.ts"] },
 });

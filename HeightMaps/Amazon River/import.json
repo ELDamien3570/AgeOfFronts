@@ -1,0 +1,40 @@
+{
+  "name": "Amazon River",
+  "source": "-3_733_-62_798_8_8192_2048_16bit.png",
+  "sourceSha256": "426e24f1ee012294837582b18ddfe2eeb12cbb139cc1e463b68528645908a628",
+  "sourceUrl": "https://manticorp.github.io/unrealheightmap/#latitude/-3.732701379008688/longitude/-62.797881705770806/zoom/8/outputzoom/8/width/8192/height/2048/outputformat/png16",
+  "normalization": {
+    "mode": "regular",
+    "from": -450,
+    "to": 4160,
+    "range": 65536
+  },
+  "seaLevel": 0,
+  "terrainThresholds": {
+    "highland": 600,
+    "mountain": 1800
+  },
+  "sizes": [
+    250,
+    500,
+    1000
+  ],
+  "output": "resources/maps/amazon-river",
+  "albedo": {
+    "source": "-3_733_-62_798_8_8192_2048_albedo_imagery.png",
+    "sourceSha256": "00dbd9c9e5fd89c88e90651c3898b73a8446873b132f1060476bf1152cf44407",
+    "registration": "same-footprint",
+    "smoothingCellsAt500": 1.4,
+    "greenSensitivity": 1.1
+  },
+  "rivers": {
+    "source": "rivers.geojson",
+    "sourceSha256": "5347d5fee12bee39445f87644425003b3574ba0264082e83866a5ba9ac365677",
+    "widthCellsAt500": 1,
+    "widthCellsBySize": {
+      "250": 1,
+      "500": 2,
+      "1000": 3
+    }
+  }
+}

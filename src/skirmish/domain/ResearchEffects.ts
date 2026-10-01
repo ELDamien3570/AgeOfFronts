@@ -21,8 +21,15 @@ export function unitEffects(
   if (!has(research, unit.age, "warfare", 4)) return unit;
   return {
     ...unit,
-    meleeArmour: Math.min(6500, unit.meleeArmour + 300),
-    rangedArmour: Math.min(7000, unit.rangedArmour + 300),
+    meleeArmour:
+      unit.armourKind === "points"
+        ? unit.meleeArmour + Math.max(3, Math.round(unit.attack.damage * 0.025))
+        : Math.min(6500, unit.meleeArmour + 300),
+    rangedArmour:
+      unit.armourKind === "points"
+        ? unit.rangedArmour +
+          Math.max(3, Math.round(unit.attack.damage * 0.025))
+        : Math.min(7000, unit.rangedArmour + 300),
     attack: {
       ...unit.attack,
       damage: Math.round(unit.attack.damage * 1.1),

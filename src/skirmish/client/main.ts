@@ -14,7 +14,7 @@ import type {
   WorkerResponse,
 } from "../Protocol";
 
-import { FIXED, MAX_FACTIONS, MAX_SQUADS, TICKS_PER_SECOND } from "../Protocol";
+import { FIXED, MAX_FACTIONS, TICKS_PER_SECOND } from "../Protocol";
 
 import { BUILDING_RULES } from "../Rules";
 
@@ -25,10 +25,16 @@ import { loadMap, MAPS } from "../Terrain";
 import { empireMarkup, EmpireView } from "./EmpireView";
 
 import { EmpireViewModel } from "./EmpireViewModel";
+import { FactionViewModel } from "./FactionViewModel";
 
 import { UNIT } from "../content/Units";
 
-import { AGE_NAMES, AGES, type Age } from "../domain/Definitions";
+import {
+  AGE_NAMES,
+  AGES,
+  type Age,
+  type TechnologySpeed,
+} from "../domain/Definitions";
 
 import { ControlGroups } from "./ControlGroups";
 
@@ -61,7 +67,7 @@ document.querySelector<HTMLDivElement>("#app")!.innerHTML = `
 
   <header class="topbar">
 
-    <div class="brand"><span class="brand-mark">AF</span><div><h1>Age of Fronts</h1><p>Local AI skirmish</p></div></div>
+    <div class="brand"><a class="brand-mark" href="/" aria-label="Return to main lobby">AF</a><div><h1>Age of Fronts</h1><p>Local AI skirmish</p></div></div>
 
     <div class="match-settings"><label>Battlefield<select id="map">${MAPS.map((m) => `<option value="${m.id}">${m.name}</option>`).join("")}</select></label><label>Opponents<select id="opponents">${Array.from(
       { length: MAX_FACTIONS - 1 },
@@ -76,7 +82,7 @@ document.querySelector<HTMLDivElement>("#app")!.innerHTML = `
 
       .join(
         "",
-      )}</select></label><label>World size<select id="world-size"><option value="250">250×125 · classic</option><option value="500" selected>500×250 · expanded</option><option value="1000">1000×500 · large</option></select></label><label>Victory<select id="victory-mode"><option value="solo">Solo conquest</option><option value="allied">Allied conquest</option></select></label><button id="restart" class="primary">New skirmish</button></div>
+      )}</select></label><label>Map size<select id="world-size"><option value="250">250 cells · longest edge</option><option value="500" selected>500 cells · longest edge</option><option value="1000">1000 cells · longest edge</option></select></label><label>Victory<select id="victory-mode"><option value="solo">Solo conquest</option><option value="allied">Allied conquest</option></select></label><label title="New skirmishes divide all research and age-advancement costs and times by this setting, for every faction.">Tech speed<select id="technology-speed" aria-label="Technology speed"><option value="1">1×</option><option value="2">2×</option><option value="3">3×</option></select></label><button id="restart" class="primary">New skirmish</button></div>
 
     <div class="time-controls"><span id="clock">0:00</span><select id="speed" aria-label="Game speed"><option value="1">1× speed</option><option value="2">2× speed</option><option value="4">4× speed</option></select><button id="pause" aria-label="Pause game">Pause <kbd>Space</kbd></button><button id="home" aria-label="Fit battlefield">Fit map <kbd>Home</kbd></button></div>
 
@@ -90,7 +96,7 @@ document.querySelector<HTMLDivElement>("#app")!.innerHTML = `
 
     <div class="map-badge"><span class="live-dot"></span><span id="map-name">Loading battlefield…</span></div>
 
-    <div id="loading" class="loading"><span class="spinner"></span><h2>Preparing the battlefield</h2><p>Loading OpenFront terrain and deploying your squads.</p></div>
+    <div id="loading" class="loading"><span class="spinner"></span><h2>Preparing the battlefield</h2><p>Loading terrain and deploying your squads.</p></div>
 
     <div id="result" class="result" hidden><div><span class="eyebrow">SKIRMISH COMPLETE</span><h2 id="result-title"></h2><p id="result-description"></p><button id="play-again" class="primary">Play again</button></div></div>
 
@@ -202,6 +208,7 @@ function selectArmy(ids: number[]): void {
   renderer.selectedShips.clear();
   renderer.selectedAircraft.clear();
   renderer.selectedBuilding = null;
+  renderer.inspectedSquadId = null;
   renderer.selectedDeposit = null;
   updateHud();
 }
@@ -289,6 +296,9 @@ function notify(message: string): void {
 async function start(): Promise<void> {
   orderGesture.cancel();
   const sequence = ++matchSequence;
+  const technologySpeed = Number(
+    element<HTMLSelectElement>("technology-speed").value,
+  ) as TechnologySpeed;
 
   worker?.terminate();
 
@@ -308,6 +318,8 @@ async function start(): Promise<void> {
   renderer.selectedAircraft.clear();
 
   renderer.selectedBuilding = null;
+
+  renderer.inspectedSquadId = null;
   renderer.selectedDeposit = null;
 
   groups.reset();
@@ -333,7 +345,7 @@ async function start(): Promise<void> {
   element<HTMLButtonElement>("restart").disabled = true;
 
   element("loading").innerHTML =
-    '<span class="spinner"></span><h2>Preparing the battlefield</h2><p>Loading OpenFront terrain and deploying your squads.</p>';
+    '<span class="spinner"></span><h2>Preparing the battlefield</h2><p>Loading terrain and deploying your squads.</p>';
 
   try {
     const mapId = element<HTMLSelectElement>("map").value;
@@ -465,6 +477,7 @@ async function start(): Promise<void> {
           | "allied",
 
         territoryIncomeScale: loaded.territoryIncomeScale,
+        technologySpeed,
       },
     });
 
@@ -499,7 +512,7 @@ function updateHud(): void {
 
   element("gold").textContent = format(player.gold);
 
-  element("squad-count").textContent = `${own.length} / ${MAX_SQUADS}`;
+  element("squad-count").textContent = `${own.length} / ${squadCap(player, snapshot.expansion?.progression[player.id]?.age)}`;
 
   element("land").textContent = format(player.land);
 
@@ -553,8 +566,9 @@ function updateHud(): void {
         campOpacity > 0
           ? `<span data-camp-loss="${p.id}" style="opacity:${campOpacity}"> · camp lost</span>`
           : "";
+      const identity = new FactionViewModel(p);
 
-      return `<div data-player="${p.id}" class="rival ${p.eliminated ? "eliminated" : ""}"><div class="rival-name"><i style="background:${COLORS[p.id]}"></i><strong>${p.name}</strong><span>${p.kind === "tribe" ? "TRIBE" : p.ai ? "AI" : "YOU"}</span></div><div class="rival-stats"><b>${format(troops)}</b> troops · ${squads.length}${p.kind === "tribe" ? `/${squadCap(p)}` : ""} squads</div><div class="rival-land">${snapshot!.expansion ? AGE_NAMES[AGES.indexOf(snapshot!.expansion.progression[p.id].age)] + " · " : ""}${format(p.land)} land${p.eliminated ? " · eliminated" : campNotice}</div></div>`;
+      return `<div data-player="${p.id}" class="rival ${p.eliminated ? "eliminated" : ""}"><div class="rival-name"><i style="background:${COLORS[p.id]}"></i><strong>${p.name}</strong><span>${p.kind === "tribe" ? "TRIBE" : p.ai ? "AI" : "YOU"}</span></div><div class="rival-stats"><b>${format(troops)}</b> troops · ${squads.length}${p.kind === "tribe" ? `/${squadCap(p)}` : ""} squads</div>${p.ai ? `<div class="rival-land">${identity.personalityName}${identity.originName ? ` · ${identity.originName}` : ""}</div>` : ""}<div class="rival-land">${snapshot!.expansion ? AGE_NAMES[AGES.indexOf(snapshot!.expansion.progression[p.id].age)] + " · " : ""}${format(p.land)} land${p.eliminated ? " · eliminated" : campNotice}</div></div>`;
     })
 
     .join("");
@@ -585,6 +599,13 @@ function updateTerrainHover(): void {
 
   element("hover-terrain").textContent =
     tile === null ? "" : terrainView.describe(tile);
+  const bounds = canvas.getBoundingClientRect();
+  hud.hoverDeposit(
+    drag || placementType || landingShip !== undefined || targetedAction
+      ? null
+      : renderer.depositAt(terrainPointer.x, terrainPointer.y),
+    { x: bounds.left + terrainPointer.x, y: bounds.top + terrainPointer.y },
+  );
 }
 
 function updateSelection(): void {
@@ -599,7 +620,9 @@ function updateSelection(): void {
       ? `${renderer.selectedShips.size} ships selected`
       : vm?.building
         ? "Building selected"
-        : "No squads selected";
+        : vm?.inspectedSquad
+          ? "Inspecting enemy squad"
+          : "No squads selected";
 
   element("selected-orders").textContent = selected.length
     ? `Right click to move or attack. Shift queues orders. ${Math.max(...selected.map((s) => s.queuedOrders.length))} queued.`
@@ -607,7 +630,9 @@ function updateSelection(): void {
       ? "Right click water to sail. Shift queues waypoints."
       : vm?.building
         ? "Recruitment stays available in the bottom command bar."
-        : "Click your units or drag a selection box.";
+        : vm?.inspectedSquad
+          ? "Enemy details are read only. Select your troops to issue orders."
+          : "Click your units or drag a selection box.";
 
   element<HTMLButtonElement>("hold").disabled =
     selected.length === 0 && renderer.selectedShips.size === 0;
@@ -684,6 +709,8 @@ function controlGroup(digit: number, mode: "add" | "replace" | "recall"): void {
     renderer.selectedShips = members.selectedShips;
 
     renderer.selectedBuilding = null;
+
+    renderer.inspectedSquadId = null;
     renderer.selectedDeposit = null;
   } else {
     groups.bind(digit, renderer, snapshot, mode === "add");
@@ -709,6 +736,8 @@ function selectAll(): void {
   renderer.selectedAircraft.clear();
 
   renderer.selectedBuilding = null;
+
+  renderer.inspectedSquadId = null;
   renderer.selectedDeposit = null;
 
   updateHud();
@@ -787,6 +816,7 @@ function replenish(): void {
 }
 
 function cancelPlacement(): void {
+  hud.setBuildingPlacement(false);
   placementType = undefined;
 
   placementAge = undefined;
@@ -893,6 +923,7 @@ function placeBuilding(type: BuildingType, age?: Age): void {
   cancelPlacement();
   empire.close();
   placementType = type;
+  hud.setBuildingPlacement(true);
   placementAge = choice?.age;
 
   document
@@ -999,6 +1030,16 @@ const localPosition = (event: MouseEvent | PointerEvent) => {
 
 canvas.addEventListener("contextmenu", (event) => event.preventDefault());
 
+document.addEventListener("contextmenu", (event) => {
+  if (
+    !renderer.selected.size &&
+    !renderer.selectedShips.size &&
+    !renderer.selectedAircraft.size &&
+    empire.closeDiplomacy()
+  )
+    event.preventDefault();
+});
+
 canvas.addEventListener("pointerdown", (event) => {
   if (!snapshot || snapshot.winner !== null || event.button > 2) return;
 
@@ -1061,6 +1102,12 @@ canvas.addEventListener("pointermove", (event) => {
   drag.lastY = p.y;
 });
 
+canvas.addEventListener("pointerleave", () => {
+  terrainPointer = undefined;
+  element("hover-terrain").textContent = "";
+  hud.hoverDeposit(null);
+});
+
 canvas.addEventListener("pointerup", (event) => {
   if (!drag || !snapshot) return;
 
@@ -1117,6 +1164,7 @@ canvas.addEventListener("pointerup", (event) => {
   }
 
   if (start.button === 0) {
+    renderer.inspectedSquadId = null;
     if (!start.shift) {
       orderGesture.cancel();
       renderer.selectedDeposit = null;
@@ -1126,6 +1174,8 @@ canvas.addEventListener("pointerup", (event) => {
       renderer.selectedAircraft.clear();
 
       renderer.selectedBuilding = null;
+
+      renderer.inspectedSquadId = null;
       renderer.selectedDeposit = null;
     }
 
@@ -1179,6 +1229,7 @@ canvas.addEventListener("pointerup", (event) => {
       const ship = renderer.shipAt(p.x, p.y);
 
       const squad = renderer.squadAt(p.x, p.y, 1);
+      const foreignSquad = renderer.squadAt(p.x, p.y);
 
       if (army !== null) {
         const selectedArmy = snapshot.expansion?.armies.find(
@@ -1208,6 +1259,8 @@ canvas.addEventListener("pointerup", (event) => {
         if (start.shift && renderer.selected.has(squad.id))
           renderer.selected.delete(squad.id);
         else renderer.selected.add(squad.id);
+      } else if (foreignSquad && foreignSquad.playerId !== 1) {
+        renderer.inspectedSquadId = foreignSquad.id;
       } else if (building !== null) renderer.selectedBuilding = building;
       else if (
         ship !== null &&
@@ -1225,6 +1278,7 @@ canvas.addEventListener("pointerup", (event) => {
       !renderer.selectedShips.size &&
       !renderer.selectedAircraft.size &&
       renderer.selectedDeposit === null &&
+      renderer.inspectedSquadId === null &&
       (renderer.selectedBuilding === null ||
         snapshot.buildings.find((b) => b.id === renderer.selectedBuilding)
           ?.playerId !== 1)
@@ -1451,6 +1505,8 @@ canvas.addEventListener("dblclick", (event) => {
   }
 
   renderer.selectedBuilding = null;
+
+  renderer.inspectedSquadId = null;
   renderer.selectedDeposit = null;
 
   if (
@@ -1486,7 +1542,9 @@ document.addEventListener("keydown", (event) => {
     return;
   }
   if (
-    (event.target as HTMLElement).matches("input,select,textarea") ||
+    (event.target as HTMLElement).matches(
+      "input:not([type=checkbox]):not([type=radio]),select,textarea",
+    ) ||
     (event.target as HTMLElement).isContentEditable
   )
     return;
@@ -1504,12 +1562,6 @@ document.addEventListener("keydown", (event) => {
     else empire.toggle(key === "y" ? "technology" : "supplies");
     return;
   }
-
-  if (
-    empire.open ||
-    (event.target as HTMLElement).closest("button,[role=button],.empire-panel,.hud-popover,.army-card")
-  )
-    return;
 
   const action = hotkeyAction(event);
 
@@ -1579,5 +1631,10 @@ function frame(now: number): void {
 }
 
 requestAnimationFrame(frame);
+
+// The homepage links to a validated map; the game's full local settings stay available.
+const launchMap = new URLSearchParams(window.location.search).get("map");
+if (MAPS.some((map) => map.id === launchMap))
+  element<HTMLSelectElement>("map").value = launchMap!;
 
 void start();

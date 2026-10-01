@@ -106,9 +106,14 @@ build or DNS verification alone does not establish that the game works in a brow
 ## Multiplayer hosting
 
 Keep this Static Site for the homepage, lobby interface, and game client. Add a
-separate Render Web Service for the authoritative multiplayer application, reached
-over HTTPS and WSS. Its HTTP and WebSocket routes must share Render's public port,
-and the listener must bind to `0.0.0.0` using `PORT`.
+separate Render Web Service for the multiplayer coordinator, relay, server-owned
+gold/reserve ledger, checkpoint storage and fallback workers. An elected browser
+normally executes each match; host loss pauses it for replacement or server fallback.
+This is the chosen casual architecture for games with friends and trusts host world
+events. The server must still have measured capacity to resume admitted matches.
+
+Reach the coordinator over HTTPS and WSS. Its HTTP and WebSocket routes must share
+Render's public port, and the listener must bind to `0.0.0.0` using `PORT`.
 
 See [the multiplayer plan](MultiplayerPlan.md) for the required domain, application,
 transport, presentation, recovery, and performance work.

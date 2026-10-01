@@ -25,4 +25,14 @@ export class CoastIndex {
   candidates(landComponent: number, waterComponent: number): readonly Coast[] {
     return this.edges.get(`${landComponent}:${waterComponent}`) ?? [];
   }
+  connections(): {
+    landComponent: number;
+    waterComponent: number;
+    edges: readonly Coast[];
+  }[] {
+    return [...this.edges].map(([key, edges]) => {
+      const [landComponent, waterComponent] = key.split(":").map(Number);
+      return { landComponent, waterComponent, edges };
+    });
+  }
 }

@@ -4,7 +4,7 @@ import { GameMapImpl } from "../../src/core/game/GameMap";
 import { EmpireHudView } from "../../src/skirmish/client/EmpireHudView";
 import { empireMarkup } from "../../src/skirmish/client/EmpireView";
 import { EmpireViewModel } from "../../src/skirmish/client/EmpireViewModel";
-import { hudMarkup } from "../../src/skirmish/client/HudView";
+import { hudMarkup, HudView } from "../../src/skirmish/client/HudView";
 import { HudViewModel } from "../../src/skirmish/client/HudViewModel";
 import { ResourceViewModel } from "../../src/skirmish/client/ResourceViewModel";
 import { SkirmishViewModel } from "../../src/skirmish/client/SkirmishViewModel";
@@ -36,6 +36,137 @@ const firstAges = {
 } as const;
 
 describe("age-based strategic resource discovery", () => {
+  it("names the exact extraction node for every visible deposit and updates it after local research", () => {
+    const terrain = new Uint8Array(96 * 64).fill(133);
+    const match = new Skirmish(
+      new GameMapImpl(96, 64, terrain, terrain.length),
+      {
+        seed: 47,
+        aiCount: 1,
+        tribes: false,
+        runAi: false,
+        ruleset: "ages-v1",
+      },
+    );
+    const expansion = match.expansion!,
+      selection = {
+        selected: new Set<number>(),
+        selectedShips: new Set<number>(),
+        selectedBuilding: null,
+        selectedDeposit: null as number | null,
+      },
+      local = expansion.progression.states[1];
+    local.age = "Modern";
+    local.completed = [];
+    // Foreign research must not make local extraction appear unlocked.
+    expansion.progression.states[2].completed = expansion.supply.deposits.map(
+      (d) => resourceTechnology(d.resource).id,
+    );
+    const model = () =>
+      new HudViewModel(new SkirmishViewModel(match.snapshot(), selection));
+    for (const deposit of expansion.supply.deposits) {
+      const technology = resourceTechnology(deposit.resource);
+      selection.selectedDeposit = deposit.id;
+      const hover = model().depositCard(deposit.id)!;
+      expect(hover.status).toBe(`Requires research: ${technology.name}`);
+      expect(
+        hover.stats.find((s) => s.label === "Research node")?.value,
+      ).toContain(technology.name);
+      expect(
+        hover.stats.find((s) => s.label === "Research node")?.value,
+      ).toMatch(/Economic|Warfare/);
+      const clicked = model().selectionCard(null);
+      expect(clicked.mode).toBe("detail");
+      if (clicked.mode === "detail") expect(clicked.card).toEqual(hover);
+    }
+    const stone = expansion.supply.deposits.find(
+      (d) => d.resource === "stone",
+    )!;
+    local.completed.push(resourceTechnology("stone").id);
+    expect(model().depositCard(stone.id)?.status).toBe(
+      "Research complete: Stone Mining",
+    );
+    expect(
+      model()
+        .depositCard(stone.id)
+        ?.stats.find((s) => s.label === "Extraction")?.value,
+    ).toContain("build a mine");
+    local.age = "StoneAge";
+    const oil = expansion.supply.deposits.find((d) => d.resource === "oil")!;
+    expect(model().depositCard(oil.id)).toBeUndefined();
+  });
+
+  it("shows matching research requirements in clicked and hovered cards without changing selection, then hides the popup on leave", () => {
+    const terrain = new Uint8Array(96 * 64).fill(133);
+    const match = new Skirmish(
+      new GameMapImpl(96, 64, terrain, terrain.length),
+      {
+        seed: 47,
+        aiCount: 1,
+        tribes: false,
+        runAi: false,
+        ruleset: "ages-v1",
+      },
+    );
+    const deposit = match.expansion!.supply.deposits.find(
+        (d) => d.resource === "stone",
+      )!,
+      selection = {
+        selected: new Set<number>(),
+        selectedShips: new Set<number>(),
+        selectedBuilding: null,
+        selectedDeposit: deposit.id as number | null,
+      },
+      root = document.createElement("main");
+    root.innerHTML = hudMarkup();
+    document.body.replaceChildren(root);
+    vi.stubGlobal(
+      "ResizeObserver",
+      class {
+        observe() {}
+      },
+    );
+    try {
+      const view = new HudView(root),
+        update = () =>
+          view.update(
+            new HudViewModel(
+              new SkirmishViewModel(match.snapshot(), selection),
+            ),
+          ),
+        tooltip = root.querySelector<HTMLElement>("#deposit-tooltip")!;
+      update();
+      expect(root.querySelector("#selection-label")!.textContent).toBe(
+        "RESOURCE DETAILS",
+      );
+      expect(root.querySelector("#selection-status")!.textContent).toBe(
+        "Requires research: Stone Mining",
+      );
+      expect(root.querySelector("#selection-stats")!.textContent).toContain(
+        "Stone Mining · Stone Age · Economic",
+      );
+      view.hoverDeposit(deposit.id, { x: 100, y: 100 });
+      expect(tooltip.hidden).toBe(false);
+      expect(tooltip.textContent).toContain("Requires research: Stone Mining");
+      expect(selection.selectedDeposit).toBe(deposit.id);
+      match.expansion!.progression.states[1].completed.push(
+        resourceTechnology("stone").id,
+      );
+      update();
+      expect(tooltip.textContent).toContain("Research complete: Stone Mining");
+      expect(root.querySelector("#selection-status")!.textContent).toBe(
+        "Research complete: Stone Mining",
+      );
+      view.hoverDeposit(null);
+      expect(tooltip.hidden).toBe(true);
+      view.hoverDeposit(deposit.id, { x: 100, y: 100 });
+      view.reset();
+      expect(tooltip.hidden).toBe(true);
+    } finally {
+      vi.unstubAllGlobals();
+    }
+  });
+
   it("gates deposit inspection and enemy producer details without revealing foreign stocks", () => {
     const terrain = new Uint8Array(96 * 64).fill(133);
     const match = new Skirmish(

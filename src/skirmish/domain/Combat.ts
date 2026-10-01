@@ -12,6 +12,7 @@ export function promotionLevel(xp: number): number {
 }
 export interface Defence {
   tags: readonly TargetTag[];
+  armourKind?: "points" | "percentage";
   meleeArmour: number;
   rangedArmour: number;
   bonusResistance: Partial<Record<TargetTag, number>>;
@@ -47,34 +48,58 @@ export function scaledAttack(
     ),
   };
 }
-// Armour is basis points. Bonus classes are distinct from the base armour
-// channel; duplicate/overlapping presentation categories never create bonuses.
+// Troops use flat melee/pierce armour and independent bonus-class armour.
+// Hulls and structures retain basis-point resistance. Cover is always a
+// percentage; it never changes the units of a defence's base armour.
 export function damageAmount(
   profile: AttackProfile,
   defence: Defence,
   troops = 1000,
   xp = 0,
   capacity = 1000,
+  committedStrength?: number,
 ): number {
-  if (troops <= 0) return 0;
+  if (
+    troops <= 0 ||
+    (committedStrength !== undefined && committedStrength <= 0)
+  )
+    return 0;
   if (!profile.targets.some((tag) => defence.tags.includes(tag))) return 0;
+  // Promotion changes the displayed per-unit weapon before armour. Surviving
+  // troop count scales the resolved per-unit damage, not armour penetration.
+  const attack = xp ? scaledAttack(profile, 1000, 1000, xp) : profile;
+  const armour = Math.max(
+    0,
+    attack.channel === "melee" ? defence.meleeArmour : defence.rangedArmour,
+  );
   const reduction = Math.min(
     MAX_ARMOUR,
-    Math.max(
-      0,
-      profile.channel === "melee" ? defence.meleeArmour : defence.rangedArmour,
-    ) + (defence.cover ?? 0),
+    Math.max(0, defence.armourKind === "points" ? 0 : armour) +
+      (defence.cover ?? 0),
   );
   const effective = Math.floor(
-    (reduction * (10000 - profile.penetration)) / 10000,
+    (reduction * (10000 - attack.penetration)) / 10000,
   );
-  let damage = Math.floor((profile.damage * (10000 - effective)) / 10000);
+  const base =
+    defence.armourKind === "points"
+      ? Math.max(
+          0,
+          attack.damage -
+            Math.floor((armour * (10000 - attack.penetration)) / 10000),
+        )
+      : attack.damage;
+  let damage = Math.floor((base * (10000 - effective)) / 10000);
   for (const tag of new Set(defence.tags))
     damage += Math.max(
       0,
-      (profile.bonuses[tag] ?? 0) - (defence.bonusResistance[tag] ?? 0),
+      (attack.bonuses[tag] ?? 0) - (defence.bonusResistance[tag] ?? 0),
     );
-  return Math.max(1, Math.floor(damage * attackStrength(troops, capacity, xp)));
+  return Math.max(
+    1,
+    Math.floor(
+      damage * (committedStrength ?? attackStrength(troops, capacity)),
+    ),
+  );
 }
 export function defenceOf(definition: UnitDefinition, cover = 0): Defence {
   return { ...definition, cover };

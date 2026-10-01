@@ -2,7 +2,9 @@
 import { describe, expect, it } from "vitest";
 import { GameMapImpl } from "../../src/core/game/GameMap";
 import { Skirmish } from "../../src/skirmish/Simulation";
+import { empireMarkup, EmpireView } from "../../src/skirmish/client/EmpireView";
 import { EmpireViewModel } from "../../src/skirmish/client/EmpireViewModel";
+import { hudMarkup } from "../../src/skirmish/client/HudView";
 import { technologyTreeMarkup } from "../../src/skirmish/client/TechnologyTreeView";
 import { TechnologyViewModel } from "../../src/skirmish/client/TechnologyViewModel";
 import { TECHNOLOGIES } from "../../src/skirmish/content/Technology";
@@ -82,5 +84,60 @@ describe("battlefield research drawer", () => {
         .querySelector('[data-research="bronzeage-armies"]')
         ?.getAttribute("disabled"),
     ).not.toBeNull();
+  });
+
+  it("researches the inspected node from the pinned details without losing the tree position", () => {
+    const { m, vm } = fixture();
+    const root = document.createElement("div");
+    root.id = "app";
+    root.innerHTML = `${empireMarkup()}<main class="battlefield">${hudMarkup()}</main>`;
+    document.body.replaceChildren(root);
+    const view = new EmpireView(root, {
+      refresh: () => {},
+      build: () => {},
+      notify: () => {},
+      focusedRef: () => null,
+      target: () => {},
+      command: (command) => {
+        expect(m.applyCommand(command)).toBeNull();
+      },
+    });
+    view.update(vm());
+    view.toggle("technology");
+    root.querySelector<HTMLElement>(".technology-tree-scroll")!.scrollTop = 200;
+    root
+      .querySelector<HTMLButtonElement>('[data-node="stoneage-shorecraft"]')!
+      .click();
+    const details = root.querySelector<HTMLElement>(".technology-detail")!;
+    expect(details.closest(".technology-tree-scroll")).toBeNull();
+    expect(
+      root.querySelector<HTMLElement>(".technology-tree-scroll")!.scrollTop,
+    ).toBe(200);
+    const research = details.querySelector<HTMLButtonElement>(
+      "header [data-research]",
+    )!;
+    expect(research.disabled).toBe(false);
+    research.click();
+    expect(
+      m.expansion!.progression.states[1].research.naval?.technologyId,
+    ).toBe("stoneage-shorecraft");
+    view.update(vm());
+    view.toggle("technology");
+    view.toggle("technology");
+    expect(
+      root.querySelector<HTMLElement>(".technology-tree-scroll")!.scrollTop,
+    ).toBe(200);
+    const running = root.querySelector<HTMLButtonElement>(
+      ".technology-detail-header [data-research]",
+    )!;
+    expect(running.textContent).toBe("Researching");
+    expect(running.disabled).toBe(true);
+    view.toggle("supplies");
+    expect(root.querySelector(".technology-detail")).toBeNull();
+    expect(
+      root
+        .querySelector("#empire-panel")!
+        .classList.contains("technology-drawer"),
+    ).toBe(false);
   });
 });

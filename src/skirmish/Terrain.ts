@@ -1,6 +1,7 @@
 import { TerrainType } from "../core/game/Game";
 import type { GameMap } from "../core/game/GameMap";
 import { GameMapImpl } from "../core/game/GameMap";
+import { HEIGHTMAP_MAPS } from "./content/Maps";
 import { createSkirmishMap } from "./Elevation";
 import { EnvironmentProfile } from "./Environment";
 import { forestOf } from "./Forest";
@@ -9,10 +10,8 @@ import { loadHeightmap } from "./HeightmapMap";
 import type { LoadedMap } from "./Protocol";
 
 export const MAPS = [
-  { id: "world", name: "World · land skirmish" },
-  { id: "fourislands", name: "Four Islands · one island" },
+  ...HEIGHTMAP_MAPS.map(({ id, name }) => ({ id, name })),
   { id: "thebox", name: "Training Square" },
-  { id: "heightmap-test1", name: "Heightmap · Test 1" },
 ] as const;
 
 export function terrainSpeed(map: GameMap, tile: number): number {
@@ -58,8 +57,9 @@ async function loadBareMap(id: string, worldSize: number): Promise<LoadedMap> {
   if (!MAPS.some((m) => m.id === id)) throw new Error("Unknown map");
   if (![250, 500, 1000].includes(worldSize))
     throw new Error("Unknown world size");
-  if (id === "heightmap-test1") return loadHeightmap(worldSize);
-  const variant = id === "world" && worldSize === 1000 ? "map4x" : "map16x";
+  const heightmap = HEIGHTMAP_MAPS.find((map) => map.id === id);
+  if (heightmap) return loadHeightmap(heightmap.assetRoot, worldSize);
+  const variant = "map16x";
   const [manifestResponse, binaryResponse] = await Promise.all([
     fetch(`/maps/${id}/manifest.json`),
     fetch(`/maps/${id}/${variant}.bin`),
@@ -74,10 +74,7 @@ async function loadBareMap(id: string, worldSize: number): Promise<LoadedMap> {
   // Use OpenFront's original terrain bytes at a readable skirmish resolution.
   const stride = Math.max(
     1,
-    Math.ceil(
-      Math.max(metadata.width, metadata.height) /
-        (id === "world" ? worldSize : 256),
-    ),
+    Math.ceil(Math.max(metadata.width, metadata.height) / 256),
   );
   const width = Math.ceil(metadata.width / stride);
   const height = Math.ceil(metadata.height / stride);
@@ -102,6 +99,6 @@ async function loadBareMap(id: string, worldSize: number): Promise<LoadedMap> {
     map: new GameMapImpl(width, height, terrain, land),
     terrain,
     name: `${manifest.name} · ${width}×${height}`,
-    territoryIncomeScale: id === "world" ? (width * height) / (250 * 125) : 1,
+    territoryIncomeScale: 1,
   };
 }

@@ -7,6 +7,8 @@ import { BUILDING_RULES } from "../Rules";
 import { UNIT } from "../content/Units";
 
 import { AgeThemeView } from "./AgeThemeView";
+import { AGE_UI_THEMES } from "./AgeUiTheme";
+import { COLORS } from "./FactionColors";
 import { EmpireHudView } from "./EmpireHudView";
 import type { EmpireViewModel } from "./EmpireViewModel";
 import { technologyTreeMarkup } from "./TechnologyTreeView";
@@ -196,6 +198,10 @@ export class EmpireView {
     (this.root.querySelector("#empire-panel") as HTMLElement).hidden = true;
     this.root.querySelector<HTMLElement>(`#${opener}`)?.focus();
     return true;
+  }
+
+  closeDiplomacy(): boolean {
+    return this.panel === "diplomacy" && this.close();
   }
 
   get open(): boolean {
@@ -421,21 +427,6 @@ export class EmpireView {
         buildingId: Number(d.repair),
       });
 
-    if (d.gate) {
-      const id = Number(d.gate);
-      this.actions.target(
-        (x, y) =>
-          this.actions.command({
-            type: "gate",
-            playerId: 1,
-            barrierId: id,
-            tile:
-              Math.floor(y / 256) * this.vm!.state.width + Math.floor(x / 256),
-          }),
-        "Click a tile on this wall to build a gate · 250 gold",
-      );
-    }
-
     if (d.wallRepair)
       this.actions.command({
         type: "repair",
@@ -453,6 +444,21 @@ export class EmpireView {
     const panel = this.root.querySelector<HTMLElement>("#empire-panel")!;
     panel.hidden = false;
     panel.classList.toggle("technology-drawer", this.panel === "technology");
+    panel.classList.toggle("diplomacy-drawer", this.panel === "diplomacy");
+    if (this.panel === "diplomacy") {
+      const faction = vm.faction(this.inspectedPlayer);
+      if (faction) {
+        const theme = AGE_UI_THEMES[faction.age];
+        panel.dataset.factionAge = faction.age;
+        panel.style.setProperty("--diplomacy-color", COLORS[faction.player.id]);
+        panel.style.setProperty("--diplomacy-texture", `url("${theme.texture}")`);
+        panel.style.setProperty("--diplomacy-rim", theme.palette.rim);
+      }
+    } else {
+      delete panel.dataset.factionAge;
+      for (const property of ["color", "texture", "rim"])
+        panel.style.removeProperty(`--diplomacy-${property}`);
+    }
 
     this.root.querySelector("#empire-panel-title")!.textContent =
       this.panel === "technology"
@@ -470,7 +476,7 @@ export class EmpireView {
 
     const footer =
       this.panel === "technology"
-        ? `<b>${escape(vm.summary)}</b><p>${vm.progression.advancement ? `Advancing: ${Math.ceil(vm.progression.advancement.remainingTicks / 20)} sec` : (vm.advance.reason ?? "Two trees complete · ready to advance")}</p>${vm.advance.cost ? `<button data-advance="yes" ${vm.advance.reason ? "disabled" : ""}>Advance age · ${fmt(vm.advance.cost.gold)} gold · ${vm.advance.cost.ticks / 20}s</button>` : "<b>Final age</b>"}`
+        ? `<div class="technology-progress"><b>${escape(vm.summary)}</b><p>${vm.progression.advancement ? `Advancing: ${Math.ceil(vm.progression.advancement.remainingTicks / 20)} sec` : (vm.advance.reason ?? "Two trees complete · ready to advance")}</p></div>${vm.advance.cost ? `<button data-advance="yes" ${vm.advance.reason ? "disabled" : ""}>Advance age · ${fmt(vm.advance.cost.gold)} gold · ${vm.advance.cost.ticks / 20}s</button>` : "<b>Final age</b>"}`
         : "";
 
     if (!force && html + footer === this.fingerprint) return;
@@ -490,11 +496,15 @@ export class EmpireView {
         : "";
 
     const content = this.root.querySelector<HTMLElement>("#empire-content")!,
-      scroll = content.scrollTop;
+      scroll = (
+        content.querySelector<HTMLElement>(".technology-tree-scroll") ?? content
+      ).scrollTop;
 
     content.innerHTML = html;
     this.root.querySelector("#empire-panel-footer")!.innerHTML = footer;
-    content.scrollTop = scroll;
+    (
+      content.querySelector<HTMLElement>(".technology-tree-scroll") ?? content
+    ).scrollTop = scroll;
 
     if (identity)
       panel
@@ -559,11 +569,11 @@ export class EmpireView {
       )
       .join(
         "",
-      )}<h3>Fortification controls</h3>${repair ? `<button data-repair="${repair.id}">Repair selected ${BUILDING_RULES[repair.type].name}</button>` : "<p>Select an owned building to repair it.</p>"}<p>${walls.length} wall segments · page ${wallPage + 1} / ${Math.max(1, Math.ceil(walls.length / 16))}</p><button data-wall-page="${Math.max(0, wallPage - 1)}" ${wallPage === 0 ? "disabled" : ""}>Previous walls</button><button data-wall-page="${wallPage + 1}" ${(wallPage + 1) * 16 >= walls.length ? "disabled" : ""}>Next walls</button>${walls
+      )}<h3>Fortification controls</h3><p>Your troops and allies can cross friendly walls anywhere. Gates appear automatically and are visual only.</p>${repair ? `<button data-repair="${repair.id}">Repair selected ${BUILDING_RULES[repair.type].name}</button>` : "<p>Select an owned building to repair it.</p>"}<p>${walls.length} wall segments · page ${wallPage + 1} / ${Math.max(1, Math.ceil(walls.length / 16))}</p><button data-wall-page="${Math.max(0, wallPage - 1)}" ${wallPage === 0 ? "disabled" : ""}>Previous walls</button><button data-wall-page="${wallPage + 1}" ${(wallPage + 1) * 16 >= walls.length ? "disabled" : ""}>Next walls</button>${walls
       .slice(wallPage * 16, wallPage * 16 + 16)
       .map(
         (w) =>
-          `<button data-gate="${w.id}">Gate · wall #${w.id}</button><button data-wall-repair="${w.id}">Repair wall #${w.id}</button>`,
+          `<button data-wall-repair="${w.id}">Repair wall #${w.id}</button>`,
       )
       .join("")}`;
   }
@@ -579,6 +589,6 @@ export class EmpireView {
       ),
       incoming = vm.incoming.find((o) => o.proposer === p.id);
 
-    return `<h3>${escape(p.name)}</h3><p class="faction-age"><strong>Current age: ${faction.ageName}</strong></p><p>${p.kind === "tribe" ? "Tribes do not negotiate" : treaty ? `Allied · ${Math.ceil((treaty.expiresTick - vm.state.tick) / 20)}s remaining` : "Independent faction"}</p><p>${fmt(p.land)} land · ${fmt(p.gold)} gold</p>${p.kind === "tribe" || p.eliminated ? "" : treaty ? `<button data-diplomacy="renew" data-other="${p.id}">Agree to renewal</button><button data-diplomacy="break" data-other="${p.id}">Break alliance · 30s betrayal penalty</button>` : incoming ? `<button data-diplomacy="accept" data-other="${p.id}">Accept alliance</button><button data-diplomacy="reject" data-other="${p.id}">Reject</button>` : `<button data-diplomacy="offer" data-other="${p.id}">Offer alliance</button>`}<p>Allies retain their own units, supplies, buildings and research.</p>`;
+    return `<div class="diplomacy-identity" data-faction-kind="${p.kind === "tribe" ? "tribe" : p.ai ? "nation" : "player"}"><span class="diplomacy-kind">${p.kind === "tribe" ? "Tribe" : p.ai ? "AI nation" : "Player nation"}</span><h3>${escape(p.name)}</h3></div>${p.ai ? `<p><strong>${escape(faction.identity.personalityName)}</strong>${faction.identity.originName ? ` · ${escape(faction.identity.originName)}` : ""}</p><p>${escape(faction.identity.description)}</p>` : ""}<p class="faction-age"><strong>Current age: ${faction.ageName}</strong></p><p>${p.kind === "tribe" ? "Tribes do not negotiate" : treaty ? `Allied · ${Math.ceil((treaty.expiresTick - vm.state.tick) / 20)}s remaining` : "Independent faction"}</p><p>${fmt(p.land)} land · ${fmt(p.gold)} gold</p>${p.kind === "tribe" || p.eliminated ? "" : treaty ? `<button data-diplomacy="renew" data-other="${p.id}">Agree to renewal</button><button data-diplomacy="break" data-other="${p.id}">Break alliance · 30s betrayal penalty</button>` : incoming ? `<button data-diplomacy="accept" data-other="${p.id}">Accept alliance</button><button data-diplomacy="reject" data-other="${p.id}">Reject</button>` : `<button data-diplomacy="offer" data-other="${p.id}">Offer alliance</button>`}<p>Allies retain their own units, supplies, buildings and research.</p>`;
   }
 }
