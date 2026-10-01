@@ -1,4 +1,5 @@
 import type { Command } from "../Protocol";
+import { AGE_UI_THEMES } from "./AgeUiTheme";
 import type { EmpireViewModel } from "./EmpireViewModel";
 import { ResearchOpportunitiesViewModel } from "./ResearchOpportunitiesViewModel";
 
@@ -36,11 +37,15 @@ export class ResearchOpportunitiesView {
         (node) => node.id === button.dataset.quickResearch,
       );
       if (!card || card.reason) return;
-      this.command({
-        type: "research",
-        playerId: this.vm.playerId,
-        technologyId: card.id,
-      });
+      this.command(
+        card.kind === "advance-age"
+          ? { type: "advance-age", playerId: this.vm.playerId }
+          : {
+              type: "research",
+              playerId: this.vm.playerId,
+              technologyId: card.id,
+            },
+      );
     });
   }
 
@@ -56,7 +61,14 @@ export class ResearchOpportunitiesView {
     const cards = new ResearchOpportunitiesViewModel(vm).cards;
     this.element.hidden = cards.length === 0;
     const fingerprint = JSON.stringify(
-      cards.map((card) => [card.id, card.gold, card.seconds, card.reason, card.tree]),
+      cards.map((card) => [
+        card.id,
+        card.gold,
+        card.seconds,
+        card.reason,
+        card.tree,
+        card.kind === "advance-age" ? card.targetAge : null,
+      ]),
     );
     if (fingerprint === this.fingerprint) return;
     this.fingerprint = fingerprint;
@@ -67,10 +79,32 @@ export class ResearchOpportunitiesView {
       : undefined;
     this.element.innerHTML = cards
       .map((card) => {
-        const treeLabel = card.tree === "economic" ? "Economics" : card.tree;
-        return `<article class="research-opportunity hud-surface research-tree-${escape(card.tree)}" data-tree="${escape(card.tree)}" aria-label="${escape(card.name)}" tabindex="0"><header><div class="research-title-group"><small class="branch-label">${escape(treeLabel)}</small><b>${escape(card.name)}</b></div><button data-quick-research="${escape(card.id)}" aria-label="Research ${escape(card.name)}"><span>Research</span><small class="cost-label">${format(card.gold)}g · ${card.seconds}s</small></button></header><div class="research-description"><div><p>${escape(card.description)}</p></div></div></article>`;
+        const ageUp = card.kind === "advance-age";
+        const treeLabel = ageUp
+          ? "Age up"
+          : card.tree === "economic"
+            ? "Economics"
+            : card.tree;
+        const action = ageUp ? "Advance age" : "Research";
+        const label = ageUp
+          ? `Advance to ${card.name}`
+          : `Research ${card.name}`;
+        return `<article class="research-opportunity hud-surface research-tree-${escape(card.tree)}${ageUp ? " research-age-up" : ""}" data-tree="${escape(card.tree)}"${ageUp ? ` data-target-age="${card.targetAge}"` : ""} aria-label="${escape(card.name)}" tabindex="0"><header><div class="research-title-group"><small class="branch-label">${escape(treeLabel)}</small><b>${escape(card.name)}</b></div><button data-quick-research="${escape(card.id)}" aria-label="${escape(label)}"><span>${action}</span><small class="cost-label">${format(card.gold)}g · ${card.seconds}s</small></button></header><div class="research-description"><div><p>${escape(card.description)}</p></div></div></article>`;
       })
       .join("");
+    for (const card of cards) {
+      if (card.kind !== "advance-age") continue;
+      const frame =
+        this.element.querySelector<HTMLElement>(".research-age-up")!;
+      const theme = AGE_UI_THEMES[card.targetAge];
+      // Preview the destination frame locally; the earned HUD age stays intact.
+      frame.style.setProperty(
+        "--research-age-texture",
+        `url("${theme.texture}")`,
+      );
+      frame.style.setProperty("--research-age-light", theme.palette.light);
+      frame.style.setProperty("--research-age-edge", theme.palette.edge);
+    }
     this.element.scrollTop = scroll;
     if (focused)
       [

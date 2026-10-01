@@ -48,6 +48,19 @@
     0 5px 15px #0008;
   border-image: none;
 }
+#app[data-ui-age] .battlefield .research-opportunity.research-age-up {
+  background:
+    linear-gradient(145deg, #ffffff08, #0004) padding-box,
+    linear-gradient(var(--age-panel), var(--age-panel)) padding-box,
+    var(--research-age-texture) 0 0 / 150px 150px border-box;
+  box-shadow:
+    inset 1px 1px 2px #000a,
+    0 3px 12px #0006;
+}
+#app[data-ui-age] .research-age-up .branch-label {
+  color: var(--research-age-light);
+  border-color: var(--research-age-edge);
+}
 #app[data-ui-age] :is(.topbar, .resource-strip, footer) {
   background: var(--frame-paint);
   border: 0 solid transparent;
