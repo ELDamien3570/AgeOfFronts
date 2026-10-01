@@ -128,7 +128,7 @@ export class SpawnSelection {
       }
       try {
         for (let i = 0; i < this.humanCount + this.options.aiCount; i++)
-          if (bases[i] === undefined) bases[i] = placement.next(CAMP_RADIUS);
+          bases[i] ??= placement.next(CAMP_RADIUS);
         if (this.options.tribes)
           for (
             let i = 0;

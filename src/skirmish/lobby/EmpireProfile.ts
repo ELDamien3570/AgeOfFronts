@@ -19,6 +19,7 @@ export function createEmpireProfile(
     throw new Error(
       `Use an empire name of 1–${MAX_EMPIRE_NAME_LENGTH} characters.`,
     );
+  // eslint-disable-next-line no-control-regex -- rejects control characters on purpose
   if (/[\u0000-\u001f\u007f]/u.test(normalized))
     throw new Error("Empire names cannot contain control characters.");
   return Object.freeze({ name: normalized, flagCode });

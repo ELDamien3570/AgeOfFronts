@@ -113,6 +113,7 @@ export class LobbyDirectory {
     if (
       !title ||
       Array.from(title).length > MAX_LOBBY_TITLE_LENGTH ||
+      // eslint-disable-next-line no-control-regex -- rejects control characters on purpose
       /[\u0000-\u001f\u007f]/u.test(title)
     )
       throw new Error(

@@ -153,10 +153,6 @@ export function createCoordinatorServer(options: CoordinatorServerOptions) {
           });
           clearTimeout(authenticationDeadline);
           rooms.reconnect(guestId);
-          const restoredProfile = rooms
-            .snapshot()
-            .rooms.flatMap((room) => room.members)
-            .find((member) => member.guestId === guestId)?.profile;
           options.store.write(rooms.snapshot());
           publish();
           return;

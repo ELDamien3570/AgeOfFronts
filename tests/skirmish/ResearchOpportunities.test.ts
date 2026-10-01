@@ -6,7 +6,6 @@ import { EmpireViewModel } from "../../src/skirmish/client/EmpireViewModel";
 import { hudMarkup } from "../../src/skirmish/client/HudView";
 import { ResearchOpportunitiesView } from "../../src/skirmish/client/ResearchOpportunitiesView";
 import { ResearchOpportunitiesViewModel } from "../../src/skirmish/client/ResearchOpportunitiesViewModel";
-import { TECHNOLOGIES } from "../../src/skirmish/content/Technology";
 import type { Command } from "../../src/skirmish/Protocol";
 import { Skirmish } from "../../src/skirmish/Simulation";
 

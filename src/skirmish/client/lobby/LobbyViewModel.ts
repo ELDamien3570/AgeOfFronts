@@ -311,11 +311,14 @@ export class LobbyViewModel {
               ...room.settings,
               // Earlier version-1 previews predate resource controls. Only an
               // absent value gets the original 1× rule; invalid values fail validation.
+              // `??` would also turn null into 1; null must fail validation.
               resourceDensity:
+                // eslint-disable-next-line @typescript-eslint/prefer-nullish-coalescing
                 room.settings.resourceDensity === undefined
                   ? 1
                   : room.settings.resourceDensity,
               resourceOutput:
+                // eslint-disable-next-line @typescript-eslint/prefer-nullish-coalescing
                 room.settings.resourceOutput === undefined
                   ? 1
                   : room.settings.resourceOutput,

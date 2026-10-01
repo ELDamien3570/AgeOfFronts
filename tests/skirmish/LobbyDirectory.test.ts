@@ -183,6 +183,8 @@ describe("custom settings and empire identity in preview", () => {
   });
 
   it("restores older saved rooms at 1× without discarding identity, rules or queue order", () => {
+    // Destructured only to drop the fields older saves did not have.
+    // eslint-disable-next-line @typescript-eslint/no-unused-vars
     const { resourceDensity, resourceOutput, ...legacySettings } =
       defaultLobbySettings("africa");
     const legacyRoom = (id: string) => ({

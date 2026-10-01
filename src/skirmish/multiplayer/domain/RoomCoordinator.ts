@@ -99,6 +99,7 @@ export class RoomCoordinator {
     if (
       !title ||
       Array.from(title).length > 40 ||
+      // eslint-disable-next-line no-control-regex -- rejects control characters on purpose
       /[\u0000-\u001f\u007f]/u.test(title)
     )
       throw new Error("Use a lobby name of 1–40 characters.");
@@ -336,7 +337,6 @@ export class RoomCoordinator {
     if (connected < room.settings.minimumHumans || room.listing === "queued") {
       delete room.deadline;
       room.capacityWaiting = false;
-    } else if (room.deadline === undefined)
-      room.deadline = now + room.settings.countdownSeconds * 1000;
+    } else room.deadline ??= now + room.settings.countdownSeconds * 1000;
   }
 }

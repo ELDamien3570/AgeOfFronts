@@ -1199,7 +1199,7 @@ document.addEventListener("contextmenu", (event) => {
 });
 
 canvas.addEventListener("pointerdown", (event) => {
-  if ((!snapshot && !renderer.spawn) || snapshot?.winner != null || event.button > 2) return;
+  if ((!snapshot && !renderer.spawn) || (snapshot !== undefined && snapshot.winner !== null) || event.button > 2) return;
 
   const p = localPosition(event);
 
