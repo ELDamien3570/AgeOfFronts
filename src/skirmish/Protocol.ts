@@ -107,6 +107,7 @@ export type Command =
       type: "recruit-aircraft";
       playerId: number;
       buildingId: number;
+      buildingIds?: number[];
       autoRecruit?: boolean;
       definitionId: "fighter" | "bomber";
     }
@@ -129,6 +130,7 @@ export type Command =
       type: "recruit";
       playerId: number;
       buildingId: number;
+      buildingIds?: number[];
       autoRecruit?: boolean;
       definitionId?: string;
     }
@@ -143,6 +145,7 @@ export type Command =
       type: "recruit-ship";
       playerId: number;
       buildingId: number;
+      buildingIds?: number[];
       autoRecruit?: boolean;
       shipType: ShipType;
       definitionId?: string;
@@ -317,6 +320,8 @@ export interface MatchOptions {
   aiCount: number;
   /** Ordered human seats; IDs are 1..N. Omitted for the existing solo game. */
   humanNames?: readonly string[];
+  /** Human reservations accepted during setup; absent seats use seeded fallback. */
+  humanSpawns?: readonly { playerId: number; tile: number }[];
   resourceDensity?: 1 | 2 | 3 | 5;
   resourceOutput?: 1 | 2 | 3 | 5;
   alliances?: boolean;
@@ -391,6 +396,11 @@ export interface SnapshotPacket {
   }[];
 }
 
+export interface SpawnState {
+  remainingMs: number;
+  reservations: { playerId: number; tile: number }[];
+}
+
 export type WorkerRequest =
   | {
       type: "start";
@@ -403,10 +413,12 @@ export type WorkerRequest =
       options: MatchOptions;
     }
   | { type: "command"; command: Command }
+  | { type: "select-spawn"; tile: number }
   | { type: "pause"; paused: boolean }
   | { type: "speed"; speed: 1 | 2 | 4 };
 
 export type WorkerResponse =
+  | { type: "spawn"; state: SpawnState }
   | { type: "state"; packet: SnapshotPacket; paused: boolean; speed: number }
   | { type: "rejected"; message: string }
   | { type: "error"; message: string };

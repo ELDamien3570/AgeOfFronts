@@ -652,122 +652,125 @@ export class HudViewModel {
           ),
         ],
       }));
-    const b = this.game.building;
-    const stack = b
-      ? state.buildings.filter(
-          (other) => other.tile === b.tile && other.type === b.type,
-        )
-      : [];
-    const completed = stack.filter(
-      (other) => other.remainingTicks === 0,
-    ).length;
-    const remaining = stack.reduce(
-      (maximum, other) => Math.max(maximum, other.remainingTicks),
-      0,
+    const selectedBuildings = state.buildings.filter((b) =>
+      selection.selectedBuildings?.has(b.id),
     );
-    const buildings: SelectedEntity[] = b
-      ? [
-          {
-            ...buildingCards[b.type],
-            ref: `building:${b.id}`,
-            kind: b.type,
-            definitionId: b.age
-              ? `building-${b.age.toLowerCase()}-${b.type}`
-              : undefined,
-            category: "building",
-            playerId: b.playerId,
-            count: stack.length,
-            title:
-              stack.length > 1
-                ? `${BUILDING_RULES[b.type].name} ×${stack.length}`
-                : `${BUILDING_RULES[b.type].name} #${b.id}`,
-            subtitle: `${b.playerId === this.playerId ? "Friendly" : "Enemy"} building${stack.length > 1 ? " stack" : ""}`,
-            stats:
-              stack.length > 1
-                ? [
-                    stat("Buildings", String(stack.length)),
-                    stat("Ready", String(completed)),
-                    stat(
-                      "Under construction",
-                      String(stack.length - completed),
-                    ),
-                    ...(BUILDING_RULES[b.type].reserveIncome
-                      ? [
-                          stat(
-                            "Combined reserve income",
-                            `+${fmt(completed * BUILDING_RULES[b.type].reserveIncome)} / sec`,
-                          ),
-                        ]
+    const representatives = selectedBuildings.filter(
+      (b, index) =>
+        selectedBuildings.findIndex(
+          (other) => other.tile === b.tile && other.type === b.type,
+        ) === index,
+    );
+    const buildings: SelectedEntity[] = (
+      representatives.length
+        ? representatives
+        : this.game.building
+          ? [this.game.building]
+          : []
+    ).map((b) => {
+      const stack = b
+        ? (representatives.length ? selectedBuildings : state.buildings).filter(
+            (other) => other.tile === b.tile && other.type === b.type,
+          )
+        : [];
+      const completed = stack.filter(
+        (other) => other.remainingTicks === 0,
+      ).length;
+      const remaining = stack.reduce(
+        (maximum, other) => Math.max(maximum, other.remainingTicks),
+        0,
+      );
+      return {
+        ...buildingCards[b.type],
+        ref: `building:${b.id}`,
+        kind: b.type,
+        definitionId: b.age
+          ? `building-${b.age.toLowerCase()}-${b.type}`
+          : undefined,
+        category: "building",
+        playerId: b.playerId,
+        count: stack.length,
+        title:
+          stack.length > 1
+            ? `${BUILDING_RULES[b.type].name} ×${stack.length}`
+            : `${BUILDING_RULES[b.type].name} #${b.id}`,
+        subtitle: `${b.playerId === this.playerId ? "Friendly" : "Enemy"} building${stack.length > 1 ? " stack" : ""}`,
+        stats:
+          stack.length > 1
+            ? [
+                stat("Buildings", String(stack.length)),
+                stat("Ready", String(completed)),
+                stat("Under construction", String(stack.length - completed)),
+                ...(BUILDING_RULES[b.type].reserveIncome
+                  ? [
+                      stat(
+                        "Combined reserve income",
+                        `+${fmt(completed * BUILDING_RULES[b.type].reserveIncome)} / sec`,
+                      ),
+                    ]
+                  : []),
+                ...(BUILDING_RULES[b.type].goldIncome
+                  ? [
+                      stat(
+                        "Combined gold income",
+                        `+${fmt(completed * BUILDING_RULES[b.type].goldIncome)} / sec`,
+                      ),
+                    ]
+                  : []),
+                ...buildingCards[b.type].stats.filter(
+                  (s) => !["Reserve income", "Gold income"].includes(s.label),
+                ),
+              ]
+            : buildingCards[b.type].stats,
+        status: remaining
+          ? `${Math.ceil(remaining / TICKS_PER_SECOND)} sec until ${stack.length > 1 ? "all copies are ready" : "ready"}`
+          : "Ready",
+        ...(state.expansion
+          ? {
+              stats: [
+                stat("Age", AGE_NAMES[AGES.indexOf(b.age ?? "StoneAge")]),
+                stat("Buildings", `${completed}/${stack.length} ready`),
+                ...this.buildingDetails(b),
+                ...(b.type === "city"
+                  ? [
+                      stat(
+                        "Reserve income",
+                        `+${stack.filter((b) => !b.remainingTicks).reduce((sum, b) => sum + cityReserveIncome(b.age ?? "StoneAge"), 0)} / sec`,
+                      ),
+                    ]
+                  : b.type === "factory"
+                    ? [
+                        stat(
+                          "Economy",
+                          "Commercial goods · gold paid on delivery",
+                        ),
+                      ]
+                    : b.type === "port"
+                      ? [stat("Role", "Fleet construction and trade endpoint")]
                       : []),
-                    ...(BUILDING_RULES[b.type].goldIncome
-                      ? [
-                          stat(
-                            "Combined gold income",
-                            `+${fmt(completed * BUILDING_RULES[b.type].goldIncome)} / sec`,
-                          ),
-                        ]
-                      : []),
-                    ...buildingCards[b.type].stats.filter(
-                      (s) =>
-                        !["Reserve income", "Gold income"].includes(s.label),
-                    ),
-                  ]
-                : buildingCards[b.type].stats,
-            status: remaining
-              ? `${Math.ceil(remaining / TICKS_PER_SECOND)} sec until ${stack.length > 1 ? "all copies are ready" : "ready"}`
-              : "Ready",
-            ...(state.expansion
-              ? {
-                  stats: [
-                    stat("Age", AGE_NAMES[AGES.indexOf(b.age ?? "StoneAge")]),
-                    stat("Buildings", `${completed}/${stack.length} ready`),
-                    ...this.buildingDetails(b),
-                    ...(b.type === "city"
-                      ? [
-                          stat(
-                            "Reserve income",
-                            `+${stack.filter((b) => !b.remainingTicks).reduce((sum, b) => sum + cityReserveIncome(b.age ?? "StoneAge"), 0)} / sec`,
-                          ),
-                        ]
-                      : b.type === "factory"
-                        ? [
-                            stat(
-                              "Economy",
-                              "Commercial goods · gold paid on delivery",
-                            ),
-                          ]
-                        : b.type === "port"
-                          ? [
-                              stat(
-                                "Role",
-                                "Fleet construction and trade endpoint",
-                              ),
-                            ]
-                          : []),
-                  ],
-                }
-              : {}),
-            ...(b.health !== undefined && !remaining
-              ? {
-                  meter: {
-                    label: "Building health",
-                    value: stack.reduce((sum, b) => sum + (b.health ?? 0), 0),
-                    max: stack.reduce((sum, b) => sum + (b.maxHealth ?? 0), 0),
-                  },
-                }
-              : {}),
-            ...(remaining
-              ? {
-                  meter: {
-                    label: "Construction",
-                    value: BUILDING_RULES[b.type].ticks - remaining,
-                    max: BUILDING_RULES[b.type].ticks,
-                  },
-                }
-              : {}),
-          },
-        ]
-      : [];
+              ],
+            }
+          : {}),
+        ...(b.health !== undefined && !remaining
+          ? {
+              meter: {
+                label: "Building health",
+                value: stack.reduce((sum, b) => sum + (b.health ?? 0), 0),
+                max: stack.reduce((sum, b) => sum + (b.maxHealth ?? 0), 0),
+              },
+            }
+          : {}),
+        ...(remaining
+          ? {
+              meter: {
+                label: "Construction",
+                value: BUILDING_RULES[b.type].ticks - remaining,
+                max: BUILDING_RULES[b.type].ticks,
+              },
+            }
+          : {}),
+      };
+    });
     const aircraft: SelectedEntity[] = (state.expansion?.aircraft ?? [])
       .filter((a) => a.playerId === this.playerId && selection.selectedAircraft?.has(a.id))
       .map((a) => ({
@@ -818,13 +821,14 @@ export class HudViewModel {
           ...focused,
           subtitle:
             entities.length > 1
-              ? `Inspecting 1 of ${entities.length} selected units`
+              ? `Inspecting 1 of ${entities.length} selected ${focused.category === "building" ? "buildings" : "units"}`
               : focused.subtitle,
         },
       };
     if (entities.length === 1)
       return { mode: "detail", entities, card: entities[0] };
     const first = entities[0];
+    if (first.category === "building") return { mode: "mixed", entities };
     if (
       entities.every(
         (e) =>

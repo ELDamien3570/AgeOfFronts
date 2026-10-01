@@ -1,5 +1,5 @@
 import { z } from "zod";
-import type { MatchOptions } from "../Protocol";
+import type { MatchOptions, SpawnState } from "../Protocol";
 import type { LobbySettings } from "../lobby/LobbyDirectory";
 import type { EncodedState } from "./StateCodec";
 import type { HostBatch } from "./application/HostedRuntime";
@@ -56,6 +56,7 @@ const settings = z
   .strict();
 const requestId = z.string().regex(/^[a-zA-Z0-9-]{1,80}$/u);
 export const clientMessageSchema = z.discriminatedUnion("type", [
+  z.object({ type: z.literal("select-spawn"), requestId, matchId: z.string().max(80), tile: z.number().int().nonnegative().max(4_000_000) }).strict(),
   z
     .object({
       type: z.literal("watch-match"),
@@ -147,6 +148,7 @@ export const clientMessageSchema = z.discriminatedUnion("type", [
 ]);
 export type ClientMessage = z.infer<typeof clientMessageSchema>;
 export type ServerMessage =
+  | { type: "match-spawn"; matchId: string; state: SpawnState }
   | { type: "match"; manifest: MatchManifest }
   | {
       type: "host-restore";

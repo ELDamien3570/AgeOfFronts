@@ -12,6 +12,7 @@ import { ownerUiAge } from "./AgeUiTheme";
 import { buildingArtworkId } from "./ArtworkCatalog";
 import { BuildingArtwork } from "./BuildingArtwork";
 import { BuildingMarkers } from "./BuildingMarkers";
+import { BuildingSelectionViewModel } from "./BuildingSelectionViewModel";
 import { CampLossPresentation } from "./CampLossPresentation";
 import { CombatEffectsView } from "./CombatEffectsView";
 import {
@@ -43,6 +44,7 @@ import { PromotionArtwork } from "./PromotionArtwork";
 import { ResourceViewModel } from "./ResourceViewModel";
 import { RoadLayer } from "./RoadLayer";
 import { StrategicSprites } from "./StrategicSprites";
+import type { SpawnSelectionViewModel } from "./SpawnSelectionViewModel";
 import { ownsCamp, TerritoryLabelViewModel } from "./TerritoryLabelViewModel";
 import { bakeTerrainFields } from "./TerrainFields";
 import { TerritoryLayer } from "./TerritoryLayer";
@@ -68,7 +70,9 @@ const BUILDING_PAD_COLORS = new Map(
 const SELECTED_UNIT_COLOR = "#c4ff36";
 
 export class Renderer {
-  private get playerId(): number { return this.snapshot?.localPlayerId ?? 1; }
+  private get playerId(): number {
+    return this.snapshot?.localPlayerId ?? 1;
+  }
 
   private readonly eraArtwork = new EraArtwork();
   private roads?: RoadLayer;
@@ -149,7 +153,37 @@ export class Renderer {
     }
     return best;
   }
-  selectedBuilding: number | null = null;
+  readonly buildingSelection = new BuildingSelectionViewModel();
+  spawn?: SpawnSelectionViewModel;
+  get selectedBuildings(): Set<number> {
+    return this.buildingSelection.ids;
+  }
+  get selectedBuilding(): number | null {
+    return this.buildingSelection.focused;
+  }
+  set selectedBuilding(id: number | null) {
+    this.buildingSelection.clear();
+    if (id !== null) this.selectBuilding(id);
+  }
+  selectBuilding(id: number, additive = false): void {
+    const building = this.snapshot?.buildings.find((b) => b.id === id);
+    if (!building) return;
+    if (building.playerId !== this.playerId) {
+      this.buildingSelection.clear();
+      this.buildingSelection.focused = id;
+      return;
+    }
+    this.buildingSelection.select(
+      this.snapshot!.buildings.filter(
+        (b) =>
+          b.playerId === this.playerId &&
+          b.tile === building.tile &&
+          b.type === building.type,
+      ),
+      additive,
+      additive,
+    );
+  }
   inspectedSquadId: number | null = null;
   selectedDeposit: number | null = null;
   placement?: { tile: number; type: BuildingType; friendly: boolean };
@@ -202,6 +236,7 @@ export class Renderer {
     this.buildingStacks = [];
     this.walls.reset();
     this.snapshot = undefined;
+    this.spawn = undefined;
     this.resources = undefined;
     this.previous = undefined;
     this.previousSquads.clear();
@@ -239,6 +274,7 @@ export class Renderer {
           (this.cargoCounts.get(squad.embarkedOn) ?? 0) + 1,
         );
     this.snapshot = snapshot;
+    this.buildingSelection.reconcile(snapshot.buildings, this.playerId);
     this.roads!.update(snapshot);
     this.walls.update(snapshot);
     this.impacts.update(snapshot.expansion?.projectiles ?? [], snapshot.tick);
@@ -268,7 +304,9 @@ export class Renderer {
       )
         this.selected.delete(id);
     for (const id of this.selectedShips)
-      if (!snapshot.ships.some((s) => s.id === id && s.playerId === this.playerId))
+      if (
+        !snapshot.ships.some((s) => s.id === id && s.playerId === this.playerId)
+      )
         this.selectedShips.delete(id);
     this.territory!.update(snapshot);
     this.territoryLabels!.update(snapshot);
@@ -365,7 +403,10 @@ export class Renderer {
     // Keep roughly 48 cells across the shorter usable axis: starting land and
     // squads stay readable at the same tactical scale on every world size.
     this.updateFitScale();
-    this.scale = Math.max(this.fitScale, Math.min(96, Math.min(this.width, usableHeight) / 48));
+    this.scale = Math.max(
+      this.fitScale,
+      Math.min(96, Math.min(this.width, usableHeight) / 48),
+    );
     this.offsetX = this.width / 2 - (this.map.x(tile) + 0.5) * this.scale;
     this.offsetY = usableHeight / 2 - (this.map.y(tile) + 0.5) * this.scale;
     this.nextFrame = 0;
@@ -475,6 +516,37 @@ export class Renderer {
       .map((s) => s.id);
   }
 
+  visibleBuildings(type: BuildingType): number[] {
+    return (this.snapshot?.buildings ?? [])
+      .filter(
+        (b) =>
+          b.playerId === this.playerId &&
+          b.type === type &&
+          (b.health ?? 1) > 0 &&
+          visibleInViewport(
+            this.screen(this.map!.x(b.tile) + 0.5, this.map!.y(b.tile) + 0.5),
+            this.buildingHalfSize(b),
+            this.width,
+            this.height,
+          ),
+      )
+      .map((b) => b.id);
+  }
+
+  private buildingHalfSize(building: Snapshot["buildings"][number]): number {
+    return building.type === "tower"
+      ? Math.max(6, this.scale / 2)
+      : buildingSymbol(
+          this.scale,
+          !!(building.age
+            ? this.eraArtwork.get(
+                buildingArtworkId(building.type, building.age) ?? "",
+              )
+            : this.buildingArtwork.get(building.type)),
+          building.type,
+        ).size / 2;
+  }
+
   buildingAt(x: number, y: number): number | null {
     let nearest: number | null = null;
     let distance = Infinity;
@@ -484,18 +556,7 @@ export class Renderer {
         this.map!.y(building.tile) + 0.5,
       );
       const d = (p.x - x) ** 2 + (p.y - y) ** 2;
-      const half =
-        building.type === "tower"
-          ? Math.max(6, this.scale / 2)
-          : buildingSymbol(
-              this.scale,
-              !!(building.age
-                ? this.eraArtwork.get(
-                    buildingArtworkId(building.type, building.age) ?? "",
-                  )
-                : this.buildingArtwork.get(building.type)),
-              building.type,
-            ).size / 2;
+      const half = this.buildingHalfSize(building);
       if (
         Math.abs(p.x - x) <= half &&
         Math.abs(p.y - y) <= half &&
@@ -543,11 +604,15 @@ export class Renderer {
       ctx.save();
       ctx.translate(p.x, p.y);
       ctx.rotate(label.angle);
-        if(this.snapshot?.disconnectedPlayerIds?.includes(label.playerId)) {
-          ctx.font="bold 16px Georgia";
-          ctx.textAlign="center";ctx.fillStyle="#f4e6b7";ctx.strokeStyle="#20332b";ctx.lineWidth=3;
-          ctx.strokeText("zzz",0,-Math.max(16,font));ctx.fillText("zzz",0,-Math.max(16,font));
-        }
+      if (this.snapshot?.disconnectedPlayerIds?.includes(label.playerId)) {
+        ctx.font = "bold 16px Georgia";
+        ctx.textAlign = "center";
+        ctx.fillStyle = "#f4e6b7";
+        ctx.strokeStyle = "#20332b";
+        ctx.lineWidth = 3;
+        ctx.strokeText("zzz", 0, -Math.max(16, font));
+        ctx.fillText("zzz", 0, -Math.max(16, font));
+      }
       ctx.font = `600 ${font}px Georgia, Cambria, serif`;
       let advances = letters.map((letter) => ctx.measureText(letter).width);
       let inkWidth = advances.reduce((sum, advance) => sum + advance, 0);
@@ -768,12 +833,12 @@ export class Renderer {
       ctx.fillStyle = "#102331";
       ctx.fillRect(0, 0, this.width, this.height);
     }
-    if (!this.map || !this.snapshot) {
+    if (!this.map || (!this.snapshot && !this.spawn)) {
       if (gpuGround) this.groundLayer.clear();
       this.strategic.flush();
       return true;
     }
-    const snapshot = this.snapshot;
+    const snapshot = this.snapshot!;
     if (gpuGround)
       this.groundLayer.draw(this.scale, this.offsetX, this.offsetY, now);
     this.ground!.draw(
@@ -784,6 +849,39 @@ export class Renderer {
       this.width,
       this.height,
     );
+    if (this.spawn) {
+      const reservations = this.spawn.state.reservations;
+      for (const { playerId, tile } of reservations) {
+        const p = this.screen(this.map.x(tile) + 0.5, this.map.y(tile) + 0.5);
+        ctx.beginPath();
+        ctx.arc(p.x, p.y, Math.max(9, 6 * this.scale), 0, Math.PI * 2);
+        ctx.fillStyle = `${COLORS[playerId]}55`;
+        ctx.fill();
+        ctx.strokeStyle = COLORS[playerId];
+        ctx.lineWidth = playerId === this.playerId ? 3 : 2;
+        ctx.stroke();
+        ctx.font = "bold 14px sans-serif";
+        ctx.textAlign = "center";
+        ctx.fillStyle = "#fff";
+        ctx.strokeStyle = "#15252e";
+        ctx.lineWidth = 4;
+        const label =
+          playerId === this.playerId ? "Your spawn" : `Player ${playerId}`;
+        ctx.strokeText(label, p.x, p.y - Math.max(15, 6 * this.scale));
+        ctx.fillText(label, p.x, p.y - Math.max(15, 6 * this.scale));
+      }
+      const tile = this.spawn.hoverTile;
+      if (tile !== null) {
+        const p = this.screen(this.map.x(tile) + 0.5, this.map.y(tile) + 0.5);
+        ctx.strokeStyle = this.spawn.rejection(tile) ? "#ff7777" : "#a7f2be";
+        ctx.lineWidth = 2;
+        ctx.beginPath();
+        ctx.arc(p.x, p.y, Math.max(7, 6 * this.scale), 0, Math.PI * 2);
+        ctx.stroke();
+      }
+      this.strategic.flush();
+      return true;
+    }
     this.roads!.draw(
       ctx,
       this.scale,
@@ -825,11 +923,17 @@ export class Renderer {
         this.map.x(player.base) + 0.5,
         this.map.y(player.base) + 0.5,
       );
-        if(snapshot.disconnectedPlayerIds?.includes(player.id)) {
-          ctx.save();ctx.font="bold 14px Georgia";ctx.textAlign="center";
-          ctx.lineWidth=3;ctx.strokeStyle="#10212b";ctx.fillStyle="#f4e6b7";
-          ctx.strokeText("zzz",p.x,p.y-18);ctx.fillText("zzz",p.x,p.y-18);ctx.restore();
-        }
+      if (snapshot.disconnectedPlayerIds?.includes(player.id)) {
+        ctx.save();
+        ctx.font = "bold 14px Georgia";
+        ctx.textAlign = "center";
+        ctx.lineWidth = 3;
+        ctx.strokeStyle = "#10212b";
+        ctx.fillStyle = "#f4e6b7";
+        ctx.strokeText("zzz", p.x, p.y - 18);
+        ctx.fillText("zzz", p.x, p.y - 18);
+        ctx.restore();
+      }
       if (ownsCamp(snapshot, player)) {
         ctx.fillStyle = COLORS[player.id];
         ctx.strokeStyle = "#10212b";
@@ -889,8 +993,9 @@ export class Renderer {
       const rules = BUILDING_RULES[building.type];
       if (!visibleInViewport(p, 70, this.width, this.height)) continue;
       const selected =
-        selectedBuilding?.tile === building.tile &&
-        selectedBuilding?.type === building.type;
+        this.selectedBuildings.has(building.id) ||
+        (selectedBuilding?.tile === building.tile &&
+          selectedBuilding?.type === building.type);
       const size =
         building.type === "tower"
           ? this.drawTower(

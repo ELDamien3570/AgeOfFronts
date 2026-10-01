@@ -125,6 +125,9 @@ it("connects two authenticated players through lobby start, shared updates and h
         .rooms.some((room) => room.id === roomId && room.members.length === 2),
     );
     now = 15_000;
+    await until(() => all.every(messages => messages.some(message => message.type === "match-spawn")));
+    expect(all.flat().some(message => message.type === "match-state")).toBe(false);
+    now += 20_000;
     await until(() =>
       all.every((messages) =>
         messages.some(
@@ -158,7 +161,7 @@ it("connects two authenticated players through lobby start, shared updates and h
       command: {
         type: "research",
         playerId: 1,
-        technologyId: "stoneage-shorecraft",
+        technologyId: "stoneage-cargo-canoes",
       },
     });
     now += 200;
@@ -180,12 +183,12 @@ it("connects two authenticated players through lobby start, shared updates and h
     const paidState = await decodeState<SnapshotPacket>(paid.packet);
     expect(
       Object.values(paidState.expansion!.progression[2].research).some(
-        (job) => job?.technologyId === "stoneage-shorecraft",
+        (job) => job?.technologyId === "stoneage-cargo-canoes",
       ),
     ).toBe(true);
     expect(
       Object.values(paidState.expansion!.progression[1].research).some(
-        (job) => job?.technologyId === "stoneage-shorecraft",
+        (job) => job?.technologyId === "stoneage-cargo-canoes",
       ),
     ).toBe(false);
     clients[0].close();

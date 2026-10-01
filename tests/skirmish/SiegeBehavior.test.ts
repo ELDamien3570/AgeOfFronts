@@ -20,6 +20,7 @@ function fixture(id = "bronzeage-siege") {
   });
   const unit = m.squads.find((s) => s.playerId === 1)!,
     enemy = m.squads.find((s) => s.playerId === 2)!;
+  m.owners.fill(0); // Neutral occupation arena, independent of random camp positions.
   m.squads.splice(0, m.squads.length, unit, enemy);
   unit.definitionId = id;
   unit.kind = UNIT.get(id)!.line;

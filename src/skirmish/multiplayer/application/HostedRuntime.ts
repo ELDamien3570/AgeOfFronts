@@ -41,8 +41,8 @@ export interface RuntimeCommit {
 
 /** Runs in either a browser worker or the reserved server worker. No transport or UI state. */
 export class HostedRuntime {
-  readonly match: Skirmish;
-  constructor(map: RuntimeMap, options: MatchOptions) {
+  match: Skirmish;
+  constructor(private readonly map: RuntimeMap, options: MatchOptions) {
     this.match = new Skirmish(
       createSkirmishMap(
         map.width,
@@ -56,6 +56,8 @@ export class HostedRuntime {
     );
   }
   restore(checkpoint: ReturnType<Skirmish["checkpoint"]>): void {
+    if (JSON.stringify(checkpoint.options) !== JSON.stringify(this.match.options))
+      this.match = new HostedRuntime(this.map, checkpoint.options).match;
     this.match.restore(checkpoint);
   }
   async run(batch: HostBatch): Promise<RuntimeCommit> {

@@ -74,7 +74,9 @@ describe("compact formations and local avoidance", () => {
       for (let y = 20; y <= 22; y++) data.fill(133, y * 80, (y + 1) * 80);
       const match = new Skirmish(new GameMapImpl(80, 50, data, 80 * 3), {
         seed: 42,
-        aiCount: 1,
+        aiCount: 0,
+        humanNames: ["You", "Opponent"],
+        humanSpawns: [{ playerId: 1, tile: 21 * 80 + 8 }, { playerId: 2, tile: 21 * 80 + 70 }],
         runAi: false,
       });
       const [mover, a, b] = match.squads;

@@ -68,6 +68,8 @@ import { OrderGesture } from "./OrderGesture";
 import { COLORS, Renderer } from "./Renderer";
 
 import { SkirmishViewModel } from "./SkirmishViewModel";
+import { SpawnSelectionViewModel } from "./SpawnSelectionViewModel";
+import type { MatchOptions, SpawnState } from "../Protocol";
 
 import { TerrainViewModel } from "./TerrainViewModel";
 
@@ -104,6 +106,7 @@ document.querySelector<HTMLDivElement>("#app")!.innerHTML = `
   <main class="battlefield" aria-label="Battlefield">
 
     <canvas id="battlefield" aria-label="Map with selectable troop squads" tabindex="0"></canvas>
+    <div id="spawn-selection" class="spawn-selection" role="status" aria-live="polite" hidden><strong>Choose your starting camp</strong><p id="spawn-hint"></p></div>
 
     <div id="recruitment-feed" class="recruitment-feed" aria-label="Recruitment queues" hidden></div>
 
@@ -341,6 +344,8 @@ async function start(): Promise<void> {
   cameraPan.clear();
   orderGesture.cancel();
   const sequence = ++matchSequence;
+  renderer.spawn = undefined;
+  element("spawn-selection").hidden = true;
   const technologySpeed = Number(
     element<HTMLSelectElement>("technology-speed").value,
   ) as TechnologySpeed;
@@ -474,6 +479,13 @@ async function start(): Promise<void> {
 
         return;
       }
+      if (message.type === "spawn") {
+        showSpawn(message.state, spawnOptions);
+        return;
+      }
+      renderer.spawn = undefined;
+      element("spawn-selection").hidden = true;
+      element<HTMLButtonElement>("pause").disabled = false;
 
       snapshot = decoder.decode(message.packet);
       snapshot.localPlayerId=localPlayerId;
@@ -503,6 +515,7 @@ async function start(): Promise<void> {
     };
 
     const seed = Math.floor(Math.random() * 0x7fffffff);
+    const spawnOptions: MatchOptions = { seed, aiCount: Number(element<HTMLSelectElement>("opponents").value), tribes: true, ruleset: "ages-v1" };
 
     post({
       type: "start",
@@ -550,6 +563,26 @@ async function start(): Promise<void> {
   }
 }
 
+let onlineSpawnOptions: MatchOptions | undefined;
+function showSpawn(state: SpawnState, options: MatchOptions): void {
+  if (!currentMap) return;
+  if (renderer.spawn) renderer.spawn.update(state, performance.now());
+  else
+    renderer.spawn = new SpawnSelectionViewModel(
+      currentMap.map,
+      options,
+      state,
+      localPlayerId,
+      performance.now(),
+    );
+  paused = true;
+  element<HTMLButtonElement>("pause").disabled = true;
+  element("loading").hidden = true;
+  element("spawn-selection").hidden = false;
+  element("spawn-hint").textContent = renderer.spawn.hint(performance.now());
+  element<HTMLButtonElement>("restart").disabled = !!onlineMatchId;
+}
+
 async function startOnlineMatch():Promise<void> {
   document.title="Age of Fronts — Online match";
   if(worker)return;
@@ -558,6 +591,7 @@ async function startOnlineMatch():Promise<void> {
   const decoder=new SnapshotDecoder();
   let startingCamera=true;
   const session=new OnlineMatchSession(endpoint,onlineMatchId!,async manifest=> {
+    onlineSpawnOptions = manifest.options;
     element<HTMLSelectElement>("map").value=manifest.settings.mapId;
     element<HTMLSelectElement>("world-size").value=String(manifest.settings.worldSize);
     element<HTMLSelectElement>("opponents").innerHTML=`<option>${manifest.options.aiCount} AI</option>`;
@@ -578,7 +612,10 @@ async function startOnlineMatch():Promise<void> {
     element("loading").textContent=event.message;
   };
   session.onmessage=event=> {
+    if(event.data.type==="spawn"){showSpawn(event.data.state, onlineSpawnOptions!);return;}
+    if(event.data.type==="rejected"){notify(event.data.message);return;}
     if(event.data.type!=="state")return;
+    renderer.spawn=undefined;element("spawn-selection").hidden=true;
     snapshot=decoder.decode(event.data.packet);
     snapshot.localPlayerId=localPlayerId;
     snapshot.disconnectedPlayerIds=session.disconnectedPlayerIds;
@@ -596,7 +633,7 @@ function updateHud(): void {
   if (!snapshot) return;
 
   updateTerrainHover();
-  recruitmentFeed.update(new RecruitmentQueueViewModel(snapshot, localPlayerId));
+  recruitmentFeed.update(new RecruitmentQueueViewModel(snapshot, localPlayerId, renderer.selectedBuildings));
 
   const player = snapshot.players.find(player => player.id === localPlayerId)!;
 
@@ -721,7 +758,7 @@ function updateSelection(): void {
     : renderer.selectedShips.size
       ? `${renderer.selectedShips.size} ships selected`
       : vm?.building
-        ? "Building selected"
+        ? `${renderer.selectedBuildings.size || 1} building${renderer.selectedBuildings.size > 1 ? "s" : ""} selected`
         : vm?.inspectedSquad
           ? "Inspecting enemy squad"
           : "No squads selected";
@@ -731,7 +768,7 @@ function updateSelection(): void {
     : renderer.selectedShips.size
       ? "Right click water to sail. Shift queues waypoints."
       : vm?.building
-        ? "Recruitment stays available in the bottom command bar."
+        ? "Recruit into the shortest compatible selected queue. Shift-click adds buildings; double-click selects visible buildings of this type."
         : vm?.inspectedSquad
           ? "Enemy details are read only. Select your troops to issue orders."
           : "Click your units or drag a selection box.";
@@ -878,6 +915,7 @@ function recruit(kind: SquadType, count = 1): void {
       type: "recruit",
       playerId: localPlayerId,
       buildingId: choice.building.id,
+      buildingIds: choice.buildingIds,
       autoRecruit: choice.building.id !== renderer.selectedBuilding,
       definitionId: choice.definitionId,
     });
@@ -894,6 +932,7 @@ function recruitShip(kind: ShipType, count = 1): void {
       playerId: localPlayerId,
 
       buildingId: choice.building.id,
+      buildingIds: choice.buildingIds,
       autoRecruit: choice.building.id !== renderer.selectedBuilding,
 
       shipType: kind,
@@ -1145,7 +1184,7 @@ document.addEventListener("contextmenu", (event) => {
 });
 
 canvas.addEventListener("pointerdown", (event) => {
-  if (!snapshot || snapshot.winner !== null || event.button > 2) return;
+  if ((!snapshot && !renderer.spawn) || snapshot?.winner != null || event.button > 2) return;
 
   const p = localPosition(event);
 
@@ -1174,6 +1213,7 @@ canvas.addEventListener("pointermove", (event) => {
   terrainPointer = p;
 
   const tile = renderer.tileAt(p.x, p.y);
+  if (renderer.spawn) renderer.spawn.hoverTile = tile;
 
   if (placementType && tile !== null && snapshot && currentMap) {
     const rejection = placementRejection(placementType, tile);
@@ -1207,12 +1247,25 @@ canvas.addEventListener("pointermove", (event) => {
 });
 
 canvas.addEventListener("pointerleave", () => {
+  if (renderer.spawn) renderer.spawn.hoverTile = null;
   terrainPointer = undefined;
   element("hover-terrain").textContent = "";
   hud.hoverDeposit(null);
 });
 
 canvas.addEventListener("pointerup", (event) => {
+  if (renderer.spawn && drag) {
+    const start = drag, p = localPosition(event);
+    drag = undefined;
+    if (start.button === 0 && !start.moved) {
+      const tile = renderer.tileAt(p.x, p.y);
+      if (tile !== null) {
+        const rejection = renderer.spawn.rejection(tile);
+        if (rejection) notify(rejection); else post({ type: "select-spawn", tile });
+      }
+    }
+    return;
+  }
   if (!drag || !snapshot) return;
 
   const p = localPosition(event),
@@ -1365,7 +1418,7 @@ canvas.addEventListener("pointerup", (event) => {
         else renderer.selected.add(squad.id);
       } else if (foreignSquad && foreignSquad.playerId !== localPlayerId) {
         renderer.inspectedSquadId = foreignSquad.id;
-      } else if (building !== null) renderer.selectedBuilding = building;
+      } else if (building !== null) renderer.selectBuilding(building, start.shift);
       else if (
         ship !== null &&
         snapshot.ships.some((s) => s.id === ship && s.playerId === localPlayerId)
@@ -1598,17 +1651,17 @@ canvas.addEventListener("dblclick", (event) => {
   );
 
   const squad = renderer.squadAt(point.x, point.y, localPlayerId);
+  const building = snapshot.buildings.find(b => b.id === renderer.buildingAt(point.x, point.y) && b.playerId === localPlayerId);
 
-  if (!ship && !squad) return;
+  if (!ship && !squad && !building) return;
 
   if (!event.shiftKey) {
     renderer.selected.clear();
 
     renderer.selectedShips.clear();
     renderer.selectedAircraft.clear();
+    renderer.selectedBuilding = null;
   }
-
-  renderer.selectedBuilding = null;
 
   renderer.inspectedSquadId = null;
   renderer.selectedDeposit = null;
@@ -1622,6 +1675,11 @@ canvas.addEventListener("dblclick", (event) => {
   else if (squad)
     for (const id of renderer.visibleSquads(squad.kind))
       renderer.selected.add(id);
+  else if (building) {
+    const ids = new Set(renderer.visibleBuildings(building.type));
+    renderer.buildingSelection.select(snapshot.buildings.filter(b => ids.has(b.id)), true);
+    renderer.buildingSelection.focused = building.id;
+  }
 
   updateHud();
 });
@@ -1742,6 +1800,10 @@ document.addEventListener("keydown", (event) => {
 });
 
 function frame(now: number): void {
+  if (renderer.spawn) {
+    const hint = renderer.spawn.hint(now);
+    if (element("spawn-hint").textContent !== hint) element("spawn-hint").textContent = hint;
+  }
   const pan = cameraPan.step(now);
   if (pan.x || pan.y) renderer.pan(pan.x, pan.y);
   if (renderer.draw(now, speed, paused)) updateCampLossLabels(now);

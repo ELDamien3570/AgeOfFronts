@@ -160,10 +160,10 @@ describe("match technology speed", () => {
     p.gold = 1e6;
     const request = (id: string) =>
       m.applyCommand({ type: "research", playerId: 1, technologyId: id });
-    expect(request("stoneage-cargo-canoes")).toMatch(/prerequisites/);
+    expect(request("stoneage-shorecraft")).toMatch(/prerequisites/);
     expect(request("bronzeage-armies")).toMatch(/age first/);
-    expect(request("stoneage-shorecraft")).toBeNull();
-    expect(request("stoneage-cargo-canoes")).toMatch(/already researching/);
+    expect(request("stoneage-cargo-canoes")).toBeNull();
+    expect(request("stoneage-shorecraft")).toMatch(/already researching/);
     expect(request("stoneage-spear-throwing")).toBeNull();
     expect(Object.keys(state.research)).toHaveLength(2);
   });

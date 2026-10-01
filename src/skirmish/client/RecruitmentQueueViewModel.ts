@@ -16,9 +16,9 @@ export interface RecruitmentQueueEntry {
 // one producer. Only each producer's FIFO head can make progress.
 export class RecruitmentQueueViewModel {
   readonly entries: RecruitmentQueueEntry[] = [];
-  constructor(snapshot: Pick<Snapshot, "expansion">, playerId = 1) {
+  constructor(snapshot: Pick<Snapshot, "expansion">, playerId = 1, buildingIds?: ReadonlySet<number>) {
     const jobs = (snapshot.expansion?.recruitment ?? []).filter(
-      (j) => j.playerId === playerId,
+      (j) => j.playerId === playerId && (!buildingIds?.size || buildingIds.has(j.buildingId)),
     );
     const heads = new Set<number>();
     const groups = new Map<

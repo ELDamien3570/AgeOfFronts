@@ -347,7 +347,7 @@ export class HudView {
     if (mixed) {
       this.el("selection-label").textContent = "MIXED SELECTION";
       this.el("mixed-title").textContent =
-        `${selection.entities.length} units selected`;
+        selection.entities.every(e => e.category === "building") ? `${selection.entities.reduce((sum, e) => sum + e.count, 0)} buildings selected` : `${selection.entities.length} units selected`;
       const membership = selection.entities
         .map((e) => `${e.ref}:${e.definitionId}`)
         .join(",");

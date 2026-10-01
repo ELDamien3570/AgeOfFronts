@@ -1,13 +1,13 @@
 import type { GameMap } from "../core/game/GameMap";
+import { PseudoRandom } from "../core/PseudoRandom";
 
-// Incremental farthest-point placement: one linear update per camp, rather
-// than comparing every candidate against every earlier camp on each pass.
-// Clearance includes each camp's claimed radius, preserving both kinds' land.
+// Seeded uniform sampling among separated camps avoids predictable edge starts.
 export class StartingPositions {
   private readonly clearance: Float64Array;
   constructor(
     private readonly map: GameMap,
     private readonly candidates: readonly number[],
+    private readonly random = new PseudoRandom(1),
   ) {
     this.clearance = new Float64Array(map.width() * map.height()).fill(
       Infinity,
@@ -21,19 +21,19 @@ export class StartingPositions {
       );
   }
   next(radius: number): number {
-    let best = -1,
-      score = radius + 4;
+    let count = 0;
     for (const candidate of this.candidates)
-      if (this.clearance[candidate] >= score) {
-        if (best !== -1 && this.clearance[candidate] === score) continue;
-        score = this.clearance[candidate];
-        best = candidate;
-      }
-    if (best < 0)
+      if (this.clearance[candidate] >= radius + 4) count++;
+    if (!count)
       throw new Error(
         "Not enough room for these factions and tribes. Choose fewer opponents or a larger battlefield.",
       );
-    this.add(best, radius);
-    return best;
+    let index = this.random.nextInt(0, count);
+    for (const candidate of this.candidates)
+      if (this.clearance[candidate] >= radius + 4 && index-- === 0) {
+        this.add(candidate, radius);
+        return candidate;
+      }
+    throw new Error("Invalid starting-position sample");
   }
 }

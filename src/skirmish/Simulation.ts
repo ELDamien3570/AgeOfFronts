@@ -94,7 +94,7 @@ import {
   tilePoint,
   traversable,
 } from "./SquadGeometry";
-import { StartingPositions } from "./StartingPositions";
+import { SpawnSelection } from "./domain/SpawnSelection";
 import { boardingMeeting, firingPosition } from "./TacticalRoutes";
 import { terrainSpeed } from "./Terrain";
 
@@ -270,8 +270,6 @@ export class Skirmish {
         this.activateOrder(squad,{type:"hold"});
       },
     }, new ShoreRoutes(map,this.paths,this.waterPaths,this.coast));
-    if (this.paths.largestLand.length < (options.aiCount + humanCount) * 80)
-      throw new Error("This map does not have enough connected land");
     if (options.ruleset === "ages-v1")
       this.expansion = new Expansion(
         this,
@@ -285,26 +283,11 @@ export class Skirmish {
 
   private createPlayers(): void {
     const roster = new FactionRoster(this.options.seed, FACTIONS);
-    const candidates = this.paths.largestLand.filter((tile) => {
-      const x = this.map.x(tile),
-        y = this.map.y(tile);
-      return (
-        x >= BASE_RADIUS &&
-        y >= BASE_RADIUS &&
-        x < this.map.width() - BASE_RADIUS &&
-        y < this.map.height() - BASE_RADIUS
-      );
-    });
-    if (candidates.length === 0) throw new Error("No valid starting camp");
-    // Farthest-point placement keeps every opponent reachable by land.
-    const placement = new StartingPositions(this.map, candidates),
-      bases: number[] = [candidates[this.random.nextInt(0, candidates.length)]];
-    placement.add(bases[0], BASE_RADIUS);
     const humanNames = this.options.humanNames ?? ["You"];
-    for (let i = 1; i < this.options.aiCount + humanNames.length; i++) {
-      bases.push(placement.next(BASE_RADIUS));
-    }
-    bases.forEach((base, index) => {
+    const placement = new SpawnSelection(this.map, this.options, this.paths);
+    const bases = placement.resolve();
+    const regularCount = this.options.aiCount + humanNames.length;
+    bases.slice(0, regularCount).forEach((base, index) => {
       const faction = index < humanNames.length ? null : roster.take("regular");
       this.deployPlayer(
         base,
@@ -320,8 +303,8 @@ export class Skirmish {
       for (let index = 0; index < count; index++) {
         const faction = roster.take("tribe");
         this.deployPlayer(
-          placement.next(TRIBE_BASE_RADIUS),
-          bases.length + index + 1,
+          bases[regularCount + index],
+          regularCount + index + 1,
           "tribe",
           faction.identity.name,
           faction.identity.id,
@@ -452,7 +435,7 @@ export class Skirmish {
       return extended;
     }
     if (command.type === "recruit")
-      return this.recruit(player, command.buildingId, command.definitionId, "queue", command.autoRecruit === true);
+      return this.recruit(player, command.buildingId, command.definitionId, "queue", command.autoRecruit === true, command.buildingIds);
     if (command.type === "build")
       return this.build(
         player,
@@ -468,6 +451,7 @@ export class Skirmish {
         command.definitionId,
         false,
         command.autoRecruit === true,
+        command.buildingIds,
       );
     if (command.type === "sail")
       return this.sail(
@@ -686,8 +670,13 @@ export class Skirmish {
     definitionId?: string,
     mode: "queue" | "instant" | "complete" = "queue",
     automatic = false,
+    buildingIds?: readonly number[],
   ): string | null {
     let building = this.buildings.find((b) => b.id === buildingId);
+    if (buildingIds) {
+      const definition = UNIT.get(definitionId ?? "");
+      building = this.automaticRecruitmentBuilding(player.id, building?.tile ?? player.base, definition?.building ?? building?.type ?? "barracks", definition?.age ?? "StoneAge", buildingIds);
+    }
     if (
       !building ||
       building.playerId !== player.id ||
@@ -701,7 +690,7 @@ export class Skirmish {
             defaultUnit(BUILDING_RULES[building.type].squad ?? "infantry").id,
         )
       : undefined;
-    if (automatic && definition) building = this.automaticRecruitmentBuilding(player.id, building, definition.building, definition.age) ?? building;
+    if (automatic && definition && !buildingIds) building = this.automaticRecruitmentBuilding(player.id, building.tile, definition.building, definition.age) ?? building;
     if (
       this.expansion &&
       (!definition ||
@@ -900,12 +889,13 @@ export class Skirmish {
     return null;
   }
 
-  private automaticRecruitmentBuilding(playerId: number, anchor: Building, type: BuildingType, age: Age): Building | undefined {
+  private automaticRecruitmentBuilding(playerId: number, anchorTile: number, type: BuildingType, age: Age, buildingIds?: readonly number[]): Building | undefined {
     return this.recruitment.chooseProducer(this.buildings.filter(b => b.playerId === playerId
+      && (!buildingIds || buildingIds.includes(b.id))
       && this.owners[b.tile] === playerId && b.type === type && !b.remainingTicks && (b.health ?? 1) > 0
       && AGES.indexOf(b.age ?? "StoneAge") >= AGES.indexOf(age)
       && (type !== "port" || this.map.neighbors(b.tile).some(t => this.waterPaths.walkable(t)))),
-      tile => this.map.euclideanDistSquared(tile, anchor.tile));
+      tile => this.map.euclideanDistSquared(tile, anchorTile));
   }
 
   private stepRecruitment(): void {
@@ -956,10 +946,12 @@ export class Skirmish {
     definitionId?: string,
     completing = false,
     automatic = false,
+    buildingIds?: readonly number[],
   ): string | null {
     if (!Object.prototype.hasOwnProperty.call(SHIP_RULES, kind))
       return "Unknown ship type";
     let port = this.buildings.find((b) => b.id === buildingId);
+    if (buildingIds) port = this.automaticRecruitmentBuilding(player.id, port?.tile ?? player.base, "port", VESSEL.get(definitionId ?? `stoneage-${kind}`)?.age ?? "StoneAge", buildingIds);
     if (
       !port ||
       port.type !== "port" ||
@@ -971,7 +963,7 @@ export class Skirmish {
     const vessel = this.expansion
       ? VESSEL.get(definitionId ?? `stoneage-${kind}`)
       : undefined;
-    if (automatic && vessel) port = this.automaticRecruitmentBuilding(player.id, port, "port", vessel.age) ?? port;
+    if (automatic && vessel && !buildingIds) port = this.automaticRecruitmentBuilding(player.id, port.tile, "port", vessel.age) ?? port;
     if (
       this.expansion &&
       (!vessel ||

@@ -25,15 +25,16 @@ export function commandRejection(command: Command): string | null {
       (command as { armyId: number }).armyId <= 0)
   )
     return "Invalid army identity";
-  for (const field of ["squadIds", "shipIds", "aircraftIds"] as const)
+  for (const field of ["squadIds", "shipIds", "aircraftIds", "buildingIds"] as const)
     if (field in command) {
       const ids = (command as unknown as Record<string, unknown>)[field],
         cap =
-          field === "squadIds"
+          field === "buildingIds" ? 10_000 : field === "squadIds"
             ? MAX_SQUADS
             : field === "shipIds"
               ? MAX_SHIPS
               : 32;
+      if (field === "buildingIds" && ids === undefined) continue;
       if (
         !Array.isArray(ids) ||
         !ids.length ||

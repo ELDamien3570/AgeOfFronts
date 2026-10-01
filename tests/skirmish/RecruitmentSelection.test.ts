@@ -1,6 +1,8 @@
 import { describe, expect, it } from "vitest";
 import { GameMapImpl } from "../../src/core/game/GameMap";
 import { EmpireViewModel } from "../../src/skirmish/client/EmpireViewModel";
+import { HudViewModel } from "../../src/skirmish/client/HudViewModel";
+import { RecruitmentQueueViewModel } from "../../src/skirmish/client/RecruitmentQueueViewModel";
 import {
   SkirmishViewModel,
   type SelectionState,
@@ -71,6 +73,133 @@ function fixture(water = false, legacy = false) {
 }
 
 describe("selected recruitment building", () => {
+  it("balances five recruits among only the selected compatible queues, including a mixed building group", () => {
+    const { match, selection, building, vm } = fixture();
+    const outside = building("barracks", 16);
+    const a = building("barracks", 38),
+      b = building("barracks", 60),
+      stable = building("stables", 75);
+    selection.selectedBuildings = new Set([a.id, b.id, stable.id]);
+    selection.selectedBuilding = a.id;
+    const quote = vm().recruitment("infantry");
+    expect(quote.enabled).toBe(true);
+    for (let i = 0; i < 5; i++)
+      expect(
+        match.applyCommand({
+          type: "recruit",
+          playerId: 1,
+          buildingId: quote.building!.id,
+          buildingIds: quote.buildingIds,
+          definitionId: quote.definitionId,
+        }),
+      ).toBeNull();
+    expect(match.recruitment.jobs.map((j) => j.buildingId)).toEqual([
+      a.id,
+      b.id,
+      a.id,
+      b.id,
+      a.id,
+    ]);
+    expect(
+      match.recruitment.jobs.some(
+        (j) => j.buildingId === outside.id || j.buildingId === stable.id,
+      ),
+    ).toBe(false);
+    expect(vm().recruitment("infantry").building?.id).toBe(b.id);
+    const hud = new HudViewModel(vm());
+    expect(hud.selectionCard(null).mode).toBe("mixed");
+    expect(hud.entities.filter((e) => e.category === "building")).toHaveLength(
+      3,
+    );
+    expect(
+      new RecruitmentQueueViewModel(
+        match.snapshot(),
+        1,
+        selection.selectedBuildings,
+      ).entries[0].count,
+    ).toBe(5);
+    const cavalry = vm().recruitment("cavalry");
+    expect(cavalry.building?.id).toBe(stable.id);
+  });
+  it("balances naval and aircraft groups without recruiting at unselected producers", () => {
+    const { match, selection, building, vm } = fixture(true);
+    building("port", 16);
+    const a = building("port", 38),
+      b = building("port", 60);
+    selection.selectedBuildings = new Set([a.id, b.id]);
+    selection.selectedBuilding = a.id;
+    const quote = vm().recruitment("transport");
+    for (let i = 0; i < 5; i++)
+      expect(
+        match.applyCommand({
+          type: "recruit-ship",
+          playerId: 1,
+          buildingId: a.id,
+          buildingIds: quote.buildingIds,
+          shipType: "transport",
+          definitionId: quote.definitionId,
+        }),
+      ).toBeNull();
+    expect(match.recruitment.jobs.map((j) => j.buildingId)).toEqual([
+      a.id,
+      b.id,
+      a.id,
+      b.id,
+      a.id,
+    ]);
+    const field = building("airstrip", 38, "Modern"),
+      other = building("airstrip", 60, "Modern");
+    building("airstrip", 16, "Modern");
+    selection.selectedBuildings = new Set([field.id, other.id]);
+    selection.selectedBuilding = field.id;
+    Object.assign(match.expansion!.supply.inventories[1], {
+      "equipment:fighter": 10,
+      oil: 1000,
+    });
+    for (let i = 0; i < 5; i++)
+      expect(
+        match.applyCommand({
+          type: "recruit-aircraft",
+          playerId: 1,
+          buildingId: field.id,
+          buildingIds: [...selection.selectedBuildings],
+          definitionId: "fighter",
+        }),
+      ).toBeNull();
+    expect(
+      match.recruitment.jobs
+        .filter((j) => j.category === "aircraft")
+        .map((j) => j.buildingId),
+    ).toEqual([field.id, other.id, field.id, other.id, field.id]);
+    expect(
+      new EmpireViewModel(match.snapshot(), selection).aircraft("fighter")
+        .building?.id,
+    ).toBe(other.id);
+  });
+  it("revalidates selected producers after capture or demolition and never escapes the selected group", () => {
+    const { match, selection, building, vm } = fixture();
+    building("barracks", 16);
+    const a = building("barracks", 38),
+      b = building("barracks", 60);
+    selection.selectedBuildings = new Set([a.id, b.id]);
+    selection.selectedBuilding = a.id;
+    const quote = vm().recruitment("infantry");
+    a.playerId = 2;
+    const command = {
+      type: "recruit" as const,
+      playerId: 1,
+      buildingId: a.id,
+      buildingIds: quote.buildingIds,
+      definitionId: quote.definitionId,
+    };
+    expect(match.applyCommand(command)).toBeNull();
+    expect(match.recruitment.jobs[0].buildingId).toBe(b.id);
+    b.health = 0;
+    const gold = match.players[0].gold;
+    expect(match.applyCommand(command)).toMatch(/completed friendly/);
+    expect(match.players[0].gold).toBe(gold);
+    expect(vm().recruitment("infantry").enabled).toBe(false);
+  });
   it("names the actual research and specialist recruitment building", () => {
     const { match, selection, vm } = fixture();
     const unit = UNITS.find((u) => u.role === "siege")!;

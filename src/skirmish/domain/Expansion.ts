@@ -367,6 +367,7 @@ export class Expansion {
         command.buildingId,
         command.definitionId,
         command.autoRecruit === true,
+        command.buildingIds,
       );
     if (command.type === "sortie") {
       const selected = [...new Set(command.aircraftIds)].map((id) =>
@@ -655,6 +656,7 @@ export class Expansion {
     id: number,
     kind: "fighter" | "bomber",
     automatic = false,
+    buildingIds?: readonly number[],
   ): string | null {
     let field = this.world.buildings.find(
       (b) =>
@@ -664,16 +666,18 @@ export class Expansion {
         !b.remainingTicks &&
         this.world.owners[b.tile] === player.id && (b.health ?? 1) > 0,
     );
+    const anchorTile = field?.tile ?? player.base;
+    if (automatic || buildingIds) field = this.world.recruitment.chooseProducer(this.world.buildings.filter(b => b.playerId === player.id
+      && (!buildingIds || buildingIds.includes(b.id))
+      && this.world.owners[b.tile] === player.id && b.type === "airstrip" && !b.remainingTicks && (b.health ?? 1) > 0
+      && this.aircraft.filter(a => a.airfieldId === b.id).length + this.world.recruitment.count(player.id, "aircraft", b.id) < 6),
+      tile => this.world.map.euclideanDistSquared(tile, anchorTile));
     if (
       !field ||
       !["fighter", "bomber"].includes(kind) ||
       !this.progression.has(player.id, technologyAt("Modern", "warfare", 3).id)
     )
       return "Needs researched aviation and a completed owned airstrip";
-    if (automatic) field = this.world.recruitment.chooseProducer(this.world.buildings.filter(b => b.playerId === player.id
-      && this.world.owners[b.tile] === player.id && b.type === "airstrip" && !b.remainingTicks && (b.health ?? 1) > 0
-      && this.aircraft.filter(a => a.airfieldId === b.id).length + this.world.recruitment.count(player.id, "aircraft", b.id) < 6),
-      tile => this.world.map.euclideanDistSquared(tile, field!.tile)) ?? field;
     if (
       this.aircraft.filter((a) => a.airfieldId === field.id).length + this.world.recruitment.count(player.id, "aircraft", field.id) >= 6 ||
       this.aircraft.filter((a) => a.playerId === player.id).length + this.world.recruitment.count(player.id, "aircraft") >= 32

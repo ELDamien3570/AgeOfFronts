@@ -457,6 +457,7 @@ export class EmpireHudView {
           type: "recruit",
           playerId: this.playerId,
           buildingId: q.building.id,
+          buildingIds: q.buildingIds,
           autoRecruit: q.building.id !== vm.selection.selectedBuilding,
           definitionId: value!,
         });
@@ -469,6 +470,7 @@ export class EmpireHudView {
           type: "recruit-aircraft",
           playerId: this.playerId,
           buildingId: q.building.id,
+          buildingIds: q.buildingIds,
           autoRecruit: q.building.id !== vm.selection.selectedBuilding,
           definitionId: kind,
         });

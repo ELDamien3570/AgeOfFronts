@@ -70,6 +70,7 @@ export const commandSchema = z.discriminatedUnion("type", [
   command("repair", { buildingId: id.optional(), barrierId: id.optional() }),
   command("recruit-aircraft", {
     buildingId: id,
+    buildingIds: z.array(id).min(1).max(10_000).optional(),
     autoRecruit: z.boolean().optional(),
     definitionId: z.enum(["fighter", "bomber"]),
   }),
@@ -81,6 +82,7 @@ export const commandSchema = z.discriminatedUnion("type", [
   }),
   command("recruit", {
     buildingId: id,
+    buildingIds: z.array(id).min(1).max(10_000).optional(),
     autoRecruit: z.boolean().optional(),
     definitionId: text.optional(),
   }),
@@ -91,6 +93,7 @@ export const commandSchema = z.discriminatedUnion("type", [
   }),
   command("recruit-ship", {
     buildingId: id,
+    buildingIds: z.array(id).min(1).max(10_000).optional(),
     autoRecruit: z.boolean().optional(),
     shipType: z.enum(["transport", "warship"]),
     definitionId: text.optional(),

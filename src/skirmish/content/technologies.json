@@ -4,11 +4,11 @@
     "name": "Shorecraft",
     "age": "StoneAge",
     "tree": "naval",
-    "slot": 1,
+    "slot": 2,
     "gold": 200,
     "ticks": 600,
     "description": "Construct Stone ports. Port access alone creates no military vessel, sea trader, or passive trade income.",
-    "prerequisites": [],
+    "prerequisites": ["stoneage-cargo-canoes"],
     "capabilities": ["stoneage-shorecraft"]
   },
   {
@@ -16,11 +16,11 @@
     "name": "Cargo Canoes",
     "age": "StoneAge",
     "tree": "naval",
-    "slot": 2,
+    "slot": 1,
     "gold": 300,
     "ticks": 700,
     "description": "Unlock automatic shore embarkation in free temporary transports carrying 10 whole squads. Move orders cross reachable water and resume on land; transports disappear after landing. Also unlock port-built permanent transports and automatic water trade from factories through reachable ports. Water trade does not require Goods Handling.",
-    "prerequisites": ["stoneage-shorecraft"],
+    "prerequisites": [],
     "capabilities": ["stoneage-cargo-canoes"]
   },
   {

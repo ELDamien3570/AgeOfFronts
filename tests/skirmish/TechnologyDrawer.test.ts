@@ -106,7 +106,7 @@ describe("battlefield research drawer", () => {
     view.toggle("technology");
     root.querySelector<HTMLElement>(".technology-tree-scroll")!.scrollTop = 200;
     root
-      .querySelector<HTMLButtonElement>('[data-node="stoneage-shorecraft"]')!
+      .querySelector<HTMLButtonElement>('[data-node="stoneage-cargo-canoes"]')!
       .click();
     const details = root.querySelector<HTMLElement>(".technology-detail")!;
     expect(details.closest(".technology-tree-scroll")).toBeNull();
@@ -120,7 +120,7 @@ describe("battlefield research drawer", () => {
     research.click();
     expect(
       m.expansion!.progression.states[1].research.naval?.technologyId,
-    ).toBe("stoneage-shorecraft");
+    ).toBe("stoneage-cargo-canoes");
     view.update(vm());
     view.toggle("technology");
     view.toggle("technology");

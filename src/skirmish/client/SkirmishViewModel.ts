@@ -11,6 +11,7 @@ export interface SelectionState {
   selected: Set<number>;
   selectedShips: Set<number>;
   selectedBuilding: number | null;
+  selectedBuildings?: ReadonlySet<number>;
   selectedAircraft?: Set<number>;
   selectedDeposit?: number | null;
   inspectedSquadId?: number | null;
@@ -65,6 +66,7 @@ export class SkirmishViewModel {
     enabled: boolean;
     reason: string;
     definitionId: string | undefined;
+    buildingIds: number[] | undefined;
   } {
     const naval = kind === "transport" || kind === "warship";
     if (this.autoTier && this.state.expansion) {
@@ -117,6 +119,9 @@ export class SkirmishViewModel {
     const vesselDefinition =
       this.state.expansion && naval ? VESSEL.get(definitionId) : undefined;
     const definition = landDefinition ?? vesselDefinition;
+    const scope = this.selection.selectedBuildings?.size ? this.selection.selectedBuildings : undefined;
+    const workloads = new Map<number, number>();
+    for (const job of this.state.expansion?.recruitment ?? []) workloads.set(job.buildingId, (workloads.get(job.buildingId) ?? 0) + job.remainingTicks);
     const forces = [
       ...this.selectedSquads,
       ...this.state.ships.filter(
@@ -139,7 +144,9 @@ export class SkirmishViewModel {
       .filter(
         (b) =>
           b.playerId === this.playerId &&
-          (!selectedOnly || b.id === this.selection.selectedBuilding) &&
+          (!scope || scope.has(b.id)) &&
+          (!selectedOnly || (scope ? scope.has(b.id) : b.id === this.selection.selectedBuilding)) &&
+          (b.health ?? 1) > 0 &&
           this.state.owners[b.tile] === this.playerId &&
           b.remainingTicks === 0 &&
           (naval
@@ -152,8 +159,7 @@ export class SkirmishViewModel {
       )
       .sort(
         (a, b) =>
-          Number(b.id === this.selection.selectedBuilding) -
-            Number(a.id === this.selection.selectedBuilding) ||
+          (scope ? (workloads.get(a.id) ?? 0) - (workloads.get(b.id) ?? 0) : Number(b.id === this.selection.selectedBuilding) - Number(a.id === this.selection.selectedBuilding)) ||
           distance(a.tile) - distance(b.tile) ||
           a.id - b.id,
       )[0];
@@ -195,6 +201,7 @@ export class SkirmishViewModel {
       enabled: reason === "",
       reason,
       definitionId: definition?.id,
+      buildingIds: scope ? [...scope] : undefined,
     };
   }
 

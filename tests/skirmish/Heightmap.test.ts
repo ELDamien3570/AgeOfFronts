@@ -241,20 +241,16 @@ describe("calibrated heightmap terrain", () => {
     expect(Array.from(loaded.terrain)).toEqual(before);
   });
 
-  it("starts 20 reachable factions on the imported map and accepts ordinary move orders", () => {
+  it("starts 20 factions on viable land on the imported map and accepts ordinary move orders", () => {
     const loaded = load(),
       match = new Skirmish(loaded.map, { seed: 42, aiCount: 19, runAi: false });
     expect(match.players).toHaveLength(20);
     for (const player of match.players) {
       expect(match.map.isLand(player.base)).toBe(true);
-      expect(match.paths.connected(match.players[0].base, player.base)).toBe(
-        true,
-      );
+      expect(match.paths.walkable(player.base)).toBe(true);
     }
     const squad = match.squads[0];
-    const goal = match.paths.largestLand.find(
-      (tile) => match.map.manhattanDist(tile, match.tileOf(squad)) > 40,
-    )!;
+    const goal = Array.from(match.paths.component.keys()).find(tile => match.paths.connected(tile, match.tileOf(squad)) && match.map.manhattanDist(tile, match.tileOf(squad)) > 8)!;
     expect(
       match.applyCommand({
         type: "order",

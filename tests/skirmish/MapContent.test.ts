@@ -265,7 +265,7 @@ describe("reviewed heightmap content contract", () => {
     ).toThrow("climate");
   });
 
-  it("starts twenty factions on reachable Africa land and advances the simulation", () => {
+  it("starts twenty factions on viable Africa land and advances the simulation", () => {
     const loaded = africa();
     const match = new Skirmish(loaded.map, {
       seed: 42,
@@ -275,9 +275,7 @@ describe("reviewed heightmap content contract", () => {
     expect(match.players).toHaveLength(20);
     for (const player of match.players) {
       expect(match.map.isLand(player.base)).toBe(true);
-      expect(match.paths.connected(match.players[0].base, player.base)).toBe(
-        true,
-      );
+      expect(match.paths.walkable(player.base)).toBe(true);
     }
     match.step();
     expect(match.tick).toBe(1);

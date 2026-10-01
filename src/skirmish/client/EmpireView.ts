@@ -357,12 +357,14 @@ export class EmpireView {
 
     if (d.recruit) {
       const u = UNIT.get(d.recruit)!;
-      const source = this.vm.recruitDefinition(u.id).building;
+      const choice = this.vm.recruitDefinition(u.id);
+      const source = choice.building;
       if (source)
         this.actions.command({
           type: "recruit",
           playerId: this.playerId,
           buildingId: source.id,
+          buildingIds: choice.buildingIds,
           definitionId: u.id,
         });
       else
@@ -391,6 +393,7 @@ export class EmpireView {
         type: "recruit-aircraft",
         playerId: this.playerId,
         buildingId: Number(d.airfield),
+        buildingIds: this.vm.aircraft(d.aircraft as "fighter" | "bomber").buildingIds,
         definitionId: d.aircraft as "fighter" | "bomber",
       });
 

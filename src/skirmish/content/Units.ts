@@ -331,7 +331,7 @@ for (const [index, age] of AGES.entries())
       name: `${age === "StoneAge" ? "Canoe" : age === "Modern" ? "Powered" : age.replace(/Age$/, "")} ${kind === "trade" ? "merchant vessel" : kind}`,
       age,
       kind,
-      technologyId: technologyAt(age, "naval", actualSlot).id,
+      technologyId: age === "StoneAge" && kind !== "warship" ? "stoneage-cargo-canoes" : technologyAt(age, "naval", actualSlot).id,
       cost: {
         gold: (kind === "warship" ? 700 : 300) * (index + 1),
         items:

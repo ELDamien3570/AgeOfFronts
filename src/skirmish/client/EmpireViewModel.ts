@@ -29,7 +29,9 @@ import { FactionViewModel } from "./FactionViewModel";
 import { ResourceViewModel } from "./ResourceViewModel";
 import { SkirmishViewModel, type SelectionState } from "./SkirmishViewModel";
 export class EmpireViewModel {
-  get playerId(): number { return this.state.localPlayerId ?? 1; }
+  get playerId(): number {
+    return this.state.localPlayerId ?? 1;
+  }
 
   readonly resources: ResourceViewModel;
   constructor(
@@ -45,7 +47,7 @@ export class EmpireViewModel {
     return this.state.expansion!;
   }
   get player() {
-    return this.state.players.find(player => player.id === this.playerId)!;
+    return this.state.players.find((player) => player.id === this.playerId)!;
   }
   get progression() {
     return this.expansion.progression[this.playerId];
@@ -153,7 +155,10 @@ export class EmpireViewModel {
       : "Building unavailable";
   }
   buildingVisible(type: BuildingType): boolean {
-    return !!this.buildingAge(type) || !!buildingTechnology(type, this.progression.age);
+    return (
+      !!this.buildingAge(type) ||
+      !!buildingTechnology(type, this.progression.age)
+    );
   }
   buildingPreview(type: BuildingType) {
     const unlocked = this.buildingAge(type);
@@ -322,7 +327,9 @@ export class EmpireViewModel {
     return { selected, target, cost, reason };
   }
   get incoming() {
-    return this.expansion.diplomacy.offers.filter((o) => o.recipient === this.playerId);
+    return this.expansion.diplomacy.offers.filter(
+      (o) => o.recipient === this.playerId,
+    );
   }
   technologyName(id: string) {
     return TECHNOLOGY.get(id)?.name ?? id;
@@ -369,18 +376,39 @@ export class EmpireViewModel {
     );
   }
   aircraft(kind: "fighter" | "bomber") {
+    const workloads = new Map<number, number>();
+    for (const job of this.expansion.recruitment ?? [])
+      workloads.set(
+        job.buildingId,
+        (workloads.get(job.buildingId) ?? 0) + job.remainingTicks,
+      );
     const building = this.state.buildings
       .filter(
         (b) =>
           b.playerId === this.playerId &&
           !b.remainingTicks &&
           b.type === "airstrip" &&
-          this.expansion.aircraft.filter((a) => a.airfieldId === b.id).length + (this.expansion.recruitment ?? []).filter(j => j.playerId === this.playerId && j.category === "aircraft" && j.buildingId === b.id).length <
+          (!this.selection.selectedBuildings?.size ||
+            this.selection.selectedBuildings.has(b.id)) &&
+          this.state.owners[b.tile] === this.playerId &&
+          (b.health ?? 1) > 0 &&
+          this.expansion.aircraft.filter((a) => a.airfieldId === b.id).length +
+            (this.expansion.recruitment ?? []).filter(
+              (j) =>
+                j.playerId === this.playerId &&
+                j.category === "aircraft" &&
+                j.buildingId === b.id,
+            ).length <
             6,
       )
       .sort(
-        (a, b) => Number(b.id === this.selection.selectedBuilding) - Number(a.id === this.selection.selectedBuilding)
-          || this.distance(a.tile) - this.distance(b.tile) || a.id - b.id,
+        (a, b) =>
+          (this.selection.selectedBuildings?.size
+            ? (workloads.get(a.id) ?? 0) - (workloads.get(b.id) ?? 0)
+            : Number(b.id === this.selection.selectedBuilding) -
+              Number(a.id === this.selection.selectedBuilding)) ||
+          this.distance(a.tile) - this.distance(b.tile) ||
+          a.id - b.id,
       )[0];
     const cost = {
       gold: 5000,
@@ -391,10 +419,23 @@ export class EmpireViewModel {
       ? "Research Military Aviation"
       : !building
         ? "Needs an airstrip with a free slot"
-        : this.expansion.aircraft.filter((a) => a.playerId === this.playerId).length + (this.expansion.recruitment ?? []).filter(j => j.playerId === this.playerId && j.category === "aircraft").length >= 32
+        : this.expansion.aircraft.filter((a) => a.playerId === this.playerId)
+              .length +
+              (this.expansion.recruitment ?? []).filter(
+                (j) =>
+                  j.playerId === this.playerId && j.category === "aircraft",
+              ).length >=
+            32
           ? "Aircraft limit reached"
           : costRejection(this.player, this.inventory, cost);
-    return { building, cost, reason };
+    return {
+      building,
+      cost,
+      reason,
+      buildingIds: this.selection.selectedBuildings?.size
+        ? [...this.selection.selectedBuildings]
+        : undefined,
+    };
   }
   launcher(payload: "icbm" | "hydrogen" | "mirv") {
     const candidates = [

@@ -56,7 +56,7 @@ export class ResearchOpportunitiesView {
     const cards = new ResearchOpportunitiesViewModel(vm).cards;
     this.element.hidden = cards.length === 0;
     const fingerprint = JSON.stringify(
-      cards.map((card) => [card.id, card.gold, card.seconds, card.reason]),
+      cards.map((card) => [card.id, card.gold, card.seconds, card.reason, card.tree]),
     );
     if (fingerprint === this.fingerprint) return;
     this.fingerprint = fingerprint;
@@ -66,10 +66,10 @@ export class ResearchOpportunitiesView {
       ? (document.activeElement as HTMLElement).dataset.quickResearch
       : undefined;
     this.element.innerHTML = cards
-      .map(
-        (card) =>
-          `<article class="research-opportunity hud-surface" aria-label="${escape(card.name)}" tabindex="0"><header><small>${escape(card.tree)}</small><b>${escape(card.name)}</b></header><div class="research-description"><div><p>${escape(card.description)}</p></div></div><button data-quick-research="${escape(card.id)}" aria-label="Research ${escape(card.name)}"><span>Research · ${format(card.gold)} gold · ${card.seconds}s</span></button></article>`,
-      )
+      .map((card) => {
+        const treeLabel = card.tree === "economic" ? "Economics" : card.tree;
+        return `<article class="research-opportunity hud-surface research-tree-${escape(card.tree)}" data-tree="${escape(card.tree)}" aria-label="${escape(card.name)}" tabindex="0"><header><div class="research-title-group"><small class="branch-label">${escape(treeLabel)}</small><b>${escape(card.name)}</b></div><button data-quick-research="${escape(card.id)}" aria-label="Research ${escape(card.name)}"><span>Research</span><small class="cost-label">${format(card.gold)}g · ${card.seconds}s</small></button></header><div class="research-description"><div><p>${escape(card.description)}</p></div></div></article>`;
+      })
       .join("");
     this.element.scrollTop = scroll;
     if (focused)

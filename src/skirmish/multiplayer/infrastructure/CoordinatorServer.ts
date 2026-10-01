@@ -205,6 +205,9 @@ export function createCoordinatorServer(options: CoordinatorServerOptions) {
                 message.command,
               );
               break;
+            case "select-spawn":
+              await match.selectSpawn(session.guestId, message.tile);
+              break;
             case "host-commit":
               await match.accept(
                 session.guestId,

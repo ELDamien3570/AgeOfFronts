@@ -320,6 +320,7 @@ describe("stacked buildings and large fleets", () => {
     const match = plains(),
       tile = match.map.ref(30, 25),
       player = match.players[0];
+    match.squads.splice(0); // Isolate construction/income from randomly placed camp defenders.
     match.owners[tile] = 1;
     player.gold = 100000;
     const before = player.gold;

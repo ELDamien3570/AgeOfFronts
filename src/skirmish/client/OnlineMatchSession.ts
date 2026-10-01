@@ -62,6 +62,8 @@ export class OnlineMatchSession {
     void this.connection.connect();
   }
   postMessage(message: WorkerRequest): void {
+    if (message.type === "select-spawn")
+      void this.request({ type: "select-spawn", matchId: this.matchId, tile: message.tile }).catch(error => this.onmessage?.({ data: { type: "rejected", message: error.message } } as MessageEvent<WorkerResponse>));
     if (message.type === "command")
       void this.request({
         type: "match-command",
@@ -134,6 +136,8 @@ export class OnlineMatchSession {
         runtimeId: message.manifest.runtimeId,
         tickP95Ms,
       });
+    } else if (message.type === "match-spawn") {
+      this.onmessage?.({ data: { type: "spawn", state: message.state } } as MessageEvent<WorkerResponse>);
     } else if (message.type === "host-restore") {
       const tick = await this.hostRequest<number>("restore", {
         checkpoint: message.checkpoint,

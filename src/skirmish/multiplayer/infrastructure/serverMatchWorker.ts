@@ -1,5 +1,8 @@
 import { parentPort } from "node:worker_threads";
+import { createSkirmishMap } from "../../Elevation";
+import { SpawnSelection } from "../../domain/SpawnSelection";
 import { CommitVerifier } from "../application/CommitVerifier";
+import type { RuntimeMap } from "../application/HostedRuntime";
 import { HostedRuntime } from "../application/HostedRuntime";
 import { mapIdentity } from "../application/MapIdentity";
 import type { ExecutorRequest } from "../application/MatchExecutor";
@@ -8,6 +11,8 @@ import { loadServerMap } from "./ServerMap";
 if (!parentPort) throw new Error("The match executor requires a worker thread");
 let verifier: CommitVerifier | undefined;
 let identity: string;
+let setup: SpawnSelection | undefined;
+let preparedMap: RuntimeMap | undefined;
 let pending = Promise.resolve();
 parentPort.on(
   "message",
@@ -16,22 +21,70 @@ parentPort.on(
       try {
         const request = message.request;
         let result: unknown;
-        if (request.type === "initialize") {
-          if (verifier) throw new Error("Executor already initialized");
+        if (request.type === "initialize" || request.type === "prepare") {
+          if (verifier || setup)
+            throw new Error("Executor already initialized");
           const loaded = request.map
             ? {
                 map: request.map,
                 territoryIncomeScale: request.options.territoryIncomeScale,
               }
             : await loadServerMap(request.settings);
-          verifier = new CommitVerifier(
-            new HostedRuntime(loaded.map, {
-              ...request.options,
-              territoryIncomeScale: loaded.territoryIncomeScale,
-            }),
-          );
+          const options = {
+            ...request.options,
+            territoryIncomeScale: loaded.territoryIncomeScale,
+          };
           identity = await mapIdentity(loaded.map);
-          result = await verifier.initial();
+          if (request.type === "prepare") {
+            preparedMap = loaded.map;
+            setup = new SpawnSelection(
+              createSkirmishMap(
+                loaded.map.width,
+                loaded.map.height,
+                loaded.map.terrain,
+                loaded.map.elevation,
+                loaded.map.forest,
+                loaded.map.resourceTerrain,
+              ),
+              options,
+            );
+            setup.resolve();
+            result = { mapHash: identity, options };
+          } else {
+            verifier = new CommitVerifier(
+              new HostedRuntime(loaded.map, {
+                ...request.options,
+                territoryIncomeScale: loaded.territoryIncomeScale,
+              }),
+            );
+            identity = await mapIdentity(loaded.map);
+            result = await verifier.initial();
+          }
+        } else if (
+          request.type === "select-spawn" ||
+          request.type === "spawn-state" ||
+          request.type === "start"
+        ) {
+          if (!setup || !preparedMap)
+            throw new Error("Spawn selection has closed");
+          if (request.type === "select-spawn")
+            result = {
+              rejection: setup.select(request.playerId, request.tile),
+              state: setup.state(0),
+            };
+          else if (request.type === "spawn-state")
+            result = setup.state(request.remainingMs);
+          else {
+            verifier = new CommitVerifier(
+              new HostedRuntime(preparedMap, {
+                ...setup.options,
+                humanSpawns: setup.choices,
+              }),
+            );
+            result = await verifier.initial();
+            setup = undefined;
+            preparedMap = undefined;
+          }
         } else {
           if (!verifier) throw new Error("Executor not initialized");
           switch (request.type) {

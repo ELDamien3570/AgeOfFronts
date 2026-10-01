@@ -31,7 +31,7 @@ export function buildingTechnology(
       index !== 6)
   )
     return null;
-  if (type === "port") return technologyAt(age, "naval", 1).id;
+  if (type === "port") return age === "StoneAge" ? "stoneage-shorecraft" : technologyAt(age, "naval", 1).id;
   if (type === "city")
     return technologyAt(
       age,

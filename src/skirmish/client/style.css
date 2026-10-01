@@ -2012,8 +2012,8 @@ footer span:last-child {
   position: absolute;
   top: 54px;
   right: 8px;
-  width: min(268px, calc(100% - 16px));
-  max-height: min(434px, calc(100% - 240px));
+  width: min(285px, calc(100% - 16px));
+  max-height: min(450px, calc(100% - 240px));
   display: grid;
   align-content: start;
   gap: 6px;
@@ -2035,14 +2035,30 @@ footer span:last-child {
 }
 .research-opportunity header {
   display: flex;
+  flex-direction: row;
+  justify-content: space-between;
+  align-items: flex-start;
+  gap: 8px;
+}
+.research-opportunity .research-title-group {
+  display: flex;
   flex-direction: column;
-  gap: 1px;
+  gap: 2px;
+  min-width: 0;
+  flex: 1 1 auto;
 }
 .research-opportunity header small {
-  color: var(--gold);
+  display: inline-flex;
+  align-items: center;
+  align-self: flex-start;
   text-transform: uppercase;
   font-size: 8px;
+  line-height: 1;
   letter-spacing: .08em;
+  font-weight: 700;
+  padding: 1px 4px;
+  border-radius: 3px;
+  border: 1px solid currentColor;
 }
 .research-opportunity header b {
   font-size: 12px;
@@ -2079,17 +2095,90 @@ footer span:last-child {
 @media (prefers-reduced-motion: reduce) {
   .research-description { transition: none; }
 }
+
+/* Research button positioned in the top right of the alert header */
 #app .research-opportunity button {
-  width: 100%;
+  width: auto;
+  min-width: 76px;
+  flex-shrink: 0;
+  align-self: flex-start;
   min-height: 26px;
-  padding: 3px 5px;
+  padding: 3px 6px;
   font-size: 10px;
+  line-height: 1.15;
   border-width: 1px;
-  white-space: normal;
+  border-radius: 4px;
+  white-space: nowrap;
+  text-align: center;
+  cursor: pointer;
+  transition: background 120ms ease, border-color 120ms ease;
+}
+.research-opportunity button span {
+  display: block;
+  font-weight: 700;
 }
 .research-opportunity button small {
   display: block;
   font-size: 9px;
+  opacity: 0.95;
+}
+
+/* Branch-specific color outline behind cost and branch label */
+/* Naval (light blue) */
+.research-opportunity.research-tree-naval header small,
+.research-opportunity[data-tree="naval"] header small {
+  color: #7dd3fc;
+  border-color: #38bdf8;
+  background: rgba(14, 165, 233, 0.18);
+}
+#app .research-opportunity.research-tree-naval button,
+#app .research-opportunity[data-tree="naval"] button {
+  border-color: #38bdf8;
+  background: rgba(14, 165, 233, 0.16);
+  color: #f0f9ff;
+}
+#app .research-opportunity.research-tree-naval button:hover,
+#app .research-opportunity[data-tree="naval"] button:hover {
+  background: rgba(14, 165, 233, 0.35);
+  border-color: #7dd3fc;
+}
+
+/* Warfare (red) */
+.research-opportunity.research-tree-warfare header small,
+.research-opportunity[data-tree="warfare"] header small {
+  color: #fca5a5;
+  border-color: #ef4444;
+  background: rgba(239, 68, 68, 0.18);
+}
+#app .research-opportunity.research-tree-warfare button,
+#app .research-opportunity[data-tree="warfare"] button {
+  border-color: #ef4444;
+  background: rgba(239, 68, 68, 0.16);
+  color: #fef2f2;
+}
+#app .research-opportunity.research-tree-warfare button:hover,
+#app .research-opportunity[data-tree="warfare"] button:hover {
+  background: rgba(239, 68, 68, 0.35);
+  border-color: #fca5a5;
+}
+
+/* Economics (green) */
+.research-opportunity.research-tree-economic header small,
+.research-opportunity[data-tree="economic"] header small {
+  color: #86efac;
+  border-color: #22c55e;
+  background: rgba(34, 197, 94, 0.18);
+}
+#app .research-opportunity.research-tree-economic button,
+#app .research-opportunity[data-tree="economic"] button {
+  border-color: #22c55e;
+  background: rgba(34, 197, 94, 0.16);
+  color: #f0fdf4;
+}
+#app .research-opportunity.research-tree-economic button:hover,
+#app .research-opportunity[data-tree="economic"] button:hover {
+  background: rgba(34, 197, 94, 0.35);
+  border-color: #86efac;
 }
 
 
@@ -2116,3 +2205,21 @@ footer span:last-child {
   .command-category { flex: 0 0 145px; }
   .command-category.troops { flex-basis: 246px; }
 }
+.spawn-selection {
+  position: absolute;
+  top: 18px;
+  left: 50%;
+  transform: translateX(-50%);
+  z-index: 5;
+  max-width: min(700px, 90%);
+  padding: 14px 20px;
+  border: 1px solid #bcb28c;
+  border-radius: 8px;
+  background: #15252eee;
+  color: #f3ebd0;
+  box-shadow: 0 4px 20px #0008;
+  text-align: center;
+  pointer-events: none;
+}
+.spawn-selection[hidden] { display: none; }
+.spawn-selection p { margin: 6px 0 0; font-size: 14px; }

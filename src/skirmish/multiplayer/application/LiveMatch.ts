@@ -1,4 +1,5 @@
-import type { Command, MatchOptions } from "../../Protocol";
+import type { Command } from "../../Protocol";
+import { SPAWN_SECONDS } from "../../domain/SpawnSelection";
 import { commandSchema } from "../CommandSchema";
 import { MatchAuthority, type HostCandidate } from "../domain/MatchAuthority";
 import type { MatchReservation } from "../domain/RoomCoordinator";
@@ -6,7 +7,7 @@ import type { MatchManifest, ServerMessage } from "../Protocol";
 import type { EncodedState } from "../StateCodec";
 import type { VerifiedCommit } from "./CommitVerifier";
 import type { HostBatch, OrderedCommand, RuntimeCommit } from "./HostedRuntime";
-import type { MatchExecutor } from "./MatchExecutor";
+import type { MatchExecutor, PreparedMatch, SpawnReply } from "./MatchExecutor";
 
 /** One serialized match lifecycle. The room aggregate owns admission; this owns execution. */
 export class LiveMatch {
@@ -25,6 +26,9 @@ export class LiveMatch {
   private pendingSince = 0;
   private disconnected = new Set<number>();
   private initializedAt = 0;
+  private initialized = false;
+  private spawnDeadline?: number;
+  private nextSpawnAt = 0;
   readonly options;
   constructor(
     readonly reservation: MatchReservation,
@@ -52,24 +56,14 @@ export class LiveMatch {
     };
   }
   async initialize(): Promise<void> {
-    this.commit = await this.executor.request<VerifiedCommit>({
-      type: "initialize",
+    const prepared = await this.executor.request<PreparedMatch>({
+      type: "prepare",
       settings: this.reservation.settings,
       options: this.options,
     });
-    this.mapHash = await this.executor.request<string>({
-      type: "map-identity",
-    });
-    this.authority = new MatchAuthority(
-      this.commit.tick,
-      this.commit.checkpoint.hash,
-    );
-    // Read the authoritative options, including map-specific economy scale.
-    const { decodeState } = await import("../StateCodec");
-    const checkpoint = await decodeState<{ options: MatchOptions }>(
-      this.commit.checkpoint,
-    );
-    Object.assign(this.options, checkpoint.options);
+    this.mapHash = prepared.mapHash;
+    Object.assign(this.options, prepared.options);
+    this.initialized = true;
     for (const member of this.reservation.members)
       this.announce(member.guestId);
     this.pendingSince = this.now();
@@ -113,7 +107,45 @@ export class LiveMatch {
       roundTripMs: 0,
     });
     this.loaded.add(guest);
-    await this.baseline(guest);
+    if (this.authority) await this.baseline(guest);
+    else if (this.spawnDeadline !== undefined) await this.publishSpawn(guest);
+  }
+  async selectSpawn(guest: string, tile: number): Promise<void> {
+    if (
+      !this.connected(guest) ||
+      !this.loaded.has(guest) ||
+      this.spawnDeadline === undefined ||
+      this.now() >= this.spawnDeadline ||
+      this.authority
+    )
+      throw new Error("Spawn selection is not open");
+    const reply = await this.executor.request<SpawnReply>({
+      type: "select-spawn",
+      playerId: this.playerId(guest),
+      tile,
+    });
+    if (reply.rejection) throw new Error(reply.rejection);
+    if (!this.authority)
+      this.broadcast({
+        type: "match-spawn",
+        matchId: this.reservation.id,
+        state: {
+          ...reply.state,
+          remainingMs: Math.max(0, this.spawnDeadline - this.now()),
+        },
+      });
+  }
+  private async publishSpawn(guest?: string): Promise<void> {
+    const state = await this.executor.request<
+      import("../../Protocol").SpawnState
+    >({ type: "spawn-state", remainingMs: this.spawnDeadline! - this.now() });
+    const message = {
+      type: "match-spawn" as const,
+      matchId: this.reservation.id,
+      state,
+    };
+    if (guest) this.send(guest, message);
+    else this.broadcast(message);
   }
   async baseline(guest: string): Promise<void> {
     const packet = await this.executor.request<EncodedState>({
@@ -125,15 +157,21 @@ export class LiveMatch {
     );
   }
   hostReady(guest: string, epoch: number, tick: number, hash: string): void {
+    if (!this.authority) throw new Error("The match has not started");
     this.authority.ready(guest, epoch, tick, hash, this.now());
     this.nextAt = this.now();
   }
   command(guest: string, id: string, input: Record<string, unknown>): void {
+    if (!this.authority)
+      throw new Error("Choose your spawn before issuing orders");
     if (!this.connected(guest) || !this.loaded.has(guest))
       throw new Error("You are not active in this match");
     if (this.seen.has(id)) return;
     if (this.commands.length >= 100) throw new Error("Command queue is full");
-    if (typeof input.type !== "string" || JSON.stringify(input).length > 16_000)
+    if (
+      typeof input.type !== "string" ||
+      JSON.stringify(input).length > 100_000
+    )
       throw new Error("Invalid command");
     const command = commandSchema.parse({
       ...input,
@@ -226,15 +264,54 @@ export class LiveMatch {
       await this.end("All players left");
   }
   async advance(): Promise<void> {
-    if (this.stopped || this.busy || !this.authority) return;
+    if (this.stopped || this.busy || !this.initialized) return;
     const now = this.now();
-    this.authority.expire(now);
     if (now - this.initializedAt >= 60_000) {
       for (const member of this.reservation.members)
         if (!this.loaded.has(member.guestId))
           await this.disconnect(member.guestId);
       if (this.stopped) return;
     }
+    if (!this.authority) {
+      if (this.spawnDeadline === undefined) {
+        if (!this.loaded.size) {
+          if (now - this.initializedAt >= 60_000)
+            await this.end("No players loaded the match");
+          return;
+        }
+        if (
+          this.reservation.members.some(
+            (member) =>
+              this.connected(member.guestId) &&
+              !this.loaded.has(member.guestId),
+          ) &&
+          now - this.initializedAt < 10_000
+        )
+          return;
+        this.spawnDeadline = now + SPAWN_SECONDS * 1000;
+      }
+      this.busy = true;
+      try {
+        if (now < this.spawnDeadline) {
+          if (now >= this.nextSpawnAt) {
+            this.nextSpawnAt = now + 250;
+            await this.publishSpawn();
+          }
+          return;
+        }
+        this.commit = await this.executor.request<VerifiedCommit>({
+          type: "start",
+        });
+        if (this.stopped) return;
+        this.authority = new MatchAuthority(
+          this.commit.tick,
+          this.commit.checkpoint.hash,
+        );
+      } finally {
+        this.busy = false;
+      }
+    }
+    this.authority.expire(now);
     let state = this.authority.snapshot();
     if (state.phase === "paused") {
       const connected = this.reservation.members.filter((member) =>

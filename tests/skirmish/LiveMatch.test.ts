@@ -23,7 +23,7 @@ describe("live client-hosted match", () => {
     const executor: MatchExecutor = {
       request: <T extends ExecutorResult>(request: ExecutorRequest) =>
         worker.request<T>(
-          request.type === "initialize" ? { ...request, map } : request,
+          request.type === "initialize" || request.type === "prepare" ? { ...request, map } : request,
         ),
       close: () => worker.close(),
     };
@@ -71,12 +71,24 @@ describe("live client-hosted match", () => {
       await match.qualify("b", "version", 2);
       messages.length = 0;
       await match.advance();
+      expect(next("a", "match-spawn").state.remainingMs).toBe(20_000);
+      await match.selectSpawn("a", 25 * map.width + 25);
+      await match.selectSpawn("b", 70 * map.width + 125);
+      expect(() => match.command("a", "early", { type: "advance-age" })).toThrow(/spawn/);
+      now += 19_999;
+      await match.advance();
+      expect(messages.some(item => item.message.type === "host-restore")).toBe(false);
+      now++;
+      await match.advance();
       const restore = next("a", "host-restore");
       host.restore(
         await decodeState<ReturnType<Skirmish["checkpoint"]>>(
           restore.checkpoint,
         ),
       );
+      expect(host.match.players[0].base).toBe(25 * map.width + 25);
+      expect(host.match.players[1].base).toBe(70 * map.width + 125);
+      await expect(match.selectSpawn("a", 30 * map.width + 30)).rejects.toThrow(/not open/);
       match.hostReady("a", restore.epoch, 0, restore.checkpoint.hash);
       messages.length = 0;
       await match.advance();
