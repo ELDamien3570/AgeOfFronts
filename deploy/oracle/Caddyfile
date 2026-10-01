@@ -1,0 +1,14 @@
+www.ageoffronts.com, oracle.ageoffronts.com {
+    encode zstd gzip
+    reverse_proxy app:8080
+}
+
+ageoffronts.com {
+    redir https://www.ageoffronts.com{uri} permanent
+}
+
+# Allows pre-cutover checks through the Oracle IP without bypassing TLS warnings.
+http:// {
+    encode zstd gzip
+    reverse_proxy app:8080
+}

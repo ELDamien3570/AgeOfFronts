@@ -1,0 +1,48 @@
+name: ageoffronts
+services:
+  app:
+    image: ageoffronts:${SOURCE_REVISION:?Set the tested Git commit}
+    build:
+      context: ../..
+      dockerfile: deploy/oracle/Dockerfile
+      args:
+        SOURCE_REVISION: ${SOURCE_REVISION}
+    restart: unless-stopped
+    init: true
+    environment:
+      MULTIPLAYER_ORIGINS: https://ageoffronts.com,https://www.ageoffronts.com,https://oracle.ageoffronts.com
+      MULTIPLAYER_MATCH_CAPACITY: "1"
+    volumes:
+      - /opt/ageoffronts/data:/data
+    ports:
+      - "127.0.0.1:8080:8080"
+    security_opt:
+      - no-new-privileges:true
+    cap_drop:
+      - ALL
+    logging:
+      driver: json-file
+      options:
+        max-size: "10m"
+        max-file: "3"
+  proxy:
+    image: caddy:2-alpine
+    restart: unless-stopped
+    depends_on:
+      app:
+        condition: service_healthy
+    ports:
+      - "80:80"
+      - "443:443"
+    volumes:
+      - /opt/ageoffronts/Caddyfile:/etc/caddy/Caddyfile:ro
+      - caddy_data:/data
+      - caddy_config:/config
+    logging:
+      driver: json-file
+      options:
+        max-size: "10m"
+        max-file: "3"
+volumes:
+  caddy_data:
+  caddy_config:
