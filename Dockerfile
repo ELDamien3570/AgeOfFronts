@@ -15,7 +15,7 @@ COPY skirmish ./skirmish
 COPY src ./src
 
 # Build static skirmish frontend into build/skirmish
-RUN npm run build:skirmish
+RUN mkdir -p build/skirmish && npm run build:skirmish
 
 # Production runtime image
 FROM node:24-slim AS runner

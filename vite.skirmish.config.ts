@@ -54,10 +54,14 @@ export default defineConfig({
         });
       },
       // Publish the homepage at / and retain the game at /skirmish/index.html.
-      closeBundle() {
+      writeBundle() {
         const nested = path.join(buildOutDir, "skirmish/home.html");
-        if (fs.existsSync(nested))
+        if (!fs.existsSync(nested)) {
+          return;
+        }
+        try {
           fs.copyFileSync(nested, path.join(buildOutDir, "index.html"));
+        } catch {}
 
         const publicFiles = [
           "robots.txt",
@@ -68,8 +72,39 @@ export default defineConfig({
         ];
         for (const file of publicFiles) {
           const src = path.resolve("resources/public", file);
+          const dest = path.join(buildOutDir, file);
           if (fs.existsSync(src)) {
-            fs.copyFileSync(src, path.join(buildOutDir, file));
+            try {
+              fs.mkdirSync(path.dirname(dest), { recursive: true });
+              fs.copyFileSync(src, dest);
+            } catch {}
+          }
+        }
+      },
+      closeBundle() {
+        const nested = path.join(buildOutDir, "skirmish/home.html");
+        if (!fs.existsSync(nested)) {
+          return;
+        }
+        try {
+          fs.copyFileSync(nested, path.join(buildOutDir, "index.html"));
+        } catch {}
+
+        const publicFiles = [
+          "robots.txt",
+          "sitemap.xml",
+          "ads.txt",
+          "privacy-policy.html",
+          "terms-of-service.html",
+        ];
+        for (const file of publicFiles) {
+          const src = path.resolve("resources/public", file);
+          const dest = path.join(buildOutDir, file);
+          if (fs.existsSync(src)) {
+            try {
+              fs.mkdirSync(path.dirname(dest), { recursive: true });
+              fs.copyFileSync(src, dest);
+            } catch {}
           }
         }
       },
