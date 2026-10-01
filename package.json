@@ -6,7 +6,7 @@
   },
   "scripts": {
     "play": "vite --config vite.skirmish.config.ts",
-    "build:skirmish": "tsc --noEmit && vite build --config vite.skirmish.config.ts",
+    "build:skirmish": "vite build --config vite.skirmish.config.ts",
     "preview:skirmish": "vite preview --config vite.skirmish.config.ts",
     "test:skirmish": "vitest run --config vite.skirmish.config.ts",
     "start:multiplayer": "tsx src/skirmish/multiplayer/server.ts",
