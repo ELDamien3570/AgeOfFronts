@@ -119,3 +119,37 @@ describe("building clearance in cached terrain", () => {
     expect(created).toHaveLength(24);
   });
 });
+
+describe("decorations-only chunks under the GL ground", () => {
+  it("skips detail 1, paints no tiles or water strokes, and returns changed forest tiles", () => {
+    const created: ReturnType<typeof context>[] = [];
+    vi.stubGlobal("document", {
+      createElement: () => {
+        const ctx = context();
+        created.push(ctx);
+        return { width: 0, height: 0, getContext: () => ctx };
+      },
+    });
+    const terrain = new Uint8Array(192 * 128).fill(133);
+    for (let y = 0; y < 128; y++)
+      for (let x = 100; x < 192; x++) terrain[y * 192 + x] = 0x20;
+    const cover = new Uint8Array(192 * 128);
+    for (let y = 0; y < 128; y++) cover.fill(255, y * 192, y * 192 + 100);
+    const map = createSkirmishMap(192, 128, terrain, undefined, { cover }),
+      ground = new PaintedTerrain(map),
+      ctx = context() as unknown as CanvasRenderingContext2D;
+    ground.setDecorationsOnly(true);
+    ground.draw(ctx, 1, 0, 0, 192, 128);
+    expect(created).toHaveLength(0);
+    ground.draw(ctx, 4, 0, 0, 192 * 4, 128 * 4);
+    expect(created.length).toBeGreaterThan(0);
+    for (const c of created) {
+      expect(c.fillRect).not.toHaveBeenCalled();
+      expect(c.stroke).not.toHaveBeenCalled();
+    }
+    const changed = ground.updateBuildings([
+      { tile: map.ref(64, 20), type: "city" },
+    ]);
+    expect(changed.length).toBeGreaterThan(0);
+  });
+});
