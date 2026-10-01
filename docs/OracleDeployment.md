@@ -17,6 +17,13 @@ are not imported. Render services remain intact for rollback.
 The initial independent full boot-volume backup is
 `ageoffronts-initial-deployment-20261001` and is available in Ashburn.
 
+Verified trusted HTTPS and WSS on `www.ageoffronts.com`: two independent guests
+joined the same match, the camp placement window was 10 seconds, and server
+fallback delivered identical state to both guests through tick 4. A browser
+completed an online match and connected to the production lobby without console
+errors. The configured admission ceiling remains one match; these checks do not
+establish a maximum supported player count or load-tested capacity.
+
 ## Configuration
 
 This setup hosts the homepage, game and existing multiplayer coordinator on one
