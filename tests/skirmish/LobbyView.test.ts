@@ -12,6 +12,7 @@ function fixture() {
     addSample: vi.fn(),
     removeSample: vi.fn(),
     reset: vi.fn(),
+    voteStart: vi.fn(),
     customPreview: vi.fn(),
     openCreate: vi.fn(),
     openFlags: vi.fn(),

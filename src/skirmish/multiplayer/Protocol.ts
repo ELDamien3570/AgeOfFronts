@@ -140,6 +140,7 @@ export const clientMessageSchema = z.discriminatedUnion("type", [
     .object({ type: z.literal("join"), requestId, roomId: z.string().max(80) })
     .strict(),
   z.object({ type: z.literal("leave"), requestId }).strict(),
+  z.object({ type: z.literal("voteStart"), requestId, roomId: z.string().max(80) }).strict(),
   z
     .object({ type: z.literal("close"), requestId, roomId: z.string().max(80) })
     .strict(),

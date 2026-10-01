@@ -75,6 +75,12 @@ const view = new LobbyView(
       vm.resetPreview(performance.now());
       view.refreshPreview(vm);
     },
+    voteStart: () => {
+      if (connection && vm.onlineRoom && vm.canVoteToStart)
+        void connection.request({
+          type: "voteStart", requestId: requestId(), roomId: vm.onlineRoom.id,
+        }).catch(reportError);
+    },
     openCreate: () => {
       vm.dialog = "create";
       view.renderDialog(vm);

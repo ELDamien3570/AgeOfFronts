@@ -6,6 +6,42 @@ const profile = (name: string) => ({ name, flagCode: null });
 const rules = { ...defaultLobbySettings("africa"), countdownSeconds: 15 };
 
 describe("online room lifecycle", () => {
+  it("starts before the deadline only after all connected humans vote", () => {
+    const rooms = new RoomCoordinator(0, 1);
+    const id = "default-africa";
+    rooms.join(id, "a", profile("A"), 0);
+    rooms.voteToStart(id, "a");
+    expect(rooms.advance(1)).toHaveLength(0); // Minimum humans still applies.
+    rooms.join(id, "b", profile("B"), 2);
+    expect(rooms.advance(3)).toHaveLength(0); // A new arrival has not voted.
+    expect(() => rooms.voteToStart(id, "outsider")).toThrow(/Join/);
+    rooms.voteToStart(id, "b");
+    rooms.voteToStart(id, "b"); // Repeated votes do not create additional votes.
+    expect(rooms.advance(4)).toHaveLength(1);
+  });
+  it("clears departed votes and requires a returning player to vote again", () => {
+    const rooms = new RoomCoordinator(0, 1);
+    const id = "default-africa";
+    rooms.join(id, "a", profile("A"), 0);
+    rooms.join(id, "b", profile("B"), 0);
+    rooms.voteToStart(id, "a");
+    rooms.voteToStart(id, "b");
+    rooms.disconnect("b", 1);
+    rooms.reconnect("b");
+    expect(rooms.advance(2)).toHaveLength(0);
+    rooms.voteToStart(id, "b");
+    expect(rooms.advance(3)).toHaveLength(1);
+  });
+  it("unanimous votes still wait for reserved match capacity", () => {
+    const rooms = new RoomCoordinator(0, 0);
+    const id = "default-africa";
+    rooms.join(id, "a", profile("A"), 0);
+    rooms.join(id, "b", profile("B"), 0);
+    rooms.voteToStart(id, "a");
+    rooms.voteToStart(id, "b");
+    expect(rooms.advance(1)).toHaveLength(0);
+    expect(rooms.snapshot().rooms.find((room) => room.id === id)!.capacityWaiting).toBe(true);
+  });
   it("never starts empty default lobbies, even when capacity is available", () => {
     const rooms = new RoomCoordinator(0, 100);
     expect(rooms.advance(24 * 60 * 60 * 1000)).toHaveLength(0);

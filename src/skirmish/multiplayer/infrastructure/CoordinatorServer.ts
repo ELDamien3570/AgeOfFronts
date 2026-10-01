@@ -262,6 +262,9 @@ export function createCoordinatorServer(options: CoordinatorServerOptions) {
           case "leave":
             rooms.leave(session.guestId, now());
             break;
+          case "voteStart":
+            rooms.voteToStart(message.roomId, session.guestId);
+            break;
           case "close":
             rooms.close(message.roomId, session.guestId);
             break;

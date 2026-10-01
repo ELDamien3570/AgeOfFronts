@@ -90,6 +90,10 @@ describe("durable authenticated lobby transport", () => {
     expect(
       server.rooms.snapshot().rooms.find((room) => room.id === roomId)!.members,
     ).toHaveLength(2);
+    second.ws.send(JSON.stringify({ type: "voteStart", requestId: "vote-one", roomId }));
+    await second.next((message) => message.type === "ack" && message.requestId === "vote-one");
+    expect(server.rooms.snapshot().rooms.find((room) => room.id === roomId)!
+      .members.find((member) => member.guestId === b.guestId)!.votedToStart).toBe(true);
     second.ws.send(
       JSON.stringify({ type: "close", requestId: "stolen-close", roomId }),
     );

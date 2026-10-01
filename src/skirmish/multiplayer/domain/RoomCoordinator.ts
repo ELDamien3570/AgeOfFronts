@@ -16,6 +16,7 @@ export interface RoomMember {
   joinedAt: number;
   connected: boolean;
   disconnectedAt?: number;
+  votedToStart?: boolean;
 }
 export interface OnlineRoom {
   id: string;
@@ -172,6 +173,14 @@ export class RoomCoordinator {
     this.promote();
   }
 
+  voteToStart(id: string, guestId: string): void {
+    const member = this.room(id).members.find(
+      (candidate) => candidate.guestId === guestId && candidate.connected,
+    );
+    if (!member) throw new Error("Join this lobby before voting to start.");
+    member.votedToStart = true;
+  }
+
   disconnect(guestId: string, now: number): string[] {
     for (const room of this.state.rooms) {
       const member = room.members.find(
@@ -179,6 +188,7 @@ export class RoomCoordinator {
       );
       if (!member || !member.connected) continue;
       member.connected = false;
+      delete member.votedToStart;
       member.disconnectedAt = now;
       if (room.ownerId === guestId) room.ownerMissingSince = now;
       this.updateCountdown(room, now);
@@ -248,6 +258,7 @@ export class RoomCoordinator {
       const ready =
         connected.length >= room.settings.minimumHumans &&
         (connected.length === room.settings.slots ||
+          connected.every((member) => member.votedToStart === true) ||
           (room.deadline !== undefined && now >= room.deadline));
       if (room.listing === "queued" || !ready) continue;
       if (this.state.reservations.length >= this.matchCapacity) {

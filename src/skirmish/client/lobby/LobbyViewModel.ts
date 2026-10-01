@@ -96,6 +96,22 @@ export class LobbyViewModel {
       .find((room) => room.id === roomId)
       ?.members.filter((member) => member.connected).length ?? 0;
   }
+  get startVotes(): number {
+    return this.onlineRoom?.members.filter(
+      (member) => member.connected && member.votedToStart,
+    ).length ?? 0;
+  }
+  get hasVotedToStart(): boolean {
+    return this.onlineRoom?.members.some(
+      (member) => member.guestId === this.guestId && member.connected && member.votedToStart,
+    ) ?? false;
+  }
+  get canVoteToStart(): boolean {
+    return this.connected && !this.hasVotedToStart &&
+      (this.onlineRoom?.members.some(
+        (member) => member.guestId === this.guestId && member.connected,
+      ) ?? false);
+  }
   profile: EmpireProfile = DEFAULT_EMPIRE_PROFILE;
   draftEmpireName = this.profile.name;
   message = "";
