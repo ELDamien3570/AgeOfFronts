@@ -5,6 +5,7 @@ import type { EnvironmentProfile } from "../Environment";
 import { forestOf } from "../Forest";
 import type { MapGeography } from "../Geography";
 import type { Building } from "../Protocol";
+import type { BakeSource } from "./GroundBake";
 import { TerrainArtwork } from "./TerrainArtwork";
 import {
   TERRAIN_CHUNK_CELLS,
@@ -12,6 +13,7 @@ import {
   type TerrainBounds,
 } from "./TerrainDecorations";
 import { TerrainEnvironment } from "./TerrainEnvironment";
+import type { FieldInputs } from "./TerrainFields";
 import { terrainHash as hash, terrainNoise as noise } from "./TerrainNoise";
 
 const CHUNK = TERRAIN_CHUNK_CELLS;
@@ -119,6 +121,7 @@ export class PaintedTerrain {
     }
   >();
   private pixels = 0;
+  private decorationsOnly = false;
   constructor(
     private readonly map: GameMap,
     geography?: MapGeography,
@@ -132,11 +135,52 @@ export class PaintedTerrain {
       this.pixels = 0;
     });
   }
-  updateBuildings(buildings: readonly Pick<Building, "tile" | "type">[]): void {
-    for (const tile of forestOf(this.map)?.updateBuildings(
-      this.map,
-      buildings,
-    ) ?? [])
+  // When the WebGL ground layer paints the terrain, chunks hold only the
+  // decoration accents on transparent canvases (and none at detail 1).
+  setDecorationsOnly(value: boolean): void {
+    if (value === this.decorationsOnly) return;
+    this.decorationsOnly = value;
+    this.cache.clear();
+    this.pixels = 0;
+  }
+  // Inputs for the GL ground bakes: same colour function as the 2D chunks.
+  groundColorSource(): BakeSource {
+    const { map, relief, environment } = this,
+      land = new Uint8Array(map.width() * map.height());
+    for (let tile = 0; tile < land.length; tile++)
+      land[tile] = map.isLand(tile) ? 1 : 0;
+    return {
+      width: map.width(),
+      height: map.height(),
+      land,
+      rgbAt: (tile) => paintedRgb(map, tile, relief, environment),
+    };
+  }
+  groundFieldInputs(source: BakeSource): FieldInputs {
+    const elevation = elevationOf(this.map);
+    let heights: Float32Array | undefined;
+    if (elevation) {
+      heights = new Float32Array(source.width * source.height);
+      for (let tile = 0; tile < heights.length; tile++)
+        heights[tile] = elevation.heightAt(tile);
+    }
+    return {
+      width: source.width,
+      height: source.height,
+      land: source.land,
+      elevation:
+        elevation && heights
+          ? { heights, seaLevel: elevation.seaLevel }
+          : undefined,
+    };
+  }
+  // Returns the tiles whose forest cover changed so a GL ground can re-bake.
+  updateBuildings(
+    buildings: readonly Pick<Building, "tile" | "type">[],
+  ): readonly number[] {
+    const changed =
+      forestOf(this.map)?.updateBuildings(this.map, buildings) ?? [];
+    for (const tile of changed)
       this.invalidate({
         left: this.map.x(tile),
         top: this.map.y(tile),
@@ -145,6 +189,7 @@ export class PaintedTerrain {
       });
     for (const bounds of this.decorations.updateBuildings(buildings))
       this.invalidate(bounds);
+    return changed;
   }
   private invalidate(bounds: TerrainBounds): void {
     // Include the shared one-cell gutter, all LODs, and the entire image's
@@ -186,17 +231,18 @@ export class PaintedTerrain {
     canvas.height = height * detail;
     const ctx = canvas.getContext("2d")!;
     ctx.scale(detail, detail);
-    for (let yy = y; yy < y + height; yy++)
-      for (let xx = x; xx < x + width; xx++) {
-        const cell = paintedCell(
-          this.map,
-          this.map.ref(xx, yy),
-          this.relief,
-          this.environment,
-        );
-        ctx.fillStyle = cell.color;
-        ctx.fillRect(xx - x, yy - y, 1, 1);
-      }
+    if (!this.decorationsOnly)
+      for (let yy = y; yy < y + height; yy++)
+        for (let xx = x; xx < x + width; xx++) {
+          const cell = paintedCell(
+            this.map,
+            this.map.ref(xx, yy),
+            this.relief,
+            this.environment,
+          );
+          ctx.fillStyle = cell.color;
+          ctx.fillRect(xx - x, yy - y, 1, 1);
+        }
     if (detail > 1) {
       // Include decoration anchors beyond a chunk edge so adjacent chunks share
       // the same artwork, with no seams or dependence on camera position.
@@ -235,11 +281,16 @@ export class PaintedTerrain {
       }
       ctx.globalAlpha = 1;
       // Restrained strokes give water a painted surface at tactical zoom.
+      // The GL ground's water shader replaces them.
       ctx.strokeStyle = "#b3dbe520";
       ctx.lineWidth = 0.12;
       for (let yy = y + 2; yy < y + height; yy += 5)
         for (let xx = x + 2; xx < x + width; xx += 7)
-          if (this.map.isWater(this.map.ref(xx, yy)) && hash(xx, yy) > 0.5) {
+          if (
+            !this.decorationsOnly &&
+            this.map.isWater(this.map.ref(xx, yy)) &&
+            hash(xx, yy) > 0.5
+          ) {
             ctx.beginPath();
             ctx.moveTo(xx - x, yy - y);
             ctx.quadraticCurveTo(
@@ -271,6 +322,7 @@ export class PaintedTerrain {
     height: number,
   ) {
     const detail = scale >= 12 ? 16 : scale >= 5 ? 8 : scale >= 2 ? 4 : 1;
+    if (this.decorationsOnly && detail === 1) return;
     const left = Math.max(0, Math.floor(-offsetX / scale / CHUNK)),
       right = Math.min(
         Math.ceil(this.map.width() / CHUNK) - 1,

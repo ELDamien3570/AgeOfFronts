@@ -146,6 +146,14 @@ kbd {
   overflow: hidden;
   background: #102331;
 }
+.ground-layer {
+  position: absolute;
+  inset: 0;
+  width: 100%;
+  height: 100%;
+  pointer-events: none;
+  z-index: 0;
+}
 .strategic-sprites {
   position: absolute;
   inset: 0;

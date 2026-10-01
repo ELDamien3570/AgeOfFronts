@@ -21,6 +21,12 @@ import { CampLossPresentation } from "./CampLossPresentation";
 import { EraArtwork } from "./EraArtwork";
 import { COLORS } from "./FactionColors";
 import { FormationArtwork } from "./FormationArtwork";
+import {
+  bakeGroundColors,
+  rebakeGroundColors,
+  type BakeSource,
+} from "./GroundBake";
+import { GroundLayer, type GroundStyle } from "./GroundLayer";
 import { ImpactPresentation } from "./ImpactPresentation";
 import {
   buildingSymbol,
@@ -33,6 +39,7 @@ import { PromotionArtwork } from "./PromotionArtwork";
 import { ResourceViewModel } from "./ResourceViewModel";
 import { RoadArtwork } from "./RoadArtwork";
 import { StrategicSprites } from "./StrategicSprites";
+import { bakeTerrainFields } from "./TerrainFields";
 import { TerritoryLayer } from "./TerritoryLayer";
 import { TraderPresentation } from "./TraderPresentation";
 import { PresentationClock, squadSpriteSize } from "./UnitAnimation";
@@ -70,6 +77,11 @@ export class Renderer {
   private readonly animationClock = new PresentationClock();
   private readonly ctx: CanvasRenderingContext2D;
   private readonly strategic: StrategicSprites;
+  private readonly groundLayer: GroundLayer;
+  private groundStyle: GroundStyle = "animated";
+  private groundActive = false;
+  private groundSource?: BakeSource;
+  private groundColors?: Uint8Array;
   private ground?: PaintedTerrain;
   private territory?: TerritoryLayer;
   private buildingStacks: {
@@ -133,6 +145,7 @@ export class Renderer {
     private readonly campLoss = new CampLossPresentation(),
   ) {
     this.ctx = canvas.getContext("2d")!;
+    this.groundLayer = new GroundLayer(canvas);
     this.strategic = new StrategicSprites(canvas);
     this.resizeObserver = new ResizeObserver(() => this.resize());
     this.resizeObserver.observe(canvas.parentElement!);
@@ -146,6 +159,23 @@ export class Renderer {
   ): void {
     this.map = map;
     this.ground = new PaintedTerrain(map, geography, environment);
+    this.groundActive = false;
+    this.groundSource = undefined;
+    this.groundColors = undefined;
+    if (this.groundLayer.available) {
+      const source = this.ground.groundColorSource(),
+        fields = this.ground.groundFieldInputs(source),
+        colors = bakeGroundColors(source);
+      this.groundSource = source;
+      this.groundColors = colors;
+      this.groundLayer.setMap({
+        width: source.width,
+        height: source.height,
+        colors,
+        fields: bakeTerrainFields(fields),
+        hasDepth: !!fields.elevation,
+      });
+    }
     this.territory = new TerritoryLayer(map.width(), map.height(), RGB);
     this.buildingStacks = [];
     this.snapshot = undefined;
@@ -233,9 +263,21 @@ export class Renderer {
       );
     }
     this.buildingStacks = Array.from(stacks.values());
-    this.ground!.updateBuildings(
+    const cleared = this.ground!.updateBuildings(
       this.buildingStacks.map((stack) => stack.building),
     );
+    if (cleared.length && this.groundSource && this.groundColors)
+      this.groundLayer.updateColors(
+        rebakeGroundColors(this.groundSource, this.groundColors, cleared),
+      );
+  }
+
+  // Animated and still water use the WebGL2 ground; classic keeps the
+  // Canvas2D painted ground (also the automatic fallback without WebGL2).
+  setGroundStyle(style: GroundStyle): void {
+    this.groundStyle = style;
+    this.groundLayer.setAnimated(style === "animated");
+    this.nextFrame = 0;
   }
 
   private resize(): void {
@@ -248,6 +290,7 @@ export class Renderer {
     this.ctx.setTransform(ratio, 0, 0, ratio, 0, 0);
     this.nextFrame = 0;
     this.strategic.resize(this.width, this.height, ratio);
+    this.groundLayer.resize(this.width, this.height, ratio);
     this.home();
   }
 
@@ -545,13 +588,24 @@ export class Renderer {
     this.strategic.begin();
     const ctx = this.ctx;
     ctx.clearRect(0, 0, this.width, this.height);
-    ctx.fillStyle = "#102331";
-    ctx.fillRect(0, 0, this.width, this.height);
+    const gpuGround = this.groundStyle !== "classic" && this.groundLayer.ready;
+    if (gpuGround !== this.groundActive) {
+      this.groundActive = gpuGround;
+      this.groundLayer.setVisible(gpuGround);
+      this.ground?.setDecorationsOnly(gpuGround);
+    }
+    if (!gpuGround) {
+      ctx.fillStyle = "#102331";
+      ctx.fillRect(0, 0, this.width, this.height);
+    }
     if (!this.map || !this.snapshot) {
+      if (gpuGround) this.groundLayer.clear();
       this.strategic.flush();
       return true;
     }
     const snapshot = this.snapshot;
+    if (gpuGround)
+      this.groundLayer.draw(this.scale, this.offsetX, this.offsetY, now);
     this.ground!.draw(
       ctx,
       this.scale,
