@@ -1,19 +1,33 @@
-import { restoreArray, restoreMap } from "../StateTransfer";
 import type { GameMap } from "../../core/game/GameMap";
 import type { Building, Player } from "../Protocol";
 import { FIXED } from "../Protocol";
+import { restoreArray, restoreMap } from "../StateTransfer";
 import { AGES, type Age, type Barrier } from "./Definitions";
 import type { Diplomacy } from "./Diplomacy";
+const NO_BARRIERS: readonly Barrier[] = [];
+// Coarse occupancy blocks let segment tests skip obstacle-free neighbourhoods.
+const BLOCK_SHIFT = 3;
+
 export class Fortifications {
-  checkpoint() { return structuredClone({barriers:this.barriers, nextId:this.nextId, towers:this.towers, repairs:this.repairs, version:this.version}); }
+  checkpoint() {
+    return structuredClone({
+      barriers: this.barriers,
+      nextId: this.nextId,
+      towers: this.towers,
+      repairs: this.repairs,
+      version: this.version,
+    });
+  }
   restore(saved: ReturnType<Fortifications["checkpoint"]>): void {
-    const state=structuredClone(saved);
-    restoreArray(this.barriers,state.barriers);
-    this.nextId=state.nextId;
-    restoreMap(this.towers,state.towers);
-    restoreMap(this.repairs,state.repairs);
-    this.version=state.version;
-    const version = this.version; this.reindex(); this.version = version;
+    const state = structuredClone(saved);
+    restoreArray(this.barriers, state.barriers);
+    this.nextId = state.nextId;
+    restoreMap(this.towers, state.towers);
+    restoreMap(this.repairs, state.repairs);
+    this.version = state.version;
+    const version = this.version;
+    this.reindex();
+    this.version = version;
   }
 
   readonly barriers: Barrier[] = [];
@@ -21,6 +35,8 @@ export class Fortifications {
   private readonly tileIndex = new Map<number, Barrier[]>();
   private nextId = 1;
   private towers = new Map<number, Set<number>>();
+  private occupancy = new Uint8Array(0);
+  private blockColumns = 0;
   private readonly repairs = new Map<
     string,
     { owner: number; remaining: number }
@@ -33,9 +49,11 @@ export class Fortifications {
     return !!(this.tileIndex.size || this.towers.size);
   }
   blocked(tile: number, owner: number): boolean {
-    for (const towerOwner of this.towers.get(tile) ?? [])
-      if (!this.diplomacy.allied(towerOwner, owner)) return true;
-    return (this.tileIndex.get(tile) ?? []).some(
+    const towerOwners = this.towers.get(tile);
+    if (towerOwners)
+      for (const towerOwner of towerOwners)
+        if (!this.diplomacy.allied(towerOwner, owner)) return true;
+    return (this.tileIndex.get(tile) ?? NO_BARRIERS).some(
       (w) => w.health > 0 && !this.diplomacy.allied(w.playerId, owner),
     );
   }
@@ -47,7 +65,51 @@ export class Fortifications {
         if (!list) this.tileIndex.set(tile, (list = []));
         list.push(wall);
       }
+    this.rebuildOccupancy();
     this.version++;
+  }
+  // Conservative superset: any block holding a tower, wall tile or gate. A
+  // segment whose bounding blocks are all empty cannot cross an obstacle.
+  private rebuildOccupancy(): void {
+    this.blockColumns = (this.map.width() >> BLOCK_SHIFT) + 1;
+    const rows = (this.map.height() >> BLOCK_SHIFT) + 1;
+    if (this.occupancy.length !== this.blockColumns * rows)
+      this.occupancy = new Uint8Array(this.blockColumns * rows);
+    else this.occupancy.fill(0);
+    const mark = (tile: number) => {
+      this.occupancy[
+        (this.map.x(tile) >> BLOCK_SHIFT) +
+          (this.map.y(tile) >> BLOCK_SHIFT) * this.blockColumns
+      ] = 1;
+    };
+    for (const tile of this.towers.keys()) mark(tile);
+    for (const tile of this.tileIndex.keys()) mark(tile);
+  }
+  private mayBlock(
+    from: { x: number; y: number },
+    to: { x: number; y: number },
+  ): boolean {
+    const rows = this.occupancy.length / this.blockColumns;
+    const bx0 = Math.max(
+        0,
+        Math.floor(Math.min(from.x, to.x) / FIXED) >> BLOCK_SHIFT,
+      ),
+      bx1 = Math.min(
+        this.blockColumns - 1,
+        Math.floor(Math.max(from.x, to.x) / FIXED) >> BLOCK_SHIFT,
+      ),
+      by0 = Math.max(
+        0,
+        Math.floor(Math.min(from.y, to.y) / FIXED) >> BLOCK_SHIFT,
+      ),
+      by1 = Math.min(
+        rows - 1,
+        Math.floor(Math.max(from.y, to.y) / FIXED) >> BLOCK_SHIFT,
+      );
+    for (let by = by0; by <= by1; by++)
+      for (let bx = bx0; bx <= bx1; bx++)
+        if (this.occupancy[bx + by * this.blockColumns]) return true;
+    return false;
   }
   segmentTiles(
     from: { x: number; y: number },
@@ -104,6 +166,7 @@ export class Fortifications {
     owner: number,
   ): boolean {
     if (!this.tileIndex.size && !this.towers.size) return true;
+    if (!this.mayBlock(from, to)) return true;
     return !this.segmentTiles(from, to).some((tile) =>
       this.blocked(tile, owner),
     );

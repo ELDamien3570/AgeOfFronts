@@ -32,7 +32,7 @@ self.onmessage = (event) => {
         const saved = await decodeState<ReturnType<Skirmish["checkpoint"]>>(
           event.data.checkpoint as EncodedState,
         );
-        runtime.restore(saved);
+        runtime.restore(saved, event.data.stateId as string);
         result = runtime.match.tick;
       } else if (type === "batch")
         result = await runtime.run(event.data.batch as HostBatch);

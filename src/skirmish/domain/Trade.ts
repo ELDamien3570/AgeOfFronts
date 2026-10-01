@@ -1,4 +1,3 @@
-import { restoreArray, restoreRecord, restoreSet } from "../StateTransfer";
 import type { GameMap } from "../../core/game/GameMap";
 import { technologyAt } from "../content/Technology";
 import { VESSELS } from "../content/Units";
@@ -6,6 +5,7 @@ import type { LandPaths, WaterPaths } from "../Pathfinding";
 import type { Building, Player, Ship, Squad } from "../Protocol";
 import { FIXED } from "../Protocol";
 import { SpatialGrid } from "../SpatialGrid";
+import { restoreArray, restoreRecord, restoreSet } from "../StateTransfer";
 import { AGES, type TradeActor } from "./Definitions";
 import type { Diplomacy } from "./Diplomacy";
 import type { Fortifications } from "./Fortifications";
@@ -24,17 +24,39 @@ export interface TradeWorld {
   tick: number;
   allocateId(): number;
 }
+// A route that must detour around towers or walls may need a long exact search.
+// Past this many expansions the destination is treated as unreachable for now.
+const OBSTACLE_SEARCH_LIMIT = 60_000;
+// Deterministic routing effort (PathTopology work units, never wall time) the
+// trade system may start in one tick. Further loads wait a few ticks.
+const LOAD_WORK_BUDGET = 15_000;
+interface Routed {
+  building: Building;
+  path: number[];
+}
+const byLength = (a: Routed, b: Routed) =>
+  a.path.length - b.path.length || a.building.id - b.building.id;
+
 export class Trade {
-  checkpoint() { return structuredClone({actors:this.actors, deliveredGold:this.deliveredGold, capturedValue:this.capturedValue, lostValue:this.lostValue, nextShipment:this.nextShipment, retired:this.retired}); }
+  private tickStartWork = 0;
+  checkpoint() {
+    return structuredClone({
+      actors: this.actors,
+      deliveredGold: this.deliveredGold,
+      capturedValue: this.capturedValue,
+      lostValue: this.lostValue,
+      nextShipment: this.nextShipment,
+      retired: this.retired,
+    });
+  }
   restore(saved: ReturnType<Trade["checkpoint"]>): void {
-    const state=structuredClone(saved);
-    restoreArray(this.actors,state.actors);
-    restoreRecord(this.deliveredGold,state.deliveredGold);
+    const state = structuredClone(saved);
+    restoreArray(this.actors, state.actors);
+    restoreRecord(this.deliveredGold, state.deliveredGold);
     restoreRecord(this.capturedValue, state.capturedValue ?? {});
     restoreRecord(this.lostValue, state.lostValue ?? {});
-    this.nextShipment=state.nextShipment;
-    restoreSet(this.retired,state.retired);
-
+    this.nextShipment = state.nextShipment;
+    restoreSet(this.retired, state.retired);
   }
 
   readonly actors: TradeActor[] = [];
@@ -43,7 +65,8 @@ export class Trade {
   readonly lostValue: Record<number, number> = {};
 
   private discardCargo(actor: TradeActor): void {
-    this.lostValue[actor.playerId] = (this.lostValue[actor.playerId] ?? 0) + actor.cargo * actor.valuePerGood;
+    this.lostValue[actor.playerId] =
+      (this.lostValue[actor.playerId] ?? 0) + actor.cargo * actor.valuePerGood;
     actor.lost += actor.cargo;
     actor.cargo = 0;
   }
@@ -77,13 +100,27 @@ export class Trade {
       Math.floor(actor.y / FIXED),
     );
   }
+  // Without obstacles the blocked test is always false, so the unobstructed
+  // (cacheable) search returns exactly the same route.
+  private landPath(
+    start: number,
+    goal: number,
+    owner: number,
+  ): number[] | null {
+    if (!this.fortifications.hasObstacles)
+      return this.world.paths.find(start, goal);
+    return this.world.paths.find(
+      start,
+      goal,
+      (tile) => this.fortifications.blocked(tile, owner),
+      OBSTACLE_SEARCH_LIMIT,
+    );
+  }
   private route(actor: TradeActor, destination: Building): number[] | null {
-    const { map, paths, waterPaths } = this.world,
+    const { map, waterPaths } = this.world,
       start = this.tile(actor);
     if (!actor.naval)
-      return paths.find(start, destination.tile, (tile) =>
-        this.fortifications.blocked(tile, actor.playerId),
-      );
+      return this.landPath(start, destination.tile, actor.playerId);
     for (const tile of map.neighbors(destination.tile))
       if (waterPaths.connected(start, tile)) {
         const path = waterPaths.find(start, tile);
@@ -91,10 +128,11 @@ export class Trade {
       }
     return null;
   }
-  private destinations(
-    actor: TradeActor,
-    prize = false,
-  ): { building: Building; path: number[] }[] {
+  // The 64 nearest eligible stops, ordered by distance then id. Routing is not
+  // applied here so callers can route only what they need.
+  private candidates(actor: TradeActor, prize: boolean): Building[] {
+    const from = this.tile(actor),
+      map = this.world.map;
     return this.world.buildings
       .filter(
         (b) =>
@@ -105,29 +143,80 @@ export class Trade {
           (!prize || b.playerId === actor.playerId) &&
           !actor.visited.includes(b.id),
       )
-      .sort(
-        (a, b) =>
-          this.world.map.euclideanDistSquared(a.tile, this.tile(actor)) -
-            this.world.map.euclideanDistSquared(b.tile, this.tile(actor)) ||
-          a.id - b.id,
-      )
+      .map((building) => ({
+        building,
+        distance: map.euclideanDistSquared(building.tile, from),
+      }))
+      .sort((a, b) => a.distance - b.distance || a.building.id - b.building.id)
       .slice(0, 64)
+      .map(({ building }) => building);
+  }
+  private destinations(
+    actor: TradeActor,
+    prize = false,
+    only?: readonly number[],
+  ): Routed[] {
+    return this.candidates(actor, prize)
+      .filter((building) => !only || only.includes(building.id))
       .flatMap((building) => {
         const path = this.route(actor, building);
         return path ? [{ building, path }] : [];
       })
-      .sort(
-        (a, b) =>
-          a.path.length - b.path.length || a.building.id - b.building.id,
-      );
+      .sort(byLength);
   }
-  private select(actor: TradeActor): void {
+  // The `count` shortest routes with at least `minLength` tiles, evaluated in
+  // order of a lower bound (8-connected land paths are never shorter than the
+  // Chebyshev distance) so distant candidates are skipped once the best are
+  // proven. Identical result to routing every candidate and sorting.
+  private shortest(
+    actor: TradeActor,
+    prize: boolean,
+    count: number,
+    minLength: number,
+  ): { best: Routed[]; known: Routed[] } {
+    if (actor.naval) {
+      const known = this.destinations(actor, prize);
+      return {
+        best: known.filter((d) => d.path.length >= minLength).slice(0, count),
+        known,
+      };
+    }
+    const map = this.world.map,
+      from = this.tile(actor),
+      fx = map.x(from),
+      fy = map.y(from);
+    const ranked = this.candidates(actor, prize)
+      .map((building) => ({
+        building,
+        bound: Math.max(
+          Math.abs(map.x(building.tile) - fx),
+          Math.abs(map.y(building.tile) - fy),
+        ),
+      }))
+      .sort((a, b) => a.bound - b.bound);
+    const known: Routed[] = [],
+      best: Routed[] = [];
+    for (const { building, bound } of ranked) {
+      if (best.length >= count && bound > best[count - 1].path.length) break;
+      const path = this.route(actor, building);
+      if (!path) continue;
+      const routed = { building, path };
+      known.push(routed);
+      if (path.length >= minLength) {
+        best.push(routed);
+        best.sort(byLength);
+      }
+    }
+    return { best: best.slice(0, count), known: known.sort(byLength) };
+  }
+  private select(actor: TradeActor, known?: Routed[]): void {
     // Removed stops cannot hold a finite shipment open forever.
     actor.stops = actor.stops.filter((id) =>
       this.world.buildings.some((b) => b.id === id && !b.remainingTicks),
     );
     let next: { building: Building; path: number[] } | undefined;
-    if (actor.state === "prize") next = this.destinations(actor, true)[0];
+    if (actor.state === "prize")
+      next = this.shortest(actor, true, 1, 0).best[0];
     else if (!actor.cargo) {
       const factory = this.world.buildings.find(
         (b) => b.id === actor.factoryId && b.playerId === actor.playerId,
@@ -147,10 +236,10 @@ export class Trade {
         const path = port && this.route(actor, port);
         if (port && path) next = { building: port, path };
       } else {
-        const path = this.world.paths.find(
+        const path = this.landPath(
           this.tile(actor),
           factory.tile,
-          (tile) => this.fortifications.blocked(tile, actor.playerId),
+          actor.playerId,
         );
         if (path) next = { building: factory, path };
       }
@@ -174,9 +263,9 @@ export class Trade {
       if (path && destination) next = { building: destination, path };
       actor.state = "returning";
     } else {
-      const candidates = this.destinations(actor).filter((d) =>
-        actor.stops.includes(d.building.id),
-      );
+      const candidates = (
+        known ?? this.destinations(actor, false, actor.stops)
+      ).filter((d) => actor.stops.includes(d.building.id));
       next = candidates[0];
       actor.state = "outbound";
     }
@@ -191,6 +280,12 @@ export class Trade {
     if (!next && actor.state !== "prize") actor.state = "waiting";
   }
   private load(actor: TradeActor): void {
+    // Loads route up to 64 candidates. Past the per-tick budget they wait a few
+    // ticks (staggered by id) instead of stacking into one long tick.
+    if (this.world.paths.work - this.tickStartWork >= LOAD_WORK_BUDGET) {
+      actor.waitTicks = 1 + (actor.id % 5);
+      return;
+    }
     const source = this.world.buildings.find(
       (b) =>
         b.id === actor.factoryId &&
@@ -209,12 +304,7 @@ export class Trade {
           b.playerId === actor.playerId &&
           !b.remainingTicks,
       );
-      if (
-        !port ||
-        !this.world.paths.find(source.tile, port.tile, (t) =>
-          this.fortifications.blocked(t, actor.playerId),
-        )
-      ) {
+      if (!port || !this.landPath(source.tile, port.tile, actor.playerId)) {
         actor.state = "waiting";
         return;
       }
@@ -237,10 +327,13 @@ export class Trade {
     const maxStops = [2, 3, 4, 5, 6, 8, 12][
       logisticsTier(this.progression.states[actor.playerId].completed)
     ];
-    const eligible = this.destinations(actor).filter((d) => d.path.length > 1);
-    actor.stops = eligible
-      .slice(0, Math.min(maxStops, Math.ceil(actor.cargo / 10)))
-      .map((d) => d.building.id);
+    const { best, known } = this.shortest(
+      actor,
+      false,
+      Math.min(maxStops, Math.ceil(actor.cargo / 10)),
+      2,
+    );
+    actor.stops = best.map((d) => d.building.id);
     actor.quoteAllies = this.world.players
       .filter(
         (p) =>
@@ -249,12 +342,19 @@ export class Trade {
       )
       .map((p) => p.id);
     actor.waitTicks = 20;
-    this.select(actor);
+    this.select(actor, known);
   }
   step(): void {
     const { map, tick, players, buildings } = this.world;
-    this.land.rebuild(this.world.squads.filter((s) => s.embarkedOn === null));
-    this.sea.rebuild(this.world.ships.filter((s) => s.kind === "warship"));
+    this.tickStartWork = this.world.paths.work;
+    const rebuildGrids = () => {
+      this.land.rebuild(this.world.squads.filter((s) => s.embarkedOn === null));
+      this.sea.rebuild(this.world.ships.filter((s) => s.kind === "warship"));
+    };
+    // Nothing queries these grids without traders; rebuild from the first actor
+    // onward (including actors created below this tick).
+    const hadActors = this.actors.length > 0;
+    if (hadActors) rebuildGrids();
     if (tick % 20 === 0)
       for (const factory of buildings) {
         if (
@@ -295,9 +395,8 @@ export class Trade {
                   b.type === "port" &&
                   !b.remainingTicks &&
                   map.euclideanDistSquared(b.tile, factory.tile) <= 400 &&
-                  this.world.paths.find(factory.tile, b.tile, (tile) =>
-                    this.fortifications.blocked(tile, factory.playerId),
-                  ) !== null,
+                  this.landPath(factory.tile, b.tile, factory.playerId) !==
+                    null,
               )
               .sort(
                 (a, b) =>
@@ -355,6 +454,7 @@ export class Trade {
         // Cargo moves once from that factory; the origin port pays no export gold.
         this.actors.push(actor);
       }
+    if (!hadActors && this.actors.length) rebuildGrids();
     for (const actor of this.actors) {
       const player = players.find((p) => p.id === actor.playerId);
       if (!player || player.eliminated) {
@@ -380,8 +480,10 @@ export class Trade {
         .sort((a, b) => a.id - b.id)[0];
       if (captor && actor.cargo > 0) {
         const value = actor.cargo * actor.valuePerGood;
-        this.lostValue[actor.playerId] = (this.lostValue[actor.playerId] ?? 0) + value;
-        this.capturedValue[captor.playerId] = (this.capturedValue[captor.playerId] ?? 0) + value;
+        this.lostValue[actor.playerId] =
+          (this.lostValue[actor.playerId] ?? 0) + value;
+        this.capturedValue[captor.playerId] =
+          (this.capturedValue[captor.playerId] ?? 0) + value;
         actor.playerId = captor.playerId;
         actor.stops = [];
         actor.visited = [];

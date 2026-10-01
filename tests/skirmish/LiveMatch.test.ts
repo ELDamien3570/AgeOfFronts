@@ -85,11 +85,12 @@ describe("live client-hosted match", () => {
         await decodeState<ReturnType<Skirmish["checkpoint"]>>(
           restore.checkpoint,
         ),
+        restore.stateId,
       );
       expect(host.match.players[0].base).toBe(25 * map.width + 25);
       expect(host.match.players[1].base).toBe(70 * map.width + 125);
       await expect(match.selectSpawn("a", 30 * map.width + 30)).rejects.toThrow(/not open/);
-      match.hostReady("a", restore.epoch, 0, restore.checkpoint.hash);
+      match.hostReady("a", restore.epoch, 0, restore.stateId);
       messages.length = 0;
       await match.advance();
       const batch = next("a", "host-batch");
@@ -117,8 +118,9 @@ describe("live client-hosted match", () => {
         await decodeState<ReturnType<Skirmish["checkpoint"]>>(
           replacement.checkpoint,
         ),
+        replacement.stateId,
       );
-      match.hostReady("b", replacement.epoch, 4, replacement.checkpoint.hash);
+      match.hostReady("b", replacement.epoch, 4, replacement.stateId);
       await match.advance();
       const replacementBatch = next("b", "host-batch");
       expect(replacementBatch.batch.disconnectedPlayerIds).toEqual([1]);

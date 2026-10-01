@@ -3,6 +3,14 @@ import type { GameMap } from "../core/game/GameMap";
 import { HierarchicalPaths } from "./HierarchicalPaths";
 import { PathTopology } from "./PathTopology";
 
+// A hierarchy pays off well below the original 65,536-cell threshold: exact A*
+// across a mid-size map made trade and squad routing the dominant tick cost.
+const HIERARCHY_MIN_CELLS = 16_384;
+// Unobstructed routes are pure functions of (start, goal, tile costs). Trade and
+// AI repeat the same pairs constantly, so keep a bounded recency cache.
+const ROUTE_CACHE_ENTRIES = 16_384;
+const ROUTE_CACHE_TILES = 2_000_000;
+
 class TilePaths {
   private readonly cost: Int32Array;
   private readonly parent: Int32Array;
@@ -15,6 +23,15 @@ class TilePaths {
   private readonly hierarchy?: HierarchicalPaths;
   readonly component: Int32Array;
   readonly largestComponent: number[];
+  private readonly size: number;
+  private costRevision = 0;
+  private exactWork = 0;
+  private replayedWork = 0;
+  private readonly routes = new Map<
+    number,
+    { revision: number; path: Int32Array | null; work: number }
+  >();
+  private routeTiles = 0;
 
   constructor(
     protected readonly map: GameMap,
@@ -22,7 +39,9 @@ class TilePaths {
     prepare = true,
   ) {
     const size = map.width() * map.height();
+    this.size = size;
     this.topology = new PathTopology(map, water);
+    this.topology.onCostsChanged(() => this.costRevision++);
     this.cost = new Int32Array(size);
     this.parent = new Int32Array(size);
     this.seen = new Uint32Array(size);
@@ -51,7 +70,7 @@ class TilePaths {
       if (tail > largest.length) largest = Array.from(queue.subarray(0, tail));
     }
     this.largestComponent = largest.sort((a, b) => a - b);
-    if (size > 65_536) {
+    if (size > HIERARCHY_MIN_CELLS) {
       this.hierarchy = new HierarchicalPaths(this.topology);
       if (prepare) this.hierarchy.prepare();
     }
@@ -59,6 +78,16 @@ class TilePaths {
 
   prepare(): void {
     this.hierarchy?.prepare();
+  }
+
+  /** Incremental form of `prepare()`; see HierarchicalPaths.warm. */
+  warm(count: number): boolean {
+    return this.hierarchy?.warm(count) ?? true;
+  }
+
+  /** Deterministic search effort so far; budgets use this, never wall time. */
+  get work(): number {
+    return this.exactWork + this.replayedWork + (this.hierarchy?.work ?? 0);
   }
 
   walkable(tile: number): boolean {
@@ -77,8 +106,52 @@ class TilePaths {
     start: number,
     goal: number,
     blocked?: (tile: number) => boolean,
+    expansionLimit = Infinity,
   ): number[] | null {
     if (!this.connected(start, goal) || blocked?.(goal)) return null;
+    if (blocked || expansionLimit !== Infinity)
+      return this.search(start, goal, blocked, expansionLimit);
+    const key = start * this.size + goal;
+    const hit = this.routes.get(key);
+    if (hit && hit.revision === this.costRevision) {
+      this.routes.delete(key);
+      this.routes.set(key, hit);
+      // Report the effort the original search cost, keeping budgets independent
+      // of what happens to be cached.
+      this.replayedWork += hit.work;
+      return hit.path && Array.from(hit.path);
+    }
+    const before = this.work;
+    const route = this.search(start, goal, undefined, expansionLimit);
+    this.remember(key, route, this.work - before);
+    return route;
+  }
+
+  private remember(key: number, route: number[] | null, work: number): void {
+    const previous = this.routes.get(key);
+    if (previous) {
+      this.routeTiles -= (previous.path?.length ?? 0) + 1;
+      this.routes.delete(key);
+    }
+    const path = route && Int32Array.from(route);
+    this.routes.set(key, { revision: this.costRevision, path, work });
+    this.routeTiles += (path?.length ?? 0) + 1;
+    while (
+      this.routes.size > ROUTE_CACHE_ENTRIES ||
+      this.routeTiles > ROUTE_CACHE_TILES
+    ) {
+      const [oldest, entry] = this.routes.entries().next().value!;
+      this.routes.delete(oldest);
+      this.routeTiles -= (entry.path?.length ?? 0) + 1;
+    }
+  }
+
+  private search(
+    start: number,
+    goal: number,
+    blocked: ((tile: number) => boolean) | undefined,
+    expansionLimit: number,
+  ): number[] | null {
     if (
       this.hierarchy &&
       Math.abs(this.map.x(start) - this.map.x(goal)) +
@@ -105,7 +178,7 @@ class TilePaths {
       )
         return route;
     }
-    return this.findExact(start, goal, blocked);
+    return this.findExact(start, goal, blocked, expansionLimit);
   }
 
   // Exact refinement and dynamic obstacle repair share the authoritative costs.
@@ -135,6 +208,7 @@ class TilePaths {
       const tile = this.heap.dequeue();
       if (this.closed[tile] === stamp) continue;
       if (expanded++ >= expansionLimit) return null;
+      this.exactWork++;
       this.closed[tile] = stamp;
       if (tile === goal) {
         const result: number[] = [];
@@ -218,7 +292,7 @@ export class LandPaths extends TilePaths {
 }
 
 export class WaterPaths extends TilePaths {
-  constructor(map: GameMap) {
-    super(map, true);
+  constructor(map: GameMap, prepare = true) {
+    super(map, true, prepare);
   }
 }

@@ -117,6 +117,10 @@ export class Renderer {
   private currentSquads = new Map<number, Snapshot["squads"][number]>();
   private readonly cargoCounts = new Map<number, number>();
   private receivedAt = 0;
+  // Smoothed real time between snapshots. Interpolating over this, not over the
+  // game-time gap, keeps movement continuous at 2x/4x and when commit cycles in
+  // online matches arrive slower or more irregularly than 200 ms.
+  private arrivalMs = 0;
   private nextFrame = 0;
   private map?: GameMap;
   private scale = 1;
@@ -239,6 +243,8 @@ export class Renderer {
     this.spawn = undefined;
     this.resources = undefined;
     this.previous = undefined;
+    this.arrivalMs = 0;
+    this.receivedAt = 0;
     this.previousSquads.clear();
     this.currentSquads.clear();
     this.presentation.reset();
@@ -294,7 +300,15 @@ export class Renderer {
         this.selectedAircraft.delete(id);
     this.presentation.update(snapshot);
     this.traderPresentation.update(snapshot);
-    this.receivedAt = performance.now();
+    const arrived = performance.now();
+    if (this.receivedAt) {
+      const gap = arrived - this.receivedAt;
+      if (gap < 1000)
+        this.arrivalMs = this.arrivalMs
+          ? this.arrivalMs * 0.8 + gap * 0.2
+          : gap;
+    }
+    this.receivedAt = arrived;
     this.campLoss.update(snapshot, this.receivedAt);
     this.animationClock.update(snapshot.tick, this.receivedAt);
     for (const id of this.selected)
@@ -1084,10 +1098,12 @@ export class Renderer {
     }
 
     const previousById = this.previousSquads;
-    const interval = Math.max(
-      50,
-      (snapshot.tick - (this.previous?.tick ?? snapshot.tick - 1)) * 50,
-    );
+    const interval = this.arrivalMs
+      ? Math.min(600, Math.max(50, this.arrivalMs))
+      : Math.max(
+          50,
+          (snapshot.tick - (this.previous?.tick ?? snapshot.tick - 1)) * 50,
+        );
     const blend = paused ? 1 : Math.min(1, (now - this.receivedAt) / interval);
     const visualTick = this.animationClock.sample(
       now,

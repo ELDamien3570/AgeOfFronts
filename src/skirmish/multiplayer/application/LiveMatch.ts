@@ -218,7 +218,7 @@ export class LiveMatch {
           epoch,
           this.commit.tick,
           verified.tick,
-          verified.checkpoint.hash,
+          verified.stateId,
           this.now(),
         );
       } else {
@@ -226,11 +226,11 @@ export class LiveMatch {
         // Fence the successor at this committed cursor before selecting another host.
         this.authority = new MatchAuthority(
           verified.tick,
-          verified.checkpoint.hash,
+          verified.stateId,
           {
             ...acceptedAuthority,
             committedTick: verified.tick,
-            checkpointHash: verified.checkpoint.hash,
+            checkpointHash: verified.stateId,
           },
         );
       }
@@ -305,7 +305,7 @@ export class LiveMatch {
         if (this.stopped) return;
         this.authority = new MatchAuthority(
           this.commit.tick,
-          this.commit.checkpoint.hash,
+          this.commit.stateId,
         );
       } finally {
         this.busy = false;
@@ -343,7 +343,7 @@ export class LiveMatch {
             "server",
             state.epoch,
             this.commit.tick,
-            this.commit.checkpoint.hash,
+            this.commit.stateId,
             now,
           );
         else if (state.executor)
@@ -351,7 +351,10 @@ export class LiveMatch {
             type: "host-restore",
             matchId: this.reservation.id,
             epoch: state.epoch,
-            checkpoint: this.commit.checkpoint,
+            checkpoint: await this.executor.request<EncodedState>({
+              type: "checkpoint",
+            }),
+            stateId: this.commit.stateId,
           });
       } finally {
         this.busy = false;

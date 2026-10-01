@@ -101,7 +101,9 @@ export const clientMessageSchema = z.discriminatedUnion("type", [
         .object({
           previousTick: z.number().int(),
           tick: z.number().int(),
-          checkpoint: encoded,
+          baseId: z.string().regex(/^[a-f0-9]{64}$/),
+          stateId: z.string().regex(/^[a-f0-9]{64}$/),
+          delta: encoded,
           worldEconomy: z
             .array(
               z.object({
@@ -155,6 +157,8 @@ export type ServerMessage =
       matchId: string;
       epoch: number;
       checkpoint: EncodedState;
+      /** Id the host reports back in host-ready and chains its deltas from. */
+      stateId: string;
     }
   | { type: "host-batch"; matchId: string; epoch: number; batch: HostBatch }
   | {

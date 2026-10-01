@@ -71,13 +71,14 @@ it("connects two authenticated players through lobby start, shared updates and h
                 await decodeState<ReturnType<Skirmish["checkpoint"]>>(
                   message.checkpoint,
                 ),
+                message.stateId,
               );
               send(socket, {
                 type: "host-ready",
                 matchId: message.matchId,
                 epoch: message.epoch,
                 tick: host!.match.tick,
-                hash: message.checkpoint.hash,
+                hash: message.stateId,
               });
             } else if (message.type === "host-batch" && index === 0) {
               send(socket, {

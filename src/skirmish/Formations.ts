@@ -19,16 +19,21 @@ interface ReservedPoint extends WorldPoint, SquadGeometry {
 class Occupancy {
   readonly grid: SpatialGrid<ReservedPoint>;
   private readonly points = new Map<number, ReservedPoint[]>();
-  constructor(
-    private readonly map: GameMap,
-    others: readonly Squad[],
-  ) {
+  constructor(private readonly map: GameMap) {
     this.grid = new SpatialGrid(
       map.width() * FIXED,
       map.height() * FIXED,
       4 * FIXED,
     );
+  }
+  // A full-map grid is costly to allocate on large maps (62,500 buckets at
+  // 1000 x 1000), so instances are reused. Refilling empties the occupied
+  // buckets and re-inserts in the same order, so queries match a fresh grid.
+  reset(others: readonly Squad[]): this {
+    this.grid.rebuild([]);
+    this.points.clear();
     for (const squad of others) this.refresh(squad);
+    return this;
   }
   refresh(squad: Squad) {
     for (const point of this.points.get(squad.id) ?? [])
@@ -68,13 +73,16 @@ export interface FormationMember {
 // A movement command owns its slots; client control groups only select units.
 export class Formations {
   private batch?: Occupancy;
+  private batchGrid?: Occupancy;
+  private scratch?: Occupancy;
+  private scratchBusy = false;
   constructor(
     private readonly map: GameMap,
     private readonly paths: LandPaths,
   ) {}
 
   beginBatch(others: readonly Squad[]): void {
-    this.batch = new Occupancy(this.map, others);
+    this.batch = (this.batchGrid ??= new Occupancy(this.map)).reset(others);
   }
   endBatch(): void {
     this.batch = undefined;
@@ -91,9 +99,53 @@ export class Formations {
     preferred?: Map<number, WorldPoint>,
     blocked?: (tile: number) => boolean,
   ): Map<number, WorldPoint> | null {
+    if (this.batch)
+      return this.planWith(
+        this.batch.grid,
+        center,
+        members,
+        maximumRadius,
+        preferred,
+        blocked,
+      );
+    // Reuse one scratch grid; a re-entrant call (none today) gets its own.
+    if (this.scratchBusy)
+      return this.planWith(
+        new Occupancy(this.map).reset(others).grid,
+        center,
+        members,
+        maximumRadius,
+        preferred,
+        blocked,
+      );
+    this.scratchBusy = true;
+    try {
+      const grid = (this.scratch ??= new Occupancy(this.map)).reset(
+        others,
+      ).grid;
+      return this.planWith(
+        grid,
+        center,
+        members,
+        maximumRadius,
+        preferred,
+        blocked,
+      );
+    } finally {
+      this.scratchBusy = false;
+    }
+  }
+
+  private planWith(
+    occupied: SpatialGrid<ReservedPoint>,
+    center: number,
+    members: FormationMember[],
+    maximumRadius: number,
+    preferred: Map<number, WorldPoint> | undefined,
+    blocked: ((tile: number) => boolean) | undefined,
+  ): Map<number, WorldPoint> | null {
     const target = tilePoint(this.map, center);
     const selected = new Set(members.map(({ squad }) => squad.id));
-    const occupied = (this.batch ?? new Occupancy(this.map, others)).grid;
     const slots: ReservedPoint[] = [];
     const neighbors: ReservedPoint[] = [];
     const free = (point: WorldPoint, squad: SquadGeometry) => {

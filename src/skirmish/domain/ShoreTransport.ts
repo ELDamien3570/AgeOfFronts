@@ -13,6 +13,8 @@ export interface ShoreTransportWorld {
   squads: Squad[];
   ships: Ship[];
   blocked(tile: number, playerId: number): boolean;
+  /** False when no tower or wall exists, so unobstructed (cached) routes apply. */
+  hasObstacles?(): boolean;
   slots(
     tile: number,
     squads: Squad[],
@@ -40,6 +42,14 @@ export class ShoreTransport {
     private readonly routes: ShoreRoutes,
   ) {}
 
+  // Without obstacles the test is always false, and the unobstructed search
+  // returns the identical route while benefiting from the route cache.
+  private obstacleTest(playerId: number) {
+    const w = this.world;
+    return w.hasObstacles?.() === false
+      ? undefined
+      : (tile: number) => w.blocked(tile, playerId);
+  }
   private preferredLeg(
     squad: Squad,
     destination: number,
@@ -47,7 +57,7 @@ export class ShoreTransport {
   ): ShoreLeg | null {
     const w = this.world,
       origin = pointTile(w.map, squad),
-      blocked = (tile: number) => w.blocked(tile, squad.playerId);
+      blocked = this.obstacleTest(squad.playerId);
     const leg = this.routes.firstLeg(origin, destination, blocked);
     if (!leg || !w.paths.connected(origin, destination)) return leg;
     const land = w.paths.find(origin, destination, blocked);
@@ -118,6 +128,7 @@ export class ShoreTransport {
     const plans: Plan[] = [],
       reserved = [...w.squads];
     const blocked = (tile: number) => w.blocked(tile, playerId);
+    const search = this.obstacleTest(playerId);
     for (const group of grouped.values())
       for (let offset = 0; offset < group.length; offset += capacity) {
         const batch = group.slice(offset, offset + capacity);
@@ -146,7 +157,7 @@ export class ShoreTransport {
           w.paths.find(
             pointTile(w.map, s),
             pointTile(w.map, slots.get(s.id)!),
-            blocked,
+            search,
           ),
         );
         if (paths.some((p) => p === null))

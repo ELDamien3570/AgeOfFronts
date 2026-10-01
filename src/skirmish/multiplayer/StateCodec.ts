@@ -19,6 +19,29 @@ const types = {
   f32: Float32Array,
   f64: Float64Array,
 };
+// Map-sized byte and word arrays (ownership, claims, progress, cleared forest)
+// are mostly long constant runs. Run-length coding them before compression cuts
+// the data gzip and SHA-256 must touch by an order of magnitude on large maps.
+const RLE_MINIMUM = 4096;
+function runLength(values: Uint8Array | Uint16Array): Uint32Array | undefined {
+  if (values.length < RLE_MINIMUM) return undefined;
+  const runs: number[] = [];
+  let value = values[0],
+    start = 0;
+  for (let at = 1; at <= values.length; at++)
+    if (at === values.length || values[at] !== value) {
+      runs.push(value, at - start);
+      if (at < values.length) {
+        value = values[at];
+        start = at;
+      }
+      // Abandon early when coding is not shrinking the data.
+      if (runs.length * 4 >= values.byteLength / 2) return undefined;
+    }
+  return runs.length * 4 < values.byteLength / 2
+    ? Uint32Array.from(runs)
+    : undefined;
+}
 function base64(bytes: Uint8Array): string {
   let text = "";
   for (let start = 0; start < bytes.length; start += 8192)
@@ -34,6 +57,8 @@ function pack(value: unknown, buffers: Uint8Array[]): WireValue {
     return value;
   if (typeof value === "number") {
     if (!Number.isFinite(value)) throw new Error("Nonfinite checkpoint value");
+    // JSON writes -0 as 0; keep it so restored state is bit-identical.
+    if (Object.is(value, -0)) return { $: "-0" };
     return value;
   }
   if (Array.isArray(value)) return value.map((item) => pack(item, buffers));
@@ -47,6 +72,18 @@ function pack(value: unknown, buffers: Uint8Array[]): WireValue {
     };
   if (value instanceof Set)
     return { $: "set", entries: [...value].map((item) => pack(item, buffers)) };
+  if (value instanceof Uint8Array || value instanceof Uint16Array) {
+    const runs = runLength(value);
+    if (runs) {
+      const index = buffers.length;
+      buffers.push(new Uint8Array(runs.buffer));
+      return {
+        $: value instanceof Uint8Array ? "u8r" : "u16r",
+        index,
+        length: value.length,
+      };
+    }
+  }
   for (const [name, type] of Object.entries(types))
     if (value instanceof type) {
       const index = buffers.length;
@@ -74,6 +111,7 @@ function unpack(value: WireValue, buffers: Uint8Array[], depth = 0): unknown {
   if (Array.isArray(value))
     return value.map((item) => unpack(item, buffers, depth + 1));
   if (value.$ === "undefined") return undefined;
+  if (value.$ === "-0") return -0;
   if (value.$ === "map") {
     if (!Array.isArray(value.entries))
       throw new Error("Invalid checkpoint map");
@@ -87,6 +125,37 @@ function unpack(value: WireValue, buffers: Uint8Array[], depth = 0): unknown {
         ];
       }),
     );
+  }
+  if (value.$ === "u8r" || value.$ === "u16r") {
+    const { index, length } = value;
+    if (
+      typeof index !== "number" ||
+      !Number.isInteger(index) ||
+      index < 0 ||
+      index >= buffers.length ||
+      typeof length !== "number" ||
+      !Number.isInteger(length) ||
+      length < 0 ||
+      length > 64_000_000
+    )
+      throw new Error("Invalid checkpoint array");
+    const bytes = buffers[index];
+    if (bytes.byteLength % 8) throw new Error("Invalid checkpoint array size");
+    const runs = new Uint32Array(bytes.slice().buffer),
+      output =
+        value.$ === "u8r" ? new Uint8Array(length) : new Uint16Array(length);
+    const limit = value.$ === "u8r" ? 0xff : 0xffff;
+    let at = 0;
+    for (let run = 0; run < runs.length; run += 2) {
+      const symbol = runs[run],
+        count = runs[run + 1];
+      if (symbol > limit || at + count > length)
+        throw new Error("Invalid checkpoint array");
+      if (symbol) output.fill(symbol, at, at + count);
+      at += count;
+    }
+    if (at !== length) throw new Error("Invalid checkpoint array");
+    return output;
   }
   if (value.$ === "set") {
     if (!Array.isArray(value.entries))
