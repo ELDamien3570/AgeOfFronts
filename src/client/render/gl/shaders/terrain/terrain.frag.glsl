@@ -16,6 +16,13 @@ uniform vec3 uShallow;
 uniform vec3 uDeep;
 uniform vec3 uFoam;
 uniform vec3 uSand;
+uniform vec3 uPlains;
+uniform vec3 uHighland;
+uniform vec3 uMountain;
+uniform vec3 uDirt;
+uniform float uHillshade;
+uniform float uGrain;
+uniform float uMacro;
 uniform vec3 uWetSand;
 uniform float uRipple;
 uniform float uFoamStrength;
@@ -24,6 +31,43 @@ uniform float uZoomFadeEnd;
 
 in vec2 vUV;
 out vec4 fragColor;
+
+// Painted land: soft biome ramp from the LINEAR elevation field, hillshade,
+// macro variation, dirt patches and fine grain. Only runs for land pixels.
+vec3 landColor(vec2 w, float e, vec4 nFine, vec4 nMacro, float zf) {
+  // Biome ramp (plains -> highland -> mountain), with the legacy per-height
+  // tinting folded in (magnitude = elevation * 30).
+  float mag = e * 30.0;
+  vec3 plains = uPlains - vec3(0.0, 2.0 * mag / 255.0, 0.0);
+  vec3 highland = uHighland + (2.0 * max(mag - 10.0, 0.0)) / 255.0;
+  vec3 mountain = uMountain + floor(mag * 0.5) / 255.0;
+  vec3 c = mix(plains, highland, smoothstep(0.28, 0.42, e));
+  c = mix(c, mountain, smoothstep(0.60, 0.74, e));
+
+  // Macro variation: big soft light/warm patches.
+  float m = (nMacro.b - 0.5) * 2.0;
+  c *= 1.0 + m * uMacro;
+  c.r += m * uMacro * 0.25;
+  c.b -= m * uMacro * 0.25;
+
+  // Dirt patches in the lowlands (AoE2-style brown grass patches).
+  float dirt = smoothstep(0.52, 0.64, nMacro.r) * (1.0 - smoothstep(0.18, 0.34, e));
+  c = mix(c, uDirt, dirt * 0.4);
+
+  // Hillshade: light from the upper-left; one sample each side along the
+  // light axis (0.75 tile) gives the slope toward the light.
+  if (uHillshade > 0.0 && e > 0.02) {
+    vec2 L = vec2(-0.7071, -0.7071) * 0.75;
+    float hi = textureLod(uFields, (w + L) / uMapSize, 0.0).g;
+    float lo = textureLod(uFields, (w - L) / uMapSize, 0.0).g;
+    float shade = clamp(-(hi - lo) * 6.0, -1.0, 1.0);
+    c *= 1.0 + shade * uHillshade;
+  }
+
+  // Micro grain, faded out when tiles are only a few pixels wide.
+  c *= 1.0 + (nFine.a - 0.5) * 2.0 * uGrain * zf;
+  return c;
+}
 
 void main() {
   vec4 tex = texture(uTerrain, vUV);
@@ -39,12 +83,16 @@ void main() {
 
   vec2 w = vUV * uMapSize;
   vec4 nFine = coastNoise(w);
-  float d = coastWobble(coastRawDistance(w), nFine);
+  vec2 fields = coastFields(w);
+  float d = coastWobble(coastDecode(fields.r), nFine);
   float t = uAnimate > 0.5 ? uTime : 0.0;
   float zf = smoothstep(uZoomFadeStart, uZoomFadeEnd, uZoom);
   bool landTexel = tex.a < 0.75;
 
   vec3 col = tex.rgb;
+  // Low-frequency sample shared by water patches and land macro variation /
+  // dirt patches (B = brightness, R = ~10 tile blobs).
+  vec4 nMacro = texture(uNoise, w / 160.0 + vec2(0.31, 0.17));
 
   if (d >= 0.0) {
     // Turquoise shallows -> deep over 6 tiles; beyond that keep the
@@ -54,8 +102,7 @@ void main() {
     col = mix(uShallow, uDeep, depthT) + darken;
 
     // Large-scale colour patches (not zoom-gated).
-    vec4 nMacro = texture(uNoise, w / 160.0 + vec2(0.31, 0.17));
-    col *= 1.0 + (nMacro.b - 0.5) * 0.12;
+    col *= 1.0 + (nMacro.b - 0.5) * 0.09;
 
     // Ripples: two noise samples scrolling in different directions.
     vec4 n1 = texture(uNoise, w * 0.020 + t * vec2(0.010, 0.006));
@@ -72,16 +119,15 @@ void main() {
       col = mix(col, uFoam, foam);
     }
   } else {
-    // Land. A wobbled coast can pull land pixels over a water texel; treat
-    // those as sand.
-    vec3 land = landTexel ? tex.rgb : uSand;
-    if (d > -1.6) {
+    if (d > -1.6 || !landTexel) {
       // Beach bands: wet sand at the waterline, dry sand inland, blending
-      // into the land colour.
+      // into the land colour. (A wobbled coast can pull land pixels over a
+      // water texel; those are all sand.)
       vec3 sand = mix(uSand, uWetSand, smoothstep(-0.7, -0.05, d));
-      col = mix(sand, land, smoothstep(-1.6, -1.0, d));
+      sand *= 1.0 + (nFine.a - 0.5) * 2.0 * uGrain * zf;
+      col = mix(sand, landColor(w, fields.g, nFine, nMacro, zf), smoothstep(-1.6, -1.0, d));
     } else {
-      col = land;
+      col = landColor(w, fields.g, nFine, nMacro, zf);
     }
   }
 

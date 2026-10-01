@@ -19,8 +19,17 @@ vec4 coastNoise(vec2 worldTile) {
   return texture(uNoise, worldTile / COAST_NOISE_PERIOD);
 }
 
+// R = signed distance, G = elevation (both LINEAR-filtered).
+vec2 coastFields(vec2 worldTile) {
+  return texture(uFields, worldTile / uMapSize).rg;
+}
+
+float coastDecode(float r) {
+  return r * 16.0 - 8.0;
+}
+
 float coastRawDistance(vec2 worldTile) {
-  return texture(uFields, worldTile / uMapSize).r * 16.0 - 8.0;
+  return coastDecode(coastFields(worldTile).r);
 }
 
 // Signed coast distance in tiles (negative = land, positive = water) with a

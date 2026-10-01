@@ -44,6 +44,13 @@ const UNIFORMS = [
   "uDeep",
   "uFoam",
   "uSand",
+  "uPlains",
+  "uHighland",
+  "uMountain",
+  "uDirt",
+  "uHillshade",
+  "uGrain",
+  "uMacro",
   "uWetSand",
   "uRipple",
   "uFoamStrength",
@@ -320,6 +327,13 @@ export class TerrainPass {
     gl.uniform3fv(u.uDeep, s.deep);
     gl.uniform3fv(u.uFoam, s.foam);
     gl.uniform3fv(u.uSand, s.sand);
+    gl.uniform3fv(u.uPlains, s.plains);
+    gl.uniform3fv(u.uHighland, s.highland);
+    gl.uniform3fv(u.uMountain, s.mountain);
+    gl.uniform3fv(u.uDirt, s.dirt);
+    gl.uniform1f(u.uHillshade, s.hillshadeStrength);
+    gl.uniform1f(u.uGrain, s.grainStrength);
+    gl.uniform1f(u.uMacro, s.macroVariation);
     gl.uniform3fv(u.uWetSand, s.wetSand);
     gl.uniform1f(u.uRipple, s.rippleStrength);
     gl.uniform1f(u.uFoamStrength, s.foamStrength);
