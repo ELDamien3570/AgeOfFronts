@@ -2088,6 +2088,7 @@ export class Skirmish {
       return;
     }
     const nearby: Squad[] = [];
+    const heldTiles = new Map<number, boolean>();
     // Repair toward a nearby point on the existing corridor. Moving units are
     // local obstacles, not a reason to search the entire continent again.
     const join = Math.min(squad.path.length - 1, squad.nextPathIndex + 8);
@@ -2096,14 +2097,20 @@ export class Skirmish {
       this.tileOf(squad),
       goal,
       (tile) => {
+        // Nothing moves during one search; each tile is tested several times
+        // (as a neighbour and as a diagonal side), so remember the answer.
+        const known = heldTiles.get(tile);
+        if (known !== undefined) return known;
         const point = tilePoint(this.map, tile);
         this.spatial.query(point.x, point.y, 2 * FIXED, nearby);
-        return nearby.some(
+        const held = nearby.some(
           (other) =>
             other.id !== squad.id &&
             this.holding(other) &&
             distanceSquared(other, point) < squadSeparation(squad, other) ** 2,
         );
+        heldTiles.set(tile, held);
+        return held;
       },
       2048,
     );

@@ -43,6 +43,8 @@ export class HierarchicalPaths {
   private readonly seen: Uint32Array;
   private readonly closed: Uint32Array;
   private generation = 0;
+  private readonly localHeap = new FlatBinaryHeap();
+  private readonly localClosed = new Uint8Array(CLUSTER * CLUSTER);
   // Deterministic work counter (abstract expansions and start-tree settles). It
   // ignores cache state and lazily rebuilt crossing trees, so a restored match
   // counts exactly what an uninterrupted one does.
@@ -153,13 +155,16 @@ export class HierarchicalPaths {
       size = c.width * c.height;
     const cost = new Int32Array(size).fill(INFINITY),
       parent = new Int16Array(size).fill(-1);
-    const heap = new FlatBinaryHeap(),
+    // Scratch heap and closed set are reused: a tree keeps only cost and parent.
+    const heap = this.localHeap,
       startIndex = this.index(c, start);
+    heap.clear();
     cost[startIndex] = 0;
     heap.enqueue(startIndex, 0);
     let settled = 0;
-    const closed = new Uint8Array(size),
-      map = this.topology.map;
+    const closed = this.localClosed.subarray(0, size);
+    closed.fill(0);
+    const map = this.topology.map;
     while (heap.size()) {
       const index = heap.dequeue();
       if (closed[index]) continue;

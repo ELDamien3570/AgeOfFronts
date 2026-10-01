@@ -1,14 +1,82 @@
 # Skirmish performance fix plan
 
-Status: **plan only. No production code was changed.** Everything below was
-measured against `main` at `e72b9c0` using the scripts in
-[`docs/perf/prototypes/`](perf/prototypes/). Where a number is an estimate, or a
-fix was not prototyped, the text says so.
+Status: **phases 1–2 and parts of 3–4 are implemented** on
+`claude/optimization-implementation`; see section 0. Sections 1–7 below are the
+original plan and its measurements against `main` at `e72b9c0`, kept for the
+reasoning and the remaining work.
 
 This supersedes the earlier investigation report that circulated before the
 host/verifier multiplayer path landed. That report targeted 1000 × 500, 60
 factions and 2× speed, which is not the multiplayer configuration, and it did
 not know about the commit pipeline described in section 2.
+
+## 0. Implementation status
+
+### What changed
+
+| Plan item | Change                                                                                                                                                                                                                                       | Exact?                                 |
+| --------- | -------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- | -------------------------------------- |
+| 1a        | Start-side local trees cached per origin, validated by a per-cluster cost revision                                                                                                                                                           | yes                                    |
+| 1b        | Hierarchy built from 16,384 cells (was 65,536)                                                                                                                                                                                               | no (D1)                                |
+| 1c        | Unobstructed route cache keyed by `(start, goal)` and a global cost revision; returns copies; replays the original search effort so budgets never depend on cache contents                                                                   | yes                                    |
+| 1d        | Trade: one candidate list per load, reused by its first `select`; later selects route only the remaining stops; routing stops once the K best are proven shorter than the next Chebyshev lower bound                                         | yes                                    |
+| 1f / 1g   | Deterministic effort budget: `RouteWork` stops after 20,000 effort units (at least one job per tick); trade loads stop starting after 15,000 units per tick and retry 1–5 ticks later; obstructed trade searches capped at 60,000 expansions | no (D1)                                |
+| 1g        | Shore routing: component reachability instead of land searches when no obstacle exists, arrival checks memoized, sort keys computed once; all squad/army/shore searches use the cacheable unobstructed search when no tower or wall exists   | yes                                    |
+| 2a        | Naval destinations iterate the sea's coast edges (`CoastIndex.waterEdges`) instead of every map tile                                                                                                                                         | yes                                    |
+| 2b        | `SpatialGrid.rebuild` clears only occupied buckets; trade skips its grids without traders; formation occupancy grids reused instead of allocated per plan                                                                                    | yes                                    |
+| WS3       | Fortifications: 8×8-tile occupancy early-out in `clear()`; no allocation in `blocked()`                                                                                                                                                      | yes                                    |
+| 4a        | `pressure` dropped from checkpoints                                                                                                                                                                                                          | yes                                    |
+| 4b        | `ownedTiles` dropped from checkpoints and rebuilt on restore; AI site search uses the 256 owned tiles nearest the base (bounded heap); conquest transfers in tile order                                                                      | no (D1)                                |
+| 4c-lite   | `StateCodec` run-length codes map-sized `Uint8Array`/`Uint16Array` fields before gzip                                                                                                                                                        | wire-format change, same decoded state |
+| WS4       | Join/reconnect baseline cached per committed state                                                                                                                                                                                           | yes                                    |
+| WS5       | Hierarchy crossing trees built 4 per tick instead of all at construction; scratch heap/closed set in local trees                                                                                                                             | yes                                    |
+| other     | Navigation repair memoizes its per-tile obstacle test within one search                                                                                                                                                                      | yes                                    |
+| WS6       | Roster built in one pass and only rewritten when it changes; movement interpolates over smoothed real arrival time (fixes stepping at 2×/4× and with irregular commits)                                                                      | client only                            |
+
+"Exact" changes were confirmed by identical simulation state hashes against the
+previous commit on at least one 500- and one 1000-size map. Behaviour changes
+(D1) were approved; no golden hashes existed to update.
+
+### Measured effect (AI-only, 20 factions, seed 42)
+
+Unpatched numbers are from section 3. "After" runs shared four cores with each
+other and a test run, so isolated spikes are partly contention noise; means are
+reliable.
+
+| Map                  | Minute | Mean ms before → after | Ticks > 50 ms in that minute |
+| -------------------- | -----: | ---------------------- | ---------------------------- |
+| Africa 500           |     10 | 39.5 → 8.6             | 164 → 10                     |
+| Africa 500           |     12 | 49.6 → 5.6             | 198 → 2                      |
+| Africa 500           |     15 | (not run) → 6.0        | – → 0                        |
+| Amazon River 500     |      9 | 79.5 → 6.1             | 213 → 6                      |
+| Amazon River 500     |     12 | (not run) → 8.0        | – → 17                       |
+| Heightmap Test 1 500 |      3 | 15.9 → 6.5             | 109 → 2                      |
+| Heightmap Test 1 500 |     12 | (not run) → 9.4        | – → 21                       |
+| Africa 1000          |      8 | 17.4 → ~13             | 13 → ~5                      |
+| Africa 1000          |     14 | (not run) → 14.3       | – → 4                        |
+
+Construction of Africa 1000 × 1000: 6.2 s → 1.1 s (RSS 350 → 220 MB).
+
+Commit pipeline per 4-tick commit (uncontended):
+
+| Map, minute    | Upload      | Host checkpoint + encode | Server decode + restore + broadcast encode |
+| -------------- | ----------- | ------------------------ | ------------------------------------------ |
+| Africa 500, 8  | 257 → 67 KB | 78 → 26 ms               | 67 → 35 ms (p95 99 → 48)                   |
+| Africa 1000, 6 | 290 → 79 KB | 108 → 50 ms              | 121 → 59 ms (p95 159 → 83)                 |
+
+Host upload at Africa 1000 minute 6 drops from ~1.45 MB/s to ~0.4 MB/s.
+
+### Still open
+
+- Delta commits (4c), binary frames (4d), commit-cycle metrics and periodic host
+  re-qualification (4e), pipelining (4f). Upload is now inside home connections,
+  but the per-commit full checkpoint still grows with the match.
+- 1e (abstract search micro-optimizations) was not needed to reach the budget.
+- Remaining late-game spikes are scattered single ticks (AI thinking, combat,
+  capture) of 100–200 ms under contention; profile them on a quiet machine
+  before acting.
+- Towers and walls in human games were tested by unit tests only (occupancy
+  early-out matches exhaustive testing), not by a full match.
 
 ## 1. Bottom line
 
