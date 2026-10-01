@@ -3,6 +3,7 @@ import { GameMapImpl } from "../../src/core/game/GameMap";
 import {
   TECHNOLOGIES,
   technologyAt,
+  treeWorkload,
   validateTechnologies,
 } from "../../src/skirmish/content/Technology";
 import { UNIT, UNITS, defaultUnit } from "../../src/skirmish/content/Units";
@@ -74,14 +75,14 @@ const step = (m: Skirmish, n: number) => {
   for (let i = 0; i < n; i++) m.step();
 };
 describe("age progression and authoritative definitions", () => {
-  it("validates all 84 nodes, immutable identities, and three four-node trees per age", () => {
+  it("validates 85 named nodes, including the fifth Bronze Warfare technology", () => {
     expect(() => validateTechnologies()).not.toThrow();
-    expect(TECHNOLOGIES).toHaveLength(84);
+    expect(TECHNOLOGIES).toHaveLength(85);
     for (const age of AGES)
       for (const tree of TREES)
         expect(
           TECHNOLOGIES.filter((t) => t.age === age && t.tree === tree),
-        ).toHaveLength(4);
+        ).toHaveLength(age === "BronzeAge" && tree === "warfare" ? 5 : 4);
   });
   it("opens with exactly three flint infantry, two grants and no regular buildings", () => {
     const m = make();
@@ -134,13 +135,15 @@ describe("age progression and authoritative definitions", () => {
         )
           e.progression.step(m.players);
       }
-      expect(TREES.every((t) => treeCompletion(s, t) === 4)).toBe(true);
+      expect(
+        TREES.every((t) => treeCompletion(s, t) === treeWorkload(age, t)),
+      ).toBe(true);
       if (age !== "Modern") {
         expect(m.applyCommand({ type: "advance-age", playerId: 1 })).toBeNull();
         while (s.advancement) e.progression.step(m.players);
       }
     }
-    expect(s.completed).toHaveLength(84);
+    expect(s.completed).toHaveLength(85);
     expect(p.reserves).toBe(before);
     expect(advanceRejection(s, p.gold)).toMatch(/final/);
     expect(m.winner).toBeNull();

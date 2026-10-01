@@ -240,6 +240,18 @@
     "capabilities": ["bronzeage-fortified-settlements"]
   },
   {
+    "id": "bronzeage-armies",
+    "name": "Armies",
+    "age": "BronzeAge",
+    "tree": "warfare",
+    "slot": 5,
+    "gold": 7000,
+    "ticks": 900,
+    "description": "Organize up to 20 existing squad formations into a persistent army. Cohesive marching columns, role-based deployment, flank and fire-and-retreat orders, optional automatic tactics. Later Warfare foundations raise capacity to 25, 30, 35, 40 and 50. No free troops or equipment.",
+    "prerequisites": ["bronzeage-bronze-equipment"],
+    "capabilities": ["persistent-armies"]
+  },
+  {
     "id": "bronzeage-bronze-metallurgy",
     "name": "Bronze Metallurgy",
     "age": "BronzeAge",
@@ -347,7 +359,7 @@
     "gold": 10000,
     "ticks": 900,
     "description": "Classical blacksmith/barracks, iron infantry-kit pattern, sword-and-shield infantry, and improved protection.",
-    "prerequisites": ["bronzeage-fortified-settlements"],
+    "prerequisites": ["bronzeage-fortified-settlements", "bronzeage-armies"],
     "capabilities": ["classicalage-professional-infantry"]
   },
   {

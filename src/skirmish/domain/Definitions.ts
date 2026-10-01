@@ -246,10 +246,14 @@ export interface Barrier {
   gateTile: number | null;
   remainingTicks: number;
 }
+export type CombatSourceKind = "squad" | "ship" | "building" | "aircraft";
 export interface Projectile {
   id: number;
   playerId: number;
   sourceId: number;
+  sourceKind: CombatSourceKind;
+  definitionId?: string;
+  originTile?: number;
   x: number;
   y: number;
   fromX: number;
@@ -284,6 +288,7 @@ export interface Aircraft {
   fuelTicks: number;
 }
 export interface ExpansionSnapshot {
+  armies: Army[];
   rulesetId: string;
   contentHash: string;
   events: MatchEvent[];
@@ -292,6 +297,7 @@ export interface ExpansionSnapshot {
   progression: Record<number, ProgressionState>;
   inventories: Record<number, Inventory>;
   production: Record<number, ProductionJob | undefined>;
+  productionPlans: Record<number, { owner: number; recipeId: string }>;
   deposits: Deposit[];
   diplomacy: DiplomacyState;
   traders: Omit<TradeActor, "path" | "nextPathIndex">[];
@@ -301,6 +307,37 @@ export interface ExpansionSnapshot {
   victoryMode: "solo" | "allied";
   winners: number[];
   deliveredGold: Record<number, number>;
+}
+export type ArmyOrder =
+  | { type: "move" | "deploy" | "regroup"; tile: number }
+  | {
+      type: "attack" | "flank-left" | "flank-right" | "fire-retreat";
+      targetId: number;
+    }
+  | { type: "hold" };
+export interface Army {
+  id: number;
+  playerId: number;
+  name: string;
+  memberIds: number[];
+  leaderId: number;
+  x: number;
+  y: number;
+  facing: number;
+  state:
+    | "holding"
+    | "assembling"
+    | "marching"
+    | "deploying"
+    | "fighting"
+    | "regrouping"
+    | "blocked";
+  order: ArmyOrder;
+  queuedOrders: ArmyOrder[];
+  autoTactics: boolean;
+  manual: boolean;
+  revision: number;
+  reason: string | null;
 }
 export interface MatchEvent {
   id: number;

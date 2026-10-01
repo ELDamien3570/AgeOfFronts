@@ -457,4 +457,69 @@ describe("integrated shipments and military progression", () => {
     expect(m.applyCommand(command)).toMatch(/reloading/);
     expect(m.expansion!.battle.projectiles).toHaveLength(1);
   });
+  it("rejects launcher interruptions atomically and restarts deployment after they end", () => {
+    const m = match();
+    complete(m);
+    const s = m.squads[0],
+      e = m.expansion!,
+      stock = e.supply.inventories[1];
+    s.definitionId = "modern-launcher";
+    s.order = { type: "hold" };
+    s.deploymentTicks = 100;
+    stock["payload:mirv"] = 1;
+    const command = {
+      type: "launch" as const,
+      playerId: 1,
+      launcherId: s.id,
+      payload: "mirv" as const,
+      x: 40 * FIXED,
+      y: 30 * FIXED,
+    };
+    const gold = m.players[0].gold;
+    for (const state of [
+      {
+        refit: {
+          targetId: s.definitionId,
+          totalTicks: 200,
+          remainingTicks: 200,
+        },
+      },
+      { fighting: true },
+      { embarkedOn: 99 },
+      { moved: true },
+      { troops: 0 },
+      { order: { type: "move" as const, tile: m.map.ref(20, 20) } },
+    ]) {
+      const before = {
+        ...s,
+        refit: null,
+        charge: null,
+        fighting: false,
+        moved: false,
+        embarkedOn: null,
+      };
+      Object.assign(s, state);
+      expect(m.applyCommand(command)).not.toBeNull();
+      expect(stock["payload:mirv"]).toBe(1);
+      expect(m.players[0].gold).toBe(gold);
+      e.afterMovement();
+      expect(s.deploymentTicks).toBe(0);
+      Object.assign(s, before);
+      if (!m.squads.includes(s)) m.squads.push(s);
+    }
+    expect(e.battle.projectiles).toHaveLength(0);
+    s.deploymentTicks = 0;
+    for (let i = 0; i < 99; i++) e.afterMovement();
+    expect(m.applyCommand(command)).not.toBeNull();
+    e.afterMovement();
+    expect(m.applyCommand(command)).toBeNull();
+    expect(stock["payload:mirv"]).toBe(0);
+    const silo = building(m, "missile-silo", 10, 10, 1, "Modern");
+    silo.health = 0;
+    stock["payload:icbm"] = 1;
+    expect(
+      m.applyCommand({ ...command, launcherId: silo.id, payload: "icbm" }),
+    ).not.toBeNull();
+    expect(stock["payload:icbm"]).toBe(1);
+  });
 });

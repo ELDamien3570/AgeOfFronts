@@ -88,6 +88,8 @@ export class Formations {
     members: FormationMember[],
     others: readonly Squad[],
     maximumRadius = Infinity,
+    preferred?: Map<number, WorldPoint>,
+    blocked?: (tile: number) => boolean,
   ): Map<number, WorldPoint> | null {
     const target = tilePoint(this.map, center);
     const selected = new Set(members.map(({ squad }) => squad.id));
@@ -97,6 +99,7 @@ export class Formations {
     const free = (point: WorldPoint, squad: SquadGeometry) => {
       if (distanceSquared(point, target) > maximumRadius ** 2) return false;
       if (!standable(this.map, point, squadRadius(squad.kind))) return false;
+      if (blocked?.(pointTile(this.map, point))) return false;
       if (!this.paths.connected(center, pointTile(this.map, point)))
         return false;
       occupied.query(point.x, point.y, 2 * FIXED, neighbors);
@@ -131,13 +134,13 @@ export class Formations {
       const lateral =
         ((index % columns) - (rowWidth - 1) / 2) * FORMATION_SPACING;
       const depth = (row - (rows - 1) / 2) * FORMATION_SPACING;
-      const ideal = {
+      const ideal = preferred?.get(pending[0].squad.id) ?? {
         x: Math.round(target.x + forwardY * lateral + forwardX * depth),
         y: Math.round(target.y - forwardX * lateral + forwardY * depth),
       };
       // Nearby members get nearby slots, independent of selection-array order.
       let memberIndex = 0;
-      for (let i = 1; i < pending.length; i++)
+      for (let i = 1; !preferred && i < pending.length; i++)
         if (
           distanceSquared(pending[i].origin, ideal) <
           distanceSquared(pending[memberIndex].origin, ideal)

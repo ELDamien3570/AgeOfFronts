@@ -5,6 +5,7 @@ import type { ForestData } from "./Forest";
 import type { MapGeography } from "./Geography";
 import type {
   Age,
+  ArmyOrder,
   ChargeState,
   ExpansionSnapshot,
   RefitJob,
@@ -29,6 +30,23 @@ export type Order =
   | { type: "attack"; targetId: number };
 
 export type Command =
+  | { type: "create-army"; playerId: number; squadIds: number[] }
+  | {
+      type: "army-members";
+      playerId: number;
+      armyId: number;
+      squadIds: number[];
+      action: "add" | "remove";
+    }
+  | { type: "disband-army"; playerId: number; armyId: number }
+  | { type: "army-auto"; playerId: number; armyId: number; enabled: boolean }
+  | {
+      type: "army-order";
+      playerId: number;
+      armyId: number;
+      order: ArmyOrder;
+      append?: boolean;
+    }
   | {
       type: "refit-ships";
       playerId: number;

@@ -1,13 +1,16 @@
 import type { BuildingType, Command, ShipType, SquadType } from "../Protocol";
 
-import { AGE_NAMES, AGES, TREES, type Age } from "../domain/Definitions";
+import { type Age, type Tree } from "../domain/Definitions";
 
 import { BUILDING_RULES } from "../Rules";
 
 import { UNIT } from "../content/Units";
 
+import { AgeThemeView } from "./AgeThemeView";
 import { EmpireHudView } from "./EmpireHudView";
 import type { EmpireViewModel } from "./EmpireViewModel";
+import { technologyTreeMarkup } from "./TechnologyTreeView";
+import { TechnologyViewModel } from "./TechnologyViewModel";
 
 const escape = (s: string) =>
   s.replace(
@@ -37,6 +40,7 @@ export class EmpireView {
   autoTier = true;
   tierLimit?: Age;
   private readonly dock: EmpireHudView;
+  private readonly ageTheme: AgeThemeView;
   readonly buildAges: Partial<Record<BuildingType, Age>> = {};
   readonly choices: Partial<Record<SquadType | ShipType, string>> = {};
 
@@ -49,6 +53,7 @@ export class EmpireView {
   private browsedAge: Age = "StoneAge";
 
   private inspectedTechnology = "";
+  private inspectedTree: Tree = "warfare";
 
   private inspectedPlayer = 0;
 
@@ -62,6 +67,7 @@ export class EmpireView {
     private readonly root: HTMLElement,
     private readonly actions: EmpireActions,
   ) {
+    this.ageTheme = new AgeThemeView(root);
     const main = root.querySelector(".battlefield")!;
 
     main.insertAdjacentHTML(
@@ -152,6 +158,7 @@ export class EmpireView {
   }
 
   reset(): void {
+    this.ageTheme.reset();
     this.dock.reset();
     this.close();
     this.previousAge = undefined;
@@ -197,6 +204,7 @@ export class EmpireView {
 
   update(vm: EmpireViewModel): void {
     this.vm = vm;
+    this.ageTheme.update(vm.progression.age);
 
     if (this.previousAge !== vm.progression.age) {
       this.previousAge = vm.progression.age;
@@ -279,6 +287,12 @@ export class EmpireView {
     if (!button || button.disabled || !this.vm) return;
 
     const d = button.dataset;
+    if (d.tree) {
+      this.inspectedTree = d.tree as Tree;
+      this.inspectedTechnology = "";
+      this.render(true);
+      return;
+    }
     if (d.wallPage !== undefined) {
       this.wallPage = Number(d.wallPage);
       this.render(true);
@@ -298,6 +312,9 @@ export class EmpireView {
 
     if (d.node) {
       this.inspectedTechnology = d.node;
+      this.inspectedTree = this.vm
+        .nodes(this.browsedAge)
+        .find((n) => n.id === d.node)!.tree;
       this.render(true);
     }
 
@@ -435,6 +452,7 @@ export class EmpireView {
 
     const panel = this.root.querySelector<HTMLElement>("#empire-panel")!;
     panel.hidden = false;
+    panel.classList.toggle("technology-drawer", this.panel === "technology");
 
     this.root.querySelector("#empire-panel-title")!.textContent =
       this.panel === "technology"
@@ -485,25 +503,11 @@ export class EmpireView {
   }
 
   private technologyContent(): string {
-    const vm = this.vm!,
-      nodes = vm.nodes(this.browsedAge),
-      detail =
-        nodes.find((n) => n.id === this.inspectedTechnology) ??
-        nodes.find((n) => !n.completed) ??
-        nodes[0];
-
-    return `<nav class="age-navigation" aria-label="Research age">${AGES.map((age, i) => `<button data-age="${age}" aria-pressed="${age === this.browsedAge}">${AGE_NAMES[i]}${age === vm.progression.age ? " •" : ""}</button>`).join("")}</nav><div class="tech-columns">${TREES.map(
-      (tree) =>
-        `<section><h3>${tree}</h3>${nodes
-          .filter((t) => t.tree === tree)
-          .map(
-            (t) =>
-              `<button class="tech-node ${t.completed ? "complete" : t.researching ? "researching" : ""}" data-node="${t.id}" aria-pressed="${detail.id === t.id}"><b>${escape(t.name)}</b><small>${t.completed ? (t.gold === 0 ? "Starting grant" : "Completed") : t.researching ? `${Math.ceil(vm.progression.research[tree]!.remainingTicks / 20)}s remaining` : (t.reason ?? "Available")}</small><span>${fmt(t.gold)} gold · ${t.ticks / 20}s</span></button>`,
-          )
-          .join("")}</section>`,
-    ).join(
-      "",
-    )}</div><article class="technology-detail"><h3>${escape(detail.name)}</h3><p>${escape(detail.description)}</p><small>Requires: ${detail.prerequisites.map((id) => escape(vm.technologyName(id))).join(", ") || "No prerequisites"}</small><button data-research="${detail.id}" ${detail.reason ? "disabled" : ""}>${detail.researching ? "Researching" : detail.completed ? "Completed" : `Research · ${fmt(detail.gold)} gold`}</button><p>${escape(detail.reason ?? "Unlocks capabilities; deployment has separate building and supply costs.")}</p></article>`;
+    return technologyTreeMarkup(
+      new TechnologyViewModel(this.vm!, this.browsedAge),
+      this.inspectedTechnology,
+      this.inspectedTree,
+    );
   }
 
   private supplyContent(): string {
@@ -527,16 +531,22 @@ export class EmpireView {
     return `<p>Resources and equipment are folded into the top bar. Recruitment and construction are in the main command dock.</p><h3>Production</h3><p>${all.length} producers · page ${page + 1} / ${Math.max(1, Math.ceil(all.length / 12))}</p><button data-production-page="${Math.max(0, page - 1)}" ${page === 0 ? "disabled" : ""}>Previous</button><button data-production-page="${page + 1}" ${(page + 1) * 12 >= all.length ? "disabled" : ""}>Next</button>${
       cards
         .map(
-          ({ building: b, job, recipes }) =>
-            `<article class="producer"><b>${escape(BUILDING_RULES[b.type].name)} #${b.id}</b><small>${job ? `${escape(vm.itemName(job.recipeId))} · ${Math.ceil(job.remainingTicks / 20)}s` : "Idle / waiting for inputs"}</small><div>${recipes
-              .map(
-                (r) =>
-                  `<button data-producer="${b.id}" data-recipe="${r.id}" title="${escape(
-                    Object.entries(r.inputs)
-                      .map(([id, n]) => `${n} ${vm.itemName(id)}`)
-                      .join(", "),
-                  )}">${escape(r.name)}</button>`,
-              )
+          ({ building: b, selected, recipes }) =>
+            `<article class="producer"><b>${escape(BUILDING_RULES[b.type].name)} #${b.id}</b><small>${escape(vm.productionStatus(b.id))}</small><div>${recipes
+              .map((r) => {
+                const choice = vm.productionChoice(b.id, r.id),
+                  inputs =
+                    choice.inputs
+                      .map(
+                        (i) =>
+                          `${vm.itemName(i.id)} ${i.available}/${i.required}`,
+                      )
+                      .join(", ") || "No material input",
+                  outputs = choice.outputs
+                    .map((i) => `${i.amount} ${vm.itemName(i.id)}`)
+                    .join(", ");
+                return `<button data-producer="${b.id}" data-recipe="${r.id}" aria-pressed="${selected?.id === r.id}" ${choice.reason ? "disabled" : ""} title="${escape(choice.reason ?? `${inputs} → ${outputs} · ${choice.cycleTicks / 20}s · repeats when supplied`)}">${escape(r.name)}<small>${escape(inputs)} → ${escape(outputs)} · ${choice.cycleTicks / 20}s</small></button>`;
+              })
               .join("")}</div></article>`,
         )
         .join("") || "<p>Build a factory or equipment producer.</p>"

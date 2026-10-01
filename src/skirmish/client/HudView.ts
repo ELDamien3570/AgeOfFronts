@@ -1,10 +1,13 @@
-import { AGES } from "../domain/Definitions";
+import type { Resource } from "../domain/Definitions";
+import { AGES, RESOURCES } from "../domain/Definitions";
 import { BUILDING_RULES, SHIP_RULES } from "../Rules";
 import { buildingArtworkId, buildingPreviewArtworkId } from "./ArtworkCatalog";
 import { STONE_AGE_BUILDINGS } from "./BuildingArtwork";
 import { CONSTRUCTION, LAND_RECRUITMENT, NAVAL_RECRUITMENT } from "./Controls";
 import { eraPortrait } from "./EraArtwork";
 import { HudViewModel, type HudCard, type HudKind } from "./HudViewModel";
+import { promotionUrl } from "./PromotionArtwork";
+import { resourceIcon } from "./ResourceIcon";
 import { UNIT_ANIMATIONS } from "./UnitAnimation";
 
 const infantry = new URL(
@@ -48,6 +51,8 @@ const escape = (text: string) =>
       ]!,
   );
 export function icon(kind: HudKind, definitionId?: string) {
+  if (RESOURCES.includes(kind as Resource))
+    return resourceIcon(kind as Resource);
   const fallback = [
     "infantry",
     "archer",
@@ -100,7 +105,7 @@ export function hudMarkup(): string {
     <aside id="selection-card" class="selection-card hud-surface" aria-label="Selection details" hidden>
       <div class="selection-heading"><span class="eyebrow" id="selection-label">SELECTION</span><button id="selection-back" class="text-button" hidden>Back to selection</button></div>
       <div id="selection-detail">
-        <div class="unit-heading"><div id="selection-portrait" class="unit-portrait"></div><div><h2 id="selection-title"></h2><p id="selection-subtitle"></p><span id="selection-status" class="status-chip"></span></div></div>
+        <div class="unit-heading"><div id="selection-portrait" class="unit-portrait"></div><div><h2 id="selection-title"></h2><p id="selection-subtitle"></p><span id="selection-status" class="status-chip"></span></div></div><div id="selection-promotion" class="promotion-progress" hidden></div>
         <div id="selection-meter"><div class="meter-label"><span id="meter-name"></span><b id="meter-value"></b></div><div id="selection-health" class="health-track" role="progressbar"><i></i></div></div>
         <dl id="selection-stats" class="stat-list"></dl><p id="selection-description" class="card-description"></p>
       </div>
@@ -305,6 +310,16 @@ export class HudView {
       this.el("selection-title").textContent = card.title;
       this.el("selection-subtitle").textContent = card.subtitle;
       this.el("selection-status").textContent = card.status ?? "";
+      const promotion = this.el("selection-promotion");
+      promotion.hidden = !card.promotion;
+      if (card.promotion) {
+        const p = card.promotion,
+          html = `<img src="${promotionUrl(p.level)}" alt="Promotion level ${p.level}"><span>Level ${p.level} · ${fmt(p.xp)} XP${p.next === null ? " · maximum" : ` / ${fmt(p.next)} for next level`}</span>`;
+        if (promotion.dataset.key !== html) {
+          promotion.innerHTML = html;
+          promotion.dataset.key = html;
+        }
+      }
       this.el("selection-meter").hidden = !card.meter;
       if (card.meter) {
         this.el("meter-name").textContent = card.meter.label;

@@ -10,6 +10,7 @@ export interface SelectionState {
   selectedShips: Set<number>;
   selectedBuilding: number | null;
   selectedAircraft?: Set<number>;
+  selectedDeposit?: number | null;
 }
 
 // Presentation state derives from a read-only domain snapshot. No recruitment,

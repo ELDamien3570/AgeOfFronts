@@ -10,10 +10,21 @@ import {
   SHIP_RULES,
   SQUAD_RULES,
 } from "../Rules";
+import { GUN_NEST_ATTACK, TRENCH_COVER } from "../content/Defences";
 import { UNIT, VESSEL } from "../content/Units";
-import { promotionLevel } from "../domain/Combat";
-import { AGE_NAMES, AGES, type UnitDefinition } from "../domain/Definitions";
-import { unitEffects, vesselEffects } from "../domain/ResearchEffects";
+import { promotionLevel, scaledAttack, XP_THRESHOLDS } from "../domain/Combat";
+import {
+  AGE_NAMES,
+  AGES,
+  type Resource,
+  type UnitDefinition,
+} from "../domain/Definitions";
+import {
+  breedingPerSecond,
+  unitEffects,
+  vesselEffects,
+} from "../domain/ResearchEffects";
+import { PRODUCTION_RECIPES } from "../domain/Supply";
 import { CONSTRUCTION, LAND_RECRUITMENT, NAVAL_RECRUITMENT } from "./Controls";
 import { EmpireViewModel } from "./EmpireViewModel";
 import { SkirmishViewModel } from "./SkirmishViewModel";
@@ -23,6 +34,7 @@ export type HudKind =
   | SquadType
   | ShipType
   | "fighter"
+  | Resource
   | "bomber";
 export interface HudStat {
   label: string;
@@ -39,13 +51,14 @@ export interface HudCard {
   compact?: { stats: HudStat[]; description: string };
   status?: string;
   meter?: { label: string; value: number; max: number };
+  promotion?: { level: number; xp: number; next: number | null };
 }
 export interface SelectedEntity extends HudCard {
   ref: string;
   kind: HudKind;
   playerId: number;
   count: number;
-  category: "squad" | "ship" | "building" | "aircraft";
+  category: "squad" | "ship" | "building" | "aircraft" | "resource";
 }
 export type SelectionCard =
   | { mode: "empty"; entities: SelectedEntity[] }
@@ -187,21 +200,14 @@ const buildingCards = Object.fromEntries(
 ) as Record<BuildingType, HudCard>;
 
 function unitCard(unit: UnitDefinition, xp = 0): HudCard {
-  const a = unit.attack,
-    level = promotionLevel(xp),
-    bonus = [0, 0.03, 0.06, 0.1, 0.13, 0.16, 0.2][level - 1];
+  const a = scaledAttack(unit.attack, 1000, 1000, xp);
   const stats = [
     stat("Melee Armour", `${unit.meleeArmour / 100}%`),
     stat("Ranged Armour", `${unit.rangedArmour / 100}%`),
-    stat(
-      "Melee Attack",
-      a.channel === "melee" ? fmt(Math.floor(a.damage * (1 + bonus))) : "—",
-    ),
-    stat(
-      "Ranged Attack",
-      a.channel === "ranged" ? fmt(Math.floor(a.damage * (1 + bonus))) : "—",
-    ),
+    stat("Melee Attack", a.channel === "melee" ? fmt(a.damage) : "—"),
+    stat("Ranged Attack", a.channel === "ranged" ? fmt(a.damage) : "—"),
     stat("Range", `${fmt(a.range / FIXED)} cells`),
+    stat("Targets", a.targets.join(", ")),
     stat(
       "Reload Time",
       `${a.reloadTicks / 20}s · ${(a.reloadTicks * a.movingReloadPercent) / 2000}s moving`,
@@ -244,7 +250,7 @@ function unitCard(unit: UnitDefinition, xp = 0): HudCard {
     subtitle: `${AGE_NAMES[AGES.indexOf(unit.age)]} · ${unit.role}`,
     kind: unit.line,
     definitionId: unit.id,
-    groupKey: `${unit.id}:${level}`,
+    groupKey: `${unit.id}:${promotionLevel(xp)}`,
     stats,
     description: unit.placeholder
       ? "Temporary presentation · authoritative stats shown above."
@@ -269,16 +275,20 @@ function unitCard(unit: UnitDefinition, xp = 0): HudCard {
 function vesselCard(
   id: string,
   research: readonly string[] = [],
+  xp = 0,
 ): HudCard | undefined {
   const base = VESSEL.get(id);
   if (!base || base.kind === "trade") return;
   const v = vesselEffects(base, research);
+  const attack = v.attack
+    ? scaledAttack(v.attack, v.health, v.health, xp)
+    : undefined;
   return {
     title: v.name,
     subtitle: AGE_NAMES[AGES.indexOf(v.age)],
     kind: v.kind as ShipType,
     definitionId: id,
-    groupKey: id,
+    groupKey: `${id}:${promotionLevel(xp)}`,
     description: "Construction requires the matching researched port tier.",
     stats: [
       stat("Recruitment", `${v.cost.gold} gold`),
@@ -291,7 +301,7 @@ function vesselCard(
       stat("Hull health", String(v.health)),
       stat("Capacity", `${v.capacity} whole squads`),
       stat("Range", `${(v.attack?.range ?? 0) / FIXED} cells`),
-      stat("Attack", String(v.attack?.damage ?? 0)),
+      stat("Attack", String(attack?.damage ?? 0)),
       stat("Reload", `${(v.attack?.reloadTicks ?? 0) / 20}s`),
     ],
   };
@@ -438,6 +448,13 @@ export class HudViewModel {
                   : s.order.type === "move"
                     ? "Moving"
                     : "Holding",
+      promotion: state.expansion
+        ? {
+            level: promotionLevel(s.xp ?? 0),
+            xp: s.xp ?? 0,
+            next: XP_THRESHOLDS[promotionLevel(s.xp ?? 0)] ?? null,
+          }
+        : undefined,
       stats: [
         stat("Queued orders", String(s.queuedOrders.length)),
         ...(s.definitionId
@@ -451,7 +468,7 @@ export class HudViewModel {
               ).stats,
               stat(
                 "Promotion",
-                `${"★".repeat(promotionLevel(s.xp ?? 0))} · ${s.xp ?? 0} XP`,
+                `Level ${promotionLevel(s.xp ?? 0)} · ${s.xp ?? 0} XP`,
               ),
             ]
           : squadCards[s.kind].stats
@@ -467,6 +484,7 @@ export class HudViewModel {
           ? vesselCard(
               s.definitionId,
               state.expansion!.progression[s.playerId].completed,
+              s.xp,
             )!
           : shipCards[s.kind]),
         ref: `ship:${s.id}`,
@@ -502,7 +520,7 @@ export class HudViewModel {
             ? [
                 stat(
                   "Promotion",
-                  `${"★".repeat(promotionLevel(s.xp ?? 0))} · ${s.xp ?? 0} XP`,
+                  `Level ${promotionLevel(s.xp ?? 0)} · ${s.xp ?? 0} XP`,
                 ),
               ]
             : []),
@@ -510,6 +528,7 @@ export class HudViewModel {
             ? vesselCard(
                 s.definitionId,
                 state.expansion!.progression[s.playerId].completed,
+                s.xp,
               )!.stats
             : shipCards[s.kind].stats
           ).filter(
@@ -586,6 +605,7 @@ export class HudViewModel {
                   stats: [
                     stat("Age", AGE_NAMES[AGES.indexOf(b.age ?? "StoneAge")]),
                     stat("Buildings", `${completed}/${stack.length} ready`),
+                    ...this.buildingDetails(b),
                     ...(b.type === "city"
                       ? [
                           stat(
@@ -659,7 +679,53 @@ export class HudViewModel {
         description:
           "Ready aircraft take sortie orders. Flights use finite fuel and return to their own airfield.",
       }));
-    return [...squads, ...ships, ...aircraft, ...buildings];
+    const deposit = state.expansion?.deposits.find(
+      (d) => d.id === selection.selectedDeposit,
+    );
+    const visible =
+      deposit &&
+      new EmpireViewModel(state, selection).resources.depositVisible(
+        deposit.resource,
+      );
+    const deposits: SelectedEntity[] = visible
+      ? [
+          {
+            ref: `deposit:${deposit!.id}`,
+            kind: deposit!.resource,
+            category: "resource",
+            playerId: deposit!.owner,
+            count: 1,
+            title: `${deposit!.resource.replace(/([a-z])([A-Z])/g, "$1 $2")} deposit`,
+            subtitle: deposit!.owner
+              ? (state.players.find((p) => p.id === deposit!.owner)?.name ??
+                "Owned")
+              : "Unclaimed",
+            description:
+              "Capture its tile to control the deposit. Extraction requires the matching research and producer.",
+            stats: [
+              stat(
+                "Base yield",
+                `${deposit!.yieldPerSecond} / sec before upgrades`,
+              ),
+              stat(
+                "Extraction",
+                deposit!.resource === "horses"
+                  ? "Owned deposit and Horsemanship"
+                  : deposit!.resource === "oil"
+                    ? "Owned deposit and oil well / offshore rig"
+                    : "Owned deposit and mine",
+              ),
+              stat(
+                "Stock",
+                deposit!.owner === 1
+                  ? fmt(state.expansion!.inventories[1][deposit!.resource] ?? 0)
+                  : "Foreign inventory hidden",
+              ),
+            ],
+          },
+        ]
+      : [];
+    return [...squads, ...ships, ...aircraft, ...buildings, ...deposits];
   }
 
   selectionCard(
@@ -706,15 +772,123 @@ export class HudViewModel {
           meter: { label: first.meter!.label, value, max },
           status: statuses.size === 1 ? first.status : "Multiple orders",
           description: `Stats are per ${first.category === "ship" ? "ship" : "squad"} at full strength. Damage decreases with ${first.category === "ship" ? "hull health" : "troop strength"}.`,
+          promotion: first.promotion
+            ? {
+                level: first.promotion.level,
+                xp: entities.reduce(
+                  (sum, e) => sum + (e.promotion?.xp ?? 0),
+                  0,
+                ),
+                next:
+                  first.promotion.next === null
+                    ? null
+                    : first.promotion.next * entities.length,
+              }
+            : undefined,
           stats: first.stats.filter(
             (s) =>
-              !["Queued orders", "Queued waypoints", "Squads aboard"].includes(
-                s.label,
-              ),
+              ![
+                "Queued orders",
+                "Queued waypoints",
+                "Squads aboard",
+                ...(first.promotion ? ["Promotion"] : []),
+              ].includes(s.label),
           ),
         },
       };
     }
     return { mode: "mixed", entities };
+  }
+  private buildingDetails(b: import("../Protocol").Building): HudStat[] {
+    const empire = new EmpireViewModel(this.game.state, this.game.selection),
+      result: HudStat[] = [];
+    const producer = empire.producers.find((p) => p.building.id === b.id);
+    if (producer?.recipes.length) {
+      result.push(stat("Production", empire.productionStatus(b.id)));
+      const recipe = producer.job
+        ? PRODUCTION_RECIPES.find((r) => r.id === producer.job!.recipeId)
+        : producer.selected;
+      if (recipe) {
+        const choice = empire.productionChoice(b.id, recipe.id);
+        result.push(
+          stat(
+            "Inputs",
+            choice.inputs
+              .map(
+                (i) => `${empire.itemName(i.id)} ${i.available}/${i.required}`,
+              )
+              .join(", ") || "None",
+          ),
+          stat(
+            "Outputs",
+            choice.outputs
+              .map((i) => `${i.amount} ${empire.itemName(i.id)}`)
+              .join(", "),
+          ),
+          stat(
+            "Cycle",
+            `${(producer.job?.totalTicks ?? choice.cycleTicks) / 20}s · repeats while supplied`,
+          ),
+        );
+      }
+    }
+    if (b.type === "stables")
+      result.push(
+        stat(
+          "Horse breeding",
+          `+${breedingPerSecond(empire.expansion.progression[b.playerId].completed)} / sec when complete`,
+        ),
+      );
+    if (b.type === "mine" || b.type === "oil-well" || b.type === "oil-rig") {
+      const deposit = empire.expansion.deposits.find((d) => d.tile === b.tile);
+      result.push(
+        stat(
+          "Deposit",
+          deposit
+            ? empire.resources.depositVisible(deposit.resource)
+              ? empire.itemName(deposit.resource)
+              : "Unknown until a later age"
+            : "None",
+        ),
+      );
+    }
+    if (b.type === "gun-nest")
+      result.push(
+        stat("Targets", "Hostile ground troops"),
+        stat("Ranged Attack", String(GUN_NEST_ATTACK.damage)),
+        stat("Range", `${GUN_NEST_ATTACK.range / FIXED} cells`),
+        stat("Reload", `${GUN_NEST_ATTACK.reloadTicks / 20}s`),
+        stat("Infantry bonus", String(GUN_NEST_ATTACK.bonuses.infantry)),
+      );
+    if (b.type === "trench")
+      result.push(
+        stat(
+          "Cover",
+          `${TRENCH_COVER.reduction / 100}% ranged/melee protection`,
+        ),
+        stat(
+          "Occupancy",
+          `${TRENCH_COVER.slots} owned infantry · ${TRENCH_COVER.radius / FIXED} cell`,
+        ),
+        stat("Crossing", "Passable · no wall blocking"),
+      );
+    if (b.type === "missile-silo" || b.type === "mirv-launcher")
+      result.push(
+        stat(
+          "Payload",
+          b.type === "missile-silo"
+            ? "ICBM or hydrogen · one manufactured payload per launch"
+            : "MIRV · one manufactured payload per launch",
+        ),
+        stat(
+          "Launcher",
+          b.remainingTicks
+            ? "Under construction"
+            : (b.launchReadyTick ?? 0) > empire.state.tick
+              ? `Reloading ${Math.ceil(((b.launchReadyTick ?? 0) - empire.state.tick) / 20)}s`
+              : "Ready · payload and gold required",
+        ),
+      );
+    return result;
   }
 }

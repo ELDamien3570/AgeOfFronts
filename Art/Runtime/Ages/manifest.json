@@ -2237,9 +2237,32 @@
     "portraitHash": "8af9d52b7bc3139b56837a1807f4ab84964c7a27d32055826b3a5dd101889121"
   },
   "mirv": {
-    "file": "mirv.png",
-    "source": "Art/Weapon Icons/Modern Defense/Projectiles/MIRVCarrier_Modern/Icon.png",
-    "hash": "d8cb86eaf746091ab5aa2ce0076922afd702889b931f20d10de8cf10ea935b47"
+    "clips": {
+      "flight": {
+        "file": "mirv-flight.png",
+        "frames": 12,
+        "columns": 6,
+        "fps": 12,
+        "loop": true
+      },
+      "separation": {
+        "file": "mirv-separation.png",
+        "frames": 16,
+        "columns": 6,
+        "fps": 12,
+        "loop": false
+      }
+    },
+    "facing": "screen-up",
+    "source": "Art/Weapon Icons/Modern Defense/Projectiles/MIRVCarrier_Modern/animations.json",
+    "metadataHash": "e03a7eddc28066e5c6bcbfe15ef0175cbcda1441d528e299b2ace2eafa50aea8",
+    "hashes": {
+      "Art/Weapon Icons/Modern Defense/Projectiles/MIRVCarrier_Modern/Flight-Sheet_00.png": "9b21a27960d465cf2b9f7eec27c05949268ce6558e1e7824dd2d2880fb147e9c",
+      "Art/Weapon Icons/Modern Defense/Projectiles/MIRVCarrier_Modern/Separation-Sheet_00.png": "1c7bcc430642995883d10d35e6b22d1c0432146f2266d53c211fcdcb172db20e"
+    },
+    "poster": "mirv-portrait.png",
+    "portraitSource": "Art/Weapon Icons/Modern Defense/Projectiles/MIRVCarrier_Modern/Icon.png",
+    "portraitHash": "d8cb86eaf746091ab5aa2ce0076922afd702889b931f20d10de8cf10ea935b47"
   },
   "building-modern-missile-defence": {
     "file": "building-modern-missile-defence.png",
@@ -2265,5 +2288,138 @@
     "file": "hydrogen.png",
     "source": "Art/Bomb Icons/HydrogenBomb_Modern_TopDown.png",
     "hash": "b70ea193ca30cac00e25f231b84bb78e10c35de5188aa240da9da2c05fc5e458"
+  },
+  "mirv-warhead": {
+    "clips": {
+      "flight": {
+        "file": "mirv-warhead-flight.png",
+        "frames": 12,
+        "columns": 6,
+        "fps": 12,
+        "loop": true
+      }
+    },
+    "facing": "screen-up",
+    "source": "Art/Weapon Icons/Modern Defense/Projectiles/MIRVWarhead_Modern/animations.json",
+    "metadataHash": "a6cae160766a757ff22ea99366cbd985252dfc2b07a524aa143e8117486cdad3",
+    "hashes": {
+      "Art/Weapon Icons/Modern Defense/Projectiles/MIRVWarhead_Modern/Flight-Sheet_00.png": "de7fd5281110b8d30e5eb6720d18d3d57f7d52e7ba488b29b45149fe1398cbc6"
+    },
+    "poster": "mirv-warhead-portrait.png",
+    "portraitSource": "Art/Weapon Icons/Modern Defense/Projectiles/MIRVWarhead_Modern/Icon.png",
+    "portraitHash": "1f539dea3eb2d1ade1f96b50c78b783c9beec3a03b54fba220cd7b33e5b8bb42"
+  },
+  "impact-mirv": {
+    "clips": {
+      "detonate": {
+        "file": "impact-mirv-detonate.png",
+        "frames": 144,
+        "columns": 6,
+        "fps": 24,
+        "loop": false
+      }
+    },
+    "facing": "screen-up",
+    "source": "Art/Weapon Icons/Modern Defense/Effects/MIRVWarheadDetonation_Modern/animations.json",
+    "metadataHash": "642cb6cf17504f7054fe8c8da83555a7a5d34b795fa5478b16f344a682752257",
+    "hashes": {
+      "Art/Weapon Icons/Modern Defense/Effects/MIRVWarheadDetonation_Modern/Detonate-Sheet_00.png": "27a7c10381e4efa92fb20850d0b1cd4148ed98358db233857b2a1a8baa7c68b9",
+      "Art/Weapon Icons/Modern Defense/Effects/MIRVWarheadDetonation_Modern/Detonate-Sheet_01.png": "6645525ba7f9b32f860c52ee39db18bdf19f7adb9fc5e26391579b38a76664bd",
+      "Art/Weapon Icons/Modern Defense/Effects/MIRVWarheadDetonation_Modern/Detonate-Sheet_02.png": "fdbd379fec37537b0042ded187f072c44e421f0a6a10898f6a9ebb405fa02041"
+    }
+  },
+  "impact-bomb": {
+    "clips": {
+      "detonate": {
+        "file": "impact-bomb-detonate.png",
+        "frames": 53,
+        "columns": 6,
+        "fps": 24,
+        "loop": false
+      }
+    },
+    "facing": "screen-down",
+    "source": "Art/Bomb Icons/Explosions/AerialBomb/animations.json",
+    "metadataHash": "ee1deeaca95fd7b4ebca35fc03539b49001b16092e84b54f639709aed2147cb4",
+    "hashes": {
+      "Art/Bomb Icons/Explosions/AerialBomb/Sheet_00.png": "0b3d5bcb30db56272839b7039b4b46ff8a2b4a615d6d76ad2368079c963dfde7",
+      "Art/Bomb Icons/Explosions/AerialBomb/Sheet_01.png": "7dec34f23e5f261ea30620939e20c5d667185725372a179febdd0e8688760872"
+    }
+  },
+  "impact-shell": {
+    "clips": {
+      "detonate": {
+        "file": "impact-shell-detonate.png",
+        "frames": 43,
+        "columns": 6,
+        "fps": 24,
+        "loop": false
+      }
+    },
+    "facing": "screen-down",
+    "source": "Art/Bomb Icons/Explosions/ArtilleryImpact/animations.json",
+    "metadataHash": "e01492745926a4ebce0de6f38bbf30c813c851e8f4348a97bf7156e3a4461f2c",
+    "hashes": {
+      "Art/Bomb Icons/Explosions/ArtilleryImpact/Sheet_00.png": "c53f46e15eaf9d2381202089e65108274fd4c1a49867d8064c579fc8b41d0f6e"
+    }
+  },
+  "impact-naval": {
+    "clips": {
+      "detonate": {
+        "file": "impact-naval-detonate.png",
+        "frames": 30,
+        "columns": 6,
+        "fps": 24,
+        "loop": false
+      }
+    },
+    "facing": "screen-down",
+    "source": "Art/Bomb Icons/Explosions/GunshipImpact/animations.json",
+    "metadataHash": "43f9fab4a091c2b674bbbc071d2b2fe2eb4c9faef9d09e148d01e4bb1bd171cb",
+    "hashes": {
+      "Art/Bomb Icons/Explosions/GunshipImpact/Sheet_00.png": "e66ef609728b2e1565b242def9759bc86c7e8095cba64af73e677a31a9c7f4ac"
+    }
+  },
+  "impact-icbm": {
+    "clips": {
+      "detonate": {
+        "file": "impact-icbm-detonate.png",
+        "frames": 116,
+        "columns": 6,
+        "fps": 24,
+        "loop": false
+      }
+    },
+    "facing": "screen-down",
+    "source": "Art/Bomb Icons/Explosions/ICBM/animations.json",
+    "metadataHash": "d7ed5b85d8782b64a06c2b27c72b45af028fc55300acac6a8eba4bddb10a017a",
+    "hashes": {
+      "Art/Bomb Icons/Explosions/ICBM/Sheet_00.png": "25518c7615684cfdfe69e79ca8c047c7b9bfce8d35b007955b7dc80428db1757",
+      "Art/Bomb Icons/Explosions/ICBM/Sheet_01.png": "f7efa7527f0cdf5549b6798e1648a5c6ffbf4dd2fdf6175167faca3194e331d6",
+      "Art/Bomb Icons/Explosions/ICBM/Sheet_02.png": "0e3cc2351845dca6aa327c613441bee724fba2ab3df47c7bedf3ea2f826776bf",
+      "Art/Bomb Icons/Explosions/ICBM/Sheet_03.png": "13c84031ba8dcd6c6df312af1a95c279854a351dc9e4f751f1a6a0df55f79ac2"
+    }
+  },
+  "impact-hydrogen": {
+    "clips": {
+      "detonate": {
+        "file": "impact-hydrogen-detonate.png",
+        "frames": 208,
+        "columns": 6,
+        "fps": 24,
+        "loop": false
+      }
+    },
+    "facing": "screen-down",
+    "source": "Art/Bomb Icons/Explosions/HydrogenBomb/animations.json",
+    "metadataHash": "34e05b07cfd282de077e6c17b013f1a7561dc271a8aca9a84d90bbc965b48e09",
+    "hashes": {
+      "Art/Bomb Icons/Explosions/HydrogenBomb/Sheet_00.png": "a75c7385c12f51e9a4d92ef1dc2aa267f5c2269866acd74e8ce234d7cff8acce",
+      "Art/Bomb Icons/Explosions/HydrogenBomb/Sheet_01.png": "0b3785eb6e5b0e4f1fd26f7b8c643b77a6d35d7ad54fbb05e3277109683f51af",
+      "Art/Bomb Icons/Explosions/HydrogenBomb/Sheet_02.png": "b54450d0a34cac8d75a685ef6360588021f0901b5043faef2d7b99d68eb68b69",
+      "Art/Bomb Icons/Explosions/HydrogenBomb/Sheet_03.png": "cb7ea9e52e757a5b8da56d6769847b28cf1aebbde0fae0f48542ea0422f153f7",
+      "Art/Bomb Icons/Explosions/HydrogenBomb/Sheet_04.png": "e06c28545fbb3fcc5799921ded6202b6f8b2ae016704831279c932ac70c2f61a",
+      "Art/Bomb Icons/Explosions/HydrogenBomb/Sheet_05.png": "9f4737b6d6821e45555764b84823c2af75d6490b796b53d0d880a7d22744a595"
+    }
   }
 }

@@ -467,6 +467,23 @@ kbd {
   font-size: 9px;
   color: var(--teal);
 }
+.promotion-progress {
+  display: flex;
+  align-items: center;
+  gap: 7px;
+  font-size: 10px;
+  color: #b6ccca;
+  margin: 8px 0;
+}
+.promotion-progress[hidden] {
+  display: none;
+}
+.promotion-progress img {
+  width: 64px;
+  height: 24px;
+  object-fit: contain;
+  flex-shrink: 0;
+}
 #selection-meter {
   margin: 14px 0;
 }
@@ -1272,6 +1289,7 @@ footer span:last-child {
   padding: 4px 0;
 }
 .refit-actions {
+  flex-shrink: 0;
   padding: 10px;
   border-top: 1px solid var(--line);
   font-size: 11px;
@@ -1478,6 +1496,104 @@ footer span:last-child {
 .technology-detail {
   padding: 9px;
 }
+.technology-drawer {
+  width: min(660px, calc(100% - 24px));
+}
+.tree-navigation {
+  display: none;
+  gap: 6px;
+  margin: 8px 0;
+}
+.tree-navigation button {
+  flex: 1;
+  text-transform: capitalize;
+}
+.technology-tree h3 {
+  display: flex;
+  justify-content: space-between;
+  text-transform: capitalize;
+}
+.technology-tree h3 small {
+  color: var(--teal);
+}
+.research-job {
+  min-height: 16px;
+  margin: 0 0 5px;
+  font-size: 10px;
+  color: #bacbce;
+}
+.tech-graph {
+  display: grid;
+  position: relative;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+  grid-template-rows: repeat(var(--tree-rows), 64px);
+  gap: 14px 8px;
+  padding: 0 6%;
+}
+.tech-graph > svg {
+  position: absolute;
+  inset: 0;
+  width: 100%;
+  height: 100%;
+  pointer-events: none;
+}
+.tech-graph path {
+  fill: none;
+  stroke: #82989e;
+  stroke-width: 1.3;
+  vector-effect: non-scaling-stroke;
+}
+.tech-graph path.complete {
+  stroke: #8bbf98;
+}
+.tech-graph .tech-node {
+  position: relative;
+  z-index: 1;
+  margin: 0;
+  min-height: 0;
+  padding: 6px;
+  gap: 3px;
+  font-size: 11px;
+  overflow-wrap: normal;
+}
+.tech-graph .tech-node small {
+  font-size: 10px;
+}
+.tech-graph .tech-node[aria-pressed="true"] {
+  outline: 2px solid var(--gold);
+  outline-offset: -2px;
+}
+.age-navigation [data-age-state="future"] {
+  border-style: dashed;
+}
+.technology-detail > p {
+  line-height: 1.45;
+}
+@media (max-width: 1000px) {
+  #app .empire-panel.technology-drawer,
+  #app[data-ui-age] .empire-panel.technology-drawer {
+    position: fixed;
+    top: 12px;
+    right: 12px;
+    max-height: calc(100dvh - 36px);
+  }
+  .technology-drawer {
+    width: min(440px, calc(100% - 16px));
+  }
+  .tree-navigation {
+    display: flex;
+  }
+  .technology-drawer .tech-columns {
+    display: block;
+  }
+  .technology-tree[data-active="false"] {
+    display: none;
+  }
+  .tech-graph {
+    max-width: 330px;
+    margin: auto;
+  }
+}
 .resource-strip {
   gap: 10px;
   min-height: 43px;
@@ -1601,7 +1717,7 @@ footer span:last-child {
 }
 .selection-card {
   max-height: calc(100% - var(--dock-height) - 100px);
-  overflow-y: auto;
+  overflow: hidden;
 }
 @media (max-width: 1250px) {
   .stock-group summary span {
@@ -1631,4 +1747,66 @@ footer span:last-child {
   .match-feed {
     width: 220px;
   }
+}
+
+.army-list {
+  position: absolute;
+  z-index: 8;
+  top: 50px;
+  left: 14px;
+  max-width: min(700px, calc(100% - 28px));
+  display: flex;
+  align-items: center;
+  flex-wrap: wrap;
+  gap: 5px;
+  padding: 5px 7px;
+  font-size: 10px;
+}
+.army-list [data-list] {
+  display: flex;
+  gap: 4px;
+  max-width: 330px;
+  overflow-x: auto;
+}
+.army-list select {
+  width: 95px;
+  font-size: 10px;
+  padding: 3px;
+}
+.army-card {
+  z-index: 11;
+}
+.army-card h2 {
+  margin: 5px 0;
+  font-size: 18px;
+}
+.army-card p {
+  margin: 6px 0;
+  font-size: 11px;
+}
+.army-card .health-track {
+  flex: 0 0 7px;
+}
+.army-card .card-description {
+  font-size: 10px;
+}
+.army-card label {
+  display: flex;
+  align-items: center;
+  gap: 5px;
+  font-size: 11px;
+  margin-top: 8px;
+}
+.army-orders {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 5px;
+}
+.army-orders button {
+  font-size: 11px;
+  padding: 5px;
+}
+.army-list[hidden],
+.army-card[hidden] {
+  display: none;
 }

@@ -1,0 +1,16 @@
+# A new static frontend. Attach the custom domain after testing its Render URL.
+services:
+  - type: web
+    name: age-of-fronts-skirmish
+    runtime: static
+    branch: main
+    buildCommand: >-
+      npm install --global --ignore-scripts npm@12.1.0 &&
+      npm ci --ignore-scripts &&
+      VITE_SKIRMISH_SOURCE_URL="https://github.com/ELDamien3570/AgeOfFronts/tree/${RENDER_GIT_COMMIT:?}" npm run build:skirmish
+    staticPublishPath: ./build/skirmish
+    envVars:
+      - key: NODE_VERSION
+        value: "24.18.0"
+      - key: SKIP_INSTALL_DEPS
+        value: "true"

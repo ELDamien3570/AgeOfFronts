@@ -1,5 +1,7 @@
 import manifest from "../../../Art/Building Markers/building-markers.json";
 import type { BuildingType } from "../Protocol";
+import type { Age } from "../domain/Definitions";
+import { drawAgeMarkerRim } from "./AgeUiTheme";
 
 interface MarkerRect {
   x: number;
@@ -47,13 +49,13 @@ export class BuildingMarkers {
     });
   }
 
-  get(type: BuildingType, color: string, size: number, pixelRatio = 1) {
+  get(type: BuildingType, color: string, size: number, pixelRatio = 1, age?: Age) {
     if (!this.image) return undefined;
     const pixels = Math.max(
       8,
       Math.ceil(size * Math.max(1, Math.min(4, pixelRatio))),
     );
-    const key = `${color}:${pixels}`;
+    const key = `${color}:${pixels}:${age ?? "plain"}`;
     let canvas = this.tinted.get(key);
     if (!canvas) {
       canvas = document.createElement("canvas");
@@ -79,6 +81,16 @@ export class BuildingMarkers {
       ctx.fillStyle = color;
       ctx.fillRect(0, 0, canvas.width, canvas.height);
       ctx.globalCompositeOperation = "source-over";
+      // Material is applied after faction tint so its age remains identifiable.
+      if (age)
+        for (const frame of Object.values(BUILDING_MARKER_FRAMES))
+          drawAgeMarkerRim(
+            ctx,
+            (frame.x / manifest.grid.cellSize) * pixels,
+            (frame.y / manifest.grid.cellSize) * pixels,
+            pixels,
+            age,
+          );
       this.tinted.set(key, canvas);
       if (this.tinted.size > MAX_TINTED_ATLASES)
         this.tinted.delete(this.tinted.keys().next().value!);

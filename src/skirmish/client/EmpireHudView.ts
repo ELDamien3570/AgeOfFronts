@@ -231,15 +231,15 @@ export class EmpireHudView {
     }
     const stock = groups
       .map((group) => {
-        const entries = Object.entries(vm.inventory).filter(([id]) =>
+        const entries = Object.entries(vm.resources.stocks).filter(([id]) =>
           "prefix" in group
             ? id.startsWith(group.prefix)
             : group.items.includes(id as never),
         );
+        if (!entries.length) return "";
         const tip = `${group.name}\n${entries.map(([id, n]) => `${vm.itemName(id)}: ${fmt(n)}`).join("\n") || "No stock yet"}`;
         return `<details class="stock-group" data-stock-group="${group.id}"><summary data-dock-tip="${esc(tip)}"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="${group.glyph}"/></svg><span>${group.name}</span><b>${fmt(entries.reduce((n, [, value]) => n + value, 0))}</b></summary><div class="stock-items">${
           entries
-            .filter(([, n]) => n > 0)
             .map(
               ([id, n]) =>
                 `<span>${esc(vm.itemName(id))}<b>${fmt(n)}</b></span>`,

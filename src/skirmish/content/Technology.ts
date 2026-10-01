@@ -27,9 +27,12 @@ export const ADVANCES = [
   { gold: 230_000, ticks: 1200 },
   { gold: 330_000, ticks: 1300 },
 ] as const;
+export function treeWorkload(age: Age, tree: Tree): number {
+  return TECHNOLOGIES.filter((t) => t.age === age && t.tree === tree).length;
+}
 export function validateTechnologies(): void {
-  if (TECHNOLOGY.size !== 84)
-    throw new Error("Expected 84 unique technologies");
+  if (TECHNOLOGY.size !== 85 || TECHNOLOGIES.length !== 85)
+    throw new Error("Expected 85 unique technologies");
   const visiting = new Set<string>(),
     visited = new Set<string>();
   const visit = (id: string) => {
@@ -52,7 +55,12 @@ export function validateTechnologies(): void {
       const nodes = TECHNOLOGIES.filter(
         (t) => t.age === age && t.tree === tree,
       );
-      if (nodes.length !== 4 || new Set(nodes.map((t) => t.slot)).size !== 4)
+      const count = age === "BronzeAge" && tree === "warfare" ? 5 : 4;
+      if (
+        nodes.length !== count ||
+        new Set(nodes.map((t) => t.slot)).size !== count ||
+        nodes.some((t) => t.slot < 1 || t.slot > count)
+      )
         throw new Error("Invalid tree workload");
       for (const t of nodes) visit(t.id);
     }

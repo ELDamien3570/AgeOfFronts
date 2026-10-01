@@ -10,6 +10,9 @@ export class RouteWork {
     // Refresh a stale target without moving the request to the back of the line.
     this.pending.set(key, { units, run });
   }
+  cancel(key: string): void {
+    this.pending.delete(key);
+  }
 
   drain(budget: number): void {
     for (const [key, work] of this.pending) {

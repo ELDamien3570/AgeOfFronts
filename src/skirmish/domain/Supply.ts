@@ -1,6 +1,7 @@
 import type { GameMap } from "../../core/game/GameMap";
 import type { Building, Player } from "../Protocol";
 import { producerCompatible } from "../content/Buildings";
+import { resourceTechnology } from "../content/Resources";
 import { technologyAt } from "../content/Technology";
 import { RECIPES } from "../content/Units";
 import {
@@ -15,6 +16,12 @@ import {
 } from "./Definitions";
 import type { Progression } from "./Progression";
 import { breedingPerSecond, throughputPercent } from "./ResearchEffects";
+export function productionTicks(
+  recipe: ProductionRecipe,
+  research: readonly string[],
+): number {
+  return Math.ceil((recipe.ticks * 100) / throughputPercent(research));
+}
 const raws: readonly Resource[] = [
   "horses",
   "stone",
@@ -26,20 +33,6 @@ const raws: readonly Resource[] = [
   "nitrate",
   "oil",
 ];
-const unlock = (r: Resource): string =>
-  r === "horses"
-    ? technologyAt("StoneAge", "warfare", 3).id
-    : r === "stone"
-      ? technologyAt("StoneAge", "economic", 3).id
-      : r === "copper" || r === "tin"
-        ? technologyAt("BronzeAge", "economic", 1).id
-        : r === "ironOre"
-          ? technologyAt("ClassicalAge", "economic", 1).id
-          : r === "carbon"
-            ? technologyAt("LateMedieval", "economic", 1).id
-            : r === "sulphur" || r === "nitrate"
-              ? technologyAt("LateMedieval", "economic", 2).id
-              : technologyAt("Modern", "economic", 1).id;
 export const REFINING: ProductionRecipe[] = [
   {
     id: "refine-bronze",
@@ -130,6 +123,11 @@ export class Supply {
     number,
     { owner: number; recipeId: string }
   >();
+  productionPlans(): Record<number, { owner: number; recipeId: string }> {
+    return Object.fromEntries(
+      [...this.selectedRecipes].map(([id, plan]) => [id, { ...plan }]),
+    );
+  }
   constructor(
     private readonly map: GameMap,
     private readonly progression: Progression,
@@ -181,13 +179,14 @@ export class Supply {
     recipeId: string,
   ): string | null {
     const recipe = PRODUCTION_RECIPES.find((r) => r.id === recipeId);
-    if (!building || building.playerId !== player.id || building.remainingTicks)
-      return "Needs a completed owned producer";
-    if (!recipe || !producerCompatible(building.type, recipe.building))
-      return "This producer cannot make that recipe";
-    if (!this.progression.has(player.id, recipe.technologyId))
-      return "Research this production pattern first";
-    this.selectedRecipes.set(building.id, { owner: player.id, recipeId });
+    const rejection = productionRejection(
+      player.id,
+      building,
+      recipe,
+      this.progression.states[player.id].completed,
+    );
+    if (rejection) return rejection;
+    this.selectedRecipes.set(building!.id, { owner: player.id, recipeId });
     return null;
   }
   step(
@@ -229,9 +228,9 @@ export class Supply {
           !costRejection(player, inventory, { items: recipe.inputs })
         ) {
           spend(player, inventory, { items: recipe.inputs });
-          const ticks = Math.ceil(
-            (recipe.ticks * 100) /
-              throughputPercent(this.progression.states[player.id].completed),
+          const ticks = productionTicks(
+            recipe,
+            this.progression.states[player.id].completed,
           );
           this.jobs[b.id] = {
             recipeId: recipe.id,
@@ -252,7 +251,7 @@ export class Supply {
       }
       if (
         b.type === "stables" &&
-        this.progression.has(player.id, unlock("horses"))
+        this.progression.has(player.id, resourceTechnology("horses").id)
       )
         inventory.horses +=
           breedingPerSecond(this.progression.states[player.id].completed) ||
@@ -262,7 +261,7 @@ export class Supply {
         if (
           node &&
           node.resource !== "horses" &&
-          this.progression.has(player.id, unlock(node.resource))
+          this.progression.has(player.id, resourceTechnology(node.resource).id)
         )
           inventory[node.resource] +=
             node.yieldPerSecond * (1 + Math.floor(index / 2));
@@ -274,9 +273,28 @@ export class Supply {
         tick % 20 === 0 &&
         node.owner &&
         node.resource === "horses" &&
-        this.progression.has(node.owner, unlock("horses"))
+        this.progression.has(node.owner, resourceTechnology("horses").id)
       )
         this.inventories[node.owner].horses += node.yieldPerSecond;
     }
   }
+}
+export function productionRejection(
+  playerId: number,
+  building: Building | undefined,
+  recipe: ProductionRecipe | undefined,
+  completed: readonly string[],
+): string | null {
+  if (
+    !building ||
+    building.playerId !== playerId ||
+    building.remainingTicks ||
+    (building.health ?? 1) <= 0
+  )
+    return "Needs a completed owned producer";
+  if (!recipe || !producerCompatible(building.type, recipe.building))
+    return "This producer cannot make that recipe";
+  if (!completed.includes(recipe.technologyId))
+    return "Research this production pattern first";
+  return null;
 }

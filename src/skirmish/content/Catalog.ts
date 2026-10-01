@@ -1,7 +1,9 @@
 import { BUILDING_RULES } from "../Rules";
-import { XP_THRESHOLDS } from "../domain/Combat";
+import { MAX_ARMOUR, PROMOTION_ATTACK, XP_THRESHOLDS } from "../domain/Combat";
 import { RESOURCES } from "../domain/Definitions";
 import { PRODUCTION_RECIPES } from "../domain/Supply";
+import { ARMY_CAPS } from "./Armies";
+import { GUN_NEST_ATTACK, TRENCH_COVER } from "./Defences";
 import {
   ADVANCES,
   STARTING_TECHNOLOGIES,
@@ -75,5 +77,12 @@ export const CONTENT_HASH = hash({
   recipes: PRODUCTION_RECIPES,
   buildings: BUILDING_RULES,
   advances: ADVANCES,
-  promotions: XP_THRESHOLDS,
+  promotions: {
+    thresholds: XP_THRESHOLDS,
+    attack: PROMOTION_ATTACK,
+    maxArmour: MAX_ARMOUR,
+  },
+  combatRevision: 3,
+  armyCaps: ARMY_CAPS,
+  defences: { gunNest: GUN_NEST_ATTACK, trench: TRENCH_COVER },
 });

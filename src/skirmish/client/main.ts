@@ -43,7 +43,10 @@ import {
 
 import { hudMarkup, HudView } from "./HudView";
 
+import { ArmyView } from "./ArmyView";
+import { ArmyViewModel } from "./ArmyViewModel";
 import { HudViewModel } from "./HudViewModel";
+import { OrderGesture } from "./OrderGesture";
 
 import { COLORS, Renderer } from "./Renderer";
 
@@ -52,6 +55,7 @@ import { SkirmishViewModel } from "./SkirmishViewModel";
 import { TerrainViewModel } from "./TerrainViewModel";
 
 import "./style.css";
+import "./age-theme.css";
 
 document.querySelector<HTMLDivElement>("#app")!.innerHTML = `
 
@@ -98,9 +102,19 @@ document.querySelector<HTMLDivElement>("#app")!.innerHTML = `
 
   </main>
 
-  <footer><span>© OpenFront and Contributors · Modified Age of Fronts prototype</span><a href="/age-of-fronts-source.zip" download>Corresponding source</a><span id="map-attribution">OpenFront maps · CC BY-SA 4.0</span></footer>
+  <footer><span>© OpenFront and Contributors · Modified Age of Fronts prototype</span><a id="corresponding-source" href="/age-of-fronts-source.zip" download>Corresponding source</a><span id="map-attribution">OpenFront maps · CC BY-SA 4.0</span></footer>
 
 `;
+
+// Render builds link to their exact public revision; local builds retain the ZIP.
+const sourceUrl = import.meta.env.VITE_SKIRMISH_SOURCE_URL;
+if (sourceUrl) {
+  const sourceLink = document.querySelector<HTMLAnchorElement>(
+    "#corresponding-source",
+  )!;
+  sourceLink.href = sourceUrl;
+  sourceLink.removeAttribute("download");
+}
 
 const element = <T extends HTMLElement>(id: string) =>
   document.getElementById(id)! as T;
@@ -127,6 +141,70 @@ const empire = new EmpireView(element("app"), {
   focusedRef: () => hud.inspectedRef,
   target: beginTarget,
 });
+const armyView = new ArmyView(element("app"), {
+  command,
+  select: selectArmy,
+  target: (armyId, type) =>
+    beginTarget(
+      (x, y) => {
+        if (!snapshot || !currentMap) return;
+        if (type === "deploy" || type === "regroup" || type === "move") {
+          if (
+            !currentMap.map.isValidCoord(
+              Math.floor(x / FIXED),
+              Math.floor(y / FIXED),
+            )
+          )
+            return;
+          command({
+            type: "army-order",
+            playerId: 1,
+            armyId,
+            order: {
+              type,
+              tile: currentMap.map.ref(
+                Math.floor(x / FIXED),
+                Math.floor(y / FIXED),
+              ),
+            },
+          });
+        } else if (type !== "hold") {
+          const target = snapshot.squads
+            .filter((s) => s.playerId !== 1 && s.embarkedOn === null)
+            .sort(
+              (a, b) =>
+                (a.x - x) ** 2 +
+                (a.y - y) ** 2 -
+                ((b.x - x) ** 2 + (b.y - y) ** 2),
+            )[0];
+          if (
+            !target ||
+            (target.x - x) ** 2 + (target.y - y) ** 2 > (4 * FIXED) ** 2
+          ) {
+            notify("Click a hostile squad for this tactic");
+            return;
+          }
+          command({
+            type: "army-order",
+            playerId: 1,
+            armyId,
+            order: { type, targetId: target.id },
+          });
+        }
+      },
+      type === "deploy" || type === "regroup"
+        ? "Click passable land for the army"
+        : "Click an enemy squad for the army tactic",
+    ),
+});
+function selectArmy(ids: number[]): void {
+  renderer.selected = new Set(ids);
+  renderer.selectedShips.clear();
+  renderer.selectedAircraft.clear();
+  renderer.selectedBuilding = null;
+  renderer.selectedDeposit = null;
+  updateHud();
+}
 
 let worker: Worker | undefined;
 
@@ -156,7 +234,7 @@ let placementAge: Age | undefined;
 
 let targetedAction: ((x: number, y: number) => void) | undefined;
 
-let rightClick: { time: number; x: number; y: number } | undefined;
+const orderGesture = new OrderGesture();
 
 const empireModel = () =>
   snapshot?.expansion ? new EmpireViewModel(snapshot, renderer) : undefined;
@@ -192,6 +270,7 @@ function post(message: WorkerRequest): void {
 }
 
 function command(message: Command): void {
+  orderGesture.cancel();
   post({ type: "command", command: message });
 }
 
@@ -208,6 +287,7 @@ function notify(message: string): void {
 }
 
 async function start(): Promise<void> {
+  orderGesture.cancel();
   const sequence = ++matchSequence;
 
   worker?.terminate();
@@ -228,6 +308,7 @@ async function start(): Promise<void> {
   renderer.selectedAircraft.clear();
 
   renderer.selectedBuilding = null;
+  renderer.selectedDeposit = null;
 
   groups.reset();
 
@@ -453,6 +534,9 @@ function updateHud(): void {
   updateSelection();
 
   hud.update(new HudViewModel(vm));
+  const armyVm = new ArmyViewModel(snapshot, renderer.selected);
+  armyView.update(armyVm);
+  if (armyVm.selectedArmy) element("selection-card").hidden = true;
 
   if (snapshot.expansion) empire.update(empireModel()!);
 
@@ -600,6 +684,7 @@ function controlGroup(digit: number, mode: "add" | "replace" | "recall"): void {
     renderer.selectedShips = members.selectedShips;
 
     renderer.selectedBuilding = null;
+    renderer.selectedDeposit = null;
   } else {
     groups.bind(digit, renderer, snapshot, mode === "add");
 
@@ -624,6 +709,7 @@ function selectAll(): void {
   renderer.selectedAircraft.clear();
 
   renderer.selectedBuilding = null;
+  renderer.selectedDeposit = null;
 
   updateHud();
 }
@@ -1032,12 +1118,15 @@ canvas.addEventListener("pointerup", (event) => {
 
   if (start.button === 0) {
     if (!start.shift) {
+      orderGesture.cancel();
+      renderer.selectedDeposit = null;
       renderer.selected.clear();
 
       renderer.selectedShips.clear();
       renderer.selectedAircraft.clear();
 
       renderer.selectedBuilding = null;
+      renderer.selectedDeposit = null;
     }
 
     if (start.moved) {
@@ -1083,6 +1172,7 @@ canvas.addEventListener("pointerup", (event) => {
           renderer.selectedShips.add(ship.id);
       }
     } else {
+      const army = renderer.armyAt(p.x, p.y);
       const aircraft = renderer.aircraftAt(p.x, p.y);
       const building = renderer.buildingAt(p.x, p.y);
 
@@ -1090,7 +1180,19 @@ canvas.addEventListener("pointerup", (event) => {
 
       const squad = renderer.squadAt(p.x, p.y, 1);
 
-      if (aircraft !== null) {
+      if (army !== null) {
+        const selectedArmy = snapshot.expansion?.armies.find(
+          (a) => a.id === army,
+        );
+        if (selectedArmy)
+          for (const squad of snapshot.squads)
+            if (
+              selectedArmy.memberIds.includes(squad.id) &&
+              squad.embarkedOn === null &&
+              !squad.refit
+            )
+              renderer.selected.add(squad.id);
+      } else if (aircraft !== null) {
         if (start.shift && renderer.selectedAircraft.has(aircraft))
           renderer.selectedAircraft.delete(aircraft);
         else renderer.selectedAircraft.add(aircraft);
@@ -1114,7 +1216,7 @@ canvas.addEventListener("pointerup", (event) => {
         if (start.shift && renderer.selectedShips.has(ship))
           renderer.selectedShips.delete(ship);
         else renderer.selectedShips.add(ship);
-      }
+      } else renderer.selectedDeposit = renderer.depositAt(p.x,p.y);
     }
 
     if (
@@ -1122,6 +1224,7 @@ canvas.addEventListener("pointerup", (event) => {
       !renderer.selected.size &&
       !renderer.selectedShips.size &&
       !renderer.selectedAircraft.size &&
+      renderer.selectedDeposit === null &&
       (renderer.selectedBuilding === null ||
         snapshot.buildings.find((b) => b.id === renderer.selectedBuilding)
           ?.playerId !== 1)
@@ -1256,29 +1359,10 @@ canvas.addEventListener("pointerup", (event) => {
 
     const position = renderer.world(p.x, p.y);
 
-    const double =
-      rightClick &&
-      performance.now() - rightClick.time < 350 &&
-      (rightClick.x - p.x) ** 2 + (rightClick.y - p.y) ** 2 < 100;
-
-    rightClick = { time: performance.now(), ...p };
-
     const chargers = snapshot.squads.filter(
       (s) =>
         renderer.selected.has(s.id) && UNIT.get(s.definitionId ?? "")?.charge,
     );
-
-    if (double && !start.shift && chargers.length) {
-      command({
-        type: "charge",
-        playerId: 1,
-        squadIds: chargers.map((s) => s.id),
-        x: Math.round(position.x * FIXED),
-        y: Math.round(position.y * FIXED),
-        targetId: enemy ? target.id : undefined,
-      });
-      return;
-    }
 
     const building = snapshot.buildings.find(
       (b) => b.id === renderer.buildingAt(p.x, p.y),
@@ -1288,36 +1372,39 @@ canvas.addEventListener("pointerup", (event) => {
       (b) => tile !== null && b.health > 0 && b.tiles.includes(tile),
     );
 
-    if (
+    const structureOrder =
       !enemy &&
-      ((building && building.playerId !== 1) ||
-        (barrier && barrier.playerId !== 1))
-    ) {
-      command({
+      (Boolean(building && building.playerId !== 1) ||
+        Boolean(barrier && barrier.playerId !== 1));
+    if (!enemy && tile === null) return;
+    const ids = [...renderer.selected];
+    const ordinary: Command = structureOrder ? {
         type: "attack-structure",
         playerId: 1,
-        squadIds: [...renderer.selected],
+        squadIds: ids,
         buildingId: building?.id,
         barrierId: barrier?.id,
-      });
-      return;
-    }
-
-    if (!enemy && tile === null) return;
-
-    command({
+      } : {
       type: "order",
 
       playerId: 1,
 
-      squadIds: [...renderer.selected],
+      squadIds: ids,
 
       append: start.shift,
 
       order: enemy
         ? { type: "attack", targetId: target.id }
         : { type: "move", tile: tile! },
-    });
+    };
+    const context = `${matchSequence}:${ids.sort((a,b)=>a-b).join(",")}`;
+    orderGesture.submit({time:performance.now(),...p,context,single:()=>{
+      if (snapshot?.winner === null && context === `${matchSequence}:${[...renderer.selected].sort((a,b)=>a-b).join(",")}`)
+        command(ordinary);
+    }}, !start.shift && chargers.length ? ()=>command({
+      type:"charge",playerId:1,squadIds:chargers.map(s=>s.id),
+      x:Math.round(position.x*FIXED),y:Math.round(position.y*FIXED),targetId:enemy ? target.id : undefined,
+    }) : undefined);
 
     const world = renderer.world(p.x, p.y);
 
@@ -1364,6 +1451,7 @@ canvas.addEventListener("dblclick", (event) => {
   }
 
   renderer.selectedBuilding = null;
+  renderer.selectedDeposit = null;
 
   if (
     ship &&
@@ -1393,6 +1481,10 @@ canvas.addEventListener(
 );
 
 document.addEventListener("keydown", (event) => {
+  if (event.key === "Escape" && empire.close()) {
+    event.preventDefault();
+    return;
+  }
   if (
     (event.target as HTMLElement).matches("input,select,textarea") ||
     (event.target as HTMLElement).isContentEditable
@@ -1400,11 +1492,6 @@ document.addEventListener("keydown", (event) => {
     return;
 
   const key = event.key.toLowerCase();
-
-  if (event.key === "Escape" && empire.close()) {
-    event.preventDefault();
-    return;
-  }
 
   if (
     !event.ctrlKey &&
@@ -1420,7 +1507,7 @@ document.addEventListener("keydown", (event) => {
 
   if (
     empire.open ||
-    (event.target as HTMLElement).closest(".empire-panel,.hud-popover")
+    (event.target as HTMLElement).closest("button,[role=button],.empire-panel,.hud-popover,.army-card")
   )
     return;
 

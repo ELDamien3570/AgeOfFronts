@@ -1,0 +1,65 @@
+import { AGE_NAMES, AGES, type Tree } from "../domain/Definitions";
+import type { TechnologyViewModel } from "./TechnologyViewModel";
+
+const escape = (s: string) =>
+  s.replace(
+    /[&<>"']/g,
+    (c) =>
+      ({
+        "&": "&amp;",
+        "<": "&lt;",
+        ">": "&gt;",
+        '"': "&quot;",
+        "'": "&#39;",
+      })[c]!,
+  );
+const fmt = (n: number) => n.toLocaleString("en-US");
+
+export function technologyTreeMarkup(
+  vm: TechnologyViewModel,
+  inspected: string,
+  activeTree: Tree,
+): string {
+  const trees = vm.trees,
+    nodes = trees.flatMap((t) => t.nodes);
+  const preferred = vm.tree(activeTree).nodes;
+  const detail =
+    nodes.find((n) => n.id === inspected) ??
+    preferred.find((n) => !n.completed) ??
+    preferred[0];
+  return `<nav class="age-navigation" aria-label="Research age">${vm.ages.map(({ age, state }) => `<button data-age="${age}" data-age-state="${state}" aria-pressed="${age === vm.age}" title="${state === "future" ? "Future age · preview only" : state === "catch-up" ? "Older research remains available" : "Current empire age"}">${AGE_NAMES[AGES.indexOf(age)]}${state === "current" ? " •" : state === "future" ? " ◇" : ""}</button>`).join("")}</nav>
+    <nav class="tree-navigation" aria-label="Research tree">${trees.map((t) => `<button data-tree="${t.tree}" aria-pressed="${activeTree === t.tree}">${t.tree} ${t.completed}/${t.total}</button>`).join("")}</nav>
+    <div class="tech-columns">${trees
+      .map((tree) => {
+        const height =
+          (Math.max(...tree.nodes.map((n) => n.row)) + 1) * 78 - 14;
+        const edges = tree.nodes
+          .flatMap((n) =>
+            n.prerequisites.map((id) => ({
+              child: n,
+              parent: tree.nodes.find((p) => p.id === id),
+            })),
+          )
+          .filter((e) => e.parent);
+        const x = (n: (typeof nodes)[number]) =>
+          n.span === 2 ? 50 : n.column === 1 ? 24 : 76;
+        return `<section class="technology-tree" data-active="${tree.tree === activeTree}" aria-label="${tree.tree} tree"><h3>${tree.tree} <small>${tree.completed}/${tree.total}</small></h3><p class="research-job">${tree.job ? `${escape(tree.job.name)} · ${tree.job.remaining}s${tree.job.age !== vm.age ? " · other age" : ""}` : "Queue available"}</p><div class="tech-graph" style="--tree-rows:${Math.max(...tree.nodes.map((n) => n.row)) + 1}"><svg viewBox="0 0 100 ${height}" preserveAspectRatio="none" aria-hidden="true">${edges
+          .map(({ child, parent: p }) => {
+            const parent = p!,
+              from = parent.row * 78 + 64,
+              to = child.row * 78;
+            // A long organizational branch travels outside intervening node boxes.
+            const path =
+              child.row - parent.row > 1
+                ? `M 94 ${from - 32} H 99 V ${to + 32} H 94`
+                : `M ${x(parent)} ${from} V ${(from + to) / 2} H ${x(child)} V ${to}`;
+            return `<path data-edge="${parent.id}:${child.id}" class="${parent.completed ? "complete" : ""}" d="${path}"/>`;
+          })
+          .join(
+            "",
+          )}</svg>${tree.nodes.map((n) => `<button class="tech-node ${n.completed ? "complete" : n.researching ? "researching" : ""}" style="grid-row:${n.row + 1};grid-column:${n.column}/span ${n.span}" data-node="${n.id}" aria-pressed="${detail.id === n.id}" title="${escape(n.status)} · ${fmt(n.gold)} gold · ${n.ticks / 20}s"><b>${escape(n.name)}</b><small>${escape(n.status)}</small></button>`).join("")}</div></section>`;
+      })
+      .join(
+        "",
+      )}</div><article class="technology-detail"><h3>${escape(detail.name)}</h3><p>${escape(detail.description)}</p><small>Requires: ${detail.prerequisites.map((id) => escape(vm.empire.technologyName(id))).join(", ") || "No prerequisites"}</small><button data-research="${detail.id}" ${detail.reason ? "disabled" : ""}>${detail.researching ? "Researching" : detail.completed ? "Completed" : `Research · ${fmt(detail.gold)} gold · ${detail.ticks / 20}s`}</button><p>${escape(detail.reason ?? "Unlocks capabilities; deployment has separate building and supply costs.")}</p></article>`;
+}

@@ -2,12 +2,17 @@ import fs from "node:fs";
 import path from "node:path";
 import { defineConfig } from "vitest/config";
 
+let buildOutDir = path.resolve("build/skirmish");
+
 export default defineConfig({
   publicDir: "resources",
   resolve: { tsconfigPaths: true },
   plugins: [
     {
       name: "skirmish-entry",
+      configResolved(config) {
+        buildOutDir = path.resolve(config.root, config.build.outDir);
+      },
       configureServer(server) {
         server.middlewares.use((req, res, next) => {
           if (req.url?.split("?")[0] !== "/") {
@@ -29,9 +34,9 @@ export default defineConfig({
       },
       // Vite's Rollup input lives in a subdirectory; publish a normal root page.
       closeBundle() {
-        const nested = path.resolve("build/skirmish/skirmish/index.html");
+        const nested = path.join(buildOutDir, "skirmish/index.html");
         if (fs.existsSync(nested))
-          fs.copyFileSync(nested, path.resolve("build/skirmish/index.html"));
+          fs.copyFileSync(nested, path.join(buildOutDir, "index.html"));
       },
     },
   ],

@@ -9,6 +9,7 @@ import {
   TECHNOLOGIES,
   TECHNOLOGY,
   technologyAt,
+  treeWorkload,
 } from "../content/Technology";
 import { defaultUnit, UNIT, UNITS, VESSEL, VESSELS } from "../content/Units";
 import { AGE_NAMES, AGES, TREES, type Age } from "../domain/Definitions";
@@ -17,13 +18,25 @@ import {
   researchRejection,
   treeCompletion,
 } from "../domain/Progression";
-import { costRejection, PRODUCTION_RECIPES } from "../domain/Supply";
+import {
+  costRejection,
+  PRODUCTION_RECIPES,
+  productionRejection,
+  productionTicks,
+} from "../domain/Supply";
+import { ResourceViewModel } from "./ResourceViewModel";
 import { SkirmishViewModel, type SelectionState } from "./SkirmishViewModel";
 export class EmpireViewModel {
+  readonly resources: ResourceViewModel;
   constructor(
     readonly state: Snapshot,
     readonly selection: SelectionState,
-  ) {}
+  ) {
+    this.resources = new ResourceViewModel(
+      this.progression.age,
+      this.inventory,
+    );
+  }
   get expansion() {
     return this.state.expansion!;
   }
@@ -65,7 +78,7 @@ export class EmpireViewModel {
   get summary() {
     return TREES.map(
       (tree) =>
-        `${tree[0].toUpperCase()}${tree.slice(1)} ${treeCompletion(this.progression, tree)}/4`,
+        `${tree[0].toUpperCase()}${tree.slice(1)} ${treeCompletion(this.progression, tree)}/${treeWorkload(this.progression.age, tree)}`,
     ).join(" · ");
   }
   get advance() {
@@ -125,11 +138,56 @@ export class EmpireViewModel {
       .map((b) => ({
         building: b,
         job: this.expansion.production[b.id],
+        selected: PRODUCTION_RECIPES.find(
+          (r) => r.id === this.expansion.productionPlans?.[b.id]?.recipeId,
+        ),
         recipes: PRODUCTION_RECIPES.filter(
           (r) =>
             producerCompatible(b.type, r.building) && this.has(r.technologyId),
         ),
       }));
+  }
+  productionChoice(buildingId: number, recipeId: string) {
+    const building = this.state.buildings.find((b) => b.id === buildingId),
+      recipe = PRODUCTION_RECIPES.find((r) => r.id === recipeId);
+    return {
+      recipe,
+      cycleTicks: recipe
+        ? productionTicks(recipe, this.progression.completed)
+        : 0,
+      reason: productionRejection(
+        1,
+        building,
+        recipe,
+        this.progression.completed,
+      ),
+      inputs: Object.entries(recipe?.inputs ?? {}).map(([id, required]) => ({
+        id,
+        required,
+        available: this.inventory[id] ?? 0,
+      })),
+      outputs: Object.entries(recipe?.outputs ?? {}).map(([id, amount]) => ({
+        id,
+        amount,
+      })),
+    };
+  }
+  productionStatus(buildingId: number) {
+    const producer = this.producers.find((p) => p.building.id === buildingId);
+    if (!producer) return "Producer unavailable";
+    if (producer.building.remainingTicks)
+      return `Construction · ${Math.ceil(producer.building.remainingTicks / 20)}s`;
+    if (producer.job)
+      return `${PRODUCTION_RECIPES.find((r) => r.id === producer.job!.recipeId)!.name} · ${Math.ceil(producer.job.remainingTicks / 20)}s`;
+    if (!producer.selected) return "Choose a repeating production pattern";
+    const choice = this.productionChoice(buildingId, producer.selected.id);
+    const missing = choice.inputs.filter((i) => i.available < i.required);
+    return (
+      choice.reason ??
+      (missing.length
+        ? `Waiting: ${missing.map((i) => `${this.itemName(i.id)} ${i.available}/${i.required}`).join(", ")}`
+        : `${producer.selected.name} · ready to start`)
+    );
   }
   refit(focusedId?: number) {
     const selected = this.state.squads.filter(
@@ -307,6 +365,7 @@ export class EmpireViewModel {
           (b) =>
             b.playerId === 1 &&
             !b.remainingTicks &&
+            (b.health ?? 1) > 0 &&
             (payload === "mirv"
               ? b.type === "mirv-launcher"
               : b.type === "missile-silo"),
@@ -330,6 +389,9 @@ export class EmpireViewModel {
             Math.floor(s.y / 256) * this.state.width + Math.floor(s.x / 256),
           selected: this.selection.selected.has(s.id),
           ready:
+            s.troops <= 0 ||
+            s.order.type !== "hold" ||
+            Boolean(s.charge) ||
             s.moved ||
             s.fighting ||
             Boolean(s.refit) ||

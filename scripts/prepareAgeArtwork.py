@@ -2,12 +2,15 @@
 from pathlib import Path
 from PIL import Image, ImageDraw
 from collections import deque
-import json, hashlib
+import json, hashlib, argparse
 ROOT=Path(__file__).resolve().parents[1]
 OUT=ROOT/'Art/Runtime/Ages';OUT.mkdir(parents=True,exist_ok=True)
-manifest={}
+parser=argparse.ArgumentParser();parser.add_argument('--only',nargs='+',default=[]);args=parser.parse_args()
+only=set(args.only)
+manifest=json.loads((OUT/'manifest.json').read_text()) if only and (OUT/'manifest.json').exists() else {}
 ages=['StoneAge','BronzeAge','ClassicalAge','EarlyMedieval','LateMedieval','EarlyModern','Modern']
 def build(key,meta_path):
+ if only and key not in only:return
  d=json.loads(meta_path.read_text());clips={};source_hashes={}
  for name,clip in d.get('animations',{}).items():
   frames=clip.get('frames',[])
@@ -26,7 +29,8 @@ def build(key,meta_path):
    poster=f'{key}-portrait.png';atlas.crop((0,0,128,128)).save(OUT/poster,optimize=True)
   filename=f'{key}-{name}.png';atlas.save(OUT/filename,optimize=True)
   clips[name]={'file':filename,'frames':len(frames),'columns':columns,'fps':clip.get('suggestedFramesPerSecond',8),'loop':clip.get('loop',True)}
- manifest[key]={'clips':clips,'facing':d.get('facing','screen-down'),'source':str(meta_path.relative_to(ROOT)).replace('\\','/'),'hashes':source_hashes,'poster':f'{key}-portrait.png'}
+ manifest[key]={'clips':clips,'facing':d.get('facing','screen-down'),'source':str(meta_path.relative_to(ROOT)).replace('\\','/'),'metadataHash':hashlib.sha256(meta_path.read_bytes()).hexdigest(),'hashes':source_hashes}
+ if 'idle' in clips:manifest[key]['poster']=f'{key}-portrait.png'
 for age in ages:
  for folder,line in [('Melee','infantry'),('Ranged','archer'),('Cavalry','cavalry')]:
   meta=ROOT/f'Art/Soldier Icons/{folder}/{age}/animations.json'
@@ -43,6 +47,7 @@ for key,folder in weapons.items():
 # Fit static buildings inside a shared square without clipping. Connected black
 # removal is used only for opaque edge backgrounds, preserving interior details.
 def static(key,path,poster_only=False):
+ if only and key not in only:return
  im=Image.open(path).convert('RGBA')
  if im.getpixel((0,0))[3]>240 and max(im.getpixel((0,0))[:3])<32:
   w,h=im.size;pixels=im.load();seen=set();q=deque([(x,0)for x in range(w)]+[(x,h-1)for x in range(w)]+[(0,y)for y in range(h)]+[(w-1,y)for y in range(h)])
@@ -75,7 +80,14 @@ static('building-modern-trench',ROOT/'Art/Terrain/Modern Defenses/Trenches/tiles
 mirv=ROOT/'Art/Building Icons/MIRV Launch Complex/Top-Down-Correction'
 build('building-modern-mirv-launcher',mirv/'animations.json')
 static('building-modern-mirv-launcher',mirv/'Icon.png',poster_only=True)
-static('mirv',ROOT/'Art/Weapon Icons/Modern Defense/Projectiles/MIRVCarrier_Modern/Icon.png')
+build('mirv',ROOT/'Art/Weapon Icons/Modern Defense/Projectiles/MIRVCarrier_Modern/animations.json')
+static('mirv',ROOT/'Art/Weapon Icons/Modern Defense/Projectiles/MIRVCarrier_Modern/Icon.png',poster_only=True)
+build('mirv-warhead',ROOT/'Art/Weapon Icons/Modern Defense/Projectiles/MIRVWarhead_Modern/animations.json')
+static('mirv-warhead',ROOT/'Art/Weapon Icons/Modern Defense/Projectiles/MIRVWarhead_Modern/Icon.png',poster_only=True)
+build('impact-mirv',ROOT/'Art/Weapon Icons/Modern Defense/Effects/MIRVWarheadDetonation_Modern/animations.json')
+for key,folder in {'impact-bomb':'AerialBomb','impact-shell':'ArtilleryImpact','impact-naval':'GunshipImpact','impact-icbm':'ICBM','impact-hydrogen':'HydrogenBomb'}.items():
+ meta=ROOT/f'Art/Bomb Icons/Explosions/{folder}/animations.json'
+ if meta.exists():build(key,meta)
 static('building-modern-missile-defence',ROOT/'Art/Building Icons/Missile Silo/Top-Down-Correction/MissileSilo_Modern.png')
 for key,path in {'fighter':'Art/Aircraft Icons/Fighter_WWII_TopDown.png','bomber':'Art/Aircraft Icons/Bomber_WWII_TopDown.png','icbm':'Art/Bomb Icons/ICBM_Modern_TopDown.png','hydrogen':'Art/Bomb Icons/HydrogenBomb_Modern_TopDown.png'}.items():
  if (ROOT/path).exists():static(key,ROOT/path)

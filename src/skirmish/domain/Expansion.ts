@@ -20,6 +20,7 @@ import {
 import { CONTENT_HASH } from "../content/Catalog";
 import { TECHNOLOGIES, technologyAt } from "../content/Technology";
 import { UNIT, UNITS, VESSEL, VESSELS } from "../content/Units";
+import { Armies, type ArmyWorld } from "./Armies";
 import { Battle, type BattleWorld } from "./Battle";
 import {
   AGES,
@@ -36,7 +37,7 @@ import { vesselEffects } from "./ResearchEffects";
 import { Roads } from "./Roads";
 import { PRODUCTION_RECIPES, Supply, costRejection, spend } from "./Supply";
 import { Trade } from "./Trade";
-export interface ExpansionWorld extends BattleWorld {
+export interface ExpansionWorld extends BattleWorld, ArmyWorld {
   options?: { runAi?: boolean };
   map: GameMap;
   owners: Uint8Array;
@@ -60,6 +61,7 @@ export class Expansion {
   readonly trade: Trade;
   readonly roads: Roads;
   readonly battle: Battle;
+  readonly armies: Armies;
   readonly aircraft: Aircraft[] = [];
   readonly winners: number[] = [];
   readonly events: MatchEvent[] = [];
@@ -95,6 +97,7 @@ export class Expansion {
       this.progression,
     );
     this.battle.setWidth(world.map.width());
+    this.armies = new Armies(world, this.progression);
   }
   add(player: Player): void {
     this.progression.add(player.id);
@@ -217,6 +220,8 @@ export class Expansion {
   }
   command(player: Player, command: Command): string | null | undefined {
     const { world } = this;
+    const armyResult = this.armies.command(player, command);
+    if (armyResult !== undefined) return armyResult;
     if (command.type === "research")
       return player.kind === "tribe"
         ? "Tribes remain in the Stone Age"
@@ -686,6 +691,7 @@ export class Expansion {
         b.id === id &&
         b.playerId === player.id &&
         !b.remainingTicks &&
+        (b.health ?? 1) > 0 &&
         ((b.type === "missile-silo" && payload !== "mirv") ||
           (b.type === "mirv-launcher" && payload === "mirv")),
     );
@@ -695,6 +701,11 @@ export class Expansion {
         s.playerId === player.id &&
         this.unit(s).role === "launcher" &&
         payload === "mirv" &&
+        s.troops > 0 &&
+        !s.refit &&
+        !s.fighting &&
+        !s.charge &&
+        s.order.type === "hold" &&
         !s.moved &&
         s.embarkedOn === null &&
         (s.deploymentTicks ?? 0) >= 100,
@@ -718,7 +729,13 @@ export class Expansion {
     else unit!.chargeReadyTick = this.world.tick + 1200;
     const position = building ? this.battle.position(building) : unit!;
     this.battle.fire(
-      { id, playerId: player.id, x: position.x, y: position.y },
+      {
+        id,
+        playerId: player.id,
+        x: position.x,
+        y: position.y,
+        domain: building ? "building" : "squad",
+      },
       { x, y },
       {
         channel: "ranged",
@@ -749,6 +766,7 @@ export class Expansion {
       payload === "mirv" ? "mirv" : "icbm",
       720,
       payload === "mirv" ? 4 : 0,
+      payload,
     );
     return null;
   }
@@ -800,7 +818,13 @@ export class Expansion {
     for (const s of this.world.squads)
       if (this.unit(s).role === "launcher")
         s.deploymentTicks =
-          !s.moved && !s.fighting && s.order.type === "hold"
+          s.troops > 0 &&
+          !s.refit &&
+          !s.charge &&
+          s.embarkedOn === null &&
+          !s.moved &&
+          !s.fighting &&
+          s.order.type === "hold"
             ? Math.min(100, (s.deploymentTicks ?? 0) + 1)
             : 0;
     this.advanceAircraft();
@@ -874,7 +898,7 @@ export class Expansion {
       } else {
         if (a.definitionId === "bomber")
           this.battle.fire(
-            a,
+            { ...a, domain: "aircraft" },
             a.target,
             {
               channel: "ranged",
@@ -902,6 +926,8 @@ export class Expansion {
             2500,
             "bomb",
             20,
+            0,
+            "bomb",
           );
         a.state = "returning";
       }
@@ -1250,6 +1276,7 @@ export class Expansion {
   }
   snapshot(): ExpansionSnapshot {
     return {
+      armies: this.armies.snapshot(),
       rulesetId: "ages-v1",
       contentHash: CONTENT_HASH,
       events: this.events,
@@ -1258,6 +1285,7 @@ export class Expansion {
       progression: this.progression.states,
       inventories: this.supply.inventories,
       production: this.supply.jobs,
+      productionPlans: this.supply.productionPlans(),
       deposits: this.supply.deposits,
       diplomacy: this.diplomacy.state,
       traders: this.trade.actors.map(

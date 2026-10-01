@@ -1,6 +1,7 @@
 import type { GameMap } from "../../core/game/GameMap";
 import { UNIT, VESSEL } from "../content/Units";
 import { promotionLevel } from "../domain/Combat";
+import type { Age } from "../domain/Definitions";
 import { unitEffects } from "../domain/ResearchEffects";
 import type { EnvironmentProfile } from "../Environment";
 import type { MapGeography } from "../Geography";
@@ -12,6 +13,7 @@ import {
   SHIP_RULES,
   SQUAD_RULES,
 } from "../Rules";
+import { ownerUiAge } from "./AgeUiTheme";
 import { buildingArtworkId } from "./ArtworkCatalog";
 import { BuildingArtwork } from "./BuildingArtwork";
 import { BuildingMarkers } from "./BuildingMarkers";
@@ -19,6 +21,7 @@ import { CampLossPresentation } from "./CampLossPresentation";
 import { EraArtwork } from "./EraArtwork";
 import { COLORS } from "./FactionColors";
 import { FormationArtwork } from "./FormationArtwork";
+import { ImpactPresentation } from "./ImpactPresentation";
 import {
   buildingSymbol,
   shipSymbol,
@@ -26,6 +29,8 @@ import {
   traderSymbol,
 } from "./MapSymbols";
 import { PaintedTerrain } from "./PaintedTerrain";
+import { PromotionArtwork } from "./PromotionArtwork";
+import { ResourceViewModel } from "./ResourceViewModel";
 import { RoadArtwork } from "./RoadArtwork";
 import { StrategicSprites } from "./StrategicSprites";
 import { TerritoryLayer } from "./TerritoryLayer";
@@ -51,6 +56,8 @@ const SELECTED_UNIT_COLOR = "#c4ff36";
 export class Renderer {
   private readonly eraArtwork = new EraArtwork();
   private readonly roadArtwork = new RoadArtwork();
+  private readonly promotionArtwork = new PromotionArtwork();
+  private readonly impacts = new ImpactPresentation();
   private legacyArtwork?: UnitArtwork;
   private get artwork(): UnitArtwork {
     return (this.legacyArtwork ??= new UnitArtwork());
@@ -71,6 +78,7 @@ export class Renderer {
     remainingTicks: number;
   }[] = [];
   private snapshot?: Snapshot;
+  private resources?: ResourceViewModel;
   private occupiedBuildingTiles = new Set<number>();
   private previous?: Snapshot;
   private previousSquads = new Map<number, Snapshot["squads"][number]>();
@@ -90,6 +98,15 @@ export class Renderer {
   selected = new Set<number>();
   selectedShips = new Set<number>();
   selectedAircraft = new Set<number>();
+  armyAt(x: number, y: number): number | null {
+    for (const army of this.snapshot?.expansion?.armies ?? []) {
+      if (army.playerId !== 1) continue;
+      const p = this.screen(army.x / FIXED, army.y / FIXED);
+      if (Math.abs(x - p.x) <= 14 && Math.abs(y - (p.y - 32)) <= 13)
+        return army.id;
+    }
+    return null;
+  }
   aircraftAt(x: number, y: number): number | null {
     let best: number | null = null,
       distance = 15 ** 2;
@@ -105,6 +122,7 @@ export class Renderer {
     return best;
   }
   selectedBuilding: number | null = null;
+  selectedDeposit: number | null = null;
   placement?: { tile: number; type: BuildingType; friendly: boolean };
   buildSites: number[] = [];
   selectionBox?: { x1: number; y1: number; x2: number; y2: number };
@@ -131,10 +149,12 @@ export class Renderer {
     this.territory = new TerritoryLayer(map.width(), map.height(), RGB);
     this.buildingStacks = [];
     this.snapshot = undefined;
+    this.resources = undefined;
     this.previous = undefined;
     this.previousSquads.clear();
     this.currentSquads.clear();
     this.presentation.reset();
+    this.impacts.reset();
     this.traderPresentation.reset();
     this.campLoss.reset();
     this.animationClock.reset();
@@ -142,6 +162,7 @@ export class Renderer {
     this.selectedShips.clear();
     this.selectedAircraft.clear();
     this.selectedBuilding = null;
+    this.selectedDeposit = null;
     this.placement = undefined;
     this.buildSites = [];
     this.strategic.begin();
@@ -162,6 +183,13 @@ export class Renderer {
           (this.cargoCounts.get(squad.embarkedOn) ?? 0) + 1,
         );
     this.snapshot = snapshot;
+    this.impacts.update(snapshot.expansion?.projectiles ?? [], snapshot.tick);
+    this.resources = snapshot.expansion
+      ? new ResourceViewModel(
+          snapshot.expansion.progression[1].age,
+          snapshot.expansion.inventories[1],
+        )
+      : undefined;
     this.occupiedBuildingTiles = new Set(snapshot.buildings.map((b) => b.tile));
     for (const id of this.selectedAircraft)
       if (
@@ -226,16 +254,21 @@ export class Renderer {
   setHudBottomInset(pixels: number): void {
     if (this.hudBottomInset === pixels) return;
     this.hudBottomInset = Math.max(0, pixels);
-    this.home();
+    if (this.map) this.updateFitScale();
+  }
+
+  private updateFitScale(): void {
+    const usableHeight = Math.max(100, this.height - this.hudBottomInset);
+    this.fitScale = Math.min(
+      (this.width - 52) / this.map!.width(),
+      (usableHeight - 52) / this.map!.height(),
+    );
   }
 
   home(): void {
     if (!this.map) return;
     const usableHeight = Math.max(100, this.height - this.hudBottomInset);
-    this.fitScale = Math.min(
-      (this.width - 52) / this.map.width(),
-      (usableHeight - 52) / this.map.height(),
-    );
+    this.updateFitScale();
     this.scale = this.fitScale;
     this.offsetX = (this.width - this.map.width() * this.scale) / 2;
     this.offsetY = (usableHeight - this.map.height() * this.scale) / 2;
@@ -375,6 +408,27 @@ export class Renderer {
     }
     return nearest;
   }
+  depositAt(x: number, y: number): number | null {
+    let nearest: number | null = null,
+      distance = Math.max(7, this.scale / 2) ** 2;
+    for (const d of this.snapshot?.expansion?.deposits ?? []) {
+      if (
+        !this.resources?.depositVisible(d.resource) ||
+        this.occupiedBuildingTiles.has(d.tile)
+      )
+        continue;
+      const p = this.screen(
+          this.map!.x(d.tile) + 0.5,
+          this.map!.y(d.tile) + 0.5,
+        ),
+        delta = (p.x - x) ** 2 + (p.y - y) ** 2;
+      if (delta < distance) {
+        distance = delta;
+        nearest = d.id;
+      }
+    }
+    return nearest;
+  }
 
   private drawBuilding(
     type: BuildingType,
@@ -385,6 +439,7 @@ export class Renderer {
     ghost = false,
     definitionId?: string,
     elapsedTicks = 0,
+    ownerAge?: Age,
   ): number {
     const ctx = this.ctx;
     const era = definitionId
@@ -399,7 +454,13 @@ export class Renderer {
     );
     const marker = artwork
       ? undefined
-      : this.buildingMarkers.get(type, color, size, window.devicePixelRatio);
+      : this.buildingMarkers.get(
+          type,
+          color,
+          size,
+          window.devicePixelRatio,
+          ownerAge,
+        );
     ctx.save();
     ctx.strokeStyle = selected ? "#fff" : color;
     ctx.lineWidth = selected ? 2.5 : 1.5;
@@ -615,6 +676,7 @@ export class Renderer {
           ? buildingArtworkId(building.type, building.age)
           : undefined,
         snapshot.tick,
+        ownerUiAge(snapshot, building.playerId),
       );
       if (count > 1) {
         ctx.font = "bold 10px system-ui";
@@ -652,6 +714,9 @@ export class Renderer {
         false,
         0,
         true,
+        undefined,
+        0,
+        ownerUiAge(snapshot, 1),
       );
     }
 
@@ -861,14 +926,20 @@ export class Renderer {
         );
       }
       if (selected && (squad.xp ?? 0) > 0) {
-        ctx.font = "8px system-ui";
-        ctx.textAlign = "center";
-        ctx.fillStyle = "#f4d87d";
-        ctx.fillText(
-          "★".repeat(promotionLevel(squad.xp ?? 0)),
-          p.x,
-          p.y - symbol.height / 2 - 12,
-        );
+        const level = promotionLevel(squad.xp ?? 0),
+          rank = this.promotionArtwork.get(level);
+        if (rank) {
+          const width =
+              level > 5 ? 16 : Math.min(40, Math.max(24, symbol.width)),
+            height = level > 5 ? 16 : width / 4;
+          ctx.drawImage(
+            rank,
+            p.x - width / 2,
+            p.y - symbol.height / 2 - height - 4,
+            width,
+            height,
+          );
+        }
       }
       const radius = 4 + (2 * squad.troops) / 1_000;
       const spriteSize = this.spriteSize(squad.troops);
@@ -1215,7 +1286,11 @@ export class Renderer {
     }
     if (snapshot.expansion) {
       for (const deposit of snapshot.expansion.deposits)
-        if (this.scale >= 3 && !this.occupiedBuildingTiles.has(deposit.tile)) {
+        if (
+          this.scale >= 3 &&
+          this.resources?.depositVisible(deposit.resource) &&
+          !this.occupiedBuildingTiles.has(deposit.tile)
+        ) {
           const p = this.screen(
             this.map.x(deposit.tile) + 0.5,
             this.map.y(deposit.tile) + 0.5,
@@ -1290,6 +1365,13 @@ export class Renderer {
         }
         ctx.restore();
       }
+      const impactTick = this.impacts.clock(
+          visualTick,
+          now,
+          snapshot.winner !== null,
+        ),
+        impactVisuals = this.impacts.frames(impactTick),
+        impactIds = new Set(impactVisuals.map((e) => e.id));
       for (const projectile of snapshot.expansion.projectiles) {
         if (
           (projectile.kind === "mirv" || projectile.damage === 0) &&
@@ -1297,6 +1379,51 @@ export class Renderer {
         )
           continue;
         const p = this.screen(projectile.x / FIXED, projectile.y / FIXED);
+        const artworkId =
+          projectile.kind === "mirv"
+            ? "mirv"
+            : projectile.kind === "warhead"
+              ? "mirv-warhead"
+              : undefined;
+        const frame =
+          artworkId && !projectile.impacted
+            ? this.eraArtwork.get(
+                artworkId,
+                "flight",
+                visualTick - projectile.tick,
+              )
+            : undefined;
+        if (frame) {
+          const size = Math.max(
+            12,
+            (projectile.diameter / FIXED) * this.scale * 2,
+          );
+          ctx.save();
+          ctx.translate(p.x, p.y);
+          ctx.rotate(
+            Math.atan2(
+              projectile.toY - projectile.fromY,
+              projectile.toX - projectile.fromX,
+            ) -
+              Math.PI / 2 +
+              this.eraArtwork.facing(artworkId!),
+          );
+          ctx.imageSmoothingEnabled = true;
+          ctx.drawImage(
+            frame.source,
+            frame.x,
+            frame.y,
+            frame.width,
+            frame.height,
+            -size / 2,
+            -size / 2,
+            size,
+            size,
+          );
+          ctx.restore();
+          continue;
+        }
+        if (projectile.impacted && impactIds.has(projectile.id)) continue;
         ctx.beginPath();
         ctx.arc(
           p.x,
@@ -1313,6 +1440,40 @@ export class Renderer {
           ctx.strokeStyle = "#eab16a88";
           ctx.stroke();
         }
+      }
+      for (const impact of impactVisuals) {
+        const p = this.screen(impact.x / FIXED, impact.y / FIXED),
+          size = Math.max(12, (impact.radius / FIXED) * this.scale * 2);
+        if (!visibleInViewport(p, size / 2, this.width, this.height)) continue;
+        const frame = this.eraArtwork.get(
+          impact.artworkId,
+          impact.clip,
+          impactTick - impact.start,
+        );
+        if (!frame) {
+          ctx.beginPath();
+          ctx.arc(p.x, p.y, size / 2, 0, Math.PI * 2);
+          ctx.fillStyle = "#ffb45544";
+          ctx.fill();
+          continue;
+        }
+        ctx.save();
+        ctx.translate(p.x, p.y);
+        if (impact.clip === "separation")
+          ctx.rotate(impact.angle + this.eraArtwork.facing(impact.artworkId));
+        ctx.imageSmoothingEnabled = true;
+        ctx.drawImage(
+          frame.source,
+          frame.x,
+          frame.y,
+          frame.width,
+          frame.height,
+          -size / 2,
+          -size / 2,
+          size,
+          size,
+        );
+        ctx.restore();
       }
       for (const aircraft of snapshot.expansion.aircraft) {
         const p = this.screen(aircraft.x / FIXED, aircraft.y / FIXED);
@@ -1372,6 +1533,26 @@ export class Renderer {
           p.y + 15,
         );
       }
+    }
+    for (const army of snapshot.expansion?.armies ?? []) {
+      const p = this.screen(army.x / FIXED, army.y / FIXED);
+      p.y -= 32;
+      if (!visibleInViewport(p, 26, this.width, this.height)) continue;
+      const selected = army.memberIds.some((id) => this.selected.has(id));
+      ctx.fillStyle = "#132932ee";
+      ctx.strokeStyle = selected
+        ? SELECTED_UNIT_COLOR
+        : COLORS[army.playerId % COLORS.length];
+      ctx.lineWidth = selected ? 2 : 1;
+      ctx.fillRect(p.x - 13, p.y - 12, 26, 24);
+      ctx.strokeRect(p.x - 13, p.y - 12, 26, 24);
+      ctx.fillStyle = COLORS[army.playerId % COLORS.length];
+      ctx.fillRect(p.x - 7, p.y - 7, 2, 14);
+      ctx.fillRect(p.x - 5, p.y - 7, 12, 6);
+      ctx.fillStyle = "#f4eee0";
+      ctx.font = "bold 8px system-ui";
+      ctx.textAlign = "center";
+      ctx.fillText(String(army.memberIds.length), p.x + 2, p.y + 10);
     }
     // These are simulation-issued volleys, not a second damage calculation.
     for (const volley of snapshot.volleys) {

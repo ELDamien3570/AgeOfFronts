@@ -99,6 +99,36 @@ export class Fortifications {
       this.blocked(tile, owner),
     );
   }
+  blockingTilesOnSweep(
+    from: { x: number; y: number },
+    to: { x: number; y: number },
+    owner: number,
+    radius: number,
+    originTile?: number,
+  ): number[] {
+    if (!this.hasObstacles) return [];
+    const candidates = new Set<number>(),
+      extent = Math.ceil(radius / FIXED);
+    for (const centre of this.segmentTiles(from, to)) {
+      const x = this.map.x(centre),
+        y = this.map.y(centre);
+      for (
+        let yy = Math.max(0, y - extent);
+        yy <= Math.min(this.map.height() - 1, y + extent);
+        yy++
+      )
+        for (
+          let xx = Math.max(0, x - extent);
+          xx <= Math.min(this.map.width() - 1, x + extent);
+          xx++
+        ) {
+          const tile = this.map.ref(xx, yy);
+          if (tile !== originTile && this.blocked(tile, owner))
+            candidates.add(tile);
+        }
+    }
+    return [...candidates];
+  }
   towerPlan(
     tile: number,
     owner: number,

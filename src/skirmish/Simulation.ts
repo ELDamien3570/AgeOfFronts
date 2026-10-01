@@ -5,7 +5,7 @@ import { CoastIndex } from "./CoastIndex";
 import { ConquestCredit, DamageLedger } from "./Conquest";
 import { constructionRejection } from "./Construction";
 import { defaultUnit, UNIT, VESSEL } from "./content/Units";
-import { damageAmount, promotionLevel } from "./domain/Combat";
+import { damageAmount, scaledAttack } from "./domain/Combat";
 import { commandRejection } from "./domain/CommandPolicy";
 import { AGES, type Age } from "./domain/Definitions";
 import { Expansion } from "./domain/Expansion";
@@ -351,7 +351,14 @@ export class Skirmish {
     )
       return "Tribes defend their camp without building an economy or navy";
     const extended = this.expansion?.command(player, command);
-    if (extended !== undefined) return extended;
+    if (extended !== undefined) {
+      if (
+        extended === null &&
+        (command.type === "charge" || command.type === "attack-structure")
+      )
+        this.expansion!.armies.observeOrder(command.squadIds);
+      return extended;
+    }
     if (command.type === "recruit")
       return this.recruit(player, command.buildingId, command.definitionId);
     if (command.type === "build")
@@ -445,6 +452,12 @@ export class Skirmish {
       selected.some((s) => this.owners[this.tileOf(s!)] !== player.id)
     )
       return "Move every selected squad onto friendly territory before replenishing";
+    const armyOrder = this.expansion?.armies.groupOrder(
+      command.squadIds,
+      order,
+      append,
+    );
+    if (armyOrder !== undefined) return armyOrder;
     const orders: { squad: Squad; order: Order; path: number[] }[] = [];
     let destinations: Map<number, WorldPoint> | null = null;
     let groupPaths: (number[] | null)[] = [];
@@ -515,6 +528,7 @@ export class Skirmish {
         this.activateOrder(entry.squad, entry.order, entry.path);
       }
     }
+    this.expansion?.armies.observeOrder(command.squadIds, order, append);
     return null;
   }
 
@@ -1191,11 +1205,11 @@ export class Skirmish {
 
   private fightShips(): void {
     const hits = new DamageLedger();
-    const contributions = new Map<number, { id: number; damage: number }[]>();
+    const contributions = new Map<number, { id: string; damage: number }[]>();
     const hitShip = (source: Ship, target: Ship, amount: number) => {
       hits.add(target.id, source.playerId, amount);
       const list = contributions.get(target.id) ?? [];
-      list.push({ id: source.id, damage: amount });
+      list.push({ id: `ship:${source.id}`, damage: amount });
       contributions.set(target.id, list);
     };
     this.navalSpatial.rebuild(this.ships);
@@ -1205,15 +1219,10 @@ export class Skirmish {
       if (ship.refit) continue;
       const vessel = this.expansion?.vessel(ship);
       const profile = vessel?.attack;
-      const scaledDamage = profile
-        ? Math.floor(
-            ((profile.damage * ship.health) / vessel!.health) *
-              (1 +
-                [0, 0.03, 0.06, 0.1, 0.13, 0.16, 0.2][
-                  promotionLevel(ship.xp ?? 0) - 1
-                ]),
-          )
-        : 0;
+      const effectiveAttack = profile
+        ? scaledAttack(profile, ship.health, vessel!.health, ship.xp)
+        : undefined;
+      const scaledDamage = effectiveAttack?.damage ?? 0;
       const navalDamage = () =>
         profile
           ? damageAmount(
@@ -1318,7 +1327,12 @@ export class Skirmish {
         if (this.tick < (ship.nextAttackTick ?? 0)) continue;
         ship.nextAttackTick = this.tick + vessel!.attack!.reloadTicks;
         if (vessel!.attack!.projectile) {
-          this.expansion.battle.fire(ship, p, vessel!.attack!, scaledDamage);
+          this.expansion.battle.fire(
+            { ...ship, domain: "ship" },
+            p,
+            effectiveAttack!,
+            scaledDamage,
+          );
           continue;
         }
         if ("tile" in explicit) {
@@ -1337,6 +1351,7 @@ export class Skirmish {
               Math.round((1000 * ship.health) / vessel!.health),
               ship.xp,
             ),
+            "ship",
           );
           continue;
         }
@@ -1351,9 +1366,9 @@ export class Skirmish {
       }
       if (vessel?.attack?.projectile) {
         this.expansion!.battle.fire(
-          ship,
+          { ...ship, domain: "ship" },
           target,
-          vessel.attack,
+          effectiveAttack!,
           Math.max(1, scaledDamage),
         );
         continue;
@@ -1425,7 +1440,17 @@ export class Skirmish {
     this.spatial.rebuild(land);
     // At most 24 squad route jobs per fixed tick. Requests retain FIFO priority
     // while their targets refresh; queued units keep following their old path.
-    this.routeWork.drain(24);
+    // Army slots and their connector jobs share one occupancy index for this
+    // batch, rather than rebuilding a whole-world grid for every army/member.
+    if (this.expansion?.armies.armies.length) {
+      this.formations.beginBatch(this.squads);
+      try {
+        this.expansion.armies.step();
+        this.routeWork.drain(24);
+      } finally {
+        this.formations.endBatch();
+      }
+    } else this.routeWork.drain(24);
     this.heldSpatial.rebuild(land.filter((s) => this.holding(s)));
     const intents: MovementIntent[] = [];
     for (const squad of land) {
@@ -1475,6 +1500,7 @@ export class Skirmish {
     this.capture();
     this.processBoarding();
     this.checkWinner();
+    this.expansion?.armies.reconcile();
     this.tickSquads = undefined;
   }
 
@@ -1536,6 +1562,10 @@ export class Skirmish {
   }
 
   movementSpeed(squad: Squad): number {
+    const ordinary = this.ordinarySpeed(squad);
+    return this.expansion?.armies.speed(squad, ordinary) ?? ordinary;
+  }
+  ordinarySpeed(squad: Squad): number {
     if (squad.refit || squad.charge?.phase === "recovery") return 0;
     let speed = Math.floor(
       (terrainSpeed(this.map, this.tileOf(squad)) *
@@ -1561,6 +1591,78 @@ export class Skirmish {
       }
     }
     return speed;
+  }
+
+  unit(squad: Squad) {
+    return this.expansion!.unit(squad);
+  }
+  armyBlocked(tile: number, playerId: number): boolean {
+    return this.expansion?.fortifications.blocked(tile, playerId) ?? false;
+  }
+  nearbyArmyEnemies(
+    point: WorldPoint,
+    radius: number,
+    playerId: number,
+  ): Squad[] {
+    const nearby: Squad[] = [];
+    this.spatial.query(point.x, point.y, radius, nearby, playerId);
+    return nearby.filter(
+      (s) =>
+        s.embarkedOn === null && !s.refit && this.hostile(playerId, s.playerId),
+    );
+  }
+  armySlots(
+    tile: number,
+    members: Squad[],
+    ideals: Map<number, WorldPoint>,
+    reserved: WorldPoint[] = [],
+  ): Map<number, WorldPoint> | null {
+    return this.formations.plan(
+      tile,
+      members.map((squad) => ({ squad, origin: squad })),
+      this.squads,
+      40 * FIXED,
+      ideals,
+      (t) =>
+        this.armyBlocked(t, members[0].playerId) ||
+        reserved.some(
+          (p) =>
+            distanceSquared(tilePoint(this.map, t), p) < (FIXED * 1.2) ** 2,
+        ),
+    );
+  }
+  queueArmyRoute(key: string, work: () => void): void {
+    this.routeWork.request(key, 1, work);
+  }
+  cancelArmyRoute(key: string): void {
+    this.routeWork.cancel(key);
+  }
+  setArmyMove(
+    squad: Squad,
+    point: WorldPoint,
+    path: number[],
+    via: WorldPoint[] = [],
+  ): void {
+    const destination = via[0] ?? point;
+    this.activateOrder(
+      squad,
+      { type: "move", tile: pointTile(this.map, destination), ...destination },
+      path,
+    );
+    if (via.length)
+      squad.queuedOrders = [...via.slice(1), point].map((p) => ({
+        type: "move",
+        tile: pointTile(this.map, p),
+        ...p,
+      }));
+  }
+  setArmyAttack(squad: Squad, targetId: number): void {
+    if (squad.order.type !== "attack" || squad.order.targetId !== targetId)
+      this.activateOrder(squad, { type: "attack", targetId });
+  }
+  setArmyHold(squad: Squad): void {
+    if (squad.order.type !== "hold")
+      this.activateOrder(squad, { type: "hold" });
   }
 
   private moveDestination(order: Extract<Order, { type: "move" }>): WorldPoint {

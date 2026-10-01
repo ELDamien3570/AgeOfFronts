@@ -1,5 +1,10 @@
 import { DEFAULT_CULTURE } from "../content/Catalog";
-import { ADVANCES, TECHNOLOGIES, TECHNOLOGY } from "../content/Technology";
+import {
+  ADVANCES,
+  TECHNOLOGIES,
+  TECHNOLOGY,
+  treeWorkload,
+} from "../content/Technology";
 import type { Player } from "../Protocol";
 import { AGES, TREES, type ProgressionState, type Tree } from "./Definitions";
 export function startingProgression(): ProgressionState {
@@ -39,7 +44,11 @@ export function advanceRejection(
 ): string | null {
   if (state.age === "Modern") return "Modern is the final age";
   if (state.advancement) return "Age advancement already in progress";
-  if (TREES.filter((tree) => treeCompletion(state, tree) === 4).length < 2)
+  if (
+    TREES.filter(
+      (tree) => treeCompletion(state, tree) === treeWorkload(state.age, tree),
+    ).length < 2
+  )
     return "Complete any two current-age trees";
   const price = ADVANCES[AGES.indexOf(state.age)].gold;
   return gold < price ? `Needs ${price - gold} more gold` : null;
