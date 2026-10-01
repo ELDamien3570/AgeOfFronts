@@ -1,4 +1,4 @@
-FROM node:24.18.0-slim AS build
+FROM node:24.18.0-slim@sha256:6f7b03f7c2c8e2e784dcf9295400527b9b1270fd37b7e9a7285cf83b6951452d AS build
 WORKDIR /usr/src/app
 RUN npm install --global --ignore-scripts npm@12.1.0
 COPY package.json package-lock.json ./
@@ -7,12 +7,19 @@ COPY tsconfig.json vite.skirmish.config.ts index.html ./
 COPY resources ./resources
 COPY skirmish ./skirmish
 COPY src ./src
+COPY ["Art/UI Age Themes", "./Art/UI Age Themes/"]
+COPY ["Art/Runtime/Ages", "./Art/Runtime/Ages/"]
+COPY ["Art/Building Markers", "./Art/Building Markers/"]
+COPY ["Art/Building Icons/_prepared/StoneAge", "./Art/Building Icons/_prepared/StoneAge/"]
+COPY ["Art/Formation Icons", "./Art/Formation Icons/"]
+COPY ["Art/Soldier Icons", "./Art/Soldier Icons/"]
+COPY ["Art/Terrain", "./Art/Terrain/"]
 ARG SOURCE_REVISION
 RUN test -n "$SOURCE_REVISION" && mkdir -p build/skirmish && \
     VITE_SKIRMISH_SOURCE_URL="https://github.com/ELDamien3570/AgeOfFronts/tree/$SOURCE_REVISION" \
     npm run build:skirmish && test -s build/skirmish/index.html
 
-FROM node:24.18.0-slim AS runtime
+FROM node:24.18.0-slim@sha256:6f7b03f7c2c8e2e784dcf9295400527b9b1270fd37b7e9a7285cf83b6951452d AS runtime
 WORKDIR /usr/src/app
 COPY --from=build /usr/src/app/node_modules ./node_modules
 COPY --from=build /usr/src/app/build/skirmish ./build/skirmish

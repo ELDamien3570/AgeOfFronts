@@ -13,7 +13,7 @@ git -C "$repo" fetch origin
 GIT_LFS_SKIP_SMUDGE=1 git -C "$repo" checkout --detach "$revision"
 # Artwork and map binaries are Git LFS objects. Avoid fetching the art working
 # library, which is not required for a deployed game.
-git -C "$repo" lfs pull --include='resources/**' --exclude=''
+git -C "$repo" lfs pull --include='resources/**,Art/UI Age Themes/**,Art/Runtime/Ages/**,Art/Building Markers/**,Art/Building Icons/_prepared/StoneAge/**,Art/Formation Icons/**,Art/Soldier Icons/**,Art/Terrain/**' --exclude=''
 cd "$repo"
 compose=(docker compose -f deploy/oracle/compose.yml)
 "${compose[@]}" build app
