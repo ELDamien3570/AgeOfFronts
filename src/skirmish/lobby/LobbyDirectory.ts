@@ -7,6 +7,7 @@ import { createEmpireProfile, type EmpireProfile } from "./EmpireProfile";
 import {
   FRIENDS_MATCH_RULES,
   isLobbyMapId,
+  MAP_CAMP_LIMITS,
   type LobbyMapId,
 } from "./LobbyRules";
 
@@ -99,6 +100,16 @@ export function validateLobbySettings(settings: LobbySettings): LobbySettings {
   )
     throw new Error(
       "Resource density and deposit output must be 1×, 2×, 3× or 5×.",
+    );
+  const limit = MAP_CAMP_LIMITS[settings.mapId]?.[settings.worldSize];
+  if (
+    limit &&
+    limit.regularCost * (settings.slots + settings.aiCount) +
+      limit.tribeCost * settings.tribeCount >
+      limit.budget
+  )
+    throw new Error(
+      `This map is too small at ${settings.worldSize} cells for ${settings.slots} human seats, ${settings.aiCount} AI and ${settings.tribeCount} tribes. Choose fewer seats, AI or tribes, or a larger map size.`,
     );
   if (typeof settings.alliances !== "boolean")
     throw new Error("Choose the alliance rules.");

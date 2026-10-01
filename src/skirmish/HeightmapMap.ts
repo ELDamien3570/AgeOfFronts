@@ -94,7 +94,13 @@ export function decodeHeightmap(
       environmentData,
     ),
     name: `${manifest.name} · ${variant.width}×${variant.height}`,
-    territoryIncomeScale: (variant.width * variant.height) / (250 * 125),
+    // Income is normalised to a 250 x 125 reference map. Smaller maps (Amazon
+    // River at 250 is 250 x 63) use the reference rate instead of a scale below
+    // 1, so each tile earns the same and total income follows the land area.
+    territoryIncomeScale: Math.max(
+      1,
+      (variant.width * variant.height) / (250 * 125),
+    ),
     attribution: {
       label: "Elevation · Mapzen / Nextzen and others",
       url: "https://manticorp.github.io/unrealheightmap/rights.html",

@@ -4,11 +4,16 @@ import {
   HEIGHTMAP_MAPS,
   heightmapDimensions,
 } from "../../src/skirmish/content/Maps";
+import { SpawnSelection } from "../../src/skirmish/domain/SpawnSelection";
 import { latitudeAt } from "../../src/skirmish/Geography";
 import {
   decodeHeightmap,
   type HeightmapManifest,
 } from "../../src/skirmish/HeightmapMap";
+import {
+  defaultLobbySettings,
+  validateLobbySettings,
+} from "../../src/skirmish/lobby/LobbyDirectory";
 import { LOBBY_MAP_IDS } from "../../src/skirmish/lobby/LobbyRules";
 import { LandPaths, WaterPaths } from "../../src/skirmish/Pathfinding";
 import { decodeClimateRegions } from "../../src/skirmish/RegionalClimate";
@@ -286,4 +291,61 @@ describe("reviewed heightmap content contract", () => {
     match.step();
     expect(match.tick).toBe(1);
   });
+});
+
+describe("small Amazon River lobbies", () => {
+  it("starts with a territory income scale of at least 1", () => {
+    const loaded = heightmap("amazon-river", 250);
+    expect(loaded.territoryIncomeScale).toBe(1);
+    const match = new Skirmish(loaded.map, {
+      seed: 3,
+      ...defaultLobbySettings("amazon-river", 250),
+      humanNames: ["A", "B"],
+      tribes: true,
+      ruleset: "ages-v1",
+      territoryIncomeScale: loaded.territoryIncomeScale,
+    });
+    expect(match.players).toHaveLength(2 + 6 + 20);
+  });
+
+  it("only accepts lobbies whose full roster fits on the map", () => {
+    const loaded = heightmap("amazon-river", 250);
+    const base = defaultLobbySettings("amazon-river", 250);
+    expect(validateLobbySettings(base)).toBeTruthy();
+    for (const aiCount of [0, 7, 14]) {
+      // Largest tribe count the rule accepts with all 20 human seats filled.
+      let tribeCount = 30;
+      const settings = () => ({ ...base, aiCount, tribeCount });
+      while (tribeCount > 0) {
+        try {
+          validateLobbySettings(settings());
+          break;
+        } catch {
+          tribeCount--;
+        }
+      }
+      if (tribeCount < 30)
+        expect(() =>
+          validateLobbySettings({ ...settings(), tribeCount: tribeCount + 1 }),
+        ).toThrow("too small");
+      for (let seed = 1; seed <= 6; seed++)
+        expect(() =>
+          new SpawnSelection(loaded.map, {
+            seed,
+            aiCount,
+            tribes: true,
+            tribeCount,
+            humanNames: Array.from({ length: 20 }, (_, i) => `H${i}`),
+          }).resolve(),
+        ).not.toThrow();
+    }
+    // Larger map sizes are not limited.
+    expect(
+      validateLobbySettings({
+        ...defaultLobbySettings("amazon-river", 500),
+        aiCount: 14,
+        tribeCount: 30,
+      }),
+    ).toBeTruthy();
+  }, 60_000);
 });
