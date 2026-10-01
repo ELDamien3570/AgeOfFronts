@@ -58,12 +58,14 @@ function roomCard(
   const online = vm?.online;
   const settings = room?.settings ?? defaultLobbySettings(map.id);
   const title = room?.title ?? map.name;
+  const humans = vm?.directoryHumanCount(room?.id ?? `default-${map.id}`);
   const preview = room
     ? `href="#room=${room.id}" data-room="${room.id}"`
     : `href="#lobby=${map.id}" data-preview="${map.id}"`;
   return `<article class="directory-card" ${room ? `data-custom-id="${room.id}"` : `data-default="${map.id}"`}>
     <a class="directory-map" ${preview} aria-label="${online ? "Join" : "Preview"} ${e(title)} lobby"><img src="${map.image}" alt="${map.name} terrain overview" width="500" height="250" loading="lazy" /><span>${room ? "CUSTOM" : "DEFAULT"}</span></a>
     <div class="directory-card-copy"><h3>${e(title)}</h3><p class="room-owner">${room ? `${flag(room.owner.flagCode, room.owner.name, "owner-flag")}<span>${e(room.owner.name)}</span>` : map.terrain}</p>
+      <div class="directory-human-count" aria-label="${humans ?? "Unknown"} connected humans out of ${settings.slots} slots"><strong>${humans ?? "—"}<small> / ${settings.slots}</small></strong><span>${online ? "HUMANS IN LOBBY" : "HUMANS · LOCAL PREVIEW"}</span></div>
       <p class="directory-meta">${settings.slots} slots <span>·</span> ${settings.countdownSeconds}s timer <span>·</span> ${settings.alliances ? "Alliances allowed" : "Free for all"}</p>
       <div class="directory-card-actions"><a class="lobby-button brass" ${preview}>${online ? "Join lobby" : "Preview lobby"} ${arrow}</a>${room && (!online || vm?.canCloseRoom(room.id)) ? `<button class="close-room" data-remove-room="${room.id}" aria-label="Close ${e(title)} lobby">Close</button>` : `<a class="quiet-link" href="/skirmish/index.html?map=${map.id}" aria-label="Play ${map.name} vs AI">Play vs AI →</a>`}</div>
     </div>

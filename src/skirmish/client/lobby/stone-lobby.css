@@ -64,6 +64,43 @@
     inset 0 0 0 1px var(--age-light),
     0 5px 18px #0009;
 }
+#lobby-app .room-rules {
+  background:
+    linear-gradient(145deg, #ffffff06, #0005) padding-box,
+    linear-gradient(#21271bf0, #21271bf0) padding-box,
+    var(--age-texture) 0 0 / 150px border-box;
+}
+#lobby-app .room-rules .match-rules {
+  background: transparent;
+}
+#lobby-app .match-rules dd {
+  text-align: right;
+  overflow-wrap: anywhere;
+}
+#lobby-app .directory-human-count {
+  display: flex;
+  align-items: center;
+  gap: 14px;
+  margin: 14px 0;
+  padding: 10px 12px;
+  background: #12180ec9;
+  border: 1px solid var(--age-edge);
+  color: var(--brass);
+}
+#lobby-app .directory-human-count strong {
+  font-size: 38px;
+  line-height: 1;
+  font-variant-numeric: tabular-nums;
+  white-space: nowrap;
+}
+#lobby-app .directory-human-count small {
+  font-size: 17px;
+  color: var(--age-muted);
+}
+#lobby-app .directory-human-count > span {
+  font-size: 10px;
+  letter-spacing: 1px;
+}
 #lobby-app :is(.lobby-button, .flag-field button, .flag-choice, .dialog-close) {
   border: 3px solid transparent;
   border-radius: 2px;

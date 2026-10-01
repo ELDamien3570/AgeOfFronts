@@ -89,6 +89,13 @@ export class LobbyViewModel {
         this.guestId
     );
   }
+  directoryHumanCount(roomId: string): number | undefined {
+    if (!this.online) return 0;
+    if (!this.onlineState) return undefined;
+    return this.onlineState.rooms
+      .find((room) => room.id === roomId)
+      ?.members.filter((member) => member.connected).length ?? 0;
+  }
   profile: EmpireProfile = DEFAULT_EMPIRE_PROFILE;
   draftEmpireName = this.profile.name;
   message = "";
