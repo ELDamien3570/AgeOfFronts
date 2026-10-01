@@ -86,6 +86,7 @@ import {
   type GPUResources,
 } from "./utils/GpuResources";
 import { HeatManager } from "./utils/HeatManager";
+import { terrainStyleFromSettings } from "./utils/TerrainStyle";
 
 /** Ghost types that trigger SAM radius overlay (matches upstream SAMRadiusLayer). */
 const SAM_RADIUS_GHOST_TYPES = new Set([
@@ -274,6 +275,7 @@ export class GPURenderer {
       mapW,
       mapH,
       this.terrainColorOverrides(),
+      terrainStyleFromSettings(this.settings.terrain),
     );
 
     // --- Terrain bytes R8UI texture (shared by map-layer passes) ---
@@ -1008,6 +1010,7 @@ export class GPURenderer {
    * settings change needs this explicit rebuild.
    */
   rebuildTerrain(): void {
+    this.terrainPass.setStyle(terrainStyleFromSettings(this.settings.terrain));
     this.terrainPass.setTerrainColors(this.terrainColorOverrides());
   }
 
@@ -1341,7 +1344,7 @@ export class GPURenderer {
     gl.clearColor(bgR / 255, bgG / 255, bgB / 255, 1.0);
     gl.clear(gl.COLOR_BUFFER_BIT);
     gl.disable(gl.BLEND);
-    if (pe.terrain) this.terrainPass.draw(cam);
+    if (pe.terrain) this.terrainPass.draw(cam, this.camera.zoom);
     gl.enable(gl.BLEND);
     gl.blendFunc(gl.SRC_ALPHA, gl.ONE_MINUS_SRC_ALPHA);
     // Map layers sit between terrain and territory.

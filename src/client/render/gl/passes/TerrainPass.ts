@@ -22,10 +22,64 @@ import {
   createTexture2D,
   shaderSrc,
 } from "../utils/GlUtils";
+import { generateNoiseData, NOISE_SIZE } from "../utils/NoiseGen";
 import {
   bakeTerrainFields,
   bakeTerrainFieldsRect,
 } from "../utils/TerrainFields";
+import { LEGACY_TERRAIN_STYLE, TerrainStyle } from "../utils/TerrainStyle";
+
+const UNIFORMS = [
+  "uTerrain",
+  "uFields",
+  "uNoise",
+  "uMapSize",
+  "uTime",
+  "uZoom",
+  "uStylized",
+  "uAnimate",
+  "uShallow",
+  "uDeep",
+  "uFoam",
+  "uRipple",
+  "uFoamStrength",
+  "uZoomFadeStart",
+  "uZoomFadeEnd",
+];
+
+/**
+ * 256x256 RGBA8 tileable value-noise texture (REPEAT, mipmapped). Four
+ * independent channels, generated procedurally with a fixed seed.
+ */
+export function createNoiseTexture(
+  gl: WebGL2RenderingContext,
+  seed = 0x5eed,
+): WebGLTexture {
+  const tex = gl.createTexture()!;
+  gl.bindTexture(gl.TEXTURE_2D, tex);
+  gl.pixelStorei(gl.UNPACK_ALIGNMENT, 1);
+  gl.texImage2D(
+    gl.TEXTURE_2D,
+    0,
+    gl.RGBA8,
+    NOISE_SIZE,
+    NOISE_SIZE,
+    0,
+    gl.RGBA,
+    gl.UNSIGNED_BYTE,
+    generateNoiseData(seed),
+  );
+  gl.generateMipmap(gl.TEXTURE_2D);
+  gl.texParameteri(
+    gl.TEXTURE_2D,
+    gl.TEXTURE_MIN_FILTER,
+    gl.LINEAR_MIPMAP_LINEAR,
+  );
+  gl.texParameteri(gl.TEXTURE_2D, gl.TEXTURE_MAG_FILTER, gl.LINEAR);
+  gl.texParameteri(gl.TEXTURE_2D, gl.TEXTURE_WRAP_S, gl.REPEAT);
+  gl.texParameteri(gl.TEXTURE_2D, gl.TEXTURE_WRAP_T, gl.REPEAT);
+  return tex;
+}
 
 // ---------------------------------------------------------------------------
 // TerrainPass
@@ -38,6 +92,9 @@ export class TerrainPass {
   private fieldsTex: WebGLTexture;
   private vao: WebGLVertexArrayObject;
   private uCamera: WebGLUniformLocation;
+  private noiseTex: WebGLTexture;
+  private style: TerrainStyle;
+  private u: Record<string, WebGLUniformLocation | null> = {};
   private mapW: number;
   private mapH: number;
   // Base ocean (deep water) color; reused by applyTerrainRects and rebuilds.
@@ -57,7 +114,9 @@ export class TerrainPass {
     mapW: number,
     mapH: number,
     terrainColors?: TerrainColorOverrides,
+    style: TerrainStyle = LEGACY_TERRAIN_STYLE,
   ) {
+    this.style = style;
     this.mapW = mapW;
     this.mapH = mapH;
     this.terrainColors = terrainColors;
@@ -67,6 +126,10 @@ export class TerrainPass {
       terrainFragSrc,
     );
     this.uCamera = gl.getUniformLocation(this.program, "uCamera")!;
+    for (const name of UNIFORMS) {
+      this.u[name] = gl.getUniformLocation(this.program, name);
+    }
+    this.noiseTex = createNoiseTexture(gl);
 
     this.tex = createTexture2D(gl, {
       width: mapW,
@@ -89,6 +152,16 @@ export class TerrainPass {
     });
 
     this.vao = createMapQuad(gl, mapW, mapH);
+  }
+
+  /** The tileable noise texture shared with other terrain-aware shaders. */
+  get noise(): WebGLTexture {
+    return this.noiseTex;
+  }
+
+  /** Replace the uniform-only style (live, no re-bake). */
+  setStyle(style: TerrainStyle): void {
+    this.style = style;
   }
 
   /** The RG8 fields texture (R coast distance, G elevation), LINEAR. */
@@ -215,16 +288,41 @@ export class TerrainPass {
   }
 
   /** Render the terrain. Call with depth test disabled, no blending. */
-  draw(cameraMatrix: Float32Array): void {
+  draw(cameraMatrix: Float32Array, zoom = 1): void {
     const gl = this.gl;
+    const s = this.style;
+    const u = this.u;
     gl.useProgram(this.program);
     gl.uniformMatrix3fv(this.uCamera, false, cameraMatrix);
 
     gl.activeTexture(gl.TEXTURE0);
     gl.bindTexture(gl.TEXTURE_2D, this.tex);
+    gl.activeTexture(gl.TEXTURE1);
+    gl.bindTexture(gl.TEXTURE_2D, this.fieldsTex);
+    gl.activeTexture(gl.TEXTURE2);
+    gl.bindTexture(gl.TEXTURE_2D, this.noiseTex);
+    gl.uniform1i(u.uTerrain, 0);
+    gl.uniform1i(u.uFields, 1);
+    gl.uniform1i(u.uNoise, 2);
+
+    gl.uniform2f(u.uMapSize, this.mapW, this.mapH);
+    // Wall-clock seconds (frameTick advances per game tick, not per frame).
+    // Wrapped at 1000 s; motion speeds are chosen so the wrap is seamless.
+    gl.uniform1f(u.uTime, (performance.now() / 1000) % 1000);
+    gl.uniform1f(u.uZoom, zoom);
+    gl.uniform1f(u.uStylized, s.stylized ? 1 : 0);
+    gl.uniform1f(u.uAnimate, s.animate ? 1 : 0);
+    gl.uniform3fv(u.uShallow, s.shallow);
+    gl.uniform3fv(u.uDeep, s.deep);
+    gl.uniform3fv(u.uFoam, s.foam);
+    gl.uniform1f(u.uRipple, s.rippleStrength);
+    gl.uniform1f(u.uFoamStrength, s.foamStrength);
+    gl.uniform1f(u.uZoomFadeStart, s.zoomFadeStart);
+    gl.uniform1f(u.uZoomFadeEnd, s.zoomFadeEnd);
 
     gl.bindVertexArray(this.vao);
     gl.drawArrays(gl.TRIANGLES, 0, 6);
+    gl.activeTexture(gl.TEXTURE0);
   }
 
   dispose(): void {
@@ -232,6 +330,7 @@ export class TerrainPass {
     gl.deleteProgram(this.program);
     gl.deleteTexture(this.tex);
     gl.deleteTexture(this.fieldsTex);
+    gl.deleteTexture(this.noiseTex);
     // VAO + buffer leak is acceptable on dispose (context is being destroyed)
   }
 }

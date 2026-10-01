@@ -224,7 +224,16 @@ export function encodeTerrainTile(
   out[offset] = r;
   out[offset + 1] = g;
   out[offset + 2] = b;
-  out[offset + 3] = 255;
+  // Alpha is 255 in the legacy encoding. The stylized bake uses it as a tile
+  // kind tag read by the terrain shader (which always outputs alpha 1):
+  // 255 = water, 128 = land, 0 = impassable.
+  out[offset + 3] = colors?.stylized
+    ? isLand && magnitude === 31
+      ? 0
+      : isLand
+        ? 128
+        : 255
+    : 255;
 }
 
 export function buildTerrainRGBA(

@@ -53,6 +53,6 @@ describe("stylized water ramp", () => {
     const b = new Uint8Array(4);
     encodeTerrainTile(0x80 | 5, a, 0, { stylized: true });
     encodeTerrainTile(0x80 | 5, b, 0, { stylized: false });
-    expect(Array.from(a)).toEqual(Array.from(b));
+    expect(Array.from(a.subarray(0, 3))).toEqual(Array.from(b.subarray(0, 3)));
   });
 });
