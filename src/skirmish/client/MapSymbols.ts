@@ -1,5 +1,6 @@
 import { buildingFootprintCells } from "../BuildingFootprint";
 import type { BuildingType } from "../Protocol";
+import type { FormationType } from "./FormationArtwork";
 import {
   MAX_MELEE_LUNGE_RATIO,
   SPRITE_FOOTPRINT,
@@ -15,11 +16,16 @@ export function squadSymbol(
   scale: number,
   troops: number,
   hasArtwork: boolean,
+  formation: FormationType = "infantry",
 ) {
   const size = squadSpriteSize(scale, troops);
   const artwork = hasArtwork && size >= SQUAD_ART_MIN_PIXELS;
   const width = artwork ? size : Math.max(6, Math.min(28, size));
-  const height = artwork ? size : (width * 240) / 448;
+  const height = artwork
+    ? size
+    : formation === "siege"
+      ? width
+      : (width * 240) / 448;
   // Hug the standing troop formation; weapon swings extend beyond the pad.
   // Keep selection and viewport bounds independent of this cosmetic circle.
   const underlayRadius = artwork ? size * 0.35 + 1 : 0;
@@ -30,10 +36,16 @@ export function squadSymbol(
     underlayRadius,
     hitRadius: artwork
       ? size * Math.SQRT1_2 + 1.5
-      : Math.hypot(width / 2, (height * 128) / 240),
+      : Math.hypot(
+          width / 2,
+          height * (formation === "siege" ? 0.5 : 128 / 240),
+        ),
     viewRadius: artwork
       ? (size / SPRITE_FOOTPRINT) * Math.SQRT1_2 + size * MAX_MELEE_LUNGE_RATIO
-      : Math.hypot(width / 2, (height * 128) / 240),
+      : Math.hypot(
+          width / 2,
+          height * (formation === "siege" ? 0.5 : 128 / 240),
+        ),
   };
 }
 

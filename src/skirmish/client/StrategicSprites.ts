@@ -1,5 +1,4 @@
-import type { ShipType, SquadType } from "../Protocol";
-type Kind = SquadType | ShipType;
+import type { FormationType as Kind } from "./FormationArtwork";
 interface Frame {
   source: HTMLCanvasElement;
   x: number;
@@ -9,7 +8,14 @@ interface Frame {
   pivotX: number;
   pivotY: number;
 }
-const KINDS: Kind[] = ["infantry", "archer", "cavalry", "transport", "warship"];
+const KINDS: Kind[] = [
+  "infantry",
+  "archer",
+  "cavalry",
+  "transport",
+  "warship",
+  "siege",
+];
 const STRIDE = 16;
 const VERTEX = `#version 300 es
 precision highp float;

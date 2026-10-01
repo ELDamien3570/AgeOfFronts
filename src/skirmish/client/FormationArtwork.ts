@@ -1,6 +1,16 @@
 import type { ShipType, SquadType } from "../Protocol";
+import { UNIT } from "../content/Units";
 
-type FormationType = SquadType | ShipType;
+export type FormationType = SquadType | ShipType | "siege";
+
+export function squadFormationType(squad: {
+  kind: SquadType;
+  definitionId?: string;
+}): FormationType {
+  return UNIT.get(squad.definitionId ?? "")?.role === "siege"
+    ? "siege"
+    : squad.kind;
+}
 const FRAME_SIZE = 128;
 const FILES: Record<FormationType, string> = {
   infantry: new URL(
@@ -13,6 +23,10 @@ const FILES: Record<FormationType, string> = {
   ).href,
   cavalry: new URL(
     "../../../Art/Formation Icons/png/cavalry.png",
+    import.meta.url,
+  ).href,
+  siege: new URL(
+    "../../../Art/Formation Icons/png/siege-catapult.png",
     import.meta.url,
   ).href,
   transport: new URL(
@@ -29,6 +43,7 @@ const FILES: Record<FormationType, string> = {
 // (256, 256); it must survive cropping, especially for the asymmetric ships.
 const LAND_BOUNDS = { x: 32, y: 128, width: 448, height: 240 };
 const SHIP_BOUNDS = { x: 144, y: 16, width: 224, height: 464 };
+const SIEGE_BOUNDS = { x: 32, y: 32, width: 448, height: 448 };
 
 export function tintFormationPixels(
   pixels: Uint8ClampedArray,
@@ -88,7 +103,11 @@ export class FormationArtwork {
       this.tinted.set(key, canvas);
     }
     const bounds =
-      kind === "transport" || kind === "warship" ? SHIP_BOUNDS : LAND_BOUNDS;
+      kind === "transport" || kind === "warship"
+        ? SHIP_BOUNDS
+        : kind === "siege"
+          ? SIEGE_BOUNDS
+          : LAND_BOUNDS;
     return {
       source: canvas,
       x: bounds.x / 4,

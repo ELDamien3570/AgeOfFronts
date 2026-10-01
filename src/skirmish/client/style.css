@@ -166,6 +166,14 @@ kbd {
   pointer-events: none;
   z-index: 1;
 }
+.aircraft-layer {
+  position: absolute;
+  inset: 0;
+  width: 100%;
+  height: 100%;
+  pointer-events: none;
+  z-index: 2;
+}
 #battlefield {
   display: block;
   position: absolute;

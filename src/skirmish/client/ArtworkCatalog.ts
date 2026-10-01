@@ -17,11 +17,12 @@ export interface ArtworkAsset {
 }
 export const ARTWORK_CATALOG: Readonly<Record<string, ArtworkAsset>> = {
   ...manifest,
-  // Approved substitutions for missing Stone Age workshop and trader art.
+  // Approved substitutions for missing Stone Age workshop, trader and ram art.
   // Entity ages, research unlocks, and construction remain domain-owned.
   "building-stoneage-siege-workshop":
     manifest["building-bronzeage-siege-workshop"],
   "stoneage-trader": manifest["bronzeage-trader"],
+  "stoneage-siege": manifest["bronzeage-siege"],
 };
 
 // Resolve authored tiers and the explicit workshop substitution above. Later

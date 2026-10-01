@@ -1,12 +1,41 @@
 import { describe, expect, it } from "vitest";
 import { GameMapImpl } from "../../src/core/game/GameMap";
-import { tintFormationPixels } from "../../src/skirmish/client/FormationArtwork";
-import { shipSymbol } from "../../src/skirmish/client/MapSymbols";
+import { ARTWORK_CATALOG } from "../../src/skirmish/client/ArtworkCatalog";
+import {
+  squadFormationType,
+  tintFormationPixels,
+} from "../../src/skirmish/client/FormationArtwork";
+import { shipSymbol, squadSymbol } from "../../src/skirmish/client/MapSymbols";
 import { UnitPresentation } from "../../src/skirmish/client/UnitPresentation";
 import { FIXED } from "../../src/skirmish/Protocol";
 import { Skirmish } from "../../src/skirmish/Simulation";
 
 describe("formation artwork", () => {
+  it("gives the field ram the siege marker and the earliest authored ram animations without changing its domain identity", () => {
+    expect(
+      squadFormationType({ kind: "archer", definitionId: "stoneage-siege" }),
+    ).toBe("siege");
+    expect(
+      squadFormationType({ kind: "archer", definitionId: "bronzeage-siege" }),
+    ).toBe("siege");
+    expect(
+      squadFormationType({ kind: "archer", definitionId: "stoneage-archer" }),
+    ).toBe("archer");
+    expect(squadFormationType({ kind: "infantry" })).toBe("infantry");
+    const ram = ARTWORK_CATALOG["stoneage-siege"];
+    expect(ram).toBe(ARTWORK_CATALOG["bronzeage-siege"]);
+    expect(ram.facing).toBe("screen-up");
+    for (const clip of ["idle", "movement", "attack"])
+      expect(ram.clips![clip].file).toBe(`bronzeage-siege-${clip}.png`);
+    const symbol = squadSymbol(1, 1000, false, "siege");
+    expect(symbol.height).toBe(symbol.width);
+    expect(symbol.hitRadius).toBeCloseTo(
+      Math.hypot(symbol.width, symbol.height) / 2,
+    );
+    expect(symbol.viewRadius).toBe(symbol.hitRadius);
+    expect(squadSymbol(14, 1000, true, "siege").artwork).toBe(true);
+  });
+
   it("tints white and shaded fields while preserving black symbols and every alpha value", () => {
     const pixels = new Uint8ClampedArray([
       255, 255, 255, 255, 128, 128, 128, 127, 0, 0, 0, 255, 255, 255, 255, 0,

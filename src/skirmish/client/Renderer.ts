@@ -9,6 +9,9 @@ import type { BuildingType, ShipType, Snapshot, SquadType } from "../Protocol";
 import { CAPTURE_RADIUS, FIXED } from "../Protocol";
 import { BUILDING_RULES, SHIP_RULES, SQUAD_RULES } from "../Rules";
 import { ownerUiAge } from "./AgeUiTheme";
+import { AircraftLayer } from "./AircraftLayer";
+import { AircraftPresentation } from "./AircraftPresentation";
+import { AircraftView } from "./AircraftView";
 import { buildingArtworkId } from "./ArtworkCatalog";
 import { BuildingArtwork } from "./BuildingArtwork";
 import { BuildingMarkers } from "./BuildingMarkers";
@@ -25,7 +28,7 @@ import {
 } from "./CombatEffectsViewModel";
 import { EraArtwork } from "./EraArtwork";
 import { COLORS } from "./FactionColors";
-import { FormationArtwork } from "./FormationArtwork";
+import { FormationArtwork, squadFormationType } from "./FormationArtwork";
 import {
   bakeGroundColors,
   rebakeGroundColors,
@@ -43,10 +46,10 @@ import { PaintedTerrain } from "./PaintedTerrain";
 import { PromotionArtwork } from "./PromotionArtwork";
 import { ResourceViewModel } from "./ResourceViewModel";
 import { RoadLayer } from "./RoadLayer";
-import { StrategicSprites } from "./StrategicSprites";
 import type { SpawnSelectionViewModel } from "./SpawnSelectionViewModel";
-import { ownsCamp, TerritoryLabelViewModel } from "./TerritoryLabelViewModel";
+import { StrategicSprites } from "./StrategicSprites";
 import { bakeTerrainFields } from "./TerrainFields";
+import { ownsCamp, TerritoryLabelViewModel } from "./TerritoryLabelViewModel";
 import { TerritoryLayer } from "./TerritoryLayer";
 import { TraderPresentation } from "./TraderPresentation";
 import { PresentationClock, squadSpriteSize } from "./UnitAnimation";
@@ -91,6 +94,10 @@ export class Renderer {
   private readonly formationArtwork = new FormationArtwork();
   private readonly presentation = new UnitPresentation();
   private readonly traderPresentation = new TraderPresentation();
+  private readonly aircraftPresentation = new AircraftPresentation();
+  private readonly aircraftView = new AircraftView();
+  private readonly aircraftLayer: AircraftLayer;
+  private aircraftBlend = 1;
   private readonly animationClock = new PresentationClock();
   private readonly ctx: CanvasRenderingContext2D;
   private readonly strategic: StrategicSprites;
@@ -145,12 +152,14 @@ export class Renderer {
   }
   aircraftAt(x: number, y: number): number | null {
     let best: number | null = null,
-      distance = 15 ** 2;
+      distance = Infinity;
     for (const a of this.snapshot?.expansion?.aircraft ?? []) {
       if (a.playerId !== this.playerId) continue;
-      const p = this.screen(a.x / FIXED, a.y / FIXED),
+      const pose = this.aircraftPresentation.pose(a.id, this.aircraftBlend);
+      if (!pose) continue;
+      const p = this.screen(pose.x / FIXED, pose.y / FIXED),
         d = (p.x - x) ** 2 + (p.y - y) ** 2;
-      if (d < distance) {
+      if (d <= pose.radius ** 2 && d < distance) {
         distance = d;
         best = a.id;
       }
@@ -202,6 +211,7 @@ export class Renderer {
     this.ctx = canvas.getContext("2d")!;
     this.groundLayer = new GroundLayer(canvas);
     this.strategic = new StrategicSprites(canvas);
+    this.aircraftLayer = new AircraftLayer(canvas);
     this.resizeObserver = new ResizeObserver(() => this.resize());
     this.resizeObserver.observe(canvas.parentElement!);
     this.resize();
@@ -251,6 +261,9 @@ export class Renderer {
     this.impacts.reset();
     this.combatMarkers = [];
     this.traderPresentation.reset();
+    this.aircraftPresentation.reset();
+    this.aircraftBlend = 1;
+    this.aircraftLayer.clear();
     this.campLoss.reset();
     this.animationClock.reset();
     this.selected.clear();
@@ -300,6 +313,7 @@ export class Renderer {
         this.selectedAircraft.delete(id);
     this.presentation.update(snapshot);
     this.traderPresentation.update(snapshot);
+    this.aircraftPresentation.update(snapshot);
     const arrived = performance.now();
     if (this.receivedAt) {
       const gap = arrived - this.receivedAt;
@@ -385,6 +399,7 @@ export class Renderer {
     this.nextFrame = 0;
     this.strategic.resize(this.width, this.height, ratio);
     this.groundLayer.resize(this.width, this.height, ratio);
+    this.aircraftLayer.resize(this.width, this.height, ratio);
     this.home();
   }
 
@@ -475,6 +490,7 @@ export class Renderer {
         !!(squad.definitionId
           ? this.eraArtwork.get(squad.definitionId)
           : this.artwork.get(squad.kind)),
+        squadFormationType(squad),
       );
       if (d <= hitRadius ** 2 && d < distance) {
         distance = d;
@@ -503,6 +519,7 @@ export class Renderer {
               !!(s.definitionId
                 ? this.eraArtwork.get(s.definitionId)
                 : this.artwork.get(s.kind)),
+              squadFormationType(s),
             ).viewRadius,
             this.width,
             this.height,
@@ -835,6 +852,7 @@ export class Renderer {
     this.nextFrame =
       now + frameInterval - ((now - this.nextFrame) % frameInterval);
     this.strategic.begin();
+    this.aircraftLayer.clear();
     const ctx = this.ctx;
     ctx.clearRect(0, 0, this.width, this.height);
     const gpuGround = this.groundStyle !== "classic" && this.groundLayer.ready;
@@ -1105,6 +1123,7 @@ export class Renderer {
           (snapshot.tick - (this.previous?.tick ?? snapshot.tick - 1)) * 50,
         );
     const blend = paused ? 1 : Math.min(1, (now - this.receivedAt) / interval);
+    this.aircraftBlend = blend;
     const visualTick = this.animationClock.sample(
       now,
       speed,
@@ -1132,7 +1151,12 @@ export class Renderer {
               squad.kind,
               this.presentation.animation(squad.id, visualTick),
             );
-        const symbol = squadSymbol(this.scale, squad.troops, !!activeImage);
+        const symbol = squadSymbol(
+          this.scale,
+          squad.troops,
+          !!activeImage,
+          squadFormationType(squad),
+        );
         if (
           !visibleInViewport(
             p,
@@ -1339,8 +1363,9 @@ export class Renderer {
           3,
         );
       } else {
+        const formationType = squadFormationType(squad);
         const formation = this.formationArtwork.get(
-          squad.kind,
+          formationType,
           this.strategic.available ? "#ffffff" : COLORS[squad.playerId],
         );
         const angle =
@@ -1350,7 +1375,7 @@ export class Renderer {
         const batched =
           formation &&
           this.strategic.add(
-            squad.kind,
+            formationType,
             formation,
             p.x,
             p.y,
@@ -1362,7 +1387,7 @@ export class Renderer {
           );
         if (formation && !selected && !batched) {
           const marker = this.formationArtwork.heading(
-            squad.kind,
+            formationType,
             COLORS[squad.playerId],
             angle,
             symbol.width,
@@ -1426,7 +1451,11 @@ export class Renderer {
           ctx.fillStyle = "#10212b";
           ctx.font = `bold ${Math.max(8, Math.min(12, symbol.height - 2))}px system-ui`;
           ctx.textAlign = "center";
-          ctx.fillText(SQUAD_RULES[squad.kind].glyph, p.x, p.y + 3);
+          ctx.fillText(
+            formationType === "siege" ? "S" : SQUAD_RULES[squad.kind].glyph,
+            p.x,
+            p.y + 3,
+          );
         }
         // Distant formations retain a strength cue without thousands of text
         // labels competing for space at strategic zoom.
@@ -1853,64 +1882,6 @@ export class Renderer {
         );
         ctx.restore();
       }
-      for (const aircraft of snapshot.expansion.aircraft) {
-        const p = this.screen(aircraft.x / FIXED, aircraft.y / FIXED);
-        if (
-          p.x < -24 ||
-          p.y < -24 ||
-          p.x > this.width + 24 ||
-          p.y > this.height + 24
-        )
-          continue;
-        ctx.save();
-        ctx.translate(p.x, p.y);
-        if (aircraft.target)
-          ctx.rotate(
-            Math.atan2(
-              aircraft.target.y - aircraft.y,
-              aircraft.target.x - aircraft.x,
-            ) +
-              Math.PI / 2,
-          );
-        ctx.beginPath();
-        ctx.moveTo(0, -9);
-        ctx.lineTo(8, 7);
-        ctx.lineTo(0, 3);
-        ctx.lineTo(-8, 7);
-        ctx.closePath();
-        const frame =
-          this.scale >= 5
-            ? this.eraArtwork.get(aircraft.definitionId)
-            : undefined;
-        if (frame)
-          ctx.drawImage(
-            frame.source,
-            frame.x,
-            frame.y,
-            frame.width,
-            frame.height,
-            -14,
-            -14,
-            28,
-            28,
-          );
-        else {
-          ctx.fillStyle = COLORS[aircraft.playerId];
-          ctx.fill();
-        }
-        ctx.strokeStyle = this.selectedAircraft.has(aircraft.id)
-          ? SELECTED_UNIT_COLOR
-          : "#152a35";
-        ctx.stroke();
-        ctx.restore();
-        ctx.font = "8px system-ui";
-        ctx.fillStyle = "#fff";
-        ctx.fillText(
-          aircraft.definitionId === "fighter" ? "F" : "B",
-          p.x,
-          p.y + 15,
-        );
-      }
     }
     for (const army of snapshot.expansion?.armies ?? []) {
       const p = this.screen(army.x / FIXED, army.y / FIXED);
@@ -1993,6 +1964,30 @@ export class Renderer {
       ctx.fillText("Paused", this.width / 2, 40);
     }
     this.strategic.flush();
+    const aircraftCtx = this.aircraftLayer.context;
+    aircraftCtx.globalAlpha = paused ? 0.67 : 1;
+    for (const aircraft of snapshot.expansion?.aircraft ?? []) {
+      const pose = this.aircraftPresentation.pose(aircraft.id, blend);
+      if (!pose) continue;
+      const p = this.screen(pose.x / FIXED, pose.y / FIXED);
+      if (!visibleInViewport(p, pose.radius, this.width, this.height)) continue;
+      this.aircraftView.draw(
+        aircraftCtx,
+        p,
+        pose,
+        this.eraArtwork.get(aircraft.definitionId),
+        COLORS[aircraft.playerId],
+        this.selectedAircraft.has(aircraft.id),
+      );
+      aircraftCtx.font = "8px system-ui";
+      aircraftCtx.fillStyle = "#fff";
+      aircraftCtx.textAlign = "center";
+      aircraftCtx.fillText(
+        aircraft.definitionId === "fighter" ? "F" : "B",
+        p.x,
+        p.y + pose.size / 2 + 8,
+      );
+    }
     return true;
   }
 }
