@@ -97,41 +97,6 @@ export interface TerrainColorOverrides {
   plainsColor?: readonly [number, number, number];
   highlandColor?: readonly [number, number, number];
   mountainColor?: readonly [number, number, number];
-  /**
-   * Opt in to the stylized water ramp (turquoise shallows fading to the deep
-   * colour). Left unset/false the original flat colours are produced exactly.
-   */
-  stylized?: boolean;
-  /** Shallow water colour (stylized only); defaults to render-settings. */
-  shallowColor?: readonly [number, number, number];
-}
-
-/** Default shallow-water colour from render-settings.json. */
-const SHALLOW_WATER_BASE: readonly [number, number, number] = hexToRgb(
-  renderDefaults.terrain.shallowColor,
-)!;
-
-/** Magnitude at which the stylized shallow→deep ramp reaches the deep colour. */
-const WATER_RAMP_MAGNITUDE = 4;
-
-/** Stylized water: shallow→deep ramp by magnitude, then gentle depth darkening. */
-function encodeStylizedWater(
-  magnitude: number,
-  deep: readonly [number, number, number],
-  shallow: readonly [number, number, number],
-  out: Uint8Array,
-  offset: number,
-): void {
-  // Smoothstep over magnitude 0..WATER_RAMP_MAGNITUDE (≈ 0..8 tiles).
-  const t0 = Math.min(1, magnitude / WATER_RAMP_MAGNITUDE);
-  const t = t0 * t0 * (3 - 2 * t0);
-  // Beyond the ramp, keep the old per-depth darkening so open ocean has depth.
-  const dark = Math.max(0, Math.min(magnitude, 10) - WATER_RAMP_MAGNITUDE);
-  for (let c = 0; c < 3; c++) {
-    const v = shallow[c] + (deep[c] - shallow[c]) * t - dark;
-    out[offset + c] = Math.max(0, Math.min(255, Math.round(v)));
-  }
-  out[offset + 3] = 255;
 }
 
 export function encodeTerrainTile(
@@ -195,15 +160,6 @@ export function encodeTerrainTile(
       g = Math.min(255, base[1] + m);
       b = Math.min(255, base[2] + m);
     }
-  } else if (!isLand && colors?.stylized) {
-    encodeStylizedWater(
-      magnitude,
-      oceanColor ?? DEEP_WATER_BASE,
-      colors.shallowColor ?? SHALLOW_WATER_BASE,
-      out,
-      offset,
-    );
-    return;
   } else if (isShoreline) {
     // Shoreline water — computed dynamically by blending 70% ocean color and 30% white
     const base = oceanColor ?? DEEP_WATER_BASE;
@@ -224,16 +180,7 @@ export function encodeTerrainTile(
   out[offset] = r;
   out[offset + 1] = g;
   out[offset + 2] = b;
-  // Alpha is 255 in the legacy encoding. The stylized bake uses it as a tile
-  // kind tag read by the terrain shader (which always outputs alpha 1):
-  // 255 = water, 128 = land, 0 = impassable.
-  out[offset + 3] = colors?.stylized
-    ? isLand && magnitude === 31
-      ? 0
-      : isLand
-        ? 128
-        : 255
-    : 255;
+  out[offset + 3] = 255;
 }
 
 export function buildTerrainRGBA(

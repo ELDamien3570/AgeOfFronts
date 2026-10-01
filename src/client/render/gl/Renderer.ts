@@ -71,7 +71,6 @@ import {
   getPaletteSize,
   hexToRgb,
   MAX_TRAIL_COLORS,
-  type TerrainColorOverrides,
 } from "./utils/ColorUtils";
 import { renderDpr } from "./utils/Dpr";
 import {
@@ -86,7 +85,6 @@ import {
   type GPUResources,
 } from "./utils/GpuResources";
 import { HeatManager } from "./utils/HeatManager";
-import { terrainStyleFromSettings } from "./utils/TerrainStyle";
 
 /** Ghost types that trigger SAM radius overlay (matches upstream SAMRadiusLayer). */
 const SAM_RADIUS_GHOST_TYPES = new Set([
@@ -120,9 +118,6 @@ export class GPURenderer {
 
   // Passes
   private terrainPass: TerrainPass;
-  // Signatures of the last-applied terrain settings (see syncTerrainSettings).
-  private terrainBakeSig = "";
-  private terrainStyleSig = "";
   private territoryPass: TerritoryPass;
   private trailPass: TrailPass;
   private spiralRibbonPass: SpiralRibbonPass;
@@ -277,11 +272,18 @@ export class GPURenderer {
       terrainBytes,
       mapW,
       mapH,
-      this.terrainColorOverrides(),
-      terrainStyleFromSettings(this.settings.terrain),
+      {
+        backgroundColor:
+          hexToRgb(this.settings.terrain.backgroundColor) ?? undefined,
+        oceanColor: hexToRgb(this.settings.terrain.oceanColor) ?? undefined,
+        sandColor: hexToRgb(this.settings.terrain.sandColor) ?? undefined,
+        plainsColor: hexToRgb(this.settings.terrain.plainsColor) ?? undefined,
+        highlandColor:
+          hexToRgb(this.settings.terrain.highlandColor) ?? undefined,
+        mountainColor:
+          hexToRgb(this.settings.terrain.mountainColor) ?? undefined,
+      },
     );
-
-    this.terrainBakeSig = this.terrainBakeSignature();
 
     // --- Terrain bytes R8UI texture (shared by map-layer passes) ---
     this.terrainBytesTex = createTexture2D(gl, {
@@ -494,7 +496,6 @@ export class GPURenderer {
     this.borderStampPass.setDefenseCoverageTex(
       this.defenseCoveragePass.getCoverageTex(),
     );
-    this.applyTerrainStyleToPasses();
 
     // --- Fallout bloom (needs tileTex, heatManager) ---
     this.bloomPass = new FalloutBloomPass(
@@ -1016,47 +1017,15 @@ export class GPURenderer {
    * settings change needs this explicit rebuild.
    */
   rebuildTerrain(): void {
-    this.terrainBakeSig = this.terrainBakeSignature();
-    this.applyTerrainStyleToPasses();
-    this.terrainPass.setTerrainColors(this.terrainColorOverrides());
-  }
-
-  /**
-   * Push the uniform-only terrain settings (stylized look, coast clipping,
-   * coastal borders) to every pass that depends on them. Cheap; safe to call
-   * live whenever `settings.terrain` changes.
-   */
-  applyTerrainStyleToPasses(): void {
-    const t = this.settings.terrain;
-    this.terrainStyleSig = JSON.stringify(t);
-    this.terrainPass.setStyle(terrainStyleFromSettings(t));
-    // Fill/stamp clipping only makes sense with the stylized coastline.
-    this.territoryPass.setCoastClip(
-      t.stylized,
-      this.terrainPass.fields,
-      this.terrainPass.noise,
-    );
-    this.borderStampPass.setCoastClip(
-      t.stylized,
-      this.terrainPass.fields,
-      this.terrainPass.noise,
-    );
-    this.borderPass.setCoastalBorders(t.coastalBorders, this.terrainBytesTex);
-  }
-
-  /** Terrain bake colours/flags from the current `settings.terrain`. */
-  private terrainColorOverrides(): TerrainColorOverrides {
-    const t = this.settings.terrain;
-    return {
-      backgroundColor: hexToRgb(t.backgroundColor) ?? undefined,
-      oceanColor: hexToRgb(t.deepColor) ?? hexToRgb(t.oceanColor) ?? undefined,
-      sandColor: hexToRgb(t.sandColor) ?? undefined,
-      plainsColor: hexToRgb(t.plainsColor) ?? undefined,
-      highlandColor: hexToRgb(t.highlandColor) ?? undefined,
-      mountainColor: hexToRgb(t.mountainColor) ?? undefined,
-      shallowColor: hexToRgb(t.shallowColor) ?? undefined,
-      stylized: t.stylized,
-    };
+    this.terrainPass.setTerrainColors({
+      backgroundColor:
+        hexToRgb(this.settings.terrain.backgroundColor) ?? undefined,
+      oceanColor: hexToRgb(this.settings.terrain.oceanColor) ?? undefined,
+      sandColor: hexToRgb(this.settings.terrain.sandColor) ?? undefined,
+      plainsColor: hexToRgb(this.settings.terrain.plainsColor) ?? undefined,
+      highlandColor: hexToRgb(this.settings.terrain.highlandColor) ?? undefined,
+      mountainColor: hexToRgb(this.settings.terrain.mountainColor) ?? undefined,
+    });
   }
 
   applyConquestEvents(events: ConquestFx[]): void {
@@ -1365,41 +1334,7 @@ export class GPURenderer {
     );
   }
 
-  /**
-   * Pick up live edits of `settings.terrain` (graphics overrides copied in
-   * place, or the debug editor). Settings that change the baked textures
-   * trigger a re-bake; the rest only refresh uniforms, so slider drags stay
-   * cheap. The signatures are small strings, built only from the terrain slice.
-   */
-  private terrainBakeSignature(): string {
-    const t = this.settings.terrain;
-    return [
-      t.stylized,
-      t.backgroundColor,
-      t.oceanColor,
-      t.deepColor,
-      t.shallowColor,
-      t.sandColor,
-      t.plainsColor,
-      t.highlandColor,
-      t.mountainColor,
-    ].join("|");
-  }
-
-  private syncTerrainSettings(): void {
-    const bakeSig = this.terrainBakeSignature();
-    if (bakeSig !== this.terrainBakeSig) {
-      this.rebuildTerrain();
-      return;
-    }
-    const styleSig = JSON.stringify(this.settings.terrain);
-    if (styleSig !== this.terrainStyleSig) {
-      this.applyTerrainStyleToPasses();
-    }
-  }
-
   private drawBaseLayer(cam: Float32Array): void {
-    this.syncTerrainSettings();
     const gl = this.gl;
     const pe = this.settings.passEnabled;
     const [bgR, bgG, bgB] = hexToRgb(this.settings.terrain.backgroundColor) ?? [
@@ -1408,7 +1343,7 @@ export class GPURenderer {
     gl.clearColor(bgR / 255, bgG / 255, bgB / 255, 1.0);
     gl.clear(gl.COLOR_BUFFER_BIT);
     gl.disable(gl.BLEND);
-    if (pe.terrain) this.terrainPass.draw(cam, this.camera.zoom);
+    if (pe.terrain) this.terrainPass.draw(cam);
     gl.enable(gl.BLEND);
     gl.blendFunc(gl.SRC_ALPHA, gl.ONE_MINUS_SRC_ALPHA);
     // Map layers sit between terrain and territory.

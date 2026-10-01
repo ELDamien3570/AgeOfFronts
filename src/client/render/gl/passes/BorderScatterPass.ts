@@ -42,9 +42,6 @@ export class BorderScatterPass {
   private uMapSize: WebGLUniformLocation;
   private uHighlightOwner: WebGLUniformLocation;
   private uHighlightThicken: WebGLUniformLocation;
-  private uCoastalBorders: WebGLUniformLocation;
-  private terrainBytesTex: WebGLTexture | null = null;
-  private coastalBorders = true;
 
   private fbo: WebGLFramebuffer;
   private vao: WebGLVertexArrayObject;
@@ -91,15 +88,9 @@ export class BorderScatterPass {
       "uHighlightThicken",
     )!;
 
-    this.uCoastalBorders = gl.getUniformLocation(
-      this.program,
-      "uCoastalBorders",
-    )!;
-
     gl.useProgram(this.program);
     gl.uniform1i(gl.getUniformLocation(this.program, "uTileTex"), 0);
     gl.uniform1i(gl.getUniformLocation(this.program, "uRelationTex"), 1);
-    gl.uniform1i(gl.getUniformLocation(this.program, "uTerrainBytes"), 2);
 
     this.fbo = gl.createFramebuffer()!;
     gl.bindFramebuffer(gl.FRAMEBUFFER, this.fbo);
@@ -218,14 +209,11 @@ export class BorderScatterPass {
     gl.uniform2f(this.uMapSize, this.mapW, this.mapH);
     gl.uniform1ui(this.uHighlightOwner, this.highlightOwner);
     gl.uniform1i(this.uHighlightThicken, Math.floor(mo.highlightThicken));
-    gl.uniform1i(this.uCoastalBorders, this.coastalBorders ? 1 : 0);
 
     gl.activeTexture(gl.TEXTURE0);
     gl.bindTexture(gl.TEXTURE_2D, this.tileTex);
     gl.activeTexture(gl.TEXTURE1);
     gl.bindTexture(gl.TEXTURE_2D, this.relationTex);
-    gl.activeTexture(gl.TEXTURE2);
-    gl.bindTexture(gl.TEXTURE_2D, this.terrainBytesTex);
 
     gl.bindVertexArray(this.vao);
     gl.drawArrays(gl.POINTS, 0, this.patchCount);
@@ -233,12 +221,6 @@ export class BorderScatterPass {
     gl.bindFramebuffer(gl.FRAMEBUFFER, null);
 
     this.patchCount = 0;
-  }
-
-  /** Terrain bytes (R8UI) and whether coast-adjacent water makes a border. */
-  setCoastalBorders(coastal: boolean, terrainBytesTex: WebGLTexture | null) {
-    this.coastalBorders = coastal || !terrainBytesTex;
-    this.terrainBytesTex = terrainBytesTex;
   }
 
   dispose(): void {

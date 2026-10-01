@@ -8,17 +8,11 @@
 
 import type { RenderSettings } from "../RenderSettings";
 import { getPaletteSize } from "../utils/ColorUtils";
-import {
-  createMapQuad,
-  createProgram,
-  shaderInclude,
-  shaderSrc,
-} from "../utils/GlUtils";
+import { createMapQuad, createProgram, shaderSrc } from "../utils/GlUtils";
 import { TILE_DEFINES } from "../utils/TileCodec";
 
 import borderStampFragSrc from "../shaders/day-night/border-stamp.frag.glsl?raw";
 import borderStampVertSrc from "../shaders/day-night/border-stamp.vert.glsl?raw";
-import coastSrc from "../shaders/terrain/coast.glsl?raw";
 
 export class BorderStampPass {
   private gl: WebGL2RenderingContext;
@@ -29,10 +23,6 @@ export class BorderStampPass {
   private program: WebGLProgram;
   private uCam: WebGLUniformLocation;
   private uMapSize: WebGLUniformLocation;
-  private uCoastClip: WebGLUniformLocation | null;
-  private fieldsTex: WebGLTexture | null = null;
-  private noiseTex: WebGLTexture | null = null;
-  private coastClip = false;
   private uHighlightBrighten: WebGLUniformLocation;
   private uDefenseCheckerDarken: WebGLUniformLocation;
   private uEmbargoTintRatio: WebGLUniformLocation;
@@ -69,7 +59,7 @@ export class BorderStampPass {
     this.program = createProgram(
       gl,
       borderStampVertSrc,
-      shaderSrc(shaderInclude(borderStampFragSrc, "coast", coastSrc), {
+      shaderSrc(borderStampFragSrc, {
         PALETTE_SIZE: getPaletteSize(),
         ...TILE_DEFINES,
       }),
@@ -102,9 +92,6 @@ export class BorderStampPass {
     gl.uniform1i(gl.getUniformLocation(this.program, "uBorderTex"), 2);
     gl.uniform1i(gl.getUniformLocation(this.program, "uAffiliation"), 3);
     gl.uniform1i(gl.getUniformLocation(this.program, "uDefenseCoverageTex"), 4);
-    gl.uniform1i(gl.getUniformLocation(this.program, "uFields"), 5);
-    gl.uniform1i(gl.getUniformLocation(this.program, "uNoise"), 6);
-    this.uCoastClip = gl.getUniformLocation(this.program, "uCoastClip");
 
     this.vao = createMapQuad(gl, mapW, mapH);
   }
@@ -115,17 +102,6 @@ export class BorderStampPass {
   setAffiliationTex(tex: WebGLTexture): void {
     this.affiliationTex = tex;
   }
-  /** Terrain fields + noise and whether to clip stamps to the coastline. */
-  setCoastClip(
-    enabled: boolean,
-    fields: WebGLTexture | null,
-    noise: WebGLTexture | null,
-  ): void {
-    this.coastClip = enabled && !!fields && !!noise;
-    this.fieldsTex = fields;
-    this.noiseTex = noise;
-  }
-
   setDefenseCoverageTex(tex: WebGLTexture): void {
     this.defenseCoverageTex = tex;
   }
@@ -170,13 +146,6 @@ export class BorderStampPass {
       gl.activeTexture(gl.TEXTURE4);
       gl.bindTexture(gl.TEXTURE_2D, this.defenseCoverageTex);
     }
-    gl.uniform1i(this.uCoastClip, this.coastClip ? 1 : 0);
-    // Always bind (or unbind): a sampler2D left pointing at a unit that still
-    // holds another pass's integer texture is a GL sampler-type mismatch.
-    gl.activeTexture(gl.TEXTURE5);
-    gl.bindTexture(gl.TEXTURE_2D, this.coastClip ? this.fieldsTex : null);
-    gl.activeTexture(gl.TEXTURE6);
-    gl.bindTexture(gl.TEXTURE_2D, this.coastClip ? this.noiseTex : null);
 
     gl.bindVertexArray(this.vao);
     gl.drawArrays(gl.TRIANGLES, 0, 6);

@@ -7,9 +7,7 @@ uniform sampler2D uPalette;
 uniform sampler2D uBorderTex;     // RGBA8 — border flags from BorderComputePass
 uniform sampler2D uDefenseCoverageTex; // R8 — 1.0 = defended by same-owner post
 uniform sampler2D uAffiliation;   // 256×2 RGBA8 — affiliation colors (row 0 = border)
-// #include coast
-
-uniform int uCoastClip;           // 1 = clip to the stylized coastline
+uniform vec2 uMapSize;
 uniform int uAltView;
 uniform float uHighlightBrighten;
 uniform float uDefenseCheckerDarken;
@@ -25,10 +23,6 @@ void main() {
   ivec2 tc = ivec2(floor(vWorldPos));
   if (tc.x < 0 || tc.y < 0 || tc.x >= int(uMapSize.x) || tc.y >= int(uMapSize.y)) discard;
 
-  // Fetched in uniform control flow (derivative-based mip selection), before
-  // any per-pixel discard. Must match the terrain pass's coastline.
-  float coastD = uCoastClip != 0 ? coastDistance(vWorldPos) : -1.0;
-
   uint raw = texelFetch(uTileTex, tc, 0).r;
   uint owner = raw & uint(OWNER_MASK);
 
@@ -43,7 +37,6 @@ void main() {
 
   // --- Border stamp: full-brightness border color ---
   if (isBorder && owner != 0u) {
-    if (uCoastClip != 0 && coastD > 0.0) discard;
     vec3 bc;
     if (uAltView != 0) {
       // Alt-view: pure affiliation color from palette row 0

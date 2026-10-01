@@ -182,23 +182,6 @@ export function shaderSrc(
   return source.replace("#version 300 es", `#version 300 es\n${defs}`);
 }
 
-/**
- * Replace a `// #include <name>` marker line with a shared GLSL snippet
- * (e.g. coast.glsl). Throws if the marker is missing so a typo cannot silently
- * drop the shared code.
- */
-export function shaderInclude(
-  source: string,
-  name: string,
-  snippet: string,
-): string {
-  const marker = `// #include ${name}`;
-  if (!source.includes(marker)) {
-    throw new Error(`shader is missing include marker "${marker}"`);
-  }
-  return source.replace(marker, () => snippet);
-}
-
 export interface RenderTarget {
   fbo: WebGLFramebuffer;
   tex: WebGLTexture;

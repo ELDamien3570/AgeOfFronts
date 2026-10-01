@@ -4,8 +4,6 @@ precision highp usampler2D;
 
 uniform usampler2D uTileTex;   // R16UI — tile state per cell
 uniform usampler2D uRelationTex; // R8UI — relationship matrix (ownerA × ownerB)
-uniform usampler2D uTerrainBytes; // R8UI — terrain byte, bit 7 = land
-uniform int uCoastalBorders;   // 1 = water neighbours make a border (legacy)
 uniform vec2 uMapSize;
 uniform uint uHighlightOwner;
 uniform int uHighlightThicken; // Chebyshev radius for highlight expansion
@@ -16,23 +14,6 @@ uint getOwner(ivec2 c) {
   if (c.x < 0 || c.y < 0 || c.x >= int(uMapSize.x) || c.y >= int(uMapSize.y))
     return 0u;
   return texelFetch(uTileTex, c, 0).r & uint(OWNER_MASK);
-}
-
-bool inMap(ivec2 c) {
-  return c.x >= 0 && c.y >= 0 && c.x < int(uMapSize.x) && c.y < int(uMapSize.y);
-}
-
-// True when the neighbour at `c` counts as a different owner for border
-// purposes. With coastal borders off, in-map water does not (owner 0 water is
-// told apart from owner 0 land via the terrain bytes).
-bool foreign(ivec2 c, uint owner) {
-  uint o = getOwner(c);
-  if (o == owner) return false;
-  if (o == 0u && uCoastalBorders == 0 && inMap(c) &&
-      (texelFetch(uTerrainBytes, c, 0).r & 0x80u) == 0u) {
-    return false;
-  }
-  return true;
 }
 
 void main() {
@@ -53,10 +34,7 @@ void main() {
     uint w = getOwner(tc + ivec2(-1,  0));
     uint e = getOwner(tc + ivec2( 1,  0));
 
-    bool isBorder = foreign(tc + ivec2( 0, -1), owner) ||
-                    foreign(tc + ivec2( 0,  1), owner) ||
-                    foreign(tc + ivec2(-1,  0), owner) ||
-                    foreign(tc + ivec2( 1,  0), owner);
+    bool isBorder = (n != owner) || (s != owner) || (w != owner) || (e != owner);
 
     if (isBorder) {
       borderType = 0.5; // normal border
@@ -80,14 +58,14 @@ void main() {
           // Check all tiles at Chebyshev distance d
           for (int i = -d; i <= d; i++) {
             // Top/bottom edges
-            if (foreign(tc + ivec2(i, -d), owner)) { found = true; break; }
-            if (foreign(tc + ivec2(i,  d), owner)) { found = true; break; }
+            if (getOwner(tc + ivec2(i, -d)) != owner) { found = true; break; }
+            if (getOwner(tc + ivec2(i,  d)) != owner) { found = true; break; }
           }
           if (!found) {
             for (int i = -d + 1; i <= d - 1; i++) {
               // Left/right edges (excluding corners already checked)
-              if (foreign(tc + ivec2(-d, i), owner)) { found = true; break; }
-              if (foreign(tc + ivec2( d, i), owner)) { found = true; break; }
+              if (getOwner(tc + ivec2(-d, i)) != owner) { found = true; break; }
+              if (getOwner(tc + ivec2( d, i)) != owner) { found = true; break; }
             }
           }
           if (found) {
