@@ -105,7 +105,7 @@ const ROUTE_EFFORT_LIMIT = 20_000;
 // Fixed-step, integer-position simulation. Browser timing and rendering never
 // determine gameplay. Human and AI players enter through applyCommand().
 export class Skirmish {
-  checkpoint() { return structuredClone({version:1 as const,width:this.map.width(),height:this.map.height(),options:this.options,players:this.players,squads:this.squads,buildings:this.buildings,ships:this.ships,volleys:this.volleys,defenseZones:this.defenseZones,owners:this.owners,claims:this.claims,progress:this.progress,ownedTiles:this.ownedTiles,detours:this.detours,navigationProgress:this.navigationProgress,orderRevisions:this.orderRevisions,activeClaims:this.activeClaims,tick:this.tick,winner:this.winner,combatTicks:this.combatTicks,producedTroops:this.producedTroops,nextId:this.nextId,nextVolleyId:this.nextVolleyId,random:this.random.getState(),forest:forestOf(this.map)?.checkpoint(),routeWork:this.routeWork.checkpoint(),recruitment:this.recruitment.checkpoint(),expansion:this.expansion?.checkpoint(),territoryAbsorption:this.territoryAbsorption.checkpoint(),homeTerritory:this.homeTerritory.checkpoint(),avoidance:this.avoidance.checkpoint(),passageTraffic:this.passageTraffic.checkpoint(),conquest:this.conquest.checkpoint()}); }
+  checkpoint() { return structuredClone({version:1 as const,width:this.map.width(),height:this.map.height(),options:this.options,players:this.players,squads:this.squads,buildings:this.buildings,ships:this.ships,volleys:this.volleys,defenseZones:this.defenseZones,owners:this.owners,claims:this.claims,progress:this.progress,detours:this.detours,navigationProgress:this.navigationProgress,orderRevisions:this.orderRevisions,activeClaims:this.activeClaims,tick:this.tick,winner:this.winner,combatTicks:this.combatTicks,producedTroops:this.producedTroops,nextId:this.nextId,nextVolleyId:this.nextVolleyId,random:this.random.getState(),forest:forestOf(this.map)?.checkpoint(),routeWork:this.routeWork.checkpoint(),recruitment:this.recruitment.checkpoint(),expansion:this.expansion?.checkpoint(),territoryAbsorption:this.territoryAbsorption.checkpoint(),homeTerritory:this.homeTerritory.checkpoint(),avoidance:this.avoidance.checkpoint(),passageTraffic:this.passageTraffic.checkpoint(),conquest:this.conquest.checkpoint()}); }
   restore(saved: ReturnType<Skirmish["checkpoint"]>): void {
     if (saved.version!==1 || saved.width!==this.map.width() || saved.height!==this.map.height() || JSON.stringify(saved.options)!==JSON.stringify(this.options) || Boolean(saved.expansion)!==Boolean(this.expansion)) throw new Error("Checkpoint does not match this simulation");
     const state=structuredClone(saved);
@@ -119,7 +119,7 @@ export class Skirmish {
     if (state.owners.length!==this.owners.length) throw new Error("Invalid checkpoint tile array"); this.owners.set(state.owners);
     if (state.claims.length!==this.claims.length) throw new Error("Invalid checkpoint tile array"); this.claims.set(state.claims);
     if (state.progress.length!==this.progress.length) throw new Error("Invalid checkpoint tile array"); this.progress.set(state.progress);
-    restoreMap(this.ownedTiles,state.ownedTiles);
+    this.rebuildOwnedTiles();
     restoreMap(this.detours,state.detours);
     restoreMap(this.navigationProgress,state.navigationProgress);
     restoreMap(this.orderRevisions,state.orderRevisions);
@@ -177,6 +177,14 @@ export class Skirmish {
   private readonly shoreTransport: ShoreTransport;
   // At most 24 route jobs per tick, and no more than ROUTE_EFFORT_LIMIT units of
   // search effort once a job completes: both are deterministic counters.
+  // With no tower or wall the test is always false, so the unobstructed (and
+  // cacheable) search returns the identical route.
+  private obstacleTest(playerId: number): ((tile: number) => boolean) | undefined {
+    const forts = this.expansion?.fortifications;
+    return forts?.hasObstacles
+      ? (tile) => forts.blocked(tile, playerId)
+      : undefined;
+  }
   private drainRoutes(): void {
     this.routeWork.drain(24, {
       read: () => this.paths.work,
@@ -251,6 +259,7 @@ export class Skirmish {
     this.shoreTransport = new ShoreTransport({
       map, paths: this.paths, squads: this.squads, ships: this.ships,
       blocked: (tile, playerId) => this.expansion?.fortifications.blocked(tile, playerId) ?? false,
+      hasObstacles: () => this.expansion?.fortifications.hasObstacles ?? false,
       slots: (tile, squads, reserved, radius, blocked) => this.formations.plan(tile,
         squads.map(squad => ({squad,origin:squad})),reserved,radius,undefined,blocked),
       activate: (squad, order, path) => this.activateOrder(squad, order, path),
@@ -270,7 +279,7 @@ export class Skirmish {
           const blocked = (t:number) => this.expansion?.fortifications.blocked(t,squad.playerId) ?? false;
           const slots = this.formations.plan(tile,[{squad,origin:squad}],this.squads,undefined,undefined,blocked);
           const point = slots?.get(squad.id);
-          const path = point ? this.paths.find(this.tileOf(squad),pointTile(map,point),blocked) : null;
+          const path = point ? this.paths.find(this.tileOf(squad),pointTile(map,point),this.obstacleTest(squad.playerId)) : null;
           if (point && path !== null) {
             this.activateOrder(squad,{type:"move",tile:pointTile(map,point),...point},path); return;
           }
@@ -605,9 +614,7 @@ export class Skirmish {
           pointTile(this.map, destinations!.get(squad.id)!),
         ),
         order.tile,
-        this.expansion
-          ? (t) => this.expansion!.fortifications.blocked(t, player.id)
-          : undefined,
+        this.obstacleTest(player.id),
       );
     }
     for (let i = 0; i < selected.length; i++) {
@@ -668,9 +675,7 @@ export class Skirmish {
         const path = this.paths.find(
           this.tileOf(squad),
           order.tile,
-          this.expansion
-            ? (t) => this.expansion!.fortifications.blocked(t, squad.playerId)
-            : undefined,
+          this.obstacleTest(squad.playerId),
         );
         if (path === null) {
           const completed = this.expansion?.progression.states[squad.playerId]?.completed ?? [];
@@ -798,6 +803,63 @@ export class Skirmish {
   }
   ownedLand(playerId: number): Iterable<number> {
     return this.ownedTiles.get(playerId) ?? [];
+  }
+  // Ownership sets are derived from `owners`; checkpoints omit them and restore
+  // rebuilds them. Every consumer is therefore independent of insertion order.
+  private rebuildOwnedTiles(): void {
+    this.ownedTiles.clear();
+    for (let tile = 0; tile < this.owners.length; tile++) {
+      const id = this.owners[tile];
+      if (!id) continue;
+      let tiles = this.ownedTiles.get(id);
+      if (!tiles) this.ownedTiles.set(id, (tiles = new Set()));
+      tiles.add(tile);
+    }
+  }
+  ownedLandNearest(playerId: number, anchor: number, limit: number): number[] {
+    // Bounded max-heap of (distance, tile): O(n log limit), no full sort.
+    const distances: number[] = [],
+      tiles: number[] = [];
+    const worse = (a: number, b: number) =>
+      distances[a] > distances[b] ||
+      (distances[a] === distances[b] && tiles[a] > tiles[b]);
+    const swap = (a: number, b: number) => {
+      [distances[a], distances[b]] = [distances[b], distances[a]];
+      [tiles[a], tiles[b]] = [tiles[b], tiles[a]];
+    };
+    const down = (at: number) => {
+      for (;;) {
+        let top = at;
+        const left = 2 * at + 1,
+          right = left + 1;
+        if (left < tiles.length && worse(left, top)) top = left;
+        if (right < tiles.length && worse(right, top)) top = right;
+        if (top === at) return;
+        swap(at, top);
+        at = top;
+      }
+    };
+    for (const tile of this.ownedTiles.get(playerId) ?? []) {
+      const d = this.map.euclideanDistSquared(tile, anchor);
+      if (tiles.length < limit) {
+        distances.push(d);
+        tiles.push(tile);
+        for (let at = tiles.length - 1; at > 0; ) {
+          const parent = (at - 1) >> 1;
+          if (!worse(at, parent)) break;
+          swap(at, parent);
+          at = parent;
+        }
+      } else if (d < distances[0] || (d === distances[0] && tile < tiles[0])) {
+        distances[0] = d;
+        tiles[0] = tile;
+        down(0);
+      }
+    }
+    return tiles
+      .map((tile, i) => ({ tile, d: distances[i] }))
+      .sort((a, b) => a.d - b.d || a.tile - b.tile)
+      .map(({ tile }) => tile);
   }
   hostile(a: number, b: number): boolean {
     return this.expansion ? this.expansion.diplomacy.hostile(a, b) : a !== b;
@@ -1162,9 +1224,7 @@ export class Skirmish {
         path: this.paths.find(
           this.tileOf(squad),
           tile,
-          this.expansion
-            ? (t) => this.expansion!.fortifications.blocked(t, squad.playerId)
-            : undefined,
+          this.obstacleTest(squad.playerId),
         ),
       });
     }
@@ -2179,13 +2239,7 @@ export class Skirmish {
               : this.paths.find(
                   this.tileOf(squad),
                   goal,
-                  this.expansion
-                    ? (t) =>
-                        this.expansion!.fortifications.blocked(
-                          t,
-                          squad.playerId,
-                        )
-                    : undefined,
+                  this.obstacleTest(squad.playerId),
                 );
           squad.path = path === null ? [] : [this.tileOf(squad), ...path];
           squad.nextPathIndex = 0;
@@ -2197,7 +2251,7 @@ export class Skirmish {
         const path = this.paths.find(
           this.tileOf(squad),
           squad.order.tile,
-          (t) => this.expansion!.fortifications.blocked(t, squad.playerId),
+          this.obstacleTest(squad.playerId),
         );
         squad.path = path ?? [];
         squad.nextPathIndex = 0;
@@ -2208,9 +2262,7 @@ export class Skirmish {
         const path = this.paths.find(
           this.tileOf(squad),
           squad.order.tile,
-          this.expansion
-            ? (t) => this.expansion!.fortifications.blocked(t, squad.playerId)
-            : undefined,
+          this.obstacleTest(squad.playerId),
         );
         if (path !== null) {
           squad.path = [this.tileOf(squad), ...path];
@@ -2715,7 +2767,7 @@ export class Skirmish {
         )
           continue;
         const d = this.map.euclideanDistSquared(player.base, t);
-        if (d < distance) {
+        if (d < distance || (d === distance && t < (tile ?? Infinity))) {
           tile = t;
           distance = d;
         }
@@ -2926,7 +2978,9 @@ export class Skirmish {
           actorId: beneficiary,
           otherId: player.id,
         });
-      for (const tile of this.ownedTiles.get(player.id) ?? []) {
+      for (const tile of [...(this.ownedTiles.get(player.id) ?? [])].sort(
+        (a, b) => a - b,
+      )) {
         if (this.owners[tile] !== player.id) continue;
         this.changeOwner(tile, beneficiary);
         this.progress[tile] = 0;

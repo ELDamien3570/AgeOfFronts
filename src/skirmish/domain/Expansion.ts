@@ -66,6 +66,8 @@ export interface ExpansionWorld extends BattleWorld, ArmyWorld {
   buildingsAt(tile: number): readonly Building[];
   tileOf(squad: { x: number; y: number }): number;
   ownedLand(playerId: number): Iterable<number>;
+  /** The `limit` owned tiles closest to `anchor`, ordered by distance then id. */
+  ownedLandNearest(playerId: number, anchor: number, limit: number): number[];
 }
 // Match-level application coordinator; each domain service owns its own rules.
 // All services operate on the same authoritative world, never a parallel game.
@@ -1007,6 +1009,9 @@ export class Expansion {
           });
       }
       const own = this.world.buildings.filter((b) => b.playerId === player.id);
+      // Nearest owned land is order-independent (it is derived from ownership),
+      // so checkpoints never need the per-player tile sets.
+      let nearestOwned: number[] | undefined;
       const incoming: Record<string, number> = {};
       for (const job of Object.values(this.supply.jobs)) {
         if (!job || job.owner !== player.id) continue;
@@ -1071,7 +1076,11 @@ export class Expansion {
                     !own.some((b) => b.tile === d.tile && b.type === type),
                 )
                 .map((d) => d.tile)
-            : Array.from(this.world.ownedLand(player.id)).slice(0, 256);
+            : (nearestOwned ??= this.world.ownedLandNearest(
+                player.id,
+                player.base,
+                256,
+              )).slice();
         for (const tile of candidates.sort(
           (a, b) =>
             this.world.map.euclideanDistSquared(a, player.base) -

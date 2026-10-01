@@ -28,6 +28,9 @@ export class CommitVerifier {
   private ledger: EconomyLedger;
   private encoder = new SnapshotEncoder();
   private committedHash = "";
+  // Joins and reconnects ask for the same baseline until the next commit; a
+  // full-map baseline costs about a second to encode on the largest maps.
+  private baselineCache?: { hash: string; state: EncodedState };
   private runtimeHash = "";
   private prepared?: {
     hash: string;
@@ -207,14 +210,20 @@ export class CommitVerifier {
   }
   /** A new subscriber receives a full presentation baseline, never an unpublished delta. */
   async baseline(): Promise<EncodedState> {
+    const cached = this.baselineCache;
+    if (cached && cached.hash === this.committedHash) return cached.state;
     if (this.runtimeHash !== this.committedHash)
       this.runtime.restore(this.committed);
     this.runtimeHash = this.committedHash;
-    return encodeState(
+    const hash = this.committedHash;
+    const state = await encodeState(
       new SnapshotEncoder().encode(
         this.runtime.match.snapshot(),
       ) satisfies SnapshotPacket,
     );
+    // A commit may have been accepted while encoding; only keep a still-current one.
+    if (hash === this.committedHash) this.baselineCache = { hash, state };
+    return state;
   }
   async fallback(batch: HostBatch): Promise<RuntimeCommit> {
     if (this.runtimeHash !== this.committedHash)
