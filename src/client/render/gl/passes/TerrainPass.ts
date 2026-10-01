@@ -9,6 +9,7 @@
  */
 
 import type { TerrainRect } from "../../types";
+import coastSrc from "../shaders/terrain/coast.glsl?raw";
 import terrainFragSrc from "../shaders/terrain/terrain.frag.glsl?raw";
 import terrainVertSrc from "../shaders/terrain/terrain.vert.glsl?raw";
 import {
@@ -20,6 +21,7 @@ import {
   createMapQuad,
   createProgram,
   createTexture2D,
+  shaderInclude,
   shaderSrc,
 } from "../utils/GlUtils";
 import { generateNoiseData, NOISE_SIZE } from "../utils/NoiseGen";
@@ -41,6 +43,8 @@ const UNIFORMS = [
   "uShallow",
   "uDeep",
   "uFoam",
+  "uSand",
+  "uWetSand",
   "uRipple",
   "uFoamStrength",
   "uZoomFadeStart",
@@ -123,7 +127,7 @@ export class TerrainPass {
     this.program = createProgram(
       gl,
       shaderSrc(terrainVertSrc, { MAP_W: mapW, MAP_H: mapH }),
-      terrainFragSrc,
+      shaderInclude(terrainFragSrc, "coast", coastSrc),
     );
     this.uCamera = gl.getUniformLocation(this.program, "uCamera")!;
     for (const name of UNIFORMS) {
@@ -315,6 +319,8 @@ export class TerrainPass {
     gl.uniform3fv(u.uShallow, s.shallow);
     gl.uniform3fv(u.uDeep, s.deep);
     gl.uniform3fv(u.uFoam, s.foam);
+    gl.uniform3fv(u.uSand, s.sand);
+    gl.uniform3fv(u.uWetSand, s.wetSand);
     gl.uniform1f(u.uRipple, s.rippleStrength);
     gl.uniform1f(u.uFoamStrength, s.foamStrength);
     gl.uniform1f(u.uZoomFadeStart, s.zoomFadeStart);
