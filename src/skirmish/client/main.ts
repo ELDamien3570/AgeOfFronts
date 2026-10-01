@@ -632,12 +632,20 @@ function updateHud(): void {
 
   if (snapshot.expansion) empire.update(empireModel()!);
 
-  element("roster").innerHTML = snapshot.players
+  // One pass over squads instead of a filter per faction (O(players x squads)).
+  const squadStats = new Map<number, { count: number; troops: number }>();
+  for (const s of snapshot.squads) {
+    const entry = squadStats.get(s.playerId) ?? { count: 0, troops: 0 };
+    entry.count++;
+    entry.troops += s.troops;
+    squadStats.set(s.playerId, entry);
+  }
+  const rosterHtml = snapshot.players
 
     .map((p) => {
-      const squads = snapshot!.squads.filter((s) => s.playerId === p.id);
+      const stats = squadStats.get(p.id) ?? { count: 0, troops: 0 };
 
-      const troops = squads.reduce((sum, s) => sum + s.troops, 0);
+      const troops = stats.troops;
 
       const campOpacity = campLoss.opacity(p.id);
 
@@ -647,16 +655,23 @@ function updateHud(): void {
           : "";
       const identity = new FactionViewModel(p);
 
-      return `<div data-player="${p.id}" class="rival ${p.eliminated ? "eliminated" : ""}"><div class="rival-name"><i style="background:${COLORS[p.id]}"></i><strong>${p.name.replace(/[&<>"']/g, c => ({"&":"&amp;","<":"&lt;",">":"&gt;",'"':"&quot;","'":"&#39;"})[c]!)}</strong><span>${p.kind === "tribe" ? "TRIBE" : p.ai ? "AI" : p.id === localPlayerId ? "YOU" : "PLAYER"}</span></div><div class="rival-stats"><b>${format(troops)}</b> troops · ${squads.length}${p.kind === "tribe" ? `/${squadCap(p)}` : ""} squads</div>${p.ai ? `<div class="rival-land">${identity.personalityName}${identity.originName ? ` · ${identity.originName}` : ""}</div>` : ""}<div class="rival-land">${snapshot!.expansion ? AGE_NAMES[AGES.indexOf(snapshot!.expansion.progression[p.id].age)] + " · " : ""}${format(p.land)} land${p.eliminated ? " · eliminated" : campNotice}</div></div>`;
+      return `<div data-player="${p.id}" class="rival ${p.eliminated ? "eliminated" : ""}"><div class="rival-name"><i style="background:${COLORS[p.id]}"></i><strong>${p.name.replace(/[&<>"']/g, c => ({"&":"&amp;","<":"&lt;",">":"&gt;",'"':"&quot;","'":"&#39;"})[c]!)}</strong><span>${p.kind === "tribe" ? "TRIBE" : p.ai ? "AI" : p.id === localPlayerId ? "YOU" : "PLAYER"}</span></div><div class="rival-stats"><b>${format(troops)}</b> troops · ${stats.count}${p.kind === "tribe" ? `/${squadCap(p)}` : ""} squads</div>${p.ai ? `<div class="rival-land">${identity.personalityName}${identity.originName ? ` · ${identity.originName}` : ""}</div>` : ""}<div class="rival-land">${snapshot!.expansion ? AGE_NAMES[AGES.indexOf(snapshot!.expansion.progression[p.id].age)] + " · " : ""}${format(p.land)} land${p.eliminated ? " · eliminated" : campNotice}</div></div>`;
     })
 
     .join("");
 
-  campLossLabels = Array.from(
-    element("roster").querySelectorAll<HTMLElement>("[data-camp-loss]"),
-    (label) => ({ playerId: Number(label.dataset.campLoss), label }),
-  );
+  // Replacing the roster every packet rebuilds the DOM and drops hover state; it
+  // only changes when a faction's stats or camp notice do.
+  if (rosterHtml !== lastRosterHtml) {
+    lastRosterHtml = rosterHtml;
+    element("roster").innerHTML = rosterHtml;
+    campLossLabels = Array.from(
+      element("roster").querySelectorAll<HTMLElement>("[data-camp-loss]"),
+      (label) => ({ playerId: Number(label.dataset.campLoss), label }),
+    );
+  }
 }
+let lastRosterHtml = "";
 
 function updateCampLossLabels(now: number): void {
   if (!campLossLabels.length) return;
