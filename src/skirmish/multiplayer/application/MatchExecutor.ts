@@ -16,6 +16,7 @@ export type ExecutorRequest =
   | { type: "verify"; batch: HostBatch; proposal: RuntimeCommit }
   | { type: "accept"; commit: VerifiedCommit }
   | { type: "baseline" }
+  | { type: "checkpoint" }
   | { type: "map-identity" }
   | { type: "fallback"; batch: HostBatch };
 export type ExecutorResult =

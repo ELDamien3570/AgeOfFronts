@@ -5,6 +5,20 @@ import type { Command, MatchOptions } from "../../Protocol";
 import type { ResourceTerrainData } from "../../ResourceTerrain";
 import { Skirmish } from "../../Simulation";
 import { encodeState, type EncodedState } from "../StateCodec";
+import { diffState } from "../StateDelta";
+
+type Checkpoint = ReturnType<Skirmish["checkpoint"]>;
+
+/** Identity of a committed state: chained from its base and the delta's hash. */
+export async function chainStateId(
+  baseId: string,
+  deltaHash: string,
+): Promise<string> {
+  const bytes = new TextEncoder().encode(`${baseId}:${deltaHash}`);
+  return [...new Uint8Array(await crypto.subtle.digest("SHA-256", bytes))]
+    .map((byte) => byte.toString(16).padStart(2, "0"))
+    .join("");
+}
 
 export const COMMIT_TICKS = 4;
 export interface RuntimeMap {
@@ -33,7 +47,12 @@ export interface WorldEconomyChange {
 export interface RuntimeCommit {
   previousTick: number;
   tick: number;
-  checkpoint: EncodedState;
+  /** State the delta applies to; must equal the server's committed state id. */
+  baseId: string;
+  /** Id of the resulting state, `chainStateId(baseId, delta.hash)`. */
+  stateId: string;
+  /** Structural delta from the base checkpoint to the new one. */
+  delta: EncodedState;
   worldEconomy: WorldEconomyChange[];
   rejectedCommands: { id: string; message: string }[];
   computeMs: number;
@@ -42,6 +61,9 @@ export interface RuntimeCommit {
 /** Runs in either a browser worker or the reserved server worker. No transport or UI state. */
 export class HostedRuntime {
   readonly match: Skirmish;
+  // The last committed (or restored) checkpoint and its id. Commits are deltas
+  // against it; it is never mutated.
+  private base?: { state: Checkpoint; id: string };
   constructor(map: RuntimeMap, options: MatchOptions) {
     this.match = new Skirmish(
       createSkirmishMap(
@@ -55,13 +77,24 @@ export class HostedRuntime {
       options,
     );
   }
-  restore(checkpoint: ReturnType<Skirmish["checkpoint"]>): void {
+  /**
+   * Restores `checkpoint`. With `stateId` it also becomes the delta base;
+   * without one (local experiments) the base is derived on the next run.
+   */
+  restore(checkpoint: Checkpoint, stateId?: string): void {
     this.match.restore(checkpoint);
+    this.base = stateId ? { state: checkpoint, id: stateId } : undefined;
   }
   async run(batch: HostBatch): Promise<RuntimeCommit> {
     if (batch.previousTick !== this.match.tick)
       throw new Error("Host batch has a stale tick boundary");
     const started = performance.now();
+    if (!this.base) {
+      // Same id the server gives an initial or restored checkpoint.
+      const state = this.match.checkpoint();
+      this.base = { state, id: (await encodeState(state)).hash };
+    }
+    const base = this.base;
     for (const id of batch.disconnectedPlayerIds) {
       const player = this.match.player(id);
       if (player) player.ai = true;
@@ -83,11 +116,16 @@ export class HostedRuntime {
       gold: player.gold - before.get(player.id)!.gold,
       reserves: player.reserves - before.get(player.id)!.reserves,
     }));
-    const checkpoint = await encodeState(this.match.checkpoint());
+    const next = this.match.checkpoint();
+    const delta = await encodeState(diffState(base.state, next));
+    const stateId = await chainStateId(base.id, delta.hash);
+    this.base = { state: next, id: stateId };
     return {
       previousTick: batch.previousTick,
       tick: this.match.tick,
-      checkpoint,
+      baseId: base.id,
+      stateId,
+      delta,
       worldEconomy,
       rejectedCommands,
       computeMs: performance.now() - started,

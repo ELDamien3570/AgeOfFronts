@@ -7,7 +7,9 @@ import {
   type SpendAuthorization,
 } from "../domain/EconomyLedger";
 import { decodeState, encodeState, type EncodedState } from "../StateCodec";
+import { applyDelta, type StateDelta } from "../StateDelta";
 import {
+  chainStateId,
   COMMIT_TICKS,
   HostedRuntime,
   type HostBatch,
@@ -15,7 +17,8 @@ import {
 } from "./HostedRuntime";
 
 export interface VerifiedCommit {
-  checkpoint: EncodedState;
+  /** Id of the committed state; the authority and new hosts use it. */
+  stateId: string;
   tick: number;
   winner: number | null;
   ledger: ReturnType<EconomyLedger["snapshot"]>;
@@ -27,13 +30,17 @@ export class CommitVerifier {
   private committed: ReturnType<Skirmish["checkpoint"]>;
   private ledger: EconomyLedger;
   private encoder = new SnapshotEncoder();
-  private committedHash = "";
+  // Ids follow the hash chain of accepted deltas, never a re-encoding.
+  private committedId = "";
   // Joins and reconnects ask for the same baseline until the next commit; a
   // full-map baseline costs about a second to encode on the largest maps.
-  private baselineCache?: { hash: string; state: EncodedState };
-  private runtimeHash = "";
+  private baselineCache?: { id: string; state: EncodedState };
+  // Full checkpoints are only needed to hand the match to a new host.
+  private checkpointCache?: { id: string; state: EncodedState };
+  // Id of the state the runtime currently holds, or "" once it has diverged.
+  private runtimeId = "";
   private prepared?: {
-    hash: string;
+    id: string;
     state: ReturnType<Skirmish["checkpoint"]>;
   };
   constructor(readonly runtime: HostedRuntime) {
@@ -47,11 +54,17 @@ export class CommitVerifier {
     );
   }
   async initial(): Promise<VerifiedCommit> {
-    const checkpoint = await encodeState(this.committed);
-    this.committedHash = checkpoint.hash;
-    if (!this.runtimeHash) this.runtimeHash = checkpoint.hash;
+    if (!this.committedId) {
+      const checkpoint = await encodeState(this.committed);
+      this.committedId = checkpoint.hash;
+      this.checkpointCache = { id: checkpoint.hash, state: checkpoint };
+    }
+    if (this.runtimeId !== this.committedId) {
+      this.runtime.restore(this.committed, this.committedId);
+      this.runtimeId = this.committedId;
+    }
     return {
-      checkpoint,
+      stateId: this.committedId,
       tick: this.committed.tick,
       winner: this.committed.winner,
       ledger: this.ledger.snapshot(),
@@ -64,10 +77,11 @@ export class CommitVerifier {
   ): Promise<void> {
     const decoded =
       await decodeState<ReturnType<Skirmish["checkpoint"]>>(checkpoint);
-    this.runtime.restore(decoded);
+    this.runtime.restore(decoded, checkpoint.hash);
     this.committed = decoded;
-    this.committedHash = checkpoint.hash;
-    this.runtimeHash = checkpoint.hash;
+    this.committedId = checkpoint.hash;
+    this.runtimeId = checkpoint.hash;
+    this.checkpointCache = { id: checkpoint.hash, state: checkpoint };
     this.prepared = undefined;
     this.ledger = new EconomyLedger([], ledger);
     this.encoder = new SnapshotEncoder();
@@ -81,9 +95,23 @@ export class CommitVerifier {
       batch.previousTick !== this.committed.tick
     )
       throw new Error("Stale commit boundary");
-    const next = await decodeState<ReturnType<Skirmish["checkpoint"]>>(
-      proposal.checkpoint,
+    if (!this.committedId) await this.initial();
+    if (proposal.baseId !== this.committedId)
+      throw new Error("Commit does not extend the committed state");
+    const stateId = await chainStateId(this.committedId, proposal.delta.hash);
+    if (proposal.stateId !== stateId) throw new Error("Invalid commit id");
+    const next = applyDelta(
+      this.committed,
+      await decodeState<StateDelta>(proposal.delta),
     );
+    if (
+      typeof next !== "object" ||
+      next === null ||
+      !Array.isArray(next.players) ||
+      !(next.owners instanceof Uint8Array) ||
+      !(next.claims instanceof Uint8Array)
+    )
+      throw new Error("Invalid committed state");
     if (
       next.tick !== proposal.tick ||
       next.tick <= this.committed.tick ||
@@ -111,9 +139,9 @@ export class CommitVerifier {
     const events: EconomyEvent[] = [],
       quotes: SpendAuthorization[] = [],
       rejected: RuntimeCommit["rejectedCommands"] = [];
-    if (this.runtimeHash !== this.committedHash)
-      this.runtime.restore(this.committed);
-    this.runtimeHash = "";
+    if (this.runtimeId !== this.committedId)
+      this.runtime.restore(this.committed, this.committedId);
+    this.runtimeId = "";
     const humanIds = new Set(
       this.runtime.match.players
         .filter(
@@ -183,11 +211,11 @@ export class CommitVerifier {
       })),
     );
     // Restore into a constructor-wired world before accepting it; malformed host state fails here.
-    this.runtime.restore(next);
-    this.runtimeHash = proposal.checkpoint.hash;
-    this.prepared = { hash: proposal.checkpoint.hash, state: next };
+    this.runtime.restore(next, stateId);
+    this.runtimeId = stateId;
+    this.prepared = { id: stateId, state: next };
     const result = {
-      checkpoint: proposal.checkpoint,
+      stateId,
       tick: next.tick,
       winner: next.winner,
       ledger,
@@ -197,13 +225,13 @@ export class CommitVerifier {
   }
   /** Atomically advances the in-memory world/ledger before publishing its presentation. */
   async accept(result: VerifiedCommit): Promise<EncodedState> {
-    if (!this.prepared || this.prepared.hash !== result.checkpoint.hash)
+    if (!this.prepared || this.prepared.id !== result.stateId)
       throw new Error("Commit was not verified");
     this.committed = this.prepared.state;
-    this.committedHash = result.checkpoint.hash;
-    if (this.runtimeHash !== this.committedHash)
-      this.runtime.restore(this.committed);
-    this.runtimeHash = this.committedHash;
+    this.committedId = result.stateId;
+    if (this.runtimeId !== this.committedId)
+      this.runtime.restore(this.committed, this.committedId);
+    this.runtimeId = this.committedId;
     this.prepared = undefined;
     this.ledger.commit(result.ledger);
     return this.encodeSnapshot();
@@ -211,24 +239,35 @@ export class CommitVerifier {
   /** A new subscriber receives a full presentation baseline, never an unpublished delta. */
   async baseline(): Promise<EncodedState> {
     const cached = this.baselineCache;
-    if (cached && cached.hash === this.committedHash) return cached.state;
-    if (this.runtimeHash !== this.committedHash)
-      this.runtime.restore(this.committed);
-    this.runtimeHash = this.committedHash;
-    const hash = this.committedHash;
+    if (cached && cached.id === this.committedId) return cached.state;
+    if (this.runtimeId !== this.committedId)
+      this.runtime.restore(this.committed, this.committedId);
+    this.runtimeId = this.committedId;
+    const id = this.committedId;
     const state = await encodeState(
       new SnapshotEncoder().encode(
         this.runtime.match.snapshot(),
       ) satisfies SnapshotPacket,
     );
     // A commit may have been accepted while encoding; only keep a still-current one.
-    if (hash === this.committedHash) this.baselineCache = { hash, state };
+    if (id === this.committedId) this.baselineCache = { id, state };
+    return state;
+  }
+  /** The committed state in full, for a host taking over the match. */
+  async checkpoint(): Promise<EncodedState> {
+    if (!this.committedId) await this.initial();
+    const cached = this.checkpointCache;
+    if (cached && cached.id === this.committedId) return cached.state;
+    const id = this.committedId;
+    const state = await encodeState(this.committed);
+    if (id === this.committedId) this.checkpointCache = { id, state };
     return state;
   }
   async fallback(batch: HostBatch): Promise<RuntimeCommit> {
-    if (this.runtimeHash !== this.committedHash)
-      this.runtime.restore(this.committed);
-    this.runtimeHash = "";
+    if (!this.committedId) await this.initial();
+    if (this.runtimeId !== this.committedId)
+      this.runtime.restore(this.committed, this.committedId);
+    this.runtimeId = "";
     return this.runtime.run(batch);
   }
   private async encodeSnapshot(): Promise<EncodedState> {

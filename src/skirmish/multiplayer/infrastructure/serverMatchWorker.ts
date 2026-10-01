@@ -50,6 +50,9 @@ parentPort.on(
             case "baseline":
               result = await verifier.baseline();
               break;
+            case "checkpoint":
+              result = await verifier.checkpoint();
+              break;
             case "fallback":
               result = await verifier.fallback(request.batch);
               break;

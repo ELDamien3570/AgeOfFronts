@@ -137,13 +137,14 @@ export class OnlineMatchSession {
     } else if (message.type === "host-restore") {
       const tick = await this.hostRequest<number>("restore", {
         checkpoint: message.checkpoint,
+        stateId: message.stateId,
       });
       await this.request({
         type: "host-ready",
         matchId: this.matchId,
         epoch: message.epoch,
         tick,
-        hash: message.checkpoint.hash,
+        hash: message.stateId,
       });
     } else if (message.type === "host-batch") {
       const proposal = await this.hostRequest<RuntimeCommit>("batch", {
