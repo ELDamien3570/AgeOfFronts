@@ -10,9 +10,16 @@ export const LAND_RECRUITMENT: {
   { kind: "cavalry", label: "Cavalry", key: "E" },
 ];
 export const NAVAL_RECRUITMENT: { kind: ShipType; key: string }[] = [
-  { kind: "transport", key: "T" },
   { kind: "warship", key: "B" },
 ];
+
+export function recruitmentBatch(
+  shift: boolean,
+  wasdMode: boolean,
+  spaceHeld = false,
+): number {
+  return (wasdMode ? spaceHeld : shift) ? 5 : 1;
+}
 export const CONSTRUCTION: { kind: BuildingType; key: string }[] = [
   { kind: "city", key: "A" },
   { kind: "factory", key: "S" },
@@ -26,7 +33,7 @@ export type HotkeyAction =
   | { type: "recruit"; kind: SquadType }
   | { type: "recruit-ship"; kind: ShipType }
   | { type: "construct"; kind: BuildingType }
-  | { type: "replenish" | "hold" | "pause" | "fit" | "cancel" | "select-all" }
+  | { type: "replenish" | "hold" | "fit" | "cancel" | "select-all" }
   | { type: "group"; digit: number; mode: "add" | "replace" | "recall" };
 
 // Physical key codes also identify Shift+digits, whose key value is punctuation.
@@ -35,6 +42,8 @@ export function hotkeyAction(
     KeyboardEvent,
     "code" | "repeat" | "shiftKey" | "ctrlKey" | "metaKey" | "altKey"
   >,
+  wasdMode = false,
+  spaceHeld = false,
 ): HotkeyAction | null {
   if (event.repeat || event.altKey) return null;
   const modified = event.ctrlKey || event.metaKey;
@@ -47,25 +56,31 @@ export function hotkeyAction(
       mode: modified ? "replace" : event.shiftKey ? "add" : "recall",
     };
   if (modified) return null;
+  const commandsAllowed = !wasdMode || event.shiftKey;
   const land = LAND_RECRUITMENT.find(
     (action) => event.code === `Key${action.key}`,
   );
-  if (land) return { type: "recruit", kind: land.kind };
+  if (land)
+    return commandsAllowed || spaceHeld
+      ? { type: "recruit", kind: land.kind }
+      : null;
   const navy = NAVAL_RECRUITMENT.find(
     (action) => event.code === `Key${action.key}`,
   );
-  if (navy) return { type: "recruit-ship", kind: navy.kind };
+  if (navy)
+    return commandsAllowed || spaceHeld
+      ? { type: "recruit-ship", kind: navy.kind }
+      : null;
   const building = CONSTRUCTION.find(
     (action) => event.code === `Key${action.key}`,
   );
-  if (building) return { type: "construct", kind: building.kind };
+  if (building)
+    return commandsAllowed ? { type: "construct", kind: building.kind } : null;
   switch (event.code) {
     case "KeyR":
       return { type: "replenish" };
     case "KeyX":
       return { type: "hold" };
-    case "Space":
-      return { type: "pause" };
     case "Home":
       return { type: "fit" };
     case "Escape":

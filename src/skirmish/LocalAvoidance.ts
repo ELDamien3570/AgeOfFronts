@@ -1,3 +1,4 @@
+import { restoreMap } from "./StateTransfer";
 import type { GameMap } from "../core/game/GameMap";
 import { CrowdVelocity } from "./CrowdVelocity";
 import { FIXED, type Squad } from "./Protocol";
@@ -69,6 +70,13 @@ function crossing(a: Squad, av: Velocity, b: Squad, bv: Velocity): boolean {
 // headings handle terrain edges where the continuous velocity is impassable.
 // Every proposal observes the same tick, and no solver can move a held squad.
 export class LocalAvoidance {
+  checkpoint() { return structuredClone({previous:this.previous}); }
+  restore(saved: ReturnType<LocalAvoidance["checkpoint"]>): void {
+    const state=structuredClone(saved);
+    restoreMap(this.previous,state.previous);
+
+  }
+
   private readonly previous = new Map<number, Velocity>();
   private readonly obstacles: Obstacle[] = [];
   private readonly crowd = new CrowdVelocity();

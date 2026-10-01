@@ -1,3 +1,4 @@
+import { restoreArray } from "../StateTransfer";
 import type { GameMap } from "../../core/game/GameMap";
 import { DamageLedger } from "../Conquest";
 import type { LandPaths, WaterPaths } from "../Pathfinding";
@@ -9,7 +10,7 @@ import type {
   Ship,
   Squad,
 } from "../Protocol";
-import { FIXED } from "../Protocol";
+import { FIXED, TICKS_PER_SECOND } from "../Protocol";
 import { personalityOf } from "../content/AiPersonalities";
 import {
   DEFENSIVE_BUILDINGS,
@@ -47,10 +48,13 @@ import {
 import { unitRefitCost } from "./Refitting";
 import { vesselEffects } from "./ResearchEffects";
 import { Roads } from "./Roads";
+import { Recruitment, RECRUITMENT_SECONDS } from "./Recruitment";
+import type { RecruitmentJob } from "./Definitions";
 import { PRODUCTION_RECIPES, Supply, costRejection, spend } from "./Supply";
 import { Trade } from "./Trade";
 export interface ExpansionWorld extends BattleWorld, ArmyWorld {
-  options?: { runAi?: boolean };
+  recruitment: Recruitment;
+  options?: { runAi?: boolean; resourceDensity?: 1 | 2 | 3 | 5; resourceOutput?: 1 | 2 | 3 | 5; alliances?: boolean };
   map: GameMap;
   owners: Uint8Array;
   claims: Uint8Array;
@@ -66,6 +70,21 @@ export interface ExpansionWorld extends BattleWorld, ArmyWorld {
 // Match-level application coordinator; each domain service owns its own rules.
 // All services operate on the same authoritative world, never a parallel game.
 export class Expansion {
+  checkpoint() { return structuredClone({progression:this.progression.checkpoint(),diplomacy:this.diplomacy.checkpoint(),fortifications:this.fortifications.checkpoint(),supply:this.supply.checkpoint(),trade:this.trade.checkpoint(),roads:this.roads.checkpoint(),battle:this.battle.checkpoint(),armies:this.armies.checkpoint(),modernization:this.modernization.checkpoint(),aircraft:this.aircraft,winners:this.winners,events:this.events,nextEvent:this.nextEvent}); }
+  restore(saved: ReturnType<Expansion["checkpoint"]>): void {
+    const state=structuredClone(saved);
+    this.progression.restore(state.progression);
+    this.diplomacy.restore(state.diplomacy);
+    this.fortifications.restore(state.fortifications);
+    this.supply.restore(state.supply);
+    this.trade.restore(state.trade);
+    this.roads.restore(state.roads);
+    this.battle.restore(state.battle);
+    this.armies.restore(state.armies);
+    this.modernization.restore(state.modernization);
+    restoreArray(this.aircraft,state.aircraft); restoreArray(this.winners,state.winners); restoreArray(this.events,state.events); this.nextEvent=state.nextEvent;
+  }
+
   readonly progression: Progression;
   readonly diplomacy = new Diplomacy();
   readonly fortifications: Fortifications;
@@ -93,7 +112,7 @@ export class Expansion {
     this.progression = new Progression(technologySpeed);
     this.victoryMode = mode;
     this.fortifications = new Fortifications(world.map, this.diplomacy);
-    this.supply = new Supply(world.map, this.progression, seed);
+    this.supply = new Supply(world.map, this.progression, seed, world.options?.resourceDensity, world.options?.resourceOutput);
     this.roads = new Roads(world.map);
     this.trade = new Trade(
       world,
@@ -235,6 +254,7 @@ export class Expansion {
   }
   command(player: Player, command: Command): string | null | undefined {
     const { world } = this;
+    if (command.type === "alliance" && world.options?.alliances === false) return "Alliances are disabled for this match";
     const armyResult = this.armies.command(player, command);
     if (armyResult !== undefined) return armyResult;
     if (command.type === "research")
@@ -346,6 +366,7 @@ export class Expansion {
         player,
         command.buildingId,
         command.definitionId,
+        command.autoRecruit === true,
       );
     if (command.type === "sortie") {
       const selected = [...new Set(command.aircraftIds)].map((id) =>
@@ -633,13 +654,15 @@ export class Expansion {
     player: Player,
     id: number,
     kind: "fighter" | "bomber",
+    automatic = false,
   ): string | null {
-    const field = this.world.buildings.find(
+    let field = this.world.buildings.find(
       (b) =>
         b.id === id &&
         b.type === "airstrip" &&
         b.playerId === player.id &&
-        !b.remainingTicks,
+        !b.remainingTicks &&
+        this.world.owners[b.tile] === player.id && (b.health ?? 1) > 0,
     );
     if (
       !field ||
@@ -647,9 +670,13 @@ export class Expansion {
       !this.progression.has(player.id, technologyAt("Modern", "warfare", 3).id)
     )
       return "Needs researched aviation and a completed owned airstrip";
+    if (automatic) field = this.world.recruitment.chooseProducer(this.world.buildings.filter(b => b.playerId === player.id
+      && this.world.owners[b.tile] === player.id && b.type === "airstrip" && !b.remainingTicks && (b.health ?? 1) > 0
+      && this.aircraft.filter(a => a.airfieldId === b.id).length + this.world.recruitment.count(player.id, "aircraft", b.id) < 6),
+      tile => this.world.map.euclideanDistSquared(tile, field!.tile)) ?? field;
     if (
-      this.aircraft.filter((a) => a.airfieldId === id).length >= 6 ||
-      this.aircraft.filter((a) => a.playerId === player.id).length >= 32
+      this.aircraft.filter((a) => a.airfieldId === field.id).length + this.world.recruitment.count(player.id, "aircraft", field.id) >= 6 ||
+      this.aircraft.filter((a) => a.playerId === player.id).length + this.world.recruitment.count(player.id, "aircraft") >= 32
     )
       return "Airfield or aircraft capacity reached";
     const cost = {
@@ -664,11 +691,18 @@ export class Expansion {
       );
     if (rejection) return rejection;
     spend(player, this.supply.inventories[player.id], cost);
+    this.world.recruitment.enqueue({ playerId: player.id, buildingId: field.id, category: "aircraft", kind,
+      definitionId: kind, cost, totalTicks: RECRUITMENT_SECONDS.aircraft * TICKS_PER_SECOND });
+    return null;
+  }
+  completeAircraft(job: RecruitmentJob): boolean {
+    const field = this.world.buildings.find(b => b.id === job.buildingId && b.playerId === job.playerId);
+    if (!field) return false;
     this.aircraft.push({
       id: this.world.allocateId(),
-      playerId: player.id,
-      definitionId: kind,
-      airfieldId: id,
+      playerId: job.playerId,
+      definitionId: job.kind as "fighter" | "bomber",
+      airfieldId: job.buildingId,
       ...this.battle.position(field),
       health: 1000,
       target: null,
@@ -676,7 +710,7 @@ export class Expansion {
       reloadTick: 0,
       fuelTicks: 1200,
     });
-    return null;
+    return true;
   }
   private launch(
     player: Player,
@@ -1222,6 +1256,7 @@ export class Expansion {
       if (b) {
         this.world.applyCommand({
           type: "recruit",
+                autoRecruit: true,
           playerId: player.id,
           buildingId: b.id,
           definitionId: u.id,
@@ -1289,6 +1324,7 @@ export class Expansion {
         if (port && !costRejection(player, stock, v.cost)) {
           this.world.applyCommand({
             type: "recruit-ship",
+                autoRecruit: true,
             playerId: player.id,
             buildingId: port.id,
             shipType: kind,
@@ -1307,6 +1343,7 @@ export class Expansion {
         )
           this.world.applyCommand({
             type: "recruit-aircraft",
+                autoRecruit: true,
             playerId: player.id,
             buildingId: base.id,
             definitionId,
@@ -1401,6 +1438,7 @@ export class Expansion {
       progression: this.progression.states,
       inventories: this.supply.inventories,
       production: this.supply.jobs,
+      recruitment: this.world.recruitment.jobs,
       productionPlans: this.supply.productionPlans(),
       deposits: this.supply.deposits,
       diplomacy: this.diplomacy.state,
@@ -1413,6 +1451,8 @@ export class Expansion {
       victoryMode: this.victoryMode,
       winners: this.winners,
       deliveredGold: this.trade.deliveredGold,
+      tradeCapturedValue: this.trade.capturedValue,
+      tradeLostValue: this.trade.lostValue,
     };
   }
 }

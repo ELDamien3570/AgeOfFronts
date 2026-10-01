@@ -1,10 +1,12 @@
 import fs from "node:fs";
 import path from "node:path";
 import { defineConfig } from "vitest/config";
+import { computeRuntimeBuild } from "./src/skirmish/multiplayer/infrastructure/RuntimeBuild";
 
 let buildOutDir = path.resolve("build/skirmish");
 
 export default defineConfig({
+  define: { "import.meta.env.VITE_SKIRMISH_RUNTIME_ID": JSON.stringify(computeRuntimeBuild()) },
   publicDir: "resources",
   resolve: { tsconfigPaths: true },
   plugins: [

@@ -367,12 +367,10 @@ describe("persistent armies and Bronze tree", () => {
       armyId: 1,
       order: { type: "move", tile: m.map.ref(70, 30) },
     });
-    let background = 0;
-    m.queueArmyRoute("other-faction", () => {
-      background++;
-    });
+    const background = vi.spyOn(m.expansion!.armies, "resolveRoute");
+    m.queueArmyRoute("other-faction", {armyId:999,squadId:999,revision:0});
     step(m, 3);
-    expect(background).toBe(1);
+    expect(background.mock.calls.filter(([work]) => work.armyId === 999)).toHaveLength(1);
     expect(spy.mock.calls.length).toBeGreaterThan(24);
     m.applyCommand({
       type: "army-order",

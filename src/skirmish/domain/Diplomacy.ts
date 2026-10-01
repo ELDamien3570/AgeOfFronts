@@ -1,6 +1,15 @@
+import { restoreRecord } from "../StateTransfer";
 import type { Player } from "../Protocol";
 import type { DiplomacyState } from "./Definitions";
 export class Diplomacy {
+  checkpoint() { return structuredClone({state:this.state, nextId:this.nextId}); }
+  restore(saved: ReturnType<Diplomacy["checkpoint"]>): void {
+    const state=structuredClone(saved);
+    restoreRecord(this.state,state.state);
+    this.nextId=state.nextId;
+
+  }
+
   readonly state: DiplomacyState = {
     offers: [],
     alliances: [],

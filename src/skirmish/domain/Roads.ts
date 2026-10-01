@@ -1,3 +1,4 @@
+import { restoreMap } from "../StateTransfer";
 import type { GameMap } from "../../core/game/GameMap";
 import { AGES, type Age } from "./Definitions";
 
@@ -5,6 +6,16 @@ import { AGES, type Age } from "./Definitions";
 // path costs nor makes an otherwise blocked route traversable. Cardinal masks
 // match the authored art; diagonal route edges need two legal cardinal legs.
 export class Roads {
+  checkpoint() { return structuredClone({tiles:this.tiles, cache:this.cache, dirty:this.dirty, revision:this.revision}); }
+  restore(saved: ReturnType<Roads["checkpoint"]>): void {
+    const state=structuredClone(saved);
+    restoreMap(this.tiles,state.tiles);
+    this.cache=state.cache;
+    this.dirty=state.dirty;
+    this.revision=state.revision;
+
+  }
+
   private readonly tiles = new Map<number, Age>();
   private cache = new Uint32Array();
   private dirty = false;

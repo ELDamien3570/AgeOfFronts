@@ -727,7 +727,7 @@
     "slot": 2,
     "gold": 28000,
     "ticks": 1300,
-    "description": "Basic gunpowder ingredient extraction/processing for early naval guns and the proposed Organ Gun/Bombard equipment. No handheld firearm infantry is granted here.",
+    "description": "Unlock direct gunpowder extraction from gunpowder deposits using mines, supplying naval guns and Organ Gun/Bombard equipment. No ingredient refining is needed. No handheld firearm infantry is granted here.",
     "prerequisites": ["latemedieval-steelmaking"],
     "capabilities": ["latemedieval-powder-milling"]
   },

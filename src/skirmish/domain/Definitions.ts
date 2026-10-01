@@ -171,6 +171,17 @@ export interface ProductionJob {
   totalTicks: number;
   owner: number;
 }
+export interface RecruitmentJob {
+  id: number;
+  playerId: number;
+  buildingId: number;
+  category: "land" | "ship" | "aircraft";
+  kind: SquadType | ShipType | "fighter" | "bomber";
+  definitionId?: string;
+  cost: Cost;
+  totalTicks: number;
+  remainingTicks: number;
+}
 export interface Deposit {
   id: number;
   tile: number;
@@ -302,6 +313,7 @@ export interface ExpansionSnapshot {
   progression: Record<number, ProgressionState>;
   inventories: Record<number, Inventory>;
   production: Record<number, ProductionJob | undefined>;
+  recruitment?: RecruitmentJob[];
   productionPlans: Record<number, { owner: number; recipeId: string }>;
   deposits: Deposit[];
   diplomacy: DiplomacyState;
@@ -312,6 +324,8 @@ export interface ExpansionSnapshot {
   victoryMode: "solo" | "allied";
   winners: number[];
   deliveredGold: Record<number, number>;
+  tradeCapturedValue?: Record<number, number>;
+  tradeLostValue?: Record<number, number>;
 }
 export type ArmyOrder =
   | { type: "move" | "deploy" | "regroup"; tile: number }

@@ -1,3 +1,4 @@
+import type { ResourceTerrainData } from "./ResourceTerrain";
 import type { GameMap } from "../core/game/GameMap";
 import { GameMapImpl } from "../core/game/GameMap";
 import { ForestField, type ForestData } from "./Forest";
@@ -47,17 +48,24 @@ export class ElevationField {
 export class SkirmishMap extends GameMapImpl {
   readonly elevation?: ElevationField;
   readonly forest?: ForestField;
+  readonly resourceTerrain?: ResourceTerrainData;
   constructor(
     width: number,
     height: number,
     terrain: Uint8Array,
     elevation?: ElevationData,
     forest?: ForestData,
+    resourceTerrain?: ResourceTerrainData,
   ) {
     let land = 0;
     for (const cell of terrain)
       if ((cell & 128) !== 0 && (cell & 31) !== 31) land++;
     super(width, height, terrain, land);
+    if (resourceTerrain) {
+      if (!(resourceTerrain.desert instanceof Uint8Array) || resourceTerrain.desert.length !== terrain.length)
+        throw new Error("Invalid resource biome inputs");
+      this.resourceTerrain = { desert: resourceTerrain.desert.slice() };
+    }
     if (elevation)
       this.elevation = new ElevationField(width * height, elevation);
     if (forest) {
@@ -94,6 +102,7 @@ export function createSkirmishMap(
   terrain: Uint8Array,
   elevation?: ElevationData,
   forest?: ForestData,
+  resourceTerrain?: ResourceTerrainData,
 ): GameMapImpl {
-  return new SkirmishMap(width, height, terrain, elevation, forest);
+  return new SkirmishMap(width, height, terrain, elevation, forest, resourceTerrain);
 }

@@ -117,6 +117,9 @@ describe("selected recruitment building", () => {
           definitionId: choice.definitionId,
         }),
       ).toBeNull();
+      expect(match.recruitment.jobs[0].buildingId).toBe(selected.id);
+      const trainingTicks = match.recruitment.jobs[0].totalTicks;
+      for (let i = 0; i < trainingTicks; i++) match.step();
       const recruit = match.squads[match.squads.length - 1];
       expect(recruit.kind).toBe(kind);
       expect(
@@ -217,6 +220,9 @@ describe("selected recruitment building", () => {
           shipType: kind,
         }),
       ).toBeNull();
+      expect(match.recruitment.jobs[0].buildingId).toBe(selected.id);
+      const trainingTicks = match.recruitment.jobs[0].totalTicks;
+      for (let i = 0; i < trainingTicks; i++) match.step();
       expect(match.ships[match.ships.length - 1].x).toBe(55.5 * FIXED);
     },
   );

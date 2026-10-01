@@ -12,7 +12,7 @@ import { PRODUCTION_RECIPES } from "../domain/Supply";
 // Project discovery from content, never from stock amounts or completed jobs.
 // The ledger retains every item; hidden stocks are neither deleted nor spent.
 const itemAges = new Map<string, Age>(
-  RESOURCES.map((resource) => [resource, resourceTechnology(resource).age]),
+  RESOURCES.filter(resource => resource !== "sulphur" && resource !== "nitrate").map((resource) => [resource, resourceTechnology(resource).age]),
 );
 for (const recipe of PRODUCTION_RECIPES) {
   const age = TECHNOLOGY.get(recipe.technologyId)!.age;

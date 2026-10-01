@@ -1,3 +1,5 @@
+import { generateDeposits } from "./DepositGeneration";
+import { restoreArray, restoreMap, restoreRecord } from "../StateTransfer";
 import type { GameMap } from "../../core/game/GameMap";
 import type { Building, Player } from "../Protocol";
 import { producerCompatible } from "../content/Buildings";
@@ -12,7 +14,6 @@ import {
   type Inventory,
   type ProductionJob,
   type ProductionRecipe,
-  type Resource,
 } from "./Definitions";
 import type { Progression } from "./Progression";
 import { breedingPerSecond, throughputPercent } from "./ResearchEffects";
@@ -22,17 +23,6 @@ export function productionTicks(
 ): number {
   return Math.ceil((recipe.ticks * 100) / throughputPercent(research));
 }
-const raws: readonly Resource[] = [
-  "horses",
-  "stone",
-  "copper",
-  "tin",
-  "ironOre",
-  "carbon",
-  "sulphur",
-  "nitrate",
-  "oil",
-];
 export const REFINING: ProductionRecipe[] = [
   {
     id: "refine-bronze",
@@ -60,15 +50,6 @@ export const REFINING: ProductionRecipe[] = [
     inputs: { iron: 8, carbon: 2 },
     outputs: { steel: 10 },
     ticks: 240,
-  },
-  {
-    id: "refine-gunpowder",
-    name: "Mill gunpowder",
-    technologyId: technologyAt("LateMedieval", "economic", 2).id,
-    building: "factory",
-    inputs: { nitrate: 6, sulphur: 2, carbon: 2 },
-    outputs: { gunpowder: 10 },
-    ticks: 200,
   },
   ...["icbm", "hydrogen", "mirv"].map((name, i) => ({
     id: `make-${name}`,
@@ -114,6 +95,18 @@ export function spend(player: Player, inventory: Inventory, cost: Cost): void {
     inventory[item] = (inventory[item] ?? 0) - amount;
 }
 export class Supply {
+  checkpoint() { return structuredClone({inventories:this.inventories, jobs:this.jobs, deposits:this.deposits, goods:this.goods, goodsOwners:this.goodsOwners, selectedRecipes:this.selectedRecipes}); }
+  restore(saved: ReturnType<Supply["checkpoint"]>): void {
+    const state=structuredClone(saved);
+    restoreRecord(this.inventories,state.inventories);
+    restoreRecord(this.jobs,state.jobs);
+    restoreArray(this.deposits,state.deposits);
+    restoreMap(this.goods,state.goods);
+    restoreMap(this.goodsOwners,state.goodsOwners);
+    restoreMap(this.selectedRecipes,state.selectedRecipes);
+
+  }
+
   readonly inventories: Record<number, Inventory> = {};
   readonly jobs: Record<number, ProductionJob | undefined> = {};
   readonly deposits: Deposit[] = [];
@@ -132,41 +125,11 @@ export class Supply {
     private readonly map: GameMap,
     private readonly progression: Progression,
     seed: number,
+    density: 1 | 2 | 3 | 5 = 1,
+    output: 1 | 2 | 3 | 5 = 1,
   ) {
-    let n = 1;
-    for (let tile = 0; tile < map.width() * map.height(); tile++) {
-      let hash = Math.imul(tile ^ seed, 1597334677) >>> 0;
-      hash = Math.imul(hash ^ (hash >>> 16), 2246822519) >>> 0;
-      if (hash % 700 !== 0 || map.isImpassable(tile)) continue;
-      const resource = raws[(hash >>> 10) % raws.length];
-      if (!map.isLand(tile) && !(map.isWater(tile) && resource === "oil"))
-        continue;
-      this.deposits.push({
-        id: n++,
-        tile,
-        resource,
-        owner: 0,
-        yieldPerSecond: resource === "horses" ? 2 : 3,
-      });
-    }
-    // Tiny test scenarios still have deterministic sources; real maps use the
-    // seeded distribution rather than terrain colours or identical home grants.
-    if (map.width() * map.height() < 20000)
-      for (const [i, resource] of raws.entries()) {
-        if (this.deposits.some((d) => d.resource === resource)) continue;
-        const land = Array.from(
-          { length: map.width() * map.height() },
-          (_, t) => t,
-        ).filter((t) => map.isLand(t) && !map.isImpassable(t));
-        if (land.length)
-          this.deposits.push({
-            id: n++,
-            tile: land[Math.floor(((i + 1) * land.length) / (raws.length + 1))],
-            resource,
-            owner: 0,
-            yieldPerSecond: resource === "horses" ? 2 : 3,
-          });
-      }
+    if (![1,2,3,5].includes(density) || ![1,2,3,5].includes(output)) throw new Error("Invalid resource rules");
+    this.deposits.push(...generateDeposits(map, seed, density, output));
   }
   add(playerId: number): void {
     this.inventories[playerId] = Object.fromEntries(

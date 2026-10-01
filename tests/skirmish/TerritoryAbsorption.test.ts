@@ -35,6 +35,31 @@ function fixture(cells = 1) {
 }
 
 describe("isolated territory absorption", () => {
+  it.each([1, 2])("absorbs a %i-cell unclaimed pocket after ten seconds without requiring hostility", (cells) => {
+    const f = fixture(cells);
+    for (const tile of f.tiles) f.owners[tile] = 0;
+    f.ally();
+    expect(f.step(20)).toEqual([]);
+    expect(f.step(200)).toEqual([]);
+    expect(f.step(220)).toEqual([{ owner: 0, recipient: 1, tiles: f.tiles }]);
+  });
+
+  it.each(["large", "water", "mixed", "edge", "building"])("does not absorb an unclaimed pocket with a %s boundary or protection", (reason) => {
+    const f = fixture(reason === "large" ? 3 : 1);
+    for (const tile of f.tiles) f.owners[tile] = 0;
+    const neighbor = f.map.ref(7, 6);
+    if (reason === "water") f.terrain[neighbor] = 0;
+    if (reason === "mixed") f.owners[neighbor] = 3;
+    if (reason === "building") f.buildings.add(f.tiles[0]);
+    if (reason === "edge") {
+      f.owners[f.tiles[0]] = 1;
+      f.owners[0] = 0;
+      f.policy.changed(0);
+    }
+    f.step(20);
+    expect(f.step(220)).toEqual([]);
+  });
+
   it.each([1, 2])(
     "absorbs a %i-cell pocket only after ten game seconds",
     (cells) => {
@@ -88,7 +113,7 @@ describe("isolated territory absorption", () => {
     expect(f.step(440)[0].recipient).toBe(3);
   });
 
-  it("applies absorption through authoritative ownership accounting and clears capture state", () => {
+  it.each([0, 2])("applies absorption from owner %i through authoritative ownership accounting and clears capture state", (owner) => {
     const terrain = new Uint8Array(100 * 80).fill(133);
     const game = new Skirmish(
       new GameMapImpl(100, 80, terrain, terrain.length),
@@ -101,14 +126,14 @@ describe("isolated territory absorption", () => {
     const center = game.map.ref(50, 40);
     for (let y = 36; y <= 44; y++)
       for (let x = 46; x <= 54; x++) change(game.map.ref(x, y), 1);
-    change(center, 2);
+    change(center, owner);
     for (let i = 0; i < 219; i++) game.step();
-    expect(game.owners[center]).toBe(2);
+    expect(game.owners[center]).toBe(owner);
     const before = game.players.map((p) => p.land);
     game.step();
     expect(game.owners[center]).toBe(1);
     expect(game.players[0].land).toBe(before[0] + 1);
-    expect(game.players[1].land).toBe(before[1] - 1);
+    expect(game.players[1].land).toBe(before[1] - (owner === 2 ? 1 : 0));
     expect([...game.ownedLand(1)]).toContain(center);
     expect([...game.ownedLand(2)]).not.toContain(center);
     expect(game.claims[center]).toBe(0);

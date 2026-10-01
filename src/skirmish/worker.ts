@@ -49,6 +49,7 @@ self.onmessage = (event: MessageEvent<WorkerRequest>) => {
         message.terrain,
         message.elevation,
         message.forest,
+        message.resourceTerrain,
       );
       match = new Skirmish(map, message.options);
       encoder = new SnapshotEncoder();

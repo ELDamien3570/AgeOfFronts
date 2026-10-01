@@ -428,8 +428,12 @@ describe("integrated shipments and military progression", () => {
       "equipment:fighter": 2,
       "equipment:bomber": 2,
     });
-    building(m, "airstrip", 85, 55, 2, "Modern");
+    const airfield = building(m, "airstrip", 85, 55, 2, "Modern");
+    m.owners[airfield.tile] = p.id;
     for (let i = 0; i < 10; i++) m.step();
+    expect(m.recruitment.jobs.some(j => j.playerId === p.id && j.category === "aircraft")).toBe(true);
+    m.options.runAi = false;
+    for (let i = 0; i < 600; i++) m.step();
     expect(m.expansion!.aircraft.some((a) => a.playerId === p.id)).toBe(true);
     expect(
       m.buildings.some((b) => b.playerId === p.id && b.type === "city"),

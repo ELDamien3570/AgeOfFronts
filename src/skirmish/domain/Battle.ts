@@ -1,3 +1,4 @@
+import { restoreArray } from "../StateTransfer";
 import { DamageLedger } from "../Conquest";
 import { GUN_NEST_ATTACK, TRENCH_COVER } from "../content/Defences";
 import { UNIT, defaultUnit } from "../content/Units";
@@ -74,6 +75,13 @@ const STRUCTURE_DEFENCE = {
   bonusResistance: {},
 };
 export class Battle {
+  checkpoint() { return structuredClone({projectiles:this.projectiles}); }
+  restore(saved: ReturnType<Battle["checkpoint"]>): void {
+    const state=structuredClone(saved);
+    restoreArray(this.projectiles,state.projectiles);
+    this.definitions.clear();
+  }
+
   readonly projectiles: Projectile[] = [];
   private readonly spatial: SpatialGrid<Squad>;
   private readonly naval: SpatialGrid<Ship>;

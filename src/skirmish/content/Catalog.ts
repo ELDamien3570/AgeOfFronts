@@ -4,6 +4,8 @@ import { MAX_ARMOUR, PROMOTION_ATTACK, XP_THRESHOLDS } from "../domain/Combat";
 import { RESOURCES } from "../domain/Definitions";
 import { PRODUCTION_RECIPES } from "../domain/Supply";
 import { TERRITORY_ABSORPTION } from "../domain/TerritoryAbsorption";
+import { DEPOSIT_RULES } from "../domain/DepositGeneration";
+import { RECRUITMENT_SECONDS } from "../domain/Recruitment";
 import { AI_PERSONALITIES } from "./AiPersonalities";
 import { ARMY_CAPS } from "./Armies";
 import { GUN_NEST_ATTACK, TRENCH_COVER } from "./Defences";
@@ -94,6 +96,8 @@ export const CONTENT_HASH = hash({
   aiPersonalities: AI_PERSONALITIES,
   squadCaps: AGE_SQUAD_CAPS,
   territoryAbsorption: TERRITORY_ABSORPTION,
+  recruitment: RECRUITMENT_SECONDS,
+  deposits: DEPOSIT_RULES,
   tribePromotion: { percent: TRIBE_PROMOTION_PERCENT, conquestInheritance: 1 },
   economy: { reserves: RESERVE_GROWTH, startingTroops: STARTING_AGE_TROOPS },
 });

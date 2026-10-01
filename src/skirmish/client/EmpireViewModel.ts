@@ -29,6 +29,8 @@ import { FactionViewModel } from "./FactionViewModel";
 import { ResourceViewModel } from "./ResourceViewModel";
 import { SkirmishViewModel, type SelectionState } from "./SkirmishViewModel";
 export class EmpireViewModel {
+  get playerId(): number { return this.state.localPlayerId ?? 1; }
+
   readonly resources: ResourceViewModel;
   constructor(
     readonly state: Snapshot,
@@ -43,16 +45,16 @@ export class EmpireViewModel {
     return this.state.expansion!;
   }
   get player() {
-    return this.state.players[0];
+    return this.state.players.find(player => player.id === this.playerId)!;
   }
   get progression() {
-    return this.expansion.progression[1];
+    return this.expansion.progression[this.playerId];
   }
   get technologySpeed() {
     return this.expansion.technologySpeed;
   }
   get inventory() {
-    return this.expansion.inventories[1];
+    return this.expansion.inventories[this.playerId];
   }
   get ageName() {
     return AGE_NAMES[AGES.indexOf(this.progression.age)];
@@ -150,6 +152,9 @@ export class EmpireViewModel {
       ? `Requires research: ${this.technologyName(id)} (${AGE_NAMES[AGES.indexOf(age!)]})`
       : "Building unavailable";
   }
+  buildingVisible(type: BuildingType): boolean {
+    return !!this.buildingAge(type) || !!buildingTechnology(type, this.progression.age);
+  }
   buildingPreview(type: BuildingType) {
     const unlocked = this.buildingAge(type);
     const age = unlocked ?? AGES.find((a) => buildingTechnology(type, a));
@@ -166,7 +171,7 @@ export class EmpireViewModel {
   }
   get producers() {
     return this.state.buildings
-      .filter((b) => b.playerId === 1)
+      .filter((b) => b.playerId === this.playerId)
       .map((b) => ({
         building: b,
         job: this.expansion.production[b.id],
@@ -188,7 +193,7 @@ export class EmpireViewModel {
         ? productionTicks(recipe, this.progression.completed)
         : 0,
       reason: productionRejection(
-        1,
+        this.playerId,
         building,
         recipe,
         this.progression.completed,
@@ -224,7 +229,7 @@ export class EmpireViewModel {
   refit(focusedId?: number) {
     const selected = this.state.squads.filter(
       (s) =>
-        s.playerId === 1 &&
+        s.playerId === this.playerId &&
         s.embarkedOn === null &&
         (focusedId === undefined
           ? this.selection.selected.has(s.id)
@@ -267,7 +272,7 @@ export class EmpireViewModel {
         s.fighting ||
         this.state.owners[
           Math.floor(s.y / 256) * this.state.width + Math.floor(s.x / 256)
-        ] !== 1,
+        ] !== this.playerId,
     )
       ? "Needs owned land and no combat or active refit"
       : costRejection(this.player, this.inventory, cost);
@@ -276,7 +281,7 @@ export class EmpireViewModel {
   shipRefit(focusedId?: number) {
     const selected = this.state.ships.filter(
       (s) =>
-        s.playerId === 1 &&
+        s.playerId === this.playerId &&
         (focusedId === undefined
           ? this.selection.selectedShips.has(s.id)
           : s.id === focusedId),
@@ -317,7 +322,7 @@ export class EmpireViewModel {
     return { selected, target, cost, reason };
   }
   get incoming() {
-    return this.expansion.diplomacy.offers.filter((o) => o.recipient === 1);
+    return this.expansion.diplomacy.offers.filter((o) => o.recipient === this.playerId);
   }
   technologyName(id: string) {
     return TECHNOLOGY.get(id)?.name ?? id;
@@ -367,14 +372,15 @@ export class EmpireViewModel {
     const building = this.state.buildings
       .filter(
         (b) =>
-          b.playerId === 1 &&
+          b.playerId === this.playerId &&
           !b.remainingTicks &&
           b.type === "airstrip" &&
-          this.expansion.aircraft.filter((a) => a.airfieldId === b.id).length <
+          this.expansion.aircraft.filter((a) => a.airfieldId === b.id).length + (this.expansion.recruitment ?? []).filter(j => j.playerId === this.playerId && j.category === "aircraft" && j.buildingId === b.id).length <
             6,
       )
       .sort(
-        (a, b) => this.distance(a.tile) - this.distance(b.tile) || a.id - b.id,
+        (a, b) => Number(b.id === this.selection.selectedBuilding) - Number(a.id === this.selection.selectedBuilding)
+          || this.distance(a.tile) - this.distance(b.tile) || a.id - b.id,
       )[0];
     const cost = {
       gold: 5000,
@@ -385,7 +391,7 @@ export class EmpireViewModel {
       ? "Research Military Aviation"
       : !building
         ? "Needs an airstrip with a free slot"
-        : this.expansion.aircraft.filter((a) => a.playerId === 1).length >= 32
+        : this.expansion.aircraft.filter((a) => a.playerId === this.playerId).length + (this.expansion.recruitment ?? []).filter(j => j.playerId === this.playerId && j.category === "aircraft").length >= 32
           ? "Aircraft limit reached"
           : costRejection(this.player, this.inventory, cost);
     return { building, cost, reason };
@@ -395,7 +401,7 @@ export class EmpireViewModel {
       ...this.state.buildings
         .filter(
           (b) =>
-            b.playerId === 1 &&
+            b.playerId === this.playerId &&
             !b.remainingTicks &&
             (b.health ?? 1) > 0 &&
             (payload === "mirv"
@@ -411,7 +417,7 @@ export class EmpireViewModel {
       ...this.state.squads
         .filter(
           (s) =>
-            s.playerId === 1 &&
+            s.playerId === this.playerId &&
             payload === "mirv" &&
             UNIT.get(s.definitionId ?? "")?.role === "launcher",
         )

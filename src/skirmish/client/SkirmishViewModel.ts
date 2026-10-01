@@ -19,6 +19,8 @@ export interface SelectionState {
 // Presentation state derives from a read-only domain snapshot. No recruitment,
 // combat, resource transfers, or construction happens in the view model.
 export class SkirmishViewModel {
+  get playerId(): number { return this.state.localPlayerId ?? 1; }
+
   constructor(
     readonly state: Snapshot,
     readonly selection: SelectionState,
@@ -28,10 +30,10 @@ export class SkirmishViewModel {
   ) {}
 
   get player() {
-    return this.state.players[0];
+    return this.state.players.find(player => player.id === this.playerId)!;
   }
   get ownSquads() {
-    return this.state.squads.filter((s) => s.playerId === 1);
+    return this.state.squads.filter((s) => s.playerId === this.playerId);
   }
   get squadCapacity() {
     return squadCap(
@@ -48,7 +50,7 @@ export class SkirmishViewModel {
     return this.state.squads.find(
       (s) =>
         s.id === this.selection.inspectedSquadId &&
-        s.playerId !== 1 &&
+        s.playerId !== this.playerId &&
         s.troops > 0 &&
         s.embarkedOn === null,
     );
@@ -118,7 +120,7 @@ export class SkirmishViewModel {
     const forces = [
       ...this.selectedSquads,
       ...this.state.ships.filter(
-        (s) => this.selection.selectedShips.has(s.id) && s.playerId === 1,
+        (s) => this.selection.selectedShips.has(s.id) && s.playerId === this.playerId,
       ),
     ];
     const origin = forces.length
@@ -136,9 +138,9 @@ export class SkirmishViewModel {
     const building = this.state.buildings
       .filter(
         (b) =>
-          b.playerId === 1 &&
+          b.playerId === this.playerId &&
           (!selectedOnly || b.id === this.selection.selectedBuilding) &&
-          this.state.owners[b.tile] === 1 &&
+          this.state.owners[b.tile] === this.playerId &&
           b.remainingTicks === 0 &&
           (naval
             ? b.type === "port"
@@ -176,10 +178,10 @@ export class SkirmishViewModel {
       reason = "Needs 1,000 reserve troops";
     else if (
       naval &&
-      this.state.ships.filter((s) => s.playerId === 1).length >= MAX_SHIPS
+      this.state.ships.filter((s) => s.playerId === this.playerId).length + (this.state.expansion?.recruitment ?? []).filter(j => j.playerId === this.playerId && j.category === "ship").length >= MAX_SHIPS
     )
       reason = "Fleet limit reached";
-    else if (!naval && this.ownSquads.length >= this.squadCapacity)
+    else if (!naval && this.ownSquads.length + (this.state.expansion?.recruitment ?? []).filter(j => j.playerId === this.playerId && j.category === "land").length >= this.squadCapacity)
       reason = "Squad limit reached";
     if (!reason && definition)
       reason =
@@ -203,7 +205,7 @@ export class SkirmishViewModel {
         !s.refit &&
         this.state.owners[
           Math.floor(s.y / FIXED) * this.state.width + Math.floor(s.x / FIXED)
-        ] === 1,
+        ] === this.playerId,
     );
   }
   get canReplenish() {
@@ -219,7 +221,7 @@ export class SkirmishViewModel {
     return this.state.ships.find(
       (s) =>
         this.selection.selectedShips.has(s.id) &&
-        s.playerId === 1 &&
+        s.playerId === this.playerId &&
         s.kind === "transport",
     );
   }

@@ -130,14 +130,16 @@ describe("AI personality policies", () => {
     const ids = new Set(game.squads.map((s) => s.id));
     game.tick = 1;
     game.step();
-    const recruit = game.squads.find(
-      (s) => !ids.has(s.id) && s.playerId === player.id,
-    )!;
-    expect(recruit.kind).toBe("cavalry");
+    const job = game.recruitment.jobs.find(j => j.playerId === player.id)!;
+    expect(job.kind).toBe("cavalry");
     expect(player.reserves).toBe(reserves - 1000);
-    const cost = UNIT.get(recruit.definitionId!)!.cost;
+    const cost = UNIT.get(job.definitionId!)!.cost;
     expect(player.gold).toBe(gold - (cost.gold ?? 0));
     expect(stock.horses).toBe(horses - (cost.items?.horses ?? 0));
+    game.options.runAi = false;
+    const ticks = job.remainingTicks;
+    for (let i = 0; i < ticks; i++) game.step();
+    expect(game.squads.find(s => !ids.has(s.id) && s.playerId === player.id)?.kind).toBe("cavalry");
   });
   it("accepts a player's offer in the real simulation when the diplomat can honor it", () => {
     const game = match(),

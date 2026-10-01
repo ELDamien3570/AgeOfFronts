@@ -3,7 +3,7 @@ $taskRoot = [IO.Path]::GetFullPath((Join-Path $PSScriptRoot '..'))
 $taskOutput = Join-Path $taskRoot 'resources\age-of-fronts-source.zip'
 $taskStage = Join-Path ([IO.Path]::GetTempPath()) ('AgeOfFronts-source-' + [guid]::NewGuid().ToString('N'))
 New-Item -ItemType Directory -Path $taskStage | Out-Null
-$taskExcluded = @('.git', 'node_modules', 'build', 'static', '.worktrees', '.claude', '.agents', '.codex', '.aws', '.cache')
+$taskExcluded = @('.git', 'node_modules', 'build', 'static', 'data', '.worktrees', '.claude', '.agents', '.codex', '.aws', '.cache')
 Get-ChildItem -LiteralPath $taskRoot -Force | Where-Object { $_.Name -notin $taskExcluded -and $_.Name -notlike '.env*' -and $_.Name -notlike '.tmp-*' -and $_.Extension -ne '.log' } | ForEach-Object {
     if ($_.Name -eq 'resources') {
         $taskResources = Join-Path $taskStage 'resources'

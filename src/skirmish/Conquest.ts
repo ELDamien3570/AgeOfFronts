@@ -1,3 +1,4 @@
+import { restoreMap } from "./StateTransfer";
 interface Hits {
   total: number;
   first: number;
@@ -43,6 +44,13 @@ export class DamageLedger {
 // Match-owned credit for the last building capture or lethal combat batch.
 // Terminal eligibility is evaluated after combat and capture, by the aggregate.
 export class ConquestCredit {
+  checkpoint() { return structuredClone({credits:this.credits}); }
+  restore(saved: ReturnType<ConquestCredit["checkpoint"]>): void {
+    const state=structuredClone(saved);
+    restoreMap(this.credits,state.credits);
+
+  }
+
   private readonly credits = new Map<number, number>();
   capture(victim: number, captor: number): void {
     this.credits.set(victim, captor);

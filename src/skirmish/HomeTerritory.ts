@@ -1,3 +1,4 @@
+import { restoreMap } from "./StateTransfer";
 import type { GameMap } from "../core/game/GameMap";
 
 interface HomeFrontier {
@@ -9,6 +10,13 @@ interface HomeFrontier {
 // A bounded strategic read model of land connected to the starting camp.
 // Disconnected captures never become origins for random outward exploration.
 export class HomeTerritory {
+  checkpoint() { return structuredClone({cache:this.cache}); }
+  restore(saved: ReturnType<HomeTerritory["checkpoint"]>): void {
+    const state=structuredClone(saved);
+    restoreMap(this.cache,state.cache);
+    this.visited.fill(0); this.stamp=0;
+  }
+
   private readonly visited: Uint32Array;
   private stamp = 0;
   private readonly cache = new Map<number, HomeFrontier>();

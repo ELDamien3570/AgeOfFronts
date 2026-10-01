@@ -236,8 +236,8 @@ describe("age-based strategic resource discovery", () => {
         expect(model.depositVisible(resource)).toBe(visible);
         expect(
           Object.prototype.hasOwnProperty.call(model.stocks, resource),
-        ).toBe(visible);
-        if (visible) expect(model.stocks[resource]).toBe(0);
+        ).toBe(visible && resource !== "sulphur" && resource !== "nitrate");
+        if (visible && resource !== "sulphur" && resource !== "nitrate") expect(model.stocks[resource]).toBe(0);
       }
   });
 

@@ -1,3 +1,6 @@
+let localPlayerId = 1;
+import { OnlineMatchSession } from "./OnlineMatchSession";
+const onlineMatchId=new URLSearchParams(window.location.search).get("match");
 import { BuildingIndex } from "../BuildingIndex";
 
 import { constructionRejection } from "../Construction";
@@ -39,6 +42,7 @@ import {
 import { ControlGroups } from "./ControlGroups";
 
 import { CampLossPresentation } from "./CampLossPresentation";
+import { CameraPanViewModel } from "./CameraPanViewModel";
 
 import {
   CONSTRUCTION,
@@ -48,6 +52,11 @@ import {
 } from "./Controls";
 
 import { hudMarkup, HudView } from "./HudView";
+
+import { RecruitmentControlsViewModel } from "./RecruitmentControlsViewModel";
+import { MatchMetricsViewModel } from "./MatchMetricsViewModel";
+import { RecruitmentQueueView } from "./RecruitmentQueueView";
+import { RecruitmentQueueViewModel } from "./RecruitmentQueueViewModel";
 
 import { ArmyView } from "./ArmyView";
 import { ArmyViewModel } from "./ArmyViewModel";
@@ -84,7 +93,7 @@ document.querySelector<HTMLDivElement>("#app")!.innerHTML = `
         "",
       )}</select></label><label>Map size<select id="world-size"><option value="250">250 cells · longest edge</option><option value="500" selected>500 cells · longest edge</option><option value="1000">1000 cells · longest edge</option></select></label><label>Victory<select id="victory-mode"><option value="solo">Solo conquest</option><option value="allied">Allied conquest</option></select></label><label title="New skirmishes divide all research and age-advancement costs and times by this setting, for every faction.">Tech speed<select id="technology-speed" aria-label="Technology speed"><option value="1">1×</option><option value="2">2×</option><option value="3">3×</option></select></label><button id="restart" class="primary">New skirmish</button></div>
 
-    <div class="time-controls"><span id="clock">0:00</span><select id="speed" aria-label="Game speed"><option value="1">1× speed</option><option value="2">2× speed</option><option value="4">4× speed</option></select><button id="pause" aria-label="Pause game">Pause <kbd>Space</kbd></button><button id="home" aria-label="Fit battlefield">Fit map <kbd>Home</kbd></button></div>
+    <div class="time-controls"><button id="wasd-mode" type="button" aria-pressed="false" title="WASD pans the map; Shift for building/single recruitment shortcuts, Space for five recruits.">WASD Mode</button><span id="clock">0:00</span><select id="speed" aria-label="Game speed"><option value="1">1× speed</option><option value="2">2× speed</option><option value="4">4× speed</option></select><button id="pause" aria-label="Pause game">Pause</button><button id="home" aria-label="Fit battlefield">Fit map <kbd>Home</kbd></button></div>
 
   </header>
 
@@ -94,7 +103,7 @@ document.querySelector<HTMLDivElement>("#app")!.innerHTML = `
 
     <canvas id="battlefield" aria-label="Map with selectable troop squads" tabindex="0"></canvas>
 
-    <div class="map-badge"><span class="live-dot"></span><span id="map-name">Loading battlefield…</span></div>
+    <div id="recruitment-feed" class="recruitment-feed" aria-label="Recruitment queues" hidden></div>
 
     <div id="loading" class="loading"><span class="spinner"></span><h2>Preparing the battlefield</h2><p>Loading terrain and deploying your squads.</p></div>
 
@@ -102,7 +111,7 @@ document.querySelector<HTMLDivElement>("#app")!.innerHTML = `
 
     <div id="toast" role="status" class="toast" hidden></div><div id="placement-hint" class="placement-hint" hidden></div>
 
-    <div class="terrain-legend"><span><i class="plains"></i>Plains · fast</span><span><i class="hills"></i>Highlands · slower</span><span><i class="mountains"></i>Mountains · slowest</span><span id="hover-terrain"></span></div>
+    <div class="map-context"><div class="map-badge"><span class="live-dot"></span><span id="map-name">Loading battlefield…</span></div><div class="terrain-legend"><span><i class="plains"></i>Plains · fast</span><span><i class="hills"></i>Highlands · slower</span><span><i class="mountains"></i>Mountains · slowest</span><span id="hover-terrain"></span></div></div>
 
     ${hudMarkup()}
 
@@ -138,8 +147,18 @@ const groups = new ControlGroups();
 const hud = new HudView(element("app"), (height) =>
   renderer.setHudBottomInset(height),
 );
+const cameraPan = new CameraPanViewModel();
+const recruitmentControls = new RecruitmentControlsViewModel();
+element("wasd-mode").addEventListener("click", () => {
+  recruitmentControls.clear();
+  cameraPan.setEnabled(!cameraPan.enabled);
+  element("wasd-mode").setAttribute("aria-pressed", String(cameraPan.enabled));
+  hud.setWasdMode(cameraPan.enabled);
+});
 
+const recruitmentFeed = new RecruitmentQueueView(element("recruitment-feed"), element("app"));
 const empire = new EmpireView(element("app"), {
+  recruitmentBatch: (shift) => recruitmentControls.batch(shift, cameraPan.enabled),
   refresh: updateHud,
   command,
   build: placeBuilding,
@@ -164,7 +183,7 @@ const armyView = new ArmyView(element("app"), {
             return;
           command({
             type: "army-order",
-            playerId: 1,
+            playerId: localPlayerId,
             armyId,
             order: {
               type,
@@ -176,7 +195,7 @@ const armyView = new ArmyView(element("app"), {
           });
         } else if (type !== "hold") {
           const target = snapshot.squads
-            .filter((s) => s.playerId !== 1 && s.embarkedOn === null)
+            .filter((s) => s.playerId !== localPlayerId && s.embarkedOn === null)
             .sort(
               (a, b) =>
                 (a.x - x) ** 2 +
@@ -192,7 +211,7 @@ const armyView = new ArmyView(element("app"), {
           }
           command({
             type: "army-order",
-            playerId: 1,
+            playerId: localPlayerId,
             armyId,
             order: { type, targetId: target.id },
           });
@@ -213,7 +232,7 @@ function selectArmy(ids: number[]): void {
   updateHud();
 }
 
-let worker: Worker | undefined;
+let worker: Worker | OnlineMatchSession | undefined;
 
 let snapshot: Snapshot | undefined;
 
@@ -294,6 +313,9 @@ function notify(message: string): void {
 }
 
 async function start(): Promise<void> {
+  if(onlineMatchId) { await startOnlineMatch(); return; }
+  recruitmentControls.clear();
+  cameraPan.clear();
   orderGesture.cancel();
   const sequence = ++matchSequence;
   const technologySpeed = Number(
@@ -393,6 +415,7 @@ async function start(): Promise<void> {
     worker = nextWorker;
 
     const decoder = new SnapshotDecoder();
+    let startingCameraPending = true;
 
     const fail = (message: string) => {
       if (sequence !== matchSequence) return;
@@ -430,6 +453,7 @@ async function start(): Promise<void> {
       }
 
       snapshot = decoder.decode(message.packet);
+      snapshot.localPlayerId=localPlayerId;
 
       placementIndex!.rebuild(snapshot.buildings);
 
@@ -440,6 +464,13 @@ async function start(): Promise<void> {
       groups.prune(snapshot);
 
       updateHud();
+      if (startingCameraPending) {
+        const player = snapshot.players.find((p) => p.id === localPlayerId);
+        if (player) {
+          renderer.focusStartingLocation(player.base);
+          startingCameraPending = false;
+        }
+      }
 
       element("loading").hidden = true;
 
@@ -462,6 +493,7 @@ async function start(): Promise<void> {
       elevation: loaded.elevation,
 
       forest: loaded.forest,
+      resourceTerrain: loaded.resourceTerrain,
 
       options: {
         seed,
@@ -495,14 +527,57 @@ async function start(): Promise<void> {
   }
 }
 
+async function startOnlineMatch():Promise<void> {
+  document.title="Age of Fronts — Online match";
+  if(worker)return;
+  const endpoint=import.meta.env.VITE_MULTIPLAYER_URL;
+  if(!endpoint){element("loading").textContent="Multiplayer server URL is not configured.";return;}
+  const decoder=new SnapshotDecoder();
+  let startingCamera=true;
+  const session=new OnlineMatchSession(endpoint,onlineMatchId!,async manifest=> {
+    element<HTMLSelectElement>("map").value=manifest.settings.mapId;
+    element<HTMLSelectElement>("world-size").value=String(manifest.settings.worldSize);
+    element<HTMLSelectElement>("opponents").innerHTML=`<option>${manifest.options.aiCount} AI</option>`;
+    element<HTMLSelectElement>("victory-mode").value=manifest.settings.victory;
+    element<HTMLSelectElement>("technology-speed").value=String(manifest.settings.technologySpeed);
+    const loaded=await loadMap(manifest.settings.mapId,manifest.settings.worldSize);
+    currentMap=loaded;terrainView=new TerrainViewModel(loaded.map);placementIndex=new BuildingIndex(loaded.map);
+    renderer.setMap(loaded.map,loaded.geography,loaded.environment);
+    element("map-name").textContent=loaded.name;
+    return loaded;
+  },id=>localPlayerId=id,message=> {
+    document.querySelector(".brand p")!.textContent=message;
+  });
+  worker=session;
+  for(const control of document.querySelectorAll<HTMLInputElement>(".match-settings select,.match-settings button,#speed,#pause,#play-again"))control.disabled=true;
+  session.onerror=event=> {
+    element("loading").hidden=false;
+    element("loading").textContent=event.message;
+  };
+  session.onmessage=event=> {
+    if(event.data.type!=="state")return;
+    snapshot=decoder.decode(event.data.packet);
+    snapshot.localPlayerId=localPlayerId;
+    snapshot.disconnectedPlayerIds=session.disconnectedPlayerIds;
+    placementIndex!.rebuild(snapshot.buildings);paused=event.data.paused;
+    renderer.update(snapshot);groups.prune(snapshot);updateHud();
+    if(startingCamera){const player=snapshot.players.find(p=>p.id===localPlayerId);if(player){renderer.focusStartingLocation(player.base);startingCamera=false;}}
+    element("loading").hidden=true;
+    if(snapshot.winner!==null)showResult(snapshot.winner);
+  };
+  window.addEventListener("pagehide",()=>session.terminate(),{once:true});
+  session.connect();
+}
+
 function updateHud(): void {
   if (!snapshot) return;
 
   updateTerrainHover();
+  recruitmentFeed.update(new RecruitmentQueueViewModel(snapshot, localPlayerId));
 
-  const player = snapshot.players[0];
+  const player = snapshot.players.find(player => player.id === localPlayerId)!;
 
-  const own = snapshot.squads.filter((s) => s.playerId === 1);
+  const own = snapshot.squads.filter((s) => s.playerId === localPlayerId);
 
   element("troop-total").textContent = format(
     own.reduce((sum, s) => sum + s.troops, 0),
@@ -516,7 +591,11 @@ function updateHud(): void {
 
   element("land").textContent = format(player.land);
 
-  element("losses").textContent = format(player.losses);
+  const metrics = new MatchMetricsViewModel(snapshot, localPlayerId);
+  element("losses").textContent = format(metrics.deaths);
+  element("kills").textContent = format(metrics.kills);
+  element("trade-captured").textContent = format(metrics.tradeCaptured);
+  element("trade-lost").textContent = format(metrics.tradeLost);
 
   const seconds = Math.floor(snapshot.tick / TICKS_PER_SECOND);
 
@@ -524,7 +603,7 @@ function updateHud(): void {
     `${Math.floor(seconds / 60)}:${String(seconds % 60).padStart(2, "0")}`;
 
   element("pause").innerHTML =
-    `${paused ? "Resume" : "Pause"} <kbd>Space</kbd>`;
+    `${paused ? "Resume" : "Pause"}`;
 
   const vm = viewModel()!;
 
@@ -547,7 +626,7 @@ function updateHud(): void {
   updateSelection();
 
   hud.update(new HudViewModel(vm));
-  const armyVm = new ArmyViewModel(snapshot, renderer.selected);
+  const armyVm = new ArmyViewModel(snapshot, renderer.selected, localPlayerId);
   armyView.update(armyVm);
   if (armyVm.selectedArmy) element("selection-card").hidden = true;
 
@@ -568,7 +647,7 @@ function updateHud(): void {
           : "";
       const identity = new FactionViewModel(p);
 
-      return `<div data-player="${p.id}" class="rival ${p.eliminated ? "eliminated" : ""}"><div class="rival-name"><i style="background:${COLORS[p.id]}"></i><strong>${p.name}</strong><span>${p.kind === "tribe" ? "TRIBE" : p.ai ? "AI" : "YOU"}</span></div><div class="rival-stats"><b>${format(troops)}</b> troops · ${squads.length}${p.kind === "tribe" ? `/${squadCap(p)}` : ""} squads</div>${p.ai ? `<div class="rival-land">${identity.personalityName}${identity.originName ? ` · ${identity.originName}` : ""}</div>` : ""}<div class="rival-land">${snapshot!.expansion ? AGE_NAMES[AGES.indexOf(snapshot!.expansion.progression[p.id].age)] + " · " : ""}${format(p.land)} land${p.eliminated ? " · eliminated" : campNotice}</div></div>`;
+      return `<div data-player="${p.id}" class="rival ${p.eliminated ? "eliminated" : ""}"><div class="rival-name"><i style="background:${COLORS[p.id]}"></i><strong>${p.name.replace(/[&<>"']/g, c => ({"&":"&amp;","<":"&lt;",">":"&gt;",'"':"&quot;","'":"&#39;"})[c]!)}</strong><span>${p.kind === "tribe" ? "TRIBE" : p.ai ? "AI" : p.id === localPlayerId ? "YOU" : "PLAYER"}</span></div><div class="rival-stats"><b>${format(troops)}</b> troops · ${squads.length}${p.kind === "tribe" ? `/${squadCap(p)}` : ""} squads</div>${p.ai ? `<div class="rival-land">${identity.personalityName}${identity.originName ? ` · ${identity.originName}` : ""}</div>` : ""}<div class="rival-land">${snapshot!.expansion ? AGE_NAMES[AGES.indexOf(snapshot!.expansion.progression[p.id].age)] + " · " : ""}${format(p.land)} land${p.eliminated ? " · eliminated" : campNotice}</div></div>`;
     })
 
     .join("");
@@ -727,7 +806,7 @@ function selectAll(): void {
   renderer.selected = new Set(
     snapshot?.squads
 
-      .filter((s) => s.playerId === 1 && s.embarkedOn === null)
+      .filter((s) => s.playerId === localPlayerId && s.embarkedOn === null)
 
       .map((s) => s.id),
   );
@@ -748,7 +827,7 @@ function hold(): void {
     command({
       type: "stop-ships",
 
-      playerId: 1,
+      playerId: localPlayerId,
 
       shipIds: [...renderer.selectedShips],
     });
@@ -758,7 +837,7 @@ function hold(): void {
   command({
     type: "order",
 
-    playerId: 1,
+    playerId: localPlayerId,
 
     squadIds: [...renderer.selected],
 
@@ -766,31 +845,33 @@ function hold(): void {
   });
 }
 
-function recruit(kind: SquadType): void {
+function recruit(kind: SquadType, count = 1): void {
   const vm = viewModel();
 
   const choice = vm?.recruitment(kind);
 
   if (choice?.enabled && choice.building)
-    command({
+    for (let i = 0; i < count; i++) command({
       type: "recruit",
-      playerId: 1,
+      playerId: localPlayerId,
       buildingId: choice.building.id,
+      autoRecruit: choice.building.id !== renderer.selectedBuilding,
       definitionId: choice.definitionId,
     });
   else if (choice) notify(choice.reason);
 }
 
-function recruitShip(kind: ShipType): void {
+function recruitShip(kind: ShipType, count = 1): void {
   const choice = viewModel()?.recruitment(kind);
 
   if (choice?.enabled && choice.building)
-    command({
+    for (let i = 0; i < count; i++) command({
       type: "recruit-ship",
 
-      playerId: 1,
+      playerId: localPlayerId,
 
       buildingId: choice.building.id,
+      autoRecruit: choice.building.id !== renderer.selectedBuilding,
 
       shipType: kind,
 
@@ -806,7 +887,7 @@ function replenish(): void {
     command({
       type: "order",
 
-      playerId: 1,
+      playerId: localPlayerId,
 
       squadIds: vm.replenishableSquads.map((s) => s.id),
 
@@ -845,7 +926,7 @@ function showResult(winner: number): void {
   const player = snapshot!.players.find((p) => p.id === winner);
 
   element("result-title").textContent =
-    winner === 1
+    winner === localPlayerId
       ? "Victory"
       : winner === 0
         ? "A hard-fought draw"
@@ -856,7 +937,7 @@ function showResult(winner: number): void {
       `Allied victory · ${snapshot!.expansion!.winners.map((id) => snapshot!.players.find((p) => p.id === id)!.name).join(", ")}`;
 
   element("result-description").textContent =
-    winner === 1
+    winner === localPlayerId
       ? "All hostile buildings and military forces have fallen."
       : "The remaining enemy buildings and military forces have been defeated.";
 
@@ -868,7 +949,7 @@ element("restart").addEventListener("click", () => void start());
 element("play-again").addEventListener("click", () => void start());
 
 for (const { kind } of LAND_RECRUITMENT)
-  element(`recruit-${kind}`).addEventListener("click", () => recruit(kind));
+  element(`recruit-${kind}`).addEventListener("click", (event) => recruit(kind, recruitmentControls.batch(event.shiftKey, cameraPan.enabled)));
 
 element("replenish").addEventListener("click", replenish);
 
@@ -879,7 +960,7 @@ function placementRejection(type: BuildingType, tile: number): string | null {
     currentMap.map,
     snapshot.owners,
     placementIndex!,
-    snapshot.players[0],
+    snapshot.players.find(player => player.id === localPlayerId)!,
     type,
     tile,
   );
@@ -907,7 +988,7 @@ function placementRejection(type: BuildingType, tile: number): string | null {
 }
 
 function placeBuilding(type: BuildingType, age?: Age): void {
-  if (!snapshot || snapshot.winner !== null || snapshot.players[0].eliminated)
+  if (!snapshot || snapshot.winner !== null || snapshot.players.find(player => player.id === localPlayerId)!.eliminated)
     return;
 
   const choice = empireModel()?.buildChoice(
@@ -945,8 +1026,8 @@ function placeBuilding(type: BuildingType, age?: Age): void {
 for (const { kind } of CONSTRUCTION)
   element(`build-${kind}`).addEventListener("click", () => placeBuilding(kind));
 
-for (const kind of ["transport", "warship"] as ShipType[])
-  element(kind).addEventListener("click", () => recruitShip(kind));
+for (const { kind } of NAVAL_RECRUITMENT)
+  element(kind).addEventListener("click", (event) => recruitShip(kind, recruitmentControls.batch(event.shiftKey, cameraPan.enabled)));
 
 for (const digit of [1, 2, 3, 4, 5, 6, 7, 8, 9, 0])
   element(`group-${digit}`).addEventListener("click", (event) =>
@@ -968,7 +1049,7 @@ element("load").addEventListener("click", () => {
     command({
       type: "board",
 
-      playerId: 1,
+      playerId: localPlayerId,
 
       shipId: ship.id,
 
@@ -1147,7 +1228,7 @@ canvas.addEventListener("pointerup", (event) => {
         command({
           type: "build",
 
-          playerId: 1,
+          playerId: localPlayerId,
 
           buildingType: placementType,
 
@@ -1155,7 +1236,7 @@ canvas.addEventListener("pointerup", (event) => {
 
           tile,
         });
-      else command({ type: "unload", playerId: 1, shipId: landingShip!, tile });
+      else command({ type: "unload", playerId: localPlayerId, shipId: landingShip!, tile });
 
       cancelPlacement();
     }
@@ -1181,7 +1262,7 @@ canvas.addEventListener("pointerup", (event) => {
 
     if (start.moved) {
       for (const aircraft of snapshot.expansion?.aircraft ?? []) {
-        if (aircraft.playerId !== 1) continue;
+        if (aircraft.playerId !== localPlayerId) continue;
         const position = renderer.screen(
           aircraft.x / FIXED,
           aircraft.y / FIXED,
@@ -1195,7 +1276,7 @@ canvas.addEventListener("pointerup", (event) => {
           renderer.selectedAircraft.add(aircraft.id);
       }
       for (const squad of snapshot.squads) {
-        if (squad.playerId !== 1 || squad.embarkedOn !== null) continue;
+        if (squad.playerId !== localPlayerId || squad.embarkedOn !== null) continue;
 
         const position = renderer.screen(squad.x / FIXED, squad.y / FIXED);
 
@@ -1209,7 +1290,7 @@ canvas.addEventListener("pointerup", (event) => {
       }
 
       for (const ship of snapshot.ships) {
-        if (ship.playerId !== 1) continue;
+        if (ship.playerId !== localPlayerId) continue;
 
         const position = renderer.screen(ship.x / FIXED, ship.y / FIXED);
 
@@ -1228,7 +1309,7 @@ canvas.addEventListener("pointerup", (event) => {
 
       const ship = renderer.shipAt(p.x, p.y);
 
-      const squad = renderer.squadAt(p.x, p.y, 1);
+      const squad = renderer.squadAt(p.x, p.y, localPlayerId);
       const foreignSquad = renderer.squadAt(p.x, p.y);
 
       if (army !== null) {
@@ -1250,7 +1331,7 @@ canvas.addEventListener("pointerup", (event) => {
       } else if (
         ship !== null &&
         currentMap?.map.isWater(renderer.tileAt(p.x, p.y) ?? -1) &&
-        snapshot.ships.some((s) => s.id === ship && s.playerId === 1)
+        snapshot.ships.some((s) => s.id === ship && s.playerId === localPlayerId)
       ) {
         if (start.shift && renderer.selectedShips.has(ship))
           renderer.selectedShips.delete(ship);
@@ -1259,12 +1340,12 @@ canvas.addEventListener("pointerup", (event) => {
         if (start.shift && renderer.selected.has(squad.id))
           renderer.selected.delete(squad.id);
         else renderer.selected.add(squad.id);
-      } else if (foreignSquad && foreignSquad.playerId !== 1) {
+      } else if (foreignSquad && foreignSquad.playerId !== localPlayerId) {
         renderer.inspectedSquadId = foreignSquad.id;
       } else if (building !== null) renderer.selectedBuilding = building;
       else if (
         ship !== null &&
-        snapshot.ships.some((s) => s.id === ship && s.playerId === 1)
+        snapshot.ships.some((s) => s.id === ship && s.playerId === localPlayerId)
       ) {
         if (start.shift && renderer.selectedShips.has(ship))
           renderer.selectedShips.delete(ship);
@@ -1281,7 +1362,7 @@ canvas.addEventListener("pointerup", (event) => {
       renderer.inspectedSquadId === null &&
       (renderer.selectedBuilding === null ||
         snapshot.buildings.find((b) => b.id === renderer.selectedBuilding)
-          ?.playerId !== 1)
+          ?.playerId !== localPlayerId)
     ) {
       const tile = renderer.tileAt(p.x, p.y),
         clickedSquad = renderer.squadAt(p.x, p.y),
@@ -1297,7 +1378,7 @@ canvas.addEventListener("pointerup", (event) => {
           clickedBuilding?.playerId ??
           (tile === null ? 0 : snapshot.owners[tile]);
 
-      if (owner && owner !== 1) empire.inspectPlayer(owner);
+      if (owner && owner !== localPlayerId) empire.inspectPlayer(owner);
     }
 
     updateHud();
@@ -1308,7 +1389,7 @@ canvas.addEventListener("pointerup", (event) => {
           .filter(
             (a) =>
               renderer.selectedAircraft.has(a.id) &&
-              a.playerId === 1 &&
+              a.playerId === localPlayerId &&
               a.state === "ready",
           )
           .map((a) => a.id) ?? [];
@@ -1316,7 +1397,7 @@ canvas.addEventListener("pointerup", (event) => {
         const position = renderer.world(p.x, p.y);
         command({
           type: "sortie",
-          playerId: 1,
+          playerId: localPlayerId,
           aircraftIds: ids,
           x: Math.round(position.x * FIXED),
           y: Math.round(position.y * FIXED),
@@ -1338,15 +1419,15 @@ canvas.addEventListener("pointerup", (event) => {
       (b) => b.id === renderer.buildingAt(p.x, p.y),
     );
     const enemyShip = snapshot.ships.find(
-      (s) => s.id === clickedShipId && s.playerId !== 1,
+      (s) => s.id === clickedShipId && s.playerId !== localPlayerId,
     );
     if (
       renderer.selectedShips.size &&
-      (enemyShip || (coastal && coastal.playerId !== 1))
+      (enemyShip || (coastal && coastal.playerId !== localPlayerId))
     ) {
       command({
         type: "naval-attack",
-        playerId: 1,
+        playerId: localPlayerId,
         shipIds: [...renderer.selectedShips].filter(
           (id) => snapshot!.ships.find((s) => s.id === id)?.kind === "warship",
         ),
@@ -1356,14 +1437,14 @@ canvas.addEventListener("pointerup", (event) => {
     }
     const transport = snapshot.ships.find(
       (s) =>
-        s.id === clickedShipId && s.playerId === 1 && s.kind === "transport",
+        s.id === clickedShipId && s.playerId === localPlayerId && s.kind === "transport",
     );
 
     if (transport && renderer.selected.size) {
       command({
         type: "board",
 
-        playerId: 1,
+        playerId: localPlayerId,
 
         shipId: transport.id,
 
@@ -1389,7 +1470,7 @@ canvas.addEventListener("pointerup", (event) => {
       command({
         type: "sail",
 
-        playerId: 1,
+        playerId: localPlayerId,
 
         shipIds: [...renderer.selectedShips],
 
@@ -1409,7 +1490,7 @@ canvas.addEventListener("pointerup", (event) => {
       return;
     }
 
-    const enemy = target && target.playerId !== 1;
+    const enemy = target && target.playerId !== localPlayerId;
 
     const position = renderer.world(p.x, p.y);
 
@@ -1428,20 +1509,20 @@ canvas.addEventListener("pointerup", (event) => {
 
     const structureOrder =
       !enemy &&
-      (Boolean(building && building.playerId !== 1) ||
-        Boolean(barrier && barrier.playerId !== 1));
+      (Boolean(building && building.playerId !== localPlayerId) ||
+        Boolean(barrier && barrier.playerId !== localPlayerId));
     if (!enemy && tile === null) return;
     const ids = [...renderer.selected];
     const ordinary: Command = structureOrder ? {
         type: "attack-structure",
-        playerId: 1,
+        playerId: localPlayerId,
         squadIds: ids,
         buildingId: building?.id,
         barrierId: barrier?.id,
       } : {
       type: "order",
 
-      playerId: 1,
+      playerId: localPlayerId,
 
       squadIds: ids,
 
@@ -1456,7 +1537,7 @@ canvas.addEventListener("pointerup", (event) => {
       if (snapshot?.winner === null && context === `${matchSequence}:${[...renderer.selected].sort((a,b)=>a-b).join(",")}`)
         command(ordinary);
     }}, !start.shift && chargers.length ? ()=>command({
-      type:"charge",playerId:1,squadIds:chargers.map(s=>s.id),
+      type:"charge",playerId:localPlayerId,squadIds:chargers.map(s=>s.id),
       x:Math.round(position.x*FIXED),y:Math.round(position.y*FIXED),targetId:enemy ? target.id : undefined,
     }) : undefined);
 
@@ -1490,10 +1571,10 @@ canvas.addEventListener("dblclick", (event) => {
   const point = localPosition(event);
 
   const ship = snapshot.ships.find(
-    (s) => s.id === renderer.shipAt(point.x, point.y) && s.playerId === 1,
+    (s) => s.id === renderer.shipAt(point.x, point.y) && s.playerId === localPlayerId,
   );
 
-  const squad = renderer.squadAt(point.x, point.y, 1);
+  const squad = renderer.squadAt(point.x, point.y, localPlayerId);
 
   if (!ship && !squad) return;
 
@@ -1536,19 +1617,37 @@ canvas.addEventListener(
   { passive: false },
 );
 
+const editingText = (target: EventTarget | null): boolean =>
+  target instanceof HTMLElement && (target.matches(
+    "input:not([type=checkbox]):not([type=radio]),select,textarea",
+  ) || target.isContentEditable);
+document.addEventListener("keyup", (event) => {
+  cameraPan.keyUp(event.code);
+  recruitmentControls.keyUp(event.code);
+});
+window.addEventListener("blur", () => { cameraPan.clear(); recruitmentControls.clear(); });
+document.addEventListener("visibilitychange", () => {
+  if (document.hidden) { cameraPan.clear(); recruitmentControls.clear(); }
+});
+document.addEventListener("focusin", (event) => {
+  if (editingText(event.target)) { cameraPan.clear(); recruitmentControls.clear(); }
+});
 document.addEventListener("keydown", (event) => {
   if (event.key === "Escape" && empire.close()) {
     event.preventDefault();
     return;
   }
-  if (
-    (event.target as HTMLElement).matches(
-      "input:not([type=checkbox]):not([type=radio]),select,textarea",
-    ) ||
-    (event.target as HTMLElement).isContentEditable
-  )
-    return;
+  if (editingText(event.target)) return;
 
+  if (recruitmentControls.keyDown(event.code)) {
+    cameraPan.clear();
+    event.preventDefault();
+    return;
+  }
+  if (!recruitmentControls.spaceHeld && cameraPan.keyDown(event)) {
+    event.preventDefault();
+    return;
+  }
   const key = event.key.toLowerCase();
 
   if (
@@ -1563,7 +1662,7 @@ document.addEventListener("keydown", (event) => {
     return;
   }
 
-  const action = hotkeyAction(event);
+  const action = hotkeyAction(event, cameraPan.enabled, recruitmentControls.spaceHeld);
 
   if (!action) return;
 
@@ -1571,12 +1670,12 @@ document.addEventListener("keydown", (event) => {
 
   switch (action.type) {
     case "recruit":
-      recruit(action.kind);
+      recruit(action.kind, recruitmentControls.batch(event.shiftKey, cameraPan.enabled));
 
       break;
 
     case "recruit-ship":
-      recruitShip(action.kind);
+      recruitShip(action.kind, recruitmentControls.batch(event.shiftKey, cameraPan.enabled));
 
       break;
 
@@ -1592,11 +1691,6 @@ document.addEventListener("keydown", (event) => {
 
     case "hold":
       hold();
-
-      break;
-
-    case "pause":
-      togglePause();
 
       break;
 
@@ -1625,6 +1719,8 @@ document.addEventListener("keydown", (event) => {
 });
 
 function frame(now: number): void {
+  const pan = cameraPan.step(now);
+  if (pan.x || pan.y) renderer.pan(pan.x, pan.y);
   if (renderer.draw(now, speed, paused)) updateCampLossLabels(now);
 
   requestAnimationFrame(frame);

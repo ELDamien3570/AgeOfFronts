@@ -1392,7 +1392,7 @@ footer span:last-child {
 }
 .command-category.orders .hud-action {
   width: 44px;
-  height: 25px;
+  height: 38px;
 }
 .command-category.orders .command-symbol {
   display: none;
@@ -1974,4 +1974,137 @@ footer span:last-child {
 .army-list[hidden],
 .army-card[hidden] {
   display: none;
+}
+
+/* The map summary shares the terrain key; training occupies the opposite corner. */
+.map-context { position: absolute; top: 14px; right: 18px; max-width: 55%; display: flex; flex-direction: column; align-items: flex-end; gap: 6px; pointer-events: none; }
+.map-context .map-badge { position: static; padding: 0; border: 0; background: none; box-shadow: none; font-size: 9px; text-shadow: 0 1px 2px #000, 0 0 4px #000; }
+.map-context .terrain-legend { position: static; justify-content: flex-end; }
+.recruitment-feed { position: absolute; top: 14px; left: 16px; display: flex; flex-wrap: wrap; gap: 6px; max-width: min(420px, 42%); }
+.recruitment-feed[hidden] { display: none; }
+.recruitment-cell { position: relative; width: 44px; height: 46px; border: 1px solid #a8c7c56b; border-radius: 3px; background: #101b24a8; overflow: hidden; }
+.recruitment-cell .hud-art { position: absolute; inset: 3px 3px 7px; width: 36px; height: 36px; object-fit: contain; }
+.recruitment-cell .command-symbol { display: grid; place-items: center; height: 40px; }
+.recruitment-count { position: absolute; right: 3px; bottom: 7px; color: #fff; font-size: 11px; font-weight: 700; text-shadow: 0 1px 2px #000, 1px 0 2px #000, -1px 0 2px #000; }
+.recruitment-progress { position: absolute; bottom: 2px; left: 2px; right: 2px; height: 3px; background: #101720; }
+.recruitment-progress i { display: block; height: 100%; background: #87d4b2; transition: width .15s linear; }
+.army-list { top: calc(50px + var(--recruitment-feed-height, 0px)); }
+
+/* Keep match totals readable when the compact HUD wraps on narrow windows. */
+.resource-row .match-metric {
+  display: flex;
+  flex-shrink: 0;
+}
+.resource-row:has(.match-metric) {
+  flex-wrap: wrap;
+}
+
+/* Four compact research cards; open right-side drawers take presentation priority. */
+.research-opportunities {
+  position: absolute;
+  top: 54px;
+  right: 8px;
+  width: min(268px, calc(100% - 16px));
+  max-height: min(434px, calc(100% - 240px));
+  display: grid;
+  align-content: start;
+  gap: 6px;
+  overflow-y: auto;
+  overscroll-behavior: contain;
+  scrollbar-width: thin;
+  z-index: 2;
+}
+.research-opportunities[hidden],
+.battlefield:has(#empire-panel:not([hidden]), #roster-popover:not([hidden]), #controls-popover:not([hidden])) .research-opportunities {
+  display: none;
+}
+.research-opportunity {
+  padding: 5px 7px;
+  min-width: 0;
+}
+#app[data-ui-age] .battlefield .research-opportunity {
+  border-width: 3px;
+}
+.research-opportunity header {
+  display: flex;
+  flex-direction: column;
+  gap: 1px;
+}
+.research-opportunity header small {
+  color: var(--gold);
+  text-transform: uppercase;
+  font-size: 8px;
+  letter-spacing: .08em;
+}
+.research-opportunity header b {
+  font-size: 12px;
+  line-height: 15px;
+  overflow-wrap: anywhere;
+}
+.research-description {
+  display: grid;
+  grid-template-rows: minmax(46px, 0fr);
+  opacity: 1;
+  transition: grid-template-rows 240ms ease, opacity 180ms ease;
+}
+.research-description > div {
+  min-height: 0;
+  overflow: hidden;
+}
+.research-opportunity:is(:hover, :focus-within) .research-description {
+  grid-template-rows: minmax(46px, 1fr);
+  opacity: 1;
+}
+.research-opportunity p {
+  display: -webkit-box;
+  -webkit-box-orient: vertical;
+  -webkit-line-clamp: 2;
+  overflow: hidden;
+  font-size: 11px;
+  line-height: 16px;
+  margin: 6px 0 8px;
+  overflow-wrap: anywhere;
+}
+.research-opportunity:is(:hover, :focus-within) p {
+  -webkit-line-clamp: unset;
+}
+@media (prefers-reduced-motion: reduce) {
+  .research-description { transition: none; }
+}
+#app .research-opportunity button {
+  width: 100%;
+  min-height: 26px;
+  padding: 3px 5px;
+  font-size: 10px;
+  border-width: 1px;
+  white-space: normal;
+}
+.research-opportunity button small {
+  display: block;
+  font-size: 9px;
+}
+
+
+/* Room for the full era label and the reorganized building categories. */
+#app .dock-tier select {
+  width: 136px;
+  min-width: 136px;
+  flex-shrink: 0;
+  padding: 2px 4px;
+}
+.command-category h3 {
+  overflow-wrap: normal;
+  white-space: normal;
+}
+.action-slot[hidden] { display: none; }
+@media (min-width: 1100px) {
+  .command-row {
+    display: grid;
+    grid-template-columns: repeat(4, minmax(70px, 1fr)) minmax(246px, 1.7fr) minmax(112px, 1fr) 104px;
+  }
+}
+@media (max-width: 1099px) {
+  .command-row { overflow-x: auto; }
+  .command-category { flex: 0 0 145px; }
+  .command-category.troops { flex-basis: 246px; }
 }

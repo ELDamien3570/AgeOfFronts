@@ -1,3 +1,4 @@
+import { restoreRecord } from "../StateTransfer";
 import { DEFAULT_CULTURE } from "../content/Catalog";
 import {
   ADVANCES,
@@ -74,6 +75,13 @@ export function advanceRejection(
   return gold < price ? `Needs ${price - gold} more gold` : null;
 }
 export class Progression {
+  checkpoint() { return structuredClone({states:this.states}); }
+  restore(saved: ReturnType<Progression["checkpoint"]>): void {
+    const state=structuredClone(saved);
+    restoreRecord(this.states,state.states);
+
+  }
+
   readonly states: Record<number, ProgressionState> = {};
   constructor(readonly technologySpeed: TechnologySpeed = 1) {
     if (![1, 2, 3].includes(technologySpeed))

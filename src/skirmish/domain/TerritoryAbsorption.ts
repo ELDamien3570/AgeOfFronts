@@ -1,7 +1,8 @@
+import { restoreMap, restoreSet } from "../StateTransfer";
 import type { GameMap } from "../../core/game/GameMap";
 import { TICKS_PER_SECOND } from "../Protocol";
 
-export const TERRITORY_ABSORPTION = Object.freeze({ maxCells: 2, seconds: 10 });
+export const TERRITORY_ABSORPTION = Object.freeze({ maxCells: 2, seconds: 10, includeUnclaimed: true });
 
 interface Pocket {
   owner: number;
@@ -15,6 +16,15 @@ interface Pending extends Pocket {
 // Domain policy with bounded local connectivity checks. Ownership mutations
 // remain the simulation aggregate's responsibility, including capture credit.
 export class TerritoryAbsorption {
+  checkpoint() { return structuredClone({dirty:this.dirty, watched:this.watched, pending:this.pending}); }
+  restore(saved: ReturnType<TerritoryAbsorption["checkpoint"]>): void {
+    const state=structuredClone(saved);
+    restoreSet(this.dirty,state.dirty);
+    restoreSet(this.watched,state.watched);
+    restoreMap(this.pending,state.pending);
+
+  }
+
   private readonly dirty = new Set<number>();
   private readonly watched = new Set<number>();
   private readonly pending = new Map<number, Pending>();
@@ -48,7 +58,7 @@ export class TerritoryAbsorption {
       this.watched.add(root);
       if (
         pocket.tiles.some(hasBuilding) ||
-        !hostile(pocket.owner, pocket.recipient)
+        (pocket.owner !== 0 && !hostile(pocket.owner, pocket.recipient))
       ) {
         this.pending.delete(root);
         continue;
@@ -76,20 +86,21 @@ export class TerritoryAbsorption {
 
   private inspect(start: number, owners: Uint8Array): Pocket | undefined {
     const owner = owners[start];
-    if (!owner || !this.map.isLand(start)) return;
+    if ((!owner && !TERRITORY_ABSORPTION.includeUnclaimed) || !this.map.isLand(start)) return;
     const tiles = [start];
     let recipient = 0;
     for (let at = 0; at < tiles.length; at++) {
       const neighbors = this.map.neighbors(tiles[at]);
       if (neighbors.length !== 4) return; // An open map edge is not enclosed.
       for (const neighbor of neighbors) {
-        if (!this.map.isLand(neighbor) || !owners[neighbor]) return;
+        if (!this.map.isLand(neighbor)) return;
         if (owners[neighbor] === owner) {
           if (!tiles.includes(neighbor)) {
             tiles.push(neighbor);
             if (tiles.length > TERRITORY_ABSORPTION.maxCells) return;
           }
         } else {
+          if (!owners[neighbor]) return; // Enemy pockets bordering neutral land stay open.
           if (recipient && recipient !== owners[neighbor]) return;
           recipient = owners[neighbor];
         }

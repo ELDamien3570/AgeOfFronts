@@ -75,7 +75,7 @@ describe("keyboard command mapping", () => {
       F: { type: "construct", kind: "barracks" },
       G: { type: "construct", kind: "archery" },
       H: { type: "construct", kind: "stables" },
-      T: { type: "recruit-ship", kind: "transport" },
+      T: null,
       B: { type: "recruit-ship", kind: "warship" },
       R: { type: "replenish" },
       X: { type: "hold" },

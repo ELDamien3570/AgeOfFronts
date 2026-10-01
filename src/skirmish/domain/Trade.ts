@@ -1,3 +1,4 @@
+import { restoreArray, restoreRecord, restoreSet } from "../StateTransfer";
 import type { GameMap } from "../../core/game/GameMap";
 import { technologyAt } from "../content/Technology";
 import { VESSELS } from "../content/Units";
@@ -24,8 +25,28 @@ export interface TradeWorld {
   allocateId(): number;
 }
 export class Trade {
+  checkpoint() { return structuredClone({actors:this.actors, deliveredGold:this.deliveredGold, capturedValue:this.capturedValue, lostValue:this.lostValue, nextShipment:this.nextShipment, retired:this.retired}); }
+  restore(saved: ReturnType<Trade["checkpoint"]>): void {
+    const state=structuredClone(saved);
+    restoreArray(this.actors,state.actors);
+    restoreRecord(this.deliveredGold,state.deliveredGold);
+    restoreRecord(this.capturedValue, state.capturedValue ?? {});
+    restoreRecord(this.lostValue, state.lostValue ?? {});
+    this.nextShipment=state.nextShipment;
+    restoreSet(this.retired,state.retired);
+
+  }
+
   readonly actors: TradeActor[] = [];
   readonly deliveredGold: Record<number, number> = {};
+  readonly capturedValue: Record<number, number> = {};
+  readonly lostValue: Record<number, number> = {};
+
+  private discardCargo(actor: TradeActor): void {
+    this.lostValue[actor.playerId] = (this.lostValue[actor.playerId] ?? 0) + actor.cargo * actor.valuePerGood;
+    actor.lost += actor.cargo;
+    actor.cargo = 0;
+  }
   private nextShipment = 1;
   private readonly retired = new Set<number>();
   private readonly land: SpatialGrid<Squad>;
@@ -139,8 +160,7 @@ export class Trade {
         (b) => b.id === actor.factoryId && b.playerId === actor.playerId,
       );
       if (!factory) {
-        actor.lost += actor.cargo;
-        actor.cargo = 0;
+        this.discardCargo(actor);
         this.retired.add(actor.id);
         actor.destination = null;
         return;
@@ -178,8 +198,7 @@ export class Trade {
         !b.remainingTicks,
     );
     if (!source) {
-      actor.lost += actor.cargo;
-      actor.cargo = 0;
+      this.discardCargo(actor);
       this.retired.add(actor.id);
       return;
     }
@@ -339,8 +358,7 @@ export class Trade {
     for (const actor of this.actors) {
       const player = players.find((p) => p.id === actor.playerId);
       if (!player || player.eliminated) {
-        actor.lost += actor.cargo;
-        actor.cargo = 0;
+        this.discardCargo(actor);
         continue;
       }
       if (actor.waitTicks > 0) {
@@ -361,6 +379,9 @@ export class Trade {
         )
         .sort((a, b) => a.id - b.id)[0];
       if (captor && actor.cargo > 0) {
+        const value = actor.cargo * actor.valuePerGood;
+        this.lostValue[actor.playerId] = (this.lostValue[actor.playerId] ?? 0) + value;
+        this.capturedValue[captor.playerId] = (this.capturedValue[captor.playerId] ?? 0) + value;
         actor.playerId = captor.playerId;
         actor.stops = [];
         actor.visited = [];
@@ -426,7 +447,7 @@ export class Trade {
               (this.supply.goods.get(actor.factoryId) ?? 0) + actor.cargo,
             );
             actor.returned += actor.cargo;
-          } else actor.lost += actor.cargo;
+          } else this.discardCargo(actor);
           actor.cargo = 0;
         }
         actor.state = "loading";

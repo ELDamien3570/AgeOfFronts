@@ -1,3 +1,4 @@
+import { restoreArray, restoreMap, restoreSet } from "../StateTransfer";
 import type { GameMap } from "../../core/game/GameMap";
 import type { LandPaths } from "../Pathfinding";
 import {
@@ -20,6 +21,7 @@ import {
 import { armyCapacity } from "../content/Armies";
 import type { Army, ArmyOrder, UnitDefinition } from "./Definitions";
 import type { Progression } from "./Progression";
+import type { ArmyRouteRequest } from "./RouteTask";
 
 // Coordination owns intent and membership; the existing simulation still owns
 // every physical position, collision, shot, transport and pathfinding operation.
@@ -45,7 +47,7 @@ export interface ArmyWorld {
     ideals: Map<number, WorldPoint>,
     reserved?: WorldPoint[],
   ): Map<number, WorldPoint> | null;
-  queueArmyRoute(key: string, work: () => void): void;
+  queueArmyRoute(key: string, work: ArmyRouteRequest): void;
   cancelArmyRoute(key: string): void;
   setArmyMove(
     squad: Squad,
@@ -82,6 +84,17 @@ const attackOrder = (
   o: ArmyOrder,
 ): o is Extract<ArmyOrder, { targetId: number }> => "targetId" in o;
 export class Armies {
+  checkpoint() { return structuredClone({armies:this.armies, membership:this.membership, marches:this.marches, externalActions:this.externalActions, nextId:this.nextId}); }
+  restore(saved: ReturnType<Armies["checkpoint"]>): void {
+    const state=structuredClone(saved);
+    restoreArray(this.armies,state.armies);
+    restoreMap(this.membership,state.membership);
+    restoreMap(this.marches,state.marches);
+    restoreSet(this.externalActions,state.externalActions);
+    this.nextId=state.nextId;
+    this.byArmyId.clear(); for (const army of this.armies) this.byArmyId.set(army.id,army);
+  }
+
   readonly armies: Army[] = [];
   private readonly membership = new Map<number, number>();
   private readonly byArmyId = new Map<number, Army>();
@@ -629,15 +642,22 @@ export class Armies {
       )
         continue;
       march.pending.add(s.id);
-      const revision = army.revision;
-      this.world.queueArmyRoute(`army:${army.id}:${s.id}`, () => {
-        march.pending.delete(s.id);
+      this.world.queueArmyRoute(`army:${army.id}:${s.id}`, { armyId: army.id, squadId: s.id, revision: army.revision });
+    }
+    return true;
+  }
+  resolveRoute(request: ArmyRouteRequest): void {
+    const army = this.byArmyId.get(request.armyId);
+    const march = this.marches.get(request.armyId);
+    const s = this.world.squad(request.squadId);
+    if (!army || !march || !s) return;
         if (
-          army.revision !== revision ||
+          army.revision !== request.revision ||
           this.membership.get(s.id) !== army.id ||
           !active(s)
         )
           return;
+          march.pending.delete(s.id);
         const current = march.slots.get(s.id);
         if (!current) return;
         let via: WorldPoint[] | undefined;
@@ -727,9 +747,6 @@ export class Armies {
         }
         this.world.setArmyMove(s, current, path, via);
         march.planned.set(s.id, current);
-      });
-    }
-    return true;
   }
   private finish(army: Army): void {
     const queued = army.queuedOrders.shift();

@@ -1,3 +1,4 @@
+import { restoreMap } from "./StateTransfer";
 import type { GameMap } from "../core/game/GameMap";
 import type { MovementIntent } from "./LocalAvoidance";
 import type { LandPaths } from "./Pathfinding";
@@ -29,6 +30,13 @@ interface Ticket extends Crossing {
 // Terrain passages own traffic priority; avoidance still owns physical movement.
 // Adjacent one-cell corridor tiles share one reservation, held until fully clear.
 export class PassageTraffic {
+  checkpoint() { return structuredClone({leaders:this.leaders}); }
+  restore(saved: ReturnType<PassageTraffic["checkpoint"]>): void {
+    const state=structuredClone(saved);
+    restoreMap(this.leaders,state.leaders);
+
+  }
+
   private readonly tiles: (Passage | undefined)[];
   private readonly leaders = new Map<string, number>();
   private readonly routes = new WeakMap<number[], Crossing[]>();

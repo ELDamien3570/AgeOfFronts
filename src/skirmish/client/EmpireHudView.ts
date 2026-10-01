@@ -5,8 +5,10 @@ import { buildingPreviewArtworkId } from "./ArtworkCatalog";
 import type { EmpireActions } from "./EmpireView";
 import type { EmpireViewModel } from "./EmpireViewModel";
 import { eraPortrait } from "./EraArtwork";
+import { recruitmentBatch } from "./Controls";
 import { icon } from "./HudView";
 import { SkirmishViewModel } from "./SkirmishViewModel";
+import { BUILDING_SECTION, type BuildingSection } from "./BuildingSections";
 
 const esc = (s: string) =>
   s.replace(
@@ -22,7 +24,7 @@ const groups = [
     id: "ores",
     name: "Raw materials",
     glyph: "M3 18 7 5l9-2 5 13-7 5Z",
-    items: ["stone", "copper", "tin", "ironOre", "sulphur", "nitrate"],
+    items: ["stone", "copper", "tin", "ironOre"],
   },
   {
     id: "metals",
@@ -63,6 +65,8 @@ export interface DockPreferences {
 // The view dispatches commands selected by read-only quotes. It never mutates
 // inventories, progression, world orders, or diplomacy.
 export class EmpireHudView {
+  private get playerId(): number { return this.vm?.playerId ?? 1; }
+
   private vm?: EmpireViewModel;
   private dockKey = "";
   private stockKey = "";
@@ -84,19 +88,22 @@ export class EmpireHudView {
       "beforeend",
       `<div class="dock-tier"><select id="recruit-tier" aria-label="Recruitment tier"><option value="">Best available</option>${AGES.map((age, i) => `<option value="${age}">${AGE_NAMES[i]}</option>`).join("")}</select><label><input id="auto-tier" type="checkbox" checked>Auto tier</label></div>`,
     );
-    for (const section of ["economy", "military", "troops"])
-      root
-        .querySelector(`.command-category.${section} .category-actions`)!
-        .insertAdjacentHTML(
-          "beforeend",
-          `<div id="dock-extra-${section}" class="dock-extra"></div>`,
-        );
-    root
-      .querySelector(".command-category.ships")!
-      .insertAdjacentHTML(
-        "afterend",
-        `<div class="command-category aviation"><h3>Air & strategic</h3><div class="category-actions" id="dock-extra-aviation"></div></div>`,
+    for (const [after, section, label] of [
+      ["economy", "production", "Production Buildings"],
+      ["military", "defense", "Defense Buildings"],
+    ]) root.querySelector(`.command-category.${after}`)!.insertAdjacentHTML(
+      "afterend", `<div class="command-category ${section}"><h3>${label}</h3><div class="category-actions"></div></div>`,
+    );
+    for (const section of ["economy", "production", "military", "defense", "troops"])
+      root.querySelector(`.command-category.${section} .category-actions`)!.insertAdjacentHTML(
+        "beforeend", `<div id="dock-extra-${section}" class="dock-extra"></div>`,
       );
+    const ships = root.querySelector<HTMLElement>(".command-category.ships")!;
+    ships.classList.replace("ships", "aviation");
+    ships.querySelector("h3")!.textContent = "Air & Strategic";
+    ships.querySelector(".category-actions")!.insertAdjacentHTML(
+      "beforeend", '<div id="dock-extra-aviation" class="dock-extra"></div>',
+    );
     root
       .querySelector(".battlefield")!
       .insertAdjacentHTML(
@@ -129,7 +136,10 @@ export class EmpireHudView {
         this.inspect(Number(button.dataset.feedPlayer));
         return;
       }
-      this.dispatch(button.dataset.dockAction!, button.dataset.value);
+      const action = button.dataset.dockAction!;
+      const count = action === "support" || action === "aircraft"
+        ? (this.actions.recruitmentBatch?.(event.shiftKey) ?? recruitmentBatch(event.shiftKey, false)) : 1;
+      for (let i = 0; i < count; i++) this.dispatch(action, button.dataset.value);
     });
     root.addEventListener("pointerover", (event) =>
       this.showTip(
@@ -167,11 +177,10 @@ export class EmpireHudView {
       "infantry",
       "archer",
       "cavalry",
-      "transport",
       "warship",
     ] as const) {
       const units =
-        line === "transport" || line === "warship"
+        line === "warship"
           ? this.vm.vessels(line)
           : this.vm.units(line);
       const latest = units
@@ -265,7 +274,7 @@ export class EmpireHudView {
           ?.focus();
       this.stockKey = stock;
     }
-    const buildings = (economy: boolean) =>
+    const buildings = (section: BuildingSection) =>
       (Object.keys(BUILDING_RULES) as BuildingType[])
         .filter(
           (type) =>
@@ -277,7 +286,7 @@ export class EmpireHudView {
               "archery",
               "stables",
             ].includes(type) &&
-            ["mine", "oil-well", "oil-rig"].includes(type) === economy,
+            BUILDING_SECTION[type] === section && vm.buildingVisible(type),
         )
         .map((type) => {
           const choice = vm.buildingPreview(type);
@@ -295,6 +304,9 @@ export class EmpireHudView {
           );
         })
         .join("");
+    for (const type of ["city", "factory", "port", "barracks", "archery", "stables"] as const) {
+      this.root.querySelector<HTMLElement>(`#build-${type}`)!.closest<HTMLElement>(".action-slot")!.hidden = !vm.buildingVisible(type);
+    }
     const support = ["siege", "artillery", "anti-air", "launcher"]
       .map((role) => {
         const candidates = vm
@@ -332,7 +344,7 @@ export class EmpireHudView {
       .join("");
     const ready = vm.expansion.aircraft.filter(
       (a) =>
-        a.playerId === 1 &&
+        a.playerId === this.playerId &&
         a.state === "ready" &&
         vm.selection.selectedAircraft?.has(a.id),
     );
@@ -371,8 +383,10 @@ export class EmpireHudView {
         })
         .join("");
     const values = {
-      economy: buildings(true),
-      military: buildings(false),
+      economy: buildings("economy"),
+      production: buildings("production"),
+      military: buildings("military"),
+      defense: buildings("defense"),
       troops: support,
       aviation,
     };
@@ -393,11 +407,10 @@ export class EmpireHudView {
       "infantry",
       "archer",
       "cavalry",
-      "transport",
       "warship",
     ] as const) {
       const id =
-          kind === "transport" || kind === "warship" ? kind : `recruit-${kind}`,
+          kind === "warship" ? kind : `recruit-${kind}`,
         button = this.root.querySelector<HTMLButtonElement>(`#${id}`)!,
         quote = game.recruitment(kind);
       if (button.dataset.definition !== quote.definitionId) {
@@ -411,7 +424,7 @@ export class EmpireHudView {
       this.lastEvent = event.id;
       const name = (id: number | undefined) =>
           vm.state.players.find((p) => p.id === id)?.name ?? "Unknown faction",
-        other = event.actorId === 1 ? event.otherId : event.actorId;
+        other = event.actorId === this.playerId ? event.otherId : event.actorId;
       const message =
         event.kind === "age"
           ? `${name(event.actorId)} reached ${AGE_NAMES[AGES.indexOf(event.age!)]}`
@@ -442,8 +455,9 @@ export class EmpireHudView {
       if (q.building && !q.reason)
         this.actions.command({
           type: "recruit",
-          playerId: 1,
+          playerId: this.playerId,
           buildingId: q.building.id,
+          autoRecruit: q.building.id !== vm.selection.selectedBuilding,
           definitionId: value!,
         });
     }
@@ -453,8 +467,9 @@ export class EmpireHudView {
       if (q.building && !q.reason)
         this.actions.command({
           type: "recruit-aircraft",
-          playerId: 1,
+          playerId: this.playerId,
           buildingId: q.building.id,
+          autoRecruit: q.building.id !== vm.selection.selectedBuilding,
           definitionId: kind,
         });
     }
@@ -462,7 +477,7 @@ export class EmpireHudView {
       const ids = vm.expansion.aircraft
         .filter(
           (a) =>
-            a.playerId === 1 &&
+            a.playerId === this.playerId &&
             a.state === "ready" &&
             vm.selection.selectedAircraft?.has(a.id),
         )
@@ -472,7 +487,7 @@ export class EmpireHudView {
           (x, y) =>
             this.actions.command({
               type: "sortie",
-              playerId: 1,
+              playerId: this.playerId,
               aircraftIds: ids,
               x,
               y,
@@ -488,7 +503,7 @@ export class EmpireHudView {
           (x, y) =>
             this.actions.command({
               type: "launch",
-              playerId: 1,
+              playerId: this.playerId,
               launcherId: q.launcher!.id,
               payload,
               x,

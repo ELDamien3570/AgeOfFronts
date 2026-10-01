@@ -115,11 +115,11 @@ export function hudMarkup(): string {
       <div id="naval-orders" class="naval-orders" hidden><span id="ship-selection"></span><button id="load">Meet & board</button><button id="unload">Unload at coast</button></div>
     </aside>
     <section class="command-dock hud-surface" aria-label="Resources and commands">
-      <div class="resource-row"><div class="resource gold-resource"><span class="resource-symbol" aria-hidden="true">◈</span><span>Gold<strong id="gold">—</strong></span></div><div class="resource"><span>Troops in field<strong id="troop-total">—</strong></span></div><div class="resource"><span>Reserve troops<strong id="reserves">—</strong></span></div><div class="resource small-resource"><span>Squads<strong id="squad-count">—</strong></span></div><div class="resource small-resource"><span>Land<strong id="land">—</strong></span></div><div class="resource small-resource"><span>Lost<strong id="losses">—</strong></span></div><button type="button" class="dock-age" aria-controls="hud-command-sections" aria-expanded="true" aria-pressed="false">STONE AGE</button></div>
+      <div class="resource-row"><div class="resource gold-resource"><span class="resource-symbol" aria-hidden="true">◈</span><span>Gold<strong id="gold">—</strong></span></div><div class="resource"><span>Troops in field<strong id="troop-total">—</strong></span></div><div class="resource"><span>Reserve troops<strong id="reserves">—</strong></span></div><div class="resource small-resource"><span>Squads<strong id="squad-count">—</strong></span></div><div class="resource small-resource"><span>Land<strong id="land">—</strong></span></div><div class="resource small-resource match-metric" title="Individual enemy soldiers killed, including troops aboard sunk transports."><span>Kills<strong id="kills">—</strong></span></div><div class="resource small-resource match-metric" title="Cumulative individual soldier casualties, including troops aboard sunk transports. Ship damage is excluded."><span>Deaths<strong id="losses">—</strong></span></div><div class="resource small-resource match-metric" title="Base gold value of enemy cargo captured this match; excludes delivery bonuses. Each capture counts, including recaptures."><span>Trade captured<strong id="trade-captured">—</strong></span></div><div class="resource small-resource match-metric" title="Base gold value of your cargo captured by enemies or discarded this match. Delivered and returned cargo are excluded."><span>Trade lost<strong id="trade-lost">—</strong></span></div><button type="button" class="dock-age" aria-controls="hud-command-sections" aria-expanded="true" aria-pressed="false">STONE AGE</button></div>
       <div id="hud-command-sections" class="command-row"><div class="command-category economy"><h3>Economy</h3><div class="category-actions">${buildings(true)}</div></div><div class="command-category military"><h3>Military buildings</h3><div class="category-actions">${buildings(false)}</div></div><div class="command-category troops"><h3>Troops</h3><div class="category-actions">${LAND_RECRUITMENT.map((a) => action(`recruit-${a.kind}`, a.label, a.key, a.kind)).join("")}</div></div><div class="command-category ships"><h3>Ships</h3><div class="category-actions">${NAVAL_RECRUITMENT.map((a) => action(a.kind, SHIP_RULES[a.kind].name, a.key, a.kind)).join("")}</div></div><div class="command-category orders"><h3>Orders</h3><div class="category-actions">${action("replenish", "Replenish", "R", undefined, "+")}${action("hold", "Hold", "X", undefined, "■")}${action("all", "Select all", "Ctrl A", undefined, "▦")}</div></div></div>
       <div class="dock-utility"><div class="control-groups"><span>Groups</span>${[1, 2, 3, 4, 5, 6, 7, 8, 9, 0].map((d) => `<button id="group-${d}" aria-label="Control group ${d}"><b>${d}</b><small>0</small></button>`).join("")}</div><span class="group-help">Shift adds · Ctrl replaces</span><button id="controls-toggle" aria-expanded="false">Controls <span>?</span></button><button id="roster-toggle" aria-expanded="false">Factions</button></div>
     </section>
-    <section id="controls-popover" class="hud-popover hud-surface" aria-label="Game controls" hidden><div class="popover-heading"><h2>Battlefield controls</h2><button data-close="controls-popover" aria-label="Close controls">×</button></div><dl class="stat-list"><dt>Left click / drag</dt><dd>Select units</dd><dt>Shift + select</dt><dd>Add units</dd><dt>Double click</dt><dd>Select visible units of type</dd><dt>Right click</dt><dd>Move / attack / board</dd><dt>Shift + right click</dt><dd>Queue waypoints</dd><dt>1–0</dt><dd>Recall control group</dd><dt>Shift + 1–0</dt><dd>Add to control group</dd><dt>Ctrl + 1–0</dt><dd>Replace / clear group</dd><dt>Wheel / middle drag</dt><dd>Zoom / pan</dd><dt>Space</dt><dd>Pause / resume</dd><dt>Home</dt><dd>Fit battlefield</dd><dt>Escape</dt><dd>Cancel placement / inspection</dd></dl><p class="card-description">Recruit and construction keys are shown on every command button. R replenishes eligible squads; X holds units; Ctrl A selects all land squads.</p><a href="/age-of-fronts-source.zip" download>Download corresponding source</a></section>
+    <section id="controls-popover" class="hud-popover hud-surface" aria-label="Game controls" hidden><div class="popover-heading"><h2>Battlefield controls</h2><button data-close="controls-popover" aria-label="Close controls">×</button></div><dl class="stat-list"><dt>Left click / drag</dt><dd>Select units</dd><dt>Shift + select</dt><dd>Add units</dd><dt>Double click</dt><dd>Select visible units of type</dd><dt>Right click</dt><dd>Move / attack / board</dd><dt>Shift + right click</dt><dd>Queue waypoints</dd><dt>1–0</dt><dd>Recall control group</dd><dt>Shift + 1–0</dt><dd>Add to control group</dd><dt>Ctrl + 1–0</dt><dd>Replace / clear group</dd><dt>Wheel / middle drag</dt><dd>Zoom / pan</dd><dt>Shift + recruit</dt><dd>Queue five (normal mode)</dd><dt>Space + recruit</dt><dd>Queue five (WASD mode)</dd><dt>Pause button</dt><dd>Pause / resume</dd><dt>Home</dt><dd>Fit battlefield</dd><dt>Escape</dt><dd>Cancel placement / inspection</dd></dl><p class="card-description">Recruit and construction keys are shown on every command button. R replenishes eligible squads; X holds units; Ctrl A selects all land squads.</p><a href="/age-of-fronts-source.zip" download>Download corresponding source</a></section>
     <section id="roster-popover" class="hud-popover hud-surface" aria-label="Factions" hidden><div class="popover-heading"><h2>Factions & territory</h2><button data-close="roster-popover" aria-label="Close factions">×</button></div><div id="roster"></div></section>
     <div id="hud-tooltip" class="hud-tooltip hud-surface" role="tooltip" hidden></div>
     <div id="deposit-tooltip" class="hud-tooltip compact-tooltip hud-surface" role="tooltip" hidden></div>`;
@@ -130,6 +130,8 @@ function cardMarkup(card: HudCard) {
 }
 
 export class HudView {
+  private playerId = 1;
+
   private readonly drawer = new HudDrawerViewModel();
   private vm?: HudViewModel;
   private focusedRef: string | null = null;
@@ -254,6 +256,16 @@ export class HudView {
     this.drawer.setPlacement(active);
     this.renderDrawer();
   }
+  setWasdMode(enabled: boolean): void {
+    for (const action of [...CONSTRUCTION, ...LAND_RECRUITMENT, ...NAVAL_RECRUITMENT]) {
+      const id = CONSTRUCTION.some((entry) => entry === action)
+        ? `build-${action.kind}`
+        : LAND_RECRUITMENT.some((entry) => entry === action)
+          ? `recruit-${action.kind}` : action.kind;
+      const key = this.root.querySelector<HTMLElement>(`#${id} kbd`);
+      if (key) key.textContent = `${enabled ? "⇧" : ""}${action.key}`;
+    }
+  }
   private renderDrawer(): void {
     const dock = this.root.querySelector<HTMLElement>(".command-dock")!;
     const button = dock.querySelector<HTMLButtonElement>(".dock-age")!;
@@ -290,6 +302,7 @@ export class HudView {
       this.el(toggle).setAttribute("aria-expanded", "false");
   }
   update(vm: HudViewModel) {
+    this.playerId = vm.playerId;
     this.vm = vm;
     for (const slot of this.root.querySelectorAll<HTMLElement>(
       ".action-slot",
@@ -370,7 +383,7 @@ export class HudView {
             ? "BUILDING DETAILS"
             : card.category === "resource"
               ? "RESOURCE DETAILS"
-              : card.playerId !== 1
+              : card.playerId !== this.playerId
                 ? "ENEMY UNIT DETAILS"
                 : "UNIT DETAILS";
       if (this.portraitKind !== (card.definitionId ?? card.kind)) {

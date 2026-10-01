@@ -322,7 +322,7 @@
 #app[data-ui-age] .rival[data-player]:hover {
   background: #ffffff08;
 }
-#app[data-ui-age] :is(.map-badge, .toast, .placement-hint) {
+#app[data-ui-age] :is(.toast, .placement-hint) {
   background: var(--frame-paint);
   border: 3px solid transparent;
   color: var(--age-ink);
@@ -459,4 +459,12 @@
   #app[data-ui-age] .hud-surface {
     border-width: 4px;
   }
+}
+
+/* Native option menus must remain readable in every age theme. */
+option,
+#app[data-ui-age] option {
+  background: #000;
+  color: #fff;
+  color-scheme: dark;
 }

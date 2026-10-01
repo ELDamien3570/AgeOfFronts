@@ -15,10 +15,10 @@ export class ControlGroups {
 
   prune(snapshot: Snapshot): void {
     const squads = new Set(
-      snapshot.squads.filter((s) => s.playerId === 1).map((s) => s.id),
+      snapshot.squads.filter((s) => s.playerId === (snapshot.localPlayerId ?? 1)).map((s) => s.id),
     );
     const ships = new Set(
-      snapshot.ships.filter((s) => s.playerId === 1).map((s) => s.id),
+      snapshot.ships.filter((s) => s.playerId === (snapshot.localPlayerId ?? 1)).map((s) => s.id),
     );
     for (const group of this.groups.values()) {
       for (const id of group.selected)
@@ -55,7 +55,7 @@ export class ControlGroups {
         snapshot.squads
           .filter(
             (s) =>
-              s.playerId === 1 &&
+              s.playerId === (snapshot.localPlayerId ?? 1) &&
               s.embarkedOn === null &&
               group?.selected.has(s.id),
           )

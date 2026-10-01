@@ -61,6 +61,8 @@ const BUILDING_PAD_COLORS = new Map(
 const SELECTED_UNIT_COLOR = "#c4ff36";
 
 export class Renderer {
+  private get playerId(): number { return this.snapshot?.localPlayerId ?? 1; }
+
   private readonly eraArtwork = new EraArtwork();
   private roads?: RoadLayer;
   private readonly wallArtwork = new WallArtwork();
@@ -114,7 +116,7 @@ export class Renderer {
   selectedAircraft = new Set<number>();
   armyAt(x: number, y: number): number | null {
     for (const army of this.snapshot?.expansion?.armies ?? []) {
-      if (army.playerId !== 1) continue;
+      if (army.playerId !== this.playerId) continue;
       const p = this.screen(army.x / FIXED, army.y / FIXED);
       if (Math.abs(x - p.x) <= 14 && Math.abs(y - (p.y - 32)) <= 13)
         return army.id;
@@ -125,7 +127,7 @@ export class Renderer {
     let best: number | null = null,
       distance = 15 ** 2;
     for (const a of this.snapshot?.expansion?.aircraft ?? []) {
-      if (a.playerId !== 1) continue;
+      if (a.playerId !== this.playerId) continue;
       const p = this.screen(a.x / FIXED, a.y / FIXED),
         d = (p.x - x) ** 2 + (p.y - y) ** 2;
       if (d < distance) {
@@ -212,15 +214,15 @@ export class Renderer {
     this.impacts.update(snapshot.expansion?.projectiles ?? [], snapshot.tick);
     this.resources = snapshot.expansion
       ? new ResourceViewModel(
-          snapshot.expansion.progression[1].age,
-          snapshot.expansion.inventories[1],
+          snapshot.expansion.progression[this.playerId].age,
+          snapshot.expansion.inventories[this.playerId],
         )
       : undefined;
     this.occupiedBuildingTiles = new Set(snapshot.buildings.map((b) => b.tile));
     for (const id of this.selectedAircraft)
       if (
         !snapshot.expansion?.aircraft.some(
-          (a) => a.id === id && a.playerId === 1,
+          (a) => a.id === id && a.playerId === this.playerId,
         )
       )
         this.selectedAircraft.delete(id);
@@ -231,12 +233,12 @@ export class Renderer {
     this.animationClock.update(snapshot.tick, this.receivedAt);
     for (const id of this.selected)
       if (
-        this.currentSquads.get(id)?.playerId !== 1 ||
+        this.currentSquads.get(id)?.playerId !== this.playerId ||
         this.currentSquads.get(id)?.embarkedOn !== null
       )
         this.selected.delete(id);
     for (const id of this.selectedShips)
-      if (!snapshot.ships.some((s) => s.id === id && s.playerId === 1))
+      if (!snapshot.ships.some((s) => s.id === id && s.playerId === this.playerId))
         this.selectedShips.delete(id);
     this.territory!.update(snapshot);
     this.territoryLabels!.update(snapshot);
@@ -314,6 +316,18 @@ export class Renderer {
     this.offsetY = (usableHeight - this.map.height() * this.scale) / 2;
   }
 
+  focusStartingLocation(tile: number): void {
+    if (!this.map) return;
+    const usableHeight = Math.max(100, this.height - this.hudBottomInset);
+    // Keep roughly 48 cells across the shorter usable axis: starting land and
+    // squads stay readable at the same tactical scale on every world size.
+    this.updateFitScale();
+    this.scale = Math.max(this.fitScale, Math.min(96, Math.min(this.width, usableHeight) / 48));
+    this.offsetX = this.width / 2 - (this.map.x(tile) + 0.5) * this.scale;
+    this.offsetY = usableHeight / 2 - (this.map.y(tile) + 0.5) * this.scale;
+    this.nextFrame = 0;
+  }
+
   zoom(amount: number, x: number, y: number): void {
     const tileX = (x - this.offsetX) / this.scale,
       tileY = (y - this.offsetY) / this.scale;
@@ -380,7 +394,7 @@ export class Renderer {
     return (this.snapshot?.squads ?? [])
       .filter(
         (s) =>
-          s.playerId === 1 &&
+          s.playerId === this.playerId &&
           s.embarkedOn === null &&
           s.kind === kind &&
           visibleInViewport(
@@ -403,7 +417,7 @@ export class Renderer {
     return (this.snapshot?.ships ?? [])
       .filter(
         (s) =>
-          s.playerId === 1 &&
+          s.playerId === this.playerId &&
           s.kind === kind &&
           visibleInViewport(
             this.screen(s.x / FIXED, s.y / FIXED),
@@ -486,6 +500,11 @@ export class Renderer {
       ctx.save();
       ctx.translate(p.x, p.y);
       ctx.rotate(label.angle);
+        if(this.snapshot?.disconnectedPlayerIds?.includes(label.playerId)) {
+          ctx.font="bold 16px Georgia";
+          ctx.textAlign="center";ctx.fillStyle="#f4e6b7";ctx.strokeStyle="#20332b";ctx.lineWidth=3;
+          ctx.strokeText("zzz",0,-Math.max(16,font));ctx.fillText("zzz",0,-Math.max(16,font));
+        }
       ctx.font = `600 ${font}px Georgia, Cambria, serif`;
       let advances = letters.map((letter) => ctx.measureText(letter).width);
       let inkWidth = advances.reduce((sum, advance) => sum + advance, 0);
@@ -752,6 +771,11 @@ export class Renderer {
         this.map.x(player.base) + 0.5,
         this.map.y(player.base) + 0.5,
       );
+        if(snapshot.disconnectedPlayerIds?.includes(player.id)) {
+          ctx.save();ctx.font="bold 14px Georgia";ctx.textAlign="center";
+          ctx.lineWidth=3;ctx.strokeStyle="#10212b";ctx.fillStyle="#f4e6b7";
+          ctx.strokeText("zzz",p.x,p.y-18);ctx.fillText("zzz",p.x,p.y-18);ctx.restore();
+        }
       if (ownsCamp(snapshot, player)) {
         ctx.fillStyle = COLORS[player.id];
         ctx.strokeStyle = "#10212b";

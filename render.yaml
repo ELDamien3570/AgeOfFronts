@@ -14,3 +14,22 @@ services:
         value: "24.18.0"
       - key: SKIP_INSTALL_DEPS
         value: "true"
+      - key: VITE_MULTIPLAYER_URL
+        sync: false
+  - type: web
+    name: age-of-fronts-multiplayer
+    runtime: node
+    branch: main
+    plan: free
+    buildCommand: npm install --global --ignore-scripts npm@12.1.0 && npm ci --ignore-scripts
+    startCommand: npm run start:multiplayer
+    healthCheckPath: /healthz
+    envVars:
+      - key: NODE_VERSION
+        value: "24.18.0"
+      - key: HOST
+        value: "0.0.0.0"
+      - key: MULTIPLAYER_ORIGINS
+        value: "https://ageoffronts.com,https://www.ageoffronts.com"
+      - key: MULTIPLAYER_MATCH_CAPACITY
+        value: "1"

@@ -10,6 +10,14 @@ type Changed = (tiles: readonly number[]) => void;
 // Natural cover is immutable map data. Building occupancy is a separate match
 // overlay, updated by domain construction and mirrored from snapshots in views.
 export class ForestField {
+  checkpoint() { return structuredClone({cleared:this.cleared,sites:this.sites}); }
+  restore(state: ReturnType<ForestField["checkpoint"]>): void {
+    if (state.cleared.length !== this.cleared.length) throw new Error("Invalid forest checkpoint");
+    const changed = new Set<number>();
+    for (let tile=0;tile<this.cleared.length;tile++) if (Boolean(this.cleared[tile]) !== Boolean(state.cleared[tile])) changed.add(tile);
+    this.cleared.set(state.cleared); this.sites.clear(); for (const [tile,type] of state.sites) this.sites.set(tile,type);
+    this.publish(changed);
+  }
   private readonly cover: Uint8Array;
   private readonly cleared: Uint16Array;
   private readonly sites = new Map<number, BuildingType>();

@@ -1,9 +1,21 @@
+import { restoreArray, restoreMap } from "../StateTransfer";
 import type { GameMap } from "../../core/game/GameMap";
 import type { Building, Player } from "../Protocol";
 import { FIXED } from "../Protocol";
 import { AGES, type Age, type Barrier } from "./Definitions";
 import type { Diplomacy } from "./Diplomacy";
 export class Fortifications {
+  checkpoint() { return structuredClone({barriers:this.barriers, nextId:this.nextId, towers:this.towers, repairs:this.repairs, version:this.version}); }
+  restore(saved: ReturnType<Fortifications["checkpoint"]>): void {
+    const state=structuredClone(saved);
+    restoreArray(this.barriers,state.barriers);
+    this.nextId=state.nextId;
+    restoreMap(this.towers,state.towers);
+    restoreMap(this.repairs,state.repairs);
+    this.version=state.version;
+    const version = this.version; this.reindex(); this.version = version;
+  }
+
   readonly barriers: Barrier[] = [];
   version = 0;
   private readonly tileIndex = new Map<number, Barrier[]>();

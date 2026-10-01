@@ -1,3 +1,4 @@
+import { resourceTerrainData } from "./ResourceTerrain";
 import { TerrainType } from "../core/game/Game";
 import type { GameMap } from "../core/game/GameMap";
 import { GameMapImpl } from "../core/game/GameMap";
@@ -39,6 +40,7 @@ export async function loadMap(id: string, worldSize = 500): Promise<LoadedMap> {
   const environment =
     loaded.environment ?? new EnvironmentProfile(loaded.map, loaded.geography);
   const forest = generateForestCover(loaded.map, environment);
+  const resourceTerrain = resourceTerrainData(loaded.map, environment);
   return {
     ...loaded,
     map: createSkirmishMap(
@@ -47,9 +49,11 @@ export async function loadMap(id: string, worldSize = 500): Promise<LoadedMap> {
       loaded.terrain,
       loaded.elevation,
       forest,
+      resourceTerrain,
     ),
     forest,
     environment,
+    resourceTerrain,
   };
 }
 

@@ -10,6 +10,10 @@ import {
   type LobbySettings,
 } from "../../lobby/LobbyDirectory";
 import { isLobbyMapId, type LobbyMapId } from "../../lobby/LobbyRules";
+import type {
+  CoordinatorState,
+  OnlineRoom,
+} from "../../multiplayer/domain/RoomCoordinator";
 import { EMPIRE_FLAGS, empireFlag } from "./FlagCatalog";
 import type { LobbyPreviewStore } from "./LobbyPreviewStore";
 import { LOBBY_MAPS } from "./MapCatalog";
@@ -22,10 +26,69 @@ export interface PreviewSeat {
   detail: string;
 }
 
-/** Local UI demonstration only; never represents an online room or session. */
+/** Projects either the local preview or the server-owned room directory. */
 export class LobbyViewModel {
   readonly maps = LOBBY_MAPS;
-  readonly directory = new LobbyDirectory();
+  private readonly previewDirectory = new LobbyDirectory();
+  private readonly disconnectedDirectory = new LobbyDirectory();
+  online = false;
+  connected = false;
+  guestId?: string;
+  private onlineState?: CoordinatorState;
+  private serverOffset = 0;
+  get joinedOnlineRoom():OnlineRoom|undefined {
+    return this.onlineState?.rooms.find(room=>room.members.some(member=>member.guestId===this.guestId&&member.connected));
+  }
+  get directory() {
+    if (!this.onlineState)
+      return this.online ? this.disconnectedDirectory : this.previewDirectory;
+    const rooms = this.onlineState.rooms.filter(
+      (room) => room.kind === "custom",
+    );
+    const entries = (listing: OnlineRoom["listing"]) =>
+      rooms
+        .filter((room) => room.listing === listing)
+        .map((room) => ({
+          id: room.id,
+          title: room.title,
+          settings: room.settings,
+          owner:
+            room.members.find((member) => member.guestId === room.ownerId)
+              ?.profile ?? DEFAULT_EMPIRE_PROFILE,
+        }));
+    const visible = entries("visible"),
+      queue = entries("queued");
+    return {
+      visible,
+      queue,
+      full: visible.length === 3,
+      find: (id: string) =>
+        [...visible, ...queue].find((room) => room.id === id),
+      create: this.previewDirectory.create.bind(this.previewDirectory),
+      remove: this.previewDirectory.remove.bind(this.previewDirectory),
+    };
+  }
+  applyOnlineState(
+    state: CoordinatorState,
+    guestId: string,
+    serverNow: number,
+  ): void {
+    this.onlineState = state;
+    this.guestId = guestId;
+    this.serverOffset = serverNow - Date.now();
+  }
+  get onlineRoom(): OnlineRoom | undefined {
+    return this.onlineState?.rooms.find(
+      (room) => room.id === (this.customRoomId ?? `default-${this.mapId}`),
+    );
+  }
+  canCloseRoom(id: string): boolean {
+    return (
+      !this.online ||
+      this.onlineState?.rooms.find((room) => room.id === id)?.ownerId ===
+        this.guestId
+    );
+  }
   profile: EmpireProfile = DEFAULT_EMPIRE_PROFILE;
   draftEmpireName = this.profile.name;
   message = "";
@@ -175,8 +238,8 @@ export class LobbyViewModel {
     const saved = this.store?.write({
       version: 1,
       profile: this.profile,
-      visible: this.directory.visible,
-      queue: this.directory.queue,
+      visible: this.previewDirectory.visible,
+      queue: this.previewDirectory.queue,
     });
     this.message =
       saved === false
@@ -254,18 +317,38 @@ export class LobbyViewModel {
   }
 
   get phase(): LobbyPreviewPhase {
+    if (this.online)
+      return this.onlineRoom?.deadline === undefined ? "waiting" : "countdown";
     return this.currentPhase;
   }
 
   get humanCount(): number {
+    if (this.online)
+      return (
+        this.onlineRoom?.members.filter((member) => member.connected).length ??
+        0
+      );
     return this.humans;
   }
 
   get aiCount(): number {
-    return this.rules.fillVacanciesWithAi ? this.rules.slots - this.humans : 0;
+    return this.rules.fillVacanciesWithAi
+      ? this.rules.slots - this.humanCount
+      : 0;
   }
 
   get countdown(): string {
+    if (this.online) {
+      const deadline = this.onlineRoom?.deadline;
+      const remaining =
+        deadline === undefined
+          ? this.rules.countdownSeconds
+          : Math.max(
+              0,
+              Math.ceil((deadline - Date.now() - this.serverOffset) / 1000),
+            );
+      return `${Math.floor(remaining / 60)}:${String(remaining % 60).padStart(2, "0")}`;
+    }
     return `${Math.floor(this.remaining / 60)}:${String(this.remaining % 60).padStart(2, "0")}`;
   }
 
@@ -282,6 +365,14 @@ export class LobbyViewModel {
   }
 
   get status(): string {
+    if (this.online) {
+      if (!this.connected) return "Reconnecting to the lobby server";
+      if (this.onlineRoom?.capacityWaiting) return "Waiting for match capacity";
+      if (this.queuePosition) return "Waiting for a display space";
+      return this.phase === "countdown"
+        ? "Match countdown"
+        : `Waiting for ${this.rules.minimumHumans} humans`;
+    }
     if (this.phase === "complete") return "Roster preview ready";
     if (this.phase === "countdown") return "Preview countdown running";
     return this.rules.minimumHumans === 2
@@ -290,6 +381,10 @@ export class LobbyViewModel {
   }
 
   get statusDetail(): string {
+    if (this.online)
+      return this.onlineRoom?.capacityWaiting
+        ? "Match starts are closed while the executor and recovery checks are being installed. Your room remains open."
+        : "The server owns the roster and timer. Disconnected guests have 60 seconds to reconnect.";
     if (this.phase === "complete")
       return `${this.humans} human seats + ${this.aiCount} AI seats. No online match has started.`;
     if (this.phase === "countdown")
@@ -302,6 +397,28 @@ export class LobbyViewModel {
   }
 
   get seats(): PreviewSeat[] {
+    if (this.online)
+      return Array.from({ length: this.rules.slots }, (_, index) => {
+        const member = this.onlineRoom?.members[index];
+        return {
+          number: String(index + 1).padStart(2, "0"),
+          kind: member
+            ? member.guestId === this.guestId
+              ? "you"
+              : "sample"
+            : "open",
+          name: member?.profile.name ?? "Open seat",
+          detail: member
+            ? member.connected
+              ? member.guestId === this.guestId
+                ? "You"
+                : "Connected"
+              : "zzz · reconnecting"
+            : this.rules.fillVacanciesWithAi
+              ? "AI fills on start"
+              : "Stays vacant",
+        };
+      });
     return Array.from({ length: this.rules.slots }, (_, index) => {
       const number = String(index + 1).padStart(2, "0");
       if (index === 0)
@@ -388,6 +505,7 @@ export class LobbyViewModel {
 
   /** Project elapsed wall time for the demo; this does not advance a game. */
   tick(now: number): boolean {
+    if (this.online) return this.page === "lobby";
     if (this.deadline === undefined || this.phase !== "countdown") return false;
     const remaining = Math.min(
       this.rules.countdownSeconds,

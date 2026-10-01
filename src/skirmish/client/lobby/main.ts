@@ -5,6 +5,7 @@ import "./lobby.css";
 import { BrowserLobbyPreviewStore } from "./LobbyPreviewStore";
 import { LobbyView } from "./LobbyView";
 import { LobbyViewModel } from "./LobbyViewModel";
+import { OnlineLobbyConnection } from "./OnlineLobbyConnection";
 import "./stone-lobby.css";
 
 const lobbyRoot = document.querySelector<HTMLElement>("#lobby-app")!;
@@ -17,16 +18,49 @@ const vm = new LobbyViewModel(
   new BrowserLobbyPreviewStore(),
   performance.now(),
 );
+const coordinatorUrl = import.meta.env.VITE_MULTIPLAYER_URL as
+  | string
+  | undefined;
+vm.online = Boolean(coordinatorUrl);
+const requestId = () => crypto.randomUUID();
+let connection: OnlineLobbyConnection | undefined;
+const reportError = (error: unknown) => {
+  vm.message = (error as Error).message;
+  view.render(vm);
+};
 const view = new LobbyView(
   lobbyRoot,
   {
     preview: (mapId) => {
-      if (isLobbyMapId(mapId)) window.location.hash = `lobby=${mapId}`;
+      if (!isLobbyMapId(mapId)) return;
+      if (connection)
+        void connection
+          .request({
+            type: "join",
+            requestId: requestId(),
+            roomId: `default-${mapId}`,
+          })
+          .then(() => {
+            window.location.hash = `lobby=${mapId}`;
+          })
+          .catch(reportError);
+      else window.location.hash = `lobby=${mapId}`;
     },
     customPreview: (id) => {
-      window.location.hash = `room=${id}`;
+      if (connection)
+        void connection
+          .request({ type: "join", requestId: requestId(), roomId: id })
+          .then(() => {
+            window.location.hash = `room=${id}`;
+          })
+          .catch(reportError);
+      else window.location.hash = `room=${id}`;
     },
     home: () => {
+      if (connection)
+        void connection
+          .request({ type: "leave", requestId: requestId() })
+          .catch(reportError);
       vm.dialog = null;
       history.pushState(null, "", window.location.pathname);
       route();
@@ -57,6 +91,14 @@ const view = new LobbyView(
     },
     chooseFlag: (code) => {
       if (vm.saveProfile(vm.draftEmpireName, code)) {
+        if (connection)
+          void connection
+            .request({
+              type: "profile",
+              requestId: requestId(),
+              profile: vm.profile,
+            })
+            .catch(reportError);
         vm.dialog = null;
         view.closeDialog();
         view.render(vm);
@@ -75,7 +117,14 @@ const view = new LobbyView(
       vm.draftEmpireName = name;
     },
     saveProfile: (name) => {
-      vm.saveProfile(name);
+      if (vm.saveProfile(name) && connection)
+        void connection
+          .request({
+            type: "profile",
+            requestId: requestId(),
+            profile: vm.profile,
+          })
+          .catch(reportError);
       view.render(vm);
     },
     createRoom: (data) => {
@@ -93,6 +142,23 @@ const view = new LobbyView(
         alliances: data.get("alliances") === "allowed",
         victory: String(data.get("victory")),
       } as LobbySettings;
+      if (connection) {
+        void connection
+          .request({
+            type: "create",
+            requestId: requestId(),
+            title: String(data.get("title") ?? ""),
+            settings,
+            willingToWait: data.has("willingToWait"),
+          })
+          .then((id) => {
+            vm.dialog = null;
+            view.closeDialog();
+            window.location.hash = `room=${id}`;
+          })
+          .catch((error) => view.showDialogError((error as Error).message));
+        return;
+      }
       if (
         vm.createRoom(
           crypto.randomUUID(),
@@ -106,6 +172,12 @@ const view = new LobbyView(
       } else view.showDialogError(vm.message);
     },
     removeRoom: (id) => {
+      if (connection) {
+        void connection
+          .request({ type: "close", requestId: requestId(), roomId: id })
+          .catch(reportError);
+        return;
+      }
       vm.removeRoom(id);
       view.render(vm);
     },
@@ -122,9 +194,15 @@ function route(): void {
       ? vm.showCustomRoom(hash.slice(6), performance.now())
       : false;
   if (!lobby) vm.showHome();
+  if(connection&&vm.guestId) {
+    const joined=vm.joinedOnlineRoom;
+    const desired=lobby?vm.onlineRoom:undefined;
+    if(desired&&desired.id!==joined?.id)void connection.request({type:"join",requestId:requestId(),roomId:desired.id}).catch(reportError);
+    else if(!lobby&&joined)void connection.request({type:"leave",requestId:requestId()}).catch(reportError);
+  }
   vm.tickDirectory(performance.now());
   document.title = lobby
-    ? `${vm.roomTitle} — Preview · Age of Fronts`
+    ? `${vm.roomTitle}${vm.online ? "" : " — Preview"} · Age of Fronts`
     : "Age of Fronts — Lobbies";
   view.render(vm);
   window.scrollTo(0, 0);
@@ -141,3 +219,54 @@ window.setInterval(() => {
   if (vm.tickDirectory(now)) view.refreshDirectory(vm);
 }, 250);
 route();
+if (coordinatorUrl) {
+  connection = new OnlineLobbyConnection(
+    coordinatorUrl,
+    (message) => {
+      const firstState = !vm.guestId;
+      vm.applyOnlineState(message.state, message.guestId, message.now);
+      if (firstState) {
+        void connection!
+          .request({
+            type: "profile",
+            requestId: requestId(),
+            profile: vm.profile,
+          })
+          .catch(reportError);
+        const currentRoom = message.state.rooms.find((room) =>
+          room.members.some((member) => member.guestId === message.guestId),
+        );
+        if (currentRoom) {
+          window.location.hash =
+            currentRoom.kind === "default"
+              ? `lobby=${currentRoom.settings.mapId}`
+              : `room=${currentRoom.id}`;
+          route();
+        } else {
+          const hash = window.location.hash;
+          const roomId =
+            hash.startsWith("#lobby=") && isLobbyMapId(hash.slice(7))
+              ? `default-${hash.slice(7)}`
+              : hash.startsWith("#room=")
+                ? hash.slice(6)
+                : undefined;
+          if (roomId)
+            void connection!
+              .request({ type: "join", requestId: requestId(), roomId })
+              .then(() => route())
+              .catch(reportError);
+        }
+      }
+      if (!vm.dialog) view.render(vm);
+    },
+    (status, connected) => {
+      vm.connected = connected;
+      vm.message = status;
+      if (!vm.dialog) view.render(vm);
+    },
+    message=> {
+      if(message.type==="match")window.location.href=`/skirmish/index.html?match=${encodeURIComponent(message.manifest.id)}`;
+    },
+  );
+  void connection.connect();
+}

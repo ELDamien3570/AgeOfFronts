@@ -1,3 +1,4 @@
+import type { ResourceTerrainData } from "./ResourceTerrain";
 import type { GameMap } from "../core/game/GameMap";
 import type { ElevationData } from "./Elevation";
 import type { EnvironmentProfile } from "./Environment";
@@ -106,6 +107,7 @@ export type Command =
       type: "recruit-aircraft";
       playerId: number;
       buildingId: number;
+      autoRecruit?: boolean;
       definitionId: "fighter" | "bomber";
     }
   | {
@@ -127,6 +129,7 @@ export type Command =
       type: "recruit";
       playerId: number;
       buildingId: number;
+      autoRecruit?: boolean;
       definitionId?: string;
     }
   | {
@@ -140,6 +143,7 @@ export type Command =
       type: "recruit-ship";
       playerId: number;
       buildingId: number;
+      autoRecruit?: boolean;
       shipType: ShipType;
       definitionId?: string;
     }
@@ -205,6 +209,8 @@ export interface Player {
   gold: number;
   land: number;
   losses: number;
+  /** Individual enemy soldiers killed; absent in older snapshots. */
+  kills?: number;
   recruited: number;
   eliminated: boolean;
 }
@@ -309,6 +315,11 @@ export interface DefenseZone {
 export interface MatchOptions {
   seed: number;
   aiCount: number;
+  /** Ordered human seats; IDs are 1..N. Omitted for the existing solo game. */
+  humanNames?: readonly string[];
+  resourceDensity?: 1 | 2 | 3 | 5;
+  resourceOutput?: 1 | 2 | 3 | 5;
+  alliances?: boolean;
   runAi?: boolean;
   tribes?: boolean;
   territoryIncomeScale?: number;
@@ -318,6 +329,9 @@ export interface MatchOptions {
 }
 
 export interface Snapshot {
+  /** Presentation context supplied by the session adapter, never by the simulation. */
+  localPlayerId?: number;
+  disconnectedPlayerIds?: readonly number[];
   tick: number;
   width: number;
   height: number;
@@ -385,6 +399,7 @@ export type WorkerRequest =
       terrain: Uint8Array;
       elevation?: ElevationData;
       forest?: ForestData;
+      resourceTerrain?: ResourceTerrainData;
       options: MatchOptions;
     }
   | { type: "command"; command: Command }
@@ -403,6 +418,7 @@ export interface LoadedMap {
   territoryIncomeScale: number;
   elevation?: ElevationData;
   forest?: ForestData;
+  resourceTerrain?: ResourceTerrainData;
   environment?: EnvironmentProfile;
   environmentData?: EnvironmentData;
   geography?: MapGeography;

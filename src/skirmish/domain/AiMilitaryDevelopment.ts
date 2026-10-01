@@ -1,3 +1,4 @@
+import { restoreMap } from "../StateTransfer";
 import type { Building, Player, Squad } from "../Protocol";
 import { producerCompatible } from "../content/Buildings";
 import { UNIT, UNITS } from "../content/Units";
@@ -113,6 +114,13 @@ export interface ModernizationLease {
   startedTick: number;
 }
 export class AiModernization {
+  checkpoint() { return structuredClone({leases:this.leases}); }
+  restore(saved: ReturnType<AiModernization["checkpoint"]>): void {
+    const state=structuredClone(saved);
+    restoreMap(this.leases,state.leases);
+
+  }
+
   readonly leases = new Map<number, ModernizationLease>();
   holds(squadId: number): boolean {
     return this.leases.has(squadId);

@@ -342,6 +342,8 @@ function vesselCard(
 // HUD projections only observe domain rules and snapshots. Focused inspection
 // belongs to the view and never changes the selected army or its commands.
 export class HudViewModel {
+  get playerId(): number { return this.game.playerId; }
+
   constructor(readonly game: SkirmishViewModel) {}
 
   actionCard(id: string): HudCard | undefined {
@@ -357,12 +359,12 @@ export class HudViewModel {
             ? unitCard(
                 unitEffects(
                   UNIT.get(choice.definitionId)!,
-                  this.game.state.expansion!.progression[1].completed,
+                  this.game.state.expansion!.progression[this.playerId].completed,
                 ),
               )
             : vesselCard(
                 choice.definitionId,
-                this.game.state.expansion!.progression[1].completed,
+                this.game.state.expansion!.progression[this.playerId].completed,
               )!
           : land
             ? squadCards[land.kind]
@@ -499,7 +501,7 @@ export class HudViewModel {
         stat(
           "Stock",
           deposit.owner === 1
-            ? fmt(state.expansion.inventories[1][deposit.resource] ?? 0)
+            ? fmt(state.expansion.inventories[this.playerId][deposit.resource] ?? 0)
             : "Foreign inventory hidden",
         ),
       ],
@@ -532,7 +534,7 @@ export class HudViewModel {
       count: 1,
       title: `${UNIT.get(s.definitionId ?? "")?.name ?? SQUAD_RULES[s.kind].name} #${s.id}`,
       subtitle:
-        s.playerId === 1
+        s.playerId === this.playerId
           ? "1 squad selected"
           : `${state.players.find((p) => p.id === s.playerId)?.name ?? "Enemy"} · ${AGE_NAMES[AGES.indexOf(UNIT.get(s.definitionId ?? "")?.age ?? "StoneAge")]} · read only`,
       meter: { label: "Troop strength", value: s.troops, max: SQUAD_TROOPS },
@@ -592,7 +594,7 @@ export class HudViewModel {
     }));
     if (inspected) return squads;
     const ships: SelectedEntity[] = state.ships
-      .filter((s) => s.playerId === 1 && selection.selectedShips.has(s.id))
+      .filter((s) => s.playerId === this.playerId && selection.selectedShips.has(s.id))
       .map((s) => ({
         ...(s.definitionId
           ? vesselCard(
@@ -679,7 +681,7 @@ export class HudViewModel {
               stack.length > 1
                 ? `${BUILDING_RULES[b.type].name} ×${stack.length}`
                 : `${BUILDING_RULES[b.type].name} #${b.id}`,
-            subtitle: `${b.playerId === 1 ? "Friendly" : "Enemy"} building${stack.length > 1 ? " stack" : ""}`,
+            subtitle: `${b.playerId === this.playerId ? "Friendly" : "Enemy"} building${stack.length > 1 ? " stack" : ""}`,
             stats:
               stack.length > 1
                 ? [
@@ -767,7 +769,7 @@ export class HudViewModel {
         ]
       : [];
     const aircraft: SelectedEntity[] = (state.expansion?.aircraft ?? [])
-      .filter((a) => a.playerId === 1 && selection.selectedAircraft?.has(a.id))
+      .filter((a) => a.playerId === this.playerId && selection.selectedAircraft?.has(a.id))
       .map((a) => ({
         ref: `aircraft:${a.id}`,
         kind: a.definitionId,

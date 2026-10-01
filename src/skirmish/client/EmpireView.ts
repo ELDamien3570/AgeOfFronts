@@ -13,6 +13,7 @@ import { EmpireHudView } from "./EmpireHudView";
 import type { EmpireViewModel } from "./EmpireViewModel";
 import { technologyTreeMarkup } from "./TechnologyTreeView";
 import { TechnologyViewModel } from "./TechnologyViewModel";
+import { ResearchOpportunitiesView } from "./ResearchOpportunitiesView";
 
 const escape = (s: string) =>
   s.replace(
@@ -30,6 +31,7 @@ export function empireMarkup(): string {
 }
 
 export interface EmpireActions {
+  recruitmentBatch?(shift: boolean): number;
   refresh(): void;
   command(command: Command): void;
   build(type: BuildingType, age?: Age): void;
@@ -39,9 +41,12 @@ export interface EmpireActions {
 }
 
 export class EmpireView {
+  private get playerId(): number { return this.vm?.playerId ?? 1; }
+
   autoTier = true;
   tierLimit?: Age;
   private readonly dock: EmpireHudView;
+  private readonly researchOpportunities: ResearchOpportunitiesView;
   private readonly ageTheme: AgeThemeView;
   readonly buildAges: Partial<Record<BuildingType, Age>> = {};
   readonly choices: Partial<Record<SquadType | ShipType, string>> = {};
@@ -71,6 +76,7 @@ export class EmpireView {
   ) {
     this.ageTheme = new AgeThemeView(root);
     const main = root.querySelector(".battlefield")!;
+    this.researchOpportunities = new ResearchOpportunitiesView(main, (command) => this.actions.command(command));
 
     main.insertAdjacentHTML(
       "beforeend",
@@ -161,6 +167,7 @@ export class EmpireView {
 
   reset(): void {
     this.ageTheme.reset();
+    this.researchOpportunities.reset();
     this.dock.reset();
     this.close();
     this.previousAge = undefined;
@@ -227,6 +234,7 @@ export class EmpireView {
       .setAttribute("title", vm.summary);
 
     this.dock.update(vm);
+    this.researchOpportunities.update(vm);
 
     const focus = this.actions.focusedRef();
 
@@ -264,7 +272,7 @@ export class EmpireView {
       if (choice?.target && !choice.reason)
         this.actions.command({
           type: "refit",
-          playerId: 1,
+          playerId: this.playerId,
           squadIds: choice.selected.map((s) => s.id),
           definitionId: choice.target.id,
         });
@@ -277,7 +285,7 @@ export class EmpireView {
       if (choice?.target && !choice.reason)
         this.actions.command({
           type: "refit-ships",
-          playerId: 1,
+          playerId: this.playerId,
           shipIds: choice.selected.map((s) => s.id),
           definitionId: choice.target.id,
         });
@@ -327,11 +335,11 @@ export class EmpireView {
     if (d.research)
       this.actions.command({
         type: "research",
-        playerId: 1,
+        playerId: this.playerId,
         technologyId: d.research,
       });
 
-    if (d.advance) this.actions.command({ type: "advance-age", playerId: 1 });
+    if (d.advance) this.actions.command({ type: "advance-age", playerId: this.playerId });
 
     if (d.build)
       this.actions.build(
@@ -342,7 +350,7 @@ export class EmpireView {
     if (d.recipe)
       this.actions.command({
         type: "produce",
-        playerId: 1,
+        playerId: this.playerId,
         buildingId: Number(d.producer),
         recipeId: d.recipe,
       });
@@ -353,7 +361,7 @@ export class EmpireView {
       if (source)
         this.actions.command({
           type: "recruit",
-          playerId: 1,
+          playerId: this.playerId,
           buildingId: source.id,
           definitionId: u.id,
         });
@@ -366,7 +374,7 @@ export class EmpireView {
     if (d.diplomacy)
       this.actions.command({
         type: "alliance",
-        playerId: 1,
+        playerId: this.playerId,
         otherId: Number(d.other),
         action: d.diplomacy as
           | "offer"
@@ -381,20 +389,20 @@ export class EmpireView {
     if (d.aircraft)
       this.actions.command({
         type: "recruit-aircraft",
-        playerId: 1,
+        playerId: this.playerId,
         buildingId: Number(d.airfield),
         definitionId: d.aircraft as "fighter" | "bomber",
       });
 
     if (d.sortie) {
       const ids = this.vm.expansion.aircraft
-        .filter((a) => a.playerId === 1 && a.state === "ready")
+        .filter((a) => a.playerId === this.playerId && a.state === "ready")
         .map((a) => a.id);
       this.actions.target(
         (x, y) =>
           this.actions.command({
             type: "sortie",
-            playerId: 1,
+            playerId: this.playerId,
             aircraftIds: ids,
             x,
             y,
@@ -410,7 +418,7 @@ export class EmpireView {
         (x, y) =>
           this.actions.command({
             type: "launch",
-            playerId: 1,
+            playerId: this.playerId,
             launcherId: id,
             payload,
             x,
@@ -423,14 +431,14 @@ export class EmpireView {
     if (d.repair)
       this.actions.command({
         type: "repair",
-        playerId: 1,
+        playerId: this.playerId,
         buildingId: Number(d.repair),
       });
 
     if (d.wallRepair)
       this.actions.command({
         type: "repair",
-        playerId: 1,
+        playerId: this.playerId,
         barrierId: Number(d.wallRepair),
       });
   }
@@ -529,14 +537,14 @@ export class EmpireView {
       );
     const cards = all.slice(page * 12, page * 12 + 12);
     const walls = vm.expansion.barriers.filter(
-      (w) => w.playerId === 1 && w.health > 0,
+      (w) => w.playerId === this.playerId && w.health > 0,
     );
     const wallPage = Math.min(
       this.wallPage,
       Math.max(0, Math.ceil(walls.length / 16) - 1),
     );
     const repair = vm.state.buildings.find(
-      (b) => b.id === vm.selection.selectedBuilding && b.playerId === 1,
+      (b) => b.id === vm.selection.selectedBuilding && b.playerId === this.playerId,
     );
     return `<p>Resources and equipment are folded into the top bar. Recruitment and construction are in the main command dock.</p><h3>Production</h3><p>${all.length} producers · page ${page + 1} / ${Math.max(1, Math.ceil(all.length / 12))}</p><button data-production-page="${Math.max(0, page - 1)}" ${page === 0 ? "disabled" : ""}>Previous</button><button data-production-page="${page + 1}" ${(page + 1) * 12 >= all.length ? "disabled" : ""}>Next</button>${
       cards
@@ -560,8 +568,8 @@ export class EmpireView {
               .join("")}</div></article>`,
         )
         .join("") || "<p>Build a factory or equipment producer.</p>"
-    }<h3>Trade</h3><p>Delivered gold: ${fmt(vm.expansion.deliveredGold[1] ?? 0)} · ${vm.expansion.traders.filter((a) => a.playerId === 1).length}/64 traders</p>${vm.expansion.traders
-      .filter((a) => a.playerId === 1)
+    }<h3>Trade</h3><p>Delivered gold: ${fmt(vm.expansion.deliveredGold[this.playerId] ?? 0)} · ${vm.expansion.traders.filter((a) => a.playerId === this.playerId).length}/64 traders</p>${vm.expansion.traders
+      .filter((a) => a.playerId === this.playerId)
       .slice(0, 16)
       .map(
         (a) =>
@@ -585,7 +593,7 @@ export class EmpireView {
     const p = faction.player;
 
     const treaty = vm.expansion.diplomacy.alliances.find(
-        (t) => (t.a === 1 && t.b === p.id) || (t.b === 1 && t.a === p.id),
+        (t) => (t.a === this.playerId && t.b === p.id) || (t.b === this.playerId && t.a === p.id),
       ),
       incoming = vm.incoming.find((o) => o.proposer === p.id);
 

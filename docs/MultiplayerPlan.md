@@ -11,14 +11,19 @@ host-reported world events. It is not a competitive anti-cheat architecture.
 Host migration, checkpoint recovery, and fallback capacity are required features,
 not optional polish. DDD and MVVM remain the architecture.
 
-This document is a plan, not an implemented or validated multiplayer system.
-The published Static Site currently starts a local AI match.
+The minimal friends release now has a shared lobby coordinator, client execution,
+committed state distribution, host recovery and reserved server fallback.
+See [MultiplayerLaunch.md](MultiplayerLaunch.md) for deployment instructions and
+the narrower first-release limits. The remaining sections retain the longer-term
+design: durable coordinator-crash recovery, reconnection and broader load testing
+are future work, not claims about this release. Production changes require pushing
+and deploying the frontend and coordinator from the same revision.
 
 ## Confirmed requirements and trust policy
 
 | Requirement | Confirmed behavior |
 | ----------- | ------------------ |
-| Maps | Mediterranean and Africa |
+| Maps | Mediterranean, Africa and Amazon River |
 | Default lobby mode | Free for all |
 | Default total faction slots | 20; AI fills unused human seats when the roster freezes |
 | Default minimum humans before starting | 2 |
@@ -28,13 +33,20 @@ The published Static Site currently starts a local AI match.
 | Custom room settings | Map, slots up to the current 20-faction cap, minimum humans, timer, AI filling, map size, technology speed and resource density/output |
 | Custom diplomacy and victory | In-match alliances allowed/disabled and solo/allied conquest; no fixed teams in this pass |
 | Empire customization | Empire name plus a flag from OpenFront's local unrestricted catalog |
-| Start trigger | Human lobby fills or countdown expires |
+| Start trigger | Minimum connected humans present, then human lobby fills or countdown expires |
+| Empty lobbies | Lightweight directory listings only; no simulation worker or match capacity allocation |
+| Countdown reset | Reset whenever connected humans fall below the room's minimum; AI never counts toward it |
+| No humans remain in a match | End the match, stop its executor and release its fallback reservation |
 | Normal execution | One suitable connected client hosts the whole simulation |
 | Host disconnect | Pause the match, then select a replacement client |
 | No valid client host | Resume the same match on the server |
 | Economy checks | Server owns gold/reserve balances; rejects direct edits and unpaid spending |
 | Economy evidence | Trust host world events; verify their accounting and basic consistency |
 | Intended audience | Casual play with friends; broader cheating resistance is outside this release |
+| Identity | Remembered browser guest credential; name and flag are presentation only |
+| Player disconnect during a match | AI takeover and a zzz territory marker; no player reconnect in this release |
+| Lobby ownership | Transfer to the longest-present connected member after 60 seconds of owner absence |
+| Invites | Deferred; players use the shared lobby browser |
 
 In the default preset, two humans start with 18 AI; 20 humans start with no AI
 replacements. Custom rooms can reduce capacity and disable AI vacancy filling.
@@ -44,6 +56,14 @@ at 20. Training Square remains a local development map outside this directory.
 The intended flow is pick a map, join its lobby, wait for the roster/countdown,
 load the agreed match, and play. Host election and recovery are server decisions,
 projected into the interface.
+
+An empty default lobby can remain listed indefinitely without running a game.
+Custom rooms with no connected members cannot start and expire after their
+60-second lobby grace period. AI vacancy filling happens only after a human
+roster qualifies to start; it must never turn empty listings into AI-only matches.
+Allocate an executor only for an admitted match, and dispose of it when the last
+connected participant leaves. This cleanup is part of the match application
+lifecycle, not a visual lobby-card timer.
 
 ## Main page, custom directory and empire identity
 
@@ -244,10 +264,10 @@ simultaneous arrivals cannot take the same twentieth seat or start twice. Bind a
 server-issued session/resume credential to one participant and faction. Duplicate
 tabs must not create extra seats or host identities.
 
-Recommended countdown semantics, still to confirm: start when the second human
-joins, reset if the human count falls below two before roster freeze, and freeze
-immediately at 20 humans. The duration/minimum are confirmed; these details are
-proposals.
+Implemented countdown semantics: start at the configured minimum connected
+human count, reset below that minimum before roster freeze, and freeze immediately
+when connected humans fill the configured faction slots. Default values are two
+humans, 60 seconds and 20 total factions. AI never satisfies the human minimum.
 
 Freeze one manifest containing match ID, build/protocol/checkpoint/ruleset versions,
 map/content hashes, seed, world size, roster, factions, and mode. The server fixes
@@ -452,14 +472,16 @@ paused/retry response. Preserve outcomes for already committed commands and
 idempotently reconcile received-but-uncommitted requests after restoration.
 Do not silently queue an unbounded burst or apply an old order twice.
 
-The former host returns as a normal participant with its existing faction.
-It cannot reclaim the match automatically. Recommended stability policy: after
-server fallback succeeds, retain it for that match instead of repeatedly switching
-back to a slightly faster client.
+Player reconnect is deferred. A disconnected former host does not reclaim its
+faction; replacement hosting is independent of its seat. After server fallback
+succeeds, retain it for that match rather than repeatedly switching back to a
+slightly faster client.
 
-A participant disconnect is separate from host replacement. It must not create
-another faction, reset a match, or implicitly forfeit the player. Guest/account
-identity, disconnect grace and AI takeover remain choices to settle.
+A participant disconnect is separate from host replacement. It creates no new
+faction and does not reset the match. The existing faction becomes AI-controlled
+and displays zzz on its territory while other humans remain. The last human
+leaving ends the match and releases its executor. Lobby reconnect retains its
+60-second grace period; active player reconnect is deferred.
 
 ## Fallback capacity and coordinator failure
 
