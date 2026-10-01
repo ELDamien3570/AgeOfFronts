@@ -1,16 +1,15 @@
 # fly.toml app configuration file for Age of Fronts All-in-One server
-app = 'age-of-fronts-multiplayer'
+app = 'ageoffronts'
 primary_region = 'iad'
 
 [build]
-  dockerfile = 'Dockerfile.multiplayer'
+  dockerfile = 'Dockerfile'
 
 [env]
   HOST = '0.0.0.0'
   PORT = '8080'
   NODE_ENV = 'production'
   MULTIPLAYER_MATCH_CAPACITY = '2'
-  MULTIPLAYER_ORIGINS = 'https://ageoffronts.com,https://www.ageoffronts.com'
 
 [http_service]
   internal_port = 8080
