@@ -102,7 +102,7 @@ const STARTING_TROOPS = 12_000;
 const BASE_RADIUS = 6;
 const ROUTE_EFFORT_LIMIT = 20_000;
 // Crossing trees built per tick until every portal has one (land, then water).
-const PATH_WARM_TREES = 6;
+const PATH_WARM_TREES = 4;
 
 // Fixed-step, integer-position simulation. Browser timing and rendering never
 // determine gameplay. Human and AI players enter through applyCommand().
