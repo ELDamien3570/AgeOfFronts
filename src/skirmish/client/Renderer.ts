@@ -79,7 +79,7 @@ export class Renderer {
   private readonly strategic: StrategicSprites;
   private readonly groundLayer: GroundLayer;
   private groundStyle: GroundStyle = "animated";
-  private groundActive = false;
+  private groundActive?: boolean;
   private groundSource?: BakeSource;
   private groundColors?: Uint8Array;
   private ground?: PaintedTerrain;
@@ -159,7 +159,7 @@ export class Renderer {
   ): void {
     this.map = map;
     this.ground = new PaintedTerrain(map, geography, environment);
-    this.groundActive = false;
+    this.groundActive = undefined;
     this.groundSource = undefined;
     this.groundColors = undefined;
     if (this.groundLayer.available) {

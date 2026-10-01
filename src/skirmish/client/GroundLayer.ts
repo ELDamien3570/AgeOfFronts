@@ -92,13 +92,14 @@ void main() {
     float broad = textureGrad(uNoise, w / 233.0, dx / 233.0, dy / 233.0).b;
     waterColor *= 1.0 + (broad - 0.5) * 0.05;
     float time = uTime * uAnimate;
-    // Ripples: lattice cells of roughly 0.6 to 1 tile, two layers drifting
+    // Ripples: lattice cells of about 0.3 to 0.4 tile (features of 0.6 to
+    // 0.8 tile), two layers drifting
     // in different directions, low amplitude, gone when zoomed out.
     if (fine > 0.0) {
-      float r1 = textureGrad(uNoise, w / 22.0 + vec2(time * 0.012, time * 0.007), dx / 22.0, dy / 22.0).g;
+      float r1 = textureGrad(uNoise, w / 12.0 + vec2(time * 0.02, time * 0.012), dx / 12.0, dy / 12.0).g;
       vec2 w2 = vec2(w.x * 0.8 - w.y * 0.6, w.x * 0.6 + w.y * 0.8);
-      float r2 = textureGrad(uNoise, w2 / 17.0 + vec2(-time * 0.009, time * 0.013), dx / 17.0, dy / 17.0).g;
-      waterColor *= 1.0 + (r1 + r2 - 1.0) * 0.24 * fine;
+      float r2 = textureGrad(uNoise, w2 / 9.0 + vec2(-time * 0.015, time * 0.022), dx / 9.0, dy / 9.0).g;
+      waterColor *= 1.0 + (r1 + r2 - 1.0) * 0.13 * fine;
     }
     // Wave bands rolling toward the shore, broken up by noise.
     float phase = fract(d * 0.55 + time * 0.1);
