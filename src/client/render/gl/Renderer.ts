@@ -71,6 +71,7 @@ import {
   getPaletteSize,
   hexToRgb,
   MAX_TRAIL_COLORS,
+  type TerrainColorOverrides,
 } from "./utils/ColorUtils";
 import { renderDpr } from "./utils/Dpr";
 import {
@@ -272,17 +273,7 @@ export class GPURenderer {
       terrainBytes,
       mapW,
       mapH,
-      {
-        backgroundColor:
-          hexToRgb(this.settings.terrain.backgroundColor) ?? undefined,
-        oceanColor: hexToRgb(this.settings.terrain.oceanColor) ?? undefined,
-        sandColor: hexToRgb(this.settings.terrain.sandColor) ?? undefined,
-        plainsColor: hexToRgb(this.settings.terrain.plainsColor) ?? undefined,
-        highlandColor:
-          hexToRgb(this.settings.terrain.highlandColor) ?? undefined,
-        mountainColor:
-          hexToRgb(this.settings.terrain.mountainColor) ?? undefined,
-      },
+      this.terrainColorOverrides(),
     );
 
     // --- Terrain bytes R8UI texture (shared by map-layer passes) ---
@@ -1017,15 +1008,22 @@ export class GPURenderer {
    * settings change needs this explicit rebuild.
    */
   rebuildTerrain(): void {
-    this.terrainPass.setTerrainColors({
-      backgroundColor:
-        hexToRgb(this.settings.terrain.backgroundColor) ?? undefined,
-      oceanColor: hexToRgb(this.settings.terrain.oceanColor) ?? undefined,
-      sandColor: hexToRgb(this.settings.terrain.sandColor) ?? undefined,
-      plainsColor: hexToRgb(this.settings.terrain.plainsColor) ?? undefined,
-      highlandColor: hexToRgb(this.settings.terrain.highlandColor) ?? undefined,
-      mountainColor: hexToRgb(this.settings.terrain.mountainColor) ?? undefined,
-    });
+    this.terrainPass.setTerrainColors(this.terrainColorOverrides());
+  }
+
+  /** Terrain bake colours/flags from the current `settings.terrain`. */
+  private terrainColorOverrides(): TerrainColorOverrides {
+    const t = this.settings.terrain;
+    return {
+      backgroundColor: hexToRgb(t.backgroundColor) ?? undefined,
+      oceanColor: hexToRgb(t.deepColor) ?? hexToRgb(t.oceanColor) ?? undefined,
+      sandColor: hexToRgb(t.sandColor) ?? undefined,
+      plainsColor: hexToRgb(t.plainsColor) ?? undefined,
+      highlandColor: hexToRgb(t.highlandColor) ?? undefined,
+      mountainColor: hexToRgb(t.mountainColor) ?? undefined,
+      shallowColor: hexToRgb(t.shallowColor) ?? undefined,
+      stylized: t.stylized,
+    };
   }
 
   applyConquestEvents(events: ConquestFx[]): void {

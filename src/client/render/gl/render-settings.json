@@ -18,11 +18,26 @@
   },
   "terrain": {
     "backgroundColor": "#3c3c3c",
-    "oceanColor": "#4785b5",
+    "oceanColor": "#2f9fd0",
     "sandColor": "#CCCB9E",
     "plainsColor": "#BEDC8A",
     "highlandColor": "#DCCB9E",
-    "mountainColor": "#e6e6e6"
+    "mountainColor": "#e6e6e6",
+    "stylized": true,
+    "waterAnimation": true,
+    "coastalBorders": false,
+    "shallowColor": "#5cc8e0",
+    "deepColor": "#2f9fd0",
+    "foamColor": "#f4fbff",
+    "wetSandColor": "#a39e72",
+    "dirtColor": "#a98f5c",
+    "rippleStrength": 0.07,
+    "foamStrength": 0.85,
+    "hillshadeStrength": 0.12,
+    "grainStrength": 0.04,
+    "macroVariation": 0.06,
+    "zoomFadeStart": 2,
+    "zoomFadeEnd": 6
   },
   "falloutBloom": {
     "broilSpeedCold": 0.0018,

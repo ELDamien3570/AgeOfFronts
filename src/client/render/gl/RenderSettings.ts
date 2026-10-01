@@ -79,6 +79,31 @@ export interface RenderSettings {
     plainsColor: string;
     highlandColor: string;
     mountainColor: string;
+    /**
+     * Master switch for the stylized terrain/water look. When false the old
+     * flat per-tile colours are reproduced exactly.
+     */
+    stylized: boolean;
+    /** Enables time-based water motion (foam waves, ripples). */
+    waterAnimation: boolean;
+    /** When false, owned tiles next to water do not draw a border stroke. */
+    coastalBorders: boolean;
+    /** Water colour at the coastline (turquoise shallows). */
+    shallowColor: string;
+    /** Water colour in open water; `oceanColor` is kept equal to this. */
+    deepColor: string;
+    foamColor: string;
+    wetSandColor: string;
+    dirtColor: string;
+    rippleStrength: number;
+    foamStrength: number;
+    hillshadeStrength: number;
+    grainStrength: number;
+    macroVariation: number;
+    /** Zoom (screen px per tile) at which sub-tile detail starts fading in. */
+    zoomFadeStart: number;
+    /** Zoom at which sub-tile detail is fully visible. */
+    zoomFadeEnd: number;
   };
   falloutBloom: {
     broilSpeedCold: number;
