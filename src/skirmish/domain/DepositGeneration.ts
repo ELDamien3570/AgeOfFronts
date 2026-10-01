@@ -4,7 +4,7 @@ import { resourceTerrainOf } from "../ResourceTerrain";
 import type { Deposit, Resource } from "./Definitions";
 
 export const DEPOSIT_RULES = Object.freeze({
-  revision: 2,
+  revision: 3,
   baseDensity: 2,
   originalDenominator: 6300,
   mountainRadius: 6,
@@ -12,6 +12,7 @@ export const DEPOSIT_RULES = Object.freeze({
   plainsHorseWeight: 3,
   desertOilWeight: 4,
   powderAbundance: 2,
+  startingReach: 24,
 });
 export const DEPOSIT_RESOURCES: readonly Resource[] = [
   "horses",

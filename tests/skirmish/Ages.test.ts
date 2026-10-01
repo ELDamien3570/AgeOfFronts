@@ -191,7 +191,10 @@ describe("age progression and authoritative definitions", () => {
     const tank = defaultUnit("cavalry", "Modern");
     expect(tank.tags).toEqual(["vehicle"]);
     expect(tank.cost.items?.horses).toBeUndefined();
-    expect(tank.cost.items?.oil).toBeGreaterThan(0);
+    expect(tank.cost.items).toEqual({
+      "equipment:modern-vehicle": 1,
+      "equipment:modern-siege": 1,
+    });
     expect(defaultUnit("cavalry", "EarlyModern").charge).toBeUndefined();
     expect(UNIT.get("modern-anti-air")!.attack.targets).toEqual(["aircraft"]);
     expect(UNITS.filter((u) => u.role === "siege")).toHaveLength(7);
@@ -247,7 +250,7 @@ describe("supply conservation and deployment", () => {
         definitionId: "bronzeage-infantry",
       }),
     ).toMatch(/Needs/);
-    inv["equipment:bronzeage-infantry"] = 1;
+    inv["equipment:bronzeage"] = 1;
     const before = p.reserves;
     expect(
       m.applyCommand({
@@ -257,7 +260,7 @@ describe("supply conservation and deployment", () => {
         definitionId: "bronzeage-infantry",
       }),
     ).toBeNull();
-    expect(inv["equipment:bronzeage-infantry"]).toBe(0);
+    expect(inv["equipment:bronzeage"]).toBe(0);
     expect(p.reserves).toBe(before - 1000);
     expect(
       m.applyCommand({
@@ -276,7 +279,7 @@ describe("supply conservation and deployment", () => {
       inv = m.expansion!.supply.inventories[1];
     own[0].troops = 450;
     own[0].xp = 7000;
-    inv["equipment:bronzeage-infantry"] = 1;
+    inv["equipment:bronzeage"] = 1;
     const gold = p.gold;
     expect(
       m.applyCommand({
@@ -288,7 +291,7 @@ describe("supply conservation and deployment", () => {
     ).toMatch(/Needs/);
     expect(p.gold).toBe(gold);
     expect(own.every((s) => !s.refit)).toBe(true);
-    inv["equipment:bronzeage-infantry"] = 3;
+    inv["equipment:bronzeage"] = 3;
     expect(
       m.applyCommand({
         type: "refit",
@@ -303,7 +306,7 @@ describe("supply conservation and deployment", () => {
     expect(own[0].definitionId).toBe("bronzeage-infantry");
     expect(own[0].troops).toBe(450);
     expect(own[0].xp).toBe(0);
-    expect(inv["equipment:bronzeage-infantry"]).toBe(0);
+    expect(inv["equipment:bronzeage"]).toBe(0);
   });
 });
 describe("bonuses, promotions, volleys and finite impacts", () => {

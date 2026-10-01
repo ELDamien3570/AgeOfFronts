@@ -1,4 +1,6 @@
 import { generateDeposits } from "./DepositGeneration";
+import { startingResources } from "./StartingResources";
+import type { LandPaths } from "../Pathfinding";
 import { restoreArray, restoreMap, restoreRecord } from "../StateTransfer";
 import type { GameMap } from "../../core/game/GameMap";
 import type { Building, Player } from "../Protocol";
@@ -64,15 +66,6 @@ export const REFINING: ProductionRecipe[] = [
     outputs: { [`payload:${name}`]: 1 },
     ticks: 2400 + i * 600,
   })),
-  ...["fighter", "bomber"].map((name) => ({
-    id: `make-${name}`,
-    name: `${name} airframe`,
-    technologyId: technologyAt("Modern", "warfare", 3).id,
-    building: "arms-factory" as const,
-    inputs: { steel: 40, gunpowder: 20, oil: 20 },
-    outputs: { [`equipment:${name}`]: 1 },
-    ticks: 600,
-  })),
 ];
 export const PRODUCTION_RECIPES = [...REFINING, ...RECIPES];
 export function costRejection(
@@ -124,12 +117,23 @@ export class Supply {
   constructor(
     private readonly map: GameMap,
     private readonly progression: Progression,
-    seed: number,
+    private readonly seed: number,
     density: 1 | 2 | 3 | 5 = 1,
-    output: 1 | 2 | 3 | 5 = 1,
+    private readonly output: 1 | 2 | 3 | 5 = 1,
   ) {
     if (![1,2,3,5].includes(density) || ![1,2,3,5].includes(output)) throw new Error("Invalid resource rules");
     this.deposits.push(...generateDeposits(map, seed, density, output));
+  }
+  ensureStartingResources(
+    players: readonly Player[],
+    owners: Uint8Array,
+    paths: LandPaths,
+    buildings: readonly Building[],
+  ): void {
+    const layout = startingResources(
+      this.map, paths, players, owners, buildings, this.deposits, this.seed, this.output,
+    );
+    this.deposits.splice(0, this.deposits.length, ...layout);
   }
   add(playerId: number): void {
     this.inventories[playerId] = Object.fromEntries(

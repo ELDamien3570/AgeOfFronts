@@ -271,6 +271,8 @@ describe("integrated shipments and military progression", () => {
     s.health = 400;
     s.xp = 3000;
     const target = VESSEL.get("modern-warship")!;
+    const startingGold = m.players[0].gold;
+    m.players[0].gold = 1;
     const before = m.players[0].gold;
     expect(
       m.applyCommand({
@@ -279,14 +281,10 @@ describe("integrated shipments and military progression", () => {
         shipIds: [s.id, t.id],
         definitionId: target.id,
       }),
-    ).toMatch(/Needs/);
+    ).toMatch(/gold/);
     expect(s.refit).toBeUndefined();
     expect(m.players[0].gold).toBe(before);
-    Object.assign(m.expansion!.supply.inventories[1], {
-      oil: 100,
-      steel: 100,
-      gunpowder: 100,
-    });
+    m.players[0].gold = startingGold;
     expect(
       m.applyCommand({
         type: "refit-ships",
@@ -404,7 +402,7 @@ describe("integrated shipments and military progression", () => {
       infantry: "modern-infantry",
     });
     expect(manual.recruitment("infantry").enabled).toBe(false);
-    state.expansion!.inventories[1]["equipment:modern-infantry"] = 1;
+    state.expansion!.inventories[1]["equipment:modern"] = 1;
     expect(auto.recruitment("infantry").definitionId).toBe("modern-infantry");
     const limited = new SkirmishViewModel(
       state,

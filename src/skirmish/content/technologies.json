@@ -199,7 +199,7 @@
     "slot": 1,
     "gold": 6000,
     "ticks": 800,
-    "description": "Bronze blacksmith, barracks tier, bronze melee-kit pattern, and bronze swordsmen. Materials -> finished weapons -> recruitment.",
+    "description": "Bronze blacksmith, barracks tier and bronze swordsmen. Manufacture shared Bronze Age equipment for infantry, archers and chariots.",
     "prerequisites": ["stoneage-field-engineering"],
     "capabilities": ["bronzeage-bronze-equipment"]
   },
@@ -211,7 +211,7 @@
     "slot": 2,
     "gold": 7000,
     "ticks": 900,
-    "description": "Bronze archery range/archers and their own ranged-kit pattern.",
+    "description": "Bronze archery range and archers. Uses the same Bronze Age equipment as other Bronze troops.",
     "prerequisites": ["bronzeage-bronze-equipment"],
     "capabilities": ["bronzeage-bowcraft"]
   },
@@ -223,7 +223,7 @@
     "slot": 3,
     "gold": 7000,
     "ticks": 900,
-    "description": "Bronze stable tier and two-horse chariot definition, matching the animated art. Chariot armament plus horses and reserves; proposed charge capability.",
+    "description": "Bronze stables and chariots. Recruitment uses shared Bronze Age equipment, horses and reserves.",
     "prerequisites": ["bronzeage-bronze-equipment"],
     "capabilities": ["bronzeage-chariot-warfare"]
   },
@@ -358,7 +358,7 @@
     "slot": 1,
     "gold": 10000,
     "ticks": 900,
-    "description": "Classical blacksmith/barracks, iron infantry-kit pattern, sword-and-shield infantry, and improved protection.",
+    "description": "Classical blacksmith and barracks, sword-and-shield infantry and improved protection. Manufacture shared Classical Age equipment from iron.",
     "prerequisites": ["bronzeage-fortified-settlements", "bronzeage-armies"],
     "capabilities": ["classicalage-professional-infantry"]
   },
@@ -370,7 +370,7 @@
     "slot": 2,
     "gold": 12000,
     "ticks": 1000,
-    "description": "Classical archers/ranged kits plus Mangonel field-artillery equipment and training at the Classical siege-yard capability. Distinct projectile/range/reload profiles.",
+    "description": "Classical archers use shared Classical Age equipment. Mangonels and Onagers use shared Classical Age siege equipment, while retaining distinct research and combat profiles.",
     "prerequisites": ["classicalage-professional-infantry"],
     "capabilities": ["classicalage-ranged-warfare"]
   },
@@ -382,7 +382,7 @@
     "slot": 3,
     "gold": 12000,
     "ticks": 1000,
-    "description": "Classical stables and mounted swordsmen, mounted kit plus horses; proposed charge profile.",
+    "description": "Classical stables and mounted swordsmen. Recruitment uses shared Classical Age equipment, horses and reserves.",
     "prerequisites": ["classicalage-professional-infantry"],
     "capabilities": ["classicalage-cavalry-tactics"]
   },
@@ -511,7 +511,7 @@
     "slot": 1,
     "gold": 16000,
     "ticks": 1000,
-    "description": "Early Medieval blacksmith/barracks and mail/iron infantry-kit pattern; sword-and-shield infantry.",
+    "description": "Early Medieval blacksmith and barracks, mail infantry and shared Early Medieval equipment manufactured from iron.",
     "prerequisites": ["classicalage-masonry-engineering"],
     "capabilities": ["earlymedieval-mail-equipment"]
   },
@@ -523,7 +523,7 @@
     "slot": 2,
     "gold": 18000,
     "ticks": 1100,
-    "description": "Early Medieval bowmen/ranged kits plus Ballista field-artillery equipment and training at the era siege-yard capability.",
+    "description": "Bowmen use shared Early Medieval equipment. Ballistas and Trebuchets use shared Early Medieval siege equipment, with separate recruitment research.",
     "prerequisites": ["earlymedieval-mail-equipment"],
     "capabilities": ["earlymedieval-bow-and-bolt-warfare"]
   },
@@ -535,7 +535,7 @@
     "slot": 3,
     "gold": 18000,
     "ticks": 1100,
-    "description": "Early Medieval stables/mounted spearmen, mounted-kit pattern and horses; proposed stronger charge profile.",
+    "description": "Early Medieval stables and mounted spearmen. Recruitment uses shared Early Medieval equipment, horses and reserves.",
     "prerequisites": ["earlymedieval-mail-equipment"],
     "capabilities": ["earlymedieval-mounted-spearmen"]
   },
@@ -664,7 +664,7 @@
     "slot": 1,
     "gold": 24000,
     "ticks": 1100,
-    "description": "Late Medieval blacksmith/barracks, steel infantry kits and plate swordsmen.",
+    "description": "Late Medieval blacksmith and barracks, plate swordsmen and shared Late Medieval equipment manufactured from steel.",
     "prerequisites": ["earlymedieval-trebuchet-engineering"],
     "capabilities": ["latemedieval-steel-equipment"]
   },
@@ -676,7 +676,7 @@
     "slot": 2,
     "gold": 28000,
     "ticks": 1300,
-    "description": "Crossbowmen/crossbow kits plus Organ Gun field-artillery equipment and siege-yard training. Different reload/penetration/volley profiles; the Organ Gun operates on early powder supply.",
+    "description": "Crossbowmen use shared Late Medieval equipment. Organ Guns and Bombards use shared Late Medieval siege equipment made from steel and gunpowder.",
     "prerequisites": ["latemedieval-steel-equipment"],
     "capabilities": ["latemedieval-crossbows-and-field-guns"]
   },
@@ -688,7 +688,7 @@
     "slot": 3,
     "gold": 28000,
     "ticks": 1300,
-    "description": "Knight stables, knight equipment and lance cavalry costing horses; strongest proposed traditional mounted charge.",
+    "description": "Knight stables and lance cavalry. Recruitment uses shared Late Medieval equipment, horses and reserves.",
     "prerequisites": ["latemedieval-steel-equipment"],
     "capabilities": ["latemedieval-lance-knights"]
   },
@@ -700,7 +700,7 @@
     "slot": 4,
     "gold": 40000,
     "ticks": 1500,
-    "description": "Stronger towers/walls/gates, Late Medieval siege workshop and Bombard equipment/definition. Powder supply supports siege/field guns as well as naval guns; handheld firearm infantry still starts in Early Modern.",
+    "description": "Stronger towers, walls and gates, siege workshops and Bombards. Bombards use shared Late Medieval siege equipment. Handheld firearm infantry starts in Early Modern.",
     "prerequisites": [
       "latemedieval-crossbows-and-field-guns",
       "latemedieval-lance-knights"
@@ -727,7 +727,7 @@
     "slot": 2,
     "gold": 28000,
     "ticks": 1300,
-    "description": "Unlock direct gunpowder extraction from gunpowder deposits using mines, supplying naval guns and Organ Gun/Bombard equipment. No ingredient refining is needed. No handheld firearm infantry is granted here.",
+    "description": "Unlock direct gunpowder extraction from deposits using mines, supplying shared Late Medieval siege equipment. No ingredient refining is needed. Handheld firearm infantry starts in Early Modern.",
     "prerequisites": ["latemedieval-steelmaking"],
     "capabilities": ["latemedieval-powder-milling"]
   },
@@ -817,7 +817,7 @@
     "slot": 1,
     "gold": 35000,
     "ticks": 1300,
-    "description": "Firearm-producing Armory, Early Modern barracks, short-gun infantry and firearm-kit pattern. The former Melee art category now represents frontline ranged fire.",
+    "description": "Armory, Early Modern barracks and short-gun infantry. Manufacture shared Early Modern equipment from iron and gunpowder for frontline, ranged and mounted troops.",
     "prerequisites": ["latemedieval-siege-ordnance"],
     "capabilities": ["earlymodern-firearms"]
   },
@@ -829,7 +829,7 @@
     "slot": 2,
     "gold": 40000,
     "ticks": 1500,
-    "description": "Musketeers with longer-range firearm kit plus field cannon equipment/training, using the NapoleonicCannon_EarlyModern art. Distinct musket and artillery attack profiles.",
+    "description": "Musketeers use shared Early Modern equipment. Field cannons and howitzers use shared Early Modern siege equipment, with distinct research and attack profiles.",
     "prerequisites": ["earlymodern-firearms"],
     "capabilities": ["earlymodern-musket-and-artillery-drill"]
   },
@@ -841,7 +841,7 @@
     "slot": 3,
     "gold": 40000,
     "ticks": 1500,
-    "description": "Early Modern stables and mounted pistoliers; pistol kit plus horses/reserves. A mounted firearm role does not automatically inherit melee charge.",
+    "description": "Early Modern stables and mounted pistoliers. Recruitment uses shared Early Modern equipment, horses and reserves. Mounted firearms do not inherit melee charge.",
     "prerequisites": ["earlymodern-firearms"],
     "capabilities": ["earlymodern-pistoliers"]
   },
@@ -967,7 +967,7 @@
     "slot": 1,
     "gold": 50000,
     "ticks": 1500,
-    "description": "Arms Factory, Modern barracks, rifle infantry and rifle-kit pattern. Older researched equipment recipes remain available.",
+    "description": "Arms Factory, Modern barracks and rifle infantry. Manufacture shared Modern equipment for rifle infantry, marksmen and machine-gun crews. Older researched equipment recipes remain available.",
     "prerequisites": ["earlymodern-howitzer-engineering"],
     "capabilities": ["modern-modern-armaments"]
   },
@@ -979,7 +979,7 @@
     "slot": 2,
     "gold": 60000,
     "ticks": 1800,
-    "description": "Marksmen, machine-gun crews, tanks, vehicle depot and towed howitzer; gun nests and trenches replace the new Modern wall tier; aircraft-only anti-air vehicles and their equipment pattern. Existing walls remain usable without conversion. Tanks cost armament + steel + oil + reserves; other vehicle recipes need authoring.",
+    "description": "Marksmen, machine-gun crews, tanks, vehicle depots, howitzers and anti-air vehicles. Manufacture shared Modern siege and vehicle equipment. Tanks and other ground vehicles require one of each; howitzers require siege equipment. Gun nests and trenches replace the new wall tier.",
     "prerequisites": ["modern-modern-armaments"],
     "capabilities": ["modern-combined-arms"]
   },
@@ -991,7 +991,7 @@
     "slot": 3,
     "gold": 60000,
     "ticks": 1800,
-    "description": "Military Airstrip, fighters, bombers, aircraft-armament patterns and conventional aerial-bomb payload capability. Aircraft combat, airfield capacity, sorties and interception need authored rules.",
+    "description": "Military Airstrips, fighters and bombers. Aircraft require gold and build time only, with no equipment, materials or reserve-troop cost. Airfield capacity and aviation research still apply.",
     "prerequisites": ["modern-modern-armaments"],
     "capabilities": ["modern-military-aviation"]
   },
@@ -1003,7 +1003,7 @@
     "slot": 4,
     "gold": 90000,
     "ticks": 2400,
-    "description": "Missile Silo/ICBM, hydrogen-bomb payload, dedicated fixed MIRV launcher building and mobile MIRV launcher vehicle; manufactured launcher-equipment and MIRV carrier/multiple-warhead payload patterns. Launcher, payload and launch are distinct definitions/jobs. Missile defence remains separate; production, targeting, flight and damage rules need authoring.",
+    "description": "Missile silos, fixed MIRV launchers, mobile MIRV launchers and strategic payload production. Mobile launchers require shared Modern siege and vehicle equipment. Payloads are manufactured separately and consumed when launched.",
     "prerequisites": ["modern-combined-arms", "modern-military-aviation"],
     "capabilities": ["modern-strategic-weapons"]
   },

@@ -1,5 +1,6 @@
 import { TECHNOLOGIES, TECHNOLOGY } from "../../content/Technology";
 import { UNITS } from "../../content/Units";
+import { supplyItemName } from "../../content/Equipment";
 import { scaledAttack, XP_THRESHOLDS } from "../../domain/Combat";
 import { AGE_NAMES, AGES, type Age } from "../../domain/Definitions";
 import { unitEffects } from "../../domain/ResearchEffects";
@@ -81,12 +82,7 @@ export class TroopCatalogViewModel {
         [
           "Supplies",
           Object.entries(unit.cost.items ?? {})
-            .map(([item, n]) => {
-              const equipment = item.startsWith("equipment:")
-                ? UNITS.find((u) => u.id === item.slice("equipment:".length))
-                : undefined;
-              return `${n} ${equipment ? `${equipment.name} equipment` : item.replace(/([a-z])([A-Z])/g, "$1 $2")}`;
-            })
+            .map(([item, n]) => `${n} ${supplyItemName(item)}`)
             .join(" · ") || "None",
         ],
         ["Target classes", attack.targets.join(", ")],

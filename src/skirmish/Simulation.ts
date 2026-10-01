@@ -309,6 +309,9 @@ export class Skirmish {
         options.technologySpeed,
       );
     this.createPlayers();
+    this.expansion?.supply.ensureStartingResources(
+      this.players, this.owners, this.paths, this.buildings,
+    );
     // Crossing trees are built a few per tick instead of all at construction
     // (about 5 s on a 1000 x 1000 map); queries build any they need first.
   }

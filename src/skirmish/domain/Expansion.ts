@@ -11,6 +11,7 @@ import type {
   Squad,
 } from "../Protocol";
 import { FIXED, TICKS_PER_SECOND } from "../Protocol";
+import { resourceSiteRejection } from "./StartingResources";
 import { personalityOf } from "../content/AiPersonalities";
 import {
   DEFENSIVE_BUILDINGS,
@@ -218,6 +219,10 @@ export class Expansion {
       return "Mines must be placed directly on a mineral deposit";
     if ((type === "oil-well" || type === "oil-rig") && node?.resource !== "oil")
       return "Oil extraction needs an oil deposit";
+    const resourceSite = resourceSiteRejection(
+      this.world.map, this.supply.deposits, type, tile,
+    );
+    if (resourceSite) return resourceSite;
     const cost = buildingCost(type, age),
       wallCost =
         type === "tower"
@@ -687,8 +692,6 @@ export class Expansion {
       return "Airfield or aircraft capacity reached";
     const cost = {
         gold: 5000,
-        reserves: 1000,
-        items: { [`equipment:${kind}`]: 1, oil: 20 },
       },
       rejection = costRejection(
         player,

@@ -4,6 +4,7 @@ const onlineMatchId=new URLSearchParams(window.location.search).get("match");
 import { BuildingIndex } from "../BuildingIndex";
 
 import { constructionRejection } from "../Construction";
+import { resourceSiteRejection } from "../domain/StartingResources";
 
 import { squadCap } from "../FactionRules";
 
@@ -1050,6 +1051,10 @@ function placementRejection(type: BuildingType, tile: number): string | null {
   if (reason) return reason;
 
   if (snapshot.expansion) {
+    const resourceSite = resourceSiteRejection(
+      currentMap.map, snapshot.expansion.deposits, type, tile,
+    );
+    if (resourceSite) return resourceSite;
     const node = snapshot.expansion.deposits.find((d) => d.tile === tile);
 
     if (type === "mine" && (!node || ["horses", "oil"].includes(node.resource)))

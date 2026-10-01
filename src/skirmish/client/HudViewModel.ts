@@ -13,6 +13,7 @@ import {
 import { buildingTechnology } from "../content/Buildings";
 import { GUN_NEST_ATTACK, TRENCH_COVER } from "../content/Defences";
 import { cityReserveIncome } from "../content/Economy";
+import { supplyItemName } from "../content/Equipment";
 import { resourceTechnology } from "../content/Resources";
 import { TECHNOLOGY } from "../content/Technology";
 import { UNIT, VESSEL } from "../content/Units";
@@ -292,7 +293,7 @@ function unitCard(unit: UnitDefinition, xp = 0): HudCard {
         stat(
           "Supplies",
           Object.entries(unit.cost.items ?? {})
-            .map(([id, n]) => `${n} ${id.replace("equipment:", "")}`)
+            .map(([id, n]) => `${n} ${supplyItemName(id)}`)
             .join(", ") || "None",
         ),
         ...stats.filter((s) =>

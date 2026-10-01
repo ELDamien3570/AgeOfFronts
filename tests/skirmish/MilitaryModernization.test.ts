@@ -59,7 +59,9 @@ describe("AI equipment production and refit rotation", () => {
       {},
       80,
     );
-    expect(plans.get(b.id)).toMatch(/^make-modern-(infantry|archer|cavalry)$/);
+    expect(plans.get(b.id)).toMatch(
+      /^make-modern-(equipment|siege-equipment|vehicle-equipment)$/,
+    );
     expect(plans.get(factory.id)).toMatch(/^refine-(iron|steel|gunpowder)$/);
   });
   it("finishes the paid old batch, then produces the new tier without refunding or granting inputs", () => {
@@ -70,24 +72,24 @@ describe("AI equipment production and refit rotation", () => {
         type: "produce",
         playerId: p.id,
         buildingId: b.id,
-        recipeId: "make-bronzeage-infantry",
+        recipeId: "make-bronzeage-equipment",
       }),
     ).toBeNull();
     e.supply.step(1, m.players, m.buildings, m.owners);
     expect(stock.bronze).toBe(0);
     for (let i = 0; i < 55; i++) m.step();
-    expect(e.supply.jobs[b.id]?.recipeId).toBe("make-bronzeage-infantry");
+    expect(e.supply.jobs[b.id]?.recipeId).toBe("make-bronzeage-equipment");
     expect(e.supply.productionPlans()[b.id].recipeId).toMatch(/^make-modern-/);
     for (let i = 0; i < 450; i++)
       e.supply.step(m.tick + i + 1, m.players, m.buildings, m.owners);
-    expect(stock["equipment:bronzeage-infantry"]).toBe(1);
+    expect(stock["equipment:bronzeage"]).toBe(1);
     expect(e.supply.jobs[b.id]?.recipeId).toMatch(/^make-modern-/);
     expect(stock.steel).toBeLessThan(100);
   });
   it("holds a minority of moving squads and completes a paid refit instead of immediately overwriting the order", () => {
     const { m, e, p, stock } = setup(),
       own = m.squads.filter((s) => s.playerId === p.id);
-    stock["equipment:modern-infantry"] = 1;
+    stock["equipment:modern"] = 1;
     for (const s of own) {
       s.moved = true;
       s.order = { type: "move", tile: p.base };
@@ -100,7 +102,7 @@ describe("AI equipment production and refit rotation", () => {
     expect(
       own.filter((s) => s.definitionId === "modern-infantry"),
     ).toHaveLength(1);
-    expect(stock["equipment:modern-infantry"]).toBe(0);
+    expect(stock["equipment:modern"]).toBe(0);
     expect(own.every((s) => !e.modernization.holds(s.id))).toBe(true);
   });
   it("does not refit or reserve units without their equipment", () => {
@@ -119,13 +121,13 @@ describe("AI equipment production and refit rotation", () => {
     const { m, e, p, stock, b } = setup();
     stock.steel = 12;
     stock.gunpowder = 10;
-    expect(e.supply.setProduction(p, b, "make-modern-infantry")).toBeNull();
+    expect(e.supply.setProduction(p, b, "make-modern-equipment")).toBeNull();
     e.supply.step(1, m.players, m.buildings, m.owners);
     expect(e.supply.setProduction(m.players[0], b, null)).not.toBeNull();
     expect(e.supply.setProduction(p, b, null)).toBeNull();
     for (let i = 0; i < 900; i++)
       e.supply.step(i + 2, m.players, m.buildings, m.owners);
-    expect(stock["equipment:modern-infantry"]).toBe(1);
+    expect(stock["equipment:modern"]).toBe(1);
     expect(e.supply.jobs[b.id]).toBeUndefined();
   });
 });

@@ -289,7 +289,7 @@ describe("selected recruitment building", () => {
     expect(vm(true, "StoneAge").recruitment("infantry").definitionId).toBe(
       "stoneage-infantry",
     );
-    match.expansion!.supply.inventories[1]["equipment:bronzeage-infantry"] = 0;
+    match.expansion!.supply.inventories[1]["equipment:bronzeage"] = 0;
     expect(vm(true).recruitment("infantry")).toMatchObject({
       enabled: true,
       building: { id: selected.id },

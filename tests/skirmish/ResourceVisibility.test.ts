@@ -245,18 +245,18 @@ describe("age-based strategic resource discovery", () => {
     const ledger = {
       bronze: 20,
       oil: 999,
-      "equipment:bronzeage-infantry": 3,
+      "equipment:bronzeage": 3,
       "payload:icbm": 2,
     };
     const saved = { ...ledger };
     const stone = new ResourceViewModel("StoneAge", ledger);
     expect(stone.stocks.bronze).toBeUndefined();
     expect(stone.stocks.oil).toBeUndefined();
-    expect(stone.stocks["equipment:bronzeage-infantry"]).toBeUndefined();
+    expect(stone.stocks["equipment:bronzeage"]).toBeUndefined();
     expect(stone.stocks["payload:icbm"]).toBeUndefined();
     const bronze = new ResourceViewModel("BronzeAge", ledger);
     expect(bronze.stocks.bronze).toBe(20);
-    expect(bronze.stocks["equipment:bronzeage-infantry"]).toBe(3);
+    expect(bronze.stocks["equipment:bronzeage"]).toBe(3);
     expect(bronze.stocks.oil).toBeUndefined();
     const modern = new ResourceViewModel("Modern", ledger);
     expect(modern.stocks.oil).toBe(999);
@@ -312,7 +312,7 @@ describe("age-based strategic resource discovery", () => {
         (e) => (e as HTMLElement).dataset.stockGroup,
       );
     expect(update("StoneAge").resources.depositVisible("oil")).toBe(false);
-    expect(groups()).toEqual(["ores", "horses"]);
+    expect(groups()).toEqual(["ores", "horses", "equipment"]);
     expect(stocks().textContent).toContain("stone0");
     expect(stocks().textContent).not.toContain("777");
     expect(stocks().textContent).not.toContain("oil");

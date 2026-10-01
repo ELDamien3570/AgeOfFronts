@@ -61,11 +61,11 @@ export function militaryProduction(
         core ? 3 : 1,
       );
   }
-  // Airframes and strategic payloads keep their existing production capability.
+  // Strategic payloads have demand beyond land-unit equipment. Aircraft are
+  // recruited with gold and time and do not need a manufacturing pattern.
   for (const recipe of available)
     if (
-      recipe.id.startsWith("make-") &&
-      !UNIT.has(recipe.id.replace(/^make-/, "")) &&
+      Object.keys(recipe.outputs).some((id) => id.startsWith("payload:")) &&
       buildings.some((b) => producerCompatible(b.type, recipe.building))
     )
       for (const id of Object.keys(recipe.outputs))

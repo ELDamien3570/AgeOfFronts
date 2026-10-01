@@ -8,6 +8,11 @@ import {
   type UnitDefinition,
   type VesselDefinition,
 } from "../domain/Definitions";
+import {
+  EQUIPMENT_RECIPES,
+  equipmentItem,
+  type EquipmentKind,
+} from "./Equipment";
 import { technologyAt } from "./Technology";
 const ground: readonly TargetTag[] = [
   "infantry",
@@ -45,36 +50,24 @@ const mobile = [
   "Pistoliers",
   "Tanks",
 ];
-const materials = [
-  null,
-  "bronze",
-  "iron",
-  "iron",
-  "steel",
-  "gunpowder",
-  "steel",
-] as const;
 export const UNITS: UnitDefinition[] = [];
-export const RECIPES: ProductionRecipe[] = [];
-function addEquipment(unit: UnitDefinition, index: number): void {
-  if (!index) return;
-  const item = `equipment:${unit.id}`;
+export const RECIPES: ProductionRecipe[] = EQUIPMENT_RECIPES;
+function addEquipment(
+  unit: UnitDefinition,
+  index: number,
+  kind: EquipmentKind = "troop",
+): void {
+  if (!index && kind === "troop") return;
+  const item = equipmentItem(unit.age, kind);
   unit.equipment = item;
-  unit.cost = { ...unit.cost, items: { ...unit.cost.items, [item]: 1 } };
-  RECIPES.push({
-    id: `make-${unit.id}`,
-    name: `${unit.name} equipment`,
-    technologyId: unit.technologyId,
-    building:
-      index === 6 ? "arms-factory" : index === 5 ? "armory" : "blacksmith",
-    inputs: {
-      [materials[index]!]:
-        unit.role === "frontline" || unit.role === "ranged" ? 12 : 20,
-      ...(index >= 5 ? { gunpowder: 10 } : {}),
+  unit.cost = {
+    ...unit.cost,
+    items: {
+      ...unit.cost.items,
+      [item]: 1,
+      ...(kind === "vehicle" ? { [equipmentItem(unit.age, "siege")]: 1 } : {}),
     },
-    outputs: { [item]: 1 },
-    ticks: (15 + index * 5) * TICKS_PER_SECOND,
-  });
+  };
 }
 const profile = (
   channel: "melee" | "ranged",
@@ -189,11 +182,7 @@ for (const [index, age] of AGES.entries()) {
             ? [150, 300, 500, 850, 1400, 2300, 4000]
             : [250, 450, 750, 1200, 2000, 3200, 5000])[index],
         reserves: 1000,
-        items: mounted
-          ? { horses: index === 1 ? 40 : 20 }
-          : vehicle
-            ? { steel: 30, oil: 20 }
-            : {},
+        items: mounted ? { horses: index === 1 ? 40 : 20 } : {},
       },
       canCapture: true,
       ...(mounted && index < 5
@@ -210,7 +199,7 @@ for (const [index, age] of AGES.entries()) {
           }
         : {}),
     };
-    addEquipment(unit, index);
+    addEquipment(unit, index, vehicle ? "vehicle" : "troop");
     UNITS.push(unit);
   }
   const siegeNames = [
@@ -279,7 +268,7 @@ for (const [index, age] of AGES.entries()) {
       ...(contact ? { undefendedCaptureTicks: 4 } : {}),
       placeholder: index === 0,
     };
-    addEquipment(unit, index);
+    addEquipment(unit, index, index === 6 && field ? "troop" : "siege");
     UNITS.push(unit);
   }
 }
@@ -306,11 +295,11 @@ for (const [role, name, targets] of [
       ...profile("ranged", role === "anti-air" ? 150 : 0, 12, 2),
       targets: [...targets],
     },
-    cost: { gold: 3000, reserves: 1000, items: { steel: 30, oil: 15 } },
+    cost: { gold: 3000, reserves: 1000 },
     canCapture: false,
     placeholder: true,
   };
-  addEquipment(unit, 6);
+  addEquipment(unit, 6, "vehicle");
   UNITS.push(unit);
 }
 export const UNIT = new Map(UNITS.map((u) => [u.id, u]));
@@ -331,13 +320,12 @@ for (const [index, age] of AGES.entries())
       name: `${age === "StoneAge" ? "Canoe" : age === "Modern" ? "Powered" : age.replace(/Age$/, "")} ${kind === "trade" ? "merchant vessel" : kind}`,
       age,
       kind,
-      technologyId: age === "StoneAge" && kind !== "warship" ? "stoneage-cargo-canoes" : technologyAt(age, "naval", actualSlot).id,
+      technologyId:
+        age === "StoneAge" && kind !== "warship"
+          ? "stoneage-cargo-canoes"
+          : technologyAt(age, "naval", actualSlot).id,
       cost: {
         gold: (kind === "warship" ? 700 : 300) * (index + 1),
-        items:
-          index >= 4 && kind === "warship"
-            ? { gunpowder: 10, ...(index === 6 ? { oil: 20, steel: 20 } : {}) }
-            : {},
       },
       health: Math.round((kind === "warship" ? 1000 : 600) * 1.3 ** index),
       speed: (kind === "warship" ? 55 : 70) + index * 6,

@@ -12,6 +12,7 @@ import {
   treeWorkload,
 } from "../content/Technology";
 import { defaultUnit, UNIT, UNITS, VESSEL, VESSELS } from "../content/Units";
+import { supplyItemName } from "../content/Equipment";
 import { AGE_NAMES, AGES, TREES, type Age } from "../domain/Definitions";
 import {
   advanceRejection,
@@ -335,11 +336,7 @@ export class EmpireViewModel {
     return TECHNOLOGY.get(id)?.name ?? id;
   }
   itemName(id: string) {
-    return UNIT.get(id.replace(/^equipment:/, ""))?.name
-      ? `${UNIT.get(id.replace(/^equipment:/, ""))!.name} equipment`
-      : id
-          .replace(/^equipment:|^payload:/, "")
-          .replace(/([a-z])([A-Z])/g, "$1 $2");
+    return supplyItemName(id);
   }
   recruitDefinition(id: string) {
     const u = UNIT.get(id)!;
@@ -412,8 +409,6 @@ export class EmpireViewModel {
       )[0];
     const cost = {
       gold: 5000,
-      reserves: 1000,
-      items: { [`equipment:${kind}`]: 1, oil: 20 },
     };
     const reason = !this.has(technologyAt("Modern", "warfare", 3).id)
       ? "Research Military Aviation"
