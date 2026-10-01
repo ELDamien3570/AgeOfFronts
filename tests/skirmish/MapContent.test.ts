@@ -87,7 +87,9 @@ describe("reviewed heightmap content contract", () => {
     const loaded = heightmap("amazon-river", 250);
     const match = new Skirmish(loaded.map, {
       ruleset: "ages-v1",
-      aiCount: 19,
+      // Twenty regular factions: six humans and the 14-AI cap.
+      humanNames: ["H1", "H2", "H3", "H4", "H5", "H6"],
+      aiCount: 14,
       tribes: false,
       runAi: false,
       seed: 41,
@@ -130,7 +132,9 @@ describe("reviewed heightmap content contract", () => {
     const loaded = heightmap("heightmap-test1");
     const match = new Skirmish(loaded.map, {
       seed: 42,
-      aiCount: 19,
+      // Twenty regular factions: six humans and the 14-AI cap.
+      humanNames: ["H1", "H2", "H3", "H4", "H5", "H6"],
+      aiCount: 14,
       tribes: false,
       runAi: false,
       ruleset: "ages-v1",
@@ -269,7 +273,9 @@ describe("reviewed heightmap content contract", () => {
     const loaded = africa();
     const match = new Skirmish(loaded.map, {
       seed: 42,
-      aiCount: 19,
+      // Twenty regular factions: six humans and the 14-AI cap.
+      humanNames: ["H1", "H2", "H3", "H4", "H5", "H6"],
+      aiCount: 14,
       runAi: false,
     });
     expect(match.players).toHaveLength(20);

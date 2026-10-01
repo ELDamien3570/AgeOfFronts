@@ -38,9 +38,9 @@ describe("local lobby preview", () => {
       "amazon-river",
     ]);
     expect(vm.rules.slots).toBe(MAX_HUMAN_PLAYERS);
-    // Base lobbies use the 500-cell defaults: 12 AI opponents and 30 tribes.
-    expect(vm.rules.aiCount).toBe(12);
-    expect(vm.rules.tribeCount).toBe(30);
+    // Base lobbies use the 500-cell defaults: 10 AI opponents and 25 tribes.
+    expect(vm.rules.aiCount).toBe(10);
+    expect(vm.rules.tribeCount).toBe(25);
     expect(vm.showLobby("<script>")).toBe(false);
     expect(vm.page).toBe("home");
     expect(vm.showLobby("heightmap-test1")).toBe(true);
@@ -61,8 +61,8 @@ describe("local lobby preview", () => {
     vm.tick(61_000);
     expect(vm.phase).toBe("complete");
     expect(vm.humanCount).toBe(2);
-    expect(vm.aiCount).toBe(12);
-    expect(vm.seats.filter((seat) => seat.kind === "ai")).toHaveLength(12);
+    expect(vm.aiCount).toBe(10);
+    expect(vm.seats.filter((seat) => seat.kind === "ai")).toHaveLength(10);
     expect(vm.addSample(62_000)).toBe(false);
     expect(vm.removeSample()).toBe(false);
   });
@@ -76,7 +76,7 @@ describe("local lobby preview", () => {
     vm.tick(60_000);
     expect(vm.phase).toBe("complete");
     expect(vm.humanCount).toBe(3);
-    expect(vm.aiCount).toBe(12);
+    expect(vm.aiCount).toBe(10);
   });
 
   it("cancels a countdown below the minimum and restarts a full minute", () => {
@@ -98,9 +98,9 @@ describe("local lobby preview", () => {
     vm.showLobby("africa");
     for (let i = 0; i < 30; i++) vm.addSample(0);
     expect(vm.phase).toBe("complete");
-    expect(vm.seats).toHaveLength(32);
+    expect(vm.seats).toHaveLength(30);
     expect(vm.humanCount).toBe(20);
-    expect(vm.aiCount).toBe(12);
+    expect(vm.aiCount).toBe(10);
     expect(vm.countdown).toBe("0:00");
   });
 

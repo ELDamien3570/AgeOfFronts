@@ -23,9 +23,9 @@ export interface LobbySettings {
   readonly minimumHumans: number;
   readonly countdownSeconds: number;
   readonly worldSize: 250 | 500 | 1000;
-  /** Regular AI opponents, added to the humans. Base by map size, ±5. */
+  /** Regular AI opponents, added to the humans. Base by map size; 0–14. */
   readonly aiCount: number;
-  /** Minor tribes. Base by map size, ±5. */
+  /** Minor tribes. Base by map size; 0–30. */
   readonly tribeCount: number;
   readonly technologySpeed: 1 | 2 | 3;
   readonly resourceDensity: ResourceMultiplier;

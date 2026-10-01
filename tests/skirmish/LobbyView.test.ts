@@ -114,7 +114,7 @@ describe("lobby page", () => {
     vm.tick(60_000);
     view.refreshPreview(vm);
     expect(add.disabled).toBe(true);
-    expect(root.querySelectorAll('[data-kind="ai"]')).toHaveLength(12);
+    expect(root.querySelectorAll('[data-kind="ai"]')).toHaveLength(10);
     expect(root.textContent).toContain("No online match has started.");
   });
 

@@ -12,36 +12,29 @@ export const AGE_SQUAD_CAPS: Readonly<Record<Age, number>> = {
   Modern: 200,
 };
 
-// Base faction counts per map size (longest edge). Lobbies may adjust each count
-// by FACTION_COUNT_ADJUSTMENT; the large map's upper bounds set the global caps.
+// Base faction counts per map size (longest edge). Custom lobbies may choose
+// any count from 0 up to the caps below, on any map size.
 export const WORLD_FACTION_DEFAULTS = Object.freeze({
-  250: Object.freeze({ aiCount: 8, tribeCount: 20 }),
-  500: Object.freeze({ aiCount: 12, tribeCount: 30 }),
-  1000: Object.freeze({ aiCount: 16, tribeCount: 40 }),
+  250: Object.freeze({ aiCount: 6, tribeCount: 20 }),
+  500: Object.freeze({ aiCount: 10, tribeCount: 25 }),
+  1000: Object.freeze({ aiCount: 14, tribeCount: 30 }),
 });
 export type FactionWorldSize = keyof typeof WORLD_FACTION_DEFAULTS;
-export const FACTION_COUNT_ADJUSTMENT = 5;
 export const MAX_HUMAN_PLAYERS = 20;
-export const MAX_AI_OPPONENTS =
-  WORLD_FACTION_DEFAULTS[1000].aiCount + FACTION_COUNT_ADJUSTMENT;
-export const MAX_TRIBES =
-  WORLD_FACTION_DEFAULTS[1000].tribeCount + FACTION_COUNT_ADJUSTMENT;
+export const MAX_AI_OPPONENTS = 14;
+export const MAX_TRIBES = 30;
 /** Humans + AI + tribes; owner IDs share a byte with the 255 contested marker. */
 export const MAX_PLAYER_ID = MAX_HUMAN_PLAYERS + MAX_AI_OPPONENTS + MAX_TRIBES;
 
 export function factionDefaults(worldSize: FactionWorldSize) {
   return WORLD_FACTION_DEFAULTS[worldSize];
 }
-/** Allowed lobby range for `aiCount` or `tribeCount` at a map size. */
+/** Allowed lobby range for `aiCount` or `tribeCount`; the same on every map size. */
 export function factionCountRange(
-  worldSize: FactionWorldSize,
+  _worldSize: FactionWorldSize,
   kind: "aiCount" | "tribeCount",
 ): { min: number; max: number } {
-  const base = WORLD_FACTION_DEFAULTS[worldSize][kind];
-  return {
-    min: Math.max(0, base - FACTION_COUNT_ADJUSTMENT),
-    max: base + FACTION_COUNT_ADJUSTMENT,
-  };
+  return { min: 0, max: kind === "aiCount" ? MAX_AI_OPPONENTS : MAX_TRIBES };
 }
 export const TRIBE_STARTING_SQUADS = 5;
 export const TRIBE_SQUAD_CAP = 10;

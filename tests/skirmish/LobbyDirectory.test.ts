@@ -73,11 +73,11 @@ describe("custom lobby holder and waiting queue", () => {
     expect(directory.queue).toHaveLength(0);
   });
 
-  it("uses each map size's base AI and tribe counts and allows ±5", () => {
+  it("uses each map size's base AI and tribe counts and allows 0–14 AI and 0–30 tribes", () => {
     const cases = [
-      [250, 8, 20],
-      [500, 12, 30],
-      [1000, 16, 40],
+      [250, 6, 20],
+      [500, 10, 25],
+      [1000, 14, 30],
     ] as const;
     for (const [worldSize, aiCount, tribeCount] of cases) {
       const base = defaultLobbySettings("africa", worldSize);
@@ -86,35 +86,27 @@ describe("custom lobby holder and waiting queue", () => {
         aiCount,
         tribeCount,
       });
-      for (const delta of [-5, 5])
+      // The same range on every map size.
+      for (const [ai, tribes] of [
+        [0, 0],
+        [14, 30],
+      ])
         expect(
-          validateLobbySettings({
-            ...base,
-            aiCount: aiCount + delta,
-            tribeCount: tribeCount + delta,
-          }),
-        ).toMatchObject({ aiCount: aiCount + delta });
-      expect(() =>
-        validateLobbySettings({ ...base, aiCount: aiCount + 6 }),
-      ).toThrow("AI opponents");
-      expect(() =>
-        validateLobbySettings({ ...base, aiCount: aiCount - 6 }),
-      ).toThrow("AI opponents");
-      expect(() =>
-        validateLobbySettings({ ...base, tribeCount: tribeCount + 6 }),
-      ).toThrow("tribes");
-      expect(() =>
-        validateLobbySettings({ ...base, tribeCount: tribeCount - 6 }),
-      ).toThrow("tribes");
+          validateLobbySettings({ ...base, aiCount: ai, tribeCount: tribes }),
+        ).toMatchObject({ aiCount: ai, tribeCount: tribes });
+      expect(() => validateLobbySettings({ ...base, aiCount: 15 })).toThrow(
+        "AI opponents",
+      );
+      expect(() => validateLobbySettings({ ...base, aiCount: -1 })).toThrow(
+        "AI opponents",
+      );
+      expect(() => validateLobbySettings({ ...base, tribeCount: 31 })).toThrow(
+        "tribes",
+      );
+      expect(() => validateLobbySettings({ ...base, aiCount: 2.5 })).toThrow(
+        "AI opponents",
+      );
     }
-    // The large map's upper bounds are the global maximum.
-    expect(
-      validateLobbySettings({
-        ...defaultLobbySettings("africa", 1000),
-        aiCount: 21,
-        tribeCount: 45,
-      }),
-    ).toMatchObject({ aiCount: 21, tribeCount: 45 });
   });
 
   it("brings rooms saved before AI and tribe counts up to the base for their size", () => {
@@ -127,7 +119,7 @@ describe("custom lobby holder and waiting queue", () => {
       ...older,
       fillVacanciesWithAi: true,
     } as unknown as LobbySettings);
-    expect(migrated).toMatchObject({ aiCount: 16, tribeCount: 40 });
+    expect(migrated).toMatchObject({ aiCount: 14, tribeCount: 30 });
     expect(migrated).not.toHaveProperty("fillVacanciesWithAi");
     expect(() =>
       validateLobbySettings(
@@ -176,7 +168,7 @@ describe("custom lobby holder and waiting queue", () => {
 });
 
 describe("custom settings and empire identity in preview", () => {
-  it("runs custom capacity/timer/minimum settings with the lowest AI count for the map size", () => {
+  it("runs custom capacity/timer/minimum settings with no AI opponents", () => {
     const vm = new LobbyViewModel();
     vm.createRoom(
       "custom",
@@ -186,7 +178,7 @@ describe("custom settings and empire identity in preview", () => {
         slots: 4,
         minimumHumans: 1,
         countdownSeconds: 15,
-        aiCount: 7,
+        aiCount: 0,
       },
       false,
     );
@@ -196,9 +188,9 @@ describe("custom settings and empire identity in preview", () => {
     vm.tick(16_000);
     expect(vm.phase).toBe("complete");
     expect(vm.humanCount).toBe(1);
-    expect(vm.aiCount).toBe(7);
+    expect(vm.aiCount).toBe(0);
     expect(vm.seats.filter((seat) => seat.kind === "open")).toHaveLength(3);
-    expect(vm.seats.filter((seat) => seat.kind === "ai")).toHaveLength(7);
+    expect(vm.seats.filter((seat) => seat.kind === "ai")).toHaveLength(0);
   });
 
   it("allows review of a queued room while keeping it out of the custom holder", () => {

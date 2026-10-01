@@ -58,7 +58,7 @@ export function factionHint(worldSize: FactionWorldSize): string {
   const base = factionDefaults(worldSize),
     ai = factionCountRange(worldSize, "aiCount"),
     tribes = factionCountRange(worldSize, "tribeCount");
-  return `This map size starts with ${base.aiCount} AI opponents and ${base.tribeCount} tribes. Adjust each by up to 5 (AI ${ai.min}–${ai.max}, tribes ${tribes.min}–${tribes.max}). Humans join on top of these.`;
+  return `This map size starts with ${base.aiCount} AI opponents and ${base.tribeCount} tribes. Choose ${ai.min}–${ai.max} AI and ${tribes.min}–${tribes.max} tribes. Humans join on top of these.`;
 }
 const compass = `<svg viewBox="0 0 40 40" aria-hidden="true"><path d="M20 3 28 28 20 23 12 28Z"/><path d="M20 23v14M3 20h9m16 0h9"/></svg>`;
 
@@ -212,7 +212,7 @@ export class LobbyView {
       if (input.id === "empire-name") this.actions.draftName(input.value);
       if (input.id === "flag-search") this.actions.searchFlags(input.value);
     });
-    // Each map size has its own base AI/tribe counts and ±5 range.
+    // Each map size has its own base AI and tribe counts.
     root.addEventListener("change", (event) => {
       const select = event.target;
       if (

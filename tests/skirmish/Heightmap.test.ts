@@ -243,7 +243,7 @@ describe("calibrated heightmap terrain", () => {
 
   it("starts 20 factions on viable land on the imported map and accepts ordinary move orders", () => {
     const loaded = load(),
-      match = new Skirmish(loaded.map, { seed: 42, aiCount: 19, runAi: false });
+      match = new Skirmish(loaded.map, { seed: 42, humanNames: ["H1", "H2", "H3", "H4", "H5", "H6"], aiCount: 14, runAi: false });
     expect(match.players).toHaveLength(20);
     for (const player of match.players) {
       expect(match.map.isLand(player.base)).toBe(true);

@@ -7,15 +7,25 @@ import {
   SnapshotDecoder,
   SnapshotEncoder,
 } from "../../src/skirmish/SnapshotCodec";
-import { COLORS } from "../../src/skirmish/client/FactionColors";
+import {
+  assignFactionColors,
+  COLORS,
+} from "../../src/skirmish/client/FactionColors";
 
-function match(aiCount = 1, runAi = true, tribes = true, width = 240) {
+function match(
+  aiCount = 1,
+  runAi = true,
+  tribes = true,
+  width = 240,
+  humanNames?: string[],
+) {
   const terrain = new Uint8Array(width * 160).fill(133);
   return new Skirmish(new GameMapImpl(width, 160, terrain, terrain.length), {
     seed: 42,
     aiCount,
     runAi,
     tribes,
+    humanNames,
   });
 }
 
@@ -30,7 +40,7 @@ describe("minor tribes", () => {
     ).toHaveLength(20);
     expect(
       [250, 500, 1000].map((width) => tribeCountFor(width, width / 2)),
-    ).toEqual([20, 30, 40]);
+    ).toEqual([20, 25, 30]);
     expect(
       game.players.filter((p) => p.kind === "regular").map((p) => p.base),
     ).toEqual(baseline.players.map((p) => p.base));
@@ -55,11 +65,20 @@ describe("minor tribes", () => {
     expect(decoded.players).toEqual(game.players);
   });
 
-  it("supports twenty regular factions plus forty tribes and supplies every owner a color", () => {
-    const game = match(19, false, true, 1000);
-    expect(game.players).toHaveLength(60);
-    expect(game.squads).toHaveLength(280);
-    expect(new Set(game.players.map((p) => COLORS[p.id])).size).toBe(60);
+  it("supports twenty regular factions plus thirty tribes and supplies every owner a color", () => {
+    // Six humans and the 14-AI cap, on a large map (30 tribes).
+    const game = match(14, false, true, 1000, [
+      "H1",
+      "H2",
+      "H3",
+      "H4",
+      "H5",
+      "H6",
+    ]);
+    assignFactionColors(game.players);
+    expect(game.players).toHaveLength(50);
+    expect(game.squads).toHaveLength(230);
+    expect(new Set(game.players.map((p) => COLORS[p.id])).size).toBe(50);
     expect(game.players.every((p) => /^#[0-9a-f]{6}$/.test(COLORS[p.id]))).toBe(
       true,
     );
