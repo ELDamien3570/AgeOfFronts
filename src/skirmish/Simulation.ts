@@ -100,11 +100,12 @@ import { terrainSpeed } from "./Terrain";
 
 const STARTING_TROOPS = 12_000;
 const BASE_RADIUS = 6;
+const ROUTE_EFFORT_LIMIT = 20_000;
 
 // Fixed-step, integer-position simulation. Browser timing and rendering never
 // determine gameplay. Human and AI players enter through applyCommand().
 export class Skirmish {
-  checkpoint() { return structuredClone({version:1 as const,width:this.map.width(),height:this.map.height(),options:this.options,players:this.players,squads:this.squads,buildings:this.buildings,ships:this.ships,volleys:this.volleys,defenseZones:this.defenseZones,owners:this.owners,claims:this.claims,progress:this.progress,pressure:this.pressure,ownedTiles:this.ownedTiles,detours:this.detours,navigationProgress:this.navigationProgress,orderRevisions:this.orderRevisions,activeClaims:this.activeClaims,tick:this.tick,winner:this.winner,combatTicks:this.combatTicks,producedTroops:this.producedTroops,nextId:this.nextId,nextVolleyId:this.nextVolleyId,random:this.random.getState(),forest:forestOf(this.map)?.checkpoint(),routeWork:this.routeWork.checkpoint(),recruitment:this.recruitment.checkpoint(),expansion:this.expansion?.checkpoint(),territoryAbsorption:this.territoryAbsorption.checkpoint(),homeTerritory:this.homeTerritory.checkpoint(),avoidance:this.avoidance.checkpoint(),passageTraffic:this.passageTraffic.checkpoint(),conquest:this.conquest.checkpoint()}); }
+  checkpoint() { return structuredClone({version:1 as const,width:this.map.width(),height:this.map.height(),options:this.options,players:this.players,squads:this.squads,buildings:this.buildings,ships:this.ships,volleys:this.volleys,defenseZones:this.defenseZones,owners:this.owners,claims:this.claims,progress:this.progress,ownedTiles:this.ownedTiles,detours:this.detours,navigationProgress:this.navigationProgress,orderRevisions:this.orderRevisions,activeClaims:this.activeClaims,tick:this.tick,winner:this.winner,combatTicks:this.combatTicks,producedTroops:this.producedTroops,nextId:this.nextId,nextVolleyId:this.nextVolleyId,random:this.random.getState(),forest:forestOf(this.map)?.checkpoint(),routeWork:this.routeWork.checkpoint(),recruitment:this.recruitment.checkpoint(),expansion:this.expansion?.checkpoint(),territoryAbsorption:this.territoryAbsorption.checkpoint(),homeTerritory:this.homeTerritory.checkpoint(),avoidance:this.avoidance.checkpoint(),passageTraffic:this.passageTraffic.checkpoint(),conquest:this.conquest.checkpoint()}); }
   restore(saved: ReturnType<Skirmish["checkpoint"]>): void {
     if (saved.version!==1 || saved.width!==this.map.width() || saved.height!==this.map.height() || JSON.stringify(saved.options)!==JSON.stringify(this.options) || Boolean(saved.expansion)!==Boolean(this.expansion)) throw new Error("Checkpoint does not match this simulation");
     const state=structuredClone(saved);
@@ -118,7 +119,6 @@ export class Skirmish {
     if (state.owners.length!==this.owners.length) throw new Error("Invalid checkpoint tile array"); this.owners.set(state.owners);
     if (state.claims.length!==this.claims.length) throw new Error("Invalid checkpoint tile array"); this.claims.set(state.claims);
     if (state.progress.length!==this.progress.length) throw new Error("Invalid checkpoint tile array"); this.progress.set(state.progress);
-    if (state.pressure.length!==this.pressure.length) throw new Error("Invalid checkpoint tile array"); this.pressure.set(state.pressure);
     restoreMap(this.ownedTiles,state.ownedTiles);
     restoreMap(this.detours,state.detours);
     restoreMap(this.navigationProgress,state.navigationProgress);
@@ -175,6 +175,14 @@ export class Skirmish {
   private readonly buildingIndex: BuildingIndex;
   private readonly coast: CoastIndex;
   private readonly shoreTransport: ShoreTransport;
+  // At most 24 route jobs per tick, and no more than ROUTE_EFFORT_LIMIT units of
+  // search effort once a job completes: both are deterministic counters.
+  private drainRoutes(): void {
+    this.routeWork.drain(24, {
+      read: () => this.paths.work,
+      limit: ROUTE_EFFORT_LIMIT,
+    });
+  }
   private readonly routeWork = new RouteWork<MatchRouteTask>(task => this.executeRouteTask(task));
   private readonly orderRevisions = new Map<number, number>();
   private readonly localDetours: LocalDetours;
@@ -1618,11 +1626,11 @@ export class Skirmish {
       this.formations.beginBatch(this.squads);
       try {
         this.expansion.armies.step();
-        this.routeWork.drain(24);
+        this.drainRoutes();
       } finally {
         this.formations.endBatch();
       }
-    } else this.routeWork.drain(24);
+    } else this.drainRoutes();
     this.heldSpatial.rebuild(land.filter((s) => this.holding(s)));
     const intents: MovementIntent[] = [];
     for (const squad of land) {
@@ -2744,23 +2752,25 @@ export class Skirmish {
     ship: Ship,
     player: Player,
   ): { land: number; water: number } | undefined {
+    const shipTile = this.tileOf(ship);
+    if (!this.waterPaths.walkable(shipTile)) return undefined;
     let best: { land: number; water: number } | undefined,
       distance = Infinity;
-    for (let land = 0; land < this.owners.length; land++) {
-      if (!this.paths.walkable(land) || this.owners[land] === player.id)
-        continue;
+    // Static coast edges for this sea, in ascending land-tile order. Ownership is
+    // read here, so captures never invalidate the index.
+    for (const { landTile: land, waterTile: water } of this.coast.waterEdges(
+      this.waterPaths.component[shipTile],
+    )) {
+      if (this.owners[land] === player.id) continue;
       // Prefer enemy shores; neutral land is useful on a different island.
       if (!this.owners[land] && this.paths.connected(player.base, land))
         continue;
-      for (const water of this.map.neighbors(land)) {
-        if (!this.waterPaths.connected(this.tileOf(ship), water)) continue;
-        const d =
-          this.map.euclideanDistSquared(this.tileOf(ship), water) +
-          (this.owners[land] ? 0 : 10000);
-        if (d < distance) {
-          best = { land, water };
-          distance = d;
-        }
+      const d =
+        this.map.euclideanDistSquared(shipTile, water) +
+        (this.owners[land] ? 0 : 10000);
+      if (d < distance) {
+        best = { land, water };
+        distance = d;
       }
     }
     return best;

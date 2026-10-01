@@ -7,6 +7,10 @@ export interface WorldPoint {
 export class SpatialGrid<T extends WorldPoint> {
   private readonly buckets: (T[] | undefined)[];
   private readonly allocated: T[][] = [];
+  // Buckets filled since the last rebuild. Once a grid is rebuilt, only these
+  // need clearing, so cost follows occupancy and not explored map history.
+  private readonly active: T[][] = [];
+  private tracking = false;
   private readonly columns: number;
   private readonly rows: number;
   private readonly partitions: (number | undefined)[];
@@ -24,7 +28,15 @@ export class SpatialGrid<T extends WorldPoint> {
   }
 
   rebuild(items: Iterable<T>): void {
-    for (const bucket of this.allocated) bucket.length = 0;
+    if (this.tracking) {
+      for (const bucket of this.active) bucket.length = 0;
+      this.active.length = 0;
+    } else {
+      // Entries added before the first rebuild were not tracked; clear them all
+      // once, then follow only occupied buckets.
+      for (const bucket of this.allocated) bucket.length = 0;
+      this.tracking = true;
+    }
     for (const item of items) this.insert(item);
   }
 
@@ -46,6 +58,7 @@ export class SpatialGrid<T extends WorldPoint> {
           : -1;
     }
     bucket.push(item);
+    if (this.tracking && bucket.length === 1) this.active.push(bucket);
   }
 
   remove(item: T): void {

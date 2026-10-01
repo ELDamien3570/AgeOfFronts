@@ -3,6 +3,9 @@ import { PathTopology } from "./PathTopology";
 
 const CLUSTER = 32;
 const INFINITY = 0x3fffffff;
+// Search origins repeat heavily (a trader's factory, an army's anchor), and a
+// start tree is a pure function of the origin and the cluster's tile costs.
+const START_TREE_CACHE = 512;
 interface Cluster {
   x: number;
   y: number;
@@ -14,6 +17,9 @@ interface LocalTree {
   cost: Int32Array;
   parent: Int16Array;
   start: number;
+  // Cells settled while building it: the deterministic effort a cached copy
+  // still reports, so budgets never depend on cache contents.
+  settled: number;
 }
 interface Portal {
   tile: number;
@@ -37,6 +43,16 @@ export class HierarchicalPaths {
   private readonly seen: Uint32Array;
   private readonly closed: Uint32Array;
   private generation = 0;
+  // Deterministic work counter (abstract expansions and start-tree settles). It
+  // ignores cache state and lazily rebuilt crossing trees, so a restored match
+  // counts exactly what an uninterrupted one does.
+  work = 0;
+  // Bumped when a cluster's tile costs change, retiring cached start trees.
+  private clusterRevision = new Uint32Array(0);
+  private readonly startTrees = new Map<
+    number,
+    { tree: LocalTree; revision: number }
+  >();
   constructor(private readonly topology: PathTopology) {
     const map = topology.map;
     this.columns = Math.ceil(map.width() / CLUSTER);
@@ -97,13 +113,16 @@ export class HierarchicalPaths {
     this.parent = new Int32Array(size);
     this.seen = new Uint32Array(size);
     this.closed = new Uint32Array(size);
+    this.clusterRevision = new Uint32Array(this.clusters.length);
     topology.onCostsChanged((tiles) => {
       // Cover changes alter travel cost, not connectivity. Retire crossing
       // trees only in the touched clusters; boundary costs are read live.
       const changed = new Set(tiles.map((tile) => this.cluster(tile)));
-      for (const cluster of changed)
+      for (const cluster of changed) {
+        this.clusterRevision[cluster]++;
         for (const portal of this.clusters[cluster].portals)
           this.portals[portal].tree = undefined;
+      }
     });
   }
   private cluster(tile: number): number {
@@ -138,12 +157,14 @@ export class HierarchicalPaths {
       startIndex = this.index(c, start);
     cost[startIndex] = 0;
     heap.enqueue(startIndex, 0);
+    let settled = 0;
     const closed = new Uint8Array(size),
       map = this.topology.map;
     while (heap.size()) {
       const index = heap.dequeue();
       if (closed[index]) continue;
       closed[index] = 1;
+      settled++;
       const tile = this.tile(c, index),
         count = this.topology.neighbors(tile, this.neighbors);
       for (let i = 0; i < count; i++) {
@@ -166,7 +187,24 @@ export class HierarchicalPaths {
         heap.enqueue(nextIndex, candidate);
       }
     }
-    return { cost, parent, start: startIndex };
+    return { cost, parent, start: startIndex, settled };
+  }
+  private startTree(start: number, clusterId: number): LocalTree {
+    const revision = this.clusterRevision[clusterId];
+    const hit = this.startTrees.get(start);
+    if (hit && hit.revision === revision) {
+      // Refresh recency so hot origins survive eviction.
+      this.startTrees.delete(start);
+      this.startTrees.set(start, hit);
+      this.work += hit.tree.settled;
+      return hit.tree;
+    }
+    const tree = this.localTree(start, clusterId);
+    this.work += tree.settled;
+    this.startTrees.set(start, { tree, revision });
+    if (this.startTrees.size > START_TREE_CACHE)
+      this.startTrees.delete(this.startTrees.keys().next().value!);
+    return tree;
   }
   private crossing(id: number): LocalTree {
     const portal = this.portals[id];
@@ -199,7 +237,7 @@ export class HierarchicalPaths {
   find(start: number, goal: number): number[] | null {
     const startCluster = this.cluster(start),
       goalCluster = this.cluster(goal);
-    const startTree = this.localTree(start, startCluster),
+    const startTree = this.startTree(start, startCluster),
       startNode = this.portals.length,
       goalNode = startNode + 1;
     if (
@@ -242,6 +280,7 @@ export class HierarchicalPaths {
       const id = this.heap.dequeue();
       if (this.closed[id] === stamp) continue;
       this.closed[id] = stamp;
+      this.work += 3;
       if (id === goalNode) {
         const nodes: number[] = [];
         for (let at = goalNode; at !== startNode; at = this.parent[at])
