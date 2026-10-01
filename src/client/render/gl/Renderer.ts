@@ -120,6 +120,9 @@ export class GPURenderer {
 
   // Passes
   private terrainPass: TerrainPass;
+  // Signatures of the last-applied terrain settings (see syncTerrainSettings).
+  private terrainBakeSig = "";
+  private terrainStyleSig = "";
   private territoryPass: TerritoryPass;
   private trailPass: TrailPass;
   private spiralRibbonPass: SpiralRibbonPass;
@@ -277,6 +280,8 @@ export class GPURenderer {
       this.terrainColorOverrides(),
       terrainStyleFromSettings(this.settings.terrain),
     );
+
+    this.terrainBakeSig = this.terrainBakeSignature();
 
     // --- Terrain bytes R8UI texture (shared by map-layer passes) ---
     this.terrainBytesTex = createTexture2D(gl, {
@@ -1011,6 +1016,7 @@ export class GPURenderer {
    * settings change needs this explicit rebuild.
    */
   rebuildTerrain(): void {
+    this.terrainBakeSig = this.terrainBakeSignature();
     this.applyTerrainStyleToPasses();
     this.terrainPass.setTerrainColors(this.terrainColorOverrides());
   }
@@ -1022,6 +1028,7 @@ export class GPURenderer {
    */
   applyTerrainStyleToPasses(): void {
     const t = this.settings.terrain;
+    this.terrainStyleSig = JSON.stringify(t);
     this.terrainPass.setStyle(terrainStyleFromSettings(t));
     // Fill/stamp clipping only makes sense with the stylized coastline.
     this.territoryPass.setCoastClip(
@@ -1358,7 +1365,41 @@ export class GPURenderer {
     );
   }
 
+  /**
+   * Pick up live edits of `settings.terrain` (graphics overrides copied in
+   * place, or the debug editor). Settings that change the baked textures
+   * trigger a re-bake; the rest only refresh uniforms, so slider drags stay
+   * cheap. The signatures are small strings, built only from the terrain slice.
+   */
+  private terrainBakeSignature(): string {
+    const t = this.settings.terrain;
+    return [
+      t.stylized,
+      t.backgroundColor,
+      t.oceanColor,
+      t.deepColor,
+      t.shallowColor,
+      t.sandColor,
+      t.plainsColor,
+      t.highlandColor,
+      t.mountainColor,
+    ].join("|");
+  }
+
+  private syncTerrainSettings(): void {
+    const bakeSig = this.terrainBakeSignature();
+    if (bakeSig !== this.terrainBakeSig) {
+      this.rebuildTerrain();
+      return;
+    }
+    const styleSig = JSON.stringify(this.settings.terrain);
+    if (styleSig !== this.terrainStyleSig) {
+      this.applyTerrainStyleToPasses();
+    }
+  }
+
   private drawBaseLayer(cam: Float32Array): void {
+    this.syncTerrainSettings();
     const gl = this.gl;
     const pe = this.settings.passEnabled;
     const [bgR, bgG, bgB] = hexToRgb(this.settings.terrain.backgroundColor) ?? [

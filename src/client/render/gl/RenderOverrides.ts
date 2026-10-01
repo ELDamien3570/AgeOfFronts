@@ -2,6 +2,24 @@ import type { GraphicsOverrides } from "./GraphicsOverrides";
 import { createThemeSettings, type RenderSettings } from "./RenderSettings";
 import { hexToRgb } from "./utils/ColorUtils";
 
+/** Plain terrain-style overrides copied straight onto settings.terrain. */
+const TERRAIN_STYLE_KEYS = [
+  "stylized",
+  "waterAnimation",
+  "coastalBorders",
+  "shallowColor",
+  "foamColor",
+  "wetSandColor",
+  "dirtColor",
+  "rippleStrength",
+  "foamStrength",
+  "hillshadeStrength",
+  "grainStrength",
+  "macroVariation",
+  "zoomFadeStart",
+  "zoomFadeEnd",
+] as const;
+
 /**
  * Apply the user's graphics overrides onto a RenderSettings in place: name
  * scaling, classic/dark structure and name styling, and the colorblind-safe
@@ -153,7 +171,19 @@ export function applyGraphicsOverrides(
     settings.terrain.backgroundColor = overrides.terrain.backgroundColor;
   }
   if (overrides.terrain?.oceanColor !== undefined) {
+    // oceanColor is the deep-water colour (kept for existing presets/saves).
     settings.terrain.oceanColor = overrides.terrain.oceanColor;
+    settings.terrain.deepColor = overrides.terrain.oceanColor;
+  }
+  if (overrides.terrain?.deepColor !== undefined) {
+    settings.terrain.deepColor = overrides.terrain.deepColor;
+    settings.terrain.oceanColor = overrides.terrain.deepColor;
+  }
+  for (const key of TERRAIN_STYLE_KEYS) {
+    const v = overrides.terrain?.[key];
+    if (v !== undefined) {
+      (settings.terrain as Record<string, unknown>)[key] = v;
+    }
   }
   if (overrides.terrain?.sandColor !== undefined) {
     settings.terrain.sandColor = overrides.terrain.sandColor;

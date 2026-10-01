@@ -104,6 +104,26 @@ export const GraphicsOverridesSchema = z
         plainsColor: z.string(),
         highlandColor: z.string(),
         mountainColor: z.string(),
+        // Master switch for the stylized terrain/water look; false restores
+        // the flat per-tile colours.
+        stylized: z.boolean(),
+        // Time-based water motion (foam waves, ripples).
+        waterAnimation: z.boolean(),
+        // Draw border strokes where owned land meets water.
+        coastalBorders: z.boolean(),
+        shallowColor: z.string(),
+        // Open-water colour; setting oceanColor also sets this.
+        deepColor: z.string(),
+        foamColor: z.string(),
+        wetSandColor: z.string(),
+        dirtColor: z.string(),
+        rippleStrength: z.number(),
+        foamStrength: z.number(),
+        hillshadeStrength: z.number(),
+        grainStrength: z.number(),
+        macroVariation: z.number(),
+        zoomFadeStart: z.number(),
+        zoomFadeEnd: z.number(),
       })
       .partial(),
     lighting: z

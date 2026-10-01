@@ -922,6 +922,8 @@
     "classic_icons_label": "Classic icons",
     "classic_numbers_desc": "Pixel font for structure level numbers (off uses the smooth font)",
     "classic_numbers_label": "Classic level numbers",
+    "coastal_borders_desc": "Draw a border stroke where your territory meets the sea. Off keeps the beaches visible.",
+    "coastal_borders_label": "Coastline borders",
     "colored_names_desc": "Show player names in their player color or in black",
     "colored_names_label": "Name color",
     "coordinate_grid_opacity_desc": "How opaque the coordinate grid is (lower lets more things show through)",
@@ -1029,10 +1031,14 @@
     "section_terrain": "Terrain",
     "structure_dots_desc": "Collapse structure icons into small dots when zoomed out",
     "structure_dots_label": "Structure dots",
+    "stylized_terrain_desc": "Painted terrain with turquoise shallows, beaches and foam. Off restores the flat tile colors.",
+    "stylized_terrain_label": "Stylized terrain",
     "territory_alpha_desc": "How opaque the territory fill is (lower lets terrain show through)",
     "territory_alpha_label": "Territory opacity",
     "territory_sat_desc": "How vivid the territory fill colors are (lower mutes them)",
-    "territory_sat_label": "Territory saturation"
+    "territory_sat_label": "Territory saturation",
+    "water_animation_desc": "Animate waves and ripples on the water. Disable to save battery.",
+    "water_animation_label": "Animated water"
   },
   "heads_up_message": {
     "catching_up": "Catching up...",

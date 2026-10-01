@@ -769,6 +769,39 @@ export class GraphicsAdvancedSettings extends LitElement {
     );
   }
 
+  private currentStylizedTerrain(): boolean {
+    return (
+      this.userSettings.graphicsOverrides().terrain?.stylized ??
+      renderDefaults.terrain.stylized
+    );
+  }
+
+  private onToggleStylizedTerrain() {
+    this.patchTerrain({ stylized: !this.currentStylizedTerrain() });
+  }
+
+  private currentWaterAnimation(): boolean {
+    return (
+      this.userSettings.graphicsOverrides().terrain?.waterAnimation ??
+      renderDefaults.terrain.waterAnimation
+    );
+  }
+
+  private onToggleWaterAnimation() {
+    this.patchTerrain({ waterAnimation: !this.currentWaterAnimation() });
+  }
+
+  private currentCoastalBorders(): boolean {
+    return (
+      this.userSettings.graphicsOverrides().terrain?.coastalBorders ??
+      renderDefaults.terrain.coastalBorders
+    );
+  }
+
+  private onToggleCoastalBorders() {
+    this.patchTerrain({ coastalBorders: !this.currentCoastalBorders() });
+  }
+
   private currentNukeColor(): string {
     return (
       this.userSettings.graphicsOverrides().mapOverlay?.staleNukeColor ??
@@ -1316,6 +1349,30 @@ export class GraphicsAdvancedSettings extends LitElement {
 
       <!-- ⛰️ Terrain -->
       ${GraphicsAdvancedSettings.section("graphics_setting.section_terrain")}
+      <setting-toggle
+        label=${translateText("graphics_setting.stylized_terrain_label")}
+        description=${translateText("graphics_setting.stylized_terrain_desc")}
+        id="stylized-terrain-toggle"
+        .checked=${this.currentStylizedTerrain()}
+        @change=${this.onToggleStylizedTerrain}
+      ></setting-toggle>
+
+      <setting-toggle
+        label=${translateText("graphics_setting.water_animation_label")}
+        description=${translateText("graphics_setting.water_animation_desc")}
+        id="water-animation-toggle"
+        .checked=${this.currentWaterAnimation()}
+        @change=${this.onToggleWaterAnimation}
+      ></setting-toggle>
+
+      <setting-toggle
+        label=${translateText("graphics_setting.coastal_borders_label")}
+        description=${translateText("graphics_setting.coastal_borders_desc")}
+        id="coastal-borders-toggle"
+        .checked=${this.currentCoastalBorders()}
+        @change=${this.onToggleCoastalBorders}
+      ></setting-toggle>
+
       <setting-color
         label=${translateText("graphics_setting.background_color_label")}
         description=${translateText("graphics_setting.background_color_desc")}

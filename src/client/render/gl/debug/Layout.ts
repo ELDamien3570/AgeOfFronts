@@ -2,6 +2,7 @@ import type { RenderSettings } from "../RenderSettings";
 import type { DebugNode } from "./Folder";
 import { folder } from "./Folder";
 import { color } from "./props/Color";
+import { hexColor } from "./props/HexColor";
 import { slider } from "./props/Slider";
 import { toggle } from "./props/Toggle";
 
@@ -21,6 +22,24 @@ export function buildTree(s: RenderSettings, d: RenderSettings): DebugNode[] {
       toggle(s.passEnabled, "fx", d.passEnabled),
       toggle(s.passEnabled, "bar", d.passEnabled),
       toggle(s.passEnabled, "nameDebug", d.passEnabled, "Name Debug Boxes"),
+    ]),
+
+    folder("Terrain & Water", [
+      toggle(s.terrain, "stylized", d.terrain),
+      toggle(s.terrain, "waterAnimation", d.terrain),
+      toggle(s.terrain, "coastalBorders", d.terrain),
+      hexColor(s.terrain, "shallowColor", d.terrain),
+      hexColor(s.terrain, "deepColor", d.terrain),
+      hexColor(s.terrain, "foamColor", d.terrain),
+      hexColor(s.terrain, "wetSandColor", d.terrain),
+      hexColor(s.terrain, "dirtColor", d.terrain),
+      slider(s.terrain, "rippleStrength", d.terrain, 0, 0.3, 0.005),
+      slider(s.terrain, "foamStrength", d.terrain, 0, 1, 0.01),
+      slider(s.terrain, "hillshadeStrength", d.terrain, 0, 0.4, 0.005),
+      slider(s.terrain, "grainStrength", d.terrain, 0, 0.2, 0.005),
+      slider(s.terrain, "macroVariation", d.terrain, 0, 0.3, 0.005),
+      slider(s.terrain, "zoomFadeStart", d.terrain, 0, 20, 0.1),
+      slider(s.terrain, "zoomFadeEnd", d.terrain, 0, 40, 0.1),
     ]),
 
     folder("Fallout Bloom", [
