@@ -1,0 +1,9 @@
+oracle.ageoffronts.com {
+	encode zstd gzip
+	reverse_proxy app:8080
+}
+
+http:// {
+	encode zstd gzip
+	reverse_proxy app:8080
+}

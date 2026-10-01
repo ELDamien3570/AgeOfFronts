@@ -1,5 +1,24 @@
 # Oracle deployment
 
+## Current deployment
+
+Provisioned on 2026-10-01 in US East (Ashburn), the tenancy's home region:
+instance `ageoffronts`, reserved public IP `129.158.227.109`, private IP
+`10.0.0.171`. The application revision is
+`b57bb4f6a7f1cc5bf0c96d5772ac3e0d3d3e5713` on `codex/oracle-hosting`.
+The administrator key is stored locally at
+`C:\Users\Damien\.ssh\ageoffronts_oracle`; never publish it.
+SSH ingress is restricted to the administrator's current public IP. If that
+address changes, update the OCI security-list SSH source before connecting.
+
+The owner approved a fresh Oracle guest/lobby database because Render's free
+plan has no shell/export access. Existing guest identities and custom lobbies
+are not imported. Render services remain intact for rollback.
+The initial independent full boot-volume backup is
+`ageoffronts-initial-deployment-20261001` and is available in Ashburn.
+
+## Configuration
+
 This setup hosts the homepage, game and existing multiplayer coordinator on one
 Ubuntu 24.04 ARM VM. Caddy provides HTTPS and forwards HTTP and WebSocket traffic
 to the existing application. Domain and ViewModel responsibilities are unchanged.
@@ -17,7 +36,9 @@ outside Git. Keep Render available until Oracle passes the cutover checks.
 
 Run `sudo bash deploy/oracle/bootstrap.sh` on a fresh Ubuntu 24.04 server. Then
 run `sudo bash deploy/oracle/release.sh FULL_GIT_COMMIT` with a tested, published
-revision. The release script fetches the public repository and required Git LFS
+revision. For a fresh server before DNS cutover, append `staging` to that command
+to request only the staging hostname's certificate. The release script fetches
+the public repository and required Git LFS
 objects, builds before restarting, and refuses to restart while active matches
 are reported. It retains earlier tagged application images for rollback.
 
@@ -39,7 +60,11 @@ match through that staging hostname first. Plain HTTP through an IP does not
 provide the secure browser context needed for all multiplayer APIs.
 Change Northwest's root A record to the Oracle
 public IP and `www` CNAME to `ageoffronts.com.`. Preserve MX, DKIM, DMARC, SPF and
-other records. Verify trusted HTTPS for both names, root redirect to `www`, WSS,
+other records. Confirm public DNS propagation before installing the production
+`Caddyfile` at `/opt/ageoffronts/Caddyfile` and running
+`sudo docker exec ageoffronts-proxy-1 caddy reload --config /etc/caddy/Caddyfile`.
+This avoids premature ACME validations against the former host.
+Verify trusted HTTPS for both names, root redirect to `www`, WSS,
 and multiplayer through the domain before retiring the Render services.
 
 Current rollback DNS targets are A `@` = `216.24.57.1` and CNAME `www` =

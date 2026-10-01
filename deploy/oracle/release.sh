@@ -1,6 +1,8 @@
 #!/usr/bin/env bash
 set -euo pipefail
 revision=${1:?Usage: sudo bash release.sh FULL_GIT_COMMIT}
+phase=${2:-production}
+[[ "$phase" == staging || "$phase" == production ]] || { echo "Phase must be staging or production." >&2; exit 1; }
 [[ "$revision" =~ ^[0-9a-f]{40}$ ]] || { echo "Use a full Git commit." >&2; exit 1; }
 [[ ${EUID} -eq 0 ]] || { echo "Run with sudo." >&2; exit 1; }
 export SOURCE_REVISION="$revision"
@@ -26,8 +28,11 @@ if curl --fail --silent http://127.0.0.1:8080/healthz >"$root/health-before.json
 fi
 bash deploy/oracle/backup.sh
 install -m 0755 deploy/oracle/backup.sh /etc/cron.daily/ageoffronts-sqlite
-install -m 0644 deploy/oracle/Caddyfile "$root/Caddyfile"
+proxy_config=deploy/oracle/Caddyfile
+[[ "$phase" == staging ]] && proxy_config=deploy/oracle/Caddyfile.staging
+install -m 0644 "$proxy_config" "$root/Caddyfile"
 "${compose[@]}" up -d --wait --wait-timeout 180
+docker exec ageoffronts-proxy-1 caddy reload --config /etc/caddy/Caddyfile
 printf '%s\n' "$revision" >"$root/current-revision"
 curl --fail --silent --show-error http://127.0.0.1:8080/healthz
 echo
