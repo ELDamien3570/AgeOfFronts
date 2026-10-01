@@ -97,21 +97,21 @@ describe("human spawn reservations and seeded faction placement", () => {
     const vm = new SpawnSelectionViewModel(
       map,
       options,
-      { remainingMs: 20_000, reservations: [] },
+      { remainingMs: 10_000, reservations: [] },
       1,
       100,
     );
-    expect(vm.seconds(100)).toBe(20);
-    expect(vm.seconds(19_100)).toBe(1);
-    expect(vm.seconds(25_100)).toBe(0);
+    expect(vm.seconds(100)).toBe(10);
+    expect(vm.seconds(9_100)).toBe(1);
+    expect(vm.seconds(10_100)).toBe(0);
     vm.update(
       {
         remainingMs: 5000,
         reservations: [{ playerId: 1, tile: map.ref(20, 20) }],
       },
-      15_100,
+      5_100,
     );
     expect(vm.chosenTile).toBe(map.ref(20, 20));
-    expect(vm.hint(15_100)).toContain("Spawn reserved");
+    expect(vm.hint(5_100)).toContain("Spawn reserved");
   });
 });

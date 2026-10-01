@@ -18,9 +18,9 @@ const vm = new LobbyViewModel(
   new BrowserLobbyPreviewStore(),
   performance.now(),
 );
-const coordinatorUrl = import.meta.env.VITE_MULTIPLAYER_URL as
-  | string
-  | undefined;
+const coordinatorUrl =
+  (import.meta.env.VITE_MULTIPLAYER_URL as string | undefined) ||
+  (typeof window !== "undefined" ? window.location.origin : undefined);
 vm.online = Boolean(coordinatorUrl);
 const requestId = () => crypto.randomUUID();
 let connection: OnlineLobbyConnection | undefined;

@@ -13,7 +13,13 @@ const origins = (
   .split(",")
   .map((origin) => origin.trim());
 const matchCapacity = Number(process.env.MULTIPLAYER_MATCH_CAPACITY ?? 1);
-const coordinator = createCoordinatorServer({ store, origins, matchCapacity });
+const staticDir = process.env.STATIC_DIR;
+const coordinator = createCoordinatorServer({
+  store,
+  origins,
+  matchCapacity,
+  staticDir,
+});
 coordinator.http.listen(
   Number(process.env.PORT ?? 9011),
   process.env.HOST ?? "127.0.0.1",

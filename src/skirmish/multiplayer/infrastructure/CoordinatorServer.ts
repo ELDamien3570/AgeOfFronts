@@ -1,4 +1,7 @@
-import { createServer, type IncomingMessage } from "node:http";
+import { createReadStream, existsSync, statSync } from "node:fs";
+import { createServer, type IncomingMessage, type ServerResponse } from "node:http";
+import { join, normalize, resolve } from "node:path";
+import { lookup } from "mrmime";
 import { WebSocket, WebSocketServer } from "ws";
 import { DEFAULT_EMPIRE_PROFILE } from "../../lobby/EmpireProfile";
 import { LiveMatch } from "../application/LiveMatch";
@@ -13,6 +16,43 @@ export interface CoordinatorServerOptions {
   origins: readonly string[];
   now?: () => number;
   matchCapacity?: number;
+  staticDir?: string;
+}
+
+function serveStatic(
+  req: IncomingMessage,
+  res: ServerResponse,
+  staticDir: string,
+): boolean {
+  if (!existsSync(staticDir)) return false;
+  const rawUrl = req.url?.split("?")[0] ?? "/";
+  let pathname = normalize(decodeURIComponent(rawUrl)).replace(/^(\.\.[\/\\])+/, "");
+  if (pathname === "/" || pathname === "\\" || pathname === "") pathname = "/index.html";
+  let target = join(staticDir, pathname);
+  try {
+    if (!target.startsWith(staticDir)) return false;
+    let stat = existsSync(target) ? statSync(target) : undefined;
+    if (stat?.isDirectory()) {
+      target = join(target, "index.html");
+      stat = existsSync(target) ? statSync(target) : undefined;
+    }
+    if (!stat?.isFile()) return false;
+    const mimeType = lookup(target) || "application/octet-stream";
+    res.setHeader("Content-Type", mimeType);
+    if (rawUrl.startsWith("/assets/")) {
+      res.setHeader("Cache-Control", "public, max-age=31536000, immutable");
+    } else {
+      res.setHeader("Cache-Control", "no-cache");
+    }
+    if (req.method === "HEAD") {
+      res.writeHead(200).end();
+      return true;
+    }
+    createReadStream(target).pipe(res);
+    return true;
+  } catch {
+    return false;
+  }
 }
 
 /** Transport adapter: credentials never appear in URLs or public directory messages. */
@@ -20,6 +60,7 @@ export function createCoordinatorServer(options: CoordinatorServerOptions) {
   const now = options.now ?? Date.now;
   // Tests may disable admission; the runnable server supplies its explicit ceiling.
   const capacity = options.matchCapacity ?? 0;
+  const staticDir = options.staticDir ?? resolve("build/skirmish");
   const matches = new Map<string, LiveMatch>();
   const runtimeId = computeRuntimeBuild();
   let rooms = new RoomCoordinator(now(), capacity, options.store.read());
@@ -32,9 +73,19 @@ export function createCoordinatorServer(options: CoordinatorServerOptions) {
     { guestId: string; alive: boolean; count: number; windowAt: number }
   >();
   const attempts = new Map<string, { count: number; windowAt: number }>();
-  const trustedOrigin = (req: IncomingMessage) =>
-    typeof req.headers.origin === "string" &&
-    options.origins.includes(req.headers.origin);
+  const trustedOrigin = (req: IncomingMessage) => {
+    if (!req.headers.origin) return true;
+    try {
+      const originUrl = new URL(req.headers.origin);
+      const host = req.headers.host;
+      if (host && (originUrl.host === host || originUrl.hostname === host)) {
+        return true;
+      }
+    } catch {
+      /* ignore invalid URL */
+    }
+    return options.origins.includes(req.headers.origin);
+  };
   const http = createServer((req, res) => {
     if (req.url === "/healthz" && req.method === "GET") {
       res.setHeader("Content-Type", "application/json");
@@ -47,38 +98,47 @@ export function createCoordinatorServer(options: CoordinatorServerOptions) {
       );
       return;
     }
-    if (!trustedOrigin(req)) {
-      res.writeHead(403).end();
+    if (req.url === "/guest") {
+      if (!trustedOrigin(req)) {
+        res.writeHead(403).end();
+        return;
+      }
+      if (req.headers.origin) {
+        res.setHeader("Access-Control-Allow-Origin", req.headers.origin);
+        res.setHeader("Vary", "Origin");
+      }
+      res.setHeader("Cache-Control", "no-store");
+      if (req.method === "OPTIONS") {
+        res.setHeader("Access-Control-Allow-Methods", "POST");
+        res.writeHead(204).end();
+        return;
+      }
+      if (req.method !== "POST") {
+        res.writeHead(405).end();
+        return;
+      }
+      const key = req.socket.remoteAddress ?? "unknown";
+      let attempt = attempts.get(key);
+      if (!attempt || now() - attempt.windowAt > 60_000) {
+        attempt = { count: 0, windowAt: now() };
+        attempts.set(key, attempt);
+      }
+      if (++attempt.count > 20) {
+        res.writeHead(429).end();
+        return;
+      }
+      try {
+        res.setHeader("Content-Type", "application/json");
+        res.end(JSON.stringify(options.store.createGuest()));
+      } catch {
+        res.writeHead(503).end();
+      }
       return;
     }
-    res.setHeader("Access-Control-Allow-Origin", req.headers.origin!);
-    res.setHeader("Vary", "Origin");
-    res.setHeader("Cache-Control", "no-store");
-    if (req.method === "OPTIONS") {
-      res.setHeader("Access-Control-Allow-Methods", "POST");
-      res.writeHead(204).end();
-      return;
+    if (req.method === "GET" || req.method === "HEAD") {
+      if (serveStatic(req, res, staticDir)) return;
     }
-    if (req.url !== "/guest" || req.method !== "POST") {
-      res.writeHead(404).end();
-      return;
-    }
-    const key = req.socket.remoteAddress ?? "unknown";
-    let attempt = attempts.get(key);
-    if (!attempt || now() - attempt.windowAt > 60_000) {
-      attempt = { count: 0, windowAt: now() };
-      attempts.set(key, attempt);
-    }
-    if (++attempt.count > 20) {
-      res.writeHead(429).end();
-      return;
-    }
-    try {
-      res.setHeader("Content-Type", "application/json");
-      res.end(JSON.stringify(options.store.createGuest()));
-    } catch {
-      res.writeHead(503).end();
-    }
+    res.writeHead(404).end();
   });
   const ws = new WebSocketServer({
     noServer: true,

@@ -126,6 +126,7 @@
     "jose": "^6.2.3",
     "lil-gui": "^0.21.0",
     "limiter": "^3.0.0",
+    "mrmime": "^2.0.1",
     "nanoid": "^5.1.16",
     "node-html-parser": "^7.1.0",
     "obscenity": "^0.4.6",

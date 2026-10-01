@@ -71,11 +71,11 @@ describe("live client-hosted match", () => {
       await match.qualify("b", "version", 2);
       messages.length = 0;
       await match.advance();
-      expect(next("a", "match-spawn").state.remainingMs).toBe(20_000);
+      expect(next("a", "match-spawn").state.remainingMs).toBe(10_000);
       await match.selectSpawn("a", 25 * map.width + 25);
       await match.selectSpawn("b", 70 * map.width + 125);
       expect(() => match.command("a", "early", { type: "advance-age" })).toThrow(/spawn/);
-      now += 19_999;
+      now += 9_999;
       await match.advance();
       expect(messages.some(item => item.message.type === "host-restore")).toBe(false);
       now++;

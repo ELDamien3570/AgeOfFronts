@@ -589,7 +589,9 @@ function showSpawn(state: SpawnState, options: MatchOptions): void {
 async function startOnlineMatch():Promise<void> {
   document.title="Age of Fronts — Online match";
   if(worker)return;
-  const endpoint=import.meta.env.VITE_MULTIPLAYER_URL;
+  const endpoint =
+    (import.meta.env.VITE_MULTIPLAYER_URL as string | undefined) ||
+    (typeof window !== "undefined" ? window.location.origin : undefined);
   if(!endpoint){element("loading").textContent="Multiplayer server URL is not configured.";return;}
   const decoder=new SnapshotDecoder();
   let startingCamera=true;

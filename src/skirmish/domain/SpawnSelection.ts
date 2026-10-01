@@ -5,7 +5,7 @@ import { LandPaths } from "../Pathfinding";
 import type { MatchOptions, SpawnState } from "../Protocol";
 import { StartingPositions } from "../StartingPositions";
 
-export const SPAWN_SECONDS = 20;
+export const SPAWN_SECONDS = 10;
 export const CAMP_RADIUS = 6;
 
 /** Map-backed spawn rules shared by solo setup, the coordinator and presentation. */
