@@ -25,12 +25,14 @@ const PALETTES = {
   coast: [190, 177, 127],
 };
 
-export function paintedCell(
+// Unclamped, rounded channels of the painted ground colour for one tile. The
+// 2D chunks and the WebGL ground texture both derive from this one function.
+export function paintedRgb(
   map: GameMap,
   tile: number,
   relief?: Int8Array,
   environment?: TerrainEnvironment,
-): { color: string } {
+): number[] {
   const x = map.x(tile),
     y = map.y(tile);
   let base: readonly number[];
@@ -58,8 +60,17 @@ export function paintedCell(
     (noise(x, y, 9) - 0.5) * 16 +
     (noise(x, y, 3) - 0.5) * 5 +
     (relief?.[tile] ?? 0);
+  return base.map((value) => Math.round(value + shade));
+}
+
+export function paintedCell(
+  map: GameMap,
+  tile: number,
+  relief?: Int8Array,
+  environment?: TerrainEnvironment,
+): { color: string } {
   return {
-    color: `rgb(${base.map((value) => Math.round(value + shade)).join(",")})`,
+    color: `rgb(${paintedRgb(map, tile, relief, environment).join(",")})`,
   };
 }
 
