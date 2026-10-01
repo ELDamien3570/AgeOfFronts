@@ -186,8 +186,8 @@ failure, state that limitation explicitly; it is not a completed recovery featur
 
 ## Hosting and operations
 
-Keep `www.ageofronts.com` on the static frontend. The backend can use an approved
-subdomain such as `play.ageofronts.com`, with the client configured to connect to
+Keep `www.ageoffronts.com` on the static frontend. The backend can use an approved
+subdomain such as `play.ageoffronts.com`, with the client configured to connect to
 its public HTTPS/WSS endpoint. Render routes public HTTP and WebSocket upgrades to
 one port; bind `0.0.0.0` and honor `PORT`. Avoid inheriting fixed localhost ports or
 assuming Render exposes the old OpenFront nginx worker routing.

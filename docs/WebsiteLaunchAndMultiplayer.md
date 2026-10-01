@@ -8,6 +8,12 @@ The current skirmish runs against AI in the player's browser. Hosting it on a
 website makes that mode publicly playable; it does not synchronize matches between
 players. A lobby page alone will not change that.
 
+The static launch was completed on October 1, 2026 at
+[www.ageoffronts.com](https://www.ageoffronts.com/). Both domain forms have HTTPS,
+and the root redirects to `www`. Use the existing `age-of-fronts-skirmish` Static
+Site for updates. The actual service, DNS records, and launch verification are
+recorded in [RenderDeployment.md](RenderDeployment.md).
+
 ## Check the uploaded project
 
 The deployed branch must contain the actual game source, `package.json`,
@@ -74,9 +80,9 @@ the custom domain. DNS settings cannot fix an incomplete game build.
 The current local page still includes the existing local skirmish controls and
 map list. The three-card map selection and online lobby are future multiplayer work.
 
-## Connect ageofronts.com
+## Connect ageoffronts.com
 
-1. In the new Static Site's settings, add **`www.ageofronts.com`** as a custom
+1. In the new Static Site's settings, add **`www.ageoffronts.com`** as a custom
    domain. Render also adds the root domain and redirects it to `www`.
 2. If those domains are attached to the earlier Web Service, move their Render
    bindings to the working Static Site during this cutover.
@@ -96,13 +102,15 @@ Do not assume the new service uses the old `ageoffronts.onrender.com` hostname.
 Copy the new service's target from Render.
 
 Return to Render and verify the domains. Wait for DNS and certificate issuance,
-then test **`https://www.ageofronts.com`** and **`https://ageofronts.com`**. The second
+then test **`https://www.ageoffronts.com`** and **`https://ageoffronts.com`**. The second
 should redirect to the first. Recheck an actual game through the custom domain.
 
 ## Keep deployment updates reliable
 
-Push finished changes to the deployment branch and let Render rebuild them. Run
-the skirmish typecheck/build and relevant tests before merging. Keep the previous
+Push finished changes to the deployment branch and confirm that Render starts and
+successfully finishes a deployment. If no deployment starts, use **Manual Deploy >
+Deploy latest commit** on the existing Static Site and check the GitHub connection.
+Run the skirmish typecheck/build and relevant tests before merging. Keep the previous
 working release available for rollback and recheck a match after each deployment.
 
 Do not run `npm run play` or Vite's preview server as the production server.
