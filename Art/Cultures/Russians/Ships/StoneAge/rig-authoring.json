@@ -1,0 +1,46 @@
+{
+  "schemaVersion": 1,
+  "cultureId": "russian",
+  "age": "StoneAge",
+  "camera": "vertical-overhead-orthographic",
+  "facing": "screen-up",
+  "frameCount": 10,
+  "sourceFit": { "size": 420, "frame": 512, "offset": [46, 46] },
+  "attachmentPolicy": "Lash-bound paddles, stowed spears, benches and secured cargo move rigidly with the hull. No floating or independently sliding attachments.",
+  "vessels": [
+    {
+      "role": "Warship",
+      "category": "Warships",
+      "source": "Warship/SourceArt/Warship_Russian_StoneAge_v1.png",
+      "motions": ["Idle", "Sailing", "Attack"],
+      "bows": [[627, 49]],
+      "sterns": [[627, 1185]],
+      "attack": {
+        "kind": "ranged-spear-release",
+        "eventFrame": 4,
+        "hullKickDegrees": 0.35,
+        "hullKickPixels": 1.4,
+        "spearLength": 30,
+        "spearTravel": 34,
+        "shaftColor": [135, 91, 49],
+        "headColor": [154, 153, 137]
+      }
+    },
+    {
+      "role": "Transport",
+      "category": "Transport",
+      "source": "Transport/SourceArt/Transport_Russian_StoneAge_v1.png",
+      "motions": ["Idle", "Sailing"],
+      "bows": [[626, 49]],
+      "sterns": [[626, 1157]]
+    },
+    {
+      "role": "Trade",
+      "category": "Trade",
+      "source": "Trade/SourceArt/Trade_Russian_StoneAge_v2.png",
+      "motions": ["Idle", "Sailing"],
+      "bows": [[386, 143], [870, 143]],
+      "sterns": [[367, 1158], [887, 1158]]
+    }
+  ]
+}

@@ -1,0 +1,61 @@
+{
+  "schemaVersion": 1,
+  "cultureId": "russian",
+  "source": "Warship/SourceArt/Warship_Russian_StoneAge_v1.png",
+  "sourceSha256": "c73c95bcada109f4bbe29afbf6023b8af01ef7d43189833de62a6af0a0b0787b",
+  "sourceSize": {
+    "width": 1254,
+    "height": 1254
+  },
+  "frameSize": {
+    "width": 512,
+    "height": 512
+  },
+  "sourceToFrame": {
+    "scale": 0.3349282296650718,
+    "offset": [
+      46,
+      46
+    ]
+  },
+  "layers": [
+    {
+      "name": "Hull",
+      "file": "layers/Hull.png",
+      "kind": "rigid-approved-master"
+    }
+  ],
+  "bows": [
+    [
+      627,
+      49
+    ]
+  ],
+  "sterns": [
+    [
+      627,
+      1185
+    ]
+  ],
+  "attack": {
+    "kind": "ranged-spear-release",
+    "eventFrame": 4,
+    "hullKickDegrees": 0.35,
+    "hullKickPixels": 1.4,
+    "spearLength": 30,
+    "spearTravel": 34,
+    "shaftColor": [
+      135,
+      91,
+      49
+    ],
+    "headColor": [
+      154,
+      153,
+      137
+    ]
+  },
+  "attachmentPolicy": "Lash-bound paddles, stowed spears, benches and secured cargo move rigidly with the hull. No floating or independently sliding attachments.",
+  "motionSource": "../rig-authoring.json",
+  "notes": "Approved pixels retained. Water and attack effects are separate presentation passes."
+}

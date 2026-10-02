@@ -1,0 +1,18 @@
+{
+  "tool": "built-in image_gen",
+  "records": [
+    {
+      "id": "running-v2",
+      "created": "2026-10-02",
+      "useCase": "identity-preserve",
+      "prompt": "Use case: identity-preserve.\nAsset type: transparent game sprite animation sheet.\nInput image 1 is the EDIT TARGET: the existing Russian Stone Age clubman movement sheet. Input image 2 is a supporting reference for strong leg separation in the approved charge animation; do not edit that charge sheet.\nPrimary request: correct only the movement/walking cycle so BOTH feet take full alternating steps. The target currently repeats the same leading leg and looks like shuffling. Preserve the same character identity, red cloth cap with cream fur brim and thick cream fur collar, red tunic, pale trousers, brown wrap boots, leather wrist wraps, flint-headed wooden club carried LOW at his side, painted 3D game sprite finish, proportions, overhead camera and screen-DOWN facing. The movement should be a purposeful brisk walk, less aggressive than the charge, with opposing arm swing and restrained torso bob.\nComposition: EXACTLY 1536 by 1024 pixels, 3 columns by 2 rows, SIX separate 512 by 512 frame cells, ordered left-to-right top row then bottom row. EXACTLY ONE complete soldier per cell. Consistent body scale and center in every cell. Keep full figure and club inside each cell with at least 28 pixels clear margin. Character torso centered approximately at x=256,y=240 within each cell. No forward drift through the sheet.\nSix-phase movement poses, using SCREEN sides to avoid left/right confusion:\nFrame 1: SCREEN-LEFT boot well forward toward bottom of cell, SCREEN-RIGHT boot well back beneath rear hip.\nFrame 2: SCREEN-LEFT leg supporting weight, SCREEN-RIGHT knee lifts and boot passes toward center under body.\nFrame 3: SCREEN-RIGHT leg extends forward while SCREEN-LEFT trails rearward.\nFrame 4: SCREEN-RIGHT boot well forward toward bottom of cell, SCREEN-LEFT boot well back beneath rear hip; mirror the LEG PHASE of frame 1, never mirror the character or switch weapon hands.\nFrame 5: SCREEN-RIGHT leg supporting weight, SCREEN-LEFT knee lifts and boot passes toward center under body.\nFrame 6: SCREEN-LEFT leg extends forward while SCREEN-RIGHT trails rearward, leading smoothly into frame 1.\nThe two extreme poses, frames 1 and 4, MUST visibly swap which boot is forward by a large distance. Each leg needs heel-strike, weight support, lift, pass and extension. Do not leave one foot stuck under the tunic. Maintain anatomical knees and intact boots. Keep the club in the same hand throughout.\nScene/backdrop: true transparent alpha, no colored background, no ground plane, no glow, no cast shadow backdrop, no grid lines, no text, no frame labels, no duplicates, no cropped limbs, no neighboring-frame spill.\nChange only the six walking poses; preserve costume, materials, camera, sprite grid and identity.",
+      "references": [
+        "Running.png",
+        "Charge.png"
+      ],
+      "source": "C:/Users/Damien/.codex/generated_images/01a0fea1-c63f-7343-92ca-6c21cc1c4296/exec-c348d910-db40-4b0a-8536-aa164aa52e96.png",
+      "file": "Running-v2.png",
+      "reason": "Alternate the leading foot across the travel cycle; user reported shuffling."
+    }
+  ]
+}

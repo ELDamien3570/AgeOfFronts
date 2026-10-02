@@ -1,0 +1,25 @@
+{
+  "schemaVersion": 1,
+  "cultureId": "russians",
+  "age": "BronzeAge",
+  "generator": "built-in image_gen",
+  "artDirection": "Evolved northern forest settlements with heavier timber construction, bronze equipment and researched regional Bronze Age craft, settlement and mining cues.",
+  "status": "draft",
+  "commonPrompt": "Use case: stylized-concept. Create ONE polished hand-painted raster Russian-culture BRONZE AGE building icon for Age of Fronts. Evolve the approved northern forest material language: heavier carefully fitted pine logs, birch bark accents, pale golden reed thatch roofs, compact ochre earth/daub, restrained grey stone footings and tiny moss patches, bronze equipment where the role calls for it. Regional inspirations come from Bronze Age forest and forest-steppe communities on present-day Russian territory, including household casting hearths and molds, planned dwelling blocks with wells and copper extraction; this is a gameplay interpretation, not a historical reconstruction or claim of Russian ethnic identity. NO medieval Slavic architecture, onion domes, Orthodox symbols, flags, red stars, modern national emblems, modern industrial equipment, roof tiles, iron armor or giant castle towers. CAMERA IS CRITICAL: perfectly vertical 90-degree nadir ORTHOGRAPHIC TOP VIEW, an actual roof plan; no camera tilt, isometric perspective, visible building facades, vertical walls, front-facing stall bays, front doors, window elevations, fence elevations or long exposed support-post sides. Upright posts appear as end caps. Horizontal circles round; equal near/far scale. Roofs conceal all building walls. Role must be readable at 48, 64 and 128 pixels from large shape groups, recognizable work equipment and a distinctive footprint; avoid a generic roof cluster repeated for every role. Neat strong medium-size shapes, rich but controlled hand-painted texture, natural warm brown timber, wheat-gold thatch, earth and grey stone with copper-brown bronze accents, restrained top-left surface light and tiny contact shadows. Isolated centered compound, one square canvas. Entire footprint should occupy about 80 percent of canvas width and height; completely empty genuinely transparent outer border at least 8 percent on every side. No scenic landscape, people, labels, text, lettering, HUD markers, fake checkerboard, black background, extra panels, watermarks, giant trees or clipped objects. Genuine transparent alpha background.",
+  "promptConstruction": "Each initial prompt is commonPrompt followed exactly by promptSuffix. References supply visual lineage and material style, not historical reconstruction.",
+  "assets": [
+    {
+      "id": "barracks",
+      "folder": "Barracks",
+      "category": "Barracks",
+      "role": "Infantry recruitment",
+      "file": "Barracks/Icon.png",
+      "sourceFile": "Barracks/SourceArt/Icon-v1.png",
+      "generator": "built-in image_gen",
+      "generationFile": "C:\\Users\\Damien\\.codex\\generated_images\\01a0fea5-71c9-75b3-9da6-4a1ca2cbd68f\\exec-cbcc5853-b7aa-42d0-b379-37fae12558b5.png",
+      "promptSuffix": "\n\nSUBJECT: A broad rectangular military drill courtyard recognizable as the Bronze Age evolution of the approved barracks. One long straight heavier timber-and-thatch barrack roof across the rear quarter; two LARGE orderly racks of long bronze-tipped spears and bronze axes in the foreground, bronze tips visible as copper-gold shapes, plus a few plain round wooden hide shields lying flat. TWO timber-and-straw training dummies in the open middle yard, crossbar arms and round straw heads seen overhead, never stumps. Upgraded squared beam joints and modest stone footings, more organized drill lanes, birch bark patches still visible. Roof less than one third of footprint. Maintain the open entry and barrack drill-yard silhouette; no target bullseyes, horses, forge or siege engine.\n\nImage 1 is the approved Stone Age barracks used as a visual lineage and painted-material reference. Create its new Bronze Age version with the requested upgrades. Do not copy its slightly tilted prop elevations; the new camera is strictly vertical overhead.",
+      "status": "draft",
+      "referenceImage": "../StoneAge/Barracks/Icon.png"
+    }
+  ]
+}

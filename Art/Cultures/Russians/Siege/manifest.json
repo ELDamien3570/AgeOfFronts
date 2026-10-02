@@ -1,0 +1,9 @@
+{
+  "schemaVersion": 1,
+  "cultureId": "russians",
+  "title": "Siege across the ages",
+  "status": "awaiting-first-prototype",
+  "summary": "Russian siege art will start with one complete unit before formation or crew assembly.",
+  "emptyMessage": "No Russian siege artwork has been authored yet. Base siege art remains available in the Base tab.",
+  "units": []
+}

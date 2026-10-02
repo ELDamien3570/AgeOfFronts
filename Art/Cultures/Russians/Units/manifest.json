@@ -1,0 +1,53 @@
+{
+  "schemaVersion": 1,
+  "cultureId": "russians",
+  "repeatOneShots": true,
+  "oneShotReviewPauseMs": 1000,
+  "ages": [
+    {
+      "id": "StoneAge",
+      "label": "Stone Age",
+      "subtitle": "Single soldiers · straight overhead view · build formations after actor review"
+    },
+    {
+      "id": "BronzeAge",
+      "label": "Bronze Age",
+      "subtitle": "Single soldiers · straight overhead view · build formations after actor review"
+    },
+    {
+      "id": "ClassicalAge",
+      "label": "Classical Age",
+      "subtitle": "Single soldiers · straight overhead view · build formations after actor review"
+    },
+    {
+      "id": "EarlyMedieval",
+      "label": "Early Medieval",
+      "subtitle": "Single soldiers · straight overhead view · build formations after actor review"
+    },
+    {
+      "id": "LateMedieval",
+      "label": "Late Medieval",
+      "subtitle": "Single soldiers · straight overhead view · build formations after actor review"
+    },
+    {
+      "id": "EarlyModern",
+      "label": "Early Modern",
+      "subtitle": "Single soldiers · straight overhead view · build formations after actor review"
+    },
+    {
+      "id": "Modern",
+      "label": "Modern Age",
+      "subtitle": "Single soldiers · straight overhead view · build formations after actor review"
+    }
+  ],
+  "units": [
+    {
+      "id": "russian-stoneage-clubman",
+      "age": "StoneAge",
+      "label": "Russian clubman",
+      "metadata": "StoneAge/Clubman/animations.json",
+      "review": "StoneAge/Clubman/Actor_Review.html",
+      "actorCount": 1
+    }
+  ]
+}

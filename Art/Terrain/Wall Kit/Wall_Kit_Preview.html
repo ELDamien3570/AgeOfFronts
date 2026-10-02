@@ -40,7 +40,7 @@
     @media (max-width:540px) { .grid { grid-template-columns:1fr; } }
   </style>
 </head>
-<body>
+<body data-culture-inspection="walls">
   <main>
     <header class="heading">
       <div><h1 id="review-title">Wall Kit · All Ages</h1><p class="subtitle">Timber palisades → stone walls → massive fortifications</p></div>
@@ -169,5 +169,5 @@
       elements['age-panel'].setAttribute('aria-busy','false'); render();
     }).catch(error => { elements.status.textContent=`Could not load the wall kit: ${error.message}. Open this page through the project's local art server.`; elements['age-panel'].setAttribute('aria-busy','false'); console.error(error); });
   </script>
-</body>
+<script type="module" src="../../Cultures/building-context-review.js"></script></body>
 </html>

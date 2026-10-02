@@ -33,9 +33,11 @@
     .stage { position: relative; background-color: #2c3633; background-image: linear-gradient(45deg,#35403c 25%,transparent 25%),linear-gradient(-45deg,#35403c 25%,transparent 25%),linear-gradient(45deg,transparent 75%,#35403c 75%),linear-gradient(-45deg,transparent 75%,#35403c 75%); background-size: 28px 28px; background-position: 0 0,0 14px,14px -14px,-14px 0; }
     .solid .stage { background-image: none; background-color: #263829; }
     canvas { display: block; width: 100%; aspect-ratio: 1; }
-    article footer { display: flex; justify-content: space-between; align-items: center; padding: 7px 14px; font-size: 11px; color: #99aaa0; }
+    article footer { display: flex; flex-wrap: wrap; gap: 8px; justify-content: space-between; align-items: center; padding: 7px 14px; font-size: 11px; color: #99aaa0; }
     article a { color: #c8b991; text-decoration: none; }
     .frame { font-variant-numeric: tabular-nums; }
+    .empty { grid-column: 1 / -1; padding: 30px 15px; color: #aab5ac; }
+    .inspection-link { color: #c8b991; font-size: 12px; }
     #status { color: #aab5ac; font-size: 12px; margin: 16px 0 0; }
     @media (max-width: 760px) { body { padding: 15px; } .grid { grid-template-columns: repeat(2,1fr); } .badge { display: none; } }
     @media (max-width: 470px) { .grid { grid-template-columns: 1fr; } }
@@ -45,165 +47,27 @@
   <main>
     <header>
       <div><h1 id="review-title">Soldier Animation Review</h1><p class="subtitle" id="review-subtitle">Straight overhead view · full squads</p></div>
-      <div class="badge">9 clips · transparent PNG</div>
+      <div class="badge" id="badge">9 clips · transparent PNG</div>
     </header>
+    <nav class="age-tabs" id="cultures" role="tablist" aria-label="Civilization"></nav>
     <nav class="age-tabs" id="ages" role="tablist" aria-label="Unit age"></nav>
     <div class="toolbar">
       <button id="play" type="button">Pause</button>
+      <button id="restart" type="button">Replay</button>
       <button id="previous" type="button" aria-label="Previous frame">‹</button>
       <button id="next" type="button" aria-label="Next frame">›</button>
       <label>Frame <input id="frame" type="range" min="0" max="9" value="0" aria-label="Animation frame"></label>
       <output id="frame-output">1 / 10</output>
       <span class="spacer"></span>
       <label>Speed <select id="speed"><option value="0.5">½ speed</option><option value="1" selected>Normal</option><option value="1.5">1½ speed</option></select></label>
+      <label><input id="repeat" type="checkbox">Repeat reactions for review</label>
       <label><input id="pivot" type="checkbox">Show pivot</label>
       <label><input id="background" type="checkbox">Solid ground</label>
     </div>
     <section id="age-panel" role="tabpanel" aria-busy="true"><div class="grid" id="clips"></div></section>
     <p id="status" role="status">Loading sprite sheets…</p>
+    <p><a class="inspection-link" id="siege-link" href="../Weapon%20Icons/Weapon-Review.html?category=Siege%20Weapons">Siege inspection ↗</a></p>
   </main>
-  <script>
-    const ages = [
-      { directory: 'StoneAge', label: 'Stone Age', subtitle: 'Five soldiers per group · straight overhead view', units: [
-        { directory: 'Melee', label: 'Clubmen' },
-        { directory: 'Ranged', label: 'Javelinists' },
-        { directory: 'Cavalry', label: 'Mounted spearmen' },
-      ] },
-      { directory: 'BronzeAge', label: 'Bronze Age', subtitle: 'Five swordsmen · five archers · four two-horse chariots · straight overhead view', units: [
-        { directory: 'Melee', label: 'Bronze swordsmen' },
-        { directory: 'Ranged', label: 'Bronze archers' },
-        { directory: 'Cavalry', label: 'Bronze chariots' },
-      ] },
-      { directory: 'ClassicalAge', label: 'Classical Age', subtitle: 'Five sword-and-shield infantry · five archers · five mounted swordsmen · straight overhead view', units: [
-        { directory: 'Melee', label: 'Classical sword-and-shield infantry' },
-        { directory: 'Ranged', label: 'Classical archers' },
-        { directory: 'Cavalry', label: 'Classical mounted swordsmen' },
-      ] },
-      { directory: 'EarlyMedieval', label: 'Early Medieval', subtitle: 'Five sword-and-shield infantry · five bowmen · five mounted spearmen · straight overhead view', units: [
-        { directory: 'Melee', label: 'Early Medieval infantry' },
-        { directory: 'Ranged', label: 'Early Medieval bowmen' },
-        { directory: 'Cavalry', label: 'Early Medieval mounted spearmen' },
-      ] },
-      { directory: 'LateMedieval', label: 'Late Medieval', subtitle: 'Five plate swordsmen · five crossbowmen · five lance knights · straight overhead view', units: [
-        { directory: 'Melee', label: 'Late Medieval plate swordsmen' },
-        { directory: 'Ranged', label: 'Late Medieval crossbowmen' },
-        { directory: 'Cavalry', label: 'Late Medieval lance knights' },
-      ] },
-      { directory: 'EarlyModern', label: 'Early Modern', subtitle: 'Five short-gun infantry · five musketeers · five mounted pistoliers · overhead firing with muzzle smoke', units: [
-        { directory: 'Melee', label: 'Early Modern short-gun infantry' },
-        { directory: 'Ranged', label: 'Early Modern musketeers' },
-        { directory: 'Cavalry', label: 'Early Modern mounted pistoliers' },
-      ] },
-      { directory: 'Modern', label: 'Modern Age', subtitle: 'Five bolt-action riflemen · five scoped riflemen · four tanks · straight overhead view with forward firing and muzzle smoke', units: [
-        { directory: 'Melee', label: 'Modern bolt-action riflemen' },
-        { directory: 'Ranged', label: 'Modern scoped riflemen' },
-        { directory: 'Cavalry', label: 'Modern tanks' },
-      ] },
-    ];
-    const motions = [{ state: 'Idle', fps: 8 }, { state: 'Running', fps: 12 }, { state: 'Attack', fps: 10 }];
-    const container = document.getElementById('clips');
-    let clips = [];
-    const reviewLoad = Date.now();
-    let playing = true, elapsed = 0, previousTime = performance.now(), manualFrame = 0;
-    const playButton = document.getElementById('play');
-    const slider = document.getElementById('frame');
-    const output = document.getElementById('frame-output');
-    const agePanel = document.getElementById('age-panel');
-    const ageTabs = document.getElementById('ages');
-    let currentAge;
-    function loadAge(age, updateLocation = true) {
-      currentAge = age;
-      elapsed = 0; manualFrame = 0; slider.value = 0; output.textContent = '1 / 10';
-      document.getElementById('review-title').textContent = `${age.label} · Animation Review`;
-      document.getElementById('review-subtitle').textContent = age.subtitle;
-      document.title = `${age.label} — Animation Review`;
-      agePanel.setAttribute('aria-labelledby', `tab-${age.directory}`);
-      agePanel.setAttribute('aria-busy', 'true');
-      for (const tab of ageTabs.children) {
-        const selected = tab.dataset.age === age.directory;
-        tab.setAttribute('aria-selected', String(selected));
-        tab.tabIndex = selected ? 0 : -1;
-      }
-      if (updateLocation) history.replaceState(null, '', `#${age.directory}`);
-      container.replaceChildren(); clips = [];
-      for (const unit of age.units) for (const motion of motions) {
-        const url = `${unit.directory}/${age.directory}/${motion.state}.png?review=${reviewLoad}`;
-        const card = document.createElement('article');
-        card.innerHTML = `<header><h2>${unit.label}</h2><span>${motion.state}</span></header><div class="stage"><canvas width="512" height="512" aria-label="${unit.label} ${motion.state.toLowerCase()} animation"></canvas></div><footer><span class="frame">Frame 1 / 10</span><a href="${url}" target="_blank">Open sheet ↗</a></footer>`;
-        container.append(card);
-        const image = new Image();
-        const clip = { image, card, context: card.querySelector('canvas').getContext('2d'), fps: motion.fps, state: motion.state, failed: false };
-        image.onerror = () => { clip.failed = true; };
-        image.src = url;
-        clips.push(clip);
-      }
-    }
-    for (const age of ages) {
-      const tab = document.createElement('button');
-      tab.type = 'button'; tab.id = `tab-${age.directory}`; tab.dataset.age = age.directory;
-      tab.setAttribute('role', 'tab'); tab.setAttribute('aria-controls', 'age-panel');
-      tab.textContent = age.label;
-      tab.addEventListener('click', () => loadAge(age));
-      tab.addEventListener('keydown', event => {
-        const index = ages.indexOf(age);
-        let next;
-        if (event.key === 'ArrowRight') next = (index+1)%ages.length;
-        if (event.key === 'ArrowLeft') next = (index+ages.length-1)%ages.length;
-        if (event.key === 'Home') next = 0;
-        if (event.key === 'End') next = ages.length-1;
-        if (next !== undefined) { event.preventDefault(); event.stopPropagation(); loadAge(ages[next]); ageTabs.children[next].focus(); }
-      });
-      ageTabs.append(tab);
-    }
-    const locationAge = () => ages.find(age => age.directory === location.hash.slice(1)) || ages[0];
-    loadAge(locationAge(), false);
-    window.addEventListener('hashchange', () => loadAge(locationAge(), false));
-    function pause() { playing = false; playButton.textContent = 'Play'; }
-    function selectFrame(frame) {
-      pause(); manualFrame = (frame+10)%10; slider.value = manualFrame; output.textContent = `${manualFrame+1} / 10`;
-    }
-    playButton.addEventListener('click', () => {
-      playing = !playing; playButton.textContent = playing ? 'Pause' : 'Play';
-      if (playing) elapsed = manualFrame/10;
-    });
-    slider.addEventListener('input', () => selectFrame(Number(slider.value)));
-    document.getElementById('previous').addEventListener('click', () => selectFrame(manualFrame-1));
-    document.getElementById('next').addEventListener('click', () => selectFrame(manualFrame+1));
-    document.getElementById('background').addEventListener('change', event => document.body.classList.toggle('solid', event.target.checked));
-    document.addEventListener('keydown', event => {
-      if (event.target.tagName === 'INPUT' || event.target.tagName === 'SELECT') return;
-      if (event.key === ' ') { event.preventDefault(); playButton.click(); }
-      if (event.key === 'ArrowRight') selectFrame(manualFrame+1);
-      if (event.key === 'ArrowLeft') selectFrame(manualFrame-1);
-    });
-    function render(now) {
-      const delta = Math.min(.1, (now-previousTime)/1000); previousTime = now;
-      if (playing) elapsed += delta*Number(document.getElementById('speed').value);
-      let loaded = 0;
-      for (const clip of clips) {
-        const frame = playing ? Math.floor(elapsed*clip.fps)%10 : manualFrame;
-        const ctx = clip.context;
-        ctx.clearRect(0,0,512,512);
-        if (clip.image.complete && clip.image.naturalWidth) {
-          loaded++;
-          ctx.drawImage(clip.image, frame%5*512, Math.floor(frame/5)*512, 512,512,0,0,512,512);
-        }
-        if (document.getElementById('pivot').checked) {
-          ctx.strokeStyle = '#a5dfda'; ctx.lineWidth = 1;
-          ctx.beginPath(); ctx.moveTo(236,256); ctx.lineTo(276,256); ctx.moveTo(256,236); ctx.lineTo(256,276); ctx.stroke();
-        }
-        clip.card.querySelector('.frame').textContent = `Frame ${frame+1} / 10`;
-      }
-      const failed = clips.filter(clip => clip.failed).length;
-      agePanel.setAttribute('aria-busy', String(loaded+failed < clips.length));
-      const status = loaded === clips.length
-        ? `All nine ${currentAge.label} sheets loaded. Pause and step through frames to inspect motion. Attacks repeat here for review.`
-        : `${currentAge.label}: ${loaded} / ${clips.length} sheets loaded${failed ? ` · ${failed} unavailable` : ''}`;
-      const statusElement = document.getElementById('status');
-      if (statusElement.textContent !== status) statusElement.textContent = status;
-      requestAnimationFrame(render);
-    }
-    requestAnimationFrame(render);
-  </script>
+  <script type="module" src="soldier-review.js"></script>
 </body>
 </html>

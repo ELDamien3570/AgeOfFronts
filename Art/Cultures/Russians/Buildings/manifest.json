@@ -1,0 +1,107 @@
+{
+  "schemaVersion": 1,
+  "cultureId": "russians",
+  "artDirection": "Prehistoric forest settlements using timber, thatch, earth, hides and subtle regional character.",
+  "status": "art-review-only",
+  "assets": [
+    {
+      "id": "barracks",
+      "label": "Barracks",
+      "category": "Barracks",
+      "age": "StoneAge",
+      "role": "Infantry recruitment",
+      "status": "approved",
+      "file": "StoneAge/Barracks/Icon.png",
+      "original": "../../../Building Icons/Barracks/Top-Down-Correction/Barracks_StoneAge.png",
+      "approvedDate": "2026-10-02"
+    },
+    {
+      "id": "city",
+      "label": "City",
+      "category": "City",
+      "age": "StoneAge",
+      "role": "Population and reserve growth",
+      "status": "approved",
+      "file": "StoneAge/City/Icon.png",
+      "original": "../../../Building Icons/City/Top-Down-Correction/City_StoneAge.png",
+      "approvedDate": "2026-10-02"
+    },
+    {
+      "id": "archery",
+      "label": "Archery Range",
+      "category": "Archery Range",
+      "age": "StoneAge",
+      "role": "Ranged recruitment",
+      "status": "approved",
+      "file": "StoneAge/Archery Range/Icon.png",
+      "original": "../../../Building Icons/Archery Range/Top-Down-Correction/Archery_StoneAge.png",
+      "approvedDate": "2026-10-02"
+    },
+    {
+      "id": "stables",
+      "label": "Stables",
+      "category": "Stables",
+      "age": "StoneAge",
+      "role": "Cavalry recruitment and horse production",
+      "status": "approved",
+      "file": "StoneAge/Stables/Icon.png",
+      "original": "../../../Building Icons/Stables/Top-Down-Correction/Stables_StoneAge.png",
+      "approvedDate": "2026-10-02"
+    },
+    {
+      "id": "factory",
+      "label": "Factory",
+      "category": "Factory",
+      "age": "StoneAge",
+      "role": "Trade goods and gold income",
+      "status": "approved",
+      "file": "StoneAge/Factory/Icon.png",
+      "original": "../../../Building Icons/Factory/Top-Down-Correction/Factor_StoneAge.png",
+      "approvedDate": "2026-10-02"
+    },
+    {
+      "id": "port",
+      "label": "Port",
+      "category": "Port",
+      "age": "StoneAge",
+      "role": "Naval recruitment and maritime trade",
+      "status": "approved",
+      "file": "StoneAge/Port/Icon.png",
+      "original": "../../../Building Icons/Port/Top-Down-Correction/Port_StoneAge.png",
+      "approvedDate": "2026-10-02"
+    },
+    {
+      "id": "mine",
+      "label": "Mine",
+      "category": "Mine",
+      "age": "StoneAge",
+      "role": "Resource extraction",
+      "status": "approved",
+      "file": "StoneAge/Mine/Icon.png",
+      "approvedDate": "2026-10-02"
+    },
+    {
+      "id": "siege-workshop",
+      "label": "Siege Workshop",
+      "category": "Siege",
+      "age": "StoneAge",
+      "role": "Siege equipment and recruitment",
+      "status": "approved",
+      "file": "StoneAge/Siege Workshop/Icon.png",
+      "original": "../../../Building Icons/Siege/Top-Down-Correction/Siege_BronzeAge.png",
+      "originalNote": "Base artwork · Bronze Age substitute",
+      "approvedDate": "2026-10-02"
+    },
+    {
+      "id": "tower",
+      "label": "Tower",
+      "category": "Tower",
+      "age": "StoneAge",
+      "role": "Automatic ground defense",
+      "status": "approved",
+      "file": "StoneAge/Tower/Icon.png",
+      "original": "../../../Building Icons/../Terrain/Wall Kit/Palisades/Tower.png",
+      "approvedDate": "2026-10-02"
+    }
+  ]
+}

@@ -26,6 +26,16 @@
     output { min-width: 55px; font-size: 12px; font-variant-numeric: tabular-nums; color: #d7c9ac; }
     .grid { display: grid; grid-template-columns: repeat(3, 1fr); gap: 14px; }
     .grid .unit-start { grid-column-start: 1; }
+    .empty-state { grid-column: 1 / -1; padding: 32px; border: 1px solid #354b55; border-radius: 12px; background: #202d33; }
+    .empty-state h2 { margin: 0 0 10px; font-size: 18px; }
+    .empty-state p { margin: 0; color: #aebec3; line-height: 1.6; }
+    .stage .placeholder { padding: 24px; color: #c5d0d4; text-align: center; }
+    .role-note { margin: 0; padding: 0 14px 12px; color: #aebec3; font-size: 12px; line-height: 1.5; }
+    button:disabled, select:disabled, input:disabled { opacity: .45; cursor: default; }
+    #game-scale { margin-top: 24px; }
+    #game-scale h2 { font-size: 20px; margin: 0 0 8px; }
+    #game-scale p { font-size: 13px; color: #aebec3; line-height: 1.6; margin: 0 0 14px; }
+    #game-scene { width: 100%; height: 350px; aspect-ratio: auto; border-radius: 12px; border: 1px solid #354b55; }
     .large .grid { grid-template-columns: repeat(2, 1fr); }
     .large .stage { min-height: 540px; }
     article { background: #202d33; border: 1px solid #354b55; border-radius: 12px; overflow: hidden; }
@@ -56,6 +66,7 @@
     </header>
     <nav class="age-tabs" id="ages" role="tablist" aria-label="Ship age"></nav>
     <div class="toolbar">
+      <label>Culture <select id="culture" aria-label="Culture"></select></label>
       <button id="play" type="button">Pause</button>
       <button id="previous" type="button" aria-label="Previous frame">‹</button>
       <button id="next" type="button" aria-label="Next frame">›</button>
@@ -70,94 +81,201 @@
     </div>
     <section id="age-panel" role="tabpanel" aria-busy="true"><div class="grid" id="clips"></div></section>
     <p id="status" role="status">Loading ship animations…</p>
-    <p class="review-links"><a href="../Soldier%20Icons/StoneAge_Animation_Preview.html">Soldier preview ↗</a><a href="Ship_Animation_Manifest.json" target="_blank" rel="noopener">Asset manifest ↗</a><a href="README.md" target="_blank" rel="noopener">Animation notes ↗</a></p>
+    <section id="game-scale" hidden>
+      <h2>Game-scale comparison</h2>
+      <p>Preview the boats at current game screen sizes. Motion follows the playback controls above; transports and traders idle when Attack is selected. Base portraits provide a still comparison. Culture artwork is under review before match integration.</p>
+      <div class="toolbar">
+        <label>Zoom <select id="game-zoom"><option value="14">Distant · 14 px/cell</option><option value="24" selected>Tactical · 24 px/cell</option><option value="48">Close · 48 px/cell</option><option value="80">Maximum vessel size · 80 px/cell</option></select></label>
+        <label>Motion <select id="game-motion"><option value="idle">Idle</option><option value="sailing" selected>Sailing</option><option value="attack">Attack</option></select></label>
+        <label><input id="compare-base" type="checkbox" checked>Compare Base</label>
+      </div>
+      <canvas id="game-scene" aria-label="Selected culture boats and base portraits at current game screen sizes"></canvas>
+    </section>
+    <p class="review-links"><a href="../Soldier%20Icons/StoneAge_Animation_Preview.html">Soldier preview ↗</a><a id="manifest-link" href="Ship_Animation_Manifest.json" target="_blank" rel="noopener">Asset manifest ↗</a><a href="README.md" target="_blank" rel="noopener">Animation notes ↗</a></p>
   </main>
-  <script>
+  <script type="module">
+    import { FleetScaleReview } from './Fleet_Scale_Review.js';
     // Review-only MVVM: asset model, playback view model, and canvas view.
     const assetModel = {
+      cultures: [
+        { id: 'base', label: 'Base', manifest: 'Ship_Animation_Manifest.json' },
+        { id: 'russian', label: 'Russian', manifest: '../Cultures/Russians/Ships/Ship_Animation_Manifest.json' },
+      ],
       ages: [
         ['StoneAge', 'Stone Age'], ['BronzeAge', 'Bronze Age'], ['ClassicalAge', 'Classical Age'],
         ['EarlyMedieval', 'Early Medieval'], ['LateMedieval', 'Late Medieval'], ['EarlyModern', 'Early Modern'], ['Modern', 'Modern'],
       ].map(([directory, label]) => ({ directory, label })),
       units: [{ directory: 'Warships', label: 'Warship', states: ['idle', 'sailing', 'attack'] }, { directory: 'Transport', label: 'Transport', states: ['idle', 'sailing'] }, { directory: 'Trade', label: 'Trade ship', states: ['idle', 'sailing'] }],
       version: Date.now(),
-      async load(unit, age) {
-        const response = await fetch(`${unit.directory}/${age.directory}/animations.json?review=${this.version}`);
+      catalogs: new Map(),
+      catalog(culture) {
+        if (!this.catalogs.has(culture.id)) {
+          const manifestUrl = new URL(culture.manifest, location.href);
+          this.catalogs.set(culture.id, (async () => {
+            const response = await fetch(`${manifestUrl}?review=${this.version}`);
+            if (!response.ok) throw new Error(`Fleet manifest unavailable (${response.status})`);
+            const data = await response.json();
+            if (data.schemaVersion !== 1 || !Array.isArray(data.assets)) throw new Error('Invalid fleet manifest');
+            return data.assets.map(asset => ({ ...asset,
+              metadataUrl: asset.metadata ? new URL(asset.metadata, manifestUrl) : null,
+              posterUrl: asset.poster ? new URL(asset.poster, manifestUrl) : null,
+            }));
+          })());
+        }
+        return this.catalogs.get(culture.id);
+      },
+      async load(asset) {
+        const response = await fetch(`${asset.metadataUrl}?review=${this.version}`);
         if (!response.ok) throw new Error(`Metadata unavailable (${response.status})`);
         const data = await response.json();
         if (data.frameSize.width !== 512 || data.frameSize.height !== 512) throw new Error('Unexpected frame dimensions');
         return data;
       },
     };
-    const clipsPerAge = assetModel.units.reduce((count, unit) => count + unit.states.length, 0);
-    document.getElementById('fleet-count').textContent = `${assetModel.ages.length * assetModel.units.length} ships · ${assetModel.ages.length * clipsPerAge} clips · transparent PNG`;
-    const playback = { playing: true, seconds: 0, frame: 0, speed: 1, repeatAttacks: true, pivot: false, age: null, clips: [], revision: 0 };
-    const elements = Object.fromEntries(['clips','ages','age-panel','play','frame','frame-output','status','review-title'].map(id => [id, document.getElementById(id)]));
+    const playback = { playing: true, seconds: 0, frame: 0, speed: 1, repeatAttacks: true, pivot: false, age: null, culture: null, clips: [], expectedClips: 0, expectedMasters: 0, missingUnits: 0, loading: true, notice: '', revision: 0 };
+    const elements = Object.fromEntries(['clips','ages','culture','age-panel','play','frame','frame-output','status','review-title','fleet-count','manifest-link'].map(id => [id, document.getElementById(id)]));
+    const fleetScaleReview = new FleetScaleReview(document.getElementById('game-scale'), document.getElementById('game-scene'), document.getElementById('game-zoom'), document.getElementById('compare-base'), document.getElementById('game-motion'));
+    window.addEventListener('resize', () => fleetScaleReview.draw());
+    const playbackControls = ['play', 'previous', 'next', 'frame', 'speed', 'repeat', 'restart'].map(id => document.getElementById(id));
     const labelState = state => state[0].toUpperCase() + state.slice(1);
     function selectFrame(frame) {
       playback.playing = false; playback.frame = (frame + 10) % 10; playback.seconds = 0;
       elements.play.textContent = 'Play'; elements.frame.value = playback.frame;
       elements['frame-output'].textContent = `${playback.frame + 1} / 10`;
     }
-    function restart() { playback.frame = 0; playback.seconds = 0; elements.frame.value = 0; }
-    async function loadAge(age, updateLocation = true) {
+    function restart() { playback.frame = 0; playback.seconds = 0; elements.frame.value = 0; elements['frame-output'].textContent = '1 / 10'; }
+    function showEmptyState(title, message) {
+      const empty = document.createElement('div'); empty.className = 'empty-state';
+      const heading = document.createElement('h2'); heading.textContent = title;
+      const text = document.createElement('p'); text.textContent = message;
+      empty.append(heading, text); elements.clips.append(empty);
+    }
+    async function loadSelection(age, culture, updateLocation = true) {
       const revision = ++playback.revision;
-      playback.age = age; playback.clips = []; restart();
-      elements['review-title'].textContent = `${age.label} · Ship Animation Review`;
-      document.title = `${age.label} — Ship Animation Review`;
+      playback.age = age; playback.culture = culture; playback.clips = []; playback.expectedClips = 0; playback.expectedMasters = 0;
+      fleetScaleReview.setAssets([]); for (const control of playbackControls) control.disabled = true;
+      playback.missingUnits = 0; playback.loading = true; playback.notice = ''; restart();
+      elements.culture.value = culture.id;
+      elements['review-title'].textContent = `${culture.label} · ${age.label} · Ship Animation Review`;
+      document.title = `${culture.label} · ${age.label} — Ship Animation Review`;
+      elements['fleet-count'].textContent = 'Loading fleet…';
+      elements['manifest-link'].href = culture.manifest;
       elements['age-panel'].setAttribute('aria-labelledby', `tab-${age.directory}`);
       elements['age-panel'].setAttribute('aria-busy', 'true');
       for (const tab of elements.ages.children) {
         const selected = tab.dataset.age === age.directory;
         tab.setAttribute('aria-selected', String(selected)); tab.tabIndex = selected ? 0 : -1;
       }
-      if (updateLocation) history.replaceState(null, '', `#${age.directory}`);
+      if (updateLocation) {
+        const url = new URL(location.href);
+        if (culture.id === 'base') url.searchParams.delete('culture'); else url.searchParams.set('culture', culture.id);
+        url.hash = age.directory; history.replaceState(null, '', url);
+      }
       elements.clips.replaceChildren();
+      let catalog;
+      try {
+        catalog = await assetModel.catalog(culture);
+        if (revision !== playback.revision) return;
+        const count = catalog.reduce((total, asset) => total + asset.clips.length, 0);
+        elements['fleet-count'].textContent = `${catalog.length} ships · ${count} clips · transparent PNG`;
+      } catch (error) {
+        if (revision !== playback.revision) return;
+        playback.loading = false; playback.notice = `${culture.label}: ${error.message}`;
+        elements['fleet-count'].textContent = 'Fleet unavailable';
+        showEmptyState('Fleet unavailable', playback.notice); return;
+      }
+      const assets = catalog.filter(asset => asset.age === age.directory);
+      playback.missingUnits = assetModel.units.filter(unit => !assets.some(asset => asset.category === unit.directory)).length;
+      if (playback.missingUnits === assetModel.units.length) {
+        playback.loading = false;
+        playback.notice = `${culture.label} · ${age.label}: no ship animations authored yet.`;
+        showEmptyState(`${culture.label} · ${age.label}`, 'No ship animations have been authored for this culture and age yet. Warship, transport and trade ship previews will appear here as they are added.');
+        return;
+      }
       await Promise.all(assetModel.units.map(async unit => {
-        // Append in unit/state order before asynchronous loading.
-        const pending = unit.states.map(state => {
-          const card = document.createElement('article');
-          if (state === unit.states[0]) card.className = 'unit-start';
+        const asset = assets.find(asset => asset.category === unit.directory);
+        if (!asset) {
+          const card = document.createElement('article'); card.className = 'unit-start';
           const title = document.createElement('h2'); title.textContent = unit.label;
-          const motion = document.createElement('span'); motion.textContent = labelState(state);
+          const header = document.createElement('header'); header.append(title);
+          const stage = document.createElement('div'); stage.className = 'stage';
+          const message = document.createElement('p'); message.className = 'placeholder'; message.textContent = 'Not authored yet';
+          stage.append(message); card.append(header, stage); elements.clips.append(card); return;
+        }
+        const states = asset.metadataUrl ? unit.states : ['master'];
+        if (asset.metadataUrl) playback.expectedClips += states.length; else playback.expectedMasters++;
+        // Append in unit/state order before asynchronous loading.
+        const pending = states.map(state => {
+          const card = document.createElement('article');
+          if (state !== 'master' && state === unit.states[0]) card.className = 'unit-start';
+          const title = document.createElement('h2'); title.textContent = unit.label;
+          const motion = document.createElement('span'); motion.textContent = state === 'master' ? 'Static master' : labelState(state);
           const header = document.createElement('header'); header.append(title, motion);
           const canvas = document.createElement('canvas'); canvas.width = canvas.height = 512;
-          canvas.setAttribute('aria-label', `${age.label} ${unit.label} ${state} animation`);
+          canvas.setAttribute('aria-label', `${culture.label} ${age.label} ${unit.label} ${state === 'master' ? 'static master' : `${state} animation`}`);
           const stage = document.createElement('div'); stage.className = 'stage'; stage.append(canvas);
           const footer = document.createElement('footer');
           const frame = document.createElement('span'); frame.className = 'frame'; frame.textContent = 'Loading…';
           const link = document.createElement('a'); link.textContent = 'Open sheet ↗'; link.target = '_blank'; link.rel = 'noopener';
           footer.append(frame, link); card.append(header, stage, footer); elements.clips.append(card);
-          const clip = { unit, state, card, context: canvas.getContext('2d'), image: new Image(), data: null, failed: false, frameElement: frame, link };
+          if (asset.description) { const note = document.createElement('p'); note.className = 'role-note'; note.textContent = asset.description; card.append(note); }
+          const clip = { unit, state, still: state === 'master', card, context: canvas.getContext('2d'), image: new Image(), data: null, failed: false, frameElement: frame, link };
           playback.clips.push(clip); return clip;
         });
+        if (!asset.metadataUrl) {
+          const clip = pending[0];
+          if (!asset.posterUrl) { clip.failed = true; clip.frameElement.textContent = 'Master unavailable'; return; }
+          const url = `${asset.posterUrl}?review=${assetModel.version}`;
+          clip.link.href = url; clip.link.textContent = 'Open master ↗';
+          clip.frameElement.textContent = 'Static master · awaiting animation approval';
+          clip.image.onload = () => refreshScaleReview();
+          clip.image.onerror = () => { clip.failed = true; clip.frameElement.textContent = 'Master unavailable'; };
+          clip.image.src = url; return;
+        }
         try {
-          const data = await assetModel.load(unit, age);
+          const data = await assetModel.load(asset);
           if (revision !== playback.revision) return;
           for (const clip of pending) {
             clip.data = data.animations[clip.state];
             if (!clip.data || clip.data.frameCount !== 10) throw new Error('Incomplete animation metadata');
-            const url = `${unit.directory}/${age.directory}/${clip.data.file}?review=${assetModel.version}`;
-            clip.link.href = url; clip.image.onerror = () => { clip.failed = true; }; clip.image.src = url;
+            const url = `${new URL(clip.data.file, asset.metadataUrl)}?review=${assetModel.version}`;
+            clip.link.href = url; clip.image.onload = () => refreshScaleReview();
+            clip.image.onerror = () => { clip.failed = true; clip.frameElement.textContent = 'Sheet unavailable'; refreshScaleReview(); }; clip.image.src = url;
           }
         } catch (error) {
+          if (revision !== playback.revision) return;
           for (const clip of pending) { clip.failed = true; clip.frameElement.textContent = error.message; }
         }
       }));
+      function refreshScaleReview() {
+        if (revision === playback.revision) fleetScaleReview.setAssets(playback.clips.filter(item => !item.failed && (item.still || item.data) && item.image.complete && item.image.naturalWidth), age.directory, culture.label);
+      }
+      if (revision === playback.revision) {
+        playback.loading = false;
+        for (const control of playbackControls) control.disabled = playback.expectedClips === 0;
+      }
     }
+    for (const culture of assetModel.cultures) {
+      const option = document.createElement('option'); option.value = culture.id; option.textContent = culture.label; elements.culture.append(option);
+    }
+    elements.culture.addEventListener('change', () => loadSelection(playback.age, assetModel.cultures.find(culture => culture.id === elements.culture.value)));
     for (const [index, age] of assetModel.ages.entries()) {
       const tab = document.createElement('button'); tab.type = 'button'; tab.id = `tab-${age.directory}`;
       tab.dataset.age = age.directory; tab.textContent = age.label;
       tab.setAttribute('role', 'tab'); tab.setAttribute('aria-controls', 'age-panel');
-      tab.addEventListener('click', () => loadAge(age));
+      tab.addEventListener('click', () => loadSelection(age, playback.culture));
       tab.addEventListener('keydown', event => {
         const keys = { ArrowRight: (index + 1) % 7, ArrowLeft: (index + 6) % 7, Home: 0, End: 6 };
         if (!(event.key in keys)) return;
-        event.preventDefault(); event.stopPropagation(); loadAge(assetModel.ages[keys[event.key]]); elements.ages.children[keys[event.key]].focus();
+        event.preventDefault(); event.stopPropagation(); loadSelection(assetModel.ages[keys[event.key]], playback.culture); elements.ages.children[keys[event.key]].focus();
       }); elements.ages.append(tab);
     }
-    const locationAge = () => assetModel.ages.find(age => age.directory === location.hash.slice(1)) || assetModel.ages[0];
-    loadAge(locationAge(), false); window.addEventListener('hashchange', () => loadAge(locationAge(), false));
+    const loadLocation = () => loadSelection(
+      assetModel.ages.find(age => age.directory === location.hash.slice(1)) || assetModel.ages[0],
+      assetModel.cultures.find(culture => culture.id === new URLSearchParams(location.search).get('culture')) || assetModel.cultures[0],
+      false,
+    );
+    loadLocation(); window.addEventListener('hashchange', loadLocation); window.addEventListener('popstate', loadLocation);
     elements.play.addEventListener('click', () => {
       if (playback.playing) {
         const first = playback.clips.find(clip => clip.data);
@@ -192,10 +310,13 @@
       let loaded = 0;
       for (const clip of playback.clips) {
         const ctx = clip.context; ctx.clearRect(0, 0, 512, 512);
-        if (clip.data && clip.image.complete && clip.image.naturalWidth) {
+        if (!clip.failed && clip.still && clip.image.complete && clip.image.naturalWidth) {
+          loaded++; ctx.drawImage(clip.image, 46, 46, 420, 420);
+        } else if (!clip.failed && clip.data && clip.image.complete && clip.image.naturalWidth) {
           loaded++;
           const progress = Math.floor(playback.frame + (playback.playing ? playback.seconds * clip.data.suggestedFramesPerSecond : 0));
           const index = clip.data.loop || playback.repeatAttacks ? progress % 10 : Math.min(9, progress);
+          clip.currentFrame = index;
           const frame = clip.data.frames[index];
           ctx.drawImage(clip.image, frame.x, frame.y, frame.width, frame.height, 0, 0, 512, 512);
           clip.frameElement.textContent = `Frame ${index + 1} / 10 · ${clip.data.suggestedFramesPerSecond} fps`;
@@ -205,10 +326,15 @@
           ctx.beginPath(); ctx.moveTo(236,256); ctx.lineTo(276,256); ctx.moveTo(256,236); ctx.lineTo(256,276); ctx.stroke();
         }
       }
+      fleetScaleReview.draw();
       const failed = playback.clips.filter(clip => clip.failed).length;
-      const settled = loaded + failed === clipsPerAge;
+      const expected = playback.expectedClips + playback.expectedMasters;
+      const settled = !playback.loading && loaded + failed === expected;
       elements['age-panel'].setAttribute('aria-busy', String(!settled));
-      const status = loaded === clipsPerAge ? `All ${clipsPerAge} ${playback.age.label} clips loaded. Pause and step through frames, or check motion at 24–32 px. Attacks repeat for review when enabled.` : `${playback.age.label}: ${loaded} / ${clipsPerAge} clips loaded${failed ? ` · ${failed} unavailable` : ''}`;
+      const selection = `${playback.culture.label} · ${playback.age.label}`;
+      const status = playback.notice || (playback.loading ? `${selection}: loading artwork…` : loaded === expected
+        ? `${selection}: ${playback.expectedMasters ? `${playback.expectedMasters} static masters loaded. Animations awaiting approval.${playback.expectedClips ? ` ${playback.expectedClips} animation clips also loaded.` : ''}` : `all ${playback.expectedClips} authored clips loaded. Pause and step through frames, or check motion at 24–32 px. Attacks repeat for review when enabled.`}${playback.missingUnits ? ` ${playback.missingUnits} ship role(s) not authored yet.` : ''}`
+        : `${selection}: ${loaded} / ${expected} previews loaded${failed ? ` · ${failed} unavailable` : ''}`);
       if (elements.status.textContent !== status) elements.status.textContent = status;
       requestAnimationFrame(render);
     }

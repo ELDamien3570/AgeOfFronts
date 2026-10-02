@@ -10,6 +10,16 @@ Open [Ship Animation Review](http://127.0.0.1:9008/Ship%20Icons/Ship_Animation_P
 
 The review uses the same age tabs, frame stepping, speed and pivot controls as the existing soldier preview. It includes all seven ship ages, 24–512 px display sizes, ocean/checkerboard/white/dark backdrops, and an option to stop attack clips at their last frame.
 
+The Culture dropdown selects Base or Russian. Base reads the existing fleet manifest; Russian reads `Art/Cultures/Russians/Ships/Ship_Animation_Manifest.json`. The selected culture is retained in the `culture` URL parameter while the age remains in the hash. Ages without authored culture assets show an empty state.
+
+Culture manifests use the existing schema: each `assets` entry has an `age`, a stable role `category` (`Warships`, `Transport` or `Trade`), a `metadata` path relative to its manifest, and a `clips` filename list. Russian Stone Age metadata belongs under `StoneAge/Warship/animations.json`, `StoneAge/Transport/animations.json` and `StoneAge/Trade/animations.json`. Animation sheets resolve relative to their metadata file and follow the same import contract below. Add entries as the corresponding assets are authored; preserve the base paintings and animations.
+
+Before animation approval, an entry may instead provide a `poster` path, an empty `clips` list and a `description`. These entries render as static masters with playback disabled. The game-scale comparison uses the current `MapSymbols` ship/trader size rules, `EraArtwork` frame extent and 128 px atlas resolution, the ship pipeline's 420-in-512 source fit, and the `PaintedTerrain` ocean palette. Choose Idle, Sailing or Attack; this view follows the main playback controls. Transports and traders use Idle when Attack is selected. Existing base runtime portraits provide a still comparison. This is a browser art study; culture art is not registered in the match renderer.
+
+The three Russian Stone Age masters were approved for animation on 2026-10-02. Their seven clips use gentle buoyancy, single-hull or twin-hull sailing wakes, and a ranged spear-release cue for the warship. Lash-bound paddles, spare weapons and cargo remain attached. The attack cue matches the current ranged Stone Age warship role; it carries no gameplay authority.
+
+Russian authoring lives in `Art/Cultures/Russians/Ships/StoneAge/rig-authoring.json`. Rebuild only these boats with `python "Art/Cultures/Russians/Ships/build-animations.py"`. The culture builder reuses the base rendering helpers and writes only Russian outputs. Approved `SourceArt` PNGs remain unchanged. Each role has an editable hull layer, combined clips, separate vessel/water/weapon passes, and lossless animated WebP previews. `Animation_Validation.json` records frame-grid, transparency, clipping, loop-seam, pass-composition and source-preservation checks.
+
 If the local server is stopped, run this from the repository root:
 
 ```powershell

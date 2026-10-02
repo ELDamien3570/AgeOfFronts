@@ -1,0 +1,74 @@
+{
+  "date": "2026-10-02",
+  "checks": [
+    {
+      "attackLabel": "Frame 10 / 10 · 10 fps",
+      "check": "Nonrepeating attack",
+      "playing": true,
+      "repeat": false
+    },
+    {
+      "check": "Russian unauthored age",
+      "disabled": true,
+      "scaleHidden": true,
+      "status": "Russian · Bronze Age: no ship animations authored yet."
+    },
+    {
+      "check": "Base Bronze Age",
+      "count": 7,
+      "disabled": false,
+      "status": "Base · Bronze Age: all 7 authored clips loaded. Pause and step through frames, or check motion at 24–32 px. Attacks repeat for review when enabled."
+    },
+    {
+      "check": "Return to Russian",
+      "count": 7,
+      "disabled": false,
+      "scaleShown": true,
+      "status": "Russian · Stone Age: all 7 authored clips loaded. Pause and step through frames, or check motion at 24–32 px. Attacks repeat for review when enabled."
+    },
+    {
+      "check": "Game-scale follows frame stepping",
+      "differentFramePixels": true
+    }
+  ],
+  "baseAgeChecks": [
+    {
+      "age": "Stone Age",
+      "cards": 7,
+      "status": "Base · Stone Age: all 7 authored clips loaded. Pause and step through frames, or check motion at 24–32 px. Attacks repeat for review when enabled."
+    },
+    {
+      "age": "Bronze Age",
+      "cards": 7,
+      "status": "Base · Bronze Age: all 7 authored clips loaded. Pause and step through frames, or check motion at 24–32 px. Attacks repeat for review when enabled."
+    },
+    {
+      "age": "Classical Age",
+      "cards": 7,
+      "status": "Base · Classical Age: all 7 authored clips loaded. Pause and step through frames, or check motion at 24–32 px. Attacks repeat for review when enabled."
+    },
+    {
+      "age": "Early Medieval",
+      "cards": 7,
+      "status": "Base · Early Medieval: all 7 authored clips loaded. Pause and step through frames, or check motion at 24–32 px. Attacks repeat for review when enabled."
+    },
+    {
+      "age": "Late Medieval",
+      "cards": 7,
+      "status": "Base · Late Medieval: all 7 authored clips loaded. Pause and step through frames, or check motion at 24–32 px. Attacks repeat for review when enabled."
+    },
+    {
+      "age": "Early Modern",
+      "cards": 7,
+      "status": "Base · Early Modern: all 7 authored clips loaded. Pause and step through frames, or check motion at 24–32 px. Attacks repeat for review when enabled."
+    },
+    {
+      "age": "Modern",
+      "cards": 7,
+      "status": "Base · Modern: all 7 authored clips loaded. Pause and step through frames, or check motion at 24–32 px. Attacks repeat for review when enabled."
+    }
+  ],
+  "consoleErrorsAndWarnings": [],
+  "evidence": "Animated_Boats_Review.jpg, Game_Scale_Animated_Tactical.jpg and Game_Scale_Close.jpg",
+  "runtimeScope": "browser art preview; no live match integration"
+}

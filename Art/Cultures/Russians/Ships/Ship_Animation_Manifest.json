@@ -1,0 +1,53 @@
+{
+  "schemaVersion": 1,
+  "cultureId": "russian",
+  "artDirection": "Regional prehistoric inspiration for Stone Age vessels",
+  "shipCount": 3,
+  "clipCount": 7,
+  "assets": [
+    {
+      "age": "StoneAge",
+      "ageLabel": "Stone Age",
+      "category": "Warships",
+      "poster": "StoneAge/Warship/SourceArt/Warship_Russian_StoneAge_v1.png",
+      "description": "Narrow fighting canoe \u00b7 paired stone-tipped spears \u00b7 ochre hide wraps",
+      "status": "animated-from-approved-master",
+      "clips": [
+        "Idle.png",
+        "Sailing.png",
+        "Attack.png"
+      ],
+      "metadata": "StoneAge/Warship/animations.json"
+    },
+    {
+      "age": "StoneAge",
+      "ageLabel": "Stone Age",
+      "category": "Transport",
+      "poster": "StoneAge/Transport/SourceArt/Transport_Russian_StoneAge_v1.png",
+      "description": "Broad passenger hull \u00b7 five open benches \u00b7 pale hide seat pads",
+      "status": "animated-from-approved-master",
+      "clips": [
+        "Idle.png",
+        "Sailing.png"
+      ],
+      "metadata": "StoneAge/Transport/animations.json"
+    },
+    {
+      "age": "StoneAge",
+      "ageLabel": "Stone Age",
+      "category": "Trade",
+      "poster": "StoneAge/Trade/SourceArt/Trade_Russian_StoneAge_v2.png",
+      "description": "Wide twin-log cargo craft \u00b7 six large secured bundles and containers",
+      "status": "animated-from-approved-master",
+      "clips": [
+        "Idle.png",
+        "Sailing.png"
+      ],
+      "metadata": "StoneAge/Trade/animations.json"
+    }
+  ],
+  "animationApproval": {
+    "date": "2026-10-02",
+    "userMessage": "these are perfect, you're clear to animate them."
+  }
+}
