@@ -5,27 +5,29 @@ import type {
   WorkerResponse,
 } from "../Protocol";
 import type { MatchManifest, ServerMessage } from "../multiplayer/Protocol";
-import { decodeState } from "../multiplayer/StateCodec";
-import type { RuntimeCommit } from "../multiplayer/application/HostedRuntime";
+import type { EncodedState } from "../multiplayer/StateCodec";
 import { mapIdentity } from "../multiplayer/application/MapIdentity";
 import { OnlineLobbyConnection } from "./lobby/OnlineLobbyConnection";
 
-/** Presentation/session adapter. Only the selected browser worker executes world ticks. */
+const MAX_PENDING_STATES = 8;
+
+/** Thin presentation client. The server alone advances the simulation. */
 export class OnlineMatchSession {
   onmessage: ((event: MessageEvent<WorkerResponse>) => void) | null = null;
   onerror: ((event: { message: string }) => void) | null = null;
   disconnectedPlayerIds: number[] = [];
-  private host?: Worker;
+  private decoder?: Worker;
   private connection: OnlineLobbyConnection;
-  private nextId = 1;
-  private tasks = new Map<
-    number,
-    { resolve: (value: any) => void; reject: (error: Error) => void }
-  >();
+  private decoding?: {
+    resolve: (packet: SnapshotPacket) => void;
+    reject: (error: Error) => void;
+  };
   private incoming = Promise.resolve();
+  private pendingStates = 0;
   private initialized = false;
+  private stopped = false;
   private manifest?: MatchManifest;
-  private guestId = "";
+  private lastTick = -1;
   constructor(
     endpoint: string,
     private matchId: string,
@@ -35,8 +37,7 @@ export class OnlineMatchSession {
   ) {
     this.connection = new OnlineLobbyConnection(
       endpoint,
-      (message) => {
-        this.guestId = message.guestId;
+      () => {
         if (!this.manifest)
           void this.request({
             type: "watch-match",
@@ -44,51 +45,81 @@ export class OnlineMatchSession {
           }).catch((error) => this.fail(error.message));
       },
       (message, connected) => {
-        if (connected && this.initialized) return;
-        this.status(message);
-        if (!connected && this.initialized)
-          this.status(
-            "Connection lost. This match cannot be rejoined; return to the lobby.",
+        if (this.stopped || (connected && this.initialized)) return;
+        if (!connected && this.initialized) {
+          this.fail(
+            "Connection lost. You have left this match. Return to the lobby to play again.",
           );
+          return;
+        }
+        this.status(message);
       },
       (message) => {
+        if (this.stopped) return;
+        const state = message.type === "match-state";
+        if (state && ++this.pendingStates > MAX_PENDING_STATES) {
+          this.fail(
+            "This device cannot keep up with the match updates. Return to the lobby to play again.",
+          );
+          return;
+        }
         this.incoming = this.incoming
-          .then(() => this.receive(message))
-          .catch((error) => this.fail(error.message));
+          .then(() => (this.stopped ? undefined : this.receive(message)))
+          .catch((error) => this.fail(error.message))
+          .finally(() => {
+            if (state) this.pendingStates--;
+          });
       },
+      { reconnect: false },
     );
   }
   connect(): void {
-    void this.connection.connect();
+    if (!this.stopped) void this.connection.connect();
   }
   postMessage(message: WorkerRequest): void {
+    if (this.stopped) return;
     if (message.type === "select-spawn")
-      void this.request({ type: "select-spawn", matchId: this.matchId, tile: message.tile }).catch(error => this.onmessage?.({ data: { type: "rejected", message: error.message } } as MessageEvent<WorkerResponse>));
+      void this.request({
+        type: "select-spawn",
+        matchId: this.matchId,
+        tile: message.tile,
+      }).catch((error) => {
+        if (!this.stopped)
+          this.onmessage?.({
+            data: { type: "rejected", message: error.message },
+          } as MessageEvent<WorkerResponse>);
+      });
     if (message.type === "command")
       void this.request({
         type: "match-command",
         matchId: this.matchId,
         command: message.command,
-      }).catch((error) => this.status(error.message));
+      }).catch((error) => {
+        if (!this.stopped) this.status(error.message);
+      });
   }
   terminate(): void {
+    if (this.stopped) return;
+    this.stopped = true;
     this.connection.stop();
-    this.host?.terminate();
-    for (const task of this.tasks.values())
-      task.reject(new Error("Session stopped"));
-    this.tasks.clear();
+    this.decoder?.terminate();
+    this.decoding?.reject(new Error("Session stopped"));
+    this.decoding = undefined;
   }
-  private request(message: any): Promise<string | undefined> {
+  private request(message: object): Promise<string | undefined> {
     return this.connection.request({
       ...message,
       requestId: crypto.randomUUID(),
-    });
+    } as Parameters<OnlineLobbyConnection["request"]>[0]);
   }
-  private hostRequest<T>(type: string, details: object): Promise<T> {
+  private decode(packet: EncodedState): Promise<SnapshotPacket> {
     return new Promise((resolve, reject) => {
-      const id = this.nextId++;
-      this.tasks.set(id, { resolve, reject });
-      this.host!.postMessage({ id, type, ...details });
+      if (!this.decoder || this.decoding) {
+        reject(new Error("State decoder is unavailable"));
+        return;
+      }
+      this.decoding = { resolve, reject };
+      this.decoder.postMessage(packet);
     });
   }
   private async receive(message: ServerMessage): Promise<void> {
@@ -103,83 +134,65 @@ export class OnlineMatchSession {
         );
       this.identity(message.manifest.playerId);
       const loaded = await this.load(message.manifest);
-      const runtimeMap = {
+      if (this.stopped) return;
+      const identity = await mapIdentity({
         width: loaded.map.width(),
         height: loaded.map.height(),
         terrain: loaded.terrain,
         elevation: loaded.elevation,
         forest: loaded.forest,
         resourceTerrain: loaded.resourceTerrain,
-      };
-      if ((await mapIdentity(runtimeMap)) !== message.manifest.mapHash)
+      });
+      if (this.stopped) return;
+      if (identity !== message.manifest.mapHash)
         throw new Error("Map versions differ. Reload after deployment.");
-      this.host = new Worker(
-        new URL("./multiplayerHostWorker.ts", import.meta.url),
+      this.decoder = new Worker(
+        new URL("./multiplayerStateWorker.ts", import.meta.url),
         { type: "module" },
       );
-      this.host.onmessage = (event) => {
-        const task = this.tasks.get(event.data.id);
+      this.decoder.onmessage = (
+        event: MessageEvent<{ packet?: SnapshotPacket; error?: string }>,
+      ) => {
+        const task = this.decoding;
+        this.decoding = undefined;
         if (!task) return;
-        this.tasks.delete(event.data.id);
         if (event.data.error) task.reject(new Error(event.data.error));
-        else task.resolve(event.data.result);
+        else if (event.data.packet) task.resolve(event.data.packet);
+        else task.reject(new Error("Invalid decoded match state"));
       };
-      this.host.onerror = (event) => this.fail(event.message);
-      const tickP95Ms = await this.hostRequest<number>("initialize", {
-        map: runtimeMap,
-        options: message.manifest.options,
-      });
+      this.decoder.onerror = (event) => this.fail(event.message);
       this.initialized = true;
       await this.request({
         type: "match-ready",
         matchId: this.matchId,
         runtimeId: message.manifest.runtimeId,
-        tickP95Ms,
       });
     } else if (message.type === "match-spawn") {
-      this.onmessage?.({ data: { type: "spawn", state: message.state } } as MessageEvent<WorkerResponse>);
-    } else if (message.type === "host-restore") {
-      const tick = await this.hostRequest<number>("restore", {
-        checkpoint: message.checkpoint,
-        stateId: message.stateId,
-      });
-      await this.request({
-        type: "host-ready",
-        matchId: this.matchId,
-        epoch: message.epoch,
-        tick,
-        hash: message.stateId,
-      });
-    } else if (message.type === "host-batch") {
-      const proposal = await this.hostRequest<RuntimeCommit>("batch", {
-        batch: message.batch,
-      });
-      await this.request({
-        type: "host-commit",
-        matchId: this.matchId,
-        epoch: message.epoch,
-        proposal,
-      });
+      this.onmessage?.({
+        data: { type: "spawn", state: message.state },
+      } as MessageEvent<WorkerResponse>);
     } else if (message.type === "match-state") {
+      if (!this.initialized || message.tick <= this.lastTick) return;
+      const packet = await this.decode(message.packet);
+      if (this.stopped) return;
+      if (packet.tick !== message.tick || (!packet.reset && this.lastTick < 0))
+        throw new Error(
+          "Invalid match update sequence. Return to the lobby to play again.",
+        );
+      this.lastTick = packet.tick;
       this.disconnectedPlayerIds = message.disconnectedPlayerIds;
-      const packet = await decodeState<SnapshotPacket>(message.packet);
       this.onmessage?.({
         data: { type: "state", packet, paused: message.paused, speed: 1 },
       } as MessageEvent<WorkerResponse>);
-      this.status(
-        message.paused
-          ? "Match paused · selecting a host…"
-          : message.executor === "server"
-            ? "Online match · server fallback"
-            : message.executor === this.guestId
-              ? "Online match · you are hosting"
-              : "Online match · client hosted",
-      );
-    } else if (message.type === "match-ended")
+      this.status("Online match · server hosted");
+    } else if (message.type === "match-ended") {
       this.status(`${message.message}. Return to the lobby to play again.`);
-    else if (message.type === "error") this.status(message.message);
+      this.terminate();
+    } else if (message.type === "error") this.status(message.message);
   }
   private fail(message: string): void {
+    if (this.stopped) return;
+    this.terminate();
     this.onerror?.({ message });
     this.status(message);
   }

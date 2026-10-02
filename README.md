@@ -1,9 +1,10 @@
-# Age of Fronts — local AI skirmish
+# Age of Fronts
 
 Run `npm run play` and open `http://127.0.0.1:9000`. This first playable mode
 uses OpenFront's open maps, terrain model, seeded random generator, and heap.
-It is an independent land-squad simulation; OpenFront's multiplayer relay is
-not yet connected to this mode. No account or external API is needed to play.
+It is an independent land-squad simulation. Local games need no account or
+external API. Online matches use the separate server-authoritative skirmish
+coordinator, not OpenFront's intent relay.
 
 Land squads use the provided Stone Age melee, ranged, and cavalry group art
 from `Art/Soldier Icons`. Team bases, strength bars, and troop counts identify
@@ -97,8 +98,12 @@ Gameplay advances at 20 fixed ticks per second in a worker. Commands and
 integer-position domain simulation are separate from the canvas view and
 snapshot-derived `SkirmishViewModel`; AI issues the same commands as the human
 player. Rendering interpolates land movement between ticks.
-Adding multiplayer still requires command/wire integration and reconnect
-state handling; this mode does not claim those are already validated.
+Online matches run one authoritative server worker at a target 20 ticks/sec,
+with presentation updates at 5/sec. Browsers submit authenticated commands
+and render updates; they do not host or replay the simulation. There is no
+match reconnect or server-failure recovery. A departed player becomes AI,
+and the match closes when everyone leaves. See
+[the multiplayer runtime notes](docs/ServerAuthoritativeMultiplayer.md).
 
 Validate with `npm run test:skirmish` and `npm run build:skirmish`.
 `npm run source:skirmish` refreshes the source download linked in the footer;

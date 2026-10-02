@@ -1,4 +1,4 @@
-import type { RuntimeMap } from "./HostedRuntime";
+import type { RuntimeMap } from "./MatchExecutor";
 /** Identity covers immutable world inputs, including biome-derived resource placement. */
 export async function mapIdentity(map: RuntimeMap): Promise<string> {
   const parts: Uint8Array[] = [

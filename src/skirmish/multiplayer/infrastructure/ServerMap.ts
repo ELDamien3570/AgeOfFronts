@@ -6,7 +6,7 @@ import { generateForestCover } from "../../ForestGeneration";
 import { decodeHeightmap, type HeightmapManifest } from "../../HeightmapMap";
 import type { LobbySettings } from "../../lobby/LobbyDirectory";
 import { resourceTerrainData } from "../../ResourceTerrain";
-import type { RuntimeMap } from "../application/HostedRuntime";
+import type { RuntimeMap } from "../application/MatchExecutor";
 
 export async function loadServerMap(
   settings: LobbySettings,

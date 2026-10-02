@@ -1,29 +1,37 @@
-import type { Command } from "../../Protocol";
 import { SPAWN_SECONDS } from "../../domain/SpawnSelection";
+import type { Command } from "../../Protocol";
+import { TICKS_PER_SECOND } from "../../Protocol";
 import { commandSchema } from "../CommandSchema";
-import { MatchAuthority, type HostCandidate } from "../domain/MatchAuthority";
 import type { MatchReservation } from "../domain/RoomCoordinator";
 import type { MatchManifest, ServerMessage } from "../Protocol";
 import type { EncodedState } from "../StateCodec";
-import type { VerifiedCommit } from "./CommitVerifier";
-import type { HostBatch, OrderedCommand, RuntimeCommit } from "./HostedRuntime";
-import type { MatchExecutor, PreparedMatch, SpawnReply } from "./MatchExecutor";
+import {
+  MAX_ADVANCE_TICKS,
+  type MatchAdvance,
+  type MatchCommand,
+  type MatchExecutor,
+  type PreparedMatch,
+  type SpawnReply,
+} from "./MatchExecutor";
 
-/** One serialized match lifecycle. The room aggregate owns admission; this owns execution. */
+export const MAX_RECENT_COMMANDS = 2048;
+export const MAX_QUEUED_COMMANDS = 100;
+const TICK_MS = 1000 / TICKS_PER_SECOND;
+const SNAPSHOT_MS = 200;
+
+/** The coordinator admits commands; one reserved worker owns the live world. */
 export class LiveMatch {
-  readonly ready = new Map<string, HostCandidate>();
   private loaded = new Set<string>();
-  private authority!: MatchAuthority;
-  private commit!: VerifiedCommit;
+  private loading = new Set<string>();
   private mapHash = "";
-  private batch?: HostBatch;
-  private commands: OrderedCommand[] = [];
+  private commands: MatchCommand[] = [];
   private seen = new Set<string>();
-  private sequence = 0;
   private busy = false;
   private stopped = false;
-  private nextAt = 0;
-  private pendingSince = 0;
+  private running = false;
+  private tick = 0;
+  private nextTickAt = 0;
+  private nextSnapshotAt = 0;
   private disconnected = new Set<number>();
   private initializedAt = 0;
   private initialized = false;
@@ -43,7 +51,6 @@ export class LiveMatch {
     this.options = {
       seed: Math.floor(Math.random() * 0x7fffffff),
       humanNames: reservation.members.map((member) => member.profile.name),
-      // Lobby counts are absolute: humans plus these AI opponents and tribes.
       aiCount: settings.aiCount,
       tribes: settings.tribeCount > 0,
       tribeCount: settings.tribeCount,
@@ -61,13 +68,13 @@ export class LiveMatch {
       settings: this.reservation.settings,
       options: this.options,
     });
+    if (this.stopped) return;
     this.mapHash = prepared.mapHash;
     Object.assign(this.options, prepared.options);
     this.initialized = true;
-    for (const member of this.reservation.members)
-      this.announce(member.guestId);
-    this.pendingSince = this.now();
     this.initializedAt = this.now();
+    for (const member of this.reservation.members)
+      if (this.connected(member.guestId)) this.announce(member.guestId);
   }
   playerId(guest: string): number {
     return (
@@ -83,6 +90,8 @@ export class LiveMatch {
   announce(guest: string): void {
     if (!this.connected(guest))
       throw new Error("Player reconnect is not available for this match");
+    // Watching can race asynchronous map preparation; initialize announces later.
+    if (!this.initialized) return;
     const manifest: MatchManifest = {
       id: this.reservation.id,
       settings: this.reservation.settings,
@@ -93,22 +102,28 @@ export class LiveMatch {
     };
     this.send(guest, { type: "match", manifest });
   }
-  async qualify(
-    guest: string,
-    runtimeId: string,
-    tickP95Ms: number,
-  ): Promise<void> {
+  async qualify(guest: string, runtimeId: string): Promise<void> {
     if (!this.connected(guest) || runtimeId !== this.runtimeId)
       throw new Error("Game versions differ. Reload after deployment.");
-    this.ready.set(guest, {
-      guestId: guest,
-      eligible: true,
-      tickP95Ms,
-      roundTripMs: 0,
-    });
-    this.loaded.add(guest);
-    if (this.authority) await this.baseline(guest);
-    else if (this.spawnDeadline !== undefined) await this.publishSpawn(guest);
+    if (this.loaded.has(guest) || this.loading.has(guest)) return;
+    this.loading.add(guest);
+    try {
+      if (this.running) {
+        const packet = await this.executor.request<EncodedState>({
+          type: "baseline",
+        });
+        if (this.stopped || !this.connected(guest)) return;
+        // Do not deliver dependent deltas to this subscriber before its baseline.
+        this.loaded.add(guest);
+        this.send(guest, this.state(packet));
+      } else {
+        this.loaded.add(guest);
+        if (this.spawnDeadline !== undefined && this.now() < this.spawnDeadline)
+          await this.publishSpawn(guest);
+      }
+    } finally {
+      this.loading.delete(guest);
+    }
   }
   async selectSpawn(guest: string, tile: number): Promise<void> {
     if (
@@ -116,7 +131,7 @@ export class LiveMatch {
       !this.loaded.has(guest) ||
       this.spawnDeadline === undefined ||
       this.now() >= this.spawnDeadline ||
-      this.authority
+      this.running
     )
       throw new Error("Spawn selection is not open");
     const reply = await this.executor.request<SpawnReply>({
@@ -125,7 +140,7 @@ export class LiveMatch {
       tile,
     });
     if (reply.rejection) throw new Error(reply.rejection);
-    if (!this.authority)
+    if (!this.running && !this.stopped)
       this.broadcast({
         type: "match-spawn",
         matchId: this.reservation.id,
@@ -138,7 +153,11 @@ export class LiveMatch {
   private async publishSpawn(guest?: string): Promise<void> {
     const state = await this.executor.request<
       import("../../Protocol").SpawnState
-    >({ type: "spawn-state", remainingMs: this.spawnDeadline! - this.now() });
+    >({
+      type: "spawn-state",
+      remainingMs: this.spawnDeadline! - this.now(),
+    });
+    if (this.stopped) return;
     const message = {
       type: "match-spawn" as const,
       matchId: this.reservation.id,
@@ -147,27 +166,15 @@ export class LiveMatch {
     if (guest) this.send(guest, message);
     else this.broadcast(message);
   }
-  async baseline(guest: string): Promise<void> {
-    const packet = await this.executor.request<EncodedState>({
-      type: "baseline",
-    });
-    this.send(
-      guest,
-      this.state(packet, this.authority.snapshot().phase !== "running"),
-    );
-  }
-  hostReady(guest: string, epoch: number, tick: number, hash: string): void {
-    if (!this.authority) throw new Error("The match has not started");
-    this.authority.ready(guest, epoch, tick, hash, this.now());
-    this.nextAt = this.now();
-  }
   command(guest: string, id: string, input: Record<string, unknown>): void {
-    if (!this.authority)
+    if (this.stopped) throw new Error("This match has ended");
+    if (!this.running)
       throw new Error("Choose your spawn before issuing orders");
     if (!this.connected(guest) || !this.loaded.has(guest))
       throw new Error("You are not active in this match");
     if (this.seen.has(id)) return;
-    if (this.commands.length >= 100) throw new Error("Command queue is full");
+    if (this.commands.length >= MAX_QUEUED_COMMANDS)
+      throw new Error("Command queue is full");
     if (
       typeof input.type !== "string" ||
       JSON.stringify(input).length > 100_000
@@ -178,88 +185,15 @@ export class LiveMatch {
       playerId: this.playerId(guest),
     }) as Command;
     this.seen.add(id);
-    this.commands.push({ id, sequence: ++this.sequence, command });
-  }
-  async accept(
-    guest: string,
-    epoch: number,
-    proposal: RuntimeCommit,
-  ): Promise<void> {
-    if (this.busy || !this.batch) throw new Error("No host batch is pending");
-    const current = this.authority.snapshot();
-    if (
-      current.executor !== guest ||
-      current.epoch !== epoch ||
-      current.phase !== "running"
-    )
-      throw new Error("Stale host");
-    this.busy = true;
-    try {
-      const verified = await this.executor.request<VerifiedCommit>({
-        type: "verify",
-        batch: this.batch,
-        proposal,
-      });
-      const after = this.authority.snapshot();
-      if (this.stopped || after.epoch !== epoch || after.executor !== guest)
-        return;
-      const packet = await this.executor.request<EncodedState>({
-        type: "accept",
-        commit: verified,
-      });
-      const acceptedAuthority = this.authority.snapshot();
-      if (
-        acceptedAuthority.epoch === epoch &&
-        acceptedAuthority.executor === guest &&
-        this.now() < acceptedAuthority.leaseExpiresAt
-      ) {
-        this.authority.commit(
-          guest,
-          epoch,
-          this.commit.tick,
-          verified.tick,
-          verified.stateId,
-          this.now(),
-        );
-      } else {
-        // A disconnect during acceptance cannot undo an already accepted world.
-        // Fence the successor at this committed cursor before selecting another host.
-        this.authority = new MatchAuthority(
-          verified.tick,
-          verified.stateId,
-          {
-            ...acceptedAuthority,
-            committedTick: verified.tick,
-            checkpointHash: verified.stateId,
-          },
-        );
-      }
-      this.commit = verified;
-      this.batch = undefined;
-      this.broadcast(
-        this.state(packet, this.authority.snapshot().phase !== "running"),
-      );
-      for (const rejection of verified.rejectedCommands)
-        this.broadcast({ type: "error", message: rejection.message });
-      if (verified.winner !== null) await this.end("Match complete");
-    } catch (error) {
-      this.ready.delete(guest);
-      this.authority.disconnect(guest);
-      this.broadcast({
-        type: "error",
-        message: `Host recovery: ${(error as Error).message}`,
-      });
-    } finally {
-      this.busy = false;
-    }
+    if (this.seen.size > MAX_RECENT_COMMANDS)
+      this.seen.delete(this.seen.values().next().value!);
+    this.commands.push({ id, command });
   }
   async disconnect(guest: string): Promise<void> {
     const id = this.playerId(guest);
     if (!id || this.disconnected.has(id)) return;
     this.disconnected.add(id);
     this.departed?.(guest);
-    this.ready.delete(guest);
-    this.authority?.disconnect(guest);
     if (this.disconnected.size === this.reservation.members.length)
       await this.end("All players left");
   }
@@ -272,13 +206,9 @@ export class LiveMatch {
           await this.disconnect(member.guestId);
       if (this.stopped) return;
     }
-    if (!this.authority) {
+    if (!this.running) {
       if (this.spawnDeadline === undefined) {
-        if (!this.loaded.size) {
-          if (now - this.initializedAt >= 60_000)
-            await this.end("No players loaded the match");
-          return;
-        }
+        if (!this.loaded.size) return;
         if (
           this.reservation.members.some(
             (member) =>
@@ -299,110 +229,60 @@ export class LiveMatch {
           }
           return;
         }
-        this.commit = await this.executor.request<VerifiedCommit>({
+        const initial = await this.executor.request<MatchAdvance>({
           type: "start",
         });
         if (this.stopped) return;
-        this.authority = new MatchAuthority(
-          this.commit.tick,
-          this.commit.stateId,
-        );
-      } finally {
-        this.busy = false;
-      }
-    }
-    this.authority.expire(now);
-    let state = this.authority.snapshot();
-    if (state.phase === "paused") {
-      const connected = this.reservation.members.filter((member) =>
-        this.connected(member.guestId),
-      );
-      if (
-        connected.some((member) => !this.loaded.has(member.guestId)) &&
-        now - this.pendingSince < 10_000
-      )
-        return;
-      if (this.loaded.size === 0 && now - this.pendingSince < 60_000) return;
-      if (this.loaded.size === 0) {
-        await this.end("No players loaded the match");
-        return;
-      }
-      this.busy = true;
-      try {
-        if (this.batch) this.commands.unshift(...this.batch.commands);
-        this.batch = undefined;
-        state = this.authority.elect([...this.ready.values()], now, true);
-        this.broadcast(
-          this.state(
-            await this.executor.request<EncodedState>({ type: "baseline" }),
-            true,
-          ),
-        );
-        if (state.executor === "server")
-          this.authority.ready(
-            "server",
-            state.epoch,
-            this.commit.tick,
-            this.commit.stateId,
-            now,
-          );
-        else if (state.executor)
-          this.send(state.executor, {
-            type: "host-restore",
-            matchId: this.reservation.id,
-            epoch: state.epoch,
-            checkpoint: await this.executor.request<EncodedState>({
-              type: "checkpoint",
-            }),
-            stateId: this.commit.stateId,
-          });
+        this.running = true;
+        this.tick = initial.tick;
+        this.nextTickAt = this.now() + TICK_MS;
+        this.nextSnapshotAt = this.now() + SNAPSHOT_MS;
+        this.broadcast(this.state(initial.packet!));
       } finally {
         this.busy = false;
       }
       return;
     }
-    if (state.phase !== "running") return;
-    if (this.batch) {
-      if (now - this.pendingSince > 3000) {
-        this.ready.delete(state.executor!);
-        this.authority.disconnect(state.executor!);
-      }
-      return;
-    }
-    if (now < this.nextAt) return;
-    this.batch = {
-      previousTick: this.commit.tick,
-      commands: this.commands
-        .splice(0)
-        .filter((item) => !this.disconnected.has(item.command.playerId)),
-      disconnectedPlayerIds: [...this.disconnected],
-    };
-    this.pendingSince = now;
-    this.nextAt = now + 200;
-    if (state.executor === "server") {
-      this.busy = true;
-      try {
-        const proposal = await this.executor.request<RuntimeCommit>({
-          type: "fallback",
-          batch: this.batch,
-        });
-        this.busy = false;
-        await this.accept("server", state.epoch, proposal);
-      } finally {
-        this.busy = false;
-      }
-    } else
-      this.send(state.executor!, {
-        type: "host-batch",
-        matchId: this.reservation.id,
-        epoch: state.epoch,
-        batch: this.batch,
+    if (now < this.nextTickAt) return;
+    const due = Math.floor((now - this.nextTickAt) / TICK_MS) + 1;
+    const ticks = Math.min(MAX_ADVANCE_TICKS, due);
+    this.nextTickAt =
+      due > MAX_ADVANCE_TICKS
+        ? now + TICK_MS
+        : this.nextTickAt + ticks * TICK_MS;
+    const publish = now >= this.nextSnapshotAt;
+    if (publish)
+      this.nextSnapshotAt +=
+        (Math.floor((now - this.nextSnapshotAt) / SNAPSHOT_MS) + 1) *
+        SNAPSHOT_MS;
+    const commands = this.commands
+      .splice(0)
+      .filter((item) => !this.disconnected.has(item.command.playerId));
+    this.busy = true;
+    try {
+      const result = await this.executor.request<MatchAdvance>({
+        type: "advance",
+        ticks,
+        commands,
+        disconnectedPlayerIds: [...this.disconnected],
+        publish,
       });
+      if (this.stopped) return;
+      this.tick = result.tick;
+      if (result.packet) this.broadcast(this.state(result.packet));
+      for (const rejection of result.rejectedCommands) {
+        const guest = this.reservation.members[rejection.playerId - 1]?.guestId;
+        if (guest && this.connected(guest))
+          this.send(guest, { type: "error", message: rejection.message });
+      }
+      if (result.winner !== null) await this.end("Match complete");
+    } finally {
+      this.busy = false;
+    }
   }
   async end(message: string): Promise<void> {
     if (this.stopped) return;
     this.stopped = true;
-    this.authority?.end();
     this.broadcast({
       type: "match-ended",
       matchId: this.reservation.id,
@@ -413,16 +293,15 @@ export class LiveMatch {
   }
   private state(
     packet: EncodedState,
-    paused: boolean,
   ): Extract<ServerMessage, { type: "match-state" }> {
     return {
       type: "match-state",
       matchId: this.reservation.id,
       packet,
-      tick: this.commit.tick,
-      paused,
+      tick: this.tick,
+      paused: false,
       disconnectedPlayerIds: [...this.disconnected],
-      executor: this.authority.snapshot().executor,
+      executor: "server",
     };
   }
   isLoaded(guest: string): boolean {

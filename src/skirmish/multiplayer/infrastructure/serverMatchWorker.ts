@@ -1,29 +1,45 @@
 import { parentPort } from "node:worker_threads";
-import { createSkirmishMap } from "../../Elevation";
 import { SpawnSelection } from "../../domain/SpawnSelection";
-import { CommitVerifier } from "../application/CommitVerifier";
-import type { RuntimeMap } from "../application/HostedRuntime";
-import { HostedRuntime } from "../application/HostedRuntime";
+import { createSkirmishMap } from "../../Elevation";
+import { Skirmish } from "../../Simulation";
+import { SnapshotEncoder } from "../../SnapshotCodec";
 import { mapIdentity } from "../application/MapIdentity";
-import type { ExecutorRequest } from "../application/MatchExecutor";
+import {
+  MAX_ADVANCE_TICKS,
+  type ExecutorRequest,
+  type MatchAdvance,
+  type RuntimeMap,
+} from "../application/MatchExecutor";
+import { encodeState } from "../StateCodec";
 import { loadServerMap } from "./ServerMap";
 
 if (!parentPort) throw new Error("The match executor requires a worker thread");
-let verifier: CommitVerifier | undefined;
-let identity: string;
+let match: Skirmish | undefined;
+const encoder = new SnapshotEncoder(true);
 let setup: SpawnSelection | undefined;
 let preparedMap: RuntimeMap | undefined;
 let pending = Promise.resolve();
+const makeMap = (map: RuntimeMap) =>
+  createSkirmishMap(
+    map.width,
+    map.height,
+    map.terrain,
+    map.elevation,
+    map.forest,
+    map.resourceTerrain,
+  );
+const snapshot = () => encodeState(encoder.encode(match!.snapshot()));
+
 parentPort.on(
   "message",
   (message: { id: number; request: ExecutorRequest }) => {
+    // Serialization also covers asynchronous snapshot compression.
     pending = pending.then(async () => {
       try {
         const request = message.request;
         let result: unknown;
         if (request.type === "initialize" || request.type === "prepare") {
-          if (verifier || setup)
-            throw new Error("Executor already initialized");
+          if (match || setup) throw new Error("Executor already initialized");
           const loaded = request.map
             ? {
                 map: request.map,
@@ -34,31 +50,19 @@ parentPort.on(
             ...request.options,
             territoryIncomeScale: loaded.territoryIncomeScale,
           };
-          identity = await mapIdentity(loaded.map);
           if (request.type === "prepare") {
             preparedMap = loaded.map;
-            setup = new SpawnSelection(
-              createSkirmishMap(
-                loaded.map.width,
-                loaded.map.height,
-                loaded.map.terrain,
-                loaded.map.elevation,
-                loaded.map.forest,
-                loaded.map.resourceTerrain,
-              ),
-              options,
-            );
+            setup = new SpawnSelection(makeMap(loaded.map), options);
             setup.resolve();
-            result = { mapHash: identity, options };
+            result = { mapHash: await mapIdentity(loaded.map), options };
           } else {
-            verifier = new CommitVerifier(
-              new HostedRuntime(loaded.map, {
-                ...request.options,
-                territoryIncomeScale: loaded.territoryIncomeScale,
-              }),
-            );
-            identity = await mapIdentity(loaded.map);
-            result = await verifier.initial();
+            match = new Skirmish(makeMap(loaded.map), options);
+            result = {
+              tick: match.tick,
+              winner: match.winner,
+              packet: await snapshot(),
+              rejectedCommands: [],
+            } satisfies MatchAdvance;
           }
         } else if (
           request.type === "select-spawn" ||
@@ -75,41 +79,63 @@ parentPort.on(
           else if (request.type === "spawn-state")
             result = setup.state(request.remainingMs);
           else {
-            verifier = new CommitVerifier(
-              new HostedRuntime(preparedMap, {
-                ...setup.options,
-                humanSpawns: setup.choices,
-              }),
-            );
-            result = await verifier.initial();
+            match = new Skirmish(makeMap(preparedMap), {
+              ...setup.options,
+              humanSpawns: setup.choices,
+            });
             setup = undefined;
             preparedMap = undefined;
+            result = {
+              tick: match.tick,
+              winner: match.winner,
+              packet: await snapshot(),
+              rejectedCommands: [],
+            } satisfies MatchAdvance;
           }
         } else {
-          if (!verifier) throw new Error("Executor not initialized");
-          switch (request.type) {
-            case "map-identity":
-              result = identity;
-              break;
-            case "restore":
-              await verifier.restore(request.checkpoint, request.ledger);
-              break;
-            case "verify":
-              result = await verifier.verify(request.batch, request.proposal);
-              break;
-            case "accept":
-              result = await verifier.accept(request.commit);
-              break;
-            case "baseline":
-              result = await verifier.baseline();
-              break;
-            case "checkpoint":
-              result = await verifier.checkpoint();
-              break;
-            case "fallback":
-              result = await verifier.fallback(request.batch);
-              break;
-          }
+          if (!match) throw new Error("Executor not initialized");
+          if (request.type === "baseline") {
+            // A late initial subscriber must not reset everyone else's delta cursor.
+            result = await encodeState(
+              new SnapshotEncoder(true).encode(match.snapshot()),
+            );
+          } else if (request.type === "advance") {
+            if (
+              !Number.isInteger(request.ticks) ||
+              request.ticks < 1 ||
+              request.ticks > MAX_ADVANCE_TICKS ||
+              request.commands.length > 100
+            )
+              throw new Error("Invalid match advance");
+            for (const id of request.disconnectedPlayerIds) {
+              const player = match.player(id);
+              if (player) player.ai = true;
+            }
+            const rejectedCommands: MatchAdvance["rejectedCommands"] = [];
+            for (const item of request.commands) {
+              const player = match.player(item.command.playerId);
+              const rejection =
+                !player || player.ai
+                  ? "You are not active in this match"
+                  : match.applyCommand(item.command);
+              if (rejection)
+                rejectedCommands.push({
+                  id: item.id,
+                  playerId: item.command.playerId,
+                  message: rejection,
+                });
+            }
+            for (let i = 0; i < request.ticks; i++) match.step();
+            result = {
+              tick: match.tick,
+              winner: match.winner,
+              packet:
+                request.publish || match.winner !== null
+                  ? await snapshot()
+                  : undefined,
+              rejectedCommands,
+            } satisfies MatchAdvance;
+          } else throw new Error("Unknown match operation");
         }
         parentPort!.postMessage({ id: message.id, result });
       } catch (error) {

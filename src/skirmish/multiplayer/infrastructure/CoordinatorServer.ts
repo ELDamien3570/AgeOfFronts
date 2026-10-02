@@ -1,7 +1,11 @@
-import { createReadStream, existsSync, statSync } from "node:fs";
-import { createServer, type IncomingMessage, type ServerResponse } from "node:http";
-import { join, normalize, resolve } from "node:path";
 import { lookup } from "mrmime";
+import { createReadStream, existsSync, statSync } from "node:fs";
+import {
+  createServer,
+  type IncomingMessage,
+  type ServerResponse,
+} from "node:http";
+import { join, normalize, resolve } from "node:path";
 import { WebSocket, WebSocketServer } from "ws";
 import { DEFAULT_EMPIRE_PROFILE } from "../../lobby/EmpireProfile";
 import { LiveMatch } from "../application/LiveMatch";
@@ -26,8 +30,12 @@ function serveStatic(
 ): boolean {
   if (!existsSync(staticDir)) return false;
   const rawUrl = req.url?.split("?")[0] ?? "/";
-  let pathname = normalize(decodeURIComponent(rawUrl)).replace(/^(\.\.[\/\\])+/, "");
-  if (pathname === "/" || pathname === "\\" || pathname === "") pathname = "/index.html";
+  let pathname = normalize(decodeURIComponent(rawUrl)).replace(
+    /^(\.\.[/\\])+/,
+    "",
+  );
+  if (pathname === "/" || pathname === "\\" || pathname === "")
+    pathname = "/index.html";
   let target = join(staticDir, pathname);
   try {
     if (!target.startsWith(staticDir)) return false;
@@ -37,7 +45,7 @@ function serveStatic(
       stat = existsSync(target) ? statSync(target) : undefined;
     }
     if (!stat?.isFile()) return false;
-    const mimeType = lookup(target) || "application/octet-stream";
+    const mimeType = lookup(target) ?? "application/octet-stream";
     res.setHeader("Content-Type", mimeType);
     if (rawUrl.startsWith("/assets/")) {
       res.setHeader("Cache-Control", "public, max-age=31536000, immutable");
@@ -142,7 +150,8 @@ export function createCoordinatorServer(options: CoordinatorServerOptions) {
   });
   const ws = new WebSocketServer({
     noServer: true,
-    maxPayload: 8_100_000,
+    // Clients send orders only; large simulation proposals no longer exist.
+    maxPayload: 512_000,
     perMessageDeflate: false,
   });
   http.on("upgrade", (req, socket, head) => {
@@ -199,6 +208,16 @@ export function createCoordinatorServer(options: CoordinatorServerOptions) {
             client.close(1008, "Invalid guest session");
             return;
           }
+          // A loaded match has no reconnect/handoff path. Keep its controlling
+          // socket alive; only the initial lobby-to-match transition may replace it.
+          if (
+            [...matches.values()].some(
+              (match) => match.connected(guestId) && match.isLoaded(guestId),
+            )
+          ) {
+            client.close(4001, "Match already open");
+            return;
+          }
           // One controlling socket per remembered guest, including duplicate browser tabs.
           for (const [other, session] of sessions)
             if (session.guestId === guestId) {
@@ -240,19 +259,7 @@ export function createCoordinatorServer(options: CoordinatorServerOptions) {
               match.announce(session.guestId);
               break;
             case "match-ready":
-              await match.qualify(
-                session.guestId,
-                message.runtimeId,
-                message.tickP95Ms,
-              );
-              break;
-            case "host-ready":
-              match.hostReady(
-                session.guestId,
-                message.epoch,
-                message.tick,
-                message.hash,
-              );
+              await match.qualify(session.guestId, message.runtimeId);
               break;
             case "match-command":
               match.command(
@@ -263,13 +270,6 @@ export function createCoordinatorServer(options: CoordinatorServerOptions) {
               break;
             case "select-spawn":
               await match.selectSpawn(session.guestId, message.tile);
-              break;
-            case "host-commit":
-              await match.accept(
-                session.guestId,
-                message.epoch,
-                message.proposal,
-              );
               break;
           }
           send(client, { type: "ack", requestId: message.requestId });

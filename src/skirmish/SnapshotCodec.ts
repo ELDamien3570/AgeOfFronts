@@ -50,6 +50,8 @@ function readOrder(input: Int32Array, at: number): Order {
 // Worker adapter: only presentation fields leave the authoritative domain.
 // Numeric buffers are transferred; ownership/construction changes are deltas.
 export class SnapshotEncoder {
+  // Fresh network clients reset their arrays to zero, so neutral tiles need no wire entry.
+  constructor(private readonly sparseBaseline = false) {}
   private previousRoadRevision = -1;
   private previousTiles?: Uint32Array;
   private readonly buildings = new Map<
@@ -75,7 +77,10 @@ export class SnapshotEncoder {
         source.owners[tile] |
         (source.claims[tile] << 8) |
         (source.progress[tile] << 16);
-      if (reset || value !== this.previousTiles![tile]) {
+      if (
+        (reset && !this.sparseBaseline) ||
+        value !== this.previousTiles![tile]
+      ) {
         tileChanges.push(tile, value);
         this.previousTiles![tile] = value;
       }
@@ -309,7 +314,8 @@ export class SnapshotDecoder {
       owners: this.owners.slice(),
       claims: this.claims.slice(),
       progress: this.progress.slice(),
-      changedTiles,
+      // A reset must initialize presentation caches, including neutral tiles.
+      changedTiles: packet.reset ? undefined : changedTiles,
       squads,
       players: packet.players,
       ships: packet.ships,

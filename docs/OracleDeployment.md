@@ -81,11 +81,14 @@ commit with `release.sh`; this rebuilds that revision and preserves SQLite data.
 
 ## Limits
 
-The initial admission ceiling is one concurrent match, pending measurement on
-the actual VM. Browser hosts usually run the simulation; server fallback must
-still meet the match's requirements. Active match checkpoints remain in memory:
-restarts lose active matches. This hosting migration does not add durable match
-recovery. Coordinate updates when matches have finished.
+The admission ceiling remains one concurrent match, pending measurement on
+the actual VM. The server-authoritative implementation in this branch runs
+the world in one reserved server worker; browsers only submit commands and
+render updates. It intentionally has no player reconnect, host migration,
+replay ledger or server-failure recovery. Restarting loses active matches, so
+coordinate updates when matches have finished. The deployment record above
+describes the previously deployed revision; a local implementation change
+does not deploy it. See [runtime notes](ServerAuthoritativeMultiplayer.md).
 
 Always Free capacity may be unavailable and idle free instances can be reclaimed.
 An Always Free VM is suitable for a small launch; it does not establish high

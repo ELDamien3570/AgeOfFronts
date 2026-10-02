@@ -2,13 +2,11 @@ import { z } from "zod";
 import {
   MAX_AI_OPPONENTS,
   MAX_HUMAN_PLAYERS,
-  MAX_PLAYER_ID,
   MAX_TRIBES,
 } from "../FactionRules";
 import type { MatchOptions, SpawnState } from "../Protocol";
 import type { LobbySettings } from "../lobby/LobbyDirectory";
 import type { EncodedState } from "./StateCodec";
-import type { HostBatch } from "./application/HostedRuntime";
 import type { CoordinatorState } from "./domain/RoomCoordinator";
 export interface MatchManifest {
   id: string;
@@ -18,13 +16,6 @@ export interface MatchManifest {
   mapHash: string;
   playerId: number;
 }
-const encoded = z
-  .object({
-    hash: z.string().regex(/^[a-f0-9]{64}$/),
-    payload: z.string().max(8_000_000),
-  })
-  .strict();
-
 const profile = z
   .object({
     name: z.string().min(1).max(80),
@@ -64,7 +55,14 @@ const settings = z
   .strict();
 const requestId = z.string().regex(/^[a-zA-Z0-9-]{1,80}$/u);
 export const clientMessageSchema = z.discriminatedUnion("type", [
-  z.object({ type: z.literal("select-spawn"), requestId, matchId: z.string().max(80), tile: z.number().int().nonnegative().max(4_000_000) }).strict(),
+  z
+    .object({
+      type: z.literal("select-spawn"),
+      requestId,
+      matchId: z.string().max(80),
+      tile: z.number().int().nonnegative().max(4_000_000),
+    })
+    .strict(),
   z
     .object({
       type: z.literal("watch-match"),
@@ -78,17 +76,6 @@ export const clientMessageSchema = z.discriminatedUnion("type", [
       requestId,
       matchId: z.string().max(80),
       runtimeId: z.string().max(80),
-      tickP95Ms: z.number().nonnegative().finite(),
-    })
-    .strict(),
-  z
-    .object({
-      type: z.literal("host-ready"),
-      requestId,
-      matchId: z.string().max(80),
-      epoch: z.number().int(),
-      tick: z.number().int(),
-      hash: z.string().length(64),
     })
     .strict(),
   z
@@ -97,41 +84,6 @@ export const clientMessageSchema = z.discriminatedUnion("type", [
       requestId,
       matchId: z.string().max(80),
       command: z.record(z.string(), z.unknown()),
-    })
-    .strict(),
-  z
-    .object({
-      type: z.literal("host-commit"),
-      requestId,
-      matchId: z.string().max(80),
-      epoch: z.number().int(),
-      proposal: z
-        .object({
-          previousTick: z.number().int(),
-          tick: z.number().int(),
-          baseId: z.string().regex(/^[a-f0-9]{64}$/),
-          stateId: z.string().regex(/^[a-f0-9]{64}$/),
-          delta: encoded,
-          worldEconomy: z
-            .array(
-              z.object({
-                playerId: z.number().int(),
-                gold: z.number().int().safe(),
-                reserves: z.number().int().safe(),
-              }),
-            )
-            .max(MAX_PLAYER_ID),
-          rejectedCommands: z
-            .array(
-              z.object({
-                id: z.string().max(80),
-                message: z.string().max(1000),
-              }),
-            )
-            .max(100),
-          computeMs: z.number().nonnegative().finite(),
-        })
-        .strict(),
     })
     .strict(),
   z
@@ -151,7 +103,13 @@ export const clientMessageSchema = z.discriminatedUnion("type", [
     .object({ type: z.literal("join"), requestId, roomId: z.string().max(80) })
     .strict(),
   z.object({ type: z.literal("leave"), requestId }).strict(),
-  z.object({ type: z.literal("voteStart"), requestId, roomId: z.string().max(80) }).strict(),
+  z
+    .object({
+      type: z.literal("voteStart"),
+      requestId,
+      roomId: z.string().max(80),
+    })
+    .strict(),
   z
     .object({ type: z.literal("close"), requestId, roomId: z.string().max(80) })
     .strict(),
@@ -161,22 +119,13 @@ export type ServerMessage =
   | { type: "match-spawn"; matchId: string; state: SpawnState }
   | { type: "match"; manifest: MatchManifest }
   | {
-      type: "host-restore";
-      matchId: string;
-      epoch: number;
-      checkpoint: EncodedState;
-      /** Id the host reports back in host-ready and chains its deltas from. */
-      stateId: string;
-    }
-  | { type: "host-batch"; matchId: string; epoch: number; batch: HostBatch }
-  | {
       type: "match-state";
       matchId: string;
       packet: EncodedState;
       tick: number;
       paused: boolean;
       disconnectedPlayerIds: number[];
-      executor: string | null;
+      executor: "server";
     }
   | { type: "match-ended"; matchId: string; message: string }
   | { type: "directory"; guestId: string; now: number; state: CoordinatorState }

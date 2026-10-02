@@ -1,38 +1,127 @@
 import { describe, expect, it } from "vitest";
 import { defaultLobbySettings } from "../../src/skirmish/lobby/LobbyDirectory";
-import { HostedRuntime } from "../../src/skirmish/multiplayer/application/HostedRuntime";
-import { LiveMatch } from "../../src/skirmish/multiplayer/application/LiveMatch";
+import {
+  LiveMatch,
+  MAX_QUEUED_COMMANDS,
+  MAX_RECENT_COMMANDS,
+} from "../../src/skirmish/multiplayer/application/LiveMatch";
 import type {
   ExecutorRequest,
   ExecutorResult,
+  MatchAdvance,
   MatchExecutor,
 } from "../../src/skirmish/multiplayer/application/MatchExecutor";
-import { ReservedMatchWorker } from "../../src/skirmish/multiplayer/infrastructure/ReservedMatchWorker";
 import type { ServerMessage } from "../../src/skirmish/multiplayer/Protocol";
-import { decodeState } from "../../src/skirmish/multiplayer/StateCodec";
-import type { Skirmish } from "../../src/skirmish/Simulation";
 
-describe("live client-hosted match", () => {
-  it("shares committed states, fences a lost host, migrates, falls back, and releases when abandoned", async () => {
-    const map = {
-      width: 160,
-      height: 100,
-      terrain: new Uint8Array(16000).fill(133),
-    };
-    const worker = new ReservedMatchWorker();
-    const executor: MatchExecutor = {
-      request: <T extends ExecutorResult>(request: ExecutorRequest) =>
-        worker.request<T>(
-          request.type === "initialize" || request.type === "prepare" ? { ...request, map } : request,
-        ),
-      close: () => worker.close(),
-    };
-    let now = 0,
-      released = 0;
+const packet = { hash: "0".repeat(64), payload: "test" };
+async function fixture() {
+  let now = 0,
+    tick = 0,
+    released = 0,
+    closed = 0;
+  const requests: ExecutorRequest[] = [];
+  const messages: { guest: string; message: ServerMessage }[] = [];
+  const executor: MatchExecutor = {
+    async request<T extends ExecutorResult>(
+      request: ExecutorRequest,
+    ): Promise<T> {
+      requests.push(request);
+      let result: unknown;
+      switch (request.type) {
+        case "prepare":
+          result = { mapHash: "map", options: request.options };
+          break;
+        case "spawn-state":
+          result = { remainingMs: request.remainingMs };
+          break;
+        case "start":
+          result = { tick, winner: null, packet, rejectedCommands: [] };
+          break;
+        case "advance":
+          tick += request.ticks;
+          result = {
+            tick,
+            winner: null,
+            packet: request.publish ? packet : undefined,
+            rejectedCommands: [],
+          };
+          break;
+        case "baseline":
+          result = packet;
+          break;
+        default:
+          throw new Error("Unexpected operation");
+      }
+      return result as T;
+    },
+    async close() {
+      closed++;
+    },
+  };
+  const match = new LiveMatch(
+    {
+      id: "test",
+      roomId: "room",
+      createdAt: 0,
+      settings: {
+        ...defaultLobbySettings("africa"),
+        aiCount: 0,
+        tribeCount: 0,
+      },
+      members: ["a", "b"].map((guestId) => ({
+        guestId,
+        profile: { name: guestId, flagCode: null },
+        joinedAt: 0,
+        connected: true,
+      })),
+    },
+    executor,
+    "version",
+    (guest, message) => messages.push({ guest, message }),
+    () => released++,
+    () => now,
+  );
+  await match.initialize();
+  await match.qualify("a", "version");
+  await match.qualify("b", "version");
+  await match.advance();
+  expect(() => match.command("a", "early", { type: "advance-age" })).toThrow(
+    /spawn/,
+  );
+  now = 10_000;
+  await match.advance();
+  const initial = messages.filter(
+    (item) => item.message.type === "match-state",
+  );
+  expect(initial).toHaveLength(2);
+  expect(
+    initial.every(
+      (item) =>
+        item.message.type === "match-state" &&
+        item.message.tick === 0 &&
+        item.message.executor === "server",
+    ),
+  ).toBe(true);
+  requests.length = messages.length = 0;
+  return {
+    match,
+    executor,
+    requests,
+    messages,
+    setTime: (value: number) => {
+      now = value;
+    },
+    cleanup: () => ({ released, closed }),
+  };
+}
+
+describe("server-authoritative live match", () => {
+  it("waits for prepared map identity before announcing, including a departure during loading", async () => {
+    let finish!: (result: ExecutorResult) => void;
     const messages: { guest: string; message: ServerMessage }[] = [];
     const match = new LiveMatch(
       {
-        id: "test",
+        id: "loading",
         roomId: "room",
         createdAt: 0,
         settings: defaultLobbySettings("africa"),
@@ -43,110 +132,179 @@ describe("live client-hosted match", () => {
           connected: true,
         })),
       },
-      executor,
+      {
+        request: <T extends ExecutorResult>() =>
+          new Promise<ExecutorResult>((resolve) => {
+            finish = resolve;
+          }) as Promise<T>,
+        close: async () => {},
+      },
       "version",
       (guest, message) => messages.push({ guest, message }),
-      () => released++,
-      () => now,
+      () => {},
+      () => 0,
     );
-    const next = <T extends ServerMessage["type"]>(
-      guest: string,
-      type: T,
-    ): Extract<ServerMessage, { type: T }> => {
-      const index = messages.findIndex(
-        (item) => item.guest === guest && item.message.type === type,
-      );
-      expect(index).toBeGreaterThanOrEqual(0);
-      return messages.splice(index, 1)[0].message as Extract<
-        ServerMessage,
-        { type: T }
-      >;
+    const preparing = match.initialize();
+    match.announce("b");
+    expect(messages).toEqual([]);
+    await match.disconnect("a");
+    finish({ mapHash: "prepared-map", options: match.options });
+    await preparing;
+    expect(messages).toHaveLength(1);
+    expect(messages[0]).toMatchObject({
+      guest: "b",
+      message: { type: "match", manifest: { mapHash: "prepared-map" } },
+    });
+  });
+
+  it("ticks at20Hz, publishes at5Hz and bounds catch-up without overlapping advances", async () => {
+    const f = await fixture();
+    f.setTime(10_050);
+    await f.match.advance();
+    expect(f.requests[0]).toMatchObject({
+      type: "advance",
+      ticks: 1,
+      publish: false,
+    });
+    expect(f.messages).toHaveLength(0);
+    f.setTime(10_200);
+    await f.match.advance();
+    expect(f.requests[1]).toMatchObject({
+      type: "advance",
+      ticks: 3,
+      publish: true,
+    });
+    expect(f.messages).toHaveLength(2);
+    await f.match.advance();
+    expect(f.requests).toHaveLength(2);
+    f.setTime(12_000);
+    await f.match.advance();
+    expect(f.requests[2]).toMatchObject({
+      type: "advance",
+      ticks: 4,
+      publish: true,
+    });
+    await f.match.advance();
+    expect(f.requests).toHaveLength(3);
+    f.setTime(12_050);
+    await f.match.advance();
+    expect(f.requests[3]).toMatchObject({
+      type: "advance",
+      ticks: 1,
+      publish: false,
+    });
+
+    let complete!: (result: MatchAdvance) => void;
+    f.executor.request = async <T extends ExecutorResult>(
+      request: ExecutorRequest,
+    ) => {
+      f.requests.push(request);
+      return (await new Promise<MatchAdvance>((resolve) => {
+        complete = resolve;
+      })) as T;
     };
-    try {
-      await match.initialize();
-      const manifest = next("a", "match").manifest;
-      expect(next("b", "match").manifest.playerId).toBe(2);
-      const host = new HostedRuntime(map, manifest.options);
-      await match.qualify("a", "version", 1);
-      await match.qualify("b", "version", 2);
-      messages.length = 0;
-      await match.advance();
-      expect(next("a", "match-spawn").state.remainingMs).toBe(10_000);
-      await match.selectSpawn("a", 25 * map.width + 25);
-      await match.selectSpawn("b", 70 * map.width + 125);
-      expect(() => match.command("a", "early", { type: "advance-age" })).toThrow(/spawn/);
-      now += 9_999;
-      await match.advance();
-      expect(messages.some(item => item.message.type === "host-restore")).toBe(false);
-      now++;
-      await match.advance();
-      const restore = next("a", "host-restore");
-      host.restore(
-        await decodeState<ReturnType<Skirmish["checkpoint"]>>(
-          restore.checkpoint,
-        ),
-        restore.stateId,
-      );
-      expect(host.match.players[0].base).toBe(25 * map.width + 25);
-      expect(host.match.players[1].base).toBe(70 * map.width + 125);
-      await expect(match.selectSpawn("a", 30 * map.width + 30)).rejects.toThrow(/not open/);
-      match.hostReady("a", restore.epoch, 0, restore.stateId);
-      messages.length = 0;
-      await match.advance();
-      const batch = next("a", "host-batch");
-      await match.accept("a", batch.epoch, await host.run(batch.batch));
-      expect(next("a", "match-state").packet).toEqual(
-        next("b", "match-state").packet,
-      );
-      await match.disconnect("a");
-      now += 200;
-      await match.advance();
-      const replacement = next("b", "host-restore");
-      expect(replacement.epoch).toBeGreaterThan(restore.epoch);
-      await expect(
-        match.accept(
-          "a",
-          restore.epoch,
-          await host.run({
-            previousTick: 4,
-            commands: [],
-            disconnectedPlayerIds: [],
-          }),
-        ),
-      ).rejects.toThrow();
-      host.restore(
-        await decodeState<ReturnType<Skirmish["checkpoint"]>>(
-          replacement.checkpoint,
-        ),
-        replacement.stateId,
-      );
-      match.hostReady("b", replacement.epoch, 4, replacement.stateId);
-      await match.advance();
-      const replacementBatch = next("b", "host-batch");
-      expect(replacementBatch.batch.disconnectedPlayerIds).toEqual([1]);
-      await match.accept(
-        "b",
-        replacementBatch.epoch,
-        await host.run(replacementBatch.batch),
-      );
-      const state = next("b", "match-state");
-      expect(state.disconnectedPlayerIds).toEqual([1]);
-      // An eligible client that stops supplying batches must yield to reserved fallback.
-      now += 200;
-      await match.advance();
-      next("b", "host-batch");
-      now += 3100;
-      await match.advance();
-      await match.advance();
-      messages.length = 0;
-      await match.advance();
-      expect(next("b", "match-state").executor).toBe("server");
-      await match.disconnect("b");
-      expect(released).toBe(1);
-      await match.advance();
-      expect(released).toBe(1);
-    } finally {
-      await worker.close();
+    f.setTime(12_100);
+    const pending = f.match.advance();
+    f.setTime(12_600);
+    await f.match.advance();
+    expect(f.requests).toHaveLength(5);
+    complete({ tick: 10, winner: null, rejectedCommands: [] });
+    await pending;
+  });
+
+  it("overwrites claimed ownership, deduplicates commands and bounds queue/history", async () => {
+    const f = await fixture();
+    f.match.command("b", "same", { type: "advance-age", playerId: 1 });
+    f.match.command("b", "same", { type: "advance-age", playerId: 1 });
+    f.setTime(10_050);
+    await f.match.advance();
+    expect(f.requests[0]).toMatchObject({
+      type: "advance",
+      commands: [{ id: "same", command: { type: "advance-age", playerId: 2 } }],
+    });
+    for (let i = 0; i < MAX_QUEUED_COMMANDS; i++)
+      f.match.command("a", `queued-${i}`, { type: "advance-age" });
+    expect(() =>
+      f.match.command("a", "overflow", { type: "advance-age" }),
+    ).toThrow(/queue is full/);
+    let now = 10_100;
+    f.setTime(now);
+    await f.match.advance();
+    for (let i = 0; i < MAX_RECENT_COMMANDS + 100; i++) {
+      f.match.command("a", `history-${i}`, { type: "advance-age" });
+      if ((i + 1) % MAX_QUEUED_COMMANDS === 0) {
+        f.setTime((now += 50));
+        await f.match.advance();
+      }
     }
-  }, 30_000);
+    expect((f.match as unknown as { seen: Set<string> }).seen.size).toBe(
+      MAX_RECENT_COMMANDS,
+    );
+    expect(
+      (f.match as unknown as { commands: unknown[] }).commands.length,
+    ).toBeLessThanOrEqual(MAX_QUEUED_COMMANDS);
+  });
+
+  it("keeps the remaining player running and releases once when everyone leaves", async () => {
+    const f = await fixture();
+    f.match.command("a", "departing", { type: "advance-age" });
+    await f.match.disconnect("a");
+    expect(() => f.match.announce("a")).toThrow(/reconnect/);
+    expect(() => f.match.command("a", "late", { type: "advance-age" })).toThrow(
+      /not active/,
+    );
+    f.setTime(10_200);
+    await f.match.advance();
+    expect(f.requests[0]).toMatchObject({
+      type: "advance",
+      disconnectedPlayerIds: [1],
+      commands: [],
+      publish: true,
+    });
+    expect(f.messages).toHaveLength(1);
+    expect(f.messages[0].guest).toBe("b");
+    expect(f.messages[0].message).toMatchObject({
+      type: "match-state",
+      paused: false,
+      tick: 4,
+    });
+    await f.match.disconnect("b");
+    await f.match.disconnect("b");
+    await f.match.advance();
+    expect(f.cleanup()).toEqual({ released: 1, closed: 1 });
+  });
+
+  it("reports domain rejections only to their sender and ignores repeated ready messages", async () => {
+    const f = await fixture();
+    await f.match.qualify("a", "version");
+    expect(f.requests).toHaveLength(0);
+    f.executor.request = async <T extends ExecutorResult>() =>
+      ({
+        tick: 1,
+        winner: null,
+        rejectedCommands: [
+          { id: "bad", playerId: 2, message: "Not enough gold" },
+        ],
+      }) as T;
+    f.setTime(10_050);
+    await f.match.advance();
+    expect(f.messages).toEqual([
+      { guest: "b", message: { type: "error", message: "Not enough gold" } },
+    ]);
+  });
+
+  it("publishes the final state before ending and closing the worker", async () => {
+    const f = await fixture();
+    f.executor.request = async <T extends ExecutorResult>() =>
+      ({ tick: 1, winner: 1, packet, rejectedCommands: [] }) as unknown as T;
+    f.setTime(10_050);
+    await f.match.advance();
+    expect(f.messages.map((item) => item.message.type)).toEqual([
+      "match-state",
+      "match-state",
+      "match-ended",
+      "match-ended",
+    ]);
+    expect(f.cleanup()).toEqual({ released: 1, closed: 1 });
+  });
 });

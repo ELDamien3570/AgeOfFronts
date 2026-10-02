@@ -2,6 +2,7 @@ import { describe, expect, it } from "vitest";
 import { GameMapImpl } from "../../src/core/game/GameMap";
 import { squadCap, tribeCountFor } from "../../src/skirmish/FactionRules";
 import { HomeTerritory } from "../../src/skirmish/HomeTerritory";
+import type { MatchOptions } from "../../src/skirmish/Protocol";
 import { Skirmish } from "../../src/skirmish/Simulation";
 import {
   SnapshotDecoder,
@@ -18,7 +19,7 @@ function match(
   tribes = true,
   width = 240,
   humanNames?: string[],
-  ruleset?: "classic" | "ages-v1",
+  ruleset?: MatchOptions["ruleset"],
 ) {
   const terrain = new Uint8Array(width * 160).fill(133);
   return new Skirmish(new GameMapImpl(width, 160, terrain, terrain.length), {

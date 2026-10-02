@@ -5,6 +5,7 @@ type LobbyRequest = Exclude<ClientMessage, { type: "authenticate" }>;
 export class OnlineLobbyConnection {
   private socket?: WebSocket;
   private reconnectTimer?: number;
+  private authenticationTimer?: number;
   private stopped = false;
   private failures = 0;
   private pending = new Map<
@@ -13,6 +14,7 @@ export class OnlineLobbyConnection {
       message: LobbyRequest;
       resolve: (roomId?: string) => void;
       reject: (error: Error) => void;
+      timeout: ReturnType<typeof setTimeout>;
     }
   >();
   constructor(
@@ -22,6 +24,7 @@ export class OnlineLobbyConnection {
     ) => void,
     private readonly onStatus: (status: string, connected: boolean) => void,
     private readonly onMatch?: (message: ServerMessage) => void,
+    private readonly options: { reconnect?: boolean } = {},
   ) {}
 
   async connect(): Promise<void> {
@@ -34,21 +37,24 @@ export class OnlineLobbyConnection {
           method: "POST",
           signal: AbortSignal.timeout(10_000),
         });
+        if (this.stopped) return;
         if (!response.ok) throw new Error("Guest session service unavailable.");
         const guest = (await response.json()) as { token: string };
+        if (this.stopped) return;
         if (!/^[A-Za-z0-9_-]{43}$/u.test(guest.token))
           throw new Error("Invalid guest session response.");
         localStorage.setItem("ageoffronts.guest-token.v1", guest.token);
         token = guest.token;
       }
+      if (this.stopped) return;
       const url = new URL("socket", this.baseUrl());
       url.protocol = url.protocol === "https:" ? "wss:" : "ws:";
       const socket = (this.socket = new WebSocket(url));
       let authenticated = false;
-      const authenticationTimer = window.setTimeout(
+      const authenticationTimer = (this.authenticationTimer = window.setTimeout(
         () => socket.close(),
         10_000,
-      );
+      ));
       socket.onopen = () =>
         socket.send(JSON.stringify({ type: "authenticate", token }));
       socket.onmessage = (event) => {
@@ -69,6 +75,7 @@ export class OnlineLobbyConnection {
               : undefined;
             if (pending && message.requestId) {
               this.pending.delete(message.requestId);
+              clearTimeout(pending.timeout);
               if (message.type === "ack") pending.resolve(message.roomId);
               else pending.reject(new Error(message.message));
             } else if (message.type === "error") this.onMatch?.(message);
@@ -89,7 +96,9 @@ export class OnlineLobbyConnection {
         if (event.code === 4001 || event.code === 1008) {
           this.onStatus(
             event.code === 4001
-              ? "This guest is active in another tab. Close that tab and reload to return."
+              ? event.reason === "Match already open"
+                ? "This guest is already playing in another tab. Keep that tab open to finish the match."
+                : "This guest is active in another tab. Close that tab and reload to return."
               : "Guest session rejected. Clear the saved guest session to create a new identity.",
             false,
           );
@@ -108,19 +117,39 @@ export class OnlineLobbyConnection {
   request(message: LobbyRequest): Promise<string | undefined> {
     if (this.stopped || this.socket?.readyState !== WebSocket.OPEN)
       return Promise.reject(
-        new Error("The lobby server is disconnected. Wait for reconnection."),
+        new Error(
+          this.options.reconnect === false
+            ? "The match connection is closed. Return to the lobby to play again."
+            : "The lobby server is disconnected. Wait for reconnection.",
+        ),
+      );
+    if (this.pending.size >= 100)
+      return Promise.reject(
+        new Error("Too many pending requests. Wait for the server."),
       );
     return new Promise((resolve, reject) => {
-      this.pending.set(message.requestId, { message, resolve, reject });
+      const timeout = setTimeout(() => {
+        this.pending.delete(message.requestId);
+        reject(new Error("The server did not respond in time."));
+      }, 10_000);
+      this.pending.set(message.requestId, {
+        message,
+        resolve,
+        reject,
+        timeout,
+      });
       this.socket!.send(JSON.stringify(message));
     });
   }
   stop(): void {
     this.stopped = true;
     clearTimeout(this.reconnectTimer);
+    clearTimeout(this.authenticationTimer);
     this.socket?.close();
-    for (const pending of this.pending.values())
+    for (const pending of this.pending.values()) {
+      clearTimeout(pending.timeout);
       pending.reject(new Error("Lobby connection closed."));
+    }
     this.pending.clear();
   }
   private baseUrl(): URL {
@@ -129,6 +158,15 @@ export class OnlineLobbyConnection {
     );
   }
   private retry(): void {
+    if (this.stopped) return;
+    if (this.options.reconnect === false) {
+      this.onStatus(
+        "Connection lost. Return to the lobby to play again.",
+        false,
+      );
+      this.stop();
+      return;
+    }
     this.onStatus("Lobby server disconnected. Reconnecting…", false);
     this.reconnectTimer = window.setTimeout(
       () => void this.connect(),
