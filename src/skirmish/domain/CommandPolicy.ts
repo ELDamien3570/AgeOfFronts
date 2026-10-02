@@ -25,6 +25,8 @@ export function commandRejection(command: Command): string | null {
       (command as { armyId: number }).armyId <= 0)
   )
     return "Invalid army identity";
+  if (command.type === "upgrade-building" && (!Array.isArray(command.buildingIds) || command.buildingIds.length > 200))
+    return "Select up to 200 buildings";
   for (const field of ["squadIds", "shipIds", "aircraftIds", "buildingIds"] as const)
     if (field in command) {
       const ids = (command as unknown as Record<string, unknown>)[field],
@@ -72,6 +74,11 @@ export function commandRejection(command: Command): string | null {
       (command.age !== undefined && !AGES.includes(command.age)))
   )
     return "Unknown building tier";
+  if (command.type === "cancel-recruitment" &&
+      ((command.category !== undefined && !["land", "ship", "aircraft"].includes(command.category)) ||
+       [command.definitionId, command.kind].some(value => value !== undefined &&
+         (typeof value !== "string" || !value.length || value.length > 100))))
+    return "Invalid recruitment filter";
   if (command.type === "order") {
     const order = command.order;
     if (

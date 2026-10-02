@@ -76,6 +76,41 @@ export class Recruitment {
     this.ids.set(paid.id, paid);
     for (const listener of this.listeners) listener(paid, true);
   }
+  /** Cancel exactly one paid job. Producer heads are determined before filtering,
+   * so a different unit at the front still protects its ongoing training. */
+  cancel(
+    playerId: number,
+    filter: {
+      category?: RecruitmentJob["category"];
+      definitionId?: string;
+      kind?: string;
+      buildingIds?: ReadonlySet<number>;
+    },
+    refund: (job: RecruitmentJob) => void,
+  ): RecruitmentJob | undefined {
+    const heads = new Set<number>();
+    let inactive: RecruitmentJob | undefined;
+    let active: RecruitmentJob | undefined;
+    for (const job of this.jobs) {
+      const head = !heads.has(job.buildingId);
+      heads.add(job.buildingId);
+      if (job.playerId !== playerId ||
+          (filter.category !== undefined && job.category !== filter.category) ||
+          (filter.definitionId !== undefined && job.definitionId !== filter.definitionId) ||
+          (filter.kind !== undefined && job.kind !== filter.kind) ||
+          (filter.buildingIds && !filter.buildingIds.has(job.buildingId))) continue;
+      if (!head) inactive = job;
+      else if (!active || job.remainingTicks > active.remainingTicks ||
+          (job.remainingTicks === active.remainingTicks && job.id > active.id)) active = job;
+    }
+    const job = inactive ?? active;
+    if (!job) return undefined;
+    this.jobs.splice(this.jobs.indexOf(job), 1);
+    this.ids.delete(job.id);
+    refund(job);
+    for (const listener of this.listeners) listener(job, false);
+    return job;
+  }
   step(
     buildings: readonly Building[],
     owners: Uint8Array,

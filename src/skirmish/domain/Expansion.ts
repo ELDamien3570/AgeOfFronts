@@ -18,7 +18,11 @@ import {
   buildingCost,
   buildingIntegrity,
   buildingTechnology,
+  nextBuildingAge,
 } from "../content/Buildings";
+import { startingEconomy } from "../content/StartingEconomy";
+import { TRIBE_BUILDING_ORDER, tribeBuildingLimit } from "./TribeDevelopment";
+import { resourceVisibleAtAge } from "../content/Resources";
 import { CONTENT_HASH } from "../content/Catalog";
 import { TECHNOLOGIES, technologyAt } from "../content/Technology";
 import { UNIT, UNITS, VESSEL, VESSELS } from "../content/Units";
@@ -54,7 +58,7 @@ import { Recruitment, RECRUITMENT_SECONDS } from "./Recruitment";
 import type { RecruitmentJob } from "./Definitions";
 import { Supply, costRejection, spend } from "./Supply";
 import { Trade } from "./Trade";
-import { modernizeMilitaryBuildings } from "./MilitaryInfrastructure";
+import { quoteBuildingUpgrades } from "./BuildingUpgrades";
 import { structureAim } from "./StructureTargeting";
 import { squadRadius, standable, tilePoint } from "../SquadGeometry";
 import type { CoastIndex } from "../CoastIndex";
@@ -87,9 +91,11 @@ export interface ExpansionWorld extends BattleWorld, ArmyWorld {
 // Match-level application coordinator; each domain service owns its own rules.
 // All services operate on the same authoritative world, never a parallel game.
 export class Expansion {
-  checkpoint() { return structuredClone({progression:this.progression.checkpoint(),diplomacy:this.diplomacy.checkpoint(),fortifications:this.fortifications.checkpoint(),supply:this.supply.checkpoint(),trade:this.trade.checkpoint(),roads:this.roads.checkpoint(),battle:this.battle.checkpoint(),armies:this.armies.checkpoint(),modernization:this.modernization.checkpoint(),economy:this.economy.checkpoint(),aircraft:this.aircraft,winners:this.winners,events:this.events,nextEvent:this.nextEvent}); }
+  checkpoint() { return structuredClone({progression:this.progression.checkpoint(),diplomacy:this.diplomacy.checkpoint(),fortifications:this.fortifications.checkpoint(),supply:this.supply.checkpoint(),trade:this.trade.checkpoint(),roads:this.roads.checkpoint(),battle:this.battle.checkpoint(),armies:this.armies.checkpoint(),modernization:this.modernization.checkpoint(),economy:this.economy.checkpoint(),aircraft:this.aircraft,winners:this.winners,events:this.events,nextEvent:this.nextEvent,tribePlans:[...this.tribePlans]}); }
   restore(saved: ReturnType<Expansion["checkpoint"]>): void {
     const state=structuredClone(saved);
+    this.tribePlans.clear();
+    for (const [id, plan] of state.tribePlans ?? []) this.tribePlans.set(id, plan);
     this.progression.restore(state.progression);
     this.diplomacy.restore(state.diplomacy);
     this.fortifications.restore(state.fortifications);
@@ -118,6 +124,7 @@ export class Expansion {
   readonly winners: number[] = [];
   readonly events: MatchEvent[] = [];
   private nextEvent = 1;
+  private readonly tribePlans = new Map<number, { nextType: number; tiles: Partial<Record<BuildingType, number>> }>();
   announce(event: Omit<MatchEvent, "id" | "tick">): void {
     this.events.push({ ...event, id: this.nextEvent++, tick: this.world.tick });
     if (this.events.length > 80) this.events.shift();
@@ -160,12 +167,9 @@ export class Expansion {
     this.supply.aiProduction = playerId => this.economy.production(playerId);
   }
   add(player: Player): void {
-    if (player.kind === "tribe") {
-      this.progression.add(player.id, "StoneAge");
-    } else {
-      this.progression.add(player.id, this.startingAge);
-    }
+    this.progression.add(player.id, this.startingAge);
     this.supply.add(player.id);
+    Object.assign(this.supply.inventories[player.id], startingEconomy(this.startingAge, player.kind === "tribe").items);
   }
   unit(squad: Squad): UnitDefinition {
     return this.battle.definition(squad);
@@ -241,12 +245,13 @@ export class Expansion {
       return "Cannot build on an intact wall";
     this.supply.resourceSites.update(this.supply.deposits);
     const node = this.supply.resourceSites.at(tile);
+    const visible = node && resourceVisibleAtAge(node.resource, this.progression.states[player.id].age);
     if (
       type === "mine" &&
-      (!node || node.resource === "horses" || node.resource === "oil")
+      (!node || !visible || node.resource === "horses" || node.resource === "oil")
     )
       return "Mines must be placed directly on a mineral deposit";
-    if ((type === "oil-well" || type === "oil-rig") && node?.resource !== "oil")
+    if ((type === "oil-well" || type === "oil-rig") && (!visible || node?.resource !== "oil"))
       return "Oil extraction needs an oil deposit";
     const resourceSite = this.supply.resourceSites.rejection(type,tile);
     if (resourceSite) return resourceSite;
@@ -293,15 +298,31 @@ export class Expansion {
   command(player: Player, command: Command): string | null | undefined {
     const { world } = this;
     if (command.type === "alliance" && world.options?.alliances === false) return "Alliances are disabled for this match";
+    if (command.type === "upgrade-building") {
+      const quote = quoteBuildingUpgrades(player, this.progression.states[player.id],
+        this.supply.inventories[player.id], world.buildings, world.owners, command.buildingIds);
+      if (quote.reason) return quote.reason;
+      spend(player, this.supply.inventories[player.id], quote.cost);
+      for (const { building, age, ticks } of quote.upgrades) {
+        const maximum = building.maxHealth ?? buildingIntegrity(building.type, building.age ?? "StoneAge");
+        const ratio = Math.min(1, (building.health ?? maximum) / maximum);
+        building.age = age;
+        building.maxHealth = buildingIntegrity(building.type, age);
+        building.health = Math.max(1, Math.floor(building.maxHealth * ratio));
+        building.remainingTicks = ticks;
+      }
+      return null;
+    }
     const armyResult = this.armies.command(player, command);
     if (armyResult !== undefined) return armyResult;
-    if (command.type === "research")
-      return player.kind === "tribe"
-        ? "Tribes remain in the Stone Age"
-        : this.progression.research(player, command.technologyId);
+    if (command.type === "research") {
+      if (player.kind === "tribe" && TECHNOLOGIES.find(t => t.id === command.technologyId)?.age !== this.startingAge)
+        return "Tribes can only research technologies from their starting age";
+      return this.progression.research(player, command.technologyId);
+    }
     if (command.type === "advance-age")
       return player.kind === "tribe"
-        ? "Tribes remain in the Stone Age"
+        ? "Tribes cannot advance beyond their starting age"
         : this.progression.advance(player);
     if (command.type === "production-priority")
       return this.supply.setPriorities(player, world.buildings, command.buildingType, command.recipeIds);
@@ -884,10 +905,11 @@ export class Expansion {
   }
   beforeStep(): void {
     const { world } = this;
+    for (const id of this.tribePlans.keys()) if (!world.players.some(p => p.id === id && p.kind === "tribe" && !p.eliminated)) this.tribePlans.delete(id);
     this.progression.step(world.players, (player, age) =>
       this.announce({ kind: "age", actorId: player.id, age }),
     );
-    modernizeMilitaryBuildings(world.buildings, this.progression.states);
+    // Infrastructure upgrades are explicit paid commands, never a research side effect.
     const treaties = [...this.diplomacy.state.alliances];
     this.diplomacy.step(world.tick, world.players);
     for (const treaty of treaties)
@@ -1086,6 +1108,11 @@ export class Expansion {
           });
       }
       const own = this.world.buildings.filter((b) => b.playerId === player.id);
+      // One paid infrastructure improvement per strategic pass; no hidden grants.
+      const upgrade = own.find(building => !building.remainingTicks &&
+        (building.health ?? 1) >= (building.maxHealth ?? 1) &&
+        nextBuildingAge(building.type, building.age ?? "StoneAge", state.age, state.completed));
+      if (upgrade) this.world.applyCommand({ type: "upgrade-building", playerId: player.id, buildingIds: [upgrade.id] });
       const squadCount = this.world.squads.filter((s) => s.playerId === player.id).length;
       // Nearest owned land is order-independent (it is derived from ownership),
       // so checkpoints never need the per-player tile sets.
@@ -1236,31 +1263,34 @@ export class Expansion {
     }
   }
   private thinkTribeDevelopment(player: Player): void {
-    const own = this.world.buildings.filter((b) => b.playerId === player.id);
-    const targets: BuildingType[] = [];
-    if (!own.some((b) => b.type === "city")) targets.push("city");
-    if (own.filter((b) => b.type === "barracks").length < 2) targets.push("barracks");
-    for (const type of targets) {
-      const count = own.filter((b) => b.type === type).length;
-      const cost = buildingCost(type, "StoneAge", count);
-      if (player.gold < (cost.gold ?? 0)) continue;
-      const candidates = (this.world.ownedLandNearest(player.id, player.base, 256) ?? []).slice();
-      candidates.sort((a, b) =>
-        this.world.map.euclideanDistSquared(a, player.base) -
-        this.world.map.euclideanDistSquared(b, player.base) || a - b
-      );
-      for (const tile of candidates) {
-        if (
-          this.world.applyCommand({
-            type: "build",
-            playerId: player.id,
-            buildingType: type,
-            tile,
-            age: "StoneAge",
-          }) === null
-        )
-          break;
+    const state = this.progression.states[player.id];
+    const next = TECHNOLOGIES.find(t => t.age === this.startingAge &&
+      !researchRejection(state, player.gold, t.id, this.progression.technologySpeed));
+    if (next) this.world.applyCommand({ type: "research", playerId: player.id, technologyId: next.id });
+    const own = this.world.buildings.filter(b => b.playerId === player.id);
+    const plan = this.tribePlans.get(player.id) ?? { nextType: 0, tiles: {} };
+    this.tribePlans.set(player.id, plan);
+    // One type and at most sixteen legal site attempts per strategic pass.
+    for (let checked = 0; checked < TRIBE_BUILDING_ORDER.length; checked++) {
+      const type = TRIBE_BUILDING_ORDER[plan.nextType++ % TRIBE_BUILDING_ORDER.length];
+      plan.nextType %= TRIBE_BUILDING_ORDER.length;
+      const count = own.filter(b => b.type === type).length;
+      const technology = buildingTechnology(type, this.startingAge);
+      if (count >= tribeBuildingLimit(type, this.startingAge) || !technology ||
+          !state.completed.includes(technology) ||
+          costRejection(player, this.supply.inventories[player.id], buildingCost(type, this.startingAge, count))) continue;
+      const extraction = type === "mine" || type === "oil-well" || type === "oil-rig";
+      const candidates = extraction
+        ? this.supply.deposits.filter(d => this.world.owners[d.tile] === player.id && resourceVisibleAtAge(d.resource, state.age)).map(d => d.tile)
+        : this.world.ownedLandNearest(player.id, player.base, 256);
+      if (!candidates.length) continue;
+      for (let i = 0; i < Math.min(16, candidates.length); i++) {
+        const cursor = plan.tiles[type] ?? 0;
+        plan.tiles[type] = (cursor + 1) % candidates.length;
+        if (this.world.applyCommand({ type: "build", playerId: player.id,
+          buildingType: type, tile: candidates[cursor % candidates.length], age: this.startingAge }) === null) return;
       }
+      return;
     }
   }
   private thinkCapabilities(player: Player): void {
