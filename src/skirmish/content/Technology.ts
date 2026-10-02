@@ -16,6 +16,7 @@ export function technologyAt(age: Age, tree: Tree, slot: number): Technology {
   return definition;
 }
 export const STARTING_TECHNOLOGIES = [
+  technologyAt("StoneAge", "naval", 1).id,
   technologyAt("StoneAge", "warfare", 1).id,
   technologyAt("StoneAge", "economic", 1).id,
 ];
