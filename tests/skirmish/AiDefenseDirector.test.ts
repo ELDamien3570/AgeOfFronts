@@ -85,6 +85,31 @@ function fixture() {
   };
 }
 describe("persistent funded city defenses", () => {
+  it("resumes a terrain-aware enclosure when the simple rectangle crosses unowned land", () => {
+    const {game, map, player, defenses} = fixture();
+    defenses.release(player.id);
+    const change = (tile: number) => (game as unknown as {changeOwner(t:number,id:number):void}).changeOwner(tile, 0);
+    for (let y = 20; y <= 22; y++) for (let x = 19; x <= 21; x++) change(map.ref(x,y));
+    let restored = false;
+    for (let tick = 600; tick < 6000 && !defenses.projects.has(player.id); tick += 3) {
+      game.tick = tick; defenses.step();
+      expect(defenses.diagnostics.outlineWork).toBeLessThanOrEqual(32);
+      if (!restored && defenses.checkpoint().outlines.length) {
+        const saved = defenses.checkpoint(); defenses.restore(saved); expect(defenses.checkpoint()).toEqual(saved); restored = true;
+      }
+    }
+    const project = defenses.projects.get(player.id)!;
+    expect(restored).toBe(true); expect(project).toBeDefined();
+    expect(project.sites.some(s => map.y(s.tile) < 21)).toBe(true);
+    expect([...project.perimeter].every(t => game.owners[t] === player.id)).toBe(true);
+    expect(project.quote.steps[project.quote.steps.length - 1].links).toHaveLength(2);
+    const funded = defenses.checkpoint(); funded.allowances.forEach(([,a]) => a.amount = 100000); defenses.restore(funded);
+    for (let i = 0; i < 5000 && defenses.projects.get(player.id)!.phase !== "defended"; i++) { game.step(); defenses.step(); }
+    expect(defenses.projects.get(player.id)!.phase).toBe("defended");
+    for (const tile of defenses.projects.get(player.id)!.perimeter)
+      expect(game.expansion!.fortifications.blocked(tile, player.id)).toBe(false);
+  });
+
   it("completes an actual circuit before marking it defended and preserves a paid repair on takeover", () => {
     const { game, player, defenses } = fixture();
     game.tick = 420;
