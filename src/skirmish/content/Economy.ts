@@ -2,6 +2,11 @@ import { AGES, type Age } from "../domain/Definitions";
 
 // Shared opening and growth rules used by simulation and presentation.
 export const STARTING_AGE_TROOPS = 6_000;
+// Water trade pays no base reward; distance is loading port to destination.
+export const WATER_TRADE_PRICING = {
+  percentPerTile: 1,
+  maximumPercent: 200,
+} as const;
 export const RESERVE_GROWTH = {
   base: [12, 18, 26, 36, 48, 64, 80],
   city: [8, 12, 18, 26, 36, 50, 70],

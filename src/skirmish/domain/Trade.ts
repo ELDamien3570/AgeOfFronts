@@ -1,4 +1,5 @@
 import type { GameMap } from "../../core/game/GameMap";
+import { WATER_TRADE_PRICING } from "../content/Economy";
 import { technologyAt } from "../content/Technology";
 import { VESSELS } from "../content/Units";
 import type { LandPaths, WaterPaths } from "../Pathfinding";
@@ -320,7 +321,10 @@ export class Trade {
     actor.lost = 0;
     actor.returned = 0;
     actor.valuePerGood = 50 * (AGES.indexOf(source.age ?? "StoneAge") + 1);
-    actor.originTile = source.tile;
+    // Quote sea distance from the loading port, never the inland factory.
+    actor.originTile = actor.naval
+      ? this.world.buildings.find((b) => b.id === actor.originPortId)!.tile
+      : source.tile;
     actor.shipmentId = this.nextShipment++;
     actor.visited = [];
     this.supply.goods.set(source.id, goods - actor.cargo);
@@ -583,16 +587,17 @@ export class Trade {
           actor.quoteAllies.includes(destination.playerId) &&
           this.diplomacy.allied(player.id, destination.playerId);
       const percent = allied ? 350 : foreign ? 250 : 100;
-      const distanceFactor =
-        100 +
-        Math.min(
-          100,
-          Math.floor(
-            Math.sqrt(
-              map.euclideanDistSquared(destination.tile, actor.originTile),
-            ),
-          ),
-        );
+      const distance = Math.floor(
+        Math.sqrt(map.euclideanDistSquared(destination.tile, actor.originTile)),
+      );
+      // Sea deliveries have no base payout: 1% per tile, capped at 200%.
+      // A short round trip cannot repeatedly collect a full-distance reward.
+      const distanceFactor = actor.naval
+        ? Math.min(
+            WATER_TRADE_PRICING.maximumPercent,
+            distance * WATER_TRADE_PRICING.percentPerTile,
+          )
+        : 100 + Math.min(100, distance);
       const gold = Math.floor(
         (quantity * actor.valuePerGood * percent * distanceFactor) / 10000,
       );

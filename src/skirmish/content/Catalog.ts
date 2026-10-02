@@ -2,14 +2,18 @@ import { AGE_SQUAD_CAPS, TRIBE_PROMOTION_PERCENT } from "../FactionRules";
 import { BUILDING_RULES } from "../Rules";
 import { MAX_ARMOUR, PROMOTION_ATTACK, XP_THRESHOLDS } from "../domain/Combat";
 import { RESOURCES } from "../domain/Definitions";
-import { PRODUCTION_RECIPES } from "../domain/Supply";
-import { TERRITORY_ABSORPTION } from "../domain/TerritoryAbsorption";
 import { DEPOSIT_RULES } from "../domain/DepositGeneration";
 import { RECRUITMENT_SECONDS } from "../domain/Recruitment";
+import { PRODUCTION_RECIPES } from "../domain/Supply";
+import { TERRITORY_ABSORPTION } from "../domain/TerritoryAbsorption";
 import { AI_PERSONALITIES } from "./AiPersonalities";
 import { ARMY_CAPS } from "./Armies";
 import { GUN_NEST_ATTACK, TRENCH_COVER } from "./Defences";
-import { RESERVE_GROWTH, STARTING_AGE_TROOPS } from "./Economy";
+import {
+  RESERVE_GROWTH,
+  STARTING_AGE_TROOPS,
+  WATER_TRADE_PRICING,
+} from "./Economy";
 import { FACTIONS } from "./Factions";
 import {
   ADVANCES,
@@ -99,5 +103,10 @@ export const CONTENT_HASH = hash({
   recruitment: RECRUITMENT_SECONDS,
   deposits: DEPOSIT_RULES,
   tribePromotion: { percent: TRIBE_PROMOTION_PERCENT, conquestInheritance: 1 },
-  economy: { reserves: RESERVE_GROWTH, startingTroops: STARTING_AGE_TROOPS },
+  economy: {
+    reserves: RESERVE_GROWTH,
+    startingTroops: STARTING_AGE_TROOPS,
+    waterTrade: WATER_TRADE_PRICING,
+    militaryInfrastructureRevision: 1,
+  },
 });

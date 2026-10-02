@@ -53,6 +53,7 @@ import { Recruitment, RECRUITMENT_SECONDS } from "./Recruitment";
 import type { RecruitmentJob } from "./Definitions";
 import { Supply, costRejection, spend } from "./Supply";
 import { Trade } from "./Trade";
+import { modernizeMilitaryBuildings } from "./MilitaryInfrastructure";
 export interface ExpansionWorld extends BattleWorld, ArmyWorld {
   recruitment: Recruitment;
   options?: { runAi?: boolean; resourceDensity?: 1 | 2 | 3 | 5; resourceOutput?: 1 | 2 | 3 | 5; alliances?: boolean };
@@ -849,6 +850,7 @@ export class Expansion {
     this.progression.step(world.players, (player, age) =>
       this.announce({ kind: "age", actorId: player.id, age }),
     );
+    modernizeMilitaryBuildings(world.buildings, this.progression.states);
     const treaties = [...this.diplomacy.state.alliances];
     this.diplomacy.step(world.tick, world.players);
     for (const treaty of treaties)
