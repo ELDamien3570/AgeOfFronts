@@ -33,6 +33,8 @@ import {
   TRIBE_INTERCEPT_RANGE,
   TRIBE_PURSUIT_RANGE,
   TRIBE_STARTING_SQUADS,
+  TRIBE_STARTING_RESERVES,
+  TRIBE_STARTING_GOLD,
   matchTribeCount,
   MAX_AI_OPPONENTS,
   MAX_HUMAN_PLAYERS,
@@ -368,8 +370,13 @@ export class Skirmish {
       ai: id > (this.options.humanNames?.length ?? 1),
       kind,
       base,
-      reserves: this.expansion && kind === "regular" ? STARTING_AGE_TROOPS : STARTING_TROOPS,
-      gold: STARTING_GOLD,
+      reserves:
+        kind === "tribe"
+          ? TRIBE_STARTING_RESERVES
+          : this.expansion && kind === "regular"
+            ? STARTING_AGE_TROOPS
+            : STARTING_TROOPS,
+      gold: kind === "tribe" ? TRIBE_STARTING_GOLD : STARTING_GOLD,
       land: 0,
       losses: 0,
       kills: 0,
@@ -429,7 +436,11 @@ export class Skirmish {
     this.buildingIndex.add(barracks);
     forestOf(this.map)?.occupy(this.map, base, "barracks");
     for (let i = 0; i < (kind === "tribe" ? TRIBE_STARTING_SQUADS : 4); i++)
-      this.recruit(player, barracks.id, undefined, "instant");
+      this.recruit(player, barracks.id, undefined, kind === "tribe" ? "complete" : "instant");
+    if (kind === "tribe") {
+      player.reserves = TRIBE_STARTING_RESERVES;
+      player.gold = TRIBE_STARTING_GOLD;
+    }
   }
 
   player(id: number): Player | undefined {

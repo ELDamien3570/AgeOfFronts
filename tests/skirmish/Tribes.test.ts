@@ -54,6 +54,8 @@ describe("minor tribes", () => {
       );
       expect(game.owners[tribe.base]).toBe(tribe.id);
       expect(squadCap(tribe)).toBe(10);
+      expect(tribe.reserves).toBe(2500);
+      expect(tribe.gold).toBe(250);
     }
     expect(squadCap(game.players[0])).toBe(200);
     expect(new Set(game.players.map((p) => p.id)).size).toBe(
@@ -88,6 +90,10 @@ describe("minor tribes", () => {
     const game = match(),
       tribe = game.players.find((p) => p.kind === "tribe")!,
       camp = game.buildings.find((b) => b.playerId === tribe.id)!;
+    expect(tribe.reserves).toBe(2500);
+    expect(tribe.gold).toBe(250);
+    tribe.reserves = 10000;
+    tribe.gold = 1000;
     const own = game.squads.filter((s) => s.playerId === tribe.id);
     for (let i = 0; i < 5; i++)
       expect(
@@ -123,6 +129,36 @@ describe("minor tribes", () => {
         tile: tribe.base,
       }),
     ).toContain("Tribes defend");
+  });
+
+  it("starts with 2500 reserves and 250 gold, limiting immediate recruitment", () => {
+    const game = match(),
+      tribe = game.players.find((p) => p.kind === "tribe")!,
+      camp = game.buildings.find((b) => b.playerId === tribe.id)!;
+    expect(tribe.reserves).toBe(2500);
+    expect(tribe.gold).toBe(250);
+    expect(
+      game.applyCommand({
+        type: "recruit",
+        playerId: tribe.id,
+        buildingId: camp.id,
+      }),
+    ).toBeNull();
+    expect(
+      game.applyCommand({
+        type: "recruit",
+        playerId: tribe.id,
+        buildingId: camp.id,
+      }),
+    ).toBeNull();
+    expect(tribe.reserves).toBe(500);
+    expect(
+      game.applyCommand({
+        type: "recruit",
+        playerId: tribe.id,
+        buildingId: camp.id,
+      }),
+    ).toContain("reserve troops");
   });
 
   it("keeps extending its home frontier beyond the former local limit", () => {
