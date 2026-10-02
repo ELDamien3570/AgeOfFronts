@@ -15,12 +15,17 @@ export class BuildingIndex {
     number,
     { reserves: number; gold: number }
   >();
+  private readonly playerCounts = new Map<
+    number,
+    Map<Building["type"], number>
+  >();
   private count = 0;
   constructor(private readonly map: GameMap) {}
   rebuild(buildings: readonly Building[]): void {
     this.tiles.clear();
     this.representatives.clear();
     this.income.clear();
+    this.playerCounts.clear();
     this.count = 0;
     for (const building of buildings) this.add(building);
   }
@@ -36,12 +41,19 @@ export class BuildingIndex {
     if (!representatives)
       this.representatives.set(building.tile, (representatives = new Map()));
     representatives.set(building.type, building);
+    let playerMap = this.playerCounts.get(building.playerId);
+    if (!playerMap)
+      this.playerCounts.set(building.playerId, (playerMap = new Map()));
+    playerMap.set(building.type, (playerMap.get(building.type) ?? 0) + 1);
     if (building.remainingTicks) return;
     let income = this.income.get(building.playerId);
     if (!income)
       this.income.set(building.playerId, (income = { reserves: 0, gold: 0 }));
     income.reserves += BUILDING_RULES[building.type].reserveIncome;
     income.gold += BUILDING_RULES[building.type].goldIncome;
+  }
+  countOfType(playerId: number, type: Building["type"]): number {
+    return this.playerCounts.get(playerId)?.get(type) ?? 0;
   }
   at(tile: number): readonly Building[] {
     return this.tiles.get(tile) ?? EMPTY_BUILDINGS;

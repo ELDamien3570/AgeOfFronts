@@ -370,10 +370,9 @@ export class Renderer {
       stack.count++;
       stack.health += building.health ?? 0;
       stack.maxHealth += building.maxHealth ?? 0;
-      stack.remainingTicks = Math.max(
-        stack.remainingTicks,
-        building.remainingTicks,
-      );
+      if (building.remainingTicks > 0 && stack.remainingTicks === 0) {
+        stack.remainingTicks = building.remainingTicks;
+      }
     }
     this.buildingStacks = Array.from(stacks.values());
     const cleared = this.ground!.updateBuildings(
@@ -953,6 +952,13 @@ export class Renderer {
     );
     for (const tile of this.buildSites) {
       const p = this.screen(this.map.x(tile), this.map.y(tile));
+      if (
+        p.x + this.scale < 0 ||
+        p.x > this.width ||
+        p.y + this.scale < 0 ||
+        p.y > this.height
+      )
+        continue;
       ctx.fillStyle = "#9bffe066";
       ctx.fillRect(p.x, p.y, this.scale, this.scale);
       ctx.strokeStyle = "#baffebbb";

@@ -143,7 +143,10 @@ export class EmpireViewModel {
         age: undefined,
         cost: undefined,
       };
-    const cost = buildingCost(type, age);
+    const count = this.state.buildings.filter(
+      (b) => b.playerId === this.playerId && b.type === type,
+    ).length;
+    const cost = buildingCost(type, age, count);
     return {
       age,
       cost,
@@ -166,9 +169,12 @@ export class EmpireViewModel {
   buildingPreview(type: BuildingType) {
     const unlocked = this.buildingAge(type);
     const age = unlocked ?? AGES.find((a) => buildingTechnology(type, a));
+    const count = this.state.buildings.filter(
+      (b) => b.playerId === this.playerId && b.type === type,
+    ).length;
     return {
       age,
-      cost: age ? buildingCost(type, age) : undefined,
+      cost: age ? buildingCost(type, age, count) : undefined,
       requiredTechnology: age
         ? this.technologyName(buildingTechnology(type, age)!)
         : undefined,

@@ -13,12 +13,14 @@ let encoder = new SnapshotEncoder();
 let setup: SpawnSelection | undefined;
 let spawnDeadline = 0;
 let spawnPublishedAt = 0;
+let lastPublishedAt = 0;
 
 function send(message: WorkerResponse): void {
   self.postMessage(message);
 }
 function publish(): void {
   if (!match) return;
+  lastPublishedAt = performance.now();
   const packet = encoder.encode({
     tick: match.tick,
     width: match.map.width(),
@@ -115,7 +117,7 @@ self.onmessage = (event: MessageEvent<WorkerRequest>) => {
       }
       const rejection = match?.applyCommand(message.command);
       if (rejection) send({ type: "rejected", message: rejection });
-      publish();
+      if (paused || performance.now() - lastPublishedAt >= 30) publish();
     } else if (message.type === "pause") {
       if (setup) return;
       paused = message.paused;

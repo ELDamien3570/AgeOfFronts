@@ -231,7 +231,10 @@ export class Expansion {
       this.world.map, this.supply.deposits, type, tile,
     );
     if (resourceSite) return resourceSite;
-    const cost = buildingCost(type, age),
+    const existingCount = this.world.buildings.filter(
+      (b) => b.playerId === player.id && b.type === type,
+    ).length;
+    const cost = buildingCost(type, age, existingCount),
       wallCost =
         type === "tower"
           ? this.fortifications.towerPlan(
@@ -251,13 +254,19 @@ export class Expansion {
     const plan =
       building.type === "tower"
         ? this.fortifications.towerPlan(
-            building.tile,
-            player.id,
-            age,
-            this.world.buildings,
-          )
+              building.tile,
+              player.id,
+              age,
+              this.world.buildings,
+            )
         : null;
-    const cost = buildingCost(building.type, age);
+    const existingCount = Math.max(
+      0,
+      this.world.buildings.filter(
+        (b) => b.playerId === player.id && b.type === building.type,
+      ).length - 1,
+    );
+    const cost = buildingCost(building.type, age, existingCount);
     spend(player, this.supply.inventories[player.id], {
       ...cost,
       gold: (cost.gold ?? 0) + (plan?.gold ?? 0),
@@ -1203,7 +1212,8 @@ export class Expansion {
     if (!own.some((b) => b.type === "city")) targets.push("city");
     if (own.filter((b) => b.type === "barracks").length < 2) targets.push("barracks");
     for (const type of targets) {
-      const cost = buildingCost(type, "StoneAge");
+      const count = own.filter((b) => b.type === type).length;
+      const cost = buildingCost(type, "StoneAge", count);
       if (player.gold < (cost.gold ?? 0)) continue;
       const candidates = (this.world.ownedLandNearest(player.id, player.base, 256) ?? []).slice();
       candidates.sort((a, b) =>

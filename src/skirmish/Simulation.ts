@@ -8,6 +8,7 @@ import { ShoreRoutes } from "./domain/ShoreRoutes";
 import { ShoreTransport } from "./domain/ShoreTransport";
 import { ConquestCredit, DamageLedger } from "./Conquest";
 import { constructionRejection } from "./Construction";
+import { buildingCostMultiplier } from "./content/Buildings";
 import { defaultUnit, UNIT, VESSEL } from "./content/Units";
 import { STARTING_AGE_TROOPS, baseReserveIncome, cityReserveIncome } from "./content/Economy";
 import { personalityOf } from "./content/AiPersonalities";
@@ -1029,7 +1030,14 @@ export class Skirmish {
   ): string | null {
     const rejection = this.buildingPlacement(player.id, type, tile, age);
     if (rejection) return rejection;
-    if (!this.expansion) player.gold -= BUILDING_RULES[type].cost;
+    if (!this.expansion) {
+      const existingCount = this.buildings.filter(
+        (b) => b.playerId === player.id && b.type === type,
+      ).length;
+      player.gold -= Math.round(
+        BUILDING_RULES[type].cost * buildingCostMultiplier(existingCount),
+      );
+    }
     this.buildings.push({
       id: this.nextId++,
       playerId: player.id,
@@ -2082,8 +2090,15 @@ export class Skirmish {
       this.tick - this.volleys[0].tick > ARCHER_ARROW_TICKS
     )
       this.volleys.shift();
-    for (const building of this.buildings)
-      if (building.remainingTicks > 0) building.remainingTicks--;
+    const activeTiles = new Set<number>();
+    for (const building of this.buildings) {
+      if (building.remainingTicks > 0) {
+        if (!activeTiles.has(building.tile)) {
+          activeTiles.add(building.tile);
+          building.remainingTicks--;
+        }
+      }
+    }
     this.buildingIndex.rebuild(this.buildings);
     this.promoteTribes();
     this.expansion?.beforeStep();
@@ -3254,7 +3269,11 @@ export class Skirmish {
     if (!own.some((b) => b.type === "city")) targets.push("city");
     if (own.filter((b) => b.type === "barracks").length < 2) targets.push("barracks");
     for (const type of targets) {
-      if (player.gold < BUILDING_RULES[type].cost) continue;
+      const existing = own.filter((b) => b.type === type).length;
+      const cost = Math.round(
+        BUILDING_RULES[type].cost * buildingCostMultiplier(existing),
+      );
+      if (player.gold < cost) continue;
       let tile: number | undefined,
         distance = Infinity;
       for (const t of this.ownedTiles.get(player.id) ?? []) {

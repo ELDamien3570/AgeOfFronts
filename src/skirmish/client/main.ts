@@ -292,6 +292,9 @@ let landingShip: number | undefined;
 
 let placementAge: Age | undefined;
 
+let lastPlacementTime = 0;
+let lastPlacementAttempt = 0;
+
 let targetedAction: ((x: number, y: number) => void) | undefined;
 
 const orderGesture = new OrderGesture();
@@ -1183,6 +1186,10 @@ function placeBuilding(type: BuildingType, age?: Age): void {
   if (!snapshot || snapshot.winner !== null || snapshot.players.find(player => player.id === localPlayerId)!.eliminated)
     return;
 
+  const now = performance.now();
+  if (now - lastPlacementAttempt < 80) return;
+  lastPlacementAttempt = now;
+
   const choice = empireModel()?.buildChoice(
     type,
     age ?? empire.buildAges[type],
@@ -1203,9 +1210,14 @@ function placeBuilding(type: BuildingType, age?: Age): void {
     .getElementById(`build-${type}`)
     ?.setAttribute("aria-pressed", "true");
 
-  renderer.buildSites = Array.from(snapshot.owners.keys()).filter(
-    (tile) => !placementRejection(type, tile),
-  );
+  const candidateSites: number[] = [];
+  const owners = snapshot.owners;
+  for (let tile = 0; tile < owners.length; tile++) {
+    if (owners[tile] === localPlayerId) {
+      if (!placementRejection(type, tile)) candidateSites.push(tile);
+    }
+  }
+  renderer.buildSites = candidateSites;
 
   element("placement-hint").hidden = false;
 
@@ -1356,9 +1368,12 @@ canvas.addEventListener("pointermove", (event) => {
       friendly: rejection === null,
     };
 
+    const currentCost =
+      empireModel()?.buildChoice(placementType, placementAge)?.cost?.gold ??
+      BUILDING_RULES[placementType].cost;
     element("placement-hint").textContent =
       rejection ??
-      `Place ${BUILDING_RULES[placementType].name} · ${BUILDING_RULES[placementType].cost} gold`;
+      `Place ${BUILDING_RULES[placementType].name} · ${currentCost} gold`;
   }
 
   updateTerrainHover();
@@ -1430,19 +1445,19 @@ canvas.addEventListener("pointerup", (event) => {
     const tile = renderer.tileAt(p.x, p.y);
 
     if (tile !== null) {
-      if (placementType)
-        command({
-          type: "build",
-
-          playerId: localPlayerId,
-
-          buildingType: placementType,
-
-          age: placementAge,
-
-          tile,
-        });
-      else command({ type: "unload", playerId: localPlayerId, shipId: landingShip!, tile });
+      if (placementType) {
+        const now = performance.now();
+        if (now - lastPlacementTime >= 80) {
+          lastPlacementTime = now;
+          command({
+            type: "build",
+            playerId: localPlayerId,
+            buildingType: placementType,
+            age: placementAge,
+            tile,
+          });
+        }
+      } else command({ type: "unload", playerId: localPlayerId, shipId: landingShip!, tile });
 
       cancelPlacement();
     }

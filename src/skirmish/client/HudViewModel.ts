@@ -695,7 +695,7 @@ export class HudViewModel {
         (other) => other.remainingTicks === 0,
       ).length;
       const remaining = stack.reduce(
-        (maximum, other) => Math.max(maximum, other.remainingTicks),
+        (sum, other) => sum + other.remainingTicks,
         0,
       );
       return {

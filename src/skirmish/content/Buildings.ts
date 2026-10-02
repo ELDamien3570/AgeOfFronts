@@ -69,19 +69,28 @@ export function buildingTechnology(
     return index === 6 ? null : technologyAt(age, "warfare", 4).id;
   return technologyAt(age, "warfare", 4).id;
 }
-export function buildingCost(type: BuildingType, age: Age): Cost {
+export function buildingCostMultiplier(existingCount = 0): number {
+  return Math.min(4, 1 + Math.max(0, existingCount) * 0.3);
+}
+
+export function buildingCost(
+  type: BuildingType,
+  age: Age,
+  existingCount = 0,
+): Cost {
   const index = AGES.indexOf(age),
-    cost = BUILDING_RULES[type].cost * (1 + index);
+    multiplier = buildingCostMultiplier(existingCount),
+    cost = Math.round(BUILDING_RULES[type].cost * (1 + index) * multiplier);
   const items: Cost["items"] =
     type === "tower" && index
-      ? { stone: 10 * index }
+      ? { stone: Math.round(10 * index * multiplier) }
       : [
             "gun-nest",
             "missile-defence",
             "missile-silo",
             "mirv-launcher",
           ].includes(type)
-        ? { steel: 40 }
+        ? { steel: Math.round(40 * multiplier) }
         : undefined;
   return { gold: cost, items };
 }

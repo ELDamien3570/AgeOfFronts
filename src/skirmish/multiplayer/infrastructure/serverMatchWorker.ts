@@ -141,8 +141,7 @@ parentPort.on(
             if (
               !Number.isInteger(request.ticks) ||
               request.ticks < 1 ||
-              request.ticks > MAX_ADVANCE_TICKS ||
-              request.commands.length > 100
+              request.ticks > MAX_ADVANCE_TICKS
             )
               throw new Error("Invalid match advance");
             for (const id of request.disconnectedPlayerIds) {
@@ -150,7 +149,8 @@ parentPort.on(
               if (player) match.setAiController(id, true);
             }
             const rejectedCommands: MatchAdvance["rejectedCommands"] = [];
-            for (const item of request.commands) {
+            const commands = request.commands.slice(0, 100);
+            for (const item of commands) {
               const player = match.player(item.command.playerId);
               const rejection =
                 !player || player.ai

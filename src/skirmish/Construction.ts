@@ -3,6 +3,7 @@ import type { BuildingIndex } from "./BuildingIndex";
 import type { Building, BuildingType, Player } from "./Protocol";
 import { BUILDING_RULES, BUILDING_SPACING } from "./Rules";
 import { coastalRanges } from "./content/CoastalTerritory";
+import { buildingCostMultiplier } from "./content/Buildings";
 import { coastalWaterDistances } from "./domain/CoastalReach";
 
 // Shared domain validation also drives placement previews. A preview is advisory;
@@ -10,7 +11,12 @@ import { coastalWaterDistances } from "./domain/CoastalReach";
 export function constructionRejection(
   map: GameMap,
   owners: Uint8Array,
-  buildings: readonly Building[] | Pick<BuildingIndex, "nearby">,
+  buildings:
+    | readonly Building[]
+    | (Pick<BuildingIndex, "nearby"> & {
+        at?(tile: number): readonly Building[];
+        countOfType?(playerId: number, type: BuildingType): number;
+      }),
   player: Player | undefined,
   type: BuildingType,
   tile: number,
@@ -34,6 +40,15 @@ export function constructionRejection(
     return "Oil rigs need claimed coastal water within the offshore oil band";
   if (type === "port" && !map.neighbors(tile).some((n) => map.isWater(n)))
     return "Ports need a land tile directly beside water";
+  const stack = Array.isArray(buildings)
+    ? (buildings as readonly Building[]).filter((b) => b.tile === tile)
+    : "at" in buildings && typeof buildings.at === "function"
+      ? (buildings.at(tile) ?? [])
+      : [];
+  if (stack.length > 0 && stack[0].type !== type)
+    return "Only buildings of the same type can share a tile";
+  if (stack.length >= 10)
+    return "A single site can support at most 10 stacked buildings";
   const nearby =
     "nearby" in buildings
       ? buildings.nearby(tile, BUILDING_SPACING)
@@ -45,7 +60,17 @@ export function constructionRejection(
     } else if (map.euclideanDistSquared(b.tile, tile) < BUILDING_SPACING ** 2)
       return "Leave at least three tiles between separate building sites";
   }
-  if (player.gold < BUILDING_RULES[type].cost)
+  const existingCount = Array.isArray(buildings)
+    ? (buildings as readonly Building[]).filter(
+        (b) => b.playerId === player.id && b.type === type,
+      ).length
+    : "countOfType" in buildings && typeof buildings.countOfType === "function"
+      ? buildings.countOfType(player.id, type)
+      : 0;
+  const cost = Math.round(
+    BUILDING_RULES[type].cost * buildingCostMultiplier(existingCount),
+  );
+  if (player.gold < cost)
     return "Not enough gold for this building";
   return null;
 }

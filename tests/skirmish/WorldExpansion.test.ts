@@ -324,7 +324,7 @@ describe("stacked buildings and large fleets", () => {
     match.owners[tile] = 1;
     player.gold = 100000;
     const before = player.gold;
-    for (let i = 0; i < 40; i++)
+    for (let i = 0; i < 10; i++)
       expect(
         match.applyCommand({
           type: "build",
@@ -333,10 +333,21 @@ describe("stacked buildings and large fleets", () => {
           tile,
         }),
       ).toBeNull();
-    expect(player.gold).toBe(before - 40 * BUILDING_RULES.city.cost);
+    const expectedCost = Array.from({ length: 10 }, (_, i) =>
+      Math.round(BUILDING_RULES.city.cost * (1 + i * 0.3)),
+    ).reduce((a, b) => a + b, 0);
+    expect(player.gold).toBe(before - expectedCost);
+    expect(
+      match.applyCommand({
+        type: "build",
+        playerId: 1,
+        buildingType: "city",
+        tile,
+      }),
+    ).toBe("A single site can support at most 10 stacked buildings");
     const cities = match.buildings.filter((b) => b.tile === tile);
-    expect(cities).toHaveLength(40);
-    expect(new Set(cities.map((b) => b.id)).size).toBe(40);
+    expect(cities).toHaveLength(10);
+    expect(new Set(cities.map((b) => b.id)).size).toBe(10);
     expect(
       match.applyCommand({
         type: "build",
@@ -354,13 +365,13 @@ describe("stacked buildings and large fleets", () => {
         tile: tile + 1,
       }),
     ).toMatch(/three tiles/);
-    for (let i = 0; i < BUILDING_RULES.city.ticks - 1; i++) match.step();
-    const beforeIncome = player.reserves;
+    for (let i = 0; i < 10 * BUILDING_RULES.city.ticks - 1; i++) match.step();
+    const beforeIncome = (player.reserves = 0);
     match.step();
     expect(player.reserves - beforeIncome).toBe(
       40 +
         Math.floor(player.land / 20) +
-        40 * BUILDING_RULES.city.reserveIncome,
+        10 * BUILDING_RULES.city.reserveIncome,
     );
     const s = selection();
     s.selectedBuilding = cities[0].id;
@@ -368,10 +379,10 @@ describe("stacked buildings and large fleets", () => {
       new SkirmishViewModel(match.snapshot(), s),
     ).selectionCard(null);
     if (card.mode !== "detail") throw new Error("Expected stack card");
-    expect(card.card.count).toBe(40);
+    expect(card.card.count).toBe(10);
     expect(
       card.card.stats.find((s) => s.label === "Combined reserve income")?.value,
-    ).toBe("+1,600 / sec");
+    ).toBe("+400 / sec");
   });
   it("captures every copy while preserving independent construction progress", () => {
     const match = plains(),
@@ -394,13 +405,10 @@ describe("stacked buildings and large fleets", () => {
     for (let i = 0; i < 60; i++) match.step();
     const stack = match.buildings.filter((b) => b.tile === tile);
     expect(stack).toHaveLength(3);
-    expect(
-      stack.every(
-        (b) =>
-          b.playerId === 2 &&
-          b.remainingTicks === BUILDING_RULES.city.ticks - 60,
-      ),
-    ).toBe(true);
+    expect(stack.every((b) => b.playerId === 2)).toBe(true);
+    expect(stack[0].remainingTicks).toBe(BUILDING_RULES.city.ticks - 60);
+    expect(stack[1].remainingTicks).toBe(BUILDING_RULES.city.ticks);
+    expect(stack[2].remainingTicks).toBe(BUILDING_RULES.city.ticks);
   });
   it("admits exactly 64 ships and rejects the next purchase without spending", () => {
     const data = new Uint8Array(100 * 80).fill(133);

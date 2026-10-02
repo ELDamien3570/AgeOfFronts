@@ -258,8 +258,10 @@ export function createCoordinatorServer(options: CoordinatorServerOptions) {
           session.windowAt = now();
           session.count = 0;
         }
-        if (++session.count > 30) {
-          client.close(1008, "Too many requests");
+        if (++session.count > 50) {
+          if (session.count > 100) {
+            client.close(1008, "Too many requests");
+          }
           return;
         }
         if ("matchId" in message) {
