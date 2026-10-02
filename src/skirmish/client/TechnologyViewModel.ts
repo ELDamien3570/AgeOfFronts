@@ -24,7 +24,7 @@ export class TechnologyViewModel {
         nodes: nodes.map((n) => ({
           ...n,
           status: n.completed
-            ? STARTING_TECHNOLOGIES.includes(n.id)
+            ? (STARTING_TECHNOLOGIES.includes(n.id) || (n.age === (this.empire.expansion.startingAge ?? "StoneAge") && n.slot === 1))
               ? "Starting grant"
               : "Completed"
             : n.researching

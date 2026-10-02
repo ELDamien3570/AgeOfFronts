@@ -14,7 +14,7 @@ import { OnlineLobbyConnection } from "./lobby/OnlineLobbyConnection";
 
 const MAX_PENDING_STATES = 8;
 const MAX_PENDING_BYTES=16*1024*1024;
-interface DecodedState {packet:SnapshotPacket;snapshot?:Snapshot;canonicalSequence?:number;decodeMs?:number;applyMs?:number;decodeStats?:StateDecodeStats;}
+interface DecodedState {canonicalOnly?:boolean;packet:SnapshotPacket;snapshot?:Snapshot;canonicalSequence?:number;decodeMs?:number;applyMs?:number;decodeStats?:StateDecodeStats;}
 interface Presentation {data:Extract<WorkerResponse,{type:"state"}>;sequence?:number;}
 
 /** Thin presentation client. The server alone advances the simulation. */
@@ -44,6 +44,8 @@ export class OnlineMatchSession {
   private flowEpoch=0;
   private presenting?:Promise<void>;
   private latestPresentation?:Presentation;
+  private pendingView?: { generation: number; paused: boolean };
+  private presentationScheduled = false;
   readonly diagnostics={pendingStates:0,pendingBytes:0,oldestAgeMs:0,decodeMs:0,applyMs:0,presentationMs:0,coalesced:0,recoveries:0,wireBytes:0,decodedArrayBytes:0,metadataBytes:0,metadataTokens:0};
   private initialized = false;
   private stopped = false;
@@ -205,19 +207,22 @@ export class OnlineMatchSession {
       requestId: crypto.randomUUID(),
     } as Parameters<OnlineLobbyConnection["request"]>[0]);
   }
-  private decode(packet: EncodedState): Promise<DecodedState> {
+  private decode(packet: EncodedState, presentation = true): Promise<DecodedState> {
+    return this.decoderRequest({ ...packet, expectedMap: this.expectedMap, presentation });
+  }
+  private decoderRequest(message: unknown): Promise<DecodedState> {
     return new Promise((resolve, reject) => {
       if (!this.decoder || this.decoding) {
         reject(new Error("State decoder is unavailable"));
         return;
       }
       this.decoding = { resolve, reject };
-      this.decoder.postMessage({...packet, expectedMap: this.expectedMap});
+      this.decoder.postMessage(message);
     });
   }
   private recover():void {
     if(this.recovering || this.stopped)return;
-    this.recovering=true;this.receiveGeneration++;this.latestPresentation=undefined;this.diagnostics.recoveries++;
+    this.recovering=true;this.receiveGeneration++;this.latestPresentation=undefined;this.pendingView=undefined;this.diagnostics.recoveries++;
     this.setCommandsAvailable(false);this.status("Catching up with the match · requesting a fresh state…");
     void this.request({type:"match-state-resync",matchId:this.matchId}).catch(error=>this.fail(error.message));
   }
@@ -231,9 +236,28 @@ export class OnlineMatchSession {
     this.presenting=task;
     void task.catch(error=>this.fail(error.message)).finally(()=>{
       if(this.presenting!==task)return;this.presenting=undefined;
-      const next=this.latestPresentation;this.latestPresentation=undefined;if(next && !this.stopped)this.present(next);
+      const next=this.latestPresentation;this.latestPresentation=undefined;
+      if(next && !this.stopped)this.present(next);
+      else this.scheduleLatestPresentation();
     });
     return task;
+  }
+  private scheduleLatestPresentation(): void {
+    if (this.presentationScheduled || this.presenting || !this.pendingView || this.recovering || this.stopped) return;
+    this.presentationScheduled = true;
+    // Shares the decode chain, so an explicit projection cannot race a network
+    // decode or be mistaken for that decode's result.
+    this.incoming = this.incoming.then(async () => {
+      this.presentationScheduled = false;
+      if (this.presenting || this.recovering || this.stopped) return;
+      const context = this.pendingView; this.pendingView = undefined;
+      if (!context) return;
+      const decoded = await this.decoderRequest({ type: "presentation" });
+      if (this.stopped || context.generation !== this.receiveGeneration) return;
+      if (!decoded.snapshot) throw new Error("Missing canonical presentation");
+      this.queuePresentation({ data: { type: "state", packet: decoded.packet, snapshot: decoded.snapshot,
+        paused: context.paused, speed: 1 }, sequence: decoded.canonicalSequence });
+    }).catch(error => this.fail(error.message));
   }
   private queuePresentation(update:Presentation):void {
     if(this.presenting){if(this.latestPresentation)this.diagnostics.coalesced++;this.latestPresentation=update;}
@@ -328,7 +352,7 @@ export class OnlineMatchSession {
           "Synchronizing your empire… Commands unlock when synchronization completes.",
         );
       }
-      const decoded = await this.decode(message.packet),packet=decoded.packet;
+      const decoded = await this.decode(message.packet, !!message.syncId || !!message.rebase || !this.presenting),packet=decoded.packet;
       if (this.stopped) return;
       if(this.recovering && !message.rebase)return;
       if (
@@ -355,7 +379,13 @@ export class OnlineMatchSession {
           "The match view is unavailable. Return to the lobby to rejoin.",
         );
       const update:Presentation={data:{type:"state",packet,snapshot:decoded.snapshot,paused:message.paused,speed:1},sequence:decoded.canonicalSequence};
-      if(message.syncId || message.rebase){
+      if (decoded.snapshot) this.pendingView = undefined;
+      if (decoded.canonicalOnly) {
+        if (message.syncId || message.rebase) throw new Error("A synchronization baseline requires presentation");
+        this.pendingView = { generation: this.receiveGeneration, paused: message.paused };
+        this.diagnostics.coalesced++;
+        this.scheduleLatestPresentation();
+      } else if(message.syncId || message.rebase){
         await this.presenting;if(this.stopped)return;this.latestPresentation=undefined;
         await this.present(update);
         if(message.rebase){this.recovering=false;this.setCommandsAvailable(!message.paused && !this.pendingSync);}
