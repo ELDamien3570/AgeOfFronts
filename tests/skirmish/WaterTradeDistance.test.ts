@@ -3,7 +3,7 @@ import { GameMapImpl } from "../../src/core/game/GameMap";
 import { FIXED } from "../../src/skirmish/Protocol";
 import { Skirmish } from "../../src/skirmish/Simulation";
 
-function route(distance: number, inland = 0, foreign = false) {
+function route(distance: number, inland = 0, foreign = true) {
   const terrain = new Uint8Array(140 * 40).fill(133);
   for (let y = 20; y < 30; y++)
     for (let x = 0; x < 140; x++) terrain[y * 140 + x] = 0;
@@ -38,7 +38,7 @@ function route(distance: number, inland = 0, foreign = false) {
   };
   const factory = add("factory", 10, 19 - inland);
   add("port", 10, 19);
-  add("port", 10 + distance, 19, foreign ? 2 : 1);
+  const destination = add("port", 10 + distance, 19, foreign ? 2 : 1);
   const e = m.expansion!;
   e.progression.states[1].completed.push(
     "stoneage-cargo-canoes",
@@ -53,16 +53,59 @@ function route(distance: number, inland = 0, foreign = false) {
     for (let i = 0; i < 12000 && !e.trade.deliveredGold[1]; i++) step();
     return e.trade.deliveredGold[1];
   };
-  return { m, e, step, firstDelivery };
+  return { m, e, step, firstDelivery, destination };
 }
 
 describe("water trade distance pricing", () => {
   it("pays for loading-port separation with no base payout", () => {
-    expect(route(2).firstDelivery()).toBe(10);
-    expect(route(20).firstDelivery()).toBe(100);
-    expect(route(100).firstDelivery()).toBe(500);
-    expect(route(2, 15).firstDelivery()).toBe(10);
+    expect(route(2).firstDelivery()).toBe(25);
+    expect(route(20).firstDelivery()).toBe(250);
+    expect(route(100).firstDelivery()).toBe(1250);
+    expect(route(2, 15).firstDelivery()).toBe(25);
     expect(route(2, 0, true).firstDelivery()).toBe(25);
+  });
+  it("does not deliver water trade to another port belonging to the sender", () => {
+    const own = route(20, 0, false);
+    for (let i = 0; i < 6000; i++) own.step();
+    expect(own.e.trade.deliveredGold[1] ?? 0).toBe(0);
+    expect(own.e.trade.actors.every((actor) => actor.delivered === 0)).toBe(
+      true,
+    );
+  });
+  it("still delivers to an allied foreign faction", () => {
+    const allied = route(2);
+    expect(
+      allied.e.diplomacy.action(
+        allied.m.players[0],
+        allied.m.players[1],
+        "offer",
+        0,
+      ),
+    ).toBeNull();
+    expect(
+      allied.e.diplomacy.action(
+        allied.m.players[1],
+        allied.m.players[0],
+        "accept",
+        0,
+      ),
+    ).toBeNull();
+    expect(allied.firstDelivery()).toBe(35);
+  });
+  it("returns cargo without payment when a foreign destination becomes domestic in transit", () => {
+    const captured = route(20);
+    for (let i = 0; i < 100 && !captured.e.trade.actors[0]?.cargo; i++)
+      captured.step();
+    const actor = captured.e.trade.actors[0];
+    expect(actor.stops).toContain(captured.destination.id);
+    expect(actor.cargo).toBeGreaterThan(0);
+    captured.destination.playerId = 1;
+    for (let i = 0; i < 1000 && !actor.returned; i++) captured.step();
+    expect(actor.returned).toBe(actor.loaded);
+    expect(actor.returned).toBeGreaterThan(0);
+    expect(actor.cargo).toBe(0);
+    expect(actor.delivered).toBe(0);
+    expect(captured.e.trade.deliveredGold[1] ?? 0).toBe(0);
   });
   it("bounds five-minute adjacent foreign trade without rewarding faster cycles", () => {
     const near = route(2, 0, true),

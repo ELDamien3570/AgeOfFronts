@@ -141,7 +141,9 @@ export class Trade {
           (actor.naval
             ? b.type === "port"
             : b.type === "city" || (!prize && b.type === "port")) &&
-          (!prize || b.playerId === actor.playerId) &&
+          (prize
+            ? b.playerId === actor.playerId
+            : !actor.naval || b.playerId !== actor.playerId) &&
           !actor.visited.includes(b.id),
       )
       .map((building) => ({
@@ -211,9 +213,14 @@ export class Trade {
     return { best: best.slice(0, count), known: known.sort(byLength) };
   }
   private select(actor: TradeActor, known?: Routed[]): void {
-    // Removed stops cannot hold a finite shipment open forever.
+    // Removed or newly captured domestic stops cannot hold a shipment open.
     actor.stops = actor.stops.filter((id) =>
-      this.world.buildings.some((b) => b.id === id && !b.remainingTicks),
+      this.world.buildings.some(
+        (b) =>
+          b.id === id &&
+          !b.remainingTicks &&
+          (!actor.naval || b.playerId !== actor.playerId),
+      ),
     );
     let next: { building: Building; path: number[] } | undefined;
     if (actor.state === "prize")
@@ -577,6 +584,12 @@ export class Trade {
         continue;
       }
       if (actor.visited.includes(destination.id)) {
+        this.select(actor);
+        continue;
+      }
+      // Ownership may change while a ship is travelling. Returning cargo and
+      // captured prizes are handled above; domestic water deliveries never pay.
+      if (actor.naval && destination.playerId === player.id) {
         this.select(actor);
         continue;
       }

@@ -5,7 +5,9 @@
 Provisioned on 2026-10-01 in US East (Ashburn), the tenancy's home region:
 instance `ageoffronts`, reserved public IP `129.158.227.109`, private IP
 `10.0.0.171`. The application revision is
-`b57bb4f6a7f1cc5bf0c96d5772ac3e0d3d3e5713` on `codex/oracle-hosting`.
+`ce5a316f3c8ed62be58637a63c5d222978a40dd0` from `main`, including military
+modernization, distance-priced water trade, Old World, New World and Valles
+Kairulia. Follow the [redeployment guide](OracleRedeploymentGuide.md) for updates.
 The administrator key is stored locally at
 `C:\Users\Damien\.ssh\ageoffronts_oracle`; never publish it.
 SSH ingress is restricted to the administrator's current public IP. If that
@@ -19,7 +21,8 @@ The initial independent full boot-volume backup is
 
 Verified trusted HTTPS and WSS on `www.ageoffronts.com`: two independent guests
 joined the same match, the camp placement window was 10 seconds, and server
-fallback delivered identical state to both guests through tick 4. A browser
+workers delivered identical state to both guests through tick 4 and continued
+through tick 32 after one disconnected, on each of the three new maps. A browser
 completed an online match and connected to the production lobby without console
 errors. The configured admission ceiling remains one match; these checks do not
 establish a maximum supported player count or load-tested capacity.
@@ -86,9 +89,9 @@ the actual VM. The server-authoritative implementation in this branch runs
 the world in one reserved server worker; browsers only submit commands and
 render updates. It intentionally has no player reconnect, host migration,
 replay ledger or server-failure recovery. Restarting loses active matches, so
-coordinate updates when matches have finished. The deployment record above
-describes the previously deployed revision; a local implementation change
-does not deploy it. See [runtime notes](ServerAuthoritativeMultiplayer.md).
+coordinate updates when matches have finished. The release script checks active
+matches but does not lock admissions during the restart window. See
+[runtime notes](ServerAuthoritativeMultiplayer.md).
 
 Always Free capacity may be unavailable and idle free instances can be reclaimed.
 An Always Free VM is suitable for a small launch; it does not establish high

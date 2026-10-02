@@ -14,7 +14,12 @@ Bronze Age and later technologies that unlock military infrastructure cost twice
 their previous gold price. Research time and technology-speed scaling retain
 their existing rules; there is no per-building charge.
 
-Water deliveries pay cargo base value times the existing ownership/alliance
+Water trade delivers only to ports owned by another faction, including allies.
+Own ports remain valid for loading, returning unsold cargo and captured-prize
+settlement. If a destination port becomes domestic while a ship is en route,
+the ship skips that stop without a trade payout.
+
+Water deliveries pay cargo base value times the existing foreign/alliance
 multiplier times **1% per tile between the loading port and destination port**,
 capped at 200%. Distance rounds down to whole tiles. There is no minimum base
 payout, and an inland factory does not contribute distance. Distance is direct

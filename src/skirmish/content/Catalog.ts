@@ -107,6 +107,7 @@ export const CONTENT_HASH = hash({
     reserves: RESERVE_GROWTH,
     startingTroops: STARTING_AGE_TROOPS,
     waterTrade: WATER_TRADE_PRICING,
+    waterTradeDestinations: "foreign-only",
     militaryInfrastructureRevision: 1,
   },
 });
