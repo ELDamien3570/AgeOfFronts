@@ -52,12 +52,14 @@ export interface MatchAdvance {
   rejectedCommands: { id: string; playerId: number; message: string }[];
   commandOutcomes?: CommandOutcome[];
 }
+export interface MatchPublication { tick: number; packet: EncodedState }
 export interface ClientBaseline {tick:number;winner:number|null;baseline:EncodedState;}
 export const MAX_ADVANCE_TICKS = 4;
 export const MAX_COMMAND_BATCH = 100;
 export type ExecutorRequest =
   | {
       type: "initialize" | "prepare";
+      streamPublications?: boolean;
       settings: LobbySettings;
       options: MatchOptions;
       map?: RuntimeMap;
@@ -91,6 +93,7 @@ export type ExecutorResult =
 
 /** One isolated worker owns and advances the authoritative simulation. */
 export interface MatchExecutor {
+  onPublication?(listener: (publication: MatchPublication) => void): () => void;
   request<T extends ExecutorResult>(request: ExecutorRequest): Promise<T>;
   close(): Promise<void>;
 }
