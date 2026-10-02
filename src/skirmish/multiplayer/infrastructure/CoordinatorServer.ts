@@ -405,14 +405,8 @@ export function createCoordinatorServer(options: CoordinatorServerOptions) {
           match.connected(session.guestId) ||
           match.isAdmitting(session.guestId),
       );
-      if (
-        active &&
-        (active.isLoaded(session.guestId) ||
-          active.isAdmitting(session.guestId))
-      ) {
-        rooms.disconnect(session.guestId, now());
-        void active.disconnect(session.guestId);
-      } else if (!active) rooms.disconnect(session.guestId, now());
+      rooms.disconnect(session.guestId, now());
+      if (active) void active.disconnect(session.guestId);
       options.store.write(rooms.snapshot());
       publish();
     });
