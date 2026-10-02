@@ -36,7 +36,7 @@ describe("battlefield research drawer", () => {
         .filter((n) => n.status === "Starting grant")
         .map((n) => n.id)
         .sort(),
-    ).toEqual(["stoneage-flint-weapons", "stoneage-settlements"]);
+    ).toEqual(["stoneage-cargo-canoes", "stoneage-flint-weapons", "stoneage-settlements"]);
     const future = new TechnologyViewModel(vm(), "Modern");
     expect(future.trees.flatMap((t) => t.nodes).every((n) => n.reason)).toBe(
       true,
@@ -106,7 +106,7 @@ describe("battlefield research drawer", () => {
     view.toggle("technology");
     root.querySelector<HTMLElement>(".technology-tree-scroll")!.scrollTop = 200;
     root
-      .querySelector<HTMLButtonElement>('[data-node="stoneage-cargo-canoes"]')!
+      .querySelector<HTMLButtonElement>('[data-node="stoneage-shorecraft"]')!
       .click();
     const details = root.querySelector<HTMLElement>(".technology-detail")!;
     expect(details.closest(".technology-tree-scroll")).toBeNull();
@@ -120,7 +120,7 @@ describe("battlefield research drawer", () => {
     research.click();
     expect(
       m.expansion!.progression.states[1].research.naval?.technologyId,
-    ).toBe("stoneage-cargo-canoes");
+    ).toBe("stoneage-shorecraft");
     view.update(vm());
     view.toggle("technology");
     view.toggle("technology");

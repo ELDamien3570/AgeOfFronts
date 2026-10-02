@@ -32,7 +32,7 @@ describe("quick research opportunities", () => {
   it("shows unlocked branches but excludes completed, future, and missing-prerequisite nodes", () => {
     const { cards } = fixture();
     expect(cards().map((c) => c.id)).toEqual([
-      "stoneage-cargo-canoes",
+      "stoneage-shorecraft",
       "stoneage-spear-throwing",
       "stoneage-horsemanship",
       "stoneage-craft-workshops",
@@ -41,12 +41,12 @@ describe("quick research opportunities", () => {
   });
   it("shows nodes only with sufficient funds and uses the shared tech-speed quote", () => {
     const { m, cards } = fixture(3);
-    m.players[0].gold = 99;
-    expect(cards().some((c) => c.id === "stoneage-cargo-canoes")).toBe(false);
-    m.players[0].gold = 100;
-    const node = cards().find((c) => c.id === "stoneage-cargo-canoes")!;
-    expect(node.gold).toBe(100);
-    expect(node.seconds).toBe(12);
+    m.players[0].gold = 66;
+    expect(cards().some((c) => c.id === "stoneage-shorecraft")).toBe(false);
+    m.players[0].gold = 67;
+    const node = cards().find((c) => c.id === "stoneage-shorecraft")!;
+    expect(node.gold).toBe(67);
+    expect(node.seconds).toBe(10);
     expect(node.reason).toBeNull();
     m.players[0].gold = 0;
     expect(cards()).toEqual([]);
@@ -57,18 +57,18 @@ describe("quick research opportunities", () => {
       m.applyCommand({
         type: "research",
         playerId: 1,
-        technologyId: "stoneage-cargo-canoes",
+        technologyId: "stoneage-shorecraft",
       }),
     ).toBeNull();
     expect(cards().some((c) => c.tree === "naval")).toBe(false);
     const progression = m.expansion!.progression.states[1];
-    progression.completed.push("stoneage-cargo-canoes");
+    progression.completed.push("stoneage-shorecraft");
     delete progression.research.naval;
     expect(
       cards()
         .filter((c) => c.tree === "naval")
         .map((c) => c.id),
-    ).toEqual(["stoneage-shorecraft"]);
+    ).toEqual(["stoneage-war-canoes"]);
   });
   it("includes unfinished older-age research and uses the local player rather than player one", () => {
     const { m, vm } = fixture();
@@ -98,16 +98,16 @@ describe("quick research opportunities", () => {
     });
     view.update(vm());
     const button = main.querySelector<HTMLButtonElement>(
-      '[data-quick-research="stoneage-cargo-canoes"]',
+      '[data-quick-research="stoneage-shorecraft"]',
     )!;
     expect(button.disabled).toBe(false);
     button.click();
     view.update(vm());
     expect(commands).toEqual([
-      { type: "research", playerId: 1, technologyId: "stoneage-cargo-canoes" },
+      { type: "research", playerId: 1, technologyId: "stoneage-shorecraft" },
     ]);
     expect(
-      main.querySelector('[data-quick-research="stoneage-cargo-canoes"]'),
+      main.querySelector('[data-quick-research="stoneage-shorecraft"]'),
     ).toBeNull();
     expect(
       main.querySelector('[data-quick-research="stoneage-horsemanship"]'),

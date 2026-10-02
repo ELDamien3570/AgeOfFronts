@@ -66,6 +66,7 @@ describe("independent trade unlocks", () => {
   });
   it("unlocks a water trader with Cargo Canoes without Goods Handling", () => {
     const { m, dispatch, research } = fixture(true);
+    research.splice(research.indexOf("stoneage-cargo-canoes"), 1);
     research.push("stoneage-craft-workshops");
     dispatch();
     expect(m.expansion!.trade.actors).toHaveLength(0);

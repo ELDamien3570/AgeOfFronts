@@ -124,7 +124,7 @@ describe("atomic live-join runtime", () => {
             command: {
               type: "research",
               playerId: 1,
-              technologyId: "stoneage-cargo-canoes",
+              technologyId: "stoneage-shorecraft",
             },
           },
         ],
@@ -160,7 +160,7 @@ describe("atomic live-join runtime", () => {
       );
       expect(
         Object.values(baseline.expansion!.progression[1].research).some(
-          (job) => job?.technologyId === "stoneage-cargo-canoes",
+          (job) => job?.technologyId === "stoneage-shorecraft",
         ),
       ).toBe(true);
       const status = await worker.request<SeatStatus>({ type: "seat-status" });

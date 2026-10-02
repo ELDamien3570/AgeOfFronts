@@ -32,6 +32,26 @@ function fixture() {
   };
 }
 describe("real network state decode worker", () => {
+  it("applies hidden canonical updates without cloning views and projects the latest state on demand", async () => {
+    const surface = await worker(), { match, encoder, expectedMap } = fixture();
+    const tile = match.map.ref(30, 20), original = match.owners[tile];
+    surface.onmessage!({ data: { ...(await encodeState(encoder.encode(match.snapshot()))), expectedMap } });
+    await vi.waitFor(() => expect(surface.postMessage).toHaveBeenCalledTimes(1));
+    surface.onmessage!({ data: { type: "presented", sequence: 1 } });
+    match.owners[tile] = original === 1 ? 2 : 1; match.tick = 1;
+    surface.onmessage!({ data: { ...(await encodeState(encoder.encode(match.snapshot()))), expectedMap, presentation: false } });
+    match.owners[tile] = original; match.tick = 2;
+    surface.onmessage!({ data: { ...(await encodeState(encoder.encode(match.snapshot()))), expectedMap, presentation: false } });
+    await vi.waitFor(() => expect(surface.postMessage).toHaveBeenCalledTimes(3));
+    for (const call of surface.postMessage.mock.calls.slice(1)) {
+      expect(call[0].canonicalOnly).toBe(true); expect(call[0].snapshot).toBeUndefined(); expect(call).toHaveLength(1);
+    }
+    surface.onmessage!({ data: { type: "presentation" } });
+    await vi.waitFor(() => expect(surface.postMessage).toHaveBeenCalledTimes(4));
+    const latest = surface.postMessage.mock.calls[3][0];
+    expect(latest.snapshot.tick).toBe(2); expect(latest.snapshot.owners[tile]).toBe(original);
+    expect(latest.snapshot.changedTiles).toContain(tile); expect(latest.canonicalSequence).toBe(3);
+  });
   it("decodes queued updates in order, publishes isolated complete views and exposes structural allocation stats", async () => {
     const surface = await worker(),
       { match, encoder, expectedMap } = fixture();
