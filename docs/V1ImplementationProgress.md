@@ -62,7 +62,8 @@ and never-run checks rather than calling a partial run a pass.
 | 5b | Independent dirty-tile journal and snapshot extraction | Passed; 993 tests; independent bounded cursors, restore/overflow fallback and network-only borrowed terrain fields |
 | 7a | Geographic diplomacy and recipient cooldowns | Passed; 997 tests; maintained land borders, bounded same-sea port facts, checkpointed recipient cooldowns |
 | 7b | Optional AI operations and local defensive wake | Passed initial policy; 1003 tests, deterministic single offensive commitment, declarations, recovery, local multi-aggressor defence and footprint guards |
-| 8a | Stable terrain-aware defence fronts and staffed Modern sections | Pending; terrain outlines, access/gates, reserves, withdrawal/reuse and funded bounded work |
+| 8a1 | Terrain-aware city enclosure planning | Passed; 1006 tests, resumable terrain-band search/copy/outline, exact paid links and friendly access |
+| 8a2 | Stable defence sectors and staffed Modern sections | Passed; 1012 tests, bounded stable sector facts, actual payment, garrison/support/reserve, withdrawal and reuse |
 | 8b | Coordinated land Armies and eleven doctrines | Pending; researched Armies, supported pushes, flank/breach/escort and recovery |
 | 8c | Economic dependency and utility decisions | Pending; bottlenecks, research/age utility, remote coast, shared cycle/risk and intended-sea quotes |
 | 8d | Complete strategic naval missions | Pending; theater ranking, combat evidence, bombardment, cargo/escort/capacity/boarding/landing and handoff |
@@ -345,3 +346,60 @@ files), TypeScript/build/whitespace and targeted lint passed. This is the initia
 operations layer: richer force/logistics readiness belongs to 8b/8d; broader
 regional lifecycle indexes, remaining bounded planners and field qualification
 remain explicit open acceptance work.
+
+### Phase 8a1 terrain-aware city enclosures
+
+City defence retains its simple exact rectangle when legal, then resumes a
+four-tile lattice search in exterior terrain bands when it is obstructed. The
+result can bend around unusable or unowned cells while enclosing the protected
+hub. Search, trace copying and final perimeter construction yield explicitly;
+a slice consumes at most 32 outline work units. Search storage and the final
+32-tower/384-cell construction limits are capped. Failed proposals back off.
+
+Actual production tower quotes still decide links and costs. Legal automatic
+shortcuts at bends are included in the paid footprint, and every intended
+circuit edge must exist before the proposal is accepted. Friendly/allied access
+uses the existing gate/passability rules. Tests independently check polygon
+containment, exact spacing, unusable cells, work bounds, checkpoint continuation
+and a real terrain-aware project through paid completion and friendly access.
+Full gate: 1006/1006 tests (155 files), TypeScript/build/whitespace and focused
+lint passed. An initial integration test correctly rejected an automatic link
+outside the planned footprint; the quote reconciliation now retains legal
+shortcuts while verifying all intended edges. Modern staffed fronts remain 8a2.
+
+### Phase 8a2 stable sectors and staffed Modern sections
+
+A constant-time shared boundary cursor feeds resumable 16-by-16 sector
+assessments. Each faction retains at most eight stable hostile sectors. Equal
+quality discoveries do not churn that shortlist; live ownership and treaty
+checks invalidate lost fronts. Sector work shares the existing 128-unit facts
+allowance without taking away the city minimum. Checkpoints retain exact scans.
+
+The Modern controller builds at most one active three-site section per faction:
+two trenches, a supported gun position and a mobile reserve, with additional
+unleased force left available. Resumable roster/threat assessments consume at
+most 32 work units per slice. Real researched construction commands own payment;
+the full unpaid useful section is reserved, approaching threats suppress unsafe
+construction, and holding requires actual garrison arrival. Control changes,
+lost fronts and depleted garrisons release unpaid funds/leases; paid buildings
+remain. A later section reuses compatible paid structures instead of buying
+duplicates. Existing friendly passability and combat remain authoritative.
+
+Tests compare border facts to an independent edge scan, restore mid-scan and
+mid-construction, prove stable bounded shortlists, verify exact 49,980 gold and
+40 steel construction payments, cover/support/reserve staffing, funding cleanup,
+takeover, withdrawal, reuse and rejection of unsupported/unsafe spending. Full
+gate: 1012/1012 tests (156 files), TypeScript/build/whitespace and focused lint
+passed. This is a completed bounded sector/section implementation, not connected
+whole-front aggregation or final performance acceptance. Broader defence
+optimization and multi-region doctrine remain handoff tasks.
+
+## Requested stopping point
+
+The user requested completion/testing of the active defence slice followed by a
+local-agent handoff, replacing further implementation in this run. Feature work
+stops after 8a2. `Optimization Handoff/` records the exact checkpoint and separate
+remaining-task plans. No later land/economy/naval phase was started. Experimental
+features remain opt-in; no deployment readiness or ARM capacity is asserted.
+Concurrent remote `Art/` additions are the user's in-progress artwork and must
+be preserved without wiring them into gameplay or treating them as this scope.
