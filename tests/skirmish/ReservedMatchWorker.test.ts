@@ -47,6 +47,7 @@ describe("reserved authoritative worker", () => {
       expect(Object.keys(update).sort()).toEqual([
         "packet",
         "rejectedCommands",
+        "seats",
         "tick",
         "winner",
       ]);

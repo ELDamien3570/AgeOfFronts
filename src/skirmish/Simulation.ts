@@ -116,7 +116,15 @@ export const WARSHIP_REPAIR_FRACTION = 0.10;
 // Fixed-step, integer-position simulation. Browser timing and rendering never
 // determine gameplay. Human and AI players enter through applyCommand().
 export class Skirmish {
-  checkpoint() { return structuredClone({version:1 as const,width:this.map.width(),height:this.map.height(),options:this.options,players:this.players,squads:this.squads,buildings:this.buildings,ships:this.ships,volleys:this.volleys,defenseZones:this.defenseZones,owners:this.owners,claims:this.claims,progress:this.progress,detours:this.detours,navigationProgress:this.navigationProgress,orderRevisions:this.orderRevisions,activeClaims:this.activeClaims,tick:this.tick,winner:this.winner,combatTicks:this.combatTicks,producedTroops:this.producedTroops,nextId:this.nextId,nextVolleyId:this.nextVolleyId,random:this.random.getState(),forest:forestOf(this.map)?.checkpoint(),routeWork:this.routeWork.checkpoint(),recruitment:this.recruitment.checkpoint(),expansion:this.expansion?.checkpoint(),territoryAbsorption:this.territoryAbsorption.checkpoint(),coastalTerritory:this.coastalTerritory.checkpoint(),homeTerritory:this.homeTerritory.checkpoint(),avoidance:this.avoidance.checkpoint(),passageTraffic:this.passageTraffic.checkpoint(),conquest:this.conquest.checkpoint()}); }
+  private readonly controlGenerations = new Map<number, number>();
+  /** Transfer control without replacing any domain state or legitimate orders. */
+  setAiController(playerId: number, ai: boolean): void {
+    const player = this.player(playerId);
+    if (!player || player.ai === ai) return;
+    player.ai = ai;
+    this.controlGenerations.set(playerId, (this.controlGenerations.get(playerId) ?? 0) + 1);
+  }
+  checkpoint() { return structuredClone({version:1 as const,width:this.map.width(),height:this.map.height(),options:this.options,players:this.players,squads:this.squads,buildings:this.buildings,ships:this.ships,volleys:this.volleys,defenseZones:this.defenseZones,owners:this.owners,claims:this.claims,progress:this.progress,detours:this.detours,navigationProgress:this.navigationProgress,orderRevisions:this.orderRevisions,controlGenerations:this.controlGenerations,activeClaims:this.activeClaims,tick:this.tick,winner:this.winner,combatTicks:this.combatTicks,producedTroops:this.producedTroops,nextId:this.nextId,nextVolleyId:this.nextVolleyId,random:this.random.getState(),forest:forestOf(this.map)?.checkpoint(),routeWork:this.routeWork.checkpoint(),recruitment:this.recruitment.checkpoint(),expansion:this.expansion?.checkpoint(),territoryAbsorption:this.territoryAbsorption.checkpoint(),coastalTerritory:this.coastalTerritory.checkpoint(),homeTerritory:this.homeTerritory.checkpoint(),avoidance:this.avoidance.checkpoint(),passageTraffic:this.passageTraffic.checkpoint(),conquest:this.conquest.checkpoint()}); }
   restore(saved: ReturnType<Skirmish["checkpoint"]>): void {
     if (saved.version!==1 || saved.width!==this.map.width() || saved.height!==this.map.height() || JSON.stringify(saved.options)!==JSON.stringify(this.options) || Boolean(saved.expansion)!==Boolean(this.expansion)) throw new Error("Checkpoint does not match this simulation");
     const state=structuredClone(saved);
@@ -134,6 +142,7 @@ export class Skirmish {
     restoreMap(this.detours,state.detours);
     restoreMap(this.navigationProgress,state.navigationProgress);
     restoreMap(this.orderRevisions,state.orderRevisions);
+    restoreMap(this.controlGenerations,state.controlGenerations ?? new Map());
     restoreSet(this.activeClaims,state.activeClaims);
     this.tick=state.tick;
     this.winner=state.winner;
@@ -317,6 +326,7 @@ export class Skirmish {
         options.seed,
         options.victoryMode,
         options.technologySpeed,
+        options.startingAge ?? "StoneAge",
       );
     this.createPlayers();
     this.expansion?.supply.ensureStartingResources(
@@ -419,6 +429,8 @@ export class Skirmish {
           this.map.euclideanDistSquared(a, base) -
             this.map.euclideanDistSquared(b, base) || a - b,
       );
+      const startingAge =
+        this.expansion.progression.states[player.id]?.age ?? "StoneAge";
       for (const tile of positions) {
         const point = tilePoint(this.map, tile);
         if (
@@ -428,7 +440,12 @@ export class Skirmish {
           )
         )
           continue;
-        this.spawnSquad(player, "infantry", tile, defaultUnit("infantry").id);
+        this.spawnSquad(
+          player,
+          "infantry",
+          tile,
+          defaultUnit("infantry", startingAge).id,
+        );
         if (this.squads.filter((s) => s.playerId === id).length === 3) break;
       }
       return;
@@ -2468,6 +2485,8 @@ export class Skirmish {
   private executeRouteTask(task: MatchRouteTask): void {
     if (task.kind === "army") { this.expansion?.armies.resolveRoute(task.request); return; }
     if (task.kind === "ai-move") {
+      const player = this.player(task.playerId);
+      if (!player?.ai || player.eliminated || (task.generation ?? 0) !== (this.controlGenerations.get(task.playerId) ?? 0)) return;
       const ready = task.squadIds.map(id => this.squad(id)).filter((s):s is Squad => Boolean(s && s.playerId === task.playerId && s.order.type === "hold" && s.embarkedOn === null));
       if (ready.length) this.applyCommand({type:"order",playerId:task.playerId,squadIds:ready.map(s => s.id),order:{type:"move",tile:task.tile}});
       return;
@@ -3158,7 +3177,7 @@ export class Skirmish {
           raid.push(squad);
           continue;
         }
-        this.routeWork.request(`ai:${squad.id}`, 1, {kind:"ai-move",playerId:player.id,squadIds:[squad.id],tile:goal});
+        this.routeWork.request(`ai:${squad.id}`, 1, {kind:"ai-move",playerId:player.id,generation:this.controlGenerations.get(player.id) ?? 0,squadIds:[squad.id],tile:goal});
       }
       // Cohorts share one long HPA corridor and only refine local connectors.
       // Group size also bounds the route-work charge of any queued command.
@@ -3168,7 +3187,7 @@ export class Skirmish {
           this.routeWork.request(
             `raid:${player.id}:${tile}:${cohort[0].id}`,
             cohort.length,
-            {kind:"ai-move",playerId:player.id,squadIds:cohort.map(s => s.id),tile},
+            {kind:"ai-move",playerId:player.id,generation:this.controlGenerations.get(player.id) ?? 0,squadIds:cohort.map(s => s.id),tile},
           );
         }
       if (develop && player.kind === "regular") this.thinkNavy(player);

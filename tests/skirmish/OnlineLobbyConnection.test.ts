@@ -116,6 +116,36 @@ describe("bounded match connection", () => {
     connection.stop();
     expect(vi.getTimerCount()).toBe(0);
   });
+  it("does not replay a watch request created by the authenticated directory callback", async () => {
+    const onDirectory = () => {
+      void connection
+        .request({
+          type: "watch-match",
+          requestId: "admission",
+          matchId: "match",
+        })
+        .catch(() => {});
+    };
+    connection = new OnlineLobbyConnection(
+      "http://localhost",
+      onDirectory,
+      vi.fn(),
+    );
+    await connection.connect();
+    Socket.instances[0].onmessage?.({
+      data: JSON.stringify({
+        type: "directory",
+        guestId: "guest",
+        now: 0,
+        state: { rooms: [] },
+        activeMatches: [],
+      }),
+    });
+    expect(Socket.instances[0].send).toHaveBeenCalledTimes(1);
+    expect(JSON.parse(Socket.instances[0].send.mock.calls[0][0])).toMatchObject(
+      { type: "watch-match", requestId: "admission" },
+    );
+  });
   it("does not open a socket after stopping during guest acquisition", async () => {
     const saved = vi.fn();
     vi.stubGlobal("localStorage", { getItem: () => null, setItem: saved });

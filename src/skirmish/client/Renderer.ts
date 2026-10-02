@@ -16,6 +16,7 @@ import { buildingArtworkId } from "./ArtworkCatalog";
 import { BoatPresentation } from "./BoatPresentation";
 import { BuildingArtwork } from "./BuildingArtwork";
 import { BuildingMarkers } from "./BuildingMarkers";
+import { BuildingSpriteLayout, fittedBuildingSprite } from "./BuildingSpriteLayout";
 import { BuildingSelectionViewModel } from "./BuildingSelectionViewModel";
 import { CampLossPresentation } from "./CampLossPresentation";
 import { CombatEffectsView } from "./CombatEffectsView";
@@ -571,15 +572,7 @@ export class Renderer {
   private buildingHalfSize(building: Snapshot["buildings"][number]): number {
     return building.type === "tower"
       ? Math.max(6, this.scale / 2)
-      : buildingSymbol(
-          this.scale,
-          !!(building.age
-            ? this.eraArtwork.get(
-                buildingArtworkId(building.type, building.age) ?? "",
-              )
-            : this.buildingArtwork.get(building.type)),
-          building.type,
-        ).size / 2;
+      : Math.max(9, this.scale / 2);
   }
 
   buildingAt(x: number, y: number): number | null {
@@ -679,6 +672,8 @@ export class Renderer {
     }
   }
 
+  private readonly buildingSpriteLayout = new BuildingSpriteLayout();
+
   private drawBuilding(
     type: BuildingType,
     p: { x: number; y: number },
@@ -695,7 +690,7 @@ export class Renderer {
       ? this.eraArtwork.get(definitionId, "idle", elapsedTicks)
       : undefined;
     const image = definitionId ? era?.source : this.buildingArtwork.get(type);
-    const { artwork, size, inset, backdropAlpha } = buildingSymbol(
+    const { artwork, size, footprintSize, inset, backdropAlpha } = buildingSymbol(
       this.scale,
       !!image,
       type,
@@ -714,27 +709,27 @@ export class Renderer {
     ctx.strokeStyle = selected ? "#fff" : color;
     ctx.lineWidth = selected ? 2.5 : 1.5;
     ctx.setLineDash(remainingTicks || ghost ? [3, 2] : []);
-    if (backdropAlpha && !marker) {
+    if (backdropAlpha && (!marker || selected || ghost)) {
       ctx.globalAlpha = backdropAlpha;
       ctx.fillStyle = artwork
         ? (BUILDING_PAD_COLORS.get(color) ?? color)
         : "#142c37";
-      ctx.fillRect(p.x - size / 2, p.y - size / 2, size, size);
+      ctx.fillRect(p.x - footprintSize / 2, p.y - footprintSize / 2, footprintSize, footprintSize);
       ctx.globalAlpha = 1;
     }
     if (artwork && image) {
+      const bounds = this.buildingSpriteLayout.visibleBounds(image, {
+        x: era?.x ?? 0, y: era?.y ?? 0,
+        width: era?.width ?? (image as HTMLImageElement).naturalWidth,
+        height: era?.height ?? (image as HTMLImageElement).naturalHeight,
+      });
+      const destination = fittedBuildingSprite(bounds, p.x, p.y, size - inset * 2);
       ctx.globalAlpha = ghost ? 0.65 : remainingTicks ? 0.55 : 1;
       ctx.imageSmoothingEnabled = true;
       ctx.drawImage(
         image,
-        era?.x ?? 0,
-        era?.y ?? 0,
-        era?.width ?? (image as HTMLImageElement).naturalWidth,
-        era?.height ?? (image as HTMLImageElement).naturalHeight,
-        p.x - size / 2 + inset,
-        p.y - size / 2 + inset,
-        size - inset * 2,
-        size - inset * 2,
+        bounds.x, bounds.y, bounds.width, bounds.height,
+        destination.x, destination.y, destination.width, destination.height,
       );
       ctx.globalAlpha = 1;
     } else if (marker) {
@@ -754,7 +749,7 @@ export class Renderer {
       ctx.globalAlpha = 1;
     }
     if (selected || ghost || (!artwork && !marker))
-      ctx.strokeRect(p.x - size / 2, p.y - size / 2, size, size);
+      ctx.strokeRect(p.x - footprintSize / 2, p.y - footprintSize / 2, footprintSize, footprintSize);
     if (remainingTicks) {
       const fraction = 1 - remainingTicks / BUILDING_RULES[type].ticks;
       ctx.fillStyle = "#10212b";
@@ -807,7 +802,10 @@ export class Renderer {
     if (frame) {
       ctx.globalAlpha = ghost ? 0.65 : remainingTicks ? 0.55 : 1;
       ctx.imageSmoothingEnabled = true;
-      this.drawWallFrame(frame, tile);
+      const bounds = this.buildingSpriteLayout.visibleBounds(frame.source, frame);
+      const destination = fittedBuildingSprite(bounds, p.x, p.y, size * 0.85);
+      ctx.drawImage(frame.source, bounds.x, bounds.y, bounds.width, bounds.height,
+        destination.x, destination.y, destination.width, destination.height);
       ctx.globalAlpha = 1;
     }
     if (selected || ghost) {

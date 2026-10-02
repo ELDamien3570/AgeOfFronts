@@ -353,6 +353,7 @@ export interface MatchOptions {
   ruleset?: "sandbox-v1" | "ages-v1";
   victoryMode?: "solo" | "allied";
   technologySpeed?: TechnologySpeed;
+  startingAge?: Age;
 }
 
 export interface Snapshot {

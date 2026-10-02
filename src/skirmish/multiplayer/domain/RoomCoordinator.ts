@@ -33,6 +33,7 @@ export interface OnlineRoom {
   createdAt: number;
 }
 export interface MatchReservation {
+  title?: string;
   id: string;
   roomId: string;
   settings: LobbySettings;
@@ -198,9 +199,7 @@ export class RoomCoordinator {
       if (room.ownerId === guestId) room.ownerMissingSince = now;
       this.updateCountdown(room, now);
     }
-    // Match seats do not reconnect in this release. Preserve a departed faction
-    // for AI takeover while anyone remains, but release an abandoned match.
-    const abandoned: string[] = [];
+    // Runtime alone owns the bounded empty-match grace and capacity release.
     for (const match of this.state.reservations) {
       const member = match.members.find(
         (candidate) => candidate.guestId === guestId,
@@ -209,11 +208,39 @@ export class RoomCoordinator {
         member.connected = false;
         member.disconnectedAt = now;
       }
-      if (!match.members.some((candidate) => candidate.connected))
-        abandoned.push(match.id);
     }
-    for (const id of abandoned) this.releaseMatch(id);
-    return abandoned;
+    return [];
+  }
+
+  claimMatchSeat(
+    id: string,
+    guestId: string,
+    profile: EmpireProfile,
+    now: number,
+  ): void {
+    const match = this.state.reservations.find(
+      (candidate) => candidate.id === id,
+    );
+    if (!match) throw new Error("This match is no longer available");
+    if (
+      this.state.reservations.some(
+        (other) =>
+          other.id !== id &&
+          other.members.some(
+            (member) => member.guestId === guestId && member.connected,
+          ),
+      )
+    )
+      throw new Error("Leave your other match before joining this one");
+    this.leave(guestId, now);
+    const member = match.members.find(
+      (candidate) => candidate.guestId === guestId,
+    );
+    if (member) {
+      member.connected = true;
+      delete member.disconnectedAt;
+    } else
+      match.members.push({ guestId, profile, joinedAt: now, connected: true });
   }
 
   reconnect(guestId: string): void {
@@ -274,6 +301,7 @@ export class RoomCoordinator {
       const match: MatchReservation = {
         id: `match-${this.state.nextSequence++}`,
         roomId: room.id,
+        title: room.title,
         settings: room.settings,
         members: structuredClone(connected),
         createdAt: now,

@@ -63,12 +63,15 @@ export class OnlineLobbyConnection {
           if (message.type === "directory") {
             clearTimeout(authenticationTimer);
             this.failures = 0;
-            this.onStatus("Connected to shared lobbies", true);
-            this.onState(message);
+            // Replay only requests that predate this connection's authentication.
+            // onState may immediately issue watch-match; replaying afterward
+            // would submit that admission twice.
             if (!authenticated)
               for (const item of this.pending.values())
                 socket.send(JSON.stringify(item.message));
             authenticated = true;
+            this.onStatus("Connected to shared lobbies", true);
+            this.onState(message);
           } else if (message.type === "ack" || message.type === "error") {
             const pending = message.requestId
               ? this.pending.get(message.requestId)

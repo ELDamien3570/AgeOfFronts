@@ -10,6 +10,7 @@ import type { Player } from "../Protocol";
 import {
   AGES,
   TREES,
+  type Age,
   type ProgressionState,
   type TechnologySpeed,
   type Tree,
@@ -25,11 +26,20 @@ export function researchTerms(
     ticks: Math.ceil(definition.ticks / speed),
   };
 }
-export function startingProgression(): ProgressionState {
+export function startingProgression(
+  startingAge: Age = "StoneAge",
+): ProgressionState {
+  const ageIndex = AGES.indexOf(startingAge);
+  const completed = new Set<string>(DEFAULT_CULTURE.startingTechnologies);
+  for (const t of TECHNOLOGIES) {
+    if (AGES.indexOf(t.age) < ageIndex) {
+      completed.add(t.id);
+    }
+  }
   return {
     cultureId: DEFAULT_CULTURE.id,
-    age: "StoneAge",
-    completed: [...DEFAULT_CULTURE.startingTechnologies],
+    age: startingAge,
+    completed: [...completed],
     research: {},
     advancement: null,
   };
@@ -83,12 +93,15 @@ export class Progression {
   }
 
   readonly states: Record<number, ProgressionState> = {};
-  constructor(readonly technologySpeed: TechnologySpeed = 1) {
+  constructor(
+    readonly technologySpeed: TechnologySpeed = 1,
+    readonly startingAge: Age = "StoneAge",
+  ) {
     if (![1, 2, 3].includes(technologySpeed))
       throw new Error("Technology speed must be 1×, 2× or 3×");
   }
-  add(playerId: number): void {
-    this.states[playerId] = startingProgression();
+  add(playerId: number, startingAge: Age = this.startingAge): void {
+    this.states[playerId] = startingProgression(startingAge);
   }
   inheritCompleted(playerId: number, donorId: number): void {
     const recipient = this.states[playerId],

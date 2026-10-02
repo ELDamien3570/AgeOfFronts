@@ -56,7 +56,7 @@ import { Trade } from "./Trade";
 import { modernizeMilitaryBuildings } from "./MilitaryInfrastructure";
 export interface ExpansionWorld extends BattleWorld, ArmyWorld {
   recruitment: Recruitment;
-  options?: { runAi?: boolean; resourceDensity?: 1 | 2 | 3 | 5; resourceOutput?: 1 | 2 | 3 | 5; alliances?: boolean };
+  options?: { runAi?: boolean; resourceDensity?: 1 | 2 | 3 | 5; resourceOutput?: 1 | 2 | 3 | 5; alliances?: boolean; startingAge?: Age };
   map: GameMap;
   owners: Uint8Array;
   claims: Uint8Array;
@@ -107,13 +107,16 @@ export class Expansion {
     if (this.events.length > 80) this.events.shift();
   }
   readonly victoryMode: "solo" | "allied";
+  readonly startingAge: Age;
   constructor(
     readonly world: ExpansionWorld,
     seed: number,
     mode: "solo" | "allied" = "solo",
     technologySpeed: TechnologySpeed = 1,
+    startingAge: Age = world.options?.startingAge ?? "StoneAge",
   ) {
-    this.progression = new Progression(technologySpeed);
+    this.startingAge = startingAge;
+    this.progression = new Progression(technologySpeed, startingAge);
     this.victoryMode = mode;
     this.fortifications = new Fortifications(world.map, this.diplomacy);
     this.supply = new Supply(world.map, this.progression, seed, world.options?.resourceDensity, world.options?.resourceOutput);
@@ -138,7 +141,11 @@ export class Expansion {
     this.armies = new Armies(world, this.progression);
   }
   add(player: Player): void {
-    this.progression.add(player.id);
+    if (player.kind === "tribe") {
+      this.progression.add(player.id, "StoneAge");
+    } else {
+      this.progression.add(player.id, this.startingAge);
+    }
     this.supply.add(player.id);
   }
   unit(squad: Squad): UnitDefinition {

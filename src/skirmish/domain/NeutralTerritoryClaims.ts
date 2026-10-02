@@ -37,13 +37,19 @@ export class NeutralTerritoryClaims {
   private rejectedRevision = 0;
   private rejected: Uint8Array;
   constructor(private readonly map: GameMap) {
-    this.rejected = new Uint8Array(map.width() * map.height());
+    this.rejected = new Uint8Array(Math.ceil((map.width() * map.height()) / 8));
   }
   checkpoint() {
     return structuredClone({
       dirty: this.dirty,
       pending: this.pending,
-      scan: this.scan ? { tiles: Uint32Array.from(this.scan.tiles), head: this.scan.head, recipient: this.scan.recipient } : undefined,
+      scan: this.scan
+        ? {
+            tiles: Uint32Array.from(this.scan.tiles),
+            head: this.scan.head,
+            recipient: this.scan.recipient,
+          }
+        : undefined,
       revision: this.revision,
       rejectedRevision: this.rejectedRevision,
       rejected: this.rejected,
@@ -53,9 +59,18 @@ export class NeutralTerritoryClaims {
     const s = structuredClone(saved);
     this.dirty = s.dirty;
     this.pending = s.pending;
-    this.scan = s.scan ? { ...s.scan, tiles: Array.from(s.scan.tiles), seen: new Set(s.scan.tiles), boundary: new Set() } : undefined;
-    if (this.scan) for (const tile of this.scan.tiles) for (const n of this.map.neighbors(tile))
-      if (!this.scan.seen.has(n)) this.scan.boundary.add(n);
+    this.scan = s.scan
+      ? {
+          ...s.scan,
+          tiles: Array.from(s.scan.tiles),
+          seen: new Set(s.scan.tiles),
+          boundary: new Set(),
+        }
+      : undefined;
+    if (this.scan)
+      for (const tile of this.scan.tiles)
+        for (const n of this.map.neighbors(tile))
+          if (!this.scan.seen.has(n)) this.scan.boundary.add(n);
     this.revision = s.revision;
     this.rejectedRevision = s.rejectedRevision;
     this.rejected = s.rejected;
@@ -80,8 +95,12 @@ export class NeutralTerritoryClaims {
     }
   }
   private discardScan() {
-    for (const tile of this.scan!.tiles) this.rejected[tile] = 1;
+    for (const tile of this.scan!.tiles)
+      this.rejected[tile >> 3] |= 1 << (tile & 7);
     this.scan = undefined;
+  }
+  private wasRejected(tile: number): boolean {
+    return Boolean(this.rejected[tile >> 3] & (1 << (tile & 7)));
   }
   step(
     tick: number,
@@ -107,7 +126,7 @@ export class NeutralTerritoryClaims {
           owners[seed] ||
           !this.map.isLand(seed) ||
           this.indexed.has(seed) ||
-          this.rejected[seed]
+          this.wasRejected(seed)
         )
           continue;
         this.scan = {
@@ -141,14 +160,15 @@ export class NeutralTerritoryClaims {
       for (const n of neighbors) {
         if (!this.map.isLand(n)) continue;
         if (!owners[n]) {
-          if (this.rejected[n] || this.indexed.has(n)) {
+          if (this.wasRejected(n) || this.indexed.has(n)) {
             invalid = true;
             break;
           }
           if (!scan.seen.has(n)) {
             scan.seen.add(n);
             scan.boundary.delete(n);
-            for (const next of this.map.neighbors(n)) if (!scan.seen.has(next)) scan.boundary.add(next);
+            for (const next of this.map.neighbors(n))
+              if (!scan.seen.has(next)) scan.boundary.add(next);
             scan.tiles.push(n);
           }
           if (scan.tiles.length > maxCells) {

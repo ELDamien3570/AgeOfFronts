@@ -7,8 +7,23 @@ import {
 import type { MatchOptions, SpawnState } from "../Protocol";
 import type { LobbySettings } from "../lobby/LobbyDirectory";
 import { LOBBY_MAP_IDS } from "../lobby/LobbyRules";
+import { AGES } from "../domain/Definitions";
 import type { EncodedState } from "./StateCodec";
 import type { CoordinatorState } from "./domain/RoomCoordinator";
+export interface LiveMatchSummary {
+  id: string;
+  title: string;
+  mapId: LobbySettings["mapId"];
+  elapsedSeconds: number;
+  connectedHumans: number;
+  humanSeats: number;
+  claimedHumanSeats?: number;
+  freeAiSeats: { playerId: number; name: string }[];
+  rejoinPlayerId?: number;
+  publicTakeover: boolean;
+  status: "running" | "syncing" | "paused";
+  graceRemainingMs?: number;
+}
 export interface MatchManifest {
   id: string;
   settings: LobbySettings;
@@ -38,6 +53,7 @@ const settings = z
     aiCount: z.number().int().min(0).max(MAX_AI_OPPONENTS),
     tribeCount: z.number().int().min(0).max(MAX_TRIBES),
     technologySpeed: z.union([z.literal(1), z.literal(2), z.literal(3)]),
+    startingAge: z.enum(AGES).optional(),
     resourceDensity: z.union([
       z.literal(1),
       z.literal(2),
@@ -52,10 +68,20 @@ const settings = z
     ]),
     alliances: z.boolean(),
     victory: z.enum(["solo", "allied"]),
+    publicAiTakeover: z.boolean().optional(),
   })
   .strict();
 const requestId = z.string().regex(/^[a-zA-Z0-9-]{1,80}$/u);
 export const clientMessageSchema = z.discriminatedUnion("type", [
+  z
+    .object({
+      type: z.literal("match-sync-applied"),
+      requestId,
+      matchId: z.string().max(80),
+      syncId: z.string().max(80),
+      publicationSequence: z.number().int().nonnegative(),
+    })
+    .strict(),
   z
     .object({
       type: z.literal("select-spawn"),
@@ -69,6 +95,7 @@ export const clientMessageSchema = z.discriminatedUnion("type", [
       type: z.literal("watch-match"),
       requestId,
       matchId: z.string().max(80),
+      playerId: z.number().int().positive().max(255).optional(),
     })
     .strict(),
   z
@@ -124,11 +151,21 @@ export type ServerMessage =
       matchId: string;
       packet: EncodedState;
       tick: number;
+      publicationSequence?: number;
+      syncId?: string;
       paused: boolean;
       disconnectedPlayerIds: number[];
       executor: "server";
     }
+  | { type: "match-status"; matchId: string; message: string; paused: boolean }
+  | { type: "match-sync-complete"; matchId: string; syncId: string }
   | { type: "match-ended"; matchId: string; message: string }
-  | { type: "directory"; guestId: string; now: number; state: CoordinatorState }
+  | {
+      type: "directory";
+      guestId: string;
+      now: number;
+      state: CoordinatorState;
+      activeMatches?: LiveMatchSummary[];
+    }
   | { type: "ack"; requestId: string; roomId?: string }
   | { type: "error"; requestId?: string; message: string };

@@ -11,21 +11,25 @@ describe("map symbol readability", () => {
       artwork: false,
       size: 18,
     });
-    expect(buildingSymbol(20, true, "barracks")).toMatchObject({
+    expect(buildingSymbol(32, true, "barracks")).toMatchObject({
       artwork: true,
     });
-    expect(buildingSymbol(20, true, "barracks").size).toBeCloseTo(43.4);
+    expect(buildingSymbol(32, true, "barracks").size).toBe(32);
     expect(buildingSymbol(20, false, "barracks")).toMatchObject({
       artwork: false,
       size: 18,
     });
-    for (const scale of [14, 20, 40]) {
+    for (const scale of [28, 40, 96]) {
       const symbol = buildingSymbol(scale, true, "barracks");
-      expect(symbol.size).toBeLessThanOrEqual(47.8 + 1e-10);
+      expect(symbol.size).toBe(scale);
+      expect(symbol.footprintSize).toBe(scale);
       expect(symbol.inset).toBeGreaterThan(0);
-      expect(symbol.size - symbol.inset * 2).toBeGreaterThan(0);
+      expect(symbol.size - symbol.inset * 2).toBeCloseTo(scale * 0.85);
+      const city = buildingSymbol(scale, true, "city");
+      expect(city.size).toBe(scale);
+      expect(city.inset).toBe(0);
     }
-    expect(buildingSymbol(20, true, "city").size).toBeCloseTo(52);
+    expect(buildingSymbol(96, true, "city").size).toBe(96);
     expect(buildingSymbol(2, true, "city").size).toBe(18);
   });
   it("keeps distant glyph pads opaque and only makes them transparent once artwork appears", () => {
@@ -57,15 +61,6 @@ describe("map symbol readability", () => {
     );
     expect(near.artwork).toBe(true);
     expect(near.width / 20).toBe(2);
-    for (const scale of [14, 20, 22]) {
-      const city = buildingSymbol(scale, true, "city");
-      const squad = squadSymbol(scale, 1_000, true);
-      expect(squad.artwork).toBe(true);
-      // Cities now have the requested additional 15% artwork enlargement.
-      expect(
-        Math.abs(squad.width - (city.size - city.inset * 2) / 1.15),
-      ).toBeLessThan(3);
-    }
     const close = squadSymbol(96, 1_000, true);
     expect(close.width).toBe(55);
     expect(close.hitRadius).toBeGreaterThan(close.underlayRadius);

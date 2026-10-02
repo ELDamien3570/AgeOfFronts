@@ -14,11 +14,15 @@ const origins = (
   .map((origin) => origin.trim());
 const matchCapacity = Number(process.env.MULTIPLAYER_MATCH_CAPACITY ?? 1);
 const staticDir = process.env.STATIC_DIR;
+const graceMs = Number(process.env.MULTIPLAYER_EMPTY_MATCH_GRACE_MS ?? 120_000);
+if (!Number.isInteger(graceMs) || graceMs < 1_000 || graceMs > 300_000)
+  throw new Error("MULTIPLAYER_EMPTY_MATCH_GRACE_MS must be 1000–300000");
 const coordinator = createCoordinatorServer({
   store,
   origins,
   matchCapacity,
   staticDir,
+  liveMatch: { graceMs },
 });
 coordinator.http.listen(
   Number(process.env.PORT ?? 9011),

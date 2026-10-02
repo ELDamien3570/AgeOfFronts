@@ -25,7 +25,24 @@ export interface MatchCommand {
   id: string;
   command: Command;
 }
+export interface RuntimeSeat {
+  playerId: number;
+  name: string;
+  ai: boolean;
+  kind: "regular" | "tribe";
+  eliminated: boolean;
+}
+export interface SeatStatus {
+  seats: RuntimeSeat[];
+}
+export interface JoinBarrier extends SeatStatus {
+  tick: number;
+  winner: number | null;
+  packet: EncodedState;
+  baseline: EncodedState;
+}
 export interface MatchAdvance {
+  seats?: RuntimeSeat[];
   tick: number;
   winner: number | null;
   packet?: EncodedState;
@@ -49,13 +66,18 @@ export type ExecutorRequest =
       disconnectedPlayerIds: number[];
       publish: boolean;
     }
-  | { type: "baseline" };
+  | { type: "baseline" }
+  | { type: "seat-status" }
+  | { type: "join-barrier"; playerId: number }
+  | { type: "set-controller"; playerId: number; ai: boolean };
 export type ExecutorResult =
   | PreparedMatch
   | SpawnReply
   | SpawnState
   | MatchAdvance
-  | EncodedState;
+  | EncodedState
+  | SeatStatus
+  | JoinBarrier;
 
 /** One isolated worker owns and advances the authoritative simulation. */
 export interface MatchExecutor {

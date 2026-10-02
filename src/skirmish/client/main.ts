@@ -1,6 +1,8 @@
 let localPlayerId = 1;
 import { OnlineMatchSession } from "./OnlineMatchSession";
-const onlineMatchId=new URLSearchParams(window.location.search).get("match");
+const onlineQuery = new URLSearchParams(window.location.search);
+const onlineMatchId = onlineQuery.get("match");
+const onlineSeat = onlineQuery.has("seat") ? Number(onlineQuery.get("seat")) : undefined;
 import { BuildingIndex } from "../BuildingIndex";
 
 import { constructionRejection } from "../Construction";
@@ -99,7 +101,7 @@ document.querySelector<HTMLDivElement>("#app")!.innerHTML = `
 
       .join(
         "",
-      )}</select></label><label>Map size<select id="world-size"><option value="250">250 cells · longest edge</option><option value="500" selected>500 cells · longest edge</option><option value="1000">1000 cells · longest edge</option></select></label><label>Victory<select id="victory-mode"><option value="solo">Solo conquest</option><option value="allied">Allied conquest</option></select></label><label title="New skirmishes divide all research and age-advancement costs and times by this setting, for every faction.">Tech speed<select id="technology-speed" aria-label="Technology speed"><option value="1">1×</option><option value="2">2×</option><option value="3">3×</option></select></label><button id="restart" class="primary">New skirmish</button></div>
+      )}</select></label><label>Map size<select id="world-size"><option value="250">250 cells · longest edge</option><option value="500" selected>500 cells · longest edge</option><option value="1000">1000 cells · longest edge</option></select></label><label>Starting age<select id="starting-age">${AGES.map((a, i) => `<option value="${a}" ${a === "StoneAge" ? "selected" : ""}>${AGE_NAMES[i]}</option>`).join("")}</select></label><label>Victory<select id="victory-mode"><option value="solo">Solo conquest</option><option value="allied">Allied conquest</option></select></label><label title="New skirmishes divide all research and age-advancement costs and times by this setting, for every faction.">Tech speed<select id="technology-speed" aria-label="Technology speed"><option value="1">1×</option><option value="2">2×</option><option value="3">3×</option></select></label><button id="restart" class="primary">New skirmish</button></div>
 
     <div class="time-controls"><button id="wasd-mode" type="button" aria-pressed="false" title="WASD pans the map; Shift for building/single recruitment shortcuts, Space for five recruits.">WASD Mode</button><span id="clock">0:00</span><select id="ground-style" aria-label="Ground style" title="Ground style"><option value="animated">Animated sea</option><option value="still">Still sea</option><option value="classic">Classic</option></select><select id="speed" aria-label="Game speed"><option value="1">1× speed</option><option value="2">2× speed</option><option value="4">4× speed</option></select><button id="pause" aria-label="Pause game">Pause</button><button id="home" aria-label="Fit battlefield">Fit map <kbd>Home</kbd></button></div>
 
@@ -522,7 +524,15 @@ async function start(): Promise<void> {
     };
 
     const seed = Math.floor(Math.random() * 0x7fffffff);
-    const spawnOptions: MatchOptions = { seed, aiCount: Number(element<HTMLSelectElement>("opponents").value), tribes: true, ruleset: "ages-v1" };
+    const startingAge =
+      (element<HTMLSelectElement>("starting-age")?.value as Age) || "StoneAge";
+    const spawnOptions: MatchOptions = {
+      seed,
+      aiCount: Number(element<HTMLSelectElement>("opponents").value),
+      tribes: true,
+      ruleset: "ages-v1",
+      startingAge,
+    };
 
     post({
       type: "start",
@@ -546,6 +556,8 @@ async function start(): Promise<void> {
         tribes: true,
 
         ruleset: "ages-v1",
+
+        startingAge,
 
         victoryMode: element<HTMLSelectElement>("victory-mode").value as
           | "solo"
@@ -590,51 +602,110 @@ function showSpawn(state: SpawnState, options: MatchOptions): void {
   element<HTMLButtonElement>("restart").disabled = !!onlineMatchId;
 }
 
-async function startOnlineMatch():Promise<void> {
-  document.title="Age of Fronts — Online match";
-  if(worker)return;
+async function startOnlineMatch(): Promise<void> {
+  document.title = "Age of Fronts — Online match";
+  if (worker) return;
+  const showOnlineLoading = (message: string, failed = false) => {
+    const loading = element("loading");
+    loading.hidden = false;
+    loading.replaceChildren();
+    const title = document.createElement("h2");
+    title.textContent = failed ? "Unable to join this match" : "Joining the battlefield";
+    const detail = document.createElement("p");
+    detail.setAttribute("role", failed ? "alert" : "status");
+    detail.textContent = message;
+    const cancel = document.createElement("button");
+    cancel.type = "button";
+    cancel.textContent = failed ? "Return to lobbies" : "Cancel and return to lobbies";
+    cancel.className = "primary";
+    cancel.style.marginTop = "16px";
+    cancel.addEventListener("click", () => {
+      worker?.terminate();
+      window.location.assign("/");
+    });
+    loading.append(title, detail, cancel);
+  };
+  if (onlineSeat !== undefined && (!Number.isSafeInteger(onlineSeat) || onlineSeat < 1)) {
+    showOnlineLoading("This empire link is invalid. Choose an available empire from the lobby.", true);
+    return;
+  }
   const endpoint =
+    // Empty configuration uses the coordinator on this origin.
+    // eslint-disable-next-line @typescript-eslint/prefer-nullish-coalescing
     (import.meta.env.VITE_MULTIPLAYER_URL as string | undefined) ||
     (typeof window !== "undefined" ? window.location.origin : undefined);
-  if(!endpoint){element("loading").textContent="Multiplayer server URL is not configured.";return;}
-  const decoder=new SnapshotDecoder();
-  let startingCamera=true;
-  const session=new OnlineMatchSession(endpoint,onlineMatchId!,async manifest=> {
-    onlineSpawnOptions = manifest.options;
-    element<HTMLSelectElement>("map").value=manifest.settings.mapId;
-    element<HTMLSelectElement>("world-size").value=String(manifest.settings.worldSize);
-    element<HTMLSelectElement>("opponents").innerHTML=`<option>${manifest.options.aiCount} AI</option>`;
-    element<HTMLSelectElement>("victory-mode").value=manifest.settings.victory;
-    element<HTMLSelectElement>("technology-speed").value=String(manifest.settings.technologySpeed);
-    const loaded=await loadMap(manifest.settings.mapId,manifest.settings.worldSize);
-    currentMap=loaded;terrainView=new TerrainViewModel(loaded.map);placementIndex=new BuildingIndex(loaded.map);
-    renderer.setMap(loaded.map,loaded.geography,loaded.environment);
-    element("map-name").textContent=loaded.name;
-    return loaded;
-  },id=>localPlayerId=id,message=> {
-    document.querySelector(".brand p")!.textContent=message;
-  });
-  worker=session;
-  for(const control of document.querySelectorAll<HTMLInputElement>(".match-settings select,.match-settings button,#speed,#pause,#play-again"))control.disabled=true;
-  session.onerror=event=> {
-    element("loading").hidden=false;
-    element("loading").textContent=event.message;
+  if (!endpoint) {
+    showOnlineLoading("Multiplayer server URL is not configured.", true);
+    return;
+  }
+  showOnlineLoading("Connecting to the match server…");
+  const decoder = new SnapshotDecoder();
+  let startingCamera = true;
+  let failure = false;
+  const session = new OnlineMatchSession(
+    endpoint,
+    onlineMatchId!,
+    async (manifest) => {
+      onlineSpawnOptions = manifest.options;
+      element<HTMLSelectElement>("map").value = manifest.settings.mapId;
+      element<HTMLSelectElement>("world-size").value = String(manifest.settings.worldSize);
+      element<HTMLSelectElement>("opponents").innerHTML = `<option>${manifest.options.aiCount} AI</option>`;
+      element<HTMLSelectElement>("victory-mode").value = manifest.settings.victory;
+      element<HTMLSelectElement>("starting-age").value = manifest.settings.startingAge ?? "StoneAge";
+      element<HTMLSelectElement>("technology-speed").value = String(manifest.settings.technologySpeed);
+      const loaded = await loadMap(manifest.settings.mapId, manifest.settings.worldSize);
+      currentMap = loaded;
+      terrainView = new TerrainViewModel(loaded.map);
+      placementIndex = new BuildingIndex(loaded.map);
+      renderer.setMap(loaded.map, loaded.geography, loaded.environment);
+      element("map-name").textContent = loaded.name;
+      return loaded;
+    },
+    (id) => localPlayerId = id,
+    (message) => {
+      document.querySelector(".brand p")!.textContent = message;
+      if (failure || (!session.commandsAvailable && !renderer.spawn))
+        showOnlineLoading(message, failure);
+    },
+    onlineSeat,
+  );
+  worker = session;
+  for (const control of document.querySelectorAll<HTMLInputElement>(".match-settings select,.match-settings button,#speed,#pause,#play-again")) control.disabled = true;
+  const syncControls = (available: boolean) => {
+    for (const control of document.querySelectorAll<HTMLElement>(".command-dock,#selection-card,#empire-panel,#recruitment-feed,#refit-actions")) {
+      control.inert = !available;
+      control.setAttribute("aria-disabled", String(!available));
+    }
+    if (available) element("loading").hidden = true;
   };
-  session.onmessage=event=> {
-    if(event.data.type==="spawn"){showSpawn(event.data.state, onlineSpawnOptions!);return;}
-    if(event.data.type==="rejected"){notify(event.data.message);return;}
-    if(event.data.type!=="state")return;
-    renderer.spawn=undefined;element("spawn-selection").hidden=true;
-    snapshot=decoder.decode(event.data.packet);
-    snapshot.localPlayerId=localPlayerId;
-    snapshot.disconnectedPlayerIds=session.disconnectedPlayerIds;
-    placementIndex!.rebuild(snapshot.buildings);paused=event.data.paused;
-    renderer.update(snapshot);groups.prune(snapshot);updateHud();
-    if(startingCamera){const player=snapshot.players.find(p=>p.id===localPlayerId);if(player){renderer.focusStartingLocation(player.base);startingCamera=false;}}
-    element("loading").hidden=true;
-    if(snapshot.winner!==null)showResult(snapshot.winner);
+  syncControls(false);
+  session.oncommandsavailable = syncControls;
+  session.onerror = (event) => {
+    failure = true;
+    showOnlineLoading(event.message, true);
   };
-  window.addEventListener("pagehide",()=>session.terminate(),{once:true});
+  session.onmessage = (event) => {
+    if (event.data.type === "spawn") { showSpawn(event.data.state, onlineSpawnOptions!); return; }
+    if (event.data.type === "rejected") { notify(event.data.message); return; }
+    if (event.data.type !== "state") return;
+    renderer.spawn = undefined;
+    element("spawn-selection").hidden = true;
+    snapshot = decoder.decode(event.data.packet);
+    snapshot.localPlayerId = localPlayerId;
+    snapshot.disconnectedPlayerIds = session.disconnectedPlayerIds;
+    placementIndex!.rebuild(snapshot.buildings);
+    paused = event.data.paused;
+    renderer.update(snapshot);
+    groups.prune(snapshot);
+    updateHud();
+    if (startingCamera) {
+      const player = snapshot.players.find((p) => p.id === localPlayerId);
+      if (player) { renderer.focusStartingLocation(player.base); startingCamera = false; }
+    }
+    syncControls(session.commandsAvailable);
+    if (snapshot.winner !== null) showResult(snapshot.winner);
+  };
+  window.addEventListener("pagehide", () => session.terminate(), { once: true });
   session.connect();
 }
 

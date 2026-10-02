@@ -4,6 +4,7 @@ import {
   MAX_HUMAN_PLAYERS,
 } from "../FactionRules";
 import { createEmpireProfile, type EmpireProfile } from "./EmpireProfile";
+import { AGES, type Age } from "../domain/Definitions";
 import {
   FRIENDS_MATCH_RULES,
   isLobbyMapId,
@@ -29,10 +30,13 @@ export interface LobbySettings {
   /** Minor tribes. Base by map size; 0–30. */
   readonly tribeCount: number;
   readonly technologySpeed: 1 | 2 | 3;
+  readonly startingAge?: Age;
   readonly resourceDensity: ResourceMultiplier;
   readonly resourceOutput: ResourceMultiplier;
   readonly alliances: boolean;
   readonly victory: "solo" | "allied";
+  /** Explicit opt-in to newcomers taking an unclaimed regular AI. */
+  readonly publicAiTakeover?: boolean;
 }
 
 export function defaultLobbySettings(
@@ -45,10 +49,12 @@ export function defaultLobbySettings(
     worldSize,
     ...factionDefaults(worldSize),
     technologySpeed: 1,
+    startingAge: "StoneAge",
     resourceDensity: 1,
     resourceOutput: 1,
     alliances: false,
     victory: "solo",
+    publicAiTakeover: false,
   });
 }
 
@@ -118,7 +124,14 @@ export function validateLobbySettings(settings: LobbySettings): LobbySettings {
     (settings.victory === "allied" && !settings.alliances)
   )
     throw new Error("Allied conquest requires alliances to be allowed.");
-  return Object.freeze({ ...settings });
+  if (
+    settings.startingAge !== undefined &&
+    !AGES.includes(settings.startingAge)
+  )
+    throw new Error("Choose a supported starting age.");
+  if (settings.publicAiTakeover !== undefined && typeof settings.publicAiTakeover !== "boolean")
+    throw new Error("Choose whether public AI takeover is allowed.");
+  return Object.freeze({ ...settings, publicAiTakeover: settings.publicAiTakeover ?? false });
 }
 
 /**
@@ -135,6 +148,7 @@ export function migrateLobbySettings(saved: LobbySettings): LobbySettings {
     if (settings.tribeCount === undefined)
       settings.tribeCount = defaults.tribeCount;
   }
+  if (settings.startingAge === undefined) settings.startingAge = "StoneAge";
   return settings as unknown as LobbySettings;
 }
 export interface CustomLobby {

@@ -1,4 +1,3 @@
-import { buildingFootprintCells } from "../BuildingFootprint";
 import type { BuildingType } from "../Protocol";
 import type { FormationType } from "./FormationArtwork";
 import {
@@ -64,18 +63,14 @@ export function buildingSymbol(
   type: BuildingType,
   selected = false,
 ) {
-  const enlargement = buildingFootprintCells(type) / 2;
-  const projectedSize = scale * 2 * enlargement;
-  const size = Math.min(44 * enlargement, projectedSize);
-  const artwork = hasArtwork && size >= BUILDING_ART_MIN_PIXELS;
+  const artwork = hasArtwork && scale >= BUILDING_ART_MIN_PIXELS;
   const backdropAlpha = artwork ? (selected ? 0.2 : 0) : 0.9;
-  const inset = 3;
-  // Enlarge the drawn art, preserving the inset and distant glyph threshold.
-  // Terrain clearing and placement footprints remain domain-owned.
-  const artScale = type === "city" ? 1.15 : 1.1;
+  // One visual terrain cell, independent of domain clearing/placement rules.
+  const inset = type === "city" ? 0 : scale * 0.075;
   return {
     artwork,
-    size: artwork ? (size - inset * 2) * artScale + inset * 2 : 18,
+    size: artwork ? scale : 18,
+    footprintSize: scale,
     inset,
     backdropAlpha,
   };

@@ -245,7 +245,7 @@ describe("server-authoritative live match", () => {
     ).toBeLessThanOrEqual(MAX_QUEUED_COMMANDS);
   });
 
-  it("keeps the remaining player running and releases once when everyone leaves", async () => {
+  it("keeps the remaining player running and pauses during grace and releases once after everyone leaves", async () => {
     const f = await fixture();
     f.match.command("a", "departing", { type: "advance-age" });
     await f.match.disconnect("a");
@@ -271,6 +271,10 @@ describe("server-authoritative live match", () => {
     await f.match.disconnect("b");
     await f.match.disconnect("b");
     await f.match.advance();
+    expect(f.cleanup()).toEqual({ released: 0, closed: 0 });
+    f.setTime(130_201);
+    await f.match.advance();
+    await f.match.end("repeat");
     expect(f.cleanup()).toEqual({ released: 1, closed: 1 });
   });
 

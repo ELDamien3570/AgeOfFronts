@@ -29,6 +29,14 @@ const makeMap = (map: RuntimeMap) =>
     map.resourceTerrain,
   );
 const snapshot = () => encodeState(encoder.encode(match!.snapshot()));
+const seats = () =>
+  match!.players.map((p) => ({
+    playerId: p.id,
+    name: p.name,
+    ai: p.ai,
+    kind: p.kind,
+    eliminated: p.eliminated,
+  }));
 
 parentPort.on(
   "message",
@@ -62,6 +70,7 @@ parentPort.on(
               winner: match.winner,
               packet: await snapshot(),
               rejectedCommands: [],
+              seats: seats(),
             } satisfies MatchAdvance;
           }
         } else if (
@@ -90,11 +99,40 @@ parentPort.on(
               winner: match.winner,
               packet: await snapshot(),
               rejectedCommands: [],
+              seats: seats(),
             } satisfies MatchAdvance;
           }
         } else {
           if (!match) throw new Error("Executor not initialized");
-          if (request.type === "baseline") {
+          if (request.type === "seat-status") {
+            result = { seats: seats() };
+          } else if (request.type === "set-controller") {
+            match.setAiController(request.playerId, request.ai);
+            result = { seats: seats() };
+          } else if (request.type === "join-barrier") {
+            const player = match.player(request.playerId);
+            if (
+              !player ||
+              player.kind !== "regular" ||
+              player.eliminated ||
+              match.winner !== null
+            )
+              throw new Error("This faction is no longer available");
+            match.setAiController(player.id, false);
+            // Both packets describe exactly S. Advancing the shared cursor here is
+            // essential: a tile that changes back after this barrier must be sent.
+            const state = match.snapshot();
+            const aligned = encoder.encodeJoinBarrier(state);
+            const packet = await encodeState(aligned.shared);
+            const baseline = await encodeState(aligned.baseline);
+            result = {
+              tick: match.tick,
+              winner: match.winner,
+              packet,
+              baseline,
+              seats: seats(),
+            };
+          } else if (request.type === "baseline") {
             // A late initial subscriber must not reset everyone else's delta cursor.
             result = await encodeState(
               new SnapshotEncoder(true).encode(match.snapshot()),
@@ -109,7 +147,7 @@ parentPort.on(
               throw new Error("Invalid match advance");
             for (const id of request.disconnectedPlayerIds) {
               const player = match.player(id);
-              if (player) player.ai = true;
+              if (player) match.setAiController(id, true);
             }
             const rejectedCommands: MatchAdvance["rejectedCommands"] = [];
             for (const item of request.commands) {
@@ -134,6 +172,7 @@ parentPort.on(
                   ? await snapshot()
                   : undefined,
               rejectedCommands,
+              seats: seats(),
             } satisfies MatchAdvance;
           } else throw new Error("Unknown match operation");
         }

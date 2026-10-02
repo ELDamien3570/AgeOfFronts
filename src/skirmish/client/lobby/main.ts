@@ -1,5 +1,6 @@
 import type { LobbySettings } from "../../lobby/LobbyDirectory";
 import { isLobbyMapId } from "../../lobby/LobbyRules";
+import type { Age } from "../../domain/Definitions";
 import { AGE_UI_THEMES } from "../AgeUiTheme";
 import "./lobby.css";
 import { BrowserLobbyPreviewStore } from "./LobbyPreviewStore";
@@ -19,6 +20,8 @@ const vm = new LobbyViewModel(
   performance.now(),
 );
 const coordinatorUrl =
+  // Empty configuration uses the coordinator on this origin.
+  // eslint-disable-next-line @typescript-eslint/prefer-nullish-coalescing
   (import.meta.env.VITE_MULTIPLAYER_URL as string | undefined) ||
   (typeof window !== "undefined" ? window.location.origin : undefined);
 vm.online = Boolean(coordinatorUrl);
@@ -77,9 +80,13 @@ const view = new LobbyView(
     },
     voteStart: () => {
       if (connection && vm.onlineRoom && vm.canVoteToStart)
-        void connection.request({
-          type: "voteStart", requestId: requestId(), roomId: vm.onlineRoom.id,
-        }).catch(reportError);
+        void connection
+          .request({
+            type: "voteStart",
+            requestId: requestId(),
+            roomId: vm.onlineRoom.id,
+          })
+          .catch(reportError);
     },
     openCreate: () => {
       vm.dialog = "create";
@@ -143,12 +150,14 @@ const view = new LobbyView(
         worldSize: Number(data.get("worldSize")),
         aiCount: Number(data.get("aiCount")),
         tribeCount: Number(data.get("tribeCount")),
+        startingAge: (data.get("startingAge") as Age) || "StoneAge",
         technologySpeed: Number(data.get("technologySpeed")),
         resourceDensity: Number(data.get("resourceDensity")),
         resourceOutput: Number(data.get("resourceOutput")),
         alliances: data.get("alliances") === "allowed",
         victory: String(data.get("victory")),
-      } as LobbySettings;
+        publicAiTakeover: data.has("publicAiTakeover"),
+      } as LobbySettings & { publicAiTakeover: boolean };
       if (connection) {
         void connection
           .request({
@@ -201,11 +210,17 @@ function route(): void {
       ? vm.showCustomRoom(hash.slice(6), performance.now())
       : false;
   if (!lobby) vm.showHome();
-  if(connection&&vm.guestId) {
-    const joined=vm.joinedOnlineRoom;
-    const desired=lobby?vm.onlineRoom:undefined;
-    if(desired&&desired.id!==joined?.id)void connection.request({type:"join",requestId:requestId(),roomId:desired.id}).catch(reportError);
-    else if(!lobby&&joined)void connection.request({type:"leave",requestId:requestId()}).catch(reportError);
+  if (connection && vm.guestId) {
+    const joined = vm.joinedOnlineRoom;
+    const desired = lobby ? vm.onlineRoom : undefined;
+    if (desired && desired.id !== joined?.id)
+      void connection
+        .request({ type: "join", requestId: requestId(), roomId: desired.id })
+        .catch(reportError);
+    else if (!lobby && joined)
+      void connection
+        .request({ type: "leave", requestId: requestId() })
+        .catch(reportError);
   }
   vm.tickDirectory(performance.now());
   document.title = lobby
@@ -231,7 +246,12 @@ if (coordinatorUrl) {
     coordinatorUrl,
     (message) => {
       const firstState = !vm.guestId;
-      vm.applyOnlineState(message.state, message.guestId, message.now);
+      vm.applyOnlineState(
+        message.state,
+        message.guestId,
+        message.now,
+        message.activeMatches,
+      );
       if (firstState) {
         void connection!
           .request({
@@ -271,8 +291,9 @@ if (coordinatorUrl) {
       vm.message = status;
       if (!vm.dialog) view.render(vm);
     },
-    message=> {
-      if(message.type==="match")window.location.href=`/skirmish/index.html?match=${encodeURIComponent(message.manifest.id)}`;
+    (message) => {
+      if (message.type === "match")
+        window.location.href = `/skirmish/index.html?match=${encodeURIComponent(message.manifest.id)}`;
     },
   );
   void connection.connect();

@@ -5,8 +5,8 @@ import {
 } from "../../lobby/EmpireProfile";
 import {
   defaultLobbySettings,
-  migrateLobbySettings,
   LobbyDirectory,
+  migrateLobbySettings,
   type CustomLobby,
   type LobbySettings,
 } from "../../lobby/LobbyDirectory";
@@ -15,6 +15,7 @@ import type {
   CoordinatorState,
   OnlineRoom,
 } from "../../multiplayer/domain/RoomCoordinator";
+import type { LiveMatchSummary } from "../../multiplayer/Protocol";
 import { EMPIRE_FLAGS, empireFlag } from "./FlagCatalog";
 import type { LobbyPreviewStore } from "./LobbyPreviewStore";
 import { LOBBY_MAPS } from "./MapCatalog";
@@ -35,10 +36,15 @@ export class LobbyViewModel {
   online = false;
   connected = false;
   guestId?: string;
+  activeMatches: LiveMatchSummary[] = [];
   private onlineState?: CoordinatorState;
   private serverOffset = 0;
-  get joinedOnlineRoom():OnlineRoom|undefined {
-    return this.onlineState?.rooms.find(room=>room.members.some(member=>member.guestId===this.guestId&&member.connected));
+  get joinedOnlineRoom(): OnlineRoom | undefined {
+    return this.onlineState?.rooms.find((room) =>
+      room.members.some(
+        (member) => member.guestId === this.guestId && member.connected,
+      ),
+    );
   }
   get directory() {
     if (!this.onlineState)
@@ -73,7 +79,9 @@ export class LobbyViewModel {
     state: CoordinatorState,
     guestId: string,
     serverNow: number,
+    activeMatches: LiveMatchSummary[] = [],
   ): void {
+    this.activeMatches = activeMatches;
     this.onlineState = state;
     this.guestId = guestId;
     this.serverOffset = serverNow - Date.now();
@@ -93,25 +101,38 @@ export class LobbyViewModel {
   directoryHumanCount(roomId: string): number | undefined {
     if (!this.online) return 0;
     if (!this.onlineState) return undefined;
-    return this.onlineState.rooms
-      .find((room) => room.id === roomId)
-      ?.members.filter((member) => member.connected).length ?? 0;
+    return (
+      this.onlineState.rooms
+        .find((room) => room.id === roomId)
+        ?.members.filter((member) => member.connected).length ?? 0
+    );
   }
   get startVotes(): number {
-    return this.onlineRoom?.members.filter(
-      (member) => member.connected && member.votedToStart,
-    ).length ?? 0;
+    return (
+      this.onlineRoom?.members.filter(
+        (member) => member.connected && member.votedToStart,
+      ).length ?? 0
+    );
   }
   get hasVotedToStart(): boolean {
-    return this.onlineRoom?.members.some(
-      (member) => member.guestId === this.guestId && member.connected && member.votedToStart,
-    ) ?? false;
+    return (
+      this.onlineRoom?.members.some(
+        (member) =>
+          member.guestId === this.guestId &&
+          member.connected &&
+          member.votedToStart,
+      ) ?? false
+    );
   }
   get canVoteToStart(): boolean {
-    return this.connected && !this.hasVotedToStart &&
+    return (
+      this.connected &&
+      !this.hasVotedToStart &&
       (this.onlineRoom?.members.some(
         (member) => member.guestId === this.guestId && member.connected,
-      ) ?? false);
+      ) ??
+        false)
+    );
   }
   profile: EmpireProfile = DEFAULT_EMPIRE_PROFILE;
   draftEmpireName = this.profile.name;
@@ -323,6 +344,12 @@ export class LobbyViewModel {
                 room.settings.resourceOutput === undefined
                   ? 1
                   : room.settings.resourceOutput,
+              startingAge:
+                // Preserve invalid null values for validation, as above.
+                // eslint-disable-next-line @typescript-eslint/prefer-nullish-coalescing
+                room.settings.startingAge === undefined
+                  ? "StoneAge"
+                  : room.settings.startingAge,
             }),
           },
           true,

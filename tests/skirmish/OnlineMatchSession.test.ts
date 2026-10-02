@@ -62,7 +62,9 @@ const loaded = {
 } as unknown as LoadedMap;
 const packet = (tick: number, reset = tick === 0) =>
   ({ tick, reset }) as SnapshotPacket;
-const state = (tick: number): ServerMessage => ({
+const state = (
+  tick: number,
+): Extract<ServerMessage, { type: "match-state" }> => ({
   type: "match-state",
   matchId: manifest.id,
   tick,
@@ -108,7 +110,7 @@ afterEach(() => {
 });
 
 describe("server-only match client", () => {
-  it("loads presentation, disables rejoin and declares readiness without starting a simulation", async () => {
+  it("loads presentation without automatic reconnect and declares readiness without starting a simulation", async () => {
     await initialize();
     expect(connection().options).toEqual({ reconnect: false });
     expect(connection().request).toHaveBeenCalledWith({
@@ -202,6 +204,12 @@ describe("server-only match client", () => {
   });
   it("does not replace the final match status when a pending command rejects during teardown", async () => {
     await initialize();
+    connection().message(state(0));
+    await vi.waitFor(() =>
+      expect(DecoderWorker.instances[0].postMessage).toHaveBeenCalledTimes(1),
+    );
+    DecoderWorker.instances[0].deliver(packet(0));
+    await vi.waitFor(() => expect(session.commandsAvailable).toBe(true));
     let reject!: (error: Error) => void;
     connection().request.mockImplementationOnce(
       () =>
@@ -230,5 +238,307 @@ describe("server-only match client", () => {
     expect(status).toHaveBeenLastCalledWith(
       "Match complete. Return to the lobby to play again.",
     );
+  });
+});
+
+const hold = () =>
+  session.postMessage({
+    type: "command",
+    command: {
+      type: "order",
+      playerId: 2,
+      squadIds: [1],
+      order: { type: "hold" },
+    },
+  });
+const syncState = (
+  sequence: number,
+  tick = 80,
+  syncId = "sync-one",
+): ServerMessage => ({
+  ...state(tick),
+  type: "match-state",
+  publicationSequence: sequence,
+  syncId,
+  paused: true,
+});
+const requested = (type: string) =>
+  connection().request.mock.calls.filter(
+    (call: any[]) => call[0].type === type,
+  );
+
+describe("live admission synchronization", () => {
+  it("requests the chosen AI seat once, never deriving ownership from a display name", () => {
+    session = new OnlineMatchSession(
+      "http://localhost",
+      manifest.id,
+      async () => loaded,
+      vi.fn(),
+      status,
+      4,
+    );
+    connection().directory({});
+    connection().directory({});
+    expect(requested("watch-match")).toHaveLength(1);
+    expect(requested("watch-match")[0][0]).toMatchObject({
+      matchId: manifest.id,
+      playerId: 4,
+    });
+    expect(session.commandsAvailable).toBe(false);
+  });
+  it("allows the server to resolve a remembered browser's reserved empire", () => {
+    session = new OnlineMatchSession(
+      "http://localhost",
+      manifest.id,
+      async () => loaded,
+      vi.fn(),
+      status,
+    );
+    connection().directory({});
+    expect(requested("watch-match")[0][0]).not.toHaveProperty("playerId");
+  });
+  it("acknowledges only after applying the full baseline, then unlocks only on matching completion", async () => {
+    await initialize();
+    let apply!: () => void;
+    session.onmessage = vi.fn(
+      () =>
+        new Promise<void>((resolve) => {
+          apply = resolve;
+        }),
+    );
+    connection().message(syncState(20));
+    await vi.waitFor(() =>
+      expect(DecoderWorker.instances[0].postMessage).toHaveBeenCalledTimes(1),
+    );
+    hold();
+    expect(requested("match-command")).toHaveLength(0);
+    expect(requested("match-sync-applied")).toHaveLength(0);
+    DecoderWorker.instances[0].deliver(packet(80, true));
+    await vi.waitFor(() => expect(apply).toBeTypeOf("function"));
+    expect(requested("match-sync-applied")).toHaveLength(0);
+    apply();
+    await vi.waitFor(() =>
+      expect(requested("match-sync-applied")).toHaveLength(1),
+    );
+    expect(requested("match-sync-applied")[0][0]).toMatchObject({
+      matchId: manifest.id,
+      syncId: "sync-one",
+      publicationSequence: 20,
+    });
+    expect(session.commandsAvailable).toBe(false);
+    connection().message({
+      type: "match-sync-complete",
+      matchId: manifest.id,
+      syncId: "stale-sync",
+    });
+    await new Promise((resolve) => setTimeout(resolve, 0));
+    expect(session.commandsAvailable).toBe(false);
+    connection().message({
+      type: "match-sync-complete",
+      matchId: manifest.id,
+      syncId: "sync-one",
+    });
+    await vi.waitFor(() => expect(session.commandsAvailable).toBe(true));
+    hold();
+    expect(requested("match-command")).toHaveLength(1);
+  });
+  it("accepts a fresh publication at the same tick and ignores duplicate publication identities", async () => {
+    await initialize();
+    connection().message({ ...state(80), publicationSequence: 19 });
+    await vi.waitFor(() =>
+      expect(DecoderWorker.instances[0].postMessage).toHaveBeenCalledTimes(1),
+    );
+    DecoderWorker.instances[0].deliver(packet(80, true));
+    await vi.waitFor(() => expect(updates).toHaveBeenCalledTimes(1));
+    connection().message(syncState(20));
+    await vi.waitFor(() =>
+      expect(DecoderWorker.instances[0].postMessage).toHaveBeenCalledTimes(2),
+    );
+    DecoderWorker.instances[0].deliver(packet(80, true));
+    await vi.waitFor(() =>
+      expect(requested("match-sync-applied")).toHaveLength(1),
+    );
+    connection().message(syncState(20));
+    await new Promise((resolve) => setTimeout(resolve, 0));
+    expect(DecoderWorker.instances[0].postMessage).toHaveBeenCalledTimes(2);
+    expect(updates).toHaveBeenCalledTimes(2);
+    expect(errors).not.toHaveBeenCalled();
+  });
+  it("never acknowledges a failed presentation or a non-reset sync packet", async () => {
+    await initialize();
+    session.onmessage = () => {
+      throw new Error("Presentation failed");
+    };
+    connection().message(syncState(20));
+    await vi.waitFor(() =>
+      expect(DecoderWorker.instances[0].postMessage).toHaveBeenCalledTimes(1),
+    );
+    DecoderWorker.instances[0].deliver(packet(80, true));
+    await vi.waitFor(() =>
+      expect(errors).toHaveBeenCalledWith({ message: "Presentation failed" }),
+    );
+    expect(requested("match-sync-applied")).toHaveLength(0);
+    expect(session.commandsAvailable).toBe(false);
+  });
+  it("rejects a sync delta even after earlier states have been applied", async () => {
+    await initialize();
+    connection().message(state(0));
+    await vi.waitFor(() =>
+      expect(DecoderWorker.instances[0].postMessage).toHaveBeenCalledTimes(1),
+    );
+    DecoderWorker.instances[0].deliver(packet(0));
+    await vi.waitFor(() => expect(updates).toHaveBeenCalledTimes(1));
+    connection().message(syncState(20));
+    await vi.waitFor(() =>
+      expect(DecoderWorker.instances[0].postMessage).toHaveBeenCalledTimes(2),
+    );
+    DecoderWorker.instances[0].deliver(packet(80, false));
+    await vi.waitFor(() => expect(errors).toHaveBeenCalled());
+    expect(requested("match-sync-applied")).toHaveLength(0);
+  });
+  it("cancels a baseline application without acknowledging or reopening commands", async () => {
+    await initialize();
+    let finish!: () => void;
+    session.onmessage = () =>
+      new Promise<void>((resolve) => {
+        finish = resolve;
+      });
+    connection().message(syncState(20));
+    await vi.waitFor(() =>
+      expect(DecoderWorker.instances[0].postMessage).toHaveBeenCalledTimes(1),
+    );
+    DecoderWorker.instances[0].deliver(packet(80, true));
+    await vi.waitFor(() => expect(finish).toBeTypeOf("function"));
+    session.terminate();
+    finish();
+    await new Promise((resolve) => setTimeout(resolve, 0));
+    expect(requested("match-sync-applied")).toHaveLength(0);
+    expect(session.commandsAvailable).toBe(false);
+  });
+  it.each(["error", "match-ended"] as const)(
+    "handles %s immediately while assets are still loading",
+    async (type) => {
+      let finish!: (value: LoadedMap) => void;
+      session = new OnlineMatchSession(
+        "http://localhost",
+        manifest.id,
+        () =>
+          new Promise((resolve) => {
+            finish = resolve;
+          }),
+        vi.fn(),
+        status,
+      );
+      session.onerror = errors;
+      session.onmessage = updates;
+      connection().message({ type: "match", manifest });
+      await vi.waitFor(() => expect(finish).toBeTypeOf("function"));
+      connection().message(
+        type === "error"
+          ? { type, message: "Loading timed out" }
+          : { type, matchId: manifest.id, message: "Match expired" },
+      );
+      expect(errors).toHaveBeenCalledTimes(1);
+      expect(connection().stop).toHaveBeenCalledTimes(1);
+      expect(session.commandsAvailable).toBe(false);
+      finish(loaded);
+      await new Promise((resolve) => setTimeout(resolve, 0));
+      expect(DecoderWorker.instances).toHaveLength(0);
+      expect(connection().request).not.toHaveBeenCalled();
+      expect(updates).not.toHaveBeenCalled();
+    },
+  );
+  it("handles a sync timeout while baseline presentation is still applying", async () => {
+    await initialize();
+    let finish!: () => void;
+    session.onmessage = () =>
+      new Promise<void>((resolve) => {
+        finish = resolve;
+      });
+    connection().message(syncState(20));
+    await vi.waitFor(() =>
+      expect(DecoderWorker.instances[0].postMessage).toHaveBeenCalledTimes(1),
+    );
+    DecoderWorker.instances[0].deliver(packet(80, true));
+    await vi.waitFor(() => expect(finish).toBeTypeOf("function"));
+    connection().message({
+      type: "error",
+      message: "Synchronization timed out",
+    });
+    expect(errors).toHaveBeenCalledWith({
+      message: "Synchronization timed out",
+    });
+    expect(connection().stop).toHaveBeenCalledTimes(1);
+    finish();
+    await new Promise((resolve) => setTimeout(resolve, 0));
+    expect(requested("match-sync-applied")).toHaveLength(0);
+  });
+  it("ends a rejected or timed-out admission with a readable error", async () => {
+    await initialize();
+    connection().message({
+      type: "error",
+      message: "Synchronization timed out. Please try again.",
+    });
+    await vi.waitFor(() =>
+      expect(errors).toHaveBeenCalledWith({
+        message: "Synchronization timed out. Please try again.",
+      }),
+    );
+    expect(connection().stop).toHaveBeenCalledTimes(1);
+    expect(session.commandsAvailable).toBe(false);
+  });
+  it("does not drop an established player when an in-flight command rejects during another player's synchronization", async () => {
+    await initialize();
+    connection().message(state(0));
+    await vi.waitFor(() =>
+      expect(DecoderWorker.instances[0].postMessage).toHaveBeenCalledTimes(1),
+    );
+    DecoderWorker.instances[0].deliver(packet(0));
+    await vi.waitFor(() => expect(session.commandsAvailable).toBe(true));
+    connection().message({
+      type: "match-status",
+      matchId: manifest.id,
+      message: "Synchronizing a joining player…",
+      paused: true,
+    });
+    connection().message({ type: "error", message: "Not enough gold" });
+    await vi.waitFor(() =>
+      expect(status).toHaveBeenLastCalledWith("Not enough gold"),
+    );
+    expect(errors).not.toHaveBeenCalled();
+    expect(connection().stop).not.toHaveBeenCalled();
+    expect(session.commandsAvailable).toBe(false);
+    connection().message({
+      type: "match-status",
+      matchId: manifest.id,
+      message: "Match resumed",
+      paused: false,
+    });
+    await vi.waitFor(() => expect(session.commandsAvailable).toBe(true));
+  });
+  it("locks commands for a paused match and resumes from status without a new tick", async () => {
+    await initialize();
+    connection().message(state(0));
+    await vi.waitFor(() =>
+      expect(DecoderWorker.instances[0].postMessage).toHaveBeenCalledTimes(1),
+    );
+    DecoderWorker.instances[0].deliver(packet(0));
+    await vi.waitFor(() => expect(session.commandsAvailable).toBe(true));
+    connection().message({
+      type: "match-status",
+      matchId: manifest.id,
+      message: "Waiting for a player",
+      paused: true,
+    });
+    await vi.waitFor(() => expect(session.commandsAvailable).toBe(false));
+    hold();
+    expect(requested("match-command")).toHaveLength(0);
+    connection().message({
+      type: "match-status",
+      matchId: manifest.id,
+      message: "Match resumed",
+      paused: false,
+    });
+    await vi.waitFor(() => expect(session.commandsAvailable).toBe(true));
   });
 });

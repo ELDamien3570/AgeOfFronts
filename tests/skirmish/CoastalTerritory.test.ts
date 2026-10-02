@@ -2,13 +2,13 @@ import { describe, expect, it } from "vitest";
 import { GameMapImpl } from "../../src/core/game/GameMap";
 import { constructionRejection } from "../../src/skirmish/Construction";
 import { coastalRanges } from "../../src/skirmish/content/CoastalTerritory";
+import { TECHNOLOGIES } from "../../src/skirmish/content/Technology";
 import { coastalWaterDistances } from "../../src/skirmish/domain/CoastalReach";
 import { CoastalTerritory } from "../../src/skirmish/domain/CoastalTerritory";
+import { RESOURCES } from "../../src/skirmish/domain/Definitions";
 import { generateDeposits } from "../../src/skirmish/domain/DepositGeneration";
 import { FIXED, type Ship } from "../../src/skirmish/Protocol";
 import { Skirmish } from "../../src/skirmish/Simulation";
-import { TECHNOLOGIES } from "../../src/skirmish/content/Technology";
-import { RESOURCES } from "../../src/skirmish/domain/Definitions";
 
 function fixture(width = 500) {
   const height = 40,
@@ -33,30 +33,65 @@ function fixture(width = 500) {
 }
 describe("scaled coastal water rights and offshore oil", () => {
   it("claims shoreline water in the actual simulation, builds an offshore rig and extracts oil", () => {
-    const width=500, height=120, terrain=new Uint8Array(width*height);
-    for(let y=0;y<height;y++) for(let x=0;x<150;x++) terrain[y*width+x]=133;
-    const m=new Skirmish(new GameMapImpl(width,height,terrain,150*height), {
-      seed:42,aiCount:1,runAi:false,tribes:false,ruleset:"ages-v1",
+    const width = 500,
+      height = 120,
+      terrain = new Uint8Array(width * height);
+    for (let y = 0; y < height; y++)
+      for (let x = 0; x < 150; x++) terrain[y * width + x] = 133;
+    const m = new Skirmish(
+      new GameMapImpl(width, height, terrain, 150 * height),
+      {
+        seed: 42,
+        aiCount: 1,
+        runAi: false,
+        tribes: false,
+        ruleset: "ages-v1",
+      },
+    );
+    const shore = m.map.ref(149, 60),
+      site = m.map.ref(150, 60);
+    (m as unknown as { changeOwner(t: number, o: number): void }).changeOwner(
+      shore,
+      1,
+    );
+    const expansion = m.expansion!;
+    expansion.progression.states[1].age = "Modern";
+    expansion.progression.states[1].completed = TECHNOLOGIES.map((t) => t.id);
+    m.players[0].gold = 50000;
+    for (const resource of RESOURCES)
+      expansion.supply.inventories[1][resource] = 5000;
+    expansion.supply.deposits.push({
+      id: 999,
+      tile: site,
+      owner: 0,
+      resource: "oil",
+      yieldPerSecond: 3,
     });
-    const shore=m.map.ref(149,60), site=m.map.ref(150,60);
-    (m as unknown as {changeOwner(t:number,o:number):void}).changeOwner(shore,1);
-    const expansion=m.expansion!;
-    expansion.progression.states[1].age="Modern";
-    expansion.progression.states[1].completed=TECHNOLOGIES.map(t=>t.id);
-    m.players[0].gold=50000;
-    for(const resource of RESOURCES) expansion.supply.inventories[1][resource]=5000;
-    expansion.supply.deposits.push({id:999,tile:site,owner:0,resource:"oil",yieldPerSecond:3});
-    expect(m.applyCommand({type:"build",playerId:1,buildingType:"oil-rig",tile:site})).toContain("claimed");
-    for(let i=0;i<400;i++) m.step();
+    expect(
+      m.applyCommand({
+        type: "build",
+        playerId: 1,
+        buildingType: "oil-rig",
+        tile: site,
+      }),
+    ).toContain("claimed");
+    for (let i = 0; i < 400; i++) m.step();
     expect(m.owners[site]).toBe(1);
-    expect(m.applyCommand({type:"build",playerId:1,buildingType:"oil-rig",tile:site})).toBeNull();
-    m.buildings.find(b=>b.type==="oil-rig")!.remainingTicks=0;
-    const oil=expansion.supply.inventories[1].oil;
-    for(let i=0;i<20;i++) m.step();
+    expect(
+      m.applyCommand({
+        type: "build",
+        playerId: 1,
+        buildingType: "oil-rig",
+        tile: site,
+      }),
+    ).toBeNull();
+    m.buildings.find((b) => b.type === "oil-rig")!.remainingTicks = 0;
+    const oil = expansion.supply.inventories[1].oil;
+    for (let i = 0; i < 20; i++) m.step();
     expect(expansion.supply.inventories[1].oil).toBeGreaterThan(oil);
-    for(const player of m.players) {
-      const land=[...m.ownedLand(player.id)];
-      expect(land.every(t=>m.map.isLand(t))).toBe(true);
+    for (const player of m.players) {
+      const land = [...m.ownedLand(player.id)];
+      expect(land.every((t) => m.map.isLand(t))).toBe(true);
       expect(player.land).toBe(land.length);
     }
   });

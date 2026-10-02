@@ -162,15 +162,18 @@ describe("online room lifecycle", () => {
     expect(() => rooms.close(room.id, "b")).toThrow("owner");
     expect(() => rooms.close("default-africa", "a")).toThrow("owner");
   });
-  it("releases an abandoned match once the last human disconnects", () => {
+  it("retains abandoned capacity until the runtime releases it", () => {
     const rooms = new RoomCoordinator(0, 1);
     const room = rooms.create("a", profile("A"), "A", rules, false, 0);
     rooms.join(room.id, "b", profile("B"), 0);
     const [match] = rooms.advance(15_000);
     expect(rooms.disconnect("a", 16_000)).toEqual([]);
     expect(rooms.snapshot().reservations).toHaveLength(1);
-    expect(rooms.disconnect("b", 17_000)).toEqual([match.id]);
+    expect(rooms.disconnect("b", 17_000)).toEqual([]);
     expect(rooms.disconnect("b", 17_001)).toEqual([]);
+    expect(rooms.snapshot().reservations).toHaveLength(1);
+    rooms.releaseMatch(match.id);
+    rooms.releaseMatch(match.id);
     expect(rooms.snapshot().reservations).toHaveLength(0);
     rooms.join("default-africa", "a", profile("A"), 18_000);
     rooms.join("default-africa", "b", profile("B"), 18_000);

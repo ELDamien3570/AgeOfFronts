@@ -8,7 +8,8 @@ import {
 import { join, normalize, resolve } from "node:path";
 import { WebSocket, WebSocketServer } from "ws";
 import { DEFAULT_EMPIRE_PROFILE } from "../../lobby/EmpireProfile";
-import { LiveMatch } from "../application/LiveMatch";
+import { LiveMatch, type LiveMatchOptions } from "../application/LiveMatch";
+import type { MatchExecutor } from "../application/MatchExecutor";
 import { RoomCoordinator } from "../domain/RoomCoordinator";
 import { clientMessageSchema, type ServerMessage } from "../Protocol";
 import { CoordinatorStore } from "./CoordinatorStore";
@@ -21,6 +22,9 @@ export interface CoordinatorServerOptions {
   now?: () => number;
   matchCapacity?: number;
   staticDir?: string;
+  liveMatch?: LiveMatchOptions;
+  /** Injectable executor for deterministic integration tests; production uses one reserved worker. */
+  createExecutor?: () => MatchExecutor;
 }
 
 function serveStatic(
@@ -75,6 +79,9 @@ export function createCoordinatorServer(options: CoordinatorServerOptions) {
   const restored = rooms.snapshot();
   for (const room of [...restored.rooms, ...restored.reservations])
     for (const member of room.members) rooms.disconnect(member.guestId, now());
+  // Workers are memory-only; never advertise or reserve capacity for stale DB matches.
+  for (const reservation of restored.reservations)
+    rooms.releaseMatch(reservation.id);
   options.store.write(rooms.snapshot());
   const sessions = new Map<
     WebSocket,
@@ -179,6 +186,10 @@ export function createCoordinatorServer(options: CoordinatorServerOptions) {
         guestId: session.guestId,
         now: now(),
         state,
+        activeMatches: [...matches.values()].flatMap((match) => {
+          const summary = match.summary(session.guestId);
+          return summary ? [summary] : [];
+        }),
       });
   };
   const sendGuest = (guest: string, message: ServerMessage) => {
@@ -208,11 +219,13 @@ export function createCoordinatorServer(options: CoordinatorServerOptions) {
             client.close(1008, "Invalid guest session");
             return;
           }
-          // A loaded match has no reconnect/handoff path. Keep its controlling
-          // socket alive; only the initial lobby-to-match transition may replace it.
+          // Keep a live controller or pending admission safe from duplicate tabs.
+          // A disconnected remembered guest can explicitly rejoin its stable seat.
           if (
             [...matches.values()].some(
-              (match) => match.connected(guestId) && match.isLoaded(guestId),
+              (match) =>
+                (match.connected(guestId) && match.isLoaded(guestId)) ||
+                match.isAdmitting(guestId),
             )
           ) {
             client.close(4001, "Match already open");
@@ -252,14 +265,36 @@ export function createCoordinatorServer(options: CoordinatorServerOptions) {
         if ("matchId" in message) {
           matchRequest = true;
           const match = matches.get(message.matchId);
-          if (!match || !match.connected(session.guestId))
-            throw new Error("This match is no longer available");
+          if (!match) throw new Error("This match is no longer available");
+          if (
+            [...matches.values()].some(
+              (other) =>
+                other !== match &&
+                (other.connected(session.guestId) ||
+                  other.isAdmitting(session.guestId)),
+            )
+          )
+            throw new Error("Leave your other match before joining this one");
           switch (message.type) {
             case "watch-match":
-              match.announce(session.guestId);
+              match.watch(
+                session.guestId,
+                options.store.profile(session.guestId) ??
+                  DEFAULT_EMPIRE_PROFILE,
+                message.playerId,
+              );
               break;
             case "match-ready":
               await match.qualify(session.guestId, message.runtimeId);
+              break;
+            case "match-sync-applied":
+              match.acknowledge(
+                session.guestId,
+                message.syncId,
+                message.publicationSequence,
+              );
+              options.store.write(rooms.snapshot());
+              publish();
               break;
             case "match-command":
               match.command(
@@ -272,7 +307,8 @@ export function createCoordinatorServer(options: CoordinatorServerOptions) {
               await match.selectSpawn(session.guestId, message.tile);
               break;
           }
-          send(client, { type: "ack", requestId: message.requestId });
+          if (sessions.get(client) === session)
+            send(client, { type: "ack", requestId: message.requestId });
           return;
         }
         const previous = options.store.reply(
@@ -291,11 +327,14 @@ export function createCoordinatorServer(options: CoordinatorServerOptions) {
           message.type === "join" ||
           message.type === "create"
         ) {
-          const active = [...matches.values()].find((match) =>
-            match.connected(session.guestId),
+          const active = [...matches.values()].find(
+            (match) =>
+              match.connected(session.guestId) ||
+              match.isAdmitting(session.guestId),
           );
           if (active) {
             await active.disconnect(session.guestId);
+            if (sessions.get(client) !== session) return;
             previousState = rooms.snapshot();
             options.store.write(previousState);
           }
@@ -359,10 +398,16 @@ export function createCoordinatorServer(options: CoordinatorServerOptions) {
       const session = sessions.get(client);
       if (!session) return;
       sessions.delete(client);
-      const active = [...matches.values()].find((match) =>
-        match.connected(session.guestId),
+      const active = [...matches.values()].find(
+        (match) =>
+          match.connected(session.guestId) ||
+          match.isAdmitting(session.guestId),
       );
-      if (active?.isLoaded(session.guestId)) {
+      if (
+        active &&
+        (active.isLoaded(session.guestId) ||
+          active.isAdmitting(session.guestId))
+      ) {
         rooms.disconnect(session.guestId, now());
         void active.disconnect(session.guestId);
       } else if (!active) rooms.disconnect(session.guestId, now());
@@ -377,7 +422,7 @@ export function createCoordinatorServer(options: CoordinatorServerOptions) {
     for (const reservation of starts) {
       const match = new LiveMatch(
         reservation,
-        new ReservedMatchWorker(),
+        options.createExecutor?.() ?? new ReservedMatchWorker(),
         runtimeId,
         sendGuest,
         () => {
@@ -388,6 +433,9 @@ export function createCoordinatorServer(options: CoordinatorServerOptions) {
         },
         now,
         (guest) => rooms.disconnect(guest, now()),
+        (guest, _playerId, profile) =>
+          rooms.claimMatchSeat(reservation.id, guest, profile, now()),
+        options.liveMatch,
       );
       matches.set(reservation.id, match);
       void match.initialize().catch(async (error) => {
@@ -408,6 +456,8 @@ export function createCoordinatorServer(options: CoordinatorServerOptions) {
       publish();
     }
   }, 50);
+  // Public summaries are runtime-derived and cheap; no per-tick SQLite writes.
+  const directoryClock = setInterval(publish, 1_000);
   const heartbeat = setInterval(() => {
     for (const [client, session] of sessions) {
       if (!session.alive) client.terminate();
@@ -426,6 +476,7 @@ export function createCoordinatorServer(options: CoordinatorServerOptions) {
     },
     async close() {
       clearInterval(clock);
+      clearInterval(directoryClock);
       clearInterval(heartbeat);
       await Promise.all(
         [...matches.values()].map((match) =>

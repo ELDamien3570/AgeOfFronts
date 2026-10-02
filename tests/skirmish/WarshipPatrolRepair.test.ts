@@ -40,7 +40,7 @@ function spawnWarship(
   playerId = 1,
 ): Ship {
   const ship: Ship = {
-    id: match.nextId++,
+    id: (match as any).nextId++,
     playerId,
     kind: "warship",
     x: xTile * FIXED + FIXED / 2,
@@ -63,7 +63,7 @@ function spawnWarship(
 function addPort(match: Skirmish, xTile: number, yTile: number, playerId = 1) {
   const tile = match.map.ref(xTile, yTile);
   const port = {
-    id: match.nextId++,
+    id: (match as any).nextId++,
     playerId,
     type: "port" as const,
     tile,
@@ -72,7 +72,7 @@ function addPort(match: Skirmish, xTile: number, yTile: number, playerId = 1) {
     maxHealth: 1000,
   };
   match.buildings.push(port);
-  match.buildingIndex.add(port);
+  (match as any).buildingIndex.add(port);
   return port;
 }
 

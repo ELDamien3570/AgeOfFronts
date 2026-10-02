@@ -60,6 +60,16 @@ export class SnapshotEncoder {
   >();
   private width = 0;
   private height = 0;
+  /** Align existing subscribers and a newcomer to the same immutable tick boundary. */
+  encodeJoinBarrier(source: Snapshot): {
+    shared: SnapshotPacket;
+    baseline: SnapshotPacket;
+  } {
+    return {
+      shared: this.encode(source),
+      baseline: new SnapshotEncoder(true).encode(source),
+    };
+  }
   encode(source: Snapshot): SnapshotPacket {
     const reset =
       !this.previousTiles ||

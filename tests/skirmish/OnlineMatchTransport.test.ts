@@ -205,6 +205,9 @@ it("runs two thin clients from one server simulation, enforces ownership and con
       (await decodeState<SnapshotPacket>(remaining.packet)).players[0].ai,
     ).toBe(true);
     clients[1].close();
+    await until(() => coordinator.rooms.snapshot().reservations[0].members.every(member => !member.connected));
+    expect(coordinator.rooms.snapshot().reservations).toHaveLength(1);
+    now += 120_001;
     await until(() => coordinator.rooms.snapshot().reservations.length === 0);
     expect(errors).toEqual([]);
   } finally {
