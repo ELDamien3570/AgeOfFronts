@@ -1424,7 +1424,7 @@ canvas.addEventListener("pointerup", (event) => {
       for (const ship of snapshot.ships) {
         if (ship.playerId !== localPlayerId) continue;
 
-        const position = renderer.screen(ship.x / FIXED, ship.y / FIXED);
+        const position = renderer.shipScreenPosition(ship);
 
         if (
           position.x >= Math.min(p.x, start.x) &&

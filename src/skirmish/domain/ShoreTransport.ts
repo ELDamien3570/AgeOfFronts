@@ -208,6 +208,29 @@ export class ShoreTransport {
     return null;
   }
 
+  land(ship: Ship, tile: number, redirected = false): string | null {
+    const w = this.world;
+    const transfer = ship.shoreTransfer!;
+    const cargo = w.squads.filter((s) => s.embarkedOn === ship.id);
+    const result = w.unload(ship, tile);
+    if (result !== null) return result;
+    if (redirected) {
+      transfer.landingTile = tile;
+      transfer.destinationTile = tile;
+      transfer.queued = [];
+    }
+    for (const squad of cargo) {
+      if (squad.embarkedOn === ship.id) continue;
+      squad.queuedOrders = redirected
+        ? []
+        : (transfer.queued.find((q) => q.squadId === squad.id)?.orders ?? []);
+      w.resume(squad, transfer.destinationTile);
+    }
+    if (!w.squads.some((s) => s.embarkedOn === ship.id))
+      w.ships.splice(w.ships.indexOf(ship), 1);
+    return null;
+  }
+
   step(): void {
     const w = this.world;
     for (const ship of [...w.ships]) {
@@ -233,19 +256,13 @@ export class ShoreTransport {
       }
       if (transfer.phase === "sailing" && ship.destination === null)
         transfer.phase = "landing";
-      if (transfer.phase !== "landing") continue;
+      if (transfer.phase !== "landing" || ship.destination !== null) continue;
       // A newly occupied landing is retried; never force units into blockers.
       if (
         w.blocked(transfer.landingTile, ship.playerId) ||
-        w.unload(ship, transfer.landingTile) !== null
+        this.land(ship, transfer.landingTile) !== null
       )
         continue;
-      w.ships.splice(w.ships.indexOf(ship), 1);
-      for (const squad of cargo) {
-        squad.queuedOrders =
-          transfer.queued.find((q) => q.squadId === squad.id)?.orders ?? [];
-        w.resume(squad, transfer.destinationTile);
-      }
     }
   }
 }

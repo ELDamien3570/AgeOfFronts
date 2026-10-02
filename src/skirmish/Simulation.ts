@@ -468,7 +468,11 @@ export class Skirmish {
     if (!player || player.eliminated || this.winner !== null)
       return "This player cannot issue orders";
     const shipIds = "shipIds" in command ? command.shipIds : "shipId" in command ? [command.shipId] : [];
-    if (shipIds.some(id => this.ships.some(s => s.id === id && s.shoreTransfer)))
+    const landingControl = command.type === "sail" ||
+      command.type === "stop-ships" || command.type === "unload";
+    if (shipIds.some(id => this.ships.some(s =>
+      s.id === id && s.shoreTransfer &&
+      !(s.shoreTransfer.phase === "landing" && landingControl))))
       return "Shore transports complete their crossing automatically";
     if (player.kind === "tribe") {
       if (command.type === "recruit-ship")
@@ -545,8 +549,12 @@ export class Skirmish {
       return this.load(player, command.shipId, command.squadIds);
     if (command.type === "board")
       return this.board(player, command.shipId, command.squadIds);
-    if (command.type === "unload")
-      return this.unload(player, command.shipId, command.tile);
+    if (command.type === "unload") {
+      const ship = this.ships.find(s => s.id === command.shipId && s.playerId === player.id);
+      return ship?.shoreTransfer
+        ? this.shoreTransport.land(ship, command.tile, true)
+        : this.unload(player, command.shipId, command.tile);
+    }
     if (
       command.type !== "order" ||
       !Array.isArray(command.squadIds) ||
@@ -1422,7 +1430,7 @@ export class Skirmish {
       return "Choose passable coastal land directly beside the transport";
     const cargo = this.squads.filter((s) => s.embarkedOn === ship.id);
     if (!cargo.length) return "This transport has no squads aboard";
-    const slots = this.formations.plan(
+    let slots = this.formations.plan(
       tile,
       cargo.map((squad) => ({ squad, origin: ship })),
       this.squads,
@@ -1430,9 +1438,27 @@ export class Skirmish {
       undefined,
       this.expansion ? (t) => this.expansion!.fortifications.blocked(t,ship.playerId) : undefined,
     );
-    if (!slots) return "There is no room for the squads on this landing coast";
+    if (!slots) {
+      // Reserve each accepted footprint before considering the next squad.
+      // Planning remains atomic; squads that cannot fit stay aboard.
+      slots = new Map();
+      const reserved = [...this.squads];
+      for (const squad of [...cargo].sort((a, b) => a.id - b.id)) {
+        const placement = this.formations.plan(
+          tile, [{ squad, origin: ship }], reserved, 3 * FIXED, undefined,
+          this.expansion ? t => this.expansion!.fortifications.blocked(t, ship.playerId) : undefined,
+        );
+        const destination = placement?.get(squad.id);
+        if (!destination) continue;
+        slots.set(squad.id, destination);
+        reserved.push({ ...squad, ...destination, embarkedOn: null,
+          order: { type: "hold" }, queuedOrders: [] });
+      }
+    }
+    if (!slots.size) return "There is no room for the squads on this landing coast";
     cargo.forEach((squad) => {
-      const destination = slots.get(squad.id)!;
+      const destination = slots.get(squad.id);
+      if (!destination) return;
       squad.embarkedOn = null;
       squad.x = destination.x;
       squad.y = destination.y;

@@ -13,6 +13,7 @@ import { AircraftLayer } from "./AircraftLayer";
 import { AircraftPresentation } from "./AircraftPresentation";
 import { AircraftView } from "./AircraftView";
 import { buildingArtworkId } from "./ArtworkCatalog";
+import { BoatPresentation } from "./BoatPresentation";
 import { BuildingArtwork } from "./BuildingArtwork";
 import { BuildingMarkers } from "./BuildingMarkers";
 import { BuildingSelectionViewModel } from "./BuildingSelectionViewModel";
@@ -93,6 +94,7 @@ export class Renderer {
   private readonly buildingMarkers = new BuildingMarkers();
   private readonly formationArtwork = new FormationArtwork();
   private readonly presentation = new UnitPresentation();
+  private readonly boats = new BoatPresentation();
   private readonly traderPresentation = new TraderPresentation();
   private readonly aircraftPresentation = new AircraftPresentation();
   private readonly aircraftView = new AircraftView();
@@ -258,6 +260,7 @@ export class Renderer {
     this.previousSquads.clear();
     this.currentSquads.clear();
     this.presentation.reset();
+    this.boats.reset();
     this.impacts.reset();
     this.combatMarkers = [];
     this.traderPresentation.reset();
@@ -315,6 +318,7 @@ export class Renderer {
     this.traderPresentation.update(snapshot);
     this.aircraftPresentation.update(snapshot);
     const arrived = performance.now();
+    this.boats.update(snapshot, arrived);
     if (this.receivedAt) {
       const gap = arrived - this.receivedAt;
       if (gap < 1000)
@@ -535,7 +539,7 @@ export class Renderer {
           s.playerId === this.playerId &&
           s.kind === kind &&
           visibleInViewport(
-            this.screen(s.x / FIXED, s.y / FIXED),
+            this.shipScreenPosition(s),
             shipSymbol(
               this.scale,
               !!this.formationArtwork.get(s.kind, COLORS[s.playerId]),
@@ -826,9 +830,18 @@ export class Renderer {
     return size;
   }
 
+  shipScreenPosition(ship: Snapshot["ships"][number]): {
+    x: number;
+    y: number;
+  } {
+    const pose = this.boats.shipPose(ship.id) ?? ship;
+    return this.screen(pose.x / FIXED, pose.y / FIXED);
+  }
+
   shipAt(x: number, y: number): number | null {
     for (const ship of this.snapshot?.ships ?? []) {
-      const p = this.screen(ship.x / FIXED, ship.y / FIXED);
+      const pose = this.boats.shipPose(ship.id) ?? ship;
+      const p = this.screen(pose.x / FIXED, pose.y / FIXED);
       const radius = shipSymbol(
         this.scale,
         !!this.formationArtwork.get(ship.kind, COLORS[ship.playerId]),
@@ -1124,6 +1137,11 @@ export class Renderer {
         );
     const blend = paused ? 1 : Math.min(1, (now - this.receivedAt) / interval);
     this.aircraftBlend = blend;
+    const boatTick = this.boats.frame(
+      now,
+      speed,
+      paused || snapshot.winner !== null,
+    );
     const visualTick = this.animationClock.sample(
       now,
       speed,
@@ -1505,7 +1523,8 @@ export class Renderer {
       }
     }
     for (const ship of snapshot.ships) {
-      const p = this.screen(ship.x / FIXED, ship.y / FIXED);
+      const pose = this.boats.shipPose(ship.id) ?? ship;
+      const p = this.screen(pose.x / FIXED, pose.y / FIXED);
       if (!visibleInViewport(p, 60, this.width, this.height)) continue;
       const vessel = VESSEL.get(ship.definitionId ?? "");
       const rules = vessel
@@ -1562,16 +1581,18 @@ export class Renderer {
               ship.definitionId,
               ship.fighting
                 ? "attack"
-                : ship.destination !== null
+                : ("moving" in pose ? pose.moving : ship.destination !== null)
                   ? "running"
                   : "idle",
-              visualTick,
+              ship.fighting ? visualTick : boatTick,
             )
           : undefined;
       if (shipArt) {
         ctx.save();
         ctx.translate(p.x, p.y);
-        ctx.rotate(this.presentation.shipAngle(ship.id));
+        ctx.rotate(
+          "angle" in pose ? pose.angle : this.presentation.shipAngle(ship.id),
+        );
         const size = Math.min(50, this.scale * 2.4) * shipArt.extent;
         ctx.imageSmoothingEnabled = true;
         ctx.drawImage(
@@ -1600,14 +1621,16 @@ export class Renderer {
           p.y,
           symbol.width,
           symbol.height,
-          this.presentation.shipAngle(ship.id),
+          "angle" in pose ? pose.angle : this.presentation.shipAngle(ship.id),
           RGB[ship.playerId],
           paused ? 0.67 : 1,
         );
         if (!batched || selected) {
           ctx.save();
           ctx.translate(p.x, p.y);
-          ctx.rotate(this.presentation.shipAngle(ship.id));
+          ctx.rotate(
+            "angle" in pose ? pose.angle : this.presentation.shipAngle(ship.id),
+          );
           ctx.imageSmoothingEnabled = true;
           const x = -symbol.width * formation.pivotX;
           const y = -symbol.height * formation.pivotY;
@@ -1705,7 +1728,9 @@ export class Renderer {
           }
         }
       for (const actor of snapshot.expansion.traders) {
-        const pose = this.traderPresentation.pose(actor.id, visualTick, blend);
+        const boat = actor.naval ? this.boats.traderPose(actor.id) : undefined;
+        const pose =
+          boat ?? this.traderPresentation.pose(actor.id, visualTick, blend);
         if (!pose) continue;
         const p = this.screen(pose.x / FIXED, pose.y / FIXED);
         const projected = traderSymbol(this.scale, true);
@@ -1716,10 +1741,14 @@ export class Renderer {
         const art = projected.artwork
           ? (this.eraArtwork.get(
               actor.definitionId,
-              pose.clip,
-              pose.elapsedTicks,
+              "moving" in pose ? (pose.moving ? "running" : "idle") : pose.clip,
+              "elapsedTicks" in pose ? pose.elapsedTicks : boatTick,
             ) ??
-            this.eraArtwork.get(actor.definitionId, "idle", pose.elapsedTicks))
+            this.eraArtwork.get(
+              actor.definitionId,
+              "idle",
+              "elapsedTicks" in pose ? pose.elapsedTicks : boatTick,
+            ))
           : undefined;
         const symbol = traderSymbol(this.scale, !!art);
         ctx.save();
@@ -1728,7 +1757,11 @@ export class Renderer {
           const size = symbol.size * art.extent;
           ctx.imageSmoothingEnabled = true;
           ctx.translate(p.x, p.y);
-          ctx.rotate(pose.angle + this.eraArtwork.facing(actor.definitionId));
+          ctx.rotate(
+            pose.angle -
+              (boat ? Math.PI : 0) +
+              this.eraArtwork.facing(actor.definitionId),
+          );
           ctx.drawImage(
             art.source,
             art.x,

@@ -94,6 +94,7 @@ export const CONTENT_HASH = hash({
     maxArmour: MAX_ARMOUR,
   },
   combatRevision: 3,
+  shoreTransportRevision: 1,
   armyCaps: ARMY_CAPS,
   defences: { gunNest: GUN_NEST_ATTACK, trench: TRENCH_COVER },
   factions: FACTIONS,
