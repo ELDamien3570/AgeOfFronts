@@ -1,3 +1,4 @@
+import { AiDefenseOutline, type DefenseOutlineState } from "./AiDefenseOutline";
 import type { Player } from "../Protocol";
 import { FIXED } from "../Protocol";
 import { personalityOf } from "../content/AiPersonalities";
@@ -57,11 +58,14 @@ export class AiDefenseDirector {
   private cursor = 0;
   private readonly cityCursors = new Map<number, number>();
   private nextBuild = 0;
+  private readonly proposalRetry = new Map<number, number>();
+  private readonly outlines = new Map<number, { cityId: string; revision: number; retryAt: number; state: DefenseOutlineState }>();
   readonly diagnostics = {
     proposed: 0,
     commands: 0,
     rejected: 0,
     abandoned: 0,
+    outlineWork: 0,
   };
   constructor(
     private readonly expansion: Expansion,
@@ -74,9 +78,15 @@ export class AiDefenseDirector {
       cityCursors: [...this.cityCursors],
       cursor: this.cursor,
       nextBuild: this.nextBuild,
+      outlines: [...this.outlines],
+      proposalRetry: [...this.proposalRetry],
     });
   }
   restore(saved: ReturnType<AiDefenseDirector["checkpoint"]>): void {
+    this.proposalRetry.clear();
+    for (const [id, tick] of saved.proposalRetry ?? []) this.proposalRetry.set(id, tick);
+    this.outlines.clear();
+    for (const [id, outline] of structuredClone(saved.outlines ?? [])) this.outlines.set(id, outline);
     this.projects.clear();
     for (const [id, project] of structuredClone(saved.projects))
       this.projects.set(id, project);
@@ -98,6 +108,8 @@ export class AiDefenseDirector {
     this.projects.delete(playerId);
     this.allowances.delete(playerId);
     this.cityCursors.delete(playerId);
+    this.outlines.delete(playerId);
+    this.proposalRetry.delete(playerId);
   }
   production(playerId: number): Inventory {
     const project = this.projects.get(playerId);
@@ -187,41 +199,51 @@ export class AiDefenseDirector {
           b.buildings.length - a.buildings.length ||
           a.anchorTile - b.anchorTile,
       );
-    const cursor = this.cityCursors.get(player.id) ?? 0,
-      city = cities[cursor % Math.max(1, cities.length)];
-    this.cityCursors.set(player.id, cursor + 1);
-    if (!city) return;
-    const tiles = rectangularDefensePerimeter(world.map, {
+    const pending = this.outlines.get(player.id), cursor = this.cityCursors.get(player.id) ?? 0,
+      city = pending ? cities.find(c => c.id === pending.cityId) : cities[cursor % Math.max(1, cities.length)];
+    if (!pending) this.cityCursors.set(player.id, cursor + 1);
+    if (!city) { this.outlines.delete(player.id); return; }
+    if (pending && pending.revision !== city.revision) { this.outlines.delete(player.id); return; }
+    if (pending && pending.retryAt > world.tick) return;
+    if (pending?.state.phase === "failed") { this.outlines.delete(player.id); return; }
+    let tiles = rectangularDefensePerimeter(world.map, {
       left: city.bounds.left - 4,
       top: city.bounds.top - 4,
       right: city.bounds.right + 4,
       bottom: city.bounds.bottom + 4,
     });
-    if (
-      !tiles ||
-      tiles.length + towers > 32 ||
-      tiles.some((t) => world.buildingsAt(t).length)
-    )
-      return;
-    const perimeter = new Set<number>();
-    for (let i = 0; i < tiles.length; i++) {
-      let x = world.map.x(tiles[i]),
-        y = world.map.y(tiles[i]);
+    let perimeter = new Set<number>();
+    const usable = (tile: number) => world.owners[tile] === player.id && world.paths.walkable(tile) &&
+      !world.buildingsAt(tile).length && !fortifications.intactWallAt(tile) &&
+      !supply.resourceSites.rejection("tower", tile);
+    let rectangleValid = !!tiles && tiles.length + towers <= 32;
+    if (tiles) for (let i = 0; i < tiles.length; i++) {
+      let x = world.map.x(tiles[i]), y = world.map.y(tiles[i]);
       const to = tiles[(i + 1) % tiles.length];
-      perimeter.add(tiles[i]);
-      while (x !== world.map.x(to) || y !== world.map.y(to)) {
-        x += Math.sign(world.map.x(to) - x);
-        y += Math.sign(world.map.y(to) - y);
+      while (true) {
         const tile = world.map.ref(x, y);
-        if (
-          world.owners[tile] !== player.id ||
-          !world.map.isLand(tile) ||
-          world.map.isImpassable(tile)
-        )
-          return;
+        if (!usable(tile)) rectangleValid = false;
         perimeter.add(tile);
+        if (x === world.map.x(to) && y === world.map.y(to)) break;
+        x += Math.sign(world.map.x(to) - x); y += Math.sign(world.map.y(to) - y);
       }
     }
+    if (!rectangleValid || pending) {
+      const facts = world.buildingFacts(), outline = new AiDefenseOutline(world.map, city.bounds, tile => usable(tile) &&
+        ![...facts.nearby(tile, 3)].some(b => world.map.euclideanDistSquared(tile, b.tile) < 9), pending?.state);
+      this.diagnostics.outlineWork = outline.step(32);
+      this.outlines.set(player.id, { cityId: city.id, revision: city.revision,
+        retryAt: outline.state.phase === "failed" ? world.tick + 400 : 0, state: outline.state });
+      const result = outline.result();
+      if (!result) {
+        if (outline.state.phase === "complete") this.outlines.delete(player.id);
+        return;
+      }
+      tiles = result.towers; perimeter = result.perimeter;
+      this.outlines.delete(player.id);
+      if (tiles.length + towers > 32 || [...perimeter].some(t => !usable(t))) return;
+    }
+    if (!tiles) return;
     if (
       perimeter.size +
         fortifications.barriers
@@ -245,9 +267,17 @@ export class AiDefenseDirector {
         diplomacy,
         resources: supply.resourceSites,
         sites,
-        allowedWall: (t) => perimeter.has(t),
+        allowedWall: (t) => usable(t),
       });
     if (typeof quote === "string") return;
+    // Automatic production links can add a legal shortcut at a concave corner.
+    // Retain its actual paid footprint, but still require every intended edge.
+    const firstId = world.buildingFacts().highestId + 1;
+    const edges = new Set(quote.steps.flatMap((step, index) => step.links.map(link =>
+      [link.a, firstId + index].sort((a,b) => a-b).join(":"))));
+    if (sites.some((_, index) => !edges.has([firstId + index, firstId + (index + 1) % sites.length].sort((a,b) => a-b).join(":")))) return;
+    for (const step of quote.steps) for (const link of step.links) for (const tile of link.tiles) perimeter.add(tile);
+    if (perimeter.size + fortifications.barriers.filter(b => b.playerId === player.id).reduce((n,b) => n + b.tiles.length, 0) > 384) return;
     this.diagnostics.proposed++;
     return {
       id: `defense:${player.id}:${city.anchorTile}`,
@@ -490,6 +520,7 @@ export class AiDefenseDirector {
   }
   step(): void {
     const { world } = this.expansion;
+    this.diagnostics.outlineWork = 0;
     if (world.tick % 3) return;
     for (let i = 0; i < world.players.length; i++) {
       const player = world.players[this.cursor % world.players.length];
@@ -505,8 +536,10 @@ export class AiDefenseDirector {
         project = undefined;
       }
       if (!project) {
+        if ((this.proposalRetry.get(player.id) ?? 0) > world.tick) continue;
         project = this.proposal(player);
         if (project) this.projects.set(player.id, project);
+        else if (!this.outlines.has(player.id)) this.proposalRetry.set(player.id, world.tick + 120);
       }
       if (project) this.advance(project, player, allowance);
       break;

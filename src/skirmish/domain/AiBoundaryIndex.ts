@@ -18,6 +18,44 @@ export class AiBoundaryIndex {
   private readonly masks: Uint8Array;
   private readonly owners = new Map<number, Map<string, BoundaryChunk>>();
   private revision = 0;
+  private readonly links = new Map<
+    string,
+    { chunk: BoundaryChunk; previous?: string; next?: string }
+  >();
+  private readonly first = new Map<number, string>();
+  private readonly last = new Map<number, string>();
+  private link(chunk: BoundaryChunk): void {
+    const previous = this.last.get(chunk.playerId);
+    this.links.set(chunk.id, { chunk, previous });
+    if (previous) this.links.get(previous)!.next = chunk.id;
+    else this.first.set(chunk.playerId, chunk.id);
+    this.last.set(chunk.playerId, chunk.id);
+  }
+  private unlink(chunk: BoundaryChunk): void {
+    const entry = this.links.get(chunk.id)!;
+    if (entry.previous) this.links.get(entry.previous)!.next = entry.next;
+    else if (entry.next) this.first.set(chunk.playerId, entry.next);
+    else this.first.delete(chunk.playerId);
+    if (entry.next) this.links.get(entry.next)!.previous = entry.previous;
+    else if (entry.previous) this.last.set(chunk.playerId, entry.previous);
+    else this.last.delete(chunk.playerId);
+    this.links.delete(chunk.id);
+  }
+  /** Constant-time cursor reads; deleting the cursor restarts at a live head. */
+  readChunk(
+    playerId: number,
+    cursor?: string,
+  ): { value?: BoundaryChunk; next: string | null } {
+    const entry =
+      (cursor ? this.links.get(cursor) : undefined) ??
+      this.links.get(this.first.get(playerId) ?? "");
+    return entry?.chunk.playerId === playerId
+      ? { value: entry.chunk, next: entry.next ?? null }
+      : { next: null };
+  }
+  chunk(id: string): BoundaryChunk | undefined {
+    return this.links.get(id)?.chunk;
+  }
   private rebuildCursor = 0;
   ready = true;
   readonly diagnostics = { cells: 0, edges: 0, chunks: 0, bytes: 0 };
@@ -70,6 +108,7 @@ export class AiBoundaryIndex {
     chunk.changedTick = tick;
     if (!chunk.tiles.size) {
       groups!.delete(key);
+      this.unlink(chunk);
       this.diagnostics.chunks--;
       if (!groups!.size) this.owners.delete(owner);
     }
@@ -92,6 +131,7 @@ export class AiBoundaryIndex {
         changedTick: tick,
       };
       groups.set(key, chunk);
+      this.link(chunk);
       this.diagnostics.chunks++;
     }
     chunk.tiles.add(tile);
@@ -147,6 +187,9 @@ export class AiBoundaryIndex {
   }
   resetForRebuild(): void {
     this.owners.clear();
+    this.links.clear();
+    this.first.clear();
+    this.last.clear();
     this.masks.fill(0);
     this.diagnostics.chunks = 0;
     this.rebuildCursor = 0;
@@ -167,6 +210,9 @@ export class AiBoundaryIndex {
   }
   restore(saved: ReturnType<AiBoundaryIndex["checkpoint"]>): void {
     this.owners.clear();
+    this.links.clear();
+    this.first.clear();
+    this.last.clear();
     this.masks.fill(0);
     this.diagnostics.chunks = 0;
     this.revision = saved.revision;
@@ -176,6 +222,7 @@ export class AiBoundaryIndex {
       this.owners.set(owner, chunks);
       this.diagnostics.chunks += chunks.size;
       for (const chunk of chunks.values()) {
+        this.link(chunk);
         const directions = [0, 0, 0, 0];
         for (const tile of chunk.tiles) {
           const mask = this.mask(tile);

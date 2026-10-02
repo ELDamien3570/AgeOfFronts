@@ -1,3 +1,5 @@
+import { AiFrontRecords } from "./AiFrontRecords";
+import { AiModernFronts } from "./AiModernFronts";
 import type { Player } from "../Protocol";
 import { personalityOf } from "../content/AiPersonalities";
 import { resourceTechnology } from "../content/Resources";
@@ -32,6 +34,8 @@ export class AiEconomicDirector {
   readonly losses = new AiLossWindow();
   readonly cities: AiCityRecords;
   readonly defenses: AiDefenseDirector;
+  readonly fronts: AiFrontRecords;
+  readonly modernFronts: AiModernFronts;
   readonly navalFacts: AiNavalFacts;
   readonly naval: AiNavalPlanner;
   readonly boundaries?: AiBoundaryIndex;
@@ -58,6 +62,8 @@ export class AiEconomicDirector {
     this.defenses = new AiDefenseDirector(expansion, this);
     this.navalFacts = new AiNavalFacts(expansion.world);
     this.naval = new AiNavalPlanner(expansion, this);
+    this.fronts = new AiFrontRecords(expansion, this);
+    this.modernFronts = new AiModernFronts(expansion, this);
     if (
       expansion.world.options?.aiEconomy &&
       expansion.world.options.aiDefenses
@@ -83,6 +89,8 @@ export class AiEconomicDirector {
       losses: this.losses.checkpoint(),
       cities: this.cities.checkpoint(),
       defenses: this.defenses.checkpoint(),
+      fronts: this.fronts.checkpoint(),
+      modernFronts: this.modernFronts.checkpoint(),
       navalFacts: this.navalFacts.checkpoint(),
       naval: this.naval.checkpoint(),
       boundaries: this.boundaries?.checkpoint(),
@@ -116,8 +124,12 @@ export class AiEconomicDirector {
         cityCursors: [],
         cursor: 0,
         nextBuild: 0,
+        outlines: [],
+        proposalRetry: [],
       },
     );
+    this.fronts.restore(saved.fronts ?? { records: [], cursors: [], player: 0, scan: undefined });
+    this.modernFronts.restore(saved.modernFronts ?? { sections: [], player: 0, nextBuild: 0, retries: [] });
     if (saved.navalFacts) this.navalFacts.restore(saved.navalFacts);
     this.naval.restore(saved.naval ?? { missions: [], cursor: 0, serial: 0 });
     if (saved.boundaries) this.boundaries?.restore(saved.boundaries);
@@ -135,6 +147,7 @@ export class AiEconomicDirector {
   release(playerId: number): void {
     this.naval.release(playerId);
     this.defenses.release(playerId);
+    this.fronts.release(playerId); this.modernFronts.release(playerId);
     this.military.release(playerId);
     this.losses.release(playerId);
     this.ledger.releasePlayer(playerId);
@@ -153,9 +166,10 @@ export class AiEconomicDirector {
     // sixteen units for city work even during simultaneous cold boundary and
     // naval passes; more becomes available when another consumer is idle.
     const boundaryWork = this.boundaries?.step(world.tick, 32) ?? 0;
+    const frontWork = world.options.aiDefenses ? this.fronts.step(16) : 0;
     const navalWork =
       world.options.aiNaval && world.options.deferredPlanning
-        ? this.navalFacts.step(world.tick, 48)
+        ? this.navalFacts.step(world.tick, 48 - frontWork)
         : 0;
     const controllerWork =
       world.options.aiNaval && world.options.deferredPlanning
@@ -163,12 +177,12 @@ export class AiEconomicDirector {
         : 0;
     const cityWork = this.cities.step(
       world.tick,
-      128 - navalWork - boundaryWork - controllerWork,
+      128 - navalWork - boundaryWork - controllerWork - frontWork,
       8,
     );
     this.diagnostics.backgroundWork =
-      navalWork + boundaryWork + controllerWork + cityWork;
-    if (world.options.aiDefenses) this.defenses.step();
+      navalWork + boundaryWork + controllerWork + frontWork + cityWork;
+    if (world.options.aiDefenses) { this.defenses.step(); this.modernFronts.step(32); }
     if (world.tick % 3) return;
     for (let i = 0; i < world.players.length; i++) {
       const player = world.players[this.cursor % world.players.length];
@@ -194,6 +208,8 @@ export class AiEconomicDirector {
     if (this.expansion.world.options?.aiDefenses)
       for (const [id, n] of Object.entries(this.defenses.production(playerId)))
         materials[id] = (materials[id] ?? 0) + n;
+    if (this.expansion.world.options?.aiDefenses)
+      for (const [id, n] of Object.entries(this.modernFronts.production(playerId))) materials[id] = (materials[id] ?? 0) + n;
     return {
       demand: { ...(base ?? { equipment: {}, units: {} }), materials },
       protectedInputs: { ...this.ledger.protected(playerId).items },
