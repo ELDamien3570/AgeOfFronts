@@ -53,11 +53,12 @@ and never-run checks rather than calling a partial run a pass.
 | 1 | Recruitment one-at-a-time cancellation; age-correct deposit placement | Passed; 945 tests, TypeScript, build; exact one-item refunds, producer-head preservation and age invalidation |
 | 2 | Paid one-tier building upgrades; no free auto-modernization | Passed; 951 tests, TypeScript, build; shared atomic quote, timed production pause, paid AI and U shortcut |
 | 3a | Advanced opening budgets and age-locked tribe progression | Passed functional gate: 967 tests, TypeScript, build; initial research-grant choice remains separate |
-| 3b | Regular-player immediate starting-package technology grants | Awaiting user clarification; no dependency on runtime diagnostics |
+| 3b | Regular-player immediate starting-package technology grants | Passed; 986 tests; all prior-age research plus first node of each starting-age branch, remaining nodes require research |
 | 4a | Production-path bounded runtime diagnostics | Passed; 970 tests, typecheck/build, active worker and liveness/progress separation |
 | 4b | Remaining blocking planning paths and retention | Passed narrow slice: 973 tests; land queued-leg/patrol integration and limited-input outcomes; army/trade/shore admission still open |
 | 5 | Shared facts and less repeated work | Passed narrow slice: 977 tests; sparse capture pressure and one cargo grouping per movement stage; wider lifecycle/journal work remains |
-| 6 | Replication and presentation isolation | Pending; coherent versions, reset/join/slow-client correctness, bounded queues |
+| 6a | Demand-driven browser presentation copies | Passed; 979 tests; canonical apply continues without throwaway clones while rendering is busy |
+| 6b | Server replication pipeline and dirty publication journal | Pending; separate coherent bounded encoding pipeline, recovery baselines and lifecycle revisions |
 | 7 | AI operations, geography and diplomacy | Pending; optional policy, local defensive wake, recipient cooldowns, no human mechanic change |
 | 8a | Stable terrain-aware defence fronts and staffed Modern sections | Pending; terrain outlines, access/gates, reserves, withdrawal/reuse and funded bounded work |
 | 8b | Coordinated land Armies and eleven doctrines | Pending; researched Armies, supported pushes, flank/breach/escort and recovery |
@@ -219,3 +220,34 @@ Oxlint passed. This removes known repeated work, without asserting wall-clock
 speedups. The broader persistent building/resource/producer lifecycle indexes,
 regional facts and dirty publication journal remain open; stage grouping is not
 presented as a complete lifecycle event system.
+
+### Phase 6a presentation slice
+
+The decoder worker can apply an update without cloning/transferring a complete
+render view. When rendering is busy, the session continues ordered canonical
+application and network acknowledgements, then requests one latest projection
+through the same serialized decode channel when ready. Dirty change-and-return
+unions survive; sync/recovery baselines still demand a complete presentation
+before barrier acknowledgement. No server protocol or human simulation changed.
+
+Real-worker and session tests cover canonical-only updates, late projection,
+change-and-return, bounded pending presentation, and ordinary/recovery flows.
+Focused suite: 33/33. Full gate: 979/979 (149 files), TypeScript/build and
+whitespace passed. Browser end-to-end performance review is still outstanding.
+Server compression is still on the advance dependency and is tracked separately
+in phase 6b; this slice does not claim a complete replication-worker split.
+
+### Phase 3b confirmed starting research
+
+Latest user clarification supersedes the ambiguous immediate-package technology
+proposal: every start grants the first actual node in each research branch plus
+all prior-age technologies. Other starting-age nodes still require ordinary
+research. This applies to regular factions and age-locked tribes in all seven
+ages, including Cargo Canoes at Stone start. Snapshots include the starting age
+so the UI labels the corresponding current-age roots as starting grants.
+
+Seven new all-age checkpoint tests verify exact grants, no accidental later-node
+unlocks and restore. Existing research/transport tests now use the next legal
+node, or explicitly construct an unresearched state when testing prerequisite
+rejection. Full gate: 986/986 tests (149 files), TypeScript/build/whitespace passed;
+focused research, transport, UI and live-join checks: 55/55.
