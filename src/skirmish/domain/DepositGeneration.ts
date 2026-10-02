@@ -1,10 +1,12 @@
 import { TerrainType } from "../../core/game/Game";
 import type { GameMap } from "../../core/game/GameMap";
 import { resourceTerrainOf } from "../ResourceTerrain";
+import { coastalRanges } from "../content/CoastalTerritory";
+import { coastalWaterDistances } from "./CoastalReach";
 import type { Deposit, Resource } from "./Definitions";
 
 export const DEPOSIT_RULES = Object.freeze({
-  revision: 3,
+  revision: 4,
   baseDensity: 2,
   originalDenominator: 6300,
   mountainRadius: 6,
@@ -66,13 +68,14 @@ export function generateDeposits(
   const size = map.width() * map.height(),
     mountains = mountainDistances(map),
     desert = resourceTerrainOf(map)?.desert;
+  const waterDistances = coastalWaterDistances(map), oilReach = coastalRanges(map).oilTiles;
   const sums = new Float64Array(DEPOSIT_RESOURCES.length),
     eligible = new Uint32Array(DEPOSIT_RESOURCES.length);
   const weight = (tile: number, index: number): number => {
     const resource = DEPOSIT_RESOURCES[index];
     if (map.isImpassable(tile)) return 0;
     if (!map.isLand(tile))
-      return resource === "oil" && map.isWater(tile) ? 1 : 0;
+      return resource === "oil" && map.isWater(tile) && waterDistances[tile] <= oilReach ? 1 : 0;
     if (
       ["copper", "tin", "ironOre"].includes(resource) &&
       mountains[tile] <= DEPOSIT_RULES.mountainRadius

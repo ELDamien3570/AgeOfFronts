@@ -7,6 +7,7 @@ import { RECRUITMENT_SECONDS } from "../domain/Recruitment";
 import { PRODUCTION_RECIPES } from "../domain/Supply";
 import { TERRITORY_ABSORPTION } from "../domain/TerritoryAbsorption";
 import { AI_PERSONALITIES } from "./AiPersonalities";
+import { COASTAL_TERRITORY_RULES } from "./CoastalTerritory";
 import { ARMY_CAPS } from "./Armies";
 import { GUN_NEST_ATTACK, TRENCH_COVER } from "./Defences";
 import {
@@ -101,6 +102,7 @@ export const CONTENT_HASH = hash({
   aiPersonalities: AI_PERSONALITIES,
   squadCaps: AGE_SQUAD_CAPS,
   territoryAbsorption: TERRITORY_ABSORPTION,
+  coastalTerritory: COASTAL_TERRITORY_RULES,
   recruitment: RECRUITMENT_SECONDS,
   deposits: DEPOSIT_RULES,
   tribePromotion: { percent: TRIBE_PROMOTION_PERCENT, conquestInheritance: 1 },

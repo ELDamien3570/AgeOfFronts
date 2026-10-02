@@ -2,6 +2,8 @@ import type { GameMap } from "../core/game/GameMap";
 import type { BuildingIndex } from "./BuildingIndex";
 import type { Building, BuildingType, Player } from "./Protocol";
 import { BUILDING_RULES, BUILDING_SPACING } from "./Rules";
+import { coastalRanges } from "./content/CoastalTerritory";
+import { coastalWaterDistances } from "./domain/CoastalReach";
 
 // Shared domain validation also drives placement previews. A preview is advisory;
 // applyCommand checks again against the current authoritative simulation state.
@@ -20,13 +22,11 @@ export function constructionRejection(
     !map.isValidRef(tile) ||
     (type === "oil-rig" ? !map.isWater(tile) : !map.isLand(tile)) ||
     map.isImpassable(tile) ||
-    (type === "oil-rig"
-      ? !map
-          .neighbors(tile)
-          .some((t) => map.isLand(t) && owners[t] === player.id)
-      : owners[tile] !== player.id)
+    owners[tile] !== player.id
   )
     return "Buildings need passable friendly land";
+  if (type === "oil-rig" && coastalWaterDistances(map)[tile] > coastalRanges(map).oilTiles)
+    return "Oil rigs need claimed coastal water within the offshore oil band";
   if (type === "port" && !map.neighbors(tile).some((n) => map.isWater(n)))
     return "Ports need a land tile directly beside water";
   const nearby =
