@@ -231,16 +231,16 @@ function unpack(
   if (value.$ === "map") {
     if (!Array.isArray(value.entries))
       throw new Error("Invalid checkpoint map");
-    return new Map(
-      value.entries.map((item) => {
-        if (!Array.isArray(item) || item.length !== 2)
-          throw new Error("Invalid map entry");
-        return [
-          unpack(item[0], buffers, budget, depth + 1),
-          unpack(item[1], buffers, budget, depth + 1),
-        ];
-      }),
-    );
+    const output = new Map<unknown, unknown>();
+    for (const item of value.entries) {
+      if (!Array.isArray(item) || item.length !== 2)
+        throw new Error("Invalid map entry");
+      output.set(
+        unpack(item[0], buffers, budget, depth + 1),
+        unpack(item[1], buffers, budget, depth + 1),
+      );
+    }
+    return output;
   }
   if (value.$ === "u8r" || value.$ === "u16r") {
     const { index, length } = value;
@@ -285,9 +285,10 @@ function unpack(
   if (value.$ === "set") {
     if (!Array.isArray(value.entries))
       throw new Error("Invalid checkpoint set");
-    return new Set(
-      value.entries.map((item) => unpack(item, buffers, budget, depth + 1)),
-    );
+    const output = new Set<unknown>();
+    for (const item of value.entries)
+      output.add(unpack(item, buffers, budget, depth + 1));
+    return output;
   }
   if (
     typeof value.$ === "string" &&
@@ -309,10 +310,11 @@ function unpack(
   }
   if (value.$ !== undefined) throw new Error("Unknown checkpoint value type");
   const result: Record<string, unknown> = {};
-  for (const [key, item] of Object.entries(value)) {
+  for (const key in value) {
+    if (!Object.prototype.hasOwnProperty.call(value, key)) continue;
     if (["__proto__", "constructor", "prototype"].includes(key))
       throw new Error("Invalid checkpoint key");
-    result[key] = unpack(item, buffers, budget, depth + 1);
+    result[key] = unpack(value[key], buffers, budget, depth + 1);
   }
   return result;
 }

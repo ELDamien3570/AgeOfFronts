@@ -1,5 +1,6 @@
 import { restoreArray } from "../StateTransfer";
 import type { GameMap } from "../../core/game/GameMap";
+import type { BuildingQueries } from "../BuildingIndex";
 import { DamageLedger } from "../Conquest";
 import type { LandPaths, WaterPaths } from "../Pathfinding";
 import type {
@@ -81,6 +82,7 @@ export interface ExpansionWorld extends BattleWorld, ArmyWorld {
   aiGeneration(playerId: number): number;
   ship(id:number):Ship | undefined;
   building(id:number):Building | undefined;
+  buildingFacts(): BuildingQueries;
 }
 // Match-level application coordinator; each domain service owns its own rules.
 // All services operate on the same authoritative world, never a parallel game.

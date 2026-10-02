@@ -573,7 +573,7 @@ export class AiNavalPlanner {
   private recovering(ship: Ship, sea: number): boolean {
     const { world } = this.expansion,
       port =
-        ship.repairPortId == null
+        ship.repairPortId === undefined || ship.repairPortId === null
           ? undefined
           : world.building(ship.repairPortId);
     return (

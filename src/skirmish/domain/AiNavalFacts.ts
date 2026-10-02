@@ -103,11 +103,17 @@ export class AiNavalFacts {
     this.sectors.clear();
     for (const [sector, ids] of structuredClone(saved.sectors))
       this.sectors.set(sector, ids);
+    const derivedSequences = new Map(this.sequences);
+    this.sequences.clear();
     for (const [key, state] of saved.sequences ?? []) {
       const sequence = new NavalFactSequence();
       sequence.restore(state);
       this.sequences.set(key, sequence);
     }
+    // Preserve checkpoint key order after capture/reinsertion changed registry
+    // order. Older checkpoints derive only the newly introduced owner index.
+    for (const [key, sequence] of derivedSequences)
+      if (!this.sequences.has(key)) this.sequences.set(key, sequence);
     this.phase = saved.phase;
     this.cursor = saved.cursor;
     this.remaining = saved.remaining;

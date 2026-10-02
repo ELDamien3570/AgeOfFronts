@@ -2,6 +2,12 @@ import type { GameMap } from "../core/game/GameMap";
 import type { Building } from "./Protocol";
 import { BUILDING_RULES } from "./Rules";
 const EMPTY_BUILDINGS: readonly Building[] = Object.freeze([]);
+export type BuildingQueries = Readonly<
+  Pick<
+    BuildingIndex,
+    "at" | "nearby" | "towersNearby" | "countOfType" | "highestId"
+  >
+>;
 
 // Derived domain index. The simulation remains the owner of every independent
 // building, its cost, construction timer and capture lifecycle.
@@ -22,6 +28,7 @@ export class BuildingIndex {
     Map<Building["type"], number>
   >();
   private count = 0;
+  highestId = 0;
   constructor(private readonly map: GameMap) {}
   rebuild(buildings: readonly Building[]): void {
     this.tiles.clear();
@@ -31,12 +38,14 @@ export class BuildingIndex {
     this.income.clear();
     this.playerCounts.clear();
     this.count = 0;
+    this.highestId = 0;
     for (const building of buildings) this.add(building);
   }
   ensure(buildings: readonly Building[]): void {
     if (this.count !== buildings.length) this.rebuild(buildings);
   }
   add(building: Building): void {
+    this.highestId = Math.max(this.highestId, building.id);
     this.ids.set(building.id, building);
     let stack = this.tiles.get(building.tile);
     if (!stack) this.tiles.set(building.tile, (stack = []));

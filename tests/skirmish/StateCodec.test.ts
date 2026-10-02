@@ -58,7 +58,7 @@ describe("portable recovery transport", () => {
   });
   it("rejects excessive nesting before JSON.parse and supports the extra wire indirection of legal nested maps", async () => {
     let value: unknown = 1;
-    for (let i = 0; i < 32; i++) value = new Map([[i, value]]);
+    for (let i = 0; i < 64; i++) value = new Map([[i, value]]);
     expect(await decodeState(await encodeState(value))).toEqual(value);
     const text = Buffer.from(
       '{"lengths":[],"value":' + "[".repeat(198) + "0" + "]".repeat(198) + "}",

@@ -1,12 +1,13 @@
 import type { GameMap } from "../../core/game/GameMap";
-import { BuildingIndex } from "../BuildingIndex";
+import { BuildingIndex, type BuildingQueries } from "../BuildingIndex";
 import { constructionRejection } from "../Construction";
 import type { Building, BuildingType, Player } from "../Protocol";
 import { buildingCost, buildingTicks } from "../content/Buildings";
 import type { Age, Cost, Inventory } from "./Definitions";
 import type { Diplomacy } from "./Diplomacy";
-import { Fortifications } from "./Fortifications";
+import type { Fortifications } from "./Fortifications";
 import type { ResourceSiteIndex } from "./ResourceSiteIndex";
+import { quoteTowerPlan } from "./TowerPlacement";
 
 export interface AiDefenseSite {
   type: BuildingType;
@@ -34,6 +35,7 @@ export function quoteAiDefense(input: {
   player: Player;
   age: Age;
   buildings: readonly Building[];
+  buildingFacts?: BuildingQueries;
   fortifications: Fortifications;
   diplomacy: Diplomacy;
   resources: ResourceSiteIndex;
@@ -41,16 +43,42 @@ export function quoteAiDefense(input: {
   allowedWall?: (tile: number) => boolean;
 }): AiDefenseQuote | string {
   if (input.sites.length > 32) return "Defense candidate exceeds site budget";
-  const buildings = input.buildings.map((b) => ({ ...b })),
-    index = new BuildingIndex(input.map),
-    forts = new Fortifications(input.map, input.diplomacy),
-    steps: AiDefenseStep[] = [],
+  let live = input.buildingFacts;
+  if (!live) {
+    const rebuilt = new BuildingIndex(input.map);
+    rebuilt.rebuild(input.buildings);
+    live = rebuilt;
+  }
+  const base = live,
+    additions = new BuildingIndex(input.map),
+    walls = new Set<number>();
+  const index = {
+    at(tile: number): readonly Building[] {
+      const original = base.at(tile),
+        extra = additions.at(tile);
+      return !extra.length
+        ? original
+        : !original.length
+          ? extra
+          : [...original, ...extra];
+    },
+    *nearby(tile: number, radius: number) {
+      yield* base.nearby(tile, radius);
+      yield* additions.nearby(tile, radius);
+    },
+    *towersNearby(tile: number, radius: number) {
+      yield* base.towersNearby(tile, radius);
+      yield* additions.towersNearby(tile, radius);
+    },
+    countOfType(owner: number, type: BuildingType) {
+      return base.countOfType(owner, type) + additions.countOfType(owner, type);
+    },
+  };
+  const steps: AiDefenseStep[] = [],
     items: Inventory = {},
     cost: Cost = { gold: 0, items };
-  forts.restore(input.fortifications.checkpoint());
-  let nextId = buildings.reduce((n, b) => Math.max(n, b.id), 0) + 1,
+  let nextId = base.highestId + 1,
     totalTicks = 0;
-  index.rebuild(buildings);
   for (const site of input.sites) {
     if (!["tower", "trench", "gun-nest"].includes(site.type))
       return "Unsupported defense site";
@@ -65,17 +93,25 @@ export function quoteAiDefense(input: {
         false,
       ) ?? input.resources.rejection(site.type, site.tile);
     if (rejected) return rejected;
-    if (forts.blocked(site.tile, input.player.id))
+    if (input.fortifications.blocked(site.tile, input.player.id))
       return "Intact wall occupies defense site";
     const count = index.countOfType(input.player.id, site.type),
       stepCost = buildingCost(site.type, input.age, count),
       ticks = buildingTicks(site.type, count),
       plan =
         site.type === "tower"
-          ? forts.towerPlan(site.tile, input.player.id, input.age, {
-              at: (tile) => index.at(tile),
-              nearby: (tile, radius) => index.towersNearby(tile, radius),
-            })
+          ? quoteTowerPlan(
+              input.map,
+              site.tile,
+              input.player.id,
+              input.age,
+              {
+                at: (tile) => index.at(tile),
+                nearby: (tile, radius) => index.towersNearby(tile, radius),
+              },
+              (tile) =>
+                walls.has(tile) || input.fortifications.intactWallAt(tile),
+            )
           : { links: [], gold: 0 };
     if (
       input.allowedWall &&
@@ -104,9 +140,9 @@ export function quoteAiDefense(input: {
       type: site.type,
       remainingTicks: 0,
     };
-    buildings.push(building);
-    index.add(building);
-    if (site.type === "tower") forts.addTower(building, plan);
+    additions.add(building);
+    for (const link of plan.links)
+      for (const tile of link.tiles) walls.add(tile);
   }
   return { steps, cost, ticks: totalTicks };
 }

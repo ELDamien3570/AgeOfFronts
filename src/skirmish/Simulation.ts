@@ -1,7 +1,7 @@
 import { restoreArray, restoreMap, restoreSet } from "./StateTransfer";
 import type { GameMap } from "../core/game/GameMap";
 import { PseudoRandom } from "../core/PseudoRandom";
-import { BuildingIndex } from "./BuildingIndex";
+import { BuildingIndex, type BuildingQueries } from "./BuildingIndex";
 import { CommandApplications } from "./CommandApplications";
 import { CoastIndex } from "./CoastIndex";
 import { shoreTransportCapacity, shoreTransportDefinition } from "./content/ShoreTransport";
@@ -593,6 +593,7 @@ export class Skirmish {
   }
   ship(id: number): Ship | undefined { return this.tickShips ? this.tickShips.get(id) : this.ships.find(s=>s.id===id); }
   building(id: number): Building | undefined { return this.buildingIndex.byId(id); }
+  buildingFacts(): BuildingQueries {this.buildingIndex.ensure(this.buildings);return this.buildingIndex;}
   tileOf(squad: Pick<Squad, "x" | "y">): number {
     return this.map.ref(
       Math.floor(squad.x / FIXED),

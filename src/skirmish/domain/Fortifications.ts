@@ -51,6 +51,9 @@ export class Fortifications {
   get hasObstacles(): boolean {
     return !!(this.tileIndex.size || this.towers.size);
   }
+  intactWallAt(tile: number): boolean {
+    return (this.tileIndex.get(tile) ?? NO_BARRIERS).some(w=>w.health>0);
+  }
   blocked(tile: number, owner: number): boolean {
     const towerOwners = this.towers.get(tile);
     if (towerOwners)
@@ -215,8 +218,7 @@ export class Fortifications {
     age: Age,
     buildings: readonly Building[] | TowerSiteIndex,
   ): { links: { a: number; tiles: number[] }[]; gold: number } {
-    return quoteTowerPlan(this.map, tile, owner, age, buildings, t =>
-      (this.tileIndex.get(t) ?? NO_BARRIERS).some(w => w.health > 0));
+    return quoteTowerPlan(this.map, tile, owner, age, buildings, t => this.intactWallAt(t));
   }
   addTower(
     tower: Building,

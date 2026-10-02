@@ -1,10 +1,12 @@
-import { describe, expect, it } from "vitest";
+import { afterEach, describe, expect, it, vi } from "vitest";
 import { GameMapImpl } from "../../src/core/game/GameMap";
+import { BuildingIndex } from "../../src/skirmish/BuildingIndex";
 import { Skirmish } from "../../src/skirmish/Simulation";
 import {
   buildingCost,
   buildingTicks,
 } from "../../src/skirmish/content/Buildings";
+import { TECHNOLOGIES } from "../../src/skirmish/content/Technology";
 import {
   quoteAiDefense,
   rectangularDefensePerimeter,
@@ -39,7 +41,58 @@ function fixture() {
     },
   };
 }
+afterEach(() => vi.restoreAllMocks());
 describe("exact funded defense quotation", () => {
+  it("uses live spatial facts without cloning or rebuilding the full world and matches real sequential wall payments", () => {
+    const { map, game, input } = fixture();
+    game.players[0].gold = 100000;
+    game.expansion!.progression.states[1].completed.push(
+      ...TECHNOLOGIES.filter((t) => t.age === "StoneAge").map((t) => t.id),
+    );
+    const live = game.buildingFacts(),
+      rebuild = vi.spyOn(BuildingIndex.prototype, "rebuild"),
+      checkpoint = vi.spyOn(input.fortifications, "checkpoint");
+    const sites: AiDefenseSite[] = [
+      [10, 10],
+      [22, 10],
+      [22, 22],
+      [10, 22],
+    ].map(([x, y]) => ({ type: "tower", tile: map.ref(x, y) }));
+    const quote = quoteAiDefense({
+      ...input,
+      age: "StoneAge",
+      buildingFacts: live,
+      sites,
+    });
+    if (typeof quote === "string") throw Error(quote);
+    expect(rebuild).not.toHaveBeenCalled();
+    expect(checkpoint).not.toHaveBeenCalled();
+    const gold = game.players[0].gold;
+    for (const step of quote.steps) {
+      expect(
+        game.applyCommand({
+          type: "build",
+          playerId: 1,
+          buildingType: step.type,
+          tile: step.tile,
+          age: "StoneAge",
+        }),
+      ).toBeNull();
+      const building = game.buildingsAt(step.tile)[0];
+      building.remainingTicks = 0;
+      input.fortifications.step(game.tick, game.buildings);
+    }
+    expect(gold - game.players[0].gold).toBe(quote.cost.gold);
+    expect(
+      input.fortifications.barriers
+        .flatMap((b) => b.tiles)
+        .sort((a, b) => a - b),
+    ).toEqual(
+      quote.steps
+        .flatMap((s) => s.links.flatMap((l) => l.tiles))
+        .sort((a, b) => a - b),
+    );
+  });
   it("quotes the plan's full Modern count-scaled examples without mutating the live world", () => {
     const { map, game, input } = fixture(),
       sites: AiDefenseSite[] = [];
