@@ -228,6 +228,51 @@ describe("automatic recruitment and selective replenishment", () => {
     m.players[0].reserves = 0;
     expect(new SkirmishViewModel(m.snapshot(), s).canReplenish).toBe(false);
   });
+
+  it("identifies repairable selected buildings and supports repair commands", () => {
+    const terrain = new Uint8Array(80 * 50).fill(133);
+    terrain.fill(0, 0, 80 * 6);
+    const m = new Skirmish(new GameMapImpl(80, 50, terrain, terrain.length), {
+      seed: 42,
+      aiCount: 1,
+      runAi: false,
+      ruleset: "ages-v1",
+    });
+    const s = selection();
+    const barracks = build(m, "barracks", 20, 10);
+    const city = build(m, "city", 25, 10);
+    barracks.health = 600;
+    city.health = 800;
+    m.players[0].gold = 5000;
+
+    s.selectedBuildings = new Set([barracks.id, city.id]);
+    s.selectedBuilding = barracks.id;
+
+    const vm = new SkirmishViewModel(m.snapshot(), s);
+    expect(vm.selectedBuildings.map((b) => b.id).sort()).toEqual(
+      [barracks.id, city.id].sort(),
+    );
+    expect(vm.repairableBuildings.map((b) => b.id).sort()).toEqual(
+      [barracks.id, city.id].sort(),
+    );
+    expect(vm.canRepairBuildings).toBe(true);
+
+    expect(
+      m.applyCommand({
+        type: "repair",
+        playerId: 1,
+        buildingIds: [barracks.id, city.id],
+      }),
+    ).toBeNull();
+
+    expect(
+      m.applyCommand({
+        type: "repair",
+        playerId: 1,
+        buildingId: barracks.id,
+      }),
+    ).toBe("No repair needed or repair already in progress");
+  });
 });
 
 describe("control group selection", () => {
