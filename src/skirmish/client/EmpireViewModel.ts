@@ -28,6 +28,7 @@ import {
   productionRejection,
   productionTicks,
 } from "../domain/Supply";
+import { quoteBuildingUpgrades } from "../domain/BuildingUpgrades";
 import { FactionViewModel } from "./FactionViewModel";
 import { productionText } from "./ProductionText";
 import { ResourceViewModel } from "./ResourceViewModel";
@@ -357,6 +358,13 @@ export class EmpireViewModel {
           })
         : productionText("ready", { recipe: producer.selected.name }))
     );
+  }
+  buildingUpgrade() {
+    const ids = this.selection.selectedBuildings?.size ? [...this.selection.selectedBuildings]
+      : this.selection.selectedBuilding === null ? [] : [this.selection.selectedBuilding];
+    if (!ids.length) return null;
+    return quoteBuildingUpgrades(this.player, this.progression, this.inventory,
+      this.state.buildings, this.state.owners, ids);
   }
   refit(focusedId?: number) {
     const selected = this.state.squads.filter(

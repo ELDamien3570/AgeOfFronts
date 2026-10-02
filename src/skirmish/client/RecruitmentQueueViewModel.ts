@@ -4,6 +4,7 @@ import type { RecruitmentJob } from "../domain/Definitions";
 
 export interface RecruitmentQueueEntry {
   key: string;
+  category: RecruitmentJob["category"];
   definitionId?: string;
   kind: RecruitmentJob["kind"];
   name: string;
@@ -42,6 +43,7 @@ export class RecruitmentQueueViewModel {
         group = {
           entry: {
             key,
+            category: job.category,
             definitionId: job.definitionId,
             kind: job.kind,
             name,

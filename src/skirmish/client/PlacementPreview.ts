@@ -9,6 +9,7 @@ import {
   buildingCostMultiplier,
   buildingTechnology,
 } from "../content/Buildings";
+import { resourceVisibleAtAge } from "../content/Resources";
 import type { Age } from "../domain/Definitions";
 import { Diplomacy } from "../domain/Diplomacy";
 import { ResourceSiteIndex } from "../domain/ResourceSiteIndex";
@@ -68,6 +69,7 @@ export class PlacementPreview {
       snapshot.expansion?.deposits ?? [],
     );
     const geometry =
+      (snapshot.expansion?.progression[this.playerId]?.age ?? "StoneAge") + "/" +
       snapshot.buildings
         .map(
           (b) =>
@@ -222,12 +224,13 @@ export class PlacementPreview {
       const exclusion = this.resources.rejection(type, tile);
       if (exclusion) return { reason: exclusion, wallGold: 0 };
       const node = this.resources.at(tile);
+      const visible = node && resourceVisibleAtAge(node.resource, snapshot.expansion.progression[this.playerId].age);
       if (
         type === "mine" &&
-        (!node || ["horses", "oil"].includes(node.resource))
+        (!node || !visible || ["horses", "oil"].includes(node.resource))
       )
         return { reason: "Choose a mineral deposit", wallGold: 0 };
-      if (["oil-well", "oil-rig"].includes(type) && node?.resource !== "oil")
+      if (["oil-well", "oil-rig"].includes(type) && (!visible || node?.resource !== "oil"))
         return { reason: "Choose an oil deposit", wallGold: 0 };
       if (this.blocked.has(tile))
         return { reason: "Intact wall occupies this site", wallGold: 0 };

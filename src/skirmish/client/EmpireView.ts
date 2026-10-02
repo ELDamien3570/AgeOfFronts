@@ -1,6 +1,6 @@
 import type { BuildingType, Command, ShipType, SquadType } from "../Protocol";
 
-import { type Age, type Tree } from "../domain/Definitions";
+import { AGES, AGE_NAMES, type Age, type Tree } from "../domain/Definitions";
 
 import { BUILDING_RULES } from "../Rules";
 
@@ -259,10 +259,21 @@ export class EmpireView {
         );
     const actions = this.root.querySelector<HTMLElement>("#refit-actions")!;
 
-    actions.hidden = !refit;
+    const buildingUpgrade = vm.buildingUpgrade();
+    actions.hidden = !refit && !buildingUpgrade;
+    if (buildingUpgrade) {
+      const { upgrades, reason, cost, skipped } = buildingUpgrade;
+      const key = JSON.stringify([reason, cost, skipped, upgrades.map(u => [u.building.id, u.age])]);
+      if (actions.dataset.key !== key) {
+        actions.dataset.key = key;
+        const tiers = [...new Set(upgrades.map(u => AGE_NAMES[AGES.indexOf(u.age)]))].join(" / ");
+        const items = Object.entries(cost.items ?? {}).map(([id, n]) => `${n} ${id}`).join(" · ");
+        actions.innerHTML = `<button ${reason ? "disabled" : ""}>Upgrade ${upgrades.length} Building${upgrades.length === 1 ? "" : "s"}${tiers ? ` to ${tiers}` : ""} <kbd>U</kbd></button><small>${escape(reason ?? `${fmt(cost.gold ?? 0)} gold${items ? ` · ${items}` : ""} · production pauses${skipped ? ` · ${skipped} ineligible skipped` : ""}`)}</small>`;
+      }
+    }
 
     if (
-      refit &&
+      !buildingUpgrade && refit &&
       actions.dataset.key !==
         `${refit.reason}:${refit.target?.id}:${refit.selected.map((s) => s.id).join()}`
     ) {
@@ -277,6 +288,13 @@ export class EmpireView {
   upgrade(): void {
     if (!this.vm) return;
     const focus = this.actions.focusedRef();
+    const buildingUpgrade = this.vm.buildingUpgrade();
+    if (buildingUpgrade) {
+      if (!buildingUpgrade.reason) this.actions.command({ type: "upgrade-building",
+        playerId: this.playerId, buildingIds: buildingUpgrade.upgrades.map(u => u.building.id) });
+      else this.actions.notify(buildingUpgrade.reason);
+      return;
+    }
     if (this.vm.selection.selected.size) {
       const choice = this.vm.refit(
         focus?.startsWith("squad:") ? Number(focus.split(":")[1]) : undefined,

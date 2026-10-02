@@ -186,7 +186,13 @@ element("wasd-mode").addEventListener("click", () => {
   hud.setWasdMode(cameraPan.enabled);
 });
 
-const recruitmentFeed = new RecruitmentQueueView(element("recruitment-feed"), element("app"));
+const recruitmentFeed = new RecruitmentQueueView(element("recruitment-feed"), element("app"), entry => {
+  command({
+    type: "cancel-recruitment", playerId: localPlayerId,
+    category: entry.category, definitionId: entry.definitionId, kind: entry.kind,
+    buildingIds: renderer.selectedBuildings.size ? [...renderer.selectedBuildings] : undefined,
+  });
+});
 const empire = new EmpireView(element("app"), {
   recruitmentBatch: (shift) => recruitmentControls.batch(shift, cameraPan.enabled),
   refresh: updateHud,

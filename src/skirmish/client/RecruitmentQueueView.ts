@@ -1,12 +1,13 @@
 import { eraPortrait } from "./EraArtwork";
 import { icon } from "./HudView";
-import type { RecruitmentQueueViewModel } from "./RecruitmentQueueViewModel";
+import type { RecruitmentQueueEntry, RecruitmentQueueViewModel } from "./RecruitmentQueueViewModel";
 
 export class RecruitmentQueueView {
   private readonly cells = new Map<string, HTMLElement>();
   constructor(
     private readonly root: HTMLElement,
     app: HTMLElement,
+    private readonly onCancel?: (entry: RecruitmentQueueEntry) => void,
   ) {
     new ResizeObserver(() =>
       app.style.setProperty(
@@ -48,7 +49,8 @@ export class RecruitmentQueueView {
         this.root.append(cell);
         this.cells.set(entry.key, cell);
       }
-      cell.title = `${entry.name}: ${entry.count} queued · ${entry.seconds === null ? "Waiting for producer" : entry.seconds === 0 ? "Training complete; waiting for deployment" : `Next in ${entry.seconds}s (game time)`}`;
+      cell.oncontextmenu = event => { event.preventDefault(); this.onCancel?.(entry); };
+      cell.title = `${entry.name}: ${entry.count} queued · Right-click to cancel 1 · ${entry.seconds === null ? "Waiting for producer" : entry.seconds === 0 ? "Training complete; waiting for deployment" : `Next in ${entry.seconds}s (game time)`}`;
       cell.querySelector(".recruitment-count")!.textContent = String(
         entry.count,
       );
