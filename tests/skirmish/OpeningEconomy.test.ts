@@ -42,7 +42,7 @@ describe("opening economy and troop catalogue", () => {
         game.squads
           .filter((s) => s.playerId === p.id)
           .reduce((n, s) => n + s.troops, 0),
-    ).toBe(STARTING_AGE_TROOPS);
+    ).toBe(STARTING_AGE_TROOPS + 3000);
     const before = p.reserves;
     game.buildings.push({
       id: 9999,

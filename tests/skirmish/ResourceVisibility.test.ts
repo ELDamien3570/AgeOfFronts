@@ -295,6 +295,7 @@ describe("age-based strategic resource discovery", () => {
     );
     match.expansion!.progression.states[2].age = "Modern";
     match.expansion!.supply.inventories[1].oil = 777;
+    match.expansion!.supply.inventories[1].stone = 0; // Explicitly test depleted stock after the opening grant.
     const grants = [...match.expansion!.progression.states[1].completed];
     const update = (age: Age) => {
       match.expansion!.progression.states[1].age = age;

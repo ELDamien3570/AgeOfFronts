@@ -1,4 +1,4 @@
-import { describe, expect, it } from "vitest";
+import { describe, expect, it, vi } from "vitest";
 import { GameMapImpl } from "../../src/core/game/GameMap";
 import { Skirmish } from "../../src/skirmish/Simulation";
 
@@ -19,6 +19,38 @@ function status(match: Skirmish) {
   return events[events.length - 1]?.status;
 }
 describe("transactional replacement movement", () => {
+  it("backs off limited replacement routes and rejects capacity exhaustion without changing current orders", () => {
+    const { match, map, own } = fixture();
+    const orders = own.map(s => structuredClone(s.order));
+    match.applyCommand({ type: "order", playerId: 1, squadIds: own.map(s => s.id), order: { type: "move", tile: map.ref(75, 50) } });
+    const id = match.movementAdmission.events.slice(-1)[0]!.id;
+    match.movementAdmission.completed(id, own[0].id, "limited", [], 10);
+    const saved = match.checkpoint();
+    expect(saved.admission.pending[0][1].members[0]).toMatchObject({ limitedAttempts: 1, retryAt: 30 });
+    match.restore(saved);
+    match.movementAdmission.completed(id, own[0].id, "limited", [], 40);
+    match.movementAdmission.completed(id, own[0].id, "limited", [], 100);
+    expect(match.movementAdmission.pendingCount).toBe(0);
+    expect(match.movementAdmission.events.slice(-1)[0]).toMatchObject({ status: "rejected", reason: expect.stringContaining("capacity") });
+    expect(match.squads.filter(s => s.playerId === 1).map(s => s.order)).toEqual(orders);
+  });
+  it("activates committed land waypoints without synchronous searches and retains later legs across restore", () => {
+    const { match, map, own } = fixture(), squad = own[0];
+    const first = map.ref(45, 35), second = map.ref(48, 35);
+    squad.queuedOrders = [{ type: "move", tile: first }, { type: "move", tile: second }];
+    const sync = vi.spyOn(match.paths, "find");
+    (match as unknown as { finishOrder(s: typeof squad): void }).finishOrder(squad);
+    expect(sync).not.toHaveBeenCalled();
+    expect(squad.order).toEqual({ type: "move", tile: first });
+    expect(squad.queuedOrders).toEqual([{ type: "move", tile: second }]);
+    expect(match.checkpoint().queuedLegs.size).toBe(1);
+    const restored = new Skirmish(map, match.options); restored.restore(match.checkpoint());
+    for (let i = 0; i < 50; i++) { match.step(); restored.step(); }
+    expect(restored.checkpoint()).toEqual(match.checkpoint());
+    expect(sync).not.toHaveBeenCalled();
+    expect(match.checkpoint().queuedLegs.size).toBe(0);
+    expect(match.squad(squad.id)!.queuedOrders).toEqual([{ type: "move", tile: second }]);
+  });
   it("keeps an unchanged AI route while another faction has pending Shift intentions, including after restore", () => {
     const {match,map,own}=fixture();
     const other=match.squads.filter(s=>s.playerId===2);

@@ -114,7 +114,13 @@ describe("reserved authoritative worker", () => {
         tick: 4,
         reset: false,
       });
+      expect(update.diagnostics).toMatchObject({ tick: 4, ticksAdvanced: 3, commands: 0 });
+      expect(update.diagnostics!.timings.tick!.samples).toBe(4);
+      expect(update.diagnostics!.memory.heapUsed).toBeGreaterThan(0);
+      expect(update.diagnostics!.payloadBytes).toBe(update.packet!.payload.length);
+      expect(update.diagnostics!.retainedBytes).toBeLessThanOrEqual(16 * 256 * 8);
       expect(Object.keys(update).sort()).toEqual([
+        "diagnostics",
         "packet",
         "rejectedCommands",
         "seats",

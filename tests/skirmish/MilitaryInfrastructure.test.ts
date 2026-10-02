@@ -65,7 +65,7 @@ describe("research-linked military infrastructure", () => {
     expect(buildings[1].age).toBe("BronzeAge");
     expect(buildings[3].age).toBe("BronzeAge");
   });
-  it("upgrades on research completion in the authoritative simulation", () => {
+  it("research completion no longer grants free authoritative building upgrades", () => {
     const cells = new Uint8Array(48 * 48).fill(133);
     const match = new Skirmish(new GameMapImpl(48, 48, cells, cells.length), {
       seed: 42,
@@ -90,7 +90,7 @@ describe("research-linked military infrastructure", () => {
     expect(b.age).toBe("StoneAge");
     e.progression.states[1].research.warfare!.remainingTicks = 1;
     e.beforeStep();
-    expect(b.age).toBe("BronzeAge");
-    expect(b.health).toBe(780);
+    expect(b.age).toBe("StoneAge");
+    expect(b.health).toBe(600);
   });
 });

@@ -1,3 +1,4 @@
+import { startingEconomy } from "../../src/skirmish/content/StartingEconomy";
 import { describe, expect, it } from "vitest";
 import { GameMapImpl } from "../../src/core/game/GameMap";
 import { squadCap, tribeCountFor } from "../../src/skirmish/FactionRules";
@@ -162,8 +163,8 @@ describe("minor tribes", () => {
     const ageGame = match(1, false, true, 240, undefined, "ages-v1");
     const ageTribe = ageGame.players.find((p) => p.kind === "tribe")!;
     const ageCamp = ageGame.buildings.find((b) => b.playerId === ageTribe.id)!;
-    expect(ageTribe.reserves).toBe(1500);
-    expect(ageTribe.gold).toBe(150);
+    expect(ageTribe.reserves).toBe(2000);
+    expect(ageTribe.gold).toBe(startingEconomy("StoneAge", true).gold);
     expect(
       ageGame.applyCommand({
         type: "recruit",
@@ -171,15 +172,17 @@ describe("minor tribes", () => {
         buildingId: ageCamp.id,
       }),
     ).toBeNull();
-    expect(ageTribe.reserves).toBe(500);
-    expect(ageTribe.gold).toBe(50);
+    expect(ageTribe.reserves).toBe(1000);
+    expect(ageTribe.gold).toBe(startingEconomy("StoneAge", true).gold - 100);
     expect(
       ageGame.applyCommand({
         type: "recruit",
         playerId: ageTribe.id,
         buildingId: ageCamp.id,
       }),
-    ).toContain("Not enough gold");
+    ).toBeNull();
+    expect(ageTribe.reserves).toBe(0);
+    expect(ageTribe.gold).toBe(startingEconomy("StoneAge", true).gold - 200);
   });
 
   it("allows tribes to build 1 city and 1 extra barracks and rejects additional or invalid buildings", () => {

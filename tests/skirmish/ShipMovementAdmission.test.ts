@@ -39,6 +39,16 @@ function finish(match: Skirmish) {
   expect(match.shipAdmission.pendingCount).toBe(0);
 }
 describe("transactional sailing admission", () => {
+  it("terminates repeatedly limited replacements with an explicit capacity outcome and leaves voyages intact", () => {
+    const { map, match, ships, ids } = fixture();
+    const voyages = ships.map(s => ({ destination: s.destination, path: [...s.path] }));
+    match.applyCommand({ type: "sail", playerId: 1, shipIds: ids, tile: map.ref(50, 40) });
+    const id = match.shipAdmission.events.slice(-1)[0]!.id;
+    for (const tick of [10, 40, 100]) match.shipAdmission.completed(id, ids[0], "limited", [], tick);
+    expect(match.shipAdmission.pendingCount).toBe(0);
+    expect(match.shipAdmission.events.slice(-1)[0]).toMatchObject({ status: "rejected", reason: expect.stringContaining("capacity") });
+    expect(ships.map(s => ({ destination: s.destination, path: s.path }))).toEqual(voyages);
+  });
   it("plans later waypoints without synchronous searches and preserves committed legs on takeover", () => {
     const { map, match, ships, ids } = fixture(),
       first = map.ref(12, 30),

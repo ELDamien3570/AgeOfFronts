@@ -147,10 +147,10 @@ describe("Starting Tech Age Selector", () => {
       }
     }
 
-    // Minor tribes remain in Stone Age
+    // Minor tribes share the match starting age
     for (const tribe of tribes) {
       const prog = expansion.progression.states[tribe.id];
-      expect(prog.age).toBe("StoneAge");
+      expect(prog.age).toBe("BronzeAge");
     }
   });
 

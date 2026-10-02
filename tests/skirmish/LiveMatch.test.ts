@@ -116,6 +116,15 @@ async function fixture() {
 }
 
 describe("server-authoritative live match", () => {
+  it("reports lack of match progress separately from a live coordinator", async () => {
+    const f = await fixture();
+    expect(f.match.progress()).toMatchObject({ state: "running", tick: 0, ageMs: 0 });
+    f.setTime(16_000);
+    expect(f.match.progress()).toMatchObject({ state: "stalled", tick: 0, ageMs: 6000 });
+    await f.match.advance();
+    expect(f.match.progress().state).toBe("running");
+    expect(f.match.progress().tick).toBeGreaterThan(0);
+  });
   it("relays correlated outcomes only to their original guest and strips the authenticated identity prefix", async () => {
     const f = await fixture();
     f.executor.request = async <T extends ExecutorResult>(request: ExecutorRequest) => {
