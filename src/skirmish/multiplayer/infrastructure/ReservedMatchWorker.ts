@@ -44,8 +44,8 @@ export class ReservedMatchWorker implements MatchExecutor {
       },
     );
     this.worker.on("error", (error) => this.fail(error));
-    this.worker.on("exit", () =>
-      this.fail(new Error("Match executor stopped")),
+    this.worker.on("exit", (code) =>
+      this.fail(new Error(`Match executor stopped (exit ${code})`)),
     );
   }
   request<T extends ExecutorResult>(request: ExecutorRequest): Promise<T> {
@@ -55,7 +55,7 @@ export class ReservedMatchWorker implements MatchExecutor {
     return new Promise<T>((resolve, reject) => {
       const id = this.nextId++;
       const timeout = setTimeout(() => {
-        this.fail(new Error("Match executor timed out"));
+        this.fail(new Error(`Match executor timed out during ${request.type}`));
         void this.worker.terminate();
       }, 30_000);
       this.pending.set(id, {

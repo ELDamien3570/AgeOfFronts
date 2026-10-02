@@ -109,6 +109,13 @@ export function createCoordinatorServer(options: CoordinatorServerOptions) {
           status: "ok",
           matchAdmission: capacity > 0 ? "open" : "closed",
           activeMatches: rooms.snapshot().reservations.length,
+          // Liveness is distinct from advancing match workers; expose only
+          // aggregate status here, not internal memory or per-player details.
+          matchProgress: {
+            running: [...matches.values()].filter(m => m.progress().state === "running").length,
+            stalled: [...matches.values()].filter(m => m.progress().state === "stalled").length,
+            preparing: [...matches.values()].filter(m => m.progress().state === "preparing").length,
+          },
         }),
       );
       return;

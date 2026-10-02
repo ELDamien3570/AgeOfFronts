@@ -1,4 +1,5 @@
-import { parentPort } from "node:worker_threads";
+import { RuntimeDiagnostics, type MatchDiagnostics } from "../../RuntimeDiagnostics";
+import { parentPort, threadId } from "node:worker_threads";
 import { SpawnSelection } from "../../domain/SpawnSelection";
 import { createSkirmishMap } from "../../Elevation";
 import { Skirmish } from "../../Simulation";
@@ -17,6 +18,9 @@ import { loadServerMap } from "./ServerMap";
 
 if (!parentPort) throw new Error("The match executor requires a worker thread");
 let match: Skirmish | undefined;
+const diagnostics = new RuntimeDiagnostics();
+let nextDiagnosticTick = 600;
+const observeMatch = () => { match!.onPhase = (phase, ms) => diagnostics.record(phase, ms); };
 const encoder = new SnapshotEncoder(true);
 let setup: SpawnSelection | undefined;
 let preparedMap: RuntimeMap | undefined;
@@ -40,7 +44,27 @@ const makeMap = (map: RuntimeMap) =>
     map.forest,
     map.resourceTerrain,
   );
-const snapshot = () => encodeState(encoder.encode(match!.snapshot()));
+const snapshot = async () => {
+  const start = performance.now();
+  const packet = encoder.encode(match!.snapshot());
+  const captured = performance.now();
+  diagnostics.record("snapshot", captured - start);
+  const result = await encodeState(packet);
+  diagnostics.record("encoding", performance.now() - captured);
+  return result;
+};
+const diagnosticSnapshot = (commands: number, ticksAdvanced: number, payloadBytes: number): MatchDiagnostics => {
+  const m = match!, memory = process.memoryUsage(), planning = m.routePlanner.diagnostics;
+  return { tick: m.tick, timings: diagnostics.snapshot(), retainedBytes: diagnostics.retainedBytes,
+    commands, ticksAdvanced, payloadBytes,
+    entities: { squads: m.squads.length, ships: m.ships.length, buildings: m.buildings.length,
+      traders: m.expansion?.trade.actors.length ?? 0, projectiles: m.expansion?.battle.projectiles.length ?? 0,
+      recruitment: m.recruitment.jobs.length },
+    planner: { pending: planning.pending, oldestAge: planning.oldestAge, limited: planning.limited,
+      workspaceBytes: planning.workspaceBytes, workspaceUsed: planning.workspaceUsed, receipts: m.commandApplications.diagnostics.pending },
+    memory: { heapUsed: memory.heapUsed, heapTotal: memory.heapTotal, external: memory.external,
+      arrayBuffers: memory.arrayBuffers, processRss: memory.rss } };
+};
 const seats = () =>
   match!.players.map((p) => ({
     playerId: p.id,
@@ -53,8 +77,10 @@ const seats = () =>
 parentPort.on(
   "message",
   (message: { id: number; request: ExecutorRequest }) => {
-    // Serialization also covers asynchronous snapshot compression.
+    const receivedAt = performance.now();
+    // Serialization still covers compression; separate timing makes this debt visible.
     pending = pending.then(async () => {
+      diagnostics.record("queue", performance.now() - receivedAt);
       try {
         const request = message.request;
         let result: unknown;
@@ -78,6 +104,7 @@ parentPort.on(
           } else {
             match = new Skirmish(makeMap(loaded.map), options);
             match.commandApplications.onOutcome = collectOutcome;
+            observeMatch();
             result = {
               tick: match.tick,
               winner: match.winner,
@@ -106,6 +133,7 @@ parentPort.on(
               humanSpawns: setup.choices,
             });
             match.commandApplications.onOutcome = collectOutcome;
+            observeMatch();
             setup = undefined;
             preparedMap = undefined;
             result = {
@@ -168,6 +196,7 @@ parentPort.on(
               const player = match.player(id);
               if (player) match.setAiController(id, true);
             }
+            const advanceStarted = performance.now();
             const rejectedCommands: MatchAdvance["rejectedCommands"] = [];
             for (const item of request.commands) {
               const player = match.player(item.command.playerId);
@@ -183,6 +212,8 @@ parentPort.on(
                   message: rejection,
                 });
             }
+            diagnostics.record("commands", performance.now() - advanceStarted);
+            const previousTick = match.tick;
             for (let i = 0; i < request.ticks; i++) match.step();
             const outcomes = [...commandOutcomes.values()];
             result = {
@@ -196,6 +227,16 @@ parentPort.on(
               ...(outcomes.length ? {commandOutcomes: outcomes} : {}),
               seats: seats(),
             } satisfies MatchAdvance;
+            diagnostics.record("advance", performance.now() - advanceStarted);
+            if (request.publish || match.winner !== null) {
+              const advanced = result as MatchAdvance;
+              advanced.diagnostics = diagnosticSnapshot(request.commands.length, match.tick - previousTick, advanced.packet?.payload.length ?? 0);
+              if (match.tick >= nextDiagnosticTick) {
+                nextDiagnosticTick = match.tick + 600;
+                console.info(JSON.stringify({ event: "match-runtime-diagnostics", threadId,
+                  source: process.env.GIT_COMMIT ?? "unknown", ...advanced.diagnostics }));
+              }
+            }
             commandOutcomes.clear();
           } else throw new Error("Unknown match operation");
         }
