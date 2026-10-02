@@ -34,6 +34,55 @@ beforeEach(() => {
 });
 
 describe("live match directory", () => {
+  it("keeps the name editor mounted with its caret and selection across live publications", () => {
+    view.render(vm);
+    const input = root.querySelector<HTMLInputElement>("#empire-name")!;
+    vm.draftEmpireName = input.value = "Northern Empire";
+    input.focus();
+    input.setSelectionRange(3, 8, "backward");
+    input.dispatchEvent(
+      new CompositionEvent("compositionstart", { bubbles: true }),
+    );
+    for (let tick = 0; tick < 3; tick++) {
+      vm.activeMatches = [match({ elapsedSeconds: tick })];
+      view.render(vm);
+      expect(root.querySelector("#empire-name")).toBe(input);
+      expect(document.activeElement).toBe(input);
+      expect(input.value).toBe("Northern Empire");
+      expect(input.selectionStart).toBe(3);
+      expect(input.selectionEnd).toBe(8);
+      expect(input.selectionDirection).toBe("backward");
+      expect(root.querySelectorAll("[data-live-match]")).toHaveLength(1);
+    }
+    input.setSelectionRange(5, 5);
+    view.render(vm);
+    expect(input.selectionStart).toBe(5);
+    expect(input.selectionEnd).toBe(5);
+    input.dispatchEvent(
+      new CompositionEvent("compositionend", { bubbles: true }),
+    );
+  });
+
+  it("refreshes saved identity and connection messages without recreating the editor", () => {
+    view.render(vm);
+    const input = root.querySelector<HTMLInputElement>("#empire-name")!;
+    vm.draftEmpireName = "New Empire";
+    vm.message = "Disconnected from the lobby server";
+    vm.connected = false;
+    view.render(vm);
+    expect(root.querySelector("#empire-name")).toBe(input);
+    expect(input.value).toBe("New Empire");
+    expect(root.querySelector("#directory-message")!.textContent).toBe(
+      vm.message,
+    );
+    vm.showLobby("africa");
+    view.render(vm);
+    expect(root.querySelector("#empire-name")).toBeNull();
+    vm.showHome();
+    view.render(vm);
+    expect(root.querySelector("#empire-name")).not.toBe(input);
+  });
+
   it("has an honest empty/loading state without invented matches", () => {
     view.render(vm);
     expect(root.querySelectorAll("[data-live-match]")).toHaveLength(0);

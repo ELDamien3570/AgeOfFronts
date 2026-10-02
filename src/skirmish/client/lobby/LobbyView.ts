@@ -1,3 +1,4 @@
+import { AGE_NAMES, AGES } from "../../domain/Definitions";
 import {
   factionCountRange,
   factionDefaults,
@@ -12,9 +13,8 @@ import {
   type CustomLobby,
 } from "../../lobby/LobbyDirectory";
 import { FRIENDS_MATCH_RULES } from "../../lobby/LobbyRules";
-import { AGES, AGE_NAMES } from "../../domain/Definitions";
-import { liveMatchesMarkup } from "./LiveMatchCards";
 import { empireFlag } from "./FlagCatalog";
+import { liveMatchesMarkup } from "./LiveMatchCards";
 import type { LobbyViewModel } from "./LobbyViewModel";
 import { lobbyMapDimensions, type LobbyMapCard } from "./MapCatalog";
 
@@ -258,13 +258,44 @@ export class LobbyView {
       ),
       (chooser) => chooser.dataset.seatChooser,
     );
-    this.root.innerHTML = `${header()}${vm.page === "home" ? home(vm) : lobby(vm)}${footer(this.sourceUrl)}<div id="dialog-holder"></div>`;
+    const currentHome = this.root.querySelector("main.directory-page");
+    const editor = currentHome?.querySelector<HTMLFormElement>(
+      "#empire-customization",
+    );
+    if (vm.page === "home" && currentHome && editor) {
+      // Directory publications must not unmount the editor: selection, IME
+      // composition and the browser's undo history belong to the live input.
+      const template = document.createElement("template");
+      template.innerHTML = home(vm);
+      const nextHome = template.content.querySelector("main")!;
+      const nextEditor = nextHome.querySelector("#empire-customization")!;
+      const name = editor.querySelector<HTMLInputElement>("#empire-name")!;
+      if (name.value !== vm.draftEmpireName) name.value = vm.draftEmpireName;
+      editor.querySelector("#choose-flag")!.innerHTML =
+        nextEditor.querySelector("#choose-flag")!.innerHTML;
+      for (const child of Array.from(currentHome.childNodes))
+        if (child !== editor) child.remove();
+      let beforeEditor = true;
+      for (const child of Array.from(nextHome.childNodes)) {
+        if (child === nextEditor) {
+          beforeEditor = false;
+          continue;
+        }
+        if (beforeEditor) currentHome.insertBefore(child, editor);
+        else currentHome.appendChild(child);
+      }
+    } else {
+      this.root.innerHTML = `${header()}${vm.page === "home" ? home(vm) : lobby(vm)}${footer(this.sourceUrl)}<div id="dialog-holder"></div>`;
+    }
     for (const chooser of this.root.querySelectorAll<HTMLDetailsElement>(
       "details[data-seat-chooser]",
     ))
       chooser.open = openChoosers.includes(chooser.dataset.seatChooser);
-    if (focusedId)
-      document.getElementById(focusedId)?.focus({ preventScroll: true });
+    if (focusedId) {
+      const focused = document.getElementById(focusedId);
+      if (focused !== document.activeElement)
+        focused?.focus({ preventScroll: true });
+    }
   }
 
   renderDialog(vm: LobbyViewModel): void {
