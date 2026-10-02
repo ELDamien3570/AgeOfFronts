@@ -84,6 +84,8 @@ export class Battle {
   }
 
   readonly projectiles: Projectile[] = [];
+  // Read-only diagnostics: cache warmth and counters never drive simulation.
+  readonly telemetry = { indexRebuilds: 0, trenchCandidates: 0, nestSearches: 0 };
   private readonly spatial: SpatialGrid<Squad>;
   private readonly naval: SpatialGrid<Ship>;
   private readonly structures: SpatialGrid<Building & Position>;
@@ -148,6 +150,7 @@ export class Battle {
     return (a.x - b.x) ** 2 + (a.y - b.y) ** 2;
   }
   private rebuild(): void {
+    this.telemetry.indexRebuilds++;
     this.spatial.rebuild(
       this.world.squads.filter((s) => s.embarkedOn === null),
     );
@@ -164,6 +167,7 @@ export class Battle {
       if (b.type === "trench" && !b.remainingTicks && (b.health ?? 1) > 0) {
         const p = this.position(b);
         this.spatial.query(p.x, p.y, FIXED, this.nearby);
+        this.telemetry.trenchCandidates += this.nearby.length;
         for (const s of this.nearby
           .filter(
             (s) =>
@@ -521,6 +525,7 @@ export class Battle {
         tick >= (b.nextAttackTick ?? 0)
       ) {
         const p = this.position(b);
+        this.telemetry.nestSearches++;
         this.spatial.query(p.x, p.y, GUN_NEST_ATTACK.range, this.nearby);
         const target = this.nearby
           .filter(

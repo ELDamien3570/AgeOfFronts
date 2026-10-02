@@ -117,6 +117,7 @@ class TilePaths {
       // cell and diagonal side against the caller's current hostility mask;
       // never cache that mask or a budget-limited failure.
       const route = this.find(start, goal);
+      if (route === null) return null;
       if (route && [start, ...route].every((tile, i, list) => {
         this.telemetry.obstacleChecks++;
         if (blocked(tile)) return false;

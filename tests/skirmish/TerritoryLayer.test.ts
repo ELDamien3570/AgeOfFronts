@@ -15,6 +15,13 @@ class MockPath {
   curves: number[][] = [];
   private x = 0;
   private y = 0;
+  constructor(path?: MockPath) {
+    if (path) this.addPath(path);
+  }
+  addPath(path: MockPath) {
+    this.segments.push(...path.segments);
+    this.curves.push(...path.curves);
+  }
   moveTo(x: number, y: number) {
     this.x = x;
     this.y = y;
@@ -137,7 +144,11 @@ function setup(width: number, height: number, owners?: number[]) {
     return result;
   };
   const boundaries = (draw: ReturnType<typeof render>) =>
-    draw.strokes.filter((s) => s.color === TERRITORY_BORDER_LIGHT);
+    draw.strokes.filter(
+      (s) =>
+        s.color === TERRITORY_BORDER_LIGHT ||
+        (s.color === "#ff302d" && s.alpha > 0.5),
+    );
   const segments = (draw: ReturnType<typeof render>) =>
     boundaries(draw)
       .flatMap((s) => s.path.segments)
@@ -298,7 +309,9 @@ describe("cached styled territory boundaries", () => {
     expect(
       render.strokes
         .slice(firstLight)
-        .every((s) => s.color === TERRITORY_BORDER_LIGHT),
+        .every(
+          (s) => s.color === TERRITORY_BORDER_LIGHT || s.color === "#ff302d",
+        ),
     ).toBe(true);
     f.snapshot.owners[1] = 0;
     f.layer.update(f.snapshot);
@@ -336,6 +349,38 @@ describe("cached styled territory boundaries", () => {
     const image = f.canvases[0].ctx.putImageData.mock.lastCall![0] as ImageData;
     expect([...image.data.slice(0, 3)]).toEqual(COLORS[1]);
     expect(image.data[7]).toBe(0);
+  });
+
+  it("glows only along hostile shared borders and updates treaties without rebuilding geometry", () => {
+    const f = setup(3, 1, [1, 2, 3]);
+    f.layer.update(f.snapshot);
+    const initial = f.render();
+    const geometry = vi.spyOn(
+      f.layer as unknown as { border: (chunk: unknown) => void },
+      "border",
+    );
+    const glow = (draw: ReturnType<typeof f.render>) =>
+      draw.strokes.filter((s) => s.color === "#ff302d");
+    expect(glow(initial)).toHaveLength(2); // two strokes per visible chunk
+    const originalFronts = glow(initial)[0].path.segments;
+    f.snapshot.expansion = {
+      diplomacy: { alliances: [{ id: 1, a: 1, b: 2, expiresTick: 1000 }] },
+    } as Snapshot["expansion"];
+    f.snapshot.changedTiles = new Uint32Array();
+    f.layer.update(f.snapshot);
+    const allied = f.render();
+    expect(glow(allied)).toHaveLength(2);
+    expect(glow(allied)[0].path.segments.length).toBeLessThan(
+      originalFronts.length,
+    );
+    expect(geometry).not.toHaveBeenCalled();
+    f.snapshot.expansion!.diplomacy.alliances = [];
+    f.layer.update(f.snapshot);
+    expect(glow(f.render())[0].path.segments).toEqual(originalFronts);
+    f.snapshot.owners[1] = 0;
+    f.snapshot.changedTiles = Uint32Array.of(1);
+    f.layer.update(f.snapshot);
+    expect(glow(f.render())).toHaveLength(0);
   });
 
   it("keeps the border fringe from offscreen chunks and rebuilds stale offscreen paths on return", () => {

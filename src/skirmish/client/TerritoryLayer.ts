@@ -1,5 +1,6 @@
 import type { Snapshot } from "../Protocol";
 import { CAPTURE_TICKS } from "../Protocol";
+import { Diplomacy } from "../domain/Diplomacy";
 import { roundedBorderEdge } from "./RoundedTerritoryBorders";
 import {
   TERRITORY_ALPHA,
@@ -30,8 +31,12 @@ interface Chunk {
   y: number;
   width: number;
   height: number;
-  path: Path2D;
   accents: Accent[];
+  fronts: { a: number; b: number; path: Path2D }[];
+  warFronts: Path2D[];
+  warPath: Path2D;
+  outerPath: Path2D;
+  peacePath: Path2D;
   borderDirty: boolean;
 }
 
@@ -45,6 +50,9 @@ export class TerritoryLayer {
   private readonly progress: Uint8Array;
   private readonly borderColors: string[];
   private initialized = false;
+  // Snapshot-derived diplomacy only; never writes simulation state.
+  private readonly diplomacy = new Diplomacy();
+  private allianceKey = "";
   constructor(
     private readonly width: number,
     private readonly height: number,
@@ -84,14 +92,28 @@ export class TerritoryLayer {
       y,
       width,
       height,
-      path: new Path2D(),
       accents: [],
+      fronts: [],
+      warFronts: [],
+      warPath: new Path2D(),
+      outerPath: new Path2D(),
+      peacePath: new Path2D(),
       borderDirty: true,
     };
     this.chunks.set(key, chunk);
     return chunk;
   }
   update(snapshot: Snapshot): void {
+    this.diplomacy.state.alliances =
+      snapshot.expansion?.diplomacy.alliances ?? [];
+    const allianceKey = this.diplomacy.state.alliances
+      .map((t) => `${Math.min(t.a, t.b)}:${Math.max(t.a, t.b)}`)
+      .sort()
+      .join(",");
+    if (allianceKey !== this.allianceKey) {
+      this.allianceKey = allianceKey;
+      for (const c of this.chunks.values()) this.updateWarFronts(c);
+    }
     const dirty = new Set<number>();
     const update = (tile: number) => {
       const owner = snapshot.owners[tile],
@@ -157,8 +179,9 @@ export class TerritoryLayer {
     }
   }
   private border(c: Chunk) {
-    const path = new Path2D();
+    const outerPath = new Path2D();
     const accents = new Map<number, Accent>();
+    const fronts = new Map<string, { a: number; b: number; path: Path2D }>();
     const at = (x: number, y: number) =>
       x < 0 || y < 0 || x >= this.width || y >= this.height
         ? 0
@@ -182,7 +205,15 @@ export class TerritoryLayer {
       if (a === b) return;
       const dx = Number(horizontal),
         dy = Number(!horizontal);
-      segment(path, x, y, dx, dy);
+      if (a && b) {
+        const key = `${Math.min(a, b)}:${Math.max(a, b)}`;
+        let front = fronts.get(key);
+        if (!front) {
+          front = { a, b, path: new Path2D() };
+          fronts.set(key, front);
+        }
+        segment(front.path, x, y, dx, dy);
+      } else segment(outerPath, x, y, dx, dy);
       // a is the north/west owner; b is the south/east owner. Keeping both
       // accents with this edge preserves the existing left/up invalidation.
       for (const [owner, direction] of [
@@ -211,9 +242,22 @@ export class TerritoryLayer {
         if (x === 0) line(x, y, false, 0, owner);
         if (y === 0) line(x, y, true, 0, owner);
       }
-    c.path = path;
     c.accents = [...accents.values()];
+    c.fronts = [...fronts.values()];
+    c.outerPath = outerPath;
+    this.updateWarFronts(c);
     c.borderDirty = false;
+  }
+  private updateWarFronts(c: Chunk): void {
+    c.warFronts = c.fronts
+      .filter((front) => this.diplomacy.hostile(front.a, front.b))
+      .map((front) => front.path);
+    c.warPath = new Path2D();
+    for (const path of c.warFronts) c.warPath.addPath(path);
+    c.peacePath = new Path2D(c.outerPath);
+    for (const front of c.fronts)
+      if (!this.diplomacy.hostile(front.a, front.b))
+        c.peacePath.addPath(front.path);
   }
   draw(
     ctx: CanvasRenderingContext2D,
@@ -226,7 +270,7 @@ export class TerritoryLayer {
     const style = territoryStyle(scale);
     const visible: Chunk[] = [];
     // Include the screen-space stroke fringe when a chunk is just offscreen.
-    const fringe = 4;
+    const fringe = 5;
     for (const c of this.chunks.values())
       if (
         offsetX + (c.x + c.width) * scale >= -fringe &&
@@ -256,8 +300,12 @@ export class TerritoryLayer {
     ctx.lineWidth = style.casingWidth / scale;
     for (const c of visible) {
       if (c.borderDirty) this.border(c);
-      ctx.stroke(c.path);
+      ctx.stroke(c.peacePath);
     }
+    ctx.strokeStyle = "#ff302d";
+    ctx.globalAlpha = alpha * 0.32;
+    ctx.lineWidth = (style.casingWidth + 1.2) / scale;
+    for (const c of visible) if (c.warFronts.length) ctx.stroke(c.warPath);
     if (style.accentAlpha > 0) {
       ctx.globalAlpha = alpha * style.accentAlpha;
       ctx.lineWidth = style.accentWidth / scale;
@@ -276,7 +324,13 @@ export class TerritoryLayer {
     ctx.globalAlpha = alpha * 0.72;
     ctx.strokeStyle = TERRITORY_BORDER_LIGHT;
     ctx.lineWidth = style.lineWidth / scale;
-    for (const c of visible) ctx.stroke(c.path);
+    for (const c of visible) ctx.stroke(c.peacePath);
+    // Replace the ordinary casing and light strokes at hostile fronts rather
+    // than adding glow passes. All geometry and treaty classification is cached.
+    ctx.strokeStyle = "#ff302d";
+    ctx.globalAlpha = alpha * 0.88;
+    ctx.lineWidth = 1.6 / scale;
+    for (const c of visible) if (c.warFronts.length) ctx.stroke(c.warPath);
     ctx.restore();
   }
 }
