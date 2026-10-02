@@ -5,6 +5,7 @@ import {
   TECHNOLOGIES,
   TECHNOLOGY,
   treeWorkload,
+  technologyAt,
 } from "../content/Technology";
 import type { Player } from "../Protocol";
 import {
@@ -36,6 +37,7 @@ export function startingProgression(
       completed.add(t.id);
     }
   }
+  for (const tree of TREES) completed.add(technologyAt(startingAge, tree, 1).id);
   return {
     cultureId: DEFAULT_CULTURE.id,
     age: startingAge,

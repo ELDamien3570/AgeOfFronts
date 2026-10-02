@@ -1562,6 +1562,7 @@ export class Expansion {
     return {
       armies: this.armies.snapshot(),
       rulesetId: "ages-v1",
+      startingAge: this.startingAge,
       contentHash: CONTENT_HASH,
       technologySpeed: this.progression.technologySpeed,
       fortificationRevision: this.fortifications.version,

@@ -302,6 +302,7 @@ export interface Aircraft {
   fuelTicks: number;
 }
 export interface ExpansionSnapshot {
+  startingAge?: Age;
   armies: Army[];
   rulesetId: string;
   contentHash: string;
