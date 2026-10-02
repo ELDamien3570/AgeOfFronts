@@ -365,6 +365,8 @@ export interface MatchOptions {
   aiDefenses?: boolean;
   /** Fleet mission trials require economy and deferred route admission. */
   aiNaval?: boolean;
+  /** Optional strategic declarations; physical human combat rules are unchanged. */
+  aiWarPolicy?: boolean;
   tribes?: boolean;
   /** Tribes to deploy when `tribes` is set; defaults to the map size's base. */
   tribeCount?: number;
