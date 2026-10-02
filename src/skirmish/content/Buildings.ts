@@ -100,6 +100,18 @@ export function buildingCost(
         : undefined;
   return { gold: cost, items };
 }
+/** A paid upgrade advances one catalogue tier; it never jumps missing tiers. */
+export function nextBuildingAge(type: BuildingType, currentAge: Age, playerAge: Age, completedTechs: readonly string[]): Age | null {
+  const next = AGES[AGES.indexOf(currentAge) + 1];
+  if (!next || AGES.indexOf(next) > AGES.indexOf(playerAge)) return null;
+  const technology = buildingTechnology(type, next);
+  return technology && completedTechs.includes(technology) ? next : null;
+}
+export function buildingUpgradeCost(type: BuildingType, nextAge: Age, existingCount = 0): Cost {
+  const full = buildingCost(type, nextAge, existingCount);
+  return { gold: Math.round((full.gold ?? 0) / 2),
+    items: Object.fromEntries(Object.entries(full.items ?? {}).map(([id, n]) => [id, Math.ceil(n / 2)])) };
+}
 export function buildingIntegrity(type: BuildingType, age: Age): number {
   return Math.round(
     (type === "tower" ? 2000 : type === "trench" ? 1500 : 1200) *

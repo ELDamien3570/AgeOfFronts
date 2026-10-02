@@ -151,7 +151,7 @@
     "slot": 1,
     "gold": 12000,
     "ticks": 800,
-    "description": "Bronze port/shipbuilding tier and Bronze military transport definition. Enables the new hull tier; does not refit old ships automatically. Automatically upgrades existing associated military buildings to this age; the research price includes modernization.",
+    "description": "Bronze port/shipbuilding tier and Bronze military transport definition. Enables the new hull tier; does not refit old ships automatically. Unlocks paid, one-tier upgrades for compatible existing buildings; select them and press U.",
     "prerequisites": ["stoneage-coastal-navigation"],
     "capabilities": ["bronzeage-planked-hulls"]
   },
@@ -199,7 +199,7 @@
     "slot": 1,
     "gold": 12000,
     "ticks": 800,
-    "description": "Bronze blacksmith, barracks tier and bronze swordsmen. Manufacture shared Bronze Age equipment for infantry, archers and chariots. Automatically upgrades existing associated military buildings to this age; the research price includes modernization.",
+    "description": "Bronze blacksmith, barracks tier and bronze swordsmen. Manufacture shared Bronze Age equipment for infantry, archers and chariots. Unlocks paid, one-tier upgrades for compatible existing buildings; select them and press U.",
     "prerequisites": ["stoneage-field-engineering"],
     "capabilities": ["bronzeage-bronze-equipment"]
   },
@@ -211,7 +211,7 @@
     "slot": 2,
     "gold": 14000,
     "ticks": 900,
-    "description": "Bronze archery range and archers. Uses the same Bronze Age equipment as other Bronze troops. Automatically upgrades existing associated military buildings to this age; the research price includes modernization.",
+    "description": "Bronze archery range and archers. Uses the same Bronze Age equipment as other Bronze troops. Unlocks paid, one-tier upgrades for compatible existing buildings; select them and press U.",
     "prerequisites": ["bronzeage-bronze-equipment"],
     "capabilities": ["bronzeage-bowcraft"]
   },
@@ -223,7 +223,7 @@
     "slot": 3,
     "gold": 14000,
     "ticks": 900,
-    "description": "Bronze stables and chariots. Recruitment uses shared Bronze Age equipment, horses and reserves. Automatically upgrades existing associated military buildings to this age; the research price includes modernization.",
+    "description": "Bronze stables and chariots. Recruitment uses shared Bronze Age equipment, horses and reserves. Unlocks paid, one-tier upgrades for compatible existing buildings; select them and press U.",
     "prerequisites": ["bronzeage-bronze-equipment"],
     "capabilities": ["bronzeage-chariot-warfare"]
   },
@@ -235,7 +235,7 @@
     "slot": 4,
     "gold": 20000,
     "ticks": 1100,
-    "description": "Stone walls and round stone towers use Art/Terrain/Wall Kit/StoneWalls; gate capability, Bronze siege workshop, reinforced ram and siege-equipment pattern. Battering-ram and assault siege-tower art exists; assault/bridge behaviour needs its own contract. Automatically upgrades existing associated military buildings to this age; the research price includes modernization.",
+    "description": "Stone walls and round stone towers use Art/Terrain/Wall Kit/StoneWalls; gate capability, Bronze siege workshop, reinforced ram and siege-equipment pattern. Battering-ram and assault siege-tower art exists; assault/bridge behaviour needs its own contract. Unlocks paid, one-tier upgrades for compatible existing buildings; select them and press U.",
     "prerequisites": ["bronzeage-bowcraft", "bronzeage-chariot-warfare"],
     "capabilities": ["bronzeage-fortified-settlements"]
   },
@@ -307,7 +307,7 @@
     "slot": 1,
     "gold": 20000,
     "ticks": 900,
-    "description": "Classical port and hull-production tier. No extra standalone shipyard art/building is assumed. Automatically upgrades existing associated military buildings to this age; the research price includes modernization.",
+    "description": "Classical port and hull-production tier. No extra standalone shipyard art/building is assumed. Unlocks paid, one-tier upgrades for compatible existing buildings; select them and press U.",
     "prerequisites": ["bronzeage-naval-organisation"],
     "capabilities": ["classicalage-shipyards"]
   },
@@ -358,7 +358,7 @@
     "slot": 1,
     "gold": 20000,
     "ticks": 900,
-    "description": "Classical blacksmith and barracks, sword-and-shield infantry and improved protection. Manufacture shared Classical Age equipment from iron. Automatically upgrades existing associated military buildings to this age; the research price includes modernization.",
+    "description": "Classical blacksmith and barracks, sword-and-shield infantry and improved protection. Manufacture shared Classical Age equipment from iron. Unlocks paid, one-tier upgrades for compatible existing buildings; select them and press U.",
     "prerequisites": ["bronzeage-fortified-settlements", "bronzeage-armies"],
     "capabilities": ["classicalage-professional-infantry"]
   },
@@ -370,7 +370,7 @@
     "slot": 2,
     "gold": 24000,
     "ticks": 1000,
-    "description": "Classical archers use shared Classical Age equipment. Mangonels and Onagers use shared Classical Age siege equipment, while retaining distinct research and combat profiles. Automatically upgrades existing associated military buildings to this age; the research price includes modernization.",
+    "description": "Classical archers use shared Classical Age equipment. Mangonels and Onagers use shared Classical Age siege equipment, while retaining distinct research and combat profiles. Unlocks paid, one-tier upgrades for compatible existing buildings; select them and press U.",
     "prerequisites": ["classicalage-professional-infantry"],
     "capabilities": ["classicalage-ranged-warfare"]
   },
@@ -382,7 +382,7 @@
     "slot": 3,
     "gold": 24000,
     "ticks": 1000,
-    "description": "Classical stables and mounted swordsmen. Recruitment uses shared Classical Age equipment, horses and reserves. Automatically upgrades existing associated military buildings to this age; the research price includes modernization.",
+    "description": "Classical stables and mounted swordsmen. Recruitment uses shared Classical Age equipment, horses and reserves. Unlocks paid, one-tier upgrades for compatible existing buildings; select them and press U.",
     "prerequisites": ["classicalage-professional-infantry"],
     "capabilities": ["classicalage-cavalry-tactics"]
   },
@@ -394,7 +394,7 @@
     "slot": 4,
     "gold": 32000,
     "ticks": 1200,
-    "description": "Massive stone walls and square bastions use Art/Terrain/Wall Kit/MassiveStoneWalls; gate capability, Classical siege facility and heavy Onager equipment/definition, distinct from Mangonel field support. Automatically upgrades existing associated military buildings to this age; the research price includes modernization.",
+    "description": "Massive stone walls and square bastions use Art/Terrain/Wall Kit/MassiveStoneWalls; gate capability, Classical siege facility and heavy Onager equipment/definition, distinct from Mangonel field support. Unlocks paid, one-tier upgrades for compatible existing buildings; select them and press U.",
     "prerequisites": [
       "classicalage-ranged-warfare",
       "classicalage-cavalry-tactics"
@@ -460,7 +460,7 @@
     "slot": 1,
     "gold": 32000,
     "ticks": 1000,
-    "description": "Early Medieval port and stronger hull-production tier. Automatically upgrades existing associated military buildings to this age; the research price includes modernization.",
+    "description": "Early Medieval port and stronger hull-production tier. Unlocks paid, one-tier upgrades for compatible existing buildings; select them and press U.",
     "prerequisites": ["classicalage-naval-logistics"],
     "capabilities": ["earlymedieval-framed-hulls"]
   },
@@ -511,7 +511,7 @@
     "slot": 1,
     "gold": 32000,
     "ticks": 1000,
-    "description": "Early Medieval blacksmith and barracks, mail infantry and shared Early Medieval equipment manufactured from iron. Automatically upgrades existing associated military buildings to this age; the research price includes modernization.",
+    "description": "Early Medieval blacksmith and barracks, mail infantry and shared Early Medieval equipment manufactured from iron. Unlocks paid, one-tier upgrades for compatible existing buildings; select them and press U.",
     "prerequisites": ["classicalage-masonry-engineering"],
     "capabilities": ["earlymedieval-mail-equipment"]
   },
@@ -523,7 +523,7 @@
     "slot": 2,
     "gold": 36000,
     "ticks": 1100,
-    "description": "Bowmen use shared Early Medieval equipment. Ballistas and Trebuchets use shared Early Medieval siege equipment, with separate recruitment research. Automatically upgrades existing associated military buildings to this age; the research price includes modernization.",
+    "description": "Bowmen use shared Early Medieval equipment. Ballistas and Trebuchets use shared Early Medieval siege equipment, with separate recruitment research. Unlocks paid, one-tier upgrades for compatible existing buildings; select them and press U.",
     "prerequisites": ["earlymedieval-mail-equipment"],
     "capabilities": ["earlymedieval-bow-and-bolt-warfare"]
   },
@@ -535,7 +535,7 @@
     "slot": 3,
     "gold": 36000,
     "ticks": 1100,
-    "description": "Early Medieval stables and mounted spearmen. Recruitment uses shared Early Medieval equipment, horses and reserves. Automatically upgrades existing associated military buildings to this age; the research price includes modernization.",
+    "description": "Early Medieval stables and mounted spearmen. Recruitment uses shared Early Medieval equipment, horses and reserves. Unlocks paid, one-tier upgrades for compatible existing buildings; select them and press U.",
     "prerequisites": ["earlymedieval-mail-equipment"],
     "capabilities": ["earlymedieval-mounted-spearmen"]
   },
@@ -547,7 +547,7 @@
     "slot": 4,
     "gold": 52000,
     "ticks": 1300,
-    "description": "Improved masonry walls/towers/gates, Early Medieval siege workshop and Trebuchet equipment/definition. The current wall kit ends at Classical; a distinct Early Medieval visual tier is not verified. Automatically upgrades existing associated military buildings to this age; the research price includes modernization.",
+    "description": "Improved masonry walls/towers/gates, Early Medieval siege workshop and Trebuchet equipment/definition. The current wall kit ends at Classical; a distinct Early Medieval visual tier is not verified. Unlocks paid, one-tier upgrades for compatible existing buildings; select them and press U.",
     "prerequisites": [
       "earlymedieval-bow-and-bolt-warfare",
       "earlymedieval-mounted-spearmen"
@@ -613,7 +613,7 @@
     "slot": 1,
     "gold": 48000,
     "ticks": 1100,
-    "description": "Late Medieval port and sailing-hull production tier. Automatically upgrades existing associated military buildings to this age; the research price includes modernization.",
+    "description": "Late Medieval port and sailing-hull production tier. Unlocks paid, one-tier upgrades for compatible existing buildings; select them and press U.",
     "prerequisites": ["earlymedieval-landing-logistics"],
     "capabilities": ["latemedieval-sailing-hulls"]
   },
@@ -664,7 +664,7 @@
     "slot": 1,
     "gold": 48000,
     "ticks": 1100,
-    "description": "Late Medieval blacksmith and barracks, plate swordsmen and shared Late Medieval equipment manufactured from steel. Automatically upgrades existing associated military buildings to this age; the research price includes modernization.",
+    "description": "Late Medieval blacksmith and barracks, plate swordsmen and shared Late Medieval equipment manufactured from steel. Unlocks paid, one-tier upgrades for compatible existing buildings; select them and press U.",
     "prerequisites": ["earlymedieval-trebuchet-engineering"],
     "capabilities": ["latemedieval-steel-equipment"]
   },
@@ -676,7 +676,7 @@
     "slot": 2,
     "gold": 56000,
     "ticks": 1300,
-    "description": "Crossbowmen use shared Late Medieval equipment. Organ Guns and Bombards use shared Late Medieval siege equipment made from steel and gunpowder. Automatically upgrades existing associated military buildings to this age; the research price includes modernization.",
+    "description": "Crossbowmen use shared Late Medieval equipment. Organ Guns and Bombards use shared Late Medieval siege equipment made from steel and gunpowder. Unlocks paid, one-tier upgrades for compatible existing buildings; select them and press U.",
     "prerequisites": ["latemedieval-steel-equipment"],
     "capabilities": ["latemedieval-crossbows-and-field-guns"]
   },
@@ -688,7 +688,7 @@
     "slot": 3,
     "gold": 56000,
     "ticks": 1300,
-    "description": "Knight stables and lance cavalry. Recruitment uses shared Late Medieval equipment, horses and reserves. Automatically upgrades existing associated military buildings to this age; the research price includes modernization.",
+    "description": "Knight stables and lance cavalry. Recruitment uses shared Late Medieval equipment, horses and reserves. Unlocks paid, one-tier upgrades for compatible existing buildings; select them and press U.",
     "prerequisites": ["latemedieval-steel-equipment"],
     "capabilities": ["latemedieval-lance-knights"]
   },
@@ -700,7 +700,7 @@
     "slot": 4,
     "gold": 80000,
     "ticks": 1500,
-    "description": "Stronger towers, walls and gates, siege workshops and Bombards. Bombards use shared Late Medieval siege equipment. Handheld firearm infantry starts in Early Modern. Automatically upgrades existing associated military buildings to this age; the research price includes modernization.",
+    "description": "Stronger towers, walls and gates, siege workshops and Bombards. Bombards use shared Late Medieval siege equipment. Handheld firearm infantry starts in Early Modern. Unlocks paid, one-tier upgrades for compatible existing buildings; select them and press U.",
     "prerequisites": [
       "latemedieval-crossbows-and-field-guns",
       "latemedieval-lance-knights"
@@ -766,7 +766,7 @@
     "slot": 1,
     "gold": 70000,
     "ticks": 1300,
-    "description": "Early Modern port/hull tier and improved maritime navigation performance; no arbitrary global teleportation. Automatically upgrades existing associated military buildings to this age; the research price includes modernization.",
+    "description": "Early Modern port/hull tier and improved maritime navigation performance; no arbitrary global teleportation. Unlocks paid, one-tier upgrades for compatible existing buildings; select them and press U.",
     "prerequisites": ["latemedieval-broadside-tactics"],
     "capabilities": ["earlymodern-ocean-navigation"]
   },
@@ -817,7 +817,7 @@
     "slot": 1,
     "gold": 70000,
     "ticks": 1300,
-    "description": "Armory, Early Modern barracks and short-gun infantry. Manufacture shared Early Modern equipment from iron and gunpowder for frontline, ranged and mounted troops. Automatically upgrades existing associated military buildings to this age; the research price includes modernization.",
+    "description": "Armory, Early Modern barracks and short-gun infantry. Manufacture shared Early Modern equipment from iron and gunpowder for frontline, ranged and mounted troops. Unlocks paid, one-tier upgrades for compatible existing buildings; select them and press U.",
     "prerequisites": ["latemedieval-siege-ordnance"],
     "capabilities": ["earlymodern-firearms"]
   },
@@ -829,7 +829,7 @@
     "slot": 2,
     "gold": 80000,
     "ticks": 1500,
-    "description": "Musketeers use shared Early Modern equipment. Field cannons and howitzers use shared Early Modern siege equipment, with distinct research and attack profiles. Automatically upgrades existing associated military buildings to this age; the research price includes modernization.",
+    "description": "Musketeers use shared Early Modern equipment. Field cannons and howitzers use shared Early Modern siege equipment, with distinct research and attack profiles. Unlocks paid, one-tier upgrades for compatible existing buildings; select them and press U.",
     "prerequisites": ["earlymodern-firearms"],
     "capabilities": ["earlymodern-musket-and-artillery-drill"]
   },
@@ -841,7 +841,7 @@
     "slot": 3,
     "gold": 80000,
     "ticks": 1500,
-    "description": "Early Modern stables and mounted pistoliers. Recruitment uses shared Early Modern equipment, horses and reserves. Mounted firearms do not inherit melee charge. Automatically upgrades existing associated military buildings to this age; the research price includes modernization.",
+    "description": "Early Modern stables and mounted pistoliers. Recruitment uses shared Early Modern equipment, horses and reserves. Mounted firearms do not inherit melee charge. Unlocks paid, one-tier upgrades for compatible existing buildings; select them and press U.",
     "prerequisites": ["earlymodern-firearms"],
     "capabilities": ["earlymodern-pistoliers"]
   },
@@ -853,7 +853,7 @@
     "slot": 4,
     "gold": 110000,
     "ticks": 1800,
-    "description": "Gunpowder-era fortifications, Early Modern siege foundry and Early Howitzer equipment/definition, separate from the field cannon. Keep material/weapon requirements separate from research. Automatically upgrades existing associated military buildings to this age; the research price includes modernization.",
+    "description": "Gunpowder-era fortifications, Early Modern siege foundry and Early Howitzer equipment/definition, separate from the field cannon. Keep material/weapon requirements separate from research. Unlocks paid, one-tier upgrades for compatible existing buildings; select them and press U.",
     "prerequisites": [
       "earlymodern-musket-and-artillery-drill",
       "earlymodern-pistoliers"
@@ -919,7 +919,7 @@
     "slot": 1,
     "gold": 100000,
     "ticks": 1500,
-    "description": "Modern port and powered hull-production tier. Fuel/ship recipes require separate authoring. Automatically upgrades existing associated military buildings to this age; the research price includes modernization.",
+    "description": "Modern port and powered hull-production tier. Fuel/ship recipes require separate authoring. Unlocks paid, one-tier upgrades for compatible existing buildings; select them and press U.",
     "prerequisites": ["earlymodern-fleet-coordination"],
     "capabilities": ["modern-powered-vessels"]
   },
@@ -967,7 +967,7 @@
     "slot": 1,
     "gold": 100000,
     "ticks": 1500,
-    "description": "Arms Factory, Modern barracks and rifle infantry. Manufacture shared Modern equipment for rifle infantry, marksmen and machine-gun crews. Older researched equipment recipes remain available. Automatically upgrades existing associated military buildings to this age; the research price includes modernization.",
+    "description": "Arms Factory, Modern barracks and rifle infantry. Manufacture shared Modern equipment for rifle infantry, marksmen and machine-gun crews. Older researched equipment recipes remain available. Unlocks paid, one-tier upgrades for compatible existing buildings; select them and press U.",
     "prerequisites": ["earlymodern-howitzer-engineering"],
     "capabilities": ["modern-modern-armaments"]
   },
@@ -979,7 +979,7 @@
     "slot": 2,
     "gold": 120000,
     "ticks": 1800,
-    "description": "Marksmen, machine-gun crews, tanks, vehicle depots, howitzers and anti-air vehicles. Manufacture shared Modern siege and vehicle equipment. Tanks and other ground vehicles require one of each; howitzers require siege equipment. Gun nests and trenches replace the new wall tier. Automatically upgrades existing associated military buildings to this age; the research price includes modernization.",
+    "description": "Marksmen, machine-gun crews, tanks, vehicle depots, howitzers and anti-air vehicles. Manufacture shared Modern siege and vehicle equipment. Tanks and other ground vehicles require one of each; howitzers require siege equipment. Gun nests and trenches replace the new wall tier. Unlocks paid, one-tier upgrades for compatible existing buildings; select them and press U.",
     "prerequisites": ["modern-modern-armaments"],
     "capabilities": ["modern-combined-arms"]
   },
@@ -991,7 +991,7 @@
     "slot": 3,
     "gold": 120000,
     "ticks": 1800,
-    "description": "Military Airstrips, fighters and bombers. Aircraft require gold and build time only, with no equipment, materials or reserve-troop cost. Airfield capacity and aviation research still apply. Automatically upgrades existing associated military buildings to this age; the research price includes modernization.",
+    "description": "Military Airstrips, fighters and bombers. Aircraft require gold and build time only, with no equipment, materials or reserve-troop cost. Airfield capacity and aviation research still apply. Unlocks paid, one-tier upgrades for compatible existing buildings; select them and press U.",
     "prerequisites": ["modern-modern-armaments"],
     "capabilities": ["modern-military-aviation"]
   },
@@ -1003,7 +1003,7 @@
     "slot": 4,
     "gold": 180000,
     "ticks": 2400,
-    "description": "Missile silos, fixed MIRV launchers, mobile MIRV launchers and strategic payload production. Mobile launchers require shared Modern siege and vehicle equipment. Payloads are manufactured separately and consumed when launched. Automatically upgrades existing associated military buildings to this age; the research price includes modernization.",
+    "description": "Missile silos, fixed MIRV launchers, mobile MIRV launchers and strategic payload production. Mobile launchers require shared Modern siege and vehicle equipment. Payloads are manufactured separately and consumed when launched. Unlocks paid, one-tier upgrades for compatible existing buildings; select them and press U.",
     "prerequisites": ["modern-combined-arms", "modern-military-aviation"],
     "capabilities": ["modern-strategic-weapons"]
   },
