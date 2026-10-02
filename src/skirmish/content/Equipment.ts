@@ -41,13 +41,15 @@ for (const [index, age] of AGES.entries()) {
         kind === "troop" ? 1 : index < 2 ? 4 : 2,
       ).id,
       building:
-        index === 6
-          ? "arms-factory"
-          : index === 5
-            ? "armory"
-            : kind === "siege"
-              ? "siege-workshop"
-              : "blacksmith",
+        kind === "siege"
+          ? "siege-workshop"
+          : kind === "vehicle"
+            ? "depot"
+            : index === 6
+              ? "arms-factory"
+              : index === 5
+                ? "armory"
+                : "blacksmith",
       inputs: {
         [material]: kind === "troop" ? 12 : kind === "vehicle" ? 30 : 20,
         ...(kind !== "vehicle" &&

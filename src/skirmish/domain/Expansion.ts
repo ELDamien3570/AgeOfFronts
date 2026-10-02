@@ -22,7 +22,7 @@ import {
 import { CONTENT_HASH } from "../content/Catalog";
 import { TECHNOLOGIES, technologyAt } from "../content/Technology";
 import { UNIT, UNITS, VESSEL, VESSELS } from "../content/Units";
-import { AiModernization, militaryProduction } from "./AiMilitaryDevelopment";
+import { AiModernization } from "./AiMilitaryDevelopment";
 import {
   acceptsAlliance,
   buildingPriority,
@@ -51,7 +51,7 @@ import { vesselEffects } from "./ResearchEffects";
 import { Roads } from "./Roads";
 import { Recruitment, RECRUITMENT_SECONDS } from "./Recruitment";
 import type { RecruitmentJob } from "./Definitions";
-import { PRODUCTION_RECIPES, Supply, costRejection, spend } from "./Supply";
+import { Supply, costRejection, spend } from "./Supply";
 import { Trade } from "./Trade";
 export interface ExpansionWorld extends BattleWorld, ArmyWorld {
   recruitment: Recruitment;
@@ -272,6 +272,12 @@ export class Expansion {
       return player.kind === "tribe"
         ? "Tribes remain in the Stone Age"
         : this.progression.advance(player);
+    if (command.type === "production-priority")
+      return this.supply.setPriorities(player, world.buildings, command.buildingType, command.recipeIds);
+    if (command.type === "reset-production-priorities") {
+      this.supply.resetPriorities(player.id);
+      return null;
+    }
     if (command.type === "produce")
       return this.supply.setProduction(
         player,
@@ -834,7 +840,7 @@ export class Expansion {
           action: "expire",
         });
     this.fortifications.step(world.tick, world.buildings);
-    this.supply.step(world.tick, world.players, world.buildings, world.owners);
+    this.supply.step(world.tick, world.players, world.buildings, world.owners, world.squads);
     for (const s of world.ships)
       if (s.refit && --s.refit.remainingTicks <= 0) {
         s.definitionId = s.refit.targetId;
@@ -1019,29 +1025,7 @@ export class Expansion {
       // Nearest owned land is order-independent (it is derived from ownership),
       // so checkpoints never need the per-player tile sets.
       let nearestOwned: number[] | undefined;
-      const incoming: Record<string, number> = {};
-      for (const job of Object.values(this.supply.jobs)) {
-        if (!job || job.owner !== player.id) continue;
-        const recipe = PRODUCTION_RECIPES.find((r) => r.id === job.recipeId)!;
-        for (const [id, n] of Object.entries(recipe.outputs))
-          incoming[id] = (incoming[id] ?? 0) + n;
-      }
-      const plans = this.supply.productionPlans();
-      for (const [buildingId, recipeId] of militaryProduction(
-        own,
-        state.completed,
-        this.supply.inventories[player.id],
-        PRODUCTION_RECIPES,
-        incoming,
-        this.world.squads.filter((s) => s.playerId === player.id).length,
-      ))
-        if ((plans[buildingId]?.recipeId ?? null) !== recipeId)
-          this.world.applyCommand({
-            type: "produce",
-            playerId: player.id,
-            buildingId,
-            recipeId,
-          });
+      // Supply applies the same automatic allocation to humans and AI.
       for (const type of buildingPriority(personality, [
         "city",
         "barracks",
@@ -1456,6 +1440,7 @@ export class Expansion {
       production: this.supply.jobs,
       recruitment: this.world.recruitment.jobs,
       productionPlans: this.supply.productionPlans(),
+      productionPriorities: this.supply.priorities,
       deposits: this.supply.deposits,
       diplomacy: this.diplomacy.state,
       traders: this.trade.actors.map(

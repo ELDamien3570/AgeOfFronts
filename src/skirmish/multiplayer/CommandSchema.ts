@@ -56,6 +56,11 @@ export const commandSchema = z.discriminatedUnion("type", [
   command("research", { technologyId: text }),
   command("advance-age"),
   command("produce", { buildingId: id, recipeId: text.nullable() }),
+  command("production-priority", {
+    buildingType: z.enum(Object.keys(BUILDING_RULES) as [string, ...string[]]),
+    recipeIds: z.array(text).max(100).nullable(),
+  }),
+  command("reset-production-priorities"),
   command("refit", { squadIds: ids, definitionId: text }),
   command("charge", { squadIds: ids, ...point, targetId: id.optional() }),
   command("attack-structure", {

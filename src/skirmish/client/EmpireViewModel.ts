@@ -4,6 +4,7 @@ import {
   buildingTechnology,
   producerCompatible,
 } from "../content/Buildings";
+import { supplyItemName } from "../content/Equipment";
 import {
   ADVANCES,
   TECHNOLOGIES,
@@ -12,7 +13,7 @@ import {
   treeWorkload,
 } from "../content/Technology";
 import { defaultUnit, UNIT, UNITS, VESSEL, VESSELS } from "../content/Units";
-import { supplyItemName } from "../content/Equipment";
+import { automaticProductionPriorities } from "../domain/AutomaticProduction";
 import { AGE_NAMES, AGES, TREES, type Age } from "../domain/Definitions";
 import {
   advanceRejection,
@@ -27,6 +28,7 @@ import {
   productionTicks,
 } from "../domain/Supply";
 import { FactionViewModel } from "./FactionViewModel";
+import { productionText } from "./ProductionText";
 import { ResourceViewModel } from "./ResourceViewModel";
 import { SkirmishViewModel, type SelectionState } from "./SkirmishViewModel";
 export class EmpireViewModel {
@@ -177,10 +179,18 @@ export class EmpireViewModel {
   }
   get producers() {
     return this.state.buildings
-      .filter((b) => b.playerId === this.playerId)
+      .filter(
+        (b) =>
+          b.playerId === this.playerId &&
+          (b.health ?? 1) > 0 &&
+          PRODUCTION_RECIPES.some((r) =>
+            producerCompatible(b.type, r.building),
+          ),
+      )
       .map((b) => ({
         building: b,
         job: this.expansion.production[b.id],
+        mode: this.productionMode(b.id),
         selected: PRODUCTION_RECIPES.find(
           (r) => r.id === this.expansion.productionPlans?.[b.id]?.recipeId,
         ),
@@ -189,6 +199,79 @@ export class EmpireViewModel {
             producerCompatible(b.type, r.building) && this.has(r.technologyId),
         ),
       }));
+  }
+  get productionGroups() {
+    const groups = new Map<BuildingType, typeof this.producers>();
+    for (const producer of this.producers) {
+      const group = groups.get(producer.building.type) ?? [];
+      group.push(producer);
+      groups.set(producer.building.type, group);
+    }
+    return [...groups].map(([type, producers]) => {
+      const manual =
+        this.expansion.productionPriorities?.[this.playerId]?.[type];
+      const automaticPriorityIds = automaticProductionPriorities(
+        type,
+        this.progression.completed,
+      );
+      const priorityIds = manual ?? automaticPriorityIds;
+      const jobs = new Map<string, number>();
+      for (const { job } of producers)
+        if (job) jobs.set(job.recipeId, (jobs.get(job.recipeId) ?? 0) + 1);
+      return {
+        type,
+        count: producers.length,
+        ready: producers.filter((p) => !p.building.remainingTicks).length,
+        mode:
+          manual === undefined
+            ? ("auto" as const)
+            : manual.length
+              ? ("manual" as const)
+              : ("paused" as const),
+        priorityIds,
+        automaticPriorityIds,
+        recipes: PRODUCTION_RECIPES.filter((r) =>
+          producerCompatible(type, r.building),
+        ).map((recipe) => ({
+          ...recipe,
+          prioritized: priorityIds.includes(recipe.id),
+          reason: this.has(recipe.technologyId)
+            ? null
+            : productionText("requires_research", {
+                technology: this.technologyName(recipe.technologyId),
+              }),
+          cycleTicks: productionTicks(recipe, this.progression.completed),
+        })),
+        running: [...jobs].map(([recipeId, count]) => ({
+          recipe: PRODUCTION_RECIPES.find((r) => r.id === recipeId),
+          recipeId,
+          count,
+        })),
+      };
+    });
+  }
+  get hasManualProduction(): boolean {
+    return (
+      Object.keys(this.expansion.productionPriorities?.[this.playerId] ?? {})
+        .length > 0 ||
+      Object.values(this.expansion.productionPlans ?? {}).some(
+        (plan) => plan.owner === this.playerId,
+      )
+    );
+  }
+  productionMode(buildingId: number): "auto" | "manual" | "paused" {
+    const plan = this.expansion.productionPlans?.[buildingId];
+    if (plan?.owner === this.playerId)
+      return plan.recipeId === "paused" ? "paused" : "manual";
+    const building = this.state.buildings.find((b) => b.id === buildingId);
+    const priorities =
+      building &&
+      this.expansion.productionPriorities?.[this.playerId]?.[building.type];
+    return priorities === undefined
+      ? "auto"
+      : priorities.length
+        ? "manual"
+        : "paused";
   }
   productionChoice(buildingId: number, recipeId: string) {
     const building = this.state.buildings.find((b) => b.id === buildingId),
@@ -217,19 +300,51 @@ export class EmpireViewModel {
   }
   productionStatus(buildingId: number) {
     const producer = this.producers.find((p) => p.building.id === buildingId);
-    if (!producer) return "Producer unavailable";
+    if (!producer) return productionText("unavailable");
     if (producer.building.remainingTicks)
-      return `Construction · ${Math.ceil(producer.building.remainingTicks / 20)}s`;
-    if (producer.job)
-      return `${PRODUCTION_RECIPES.find((r) => r.id === producer.job!.recipeId)!.name} · ${Math.ceil(producer.job.remainingTicks / 20)}s`;
-    if (!producer.selected) return "Choose a repeating production pattern";
+      return productionText("construction", {
+        seconds: Math.ceil(producer.building.remainingTicks / 20),
+      });
+    if (producer.job) {
+      const recipe = PRODUCTION_RECIPES.find(
+        (r) => r.id === producer.job!.recipeId,
+      );
+      const seconds = Math.ceil(producer.job.remainingTicks / 20);
+      if (producer.mode === "paused")
+        return productionText("pausing", {
+          recipe: recipe?.name ?? producer.job.recipeId,
+          seconds,
+        });
+      if (producer.selected && producer.selected.id !== producer.job.recipeId)
+        return productionText("manual_next", {
+          current: recipe?.name ?? producer.job.recipeId,
+          seconds,
+          next: producer.selected.name,
+        });
+      return productionText("active", {
+        mode: productionText(producer.mode === "auto" ? "automatic" : "manual"),
+        recipe: recipe?.name ?? producer.job.recipeId,
+        seconds,
+      });
+    }
+    if (producer.mode === "paused") return productionText("paused_idle");
+    if (producer.mode === "manual" && !producer.selected)
+      return productionText("manual_idle");
+    if (!producer.selected)
+      return productionText(
+        producer.recipes.length ? "automatic_idle" : "automatic_locked",
+      );
     const choice = this.productionChoice(buildingId, producer.selected.id);
     const missing = choice.inputs.filter((i) => i.available < i.required);
     return (
       choice.reason ??
       (missing.length
-        ? `Waiting: ${missing.map((i) => `${this.itemName(i.id)} ${i.available}/${i.required}`).join(", ")}`
-        : `${producer.selected.name} · ready to start`)
+        ? productionText("waiting", {
+            inputs: missing
+              .map((i) => `${this.itemName(i.id)} ${i.available}/${i.required}`)
+              .join(", "),
+          })
+        : productionText("ready", { recipe: producer.selected.name }))
     );
   }
   refit(focusedId?: number) {

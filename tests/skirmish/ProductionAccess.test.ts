@@ -1,5 +1,6 @@
 import { describe, expect, it } from "vitest";
 import { EmpireViewModel } from "../../src/skirmish/client/EmpireViewModel";
+import { producerCompatible } from "../../src/skirmish/content/Buildings";
 import {
   EQUIPMENT_RECIPES,
   equipmentItem,
@@ -140,6 +141,11 @@ describe("production resource accessibility", () => {
       const b = m.buildings[m.buildings.length - 1]!;
       // Focus this test on paid production; construction timing is independently covered.
       b.remainingTicks = 0;
+      // Keep this manual single-batch fixture independent of automatic stock balancing.
+      if (
+        PRODUCTION_RECIPES.some((r) => producerCompatible(b.type, r.building))
+      )
+        expect(e.supply.setProduction(p, b, null)).toBeNull();
       return b;
     };
     for (const resource of [
@@ -157,7 +163,9 @@ describe("production resource accessibility", () => {
         )!.tile,
       );
     const factory = build("factory"),
-      arms = build("arms-factory");
+      arms = build("arms-factory"),
+      siege = build("siege-workshop"),
+      depot = build("depot");
     e.supply.step(20, m.players, m.buildings, m.owners);
     expect(stock.copper).toBeGreaterThan(0);
     expect(stock.tin).toBeGreaterThan(0);
@@ -210,15 +218,14 @@ describe("production resource accessibility", () => {
     batch("refine-steel", factory.id);
     batch("refine-iron", factory.id);
     batch("refine-steel", factory.id);
-    batch("make-modern-vehicle-equipment", arms.id);
+    batch("make-modern-vehicle-equipment", depot.id);
     batch("refine-iron", factory.id);
     batch("refine-steel", factory.id);
     batch("refine-iron", factory.id);
     batch("refine-steel", factory.id);
-    batch("make-modern-siege-equipment", arms.id);
+    batch("make-modern-siege-equipment", siege.id);
     const tank = UNIT.get("modern-cavalry")!;
     expect(costRejection(p, stock, tank.cost)).toBeNull();
-    const depot = build("depot");
     expect(
       m.applyCommand({
         type: "recruit",
@@ -232,6 +239,28 @@ describe("production resource accessibility", () => {
   });
 });
 describe("shared equipment contracts", () => {
+  it("assigns every siege pattern to workshops, modern vehicles to depots, and troop patterns to their producer tiers", () => {
+    for (const [index, age] of AGES.entries()) {
+      const siege = EQUIPMENT_RECIPES.find(
+        (r) => r.outputs[equipmentItem(age, "siege")],
+      )!;
+      expect(siege.building).toBe("siege-workshop");
+      if (index) {
+        const troop = EQUIPMENT_RECIPES.find(
+          (r) => r.outputs[equipmentItem(age)],
+        )!;
+        expect(troop.building).toBe(
+          index === 6 ? "arms-factory" : index === 5 ? "armory" : "blacksmith",
+        );
+        expect(producerCompatible("arms-factory", troop.building)).toBe(true);
+      }
+    }
+    const vehicle = EQUIPMENT_RECIPES.find(
+      (r) => r.outputs[equipmentItem("Modern", "vehicle")],
+    )!;
+    expect(vehicle.building).toBe("depot");
+    expect(producerCompatible("arms-factory", vehicle.building)).toBe(false);
+  });
   it("defines one troop pattern per equipped age and one siege pattern for every age", () => {
     expect(EQUIPMENT_RECIPES).toHaveLength(14);
     for (const age of AGES) {

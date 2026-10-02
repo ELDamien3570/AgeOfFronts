@@ -79,7 +79,11 @@ describe("AI equipment production and refit rotation", () => {
     expect(stock.bronze).toBe(0);
     for (let i = 0; i < 55; i++) m.step();
     expect(e.supply.jobs[b.id]?.recipeId).toBe("make-bronzeage-equipment");
-    expect(e.supply.productionPlans()[b.id].recipeId).toMatch(/^make-modern-/);
+    expect(e.supply.productionPlans()[b.id].recipeId).toBe(
+      "make-bronzeage-equipment",
+    );
+    // AI shares the player allocator and never overwrites explicit controls.
+    expect(e.supply.setProduction(p, b, "auto")).toBeNull();
     for (let i = 0; i < 450; i++)
       e.supply.step(m.tick + i + 1, m.players, m.buildings, m.owners);
     expect(stock["equipment:bronzeage"]).toBe(1);

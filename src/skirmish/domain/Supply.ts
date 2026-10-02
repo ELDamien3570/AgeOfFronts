@@ -1,13 +1,11 @@
-import { generateDeposits } from "./DepositGeneration";
-import { startingResources } from "./StartingResources";
-import type { LandPaths } from "../Pathfinding";
-import { restoreArray, restoreMap, restoreRecord } from "../StateTransfer";
 import type { GameMap } from "../../core/game/GameMap";
-import type { Building, Player } from "../Protocol";
 import { producerCompatible } from "../content/Buildings";
+import { PRODUCTION_RECIPES } from "../content/Production";
 import { resourceTechnology } from "../content/Resources";
-import { technologyAt } from "../content/Technology";
-import { RECIPES } from "../content/Units";
+import type { LandPaths } from "../Pathfinding";
+import type { Building, BuildingType, Player, Squad } from "../Protocol";
+import { restoreArray, restoreMap, restoreRecord } from "../StateTransfer";
+import { automaticProducer, automaticProduction } from "./AutomaticProduction";
 import {
   AGES,
   RESOURCES,
@@ -17,57 +15,17 @@ import {
   type ProductionJob,
   type ProductionRecipe,
 } from "./Definitions";
+import { generateDeposits } from "./DepositGeneration";
 import type { Progression } from "./Progression";
 import { breedingPerSecond, throughputPercent } from "./ResearchEffects";
+import { startingResources } from "./StartingResources";
 export function productionTicks(
   recipe: ProductionRecipe,
   research: readonly string[],
 ): number {
   return Math.ceil((recipe.ticks * 100) / throughputPercent(research));
 }
-export const REFINING: ProductionRecipe[] = [
-  {
-    id: "refine-bronze",
-    name: "Smelt bronze",
-    technologyId: technologyAt("BronzeAge", "economic", 1).id,
-    building: "factory",
-    inputs: { copper: 8, tin: 2 },
-    outputs: { bronze: 10 },
-    ticks: 200,
-  },
-  {
-    id: "refine-iron",
-    name: "Smelt iron",
-    technologyId: technologyAt("ClassicalAge", "economic", 1).id,
-    building: "factory",
-    inputs: { ironOre: 10 },
-    outputs: { iron: 10 },
-    ticks: 200,
-  },
-  {
-    id: "refine-steel",
-    name: "Make steel",
-    technologyId: technologyAt("LateMedieval", "economic", 1).id,
-    building: "factory",
-    inputs: { iron: 8, carbon: 2 },
-    outputs: { steel: 10 },
-    ticks: 240,
-  },
-  ...["icbm", "hydrogen", "mirv"].map((name, i) => ({
-    id: `make-${name}`,
-    name: `${name.toUpperCase()} payload`,
-    technologyId: technologyAt("Modern", "warfare", 4).id,
-    building: "arms-factory" as const,
-    inputs: {
-      steel: 200 + i * 100,
-      gunpowder: 150 + i * 100,
-      oil: 100 + i * 50,
-    },
-    outputs: { [`payload:${name}`]: 1 },
-    ticks: 2400 + i * 600,
-  })),
-];
-export const PRODUCTION_RECIPES = [...REFINING, ...RECIPES];
+export { PRODUCTION_RECIPES, REFINING } from "../content/Production";
 export function costRejection(
   player: Pick<Player, "gold" | "reserves">,
   inventory: Inventory,
@@ -88,18 +46,30 @@ export function spend(player: Player, inventory: Inventory, cost: Cost): void {
     inventory[item] = (inventory[item] ?? 0) - amount;
 }
 export class Supply {
-  checkpoint() { return structuredClone({inventories:this.inventories, jobs:this.jobs, deposits:this.deposits, goods:this.goods, goodsOwners:this.goodsOwners, selectedRecipes:this.selectedRecipes}); }
+  checkpoint() {
+    return structuredClone({
+      inventories: this.inventories,
+      jobs: this.jobs,
+      deposits: this.deposits,
+      goods: this.goods,
+      goodsOwners: this.goodsOwners,
+      selectedRecipes: this.selectedRecipes,
+      priorities: this.priorities,
+    });
+  }
   restore(saved: ReturnType<Supply["checkpoint"]>): void {
-    const state=structuredClone(saved);
-    restoreRecord(this.inventories,state.inventories);
-    restoreRecord(this.jobs,state.jobs);
-    restoreArray(this.deposits,state.deposits);
-    restoreMap(this.goods,state.goods);
-    restoreMap(this.goodsOwners,state.goodsOwners);
-    restoreMap(this.selectedRecipes,state.selectedRecipes);
-
+    const state = structuredClone(saved);
+    restoreRecord(this.inventories, state.inventories);
+    restoreRecord(this.jobs, state.jobs);
+    restoreArray(this.deposits, state.deposits);
+    restoreMap(this.goods, state.goods);
+    restoreMap(this.goodsOwners, state.goodsOwners);
+    restoreMap(this.selectedRecipes, state.selectedRecipes);
+    restoreRecord(this.priorities, state.priorities ?? {});
   }
 
+  readonly priorities: Record<number, Partial<Record<BuildingType, string[]>>> =
+    {};
   readonly inventories: Record<number, Inventory> = {};
   readonly jobs: Record<number, ProductionJob | undefined> = {};
   readonly deposits: Deposit[] = [];
@@ -121,7 +91,8 @@ export class Supply {
     density: 1 | 2 | 3 | 5 = 1,
     private readonly output: 1 | 2 | 3 | 5 = 1,
   ) {
-    if (![1,2,3,5].includes(density) || ![1,2,3,5].includes(output)) throw new Error("Invalid resource rules");
+    if (![1, 2, 3, 5].includes(density) || ![1, 2, 3, 5].includes(output))
+      throw new Error("Invalid resource rules");
     this.deposits.push(...generateDeposits(map, seed, density, output));
   }
   ensureStartingResources(
@@ -131,7 +102,14 @@ export class Supply {
     buildings: readonly Building[],
   ): void {
     const layout = startingResources(
-      this.map, paths, players, owners, buildings, this.deposits, this.seed, this.output,
+      this.map,
+      paths,
+      players,
+      owners,
+      buildings,
+      this.deposits,
+      this.seed,
+      this.output,
     );
     this.deposits.splice(0, this.deposits.length, ...layout);
   }
@@ -145,14 +123,21 @@ export class Supply {
     building: Building | undefined,
     recipeId: string | null,
   ): string | null {
-    if (recipeId === null) {
+    if (recipeId === null || recipeId === "auto") {
       if (
         !building ||
         building.playerId !== player.id ||
-        building.remainingTicks
+        building.remainingTicks ||
+        (building.health ?? 1) <= 0 ||
+        !automaticProducer(building)
       )
         return "Select a completed friendly producer";
-      this.selectedRecipes.delete(building.id);
+      if (recipeId === "auto") this.selectedRecipes.delete(building.id);
+      else
+        this.selectedRecipes.set(building.id, {
+          owner: player.id,
+          recipeId: "paused",
+        });
       return null; // An already paid batch still finishes normally.
     }
     const recipe = PRODUCTION_RECIPES.find((r) => r.id === recipeId);
@@ -166,11 +151,49 @@ export class Supply {
     this.selectedRecipes.set(building!.id, { owner: player.id, recipeId });
     return null;
   }
+  setPriorities(
+    player: Player,
+    buildings: readonly Building[],
+    type: BuildingType,
+    recipeIds: string[] | null,
+  ): string | null {
+    const own = buildings.find(
+      (b) => b.playerId === player.id && b.type === type && (b.health ?? 1) > 0,
+    );
+    if (!own || !automaticProducer(own))
+      return "Choose an owned production building type";
+    if (
+      recipeIds !== null &&
+      recipeIds.some((id) => {
+        const r = PRODUCTION_RECIPES.find((r) => r.id === id);
+        return (
+          !r ||
+          !producerCompatible(type, r.building) ||
+          !this.progression.has(player.id, r.technologyId)
+        );
+      })
+    )
+      return "Choose researched patterns available to this building type";
+    const priorities = (this.priorities[player.id] ??= {});
+    if (recipeIds === null) delete priorities[type];
+    else priorities[type] = [...new Set(recipeIds)].sort();
+    // A type control supersedes legacy per-building repeat/pause commands.
+    for (const b of buildings)
+      if (b.playerId === player.id && b.type === type)
+        this.selectedRecipes.delete(b.id);
+    return null;
+  }
+  resetPriorities(playerId: number): void {
+    delete this.priorities[playerId];
+    for (const [id, plan] of this.selectedRecipes)
+      if (plan.owner === playerId) this.selectedRecipes.delete(id);
+  }
   step(
     tick: number,
     players: readonly Player[],
     buildings: readonly Building[],
     owners: Uint8Array,
+    squads: readonly Squad[] = [],
   ): void {
     const live = new Map(buildings.map((b) => [b.id, b]));
     for (const [id, owner] of this.goodsOwners)
@@ -183,9 +206,28 @@ export class Supply {
         this.selectedRecipes.delete(id);
         delete this.jobs[id];
       }
+    const byPlayer = new Map(players.map((p) => [p.id, p]));
+    // Automatic jobs have no manual plan, so clean paid work independently.
+    for (const [id, job] of Object.entries(this.jobs)) {
+      const b = live.get(Number(id));
+      if (
+        !job ||
+        !b ||
+        b.playerId !== job.owner ||
+        (b.health ?? 1) <= 0 ||
+        byPlayer.get(job.owner)?.eliminated
+      )
+        delete this.jobs[Number(id)];
+    }
     for (const b of buildings) {
-      const player = players.find((p) => p.id === b.playerId);
-      if (!player || player.eliminated || b.remainingTicks) continue;
+      const player = byPlayer.get(b.playerId);
+      if (
+        !player ||
+        player.eliminated ||
+        b.remainingTicks ||
+        (b.health ?? 1) <= 0
+      )
+        continue;
       const inventory = this.inventories[player.id],
         job = this.jobs[b.id];
       if (job && --job.remainingTicks <= 0) {
@@ -196,12 +238,17 @@ export class Supply {
         delete this.jobs[b.id];
       }
       const selected = this.selectedRecipes.get(b.id);
-      if (selected && !this.jobs[b.id]) {
+      if (selected && selected.recipeId !== "paused" && !this.jobs[b.id]) {
         const recipe = PRODUCTION_RECIPES.find(
           (r) => r.id === selected.recipeId,
         )!;
         if (
-          this.progression.has(player.id, recipe.technologyId) &&
+          !productionRejection(
+            player.id,
+            b,
+            recipe,
+            this.progression.states[player.id].completed,
+          ) &&
           !costRejection(player, inventory, { items: recipe.inputs })
         ) {
           spend(player, inventory, { items: recipe.inputs });
@@ -253,6 +300,81 @@ export class Supply {
         this.progression.has(node.owner, resourceTechnology("horses").id)
       )
         this.inventories[node.owner].horses += node.yieldPerSecond;
+    }
+    if (tick % 20 !== 0) return;
+    // Group once per allocation pass; never scan the map or squads per factory.
+    const own = new Map<number, Building[]>(),
+      counts = new Map<number, number>();
+    for (const b of buildings) {
+      if (!own.has(b.playerId)) own.set(b.playerId, []);
+      own.get(b.playerId)!.push(b);
+    }
+    for (const squad of squads)
+      if (squad.troops > 0)
+        counts.set(squad.playerId, (counts.get(squad.playerId) ?? 0) + 1);
+    const deposits = new Map(this.deposits.map((d) => [d.tile, d]));
+    for (const player of players) {
+      if (player.eliminated) continue;
+      const buildings = own.get(player.id) ?? [];
+      if (!buildings.some(automaticProducer)) continue;
+      const incoming: Inventory = {},
+        renewable = new Set<string>(),
+        busy = new Set<number>();
+      for (const b of buildings) {
+        const job = this.jobs[b.id];
+        if (job) {
+          busy.add(b.id);
+          const recipe = PRODUCTION_RECIPES.find((r) => r.id === job.recipeId)!;
+          for (const [id, n] of Object.entries(recipe.outputs))
+            incoming[id] = (incoming[id] ?? 0) + n;
+        }
+        if (
+          b.remainingTicks ||
+          (b.health ?? 1) <= 0 ||
+          !["mine", "oil-well", "oil-rig"].includes(b.type)
+        )
+          continue;
+        const node = deposits.get(b.tile);
+        if (
+          node &&
+          this.progression.has(player.id, resourceTechnology(node.resource).id)
+        )
+          renewable.add(node.resource);
+      }
+      const plans = new Map(
+        [...this.selectedRecipes].filter(([, p]) => p.owner === player.id),
+      );
+      for (const [id, recipeId] of automaticProduction({
+        buildings,
+        research: this.progression.states[player.id].completed,
+        inventory: this.inventories[player.id],
+        incoming,
+        recipes: PRODUCTION_RECIPES,
+        plans,
+        busy,
+        renewable,
+        squadCount: counts.get(player.id) ?? 0,
+        priorities: this.priorities[player.id],
+        ai: player.ai,
+      })) {
+        const recipe = PRODUCTION_RECIPES.find((r) => r.id === recipeId)!;
+        const inventory = this.inventories[player.id];
+        // Manual work has already been paid above. Apply each planned batch
+        // through the same spend/job lifecycle, never through a free output path.
+        if (costRejection(player, inventory, { items: recipe.inputs }))
+          continue;
+        spend(player, inventory, { items: recipe.inputs });
+        const ticks = productionTicks(
+          recipe,
+          this.progression.states[player.id].completed,
+        );
+        this.jobs[id] = {
+          recipeId,
+          owner: player.id,
+          remainingTicks: ticks,
+          totalTicks: ticks,
+        };
+      }
     }
   }
 }

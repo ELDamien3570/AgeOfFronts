@@ -1,10 +1,10 @@
-import type { ResourceTerrainData } from "./ResourceTerrain";
 import type { GameMap } from "../core/game/GameMap";
 import type { ElevationData } from "./Elevation";
 import type { EnvironmentProfile } from "./Environment";
 import type { EnvironmentData } from "./EnvironmentData";
 import type { ForestData } from "./Forest";
 import type { MapGeography } from "./Geography";
+import type { ResourceTerrainData } from "./ResourceTerrain";
 import type {
   Age,
   ArmyOrder,
@@ -71,6 +71,13 @@ export type Command =
       buildingId: number;
       recipeId: string | null;
     }
+  | {
+      type: "production-priority";
+      playerId: number;
+      buildingType: BuildingType;
+      recipeIds: string[] | null;
+    }
+  | { type: "reset-production-priorities"; playerId: number }
   | {
       type: "refit";
       playerId: number;
@@ -349,7 +356,10 @@ export interface Snapshot {
   players: Player[];
   buildings: Building[];
   ships: (Omit<Ship, "path" | "nextPathIndex" | "shoreTransfer"> & {
-    shoreTransfer?: Pick<NonNullable<Ship["shoreTransfer"]>, "capacity" | "phase" | "destinationTile" | "landingTile">;
+    shoreTransfer?: Pick<
+      NonNullable<Ship["shoreTransfer"]>,
+      "capacity" | "phase" | "destinationTile" | "landingTile"
+    >;
   })[];
   squads: Omit<
     Squad,

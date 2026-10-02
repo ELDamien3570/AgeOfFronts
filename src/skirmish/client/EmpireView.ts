@@ -8,12 +8,13 @@ import { UNIT } from "../content/Units";
 
 import { AgeThemeView } from "./AgeThemeView";
 import { AGE_UI_THEMES } from "./AgeUiTheme";
-import { COLORS } from "./FactionColors";
 import { EmpireHudView } from "./EmpireHudView";
 import type { EmpireViewModel } from "./EmpireViewModel";
+import { COLORS } from "./FactionColors";
+import { productionText } from "./ProductionText";
+import { ResearchOpportunitiesView } from "./ResearchOpportunitiesView";
 import { technologyTreeMarkup } from "./TechnologyTreeView";
 import { TechnologyViewModel } from "./TechnologyViewModel";
-import { ResearchOpportunitiesView } from "./ResearchOpportunitiesView";
 
 const escape = (s: string) =>
   s.replace(
@@ -41,7 +42,9 @@ export interface EmpireActions {
 }
 
 export class EmpireView {
-  private get playerId(): number { return this.vm?.playerId ?? 1; }
+  private get playerId(): number {
+    return this.vm?.playerId ?? 1;
+  }
 
   autoTier = true;
   tierLimit?: Age;
@@ -52,8 +55,12 @@ export class EmpireView {
   readonly choices: Partial<Record<SquadType | ShipType, string>> = {};
 
   private vm?: EmpireViewModel;
-  private productionPage = 0;
   private wallPage = 0;
+  private readonly pendingProduction = new Map<
+    BuildingType,
+    { recipeIds: string[] | null; tick: number }
+  >();
+  private pendingProductionResetTick?: number;
 
   private panel: "technology" | "supplies" | "diplomacy" | null = null;
 
@@ -76,7 +83,10 @@ export class EmpireView {
   ) {
     this.ageTheme = new AgeThemeView(root);
     const main = root.querySelector(".battlefield")!;
-    this.researchOpportunities = new ResearchOpportunitiesView(main, (command) => this.actions.command(command));
+    this.researchOpportunities = new ResearchOpportunitiesView(
+      main,
+      (command) => this.actions.command(command),
+    );
 
     main.insertAdjacentHTML(
       "beforeend",
@@ -172,8 +182,9 @@ export class EmpireView {
     this.close();
     this.previousAge = undefined;
     this.fingerprint = "";
-    this.productionPage = 0;
     this.wallPage = 0;
+    this.pendingProduction.clear();
+    this.pendingProductionResetTick = undefined;
     for (const key of Object.keys(this.buildAges))
       delete this.buildAges[key as BuildingType];
     for (const key of Object.keys(this.choices))
@@ -217,6 +228,7 @@ export class EmpireView {
 
   update(vm: EmpireViewModel): void {
     this.vm = vm;
+    this.reconcileProductionPriorities();
     this.ageTheme.update(vm.progression.age);
 
     if (this.previousAge !== vm.progression.age) {
@@ -312,12 +324,6 @@ export class EmpireView {
       this.render(true);
       return;
     }
-    if (d.productionPage !== undefined) {
-      this.productionPage = Number(d.productionPage);
-      this.render(true);
-      return;
-    }
-
     if (d.age) {
       this.browsedAge = d.age as Age;
       this.inspectedTechnology = "";
@@ -339,7 +345,8 @@ export class EmpireView {
         technologyId: d.research,
       });
 
-    if (d.advance) this.actions.command({ type: "advance-age", playerId: this.playerId });
+    if (d.advance)
+      this.actions.command({ type: "advance-age", playerId: this.playerId });
 
     if (d.build)
       this.actions.build(
@@ -347,13 +354,47 @@ export class EmpireView {
         this.buildAges[d.build as BuildingType] ?? (d.buildAge as Age),
       );
 
-    if (d.recipe)
-      this.actions.command({
-        type: "produce",
-        playerId: this.playerId,
-        buildingId: Number(d.producer),
-        recipeId: d.recipe,
+    if (d.priorityRecipe && d.productionType) {
+      const buildingType = d.productionType as BuildingType;
+      const group = this.productionGroups.find((g) => g.type === buildingType);
+      if (!group) return;
+      const recipeIds = group.priorityIds.includes(d.priorityRecipe)
+        ? group.priorityIds.filter((id) => id !== d.priorityRecipe)
+        : [...group.priorityIds, d.priorityRecipe];
+      this.pendingProduction.set(buildingType, {
+        recipeIds,
+        tick: this.vm.state.tick,
       });
+      this.actions.command({
+        type: "production-priority",
+        playerId: this.playerId,
+        buildingType,
+        recipeIds,
+      });
+      this.render(true);
+    }
+    if (d.priorityReset) {
+      this.pendingProduction.set(d.priorityReset as BuildingType, {
+        recipeIds: null,
+        tick: this.vm.state.tick,
+      });
+      this.actions.command({
+        type: "production-priority",
+        playerId: this.playerId,
+        buildingType: d.priorityReset as BuildingType,
+        recipeIds: null,
+      });
+      this.render(true);
+    }
+    if (d.resetProduction) {
+      this.pendingProduction.clear();
+      this.pendingProductionResetTick = this.vm.state.tick;
+      this.actions.command({
+        type: "reset-production-priorities",
+        playerId: this.playerId,
+      });
+      this.render(true);
+    }
 
     if (d.recruit) {
       const u = UNIT.get(d.recruit)!;
@@ -393,7 +434,8 @@ export class EmpireView {
         type: "recruit-aircraft",
         playerId: this.playerId,
         buildingId: Number(d.airfield),
-        buildingIds: this.vm.aircraft(d.aircraft as "fighter" | "bomber").buildingIds,
+        buildingIds: this.vm.aircraft(d.aircraft as "fighter" | "bomber")
+          .buildingIds,
         definitionId: d.aircraft as "fighter" | "bomber",
       });
 
@@ -462,7 +504,10 @@ export class EmpireView {
         const theme = AGE_UI_THEMES[faction.age];
         panel.dataset.factionAge = faction.age;
         panel.style.setProperty("--diplomacy-color", COLORS[faction.player.id]);
-        panel.style.setProperty("--diplomacy-texture", `url("${theme.texture}")`);
+        panel.style.setProperty(
+          "--diplomacy-texture",
+          `url("${theme.texture}")`,
+        );
         panel.style.setProperty("--diplomacy-rim", theme.palette.rim);
       }
     } else {
@@ -531,14 +576,68 @@ export class EmpireView {
     );
   }
 
+  private reconcileProductionPriorities(): void {
+    const vm = this.vm!,
+      actual = vm.expansion.productionPriorities?.[vm.playerId] ?? {};
+    const matches = (
+      a: readonly string[] | undefined,
+      b: readonly string[] | null,
+    ) =>
+      b === null
+        ? a === undefined
+        : a !== undefined &&
+          a.length === b.length &&
+          b.every((id) => a.includes(id));
+    // Only a newer simulation snapshot can acknowledge an issued command.
+    if (
+      this.pendingProductionResetTick !== undefined &&
+      vm.state.tick > this.pendingProductionResetTick &&
+      !Object.values(vm.expansion.productionPlans ?? {}).some(
+        (p) => p.owner === vm.playerId,
+      ) &&
+      Object.entries(actual).every(([type, ids]) => {
+        const pending = this.pendingProduction.get(type as BuildingType);
+        return pending !== undefined && matches(ids, pending.recipeIds);
+      })
+    )
+      this.pendingProductionResetTick = undefined;
+    const ownedTypes = new Set(vm.productionGroups.map((g) => g.type));
+    for (const [type, pending] of this.pendingProduction)
+      if (
+        !ownedTypes.has(type) ||
+        (vm.state.tick > pending.tick &&
+          matches(actual[type], pending.recipeIds))
+      )
+        this.pendingProduction.delete(type);
+  }
+
+  private get productionGroups(): EmpireViewModel["productionGroups"] {
+    return this.vm!.productionGroups.map((group) => {
+      const pending = this.pendingProduction.get(group.type);
+      if (!pending && this.pendingProductionResetTick === undefined)
+        return group;
+      const selection = pending?.recipeIds ?? null;
+      const priorityIds = selection ?? group.automaticPriorityIds;
+      return {
+        ...group,
+        mode:
+          selection === null ? "auto" : selection.length ? "manual" : "paused",
+        priorityIds,
+        recipes: group.recipes.map((recipe) => ({
+          ...recipe,
+          prioritized: priorityIds.includes(recipe.id),
+        })),
+      };
+    });
+  }
+
   private supplyContent(): string {
     const vm = this.vm!,
-      all = vm.producers.filter((p) => p.recipes.length),
-      page = Math.min(
-        this.productionPage,
-        Math.max(0, Math.ceil(all.length / 12) - 1),
-      );
-    const cards = all.slice(page * 12, page * 12 + 12);
+      groups = this.productionGroups,
+      hasManual =
+        groups.some((g) => g.mode !== "auto") ||
+        (this.pendingProductionResetTick === undefined &&
+          vm.hasManualProduction);
     const walls = vm.expansion.barriers.filter(
       (w) => w.playerId === this.playerId && w.health > 0,
     );
@@ -547,30 +646,12 @@ export class EmpireView {
       Math.max(0, Math.ceil(walls.length / 16) - 1),
     );
     const repair = vm.state.buildings.find(
-      (b) => b.id === vm.selection.selectedBuilding && b.playerId === this.playerId,
+      (b) =>
+        b.id === vm.selection.selectedBuilding && b.playerId === this.playerId,
     );
-    return `<p>Resources and equipment are folded into the top bar. Recruitment and construction are in the main command dock.</p><h3>Production</h3><p>${all.length} producers · page ${page + 1} / ${Math.max(1, Math.ceil(all.length / 12))}</p><button data-production-page="${Math.max(0, page - 1)}" ${page === 0 ? "disabled" : ""}>Previous</button><button data-production-page="${page + 1}" ${(page + 1) * 12 >= all.length ? "disabled" : ""}>Next</button>${
-      cards
-        .map(
-          ({ building: b, selected, recipes }) =>
-            `<article class="producer"><b>${escape(BUILDING_RULES[b.type].name)} #${b.id}</b><small>${escape(vm.productionStatus(b.id))}</small><div>${recipes
-              .map((r) => {
-                const choice = vm.productionChoice(b.id, r.id),
-                  inputs =
-                    choice.inputs
-                      .map(
-                        (i) =>
-                          `${vm.itemName(i.id)} ${i.available}/${i.required}`,
-                      )
-                      .join(", ") || "No material input",
-                  outputs = choice.outputs
-                    .map((i) => `${i.amount} ${vm.itemName(i.id)}`)
-                    .join(", ");
-                return `<button data-producer="${b.id}" data-recipe="${r.id}" aria-pressed="${selected?.id === r.id}" ${choice.reason ? "disabled" : ""} title="${escape(choice.reason ?? `${inputs} → ${outputs} · ${choice.cycleTicks / 20}s · repeats when supplied`)}">${escape(r.name)}<small>${escape(inputs)} → ${escape(outputs)} · ${choice.cycleTicks / 20}s</small></button>`;
-              })
-              .join("")}</div></article>`,
-        )
-        .join("") || "<p>Build a factory or equipment producer.</p>"
+    return `<p>Resources and equipment are folded into the top bar. Recruitment and construction are in the main command dock.</p><h3>Production</h3><p>${escape(productionText("automatic_help"))}</p><p>${escape(productionText("balancing_help"))}</p><div class="production-toolbar"><span>${escape(productionText("groups_count", { groups: groups.length, buildings: groups.reduce((sum, group) => sum + group.count, 0) }))}</span><button data-reset-production="yes" ${hasManual ? "" : "disabled"} title="${escape(productionText("reset_all_title"))}">${escape(productionText("reset_all"))}</button></div>${
+      groups.map((group) => this.producerContent(group)).join("") ||
+      `<p>${escape(productionText("no_producers"))}</p>`
     }<h3>Trade</h3><p>Delivered gold: ${fmt(vm.expansion.deliveredGold[this.playerId] ?? 0)} · ${vm.expansion.traders.filter((a) => a.playerId === this.playerId).length}/64 traders</p>${vm.expansion.traders
       .filter((a) => a.playerId === this.playerId)
       .slice(0, 16)
@@ -589,6 +670,34 @@ export class EmpireView {
       .join("")}`;
   }
 
+  private producerContent(
+    group: EmpireViewModel["productionGroups"][number],
+  ): string {
+    const vm = this.vm!,
+      patterns = group.recipes
+        .map((recipe) => {
+          const inputs =
+              Object.entries(recipe.inputs)
+                .map(
+                  ([id, amount]) =>
+                    `${vm.itemName(id)} ${vm.inventory[id] ?? 0}/${amount}`,
+                )
+                .join(", ") || productionText("no_inputs"),
+            outputs = Object.entries(recipe.outputs)
+              .map(([id, amount]) => `${amount} ${vm.itemName(id)}`)
+              .join(", ");
+          return `<button data-production-type="${group.type}" data-priority-recipe="${recipe.id}" aria-pressed="${recipe.prioritized}" ${recipe.reason ? "disabled" : ""} title="${escape(recipe.reason ?? productionText("priority_title"))}">${escape(recipe.name)}<small>${escape(inputs)} → ${escape(outputs)} · ${recipe.cycleTicks / 20}s</small>${recipe.reason ? `<small>${escape(recipe.reason)}</small>` : ""}</button>`;
+        })
+        .join("");
+    const running = group.running
+      .map(
+        ({ recipe, recipeId, count }) =>
+          `${count} × ${recipe?.name ?? recipeId}`,
+      )
+      .join(", ");
+    return `<article class="producer" data-production-type-group="${group.type}" data-production-mode="${group.mode}"><div class="production-group-heading"><b>${escape(BUILDING_RULES[group.type].name)}</b><span>${escape(productionText("group_count", { count: group.count, ready: group.ready }))}</span></div><small>${escape(productionText(group.mode === "auto" ? "group_auto" : group.mode === "manual" ? "group_manual" : "paused"))}</small><div class="production-mode"><button data-priority-reset="${group.type}" aria-pressed="${group.mode === "auto"}" title="${escape(productionText("automatic_title"))}">${escape(productionText("automatic"))}</button></div>${running ? `<small class="production-running">${escape(productionText("running", { batches: running }))}</small>` : ""}${group.mode === "paused" ? `<small>${escape(productionText("no_priorities"))}</small>` : ""}<div class="production-patterns"><small>${escape(productionText("patterns"))}</small>${patterns}</div></article>`;
+  }
+
   private diplomacyContent(): string {
     const vm = this.vm!,
       faction = vm.faction(this.inspectedPlayer);
@@ -596,7 +705,9 @@ export class EmpireView {
     const p = faction.player;
 
     const treaty = vm.expansion.diplomacy.alliances.find(
-        (t) => (t.a === this.playerId && t.b === p.id) || (t.b === this.playerId && t.a === p.id),
+        (t) =>
+          (t.a === this.playerId && t.b === p.id) ||
+          (t.b === this.playerId && t.a === p.id),
       ),
       incoming = vm.incoming.find((o) => o.proposer === p.id);
 

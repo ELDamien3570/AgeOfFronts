@@ -315,6 +315,7 @@ export interface ExpansionSnapshot {
   production: Record<number, ProductionJob | undefined>;
   recruitment?: RecruitmentJob[];
   productionPlans: Record<number, { owner: number; recipeId: string }>;
+  productionPriorities?: Record<number, Partial<Record<BuildingType, string[]>>>;
   deposits: Deposit[];
   diplomacy: DiplomacyState;
   traders: Omit<TradeActor, "path" | "nextPathIndex">[];

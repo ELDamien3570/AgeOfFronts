@@ -1313,6 +1313,23 @@ footer span:last-child {
 .producer button {
   margin: 5px 4px 0 0;
 }
+.producer button[aria-pressed="true"] {
+  border-color: var(--age-rim, #83c7d6);
+  box-shadow: inset 0 0 0 1px var(--age-rim, #83c7d6);
+}
+.production-toolbar,
+.production-group-heading {
+  display: flex;
+  flex-wrap: wrap;
+  justify-content: space-between;
+  align-items: center;
+  gap: 8px;
+}
+.production-patterns {
+  margin-top: 10px;
+  padding-top: 6px;
+  border-top: 1px solid var(--line);
+}
 .shipment {
   color: #a8bec5;
   font-size: 11px;

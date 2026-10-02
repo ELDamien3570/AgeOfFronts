@@ -101,4 +101,38 @@ describe("shared production eligibility", () => {
     ).toContain("cannot make");
     expect(productionRejection(1, b, recipe, [])).toContain("Research");
   });
+  it("allows an older workshop to use researched siege equipment while preserving troop producer tiers", () => {
+    const siege = PRODUCTION_RECIPES.find(
+        (r) => r.id === "make-modern-siege-equipment",
+      )!,
+      troop = PRODUCTION_RECIPES.find((r) => r.id === "make-modern-equipment")!,
+      completed = [siege.technologyId, troop.technologyId];
+    expect(
+      productionRejection(
+        1,
+        { ...b, type: "siege-workshop", age: "StoneAge" },
+        siege,
+        completed,
+      ),
+    ).toBeNull();
+    expect(
+      productionRejection(1, { ...b, type: "arms-factory" }, siege, completed),
+    ).toContain("cannot make");
+    expect(
+      productionRejection(
+        1,
+        { ...b, type: "blacksmith", age: "LateMedieval" },
+        troop,
+        completed,
+      ),
+    ).toContain("cannot make");
+    expect(
+      productionRejection(
+        1,
+        { ...b, type: "arms-factory", age: "Modern" },
+        troop,
+        completed,
+      ),
+    ).toBeNull();
+  });
 });
