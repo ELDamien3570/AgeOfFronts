@@ -992,11 +992,14 @@ export class Expansion {
     for (const player of this.world.players) {
       if (
         !player.ai ||
-        player.kind === "tribe" ||
         player.eliminated ||
         this.world.tick % 60 !== (player.id % 20) * 3
       )
         continue;
+      if (player.kind === "tribe") {
+        this.thinkTribeDevelopment(player);
+        continue;
+      }
       const state = this.progression.states[player.id];
       const personality = personalityOf(player);
       if (
@@ -1161,6 +1164,33 @@ export class Expansion {
             otherId: partner.id,
             action: "offer",
           });
+      }
+    }
+  }
+  private thinkTribeDevelopment(player: Player): void {
+    const own = this.world.buildings.filter((b) => b.playerId === player.id);
+    const targets: BuildingType[] = [];
+    if (!own.some((b) => b.type === "city")) targets.push("city");
+    if (own.filter((b) => b.type === "barracks").length < 2) targets.push("barracks");
+    for (const type of targets) {
+      const cost = buildingCost(type, "StoneAge");
+      if (player.gold < (cost.gold ?? 0)) continue;
+      const candidates = (this.world.ownedLandNearest(player.id, player.base, 256) ?? []).slice();
+      candidates.sort((a, b) =>
+        this.world.map.euclideanDistSquared(a, player.base) -
+        this.world.map.euclideanDistSquared(b, player.base) || a - b
+      );
+      for (const tile of candidates) {
+        if (
+          this.world.applyCommand({
+            type: "build",
+            playerId: player.id,
+            buildingType: type,
+            tile,
+            age: "StoneAge",
+          }) === null
+        )
+          break;
       }
     }
   }

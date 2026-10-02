@@ -18,6 +18,7 @@ function match(
   tribes = true,
   width = 240,
   humanNames?: string[],
+  ruleset?: "classic" | "ages-v1",
 ) {
   const terrain = new Uint8Array(width * 160).fill(133);
   return new Skirmish(new GameMapImpl(width, 160, terrain, terrain.length), {
@@ -26,6 +27,7 @@ function match(
     runAi,
     tribes,
     humanNames,
+    ruleset,
   });
 }
 
@@ -50,12 +52,12 @@ describe("minor tribes", () => {
           expect(game.owners[tile]).toBe(player.id);
     for (const tribe of tribes) {
       expect(game.squads.filter((s) => s.playerId === tribe.id)).toHaveLength(
-        5,
+        4,
       );
       expect(game.owners[tribe.base]).toBe(tribe.id);
       expect(squadCap(tribe)).toBe(10);
-      expect(tribe.reserves).toBe(2500);
-      expect(tribe.gold).toBe(250);
+      expect(tribe.reserves).toBe(1500);
+      expect(tribe.gold).toBe(150);
     }
     expect(squadCap(game.players[0])).toBe(200);
     expect(new Set(game.players.map((p) => p.id)).size).toBe(
@@ -79,23 +81,24 @@ describe("minor tribes", () => {
     ]);
     assignFactionColors(game.players);
     expect(game.players).toHaveLength(50);
-    expect(game.squads).toHaveLength(230);
+    expect(game.squads).toHaveLength(200);
     expect(new Set(game.players.map((p) => COLORS[p.id])).size).toBe(50);
     expect(game.players.every((p) => /^#[0-9a-f]{6}$/.test(COLORS[p.id]))).toBe(
       true,
     );
   });
 
-  it("starts with five, enforces the ten-squad cap including cargo, and rebuilds a casualty", () => {
+  it("starts with four, enforces the ten-squad cap including cargo, and rebuilds a casualty", () => {
     const game = match(),
       tribe = game.players.find((p) => p.kind === "tribe")!,
       camp = game.buildings.find((b) => b.playerId === tribe.id)!;
-    expect(tribe.reserves).toBe(2500);
-    expect(tribe.gold).toBe(250);
+    expect(tribe.reserves).toBe(1500);
+    expect(tribe.gold).toBe(150);
     tribe.reserves = 10000;
     tribe.gold = 1000;
     const own = game.squads.filter((s) => s.playerId === tribe.id);
-    for (let i = 0; i < 5; i++)
+    expect(own).toHaveLength(4);
+    for (let i = 0; i < 6; i++)
       expect(
         game.applyCommand({
           type: "recruit",
@@ -119,31 +122,25 @@ describe("minor tribes", () => {
     expect(
       game.buildings
         .filter((b) => b.playerId === tribe.id)
-        .every((b) => b.type === "barracks"),
+        .every((b) => b.type === "barracks" || b.type === "city"),
     ).toBe(true);
     expect(
       game.applyCommand({
         type: "build",
         playerId: tribe.id,
-        buildingType: "city",
+        buildingType: "stables",
         tile: tribe.base,
       }),
-    ).toContain("Tribes defend");
+    ).toContain("Tribes can only build 1 city and 1 extra barracks");
   });
 
-  it("starts with 2500 reserves and 250 gold, limiting immediate recruitment", () => {
+  it("starts with 1500 reserves and 150 gold, limiting immediate recruitment to 1 squad", () => {
     const game = match(),
       tribe = game.players.find((p) => p.kind === "tribe")!,
       camp = game.buildings.find((b) => b.playerId === tribe.id)!;
-    expect(tribe.reserves).toBe(2500);
-    expect(tribe.gold).toBe(250);
-    expect(
-      game.applyCommand({
-        type: "recruit",
-        playerId: tribe.id,
-        buildingId: camp.id,
-      }),
-    ).toBeNull();
+    expect(tribe.reserves).toBe(1500);
+    expect(tribe.gold).toBe(150);
+    expect(game.squads.filter((s) => s.playerId === tribe.id)).toHaveLength(4);
     expect(
       game.applyCommand({
         type: "recruit",
@@ -152,6 +149,7 @@ describe("minor tribes", () => {
       }),
     ).toBeNull();
     expect(tribe.reserves).toBe(500);
+    expect(tribe.gold).toBe(150);
     expect(
       game.applyCommand({
         type: "recruit",
@@ -159,6 +157,82 @@ describe("minor tribes", () => {
         buildingId: camp.id,
       }),
     ).toContain("reserve troops");
+
+    const ageGame = match(1, false, true, 240, undefined, "ages-v1");
+    const ageTribe = ageGame.players.find((p) => p.kind === "tribe")!;
+    const ageCamp = ageGame.buildings.find((b) => b.playerId === ageTribe.id)!;
+    expect(ageTribe.reserves).toBe(1500);
+    expect(ageTribe.gold).toBe(150);
+    expect(
+      ageGame.applyCommand({
+        type: "recruit",
+        playerId: ageTribe.id,
+        buildingId: ageCamp.id,
+      }),
+    ).toBeNull();
+    expect(ageTribe.reserves).toBe(500);
+    expect(ageTribe.gold).toBe(50);
+    expect(
+      ageGame.applyCommand({
+        type: "recruit",
+        playerId: ageTribe.id,
+        buildingId: ageCamp.id,
+      }),
+    ).toContain("Not enough gold");
+  });
+
+  it("allows tribes to build 1 city and 1 extra barracks and rejects additional or invalid buildings", () => {
+    const game = match(),
+      tribe = game.players.find((p) => p.kind === "tribe")!;
+    tribe.gold = 3000;
+    const owned = Array.from(game.owners).flatMap((owner, tile) =>
+      owner === tribe.id && game.map.euclideanDistSquared(tile, tribe.base) >= 9 ? [tile] : []
+    );
+    expect(owned.length).toBeGreaterThan(0);
+    const cityTile = owned[0];
+    expect(
+      game.applyCommand({
+        type: "build",
+        playerId: tribe.id,
+        buildingType: "city",
+        tile: cityTile,
+      }),
+    ).toBeNull();
+    const nextTile = owned.find(
+      (t) => game.map.euclideanDistSquared(t, cityTile) >= 9 && game.map.euclideanDistSquared(t, tribe.base) >= 9
+    )!;
+    expect(
+      game.applyCommand({
+        type: "build",
+        playerId: tribe.id,
+        buildingType: "city",
+        tile: nextTile,
+      }),
+    ).toContain("only build 1 city");
+    expect(
+      game.applyCommand({
+        type: "build",
+        playerId: tribe.id,
+        buildingType: "barracks",
+        tile: nextTile,
+      }),
+    ).toBeNull();
+    expect(
+      game.applyCommand({
+        type: "build",
+        playerId: tribe.id,
+        buildingType: "barracks",
+        tile: owned[owned.length - 1],
+      }),
+    ).toContain("only build 1 extra barracks");
+    expect(
+      game.applyCommand({
+        type: "build",
+        playerId: tribe.id,
+        buildingType: "stables",
+        tile: nextTile,
+      }),
+    ).toContain("Tribes can only build 1 city and 1 extra barracks");
   });
 
   it("keeps extending its home frontier beyond the former local limit", () => {

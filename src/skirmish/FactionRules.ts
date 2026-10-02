@@ -36,9 +36,9 @@ export function factionCountRange(
 ): { min: number; max: number } {
   return { min: 0, max: kind === "aiCount" ? MAX_AI_OPPONENTS : MAX_TRIBES };
 }
-export const TRIBE_STARTING_SQUADS = 5;
-export const TRIBE_STARTING_RESERVES = 2500;
-export const TRIBE_STARTING_GOLD = 250;
+export const TRIBE_STARTING_SQUADS = 4;
+export const TRIBE_STARTING_RESERVES = 1500;
+export const TRIBE_STARTING_GOLD = 150;
 export const TRIBE_SQUAD_CAP = 10;
 export const TRIBE_BASE_RADIUS = 3;
 export const TRIBE_INTERCEPT_RANGE = 8;

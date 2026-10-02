@@ -470,11 +470,22 @@ export class Skirmish {
     const shipIds = "shipIds" in command ? command.shipIds : "shipId" in command ? [command.shipId] : [];
     if (shipIds.some(id => this.ships.some(s => s.id === id && s.shoreTransfer)))
       return "Shore transports complete their crossing automatically";
-    if (
-      player.kind === "tribe" &&
-      (command.type === "build" || command.type === "recruit-ship")
-    )
-      return "Tribes defend their camp without building an economy or navy";
+    if (player.kind === "tribe") {
+      if (command.type === "recruit-ship")
+        return "Tribes defend their camp without building an economy or navy";
+      if (command.type === "build") {
+        if (command.buildingType !== "city" && command.buildingType !== "barracks")
+          return "Tribes can only build 1 city and 1 extra barracks";
+        const own = this.buildings.filter((b) => b.playerId === player.id);
+        if (command.buildingType === "city" && own.some((b) => b.type === "city"))
+          return "Tribes can only build 1 city";
+        if (
+          command.buildingType === "barracks" &&
+          own.filter((b) => b.type === "barracks").length >= 2
+        )
+          return "Tribes can only build 1 extra barracks";
+      }
+    }
     const extended = this.expansion?.command(player, command);
     if (extended !== undefined) {
       if (
@@ -2549,7 +2560,10 @@ export class Skirmish {
       if (!player.ai || player.eliminated) continue;
       const personality = personalityOf(player);
       const develop = this.tick % 60 === player.id % 60;
-      if (develop && player.kind === "regular") this.developAi(player);
+      if (develop) {
+        if (player.kind === "regular") this.developAi(player);
+        else if (player.kind === "tribe" && !this.expansion) this.developTribeAi(player);
+      }
       let own = armies.get(player.id) ?? [];
       if (
         develop &&
@@ -2830,6 +2844,39 @@ export class Skirmish {
           playerId: player.id,
           buildingId: port.id,
           shipType: kind,
+        });
+        break;
+      }
+    }
+  }
+
+  private developTribeAi(player: Player): void {
+    const own = this.buildings.filter((b) => b.playerId === player.id);
+    const targets: BuildingType[] = [];
+    if (!own.some((b) => b.type === "city")) targets.push("city");
+    if (own.filter((b) => b.type === "barracks").length < 2) targets.push("barracks");
+    for (const type of targets) {
+      if (player.gold < BUILDING_RULES[type].cost) continue;
+      let tile: number | undefined,
+        distance = Infinity;
+      for (const t of this.ownedTiles.get(player.id) ?? []) {
+        if (
+          this.owners[t] !== player.id ||
+          this.buildingPlacement(player.id, type, t)
+        )
+          continue;
+        const d = this.map.euclideanDistSquared(player.base, t);
+        if (d < distance || (d === distance && t < (tile ?? Infinity))) {
+          tile = t;
+          distance = d;
+        }
+      }
+      if (tile !== undefined) {
+        this.applyCommand({
+          type: "build",
+          playerId: player.id,
+          buildingType: type,
+          tile,
         });
         break;
       }
