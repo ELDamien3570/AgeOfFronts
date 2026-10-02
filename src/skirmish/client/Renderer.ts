@@ -8,6 +8,7 @@ import type { MapGeography } from "../Geography";
 import type { BuildingType, ShipType, Snapshot, SquadType } from "../Protocol";
 import { CAPTURE_RADIUS, FIXED } from "../Protocol";
 import { BUILDING_RULES, SHIP_RULES, SQUAD_RULES } from "../Rules";
+import { buildingTicks } from "../content/Buildings";
 import { ownerUiAge } from "./AgeUiTheme";
 import { AircraftLayer } from "./AircraftLayer";
 import { AircraftPresentation } from "./AircraftPresentation";
@@ -116,6 +117,7 @@ export class Renderer {
     building: Snapshot["buildings"][number];
     count: number;
     remainingTicks: number;
+    buildTicks: number;
     health: number;
     maxHealth: number;
   }[] = [];
@@ -349,6 +351,7 @@ export class Renderer {
         building: Snapshot["buildings"][number];
         count: number;
         remainingTicks: number;
+        buildTicks: number;
         health: number;
         maxHealth: number;
       }
@@ -356,22 +359,26 @@ export class Renderer {
     for (const building of snapshot.buildings) {
       const key = `${building.tile}:${building.type}`;
       let stack = stacks.get(key);
-      if (!stack)
-        stacks.set(
-          key,
-          (stack = {
-            building,
-            count: 0,
-            remainingTicks: 0,
-            health: 0,
-            maxHealth: 0,
-          }),
-        );
+      if (!stack) {
+        stack = {
+          building,
+          count: 0,
+          remainingTicks: 0,
+          buildTicks:
+            building.buildTicks ?? BUILDING_RULES[building.type].ticks,
+          health: 0,
+          maxHealth: 0,
+        };
+        stacks.set(key, stack);
+      }
       stack.count++;
       stack.health += building.health ?? 0;
       stack.maxHealth += building.maxHealth ?? 0;
       if (building.remainingTicks > 0 && stack.remainingTicks === 0) {
         stack.remainingTicks = building.remainingTicks;
+        stack.buildTicks =
+          building.buildTicks ??
+          buildingTicks(building.type, stack.count - 1);
       }
     }
     this.buildingStacks = Array.from(stacks.values());
@@ -683,6 +690,7 @@ export class Renderer {
     definitionId?: string,
     elapsedTicks = 0,
     ownerAge?: Age,
+    buildTicks = BUILDING_RULES[type].ticks,
   ): number {
     const ctx = this.ctx;
     const era = definitionId
@@ -750,7 +758,11 @@ export class Renderer {
     if (selected || ghost || (!artwork && !marker))
       ctx.strokeRect(p.x - footprintSize / 2, p.y - footprintSize / 2, footprintSize, footprintSize);
     if (remainingTicks) {
-      const fraction = 1 - remainingTicks / BUILDING_RULES[type].ticks;
+      const totalTicks = Math.max(1, buildTicks);
+      const fraction = Math.max(
+        0,
+        Math.min(1, 1 - remainingTicks / totalTicks),
+      );
       ctx.fillStyle = "#10212b";
       ctx.fillRect(p.x - size / 2, p.y + size / 2 + 2, size, 3);
       ctx.fillStyle = color;
@@ -786,6 +798,7 @@ export class Renderer {
     selected: boolean,
     remainingTicks: number,
     ghost = false,
+    buildTicks = BUILDING_RULES.tower.ticks,
   ): number {
     const p = this.screen(this.map!.x(tile) + 0.5, this.map!.y(tile) + 0.5),
       size = this.scale,
@@ -814,9 +827,10 @@ export class Renderer {
       ctx.strokeRect(p.x - size / 2, p.y - size / 2, size, size);
     }
     if (remainingTicks) {
+      const totalTicks = Math.max(1, buildTicks);
       const fraction = Math.max(
         0,
-        1 - remainingTicks / BUILDING_RULES.tower.ticks,
+        Math.min(1, 1 - remainingTicks / totalTicks),
       );
       ctx.fillStyle = "#10212b";
       ctx.fillRect(p.x - size / 2, p.y + size / 2 + 2, size, 3);
@@ -1033,8 +1047,14 @@ export class Renderer {
       this.selectedBuilding === null
         ? undefined
         : snapshot.buildings.find((b) => b.id === this.selectedBuilding);
-    for (const { building, count, remainingTicks, health, maxHealth } of this
-      .buildingStacks) {
+    for (const {
+      building,
+      count,
+      remainingTicks,
+      buildTicks,
+      health,
+      maxHealth,
+    } of this.buildingStacks) {
       const p = this.screen(
         this.map.x(building.tile) + 0.5,
         this.map.y(building.tile) + 0.5,
@@ -1053,6 +1073,8 @@ export class Renderer {
               COLORS[building.playerId],
               selected,
               remainingTicks,
+              false,
+              buildTicks,
             )
           : this.drawBuilding(
               building.type,
@@ -1066,6 +1088,7 @@ export class Renderer {
                 : undefined,
               snapshot.tick,
               ownerUiAge(snapshot, building.playerId),
+              buildTicks,
             );
       if (count > 1) {
         ctx.font = "bold 10px system-ui";

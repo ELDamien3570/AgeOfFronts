@@ -73,6 +73,12 @@ export function buildingCostMultiplier(existingCount = 0): number {
   return Math.min(4, 1 + Math.max(0, existingCount) * 0.3);
 }
 
+export function buildingTicks(type: BuildingType, existingCount = 0): number {
+  return Math.round(
+    BUILDING_RULES[type].ticks * buildingCostMultiplier(existingCount),
+  );
+}
+
 export function buildingCost(
   type: BuildingType,
   age: Age,

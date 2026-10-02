@@ -8,7 +8,7 @@ import { ShoreRoutes } from "./domain/ShoreRoutes";
 import { ShoreTransport } from "./domain/ShoreTransport";
 import { ConquestCredit, DamageLedger } from "./Conquest";
 import { constructionRejection } from "./Construction";
-import { buildingCostMultiplier } from "./content/Buildings";
+import { buildingCostMultiplier, buildingTicks } from "./content/Buildings";
 import { defaultUnit, UNIT, VESSEL } from "./content/Units";
 import { STARTING_AGE_TROOPS, baseReserveIncome, cityReserveIncome } from "./content/Economy";
 import { personalityOf } from "./content/AiPersonalities";
@@ -19,6 +19,7 @@ import {
   type AiPersonalityId,
 } from "./domain/AiPersonality";
 import { FactionRoster } from "./domain/FactionRoster";
+import { AiForceInventory } from "./domain/AiForceInventory";
 import { canPromoteTribe } from "./FactionRules";
 import { damageAmount, effectiveDamageShares, scaledAttack } from "./domain/Combat";
 import { commandRejection } from "./domain/CommandPolicy";
@@ -1030,20 +1031,22 @@ export class Skirmish {
   ): string | null {
     const rejection = this.buildingPlacement(player.id, type, tile, age);
     if (rejection) return rejection;
+    const existingCount = this.buildings.filter(
+      (b) => b.playerId === player.id && b.type === type,
+    ).length;
     if (!this.expansion) {
-      const existingCount = this.buildings.filter(
-        (b) => b.playerId === player.id && b.type === type,
-      ).length;
       player.gold -= Math.round(
         BUILDING_RULES[type].cost * buildingCostMultiplier(existingCount),
       );
     }
+    const ticks = buildingTicks(type, existingCount);
     this.buildings.push({
       id: this.nextId++,
       playerId: player.id,
       type,
       tile,
-      remainingTicks: BUILDING_RULES[type].ticks,
+      remainingTicks: ticks,
+      buildTicks: ticks,
       ...(this.expansion
         ? { age: age ?? this.expansion.progression.states[player.id].age }
         : {}),
@@ -2577,15 +2580,16 @@ export class Skirmish {
         this.finishOrder(squad);
         return null;
       }
-      const stopDistance = (
-        this.expansion
-          ? this.expansion.unit(squad).attack.channel === "ranged"
-          : squad.kind === "archer"
-      )
+      const ranged = this.expansion
+        ? this.expansion.unit(squad).attack.channel === "ranged"
+        : squad.kind === "archer";
+      const stopDistance = ranged
         ? (this.expansion?.unit(squad).attack.range ?? SQUAD_RULES.archer.range)
         : meleeContact(squad.kind, target.kind);
       const distance = Math.sqrt(distanceSquared(squad, target));
-      if (distance <= stopDistance) return null;
+      const forts = this.expansion?.fortifications;
+      const legalShot = !forts || forts.clear(squad, target, squad.playerId);
+      if (distance <= stopDistance && legalShot) return null;
       const stopPoint = {
         x: target.x + ((squad.x - target.x) * stopDistance) / distance,
         y: target.y + ((squad.y - target.y) * stopDistance) / distance,
@@ -2593,13 +2597,18 @@ export class Skirmish {
       // Direct pursuit keeps melee in contact and ranged squads at the outer edge.
       if (
         distance <= 8 * FIXED &&
+        legalShot &&
+        (!forts || forts.clear(squad, stopPoint, squad.playerId)) &&
         traversable(this.map, squad, stopPoint, squadRadius(squad.kind))
       )
         return {
           squad,
           goal: target,
           speed: this.movementSpeed(squad),
-          stopDistance,
+          // Integer velocity rounding can otherwise stop less than one fixed
+          // unit outside the exact firing range forever. Aim just inside it;
+          // the range check above still keeps already-in-range squads still.
+          stopDistance: ranged ? Math.max(0, stopDistance - 1) : stopDistance,
         };
       const targetTile = this.tileOf(target);
       if (
@@ -2688,6 +2697,8 @@ export class Skirmish {
                 target,
                 this.expansion?.unit(squad).attack.range ??
                   SQUAD_RULES.archer.range,
+                this.obstacleTest(squad.playerId),
+                this.expansion ? (from, to) => this.expansion!.fortifications.clear(from, to, squad.playerId) : undefined,
               )
             : currentTargetTile;
           const path =
@@ -2985,7 +2996,9 @@ export class Skirmish {
         player.reserves >= SQUAD_TROOPS &&
         own.length < this.squadCapacity(player)
       ) {
-        const lines = recruitmentOrder(personality, {
+        const lines = recruitmentOrder(personality, this.expansion
+          ? new AiForceInventory(player.id, this.squads, this.recruitment.jobs).core
+          : {
           infantry: own.filter((s) => s.kind === "infantry").length,
           archer: own.filter((s) => s.kind === "archer").length,
           cavalry: own.filter((s) => s.kind === "cavalry").length,
@@ -3047,6 +3060,7 @@ export class Skirmish {
         homeNeedsLand = frontier.some(
           (tile) =>
             this.owners[tile] !== player.id &&
+            (!this.owners[tile] || this.hostile(player.id, this.owners[tile])) &&
             this.map.euclideanDistSquared(player.base, tile) <= homeRadius ** 2,
         ),
         reserved = new Set(
@@ -3086,10 +3100,12 @@ export class Skirmish {
             });
         }
         let nearest: Squad | undefined,
-          distance = Number.MAX_SAFE_INTEGER;
+          distance = Number.MAX_SAFE_INTEGER,
+          threatDistance = Number.MAX_SAFE_INTEGER;
         this.spatial.query(squad.x, squad.y, 20 * FIXED, nearby);
         for (const enemy of nearby) {
           if (!this.hostile(enemy.playerId, player.id)) continue;
+          if (enemy.embarkedOn !== null || enemy.troops <= 0) continue;
           const enemyTile = this.tileOf(enemy);
           const d = this.distanceSquared(squad, enemy);
           if (
@@ -3101,6 +3117,9 @@ export class Skirmish {
               ) * FIXED) ** 2
           )
             continue;
+          threatDistance = Math.min(threatDistance, d);
+          if (this.expansion && !this.expansion.unit(squad).attack.targets.some(
+            tag => this.expansion!.unit(enemy).tags.includes(tag))) continue;
           if (d < distance || (d === distance && enemy.id < nearest!.id)) {
             distance = d;
             nearest = enemy;
@@ -3109,7 +3128,7 @@ export class Skirmish {
         if (
           this.owners[current] === player.id &&
           squad.troops < personality.replenishBelow &&
-          (!nearest || distance > (12 * FIXED) ** 2)
+          threatDistance > (12 * FIXED) ** 2
         ) {
           if (squad.order.type !== "replenish")
             this.applyCommand({
@@ -3162,7 +3181,9 @@ export class Skirmish {
           // Do not sit forever on captured enemy camps.
           if (this.owners[goal] === player.id) {
             nearest ??= this.spatial.nearest(squad.x, squad.y, (enemy) =>
-              this.hostile(enemy.playerId, player.id),
+              this.hostile(enemy.playerId, player.id) && enemy.embarkedOn === null &&
+              (!this.expansion || this.expansion.unit(squad).attack.targets.some(
+                tag => this.expansion!.unit(enemy).tags.includes(tag))),
             );
           }
           if (this.owners[goal] === player.id && nearest) {
@@ -3182,6 +3203,7 @@ export class Skirmish {
             this.owners,
             frontier,
             reserved,
+            tile => !this.owners[tile] || this.hostile(player.id, this.owners[tile]),
           );
           if (expansion === undefined) continue;
           goal = expansion;

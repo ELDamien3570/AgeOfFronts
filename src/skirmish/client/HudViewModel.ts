@@ -399,6 +399,10 @@ export class HudViewModel {
                   : []),
                 stat("Cost", `${choice.cost?.gold ?? "—"} gold`),
                 stat(
+                  "Build time",
+                  `${(choice.ticks ?? BUILDING_RULES[build.kind].ticks) / TICKS_PER_SECOND} sec`,
+                ),
+                stat(
                   "Materials",
                   Object.entries(choice.cost?.items ?? {})
                     .map(([id, n]) => `${n} ${id}`)
@@ -779,13 +783,24 @@ export class HudViewModel {
             }
           : {}),
         ...(remaining
-          ? {
-              meter: {
-                label: "Construction",
-                value: BUILDING_RULES[b.type].ticks - remaining,
-                max: BUILDING_RULES[b.type].ticks,
-              },
-            }
+          ? (() => {
+              const constructing = stack.filter((other) => other.remainingTicks > 0);
+              const totalConstructingTicks = Math.max(
+                remaining,
+                constructing.reduce(
+                  (sum, other) =>
+                    sum + (other.buildTicks ?? BUILDING_RULES[other.type].ticks),
+                  0,
+                ),
+              );
+              return {
+                meter: {
+                  label: "Construction",
+                  value: Math.max(0, totalConstructingTicks - remaining),
+                  max: totalConstructingTicks,
+                },
+              };
+            })()
           : {}),
       };
     });

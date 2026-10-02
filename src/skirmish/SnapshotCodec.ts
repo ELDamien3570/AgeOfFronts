@@ -202,6 +202,7 @@ export class SnapshotEncoder {
       buildingDetails: source.expansion
         ? source.buildings.map((b) => ({
             id: b.id,
+            buildTicks: b.buildTicks,
             age: b.age,
             health: b.health,
             maxHealth: b.maxHealth,

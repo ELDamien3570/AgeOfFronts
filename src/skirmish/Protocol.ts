@@ -258,6 +258,7 @@ export interface Building {
   type: BuildingType;
   tile: number;
   remainingTicks: number;
+  buildTicks?: number;
   age?: Age;
   health?: number;
   maxHealth?: number;
@@ -414,6 +415,7 @@ export interface SnapshotPacket {
   }[];
   buildingDetails?: {
     id: number;
+    buildTicks?: number;
     age?: Age;
     health?: number;
     maxHealth?: number;

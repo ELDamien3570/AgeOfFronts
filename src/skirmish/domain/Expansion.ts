@@ -23,6 +23,7 @@ import { CONTENT_HASH } from "../content/Catalog";
 import { TECHNOLOGIES, technologyAt } from "../content/Technology";
 import { UNIT, UNITS, VESSEL, VESSELS } from "../content/Units";
 import { AiModernization } from "./AiMilitaryDevelopment";
+import { AiForceInventory } from "./AiForceInventory";
 import {
   acceptsAlliance,
   buildingPriority,
@@ -54,6 +55,8 @@ import type { RecruitmentJob } from "./Definitions";
 import { Supply, costRejection, spend } from "./Supply";
 import { Trade } from "./Trade";
 import { modernizeMilitaryBuildings } from "./MilitaryInfrastructure";
+import { structureAim } from "./StructureTargeting";
+import { squadRadius, standable, tilePoint } from "../SquadGeometry";
 export interface ExpansionWorld extends BattleWorld, ArmyWorld {
   recruitment: Recruitment;
   options?: { runAi?: boolean; resourceDensity?: 1 | 2 | 3 | 5; resourceOutput?: 1 | 2 | 3 | 5; alliances?: boolean; startingAge?: Age };
@@ -637,9 +640,10 @@ export class Expansion {
         return "Select your available troops";
       const orders: { s: Squad; tile: number; path: number[] }[] = [];
       for (const s of selected as Squad[]) {
-        const tile = building?.tile ?? barrier!.tiles[0];
-        const approaches: number[] = [];
+        const targetTiles = building ? [building.tile] : barrier!.tiles;
+        const approaches = new Set<number>();
         const extent = Math.ceil(this.unit(s).attack.range / FIXED);
+        for (const tile of targetTiles)
         for (
           let y = Math.max(0, world.map.y(tile) - extent);
           y <= Math.min(world.map.height() - 1, world.map.y(tile) + extent);
@@ -654,18 +658,24 @@ export class Expansion {
             if (
               world.paths.walkable(t) &&
               !this.fortifications.blocked(t, player.id) &&
-              world.map.euclideanDistSquared(t, tile) <= extent ** 2
+              standable(world.map, tilePoint(world.map, t), squadRadius(s.kind)) &&
+              structureAim(tilePoint(world.map, t), targetTiles, this.unit(s).attack.range,
+                player.id, world.map.width(), this.fortifications)
             )
-              approaches.push(t);
+              approaches.add(t);
           }
         let found: { tile: number; path: number[] } | undefined;
-        for (const t of approaches.sort(
+        const before = world.paths.work;
+        for (const t of [...approaches].sort(
           (a, b) =>
             world.map.euclideanDistSquared(a, world.tileOf(s)) -
               world.map.euclideanDistSquared(b, world.tileOf(s)) || a - b,
-        )) {
+        ).slice(0, 32)) {
+          const remaining = 4096 - (world.paths.work - before);
+          if (remaining <= 0) break;
           const path = world.paths.find(world.tileOf(s), t, (n) =>
             this.fortifications.blocked(n, player.id),
+            remaining,
           );
           if (path) {
             found = { tile: t, path };
@@ -673,7 +683,7 @@ export class Expansion {
           }
         }
         if (!found)
-          return "One of the selected squads cannot reach this structure";
+          return "No legal structure approach found within the planning budget";
         orders.push({ s, ...found });
       }
       for (const { s, tile, path } of orders) {
@@ -1063,6 +1073,7 @@ export class Expansion {
           });
       }
       const own = this.world.buildings.filter((b) => b.playerId === player.id);
+      const squadCount = this.world.squads.filter((s) => s.playerId === player.id).length;
       // Nearest owned land is order-independent (it is derived from ownership),
       // so checkpoints never need the per-player tile sets.
       let nearestOwned: number[] | undefined;
@@ -1094,12 +1105,16 @@ export class Expansion {
             economicBuildingTarget(
               personality,
               type,
-              this.world.squads.filter((s) => s.playerId === player.id).length,
+              squadCount,
             )
         )
           continue;
         const tech = buildingTechnology(type, state.age);
         if (!tech || !this.progression.has(player.id, tech)) continue;
+        // Location-independent affordability precedes every location search.
+        // These types do not generate walls; final commands still own payment.
+        if (costRejection(player, this.supply.inventories[player.id],
+          buildingCost(type, state.age, own.filter((b) => b.type === type).length))) continue;
         const candidates =
           extraction
             ? this.supply.deposits
@@ -1236,6 +1251,7 @@ export class Expansion {
   }
   private thinkCapabilities(player: Player): void {
     const personality = personalityOf(player);
+    const force = new AiForceInventory(player.id, this.world.squads, this.world.recruitment.jobs);
     const own = this.world.buildings.filter(
         (b) => b.playerId === player.id && !b.remainingTicks,
       ),
@@ -1311,7 +1327,7 @@ export class Expansion {
       .slice()
       .reverse()) {
       if (
-        squads.filter((s) => s.definitionId === u.id).length >=
+        force.role(u.role) >=
           (["siege", "artillery"].includes(u.role)
             ? personality.siegeCopies
             : 2) ||
@@ -1354,7 +1370,9 @@ export class Expansion {
                 b.tile,
               ) || a.id - b.id,
         )[0];
-      if (target)
+      // Keep the current approach (or firing position) when the same live,
+      // hostile structure remains best. Reissuing resets its path every think.
+      if (target && s.structureTarget?.buildingId !== target.id)
         this.world.applyCommand({
           type: "attack-structure",
           playerId: player.id,
@@ -1365,7 +1383,7 @@ export class Expansion {
     for (const kind of ["warship", "transport"] as const) {
       const count = this.world.ships.filter(
         (s) => s.playerId === player.id && s.kind === kind,
-      ).length;
+      ).length + force.queuedShips(kind);
       if (
         count >=
         Math.min(
@@ -1404,20 +1422,21 @@ export class Expansion {
         }
       }
     }
+    const plannedAircraft = new Map<string, number>();
     for (const base of own.filter((b) => b.type === "airstrip"))
       for (const definitionId of ["fighter", "bomber"] as const)
         if (
           this.aircraft.filter(
             (a) => a.playerId === player.id && a.definitionId === definitionId,
-          ).length < 4
+          ).length + force.queuedAircraft(definitionId) + (plannedAircraft.get(definitionId) ?? 0) < 4
         )
-          this.world.applyCommand({
+          if (this.world.applyCommand({
             type: "recruit-aircraft",
                 autoRecruit: true,
             playerId: player.id,
             buildingId: base.id,
             definitionId,
-          });
+          }) === null) plannedAircraft.set(definitionId, (plannedAircraft.get(definitionId) ?? 0) + 1);
     const enemy = enemies.sort((a, b) => a.id - b.id)[0];
     if (enemy) {
       const ready = this.aircraft.filter(

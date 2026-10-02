@@ -1,6 +1,7 @@
 import type { BuildingType, ShipType, Snapshot, SquadType } from "../Protocol";
 import {
   buildingCost,
+  buildingTicks,
   buildingTechnology,
   producerCompatible,
 } from "../content/Buildings";
@@ -142,14 +143,17 @@ export class EmpireViewModel {
         reason: this.buildingResearchRequirement(type),
         age: undefined,
         cost: undefined,
+        ticks: undefined,
       };
     const count = this.state.buildings.filter(
       (b) => b.playerId === this.playerId && b.type === type,
     ).length;
     const cost = buildingCost(type, age, count);
+    const ticks = buildingTicks(type, count);
     return {
       age,
       cost,
+      ticks,
       reason: costRejection(this.player, this.inventory, cost),
     };
   }
@@ -175,6 +179,7 @@ export class EmpireViewModel {
     return {
       age,
       cost: age ? buildingCost(type, age, count) : undefined,
+      ticks: buildingTicks(type, count),
       requiredTechnology: age
         ? this.technologyName(buildingTechnology(type, age)!)
         : undefined,

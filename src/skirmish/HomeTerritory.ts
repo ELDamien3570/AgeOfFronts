@@ -67,12 +67,13 @@ export class HomeTerritory {
     owners: Uint8Array,
     frontier: readonly number[],
     reserved: Set<number>,
+    eligible: (tile: number) => boolean = () => true,
   ): number | undefined {
     let goal: number | undefined,
       best = Infinity,
       considered = 0;
     for (const tile of frontier) {
-      if (owners[tile] === playerId || reserved.has(tile)) continue;
+      if (owners[tile] === playerId || reserved.has(tile) || !eligible(tile)) continue;
       // Neutral ground is preferred; nearby enemy pockets are still eligible.
       const score =
         this.map.euclideanDistSquared(base, tile) * 2 +

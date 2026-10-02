@@ -27,6 +27,7 @@ class TilePaths {
   private costRevision = 0;
   private exactWork = 0;
   private replayedWork = 0;
+  readonly telemetry = { searches: 0, cacheHits: 0, obstacleChecks: 0, exactExpansions: 0 };
   private readonly routes = new Map<
     number,
     { revision: number; path: Int32Array | null; work: number }
@@ -109,11 +110,28 @@ class TilePaths {
     expansionLimit = Infinity,
   ): number[] | null {
     if (!this.connected(start, goal) || blocked?.(goal)) return null;
-    if (blocked || expansionLimit !== Infinity)
+    if (expansionLimit !== Infinity)
       return this.search(start, goal, blocked, expansionLimit);
+    if (blocked) {
+      // Reuse the terrain corridor even in wall-rich worlds. Validate every
+      // cell and diagonal side against the caller's current hostility mask;
+      // never cache that mask or a budget-limited failure.
+      const route = this.find(start, goal);
+      if (route && [start, ...route].every((tile, i, list) => {
+        this.telemetry.obstacleChecks++;
+        if (blocked(tile)) return false;
+        if (!i || this.map.x(tile) === this.map.x(list[i - 1]) ||
+          this.map.y(tile) === this.map.y(list[i - 1])) return true;
+        this.telemetry.obstacleChecks += 2;
+        return !blocked(this.map.ref(this.map.x(tile), this.map.y(list[i - 1]))) &&
+          !blocked(this.map.ref(this.map.x(list[i - 1]), this.map.y(tile)));
+      })) return route;
+      return this.search(start, goal, blocked, expansionLimit);
+    }
     const key = start * this.size + goal;
     const hit = this.routes.get(key);
     if (hit && hit.revision === this.costRevision) {
+      this.telemetry.cacheHits++;
       this.routes.delete(key);
       this.routes.set(key, hit);
       // Report the effort the original search cost, keeping budgets independent
@@ -152,8 +170,10 @@ class TilePaths {
     blocked: ((tile: number) => boolean) | undefined,
     expansionLimit: number,
   ): number[] | null {
+    this.telemetry.searches++;
     if (
       this.hierarchy &&
+      expansionLimit === Infinity &&
       Math.abs(this.map.x(start) - this.map.x(goal)) +
         Math.abs(this.map.y(start) - this.map.y(goal)) >
         48
@@ -209,6 +229,7 @@ class TilePaths {
       if (this.closed[tile] === stamp) continue;
       if (expanded++ >= expansionLimit) return null;
       this.exactWork++;
+      this.telemetry.exactExpansions++;
       this.closed[tile] = stamp;
       if (tile === goal) {
         const result: number[] = [];

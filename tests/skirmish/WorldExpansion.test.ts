@@ -23,6 +23,7 @@ import {
   SnapshotEncoder,
   snapshotTransfers,
 } from "../../src/skirmish/SnapshotCodec";
+import { buildingTicks } from "../../src/skirmish/content/Buildings";
 import { boardingMeeting } from "../../src/skirmish/TacticalRoutes";
 
 const selection = () => ({
@@ -365,7 +366,11 @@ describe("stacked buildings and large fleets", () => {
         tile: tile + 1,
       }),
     ).toMatch(/three tiles/);
-    for (let i = 0; i < 10 * BUILDING_RULES.city.ticks - 1; i++) match.step();
+    const totalTicks = cities.reduce(
+      (sum, b) => sum + (b.buildTicks ?? b.remainingTicks),
+      0,
+    );
+    for (let i = 0; i < totalTicks - 1; i++) match.step();
     const beforeIncome = (player.reserves = 0);
     match.step();
     expect(player.reserves - beforeIncome).toBe(
@@ -406,9 +411,9 @@ describe("stacked buildings and large fleets", () => {
     const stack = match.buildings.filter((b) => b.tile === tile);
     expect(stack).toHaveLength(3);
     expect(stack.every((b) => b.playerId === 2)).toBe(true);
-    expect(stack[0].remainingTicks).toBe(BUILDING_RULES.city.ticks - 60);
-    expect(stack[1].remainingTicks).toBe(BUILDING_RULES.city.ticks);
-    expect(stack[2].remainingTicks).toBe(BUILDING_RULES.city.ticks);
+    expect(stack[0].remainingTicks).toBe(buildingTicks("city", 0) - 60);
+    expect(stack[1].remainingTicks).toBe(buildingTicks("city", 1));
+    expect(stack[2].remainingTicks).toBe(buildingTicks("city", 2));
   });
   it("admits exactly 64 ships and rejects the next purchase without spending", () => {
     const data = new Uint8Array(100 * 80).fill(133);

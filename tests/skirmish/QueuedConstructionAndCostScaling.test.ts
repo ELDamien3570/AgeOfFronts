@@ -3,6 +3,7 @@ import { GameMapImpl } from "../../src/core/game/GameMap";
 import {
   buildingCost,
   buildingCostMultiplier,
+  buildingTicks,
 } from "../../src/skirmish/content/Buildings";
 import { Skirmish } from "../../src/skirmish/Simulation";
 import { BUILDING_RULES } from "../../src/skirmish/Rules";
@@ -44,6 +45,17 @@ describe("building cost scaling", () => {
     );
     expect(buildingCost("barracks", "StoneAge", 10).gold).toBe(baseCost * 4);
     expect(buildingCost("barracks", "StoneAge", 15).gold).toBe(baseCost * 4);
+  });
+});
+
+describe("building construction duration scaling", () => {
+  it("scales buildingTicks with the same multiplier as cost", () => {
+    const baseTicks = BUILDING_RULES.barracks.ticks;
+    expect(buildingTicks("barracks", 0)).toBe(baseTicks);
+    expect(buildingTicks("barracks", 1)).toBe(Math.round(baseTicks * 1.3));
+    expect(buildingTicks("barracks", 2)).toBe(Math.round(baseTicks * 1.6));
+    expect(buildingTicks("barracks", 10)).toBe(baseTicks * 4);
+    expect(buildingTicks("barracks", 15)).toBe(baseTicks * 4);
   });
 });
 
@@ -104,30 +116,33 @@ describe("queued construction for stacked buildings", () => {
     const [bA1, bA2] = match.buildings.filter((b) => b.tile === tileA);
     const [bB1] = match.buildings.filter((b) => b.tile === tileB);
 
-    const initialTicks = BUILDING_RULES.barracks.ticks;
-    expect(bA1.remainingTicks).toBe(initialTicks);
-    expect(bA2.remainingTicks).toBe(initialTicks);
-    expect(bB1.remainingTicks).toBe(initialTicks);
+    const ticksA1 = buildingTicks("barracks", 0);
+    const ticksA2 = buildingTicks("barracks", 1);
+    const ticksB1 = buildingTicks("barracks", 2);
+
+    expect(bA1.remainingTicks).toBe(ticksA1);
+    expect(bA2.remainingTicks).toBe(ticksA2);
+    expect(bB1.remainingTicks).toBe(ticksB1);
 
     // Step 20 ticks
     for (let i = 0; i < 20; i++) match.step();
 
-    // bA1 and bB1 should have decremented by 20; bA2 must remain at initialTicks!
-    expect(bA1.remainingTicks).toBe(initialTicks - 20);
-    expect(bA2.remainingTicks).toBe(initialTicks);
-    expect(bB1.remainingTicks).toBe(initialTicks - 20);
+    // bA1 and bB1 should have decremented by 20; bA2 must remain at ticksA2!
+    expect(bA1.remainingTicks).toBe(ticksA1 - 20);
+    expect(bA2.remainingTicks).toBe(ticksA2);
+    expect(bB1.remainingTicks).toBe(ticksB1 - 20);
 
     // Step until bA1 finishes
-    for (let i = 0; i < initialTicks - 20; i++) match.step();
+    for (let i = 0; i < ticksA1 - 20; i++) match.step();
 
     expect(bA1.remainingTicks).toBe(0);
-    expect(bB1.remainingTicks).toBe(0);
-    expect(bA2.remainingTicks).toBe(initialTicks);
+    expect(bB1.remainingTicks).toBe(ticksB1 - ticksA1);
+    expect(bA2.remainingTicks).toBe(ticksA2);
 
     // Next tick: bA1 is finished, so bA2 starts ticking down!
     match.step();
     expect(bA1.remainingTicks).toBe(0);
-    expect(bA2.remainingTicks).toBe(initialTicks - 1);
+    expect(bA2.remainingTicks).toBe(ticksA2 - 1);
   });
 
   it("scales gold cost with each additional building placed", () => {

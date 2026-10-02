@@ -3,6 +3,7 @@ import { CoastIndex } from "./CoastIndex";
 import type { LandPaths, WaterPaths } from "./Pathfinding";
 import type { BoardingMeeting, Ship, Squad } from "./Protocol";
 import { FIXED } from "./Protocol";
+import { squadRadius, standable, tilePoint } from "./SquadGeometry";
 
 function tileOf(map: GameMap, unit: Pick<Squad, "x" | "y">): number {
   return map.ref(Math.floor(unit.x / FIXED), Math.floor(unit.y / FIXED));
@@ -72,6 +73,8 @@ export function firingPosition(
   squad: Squad,
   target: Squad,
   range: number,
+  blocked?: (tile: number) => boolean,
+  clear?: (from: { x: number; y: number }, to: { x: number; y: number }) => boolean,
 ): number | null {
   const origin = tileOf(map, squad);
   const radius = Math.ceil(range / FIXED);
@@ -90,7 +93,10 @@ export function firingPosition(
       x++
     ) {
       const tile = map.ref(x, y);
-      if (!paths.connected(origin, tile)) continue;
+      const point = tilePoint(map, tile);
+      if (!paths.connected(origin, tile) || blocked?.(tile) ||
+        !standable(map, point, squadRadius(squad.kind)) ||
+        (clear && !clear(point, target))) continue;
       const dx = x * FIXED + FIXED / 2 - target.x,
         dy = y * FIXED + FIXED / 2 - target.y;
       const distance = dx * dx + dy * dy;

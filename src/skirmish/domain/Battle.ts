@@ -26,6 +26,7 @@ import type { Fortifications } from "./Fortifications";
 import type { Progression } from "./Progression";
 import { boxSweepEntry, circleSweepEntry } from "./ProjectileCollision";
 import { unitEffects } from "./ResearchEffects";
+import { structureAim } from "./StructureTargeting";
 export interface BattleWorld {
   tick: number;
   squads: Squad[];
@@ -570,31 +571,9 @@ export class Battle {
       squad.structureTarget = null;
       return;
     }
-    const tile =
-      "tile" in target
-        ? target.tile
-        : target.tiles.slice().sort(
-            (a, b) =>
-              this.distance(squad, {
-                x: ((a % this.mapWidth) + 0.5) * FIXED,
-                y: (Math.floor(a / this.mapWidth) + 0.5) * FIXED,
-              }) -
-              this.distance(squad, {
-                x: ((b % this.mapWidth) + 0.5) * FIXED,
-                y: (Math.floor(b / this.mapWidth) + 0.5) * FIXED,
-              }),
-          )[0];
-    const p = {
-      x: ((tile % this.mapWidth) + 0.5) * FIXED,
-      y: (Math.floor(tile / this.mapWidth) + 0.5) * FIXED,
-    };
-    if (
-      this.distance(squad, p) > profile.range ** 2 ||
-      this.forts
-        .segmentTiles(squad, p)
-        .some((t) => t !== tile && this.forts.blocked(t, squad.playerId))
-    )
-      return;
+    const p = structureAim(squad, "tile" in target ? [target.tile] : target.tiles,
+      profile.range, squad.playerId, this.mapWidth, this.forts);
+    if (!p) return;
     squad.fighting = true;
     squad.lastCombatTick = this.world.tick;
     if (this.world.tick < (squad.nextAttackTick ?? 0)) return;
