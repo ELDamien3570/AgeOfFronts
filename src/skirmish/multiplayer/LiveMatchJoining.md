@@ -1,13 +1,14 @@
 # Live match joining
 
-Custom lobbies can enable **Allow new players to take over unclaimed AI empires**
-before starting. This is off by default. The home page lists running matches,
+Custom lobbies enable **Allow new players to take over unclaimed AI empires**
+before starting. This is on by default. The home page lists running matches,
 eligible AI empires, and a **Rejoin your empire** action for a returning owner.
 
 An empire remains reserved to its original saved browser guest identity. Names
 and flags do not authenticate ownership. Away human empires are AI controlled;
-they still count toward the lobby's human-seat limit. Only living, regular,
-unclaimed AI factions can be taken over. Tribes cannot be taken over.
+they stay reserved for their original players. Any new player can join a running
+match to take over an unclaimed AI empire. Only living, regular, unclaimed AI
+factions can be taken over. Tribes cannot be taken over.
 
 ## Synchronization
 
@@ -38,9 +39,8 @@ resumes it; expiry releases capacity. `MULTIPLAYER_EMPTY_MATCH_GRACE_MS` accepts
 
 There is no recovery after server restart. Restart clears persisted reservations
 because their workers and worlds no longer exist. Deploy the matching client and
-server together, preferably when no match is active. Keep
-`MULTIPLAYER_MATCH_CAPACITY=1` on the current Oracle setup; prototype performance
-measurements do not establish capacity on the ARM server.
+server together, preferably when no match is active. `MULTIPLAYER_MATCH_CAPACITY=3` supports up to 3 concurrent matches on
+the Oracle host setup (each match runs inside an isolated 384MB worker thread).
 
 ## Verification
 

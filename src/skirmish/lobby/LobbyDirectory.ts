@@ -54,7 +54,7 @@ export function defaultLobbySettings(
     resourceOutput: 1,
     alliances: false,
     victory: "solo",
-    publicAiTakeover: false,
+    publicAiTakeover: true,
   });
 }
 
@@ -131,7 +131,7 @@ export function validateLobbySettings(settings: LobbySettings): LobbySettings {
     throw new Error("Choose a supported starting age.");
   if (settings.publicAiTakeover !== undefined && typeof settings.publicAiTakeover !== "boolean")
     throw new Error("Choose whether public AI takeover is allowed.");
-  return Object.freeze({ ...settings, publicAiTakeover: settings.publicAiTakeover ?? false });
+  return Object.freeze({ ...settings, publicAiTakeover: settings.publicAiTakeover ?? true });
 }
 
 /**
@@ -149,6 +149,7 @@ export function migrateLobbySettings(saved: LobbySettings): LobbySettings {
       settings.tribeCount = defaults.tribeCount;
   }
   if (settings.startingAge === undefined) settings.startingAge = "StoneAge";
+  if (settings.publicAiTakeover === undefined) settings.publicAiTakeover = true;
   return settings as unknown as LobbySettings;
 }
 export interface CustomLobby {

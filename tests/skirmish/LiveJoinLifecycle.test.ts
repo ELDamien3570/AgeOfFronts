@@ -299,4 +299,126 @@ describe("bounded live admission lifecycle", () => {
     await f.match.end("again");
     expect(f.released()).toBe(1);
   });
+  it("allows newcomers to take over AI empires beyond the initial slots limit while strictly locking existing players to their empires", async () => {
+    // Create a match where slots is 2, and both human slots are occupied by 'a' and 'b'.
+    let now = 0, tick = 0, released = 0;
+    const messages: { guest: string; message: ServerMessage }[] = [];
+    const seats: RuntimeSeat[] = [1, 2, 3, 4, 5].map((playerId) => ({
+      playerId,
+      name: `Faction ${playerId}`,
+      ai: playerId > 2,
+      kind: playerId === 5 ? "tribe" : "regular",
+      eliminated: false,
+    }));
+    const executor: MatchExecutor = {
+      close: async () => {},
+      request: async <T extends ExecutorResult>(r: ExecutorRequest) => {
+        let result: unknown;
+        if (r.type === "prepare") result = { mapHash: "test", options: r.options };
+        else if (r.type === "start") result = { tick, winner: null, packet, seats, rejectedCommands: [] };
+        else if (r.type === "advance") {
+          tick += r.ticks;
+          result = { tick, winner: null, packet: r.publish ? packet : undefined, seats, rejectedCommands: [] };
+        } else if (r.type === "join-barrier") {
+          seats.find((s) => s.playerId === r.playerId)!.ai = false;
+          result = { tick, winner: null, packet, baseline: packet, seats };
+        } else if (r.type === "spawn-state") result = { remainingMs: r.remainingMs };
+        else if (r.type === "set-controller") {
+          seats.find((s) => s.playerId === r.playerId)!.ai = r.ai;
+          result = { seats };
+        } else {
+          throw new Error("Unexpected request: " + (r as { type: string }).type);
+        }
+        return result as T;
+      },
+    };
+    const match = new LiveMatch(
+      {
+        id: "full-slots-match",
+        roomId: "full-slots-room",
+        createdAt: 0,
+        settings: {
+          ...defaultLobbySettings("africa"),
+          slots: 2, // Only 2 initial human slots!
+          aiCount: 2,
+          tribeCount: 1,
+          publicAiTakeover: true,
+        },
+        members: ["a", "b"].map((guestId) => ({
+          guestId,
+          profile: { name: guestId, flagCode: null },
+          connected: true,
+          joinedAt: 0,
+        })),
+      },
+      executor,
+      "build",
+      (guest, message) => messages.push({ guest, message }),
+      () => released++,
+      () => now,
+      undefined,
+      undefined,
+      { cooldownMs: 0 },
+    );
+    await match.initialize();
+    await match.qualify("a", "build");
+    await match.qualify("b", "build");
+    await match.advance();
+    now = 10000;
+    await match.advance();
+
+    // 1. Initial human seats (2) are fully claimed.
+    const newcomerSummary = match.summary("newcomer");
+    expect(newcomerSummary?.freeAiSeats.map((s) => s.playerId)).toEqual([3, 4]);
+
+    // 2. Existing player 'a' (who owns player 1) cannot take over AI faction 3.
+    expect(() =>
+      match.watch("a", { name: "a", flagCode: null }, 3),
+    ).toThrow(/already own a faction/);
+
+    // 3. Existing player 'a' summary does NOT offer freeAiSeats, only rejoin/reserved.
+    const ownerSummary = match.summary("a");
+    expect(ownerSummary?.freeAiSeats).toEqual([]);
+
+    // 4. Newcomer 'newcomer-c' successfully takes over AI faction 3 even though seats (2) >= slots (2).
+    match.watch("newcomer-c", { name: "Charlie", flagCode: null }, 3);
+    await match.qualify("newcomer-c", "build");
+    const baselineC = messages
+      .filter((m) => m.guest === "newcomer-c" && m.message.type === "match-state")
+      .slice(-1)[0]!.message as Extract<ServerMessage, { type: "match-state" }>;
+    match.acknowledge("newcomer-c", baselineC.syncId!, baselineC.publicationSequence!);
+    expect(match.playerId("newcomer-c")).toBe(3);
+
+    // 5. 'newcomer-c' is now permanently bound to faction 3 and cannot switch to faction 4.
+    expect(() =>
+      match.watch("newcomer-c", { name: "Charlie", flagCode: null }, 4),
+    ).toThrow(/already own a faction/);
+
+    // 6. Summary for another newcomer 'newcomer-d' shows only remaining AI faction 4.
+    const dSummary = match.summary("newcomer-d");
+    expect(dSummary?.freeAiSeats.map((s) => s.playerId)).toEqual([4]);
+
+    // 7. 'newcomer-d' takes over faction 4.
+    match.watch("newcomer-d", { name: "Dave", flagCode: null }, 4);
+    await match.qualify("newcomer-d", "build");
+    const baselineD = messages
+      .filter((m) => m.guest === "newcomer-d" && m.message.type === "match-state")
+      .slice(-1)[0]!.message as Extract<ServerMessage, { type: "match-state" }>;
+    match.acknowledge("newcomer-d", baselineD.syncId!, baselineD.publicationSequence!);
+    expect(match.playerId("newcomer-d")).toBe(4);
+
+    // 8. Now all AI empires are taken; summary for 'newcomer-e' has empty freeAiSeats.
+    const eSummary = match.summary("newcomer-e");
+    expect(eSummary?.freeAiSeats).toEqual([]);
+
+    // 9. Any further attempt to watch an empire fails.
+    expect(() =>
+      match.watch("newcomer-e", { name: "Eve", flagCode: null }, 3),
+    ).toThrow(/reserved for its original player/);
+    expect(() =>
+      match.watch("newcomer-e", { name: "Eve", flagCode: null }, 5),
+    ).toThrow(/no longer available/);
+
+    await match.end("done");
+  });
 });

@@ -12,7 +12,7 @@ const origins = (
 )
   .split(",")
   .map((origin) => origin.trim());
-const matchCapacity = Number(process.env.MULTIPLAYER_MATCH_CAPACITY ?? 1);
+const matchCapacity = Number(process.env.MULTIPLAYER_MATCH_CAPACITY ?? 3);
 const staticDir = process.env.STATIC_DIR;
 const graceMs = Number(process.env.MULTIPLAYER_EMPTY_MATCH_GRACE_MS ?? 120_000);
 if (!Number.isInteger(graceMs) || graceMs < 1_000 || graceMs > 300_000)

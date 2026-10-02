@@ -288,11 +288,28 @@ it("joins and reclaims through real WebSockets with one atomic authoritative sna
     expect(
       await response(
         loser,
-        send(loser, { type: "watch-match", matchId: manifest.id, playerId: 4 }),
+        send(loser, { type: "watch-match", matchId: manifest.id, playerId: 3 }),
       ),
     ).toMatchObject({
       type: "error",
-      message: expect.stringMatching(/human seats/),
+      message: expect.stringMatching(/reserved for its original player/),
+    });
+    expect(
+      await response(
+        loser,
+        send(loser, { type: "watch-match", matchId: manifest.id, playerId: 4 }),
+      ),
+    ).toMatchObject({
+      type: "ack",
+    });
+    expect(
+      await response(
+        loser,
+        send(loser, { type: "watch-match", matchId: manifest.id, playerId: 5 }),
+      ),
+    ).toMatchObject({
+      type: "error",
+      message: expect.stringMatching(/no longer available/),
     });
     expect(coordinator.rooms.snapshot().reservations[0].members).toHaveLength(
       3,

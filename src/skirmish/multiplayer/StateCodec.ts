@@ -222,7 +222,7 @@ export async function encodeState(value: unknown): Promise<EncodedState> {
   }
   const compressed = new Uint8Array(
     await new Response(
-      new Blob([bytes]).stream().pipeThrough(new CompressionStream("gzip")),
+      new Response(bytes).body!.pipeThrough(new CompressionStream("gzip")),
     ).arrayBuffer(),
   );
   return { hash: await digest(bytes), payload: base64(compressed) };
@@ -231,8 +231,8 @@ export async function decodeState<T>(state: EncodedState): Promise<T> {
   if (!/^[a-f0-9]{64}$/u.test(state.hash) || state.payload.length > 32_000_000)
     throw new Error("Invalid encoded checkpoint");
   const compressed = unbase64(state.payload);
-  const reader = new Blob([compressed])
-    .stream()
+  const reader = new Response(compressed)
+    .body!
     .pipeThrough(new DecompressionStream("gzip"))
     .getReader();
   const chunks: Uint8Array[] = [];

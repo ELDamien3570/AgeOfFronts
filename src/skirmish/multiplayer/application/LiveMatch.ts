@@ -204,14 +204,19 @@ export class LiveMatch {
       throw new Error(
         "Too many players are loading. Please try again shortly.",
       );
-    if (previous && previous.playerId !== playerId)
-      throw new Error("A faction join is already loading");
-    const admission = previous ?? {
-      guest,
-      playerId,
-      profile,
-      expiresAt: this.now() + this.loadTimeout,
-    };
+    if (previous && previous.playerId !== playerId) {
+      if (this.sync?.admission.guest === guest)
+        throw new Error("A faction join is already loading");
+    }
+    const admission =
+      previous && previous.playerId === playerId
+        ? previous
+        : {
+            guest,
+            playerId,
+            profile,
+            expiresAt: this.now() + this.loadTimeout,
+          };
     this.admissions.set(guest, admission);
     this.announce(guest);
   }
@@ -233,8 +238,6 @@ export class LiveMatch {
         (!runtime.ai && this.sync?.admission.guest !== guest))
     )
       throw new Error("Public AI takeover is not allowed in this match");
-    if (!owner && this.seats.size >= this.reservation.settings.slots)
-      throw new Error("All human seats are claimed, including away players");
     if (
       this.sync &&
       this.sync.admission.guest !== guest &&
@@ -672,7 +675,6 @@ export class LiveMatch {
         ));
     const freeAiSeats =
       this.reservation.settings.publicAiTakeover &&
-      this.seats.size < this.reservation.settings.slots &&
       !owner
         ? this.runtimeSeats
             .filter(
@@ -694,7 +696,7 @@ export class LiveMatch {
       connectedHumans: [...this.seats.values()].filter(
         (s) => s.connected && this.loaded.has(s.guestId),
       ).length,
-      humanSeats: this.reservation.settings.slots,
+      humanSeats: Math.max(this.reservation.settings.slots, this.seats.size),
       claimedHumanSeats: this.seats.size,
       freeAiSeats,
       rejoinPlayerId:

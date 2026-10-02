@@ -11,7 +11,7 @@ services:
     init: true
     environment:
       MULTIPLAYER_ORIGINS: https://ageoffronts.com,https://www.ageoffronts.com,https://oracle.ageoffronts.com
-      MULTIPLAYER_MATCH_CAPACITY: "1"
+      MULTIPLAYER_MATCH_CAPACITY: "3"
     volumes:
       - /opt/ageoffronts/data:/data
     ports:

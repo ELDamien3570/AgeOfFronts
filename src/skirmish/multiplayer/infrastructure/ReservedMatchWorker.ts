@@ -1,3 +1,5 @@
+import { dirname, resolve } from "node:path";
+import { fileURLToPath } from "node:url";
 import { Worker } from "node:worker_threads";
 import type {
   ExecutorRequest,
@@ -5,10 +7,15 @@ import type {
   MatchExecutor,
 } from "../application/MatchExecutor";
 
+const workerPath = resolve(
+  dirname(fileURLToPath(import.meta.url)),
+  "serverMatchWorker.ts",
+);
+
 /** Empty listings never construct this adapter. Each admitted match owns one reserved worker. */
 export class ReservedMatchWorker implements MatchExecutor {
   private readonly worker = new Worker(
-    new URL("./serverMatchWorker.ts", import.meta.url),
+    workerPath,
     {
       execArgv: ["--import", "tsx"],
       resourceLimits: { maxOldGenerationSizeMb: 384 },

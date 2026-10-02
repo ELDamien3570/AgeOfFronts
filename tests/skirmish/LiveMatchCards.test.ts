@@ -213,7 +213,7 @@ describe("live match directory", () => {
       "/skirmish/index.html?match=a%26seat%3D8&seat=3",
     );
   });
-  it("keeps custom-room public takeovers off by default and explains reserved seats", () => {
+  it("enables custom-room public takeovers on by default and explains reserved seats", () => {
     Object.defineProperty(HTMLDialogElement.prototype, "showModal", {
       configurable: true,
       value: vi.fn(),
@@ -224,7 +224,7 @@ describe("live match directory", () => {
     const input = root.querySelector<HTMLInputElement>(
       '[name="publicAiTakeover"]',
     )!;
-    expect(input.checked).toBe(false);
+    expect(input.checked).toBe(true);
     expect(root.querySelector("#live-join-hint")!.textContent).toContain(
       "never offered to strangers",
     );
