@@ -422,7 +422,23 @@ export class HudViewModel {
                 : "Choose a location on friendly land")),
       };
     }
-    if (id === "replenish")
+    if (id === "replenish") {
+      if (this.game.selectedBuildings.length > 0) {
+        const repairable = this.game.repairableBuildings;
+        return {
+          title: "Repair selected buildings",
+          subtitle: "R · structure repair",
+          stats: [
+            stat("Selected buildings", String(this.game.selectedBuildings.length)),
+            stat("Damaged buildings", String(repairable.length)),
+          ],
+          description:
+            "Repairs damaged selected friendly buildings over time using gold.",
+          status: repairable.length > 0
+            ? (this.game.player.gold > 0 ? "Ready" : "Not enough gold")
+            : "No repair needed",
+        };
+      }
       return {
         title: "Replenish selected squads",
         subtitle: "R · manual reinforcement",
@@ -437,6 +453,7 @@ export class HudViewModel {
           ? "Ready"
           : "Needs damaged squads on friendly land and available reserves",
       };
+    }
     if (id === "hold")
       return {
         title: "Hold selected units",

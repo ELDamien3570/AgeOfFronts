@@ -495,6 +495,8 @@ export class Skirmish {
         this.expansion!.armies.observeOrder(command.squadIds);
       return extended;
     }
+    if (command.type === "repair")
+      return "Repairs are only available in ages mode";
     if (command.type === "recruit")
       return this.recruit(player, command.buildingId, command.definitionId, "queue", command.autoRecruit === true, command.buildingIds);
     if (command.type === "build")

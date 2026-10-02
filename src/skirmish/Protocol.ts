@@ -109,6 +109,7 @@ export type Command =
       type: "repair";
       playerId: number;
       buildingId?: number;
+      buildingIds?: number[];
       barrierId?: number;
     }
   | {

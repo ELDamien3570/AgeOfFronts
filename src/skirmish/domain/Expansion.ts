@@ -368,12 +368,32 @@ export class Expansion {
       }
       return result;
     }
-    if (command.type === "repair")
+    if (command.type === "repair") {
+      const ids =
+        command.buildingIds ??
+        (command.buildingId !== undefined ? [command.buildingId] : []);
+      if (ids.length) {
+        let lastError: string | null = null;
+        let anySuccess = false;
+        for (const buildingId of ids) {
+          const res = this.fortifications.repair(
+            player,
+            world.buildings.find((b) => b.id === buildingId),
+            undefined,
+          );
+          if (res === null) anySuccess = true;
+          else lastError = res;
+        }
+        return anySuccess
+          ? null
+          : (lastError ?? "Choose a completed owned structure");
+      }
       return this.fortifications.repair(
         player,
-        world.buildings.find((b) => b.id === command.buildingId),
+        undefined,
         this.fortifications.barriers.find((w) => w.id === command.barrierId),
       );
+    }
     if (command.type === "recruit-aircraft")
       return this.recruitAircraft(
         player,

@@ -237,4 +237,27 @@ export class SkirmishViewModel {
       ? this.state.squads.filter((s) => s.embarkedOn === this.transport!.id)
       : [];
   }
+  get selectedBuildings() {
+    const scope = this.selection.selectedBuildings;
+    const focus = this.selection.selectedBuilding;
+    const ids = new Set<number>(scope ?? []);
+    if (focus !== null && focus !== undefined) ids.add(focus);
+    return this.state.buildings.filter((b) => ids.has(b.id));
+  }
+  get repairableBuildings() {
+    return this.selectedBuildings.filter(
+      (b) =>
+        b.playerId === this.playerId &&
+        !b.remainingTicks &&
+        (b.health ?? 1200) < (b.maxHealth ?? 1200),
+    );
+  }
+  get canRepairBuildings() {
+    return (
+      this.selectedBuildings.some((b) => b.playerId === this.playerId) &&
+      this.state.winner === null &&
+      !this.player.eliminated &&
+      this.player.gold > 0
+    );
+  }
 }

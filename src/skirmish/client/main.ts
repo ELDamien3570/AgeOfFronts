@@ -789,7 +789,7 @@ function updateSelection(): void {
     : renderer.selectedShips.size
       ? "Right click water to sail. Shift queues waypoints."
       : vm?.building
-        ? "Recruit into the shortest compatible selected queue. Shift-click adds buildings; double-click selects visible buildings of this type."
+        ? "Recruit into the shortest compatible selected queue. Shift-click adds buildings; double-click selects visible buildings of this type. Press R to repair."
         : vm?.inspectedSquad
           ? "Enemy details are read only. Select your troops to issue orders."
           : "Click your units or drag a selection box.";
@@ -797,7 +797,12 @@ function updateSelection(): void {
   element<HTMLButtonElement>("hold").disabled =
     selected.length === 0 && renderer.selectedShips.size === 0;
 
-  element<HTMLButtonElement>("replenish").disabled = !vm?.canReplenish;
+  element<HTMLButtonElement>("replenish").disabled =
+    !vm?.canReplenish && !vm?.canRepairBuildings;
+  const replenishLabel = element<HTMLButtonElement>("replenish").querySelector(".action-name");
+  if (replenishLabel) {
+    replenishLabel.textContent = (vm?.selectedBuildings.length ?? 0) > 0 ? "Repair" : "Replenish";
+  }
 
   if (selected.some((s) => s.order.type === "replenish"))
     element("selected-orders").textContent +=
@@ -963,7 +968,33 @@ function recruitShip(kind: ShipType, count = 1): void {
   else if (choice) notify(choice.reason);
 }
 
+function repairBuildings(): boolean {
+  const vm = viewModel();
+  if (!vm || !vm.selectedBuildings.length) return false;
+
+  const owned = vm.selectedBuildings.filter((b) => b.playerId === localPlayerId);
+  if (!owned.length) {
+    command({
+      type: "repair",
+      playerId: localPlayerId,
+      buildingId: vm.selectedBuildings[0].id,
+    });
+    return true;
+  }
+
+  const repairable = vm.repairableBuildings;
+  const targets = repairable.length ? repairable : owned;
+  command({
+    type: "repair",
+    playerId: localPlayerId,
+    buildingId: targets[0].id,
+    buildingIds: targets.map((b) => b.id),
+  });
+  return true;
+}
+
 function replenish(): void {
+  if (repairBuildings()) return;
   const vm = viewModel();
 
   if (vm?.canReplenish)

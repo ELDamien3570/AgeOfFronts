@@ -215,4 +215,22 @@ describe("HUD action costs and availability", () => {
       "available reserves",
     );
   });
+
+  it("reports building repair when buildings are selected", () => {
+    const { snapshot, selection, vm } = setup();
+    const building = snapshot.buildings[0];
+    building.playerId = 1;
+    building.health = 600;
+    building.maxHealth = 1200;
+    building.remainingTicks = 0;
+    selection.selectedBuilding = building.id;
+
+    const card = vm().actionCard("replenish");
+    expect(card?.title).toBe("Repair selected buildings");
+    expect(card?.subtitle).toContain("structure repair");
+    expect(card?.status).toBe("Ready");
+
+    building.health = 1200;
+    expect(vm().actionCard("replenish")?.status).toBe("No repair needed");
+  });
 });
