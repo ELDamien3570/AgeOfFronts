@@ -2,11 +2,16 @@ import { restoreRecord } from "../StateTransfer";
 import type { Player } from "../Protocol";
 import type { DiplomacyState } from "./Definitions";
 export class Diplomacy {
-  checkpoint() { return structuredClone({state:this.state, nextId:this.nextId}); }
+  private readonly recipientCooldowns: Record<number, number> = {};
+  aiOfferAvailable(recipient: number, tick: number): boolean {
+    return (this.recipientCooldowns[recipient] ?? 0) <= tick && !this.state.offers.some(o => o.recipient === recipient && o.expiresTick > tick);
+  }
+  checkpoint() { return structuredClone({state:this.state, nextId:this.nextId, recipientCooldowns:this.recipientCooldowns}); }
   restore(saved: ReturnType<Diplomacy["checkpoint"]>): void {
     const state=structuredClone(saved);
     restoreRecord(this.state,state.state);
     this.nextId=state.nextId;
+    restoreRecord(this.recipientCooldowns, state.recipientCooldowns ?? {});
 
   }
 
@@ -101,10 +106,12 @@ export class Diplomacy {
       )
     )
       return "Offer already pending";
+    if (player.ai && !this.aiOfferAvailable(other.id, tick)) return "Wait for this recipient to consider other offers";
     const key = `${player.id}:${other.id}`;
     if ((this.state.cooldowns[key] ?? 0) > tick)
       return "Wait for the offer cooldown";
     this.state.cooldowns[key] = tick + 600;
+    if (player.ai) this.recipientCooldowns[other.id] = tick + 1200;
     this.state.offers.push({
       id: this.nextId++,
       proposer: player.id,
@@ -122,6 +129,10 @@ export class Diplomacy {
     this.state.alliances = this.state.alliances.filter(
       (a) => a.expiresTick > tick && live.has(a.a) && live.has(a.b),
     );
+    for (const id of Object.keys(this.recipientCooldowns))
+      if (this.recipientCooldowns[Number(id)] <= tick || !live.has(Number(id))) delete this.recipientCooldowns[Number(id)];
+    for (const key of Object.keys(this.state.cooldowns))
+      if (this.state.cooldowns[key] <= tick) delete this.state.cooldowns[key];
     for (const id of Object.keys(this.state.betrayal))
       if (this.state.betrayal[Number(id)] <= tick)
         delete this.state.betrayal[Number(id)];

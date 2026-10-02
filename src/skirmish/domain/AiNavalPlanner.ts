@@ -316,6 +316,7 @@ export class AiNavalPlanner {
               a.anchor,
             );
             if (distance <= 32 ** 2) {
+              this.expansion.operations.threatened(player.id, ship.playerId, a.anchor);
               a.enemyPower += navalPower(definition, ship.health);
               if (
                 distance < a.targetDistance ||

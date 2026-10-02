@@ -1,3 +1,5 @@
+import { AiOperations } from "./AiOperations";
+import { DiplomaticGeography } from "./DiplomaticGeography";
 import { restoreArray } from "../StateTransfer";
 import type { GameMap } from "../../core/game/GameMap";
 import type { BuildingQueries } from "../BuildingIndex";
@@ -65,7 +67,7 @@ import type { CoastIndex } from "../CoastIndex";
 import { AiEconomicDirector } from "./AiEconomicDirector";
 export interface ExpansionWorld extends BattleWorld, ArmyWorld {
   recruitment: Recruitment;
-  options?: { runAi?: boolean; aiEconomy?: boolean; aiDefenses?:boolean; aiNaval?:boolean; deferredPlanning?:boolean; territoryIncomeScale?:number; resourceDensity?: 1 | 2 | 3 | 5; resourceOutput?: 1 | 2 | 3 | 5; alliances?: boolean; startingAge?: Age };
+  options?: { runAi?: boolean; aiEconomy?: boolean; aiDefenses?:boolean; aiNaval?:boolean; aiWarPolicy?:boolean; deferredPlanning?:boolean; territoryIncomeScale?:number; resourceDensity?: 1 | 2 | 3 | 5; resourceOutput?: 1 | 2 | 3 | 5; alliances?: boolean; startingAge?: Age };
   map: GameMap;
   owners: Uint8Array;
   claims: Uint8Array;
@@ -87,15 +89,18 @@ export interface ExpansionWorld extends BattleWorld, ArmyWorld {
   ship(id:number):Ship | undefined;
   building(id:number):Building | undefined;
   buildingFacts(): BuildingQueries;
+  factionAdjacent(a: number, b: number): boolean;
 }
 // Match-level application coordinator; each domain service owns its own rules.
 // All services operate on the same authoritative world, never a parallel game.
 export class Expansion {
-  checkpoint() { return structuredClone({progression:this.progression.checkpoint(),diplomacy:this.diplomacy.checkpoint(),fortifications:this.fortifications.checkpoint(),supply:this.supply.checkpoint(),trade:this.trade.checkpoint(),roads:this.roads.checkpoint(),battle:this.battle.checkpoint(),armies:this.armies.checkpoint(),modernization:this.modernization.checkpoint(),economy:this.economy.checkpoint(),aircraft:this.aircraft,winners:this.winners,events:this.events,nextEvent:this.nextEvent,tribePlans:[...this.tribePlans]}); }
+  checkpoint() { return structuredClone({progression:this.progression.checkpoint(),diplomacy:this.diplomacy.checkpoint(),fortifications:this.fortifications.checkpoint(),supply:this.supply.checkpoint(),trade:this.trade.checkpoint(),roads:this.roads.checkpoint(),battle:this.battle.checkpoint(),armies:this.armies.checkpoint(),modernization:this.modernization.checkpoint(),economy:this.economy.checkpoint(),aircraft:this.aircraft,winners:this.winners,events:this.events,nextEvent:this.nextEvent,tribePlans:[...this.tribePlans],geography:this.geography.checkpoint(),operations:this.operations.checkpoint()}); }
   restore(saved: ReturnType<Expansion["checkpoint"]>): void {
     const state=structuredClone(saved);
     this.tribePlans.clear();
     for (const [id, plan] of state.tribePlans ?? []) this.tribePlans.set(id, plan);
+    if (state.operations) this.operations.restore(state.operations);
+    if (state.geography) this.geography.restore(state.geography);
     this.progression.restore(state.progression);
     this.diplomacy.restore(state.diplomacy);
     this.fortifications.restore(state.fortifications);
@@ -119,6 +124,8 @@ export class Expansion {
   readonly armies: Armies;
   readonly modernization = new AiModernization();
   readonly economy: AiEconomicDirector;
+  readonly geography: DiplomaticGeography;
+  readonly operations: AiOperations;
   private readonly towerSites:TowerSiteIndex;
   readonly aircraft: Aircraft[] = [];
   readonly winners: number[] = [];
@@ -164,6 +171,8 @@ export class Expansion {
     this.battle.setWidth(world.map.width());
     this.armies = new Armies(world, this.progression);
     this.economy = new AiEconomicDirector(this);
+    this.geography = new DiplomaticGeography(world, this.economy.navalFacts);
+    this.operations = new AiOperations(this);
     this.supply.aiProduction = playerId => this.economy.production(playerId);
   }
   add(player: Player): void {
@@ -1237,6 +1246,8 @@ export class Expansion {
           .filter(
             (p) =>
               p.id !== player.id &&
+              this.diplomacy.aiOfferAvailable(p.id, this.world.tick) &&
+              this.geography.eligible(player, p) &&
               !this.diplomacy.allied(player.id, p.id) &&
               acceptsAlliance(
                 personality,

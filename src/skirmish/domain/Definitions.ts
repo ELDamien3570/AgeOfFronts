@@ -365,7 +365,7 @@ export interface MatchEvent {
   tick: number;
   actorId: number;
   otherId?: number;
-  kind: "age" | "conquest" | "diplomacy" | "promotion";
+  kind: "age" | "conquest" | "diplomacy" | "promotion" | "war";
   age?: Age;
-  action?: "offer" | "accept" | "reject" | "renew" | "break" | "expire";
+  action?: "offer" | "accept" | "reject" | "renew" | "break" | "expire" | "declare" | "withdraw";
 }
