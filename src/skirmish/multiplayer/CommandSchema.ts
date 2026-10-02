@@ -89,6 +89,14 @@ export const commandSchema = z.discriminatedUnion("type", [
     payload: z.enum(["icbm", "hydrogen", "mirv"]),
     ...point,
   }),
+  command("upgrade-building", { buildingIds: ids }),
+  command("cancel-recruitment", {
+    category: z.enum(["land", "ship", "aircraft"]).optional(),
+    definitionId: text.optional(),
+    kind: text.optional(),
+    buildingId: id.optional(),
+    buildingIds: z.array(id).min(1).max(10_000).optional(),
+  }),
   command("recruit", {
     buildingId: id,
     buildingIds: z.array(id).min(1).max(10_000).optional(),
