@@ -58,8 +58,10 @@ and never-run checks rather than calling a partial run a pass.
 | 4b | Remaining blocking planning paths and retention | Passed narrow slice: 973 tests; land queued-leg/patrol integration and limited-input outcomes; army/trade/shore admission still open |
 | 5 | Shared facts and less repeated work | Passed narrow slice: 977 tests; sparse capture pressure and one cargo grouping per movement stage; wider lifecycle/journal work remains |
 | 6a | Demand-driven browser presentation copies | Passed; 979 tests; canonical apply continues without throwaway clones while rendering is busy |
-| 6b | Server replication pipeline and dirty publication journal | Pending; separate coherent bounded encoding pipeline, recovery baselines and lifecycle revisions |
-| 7 | AI operations, geography and diplomacy | Pending; optional policy, local defensive wake, recipient cooldowns, no human mechanic change |
+| 6b | Bounded server encoding/publication pipeline | Passed; 990 tests; normal advances release before off-thread encoding, ordered publication and flushed barriers |
+| 5b | Independent dirty-tile journal and snapshot extraction | Passed; 993 tests; independent bounded cursors, restore/overflow fallback and network-only borrowed terrain fields |
+| 7a | Geographic diplomacy and recipient cooldowns | Passed; 997 tests; maintained land borders, bounded same-sea port facts, checkpointed recipient cooldowns |
+| 7b | Optional AI operations and local defensive wake | Passed initial policy; 1003 tests, deterministic single offensive commitment, declarations, recovery, local multi-aggressor defence and footprint guards |
 | 8a | Stable terrain-aware defence fronts and staffed Modern sections | Pending; terrain outlines, access/gates, reserves, withdrawal/reuse and funded bounded work |
 | 8b | Coordinated land Armies and eleven doctrines | Pending; researched Armies, supported pushes, flank/breach/escort and recovery |
 | 8c | Economic dependency and utility decisions | Pending; bottlenecks, research/age utility, remote coast, shared cycle/risk and intended-sea quotes |
@@ -144,9 +146,8 @@ work from V1. In addition to the criteria above, the following remain required:
 Existing parser budgets, client credits, checkpointed searches, naval facts,
 command receipts and tower quote overlays are retained. New work must not
 reconstruct the stopped historical stress experiments or claim that a local
-correctness suite establishes the requested capacity. Initial-tech availability
-for advanced regular-player starts is awaiting user clarification; budgets and
-explicit tribe rules can proceed independently.
+correctness suite establishes the requested capacity. Initial-tech availability was resolved by the user: start with the first node
+of every branch plus all prior-age technologies; see phase 3b.
 
 ### Phase 3a evidence and open decision
 
@@ -251,3 +252,96 @@ unlocks and restore. Existing research/transport tests now use the next legal
 node, or explicitly construct an unresearched state when testing prerequisite
 rejection. Full gate: 986/986 tests (149 files), TypeScript/build/whitespace passed;
 focused research, transport, UI and live-join checks: 55/55.
+
+### Phase 6b server replication separation
+
+A dedicated pure encoding worker now owns packing/compression/hashing. Normal
+production advances enqueue at most two coherent publications and return before
+encoding finishes. At capacity, capture is skipped without advancing the shared
+delta cursor; the next admitted capture includes accumulated state changes.
+Publication order is retained, captured ticks are not relabelled with a later
+simulation tick, and encoding errors terminate the affected executor visibly.
+Join, recovery and terminal barriers drain earlier publications before taking
+aligned baselines. The simulation remains the only authoritative owner.
+
+The immutable boundary is the synchronous worker postMessage clone. It occurs
+before any later simulation step, including for expansion records shared by the
+snapshot projection. Encoder backlog, memory and skipped-capture counters join
+the bounded diagnostics. The encoder has a 256 MiB old-generation ceiling, in
+addition to the existing simulation worker ceiling; this is a limit, not total
+process memory certification. Ordinary advances do not await compression;
+explicit join/recovery barriers still wait for required earlier encoding.
+
+Tests cover two-slot admission, no capture at capacity, ordered completion,
+failure cleanup, live-worker publications, mutable research timer coherence,
+aligned join baselines and delayed publication tick labels. Full gate: 990/990
+(150 files), TypeScript/build/whitespace and targeted lint passed. Actual ARM
+CPU/RSS and multi-match admission remain external acceptance. Full-map snapshot
+extraction and the wider entity lifecycle journal remain separate work.
+
+### Phase 5b dirty extraction
+
+A match-owned bounded journal records owner/claim/progress mutations. Each
+snapshot encoder owns an independent cursor; one-off baselines never drain the
+shared publication stream. Ordinary network snapshots borrow terrain fields
+only until immediate packet extraction, avoiding three map-sized copies. Normal
+snapshot callers still receive isolated arrays. Encoders inspect sorted changed
+tiles, preserving the existing packet ordering; overflow and restore force the
+exact full-scan path. No tile authority moved out of the simulation.
+
+Tests compare journal-backed packets byte-for-byte with full scanning over
+changing capture state, exercise independent baselines, overflow/restore and
+normal snapshot isolation, and assert reduced cell-read counts. Full gate:
+993/993 (151 files), TypeScript/build/whitespace/targeted lint passed. Persistent
+entity/producer revisions and broader lifecycle read models remain additional
+work; this journal currently covers terrain ownership and capture fields.
+
+### Phase 7a geographic diplomacy
+
+AI offers now require a genuine shared land border, a nearby connected land
+base, or usable nearby ports in the same sea. A fixed-size maintained border
+index updates from ownership mutations and rebuilds on restore. Port discovery
+uses shared naval facts with a deterministic global read budget and retained
+cursors, rather than repeatedly scanning every building. Actual port ownership,
+completion and health are revalidated before use. Recipient-wide AI offer
+cooldowns prevent several factions repeatedly approaching the same recipient;
+human offers and replies retain their ordinary behavior.
+
+Independent full-border reference checks cover 240 ownership changes, water
+exclusion and rebuilding. Geography and diplomacy tests cover connected versus
+distant bases, genuine borders, sea identity, bounded cold discovery, captured
+and unfinished ports, cross-proposer cooldowns and checkpoint restoration. Full
+gate: 997/997 tests (153 files), TypeScript/build/whitespace and targeted lint
+passed. This constrains proactive AI diplomacy only; physical hostility and
+human combat/capture are unchanged. Optional military operations follow in 7b.
+
+### Phase 7b optional military operations
+
+The new `aiWarPolicy` switch defaults off. Regular AI nations keep one stable
+offensive commitment through peace, preparation, declared war and recovery.
+Candidate discovery is geographic, staggered, limited to sixteen reads per tick
+across factions, and weighted against piling onto an existing offensive target.
+Preparation uses personality readiness and deadline rules; shortages, invalid
+targets and campaign expiry lead to recovery. Public events show declarations
+and offensive withdrawal, without exposing private preparation.
+
+Capture pressure and actual land, naval and structural damage wake only the
+affected faction. Multiple defensive aggressors are remembered independently
+for 600 ticks; border hopping refreshes that memory. Defensive pursuit is local
+to observed aggression. Sleeping nations avoid offensive target/raid work;
+ordinary squad tactical staggering remains. Route obstacles include the actual
+three-tile capture footprint, and live movement guards stop entry after border
+changes. Landing selection and controlled-water movement check the same policy;
+recovery retains former-theater transit for withdrawal and returns cargo toward
+friendly coast. Existing combat and capture rules, including human unannounced
+invasion and incidental combat, remain authoritative.
+
+Tests cover declaration uniqueness, one offensive versus multiple defensive
+targets, losses/recovery, capture pressure before owner change, hostile damage,
+allied exclusion, remembered aggression, local pursuit, interior route/footprint
+blocking, human control transfer, disabled behavior, bounded candidate work,
+checkpoint restoration and feed rendering. Full gate: 1003/1003 tests (154
+files), TypeScript/build/whitespace and targeted lint passed. This is the initial
+operations layer: richer force/logistics readiness belongs to 8b/8d; broader
+regional lifecycle indexes, remaining bounded planners and field qualification
+remain explicit open acceptance work.
