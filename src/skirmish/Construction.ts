@@ -20,6 +20,7 @@ export function constructionRejection(
   player: Player | undefined,
   type: BuildingType,
   tile: number,
+  checkFunds = true,
 ): string | null {
   if (!player || !Object.prototype.hasOwnProperty.call(BUILDING_RULES, type))
     return "Unknown building";
@@ -70,7 +71,7 @@ export function constructionRejection(
   const cost = Math.round(
     BUILDING_RULES[type].cost * buildingCostMultiplier(existingCount),
   );
-  if (player.gold < cost)
+  if (checkFunds && player.gold < cost)
     return "Not enough gold for this building";
   return null;
 }

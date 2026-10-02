@@ -4,9 +4,12 @@ import { FIXED } from "../Protocol";
 import { restoreArray, restoreMap } from "../StateTransfer";
 import { AGES, type Age, type Barrier } from "./Definitions";
 import type { Diplomacy } from "./Diplomacy";
+import { boxSweepEntry } from "./ProjectileCollision";
 const NO_BARRIERS: readonly Barrier[] = [];
 // Coarse occupancy blocks let segment tests skip obstacle-free neighbourhoods.
 const BLOCK_SHIFT = 3;
+import { quoteTowerPlan, type TowerSiteIndex } from "./TowerPlacement";
+export type { TowerSiteIndex } from "./TowerPlacement";
 
 export class Fortifications {
   checkpoint() {
@@ -201,65 +204,18 @@ export class Fortifications {
     }
     return [...candidates];
   }
+  /** Physical clearance uses a squad's swept radius. Weapon rays retain clear(). */
+  clearMovement(from:{x:number;y:number},to:{x:number;y:number},owner:number,radius:number):boolean {
+    return !this.blockingTilesOnSweep(from,to,owner,radius).some(tile =>
+      boxSweepEntry(from,to,{x:this.map.x(tile)*FIXED,y:this.map.y(tile)*FIXED},FIXED,radius)!==null);
+  }
   towerPlan(
     tile: number,
     owner: number,
     age: Age,
-    buildings: readonly Building[],
+    buildings: readonly Building[] | TowerSiteIndex,
   ): { links: { a: number; tiles: number[] }[]; gold: number } {
-    const links: { a: number; tiles: number[] }[] = [];
-    const occupied = new Set(
-      buildings.filter((b) => b.tile !== tile).map((b) => b.tile),
-    );
-    const nearby = buildings
-      .filter(
-        (b) =>
-          b.type === "tower" &&
-          b.playerId === owner &&
-          !b.remainingTicks &&
-          (b.age ?? "StoneAge") === age &&
-          b.tile !== tile &&
-          this.map.euclideanDistSquared(b.tile, tile) <= 144,
-      )
-      .sort(
-        (a, b) =>
-          this.map.euclideanDistSquared(a.tile, tile) -
-            this.map.euclideanDistSquared(b.tile, tile) || a.id - b.id,
-      );
-    for (const other of nearby) {
-      const tiles: number[] = [];
-      let x = this.map.x(tile),
-        y = this.map.y(tile);
-      while (x !== this.map.x(other.tile)) {
-        x += Math.sign(this.map.x(other.tile) - x);
-        tiles.push(this.map.ref(x, y));
-      }
-      while (y !== this.map.y(other.tile)) {
-        y += Math.sign(this.map.y(other.tile) - y);
-        tiles.push(this.map.ref(x, y));
-      }
-      tiles.pop();
-      if (
-        tiles.length &&
-        tiles.every(
-          (t) =>
-            this.map.isLand(t) &&
-            !this.map.isImpassable(t) &&
-            !occupied.has(t) &&
-            !this.tileIndex.has(t) &&
-            !links.some((l) => l.tiles.includes(t)),
-        )
-      )
-        links.push({ a: other.id, tiles });
-      if (links.length === 2) break;
-    }
-    return {
-      links,
-      gold: links.reduce(
-        (sum, l) => sum + l.tiles.length * 25 * (AGES.indexOf(age) + 1),
-        0,
-      ),
-    };
+    return quoteTowerPlan(this.map, tile, owner, age, buildings, t => this.tileIndex.has(t));
   }
   addTower(
     tower: Building,
@@ -300,6 +256,9 @@ export class Fortifications {
     player.gold -= gold;
     this.repairs.set(key, { owner: player.id, remaining: missing });
     return null;
+  }
+  repairing(kind:"building"|"wall",id:number):boolean {
+    return this.repairs.has(`${kind==="building"?"b":"w"}:${id}`);
   }
   step(tick: number, buildings: readonly Building[]): void {
     const byId = new Map(buildings.map((b) => [b.id, b]));

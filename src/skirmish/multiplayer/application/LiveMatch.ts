@@ -1,4 +1,6 @@
 import { SPAWN_SECONDS } from "../../domain/SpawnSelection";
+import {ClientStateFlow} from "./ClientStateFlow";
+import type {ClientBaseline} from "./MatchExecutor";
 import type { EmpireProfile } from "../../lobby/EmpireProfile";
 import type { Command } from "../../Protocol";
 import { TICKS_PER_SECOND } from "../../Protocol";
@@ -45,12 +47,16 @@ interface Sync {
   sequence?: number;
   expiresAt: number;
   startedAt: number;
+  phase:"waiting-worker"|"capturing-baseline"|"applying-baseline"|"restoring";
+  phaseStartedAt:number;
+  barrierRequested:boolean;
   restoring?: Promise<void>;
 }
 export interface LiveMatchOptions {
   graceMs?: number;
   loadTimeoutMs?: number;
   syncTimeoutMs?: number;
+  preparationTimeoutMs?:number;
   cooldownMs?: number;
   pauseBudgetMs?: number;
 }
@@ -83,6 +89,9 @@ export class LiveMatch {
   private nextSyncAt = 0;
   private pauses: { at: number; ms: number }[] = [];
   private emptyDeadline?: number;
+  private readonly flows=new Map<string,ClientStateFlow>();
+  private readonly recoveryQueue:string[]=[];
+  private recoveringClient=false;
   readonly options;
   constructor(
     readonly reservation: MatchReservation,
@@ -262,10 +271,11 @@ export class LiveMatch {
     };
     this.send(guest, { type: "match", manifest });
   }
-  async qualify(guest: string, runtimeId: string): Promise<void> {
+  async qualify(guest: string, runtimeId: string,flowControl=false): Promise<void> {
     if (this.stopped || runtimeId !== this.runtimeId)
       throw new Error("Game versions differ. Reload after deployment.");
     if (this.loaded.has(guest) && this.connected(guest)) return;
+    if(flowControl)this.flows.set(guest,new ClientStateFlow());
     // Starting destroys the spawn-selection state in the worker. Decide the
     // initial-loading path only after that in-flight transition has finished.
     if (!this.running && this.advancing) await this.advancing;
@@ -335,20 +345,17 @@ export class LiveMatch {
       admission,
       id: `sync-${++this.syncCounter}`,
       startedAt: this.now(),
-      expiresAt: this.now() + (this.config.syncTimeoutMs ?? 5_000),
+      expiresAt: this.now() + (this.config.preparationTimeoutMs ?? 30_000),
+      phase:"waiting-worker",phaseStartedAt:this.now(),barrierRequested:false,
     };
     this.sync = sync; // Admission lock is acquired before waiting for an in-flight advance.
     this.status("Synchronizing a joining player…", true);
-    this.syncTimer = setTimeout(() => {
-      void this.cancelSync(
-        sync,
-        "Synchronization timed out. Please rejoin from the lobby.",
-      );
-    }, this.config.syncTimeoutMs ?? 5_000);
+    this.syncPhase(sync,"waiting-worker");
     try {
       await this.advancing;
       if (this.sync !== sync || this.stopped || sync.restoring) return;
       this.assertAvailable(guest, admission.playerId);
+      this.syncPhase(sync,"capturing-baseline");sync.barrierRequested=true;
       const result = await this.executor.request<JoinBarrier>({
         type: "join-barrier",
         playerId: admission.playerId,
@@ -361,11 +368,12 @@ export class LiveMatch {
         return;
       }
       sync.sequence = ++this.publicationSequence;
+      this.syncPhase(sync,"applying-baseline");
       this.broadcast(this.state(result.packet, true));
-      this.send(guest, {
+      this.sendState(guest, {
         ...this.state(result.baseline, true),
         syncId: sync.id,
-      });
+      },true);
     } catch (error) {
       await this.cancelSync(sync, (error as Error).message);
       throw error;
@@ -375,6 +383,7 @@ export class LiveMatch {
     const sync = this.sync;
     if (
       !sync ||
+      sync.phase!=="applying-baseline" ||
       sync.restoring ||
       sync.admission.guest !== guest ||
       sync.id !== syncId ||
@@ -406,29 +415,34 @@ export class LiveMatch {
   private async cancelSync(sync: Sync, message: string): Promise<void> {
     if (this.sync !== sync || this.stopped) return;
     if (sync.restoring) return sync.restoring;
+    clearTimeout(this.syncTimer);sync.phase="restoring";sync.phaseStartedAt=this.now();
     sync.restoring = (async () => {
-      // If an executor is wedged, retire it rather than hold everyone paused.
-      const watchdog = setTimeout(() => {
-        void this.end("Match executor timed out during synchronization");
-      }, 1_000);
       try {
-        await this.advancing;
-        const result = await this.executor.request<SeatStatus>({
-          type: "set-controller",
-          playerId: sync.admission.playerId,
-          ai: true,
-        });
-        this.runtimeSeats = result.seats;
+        if(sync.barrierRequested){
+          // The executor's own bounded request contract determines health.
+          // A client application timeout is not evidence of executor failure.
+          await this.advancing;
+          const result = await this.executor.request<SeatStatus>({
+            type: "set-controller",playerId: sync.admission.playerId,ai: true,
+          });
+          this.runtimeSeats = result.seats;
+        }
       } catch {
         await this.end("Match executor unavailable during synchronization");
       } finally {
-        clearTimeout(watchdog);
         this.admissions.delete(sync.admission.guest);
         this.send(sync.admission.guest, { type: "error", message });
         this.finishSync(sync);
       }
     })();
     return sync.restoring;
+  }
+  private syncPhase(sync:Sync,phase:"waiting-worker"|"capturing-baseline"|"applying-baseline"):void {
+    clearTimeout(this.syncTimer);sync.phase=phase;sync.phaseStartedAt=this.now();
+    const timeout=phase==="applying-baseline" ? (this.config.syncTimeoutMs??5_000) : (this.config.preparationTimeoutMs??30_000);
+    sync.expiresAt=this.now()+timeout;
+    this.syncTimer=setTimeout(()=>void this.cancelSync(sync,
+      `${phase==="waiting-worker" ? "Waiting for the match worker" : phase==="capturing-baseline" ? "Preparing your empire" : "Applying your empire"} timed out. Please rejoin from the lobby.`),timeout);
   }
   private finishSync(sync: Sync): void {
     if (this.sync !== sync) return;
@@ -521,6 +535,7 @@ export class LiveMatch {
     this.commands.push({ id, command });
   }
   async disconnect(guest: string): Promise<void> {
+    this.flows.delete(guest);
     const admission = this.admissions.get(guest);
     if (admission) this.admissions.delete(guest);
     const seat = this.seat(guest);
@@ -752,6 +767,45 @@ export class LiveMatch {
   private broadcast(message: ServerMessage): void {
     for (const seat of this.seats.values())
       if (seat.connected && this.loaded.has(seat.guestId))
-        this.send(seat.guestId, message);
+        if(message.type==="match-state")this.sendState(seat.guestId,message);
+        else this.send(seat.guestId, message);
+  }
+  private sendState(guest:string,message:Extract<ServerMessage,{type:"match-state"}>,baseline=false):void {
+    const flow=this.flows.get(guest);
+    if(!flow){this.send(guest,message);return;}
+    const sequence=message.publicationSequence!;
+    if(baseline){flow.beginBaseline(true);flow.baseline(sequence,false);}
+    else if(!flow.offer(sequence))return;
+    this.send(guest,{...message,flowEpoch:flow.epoch,rebase:baseline});
+  }
+  stateApplied(guest:string,sequence:number,epoch:number):void {
+    const flow=this.flows.get(guest);if(!flow)return;
+    if(flow.applied(sequence,epoch)==="baseline")this.resync(guest);
+  }
+  resync(guest:string):void {
+    const flow=this.flows.get(guest);
+    if(!flow || !this.connected(guest))return;
+    if(!flow.beginBaseline())return;
+    this.recoveryQueue.push(guest);void this.drainRecovery();
+  }
+  private async drainRecovery():Promise<void> {
+    if(this.recoveringClient)return;this.recoveringClient=true;
+    try{
+      while(this.recoveryQueue.length && !this.stopped){
+        const guest=this.recoveryQueue.shift()!,flow=this.flows.get(guest);if(!flow)continue;
+        const epoch=flow.epoch;
+        try{
+          const result=await this.executor.request<ClientBaseline>({type:"client-baseline"});
+          if(this.stopped || this.flows.get(guest)!==flow || flow.epoch!==epoch || !this.connected(guest))continue;
+          const sequence=++this.publicationSequence;
+          flow.baseline(sequence,this.tick>result.tick);
+          this.send(guest,{...this.state(result.baseline),tick:result.tick,publicationSequence:sequence,flowEpoch:flow.epoch,rebase:true});
+        }catch(error){
+          if(this.stopped || this.flows.get(guest)!==flow || flow.epoch!==epoch || !this.connected(guest))continue;
+          flow.recovering=false;
+          this.send(guest,{type:"error",message:`State recovery failed: ${(error as Error).message}. Retry from the lobby.`});
+        }
+      }
+    }finally{this.recoveringClient=false;}
   }
 }

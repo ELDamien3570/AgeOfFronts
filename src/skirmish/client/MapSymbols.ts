@@ -1,4 +1,4 @@
-import type { BuildingType } from "../Protocol";
+import type { BuildingType, ShipType } from "../Protocol";
 import type { FormationType } from "./FormationArtwork";
 import {
   MAX_MELEE_LUNGE_RATIO,
@@ -48,8 +48,34 @@ export function squadSymbol(
   };
 }
 
-export function shipSymbol(scale: number, hasFormationArtwork: boolean) {
-  const formation = hasFormationArtwork && scale * 2 < SQUAD_ART_MIN_PIXELS;
+export function shipSpriteSize(
+  scale: number,
+  kind: ShipType = "warship",
+): number {
+  const cap = kind === "warship" ? 125 : 87.5;
+  return Math.min(cap, scale * 2.4);
+}
+
+export function shipSymbol(
+  scale: number,
+  hasFormationArtwork: boolean,
+  kind: ShipType = "warship",
+  hasShipArt = false,
+) {
+  const formation =
+    !hasShipArt && hasFormationArtwork && scale * 2 < SQUAD_ART_MIN_PIXELS;
+  if (hasShipArt) {
+    const size = (shipSpriteSize(scale, kind) * 4) / 3;
+    const hitRadius = size * 0.38;
+    const viewRadius = size * 0.5 + 12;
+    return {
+      formation: false,
+      width: size,
+      height: size,
+      hitRadius,
+      viewRadius,
+    };
+  }
   const height = formation ? Math.max(8, Math.min(28, scale * 3)) : 22;
   const width = formation ? (height * 224) / 464 : 16;
   // Include the authored pivot's slight offset from the graphic's midpoint.
@@ -76,15 +102,20 @@ export function buildingSymbol(
   };
 }
 
-export function traderSymbol(scale: number, hasArtwork: boolean) {
+export function traderSymbol(
+  scale: number,
+  hasArtwork: boolean,
+  naval = false,
+) {
   // Traders retain their own budget when soldier readability is adjusted.
-  const size = Math.min(44, scale * 2);
+  const cap = naval ? 77 : 44;
+  const size = Math.min(cap, scale * 2);
   const artwork = hasArtwork && size >= SQUAD_ART_MIN_PIXELS;
   return {
     artwork,
-    size: artwork ? size : Math.max(6, Math.min(12, size)),
+    size: artwork ? size : Math.max(6, Math.min(naval ? 18 : 12, size)),
     viewRadius: artwork
       ? (size / SPRITE_FOOTPRINT) * Math.SQRT1_2
-      : Math.max(6, Math.min(12, size)) * Math.SQRT1_2,
+      : Math.max(6, Math.min(naval ? 18 : 12, size)) * Math.SQRT1_2,
   };
 }

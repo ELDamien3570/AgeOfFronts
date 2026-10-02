@@ -132,6 +132,10 @@ parentPort.on(
               baseline,
               seats: seats(),
             };
+          } else if (request.type === "client-baseline") {
+            const tick=match.tick,winner=match.winner;
+            const baseline=await encodeState(new SnapshotEncoder(true).encode(match.snapshot()));
+            result={tick,winner,baseline};
           } else if (request.type === "baseline") {
             // A late initial subscriber must not reset everyone else's delta cursor.
             result = await encodeState(
@@ -178,6 +182,9 @@ parentPort.on(
         }
         parentPort!.postMessage({ id: message.id, result });
       } catch (error) {
+        // Retain the stack and operation on the server; client transport keeps
+        // the safe message and never receives private stack details.
+        console.error("Match executor operation failed",message.request.type,error);
         parentPort!.postMessage({
           id: message.id,
           error:

@@ -1,4 +1,5 @@
 import type { GameMap } from "../../core/game/GameMap";
+import { PlacementPreview } from "./PlacementPreview";
 import { UNIT, VESSEL } from "../content/Units";
 import { promotionLevel } from "../domain/Combat";
 import type { Age } from "../domain/Definitions";
@@ -41,6 +42,7 @@ import { GroundLayer, type GroundStyle } from "./GroundLayer";
 import { ImpactPresentation } from "./ImpactPresentation";
 import {
   buildingSymbol,
+  shipSpriteSize,
   shipSymbol,
   squadSymbol,
   traderSymbol,
@@ -206,6 +208,7 @@ export class Renderer {
   selectedDeposit: number | null = null;
   placement?: { tile: number; type: BuildingType; friendly: boolean };
   buildSites: number[] = [];
+  buildPreview?:PlacementPreview;
   selectionBox?: { x1: number; y1: number; x2: number; y2: number };
   marker?: { x: number; y: number; until: number; attack: boolean };
 
@@ -228,6 +231,7 @@ export class Renderer {
     environment?: EnvironmentProfile,
   ): void {
     this.map = map;
+    this.buildPreview=new PlacementPreview(map);
     this.roads = new RoadLayer(map);
     this.ground = new PaintedTerrain(map, geography, environment);
     this.groundActive = undefined;
@@ -287,6 +291,7 @@ export class Renderer {
 
   update(snapshot: Snapshot): void {
     if (!this.map) return;
+    this.buildPreview?.update(snapshot);
     this.previous = this.snapshot;
     this.previousSquads = this.currentSquads;
     this.currentSquads = new Map(snapshot.squads.map((s) => [s.id, s]));
@@ -550,6 +555,8 @@ export class Renderer {
             shipSymbol(
               this.scale,
               !!this.formationArtwork.get(s.kind, COLORS[s.playerId]),
+              s.kind,
+              Boolean(s.definitionId && this.scale >= 12),
             ).viewRadius,
             this.width,
             this.height,
@@ -856,6 +863,8 @@ export class Renderer {
       const radius = shipSymbol(
         this.scale,
         !!this.formationArtwork.get(ship.kind, COLORS[ship.playerId]),
+        ship.kind,
+        Boolean(ship.definitionId && this.scale >= 12),
       ).hitRadius;
       if ((p.x - x) ** 2 + (p.y - y) ** 2 <= radius ** 2) return ship.id;
     }
@@ -964,7 +973,9 @@ export class Renderer {
       this.map.width() * this.scale + 2,
       this.map.height() * this.scale + 2,
     );
-    for (const tile of this.buildSites) {
+    const sites=this.buildPreview?.sites({left:Math.floor(-this.offsetX/this.scale),top:Math.floor(-this.offsetY/this.scale),
+      right:Math.ceil((this.width-this.offsetX)/this.scale),bottom:Math.ceil((this.height-this.offsetY)/this.scale)})??this.buildSites;
+    for (const tile of sites) {
       const p = this.screen(this.map.x(tile), this.map.y(tile));
       if (
         p.x + this.scale < 0 ||
@@ -1552,7 +1563,25 @@ export class Renderer {
     for (const ship of snapshot.ships) {
       const pose = this.boats.shipPose(ship.id) ?? ship;
       const p = this.screen(pose.x / FIXED, pose.y / FIXED);
-      if (!visibleInViewport(p, 60, this.width, this.height)) continue;
+      const formation = this.formationArtwork.get(
+        ship.kind,
+        this.strategic.available ? "#ffffff" : COLORS[ship.playerId],
+      );
+      const symbol = shipSymbol(
+        this.scale,
+        !!formation,
+        ship.kind,
+        Boolean(ship.definitionId && this.scale >= 12),
+      );
+      if (
+        !visibleInViewport(
+          p,
+          Math.max(60, symbol.viewRadius),
+          this.width,
+          this.height,
+        )
+      )
+        continue;
       const vessel = VESSEL.get(ship.definitionId ?? "");
       const rules = vessel
         ? {
@@ -1562,11 +1591,6 @@ export class Renderer {
           }
         : SHIP_RULES[ship.kind];
       const selected = this.selectedShips.has(ship.id);
-      const formation = this.formationArtwork.get(
-        ship.kind,
-        this.strategic.available ? "#ffffff" : COLORS[ship.playerId],
-      );
-      const symbol = shipSymbol(this.scale, !!formation);
       if (selected) {
         if (ship.boarding) {
           const shore = this.screen(
@@ -1614,13 +1638,15 @@ export class Renderer {
               ship.fighting ? visualTick : boatTick,
             )
           : undefined;
+      let drawnShipSize = 0;
       if (shipArt) {
         ctx.save();
         ctx.translate(p.x, p.y);
         ctx.rotate(
           "angle" in pose ? pose.angle : this.presentation.shipAngle(ship.id),
         );
-        const size = Math.min(50, this.scale * 2.4) * shipArt.extent;
+        const size = shipSpriteSize(this.scale, ship.kind) * shipArt.extent;
+        drawnShipSize = size;
         ctx.imageSmoothingEnabled = true;
         ctx.drawImage(
           shipArt.source,
@@ -1727,9 +1753,10 @@ export class Renderer {
               ? " · dock full"
               : "";
       const label = `${ship.health} HP${repairInfo}${ship.kind === "transport" ? ` · ${cargo}/${ship.shoreTransfer?.capacity ?? rules.capacity ?? 4}` : ""}${ship.shoreTransfer ? ` · ${ship.shoreTransfer.phase}` : ship.boarding ? " · meeting" : ""}${ship.fighting ? " ⚔" : ""}`;
-      ctx.strokeText(label, p.x, p.y + 22);
+      const labelY = p.y + (drawnShipSize ? drawnShipSize * 0.42 + 10 : 22);
+      ctx.strokeText(label, p.x, labelY);
       ctx.fillStyle = "#eaf3ef";
-      ctx.fillText(label, p.x, p.y + 22);
+      ctx.fillText(label, p.x, labelY);
     }
     if (snapshot.expansion) {
       for (const deposit of snapshot.expansion.deposits)
@@ -1767,7 +1794,7 @@ export class Renderer {
           boat ?? this.traderPresentation.pose(actor.id, visualTick, blend);
         if (!pose) continue;
         const p = this.screen(pose.x / FIXED, pose.y / FIXED);
-        const projected = traderSymbol(this.scale, true);
+        const projected = traderSymbol(this.scale, true, actor.naval);
         if (
           !visibleInViewport(p, projected.viewRadius, this.width, this.height)
         )
@@ -1784,7 +1811,7 @@ export class Renderer {
               "elapsedTicks" in pose ? pose.elapsedTicks : boatTick,
             ))
           : undefined;
-        const symbol = traderSymbol(this.scale, !!art);
+        const symbol = traderSymbol(this.scale, !!art, actor.naval);
         ctx.save();
         ctx.globalAlpha = 0.85;
         if (art) {

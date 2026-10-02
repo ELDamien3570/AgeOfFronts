@@ -146,5 +146,13 @@ describe("trader presentation", () => {
     }
     expect(traderSymbol(48, true).size).toBe(traderSymbol(32, true).size);
     expect(traderSymbol(48, false).artwork).toBe(false);
+
+    // Naval trade vessels scale 1.75x compared to land traders (44 -> 77)
+    const landMax = traderSymbol(96, true, false);
+    const navalMax = traderSymbol(96, true, true);
+    expect(landMax.size).toBe(44);
+    expect(navalMax.size).toBe(77);
+    expect(navalMax.size / landMax.size).toBe(1.75);
+    expect(navalMax.viewRadius).toBeGreaterThan(landMax.viewRadius);
   });
 });

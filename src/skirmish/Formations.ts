@@ -16,6 +16,16 @@ import {
 interface ReservedPoint extends WorldPoint, SquadGeometry {
   squadId: number;
 }
+/** Square perimeter in the same row-major order as the former square scan. */
+export function formationRingPoint(cx: number, cy: number, ring: number, index: number): WorldPoint {
+  if (!ring) return { x: cx, y: cy };
+  const width = 2 * ring + 1;
+  if (index < width) return { x: cx - ring + index, y: cy - ring };
+  index -= width;
+  const sides = 2 * (2 * ring - 1);
+  if (index < sides) return { x: cx + (index % 2 ? ring : -ring), y: cy - ring + 1 + Math.floor(index / 2) };
+  return { x: cx - ring + index - sides, y: cy + ring };
+}
 class Occupancy {
   readonly grid: SpatialGrid<ReservedPoint>;
   private readonly points = new Map<number, ReservedPoint[]>();
@@ -146,8 +156,12 @@ export class Formations {
   ): Map<number, WorldPoint> | null {
     const target = tilePoint(this.map, center);
     const selected = new Set(members.map(({ squad }) => squad.id));
-    const slots: ReservedPoint[] = [];
+    // A formation owns only a handful of buckets, never another full-map grid.
+    const slots = new Map<number, ReservedPoint[]>();
+    const slotColumns = Math.ceil(this.map.width() / 4);
+    const slotKey = (point: WorldPoint) => Math.floor(point.x / (4 * FIXED)) + Math.floor(point.y / (4 * FIXED)) * slotColumns;
     const neighbors: ReservedPoint[] = [];
+    const nearbySlots: ReservedPoint[] = [];
     const free = (point: WorldPoint, squad: SquadGeometry) => {
       if (distanceSquared(point, target) > maximumRadius ** 2) return false;
       if (!standable(this.map, point, squadRadius(squad.kind))) return false;
@@ -155,13 +169,18 @@ export class Formations {
       if (!this.paths.connected(center, pointTile(this.map, point)))
         return false;
       occupied.query(point.x, point.y, 2 * FIXED, neighbors);
+      nearbySlots.length = 0;
+      const cx = Math.floor(point.x / (4 * FIXED)), cy = Math.floor(point.y / (4 * FIXED));
+      for (let y = Math.max(0, cy - 1); y <= cy + 1; y++)
+        for (let x = Math.max(0, cx - 1); x <= Math.min(slotColumns - 1, cx + 1); x++)
+          for (const slot of slots.get(x + y * slotColumns) ?? []) nearbySlots.push(slot);
       return (
         neighbors.every(
           (other) =>
             selected.has(other.squadId) ||
             distanceSquared(point, other) >= squadSeparation(squad, other) ** 2,
         ) &&
-        slots.every(
+        nearbySlots.every(
           (other) =>
             distanceSquared(point, other) >= squadSeparation(squad, other) ** 2,
         )
@@ -209,10 +228,8 @@ export class Formations {
       for (let ring = 0; !point && ring <= 12 + columns; ring++) {
         let best: WorldPoint | undefined,
           bestDistance = Infinity;
-        for (let y = iy - ring; y <= iy + ring; y++)
-          for (let x = ix - ring; x <= ix + ring; x++) {
-            if (ring && Math.max(Math.abs(x - ix), Math.abs(y - iy)) !== ring)
-              continue;
+        for (let at = 0; at < (ring ? 8 * ring : 1); at++) {
+            const {x, y} = formationRingPoint(ix, iy, ring, at);
             const candidate = {
               x: x * FIXED + FIXED / 2,
               y: y * FIXED + FIXED / 2,
@@ -227,7 +244,10 @@ export class Formations {
       }
       if (!point) return null;
       result.set(member.squad.id, point);
-      slots.push({
+      const key = slotKey(point);
+      let bucket = slots.get(key);
+      if (!bucket) slots.set(key, bucket = []);
+      bucket.push({
         ...point,
         squadId: member.squad.id,
         kind: member.squad.kind,

@@ -266,6 +266,7 @@ describe("bounded live admission lifecycle", () => {
       /synchronizing/,
     );
     expect(f.requests.some((r) => r.type === "join-barrier")).toBe(false);
+    f.time(17_000); // Worker wait exceeds the former five-second application limit.
     finish({
       tick: 4,
       winner: null,
@@ -276,7 +277,29 @@ describe("bounded live admission lifecycle", () => {
     await advancing;
     await qualify;
     expect(f.requests.some((r) => r.type === "join-barrier")).toBe(true);
+    const baseline=f.baseline("first");f.time(21_000);
+    f.match.acknowledge("first",baseline.syncId!,baseline.publicationSequence!);
+    expect(f.match.connected("first")).toBe(true);
+    expect(f.released()).toBe(0);
     await f.match.disconnect("first");
+    await f.match.end("test");
+  });
+  it("rebases a slow flow-controlled client without changing other clients' delta cursor or pausing the match",async()=>{
+    const f=await fixture();const original=f.executor.request;
+    f.executor.request=async<T extends ExecutorResult>(request:ExecutorRequest)=>request.type==="client-baseline"
+      ? ({tick:4,winner:null,baseline:packet} as T) : original<T>(request);
+    f.watch("slow",3);await f.match.qualify("slow","build",true);
+    const baseline=f.baseline("slow");f.match.stateApplied("slow",baseline.publicationSequence!,baseline.flowEpoch!);
+    f.match.acknowledge("slow",baseline.syncId!,baseline.publicationSequence!);
+    for(const time of [10_200,10_400,10_600,10_800]){f.time(time);await f.match.advance();}
+    const sent=f.baseline("slow");
+    f.time(11_000);await f.match.advance();expect(f.baseline("slow").publicationSequence).toBe(sent.publicationSequence);
+    f.match.stateApplied("slow",sent.publicationSequence!,sent.flowEpoch!);
+    await Promise.resolve();await Promise.resolve();
+    const rebased=f.baseline("slow");expect(rebased.rebase).toBe(true);expect(rebased.flowEpoch).toBeGreaterThan(sent.flowEpoch!);
+    expect(f.match.summary("a")?.status).toBe("running");expect(f.released()).toBe(0);
+    f.match.stateApplied("slow",sent.publicationSequence!,sent.flowEpoch!); // Stale ACK does not grant credit.
+    expect(f.baseline("slow").publicationSequence).toBe(rebased.publicationSequence);
     await f.match.end("test");
   });
   it("retains ownership and capacity through grace; successful rejoin clears it, failed joins never extend it", async () => {

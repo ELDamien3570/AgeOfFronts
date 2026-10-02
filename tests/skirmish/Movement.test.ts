@@ -1,6 +1,7 @@
 import { describe, expect, it } from "vitest";
 import { GameMapImpl } from "../../src/core/game/GameMap";
-import { Formations } from "../../src/skirmish/Formations";
+import { Formations, formationRingPoint } from "../../src/skirmish/Formations";
+import { FormationPlanning } from "../../src/skirmish/FormationPlanning";
 import { LandPaths } from "../../src/skirmish/Pathfinding";
 import { FIXED, type Squad } from "../../src/skirmish/Protocol";
 import { Skirmish } from "../../src/skirmish/Simulation";
@@ -27,6 +28,14 @@ function create(narrow = false) {
     .forEach((s, i) => place(s, 72, 4 + i * 2));
   return { match, map, own };
 }
+it("enumerates only formation perimeter cells in the original deterministic tie order", () => {
+  for (let ring=0;ring<=25;ring++) {
+    const expected=[];
+    for(let y=8-ring;y<=8+ring;y++)for(let x=12-ring;x<=12+ring;x++)
+      if(!ring || Math.max(Math.abs(x-12),Math.abs(y-8))===ring)expected.push({x,y});
+    expect(Array.from({length:ring?8*ring:1},(_,at)=>formationRingPoint(12,8,ring,at))).toEqual(expected);
+  }
+});
 function place(s: Squad, x: number, y: number) {
   s.x = (x + 0.5) * FIXED;
   s.y = (y + 0.5) * FIXED;
@@ -68,6 +77,25 @@ function run(match: Skirmish, ticks: number) {
 }
 
 describe("compact formations and local avoidance", () => {
+  it("resumes formation clearance and fallback with the same slots as synchronous planning", () => {
+    for (const narrow of [false, true]) {
+      const { match, map, own } = create(narrow), paths = new LandPaths(map, false),
+        members = own.map(squad => ({ squad, origin: { x: squad.x, y: squad.y } })),
+        center = map.ref(narrow ? 40 : 65, 25),
+        expected = new Formations(map, paths).plan(center, members, match.squads),
+        job = new FormationPlanning(map, paths, center, members, () => match.squads);
+      let restored: FormationPlanning | undefined;
+      for (let slices = 0; job.state.phase !== "done" && job.state.phase !== "failed"; slices++) {
+        expect(slices).toBeLessThan(10000);
+        const used = job.step(7);
+        expect(used).toBeLessThanOrEqual(7);
+        if (restored) expect(restored.step(7)).toBe(used);
+        else if (slices === 9) restored = new FormationPlanning(map, paths, center, [], () => match.squads, Infinity, undefined, job.checkpoint());
+      }
+      expect(job.state.phase === "failed" ? null : job.state.result).toEqual(expected);
+      expect(restored?.state).toEqual(job.state);
+    }
+  });
   it("passes through compact friendly rows while the same enemy rows block passage", () => {
     const scenario = (friendly: boolean) => {
       const data = new Uint8Array(80 * 50);

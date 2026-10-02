@@ -2,6 +2,8 @@ import { FlatBinaryHeap } from "../core/execution/utils/FlatBinaryHeap";
 import type { GameMap } from "../core/game/GameMap";
 import { HierarchicalPaths } from "./HierarchicalPaths";
 import { PathTopology } from "./PathTopology";
+import {IncrementalPath,type IncrementalPathState} from "./IncrementalPath";
+import { PlanningPath, type PlanningPathState, type PlanningWorkspace } from "./PlanningWorkspace";
 
 // A hierarchy pays off well below the original 65,536-cell threshold: exact A*
 // across a mid-size map made trade and squad routing the dominant tick cost.
@@ -101,6 +103,22 @@ class TilePaths {
       this.walkable(b) &&
       this.component[a] === this.component[b]
     );
+  }
+  get revision():number {return this.costRevision;}
+  /** Cost epochs are behavioral state for unfinished jobs, unlike route caches. */
+  restoreRevision(revision:number):void {
+    if(!Number.isSafeInteger(revision)||revision<0)throw new Error("Invalid routing revision");
+    this.costRevision=revision;this.routes.clear();this.routeTiles=0;
+  }
+  begin(start:number,goal:number,saved?:IncrementalPathState):IncrementalPath {
+    const job=new IncrementalPath(this.topology,start,goal,this.costRevision,65_536,saved);
+    if(!saved && !this.connected(start,goal))job.state.phase="unreachable";
+    return job;
+  }
+  beginPlanning(workspace: PlanningWorkspace, start: number, goal: number, saved?: PlanningPathState): PlanningPath {
+    const job = new PlanningPath(this.topology, workspace, start, goal, this.costRevision, saved);
+    if (!saved && !this.connected(start, goal)) job.state.phase = "unreachable";
+    return job;
   }
 
   find(

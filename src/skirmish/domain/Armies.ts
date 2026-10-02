@@ -331,6 +331,10 @@ export class Armies {
     } else tile = order.tile;
     if (!this.world.paths.walkable(tile))
       return "Choose passable land for the army";
+    if (append && army.order.type!=="hold") {
+      if(army.queuedOrders.length>=MAX_QUEUED_ORDERS)return "Army queue is full";
+      army.queuedOrders.push({...order});return null;
+    }
     if (
       members.some(
         (s) => !this.world.paths.connected(pointTile(this.world.map, s), tile),

@@ -1,0 +1,3 @@
+https://manticorp.github.io/unrealheightmap/#latitude/-5.61568684902204/longitude/112.49969754548624/zoom/3/outputzoom/6/width/4096/height/4096/outputformat/png16
+Resolution: 4096 x 4096
+Height range: -450 m to 8,249 m

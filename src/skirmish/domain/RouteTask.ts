@@ -6,11 +6,21 @@ export interface ArmyRouteRequest {
 export type MatchRouteTask =
   | { kind: "army"; request: ArmyRouteRequest }
   | {
+      kind: "admission";
+      admissionId: number;
+      squadId: number;
+      playerId: number;
+    }
+  | {
       kind: "navigation";
       operation: "repair" | "pursuit" | "blocked" | "smooth";
       squadId: number;
       revision: number;
+      playerId?: number;
+      generation?: number;
       targetId?: number;
+      targetTile?: number;
+      firing?: FiringPositionState;
     }
   | {
       kind: "ai-move";
@@ -19,3 +29,4 @@ export type MatchRouteTask =
       squadIds: number[];
       tile: number;
     };
+import type { FiringPositionState } from "../FiringPositions";

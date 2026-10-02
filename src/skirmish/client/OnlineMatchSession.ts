@@ -1,6 +1,7 @@
 import type {
   LoadedMap,
   SnapshotPacket,
+  Snapshot,
   WorkerRequest,
   WorkerResponse,
 } from "../Protocol";
@@ -10,6 +11,9 @@ import { mapIdentity } from "../multiplayer/application/MapIdentity";
 import { OnlineLobbyConnection } from "./lobby/OnlineLobbyConnection";
 
 const MAX_PENDING_STATES = 8;
+const MAX_PENDING_BYTES=16*1024*1024;
+interface DecodedState {packet:SnapshotPacket;snapshot?:Snapshot;canonicalSequence?:number;decodeMs?:number;applyMs?:number;}
+interface Presentation {data:Extract<WorkerResponse,{type:"state"}>;sequence?:number;}
 
 /** Thin presentation client. The server alone advances the simulation. */
 export class OnlineMatchSession {
@@ -23,11 +27,18 @@ export class OnlineMatchSession {
   private decoder?: Worker;
   private connection: OnlineLobbyConnection;
   private decoding?: {
-    resolve: (packet: SnapshotPacket) => void;
+    resolve: (packet: DecodedState) => void;
     reject: (error: Error) => void;
   };
   private incoming = Promise.resolve();
   private pendingStates = 0;
+  private pendingBytes=0;
+  private receiveGeneration=0;
+  private recovering=false;
+  private flowEpoch=0;
+  private presenting?:Promise<void>;
+  private latestPresentation?:Presentation;
+  readonly diagnostics={pendingStates:0,pendingBytes:0,oldestAgeMs:0,decodeMs:0,applyMs:0,presentationMs:0,coalesced:0,recoveries:0};
   private initialized = false;
   private stopped = false;
   private manifest?: MatchManifest;
@@ -70,7 +81,7 @@ export class OnlineMatchSession {
         if (this.stopped) return;
         // Asset loading may still be awaiting network I/O. Terminal admission
         // messages must not wait behind that promise to release this session.
-        if (this.pendingSync || this.lastTick < 0) {
+        if (this.pendingSync || this.lastTick < 0 || this.recovering) {
           if (message.type === "error") {
             this.fail(message.message);
             return;
@@ -83,18 +94,30 @@ export class OnlineMatchSession {
             return;
           }
         }
-        const state = message.type === "match-state";
-        if (state && ++this.pendingStates > MAX_PENDING_STATES) {
-          this.fail(
-            "This device cannot keep up with the match updates. Return to the lobby to play again.",
-          );
-          return;
+        if(message.type==="match-ended" && message.matchId===this.matchId){
+          this.status(`${message.message}. Return to the lobby to play again.`);this.terminate();return;
         }
+        if(message.type==="error"){this.status(message.message);return;}
+        const state = message.type === "match-state";
+        if(state && this.recovering && !message.rebase)return;
+        const bytes=state ? message.packet.payload.length*2 : 0,receivedAt=performance.now();
+        if(state){
+          if(this.pendingStates>=MAX_PENDING_STATES || this.pendingBytes+bytes>MAX_PENDING_BYTES){
+            if(bytes>MAX_PENDING_BYTES){this.fail("Match baseline exceeds this client's bounded state budget.");return;}
+            this.recover();return;
+          }
+          this.pendingStates++;this.pendingBytes+=bytes;
+          this.diagnostics.pendingStates=this.pendingStates;this.diagnostics.pendingBytes=this.pendingBytes;
+        }
+        const generation=this.receiveGeneration;
         this.incoming = this.incoming
-          .then(() => (this.stopped ? undefined : this.receive(message)))
+          .then(() => {
+            this.diagnostics.oldestAgeMs=performance.now()-receivedAt;
+            return this.stopped || (state && generation!==this.receiveGeneration) ? undefined : this.receive(message);
+          })
           .catch((error) => this.fail(error.message))
           .finally(() => {
-            if (state) this.pendingStates--;
+            if (state){this.pendingStates--;this.pendingBytes-=bytes;this.diagnostics.pendingStates=this.pendingStates;this.diagnostics.pendingBytes=this.pendingBytes;}
           });
       },
       { reconnect: false },
@@ -149,7 +172,7 @@ export class OnlineMatchSession {
       requestId: crypto.randomUUID(),
     } as Parameters<OnlineLobbyConnection["request"]>[0]);
   }
-  private decode(packet: EncodedState): Promise<SnapshotPacket> {
+  private decode(packet: EncodedState): Promise<DecodedState> {
     return new Promise((resolve, reject) => {
       if (!this.decoder || this.decoding) {
         reject(new Error("State decoder is unavailable"));
@@ -158,6 +181,30 @@ export class OnlineMatchSession {
       this.decoding = { resolve, reject };
       this.decoder.postMessage(packet);
     });
+  }
+  private recover():void {
+    if(this.recovering || this.stopped)return;
+    this.recovering=true;this.receiveGeneration++;this.latestPresentation=undefined;this.diagnostics.recoveries++;
+    this.setCommandsAvailable(false);this.status("Catching up with the match · requesting a fresh state…");
+    void this.request({type:"match-state-resync",matchId:this.matchId}).catch(error=>this.fail(error.message));
+  }
+  private present(update:Presentation):Promise<void> {
+    const started=performance.now();
+    const task=Promise.resolve().then(()=>this.stopped ? undefined : this.onmessage?.({data:update.data} as MessageEvent<WorkerResponse>))
+      .then(()=>{
+        this.diagnostics.presentationMs=performance.now()-started;
+        if(!this.stopped && update.sequence!==undefined)this.decoder?.postMessage({type:"presented",sequence:update.sequence});
+      });
+    this.presenting=task;
+    void task.catch(error=>this.fail(error.message)).finally(()=>{
+      if(this.presenting!==task)return;this.presenting=undefined;
+      const next=this.latestPresentation;this.latestPresentation=undefined;if(next && !this.stopped)this.present(next);
+    });
+    return task;
+  }
+  private queuePresentation(update:Presentation):void {
+    if(this.presenting){if(this.latestPresentation)this.diagnostics.coalesced++;this.latestPresentation=update;}
+    else this.present(update);
   }
   private setCommandsAvailable(available: boolean): void {
     if (this.commandsAvailable === available) return;
@@ -195,13 +242,13 @@ export class OnlineMatchSession {
         { type: "module" },
       );
       this.decoder.onmessage = (
-        event: MessageEvent<{ packet?: SnapshotPacket; error?: string }>,
+        event: MessageEvent<DecodedState & {error?: string}>,
       ) => {
         const task = this.decoding;
         this.decoding = undefined;
         if (!task) return;
         if (event.data.error) task.reject(new Error(event.data.error));
-        else if (event.data.packet) task.resolve(event.data.packet);
+        else if (event.data.packet) task.resolve(event.data);
         else task.reject(new Error("Invalid decoded match state"));
       };
       this.decoder.onerror = (event) => this.fail(event.message);
@@ -210,6 +257,7 @@ export class OnlineMatchSession {
         type: "match-ready",
         matchId: this.matchId,
         runtimeId: message.manifest.runtimeId,
+        flowControl:true,
       });
     } else if (message.type === "match-spawn") {
       this.onmessage?.({
@@ -217,6 +265,9 @@ export class OnlineMatchSession {
       } as MessageEvent<WorkerResponse>);
     } else if (message.type === "match-state") {
       if (!this.initialized) return;
+      if(message.flowEpoch!==undefined && message.flowEpoch<this.flowEpoch)return;
+      if(message.flowEpoch!==undefined && message.flowEpoch>this.flowEpoch && !message.rebase && this.flowEpoch>0)
+        throw new Error("A new state epoch requires a replacement baseline");
       // A join barrier can publish a fresh baseline at the current simulation tick.
       // Publication identity, not tick advancement, orders the stream.
       if (message.publicationSequence !== undefined) {
@@ -238,29 +289,38 @@ export class OnlineMatchSession {
           "Synchronizing your empire… Commands unlock when synchronization completes.",
         );
       }
-      const packet = await this.decode(message.packet);
+      const decoded = await this.decode(message.packet),packet=decoded.packet;
       if (this.stopped) return;
+      if(this.recovering && !message.rebase)return;
       if (
         packet.tick !== message.tick ||
-        (!packet.reset && (this.lastTick < 0 || !!message.syncId))
+        (!packet.reset && (this.lastTick < 0 || !!message.syncId || !!message.rebase))
       )
         throw new Error(
           "Invalid match update sequence. Return to the lobby to play again.",
         );
       this.lastTick = packet.tick;
+      if(message.flowEpoch!==undefined)this.flowEpoch=message.flowEpoch;
+      this.diagnostics.decodeMs=decoded.decodeMs??0;this.diagnostics.applyMs=decoded.applyMs??0;
       if (message.publicationSequence !== undefined)
         this.lastPublicationSequence = message.publicationSequence;
       this.matchPaused = message.paused;
       this.disconnectedPlayerIds = message.disconnectedPlayerIds;
-      this.setCommandsAvailable(!message.paused && !this.pendingSync);
+      this.setCommandsAvailable(!message.paused && !this.pendingSync && !this.recovering);
       if (message.syncId && !this.onmessage)
         throw new Error(
           "The match view is unavailable. Return to the lobby to rejoin.",
         );
-      await this.onmessage?.({
-        data: { type: "state", packet, paused: message.paused, speed: 1 },
-      } as MessageEvent<WorkerResponse>);
+      const update:Presentation={data:{type:"state",packet,snapshot:decoded.snapshot,paused:message.paused,speed:1},sequence:decoded.canonicalSequence};
+      if(message.syncId || message.rebase){
+        await this.presenting;if(this.stopped)return;this.latestPresentation=undefined;
+        await this.present(update);
+        if(message.rebase){this.recovering=false;this.setCommandsAvailable(!message.paused && !this.pendingSync);}
+      }else if(decoded.snapshot)this.queuePresentation(update);
+      else await this.onmessage?.({data:update.data} as MessageEvent<WorkerResponse>);
       if (this.stopped) return;
+      if(message.flowEpoch!==undefined && message.publicationSequence!==undefined)
+        await this.request({type:"match-state-applied",matchId:this.matchId,publicationSequence:message.publicationSequence,flowEpoch:message.flowEpoch});
       // Receipt is not application: acknowledge only after both decoding and
       // the presentation callback have applied the complete baseline.
       if (message.syncId) {

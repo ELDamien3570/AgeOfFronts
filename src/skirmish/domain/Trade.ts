@@ -1,5 +1,5 @@
 import type { GameMap } from "../../core/game/GameMap";
-import { WATER_TRADE_PRICING } from "../content/Economy";
+import { tradePayout } from "./TradeQuote";
 import { technologyAt } from "../content/Technology";
 import { VESSELS } from "../content/Units";
 import type { LandPaths, WaterPaths } from "../Pathfinding";
@@ -100,6 +100,26 @@ export class Trade {
       Math.floor(actor.x / FIXED),
       Math.floor(actor.y / FIXED),
     );
+  }
+  hasForeignMarket(playerId:number, water:number): boolean {
+    return this.world.buildings.some(b => b.type === "port" && b.playerId !== playerId && b.playerId !== 0 &&
+      !b.remainingTicks && (b.health??1)>0 && this.world.map.neighbors(b.tile).some(t => this.world.waterPaths.connected(water,t)));
+  }
+  /** Bounded exact quote: null includes exhausted work, not proof of no route. */
+  seaQuote(playerId:number, port:Building, foreign:Building, valuePerGood:number, capacity:number) {
+    if (port.playerId !== playerId || foreign.playerId === playerId || foreign.type !== "port" ||
+      port.remainingTicks || foreign.remainingTicks) return null;
+    for (const start of this.world.map.neighbors(port.tile)) for (const end of this.world.map.neighbors(foreign.tile)) {
+      if (!this.world.waterPaths.connected(start,end)) continue;
+      const path = this.world.waterPaths.find(start,end,undefined,4096);
+      if (!path) return null;
+      const distance = Math.sqrt(this.world.map.euclideanDistSquared(port.tile,foreign.tile));
+      const quantity = Math.min(10,capacity);
+      return {portId:port.id,destinationId:foreign.id,waterComponent:this.world.waterPaths.component[start],
+        routeTiles:path.length,payout:tradePayout({naval:true,quantity,valuePerGood,distance,foreign:true,
+          allied:this.diplomacy.allied(playerId,foreign.playerId)}),quantity};
+    }
+    return null;
   }
   // Without obstacles the blocked test is always false, so the unobstructed
   // (cacheable) search returns exactly the same route.
@@ -305,6 +325,7 @@ export class Trade {
       this.retired.add(actor.id);
       return;
     }
+    if (actor.cargo === 0 && this.world.tick%20===0) this.refreshEmptyMode(actor,source);
     if (actor.naval) {
       const port = this.world.buildings.find(
         (b) =>
@@ -355,6 +376,42 @@ export class Trade {
     actor.waitTicks = 20;
     this.select(actor, known);
   }
+  private loadingPort(factory:Building): {port:Building;water:number} | undefined {
+    const {map,waterPaths} = this.world;
+    const ports = this.world.buildings.filter(b => b.type === "port" && b.playerId === factory.playerId &&
+      !b.remainingTicks && (b.health??1)>0 && map.euclideanDistSquared(b.tile,factory.tile)<=400)
+      .sort((a,b) => map.euclideanDistSquared(a.tile,factory.tile)-map.euclideanDistSquared(b.tile,factory.tile)||a.id-b.id);
+    for (const port of ports.slice(0,8)) {
+      const water = map.neighbors(port.tile).find(t => waterPaths.walkable(t) && this.hasForeignMarket(factory.playerId,t));
+      if (water !== undefined && this.landPath(factory.tile,port.tile,factory.playerId)) return {port,water};
+    }
+    return undefined;
+  }
+  private refreshEmptyMode(actor:TradeActor, factory:Building): void {
+    // Only the source loading boundary may switch transport. In-flight cargo,
+    // captured prizes and shipment accounting remain owned by their lifecycle.
+    if (actor.cargo || (actor.state !== "loading" && actor.state !== "waiting") || actor.playerId !== factory.playerId) return;
+    const source = actor.naval
+      ? this.world.buildings.find(b => b.id === actor.originPortId && b.playerId === actor.playerId && !b.remainingTicks && (b.health ?? 1) > 0)
+      : factory;
+    // A failed route can leave an empty actor waiting at a remote market.
+    // Waiting describes its lifecycle, not proof that it reached the source.
+    if (!source || (actor.naval
+      ? !this.world.map.neighbors(source.tile).includes(this.tile(actor))
+      : this.tile(actor) !== source.tile)) return;
+    const research = this.progression.states[actor.playerId].completed;
+    const merchant = VESSELS.filter(v => v.kind === "trade" && research.includes(v.technologyId)).slice(-1)[0];
+    const origin = merchant && this.loadingPort(factory);
+    if (!!origin === actor.naval && (!origin || actor.originPortId === origin.port.id)) return;
+    if (!origin && !this.progression.has(actor.playerId,technologyAt("StoneAge","economic",4).id)) return;
+    const index = logisticsTier(research), tile = origin ? origin.water : factory.tile;
+    actor.naval = !!origin; actor.originPortId = origin?.port.id;
+    actor.definitionId = origin ? merchant!.id : `${AGES[index].toLowerCase()}-trader`;
+    actor.capacity = Math.floor((origin ? merchant!.capacity : [20,30,40,50,60,80,120][index])*cargoHandlingPercent(research)/100);
+    actor.x = (this.world.map.x(tile)+0.5)*FIXED; actor.y = (this.world.map.y(tile)+0.5)*FIXED;
+    actor.originTile = origin?.port.tile ?? factory.tile;
+    actor.destination = null; actor.path = []; actor.nextPathIndex = 0; actor.stops = []; actor.visited = [];
+  }
   step(): void {
     const { map, tick, players, buildings } = this.world;
     this.tickStartWork = this.world.paths.work;
@@ -398,29 +455,8 @@ export class Trade {
             v.kind === "trade" &&
             this.progression.has(factory.playerId, v.technologyId),
         ).slice(-1)[0];
-        const port = merchant
-          ? buildings
-              .filter(
-                (b) =>
-                  b.playerId === factory.playerId &&
-                  b.type === "port" &&
-                  !b.remainingTicks &&
-                  map.euclideanDistSquared(b.tile, factory.tile) <= 400 &&
-                  this.landPath(factory.tile, b.tile, factory.playerId) !==
-                    null,
-              )
-              .sort(
-                (a, b) =>
-                  map.euclideanDistSquared(a.tile, factory.tile) -
-                    map.euclideanDistSquared(b.tile, factory.tile) ||
-                  a.id - b.id,
-              )[0]
-          : undefined;
-        const water =
-          port &&
-          map
-            .neighbors(port.tile)
-            .find((t) => this.world.waterPaths.walkable(t));
+        const loading = merchant ? this.loadingPort(factory) : undefined;
+        const port = loading?.port, water = loading?.water;
         const naval = water !== undefined,
           origin = naval ? water : factory.tile;
         // Land and water trade have independent research gates. A researched
@@ -503,6 +539,15 @@ export class Trade {
         actor.waitTicks = 20;
         this.select(actor);
         continue;
+      }
+      if (actor.cargo === 0 && tick % 20 === 0 && actor.state !== "prize") {
+        const source = buildings.find(
+          (b) =>
+            b.id === actor.factoryId &&
+            b.playerId === actor.playerId &&
+            !b.remainingTicks,
+        );
+        if (source) this.refreshEmptyMode(actor, source);
       }
       if (actor.state === "loading") {
         this.load(actor);
@@ -599,21 +644,12 @@ export class Trade {
           foreign &&
           actor.quoteAllies.includes(destination.playerId) &&
           this.diplomacy.allied(player.id, destination.playerId);
-      const percent = allied ? 350 : foreign ? 250 : 100;
       const distance = Math.floor(
         Math.sqrt(map.euclideanDistSquared(destination.tile, actor.originTile)),
       );
       // Sea deliveries have no base payout: 1% per tile, capped at 200%.
       // A short round trip cannot repeatedly collect a full-distance reward.
-      const distanceFactor = actor.naval
-        ? Math.min(
-            WATER_TRADE_PRICING.maximumPercent,
-            distance * WATER_TRADE_PRICING.percentPerTile,
-          )
-        : 100 + Math.min(100, distance);
-      const gold = Math.floor(
-        (quantity * actor.valuePerGood * percent * distanceFactor) / 10000,
-      );
+      const gold = tradePayout({naval:actor.naval,quantity,valuePerGood:actor.valuePerGood,distance,foreign,allied});
       actor.cargo -= quantity;
       actor.delivered += quantity;
       actor.visited.push(destination.id);

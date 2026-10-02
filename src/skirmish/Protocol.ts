@@ -347,6 +347,12 @@ export interface MatchOptions {
   resourceOutput?: 1 | 2 | 3 | 5;
   alliances?: boolean;
   runAi?: boolean;
+  /** Experimental policy; stays opt-in until the ARM performance gate passes. */
+  aiEconomy?: boolean;
+  /** Transactional human route admission; opt-in until planning gates pass. */
+  deferredPlanning?: boolean;
+  /** City defense trials require the shared opt-in economy coordinator. */
+  aiDefenses?: boolean;
   tribes?: boolean;
   /** Tribes to deploy when `tribes` is set; defaults to the map size's base. */
   tribeCount?: number;
@@ -402,7 +408,12 @@ export interface SnapshotPacket {
   volleys: ArcherVolley[];
   winner: number | null;
   combatTicks: number;
-  expansion?: ExpansionSnapshot;
+  expansion?: Omit<ExpansionSnapshot, "deposits"> & {
+    /** Full resource facts at a baseline or geometry revision only. */
+    deposits?: ExpansionSnapshot["deposits"];
+    /** Resource id/owner pairs applied to retained canonical facts. */
+    depositOwners?: Int32Array;
+  };
   squadDetails?: {
     id: number;
     definitionId?: string;
@@ -447,7 +458,7 @@ export type WorkerRequest =
 
 export type WorkerResponse =
   | { type: "spawn"; state: SpawnState }
-  | { type: "state"; packet: SnapshotPacket; paused: boolean; speed: number }
+  | { type: "state"; packet: SnapshotPacket; snapshot?:Snapshot; paused: boolean; speed: number }
   | { type: "rejected"; message: string }
   | { type: "error"; message: string };
 

@@ -259,6 +259,7 @@ export function createCoordinatorServer(options: CoordinatorServerOptions) {
           session.count = 0;
         }
         if (++session.count > 50) {
+          send(client,{type:"error",requestId:message.requestId,message:"Request rate exceeded. This action was not accepted; retry after one second."});
           if (session.count > 100) {
             client.close(1008, "Too many requests");
           }
@@ -287,8 +288,13 @@ export function createCoordinatorServer(options: CoordinatorServerOptions) {
               );
               break;
             case "match-ready":
-              await match.qualify(session.guestId, message.runtimeId);
+              await match.qualify(session.guestId, message.runtimeId,message.flowControl);
               break;
+            case "match-state-applied":
+              match.stateApplied(session.guestId,message.publicationSequence,message.flowEpoch);
+              break;
+            case "match-state-resync":
+              match.resync(session.guestId);break;
             case "match-sync-applied":
               match.acknowledge(
                 session.guestId,

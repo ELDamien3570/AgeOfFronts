@@ -3,10 +3,6 @@ import { OnlineMatchSession } from "./OnlineMatchSession";
 const onlineQuery = new URLSearchParams(window.location.search);
 const onlineMatchId = onlineQuery.get("match");
 const onlineSeat = onlineQuery.has("seat") ? Number(onlineQuery.get("seat")) : undefined;
-import { BuildingIndex } from "../BuildingIndex";
-
-import { constructionRejection } from "../Construction";
-import { resourceSiteRejection } from "../domain/StartingResources";
 
 import { squadCap } from "../FactionRules";
 
@@ -284,7 +280,6 @@ let terrainView: TerrainViewModel | undefined;
 
 let terrainPointer: { x: number; y: number } | undefined;
 
-let placementIndex: BuildingIndex | undefined;
 
 let placementType: BuildingType | undefined;
 
@@ -441,7 +436,6 @@ async function start(): Promise<void> {
       attribution.append(link);
     } else attribution.textContent = "OpenFront maps · CC BY-SA 4.0";
 
-    placementIndex = new BuildingIndex(loaded.map);
 
     renderer.setMap(loaded.map, loaded.geography, loaded.environment);
 
@@ -502,7 +496,6 @@ async function start(): Promise<void> {
       assignFactionColors(snapshot.players);
       snapshot.localPlayerId=localPlayerId;
 
-      placementIndex!.rebuild(snapshot.buildings);
 
       paused = message.paused;
 
@@ -659,7 +652,6 @@ async function startOnlineMatch(): Promise<void> {
       const loaded = await loadMap(manifest.settings.mapId, manifest.settings.worldSize);
       currentMap = loaded;
       terrainView = new TerrainViewModel(loaded.map);
-      placementIndex = new BuildingIndex(loaded.map);
       renderer.setMap(loaded.map, loaded.geography, loaded.environment);
       element("map-name").textContent = loaded.name;
       return loaded;
@@ -693,10 +685,9 @@ async function startOnlineMatch(): Promise<void> {
     if (event.data.type !== "state") return;
     renderer.spawn = undefined;
     element("spawn-selection").hidden = true;
-    snapshot = decoder.decode(event.data.packet);
+    snapshot = event.data.snapshot??decoder.decode(event.data.packet);
     snapshot.localPlayerId = localPlayerId;
     snapshot.disconnectedPlayerIds = session.disconnectedPlayerIds;
-    placementIndex!.rebuild(snapshot.buildings);
     paused = event.data.paused;
     renderer.update(snapshot);
     groups.prune(snapshot);
@@ -1100,6 +1091,7 @@ function cancelPlacement(): void {
   renderer.placement = undefined;
 
   renderer.buildSites = [];
+  renderer.buildPreview?.cancel();
 
   element("placement-hint").hidden = true;
 
@@ -1145,41 +1137,7 @@ for (const { kind } of LAND_RECRUITMENT)
 element("replenish").addEventListener("click", replenish);
 
 function placementRejection(type: BuildingType, tile: number): string | null {
-  if (!snapshot || !currentMap) return "No active match";
-
-  const reason = constructionRejection(
-    currentMap.map,
-    snapshot.owners,
-    placementIndex!,
-    snapshot.players.find(player => player.id === localPlayerId)!,
-    type,
-    tile,
-  );
-
-  if (reason) return reason;
-
-  if (snapshot.expansion) {
-    const resourceSite = resourceSiteRejection(
-      currentMap.map, snapshot.expansion.deposits, type, tile,
-    );
-    if (resourceSite) return resourceSite;
-    const node = snapshot.expansion.deposits.find((d) => d.tile === tile);
-
-    if (type === "mine" && (!node || ["horses", "oil"].includes(node.resource)))
-      return "Choose a mineral deposit";
-
-    if (["oil-well", "oil-rig"].includes(type) && node?.resource !== "oil")
-      return "Choose an oil deposit";
-
-    if (
-      snapshot.expansion.barriers.some(
-        (b) => b.health > 0 && b.tiles.includes(tile),
-      )
-    )
-      return "Intact wall occupies this site";
-  }
-
-  return null;
+  return renderer.buildPreview?.rejection(type,tile)??"No active match";
 }
 
 function placeBuilding(type: BuildingType, age?: Age): void {
@@ -1210,14 +1168,7 @@ function placeBuilding(type: BuildingType, age?: Age): void {
     .getElementById(`build-${type}`)
     ?.setAttribute("aria-pressed", "true");
 
-  const candidateSites: number[] = [];
-  const owners = snapshot.owners;
-  for (let tile = 0; tile < owners.length; tile++) {
-    if (owners[tile] === localPlayerId) {
-      if (!placementRejection(type, tile)) candidateSites.push(tile);
-    }
-  }
-  renderer.buildSites = candidateSites;
+  renderer.buildPreview?.begin(snapshot,localPlayerId,type,placementAge);
 
   element("placement-hint").hidden = false;
 

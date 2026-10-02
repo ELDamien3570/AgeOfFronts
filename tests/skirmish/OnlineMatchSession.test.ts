@@ -2,6 +2,7 @@ import { afterEach, beforeEach, describe, expect, it, vi } from "vitest";
 import type {
   LoadedMap,
   SnapshotPacket,
+  Snapshot,
   WorkerResponse,
 } from "../../src/skirmish/Protocol";
 import { OnlineMatchSession } from "../../src/skirmish/client/OnlineMatchSession";
@@ -37,15 +38,15 @@ vi.mock("../../src/skirmish/client/lobby/OnlineLobbyConnection", () => ({
 
 class DecoderWorker {
   static instances: DecoderWorker[] = [];
-  onmessage?: (event: { data: { packet: SnapshotPacket } }) => void;
+  onmessage?: (event: { data: { packet: SnapshotPacket;snapshot?:Snapshot;canonicalSequence?:number } }) => void;
   onerror?: (event: { message: string }) => void;
   postMessage = vi.fn();
   terminate = vi.fn();
   constructor(readonly url: URL) {
     DecoderWorker.instances.push(this);
   }
-  deliver(packet: SnapshotPacket) {
-    this.onmessage?.({ data: { packet } });
+  deliver(packet: SnapshotPacket,snapshot?:Snapshot,canonicalSequence?:number) {
+    this.onmessage?.({ data: { packet,snapshot,canonicalSequence } });
   }
 }
 const manifest: MatchManifest = {
@@ -117,6 +118,7 @@ describe("server-only match client", () => {
       type: "match-ready",
       matchId: manifest.id,
       runtimeId: manifest.runtimeId,
+      flowControl:true,
       requestId: expect.any(String),
     });
     expect(DecoderWorker.instances).toHaveLength(1);
@@ -139,19 +141,34 @@ describe("server-only match client", () => {
     expect(status).toHaveBeenLastCalledWith("Online match · server hosted");
     expect(errors).not.toHaveBeenCalled();
   });
-  it("ends this client's participation if updates outpace decoding, rather than accumulating indefinitely", async () => {
+  it("requests a replacement baseline after temporary backlog without losing identity or disconnecting", async () => {
     await initialize();
     for (let i = 0; i < 9; i++) connection().message(state(i * 4));
-    await vi.waitFor(() =>
-      expect(errors).toHaveBeenCalledWith(
-        expect.objectContaining({
-          message: expect.stringContaining("cannot keep up"),
-        }),
-      ),
-    );
-    expect(connection().stop).toHaveBeenCalledTimes(1);
-    expect(DecoderWorker.instances[0].terminate).toHaveBeenCalledTimes(1);
+    await vi.waitFor(()=>expect(connection().request).toHaveBeenCalledWith(expect.objectContaining({type:"match-state-resync"})));
+    await vi.waitFor(()=>expect(session.diagnostics.pendingStates).toBe(0));
+    expect(connection().stop).not.toHaveBeenCalled();
+    expect(DecoderWorker.instances[0].terminate).not.toHaveBeenCalled();
     expect(updates).not.toHaveBeenCalled();
+    connection().message({...state(36),publicationSequence:9,flowEpoch:2,rebase:true});
+    const worker=DecoderWorker.instances[0];await vi.waitFor(()=>expect(worker.postMessage).toHaveBeenCalledTimes(1));
+    worker.deliver(packet(36,true));await vi.waitFor(()=>expect(updates).toHaveBeenCalledTimes(1));
+    expect(session.commandsAvailable).toBe(true);expect(errors).not.toHaveBeenCalled();
+    expect(connection().request).toHaveBeenCalledWith(expect.objectContaining({type:"match-state-applied",flowEpoch:2,publicationSequence:9}));
+  });
+  it("continues canonical application while presentation is delayed and shows only the newest complete state",async()=>{
+    await initialize();const worker=DecoderWorker.instances[0];let finish!:()=>void;
+    const presented:number[]=[];
+    session.onmessage=event=>{
+      if(event.data.type!=="state")return;presented.push(event.data.snapshot!.tick);
+      if(presented.length===1)return new Promise<void>(resolve=>{finish=resolve;});
+    };
+    const view=(tick:number)=>({tick} as Snapshot);
+    connection().message(state(0));await vi.waitFor(()=>expect(worker.postMessage).toHaveBeenCalledTimes(1));worker.deliver(packet(0),view(0),1);
+    await vi.waitFor(()=>expect(presented).toEqual([0]));
+    connection().message(state(4));await vi.waitFor(()=>expect(worker.postMessage).toHaveBeenCalledTimes(2));worker.deliver(packet(4),view(4),2);
+    connection().message(state(8));await vi.waitFor(()=>expect(worker.postMessage).toHaveBeenCalledTimes(3));worker.deliver(packet(8),view(8),3);
+    await vi.waitFor(()=>expect(session.diagnostics.pendingStates).toBe(0));expect(presented).toEqual([0]);finish();
+    await vi.waitFor(()=>expect(presented).toEqual([0,8]));expect(session.diagnostics.coalesced).toBe(1);
   });
   it("closes cleanly on disconnect and never requests host or recovery operations", async () => {
     await initialize();

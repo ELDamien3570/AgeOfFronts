@@ -46,6 +46,16 @@ function barrier(a: Building, b: Building, tiles: number[], id = 1): Barrier {
     remainingTicks: 0,
   };
 }
+it("blocks physical corner contact while preserving weapon rays and owner passage",()=>{
+  const m=match(),a=tower(m,10,5),b=tower(m,12,5),forts=m.expansion!.fortifications;
+  forts.barriers.push(barrier(a,b,[m.map.ref(10,5),m.map.ref(11,5),m.map.ref(12,5)]));
+  forts.step(m.tick,m.buildings);
+  const from={x:9.5*FIXED,y:4.8*FIXED},to={x:13.5*FIXED,y:4.8*FIXED};
+  expect(forts.clear(from,to,2)).toBe(true);
+  expect(forts.clearMovement(from,to,2,0.45*FIXED)).toBe(false);
+  expect(forts.clearMovement(from,to,1,0.45*FIXED)).toBe(true);
+  expect(forts.clearMovement({...from,y:4.4*FIXED},{...to,y:4.4*FIXED},2,0.45*FIXED)).toBe(true);
+});
 
 describe("wall artwork topology", () => {
   it("uses the authored shared cell size, pivots, and padded atlas rectangles for every piece", () => {

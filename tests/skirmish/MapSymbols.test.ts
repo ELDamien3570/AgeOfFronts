@@ -1,6 +1,8 @@
 import { describe, expect, it } from "vitest";
 import {
   buildingSymbol,
+  shipSpriteSize,
+  shipSymbol,
   squadSymbol,
 } from "../../src/skirmish/client/MapSymbols";
 import { SPRITE_FOOTPRINT } from "../../src/skirmish/client/UnitAnimation";
@@ -75,5 +77,33 @@ describe("map symbol readability", () => {
     expect(near.viewRadius).toBeGreaterThanOrEqual(frameCornerRadius + 3.6);
     expect(near.hitRadius).toBeGreaterThan(near.underlayRadius);
     expect(squadSymbol(10, 1_000, false).artwork).toBe(false);
+  });
+  it("scales warships 2.5x and transports 1.75x at max zoom with proportional hit and view radii", () => {
+    // Zoom threshold where era artwork appears is scale >= 12
+    expect(shipSpriteSize(12, "warship")).toBeCloseTo(28.8);
+    expect(shipSpriteSize(12, "transport")).toBeCloseTo(28.8);
+
+    // Max zoom scale = 96
+    const warshipBase = shipSpriteSize(96, "warship");
+    const transportBase = shipSpriteSize(96, "transport");
+    expect(warshipBase).toBe(125); // 2.5x original 50 cap
+    expect(transportBase).toBe(87.5); // 1.75x original 50 cap
+
+    // With 4/3 artwork extent
+    const warshipSym = shipSymbol(96, true, "warship", true);
+    const transportSym = shipSymbol(96, true, "transport", true);
+
+    expect(warshipSym.width).toBeCloseTo((125 * 4) / 3);
+    expect(warshipSym.hitRadius).toBeCloseTo(warshipSym.width * 0.38);
+    expect(warshipSym.viewRadius).toBeGreaterThan(warshipSym.width / 2);
+
+    expect(transportSym.width).toBeCloseTo((87.5 * 4) / 3);
+    expect(transportSym.hitRadius).toBeCloseTo(transportSym.width * 0.38);
+    expect(transportSym.viewRadius).toBeGreaterThan(transportSym.width / 2);
+
+    // Distant without shipArt retains formation marker
+    const distant = shipSymbol(8, true, "warship", false);
+    expect(distant.formation).toBe(true);
+    expect(distant.height).toBe(24);
   });
 });

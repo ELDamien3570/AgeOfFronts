@@ -53,6 +53,8 @@ export class SnapshotEncoder {
   // Fresh network clients reset their arrays to zero, so neutral tiles need no wire entry.
   constructor(private readonly sparseBaseline = false) {}
   private previousRoadRevision = -1;
+  private depositGeometry = "";
+  private readonly depositOwners = new Map<number, number>();
   private previousTiles?: Uint32Array;
   private readonly buildings = new Map<
     number,
@@ -163,9 +165,20 @@ export class SnapshotEncoder {
         removed.push(id);
         this.buildings.delete(id);
       }
+    const geometry = source.expansion?.deposits.map(d => `${d.id}:${d.tile}:${d.resource}:${d.yieldPerSecond}`).join("|") ?? "";
+    const resourceReset = reset || geometry !== this.depositGeometry;
+    const depositOwners: number[] = [];
+    if (resourceReset) this.depositOwners.clear();
+    for (const deposit of source.expansion?.deposits ?? []) {
+      if (!resourceReset && this.depositOwners.get(deposit.id) !== deposit.owner) depositOwners.push(deposit.id, deposit.owner);
+      this.depositOwners.set(deposit.id, deposit.owner);
+    }
+    this.depositGeometry = geometry;
     const expansion = source.expansion
       ? {
           ...source.expansion,
+          deposits: resourceReset ? source.expansion.deposits.map(d => ({...d})) : undefined,
+          depositOwners: depositOwners.length ? new Int32Array(depositOwners) : undefined,
           roads:
             reset || this.previousRoadRevision !== source.expansion.roadRevision
               ? source.expansion.roads
@@ -252,13 +265,17 @@ export function snapshotTransfers(packet: SnapshotPacket): ArrayBuffer[] {
 
 export class SnapshotDecoder {
   private roads: Uint32Array = new Uint32Array();
+  private deposits: NonNullable<Snapshot["expansion"]>["deposits"] = [];
+  private readonly depositsById = new Map<number, NonNullable<Snapshot["expansion"]>["deposits"][number]>();
   private owners = new Uint8Array();
   private claims = new Uint8Array();
   private progress = new Uint8Array();
   private readonly buildings = new Map<number, Building>();
-  decode(packet: SnapshotPacket): Snapshot {
+  decode(packet: SnapshotPacket,copyArrays=true): Snapshot {
     if (packet.reset) {
       this.roads = new Uint32Array();
+      this.deposits = [];
+      this.depositsById.clear();
       const size = packet.width * packet.height;
       this.owners = new Uint8Array(size);
       this.claims = new Uint8Array(size);
@@ -321,13 +338,24 @@ export class SnapshotDecoder {
     for (const b of packet.buildingDetails ?? [])
       Object.assign(this.buildings.get(b.id) ?? {}, b);
     if (packet.expansion?.roads) this.roads = packet.expansion.roads;
+    if (packet.expansion?.deposits) {
+      this.deposits = packet.expansion.deposits.map(d => ({...d}));
+      this.depositsById.clear();
+      for (const deposit of this.deposits) this.depositsById.set(deposit.id, deposit);
+    }
+    const owners = packet.expansion?.depositOwners;
+    if (owners) for (let at = 0; at < owners.length; at += 2) {
+      const deposit = this.depositsById.get(owners[at]);
+      if (!deposit) throw new Error("Resource ownership delta has no baseline fact");
+      deposit.owner = owners[at + 1];
+    }
     return {
       tick: packet.tick,
       width: packet.width,
       height: packet.height,
-      owners: this.owners.slice(),
-      claims: this.claims.slice(),
-      progress: this.progress.slice(),
+      owners: copyArrays ? this.owners.slice() : this.owners,
+      claims: copyArrays ? this.claims.slice() : this.claims,
+      progress: copyArrays ? this.progress.slice() : this.progress,
       // A reset must initialize presentation caches, including neutral tiles.
       changedTiles: packet.reset ? undefined : changedTiles,
       squads,
@@ -338,7 +366,7 @@ export class SnapshotDecoder {
       winner: packet.winner,
       combatTicks: packet.combatTicks,
       expansion: packet.expansion
-        ? { ...packet.expansion, roads: this.roads }
+        ? { ...packet.expansion, roads: this.roads, deposits: copyArrays ? this.deposits.map(d => ({...d})) : this.deposits }
         : undefined,
     };
   }

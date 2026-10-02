@@ -614,7 +614,9 @@ export class Battle {
     this.structuralHit(target, squad.playerId, squad.id, hit);
   }
   advanceProjectiles(): void {
-    this.rebuild();
+    // Retained impact visuals still expire below, but no collision/cover query
+    // consumes these indexes when every projectile has already impacted.
+    if (this.projectiles.some(p => !p.impacted)) this.rebuild();
     const { tick } = this.world,
       impacts = new DamageLedger(),
       naval = new DamageLedger(),

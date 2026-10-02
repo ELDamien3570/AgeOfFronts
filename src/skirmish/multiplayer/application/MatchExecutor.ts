@@ -48,6 +48,7 @@ export interface MatchAdvance {
   packet?: EncodedState;
   rejectedCommands: { id: string; playerId: number; message: string }[];
 }
+export interface ClientBaseline {tick:number;winner:number|null;baseline:EncodedState;}
 export const MAX_ADVANCE_TICKS = 4;
 export type ExecutorRequest =
   | {
@@ -67,6 +68,7 @@ export type ExecutorRequest =
       publish: boolean;
     }
   | { type: "baseline" }
+  | {type:"client-baseline"}
   | { type: "seat-status" }
   | { type: "join-barrier"; playerId: number }
   | { type: "set-controller"; playerId: number; ai: boolean };
@@ -77,7 +79,10 @@ export type ExecutorResult =
   | MatchAdvance
   | EncodedState
   | SeatStatus
-  | JoinBarrier;
+  | JoinBarrier
+  | ClientBaseline;
+// A baseline result carries its capture tick; coordinator timing must never
+// relabel an asynchronously captured state with a later simulation tick.
 
 /** One isolated worker owns and advances the authoritative simulation. */
 export interface MatchExecutor {

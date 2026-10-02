@@ -73,6 +73,9 @@ const settings = z
   .strict();
 const requestId = z.string().regex(/^[a-zA-Z0-9-]{1,80}$/u);
 export const clientMessageSchema = z.discriminatedUnion("type", [
+  z.object({type:z.literal("match-state-applied"),requestId,matchId:z.string().max(80),
+    publicationSequence:z.number().int().nonnegative(),flowEpoch:z.number().int().positive()}).strict(),
+  z.object({type:z.literal("match-state-resync"),requestId,matchId:z.string().max(80)}).strict(),
   z
     .object({
       type: z.literal("match-sync-applied"),
@@ -101,6 +104,7 @@ export const clientMessageSchema = z.discriminatedUnion("type", [
   z
     .object({
       type: z.literal("match-ready"),
+      flowControl:z.boolean().optional(),
       requestId,
       matchId: z.string().max(80),
       runtimeId: z.string().max(80),
@@ -152,6 +156,8 @@ export type ServerMessage =
       packet: EncodedState;
       tick: number;
       publicationSequence?: number;
+      flowEpoch?:number;
+      rebase?:boolean;
       syncId?: string;
       paused: boolean;
       disconnectedPlayerIds: number[];

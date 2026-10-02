@@ -19,6 +19,8 @@ import { generateDeposits } from "./DepositGeneration";
 import type { Progression } from "./Progression";
 import { breedingPerSecond, throughputPercent } from "./ResearchEffects";
 import { startingResources } from "./StartingResources";
+import type { AiProductionDemand } from "./AiMilitaryDemand";
+import { ResourceSiteIndex } from "./ResourceSiteIndex";
 export function productionTicks(
   recipe: ProductionRecipe,
   research: readonly string[],
@@ -46,6 +48,7 @@ export function spend(player: Player, inventory: Inventory, cost: Cost): void {
     inventory[item] = (inventory[item] ?? 0) - amount;
 }
 export class Supply {
+  aiProduction?: (playerId: number) => { demand?: AiProductionDemand; protectedInputs?: Inventory };
   checkpoint() {
     return structuredClone({
       inventories: this.inventories,
@@ -62,6 +65,7 @@ export class Supply {
     restoreRecord(this.inventories, state.inventories);
     restoreRecord(this.jobs, state.jobs);
     restoreArray(this.deposits, state.deposits);
+    this.resourceSites.update(this.deposits);
     restoreMap(this.goods, state.goods);
     restoreMap(this.goodsOwners, state.goodsOwners);
     restoreMap(this.selectedRecipes, state.selectedRecipes);
@@ -73,6 +77,7 @@ export class Supply {
   readonly inventories: Record<number, Inventory> = {};
   readonly jobs: Record<number, ProductionJob | undefined> = {};
   readonly deposits: Deposit[] = [];
+  readonly resourceSites:ResourceSiteIndex;
   readonly goods = new Map<number, number>();
   private readonly goodsOwners = new Map<number, number>();
   private readonly selectedRecipes = new Map<
@@ -91,9 +96,11 @@ export class Supply {
     density: 1 | 2 | 3 | 5 = 1,
     private readonly output: 1 | 2 | 3 | 5 = 1,
   ) {
+    this.resourceSites=new ResourceSiteIndex(map);
     if (![1, 2, 3, 5].includes(density) || ![1, 2, 3, 5].includes(output))
       throw new Error("Invalid resource rules");
     this.deposits.push(...generateDeposits(map, seed, density, output));
+    this.resourceSites.update(this.deposits);
   }
   ensureStartingResources(
     players: readonly Player[],
@@ -112,6 +119,7 @@ export class Supply {
       this.output,
     );
     this.deposits.splice(0, this.deposits.length, ...layout);
+    this.resourceSites.update(this.deposits);
   }
   add(playerId: number): void {
     this.inventories[playerId] = Object.fromEntries(
@@ -239,6 +247,9 @@ export class Supply {
       }
       const selected = this.selectedRecipes.get(b.id);
       if (selected && selected.recipeId !== "paused" && !this.jobs[b.id]) {
+        const protectedInputs = player.ai ? this.aiProduction?.(player.id).protectedInputs : undefined;
+        const available = {...inventory};
+        for (const [id,n] of Object.entries(protectedInputs??{})) available[id] = Math.max(0,(available[id]??0)-n);
         const recipe = PRODUCTION_RECIPES.find(
           (r) => r.id === selected.recipeId,
         )!;
@@ -249,7 +260,7 @@ export class Supply {
             recipe,
             this.progression.states[player.id].completed,
           ) &&
-          !costRejection(player, inventory, { items: recipe.inputs })
+          !costRejection(player, available, { items: recipe.inputs })
         ) {
           spend(player, inventory, { items: recipe.inputs });
           const ticks = productionTicks(
@@ -344,6 +355,7 @@ export class Supply {
       const plans = new Map(
         [...this.selectedRecipes].filter(([, p]) => p.owner === player.id),
       );
+      const aiContext = player.ai ? this.aiProduction?.(player.id) : undefined;
       for (const [id, recipeId] of automaticProduction({
         buildings,
         research: this.progression.states[player.id].completed,
@@ -356,6 +368,8 @@ export class Supply {
         squadCount: counts.get(player.id) ?? 0,
         priorities: this.priorities[player.id],
         ai: player.ai,
+        aiDemand: aiContext?.demand,
+        protectedInputs: aiContext?.protectedInputs,
       })) {
         const recipe = PRODUCTION_RECIPES.find((r) => r.id === recipeId)!;
         const inventory = this.inventories[player.id];

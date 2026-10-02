@@ -11,7 +11,6 @@ import type {
   Squad,
 } from "../Protocol";
 import { FIXED, TICKS_PER_SECOND } from "../Protocol";
-import { resourceSiteRejection } from "./StartingResources";
 import { personalityOf } from "../content/AiPersonalities";
 import {
   DEFENSIVE_BUILDINGS,
@@ -41,7 +40,7 @@ import {
   type UnitDefinition,
 } from "./Definitions";
 import { Diplomacy } from "./Diplomacy";
-import { Fortifications } from "./Fortifications";
+import { Fortifications, type TowerSiteIndex } from "./Fortifications";
 import {
   Progression,
   advanceRejection,
@@ -57,27 +56,34 @@ import { Trade } from "./Trade";
 import { modernizeMilitaryBuildings } from "./MilitaryInfrastructure";
 import { structureAim } from "./StructureTargeting";
 import { squadRadius, standable, tilePoint } from "../SquadGeometry";
+import type { CoastIndex } from "../CoastIndex";
+import { AiEconomicDirector } from "./AiEconomicDirector";
 export interface ExpansionWorld extends BattleWorld, ArmyWorld {
   recruitment: Recruitment;
-  options?: { runAi?: boolean; resourceDensity?: 1 | 2 | 3 | 5; resourceOutput?: 1 | 2 | 3 | 5; alliances?: boolean; startingAge?: Age };
+  options?: { runAi?: boolean; aiEconomy?: boolean; aiDefenses?:boolean; territoryIncomeScale?:number; resourceDensity?: 1 | 2 | 3 | 5; resourceOutput?: 1 | 2 | 3 | 5; alliances?: boolean; startingAge?: Age };
   map: GameMap;
   owners: Uint8Array;
   claims: Uint8Array;
   progress: Uint8Array;
   paths: LandPaths;
   waterPaths: WaterPaths;
+  coast: CoastIndex;
   winner: number | null;
   applyCommand(command: Command): string | null;
   buildingsAt(tile: number): readonly Building[];
+  towersNear(tile:number,radius:number):Iterable<Building>;
   tileOf(squad: { x: number; y: number }): number;
   ownedLand(playerId: number): Iterable<number>;
   /** The `limit` owned tiles closest to `anchor`, ordered by distance then id. */
   ownedLandNearest(playerId: number, anchor: number, limit: number): number[];
+  buildingSite(playerId: number, type: BuildingType, tile: number, age?: Age): string | null;
+  squadCapacity(player: Player): number;
+  aiGeneration(playerId: number): number;
 }
 // Match-level application coordinator; each domain service owns its own rules.
 // All services operate on the same authoritative world, never a parallel game.
 export class Expansion {
-  checkpoint() { return structuredClone({progression:this.progression.checkpoint(),diplomacy:this.diplomacy.checkpoint(),fortifications:this.fortifications.checkpoint(),supply:this.supply.checkpoint(),trade:this.trade.checkpoint(),roads:this.roads.checkpoint(),battle:this.battle.checkpoint(),armies:this.armies.checkpoint(),modernization:this.modernization.checkpoint(),aircraft:this.aircraft,winners:this.winners,events:this.events,nextEvent:this.nextEvent}); }
+  checkpoint() { return structuredClone({progression:this.progression.checkpoint(),diplomacy:this.diplomacy.checkpoint(),fortifications:this.fortifications.checkpoint(),supply:this.supply.checkpoint(),trade:this.trade.checkpoint(),roads:this.roads.checkpoint(),battle:this.battle.checkpoint(),armies:this.armies.checkpoint(),modernization:this.modernization.checkpoint(),economy:this.economy.checkpoint(),aircraft:this.aircraft,winners:this.winners,events:this.events,nextEvent:this.nextEvent}); }
   restore(saved: ReturnType<Expansion["checkpoint"]>): void {
     const state=structuredClone(saved);
     this.progression.restore(state.progression);
@@ -89,6 +95,7 @@ export class Expansion {
     this.battle.restore(state.battle);
     this.armies.restore(state.armies);
     this.modernization.restore(state.modernization);
+    if (state.economy) this.economy.restore(state.economy);
     restoreArray(this.aircraft,state.aircraft); restoreArray(this.winners,state.winners); restoreArray(this.events,state.events); this.nextEvent=state.nextEvent;
   }
 
@@ -101,6 +108,8 @@ export class Expansion {
   readonly battle: Battle;
   readonly armies: Armies;
   readonly modernization = new AiModernization();
+  readonly economy: AiEconomicDirector;
+  private readonly towerSites:TowerSiteIndex;
   readonly aircraft: Aircraft[] = [];
   readonly winners: number[] = [];
   readonly events: MatchEvent[] = [];
@@ -119,6 +128,7 @@ export class Expansion {
     startingAge: Age = world.options?.startingAge ?? "StoneAge",
   ) {
     this.startingAge = startingAge;
+    this.towerSites={at:tile=>world.buildingsAt(tile),nearby:(tile,radius)=>world.towersNear(tile,radius)};
     this.progression = new Progression(technologySpeed, startingAge);
     this.victoryMode = mode;
     this.fortifications = new Fortifications(world.map, this.diplomacy);
@@ -142,6 +152,8 @@ export class Expansion {
     );
     this.battle.setWidth(world.map.width());
     this.armies = new Armies(world, this.progression);
+    this.economy = new AiEconomicDirector(this);
+    this.supply.aiProduction = playerId => this.economy.production(playerId);
   }
   add(player: Player): void {
     if (player.kind === "tribe") {
@@ -197,9 +209,10 @@ export class Expansion {
     type: BuildingType,
     tile: number,
     age: Age,
+    placementOnly = false,
   ): string | null {
     const technology = buildingTechnology(type, age);
-    if (!technology || !this.progression.has(player.id, technology))
+    if (!technology || (!placementOnly && !this.progression.has(player.id, technology)))
       return "Research this building's technology first";
     const plan =
       type === "tower"
@@ -207,7 +220,7 @@ export class Expansion {
             tile,
             player.id,
             age,
-            this.world.buildings,
+            this.towerSites,
           )
         : null;
     if (
@@ -222,7 +235,8 @@ export class Expansion {
       return "Move troops clear of the tower and planned wall tiles";
     if (this.fortifications.blocked(tile, player.id))
       return "Cannot build on an intact wall";
-    const node = this.supply.deposits.find((d) => d.tile === tile);
+    this.supply.resourceSites.update(this.supply.deposits);
+    const node = this.supply.resourceSites.at(tile);
     if (
       type === "mine" &&
       (!node || node.resource === "horses" || node.resource === "oil")
@@ -230,9 +244,7 @@ export class Expansion {
       return "Mines must be placed directly on a mineral deposit";
     if ((type === "oil-well" || type === "oil-rig") && node?.resource !== "oil")
       return "Oil extraction needs an oil deposit";
-    const resourceSite = resourceSiteRejection(
-      this.world.map, this.supply.deposits, type, tile,
-    );
+    const resourceSite = this.supply.resourceSites.rejection(type,tile);
     if (resourceSite) return resourceSite;
     const existingCount = this.world.buildings.filter(
       (b) => b.playerId === player.id && b.type === type,
@@ -240,14 +252,9 @@ export class Expansion {
     const cost = buildingCost(type, age, existingCount),
       wallCost =
         type === "tower"
-          ? this.fortifications.towerPlan(
-              tile,
-              player.id,
-              age,
-              this.world.buildings,
-            ).gold
+          ? plan!.gold
           : 0;
-    return costRejection(player, this.supply.inventories[player.id], {
+    return placementOnly ? null : costRejection(player, this.supply.inventories[player.id], {
       ...cost,
       gold: (cost.gold ?? 0) + wallCost,
     });
@@ -260,7 +267,7 @@ export class Expansion {
               building.tile,
               player.id,
               age,
-              this.world.buildings,
+              this.towerSites,
             )
         : null;
     const existingCount = Math.max(
@@ -914,6 +921,7 @@ export class Expansion {
       }
     }
     this.modernization.clean(world.squads, world.tick);
+    this.economy.step();
     if (world.tick % 3 === 0 && world.options?.runAi !== false)
       this.thinkProgression();
   }
@@ -1050,6 +1058,7 @@ export class Expansion {
       }
       const state = this.progression.states[player.id];
       const personality = personalityOf(player);
+      if (!this.economy.enabled(player)) {
       if (
         !advanceRejection(state, player.gold, this.progression.technologySpeed)
       )
@@ -1145,6 +1154,7 @@ export class Expansion {
             break;
       }
       this.thinkCapabilities(player);
+      }
       for (const offer of this.diplomacy.state.offers.filter(
         (o) => o.recipient === player.id,
       )) {

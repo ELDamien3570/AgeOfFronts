@@ -3,6 +3,7 @@ import { producerCompatible } from "../content/Buildings";
 import { PRODUCTION_RECIPES } from "../content/Production";
 import { TECHNOLOGY } from "../content/Technology";
 import { AGES, type Inventory, type ProductionRecipe } from "./Definitions";
+import type { AiProductionDemand } from "./AiMilitaryDemand";
 
 export interface ProductionPlan {
   owner: number;
@@ -22,6 +23,8 @@ export interface AutomaticProductionContext {
   squadCount: number;
   ai: boolean;
   priorities?: Partial<Record<BuildingType, readonly string[]>>;
+  aiDemand?: AiProductionDemand;
+  protectedInputs?: Inventory;
 }
 
 export const automaticProducer = (building: Building) =>
@@ -242,7 +245,17 @@ export function automaticProduction(
     )
       targets.set(r, 2);
 
+  if (context.ai && context.aiDemand) {
+    targets.clear();
+    for (const recipe of automaticRecipes) {
+      const requested = context.aiDemand.equipment[Object.keys(recipe.outputs)[0]] ?? 0;
+      if (requested > 0) targets.set(recipe, requested);
+    }
+  }
   const budget = { ...inventory };
+  if (context.ai)
+    for (const [id, n] of Object.entries(context.protectedInputs ?? {}))
+      budget[id] = Math.max(0, (budget[id] ?? 0) - n);
   const allocated = { ...incoming };
   const result = new Map<number, string>();
   const idle = new Set(
@@ -322,8 +335,10 @@ export function automaticProduction(
     }
   }
 
-  const materialTargets: Inventory = {};
-  for (const [r, target] of targets) {
+  const materialTargets: Inventory = context.ai && context.aiDemand ? { ...context.aiDemand.materials } : {};
+  // The demand quote already expanded aggregate equipment inputs once. Adding
+  // those deficits again would double the AI's refining/material claims.
+  if(!(context.ai && context.aiDemand))for (const [r, target] of targets) {
     for (const [id, n] of Object.entries(r.inputs))
       if (refiners.has(id))
         materialTargets[id] = Math.min(
@@ -342,7 +357,7 @@ export function automaticProduction(
   const newestMetal = smelting.find(
     (r) => held(Object.keys(r.outputs)[0]) >= 60 || sustainable(r),
   );
-  if (newestMetal)
+  if (newestMetal && !(context.ai && context.aiDemand))
     materialTargets[output(newestMetal)] = Math.max(
       60,
       materialTargets[output(newestMetal)] ?? 0,
