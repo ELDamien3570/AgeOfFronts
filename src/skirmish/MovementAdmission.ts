@@ -17,6 +17,8 @@ interface Member {
   cursor: number;
   connector?: number;
   requested: boolean;
+  limitedAttempts?: number;
+  retryAt?: number;
   queued: Order[];
 }
 interface Admission {
@@ -333,6 +335,8 @@ export class MovementAdmission {
     if (!admission || !member) return;
     member.requested = false;
     if (outcome === "complete") {
+      member.limitedAttempts = 0;
+      member.retryAt = undefined;
       member.path = path;
       member.cursor = 0;
       member.connector = undefined;
@@ -343,7 +347,13 @@ export class MovementAdmission {
         "rejected",
         "A formation destination cannot be reached by land",
       );
-    // Budget exhaustion or invalidated geometry remain deferred, never physical failure.
+    else if (outcome === "limited") {
+      member.limitedAttempts = (member.limitedAttempts ?? 0) + 1;
+      if (member.limitedAttempts >= 3) this.finish(admission, tick, "rejected",
+        "Route planning capacity exhausted; try a shorter waypoint");
+      else member.retryAt = tick + 20 * member.limitedAttempts;
+    }
+    // Resource exhaustion is an explicit planning rejection, never disconnection.
   }
   private addIntentReference(
     index: Map<number, Set<number>>,
@@ -601,7 +611,7 @@ export class MovementAdmission {
           idle = 0;
         }
       } else if (admission.phase === "routes") {
-        const member = admission.members.find((m) => !m.path && !m.requested);
+        const member = admission.members.find((m) => !m.path && !m.requested && (m.retryAt ?? 0) <= tick);
         if (member) {
           const squad = this.ports.squad(member.id)!;
           member.start = pointTile(this.map, squad);

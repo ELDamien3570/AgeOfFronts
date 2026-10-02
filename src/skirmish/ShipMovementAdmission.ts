@@ -9,6 +9,8 @@ interface Member {
   path?: number[];
   start?: number;
   requested: boolean;
+  limitedAttempts?: number;
+  retryAt?: number;
   cursor: number;
   connector?: number;
   append: number[];
@@ -291,11 +293,19 @@ export class ShipMovementAdmission {
     if (!admission || !member) return;
     member.requested = false;
     if (outcome === "complete") {
+      member.limitedAttempts = 0;
+      member.retryAt = undefined;
       member.path = path;
       member.cursor = 0;
       member.connector = undefined;
     } else if (outcome === "unreachable")
       this.finish(admission, tick, "rejected", "Water route is disconnected");
+    else if (outcome === "limited") {
+      member.limitedAttempts = (member.limitedAttempts ?? 0) + 1;
+      if (!admission.execution && member.limitedAttempts >= 3)
+        this.finish(admission, tick, "rejected", "Route planning capacity exhausted; try a shorter waypoint");
+      else member.retryAt = tick + 20 * Math.min(10, member.limitedAttempts);
+    }
   }
   step(tick: number, budget = 64): number {
     if (!Number.isInteger(budget) || budget < 0)
@@ -316,7 +326,7 @@ export class ShipMovementAdmission {
         continue;
       }
       validated.add(id);
-      const unplanned = admission.members.find((m) => !m.path && !m.requested);
+      const unplanned = admission.members.find((m) => !m.path && !m.requested && (m.retryAt ?? 0) <= tick);
       if (unplanned) {
         unplanned.start = this.ports.tileOf(this.ports.ship(unplanned.id)!);
         unplanned.requested = this.ports.request(

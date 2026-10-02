@@ -135,6 +135,16 @@ export type Command =
       x: number;
       y: number;
     }
+  | { type: "upgrade-building"; playerId: number; buildingIds: number[] }
+  | {
+      type: "cancel-recruitment";
+      playerId: number;
+      category?: "land" | "ship" | "aircraft";
+      definitionId?: string;
+      kind?: string;
+      buildingId?: number;
+      buildingIds?: number[];
+    }
   | {
       type: "recruit";
       playerId: number;
