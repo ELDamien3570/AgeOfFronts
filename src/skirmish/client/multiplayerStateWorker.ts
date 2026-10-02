@@ -16,13 +16,24 @@ const MAX_SNAPSHOT_ARRAY_BYTES = 64_000_000;
 let incoming = Promise.resolve();
 self.onmessage = (
   event: MessageEvent<
-    | (EncodedState & { expectedMap: { width: number; height: number } })
+    | (EncodedState & { expectedMap: { width: number; height: number }; presentation?: boolean })
     | { type: "presented"; sequence: number }
+    | { type: "presentation" }
   >,
 ) => {
   incoming = incoming.then(async () => {
     if ("type" in event.data) {
-      stream?.acknowledge(event.data.sequence);
+      if (event.data.type === "presented") stream?.acknowledge(event.data.sequence);
+      else {
+        try {
+          if (!stream) throw new Error("Canonical state is unavailable");
+          const view = stream.presentation();
+          self.postMessage({ packet: { tick: view.snapshot.tick, reset: view.snapshot.changedTiles === undefined }, ...view },
+            { transfer: [view.snapshot.owners.buffer, view.snapshot.claims.buffer, view.snapshot.progress.buffer] });
+        } catch (error) {
+          self.postMessage({ error: error instanceof Error ? error.message : "Invalid presentation request" });
+        }
+      }
       return;
     }
     try {
@@ -62,6 +73,13 @@ self.onmessage = (
         decoded = performance.now();
       stream.apply(packet);
       const applied = performance.now();
+      if (event.data.presentation === false) {
+        // Canonical application and network credit continue while rendering is
+        // busy; no throwaway complete snapshot is cloned or transferred.
+        self.postMessage({ packet: { tick: packet.tick, reset: packet.reset }, canonicalOnly: true,
+          decodeMs: decoded - started, applyMs: applied - decoded, decodeStats });
+        return;
+      }
       const view = stream.presentation();
       self.postMessage(
         {

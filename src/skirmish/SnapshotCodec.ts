@@ -1,3 +1,4 @@
+import type { TileChangeJournal } from "./TileChangeJournal";
 import type {
   Building,
   BuildingType,
@@ -49,6 +50,9 @@ function readOrder(input: Int32Array, at: number): Order {
 // Worker adapter: only presentation fields leave the authoritative domain.
 // Numeric buffers are transferred; ownership/construction changes are deltas.
 export class SnapshotEncoder {
+  private journal?: TileChangeJournal;
+  private journalRevision = 0;
+  readonly diagnostics = { tileReads: 0 };
   // Fresh network clients reset their arrays to zero, so neutral tiles need no wire entry.
   constructor(private readonly sparseBaseline = false) {}
   private previousRoadRevision = -1;
@@ -62,16 +66,16 @@ export class SnapshotEncoder {
   private width = 0;
   private height = 0;
   /** Align existing subscribers and a newcomer to the same immutable tick boundary. */
-  encodeJoinBarrier(source: Snapshot): {
+  encodeJoinBarrier(source: Snapshot, journal?: TileChangeJournal): {
     shared: SnapshotPacket;
     baseline: SnapshotPacket;
   } {
     return {
-      shared: this.encode(source),
+      shared: this.encode(source, journal),
       baseline: new SnapshotEncoder(true).encode(source),
     };
   }
-  encode(source: Snapshot): SnapshotPacket {
+  encode(source: Snapshot, journal?: TileChangeJournal): SnapshotPacket {
     const reset =
       !this.previousTiles ||
       this.width !== source.width ||
@@ -83,7 +87,11 @@ export class SnapshotEncoder {
       this.height = source.height;
     }
     const tileChanges: number[] = [];
-    for (let tile = 0; tile < source.owners.length; tile++) {
+    const dirtyTiles = !reset && journal && journal === this.journal ? journal.since(this.journalRevision)?.sort((a, b) => a - b) : undefined;
+    const count = dirtyTiles?.length ?? source.owners.length;
+    this.diagnostics.tileReads = count;
+    for (let index = 0; index < count; index++) {
+      const tile = dirtyTiles ? dirtyTiles[index] : index;
       const value =
         source.owners[tile] |
         (source.claims[tile] << 8) |
@@ -96,6 +104,8 @@ export class SnapshotEncoder {
         this.previousTiles![tile] = value;
       }
     }
+    this.journal = journal;
+    this.journalRevision = journal?.revision ?? 0;
     const squads = new Int32Array(source.squads.length * SQUAD_STRIDE);
     const orderCount = source.squads.reduce(
       (sum, s) => sum + 1 + s.queuedOrders.length,

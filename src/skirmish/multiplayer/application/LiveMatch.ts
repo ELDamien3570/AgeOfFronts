@@ -77,6 +77,7 @@ export class LiveMatch {
   private running = false;
   private tick = 0;
   private lastProgressAt = 0;
+  private readonly unsubscribePublication?: () => void;
   private latestDiagnostics?: MatchAdvance["diagnostics"];
   progress() {
     const ageMs = this.running ? Math.max(0, this.now() - this.lastProgressAt) : 0;
@@ -116,6 +117,11 @@ export class LiveMatch {
     ) => void,
     private config: LiveMatchOptions = {},
   ) {
+    this.unsubscribePublication = executor.onPublication?.(publication => {
+      if (this.stopped || !this.running) return;
+      this.publicationSequence++;
+      this.broadcast(this.state(publication.packet, false, publication.tick));
+    });
     const settings = reservation.settings;
     reservation.members.forEach((member, index) =>
       this.seats.set(index + 1, {
@@ -143,6 +149,7 @@ export class LiveMatch {
   async initialize(): Promise<void> {
     const prepared = await this.executor.request<PreparedMatch>({
       type: "prepare",
+      streamPublications: Boolean(this.executor.onPublication),
       settings: this.reservation.settings,
       options: this.options,
     });
@@ -752,6 +759,7 @@ export class LiveMatch {
   async end(message: string): Promise<void> {
     if (this.stopped) return;
     this.stopped = true;
+    this.unsubscribePublication?.();
     clearTimeout(this.syncTimer);
     this.broadcast({
       type: "match-ended",
@@ -773,12 +781,13 @@ export class LiveMatch {
   private state(
     packet: EncodedState,
     paused = this.sync !== undefined || this.emptyDeadline !== undefined,
+    tick = this.tick,
   ): Extract<ServerMessage, { type: "match-state" }> {
     return {
       type: "match-state",
       matchId: this.reservation.id,
       packet,
-      tick: this.tick,
+      tick,
       publicationSequence: this.publicationSequence,
       paused,
       disconnectedPlayerIds: [...this.disconnected],

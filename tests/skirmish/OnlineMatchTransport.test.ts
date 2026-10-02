@@ -148,7 +148,7 @@ it("runs two thin clients from one server simulation, enforces ownership and con
       command: {
         type: "research",
         playerId: 1,
-        technologyId: "stoneage-cargo-canoes",
+        technologyId: "stoneage-shorecraft",
       },
     });
     await until(() =>
@@ -161,12 +161,12 @@ it("runs two thin clients from one server simulation, enforces ownership and con
     const paidState = await decodeState<SnapshotPacket>(last(states(1)).packet);
     expect(
       Object.values(paidState.expansion!.progression[2].research).some(
-        (job) => job?.technologyId === "stoneage-cargo-canoes",
+        (job) => job?.technologyId === "stoneage-shorecraft",
       ),
     ).toBe(true);
     expect(
       Object.values(paidState.expansion!.progression[1].research).some(
-        (job) => job?.technologyId === "stoneage-cargo-canoes",
+        (job) => job?.technologyId === "stoneage-shorecraft",
       ),
     ).toBe(false);
     // A duplicate tab must not take over an already-loaded seat or forfeit the existing player.

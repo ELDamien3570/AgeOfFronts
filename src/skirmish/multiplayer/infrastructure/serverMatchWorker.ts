@@ -13,11 +13,16 @@ import {
   type MatchAdvance,
   type RuntimeMap,
 } from "../application/MatchExecutor";
-import { encodeState } from "../StateCodec";
+import { PublicationQueue } from "../application/PublicationQueue";
+import { SnapshotEncodingWorker } from "./SnapshotEncodingWorker";
+import type { SnapshotPacket } from "../../Protocol";
 import { loadServerMap } from "./ServerMap";
 
 if (!parentPort) throw new Error("The match executor requires a worker thread");
 let match: Skirmish | undefined;
+let streamPublications = false;
+const encoding = new SnapshotEncodingWorker();
+parentPort.on("close", () => { void encoding.close(); });
 const diagnostics = new RuntimeDiagnostics();
 let nextDiagnosticTick = 600;
 const observeMatch = () => { match!.onPhase = (phase, ms) => diagnostics.record(phase, ms); };
@@ -44,19 +49,27 @@ const makeMap = (map: RuntimeMap) =>
     map.forest,
     map.resourceTerrain,
   );
-const snapshot = async () => {
+const capture = () => {
   const start = performance.now();
-  const packet = encoder.encode(match!.snapshot());
-  const captured = performance.now();
-  diagnostics.record("snapshot", captured - start);
-  const result = await encodeState(packet);
-  diagnostics.record("encoding", performance.now() - captured);
+  const packet = encoder.encode(match!.snapshot(false), match!.tileChanges);
+  diagnostics.record("snapshot", performance.now() - start);
+  return packet;
+};
+const encodePacket = async (packet: SnapshotPacket) => {
+  const start = performance.now();
+  const result = await encoding.encode(packet);
+  diagnostics.record("encoding", performance.now() - start);
   return result;
 };
+const snapshot = () => encodePacket(capture());
+const publications = new PublicationQueue(encodePacket,
+  (tick, packet) => parentPort!.postMessage({ publication: { tick, packet } }),
+  error => parentPort!.postMessage({ fatal: `Snapshot publication failed: ${error.message}` }));
 const diagnosticSnapshot = (commands: number, ticksAdvanced: number, payloadBytes: number): MatchDiagnostics => {
   const m = match!, memory = process.memoryUsage(), planning = m.routePlanner.diagnostics;
   return { tick: m.tick, timings: diagnostics.snapshot(), retainedBytes: diagnostics.retainedBytes,
     commands, ticksAdvanced, payloadBytes,
+    replication: { pending: publications.pending, skipped: publications.skipped, encoderMemory: encoding.memory },
     entities: { squads: m.squads.length, ships: m.ships.length, buildings: m.buildings.length,
       traders: m.expansion?.trade.actors.length ?? 0, projectiles: m.expansion?.battle.projectiles.length ?? 0,
       recruitment: m.recruitment.jobs.length },
@@ -86,6 +99,7 @@ parentPort.on(
         let result: unknown;
         if (request.type === "initialize" || request.type === "prepare") {
           if (match || setup) throw new Error("Executor already initialized");
+          streamPublications = request.streamPublications === true;
           const loaded = request.map
             ? {
                 map: request.map,
@@ -146,6 +160,7 @@ parentPort.on(
           }
         } else {
           if (!match) throw new Error("Executor not initialized");
+          if (["baseline", "client-baseline", "join-barrier"].includes(request.type)) await publications.flush();
           if (request.type === "seat-status") {
             result = { seats: seats() };
           } else if (request.type === "set-controller") {
@@ -163,10 +178,10 @@ parentPort.on(
             match.setAiController(player.id, false);
             // Both packets describe exactly S. Advancing the shared cursor here is
             // essential: a tile that changes back after this barrier must be sent.
-            const state = match.snapshot();
-            const aligned = encoder.encodeJoinBarrier(state);
-            const packet = await encodeState(aligned.shared);
-            const baseline = await encodeState(aligned.baseline);
+            const state = match.snapshot(false);
+            const aligned = encoder.encodeJoinBarrier(state, match.tileChanges);
+            const packet = await encodePacket(aligned.shared);
+            const baseline = await encodePacket(aligned.baseline);
             result = {
               tick: match.tick,
               winner: match.winner,
@@ -176,12 +191,12 @@ parentPort.on(
             };
           } else if (request.type === "client-baseline") {
             const tick=match.tick,winner=match.winner;
-            const baseline=await encodeState(new SnapshotEncoder(true).encode(match.snapshot()));
+            const baseline=await encodePacket(new SnapshotEncoder(true).encode(match.snapshot(false)));
             result={tick,winner,baseline};
           } else if (request.type === "baseline") {
             // A late initial subscriber must not reset everyone else's delta cursor.
-            result = await encodeState(
-              new SnapshotEncoder(true).encode(match.snapshot()),
+            result = await encodePacket(
+              new SnapshotEncoder(true).encode(match.snapshot(false)),
             );
           } else if (request.type === "advance") {
             if (
@@ -219,14 +234,18 @@ parentPort.on(
             result = {
               tick: match.tick,
               winner: match.winner,
-              packet:
-                request.publish || match.winner !== null
-                  ? await snapshot()
-                  : undefined,
+              packet: undefined,
               rejectedCommands,
               ...(outcomes.length ? {commandOutcomes: outcomes} : {}),
               seats: seats(),
             } satisfies MatchAdvance;
+            if (request.publish || match.winner !== null) {
+              if (streamPublications && match.winner === null) publications.offer(match.tick, capture);
+              else {
+                await publications.flush();
+                (result as MatchAdvance).packet = await snapshot();
+              }
+            }
             diagnostics.record("advance", performance.now() - advanceStarted);
             if (request.publish || match.winner !== null) {
               const advanced = result as MatchAdvance;

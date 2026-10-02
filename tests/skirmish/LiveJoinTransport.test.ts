@@ -190,7 +190,7 @@ it("joins and reclaims through real WebSockets with one atomic authoritative sna
       send(a, {
         type: "match-command",
         matchId: manifest.id,
-        command: { type: "research", technologyId: "stoneage-cargo-canoes" },
+        command: { type: "research", technologyId: "stoneage-shorecraft" },
       }),
     );
     now += 200;
@@ -239,7 +239,7 @@ it("joins and reclaims through real WebSockets with one atomic authoritative sna
     expect(baseline.players[0].ai).toBe(false);
     expect(
       Object.values(baseline.expansion!.progression[1].research).some(
-        (job) => job?.technologyId === "stoneage-cargo-canoes",
+        (job) => job?.technologyId === "stoneage-shorecraft",
       ),
     ).toBe(true);
     expect(lastState(b).tick).toBe(lastState(returning).tick);

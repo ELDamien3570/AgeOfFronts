@@ -434,7 +434,7 @@ export class EmpireHudView {
             ? `${name(event.actorId)} defeated ${name(event.otherId)}`
             : event.kind === "promotion"
               ? `${name(event.actorId)} became a full nation${event.otherId ? ` and inherited research from ${name(event.otherId)}` : ""}`
-            : `${name(event.actorId)} ${{ offer: "offered an alliance to", accept: "formed an alliance with", reject: "declined an alliance with", renew: "requested alliance renewal with", break: "broke the alliance with", expire: "ended its alliance with" }[event.action!]} ${name(event.otherId)}`;
+            : `${name(event.actorId)} ${{ offer: "offered an alliance to", accept: "formed an alliance with", reject: "declined an alliance with", renew: "requested alliance renewal with", break: "broke the alliance with", expire: "ended its alliance with", declare: "declared war on", withdraw: "ended its offensive against" }[event.action!]} ${name(event.otherId)}`;
       const item = document.createElement("div");
       item.className = "feed-event";
       item.innerHTML = `<time>${Math.floor(event.tick / 1200)}:${String(Math.floor(event.tick / 20) % 60).padStart(2, "0")}</time><span>${esc(message)}</span>${event.kind === "diplomacy" ? `<button data-feed-player="${other}">Open</button>` : ""}`;

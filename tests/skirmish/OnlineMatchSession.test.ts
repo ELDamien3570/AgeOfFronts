@@ -38,7 +38,7 @@ vi.mock("../../src/skirmish/client/lobby/OnlineLobbyConnection", () => ({
 
 class DecoderWorker {
   static instances: DecoderWorker[] = [];
-  onmessage?: (event: { data: { packet: SnapshotPacket;snapshot?:Snapshot;canonicalSequence?:number } }) => void;
+  onmessage?: (event: { data: { packet: SnapshotPacket;canonicalOnly?:boolean;snapshot?:Snapshot;canonicalSequence?:number } }) => void;
   onerror?: (event: { message: string }) => void;
   postMessage = vi.fn();
   terminate = vi.fn();
@@ -111,6 +111,32 @@ afterEach(() => {
 });
 
 describe("server-only match client", () => {
+  it("asks for no copied views while rendering and requests one latest view after acknowledgement", async () => {
+    await initialize(); const worker = DecoderWorker.instances[0]; let finish!: () => void;
+    const presented: number[] = [];
+    session.onmessage = event => {
+      if (event.data.type !== "state") return;
+      presented.push(event.data.snapshot!.tick);
+      if (presented.length === 1) return new Promise<void>(resolve => { finish = resolve; });
+    };
+    connection().message(state(0));
+    await vi.waitFor(() => expect(worker.postMessage).toHaveBeenCalledTimes(1));
+    worker.deliver(packet(0), { tick: 0 } as Snapshot, 1);
+    await vi.waitFor(() => expect(presented).toEqual([0]));
+    for (const [i, tick] of [4, 8].entries()) {
+      connection().message({ ...state(tick), publicationSequence: i + 2, flowEpoch: 1 });
+      await vi.waitFor(() => expect(worker.postMessage).toHaveBeenCalledTimes(i + 2));
+      expect(worker.postMessage.mock.calls[i + 1][0]).toMatchObject({ presentation: false });
+      worker.onmessage!({ data: { packet: packet(tick), canonicalOnly: true } });
+      await vi.waitFor(() => expect(session.diagnostics.pendingStates).toBe(0));
+    }
+    expect(presented).toEqual([0]); finish();
+    await vi.waitFor(() => expect(worker.postMessage).toHaveBeenCalledWith({ type: "presentation" }));
+    worker.deliver(packet(8), { tick: 8 } as Snapshot, 3);
+    await vi.waitFor(() => expect(presented).toEqual([0, 8]));
+    expect(errors).not.toHaveBeenCalled();
+    expect(connection().request).toHaveBeenCalledWith(expect.objectContaining({ type: "match-state-applied", publicationSequence: 3 }));
+  });
   it("separates transport admission from correlated domain results and fences foreign match and faction receipts", async () => {
     await initialize();
     const worker=DecoderWorker.instances[0];

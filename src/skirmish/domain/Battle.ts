@@ -35,6 +35,7 @@ export interface BattleWorld {
   ships: Ship[];
   volleys: ArcherVolley[];
   allocateId(): number;
+  notifyHostileAction?(victim: number, attacker: number, tile: number): void;
   resolveLandDamage(damage: DamageLedger): void;
   resolveNavalDamage(damage: DamageLedger): void;
   recordMilitaryLosses(
@@ -319,6 +320,7 @@ export class Battle {
     if ((target.health ?? 1) <= 0) return;
     const applied = Math.min(target.health ?? target.maxHealth ?? 1200, hit);
     target.health = (target.health ?? target.maxHealth ?? 1200) - applied;
+    if (applied > 0) this.world.notifyHostileAction?.(target.playerId, attacker, "tile" in target ? target.tile : target.tiles[0]);
     const s =
       kind === "squad"
         ? this.world.squads.find(

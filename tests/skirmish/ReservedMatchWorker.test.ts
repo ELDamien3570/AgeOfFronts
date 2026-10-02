@@ -161,7 +161,7 @@ describe("reserved authoritative worker", () => {
             command: {
               type: "research",
               playerId: 2,
-              technologyId: "stoneage-cargo-canoes",
+              technologyId: "stoneage-shorecraft",
             },
           },
         ],
@@ -169,12 +169,12 @@ describe("reserved authoritative worker", () => {
       const packet = await decodeState<SnapshotPacket>(update.packet!);
       expect(
         Object.values(packet.expansion!.progression[2].research).some(
-          (job) => job?.technologyId === "stoneage-cargo-canoes",
+          (job) => job?.technologyId === "stoneage-shorecraft",
         ),
       ).toBe(true);
       expect(
         Object.values(packet.expansion!.progression[1].research).some(
-          (job) => job?.technologyId === "stoneage-cargo-canoes",
+          (job) => job?.technologyId === "stoneage-shorecraft",
         ),
       ).toBe(false);
       const after = await worker.request<MatchAdvance>({

@@ -40,6 +40,7 @@ export interface MatchDiagnostics {
   commands: number;
   ticksAdvanced: number;
   payloadBytes: number;
+  replication?: { pending: number; skipped: number; encoderMemory?: { heapUsed: number; external: number; arrayBuffers: number } };
   entities: { squads: number; ships: number; buildings: number; traders: number; projectiles: number; recruitment: number };
   planner: { pending: number; oldestAge: number; limited: number; workspaceBytes: number; workspaceUsed: number; receipts: number };
   /** RSS is shared process memory; the other fields are current worker usage. */

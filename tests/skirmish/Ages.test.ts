@@ -84,12 +84,12 @@ describe("age progression and authoritative definitions", () => {
           TECHNOLOGIES.filter((t) => t.age === age && t.tree === tree),
         ).toHaveLength(age === "BronzeAge" && tree === "warfare" ? 5 : 4);
   });
-  it("opens with exactly three flint infantry, two grants and no regular buildings", () => {
+  it("opens with exactly three flint infantry, three branch grants and no regular buildings", () => {
     const m = make();
     expect(m.buildings).toHaveLength(0);
     for (const p of m.players) {
       expect(m.squads.filter((s) => s.playerId === p.id)).toHaveLength(3);
-      expect(m.expansion!.progression.states[p.id].completed).toHaveLength(2);
+      expect(m.expansion!.progression.states[p.id].completed).toHaveLength(3);
       expect(
         m.squads
           .filter((s) => s.playerId === p.id)

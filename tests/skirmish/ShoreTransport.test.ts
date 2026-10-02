@@ -137,6 +137,8 @@ describe("automatic researched shore transport", () => {
   });
   it("gates embarkation and capacity by hull research, not age", () => {
     const m = make();
+    // A restored/custom state may lack the normal starting branch grant.
+    m.match.expansion!.progression.states[1].completed = [];
     expect(move(m)).toContain("Research Cargo Canoes");
     expect(m.match.ships).toHaveLength(0);
     expect(m.own.every((s) => s.order.type === "hold")).toBe(true);

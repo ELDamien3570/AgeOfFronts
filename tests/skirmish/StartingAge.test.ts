@@ -77,7 +77,7 @@ describe("Starting Tech Age Selector", () => {
       expect(state.completed).toContain(tech.id);
     }
     for (const tech of bronzeTechs) {
-      expect(state.completed).not.toContain(tech.id);
+      expect(state.completed.includes(tech.id)).toBe(tech.slot === 1);
     }
   });
 
@@ -94,7 +94,7 @@ describe("Starting Tech Age Selector", () => {
       expect(state.completed).toContain(tech.id);
     }
     for (const tech of classicalTechs) {
-      expect(state.completed).not.toContain(tech.id);
+      expect(state.completed.includes(tech.id)).toBe(tech.slot === 1);
     }
   });
 
@@ -110,14 +110,23 @@ describe("Starting Tech Age Selector", () => {
           expect(state.completed).toContain(t.id);
         } else {
           // Current or future age tech should NOT be unlocked (except default starting techs if StoneAge)
-          if (age !== "StoneAge" || !STARTING_TECHNOLOGIES.includes(t.id)) {
-            expect(state.completed).not.toContain(t.id);
-          }
+          expect(state.completed.includes(t.id)).toBe(t.age === age && t.slot === 1);
         }
       }
     }
   });
 
+  it.each(AGES)("preserves only prior research and first branch nodes through %s checkpoint recovery", age => {
+    const { match } = createMatch(age), saved = match.checkpoint();
+    const restored = new Skirmish(match.map, match.options); restored.restore(saved);
+    expect(restored.checkpoint()).toEqual(saved);
+    for (const player of restored.players) {
+      const state = restored.expansion!.progression.states[player.id];
+      for (const tech of TECHNOLOGIES)
+        expect(state.completed.includes(tech.id)).toBe(AGES.indexOf(tech.age) < AGES.indexOf(age) || (tech.age === age && tech.slot === 1));
+      expect(Object.keys(state.research)).toHaveLength(0);
+    }
+  });
   it("deploys regular players into Bronze Age with Bronze swordsmen in simulation", () => {
     const { match } = createMatch("BronzeAge");
     const expansion = match.expansion!;

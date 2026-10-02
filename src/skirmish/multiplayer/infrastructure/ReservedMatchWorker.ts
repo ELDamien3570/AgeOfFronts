@@ -5,6 +5,7 @@ import type {
   ExecutorRequest,
   ExecutorResult,
   MatchExecutor,
+  MatchPublication,
 } from "../application/MatchExecutor";
 
 const workerPath = resolve(
@@ -21,6 +22,10 @@ export class ReservedMatchWorker implements MatchExecutor {
       resourceLimits: { maxOldGenerationSizeMb: 384 },
     },
   );
+  private readonly publications = new Set<(publication: MatchPublication) => void>();
+  onPublication(listener: (publication: MatchPublication) => void): () => void {
+    this.publications.add(listener); return () => this.publications.delete(listener);
+  }
   private nextId = 1;
   private closed = false;
   private pending = new Map<
@@ -34,7 +39,12 @@ export class ReservedMatchWorker implements MatchExecutor {
   constructor() {
     this.worker.on(
       "message",
-      (message: { id: number; result: ExecutorResult; error?: string }) => {
+      (message: { id: number; result: ExecutorResult; error?: string; fatal?: string; publication?: MatchPublication }) => {
+        if (message.fatal) { this.fail(new Error(message.fatal)); void this.worker.terminate(); return; }
+        if (message.publication) {
+          if (!this.closed) for (const listener of this.publications) listener(message.publication);
+          return;
+        }
         const task = this.pending.get(message.id);
         if (!task) return;
         this.pending.delete(message.id);
@@ -77,5 +87,6 @@ export class ReservedMatchWorker implements MatchExecutor {
       task.reject(error);
     }
     this.pending.clear();
+    this.publications.clear();
   }
 }
