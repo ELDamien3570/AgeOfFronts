@@ -1,0 +1,12 @@
+{
+  "description": "New World review: Arctic snow is centred near 65 degrees north, with a broad 3-degree transition shaped by deterministic geographic variation and calibrated elevation, rather than a straight latitude stripe. Only already-cold tundra/alpine land is eligible; steep exposed ground retains grey rock. Elsewhere, only peaks above an authored high mountain snowline are snowy: 5000 metres at the equator, falling 20 metres per degree of absolute latitude, with a 4000-metre floor. Local relief is normalized to the 500-cell map before the 220-metre exposed-rock cutoff. This is approximate art direction, not measured seasonal snow cover. Water and calibrated elevations are unchanged.",
+  "regions": [],
+  "snowPolicy": {
+    "northernIceLatitude": 65,
+    "exposedRockRelief": 220,
+    "equatorialSnowline": 5000,
+    "snowlineLatitudeDrop": 20,
+    "minimumMountainSnowline": 4000,
+    "northernTransitionDegrees": 3
+  }
+}

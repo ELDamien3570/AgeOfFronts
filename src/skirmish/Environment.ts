@@ -21,6 +21,45 @@ export const ENVIRONMENT_FAMILIES = [
   "polar-ice",
 ] as const;
 export type EnvironmentFamily = (typeof ENVIRONMENT_FAMILIES)[number];
+export interface EnvironmentSnowPolicy {
+  northernIceLatitude: number;
+  northernTransitionDegrees: number;
+  exposedRockRelief: number;
+  equatorialSnowline: number;
+  snowlineLatitudeDrop: number;
+  minimumMountainSnowline: number;
+}
+
+/** Optional map-authored snow extent, independent of its water and elevation. */
+export function decodeEnvironmentSnowPolicy(
+  value: unknown,
+): Readonly<EnvironmentSnowPolicy> | undefined {
+  if (value === undefined) return undefined;
+  if (!value || typeof value !== "object" || Array.isArray(value))
+    throw new Error("Invalid map environment snow policy");
+  const policy = value as EnvironmentSnowPolicy;
+  if (
+    ![
+      policy.northernIceLatitude,
+      policy.northernTransitionDegrees,
+      policy.exposedRockRelief,
+      policy.equatorialSnowline,
+      policy.snowlineLatitudeDrop,
+      policy.minimumMountainSnowline,
+    ].every(Number.isFinite) ||
+    policy.northernIceLatitude < 0 ||
+    policy.northernIceLatitude > 90 ||
+    policy.northernTransitionDegrees <= 0 ||
+    policy.northernTransitionDegrees > 10 ||
+    policy.exposedRockRelief <= 0 ||
+    policy.equatorialSnowline <= 0 ||
+    policy.snowlineLatitudeDrop < 0 ||
+    policy.minimumMountainSnowline <= 0 ||
+    policy.minimumMountainSnowline > policy.equatorialSnowline
+  )
+    throw new Error("Invalid map environment snow policy");
+  return Object.freeze({ ...policy });
+}
 
 export interface ApproximateClimate {
   latitude: number;
@@ -31,11 +70,13 @@ export interface ApproximateClimate {
 
 export function approximateFamily(
   climate: ApproximateClimate,
+  mountainSnowline?: number,
 ): EnvironmentFamily {
   const latitude = Math.abs(climate.latitude),
     cold = latitude + climate.height / 170,
     snowline = Math.max(1200, 3600 - latitude * 22);
-  if (latitude >= 74 || climate.height >= snowline + 600) return "polar-ice";
+  if (latitude >= 74 || climate.height >= (mountainSnowline ?? snowline + 600))
+    return "polar-ice";
   if (climate.height >= 1800) return "alpine";
   if (cold >= 65) return "tundra";
   if (climate.coastDistance <= 1) return "coastal";
@@ -71,6 +112,7 @@ export class EnvironmentProfile {
     geography?: MapGeography,
     regions: readonly ClimateRegion[] = [],
     data?: EnvironmentData,
+    snowPolicy?: Readonly<EnvironmentSnowPolicy>,
   ) {
     const size = map.width() * map.height();
     if (
@@ -169,12 +211,22 @@ export class EnvironmentProfile {
         moisture = Math.min(moisture, moistureCeiling);
         this.woodlandBias[tile] = Math.round(woodlandBias * 255);
         this.moisture[tile] = Math.round(moisture * 255);
-        let family = approximateFamily({
-          latitude,
-          height: this.heightAt(tile),
-          moisture,
-          coastDistance: this.coastDistance[tile],
-        });
+        const mountainSnowline = snowPolicy
+          ? Math.max(
+              snowPolicy.minimumMountainSnowline,
+              snowPolicy.equatorialSnowline -
+                latitude * snowPolicy.snowlineLatitudeDrop,
+            )
+          : undefined;
+        let family = approximateFamily(
+          {
+            latitude,
+            height: this.heightAt(tile),
+            moisture,
+            coastDistance: this.coastDistance[tile],
+          },
+          mountainSnowline,
+        );
         // Color evidence can identify dry ground outside a latitude-only desert
         // band. Elevation/cold/coastal families retain their independent authority.
         if (
@@ -183,6 +235,39 @@ export class EnvironmentProfile {
           !["alpine", "polar-ice", "tundra", "coastal"].includes(family)
         )
           family = "desert-xeric";
+        // A broad, deterministic transition follows geography and elevation;
+        // do not draw a ruler-straight snow edge or turn woodland into ice.
+        const northernIceLatitude = snowPolicy
+          ? snowPolicy.northernIceLatitude +
+            snowPolicy.northernTransitionDegrees *
+              (terrainNoise(nx + 521, ny - 719, 32) -
+                0.5 -
+                Math.min(1, Math.max(0, this.heightAt(tile)) / 1500) * 0.5)
+          : undefined;
+        if (
+          snowPolicy &&
+          this.latitude[y] >= northernIceLatitude! &&
+          ["tundra", "alpine", "polar-ice"].includes(family)
+        ) {
+          // Keep exposed, steep northern ground grey. Normalize local relief to
+          // the 500-cell map so the authored cutoff applies at every map size;
+          // water neighbours never invent a cliff at an inland lake shoreline.
+          let relief = 0;
+          map.forEachNeighbor(tile, (neighbor) => {
+            if (map.isLand(neighbor))
+              relief = Math.max(
+                relief,
+                Math.abs(this.heightAt(tile) - this.heightAt(neighbor)),
+              );
+          });
+          relief *= Math.max(map.width(), map.height()) / 500;
+          if (
+            this.heightAt(tile) >= mountainSnowline! ||
+            relief < snowPolicy.exposedRockRelief
+          )
+            family = "polar-ice";
+          else family = this.heightAt(tile) >= 1800 ? "alpine" : "tundra";
+        }
         this.families[tile] = ENVIRONMENT_FAMILIES.indexOf(family);
       }
     }

@@ -1,0 +1,239 @@
+{
+  "description": "Old World review: authored approximate climate regions for the supplied Africa/Europe/Asia/Australia footprint. No aligned albedo was supplied. Broad blended moisture bounds guide plausible biomes and vegetation using the shared geographic environment system; these are not measured rainfall or land-cover data. Original calibrated elevations remain authoritative.",
+  "regions": [
+    {
+      "name": "Sahara dry interior",
+      "latitude": 25,
+      "longitude": 12,
+      "latitudeRadius": 10,
+      "longitudeRadius": 29,
+      "minimumMoisture": 0,
+      "woodlandBias": 0,
+      "maximumMoisture": 0.16
+    },
+    {
+      "name": "Arabian desert",
+      "latitude": 24,
+      "longitude": 46,
+      "latitudeRadius": 10,
+      "longitudeRadius": 17,
+      "minimumMoisture": 0,
+      "woodlandBias": 0,
+      "maximumMoisture": 0.15
+    },
+    {
+      "name": "Iranian dry plateau",
+      "latitude": 31,
+      "longitude": 59,
+      "latitudeRadius": 8,
+      "longitudeRadius": 14,
+      "minimumMoisture": 0,
+      "woodlandBias": 0,
+      "maximumMoisture": 0.25
+    },
+    {
+      "name": "Tarim dry basin",
+      "latitude": 40,
+      "longitude": 83,
+      "latitudeRadius": 5,
+      "longitudeRadius": 12,
+      "minimumMoisture": 0,
+      "woodlandBias": 0,
+      "maximumMoisture": 0.22
+    },
+    {
+      "name": "Central Asian steppe and Gobi",
+      "latitude": 45,
+      "longitude": 91,
+      "latitudeRadius": 9,
+      "longitudeRadius": 30,
+      "minimumMoisture": 0,
+      "woodlandBias": 0,
+      "maximumMoisture": 0.35
+    },
+    {
+      "name": "Namib coastal desert",
+      "latitude": -24,
+      "longitude": 15,
+      "latitudeRadius": 9,
+      "longitudeRadius": 3.2,
+      "minimumMoisture": 0,
+      "woodlandBias": 0,
+      "maximumMoisture": 0.18
+    },
+    {
+      "name": "Kalahari dry interior",
+      "latitude": -24,
+      "longitude": 23,
+      "latitudeRadius": 7,
+      "longitudeRadius": 7,
+      "minimumMoisture": 0,
+      "woodlandBias": 0,
+      "maximumMoisture": 0.28
+    },
+    {
+      "name": "Australian dry interior",
+      "latitude": -25,
+      "longitude": 133,
+      "latitudeRadius": 13,
+      "longitudeRadius": 20,
+      "minimumMoisture": 0,
+      "woodlandBias": 0,
+      "maximumMoisture": 0.18
+    },
+    {
+      "name": "Western and central European woodland",
+      "latitude": 49,
+      "longitude": 7,
+      "latitudeRadius": 10,
+      "longitudeRadius": 23,
+      "minimumMoisture": 0.73,
+      "woodlandBias": 0.1
+    },
+    {
+      "name": "Boreal Eurasian woodland",
+      "latitude": 58,
+      "longitude": 91,
+      "latitudeRadius": 12,
+      "longitudeRadius": 54,
+      "minimumMoisture": 0.61,
+      "woodlandBias": 0.08
+    },
+    {
+      "name": "Guinean humid belt",
+      "latitude": 7,
+      "longitude": -4,
+      "latitudeRadius": 6,
+      "longitudeRadius": 14,
+      "minimumMoisture": 0.78,
+      "woodlandBias": 0.12
+    },
+    {
+      "name": "Congo rainforest",
+      "latitude": -2,
+      "longitude": 22,
+      "latitudeRadius": 10,
+      "longitudeRadius": 14,
+      "minimumMoisture": 0.86,
+      "woodlandBias": 0.15
+    },
+    {
+      "name": "Miombo woodland",
+      "latitude": -12,
+      "longitude": 28,
+      "latitudeRadius": 7,
+      "longitudeRadius": 8,
+      "minimumMoisture": 0.59,
+      "woodlandBias": 0.07
+    },
+    {
+      "name": "East African coast",
+      "latitude": -12,
+      "longitude": 40,
+      "latitudeRadius": 13,
+      "longitudeRadius": 4,
+      "minimumMoisture": 0.69,
+      "woodlandBias": 0.08
+    },
+    {
+      "name": "Madagascar eastern humid belt",
+      "latitude": -19,
+      "longitude": 48.3,
+      "latitudeRadius": 7,
+      "longitudeRadius": 2.7,
+      "minimumMoisture": 0.84,
+      "woodlandBias": 0.14
+    },
+    {
+      "name": "Cape scrub",
+      "latitude": -33.5,
+      "longitude": 20,
+      "latitudeRadius": 3,
+      "longitudeRadius": 5,
+      "minimumMoisture": 0.42,
+      "woodlandBias": 0.02,
+      "maximumMoisture": 0.53
+    },
+    {
+      "name": "Indian monsoon woodland",
+      "latitude": 20,
+      "longitude": 79,
+      "latitudeRadius": 13,
+      "longitudeRadius": 11,
+      "minimumMoisture": 0.62,
+      "woodlandBias": 0.07
+    },
+    {
+      "name": "Indo-Gangetic humid plain",
+      "latitude": 25,
+      "longitude": 88,
+      "latitudeRadius": 5,
+      "longitudeRadius": 10,
+      "minimumMoisture": 0.75,
+      "woodlandBias": 0.09
+    },
+    {
+      "name": "Mainland Southeast Asian rainforest",
+      "latitude": 15,
+      "longitude": 104,
+      "latitudeRadius": 13,
+      "longitudeRadius": 16,
+      "minimumMoisture": 0.8,
+      "woodlandBias": 0.13
+    },
+    {
+      "name": "Southern and eastern Chinese woodland",
+      "latitude": 28,
+      "longitude": 113,
+      "latitudeRadius": 12,
+      "longitudeRadius": 15,
+      "minimumMoisture": 0.75,
+      "woodlandBias": 0.1
+    },
+    {
+      "name": "Japanese and Korean woodland",
+      "latitude": 37,
+      "longitude": 136,
+      "latitudeRadius": 12,
+      "longitudeRadius": 10,
+      "minimumMoisture": 0.74,
+      "woodlandBias": 0.1
+    },
+    {
+      "name": "Maritime Southeast Asian rainforest",
+      "latitude": -3,
+      "longitude": 119,
+      "latitudeRadius": 12,
+      "longitudeRadius": 31,
+      "minimumMoisture": 0.85,
+      "woodlandBias": 0.14
+    },
+    {
+      "name": "Northern Australian monsoon woodland",
+      "latitude": -13,
+      "longitude": 132,
+      "latitudeRadius": 5,
+      "longitudeRadius": 16,
+      "minimumMoisture": 0.61,
+      "woodlandBias": 0.06
+    },
+    {
+      "name": "Eastern Australian coastal woodland",
+      "latitude": -27,
+      "longitude": 152,
+      "latitudeRadius": 14,
+      "longitudeRadius": 5,
+      "minimumMoisture": 0.72,
+      "woodlandBias": 0.09
+    },
+    {
+      "name": "Southeastern Australian woodland",
+      "latitude": -37,
+      "longitude": 146,
+      "latitudeRadius": 5,
+      "longitudeRadius": 9,
+      "minimumMoisture": 0.62,
+      "woodlandBias": 0.06
+    }
+  ]
+}

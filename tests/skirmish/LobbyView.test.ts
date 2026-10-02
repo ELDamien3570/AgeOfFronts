@@ -52,8 +52,13 @@ describe("lobby page", () => {
     name.focus();
     view.refreshDirectory(vm);
     expect(holder.firstElementChild?.getAttribute("data-default")).toBe(
-      "heightmap-test1",
+      "old-world",
     );
+    expect(
+      holder
+        .querySelector<HTMLAnchorElement>('[aria-label="Play Old World vs AI"]')
+        ?.getAttribute("href"),
+    ).toBe("/skirmish/index.html?map=old-world");
     expect(name.value).toBe("Unsaved empire");
     expect(document.activeElement).toBe(name);
   });

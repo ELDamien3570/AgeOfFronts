@@ -31,6 +31,20 @@ const presentation: Record<
     description:
       "Cross dry interiors, wooded uplands and the eastern coast. First terrain review.",
   },
+  "old-world": {
+    terrain: "Africa, Eurasia & Australia",
+    description: "Cross vast deserts, mountain ranges and connected seas.",
+  },
+  "new-world": {
+    terrain: "The Americas, mountain ranges & great river basins",
+    description:
+      "Cross northern forests, dry plateaus and tropical riverlands.",
+  },
+  "valles-kairulia": {
+    terrain: "Island chains, sheltered seas & rugged coasts",
+    description:
+      "Sail between islands and cross wooded ridges and dry lowlands.",
+  },
 };
 
 export const LOBBY_MAPS: readonly LobbyMapCard[] = HEIGHTMAP_MAPS.map(

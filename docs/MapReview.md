@@ -1,6 +1,32 @@
 # Map review and sequential rollout
 
-## Current review: Amazon River
+## Current review: Valles Kairulia
+
+Valles Kairulia is now available in three square sizes, using its supplied
+calibrated elevation and aligned satellite imagery. Despite the display name,
+the actual assets and export metadata depict the central Mediterranean, so the
+map follows that supplied footprint rather than inventing a fantasy geography.
+See [VallesKairuliaMapReview.md](VallesKairuliaMapReview.md) for source details,
+hydrology, verification and limits. Old World, New World and the shared lake and
+northern-snow work are preserved. This remains a local review, not a deployment.
+
+## Earlier review: New World
+
+New World is implemented with calibrated terrain, real satellite-derived biomes,
+three portrait sizes and a 27-system major-river pass. See
+[NewWorldMapReview.md](NewWorldMapReview.md) for provenance, registration, tests
+and known lake/outlet limitations. Old World's completed assets are preserved.
+Both maps remain local review candidates; no deployment is implied.
+
+## Earlier review: Old World
+
+Old World is now implemented at the user's request. See
+[OldWorldMapReview.md](OldWorldMapReview.md) for its source calibration,
+footprint, authored climate, river layer, verification and reproducible commands.
+This is a local review candidate; no deployment or approval of other queued maps
+is implied. The earlier rollout order below is historical.
+
+## Earlier review: Amazon River
 
 Amazon River now uses the supplied matching 8192x2048 heightmap and satellite
 albedo. The export's -450 to 4160 metre range is recorded in
@@ -297,3 +323,9 @@ stands, clearings and smooth dry-ground transitions without console errors.
 SHA-256 comparisons against the pre-revision assets confirmed unchanged Africa
 terrain/heights and unchanged Mediterranean assets. Review screenshots and the
 sensitivity comparison are saved locally under `build/map-review/`.
+
+## Inland lake surface authoring
+
+See [LakeSurfaceImport.md](LakeSurfaceImport.md) for the opt-in registered polygon
+water pipeline used by New World’s Great Lakes, including surface elevations,
+shore handling, source provenance and coarse-resolution limits.

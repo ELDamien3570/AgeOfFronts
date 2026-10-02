@@ -1,0 +1,49 @@
+{
+  "name": "Valles Kairulia",
+  "source": "38_617_13_579_9_4096_4096_16bit.png",
+  "sourceSha256": "93e49388d977c7b8c01fe6928f0e516d61c9ec8f8c964aef9d38e00e7089bfb8",
+  "sourceUrl": "https://manticorp.github.io/unrealheightmap/#latitude/38.61705122131377/longitude/13.579123531324512/zoom/5/outputzoom/9/width/4096/height/4096/outputformat/png16",
+  "normalization": {
+    "mode": "regular",
+    "from": -450,
+    "to": 1819.473,
+    "range": 65536
+  },
+  "seaLevel": 0,
+  "terrainThresholds": {
+    "highland": 600,
+    "mountain": 1800
+  },
+  "sizes": [
+    250,
+    500,
+    1000
+  ],
+  "output": "resources/maps/valles-kairulia",
+  "albedo": {
+    "source": "38_617_13_579_9_4096_4096_albedo_imagery.png",
+    "sourceSha256": "ad37724f3b77ab5f54993b696418532b7b31063311fd9c5c4bdee3b224d7d600",
+    "registration": "same-footprint",
+    "smoothingCellsAt500": 1.4,
+    "greenSensitivity": 1.1
+  },
+  "rivers": {
+    "source": "rivers.geojson",
+    "sourceSha256": "bc214ca3f6f3b29ae11d38edc8129502214fb399dae961432060b11164776a11",
+    "widthCellsAt500": 1,
+    "widthCellsBySize": {
+      "250": 1,
+      "500": 2,
+      "1000": 3
+    }
+  },
+  "lakes": {
+    "source": "lakes.geojson",
+    "sourceSha256": "cf966a5df4c3e49a9496920fe924aaec4ea08f0132758ffe662e9d4171885a28",
+    "surfaceElevationsMeters": {
+      "Lago di Bolsena": 305,
+      "Lago di Bracciano": 164,
+      "Lake Skadar": 6
+    }
+  }
+}

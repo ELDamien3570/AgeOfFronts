@@ -15,6 +15,7 @@ import struct
 
 import numpy as np
 from PIL import Image, ImageFilter
+from lakeHydrology import SUPERSAMPLING, apply_lake_surfaces, load_lakes
 from riverHydrology import footprint, load_rivers, river_mask
 
 
@@ -237,6 +238,20 @@ def bake(config_path):
             "interpretation": "approximate color-derived moisture, vegetation and aridity; height/water remain authoritative",
             "variants": {},
         }
+    lakes = None
+    if config.get("lakes"):
+        settings = config["lakes"]
+        lakes, lake_digest = load_lakes(config_path, settings)
+        manifest["lakes"] = {
+            "schemaVersion": 1,
+            "source": {**lakes.get("source", {}), "file": settings["source"],
+                       "sha256": lake_digest},
+            "surfaceElevationsMeters": settings["surfaceElevationsMeters"],
+            "registration": "geographic polygons projected into the original Web Mercator footprint",
+            "sampling": f"{SUPERSAMPLING}x{SUPERSAMPLING} centre-sampled union coverage; majority and ties water; holes retain islands; mixed cells use dominant lake level with source-order ties",
+            "interpretation": "explicit inland water with flat authored surface elevations; source PNG and all heights outside lake masks preserved",
+            "variants": {},
+        }
     rivers = None
     if config.get("rivers"):
         rivers, river_digest = load_rivers(config_path, config["rivers"])
@@ -252,18 +267,26 @@ def bake(config_path):
             "variants": {},
         }
         manifest["waterRule"] = "calibrated sea level plus explicitly authored major-river hydrology"
+    if lakes is not None:
+        manifest["waterRule"] += " plus registered lake polygons with explicit surface elevations"
     for size in config["sizes"]:
         land, heights, sea_code = resample(samples, size, config)
         sea_water = ~land.copy()
+        lake_water = np.zeros_like(land)
+        if lakes is not None:
+            lake_water, metrics = apply_lake_surfaces(
+                land, heights, lakes, footprint(config, dimensions),
+                config["lakes"]["surfaceElevationsMeters"], config)
+            manifest["lakes"]["variants"][str(size)] = metrics
         if rivers is not None:
             channels = river_mask(rivers, footprint(config, dimensions), land.shape,
                                   config["rivers"]["widthCellsAt500"],
                                   config["rivers"].get("widthCellsBySize", {}).get(str(size)))
-            land &= ~channels
             manifest["hydrology"]["variants"][str(size)] = {
                 "channelCells": int(channels.sum()),
-                "newWaterCells": int((channels & ~sea_water).sum()),
+                "newWaterCells": int((channels & land).sum()),
             }
+            land &= ~channels
         terrain = encode_terrain(land, heights, config)
         (output / f"{size}.terrain.bin").write_bytes(terrain.tobytes())
         (output / f"{size}.heights.f32").write_bytes(heights.astype("<f4").tobytes())
@@ -272,7 +295,7 @@ def bake(config_path):
             (output / f"{size}.environment.bin").write_bytes(fields.tobytes())
             manifest["environment"]["variants"][str(size)] = metrics
         assert np.all(heights[land] > config["seaLevel"])
-        assert np.all(heights[sea_water] <= config["seaLevel"])
+        assert np.all(heights[sea_water & ~lake_water] <= config["seaLevel"])
         manifest["variants"][str(size)] = {
             "width": int(land.shape[1]), "height": int(land.shape[0]), "landCells": int(land.sum()),
             "seaCode": sea_code, "heightMinimum": float(heights.min()),

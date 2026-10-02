@@ -1,6 +1,10 @@
 import { heightmapDimensions } from "./content/Maps";
 import { ElevatedMap } from "./Elevation";
-import { EnvironmentProfile } from "./Environment";
+import {
+  decodeEnvironmentSnowPolicy,
+  EnvironmentProfile,
+  type EnvironmentSnowPolicy,
+} from "./Environment";
 import { decodeEnvironmentData, ENVIRONMENT_ENCODING } from "./EnvironmentData";
 import { heightmapGeography } from "./Geography";
 import type { LoadedMap } from "./Protocol";
@@ -14,7 +18,11 @@ export interface HeightmapManifest {
   seaLevel: number;
   source?: { url: string; width: number; height: number };
   variants: Record<string, { width: number; height: number }>;
-  climate?: { description?: string; regions: ClimateRegion[] };
+  climate?: {
+    description?: string;
+    regions: ClimateRegion[];
+    snowPolicy?: EnvironmentSnowPolicy;
+  };
   environment?: { schemaVersion: 1; encoding: string };
 }
 
@@ -92,6 +100,7 @@ export function decodeHeightmap(
       geography,
       decodeClimateRegions(manifest.climate?.regions),
       environmentData,
+      decodeEnvironmentSnowPolicy(manifest.climate?.snowPolicy),
     ),
     name: `${manifest.name} · ${variant.width}×${variant.height}`,
     // Income is normalised to a 250 x 125 reference map. Smaller maps (Amazon

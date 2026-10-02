@@ -1,0 +1,53 @@
+{
+  "name": "New World",
+  "source": "14_606_-99_846_6_6144_8192_16bit.png",
+  "sourceSha256": "430d528c37c5b36c772532a7cf4a701249ddc4113ae9222818f6cc285370f2f3",
+  "sourceUrl": "https://manticorp.github.io/unrealheightmap/#latitude/14.606155323814846/longitude/-99.84601840885307/zoom/2/outputzoom/6/width/6144/height/8192/outputformat/png16",
+  "normalization": {
+    "mode": "regular",
+    "from": -450,
+    "to": 6501,
+    "range": 65536
+  },
+  "seaLevel": 0,
+  "terrainThresholds": {
+    "highland": 600,
+    "mountain": 1800
+  },
+  "sizes": [
+    250,
+    500,
+    1000
+  ],
+  "output": "resources/maps/new-world",
+  "albedo": {
+    "source": "14_606_-99_846_6_6144_8192_albedo_imagery.png",
+    "sourceSha256": "bf644c41d10ff13047d2d697d4c14e864076ffe357694b814056e35024b33017",
+    "registration": "same-footprint",
+    "smoothingCellsAt500": 1.4,
+    "greenSensitivity": 1.1
+  },
+  "rivers": {
+    "source": "rivers.geojson",
+    "sourceSha256": "a9b575054f794164ec747d029995ce4fa5bb679bfd5395a2c1c20f20ebade2a5",
+    "widthCellsAt500": 1,
+    "widthCellsBySize": {
+      "250": 1,
+      "500": 2,
+      "1000": 3
+    }
+  },
+  "climate": "climate.json",
+  "lakes": {
+    "source": "lakes.geojson",
+    "sourceSha256": "b02a290debcb3dd995f751cb5338c5fa231d74d1391efd43c655732946babbe6",
+    "surfaceElevationsMeters": {
+      "Lake Superior": 183.2,
+      "Lake Michigan": 176.0,
+      "Lake Huron": 176.0,
+      "Lake Erie": 173.5,
+      "Lake Ontario": 74.2,
+      "Lake Saint Clair": 174.4
+    }
+  }
+}

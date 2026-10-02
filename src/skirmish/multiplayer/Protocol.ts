@@ -6,6 +6,7 @@ import {
 } from "../FactionRules";
 import type { MatchOptions, SpawnState } from "../Protocol";
 import type { LobbySettings } from "../lobby/LobbyDirectory";
+import { LOBBY_MAP_IDS } from "../lobby/LobbyRules";
 import type { EncodedState } from "./StateCodec";
 import type { CoordinatorState } from "./domain/RoomCoordinator";
 export interface MatchManifest {
@@ -27,7 +28,7 @@ const profile = z
   .strict();
 const settings = z
   .object({
-    mapId: z.enum(["heightmap-test1", "africa", "amazon-river"]),
+    mapId: z.enum(LOBBY_MAP_IDS),
     mode: z.literal("free-for-all"),
     slots: z.number().int().min(2).max(MAX_HUMAN_PLAYERS),
     minimumHumans: z.number().int().min(1).max(MAX_HUMAN_PLAYERS),

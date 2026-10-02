@@ -63,6 +63,104 @@ function geographicTile(
 }
 
 describe("reviewed heightmap content contract", () => {
+  it("loads Old World at all sizes with calibrated heights and viable faction starts", () => {
+    for (const size of [250, 500, 1000]) {
+      const loaded = heightmap("old-world", size);
+      const height = Math.round((size * 3) / 4);
+      expect(loaded.map.width()).toBe(size);
+      expect(loaded.map.height()).toBe(height);
+      expect(loaded.terrain.length).toBe(size * height);
+      expect(loaded.name).toBe(`Old World · ${size}×${height}`);
+      expect(loaded.geography?.projection).toBe("web-mercator");
+      const landPaths = new LandPaths(loaded.map, false);
+      const waterPaths = new WaterPaths(loaded.map);
+      let valid = true,
+        water = 0,
+        inlandWater = 0;
+      for (let tile = 0; tile < loaded.terrain.length; tile++) {
+        const elevation = loaded.elevation!.values[tile];
+        valid &&=
+          Number.isFinite(elevation) && elevation >= -450 && elevation <= 5353;
+        valid &&= !loaded.map.isLand(tile) || elevation > 0;
+        water += Number(loaded.map.isWater(tile));
+        if (loaded.map.isWater(tile) && elevation > 0) {
+          inlandWater++;
+          valid &&= waterPaths.walkable(tile) && !landPaths.walkable(tile);
+        }
+      }
+      expect(valid).toBe(true);
+      expect(water).toBeGreaterThan(loaded.terrain.length * 0.2);
+      expect(water).toBeLessThan(loaded.terrain.length * 0.8);
+      expect(inlandWater).toBeGreaterThan(1000);
+    }
+    const loaded = heightmap("old-world");
+    const match = new Skirmish(loaded.map, {
+      ruleset: "ages-v1",
+      aiCount: 14,
+      humanNames: Array.from({ length: 6 }, (_, i) => `Human ${i + 1}`),
+      tribes: false,
+      runAi: false,
+      seed: 42,
+    });
+    expect(match.players).toHaveLength(20);
+    for (const player of match.players) {
+      expect(loaded.map.isLand(player.base)).toBe(true);
+      // Current spawn selection permits separate viable landmasses.
+      const component = match.paths.component[player.base];
+      expect(component).toBeGreaterThan(0);
+      expect(
+        match.paths.component.reduce(
+          (count, value) => count + Number(value === component),
+          0,
+        ),
+      ).toBeGreaterThanOrEqual(80);
+    }
+    match.step();
+    expect(match.tick).toBe(1);
+  });
+  it("connects Old World's Congo and Ganges-Brahmaputra channels to the ocean at every size", () => {
+    for (const size of [250, 500, 1000]) {
+      const loaded = heightmap("old-world", size);
+      const paths = new WaterPaths(loaded.map);
+      for (const [lon, lat, oceanLon, oceanLat] of [
+        [15.274913, -4.300226, 11, -6],
+        [85.142833, 25.641872, 90, 20],
+        [94.440684, 27.016669, 90, 20],
+      ]) {
+        const inland = geographicTile(loaded, lon, lat);
+        const ocean = geographicTile(loaded, oceanLon, oceanLat);
+        expect(loaded.map.isWater(inland)).toBe(true);
+        expect(loaded.map.isWater(ocean)).toBe(true);
+        expect(paths.connected(inland, ocean)).toBe(true);
+        expect(paths.find(inland, ocean)).not.toBeNull();
+      }
+    }
+  });
+  it("keeps Old World's Sahara drier than the Congo with authored climate regions", () => {
+    const loaded = heightmap("old-world", 500);
+    function meanMoisture(lon: number, lat: number) {
+      const center = geographicTile(loaded, lon, lat);
+      const x = loaded.map.x(center),
+        y = loaded.map.y(center);
+      let moisture = 0,
+        count = 0;
+      for (let dy = -3; dy <= 3; dy++) {
+        for (let dx = -3; dx <= 3; dx++) {
+          const tile = loaded.map.ref(x + dx, y + dy);
+          if (!loaded.map.isLand(tile)) continue;
+          moisture += loaded.environment!.moistureAt(tile);
+          count++;
+        }
+      }
+      expect(count).toBeGreaterThan(20);
+      return moisture / count;
+    }
+    const sahara = meanMoisture(12, 25),
+      congo = meanMoisture(23, -1);
+    expect(sahara).toBeLessThan(0.3);
+    expect(congo).toBeGreaterThan(0.75);
+    expect(congo - sahara).toBeGreaterThan(0.4);
+  });
   it("loads Amazon River in wide proportions with clear water and viable faction starts", () => {
     for (const size of [250, 500, 1000]) {
       const loaded = heightmap("amazon-river", size);
@@ -157,6 +255,9 @@ describe("reviewed heightmap content contract", () => {
       "heightmap-test1",
       "africa",
       "amazon-river",
+      "old-world",
+      "new-world",
+      "valles-kairulia",
       "thebox",
     ]);
     expect(MAPS[0].name).toBe("Mediterranean");

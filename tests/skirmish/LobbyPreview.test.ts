@@ -13,7 +13,11 @@ describe("local lobby preview", () => {
     expect(vm.featuredMaps.map((map) => map.id)).toEqual(original);
     vm.tickDirectory(60_000);
     expect(vm.rotationSeconds).toBe(60);
-    expect(vm.featuredMaps.map((map) => map.id)).toEqual(original);
+    expect(vm.featuredMaps.map((map) => map.id)).toEqual([
+      "old-world",
+      "new-world",
+      "valles-kairulia",
+    ]);
     expect(vm.directory.visible.map((room) => room.id)).toEqual([
       "one",
       "two",
@@ -36,6 +40,9 @@ describe("local lobby preview", () => {
       "heightmap-test1",
       "africa",
       "amazon-river",
+      "old-world",
+      "new-world",
+      "valles-kairulia",
     ]);
     expect(vm.rules.slots).toBe(MAX_HUMAN_PLAYERS);
     // Base lobbies use the 500-cell defaults: 10 AI opponents and 25 tribes.
@@ -45,6 +52,10 @@ describe("local lobby preview", () => {
     expect(vm.page).toBe("home");
     expect(vm.showLobby("heightmap-test1")).toBe(true);
     expect(vm.skirmishHref).toBe("/skirmish/index.html?map=heightmap-test1");
+    for (const id of ["old-world", "new-world", "valles-kairulia"]) {
+      expect(vm.showLobby(id)).toBe(true);
+      expect(vm.skirmishHref).toBe(`/skirmish/index.html?map=${id}`);
+    }
   });
 
   it("waits for two humans, then adds the map size's AI opponents when the timer ends", () => {

@@ -1,0 +1,562 @@
+{
+  "schemaVersion": 1,
+  "name": "Old World",
+  "minimum": -450,
+  "maximum": 5353,
+  "seaLevel": 0,
+  "source": {
+    "file": "17_309_70_313_6_8192_6144_16bit.png",
+    "sha256": "35faa0fcc24fb51c0b97018d40cf9aeced32f65ab613d56d7f189b49e3f2487e",
+    "width": 8192,
+    "height": 6144,
+    "url": "https://manticorp.github.io/unrealheightmap/#latitude/17.307970865257346/longitude/70.31319074071382/zoom/2/outputzoom/6/width/8192/height/6144/outputformat/png16"
+  },
+  "normalization": {
+    "mode": "regular",
+    "from": -450,
+    "to": 5353,
+    "range": 65536
+  },
+  "terrainThresholds": {
+    "highland": 600,
+    "mountain": 1800
+  },
+  "sampling": "area-majority land/water; average height within winning surface; ties water",
+  "waterRule": "calibrated sea level plus explicitly authored major-river hydrology",
+  "resolutionRule": "selected size is the longest edge; source aspect ratio preserved",
+  "variants": {
+    "250": {
+      "width": 250,
+      "height": 188,
+      "landCells": 20850,
+      "seaCode": 5082,
+      "heightMinimum": -450.0,
+      "heightMaximum": 5320.99853515625
+    },
+    "500": {
+      "width": 500,
+      "height": 375,
+      "landCells": 83667,
+      "seaCode": 5082,
+      "heightMinimum": -450.0,
+      "heightMaximum": 5352.57275390625
+    },
+    "1000": {
+      "width": 1000,
+      "height": 750,
+      "landCells": 342512,
+      "seaCode": 5082,
+      "heightMinimum": -450.0,
+      "heightMaximum": 5352.91162109375
+    }
+  },
+  "climate": {
+    "description": "Old World review: authored approximate climate regions for the supplied Africa/Europe/Asia/Australia footprint. No aligned albedo was supplied. Broad blended moisture bounds guide plausible biomes and vegetation using the shared geographic environment system; these are not measured rainfall or land-cover data. Original calibrated elevations remain authoritative.",
+    "regions": [
+      {
+        "name": "Sahara dry interior",
+        "latitude": 25,
+        "longitude": 12,
+        "latitudeRadius": 10,
+        "longitudeRadius": 29,
+        "minimumMoisture": 0,
+        "woodlandBias": 0,
+        "maximumMoisture": 0.16
+      },
+      {
+        "name": "Arabian desert",
+        "latitude": 24,
+        "longitude": 46,
+        "latitudeRadius": 10,
+        "longitudeRadius": 17,
+        "minimumMoisture": 0,
+        "woodlandBias": 0,
+        "maximumMoisture": 0.15
+      },
+      {
+        "name": "Iranian dry plateau",
+        "latitude": 31,
+        "longitude": 59,
+        "latitudeRadius": 8,
+        "longitudeRadius": 14,
+        "minimumMoisture": 0,
+        "woodlandBias": 0,
+        "maximumMoisture": 0.25
+      },
+      {
+        "name": "Tarim dry basin",
+        "latitude": 40,
+        "longitude": 83,
+        "latitudeRadius": 5,
+        "longitudeRadius": 12,
+        "minimumMoisture": 0,
+        "woodlandBias": 0,
+        "maximumMoisture": 0.22
+      },
+      {
+        "name": "Central Asian steppe and Gobi",
+        "latitude": 45,
+        "longitude": 91,
+        "latitudeRadius": 9,
+        "longitudeRadius": 30,
+        "minimumMoisture": 0,
+        "woodlandBias": 0,
+        "maximumMoisture": 0.35
+      },
+      {
+        "name": "Namib coastal desert",
+        "latitude": -24,
+        "longitude": 15,
+        "latitudeRadius": 9,
+        "longitudeRadius": 3.2,
+        "minimumMoisture": 0,
+        "woodlandBias": 0,
+        "maximumMoisture": 0.18
+      },
+      {
+        "name": "Kalahari dry interior",
+        "latitude": -24,
+        "longitude": 23,
+        "latitudeRadius": 7,
+        "longitudeRadius": 7,
+        "minimumMoisture": 0,
+        "woodlandBias": 0,
+        "maximumMoisture": 0.28
+      },
+      {
+        "name": "Australian dry interior",
+        "latitude": -25,
+        "longitude": 133,
+        "latitudeRadius": 13,
+        "longitudeRadius": 20,
+        "minimumMoisture": 0,
+        "woodlandBias": 0,
+        "maximumMoisture": 0.18
+      },
+      {
+        "name": "Western and central European woodland",
+        "latitude": 49,
+        "longitude": 7,
+        "latitudeRadius": 10,
+        "longitudeRadius": 23,
+        "minimumMoisture": 0.73,
+        "woodlandBias": 0.1
+      },
+      {
+        "name": "Boreal Eurasian woodland",
+        "latitude": 58,
+        "longitude": 91,
+        "latitudeRadius": 12,
+        "longitudeRadius": 54,
+        "minimumMoisture": 0.61,
+        "woodlandBias": 0.08
+      },
+      {
+        "name": "Guinean humid belt",
+        "latitude": 7,
+        "longitude": -4,
+        "latitudeRadius": 6,
+        "longitudeRadius": 14,
+        "minimumMoisture": 0.78,
+        "woodlandBias": 0.12
+      },
+      {
+        "name": "Congo rainforest",
+        "latitude": -2,
+        "longitude": 22,
+        "latitudeRadius": 10,
+        "longitudeRadius": 14,
+        "minimumMoisture": 0.86,
+        "woodlandBias": 0.15
+      },
+      {
+        "name": "Miombo woodland",
+        "latitude": -12,
+        "longitude": 28,
+        "latitudeRadius": 7,
+        "longitudeRadius": 8,
+        "minimumMoisture": 0.59,
+        "woodlandBias": 0.07
+      },
+      {
+        "name": "East African coast",
+        "latitude": -12,
+        "longitude": 40,
+        "latitudeRadius": 13,
+        "longitudeRadius": 4,
+        "minimumMoisture": 0.69,
+        "woodlandBias": 0.08
+      },
+      {
+        "name": "Madagascar eastern humid belt",
+        "latitude": -19,
+        "longitude": 48.3,
+        "latitudeRadius": 7,
+        "longitudeRadius": 2.7,
+        "minimumMoisture": 0.84,
+        "woodlandBias": 0.14
+      },
+      {
+        "name": "Cape scrub",
+        "latitude": -33.5,
+        "longitude": 20,
+        "latitudeRadius": 3,
+        "longitudeRadius": 5,
+        "minimumMoisture": 0.42,
+        "woodlandBias": 0.02,
+        "maximumMoisture": 0.53
+      },
+      {
+        "name": "Indian monsoon woodland",
+        "latitude": 20,
+        "longitude": 79,
+        "latitudeRadius": 13,
+        "longitudeRadius": 11,
+        "minimumMoisture": 0.62,
+        "woodlandBias": 0.07
+      },
+      {
+        "name": "Indo-Gangetic humid plain",
+        "latitude": 25,
+        "longitude": 88,
+        "latitudeRadius": 5,
+        "longitudeRadius": 10,
+        "minimumMoisture": 0.75,
+        "woodlandBias": 0.09
+      },
+      {
+        "name": "Mainland Southeast Asian rainforest",
+        "latitude": 15,
+        "longitude": 104,
+        "latitudeRadius": 13,
+        "longitudeRadius": 16,
+        "minimumMoisture": 0.8,
+        "woodlandBias": 0.13
+      },
+      {
+        "name": "Southern and eastern Chinese woodland",
+        "latitude": 28,
+        "longitude": 113,
+        "latitudeRadius": 12,
+        "longitudeRadius": 15,
+        "minimumMoisture": 0.75,
+        "woodlandBias": 0.1
+      },
+      {
+        "name": "Japanese and Korean woodland",
+        "latitude": 37,
+        "longitude": 136,
+        "latitudeRadius": 12,
+        "longitudeRadius": 10,
+        "minimumMoisture": 0.74,
+        "woodlandBias": 0.1
+      },
+      {
+        "name": "Maritime Southeast Asian rainforest",
+        "latitude": -3,
+        "longitude": 119,
+        "latitudeRadius": 12,
+        "longitudeRadius": 31,
+        "minimumMoisture": 0.85,
+        "woodlandBias": 0.14
+      },
+      {
+        "name": "Northern Australian monsoon woodland",
+        "latitude": -13,
+        "longitude": 132,
+        "latitudeRadius": 5,
+        "longitudeRadius": 16,
+        "minimumMoisture": 0.61,
+        "woodlandBias": 0.06
+      },
+      {
+        "name": "Eastern Australian coastal woodland",
+        "latitude": -27,
+        "longitude": 152,
+        "latitudeRadius": 14,
+        "longitudeRadius": 5,
+        "minimumMoisture": 0.72,
+        "woodlandBias": 0.09
+      },
+      {
+        "name": "Southeastern Australian woodland",
+        "latitude": -37,
+        "longitude": 146,
+        "latitudeRadius": 5,
+        "longitudeRadius": 9,
+        "minimumMoisture": 0.62,
+        "woodlandBias": 0.06
+      }
+    ]
+  },
+  "hydrology": {
+    "schemaVersion": 1,
+    "source": {
+      "file": "rivers.geojson",
+      "sha256": "8519f7fe7294ce235062ee71a44c4022eaaca26c60c558f14b5f9270ab9f1863",
+      "title": "Natural Earth 1:10m rivers and lake centerlines",
+      "url": "https://github.com/nvkelso/natural-earth-vector/blob/master/geojson/ne_10m_rivers_lake_centerlines.geojson",
+      "upstreamGitBlob": "61a0d7137a6ff1113cc259525e7479c63d5fec86",
+      "upstreamSha256": "bb854a900ecbd3b408df46d5e16e3e0f974ba55993f9d8b5c26e855273c0905a",
+      "license": "Public domain",
+      "terms": "https://www.naturalearthdata.com/about/terms-of-use/",
+      "selection": {
+        "purpose": "Major-river gameplay layer for the Old World continental map; a curated selection rather than a complete drainage network.",
+        "geographicBoundsWsen": [
+          -19.68680925928618,
+          -44.59100201948848,
+          160.31319074071382,
+          64.47247016958447
+        ],
+        "registration": "WGS84 longitude/latitude registered to the original 8192x6144 Web Mercator heightmap, output zoom 6, centered at latitude 17.307970865257346 and longitude 70.31319074071382.",
+        "method": "Select exact Natural Earth name values listed in riverSystems plus the explicitly identified additionalSourceFeatures, retaining features with a line segment intersecting the map footprint. Preserve upstream feature order and all original coordinates and bounding boxes. The unnamed 598River receives a documented display label; append the documented reused authored Congo outlet extension. Do not otherwise clip, simplify, connect, or extend geometry.",
+        "rationale": "Keep major channels across Africa, Europe, Asia and Australia. Include differently named main-stem sections, lake/reservoir centerlines and named distributaries for continuity. Retain the Benue, Irtysh and Angara as major basin tributaries; exclude the dense minor-tributary network and canals.",
+        "riverSystems": {
+          "Nile": [
+            "Nile",
+            "Rosetta Branch",
+            "Damietta Branch",
+            "El Bahr el Abyad",
+            "Bahr el Jebel",
+            "Albert Nile",
+            "Victoria Nile",
+            "El Bahr el Azraq",
+            "Abay"
+          ],
+          "Congo": [
+            "Congo",
+            "Lualaba"
+          ],
+          "Niger": [
+            "Niger",
+            "Benue",
+            "B\u00e9nou\u00e9"
+          ],
+          "Zambezi": [
+            "Zambezi"
+          ],
+          "Orange": [
+            "Orange"
+          ],
+          "Danube": [
+            "Danube",
+            "Donau",
+            "Borcea",
+            "Bratul Chillia",
+            "Bratul Sfintu Gheorghe",
+            "Bratul Sulina"
+          ],
+          "Rhine": [
+            "Rhein",
+            "Rhin",
+            "Rhine",
+            "Nederrijn",
+            "Lek",
+            "Waal",
+            "IJssel"
+          ],
+          "Volga": [
+            "Volga"
+          ],
+          "Don": [
+            "Don"
+          ],
+          "Dnieper": [
+            "Dnipro",
+            "Dnepre"
+          ],
+          "Tigris and Euphrates": [
+            "Tigris",
+            "Dicle",
+            "Euphrates",
+            "Firat",
+            "Al Furat",
+            "Shatt al Arab"
+          ],
+          "Indus": [
+            "Indus",
+            "Shiquan"
+          ],
+          "Ganges and Brahmaputra": [
+            "Ganges",
+            "Brahmaputra",
+            "Dihang",
+            "Yarlung",
+            "Ganges-Brahmaputra Delta"
+          ],
+          "Yangtze": [
+            "Yangtze",
+            "Chang Jiang",
+            "Jinsha",
+            "Tongtian",
+            "Tuotuo"
+          ],
+          "Yellow River": [
+            "Huang"
+          ],
+          "Mekong": [
+            "Mekong",
+            "Lancang"
+          ],
+          "Irrawaddy": [
+            "Ayeyarwady",
+            "Irrawaddy Delta"
+          ],
+          "Salween": [
+            "Salween",
+            "Nu"
+          ],
+          "Amur": [
+            "Amur",
+            "Heilong Jiang"
+          ],
+          "Ob and Irtysh": [
+            "Ob",
+            "Malaya Ob",
+            "Biya",
+            "Katun",
+            "Irtysh",
+            "Ertis",
+            "Ertix"
+          ],
+          "Yenisey": [
+            "Yenisey",
+            "Verkhniy Yenisey",
+            "Angara"
+          ],
+          "Lena": [
+            "Lena"
+          ],
+          "Murray and Darling": [
+            "Murray",
+            "Darling",
+            "Barwon"
+          ]
+        },
+        "featureCount": 109,
+        "knownLimitations": [
+          "The northern crop excludes the Arctic mouths of the Ob, Yenisey and Lena; original linework crossing the crop is retained for the rasterizer to bound.",
+          "Natural Earth river linework can end at lake, estuary or coastline boundaries and contain small inter-feature gaps. No other approximate courses are authored to match this heightmap coastline.",
+          "Read-only four-neighbor QA of the initial bake found each selected river system internally connected at sizes 250, 500 and 1000; the Yangtze already reached mapped estuary water at all sizes.",
+          "Remaining mapped outlet gaps: Amur and Murray-Darling at sizes 500 and 1000; Dnieper at all sizes; Don at sizes 250 and 500. The Don reaches the enclosed Sea of Azov at size 1000, and the Nile reaches the enclosed Mediterranean at size 250; an unset ocean bit alone does not imply a river outlet gap.",
+          "The Congo outlet correction is explicitly approximate, reused from the existing Africa map rather than represented as unmodified Natural Earth data."
+        ],
+        "additionalSourceFeatures": [
+          {
+            "dissolve": "598River",
+            "rivernum": 598,
+            "originalName": null,
+            "displayName": "Ganges-Brahmaputra Delta",
+            "reason": "Original source delta branch closes the baked Ganges-Brahmaputra outlet gap at size 1000 without inventing geometry."
+          }
+        ],
+        "authoredFeatures": [
+          {
+            "name": "Congo",
+            "reusedFrom": "HeightMaps/Africa/rivers.geojson",
+            "reason": "Reuse the existing approximate Congo outlet extension to connect its inland Natural Earth endpoint to the Atlantic at sizes 500 and 1000. Preserve the existing authored geometry unchanged.",
+            "geometrySha256": "3aed727c735cde159604e9d5d93df932d8e60b81407417ead849ec50c648a22a"
+          }
+        ]
+      }
+    },
+    "names": [
+      "Abay",
+      "Al Furat",
+      "Albert Nile",
+      "Amur",
+      "Angara",
+      "Ayeyarwady",
+      "Bahr el Jebel",
+      "Barwon",
+      "Benue",
+      "Biya",
+      "Borcea",
+      "Brahmaputra",
+      "Bratul Chillia",
+      "Bratul Sfintu Gheorghe",
+      "Bratul Sulina",
+      "B\u00e9nou\u00e9",
+      "Chang Jiang",
+      "Congo",
+      "Damietta Branch",
+      "Danube",
+      "Darling",
+      "Dicle",
+      "Dihang",
+      "Dnepre",
+      "Dnipro",
+      "Don",
+      "Donau",
+      "El Bahr el Abyad",
+      "El Bahr el Azraq",
+      "Ertis",
+      "Ertix",
+      "Euphrates",
+      "Firat",
+      "Ganges",
+      "Ganges-Brahmaputra Delta",
+      "Heilong Jiang",
+      "Huang",
+      "IJssel",
+      "Indus",
+      "Irrawaddy Delta",
+      "Irtysh",
+      "Jinsha",
+      "Katun",
+      "Lancang",
+      "Lek",
+      "Lena",
+      "Lualaba",
+      "Malaya Ob",
+      "Mekong",
+      "Murray",
+      "Nederrijn",
+      "Niger",
+      "Nile",
+      "Nu",
+      "Ob",
+      "Orange",
+      "Rhein",
+      "Rhin",
+      "Rhine",
+      "Rosetta Branch",
+      "Salween",
+      "Shatt al Arab",
+      "Shiquan",
+      "Tigris",
+      "Tongtian",
+      "Tuotuo",
+      "Verkhniy Yenisey",
+      "Victoria Nile",
+      "Volga",
+      "Waal",
+      "Yangtze",
+      "Yarlung",
+      "Yenisey",
+      "Zambezi"
+    ],
+    "widthCellsAt500": 1,
+    "widthCellsBySize": {
+      "250": 1,
+      "500": 2,
+      "1000": 3
+    },
+    "registration": "geographic lines projected into the original Web Mercator footprint",
+    "interpretation": "major rivers are four-connected navigable water; gameplay widths exaggerated; original elevations preserved",
+    "variants": {
+      "250": {
+        "channelCells": 1518,
+        "newWaterCells": 1498
+      },
+      "500": {
+        "channelCells": 5773,
+        "newWaterCells": 5687
+      },
+      "1000": {
+        "channelCells": 15275,
+        "newWaterCells": 15065
+      }
+    }
+  }
+}

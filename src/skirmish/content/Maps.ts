@@ -21,6 +21,27 @@ export const HEIGHTMAP_MAPS = [
     sourceWidth: 8192,
     sourceHeight: 2048,
   },
+  {
+    id: "old-world",
+    name: "Old World",
+    assetRoot: "old-world",
+    sourceWidth: 8192,
+    sourceHeight: 6144,
+  },
+  {
+    id: "new-world",
+    name: "New World",
+    assetRoot: "new-world",
+    sourceWidth: 6144,
+    sourceHeight: 8192,
+  },
+  {
+    id: "valles-kairulia",
+    name: "Valles Kairulia",
+    assetRoot: "valles-kairulia",
+    sourceWidth: 4096,
+    sourceHeight: 4096,
+  },
 ] as const;
 
 export type HeightmapId = (typeof HEIGHTMAP_MAPS)[number]["id"];
