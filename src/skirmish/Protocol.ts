@@ -293,6 +293,17 @@ export interface Ship {
   refit?: RefitJob | null;
   attackTargetId?: number | null;
   lastPlanTick?: number;
+  patrolTile?: number | null;
+  patrolDwellTicks?: number;
+  lastCombatTick?: number;
+  repairPortId?: number | null;
+  repairState?:
+    | "idle"
+    | "patrolling"
+    | "returning-to-dock"
+    | "waiting-for-dock"
+    | "repairing"
+    | "returning-to-patrol";
 }
 
 export interface BoardingMeeting {

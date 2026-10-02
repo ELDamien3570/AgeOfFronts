@@ -1,9 +1,17 @@
-import { restoreMap, restoreSet } from "../StateTransfer";
 import type { GameMap } from "../../core/game/GameMap";
 import { TICKS_PER_SECOND } from "../Protocol";
-import { NeutralTerritoryClaims, NEUTRAL_TERRITORY_RULES } from "./NeutralTerritoryClaims";
+import { restoreMap, restoreSet } from "../StateTransfer";
+import {
+  NEUTRAL_TERRITORY_RULES,
+  NeutralTerritoryClaims,
+} from "./NeutralTerritoryClaims";
 
-export const TERRITORY_ABSORPTION = Object.freeze({ maxCells: 2, seconds: 10, includeUnclaimed: true, neutral: NEUTRAL_TERRITORY_RULES });
+export const TERRITORY_ABSORPTION = Object.freeze({
+  maxCells: 2,
+  seconds: 10,
+  includeUnclaimed: true,
+  neutral: NEUTRAL_TERRITORY_RULES,
+});
 
 interface Pocket {
   owner: number;
@@ -17,14 +25,20 @@ interface Pending extends Pocket {
 // Domain policy with bounded local connectivity checks. Ownership mutations
 // remain the simulation aggregate's responsibility, including capture credit.
 export class TerritoryAbsorption {
-  checkpoint() { return structuredClone({dirty:this.dirty, watched:this.watched, pending:this.pending, neutral: this.neutral.checkpoint()}); }
+  checkpoint() {
+    return structuredClone({
+      dirty: this.dirty,
+      watched: this.watched,
+      pending: this.pending,
+      neutral: this.neutral.checkpoint(),
+    });
+  }
   restore(saved: ReturnType<TerritoryAbsorption["checkpoint"]>): void {
-    const state=structuredClone(saved);
-    restoreSet(this.dirty,state.dirty);
-    restoreSet(this.watched,state.watched);
-    restoreMap(this.pending,state.pending);
+    const state = structuredClone(saved);
+    restoreSet(this.dirty, state.dirty);
+    restoreSet(this.watched, state.watched);
+    restoreMap(this.pending, state.pending);
     this.neutral.restore(state.neutral);
-
   }
 
   private readonly dirty = new Set<number>();
@@ -32,7 +46,9 @@ export class TerritoryAbsorption {
   private readonly pending = new Map<number, Pending>();
 
   private readonly neutral: NeutralTerritoryClaims;
-  constructor(private readonly map: GameMap) { this.neutral = new NeutralTerritoryClaims(map); }
+  constructor(private readonly map: GameMap) {
+    this.neutral = new NeutralTerritoryClaims(map);
+  }
 
   changed(tile: number): void {
     this.neutral.changed(tile);
@@ -47,11 +63,18 @@ export class TerritoryAbsorption {
     hostile: (owner: number, recipient: number) => boolean,
     ownedLand?: (owner: number) => number,
   ): readonly Pocket[] {
-    const neutral = this.neutral.step(tick, owners, hasBuilding, ownedLand ?? (owner => {
-      let count = 0;
-      for (let tile = 0; tile < owners.length; tile++) if (owners[tile] === owner && this.map.isLand(tile)) count++;
-      return count;
-    }));
+    const neutral = this.neutral.step(
+      tick,
+      owners,
+      hasBuilding,
+      ownedLand ??
+        ((owner) => {
+          let count = 0;
+          for (let tile = 0; tile < owners.length; tile++)
+            if (owners[tile] === owner && this.map.isLand(tile)) count++;
+          return count;
+        }),
+    );
     if (tick % TICKS_PER_SECOND !== 0) return neutral;
     const checks = new Set([...this.dirty, ...this.watched]);
     this.dirty.clear();

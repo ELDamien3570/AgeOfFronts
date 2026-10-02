@@ -25,6 +25,7 @@ import { AGES, type Age } from "./domain/Definitions";
 import { Expansion } from "./domain/Expansion";
 import { Occupation } from "./domain/Occupation";
 import { TerritoryAbsorption } from "./domain/TerritoryAbsorption";
+import { CoastalTerritory } from "./domain/CoastalTerritory";
 import { Recruitment, RECRUITMENT_SECONDS } from "./domain/Recruitment";
 import { costRejection, spend } from "./domain/Supply";
 import {
@@ -108,11 +109,14 @@ const BASE_RADIUS = 6;
 const ROUTE_EFFORT_LIMIT = 20_000;
 // Crossing trees built per tick until every portal has one (land, then water).
 const PATH_WARM_TREES = 4;
+export const WARSHIP_PATROL_RADIUS = 2;
+export const WARSHIP_COMBAT_COOLDOWN = 60;
+export const WARSHIP_REPAIR_FRACTION = 0.10;
 
 // Fixed-step, integer-position simulation. Browser timing and rendering never
 // determine gameplay. Human and AI players enter through applyCommand().
 export class Skirmish {
-  checkpoint() { return structuredClone({version:1 as const,width:this.map.width(),height:this.map.height(),options:this.options,players:this.players,squads:this.squads,buildings:this.buildings,ships:this.ships,volleys:this.volleys,defenseZones:this.defenseZones,owners:this.owners,claims:this.claims,progress:this.progress,detours:this.detours,navigationProgress:this.navigationProgress,orderRevisions:this.orderRevisions,activeClaims:this.activeClaims,tick:this.tick,winner:this.winner,combatTicks:this.combatTicks,producedTroops:this.producedTroops,nextId:this.nextId,nextVolleyId:this.nextVolleyId,random:this.random.getState(),forest:forestOf(this.map)?.checkpoint(),routeWork:this.routeWork.checkpoint(),recruitment:this.recruitment.checkpoint(),expansion:this.expansion?.checkpoint(),territoryAbsorption:this.territoryAbsorption.checkpoint(),homeTerritory:this.homeTerritory.checkpoint(),avoidance:this.avoidance.checkpoint(),passageTraffic:this.passageTraffic.checkpoint(),conquest:this.conquest.checkpoint()}); }
+  checkpoint() { return structuredClone({version:1 as const,width:this.map.width(),height:this.map.height(),options:this.options,players:this.players,squads:this.squads,buildings:this.buildings,ships:this.ships,volleys:this.volleys,defenseZones:this.defenseZones,owners:this.owners,claims:this.claims,progress:this.progress,detours:this.detours,navigationProgress:this.navigationProgress,orderRevisions:this.orderRevisions,activeClaims:this.activeClaims,tick:this.tick,winner:this.winner,combatTicks:this.combatTicks,producedTroops:this.producedTroops,nextId:this.nextId,nextVolleyId:this.nextVolleyId,random:this.random.getState(),forest:forestOf(this.map)?.checkpoint(),routeWork:this.routeWork.checkpoint(),recruitment:this.recruitment.checkpoint(),expansion:this.expansion?.checkpoint(),territoryAbsorption:this.territoryAbsorption.checkpoint(),coastalTerritory:this.coastalTerritory.checkpoint(),homeTerritory:this.homeTerritory.checkpoint(),avoidance:this.avoidance.checkpoint(),passageTraffic:this.passageTraffic.checkpoint(),conquest:this.conquest.checkpoint()}); }
   restore(saved: ReturnType<Skirmish["checkpoint"]>): void {
     if (saved.version!==1 || saved.width!==this.map.width() || saved.height!==this.map.height() || JSON.stringify(saved.options)!==JSON.stringify(this.options) || Boolean(saved.expansion)!==Boolean(this.expansion)) throw new Error("Checkpoint does not match this simulation");
     const state=structuredClone(saved);
@@ -138,6 +142,7 @@ export class Skirmish {
     this.nextId=state.nextId;
     this.nextVolleyId=state.nextVolleyId;
     this.territoryAbsorption.restore(state.territoryAbsorption);
+    this.coastalTerritory.restore(state.coastalTerritory);
     this.homeTerritory.restore(state.homeTerritory);
     this.avoidance.restore(state.avoidance);
     this.passageTraffic.restore(state.passageTraffic);
@@ -172,7 +177,9 @@ export class Skirmish {
   private readonly activeClaims = new Set<number>();
   private readonly occupation = new Occupation();
   private readonly territoryAbsorption: TerritoryAbsorption;
+  private readonly coastalTerritory: CoastalTerritory;
   private readonly ownedTiles = new Map<number, Set<number>>();
+  private readonly ownedWater = new Map<number, Set<number>>();
   private readonly formations: Formations;
   private readonly avoidance: LocalAvoidance;
   private readonly passageTraffic: PassageTraffic;
@@ -215,6 +222,7 @@ export class Skirmish {
     readonly options: MatchOptions,
   ) {
     this.territoryAbsorption = new TerritoryAbsorption(map);
+    this.coastalTerritory = new CoastalTerritory(map);
     const humanCount = options.humanNames?.length ?? 1;
     if (humanCount < 1 || humanCount > MAX_HUMAN_PLAYERS || options.humanNames?.some(name => typeof name !== "string" || !name.trim() || Array.from(name).length > 20))
       throw new Error("Invalid human faction roster");
@@ -542,6 +550,12 @@ export class Skirmish {
         ship.waypoints = [];
         ship.path = [];
         ship.nextPathIndex = 0;
+        if (ship.kind === "warship") {
+          ship.patrolTile = null;
+          ship.repairPortId = null;
+          ship.repairState = "idle";
+          ship.patrolDwellTicks = 0;
+        }
       }
       return null;
     }
@@ -851,11 +865,13 @@ export class Skirmish {
   // rebuilds them. Every consumer is therefore independent of insertion order.
   private rebuildOwnedTiles(): void {
     this.ownedTiles.clear();
+    this.ownedWater.clear();
     for (let tile = 0; tile < this.owners.length; tile++) {
       const id = this.owners[tile];
       if (!id) continue;
-      let tiles = this.ownedTiles.get(id);
-      if (!tiles) this.ownedTiles.set(id, (tiles = new Set()));
+      const index = this.map.isLand(tile) ? this.ownedTiles : this.ownedWater;
+      let tiles = index.get(id);
+      if (!tiles) index.set(id, (tiles = new Set()));
       tiles.add(tile);
     }
   }
@@ -1137,6 +1153,13 @@ export class Skirmish {
       nextPathIndex: 0,
       fighting: false,
       boarding: null,
+      ...(kind === "warship"
+        ? {
+            patrolTile: tile,
+            repairState: "patrolling" as const,
+            patrolDwellTicks: 100,
+          }
+        : {}),
     });
     return null;
   }
@@ -1174,12 +1197,22 @@ export class Skirmish {
     for (const { ship, path } of planned) {
       ship.attackTargetId = null;
       this.cancelBoarding(ship);
-      if (append && ship.destination !== null) ship.waypoints.push(tile);
-      else {
+      if (append && ship.destination !== null) {
+        ship.waypoints.push(tile);
+        if (ship.kind === "warship" && ship.patrolTile === null) {
+          ship.patrolTile = tile;
+        }
+      } else {
         ship.destination = tile;
         ship.waypoints = [];
         ship.path = [this.tileOf(ship), ...path];
         ship.nextPathIndex = 0;
+        if (ship.kind === "warship") {
+          ship.patrolTile = tile;
+          ship.repairPortId = null;
+          ship.repairState = "patrolling";
+          ship.patrolDwellTicks = 100;
+        }
       }
     }
     return null;
@@ -1623,6 +1656,7 @@ export class Skirmish {
           continue;
         }
         ship.fighting = true;
+        ship.lastCombatTick = this.tick;
         ship.destination = null;
         ship.path = [];
         if (this.tick < (ship.nextAttackTick ?? 0)) continue;
@@ -1661,6 +1695,7 @@ export class Skirmish {
       } else if (ship.attackTargetId) ship.attackTargetId = null;
       if (!target) continue;
       ship.fighting = true;
+      ship.lastCombatTick = this.tick;
       if (vessel) {
         if (this.tick < (ship.nextAttackTick ?? 0)) continue;
         ship.nextAttackTick = this.tick + vessel.attack!.reloadTicks;
@@ -1685,7 +1720,10 @@ export class Skirmish {
     for (const ship of this.ships) {
       const damage = hits.damage(ship.id);
       ship.health = Math.max(0, ship.health - damage);
-      if (damage) ship.fighting = true;
+      if (damage) {
+        ship.fighting = true;
+        ship.lastCombatTick = this.tick;
+      }
     }
     const sunk = new Set(
       this.ships.filter((s) => s.health === 0).map((s) => s.id),
@@ -1706,6 +1744,312 @@ export class Skirmish {
     }
     for (let i = this.ships.length - 1; i >= 0; i--)
       if (sunk.has(this.ships[i].id)) this.ships.splice(i, 1);
+  }
+
+  shipMaxHealth(ship: Ship): number {
+    const vessel =
+      this.expansion?.vessel(ship) ??
+      (ship.definitionId ? VESSEL.get(ship.definitionId) : undefined);
+    return vessel?.health ?? SHIP_RULES[ship.kind]?.health ?? 1000;
+  }
+
+  private findNearestDockWithCapacity(
+    ship: Ship,
+    occupiedPorts: Set<number>,
+  ): { port: Building; berth: number } | null {
+    const shipTile = this.tileOf(ship);
+    if (!this.waterPaths.walkable(shipTile)) return null;
+    const shipComp = this.waterPaths.component[shipTile];
+
+    const friendlyPorts = this.buildings.filter(
+      (b) =>
+        b.type === "port" &&
+        b.playerId === ship.playerId &&
+        b.remainingTicks === 0 &&
+        (b.health ?? 1) > 0,
+    );
+    if (!friendlyPorts.length) return null;
+
+    const stacks = new Map<number, Building[]>();
+    for (const port of friendlyPorts) {
+      const list = stacks.get(port.tile) ?? [];
+      list.push(port);
+      stacks.set(port.tile, list);
+    }
+
+    let best: { port: Building; berth: number; dist: number } | null = null;
+
+    for (const [tile, portStack] of stacks) {
+      const freePort = portStack.find((p) => !occupiedPorts.has(p.id));
+      if (!freePort) continue;
+
+      const waterNeighbors = this.map.neighbors(tile).filter(
+        (n) => this.waterPaths.walkable(n) && this.waterPaths.component[n] === shipComp,
+      );
+      if (!waterNeighbors.length) continue;
+
+      const occupiedInStack = portStack.filter((p) => occupiedPorts.has(p.id)).length;
+      const berth = waterNeighbors[occupiedInStack % waterNeighbors.length];
+      const dist = this.map.euclideanDistSquared(shipTile, berth);
+
+      if (!best || dist < best.dist) {
+        best = { port: freePort, berth, dist };
+      }
+    }
+
+    return best ? { port: best.port, berth: best.berth } : null;
+  }
+
+  private findNearestPortBerth(
+    ship: Ship,
+  ): { port: Building; berth: number } | null {
+    const shipTile = this.tileOf(ship);
+    if (!this.waterPaths.walkable(shipTile)) return null;
+    const shipComp = this.waterPaths.component[shipTile];
+
+    const friendlyPorts = this.buildings.filter(
+      (b) =>
+        b.type === "port" &&
+        b.playerId === ship.playerId &&
+        b.remainingTicks === 0 &&
+        (b.health ?? 1) > 0,
+    );
+    if (!friendlyPorts.length) return null;
+
+    let best: { port: Building; berth: number; dist: number } | null = null;
+    for (const port of friendlyPorts) {
+      const waterNeighbors = this.map.neighbors(port.tile).filter(
+        (n) => this.waterPaths.walkable(n) && this.waterPaths.component[n] === shipComp,
+      );
+      if (!waterNeighbors.length) continue;
+      const berth = waterNeighbors[0];
+      const dist = this.map.euclideanDistSquared(shipTile, berth);
+      if (!best || dist < best.dist) {
+        best = { port, berth, dist };
+      }
+    }
+    return best ? { port: best.port, berth: best.berth } : null;
+  }
+
+  private pickPatrolWanderTile(anchor: number, current: number): number | null {
+    const ax = this.map.x(anchor);
+    const ay = this.map.y(anchor);
+    const comp = this.waterPaths.component[anchor];
+    const candidates: number[] = [];
+
+    for (let dy = -WARSHIP_PATROL_RADIUS; dy <= WARSHIP_PATROL_RADIUS; dy++) {
+      const y = ay + dy;
+      if (y < 0 || y >= this.map.height()) continue;
+      for (let dx = -WARSHIP_PATROL_RADIUS; dx <= WARSHIP_PATROL_RADIUS; dx++) {
+        if (dx === 0 && dy === 0) continue;
+        const x = ax + dx;
+        if (x < 0 || x >= this.map.width()) continue;
+        const tile = this.map.ref(x, y);
+        if (
+          this.waterPaths.walkable(tile) &&
+          this.waterPaths.component[tile] === comp &&
+          tile !== current
+        ) {
+          candidates.push(tile);
+        }
+      }
+    }
+
+    if (!candidates.length) return null;
+    const index = (this.tick + current) % candidates.length;
+    return candidates[index];
+  }
+
+  private stepWarships(): void {
+    const occupiedPorts = new Set<number>();
+    for (const s of this.ships) {
+      if (s.repairPortId !== null && s.repairPortId !== undefined) {
+        occupiedPorts.add(s.repairPortId);
+      }
+    }
+
+    for (const ship of this.ships) {
+      if (ship.kind !== "warship" || ship.refit || ship.boarding) continue;
+
+      const maxHealth = this.shipMaxHealth(ship);
+      const isDamaged = ship.health < maxHealth;
+      const shipTile = this.tileOf(ship);
+
+      if (ship.patrolTile === undefined || ship.patrolTile === null) {
+        ship.patrolTile = shipTile;
+        ship.repairState = "patrolling";
+      }
+
+      // 1. Repairing state
+      if (ship.repairState === "repairing") {
+        const port = this.buildings.find(
+          (b) =>
+            b.id === ship.repairPortId &&
+            b.type === "port" &&
+            b.playerId === ship.playerId &&
+            (b.health ?? 1) > 0,
+        );
+        if (!port) {
+          ship.repairPortId = null;
+          ship.repairState = "patrolling";
+          continue;
+        }
+
+        const distToPort = this.map.euclideanDistSquared(shipTile, port.tile);
+        if (distToPort > 8) {
+          ship.repairState = "returning-to-dock";
+          continue;
+        }
+
+        if (this.tick % TICKS_PER_SECOND === 0 && !ship.fighting) {
+          const healRate = Math.max(50, Math.ceil(maxHealth * WARSHIP_REPAIR_FRACTION));
+          ship.health = Math.min(maxHealth, ship.health + healRate);
+        }
+
+        if (ship.health >= maxHealth) {
+          occupiedPorts.delete(ship.repairPortId!);
+          ship.repairPortId = null;
+
+          if (
+            ship.patrolTile !== null &&
+            ship.patrolTile !== undefined &&
+            this.waterPaths.walkable(ship.patrolTile) &&
+            this.waterPaths.connected(shipTile, ship.patrolTile)
+          ) {
+            ship.repairState = "returning-to-patrol";
+            const path = this.waterPaths.find(shipTile, ship.patrolTile) ?? [];
+            ship.destination = ship.patrolTile;
+            ship.path = [shipTile, ...path];
+            ship.nextPathIndex = 0;
+            ship.waypoints = [];
+          } else {
+            ship.repairState = "patrolling";
+            ship.patrolTile = shipTile;
+            ship.destination = null;
+            ship.path = [];
+          }
+        }
+        continue;
+      }
+
+      // 2. Returning to dock state
+      if (ship.repairState === "returning-to-dock") {
+        const port = this.buildings.find(
+          (b) =>
+            b.id === ship.repairPortId &&
+            b.type === "port" &&
+            b.playerId === ship.playerId &&
+            (b.health ?? 1) > 0,
+        );
+        if (!port) {
+          ship.repairPortId = null;
+          ship.repairState = "patrolling";
+          continue;
+        }
+
+        const distToPort = this.map.euclideanDistSquared(shipTile, port.tile);
+        if (
+          distToPort <= 8 ||
+          ship.destination === null ||
+          ship.nextPathIndex >= ship.path.length
+        ) {
+          ship.repairState = "repairing";
+          ship.destination = null;
+          ship.path = [];
+          ship.nextPathIndex = 0;
+        }
+        continue;
+      }
+
+      // 3. Waiting for dock slot state
+      if (ship.repairState === "waiting-for-dock") {
+        const dock = this.findNearestDockWithCapacity(ship, occupiedPorts);
+        if (dock) {
+          ship.repairPortId = dock.port.id;
+          occupiedPorts.add(dock.port.id);
+          ship.repairState = "returning-to-dock";
+          ship.destination = dock.berth;
+          const path = this.waterPaths.find(shipTile, dock.berth) ?? [];
+          ship.path = [shipTile, ...path];
+          ship.nextPathIndex = 0;
+          ship.waypoints = [];
+        }
+        continue;
+      }
+
+      // 4. Returning to patrol state
+      if (ship.repairState === "returning-to-patrol") {
+        if (
+          ship.destination === null ||
+          ship.nextPathIndex >= ship.path.length ||
+          (ship.patrolTile !== null && shipTile === ship.patrolTile)
+        ) {
+          ship.repairState = "patrolling";
+          ship.patrolDwellTicks = 60 + (ship.id % 40);
+          ship.destination = null;
+          ship.path = [];
+        }
+        continue;
+      }
+
+      // 5. Damaged warship retreats to dock when out of combat
+      const outOfCombat =
+        !ship.fighting &&
+        !ship.attackTargetId &&
+        this.tick - (ship.lastCombatTick ?? -WARSHIP_COMBAT_COOLDOWN) >= WARSHIP_COMBAT_COOLDOWN;
+
+      if (isDamaged && outOfCombat && (this.tick + ship.id) % 10 === 0) {
+        const dock = this.findNearestDockWithCapacity(ship, occupiedPorts);
+        if (dock) {
+          ship.repairPortId = dock.port.id;
+          occupiedPorts.add(dock.port.id);
+          ship.repairState = "returning-to-dock";
+          ship.destination = dock.berth;
+          const path = this.waterPaths.find(shipTile, dock.berth) ?? [];
+          ship.path = [shipTile, ...path];
+          ship.nextPathIndex = 0;
+          ship.waypoints = [];
+          continue;
+        } else {
+          const staging = this.findNearestPortBerth(ship);
+          if (staging) {
+            ship.repairState = "waiting-for-dock";
+            ship.destination = staging.berth;
+            const path = this.waterPaths.find(shipTile, staging.berth) ?? [];
+            ship.path = [shipTile, ...path];
+            ship.nextPathIndex = 0;
+            ship.waypoints = [];
+            continue;
+          }
+        }
+      }
+
+      // 6. Patrolling around patrolTile ("Move around a bit")
+      if (
+        ship.repairState === "patrolling" &&
+        ship.destination === null &&
+        !ship.fighting &&
+        !ship.attackTargetId &&
+        !isDamaged &&
+        ship.patrolTile !== null &&
+        ship.patrolTile !== undefined
+      ) {
+        if ((ship.patrolDwellTicks ?? 0) > 0) {
+          ship.patrolDwellTicks!--;
+        } else {
+          const wanderTile = this.pickPatrolWanderTile(ship.patrolTile, shipTile);
+          if (wanderTile !== null && wanderTile !== shipTile) {
+            ship.destination = wanderTile;
+            const wanderPath = this.waterPaths.find(shipTile, wanderTile);
+            if (wanderPath) {
+              ship.path = [shipTile, ...wanderPath];
+              ship.nextPathIndex = 0;
+            }
+          }
+          ship.patrolDwellTicks = 120 + ((ship.id * 17) % 80);
+        }
+      }
+    }
   }
 
   step(): void {
@@ -1806,6 +2150,8 @@ export class Skirmish {
       }
     this.replenish();
     this.capture();
+    for (const claim of this.coastalTerritory.step(this.tick, this.owners, this.ships))
+      this.changeOwner(claim.tile, claim.owner);
     for (const pocket of this.territoryAbsorption.step(
       this.tick, this.owners,
       (tile) => this.buildingsAt(tile).length > 0,
@@ -1821,6 +2167,7 @@ export class Skirmish {
     }
     this.processBoarding();
     this.shoreTransport.step();
+    this.stepWarships();
     this.stepRecruitment();
     this.checkWinner();
     this.expansion?.armies.reconcile();
@@ -2543,16 +2890,19 @@ export class Skirmish {
   private changeOwner(tile: number, id: number): void {
     const old = this.owners[tile];
     if (old === id) return;
-    if (old) this.ownedTiles.get(old)?.delete(tile);
+    const land = this.map.isLand(tile);
+    const index = land ? this.ownedTiles : this.ownedWater;
+    if (old) index.get(old)?.delete(tile);
     if (id) {
-      let tiles = this.ownedTiles.get(id);
-      if (!tiles) this.ownedTiles.set(id, (tiles = new Set()));
+      let tiles = index.get(id);
+      if (!tiles) index.set(id, (tiles = new Set()));
       tiles.add(tile);
     }
-    if (old) this.player(old)!.land--;
+    if (old && land) this.player(old)!.land--;
     this.owners[tile] = id;
     this.territoryAbsorption.changed(tile);
-    if (id) this.player(id)!.land++;
+    this.coastalTerritory.changed(tile);
+    if (id && land) this.player(id)!.land++;
     this.buildingIndex.ensure(this.buildings);
     const buildings = this.buildingIndex.at(tile);
     const captured = buildings.some(
@@ -3090,7 +3440,7 @@ export class Skirmish {
           actorId: beneficiary,
           otherId: player.id,
         });
-      for (const tile of [...(this.ownedTiles.get(player.id) ?? [])].sort(
+      for (const tile of [...(this.ownedTiles.get(player.id) ?? []), ...(this.ownedWater.get(player.id) ?? [])].sort(
         (a, b) => a - b,
       )) {
         if (this.owners[tile] !== player.id) continue;

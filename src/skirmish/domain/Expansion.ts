@@ -1065,12 +1065,13 @@ export class Expansion {
         "depot",
         "port",
         "oil-well",
+        "oil-rig",
         "airstrip",
         "missile-defence",
         "missile-silo",
         "mirv-launcher",
       ])) {
-        const extraction = type === "mine" || type === "oil-well";
+        const extraction = type === "mine" || type === "oil-well" || type === "oil-rig";
         if (
           !extraction &&
           own.filter((b) => b.type === type && b.age === state.age).length >=
@@ -1084,7 +1085,7 @@ export class Expansion {
         const tech = buildingTechnology(type, state.age);
         if (!tech || !this.progression.has(player.id, tech)) continue;
         const candidates =
-          type === "mine" || type === "oil-well"
+          extraction
             ? this.supply.deposits
                 .filter(
                   (d) =>

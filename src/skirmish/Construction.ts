@@ -24,8 +24,13 @@ export function constructionRejection(
     map.isImpassable(tile) ||
     owners[tile] !== player.id
   )
-    return "Buildings need passable friendly land";
-  if (type === "oil-rig" && coastalWaterDistances(map)[tile] > coastalRanges(map).oilTiles)
+    return type === "oil-rig"
+      ? "Oil rigs need claimed coastal water"
+      : "Buildings need passable friendly land";
+  if (
+    type === "oil-rig" &&
+    coastalWaterDistances(map)[tile] > coastalRanges(map).oilTiles
+  )
     return "Oil rigs need claimed coastal water within the offshore oil band";
   if (type === "port" && !map.neighbors(tile).some((n) => map.isWater(n)))
     return "Ports need a land tile directly beside water";

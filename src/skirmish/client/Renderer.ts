@@ -1691,8 +1691,15 @@ export class Renderer {
       ctx.font = "600 9px system-ui";
       ctx.textAlign = "center";
       ctx.strokeStyle = "#10212b";
-      ctx.lineWidth = 3;
-      const label = `${ship.health} HP${ship.kind === "transport" ? ` · ${cargo}/${ship.shoreTransfer?.capacity ?? rules.capacity ?? 4}` : ""}${ship.shoreTransfer ? ` · ${ship.shoreTransfer.phase}` : ship.boarding ? " · meeting" : ""}${ship.fighting ? " ⚔" : ""}`;
+      const repairInfo =
+        ship.repairState === "repairing"
+          ? " · repairing"
+          : ship.repairState === "returning-to-dock"
+            ? " · docking"
+            : ship.repairState === "waiting-for-dock"
+              ? " · dock full"
+              : "";
+      const label = `${ship.health} HP${repairInfo}${ship.kind === "transport" ? ` · ${cargo}/${ship.shoreTransfer?.capacity ?? rules.capacity ?? 4}` : ""}${ship.shoreTransfer ? ` · ${ship.shoreTransfer.phase}` : ship.boarding ? " · meeting" : ""}${ship.fighting ? " ⚔" : ""}`;
       ctx.strokeText(label, p.x, p.y + 22);
       ctx.fillStyle = "#eaf3ef";
       ctx.fillText(label, p.x, p.y + 22);
