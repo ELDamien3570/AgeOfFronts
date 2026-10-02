@@ -76,6 +76,13 @@ export class LiveMatch {
   private stopped = false;
   private running = false;
   private tick = 0;
+  private lastProgressAt = 0;
+  private latestDiagnostics?: MatchAdvance["diagnostics"];
+  progress() {
+    const ageMs = this.running ? Math.max(0, this.now() - this.lastProgressAt) : 0;
+    return { state: this.stopped ? "stopped" : !this.running ? "preparing" : this.sync || this.emptyDeadline !== undefined ? "paused" : ageMs > 5000 ? "stalled" : "running",
+      tick: this.tick, ageMs, diagnostics: this.latestDiagnostics };
+  }
   private nextTickAt = 0;
   private nextSnapshotAt = 0;
   private disconnected = new Set<number>();
@@ -631,6 +638,7 @@ export class LiveMatch {
       });
       if (this.stopped) return;
       this.running = true;
+      this.lastProgressAt = this.now();
       this.tick = initial.tick;
       this.runtimeSeats = initial.seats ?? [];
       this.nextTickAt = this.now() + TICK_MS;
@@ -662,7 +670,9 @@ export class LiveMatch {
       publish,
     });
     if (this.stopped) return;
+    if (result.tick > this.tick) this.lastProgressAt = this.now();
     this.tick = result.tick;
+    if (result.diagnostics) this.latestDiagnostics = result.diagnostics;
     if (result.seats) this.runtimeSeats = result.seats;
     if (result.packet) {
       this.publicationSequence++;

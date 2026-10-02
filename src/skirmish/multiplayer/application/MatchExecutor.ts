@@ -1,3 +1,4 @@
+import type { MatchDiagnostics } from "../../RuntimeDiagnostics";
 import type { ElevationData } from "../../Elevation";
 import type { CommandOutcome } from "../../CommandApplications";
 import type { ForestData } from "../../Forest";
@@ -43,6 +44,7 @@ export interface JoinBarrier extends SeatStatus {
   baseline: EncodedState;
 }
 export interface MatchAdvance {
+  diagnostics?: MatchDiagnostics;
   seats?: RuntimeSeat[];
   tick: number;
   winner: number | null;
