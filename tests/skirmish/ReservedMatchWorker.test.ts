@@ -1,4 +1,4 @@
-import { describe, expect, it } from "vitest";
+import { describe, expect, it, vi } from "vitest";
 import { defaultLobbySettings } from "../../src/skirmish/lobby/LobbyDirectory";
 import type { MatchAdvance } from "../../src/skirmish/multiplayer/application/MatchExecutor";
 import { ReservedMatchWorker } from "../../src/skirmish/multiplayer/infrastructure/ReservedMatchWorker";
@@ -28,6 +28,32 @@ const advance = (ticks: number, publish = true) => ({
 });
 
 describe("reserved authoritative worker", () => {
+  it("streams ordered coherent publications outside advance results and drains before join barriers", async () => {
+    const worker = new ReservedMatchWorker(), publications: { tick: number; packet: EncodedState }[] = [];
+    const unsubscribe = worker.onPublication(publication => publications.push(publication));
+    try {
+      const initial = await worker.request<MatchAdvance>({ ...initialize, streamPublications: true });
+      const decoder = new SnapshotDecoder(); decoder.decode(await decodeState<SnapshotPacket>(initial.packet!));
+      const first = await worker.request<MatchAdvance>({ ...advance(1), commands: [{ id: "coherent-research",
+        command: { type: "research", playerId: 1, technologyId: "stoneage-shorecraft" } }] });
+      expect(first.tick).toBe(1); expect(first.packet).toBeUndefined();
+      const second = await worker.request<MatchAdvance>(advance(1, false)); expect(second.tick).toBe(2);
+      const joined = await worker.request<import("../../src/skirmish/multiplayer/application/MatchExecutor").JoinBarrier>({ type: "join-barrier", playerId: 1 });
+      expect(publications.map(p => p.tick)).toEqual([1]);
+      const packet = await decodeState<SnapshotPacket>(publications[0].packet);
+      expect(packet.tick).toBe(1);
+      expect(packet.expansion!.progression[1].research.naval!.remainingTicks).toBe(599);
+      decoder.decode(packet);
+      const shared = decoder.decode(await decodeState<SnapshotPacket>(joined.packet));
+      const baseline = new SnapshotDecoder().decode(await decodeState<SnapshotPacket>(joined.baseline));
+      expect(shared.owners).toEqual(baseline.owners); expect(shared.squads).toEqual(baseline.squads);
+      expect(shared.tick).toBe(2);
+      expect(baseline.expansion!.progression[1].research.naval!.remainingTicks).toBe(598);
+      await worker.request<MatchAdvance>(advance(3));
+      await vi.waitFor(() => expect(publications.map(p => p.tick)).toEqual([1, 5]));
+      expect((await decodeState<SnapshotPacket>(publications[1].packet)).tick).toBe(5);
+    } finally { unsubscribe(); await worker.close(); }
+  }, 20_000);
   it("correlates deferred execution and supersession, rejects oversized batches before advancing, and deduplicates completed commands", async () => {
     const worker = new ReservedMatchWorker();
     try {

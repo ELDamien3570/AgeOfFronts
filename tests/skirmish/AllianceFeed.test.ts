@@ -64,6 +64,13 @@ function fixture() {
 }
 
 describe("world alliance logger", () => {
+  it("shows declared operations and withdrawal once without exposing preparation", () => {
+    const f = fixture();
+    f.match.expansion!.announce({kind: "war", actorId: 2, otherId: 3, action: "declare"});
+    f.match.expansion!.announce({kind: "war", actorId: 2, otherId: 3, action: "withdraw"});
+    f.update(); f.update();
+    expect(f.messages()).toEqual(["Blue Bay declared war on Moss Dominion", "Blue Bay ended its offensive against Moss Dominion"]);
+  });
   it("announces AI-to-AI offers, formations and breakups once and keeps faction inspection working", () => {
     const f = fixture();
     f.action(2, 3, "offer");
@@ -91,7 +98,7 @@ describe("world alliance logger", () => {
     expect(f.messages().slice(-1)[0]).toBe(
       "Moss Dominion declined an alliance with Blue Bay",
     );
-    f.match.tick = 600;
+    f.match.tick = 1200; // AI recipient cooldown is shared across proposers.
     f.action(2, 3, "offer");
     f.action(3, 2, "offer");
     expect(f.messages().slice(-1)[0]).toBe(

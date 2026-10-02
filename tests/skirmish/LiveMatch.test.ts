@@ -14,14 +14,16 @@ import type {
 import type { ServerMessage } from "../../src/skirmish/multiplayer/Protocol";
 
 const packet = { hash: "0".repeat(64), payload: "test" };
-async function fixture() {
+async function fixture(stream = false) {
   let now = 0,
     tick = 0,
     released = 0,
     closed = 0;
   const requests: ExecutorRequest[] = [];
   const messages: { guest: string; message: ServerMessage }[] = [];
+  let publication: ((value: { tick: number; packet: typeof packet }) => void) | undefined;
   const executor: MatchExecutor = {
+    ...(stream ? { onPublication: (listener: NonNullable<typeof publication>) => { publication = listener; return () => { publication = undefined; }; } } : {}),
     async request<T extends ExecutorResult>(
       request: ExecutorRequest,
     ): Promise<T> {
@@ -42,7 +44,7 @@ async function fixture() {
           result = {
             tick,
             winner: null,
-            packet: request.publish ? packet : undefined,
+            packet: !stream && request.publish ? packet : undefined,
             rejectedCommands: [],
           };
           break;
@@ -104,6 +106,7 @@ async function fixture() {
   ).toBe(true);
   requests.length = messages.length = 0;
   return {
+    publish: (tick: number) => publication?.({ tick, packet }),
     match,
     executor,
     requests,
@@ -116,6 +119,16 @@ async function fixture() {
 }
 
 describe("server-authoritative live match", () => {
+  it("labels delayed publication with its capture tick without rewinding simulation progress", async () => {
+    const f = await fixture(true);
+    f.setTime(10_200); await f.match.advance();
+    expect(f.match.progress().tick).toBe(4);
+    f.publish(1);
+    const states = f.messages.filter(m => m.message.type === "match-state");
+    expect(states).toHaveLength(2);
+    expect(states.every(m => m.message.type === "match-state" && m.message.tick === 1)).toBe(true);
+    expect(f.match.progress().tick).toBe(4);
+  });
   it("reports lack of match progress separately from a live coordinator", async () => {
     const f = await fixture();
     expect(f.match.progress()).toMatchObject({ state: "running", tick: 0, ageMs: 0 });
