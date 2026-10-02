@@ -19,6 +19,46 @@ function status(match: Skirmish) {
   return events[events.length - 1]?.status;
 }
 describe("transactional replacement movement", () => {
+  it("keeps an unchanged AI route while another faction has pending Shift intentions, including after restore", () => {
+    const {match,map,own}=fixture();
+    const other=match.squads.filter(s=>s.playerId===2);
+    match.setAiController(2,false);
+    const human = {type:"order" as const,playerId:2,squadIds:other.map(s=>s.id),order:{type:"move" as const,tile:map.ref(55,30)}};
+    expect(match.applyCommand(human)).toBeNull();
+    expect(match.applyCommand({...human,append:true,order:{type:"move",tile:map.ref(60,40)}})).toBeNull();
+    match.setAiController(1,true);
+    const ai = {type:"order" as const,playerId:1,squadIds:own.map(s=>s.id),order:{type:"move" as const,tile:map.ref(75,50)}};
+    expect(match.applyCommand(ai)).toBeNull();
+    expect(match.movementAdmission.queued(human.squadIds)).toBe(1);
+    const saved=match.checkpoint();
+    const clone = new Skirmish(map,match.options);clone.restore(saved);
+    expect(clone.movementAdmission.queued(human.squadIds)).toBe(1);
+    expect(match.applyCommand(ai)).toBeNull();expect(clone.applyCommand(ai)).toBeNull();
+    expect(match.checkpoint()).toEqual(saved);expect(clone.checkpoint()).toEqual(saved);
+  });
+  it("admits ordinary AI moves without restarting the same pending intention", () => {
+    const { match, map, own } = fixture();
+    match.setAiController(1, true);
+    const ids = own.map((s) => s.id),
+      tile = map.ref(75, 50);
+    const command = {
+      type: "order" as const,
+      playerId: 1,
+      squadIds: ids,
+      order: { type: "move" as const, tile },
+    };
+    const oldOrders = own.map((s) => structuredClone(s.order));
+    expect(match.applyCommand(command)).toBeNull();
+    expect(own.map((s) => s.order)).toEqual(oldOrders);
+    const saved = match.movementAdmission.checkpoint();
+    expect(match.applyCommand(command)).toBeNull();
+    expect(match.movementAdmission.checkpoint()).toEqual(saved);
+    for (let i = 0; i < 400 && match.movementAdmission.pendingCount; i++)
+      match.step();
+    expect(match.movementAdmission.pendingCount).toBe(0);
+    expect(status(match)).toBe("executed");
+    expect(own.every((s) => s.order.type === "move")).toBe(true);
+  });
   it("retains later Shift legs when a mixed idle member begins its first deferred move", () => {
     const { match, map, own } = fixture();
     const ids = [own[0].id, own[1].id];
@@ -204,13 +244,14 @@ describe("transactional replacement movement", () => {
       }),
     ).toBeNull();
     for (let i = 0; i < 3; i++) match.step();
+    const replacementId = match.movementAdmission.checkpoint().pending[0][0];
     const clone = new Skirmish(map, match.options);
     clone.restore(match.checkpoint());
     let executed = false;
     for (let i = 0; i < 300; i++) {
       match.step();
       clone.step();
-      if (status(match) === "executed") {
+      if (match.movementAdmission.events.some(e => e.id === replacementId && e.status === "executed")) {
         executed = true;
         break;
       }

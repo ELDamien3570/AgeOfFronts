@@ -7,6 +7,7 @@ const EMPTY_BUILDINGS: readonly Building[] = Object.freeze([]);
 // building, its cost, construction timer and capture lifecycle.
 export class BuildingIndex {
   private readonly tiles = new Map<number, Building[]>();
+  private readonly ids = new Map<number, Building>();
   private readonly towerSectors = new Map<number, Building[]>();
   private readonly representatives = new Map<
     number,
@@ -24,6 +25,7 @@ export class BuildingIndex {
   constructor(private readonly map: GameMap) {}
   rebuild(buildings: readonly Building[]): void {
     this.tiles.clear();
+    this.ids.clear();
     this.towerSectors.clear();
     this.representatives.clear();
     this.income.clear();
@@ -35,6 +37,7 @@ export class BuildingIndex {
     if (this.count !== buildings.length) this.rebuild(buildings);
   }
   add(building: Building): void {
+    this.ids.set(building.id, building);
     let stack = this.tiles.get(building.tile);
     if (!stack) this.tiles.set(building.tile, (stack = []));
     stack.push(building);
@@ -68,6 +71,9 @@ export class BuildingIndex {
   }
   at(tile: number): readonly Building[] {
     return this.tiles.get(tile) ?? EMPTY_BUILDINGS;
+  }
+  byId(id: number): Building | undefined {
+    return this.ids.get(id);
   }
   production(owner: number) {
     return this.income.get(owner) ?? { reserves: 0, gold: 0 };

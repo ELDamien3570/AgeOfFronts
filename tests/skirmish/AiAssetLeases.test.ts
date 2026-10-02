@@ -17,6 +17,18 @@ const lease = (
   expiresTick: 200,
 });
 describe("AI movement ownership", () => {
+  it("drops displaced roster members without touching another controller", () => {
+    const leases = new AiAssetLeases();
+    leases.acquire([
+      lease("ship:1", "navy"),
+      lease("ship:2", "navy"),
+      lease("ship:3", "repair", "recovery"),
+    ]);
+    leases.retain("navy", new Set(["ship:2"]));
+    expect(leases.held("ship:1")).toBe(false);
+    expect(leases.owns("ship:2", "navy")).toBe(true);
+    expect(leases.owns("ship:3", "repair")).toBe(true);
+  });
   it("atomically leases formations and preserves higher-priority recovery and manual control", () => {
     const leases = new AiAssetLeases();
     expect(leases.acquire([lease("squad:1", "repair", "recovery")])).toBe(true);

@@ -215,7 +215,8 @@ export class Fortifications {
     age: Age,
     buildings: readonly Building[] | TowerSiteIndex,
   ): { links: { a: number; tiles: number[] }[]; gold: number } {
-    return quoteTowerPlan(this.map, tile, owner, age, buildings, t => this.tileIndex.has(t));
+    return quoteTowerPlan(this.map, tile, owner, age, buildings, t =>
+      (this.tileIndex.get(t) ?? NO_BARRIERS).some(w => w.health > 0));
   }
   addTower(
     tower: Building,

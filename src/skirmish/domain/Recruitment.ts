@@ -13,13 +13,25 @@ export const RECRUITMENT_SECONDS = Object.freeze({
 });
 export class Recruitment {
   readonly jobs: RecruitmentJob[] = [];
+  private readonly ids = new Map<number, RecruitmentJob>();
   private nextId = 1;
+  private readonly listeners = new Set<
+    (job: RecruitmentJob, added: boolean) => void
+  >();
+  onChange(
+    listener: (job: RecruitmentJob, added: boolean) => void,
+  ): () => void {
+    this.listeners.add(listener);
+    return () => this.listeners.delete(listener);
+  }
   checkpoint() {
     return structuredClone({ jobs: this.jobs, nextId: this.nextId });
   }
   restore(saved: ReturnType<Recruitment["checkpoint"]>): void {
     const state = structuredClone(saved);
     this.jobs.splice(0, this.jobs.length, ...state.jobs);
+    this.ids.clear();
+    for (const job of this.jobs) this.ids.set(job.id, job);
     this.nextId = state.nextId;
   }
   count(
@@ -33,6 +45,9 @@ export class Recruitment {
         j.category === category &&
         (buildingId === undefined || j.buildingId === buildingId),
     ).length;
+  }
+  byId(id: number): RecruitmentJob | undefined {
+    return this.ids.get(id);
   }
   chooseProducer(
     candidates: readonly Building[],
@@ -52,11 +67,14 @@ export class Recruitment {
     )[0];
   }
   enqueue(job: Omit<RecruitmentJob, "id" | "remainingTicks">): void {
-    this.jobs.push({
+    const paid: RecruitmentJob = {
       ...job,
       id: this.nextId++,
       remainingTicks: job.totalTicks,
-    });
+    };
+    this.jobs.push(paid);
+    this.ids.set(paid.id, paid);
+    for (const listener of this.listeners) listener(paid, true);
   }
   step(
     buildings: readonly Building[],
@@ -77,6 +95,8 @@ export class Recruitment {
       ) {
         refund(job);
         this.jobs.splice(i, 1);
+        this.ids.delete(job.id);
+        for (const listener of this.listeners) listener(job, false);
         continue;
       }
       if (!busy.has(job.buildingId) && !producer.remainingTicks) {
@@ -85,6 +105,8 @@ export class Recruitment {
         // Completed training waits for a safe spawn position without charging again.
         if (!job.remainingTicks && complete(job)) {
           this.jobs.splice(i, 1);
+          this.ids.delete(job.id);
+          for (const listener of this.listeners) listener(job, false);
           continue;
         }
       }

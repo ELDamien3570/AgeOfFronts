@@ -111,6 +111,38 @@ afterEach(() => {
 });
 
 describe("server-only match client", () => {
+  it("separates transport admission from correlated domain results and fences foreign match and faction receipts", async () => {
+    await initialize();
+    const worker=DecoderWorker.instances[0];
+    connection().message(state(0));
+    await vi.waitFor(()=>expect(worker.postMessage).toHaveBeenCalledTimes(1));
+    worker.deliver(packet(0));
+    await vi.waitFor(()=>expect(session.commandsAvailable).toBe(true));
+    const outcomes=vi.fn();session.oncommandoutcome=outcomes;
+    session.postMessage({type:"command",command:{type:"order",playerId:2,squadIds:[5],order:{type:"move",tile:50}}});
+    await vi.waitFor(()=>expect(outcomes).toHaveBeenCalledWith(expect.objectContaining({status:"accepted"})));
+    const request=connection().request.mock.calls.find((c:any[])=>c[0].type==="match-command")[0];
+    const outcome={id:request.requestId,playerId:2,tick:4,status:"deferred" as const};
+    connection().message({type:"match-command-outcome",matchId:"foreign",outcome});
+    connection().message({type:"match-command-outcome",matchId:manifest.id,outcome:{...outcome,playerId:1}});
+    connection().message({type:"match-command-outcome",matchId:manifest.id,outcome});
+    connection().message({type:"match-command-outcome",matchId:manifest.id,outcome:{...outcome,tick:8,status:"executed"}});
+    await vi.waitFor(()=>expect(outcomes).toHaveBeenCalledTimes(3));
+    expect(outcomes.mock.calls.map(c=>c[0].status)).toEqual(["accepted","deferred","executed"]);
+    expect(session.lastCommandOutcome).toMatchObject({id:request.requestId,tick:8,status:"executed"});
+  });
+  it("does not overwrite a completed outcome when its transport ACK resolves late",async()=>{
+    await initialize();const worker=DecoderWorker.instances[0];
+    connection().message(state(0));await vi.waitFor(()=>expect(worker.postMessage).toHaveBeenCalledTimes(1));worker.deliver(packet(0));
+    await vi.waitFor(()=>expect(session.commandsAvailable).toBe(true));
+    let acknowledge!:()=>void;connection().request.mockImplementationOnce(()=>new Promise<void>(resolve=>{acknowledge=resolve;}));
+    const outcomes=vi.fn();session.oncommandoutcome=outcomes;
+    session.postMessage({type:"command",command:{type:"order",playerId:2,squadIds:[5],order:{type:"hold"}}});
+    const request=connection().request.mock.calls.find((c:any[])=>c[0].type==="match-command")[0];
+    connection().message({type:"match-command-outcome",matchId:manifest.id,outcome:{id:request.requestId,playerId:2,tick:1,status:"executed"}});
+    await vi.waitFor(()=>expect(outcomes).toHaveBeenCalledTimes(1));acknowledge();await Promise.resolve();await Promise.resolve();
+    expect(outcomes).toHaveBeenCalledTimes(1);expect(session.lastCommandOutcome?.status).toBe("executed");
+  });
   it("loads presentation without automatic reconnect and declares readiness without starting a simulation", async () => {
     await initialize();
     expect(connection().options).toEqual({ reconnect: false });

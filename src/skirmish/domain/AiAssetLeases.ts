@@ -71,6 +71,13 @@ export class AiAssetLeases {
     for (const [asset, lease] of this.leases)
       if (lease.controller === controller) this.leases.delete(asset);
   }
+  /** Keep the controller's current roster without releasing another owner's
+   * lease or leaving replaced members held until their original deadline. */
+  retain(controller: string, assets: ReadonlySet<AiAsset>): void {
+    for (const [asset, lease] of this.leases)
+      if (lease.controller === controller && !assets.has(asset))
+        this.leases.delete(asset);
+  }
   releasePlayer(playerId: number): void {
     for (const [asset, lease] of this.leases)
       if (lease.playerId === playerId) this.leases.delete(asset);

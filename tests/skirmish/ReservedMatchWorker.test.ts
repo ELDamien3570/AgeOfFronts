@@ -5,6 +5,7 @@ import { ReservedMatchWorker } from "../../src/skirmish/multiplayer/infrastructu
 import type { EncodedState } from "../../src/skirmish/multiplayer/StateCodec";
 import { decodeState } from "../../src/skirmish/multiplayer/StateCodec";
 import type { SnapshotPacket } from "../../src/skirmish/Protocol";
+import { SnapshotDecoder } from "../../src/skirmish/SnapshotCodec";
 
 const initialize = {
   type: "initialize" as const,
@@ -27,6 +28,75 @@ const advance = (ticks: number, publish = true) => ({
 });
 
 describe("reserved authoritative worker", () => {
+  it("correlates deferred execution and supersession, rejects oversized batches before advancing, and deduplicates completed commands", async () => {
+    const worker = new ReservedMatchWorker();
+    try {
+      const initial = await worker.request<MatchAdvance>({
+        ...initialize,
+        options: { ...initialize.options, deferredPlanning: true },
+      });
+      const state = new SnapshotDecoder().decode(
+        await decodeState<SnapshotPacket>(initial.packet!),
+      );
+      const ids = state.squads.filter((s) => s.playerId === 1).map((s) => s.id);
+      const command = {
+        type: "order" as const,
+        playerId: 1,
+        squadIds: ids,
+        order: { type: "move" as const, tile: 80 * 160 + 120 },
+      };
+      await expect(
+        worker.request({
+          ...advance(1, false),
+          commands: Array.from({ length: 101 }, (_, i) => ({
+            id: `overflow-${i}`,
+            command,
+          })),
+        }),
+      ).rejects.toThrow("batch exceeds");
+      let update = await worker.request<MatchAdvance>({
+        ...advance(1, false),
+        commands: [{ id: "original", command }],
+      });
+      expect(update.tick).toBe(1);
+      expect(update.commandOutcomes).toContainEqual(
+        expect.objectContaining({ id: "original", status: "deferred" }),
+      );
+      update = await worker.request<MatchAdvance>({
+        ...advance(1, false),
+        commands: [
+          {
+            id: "replacement",
+            command: {
+              ...command,
+              order: { type: "move", tile: 65 * 160 + 115 },
+            },
+          },
+        ],
+      });
+      expect(update.commandOutcomes).toContainEqual(
+        expect.objectContaining({ id: "original", status: "superseded" }),
+      );
+      let executed = update.commandOutcomes?.find(
+        (o) => o.id === "replacement" && o.status === "executed",
+      );
+      for (let i = 0; i < 100 && !executed; i++) {
+        update = await worker.request<MatchAdvance>(advance(4, false));
+        executed = update.commandOutcomes?.find(
+          (o) => o.id === "replacement" && o.status === "executed",
+        );
+      }
+      expect(executed).toBeDefined();
+      update = await worker.request<MatchAdvance>({
+        ...advance(1, false),
+        commands: [{ id: "replacement", command }],
+      });
+      expect(update.commandOutcomes).toContainEqual(executed);
+      expect(update.rejectedCommands).toEqual([]);
+    } finally {
+      await worker.close();
+    }
+  }, 20_000);
   it("runs directly, emits an initial baseline and independently scheduled presentation deltas", async () => {
     const worker = new ReservedMatchWorker();
     try {

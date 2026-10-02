@@ -116,6 +116,24 @@ async function fixture() {
 }
 
 describe("server-authoritative live match", () => {
+  it("relays correlated outcomes only to their original guest and strips the authenticated identity prefix", async () => {
+    const f = await fixture();
+    f.executor.request = async <T extends ExecutorResult>(request: ExecutorRequest) => {
+      expect(request.type).toBe("advance");
+      return {tick:1,winner:null,rejectedCommands:[{id:"a-bad",playerId:1,message:"Rejected"}],commandOutcomes:[
+        {id:"a-move",playerId:1,tick:1,status:"deferred"},
+        {id:"a-bad",playerId:1,tick:1,status:"rejected",reason:"Rejected"},
+        {id:"predecessor-move",playerId:1,tick:1,status:"superseded"},
+        {id:"b-move",playerId:2,tick:1,status:"executed"},
+      ]} as T;
+    };
+    f.setTime(10_050);await f.match.advance();
+    expect(f.messages).toEqual([
+      {guest:"a",message:{type:"match-command-outcome",matchId:"test",outcome:{id:"move",playerId:1,tick:1,status:"deferred"}}},
+      {guest:"a",message:{type:"match-command-outcome",matchId:"test",outcome:{id:"bad",playerId:1,tick:1,status:"rejected",reason:"Rejected"}}},
+      {guest:"b",message:{type:"match-command-outcome",matchId:"test",outcome:{id:"move",playerId:2,tick:1,status:"executed"}}},
+    ]);
+  });
   it("waits for prepared map identity before announcing, including a departure during loading", async () => {
     let finish!: (result: ExecutorResult) => void;
     const messages: { guest: string; message: ServerMessage }[] = [];

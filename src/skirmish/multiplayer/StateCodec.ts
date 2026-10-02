@@ -48,8 +48,40 @@ function base64(bytes: Uint8Array): string {
     text += String.fromCharCode(...bytes.subarray(start, start + 8192));
   return btoa(text);
 }
+const base64Digits = new Int16Array(128).fill(-1);
+for (const [index, digit] of [
+  ..."ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789+/",
+].entries())
+  base64Digits[digit.charCodeAt(0)] = index;
 function unbase64(text: string): Uint8Array<ArrayBuffer> {
-  return Uint8Array.from(atob(text), (char) => char.charCodeAt(0));
+  if (text.length % 4) throw new Error("Invalid checkpoint base64");
+  const padding = text.endsWith("==") ? 2 : text.endsWith("=") ? 1 : 0;
+  const output = new Uint8Array((text.length / 4) * 3 - padding);
+  const digit = (at: number) => base64Digits[text.charCodeAt(at)] ?? -1;
+  let cursor = 0;
+  for (let at = 0; at < text.length; at += 4) {
+    const a = digit(at),
+      b = digit(at + 1),
+      padC = text.charCodeAt(at + 2) === 61,
+      padD = text.charCodeAt(at + 3) === 61;
+    const c = padC ? 0 : digit(at + 2),
+      d = padD ? 0 : digit(at + 3);
+    if (
+      a < 0 ||
+      b < 0 ||
+      c < 0 ||
+      d < 0 ||
+      (padC && !padD) ||
+      ((padC || padD) && at + 4 !== text.length) ||
+      (padC && (b & 15) !== 0) ||
+      (padD && !padC && (c & 3) !== 0)
+    )
+      throw new Error("Invalid checkpoint base64");
+    output[cursor++] = (a << 2) | (b >> 4);
+    if (cursor < output.length) output[cursor++] = ((b & 15) << 4) | (c >> 2);
+    if (cursor < output.length) output[cursor++] = ((c & 3) << 6) | d;
+  }
+  return output;
 }
 function pack(value: unknown, buffers: Uint8Array[]): WireValue {
   if (value === undefined) return { $: "undefined" };
@@ -105,11 +137,95 @@ function pack(value: unknown, buffers: Uint8Array[]): WireValue {
   }
   return result;
 }
-function unpack(value: WireValue, buffers: Uint8Array[], depth = 0): unknown {
+export interface StateDecodeStats {
+  wireBytes: number;
+  arrayBytes: number;
+  arrays: number;
+  metadataBytes: number;
+  metadataTokens: number;
+}
+export interface StateDecodeLimits {
+  /** Aggregate output allocation, including repeated references to one buffer. */
+  maxArrayBytes?: number;
+  /** Checked on UTF-8 bytes before constructing a string or JSON object tree. */
+  maxMetadataBytes?: number;
+  /** JSON values, containers and property names; limits parser and unpack work. */
+  maxMetadataTokens?: number;
+  onDecoded?: (stats: StateDecodeStats) => void;
+}
+interface DecodeAllocation {
+  bytes: number;
+  arrays: number;
+  limit: number;
+}
+/** A preflight, not a second JSON parser: JSON.parse still validates syntax.
+ * Strings and escapes are skipped as a unit, so brackets inside text cannot
+ * hide or inflate nesting. No metadata-sized arrays/strings are allocated. */
+function metadataTokens(bytes: Uint8Array, limit: number): number {
+  let tokens = 0,
+    depth = 0,
+    quoted = false,
+    primitive = false;
+  const charge = () => {
+    if (++tokens > limit)
+      throw new Error("Checkpoint metadata exceeds the token budget");
+  };
+  for (let at = 0; at < bytes.length; at++) {
+    const byte = bytes[at];
+    if (quoted) {
+      if (byte === 92) at++;
+      else if (byte === 34) quoted = false;
+      continue;
+    }
+    if (byte === 34) {
+      charge();
+      quoted = true;
+      primitive = false;
+    } else if (byte === 91 || byte === 123) {
+      charge();
+      if (++depth > 197)
+        throw new Error("Checkpoint nesting exceeds the limit");
+      primitive = false;
+    } else if (byte === 93 || byte === 125) {
+      if (--depth < 0) throw new Error("Invalid checkpoint metadata");
+      primitive = false;
+    } else if (
+      byte === 44 ||
+      byte === 58 ||
+      byte === 32 ||
+      byte === 9 ||
+      byte === 10 ||
+      byte === 13
+    )
+      primitive = false;
+    else if (!primitive) {
+      charge();
+      primitive = true;
+    }
+  }
+  if (quoted || depth !== 0) throw new Error("Invalid checkpoint metadata");
+  return tokens;
+}
+function allocate(budget: DecodeAllocation, bytes: number): void {
+  if (
+    !Number.isSafeInteger(bytes) ||
+    bytes < 0 ||
+    bytes > budget.limit - budget.bytes
+  )
+    throw new Error("Decoded arrays exceed the memory budget");
+  budget.bytes += bytes;
+  budget.arrays++;
+}
+function unpack(
+  value: WireValue,
+  buffers: Uint8Array[],
+  budget: DecodeAllocation,
+  depth = 0,
+): unknown {
   if (depth > 64) throw new Error("Checkpoint nesting exceeds the limit");
   if (value === null || typeof value !== "object") return value;
   if (Array.isArray(value))
-    return value.map((item) => unpack(item, buffers, depth + 1));
+    return value.map((item) => unpack(item, buffers, budget, depth + 1));
   if (value.$ === "undefined") return undefined;
   if (value.$ === "-0") return -0;
   if (value.$ === "map") {
@@ -120,8 +236,8 @@ function unpack(value: WireValue, buffers: Uint8Array[], depth = 0): unknown {
         if (!Array.isArray(item) || item.length !== 2)
           throw new Error("Invalid map entry");
         return [
-          unpack(item[0], buffers, depth + 1),
-          unpack(item[1], buffers, depth + 1),
+          unpack(item[0], buffers, budget, depth + 1),
+          unpack(item[1], buffers, budget, depth + 1),
         ];
       }),
     );
@@ -141,27 +257,36 @@ function unpack(value: WireValue, buffers: Uint8Array[], depth = 0): unknown {
       throw new Error("Invalid checkpoint array");
     const bytes = buffers[index];
     if (bytes.byteLength % 8) throw new Error("Invalid checkpoint array size");
-    const runs = new Uint32Array(bytes.slice().buffer),
-      output =
-        value.$ === "u8r" ? new Uint8Array(length) : new Uint16Array(length);
+    // Metadata need not end at an aligned offset. Read the little-endian run
+    // words directly, without an additional wire-sized alignment allocation.
+    const runs = new DataView(bytes.buffer, bytes.byteOffset, bytes.byteLength);
     const limit = value.$ === "u8r" ? 0xff : 0xffff;
     let at = 0;
-    for (let run = 0; run < runs.length; run += 2) {
-      const symbol = runs[run],
-        count = runs[run + 1];
+    for (let run = 0; run < bytes.byteLength; run += 8) {
+      const symbol = runs.getUint32(run, true),
+        count = runs.getUint32(run + 4, true);
       if (symbol > limit || at + count > length)
         throw new Error("Invalid checkpoint array");
-      if (symbol) output.fill(symbol, at, at + count);
       at += count;
     }
     if (at !== length) throw new Error("Invalid checkpoint array");
+    allocate(budget, length * (value.$ === "u8r" ? 1 : 2));
+    const output =
+      value.$ === "u8r" ? new Uint8Array(length) : new Uint16Array(length);
+    at = 0;
+    for (let run = 0; run < bytes.byteLength; run += 8) {
+      const symbol = runs.getUint32(run, true),
+        count = runs.getUint32(run + 4, true);
+      if (symbol) output.fill(symbol, at, at + count);
+      at += count;
+    }
     return output;
   }
   if (value.$ === "set") {
     if (!Array.isArray(value.entries))
       throw new Error("Invalid checkpoint set");
     return new Set(
-      value.entries.map((item) => unpack(item, buffers, depth + 1)),
+      value.entries.map((item) => unpack(item, buffers, budget, depth + 1)),
     );
   }
   if (
@@ -179,6 +304,7 @@ function unpack(value: WireValue, buffers: Uint8Array[], depth = 0): unknown {
       type = types[value.$ as keyof typeof types];
     if (bytes.byteLength % type.BYTES_PER_ELEMENT)
       throw new Error("Invalid checkpoint array size");
+    allocate(budget, bytes.byteLength);
     return new type(bytes.slice().buffer);
   }
   if (value.$ !== undefined) throw new Error("Unknown checkpoint value type");
@@ -186,7 +312,7 @@ function unpack(value: WireValue, buffers: Uint8Array[], depth = 0): unknown {
   for (const [key, item] of Object.entries(value)) {
     if (["__proto__", "constructor", "prototype"].includes(key))
       throw new Error("Invalid checkpoint key");
-    result[key] = unpack(item, buffers, depth + 1);
+    result[key] = unpack(item, buffers, budget, depth + 1);
   }
   return result;
 }
@@ -227,13 +353,22 @@ export async function encodeState(value: unknown): Promise<EncodedState> {
   );
   return { hash: await digest(bytes), payload: base64(compressed) };
 }
-export async function decodeState<T>(state: EncodedState): Promise<T> {
+export async function decodeState<T>(
+  state: EncodedState,
+  limits: StateDecodeLimits = {},
+): Promise<T> {
+  for (const limit of [
+    limits.maxArrayBytes,
+    limits.maxMetadataBytes,
+    limits.maxMetadataTokens,
+  ])
+    if (limit !== undefined && (!Number.isSafeInteger(limit) || limit < 0))
+      throw new Error("Invalid decoded memory budget");
   if (!/^[a-f0-9]{64}$/u.test(state.hash) || state.payload.length > 32_000_000)
     throw new Error("Invalid encoded checkpoint");
   const compressed = unbase64(state.payload);
   const reader = new Response(compressed)
-    .body!
-    .pipeThrough(new DecompressionStream("gzip"))
+    .body!.pipeThrough(new DecompressionStream("gzip"))
     .getReader();
   const chunks: Uint8Array[] = [];
   let size = 0;
@@ -253,6 +388,7 @@ export async function decodeState<T>(state: EncodedState): Promise<T> {
     bytes.set(chunk, at);
     at += chunk.length;
   }
+  chunks.length = 0;
   if ((await digest(bytes)) !== state.hash)
     throw new Error("Checkpoint hash mismatch");
   if (bytes.length < 8) throw new Error("Invalid checkpoint header");
@@ -263,9 +399,21 @@ export async function decodeState<T>(state: EncodedState): Promise<T> {
     metadataLength > bytes.length - 8
   )
     throw new Error("Unsupported checkpoint format");
-  const metadata = JSON.parse(
-    dec.decode(bytes.subarray(8, 8 + metadataLength)),
+  if (metadataLength > (limits.maxMetadataBytes ?? 64_000_000))
+    throw new Error("Checkpoint metadata exceeds the byte budget");
+  const metadataBytes = bytes.subarray(8, 8 + metadataLength);
+  const tokens = metadataTokens(
+    metadataBytes,
+    limits.maxMetadataTokens ?? 4_000_000,
   );
+  const metadata = JSON.parse(dec.decode(metadataBytes));
+  if (
+    !metadata ||
+    typeof metadata !== "object" ||
+    Array.isArray(metadata) ||
+    !("value" in metadata)
+  )
+    throw new Error("Invalid checkpoint metadata");
   if (!Array.isArray(metadata.lengths) || metadata.lengths.length > 100_000)
     throw new Error("Invalid checkpoint buffers");
   const buffers: Uint8Array[] = [];
@@ -282,5 +430,18 @@ export async function decodeState<T>(state: EncodedState): Promise<T> {
   }
   if (offset !== bytes.length)
     throw new Error("Unexpected checkpoint trailing data");
-  return unpack(metadata.value, buffers) as T;
+  const budget = {
+    bytes: 0,
+    arrays: 0,
+    limit: limits.maxArrayBytes ?? 256_000_000,
+  };
+  const result = unpack(metadata.value, buffers, budget) as T;
+  limits.onDecoded?.({
+    wireBytes: bytes.byteLength,
+    arrayBytes: budget.bytes,
+    arrays: budget.arrays,
+    metadataBytes: metadataLength,
+    metadataTokens: tokens,
+  });
+  return result;
 }

@@ -29,6 +29,41 @@ function fixture() {
   return { game, player, expansion };
 }
 describe("coordinated AI economy", () => {
+  it("expires ownership before controllers even on ticks with no economic decision", () => {
+    const { game, player, expansion } = fixture(),
+      economy = expansion.economy;
+    const squad = game.squads.find((s) => s.playerId === player.id)!;
+    economy.assets.acquire([
+      {
+        asset: `squad:${squad.id}`,
+        playerId: player.id,
+        generation: game.aiGeneration(player.id),
+        controller: "expired-test",
+        priority: "operation",
+        createdTick: 0,
+        expiresTick: 1,
+      },
+    ]);
+    economy.ledger.tryReserve(
+      {
+        id: "expired-test",
+        playerId: player.id,
+        generation: game.aiGeneration(player.id),
+        claimant: "expired-test",
+        priority: "growth",
+        amounts: { gold: 1 },
+        createdTick: 0,
+        progressTick: 0,
+        expiresTick: 1,
+      },
+      { gold: player.gold },
+    );
+    game.tick = 1;
+    economy.step();
+    expect(economy.assets.held(`squad:${squad.id}`)).toBe(false);
+    expect(economy.ledger.reservations.has("expired-test")).toBe(false);
+    expect(economy.diagnostics.decisions).toBe(0);
+  });
   it("funds an attainable workshop dependency before its refined equipment input exists", () => {
     const { player, expansion } = fixture();
     const research = TECHNOLOGIES.filter((t) =>

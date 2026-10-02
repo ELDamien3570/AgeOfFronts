@@ -5,6 +5,37 @@ import type { Building } from "../../src/skirmish/Protocol";
 import { Diplomacy } from "../../src/skirmish/domain/Diplomacy";
 import { Fortifications } from "../../src/skirmish/domain/Fortifications";
 describe("exact local fortification endpoint index", () => {
+  it("releases destroyed wall occupancy for quotes before background index cleanup", () => {
+    const map = new GameMapImpl(24, 24, new Uint8Array(576).fill(133), 576),
+      forts = new Fortifications(map, new Diplomacy()),
+      tower: Building = {
+        id: 1,
+        playerId: 1,
+        type: "tower",
+        age: "StoneAge",
+        tile: map.ref(4, 4),
+        remainingTicks: 0,
+      };
+    forts.barriers.push({
+      id: 1,
+      playerId: 1,
+      age: "StoneAge",
+      a: 1,
+      b: 1,
+      tiles: [map.ref(6, 4)],
+      health: 100,
+      maxHealth: 100,
+      remainingTicks: 0,
+    });
+    forts.step(0, [tower]);
+    expect(
+      forts.towerPlan(map.ref(8, 4), 1, "StoneAge", [tower]).links,
+    ).toHaveLength(0);
+    forts.barriers[0].health = 0;
+    expect(
+      forts.towerPlan(map.ref(8, 4), 1, "StoneAge", [tower]).links,
+    ).toHaveLength(1);
+  });
   it("preserves nearest endpoint, stack, tier, completion and occupied bend rules", () => {
     const data = new Uint8Array(100 * 80).fill(133),
       map = new GameMapImpl(100, 80, data, data.length),
@@ -70,7 +101,8 @@ describe("exact local fortification endpoint index", () => {
     index.rebuild(buildings);
     const local = {
       at: (tile: number) => index.at(tile),
-      nearby: (tile: number, radius: number) => index.towersNearby(tile, radius),
+      nearby: (tile: number, radius: number) =>
+        index.towersNearby(tile, radius),
     };
     for (const [x, y] of [
       [24, 23],

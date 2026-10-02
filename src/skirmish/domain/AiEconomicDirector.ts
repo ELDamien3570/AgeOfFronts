@@ -2,6 +2,7 @@ import type { Player } from "../Protocol";
 import { personalityOf } from "../content/AiPersonalities";
 import { resourceTechnology } from "../content/Resources";
 import { AiAssetLeases } from "./AiAssetLeases";
+import { AiBoundaryIndex } from "./AiBoundaryIndex";
 import { AiBudgetLedger, affordableAiCost } from "./AiBudgetLedger";
 import { AiCityRecords } from "./AiCityRecords";
 import { AiDefenseDirector } from "./AiDefenseDirector";
@@ -10,6 +11,8 @@ import { economicSnapshot } from "./AiEconomicSnapshot";
 import { AiLossWindow } from "./AiLossWindow";
 import { militaryDemand, type AiProductionDemand } from "./AiMilitaryDemand";
 import { AiMilitaryDirector } from "./AiMilitaryDirector";
+import { AiNavalFacts } from "./AiNavalFacts";
+import { AiNavalPlanner } from "./AiNavalPlanner";
 import { AiPlacementCandidates } from "./AiPlacementCandidates";
 import type { Cost, Inventory } from "./Definitions";
 import type { Expansion } from "./Expansion";
@@ -29,11 +32,15 @@ export class AiEconomicDirector {
   readonly losses = new AiLossWindow();
   readonly cities: AiCityRecords;
   readonly defenses: AiDefenseDirector;
+  readonly navalFacts: AiNavalFacts;
+  readonly naval: AiNavalPlanner;
+  readonly boundaries?: AiBoundaryIndex;
   private readonly demands = new Map<number, AiProductionDemand>();
   private readonly saving = new Map<number, Saving>();
   private cursor = 0;
   private readonly nextDecision = new Map<number, number>();
   readonly diagnostics = {
+    backgroundWork: 0,
     decisions: 0,
     candidates: 0,
     commands: 0,
@@ -49,6 +56,17 @@ export class AiEconomicDirector {
       () => expansion.world.buildings,
     );
     this.defenses = new AiDefenseDirector(expansion, this);
+    this.navalFacts = new AiNavalFacts(expansion.world);
+    this.naval = new AiNavalPlanner(expansion, this);
+    if (
+      expansion.world.options?.aiEconomy &&
+      expansion.world.options.aiDefenses
+    )
+      this.boundaries = new AiBoundaryIndex(
+        expansion.world.map,
+        expansion.world.owners,
+        (tile) => expansion.world.paths.walkable(tile),
+      );
   }
   enabled(player: Player): boolean {
     return (
@@ -65,6 +83,9 @@ export class AiEconomicDirector {
       losses: this.losses.checkpoint(),
       cities: this.cities.checkpoint(),
       defenses: this.defenses.checkpoint(),
+      navalFacts: this.navalFacts.checkpoint(),
+      naval: this.naval.checkpoint(),
+      boundaries: this.boundaries?.checkpoint(),
       demands: [...this.demands],
       saving: [...this.saving],
       placements: this.placements.checkpoint(),
@@ -73,6 +94,7 @@ export class AiEconomicDirector {
     });
   }
   restore(saved: ReturnType<AiEconomicDirector["checkpoint"]>): void {
+    this.ownershipTick = -1;
     this.ledger.restore(saved.ledger);
     this.demands.clear();
     this.saving.clear();
@@ -96,6 +118,10 @@ export class AiEconomicDirector {
         nextBuild: 0,
       },
     );
+    if (saved.navalFacts) this.navalFacts.restore(saved.navalFacts);
+    this.naval.restore(saved.naval ?? { missions: [], cursor: 0, serial: 0 });
+    if (saved.boundaries) this.boundaries?.restore(saved.boundaries);
+    else this.boundaries?.resetForRebuild();
     for (const [id, demand] of saved.demands)
       this.demands.set(id, structuredClone(demand));
     for (const [id, goal] of saved.saving)
@@ -107,6 +133,7 @@ export class AiEconomicDirector {
       this.nextDecision.set(id, tick);
   }
   release(playerId: number): void {
+    this.naval.release(playerId);
     this.defenses.release(playerId);
     this.military.release(playerId);
     this.losses.release(playerId);
@@ -118,9 +145,29 @@ export class AiEconomicDirector {
   }
   step(): void {
     const { world } = this.expansion;
+    this.diagnostics.backgroundWork = 0;
     if (world.options?.aiEconomy !== true || world.options.runAi === false)
       return;
-    this.cities.step(world.tick, 128, 8);
+    this.expireOwnership();
+    // Read models and naval assessment share one allowance. Preserve at least
+    // sixteen units for city work even during simultaneous cold boundary and
+    // naval passes; more becomes available when another consumer is idle.
+    const boundaryWork = this.boundaries?.step(world.tick, 32) ?? 0;
+    const navalWork =
+      world.options.aiNaval && world.options.deferredPlanning
+        ? this.navalFacts.step(world.tick, 48)
+        : 0;
+    const controllerWork =
+      world.options.aiNaval && world.options.deferredPlanning
+        ? this.naval.step(32)
+        : 0;
+    const cityWork = this.cities.step(
+      world.tick,
+      128 - navalWork - boundaryWork - controllerWork,
+      8,
+    );
+    this.diagnostics.backgroundWork =
+      navalWork + boundaryWork + controllerWork + cityWork;
     if (world.options.aiDefenses) this.defenses.step();
     if (world.tick % 3) return;
     for (let i = 0; i < world.players.length; i++) {
@@ -160,10 +207,7 @@ export class AiEconomicDirector {
     const { world, progression, supply } = this.expansion,
       state = progression.states[player.id];
     const generation = world.aiGeneration(player.id);
-    this.ledger.expire(
-      world.tick,
-      new Map(world.players.map((p) => [p.id, world.aiGeneration(p.id)])),
-    );
+    this.expireOwnership();
     this.diagnostics.decisions++;
     const snapshot = economicSnapshot({
       player,
@@ -221,21 +265,6 @@ export class AiEconomicDirector {
       this.military.decide(player)
     )
       return;
-    const ships = new Set(world.ships.map((s) => s.id)),
-      aircraft = new Set(this.expansion.aircraft.map((a) => a.id));
-    this.assets.expire(
-      world.tick,
-      (id) => world.aiGeneration(id),
-      (asset) => {
-        const [kind, value] = asset.split(":"),
-          id = Number(value);
-        return kind === "squad"
-          ? !!world.squad(id)
-          : kind === "ship"
-            ? ships.has(id)
-            : aircraft.has(id);
-      },
-    );
     const candidates = economicCandidates(
       snapshot,
       state,
@@ -323,5 +352,30 @@ export class AiEconomicDirector {
     this.ledger.release(chosen.id);
     this.saving.delete(player.id);
     if (rejection) this.diagnostics.rejected++;
+  }
+  private ownershipTick = -1;
+  private expireOwnership(): void {
+    const { world } = this.expansion;
+    if (this.ownershipTick === world.tick) return;
+    this.ownershipTick = world.tick;
+    this.ledger.expire(
+      world.tick,
+      new Map(world.players.map((p) => [p.id, world.aiGeneration(p.id)])),
+    );
+    // Aircraft currently has no maintained ID index. Build it only when a
+    // controller actually owns aircraft; land/naval ownership uses live indexes.
+    let aircraft: Set<number> | undefined;
+    this.assets.expire(
+      world.tick,
+      (id) => world.aiGeneration(id),
+      (asset) => {
+        const [kind, value] = asset.split(":"),
+          id = Number(value);
+        if (kind === "squad") return !!world.squad(id);
+        if (kind === "ship") return !!world.ship(id);
+        aircraft ??= new Set(this.expansion.aircraft.map((a) => a.id));
+        return aircraft.has(id);
+      },
+    );
   }
 }

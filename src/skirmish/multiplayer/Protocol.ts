@@ -148,6 +148,7 @@ export const clientMessageSchema = z.discriminatedUnion("type", [
 ]);
 export type ClientMessage = z.infer<typeof clientMessageSchema>;
 export type ServerMessage =
+  | { type: "match-command-outcome"; matchId: string; outcome: import("../CommandApplications").CommandOutcome }
   | { type: "match-spawn"; matchId: string; state: SpawnState }
   | { type: "match"; manifest: MatchManifest }
   | {

@@ -1,4 +1,5 @@
 import type { ElevationData } from "../../Elevation";
+import type { CommandOutcome } from "../../CommandApplications";
 import type { ForestData } from "../../Forest";
 import type { LobbySettings } from "../../lobby/LobbyDirectory";
 import type { Command, MatchOptions, SpawnState } from "../../Protocol";
@@ -47,9 +48,11 @@ export interface MatchAdvance {
   winner: number | null;
   packet?: EncodedState;
   rejectedCommands: { id: string; playerId: number; message: string }[];
+  commandOutcomes?: CommandOutcome[];
 }
 export interface ClientBaseline {tick:number;winner:number|null;baseline:EncodedState;}
 export const MAX_ADVANCE_TICKS = 4;
+export const MAX_COMMAND_BATCH = 100;
 export type ExecutorRequest =
   | {
       type: "initialize" | "prepare";

@@ -60,7 +60,7 @@ import type { CoastIndex } from "../CoastIndex";
 import { AiEconomicDirector } from "./AiEconomicDirector";
 export interface ExpansionWorld extends BattleWorld, ArmyWorld {
   recruitment: Recruitment;
-  options?: { runAi?: boolean; aiEconomy?: boolean; aiDefenses?:boolean; territoryIncomeScale?:number; resourceDensity?: 1 | 2 | 3 | 5; resourceOutput?: 1 | 2 | 3 | 5; alliances?: boolean; startingAge?: Age };
+  options?: { runAi?: boolean; aiEconomy?: boolean; aiDefenses?:boolean; aiNaval?:boolean; deferredPlanning?:boolean; territoryIncomeScale?:number; resourceDensity?: 1 | 2 | 3 | 5; resourceOutput?: 1 | 2 | 3 | 5; alliances?: boolean; startingAge?: Age };
   map: GameMap;
   owners: Uint8Array;
   claims: Uint8Array;
@@ -79,6 +79,8 @@ export interface ExpansionWorld extends BattleWorld, ArmyWorld {
   buildingSite(playerId: number, type: BuildingType, tile: number, age?: Age): string | null;
   squadCapacity(player: Player): number;
   aiGeneration(playerId: number): number;
+  ship(id:number):Ship | undefined;
+  building(id:number):Building | undefined;
 }
 // Match-level application coordinator; each domain service owns its own rules.
 // All services operate on the same authoritative world, never a parallel game.

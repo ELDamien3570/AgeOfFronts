@@ -90,12 +90,21 @@ export class RoutePlanner<T> {
       workspace: this.workspace.checkpoint(),
     });
   }
-  restore(saved: ReturnType<RoutePlanner<T>["checkpoint"]>): void {
+  restore(
+    saved: Omit<ReturnType<RoutePlanner<T>["checkpoint"]>, "workspace"> & {
+      workspace?: ReturnType<PlanningWorkspace["checkpoint"]>;
+    },
+  ): void {
     if (saved.jobs.length > this.jobLimit)
       throw new Error("Route checkpoint exceeds queue limit");
+    if (!saved.workspace && saved.jobs.length)
+      throw new Error("Missing route checkpoint workspace");
     this.land.restoreRevision(saved.landRevision);
     this.water.restoreRevision(saved.waterRevision);
-    this.workspace.restore(saved.workspace);
+    this.workspace.restore(
+      saved.workspace ??
+        new PlanningWorkspace(this.workspace.capacity).checkpoint(),
+    );
     this.jobs.clear();
     for (const job of structuredClone(saved.jobs)) this.jobs.set(job.key, job);
     this.diagnostics.pending = this.jobs.size;

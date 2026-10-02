@@ -1,22 +1,64 @@
 import type { SnapshotPacket } from "../Protocol";
-import { decodeState, type EncodedState } from "../multiplayer/StateCodec";
+import {
+  decodeState,
+  type EncodedState,
+  type StateDecodeStats,
+} from "../multiplayer/StateCodec";
 import { CanonicalStateStream } from "./CanonicalStateStream";
 
 // Network decompression, hashing and parsing stay off the rendering thread.
 // OnlineMatchSession admits one decode at a time and bounds queued states.
-const stream = new CanonicalStateStream();
+let stream: CanonicalStateStream | undefined;
+let expectedMap: { width: number; height: number } | undefined;
+// SnapshotPacket uses word arrays, not expanded RLE map arrays: a valid
+// encoder's aggregate typed output is already below its 64 MB wire ceiling.
+const MAX_SNAPSHOT_ARRAY_BYTES = 64_000_000;
 let incoming = Promise.resolve();
 self.onmessage = (
-  event: MessageEvent<EncodedState | { type: "presented"; sequence: number }>,
+  event: MessageEvent<
+    | (EncodedState & { expectedMap: { width: number; height: number } })
+    | { type: "presented"; sequence: number }
+  >,
 ) => {
   incoming = incoming.then(async () => {
     if ("type" in event.data) {
-      stream.acknowledge(event.data.sequence);
+      stream?.acknowledge(event.data.sequence);
       return;
     }
     try {
+      const dimensions = event.data.expectedMap;
+      if (
+        !dimensions ||
+        !Number.isSafeInteger(dimensions.width) ||
+        dimensions.width <= 0 ||
+        !Number.isSafeInteger(dimensions.height) ||
+        dimensions.height <= 0 ||
+        !Number.isSafeInteger(dimensions.width * dimensions.height) ||
+        dimensions.width * dimensions.height > 64_000_000
+      )
+        throw new Error("Invalid loaded map dimensions");
+      if (
+        expectedMap &&
+        (expectedMap.width !== dimensions.width ||
+          expectedMap.height !== dimensions.height)
+      )
+        throw new Error("Loaded map dimensions changed");
+      if (!stream) {
+        expectedMap = { ...dimensions };
+        stream = new CanonicalStateStream(
+          dimensions.width * dimensions.height,
+          65_536,
+          expectedMap,
+        );
+      }
+      let decodeStats: StateDecodeStats | undefined;
       const started = performance.now(),
-        packet = await decodeState<SnapshotPacket>(event.data),
+        packet = await decodeState<SnapshotPacket>(event.data, {
+          maxArrayBytes: MAX_SNAPSHOT_ARRAY_BYTES,
+          onDecoded: (stats) => {
+            decodeStats = stats;
+          },
+        }),
         decoded = performance.now();
       stream.apply(packet);
       const applied = performance.now();
@@ -27,6 +69,7 @@ self.onmessage = (
           ...view,
           decodeMs: decoded - started,
           applyMs: applied - decoded,
+          decodeStats,
         },
         {
           transfer: [

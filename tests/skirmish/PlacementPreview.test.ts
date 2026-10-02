@@ -1,8 +1,13 @@
 import { describe, expect, it } from "vitest";
 import { GameMapImpl } from "../../src/core/game/GameMap";
 import { constructionRejection } from "../../src/skirmish/Construction";
+import { FIXED, type Building } from "../../src/skirmish/Protocol";
 import { Skirmish } from "../../src/skirmish/Simulation";
 import { PlacementPreview } from "../../src/skirmish/client/PlacementPreview";
+import {
+  buildingCost,
+  buildingTechnology,
+} from "../../src/skirmish/content/Buildings";
 import { ResourceSiteIndex } from "../../src/skirmish/domain/ResourceSiteIndex";
 import { resourceSiteRejection } from "../../src/skirmish/domain/StartingResources";
 
@@ -27,6 +32,86 @@ function fixture() {
   return { map, snapshot, preview };
 }
 describe("bounded placement preview", () => {
+  it("quotes automatic wall gold and troop clearance identically to domain construction", () => {
+    const { map } = fixture(),
+      game = new Skirmish(map, {
+        seed: 47,
+        aiCount: 1,
+        tribes: false,
+        runAi: false,
+        ruleset: "ages-v1",
+      });
+    game.owners.fill(1);
+    game.expansion!.supply.deposits.length = 0;
+    game.expansion!.progression.states[1].completed.push(
+      buildingTechnology("tower", "StoneAge")!,
+    );
+    const endpoint: Building = {
+      id: game.allocateId(),
+      playerId: 1,
+      type: "tower",
+      age: "StoneAge",
+      tile: map.ref(20, 20),
+      remainingTicks: 0,
+      health: 2000,
+    };
+    game.buildings.splice(0, game.buildings.length, endpoint);
+    for (const squad of game.squads) {
+      squad.x = 60.5 * FIXED;
+      squad.y = 50.5 * FIXED;
+    }
+    game.expansion!.fortifications.step(game.tick, game.buildings);
+    const player = game.players.find((p) => p.id === 1)!,
+      tile = map.ref(24, 20),
+      base = buildingCost("tower", "StoneAge", 1).gold!,
+      bounds = { left: 16, top: 16, right: 31, bottom: 31 },
+      preview = new PlacementPreview(map);
+    player.gold = base;
+    preview.begin(game.snapshot(), 1, "tower", "StoneAge");
+    expect(preview.rejection("tower", tile)).toBe(
+      game.buildingPlacement(1, "tower", tile, "StoneAge"),
+    );
+    expect(preview.rejection("tower", tile)).toBe("Not enough gold");
+    expect(preview.sites(bounds, 256)).not.toContain(tile);
+    const tested = preview.diagnostics.tested;
+    player.gold = base + 75;
+    let snapshot = game.snapshot();
+    snapshot.changedTiles = new Uint32Array();
+    preview.update(snapshot);
+    expect(preview.sites(bounds, 1)).toContain(tile);
+    expect(preview.diagnostics.tested).toBe(tested);
+    expect(preview.rejection("tower", tile)).toBeNull();
+    game.squads[0].x = 22.5 * FIXED;
+    game.squads[0].y = 20.5 * FIXED;
+    snapshot = game.snapshot();
+    snapshot.changedTiles = new Uint32Array();
+    preview.update(snapshot);
+    expect(preview.rejection("tower", tile)).toBe(
+      game.buildingPlacement(1, "tower", tile, "StoneAge"),
+    );
+    expect(preview.sites(bounds, 256)).not.toContain(tile);
+    game.squads[0].x = 60.5 * FIXED;
+    snapshot = game.snapshot();
+    snapshot.changedTiles = new Uint32Array();
+    preview.update(snapshot);
+    expect(preview.sites(bounds, 256)).toContain(tile);
+    player.gold = base;
+    endpoint.remainingTicks = 1;
+    snapshot = game.snapshot();
+    snapshot.changedTiles = new Uint32Array();
+    preview.update(snapshot);
+    expect(preview.sites(bounds, 256)).toContain(tile);
+    endpoint.remainingTicks = 0;
+    snapshot = game.snapshot();
+    snapshot.changedTiles = new Uint32Array();
+    preview.update(snapshot);
+    expect(preview.sites(bounds, 256)).not.toContain(tile);
+    endpoint.age = "BronzeAge";
+    snapshot = game.snapshot();
+    snapshot.changedTiles = new Uint32Array();
+    preview.update(snapshot);
+    expect(preview.sites(bounds, 256)).toContain(tile);
+  });
   it("does no tile enumeration at activation and charges every examined cell", () => {
     const { preview } = fixture();
     expect(preview.diagnostics.tested).toBe(0);

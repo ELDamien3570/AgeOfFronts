@@ -82,8 +82,12 @@ export interface MovementAdmissionPorts {
  */
 export class MovementAdmission {
   private readonly pending = new Map<number, Admission>();
+  private readonly pendingBySquad = new Map<number, number>();
   private readonly intents = new Map<number, QueuedIntent>();
+  private readonly intentsBySquad = new Map<number, Set<number>>();
+  private readonly intentsByAdmission = new Map<number, Set<number>>();
   readonly events: MovementAdmissionEvent[] = [];
+  onEvent?: (event: MovementAdmissionEvent) => void;
   private nextId = 1;
   get pendingCount(): number {
     return this.pending.size;
@@ -103,11 +107,17 @@ export class MovementAdmission {
   }
   restore(saved: ReturnType<MovementAdmission["checkpoint"]>): void {
     this.pending.clear();
-    for (const [id, admission] of structuredClone(saved.pending))
+    this.pendingBySquad.clear();
+    for (const [id, admission] of structuredClone(saved.pending)) {
       this.pending.set(id, admission);
+      for (const member of admission.members)
+        this.pendingBySquad.set(member.id, id);
+    }
     this.intents.clear();
-    for (const [id, intent] of structuredClone(saved.intents))
-      this.intents.set(id, intent);
+    this.intentsBySquad.clear();
+    this.intentsByAdmission.clear();
+    for (const [, intent] of structuredClone(saved.intents ?? []))
+      this.addIntent(intent);
     this.nextId = saved.nextId;
     this.events.splice(0, this.events.length, ...structuredClone(saved.events));
   }
@@ -125,6 +135,7 @@ export class MovementAdmission {
       reason,
     });
     if (this.events.length > 128) this.events.shift();
+    this.onEvent?.({ ...this.events[this.events.length - 1] });
   }
   private finish(
     admission: Admission,
@@ -133,15 +144,18 @@ export class MovementAdmission {
     reason?: string,
   ): void {
     this.pending.delete(admission.id);
-    for (const member of admission.members)
+    for (const member of admission.members) {
+      if (this.pendingBySquad.get(member.id) === admission.id)
+        this.pendingBySquad.delete(member.id);
       this.ports.cancel(admission.id, member.id);
+    }
     this.event(admission, tick, status, reason);
   }
   cancel(ids: readonly number[], tick: number): void {
     const selected = new Set(ids);
     for (const [id, intent] of this.intents)
       if (intent.members.some((m) => selected.has(m.id))) {
-        this.intents.delete(id);
+        this.removeIntent(id);
         this.event(intent, tick, "superseded", "Replaced by a newer command");
       }
     for (const admission of this.pending.values())
@@ -153,13 +167,11 @@ export class MovementAdmission {
           "Replaced by a newer command",
         );
   }
-  append(ids: readonly number[], order: Order): boolean {
+  append(ids: readonly number[], order: Order, tick = 0): boolean {
     const selected = [...new Set(ids)],
       members = selected.map((id) => ({
         id,
-        admissionId: [...this.pending.values()].find((a) =>
-          a.formation.selected.has(id),
-        )?.id,
+        admissionId: this.pendingBySquad.get(id),
       }));
     if (!members.some((m) => m.admissionId !== undefined)) return false;
     const squad = this.ports.squad(selected[0])!;
@@ -171,18 +183,17 @@ export class MovementAdmission {
       members,
       revision: this.ports.revision(),
     };
-    this.intents.set(intent.id, intent);
+    this.addIntent(intent);
+    this.event(intent, tick, "deferred");
     return true;
   }
   queued(ids: readonly number[]): number {
     let maximum = 0;
     for (const id of new Set(ids)) {
-      const member = [...this.pending.values()]
-        .flatMap((a) => a.members)
-        .find((m) => m.id === id);
-      const pending = [...this.intents.values()].filter((i) =>
-        i.members.some((m) => m.id === id),
-      ).length;
+      const member = this.pending
+        .get(this.pendingBySquad.get(id) ?? -1)
+        ?.members.find((m) => m.id === id);
+      const pending = this.intentsBySquad.get(id)?.size ?? 0;
       maximum = Math.max(
         maximum,
         (member?.queued.length ??
@@ -198,7 +209,31 @@ export class MovementAdmission {
     tile: number,
     tick: number,
     preferred?: Map<number, WorldPoint>,
+    repeatIntent = false,
   ): number {
+    // A periodic AI controller restating its unchanged intention must not
+    // throw away a long-running search. Deliberate manual replacements retain
+    // normal cancellation semantics, including clearing pending Shift legs.
+    if (
+      repeatIntent &&
+      !preferred &&
+      squads.length &&
+      squads.every((s) => !this.intentsBySquad.get(s.id)?.size)
+    ) {
+      const current = this.pending.get(
+        this.pendingBySquad.get(squads[0].id) ?? -1,
+      );
+      if (
+        current &&
+        current.playerId === playerId &&
+        current.tile === tile &&
+        current.generation === this.ports.generation(playerId) &&
+        current.members.length === squads.length &&
+        squads.every((s) => current.formation.selected.has(s.id)) &&
+        current.members.every((m) => !m.queued.length)
+      )
+        return current.id;
+    }
     this.cancel(
       squads.map((s) => s.id),
       tick,
@@ -223,10 +258,14 @@ export class MovementAdmission {
       tick,
       new Map([[squad.id, point]]),
     );
-    for (const intent of this.intents.values())
+    for (const intentId of this.intentsBySquad.get(squad.id) ?? []) {
+      const intent = this.intents.get(intentId)!;
       for (const member of intent.members)
-        if (member.id === squad.id && member.admissionId === undefined)
+        if (member.id === squad.id && member.admissionId === undefined) {
           member.admissionId = id;
+          this.addIntentReference(this.intentsByAdmission, id, intent.id);
+        }
+    }
     return id;
   }
   private create(
@@ -263,6 +302,8 @@ export class MovementAdmission {
       member: 0,
     };
     this.pending.set(id, admission);
+    for (const member of admission.members)
+      this.pendingBySquad.set(member.id, id);
     this.event(admission, tick, "deferred");
     return id;
   }
@@ -304,10 +345,45 @@ export class MovementAdmission {
       );
     // Budget exhaustion or invalidated geometry remain deferred, never physical failure.
   }
+  private addIntentReference(
+    index: Map<number, Set<number>>,
+    key: number,
+    id: number,
+  ): void {
+    let ids = index.get(key);
+    if (!ids) index.set(key, (ids = new Set()));
+    ids.add(id);
+  }
+  private addIntent(intent: QueuedIntent): void {
+    this.intents.set(intent.id, intent);
+    for (const member of intent.members) {
+      this.addIntentReference(this.intentsBySquad, member.id, intent.id);
+      if (member.admissionId !== undefined)
+        this.addIntentReference(
+          this.intentsByAdmission,
+          member.admissionId,
+          intent.id,
+        );
+    }
+  }
+  private removeIntent(id: number): void {
+    const intent = this.intents.get(id);
+    if (!intent) return;
+    this.intents.delete(id);
+    for (const member of intent.members) {
+      for (const [index, key] of [
+        [this.intentsBySquad, member.id],
+        [this.intentsByAdmission, member.admissionId],
+      ] as const) {
+        if (key === undefined) continue;
+        const ids = index.get(key);
+        ids?.delete(id);
+        if (!ids?.size) index.delete(key);
+      }
+    }
+  }
   private waitingIntent(admissionId: number): boolean {
-    return [...this.intents.values()].some((i) =>
-      i.members.some((m) => m.admissionId === admissionId),
-    );
+    return !!this.intentsByAdmission.get(admissionId)?.size;
   }
   private stepIntents(tick: number, budget: number): number {
     let used = 0;
@@ -329,7 +405,7 @@ export class MovementAdmission {
           );
         })
       ) {
-        this.intents.delete(id);
+        this.removeIntent(id);
         this.event(intent, tick, "superseded", "Queued selection changed");
         used++;
         continue;
@@ -416,7 +492,7 @@ export class MovementAdmission {
         );
       } else used++;
       if (intent.formation?.phase === "failed") {
-        this.intents.delete(id);
+        this.removeIntent(id);
         this.event(
           intent,
           tick,
@@ -426,7 +502,7 @@ export class MovementAdmission {
         continue;
       }
       if (order.type === "move" && intent.formation?.phase !== "done") continue;
-      this.intents.delete(id);
+      this.removeIntent(id);
       for (const m of intent.members) {
         const point = intent.formation?.result.get(m.id),
           next: Order =
@@ -440,6 +516,7 @@ export class MovementAdmission {
             .queued.push(next);
         else this.ports.queue(this.ports.squad(m.id)!, next);
       }
+      this.event(intent, tick, "executed");
     }
     return used;
   }

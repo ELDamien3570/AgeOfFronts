@@ -2,10 +2,12 @@ import { parentPort } from "node:worker_threads";
 import { SpawnSelection } from "../../domain/SpawnSelection";
 import { createSkirmishMap } from "../../Elevation";
 import { Skirmish } from "../../Simulation";
+import type { CommandOutcome } from "../../CommandApplications";
 import { SnapshotEncoder } from "../../SnapshotCodec";
 import { mapIdentity } from "../application/MapIdentity";
 import {
   MAX_ADVANCE_TICKS,
+  MAX_COMMAND_BATCH,
   type ExecutorRequest,
   type MatchAdvance,
   type RuntimeMap,
@@ -19,6 +21,16 @@ const encoder = new SnapshotEncoder(true);
 let setup: SpawnSelection | undefined;
 let preparedMap: RuntimeMap | undefined;
 let pending = Promise.resolve();
+// At most 512 pending receipts plus one 100-command advance can produce
+// results between drains. Keep the latest result per input, including control
+// transfers performed outside an advance, without retaining state packets.
+const commandOutcomes = new Map<string, CommandOutcome>();
+const collectOutcome = (outcome: CommandOutcome) => {
+  const key = `${outcome.playerId}:${outcome.id}`;
+  if (!commandOutcomes.has(key) && commandOutcomes.size >= 2048)
+    throw new Error("Command outcome drain budget exceeded");
+  commandOutcomes.set(key, outcome);
+};
 const makeMap = (map: RuntimeMap) =>
   createSkirmishMap(
     map.width,
@@ -65,6 +77,7 @@ parentPort.on(
             result = { mapHash: await mapIdentity(loaded.map), options };
           } else {
             match = new Skirmish(makeMap(loaded.map), options);
+            match.commandApplications.onOutcome = collectOutcome;
             result = {
               tick: match.tick,
               winner: match.winner,
@@ -92,6 +105,7 @@ parentPort.on(
               ...setup.options,
               humanSpawns: setup.choices,
             });
+            match.commandApplications.onOutcome = collectOutcome;
             setup = undefined;
             preparedMap = undefined;
             result = {
@@ -148,18 +162,20 @@ parentPort.on(
               request.ticks > MAX_ADVANCE_TICKS
             )
               throw new Error("Invalid match advance");
+            if (request.commands.length > MAX_COMMAND_BATCH)
+              throw new Error("Match command batch exceeds its budget");
             for (const id of request.disconnectedPlayerIds) {
               const player = match.player(id);
               if (player) match.setAiController(id, true);
             }
             const rejectedCommands: MatchAdvance["rejectedCommands"] = [];
-            const commands = request.commands.slice(0, 100);
-            for (const item of commands) {
+            for (const item of request.commands) {
               const player = match.player(item.command.playerId);
-              const rejection =
-                !player || player.ai
-                  ? "You are not active in this match"
-                  : match.applyCommand(item.command);
+              const outcome: CommandOutcome = !player || player.ai
+                ? {id: item.id, playerId: item.command.playerId, tick: match.tick, status: "rejected", reason: "You are not active in this match"}
+                : match.commandApplications.apply(item.id, item.command);
+              if (!player || player.ai) collectOutcome(outcome);
+              const rejection = outcome.status === "rejected" ? outcome.reason : undefined;
               if (rejection)
                 rejectedCommands.push({
                   id: item.id,
@@ -168,6 +184,7 @@ parentPort.on(
                 });
             }
             for (let i = 0; i < request.ticks; i++) match.step();
+            const outcomes = [...commandOutcomes.values()];
             result = {
               tick: match.tick,
               winner: match.winner,
@@ -176,8 +193,10 @@ parentPort.on(
                   ? await snapshot()
                   : undefined,
               rejectedCommands,
+              ...(outcomes.length ? {commandOutcomes: outcomes} : {}),
               seats: seats(),
             } satisfies MatchAdvance;
+            commandOutcomes.clear();
           } else throw new Error("Unknown match operation");
         }
         parentPort!.postMessage({ id: message.id, result });

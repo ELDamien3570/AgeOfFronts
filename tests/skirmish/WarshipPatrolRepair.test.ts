@@ -1,4 +1,4 @@
-import { describe, expect, it } from "vitest";
+import { describe, expect, it, vi } from "vitest";
 import { GameMapImpl } from "../../src/core/game/GameMap";
 import { FIXED, type Ship } from "../../src/skirmish/Protocol";
 import {
@@ -7,7 +7,7 @@ import {
   WARSHIP_PATROL_RADIUS,
 } from "../../src/skirmish/Simulation";
 
-function createMatch() {
+function createMatch(deferredPlanning = false) {
   const width = 64;
   const height = 64;
   // Land is 133, Water is 0. Left half (x < 20) is land, right half is water.
@@ -20,7 +20,7 @@ function createMatch() {
 
   const match = new Skirmish(
     new GameMapImpl(width, height, data, data.filter((t) => t & 128).length),
-    { seed: 42, aiCount: 1, tribes: false, runAi: false, ruleset: "ages-v1" },
+    { seed: 42, aiCount: 1, tribes: false, runAi: false, ruleset: "ages-v1", deferredPlanning },
   );
 
   // Claim territory for player 1 on the coast
@@ -77,6 +77,28 @@ function addPort(match: Skirmish, xTile: number, yTile: number, playerId = 1) {
 }
 
 describe("Warship patrol and dock repair logic", () => {
+  it("plans recovery and return voyages without clearing repair ownership or searching synchronously", () => {
+    const { match } = createMatch(true), port = addPort(match, 19, 25);
+    const ship = spawnWarship(match, 35, 25);
+    const anchor = ship.patrolTile;
+    ship.health = 500; ship.lastCombatTick = -WARSHIP_COMBAT_COOLDOWN;
+    const search = vi.spyOn(match.waterPaths, "find");
+    for (let i = 0; i < 15 && ship.repairState === "patrolling"; i++) match.step();
+    expect(ship.repairState).toBe("returning-to-dock");
+    expect(match.shipAdmission.executing(ship.id)).toBe(true);
+    expect(ship.repairPortId).toBe(port.id);
+    match.setAiController(1, true);
+    for (let i = 0; i < 500 && ship.repairState === "returning-to-dock"; i++) match.step();
+    expect(ship.repairState).toBe("repairing");
+    expect(match.map.euclideanDistSquared(match.tileOf(ship), port.tile)).toBeLessThanOrEqual(8);
+    for (let i = 0; i < 600 && ship.health < 1000; i++) match.step();
+    expect(ship.health).toBe(1000);
+    expect(ship.patrolTile).toBe(anchor);
+    for (let i = 0; i < 500 && ship.repairState === "returning-to-patrol"; i++) match.step();
+    expect(ship.repairState).toBe("patrolling");
+    expect(match.tileOf(ship)).toBe(anchor);
+    expect(search).not.toHaveBeenCalled();
+  });
   it("assigns patrol station on sail and drifts within small patrol radius", () => {
     const { match } = createMatch();
     const ship = spawnWarship(match, 25, 25);

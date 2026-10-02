@@ -5,6 +5,7 @@ export interface ArmyRouteRequest {
 }
 export type MatchRouteTask =
   | { kind: "army"; request: ArmyRouteRequest }
+  | { kind: "ship-admission"; admissionId: number; shipId: number; playerId: number }
   | {
       kind: "admission";
       admissionId: number;

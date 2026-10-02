@@ -7,12 +7,14 @@ import type {
 } from "../Protocol";
 import type { MatchManifest, ServerMessage } from "../multiplayer/Protocol";
 import type { EncodedState } from "../multiplayer/StateCodec";
+import type { StateDecodeStats } from "../multiplayer/StateCodec";
+import type { CommandOutcome } from "../CommandApplications";
 import { mapIdentity } from "../multiplayer/application/MapIdentity";
 import { OnlineLobbyConnection } from "./lobby/OnlineLobbyConnection";
 
 const MAX_PENDING_STATES = 8;
 const MAX_PENDING_BYTES=16*1024*1024;
-interface DecodedState {packet:SnapshotPacket;snapshot?:Snapshot;canonicalSequence?:number;decodeMs?:number;applyMs?:number;}
+interface DecodedState {packet:SnapshotPacket;snapshot?:Snapshot;canonicalSequence?:number;decodeMs?:number;applyMs?:number;decodeStats?:StateDecodeStats;}
 interface Presentation {data:Extract<WorkerResponse,{type:"state"}>;sequence?:number;}
 
 /** Thin presentation client. The server alone advances the simulation. */
@@ -21,10 +23,14 @@ export class OnlineMatchSession {
     | ((event: MessageEvent<WorkerResponse>) => void | Promise<void>)
     | null = null;
   oncommandsavailable: ((available: boolean) => void) | null = null;
+  oncommandoutcome: ((outcome: CommandOutcome) => void) | null = null;
+  lastCommandOutcome?: CommandOutcome;
+  private readonly commandOutcomes = new Map<string, CommandOutcome>();
   commandsAvailable = false;
   onerror: ((event: { message: string }) => void) | null = null;
   disconnectedPlayerIds: number[] = [];
   private decoder?: Worker;
+  private expectedMap?: {width: number; height: number};
   private connection: OnlineLobbyConnection;
   private decoding?: {
     resolve: (packet: DecodedState) => void;
@@ -38,7 +44,7 @@ export class OnlineMatchSession {
   private flowEpoch=0;
   private presenting?:Promise<void>;
   private latestPresentation?:Presentation;
-  readonly diagnostics={pendingStates:0,pendingBytes:0,oldestAgeMs:0,decodeMs:0,applyMs:0,presentationMs:0,coalesced:0,recoveries:0};
+  readonly diagnostics={pendingStates:0,pendingBytes:0,oldestAgeMs:0,decodeMs:0,applyMs:0,presentationMs:0,coalesced:0,recoveries:0,wireBytes:0,decodedArrayBytes:0,metadataBytes:0,metadataTokens:0};
   private initialized = false;
   private stopped = false;
   private manifest?: MatchManifest;
@@ -79,6 +85,14 @@ export class OnlineMatchSession {
       },
       (message) => {
         if (this.stopped) return;
+        // Small command results do not depend on map decoding or presentation.
+        // Consume them directly so a slow baseline cannot accumulate an
+        // unbounded promise chain of receipt metadata.
+        if (message.type === "match-command-outcome") {
+          if (message.matchId === this.matchId && message.outcome.playerId === this.manifest?.playerId)
+            this.recordCommandOutcome(message.outcome);
+          return;
+        }
         // Asset loading may still be awaiting network I/O. Terminal admission
         // messages must not wait behind that promise to release this session.
         if (this.pendingSync || this.lastTick < 0 || this.recovering) {
@@ -148,12 +162,22 @@ export class OnlineMatchSession {
         );
         return;
       }
-      void this.request({
+      const requestId = crypto.randomUUID();
+      void this.connection.request({
         type: "match-command",
+        requestId,
         matchId: this.matchId,
         command: message.command,
+      }).then(() => {
+        // ACK means transport admission. A later domain result may already
+        // have arrived; never overwrite it with an older accepted state.
+        if (!this.stopped && !this.commandOutcomes.has(requestId))
+          this.recordCommandOutcome({id: requestId, playerId: this.manifest?.playerId ?? message.command.playerId,
+            tick: this.lastTick, status: "accepted"});
       }).catch((error) => {
-        if (!this.stopped) this.status(error.message);
+        if (!this.stopped) this.recordCommandOutcome({id: requestId,
+          playerId: this.manifest?.playerId ?? message.command.playerId,
+          tick: this.lastTick, status: "rejected", reason: error.message});
       });
     }
   }
@@ -165,6 +189,15 @@ export class OnlineMatchSession {
     this.decoder?.terminate();
     this.decoding?.reject(new Error("Session stopped"));
     this.decoding = undefined;
+  }
+  private recordCommandOutcome(outcome: CommandOutcome): void {
+    this.commandOutcomes.delete(outcome.id);
+    this.commandOutcomes.set(outcome.id, {...outcome});
+    while (this.commandOutcomes.size > 2048)
+      this.commandOutcomes.delete(this.commandOutcomes.keys().next().value!);
+    this.lastCommandOutcome = {...outcome};
+    this.oncommandoutcome?.({...outcome});
+    if (outcome.status === "rejected" && outcome.reason) this.status(outcome.reason);
   }
   private request(message: object): Promise<string | undefined> {
     return this.connection.request({
@@ -179,7 +212,7 @@ export class OnlineMatchSession {
         return;
       }
       this.decoding = { resolve, reject };
-      this.decoder.postMessage(packet);
+      this.decoder.postMessage({...packet, expectedMap: this.expectedMap});
     });
   }
   private recover():void {
@@ -213,6 +246,11 @@ export class OnlineMatchSession {
   }
   private async receive(message: ServerMessage): Promise<void> {
     if ("matchId" in message && message.matchId !== this.matchId) return;
+    if (message.type === "match-command-outcome") {
+      if (message.outcome.playerId === this.manifest?.playerId)
+        this.recordCommandOutcome(message.outcome);
+      return;
+    }
     if (message.type === "match") {
       if (this.manifest || message.manifest.id !== this.matchId) return;
       this.manifest = message.manifest;
@@ -237,6 +275,7 @@ export class OnlineMatchSession {
       if (this.stopped) return;
       if (identity !== message.manifest.mapHash)
         throw new Error("Map versions differ. Reload after deployment.");
+      this.expectedMap = {width: loaded.map.width(), height: loaded.map.height()};
       this.decoder = new Worker(
         new URL("./multiplayerStateWorker.ts", import.meta.url),
         { type: "module" },
@@ -302,6 +341,10 @@ export class OnlineMatchSession {
       this.lastTick = packet.tick;
       if(message.flowEpoch!==undefined)this.flowEpoch=message.flowEpoch;
       this.diagnostics.decodeMs=decoded.decodeMs??0;this.diagnostics.applyMs=decoded.applyMs??0;
+      this.diagnostics.wireBytes=decoded.decodeStats?.wireBytes??0;
+      this.diagnostics.decodedArrayBytes=decoded.decodeStats?.arrayBytes??0;
+      this.diagnostics.metadataBytes=decoded.decodeStats?.metadataBytes??0;
+      this.diagnostics.metadataTokens=decoded.decodeStats?.metadataTokens??0;
       if (message.publicationSequence !== undefined)
         this.lastPublicationSequence = message.publicationSequence;
       this.matchPaused = message.paused;

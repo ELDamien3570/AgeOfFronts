@@ -8,9 +8,8 @@ import type {
 } from "./Protocol";
 import { BUILDING_RULES } from "./Rules";
 
-const SQUAD_STRIDE = 14,
-  ORDER_STRIDE = 6,
-  BUILDING_STRIDE = 5;
+export const SNAPSHOT_LAYOUT = Object.freeze({ squadStride: 14, orderStride: 6, buildingStride: 5 });
+const { squadStride: SQUAD_STRIDE, orderStride: ORDER_STRIDE, buildingStride: BUILDING_STRIDE } = SNAPSHOT_LAYOUT;
 const SQUAD_TYPES: SquadType[] = ["infantry", "archer", "cavalry"];
 const BUILDING_TYPES = Object.keys(BUILDING_RULES) as BuildingType[];
 const ORDER_TYPES: Order["type"][] = [
@@ -271,7 +270,7 @@ export class SnapshotDecoder {
   private claims = new Uint8Array();
   private progress = new Uint8Array();
   private readonly buildings = new Map<number, Building>();
-  decode(packet: SnapshotPacket,copyArrays=true): Snapshot {
+  decode(packet: SnapshotPacket,copyArrays=true,includeChangedTiles=true): Snapshot {
     if (packet.reset) {
       this.roads = new Uint32Array();
       this.deposits = [];
@@ -282,11 +281,11 @@ export class SnapshotDecoder {
       this.progress = new Uint8Array(size);
       this.buildings.clear();
     }
-    const changedTiles = new Uint32Array(packet.tiles.length / 2);
+    const changedTiles = !packet.reset && includeChangedTiles ? new Uint32Array(packet.tiles.length / 2) : undefined;
     for (let at = 0; at < packet.tiles.length; at += 2) {
       const tile = packet.tiles[at],
         value = packet.tiles[at + 1];
-      changedTiles[at / 2] = tile;
+      if (changedTiles) changedTiles[at / 2] = tile;
       this.owners[tile] = value & 255;
       this.claims[tile] = (value >>> 8) & 255;
       this.progress[tile] = (value >>> 16) & 255;

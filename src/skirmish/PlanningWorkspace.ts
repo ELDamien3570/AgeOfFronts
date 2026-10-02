@@ -10,6 +10,7 @@ export class PlanningWorkspace {
   readonly position: Int32Array;
   readonly free: Int32Array;
   private freeCount: number;
+  private pristine = true;
   constructor(readonly capacity = 65_536) {
     if (!Number.isInteger(capacity) || capacity < 1 || capacity > 65_536)
       throw new Error("Invalid planning workspace capacity");
@@ -37,6 +38,7 @@ export class PlanningWorkspace {
     score: number,
   ): number | undefined {
     if (!this.freeCount) return undefined;
+    this.pristine = false;
     const slot = this.free[--this.freeCount];
     this.tile[slot] = tile;
     this.cost[slot] = cost;
@@ -49,7 +51,16 @@ export class PlanningWorkspace {
     this.free[this.freeCount++] = slot;
   }
   checkpoint() {
+    if (!this.used)
+      return {
+        empty: true as const,
+        capacity: this.capacity,
+        // Preserve reused allocation order, but an untouched arena is implicit.
+        free: this.pristine ? undefined : this.free.slice(),
+      };
     return structuredClone({
+      empty: false as const,
+      capacity: this.capacity,
       tile: this.tile,
       parent: this.parent,
       cost: this.cost,
@@ -60,6 +71,20 @@ export class PlanningWorkspace {
     });
   }
   restore(saved: ReturnType<PlanningWorkspace["checkpoint"]>): void {
+    if (saved.capacity !== undefined && saved.capacity !== this.capacity)
+      throw new Error("Planning workspace size changed");
+    if (saved.empty) {
+      if (saved.free && saved.free.length !== this.capacity)
+        throw new Error("Planning workspace size changed");
+      this.freeCount = this.capacity;
+      this.pristine = !saved.free;
+      if (saved.free) this.free.set(saved.free);
+      else
+        for (let i = 0; i < this.capacity; i++)
+          this.free[i] = this.capacity - 1 - i;
+      return;
+    }
+    this.pristine = false;
     for (const name of [
       "tile",
       "parent",

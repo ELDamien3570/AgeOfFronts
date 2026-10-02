@@ -9,6 +9,80 @@ import { CanonicalStateStream } from "../../src/skirmish/client/CanonicalStateSt
 import { ClientStateFlow } from "../../src/skirmish/multiplayer/application/ClientStateFlow";
 
 describe("ordered canonical state and fenced flow control", () => {
+  it("fences the first baseline to the loaded map even when forged dimensions have the same cell count", () => {
+    const map = new GameMapImpl(64, 48, new Uint8Array(3072).fill(133), 3072);
+    const match = new Skirmish(map, {
+      seed: 42,
+      aiCount: 1,
+      tribes: false,
+      runAi: false,
+    });
+    const packet = new SnapshotEncoder(true).encode(match.snapshot());
+    const stream = new CanonicalStateStream(3072, 65_536, {
+      width: 64,
+      height: 48,
+    });
+    expect(() => stream.apply({ ...packet, width: 48, height: 64 })).toThrow(
+      "loaded map",
+    );
+    stream.apply(packet);
+    expect(stream.presentation().canonicalSequence).toBe(1);
+  });
+  it("falls back to a full frame when the dirty union exceeds its allowance and fences older acknowledgements", () => {
+    const map = new GameMapImpl(64, 48, new Uint8Array(3072).fill(133), 3072),
+      game = new Skirmish(map, {
+        seed: 42,
+        aiCount: 1,
+        tribes: false,
+        runAi: false,
+      });
+    const encoder = new SnapshotEncoder(true),
+      stream = new CanonicalStateStream(3072, 1);
+    stream.apply(encoder.encode(game.snapshot()));
+    stream.acknowledge(1);
+    game.tick = 4;
+    game.owners[100] = 2;
+    stream.apply(encoder.encode(game.snapshot()));
+    game.tick = 8;
+    game.owners[101] = 2;
+    stream.apply(encoder.encode(game.snapshot()));
+    expect(stream.presentation().snapshot.changedTiles).toBeUndefined();
+    stream.acknowledge(2);
+    expect(stream.presentation().snapshot.changedTiles).toBeUndefined();
+    game.tick = 12;
+    game.owners[102] = 2;
+    stream.apply(encoder.encode(game.snapshot()));
+    stream.acknowledge(3);
+    expect([...stream.presentation().snapshot.changedTiles!]).toEqual([102]);
+    expect(stream.presentation().snapshot.owners.slice(100, 103)).toEqual(
+      new Uint8Array([2, 2, 2]),
+    );
+  });
+  it("rejects oversized or changing dimensions before allocating canonical maps", () => {
+    const map = new GameMapImpl(64, 48, new Uint8Array(3072).fill(133), 3072),
+      game = new Skirmish(map, {
+        seed: 42,
+        aiCount: 1,
+        tribes: false,
+        runAi: false,
+      });
+    const baseline = new SnapshotEncoder(true).encode(game.snapshot()),
+      stream = new CanonicalStateStream(3072);
+    expect(() =>
+      stream.apply({ ...baseline, width: 1_000_000, height: 1_000_000 }),
+    ).toThrow("memory budget");
+    stream.apply(baseline);
+    expect(() => stream.apply({ ...baseline, width: 48, height: 64 })).toThrow(
+      "dimensions changed",
+    );
+    expect(() =>
+      stream.apply({ ...baseline, tiles: new Uint32Array([3072, 1]) }),
+    ).toThrow("outside the map");
+    const squads = baseline.squads.slice();
+    squads[13] = 1_000_000_000;
+    expect(() => stream.apply({ ...baseline, squads })).toThrow("order range");
+    expect(stream.presentation().canonicalSequence).toBe(1);
+  });
   it("preserves tile change-and-return and building deltas through presentation coalescing", () => {
     const map = new GameMapImpl(64, 48, new Uint8Array(3072).fill(133), 3072),
       game = new Skirmish(map, {

@@ -14,6 +14,7 @@ import type {
 import type { EncodedState } from "../StateCodec";
 import {
   MAX_ADVANCE_TICKS,
+  MAX_COMMAND_BATCH,
   type JoinBarrier,
   type MatchAdvance,
   type MatchCommand,
@@ -25,7 +26,7 @@ import {
 } from "./MatchExecutor";
 
 export const MAX_RECENT_COMMANDS = 2048;
-export const MAX_QUEUED_COMMANDS = 100;
+export const MAX_QUEUED_COMMANDS = MAX_COMMAND_BATCH;
 export const EMPTY_MATCH_GRACE_MS = 120_000;
 const TICK_MS = 1000 / TICKS_PER_SECOND;
 const SNAPSHOT_MS = 200;
@@ -667,7 +668,17 @@ export class LiveMatch {
       this.publicationSequence++;
       this.broadcast(this.state(result.packet));
     }
+    for (const outcome of result.commandOutcomes ?? []) {
+      const guest = this.seats.get(outcome.playerId)?.guestId;
+      // A reclaimed seat must not receive its predecessor's receipts. The
+      // coordinator prefixes every request identity with its authenticated guest.
+      const prefix = guest === undefined ? undefined : `${guest}-`;
+      if (guest && prefix && outcome.id.startsWith(prefix) && this.connected(guest))
+        this.send(guest, {type: "match-command-outcome", matchId: this.reservation.id,
+          outcome: {...outcome, id: outcome.id.slice(prefix.length)}});
+    }
     for (const rejection of result.rejectedCommands) {
+      if (result.commandOutcomes?.some(o => o.id === rejection.id && o.playerId === rejection.playerId)) continue;
       const guest = this.seats.get(rejection.playerId)?.guestId;
       if (guest && this.connected(guest))
         this.send(guest, { type: "error", message: rejection.message });

@@ -349,10 +349,12 @@ export interface MatchOptions {
   runAi?: boolean;
   /** Experimental policy; stays opt-in until the ARM performance gate passes. */
   aiEconomy?: boolean;
-  /** Transactional human route admission; opt-in until planning gates pass. */
+  /** Transactional route admission; opt-in until planning gates pass. */
   deferredPlanning?: boolean;
   /** City defense trials require the shared opt-in economy coordinator. */
   aiDefenses?: boolean;
+  /** Fleet mission trials require economy and deferred route admission. */
+  aiNaval?: boolean;
   tribes?: boolean;
   /** Tribes to deploy when `tribes` is set; defaults to the map size's base. */
   tribeCount?: number;

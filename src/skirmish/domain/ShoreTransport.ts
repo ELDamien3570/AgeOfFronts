@@ -12,6 +12,7 @@ export interface ShoreTransportWorld {
   paths: LandPaths;
   squads: Squad[];
   ships: Ship[];
+  removed?(ship: Ship): void;
   blocked(tile: number, playerId: number): boolean;
   /** False when no tower or wall exists, so unobstructed (cached) routes apply. */
   hasObstacles?(): boolean;
@@ -226,8 +227,10 @@ export class ShoreTransport {
         : (transfer.queued.find((q) => q.squadId === squad.id)?.orders ?? []);
       w.resume(squad, transfer.destinationTile);
     }
-    if (!w.squads.some((s) => s.embarkedOn === ship.id))
+    if (!w.squads.some((s) => s.embarkedOn === ship.id)) {
       w.ships.splice(w.ships.indexOf(ship), 1);
+      w.removed?.(ship);
+    }
     return null;
   }
 
@@ -239,11 +242,13 @@ export class ShoreTransport {
       const cargo = w.squads.filter((s) => s.embarkedOn === ship.id);
       if (transfer.phase !== "boarding" && !cargo.length) {
         w.ships.splice(w.ships.indexOf(ship), 1);
+        w.removed?.(ship);
         continue;
       }
       if (transfer.phase === "boarding" && !ship.boarding) {
         if (!cargo.length) {
           w.ships.splice(w.ships.indexOf(ship), 1);
+          w.removed?.(ship);
           continue;
         }
         transfer.phase = "sailing";
