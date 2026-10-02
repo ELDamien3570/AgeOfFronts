@@ -457,7 +457,7 @@ export class HudViewModel {
     if (id === "hold")
       return {
         title: "Hold selected units",
-        subtitle: "X · stop and clear routes",
+        subtitle: "T · stop and clear routes",
         stats: [],
         description:
           "Stops selected squads and ships and clears their queued movement orders. Units can still automatically fight enemies within range.",

@@ -28,6 +28,14 @@ export const CONSTRUCTION: { kind: BuildingType; key: string }[] = [
   { kind: "archery", key: "G" },
   { kind: "stables", key: "H" },
 ];
+export const CONSTRUCTION_SHORTCUTS: { kind: BuildingType; key: string }[] = [
+  ...CONSTRUCTION,
+  { kind: "mine", key: "Z" },
+  { kind: "oil-well", key: "X" },
+  { kind: "blacksmith", key: "C" },
+  { kind: "armory", key: "V" },
+  { kind: "arms-factory", key: "N" },
+];
 
 export type HotkeyAction =
   | { type: "recruit"; kind: SquadType }
@@ -71,7 +79,7 @@ export function hotkeyAction(
     return commandsAllowed || spaceHeld
       ? { type: "recruit-ship", kind: navy.kind }
       : null;
-  const building = CONSTRUCTION.find(
+  const building = CONSTRUCTION_SHORTCUTS.find(
     (action) => event.code === `Key${action.key}`,
   );
   if (building)
@@ -79,7 +87,7 @@ export function hotkeyAction(
   switch (event.code) {
     case "KeyR":
       return { type: "replenish" };
-    case "KeyX":
+    case "KeyT":
       return { type: "hold" };
     case "Home":
       return { type: "fit" };

@@ -47,6 +47,7 @@ import { ControlGroups } from "./ControlGroups";
 
 import { CampLossPresentation } from "./CampLossPresentation";
 import { CameraPanViewModel } from "./CameraPanViewModel";
+import { BrowserControlPreferences } from "./ControlPreferences";
 
 import {
   CONSTRUCTION,
@@ -176,7 +177,9 @@ const groups = new ControlGroups();
 const hud = new HudView(element("app"), (height) =>
   renderer.setHudBottomInset(height),
 );
-const cameraPan = new CameraPanViewModel();
+const cameraPan = new CameraPanViewModel(new BrowserControlPreferences(() => localStorage));
+element("wasd-mode").setAttribute("aria-pressed", String(cameraPan.enabled));
+hud.setWasdMode(cameraPan.enabled);
 const recruitmentControls = new RecruitmentControlsViewModel();
 element("wasd-mode").addEventListener("click", () => {
   recruitmentControls.clear();

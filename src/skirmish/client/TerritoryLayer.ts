@@ -1,5 +1,6 @@
 import type { Snapshot } from "../Protocol";
 import { CAPTURE_TICKS } from "../Protocol";
+import { roundedBorderEdge } from "./RoundedTerritoryBorders";
 import {
   TERRITORY_ALPHA,
   TERRITORY_BORDER_INK,
@@ -124,11 +125,21 @@ export class TerritoryLayer {
       chunk.image.data[pixel + 3] = Math.round(total * 255);
       dirty.add(key);
       if (this.owners[tile] !== owner) {
-        chunk.borderDirty = true;
-        if (tile % this.width)
-          this.chunk(this.key(tile - 1)).borderDirty = true;
-        if (tile >= this.width)
-          this.chunk(this.key(tile - this.width)).borderDirty = true;
+        // Corner curves read all four incident owners, including diagonal
+        // neighbors across chunk seams. Claim progress does not affect geometry.
+        const x = tile % this.width,
+          y = Math.floor(tile / this.width);
+        for (
+          let ty = Math.max(0, y - 1);
+          ty <= Math.min(this.height - 1, y + 1);
+          ty++
+        )
+          for (
+            let tx = Math.max(0, x - 1);
+            tx <= Math.min(this.width - 1, x + 1);
+            tx++
+          )
+            this.chunk(this.key(ty * this.width + tx)).borderDirty = true;
       }
       this.owners[tile] = owner;
       this.claims[tile] = claim;
@@ -159,8 +170,7 @@ export class TerritoryLayer {
       dx: number,
       dy: number,
     ) => {
-      p.moveTo(x, y);
-      p.lineTo(x + dx, y + dy);
+      roundedBorderEdge(p, { x1: x, y1: y, x2: x + dx, y2: y + dy }, at);
     };
     const line = (
       x: number,

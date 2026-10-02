@@ -37,6 +37,35 @@ function fixture() {
   return { m, root, view, vm };
 }
 describe("HUD building categories and visibility", () => {
+  it("shows the new construction shortcuts once in their existing categories, including saved WASD mode", () => {
+    const { m, root, view, vm } = fixture();
+    m.expansion!.progression.states[1].age = "Modern";
+    m.expansion!.progression.states[1].completed = TECHNOLOGIES.map(
+      (t) => t.id,
+    );
+    root.dataset.wasdMode = "true";
+    view.update(vm());
+    for (const [type, key, section] of [
+      ["mine", "Z", "economy"],
+      ["oil-well", "X", "economy"],
+      ["blacksmith", "C", "production"],
+      ["armory", "V", "production"],
+      ["arms-factory", "N", "production"],
+    ]) {
+      const buttons = root.querySelectorAll(
+        `[data-dock-action="build"][data-value="${type}"]`,
+      );
+      expect(buttons).toHaveLength(1);
+      expect(buttons[0].closest(`.${section}`)).not.toBeNull();
+      expect(buttons[0].querySelector("kbd")!.textContent).toBe(`⇧${key}`);
+    }
+    expect(root.querySelector("#hold kbd")!.textContent).toBe("T");
+    root.dataset.wasdMode = "false";
+    view.update(vm());
+    expect(root.querySelector('[data-value="mine"] kbd')!.textContent).toBe(
+      "Z",
+    );
+  });
   it("orders the new categories and preserves factories and warship controls", () => {
     const { root } = fixture();
     expect(

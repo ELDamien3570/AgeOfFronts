@@ -1810,6 +1810,7 @@ export class Skirmish {
       this.tick, this.owners,
       (tile) => this.buildingsAt(tile).length > 0,
       (owner, recipient) => this.hostile(owner, recipient),
+      owner => this.player(owner)?.land ?? 0,
     )) {
       for (const tile of pocket.tiles) {
         this.changeOwner(tile, pocket.recipient);

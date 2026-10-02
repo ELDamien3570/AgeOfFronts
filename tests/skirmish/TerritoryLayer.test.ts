@@ -1,5 +1,6 @@
 import { afterEach, describe, expect, it, vi } from "vitest";
 import { CAPTURE_TICKS, type Snapshot } from "../../src/skirmish/Protocol";
+import { roundedBorderEdge } from "../../src/skirmish/client/RoundedTerritoryBorders";
 import { TerritoryBorders } from "../../src/skirmish/client/TerritoryBorders";
 import { TerritoryLayer } from "../../src/skirmish/client/TerritoryLayer";
 import {
@@ -11,6 +12,7 @@ import {
 type Segment = [number, number, number, number];
 class MockPath {
   segments: Segment[] = [];
+  curves: number[][] = [];
   private x = 0;
   private y = 0;
   moveTo(x: number, y: number) {
@@ -19,6 +21,13 @@ class MockPath {
   }
   lineTo(x: number, y: number) {
     this.segments.push([this.x, this.y, x, y]);
+    this.x = x;
+    this.y = y;
+  }
+  quadraticCurveTo(cx: number, cy: number, x: number, y: number) {
+    this.curves.push([this.x, this.y, cx, cy, x, y]);
+    this.x = x;
+    this.y = y;
   }
 }
 
@@ -134,15 +143,43 @@ function setup(width: number, height: number, owners?: number[]) {
       .flatMap((s) => s.path.segments)
       .map((s) => s.join(","))
       .sort();
-  const reference = () => {
+  const referencePaths = () => {
     const borders = new TerritoryBorders(width, height);
     for (let t = 0; t < snapshot.owners.length; t++)
       borders.updateTile(snapshot.owners, t);
-    return [...borders.segments]
-      .map((e) => [e.x1, e.y1, e.x2, e.y2].join(","))
-      .sort();
+    return [...borders.segments].map((e) => {
+      const path = new MockPath();
+      roundedBorderEdge(path, e, (x, y) =>
+        x < 0 || y < 0 || x >= width || y >= height
+          ? 0
+          : snapshot.owners[y * width + x],
+      );
+      return path;
+    });
   };
-  return { layer, snapshot, render, boundaries, segments, reference, canvases };
+  const reference = () =>
+    referencePaths()
+      .flatMap((p) => p.segments.map((s) => s.join(",")))
+      .sort();
+  const referenceCurves = () =>
+    referencePaths()
+      .flatMap((p) => p.curves.map((s) => s.join(",")))
+      .sort();
+  const curves = (draw: ReturnType<typeof render>) =>
+    boundaries(draw)
+      .flatMap((s) => s.path.curves.map((c) => c.join(",")))
+      .sort();
+  return {
+    layer,
+    snapshot,
+    render,
+    boundaries,
+    segments,
+    reference,
+    curves,
+    referenceCurves,
+    canvases,
+  };
 }
 
 describe("territory zoom styling", () => {
@@ -238,6 +275,7 @@ describe("cached styled territory boundaries", () => {
         f.snapshot.changedTiles = Uint32Array.of(tile);
         f.layer.update(f.snapshot);
         expect(f.segments(f.render())).toEqual(f.reference());
+        expect(f.curves(f.render())).toEqual(f.referenceCurves());
       }
     }
   });
@@ -248,7 +286,7 @@ describe("cached styled territory boundaries", () => {
     const render = f.render(),
       shared = render.strokes.filter(
         (s) =>
-          s.path.segments.some((e) => e.join(",") === "1,0,1,1") &&
+          s.path.segments.some((e) => e[0] === 1 && e[2] === 1) &&
           s.color.startsWith("rgb"),
       );
     expect(shared).toHaveLength(2);
@@ -268,7 +306,7 @@ describe("cached styled territory boundaries", () => {
       .render()
       .strokes.filter(
         (s) =>
-          s.path.segments.some((e) => e.join(",") === "1,0,1,1") &&
+          s.path.segments.some((e) => e[0] === 1 && e[2] === 1) &&
           s.color.startsWith("rgb"),
       );
     expect(neutral).toHaveLength(1);

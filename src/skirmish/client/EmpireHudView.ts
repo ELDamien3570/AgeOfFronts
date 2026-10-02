@@ -5,7 +5,7 @@ import { buildingPreviewArtworkId } from "./ArtworkCatalog";
 import type { EmpireActions } from "./EmpireView";
 import type { EmpireViewModel } from "./EmpireViewModel";
 import { eraPortrait } from "./EraArtwork";
-import { recruitmentBatch } from "./Controls";
+import { CONSTRUCTION_SHORTCUTS, recruitmentBatch } from "./Controls";
 import { icon } from "./HudView";
 import { SkirmishViewModel } from "./SkirmishViewModel";
 import { BUILDING_SECTION, type BuildingSection } from "./BuildingSections";
@@ -219,7 +219,9 @@ export class EmpireHudView {
     portrait?: string,
   ): string {
     const art = portrait && eraPortrait(portrait);
-    return `<div class="action-slot" data-dock-tip="${esc(`${label}\n${tip}${reason ? `\n${reason}` : ""}`)}" tabindex="${reason ? 0 : -1}"><button class="hud-action" data-dock-action="${action}" data-value="${value}" ${reason ? "disabled" : ""} aria-label="${esc(label)}">${art ? `<img class="hud-art" src="${art}" alt="">` : `<span class="command-symbol">${esc(label.slice(0, 2))}</span>`}<span class="action-name">${esc(label)}</span></button></div>`;
+    const shortcut = action === "build" ? CONSTRUCTION_SHORTCUTS.find(a => a.kind === value) : undefined;
+    const key = shortcut ? `<kbd>${this.root.dataset.wasdMode === "true" ? "⇧" : ""}${shortcut.key}</kbd>` : "";
+    return `<div class="action-slot" data-dock-tip="${esc(`${label}\n${tip}${reason ? `\n${reason}` : ""}`)}" tabindex="${reason ? 0 : -1}"><button class="hud-action" data-dock-action="${action}" data-value="${value}" ${reason ? "disabled" : ""} aria-label="${esc(label)}">${art ? `<img class="hud-art" src="${art}" alt="">` : `<span class="command-symbol">${esc(label.slice(0, 2))}</span>`}${key}<span class="action-name">${esc(label)}</span></button></div>`;
   }
   update(vm: EmpireViewModel): void {
     this.vm = vm;

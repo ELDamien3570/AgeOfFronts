@@ -1,3 +1,5 @@
+import type { ControlPreferenceStore } from "./ControlPreferences";
+
 const PAN_KEYS = new Set(["KeyW", "KeyA", "KeyS", "KeyD"]);
 const SPEED = 600; // CSS pixels per second, independent of zoom and game speed.
 const RESPONSE = 0.09;
@@ -9,9 +11,14 @@ export class CameraPanViewModel {
   private vx = 0;
   private vy = 0;
 
+  constructor(private readonly preferences?: ControlPreferenceStore) {
+    this.enabled = preferences?.readWasdMode() ?? false;
+  }
+
   setEnabled(enabled: boolean): void {
     this.enabled = enabled;
     this.clear();
+    this.preferences?.writeWasdMode(enabled);
   }
 
   keyDown(

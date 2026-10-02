@@ -1,8 +1,9 @@
 import { restoreMap, restoreSet } from "../StateTransfer";
 import type { GameMap } from "../../core/game/GameMap";
 import { TICKS_PER_SECOND } from "../Protocol";
+import { NeutralTerritoryClaims, NEUTRAL_TERRITORY_RULES } from "./NeutralTerritoryClaims";
 
-export const TERRITORY_ABSORPTION = Object.freeze({ maxCells: 2, seconds: 10, includeUnclaimed: true });
+export const TERRITORY_ABSORPTION = Object.freeze({ maxCells: 2, seconds: 10, includeUnclaimed: true, neutral: NEUTRAL_TERRITORY_RULES });
 
 interface Pocket {
   owner: number;
@@ -16,12 +17,13 @@ interface Pending extends Pocket {
 // Domain policy with bounded local connectivity checks. Ownership mutations
 // remain the simulation aggregate's responsibility, including capture credit.
 export class TerritoryAbsorption {
-  checkpoint() { return structuredClone({dirty:this.dirty, watched:this.watched, pending:this.pending}); }
+  checkpoint() { return structuredClone({dirty:this.dirty, watched:this.watched, pending:this.pending, neutral: this.neutral.checkpoint()}); }
   restore(saved: ReturnType<TerritoryAbsorption["checkpoint"]>): void {
     const state=structuredClone(saved);
     restoreSet(this.dirty,state.dirty);
     restoreSet(this.watched,state.watched);
     restoreMap(this.pending,state.pending);
+    this.neutral.restore(state.neutral);
 
   }
 
@@ -29,9 +31,11 @@ export class TerritoryAbsorption {
   private readonly watched = new Set<number>();
   private readonly pending = new Map<number, Pending>();
 
-  constructor(private readonly map: GameMap) {}
+  private readonly neutral: NeutralTerritoryClaims;
+  constructor(private readonly map: GameMap) { this.neutral = new NeutralTerritoryClaims(map); }
 
   changed(tile: number): void {
+    this.neutral.changed(tile);
     this.dirty.add(tile);
     for (const neighbor of this.map.neighbors(tile)) this.dirty.add(neighbor);
   }
@@ -41,8 +45,14 @@ export class TerritoryAbsorption {
     owners: Uint8Array,
     hasBuilding: (tile: number) => boolean,
     hostile: (owner: number, recipient: number) => boolean,
+    ownedLand?: (owner: number) => number,
   ): readonly Pocket[] {
-    if (tick % TICKS_PER_SECOND !== 0) return [];
+    const neutral = this.neutral.step(tick, owners, hasBuilding, ownedLand ?? (owner => {
+      let count = 0;
+      for (let tile = 0; tile < owners.length; tile++) if (owners[tile] === owner && this.map.isLand(tile)) count++;
+      return count;
+    }));
+    if (tick % TICKS_PER_SECOND !== 0) return neutral;
     const checks = new Set([...this.dirty, ...this.watched]);
     this.dirty.clear();
     this.watched.clear();
@@ -81,12 +91,12 @@ export class TerritoryAbsorption {
     }
     for (const root of this.pending.keys())
       if (!pockets.has(root)) this.pending.delete(root);
-    return ready.sort((a, b) => a.tiles[0] - b.tiles[0]);
+    return [...ready, ...neutral].sort((a, b) => a.tiles[0] - b.tiles[0]);
   }
 
   private inspect(start: number, owners: Uint8Array): Pocket | undefined {
     const owner = owners[start];
-    if ((!owner && !TERRITORY_ABSORPTION.includeUnclaimed) || !this.map.isLand(start)) return;
+    if (!owner || !this.map.isLand(start)) return;
     const tiles = [start];
     let recipient = 0;
     for (let at = 0; at < tiles.length; at++) {

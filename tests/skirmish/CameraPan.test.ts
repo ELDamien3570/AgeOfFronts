@@ -1,7 +1,8 @@
 import { describe, expect, it } from "vitest";
 import { CameraPanViewModel } from "../../src/skirmish/client/CameraPanViewModel";
+import { BrowserControlPreferences } from "../../src/skirmish/client/ControlPreferences";
 import {
-  CONSTRUCTION,
+  CONSTRUCTION_SHORTCUTS,
   LAND_RECRUITMENT,
   NAVAL_RECRUITMENT,
   hotkeyAction,
@@ -33,9 +34,37 @@ function travel(fps: number, diagonal = false) {
 }
 
 describe("WASD camera controls", () => {
+  it("remembers both enabled and disabled mode across new camera sessions", () => {
+    const values = new Map<string, string>();
+    const store = () => ({
+      getItem: (key: string) => values.get(key) ?? null,
+      setItem: (key: string, value: string) => {
+        values.set(key, value);
+      },
+    });
+    const first = new CameraPanViewModel(new BrowserControlPreferences(store));
+    expect(first.enabled).toBe(false);
+    first.setEnabled(true);
+    const second = new CameraPanViewModel(new BrowserControlPreferences(store));
+    expect(second.enabled).toBe(true);
+    expect(second.keyDown(event("KeyW"))).toBe(true);
+    second.setEnabled(false);
+    expect(
+      new CameraPanViewModel(new BrowserControlPreferences(store)).enabled,
+    ).toBe(false);
+  });
+  it("still changes mode when browser storage is unavailable", () => {
+    const blocked = new BrowserControlPreferences(() => {
+      throw new Error("Blocked storage");
+    });
+    const pan = new CameraPanViewModel(blocked);
+    expect(pan.enabled).toBe(false);
+    expect(() => pan.setEnabled(true)).not.toThrow();
+    expect(pan.enabled).toBe(true);
+  });
   it("requires Shift for every construction and recruitment shortcut while preserving other controls", () => {
     for (const { key } of [
-      ...CONSTRUCTION,
+      ...CONSTRUCTION_SHORTCUTS,
       ...LAND_RECRUITMENT,
       ...NAVAL_RECRUITMENT,
     ]) {

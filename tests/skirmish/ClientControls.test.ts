@@ -75,10 +75,14 @@ describe("keyboard command mapping", () => {
       F: { type: "construct", kind: "barracks" },
       G: { type: "construct", kind: "archery" },
       H: { type: "construct", kind: "stables" },
-      T: null,
+      T: { type: "hold" },
       B: { type: "recruit-ship", kind: "warship" },
       R: { type: "replenish" },
-      X: { type: "hold" },
+      Z: { type: "construct", kind: "mine" },
+      X: { type: "construct", kind: "oil-well" },
+      C: { type: "construct", kind: "blacksmith" },
+      V: { type: "construct", kind: "armory" },
+      N: { type: "construct", kind: "arms-factory" },
     };
     for (const [letter, action] of Object.entries(expected))
       expect(key(`Key${letter}`)).toEqual(action);
