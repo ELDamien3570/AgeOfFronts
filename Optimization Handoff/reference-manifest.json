@@ -1,0 +1,20 @@
+{
+  "description": "Unmodified historical user inputs; current authority is handoff.md",
+  "files": [
+    {
+      "file": "References/combined-implementation-progress.md",
+      "sha256": "4ea5523d95e3b12e1b06a0f0ce2a335fca2d7f6cf38ccc88643ea83c9578144f",
+      "bytes": 12769
+    },
+    {
+      "file": "References/tuneups.md",
+      "sha256": "befdbf92ddf2782c5316a6df317ba6e1aee255c8d01c602c24e87ce52de9ad1b",
+      "bytes": 23126
+    },
+    {
+      "file": "References/AgeOfFronts-V1-Optimization-Architecture.md",
+      "sha256": "a1ab1c1f958ba9ebfefa0cd7f779ebe20e9fb55fa40af4bfb2d8111980ad9cb1",
+      "bytes": 67494
+    }
+  ]
+}

@@ -1,0 +1,50 @@
+{
+  "codeCommit": "7def4ee6376ec8c79971d461dae56bbae9b79752",
+  "environment": {
+    "os": "Linux",
+    "architecture": "x64",
+    "node": "24.19.0"
+  },
+  "commands": [
+    "npm run test:skirmish -- --maxWorkers=4",
+    "npx tsc --noEmit",
+    "npm run build:skirmish"
+  ],
+  "tests": 1012,
+  "testFiles": 156,
+  "logs": [
+    {
+      "stage": "tests",
+      "sha256": "0b70ef49d6fcb590bd2640a1f623240fc6349bc37a6bde3216a28c3c0009d3ce",
+      "bytes": 1928,
+      "result": "passed"
+    },
+    {
+      "stage": "typecheck",
+      "sha256": "8b47a6b410175b460a4f563a5b70790aeccdf236ac4f6f936a4e2c6209cbace4",
+      "bytes": 731,
+      "result": "passed"
+    },
+    {
+      "stage": "build",
+      "sha256": "0a7d999e5dfe99d434954a1765e4d4c6aa7717d1ad63ea6dcb692a117134c104",
+      "bytes": 34424,
+      "result": "passed"
+    }
+  ],
+  "otherChecks": [
+    "git diff --check",
+    "scoped Oxlint on current slice"
+  ],
+  "notVerified": [
+    "real-browser gameplay acceptance",
+    "largest-map 14 AI / 30 tribes / >=10 humans capacity",
+    "actual ARM hardware performance",
+    "hosted GitHub CI status"
+  ],
+  "notes": [
+    "New experimental features remain opt-in",
+    "The large-chunk Vite warning remains",
+    "Final publication preserves user-owned concurrent Art changes"
+  ]
+}
