@@ -1,5 +1,9 @@
 # Optimization handoff
 
+## Building placement regression continuation — 3 October 2026
+
+A valid placement returns a null rejection. A client-side fallback incorrectly converted that success into “No active match”, making valid previews red and stopping their commands before submission. The UI now distinguishes a missing preview from an accepted site. The correction is deployed on Oracle in `f86c9fa186be892eabda08d984fa1a5d9ad6ec01`. A rendered public 500 Valles / ten-AI Stone Age check placed a City and inspected it as Ready; local and public two-client Modern smoke checks require a normal Barracks command to succeed and its new building to finish construction. See the [placement correction and evidence](Evidence/multiplayer-stability-20261003.md). The earlier rejected-action checks did not cover successful client placement; this is a corrected acceptance gap.
+
 ## Movement regression continuation — 3 October 2026
 
 A public playtest exposed movement-admission starvation that the earlier tick/synchronization smoke missed. The repair shares formation occupancy across planning batches and reserves bounded work for human commands. Ten public test players and ten regular AI now physically move, and normal right-click movement is verified in rendered Chromium. A further routing-batch permission cache reduces repeated AI footprint work while retaining ownership/threat invalidation. The actual moving/contested workload reached 35 simulated minutes locally and on one-CPU Oracle ARM; complete final checkpoints match. See the corrected [movement and performance evidence](Evidence/multiplayer-stability-20261003.md). The final repair is deployed on Oracle in `ad39860f8875b3700ee51cb00762744e60113a61`; a repeated ten-peer public movement/reconnect/state-agreement smoke passes. Native Opera and ten-rendering-browser/concurrent-match acceptance remain open.

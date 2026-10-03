@@ -1,5 +1,18 @@
 # Multiplayer stability investigation — 3 October 2026
 
+## Building placement regression correction
+
+Deployed revision: **f86c9fa186be892eabda08d984fa1a5d9ad6ec01**. The client `placementRejection` wrapper used optional chaining and a nullish fallback, so both an absent preview and a valid null rejection became “No active match”. The valid-site grid called the validator directly and remained correct; hover and click preflight called the faulty wrapper. The correction checks whether the preview exists before returning its rejection, preserving null success and real domain rejection reasons.
+
+The earlier invalid-placement smoke never submitted a valid build from the rendered client. It therefore missed this regression. The extended `scripts/smokeOracleStability.mjs` now finds an affordable, unlocked Barracks site using the shared placement preview, submits the ordinary build command, requires an executed receipt, then identifies a newly created building and waits for its remaining construction ticks to reach zero.
+
+Validation: eight focused placement/deposit tests, TypeScript and the production build pass. Local two-client Modern 500 Valles / ten-AI / 25-tribe smoke accepted the build at tick 43 and completed it by tick 144. The public repeat on match 114 did the same: building 188 at tile 187585, eight common canonical samples agreed, both human forces and all ten regular AI physically moved, and rejected-action/reconnect checks passed. Publication gap p95 was 218–219 ms, maximum 456 ms during controlled reconnect; no smoke failures. Artifacts: `data/investigation-20261003/placement-local-smoke.json` and `placement-oracle-smoke.json`.
+
+Rendered public Chromium verification used Stone Age 500 Valles with ten AI. The valid hover showed “Place City · 800 gold”; a left click deducted the cost and exited placement mode. After construction, City #331 was selected and its DOM details reported Ready, 1/1 ready and full 1,200 health. The corresponding-source anchor names the deployed correction; there were no browser errors or warnings. Screenshots `placement-valid-preview.png` and `placement-city-completed.png` are retained in local review artifacts. This is actual successful UI placement proof, separate from the successful server command smoke. Native Opera qualification remains open.
+
+The documented release waited for the user's match to drain, rebuilt before restart, and verified the app healthy, proxy running and embedded GIT_COMMIT at the fixed revision. Fresh backup `multiplayer-20261003T091104Z.sqlite` passed integrity_check. The public HTML's observed script `/assets/game-CYxn8Ot-.js` embeds the exact corresponding-source revision.
+
+
 ## Movement regression correction
 
 The first public smoke and the earlier mature-game profiles verified clock progress, synchronization and resource behavior, but did **not** verify physical movement. They must not be treated as proof of a playable moving-army workload. The subsequent report that nobody could move exposed that acceptance gap.
