@@ -23,5 +23,9 @@
     "Animations_Playing.jpg",
     "Animations_Large.jpg"
   ],
-  "limitation": "Browser artwork review; no live game renderer integration."
+  "limitation": "Browser artwork review; no live game renderer integration.",
+  "userVisualApproval": {
+    "status": "approved",
+    "userMessage": "The boats as you have them are approved."
+  }
 }

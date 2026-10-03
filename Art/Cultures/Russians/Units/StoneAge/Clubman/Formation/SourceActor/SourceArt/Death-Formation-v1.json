@@ -1,0 +1,72 @@
+{
+  "death": {
+    "id": "death",
+    "label": "Death",
+    "file": "Death.png",
+    "source": "death",
+    "layoutFrom": "standard",
+    "layoutTo": "standard",
+    "durationMs": 1440,
+    "loop": false,
+    "memberStartMs": {
+      "tip": 0,
+      "left": 40,
+      "right": 80,
+      "rear-left": 320,
+      "rear-right": 370
+    },
+    "description": "The front three collapse first, then the back two. All five remain on the ground."
+  },
+  "sheets": [
+    {
+      "id": "idle",
+      "file": "Idle.png",
+      "sha256": "9370d8c2122413dbc1cf0e57154e85c023f2f45da7013d7893f0a3a3eee69502"
+    },
+    {
+      "id": "running",
+      "file": "Running.png",
+      "sha256": "c63f4389c7c1f3bb7e9cb5e4d1158f5fb019b8d8aecf199bf2a8ea92e4c7b287"
+    },
+    {
+      "id": "attack",
+      "file": "Attack.png",
+      "sha256": "ca1b2e801e2a6640d80a0ba3384369a13d642c9efc9f07dd89140e1631c93136"
+    },
+    {
+      "id": "hit",
+      "file": "Hit.png",
+      "sha256": "91a09c1a6a99502a86d1a03e829be5bcaf795096435d7b3296b16bc1d5c56a04"
+    },
+    {
+      "id": "charged",
+      "file": "Charged.png",
+      "sha256": "7a57f0f22432eb7046e1d0798b216b35e1ad0784b1cb62cdb00c730c98c161e0"
+    },
+    {
+      "id": "charge-in",
+      "file": "Charge-In.png",
+      "sha256": "24a604791ccd2e419aaad76246675b528ab95478d9afdcb0fe8deb7c14e40629"
+    },
+    {
+      "id": "charge-maintain",
+      "file": "Charge-Maintain.png",
+      "sha256": "34600968e1d43fe5c048a4a54962dfecd4478e953070b3801e21db84b5d10c2f"
+    },
+    {
+      "id": "charge-attack",
+      "file": "Charge-Attack.png",
+      "sha256": "e1684b3f33568585eb9007a41f2556b614486cb7c199d9c01e926a314abd4294"
+    },
+    {
+      "id": "charge-out",
+      "file": "Charge-Out.png",
+      "sha256": "9ed28c550c68cca9c0308e357aead5eaf7f52d5906909da2e6f9d36656d2a913"
+    },
+    {
+      "id": "death",
+      "file": "Death.png",
+      "sha256": "2f5adc6958b2e45585758439effa811b2f63a04e40e3df449f637d7192042b6f"
+    }
+  ]
+}

@@ -49,13 +49,15 @@ export function sampleFormation(definition, clips, id, elapsedMs) {
     const to = definition.layouts[animation.layoutTo][member.id];
     const start = animation.memberStartMs?.[member.id] || 0;
     const local = elapsed - start;
-    const source = clips.get(animation.source);
+    const sourceId = animation.memberSources?.[member.id] || animation.source;
+    const source = clips.get(sourceId);
+    if (!source) throw new Error("Missing actor clip: " + sourceId);
     let layers;
     if (local < 0) {
-      layers = [layer(clips, animation.beforeSource || "idle", elapsed + member.phaseMs)];
+      layers = [layer(clips, animation.beforeSource || "idle", elapsed + member.phaseMs, 1, animation.beforeFrame)];
     } else {
       const phase = source.loop ? member.phaseMs : 0;
-      layers = [layer(clips, animation.source, local + phase)];
+      layers = [layer(clips, sourceId, local + phase)];
       if (animation.blendIn && local < animation.blendIn.durationMs) {
         const blend = smooth(local / animation.blendIn.durationMs);
         layers[0].weight = blend;

@@ -55,7 +55,7 @@ def fit_native(image):
 
 
 def articulated_rig(source, spec):
-    """Export the approved oars as eight rigid pieces, with an authored underlay."""
+    """Export each approved working oar as a rigid piece with an authored underlay."""
     layers = []
     union = Image.new("L", source.size, 0)
     oars = spec.get("oars", [])
@@ -198,7 +198,7 @@ def export_vessel(spec, expected_hash):
     layers = output / "layers"
     layers.mkdir(exist_ok=True)
     source.save(output / "Source_Transparent.png", optimize=True)
-    rig = articulated_rig(source, spec) if CONFIG["age"] == "BronzeAge" else {
+    rig = articulated_rig(source, spec) if CONFIG["age"] in ("BronzeAge", "ClassicalAge") else {
         "source": source, "base": source, "layers": [], "original": source_path,
         "hull": [], "category": spec["category"], "age": CONFIG["age"],
         "bows": spec["bows"], "stern": spec["sterns"][0]}
@@ -332,7 +332,7 @@ def validate(approved_hashes, base_hashes):
 
 def main(age="StoneAge"):
     global AGE_ROOT, CONFIG
-    if age not in ("StoneAge", "BronzeAge"):
+    if age not in ("StoneAge", "BronzeAge", "ClassicalAge"):
         raise ValueError(f"Unsupported authored age: {age}")
     AGE_ROOT = ROOT / age
     CONFIG = json.loads((AGE_ROOT / "rig-authoring.json").read_text(encoding="utf-8"))
@@ -371,5 +371,5 @@ def main(age="StoneAge"):
 if __name__ == "__main__":
     import argparse
     parser = argparse.ArgumentParser(description=__doc__)
-    parser.add_argument("--age", choices=("StoneAge", "BronzeAge"), default="StoneAge")
+    parser.add_argument("--age", choices=("StoneAge", "BronzeAge", "ClassicalAge"), default="StoneAge")
     main(parser.parse_args().age)

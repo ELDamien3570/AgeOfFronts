@@ -1,0 +1,47 @@
+{
+  "checkedAt": "2026-10-03T02:26:00.216Z",
+  "passed": true,
+  "scope": "Local browser inspection and source-art registration only. No engine runtime integration or publication.",
+  "reviewUrl": "http://127.0.0.1:9000/Art/Building%20Icons/Top-Down-Correction-Review.html?age=LateMedieval&civ=russians",
+  "reviewState": {
+    "lateMedievalDrafts": 10,
+    "earlierApprovedAssets": 39,
+    "totalCultureAssets": 49
+  },
+  "checks": {
+    "allTenDraftCardsVisible": true,
+    "fullPageInspectionImagesLoaded": 40,
+    "previewSizes": [
+      48,
+      64,
+      128
+    ],
+    "baseLateMedievalEntriesAvailable": 9,
+    "cultureAndAgeDropdownsPassed": true,
+    "categoryFilterPassed": true,
+    "blacksmithBaseComparisonPassed": true,
+    "towerBaseComparisonPassed": true,
+    "earlyMedievalApprovedCards": 10,
+    "wallGalleryTowers": 5,
+    "wallGalleryEarlierApprovedTowers": 4,
+    "wallGalleryLateMedievalDraftTowers": 1,
+    "buildingConsoleErrors": [],
+    "wallConsoleErrors": [],
+    "transparentSourceValidationPassed": true,
+    "earlierApprovedImagesUnchanged": true,
+    "uniqueStableAssetAgeKeys": true,
+    "manifestPathsExist": true,
+    "retainedGenerationMasters": 18,
+    "retainedCameraAndDetailRevisions": 8,
+    "exactPromptsAndReferenceImagesRecorded": true,
+    "inspectorJavaScriptSyntaxPassed": true,
+    "scopedTextDiffCheckPassed": true
+  },
+  "evidence": [
+    "Inspection_Review.png",
+    "Full_Inspection_Review.png",
+    "Blacksmith_Comparison.png",
+    "Source_Validation.json",
+    "Generation.json"
+  ]
+}

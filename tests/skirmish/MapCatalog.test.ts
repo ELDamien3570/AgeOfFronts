@@ -14,8 +14,8 @@ describe("heightmap registration", () => {
     expect(map).toMatchObject({
       name: "Old World",
       image: "/maps/old-world/lobby-preview.png",
-      sourceWidth: 8192,
-      sourceHeight: 6144,
+      sourceWidth: 4096,
+      sourceHeight: 3072,
     });
     for (const [size, height] of [
       [250, 188],

@@ -1,6 +1,6 @@
 {
   "scope": "Selected source PNG transparency, containment, master parity and preservation of approved earlier ages. Browser and runtime integration are separate.",
-  "checkedAt": "2026-10-03T00:45:47.744091+00:00",
+  "checkedAt": "2026-10-03T00:50:10.242569+00:00",
   "passed": true,
   "generator": "built-in image_gen",
   "approvedEarlierAges": [
@@ -28,16 +28,17 @@
         255
       ],
       "solidContentBounds": [
-        51,
-        119,
-        1209,
-        1170
+        57,
+        85,
+        1198,
+        1191
       ],
       "maximumEdgeAlpha": 1,
       "opaqueEdgePixels": 0,
-      "selectedMaster": "Barracks/SourceArt/Icon-v1.png",
+      "selectedMaster": "Barracks/SourceArt/Icon-v2.png",
       "selectedMasterMatches": true,
-      "sha256": "94493d131202faef80f48276652acb02b56d43e858634aa954760f3c325641c6"
+      "sha256": "3fde42305845a36a6f31c16710ed4b97564f3284ce972548812b90a5ffcd3b07",
+      "previousSha256": "94493d131202faef80f48276652acb02b56d43e858634aa954760f3c325641c6"
     },
     {
       "id": "city",
@@ -246,5 +247,19 @@
       "selectedMasterMatches": true,
       "sha256": "1a27020996fd181b021c6b19c0910b7725b19c7e7a164ea5e24b9a52f02b228f"
     }
+  ],
+  "latestChangedAssets": [
+    "barracks"
+  ],
+  "latestUnchangedAssets": [
+    "archery",
+    "blacksmith",
+    "city",
+    "factory",
+    "mine",
+    "port",
+    "siege-workshop",
+    "stables",
+    "tower"
   ]
 }

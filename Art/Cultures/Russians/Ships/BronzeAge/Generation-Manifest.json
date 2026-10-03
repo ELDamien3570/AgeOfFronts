@@ -3,7 +3,7 @@
   "cultureId": "russian",
   "age": "BronzeAge",
   "tool": "built-in image_gen",
-  "status": "static-masters-approved; animations-exported",
+  "status": "boat animations approved by user",
   "artDirection": "Regional prehistoric forest and river inspiration; role configurations are gameplay interpretations.",
   "references": {
     "Warship": "C:/Users/Damien/Documents/GitHub/AgeOfFronts/AgeOfFronts/Art/Cultures/Russians/Ships/StoneAge/Warship/SourceArt/Warship_Russian_StoneAge_v1.png",
@@ -87,7 +87,7 @@
     "trader": "src/skirmish/client/MapSymbols.ts:113",
     "frameExtent": "src/skirmish/client/EraArtwork.ts",
     "sourceFit": "Art/Ship Icons/Fleet_Scale_Review.js:masterFrameRect",
-    "status": "Static browser study of current game sizes, 128px atlas resolution and ocean palette; native master proportions preserved within a 420px extent inside a 512px frame. No Bronze Age animations or live match integration yet."
+    "status": "Browser study uses current game sizes, 128px atlas resolution and ocean palette. Seven Bronze Age animation clips are exported and user-approved. Culture match integration remains unverified."
   },
   "oarLayoutGuide": {
     "image": "Warship/SourceArt/Oar_Layout_Guide.png",
@@ -101,12 +101,12 @@
       {
         "age": "BronzeAge",
         "role": "overland-trader",
-        "status": "queued"
+        "status": "smooth wheel tread master animated; Idle and Travel exported"
       },
       {
         "age": "StoneAge",
         "role": "overland-trader",
-        "status": "queued"
+        "status": "basket-carrier static master ready for animation approval"
       }
     ]
   },
@@ -114,5 +114,9 @@
     "age": "BronzeAge",
     "date": "2026-10-02",
     "userMessage": "Okay those are good, animate them"
+  },
+  "animationVisualApproval": {
+    "status": "approved",
+    "userMessage": "The boats as you have them are approved."
   }
 }

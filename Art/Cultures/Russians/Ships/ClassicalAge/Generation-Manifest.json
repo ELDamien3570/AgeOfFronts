@@ -1,0 +1,109 @@
+{
+  "schemaVersion": 1,
+  "cultureId": "russian",
+  "age": "ClassicalAge",
+  "tool": "built-in image_gen",
+  "status": "static-masters-approved; animations-exported",
+  "artDirection": "Regional Iron Age eastern-European forest river craft and steppe-contact goods. Specialized vessels and exact caravan composition are gameplay interpretations, not archaeological reconstructions.",
+  "research": [
+    {
+      "title": "Dyakovo hillfort: the culture of the Moscow River basin in the first millennia BC and AD",
+      "author": "Nikolai A. Krenke, Institute of Archaeology, Russian Academy of Sciences, 2011",
+      "url": "https://archaeolog.ru/el-bib/el-cat/el-books/el-books-2011/dyakovo-1",
+      "use": "Regional Iron Age river-basin material context only; specialized vessels and plank layouts are gameplay interpretations, not reconstructions."
+    },
+    {
+      "title": "Introducing the Scythians",
+      "author": "British Museum",
+      "url": "https://www.britishmuseum.org/blog/introducing-scythians",
+      "use": "Portable felt, fur and wooden goods; horse equipment and wagon context for the regional Iron Age trader. Specific caravan composition is a gameplay interpretation."
+    },
+    {
+      "title": "The Moskva River Basin in the Iron Age\u2013Migration Period",
+      "author": "Nikolai A. Krenke",
+      "url": "https://e-journals.ku.lt/journal/AB/article/1670/file/pdf",
+      "use": "River valley settlement, increasing iron implements, crops and contact with the Scythian/Sarmatian world support regional materials and traded-goods direction, not exact vessel construction."
+    }
+  ],
+  "prompts": {
+    "Warship": "Use case: stylized-concept.\nCreate one new RUSSIAN CULTURE CLASSICAL AGE warship master for the overhead historical RTS Age of Fronts.\nInput image 1 is the approved Bronze Age warship, a STYLE and camera reference only. Make a visibly more developed new vessel, do not alter the reference.\nPure vertical overhead orthographic camera, bow precisely screen-up and stern screen-down. Square RGBA canvas, genuinely transparent background. Complete centered boat, every oar tip contained with generous transparent margin. No water, wake, shadow outside boat, crew, text or sprite-sheet frames. Match the reference's beautifully painted thick timber, crisp contours, warm upper-left highlights and restrained large shapes readable at 24-48 pixels.\nRegional Iron Age eastern-European forest/river inspiration, a game interpretation rather than a claimed archaeological reconstruction. A long narrow fighting boat with a continuous dark oak lower hull, BUILT-UP PLANK sides, visible transverse ribs, low planked bow and stern fighting platforms and a clear central rowing well. Substantially more constructed than the dugout reference. Thick straight planks, believable joinery, a few small plain dark iron fasteners; no medieval clinker longship styling or ornament.\nExactly SIX MATCHED PAIRS of working oars: twelve total, six port, six starboard, each pair aligned with one of six evenly spaced rowing benches. Oars sweep outward and modestly toward the stern. All six left oars parallel; all six right oars parallel. Each oar is a SINGLE STRAIGHT RIGID wooden object: its inner grip, shaft and elongated round-ended blade are perfectly collinear. Visible usable inner grips beside their benches, shaft crosses plain separate thole pin at gunwale; no bent handles, elbow, offset blade, ball joint or kink. All twelve complete blades clearly separate, generous margin, no cropping. Boat hull about four times longer than wide; total oar silhouette roughly twice longer than wide.\nCombat role cue: TWO bold dark silver-gray forged IRON leaf-shaped spearheads and wooden spare spear shafts secured along the front gunwales, tips forward. Two dark red-brown leather-covered oval shields lie flat on the bow deck with restrained small dark iron center bosses, visibly strapped down. Clean reddish ochre wool/hide binding panels at the middle gunwales continue the older combat accent. No cargo. Interior contains six benches, central clear floor and practical timber supports only.\nAvoid Greek/Roman trireme copies, naval ram, ballista, mast, sail, medieval dragon heads, rows of Viking shields, heraldry, flags, crosses, stars, Soviet or modern national symbols, modern guns, gold ornament, tropical outriggers, disconnected parts. Role silhouette, straight physical oars and strong clear iron weapon cue take priority over small decoration. One polished static production sprite.",
+    "WarshipMarginAndCountV2": "Use case: precise-object-edit.\nEdit this exact Russian Classical Age overhead warship static master. Preserve the new plank-built hull, two gray iron spearheads, paired red-brown shields, six benches, deck platforms, wood style, lighting, role accents and pure bow-up overhead camera.\nTwo corrections:\n1. It currently has FIVE mirrored working-oar pairs (TEN oars), leaving the REARMOST sixth bench empty. ADD ONE matched pair of straight wooden oars at that sixth rear bench, immediately above the stern platform. Final count EXACTLY SIX port and SIX starboard working oars, twelve total. Keep the existing ten oars' straight geometry. The new rear oars have the SAME parallel direction, thickness, rounded paddle blade and continuous collinear inner grip/shaft/blade as the existing oars. Each new inner grip is visible, crosses the gunwale at a separate small plain thole pin. No bent shaft, elbow, kink or offset grip. All twelve complete blades separated and visible.\n2. Give the whole asset breathing room: uniformly reduce the complete boat and all oars slightly within the same square transparent canvas so the bow, stern and every oar have at least 6% clear transparent margin. No cropped or truncated tip. Retain original vertical alignment and proportions, do not widen the boat.\nNo other redesign, no extra equipment, no sails, crew, water, background, text or sprite frames. Genuine transparent RGBA background. One complete polished static master.",
+    "WarshipSixthPairV3": "Use case: precise-object-edit.\nEdit this exact warship image. The ONLY change is to ADD the missing last pair of working wooden oars. This image currently has FIVE pairs, TEN oars. The requested boat requires SIX pairs, TWELVE oars. Do not just return the same ten-oar image.\nCanvas is about 1254 pixels square. Existing working-oar grips are at y approximately 360, 475, 585, 700, and 815. There is NO working oar at the transverse timber at y approximately 945, immediately above the stern planked platform.\nDRAW TWO NEW OARS HERE: one left and one right at y=930-950. Left inner handgrip starts approximately (553,922), crosses left gunwale approximately (520,955), continues in ONE perfectly straight diagonal down-left to complete rounded paddle blade near (335,1115). Right is its exact mirrored counterpart: grip near (677,922), crossing approximately (710,955), blade near (895,1115). Match the existing oars' wood, width, perspective-free overhead shape, stroke angle and rounded tips. Those two lower paddle blades will be below the previous lowest blades, clearly visible on transparent background and inside the existing clear outer margins.\nThe final silhouette must have SIX clearly separated blades on EACH side. Keep all existing five pairs as they are; none removed, duplicated or bent. The new inner grips, shafts and blade centerlines must be fully collinear rigid straight pieces of wood, no kink at the gunwale.\nEverything else stays EXACTLY the same: framing and square true transparent RGBA background, hull, six transverse timber stations, stern and bow platforms, iron spearheads, two shields, red leather binding panels, upper-left lighting, painterly game sprite style. No water, no crew, no text, no extra items. Add only these TWO specified rear oars.",
+    "Transport": "Use case: stylized-concept.\nCreate ONE new Russian culture CLASSICAL AGE troop transport static sprite for Age of Fronts. Input image 1 (approved Bronze passenger boat) is a painterly style, lighting and directly-overhead camera reference only. This is a new later-age built-up timber vessel.\nPure vertical overhead orthographic, bow points screen-up, stern screen-down. Square genuine transparent RGBA canvas, one complete centered boat with 7% clear margin on all four sides. No background, water, wake, crew, external shadow, text or sprite frames.\nMatch crisp richly painted practical wood, clean highlights from upper-left and strong shapes legible at 24-48 pixels.\nSubject: A BROAD, open, pointed-oval shallow-draft passenger river boat made from warm pale honey-colored PLANKS over visible stout oak ribs. Built-up side planks have credible joined seams and restrained dark iron fasteners. Dark brown thick continuous gunwales; pale inner wood makes the open bench layout instantly readable. Clearly more developed than the earlier birch-bark craft, no bark skin or rawhide inflatable appearance.\nHull is approximately three times as long as wide, open passenger interior occupies most of its length. EIGHT wide pale timber transverse benches spaced evenly with dark open floor gaps between them. Benches properly supported at both ends on the ribs and gunwales. Two small pale wool seat pads only at the very front and rear bench, retaining a clean light civilian accent. Large clear floorboards, no busy decoration.\nTwo complete straight wooden paddles are securely STOWED lengthwise along the inner aft sides, blades near stern; no projecting working oar banks. Small useful planked bow and stern landings. Every structural piece connected. Clear EMPTY passenger space, no cargo stacks, no weapons, no shields, no fighting paraphernalia.\nRegional Iron Age eastern-European forest/river inspiration, specialized passenger layout is gameplay interpretation, not an archaeological reconstruction.\nAvoid sails, masts, medieval/Viking dragon prows, Greek trireme styling, flags, religious or national symbols, armor, cannons, barrels, cargo or an exterior scene. One polished production static master with the role obvious from the broad EMPTY hull and many bright benches.",
+    "Trade": "Use case: stylized-concept.\nCreate ONE new Russian culture CLASSICAL AGE trade boat static production sprite for Age of Fronts. Input image 1 is the approved Bronze cargo raft: use its rich painted game-art style, wood and cargo materials, warm upper-left lighting and exact vertical overhead camera. Build a new later-age craft, not an edit of the raft.\nSquare genuinely transparent RGBA canvas. Pure perpendicular overhead orthographic, bow precisely screen-up, stern screen-down. One complete centered vessel, 6% transparent margin around all extremities. No water, wake, crew, scenery, outside cast shadow, text or animation frames.\nSubject: a BROAD SHALLOW-DRAFT PLANK-BUILT river cargo boat with a nearly rectangular cargo well and tapered blunt bow and stern. Single watertight hull, not twin logs, not a raft. Stout dark oak outer gunwales, warm mid-brown wide planked floor, visibly connected ribs and restrained small plain dark iron seam fasteners. Low side walls visible ONLY by their tops/interior: no isometric exterior hull side. Overall hull approximately 2.3 times longer than wide, clearly stockier than a fighting vessel.\nFill its main deck with SIX deliberately large clearly separated strapped cargo masses in TWO columns of THREE: pale cream felt bale, warm gray rough iron ingots in a wicker basket, rolled brown furs, russet leather goods bundle, pale grain sack and one large round terracotta storage jar. Rope binds each load securely to deck tie points, continuous credible straps, no floating gear. Simple undyed linen or muted dull green cargo wraps give readable civilian accent; broad shapes before tiny details. Cargo visible from directly above and recognizable at tiny game sizes. A short clear bow landing and short stern working landing remain.\nTwo straight wooden paddles stowed crosswise in neat loops across the stern landing, compact within hull. No projecting working oar banks. No passengers, weapons, shield racks, mast or sail.\nRegional Iron Age eastern-European forest/river and steppe-contact inspiration; this specialized cargo craft is a gameplay interpretation, not a documented exact archaeological type. Practical timber, iron, wool, furs, pottery and grain.\nAvoid medieval dragon prows, Viking longship silhouette, Greek trireme decor, modern barrel hoops or pallets, wooden crates with labels, ornate gold, flags, crosses, stars, Soviet or modern Russian symbols, modern technology. Preserve crisp polished painted materials and large bold role-readable cargo blocks. One static game asset."
+  },
+  "references": {
+    "Warship": [
+      "C:/Users/Damien/Documents/GitHub/AgeOfFronts/AgeOfFronts/Art/Cultures/Russians/Ships/BronzeAge/Warship/SourceArt/Warship_Russian_BronzeAge_v7.png"
+    ],
+    "Transport": [
+      "C:/Users/Damien/Documents/GitHub/AgeOfFronts/AgeOfFronts/Art/Cultures/Russians/Ships/BronzeAge/Transport/SourceArt/Transport_Russian_BronzeAge_v1.png"
+    ],
+    "Trade": [
+      "C:/Users/Damien/Documents/GitHub/AgeOfFronts/AgeOfFronts/Art/Cultures/Russians/Ships/BronzeAge/Trade/SourceArt/Trade_Russian_BronzeAge_v1.png"
+    ]
+  },
+  "selected": {
+    "Warship": "Warship/SourceArt/Warship_Russian_ClassicalAge_v3.png",
+    "Transport": "Transport/SourceArt/Transport_Russian_ClassicalAge_v1.png",
+    "Trade": "Trade/SourceArt/Trade_Russian_ClassicalAge_v1.png"
+  },
+  "iterations": {
+    "Warship": [
+      {
+        "file": "Warship/SourceArt/Warship_Russian_ClassicalAge_v1.png",
+        "generatedSource": "C:/Users/Damien/.codex/generated_images/01a0fea7-45e8-7a11-8804-5420a62f53c3/exec-70fdf61b-c7ff-4f51-8325-f5de8d387c7c.png",
+        "status": "superseded; five pairs and insufficient visible top margin"
+      },
+      {
+        "file": "Warship/SourceArt/Warship_Russian_ClassicalAge_v2.png",
+        "generatedSource": "C:/Users/Damien/.codex/generated_images/01a0fea7-45e8-7a11-8804-5420a62f53c3/exec-9624dc36-d688-470e-8dd3-9eaac45dca98.png",
+        "status": "superseded; corrected framing but still five pairs"
+      },
+      {
+        "file": "Warship/SourceArt/Warship_Russian_ClassicalAge_v3.png",
+        "generatedSource": "C:/Users/Damien/.codex/generated_images/01a0fea7-45e8-7a11-8804-5420a62f53c3/exec-41b03807-ac6e-482c-8a0f-79c34f31c8e9.png",
+        "status": "selected; six complete straight oar pairs and clear margin"
+      }
+    ],
+    "Transport": [
+      {
+        "file": "Transport/SourceArt/Transport_Russian_ClassicalAge_v1.png",
+        "generatedSource": "C:/Users/Damien/.codex/generated_images/01a0fea7-45e8-7a11-8804-5420a62f53c3/exec-7065df4d-8ca6-4885-b636-edee1c74cba4.png",
+        "status": "selected; eight passenger benches, two stowed paddles"
+      }
+    ],
+    "Trade": [
+      {
+        "file": "Trade/SourceArt/Trade_Russian_ClassicalAge_v1.png",
+        "generatedSource": "C:/Users/Damien/.codex/generated_images/01a0fea7-45e8-7a11-8804-5420a62f53c3/exec-105ea5e5-ddb4-4294-8161-586d4fb040ac.png",
+        "status": "selected; six tied cargo masses, two stowed paddles"
+      }
+    ]
+  },
+  "animationApproval": {
+    "status": "approved",
+    "age": "ClassicalAge",
+    "date": "2026-10-02",
+    "userMessage": "those are approved, animate them"
+  },
+  "selectedSourceHashes": {
+    "Warship": "b2357b1f62c81cf33da8c4c6c1ee278f93e064c17647d1e305cb896c7dcea503",
+    "Transport": "1f9f3d3253e85593af5fb578249d25b012fb4cffa21b159b98486f401b26b81a",
+    "Trade": "740502f0b3c880403a02cb7728dd9348db532c0454523c1b8071412f06b8ee0d"
+  },
+  "selectedNativeDimensions": {
+    "Warship": [
+      1232,
+      1277
+    ],
+    "Transport": [
+      1254,
+      1254
+    ],
+    "Trade": [
+      1254,
+      1254
+    ]
+  }
+}

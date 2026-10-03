@@ -20,13 +20,14 @@ test("Every phase preserves five unique members and normalized pose weights",()=
 test("Death and charge impact reach the front before either rear soldier reacts",()=>{
   for(const id of ["death","charged"]) {
     const members=byMember(sampleFormation(definition,clips,id,200));
-    for(const front of ["tip","left","right"])assert.equal(members.get(front).layers[0].clipId,id);
+    for(const front of ["tip","left","right"])assert.equal(members.get(front).layers[0].clipId, id==="death" ? definition.animations.find(a=>a.id===id).memberSources[front] : id);
     for(const rear of ["rear-left","rear-right"])assert.equal(members.get(rear).layers[0].clipId,"idle");
   }
 });
 test("All five end death on the last fallen pose",()=>{
   for(const member of sampleFormation(definition,clips,"death",100000)) {
-    assert.deepEqual(member.layers,[{clipId:"death",frame:clips.get("death").frameCount-1,weight:1}]);
+    const source=definition.animations.find(a=>a.id==="death").memberSources[member.id];
+    assert.deepEqual(member.layers,[{clipId:source,frame:clips.get(source).frameCount-1,weight:1}]);
   }
 });
 test("Charge entry joins Maintain charge without a slot or pose jump",()=>{
@@ -100,4 +101,11 @@ test("Full review visits all four charge phases and ends in standard recovery",(
   const steps=chargeReviewSteps(definition);assert.deepEqual(steps.map(step=>step.id),["charge-in","charge-maintain","charge-attack","charge-out"]);
   let boundary=0;for(const step of steps){assert.equal(chargeReviewPose(definition,boundary+1).id,step.id);boundary+=step.durationMs;}
   const last=chargeReviewPose(definition,boundary+100);assert.equal(last.id,"charge-out");assert.equal(last.done,true);
+});
+
+test("Clubman deaths use both authored motions in both ranks",()=>{
+  const death=definition.animations.find(a=>a.id==="death");
+  assert.equal(new Set(Object.values(death.memberSources)).size,2);
+  for(const ids of [["tip","left","right"],["rear-left","rear-right"]])assert.equal(new Set(ids.map(id=>death.memberSources[id])).size,2);
+  assert.notEqual(clips.get('death').file,clips.get('death-back').file);
 });

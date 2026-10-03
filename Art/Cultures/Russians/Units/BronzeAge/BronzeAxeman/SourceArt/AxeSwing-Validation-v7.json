@@ -1,0 +1,3611 @@
+{
+  "stage": "single-actor-art-prototype",
+  "actorCount": 1,
+  "checks": "RGBA, six nonempty distinct frames, eight-pixel visible guards, registered preview clipping, transparency, source hashes",
+  "guardAlphaTolerance": 16,
+  "guardNote": "Low-alpha generator residue is recorded, not removed. This certifies visible spill guards, not zero-alpha atlas padding.",
+  "visualApproval": "pending user review",
+  "engineIntegration": "not integrated",
+  "failures": [
+    "Attack-v7.png: visible art crosses frame guard 1"
+  ],
+  "sheets": [
+    {
+      "file": "Idle-v2.png",
+      "mode": "RGBA",
+      "size": [
+        1536,
+        1024
+      ],
+      "alphaExtrema": [
+        0,
+        254
+      ],
+      "sha256": "7f480e5b9deac498bee369442130e93ad45c69c4e3be5cf48cf0261d24bbcd35",
+      "uniqueFrames": 6,
+      "frames": [
+        {
+          "index": 0,
+          "visibleBounds": [
+            84,
+            96,
+            474,
+            441
+          ],
+          "registeredPreviewBounds": [
+            103.42,
+            103.42,
+            423.34,
+            386.43
+          ],
+          "guardAlphaMax": 1,
+          "sha256": "b207e4e2163bcf4b1557b3e8302dccff80288db40ff25fa00cf989dc71c13142",
+          "redComponentRegistrationAid": [
+            272.3,
+            142.3
+          ],
+          "redComponents": [
+            {
+              "center": [
+                272.3,
+                142.3
+              ],
+              "bounds": [
+                227,
+                96,
+                320,
+                192
+              ],
+              "area": 6500
+            },
+            {
+              "center": [
+                212.8,
+                282.6
+              ],
+              "bounds": [
+                176,
+                238,
+                256,
+                321
+              ],
+              "area": 2637
+            },
+            {
+              "center": [
+                307.3,
+                300.7
+              ],
+              "bounds": [
+                272,
+                265,
+                344,
+                330
+              ],
+              "area": 2083
+            },
+            {
+              "center": [
+                388.2,
+                193.3
+              ],
+              "bounds": [
+                366,
+                160,
+                413,
+                221
+              ],
+              "area": 1308
+            }
+          ]
+        },
+        {
+          "index": 1,
+          "visibleBounds": [
+            74,
+            96,
+            462,
+            442
+          ],
+          "registeredPreviewBounds": [
+            104.24,
+            103.42,
+            422.52,
+            387.25
+          ],
+          "guardAlphaMax": 1,
+          "sha256": "db4a5454f26504849573fe8807273dca2e8b1a92fe4269ddf0db4a8f808b680a",
+          "redComponentRegistrationAid": [
+            255.6,
+            143.4
+          ],
+          "redComponents": [
+            {
+              "center": [
+                255.6,
+                143.4
+              ],
+              "bounds": [
+                210,
+                96,
+                304,
+                197
+              ],
+              "area": 6674
+            },
+            {
+              "center": [
+                196.2,
+                284.2
+              ],
+              "bounds": [
+                158,
+                234,
+                242,
+                323
+              ],
+              "area": 2740
+            },
+            {
+              "center": [
+                289.3,
+                304.0
+              ],
+              "bounds": [
+                259,
+                271,
+                321,
+                331
+              ],
+              "area": 1885
+            },
+            {
+              "center": [
+                373.1,
+                194.1
+              ],
+              "bounds": [
+                352,
+                162,
+                399,
+                222
+              ],
+              "area": 1392
+            }
+          ]
+        },
+        {
+          "index": 2,
+          "visibleBounds": [
+            65,
+            96,
+            455,
+            441
+          ],
+          "registeredPreviewBounds": [
+            91.12,
+            103.42,
+            411.04,
+            386.43
+          ],
+          "guardAlphaMax": 1,
+          "sha256": "a4dac48da63a3012aef5ac52425dffdbb668108ff695d8e5b51e4b39e950157d",
+          "redComponentRegistrationAid": [
+            240.3,
+            142.8
+          ],
+          "redComponents": [
+            {
+              "center": [
+                240.3,
+                142.8
+              ],
+              "bounds": [
+                195,
+                96,
+                287,
+                192
+              ],
+              "area": 6608
+            },
+            {
+              "center": [
+                187.1,
+                285.7
+              ],
+              "bounds": [
+                149,
+                240,
+                233,
+                329
+              ],
+              "area": 2623
+            },
+            {
+              "center": [
+                280.6,
+                302.6
+              ],
+              "bounds": [
+                247,
+                265,
+                317,
+                334
+              ],
+              "area": 2124
+            }
+          ]
+        },
+        {
+          "index": 3,
+          "visibleBounds": [
+            90,
+            85,
+            475,
+            425
+          ],
+          "registeredPreviewBounds": [
+            108.34,
+            103.42,
+            424.16,
+            382.33
+          ],
+          "guardAlphaMax": 1,
+          "sha256": "faf66c3dd5b414f7977d609c63d060eefbb7c88ca813d1eae36f49dd9b36036a",
+          "redComponentRegistrationAid": [
+            269.7,
+            132.1
+          ],
+          "redComponents": [
+            {
+              "center": [
+                269.7,
+                132.1
+              ],
+              "bounds": [
+                224,
+                85,
+                316,
+                185
+              ],
+              "area": 6602
+            },
+            {
+              "center": [
+                213.9,
+                270.3
+              ],
+              "bounds": [
+                176,
+                221,
+                259,
+                307
+              ],
+              "area": 2714
+            },
+            {
+              "center": [
+                304.0,
+                291.8
+              ],
+              "bounds": [
+                276,
+                262,
+                334,
+                319
+              ],
+              "area": 1777
+            },
+            {
+              "center": [
+                385.6,
+                181.5
+              ],
+              "bounds": [
+                363,
+                148,
+                410,
+                211
+              ],
+              "area": 1355
+            }
+          ]
+        },
+        {
+          "index": 4,
+          "visibleBounds": [
+            74,
+            87,
+            460,
+            426
+          ],
+          "registeredPreviewBounds": [
+            103.42,
+            103.42,
+            420.06,
+            381.51
+          ],
+          "guardAlphaMax": 1,
+          "sha256": "7fa30dd03c5a72882cd39012721d8f651d84f1792aee90919e6b5a773ba61800",
+          "redComponentRegistrationAid": [
+            255.1,
+            134.1
+          ],
+          "redComponents": [
+            {
+              "center": [
+                255.1,
+                134.1
+              ],
+              "bounds": [
+                210,
+                87,
+                304,
+                179
+              ],
+              "area": 6665
+            },
+            {
+              "center": [
+                197.6,
+                272.3
+              ],
+              "bounds": [
+                159,
+                225,
+                243,
+                311
+              ],
+              "area": 2794
+            },
+            {
+              "center": [
+                142.2,
+                186.6
+              ],
+              "bounds": [
+                110,
+                142,
+                174,
+                226
+              ],
+              "area": 2592
+            },
+            {
+              "center": [
+                288.7,
+                292.3
+              ],
+              "bounds": [
+                259,
+                263,
+                320,
+                320
+              ],
+              "area": 1891
+            },
+            {
+              "center": [
+                371.7,
+                181.7
+              ],
+              "bounds": [
+                350,
+                149,
+                396,
+                211
+              ],
+              "area": 1345
+            }
+          ]
+        },
+        {
+          "index": 5,
+          "visibleBounds": [
+            64,
+            84,
+            452,
+            426
+          ],
+          "registeredPreviewBounds": [
+            89.48,
+            100.96,
+            407.76,
+            381.51
+          ],
+          "guardAlphaMax": 1,
+          "sha256": "c49583ad8ef0cba0addcc1e85d8ed65eb42da6c716fc0c44c9476a05eb295161",
+          "redComponentRegistrationAid": [
+            244.2,
+            131.5
+          ],
+          "redComponents": [
+            {
+              "center": [
+                244.2,
+                131.5
+              ],
+              "bounds": [
+                198,
+                84,
+                291,
+                184
+              ],
+              "area": 6730
+            },
+            {
+              "center": [
+                187.4,
+                271.3
+              ],
+              "bounds": [
+                149,
+                221,
+                233,
+                310
+              ],
+              "area": 2725
+            },
+            {
+              "center": [
+                281.0,
+                290.7
+              ],
+              "bounds": [
+                248,
+                257,
+                316,
+                321
+              ],
+              "area": 2123
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "file": "Running.png",
+      "mode": "RGBA",
+      "size": [
+        1536,
+        1024
+      ],
+      "alphaExtrema": [
+        0,
+        254
+      ],
+      "sha256": "b04028ee3fe81b648b9ae40d311d397316594af1af5efd2233146488d57f9813",
+      "uniqueFrames": 6,
+      "frames": [
+        {
+          "index": 0,
+          "visibleBounds": [
+            85,
+            96,
+            476,
+            439
+          ],
+          "registeredPreviewBounds": [
+            104.24,
+            103.42,
+            424.98,
+            384.79
+          ],
+          "guardAlphaMax": 1,
+          "sha256": "fe3d25393a34ec95638e9b52859276cef8843cc9c7f6147af4f5018af0652c76",
+          "redComponentRegistrationAid": [
+            273.5,
+            142.7
+          ],
+          "redComponents": [
+            {
+              "center": [
+                273.5,
+                142.7
+              ],
+              "bounds": [
+                228,
+                96,
+                320,
+                191
+              ],
+              "area": 6465
+            },
+            {
+              "center": [
+                216.2,
+                282.7
+              ],
+              "bounds": [
+                179,
+                237,
+                259,
+                320
+              ],
+              "area": 2574
+            },
+            {
+              "center": [
+                308.6,
+                300.5
+              ],
+              "bounds": [
+                276,
+                269,
+                342,
+                326
+              ],
+              "area": 1831
+            },
+            {
+              "center": [
+                390.7,
+                193.1
+              ],
+              "bounds": [
+                370,
+                159,
+                416,
+                223
+              ],
+              "area": 1383
+            }
+          ]
+        },
+        {
+          "index": 1,
+          "visibleBounds": [
+            76,
+            96,
+            463,
+            444
+          ],
+          "registeredPreviewBounds": [
+            104.24,
+            103.42,
+            421.7,
+            388.89
+          ],
+          "guardAlphaMax": 1,
+          "sha256": "22b7ad0bcbf0d6a571a5bd2534aab809d1e02b1550989eafb866b0b2f904329e",
+          "redComponentRegistrationAid": [
+            253.0,
+            143.2
+          ],
+          "redComponents": [
+            {
+              "center": [
+                253.0,
+                143.2
+              ],
+              "bounds": [
+                207,
+                96,
+                302,
+                193
+              ],
+              "area": 6691
+            },
+            {
+              "center": [
+                138.1,
+                204.1
+              ],
+              "bounds": [
+                106,
+                158,
+                170,
+                249
+              ],
+              "area": 2730
+            },
+            {
+              "center": [
+                197.2,
+                286.5
+              ],
+              "bounds": [
+                160,
+                242,
+                241,
+                322
+              ],
+              "area": 2617
+            },
+            {
+              "center": [
+                289.9,
+                302.2
+              ],
+              "bounds": [
+                259,
+                273,
+                321,
+                328
+              ],
+              "area": 1821
+            },
+            {
+              "center": [
+                372.0,
+                192.4
+              ],
+              "bounds": [
+                349,
+                160,
+                396,
+                221
+              ],
+              "area": 1432
+            }
+          ]
+        },
+        {
+          "index": 2,
+          "visibleBounds": [
+            63,
+            96,
+            453,
+            439
+          ],
+          "registeredPreviewBounds": [
+            88.66,
+            103.42,
+            408.58,
+            384.79
+          ],
+          "guardAlphaMax": 1,
+          "sha256": "9d7503354bb8e53688c5c7b4e5c6689b44f0f7a0f8da9edda626bfce6667f740",
+          "redComponentRegistrationAid": [
+            237.2,
+            143.5
+          ],
+          "redComponents": [
+            {
+              "center": [
+                237.2,
+                143.5
+              ],
+              "bounds": [
+                191,
+                96,
+                286,
+                193
+              ],
+              "area": 6696
+            },
+            {
+              "center": [
+                190.1,
+                290.5
+              ],
+              "bounds": [
+                153,
+                246,
+                232,
+                325
+              ],
+              "area": 2722
+            },
+            {
+              "center": [
+                123.9,
+                195.5
+              ],
+              "bounds": [
+                92,
+                152,
+                154,
+                232
+              ],
+              "area": 2611
+            },
+            {
+              "center": [
+                280.7,
+                301.9
+              ],
+              "bounds": [
+                250,
+                267,
+                314,
+                331
+              ],
+              "area": 1915
+            },
+            {
+              "center": [
+                356.5,
+                196.1
+              ],
+              "bounds": [
+                336,
+                163,
+                382,
+                227
+              ],
+              "area": 1408
+            }
+          ]
+        },
+        {
+          "index": 3,
+          "visibleBounds": [
+            91,
+            82,
+            478,
+            420
+          ],
+          "registeredPreviewBounds": [
+            108.34,
+            102.6,
+            425.8,
+            379.87
+          ],
+          "guardAlphaMax": 1,
+          "sha256": "56d6b1e96cc43917234a8067016f46214c228f07c81f2d50a45b54a2441a33a2",
+          "redComponentRegistrationAid": [
+            271.8,
+            129.9
+          ],
+          "redComponents": [
+            {
+              "center": [
+                271.8,
+                129.9
+              ],
+              "bounds": [
+                226,
+                82,
+                319,
+                184
+              ],
+              "area": 6755
+            },
+            {
+              "center": [
+                216.0,
+                270.8
+              ],
+              "bounds": [
+                179,
+                221,
+                261,
+                308
+              ],
+              "area": 2834
+            },
+            {
+              "center": [
+                306.5,
+                289.8
+              ],
+              "bounds": [
+                279,
+                261,
+                336,
+                317
+              ],
+              "area": 1659
+            },
+            {
+              "center": [
+                390.0,
+                180.8
+              ],
+              "bounds": [
+                368,
+                146,
+                416,
+                209
+              ],
+              "area": 1486
+            }
+          ]
+        },
+        {
+          "index": 4,
+          "visibleBounds": [
+            77,
+            82,
+            460,
+            421
+          ],
+          "registeredPreviewBounds": [
+            105.06,
+            100.14,
+            419.24,
+            378.23
+          ],
+          "guardAlphaMax": 1,
+          "sha256": "ca3595c0b7955008eaa0963a89cb7b30d12ee6de50a2576064473c9d5d54a2d6",
+          "redComponentRegistrationAid": [
+            253.6,
+            131.1
+          ],
+          "redComponents": [
+            {
+              "center": [
+                253.6,
+                131.1
+              ],
+              "bounds": [
+                207,
+                82,
+                302,
+                186
+              ],
+              "area": 6971
+            },
+            {
+              "center": [
+                198.3,
+                273.6
+              ],
+              "bounds": [
+                161,
+                225,
+                242,
+                308
+              ],
+              "area": 2664
+            },
+            {
+              "center": [
+                139.6,
+                185.9
+              ],
+              "bounds": [
+                106,
+                141,
+                170,
+                224
+              ],
+              "area": 2592
+            },
+            {
+              "center": [
+                288.1,
+                290.1
+              ],
+              "bounds": [
+                259,
+                262,
+                319,
+                318
+              ],
+              "area": 1677
+            },
+            {
+              "center": [
+                372.3,
+                180.2
+              ],
+              "bounds": [
+                348,
+                146,
+                400,
+                212
+              ],
+              "area": 1589
+            }
+          ]
+        },
+        {
+          "index": 5,
+          "visibleBounds": [
+            61,
+            81,
+            453,
+            423
+          ],
+          "registeredPreviewBounds": [
+            87.84,
+            99.32,
+            409.4,
+            379.87
+          ],
+          "guardAlphaMax": 1,
+          "sha256": "2d2b1e0f9fd02dc9e1bca0414491e1c0eaf5ea5d74661a01b92ba2376c23dfad",
+          "redComponentRegistrationAid": [
+            242.8,
+            128.7
+          ],
+          "redComponents": [
+            {
+              "center": [
+                242.8,
+                128.7
+              ],
+              "bounds": [
+                196,
+                81,
+                291,
+                174
+              ],
+              "area": 6750
+            },
+            {
+              "center": [
+                128.5,
+                185.0
+              ],
+              "bounds": [
+                97,
+                137,
+                162,
+                225
+              ],
+              "area": 2793
+            },
+            {
+              "center": [
+                190.1,
+                273.7
+              ],
+              "bounds": [
+                153,
+                230,
+                232,
+                312
+              ],
+              "area": 2510
+            },
+            {
+              "center": [
+                280.9,
+                289.3
+              ],
+              "bounds": [
+                250,
+                254,
+                316,
+                317
+              ],
+              "area": 1949
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "file": "Attack-v7.png",
+      "mode": "RGBA",
+      "size": [
+        1536,
+        1024
+      ],
+      "alphaExtrema": [
+        0,
+        254
+      ],
+      "sha256": "39409c3cbfe82a9c8d2a9ceb43ebae9aa1dd85a65668b9241cb4894d9c0be36c",
+      "uniqueFrames": 6,
+      "frames": [
+        {
+          "index": 0,
+          "visibleBounds": [
+            66,
+            96,
+            464,
+            433
+          ],
+          "registeredPreviewBounds": [
+            85.46,
+            104.41,
+            428.27,
+            394.67
+          ],
+          "guardAlphaMax": 1,
+          "sha256": "b59e4079827134e6a56b923fb28d42c45d47de470ded98c67829d600ac857b3a",
+          "redComponentRegistrationAid": [
+            265.8,
+            142.7
+          ],
+          "redComponents": [
+            {
+              "center": [
+                265.8,
+                142.7
+              ],
+              "bounds": [
+                220,
+                96,
+                311,
+                192
+              ],
+              "area": 6435
+            },
+            {
+              "center": [
+                154.3,
+                199.6
+              ],
+              "bounds": [
+                112,
+                152,
+                186,
+                243
+              ],
+              "area": 2694
+            },
+            {
+              "center": [
+                212.8,
+                273.0
+              ],
+              "bounds": [
+                177,
+                227,
+                255,
+                310
+              ],
+              "area": 2247
+            },
+            {
+              "center": [
+                379.2,
+                190.3
+              ],
+              "bounds": [
+                356,
+                155,
+                408,
+                221
+              ],
+              "area": 1609
+            },
+            {
+              "center": [
+                300.7,
+                289.8
+              ],
+              "bounds": [
+                273,
+                259,
+                331,
+                319
+              ],
+              "area": 1603
+            }
+          ]
+        },
+        {
+          "index": 1,
+          "visibleBounds": [
+            11,
+            107,
+            509,
+            400
+          ],
+          "registeredPreviewBounds": [
+            20.0,
+            110.44,
+            448.94,
+            362.8
+          ],
+          "guardAlphaMax": 251,
+          "sha256": "d1d2894d630345876c1b6ac5f0ca5b0466d6615ee3f5bd241e448207565894f5",
+          "redComponentRegistrationAid": [
+            306.8,
+            153.5
+          ],
+          "redComponents": [
+            {
+              "center": [
+                306.8,
+                153.5
+              ],
+              "bounds": [
+                262,
+                107,
+                352,
+                202
+              ],
+              "area": 6483
+            },
+            {
+              "center": [
+                196.1,
+                155.5
+              ],
+              "bounds": [
+                165,
+                124,
+                230,
+                202
+              ],
+              "area": 2649
+            },
+            {
+              "center": [
+                248.3,
+                276.9
+              ],
+              "bounds": [
+                211,
+                231,
+                291,
+                320
+              ],
+              "area": 2431
+            },
+            {
+              "center": [
+                339.0,
+                296.9
+              ],
+              "bounds": [
+                309,
+                267,
+                371,
+                325
+              ],
+              "area": 1744
+            },
+            {
+              "center": [
+                418.7,
+                196.0
+              ],
+              "bounds": [
+                397,
+                160,
+                450,
+                226
+              ],
+              "area": 1557
+            }
+          ]
+        },
+        {
+          "index": 2,
+          "visibleBounds": [
+            101,
+            50,
+            487,
+            414
+          ],
+          "registeredPreviewBounds": [
+            109.57,
+            53.59,
+            442.05,
+            367.11
+          ],
+          "guardAlphaMax": 1,
+          "sha256": "e65ebe7166d65636a107311cd3c3616b32bbe33994a534f0686a72d50250f61f",
+          "redComponentRegistrationAid": [
+            284.2,
+            164.3
+          ],
+          "redComponents": [
+            {
+              "center": [
+                284.2,
+                164.3
+              ],
+              "bounds": [
+                238,
+                116,
+                331,
+                215
+              ],
+              "area": 6832
+            },
+            {
+              "center": [
+                166.0,
+                197.6
+              ],
+              "bounds": [
+                110,
+                149,
+                195,
+                237
+              ],
+              "area": 3065
+            },
+            {
+              "center": [
+                317.0,
+                308.7
+              ],
+              "bounds": [
+                285,
+                267,
+                353,
+                338
+              ],
+              "area": 1837
+            },
+            {
+              "center": [
+                398.8,
+                207.6
+              ],
+              "bounds": [
+                369,
+                173,
+                425,
+                239
+              ],
+              "area": 1635
+            }
+          ]
+        },
+        {
+          "index": 3,
+          "visibleBounds": [
+            54,
+            70,
+            467,
+            427
+          ],
+          "registeredPreviewBounds": [
+            83.73,
+            93.21,
+            439.46,
+            400.7
+          ],
+          "guardAlphaMax": 0,
+          "sha256": "2014872cd94dc8fed17f034cc45d829b5da84d58111c536248d97874f9933a5b",
+          "redComponentRegistrationAid": [
+            256.5,
+            118.0
+          ],
+          "redComponents": [
+            {
+              "center": [
+                256.5,
+                118.0
+              ],
+              "bounds": [
+                209,
+                70,
+                304,
+                169
+              ],
+              "area": 6873
+            },
+            {
+              "center": [
+                168.9,
+                207.5
+              ],
+              "bounds": [
+                116,
+                136,
+                247,
+                272
+              ],
+              "area": 4267
+            },
+            {
+              "center": [
+                372.4,
+                152.9
+              ],
+              "bounds": [
+                349,
+                117,
+                402,
+                187
+              ],
+              "area": 1622
+            },
+            {
+              "center": [
+                297.9,
+                251.1
+              ],
+              "bounds": [
+                267,
+                225,
+                336,
+                279
+              ],
+              "area": 1500
+            }
+          ]
+        },
+        {
+          "index": 4,
+          "visibleBounds": [
+            48,
+            70,
+            495,
+            357
+          ],
+          "registeredPreviewBounds": [
+            63.06,
+            94.07,
+            448.08,
+            341.27
+          ],
+          "guardAlphaMax": 1,
+          "sha256": "eaf84db14175961c2e9f374cc435ce8bd5463befa010040738fd5d698c5aae85",
+          "redComponentRegistrationAid": [
+            289.8,
+            117.2
+          ],
+          "redComponents": [
+            {
+              "center": [
+                289.8,
+                117.2
+              ],
+              "bounds": [
+                244,
+                70,
+                336,
+                163
+              ],
+              "area": 6619
+            },
+            {
+              "center": [
+                180.2,
+                154.7
+              ],
+              "bounds": [
+                141,
+                112,
+                207,
+                195
+              ],
+              "area": 2307
+            },
+            {
+              "center": [
+                237.5,
+                237.9
+              ],
+              "bounds": [
+                201,
+                199,
+                278,
+                274
+              ],
+              "area": 2222
+            },
+            {
+              "center": [
+                327.8,
+                255.4
+              ],
+              "bounds": [
+                299,
+                221,
+                371,
+                285
+              ],
+              "area": 1615
+            },
+            {
+              "center": [
+                403.4,
+                158.2
+              ],
+              "bounds": [
+                380,
+                125,
+                433,
+                189
+              ],
+              "area": 1465
+            }
+          ]
+        },
+        {
+          "index": 5,
+          "visibleBounds": [
+            59,
+            74,
+            451,
+            415
+          ],
+          "registeredPreviewBounds": [
+            84.6,
+            95.79,
+            422.24,
+            389.51
+          ],
+          "guardAlphaMax": 1,
+          "sha256": "67222c9cd7796e002c38878ff04b41b93f049a347b120d4934a1701e8e855476",
+          "redComponentRegistrationAid": [
+            242.7,
+            120.6
+          ],
+          "redComponents": [
+            {
+              "center": [
+                242.7,
+                120.6
+              ],
+              "bounds": [
+                198,
+                74,
+                288,
+                170
+              ],
+              "area": 6460
+            },
+            {
+              "center": [
+                162.2,
+                209.9
+              ],
+              "bounds": [
+                97,
+                128,
+                235,
+                284
+              ],
+              "area": 4709
+            },
+            {
+              "center": [
+                357.2,
+                162.5
+              ],
+              "bounds": [
+                329,
+                126,
+                390,
+                200
+              ],
+              "area": 1847
+            },
+            {
+              "center": [
+                283.8,
+                260.3
+              ],
+              "bounds": [
+                254,
+                226,
+                322,
+                292
+              ],
+              "area": 1763
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "file": "Hit.png",
+      "mode": "RGBA",
+      "size": [
+        1536,
+        1024
+      ],
+      "alphaExtrema": [
+        0,
+        254
+      ],
+      "sha256": "9cd19041e5db180c286cae0020d9ec3447f709ca791f47d57e8991d1c4b32a38",
+      "uniqueFrames": 6,
+      "frames": [
+        {
+          "index": 0,
+          "visibleBounds": [
+            85,
+            93,
+            477,
+            439
+          ],
+          "registeredPreviewBounds": [
+            108.34,
+            104.24,
+            429.91,
+            388.07
+          ],
+          "guardAlphaMax": 1,
+          "sha256": "f0b6b31c0d0f1fc14af3dd405109b2fc6dc4db2c88a15f127a840bd975a8a557",
+          "redComponentRegistrationAid": [
+            264.6,
+            140.2
+          ],
+          "redComponents": [
+            {
+              "center": [
+                264.6,
+                140.2
+              ],
+              "bounds": [
+                218,
+                93,
+                312,
+                186
+              ],
+              "area": 6619
+            },
+            {
+              "center": [
+                305.3,
+                299.7
+              ],
+              "bounds": [
+                270,
+                266,
+                340,
+                331
+              ],
+              "area": 2124
+            },
+            {
+              "center": [
+                383.1,
+                193.2
+              ],
+              "bounds": [
+                361,
+                160,
+                407,
+                224
+              ],
+              "area": 1409
+            }
+          ]
+        },
+        {
+          "index": 1,
+          "visibleBounds": [
+            118,
+            113,
+            412,
+            435
+          ],
+          "registeredPreviewBounds": [
+            131.31,
+            113.27,
+            372.48,
+            377.41
+          ],
+          "guardAlphaMax": 0,
+          "sha256": "f697ab99087dba08565c5d77673e9294e8bafde3fe3227e369073225b6d829dc",
+          "redComponentRegistrationAid": [
+            268.5,
+            164.1
+          ],
+          "redComponents": [
+            {
+              "center": [
+                268.5,
+                164.1
+              ],
+              "bounds": [
+                223,
+                116,
+                316,
+                217
+              ],
+              "area": 6556
+            },
+            {
+              "center": [
+                159.9,
+                203.0
+              ],
+              "bounds": [
+                131,
+                159,
+                188,
+                240
+              ],
+              "area": 2436
+            },
+            {
+              "center": [
+                221.6,
+                280.5
+              ],
+              "bounds": [
+                186,
+                238,
+                264,
+                313
+              ],
+              "area": 2109
+            }
+          ]
+        },
+        {
+          "index": 2,
+          "visibleBounds": [
+            104,
+            108,
+            419,
+            434
+          ],
+          "registeredPreviewBounds": [
+            114.91,
+            111.62,
+            373.3,
+            379.05
+          ],
+          "guardAlphaMax": 0,
+          "sha256": "c8350a77dfb27641eeea4281eff9c0b46356466ca73e4029f5b461362b4c520b",
+          "redComponentRegistrationAid": [
+            279.4,
+            152.2
+          ],
+          "redComponents": [
+            {
+              "center": [
+                279.4,
+                152.2
+              ],
+              "bounds": [
+                234,
+                108,
+                327,
+                201
+              ],
+              "area": 6266
+            },
+            {
+              "center": [
+                220.1,
+                286.2
+              ],
+              "bounds": [
+                177,
+                239,
+                267,
+                325
+              ],
+              "area": 3455
+            },
+            {
+              "center": [
+                166.5,
+                193.1
+              ],
+              "bounds": [
+                132,
+                149,
+                196,
+                234
+              ],
+              "area": 2818
+            }
+          ]
+        },
+        {
+          "index": 3,
+          "visibleBounds": [
+            112,
+            93,
+            475,
+            425
+          ],
+          "registeredPreviewBounds": [
+            124.75,
+            108.34,
+            422.52,
+            380.69
+          ],
+          "guardAlphaMax": 1,
+          "sha256": "ea2bd4dddeb80fe3d2115ee87397c3430b3cba1ba3d46673f48540a9860eb18c",
+          "redComponentRegistrationAid": [
+            273.0,
+            141.7
+          ],
+          "redComponents": [
+            {
+              "center": [
+                273.0,
+                141.7
+              ],
+              "bounds": [
+                227,
+                94,
+                322,
+                193
+              ],
+              "area": 6786
+            },
+            {
+              "center": [
+                160.8,
+                184.3
+              ],
+              "bounds": [
+                130,
+                138,
+                192,
+                222
+              ],
+              "area": 2710
+            },
+            {
+              "center": [
+                331.2,
+                277.2
+              ],
+              "bounds": [
+                304,
+                238,
+                360,
+                310
+              ],
+              "area": 1703
+            }
+          ]
+        },
+        {
+          "index": 4,
+          "visibleBounds": [
+            76,
+            84,
+            468,
+            424
+          ],
+          "registeredPreviewBounds": [
+            105.06,
+            101.78,
+            426.62,
+            380.69
+          ],
+          "guardAlphaMax": 1,
+          "sha256": "e46380443461457e9e30fe517887651287eab406a9b5df589a41b3934efbdf29",
+          "redComponentRegistrationAid": [
+            254.9,
+            131.9
+          ],
+          "redComponents": [
+            {
+              "center": [
+                254.9,
+                131.9
+              ],
+              "bounds": [
+                209,
+                84,
+                304,
+                186
+              ],
+              "area": 6734
+            },
+            {
+              "center": [
+                200.5,
+                272.8
+              ],
+              "bounds": [
+                162,
+                224,
+                245,
+                310
+              ],
+              "area": 2770
+            },
+            {
+              "center": [
+                139.5,
+                183.2
+              ],
+              "bounds": [
+                107,
+                140,
+                167,
+                225
+              ],
+              "area": 2677
+            },
+            {
+              "center": [
+                294.7,
+                289.7
+              ],
+              "bounds": [
+                262,
+                256,
+                331,
+                319
+              ],
+              "area": 2072
+            },
+            {
+              "center": [
+                370.0,
+                183.0
+              ],
+              "bounds": [
+                344,
+                149,
+                396,
+                221
+              ],
+              "area": 1637
+            }
+          ]
+        },
+        {
+          "index": 5,
+          "visibleBounds": [
+            70,
+            84,
+            457,
+            433
+          ],
+          "registeredPreviewBounds": [
+            104.24,
+            100.96,
+            421.7,
+            387.25
+          ],
+          "guardAlphaMax": 1,
+          "sha256": "0d842283850f24558dd42c431c49c38f7188fff4089a53502a7790ce47b5b41b",
+          "redComponentRegistrationAid": [
+            248.4,
+            131.7
+          ],
+          "redComponents": [
+            {
+              "center": [
+                248.4,
+                131.7
+              ],
+              "bounds": [
+                202,
+                84,
+                297,
+                180
+              ],
+              "area": 6919
+            },
+            {
+              "center": [
+                193.1,
+                274.1
+              ],
+              "bounds": [
+                155,
+                225,
+                237,
+                313
+              ],
+              "area": 2695
+            },
+            {
+              "center": [
+                134.7,
+                190.9
+              ],
+              "bounds": [
+                105,
+                145,
+                168,
+                229
+              ],
+              "area": 2548
+            },
+            {
+              "center": [
+                284.4,
+                292.7
+              ],
+              "bounds": [
+                254,
+                260,
+                316,
+                320
+              ],
+              "area": 1940
+            },
+            {
+              "center": [
+                370.9,
+                179.7
+              ],
+              "bounds": [
+                350,
+                147,
+                397,
+                207
+              ],
+              "area": 1421
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "file": "Charged-v2.png",
+      "mode": "RGBA",
+      "size": [
+        1536,
+        1024
+      ],
+      "alphaExtrema": [
+        0,
+        254
+      ],
+      "sha256": "0ff74bc955498d6fd57acb3bc641faed4492b2a28b8e7c33438a045c301db021",
+      "uniqueFrames": 6,
+      "frames": [
+        {
+          "index": 0,
+          "visibleBounds": [
+            118,
+            141,
+            433,
+            414
+          ],
+          "registeredPreviewBounds": [
+            103.64,
+            112.72,
+            421.47,
+            388.18
+          ],
+          "guardAlphaMax": 1,
+          "sha256": "1b922652b847d9b024c9636780948b3d988c6c320efd32feaab0c8a2dd867ef2",
+          "redComponentRegistrationAid": [
+            268.7,
+            262.9
+          ],
+          "redComponents": [
+            {
+              "center": [
+                268.7,
+                262.9
+              ],
+              "bounds": [
+                193,
+                190,
+                376,
+                324
+              ],
+              "area": 4000
+            },
+            {
+              "center": [
+                267.4,
+                176.8
+              ],
+              "bounds": [
+                233,
+                141,
+                304,
+                213
+              ],
+              "area": 3988
+            },
+            {
+              "center": [
+                295.5,
+                301.5
+              ],
+              "bounds": [
+                269,
+                274,
+                323,
+                327
+              ],
+              "area": 1425
+            }
+          ]
+        },
+        {
+          "index": 1,
+          "visibleBounds": [
+            119,
+            141,
+            382,
+            398
+          ],
+          "registeredPreviewBounds": [
+            105.66,
+            114.74,
+            371.02,
+            374.05
+          ],
+          "guardAlphaMax": 1,
+          "sha256": "3aac7720b2b69f6b4370fe07a64c7865750d9351f326cf77b304305f13fa804e",
+          "redComponentRegistrationAid": [
+            269.5,
+            177.4
+          ],
+          "redComponents": [
+            {
+              "center": [
+                269.5,
+                177.4
+              ],
+              "bounds": [
+                232,
+                141,
+                308,
+                218
+              ],
+              "area": 4168
+            },
+            {
+              "center": [
+                231.0,
+                276.0
+              ],
+              "bounds": [
+                194,
+                236,
+                258,
+                322
+              ],
+              "area": 2040
+            }
+          ]
+        },
+        {
+          "index": 2,
+          "visibleBounds": [
+            76,
+            158,
+            404,
+            393
+          ],
+          "registeredPreviewBounds": [
+            38.06,
+            136.94,
+            369.01,
+            374.05
+          ],
+          "guardAlphaMax": 1,
+          "sha256": "04336a373c9637adf5a95b9a69f643e8c3ed5babed511bffa5bfff61dbb23d79",
+          "redComponentRegistrationAid": [
+            295.8,
+            204.5
+          ],
+          "redComponents": [
+            {
+              "center": [
+                295.8,
+                204.5
+              ],
+              "bounds": [
+                262,
+                174,
+                332,
+                238
+              ],
+              "area": 3346
+            },
+            {
+              "center": [
+                236.4,
+                283.6
+              ],
+              "bounds": [
+                205,
+                233,
+                272,
+                328
+              ],
+              "area": 2612
+            },
+            {
+              "center": [
+                218.0,
+                198.6
+              ],
+              "bounds": [
+                199,
+                173,
+                245,
+                233
+              ],
+              "area": 1551
+            }
+          ]
+        },
+        {
+          "index": 3,
+          "visibleBounds": [
+            73,
+            140,
+            450,
+            343
+          ],
+          "registeredPreviewBounds": [
+            45.12,
+            140.98,
+            425.51,
+            345.8
+          ],
+          "guardAlphaMax": 1,
+          "sha256": "c5957ed15c4371822b47e071e6f3c174b7c3f5c2f55dead0e00d492df217fae6",
+          "redComponentRegistrationAid": [
+            303.7,
+            189.2
+          ],
+          "redComponents": [
+            {
+              "center": [
+                303.7,
+                189.2
+              ],
+              "bounds": [
+                268,
+                154,
+                339,
+                226
+              ],
+              "area": 3810
+            }
+          ]
+        },
+        {
+          "index": 4,
+          "visibleBounds": [
+            115,
+            103,
+            421,
+            376
+          ],
+          "registeredPreviewBounds": [
+            101.63,
+            106.67,
+            410.37,
+            382.12
+          ],
+          "guardAlphaMax": 1,
+          "sha256": "68be14dac09a5f486936a34abef0cf26e5da8ddc8c6084fc4cbc723da4d703c3",
+          "redComponentRegistrationAid": [
+            259.7,
+            139.6
+          ],
+          "redComponents": [
+            {
+              "center": [
+                259.7,
+                139.6
+              ],
+              "bounds": [
+                225,
+                103,
+                296,
+                174
+              ],
+              "area": 4011
+            },
+            {
+              "center": [
+                293.1,
+                263.2
+              ],
+              "bounds": [
+                267,
+                240,
+                323,
+                288
+              ],
+              "area": 1373
+            }
+          ]
+        },
+        {
+          "index": 5,
+          "visibleBounds": [
+            120,
+            107,
+            426,
+            387
+          ],
+          "registeredPreviewBounds": [
+            103.64,
+            107.68,
+            412.39,
+            390.19
+          ],
+          "guardAlphaMax": 1,
+          "sha256": "1217cb139fa3a463fe3436fab2b19310016389e268365bd0dd22b5dec0a17f1b",
+          "redComponentRegistrationAid": [
+            262.6,
+            145.1
+          ],
+          "redComponents": [
+            {
+              "center": [
+                262.6,
+                145.1
+              ],
+              "bounds": [
+                226,
+                107,
+                301,
+                184
+              ],
+              "area": 4300
+            },
+            {
+              "center": [
+                221.3,
+                257.9
+              ],
+              "bounds": [
+                192,
+                219,
+                256,
+                290
+              ],
+              "area": 1641
+            },
+            {
+              "center": [
+                291.2,
+                274.0
+              ],
+              "bounds": [
+                268,
+                247,
+                317,
+                299
+              ],
+              "area": 1327
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "file": "Charge-v3.png",
+      "mode": "RGBA",
+      "size": [
+        1536,
+        1024
+      ],
+      "alphaExtrema": [
+        0,
+        254
+      ],
+      "sha256": "52ad607a2223441728755e0c459b1c43d127f35683367ac18ad93e0491878b16",
+      "uniqueFrames": 6,
+      "frames": [
+        {
+          "index": 0,
+          "visibleBounds": [
+            47,
+            56,
+            492,
+            462
+          ],
+          "registeredPreviewBounds": [
+            86.69,
+            101.65,
+            437.12,
+            421.38
+          ],
+          "guardAlphaMax": 1,
+          "sha256": "1346666ec149c3e41535532d0b19d8142630b41fc7b374fa63d038fe09b611ac",
+          "redComponentRegistrationAid": [
+            258.7,
+            105.6
+          ],
+          "redComponents": [
+            {
+              "center": [
+                258.7,
+                105.6
+              ],
+              "bounds": [
+                206,
+                56,
+                313,
+                161
+              ],
+              "area": 7864
+            },
+            {
+              "center": [
+                130.2,
+                139.1
+              ],
+              "bounds": [
+                94,
+                96,
+                160,
+                180
+              ],
+              "area": 3105
+            },
+            {
+              "center": [
+                390.9,
+                151.3
+              ],
+              "bounds": [
+                367,
+                118,
+                424,
+                182
+              ],
+              "area": 1606
+            },
+            {
+              "center": [
+                306.1,
+                260.1
+              ],
+              "bounds": [
+                265,
+                225,
+                340,
+                288
+              ],
+              "area": 1591
+            }
+          ]
+        },
+        {
+          "index": 1,
+          "visibleBounds": [
+            44,
+            54,
+            492,
+            370
+          ],
+          "registeredPreviewBounds": [
+            86.69,
+            109.53,
+            439.49,
+            358.38
+          ],
+          "guardAlphaMax": 0,
+          "sha256": "fa282e378564a4390781f883f3975fc2bf0b84f5893cfa9f0b135aea2f175f68",
+          "redComponentRegistrationAid": [
+            259.5,
+            104.9
+          ],
+          "redComponents": [
+            {
+              "center": [
+                259.5,
+                104.9
+              ],
+              "bounds": [
+                207,
+                54,
+                312,
+                161
+              ],
+              "area": 8007
+            },
+            {
+              "center": [
+                127.9,
+                137.3
+              ],
+              "bounds": [
+                90,
+                95,
+                158,
+                179
+              ],
+              "area": 3186
+            },
+            {
+              "center": [
+                391.2,
+                149.1
+              ],
+              "bounds": [
+                367,
+                121,
+                420,
+                177
+              ],
+              "area": 1279
+            }
+          ]
+        },
+        {
+          "index": 2,
+          "visibleBounds": [
+            44,
+            52,
+            493,
+            466
+          ],
+          "registeredPreviewBounds": [
+            85.11,
+            97.71,
+            438.7,
+            423.74
+          ],
+          "guardAlphaMax": 1,
+          "sha256": "08aa5591b2b1cdc0d324cc9e8de0fb87a85c125ef5b21d2030c9340cf15163ff",
+          "redComponentRegistrationAid": [
+            261.6,
+            102.8
+          ],
+          "redComponents": [
+            {
+              "center": [
+                261.6,
+                102.8
+              ],
+              "bounds": [
+                210,
+                52,
+                315,
+                154
+              ],
+              "area": 8051
+            },
+            {
+              "center": [
+                128.8,
+                137.4
+              ],
+              "bounds": [
+                90,
+                94,
+                160,
+                179
+              ],
+              "area": 3301
+            },
+            {
+              "center": [
+                304.0,
+                258.2
+              ],
+              "bounds": [
+                261,
+                227,
+                338,
+                283
+              ],
+              "area": 1569
+            },
+            {
+              "center": [
+                393.3,
+                148.9
+              ],
+              "bounds": [
+                372,
+                121,
+                423,
+                176
+              ],
+              "area": 1260
+            }
+          ]
+        },
+        {
+          "index": 3,
+          "visibleBounds": [
+            48,
+            48,
+            495,
+            370
+          ],
+          "registeredPreviewBounds": [
+            85.9,
+            93.78,
+            437.91,
+            347.35
+          ],
+          "guardAlphaMax": 0,
+          "sha256": "5c4b93db8183ed3b7c70de6c6eb37208173e89891ef6a1bc833227b0c4b6a5ba",
+          "redComponentRegistrationAid": [
+            259.8,
+            98.1
+          ],
+          "redComponents": [
+            {
+              "center": [
+                259.8,
+                98.1
+              ],
+              "bounds": [
+                208,
+                48,
+                312,
+                153
+              ],
+              "area": 7865
+            },
+            {
+              "center": [
+                130.6,
+                135.8
+              ],
+              "bounds": [
+                98,
+                94,
+                159,
+                176
+              ],
+              "area": 2956
+            },
+            {
+              "center": [
+                182.0,
+                227.4
+              ],
+              "bounds": [
+                149,
+                189,
+                254,
+                271
+              ],
+              "area": 2145
+            },
+            {
+              "center": [
+                392.3,
+                146.1
+              ],
+              "bounds": [
+                367,
+                113,
+                425,
+                177
+              ],
+              "area": 1525
+            },
+            {
+              "center": [
+                307.1,
+                251.8
+              ],
+              "bounds": [
+                271,
+                216,
+                341,
+                273
+              ],
+              "area": 1434
+            }
+          ]
+        },
+        {
+          "index": 4,
+          "visibleBounds": [
+            46,
+            46,
+            493,
+            460
+          ],
+          "registeredPreviewBounds": [
+            85.11,
+            100.86,
+            437.12,
+            426.89
+          ],
+          "guardAlphaMax": 1,
+          "sha256": "06b6dd9e0479708d9695d04dd064f76584c228d997d343f6c0029058e76d6b95",
+          "redComponentRegistrationAid": [
+            260.6,
+            97.6
+          ],
+          "redComponents": [
+            {
+              "center": [
+                260.6,
+                97.6
+              ],
+              "bounds": [
+                209,
+                48,
+                314,
+                153
+              ],
+              "area": 8247
+            },
+            {
+              "center": [
+                128.6,
+                130.8
+              ],
+              "bounds": [
+                94,
+                87,
+                159,
+                174
+              ],
+              "area": 3279
+            },
+            {
+              "center": [
+                304.0,
+                252.4
+              ],
+              "bounds": [
+                269,
+                219,
+                338,
+                281
+              ],
+              "area": 1559
+            },
+            {
+              "center": [
+                393.6,
+                145.1
+              ],
+              "bounds": [
+                371,
+                113,
+                422,
+                173
+              ],
+              "area": 1458
+            }
+          ]
+        },
+        {
+          "index": 5,
+          "visibleBounds": [
+            45,
+            46,
+            492,
+            368
+          ],
+          "registeredPreviewBounds": [
+            78.03,
+            100.08,
+            430.04,
+            353.65
+          ],
+          "guardAlphaMax": 1,
+          "sha256": "52f7ee596b399a07339b83bb1a28059970702ff0390425874859ca6c3fc829f0",
+          "redComponentRegistrationAid": [
+            260.0,
+            96.4
+          ],
+          "redComponents": [
+            {
+              "center": [
+                260.0,
+                96.4
+              ],
+              "bounds": [
+                207,
+                48,
+                315,
+                153
+              ],
+              "area": 8100
+            },
+            {
+              "center": [
+                127.4,
+                133.5
+              ],
+              "bounds": [
+                93,
+                90,
+                159,
+                174
+              ],
+              "area": 3245
+            },
+            {
+              "center": [
+                182.4,
+                231.0
+              ],
+              "bounds": [
+                145,
+                182,
+                248,
+                274
+              ],
+              "area": 2978
+            },
+            {
+              "center": [
+                392.6,
+                146.6
+              ],
+              "bounds": [
+                367,
+                114,
+                423,
+                178
+              ],
+              "area": 1480
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "file": "ChargeAttack-v7.png",
+      "mode": "RGBA",
+      "size": [
+        1536,
+        1024
+      ],
+      "alphaExtrema": [
+        0,
+        254
+      ],
+      "sha256": "ff7098a6438ff4095ebd8fa81104fbf9f3710be815c060b2bb22324862b5d631",
+      "uniqueFrames": 6,
+      "frames": [
+        {
+          "index": 0,
+          "visibleBounds": [
+            76,
+            162,
+            431,
+            453
+          ],
+          "registeredPreviewBounds": [
+            87.87,
+            120.02,
+            414.02,
+            387.38
+          ],
+          "guardAlphaMax": 0,
+          "sha256": "7ff0868515325b5ab06aac5aa9cc04880d23a8e0d430c5c3882fedb2c213f724",
+          "redComponentRegistrationAid": [
+            264.4,
+            200.3
+          ],
+          "redComponents": [
+            {
+              "center": [
+                264.4,
+                200.3
+              ],
+              "bounds": [
+                226,
+                162,
+                303,
+                240
+              ],
+              "area": 4506
+            },
+            {
+              "center": [
+                195.6,
+                279.7
+              ],
+              "bounds": [
+                141,
+                199,
+                259,
+                352
+              ],
+              "area": 4347
+            }
+          ]
+        },
+        {
+          "index": 1,
+          "visibleBounds": [
+            56,
+            130,
+            450,
+            429
+          ],
+          "registeredPreviewBounds": [
+            64.9,
+            97.06,
+            426.89,
+            371.76
+          ],
+          "guardAlphaMax": 1,
+          "sha256": "797b748c0f937e0df73f1330f44dbbceee6318776eddc9fa6581763ba87232a7",
+          "redComponentRegistrationAid": [
+            282.0,
+            199.6
+          ],
+          "redComponents": [
+            {
+              "center": [
+                282.0,
+                199.6
+              ],
+              "bounds": [
+                243,
+                160,
+                321,
+                240
+              ],
+              "area": 4618
+            },
+            {
+              "center": [
+                199.3,
+                163.8
+              ],
+              "bounds": [
+                170,
+                135,
+                242,
+                206
+              ],
+              "area": 2117
+            },
+            {
+              "center": [
+                293.4,
+                318.7
+              ],
+              "bounds": [
+                266,
+                291,
+                326,
+                341
+              ],
+              "area": 1457
+            }
+          ]
+        },
+        {
+          "index": 2,
+          "visibleBounds": [
+            111,
+            53,
+            438,
+            438
+          ],
+          "registeredPreviewBounds": [
+            110.84,
+            11.61,
+            411.27,
+            365.33
+          ],
+          "guardAlphaMax": 1,
+          "sha256": "b03534b66198ce8035bb56c626e4232a0a67a43f77852a6fa55263d6fddda318",
+          "redComponentRegistrationAid": [
+            263.2,
+            204.9
+          ],
+          "redComponents": [
+            {
+              "center": [
+                263.2,
+                204.9
+              ],
+              "bounds": [
+                224,
+                163,
+                302,
+                245
+              ],
+              "area": 4552
+            },
+            {
+              "center": [
+                211.1,
+                308.0
+              ],
+              "bounds": [
+                177,
+                261,
+                248,
+                352
+              ],
+              "area": 2425
+            },
+            {
+              "center": [
+                286.0,
+                329.2
+              ],
+              "bounds": [
+                264,
+                306,
+                310,
+                353
+              ],
+              "area": 1220
+            }
+          ]
+        },
+        {
+          "index": 3,
+          "visibleBounds": [
+            87,
+            101,
+            445,
+            425
+          ],
+          "registeredPreviewBounds": [
+            87.87,
+            121.86,
+            416.78,
+            419.54
+          ],
+          "guardAlphaMax": 1,
+          "sha256": "1e29f1a0fdbb4b7f78453308bbabf73ac7ee1a52ac7536bab4153608c52d532c",
+          "redComponentRegistrationAid": [
+            274.6,
+            141.5
+          ],
+          "redComponents": [
+            {
+              "center": [
+                274.6,
+                141.5
+              ],
+              "bounds": [
+                234,
+                101,
+                315,
+                181
+              ],
+              "area": 4801
+            }
+          ]
+        },
+        {
+          "index": 4,
+          "visibleBounds": [
+            57,
+            106,
+            447,
+            419
+          ],
+          "registeredPreviewBounds": [
+            52.96,
+            119.11,
+            411.27,
+            406.68
+          ],
+          "guardAlphaMax": 1,
+          "sha256": "2d766ef92441663f668b228cf34926e43d53253d32efae96aca8d4bfa99500f5",
+          "redComponentRegistrationAid": [
+            264.7,
+            146.5
+          ],
+          "redComponents": [
+            {
+              "center": [
+                264.7,
+                146.5
+              ],
+              "bounds": [
+                225,
+                106,
+                306,
+                187
+              ],
+              "area": 5026
+            },
+            {
+              "center": [
+                191.1,
+                208.5
+              ],
+              "bounds": [
+                133,
+                131,
+                258,
+                287
+              ],
+              "area": 4306
+            }
+          ]
+        },
+        {
+          "index": 5,
+          "visibleBounds": [
+            60,
+            101,
+            448,
+            382
+          ],
+          "registeredPreviewBounds": [
+            52.04,
+            109.92,
+            408.51,
+            368.09
+          ],
+          "guardAlphaMax": 0,
+          "sha256": "4109509f6b6985912e28ff37d28829772906d608b60bfe5bffcfd23f67dc1ede",
+          "redComponentRegistrationAid": [
+            271.9,
+            153.9
+          ],
+          "redComponents": [
+            {
+              "center": [
+                271.9,
+                153.9
+              ],
+              "bounds": [
+                231,
+                113,
+                314,
+                196
+              ],
+              "area": 5068
+            },
+            {
+              "center": [
+                179.7,
+                133.1
+              ],
+              "bounds": [
+                154,
+                102,
+                221,
+                176
+              ],
+              "area": 2246
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "file": "Death.png",
+      "mode": "RGBA",
+      "size": [
+        1536,
+        1024
+      ],
+      "alphaExtrema": [
+        0,
+        254
+      ],
+      "sha256": "d910f2f1c40ee9be8655e73f1f52fe7c690a8c572f4d0289ad59067d9c1d0803",
+      "uniqueFrames": 6,
+      "frames": [
+        {
+          "index": 0,
+          "visibleBounds": [
+            84,
+            95,
+            474,
+            441
+          ],
+          "registeredPreviewBounds": [
+            103.42,
+            104.24,
+            423.34,
+            388.07
+          ],
+          "guardAlphaMax": 1,
+          "sha256": "dfbaec68f8597bca3778e5d61ecaf0c2f3b5f2be79a688b13f4ba2f5ab0b34ef",
+          "redComponentRegistrationAid": [
+            272.4,
+            141.8
+          ],
+          "redComponents": [
+            {
+              "center": [
+                272.4,
+                141.8
+              ],
+              "bounds": [
+                227,
+                95,
+                320,
+                195
+              ],
+              "area": 6498
+            },
+            {
+              "center": [
+                213.2,
+                282.4
+              ],
+              "bounds": [
+                176,
+                238,
+                257,
+                320
+              ],
+              "area": 2633
+            },
+            {
+              "center": [
+                306.3,
+                300.8
+              ],
+              "bounds": [
+                272,
+                266,
+                342,
+                329
+              ],
+              "area": 2070
+            },
+            {
+              "center": [
+                388.5,
+                193.3
+              ],
+              "bounds": [
+                367,
+                160,
+                415,
+                221
+              ],
+              "area": 1381
+            }
+          ]
+        },
+        {
+          "index": 1,
+          "visibleBounds": [
+            90,
+            144,
+            454,
+            456
+          ],
+          "registeredPreviewBounds": [
+            103.42,
+            119.83,
+            402.02,
+            375.77
+          ],
+          "guardAlphaMax": 1,
+          "sha256": "4e6849624ea95e63048e285bcd14f1c8690d740a335309ec91f666bb767d1105",
+          "redComponentRegistrationAid": [
+            274.4,
+            216.6
+          ],
+          "redComponents": [
+            {
+              "center": [
+                274.4,
+                216.6
+              ],
+              "bounds": [
+                232,
+                170,
+                319,
+                265
+              ],
+              "area": 6182
+            },
+            {
+              "center": [
+                200.2,
+                257.0
+              ],
+              "bounds": [
+                139,
+                167,
+                334,
+                333
+              ],
+              "area": 5939
+            }
+          ]
+        },
+        {
+          "index": 2,
+          "visibleBounds": [
+            53,
+            165,
+            439,
+            448
+          ],
+          "registeredPreviewBounds": [
+            87.84,
+            125.57,
+            404.48,
+            357.72
+          ],
+          "guardAlphaMax": 1,
+          "sha256": "234793959207718c611b3a7affd12c9a5667fcc7e02d70965348d104f34cffb3",
+          "redComponentRegistrationAid": [
+            247.5,
+            227.8
+          ],
+          "redComponents": [
+            {
+              "center": [
+                247.5,
+                227.8
+              ],
+              "bounds": [
+                205,
+                181,
+                290,
+                273
+              ],
+              "area": 5908
+            },
+            {
+              "center": [
+                137.6,
+                222.9
+              ],
+              "bounds": [
+                104,
+                178,
+                173,
+                272
+              ],
+              "area": 3321
+            },
+            {
+              "center": [
+                268.1,
+                331.7
+              ],
+              "bounds": [
+                235,
+                305,
+                302,
+                353
+              ],
+              "area": 1604
+            }
+          ]
+        },
+        {
+          "index": 3,
+          "visibleBounds": [
+            84,
+            126,
+            447,
+            416
+          ],
+          "registeredPreviewBounds": [
+            116.55,
+            126.39,
+            414.32,
+            364.28
+          ],
+          "guardAlphaMax": 1,
+          "sha256": "80d05dc74ca057629b206de5e3ba286d1de4874bc4ab3108d6a0773191e00398",
+          "redComponentRegistrationAid": [
+            188.7,
+            175.9
+          ],
+          "redComponents": [
+            {
+              "center": [
+                188.7,
+                175.9
+              ],
+              "bounds": [
+                147,
+                130,
+                232,
+                221
+              ],
+              "area": 5686
+            },
+            {
+              "center": [
+                289.2,
+                218.6
+              ],
+              "bounds": [
+                193,
+                152,
+                361,
+                298
+              ],
+              "area": 5629
+            }
+          ]
+        },
+        {
+          "index": 4,
+          "visibleBounds": [
+            65,
+            130,
+            504,
+            441
+          ],
+          "registeredPreviewBounds": [
+            104.24,
+            149.36,
+            464.36,
+            404.48
+          ],
+          "guardAlphaMax": 4,
+          "sha256": "2b717beb550932232dc1e1950a2991f0b0df1ed0efe4ead946aca1d392a4e62c",
+          "redComponentRegistrationAid": [
+            236.9,
+            196.5
+          ],
+          "redComponents": [
+            {
+              "center": [
+                236.9,
+                196.5
+              ],
+              "bounds": [
+                178,
+                130,
+                304,
+                280
+              ],
+              "area": 9646
+            },
+            {
+              "center": [
+                346.8,
+                262.8
+              ],
+              "bounds": [
+                308,
+                219,
+                387,
+                305
+              ],
+              "area": 5281
+            }
+          ]
+        },
+        {
+          "index": 5,
+          "visibleBounds": [
+            56,
+            129,
+            502,
+            442
+          ],
+          "registeredPreviewBounds": [
+            97.68,
+            148.54,
+            463.54,
+            405.3
+          ],
+          "guardAlphaMax": 4,
+          "sha256": "015ceddf8b77143a995a4cb4002b7e18a03f1524af8c5a30eaa85360f90c3193",
+          "redComponentRegistrationAid": [
+            232.9,
+            196.4
+          ],
+          "redComponents": [
+            {
+              "center": [
+                232.9,
+                196.4
+              ],
+              "bounds": [
+                173,
+                129,
+                300,
+                279
+              ],
+              "area": 9808
+            },
+            {
+              "center": [
+                342.5,
+                262.5
+              ],
+              "bounds": [
+                302,
+                219,
+                387,
+                305
+              ],
+              "area": 5425
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "file": "Death-Back-v2.png",
+      "mode": "RGBA",
+      "size": [
+        1536,
+        1024
+      ],
+      "alphaExtrema": [
+        0,
+        254
+      ],
+      "sha256": "ccfb8b2618511524fc9ec7a86a03fb1e57c99e0090efca577fe9b2dd3cebd1b2",
+      "uniqueFrames": 6,
+      "frames": [
+        {
+          "index": 0,
+          "visibleBounds": [
+            104,
+            122,
+            474,
+            433
+          ],
+          "registeredPreviewBounds": [
+            93.38,
+            107.16,
+            433.32,
+            392.89
+          ],
+          "guardAlphaMax": 0,
+          "sha256": "431471fe89f8fcc78b48fcc42843d3d6ab563db48560a18981691e3fb115e455",
+          "redComponentRegistrationAid": [
+            280.9,
+            164.0
+          ],
+          "redComponents": [
+            {
+              "center": [
+                280.9,
+                164.0
+              ],
+              "bounds": [
+                240,
+                122,
+                323,
+                210
+              ],
+              "area": 5119
+            },
+            {
+              "center": [
+                177.4,
+                215.9
+              ],
+              "bounds": [
+                143,
+                174,
+                204,
+                258
+              ],
+              "area": 2422
+            },
+            {
+              "center": [
+                317.1,
+                303.1
+              ],
+              "bounds": [
+                281,
+                267,
+                354,
+                334
+              ],
+              "area": 2076
+            },
+            {
+              "center": [
+                383.2,
+                218.9
+              ],
+              "bounds": [
+                356,
+                179,
+                420,
+                253
+              ],
+              "area": 1887
+            }
+          ]
+        },
+        {
+          "index": 1,
+          "visibleBounds": [
+            46,
+            114,
+            447,
+            433
+          ],
+          "registeredPreviewBounds": [
+            57.55,
+            86.03,
+            425.97,
+            379.11
+          ],
+          "guardAlphaMax": 1,
+          "sha256": "23b2c59f16a66d7b40833359364116120c1338dec3b4714729d285bc096f6ee2",
+          "redComponentRegistrationAid": null,
+          "redComponents": []
+        },
+        {
+          "index": 2,
+          "visibleBounds": [
+            37,
+            151,
+            446,
+            446
+          ],
+          "registeredPreviewBounds": [
+            52.96,
+            117.27,
+            428.73,
+            388.3
+          ],
+          "guardAlphaMax": 0,
+          "sha256": "2bbe23ac020f0f355bb6fc4b8dfa98f59e8fdf17e90bcddfe1f3ebb8274ab2ef",
+          "redComponentRegistrationAid": null,
+          "redComponents": []
+        },
+        {
+          "index": 3,
+          "visibleBounds": [
+            95,
+            103,
+            460,
+            398
+          ],
+          "registeredPreviewBounds": [
+            100.73,
+            106.24,
+            436.08,
+            377.27
+          ],
+          "guardAlphaMax": 1,
+          "sha256": "cd9c695cbc81d1565951f0345a54b2d2017c3917b9ff708255ea58acaa4251ba",
+          "redComponentRegistrationAid": null,
+          "redComponents": []
+        },
+        {
+          "index": 4,
+          "visibleBounds": [
+            46,
+            58,
+            476,
+            389
+          ],
+          "registeredPreviewBounds": [
+            67.66,
+            94.3,
+            462.72,
+            398.41
+          ],
+          "guardAlphaMax": 1,
+          "sha256": "9fd5ac12f7df9193728332f4d98b5bfc78a57eb829811840d088b0ae0e4ad0cb",
+          "redComponentRegistrationAid": [
+            250.8,
+            214.0
+          ],
+          "redComponents": [
+            {
+              "center": [
+                250.8,
+                214.0
+              ],
+              "bounds": [
+                141,
+                143,
+                359,
+                302
+              ],
+              "area": 13139
+            }
+          ]
+        },
+        {
+          "index": 5,
+          "visibleBounds": [
+            43,
+            61,
+            480,
+            391
+          ],
+          "registeredPreviewBounds": [
+            68.57,
+            98.89,
+            470.07,
+            402.08
+          ],
+          "guardAlphaMax": 1,
+          "sha256": "0eac0e5780e0450a99f1fad7d09f1273db71f3be8b24503354c6ee8aec0dd13e",
+          "redComponentRegistrationAid": [
+            243.8,
+            214.3
+          ],
+          "redComponents": [
+            {
+              "center": [
+                243.8,
+                214.3
+              ],
+              "bounds": [
+                137,
+                141,
+                356,
+                300
+              ],
+              "area": 13530
+            }
+          ]
+        }
+      ]
+    }
+  ]
+}

@@ -1,9 +1,9 @@
 {
   "schemaVersion": 1,
   "cultureId": "russian",
-  "artDirection": "Regional prehistoric inspiration for Russian culture vessels",
-  "shipCount": 6,
-  "clipCount": 14,
+  "artDirection": "Regional prehistoric and Iron Age inspiration for Russian culture vessels",
+  "shipCount": 9,
+  "clipCount": 21,
   "assets": [
     {
       "age": "StoneAge",
@@ -84,12 +84,56 @@
         "Sailing.png"
       ],
       "metadata": "BronzeAge/Trade/animations.json"
+    },
+    {
+      "age": "ClassicalAge",
+      "ageLabel": "Classical Age",
+      "category": "Warships",
+      "poster": "ClassicalAge/Warship/SourceArt/Warship_Russian_ClassicalAge_v3.png",
+      "description": "Plank-built fighting hull \u00b7 six straight oar pairs \u00b7 iron spearheads and shields",
+      "status": "animated-from-approved-master",
+      "clips": [
+        "Idle.png",
+        "Sailing.png",
+        "Attack.png"
+      ],
+      "sourceSha256": "b2357b1f62c81cf33da8c4c6c1ee278f93e064c17647d1e305cb896c7dcea503",
+      "metadata": "ClassicalAge/Warship/animations.json"
+    },
+    {
+      "age": "ClassicalAge",
+      "ageLabel": "Classical Age",
+      "category": "Transport",
+      "poster": "ClassicalAge/Transport/SourceArt/Transport_Russian_ClassicalAge_v1.png",
+      "description": "Broad passenger hull \u00b7 eight pale benches \u00b7 clear open interior",
+      "status": "animated-from-approved-master",
+      "clips": [
+        "Idle.png",
+        "Sailing.png"
+      ],
+      "sourceSha256": "1f9f3d3253e85593af5fb578249d25b012fb4cffa21b159b98486f401b26b81a",
+      "metadata": "ClassicalAge/Transport/animations.json"
+    },
+    {
+      "age": "ClassicalAge",
+      "ageLabel": "Classical Age",
+      "category": "Trade",
+      "poster": "ClassicalAge/Trade/SourceArt/Trade_Russian_ClassicalAge_v1.png",
+      "description": "Plank-built cargo hull \u00b7 six secured loads \u00b7 iron, felt, fur and pottery",
+      "status": "animated-from-approved-master",
+      "clips": [
+        "Idle.png",
+        "Sailing.png"
+      ],
+      "sourceSha256": "740502f0b3c880403a02cb7728dd9348db532c0454523c1b8071412f06b8ee0d",
+      "metadata": "ClassicalAge/Trade/animations.json"
     }
   ],
   "animationApproval": {
-    "age": "BronzeAge",
+    "status": "approved",
+    "age": "ClassicalAge",
     "date": "2026-10-02",
-    "userMessage": "Okay those are good, animate them"
+    "userMessage": "those are approved, animate them"
   },
   "animationApprovals": {
     "StoneAge": {
@@ -101,6 +145,12 @@
       "age": "BronzeAge",
       "date": "2026-10-02",
       "userMessage": "Okay those are good, animate them"
+    },
+    "ClassicalAge": {
+      "status": "approved",
+      "age": "ClassicalAge",
+      "date": "2026-10-02",
+      "userMessage": "those are approved, animate them"
     }
   }
 }

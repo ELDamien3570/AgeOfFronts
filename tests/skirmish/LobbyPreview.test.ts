@@ -43,6 +43,8 @@ describe("local lobby preview", () => {
       "old-world",
       "new-world",
       "valles-kairulia",
+      "down-unda",
+      "middle-east",
     ]);
     expect(vm.rules.slots).toBe(MAX_HUMAN_PLAYERS);
     // Base lobbies use the 500-cell defaults: 10 AI opponents and 25 tribes.
@@ -52,7 +54,13 @@ describe("local lobby preview", () => {
     expect(vm.page).toBe("home");
     expect(vm.showLobby("heightmap-test1")).toBe(true);
     expect(vm.skirmishHref).toBe("/skirmish/index.html?map=heightmap-test1");
-    for (const id of ["old-world", "new-world", "valles-kairulia"]) {
+    for (const id of [
+      "old-world",
+      "new-world",
+      "valles-kairulia",
+      "down-unda",
+      "middle-east",
+    ]) {
       expect(vm.showLobby(id)).toBe(true);
       expect(vm.skirmishHref).toBe(`/skirmish/index.html?map=${id}`);
     }

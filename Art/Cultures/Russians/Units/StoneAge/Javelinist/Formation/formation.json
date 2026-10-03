@@ -1,0 +1,409 @@
+{
+  "schemaVersion": 1,
+  "cultureId": "russians",
+  "age": "StoneAge",
+  "unit": "Javelinists",
+  "groupMemberCount": 5,
+  "camera": "vertical-overhead-orthographic",
+  "facing": "screen-down",
+  "actorSources": [
+    "../animations.json",
+    "SourceActor/animations.json"
+  ],
+  "frameSize": {
+    "width": 512,
+    "height": 512
+  },
+  "pivot": {
+    "x": 256,
+    "y": 256
+  },
+  "memberScale": 0.36,
+  "sampleFramesPerSecond": 20,
+  "atlasColumns": 5,
+  "layouts": {
+    "standard": {
+      "tip": {
+        "x": 256,
+        "y": 326
+      },
+      "left": {
+        "x": 130,
+        "y": 286
+      },
+      "right": {
+        "x": 382,
+        "y": 286
+      },
+      "rear-left": {
+        "x": 192,
+        "y": 170
+      },
+      "rear-right": {
+        "x": 320,
+        "y": 170
+      }
+    },
+    "wedge": {
+      "tip": {
+        "x": 256,
+        "y": 365
+      },
+      "left": {
+        "x": 112,
+        "y": 160
+      },
+      "right": {
+        "x": 400,
+        "y": 160
+      },
+      "rear-left": {
+        "x": 184,
+        "y": 267
+      },
+      "rear-right": {
+        "x": 328,
+        "y": 267
+      }
+    }
+  },
+  "members": [
+    {
+      "id": "tip",
+      "rank": 0,
+      "phaseMs": 0
+    },
+    {
+      "id": "left",
+      "rank": 0,
+      "phaseMs": 90
+    },
+    {
+      "id": "right",
+      "rank": 0,
+      "phaseMs": 180
+    },
+    {
+      "id": "rear-left",
+      "rank": 1,
+      "phaseMs": 270
+    },
+    {
+      "id": "rear-right",
+      "rank": 1,
+      "phaseMs": 360
+    }
+  ],
+  "animations": [
+    {
+      "id": "idle",
+      "label": "Idle",
+      "file": "Idle.png",
+      "source": "idle",
+      "layoutFrom": "standard",
+      "layoutTo": "standard",
+      "durationMs": 1020,
+      "loop": true,
+      "description": "Five javelinists hold the standard two-back, three-front layout."
+    },
+    {
+      "id": "running",
+      "label": "Movement",
+      "file": "Running.png",
+      "source": "running",
+      "layoutFrom": "standard",
+      "layoutTo": "standard",
+      "durationMs": 880,
+      "loop": true,
+      "description": "Five alternating walking cycles with small phase differences."
+    },
+    {
+      "id": "attack",
+      "label": "Javelin volley",
+      "file": "Attack.png",
+      "source": "attack",
+      "layoutFrom": "standard",
+      "layoutTo": "standard",
+      "durationMs": 1100,
+      "loop": false,
+      "memberStartMs": {
+        "tip": 0,
+        "left": 35,
+        "right": 70,
+        "rear-left": 100,
+        "rear-right": 120
+      },
+      "description": "Plant and throw from the standard ranks with a short stagger, then draw fresh javelins."
+    },
+    {
+      "id": "hit",
+      "label": "Get hit",
+      "file": "Hit.png",
+      "source": "hit",
+      "layoutFrom": "standard",
+      "layoutTo": "standard",
+      "durationMs": 680,
+      "loop": false,
+      "memberStartMs": {
+        "tip": 0,
+        "left": 25,
+        "right": 50,
+        "rear-left": 75,
+        "rear-right": 100
+      },
+      "description": "Light hit reactions through all five members."
+    },
+    {
+      "id": "charged",
+      "label": "Get charged",
+      "file": "Charged.png",
+      "source": "charged",
+      "layoutFrom": "standard",
+      "layoutTo": "standard",
+      "durationMs": 1245,
+      "loop": false,
+      "memberStartMs": {
+        "tip": 0,
+        "left": 40,
+        "right": 80,
+        "rear-left": 320,
+        "rear-right": 370
+      },
+      "description": "Heavy impact hits the front three first, then the two at the back. Everyone recovers."
+    },
+    {
+      "id": "charge-in",
+      "label": "Charge in",
+      "file": "Charge-In.png",
+      "source": "charge",
+      "layoutFrom": "standard",
+      "layoutTo": "wedge",
+      "layoutTransitionMs": 720,
+      "layoutTransitionDelayMs": 150,
+      "layoutTracks": {
+        "left": {
+          "x": [
+            {
+              "timeMs": 0,
+              "value": 130
+            },
+            {
+              "timeMs": 200,
+              "value": 90
+            },
+            {
+              "timeMs": 520,
+              "value": 90
+            },
+            {
+              "timeMs": 720,
+              "value": 112
+            }
+          ]
+        },
+        "right": {
+          "x": [
+            {
+              "timeMs": 0,
+              "value": 382
+            },
+            {
+              "timeMs": 200,
+              "value": 422
+            },
+            {
+              "timeMs": 520,
+              "value": 422
+            },
+            {
+              "timeMs": 720,
+              "value": 400
+            }
+          ]
+        }
+      },
+      "reviewTravel": {
+        "forwardPixelsPerSecond": 360,
+        "rampInMs": 150
+      },
+      "durationMs": 1080,
+      "loop": false,
+      "blendIn": {
+        "source": "idle",
+        "durationMs": 150
+      },
+      "description": "The rear pair runs through two open lanes into the inner wedge. The front flanks arc outward, then settle as the trailing pair; the center leads."
+    },
+    {
+      "id": "charge-maintain",
+      "label": "Maintain charge",
+      "file": "Charge-Maintain.png",
+      "source": "charge",
+      "layoutFrom": "wedge",
+      "layoutTo": "wedge",
+      "durationMs": 540,
+      "loop": true,
+      "reviewTravel": {
+        "forwardPixelsPerSecond": 360
+      },
+      "description": "Keep running in the wedge until the attack or exit phase is requested."
+    },
+    {
+      "id": "charge-attack",
+      "label": "Charge volley",
+      "file": "Charge-Attack.png",
+      "source": "charge-attack",
+      "layoutFrom": "wedge",
+      "layoutTo": "wedge",
+      "durationMs": 1400,
+      "loop": false,
+      "memberStartMs": {
+        "tip": 0,
+        "left": 360,
+        "right": 360,
+        "rear-left": 180,
+        "rear-right": 180
+      },
+      "beforeSource": "charge-attack",
+      "blendIn": {
+        "source": "charge",
+        "durationMs": 90
+      },
+      "description": "Stop in the wedge and throw: tip first, then inner pair, then trailing pair. Rear members wait in the planted ready pose.",
+      "beforeFrame": 0
+    },
+    {
+      "id": "charge-out",
+      "label": "Transition out",
+      "file": "Charge-Out.png",
+      "source": "running",
+      "layoutFrom": "wedge",
+      "layoutTo": "standard",
+      "layoutTransitionMs": 720,
+      "layoutTransitionDelayMs": 140,
+      "layoutTracks": {
+        "left": {
+          "x": [
+            {
+              "timeMs": 0,
+              "value": 112
+            },
+            {
+              "timeMs": 200,
+              "value": 90
+            },
+            {
+              "timeMs": 520,
+              "value": 90
+            },
+            {
+              "timeMs": 720,
+              "value": 130
+            }
+          ]
+        },
+        "right": {
+          "x": [
+            {
+              "timeMs": 0,
+              "value": 400
+            },
+            {
+              "timeMs": 200,
+              "value": 422
+            },
+            {
+              "timeMs": 520,
+              "value": 422
+            },
+            {
+              "timeMs": 720,
+              "value": 382
+            }
+          ]
+        }
+      },
+      "reviewTravel": {
+        "forwardPixelsPerSecond": 360,
+        "rampInMs": 140,
+        "rampOutMs": 220
+      },
+      "durationMs": 1080,
+      "loop": false,
+      "blendIn": {
+        "source": "charge-attack",
+        "frame": "last",
+        "durationMs": 140
+      },
+      "blendOut": {
+        "source": "idle",
+        "durationMs": 220
+      },
+      "description": "The outer pair catches up to the front flanks while the inner pair drops back into the rear rank. Settle into the original standard formation."
+    },
+    {
+      "id": "death",
+      "label": "Death",
+      "file": "Death.png",
+      "source": "death",
+      "layoutFrom": "standard",
+      "layoutTo": "standard",
+      "durationMs": 1580,
+      "loop": false,
+      "memberStartMs": {
+        "tip": 0,
+        "left": 40,
+        "right": 80,
+        "rear-left": 320,
+        "rear-right": 370
+      },
+      "description": "Front three fall before the rear two. Three buckle onto their side; two recoil and fall onto their back. All five stay down.",
+      "memberSources": {
+        "tip": "death",
+        "left": "death-back",
+        "right": "death",
+        "rear-left": "death",
+        "rear-right": "death-back"
+      }
+    }
+  ],
+  "chargeSequence": {
+    "wedgeRoles": {
+      "tip": [
+        "tip"
+      ],
+      "innerPair": [
+        "rear-left",
+        "rear-right"
+      ],
+      "rearPair": [
+        "left",
+        "right"
+      ]
+    },
+    "reviewTravelNote": "Forward travel is an inspection reference only. It scrolls the review ground; it is never baked as squad movement or applied to gameplay.",
+    "phases": [
+      "charge-in",
+      "charge-maintain",
+      "charge-attack",
+      "charge-out"
+    ],
+    "reviewMaintainCycles": 3,
+    "gameplayContract": {
+      "entry": "charge-in",
+      "automaticTransitions": {
+        "charge-in": "charge-maintain",
+        "charge-attack": "charge-out",
+        "charge-out": "idle"
+      },
+      "eventTransitions": {
+        "charge-maintain": {
+          "attack": "charge-attack",
+          "cancel": "charge-out"
+        }
+      },
+      "note": "Presentation contract only. Gameplay owns movement, target range, attack authorization and projectile events. Ranged attack is requested after the advance stops; physical contact is not required."
+    }
+  },
+  "minimumDeathVariants": 2
+}

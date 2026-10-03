@@ -4,8 +4,9 @@ from PIL import Image
 from collections import deque
 import hashlib
 import json
+import sys
 
-ROOT = Path(__file__).resolve().parent
+ROOT = Path(sys.argv[1]).resolve() if len(sys.argv) > 1 else Path(__file__).resolve().parent
 metadata_path = ROOT / "animations.json"
 metadata = json.loads(metadata_path.read_text(encoding="utf-8")) if metadata_path.exists() else None
 files = [clip["file"] for clip in metadata["animations"]] if metadata else sorted(path.name for path in ROOT.glob("*.png"))
@@ -49,11 +50,18 @@ for filename in files:
                     components.append({"center":[round(sum(p[axis] for p in component)/len(component),1) for axis in range(2)],"bounds":box,"area":len(component)})
         components.sort(key=lambda item:item["area"],reverse=True)
         center = components[0]["center"] if components else None
-        frame_rows.append({"index":index,"visibleBounds":bounds,"guardAlphaMax":maximum,"sha256":digest,"redCapRegistrationAid":center,"redComponents":components})
+        registered = None
+        if metadata and bounds:
+            clip=next(clip for clip in metadata["animations"] if clip["file"]==filename)
+            pivot=clip["frames"][index]["pivot"];scale=metadata.get("reviewFootprint",460)/512*clip["scale"]
+            registered=[round(256+(bounds[axis]-pivot["x" if axis%2==0 else "y"])*scale,2) for axis in range(4)]
+            if min(registered[:2])<0 or max(registered[2:])>512:
+                failures.append(filename+": registered actor clips the main review canvas in frame "+str(index))
+        frame_rows.append({"index":index,"visibleBounds":bounds,"registeredPreviewBounds":registered,"guardAlphaMax":maximum,"sha256":digest,"redComponentRegistrationAid":center,"redComponents":components})
     if len(set(hashes))<5: failures.append(filename+": fewer than five distinct frames")
     if image.getchannel("A").getextrema()[0]!=0: failures.append(filename+": no fully transparent pixels")
     rows.append({"file":filename,"mode":image.mode,"size":image.size,"alphaExtrema":image.getchannel("A").getextrema(),"sha256":hashlib.sha256(path.read_bytes()).hexdigest(),"uniqueFrames":len(set(hashes)),"frames":frame_rows})
-report = {"stage":"single-actor-art-prototype","actorCount":1,"checks":"RGBA, six nonempty distinct frames, eight-pixel visible guards, transparency, source hashes","guardAlphaTolerance":16,"guardNote":"Low-alpha generator residue is recorded, not removed. This certifies visible spill guards, not zero-alpha atlas padding.","visualApproval":"pending user review","engineIntegration":"not integrated","failures":failures,"sheets":rows}
+report = {"stage":"single-actor-art-prototype","actorCount":1,"checks":"RGBA, six nonempty distinct frames, eight-pixel visible guards, registered preview clipping, transparency, source hashes","guardAlphaTolerance":16,"guardNote":"Low-alpha generator residue is recorded, not removed. This certifies visible spill guards, not zero-alpha atlas padding.","visualApproval":"pending user review","engineIntegration":"not integrated","failures":failures,"sheets":rows}
 (ROOT / "Validation.json").write_text(json.dumps(report,indent=2)+"\n",encoding="utf-8")
-print(json.dumps({"sheets":len(rows),"failures":failures,"registrationAids":{row["file"]:[frame["redCapRegistrationAid"] for frame in row["frames"]] for row in rows},"bounds":{row["file"]:[frame["visibleBounds"] for frame in row["frames"]] for row in rows}}))
+print(json.dumps({"sheets":len(rows),"frames":sum(len(row["frames"]) for row in rows),"failures":failures,"registrationAids":{row["file"]:[frame["redComponentRegistrationAid"] for frame in row["frames"]] for row in rows}}))
 raise SystemExit(1 if failures else 0)

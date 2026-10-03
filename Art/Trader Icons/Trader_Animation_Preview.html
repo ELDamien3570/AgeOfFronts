@@ -25,7 +25,7 @@
     input[type=range] { width: 110px; }
     output { min-width: 55px; font-size: 12px; font-variant-numeric: tabular-nums; color: #ded1ad; }
     .grid { display: grid; grid-template-columns: repeat(3,minmax(0,1fr)); gap: 14px; }
-    .single-age .grid,.large .grid { grid-template-columns: repeat(2,minmax(0,1fr)); }
+    .single-age .grid,.large .grid,.pair .grid { grid-template-columns: repeat(2,minmax(0,1fr)); }
     article { background: #24332a; border: 1px solid #405746; border-radius: 12px; overflow: hidden; }
     article header { padding: 11px 14px; border-bottom: 1px solid #405746; }
     article h2 { margin: 0 0 4px; font-size: 14px; font-weight: 600; }
@@ -45,13 +45,13 @@
     #status { color: #b6c4b9; font-size: 13px; margin: 18px 0 10px; }
     .review-links { display: flex; flex-wrap: wrap; gap: 20px; font-size: 12px; }
     @media (max-width:760px) { body { padding: 15px; } .badge { display: none; } .grid { grid-template-columns: repeat(2,minmax(0,1fr)); } .large .grid { grid-template-columns: 1fr; } .stage { min-height: 230px; } }
-    @media (max-width:470px) { .grid,.single-age .grid { grid-template-columns: 1fr; } }
+    @media (max-width:470px) { .grid,.single-age .grid,.pair .grid { grid-template-columns: 1fr; } }
   </style>
 </head>
 <body>
   <main>
     <header class="heading">
-      <div><h1 id="review-title">Overland Traders</h1><p class="subtitle">A merchant and his wagon → a growing caravan → a modern freight truck</p></div>
+      <div><h1 id="review-title">Overland Traders</h1><p class="subtitle">Basket carriers, handcarts and caravans across the ages</p></div>
       <div class="badge" id="trader-count">6 traders · 12 clips · transparent PNG</div>
     </header>
     <nav class="age-tabs" id="ages" role="tablist" aria-label="Trader age"></nav>
@@ -66,6 +66,7 @@
       <label>Size <select id="size"><option value="24">24 px</option><option value="32">32 px</option><option value="64">64 px</option><option value="128">128 px</option><option value="256" selected>256 px</option><option value="512">512 px</option></select></label>
       <label>Backdrop <select id="background"><option value="grass">Grass</option><option value="checker">Checkerboard</option><option value="white">White</option><option value="dark">Dark</option></select></label>
       <label><input id="pivot" type="checkbox">Pivot</label>
+      <label><input id="travel-ground" type="checkbox" checked>Moving ground</label>
       <button id="restart" type="button">Restart</button>
     </div>
     <section id="age-panel" role="tabpanel" aria-busy="true"><div class="grid" id="clips"></div></section>

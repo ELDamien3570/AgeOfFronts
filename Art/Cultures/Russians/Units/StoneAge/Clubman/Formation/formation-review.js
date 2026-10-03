@@ -81,7 +81,7 @@ function draw() {
   elements["time-output"].textContent=(Math.min(model.elapsed,model.duration)/1000).toFixed(2)+" / "+(model.duration/1000).toFixed(2)+" s";
   elements.play.textContent=model.playing?"Pause":"Play";
   elements["clip-title"].textContent=model.selected==="charge-sequence"?"Full charge sequence · "+clip.label:clip.label+" · "+(clip.loop?"Loop":"Plays once");
-  elements.description.textContent=model.selected==="charge-sequence"?"Review demonstrates three running loops in the wedge before contact. Planned gameplay holds Maintain charge until attack or exit.":clip.description;
+  elements.description.textContent=model.selected==="charge-sequence"?"Review demonstrates three running loops in the wedge before the attack. Planned gameplay holds Maintain charge until attack or exit.":clip.description;
   elements.sheet.href=clip.file;
   for(const phase of document.querySelectorAll("[data-phase]"))phase.classList.toggle("active",phase.dataset.phase===pose.id);
 }

@@ -21,6 +21,13 @@ export const ENVIRONMENT_FAMILIES = [
   "polar-ice",
 ] as const;
 export type EnvironmentFamily = (typeof ENVIRONMENT_FAMILIES)[number];
+export interface MountainSnowlineRegion {
+  latitude: number;
+  longitude: number;
+  latitudeRadius: number;
+  longitudeRadius: number;
+  snowline: number;
+}
 export interface EnvironmentSnowPolicy {
   northernIceLatitude: number;
   northernTransitionDegrees: number;
@@ -28,6 +35,7 @@ export interface EnvironmentSnowPolicy {
   equatorialSnowline: number;
   snowlineLatitudeDrop: number;
   minimumMountainSnowline: number;
+  mountainSnowlineRegions?: readonly MountainSnowlineRegion[];
 }
 
 /** Optional map-authored snow extent, independent of its water and elevation. */
@@ -58,7 +66,39 @@ export function decodeEnvironmentSnowPolicy(
     policy.minimumMountainSnowline > policy.equatorialSnowline
   )
     throw new Error("Invalid map environment snow policy");
-  return Object.freeze({ ...policy });
+  let mountainSnowlineRegions: readonly MountainSnowlineRegion[] | undefined;
+  if (policy.mountainSnowlineRegions !== undefined) {
+    if (!Array.isArray(policy.mountainSnowlineRegions))
+      throw new Error("Invalid map environment snow policy regions");
+    mountainSnowlineRegions = Object.freeze(
+      policy.mountainSnowlineRegions.map((region) => {
+        if (
+          !region ||
+          typeof region !== "object" ||
+          ![
+            region.latitude,
+            region.longitude,
+            region.latitudeRadius,
+            region.longitudeRadius,
+            region.snowline,
+          ].every(Number.isFinite) ||
+          Math.abs(region.latitude) > 90 ||
+          Math.abs(region.longitude) > 180 ||
+          region.latitudeRadius <= 0 ||
+          region.longitudeRadius <= 0 ||
+          region.snowline <= 0
+        )
+          throw new Error("Invalid map environment snow policy region");
+        return Object.freeze({ ...region });
+      }),
+    );
+  }
+  return Object.freeze({
+    ...policy,
+    ...(mountainSnowlineRegions === undefined
+      ? {}
+      : { mountainSnowlineRegions }),
+  });
 }
 
 export interface ApproximateClimate {
@@ -179,17 +219,18 @@ export class EnvironmentProfile {
         let moisture = baseMoisture,
           woodlandBias = 0,
           moistureCeiling = 1;
-        if (geography) {
-          const longitude =
-            (geography.west +
+        const longitude = geography
+          ? (geography.west +
               (geography.east - geography.west) * ((x + 0.5) / map.width())) *
               360 -
-            180;
+            180
+          : undefined;
+        if (geography) {
           for (const region of regions) {
             const influence = climateInfluence(
               region,
               this.latitude[y],
-              longitude,
+              longitude!,
             );
             // Combine overlapping regions by maximum, never accumulating them.
             moisture = Math.max(
@@ -211,13 +252,30 @@ export class EnvironmentProfile {
         moisture = Math.min(moisture, moistureCeiling);
         this.woodlandBias[tile] = Math.round(woodlandBias * 255);
         this.moisture[tile] = Math.round(moisture * 255);
-        const mountainSnowline = snowPolicy
+        let mountainSnowline = snowPolicy
           ? Math.max(
               snowPolicy.minimumMountainSnowline,
               snowPolicy.equatorialSnowline -
                 latitude * snowPolicy.snowlineLatitudeDrop,
             )
           : undefined;
+        if (snowPolicy?.mountainSnowlineRegions && longitude !== undefined) {
+          const baseSnowline = mountainSnowline!;
+          for (const region of snowPolicy.mountainSnowlineRegions) {
+            const influence = climateInfluence(
+              region,
+              this.latitude[y],
+              longitude,
+            );
+            // Overlapping regions raise the baseline by maximum influence;
+            // authored extents never accumulate or alter elevation/passability.
+            mountainSnowline = Math.max(
+              mountainSnowline!,
+              baseSnowline +
+                Math.max(0, region.snowline - baseSnowline) * influence,
+            );
+          }
+        }
         let family = approximateFamily(
           {
             latitude,

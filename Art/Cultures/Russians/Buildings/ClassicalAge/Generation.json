@@ -3,7 +3,7 @@
   "cultureId": "russians",
   "age": "ClassicalAge",
   "generator": "built-in image_gen",
-  "status": "draft",
+  "status": "approved",
   "artDirection": "User-selected Black Sea stone-building influence: limestone footings and wall caps, terracotta tile roofs, pale paved courts, ironwork and distinct building role silhouettes in strict overhead view.",
   "commonPrompt": "Use case: stylized-concept. Asset type: ONE polished transparent hand-painted RTS building icon for Age of Fronts, Russian culture, CLASSICAL AGE. Primary request: develop the user's chosen BLACK SEA STONE-BUILDING influence into a visibly new age. Image 1 (approved Bronze Age City) and Image 2 (approved Bronze Age Barracks) are PAINTED STYLE / readable overhead scale references only. Make a NEW Classical design; change the architecture and palette substantially. Materials: pale warm limestone foundations and wall caps, warm ivory plaster/mudbrick, muted burnt-orange TERRACOTTA TILE roofs with orderly broad tile rows, dark timber joinery, small grey iron equipment where relevant, buff paved courts and compact earth margins. Black Sea archaeological cues are rectangular tiled buildings, stone footings, paved streets/courts, wells/cisterns and amphora storage. These inform a game interpretation, not a literal site reconstruction. CAMERA: perfectly vertical 90-degree nadir ORTHOGRAPHIC plan view, NO perspective or isometric tilt. Every roof shows both pitches evenly about its ridge; rectangles parallel, near/far objects equal scale. NO visible building facades, front doors, window elevations or external vertical wall surfaces. Upright posts show ONLY small round top caps. For any boundary wall: ONLY horizontal PALE STONE TOP CAP surfaces, a continuous narrow strip of compact stone block tops with tiny contact shadow, equal width on ALL edges; no tall front-facing walls, exposed masonry sides, vertical band or long shadow. Gates are gaps between compact square TOP CAPS, never upright arches or vertical jambs. Roofs hide their supporting walls. Equipment and animals likewise seen directly above. Keep clean bold role-defining shape groups legible at 48,64,128 pixels; rich controlled hand-painted surface detail comparable to the supplied art, not a photograph or toy diorama. No dense generic roof compound repeated for all roles. Center one complete isolated footprint on square canvas. Keep at least 8 percent true transparent empty margin on ALL four sides; all objects fit, no cropped props. Natural top-surface light, minimal contact shadows. No scenic background, people, letters, labels, arrows, HUD, watermark, flags, national emblems, religious symbols, onion domes, medieval Russian churches, medieval castle towers, modern industrial machinery, fake checkerboard or painted background. Genuine transparent alpha.",
   "promptConstruction": "commonPrompt followed by assets[].promptSuffix. The two approved Bronze Age references supply painted style only; this age intentionally changes architecture, palette and layout.",
@@ -25,9 +25,20 @@
       "file": "Barracks/Icon.png",
       "sourceFile": "Barracks/SourceArt/Icon-v1.png",
       "promptSuffix": "\n\nSUBJECT: Broad rectangular infantry drill court. One long terracotta tiled barrack roof across the rear quarter, tiled roofing and modest pale limestone outlines instead of logs/thatch. Enclose the whole court with a compact continuous pale stone boundary cap with one open bottom entry. TWO large straw-and-hide training dummies seen directly overhead: round heads and horizontal crossbar arms, minimize visible torso sides. Two orderly groups of dark iron-tipped spears, short straight swords and axes lying in flat racks along the foreground sides; a few plain round wooden shields flat beside them. Open sandy drill center dominates, rear roof less than one third of footprint. No shooting targets, horses, forge or siege machine.",
-      "status": "draft",
+      "status": "approved",
       "generationFile": "C:\\Users\\Damien\\.codex\\generated_images\\01a0fea5-71c9-75b3-9da6-4a1ca2cbd68f\\exec-5f25de7c-d394-429d-ac4a-221eecaa3412.png",
-      "selectedSourceFile": "Barracks/SourceArt/Icon-v1.png"
+      "selectedSourceFile": "Barracks/SourceArt/Icon-v2.png",
+      "edits": [
+        {
+          "sourceFile": "Barracks/SourceArt/Icon-v2.png",
+          "generationFile": "C:\\Users\\Damien\\.codex\\generated_images\\01a0fea5-71c9-75b3-9da6-4a1ca2cbd68f\\exec-f6baa91a-bfca-468a-874d-96c01201dcad.png",
+          "prompt": "Use case: precise-object-edit. The user says this Russian Classical Age BARRACKS still is not top-down enough. Correct the ENTIRE compound to a PERFECTLY VERTICAL 90-DEGREE NADIR ORTHOGRAPHIC camera, an actual roof-and-yard PLAN rather than a tilted RTS diorama. Keep the exact subject, composition, stone enclosure with one bottom entry, warm hand-painted style, terracotta/pale limestone/iron palette, square canvas and genuine transparent alpha. Preserve the rear long barracks roof, TWO straw training dummies, both large flat iron weapon racks and the round shields. CAMERA CORRECTIONS: (1) Rear tiled roof is a perfect rectangular plan with one horizontal centered ridge. Both roof pitches have EXACTLY equal widths, lengths and tile-row scale, no foreshortening or taller near pitch. Show NO front eave fascia, vertical building facade, stone foundation side face, or visible long support-post shaft. Supporting posts appear as SMALL circular end-grain TOP CAPS only. (2) Each training dummy is unmistakably an OVERHEAD practice dummy: LARGE ROUND STRAW HEAD TOP at center, straight timber crossbar arms extending LEFT and RIGHT, with wrapped straw padding visible only as small top surfaces beneath the head. The head HIDES the standing torso below it; REMOVE the long visible upright body, front hide-shirt face and tall vertical lower stump. No visible face or front-facing torso. Preserve two recognizable cross-shaped straw practice dummies, never plain stumps. Any footing is only a small flat circular stone patch around the dummy. (3) Both weapon racks are shallow horizontal top-view trays; posts only small end-grain caps, no exposed vertical wooden shafts. Spears, swords and axes remain flat and recognizable, silver-grey iron blades and tips visible; shields remain true circular flat top surfaces. (4) Stone enclosure is ONLY a flat continuous pale masonry CAP STRIP, same width on near, far and side edges, square block tops only, no front-facing vertical masonry band or raised gate side faces. Gate jambs are small square top caps, gap remains fully open. Every horizontal shape equal scale across the image, circles perfectly round, minimum contact shadows, no long directional shadow. Remove vertical-side geometry instead of merely rotating the image. Fill any newly revealed ground with matching sandy drill yard. No additional objects, people, labels, flags, extra roofs, bullseye targets, horses or forge. Keep all existing large role cues and clean transparent outer margins.",
+          "referenceImage": "Barracks/SourceArt/Icon-v1.png",
+          "reason": "User requested a stricter overhead barracks; correct roof pitches, training dummies, posts, racks and enclosure."
+        }
+      ],
+      "selectedGenerationFile": "C:\\Users\\Damien\\.codex\\generated_images\\01a0fea5-71c9-75b3-9da6-4a1ca2cbd68f\\exec-f6baa91a-bfca-468a-874d-96c01201dcad.png",
+      "approvedDate": "2026-10-02"
     },
     {
       "id": "city",
@@ -42,9 +53,10 @@
       "file": "City/Icon.png",
       "sourceFile": "City/SourceArt/Icon-v1.png",
       "promptSuffix": "\n\nSUBJECT: Clearly residential mini-town: FOUR separated L-shaped / courtyard household roof groups with muted terracotta tiles, arranged in an orderly 2-by-2 block around a broad pale-paved central square. A prominent ROUND STONE WELL / cistern opening in the center, blue-dark water visible from directly above. Small grouped grain baskets and amphorae beside households. Each home has its own tiny open domestic court, not a military yard. Compact pale limestone top-cap outer wall around the block with an open bottom gate and four modest square corner wall caps, strictly overhead. The tile-and-paving pattern and four courtyard homes must look substantially more organized and urban than the five separate thatched Bronze Age longhouses. No temple, weapons, targets or horses.",
-      "status": "draft",
+      "status": "approved",
       "generationFile": "C:\\Users\\Damien\\.codex\\generated_images\\01a0fea5-71c9-75b3-9da6-4a1ca2cbd68f\\exec-f376250c-2a39-40b0-b410-b2a63c0701a4.png",
-      "selectedSourceFile": "City/SourceArt/Icon-v1.png"
+      "selectedSourceFile": "City/SourceArt/Icon-v1.png",
+      "approvedDate": "2026-10-02"
     },
     {
       "id": "archery",
@@ -59,9 +71,10 @@
       "file": "Archery Range/Icon.png",
       "sourceFile": "Archery Range/SourceArt/Icon-v1.png",
       "promptSuffix": "\n\nSUBJECT: Long rectangular archery training yard. THREE LARGE flat circular straw bullseye targets along the rear edge, THREE straight sandy shooting lanes leading toward them, two low narrow stone-top lane dividers. A slender terracotta tile supply shelter along the left side, visible flat bows and full arrow bundles under its open work edge. Enclose the yard with a thin continuous pale limestone TOP CAP boundary, one open bottom gate. Targets and long parallel lanes dominate; roof occupies less than one fifth of footprint. No barracks dummies, horses, sword racks, forge or siege equipment.",
-      "status": "draft",
+      "status": "approved",
       "generationFile": "C:\\Users\\Damien\\.codex\\generated_images\\01a0fea5-71c9-75b3-9da6-4a1ca2cbd68f\\exec-01c67d0a-cf78-4341-af48-5fd7fa625405.png",
-      "selectedSourceFile": "Archery Range/SourceArt/Icon-v1.png"
+      "selectedSourceFile": "Archery Range/SourceArt/Icon-v1.png",
+      "approvedDate": "2026-10-02"
     },
     {
       "id": "stables",
@@ -76,9 +89,10 @@
       "file": "Stables/Icon.png",
       "sourceFile": "Stables/SourceArt/Icon-v1.png",
       "promptSuffix": "\n\nSUBJECT: Distinctive U-shaped TERRACOTTA tiled stable roof around the rear and side edges of a large open horse paddock, with a narrow pale stone perimeter top cap and one open bottom gate. EXACTLY THREE horses, each unmistakably seen from DIRECTLY ABOVE with visible back/mane, nose aligned along body, top of rump/tail, and NO broad horse side or rear stall fronts: one dark bay, one chestnut, one palomino. Horses separated in center. Large golden hay mound, long blue-water stone trough and brown tack/saddles laid flat in a compact side group. Some pale paving around sandy paddock. Keep U shape and horses clear at small size. No riders or visible stall facade.",
-      "status": "draft",
+      "status": "approved",
       "generationFile": "C:\\Users\\Damien\\.codex\\generated_images\\01a0fea5-71c9-75b3-9da6-4a1ca2cbd68f\\exec-df877b3c-671b-4f91-9ac0-24247a296981.png",
-      "selectedSourceFile": "Stables/SourceArt/Icon-v1.png"
+      "selectedSourceFile": "Stables/SourceArt/Icon-v1.png",
+      "approvedDate": "2026-10-02"
     },
     {
       "id": "factory",
@@ -93,7 +107,7 @@
       "file": "Factory/Icon.png",
       "sourceFile": "Factory/SourceArt/Icon-v1.png",
       "promptSuffix": "\n\nSUBJECT: L-shaped terracotta tile-roofed craft workshop around an open paved production yard, NOT a modern factory. EXACTLY THREE round pale masonry kiln CHIMNEY TOPS positioned on the workshop roofs, each a visible dark circular flue from above with a small restrained smoke wisp that does not hide the roof. Open yard has two prominent clay pottery kiln mouths / circular working hearths, orderly grouped terracotta amphorae/pots, neatly folded woven cloth and a flat timber loom frame. Emphasize three flues plus finished goods as trade-production cue, no iron swords/anvil or huge industrial equipment. NO defensive perimeter wall or palisade.",
-      "status": "draft",
+      "status": "approved",
       "generationFile": "C:\\Users\\Damien\\.codex\\generated_images\\01a0fea5-71c9-75b3-9da6-4a1ca2cbd68f\\exec-e81d2a82-1892-4ed0-8ef8-91d64a1ae237.png",
       "selectedSourceFile": "Factory/SourceArt/Icon-v2.png",
       "edits": [
@@ -105,7 +119,8 @@
           "reason": "Correct chimney and pottery kiln elevations to directly overhead openings."
         }
       ],
-      "selectedGenerationFile": "C:\\Users\\Damien\\.codex\\generated_images\\01a0fea5-71c9-75b3-9da6-4a1ca2cbd68f\\exec-91051f6c-6c46-46f4-a1b9-d6014dbf7841.png"
+      "selectedGenerationFile": "C:\\Users\\Damien\\.codex\\generated_images\\01a0fea5-71c9-75b3-9da6-4a1ca2cbd68f\\exec-91051f6c-6c46-46f4-a1b9-d6014dbf7841.png",
+      "approvedDate": "2026-10-02"
     },
     {
       "id": "port",
@@ -120,7 +135,7 @@
       "file": "Port/Icon.png",
       "sourceFile": "Port/SourceArt/Icon-v1.png",
       "promptSuffix": "\n\nSUBJECT: Compact Black Sea harbor workshop: one terracotta tiled warehouse roof on pale stone footings at the shore end; TWO pale masonry-and-timber finger piers flank a slim patch of blue harbor water. EXACTLY ONE LARGE wooden PLANKED CARGO BOAT between the piers, with long symmetrical dark wooden hull, visibly pointed bow and roomy open central cargo deck; cargo amphorae tied in groups, transverse benches and mast with sail rolled tightly so it NEVER hides the deck. Entire hull is viewed straight down, no visible hull side plane. Shore has wood supplies and amphora cargo, no second boat or spare unfinished hull. Quays, boat and water form a strong port silhouette. Blue water patch fades cleanly to real transparency, no ocean background. NO defensive perimeter wall.",
-      "status": "draft",
+      "status": "approved",
       "generationFile": "C:\\Users\\Damien\\.codex\\generated_images\\01a0fea5-71c9-75b3-9da6-4a1ca2cbd68f\\exec-208ddd17-d1fa-486b-b4dc-9c5f454b876d.png",
       "selectedSourceFile": "Port/SourceArt/Icon-v2.png",
       "edits": [
@@ -132,7 +147,8 @@
           "reason": "Correct exposed mast, mooring posts, quay legs and warehouse elevation to overhead."
         }
       ],
-      "selectedGenerationFile": "C:\\Users\\Damien\\.codex\\generated_images\\01a0fea5-71c9-75b3-9da6-4a1ca2cbd68f\\exec-741ce1ab-1ee7-44f5-ab7f-aeea0b66a984.png"
+      "selectedGenerationFile": "C:\\Users\\Damien\\.codex\\generated_images\\01a0fea5-71c9-75b3-9da6-4a1ca2cbd68f\\exec-741ce1ab-1ee7-44f5-ab7f-aeea0b66a984.png",
+      "approvedDate": "2026-10-02"
     },
     {
       "id": "mine",
@@ -147,7 +163,7 @@
       "file": "Mine/Icon.png",
       "sourceFile": "Mine/SourceArt/Icon-v1.png",
       "promptSuffix": "\n\nSUBJECT: Resource extraction site dominated by a LARGE stepped pale-grey limestone/rock quarry opening, roughly circular with visibly distinct concentric ledge TOP SURFACES and darker central pit floor. Iron-grey ore chunks collected in clear baskets and a shallow flat overhead ore cart near the entry. At upper edge a compact square masonry-lined shaft opening with a dark void and a modest horizontal timber hoist beam across it, all seen directly overhead with posts as small top caps. One SMALL terracotta tile shelter covers tools at the side; roof less than one fifth of total footprint. Rough rock spoil makes the silhouette distinctive. No generic city compound, no defensive perimeter walls, no rails, crane tower facade or modern machinery.",
-      "status": "draft",
+      "status": "approved",
       "generationFile": "C:\\Users\\Damien\\.codex\\generated_images\\01a0fea5-71c9-75b3-9da6-4a1ca2cbd68f\\exec-08ab8d84-a4c6-4a35-81e5-8739565f7ca4.png",
       "selectedSourceFile": "Mine/SourceArt/Icon-v2.png",
       "edits": [
@@ -159,7 +175,8 @@
           "reason": "Correct tilted quarry, hoist and tool-shed geometry to a directly overhead plan."
         }
       ],
-      "selectedGenerationFile": "C:\\Users\\Damien\\.codex\\generated_images\\01a0fea5-71c9-75b3-9da6-4a1ca2cbd68f\\exec-1153cb47-61d7-4422-af89-af9a92d1267c.png"
+      "selectedGenerationFile": "C:\\Users\\Damien\\.codex\\generated_images\\01a0fea5-71c9-75b3-9da6-4a1ca2cbd68f\\exec-1153cb47-61d7-4422-af89-af9a92d1267c.png",
+      "approvedDate": "2026-10-02"
     },
     {
       "id": "siege-workshop",
@@ -174,9 +191,10 @@
       "file": "Siege Workshop/Icon.png",
       "sourceFile": "Siege Workshop/SourceArt/Icon-v1.png",
       "promptSuffix": "\n\nSUBJECT: Open large siege engineering yard framed by a slender L-shaped terracotta tile workshop roof on limestone footings along rear and left edges, roof less than one quarter of footprint. MAIN CLASSICAL CUE: one LARGE heavy wooden TORSION STONE-THROWER / catapult at center foreground, perfectly top-down: broad rectangular timber chassis, paired horizontal torsion crossbar skeins, stout long central throwing arm and visible round stone in the sling/cup; no bow-and-arrow rack confusion. At upper-right work area a compact SQUARE mobile timber siege tower TOP DECK with a pale hide cover and small flat boarding bridge; beside it a clearly separated iron-capped horizontal battering ram on two-beam chassis. Wheels must be narrow edge-on slivers in top view, NEVER large circular vertical wheel side faces. Timber stock, coiled rope and a few round stones grouped along bottom edge. Engines separated, no clutter, no horses or people, NO defensive outer wall.",
-      "status": "draft",
+      "status": "approved",
       "generationFile": "C:\\Users\\Damien\\.codex\\generated_images\\01a0fea5-71c9-75b3-9da6-4a1ca2cbd68f\\exec-a04b2108-e1cd-49f1-a1b7-f2894d533633.png",
-      "selectedSourceFile": "Siege Workshop/SourceArt/Icon-v1.png"
+      "selectedSourceFile": "Siege Workshop/SourceArt/Icon-v1.png",
+      "approvedDate": "2026-10-02"
     },
     {
       "id": "tower",
@@ -191,9 +209,10 @@
       "file": "Tower/Icon.png",
       "sourceFile": "Tower/SourceArt/Icon-v1.png",
       "promptSuffix": "\n\nSUBJECT: One compact square CLASSICAL LIMESTONE lookout / defensive tower seen EXACTLY DIRECTLY ABOVE as its open square deck plan. Pale square parapet cap strips around a dark timber-and-pale-stone deck, four modest square corner parapet TOP CAPS, no cylindrical towers, no walls visible below deck, no massive medieval battlements or long tower shadow. One small corner terracotta tile canopy occupies less than one quarter of deck; iron-tipped spear bundle and two plain round shields lie flat on remaining deck. A short straight access stair is visible ONLY as a narrow sequence of horizontal top treads ending flush at bottom edge. Sparse rock footings/earth around the small tower footprint. Strong compact square silhouette, no surrounding defensive wall.",
-      "status": "draft",
+      "status": "approved",
       "generationFile": "C:\\Users\\Damien\\.codex\\generated_images\\01a0fea5-71c9-75b3-9da6-4a1ca2cbd68f\\exec-6464b78c-1ea2-4fb0-92a4-6dd63295473e.png",
-      "selectedSourceFile": "Tower/SourceArt/Icon-v1.png"
+      "selectedSourceFile": "Tower/SourceArt/Icon-v1.png",
+      "approvedDate": "2026-10-02"
     },
     {
       "id": "blacksmith",
@@ -208,7 +227,7 @@
       "file": "Blacksmith/Icon.png",
       "sourceFile": "Blacksmith/SourceArt/Icon-v1.png",
       "promptSuffix": "\n\nSUBJECT: Open smithy dominated by ONE LARGE circular pale masonry FORGE HEARTH with a strong orange ember glow in a dark charcoal center, viewed directly down. Beside it a LARGE unmistakable iron ANVIL top surface, horizontally aligned long horn and rectangular working face, plus flat timber-and-hide bellows linked to hearth. Neat groups of dark IRON ingots, finished straight sword blades, spearheads and axeheads visible on a flat workbench. Short terracotta tile smithy roof across back edge on pale stone footings, less than one quarter footprint; one small round flue if structurally needed. The glowing hearth + dark anvil + weapon group define equipment production. No pottery kiln stacks, textile goods, target lanes, horses or outer defensive wall.",
-      "status": "draft",
+      "status": "approved",
       "generationFile": "C:\\Users\\Damien\\.codex\\generated_images\\01a0fea5-71c9-75b3-9da6-4a1ca2cbd68f\\exec-b72c5d84-dd8a-46fc-8b1e-477c6a9dbafb.png",
       "selectedSourceFile": "Blacksmith/SourceArt/Icon-v2.png",
       "edits": [
@@ -220,7 +239,10 @@
           "reason": "Remove unrequested defensive enclosure and correct anvil, forge, posts and chimney to overhead."
         }
       ],
-      "selectedGenerationFile": "C:\\Users\\Damien\\.codex\\generated_images\\01a0fea5-71c9-75b3-9da6-4a1ca2cbd68f\\exec-a6824da8-9f1f-46cd-930f-0100417c19c1.png"
+      "selectedGenerationFile": "C:\\Users\\Damien\\.codex\\generated_images\\01a0fea5-71c9-75b3-9da6-4a1ca2cbd68f\\exec-a6824da8-9f1f-46cd-930f-0100417c19c1.png",
+      "approvedDate": "2026-10-02"
     }
-  ]
+  ],
+  "approvedAssetCount": 10,
+  "approvedDate": "2026-10-02"
 }

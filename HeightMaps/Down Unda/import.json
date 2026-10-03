@@ -1,0 +1,48 @@
+{
+  "name": "Down Unda",
+  "source": "-5_616_112_500_6_4096_4096_16bit.png",
+  "sourceSha256": "291fdb65e0b2994e6e0e2a7740a49a3cf4af262c391301f71866b00023593e0f",
+  "sourceUrl": "https://manticorp.github.io/unrealheightmap/#latitude/-5.61568684902204/longitude/112.49969754548624/zoom/3/outputzoom/6/width/4096/height/4096/outputformat/png16",
+  "normalization": {
+    "mode": "regular",
+    "from": -450,
+    "to": 8249.0,
+    "range": 65536
+  },
+  "seaLevel": 0,
+  "terrainThresholds": {
+    "highland": 600,
+    "mountain": 1800
+  },
+  "sizes": [
+    250,
+    500,
+    1000
+  ],
+  "output": "resources/maps/down-unda",
+  "albedo": {
+    "source": "-5_616_112_500_6_4096_4096_albedo_imagery (1).png",
+    "sourceSha256": "8ef4518bb7088bd921f9d62d44af7f85b41257d3a26bb89165e42c384bfdd9ea",
+    "registration": "same-footprint",
+    "smoothingCellsAt500": 1.4,
+    "greenSensitivity": 1.1
+  },
+  "rivers": {
+    "source": "rivers.geojson",
+    "sourceSha256": "0f9ad1921c3033b325702be4013e964aefddad285dd555a7685384d6e6fda8f0",
+    "widthCellsAt500": 1,
+    "widthCellsBySize": {
+      "250": 1,
+      "500": 2,
+      "1000": 3
+    }
+  },
+  "lakes": {
+    "source": "lakes.geojson",
+    "sourceSha256": "c67e36762eae75b5702c5efbfe1479102a3cc4c4566bc57297263dca0e96cbfb",
+    "surfaceElevationsMeters": {
+      "Danau Toba": 905
+    }
+  },
+  "climate": "snow-climate.json"
+}

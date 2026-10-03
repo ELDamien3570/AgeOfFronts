@@ -63,7 +63,7 @@ class ActorReviewModel {
   }
 }
 const model = new ActorReviewModel();
-const canvases = [{ element: elements.actor, footprint: 460 },
+const canvases = [{ element: elements.actor, footprint: asset.reviewFootprint || 460 },
   ...Array.from(document.querySelectorAll("[data-size]")).map(element =>
     ({ element, footprint: Number(element.dataset.size) }))];
 function draw() {

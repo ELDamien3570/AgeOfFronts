@@ -58,7 +58,7 @@ const playback = {
 };
 const ids = ['clips','ages','age-panel','play','previous','next','frame','frame-output',
   'speed','restart','status','review-title','culture','trader-count','manifest-link',
-  'ground-scale','ground-scene','ground-zoom','compare-base'];
+  'ground-scale','ground-scene','ground-zoom','compare-base','travel-ground'];
 const elements = Object.fromEntries(ids.map(id => [id,document.getElementById(id)]));
 const controls = ['play','previous','next','frame','speed','restart'].map(id=>elements[id]);
 function frameMaster(image,size=512) {
@@ -71,6 +71,28 @@ function selectFrame(frame) {
   elements.play.textContent = 'Play'; elements.frame.value = playback.frame;
 }
 function restart() { playback.seconds = 0; playback.frame = 0; elements.frame.value = 0; }
+function drawWalkingGround(context,clip) {
+  if (!elements['travel-ground'].checked || clip.state!=='travel' || !clip.metadata?.walkingGroundSpeed) return;
+  const seconds = playback.playing ? playback.seconds : playback.frame/clip.data.suggestedFramesPerSecond;
+  const offset = seconds*clip.metadata.walkingGroundSpeed;
+  context.save();
+  context.fillStyle = '#34452d'; context.fillRect(158,0,196,512);
+  context.strokeStyle = '#3b5034'; context.lineWidth = 4;
+  context.beginPath(); context.moveTo(158,0); context.lineTo(158,512);
+  context.moveTo(354,0); context.lineTo(354,512); context.stroke();
+  // A following camera keeps the merchant centered. Ground travels opposite
+  // the walk at the exported stance speed, so planted feet track the terrain.
+  const tile = 84, start = Math.floor(offset/tile);
+  for (let row=start;row<start+9;row++) {
+    const y = row*tile-offset;
+    context.fillStyle = '#425333';
+    context.fillRect(170+((row*37)%135+135)%135,y+19,9,3);
+    context.fillRect(172+((row*19)%138+138)%138,y+47,6,2);
+    context.fillStyle = '#4a5536';
+    context.fillRect(177+((row*13)%128+128)%128,y+67,13,2);
+  }
+  context.restore();
+}
 const canvasView = {
   create(asset,state) {
     const article = document.createElement('article'), header = document.createElement('header');
@@ -91,6 +113,7 @@ const canvasView = {
   draw(clip) {
     const {context,image,data,counter} = clip;
     context.clearRect(0,0,512,512);
+    drawWalkingGround(context,clip);
     if (clip.still) {
       context.drawImage(image,...frameMaster(image));
       counter.textContent = 'Static master · awaiting animation approval';
@@ -194,14 +217,18 @@ async function selectAge(selection,updateLocation=true) {
   let failed = 0;
   const requests = selectedAssets.flatMap(asset=>(asset.metadataUrl ? overview ? ['travel'] : ['idle','travel'] : ['master'])
     .map(state=>({asset,state,view:canvasView.create(asset,state)})));
-  await Promise.all(requests.map(async ({asset,state,view})=>{
+  document.body.classList.toggle('pair',requests.length===2);
+  const loaded = new Array(requests.length);
+  await Promise.all(requests.map(async ({asset,state,view},index)=>{
     try {
       const resource = await assetModel.load(asset,state); if (revision!==playback.revision) return;
-      view.link.href = resource.url; playback.clips.push({...view,...resource,asset,state});
+      view.link.href = resource.url; loaded[index] = {...view,...resource,asset,state};
     } catch (error) { if (revision!==playback.revision) return; view.counter.textContent = error.message; failed++; }
   }));
   if (revision!==playback.revision) return;
+  playback.clips = loaded.filter(Boolean);
   playback.hasAnimation = playback.clips.some(clip=>!clip.still);
+  elements['travel-ground'].disabled = !playback.clips.some(clip=>clip.metadata?.walkingGroundSpeed);
   controls.forEach(control=>control.disabled=!playback.hasAnimation);
   elements.play.textContent = playback.hasAnimation && playback.playing ? 'Pause' : 'Play';
   elements['age-panel'].setAttribute('aria-busy','false');

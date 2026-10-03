@@ -1,0 +1,81 @@
+{
+  "schemaVersion": 2,
+  "date": "2026-10-02",
+  "url": "http://127.0.0.1:9018/Trader%20Icons/Trader_Animation_Preview.html?culture=russian#Overview",
+  "animationRevision": 2,
+  "clipsLoaded": 4,
+  "frameCount": 40,
+  "checks": {
+    "stoneAgeIdleAndTravel": true,
+    "bronzeAgeIdleAndTravel": true,
+    "stoneFrameOne": [
+      "1 / 10",
+      "1 / 10"
+    ],
+    "stoneFrameTen": [
+      "10 / 10",
+      "10 / 10"
+    ],
+    "stoneFrameWrap": [
+      "1 / 10",
+      "1 / 10"
+    ],
+    "bronzeFrameTen": [
+      "10 / 10",
+      "10 / 10"
+    ],
+    "bronzeFrameWrap": [
+      "1 / 10",
+      "1 / 10"
+    ],
+    "stonePlaybackAdvanced": true,
+    "bronzePlaybackAdvanced": true,
+    "halfAndNormalSpeed": true,
+    "fullSizeAnkleAndHipJoins": true,
+    "movingGroundMatchesStanceSpeed": true,
+    "movingGroundToggle": true,
+    "checkerboardTransparency": true
+  },
+  "catalogChecks": [
+    {
+      "culture": "base",
+      "age": "Overview",
+      "cards": 6,
+      "status": "Base: 6 animations and 0 static masters loaded · Idle at 8 fps · travel at 12 fps. · overhead, facing down",
+      "movingGroundEnabled": false
+    },
+    {
+      "culture": "base",
+      "age": "StoneAge",
+      "cards": 0,
+      "status": "Base · Stone Age: no trader artwork authored for this age."
+    },
+    {
+      "culture": "russian",
+      "age": "StoneAge",
+      "cards": 2,
+      "status": "Russian: 2 animations and 0 static masters loaded · Idle at 8 fps · travel at 12 fps. · overhead, facing down"
+    },
+    {
+      "culture": "russian",
+      "age": "Modern",
+      "cards": 0,
+      "status": "Russian · Modern: no trader artwork authored for this age."
+    },
+    {
+      "culture": "russian",
+      "age": "Overview",
+      "cards": 2,
+      "status": "Russian: 2 animations and 0 static masters loaded · Idle at 8 fps · travel at 12 fps. · overhead, facing down",
+      "movingGroundEnabled": true
+    }
+  ],
+  "consoleWarningsAndErrors": [],
+  "screenshots": [
+    "Walking_Overview.jpg",
+    "StoneAge_Walking.jpg",
+    "BronzeAge_Walking.jpg",
+    "StoneAge_Articulated_Checker.jpg"
+  ],
+  "limitation": "Browser sprite review; these culture assets remain outside the match renderer."
+}

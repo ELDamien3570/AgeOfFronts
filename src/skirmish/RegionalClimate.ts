@@ -45,7 +45,10 @@ export function decodeClimateRegions(value: unknown): readonly ClimateRegion[] {
 }
 
 export function climateInfluence(
-  region: ClimateRegion,
+  region: Pick<
+    ClimateRegion,
+    "latitude" | "longitude" | "latitudeRadius" | "longitudeRadius"
+  >,
   latitude: number,
   longitude: number,
 ): number {

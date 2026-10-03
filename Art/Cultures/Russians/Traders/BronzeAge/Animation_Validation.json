@@ -1,0 +1,245 @@
+{
+  "schemaVersion": 1,
+  "cultureId": "russian",
+  "primaryClipCount": 2,
+  "frameCount": 20,
+  "assetContractsPassed": true,
+  "sourcesPreserved": true,
+  "sources": [
+    {
+      "age": "BronzeAge",
+      "file": "BronzeAge/SourceArt/Trader_Russian_BronzeAge_v2.png",
+      "sha256": "9d81a90b829c6d77dc2987d615644283a28243a598bd4c8d1affc16a4afdb07a",
+      "unchanged": true
+    },
+    {
+      "age": "StoneAge",
+      "file": "StoneAge/SourceArt/Trader_Russian_StoneAge_v1.png",
+      "sha256": "6a18f962b49e84c0f628eddfedd9a2eb07ad9c3c67900e1ce506f61777ad1e50",
+      "unchanged": true
+    }
+  ],
+  "walkingAtlasPreserved": true,
+  "baseArtworkFileCount": 335,
+  "baseArtworkUnchanged": true,
+  "baseArtworkChanges": [],
+  "bothAgesAnimated": true,
+  "approvedBoatArtFileCount": 122,
+  "approvedBoatsUnchanged": true,
+  "approvedBoatChanges": [],
+  "physicalInvariants": {
+    "cartCargoShaftsAndHubsUnchanged": true,
+    "wheelAndCartAlphaUnchanged": true,
+    "treadTextureAnimates": true,
+    "noSuspensionRegions": true,
+    "smoothTreadMaster": "SourceArt/Trader_Russian_BronzeAge_v2.png",
+    "note": "Exact source-space checks across all 20 Bronze Age poses; wheel outlines, hubs, shafts and secured cargo remain fixed."
+  },
+  "gaits": [
+    {
+      "age": "BronzeAge",
+      "leftFootLeads": true,
+      "rightFootLeads": true,
+      "fullStrideExcursion": true,
+      "liftedRecoveryBothFeet": true,
+      "plantedStanceMatchesGroundMotion": true,
+      "boneLengthsValid": true,
+      "stanceSamplesPerFoot": {
+        "left": 6,
+        "right": 6
+      },
+      "frontRearSeparation": [
+        -197.5,
+        -197.5,
+        -120.96875,
+        0.0,
+        120.96875,
+        197.5,
+        197.5,
+        120.96875,
+        0.0,
+        -120.96875
+      ],
+      "groundSpeedPixelsPerSecond": 147.25941267845255,
+      "separatePaintedLegLayers": true,
+      "passed": true
+    }
+  ],
+  "clips": [
+    {
+      "file": "BronzeAge/Idle.png",
+      "dimensionsCorrect": true,
+      "transparentRGBA": true,
+      "frameCount": 10,
+      "nonemptyFrames": 10,
+      "distinctFrames": 10,
+      "eightPixelGuardClear": true,
+      "metadataCorrect": true,
+      "loopSeamComparable": true,
+      "adjacentFrameDifferences": [
+        0.038418,
+        0.020862,
+        0.012926,
+        0.028383,
+        0.039822,
+        0.037774,
+        0.020691,
+        0.013068,
+        0.027979,
+        0.039798
+      ],
+      "frameBounds": [
+        [
+          156,
+          77,
+          359,
+          406
+        ],
+        [
+          156,
+          77,
+          359,
+          406
+        ],
+        [
+          156,
+          77,
+          359,
+          406
+        ],
+        [
+          156,
+          77,
+          359,
+          406
+        ],
+        [
+          156,
+          77,
+          359,
+          406
+        ],
+        [
+          156,
+          77,
+          359,
+          406
+        ],
+        [
+          156,
+          77,
+          359,
+          406
+        ],
+        [
+          156,
+          77,
+          359,
+          406
+        ],
+        [
+          156,
+          77,
+          359,
+          406
+        ],
+        [
+          156,
+          77,
+          359,
+          406
+        ]
+      ],
+      "passed": true
+    },
+    {
+      "file": "BronzeAge/Travel.png",
+      "dimensionsCorrect": true,
+      "transparentRGBA": true,
+      "frameCount": 10,
+      "nonemptyFrames": 10,
+      "distinctFrames": 10,
+      "eightPixelGuardClear": true,
+      "metadataCorrect": true,
+      "loopSeamComparable": true,
+      "adjacentFrameDifferences": [
+        0.358512,
+        0.305982,
+        0.317225,
+        0.349008,
+        0.307724,
+        0.303051,
+        0.248313,
+        0.311304,
+        0.350082,
+        0.321544
+      ],
+      "frameBounds": [
+        [
+          156,
+          77,
+          359,
+          425
+        ],
+        [
+          156,
+          77,
+          359,
+          413
+        ],
+        [
+          156,
+          77,
+          359,
+          400
+        ],
+        [
+          156,
+          77,
+          359,
+          395
+        ],
+        [
+          156,
+          77,
+          359,
+          413
+        ],
+        [
+          156,
+          77,
+          359,
+          425
+        ],
+        [
+          156,
+          77,
+          359,
+          413
+        ],
+        [
+          156,
+          77,
+          359,
+          400
+        ],
+        [
+          156,
+          77,
+          359,
+          395
+        ],
+        [
+          156,
+          77,
+          359,
+          413
+        ]
+      ],
+      "passed": true
+    }
+  ],
+  "validationLimit": "Sheet contracts and browser artwork review only; no engine integration or live match certification.",
+  "passed": true,
+  "age": "BronzeAge"
+}

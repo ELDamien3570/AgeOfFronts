@@ -1,0 +1,21 @@
+{
+  "description": "Himalayan and Tibetan snow review: raise the mountain snowline to 5700 m in the regional core, softly blending to the original map baseline at the elliptical boundary. Keep snow on the highest peaks and expose grey rock over the plateau. Artistic snow extent, not a measured seasonal snow cover. Other climate fields, water and elevations retain their existing authority.",
+  "regions": [],
+  "snowPolicy": {
+    "northernIceLatitude": 90,
+    "northernTransitionDegrees": 3,
+    "exposedRockRelief": 220,
+    "equatorialSnowline": 4200,
+    "snowlineLatitudeDrop": 22,
+    "minimumMountainSnowline": 1800,
+    "mountainSnowlineRegions": [
+      {
+        "latitude": 32,
+        "longitude": 87,
+        "latitudeRadius": 10,
+        "longitudeRadius": 22,
+        "snowline": 5700
+      }
+    ]
+  }
+}

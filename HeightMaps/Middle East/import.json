@@ -1,0 +1,47 @@
+{
+  "name": "Middle East",
+  "source": "30_600_48_428_7_4096_4096_16bit.png",
+  "sourceSha256": "d062471c6185841b78c5b3a6d0e45a7cc67603cd33dcb0873c596cd69935d9b9",
+  "sourceUrl": "https://manticorp.github.io/unrealheightmap/#latitude/30.60030627583467/longitude/48.42766489220628/zoom/4/outputzoom/7/width/4096/height/4096/outputformat/png16",
+  "normalization": {
+    "mode": "regular",
+    "from": -450,
+    "to": 3938.0,
+    "range": 65536
+  },
+  "seaLevel": 0,
+  "terrainThresholds": {
+    "highland": 600,
+    "mountain": 1800
+  },
+  "sizes": [
+    250,
+    500,
+    1000
+  ],
+  "output": "resources/maps/middle-east",
+  "albedo": {
+    "source": "30_600_48_428_7_4096_4096_albedo_imagery.png",
+    "sourceSha256": "c38eb61436b44cb343032f9a2a05080887e171a880947191767c10d0ec7406a6",
+    "registration": "same-footprint",
+    "smoothingCellsAt500": 1.4,
+    "greenSensitivity": 1.1
+  },
+  "rivers": {
+    "source": "rivers.geojson",
+    "sourceSha256": "79000b6aea9fd411fadc9e8c58df831e94c23860ebbf92ae36ece8f827cb46af",
+    "widthCellsAt500": 1,
+    "widthCellsBySize": {
+      "250": 1,
+      "500": 2,
+      "1000": 3
+    }
+  },
+  "lakes": {
+    "source": "lakes.geojson",
+    "sourceSha256": "cc89faf8d4e48b1ee65105e342d9179b13247ad6819e91dd20c21de744075146",
+    "surfaceElevationsMeters": {
+      "Lake Van": 1649
+    }
+  }
+}

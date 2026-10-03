@@ -1,0 +1,25 @@
+{
+  "mode": "built-in-imagegen",
+  "records": [
+    {
+      "id": "death-back",
+      "selectedFile": "Death-Back.png",
+      "generatedSource": "C:/Users/Damien/.codex/generated_images/01a0fea1-c63f-7343-92ca-6c21cc1c4296/exec-3a78075c-fd8d-4c96-9eef-75523cd38761.png",
+      "references": [
+        "../../Idle.png",
+        "../../Death.png"
+      ],
+      "prompt": "Use case: identity-preserve\nAsset type: transparent single-soldier death animation sprite sheet for a top-down RTS.\nInput image 1 is the APPROVED Russian Stone Age javelinist costume, equipment, body scale, render style and camera reference. Input image 2 is the approved SIDE-collapse death; it is only a style reference. Create a genuinely DIFFERENT full death motion: a BACKWARD fall ending flat on his back, face upward toward the overhead camera, knees and boots pointing toward screen bottom. Do not simply rotate or mirror the side collapse.\nOutput one 1536x1024 RGBA sheet, exact 3 columns by 2 rows, six 512x512 cells read left to right then top to bottom, one complete actor and one dropped javelin per cell when appropriate. Actual transparent background, no backdrop, no grid, no labels, no blood. Maintain generous at least 32px empty padding inside EVERY cell, including the long spear. Fixed vertical overhead orthographic camera; standing poses face screen-down.\nPreserve identical red cloth cap with cream fur brim, cream fur collar, red tunic, brown leather belt/wrist wraps/boots, pale trousers, two spare stone-tipped javelins in a small back carrier; same muscular adult proportions and detailed stylized painted realism. Right hand is screen-left when standing. A long slim wood shaft with small stone tip, no giant club.\nSix consecutive poses: 1 upright ready starting to recoil, close to approved idle; 2 chest recoils and both knees soften, left arm opens for balance; 3 knees buckle and pelvis sinks, shoulders tipping backward, held spear begins to drop; 4 seated/hips on ground with torso falling backward and arms opening, spear now separate on ground to screen-left; 5 complete backward landing, body flat on back, head at upper side and boots toward lower side, same red cap and cream fur collar plainly recognizable, arms relaxed apart, dropped spear beside him; 6 settle into the SAME supine corpse position with small arm/leg settling, never standing again. Entire final body visible including head, both legs and boots. Ground plane absent. Allow the face to become visible only because the corpse faces upward.\nMaintain consistent actor size and chronological physically readable collapse, no disappearing limbs, no duplicate limbs, no extra soldier, no dramatic camera shift. The fixed cell torso registration will be authored later; avoid arbitrary drift. This death will alternate across a five-soldier formation with the approved side fall.",
+      "status": "superseded: cell spill"
+    },
+    {
+      "id": "death-back-padding",
+      "selectedFile": "Death-Back-v2.png",
+      "generatedSource": "C:/Users/Damien/.codex/generated_images/01a0fea1-c63f-7343-92ca-6c21cc1c4296/exec-dc71d05f-a594-4119-8fcd-454e7c99a6f2.png",
+      "references": [
+        "Death-Back.png"
+      ],
+      "prompt": "Edit the input sprite sheet only to correct layout/padding. Preserve the exact same six chronological poses, Russian javelinist identity, costume, red-and-cream palette, equipment, lighting, vertical overhead camera, transparent alpha and BACKWARD onto-his-back death ending. Do not substitute the previous side collapse.\nThe input is a 1536x1024 sheet with 3x2 fixed 512px cells. Several actors cross cell edges. REDRAW all six full isolated poses uniformly at 75 percent of their current rendered size within their respective cells, centered in each cell. Keep the same relative body scale between poses. Restore any cropped fingertips, wrists or spear ends so every actor and his complete dropped spear are intact. Each whole actor plus any dropped javelin must fit inside a 420x420 box centered in each cell, leaving at least 46px empty transparent padding on all four cell edges, including between neighboring cells. Do not let any pixels of one pose enter the neighboring cell. Keep image dimensions 1536x1024 with exact 3 columns 2 rows. No grids, labels, background, extra soldiers, blood, or shadows outside the silhouette. This is a layout correction, not a new death animation."
+    }
+  ]
+}

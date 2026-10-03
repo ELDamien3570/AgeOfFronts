@@ -1,7 +1,7 @@
 {
   "schemaVersion": 1,
   "cultureId": "russians",
-  "artDirection": "Northern forest material language adapted by age, with distinct role silhouettes and regional archaeological cues.",
+  "artDirection": "Age-specific Russian source-art family with strict overhead camera and distinct role silhouettes; regional material cues progress from northern forest and Rus compounds to mixed Soviet-era and contemporary facilities.",
   "status": "art-review-only",
   "assets": [
     {
@@ -248,13 +248,14 @@
       "category": "Barracks",
       "age": "ClassicalAge",
       "role": "Infantry recruitment",
-      "status": "draft",
+      "status": "approved",
       "file": "ClassicalAge/Barracks/Icon.png",
       "original": "../../../Building Icons/Barracks/Top-Down-Correction/Barracks_ClassicalAge.png",
       "visualFeatures": [
         "Pale stone enclosure and terracotta barrack roof",
         "Two training dummies, iron spear racks and flat shields"
-      ]
+      ],
+      "approvedDate": "2026-10-02"
     },
     {
       "id": "city",
@@ -262,13 +263,14 @@
       "category": "City",
       "age": "ClassicalAge",
       "role": "Population and reserve growth",
-      "status": "draft",
+      "status": "approved",
       "file": "ClassicalAge/City/Icon.png",
       "original": "../../../Building Icons/City/Top-Down-Correction/City_ClassicalAge.png",
       "visualFeatures": [
         "Four tiled courtyard households and central cistern",
         "Stone-walled paved settlement block"
-      ]
+      ],
+      "approvedDate": "2026-10-02"
     },
     {
       "id": "archery",
@@ -276,13 +278,14 @@
       "category": "Archery Range",
       "age": "ClassicalAge",
       "role": "Ranged recruitment",
-      "status": "draft",
+      "status": "approved",
       "file": "ClassicalAge/Archery Range/Icon.png",
       "original": "../../../Building Icons/Archery Range/Top-Down-Correction/Archery_ClassicalAge.png",
       "visualFeatures": [
         "Three prominent straw targets and straight lanes",
         "Terracotta side shelter and stone perimeter"
-      ]
+      ],
+      "approvedDate": "2026-10-02"
     },
     {
       "id": "stables",
@@ -290,13 +293,14 @@
       "category": "Stables",
       "age": "ClassicalAge",
       "role": "Cavalry recruitment and horse production",
-      "status": "draft",
+      "status": "approved",
       "file": "ClassicalAge/Stables/Icon.png",
       "original": "../../../Building Icons/Stables/Top-Down-Correction/Stables_ClassicalAge.png",
       "visualFeatures": [
         "U-shaped tiled stable roof and three overhead horses",
         "Hay, water trough, tack and stone enclosure"
-      ]
+      ],
+      "approvedDate": "2026-10-02"
     },
     {
       "id": "factory",
@@ -304,13 +308,14 @@
       "category": "Factory",
       "age": "ClassicalAge",
       "role": "Trade goods and gold income",
-      "status": "draft",
+      "status": "approved",
       "file": "ClassicalAge/Factory/Icon.png",
       "original": "../../../Building Icons/Factory/Top-Down-Correction/Factory_ClassicalAge.png",
       "visualFeatures": [
         "Three masonry kiln chimneys",
         "Pottery, amphorae and woven goods in open craft yard"
-      ]
+      ],
+      "approvedDate": "2026-10-02"
     },
     {
       "id": "port",
@@ -318,13 +323,14 @@
       "category": "Port",
       "age": "ClassicalAge",
       "role": "Naval recruitment and maritime trade",
-      "status": "draft",
+      "status": "approved",
       "file": "ClassicalAge/Port/Icon.png",
       "original": "../../../Building Icons/Port/Top-Down-Correction/Port_ClassicalAge.png",
       "visualFeatures": [
         "One larger planked cargo vessel",
         "Two quays, tiled warehouse and amphora cargo"
-      ]
+      ],
+      "approvedDate": "2026-10-02"
     },
     {
       "id": "mine",
@@ -332,13 +338,14 @@
       "category": "Mine",
       "age": "ClassicalAge",
       "role": "Resource extraction",
-      "status": "draft",
+      "status": "approved",
       "file": "ClassicalAge/Mine/Icon.png",
       "original": "../../../Building Icons/Mine/Top-Down-Correction/Mine_ClassicalAge.png",
       "visualFeatures": [
         "Stepped pale rock quarry and masonry shaft",
         "Overhead hoist beam, ore baskets and cart"
-      ]
+      ],
+      "approvedDate": "2026-10-02"
     },
     {
       "id": "siege-workshop",
@@ -346,13 +353,14 @@
       "category": "Siege",
       "age": "ClassicalAge",
       "role": "Siege equipment and recruitment",
-      "status": "draft",
+      "status": "approved",
       "file": "ClassicalAge/Siege Workshop/Icon.png",
       "original": "../../../Building Icons/Siege/Top-Down-Correction/Siege_ClassicalAge.png",
       "visualFeatures": [
         "Prominent torsion stone thrower",
         "Timber siege tower, iron-capped ram and tiled workshop"
-      ]
+      ],
+      "approvedDate": "2026-10-02"
     },
     {
       "id": "tower",
@@ -360,14 +368,15 @@
       "category": "Tower",
       "age": "ClassicalAge",
       "role": "Automatic ground defense",
-      "status": "draft",
+      "status": "approved",
       "file": "ClassicalAge/Tower/Icon.png",
       "original": "../../../Terrain/Wall Kit/StoneWalls/Tower.png",
       "originalNote": "Base artwork · shared stone tower",
       "visualFeatures": [
         "Compact square limestone parapet deck",
         "Iron spear supplies and unobstructed defensive platform"
-      ]
+      ],
+      "approvedDate": "2026-10-02"
     },
     {
       "id": "blacksmith",
@@ -375,18 +384,648 @@
       "category": "Blacksmith",
       "age": "ClassicalAge",
       "role": "Troop equipment production",
-      "status": "draft",
+      "status": "approved",
       "file": "ClassicalAge/Blacksmith/Icon.png",
       "original": "../../../Building Icons/Blacksmith/Top-Down-Correction/Blacksmith_ClassicalAge.png",
       "visualFeatures": [
         "Large glowing masonry forge and iron anvil",
         "Iron weapons, bars, bellows and tiled smithy"
+      ],
+      "approvedDate": "2026-10-02"
+    },
+    {
+      "id": "barracks",
+      "label": "Barracks",
+      "category": "Barracks",
+      "age": "EarlyMedieval",
+      "role": "Infantry recruitment",
+      "status": "approved",
+      "file": "EarlyMedieval/Barracks/Icon.png",
+      "original": "../../../Building Icons/Barracks/Top-Down-Correction/Barracks_EarlyMedieval.png",
+      "visualFeatures": [
+        "Rus timber-and-earth enclosure and plank-roofed log barrack",
+        "Overhead crossbar training dummies, iron weapon racks and shields"
+      ],
+      "approvedDate": "2026-10-02"
+    },
+    {
+      "id": "city",
+      "label": "City",
+      "category": "City",
+      "age": "EarlyMedieval",
+      "role": "Population and reserve growth",
+      "status": "approved",
+      "file": "EarlyMedieval/City/Icon.png",
+      "original": "../../../Building Icons/City/Top-Down-Correction/City_EarlyMedieval.png",
+      "visualFeatures": [
+        "Notched-log households with grey plank roofs",
+        "Timber streets, central log-lined well and gorodnya enclosure"
+      ],
+      "approvedDate": "2026-10-02"
+    },
+    {
+      "id": "archery",
+      "label": "Archery Range",
+      "category": "Archery Range",
+      "age": "EarlyMedieval",
+      "role": "Ranged recruitment",
+      "status": "approved",
+      "file": "EarlyMedieval/Archery Range/Icon.png",
+      "original": "../../../Building Icons/Archery Range/Top-Down-Correction/Archery_EarlyMedieval.png",
+      "visualFeatures": [
+        "Three circular targets and long shooting lanes",
+        "Grey plank shelter, bows and timber-and-earth perimeter"
+      ],
+      "approvedDate": "2026-10-02"
+    },
+    {
+      "id": "stables",
+      "label": "Stables",
+      "category": "Stables",
+      "age": "EarlyMedieval",
+      "role": "Cavalry recruitment and horse production",
+      "status": "approved",
+      "file": "EarlyMedieval/Stables/Icon.png",
+      "original": "../../../Building Icons/Stables/Top-Down-Correction/Stables_EarlyMedieval.png",
+      "visualFeatures": [
+        "U-shaped grey plank roof and three overhead horses",
+        "Hay, log trough, tack and timber-and-earth enclosure"
+      ],
+      "approvedDate": "2026-10-02"
+    },
+    {
+      "id": "factory",
+      "label": "Factory",
+      "category": "Factory",
+      "age": "EarlyMedieval",
+      "role": "Trade goods and gold income",
+      "status": "approved",
+      "file": "EarlyMedieval/Factory/Icon.png",
+      "original": "../../../Building Icons/Factory/Top-Down-Correction/Factory_EarlyMedieval.png",
+      "visualFeatures": [
+        "Three flat kiln flue openings on a grey plank workshop roof",
+        "Open craft court with pottery, woven linen, fur and barrels"
+      ],
+      "approvedDate": "2026-10-02"
+    },
+    {
+      "id": "port",
+      "label": "Port",
+      "category": "Port",
+      "age": "EarlyMedieval",
+      "role": "Naval recruitment and maritime trade",
+      "status": "approved",
+      "file": "EarlyMedieval/Port/Icon.png",
+      "original": "../../../Building Icons/Port/Top-Down-Correction/Port_EarlyMedieval.png",
+      "visualFeatures": [
+        "One large clinker-style Rus river cargo boat",
+        "Timber quays, plank warehouse, barrels and fur bundles"
+      ],
+      "approvedDate": "2026-10-02"
+    },
+    {
+      "id": "mine",
+      "label": "Mine",
+      "category": "Mine",
+      "age": "EarlyMedieval",
+      "role": "Resource extraction",
+      "status": "approved",
+      "file": "EarlyMedieval/Mine/Icon.png",
+      "original": "../../../Building Icons/Mine/Top-Down-Correction/Mine_EarlyMedieval.png",
+      "visualFeatures": [
+        "Concentric quarry ledges, log-lined shaft and ore cart",
+        "Grey plank tool shelter and overhead timber hoist"
+      ],
+      "approvedDate": "2026-10-02"
+    },
+    {
+      "id": "siege-workshop",
+      "label": "Siege Workshop",
+      "category": "Siege",
+      "age": "EarlyMedieval",
+      "role": "Siege equipment and recruitment",
+      "status": "approved",
+      "file": "EarlyMedieval/Siege Workshop/Icon.png",
+      "original": "../../../Building Icons/Siege/Top-Down-Correction/Siege_EarlyMedieval.png",
+      "visualFeatures": [
+        "Traction stone thrower with bundled ropes",
+        "Mobile timber tower, iron-capped ram and grey plank workshop"
+      ],
+      "approvedDate": "2026-10-02"
+    },
+    {
+      "id": "tower",
+      "label": "Tower",
+      "category": "Tower",
+      "age": "EarlyMedieval",
+      "role": "Automatic ground defense",
+      "status": "approved",
+      "file": "EarlyMedieval/Tower/Icon.png",
+      "original": "../../../Terrain/Wall Kit/Palisades/Tower.png",
+      "visualFeatures": [
+        "Square Rus log defensive deck with framed timber parapet",
+        "Small grey plank canopy and iron spear supplies"
+      ],
+      "originalNote": "Base artwork · shared palisade tower",
+      "approvedDate": "2026-10-02"
+    },
+    {
+      "id": "blacksmith",
+      "label": "Blacksmith",
+      "category": "Blacksmith",
+      "age": "EarlyMedieval",
+      "role": "Troop equipment production",
+      "status": "approved",
+      "file": "EarlyMedieval/Blacksmith/Icon.png",
+      "original": "../../../Building Icons/Blacksmith/Top-Down-Correction/Blacksmith_EarlyMedieval.png",
+      "visualFeatures": [
+        "Large open forge ring, flat iron anvil and bellows",
+        "Iron axes, swords, spearheads and grey plank smithy roof"
+      ],
+      "approvedDate": "2026-10-02"
+    },
+    {
+      "id": "barracks",
+      "label": "Barracks",
+      "category": "Barracks",
+      "age": "LateMedieval",
+      "role": "Infantry recruitment",
+      "status": "approved",
+      "file": "LateMedieval/Barracks/Icon.png",
+      "original": "../../../Building Icons/Barracks/Top-Down-Correction/Barracks_LateMedieval.png",
+      "visualFeatures": [
+        "L-shaped dark wooden-shingle barrack and stone enclosure",
+        "Two training dummies, armor, helmets and iron weapons"
       ]
+    },
+    {
+      "id": "city",
+      "label": "City",
+      "category": "City",
+      "age": "LateMedieval",
+      "role": "Population and reserve growth",
+      "status": "approved",
+      "file": "LateMedieval/City/Icon.png",
+      "original": "../../../Building Icons/City/Top-Down-Correction/City_LateMedieval.png",
+      "visualFeatures": [
+        "Developed timber courtyard households and central gathering square",
+        "Limestone enclosure, stone well, boardwalks and produce awnings"
+      ]
+    },
+    {
+      "id": "archery",
+      "label": "Archery Range",
+      "category": "Archery Range",
+      "age": "LateMedieval",
+      "role": "Ranged recruitment",
+      "status": "approved",
+      "file": "LateMedieval/Archery Range/Icon.png",
+      "original": "../../../Building Icons/Archery Range/Top-Down-Correction/Archery_LateMedieval.png",
+      "visualFeatures": [
+        "Three large targets and long separated firing lanes",
+        "Flat bows, crossbows and iron arrows inside stone enclosure"
+      ]
+    },
+    {
+      "id": "stables",
+      "label": "Stables",
+      "category": "Stables",
+      "age": "LateMedieval",
+      "role": "Cavalry recruitment and horse production",
+      "status": "approved",
+      "file": "LateMedieval/Stables/Icon.png",
+      "original": "../../../Building Icons/Stables/Top-Down-Correction/Stables_LateMedieval.png",
+      "visualFeatures": [
+        "U-shaped wooden-shingle stable and three overhead horses",
+        "Stone enclosure, hay bay, water trough and cavalry tack"
+      ]
+    },
+    {
+      "id": "factory",
+      "label": "Factory",
+      "category": "Factory",
+      "age": "LateMedieval",
+      "role": "Trade goods and gold income",
+      "status": "approved",
+      "file": "LateMedieval/Factory/Icon.png",
+      "original": "../../../Building Icons/Factory/Top-Down-Correction/Factory_LateMedieval.png",
+      "visualFeatures": [
+        "Three flat brick chimney openings and two kiln tops",
+        "Organized ceramic, linen, fur and weaving work areas"
+      ]
+    },
+    {
+      "id": "port",
+      "label": "Port",
+      "category": "Port",
+      "age": "LateMedieval",
+      "role": "Naval recruitment and maritime trade",
+      "status": "approved",
+      "file": "LateMedieval/Port/Icon.png",
+      "original": "../../../Building Icons/Port/Top-Down-Correction/Port_LateMedieval.png",
+      "visualFeatures": [
+        "One broad laden cargo vessel with small aft deckhouse",
+        "Stepped timber warehouses, stone-and-timber quays and trade cargo"
+      ]
+    },
+    {
+      "id": "mine",
+      "label": "Mine",
+      "category": "Mine",
+      "age": "LateMedieval",
+      "role": "Resource extraction",
+      "status": "approved",
+      "file": "LateMedieval/Mine/Icon.png",
+      "original": "../../../Building Icons/Mine/Top-Down-Correction/Mine_LateMedieval.png",
+      "visualFeatures": [
+        "Concentric quarry ledges and masonry-lined shaft",
+        "Overhead timber capstan, ore baskets and handcart"
+      ]
+    },
+    {
+      "id": "siege-workshop",
+      "label": "Siege Workshop",
+      "category": "Siege",
+      "age": "LateMedieval",
+      "role": "Siege equipment and recruitment",
+      "status": "approved",
+      "file": "LateMedieval/Siege Workshop/Icon.png",
+      "original": "../../../Building Icons/Siege/Top-Down-Correction/Siege_LateMedieval.png",
+      "visualFeatures": [
+        "Counterweight trebuchet with ballast box and stone sling",
+        "Separate covered siege tower, iron-capped ram and organized timber stock"
+      ]
+    },
+    {
+      "id": "tower",
+      "label": "Tower",
+      "category": "Tower",
+      "age": "LateMedieval",
+      "role": "Automatic ground defense",
+      "status": "approved",
+      "file": "LateMedieval/Tower/Icon.png",
+      "original": "../../../Terrain/Wall Kit/MassiveStoneWalls/Tower.png",
+      "visualFeatures": [
+        "Round limestone parapet deck and small wooden canopy",
+        "Crossbow, spear supplies and flat shields in defensive platform"
+      ],
+      "originalNote": "Base artwork · shared massive stone tower"
+    },
+    {
+      "id": "blacksmith",
+      "label": "Blacksmith",
+      "category": "Blacksmith",
+      "age": "LateMedieval",
+      "role": "Troop equipment production",
+      "status": "approved",
+      "file": "LateMedieval/Blacksmith/Icon.png",
+      "original": "../../../Building Icons/Blacksmith/Top-Down-Correction/Blacksmith_LateMedieval.png",
+      "visualFeatures": [
+        "Square glowing forge, overhead anvil and brick chimney tops",
+        "Iron weapons, armor, helmets and organized stock"
+      ]
+    },
+    {
+      "id": "barracks",
+      "label": "Barracks",
+      "category": "Barracks",
+      "age": "EarlyModern",
+      "role": "Infantry recruitment",
+      "status": "approved",
+      "file": "EarlyModern/Barracks/Icon.png",
+      "original": "../../../Building Icons/Barracks/Top-Down-Correction/Barracks_EarlyModern.png",
+      "visualFeatures": [
+        "Brick-framed infantry drill court and hipped barrack roofs",
+        "Two training dummies, muskets and distinctive berdysh poleaxes"
+      ],
+      "approvedDate": "2026-10-02"
+    },
+    {
+      "id": "city",
+      "label": "City",
+      "category": "City",
+      "age": "EarlyModern",
+      "role": "Population and reserve growth",
+      "status": "approved",
+      "file": "EarlyModern/City/Icon.png",
+      "original": "../../../Building Icons/City/Top-Down-Correction/City_EarlyModern.png",
+      "visualFeatures": [
+        "Brick civic hall, larger courtyard households and gathering square",
+        "Cream-trimmed brick enclosure, central well and burgundy market awnings"
+      ],
+      "approvedDate": "2026-10-02"
+    },
+    {
+      "id": "archery",
+      "label": "Archery Range",
+      "category": "Archery Range",
+      "age": "EarlyModern",
+      "role": "Ranged recruitment",
+      "status": "approved",
+      "file": "EarlyModern/Archery Range/Icon.png",
+      "original": "../../../Building Icons/Archery Range/Top-Down-Correction/Archery_EarlyModern.png",
+      "visualFeatures": [
+        "Three large targets and separated shooting lanes",
+        "Muskets, powder supplies and brick shooting-range enclosure"
+      ],
+      "approvedDate": "2026-10-02"
+    },
+    {
+      "id": "stables",
+      "label": "Stables",
+      "category": "Stables",
+      "age": "EarlyModern",
+      "role": "Cavalry recruitment and horse production",
+      "status": "approved",
+      "file": "EarlyModern/Stables/Icon.png",
+      "original": "../../../Building Icons/Stables/Top-Down-Correction/Stables_EarlyModern.png",
+      "visualFeatures": [
+        "Developed U-shaped stable roofs and four visible horses",
+        "Cavalry saddles, sabres, pistols, feed and water bays"
+      ],
+      "approvedDate": "2026-10-02"
+    },
+    {
+      "id": "factory",
+      "label": "Factory",
+      "category": "Factory",
+      "age": "EarlyModern",
+      "role": "Trade goods and gold income",
+      "status": "approved",
+      "file": "EarlyModern/Factory/Icon.png",
+      "original": "../../../Building Icons/Factory/Top-Down-Correction/Factory_EarlyModern.png",
+      "visualFeatures": [
+        "Larger brick-and-timber production roofs with three chimney openings",
+        "Dye vats, linen weaving, ceramics and finished trade goods"
+      ],
+      "approvedDate": "2026-10-02"
+    },
+    {
+      "id": "port",
+      "label": "Port",
+      "category": "Port",
+      "age": "EarlyModern",
+      "role": "Naval recruitment and maritime trade",
+      "status": "approved",
+      "file": "EarlyModern/Port/Icon.png",
+      "original": "../../../Building Icons/Port/Top-Down-Correction/Port_EarlyModern.png",
+      "visualFeatures": [
+        "One larger two-masted cargo vessel and brick warehouse quay",
+        "Contained water basin, finger piers, cargo and rope supplies"
+      ],
+      "approvedDate": "2026-10-02"
+    },
+    {
+      "id": "mine",
+      "label": "Mine",
+      "category": "Mine",
+      "age": "EarlyModern",
+      "role": "Resource extraction",
+      "status": "approved",
+      "file": "EarlyModern/Mine/Icon.png",
+      "original": "../../../Building Icons/Mine/Top-Down-Correction/Mine_EarlyModern.png",
+      "visualFeatures": [
+        "Terraced extraction pit and larger timber hoist complex",
+        "Overhead capstan, ore carts, sorted stock and extraction tools"
+      ],
+      "approvedDate": "2026-10-02"
+    },
+    {
+      "id": "siege-workshop",
+      "label": "Siege Workshop",
+      "category": "Siege",
+      "age": "EarlyModern",
+      "role": "Siege equipment and recruitment",
+      "status": "approved",
+      "file": "EarlyModern/Siege Workshop/Icon.png",
+      "original": "../../../Building Icons/Siege/Top-Down-Correction/Siege_EarlyModern.png",
+      "visualFeatures": [
+        "Two field guns and shorter howitzer with carriage assembly",
+        "Cannon foundry roof, barrel moulds, shot and spare carriage wheels"
+      ],
+      "approvedDate": "2026-10-02"
+    },
+    {
+      "id": "tower",
+      "label": "Tower",
+      "category": "Tower",
+      "age": "EarlyModern",
+      "role": "Automatic ground defense",
+      "status": "approved",
+      "file": "EarlyModern/Tower/Icon.png",
+      "original": "../../../Terrain/Wall Kit/MassiveStoneWalls/Tower.png",
+      "visualFeatures": [
+        "Square cream-capped brick defensive gun platform",
+        "One overhead cannon and small hipped canopy roof"
+      ],
+      "originalNote": "Base artwork · shared massive stone tower",
+      "approvedDate": "2026-10-02"
+    },
+    {
+      "id": "armory",
+      "label": "Armory",
+      "category": "Armory",
+      "age": "EarlyModern",
+      "role": "Troop equipment production",
+      "status": "approved",
+      "file": "EarlyModern/Armory/Icon.png",
+      "original": "../../../Building Icons/Armory/Top-Down-Correction/Armory_EarlyModern.png",
+      "visualFeatures": [
+        "Brick armory roof and organized weapon-finishing court",
+        "Muskets, sabres, armor, barrel parts and two forge flue openings"
+      ],
+      "newFacility": true,
+      "approvedDate": "2026-10-02"
+    },
+    {
+      "id": "barracks",
+      "label": "Barracks",
+      "category": "Barracks",
+      "age": "Modern",
+      "role": "Infantry recruitment",
+      "status": "draft",
+      "file": "Modern/Barracks/Icon.png",
+      "original": "../../../Building Icons/Barracks/Top-Down-Correction/Barracks_Modern.png"
+    },
+    {
+      "id": "city",
+      "label": "City",
+      "category": "City",
+      "age": "Modern",
+      "role": "Population and reserve growth",
+      "status": "draft",
+      "file": "Modern/City/Icon.png",
+      "original": "../../../Building Icons/City/Top-Down-Correction/City_Modern.png"
+    },
+    {
+      "id": "archery",
+      "label": "Archery Range",
+      "category": "Archery Range",
+      "age": "Modern",
+      "role": "Marksman recruitment",
+      "status": "draft",
+      "file": "Modern/Archery Range/Icon.png",
+      "original": "../../../Building Icons/Archery Range/Top-Down-Correction/Archery_Modern.png"
+    },
+    {
+      "id": "depot",
+      "label": "Vehicle Depot",
+      "category": "Vehicle Depot",
+      "age": "Modern",
+      "role": "Armored vehicle recruitment and vehicle equipment",
+      "status": "draft",
+      "file": "Modern/Vehicle Depot/Icon.png",
+      "newFacility": true,
+      "original": "../../../Building Icons/Stables/Top-Down-Correction/Stables_Modern.png",
+      "originalNote": "Base artwork · legacy Modern Stables vehicle depot"
+    },
+    {
+      "id": "factory",
+      "label": "Factory",
+      "category": "Factory",
+      "age": "Modern",
+      "role": "Trade goods and gold income",
+      "status": "draft",
+      "file": "Modern/Factory/Icon.png",
+      "original": "../../../Building Icons/Factory/Top-Down-Correction/Factory_Modern.png"
+    },
+    {
+      "id": "port",
+      "label": "Port",
+      "category": "Port",
+      "age": "Modern",
+      "role": "Naval recruitment and maritime trade",
+      "status": "draft",
+      "file": "Modern/Port/Icon.png",
+      "original": "../../../Building Icons/Port/Top-Down-Correction/Port_Modern.png"
+    },
+    {
+      "id": "mine",
+      "label": "Mine",
+      "category": "Mine",
+      "age": "Modern",
+      "role": "Ore extraction",
+      "status": "draft",
+      "file": "Modern/Mine/Icon.png",
+      "original": "../../../Building Icons/Mine/Top-Down-Correction/Mine_Modern.png"
+    },
+    {
+      "id": "siege-workshop",
+      "label": "Siege Workshop",
+      "category": "Siege Workshop",
+      "age": "Modern",
+      "role": "Artillery recruitment and siege equipment",
+      "status": "draft",
+      "file": "Modern/Siege Workshop/Icon.png",
+      "original": "../../../Building Icons/Siege/Top-Down-Correction/Siege_Modern.png"
+    },
+    {
+      "id": "arms-factory",
+      "label": "Arms Factory",
+      "category": "Arms Factory",
+      "age": "Modern",
+      "role": "Infantry equipment production",
+      "status": "draft",
+      "file": "Modern/Arms Factory/Icon.png",
+      "newFacility": true,
+      "original": "../../../Building Icons/Arms Factory/Top-Down-Correction/ArmsFactory_Modern.png"
+    },
+    {
+      "id": "oil-well",
+      "label": "Oil Well",
+      "category": "Oil Well",
+      "age": "Modern",
+      "role": "Land-based oil extraction",
+      "status": "draft",
+      "file": "Modern/Oil Well/Icon.png",
+      "newFacility": true,
+      "original": "../../../Building Icons/Oil Well/Top-Down-Correction/OilWell_Modern.png"
+    },
+    {
+      "id": "oil-rig",
+      "label": "Oil Rig",
+      "category": "Oil Rig",
+      "age": "Modern",
+      "role": "Offshore oil extraction",
+      "status": "draft",
+      "file": "Modern/Oil Rig/Icon.png",
+      "newFacility": true,
+      "original": "../../../Building Icons/Oil Rig/Top-Down-Correction/OilRig_Modern.png"
+    },
+    {
+      "id": "airstrip",
+      "label": "Military Airstrip",
+      "category": "Military Airstrip",
+      "age": "Modern",
+      "role": "Aircraft recruitment",
+      "status": "draft",
+      "file": "Modern/Military Airstrip/Icon.png",
+      "newFacility": true,
+      "original": "../../../Building Icons/Military Airstrip/Top-Down-Correction/MilitaryAirstrip_Modern.png"
+    },
+    {
+      "id": "missile-silo",
+      "label": "Missile Silo",
+      "category": "Missile Silo",
+      "age": "Modern",
+      "role": "Strategic missile production and launch",
+      "status": "draft",
+      "file": "Modern/Missile Silo/Icon.png",
+      "newFacility": true,
+      "original": "../../../Building Icons/Missile Silo/Top-Down-Correction/MissileSilo_Modern.png"
+    },
+    {
+      "id": "mirv-launcher",
+      "label": "MIRV Launch Complex",
+      "category": "MIRV Launch Complex",
+      "age": "Modern",
+      "role": "Multi-warhead missile production and launch",
+      "status": "draft",
+      "file": "Modern/MIRV Launch Complex/Icon.png",
+      "newFacility": true,
+      "original": "../../../Building Icons/MIRV Launch Complex/Top-Down-Correction/Icon.png"
+    },
+    {
+      "id": "gun-nest",
+      "label": "Gun Nest",
+      "category": "Gun Nest",
+      "age": "Modern",
+      "role": "Automatic ground defense",
+      "status": "draft",
+      "file": "Modern/Gun Nest/Icon.png",
+      "newFacility": true,
+      "original": "../../../Terrain/Modern Defenses/Gun Nests/AntiInfantry_N.png",
+      "originalNote": "Base terrain kit · anti-infantry gun nest"
+    },
+    {
+      "id": "trench",
+      "label": "Trench",
+      "category": "Trench",
+      "age": "Modern",
+      "role": "Infantry cover and defensive position",
+      "status": "draft",
+      "file": "Modern/Trench/Icon.png",
+      "newFacility": true,
+      "original": "../../../Terrain/Modern Defenses/Trenches/tiles/00-isolated.png",
+      "originalNote": "Base terrain kit · isolated trench tile"
+    },
+    {
+      "id": "missile-defence",
+      "label": "Missile Defence",
+      "category": "Missile Defence",
+      "age": "Modern",
+      "role": "Automatic strategic missile interception",
+      "status": "draft",
+      "file": "Modern/Missile Defence/Icon.png",
+      "newFacility": true
     }
   ],
   "ageArtDirections": {
     "StoneAge": "Prehistoric forest settlements using timber, thatch, earth, hides and subtle regional character.",
     "BronzeAge": "Evolved northern forest settlements with palisaded city and recruitment compounds, bronze equipment, multiple factory kiln chimneys, a larger cargo boat and siege assembly showing both tower and ram. Regional research informs selected craft and extraction cues.",
-    "ClassicalAge": "User-selected Black Sea stone-building influence: limestone footings and wall caps, terracotta tile roofs, pale paved courts, ironwork and distinct building role silhouettes in strict overhead view."
+    "ClassicalAge": "User-selected Black Sea stone-building influence: limestone footings and wall caps, terracotta tile roofs, pale paved courts, ironwork and distinct building role silhouettes in strict overhead view.",
+    "EarlyMedieval": "Early Rus and East Slavic timber identity, anchored in ninth–eleventh-century Ladoga/Novgorod: grey plank roofs, notched log joinery, wooden streets, timber-and-earth framed fortifications, river cargo and iron craft in strict overhead view.",
+    "LateMedieval": "Fourteenth–fifteenth-century Novgorod/Pskov influence: mature timber courtyard buildings, dark wood-shingle roofs, limestone defenses, organized craft and trade yards, clearer overhead equipment silhouettes.",
+    "EarlyModern": "Sixteenth–seventeenth-century Muscovite brick and timber compounds, cream stone trim, muted grey-green roof tops, developed trade manufactures and gunpowder recruitment/production roles in strict overhead plan."
   }
 }

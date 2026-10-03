@@ -1,19 +1,19 @@
 {
   "schemaVersion": 1,
   "cultureId": "russian",
-  "traderCount": 2,
-  "clipCount": 0,
+  "traderCount": 3,
+  "clipCount": 6,
   "camera": "vertical-overhead-orthographic",
   "facing": "screen-down",
-  "status": "static-masters-awaiting-approval",
+  "status": "animated artwork; game integration unverified",
   "assets": [
     {
       "age": "BronzeAge",
       "ageLabel": "Bronze Age",
       "label": "Handcart merchant · four secured cargo masses · copper goods",
       "category": "OverlandTrader",
-      "poster": "BronzeAge/SourceArt/Trader_Russian_BronzeAge_v1.png",
-      "status": "static-master-awaiting-approval",
+      "poster": "BronzeAge/SourceArt/Trader_Russian_BronzeAge_v2.png",
+      "status": "animations-exported",
       "memberCounts": {
         "merchants": 1,
         "wagons": 1,
@@ -21,7 +21,19 @@
         "packAnimals": 0,
         "trucks": 0
       },
-      "clips": []
+      "clips": [
+        "BronzeAge/Idle.png",
+        "BronzeAge/Travel.png"
+      ],
+      "original": "BronzeAge/SourceArt/Trader_Russian_BronzeAge_v2.png",
+      "sourceSha256": "9d81a90b829c6d77dc2987d615644283a28243a598bd4c8d1affc16a4afdb07a",
+      "metadata": "BronzeAge/animations.json",
+      "animationApproval": {
+        "status": "approved",
+        "userMessage": "remove the bump in the tread of the wheels for the bronze age trader and you're clear to animate. The boats as you have them are approved.",
+        "condition": "Remove raised wheel-tread blocks before animating.",
+        "selectedMaster": "SourceArt/Trader_Russian_BronzeAge_v2.png"
+      }
     },
     {
       "age": "StoneAge",
@@ -29,7 +41,7 @@
       "label": "Basket carrier · strapped hide bundles and flint goods",
       "category": "OverlandTrader",
       "poster": "StoneAge/SourceArt/Trader_Russian_StoneAge_v1.png",
-      "status": "static-master-awaiting-approval",
+      "status": "animations-exported",
       "memberCounts": {
         "merchants": 1,
         "wagons": 0,
@@ -37,7 +49,47 @@
         "packAnimals": 0,
         "trucks": 0
       },
-      "clips": []
+      "clips": [
+        "StoneAge/Idle.png",
+        "StoneAge/Travel.png"
+      ],
+      "original": "StoneAge/SourceArt/Trader_Russian_StoneAge_v1.png",
+      "sourceSha256": "6a18f962b49e84c0f628eddfedd9a2eb07ad9c3c67900e1ce506f61777ad1e50",
+      "metadata": "StoneAge/animations.json",
+      "animationApproval": {
+        "status": "approved",
+        "userMessage": "okay the boats are good, stone age trader lacks and animation and the bronze age one just looks like hes shuffling, hes not actually walking",
+        "scope": "Add the missing Stone Age trader animation."
+      }
+    },
+    {
+      "age": "ClassicalAge",
+      "ageLabel": "Classical Age",
+      "label": "Horse-drawn cargo party · two merchants · wagon and loaded pack horse",
+      "category": "OverlandTrader",
+      "poster": "ClassicalAge/SourceArt/Trader_Russian_ClassicalAge_v1.png",
+      "original": "ClassicalAge/SourceArt/Trader_Russian_ClassicalAge_v1.png",
+      "status": "animations-exported",
+      "sourceSha256": "a249ca059b186f920a309930695d49dca8df89e4eb5b8a50b1c6635e7de38a61",
+      "memberCounts": {
+        "merchants": 2,
+        "wagons": 1,
+        "pullingAnimals": 1,
+        "packAnimals": 1,
+        "trucks": 0
+      },
+      "clips": [
+        "ClassicalAge/Idle.png",
+        "ClassicalAge/Travel.png"
+      ],
+      "metadata": "ClassicalAge/animations.json",
+      "animationApproval": {
+        "status": "approved",
+        "age": "ClassicalAge",
+        "date": "2026-10-02",
+        "userMessage": "those are approved, animate them",
+        "selectedMaster": "SourceArt/Trader_Russian_ClassicalAge_v1.png"
+      }
     }
   ]
 }

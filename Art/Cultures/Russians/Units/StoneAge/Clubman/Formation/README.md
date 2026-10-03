@@ -8,7 +8,7 @@ Five copies of the approved single soldier form a standard two-back, three-front
 - **Maintain charge:** a 540 ms loop in the wedge. Its duration is not a gameplay timeout.
 - **Charge attack:** 1,300 ms; tip starts immediately, inner pair (`rear-left`/`rear-right`) at 180 ms, trailing pair (`left`/`right`) at 360 ms. Member IDs refer to their original standard slots; `chargeSequence.wedgeRoles` records their charge roles. The new single-actor strike lives in `SourceActor/`, with its ImageGen prompts and rejected source retained.
 - **Transition out:** 1,080 ms; establish the walking gait for 140 ms, restore each member to his original standard slot over 720 ms, then settle into idle for 220 ms.
-- **Death and get charged:** front starts at 0/40/80 ms, rear at 320/370 ms. All five finish death on the final fallen pose.
+- **Death and get charged:** front starts at 0/40/80 ms, rear at 320/370 ms. Death alternates three side collapses (`tip`, `right`, `rear-left`) with two backward falls (`left`, `rear-right`), matching the approved javelinist pattern. The 1,580 ms death ends with all five on their final corpse pose. `SourceActor/Death-Back.png` and its built-in ImageGen prompt record provide the second authored motion. The previous death atlas and its hash record are retained in `SourceActor/SourceArt/`.
 
 The review page plays the baked assets by default and can switch to the editable composition. Full charge sequence uses three Maintain charge cycles only to demonstrate the sequence. Individual Maintain charge loops continuously.
 
@@ -27,4 +27,4 @@ node --test 'Art/Cultures/Russians/Units/StoneAge/Clubman/Formation/formation.te
 
 For the Codex bundled runtime, set `ART_CANVAS_MODULE` to its discovered `node_modules/@napi-rs/canvas` directory before running the build. No repository package installation is required.
 
-`Validation.json` records source hashes, guards, all 207 baked samples and the five member poses per sample. Structural tests cover front-to-back reactions, death completion, member preservation, loop stability, phase continuity and exact restoration of the standard layout. Browser review and engine integration are distinct gates; visual acceptance remains with the user.
+`Validation.json` records source hashes, guards, all 210 baked samples, both death assignments and the five member poses per sample. Structural tests cover front-to-back reactions, two authored death motions, death completion, member preservation, loop stability, phase continuity and exact restoration of the standard layout. Browser review and engine integration are distinct gates; visual acceptance remains with the user.

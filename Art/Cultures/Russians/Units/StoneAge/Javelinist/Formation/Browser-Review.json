@@ -1,0 +1,24 @@
+{
+  "stage": "local-browser-formation-art-review",
+  "date": "2026-10-02",
+  "memberCount": 5,
+  "bakedClips": 10,
+  "bakedFrames": 215,
+  "deathMotionCount": 2,
+  "checks": {
+    "sourceAndBakedGuards": "Validation.json: no failures; maximum baked eight-pixel guard alpha is 1.",
+    "structuralTests": "26 passed: 12 existing clubman tests and 14 javelinist tests.",
+    "deathProgression": "At 300 ms the front three react while the back two remain standing. At 1580 ms, three side corpses and two supine corpses remain on the ground.",
+    "deathFinalHold": "Repeat disabled and final time selected: all five corpses remain visible.",
+    "editableAndBaked": "Both reviewed at the final death pose with matching five-member arrangement.",
+    "chargeVolley": "At 580 ms the tip is in the empty-hand release pose and the other pairs wind up in front-to-back order; the review ground holds during this phase.",
+    "chargeRecovery": "Full four-phase sequence finishes at 5180 ms with all five back in standard ranks.",
+    "sizePreviews": [64, 96, 128],
+    "galleryClipsLoaded": 20,
+    "consoleWarningsAndErrors": [],
+    "preservedSheetsVerifiedAgainstExistingHashes": 18
+  },
+  "reviewUrl": "http://127.0.0.1:9007/Cultures/Russians/Units/StoneAge/Javelinist/Formation/Formation_Review.html#death",
+  "userVisualAcceptance": "pending",
+  "gameplayIntegration": "not integrated"
+}

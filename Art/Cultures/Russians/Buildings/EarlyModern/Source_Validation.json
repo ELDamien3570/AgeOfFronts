@@ -1,0 +1,255 @@
+{
+  "scope": "Selected PNG source alpha, solid-content containment, selected-master parity, manifest paths and unchanged approved earlier-age images. No engine integration.",
+  "checkedAt": "2026-10-03T03:05:03.347215+00:00",
+  "generator": "built-in image_gen",
+  "alphaNotes": "Generated PNG masters and alpha are retained unchanged. Solid content threshold is alpha>=128; near-transparent edge pixels are reported separately.",
+  "approvedEarlierImages": 49,
+  "approvedEarlierImagesUnchanged": true,
+  "assets": [
+    {
+      "id": "barracks",
+      "file": "Barracks/Icon.png",
+      "size": [
+        1254,
+        1254
+      ],
+      "mode": "RGBA",
+      "alphaExtrema": [
+        0,
+        255
+      ],
+      "solidContentBounds": [
+        54,
+        65,
+        1201,
+        1169
+      ],
+      "maximumEdgeAlpha": 0,
+      "opaqueEdgePixels": 0,
+      "selectedMaster": "Barracks/SourceArt/Icon-v2.png",
+      "selectedMasterMatches": true,
+      "sha256": "7f638671bf9f22ad26d91ae5cac28aa529330bd86a334b8275a36bc9097ae141"
+    },
+    {
+      "id": "city",
+      "file": "City/Icon.png",
+      "size": [
+        1254,
+        1254
+      ],
+      "mode": "RGBA",
+      "alphaExtrema": [
+        0,
+        255
+      ],
+      "solidContentBounds": [
+        41,
+        61,
+        1214,
+        1175
+      ],
+      "maximumEdgeAlpha": 1,
+      "opaqueEdgePixels": 0,
+      "selectedMaster": "City/SourceArt/Icon-v2.png",
+      "selectedMasterMatches": true,
+      "sha256": "3993c6be1d8678e7bf9a535a93289a20c1d16cc39513f0ae28f74b91eb9b0b26"
+    },
+    {
+      "id": "archery",
+      "file": "Archery Range/Icon.png",
+      "size": [
+        1254,
+        1254
+      ],
+      "mode": "RGBA",
+      "alphaExtrema": [
+        0,
+        255
+      ],
+      "solidContentBounds": [
+        48,
+        57,
+        1207,
+        1155
+      ],
+      "maximumEdgeAlpha": 0,
+      "opaqueEdgePixels": 0,
+      "selectedMaster": "Archery Range/SourceArt/Icon-v2.png",
+      "selectedMasterMatches": true,
+      "sha256": "3ea7dc91dfde845a07fb9289e60703656ed7e2bf32c825bea54180c0319c7238"
+    },
+    {
+      "id": "stables",
+      "file": "Stables/Icon.png",
+      "size": [
+        1254,
+        1254
+      ],
+      "mode": "RGBA",
+      "alphaExtrema": [
+        0,
+        255
+      ],
+      "solidContentBounds": [
+        51,
+        60,
+        1204,
+        1161
+      ],
+      "maximumEdgeAlpha": 1,
+      "opaqueEdgePixels": 0,
+      "selectedMaster": "Stables/SourceArt/Icon-v2.png",
+      "selectedMasterMatches": true,
+      "sha256": "d071ba2e7eabc01795272242abf5bfeacc358971cdddfca68fbc81410a2b12d5"
+    },
+    {
+      "id": "factory",
+      "file": "Factory/Icon.png",
+      "size": [
+        1254,
+        1254
+      ],
+      "mode": "RGBA",
+      "alphaExtrema": [
+        0,
+        255
+      ],
+      "solidContentBounds": [
+        55,
+        66,
+        1202,
+        1186
+      ],
+      "maximumEdgeAlpha": 1,
+      "opaqueEdgePixels": 0,
+      "selectedMaster": "Factory/SourceArt/Icon-v2.png",
+      "selectedMasterMatches": true,
+      "sha256": "98e06b4fe2dafff626cf00210b7c84711f447d508cec6221a55a047f1ee7254c"
+    },
+    {
+      "id": "port",
+      "file": "Port/Icon.png",
+      "size": [
+        1254,
+        1254
+      ],
+      "mode": "RGBA",
+      "alphaExtrema": [
+        0,
+        255
+      ],
+      "solidContentBounds": [
+        49,
+        35,
+        1205,
+        1163
+      ],
+      "maximumEdgeAlpha": 1,
+      "opaqueEdgePixels": 0,
+      "selectedMaster": "Port/SourceArt/Icon-v2.png",
+      "selectedMasterMatches": true,
+      "sha256": "d49133e672c6835d1a8bfda6217c5a54b831cf2e0733985242c6336dfe8a1b98"
+    },
+    {
+      "id": "mine",
+      "file": "Mine/Icon.png",
+      "size": [
+        1254,
+        1254
+      ],
+      "mode": "RGBA",
+      "alphaExtrema": [
+        0,
+        255
+      ],
+      "solidContentBounds": [
+        71,
+        68,
+        1185,
+        1181
+      ],
+      "maximumEdgeAlpha": 1,
+      "opaqueEdgePixels": 0,
+      "selectedMaster": "Mine/SourceArt/Icon-v2.png",
+      "selectedMasterMatches": true,
+      "sha256": "a8f455d1cbebd6a9ee08da370d27b6776bfd53ec5dd6bf62609223ea8868bd6f"
+    },
+    {
+      "id": "siege-workshop",
+      "file": "Siege Workshop/Icon.png",
+      "size": [
+        1254,
+        1254
+      ],
+      "mode": "RGBA",
+      "alphaExtrema": [
+        0,
+        255
+      ],
+      "solidContentBounds": [
+        51,
+        63,
+        1204,
+        1157
+      ],
+      "maximumEdgeAlpha": 0,
+      "opaqueEdgePixels": 0,
+      "selectedMaster": "Siege Workshop/SourceArt/Icon-v2.png",
+      "selectedMasterMatches": true,
+      "sha256": "6b459fa1026d951e1b35f55cb03dd3097c4f44298d30aa59a59c155991bcd88f"
+    },
+    {
+      "id": "tower",
+      "file": "Tower/Icon.png",
+      "size": [
+        1254,
+        1254
+      ],
+      "mode": "RGBA",
+      "alphaExtrema": [
+        0,
+        255
+      ],
+      "solidContentBounds": [
+        55,
+        95,
+        1200,
+        1160
+      ],
+      "maximumEdgeAlpha": 0,
+      "opaqueEdgePixels": 0,
+      "selectedMaster": "Tower/SourceArt/Icon-v2.png",
+      "selectedMasterMatches": true,
+      "sha256": "44067cb6d2781fca61cdab69e66d537404797c212f3b9b1d1d1d05c8e9242057"
+    },
+    {
+      "id": "armory",
+      "file": "Armory/Icon.png",
+      "size": [
+        1254,
+        1254
+      ],
+      "mode": "RGBA",
+      "alphaExtrema": [
+        0,
+        255
+      ],
+      "solidContentBounds": [
+        35,
+        42,
+        1222,
+        1216
+      ],
+      "maximumEdgeAlpha": 1,
+      "opaqueEdgePixels": 0,
+      "selectedMaster": "Armory/SourceArt/Icon-v2.png",
+      "selectedMasterMatches": true,
+      "sha256": "672b202acda1b5ea6e64eadb8a37a586726c2ef7813c904ae1e37b5000123ec1"
+    }
+  ],
+  "manifestAssetCount": 59,
+  "uniqueAssetAgeKeys": true,
+  "manifestPathsExist": true,
+  "retainedMasters": 20,
+  "passed": true
+}

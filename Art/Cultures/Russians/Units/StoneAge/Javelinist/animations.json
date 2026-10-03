@@ -110,7 +110,7 @@
     },
     {
       "id": "running",
-      "file": "Running.png",
+      "file": "Running-v2.png",
       "label": "Movement",
       "loop": true,
       "scale": 1.03,
@@ -133,8 +133,8 @@
           "width": 512,
           "height": 512,
           "pivot": {
-            "x": 270,
-            "y": 257
+            "x": 271,
+            "y": 256
           }
         },
         {
@@ -155,7 +155,7 @@
           "width": 512,
           "height": 512,
           "pivot": {
-            "x": 251,
+            "x": 252,
             "y": 257
           }
         },
@@ -166,8 +166,8 @@
           "width": 512,
           "height": 512,
           "pivot": {
-            "x": 273,
-            "y": 256
+            "x": 272,
+            "y": 252
           }
         },
         {
@@ -177,7 +177,7 @@
           "width": 512,
           "height": 512,
           "pivot": {
-            "x": 255,
+            "x": 256,
             "y": 257
           }
         },
@@ -188,7 +188,7 @@
           "width": 512,
           "height": 512,
           "pivot": {
-            "x": 250,
+            "x": 251,
             "y": 256
           }
         }
@@ -712,5 +712,6 @@
         }
       ]
     }
-  ]
+  ],
+  "reviewFootprint": 400
 }

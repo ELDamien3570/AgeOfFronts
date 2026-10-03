@@ -51,8 +51,8 @@ def pack_master(image):
     return native,{'crop':crop,'scale':scale,'offset':offset,'generatedSize':list(image.size)}
 
 
-def make_rig(age,spec):
-    original=ROOT/'generated'/f'Trader_{age}.png'
+def make_rig(age,spec,original=None):
+    original=Path(original) if original is not None else ROOT/'generated'/f'Trader_{age}.png'
     source=Image.open(original).convert('RGBA')
     native,placement=pack_master(source)
     regions=[]

@@ -1,12 +1,12 @@
 {
   "name": "Old World",
-  "source": "17_309_70_313_6_8192_6144_16bit.png",
-  "sourceSha256": "35faa0fcc24fb51c0b97018d40cf9aeced32f65ab613d56d7f189b49e3f2487e",
-  "sourceUrl": "https://manticorp.github.io/unrealheightmap/#latitude/17.307970865257346/longitude/70.31319074071382/zoom/2/outputzoom/6/width/8192/height/6144/outputformat/png16",
+  "source": "15_623_69_961_5_4096_3072_16bit.png",
+  "sourceSha256": "dedec5acd8d5c3dc21670b59ccb9f53750eee0f78e2386c2192a32c90770a9e6",
+  "sourceUrl": "https://manticorp.github.io/unrealheightmap/#latitude/15.623021332612552/longitude/69.96092523833056/zoom/2/outputzoom/5/width/4096/height/3072/outputformat/png16",
   "normalization": {
     "mode": "regular",
     "from": -450,
-    "to": 5353,
+    "to": 7188.0,
     "range": 65536
   },
   "seaLevel": 0,
@@ -14,17 +14,40 @@
     "highland": 600,
     "mountain": 1800
   },
-  "sizes": [250, 500, 1000],
+  "sizes": [
+    250,
+    500,
+    1000
+  ],
   "output": "resources/maps/old-world",
-  "climate": "climate.json",
+  "albedo": {
+    "source": "15_623_69_961_5_4096_3072_albedo_imagery.png",
+    "sourceSha256": "69600635aab384cfdb1f239e2ffd15426c648467af503618815ce6005641a24b",
+    "registration": "same-footprint",
+    "smoothingCellsAt500": 1.4,
+    "greenSensitivity": 1.1
+  },
   "rivers": {
     "source": "rivers.geojson",
-    "sourceSha256": "8519f7fe7294ce235062ee71a44c4022eaaca26c60c558f14b5f9270ab9f1863",
+    "sourceSha256": "c215347d6580990985a140ddd9a5a373c723c26d9ffac2674486f2f908026b18",
     "widthCellsAt500": 1,
     "widthCellsBySize": {
       "250": 1,
       "500": 2,
       "1000": 3
     }
-  }
+  },
+  "lakes": {
+    "source": "lakes.geojson",
+    "sourceSha256": "1518531792d071b5451e01d8e9f561d84cb037c7a01f02f1fe88e5bd6597c6b7",
+    "surfaceElevationsMeters": {
+      "Lake Victoria": 1134,
+      "Lake Tanganyika": 773,
+      "Lake Malawi": 474,
+      "Lake Baikal": 455.5,
+      "Lake Van": 1649,
+      "Danau Toba": 905
+    }
+  },
+  "climate": "snow-climate.json"
 }

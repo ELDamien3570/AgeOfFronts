@@ -45,6 +45,16 @@ const presentation: Record<
     description:
       "Sail between islands and cross wooded ridges and dry lowlands.",
   },
+  "down-unda": {
+    terrain: "Australia, Southeast Asia & island seas",
+    description:
+      "Cross dry interiors, tropical forests and major river basins.",
+  },
+  "middle-east": {
+    terrain: "Deserts, river valleys & rugged highlands",
+    description:
+      "Follow the Nile, Tigris and Euphrates through arid landscapes.",
+  },
 };
 
 export const LOBBY_MAPS: readonly LobbyMapCard[] = HEIGHTMAP_MAPS.map(

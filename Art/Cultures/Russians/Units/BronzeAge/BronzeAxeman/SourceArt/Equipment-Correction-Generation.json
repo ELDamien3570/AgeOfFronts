@@ -1,0 +1,52 @@
+{
+  "date": "2026-10-03",
+  "mode": "built-in-imagegen",
+  "reason": "Preserve target actor size without transferring reference geometry; restore complete death-sheet padding.",
+  "records": [
+    {
+      "id": "equipment-hit-v2",
+      "clip": "hit",
+      "file": "Hit-RoughBronze-v2.png",
+      "prompt": "Use case: precise-object-edit\nEdit this exact sprite sheet IN PLACE. This is ONLY a material/color edit. Keep every pose, body part, object size, shape, position, spacing, weapon angle and camera from the input. Do not resize, enlarge, zoom, reposition, or recreate any soldier.\nChange the RED FABRIC CROWN of the cap in all six poses to warm dull HAMMERED BRONZE. Keep exactly the existing cap dimensions/profile and cream fur brim. Subtle small shallow hammer marks and lightly rubbed bronze, not shiny gold. Tunic stays red, fur stays cream, trousers stay pale.\nMake the existing equipment mildly rougher: a few small scuffs/dents on existing bronze surfaces, rougher wood grain on the same shield/axe haft and worn leather. Retain readable complete silhouettes, rounded wooden shield and same bronze axe. No added armor, ornament or corrosion. Do not change the animation at all.\nExact1536x1024 RGBA, same3x2grid of512px cells in original order. Preserve original cell padding, with complete limbs/weapons inside each cell and at least16 transparent pixels at every edge. Genuine transparent background, no haze, ground, shadows, grid or text.\nKeep all existing standing/stagger and recovery poses exactly as authored.",
+      "references": [
+        "Hit.png"
+      ],
+      "generatedSource": "C:\\Users\\Damien\\.codex\\generated_images\\01a0fea1-c63f-7343-92ca-6c21cc1c4296\\exec-d7a797a6-60dd-4edc-ad9d-2cf9cfbaed6e.png",
+      "status": "selected"
+    },
+    {
+      "id": "equipment-charged-v2",
+      "clip": "charged",
+      "file": "Charged-RoughBronze-v2.png",
+      "prompt": "Use case: precise-object-edit\nEdit this exact sprite sheet IN PLACE. This is ONLY a material/color edit. Keep every pose, body part, object size, shape, position, spacing, weapon angle and camera from the input. Do not resize, enlarge, zoom, reposition, or recreate any soldier.\nChange the RED FABRIC CROWN of the cap in all six poses to warm dull HAMMERED BRONZE. Keep exactly the existing cap dimensions/profile and cream fur brim. Subtle small shallow hammer marks and lightly rubbed bronze, not shiny gold. Tunic stays red, fur stays cream, trousers stay pale.\nMake the existing equipment mildly rougher: a few small scuffs/dents on existing bronze surfaces, rougher wood grain on the same shield/axe haft and worn leather. Retain readable complete silhouettes, rounded wooden shield and same bronze axe. No added armor, ornament or corrosion. Do not change the animation at all.\nExact1536x1024 RGBA, same3x2grid of512px cells in original order. Preserve original cell padding, with complete limbs/weapons inside each cell and at least16 transparent pixels at every edge. Genuine transparent background, no haze, ground, shadows, grid or text.\nKeep all existing standing/stagger and recovery poses exactly as authored.",
+      "references": [
+        "Charged-v2.png"
+      ],
+      "generatedSource": "C:\\Users\\Damien\\.codex\\generated_images\\01a0fea1-c63f-7343-92ca-6c21cc1c4296\\exec-14d0be5e-9815-46ab-b014-c8d0c66fb3df.png",
+      "status": "selected"
+    },
+    {
+      "id": "equipment-death-back-v2",
+      "clip": "death-back",
+      "file": "Death-Back-RoughBronze-v2.png",
+      "prompt": "Use case: precise-object-edit\nEdit this exact sprite sheet IN PLACE. This is ONLY a material/color edit. Keep every pose, body part, object size, shape, position, spacing, weapon angle and camera from the input. Do not resize, enlarge, zoom, reposition, or recreate any soldier.\nChange the RED FABRIC CROWN of the cap in all six poses to warm dull HAMMERED BRONZE. Keep exactly the existing cap dimensions/profile and cream fur brim. Subtle small shallow hammer marks and lightly rubbed bronze, not shiny gold. Tunic stays red, fur stays cream, trousers stay pale.\nMake the existing equipment mildly rougher: a few small scuffs/dents on existing bronze surfaces, rougher wood grain on the same shield/axe haft and worn leather. Retain readable complete silhouettes, rounded wooden shield and same bronze axe. No added armor, ornament or corrosion. Do not change the animation at all.\nExact1536x1024 RGBA, same3x2grid of512px cells in original order. Preserve original cell padding, with complete limbs/weapons inside each cell and at least16 transparent pixels at every edge. Genuine transparent background, no haze, ground, shadows, grid or text.\nKeep ALL existing fallen/corpse poses and dropped equipment exactly as authored. Cap crown is bronze even when upside-down or sideways.",
+      "references": [
+        "Death-Back-v2.png"
+      ],
+      "generatedSource": "C:\\Users\\Damien\\.codex\\generated_images\\01a0fea1-c63f-7343-92ca-6c21cc1c4296\\exec-53c8294f-eef7-4393-8d4e-b3f5d5ad5f7c.png",
+      "status": "selected"
+    },
+    {
+      "id": "equipment-death-v2",
+      "clip": "death",
+      "file": "Death-RoughBronze-v2.png",
+      "prompt": "Use case: precise-object-edit\nEdit this exact sprite sheet IN PLACE. This is ONLY a material/color edit. Keep every pose, body part, object size, shape, position, spacing, weapon angle and camera from the input. Do not resize, enlarge, zoom, reposition, or recreate any soldier.\nChange the RED FABRIC CROWN of the cap in all six poses to warm dull HAMMERED BRONZE. Keep exactly the existing cap dimensions/profile and cream fur brim. Subtle small shallow hammer marks and lightly rubbed bronze, not shiny gold. Tunic stays red, fur stays cream, trousers stay pale.\nMake the existing equipment mildly rougher: a few small scuffs/dents on existing bronze surfaces, rougher wood grain on the same shield/axe haft and worn leather. Retain readable complete silhouettes, rounded wooden shield and same bronze axe. No added armor, ornament or corrosion. Do not change the animation at all.\nExact1536x1024 RGBA, same3x2grid of512px cells in original order. Preserve original cell padding, with complete limbs/weapons inside each cell and at least16 transparent pixels at every edge. Genuine transparent background, no haze, ground, shadows, grid or text.\nKeep ALL existing fallen/corpse poses and dropped equipment exactly as authored. Cap crown is bronze even when upside-down or sideways.",
+      "references": [
+        "Death.png"
+      ],
+      "generatedSource": "C:\\Users\\Damien\\.codex\\generated_images\\01a0fea1-c63f-7343-92ca-6c21cc1c4296\\exec-5b17e3bb-ad59-4fac-b5d7-058ca2e10a73.png",
+      "status": "composition-source",
+      "reason": "All six source poses preserved; frame4 shifted left eight pixels during authorized atlas baking."
+    }
+  ]
+}

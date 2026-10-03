@@ -2,19 +2,19 @@
   "schemaVersion": 1,
   "name": "Old World",
   "minimum": -450,
-  "maximum": 5353,
+  "maximum": 7188.0,
   "seaLevel": 0,
   "source": {
-    "file": "17_309_70_313_6_8192_6144_16bit.png",
-    "sha256": "35faa0fcc24fb51c0b97018d40cf9aeced32f65ab613d56d7f189b49e3f2487e",
-    "width": 8192,
-    "height": 6144,
-    "url": "https://manticorp.github.io/unrealheightmap/#latitude/17.307970865257346/longitude/70.31319074071382/zoom/2/outputzoom/6/width/8192/height/6144/outputformat/png16"
+    "file": "15_623_69_961_5_4096_3072_16bit.png",
+    "sha256": "dedec5acd8d5c3dc21670b59ccb9f53750eee0f78e2386c2192a32c90770a9e6",
+    "width": 4096,
+    "height": 3072,
+    "url": "https://manticorp.github.io/unrealheightmap/#latitude/15.623021332612552/longitude/69.96092523833056/zoom/2/outputzoom/5/width/4096/height/3072/outputformat/png16"
   },
   "normalization": {
     "mode": "regular",
     "from": -450,
-    "to": 5353,
+    "to": 7188.0,
     "range": 65536
   },
   "terrainThresholds": {
@@ -22,278 +22,179 @@
     "mountain": 1800
   },
   "sampling": "area-majority land/water; average height within winning surface; ties water",
-  "waterRule": "calibrated sea level plus explicitly authored major-river hydrology",
+  "waterRule": "calibrated sea level plus explicitly authored major-river hydrology plus registered lake polygons with explicit surface elevations",
   "resolutionRule": "selected size is the longest edge; source aspect ratio preserved",
   "variants": {
     "250": {
       "width": 250,
       "height": 188,
-      "landCells": 20850,
-      "seaCode": 5082,
+      "landCells": 20274,
+      "seaCode": 3861,
       "heightMinimum": -450.0,
-      "heightMaximum": 5320.99853515625
+      "heightMaximum": 5708.177734375
     },
     "500": {
       "width": 500,
       "height": 375,
-      "landCells": 83667,
-      "seaCode": 5082,
+      "landCells": 81374,
+      "seaCode": 3861,
       "heightMinimum": -450.0,
-      "heightMaximum": 5352.57275390625
+      "heightMaximum": 6053.13623046875
     },
     "1000": {
       "width": 1000,
       "height": 750,
-      "landCells": 342512,
-      "seaCode": 5082,
+      "landCells": 333153,
+      "seaCode": 3861,
       "heightMinimum": -450.0,
-      "heightMaximum": 5352.91162109375
+      "heightMaximum": 6268.19091796875
     }
   },
-  "climate": {
-    "description": "Old World review: authored approximate climate regions for the supplied Africa/Europe/Asia/Australia footprint. No aligned albedo was supplied. Broad blended moisture bounds guide plausible biomes and vegetation using the shared geographic environment system; these are not measured rainfall or land-cover data. Original calibrated elevations remain authoritative.",
-    "regions": [
-      {
-        "name": "Sahara dry interior",
-        "latitude": 25,
-        "longitude": 12,
-        "latitudeRadius": 10,
-        "longitudeRadius": 29,
-        "minimumMoisture": 0,
-        "woodlandBias": 0,
-        "maximumMoisture": 0.16
+  "environment": {
+    "schemaVersion": 1,
+    "encoding": "u8-moisture-vegetation-aridity",
+    "classifier": "visible-color-gradients-v1",
+    "smoothingCellsAt500": 1.4,
+    "greenSensitivity": 1.1,
+    "source": {
+      "file": "15_623_69_961_5_4096_3072_albedo_imagery.png",
+      "sha256": "69600635aab384cfdb1f239e2ffd15426c648467af503618815ce6005641a24b",
+      "width": 4096,
+      "height": 3072,
+      "registration": "same-footprint"
+    },
+    "interpretation": "approximate color-derived moisture, vegetation and aridity; height/water remain authoritative",
+    "variants": {
+      "250": {
+        "waterHintAgreement": 0.9444893617021276,
+        "waterHintIoU": 0.9024052668985898,
+        "meanLandMoisture": 0.4559751018884421,
+        "meanLandVegetation": 0.4341213608852834,
+        "meanLandAridity": 0.2829579854038883
       },
-      {
-        "name": "Arabian desert",
-        "latitude": 24,
-        "longitude": 46,
-        "latitudeRadius": 10,
-        "longitudeRadius": 17,
-        "minimumMoisture": 0,
-        "woodlandBias": 0,
-        "maximumMoisture": 0.15
+      "500": {
+        "waterHintAgreement": 0.952576,
+        "waterHintIoU": 0.9162672442205377,
+        "meanLandMoisture": 0.45145599813400916,
+        "meanLandVegetation": 0.42823766515970557,
+        "meanLandAridity": 0.2857942292113345
       },
-      {
-        "name": "Iranian dry plateau",
-        "latitude": 31,
-        "longitude": 59,
-        "latitudeRadius": 8,
-        "longitudeRadius": 14,
-        "minimumMoisture": 0,
-        "woodlandBias": 0,
-        "maximumMoisture": 0.25
-      },
-      {
-        "name": "Tarim dry basin",
-        "latitude": 40,
-        "longitude": 83,
-        "latitudeRadius": 5,
-        "longitudeRadius": 12,
-        "minimumMoisture": 0,
-        "woodlandBias": 0,
-        "maximumMoisture": 0.22
-      },
-      {
-        "name": "Central Asian steppe and Gobi",
-        "latitude": 45,
-        "longitude": 91,
-        "latitudeRadius": 9,
-        "longitudeRadius": 30,
-        "minimumMoisture": 0,
-        "woodlandBias": 0,
-        "maximumMoisture": 0.35
-      },
-      {
-        "name": "Namib coastal desert",
-        "latitude": -24,
-        "longitude": 15,
-        "latitudeRadius": 9,
-        "longitudeRadius": 3.2,
-        "minimumMoisture": 0,
-        "woodlandBias": 0,
-        "maximumMoisture": 0.18
-      },
-      {
-        "name": "Kalahari dry interior",
-        "latitude": -24,
-        "longitude": 23,
-        "latitudeRadius": 7,
-        "longitudeRadius": 7,
-        "minimumMoisture": 0,
-        "woodlandBias": 0,
-        "maximumMoisture": 0.28
-      },
-      {
-        "name": "Australian dry interior",
-        "latitude": -25,
-        "longitude": 133,
-        "latitudeRadius": 13,
-        "longitudeRadius": 20,
-        "minimumMoisture": 0,
-        "woodlandBias": 0,
-        "maximumMoisture": 0.18
-      },
-      {
-        "name": "Western and central European woodland",
-        "latitude": 49,
-        "longitude": 7,
-        "latitudeRadius": 10,
-        "longitudeRadius": 23,
-        "minimumMoisture": 0.73,
-        "woodlandBias": 0.1
-      },
-      {
-        "name": "Boreal Eurasian woodland",
-        "latitude": 58,
-        "longitude": 91,
-        "latitudeRadius": 12,
-        "longitudeRadius": 54,
-        "minimumMoisture": 0.61,
-        "woodlandBias": 0.08
-      },
-      {
-        "name": "Guinean humid belt",
-        "latitude": 7,
-        "longitude": -4,
-        "latitudeRadius": 6,
-        "longitudeRadius": 14,
-        "minimumMoisture": 0.78,
-        "woodlandBias": 0.12
-      },
-      {
-        "name": "Congo rainforest",
-        "latitude": -2,
-        "longitude": 22,
-        "latitudeRadius": 10,
-        "longitudeRadius": 14,
-        "minimumMoisture": 0.86,
-        "woodlandBias": 0.15
-      },
-      {
-        "name": "Miombo woodland",
-        "latitude": -12,
-        "longitude": 28,
-        "latitudeRadius": 7,
-        "longitudeRadius": 8,
-        "minimumMoisture": 0.59,
-        "woodlandBias": 0.07
-      },
-      {
-        "name": "East African coast",
-        "latitude": -12,
-        "longitude": 40,
-        "latitudeRadius": 13,
-        "longitudeRadius": 4,
-        "minimumMoisture": 0.69,
-        "woodlandBias": 0.08
-      },
-      {
-        "name": "Madagascar eastern humid belt",
-        "latitude": -19,
-        "longitude": 48.3,
-        "latitudeRadius": 7,
-        "longitudeRadius": 2.7,
-        "minimumMoisture": 0.84,
-        "woodlandBias": 0.14
-      },
-      {
-        "name": "Cape scrub",
-        "latitude": -33.5,
-        "longitude": 20,
-        "latitudeRadius": 3,
-        "longitudeRadius": 5,
-        "minimumMoisture": 0.42,
-        "woodlandBias": 0.02,
-        "maximumMoisture": 0.53
-      },
-      {
-        "name": "Indian monsoon woodland",
-        "latitude": 20,
-        "longitude": 79,
-        "latitudeRadius": 13,
-        "longitudeRadius": 11,
-        "minimumMoisture": 0.62,
-        "woodlandBias": 0.07
-      },
-      {
-        "name": "Indo-Gangetic humid plain",
-        "latitude": 25,
-        "longitude": 88,
-        "latitudeRadius": 5,
-        "longitudeRadius": 10,
-        "minimumMoisture": 0.75,
-        "woodlandBias": 0.09
-      },
-      {
-        "name": "Mainland Southeast Asian rainforest",
-        "latitude": 15,
-        "longitude": 104,
-        "latitudeRadius": 13,
-        "longitudeRadius": 16,
-        "minimumMoisture": 0.8,
-        "woodlandBias": 0.13
-      },
-      {
-        "name": "Southern and eastern Chinese woodland",
-        "latitude": 28,
-        "longitude": 113,
-        "latitudeRadius": 12,
-        "longitudeRadius": 15,
-        "minimumMoisture": 0.75,
-        "woodlandBias": 0.1
-      },
-      {
-        "name": "Japanese and Korean woodland",
-        "latitude": 37,
-        "longitude": 136,
-        "latitudeRadius": 12,
-        "longitudeRadius": 10,
-        "minimumMoisture": 0.74,
-        "woodlandBias": 0.1
-      },
-      {
-        "name": "Maritime Southeast Asian rainforest",
-        "latitude": -3,
-        "longitude": 119,
-        "latitudeRadius": 12,
-        "longitudeRadius": 31,
-        "minimumMoisture": 0.85,
-        "woodlandBias": 0.14
-      },
-      {
-        "name": "Northern Australian monsoon woodland",
-        "latitude": -13,
-        "longitude": 132,
-        "latitudeRadius": 5,
-        "longitudeRadius": 16,
-        "minimumMoisture": 0.61,
-        "woodlandBias": 0.06
-      },
-      {
-        "name": "Eastern Australian coastal woodland",
-        "latitude": -27,
-        "longitude": 152,
-        "latitudeRadius": 14,
-        "longitudeRadius": 5,
-        "minimumMoisture": 0.72,
-        "woodlandBias": 0.09
-      },
-      {
-        "name": "Southeastern Australian woodland",
-        "latitude": -37,
-        "longitude": 146,
-        "latitudeRadius": 5,
-        "longitudeRadius": 9,
-        "minimumMoisture": 0.62,
-        "woodlandBias": 0.06
+      "1000": {
+        "waterHintAgreement": 0.964728,
+        "waterHintIoU": 0.9366579110567311,
+        "meanLandMoisture": 0.4486932607010981,
+        "meanLandVegetation": 0.42336365150016747,
+        "meanLandAridity": 0.28690821734558397
       }
-    ]
+    }
+  },
+  "lakes": {
+    "schemaVersion": 1,
+    "source": {
+      "title": "Natural Earth v5.0.0 1:10m ne_10m_lakes",
+      "license": "Public domain",
+      "terms": "https://www.naturalearthdata.com/about/terms-of-use/",
+      "upstreamCommit": "ace5fed0eaf3c6c03c951e75b439ba8fffbc218e",
+      "sourceFiles": [
+        {
+          "file": "ne_10m_lakes.geojson",
+          "sha256": "2d036f53dedec578001c5c30c2959ee7d4eebc1306900fa4367c49929ec8f2d9",
+          "url": "https://github.com/nvkelso/natural-earth-vector/blob/ace5fed0eaf3c6c03c951e75b439ba8fffbc218e/geojson/ne_10m_lakes.geojson"
+        }
+      ],
+      "geometryPolicy": "Original features, properties and coordinates preserved; cropped only during rasterization",
+      "limitations": "Generalized cartography, not a complete drainage or lake inventory. Gameplay widths are exaggerated; fixed nominal lake levels are not current levels or datum conversions.",
+      "geographicBoundsWsen": [
+        -20.03907476166944,
+        -45.82881046594588,
+        159.96092523833056,
+        63.704715300055426
+      ],
+      "surfaceReferenceLevels": {
+        "Lake Victoria": {
+          "surfaceElevationMeters": 1134,
+          "url": "https://www.geodoi.ac.cn/weben/doi.aspx?Id=221"
+        },
+        "Lake Tanganyika": {
+          "surfaceElevationMeters": 773,
+          "url": "https://www.fao.org/fishery/static/LTR/GEN.HTM"
+        },
+        "Lake Malawi": {
+          "surfaceElevationMeters": 474,
+          "url": "https://africangreatlakesinform.org/article/lake-malawiniassanyasa"
+        },
+        "Lake Baikal": {
+          "surfaceElevationMeters": 455.5,
+          "url": "https://archive.iwlearn.net/bic.iwlearn.org/bic.iwlearn.org/bic.iwlearn.org/en/atlas/atlas/01-satellite-image-map.html"
+        },
+        "Lake Van": {
+          "surfaceElevationMeters": 1649,
+          "url": "https://agupubs.onlinelibrary.wiley.com/doi/full/10.1029/2009WR008555"
+        },
+        "Danau Toba": {
+          "surfaceElevationMeters": 905,
+          "url": "https://wldb.ilec.or.jp/Display/html/3527"
+        }
+      },
+      "selectionNotes": "Selected significant permanent lakes with independently referenced nonnegative nominal levels. Below-sea basins and seasonal playas are excluded: shared renderer cannot represent negative lake surfaces.",
+      "file": "lakes.geojson",
+      "sha256": "1518531792d071b5451e01d8e9f561d84cb037c7a01f02f1fe88e5bd6597c6b7"
+    },
+    "surfaceElevationsMeters": {
+      "Lake Victoria": 1134,
+      "Lake Tanganyika": 773,
+      "Lake Malawi": 474,
+      "Lake Baikal": 455.5,
+      "Lake Van": 1649,
+      "Danau Toba": 905
+    },
+    "registration": "geographic polygons projected into the original Web Mercator footprint",
+    "sampling": "8x8 centre-sampled union coverage; majority and ties water; holes retain islands; mixed cells use dominant lake level with source-order ties",
+    "interpretation": "explicit inland water with flat authored surface elevations; source PNG and all heights outside lake masks preserved",
+    "variants": {
+      "250": {
+        "surfaceCells": 31,
+        "newWaterCells": 31,
+        "cellsByLake": {
+          "Lake Baikal": 12,
+          "Lake Malawi": 5,
+          "Lake Tanganyika": 4,
+          "Lake Victoria": 9,
+          "Danau Toba": 0,
+          "Lake Van": 1
+        }
+      },
+      "500": {
+        "surfaceCells": 135,
+        "newWaterCells": 135,
+        "cellsByLake": {
+          "Lake Baikal": 55,
+          "Lake Malawi": 18,
+          "Lake Tanganyika": 18,
+          "Lake Victoria": 40,
+          "Danau Toba": 0,
+          "Lake Van": 4
+        }
+      },
+      "1000": {
+        "surfaceCells": 568,
+        "newWaterCells": 568,
+        "cellsByLake": {
+          "Lake Baikal": 222,
+          "Lake Malawi": 80,
+          "Lake Tanganyika": 80,
+          "Lake Victoria": 172,
+          "Danau Toba": 2,
+          "Lake Van": 12
+        }
+      }
+    }
   },
   "hydrology": {
     "schemaVersion": 1,
     "source": {
       "file": "rivers.geojson",
-      "sha256": "8519f7fe7294ce235062ee71a44c4022eaaca26c60c558f14b5f9270ab9f1863",
+      "sha256": "c215347d6580990985a140ddd9a5a373c723c26d9ffac2674486f2f908026b18",
       "title": "Natural Earth 1:10m rivers and lake centerlines",
       "url": "https://github.com/nvkelso/natural-earth-vector/blob/master/geojson/ne_10m_rivers_lake_centerlines.geojson",
       "upstreamGitBlob": "61a0d7137a6ff1113cc259525e7479c63d5fec86",
@@ -458,7 +359,14 @@
             "geometrySha256": "3aed727c735cde159604e9d5d93df932d8e60b81407417ead849ec50c648a22a"
           }
         ]
-      }
+      },
+      "geographicBoundsWsen": [
+        -20.03907476166944,
+        -45.82881046594588,
+        159.96092523833056,
+        63.704715300055426
+      ],
+      "registrationUpdate": "Reproject existing reviewed river geometries against replacement heightmap footprint."
     },
     "names": [
       "Abay",
@@ -546,17 +454,38 @@
     "interpretation": "major rivers are four-connected navigable water; gameplay widths exaggerated; original elevations preserved",
     "variants": {
       "250": {
-        "channelCells": 1518,
-        "newWaterCells": 1498
+        "channelCells": 1539,
+        "newWaterCells": 1500
       },
       "500": {
-        "channelCells": 5773,
-        "newWaterCells": 5687
+        "channelCells": 5735,
+        "newWaterCells": 5614
       },
       "1000": {
-        "channelCells": 15275,
-        "newWaterCells": 15065
+        "channelCells": 15046,
+        "newWaterCells": 14708
       }
+    }
+  },
+  "climate": {
+    "description": "Himalayan and Tibetan snow review: raise the mountain snowline to 5700 m in the regional core, softly blending to the original map baseline at the elliptical boundary. Keep snow on the highest peaks and expose grey rock over the plateau. Artistic snow extent, not a measured seasonal snow cover. Other climate fields, water and elevations retain their existing authority.",
+    "regions": [],
+    "snowPolicy": {
+      "northernIceLatitude": 90,
+      "northernTransitionDegrees": 3,
+      "exposedRockRelief": 220,
+      "equatorialSnowline": 4200,
+      "snowlineLatitudeDrop": 22,
+      "minimumMountainSnowline": 1800,
+      "mountainSnowlineRegions": [
+        {
+          "latitude": 32,
+          "longitude": 87,
+          "latitudeRadius": 10,
+          "longitudeRadius": 22,
+          "snowline": 5700
+        }
+      ]
     }
   }
 }

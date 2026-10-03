@@ -1,0 +1,44 @@
+{
+  "schemaVersion": 2,
+  "age": "ClassicalAge",
+  "cultureId": "russian",
+  "status": "pass",
+  "reviewedAt": "2026-10-03T02:54:46.872098+00:00",
+  "scope": "Local animation sheets and browser playback/game-scale review; match-runtime integration unverified",
+  "urls": {
+    "ships": "http://127.0.0.1:9018/Ship%20Icons/Ship_Animation_Preview.html?culture=russian#ClassicalAge",
+    "trader": "http://127.0.0.1:9018/Trader%20Icons/Trader_Animation_Preview.html?culture=russian#ClassicalAge"
+  },
+  "checks": {
+    "boatClipsLoaded": 7,
+    "traderClipsLoaded": 2,
+    "primaryFrameCount": 90,
+    "rgbaSheetsAndTransparentGuardsPassed": true,
+    "playbackControlsEnabled": true,
+    "nextAndPreviousWrapBetweenFramesOneAndTen": true,
+    "normalAndHalfSpeedPlaybackInspected": true,
+    "gameScaleAndBaseComparisonVisuallyInspected": true,
+    "boatRolesDistinctAtTacticalSize": true,
+    "correctedEquineForelegsVisuallyInspected": true,
+    "wagonAndPanniersPreserved": true,
+    "consoleErrors": 0,
+    "earlierArtworkFilesChecked": 956,
+    "earlierArtworkUnchanged": true,
+    "reviewTabsLeftPlayingRussianClassicalAge": true
+  },
+  "sourceApproval": {
+    "status": "approved",
+    "userMessage": "those are approved, animate them"
+  },
+  "motionRevision": {
+    "revision": 2,
+    "userMessage": "the horse and mules front legs are kind of ridiculous",
+    "changes": "Narrower shoulder anchors and contact paths; slender forelegs with a separate fetlock/pastern link and retained-body occlusion.",
+    "verification": "Twenty trader frames, twelve leg tracks, fixed link lengths, planted contact, lifted recovery and live browser review passed.",
+    "userAcceptance": "Pending user review of corrected motion"
+  },
+  "screenshots": {
+    "boats": "Classical_Animations_Playing.jpg",
+    "trader": "../../../Traders/ClassicalAge/Review/Classical_Trader_Walking.jpg"
+  }
+}

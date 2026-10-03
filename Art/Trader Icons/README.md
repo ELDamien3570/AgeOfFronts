@@ -13,6 +13,12 @@ Six overhead formations progress from one merchant pulling his own wagon to a la
 
 Open `Trader_Animation_Preview.html` through the existing Art preview server. All ages shows the six travel loops; each age tab compares Idle and Travel. Controls include frame stepping, playback speed, 24–512 px sizes, backdrops and pivot display. The ship and soldier previews remain available through links.
 
+The Culture dropdown also offers Russian. Its Bronze Age handcart and Stone Age
+basket carrier each have articulated Idle and Travel loops. Moving ground
+shows the planted-foot walk in motion. Russian sources and exports live separately in
+`Art/Cultures/Russians/Traders/`; Base paintings and sheets are preserved.
+The Russian view includes a comparison at current game screen sizes.
+
 ## Sprite contract
 
 - Transparent RGBA PNG, 2560 × 1024, five columns and two rows.

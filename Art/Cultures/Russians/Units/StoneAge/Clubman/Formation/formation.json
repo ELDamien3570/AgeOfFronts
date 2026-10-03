@@ -182,10 +182,44 @@
       "layoutTransitionDelayMs": 150,
       "layoutTracks": {
         "left": {
-          "x": [{"timeMs":0,"value":130},{"timeMs":200,"value":90},{"timeMs":520,"value":90},{"timeMs":720,"value":112}]
+          "x": [
+            {
+              "timeMs": 0,
+              "value": 130
+            },
+            {
+              "timeMs": 200,
+              "value": 90
+            },
+            {
+              "timeMs": 520,
+              "value": 90
+            },
+            {
+              "timeMs": 720,
+              "value": 112
+            }
+          ]
         },
         "right": {
-          "x": [{"timeMs":0,"value":382},{"timeMs":200,"value":422},{"timeMs":520,"value":422},{"timeMs":720,"value":400}]
+          "x": [
+            {
+              "timeMs": 0,
+              "value": 382
+            },
+            {
+              "timeMs": 200,
+              "value": 422
+            },
+            {
+              "timeMs": 520,
+              "value": 422
+            },
+            {
+              "timeMs": 720,
+              "value": 400
+            }
+          ]
         }
       },
       "reviewTravel": {
@@ -248,10 +282,44 @@
       "layoutTransitionDelayMs": 140,
       "layoutTracks": {
         "left": {
-          "x": [{"timeMs":0,"value":112},{"timeMs":200,"value":90},{"timeMs":520,"value":90},{"timeMs":720,"value":130}]
+          "x": [
+            {
+              "timeMs": 0,
+              "value": 112
+            },
+            {
+              "timeMs": 200,
+              "value": 90
+            },
+            {
+              "timeMs": 520,
+              "value": 90
+            },
+            {
+              "timeMs": 720,
+              "value": 130
+            }
+          ]
         },
         "right": {
-          "x": [{"timeMs":0,"value":400},{"timeMs":200,"value":422},{"timeMs":520,"value":422},{"timeMs":720,"value":382}]
+          "x": [
+            {
+              "timeMs": 0,
+              "value": 400
+            },
+            {
+              "timeMs": 200,
+              "value": 422
+            },
+            {
+              "timeMs": 520,
+              "value": 422
+            },
+            {
+              "timeMs": 720,
+              "value": 382
+            }
+          ]
         }
       },
       "reviewTravel": {
@@ -279,7 +347,7 @@
       "source": "death",
       "layoutFrom": "standard",
       "layoutTo": "standard",
-      "durationMs": 1440,
+      "durationMs": 1580,
       "loop": false,
       "memberStartMs": {
         "tip": 0,
@@ -288,14 +356,29 @@
         "rear-left": 320,
         "rear-right": 370
       },
-      "description": "The front three collapse first, then the back two. All five remain on the ground."
+      "description": "Front three fall first, then the back two. Three buckle onto their side and two fall backward onto their back. All five remain down.",
+      "memberSources": {
+        "tip": "death",
+        "left": "death-back",
+        "right": "death",
+        "rear-left": "death",
+        "rear-right": "death-back"
+      }
     }
   ],
   "chargeSequence": {
     "wedgeRoles": {
-      "tip": ["tip"],
-      "innerPair": ["rear-left", "rear-right"],
-      "rearPair": ["left", "right"]
+      "tip": [
+        "tip"
+      ],
+      "innerPair": [
+        "rear-left",
+        "rear-right"
+      ],
+      "rearPair": [
+        "left",
+        "right"
+      ]
     },
     "reviewTravelNote": "Forward travel is an inspection reference only. It scrolls the review ground; it is never baked as squad movement or applied to gameplay.",
     "phases": [
@@ -320,5 +403,6 @@
       },
       "note": "Presentation contract only. Combat events and movement remain owned by the existing game domain."
     }
-  }
+  },
+  "minimumDeathVariants": 2
 }

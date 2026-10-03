@@ -46,8 +46,51 @@ describe("map-scoped snow policy", () => {
       { ...policy, equatorialSnowline: NaN },
       { ...policy, snowlineLatitudeDrop: -1 },
       { ...policy, minimumMountainSnowline: 6000 },
+      { ...policy, mountainSnowlineRegions: {} },
+      { ...policy, mountainSnowlineRegions: [null] },
+      {
+        ...policy,
+        mountainSnowlineRegions: [
+          {
+            latitude: 32,
+            longitude: 87,
+            latitudeRadius: 10,
+            longitudeRadius: 22,
+            snowline: NaN,
+          },
+        ],
+      },
+      {
+        ...policy,
+        mountainSnowlineRegions: [
+          {
+            latitude: 32,
+            longitude: 87,
+            latitudeRadius: 0,
+            longitudeRadius: 22,
+            snowline: 5700,
+          },
+        ],
+      },
     ])
       expect(() => decodeEnvironmentSnowPolicy(invalid)).toThrow("snow policy");
+  });
+
+  it("isolates regional snowline settings from later authoring mutations", () => {
+    const region = {
+      latitude: 32,
+      longitude: 87,
+      latitudeRadius: 10,
+      longitudeRadius: 22,
+      snowline: 5700,
+    };
+    const authored = { ...policy, mountainSnowlineRegions: [region] };
+    const decoded = decodeEnvironmentSnowPolicy(authored)!;
+    region.snowline = 1;
+    authored.mountainSnowlineRegions.length = 0;
+    expect(decoded.mountainSnowlineRegions![0].snowline).toBe(5700);
+    expect(Object.isFrozen(decoded.mountainSnowlineRegions)).toBe(true);
+    expect(Object.isFrozen(decoded.mountainSnowlineRegions![0])).toBe(true);
   });
 
   it("retains the default classifier while allowing a higher map-specific mountain snowline", () => {

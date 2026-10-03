@@ -2,6 +2,29 @@
   "stage": "formation-art-prototype",
   "compositionSource": "formation.json",
   "memberCount": 5,
+  "deathMotionCount": 2,
+  "deathAssignments": [
+    {
+      "id": "rear-left",
+      "source": "death"
+    },
+    {
+      "id": "rear-right",
+      "source": "death-back"
+    },
+    {
+      "id": "left",
+      "source": "death-back"
+    },
+    {
+      "id": "right",
+      "source": "death"
+    },
+    {
+      "id": "tip",
+      "source": "death"
+    }
+  ],
   "sourceActors": [
     {
       "id": "idle",
@@ -534,6 +557,73 @@
             90,
             400,
             375
+          ],
+          "guardAlphaMax": 1
+        }
+      ]
+    },
+    {
+      "id": "death-back",
+      "path": "SourceActor/Death-Back.png",
+      "sha256": "d89ed125d5ee9b72d006ccd130c0261392df8aecc498934d9b17b1026bb64908",
+      "frames": [
+        {
+          "index": 0,
+          "visibleBounds": [
+            120,
+            114,
+            445,
+            437
+          ],
+          "guardAlphaMax": 0
+        },
+        {
+          "index": 1,
+          "visibleBounds": [
+            93,
+            115,
+            464,
+            436
+          ],
+          "guardAlphaMax": 1
+        },
+        {
+          "index": 2,
+          "visibleBounds": [
+            52,
+            112,
+            459,
+            451
+          ],
+          "guardAlphaMax": 0
+        },
+        {
+          "index": 3,
+          "visibleBounds": [
+            57,
+            74,
+            502,
+            418
+          ],
+          "guardAlphaMax": 1
+        },
+        {
+          "index": 4,
+          "visibleBounds": [
+            36,
+            79,
+            489,
+            426
+          ],
+          "guardAlphaMax": 1
+        },
+        {
+          "index": 5,
+          "visibleBounds": [
+            27,
+            85,
+            461,
+            432
           ],
           "guardAlphaMax": 1
         }
@@ -13891,12 +13981,12 @@
     {
       "id": "death",
       "file": "Death.png",
-      "frameCount": 29,
+      "frameCount": 32,
       "sheetSize": {
         "width": 2560,
-        "height": 3072
+        "height": 3584
       },
-      "sha256": "2f5adc6958b2e45585758439effa811b2f63a04e40e3df449f637d7192042b6f",
+      "sha256": "4a4e91c265eb051c4cb04ef28e4b76b5295866906ebfc8bb3943e46c3601900d",
       "frames": [
         {
           "index": 0,
@@ -13973,9 +14063,9 @@
         },
         {
           "index": 1,
-          "timeMs": 51.42857142857143,
+          "timeMs": 50.96774193548387,
           "visibleBounds": [
-            68,
+            69,
             105,
             443,
             400
@@ -14012,7 +14102,7 @@
               "y": 286,
               "poses": [
                 {
-                  "clipId": "death",
+                  "clipId": "death-back",
                   "frame": 0,
                   "weight": 1
                 }
@@ -14046,9 +14136,9 @@
         },
         {
           "index": 2,
-          "timeMs": 102.85714285714286,
+          "timeMs": 101.93548387096774,
           "visibleBounds": [
-            68,
+            69,
             105,
             443,
             400
@@ -14085,7 +14175,7 @@
               "y": 286,
               "poses": [
                 {
-                  "clipId": "death",
+                  "clipId": "death-back",
                   "frame": 0,
                   "weight": 1
                 }
@@ -14119,9 +14209,9 @@
         },
         {
           "index": 3,
-          "timeMs": 154.28571428571428,
+          "timeMs": 152.90322580645162,
           "visibleBounds": [
-            68,
+            69,
             105,
             443,
             400
@@ -14158,7 +14248,7 @@
               "y": 286,
               "poses": [
                 {
-                  "clipId": "death",
+                  "clipId": "death-back",
                   "frame": 0,
                   "weight": 1
                 }
@@ -14192,9 +14282,9 @@
         },
         {
           "index": 4,
-          "timeMs": 205.71428571428572,
+          "timeMs": 203.8709677419355,
           "visibleBounds": [
-            56,
+            66,
             105,
             450,
             400
@@ -14231,7 +14321,7 @@
               "y": 286,
               "poses": [
                 {
-                  "clipId": "death",
+                  "clipId": "death-back",
                   "frame": 1,
                   "weight": 1
                 }
@@ -14265,9 +14355,9 @@
         },
         {
           "index": 5,
-          "timeMs": 257.14285714285717,
+          "timeMs": 254.83870967741936,
           "visibleBounds": [
-            56,
+            66,
             105,
             450,
             400
@@ -14304,7 +14394,7 @@
               "y": 286,
               "poses": [
                 {
-                  "clipId": "death",
+                  "clipId": "death-back",
                   "frame": 1,
                   "weight": 1
                 }
@@ -14338,9 +14428,9 @@
         },
         {
           "index": 6,
-          "timeMs": 308.57142857142856,
+          "timeMs": 305.80645161290323,
           "visibleBounds": [
-            60,
+            66,
             105,
             450,
             400
@@ -14377,8 +14467,8 @@
               "y": 286,
               "poses": [
                 {
-                  "clipId": "death",
-                  "frame": 2,
+                  "clipId": "death-back",
+                  "frame": 1,
                   "weight": 1
                 }
               ]
@@ -14411,9 +14501,9 @@
         },
         {
           "index": 7,
-          "timeMs": 360,
+          "timeMs": 356.7741935483871,
           "visibleBounds": [
-            60,
+            49,
             105,
             451,
             400
@@ -14450,7 +14540,7 @@
               "y": 286,
               "poses": [
                 {
-                  "clipId": "death",
+                  "clipId": "death-back",
                   "frame": 2,
                   "weight": 1
                 }
@@ -14484,12 +14574,12 @@
         },
         {
           "index": 8,
-          "timeMs": 411.42857142857144,
+          "timeMs": 407.741935483871,
           "visibleBounds": [
-            60,
+            49,
             105,
             451,
-            388
+            400
           ],
           "guardAlphaMax": 0,
           "members": [
@@ -14511,7 +14601,7 @@
               "y": 170,
               "poses": [
                 {
-                  "clipId": "death",
+                  "clipId": "death-back",
                   "frame": 0,
                   "weight": 1
                 }
@@ -14523,7 +14613,7 @@
               "y": 286,
               "poses": [
                 {
-                  "clipId": "death",
+                  "clipId": "death-back",
                   "frame": 2,
                   "weight": 1
                 }
@@ -14548,7 +14638,7 @@
               "poses": [
                 {
                   "clipId": "death",
-                  "frame": 3,
+                  "frame": 2,
                   "weight": 1
                 }
               ]
@@ -14557,10 +14647,10 @@
         },
         {
           "index": 9,
-          "timeMs": 462.85714285714283,
+          "timeMs": 458.7096774193548,
           "visibleBounds": [
-            48,
-            105,
+            49,
+            109,
             451,
             388
           ],
@@ -14584,7 +14674,7 @@
               "y": 170,
               "poses": [
                 {
-                  "clipId": "death",
+                  "clipId": "death-back",
                   "frame": 0,
                   "weight": 1
                 }
@@ -14596,8 +14686,8 @@
               "y": 286,
               "poses": [
                 {
-                  "clipId": "death",
-                  "frame": 3,
+                  "clipId": "death-back",
+                  "frame": 2,
                   "weight": 1
                 }
               ]
@@ -14630,10 +14720,10 @@
         },
         {
           "index": 10,
-          "timeMs": 514.2857142857143,
+          "timeMs": 509.6774193548387,
           "visibleBounds": [
-            48,
-            119,
+            43,
+            107,
             455,
             388
           ],
@@ -14657,7 +14747,7 @@
               "y": 170,
               "poses": [
                 {
-                  "clipId": "death",
+                  "clipId": "death-back",
                   "frame": 1,
                   "weight": 1
                 }
@@ -14669,7 +14759,7 @@
               "y": 286,
               "poses": [
                 {
-                  "clipId": "death",
+                  "clipId": "death-back",
                   "frame": 3,
                   "weight": 1
                 }
@@ -14703,10 +14793,10 @@
         },
         {
           "index": 11,
-          "timeMs": 565.7142857142857,
+          "timeMs": 560.6451612903226,
           "visibleBounds": [
-            48,
-            119,
+            43,
+            107,
             455,
             388
           ],
@@ -14730,7 +14820,7 @@
               "y": 170,
               "poses": [
                 {
-                  "clipId": "death",
+                  "clipId": "death-back",
                   "frame": 1,
                   "weight": 1
                 }
@@ -14742,7 +14832,7 @@
               "y": 286,
               "poses": [
                 {
-                  "clipId": "death",
+                  "clipId": "death-back",
                   "frame": 3,
                   "weight": 1
                 }
@@ -14776,10 +14866,10 @@
         },
         {
           "index": 12,
-          "timeMs": 617.1428571428571,
+          "timeMs": 611.6129032258065,
           "visibleBounds": [
-            48,
-            119,
+            43,
+            107,
             455,
             385
           ],
@@ -14803,7 +14893,7 @@
               "y": 170,
               "poses": [
                 {
-                  "clipId": "death",
+                  "clipId": "death-back",
                   "frame": 1,
                   "weight": 1
                 }
@@ -14815,7 +14905,7 @@
               "y": 286,
               "poses": [
                 {
-                  "clipId": "death",
+                  "clipId": "death-back",
                   "frame": 3,
                   "weight": 1
                 }
@@ -14849,10 +14939,10 @@
         },
         {
           "index": 13,
-          "timeMs": 668.5714285714286,
+          "timeMs": 662.5806451612904,
           "visibleBounds": [
-            50,
-            131,
+            43,
+            108,
             455,
             385
           ],
@@ -14876,7 +14966,7 @@
               "y": 170,
               "poses": [
                 {
-                  "clipId": "death",
+                  "clipId": "death-back",
                   "frame": 2,
                   "weight": 1
                 }
@@ -14888,8 +14978,8 @@
               "y": 286,
               "poses": [
                 {
-                  "clipId": "death",
-                  "frame": 4,
+                  "clipId": "death-back",
+                  "frame": 3,
                   "weight": 1
                 }
               ]
@@ -14922,10 +15012,10 @@
         },
         {
           "index": 14,
-          "timeMs": 720,
+          "timeMs": 713.5483870967741,
           "visibleBounds": [
-            50,
-            131,
+            40,
+            108,
             461,
             385
           ],
@@ -14949,7 +15039,7 @@
               "y": 170,
               "poses": [
                 {
-                  "clipId": "death",
+                  "clipId": "death-back",
                   "frame": 2,
                   "weight": 1
                 }
@@ -14961,7 +15051,7 @@
               "y": 286,
               "poses": [
                 {
-                  "clipId": "death",
+                  "clipId": "death-back",
                   "frame": 4,
                   "weight": 1
                 }
@@ -14995,10 +15085,10 @@
         },
         {
           "index": 15,
-          "timeMs": 771.4285714285714,
+          "timeMs": 764.516129032258,
           "visibleBounds": [
-            50,
-            129,
+            40,
+            108,
             461,
             385
           ],
@@ -15022,7 +15112,7 @@
               "y": 170,
               "poses": [
                 {
-                  "clipId": "death",
+                  "clipId": "death-back",
                   "frame": 2,
                   "weight": 1
                 }
@@ -15034,7 +15124,7 @@
               "y": 286,
               "poses": [
                 {
-                  "clipId": "death",
+                  "clipId": "death-back",
                   "frame": 4,
                   "weight": 1
                 }
@@ -15059,7 +15149,7 @@
               "poses": [
                 {
                   "clipId": "death",
-                  "frame": 5,
+                  "frame": 4,
                   "weight": 1
                 }
               ]
@@ -15068,10 +15158,10 @@
         },
         {
           "index": 16,
-          "timeMs": 822.8571428571429,
+          "timeMs": 815.483870967742,
           "visibleBounds": [
-            55,
-            129,
+            40,
+            98,
             461,
             385
           ],
@@ -15095,7 +15185,7 @@
               "y": 170,
               "poses": [
                 {
-                  "clipId": "death",
+                  "clipId": "death-back",
                   "frame": 3,
                   "weight": 1
                 }
@@ -15107,8 +15197,8 @@
               "y": 286,
               "poses": [
                 {
-                  "clipId": "death",
-                  "frame": 5,
+                  "clipId": "death-back",
+                  "frame": 4,
                   "weight": 1
                 }
               ]
@@ -15141,10 +15231,10 @@
         },
         {
           "index": 17,
-          "timeMs": 874.2857142857143,
+          "timeMs": 866.4516129032259,
           "visibleBounds": [
-            55,
-            129,
+            40,
+            98,
             465,
             385
           ],
@@ -15168,7 +15258,7 @@
               "y": 170,
               "poses": [
                 {
-                  "clipId": "death",
+                  "clipId": "death-back",
                   "frame": 3,
                   "weight": 1
                 }
@@ -15180,8 +15270,8 @@
               "y": 286,
               "poses": [
                 {
-                  "clipId": "death",
-                  "frame": 5,
+                  "clipId": "death-back",
+                  "frame": 4,
                   "weight": 1
                 }
               ]
@@ -15214,10 +15304,10 @@
         },
         {
           "index": 18,
-          "timeMs": 925.7142857142857,
+          "timeMs": 917.4193548387096,
           "visibleBounds": [
-            55,
-            129,
+            38,
+            98,
             465,
             385
           ],
@@ -15241,7 +15331,7 @@
               "y": 170,
               "poses": [
                 {
-                  "clipId": "death",
+                  "clipId": "death-back",
                   "frame": 3,
                   "weight": 1
                 }
@@ -15253,7 +15343,7 @@
               "y": 286,
               "poses": [
                 {
-                  "clipId": "death",
+                  "clipId": "death-back",
                   "frame": 5,
                   "weight": 1
                 }
@@ -15287,10 +15377,10 @@
         },
         {
           "index": 19,
-          "timeMs": 977.1428571428571,
+          "timeMs": 968.3870967741935,
           "visibleBounds": [
-            55,
-            133,
+            38,
+            98,
             465,
             385
           ],
@@ -15314,8 +15404,8 @@
               "y": 170,
               "poses": [
                 {
-                  "clipId": "death",
-                  "frame": 4,
+                  "clipId": "death-back",
+                  "frame": 3,
                   "weight": 1
                 }
               ]
@@ -15326,7 +15416,7 @@
               "y": 286,
               "poses": [
                 {
-                  "clipId": "death",
+                  "clipId": "death-back",
                   "frame": 5,
                   "weight": 1
                 }
@@ -15360,10 +15450,10 @@
         },
         {
           "index": 20,
-          "timeMs": 1028.5714285714287,
+          "timeMs": 1019.3548387096774,
           "visibleBounds": [
-            55,
-            133,
+            38,
+            98,
             465,
             385
           ],
@@ -15387,8 +15477,8 @@
               "y": 170,
               "poses": [
                 {
-                  "clipId": "death",
-                  "frame": 4,
+                  "clipId": "death-back",
+                  "frame": 3,
                   "weight": 1
                 }
               ]
@@ -15399,7 +15489,7 @@
               "y": 286,
               "poses": [
                 {
-                  "clipId": "death",
+                  "clipId": "death-back",
                   "frame": 5,
                   "weight": 1
                 }
@@ -15433,10 +15523,10 @@
         },
         {
           "index": 21,
-          "timeMs": 1080,
+          "timeMs": 1070.3225806451612,
           "visibleBounds": [
-            55,
-            133,
+            38,
+            99,
             465,
             385
           ],
@@ -15460,7 +15550,7 @@
               "y": 170,
               "poses": [
                 {
-                  "clipId": "death",
+                  "clipId": "death-back",
                   "frame": 4,
                   "weight": 1
                 }
@@ -15472,7 +15562,7 @@
               "y": 286,
               "poses": [
                 {
-                  "clipId": "death",
+                  "clipId": "death-back",
                   "frame": 5,
                   "weight": 1
                 }
@@ -15506,10 +15596,10 @@
         },
         {
           "index": 22,
-          "timeMs": 1131.4285714285713,
+          "timeMs": 1121.2903225806451,
           "visibleBounds": [
-            55,
-            133,
+            38,
+            99,
             465,
             385
           ],
@@ -15533,7 +15623,7 @@
               "y": 170,
               "poses": [
                 {
-                  "clipId": "death",
+                  "clipId": "death-back",
                   "frame": 4,
                   "weight": 1
                 }
@@ -15545,7 +15635,7 @@
               "y": 286,
               "poses": [
                 {
-                  "clipId": "death",
+                  "clipId": "death-back",
                   "frame": 5,
                   "weight": 1
                 }
@@ -15579,10 +15669,10 @@
         },
         {
           "index": 23,
-          "timeMs": 1182.857142857143,
+          "timeMs": 1172.258064516129,
           "visibleBounds": [
-            55,
-            133,
+            38,
+            99,
             465,
             385
           ],
@@ -15606,8 +15696,8 @@
               "y": 170,
               "poses": [
                 {
-                  "clipId": "death",
-                  "frame": 5,
+                  "clipId": "death-back",
+                  "frame": 4,
                   "weight": 1
                 }
               ]
@@ -15618,7 +15708,7 @@
               "y": 286,
               "poses": [
                 {
-                  "clipId": "death",
+                  "clipId": "death-back",
                   "frame": 5,
                   "weight": 1
                 }
@@ -15652,10 +15742,10 @@
         },
         {
           "index": 24,
-          "timeMs": 1234.2857142857142,
+          "timeMs": 1223.225806451613,
           "visibleBounds": [
-            55,
-            133,
+            38,
+            101,
             465,
             385
           ],
@@ -15679,7 +15769,7 @@
               "y": 170,
               "poses": [
                 {
-                  "clipId": "death",
+                  "clipId": "death-back",
                   "frame": 5,
                   "weight": 1
                 }
@@ -15691,7 +15781,7 @@
               "y": 286,
               "poses": [
                 {
-                  "clipId": "death",
+                  "clipId": "death-back",
                   "frame": 5,
                   "weight": 1
                 }
@@ -15725,10 +15815,10 @@
         },
         {
           "index": 25,
-          "timeMs": 1285.7142857142858,
+          "timeMs": 1274.1935483870968,
           "visibleBounds": [
-            55,
-            133,
+            38,
+            101,
             465,
             385
           ],
@@ -15752,7 +15842,7 @@
               "y": 170,
               "poses": [
                 {
-                  "clipId": "death",
+                  "clipId": "death-back",
                   "frame": 5,
                   "weight": 1
                 }
@@ -15764,7 +15854,7 @@
               "y": 286,
               "poses": [
                 {
-                  "clipId": "death",
+                  "clipId": "death-back",
                   "frame": 5,
                   "weight": 1
                 }
@@ -15798,10 +15888,10 @@
         },
         {
           "index": 26,
-          "timeMs": 1337.142857142857,
+          "timeMs": 1325.1612903225807,
           "visibleBounds": [
-            55,
-            133,
+            38,
+            101,
             465,
             385
           ],
@@ -15825,7 +15915,7 @@
               "y": 170,
               "poses": [
                 {
-                  "clipId": "death",
+                  "clipId": "death-back",
                   "frame": 5,
                   "weight": 1
                 }
@@ -15837,7 +15927,7 @@
               "y": 286,
               "poses": [
                 {
-                  "clipId": "death",
+                  "clipId": "death-back",
                   "frame": 5,
                   "weight": 1
                 }
@@ -15871,10 +15961,10 @@
         },
         {
           "index": 27,
-          "timeMs": 1388.5714285714287,
+          "timeMs": 1376.1290322580646,
           "visibleBounds": [
-            55,
-            133,
+            38,
+            101,
             465,
             385
           ],
@@ -15898,7 +15988,7 @@
               "y": 170,
               "poses": [
                 {
-                  "clipId": "death",
+                  "clipId": "death-back",
                   "frame": 5,
                   "weight": 1
                 }
@@ -15910,7 +16000,7 @@
               "y": 286,
               "poses": [
                 {
-                  "clipId": "death",
+                  "clipId": "death-back",
                   "frame": 5,
                   "weight": 1
                 }
@@ -15944,10 +16034,10 @@
         },
         {
           "index": 28,
-          "timeMs": 1440,
+          "timeMs": 1427.0967741935483,
           "visibleBounds": [
-            55,
-            133,
+            38,
+            101,
             465,
             385
           ],
@@ -15971,7 +16061,7 @@
               "y": 170,
               "poses": [
                 {
-                  "clipId": "death",
+                  "clipId": "death-back",
                   "frame": 5,
                   "weight": 1
                 }
@@ -15983,7 +16073,226 @@
               "y": 286,
               "poses": [
                 {
+                  "clipId": "death-back",
+                  "frame": 5,
+                  "weight": 1
+                }
+              ]
+            },
+            {
+              "id": "right",
+              "x": 382,
+              "y": 286,
+              "poses": [
+                {
                   "clipId": "death",
+                  "frame": 5,
+                  "weight": 1
+                }
+              ]
+            },
+            {
+              "id": "tip",
+              "x": 256,
+              "y": 326,
+              "poses": [
+                {
+                  "clipId": "death",
+                  "frame": 5,
+                  "weight": 1
+                }
+              ]
+            }
+          ]
+        },
+        {
+          "index": 29,
+          "timeMs": 1478.0645161290322,
+          "visibleBounds": [
+            38,
+            101,
+            465,
+            385
+          ],
+          "guardAlphaMax": 0,
+          "members": [
+            {
+              "id": "rear-left",
+              "x": 192,
+              "y": 170,
+              "poses": [
+                {
+                  "clipId": "death",
+                  "frame": 5,
+                  "weight": 1
+                }
+              ]
+            },
+            {
+              "id": "rear-right",
+              "x": 320,
+              "y": 170,
+              "poses": [
+                {
+                  "clipId": "death-back",
+                  "frame": 5,
+                  "weight": 1
+                }
+              ]
+            },
+            {
+              "id": "left",
+              "x": 130,
+              "y": 286,
+              "poses": [
+                {
+                  "clipId": "death-back",
+                  "frame": 5,
+                  "weight": 1
+                }
+              ]
+            },
+            {
+              "id": "right",
+              "x": 382,
+              "y": 286,
+              "poses": [
+                {
+                  "clipId": "death",
+                  "frame": 5,
+                  "weight": 1
+                }
+              ]
+            },
+            {
+              "id": "tip",
+              "x": 256,
+              "y": 326,
+              "poses": [
+                {
+                  "clipId": "death",
+                  "frame": 5,
+                  "weight": 1
+                }
+              ]
+            }
+          ]
+        },
+        {
+          "index": 30,
+          "timeMs": 1529.032258064516,
+          "visibleBounds": [
+            38,
+            101,
+            465,
+            385
+          ],
+          "guardAlphaMax": 0,
+          "members": [
+            {
+              "id": "rear-left",
+              "x": 192,
+              "y": 170,
+              "poses": [
+                {
+                  "clipId": "death",
+                  "frame": 5,
+                  "weight": 1
+                }
+              ]
+            },
+            {
+              "id": "rear-right",
+              "x": 320,
+              "y": 170,
+              "poses": [
+                {
+                  "clipId": "death-back",
+                  "frame": 5,
+                  "weight": 1
+                }
+              ]
+            },
+            {
+              "id": "left",
+              "x": 130,
+              "y": 286,
+              "poses": [
+                {
+                  "clipId": "death-back",
+                  "frame": 5,
+                  "weight": 1
+                }
+              ]
+            },
+            {
+              "id": "right",
+              "x": 382,
+              "y": 286,
+              "poses": [
+                {
+                  "clipId": "death",
+                  "frame": 5,
+                  "weight": 1
+                }
+              ]
+            },
+            {
+              "id": "tip",
+              "x": 256,
+              "y": 326,
+              "poses": [
+                {
+                  "clipId": "death",
+                  "frame": 5,
+                  "weight": 1
+                }
+              ]
+            }
+          ]
+        },
+        {
+          "index": 31,
+          "timeMs": 1580,
+          "visibleBounds": [
+            38,
+            101,
+            465,
+            385
+          ],
+          "guardAlphaMax": 0,
+          "members": [
+            {
+              "id": "rear-left",
+              "x": 192,
+              "y": 170,
+              "poses": [
+                {
+                  "clipId": "death",
+                  "frame": 5,
+                  "weight": 1
+                }
+              ]
+            },
+            {
+              "id": "rear-right",
+              "x": 320,
+              "y": 170,
+              "poses": [
+                {
+                  "clipId": "death-back",
+                  "frame": 5,
+                  "weight": 1
+                }
+              ]
+            },
+            {
+              "id": "left",
+              "x": 130,
+              "y": 286,
+              "poses": [
+                {
+                  "clipId": "death-back",
                   "frame": 5,
                   "weight": 1
                 }

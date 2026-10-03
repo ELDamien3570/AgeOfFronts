@@ -7,44 +7,44 @@
     {
       "id": "StoneAge",
       "label": "Stone Age",
-      "subtitle": "Clubmen formation and single javelinist · straight overhead view"
+      "subtitle": "Three five-member formations \u00b7 straight overhead view"
     },
     {
       "id": "BronzeAge",
       "label": "Bronze Age",
-      "subtitle": "Single soldiers · straight overhead view · build formations after actor review"
+      "subtitle": "Imagined ancestral roster - single axeman review - formations follow actor acceptance"
     },
     {
       "id": "ClassicalAge",
       "label": "Classical Age",
-      "subtitle": "Single soldiers · straight overhead view · build formations after actor review"
+      "subtitle": "Single soldiers \u00b7 straight overhead view \u00b7 build formations after actor review"
     },
     {
       "id": "EarlyMedieval",
       "label": "Early Medieval",
-      "subtitle": "Single soldiers · straight overhead view · build formations after actor review"
+      "subtitle": "Single soldiers \u00b7 straight overhead view \u00b7 build formations after actor review"
     },
     {
       "id": "LateMedieval",
       "label": "Late Medieval",
-      "subtitle": "Single soldiers · straight overhead view · build formations after actor review"
+      "subtitle": "Single soldiers \u00b7 straight overhead view \u00b7 build formations after actor review"
     },
     {
       "id": "EarlyModern",
       "label": "Early Modern",
-      "subtitle": "Single soldiers · straight overhead view · build formations after actor review"
+      "subtitle": "Single soldiers \u00b7 straight overhead view \u00b7 build formations after actor review"
     },
     {
       "id": "Modern",
       "label": "Modern Age",
-      "subtitle": "Single soldiers · straight overhead view · build formations after actor review"
+      "subtitle": "Single soldiers \u00b7 straight overhead view \u00b7 build formations after actor review"
     }
   ],
   "units": [
     {
       "id": "russian-stoneage-clubman",
       "age": "StoneAge",
-      "label": "Russian clubmen · 5 men",
+      "label": "Russian clubmen \u00b7 5 men",
       "metadata": "StoneAge/Clubman/Formation/animations.json",
       "review": "StoneAge/Clubman/Formation/Formation_Review.html",
       "actorCount": 5
@@ -52,9 +52,25 @@
     {
       "id": "russian-stoneage-javelinist",
       "age": "StoneAge",
-      "label": "Russian javelinist · single soldier",
-      "metadata": "StoneAge/Javelinist/animations.json",
-      "review": "StoneAge/Javelinist/Actor_Review.html",
+      "label": "Russian javelinists \u00b7 5 men",
+      "metadata": "StoneAge/Javelinist/Formation/animations.json",
+      "review": "StoneAge/Javelinist/Formation/Formation_Review.html",
+      "actorCount": 5
+    },
+    {
+      "id": "russian-stoneage-mounted-spearman",
+      "age": "StoneAge",
+      "label": "Russian mounted spearmen \u00b7 5 riders",
+      "metadata": "StoneAge/MountedSpearman/Formation/animations.json",
+      "review": "StoneAge/MountedSpearman/Formation/Formation_Review.html",
+      "actorCount": 5
+    },
+    {
+      "id": "russian-bronzeage-axeman",
+      "age": "BronzeAge",
+      "label": "Russian bronze axeman - single soldier",
+      "metadata": "BronzeAge/BronzeAxeman/animations.json",
+      "review": "BronzeAge/BronzeAxeman/Actor_Review.html",
       "actorCount": 1
     }
   ]

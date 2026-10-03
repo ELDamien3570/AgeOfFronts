@@ -1,0 +1,641 @@
+{
+  "mode": "built-in-imagegen",
+  "fictionalRoster": true,
+  "selectedFiles": {
+    "idle": "Idle-RoughBronze-v1.png",
+    "running": "Running-RoughBronze-v1.png",
+    "charge": "Charge-RoughBronze-v1.png",
+    "attack": "Attack-RoughBronze-v1.png",
+    "charge-attack": "ChargeAttack-RoughBronze-v1.png",
+    "hit": "Hit-RoughBronze-v2.png",
+    "charged": "Charged-RoughBronze-v2.png",
+    "death": "Death-RoughBronze-Baked-v1.png",
+    "death-back": "Death-Back-RoughBronze-v2.png"
+  },
+  "alphaPolicy": "Generated alpha preserved. No background removal or alpha thresholding.",
+  "records": [
+    {
+      "id": "idle-v1",
+      "file": "Idle.png",
+      "prompt": "Use case: stylized-concept\nAsset type: Russian civilization Bronze Age BRONZE AXEMAN, single animated soldier sprite sheet for a top-down RTS.\nPrimary request: An imagined ancestral roster, not a historically literal Slavic army. Broad bronze axe head and ROUND WOODEN SHIELD give the new infantry an unmistakable silhouette.\nReference image: Approved Russian Stone Age clubman sheet for the painted rendering, overhead camera and established red/cream cultural identity ONLY. Create a Bronze Axeman rather than another clubman; one soldier per frame, never a formation.\n\nSubject: Robust infantryman with red wool cloth cap, cream fur brim and collar, muted red linen tunic, pale linen trousers, brown belt and boots. Subtle bronze reinforcement on cap band and wrist guards signals progression. RIGHT hand on SCREEN-LEFT holds a short timber haft with a broad single curved bronze axe blade, thick bronze socket, clear golden copper alloy edge; weapon is visually a broad AXE, not a stone club or sword. LEFT forearm on SCREEN-RIGHT holds a round plank-built wooden shield, visible circular shape and timber grain, leather-bound rim and small bronze central boss. No national flag, heraldry, modern insignia, full plate or steel weapons.\nCamera: STRICT straight VERTICAL OVERHEAD orthographic looking down onto cap crown, shoulders, shield face and top of feet. Soldier faces SCREEN-DOWN; no isometric view, horizon or upright portrait face. Preserve the reference's top-down body proportions.\nComposition: Exactly1536x1024 transparent RGBA, EXACT3 columns x2 rows of six512x512 cells. ONE COMPLETE soldier in each. Consistent foot/body root at local256,285 and same size throughout. Entire soldier +complete axe+shield fits inside a centered400x400 area, leaving at least56px EMPTY transparent padding on every cell edge. No neighboring pixels cross any cell boundary. Axe/shield remain fully visible and distinct from the red torso. Keep silhouettes clean and strong at32/48/64pixel game scale.\nMOTION: Six small chronological IDLE poses forming a subtle breathing/weight shift loop. Knees planted; shoulders rise and settle gently, axe and shield subtly settle with breathing. Frame6 returns closely into frame1. Six distinct poses, not duplicate copies.\nRendering: Detailed stylized painterly game art like the reference, controlled lighting, warm bronze contrasting red fabric and dark timber. True transparent background: no background haze, vignette, glow, cast shadow, text, labels, grid or blood. Exactly two arms, two legs, one axe and one shield in every frame; complete fingers, toes, axe blade and round shield.",
+      "references": [
+        "../../StoneAge/Clubman/Idle.png"
+      ],
+      "generatedSource": "C:/Users/Damien/.codex/generated_images/01a0fea1-c63f-7343-92ca-6c21cc1c4296/exec-62c01ab2-3b01-45ff-8ee9-65da7f213683.png",
+      "status": "superseded"
+    },
+    {
+      "id": "idle-shield-padding-v2",
+      "file": "Idle-v2.png",
+      "prompt": "Use case: precise-object-edit\nEdit this Russian Bronze Axeman idle sheet for shield readability and clean cell padding. Preserve exact man, red/cream costume, fur cap with bronze band, bronze wrist guards, broad bronze axe, boots, straight vertical overhead screen-down camera, six breathing poses and painted style. Change ONLY the SHIELD orientation and uniform sprite padding.\nThe shield is ROUND, not tall/oval. Tilt the same timber shield face UP toward the overhead camera, held on the left forearm at SCREEN-RIGHT. It should read as a broad near-circular wooden disk, about140px wide by150px tall before scaling, with a small bronze central boss, radial timber/plank texture and leather-bound rim. Keep its face fully visible beside the torso, round silhouette clear at32/48/64px. No giant upright elliptical shield, no shield on the wrong arm, no second shield. The round shield remains firmly held and does not cover the soldier's cap or axe arm. Do not change the axe into a sword.\nUniformly redraw all six COMPLETE silhouettes slightly smaller at90 percent of current body size, centered around the same foot/body root within EACH cell. Output exactly1536x1024 RGBA, exact3columns x2rows, six512px cells. Each complete man+axe+round shield fits within a centered400x400 box leaving at least56px empty transparent padding on ALL edges of EVERY cell. Keep the same body scale and root across six poses, not per-frame fitting. Restore any cropped fingertips or axe tip. No cross-cell pixels or neighbors.\nTRUE transparent background, NO haze, vignette, ground shadow, glow, labels, grid or blood. Same subtle idle breathing/weight shift in chronological reading order; six distinct poses, with frame6 closing smoothly to frame1.",
+      "references": [
+        "Idle.png"
+      ],
+      "generatedSource": "C:/Users/Damien/.codex/generated_images/01a0fea1-c63f-7343-92ca-6c21cc1c4296/exec-83bd462c-c592-41d4-8872-9545804f40db.png",
+      "status": "superseded",
+      "supersededReason": "Equipment finish and cap crown revised; prior motion source retained."
+    },
+    {
+      "id": "running",
+      "file": "Running.png",
+      "motion": "Six-pose WALK loop with unmistakable alternating foot reach. Frame1 anatomical LEFT foot (SCREEN-RIGHT) steps clearly forward/down, RIGHT foot (SCREEN-LEFT) moves back; frame2 passing; frame3 left foot pushes back and right begins reaching; frame4 RIGHT foot reaches clearly forward/down and LEFT is back; frame5 passing; frame6 recover into frame1. Visible hip/knee bends and sole/heel changes, both feet move substantially, no shuffle. Axe and round shield held steady near sides, gentle counter-sway. Short slow walking strides, not a charge.",
+      "prompt": "Use case: precise-object-edit\nEdit the attached Russian BRONZE AXEMAN idle sprite sheet into the requested motion. Preserve EXACT same soldier, red wool cap with bronze band and cream fur brim/collar, red tunic, pale trousers, bronze wrist guards, brown belt/boots, broad single-bladed BRONZE AXE on RIGHT hand/SCREEN-LEFT, near-circular WOODEN SHIELD with bronze boss on LEFT arm/SCREEN-RIGHT. Identical painterly rendering, overhead camera and body proportions across clips. Imagined ancestral Russian roster, not a historically literal Slavic army.\nSTRICT straight vertical OVERHEAD orthographic camera, soldier faces SCREEN-DOWN; never change camera or mirror handedness.\nExactly1536x1024 RGBA, exact3columns x2rows of six512x512 cells in chronological reading order. ONE complete actor per frame, never a formation. Keep body/root anchored around local256,275; limbs may move, no whole-image translation, per-frame zoom or silhouette fitting. Every FULL pose including axe blade and shield fits within the centered400x400 region, at least56px empty transparent space on ALL cell edges. Scale any pose uniformly if needed, same constant actor scale throughout. No cell overlap or cropped blade, fingers, boots or shield.\nTrue transparent background, no haze, glow, vignette, ground shadow, grid, labels or blood. Exactly two arms, two legs, one bronze axe and one round shield. Shield face stays readable and visibly attached; axe is broad bronze, never stone club, sword or double axe.\nMOTION: Six-pose WALK loop with unmistakable alternating foot reach. Frame1 anatomical LEFT foot (SCREEN-RIGHT) steps clearly forward/down, RIGHT foot (SCREEN-LEFT) moves back; frame2 passing; frame3 left foot pushes back and right begins reaching; frame4 RIGHT foot reaches clearly forward/down and LEFT is back; frame5 passing; frame6 recover into frame1. Visible hip/knee bends and sole/heel changes, both feet move substantially, no shuffle. Axe and round shield held steady near sides, gentle counter-sway. Short slow walking strides, not a charge.",
+      "generatedSource": "C:\\Users\\Damien\\.codex\\generated_images\\01a0fea1-c63f-7343-92ca-6c21cc1c4296\\exec-511fe6a6-071c-4a10-946f-79a3af7b5097.png",
+      "status": "superseded",
+      "references": [
+        "Idle-v2.png"
+      ],
+      "supersededReason": "Equipment finish and cap crown revised; prior motion source retained."
+    },
+    {
+      "id": "charge",
+      "file": "Charge.png",
+      "motion": "Six-pose FAST RUN / CHARGE-IN loop. Lowered torso, shield presented ahead/right, axe tucked ready at left. Strong alternating bent-knee running stride and both feet visibly reaching and lifting, larger reach than walk, no shuffle or floating feet. Frame1 left-foot lead,2 push-off,3 gathered airborne return,4 right-foot lead,5 push-off,6 gathered return into1. Single actor stays at fixed root; no wedge movement in source art. Axe stays held ready, no attack swing during running.",
+      "prompt": "Use case: precise-object-edit\nEdit the attached Russian BRONZE AXEMAN idle sprite sheet into the requested motion. Preserve EXACT same soldier, red wool cap with bronze band and cream fur brim/collar, red tunic, pale trousers, bronze wrist guards, brown belt/boots, broad single-bladed BRONZE AXE on RIGHT hand/SCREEN-LEFT, near-circular WOODEN SHIELD with bronze boss on LEFT arm/SCREEN-RIGHT. Identical painterly rendering, overhead camera and body proportions across clips. Imagined ancestral Russian roster, not a historically literal Slavic army.\nSTRICT straight vertical OVERHEAD orthographic camera, soldier faces SCREEN-DOWN; never change camera or mirror handedness.\nExactly1536x1024 RGBA, exact3columns x2rows of six512x512 cells in chronological reading order. ONE complete actor per frame, never a formation. Keep body/root anchored around local256,275; limbs may move, no whole-image translation, per-frame zoom or silhouette fitting. Every FULL pose including axe blade and shield fits within the centered400x400 region, at least56px empty transparent space on ALL cell edges. Scale any pose uniformly if needed, same constant actor scale throughout. No cell overlap or cropped blade, fingers, boots or shield.\nTrue transparent background, no haze, glow, vignette, ground shadow, grid, labels or blood. Exactly two arms, two legs, one bronze axe and one round shield. Shield face stays readable and visibly attached; axe is broad bronze, never stone club, sword or double axe.\nMOTION: Six-pose FAST RUN / CHARGE-IN loop. Lowered torso, shield presented ahead/right, axe tucked ready at left. Strong alternating bent-knee running stride and both feet visibly reaching and lifting, larger reach than walk, no shuffle or floating feet. Frame1 left-foot lead,2 push-off,3 gathered airborne return,4 right-foot lead,5 push-off,6 gathered return into1. Single actor stays at fixed root; no wedge movement in source art. Axe stays held ready, no attack swing during running.",
+      "generatedSource": "C:\\Users\\Damien\\.codex\\generated_images\\01a0fea1-c63f-7343-92ca-6c21cc1c4296\\exec-786ef7b9-220a-464f-9641-436284a61f64.png",
+      "status": "superseded",
+      "references": [
+        "Idle-v2.png"
+      ]
+    },
+    {
+      "id": "attack",
+      "file": "Attack.png",
+      "motion": "Six chronological poses for ONE deliberate axe attack, not a loop:1ready;2 draw axe back to right/screen-left and rotate shoulder;3 cock the elbow and raise broad blade above/left of shoulder;4 strong forward/downward diagonal CHOP, arm extended and broad bronze blade clearly at the strike endpoint near screen-bottom/left;5 pull back with elbow bending;6 return ready. Keep round shield guarding at SCREEN-RIGHT throughout, left arm never joins axe grip. One bronze blade moves in a clear arc, no second weapon or motion trails. Moderate controlled chop, planted feet with a short weight transfer. Body rooted. Draw the entire lifted axe in frames2/3 and blade extension4 within each cell, no top/side clipping.",
+      "prompt": "Use case: precise-object-edit\nEdit the attached Russian BRONZE AXEMAN idle sprite sheet into the requested motion. Preserve EXACT same soldier, red wool cap with bronze band and cream fur brim/collar, red tunic, pale trousers, bronze wrist guards, brown belt/boots, broad single-bladed BRONZE AXE on RIGHT hand/SCREEN-LEFT, near-circular WOODEN SHIELD with bronze boss on LEFT arm/SCREEN-RIGHT. Identical painterly rendering, overhead camera and body proportions across clips. Imagined ancestral Russian roster, not a historically literal Slavic army.\nSTRICT straight vertical OVERHEAD orthographic camera, soldier faces SCREEN-DOWN; never change camera or mirror handedness.\nExactly1536x1024 RGBA, exact3columns x2rows of six512x512 cells in chronological reading order. ONE complete actor per frame, never a formation. Keep body/root anchored around local256,275; limbs may move, no whole-image translation, per-frame zoom or silhouette fitting. Every FULL pose including axe blade and shield fits within the centered400x400 region, at least56px empty transparent space on ALL cell edges. Scale any pose uniformly if needed, same constant actor scale throughout. No cell overlap or cropped blade, fingers, boots or shield.\nTrue transparent background, no haze, glow, vignette, ground shadow, grid, labels or blood. Exactly two arms, two legs, one bronze axe and one round shield. Shield face stays readable and visibly attached; axe is broad bronze, never stone club, sword or double axe.\nMOTION: Six chronological poses for ONE deliberate axe attack, not a loop:1ready;2 draw axe back to right/screen-left and rotate shoulder;3 cock the elbow and raise broad blade above/left of shoulder;4 strong forward/downward diagonal CHOP, arm extended and broad bronze blade clearly at the strike endpoint near screen-bottom/left;5 pull back with elbow bending;6 return ready. Keep round shield guarding at SCREEN-RIGHT throughout, left arm never joins axe grip. One bronze blade moves in a clear arc, no second weapon or motion trails. Moderate controlled chop, planted feet with a short weight transfer. Body rooted. Draw the entire lifted axe in frames2/3 and blade extension4 within each cell, no top/side clipping.",
+      "generatedSource": "C:\\Users\\Damien\\.codex\\generated_images\\01a0fea1-c63f-7343-92ca-6c21cc1c4296\\exec-53836bfe-b60e-46e0-956d-9228ff081303.png",
+      "status": "superseded",
+      "references": [
+        "Idle-v2.png"
+      ]
+    },
+    {
+      "id": "charge-attack",
+      "file": "ChargeAttack.png",
+      "motion": "Six chronological poses for ONE HEAVY CHARGE AXE STRIKE:1 low ready after running with shield raised;2 plant feet wide and load the axe back at right/screen-left;3 torso coils and blade cocked back/above right shoulder;4 decisive lunging forward/downward diagonal heavy chop, RIGHT arm strongly extended toward screen-bottom/left, knees low, bronze blade clearly lower/forward than normal attack;5 deep follow-through then bend elbow to retract;6 recover to stable low guard. Round shield stays on SCREEN-RIGHT, angled in front to cover chest; single axe remains firmly held. Stronger planted lunge and recovery than normal attack, not another running cycle. All limbs, broad blade and shield complete inside each cell; keep fixed root rather than moving the whole image.",
+      "prompt": "Use case: precise-object-edit\nEdit the attached Russian BRONZE AXEMAN idle sprite sheet into the requested motion. Preserve EXACT same soldier, red wool cap with bronze band and cream fur brim/collar, red tunic, pale trousers, bronze wrist guards, brown belt/boots, broad single-bladed BRONZE AXE on RIGHT hand/SCREEN-LEFT, near-circular WOODEN SHIELD with bronze boss on LEFT arm/SCREEN-RIGHT. Identical painterly rendering, overhead camera and body proportions across clips. Imagined ancestral Russian roster, not a historically literal Slavic army.\nSTRICT straight vertical OVERHEAD orthographic camera, soldier faces SCREEN-DOWN; never change camera or mirror handedness.\nExactly1536x1024 RGBA, exact3columns x2rows of six512x512 cells in chronological reading order. ONE complete actor per frame, never a formation. Keep body/root anchored around local256,275; limbs may move, no whole-image translation, per-frame zoom or silhouette fitting. Every FULL pose including axe blade and shield fits within the centered400x400 region, at least56px empty transparent space on ALL cell edges. Scale any pose uniformly if needed, same constant actor scale throughout. No cell overlap or cropped blade, fingers, boots or shield.\nTrue transparent background, no haze, glow, vignette, ground shadow, grid, labels or blood. Exactly two arms, two legs, one bronze axe and one round shield. Shield face stays readable and visibly attached; axe is broad bronze, never stone club, sword or double axe.\nMOTION: Six chronological poses for ONE HEAVY CHARGE AXE STRIKE:1 low ready after running with shield raised;2 plant feet wide and load the axe back at right/screen-left;3 torso coils and blade cocked back/above right shoulder;4 decisive lunging forward/downward diagonal heavy chop, RIGHT arm strongly extended toward screen-bottom/left, knees low, bronze blade clearly lower/forward than normal attack;5 deep follow-through then bend elbow to retract;6 recover to stable low guard. Round shield stays on SCREEN-RIGHT, angled in front to cover chest; single axe remains firmly held. Stronger planted lunge and recovery than normal attack, not another running cycle. All limbs, broad blade and shield complete inside each cell; keep fixed root rather than moving the whole image.",
+      "generatedSource": "C:\\Users\\Damien\\.codex\\generated_images\\01a0fea1-c63f-7343-92ca-6c21cc1c4296\\exec-82416113-4535-4e0a-a7fe-98793f4f0820.png",
+      "status": "superseded",
+      "references": [
+        "Idle-v2.png"
+      ]
+    },
+    {
+      "id": "hit",
+      "file": "Hit.png",
+      "motion": "Six chronological poses for a SHORT LIGHT-HIT FLINCH:1ready;2 shoulders recoil and shield comes inward against a light blow;3 slight torso twist, knees soften, axe hand stays closed;4 counterbalance with one small foot adjustment;5 recover posture and shield;6ready again. Soldier remains standing. No attack swing or death, no invented projectile or visible attacker. Reaction visibly different from idle but modest compared to a heavy charge impact; complete axe and round shield stay held throughout.",
+      "prompt": "Use case: precise-object-edit\nEdit the attached Russian BRONZE AXEMAN idle sprite sheet into the requested motion. Preserve EXACT same soldier, red wool cap with bronze band and cream fur brim/collar, red tunic, pale trousers, bronze wrist guards, brown belt/boots, broad single-bladed BRONZE AXE on RIGHT hand/SCREEN-LEFT, near-circular WOODEN SHIELD with bronze boss on LEFT arm/SCREEN-RIGHT. Identical painterly rendering, overhead camera and body proportions across clips. Imagined ancestral Russian roster, not a historically literal Slavic army.\nSTRICT straight vertical OVERHEAD orthographic camera, soldier faces SCREEN-DOWN; never change camera or mirror handedness.\nExactly1536x1024 RGBA, exact3columns x2rows of six512x512 cells in chronological reading order. ONE complete actor per frame, never a formation. Keep body/root anchored around local256,275; limbs may move, no whole-image translation, per-frame zoom or silhouette fitting. Every FULL pose including axe blade and shield fits within the centered400x400 region, at least56px empty transparent space on ALL cell edges. Scale any pose uniformly if needed, same constant actor scale throughout. No cell overlap or cropped blade, fingers, boots or shield.\nTrue transparent background, no haze, glow, vignette, ground shadow, grid, labels or blood. Exactly two arms, two legs, one bronze axe and one round shield. Shield face stays readable and visibly attached; axe is broad bronze, never stone club, sword or double axe.\nMOTION: Six chronological poses for a SHORT LIGHT-HIT FLINCH:1ready;2 shoulders recoil and shield comes inward against a light blow;3 slight torso twist, knees soften, axe hand stays closed;4 counterbalance with one small foot adjustment;5 recover posture and shield;6ready again. Soldier remains standing. No attack swing or death, no invented projectile or visible attacker. Reaction visibly different from idle but modest compared to a heavy charge impact; complete axe and round shield stay held throughout.",
+      "generatedSource": "C:\\Users\\Damien\\.codex\\generated_images\\01a0fea1-c63f-7343-92ca-6c21cc1c4296\\exec-b1bb6e84-a240-42b7-96f8-0e48f686fe8b.png",
+      "status": "superseded",
+      "references": [
+        "Idle-v2.png"
+      ],
+      "supersededReason": "Equipment finish and cap crown revised; prior motion source retained."
+    },
+    {
+      "id": "charged",
+      "file": "Charged.png",
+      "motion": "Six chronological poses for DISTINCT HEAVY CHARGE-IMPACT REACTION, not death:1guard;2 forceful shield brace, torso jolts backward/up;3 deep bent knees and sideways stagger with both boots widening, shield rotates across upper body;4 low crouched off-balance catch, axe arm extends left as counterweight but weapon stays held;5 push back upright,6stableguard. Clearly stronger than light-hit flinch. No broken limb or fallen corpse; both arms/legs and single axe/shield remain present. Do not rotate the camera. Body/root nearly fixed; joints do the reacting.",
+      "prompt": "Use case: precise-object-edit\nEdit the attached Russian BRONZE AXEMAN idle sprite sheet into the requested motion. Preserve EXACT same soldier, red wool cap with bronze band and cream fur brim/collar, red tunic, pale trousers, bronze wrist guards, brown belt/boots, broad single-bladed BRONZE AXE on RIGHT hand/SCREEN-LEFT, near-circular WOODEN SHIELD with bronze boss on LEFT arm/SCREEN-RIGHT. Identical painterly rendering, overhead camera and body proportions across clips. Imagined ancestral Russian roster, not a historically literal Slavic army.\nSTRICT straight vertical OVERHEAD orthographic camera, soldier faces SCREEN-DOWN; never change camera or mirror handedness.\nExactly1536x1024 RGBA, exact3columns x2rows of six512x512 cells in chronological reading order. ONE complete actor per frame, never a formation. Keep body/root anchored around local256,275; limbs may move, no whole-image translation, per-frame zoom or silhouette fitting. Every FULL pose including axe blade and shield fits within the centered400x400 region, at least56px empty transparent space on ALL cell edges. Scale any pose uniformly if needed, same constant actor scale throughout. No cell overlap or cropped blade, fingers, boots or shield.\nTrue transparent background, no haze, glow, vignette, ground shadow, grid, labels or blood. Exactly two arms, two legs, one bronze axe and one round shield. Shield face stays readable and visibly attached; axe is broad bronze, never stone club, sword or double axe.\nMOTION: Six chronological poses for DISTINCT HEAVY CHARGE-IMPACT REACTION, not death:1guard;2 forceful shield brace, torso jolts backward/up;3 deep bent knees and sideways stagger with both boots widening, shield rotates across upper body;4 low crouched off-balance catch, axe arm extends left as counterweight but weapon stays held;5 push back upright,6stableguard. Clearly stronger than light-hit flinch. No broken limb or fallen corpse; both arms/legs and single axe/shield remain present. Do not rotate the camera. Body/root nearly fixed; joints do the reacting.",
+      "generatedSource": "C:\\Users\\Damien\\.codex\\generated_images\\01a0fea1-c63f-7343-92ca-6c21cc1c4296\\exec-8660e4da-a18a-4af9-a95c-f42444cb377a.png",
+      "status": "superseded",
+      "references": [
+        "Idle-v2.png"
+      ]
+    },
+    {
+      "id": "death",
+      "file": "Death.png",
+      "motion": "Six chronological full DEATH poses, collapse onto soldier's RIGHT SIDE (screen-left): 1 same guard;2 knees buckle and head lowers;3 drops onto both knees leaning right;4 body tips onto right hip/forearm;5 fully falls and curls onto RIGHT SIDE with both boots and arms present;6 same side corpse settles. Head remains towards lower screen relative to the feet; maintain overhead camera. Full-body sideways collapse, not merely rotating an upright cutout. At end the broad bronze axe lies loose beside the right arm and round wooden shield lies beside left arm, each fully visible in same cell. No blood. Do not skip the intermediate kneel and fall. Corpse remains complete within transparent margins. Use SAME standing scale as attached seed; contain the FULL fall and loose weapons within centered400x400 region in every cell.",
+      "prompt": "Use case: precise-object-edit\nEdit the attached Russian BRONZE AXEMAN idle sprite sheet into the requested motion. Preserve EXACT same soldier, red wool cap with bronze band and cream fur brim/collar, red tunic, pale trousers, bronze wrist guards, brown belt/boots, broad single-bladed BRONZE AXE on RIGHT hand/SCREEN-LEFT, near-circular WOODEN SHIELD with bronze boss on LEFT arm/SCREEN-RIGHT. Identical painterly rendering, overhead camera and body proportions across clips. Imagined ancestral Russian roster, not a historically literal Slavic army.\nSTRICT straight vertical OVERHEAD orthographic camera, soldier faces SCREEN-DOWN; never change camera or mirror handedness.\nExactly1536x1024 RGBA, exact3columns x2rows of six512x512 cells in chronological reading order. ONE complete actor per frame, never a formation. Keep body/root anchored around local256,275; limbs may move, no whole-image translation, per-frame zoom or silhouette fitting. Every FULL pose including axe blade and shield fits within the centered400x400 region, at least56px empty transparent space on ALL cell edges. Scale any pose uniformly if needed, same constant actor scale throughout. No cell overlap or cropped blade, fingers, boots or shield.\nTrue transparent background, no haze, glow, vignette, ground shadow, grid, labels or blood. Exactly two arms, two legs, one bronze axe and one round shield. Shield face stays readable and visibly attached; axe is broad bronze, never stone club, sword or double axe.\nMOTION: Six chronological full DEATH poses, collapse onto soldier's RIGHT SIDE (screen-left): 1 same guard;2 knees buckle and head lowers;3 drops onto both knees leaning right;4 body tips onto right hip/forearm;5 fully falls and curls onto RIGHT SIDE with both boots and arms present;6 same side corpse settles. Head remains towards lower screen relative to the feet; maintain overhead camera. Full-body sideways collapse, not merely rotating an upright cutout. At end the broad bronze axe lies loose beside the right arm and round wooden shield lies beside left arm, each fully visible in same cell. No blood. Do not skip the intermediate kneel and fall. Corpse remains complete within transparent margins. Use SAME standing scale as attached seed; contain the FULL fall and loose weapons within centered400x400 region in every cell.",
+      "generatedSource": "C:\\Users\\Damien\\.codex\\generated_images\\01a0fea1-c63f-7343-92ca-6c21cc1c4296\\exec-6a664265-d6f1-4930-b2fe-50b1226e1be4.png",
+      "status": "superseded",
+      "references": [
+        "Idle-v2.png"
+      ],
+      "supersededReason": "Equipment finish and cap crown revised; prior motion source retained."
+    },
+    {
+      "id": "death-back",
+      "file": "Death-Back.png",
+      "motion": "Six chronological full DEATH poses distinct from a sideways fall: 1 same standing guard;2 torso recoils backward, knees bend;3 drops onto rear/hips with knees up;4 topples BACKWARD onto shoulder blades, both legs lifting with soles visible;5 flat SUPINE body face/chest upward with face/beard showing, head toward LOWER screen and feet toward UPPER screen, arms relaxed;6 supine corpse settles with feet down. Strict vertical overhead camera. This is a real backward tumble and supine final corpse, not a rotated side corpse and not a kneeling final pose. Broad bronze axe and round wooden shield drop next to body and remain fully visible; two arms, two legs, complete cap and body. No blood. Constant actor size throughout; full body and loose equipment fit centered400x400 in each512cell with56px transparent margin.",
+      "prompt": "Use case: precise-object-edit\nEdit the attached Russian BRONZE AXEMAN idle sprite sheet into the requested motion. Preserve EXACT same soldier, red wool cap with bronze band and cream fur brim/collar, red tunic, pale trousers, bronze wrist guards, brown belt/boots, broad single-bladed BRONZE AXE on RIGHT hand/SCREEN-LEFT, near-circular WOODEN SHIELD with bronze boss on LEFT arm/SCREEN-RIGHT. Identical painterly rendering, overhead camera and body proportions across clips. Imagined ancestral Russian roster, not a historically literal Slavic army.\nSTRICT straight vertical OVERHEAD orthographic camera, soldier faces SCREEN-DOWN; never change camera or mirror handedness.\nExactly1536x1024 RGBA, exact3columns x2rows of six512x512 cells in chronological reading order. ONE complete actor per frame, never a formation. Keep body/root anchored around local256,275; limbs may move, no whole-image translation, per-frame zoom or silhouette fitting. Every FULL pose including axe blade and shield fits within the centered400x400 region, at least56px empty transparent space on ALL cell edges. Scale any pose uniformly if needed, same constant actor scale throughout. No cell overlap or cropped blade, fingers, boots or shield.\nTrue transparent background, no haze, glow, vignette, ground shadow, grid, labels or blood. Exactly two arms, two legs, one bronze axe and one round shield. Shield face stays readable and visibly attached; axe is broad bronze, never stone club, sword or double axe.\nMOTION: Six chronological full DEATH poses distinct from a sideways fall: 1 same standing guard;2 torso recoils backward, knees bend;3 drops onto rear/hips with knees up;4 topples BACKWARD onto shoulder blades, both legs lifting with soles visible;5 flat SUPINE body face/chest upward with face/beard showing, head toward LOWER screen and feet toward UPPER screen, arms relaxed;6 supine corpse settles with feet down. Strict vertical overhead camera. This is a real backward tumble and supine final corpse, not a rotated side corpse and not a kneeling final pose. Broad bronze axe and round wooden shield drop next to body and remain fully visible; two arms, two legs, complete cap and body. No blood. Constant actor size throughout; full body and loose equipment fit centered400x400 in each512cell with56px transparent margin.",
+      "generatedSource": "C:\\Users\\Damien\\.codex\\generated_images\\01a0fea1-c63f-7343-92ca-6c21cc1c4296\\exec-a47286ee-cca5-401a-80c2-ded3e183858b.png",
+      "status": "superseded",
+      "references": [
+        "Idle-v2.png"
+      ]
+    },
+    {
+      "id": "attack-v2",
+      "clipId": "attack",
+      "file": "Attack-v2.png",
+      "prompt": "Use case: precise-object-edit\nRepair SPRITE CELL PADDING in the attached Russian Bronze Axeman Attack.png animation sheet. Keep the SAME six chronological poses, identity, equipment, overhead screen-down camera, distinct motion and true transparent alpha. Do not invent new motion. Output exactly1536x1024 RGBA,3columns2rows,512x512cell. Redraw ALL SIX complete soldier poses at a uniformly SMALLER scale, about75 percent of their current size. Keep the EXACT SAME relative body proportions and same scale across all6cells. Center each body root around local256,275. All fingers, boots, shield and EVERY broad bronze axe blade at every windup/strike position MUST fit WITHIN each512cell, inside local x64..448 and y64..448. The broad extended blade in the windup is currently crossing into the neighbor; redraw that blade COMPLETE inside its own cell. Preserve full weapon extension/motion but contain it by reducing the entire actor uniformly, never by amputating/cropping the weapon. Nothing crosses cell edges. At least64px fully transparent padding on all4sides of EVERY cell. One full red-tunic soldier per cell, one broad bronze axe on his right hand/screen-left, one ROUND wooden shield with bronze boss on left arm/screen-right. No shadows, haze, vignette, labels, grid or background.",
+      "generatedSource": "C:\\Users\\Damien\\.codex\\generated_images\\01a0fea1-c63f-7343-92ca-6c21cc1c4296\\exec-cc3e3f55-ec91-4682-b646-dbe37bdb9590.png",
+      "status": "rejected",
+      "references": [
+        "Attack.png"
+      ],
+      "reason": "Full-pose padding repair after visible frame guard failure.",
+      "reviewReason": "User reported sideways axe swing on 2026-10-03."
+    },
+    {
+      "id": "charge-attack-v2",
+      "clipId": "charge-attack",
+      "file": "ChargeAttack-v2.png",
+      "prompt": "Use case: precise-object-edit\nRepair SPRITE CELL PADDING in the attached Russian Bronze Axeman ChargeAttack.png animation sheet. Keep the SAME six chronological poses, identity, equipment, overhead screen-down camera, distinct motion and true transparent alpha. Do not invent new motion. Output exactly1536x1024 RGBA,3columns2rows,512x512cell. Redraw ALL SIX complete soldier poses at a uniformly SMALLER scale, about75 percent of their current size. Keep the EXACT SAME relative body proportions and same scale across all6cells. Center each body root around local256,275. All fingers, boots, shield and EVERY broad bronze axe blade at every windup/strike position MUST fit WITHIN each512cell, inside local x64..448 and y64..448. The broad extended blade in the windup is currently crossing into the neighbor; redraw that blade COMPLETE inside its own cell. Preserve full weapon extension/motion but contain it by reducing the entire actor uniformly, never by amputating/cropping the weapon. Nothing crosses cell edges. At least64px fully transparent padding on all4sides of EVERY cell. One full red-tunic soldier per cell, one broad bronze axe on his right hand/screen-left, one ROUND wooden shield with bronze boss on left arm/screen-right. No shadows, haze, vignette, labels, grid or background.",
+      "generatedSource": "C:\\Users\\Damien\\.codex\\generated_images\\01a0fea1-c63f-7343-92ca-6c21cc1c4296\\exec-6a3f6f47-5721-4b52-af2e-5ac830040b0f.png",
+      "status": "rejected",
+      "references": [
+        "ChargeAttack.png"
+      ],
+      "reason": "Full-pose padding repair after visible frame guard failure.",
+      "reviewReason": "User reported sideways axe swing on 2026-10-03."
+    },
+    {
+      "id": "charged-v2",
+      "clipId": "charged",
+      "file": "Charged-v2.png",
+      "prompt": "Use case: precise-object-edit\nRepair SPRITE CELL PADDING in the attached Russian Bronze Axeman Charged.png animation sheet. Keep the SAME six chronological poses, identity, equipment, overhead screen-down camera, distinct motion and true transparent alpha. Do not invent new motion. Output exactly1536x1024 RGBA,3columns2rows,512x512cell. Redraw ALL SIX complete soldier poses at a uniformly SMALLER scale, about75 percent of their current size. Keep the EXACT SAME relative body proportions and same scale across all6cells. Center each body root around local256,275. All fingers, boots, shield and EVERY broad bronze axe blade at every windup/strike position MUST fit WITHIN each512cell, inside local x64..448 and y64..448. The broad extended blade in the windup is currently crossing into the neighbor; redraw that blade COMPLETE inside its own cell. Preserve full weapon extension/motion but contain it by reducing the entire actor uniformly, never by amputating/cropping the weapon. Nothing crosses cell edges. At least64px fully transparent padding on all4sides of EVERY cell. One full red-tunic soldier per cell, one broad bronze axe on his right hand/screen-left, one ROUND wooden shield with bronze boss on left arm/screen-right. No shadows, haze, vignette, labels, grid or background.",
+      "generatedSource": "C:\\Users\\Damien\\.codex\\generated_images\\01a0fea1-c63f-7343-92ca-6c21cc1c4296\\exec-4d21e203-37cc-4aa9-b164-26ea4c3508b8.png",
+      "status": "superseded",
+      "references": [
+        "Charged.png"
+      ],
+      "reason": "Full-pose padding repair after visible frame guard failure.",
+      "supersededReason": "Equipment finish and cap crown revised; prior motion source retained."
+    },
+    {
+      "id": "death-back-v2",
+      "clipId": "death-back",
+      "file": "Death-Back-v2.png",
+      "prompt": "Use case: precise-object-edit\nRepair the attached SIX-frame Russian Bronze Axeman BACKWARD DEATH sheet. Preserve exact full6pose chronology: guard, backward stagger seated, legs lifting, topple backward, supine corpse with head lower screen and feet upper screen, settled supine corpse. Preserve identity, cap/fur/redtunic, pale trousers, boots, one broad bronze axe and roundwoodshield with bronze boss, overhead camera, transparency, face/chest upward final. The shield in frames4/5 is too close to a cell edge. Redraw ALL complete actors and equipment uniformly at80 percent current size, same body scale across all6, centered within each cell. Entire body, outspread arms, both boots, axe and loose roundshield must stay within local x56..456 and y56..456 of EVERY512cell; fully transparent padding56px all4edges. Never crop limbs or shield and no neighbor spill. EXACT1536x1024RGBA3columns2rows6cells. No haze, glow, shadows, blood, ground, grid or text.",
+      "generatedSource": "C:\\Users\\Damien\\.codex\\generated_images\\01a0fea1-c63f-7343-92ca-6c21cc1c4296\\exec-0c3fe12b-e36f-4334-a99e-3ffe5f119706.png",
+      "status": "superseded",
+      "references": [
+        "Death-Back.png"
+      ],
+      "reason": "Shield edge padding repair.",
+      "supersededReason": "Equipment finish and cap crown revised; prior motion source retained."
+    },
+    {
+      "id": "charge-v2",
+      "clipId": "charge",
+      "file": "Charge-v2.png",
+      "prompt": "Use case: precise-object-edit\nImprove ONLY the LEG/BOOT GAIT in this Russian Bronze Axeman CHARGE RUN sprite sheet. The existing run overuses the anatomical RIGHT foot (screen-left) as the lead. Keep exact axeman costume, cap, fur, body, bronze axe, round wooden shield, hand placement, overhead orthographic screen-down camera and body scale. Full1536x1024RGBA3columns2rows6x512cell, true transparent background and at least24px empty cell margin. Root remains fixed and same torso/weapon size across all6. Clear ordinary ALTERNATING biped run, no skating or duplicated right-foot lead.\nSix chronological frames in reading order: TOP-LEFT frame1 RIGHT boot at screen-left extends FORWARD toward lower screen, LEFT boot screen-right clearly BEHIND; TOP-MIDDLE frame2 right leg bears weight and left knee lifts/passes forward bent, heel clears ground; TOP-RIGHT frame3 right heel pushes backward/up while LEFT leg starts reaching forward; BOTTOM-LEFT frame4 LEFT boot screen-right extends FORWARD toward lower screen, RIGHT boot screen-left clearly BEHIND; BOTTOM-MIDDLE frame5 left leg bears weight and RIGHT knee lifts/passes bent, heel clears ground; BOTTOM-RIGHT frame6 left heel pushes backward/up while RIGHT leg reaches forward into frame1. Each leg has equal forward reach and equal rear reach. Frames1/4 opposite leg leads, frames2/5 opposite passing legs, frames3/6 opposite push-off legs. Exactly two complete legs, distinct knee bends and foot angles, no extra footwear. No attack motion, blood, shadow, glow, haze, background, grid or labels. Shield and axe complete and inside each own cell.",
+      "generatedSource": "C:\\Users\\Damien\\.codex\\generated_images\\01a0fea1-c63f-7343-92ca-6c21cc1c4296\\exec-e40a28db-446a-4809-b428-57738963f0c3.png",
+      "status": "superseded",
+      "references": [
+        "Charge.png"
+      ],
+      "reason": "Correct repeated right-foot lead to alternating run gait."
+    },
+    {
+      "id": "charge-v3",
+      "clipId": "charge",
+      "file": "Charge-v3.png",
+      "prompt": "Use case: precise-object-edit\nChange ONLY BOOTS/LEGS of this Russian Bronze Axeman charge sheet. Keep exact upper bodies, caps, fur, tunics, arms, broad bronze axe and wooden shield, overhead camera and alpha. STRICT1536x1024RGBA six512cells3columns2rows. Existing sheet has too many frames with one boot extended. NEW6POSES must be visually different silhouettes with BOTH legs moving. SCREEN sides below are literal image coordinates, no anatomical interpretation.\nTOP-LEFT: keep current SCREEN-LEFT boot fully extended DOWN, screen-right boot tucked HIGH near belt.\nTOP-MIDDLE: BOTH BOOTS TUCKED HIGH side by side under hips, bent knees, feet near localy345, neither long extended boot.\nTOP-RIGHT: SCREEN-RIGHT boot fully extended DOWN tolocaly440, screen-left boot tucked HIGH near belt. Keep screen-right knee and boot clearly below shield.\nBOTTOM-LEFT: SCREEN-RIGHT boot drawn BACK/UP under hip, screen-left knee bends and sole visible on passing foot, neither boot long down.\nBOTTOM-MIDDLE: SCREEN-LEFT boot extends DOWN fully tolocaly440, screen-right leg trails UP behind. DIFFERENT bent-knee landing fromframe1.\nBOTTOM-RIGHT: BOTH BOOTS TUCKED HIGH under hips, airborne gathered run, bent knees; neither long extended boot. Feet localy335-355, keep bodyroot fixed.\nThe TWO gathered poses are mandatory and must shorten the leg silhouette dramatically. DO NOT draw extended long straight lower legs in EVERY frame. Guard/axe/shield stays steady. Exactly2legs2boots, no duplicates or missing foot. Constant body size/registration, all art within own512cell with24px transparent minimum edges. No haze, background, shadow, blood, labels or grids.",
+      "generatedSource": "C:\\Users\\Damien\\.codex\\generated_images\\01a0fea1-c63f-7343-92ca-6c21cc1c4296\\exec-631e875f-2b7d-44fd-8e41-2765bf4e16a3.png",
+      "status": "superseded",
+      "references": [
+        "Charge-v2.png"
+      ],
+      "reason": "Add gathered poses and clear opposing boot reach.",
+      "supersededReason": "Equipment finish and cap crown revised; prior motion source retained."
+    },
+    {
+      "id": "attack-edge-v3",
+      "clipId": "attack",
+      "file": "Attack-v3.png",
+      "references": [
+        "Attack-v2.png"
+      ],
+      "prompt": "Use case: precise-object-edit\nAsset type: six-frame Russian Bronze Axeman game sprite animation sheet.\nInput image is the EDIT TARGET. Preserve exact soldier identity, cap, red/cream outfit, bronze wrist guards, round timber shield, body poses, body registration, scale, strict straight-overhead orthographic camera facing screen-down, and six-frame chronology.\nPrimary correction: the axe currently swings with its broad FLAT FACE toward the camera, like a paddle. Fix the gripping wrist and rotate the AXE HEAD AROUND THE HAFT so the SHARP CUTTING EDGE LEADS the actual downswing. This is a one-handed overhead CHOP toward an enemy below the soldier on screen. Axe blade plane must align with the vertical chopping plane, not lie flat sideways. During raised windup and impact the overhead camera sees a FORESHORTENED narrow bronze spine/top surface and slim wedge of the cutting bit, NOT the broad full side face. Keep enough bronze crescent/bevel detail for it to remain clearly an axe. The blade cutting edge points forward/down toward the target at impact, not off sideways. Single head, one crescent cutting bit, wood haft, bronze socket. Head is fixed rigidly to haft. Wrist rolls the whole weapon into cutting alignment; head never swivels independently or changes sides on its socket. Right hand grips WOODEN HANDLE below the head, not the metal socket.\nSix chronological poses: 1 relaxed guard with existing broadside axe, 2 begin lifting/rolling wrist into chopping plane, 3 high bent-elbow windup with head angled edge-first, 4 decisive downstroke with CUTTING EDGE facing down-screen and only foreshortened blade side visible, 5 follow-through remains edge-first then wrist unrolls, 6 recover to familiar idle grip. Restore physically plausible fingers and wrist angle. Broad bronze axe identity must persist.\nComposition: EXACT1536x1024 RGBA, 3 columns x2 rows, six512x512 cells. Same complete actor per cell, all head/handle/fingers/boots/shield contained in own cell with at least24px transparent padding. No translation or zoom of upper body, no new characters.\nBackground: true transparent alpha. No haze, glow, vignette, ground shadow, grid, labels, blood or weapon trail. Keep shield, left hand, legs and clothing unchanged.\nClip-specific motion: Normal restrained chop: keep original feet stance and six existing body poses; change only axe/wrist/weapon forearm orientation.",
+      "generatedSource": "C:\\Users\\Damien\\.codex\\generated_images\\01a0fea1-c63f-7343-92ca-6c21cc1c4296\\exec-7918caad-cb0d-4ce0-af8c-e83107887c7d.png",
+      "status": "rejected",
+      "reason": "User reported sideways axe swing; correct cutting-plane and wrist roll.",
+      "reviewReason": "Chopping perspective improved but some heads read as pointed weapons."
+    },
+    {
+      "id": "charge-attack-edge-v3",
+      "clipId": "charge-attack",
+      "file": "ChargeAttack-v3.png",
+      "references": [
+        "ChargeAttack-v2.png"
+      ],
+      "prompt": "Use case: precise-object-edit\nAsset type: six-frame Russian Bronze Axeman game sprite animation sheet.\nInput image is the EDIT TARGET. Preserve exact soldier identity, cap, red/cream outfit, bronze wrist guards, round timber shield, body poses, body registration, scale, strict straight-overhead orthographic camera facing screen-down, and six-frame chronology.\nPrimary correction: the axe currently swings with its broad FLAT FACE toward the camera, like a paddle. Fix the gripping wrist and rotate the AXE HEAD AROUND THE HAFT so the SHARP CUTTING EDGE LEADS the actual downswing. This is a one-handed overhead CHOP toward an enemy below the soldier on screen. Axe blade plane must align with the vertical chopping plane, not lie flat sideways. During raised windup and impact the overhead camera sees a FORESHORTENED narrow bronze spine/top surface and slim wedge of the cutting bit, NOT the broad full side face. Keep enough bronze crescent/bevel detail for it to remain clearly an axe. The blade cutting edge points forward/down toward the target at impact, not off sideways. Single head, one crescent cutting bit, wood haft, bronze socket. Head is fixed rigidly to haft. Wrist rolls the whole weapon into cutting alignment; head never swivels independently or changes sides on its socket. Right hand grips WOODEN HANDLE below the head, not the metal socket.\nSix chronological poses: 1 relaxed guard with existing broadside axe, 2 begin lifting/rolling wrist into chopping plane, 3 high bent-elbow windup with head angled edge-first, 4 decisive downstroke with CUTTING EDGE facing down-screen and only foreshortened blade side visible, 5 follow-through remains edge-first then wrist unrolls, 6 recover to familiar idle grip. Restore physically plausible fingers and wrist angle. Broad bronze axe identity must persist.\nComposition: EXACT1536x1024 RGBA, 3 columns x2 rows, six512x512 cells. Same complete actor per cell, all head/handle/fingers/boots/shield contained in own cell with at least24px transparent padding. No translation or zoom of upper body, no new characters.\nBackground: true transparent alpha. No haze, glow, vignette, ground shadow, grid, labels, blood or weapon trail. Keep shield, left hand, legs and clothing unchanged.\nClip-specific motion: Heavy charge chop: keep original forward lunge, wider planted feet and forceful six body poses; change only axe/wrist/weapon forearm orientation. Edge-first heavy chop, not spear thrust.",
+      "generatedSource": "C:\\Users\\Damien\\.codex\\generated_images\\01a0fea1-c63f-7343-92ca-6c21cc1c4296\\exec-da3b9467-f458-415c-bb84-2b805e92760d.png",
+      "status": "rejected",
+      "reason": "User reported sideways axe swing; correct cutting-plane and wrist roll.",
+      "reviewReason": "Chopping perspective improved but some heads read as pointed weapons."
+    },
+    {
+      "id": "attack-edge-v4",
+      "clipId": "attack",
+      "file": "Attack-v4.png",
+      "references": [
+        "Attack-v3.png"
+      ],
+      "prompt": "Use case: precise-object-edit\nEdit target is the attached six-pose Russian Bronze Axeman attack animation sheet. Refine ONLY THE BRONZE AXE HEADS in swinging frames2/3/4/5, retain all soldier body poses, gripping hands/wrist roll, arms, costume, round shield, camera, root registration and exact body scale. Frame1/6 idle bronze axe head stays broad and crescent-shaped exactly as it is.\nThe recent edit over-foreshortened the axe into a pointed spear/dagger shape. It MUST remain a ONE-SIDED BROAD BRONZE AXE even while chopping. Give windup/impact head a recognizable asymmetric fan/crescent cutting bit, short blunt poll behind the socket, thick bronze spine, convex curved cutting edge and blunt upper/lower blade corners. NO sharp dagger tip, lance point or symmetric arrowhead. The axe head extends OFF ONE SIDE of the socket, perpendicular to the wood haft, never a straight pointed continuation of the haft.\nDuring windup and strike, blade plane is CANTED about30-45 degrees away from vertical so we see a PARTIAL crescent side face and strong bevel. This is aboutHALF the apparent face width of the broad idle blade, neither fully sideways broad-face nor an invisible/knife-thin line. The curved cutting edge is tipped FORWARD into the chop toward LOWER SCREEN and leads the motion; back/poll trails. At impact, convex sharp edge points down/forward toward enemy at screen-bottom, NOT sideways. Hand still grips below socket on wood handle. The socket and blade are rigid; wrist turns whole weapon into chopping plane. Preserve same axe dimensions, its distinctive broad crescent and material; only perspective angle changes.\nNo pointed weapon even in edge view. Keep exact6-frame chronological3x2 layout,1536x1024RGBA six512cells, full actor+axe+shield contained with24px transparent edges. Alpha stays transparent, no background/haze/shadow/trail/grid/text/blood. No camera change or mirrored handedness.",
+      "generatedSource": "C:\\Users\\Damien\\.codex\\generated_images\\01a0fea1-c63f-7343-92ca-6c21cc1c4296\\exec-0df726d2-95ed-4743-bda7-2a5daad3874b.png",
+      "status": "rejected",
+      "reason": "Refine foreshortened chopping blade to retain recognizable crescent axe geometry.",
+      "reviewReason": "Broad side face returned during the chop."
+    },
+    {
+      "id": "charge-attack-edge-v4",
+      "clipId": "charge-attack",
+      "file": "ChargeAttack-v4.png",
+      "references": [
+        "ChargeAttack-v3.png"
+      ],
+      "prompt": "Use case: precise-object-edit\nEdit target is the attached six-pose Russian Bronze Axeman charge-attack animation sheet. Refine ONLY THE BRONZE AXE HEADS in swinging frames2/3/4/5, retain all soldier body poses, gripping hands/wrist roll, arms, costume, round shield, camera, root registration and exact body scale. Frame1/6 idle bronze axe head stays broad and crescent-shaped exactly as it is.\nThe recent edit over-foreshortened the axe into a pointed spear/dagger shape. It MUST remain a ONE-SIDED BROAD BRONZE AXE even while chopping. Give windup/impact head a recognizable asymmetric fan/crescent cutting bit, short blunt poll behind the socket, thick bronze spine, convex curved cutting edge and blunt upper/lower blade corners. NO sharp dagger tip, lance point or symmetric arrowhead. The axe head extends OFF ONE SIDE of the socket, perpendicular to the wood haft, never a straight pointed continuation of the haft.\nDuring windup and strike, blade plane is CANTED about30-45 degrees away from vertical so we see a PARTIAL crescent side face and strong bevel. This is aboutHALF the apparent face width of the broad idle blade, neither fully sideways broad-face nor an invisible/knife-thin line. The curved cutting edge is tipped FORWARD into the chop toward LOWER SCREEN and leads the motion; back/poll trails. At impact, convex sharp edge points down/forward toward enemy at screen-bottom, NOT sideways. Hand still grips below socket on wood handle. The socket and blade are rigid; wrist turns whole weapon into chopping plane. Preserve same axe dimensions, its distinctive broad crescent and material; only perspective angle changes.\nNo pointed weapon even in edge view. Keep exact6-frame chronological3x2 layout,1536x1024RGBA six512cells, full actor+axe+shield contained with24px transparent edges. Alpha stays transparent, no background/haze/shadow/trail/grid/text/blood. No camera change or mirrored handedness.",
+      "generatedSource": "C:\\Users\\Damien\\.codex\\generated_images\\01a0fea1-c63f-7343-92ca-6c21cc1c4296\\exec-c74a7b08-2682-4cb5-a127-db7dc93e86ba.png",
+      "status": "rejected",
+      "reason": "Refine foreshortened chopping blade to retain recognizable crescent axe geometry.",
+      "reviewReason": "Broad side face returned during the chop."
+    },
+    {
+      "id": "attack-edge-v5",
+      "clipId": "attack",
+      "file": "Attack-v5.png",
+      "references": [
+        "Attack-v3.png"
+      ],
+      "prompt": "Use case: precise-object-edit\nKeep this six-frame overhead axeman sheet exactly as shown. Change ONLY the POINTED TIPS of the narrow bronze weapon heads in frames2,3,4,5. Those heads are AXES viewed EDGE-ON from above, not spears. KEEP THEIR NARROW EDGE-ON PERSPECTIVE: do not restore a broad sideways crescent face during the chop.\nReplace each long sharp triangle/knife point with a SHORT BLUNT AXE TOP PROFILE: bronze socket and squared rear poll, stout rectangular tapered wedge, then a SMALL ROUNDED convex cutting lip perpendicular to the haft at its forward end. A tiny sideways flange at the head makes a compact asymmetric T shape, but do not show the full broad blade side. Tip is a short curved cutting line, NEVER a pointed apex. The axe is canted toward screen-bottom and the cutting lip leads the downstroke. Head is roughly30-40px wide in the impact frame, stout and stubby, not a60px long spear point. Wood haft length remains identical. The narrow blade/spine may have a thin bevel highlight to distinguish cutting edge and back. No dagger, sword, spearhead or V-point.\nFrames1/6 broad resting axe remain EXACTLY unchanged. Do not change soldier size, body/arm/foot poses, hands, red/cream clothing, roundshield, camera, frame chronology or placement. True transparency. Exact1536x1024RGBA,3columns2rows6cells512. Full silhouettes contained within original cells with24px transparent edges. No new background, haze, shadow, labels, blood or trail.",
+      "generatedSource": "C:\\Users\\Damien\\.codex\\generated_images\\01a0fea1-c63f-7343-92ca-6c21cc1c4296\\exec-e4c1af29-6b06-4316-92b4-651554d8523b.png",
+      "status": "rejected",
+      "reason": "Replace pointed head with blunt compact axe top profile while preserving edge-first chopping perspective.",
+      "reviewReason": "Blade omitted in swing frames."
+    },
+    {
+      "id": "charge-attack-edge-v5",
+      "clipId": "charge-attack",
+      "file": "ChargeAttack-v5.png",
+      "references": [
+        "ChargeAttack-v3.png"
+      ],
+      "prompt": "Use case: precise-object-edit\nKeep this six-frame overhead axeman sheet exactly as shown. Change ONLY the POINTED TIPS of the narrow bronze weapon heads in frames2,3,4,5. Those heads are AXES viewed EDGE-ON from above, not spears. KEEP THEIR NARROW EDGE-ON PERSPECTIVE: do not restore a broad sideways crescent face during the chop.\nReplace each long sharp triangle/knife point with a SHORT BLUNT AXE TOP PROFILE: bronze socket and squared rear poll, stout rectangular tapered wedge, then a SMALL ROUNDED convex cutting lip perpendicular to the haft at its forward end. A tiny sideways flange at the head makes a compact asymmetric T shape, but do not show the full broad blade side. Tip is a short curved cutting line, NEVER a pointed apex. The axe is canted toward screen-bottom and the cutting lip leads the downstroke. Head is roughly30-40px wide in the impact frame, stout and stubby, not a60px long spear point. Wood haft length remains identical. The narrow blade/spine may have a thin bevel highlight to distinguish cutting edge and back. No dagger, sword, spearhead or V-point.\nFrames1/6 broad resting axe remain EXACTLY unchanged. Do not change soldier size, body/arm/foot poses, hands, red/cream clothing, roundshield, camera, frame chronology or placement. True transparency. Exact1536x1024RGBA,3columns2rows6cells512. Full silhouettes contained within original cells with24px transparent edges. No new background, haze, shadow, labels, blood or trail.",
+      "generatedSource": "C:\\Users\\Damien\\.codex\\generated_images\\01a0fea1-c63f-7343-92ca-6c21cc1c4296\\exec-dd9ec73b-61f3-4344-b1de-b85a2d324974.png",
+      "status": "rejected",
+      "reason": "Replace pointed head with blunt compact axe top profile while preserving edge-first chopping perspective.",
+      "reviewReason": "Blade omitted in swing frames."
+    },
+    {
+      "id": "attack-edge-v6",
+      "clipId": "attack",
+      "file": "Attack-v6.png",
+      "references": [
+        "Attack-v2.png"
+      ],
+      "prompt": "Use case: precise-object-edit\nCorrect only the bronze axe and gripping right wrist in this six-frame axeman attack sheet. Keep soldier, round wooden shield, legs, clothing, straight overhead camera, six original body poses, grid, scale and registration.\nHe must CHOP WITH THE CURVED SHARP EDGE of the axe. During the lifted windup and downstroke the axe head is currently facing LEFT, sideways to his forward attack. ROLL HIS WRIST so the axe blade aims TOWARD THE BOTTOM OF THE IMAGE as he strikes.\nSpecific changes to top-right windup and bottom-left impact: keep a recognizable fan-shaped BRONZE AXE HEAD, but ROTATE ITS PROJECTION so the curved sharp outer edge is on the LOWER SIDE OF THE HEAD, facing SCREEN-BOTTOM or BOTTOM-LEFT toward the enemy. The sharp edge leads down/forward; the small blunt poll stays behind it. The curved cutting bit must extend FORWARD BELOW the haft socket, rather than extending horizontally LEFT of the socket. The lower cutting arc should read as a short broad convex smile BELOW the socket. Angle the blade face so we see a bevel and partial side face, a solid three-dimensional axe. It remains one broad bronze blade on a wood handle. No knife point, spear tip, straight rod or missing blade. Do not keep the cutting edge facing sideways-left throughout the downswing.\nTop-left and bottom-right guard poses remain unchanged. Top-middle windup begins rolling blade toward the lower target; bottom-middle follow-through keeps cutting edge down then rolls back to guard. Fingers grip wooden haft firmly, wrist follows axe orientation. Every head stays rigidly attached.\nExact1536x1024RGBA,3columns2rows,six512cells. All full poses/weapon within own cell with24px transparent edge margin. True transparent background. No blood, text, glow, haze, shadow, trails or formation.",
+      "generatedSource": "C:\\Users\\Damien\\.codex\\generated_images\\01a0fea1-c63f-7343-92ca-6c21cc1c4296\\exec-ee1beb5a-9da2-4cd3-8ceb-d19c7a4388f8.png",
+      "status": "rejected",
+      "reason": "Orient curved bronze cutting edge toward lower target in windup and impact, preserve recognizable axe.",
+      "reviewReason": "Incorrect head attachment and inconsistent cutting angle."
+    },
+    {
+      "id": "charge-attack-edge-v6",
+      "clipId": "charge-attack",
+      "file": "ChargeAttack-v6.png",
+      "references": [
+        "ChargeAttack-v2.png"
+      ],
+      "prompt": "Use case: precise-object-edit\nCorrect only the bronze axe and gripping right wrist in this six-frame axeman charge-attack sheet. Keep soldier, round wooden shield, legs, clothing, straight overhead camera, six original body poses, grid, scale and registration.\nHe must CHOP WITH THE CURVED SHARP EDGE of the axe. During the lifted windup and downstroke the axe head is currently facing LEFT, sideways to his forward attack. ROLL HIS WRIST so the axe blade aims TOWARD THE BOTTOM OF THE IMAGE as he strikes.\nSpecific changes to top-right windup and bottom-left impact: keep a recognizable fan-shaped BRONZE AXE HEAD, but ROTATE ITS PROJECTION so the curved sharp outer edge is on the LOWER SIDE OF THE HEAD, facing SCREEN-BOTTOM or BOTTOM-LEFT toward the enemy. The sharp edge leads down/forward; the small blunt poll stays behind it. The curved cutting bit must extend FORWARD BELOW the haft socket, rather than extending horizontally LEFT of the socket. The lower cutting arc should read as a short broad convex smile BELOW the socket. Angle the blade face so we see a bevel and partial side face, a solid three-dimensional axe. It remains one broad bronze blade on a wood handle. No knife point, spear tip, straight rod or missing blade. Do not keep the cutting edge facing sideways-left throughout the downswing.\nTop-left and bottom-right guard poses remain unchanged. Top-middle windup begins rolling blade toward the lower target; bottom-middle follow-through keeps cutting edge down then rolls back to guard. Fingers grip wooden haft firmly, wrist follows axe orientation. Every head stays rigidly attached.\nExact1536x1024RGBA,3columns2rows,six512cells. All full poses/weapon within own cell with24px transparent edge margin. True transparent background. No blood, text, glow, haze, shadow, trails or formation.",
+      "generatedSource": "C:\\Users\\Damien\\.codex\\generated_images\\01a0fea1-c63f-7343-92ca-6c21cc1c4296\\exec-24ab78e6-1679-4187-96d1-6d0649c605a9.png",
+      "status": "rejected",
+      "reason": "Orient curved bronze cutting edge toward lower target in windup and impact, preserve recognizable axe.",
+      "reviewReason": "Incorrect head attachment and inconsistent cutting angle."
+    },
+    {
+      "id": "attack-edge-v7",
+      "clipId": "attack",
+      "file": "Attack-v7.png",
+      "references": [
+        "Attack-v2.png",
+        "SourceArt/AxeChop-Impact-Corrected.png"
+      ],
+      "prompt": "Use case: precise-object-edit\nInput Image1 is EDIT TARGET: the six-frame Russian Bronze Axeman attack sheet. Image2 is a SUCCESSFUL AXE ORIENTATION REFERENCE: the single soldier has the correct narrow, curved bronze chopping blade and wrist alignment. Use Image2 ONLY to match axe perspective/geometry and right-hand grip, not its larger body size or composition.\nIn Image1 frames2,3,4,5, correct axe/wrist to use EXACT SAME axe-edge profile as Image2: narrow but visibly CURVED bronze cutting bit off socket, visible thick spine/back, not a straight triangular spear point. Blade is rolled into chopping plane, edge points forward/down along the strike. Match the three-dimensional foreshortened axe in Image2; do not show the broad flat blade face hitting sideways. Frame4 impact should specifically match Image2's axe head orientation. Frame3 raised windup has the same weapon rolled edge-first. Frame2 rotates wrist into alignment, frame5 follow-through keeps edge alignment then returns. Frame1/6 resting axe retains Image1's broad bronze idle crescent. Maintain a single rigid axe head attached to wood haft; no shape-changing/extra blade. Fingers grip wood below socket.\nPreserve EXACT Image1 actor body poses/scale/root, leg positions, six-frame chronology, round timber shield, red/cream costume and vertical overhead orthographic camera. It is a restrained chop in attack or heavy lunge in charge-attack, just as Image1 shows.\nOutput exactly1536x1024RGBA,3columns2rows6cells512. All full silhouettes and axe inside each own cell with24px empty transparent margins. True transparency, no haze/ground/glow/shadow/text/grid/blood/trails. Never turn the axe into a spear, club or bare handle.",
+      "generatedSource": "C:\\Users\\Damien\\.codex\\generated_images\\01a0fea1-c63f-7343-92ca-6c21cc1c4296\\exec-efae05ac-3a67-4a0b-aa38-a815b36f2899.png",
+      "status": "superseded",
+      "reason": "Use successful single-pose axe perspective as explicit visual reference for both full swings.",
+      "reviewReason": "Axe perspective passed visual check, but top-middle shield failed visible sprite guard; padding fixed in v8."
+    },
+    {
+      "id": "charge-attack-edge-v7",
+      "clipId": "charge-attack",
+      "file": "ChargeAttack-v7.png",
+      "references": [
+        "ChargeAttack-v2.png",
+        "SourceArt/AxeChop-Impact-Corrected.png"
+      ],
+      "prompt": "Use case: precise-object-edit\nInput Image1 is EDIT TARGET: the six-frame Russian Bronze Axeman charge-attack sheet. Image2 is a SUCCESSFUL AXE ORIENTATION REFERENCE: the single soldier has the correct narrow, curved bronze chopping blade and wrist alignment. Use Image2 ONLY to match axe perspective/geometry and right-hand grip, not its larger body size or composition.\nIn Image1 frames2,3,4,5, correct axe/wrist to use EXACT SAME axe-edge profile as Image2: narrow but visibly CURVED bronze cutting bit off socket, visible thick spine/back, not a straight triangular spear point. Blade is rolled into chopping plane, edge points forward/down along the strike. Match the three-dimensional foreshortened axe in Image2; do not show the broad flat blade face hitting sideways. Frame4 impact should specifically match Image2's axe head orientation. Frame3 raised windup has the same weapon rolled edge-first. Frame2 rotates wrist into alignment, frame5 follow-through keeps edge alignment then returns. Frame1/6 resting axe retains Image1's broad bronze idle crescent. Maintain a single rigid axe head attached to wood haft; no shape-changing/extra blade. Fingers grip wood below socket.\nPreserve EXACT Image1 actor body poses/scale/root, leg positions, six-frame chronology, round timber shield, red/cream costume and vertical overhead orthographic camera. It is a restrained chop in attack or heavy lunge in charge-attack, just as Image1 shows.\nOutput exactly1536x1024RGBA,3columns2rows6cells512. All full silhouettes and axe inside each own cell with24px empty transparent margins. True transparency, no haze/ground/glow/shadow/text/grid/blood/trails. Never turn the axe into a spear, club or bare handle.",
+      "generatedSource": "C:\\Users\\Damien\\.codex\\generated_images\\01a0fea1-c63f-7343-92ca-6c21cc1c4296\\exec-97cc1b9a-f69e-4929-b353-85acd216280d.png",
+      "status": "superseded",
+      "reason": "Use successful single-pose axe perspective as explicit visual reference for both full swings.",
+      "reviewReason": "Successful single-pose reference retained narrow curved bronze cutting bit during swing.",
+      "supersededReason": "Equipment finish and cap crown revised; prior motion source retained."
+    },
+    {
+      "id": "axe-impact-reference-v1",
+      "file": "SourceArt/AxeChop-Impact-Corrected.png",
+      "references": [
+        "SourceArt/AxeChop-Impact-Reference.png"
+      ],
+      "prompt": "Use case: precise-object-edit\nEdit this ONE axeman impact pose. Keep exact red/cream soldier, shield, body and stance, vertical overhead camera and transparent background. Fix only his right hand, wrist and BRONZE AXE orientation during an overhead downward chop.\nHis wooden haft points diagonally down-left. The bronze head currently shows its entire flat side facing the viewer and cutting edge to screen-left. ROLL THE AXE90DEGREES around its wooden haft into the chopping plane. Show the narrow TOP/SPINE VIEW of the bronze axe head at the end of the shaft, with a SHORT curved cutting bevel extending forward down-left, aligned with the strike. The head must read as a real broad single-bladed axe rotated edge-first: thick rectangular top/spine, small visible near-side crescent, curved edge at the LOWER/forward side, blunt rear poll and socket around the wood. No long spear/knife point, no missing axe head, no bronze cylindrical club. Hand grips wood below the socket and wrist aligns the blade to the chop. Keep recognizable axe geometry and material. Entire cutting bit remains visible in three-dimensional foreshortened perspective.\nPreserve composition on a square transparent canvas. One complete actor only, same relative size/root as reference, no zoom. No other pose, no text, blood, shadow, glow, background or trails.",
+      "generatedSource": "C:\\Users\\Damien\\.codex\\generated_images\\01a0fea1-c63f-7343-92ca-6c21cc1c4296\\exec-6931570c-7512-4863-819d-39a33653f553.png",
+      "status": "reference-selected"
+    },
+    {
+      "id": "attack-edge-padding-v8",
+      "clipId": "attack",
+      "file": "Attack-v8.png",
+      "references": [
+        "Attack-v7.png"
+      ],
+      "prompt": "Use case: precise-object-edit\nPADDING ONLY. Preserve this successful six-frame Russian Bronze Axeman axe chop sheet, including exact narrow CURVED bronze axe head perspective, edge-first grip in swing poses, broad resting axe in frames1/6, clothing, round wooden shield, overhead camera and exact pose chronology. DO NOT reinterpret or broaden the chopping blade or change the swing.\nThe shield in the top-middle cell is within5px of its right edge. Redraw ALL6 full sprites uniformly at90percent their current size, same constant body scale for all6. Center each body's root aroundlocal256,275. Complete shield rim, all boots/fingers, woodhaft and bronze head must stay withinlocal24..488px of EACH512cell with at least24px clear transparent padding all4edges. No cropped or neighboring pixels. Do not fit different frames to different scales.\nExactly1536x1024RGBA,3columns2rows6cells512. Alpha true transparent; no haze, shadows, glow, ground, grids, text or trails. Preserve correct narrow curved axe profile from this sheet, never spear point or bare handle.",
+      "generatedSource": "C:\\Users\\Damien\\.codex\\generated_images\\01a0fea1-c63f-7343-92ca-6c21cc1c4296\\exec-d41f3bb6-dfca-4ade-8fe2-57416a2595be.png",
+      "status": "superseded",
+      "reason": "Add visible frame-guard space around top-middle shield while retaining correct axe perspective.",
+      "supersededReason": "Equipment finish and cap crown revised; prior motion source retained."
+    },
+    {
+      "id": "equipment-idle-v1",
+      "clip": "idle",
+      "file": "Idle-RoughBronze-v1.png",
+      "prompt": "Use case: precise-object-edit\nAsset type: single soldier animation sheet, Russian civilization Bronze Age Bronze Axeman.\nInput image 1 is the EDIT TARGET: keep these exact six idle poses and geometry. Change ONLY the equipment surfaces and red cap crown.\nReplace the RED CLOTH CROWN of the cap with a simple hammered BRONZE dome in exactly the same size and rounded profile. Warm dull copper-bronze, visible small hammer marks, a few shallow dents and rubbed edges, not glossy gold. Retain the cream fur brim and collar unchanged; leave the red tunic red.\nMake equipment a LITTLE rougher: slightly irregular rough timber grain on the round wooden shield, modest scuffs and small edge chips, worn leather rim and straps; bronze boss, wrist guards and axe have understated hammer texture, dull rubbed finish and a few small dents. Wooden axe haft has coarse grain and worn grip. Still functional and easily readable. No extreme rust, damage, green patina, filth, broken pieces or new decoration.\nPreserve exact face/body/costume, handedness, broad curved single axe silhouette, round shield shape, all six poses, limb positions, weapon angles, actor sizes, positions and camera. This is a material-only edit, not new animation. STRICT vertical overhead orthographic screen-down view. Imagined ancestral roster, not historical reconstruction.\nOutput exactly1536x1024 RGBA, same3columns x2rows of six512px cells, one complete actor per cell. Keep exact target root registration and generous transparent padding. TRUE transparent background including space between actors, no haze, backdrop, ground shadows, glow, grid, text, watermark or blood.",
+      "references": [
+        "Idle-v2.png"
+      ],
+      "generatedSource": "C:\\Users\\Damien\\.codex\\generated_images\\01a0fea1-c63f-7343-92ca-6c21cc1c4296\\exec-90207188-e8c4-41ea-a447-cc0fde2264c5.png",
+      "status": "selected"
+    },
+    {
+      "id": "equipment-running-v1",
+      "clip": "running",
+      "file": "Running-RoughBronze-v1.png",
+      "prompt": "Use case: precise-object-edit\nAsset type: existing six-frame Russian Bronze Axeman single-soldier animation sheet.\nInput1 is the EDIT TARGET with the exact motion, poses and weapon geometry to retain. Input2 is a MATERIAL AND CAP reference only: DO NOT copy its idle poses.\nChange only equipment finish and replace ALL RED CAP CROWNS with the same hammered BRONZE dome shown in image2. Same cap profile, warm dull copper-bronze, shallow hammer marks/dents, rubbed edges, cream fur brim retained. Keep tunic RED and fur cream.\nMatch image2's modest roughness: coarse shield timber grain, light scuffs/small edge chips, worn leather rim and straps, understated hammered bronze boss/wrist guards/axe, coarse worn wooden axe grip. Still sturdy/readable, not severely damaged. No rusty wreckage, green corrosion, decoration, new armor, changed weapon or changed cap silhouette.\nSTRICTLY retain image1's exact six poses in their existing cell order, limb/foot/body positions, camera, handedness, weapon angles, shield orientation and silhouette, actor root and constant scale. Do not change animation or fit/zoom individual frames. No mirrored weapons. Keep corrected axe head orientation: in windup/impact the axe is rolled so its narrow curved cutting bit leads the chop, not a flat paddle or spear. Preserve target's curved blade shape at every angle.\nOutput exactly1536x1024 RGBA,3columns x2rows of512px cells, true transparent background and transparent gaps between silhouettes. Keep full actors/equipment within their original cells and original padding. No haze, background, shadows, glow, grid, text, blood or watermark.\nThis target is a WALK loop. Preserve every existing alternating foot position and closing loop; material-only edit.",
+      "references": [
+        "Running.png",
+        "Idle-RoughBronze-v1.png"
+      ],
+      "generatedSource": "C:\\Users\\Damien\\.codex\\generated_images\\01a0fea1-c63f-7343-92ca-6c21cc1c4296\\exec-5456c880-0485-4594-a858-51f833e650e4.png",
+      "status": "selected"
+    },
+    {
+      "id": "equipment-attack-v1",
+      "clip": "attack",
+      "file": "Attack-RoughBronze-v1.png",
+      "prompt": "Use case: precise-object-edit\nAsset type: existing six-frame Russian Bronze Axeman single-soldier animation sheet.\nInput1 is the EDIT TARGET with the exact motion, poses and weapon geometry to retain. Input2 is a MATERIAL AND CAP reference only: DO NOT copy its idle poses.\nChange only equipment finish and replace ALL RED CAP CROWNS with the same hammered BRONZE dome shown in image2. Same cap profile, warm dull copper-bronze, shallow hammer marks/dents, rubbed edges, cream fur brim retained. Keep tunic RED and fur cream.\nMatch image2's modest roughness: coarse shield timber grain, light scuffs/small edge chips, worn leather rim and straps, understated hammered bronze boss/wrist guards/axe, coarse worn wooden axe grip. Still sturdy/readable, not severely damaged. No rusty wreckage, green corrosion, decoration, new armor, changed weapon or changed cap silhouette.\nSTRICTLY retain image1's exact six poses in their existing cell order, limb/foot/body positions, camera, handedness, weapon angles, shield orientation and silhouette, actor root and constant scale. Do not change animation or fit/zoom individual frames. No mirrored weapons. Keep corrected axe head orientation: in windup/impact the axe is rolled so its narrow curved cutting bit leads the chop, not a flat paddle or spear. Preserve target's curved blade shape at every angle.\nOutput exactly1536x1024 RGBA,3columns x2rows of512px cells, true transparent background and transparent gaps between silhouettes. Keep full actors/equipment within their original cells and original padding. No haze, background, shadows, glow, grid, text, blood or watermark.\nThis target is a normal axe chop. Preserve precisely its corrected wrist roll, slim curved edge-leading blade in frames2/3/4/5, complete attached axe socket/head, shield placement and padding.",
+      "references": [
+        "Attack-v8.png",
+        "Idle-RoughBronze-v1.png"
+      ],
+      "generatedSource": "C:\\Users\\Damien\\.codex\\generated_images\\01a0fea1-c63f-7343-92ca-6c21cc1c4296\\exec-12517cca-181d-4817-b161-39d6239d385e.png",
+      "status": "selected"
+    },
+    {
+      "id": "equipment-charge-attack-v1",
+      "clip": "charge-attack",
+      "file": "ChargeAttack-RoughBronze-v1.png",
+      "prompt": "Use case: precise-object-edit\nAsset type: existing six-frame Russian Bronze Axeman single-soldier animation sheet.\nInput1 is the EDIT TARGET with the exact motion, poses and weapon geometry to retain. Input2 is a MATERIAL AND CAP reference only: DO NOT copy its idle poses.\nChange only equipment finish and replace ALL RED CAP CROWNS with the same hammered BRONZE dome shown in image2. Same cap profile, warm dull copper-bronze, shallow hammer marks/dents, rubbed edges, cream fur brim retained. Keep tunic RED and fur cream.\nMatch image2's modest roughness: coarse shield timber grain, light scuffs/small edge chips, worn leather rim and straps, understated hammered bronze boss/wrist guards/axe, coarse worn wooden axe grip. Still sturdy/readable, not severely damaged. No rusty wreckage, green corrosion, decoration, new armor, changed weapon or changed cap silhouette.\nSTRICTLY retain image1's exact six poses in their existing cell order, limb/foot/body positions, camera, handedness, weapon angles, shield orientation and silhouette, actor root and constant scale. Do not change animation or fit/zoom individual frames. No mirrored weapons. Keep corrected axe head orientation: in windup/impact the axe is rolled so its narrow curved cutting bit leads the chop, not a flat paddle or spear. Preserve target's curved blade shape at every angle.\nOutput exactly1536x1024 RGBA,3columns x2rows of512px cells, true transparent background and transparent gaps between silhouettes. Keep full actors/equipment within their original cells and original padding. No haze, background, shadows, glow, grid, text, blood or watermark.\nThis target is a heavy charge chop. Preserve precisely its lunge, corrected wrist roll and curved edge-leading blade during windup/impact, attached head/socket, shield placement and padding.",
+      "references": [
+        "ChargeAttack-v7.png",
+        "Idle-RoughBronze-v1.png"
+      ],
+      "generatedSource": "C:\\Users\\Damien\\.codex\\generated_images\\01a0fea1-c63f-7343-92ca-6c21cc1c4296\\exec-e69e6aef-c47f-4860-abb2-b55a9302e50f.png",
+      "status": "selected"
+    },
+    {
+      "id": "equipment-hit-v1",
+      "clip": "hit",
+      "file": "Hit-RoughBronze-v1.png",
+      "prompt": "Use case: precise-object-edit\nAsset type: existing six-frame Russian Bronze Axeman single-soldier animation sheet.\nInput1 is the EDIT TARGET with the exact motion, poses and weapon geometry to retain. Input2 is a MATERIAL AND CAP reference only: DO NOT copy its idle poses.\nChange only equipment finish and replace ALL RED CAP CROWNS with the same hammered BRONZE dome shown in image2. Same cap profile, warm dull copper-bronze, shallow hammer marks/dents, rubbed edges, cream fur brim retained. Keep tunic RED and fur cream.\nMatch image2's modest roughness: coarse shield timber grain, light scuffs/small edge chips, worn leather rim and straps, understated hammered bronze boss/wrist guards/axe, coarse worn wooden axe grip. Still sturdy/readable, not severely damaged. No rusty wreckage, green corrosion, decoration, new armor, changed weapon or changed cap silhouette.\nSTRICTLY retain image1's exact six poses in their existing cell order, limb/foot/body positions, camera, handedness, weapon angles, shield orientation and silhouette, actor root and constant scale. Do not change animation or fit/zoom individual frames. No mirrored weapons. Keep corrected axe head orientation: in windup/impact the axe is rolled so its narrow curved cutting bit leads the chop, not a flat paddle or spear. Preserve target's curved blade shape at every angle.\nOutput exactly1536x1024 RGBA,3columns x2rows of512px cells, true transparent background and transparent gaps between silhouettes. Keep full actors/equipment within their original cells and original padding. No haze, background, shadows, glow, grid, text, blood or watermark.\nTarget is a small standing hit flinch/recovery. Keep exact existing six motion poses.",
+      "references": [
+        "Hit.png",
+        "Idle-RoughBronze-v1.png"
+      ],
+      "generatedSource": "C:\\Users\\Damien\\.codex\\generated_images\\01a0fea1-c63f-7343-92ca-6c21cc1c4296\\exec-9cf7e6d4-56c6-438b-9d28-719620510749.png",
+      "status": "rejected",
+      "reason": "Reference transfer enlarged actors; precise target-only material edit selected."
+    },
+    {
+      "id": "equipment-charged-v1",
+      "clip": "charged",
+      "file": "Charged-RoughBronze-v1.png",
+      "prompt": "Use case: precise-object-edit\nAsset type: existing six-frame Russian Bronze Axeman single-soldier animation sheet.\nInput1 is the EDIT TARGET with the exact motion, poses and weapon geometry to retain. Input2 is a MATERIAL AND CAP reference only: DO NOT copy its idle poses.\nChange only equipment finish and replace ALL RED CAP CROWNS with the same hammered BRONZE dome shown in image2. Same cap profile, warm dull copper-bronze, shallow hammer marks/dents, rubbed edges, cream fur brim retained. Keep tunic RED and fur cream.\nMatch image2's modest roughness: coarse shield timber grain, light scuffs/small edge chips, worn leather rim and straps, understated hammered bronze boss/wrist guards/axe, coarse worn wooden axe grip. Still sturdy/readable, not severely damaged. No rusty wreckage, green corrosion, decoration, new armor, changed weapon or changed cap silhouette.\nSTRICTLY retain image1's exact six poses in their existing cell order, limb/foot/body positions, camera, handedness, weapon angles, shield orientation and silhouette, actor root and constant scale. Do not change animation or fit/zoom individual frames. No mirrored weapons. Keep corrected axe head orientation: in windup/impact the axe is rolled so its narrow curved cutting bit leads the chop, not a flat paddle or spear. Preserve target's curved blade shape at every angle.\nOutput exactly1536x1024 RGBA,3columns x2rows of512px cells, true transparent background and transparent gaps between silhouettes. Keep full actors/equipment within their original cells and original padding. No haze, background, shadows, glow, grid, text, blood or watermark.\nTarget is a heavy charge-impact stagger and recover. Retain exactly existing stance, lean, wide boots, shield angles and all six poses.",
+      "references": [
+        "Charged-v2.png",
+        "Idle-RoughBronze-v1.png"
+      ],
+      "generatedSource": "C:\\Users\\Damien\\.codex\\generated_images\\01a0fea1-c63f-7343-92ca-6c21cc1c4296\\exec-35c43602-46ff-4248-92b2-0e8235de462f.png",
+      "status": "rejected",
+      "reason": "Reference transfer enlarged actors; precise target-only material edit selected."
+    },
+    {
+      "id": "equipment-charge-v1",
+      "clip": "charge",
+      "file": "Charge-RoughBronze-v1.png",
+      "prompt": "Use case: precise-object-edit\nAsset type: existing six-frame Russian Bronze Axeman single-soldier animation sheet.\nInput1 is the EDIT TARGET with the exact motion, poses and weapon geometry to retain. Input2 is a MATERIAL AND CAP reference only: DO NOT copy its idle poses.\nChange only equipment finish and replace ALL RED CAP CROWNS with the same hammered BRONZE dome shown in image2. Same cap profile, warm dull copper-bronze, shallow hammer marks/dents, rubbed edges, cream fur brim retained. Keep tunic RED and fur cream.\nMatch image2's modest roughness: coarse shield timber grain, light scuffs/small edge chips, worn leather rim and straps, understated hammered bronze boss/wrist guards/axe, coarse worn wooden axe grip. Still sturdy/readable, not severely damaged. No rusty wreckage, green corrosion, decoration, new armor, changed weapon or changed cap silhouette.\nSTRICTLY retain image1's exact six poses in their existing cell order, limb/foot/body positions, camera, handedness, weapon angles, shield orientation and silhouette, actor root and constant scale. Do not change animation or fit/zoom individual frames. No mirrored weapons. Keep corrected axe head orientation: in windup/impact the axe is rolled so its narrow curved cutting bit leads the chop, not a flat paddle or spear. Preserve target's curved blade shape at every angle.\nOutput exactly1536x1024 RGBA,3columns x2rows of512px cells, true transparent background and transparent gaps between silhouettes. Keep full actors/equipment within their original cells and original padding. No haze, background, shadows, glow, grid, text, blood or watermark.\nTarget is a fast running loop. Retain EXACT existing alternating legs, including forward extended boot and backward sole views, exact cell order. Do not turn into an idle or walking loop.",
+      "references": [
+        "Charge-v3.png",
+        "Idle-RoughBronze-v1.png"
+      ],
+      "generatedSource": "C:\\Users\\Damien\\.codex\\generated_images\\01a0fea1-c63f-7343-92ca-6c21cc1c4296\\exec-d8a62673-c0ff-433d-aa06-3c4060902331.png",
+      "status": "selected"
+    },
+    {
+      "id": "equipment-death-v1",
+      "clip": "death",
+      "file": "Death-RoughBronze-v1.png",
+      "prompt": "Use case: precise-object-edit\nAsset type: existing six-frame Russian Bronze Axeman single-soldier animation sheet.\nInput1 is the EDIT TARGET with the exact motion, poses and weapon geometry to retain. Input2 is a MATERIAL AND CAP reference only: DO NOT copy its idle poses.\nChange only equipment finish and replace ALL RED CAP CROWNS with the same hammered BRONZE dome shown in image2. Same cap profile, warm dull copper-bronze, shallow hammer marks/dents, rubbed edges, cream fur brim retained. Keep tunic RED and fur cream.\nMatch image2's modest roughness: coarse shield timber grain, light scuffs/small edge chips, worn leather rim and straps, understated hammered bronze boss/wrist guards/axe, coarse worn wooden axe grip. Still sturdy/readable, not severely damaged. No rusty wreckage, green corrosion, decoration, new armor, changed weapon or changed cap silhouette.\nSTRICTLY retain image1's exact six poses in their existing cell order, limb/foot/body positions, camera, handedness, weapon angles, shield orientation and silhouette, actor root and constant scale. Do not change animation or fit/zoom individual frames. No mirrored weapons. Keep corrected axe head orientation: in windup/impact the axe is rolled so its narrow curved cutting bit leads the chop, not a flat paddle or spear. Preserve target's curved blade shape at every angle.\nOutput exactly1536x1024 RGBA,3columns x2rows of512px cells, true transparent background and transparent gaps between silhouettes. Keep full actors/equipment within their original cells and original padding. No haze, background, shadows, glow, grid, text, blood or watermark.\nTarget is the existing SIDE FALL death progression: keep standing, buckling, tipping and the two complete prone final poses exactly as image1. Replace the visible red cap crown in ALL SIX poses, including sideways lying poses, with bronze. Preserve the existing corpse, equipment positions and full sequence.",
+      "references": [
+        "Death.png",
+        "Idle-RoughBronze-v1.png"
+      ],
+      "generatedSource": "C:\\Users\\Damien\\.codex\\generated_images\\01a0fea1-c63f-7343-92ca-6c21cc1c4296\\exec-fd0b0f56-855f-4962-9ce1-4da52ddee4b4.png",
+      "status": "rejected",
+      "reason": "Death final-frame shield guard spill."
+    },
+    {
+      "id": "equipment-death-back-v1",
+      "clip": "death-back",
+      "file": "Death-Back-RoughBronze-v1.png",
+      "prompt": "Use case: precise-object-edit\nAsset type: existing six-frame Russian Bronze Axeman single-soldier animation sheet.\nInput1 is the EDIT TARGET with the exact motion, poses and weapon geometry to retain. Input2 is a MATERIAL AND CAP reference only: DO NOT copy its idle poses.\nChange only equipment finish and replace ALL RED CAP CROWNS with the same hammered BRONZE dome shown in image2. Same cap profile, warm dull copper-bronze, shallow hammer marks/dents, rubbed edges, cream fur brim retained. Keep tunic RED and fur cream.\nMatch image2's modest roughness: coarse shield timber grain, light scuffs/small edge chips, worn leather rim and straps, understated hammered bronze boss/wrist guards/axe, coarse worn wooden axe grip. Still sturdy/readable, not severely damaged. No rusty wreckage, green corrosion, decoration, new armor, changed weapon or changed cap silhouette.\nSTRICTLY retain image1's exact six poses in their existing cell order, limb/foot/body positions, camera, handedness, weapon angles, shield orientation and silhouette, actor root and constant scale. Do not change animation or fit/zoom individual frames. No mirrored weapons. Keep corrected axe head orientation: in windup/impact the axe is rolled so its narrow curved cutting bit leads the chop, not a flat paddle or spear. Preserve target's curved blade shape at every angle.\nOutput exactly1536x1024 RGBA,3columns x2rows of512px cells, true transparent background and transparent gaps between silhouettes. Keep full actors/equipment within their original cells and original padding. No haze, background, shadows, glow, grid, text, blood or watermark.\nTarget is the existing BACK FALL death progression: preserve all six poses including falling with face visible and final supine corpse, dropped axe and shield positions. Replace cap crown with bronze also when brim crosses face and when the cap is upside-down in the final two poses. Keep the same small rounded cap, not an elaborate new helmet.",
+      "references": [
+        "Death-Back-v2.png",
+        "Idle-RoughBronze-v1.png"
+      ],
+      "generatedSource": "C:\\Users\\Damien\\.codex\\generated_images\\01a0fea1-c63f-7343-92ca-6c21cc1c4296\\exec-474dfad7-6a8a-4374-a68e-b54a24c88036.png",
+      "status": "rejected",
+      "reason": "Reference transfer enlarged actors; precise target-only material edit selected."
+    },
+    {
+      "id": "equipment-hit-v2",
+      "clip": "hit",
+      "file": "Hit-RoughBronze-v2.png",
+      "prompt": "Use case: precise-object-edit\nEdit this exact sprite sheet IN PLACE. This is ONLY a material/color edit. Keep every pose, body part, object size, shape, position, spacing, weapon angle and camera from the input. Do not resize, enlarge, zoom, reposition, or recreate any soldier.\nChange the RED FABRIC CROWN of the cap in all six poses to warm dull HAMMERED BRONZE. Keep exactly the existing cap dimensions/profile and cream fur brim. Subtle small shallow hammer marks and lightly rubbed bronze, not shiny gold. Tunic stays red, fur stays cream, trousers stay pale.\nMake the existing equipment mildly rougher: a few small scuffs/dents on existing bronze surfaces, rougher wood grain on the same shield/axe haft and worn leather. Retain readable complete silhouettes, rounded wooden shield and same bronze axe. No added armor, ornament or corrosion. Do not change the animation at all.\nExact1536x1024 RGBA, same3x2grid of512px cells in original order. Preserve original cell padding, with complete limbs/weapons inside each cell and at least16 transparent pixels at every edge. Genuine transparent background, no haze, ground, shadows, grid or text.\nKeep all existing standing/stagger and recovery poses exactly as authored.",
+      "references": [
+        "Hit.png"
+      ],
+      "generatedSource": "C:\\Users\\Damien\\.codex\\generated_images\\01a0fea1-c63f-7343-92ca-6c21cc1c4296\\exec-d7a797a6-60dd-4edc-ad9d-2cf9cfbaed6e.png",
+      "status": "selected"
+    },
+    {
+      "id": "equipment-charged-v2",
+      "clip": "charged",
+      "file": "Charged-RoughBronze-v2.png",
+      "prompt": "Use case: precise-object-edit\nEdit this exact sprite sheet IN PLACE. This is ONLY a material/color edit. Keep every pose, body part, object size, shape, position, spacing, weapon angle and camera from the input. Do not resize, enlarge, zoom, reposition, or recreate any soldier.\nChange the RED FABRIC CROWN of the cap in all six poses to warm dull HAMMERED BRONZE. Keep exactly the existing cap dimensions/profile and cream fur brim. Subtle small shallow hammer marks and lightly rubbed bronze, not shiny gold. Tunic stays red, fur stays cream, trousers stay pale.\nMake the existing equipment mildly rougher: a few small scuffs/dents on existing bronze surfaces, rougher wood grain on the same shield/axe haft and worn leather. Retain readable complete silhouettes, rounded wooden shield and same bronze axe. No added armor, ornament or corrosion. Do not change the animation at all.\nExact1536x1024 RGBA, same3x2grid of512px cells in original order. Preserve original cell padding, with complete limbs/weapons inside each cell and at least16 transparent pixels at every edge. Genuine transparent background, no haze, ground, shadows, grid or text.\nKeep all existing standing/stagger and recovery poses exactly as authored.",
+      "references": [
+        "Charged-v2.png"
+      ],
+      "generatedSource": "C:\\Users\\Damien\\.codex\\generated_images\\01a0fea1-c63f-7343-92ca-6c21cc1c4296\\exec-14d0be5e-9815-46ab-b014-c8d0c66fb3df.png",
+      "status": "selected"
+    },
+    {
+      "id": "equipment-death-back-v2",
+      "clip": "death-back",
+      "file": "Death-Back-RoughBronze-v2.png",
+      "prompt": "Use case: precise-object-edit\nEdit this exact sprite sheet IN PLACE. This is ONLY a material/color edit. Keep every pose, body part, object size, shape, position, spacing, weapon angle and camera from the input. Do not resize, enlarge, zoom, reposition, or recreate any soldier.\nChange the RED FABRIC CROWN of the cap in all six poses to warm dull HAMMERED BRONZE. Keep exactly the existing cap dimensions/profile and cream fur brim. Subtle small shallow hammer marks and lightly rubbed bronze, not shiny gold. Tunic stays red, fur stays cream, trousers stay pale.\nMake the existing equipment mildly rougher: a few small scuffs/dents on existing bronze surfaces, rougher wood grain on the same shield/axe haft and worn leather. Retain readable complete silhouettes, rounded wooden shield and same bronze axe. No added armor, ornament or corrosion. Do not change the animation at all.\nExact1536x1024 RGBA, same3x2grid of512px cells in original order. Preserve original cell padding, with complete limbs/weapons inside each cell and at least16 transparent pixels at every edge. Genuine transparent background, no haze, ground, shadows, grid or text.\nKeep ALL existing fallen/corpse poses and dropped equipment exactly as authored. Cap crown is bronze even when upside-down or sideways.",
+      "references": [
+        "Death-Back-v2.png"
+      ],
+      "generatedSource": "C:\\Users\\Damien\\.codex\\generated_images\\01a0fea1-c63f-7343-92ca-6c21cc1c4296\\exec-53c8294f-eef7-4393-8d4e-b3f5d5ad5f7c.png",
+      "status": "selected"
+    },
+    {
+      "id": "equipment-death-v2",
+      "clip": "death",
+      "file": "Death-RoughBronze-v2.png",
+      "prompt": "Use case: precise-object-edit\nEdit this exact sprite sheet IN PLACE. This is ONLY a material/color edit. Keep every pose, body part, object size, shape, position, spacing, weapon angle and camera from the input. Do not resize, enlarge, zoom, reposition, or recreate any soldier.\nChange the RED FABRIC CROWN of the cap in all six poses to warm dull HAMMERED BRONZE. Keep exactly the existing cap dimensions/profile and cream fur brim. Subtle small shallow hammer marks and lightly rubbed bronze, not shiny gold. Tunic stays red, fur stays cream, trousers stay pale.\nMake the existing equipment mildly rougher: a few small scuffs/dents on existing bronze surfaces, rougher wood grain on the same shield/axe haft and worn leather. Retain readable complete silhouettes, rounded wooden shield and same bronze axe. No added armor, ornament or corrosion. Do not change the animation at all.\nExact1536x1024 RGBA, same3x2grid of512px cells in original order. Preserve original cell padding, with complete limbs/weapons inside each cell and at least16 transparent pixels at every edge. Genuine transparent background, no haze, ground, shadows, grid or text.\nKeep ALL existing fallen/corpse poses and dropped equipment exactly as authored. Cap crown is bronze even when upside-down or sideways.",
+      "references": [
+        "Death.png"
+      ],
+      "generatedSource": "C:\\Users\\Damien\\.codex\\generated_images\\01a0fea1-c63f-7343-92ca-6c21cc1c4296\\exec-5b17e3bb-ad59-4fac-b5d7-058ca2e10a73.png",
+      "status": "composition-source",
+      "reason": "All six source poses preserved; frame4 shifted left eight pixels during authorized atlas baking."
+    },
+    {
+      "id": "equipment-death-padding-v3",
+      "clip": "death",
+      "file": "Death-RoughBronze-v3.png",
+      "prompt": "Use case: precise-object-edit\nCorrect ONLY sprite-cell padding in this existing six-pose death sheet. Preserve exactly the bronze cap crown, red tunic, cream fur, mildly worn equipment, painterly details, six death poses and strict overhead camera.\nThe two settled corpse silhouettes in BOTTOM-MIDDLE and BOTTOM-RIGHT cells have their wooden shield too close to the RIGHT cell edge. Translate the ENTIRE complete corpse + axe + shield together LEFT by16pixels inside EACH of these two512px cells. Keep same actor size and all relative body/equipment positions. Leave the other FOUR frames completely unchanged. Do not crop, truncate or remove any part of shield, boot, axe or hand. No scale/zoom changes or revised animation.\nOutput exact1536x1024 RGBA, same3columns x2rows of512px cells, true transparent background. Final two whole silhouettes need at least20px clear transparent space at their right cell boundary. Preserve original alpha/clean cutout; no haze, glow, shadows, grid, text or blood.",
+      "references": [
+        "Death-RoughBronze-v2.png"
+      ],
+      "generatedSource": "C:\\Users\\Damien\\.codex\\generated_images\\01a0fea1-c63f-7343-92ca-6c21cc1c4296\\exec-e7610bd9-4db8-4d03-9279-c174f4999577.png",
+      "status": "rejected",
+      "reason": "Padding edit pushed bottom-right boot into left cell guard; geometry-preserving v2 source baked instead."
+    }
+  ],
+  "compositions": [
+    {
+      "date": "2026-10-03",
+      "mode": "authorized-sprite-composition",
+      "authorization": "User approved code composition and baking of existing soldier sprites in this chat.",
+      "file": "Death-RoughBronze-Baked-v1.png",
+      "source": "Death-RoughBronze-v2.png",
+      "sourceSha256": "d99889fc726fd3027ccabe2cec634748a4c2aa9527edf6790d8bfad5f4dc93ae",
+      "alphaPolicy": "Source pixel alpha unchanged; no thresholding/background removal. One frame translated in its cell; canvas cropping affects only empty or faint generator residue at source borders. Native source retained.",
+      "frames": [
+        {
+          "frame": 0,
+          "source": "Death-RoughBronze-v2.png",
+          "sourceRect": [
+            0,
+            0,
+            512,
+            512
+          ],
+          "offset": [
+            0,
+            0
+          ],
+          "sourceCellSha256": "aa022989db2fca1e70d1e86bddeb0911391e8e05fe5d44687f59e991ab71830a",
+          "bakedCellSha256": "aa022989db2fca1e70d1e86bddeb0911391e8e05fe5d44687f59e991ab71830a"
+        },
+        {
+          "frame": 1,
+          "source": "Death-RoughBronze-v2.png",
+          "sourceRect": [
+            512,
+            0,
+            512,
+            512
+          ],
+          "offset": [
+            0,
+            0
+          ],
+          "sourceCellSha256": "0d2ea307fee08166e4c817c513dce7d2e6b36ff02bea672fae88287f0a7421f8",
+          "bakedCellSha256": "0d2ea307fee08166e4c817c513dce7d2e6b36ff02bea672fae88287f0a7421f8"
+        },
+        {
+          "frame": 2,
+          "source": "Death-RoughBronze-v2.png",
+          "sourceRect": [
+            1024,
+            0,
+            512,
+            512
+          ],
+          "offset": [
+            0,
+            0
+          ],
+          "sourceCellSha256": "af7899200fb08e37ba3a3181cd3325e72f9e8cb6aacdca0e11ba903a16c59c0e",
+          "bakedCellSha256": "af7899200fb08e37ba3a3181cd3325e72f9e8cb6aacdca0e11ba903a16c59c0e"
+        },
+        {
+          "frame": 3,
+          "source": "Death-RoughBronze-v2.png",
+          "sourceRect": [
+            0,
+            512,
+            512,
+            512
+          ],
+          "offset": [
+            0,
+            0
+          ],
+          "sourceCellSha256": "8ada62e7ce033d64d4fd35caaba9af62853b5a4df9180bd7e93faca10b2a2445",
+          "bakedCellSha256": "8ada62e7ce033d64d4fd35caaba9af62853b5a4df9180bd7e93faca10b2a2445"
+        },
+        {
+          "frame": 4,
+          "source": "Death-RoughBronze-v2.png",
+          "sourceRect": [
+            512,
+            512,
+            512,
+            512
+          ],
+          "offset": [
+            -8,
+            0
+          ],
+          "sourceCellSha256": "a016ca050664ce1408ad3e186b05d02809daf425ffface4212a58e13cfabef1b",
+          "bakedCellSha256": "03fb4b93cb9603ceeea75330a86a58669b39b8ac80d86972fb0a50dc4341b54a"
+        },
+        {
+          "frame": 5,
+          "source": "Death-RoughBronze-v2.png",
+          "sourceRect": [
+            1024,
+            512,
+            512,
+            512
+          ],
+          "offset": [
+            0,
+            0
+          ],
+          "sourceCellSha256": "ef834673874205614189db6e175453f9214f380cc482d2b73244fa07fc55c52d",
+          "bakedCellSha256": "ef834673874205614189db6e175453f9214f380cc482d2b73244fa07fc55c52d"
+        }
+      ],
+      "sha256": "65f3a2d8ba11646b0874aa89ab39b2e296dc746c52c60bfa0f8b641b4823c797"
+    }
+  ]
+}

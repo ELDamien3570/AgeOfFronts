@@ -21,7 +21,8 @@
         "C:/Users/Damien/Documents/GitHub/AgeOfFronts/AgeOfFronts/Art/Cultures/Russians/Units/StoneAge/Javelinist/Idle.png"
       ],
       "source": "C:\\Users\\Damien\\.codex\\generated_images\\01a0fea1-c63f-7343-92ca-6c21cc1c4296\\exec-c16b9b57-60b0-416d-8fd1-5fa420375bd7.png",
-      "file": "Running.png"
+      "file": "Running.png",
+      "status": "superseded"
     },
     {
       "id": "attack",
@@ -86,6 +87,16 @@
       ],
       "source": "C:\\Users\\Damien\\.codex\\generated_images\\01a0fea1-c63f-7343-92ca-6c21cc1c4296\\exec-8039d094-ed3a-4688-adba-2bad66c5abab.png",
       "file": "Charged-v2.png"
+    },
+    {
+      "id": "running-v2",
+      "prompt": "Use case: identity-preserve. Image 1 is the EDIT TARGET: Russian javelinist six-frame walking sheet. Image 2 is ONLY the approved leg-motion reference: clubman walking sheet. NEVER add the clubman club to the javelinist.\nCorrect ONLY the walking LEG cycle. The target repeats a SCREEN-LEFT leading foot in both its top-left and bottom-left cells. The soldier must make a complete left step AND a complete right step. Use reference image 2's opposite leading feet in top-left and bottom-left poses.\nKeep the entire upper body and equipment design from image1: same red cap, cream fur, red tunic, belt, pale trousers, brown boots, spear in HIS RIGHT/screen-left hand, two spare javelins over other shoulder, same scale and overhead screen-down camera. Never mirror the whole character or switch weapon hands. Fixed body root, no translation. Same exact1536x1024 canvas, 3x2 grid of six512px cells. TRUE transparency; no vignette, ground, text, shadow, effects or cell spill.\nFrame1 TOP-LEFT: SCREEN-LEFT leg straight down toward bottom of cell, long visible shin and boot far forward; SCREEN-RIGHT knee bent back, its boot tucked high under the tunic. Keep this left-leading extreme.\nFrame2 TOP-MIDDLE: right knee lifting and passing forward under hips, left leg weight support.\nFrame3 TOP-RIGHT: right leg extending forward as left leg withdraws; a transitional right-leading pose.\nFrame4 BOTTOM-LEFT is CRITICAL: SCREEN-RIGHT leg extends straight down toward bottom of its cell, with long visible shin and boot at least60pixels below the SCREEN-LEFT boot. SCREEN-LEFT leg is bent BACK and its boot is tucked high beneath the tunic. This MUST be the OPPOSITE leg silhouette of frame1. Use bottom-left pose of reference2. Do not repeat the target's left-leading leg pose here.\nFrame5 BOTTOM-MIDDLE: left knee lifting and passing, right leg supports.\nFrame6 BOTTOM-RIGHT: left leg extends ahead while right leg withdraws, leading back into frame1.\nMirror only the LEG PHASES between the two halves of the stride, not the actor, clothes or weapons. Show intact knees and both boots. Clear full foot swings; no one-legged shuffle. Keep the same low spear carry and natural opposite free-arm swing. All limbs and spear fully inside each cell with at least24px transparent margin.",
+      "references": [
+        "Running.png",
+        "C:/Users/Damien/Documents/GitHub/AgeOfFronts/AgeOfFronts/Art/Cultures/Russians/Units/StoneAge/Clubman/Running-v2.png"
+      ],
+      "source": "C:\\Users\\Damien\\.codex\\generated_images\\01a0fea1-c63f-7343-92ca-6c21cc1c4296\\exec-0152c94d-51dc-4896-9c81-cbc2b2120855.png",
+      "file": "Running-v2.png"
     }
   ]
 }

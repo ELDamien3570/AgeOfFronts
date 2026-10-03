@@ -5,7 +5,8 @@ import { fileURLToPath } from "node:url";
 import { createRequire } from "node:module";
 import { createFormationPainter, clipDuration, sampleFormation } from "./formation-composition.js";
 
-const root = path.dirname(fileURLToPath(import.meta.url));
+// An optional target folder allows other troops to use the same asset compiler.
+const root = process.argv[2] ? path.resolve(process.argv[2]) : path.dirname(fileURLToPath(import.meta.url));
 const definition = JSON.parse(await fs.readFile(path.join(root, "formation.json"), "utf8"));
 const require = createRequire(import.meta.url);
 const { createCanvas, loadImage } = require(process.env.ART_CANVAS_MODULE || "@napi-rs/canvas");
@@ -41,6 +42,7 @@ for (const relative of definition.actorSources) {
       if (!result.visibleBounds || result.guardAlphaMax > 16) failures.push(clip.id + ": unsafe source frame " + frame.index);
       frames.push({ index: frame.index, ...result });
     }
+    if (clips.has(clip.id)) failures.push("Duplicate source clip: " + clip.id);
     clips.set(clip.id, clip); images.set(clip.id, image);
     sources.push({ id: clip.id, path: path.relative(root, imagePath).replaceAll("\\", "/"), sha256: sha256(bytes), frames });
   }
@@ -80,21 +82,33 @@ for (const animation of definition.animations) {
   const file = animation.file, bytes = await atlas.encode("png");
   await fs.writeFile(path.join(root, file), bytes);
   const source = clips.get(animation.source);
-  const impact = animation.id === "charge-attack" ?
+  const impact = animation.id === "charge-attack" && source.impactFrame !== undefined ?
     clipDuration({durations:source.durations.slice(0, source.impactFrame)}) : undefined;
+  const release = source.releaseFrame === undefined ? undefined :
+    clipDuration({durations:source.durations.slice(0, source.releaseFrame)});
   metadata.animations.push({ id: animation.id, label: animation.label, description: animation.description,
     file, loop: animation.loop, frameCount: count, durationMs: animation.durationMs,
     durations: Array(count).fill(animation.durationMs / count), scale: 1,
     sheetSize: {width:atlas.width,height:atlas.height}, grid:{columns,rows}, frames,
     ...(impact === undefined ? {} : {presentationStrikeMarkers:definition.members.map(member =>
-      ({memberId:member.id,timeMs:(animation.memberStartMs?.[member.id]||0)+impact}))}) });
+      ({memberId:member.id,timeMs:(animation.memberStartMs?.[member.id]||0)+impact}))}),
+    ...(release === undefined ? {} : {presentationReleaseMarkers:definition.members.map(member =>
+      ({memberId:member.id,timeMs:(animation.memberStartMs?.[member.id]||0)+release}))}) });
   sheets.push({ id: animation.id, file, frameCount: count, sheetSize:{width:atlas.width,height:atlas.height},
     sha256: sha256(bytes), frames: frameChecks });
 }
 const deathEnd = sampleFormation(definition, clips, "death", Infinity);
-if (deathEnd.some(member => member.layers.some(pose => pose.clipId !== "death" || pose.frame !== clips.get("death").frameCount - 1)))
+const death = definition.animations.find(item => item.id === "death");
+const deathSources = new Set(definition.members.map(member => death.memberSources?.[member.id] || death.source));
+if (deathSources.size < (definition.minimumDeathVariants || 1))
+  failures.push("Too few distinct authored death motions");
+if (deathEnd.some(member => member.layers.some(pose => {
+  const expected = death.memberSources?.[member.id] || death.source;
+  return pose.clipId !== expected || pose.frame !== clips.get(expected).frameCount - 1;
+})))
   failures.push("Death must end with all five members on their final death pose");
 const report = {stage:"formation-art-prototype",compositionSource:"formation.json",memberCount:5,
+  deathMotionCount:deathSources.size,deathAssignments:deathEnd.map(member=>({id:member.id,source:member.layers[0].clipId})),
   sourceActors:sources,sheets,failures,alphaGuardThreshold:16,
   visualApproval:"pending user review",engineIntegration:"not integrated"};
 await fs.writeFile(path.join(root,"Validation.json"),JSON.stringify(report,null,2)+"\n");

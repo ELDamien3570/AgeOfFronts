@@ -80,7 +80,7 @@ describe("reviewed heightmap content contract", () => {
       for (let tile = 0; tile < loaded.terrain.length; tile++) {
         const elevation = loaded.elevation!.values[tile];
         valid &&=
-          Number.isFinite(elevation) && elevation >= -450 && elevation <= 5353;
+          Number.isFinite(elevation) && elevation >= -450 && elevation <= 7188;
         valid &&= !loaded.map.isLand(tile) || elevation > 0;
         water += Number(loaded.map.isWater(tile));
         if (loaded.map.isWater(tile) && elevation > 0) {
@@ -136,7 +136,7 @@ describe("reviewed heightmap content contract", () => {
       }
     }
   });
-  it("keeps Old World's Sahara drier than the Congo with authored climate regions", () => {
+  it("keeps Old World's Sahara drier than the Congo with satellite biome fields", () => {
     const loaded = heightmap("old-world", 500);
     function meanMoisture(lon: number, lat: number) {
       const center = geographicTile(loaded, lon, lat);
@@ -258,6 +258,8 @@ describe("reviewed heightmap content contract", () => {
       "old-world",
       "new-world",
       "valles-kairulia",
+      "down-unda",
+      "middle-east",
       "thebox",
     ]);
     expect(MAPS[0].name).toBe("Mediterranean");
