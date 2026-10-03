@@ -12,6 +12,7 @@ import {
   squadSeparation,
   standable,
   tilePoint,
+  type FactionHostility,
 } from "./SquadGeometry";
 
 type Member = Pick<Squad, "id" | "kind" | "playerId"> & { origin: WorldPoint };
@@ -61,6 +62,7 @@ export interface FormationPlanningState {
   bucket: number;
   entry: number;
   checkingSlots: boolean;
+  mixedOwners?: boolean;
 }
 
 /** Same slot geometry and tie order as Formations, with explicit continuations
@@ -166,7 +168,7 @@ export class FormationPlanning {
     }
     s.phase = "candidate";
   }
-  step(budget: number, blocked?: (tile: number) => boolean): number {
+  step(budget: number, blocked?: (tile: number) => boolean, hostile?: FactionHostility): number {
     if (!Number.isInteger(budget) || budget < 0)
       throw new Error("Invalid formation work budget");
     const s = this.state,
@@ -177,6 +179,7 @@ export class FormationPlanning {
       if (s.phase === "setup") {
         const setup = s.setup!, member = setup.members[setup.cursor++];
         if (member) {
+          if (s.pending.length && s.pending[0].playerId !== member.playerId) s.mixedOwners = true;
           s.pending.push(member); s.selected.add(member.id);
           setup.sumX += member.origin.x; setup.sumY += member.origin.y;
         } else {
@@ -203,7 +206,8 @@ export class FormationPlanning {
           s.phase = "slot";
           continue;
         }
-        if (squad.embarkedOn !== null || s.selected.has(squad.id)) {
+        if (squad.embarkedOn !== null || s.selected.has(squad.id) ||
+            (!s.mixedOwners && !squadSeparation(s.pending[0], squad, hostile))) {
           s.other++;
           s.order = -1;
           continue;
@@ -326,7 +330,7 @@ export class FormationPlanning {
         if (
           other &&
           (s.checkingSlots || !s.selected.has(other.id)) &&
-          distanceSquared(point, other) < squadSeparation(s.member!, other) ** 2
+          distanceSquared(point, other) < squadSeparation(s.member!, other, hostile) ** 2
         ) {
           this.tested(false);
           continue;
@@ -336,7 +340,7 @@ export class FormationPlanning {
           s.bucket++;
         }
         if (s.bucket === 9) {
-          if (s.checkingSlots) this.tested(true);
+          if (s.checkingSlots || !s.mixedOwners) this.tested(true);
           else {
             s.checkingSlots = true;
             s.bucket = 0;

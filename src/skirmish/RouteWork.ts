@@ -21,9 +21,19 @@ export class RouteWork<T = () => void> {
    * since it began reaches `limit` (at least one job always runs), so a handful
    * of long routes cannot stack into one very long tick.
    */
-  drain(budget: number, effort?: { read: () => number; limit: number }): void {
+  drain(budget: number, effort?: { read: () => number; limit: number },priority?: (task:T)=>boolean,turn=0): void {
     const started = effort?.read() ?? 0;
-    for (const [key, work] of this.pending) {
+    let interactive=false;
+    if(priority)for(const work of this.pending.values())if(priority(work.task)){interactive=true;break;}
+    while(this.pending.size&&budget>0){
+      const preferred=turn++%3<2;
+      let entry:[string,{units:number;task:T}]|undefined;
+      if(interactive){
+        for(const candidate of this.pending)if(candidate[1].units<=budget&&priority!(candidate[1].task)===preferred){entry=candidate;break;}
+        if(!entry)for(const candidate of this.pending)if(candidate[1].units<=budget){entry=candidate;break;}
+      }else entry=this.pending.entries().next().value;
+      if(!entry)break;
+      const [key,work]=entry;
       if (work.units > budget) break;
       this.pending.delete(key);
       budget -= work.units;

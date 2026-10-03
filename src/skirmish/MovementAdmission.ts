@@ -57,6 +57,7 @@ export interface MovementAdmissionEvent {
 }
 export interface MovementAdmissionPorts {
   squads(): readonly Squad[];
+  hostile?(a: number, b: number): boolean;
   priority?(playerId: number): boolean;
   squad(id: number): Squad | undefined;
   generation(playerId: number): number;
@@ -267,7 +268,10 @@ export class MovementAdmission {
       squads.map((s) => s.id),
       tick,
     );
-    if (squads.length > 30) {
+    // Small human cohorts can commit promptly while the rest of a large
+    // selection prepares. AI keeps larger batches for corridor reuse.
+    const cohortSize=this.ports.priority?.(playerId)?10:30;
+    if (squads.length > cohortSize) {
       const ordered = [...squads].sort((a, b) => a.x - b.x || a.y - b.y || a.id - b.id),
         columns = Math.ceil(Math.sqrt(ordered.length)), rows = Math.ceil(ordered.length / columns),
         center = tilePoint(this.map, tile), points = preferred ?? new Map<number, WorldPoint>();
@@ -277,8 +281,18 @@ export class MovementAdmission {
       });
       let first = 0;
       const corridorId = this.nextId;
-      for (let start = 0; start < ordered.length; start += 30) {
-        const id = this.create(playerId, ordered.slice(start, start + 30), tile, tick, points, structureTarget, corridorId);
+      let start=0;
+      if(this.ports.priority?.(playerId)){
+        // Publish one real lead route promptly. Other cohorts reuse its spine;
+        // a single awkward follower cannot delay the selection's first motion.
+        let lead=0;
+        for(let i=1;i<ordered.length;i++)if(distanceSquared(ordered[i],center)<distanceSquared(ordered[lead],center))lead=i;
+        ordered.unshift(ordered.splice(lead,1)[0]);
+        if(!preferred)points.set(ordered[0].id,center);
+        first=this.create(playerId,ordered.slice(0,1),tile,tick,points,structureTarget,corridorId);start=1;
+      }
+      for (; start < ordered.length; start += cohortSize) {
+        const id = this.create(playerId, ordered.slice(start, start + cohortSize), tile, tick, points, structureTarget, corridorId);
         first ||= id;
       }
       return first;
@@ -570,6 +584,7 @@ export class MovementAdmission {
         used += formation.step(
           Math.min(16, budget - used),
           this.ports.blocked(intent.playerId),
+          this.ports.hostile,
         );
       } else used++;
       if (intent.formation?.phase === "failed") {
@@ -610,6 +625,14 @@ export class MovementAdmission {
     // returns to the ordinary round-robin, which continues serving the AI.
     used += this.stepAdmissions(tick, Math.floor((budget-used)*2/3), true);
     return used + this.stepAdmissions(tick, budget-used, false);
+  }
+  /** A fixed extra allowance for human input. Background work keeps its
+   * ordinary allowance; no wall clock affects authoritative scheduling. */
+  stepInteractive(tick:number,budget:number):number {
+    if(!Number.isInteger(budget)||budget<0)throw new Error("Invalid interactive admission allowance");
+    if(![...this.pending.values()].some(p=>this.ports.priority?.(p.playerId)))return 0;
+    this.occupancy.rebuild(this.ports.squads());
+    return this.stepAdmissions(tick,budget,true);
   }
   private stepAdmissions(tick: number, budget: number, priority: boolean): number {
     const validated = new Set<number>();
@@ -676,6 +699,7 @@ export class MovementAdmission {
         used += formation.step(
           Math.min(16, budget - used),
           this.ports.blocked(admission.playerId),
+          this.ports.hostile,
         );
         if (formation.state.phase === "failed")
           this.finish(

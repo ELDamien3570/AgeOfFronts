@@ -13,6 +13,7 @@ import {
   squadRadius,
   squadSeparation,
   traversable,
+  type FactionHostility,
 } from "./SquadGeometry";
 import { restoreMap } from "./StateTransfer";
 
@@ -58,10 +59,11 @@ function closestDistanceSquared(
     : 0;
   return (dx + vx * time) ** 2 + (dy + vy * time) ** 2;
 }
-function crossing(a: Squad, av: Velocity, b: Squad, bv: Velocity): boolean {
+function crossing(a: Squad, av: Velocity, b: Squad, bv: Velocity, hostile?: FactionHostility): boolean {
   const dx = a.x - b.x,
     dy = a.y - b.y;
-  const minimum = squadSeparation(a, b);
+  const minimum = squadSeparation(a, b, hostile);
+  if (!minimum) return false;
   const initial = dx * dx + dy * dy;
   // Invalid pre-existing overlaps may separate, never deepen or cross through.
   if (initial < minimum * minimum)
@@ -90,14 +92,15 @@ export class LocalAvoidance {
   restore(saved: ReturnType<LocalAvoidance["checkpoint"]>): void {
     const state = structuredClone(saved);
     restoreMap(this.previous, state.previous);
-    this.recovery.restore(state.recovery);
+    // Historical friendly yield leases no longer constrain the overlap policy.
+    this.recovery.restore();
   }
 
   private readonly previous = new Map<number, Velocity>();
   private readonly obstacles: Obstacle[] = [];
   private readonly crowd = new CrowdVelocity();
   private readonly recovery = new CrowdRecovery();
-  constructor(private readonly map: GameMap) {}
+  constructor(private readonly map: GameMap, private readonly hostile?: FactionHostility) {}
 
   step(
     squads: readonly Squad[],
@@ -201,6 +204,7 @@ export class LocalAvoidance {
         squad.y,
         maximumClearance + horizon * (maximumTravel + maximumForecast),
         neighbors,
+        squad.playerId,
       );
       // Neighbor forecasts and pair clearance are constant across all velocity
       // samples. Cull only pairs that cannot reach even the comfort boundary.
@@ -210,7 +214,8 @@ export class LocalAvoidance {
         const dx = squad.x - other.x,
           dy = squad.y - other.y,
           initial = dx * dx + dy * dy;
-        const minimum = squadSeparation(squad, other);
+        const minimum = squadSeparation(squad, other, this.hostile);
+        if (!minimum) continue;
         const comfort =
           squad.playerId === other.playerId ? FIXED * 1.15 : minimum;
         const reach =
@@ -357,100 +362,7 @@ export class LocalAvoidance {
       if (!bestX && !bestY) recordConstraints();
       proposed.set(squad.id, bestX || bestY ? { x: bestX, y: bestY } : ZERO);
     }
-    // Persistent friendly jams receive a bounded, checkpointed local turn. Each
-    // candidate is swept against all other proposals (unassigned members are
-    // stationary). Boundary members make space before the leader retries.
-    const stalled = new Set<number>();
-    for (const squad of active) {
-      const desired = preferred.get(squad.id),
-        velocity = proposed.get(squad.id)!;
-      if (!desired || !(desired.x || desired.y)) continue;
-      if (!(velocity.x || velocity.y)) stalled.add(squad.id);
-      grid.query(squad.x, squad.y, 2 * FIXED, neighbors);
-      for (const other of neighbors)
-        if (
-          other.id !== squad.id &&
-          crossing(squad, desired, other, proposed.get(other.id)!)
-        ) {
-          addBlocker(squad.id, other.id);
-          stalled.add(squad.id);
-        }
-    }
-    const frame = this.recovery.frame(tick, byId, grid, stalled, allowed);
-    const yielding = new Set<number>();
-    for (const lease of frame.leases) {
-      const members = lease.members.map((m) => byId.get(m.id)!.squad);
-      for (const s of members) proposed.set(s.id, ZERO);
-      const leader = byId.get(lease.leader)!.squad;
-      const center = {
-        x: members.reduce((v, s) => v + s.x, 0) / members.length,
-        y: members.reduce((v, s) => v + s.y, 0) / members.length,
-      };
-      const ordered = members
-        .filter((s) => s.id !== leader.id)
-        .sort(
-          (a, b) =>
-            (b.x - center.x) ** 2 +
-              (b.y - center.y) ** 2 -
-              ((a.x - center.x) ** 2 + (a.y - center.y) ** 2) || a.id - b.id,
-        );
-      const choose = (s: Squad, goal: WorldPoint) => {
-        const intent = byId.get(s.id)!,
-          dx = goal.x - s.x,
-          dy = goal.y - s.y,
-          d = Math.hypot(dx, dy);
-        if (!d) return;
-        const travel = Math.min(intent.speed, d),
-          desired = {
-            x: Math.round((dx * travel) / d),
-            y: Math.round((dy * travel) / d),
-          };
-        grid.query(
-          s.x,
-          s.y,
-          2 * squadRadius("cavalry") + COLLISION_SKIN + 2 * intent.speed,
-          neighbors,
-        );
-        let best: Velocity = ZERO,
-          score = desired.x ** 2 + desired.y ** 2;
-        for (const fraction of [1, 0.5])
-          for (const turn of TURNS) {
-            const v = {
-              x: Math.round(
-                (desired.x * turn.cos - desired.y * turn.sin) * fraction,
-              ),
-              y: Math.round(
-                (desired.x * turn.sin + desired.y * turn.cos) * fraction,
-              ),
-            };
-            const cost = (v.x - desired.x) ** 2 + (v.y - desired.y) ** 2;
-            if (cost >= score || !allowed(s, { x: s.x + v.x, y: s.y + v.y }))
-              continue;
-            if (
-              neighbors.some(
-                (other) =>
-                  other.id !== s.id &&
-                  crossing(s, v, other, proposed.get(other.id)!),
-              )
-            )
-              continue;
-            best = v;
-            score = cost;
-          }
-        proposed.set(s.id, best);
-      };
-      choose(leader, byId.get(leader.id)!.goal);
-      for (const s of ordered) {
-        const member = lease.members.find((m) => m.id === s.id)!;
-        // Release the yield leg once clear and away from the leader's corridor.
-        if (Math.hypot(s.x - member.goal.x, s.y - member.goal.y) > FIXED / 8) {
-          yielding.add(s.id);
-          choose(s, member.goal);
-        }
-      }
-      if (!(proposed.get(leader.id)!.x || proposed.get(leader.id)!.y))
-        choose(leader, byId.get(leader.id)!.goal);
-    }
+    // Friendly squads can overlap, so friendly jam leases require no solver work.
     // Cancel conflicting trajectories simultaneously. A stopped squad may block
     // another proposal: propagate those cancellations before committing anyone.
     const stopped: Squad[] = [];
@@ -470,7 +382,7 @@ export class LocalAvoidance {
       }
     };
     for (const squad of active) {
-      grid.query(squad.x, squad.y, guardRadius, neighbors);
+      grid.query(squad.x, squad.y, guardRadius, neighbors, squad.playerId);
       for (const other of neighbors)
         if (
           other.id > squad.id &&
@@ -479,6 +391,7 @@ export class LocalAvoidance {
             proposed.get(squad.id)!,
             other,
             proposed.get(other.id)!,
+            this.hostile,
           )
         ) {
           addBlocker(squad.id, other.id);
@@ -489,11 +402,11 @@ export class LocalAvoidance {
     }
     for (let i = 0; i < stopped.length; i++) {
       const squad = stopped[i];
-      grid.query(squad.x, squad.y, guardRadius, neighbors);
+      grid.query(squad.x, squad.y, guardRadius, neighbors, squad.playerId);
       for (const other of neighbors)
         if (
           other.id !== squad.id &&
-          crossing(squad, ZERO, other, proposed.get(other.id)!)
+          crossing(squad, ZERO, other, proposed.get(other.id)!, this.hostile)
         ) {
           addBlocker(other.id, squad.id);
           cancel(other);
@@ -506,8 +419,7 @@ export class LocalAvoidance {
       const desired = preferred.get(squad.id),
         ids = [...(blocked.get(squad.id) ?? [])].sort((a, b) => a - b);
       let reason: MovementBlockReason | undefined;
-      if (yielding.has(squad.id)) reason = "yielding";
-      else if (!moved && desired && (desired.x || desired.y)) {
+      if (!moved && desired && (desired.x || desired.y)) {
         if (ids.length) reason = "crowd";
         else {
           const end = { x: squad.x + desired.x, y: squad.y + desired.y };

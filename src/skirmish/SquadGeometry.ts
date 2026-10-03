@@ -2,8 +2,7 @@ import type { GameMap } from "../core/game/GameMap";
 import { FIXED, type Squad, type SquadType } from "./Protocol";
 import type { WorldPoint } from "./SpatialGrid";
 
-// Compact rows retain lanes for friendly traffic. Pair clearance, rather than
-// duplicate colliders or queries, lets friendly artwork overlap while passing.
+// Formation spacing is presentation intent; only hostile squads block passage.
 export const FORMATION_SPACING = 1.5 * FIXED;
 export const COLLISION_SKIN = 2;
 export const ARRIVAL_TOLERANCE = 2;
@@ -11,11 +10,11 @@ export function squadRadius(kind: SquadType): number {
   return Math.round(FIXED * (kind === "cavalry" ? 0.48 : 0.45));
 }
 export type SquadGeometry = Pick<Squad, "kind" | "playerId">;
-export function squadSeparation(a: SquadGeometry, b: SquadGeometry): number {
+export type FactionHostility = (a: number, b: number) => boolean;
+export function squadSeparation(a: SquadGeometry, b: SquadGeometry, hostile?: FactionHostility): number {
+  if (a.playerId === b.playerId || (hostile && !hostile(a.playerId, b.playerId))) return 0;
   const radius = squadRadius(a.kind) + squadRadius(b.kind);
-  return (
-    Math.round(radius * (a.playerId === b.playerId ? 0.5 : 1)) + COLLISION_SKIN
-  );
+  return Math.round(radius) + COLLISION_SKIN;
 }
 export function meleeContact(a: SquadType, b: SquadType): number {
   // A close resting stance leaves a little room for the visual weapon lunge.

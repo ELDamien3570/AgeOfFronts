@@ -190,7 +190,7 @@ describe("land squad skirmish", () => {
     expect(match.combatTicks).toBe(1);
   });
 
-  it("explicit attacks pursue a moving enemy and hold when the target disappears", () => {
+  it("explicit attacks pursue a moving enemy and hold after bounded reacquisition expires", () => {
     const match = create();
     isolate(match);
     const squad = match.squads[0],
@@ -206,8 +206,11 @@ describe("land squad skirmish", () => {
     const start = squad.x;
     step(match, 20);
     expect(squad.x).toBeGreaterThan(start);
+    match.addSquad({...structuredClone(target),id:match.allocateId(),x:60.5*FIXED,y:35.5*FIXED,order:{type:"hold"},path:[]});
     for (const record of match.squads.slice(match.squads.indexOf(target), (match.squads.indexOf(target)) + (1))) match.removeSquad(record.id);
     match.step();
+    expect(squad.order.type).toBe("attack");
+    step(match,60);
     expect(squad.order.type).toBe("hold");
   });
 

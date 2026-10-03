@@ -10,6 +10,7 @@ import {
   squadSeparation,
   standable,
   tilePoint,
+  type FactionHostility,
   type SquadGeometry,
 } from "./SquadGeometry";
 
@@ -89,6 +90,7 @@ export class Formations {
   constructor(
     private readonly map: GameMap,
     private readonly paths: LandPaths,
+    private readonly hostile?: FactionHostility,
   ) {}
 
   beginBatch(others: readonly Squad[]): void {
@@ -178,11 +180,11 @@ export class Formations {
         neighbors.every(
           (other) =>
             selected.has(other.squadId) ||
-            distanceSquared(point, other) >= squadSeparation(squad, other) ** 2,
+            distanceSquared(point, other) >= squadSeparation(squad, other, this.hostile) ** 2,
         ) &&
         nearbySlots.every(
           (other) =>
-            distanceSquared(point, other) >= squadSeparation(squad, other) ** 2,
+            distanceSquared(point, other) >= squadSeparation(squad, other, this.hostile) ** 2,
         )
       );
     };

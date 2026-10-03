@@ -63,8 +63,8 @@ interface BoardAdmission {
 }
 interface TransferAdmission {
   id:number;playerId:number;generation:number;revision:string;destination:number;definition:VesselDefinition;capacity:number;preserveQueue:boolean;
-  members:{id:number;revision:number;queued:Order[]}[];cursor:number;
-  groups:{ids:number[];leg?:ShoreLeg;shortcut?:{requested:boolean;path?:number[];outcome?:ExactRouteOutcome;cursor:number;part:number;landTicks:number;crossingTicks:number;attempts:number;retryAt:number;done:boolean};cohortId?:number;prepared?:{id:number;point:WorldPoint;path:number[];index:number}[]}[];
+  members:{id:number;revision:number;queued:Order[];committed?:boolean}[];cursor:number;
+  groups:{ids:number[];committed?:boolean;leg?:ShoreLeg;shortcut?:{requested:boolean;path?:number[];outcome?:ExactRouteOutcome;cursor:number;part:number;landTicks:number;crossingTicks:number;attempts:number;retryAt:number;done:boolean};cohortId?:number;prepared?:{id:number;point:WorldPoint;path:number[];index:number}[]}[];
 }
 interface Plan {
   members: Squad[];
@@ -165,9 +165,10 @@ export class ShoreTransport {
     if(plan.cohortId!==undefined){this.boardingGroups.delete(plan.cohortId);this.cohorts!.cancel(plan.cohortId,reason);}
     this.world.domainRoutes!.event("shore",{id:plan.id,playerId:plan.playerId,tick:this.world.domainRoutes!.tick(),status,reason});
   }
-  private stepBoards(budget:number):number{
+  private stepBoards(budget:number,interactive=false):number{
     let used=0;
     for(const plan of [...this.pendingBoards.values()]){
+      if(interactive&&!this.world.domainRoutes?.priority?.(plan.playerId))continue;
       if(used>=budget)break;used++;
       if(!this.boardValid(plan)){this.finishBoard(plan,"superseded","Vessel, capacity or selected units changed");continue;}
       const ship=this.world.ship?.(plan.shipId)??this.world.ships.find(s=>s.id===plan.shipId)!;
@@ -270,9 +271,10 @@ export class ShoreTransport {
     plan.phase="sailing";
     if(ship.shoreTransfer)this.landingVoyages.delete(ship.id);
   }
-  private stepLandingVoyages(budget:number):number {
+  private stepLandingVoyages(budget:number,interactive=false):number {
     let used=0;const w=this.world;
     for(const plan of [...this.landingVoyages.values()]){
+      if(interactive&&!this.world.domainRoutes?.priority?.(plan.playerId))continue;
       if(used>=budget)break;used++;
       // Rotate for fairness when many loaded vessels request landing together.
       this.landingVoyages.delete(plan.shipId);this.landingVoyages.set(plan.shipId,plan);
@@ -327,7 +329,7 @@ export class ShoreTransport {
   private validStart(plan:TransferAdmission):boolean {
     const routes=this.world.domainRoutes!;
     return routes.generation(plan.playerId)===plan.generation && routes.revision(plan.playerId, "shore")===plan.revision &&
-      plan.members.every(m=>{const s=this.squad(m.id);return s && s.playerId===plan.playerId && s.troops>0 && s.embarkedOn===null && !s.refit && routes.orderRevision(s.id)===m.revision;});
+      plan.members.every(m=>{if(m.committed)return true;const s=this.squad(m.id);return s && s.playerId===plan.playerId && s.troops>0 && s.embarkedOn===null && !s.refit && routes.orderRevision(s.id)===m.revision;});
   }
   private finishStart(plan:TransferAdmission,status:"executed"|"rejected"|"superseded",reason?:string):void {
     this.world.domainRoutes!.cancel(this.shortcutTask(plan));
@@ -338,26 +340,34 @@ export class ShoreTransport {
   private shortcutTask(plan:TransferAdmission):DomainRouteTask{return {kind:"domain",owner:"shore",admissionId:plan.id,memberId:plan.cursor,stage:"shortcut",playerId:plan.playerId,generation:plan.generation};}
   validRoute(task:DomainRouteTask):boolean {if(task.stage==="shortcut"){const plan=this.pendingStarts.get(task.admissionId);return !!plan&&plan.cursor===task.memberId&&this.validStart(plan);}if(task.stage==="boarding-sea"){const plan=this.pendingBoards.get(task.admissionId);return !!plan&&this.boardValid(plan);}return task.stage.startsWith("crossing:") ? this.planning?.validRoute(task)??false : this.cohorts?.validRoute(task)??false;}
   completedRoute(task:DomainRouteTask,outcome:ExactRouteOutcome,path:number[]):void {
-    if(task.stage==="shortcut"){const plan=this.pendingStarts.get(task.admissionId),quote=plan?.groups[task.memberId]?.shortcut;if(!plan||!quote||!this.validRoute(task))return;quote.requested=false;quote.outcome=outcome;if(outcome==="complete")quote.path=path;else if(outcome==="limited"){const retry=limitedRouteRetry(quote.attempts,this.world.domainRoutes!.tick(),true);quote.attempts=retry.attempts;quote.retryAt=retry.retryAt;if(retry.exhausted)this.finishStart(plan,"rejected",ROUTE_CAPACITY_REASON);}return;}
-    if(task.stage==="boarding-sea"){const plan=this.pendingBoards.get(task.admissionId);if(!plan)return;plan.requested=false;plan.outcome=outcome;if(outcome==="complete")plan.path=path;else if(outcome==="limited"){const retry=limitedRouteRetry(plan.attempts,this.world.domainRoutes!.tick(),true);plan.attempts=retry.attempts;plan.retryAt=retry.retryAt;if(retry.exhausted)this.finishBoard(plan,"rejected",ROUTE_CAPACITY_REASON);}return;}
+    if(task.stage==="shortcut"){const plan=this.pendingStarts.get(task.admissionId),quote=plan?.groups[task.memberId]?.shortcut;if(!plan||!quote||!this.validRoute(task))return;quote.requested=false;quote.outcome=outcome;if(outcome==="superseded"){quote.outcome=undefined;quote.retryAt=this.world.domainRoutes!.tick()+1;}else if(outcome==="complete")quote.path=path;else if(outcome==="limited"){const retry=limitedRouteRetry(quote.attempts,this.world.domainRoutes!.tick(),true);quote.attempts=retry.attempts;quote.retryAt=retry.retryAt;if(retry.exhausted)this.finishStart(plan,"rejected",ROUTE_CAPACITY_REASON);}return;}
+    if(task.stage==="boarding-sea"){const plan=this.pendingBoards.get(task.admissionId);if(!plan)return;plan.requested=false;plan.outcome=outcome;if(outcome==="superseded"&&this.boardValid(plan)){plan.outcome=undefined;plan.retryAt=this.world.domainRoutes!.tick()+1;}else if(outcome==="complete")plan.path=path;else if(outcome==="limited"){const retry=limitedRouteRetry(plan.attempts,this.world.domainRoutes!.tick(),true);plan.attempts=retry.attempts;plan.retryAt=retry.retryAt;if(retry.exhausted)this.finishBoard(plan,"rejected",ROUTE_CAPACITY_REASON);}return;}
     if(task.stage.startsWith("crossing:"))this.planning?.completedRoute(task,outcome,path);
     else this.cohorts?.completedRoute(task,outcome,path);
   }
-  stepPlanning(budget:number):number {
+  stepInteractive(budget:number):number {
+    const priority=this.world.domainRoutes?.priority;
+    if(!priority||(![...this.pendingStarts.values(),...this.pendingBoards.values(),...this.landingVoyages.values()].some(p=>priority(p.playerId))&&
+      ![...this.landingGroups.values()].some(p=>priority(this.world.ship?.(p.shipId)?.playerId??0))))return 0;
+    return this.stepPlanning(budget,true);
+  }
+  stepPlanning(budget:number,interactive=false):number {
     if(!this.planning || !this.cohorts)return 0;
     // Each stage gets a slice even when another stage has a full backlog.
     // In particular, boarding must never consume the landing/staging budget.
     const slice=Math.floor(budget/5);
-    let used=this.planning.step(slice);
-    used+=this.stepBoards(slice);
-    used+=this.stepLandingVoyages(slice);
+    let used=this.planning.step(slice,interactive);
+    used+=this.stepBoards(slice,interactive);
+    used+=this.stepLandingVoyages(slice,interactive);
     const startsEnd=used+slice;
     for(const plan of [...this.pendingStarts.values()]){
+      if(interactive&&!this.world.domainRoutes!.priority?.(plan.playerId))continue;
       if(used>=startsEnd)break;used++;
+      this.pendingStarts.delete(plan.id);this.pendingStarts.set(plan.id,plan);
       if(!this.validStart(plan)){this.finishStart(plan,"superseded","Units or transport permission changed");continue;}
       const group=plan.groups[plan.cursor];
-      if(!group){this.commitStart(plan);continue;}
-      if(group.prepared){plan.cursor++;continue;}
+      if(!group){this.finishStart(plan,"executed");continue;}
+      if(group.prepared){if(!group.committed&&!this.commitGroup(plan,group))continue;plan.cursor++;continue;}
       if(group.cohortId!==undefined)continue;
       const members=group.ids.map(id=>this.squad(id)!);
       let leg:ShoreLeg|undefined;
@@ -391,33 +401,40 @@ export class ShoreTransport {
       const shore=leg?.departure.landTile??plan.destination;
       const extra=new Map<number,Order[]>();
       for(const prior of plan.groups)for(const row of prior.prepared??[])extra.set(row.id,[{type:"move",tile:pointTile(this.world.map,row.point),...row.point}]);
-      const id=this.cohorts.start(plan.playerId,members,shore,undefined,leg?3*FIXED:Infinity,extra);
+      // Friendly overlap permits a shared boarding point. This avoids fitting
+      // an artificial formation before boarding a capacity-sized boat.
+      const preferred=leg?new Map(members.map(s=>[s.id,tilePoint(this.world.map,shore)])):undefined;
+      const id=this.cohorts.start(plan.playerId,members,shore,preferred,leg?3*FIXED:Infinity,extra);
       if(id===undefined){this.finishStart(plan,"rejected","Shore staging admission is full");continue;}
       group.cohortId=id;this.cohortGroups.set(id,{admissionId:plan.id,group:plan.cursor});
     }
-    return used+this.cohorts.step(budget-used);
+    return used+this.cohorts.step(budget-used,interactive);
   }
-  private commitStart(plan:TransferAdmission):void {
-    const routes=this.world.domainRoutes!,selected=new Set(plan.members.map(m=>m.id));
-    const rows=plan.groups.flatMap(g=>g.prepared??[]);
+  private commitGroup(plan:TransferAdmission,group:TransferAdmission["groups"][number]):boolean {
+    const routes=this.world.domainRoutes!,selected=new Set(group.ids);
+    const rows=group.prepared!;
     if(!this.validStart(plan) || rows.some(row=>{
       const squad=this.squad(row.id)!;
       const point=row.path.length?tilePoint(this.world.map,row.path[row.index]):row.point;
       return !routes.clear(squad,point)||!routes.destinationValid(squad,row.point,selected);
-    })){this.finishStart(plan,"rejected","Departure changed while staging");return;}
-    for(const group of plan.groups){
+    })){this.finishStart(plan,"rejected","Departure changed while staging");return false;}
+    {
       const ship=group.leg?this.world.launch(plan.playerId,plan.definition,group.leg.departure.waterTile):undefined;
       if(ship)this.world.updateShip(ship.id,{shoreTransfer:{destinationTile:plan.destination,landingTile:group.leg!.arrival?.landTile ?? null,departureTile:group.leg!.departure.landTile,
         waterPath:group.leg!.waterPath,capacity:plan.capacity,phase:"boarding",queued:group.ids.map(id=>({squadId:id,orders:plan.members.find(m=>m.id===id)!.queued}))},
         boarding:{...group.leg!.departure,squadIds:group.ids}});
       for(const row of group.prepared!){
         const squad=this.squad(row.id)!;
+        // A committed boat owns these squads independently of the remaining
+        // admission. Its movement, damage and cancellation stay authoritative.
+        plan.members.find(m=>m.id===row.id)!.committed=true;
         this.world.updateSquad(squad.id,{queuedOrders:[],charge:null,structureTarget:null});
         this.world.activate(squad,ship?{type:"board",shipId:ship.id,tile:pointTile(this.world.map,row.point)}:{type:"move",tile:pointTile(this.world.map,row.point),...row.point},row.path);
         this.world.updateSquad(squad.id,{nextPathIndex:row.index});
       }
     }
-    this.finishStart(plan,"executed");
+    group.committed=true;
+    return true;
   }
   private landDeferred(ship:Ship,tile:number,redirected:boolean,destination?:number):string|null {
     if (ship.destination !== null) return "Stop beside the landing coast before unloading";

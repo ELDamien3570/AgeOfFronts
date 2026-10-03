@@ -197,7 +197,12 @@ export class CohortAdmission {
       if (retry.exhausted) this.finish(plan, "rejected", ROUTE_CAPACITY_REASON);
     } else if (outcome === "unreachable")
       this.finish(plan, "rejected", "A selected member has no legal route");
-    else this.finish(plan, "superseded", "Route revisions changed");
+    else if(plan.revision===this.ports.routes.revision(plan.playerId,this.owner)){
+      // Cost-only terrain revisions require a fresh quote, not cancellation of
+      // a still-valid player intent. Live ownership/order/permission fences
+      // remain checked before every retry and at the atomic physical commit.
+      member.retryAt=this.ports.routes.tick()+1;
+    }else this.finish(plan, "superseded", "Route revisions changed");
   }
   cancel(id: number, reason = "Cohort changed"): void {
     const plan = this.pending.get(id);
@@ -220,14 +225,16 @@ export class CohortAdmission {
       reason,
     });
   }
-  step(budget: number): number {
+  step(budget: number,interactive=false): number {
     if (!Number.isInteger(budget) || budget < 0)
       throw new Error("Invalid cohort allowance");
     if (this.pending.size) this.occupancy.rebuild(this.ports.squads());
     let work = 0,
       idle = 0;
     while (work < budget && this.pending.size) {
-      const [id, plan] = this.pending.entries().next().value!;
+      const entry=interactive?[...this.pending].find(([,p])=>this.ports.routes.priority?.(p.playerId)):this.pending.entries().next().value;
+      if(!entry)break;
+      const [id, plan] = entry;
       this.pending.delete(id);
       this.pending.set(id, plan);
       if (
@@ -269,6 +276,7 @@ export class CohortAdmission {
         work += formation.step(
           Math.min(16, budget - work),
           this.ports.blocked(plan.playerId, plan),
+          this.ports.routes.hostile,
         );
         if (formation.state.phase === "failed")
           this.finish(plan, "rejected", "There is no legal formation space");

@@ -162,7 +162,7 @@ describe("cooperative crowd recovery", () => {
       expect(s.queuedOrders).toEqual(p.queue);
     }
   });
-  it("preserves exact held positions and reports the actual blocker rather than moving it", () => {
+  it("passes through a held friendly position without moving its owner", () => {
     const f = scenario([
         [0, 0],
         [164, 0],
@@ -176,10 +176,8 @@ describe("cooperative crowd recovery", () => {
       y: held.y,
       order: { type: "hold" },
     });
-    expect(f.squads[0].movementStatus).toMatchObject({
-      reason: "crowd",
-      blockerIds: [held.id],
-    });
+    expect(Math.hypot(f.squads[0].x - held.x, f.squads[0].y - held.y)).toBeLessThan(4);
+    expect(f.squads[0].movementStatus).toBeUndefined();
   });
   it("does not recruit enemy or held blockers into a friendly yield lease", () => {
     const f = scenario([
@@ -192,7 +190,7 @@ describe("cooperative crowd recovery", () => {
     for (let tick = 1; tick <= 60; tick++) f.step(tick);
     expect(f.solver.checkpoint().recovery.leases).toHaveLength(0);
   });
-  it("restores active yield leases and remains deterministic across reversed storage", () => {
+  it("retires legacy friendly yield leases and remains deterministic across reversed storage", () => {
     const a = scenario(),
       b = scenario();
     const recovery = new CrowdRecovery(), intents = new Map(a.squads.map(s =>
@@ -207,7 +205,7 @@ describe("cooperative crowd recovery", () => {
       a.step(tick);
       b.step(tick, true);
     }
-    expect(a.solver.checkpoint().recovery.leases.length).toBeGreaterThan(0);
+    expect(a.solver.checkpoint().recovery.leases).toHaveLength(0);
     b.solver.restore(a.solver.checkpoint());
     for (let tick = 25; tick <= 130; tick++) {
       a.step(tick);
@@ -230,8 +228,8 @@ describe("cooperative crowd recovery", () => {
       x: held.x,
       y: held.y,
       moved: false,
-      movementStatus: undefined,
     });
+    expect(f.squads[0].movementStatus).toBeUndefined();
     expect(
       f.solver
         .checkpoint()

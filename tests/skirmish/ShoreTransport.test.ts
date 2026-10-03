@@ -58,6 +58,44 @@ function unlock(m: ReturnType<typeof make>) {
     "stoneage-cargo-canoes",
   );
 }
+
+describe("progressive transport admission", () => {
+  it("re-quotes cost-invalidated staging routes without cancelling the remaining boats",()=>{
+    const m=make(40,[30],false,true);unlock(m);
+    const command={type:"order" as const,playerId:1,squadIds:m.own.map(s=>s.id),order:{type:"move" as const,tile:m.target}};
+    expect(m.match.commandApplications.apply("cost-retry",command).status).toBe("deferred");
+    for(let i=0;i<1400;i++){
+      if(i===5||i===15||i===30)m.match.paths.restoreRevision(m.match.paths.revision+1);
+      m.match.step();
+    }
+    expect(m.match.commandApplications.apply("cost-retry",command).status).toBe("executed");
+    expect(m.own.every(s=>s.embarkedOn===null&&s.x>65*FIXED)).toBe(true);
+  });
+  it("launches the first boat before the full selection is admitted and restores the remaining work", () => {
+    const m=make(40,[30],false,true);unlock(m);
+    const command={type:"order" as const,playerId:1,squadIds:m.own.map(s=>s.id),order:{type:"move" as const,tile:m.target}};
+    expect(m.match.commandApplications.apply("progressive",command).status).toBe("deferred");
+    for(let i=0;i<100&&!m.match.ships.length;i++)m.match.step();
+    expect(m.match.ships.length).toBeGreaterThan(0);
+    expect(m.match.commandApplications.apply("progressive",command).status).toBe("deferred");
+    const restored=new Skirmish(m.match.map,m.match.options);restored.restore(m.match.checkpoint());
+    for(let i=0;i<1400;i++){m.match.step();restored.step();}
+    expect(restored.checkpoint()).toEqual(m.match.checkpoint());
+    expect(m.match.commandApplications.apply("progressive",command).status).toBe("executed");
+    expect(m.match.squads.filter(s=>s.playerId===1).every(s=>s.embarkedOn===null&&m.match.map.x(m.match.tileOf(s))>65)).toBe(true);
+  });
+
+  it("a replacement Hold cancels uncommitted boats without duplicating passengers", () => {
+    const m=make(40,[30],false,true);unlock(m);expect(move(m)).toBeNull();
+    for(let i=0;i<100&&!m.match.ships.length;i++)m.match.step();
+    const waiting=m.own.filter(s=>s.order.type==="hold");expect(waiting.length).toBeGreaterThan(0);
+    expect(m.match.applyCommand({type:"order",playerId:1,squadIds:waiting.map(s=>s.id),order:{type:"hold"}})).toBeNull();
+    run(m,1200);
+    expect(waiting.every(s=>s.order.type==="hold"&&s.embarkedOn===null&&s.x<30*FIXED)).toBe(true);
+    expect(new Set(m.match.squads.map(s=>s.id)).size).toBe(m.match.squads.length);
+    expect(m.match.squads.filter(s=>s.playerId===1)).toHaveLength(40);
+  });
+});
 function run(m: ReturnType<typeof make>, ticks = 2500) {
   for (let i = 0; i < ticks; i++) m.match.step();
 }
@@ -209,73 +247,29 @@ describe("automatic researched shore transport", () => {
     run(m,3000);
     expect(m.own.every(s=>s.embarkedOn===null && m.match.map.x(m.match.tileOf(s))>65)).toBe(true);
   });
-  it("lands another waiting squad when a previously occupied island slot clears", () => {
-    const m = make(10, [], true);
-    unlock(m);
-    expect(move(m)).toBeNull();
-    const ship = m.match.ships[0];
+  it("waits for an enemy-held island and unloads without friendly slot limits when a coast clears", () => {
+    const m = make(10, [], true); unlock(m);
+    const enemies = m.match.squads.filter(s => s.playerId !== 1);
+    while (enemies.length < 4) enemies.push(m.match.addSquad({ ...structuredClone(enemies[0]), id:m.match.allocateId() }));
+    enemies.forEach((s, i) => m.match.updateSquad(s.id, {
+      x: (75.5 + i % 2) * FIXED, y: (25.5 + Math.floor(i / 2)) * FIXED,
+      troops: 1000000, nextAttackTick: 10000,
+    }));
+    expect(move(m)).toBeNull(); const ship = m.match.ships[0];
     run(m, 2500);
-    const evacuated = m.own.find((s) => s.embarkedOn === null)!;
-    // Fixture evacuation: free one footprint without changing waiting cargo.
-    m.match.updateSquad(evacuated.id, { x: 15 * FIXED + FIXED / 2 });
-    m.match.updateSquad(evacuated.id, { y: 15 * FIXED + FIXED / 2 });
-    m.match.updateSquad(evacuated.id, { order: { type: "hold" } });
-    m.match.updateSquad(evacuated.id, { path: [] });
-    m.match.updateSquad(evacuated.id, { queuedOrders: [] });
-    run(m, 100);
-    expect(m.own.filter((s) => s.embarkedOn === ship.id)).toHaveLength(5);
-    expect(
-      m.own.filter(
-        (s) => s.embarkedOn === null && m.match.map.x(m.match.tileOf(s)) >= 75,
-      ),
-    ).toHaveLength(4);
+    expect(m.own.every(s => s.embarkedOn === ship.id)).toBe(true);
+    m.match.removeSquad(enemies[0].id); run(m, 100);
+    expect(m.own.every(s => s.embarkedOn === null && m.match.map.x(m.match.tileOf(s)) >= 75)).toBe(true);
+    expect(m.match.ship(ship.id)).toBeUndefined();
   });
-  it("partially lands on a four-tile island and lets remaining cargo return safely", () => {
-    const m = make(10, [], true);
-    unlock(m);
+  it.each([false,true])("lands a full boat on a four-tile island without losing squads or cargo (deferred=%s)", deferred => {
+    const m = make(10, [], true, deferred); unlock(m);
     const troops = m.own.reduce((sum, s) => sum + s.troops, 0);
-    expect(move(m)).toBeNull();
-    const ship = m.match.ships[0];
-    run(m, 2500);
-    const landed = m.own.filter((s) => s.embarkedOn === null);
-    const aboard = m.own.filter((s) => s.embarkedOn === ship.id);
-    expect(landed).toHaveLength(4);
-    expect(aboard).toHaveLength(6);
-    expect(m.match.ships).toContain(ship);
+    expect(move(m)).toBeNull(); run(m, 2500);
+    expect(m.own.every(s => s.embarkedOn === null && m.match.map.x(m.match.tileOf(s)) >= 75)).toBe(true);
+    expect(m.match.ships).toHaveLength(0);
     expect(m.own.reduce((sum, s) => sum + s.troops, 0)).toBe(troops);
-    expect(new Set(landed.map((s) => m.match.tileOf(s))).size).toBe(4);
-    expect(
-      m.match.applyCommand({
-        type: "load",
-        playerId: 1,
-        shipId: ship.id,
-        squadIds: landed.map((s) => s.id),
-      }),
-    ).toContain("automatically");
-    expect(
-      m.match.applyCommand({
-        type: "sail",
-        playerId: 1,
-        shipIds: [ship.id],
-        tile: m.match.map.ref(30, 25),
-      }),
-    ).toBeNull();
-    run(m, 2000);
-    expect(aboard.every((s) => s.embarkedOn === ship.id)).toBe(true);
-    expect(
-      m.match.applyCommand({
-        type: "unload",
-        playerId: 1,
-        shipId: ship.id,
-        tile: m.match.map.ref(29, 25),
-      }),
-    ).toBeNull();
-    expect(aboard.every((s) => s.embarkedOn === null)).toBe(true);
-    expect(m.match.ships).not.toContain(ship);
-    expect(m.own.reduce((sum, s) => sum + s.troops, 0)).toBe(troops);
-    expect(landed.every((s) => m.match.map.x(m.match.tileOf(s)) >= 75)).toBe(
-      true,
-    );
+    expect(new Set(m.own.map(s => m.match.tileOf(s))).size).toBeLessThanOrEqual(4);
   });
   it("gates embarkation and capacity by hull research, not age", () => {
     const m = make();

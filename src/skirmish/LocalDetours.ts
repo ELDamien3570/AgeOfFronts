@@ -7,6 +7,7 @@ import {
   squadRadius,
   squadSeparation,
   traversable,
+  type FactionHostility,
 } from "./SquadGeometry";
 
 const STEP = FIXED / 8;
@@ -16,6 +17,7 @@ export class LocalDetours {
   constructor(
     private readonly map: GameMap,
     private readonly grid: SpatialGrid<Squad>,
+    private readonly hostile?: FactionHostility,
   ) {}
 
   find(
@@ -32,7 +34,7 @@ export class LocalDetours {
       obstacles,
     );
     const fixed = obstacles.filter(
-      (other) => other.id !== squad.id && holding(other),
+      (other) => other.id !== squad.id && holding(other) && !!squadSeparation(squad, other, this.hostile),
     );
     const radius = squadRadius(squad.kind);
     const clear = (a: WorldPoint, b: WorldPoint) => {
@@ -55,7 +57,7 @@ export class LocalDetours {
             x: a.x + along * dx,
             y: a.y + along * dy,
           }) >=
-          squadSeparation(squad, other) ** 2
+          squadSeparation(squad, other, this.hostile) ** 2
         );
       });
     };

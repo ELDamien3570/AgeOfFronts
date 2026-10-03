@@ -271,6 +271,9 @@ export class ShorePlanning {
       s.outcome = undefined;
       if (outcome === "limited") return undefined;
       if (outcome === "superseded") {
+        if(s.generation===this.ports.generation(s.playerId)&&s.revision===this.ports.revision(s.playerId,"shore")){
+          s.retryAt=this.ports.tick()+1;return undefined;
+        }
         s.phase = "done";
         s.failure = "superseded";
         return undefined;
@@ -328,11 +331,13 @@ export class ShorePlanning {
     s.path = undefined;
     s.phase = s.waterDestination ? "approach" : "arrival";
   }
-  step(budget: number): number {
+  step(budget: number,interactive=false): number {
     let work = 0,
       idle = 0;
     while (work < budget && this.jobs.size) {
-      const [id, s] = this.jobs.entries().next().value!;
+      const entry=interactive?[...this.jobs].find(([,p])=>this.ports.priority?.(p.playerId)):this.jobs.entries().next().value;
+      if(!entry)break;
+      const [id, s] = entry;
       this.jobs.delete(id);
       this.jobs.set(id, s);
       if (s.phase === "done") {
