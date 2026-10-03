@@ -1,3 +1,4 @@
+import { quoteLandRefits, quoteShipRefits } from "../domain/RefitQuote";
 import type { BuildingType, ShipType, Snapshot, SquadType } from "../Protocol";
 import {
   buildingCost,
@@ -13,7 +14,7 @@ import {
   technologyAt,
   treeWorkload,
 } from "../content/Technology";
-import { defaultUnit, UNIT, UNITS, VESSEL, VESSELS } from "../content/Units";
+import { UNIT, UNITS, VESSEL, VESSELS } from "../content/Units";
 import { automaticProductionPriorities } from "../domain/AutomaticProduction";
 import { AGE_NAMES, AGES, TREES, type Age } from "../domain/Definitions";
 import {
@@ -367,99 +368,12 @@ export class EmpireViewModel {
       this.state.buildings, this.state.owners, ids);
   }
   refit(focusedId?: number) {
-    const selected = this.state.squads.filter(
-      (s) =>
-        s.playerId === this.playerId &&
-        s.embarkedOn === null &&
-        (focusedId === undefined
-          ? this.selection.selected.has(s.id)
-          : s.id === focusedId),
-    );
-    if (!selected.length) return null;
-    const first =
-      UNIT.get(selected[0].definitionId ?? "") ?? defaultUnit(selected[0].kind);
-    if (selected.some((s) => s.definitionId !== selected[0].definitionId))
-      return {
-        reason: "Inspect a compatible group to refit",
-        target: undefined,
-        selected,
-        cost: undefined,
-      };
-    const target = this.units(first.line).filter(
-      (u) =>
-        u.role === first.role && AGES.indexOf(u.age) > AGES.indexOf(first.age),
-    )[0];
-    if (!target)
-      return {
-        reason: "Research the next tier to unlock a refit",
-        target: undefined,
-        selected,
-        cost: undefined,
-      };
-    const items = Object.fromEntries(
-      Object.entries(target.cost.items ?? {})
-        .filter(([id]) => id !== "horses")
-        .map(([id, amount]) => [id, amount * selected.length]),
-    );
-    const cost = {
-      gold: (500 + AGES.indexOf(target.age) * 300) * selected.length,
-      items,
-    };
-    const reason = selected.some(
-      (s) =>
-        Boolean(s.refit) ||
-        s.moved ||
-        s.fighting ||
-        this.state.owners[
-          Math.floor(s.y / 256) * this.state.width + Math.floor(s.x / 256)
-        ] !== this.playerId,
-    )
-      ? "Needs owned land and no combat or active refit"
-      : costRejection(this.player, this.inventory, cost);
-    return { reason, target, selected, cost };
+    const selected=this.state.squads.filter(s=>s.playerId===this.playerId&&this.selection.selected.has(s.id));
+    return quoteLandRefits(selected,focusedId,{player:this.player,research:this.progression.completed,inventory:this.inventory},this.state.owners,this.state.width);
   }
   shipRefit(focusedId?: number) {
-    const selected = this.state.ships.filter(
-      (s) =>
-        s.playerId === this.playerId &&
-        (focusedId === undefined
-          ? this.selection.selectedShips.has(s.id)
-          : s.id === focusedId),
-    );
-    if (!selected.length) return null;
-    const first = VESSEL.get(
-      selected[0].definitionId ?? `stoneage-${selected[0].kind}`,
-    )!;
-    const target = this.vessels(first.kind as ShipType).find(
-      (v) => AGES.indexOf(v.age) > AGES.indexOf(first.age),
-    );
-    if (!target)
-      return {
-        reason: "Research the next vessel tier",
-        selected,
-        target: undefined,
-        cost: undefined,
-      };
-    const cost = {
-      gold: (500 + AGES.indexOf(target.age) * 300) * selected.length,
-      items: Object.fromEntries(
-        Object.entries(target.cost.items ?? {}).map(([id, n]) => [
-          id,
-          n * selected.length,
-        ]),
-      ),
-    };
-    const reason = selected.some(
-      (s) =>
-        s.definitionId !== selected[0].definitionId ||
-        Boolean(s.refit) ||
-        s.fighting ||
-        s.destination !== null ||
-        Boolean(s.boarding),
-    )
-      ? "Needs a compatible stationary fleet out of combat"
-      : costRejection(this.player, this.inventory, cost);
-    return { selected, target, cost, reason };
+    const selected=this.state.ships.filter(s=>s.playerId===this.playerId&&this.selection.selectedShips.has(s.id));
+    return quoteShipRefits(selected,focusedId,{player:this.player,research:this.progression.completed,inventory:this.inventory});
   }
   get incoming() {
     return this.expansion.diplomacy.offers.filter(

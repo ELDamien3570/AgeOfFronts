@@ -108,6 +108,7 @@ document.querySelector<HTMLDivElement>("#app")!.innerHTML = `
 
   ${empireMarkup()}
 
+  <div id="toast" role="status" class="toast" hidden></div>
   <main class="battlefield" aria-label="Battlefield">
 
     <canvas id="battlefield" aria-label="Map with selectable troop squads" tabindex="0"></canvas>
@@ -119,7 +120,7 @@ document.querySelector<HTMLDivElement>("#app")!.innerHTML = `
 
     <div id="result" class="result" hidden><div><span class="eyebrow">SKIRMISH COMPLETE</span><h2 id="result-title"></h2><p id="result-description"></p><button id="play-again" class="primary">Play again</button></div></div>
 
-    <div id="toast" role="status" class="toast" hidden></div><div id="placement-hint" class="placement-hint" hidden></div>
+    <div id="placement-hint" class="placement-hint" hidden></div>
 
     <div class="map-context"><div class="map-badge"><span class="live-dot"></span><span id="map-name">Loading battlefield…</span></div><div class="terrain-legend"><span><i class="plains"></i>Plains · fast</span><span><i class="hills"></i>Highlands · slower</span><span><i class="mountains"></i>Mountains · slowest</span><span id="hover-terrain"></span></div></div>
 

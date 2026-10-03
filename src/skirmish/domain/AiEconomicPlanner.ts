@@ -1,3 +1,4 @@
+import { researchUtility, usableNextAge, type ResearchOpportunity } from "./AiResearchUtility";
 import { AI_DOCTRINES } from "../content/AiDoctrines";
 import type { BuildingType, Command } from "../Protocol";
 import {
@@ -53,6 +54,7 @@ export function economicCandidates(
   demand: AiProductionDemand,
   speed: 1 | 2 | 3,
   investments: readonly AiInvestment[],
+  opportunity: ResearchOpportunity = { resources: [], usableCoast: false, seaThreat: 0, goods: 0, protectedItems: {} },
 ): AiEconomicIntent[] {
   const candidates: AiEconomicIntent[] = [];
   const emit = (
@@ -287,7 +289,9 @@ export function economicCandidates(
         !researchRejection(state, Number.MAX_SAFE_INTEGER, t.id, speed),
     );
     if (!technology) continue;
-    const survival = snapshot.threatTroops > snapshot.readyTroops ? 0 : 1500;
+    const utility = researchUtility(technology, snapshot, demand, opportunity);
+    if (!utility.benefit) continue;
+    const survival = snapshot.threatTroops > snapshot.readyTroops && technology.tree !== "warfare" ? 0 : utility.benefit;
     const bias = personality.id === "scholar" ? 1600 : 0;
     emit(
       "research",
@@ -301,14 +305,15 @@ export function economicCandidates(
       survival +
         bias +
         Math.max(0, 600 - personality.researchOrder.indexOf(tree) * 200),
-      `research:${tree}`,
+      `research:${tree}:${utility.reason}`,
       researchTerms(technology, speed).ticks,
     );
   }
   if (
     !advanceRejection(state, Number.MAX_SAFE_INTEGER, speed) &&
     snapshot.threatTroops < snapshot.readyTroops &&
-    (!materialShortage || availableKits >= 2)
+    (!materialShortage || availableKits >= 2) &&
+    usableNextAge(snapshot, opportunity)
   ) {
     const terms = researchTerms(ADVANCES[AGES.indexOf(state.age)], speed);
     emit(

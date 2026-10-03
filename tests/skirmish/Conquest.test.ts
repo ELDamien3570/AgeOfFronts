@@ -61,7 +61,7 @@ function emptyShip(
 }
 
 describe("complete conquest", () => {
-  it("requires every building, then transfers all remnants and snapshot deltas to the final captor", () => {
+  it("requires every completed building, then transfers all remnants and snapshot deltas to the final captor", () => {
     const game = fixture(),
       enemy = game.players[1],
       base = enemy.base,
@@ -82,6 +82,7 @@ describe("complete conquest", () => {
         tile: city,
       }),
     ).toBeNull();
+    for(const b of game.buildingsAt(city))game.updateBuilding(b.id,{remainingTicks:0});
     removeDefenders(game);
     occupy(game, base);
     expect(enemy.eliminated).toBe(false);

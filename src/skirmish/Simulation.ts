@@ -21,6 +21,7 @@ import { CoastIndex } from "./CoastIndex";
 import { shoreTransportCapacity, shoreTransportDefinition } from "./content/ShoreTransport";
 import { ShoreRoutes } from "./domain/ShoreRoutes";
 import { ShoreTransport } from "./domain/ShoreTransport";
+import { structureAim } from "./domain/StructureTargeting";
 import { ConquestCredit, DamageLedger } from "./Conquest";
 import { constructionRejection } from "./Construction";
 import { buildingCostMultiplier, buildingTicks, buildingIntegrity } from "./content/Buildings";
@@ -331,7 +332,7 @@ export class Skirmish {
   readonly movementAdmission: MovementAdmission;
   readonly shipAdmission: ShipMovementAdmission;
   private domainConsumer(owner: DomainRouteOwner): DomainRouteConsumer | undefined {
-    return owner === "army" ? this.expansion?.armies : owner === "shore" ? this.shoreTransport : this.expansion?.trade;
+    return owner === "army" ? this.expansion?.armies : owner === "shore" ? this.shoreTransport : owner === "strategy" ? this.expansion?.economy.routes : this.expansion?.trade;
   }
   get domainRoutes(): DomainRoutePorts | undefined {
     if (!this.options.deferredPlanning) return undefined;
@@ -351,7 +352,7 @@ export class Skirmish {
       const nearby:Squad[]=[]; this.spatial.query(point.x,point.y,2*FIXED,nearby);
       return nearby.every(other=>selected.has(other.id) || distanceSquared(point,other)>=squadSeparation(squad,other)**2);
     },
-    event:(owner,event)=>this.commandApplications.observe(owner,event),
+    event:(owner,event)=>{if(owner!=="strategy")this.commandApplications.observe(owner,event);},
   };
   private routingObstacleRevision():string {
     return `${this.expansion?.operations.revision ?? 0}:${this.expansion?.fortifications.version ?? 0}:${this.expansion?.diplomacy.state.alliances.map(t=>`${t.a},${t.b}`).join(";") ?? ""}`;
@@ -1973,7 +1974,7 @@ export class Skirmish {
     const nearby: Ship[] = [];
     for (const ship of this.ships) {
       this.shipEntities.updateOwned(ship.id, { fighting: false });
-      if (ship.refit) continue;
+      if (ship.refit || ship.health <= 0 || ship.boarding || ship.shoreTransfer) continue;
       const vessel = this.expansion?.vessel(ship);
       const profile = vessel?.attack;
       const effectiveAttack = profile
@@ -2013,7 +2014,9 @@ export class Skirmish {
       this.navalSpatial.query(ship.x, ship.y, rules.range, nearby);
       for (const enemy of nearby) {
         if (
+          enemy.health<=0 || (profile && !profile.targets.includes("ship")) ||
           !this.hostile(enemy.playerId, ship.playerId) ||
+          (this.expansion && !this.expansion.fortifications.clear(ship,enemy,ship.playerId)) ||
           !this.waterPaths.connected(this.tileOf(ship), this.tileOf(enemy))
         )
           continue;
@@ -2031,14 +2034,15 @@ export class Skirmish {
           this.building(ship.attackTargetId!))
         : undefined;
       if (
-        explicit &&
+        explicit && (explicit.health??1)>0 && profile?.targets.includes("tile" in explicit ? "structure" : "ship") &&
         this.hostile(ship.playerId, explicit.playerId) &&
         this.expansion
       ) {
         const p =
             "tile" in explicit ? tilePoint(this.map, explicit.tile) : explicit,
           range = rules.range;
-        if (this.distanceSquared(ship, p) > range ** 2) {
+        const legalShot="tile" in explicit ? !!structureAim(ship,[explicit.tile],range,ship.playerId,this.map.width(),this.expansion.fortifications) : this.expansion.fortifications.clear(ship,p,ship.playerId);
+        if (this.distanceSquared(ship, p) > range ** 2 || !legalShot) {
           if (this.tick - (ship.lastPlanTick ?? -60) >= 60) {
             this.shipEntities.updateOwned(ship.id, { lastPlanTick: this.tick });
             const tile = this.tileOf(p),
@@ -2063,14 +2067,15 @@ export class Skirmish {
                 if (
                   distance < best &&
                   this.map.euclideanDistSquared(tile, t) <= extent ** 2 &&
-                  this.waterPaths.connected(this.tileOf(ship), t)
+                  this.waterPaths.connected(this.tileOf(ship), t) &&
+                  ("tile" in explicit ? !!structureAim(tilePoint(this.map,t),[explicit.tile],range,ship.playerId,this.map.width(),this.expansion.fortifications) : this.expansion.fortifications.clear(tilePoint(this.map,t),p,ship.playerId))
                 ) {
                   goal = t;
                   best = distance;
                 }
               }
             if (goal !== undefined) {
-              this.shipEntities.updateOwned(ship.id, { path: this.waterPaths.find(this.tileOf(ship), goal) ?? [] });
+              this.shipEntities.updateOwned(ship.id, { path: this.waterPaths.find(this.tileOf(ship), goal, undefined, 4096) ?? [] });
               this.shipEntities.updateOwned(ship.id, { nextPathIndex: 0 });
               this.shipEntities.updateOwned(ship.id, { destination: goal });
               this.shipEntities.updateOwned(ship.id, { waypoints: [] });
@@ -3402,7 +3407,7 @@ export class Skirmish {
     }
     if (
       captured &&
-      !this.buildings.some((building) => building.playerId === old)
+      !this.buildings.some((building) => building.playerId === old && !building.remainingTicks && (building.health??1)>0)
     )
       this.conquest.capture(old, id);
   }
@@ -3917,17 +3922,17 @@ export class Skirmish {
 
   private checkWinner(): void {
     const armies = new Set([
-        ...this.squads.map((s) => s.playerId),
+        ...this.squads.filter(s=>s.troops>0).map((s) => s.playerId),
         ...(this.expansion
           ? [
-              ...this.ships.map((s) => s.playerId),
+              ...this.ships.filter(s=>s.health>0).map((s) => s.playerId),
               ...this.expansion.aircraft
                 .filter((a) => a.health > 0)
                 .map((a) => a.playerId),
             ]
           : []),
       ]),
-      buildings = new Set(this.buildings.map((b) => b.playerId)),
+      buildings = new Set(this.buildings.filter(b=>!b.remainingTicks&&(b.health??1)>0).map((b) => b.playerId)),
       defeated = this.players.filter(
         (p) => !p.eliminated && !armies.has(p.id) && !buildings.has(p.id),
       );
@@ -3956,6 +3961,9 @@ export class Skirmish {
           actorId: beneficiary,
           otherId: player.id,
         });
+      // Foundations disappear before territory transfer can change their owner.
+      for (const building of [...this.buildingIndex.byOwner(player.id)])
+        if (building.remainingTicks > 0) this.removeBuilding(building.id);
       for (const tile of [...(this.ownedTiles.get(player.id) ?? []), ...(this.ownedWater.get(player.id) ?? [])].sort(
         (a, b) => a - b,
       )) {
@@ -3965,7 +3973,7 @@ export class Skirmish {
         this.claims[tile] = 0;
         this.activeClaims.delete(tile);
       }
-      // Empty ships cannot keep a defeated land faction in the match.
+      // Dead vessels are cleaned after terminal ownership resolution.
       for (const ship of [...this.shipIndex.byOwner(player.id)].reverse()) this.removeShip(ship.id);
       for (let i = this.defenseZones.length - 1; i >= 0; i--)
         if (this.defenseZones[i].playerId === player.id)

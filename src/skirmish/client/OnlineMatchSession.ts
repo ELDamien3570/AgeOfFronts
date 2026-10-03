@@ -56,6 +56,8 @@ export class OnlineMatchSession {
   private lastTick = -1;
   private lastPublicationSequence = -1;
   private watching = false;
+  private connectionLost=false;
+  private awaitingReconnectBaseline=false;
   private matchPaused = false;
   private pendingSync?: { id: string; publicationSequence: number };
   constructor(
@@ -70,23 +72,25 @@ export class OnlineMatchSession {
     this.connection = new OnlineLobbyConnection(
       endpoint,
       () => {
-        if (this.manifest || this.watching || this.stopped) return;
+        if ((this.manifest&&!this.connectionLost) || this.watching || this.stopped) return;
         this.watching = true;
         this.status("Joining match · loading your empire…");
         void this.request({
           type: "watch-match",
           matchId: this.matchId,
-          ...(this.playerId === undefined ? {} : { playerId: this.playerId }),
-        }).catch((error) => this.fail(error.message));
+          ...((this.manifest?.playerId??this.playerId) === undefined ? {} : { playerId: this.manifest?.playerId??this.playerId }),
+        }).catch((error) => {if(!this.connectionLost)this.fail(error.message);});
       },
       (message, connected) => {
         if (this.stopped || (connected && this.initialized)) return;
-        if (!connected && this.initialized) {
-          this.fail(
-            "Connection lost. You have left this match. Return to the lobby to rejoin your reserved empire.",
-          );
+        if (!connected && (this.initialized || this.manifest)) {
+          if(!this.connectionLost){this.connectionLost=true;this.awaitingReconnectBaseline=true;this.receiveGeneration++;this.watching=false;this.pendingSync=undefined;
+            this.recovering=false;this.latestPresentation=undefined;this.pendingView=undefined;this.flowEpoch=0;}
+          this.setCommandsAvailable(false);
+          this.status("Connection interrupted · reconnecting to your reserved empire…");
           return;
         }
+        if(!connected)this.watching=false;
         this.status(message);
       },
       (message) => {
@@ -136,12 +140,12 @@ export class OnlineMatchSession {
             if (state) this.timings.record("queue", this.diagnostics.oldestAgeMs);
             return this.stopped || (state && generation!==this.receiveGeneration) ? undefined : this.receive(message);
           })
-          .catch((error) => this.fail(error.message))
+          .catch((error) => {if(generation===this.receiveGeneration&&!this.connectionLost)this.fail(error.message);})
           .finally(() => {
             if (state){this.pendingStates--;this.pendingBytes-=bytes;this.diagnostics.pendingStates=this.pendingStates;this.diagnostics.pendingBytes=this.pendingBytes;}
           });
       },
-      { reconnect: false },
+      { reconnectWindowMs:15_000,replayPending:false,matchId:this.matchId,onExhausted:()=>this.fail("Reconnection timed out. Return to the lobby to rejoin your reserved empire.") },
     );
   }
   connect(): void {
@@ -288,11 +292,13 @@ export class OnlineMatchSession {
     else this.present(update);
   }
   private setCommandsAvailable(available: boolean): void {
+    available=available&&!this.connectionLost&&!this.awaitingReconnectBaseline;
     if (this.commandsAvailable === available) return;
     this.commandsAvailable = available;
     this.oncommandsavailable?.(available);
   }
   private async receive(message: ServerMessage): Promise<void> {
+    const generation = this.receiveGeneration;
     if ("matchId" in message && message.matchId !== this.matchId) return;
     if (message.type === "match-command-outcome") {
       if (message.outcome.playerId === this.manifest?.playerId)
@@ -300,7 +306,21 @@ export class OnlineMatchSession {
       return;
     }
     if (message.type === "match") {
-      if (this.manifest || message.manifest.id !== this.matchId) return;
+      if(message.manifest.id!==this.matchId)return;
+      if(this.manifest){
+        if(!this.connectionLost)return;
+        if(message.manifest.runtimeId!==this.manifest.runtimeId||message.manifest.mapHash!==this.manifest.mapHash||
+          message.manifest.playerId!==this.manifest.playerId)throw new Error("Rejoined match identity changed. Reload from the lobby.");
+        this.connectionLost=false;this.watching=false;
+        const deadline=performance.now()+15_000;
+        while(!this.stopped){
+          try{await this.request({type:"match-ready",matchId:this.matchId,runtimeId:this.manifest.runtimeId,flowControl:true});break;}
+          catch(error){if(this.connectionLost)return;
+            if(performance.now()>=deadline||!/(cooling down|Another player is synchronizing)/.test((error as Error).message))throw error;
+            await new Promise<void>(resolve=>setTimeout(resolve,500));}
+        }
+        return;
+      }
       this.manifest = message.manifest;
       if (
         message.manifest.runtimeId !== import.meta.env.VITE_SKIRMISH_RUNTIME_ID
@@ -340,6 +360,7 @@ export class OnlineMatchSession {
       };
       this.decoder.onerror = (event) => this.fail(event.message);
       this.initialized = true;
+      if(this.connectionLost)return; // The queued rejoin manifest declares readiness on the new connection.
       await this.request({
         type: "match-ready",
         matchId: this.matchId,
@@ -377,6 +398,7 @@ export class OnlineMatchSession {
         );
       }
       const decoded = await this.decode(message.packet, !!message.syncId || !!message.rebase || !this.presenting),packet=decoded.packet;
+      if(this.stopped || generation!==this.receiveGeneration)return;
       if (this.stopped) return;
       if(this.recovering && !message.rebase)return;
       if (
@@ -413,7 +435,7 @@ export class OnlineMatchSession {
         this.diagnostics.coalesced++;
         this.scheduleLatestPresentation();
       } else if(message.syncId || message.rebase){
-        await this.presenting;if(this.stopped)return;this.latestPresentation=undefined;
+        await this.presenting;if(this.stopped || generation!==this.receiveGeneration)return;this.latestPresentation=undefined;
         await this.present(update);
         if(message.rebase){
           if (this.recoveryStarted !== undefined) this.timings.record("recovery", performance.now() - this.recoveryStarted);
@@ -422,7 +444,7 @@ export class OnlineMatchSession {
         }
       }else if(decoded.snapshot)this.queuePresentation(update);
       else await this.onmessage?.({data:update.data} as MessageEvent<WorkerResponse>);
-      if (this.stopped) return;
+      if (this.stopped || generation!==this.receiveGeneration) return;
       if(message.flowEpoch!==undefined && message.publicationSequence!==undefined)
         await this.request({type:"match-state-applied",matchId:this.matchId,publicationSequence:message.publicationSequence,flowEpoch:message.flowEpoch});
       // Receipt is not application: acknowledge only after both decoding and
@@ -434,15 +456,17 @@ export class OnlineMatchSession {
           syncId: message.syncId,
           publicationSequence: message.publicationSequence,
         });
-      } else if (!this.pendingSync)
+      } else if (!this.pendingSync) {
+        if(packet.reset){this.awaitingReconnectBaseline=false;this.setCommandsAvailable(!message.paused);}
         this.status(
           message.paused
             ? "Match paused · waiting for players"
             : "Online match · server hosted",
         );
+      }
     } else if (message.type === "match-sync-complete") {
       if (message.syncId !== this.pendingSync?.id) return;
-      this.pendingSync = undefined;
+      this.pendingSync = undefined;this.awaitingReconnectBaseline=false;
       // The completion event is the server's barrier-release authorization.
       this.matchPaused = false;
       this.setCommandsAvailable(true);

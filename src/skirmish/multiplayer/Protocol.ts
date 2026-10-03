@@ -119,7 +119,7 @@ export const clientMessageSchema = z.discriminatedUnion("type", [
     })
     .strict(),
   z
-    .object({ type: z.literal("authenticate"), token: z.string().length(43) })
+    .object({ type: z.literal("authenticate"), token: z.string().length(43), matchId: z.string().min(1).max(128).optional() })
     .strict(),
   z.object({ type: z.literal("profile"), requestId, profile }).strict(),
   z

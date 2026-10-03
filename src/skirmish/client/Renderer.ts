@@ -406,9 +406,13 @@ export class Renderer {
 
   private resize(): void {
     const rect = this.canvas.parentElement!.getBoundingClientRect();
+    const ratio = window.devicePixelRatio || 1;
+    const initialized=this.width>0&&this.height>0;
+    if(initialized&&Math.abs(rect.width-this.width)<1&&Math.abs(rect.height-this.height)<1&&
+      this.canvas.width===Math.round(rect.width*ratio)&&this.canvas.height===Math.round(rect.height*ratio))return;
+    const centerX=(this.width/2-this.offsetX)/this.scale,centerY=(Math.max(100,this.height-this.hudBottomInset)/2-this.offsetY)/this.scale;
     this.width = rect.width;
     this.height = rect.height;
-    const ratio = window.devicePixelRatio || 1;
     this.canvas.width = Math.round(this.width * ratio);
     this.canvas.height = Math.round(this.height * ratio);
     this.ctx.setTransform(ratio, 0, 0, ratio, 0, 0);
@@ -416,7 +420,7 @@ export class Renderer {
     this.strategic.resize(this.width, this.height, ratio);
     this.groundLayer.resize(this.width, this.height, ratio);
     this.aircraftLayer.resize(this.width, this.height, ratio);
-    this.home();
+    if(!initialized)this.home();else {this.updateFitScale();this.scale=Math.max(this.fitScale,Math.min(96,this.scale));this.offsetX=this.width/2-centerX*this.scale;this.offsetY=Math.max(100,this.height-this.hudBottomInset)/2-centerY*this.scale;}
   }
 
   setHudBottomInset(pixels: number): void {

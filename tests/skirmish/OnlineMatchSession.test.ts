@@ -210,9 +210,9 @@ describe("server-only match client", () => {
     await vi.waitFor(()=>expect(outcomes).toHaveBeenCalledTimes(1));acknowledge();await Promise.resolve();await Promise.resolve();
     expect(outcomes).toHaveBeenCalledTimes(1);expect(session.lastCommandOutcome?.status).toBe("executed");
   });
-  it("loads presentation without automatic reconnect and declares readiness without starting a simulation", async () => {
+  it("loads presentation with bounded reconnect and declares readiness without starting a simulation", async () => {
     await initialize();
-    expect(connection().options).toEqual({ reconnect: false });
+    expect(connection().options).toMatchObject({reconnectWindowMs:15_000,replayPending:false,matchId:manifest.id});
     expect(connection().request).toHaveBeenCalledWith({
       type: "match-ready",
       matchId: manifest.id,
@@ -269,18 +269,32 @@ describe("server-only match client", () => {
     await vi.waitFor(()=>expect(session.diagnostics.pendingStates).toBe(0));expect(presented).toEqual([0]);finish();
     await vi.waitFor(()=>expect(presented).toEqual([0,8]));expect(session.diagnostics.coalesced).toBe(1);
   });
-  it("closes cleanly on disconnect and never requests host or recovery operations", async () => {
+  it("rejoins the reserved empire with the existing decoder and unlocks only after a fresh baseline", async () => {
     await initialize();
+    const worker=DecoderWorker.instances[0];
     connection().status("Connection lost.", false);
-    expect(errors).toHaveBeenCalledWith(
-      expect.objectContaining({
-        message: expect.stringContaining("left this match"),
-      }),
-    );
-    expect(connection().stop).toHaveBeenCalledTimes(1);
-    expect(
-      connection().request.mock.calls.map((call: any[]) => call[0].type),
-    ).toEqual(["match-ready"]);
+    expect(errors).not.toHaveBeenCalled();expect(session.commandsAvailable).toBe(false);
+    connection().message({type:"match-status",matchId:manifest.id,paused:false,message:"stale status"});
+    await Promise.resolve();expect(session.commandsAvailable).toBe(false);
+    connection().directory({});
+    expect(requested("watch-match")[0][0]).toMatchObject({matchId:manifest.id,playerId:manifest.playerId});
+    connection().message({type:"match",manifest});
+    await vi.waitFor(()=>expect(requested("match-ready")).toHaveLength(2));
+    expect(DecoderWorker.instances).toHaveLength(1);
+    connection().message(syncState(20));
+    await vi.waitFor(()=>expect(worker.postMessage).toHaveBeenCalledTimes(1));
+    worker.deliver(packet(80,true));
+    await vi.waitFor(()=>expect(requested("match-sync-applied")).toHaveLength(1));
+    expect(session.commandsAvailable).toBe(false);
+    connection().message({type:"match-sync-complete",matchId:manifest.id,syncId:"sync-one",publicationSequence:20});
+    await vi.waitFor(()=>expect(session.commandsAvailable).toBe(true));
+    expect(errors).not.toHaveBeenCalled();expect(connection().stop).not.toHaveBeenCalled();
+  });
+  it("ends a reconnect after the bounded transport window is exhausted", async () => {
+    await initialize();connection().status("Connection lost.",false);
+    connection().options.onExhausted();
+    expect(connection().stop).toHaveBeenCalledOnce();
+    expect(errors).toHaveBeenCalledWith(expect.objectContaining({message:expect.stringContaining("Reconnection timed out")}));
   });
   it("refuses a delta before the initial baseline", async () => {
     await initialize();

@@ -269,7 +269,7 @@ describe("supply conservation and deployment", () => {
       }),
     ).toMatch(/tier/);
   });
-  it("makes an unaffordable group refit atomic and a paid refit preserve health until completion", () => {
+  it("refits the affordable part of a group and preserves health until completion", () => {
     const m = make();
     complete(m);
     const own = m.squads.filter((s) => s.playerId === 1),
@@ -286,10 +286,11 @@ describe("supply conservation and deployment", () => {
         squadIds: own.map((s) => s.id),
         definitionId: "bronzeage-infantry",
       }),
-    ).toMatch(/Needs/);
-    expect(p.gold).toBe(gold);
-    expect(own.every((s) => !s.refit)).toBe(true);
-    inv["equipment:bronzeage"] = 3;
+    ).toBeNull();
+    expect(p.gold).toBe(gold-800);
+    expect(own.filter((s) => !!s.refit)).toHaveLength(1);
+    expect(inv["equipment:bronzeage"]).toBe(0);
+    inv["equipment:bronzeage"] = 2;
     expect(
       m.applyCommand({
         type: "refit",

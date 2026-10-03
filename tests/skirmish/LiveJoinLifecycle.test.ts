@@ -208,7 +208,7 @@ describe("bounded live admission lifecycle", () => {
     f.watch("slow", 3);
     await f.match.qualify("slow", "build");
     const b = f.baseline("slow");
-    f.time(15001);
+    f.time(25001);
     await f.match.advance();
     expect(f.seats[2].ai).toBe(true);
     expect(f.match.playerId("slow")).toBe(0);
@@ -219,7 +219,7 @@ describe("bounded live admission lifecycle", () => {
       f.match.acknowledge("slow", b.syncId!, b.publicationSequence!),
     ).toThrow(/expired/);
     expect(f.match.summary("other")?.status).toBe("running");
-    f.time(15051);
+    f.time(25051);
     await f.match.advance();
     expect(f.requests.slice(-1)[0]).toMatchObject({
       type: "advance",
@@ -443,5 +443,20 @@ describe("bounded live admission lifecycle", () => {
     ).toThrow(/no longer available/);
 
     await match.end("done");
+  });
+});
+
+describe("empty-match deadline during returning baseline application",()=>{
+  it("allows a finite admitted baseline to finish across the original grace deadline",async()=>{
+    const f=await fixture();await f.match.disconnect("a");await f.match.disconnect("b");
+    f.time(129000);f.watch("a",1);await f.match.qualify("a","build");const baseline=f.baseline("a");
+    f.time(131000);await f.match.advance();expect(f.released()).toBe(0);expect(f.match.isAdmitting("a")).toBe(true);
+    f.match.acknowledge("a",baseline.syncId!,baseline.publicationSequence!);
+    expect(f.match.connected("a")).toBe(true);expect(f.released()).toBe(0);await f.match.end("test");
+  });
+  it("releases the match when that bounded baseline fails after the old deadline",async()=>{
+    const f=await fixture();await f.match.disconnect("a");await f.match.disconnect("b");
+    f.time(129000);f.watch("a",1);await f.match.qualify("a","build");
+    f.time(144001);await f.match.advance();await f.match.advance();expect(f.released()).toBe(1);expect(f.match.connected("a")).toBe(false);
   });
 });

@@ -85,6 +85,7 @@ export function createCoordinatorServer(options: CoordinatorServerOptions) {
   for (const reservation of restored.reservations)
     rooms.releaseMatch(reservation.id);
   options.store.write(rooms.snapshot());
+  const authenticationClaims=new Set<string>();
   const sessions = new Map<
     WebSocket,
     { guestId: string; alive: boolean; count: number; windowAt: number }
@@ -180,7 +181,7 @@ export function createCoordinatorServer(options: CoordinatorServerOptions) {
     );
   });
   const send = (client: WebSocket, message: ServerMessage) => {
-    if (client.bufferedAmount > 512_000) {
+    if (client.bufferedAmount > 8 * 1024 * 1024) {
       client.close(1013, "Connection too slow");
       return;
     }
@@ -232,18 +233,22 @@ export function createCoordinatorServer(options: CoordinatorServerOptions) {
             client.close(1008, "Invalid guest session");
             return;
           }
-          // Keep a live controller or pending admission safe from duplicate tabs.
-          // A disconnected remembered guest can explicitly rejoin its stable seat.
-          if (
-            [...matches.values()].some(
-              (match) =>
-                (match.connected(guestId) && match.isLoaded(guestId)) ||
-                match.isAdmitting(guestId),
-            )
-          ) {
-            client.close(4001, "Match already open");
-            return;
+          const active=[...matches.entries()].filter(([,match])=>match.connected(guestId)||match.isAdmitting(guestId));
+          if(active.length && (!message.matchId||active.some(([id])=>id!==message.matchId))){
+            client.close(4001,"Match already open");return;
           }
+          if(authenticationClaims.has(guestId)){client.close(4001,"Connection handoff in progress");return;}
+          authenticationClaims.add(guestId);
+          try {
+            // An explicit match route may replace the same guest's old socket.
+            // Release its admissions and seat before the replacement watches.
+            for(const [other,session] of sessions)if(session.guestId===guestId){
+              sessions.delete(other);other.close(4001,"Opened in another tab");
+            }
+            if(active.length)matchRequest=true;
+            await Promise.all(active.map(([,match])=>match.disconnect(guestId)));
+            if(client.readyState!==WebSocket.OPEN)return;
+          rooms.disconnect(guestId,now());
           // One controlling socket per remembered guest, including duplicate browser tabs.
           for (const [other, session] of sessions)
             if (session.guestId === guestId) {
@@ -257,9 +262,10 @@ export function createCoordinatorServer(options: CoordinatorServerOptions) {
             windowAt: now(),
           });
           clearTimeout(authenticationDeadline);
-          rooms.reconnect(guestId);
+          // Presence is restored only by an explicit join request.
           options.store.write(rooms.snapshot());
           publish();
+          } finally { authenticationClaims.delete(guestId); }
           return;
         }
         const session = sessions.get(client);
@@ -348,16 +354,11 @@ export function createCoordinatorServer(options: CoordinatorServerOptions) {
           message.type === "join" ||
           message.type === "create"
         ) {
-          const active = [...matches.values()].find(
-            (match) =>
-              match.connected(session.guestId) ||
-              match.isAdmitting(session.guestId),
-          );
-          if (active) {
-            await active.disconnect(session.guestId);
-            if (sessions.get(client) !== session) return;
-            previousState = rooms.snapshot();
-            options.store.write(previousState);
+          const active=[...matches.values()].filter(match=>match.connected(session.guestId)||match.isAdmitting(session.guestId));
+          if(active.length){
+            await Promise.all(active.map(match=>match.disconnect(session.guestId)));
+            if(sessions.get(client)!==session)return;
+            previousState=rooms.snapshot();options.store.write(previousState);
           }
         }
         switch (message.type) {
@@ -414,18 +415,14 @@ export function createCoordinatorServer(options: CoordinatorServerOptions) {
         });
       }
     });
-    client.on("close", () => {
+    client.on("close", async () => {
       clearTimeout(authenticationDeadline);
       const session = sessions.get(client);
       if (!session) return;
       sessions.delete(client);
-      const active = [...matches.values()].find(
-        (match) =>
-          match.connected(session.guestId) ||
-          match.isAdmitting(session.guestId),
-      );
       rooms.disconnect(session.guestId, now());
-      if (active) void active.disconnect(session.guestId);
+      await Promise.allSettled([...matches.values()].map(match=>match.disconnect(session.guestId)));
+      if([...sessions.values()].some(s=>s.guestId===session.guestId))return;
       options.store.write(rooms.snapshot());
       publish();
     });

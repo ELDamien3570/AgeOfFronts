@@ -1,3 +1,4 @@
+import { stepBombardment, type Bombardment } from "./AiNavalBombardment";
 import { AI_DOCTRINES } from "../content/AiDoctrines";
 import { FIXED, type Player, type Ship } from "../Protocol";
 import { personalityOf } from "../content/AiPersonalities";
@@ -38,7 +39,8 @@ export interface AiFleetMission {
   id: string;
   playerId: number;
   generation: number;
-  objective: "defend-port";
+  objective: "defend-port" | "bombard-coast";
+  bombard?: Bombardment;
   sea: number;
   state: FleetState;
   reason: string;
@@ -127,7 +129,7 @@ export class AiNavalPlanner {
         else if(scan.phase==="ships")scan.phase="jobs";
         else{
           const theater=scan.seas[scan.index],evidence=this.funding.get(`${player.id}:${theater.sea}`);
-          theater.score=theater.ownedValue+theater.cargoValue+Math.min(10000,theater.enemyPower)*AI_DOCTRINES[personalityOf(player).id].navalWeight/100+Math.min(3000,theater.fleetPower+theater.futurePower)-Math.min(5000,evidence?.lostPower??0);
+          theater.score=theater.ownedValue+theater.cargoValue+(this.economy.tradeQuotes.best(player.id,true)?.sea===theater.sea ? Math.min(5000,this.economy.tradeQuotes.best(player.id,true)!.quote.riskAdjustedGoldPer1000Ticks) : 0)+Math.min(10000,theater.enemyPower)*AI_DOCTRINES[personalityOf(player).id].navalWeight/100+Math.min(3000,theater.fleetPower+theater.futurePower)-Math.min(5000,evidence?.lostPower??0);
           if(++scan.index<scan.seas.length)scan.phase="buildings";
           else{const best=scan.seas.sort((a,b)=>b.score-a.score||a.sea-b.sea)[0];this.theaters.delete(player.id);return {work,sea:best.sea,pending:false};}
         }
@@ -184,6 +186,7 @@ export class AiNavalPlanner {
   release(playerId: number): void {
     const mission = this.missions.get(playerId);
     if (mission) {
+      this.economy.routes.release(mission.id);
       this.economy.assets.release(mission.id);
       this.economy.ledger.release(mission.id);
     }
@@ -201,6 +204,7 @@ export class AiNavalPlanner {
     m.reason = reason;
     if (state !== "fund") this.economy.ledger.release(m.id);
     if (state === "complete" || state === "abort") {
+      this.economy.routes.release(m.id);
       this.observeLosses(m);
       if(!m.recorded){this.history.push({id:m.id,playerId:m.playerId,sea:m.sea,tick:this.expansion.world.tick,state,reason,purchases:m.purchases,lostPower:m.lostPower??0});while(this.history.length>128)this.history.shift();m.recorded=true;}
       const { world } = this.expansion;
@@ -293,6 +297,17 @@ export class AiNavalPlanner {
       const alternative=[...this.economy.navalFacts.ports(player.id,m.sea)].find(port=>port.id!==m!.port);
       if(alternative){m.port=alternative.id;m.anchor=world.map.neighbors(alternative.tile).find(t=>world.waterPaths.walkable(t));m.assessment=undefined;m.nextAssessment=world.tick;this.transition(m,"recover","Gathering port lost; using a same-sea recovery port");}
       else {this.transition(m,"abort","No legal same-sea recovery port");return 0;}
+    }
+    if(m.bombard){
+      const result=stepBombardment(player,m,this.expansion,this.economy,budget);
+      if(result.terminal==="recover"){
+        const roster=[...new Set([...m.members,...(m.recovering??[])])].map(id=>world.ship(id)).filter((s):s is Ship=>!!s&&s.playerId===player!.id&&s.health>0);
+        m.members=roster.filter(s=>navalReady(s,this.expansion.vessel(s))).map(s=>s.id);
+        m.recovering=roster.filter(s=>this.recovering(s,m!.sea)).map(s=>s.id);
+        m.assessment=undefined;m.nextAssessment=world.tick;
+      }
+      if(result.terminal)this.transition(m,result.terminal,result.reason!);
+      this.diagnostics.work=initialWork+result.work;return initialWork+result.work;
     }
     if (!m.assessment && world.tick < m.nextAssessment) return 0;
     m.assessment ??= {
@@ -593,6 +608,11 @@ export class AiNavalPlanner {
     this.economy.assets.retain(m.id, selected);
     m.members = ships.map((s) => s.id);
     m.recovering = recovering.map((s) => s.id);
+    if(!a.enemyPower && world.tick-m.createdTick>=300 && !recovering.length && ships.length>=2 && ships.some(s=>this.expansion.vessel(s).attack?.targets.includes("structure")) &&
+      (!this.expansion.operations.enabled(player)||this.expansion.operations.offensiveTarget(player.id)!==undefined)){
+      m.bombard={phase:"targets",scanned:0,candidate:0,start:world.tileOf(ships[0]),since:world.tick};
+      m.reason="Selecting an actual legal coastal bombardment target";return;
+    }
     if(!a.enemyPower && m.state==="stage" && world.tick-(m.phaseSince??m.createdTick)>=600){this.transition(m,"complete","Stable port defense completed without a live threat");return;}
     const gathered = ships.every(
       (s) =>

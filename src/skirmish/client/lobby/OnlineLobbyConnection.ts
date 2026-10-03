@@ -6,8 +6,10 @@ export class OnlineLobbyConnection {
   private socket?: WebSocket;
   private reconnectTimer?: number;
   private authenticationTimer?: number;
+  private retryDeadlineTimer?: number;
   private stopped = false;
   private failures = 0;
+  private retryStarted?:number;
   private pending = new Map<
     string,
     {
@@ -24,7 +26,7 @@ export class OnlineLobbyConnection {
     ) => void,
     private readonly onStatus: (status: string, connected: boolean) => void,
     private readonly onMatch?: (message: ServerMessage) => void,
-    private readonly options: { reconnect?: boolean } = {},
+    private readonly options: { reconnect?: boolean; reconnectWindowMs?:number; replayPending?:boolean; matchId?:string; onExhausted?:()=>void } = {},
   ) {}
 
   async connect(): Promise<void> {
@@ -56,13 +58,13 @@ export class OnlineLobbyConnection {
         10_000,
       ));
       socket.onopen = () =>
-        socket.send(JSON.stringify({ type: "authenticate", token }));
+        socket.send(JSON.stringify({ type: "authenticate", token, ...(this.options.matchId?{matchId:this.options.matchId}:{}) }));
       socket.onmessage = (event) => {
         try {
           const message = JSON.parse(event.data) as ServerMessage;
           if (message.type === "directory") {
             clearTimeout(authenticationTimer);
-            this.failures = 0;
+            this.failures = 0;this.retryStarted=undefined;clearTimeout(this.retryDeadlineTimer);this.retryDeadlineTimer=undefined;
             // Replay only requests that predate this connection's authentication.
             // onState may immediately issue watch-match; replaying afterward
             // would submit that admission twice.
@@ -106,8 +108,10 @@ export class OnlineLobbyConnection {
             false,
           );
           this.stop();
+          this.options.onExhausted?.();
           return;
         }
+        if(this.options.replayPending===false){for(const pending of this.pending.values()){clearTimeout(pending.timeout);pending.reject(new Error("Connection lost before acknowledgment."));}this.pending.clear();}
         this.retry();
       };
       socket.onerror = () => socket.close();
@@ -148,6 +152,7 @@ export class OnlineLobbyConnection {
     this.stopped = true;
     clearTimeout(this.reconnectTimer);
     clearTimeout(this.authenticationTimer);
+    clearTimeout(this.retryDeadlineTimer);
     this.socket?.close();
     for (const pending of this.pending.values()) {
       clearTimeout(pending.timeout);
@@ -169,6 +174,18 @@ export class OnlineLobbyConnection {
       );
       this.stop();
       return;
+    }
+    this.retryStarted??=performance.now();
+    if(this.options.reconnectWindowMs!==undefined&&this.retryDeadlineTimer===undefined){
+      this.retryDeadlineTimer=window.setTimeout(()=>{
+        if(this.stopped)return;
+        this.onStatus("Reconnection window expired. Return to the lobby to rejoin.",false);
+        this.stop();this.options.onExhausted?.();
+      },Math.max(0,this.options.reconnectWindowMs-(performance.now()-this.retryStarted)));
+    }
+    if(this.options.reconnectWindowMs!==undefined&&performance.now()-this.retryStarted>=this.options.reconnectWindowMs){
+      this.onStatus("Reconnection window expired. Return to the lobby to rejoin.",false);
+      this.stop();this.options.onExhausted?.();return;
     }
     this.onStatus("Lobby server disconnected. Reconnecting…", false);
     this.reconnectTimer = window.setTimeout(

@@ -106,7 +106,7 @@ export interface MatchDiagnostics {
   memory: { heapUsed: number; heapTotal: number; external: number; arrayBuffers: number; processRss: number };
 }
 
-export const PLANNER_CALLERS = ["navigation", "admission", "ship-admission", "army", "trade", "shore", "defense", "other"] as const;
+export const PLANNER_CALLERS = ["navigation", "admission", "ship-admission", "army", "trade", "shore", "defense", "other", "strategy"] as const;
 export type PlannerCaller = (typeof PLANNER_CALLERS)[number];
 export interface PlannerCohort {
   playerId: number; caller: PlannerCaller; pending: number; oldestAge: number;

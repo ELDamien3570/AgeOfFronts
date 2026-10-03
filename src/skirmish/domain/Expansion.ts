@@ -54,6 +54,7 @@ import {
   advanceRejection,
   researchRejection,
 } from "./Progression";
+import { affordableRefitCount, vesselRefitCost } from "./RefitQuote";
 import { unitRefitCost } from "./Refitting";
 import { vesselEffects } from "./ResearchEffects";
 import { Roads } from "./Roads";
@@ -498,42 +499,13 @@ export class Expansion {
         !this.progression.has(player.id, target.technologyId)
       )
         return "Research a military vessel refit first";
-      if (
-        !selected.length ||
-        selected.some(
-          (s) =>
-            !s ||
-            s.playerId !== player.id ||
-            Boolean(s.refit) ||
-            s.fighting ||
-            s.destination !== null ||
-            Boolean(s.boarding) ||
-            s.kind !== target.kind ||
-            AGES.indexOf(this.vessel(s).age) >= AGES.indexOf(target.age),
-        )
-      )
-        return "Refit a compatible stationary fleet out of combat";
-      const cost = {
-        gold: (500 + AGES.indexOf(target.age) * 300) * selected.length,
-        items: Object.fromEntries(
-          Object.entries(target.cost.items ?? {}).map(([id, n]) => [
-            id,
-            n * selected.length,
-          ]),
-        ),
-      };
-      const reason = costRejection(
-        player,
-        this.supply.inventories[player.id],
-        cost,
-      );
-      if (reason) return reason;
-      spend(player, this.supply.inventories[player.id], cost);
-      for (const s of selected as Ship[]) {
-        this.world.updateShip(s.id, { refit: { targetId: target.id, remainingTicks: 200, totalTicks: 200 } });
-        this.world.updateShip(s.id, { waypoints: [] });
-        this.world.installSquadPath(s.id, []);
-        this.world.updateShip(s.id, { attackTargetId: null });
+      const eligible=selected.filter((s):s is Ship=>!!s&&s.playerId===player.id&&!s.refit&&!s.fighting&&s.destination===null&&!s.boarding&&!s.shoreTransfer&&s.kind===target.kind&&AGES.indexOf(this.vessel(s).age)<AGES.indexOf(target.age)).sort((a,b)=>a.id-b.id);
+      if(!eligible.length)return "Refit a compatible stationary fleet out of combat";
+      const count=affordableRefitCount(vesselRefitCost(target),player.gold,this.supply.inventories[player.id],eligible.length);
+      if(!count)return costRejection(player,this.supply.inventories[player.id],vesselRefitCost(target))??"No affordable vessel refit";
+      spend(player,this.supply.inventories[player.id],vesselRefitCost(target,count));
+      for(const s of eligible.slice(0,count)){
+        world.updateShip(s.id,{refit:{targetId:target.id,remainingTicks:200,totalTicks:200},waypoints:[],path:[],attackTargetId:null});
       }
       return null;
     }
@@ -554,6 +526,7 @@ export class Expansion {
         )
       )
         return "Select your available warships";
+      if(selected.some(s=>!this.vessel(s!).attack?.targets.includes("tile" in target ? "structure" : "ship"))) return "This vessel cannot attack that target";
       for (const s of selected as Ship[]) {
         this.world.updateShip(s.id, { attackTargetId: target.id });
         this.world.updateShip(s.id, { lastPlanTick: -60 });
@@ -567,37 +540,14 @@ export class Expansion {
         );
       if (!target || !this.progression.has(player.id, target.technologyId))
         return "Research the requested refit first";
-      if (
-        !selected.length ||
-        selected.some(
-          (s) =>
-            !s ||
-            s.playerId !== player.id ||
-            s.embarkedOn !== null ||
-            Boolean(s.refit) ||
-            s.moved ||
-            s.fighting ||
-            world.owners[world.tileOf(s)] !== player.id ||
-            this.unit(s).line !== target.line ||
-            this.unit(s).role !== target.role ||
-            AGES.indexOf(this.unit(s).age) >= AGES.indexOf(target.age),
-        )
-      )
-        return "Refit a compatible stationary group on owned land, out of combat";
-      const cost = unitRefitCost(target, selected.length);
-      const rejection = costRejection(
-        player,
-        this.supply.inventories[player.id],
-        cost,
-      );
-      if (rejection) return rejection;
-      spend(player, this.supply.inventories[player.id], cost);
-      for (const s of selected as Squad[]) {
-        this.world.updateSquad(s.id, { refit: { targetId: target.id, totalTicks: 200, remainingTicks: 200 } });
-        this.world.updateSquad(s.id, { order: { type: "hold" } });
-        this.world.updateSquad(s.id, { queuedOrders: [] });
-        this.world.installSquadPath(s.id, []);
-        this.world.updateSquad(s.id, { charge: null });
+      const eligible=selected.filter((s):s is Squad=>!!s&&s.playerId===player.id&&s.embarkedOn===null&&!s.refit&&!s.moved&&!s.fighting&&world.owners[world.tileOf(s)]===player.id&&this.unit(s).line===target.line&&this.unit(s).role===target.role&&AGES.indexOf(this.unit(s).age)<AGES.indexOf(target.age)).sort((a,b)=>a.id-b.id);
+      if(!eligible.length)return "Refit a compatible stationary group on owned land, out of combat";
+      const count=affordableRefitCount(unitRefitCost(target),player.gold,this.supply.inventories[player.id],eligible.length);
+      if(!count)return costRejection(player,this.supply.inventories[player.id],unitRefitCost(target))??"No affordable refit";
+      spend(player,this.supply.inventories[player.id],unitRefitCost(target,count));
+      for(const s of eligible.slice(0,count)){
+        world.updateSquad(s.id,{refit:{targetId:target.id,totalTicks:200,remainingTicks:200},order:{type:"hold"},queuedOrders:[],charge:null});
+        world.installSquadPath(s.id,[]);
       }
       return null;
     }
@@ -671,6 +621,11 @@ export class Expansion {
       const orders: { s: Squad; tile: number; path: number[] }[] = [];
       for (const s of selected as Squad[]) {
         const targetTiles = building ? [building.tile] : barrier!.tiles;
+        const profile=this.unit(s).attack;
+        if(!profile.targets.includes(building ? "structure" : "wall")) return "This weapon cannot attack that structure";
+        if(structureAim(s,targetTiles,profile.range,player.id,world.map.width(),this.fortifications)){
+          orders.push({s,tile:world.tileOf(s),path:[]});continue;
+        }
         const approaches = new Set<number>();
         const extent = Math.ceil(this.unit(s).attack.range / FIXED);
         for (const tile of targetTiles)

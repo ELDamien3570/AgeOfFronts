@@ -7,7 +7,7 @@ export interface AiDoctrine {
   assemblyTicks: number;
   commitmentTicks: number;
   preferredRoles: readonly UnitDefinition["role"][];
-  engagement: "attack" | "fire-retreat" | "flank-left";
+  engagement: "attack" | "fire-retreat" | "flank-left" | "flank-right";
   economy: Partial<Record<BuildingType, number>>;
   navalWeight: number;
   minimumHealth: number;

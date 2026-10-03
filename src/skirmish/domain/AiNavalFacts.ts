@@ -29,7 +29,8 @@ interface Theater {
   ships: Set<number>;
   jobs: Set<number>;
 }
-type Registry = "buildings" | "ships" | "jobs";
+type RegistryValues = {buildings:Building;ships:Ship;jobs:RecruitmentJob};
+type Registry = keyof RegistryValues;
 
 /** One shared, resumable entity pass, plus O(1) authoritative mutation hooks.
  * Ports use the SAME first navigable neighbour as normal ship production.
@@ -354,7 +355,7 @@ export class AiNavalFacts {
     };
     return {
       ...read,
-      value: read.id === undefined ? undefined : this[kind].get(read.id)?.ref,
+      value: (read.id === undefined ? undefined : this[kind].get(read.id)?.ref) as RegistryValues[K] | undefined,
     };
   }
   readOwnedBuilding(owner: number, cursor?: number | null) {

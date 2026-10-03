@@ -209,6 +209,8 @@ export class RoomCoordinator {
         member.disconnectedAt = now;
       }
     }
+    this.removeEmptyCustoms();
+    this.promote();
     return [];
   }
 
@@ -243,8 +245,10 @@ export class RoomCoordinator {
       match.members.push({ guestId, profile, joinedAt: now, connected: true });
   }
 
-  reconnect(guestId: string): void {
+  reconnect(guestId: string, roomId?: string): void {
+    if(!roomId)return;
     for (const room of this.state.rooms) {
+      if(room.id!==roomId)continue;
       const member = room.members.find(
         (candidate) => candidate.guestId === guestId,
       );
@@ -344,7 +348,7 @@ export class RoomCoordinator {
   }
   private removeEmptyCustoms(): void {
     this.state.rooms = this.state.rooms.filter(
-      (room) => room.kind === "default" || room.members.length > 0,
+      (room) => room.kind === "default" || room.members.some(member=>member.connected),
     );
   }
   private transferOwner(room: OnlineRoom): void {

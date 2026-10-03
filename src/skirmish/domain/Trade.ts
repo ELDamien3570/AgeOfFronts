@@ -3,7 +3,7 @@ import { limitedRouteRetry } from "../RouteRetryPolicy";
 import type { DomainRoutePorts, DomainRouteTask } from "./DomainRoutePorts";
 import type { ExactRouteOutcome } from "../RoutePlanner";
 import type { GameMap } from "../../core/game/GameMap";
-import { tradePayout } from "./TradeQuote";
+import { tradePayout, tradeCycleQuote, type TradeCycleQuote } from "./TradeQuote";
 import { technologyAt } from "../content/Technology";
 import { VESSELS } from "../content/Units";
 import type { LandPaths, WaterPaths } from "../Pathfinding";
@@ -39,10 +39,10 @@ const OBSTACLE_SEARCH_LIMIT = 60_000;
 const LOAD_WORK_BUDGET = 15_000;
 interface TradeAdmission {
   id:number;epoch:number;playerId:number;generation:number;revision:string;shipmentId:number;naval:boolean;start:number;
-  purpose:"load"|"select";phase:"supply"|"candidates"|"rank"|"routes"|"commit";sourceId:number;
+  purpose:"load"|"select";phase:"supply"|"candidates"|"rank"|"routes"|"cost"|"cycle"|"commit";sourceId:number;
   candidateCursor:number;candidateRows:{id:number;distance:number}[];ranked?:RankingState<{id:number;distance:number}>;
   index:number;waterIndex:number;requested:boolean;outcome?:ExactRouteOutcome;path?:number[];
-  best:{id:number;path:number[]}[];targetState:TradeActor["state"];maxStops:number;attempts:number;retryAt:number;
+  best:{id:number;path:number[];score?:number}[];costCursor?:number;travelTicks?:number;risk?:number;cycleIndex?:number;cycleLegs?:{id:number;path:number[];travelTicks:number;risk:number}[];cycleQuote?:TradeCycleQuote;targetState:TradeActor["state"];maxStops:number;attempts:number;retryAt:number;
 }
 interface Routed {
   building: Building;
@@ -58,9 +58,15 @@ export class Trade {
   private readonly admissions=new Map<number,TradeAdmission>();
   private readonly retryHistory=new Map<number,{attempts:number;retryAt:number}>();
   private tradeTask(plan:TradeAdmission,memberId:number,stage:string):DomainRouteTask{return {kind:"domain",owner:"trade",admissionId:plan.id,memberId,stage,playerId:plan.playerId,generation:plan.generation,epoch:plan.epoch};}
+  private currentTradeTask(plan: TradeAdmission): DomainRouteTask {
+    return this.tradeTask(plan, plan.phase === "supply" ? plan.sourceId :
+      plan.phase === "cycle" ? (plan.best[plan.cycleIndex ?? 0]?.id ?? plan.sourceId) :
+      (plan.candidateRows[plan.index]?.id ?? 0), plan.phase === "supply" ? "supply" : plan.phase === "cycle" ? "cycle" : "market");
+  }
+  readonly cycleQuotes = new Map<number, TradeCycleQuote>();
   private cancelTrade(id:number):void {
     const plan=this.admissions.get(id);if(!plan)return;
-    this.world.domainRoutes!.cancel(this.tradeTask(plan,plan.phase==="supply"?plan.sourceId:(plan.candidateRows[plan.index]?.id??0),plan.phase==="supply"?"supply":"market"));
+    this.world.domainRoutes!.cancel(this.currentTradeTask(plan));
     this.admissions.delete(id);
   }
   private beginTrade(actor:TradeActor,purpose:"load"|"select"):void {
@@ -82,7 +88,7 @@ export class Trade {
   }
   validRoute(task:DomainRouteTask):boolean {
     const plan=this.admissions.get(task.admissionId),actor=this.actors.find(a=>a.id===task.admissionId),routes=this.world.domainRoutes;
-    return !!plan && !!actor && !!routes && (task.stage==="check" || (task.stage===(plan.phase==="supply"?"supply":"market") && task.memberId===(plan.phase==="supply"?plan.sourceId:plan.candidateRows[plan.index]?.id))) && task.epoch===plan.epoch && actor.playerId===plan.playerId && actor.shipmentId===plan.shipmentId && actor.naval===plan.naval &&
+    return !!plan && !!actor && !!routes && (task.stage==="check" || (task.stage===this.currentTradeTask(plan).stage && task.memberId===this.currentTradeTask(plan).memberId)) && task.epoch===plan.epoch && actor.playerId===plan.playerId && actor.shipmentId===plan.shipmentId && actor.naval===plan.naval &&
       routes.generation(plan.playerId)===plan.generation && routes.revision()===plan.revision && this.tile(actor)===plan.start;
   }
   completedRoute(task:DomainRouteTask,outcome:ExactRouteOutcome,path:number[]):void {
@@ -96,7 +102,7 @@ export class Trade {
   private tradeCandidate(actor:TradeActor,plan:TradeAdmission,b:Building):boolean {
     if(b.remainingTicks || (b.health??1)<=0 || actor.visited.includes(b.id))return false;
     if(plan.purpose==="select" && plan.targetState==="returning")return b.id===(actor.naval?actor.originPortId:actor.factoryId)&&b.playerId===actor.playerId;
-    if(plan.purpose==="select" && plan.targetState!=="prize" && !actor.stops.includes(b.id))return false;
+    if(plan.purpose==="select" && plan.targetState!=="prize" && b.id!==actor.stops.find(id=>!actor.visited.includes(id)))return false;
     return (actor.naval ? b.type==="port" : b.type==="city" || (plan.targetState!=="prize" && b.type==="port")) &&
       (plan.targetState==="prize"?b.playerId===actor.playerId:!actor.naval || b.playerId!==actor.playerId);
   }
@@ -129,14 +135,18 @@ export class Trade {
         if(plan.ranked!.done){plan.candidateRows=plan.ranked!.rows;plan.ranked=undefined;plan.phase="routes";}
       }else if(plan.phase==="routes"){
         const candidate=plan.candidateRows[plan.index],building=candidate&&this.world.buildings.find(b=>b.id===candidate.id);
-        if(!candidate){plan.phase="commit";continue;}
+        if(!candidate){plan.phase=plan.purpose==="load" && plan.best.length ? "cycle" : "commit";plan.cycleIndex=0;plan.cycleLegs=[];continue;}
         if(!building||!this.tradeCandidate(actor,plan,building)){plan.index++;plan.waterIndex=0;continue;}
         if(plan.outcome!==undefined){
           const outcome=plan.outcome;plan.outcome=undefined;
           if(outcome==="complete"){
             const path=plan.path!;
-            if(plan.purpose==="select" || path.length>=2){plan.best.push({id:building.id,path});plan.best.sort((a,b)=>a.path.length-b.path.length||a.id-b.id);plan.best.length=Math.min(plan.best.length,plan.maxStops);}
-            plan.path=undefined;plan.index++;plan.waterIndex=0;
+            if(plan.purpose==="load" && path.length>=2){
+              plan.phase="cost";plan.costCursor=0;plan.travelTicks=0;plan.risk=0;
+            } else {
+              if(plan.purpose==="select"){plan.best.push({id:building.id,path});plan.best.sort((a,b)=>a.path.length-b.path.length||a.id-b.id);plan.best.length=Math.min(plan.best.length,plan.maxStops);}
+              plan.path=undefined;plan.index++;plan.waterIndex=0;
+            }
           }else if(outcome==="unreachable"){if(plan.naval)plan.waterIndex++;else plan.index++;}
           else if(outcome==="superseded"){this.cancelTrade(id);actor.waitTicks=20;}
           continue;
@@ -147,6 +157,57 @@ export class Trade {
           if(!this.world.waterPaths.connected(plan.start,tile)){plan.waterIndex++;continue;}
           this.queueTradeRoute(plan,building.id,plan.start,tile,true,"market");
         }else this.queueTradeRoute(plan,building.id,plan.start,building.tile,false,"market");
+      }else if(plan.phase==="cost"){
+        const path=plan.path!, at=plan.costCursor??0, tile=path[at];
+        if(tile!==undefined){
+          const previous=at?path[at-1]:tile;
+          plan.travelTicks=(plan.travelTicks??0)+(at?Math.ceil(Math.sqrt(this.world.map.euclideanDistSquared(previous,tile))*FIXED/(plan.naval?55:50)):1);
+          if(at%Math.max(1,Math.ceil(path.length/32))===0)plan.risk=(plan.risk??0)+this.observedRouteRisk(plan.playerId,plan.naval,{x:(this.world.map.x(tile)+.5)*FIXED,y:(this.world.map.y(tile)+.5)*FIXED});
+          plan.costCursor=at+1;continue;
+        }
+        const building=this.building(plan.candidateRows[plan.index].id),source=this.building(plan.sourceId),origin=plan.naval?this.building(actor.originPortId!):source;
+        if(building && source && origin && this.tradeCandidate(actor,plan,building)){
+          const quote=tradeCycleQuote({naval:plan.naval,stock:this.supply.goods.get(source.id)??0,capacity:actor.capacity,
+            valuePerGood:50*(AGES.indexOf(source.age??"StoneAge")+1),supplyTicks:0,
+            legs:[{marketId:building.id,distance:Math.sqrt(this.world.map.euclideanDistSquared(origin.tile,building.tile)),
+              foreign:building.playerId!==plan.playerId,allied:this.diplomacy.allied(plan.playerId,building.playerId),travelTicks:plan.travelTicks??0}],
+            returnTicks:plan.travelTicks??0,observedRisk:Math.min(900,(plan.risk??0)*20)});
+          plan.best.push({id:building.id,path,score:quote.riskAdjustedGoldPer1000Ticks});
+          plan.best.sort((a,b)=>(b.score??0)-(a.score??0)||a.path.length-b.path.length||a.id-b.id);
+          plan.best.length=Math.min(plan.best.length,plan.maxStops);
+        }
+        plan.phase="routes";plan.path=undefined;plan.index++;plan.waterIndex=0;
+      }else if(plan.phase==="cycle"){
+        const index=plan.cycleIndex??0,legs=plan.cycleLegs??=[];
+        if(index>plan.best.length){
+          const source=this.building(plan.sourceId),origin=plan.naval?this.building(actor.originPortId!):source;
+          if(!source||!origin||plan.best.some(row=>{const b=this.building(row.id);return !b||!this.tradeCandidate(actor,plan,b);})){this.cancelTrade(id);actor.waitTicks=20;continue;}
+          plan.cycleQuote=tradeCycleQuote({naval:plan.naval,stock:this.supply.goods.get(source.id)??0,capacity:actor.capacity,
+            valuePerGood:50*(AGES.indexOf(source.age??"StoneAge")+1),supplyTicks:0,
+            legs:legs.slice(0,-1).map(l=>{const b=this.building(l.id)!;return {marketId:l.id,
+              distance:Math.sqrt(this.world.map.euclideanDistSquared(origin.tile,b.tile)),
+              foreign:b.playerId!==plan.playerId,allied:this.diplomacy.allied(plan.playerId,b.playerId),travelTicks:l.travelTicks};}),
+            returnTicks:legs[legs.length-1]?.travelTicks??0,observedRisk:Math.min(900,legs.reduce((n,l)=>n+l.risk,0)*20)});
+          plan.phase="commit";continue;
+        }
+        const goal=index<plan.best.length?plan.best[index].path[plan.best[index].path.length-1]:plan.start;
+        const start=index?legs[index-1].path[legs[index-1].path.length-1]:plan.start;
+        if(plan.outcome!==undefined){
+          const outcome=plan.outcome;plan.outcome=undefined;
+          if(outcome==="complete"){plan.costCursor=0;plan.travelTicks=0;plan.risk=0;}
+          else {plan.path=undefined;if(outcome!=="limited"){this.cancelTrade(id);actor.waitTicks=20;}continue;}
+        }
+        if(plan.path){
+          const path=plan.path,at=plan.costCursor??0,tile=path[at];
+          if(tile!==undefined){const previous=at?path[at-1]:tile;
+            plan.travelTicks=(plan.travelTicks??0)+(at?Math.ceil(Math.sqrt(this.world.map.euclideanDistSquared(previous,tile))*FIXED/(plan.naval?55:50)):1);
+            if(at%Math.max(1,Math.ceil(path.length/32))===0)plan.risk=(plan.risk??0)+this.observedRouteRisk(plan.playerId,plan.naval,{x:(this.world.map.x(tile)+.5)*FIXED,y:(this.world.map.y(tile)+.5)*FIXED});
+            plan.costCursor=at+1;continue;}
+          legs.push({id:plan.best[index]?.id??plan.sourceId,path,travelTicks:plan.travelTicks??0,risk:plan.risk??0});
+          plan.path=undefined;plan.cycleIndex=index+1;continue;
+        }
+        if(index===0){plan.path=plan.best[0].path;plan.costCursor=0;plan.travelTicks=0;plan.risk=0;continue;}
+        this.queueTradeRoute(plan,plan.best[index]?.id??plan.sourceId,start,goal,plan.naval,"cycle");
       }else {
         const next=plan.best[0],destination=next&&this.world.buildings.find(b=>b.id===next.id);
         if(!destination || !this.tradeCandidate(actor,plan,destination)){this.cancelTrade(id);actor.waitTicks=20;continue;}
@@ -156,7 +217,10 @@ export class Trade {
           if(!source || goods<10){this.cancelTrade(id);continue;}
           const port=actor.naval?this.building(actor.originPortId!):undefined;
           if(actor.naval&&(!port||port.type!=="port"||port.playerId!==actor.playerId||port.remainingTicks||(port.health??1)<=0||!this.world.map.neighbors(port.tile).some(t=>this.world.waterPaths.connected(plan.start,t)))){this.cancelTrade(id);actor.state="waiting";continue;}
+          if(plan.best.some(row=>{const b=this.building(row.id);return !b || !this.tradeCandidate(actor,plan,b);})){this.cancelTrade(id);actor.waitTicks=20;continue;}
           const quantity=Math.min(goods,actor.capacity);
+          if(plan.cycleQuote && plan.cycleQuote.quantity!==quantity){this.cancelTrade(id);actor.waitTicks=20;continue;}
+          if(plan.cycleQuote) this.cycleQuotes.set(actor.id,plan.cycleQuote);
           actor.cargo=quantity;actor.loaded=quantity;actor.delivered=0;actor.lost=0;actor.returned=0;
           actor.valuePerGood=50*(AGES.indexOf(source.age??"StoneAge")+1);
           actor.originTile=actor.naval?port!.tile:source.tile;
@@ -174,6 +238,7 @@ export class Trade {
 
   checkpoint() {
     return structuredClone({
+      cycleQuotes:[...this.cycleQuotes],
       actors: this.actors,
       deliveredGold: this.deliveredGold,
       capturedValue: this.capturedValue,
@@ -185,6 +250,7 @@ export class Trade {
   }
   restore(saved: ReturnType<Trade["checkpoint"]>): void {
     const state = structuredClone(saved);
+    this.cycleQuotes.clear();for(const [id,q] of state.cycleQuotes??[])this.cycleQuotes.set(id,q);
     restoreArray(this.actors, state.actors);
     restoreRecord(this.deliveredGold, state.deliveredGold);
     restoreRecord(this.capturedValue, state.capturedValue ?? {});
@@ -224,12 +290,19 @@ export class Trade {
       world.map.width() * FIXED,
       world.map.height() * FIXED,
       4 * FIXED,
+      actor => actor.playerId,
     );
     this.sea = new SpatialGrid(
       world.map.width() * FIXED,
       world.map.height() * FIXED,
       4 * FIXED,
+      actor => actor.playerId,
     );
+  }
+  observedRouteRisk(playerId: number, naval: boolean, point: {x:number;y:number}): number {
+    // Occupied hostile-capable cells are a conservative observation. No future
+    // enemy positions and no repeated whole-roster scan per route sample.
+    return (naval ? this.sea : this.land).mayContain(point.x, point.y, 2 * FIXED, playerId) ? 1 : 0;
   }
   private tile(actor: TradeActor): number {
     return this.world.map.ref(
@@ -514,6 +587,7 @@ export class Trade {
     actor.waitTicks = 20;
     this.select(actor, known);
   }
+  loadingPortFor(factory: Building): Building | undefined { return this.loadingPort(factory)?.port; }
   private loadingPort(factory:Building): {port:Building;water:number} | undefined {
     const {map,waterPaths} = this.world;
     const ports = this.world.buildings.filter(b => b.type === "port" && b.playerId === factory.playerId &&
@@ -804,6 +878,7 @@ export class Trade {
         players.find((p) => p.id === this.actors[i].playerId)?.eliminated
       ) {
         this.cancelTrade(this.actors[i].id);this.retryHistory.delete(this.actors[i].id);
+        this.cycleQuotes.delete(this.actors[i].id);
         this.retired.delete(this.actors[i].id);
         this.actors.splice(i, 1);
       }

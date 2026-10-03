@@ -37,7 +37,7 @@ describe("online room lifecycle", () => {
     rooms.voteToStart(id, "a");
     rooms.voteToStart(id, "b");
     rooms.disconnect("b", 1);
-    rooms.reconnect("b");
+    rooms.reconnect("b",id);
     expect(rooms.advance(2)).toHaveLength(0);
     rooms.voteToStart(id, "b");
     expect(rooms.advance(3)).toHaveLength(1);
@@ -77,7 +77,7 @@ describe("online room lifecycle", () => {
     expect(rooms.advance(15_000)).toHaveLength(0);
     expect(rooms.snapshot().reservations).toHaveLength(0);
     expect(
-      rooms.snapshot().rooms.find((r) => r.id === room.id)!.deadline,
+      rooms.snapshot().rooms.find((r) => r.id === room.id)?.deadline,
     ).toBeUndefined();
     rooms.advance(61_000);
     expect(rooms.snapshot().rooms.some((r) => r.id === room.id)).toBe(false);
@@ -125,6 +125,8 @@ describe("online room lifecycle", () => {
       rooms.create("d", profile("D"), "Again", rules, true, 0),
     ).toThrow("already own");
     rooms.disconnect("a", 1);
+    expect(rooms.snapshot().rooms.some(r=>r.id===first.id)).toBe(false);
+    expect(rooms.snapshot().rooms.find(r=>r.id===queued.id)?.listing).toBe("visible");
     rooms.advance(60_001);
     const state = rooms.snapshot();
     expect(state.rooms.some((r) => r.id === first.id)).toBe(false);
@@ -178,5 +180,15 @@ describe("online room lifecycle", () => {
     rooms.join("default-africa", "a", profile("A"), 18_000);
     rooms.join("default-africa", "b", profile("B"), 18_000);
     expect(rooms.advance(78_000)).toHaveLength(1);
+  });
+});
+
+describe("explicit lobby presence",()=>{
+  it("does not revive old rooms on an unscoped home-page authentication",()=>{
+    const rooms=new RoomCoordinator(0,0);rooms.join("default-africa","a",profile("A"),0);rooms.disconnect("a",1);
+    rooms.reconnect("a");rooms.reconnect("a","default-europe");
+    expect(rooms.snapshot().rooms.find(r=>r.id==="default-africa")!.members[0].connected).toBe(false);
+    rooms.reconnect("a","default-africa");
+    expect(rooms.snapshot().rooms.find(r=>r.id==="default-africa")!.members[0].connected).toBe(true);
   });
 });

@@ -1,3 +1,9 @@
+import { researchRejection, advanceRejection } from "./Progression";
+import { TECHNOLOGY } from "../content/Technology";
+import { researchUtility, usableNextAge } from "./AiResearchUtility";
+import { AiCoastPlanner } from "./AiCoastPlanner";
+import { AiTradeOpportunities } from "./AiTradeOpportunities";
+import { AiRouteQuotes } from "./AiRouteQuotes";
 import { AiFrontRecords } from "./AiFrontRecords";
 import { AiModernFronts } from "./AiModernFronts";
 import type { Player } from "../Protocol";
@@ -30,6 +36,9 @@ interface Saving {
 export class AiEconomicDirector {
   readonly ledger = new AiBudgetLedger();
   readonly assets = new AiAssetLeases();
+  readonly coasts: AiCoastPlanner;
+  readonly tradeQuotes: AiTradeOpportunities;
+  readonly routes: AiRouteQuotes;
   readonly placements: AiPlacementCandidates;
   readonly military: AiMilitaryDirector;
   readonly losses = new AiLossWindow();
@@ -55,7 +64,10 @@ export class AiEconomicDirector {
     abandoned: 0,
   };
   constructor(private readonly expansion: Expansion) {
+    this.routes = new AiRouteQuotes(expansion);
+    this.tradeQuotes = new AiTradeOpportunities(expansion, this);
     this.placements = new AiPlacementCandidates(expansion);
+    this.coasts = new AiCoastPlanner(expansion, this);
     this.military = new AiMilitaryDirector(expansion, this);
     this.cities = new AiCityRecords(
       expansion.world.map,
@@ -88,6 +100,9 @@ export class AiEconomicDirector {
   }
   checkpoint() {
     return structuredClone({
+      routes: this.routes.checkpoint(),
+      tradeQuotes: this.tradeQuotes.checkpoint(),
+      coasts: this.coasts.checkpoint(),
       ledger: this.ledger.checkpoint(),
       assets: this.assets.checkpoint(),
       losses: this.losses.checkpoint(),
@@ -109,6 +124,9 @@ export class AiEconomicDirector {
     });
   }
   restore(saved: ReturnType<AiEconomicDirector["checkpoint"]>): void {
+    this.routes.restore(saved.routes);
+    this.tradeQuotes.restore(saved.tradeQuotes);
+    this.coasts.restore(saved.coasts);
     this.ownershipTick = -1;
     this.ledger.restore(saved.ledger);
     this.military.restore(saved.military);
@@ -155,6 +173,9 @@ export class AiEconomicDirector {
       this.nextDecision.set(id, tick);
   }
   release(playerId: number): void {
+    this.routes.releasePlayer(playerId);
+    this.tradeQuotes.release(playerId);
+    this.coasts.release(playerId);
     this.naval.release(playerId);
     this.transports.release(playerId);
     this.defenses.release(playerId);
@@ -179,7 +200,7 @@ export class AiEconomicDirector {
     const boundaryWork = this.boundaries?.step(world.tick, 32) ?? 0;
     const frontWork = world.options.aiDefenses ? this.fronts.step(16) : 0;
     const navalWork =
-      world.options.aiNaval && world.options.deferredPlanning
+      world.options.deferredPlanning
         ? this.navalFacts.step(world.tick, 48 - frontWork)
         : 0;
     const controllerWork =
@@ -187,13 +208,15 @@ export class AiEconomicDirector {
         ? this.naval.step(16)+this.transports.step(16)
         : 0;
     const armyWork=this.military.step(Math.max(0,Math.min(24,112-navalWork-boundaryWork-controllerWork-frontWork)));
+    const tradeQuoteWork = this.tradeQuotes.step(Math.min(8, Math.max(0, 112-navalWork-boundaryWork-controllerWork-frontWork-armyWork)));
+    const coastWork = this.coasts.step(Math.min(8,Math.max(0,112-navalWork-boundaryWork-controllerWork-frontWork-armyWork-tradeQuoteWork)));
     const cityWork = this.cities.step(
       world.tick,
-      128 - navalWork - boundaryWork - controllerWork - frontWork - armyWork,
+      128 - navalWork - boundaryWork - controllerWork - frontWork - armyWork - tradeQuoteWork - coastWork,
       8,
     );
     this.diagnostics.backgroundWork =
-      navalWork + boundaryWork + controllerWork + frontWork + armyWork + cityWork;
+      navalWork + boundaryWork + controllerWork + frontWork + armyWork + tradeQuoteWork + coastWork + cityWork;
     if (world.options.aiDefenses) { this.defenses.step(); this.modernFronts.step(32); }
     if (world.tick % 3) return;
     for (let i = 0; i < world.players.length; i++) {
@@ -298,6 +321,13 @@ export class AiEconomicDirector {
       this.military.decide(player)
     )
       return;
+    const opportunity = {
+      resources: supply.deposits.filter(d => world.owners[d.tile] === player.id).map(d => d.resource),
+      usableCoast: this.placements.coasts(player.id).length > 0,
+      seaThreat: this.naval.missions.get(player.id)?.assessment?.enemyPower ?? 0,
+      goods: snapshot.buildings.reduce((n, b) => n + (supply.goods.get(b.id) ?? 0), 0),
+      protectedItems: this.ledger.protected(player.id).items ?? {},
+    };
     const candidates = economicCandidates(
       snapshot,
       state,
@@ -305,6 +335,7 @@ export class AiEconomicDirector {
       demand,
       progression.technologySpeed,
       this.placements.candidates(player, snapshot, demand),
+      opportunity,
     );
     this.diagnostics.candidates += candidates.length;
     let goal = this.saving.get(player.id);
@@ -312,7 +343,9 @@ export class AiEconomicDirector {
       goal &&
       (goal.intent.generation !== generation ||
         world.tick >= goal.intent.expiresTick ||
-        world.tick - goal.lastProgress >= 1200)
+        world.tick - goal.lastProgress >= 1200 ||
+        (goal.intent.command.type === "research" && (!!researchRejection(state, Number.MAX_SAFE_INTEGER, goal.intent.command.technologyId, progression.technologySpeed) || !researchUtility(TECHNOLOGY.get(goal.intent.command.technologyId)!,snapshot,demand,opportunity).benefit)) ||
+        (goal.intent.kind === "advance" && (!!advanceRejection(state, Number.MAX_SAFE_INTEGER, progression.technologySpeed) || !usableNextAge(snapshot,opportunity))))
     ) {
       this.ledger.release(goal.intent.id);
       this.saving.delete(player.id);
@@ -324,7 +357,7 @@ export class AiEconomicDirector {
       goal &&
       challenger &&
       (challenger.priority === "emergency" ||
-        challenger.score * 5 > goal.intent.score * 6)
+        (goal.intent.kind !== "research" && goal.intent.kind !== "advance" && challenger.score * 5 > goal.intent.score * 6))
     ) {
       this.ledger.release(goal.intent.id);
       this.saving.delete(player.id);
