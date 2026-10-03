@@ -1,0 +1,8 @@
+
+ RUN  v4.1.11 C:/Users/Damien/.codex/worktrees/optimization-roadmap/AgeOfFronts
+
+
+ Test Files  12 passed (12)
+      Tests  132 passed (132)
+   Start at  01:47:05
+   Duration  22.62s (transform 4.92s, setup 0ms, import 8.15s, tests 8.62s, environment 1.21s)

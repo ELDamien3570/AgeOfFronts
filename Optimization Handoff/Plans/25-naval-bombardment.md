@@ -1,7 +1,13 @@
 # P25: Add supported coastal bombardment
 
-Status: **deferred to the next update by the user; no implementation in the current nightly batch**. Read
+Status: **implemented locally; full-run plus focused-repair validation recorded**. Read
 [`../agent-workflow.md`](../agent-workflow.md) and [`../handoff.md`](../handoff.md).
+
+## Current implementation - 3 October 2026
+
+The existing fleet owner selects a coastal structure, requires capable shooters and escorts, certifies a legal firing-water approach and issues ordinary sail/attack commands. Loss, threat, treaty and target changes terminate or recover the mission. Authoritative naval combat enforces weapon target tags, range, line of sight and actual reloads.
+
+The user resumed this plan and requested one combined test run with the remaining tuneups and lobby fixes. See [combined batch evidence](../Evidence/remaining-five-combined-validation.md) for results and qualification limits.
 
 ## Dependencies and ownership
 

@@ -2,9 +2,7 @@
 
 ## Local continuation - 3 October 2026
 
-The remaining non-deferred code pass is implemented and tested locally in source commit `a4145f4230cabe58023bc60d58b835407a111956`, branch `codex/optimization-lifecycle-indexes`. The final combined gate passes **1,075 tests across 164 files**, TypeScript, build, whitespace and scoped Oxlint. Scoped ESLint has one pre-existing unused variable. [Final evidence](Evidence/nightly-final-validation.md) records the exact source/runtime and limits; [current plan status](remaining-work-index.md) supersedes the historical record below.
-
-P17, P20, P21, P22 and P25 are deferred. P28's local integration gate passes; deferred-feature acceptance remains open. P29 has partial ordinary browser evidence, including exact single recruitment cancellation/refund and the final-tier U guard. P02 mature-world memory and P30 actual ARM/ten-browser capacity remain unqualified. No remote push, merge, default experimental flag change or deployment was performed. Concurrent Art was not modified.
+The five previously deferred plans **P17, P20, P21, P22 and P25** and the remaining Antigravity tuneups/lobby fixes are now implemented locally in source commit `fd34e956513686fc66523ff313d940ad31666b41` on `codex/optimization-lifecycle-indexes`. The combined full run covered 1,101 tests; its 11 failures were resolved in the affected-file group, whose final **132 tests pass**. TypeScript, build, whitespace and scoped Oxlint pass; scoped ESLint retains one pre-existing unused local. See [exact combined validation and limits](Evidence/remaining-five-combined-validation.md). This evidence is cumulative full-run plus focused repairs, not a repeated all-green exhaustive run. P02 largest-world memory, P29 native browser qualification and P30 actual ARM/ten-browser capacity remain open. Experimental defaults remain opt-in; no push, merge or deployment occurred.
 
 ## Historical handoff - 2 October 2026
 

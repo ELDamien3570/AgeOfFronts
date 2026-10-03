@@ -174,3 +174,8 @@ this chat has not committed, pushed or deployed.
 - Final tests: deterministic cold/warm save/restore, conservation and work-bound
   fixtures, seeded outcomes/performance evidence, browser review; target ARM
   profiling remains an external gate. New planners remain off by default.
+
+
+## Superseding local checkpoint - 3 October 2026
+
+The five previously deferred plans **P17, P20, P21, P22 and P25** and the remaining Antigravity tuneups/lobby fixes are now implemented locally in source commit `fd34e956513686fc66523ff313d940ad31666b41` on `codex/optimization-lifecycle-indexes`. The combined full run covered 1,101 tests; its 11 failures were resolved in the affected-file group, whose final **132 tests pass**. TypeScript, build, whitespace and scoped Oxlint pass; scoped ESLint retains one pre-existing unused local. See [exact combined validation and limits](../Evidence/remaining-five-combined-validation.md). This evidence is cumulative full-run plus focused repairs, not a repeated all-green exhaustive run. P02 largest-world memory, P29 native browser qualification and P30 actual ARM/ten-browser capacity remain open. Experimental defaults remain opt-in; no push, merge or deployment occurred.

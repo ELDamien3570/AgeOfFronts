@@ -1,0 +1,229 @@
+
+ RUN  v4.1.11 C:/Users/Damien/.codex/worktrees/optimization-roadmap/AgeOfFronts
+
+ ❯ tests/skirmish/RemainingPlans.test.ts (14 tests | 4 failed) 564ms
+     × takes an exact reachable flank and invalidates it when the target moves 71ms
+     × requires a viable paid production path before an age transition 39ms
+     × pays ordinary port construction only after a real owned coast is supplied 25ms
+     × does not fire through a wall and does not bypass weapon target eligibility 24ms
+Match executor operation failed advance Error: Match command batch exceeds its budget
+    at <anonymous> (C:\Users\Damien\.codex\worktrees\optimization-roadmap\AgeOfFronts\src\skirmish\multiplayer\infrastructure\serverMatchWorker.ts:234:21)
+Match executor operation failed advance Error: Invalid match advance
+    at <anonymous> (C:\Users\Damien\.codex\worktrees\optimization-roadmap\AgeOfFronts\src\skirmish\multiplayer\infrastructure\serverMatchWorker.ts:232:21)
+Match executor operation failed join-barrier Error: This faction is no longer available
+    at <anonymous> (C:\Users\Damien\.codex\worktrees\optimization-roadmap\AgeOfFronts\src\skirmish\multiplayer\infrastructure\serverMatchWorker.ts:200:21)
+Match executor operation failed join-barrier Error: This faction is no longer available
+    at <anonymous> (C:\Users\Damien\.codex\worktrees\optimization-roadmap\AgeOfFronts\src\skirmish\multiplayer\infrastructure\serverMatchWorker.ts:200:21)
+ ❯ tests/skirmish/AiNavalPlanner.test.ts (13 tests | 1 failed) 434ms
+     × keeps a recovery slot and reattaches its repaired ship without replacing dock orders 39ms
+ ❯ tests/skirmish/LiveMatchCards.test.ts (11 tests | 1 failed) 295ms
+     × offers a browser-identity rejoin instead of a stranger takeover 14ms
+ ❯ tests/skirmish/RefitAndConquestTuneups.test.ts (5 tests | 1 failed) 126ms
+     × keeps a faction with a completed building alive 20ms
+ ❯ tests/skirmish/CoordinatorServer.test.ts (3 tests | 1 failed) 424ms
+     × persists guest credentials and idempotent creation across a coordinator restart 174ms
+ ❯ tests/skirmish/Ages.test.ts (18 tests | 1 failed) 378ms
+     × makes an unaffordable group refit atomic and a paid refit preserve health until completion 27ms
+ ❯ tests/skirmish/Conquest.test.ts (4 tests | 1 failed) 176ms
+     × requires every building, then transfers all remnants and snapshot deltas to the final captor 86ms
+ ❯ tests/skirmish/LiveJoinLifecycle.test.ts (11 tests | 1 failed) 22ms
+     × releases the match when that bounded baseline fails after the old deadline 6ms
+
+⎯⎯⎯⎯⎯⎯ Failed Tests 11 ⎯⎯⎯⎯⎯⎯⎯
+
+ FAIL  tests/skirmish/Ages.test.ts > supply conservation and deployment > makes an unaffordable group refit atomic and a paid refit preserve health until completion
+TypeError: .toMatch() expects to receive a string, but got object
+ ❯ tests/skirmish/Ages.test.ts:289:7
+    287|         definitionId: "bronzeage-infantry",
+    288|       }),
+    289|     ).toMatch(/Needs/);
+       |       ^
+    290|     expect(p.gold).toBe(gold);
+    291|     expect(own.every((s) => !s.refit)).toBe(true);
+
+⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯[1/11]⎯
+
+ FAIL  tests/skirmish/AiNavalPlanner.test.ts > persistent concentrated port defense > keeps a recovery slot and reattaches its repaired ship without replacing dock orders
+AssertionError: expected [ 8, 9 ] to deeply equal [ 9 ]
+
+- Expected
++ Received
+
+  [
++   8,
+    9,
+  ]
+
+ ❯ tests/skirmish/AiNavalPlanner.test.ts:159:29
+    157|     const apply = vi.spyOn(f.game, "applyCommand");
+    158|     mission = f.assess();
+    159|     expect(mission.members).toEqual([second.id]);
+       |                             ^
+    160|     expect(mission.recovering).toEqual([first.id]);
+    161|     expect(
+
+⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯[2/11]⎯
+
+ FAIL  tests/skirmish/Conquest.test.ts > complete conquest > requires every building, then transfers all remnants and snapshot deltas to the final captor
+AssertionError: expected true to be false // Object.is equality
+
+- Expected
++ Received
+
+- false
++ true
+
+ ❯ tests/skirmish/Conquest.test.ts:87:30
+     85|     removeDefenders(game);
+     86|     occupy(game, base);
+     87|     expect(enemy.eliminated).toBe(false);
+       |                              ^
+     88|     expect(game.buildings.filter((b) => b.playerId === 2)).toHaveLengt…
+     89|     const old = game.owners.slice(),
+
+⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯[3/11]⎯
+
+ FAIL  tests/skirmish/CoordinatorServer.test.ts > durable authenticated lobby transport > persists guest credentials and idempotent creation across a coordinator restart
+AssertionError: expected [] to have a length of 1 but got +0
+
+- Expected
++ Received
+
+- 1
++ 0
+
+ ❯ tests/skirmish/CoordinatorServer.test.ts:142:7
+    140|         .snapshot()
+    141|         .rooms.filter((room) => room.kind === "custom"),
+    142|     ).toHaveLength(1);
+       |       ^
+    143|     expect(
+    144|       restarted.server.rooms
+
+⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯[4/11]⎯
+
+ FAIL  tests/skirmish/LiveJoinLifecycle.test.ts > empty-match deadline during returning baseline application > releases the match when that bounded baseline fails after the old deadline
+AssertionError: expected +0 to be 1 // Object.is equality
+
+- Expected
++ Received
+
+- 1
++ 0
+
+ ❯ tests/skirmish/LiveJoinLifecycle.test.ts:460:65
+    458|     const f=await fixture();await f.match.disconnect("a");await f.matc…
+    459|     f.time(129000);f.watch("a",1);await f.match.qualify("a","build");
+    460|     f.time(144001);await f.match.advance();expect(f.released()).toBe(1…
+       |                                                                 ^
+    461|   });
+    462| });
+
+⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯[5/11]⎯
+
+ FAIL  tests/skirmish/LiveMatchCards.test.ts > live match directory > offers a browser-identity rejoin instead of a stranger takeover
+AssertionError: expected '/skirmish/index.html?match=match-one&…' to be '/skirmish/index.html?match=match-one' // Object.is equality
+
+Expected: "/skirmish/index.html?match=match-one"
+Received: "/skirmish/index.html?match=match-one&seat=2"
+
+ ❯ tests/skirmish/LiveMatchCards.test.ts:129:39
+    127|     )!;
+    128|     expect(link.textContent).toContain("Rejoin your empire");
+    129|     expect(link.getAttribute("href")).toBe(
+       |                                       ^
+    130|       "/skirmish/index.html?match=match-one",
+    131|     );
+
+⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯[6/11]⎯
+
+ FAIL  tests/skirmish/RefitAndConquestTuneups.test.ts > mass refit and completed-asset survival > keeps a faction with a completed building alive
+AssertionError: expected true to be false // Object.is equality
+
+- Expected
++ Received
+
+- false
++ true
+
+ ❯ tests/skirmish/RefitAndConquestTuneups.test.ts:142:31
+    140|         f.game.updateBuilding(b.id, { remainingTicks: 0 });
+    141|     f.game.step();
+    142|     expect(victim.eliminated).toBe(false);
+       |                               ^
+    143|   });
+    144| });
+
+⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯[7/11]⎯
+
+ FAIL  tests/skirmish/RemainingPlans.test.ts > remaining strategic plans > takes an exact reachable flank and invalidates it when the target moves
+AssertionError: expected 'hold' to be 'move' // Object.is equality
+
+Expected: "move"
+Received: "hold"
+
+ ❯ tests/skirmish/RemainingPlans.test.ts:234:29
+    232|     }
+    233|     expect(plan.maneuver.tile).toBeDefined();
+    234|     expect(army.order.type).toBe("move");
+       |                             ^
+    235|     f.game.updateSquad(enemy.id, { x: 85.5 * FIXED });
+    236|     f.game.tick += 40;
+
+⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯[8/11]⎯
+
+ FAIL  tests/skirmish/RemainingPlans.test.ts > remaining strategic plans > requires a viable paid production path before an age transition
+TypeError: Cannot read properties of undefined (reading 'id')
+ ❯ tests/skirmish/RemainingPlans.test.ts:297:36
+    295|       .byOwner(f.player.id)
+    296|       .find((b) => b.type === "barracks")!;
+    297|     f.game.updateBuilding(barracks.id, { remainingTicks: 0 });
+       |                                    ^
+    298|     const snapshot = economicSnapshot({
+    299|       player: f.player,
+
+⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯[9/11]⎯
+
+ FAIL  tests/skirmish/RemainingPlans.test.ts > remaining strategic plans > pays ordinary port construction only after a real owned coast is supplied
+AssertionError: expected false to be true // Object.is equality
+
+- Expected
++ Received
+
+- true
++ false
+
+ ❯ tests/skirmish/RemainingPlans.test.ts:510:7
+    508|         .buildingsAt(tile)
+    509|         .some((b) => b.type === "port" && b.remainingTicks > 0),
+    510|     ).toBe(true);
+       |       ^
+    511|     expect(f.player.gold).toBe(before - expected);
+    512|     expect(controller.goals.get(f.player.id)?.phase).toBe("fund");
+
+⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯[10/11]⎯
+
+ FAIL  tests/skirmish/RemainingPlans.test.ts > remaining strategic plans > does not fire through a wall and does not bypass weapon target eligibility
+AssertionError: expected 944 to be 1000 // Object.is equality
+
+- Expected
++ Received
+
+- 1000
++ 944
+
+ ❯ tests/skirmish/RemainingPlans.test.ts:576:48
+    574|     ).toBeNull();
+    575|     f.game.step();
+    576|     expect(f.game.building(target.id)!.health).toBe(1000);
+       |                                                ^
+    577|     const original = f.e.vessel.bind(f.e);
+    578|     vi.spyOn(f.e, "vessel").mockImplementation((s) => ({
+
+⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯[11/11]⎯
+
+
+ Test Files  8 failed | 158 passed (166)
+      Tests  11 failed | 1090 passed (1101)
+   Start at  01:37:30
+   Duration  279.35s (transform 13.24s, setup 0ms, import 54.44s, tests 154.33s, environment 13.72s)
