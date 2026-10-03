@@ -301,14 +301,15 @@ export class Skirmish {
   private routeFootprints?: Map<number, Map<number, boolean>>;
   private footprintOperationRevision = -1;
   private footprintDiplomacyRevision = -1;
+  private footprintThreatRevision = -1;
   /** Capture/contact radius, not only the unit centre, defines foreign entry. */
   private aiFootprintAllowed(playerId: number, tile: number): boolean {
     if (!this.options.aiWarPolicy || !this.expansion?.operations.enabled(this.player(playerId))) return true;
     const cache = this.routeFootprints;
     if (cache) {
-      const operations = this.expansion.operations.revision, diplomacy = this.expansion.diplomacy.revision;
-      if (operations !== this.footprintOperationRevision || diplomacy !== this.footprintDiplomacyRevision) {
-        cache.clear(); this.footprintOperationRevision = operations; this.footprintDiplomacyRevision = diplomacy;
+      const operations = this.expansion.operations.revision, diplomacy = this.expansion.diplomacy.revision, threats = this.expansion.operations.permissionRevision;
+      if (operations !== this.footprintOperationRevision || diplomacy !== this.footprintDiplomacyRevision || threats !== this.footprintThreatRevision) {
+        cache.clear(); this.footprintOperationRevision = operations; this.footprintDiplomacyRevision = diplomacy; this.footprintThreatRevision = threats;
       }
       const known = cache.get(playerId)?.get(tile);
       if (known !== undefined) return known;

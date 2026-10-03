@@ -29,6 +29,10 @@ describe("optional AI strategic operations", () => {
       expect(internal.aiFootprintAllowed(2,near)).toBe(false);
       f.m.notifyHostileAction(2,1,tile);
       expect(internal.aiFootprintAllowed(2,near)).toBe(true);
+      // Refreshing an existing threat changes entry permission even though it
+      // deliberately does not supersede all outstanding route jobs.
+      f.ops.threatened(2,1,f.map.ref(140,80));
+      expect(internal.aiFootprintAllowed(2,near)).toBe(false);
       return 0;
     });
     internal.drainRoutes(); step.mockRestore();

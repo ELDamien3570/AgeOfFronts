@@ -24,6 +24,9 @@ export interface AiOperation {
 export class AiOperations {
   private readonly records = new Map<number, AiOperation>();
   revision = 0;
+  // Read-cache invalidation also observes refreshed threats, without restarting
+  // route jobs every time combat extends an existing retaliation window.
+  permissionRevision = 0;
   private work = 0;
   private territorialRevision=0;
   territoryChanged(oldOwner:number,newOwner:number):void{
@@ -38,6 +41,7 @@ export class AiOperations {
   checkpoint() { return structuredClone({ records: [...this.records], revision: this.revision,territorialRevision:this.territorialRevision }); }
   restore(saved: ReturnType<AiOperations["checkpoint"]>): void {
     this.records.clear(); for (const [id, record] of structuredClone(saved.records)) this.records.set(id, record);
+    this.permissionRevision++;
     this.revision = saved.revision;this.territorialRevision=saved.territorialRevision??0;
   }
   release(playerId: number): void { if (this.records.delete(playerId)) this.revision++; }
@@ -58,6 +62,7 @@ export class AiOperations {
     const record = this.record(victim), threat = record.threats.find(t => t.rival === rival);
     if (threat) { threat.tile = tile; threat.until = world.tick + 600; }
     else { record.threats.push({ rival, tile, until: world.tick + 600 }); this.revision++; }
+    this.permissionRevision++;
     record.nextThink = Math.min(record.nextThink, world.tick);
   }
   /** Offensive permission and remembered defensive retaliation are separate. */
