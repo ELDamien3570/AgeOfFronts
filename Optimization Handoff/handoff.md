@@ -2,7 +2,7 @@
 
 ## Movement regression continuation — 3 October 2026
 
-A public playtest exposed movement-admission starvation that the earlier tick/synchronization smoke missed. The local repair shares formation occupancy across planning batches and reserves bounded work for human commands. Physical player and AI displacement now pass on the production-sized Valles map and through authenticated local multiplayer. Updated Oracle movement smoke and active-movement profiling are required before repeating release readiness claims; see the correction at the top of [the evidence report](Evidence/multiplayer-stability-20261003.md).
+A public playtest exposed movement-admission starvation that the earlier tick/synchronization smoke missed. The repair shares formation occupancy across planning batches and reserves bounded work for human commands. Ten public test players and ten regular AI now physically move, and normal right-click movement is verified in rendered Chromium. A further routing-batch permission cache reduces repeated AI footprint work while retaining ownership/threat invalidation. The actual moving/contested workload reached 35 simulated minutes locally and on one-CPU Oracle ARM; complete final checkpoints match. See the corrected [movement and performance evidence](Evidence/multiplayer-stability-20261003.md). The final repair is deployed on Oracle in `ad39860f8875b3700ee51cb00762744e60113a61`; a repeated ten-peer public movement/reconnect/state-agreement smoke passes. Native Opera and ten-rendering-browser/concurrent-match acceptance remain open.
 
 ## Multiplayer stability continuation — 3 October 2026
 
