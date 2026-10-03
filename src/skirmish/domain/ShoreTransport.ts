@@ -321,6 +321,11 @@ export class ShoreTransport {
     this.finishStart(plan,"executed");
   }
   private landDeferred(ship:Ship,tile:number,redirected:boolean):string|null {
+    if (ship.destination !== null) return "Stop beside the landing coast before unloading";
+    if (!this.world.paths.walkable(tile) || this.world.map.manhattanDist(pointTile(this.world.map,ship),tile) !== 1)
+      return "Choose passable coastal land directly beside the transport";
+    if (this.world.landingAllowed && !this.world.landingAllowed(ship.playerId,tile))
+      return "AI landing requires a declared operation or local defensive response";
     const existing=[...this.landingGroups].find(([,g])=>g.shipId===ship.id);
     if(existing){if(existing[1].tile===tile&&existing[1].redirected===redirected)return null;this.cohorts!.cancel(existing[0],"Replacement landing");}
     const cargo=[...this.world.cargo(ship.id)];

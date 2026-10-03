@@ -137,11 +137,17 @@ try{
     let boat;
     await wait(()=>{const live=p.snapshot.squads.find(s=>s.id===squad.id);boat=live&&p.snapshot.ships.find(s=>s.id===live.embarkedOn);return boat?.shoreTransfer?.phase==="afloat" && Math.floor(boat.x/256)+Math.floor(boat.y/256)*map.width()===goal;},"physical water arrival",120000);
     const boatId=boat.id,afloatTick=p.tick;
+    const invalidUnloadId=rid();
+    send(p,{type:"match-command",requestId:invalidUnloadId,matchId,command:{type:"unload",playerId:p.manifest.playerId,shipId:boatId,tile:goal}});
+    await wait(()=>p.outcomes.some(o=>o.id===invalidUnloadId&&o.status==="rejected"),"invalid water landing rejection");
+    const invalidUnload=p.outcomes.find(o=>o.id===invalidUnloadId&&o.status==="rejected");
+    if(invalidUnload.reason!=="Choose passable coastal land directly beside the transport")throw new Error("Unexpected water landing rejection: "+JSON.stringify(invalidUnload));
+    if(p.snapshot.squads.find(s=>s.id===squad.id)?.embarkedOn!==boatId)throw new Error("Invalid landing lost cargo");
     send(p,{type:"match-command",requestId:rid(),matchId,command:{type:"sail",playerId:p.manifest.playerId,shipIds:[boatId],tile:edge.waterTile}});
     await wait(()=>{const b=p.snapshot.ships.find(s=>s.id===boatId);return b&&b.destination===null&&Math.floor(b.x/256)+Math.floor(b.y/256)*map.width()===edge.waterTile;},"manual afloat return",30000);
     const unloadId=rid();send(p,{type:"match-command",requestId:unloadId,matchId,command:{type:"unload",playerId:p.manifest.playerId,shipId:boatId,tile:edge.landTile}});
     await wait(()=>p.snapshot.squads.find(s=>s.id===squad.id)?.embarkedOn===null&&!p.snapshot.ships.some(s=>s.id===boatId),"physical manual landing",30000);
-    waterTransport={squadId:squad.id,boatId,commandTick,afloatTick,landedTick:p.tick,destination:goal,landing:edge.landTile,outcome};
+    waterTransport={squadId:squad.id,boatId,commandTick,afloatTick,landedTick:p.tick,destination:goal,landing:edge.landTile,outcome,invalidUnload};
     console.log(JSON.stringify({stage:"water-transport",waterTransport}));
   }
   const invalidId=rid();let badTile=p.snapshot.owners.findIndex(owner=>owner!==p.manifest.playerId);

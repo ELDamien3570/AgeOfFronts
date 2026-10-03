@@ -87,8 +87,16 @@ describe("automatic researched shore transport", () => {
     expect(m.own.every(s=>s.embarkedOn === ship.id)).toBe(true);
     const restored = new Skirmish(m.match.map, m.match.options); restored.restore(m.match.checkpoint());
     expect(restored.ship(ship.id)?.shoreTransfer?.phase).toBe("afloat");
+    const beforeInvalid = m.match.checkpoint();
+    expect(m.match.applyCommand({type:"unload",playerId:1,shipId:ship.id,tile:m.target}))
+      .toBe("Choose passable coastal land directly beside the transport");
+    expect(m.match.checkpoint()).toEqual(beforeInvalid);
     const end = m.match.map.ref(30,25);
     expect(m.match.applyCommand({type:"sail",playerId:1,shipIds:[ship.id],tile:end})).toBeNull();
+    for(let i=0;i<100 && ship.destination===null;i++)m.match.step();
+    expect(ship.destination).not.toBeNull();
+    expect(m.match.applyCommand({type:"unload",playerId:1,shipId:ship.id,tile:m.match.map.ref(29,25)}))
+      .toBe("Stop beside the landing coast before unloading");
     for(let i=0;i<1200 && m.match.tileOf(ship)!==end;i++)m.match.step();
     expect(m.match.tileOf(ship)).toBe(end);
     // Sail completes at the tile center before unloading from an adjacent shore.
