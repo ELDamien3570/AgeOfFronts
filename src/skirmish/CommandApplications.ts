@@ -65,6 +65,7 @@ export class CommandApplications {
       status: "executed",
     };
     const mayDefer =
+      command.type === "army-order" || command.type === "board" || command.type === "unload" ||
       command.type === "sail" ||
       (command.type === "order" &&
         ((command.append ?? false) || command.order.type === "move"));
@@ -102,7 +103,7 @@ export class CommandApplications {
     this.publish(result);
     return { ...result };
   }
-  observe(source: "land" | "water", event: MovementAdmissionEvent): void {
+  observe(source: "land" | "water" | "army" | "shore" | "trade", event: MovementAdmissionEvent): void {
     const plan = `${source}:${event.id}`;
     if (event.status === "deferred") {
       if (this.applying?.playerId === event.playerId)

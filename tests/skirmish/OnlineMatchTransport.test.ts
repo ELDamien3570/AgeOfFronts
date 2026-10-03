@@ -160,12 +160,12 @@ it("runs two thin clients from one server simulation, enforces ownership and con
     await until(() => states(1).some((message) => message.tick >= 8));
     const paidState = await decodeState<SnapshotPacket>(last(states(1)).packet);
     expect(
-      Object.values(paidState.expansion!.progression[2].research).some(
+      Object.values(paidState.expansion!.progression![2].research).some(
         (job) => job?.technologyId === "stoneage-shorecraft",
       ),
     ).toBe(true);
     expect(
-      Object.values(paidState.expansion!.progression[1].research).some(
+      Object.values(paidState.expansion!.progression![1].research).some(
         (job) => job?.technologyId === "stoneage-shorecraft",
       ),
     ).toBe(false);

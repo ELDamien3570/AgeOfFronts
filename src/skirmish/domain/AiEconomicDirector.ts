@@ -14,6 +14,7 @@ import { AiLossWindow } from "./AiLossWindow";
 import { militaryDemand, type AiProductionDemand } from "./AiMilitaryDemand";
 import { AiMilitaryDirector } from "./AiMilitaryDirector";
 import { AiNavalFacts } from "./AiNavalFacts";
+import { AiTransportPlanner } from "./AiTransportPlanner";
 import { AiNavalPlanner } from "./AiNavalPlanner";
 import { AiPlacementCandidates } from "./AiPlacementCandidates";
 import type { Cost, Inventory } from "./Definitions";
@@ -38,8 +39,10 @@ export class AiEconomicDirector {
   readonly modernFronts: AiModernFronts;
   readonly navalFacts: AiNavalFacts;
   readonly naval: AiNavalPlanner;
+  readonly transports: AiTransportPlanner;
   readonly boundaries?: AiBoundaryIndex;
   private readonly demands = new Map<number, AiProductionDemand>();
+  private readonly demandPlanning=new Map<number,{key:string;state:import("./AiMilitaryDemand").AiDemandPreparation}>();
   private readonly saving = new Map<number, Saving>();
   private cursor = 0;
   private readonly nextDecision = new Map<number, number>();
@@ -62,6 +65,7 @@ export class AiEconomicDirector {
     this.defenses = new AiDefenseDirector(expansion, this);
     this.navalFacts = new AiNavalFacts(expansion.world);
     this.naval = new AiNavalPlanner(expansion, this);
+    this.transports=new AiTransportPlanner(expansion,this);
     this.fronts = new AiFrontRecords(expansion, this);
     this.modernFronts = new AiModernFronts(expansion, this);
     if (
@@ -93,8 +97,11 @@ export class AiEconomicDirector {
       modernFronts: this.modernFronts.checkpoint(),
       navalFacts: this.navalFacts.checkpoint(),
       naval: this.naval.checkpoint(),
+      transports:this.transports.checkpoint(),
+      military:this.military.checkpoint(),
       boundaries: this.boundaries?.checkpoint(),
       demands: [...this.demands],
+      demandPlanning:[...this.demandPlanning],
       saving: [...this.saving],
       placements: this.placements.checkpoint(),
       cursor: this.cursor,
@@ -104,7 +111,9 @@ export class AiEconomicDirector {
   restore(saved: ReturnType<AiEconomicDirector["checkpoint"]>): void {
     this.ownershipTick = -1;
     this.ledger.restore(saved.ledger);
-    this.demands.clear();
+    this.military.restore(saved.military);
+    this.demands.clear();this.demandPlanning.clear();
+    for(const [id,plan] of structuredClone(saved.demandPlanning??[]))this.demandPlanning.set(id,plan);
     this.saving.clear();
     this.assets.restore(saved.assets ?? []);
     this.losses.restore(saved.losses ?? []);
@@ -131,7 +140,8 @@ export class AiEconomicDirector {
     this.fronts.restore(saved.fronts ?? { records: [], cursors: [], player: 0, scan: undefined });
     this.modernFronts.restore(saved.modernFronts ?? { sections: [], player: 0, nextBuild: 0, retries: [] });
     if (saved.navalFacts) this.navalFacts.restore(saved.navalFacts);
-    this.naval.restore(saved.naval ?? { missions: [], cursor: 0, serial: 0 });
+    this.naval.restore(saved.naval);
+    this.transports.restore(saved.transports);
     if (saved.boundaries) this.boundaries?.restore(saved.boundaries);
     else this.boundaries?.resetForRebuild();
     for (const [id, demand] of saved.demands)
@@ -146,13 +156,14 @@ export class AiEconomicDirector {
   }
   release(playerId: number): void {
     this.naval.release(playerId);
+    this.transports.release(playerId);
     this.defenses.release(playerId);
     this.fronts.release(playerId); this.modernFronts.release(playerId);
     this.military.release(playerId);
     this.losses.release(playerId);
     this.ledger.releasePlayer(playerId);
     this.assets.releasePlayer(playerId);
-    this.demands.delete(playerId);
+    this.demands.delete(playerId);this.demandPlanning.delete(playerId);
     this.saving.delete(playerId);
     this.nextDecision.delete(playerId);
   }
@@ -173,15 +184,16 @@ export class AiEconomicDirector {
         : 0;
     const controllerWork =
       world.options.aiNaval && world.options.deferredPlanning
-        ? this.naval.step(32)
+        ? this.naval.step(16)+this.transports.step(16)
         : 0;
+    const armyWork=this.military.step(Math.max(0,Math.min(24,112-navalWork-boundaryWork-controllerWork-frontWork)));
     const cityWork = this.cities.step(
       world.tick,
-      128 - navalWork - boundaryWork - controllerWork - frontWork,
+      128 - navalWork - boundaryWork - controllerWork - frontWork - armyWork,
       8,
     );
     this.diagnostics.backgroundWork =
-      navalWork + boundaryWork + controllerWork + frontWork + cityWork;
+      navalWork + boundaryWork + controllerWork + frontWork + armyWork + cityWork;
     if (world.options.aiDefenses) { this.defenses.step(); this.modernFronts.step(32); }
     if (world.tick % 3) return;
     for (let i = 0; i < world.players.length; i++) {
@@ -263,6 +275,8 @@ export class AiEconomicDirector {
         )
         .map((d) => d.resource),
     );
+    const demandKey=JSON.stringify([generation,state.age,state.completed,snapshot.buildings.map(b=>[b.id,b.type,b.age,!b.remainingTicks&&(b.health??1)>0]),this.ledger.protected(player.id).items]);
+    const pending=this.demandPlanning.get(player.id);
     const demand = militaryDemand(
       snapshot,
       personalityOf(player),
@@ -273,7 +287,10 @@ export class AiEconomicDirector {
           this.losses.sample(player.id, world.tick, player.losses) / 1000,
         ),
       ),
+      this.ledger.protected(player.id).items??{},
+      64,pending?.key===demandKey?pending.state:undefined,
     );
+    if(demand.planning)this.demandPlanning.set(player.id,{key:demandKey,state:demand.planning});else this.demandPlanning.delete(player.id);
     if (demand.deferred) return;
     this.demands.set(player.id, demand);
     if (

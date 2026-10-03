@@ -134,7 +134,7 @@ describe("persistent concentrated port defense", () => {
       f.game.tick++;
     }
     expect(facts.mock.calls.every((c) => c[1] === 48)).toBe(true);
-    expect(naval.mock.calls.every((c) => c[0] === 32)).toBe(true);
+    expect(naval.mock.calls.every((c) => c[0] === 16)).toBe(true);
     expect(cities.mock.calls.every((c) => c[1]! >= 16)).toBe(true);
   });
   it("keeps a recovery slot and reattaches its repaired ship without replacing dock orders", () => {

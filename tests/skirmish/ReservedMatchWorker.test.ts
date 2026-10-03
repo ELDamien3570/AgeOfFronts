@@ -60,13 +60,13 @@ describe("reserved authoritative worker", () => {
       expect(publications.map(p => p.tick)).toEqual([1]);
       const packet = await decodeState<SnapshotPacket>(publications[0].packet);
       expect(packet.tick).toBe(1);
-      expect(packet.expansion!.progression[1].research.naval!.remainingTicks).toBe(599);
+      expect(packet.expansion!.progression![1].research.naval!.remainingTicks).toBe(599);
       decoder.decode(packet);
       const shared = decoder.decode(await decodeState<SnapshotPacket>(joined.packet));
       const baseline = new SnapshotDecoder().decode(await decodeState<SnapshotPacket>(joined.baseline));
       expect(shared.owners).toEqual(baseline.owners); expect(shared.squads).toEqual(baseline.squads);
       expect(shared.tick).toBe(2);
-      expect(baseline.expansion!.progression[1].research.naval!.remainingTicks).toBe(598);
+      expect(baseline.expansion!.progression![1].research.naval!.remainingTicks).toBe(598);
       await worker.request<MatchAdvance>(advance(3));
       await vi.waitFor(() => expect(publications.map(p => p.tick)).toEqual([1, 5]));
       expect((await decodeState<SnapshotPacket>(publications[1].packet)).tick).toBe(5);
@@ -217,12 +217,12 @@ describe("reserved authoritative worker", () => {
       });
       const packet = await decodeState<SnapshotPacket>(update.packet!);
       expect(
-        Object.values(packet.expansion!.progression[2].research).some(
+        Object.values(packet.expansion!.progression![2].research).some(
           (job) => job?.technologyId === "stoneage-shorecraft",
         ),
       ).toBe(true);
       expect(
-        Object.values(packet.expansion!.progression[1].research).some(
+        Object.values(packet.expansion!.progression![1].research).some(
           (job) => job?.technologyId === "stoneage-shorecraft",
         ),
       ).toBe(false);

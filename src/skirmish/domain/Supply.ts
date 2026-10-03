@@ -66,6 +66,7 @@ export class Supply {
     });
   }
   restore(saved: ReturnType<Supply["checkpoint"]>): void {
+    this.controlRevision++;
     const state = structuredClone(saved);
     restoreRecord(this.inventories, state.inventories);
     restoreRecord(this.jobs, state.jobs);
@@ -171,6 +172,7 @@ export class Supply {
       RESOURCES.map((r) => [r, 0]),
     );
   }
+  controlRevision=0;
   setProduction(
     player: Player,
     building: Building | undefined,
@@ -185,6 +187,7 @@ export class Supply {
         !automaticProducer(building)
       )
         return "Select a completed friendly producer";
+      this.controlRevision++;
       if (recipeId === "auto") this.selectedRecipes.delete(building.id);
       else
         this.selectedRecipes.set(building.id, {
@@ -201,7 +204,7 @@ export class Supply {
       this.progression.states[player.id].completed,
     );
     if (rejection) return rejection;
-    this.selectedRecipes.set(building!.id, { owner: player.id, recipeId });
+    this.selectedRecipes.set(building!.id, { owner: player.id, recipeId });this.controlRevision++;
     return null;
   }
   setPriorities(
@@ -227,6 +230,7 @@ export class Supply {
       })
     )
       return "Choose researched patterns available to this building type";
+    this.controlRevision++;
     const priorities = (this.priorities[player.id] ??= {});
     if (recipeIds === null) delete priorities[type];
     else priorities[type] = [...new Set(recipeIds)].sort();
@@ -237,6 +241,7 @@ export class Supply {
     return null;
   }
   resetPriorities(playerId: number): void {
+    this.controlRevision++;
     delete this.priorities[playerId];
     for (const [id, plan] of this.selectedRecipes)
       if (plan.owner === playerId) this.selectedRecipes.delete(id);
@@ -259,7 +264,7 @@ export class Supply {
       }
     for (const [id, selected] of this.selectedRecipes)
       if (!live.has(id) || live.get(id)!.playerId !== selected.owner) {
-        this.selectedRecipes.delete(id);
+        this.selectedRecipes.delete(id);this.controlRevision++;
         delete this.jobs[id];
       }
     const byPlayer = new Map(players.map((p) => [p.id, p]));
@@ -275,7 +280,11 @@ export class Supply {
       )
         delete this.jobs[Number(id)];
     }
-    for (const b of buildings) {
+    const activeIds = tick % 20 === 0 || !facts ? undefined : new Set(Object.keys(this.jobs).map(Number));
+    if (activeIds) for (const [id, selection] of this.selectedRecipes)
+      if (selection.recipeId !== "paused") activeIds.add(id);
+    const activeBuildings = activeIds ? facts!.buildings.byIds(activeIds) : buildings;
+    for (const b of activeBuildings) {
       const player = byPlayer.get(b.playerId);
       if (
         !player ||
@@ -349,7 +358,8 @@ export class Supply {
       }
     }
     for (const node of this.deposits) {
-      this.depositEntities.updateOwned(node.id, {owner: owners[node.tile]});
+      if (node.owner !== owners[node.tile])
+        this.depositEntities.updateOwned(node.id, {owner: owners[node.tile]});
       if (
         tick % 20 === 0 &&
         node.owner &&

@@ -246,6 +246,7 @@ export class ShipMovementAdmission {
       )
     )
       return "A ship can queue 32 waypoints";
+    if(!append && members.length && members.every(m=>m.admission && !m.admission.execution && m.admission.goal===goal && m.admission.generation===this.ports.generation(player.id) && m.admission.id===members[0].admission?.id && m.admission.selected.size===ships.length)){this.event(members[0].admission!,tick,"deferred");return null;}
     const initial: Ship[] = [];
     if (append) {
       for (const m of members) {

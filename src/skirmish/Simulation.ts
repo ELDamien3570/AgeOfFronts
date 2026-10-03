@@ -1,3 +1,4 @@
+import { domainRouteKey, type DomainRouteOwner, type DomainRoutePorts, type DomainRouteConsumer } from "./domain/DomainRoutePorts";
 import { EntityCollection } from "./EntityCollection";
 import { EntityChangeJournal } from "./EntityChangeJournal";
 import type { ReplicatedEntities } from "./ReplicatedEntities";
@@ -161,7 +162,7 @@ export class Skirmish {
     this.expansion?.operations.release(playerId);
     this.commandApplications.release(playerId, this.tick);
   }
-  checkpoint() { return structuredClone({version:1 as const,width:this.map.width(),height:this.map.height(),options:this.options,players:this.players,squads:this.squads,buildings:this.buildings,ships:this.ships,volleys:this.volleys,defenseZones:this.defenseZones,owners:this.owners,claims:this.claims,progress:this.progress,detours:this.detours,navigationProgress:this.navigationProgress,orderRevisions:this.orderRevisions,queuedLegs:this.queuedLegs,controlGenerations:this.controlGenerations,activeClaims:this.activeClaims,tick:this.tick,winner:this.winner,combatTicks:this.combatTicks,producedTroops:this.producedTroops,nextId:this.nextId,nextVolleyId:this.nextVolleyId,random:this.random.getState(),forest:forestOf(this.map)?.checkpoint(),routeWork:this.routeWork.checkpoint(),planning:this.routePlanner.checkpoint(),admission:this.movementAdmission.checkpoint(),shipAdmission:this.shipAdmission.checkpoint(),commandApplications:this.commandApplications.checkpoint(),recruitment:this.recruitment.checkpoint(),expansion:this.expansion?.checkpoint(),territoryAbsorption:this.territoryAbsorption.checkpoint(),coastalTerritory:this.coastalTerritory.checkpoint(),homeTerritory:this.homeTerritory.checkpoint(),avoidance:this.avoidance.checkpoint(),passageTraffic:this.passageTraffic.checkpoint(),conquest:this.conquest.checkpoint()}); }
+  checkpoint() { return structuredClone({version:1 as const,width:this.map.width(),height:this.map.height(),options:this.options,players:this.players,squads:this.squads,buildings:this.buildings,ships:this.ships,volleys:this.volleys,defenseZones:this.defenseZones,owners:this.owners,claims:this.claims,progress:this.progress,detours:this.detours,navigationProgress:this.navigationProgress,orderRevisions:this.orderRevisions,queuedLegs:this.queuedLegs,controlGenerations:this.controlGenerations,activeClaims:this.activeClaims,tick:this.tick,winner:this.winner,combatTicks:this.combatTicks,producedTroops:this.producedTroops,nextId:this.nextId,nextVolleyId:this.nextVolleyId,random:this.random.getState(),forest:forestOf(this.map)?.checkpoint(),routeWork:this.routeWork.checkpoint(),planning:this.routePlanner.checkpoint(),admission:this.movementAdmission.checkpoint(),shipAdmission:this.shipAdmission.checkpoint(),commandApplications:this.commandApplications.checkpoint(),shorePlanning:this.shoreTransport.checkpoint(),recruitment:this.recruitment.checkpoint(),expansion:this.expansion?.checkpoint(),territoryAbsorption:this.territoryAbsorption.checkpoint(),coastalTerritory:this.coastalTerritory.checkpoint(),homeTerritory:this.homeTerritory.checkpoint(),avoidance:this.avoidance.checkpoint(),passageTraffic:this.passageTraffic.checkpoint(),conquest:this.conquest.checkpoint()}); }
   restore(saved: ReturnType<Skirmish["checkpoint"]>): void {
     if (saved.version!==1 || saved.width!==this.map.width() || saved.height!==this.map.height() || JSON.stringify(saved.options)!==JSON.stringify(this.options) || Boolean(saved.expansion)!==Boolean(this.expansion)) throw new Error("Checkpoint does not match this simulation");
     const state=structuredClone(saved);
@@ -200,6 +201,7 @@ export class Skirmish {
     this.conquest.restore(state.conquest);
     if (state.forest) { const field=forestOf(this.map); if (!field) throw new Error("Missing forest field"); field.restore(state.forest); }
     this.random=PseudoRandom.fromState(state.random); this.routeWork.restore(state.routeWork); if (state.expansion) this.expansion!.restore(state.expansion);
+    this.shoreTransport.restore(state.shorePlanning);
     this.routePlanner.restore(state.planning ?? {landRevision:this.paths.revision,waterRevision:this.waterPaths.revision,jobs:[]});
     this.movementAdmission.restore(state.admission ?? {pending:[],nextId:1,events:[]});
     this.shipAdmission.restore(state.shipAdmission ?? {pending:[],nextId:1,events:[]});
@@ -315,15 +317,42 @@ export class Skirmish {
     });
     this.routePlanner.step(this.tick);
     if(this.options.deferredPlanning) {
-      const landBudget = this.shipAdmission.pendingCount ? 64 : 128;
+      const armyWork=this.expansion?.armies.stepPlanning(32)??0;
+      const shoreWork=this.shoreTransport.stepPlanning(32);
+      const tradeWork=this.expansion?.trade.stepPlanning(32)??0;
+      const remaining=128-armyWork-shoreWork-tradeWork;
+      const landBudget = this.shipAdmission.pendingCount ? Math.floor(remaining/2) : remaining;
       const used = this.movementAdmission.step(this.tick, landBudget);
-      this.shipAdmission.step(this.tick,128-used);
+      this.shipAdmission.step(this.tick,remaining-used);
     }
   }
   private readonly routeWork = new RouteWork<Exclude<MatchRouteTask,{kind:"admission"|"ship-admission"}>>(task => this.executeRouteTask(task));
-  readonly routePlanner: RoutePlanner<Extract<MatchRouteTask,{kind:"navigation"|"admission"|"ship-admission"}>>;
+  readonly routePlanner: RoutePlanner<Extract<MatchRouteTask,{kind:"navigation"|"admission"|"ship-admission"|"domain"}>>;
   readonly movementAdmission: MovementAdmission;
   readonly shipAdmission: ShipMovementAdmission;
+  private domainConsumer(owner: DomainRouteOwner): DomainRouteConsumer | undefined {
+    return owner === "army" ? this.expansion?.armies : owner === "shore" ? this.shoreTransport : this.expansion?.trade;
+  }
+  get domainRoutes(): DomainRoutePorts | undefined {
+    if (!this.options.deferredPlanning) return undefined;
+    return this.domainRoutePorts;
+  }
+  private readonly domainRoutePorts: DomainRoutePorts = {
+    request:(task,start,goal,water=false)=>this.routePlanner.request({key:domainRouteKey(task),start,goal,water,createdTick:this.tick,
+      obstacleRevision:water ? "water" : this.routingObstacleRevision(),context:task}),
+    cancel:task=>this.routePlanner.cancel(domainRouteKey(task)),
+    generation:id=>this.aiGeneration(id), revision:()=>this.routingObstacleRevision(),
+    tick:()=>this.tick, orderRevision:id=>this.orderRevisions.get(id)??0,
+    clear:(squad,end)=>distanceSquared(squad,end)<= (3*FIXED)**2 && traversable(this.map,squad,end,squadRadius(squad.kind)) &&
+      (!this.expansion || this.expansion.fortifications.clearMovement(squad,end,squad.playerId,squadRadius(squad.kind))),
+    destinationValid:(squad,point,selected)=>{
+      if (!this.aiFootprintAllowed(squad.playerId,pointTile(this.map,point)) || !standable(this.map,point,squadRadius(squad.kind)) ||
+        (this.expansion && !this.expansion.fortifications.clearMovement(point,point,squad.playerId,squadRadius(squad.kind)))) return false;
+      const nearby:Squad[]=[]; this.spatial.query(point.x,point.y,2*FIXED,nearby);
+      return nearby.every(other=>selected.has(other.id) || distanceSquared(point,other)>=squadSeparation(squad,other)**2);
+    },
+    event:(owner,event)=>this.commandApplications.observe(owner,event),
+  };
   private routingObstacleRevision():string {
     return `${this.expansion?.operations.revision ?? 0}:${this.expansion?.fortifications.version ?? 0}:${this.expansion?.diplomacy.state.alliances.map(t=>`${t.a},${t.b}`).join(";") ?? ""}`;
   }
@@ -384,7 +413,7 @@ export class Skirmish {
     this.waterPaths = new WaterPaths(map, false);
     this.routePlanner = new RoutePlanner(this.paths,this.waterPaths,{
       identity:request=>({playerId:request.context.playerId ?? 0,
-        caller:request.context.kind}),
+        caller:request.context.kind === "domain" ? request.context.owner : request.context.kind}),
       prepare:(request,budget,rays)=>{
         const task=request.context;
         if(task.kind!=="navigation")return {work:1,failed:true};
@@ -399,6 +428,7 @@ export class Skirmish {
       },
       valid: request => {
         const task=request.context;
+        if(task.kind==="domain")return this.domainConsumer(task.owner)?.validRoute(task) ?? false;
         if(task.kind==="ship-admission")return this.shipAdmission.valid(task.admissionId,task.shipId);
         const squad=this.squad(task.squadId);
         if(task.kind==="admission")return this.movementAdmission.valid(task.admissionId,task.squadId);
@@ -410,8 +440,9 @@ export class Skirmish {
             : (squad.order.type==="move" || squad.order.type==="board") && squad.order.tile===request.goal);
       },
       obstacleRevision:request=>request.water ? "water" : this.routingObstacleRevision(),
-      blocked:request=>{if(request.context.kind==="ship-admission")return undefined;const squad=this.squad(request.context.squadId);return squad ? this.obstacleTest(squad.playerId) : undefined;},
+      blocked:request=>{if(request.water)return undefined;if(request.context.kind==="domain")return this.obstacleTest(request.context.playerId);if(request.context.kind==="ship-admission")return undefined;const squad=this.squad(request.context.squadId);return squad ? this.obstacleTest(squad.playerId) : undefined;},
       completed:(request,outcome,path)=>{
+        if (request.context.kind === "domain") { this.domainConsumer(request.context.owner)?.completedRoute(request.context,outcome,path); return; }
         if(request.context.kind==="ship-admission") {
           this.shipAdmission.completed(request.context.admissionId,request.context.shipId,outcome,path,this.tick);return;
         }
@@ -505,7 +536,19 @@ export class Skirmish {
     const transportSquads = () => this.squads;
     const transportShips = () => this.ships;
     this.shoreTransport = new ShoreTransport({
-      map, paths: this.paths,
+      map, paths: this.paths, domainRoutes:this.domainRoutes,
+      squad:id=>this.squad(id),ship:id=>this.ship(id),capacity:ship=>this.expansion?this.expansion.vessel(ship).capacity:SHIP_RULES.transport.capacity,
+      owned:(tile,owner)=>this.owners[tile]===owner,
+      boardCandidates:(ship,members)=>{
+        const land=this.paths.component[this.tileOf(members[0])];
+        if(members.some(s=>this.paths.component[this.tileOf(s)]!==land))return [];
+        return this.coast.candidates(land,this.waterPaths.component[this.tileOf(ship)]);
+      },
+      commitBoard:(ship,meeting,seaPath,index,members)=>{
+        this.shipAdmission.cancel([ship.id],this.tick);this.cancelBoarding(ship);
+        this.shipEntities.updateOwned(ship.id,{boarding:meeting,destination:meeting.waterTile,waypoints:[],path:seaPath,nextPathIndex:index});
+        for(const member of members){this.squadEntities.updateOwned(member.squad.id,{queuedOrders:[]});this.activateOrder(member.squad,{type:"board",shipId:ship.id,tile:pointTile(map,member.point)},member.path);this.squadEntities.updateOwned(member.squad.id,{nextPathIndex:member.index});}
+      },
       get squads() { return transportSquads(); },
       get ships() { return transportShips(); },
       removeShip: id => this.removeShip(id),
@@ -524,7 +567,9 @@ export class Skirmish {
         return this.addShip(ship);
       },
       unload: (ship,tile) => this.unload(this.player(ship.playerId)!,ship.id,tile),
+      unloadPrepared:(ship,members,tile)=>this.unloadPrepared(ship,members,tile),
       resume: (squad,tile) => {
+        if(this.options.deferredPlanning&&this.paths.connected(this.tileOf(squad),tile)){this.movementAdmission.start(squad.playerId,[squad],tile,this.tick,undefined,this.player(squad.playerId)?.ai);return;}
         const completed = this.expansion?.progression.states[squad.playerId]?.completed ?? [];
         const definition = shoreTransportDefinition(completed);
         if (!this.paths.connected(this.tileOf(squad),tile) || (definition && this.shoreTransport.useful(squad,tile,definition))) {
@@ -822,6 +867,7 @@ export class Skirmish {
         return "Select your own ships";
       this.shipAdmission.cancel(command.shipIds,this.tick);
       for (const ship of ships as Ship[]) {
+        this.shoreTransport.cancelShip(ship.id);
         this.cancelBoarding(ship);
         this.shipEntities.updateOwned(ship.id, { destination: null });
         this.shipEntities.updateOwned(ship.id, { attackTargetId: null });
@@ -1527,8 +1573,11 @@ export class Skirmish {
       return "Select your own ships";
     if (!this.waterPaths.walkable(tile))
       return "Ships sail on water; use Unload to land troops";
-    if(this.options.deferredPlanning && (ships as Ship[]).every(s=>!s.shoreTransfer))
-      return this.shipAdmission.command(player,ships as Ship[],tile,append,this.tick);
+    if(this.options.deferredPlanning && (ships as Ship[]).every(s=>!s.shoreTransfer)){
+      const result=this.shipAdmission.command(player,ships as Ship[],tile,append,this.tick);
+      if(result===null&&!append)for(const ship of ships as Ship[])this.shoreTransport.cancelShip(ship.id);
+      return result;
+    }
     const planned: { ship: Ship; path: number[] }[] = [];
     for (const ship of ships as Ship[]) {
       if (append && ship.waypoints.length >= MAX_QUEUED_ORDERS)
@@ -1600,6 +1649,7 @@ export class Skirmish {
       )
     )
       return "Select your land squads to board";
+    if(this.options.deferredPlanning)return this.shoreTransport.board(player.id,ship,selected as Squad[]);
     const meeting = boardingMeeting(
       this.map,
       this.paths,
@@ -1807,6 +1857,14 @@ export class Skirmish {
     return null;
   }
 
+  private unloadPrepared(ship:Ship,members:readonly {squad:Squad;point:WorldPoint}[],tile:number):string|null {
+    const cargo=this.squadIndex.cargo(ship.id),selected=new Set(members.map(m=>m.squad.id));
+    if(!this.ship(ship.id)||ship.kind!=="transport"||ship.destination!==null||!this.paths.walkable(tile)||this.map.manhattanDist(this.tileOf(ship),tile)!==1 || !this.aiFootprintAllowed(ship.playerId,tile))return "Landing coast or transport changed";
+    if(cargo.length!==members.length || cargo.some(s=>!selected.has(s.id)) || members.some(m=>m.squad.embarkedOn!==ship.id || distanceSquared(m.point,tilePoint(this.map,tile))>(3*FIXED)**2 || !this.domainRoutePorts.destinationValid(m.squad,m.point,selected)))return "Landing cargo or footprint changed";
+    this.shipAdmission.cancel([ship.id],this.tick);
+    for(const member of members)this.squadEntities.updateOwned(member.squad.id,{embarkedOn:null,x:member.point.x,y:member.point.y});
+    return null;
+  }
   private unload(player: Player, shipId: number, tile: number): string | null {
     if (!this.aiFootprintAllowed(player.id, tile) || (this.expansion?.operations.enabled(player) &&
       this.expansion.operations.state(player.id)?.phase === "recovery" && this.owners[tile] !== player.id))
@@ -1823,6 +1881,7 @@ export class Skirmish {
       return "Choose passable coastal land directly beside the transport";
     const cargo = this.squadIndex.cargo(ship.id);
     if (!cargo.length) return "This transport has no squads aboard";
+    if(this.options.deferredPlanning)return this.shoreTransport.land(ship,tile,true);
     let slots = this.formations.plan(
       tile,
       cargo.map((squad) => ({ squad, origin: ship })),
@@ -2858,6 +2917,7 @@ export class Skirmish {
   }
 
   private executeRouteTask(task: Exclude<MatchRouteTask,{kind:"admission"|"ship-admission"}>): void {
+    if (task.kind === "domain") return;
     if (task.kind === "army") { this.expansion?.armies.resolveRoute(task.request); return; }
     if (task.kind === "ai-move") {
       const player = this.player(task.playerId);
@@ -3314,6 +3374,8 @@ export class Skirmish {
     if (old && land) this.player(old)!.land--;
     this.owners[tile] = id;
     this.expansion?.supply.territoryChanged(tile, id);
+    this.expansion?.operations.territoryChanged(old,id);
+    for(const owner of new Set(this.map.neighbors(tile).map(t=>this.owners[t])))if(owner!==old&&owner!==id)this.expansion?.operations.territoryChanged(owner,owner);
     this.tileChanges.record(tile);
     this.adjacency.changed(tile, old);
     this.expansion?.economy.boundaries?.changed(tile, old, this.tick);
@@ -3987,6 +4049,7 @@ export class Skirmish {
   replicationFacts(): ReplicatedEntities {
     const supply = this.expansion?.supply;
     return {
+      metadata:this.expansion?.replicationMetadata(),
       squads: {journal: this.squadChanges, byId: id => this.squad(id)},
       ships: {journal: this.shipChanges, byId: id => this.ship(id)},
       buildings: {journal: this.buildingChanges, byId: id => this.building(id)},

@@ -8,6 +8,9 @@ function fixture(enabled = true, count = 3) {
   const cells = new Uint8Array(160 * 96).fill(133), map = new GameMapImpl(160, 96, cells, cells.length);
   const m = new Skirmish(map, { seed: 47, aiCount: count, tribes: false, runAi: false, ruleset: "ages-v1", aiWarPolicy: enabled });
   for (const p of m.players) { p.base = map.ref(20 + (p.id % 8) * 15, 30 + Math.floor(p.id / 8) * 20); p.personalityId = "balanced"; }
+  // Readiness now requires real healthy troops and logistics, rather than
+  // accepting the synthetic candidate-count input as a physical roster.
+  for(const player of m.players){const template=m.squads.find(s=>s.playerId===player.id)!;player.reserves=2000;for(let i=1;i<12;i++)m.addSquad({...structuredClone(template),id:m.allocateId(),x:(map.x(player.base)+(i%4))*FIXED,y:(map.y(player.base)+Math.floor(i/4))*FIXED});}
   return { m, map, ops: m.expansion!.operations, forces: new Map(m.players.map(p => [p.id, 12])) };
 }
 function evaluate(f: ReturnType<typeof fixture>, tick: number) { f.m.tick = tick; f.ops.step(f.forces); }

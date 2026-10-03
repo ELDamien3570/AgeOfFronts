@@ -13,6 +13,8 @@ export type BuildingQueries = Readonly<
     | "byId"
     | "byOwner"
     | "byType"
+    | "completed"
+    | "byIds"
     | "production"
     | "diagnostics"
     | "geometryRevision"
@@ -72,6 +74,7 @@ export class BuildingIndex {
     number,
     Map<Building["type"], Bucket>
   >();
+  private readonly readyTypes = new Map<number, Map<Building["type"], Bucket>>();
   private readonly income = new Map<
     number,
     { reserves: number; gold: number }
@@ -107,6 +110,7 @@ export class BuildingIndex {
     this.representatives.clear();
     this.owners.clear();
     this.ownerTypes.clear();
+    this.readyTypes.clear();
     this.income.clear();
     this.heap.length = 0;
     this.heapPositions.clear();
@@ -141,6 +145,18 @@ export class BuildingIndex {
     const types = this.ownerTypes.get(facts.owner)!;
     this.unbucket(types, facts.type, id);
     if (!types.size) this.ownerTypes.delete(facts.owner);
+  }
+  private bindReady(building: Building, facts: Facts): void {
+    if (!facts.ready) return;
+    let types = this.readyTypes.get(facts.owner);
+    if (!types) this.readyTypes.set(facts.owner, (types = new Map()));
+    this.bucket(types, facts.type).add(building);
+  }
+  private unbindReady(id: number, facts: Facts): void {
+    if (!facts.ready) return;
+    const types = this.readyTypes.get(facts.owner)!;
+    this.unbucket(types, facts.type, id);
+    if (!types.size) this.readyTypes.delete(facts.owner);
   }
   private bindGeometry(building: Building, facts: Facts): void {
     this.bucket(this.tiles, facts.tile).add(building);
@@ -198,6 +214,7 @@ export class BuildingIndex {
     this.ids.set(building.id, building);
     this.facts.set(building.id, facts);
     this.bindOwner(building, facts);
+    this.bindReady(building, facts);
     this.bindGeometry(building, facts);
     this.changeIncome(facts, 1);
     this.heapPositions.set(building.id, this.heap.length);
@@ -223,7 +240,7 @@ export class BuildingIndex {
     const tier = facts.age !== building.age;
     if (geometry) this.unbindGeometry(building.id, facts);
     if (owner) this.unbindOwner(building.id, facts);
-    if (production) this.changeIncome(facts, -1);
+    if (production) { this.changeIncome(facts, -1); this.unbindReady(building.id, facts); }
     facts.owner = building.playerId;
     facts.type = building.type;
     facts.tile = building.tile;
@@ -232,7 +249,7 @@ export class BuildingIndex {
     facts.age = building.age;
     if (geometry) this.bindGeometry(building, facts);
     if (owner) this.bindOwner(building, facts);
-    if (production) this.changeIncome(facts, 1);
+    if (production) { this.changeIncome(facts, 1); this.bindReady(building, facts); }
     if (geometry) this.geometryRevision++;
     if (production || aliveChanged || tier || geometry) this.producerRevision++;
     this.dynamicRevision++;
@@ -243,6 +260,7 @@ export class BuildingIndex {
     if (!facts) throw new Error("Missing building lifecycle identity");
     this.unbindGeometry(id, facts);
     this.unbindOwner(id, facts);
+    this.unbindReady(id, facts);
     this.changeIncome(facts, -1);
     this.facts.delete(id);
     this.ids.delete(id);
@@ -303,6 +321,17 @@ export class BuildingIndex {
   byType(owner: number, type: Building["type"]): readonly Building[] {
     this.counters.ownerQueries++;
     return this.ownerTypes.get(owner)?.get(type)?.values ?? EMPTY_BUILDINGS;
+  }
+  /** Readiness is maintained; research and affordability remain live domain checks. */
+  completed(owner: number, type: Building["type"]): readonly Building[] {
+    this.counters.ownerQueries++;
+    return this.readyTypes.get(owner)?.get(type)?.values ?? EMPTY_BUILDINGS;
+  }
+  /** A sparse producer pass retains the same spending order as canonical iteration. */
+  byIds(ids: Iterable<number>): readonly Building[] {
+    const rows = new Map<number, Building>();
+    for (const id of ids) { const row = this.ids.get(id); if (row) rows.set(id, row); }
+    return [...rows.values()].sort((a, b) => this.order(a) - this.order(b));
   }
   production(owner: number): Readonly<{ reserves: number; gold: number }> {
     return { ...(this.income.get(owner) ?? { reserves: 0, gold: 0 }) };
@@ -379,6 +408,7 @@ export class BuildingIndex {
         income.gold !== indexedIncome.gold
       )
         mismatch();
+      for (const [type, typed] of this.readyTypes.get(owner)??[])if(!same(typed.members,expected.filter(b=>b.type===type&&!b.remainingTicks&&(b.health??1)>0)))mismatch();
       for (const [type, typed] of this.ownerTypes.get(owner)!) {
         const expectedType = expected.filter(
           (building) => building.type === type,

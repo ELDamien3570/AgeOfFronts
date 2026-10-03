@@ -20,6 +20,7 @@ export interface ModernSection {
   playerId: number;
   generation: number;
   frontId: string;
+  regionId?: string;
   anchor: number;
   direction: number;
   sites: AiDefenseSite[];
@@ -38,6 +39,10 @@ export interface ModernSection {
 export class AiModernFronts {
   readonly sections = new Map<number, ModernSection>();
   private player = 0;
+  private readonly additional=new Map<string,ModernSection>();
+  private readonly sectionCursors=new Map<number,number>();
+  private all(playerId:number):ModernSection[]{return [...(this.sections.has(playerId)?[this.sections.get(playerId)!]:[]),...[...this.additional.values()].filter(s=>s.playerId===playerId)];}
+
   private nextBuild = 0;
   private readonly retries = new Map<number, number>();
   readonly diagnostics = { work: 0, commands: 0, reused: 0, withdrawals: 0 };
@@ -47,14 +52,16 @@ export class AiModernFronts {
   ) {}
   checkpoint() {
     return structuredClone({
-      sections: [...this.sections],
+      sections: [...this.sections],additional:[...this.additional],sectionCursors:[...this.sectionCursors],
       player: this.player,
       nextBuild: this.nextBuild,
       retries: [...this.retries],
     });
   }
   restore(saved: ReturnType<AiModernFronts["checkpoint"]>): void {
-    this.sections.clear();
+    this.sections.clear();this.additional.clear();this.sectionCursors.clear();
+    for(const [id,s] of structuredClone(saved.additional??[]))this.additional.set(id,s);
+    for(const [id,c] of saved.sectionCursors??[])this.sectionCursors.set(id,c);
     for (const [id, s] of structuredClone(saved.sections))
       this.sections.set(id, s);
     this.player = saved.player;
@@ -63,19 +70,22 @@ export class AiModernFronts {
     for (const [id, t] of saved.retries) this.retries.set(id, t);
   }
   release(playerId: number): void {
-    const section = this.sections.get(playerId);
-    if (section) {
+    for (const section of this.all(playerId)) {
       this.economy.assets.release(section.id);
       this.economy.ledger.release(section.id);
     }
-    this.sections.delete(playerId);
+    this.sections.delete(playerId);this.sectionCursors.delete(playerId);
+    for(const [id,s] of this.additional)if(s.playerId===playerId)this.additional.delete(id);
     this.retries.delete(playerId);
   }
   production(playerId: number): Inventory {
-    const section = this.sections.get(playerId);
-    if (!section || ["holding", "withdrawn"].includes(section.phase)) return {};
-    const quote = this.quote(section);
-    return typeof quote === "string" ? {} : (quote.cost.items ?? {});
+    const wanted:Inventory={};
+    for(const section of this.all(playerId)){
+      if(["holding","withdrawn"].includes(section.phase))continue;
+      const quote=this.quote(section);if(typeof quote==="string")continue;
+      for(const [id,n] of Object.entries(quote.cost.items??{}))wanted[id]=(wanted[id]??0)+n;
+    }
+    return wanted;
   }
   private liquid(player: Player): Cost {
     return {
@@ -122,6 +132,7 @@ export class AiModernFronts {
   private propose(
     player: Player,
     front: AiFrontRecord,
+    regionId: string,
   ): ModernSection | undefined {
     const { world } = this.expansion,
       dx = [1, -1, 0, 0][front.direction],
@@ -153,6 +164,7 @@ export class AiModernFronts {
       playerId: player.id,
       generation: world.aiGeneration(player.id),
       frontId: front.id,
+      regionId,
       anchor: front.anchor,
       direction: front.direction,
       sites: tiles.map((tile, i) => ({
@@ -479,7 +491,11 @@ export class AiModernFronts {
         this.release(player.id);
         continue;
       }
-      let section = this.sections.get(player.id);
+      const existing=this.all(player.id),regions=this.economy.fronts.regionsForPlayer(player.id);
+      const cursor=this.sectionCursors.get(player.id)??0;this.sectionCursors.set(player.id,cursor+1);
+      // Up to three independent connected fronts share the existing allowance.
+      const slot=cursor%Math.max(1,Math.min(3,Math.max(existing.length,regions.length)));
+      let section:ModernSection|undefined=existing[slot];
       if (
         section &&
         section.phase !== "withdrawn" &&
@@ -505,25 +521,34 @@ export class AiModernFronts {
         continue;
       }
       if (section?.phase === "withdrawn") {
-        this.sections.delete(player.id);
+        if(this.sections.get(player.id)===section)this.sections.delete(player.id);else this.additional.delete(section.id);
         section = undefined;
       }
       if (!section) {
         if ((this.retries.get(player.id) ?? 0) > world.tick) continue;
-        const fronts = this.economy.fronts
-          .forPlayer(player.id)
-          .filter(
-            (f) =>
-              world.tick - f.stableSince >= 100 && this.economy.fronts.valid(f),
-          )
-          .sort((a, b) => b.edges - a.edges || a.anchor - b.anchor);
+        const occupied = this.all(player.id);
+        // A geographic representative can sit at the map edge. Try the
+        // bounded sector shortlist within a region before discarding it.
+        // One section owns a connected region, including older checkpoints.
+        const fronts = regions
+          .filter(region => !occupied.some(s =>
+            s.regionId === region.id || region.sectors.includes(s.frontId)))
+          .flatMap(region => region.sectors
+            .map(id => this.economy.fronts.records.get(id))
+            .filter((front): front is AiFrontRecord => !!front &&
+              world.tick - front.stableSince >= 100 &&
+              this.economy.fronts.valid(front))
+            .sort((a, b) => Number(b.id === region.representative) -
+              Number(a.id === region.representative) ||
+              b.edges - a.edges || a.anchor - b.anchor)
+            .map(front => ({front, regionId: region.id})));
         this.retries.set(player.id, world.tick + 400);
-        for (const front of fronts.slice(0, 4)) {
-          section = this.propose(player, front);
+        for (const {front, regionId} of fronts.slice(0, 4)) {
+          section = this.propose(player, front, regionId);
           if (section) break;
         }
         if (!section) continue;
-        this.sections.set(player.id, section);
+        if(!this.sections.has(player.id))this.sections.set(player.id,section);else this.additional.set(section.id,section);
       }
       this.diagnostics.work += this.assessment(
         section,

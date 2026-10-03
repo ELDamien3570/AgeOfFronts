@@ -1,3 +1,5 @@
+import { ShorePlanning } from "./ShorePlanning";
+import type { DomainRoutePorts } from "./DomainRoutePorts";
 import type { GameMap } from "../../core/game/GameMap";
 import type { Coast, CoastIndex } from "../CoastIndex";
 import type { LandPaths, WaterPaths } from "../Pathfinding";
@@ -6,6 +8,8 @@ export interface ShoreLeg {
   departure: Coast;
   arrival: Coast;
   waterPath: number[];
+  approachPath?:number[];
+  arrivalPath?:number[];
 }
 
 // Static component graph chooses the first voyage of a land/water itinerary.
@@ -22,6 +26,9 @@ export class ShoreRoutes {
     this.connections = coast.connections();
   }
 
+  createPlanner(ports:DomainRoutePorts,blocked:(tile:number,owner:number)=>boolean):ShorePlanning {
+    return new ShorePlanning(this.map,this.land,this.water,this.connections,ports,blocked);
+  }
   firstLeg(
     origin: number,
     destination: number,

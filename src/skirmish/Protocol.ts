@@ -428,7 +428,8 @@ export interface SnapshotPacket {
   volleys: ArcherVolley[];
   winner: number | null;
   combatTicks: number;
-  expansion?: Omit<ExpansionSnapshot, "deposits"> & {
+  expansionMode?: "full" | "delta";
+  expansion?: Partial<Omit<ExpansionSnapshot, "deposits">> & {
     /** Full resource facts at a baseline or geometry revision only. */
     deposits?: ExpansionSnapshot["deposits"];
     /** Resource id/owner pairs applied to retained canonical facts. */

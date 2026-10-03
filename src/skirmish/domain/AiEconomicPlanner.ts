@@ -1,3 +1,4 @@
+import { AI_DOCTRINES } from "../content/AiDoctrines";
 import type { BuildingType, Command } from "../Protocol";
 import {
   buildingCost,
@@ -79,7 +80,7 @@ export function economicCandidates(
         snapshot.threatTroops > snapshot.readyTroops / 2 && kind === "recruit"
           ? "emergency"
           : "growth",
-      score: Math.floor((benefit * 2400) / Math.max(2400, delay)) - opportunity,
+      score: Math.floor((benefit * 2400) / Math.max(2400, delay+(kind==="construct" && ["blacksmith","armory","arms-factory"].includes((command as {buildingType?:string}).buildingType??"") ? Math.min(2400,demand.timeToOutput??0)/4:0))) - opportunity,
       reason,
       earliestTick: snapshot.tick,
       expiresTick: snapshot.tick + 2400,
@@ -129,7 +130,7 @@ export function economicCandidates(
     const count = snapshot.buildings.filter((b) => b.type === site.type).length;
     const cost = buildingCost(site.type, snapshot.age, count),
       ticks = buildingTicks(site.type, count);
-    let value = site.objective;
+    let value = Math.floor(site.objective*(AI_DOCTRINES[personality.id].economy[site.type]??100)/100);
     if (site.type === "city")
       value +=
         reserveShortage > 0

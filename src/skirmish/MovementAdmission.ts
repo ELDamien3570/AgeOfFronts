@@ -235,7 +235,7 @@ export class MovementAdmission {
         current.tile === tile &&
         current.generation === this.ports.generation(playerId) &&
         current.members.length === squads.length &&
-        squads.every((s) => current.formation.selected.has(s.id)) &&
+        squads.every((s) => this.pendingBySquad.get(s.id) === current.id) &&
         current.members.every((m) => !m.queued.length)
       )
         return current.id;
@@ -324,7 +324,7 @@ export class MovementAdmission {
       squad.embarkedOn === null &&
       !squad.refit &&
       admission.generation === this.ports.generation(admission.playerId) &&
-      admission.formation.selected.has(squadId)
+      this.pendingBySquad.get(squadId) === id
     );
   }
   completed(

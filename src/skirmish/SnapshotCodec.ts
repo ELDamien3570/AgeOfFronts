@@ -101,6 +101,19 @@ export class SnapshotEncoder {
   }
   // Fresh network clients reset their arrays to zero, so neutral tiles need no wire entry.
   constructor(private readonly sparseBaseline = false) {}
+  private metadataIdentity?:object;
+  private metadataRevisions:Partial<Record<keyof NonNullable<Snapshot["expansion"]>,number>>={};
+  private selectMetadata(source:NonNullable<Snapshot["expansion"]>,facts:ReplicatedEntities|undefined,reset:boolean){
+    const metadata=facts?.metadata,full=reset || !metadata || metadata.identity!==this.metadataIdentity;
+    const output:Partial<NonNullable<Snapshot["expansion"]>>={};
+    for(const key of Object.keys(source) as (keyof typeof source)[]){
+      if(key==="roads" || key==="deposits")continue;
+      const revision=metadata?.revisions[key];
+      if(full || revision===undefined || this.metadataRevisions[key]!==revision)Object.assign(output,{[key]:source[key]});
+    }
+    this.metadataIdentity=metadata?.identity;this.metadataRevisions={...metadata?.revisions};
+    return {output,full};
+  }
   private previousRoadRevision = -1;
   private depositGeometry = "";
   private readonly depositOwners = new Map<number, number>();
@@ -249,9 +262,10 @@ export class SnapshotEncoder {
     this.resourceJournal = resources?.journal;
     this.resourceCursor = resources?.journal.revision ?? 0;
     this.resourceGeometryRevision = resources?.geometryRevision ?? -1;
+    const metadata=source.expansion?this.selectMetadata(source.expansion,facts,reset):undefined;
     const expansion = source.expansion
       ? {
-          ...source.expansion,
+          ...metadata!.output,
           deposits: resourceReset ? source.expansion.deposits.map(d => ({...d})) : undefined,
           depositOwners: depositOwners.length ? new Int32Array(depositOwners) : undefined,
           roads:
@@ -276,6 +290,7 @@ export class SnapshotEncoder {
       removedBuildings: new Int32Array(removed),
       players: source.players.map((p) => ({ ...p })),
       expansion,
+      expansionMode:metadata?(metadata.full?"full":"delta"):undefined,
       squadDetails: source.expansion || selected.squads.rows.some(s => s.planningPaused)
         ? selected.squads.rows.map((s) => ({
             id: s.id,
@@ -342,6 +357,7 @@ export function snapshotTransfers(packet: SnapshotPacket): ArrayBuffer[] {
 }
 
 export class SnapshotDecoder {
+  private expansionMetadata?:Partial<NonNullable<Snapshot["expansion"]>>;
   private roads: Uint32Array = new Uint32Array();
   private readonly squads = new Map<number, Snapshot["squads"][number]>();
   private readonly ships = new Map<number, Snapshot["ships"][number]>();
@@ -369,6 +385,7 @@ export class SnapshotDecoder {
     checkCapacity(this.squads, squadIds(), packet.removedSquads, MAX_SQUADS * 255);
     checkCapacity(this.ships, packet.ships.map(ship => ship.id), packet.removedShips, MAX_SHIPS * 255);
     if (packet.reset) {
+      this.expansionMetadata=undefined;
       this.roads = new Uint32Array();
       this.deposits = [];
       this.depositsById.clear();
@@ -440,6 +457,14 @@ export class SnapshotDecoder {
     for (const ship of packet.ships) this.ships.set(ship.id, structuredClone(ship));
     for (const b of packet.buildingDetails ?? [])
       Object.assign(this.buildings.get(b.id) ?? {}, b);
+    if(packet.expansion){
+      if(packet.expansionMode!=="delta")this.expansionMetadata={};
+      if(!this.expansionMetadata)throw new Error("Metadata delta has no baseline");
+      for(const key of Object.keys(packet.expansion) as (keyof typeof packet.expansion)[]){
+        if(key==="deposits" || key==="depositOwners" || key==="roads" || packet.expansion[key]===undefined)continue;
+        Object.assign(this.expansionMetadata,{[key]:structuredClone(packet.expansion[key])});
+      }
+    }
     if (packet.expansion?.roads) this.roads = packet.expansion.roads;
     if (packet.reset || packet.expansion?.deposits) this.depositGeometryRevision++;
     if (packet.reset || packet.expansion?.deposits || packet.expansion?.depositOwners?.length) this.depositOwnershipRevision++;
@@ -471,7 +496,7 @@ export class SnapshotDecoder {
       winner: packet.winner,
       combatTicks: packet.combatTicks,
       expansion: packet.expansion
-        ? { ...packet.expansion, roads: this.roads, deposits: copyArrays ? this.deposits.map(d => ({...d})) : this.deposits,
+        ? { ...(copyArrays?structuredClone(this.expansionMetadata):this.expansionMetadata) as NonNullable<Snapshot["expansion"]>, roads: this.roads, deposits: copyArrays ? this.deposits.map(d => ({...d})) : this.deposits,
           depositGeometryRevision: this.depositGeometryRevision, depositOwnershipRevision: this.depositOwnershipRevision }
         : undefined,
     };

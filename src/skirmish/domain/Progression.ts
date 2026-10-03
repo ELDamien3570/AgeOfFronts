@@ -87,10 +87,11 @@ export function advanceRejection(
   return gold < price ? `Needs ${price - gold} more gold` : null;
 }
 export class Progression {
+  revision=0;
   checkpoint() { return structuredClone({states:this.states}); }
   restore(saved: ReturnType<Progression["checkpoint"]>): void {
     const state=structuredClone(saved);
-    restoreRecord(this.states,state.states);
+    restoreRecord(this.states,state.states);this.revision++;
 
   }
 
@@ -103,12 +104,13 @@ export class Progression {
       throw new Error("Technology speed must be 1×, 2× or 3×");
   }
   add(playerId: number, startingAge: Age = this.startingAge): void {
-    this.states[playerId] = startingProgression(startingAge);
+    this.states[playerId] = startingProgression(startingAge);this.revision++;
   }
   inheritCompleted(playerId: number, donorId: number): void {
     const recipient = this.states[playerId],
       donor = this.states[donorId];
     if (!recipient || !donor) return;
+    this.revision++;
     if (AGES.indexOf(donor.age) > AGES.indexOf(recipient.age))
       recipient.age = donor.age;
     recipient.completed = [
@@ -130,7 +132,7 @@ export class Progression {
     if (rejection) return rejection;
     const t = TECHNOLOGY.get(id)!,
       terms = researchTerms(t, this.technologySpeed);
-    player.gold -= terms.gold;
+    player.gold -= terms.gold;this.revision++;
     state.research[t.tree] = {
       technologyId: id,
       remainingTicks: terms.ticks,
@@ -144,7 +146,7 @@ export class Progression {
     if (rejection) return rejection;
     const index = AGES.indexOf(state.age),
       cost = researchTerms(ADVANCES[index], this.technologySpeed);
-    player.gold -= cost.gold;
+    player.gold -= cost.gold;this.revision++;
     state.advancement = {
       target: AGES[index + 1],
       remainingTicks: cost.ticks,
@@ -159,6 +161,7 @@ export class Progression {
     for (const p of players) {
       if (p.eliminated) continue;
       const state = this.states[p.id];
+      if(state.advancement || TREES.some(tree=>state.research[tree]))this.revision++;
       for (const tree of TREES) {
         const job = state.research[tree];
         if (job && --job.remainingTicks <= 0) {

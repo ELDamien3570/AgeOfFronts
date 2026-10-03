@@ -238,7 +238,7 @@ it("joins and reclaims through real WebSockets with one atomic authoritative sna
     );
     expect(baseline.players[0].ai).toBe(false);
     expect(
-      Object.values(baseline.expansion!.progression[1].research).some(
+      Object.values(baseline.expansion!.progression![1].research).some(
         (job) => job?.technologyId === "stoneage-shorecraft",
       ),
     ).toBe(true);

@@ -1,3 +1,4 @@
+import { AiArmyPlanner } from "./AiArmyPlanner";
 import { UNIT } from "../content/Units";
 import type { Player } from "../Protocol";
 import type { AiEconomicDirector } from "./AiEconomicDirector";
@@ -11,8 +12,13 @@ export class AiMilitaryDirector {
   constructor(
     private readonly expansion: Expansion,
     private readonly economy: AiEconomicDirector,
-  ) {}
+  ) {this.armyPlanner=new AiArmyPlanner(expansion,economy);}
+  readonly armyPlanner:AiArmyPlanner;
+  step(budget:number):number{return this.armyPlanner.step(budget);}
+  checkpoint(){return this.armyPlanner.checkpoint();}
+  restore(saved?:ReturnType<AiArmyPlanner["checkpoint"]>):void{this.armyPlanner.restore(saved);}
   release(playerId: number): void {
+    this.armyPlanner.release(playerId);
     for (const [id] of this.expansion.modernization.leases) {
       const squad = this.expansion.world.squad(id);
       if (squad?.playerId === playerId && !squad.refit)
@@ -23,7 +29,7 @@ export class AiMilitaryDirector {
     const { world, modernization, progression, supply } = this.expansion,
       ledger = this.economy.ledger,
       assets = this.economy.assets,
-      own = world.squads.filter(
+      own = world.squadFacts().byOwner(player.id).filter(
         (s) =>
           s.playerId === player.id && s.troops > 0 && s.embarkedOn === null,
       ),

@@ -40,6 +40,7 @@ export class CanonicalStateStream {
       cells > this.maxMapCells
     )
       throw new Error("Canonical map exceeds the decoded memory budget");
+    if(packet.expansionMode!==undefined && packet.expansionMode!=="full" && packet.expansionMode!=="delta")throw new Error("Invalid canonical metadata mode");
     if (packet.entityMode !== undefined && packet.entityMode !== "full" && packet.entityMode !== "delta")
       throw new Error("Invalid canonical entity mode");
     for (const removed of [packet.removedSquads, packet.removedShips])

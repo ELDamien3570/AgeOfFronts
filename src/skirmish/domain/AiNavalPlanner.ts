@@ -1,3 +1,4 @@
+import { AI_DOCTRINES } from "../content/AiDoctrines";
 import { FIXED, type Player, type Ship } from "../Protocol";
 import { personalityOf } from "../content/AiPersonalities";
 import { VESSEL, VESSELS } from "../content/Units";
@@ -16,6 +17,10 @@ export type FleetState =
   | "recover"
   | "complete"
   | "abort";
+interface TheaterAssessment {
+ playerId:number;generation:number;phase:"ports"|"buildings"|"ships"|"jobs";cursor?:number|null;index:number;
+ seas:{sea:number;port:number;anchor:number;ownedValue:number;enemyPower:number;fleetPower:number;futurePower:number;cargoValue:number;score:number}[];
+}
 interface Assessment {
   phase: "buildings" | "ships" | "jobs";
   cursor?: number | null;
@@ -47,6 +52,7 @@ export interface AiFleetMission {
   recovering?: number[];
   purchases: number;
   assessment?: Assessment;
+  phaseSince?:number;lostPower?:number;trackedPower?:Map<number,number>;recorded?:boolean;
 }
 /** Integer rate proxy based on authored, researched attack and current health.
  * It is a planning comparison, never an alternative combat damage rule. */
@@ -83,8 +89,63 @@ export class AiNavalPlanner {
       enemyPower: number;
       gold: number;
       quietSince?: number;
+      lostPower?:number;
     }
   >();
+  private readonly theaters=new Map<number,TheaterAssessment>();
+  private readonly history:{id:string;playerId:number;sea:number;tick:number;state:FleetState;reason:string;purchases:number;lostPower:number}[]=[];
+  private chooseTheater(player:Player,budget:number):{work:number;sea?:number;pending:boolean}{
+    const {world}=this.expansion;let scan=this.theaters.get(player.id);
+    if(!scan || scan.generation!==world.aiGeneration(player.id)){scan={playerId:player.id,generation:world.aiGeneration(player.id),phase:"ports",index:0,seas:[]};this.theaters.set(player.id,scan);}
+    let work=0;
+    while(work<budget){
+      work++;
+      const read=scan.phase==="ports"?this.economy.navalFacts.readOwnedBuilding(player.id,scan.cursor):this.economy.navalFacts.readSea(scan.phase,scan.seas[scan.index].sea,scan.cursor);
+      if(read.invalid){this.theaters.delete(player.id);return {work,pending:true};}
+      scan.cursor=read.next;
+      if(read.value && scan.phase==="ports" && "type" in read.value){
+        const b=read.value,sea=this.portSea(b.tile),anchor=world.map.neighbors(b.tile).find(t=>world.waterPaths.walkable(t));
+        if(b.type==="port" && !b.remainingTicks && (b.health??1)>0 && world.owners[b.tile]===player.id && sea && anchor!==undefined){
+          const existing=scan.seas.find(s=>s.sea===sea);
+          if(existing){existing.ownedValue+=1000;if(b.id<existing.port){existing.port=b.id;existing.anchor=anchor;}}
+          else if(scan.seas.length<8)scan.seas.push({sea,port:b.id,anchor,ownedValue:1000,enemyPower:0,fleetPower:0,futurePower:0,cargoValue:0,score:0});
+        }
+      }else if(read.value && "type" in read.value && scan.phase==="buildings"){
+        const b=read.value,theater=scan.seas[scan.index];
+        if(!b.remainingTicks&&(b.health??1)>0){if(b.playerId===player.id)theater.ownedValue+=Math.min(1000,(this.expansion.supply.goods.get(b.id)??0)*10)+(b.type==="port"?300:100);else if(world.hostile(player.id,b.playerId))theater.ownedValue+=Math.min(500,(this.expansion.supply.goods.get(b.id)??0)*5)+100;}
+      }else if(read.value && "destination" in read.value){
+        const s=read.value,theater=scan.seas[scan.index],power=navalPower(this.expansion.vessel(s),s.health);
+        if(s.playerId===player.id){if(navalReady(s,this.expansion.vessel(s)))theater.fleetPower+=power;if(s.kind==="transport")theater.cargoValue+=world.squadFacts().cargo(s.id).length*1000;}
+        else if(world.hostile(player.id,s.playerId) && world.map.euclideanDistSquared(world.tileOf(s),theater.anchor)<=40**2)theater.enemyPower+=power;
+      }else if(read.value && "category" in read.value && read.value.playerId===player.id){
+        const definition=VESSEL.get(read.value.definitionId??"");if(definition)scan.seas[scan.index].futurePower+=navalPower(vesselEffects(definition,this.expansion.progression.states[player.id].completed),definition.health);
+      }
+      if(read.next===null){
+        scan.cursor=undefined;
+        if(scan.phase==="ports"){if(!scan.seas.length){this.theaters.delete(player.id);return {work,pending:false};}scan.phase="buildings";}
+        else if(scan.phase==="buildings")scan.phase="ships";
+        else if(scan.phase==="ships")scan.phase="jobs";
+        else{
+          const theater=scan.seas[scan.index],evidence=this.funding.get(`${player.id}:${theater.sea}`);
+          theater.score=theater.ownedValue+theater.cargoValue+Math.min(10000,theater.enemyPower)*AI_DOCTRINES[personalityOf(player).id].navalWeight/100+Math.min(3000,theater.fleetPower+theater.futurePower)-Math.min(5000,evidence?.lostPower??0);
+          if(++scan.index<scan.seas.length)scan.phase="buildings";
+          else{const best=scan.seas.sort((a,b)=>b.score-a.score||a.sea-b.sea)[0];this.theaters.delete(player.id);return {work,sea:best.sea,pending:false};}
+        }
+      }
+    }
+    return {work,pending:true};
+  }
+  private observeLosses(m:AiFleetMission):void {
+    const {world}=this.expansion,key=`${m.playerId}:${m.sea}`,tracked=m.trackedPower??=new Map();
+    for(const [id,power] of tracked){
+      const ship=world.ship(id);
+      if(!ship || ship.playerId!==m.playerId || ship.health<=0){
+        const record=this.funding.get(key)??{purchases:0,vesselPower:0,enemyPower:0,gold:0,lostPower:0};
+        record.lostPower=(record.lostPower??0)+power;this.funding.set(key,record);m.lostPower=(m.lostPower??0)+power;tracked.delete(id);
+      }
+    }
+    for(const id of [...m.members,...(m.recovering??[])]){const ship=world.ship(id);if(ship && !tracked.has(id))tracked.set(id,navalPower(this.expansion.vessel(ship),ship.health));}
+  }
   private cursor = 0;
   private serial = 0;
   readonly diagnostics = { work: 0, transitions: 0, commands: 0, rejected: 0 };
@@ -102,18 +163,21 @@ export class AiNavalPlanner {
   checkpoint() {
     return structuredClone({
       missions: [...this.missions],
-      funding: [...this.funding],
+      funding: [...this.funding],theaters:[...this.theaters],history:this.history,
       cursor: this.cursor,
       serial: this.serial,
     });
   }
-  restore(saved: ReturnType<AiNavalPlanner["checkpoint"]>): void {
+  restore(saved?: ReturnType<AiNavalPlanner["checkpoint"]>): void {
+    saved ??= {missions:[],funding:[],theaters:[],history:[],cursor:0,serial:0};
     this.missions.clear();
     for (const [id, mission] of structuredClone(saved.missions))
       this.missions.set(id, mission);
     this.funding.clear();
     for (const [key, evidence] of structuredClone(saved.funding ?? []))
       this.funding.set(key, evidence);
+    this.theaters.clear();for(const [id,scan] of structuredClone(saved.theaters??[]))this.theaters.set(id,scan);
+    this.history.length=0;this.history.push(...structuredClone(saved.history??[]));
     this.cursor = saved.cursor;
     this.serial = saved.serial;
   }
@@ -123,7 +187,7 @@ export class AiNavalPlanner {
       this.economy.assets.release(mission.id);
       this.economy.ledger.release(mission.id);
     }
-    this.missions.delete(playerId);
+    this.missions.delete(playerId);this.theaters.delete(playerId);
   }
   private transition(
     m: AiFleetMission,
@@ -132,10 +196,13 @@ export class AiNavalPlanner {
   ): void {
     if (m.state !== state || m.reason !== reason)
       this.diagnostics.transitions++;
+    if(m.state!==state)m.phaseSince=this.expansion.world.tick;
     m.state = state;
     m.reason = reason;
     if (state !== "fund") this.economy.ledger.release(m.id);
     if (state === "complete" || state === "abort") {
+      this.observeLosses(m);
+      if(!m.recorded){this.history.push({id:m.id,playerId:m.playerId,sea:m.sea,tick:this.expansion.world.tick,state,reason,purchases:m.purchases,lostPower:m.lostPower??0});while(this.history.length>128)this.history.shift();m.recorded=true;}
       const { world } = this.expansion;
       const owned = [...m.members, ...(m.recovering ?? [])].filter((id) => {
         const ship = world.ship(id);
@@ -174,6 +241,7 @@ export class AiNavalPlanner {
       }
     }
     if (!player) return 0;
+    let initialWork=0;
     let m = this.missions.get(player.id);
     if (m && m.generation !== world.aiGeneration(player.id)) {
       this.release(player.id);
@@ -185,8 +253,11 @@ export class AiNavalPlanner {
       m = undefined;
     }
     if (!m) {
-      const sea = this.economy.navalFacts.firstSea(player.id);
-      if (!sea) return 0;
+      const theater=this.chooseTheater(player,budget);
+      this.diagnostics.work=theater.work;
+      if(theater.pending || !theater.sea)return theater.work;
+      const sea=theater.sea;
+      initialWork=theater.work;budget-=theater.work;
       m = {
         id: `fleet:${player.id}:${++this.serial}`,
         playerId: player.id,
@@ -198,12 +269,15 @@ export class AiNavalPlanner {
         createdTick: world.tick,
         deadline: world.tick + 2400,
         nextAssessment: world.tick,
+        assessment:{phase:"buildings",portDistance:Infinity,members:[],enemyPower:0,targetDistance:Infinity,futurePower:0},
         members: [],
         recovering: [],
         purchases: 0,
       };
       this.missions.set(player.id, m);
+      if(budget<=0)return initialWork;
     }
+    this.observeLosses(m);
     if (world.tick >= m.deadline) {
       this.transition(m, "abort", "mission deadline expired");
       return 0;
@@ -216,8 +290,9 @@ export class AiNavalPlanner {
         world.owners[livePort.tile] !== player.id ||
         (livePort.health ?? 1) <= 0)
     ) {
-      this.transition(m, "abort", "gathering port lost");
-      return 0;
+      const alternative=[...this.economy.navalFacts.ports(player.id,m.sea)].find(port=>port.id!==m!.port);
+      if(alternative){m.port=alternative.id;m.anchor=world.map.neighbors(alternative.tile).find(t=>world.waterPaths.walkable(t));m.assessment=undefined;m.nextAssessment=world.tick;this.transition(m,"recover","Gathering port lost; using a same-sea recovery port");}
+      else {this.transition(m,"abort","No legal same-sea recovery port");return 0;}
     }
     if (!m.assessment && world.tick < m.nextAssessment) return 0;
     m.assessment ??= {
@@ -247,7 +322,7 @@ export class AiNavalPlanner {
       if (value) {
         if ("type" in value && a.phase === "buildings") {
           if (
-            value.type === "port" &&
+            value.type === "port" && this.portSea(value.tile)===m.sea &&
             (m.port === undefined || value.id === m.port) &&
             value.playerId === player.id &&
             world.owners[value.tile] === player.id &&
@@ -368,8 +443,8 @@ export class AiNavalPlanner {
         }
       }
     }
-    this.diagnostics.work = used;
-    return used;
+    this.diagnostics.work = initialWork+used;
+    return initialWork+used;
   }
   private applyAssessment(
     player: Player,
@@ -446,9 +521,17 @@ export class AiNavalPlanner {
     if (evidence) {
       if (!a.enemyPower) {
         evidence.quietSince ??= world.tick;
-        if (world.tick - evidence.quietSince >= 400)
-          this.funding.delete(`${player.id}:${m.sea}`);
+        // Quiet water does not erase casualty or purchase evidence across mission IDs.
       } else evidence.quietSince = undefined;
+    }
+    if(m.state==="recover"){
+      const age=world.tick-(m.phaseSince??m.createdTick);
+      const survivors=[...new Set([...m.members,...(m.recovering??[])])].map(id=>world.ship(id)).filter((s):s is Ship=>!!s&&s.playerId===player.id&&s.health>0);
+      const repairPending=survivors.some(s=>this.recovering(s,m.sea));
+      if(!a.enemyPower && !repairPending && age>=400){this.transition(m,"complete","Fleet recovered and port threat cleared");return;}
+      if(age>=800 && !enough){this.transition(m,"abort","Recovery deadline reached; paid repairs remain physical tasks");return;}
+      if(!enough || repairPending || age<200){if(ships.length)this.sail(m,ships,a.anchor);m.reason=repairPending?"Waiting for paid repair subtasks":"Consolidating surviving fleet power";return;}
+      this.transition(m,"stage","Recovered fleet can safely rejoin its intended sea");
     }
     const future = a.futurePower + (a.recoveringPower ?? 0);
     if (!enough && readyPower + future < Math.max(1, required))
@@ -510,6 +593,7 @@ export class AiNavalPlanner {
     this.economy.assets.retain(m.id, selected);
     m.members = ships.map((s) => s.id);
     m.recovering = recovering.map((s) => s.id);
+    if(!a.enemyPower && m.state==="stage" && world.tick-(m.phaseSince??m.createdTick)>=600){this.transition(m,"complete","Stable port defense completed without a live threat");return;}
     const gathered = ships.every(
       (s) =>
         world.map.euclideanDistSquared(world.tileOf(s), a.anchor!) <= 6 ** 2,
@@ -639,15 +723,16 @@ export class AiNavalPlanner {
       ),
       power = navalPower(researched, researched.health),
       key = `${player.id}:${m.sea}`;
+    if(!this.funding.has(key) && [...this.funding.keys()].filter(k=>k.startsWith(`${player.id}:`)).length>=16){this.transition(m,"recover","Theater evidence envelope reached");return;}
     const evidence = this.funding.get(key);
     if (evidence && evidence.purchases >= 2) {
       // A deadline/new mission is not new evidence. Reopen investment only
       // after a material technology advantage or a weaker hostile fleet.
       if (
-        power * 4 >= evidence.vesselPower * 5 ||
+        (evidence.vesselPower>0 && power * 4 >= evidence.vesselPower * 5) ||
         (evidence.enemyPower > 0 && enemyPower * 4 <= evidence.enemyPower * 3)
       ) {
-        evidence.purchases = 0;
+        evidence.purchases = 0;evidence.lostPower=Math.floor((evidence.lostPower??0)/2);
       } else {
         this.transition(
           m,

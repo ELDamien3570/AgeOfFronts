@@ -101,6 +101,7 @@ export interface ExpansionWorld extends BattleWorld, ArmyWorld {
 export class Expansion {
   checkpoint() { return structuredClone({progression:this.progression.checkpoint(),diplomacy:this.diplomacy.checkpoint(),fortifications:this.fortifications.checkpoint(),supply:this.supply.checkpoint(),trade:this.trade.checkpoint(),roads:this.roads.checkpoint(),battle:this.battle.checkpoint(),armies:this.armies.checkpoint(),modernization:this.modernization.checkpoint(),economy:this.economy.checkpoint(),aircraft:this.aircraft,winners:this.winners,events:this.events,nextEvent:this.nextEvent,tribePlans:[...this.tribePlans],geography:this.geography.checkpoint(),operations:this.operations.checkpoint()}); }
   restore(saved: ReturnType<Expansion["checkpoint"]>): void {
+    this.metadataIdentity={};
     const state=structuredClone(saved);
     this.tribePlans.clear();
     for (const [id, plan] of state.tribePlans ?? []) this.tribePlans.set(id, plan);
@@ -1553,6 +1554,13 @@ export class Expansion {
       return null;
     return live.map((p) => p.id);
   }
+  private metadataIdentity={};
+  replicationMetadata(){return {identity:this.metadataIdentity,revisions:{
+    rulesetId:1,startingAge:1,contentHash:1,technologySpeed:1,victoryMode:1,
+    progression:this.progression.revision,diplomacy:this.diplomacy.revision,
+    productionPlans:this.supply.controlRevision,productionPriorities:this.supply.controlRevision,
+    events:this.nextEvent,roadRevision:this.roads.revision,fortificationRevision:this.fortifications.version,
+  }};}
   snapshot(): ExpansionSnapshot {
     return {
       armies: this.armies.snapshot(),

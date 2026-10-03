@@ -38,6 +38,7 @@ export class Fortifications {
   private readonly tileIndex = new Map<number, Barrier[]>();
   private readonly barrierIds = new Map<number, Barrier>();
   private readonly barrierOrder = new Map<number, number>();
+  private readonly ownerBarriers=new Map<number,Barrier[]>();
   readonly queryDiagnostics = {nearbyTiles: 0, nearbyCandidates: 0};
   private nextId = 1;
   private towers = new Map<number, Set<number>>();
@@ -54,6 +55,7 @@ export class Fortifications {
   get hasObstacles(): boolean {
     return !!(this.tileIndex.size || this.towers.size);
   }
+  byOwner(owner:number):readonly Barrier[]{return this.ownerBarriers.get(owner)??NO_BARRIERS;}
   barrier(id: number): Barrier | undefined { return this.barrierIds.get(id); }
   barriersAt(tile: number): readonly Barrier[] { return this.tileIndex.get(tile) ?? NO_BARRIERS; }
   /** Exact circle candidates in canonical barrier order. A wall touching several
@@ -86,9 +88,10 @@ export class Fortifications {
     );
   }
   private reindex(): void {
-    this.tileIndex.clear(); this.barrierIds.clear(); this.barrierOrder.clear();
+    this.tileIndex.clear(); this.barrierIds.clear(); this.barrierOrder.clear();this.ownerBarriers.clear();
     for (let i = 0; i < this.barriers.length; i++) {
       const wall = this.barriers[i];
+      const owned=this.ownerBarriers.get(wall.playerId)??[];owned.push(wall);this.ownerBarriers.set(wall.playerId,owned);
       this.barrierIds.set(wall.id, wall); this.barrierOrder.set(wall.id, i);
     }
     for (const wall of this.barriers)

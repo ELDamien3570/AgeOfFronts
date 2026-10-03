@@ -26,7 +26,13 @@ export interface FormationPlanningState {
   occupied: Map<string, Reservation[]>;
   slots: Map<string, Reservation[]>;
   result: Map<number, WorldPoint>;
+  setup?: { members: Member[]; cursor: number; sumX: number; sumY: number; sort: number; insert: number };
+  consumed?: Set<number>;
+  first?: number;
   phase:
+    | "setup"
+    | "sort"
+    | "first"
     | "occupancy"
     | "slot"
     | "nearest"
@@ -84,40 +90,30 @@ export class FormationPlanning {
       FormationPlanning.normalizeCheckpoint(this.state);
       return;
     }
-    const target = tilePoint(map, center),
-      x =
-        members.reduce((n, m) => n + m.origin.x, 0) /
-        Math.max(1, members.length),
-      y =
-        members.reduce((n, m) => n + m.origin.y, 0) /
-        Math.max(1, members.length),
-      length = Math.hypot(target.x - x, target.y - y),
-      columns = Math.ceil(Math.sqrt(members.length));
+    // Capture command scalars at the atomic input boundary (the selected cohort
+    // is capped by MAX_SQUADS). Sorting, orientation and membership population
+    // run inside the allowance and survive checkpoint/restore.
+    const columns = Math.ceil(Math.sqrt(members.length));
     this.state = {
       center,
       maximumRadius: maximumRadius === Infinity ? undefined : maximumRadius,
       preferred,
       additionalOrders,
-      pending: members
-        .map(({ squad, origin }) => ({
-          id: squad.id,
-          kind: squad.kind,
-          playerId: squad.playerId,
-          origin: { ...origin },
-        }))
-        .sort((a, b) => a.id - b.id),
-      selected: new Set(members.map((m) => m.squad.id)),
+      pending: [],
+      setup: { members: members.map(({squad, origin}) => ({id:squad.id, kind:squad.kind, playerId:squad.playerId, origin:{...origin}})), cursor:0, sumX:0, sumY:0, sort:1, insert:1 },
+      consumed: new Set(),
+      selected: new Set(),
       occupied: new Map(),
       slots: new Map(),
       result: new Map(),
-      phase: members.length ? "occupancy" : "done",
+      phase: members.length ? "setup" : "done",
       other: 0,
       order: -1,
       index: 0,
       columns,
       rows: Math.ceil(members.length / columns),
-      forwardX: length ? (target.x - x) / length : 0,
-      forwardY: length ? (target.y - y) / length : 1,
+      forwardX: 0,
+      forwardY: 1,
       nearest: 0,
       nearestCursor: 1,
       ring: -1,
@@ -149,7 +145,7 @@ export class FormationPlanning {
     s.result.set(member.id, point);
     this.insert(s.slots, { ...point, ...member });
     s.index++;
-    s.phase = s.pending.length ? "slot" : "done";
+    s.phase = s.result.size < s.selected.size ? "slot" : "done";
   }
   private tested(free: boolean): void {
     const s = this.state;
@@ -176,7 +172,26 @@ export class FormationPlanning {
     let used = 0;
     while (used < budget && s.phase !== "done" && s.phase !== "failed") {
       used++;
-      if (s.phase === "occupancy") {
+      if (s.phase === "setup") {
+        const setup = s.setup!, member = setup.members[setup.cursor++];
+        if (member) {
+          s.pending.push(member); s.selected.add(member.id);
+          setup.sumX += member.origin.x; setup.sumY += member.origin.y;
+        } else {
+          const x = setup.sumX / s.pending.length, y = setup.sumY / s.pending.length;
+          const length = Math.hypot(target.x-x, target.y-y);
+          s.forwardX = length ? (target.x-x)/length : 0;
+          s.forwardY = length ? (target.y-y)/length : 1;
+          s.phase = "sort";
+        }
+      } else if (s.phase === "sort") {
+        const setup = s.setup!;
+        if (setup.sort >= s.pending.length) { s.setup = undefined; s.phase = "occupancy"; }
+        else if (setup.insert > 0 && s.pending[setup.insert-1].id > s.pending[setup.insert].id) {
+          const at = setup.insert--;
+          [s.pending[at-1], s.pending[at]] = [s.pending[at], s.pending[at-1]];
+        } else { setup.sort++; setup.insert = setup.sort; }
+      } else if (s.phase === "occupancy") {
         const squad = this.others()[s.other];
         if (!squad) {
           s.phase = "slot";
@@ -223,28 +238,33 @@ export class FormationPlanning {
           s.order = -1;
         }
       } else if (s.phase === "slot") {
+        s.first = 0; s.phase = "first";
+      } else if (s.phase === "first") {
+        if (s.consumed?.has(s.pending[s.first!]?.id)) { s.first!++; continue; }
         const row = Math.floor(s.index / s.columns),
           rowWidth = Math.min(s.columns, s.selected.size - row * s.columns),
           lateral =
             ((s.index % s.columns) - (rowWidth - 1) / 2) * FORMATION_SPACING,
           depth = (row - (s.rows - 1) / 2) * FORMATION_SPACING;
-        s.ideal = s.preferred?.get(s.pending[0].id) ?? {
+        s.ideal = s.preferred?.get(s.pending[s.first!].id) ?? {
           x: Math.round(target.x + s.forwardY * lateral + s.forwardX * depth),
           y: Math.round(target.y - s.forwardX * lateral + s.forwardY * depth),
         };
-        s.nearest = 0;
-        s.nearestCursor = 1;
+        s.nearest = s.first!;
+        s.nearestCursor = s.first! + 1;
         s.phase = "nearest";
       } else if (s.phase === "nearest") {
         if (!s.preferred && s.nearestCursor < s.pending.length) {
           const at = s.nearestCursor++;
           if (
+            !s.consumed?.has(s.pending[at].id) &&
             distanceSquared(s.pending[at].origin, s.ideal!) <
             distanceSquared(s.pending[s.nearest].origin, s.ideal!)
           )
             s.nearest = at;
         } else {
-          s.member = s.pending.splice(s.nearest, 1)[0];
+          s.member = s.pending[s.nearest];
+          (s.consumed ??= new Set()).add(s.member.id);
           s.ring = -1;
           s.candidate = s.ideal;
           s.phase = "candidate";
