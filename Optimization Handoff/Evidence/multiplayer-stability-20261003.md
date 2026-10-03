@@ -1,5 +1,9 @@
 # Multiplayer stability investigation — 3 October 2026
 
+## Transport/navigation acceptance continuation
+
+Further playtesting exposed unfinished shore-work cancellation, broad war-policy invalidation, missing replicated transfer phases and prematurely stopped water passages. The extended acceptance now requires successful water embarkation, physical sailing and manual landing, in addition to ordinary movement and placement. See [the implementation and exact evidence](transport-navigation-20261003.md). Earlier successful ordinary movement smokes do not prove those transport behaviors.
+
 ## Building placement regression correction
 
 Deployed revision: **f86c9fa186be892eabda08d984fa1a5d9ad6ec01**. The client `placementRejection` wrapper used optional chaining and a nullish fallback, so both an absent preview and a valid null rejection became “No active match”. The valid-site grid called the validator directly and remained correct; hover and click preflight called the faulty wrapper. The correction checks whether the preview exists before returning its rejection, preserving null success and real domain rejection reasons.

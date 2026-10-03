@@ -122,12 +122,20 @@ try{
     const originTile=map.ref(Math.floor(squad.x/256),Math.floor(squad.y/256));
     const shores=coast.connections().filter(c=>c.landComponent===land.component[originTile]).flatMap(c=>c.edges);
     shores.sort((a,b)=>map.manhattanDist(originTile,a.landTile)-map.manhattanDist(originTile,b.landTile)||a.landTile-b.landTile);
-    const edge=shores[0];if(!edge)throw new Error("No same-land coast");
-    let goal;
-    for(let radius=5;radius<=7&&goal===undefined;radius++)for(let dy=-radius;dy<=radius&&goal===undefined;dy++)for(let dx=-radius;dx<=radius;dx++) {
-      if(Math.abs(dx)+Math.abs(dy)!==radius)continue;
-      const x=map.x(edge.waterTile)+dx,y=map.y(edge.waterTile)+dy;if(!map.isValidCoord(x,y))continue;
-      const tile=map.ref(x,y);if(water.walkable(tile)&&water.component[tile]===water.component[edge.waterTile]){const path=water.find(edge.waterTile,tile);if(path && path.length<=12){goal=tile;break;}}
+    if(!shores.length)throw new Error("No same-land coast");
+    // The nearest shore may border a tiny enclosed pond. Choose an actual nearby
+    // sailing passage rather than treating that fixture limitation as a game failure.
+    const waterSizes=new Map();
+    for(let tile=0;tile<map.width()*map.height();tile++)if(water.walkable(tile)){const c=water.component[tile];waterSizes.set(c,(waterSizes.get(c)??0)+1);}
+    let edge,goal;
+    for(const candidate of shores){
+      if((waterSizes.get(water.component[candidate.waterTile])??0)<16)continue;
+      for(let radius=5;radius<=7&&goal===undefined;radius++)for(let dy=-radius;dy<=radius&&goal===undefined;dy++)for(let dx=-radius;dx<=radius;dx++) {
+        if(Math.abs(dx)+Math.abs(dy)!==radius)continue;
+        const x=map.x(candidate.waterTile)+dx,y=map.y(candidate.waterTile)+dy;if(!map.isValidCoord(x,y))continue;
+        const tile=map.ref(x,y);if(water.walkable(tile)&&water.component[tile]===water.component[candidate.waterTile]){const path=water.find(candidate.waterTile,tile);if(path && path.length<=12){edge=candidate;goal=tile;break;}}
+      }
+      if(goal!==undefined)break;
     }
     if(goal===undefined)throw new Error("No nearby water destination");
     const id=rid(),commandTick=p.tick;

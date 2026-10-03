@@ -1,5 +1,9 @@
 # Optimization handoff
 
+## Transport and naval navigation continuation - 3 October 2026
+
+The water-destination rejection, repeated crossing cancellation, cross-faction route invalidation, expensive whole-coast rankings, premature mid-water landing and missing replicated transfer phases are corrected in **2b44a7356ce3bf6a96d69649c893976d817178e7**, deployed on Oracle. Normal troops can embark to open water and subsequently sail/unload. AI civilian trade and researched crossings now progress; leased defensive fleets patrol, and unsupported missions no longer purchase idle transports. Occupied standalone squad destinations recover while preserving queued orders, and online rejection notifications leave the header geometry fixed. Immediate validation for impossible deferred landings is deployed in **1ebaec057304b79fddb4f52f1a118aa5e02d8ef8**; the mature ARM replay completed 48 physical ferry trips, while tick tails remain above the 50 ms budget. See [transport/navigation findings and acceptance evidence](Evidence/transport-navigation-20261003.md).
+
 ## Building placement regression continuation — 3 October 2026
 
 A valid placement returns a null rejection. A client-side fallback incorrectly converted that success into “No active match”, making valid previews red and stopping their commands before submission. The UI now distinguishes a missing preview from an accepted site. The correction is deployed on Oracle in `f86c9fa186be892eabda08d984fa1a5d9ad6ec01`. A rendered public 500 Valles / ten-AI Stone Age check placed a City and inspected it as Ready; local and public two-client Modern smoke checks require a normal Barracks command to succeed and its new building to finish construction. See the [placement correction and evidence](Evidence/multiplayer-stability-20261003.md). The earlier rejected-action checks did not cover successful client placement; this is a corrected acceptance gap.
