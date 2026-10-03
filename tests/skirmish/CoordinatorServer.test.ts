@@ -139,11 +139,13 @@ describe("durable authenticated lobby transport", () => {
       restarted.server.rooms
         .snapshot()
         .rooms.filter((room) => room.kind === "custom"),
-    ).toHaveLength(1);
+    ).toHaveLength(0);
+    returned.ws.send(JSON.stringify({type:"join",requestId:"explicit-return",roomId:"default-africa"}));
+    await returned.next(message=>message.type==="ack"&&message.requestId==="explicit-return");
     expect(
       restarted.server.rooms
         .snapshot()
-        .rooms.find((room) => room.kind === "custom")!.members[0].connected,
+        .rooms.find((room) => room.id === "default-africa")!.members[0].connected,
     ).toBe(true);
   });
 

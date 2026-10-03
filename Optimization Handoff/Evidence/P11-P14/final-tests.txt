@@ -1,0 +1,16 @@
+
+ RUN  v4.1.11 C:/Users/Damien/.codex/worktrees/p11-p14-optimization/AgeOfFronts
+
+Match executor operation failed advance Error: Match command batch exceeds its budget
+    at <anonymous> (C:\Users\Damien\.codex\worktrees\p11-p14-optimization\AgeOfFronts\src\skirmish\multiplayer\infrastructure\serverMatchWorker.ts:223:21)
+Match executor operation failed advance Error: Invalid match advance
+    at <anonymous> (C:\Users\Damien\.codex\worktrees\p11-p14-optimization\AgeOfFronts\src\skirmish\multiplayer\infrastructure\serverMatchWorker.ts:221:21)
+Match executor operation failed join-barrier Error: This faction is no longer available
+    at <anonymous> (C:\Users\Damien\.codex\worktrees\p11-p14-optimization\AgeOfFronts\src\skirmish\multiplayer\infrastructure\serverMatchWorker.ts:186:21)
+Match executor operation failed join-barrier Error: This faction is no longer available
+    at <anonymous> (C:\Users\Damien\.codex\worktrees\p11-p14-optimization\AgeOfFronts\src\skirmish\multiplayer\infrastructure\serverMatchWorker.ts:186:21)
+
+ Test Files  158 passed (158)
+      Tests  1035 passed (1035)
+   Start at  23:11:40
+   Duration  279.86s (transform 11.31s, setup 0ms, import 52.21s, tests 152.05s, environment 15.51s)

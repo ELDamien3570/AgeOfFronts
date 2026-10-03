@@ -15,25 +15,25 @@ function route(distance: number, inland = 0, foreign = true) {
     ruleset: "ages-v1",
   });
   for (const s of m.squads) {
-    s.x = 130 * FIXED;
-    s.y = 35 * FIXED;
+    m.updateSquad(s.id, { x: 130 * FIXED });
+    m.updateSquad(s.id, { y: 35 * FIXED });
   }
-  m.buildings.length = 0;
+  for (const building of m.buildings) m.removeBuilding(building.id);
   const add = (
     type: "factory" | "port",
     x: number,
     y: number,
     playerId = 1,
   ) => {
-    const b = {
+    const b = m.addBuilding({
       id: m.allocateId(),
       type,
       tile: m.map.ref(x, y),
       playerId,
       remainingTicks: 0,
       age: "StoneAge" as const,
-    };
-    m.buildings.push(b);
+    });
+
     return b;
   };
   const factory = add("factory", 10, 19 - inland);
@@ -99,7 +99,7 @@ describe("water trade distance pricing", () => {
     const actor = captured.e.trade.actors[0];
     expect(actor.stops).toContain(captured.destination.id);
     expect(actor.cargo).toBeGreaterThan(0);
-    captured.destination.playerId = 1;
+    captured.m.updateBuilding(captured.destination.id, { playerId: 1 });
     for (let i = 0; i < 1000 && !actor.returned; i++) captured.step();
     expect(actor.returned).toBe(actor.loaded);
     expect(actor.returned).toBeGreaterThan(0);

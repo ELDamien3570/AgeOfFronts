@@ -1,7 +1,13 @@
 # P20: Select useful research and age advances
 
-Status: **remaining work, not implemented by this handoff**. Read
+Status: **implemented locally; full-run plus focused-repair validation recorded**. Read
 [`../agent-workflow.md`](../agent-workflow.md) and [`../handoff.md`](../handoff.md).
+
+## Current implementation - 3 October 2026
+
+Research utility now uses role deficits, attainable production inputs, resources, logistics and actual sea opportunity. Age advancement requires a usable paid production path. Unpaid saved goals remain stable but expire or invalidate when legality/use changes; progression owns every paid research/age transition.
+
+The user resumed this plan and requested one combined test run with the remaining tuneups and lobby fixes. See [combined batch evidence](../Evidence/remaining-five-combined-validation.md) for results and qualification limits.
 
 ## Dependencies and ownership
 

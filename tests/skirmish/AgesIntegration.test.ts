@@ -30,9 +30,9 @@ function match(water = false, ai = false) {
     ruleset: "ages-v1",
   });
   for (const s of m.squads) {
-    s.x = 85 * FIXED;
-    s.y = (s.playerId === 1 ? 3 : 55) * FIXED;
-    s.order = { type: "hold" };
+    m.updateSquad(s.id, { x: 85 * FIXED });
+    m.updateSquad(s.id, { y: (s.playerId === 1 ? 3 : 55) * FIXED });
+    m.updateSquad(s.id, { order: { type: "hold" } });
   }
   return m;
 }
@@ -53,7 +53,7 @@ function building(
   playerId = 1,
   age: Building["age"] = "StoneAge",
 ) {
-  const b: Building = {
+  const b: Building = m.addBuilding({
     id: m.allocateId(),
     type,
     tile: m.map.ref(x, y),
@@ -62,12 +62,12 @@ function building(
     remainingTicks: 0,
     health: 2000,
     maxHealth: 2000,
-  };
-  m.buildings.push(b);
+  });
+
   return b;
 }
 function ship(m: Skirmish, x: number, playerId = 1) {
-  const s: Ship = {
+  const s: Ship = m.addShip({
     id: m.allocateId(),
     playerId,
     kind: "warship",
@@ -81,8 +81,8 @@ function ship(m: Skirmish, x: number, playerId = 1) {
     nextPathIndex: 0,
     fighting: false,
     boarding: null,
-  };
-  m.ships.push(s);
+  });
+
   return s;
 }
 function tradeStep(m: Skirmish, n = 1) {
@@ -203,7 +203,7 @@ describe("integrated shipments and military progression", () => {
     for (let i = 0; i < 1000 && !actor.delivered; i++) tradeStep(m);
     expect(actor.visited).toEqual([a.id]);
     const gold = e.trade.deliveredGold[1];
-    m.buildings.splice(m.buildings.indexOf(b), 1);
+    m.removeBuilding(b.id);
     for (let i = 0; i < 1000 && !actor.returned; i++) tradeStep(m);
     expect(actor.returned).toBe(10);
     expect(actor.cargo).toBe(0);
@@ -227,14 +227,14 @@ describe("integrated shipments and military progression", () => {
     e.progression.states[1].age = "Modern";
     expect(actor.valuePerGood).toBe(50);
     const captor = m.squads.find((s) => s.playerId === 2)!;
-    captor.x = actor.x;
-    captor.y = actor.y;
+    m.updateSquad(captor.id, { x: actor.x });
+    m.updateSquad(captor.id, { y: actor.y });
     actor.waitTicks = 0;
     tradeStep(m);
     expect(actor.state).toBe("prize");
     expect(actor.playerId).toBe(2);
     expect(actor.destination).toBe(prize.id);
-    captor.x = 85 * FIXED;
+    m.updateSquad(captor.id, { x: 85 * FIXED });
     for (let i = 0; i < 200 && e.trade.actors.includes(actor); i++)
       tradeStep(m);
     expect(e.trade.actors).not.toContain(actor);
@@ -268,8 +268,8 @@ describe("integrated shipments and military progression", () => {
     complete(m);
     const s = ship(m, 10),
       t = ship(m, 11);
-    s.health = 400;
-    s.xp = 3000;
+    m.updateShip(s.id, { health: 400 });
+    m.updateShip(s.id, { xp: 3000 });
     const target = VESSEL.get("modern-warship")!;
     const startingGold = m.players[0].gold;
     m.players[0].gold = 1;
@@ -318,10 +318,10 @@ describe("integrated shipments and military progression", () => {
     e.fortifications.step(1, m.buildings);
     const source = m.squads[0],
       target = m.squads.find((s) => s.playerId === 2)!;
-    source.x = 15.5 * FIXED;
-    source.y = 21.5 * FIXED;
-    target.x = 21.5 * FIXED;
-    target.y = source.y;
+    m.updateSquad(source.id, { x: 15.5 * FIXED });
+    m.updateSquad(source.id, { y: 21.5 * FIXED });
+    m.updateSquad(target.id, { x: 21.5 * FIXED });
+    m.updateSquad(target.id, { y: source.y });
     const profile = {
       ...defaultUnit("infantry").attack,
       channel: "ranged" as const,
@@ -441,8 +441,8 @@ describe("integrated shipments and military progression", () => {
     const m = match();
     complete(m);
     const s = m.squads[0];
-    s.definitionId = "modern-launcher";
-    s.order = { type: "hold" };
+    m.updateSquad(s.id, { definitionId: "modern-launcher" });
+    m.updateSquad(s.id, { order: { type: "hold" } });
     const stock = m.expansion!.supply.inventories[1];
     stock["payload:mirv"] = 1;
     const command = {
@@ -455,7 +455,7 @@ describe("integrated shipments and military progression", () => {
     };
     expect(m.applyCommand(command)).toMatch(/five seconds/);
     expect(stock["payload:mirv"]).toBe(1);
-    s.deploymentTicks = 100;
+    m.updateSquad(s.id, { deploymentTicks: 100 });
     expect(m.applyCommand(command)).toBeNull();
     expect(stock["payload:mirv"]).toBe(0);
     expect(m.applyCommand(command)).toMatch(/reloading/);
@@ -464,12 +464,11 @@ describe("integrated shipments and military progression", () => {
   it("rejects launcher interruptions atomically and restarts deployment after they end", () => {
     const m = match();
     complete(m);
-    const s = m.squads[0],
-      e = m.expansion!,
-      stock = e.supply.inventories[1];
-    s.definitionId = "modern-launcher";
-    s.order = { type: "hold" };
-    s.deploymentTicks = 100;
+    let s = m.squads[0];
+    const e = m.expansion!, stock = e.supply.inventories[1];
+    m.updateSquad(s.id, { definitionId: "modern-launcher" });
+    m.updateSquad(s.id, { order: { type: "hold" } });
+    m.updateSquad(s.id, { deploymentTicks: 100 });
     stock["payload:mirv"] = 1;
     const command = {
       type: "launch" as const,
@@ -483,7 +482,7 @@ describe("integrated shipments and military progression", () => {
     for (const state of [
       {
         refit: {
-          targetId: s.definitionId,
+          targetId: s.definitionId!,
           totalTicks: 200,
           remainingTicks: 200,
         },
@@ -502,24 +501,24 @@ describe("integrated shipments and military progression", () => {
         moved: false,
         embarkedOn: null,
       };
-      Object.assign(s, state);
+      m.updateSquad(s.id, state);
       expect(m.applyCommand(command)).not.toBeNull();
       expect(stock["payload:mirv"]).toBe(1);
       expect(m.players[0].gold).toBe(gold);
       e.afterMovement();
       expect(s.deploymentTicks).toBe(0);
-      Object.assign(s, before);
-      if (!m.squads.includes(s)) m.squads.push(s);
+      const { id, ...changes } = before;
+      s = m.squad(id) ? m.updateSquad(id, changes)! : m.addSquad(before);
     }
     expect(e.battle.projectiles).toHaveLength(0);
-    s.deploymentTicks = 0;
+    m.updateSquad(s.id, { deploymentTicks: 0 });
     for (let i = 0; i < 99; i++) e.afterMovement();
     expect(m.applyCommand(command)).not.toBeNull();
     e.afterMovement();
     expect(m.applyCommand(command)).toBeNull();
     expect(stock["payload:mirv"]).toBe(0);
     const silo = building(m, "missile-silo", 10, 10, 1, "Modern");
-    silo.health = 0;
+    m.updateBuilding((silo).id, { health: 0 });
     stock["payload:icbm"] = 1;
     expect(
       m.applyCommand({ ...command, launcherId: silo.id, payload: "icbm" }),

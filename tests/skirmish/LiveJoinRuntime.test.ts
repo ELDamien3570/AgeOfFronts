@@ -61,7 +61,7 @@ describe("atomic live-join runtime", () => {
     const m = match("BronzeAge"),
       p = m.players[2],
       before = m.checkpoint();
-    expect(m.snapshot().expansion!.progression[p.id].age).toBe("BronzeAge");
+    expect(m.snapshot().expansion!.progression![p.id].age).toBe("BronzeAge");
     const target = m.squads.find((s) => s.playerId === p.id)!;
     const invoke = (
       m as unknown as { executeRouteTask(task: MatchRouteTask): void }
@@ -159,7 +159,7 @@ describe("atomic live-join runtime", () => {
         beforeDecoded.expansion!.productionPriorities,
       );
       expect(
-        Object.values(baseline.expansion!.progression[1].research).some(
+        Object.values(baseline.expansion!.progression![1].research).some(
           (job) => job?.technologyId === "stoneage-shorecraft",
         ),
       ).toBe(true);

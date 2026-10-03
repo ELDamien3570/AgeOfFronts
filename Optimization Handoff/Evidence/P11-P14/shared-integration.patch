@@ -1,0 +1,210 @@
+diff --git a/src/skirmish/Protocol.ts b/src/skirmish/Protocol.ts
+index 7820c84..a49c2d6 100644
+--- a/src/skirmish/Protocol.ts
++++ b/src/skirmish/Protocol.ts
+@@ -212,6 +212,7 @@ export interface Squad {
+   xp?: number;
+   nextAttackTick?: number;
+   lastAttackTick?: number;
++  planningPaused?: boolean;
+   refit?: RefitJob | null;
+   charge?: ChargeState | null;
+   chargeReadyTick?: number;
+@@ -301,6 +302,7 @@ export interface Ship {
+   definitionId?: string;
+   nextAttackTick?: number;
+   xp?: number;
++  planningPaused?: boolean;
+   refit?: RefitJob | null;
+   attackTargetId?: number | null;
+   lastPlanTick?: number;
+@@ -433,6 +435,7 @@ export interface SnapshotPacket {
+     definitionId?: string;
+     xp?: number;
+     nextAttackTick?: number;
++    planningPaused?: boolean;
+     refit?: RefitJob | null;
+     charge?: ChargeState | null;
+     chargeReadyTick?: number;
+diff --git a/src/skirmish/Simulation.ts b/src/skirmish/Simulation.ts
+index efbdda4..6ba0e49 100644
+--- a/src/skirmish/Simulation.ts
++++ b/src/skirmish/Simulation.ts
+@@ -1,3 +1,4 @@
++import { limitedRouteRetry } from "./RouteRetryPolicy";
+ import { FactionAdjacency } from "./FactionAdjacency";
+ import { TileChangeJournal } from "./TileChangeJournal";
+ import { CapturePressure } from "./CapturePressure";
+@@ -289,7 +290,7 @@ export class Skirmish {
+     return `${this.expansion?.operations.revision ?? 0}:${this.expansion?.fortifications.version ?? 0}:${this.expansion?.diplomacy.state.alliances.map(t=>`${t.a},${t.b}`).join(";") ?? ""}`;
+   }
+   private readonly orderRevisions = new Map<number, number>();
+-  private readonly queuedLegs = new Map<number, { attempts: number; retryAt: number }>();
++  private readonly queuedLegs = new Map<number, { attempts: number; retryAt: number; paused?: boolean }>();
+   private readonly localDetours: LocalDetours;
+   private readonly homeTerritory: HomeTerritory;
+   private readonly conquest = new ConquestCredit();
+@@ -385,7 +386,9 @@ export class Skirmish {
+           this.queuedLegs.delete(squad.id); this.finishOrder(squad); return;
+         }
+         if (queued && outcome === "limited") {
+-          queued.attempts++; queued.retryAt = this.tick + 20 * Math.min(10, queued.attempts);
++          const retry = limitedRouteRetry(queued.attempts, this.tick, this.routePlanner.pausesCommittedLimits);
++          queued.attempts = retry.attempts; queued.retryAt = retry.retryAt;
++          if (retry.exhausted) { queued.paused = true; squad.planningPaused = true; }
+         }
+         if(outcome!=="complete" || this.tileOf(squad)!==request.start)return;
+         this.queuedLegs.delete(squad.id);
+@@ -400,7 +403,9 @@ export class Skirmish {
+       request:(id,playerId,shipId,start,goal)=>this.routePlanner.request({key:`ship-admission:${id}:${shipId}`,start,goal,water:true,createdTick:this.tick,
+         obstacleRevision:"water",context:{kind:"ship-admission",admissionId:id,playerId,shipId}}),
+       cancel:(id,shipId)=>this.routePlanner.cancel(`ship-admission:${id}:${shipId}`),
++      paused:(ship,paused)=>{ if(paused)ship.planningPaused=true;else delete ship.planningPaused; },
+       commit:(ship,goal,path,index,append,recovery)=>{
++        delete ship.planningPaused;
+         if(recovery){ship.destination=goal;ship.path=path;ship.nextPathIndex=index;ship.waypoints=append;}
+         else this.setShipVoyage(ship,goal,path,index,append);
+       },
+@@ -966,6 +971,7 @@ export class Skirmish {
+   private activateOrder(squad: Squad, order: Order, path: number[] = []): void {
+     this.routePlanner.cancel(`navigation:${squad.id}`);
+     this.queuedLegs.delete(squad.id);
++    delete squad.planningPaused;
+     this.navigationProgress.delete(squad.id);
+     this.detours.delete(squad.id);
+     squad.order = order;
+@@ -2887,7 +2893,7 @@ export class Skirmish {
+   private navigation(squad: Squad): MovementIntent | null {
+     const queued = this.queuedLegs.get(squad.id);
+     if (queued) {
+-      if (this.tick >= queued.retryAt) this.requestNavigationRoute(squad, "blocked");
++      if (!queued.paused && this.tick >= queued.retryAt) this.requestNavigationRoute(squad, "blocked");
+       return null;
+     }
+     if (squad.refit || squad.charge?.phase === "recovery") return null;
+diff --git a/src/skirmish/SnapshotCodec.ts b/src/skirmish/SnapshotCodec.ts
+index fd8700e..a2c1218 100644
+--- a/src/skirmish/SnapshotCodec.ts
++++ b/src/skirmish/SnapshotCodec.ts
+@@ -207,7 +207,7 @@ export class SnapshotEncoder {
+       removedBuildings: new Int32Array(removed),
+       players: source.players.map((p) => ({ ...p })),
+       expansion,
+-      squadDetails: source.expansion
++      squadDetails: source.expansion || source.squads.some(s => s.planningPaused)
+         ? source.squads.map((s) => ({
+             id: s.id,
+             definitionId: s.definitionId,
+@@ -215,7 +215,8 @@ export class SnapshotEncoder {
+             deploymentTicks: s.deploymentTicks,
+             nextAttackTick: s.nextAttackTick,
+             lastAttackTick: s.lastAttackTick,
+-            refit: s.refit,
++            planningPaused: s.planningPaused,
++        refit: s.refit,
+             charge: s.charge,
+             chargeReadyTick: s.chargeReadyTick,
+             structureTarget: s.structureTarget,
+@@ -247,6 +248,7 @@ export class SnapshotEncoder {
+           : null,
+         definitionId: s.definitionId,
+         xp: s.xp,
++        planningPaused: s.planningPaused,
+         refit: s.refit,
+         attackTargetId: s.attackTargetId,
+         lastPlanTick: s.lastPlanTick,
+diff --git a/tests/skirmish/CommittedPlanningPause.test.ts b/tests/skirmish/CommittedPlanningPause.test.ts
+new file mode 100644
+index 0000000..3a8c99a
+--- /dev/null
++++ b/tests/skirmish/CommittedPlanningPause.test.ts
+@@ -0,0 +1,89 @@
++import { describe, expect, it, vi } from "vitest";
++import { GameMapImpl } from "../../src/core/game/GameMap";
++import type { MatchRouteTask } from "../../src/skirmish/domain/RouteTask";
++import type {
++  ExactRouteRequest,
++  RoutePlannerPorts,
++} from "../../src/skirmish/RoutePlanner";
++import { Skirmish } from "../../src/skirmish/Simulation";
++import {
++  SnapshotDecoder,
++  SnapshotEncoder,
++} from "../../src/skirmish/SnapshotCodec";
++
++type Task = Extract<
++  MatchRouteTask,
++  { kind: "navigation" | "admission" | "ship-admission" }
++>;
++describe("committed route capacity pause", () => {
++  it("preserves later land orders, restores the pause, publishes status and clears it on replacement", () => {
++    const map = new GameMapImpl(100, 70, new Uint8Array(7000).fill(133), 7000);
++    const match = new Skirmish(map, {
++      seed: 42,
++      aiCount: 1,
++      runAi: false,
++      deferredPlanning: true,
++    });
++    const squad = match.squads.find((s) => s.playerId === 1)!;
++    const first = map.ref(45, 35),
++      later = map.ref(48, 35);
++    squad.queuedOrders = [
++      { type: "move", tile: first },
++      { type: "move", tile: later },
++    ];
++    (match as unknown as { finishOrder(s: typeof squad): void }).finishOrder(
++      squad,
++    );
++    const planner = match.routePlanner as unknown as {
++      ports: RoutePlannerPorts<Task>;
++    };
++    const request: ExactRouteRequest<Task> = {
++      key: `navigation:${squad.id}`,
++      start: map.ref(Math.floor(squad.x / 256), Math.floor(squad.y / 256)),
++      goal: first,
++      water: false,
++      createdTick: 0,
++      obstacleRevision: "test",
++      context: {
++        kind: "navigation",
++        squadId: squad.id,
++        operation: "blocked",
++        revision: 0,
++      },
++    };
++    for (const tick of [10, 40, 100]) {
++      match.tick = tick;
++      planner.ports.completed(request, "limited", []);
++    }
++    expect(squad.planningPaused).toBe(true);
++    expect(squad.queuedOrders).toEqual([{ type: "move", tile: later }]);
++    const saved = match.checkpoint(),
++      restored = new Skirmish(map, match.options);
++    restored.restore(saved);
++    const paused = restored.squad(squad.id)!;
++    const requests = vi.spyOn(restored.routePlanner, "request");
++    restored.tick = 1000;
++    (
++      restored as unknown as { navigation(s: typeof squad): unknown }
++    ).navigation(paused);
++    expect(requests).not.toHaveBeenCalled();
++    const encoder = new SnapshotEncoder(true),
++      decoder = new SnapshotDecoder();
++    expect(
++      decoder
++        .decode(encoder.encode(restored.snapshot()))
++        .squads.find((s) => s.id === squad.id)?.planningPaused,
++    ).toBe(true);
++    (
++      restored as unknown as {
++        activateOrder(s: typeof squad, order: { type: "hold" }): void;
++      }
++    ).activateOrder(paused, { type: "hold" });
++    expect(paused.planningPaused).toBeUndefined();
++    expect(
++      decoder
++        .decode(encoder.encode(restored.snapshot()))
++        .squads.find((s) => s.id === squad.id)?.planningPaused,
++    ).toBeUndefined();
++  });
++});

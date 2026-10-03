@@ -1,3 +1,9 @@
+import { FormationOccupancy } from "../FormationOccupancy";
+import { CohortAdmission } from "./CohortAdmission";
+import { FormationPlanning, type FormationPlanningState } from "../FormationPlanning";
+import { limitedRouteRetry, ROUTE_CAPACITY_REASON } from "../RouteRetryPolicy";
+import type { DomainRoutePorts, DomainRouteTask } from "./DomainRoutePorts";
+import type { ExactRouteOutcome } from "../RoutePlanner";
 import { restoreArray, restoreMap, restoreSet } from "../StateTransfer";
 import type { GameMap } from "../../core/game/GameMap";
 import type { LandPaths } from "../Pathfinding";
@@ -26,9 +32,11 @@ import type { ArmyRouteRequest } from "./RouteTask";
 // Coordination owns intent and membership; the existing simulation still owns
 // every physical position, collision, shot, transport and pathfinding operation.
 export interface ArmyWorld {
+  readonly domainRoutes?: DomainRoutePorts;
   map: GameMap;
   paths: LandPaths;
-  squads: Squad[];
+  squads: readonly Squad[];
+  updateSquad(id: number, changes: Partial<Omit<Squad, "id">>): Squad | undefined;
   players: Player[];
   tick: number;
   squad(id: number): Squad | undefined;
@@ -60,6 +68,12 @@ export interface ArmyWorld {
   transportArmy(squads: Squad[], tile: number): string | null;
   preferArmyTransport(squads: Squad[], tile: number): boolean;
 }
+interface ArmyLeaderAdmission {
+  id:number;armyId:number;revision:number;playerId:number;generation:number;obstacles:string;
+  order:ArmyOrder;leaderId:number;memberIds:number[];memberRevisions:number[];tile:number;start:number;
+  requested:boolean;path?:number[];route:WorldPoint[];lengths:number[];cursor:number;
+  attempts:number;retryAt:number;cohortId?:number;queueLength:number;
+}
 interface March {
   deployment?: {
     point: WorldPoint;
@@ -84,7 +98,7 @@ const attackOrder = (
   o: ArmyOrder,
 ): o is Extract<ArmyOrder, { targetId: number }> => "targetId" in o;
 export class Armies {
-  checkpoint() { return structuredClone({armies:this.armies, membership:this.membership, marches:this.marches, externalActions:this.externalActions, nextId:this.nextId}); }
+  checkpoint() { return structuredClone({armies:this.armies, membership:this.membership, marches:this.marches, externalActions:this.externalActions, nextId:this.nextId, leaderAdmissions:[...this.leaderAdmissions], nextAdmission:this.nextAdmission, cohorts:this.cohorts?.checkpoint(), cohortArmies:[...this.cohortArmies], slotPlanning:[...this.slotPlanning]}); }
   restore(saved: ReturnType<Armies["checkpoint"]>): void {
     const state=structuredClone(saved);
     restoreArray(this.armies,state.armies);
@@ -92,6 +106,8 @@ export class Armies {
     restoreMap(this.marches,state.marches);
     restoreSet(this.externalActions,state.externalActions);
     this.nextId=state.nextId;
+    restoreMap(this.leaderAdmissions,new Map(state.leaderAdmissions??[]));this.nextAdmission=state.nextAdmission??1;
+    restoreMap(this.cohortArmies,new Map(state.cohortArmies??[]));restoreMap(this.slotPlanning,new Map(state.slotPlanning??[]));this.cohorts?.restore(state.cohorts);
     this.byArmyId.clear(); for (const army of this.armies) this.byArmyId.set(army.id,army);
   }
 
@@ -101,15 +117,144 @@ export class Armies {
   private readonly marches = new Map<number, March>();
   private readonly externalActions = new Set<number>();
   private nextId = 1;
+  private nextAdmission = 1;
+  private readonly leaderAdmissions=new Map<number,ArmyLeaderAdmission>();
+  private readonly cohortArmies=new Map<number,{armyId:number;revision:number;leaderId?:number}>();
+  private occupancy?: FormationOccupancy;
+  private readonly slotPlanning=new Map<number,{revision:number;formation:FormationPlanningState}>();
+  private readonly cohorts?:CohortAdmission;
   constructor(
     private readonly world: ArmyWorld,
     private readonly progression: Progression,
-  ) {}
+  ) {
+    if(world.domainRoutes)this.cohorts=new CohortAdmission("army",{
+      map:world.map,paths:world.paths,squads:()=>world.squads,squad:id=>world.squad(id),routes:world.domainRoutes,
+      blocked:id=>t=>world.armyBlocked(t,id),
+      valid:(plan,squad)=>{const link=this.cohortArmies.get(plan.id),army=link&&this.byArmyId.get(link.armyId);return !!army && army.revision===link!.revision && this.membership.get(squad.id)===army.id;},
+      commit:(plan,members)=>{
+        const link=this.cohortArmies.get(plan.id)!,army=this.byArmyId.get(link.armyId)!;
+        if(link.leaderId!==undefined){
+          const leaderPlan=this.leaderAdmissions.get(link.leaderId)!;
+          this.leaderAdmissions.delete(leaderPlan.id);this.cohortArmies.delete(plan.id);
+          const queued=army.queuedOrders.slice(leaderPlan.queueLength??army.queuedOrders.length);
+          this.order(army,leaderPlan.order,false,{path:leaderPlan.path!,route:leaderPlan.route,lengths:leaderPlan.lengths});
+          army.queuedOrders=queued;
+          this.world.domainRoutes!.event("army",{id:leaderPlan.id,playerId:army.playerId,tick:world.tick,status:"executed"});
+        }
+        const march=this.marches.get(army.id);
+        for(const member of members){
+          world.setArmyMove(member.squad,member.point,member.path);
+          world.updateSquad(member.squad.id,{nextPathIndex:member.index});
+          march?.planned.set(member.squad.id,member.point);march?.pending.delete(member.squad.id);
+        }
+      },
+      finished:(plan,status,reason)=>{
+        const link=this.cohortArmies.get(plan.id);this.cohortArmies.delete(plan.id);
+        if(link?.leaderId!==undefined){const leader=this.leaderAdmissions.get(link.leaderId);if(leader)this.finishLeader(leader,status,reason);}
+      },
+    });
+  }
+  private leaderTask(plan:ArmyLeaderAdmission):DomainRouteTask {return {kind:"domain",owner:"army",admissionId:plan.id,memberId:plan.leaderId,stage:"leader",playerId:plan.playerId,generation:plan.generation};}
+  private leaderValid(plan:ArmyLeaderAdmission):boolean {
+    const army=this.byArmyId.get(plan.armyId),routes=this.world.domainRoutes;
+    return !!routes && !!army && army.revision===plan.revision && routes.generation(plan.playerId)===plan.generation &&
+      routes.revision(plan.playerId, "army")===plan.obstacles && army.memberIds.length===plan.memberIds.length &&
+      plan.memberIds.every((id,i)=>{const s=this.world.squad(id);return !!s && active(s) && s.playerId===plan.playerId && this.membership.get(id)===army.id && routes.orderRevision(id)===plan.memberRevisions[i];}) &&
+      (!attackOrder(plan.order) || (()=>{const s=this.world.squad(plan.order.targetId);return !!s && active(s) && this.world.hostile(plan.playerId,s.playerId) && pointTile(this.world.map,s)===plan.tile;})());
+  }
+  validRoute(task:DomainRouteTask):boolean {
+    if(task.stage==="cohort")return this.cohorts?.validRoute(task)??false;
+    const plan=this.leaderAdmissions.get(task.admissionId);
+    return !!plan && task.stage==="leader" && task.generation===plan.generation && this.leaderValid(plan);
+  }
+  completedRoute(task:DomainRouteTask,outcome:ExactRouteOutcome,path:number[]):void {
+    if(task.stage==="cohort"){this.cohorts?.completedRoute(task,outcome,path);return;}
+    const plan=this.leaderAdmissions.get(task.admissionId);if(!plan)return;
+    plan.requested=false;
+    if(!this.leaderValid(plan)){this.finishLeader(plan,"superseded","Army or target changed");return;}
+    if(outcome==="complete"){plan.path=path;plan.cursor=0;}
+    else if(outcome==="limited"){
+      const retry=limitedRouteRetry(plan.attempts,this.world.tick,true);plan.attempts=retry.attempts;plan.retryAt=retry.retryAt;
+      if(retry.exhausted)this.finishLeader(plan,"rejected",ROUTE_CAPACITY_REASON);
+    }else this.finishLeader(plan,outcome==="unreachable"?"rejected":"superseded","Army corridor unavailable");
+  }
+  private finishLeader(plan:ArmyLeaderAdmission,status:"executed"|"rejected"|"superseded",reason?:string):void {
+    this.leaderAdmissions.delete(plan.id);
+    this.world.domainRoutes!.cancel(this.leaderTask(plan));
+    if(plan.cohortId!==undefined){this.cohortArmies.delete(plan.cohortId);this.cohorts?.cancel(plan.cohortId,reason);}
+    this.world.domainRoutes!.event("army",{id:plan.id,playerId:plan.playerId,tick:this.world.tick,status,reason});
+  }
+  private cancelPlanning(armyId:number):void {
+    for(const plan of [...this.leaderAdmissions.values()])if(plan.armyId===armyId)this.finishLeader(plan,"superseded","Army order changed");
+    for(const [id,link] of [...this.cohortArmies])if(link.armyId===armyId){this.cohortArmies.delete(id);this.cohorts?.cancel(id);}
+    this.slotPlanning.delete(armyId);
+  }
+  private planSlots(army:Army,center:number,members:Squad[],ideals:Map<number,WorldPoint>):Map<number,WorldPoint>|null|undefined {
+    if(!this.world.domainRoutes)return this.world.armySlots(center,members,ideals);
+    let plan=this.slotPlanning.get(army.id);
+    if(plan && plan.revision!==army.revision){this.slotPlanning.delete(army.id);plan=undefined;}
+    if(!plan){
+      plan={revision:army.revision,formation:new FormationPlanning(this.world.map,this.world.paths,center,members.map(squad=>({squad,origin:squad})),()=>this.world.squads,Infinity,ideals).state};
+      this.slotPlanning.set(army.id,plan);return undefined;
+    }
+    if(plan.formation.phase!=="done" && plan.formation.phase!=="failed")return undefined;
+    this.slotPlanning.delete(army.id);
+    return plan.formation.phase==="failed"?null:plan.formation.result;
+  }
+  stepPlanning(budget:number):number {
+    const routes=this.world.domainRoutes;if(!routes)return 0;
+    const occupancy = this.occupancy ??= new FormationOccupancy(this.world.map);
+    if (this.slotPlanning.size) occupancy.rebuild(this.world.squads);
+    let used=0;
+    for(const plan of [...this.leaderAdmissions.values()]){
+      if(used>=budget)break;
+      used++;
+      if(!this.leaderValid(plan)){this.finishLeader(plan,"superseded","Army or control changed");continue;}
+      if(!plan.path){
+        if(!plan.requested && plan.retryAt<=this.world.tick)plan.requested=routes.request(this.leaderTask(plan),plan.start,plan.tile);
+        continue;
+      }
+      if(plan.cohortId!==undefined)continue;
+      while(plan.cursor<plan.path.length && used<budget){
+        const point=tilePoint(this.world.map,plan.path[plan.cursor++]),last=plan.route[plan.route.length-1];
+        plan.lengths.push(plan.lengths[plan.lengths.length-1]+Math.hypot(point.x-last.x,point.y-last.y));
+        plan.route.push(point);used++;
+      }
+      if(plan.cursor<plan.path.length)continue;
+      if(plan.route.length===1){const end=tilePoint(this.world.map,plan.tile),last=plan.route[0];plan.route.push(end);plan.lengths.push(Math.hypot(end.x-last.x,end.y-last.y));}
+      const army=this.byArmyId.get(plan.armyId)!,members=plan.memberIds.map(id=>this.world.squad(id)!);
+      const leader=this.world.squad(plan.leaderId)!;
+      // Admit the initial assembling footprint before replacing any old order.
+      const ideals=new Map<number,WorldPoint>();
+      members.forEach((s,i)=>ideals.set(s.id,{x:leader.x+((i%2)-.5)*FIXED,y:leader.y-Math.floor(i/2)*FIXED*1.1}));
+      const id=this.cohorts!.start(plan.playerId,members,pointTile(this.world.map,leader),ideals);
+      if(id===undefined){this.finishLeader(plan,"rejected","Army admission is full");continue;}
+      plan.cohortId=id;this.cohortArmies.set(id,{armyId:army.id,revision:army.revision,leaderId:plan.id});
+    }
+    for(const [id,plan] of this.slotPlanning){
+      if(used>=budget)break;
+      const army=this.byArmyId.get(id);
+      if(!army || army.revision!==plan.revision){this.slotPlanning.delete(id);continue;}
+      const formation=new FormationPlanning(this.world.map,this.world.paths,plan.formation.center,[],()=>this.world.squads,Infinity,undefined,plan.formation,undefined,occupancy);
+      used+=formation.step(Math.min(16,budget-used),t=>this.world.armyBlocked(t,army.playerId));
+    }
+    return used+(this.cohorts?.step(budget-used)??0);
+  }
   capacity(playerId: number): number {
     return armyCapacity(this.progression.states[playerId]?.completed ?? []);
   }
   armyOf(squadId: number): Army | undefined {
     return this.byArmyId.get(this.membership.get(squadId) ?? -1);
+  }
+  // An arrived formation slot is provisional while the army is assembling.
+  // Explicit member orders detach or stop the army through observeOrder, so
+  // this permission cannot override a player-issued Hold.
+  yieldSlot(squad: Squad): WorldPoint | undefined {
+    const army=this.armyOf(squad.id),march=army && this.marches.get(army.id);
+    if(!army || !march || this.externalActions.has(army.id) || squad.order.type!=="hold" ||
+      (army.state!=="assembling" && army.state!=="marching" && army.state!=="regrouping") ||
+      (army.order.type!=="move" && army.order.type!=="regroup"))return undefined;
+    return march.slots.get(squad.id);
   }
   groupOrder(
     ids: readonly number[],
@@ -145,7 +290,7 @@ export class Armies {
       return "Research Armies in Bronze Warfare first";
     if (!ids.length || new Set(ids).size !== ids.length)
       return "Select distinct squad formations";
-    const byId = new Map(this.world.squads.map((s) => [s.id, s]));
+    const byId = {get:(id:number)=>this.world.squad(id)};
     if (
       ids.some(
         (id) =>
@@ -173,7 +318,7 @@ export class Armies {
       const reason = this.eligible(player, command.squadIds);
       if (reason) return reason;
       const ids = [...command.squadIds].sort((a, b) => a - b),
-        leader = this.world.squads.find((s) => s.id === ids[0])!;
+        leader = this.world.squad(ids[0])!;
       const army: Army = {
         id: this.nextId++,
         playerId: player.id,
@@ -275,6 +420,7 @@ export class Armies {
     else this.restart(army);
   }
   private disband(army: Army): void {
+    this.cancelPlanning(army.id);
     for (const id of army.memberIds) {
       this.membership.delete(id);
       this.world.cancelArmyRoute(`army:${army.id}:${id}`);
@@ -285,6 +431,7 @@ export class Armies {
     this.armies.splice(this.armies.indexOf(army), 1);
   }
   private stop(army: Army): void {
+    this.cancelPlanning(army.id);
     this.externalActions.delete(army.id);
     army.revision++;
     for (const id of army.memberIds)
@@ -314,7 +461,7 @@ export class Armies {
         )
       : undefined;
   }
-  private order(army: Army, order: ArmyOrder, append = false): string | null {
+  private order(army: Army, order: ArmyOrder, append = false, prepared?:{path:number[];route:WorldPoint[];lengths:number[]}): string | null {
     const members = this.members(army).filter(active);
     if (!members.length) return "Army has no available land squads";
     let tile: number;
@@ -360,7 +507,15 @@ export class Armies {
         distanceSquared(a, objective) - distanceSquared(b, objective) ||
         a.id - b.id,
     )[0];
-    const path = this.world.paths.find(
+    if(this.world.domainRoutes && !prepared && order.type!=="hold"){
+      this.cancelPlanning(army.id);
+      if(this.leaderAdmissions.size>=128)return "Army planning is full";
+      const routes=this.world.domainRoutes,id=1_000_000_000+this.nextAdmission++;
+      const plan:ArmyLeaderAdmission={id,armyId:army.id,revision:army.revision,playerId:army.playerId,generation:routes.generation(army.playerId),obstacles:routes.revision(army.playerId, "army"),order:{...order},leaderId:leader.id,
+        memberIds:members.map(s=>s.id),memberRevisions:members.map(s=>routes.orderRevision(s.id)),tile,start:pointTile(this.world.map,leader),requested:false,route:[{x:leader.x,y:leader.y}],lengths:[0],cursor:0,attempts:0,retryAt:0,queueLength:army.queuedOrders.length};
+      this.leaderAdmissions.set(id,plan);routes.event("army",{id,playerId:army.playerId,tick:this.world.tick,status:"deferred"});return null;
+    }
+    const path = order.type==="hold"?[]:prepared?.path ?? this.world.paths.find(
       pointTile(this.world.map, leader),
       tile,
       (t) => this.world.armyBlocked(t, army.playerId),
@@ -380,21 +535,21 @@ export class Armies {
     army.x = leader.x;
     army.y = leader.y;
     for (const s of members) {
-      s.charge = null;
-      s.structureTarget = null;
-      s.queuedOrders = [];
+      this.world.updateSquad(s.id, { charge: null });
+      this.world.updateSquad(s.id, { structureTarget: null });
+      this.world.updateSquad(s.id, { queuedOrders: [] });
       this.world.setArmyHold(s);
     }
     if (order.type === "hold") {
       return null;
     }
-    const route = [
+    const route = prepared?.route ?? [
       { x: leader.x, y: leader.y },
       ...path.map((t) => tilePoint(this.world.map, t)),
     ];
     if (route.length === 1) route.push(tilePoint(this.world.map, tile));
-    const lengths = [0];
-    for (let i = 1; i < route.length; i++)
+    const lengths = prepared?.lengths ?? [0];
+    for (let i = prepared ? route.length : 1; i < route.length; i++)
       lengths.push(
         lengths[i - 1] +
           Math.hypot(route[i].x - route[i - 1].x, route[i].y - route[i - 1].y),
@@ -452,7 +607,7 @@ export class Armies {
     army: Army,
     march: March,
     members: Squad[],
-  ): Map<number, WorldPoint> | null {
+  ): Map<number, WorldPoint> | null | undefined {
     const sorted = [...members].sort((a, b) => {
       const ai = march.columnIds.indexOf(a.id),
         bi = march.columnIds.indexOf(b.id);
@@ -493,7 +648,7 @@ export class Armies {
     }
     if (!march.columnIds.length) march.columnIds = sorted.map((s) => s.id);
     const center = pointTile(this.world.map, this.onRoute(march, march.cursor));
-    return this.world.armySlots(center, sorted, ideals);
+    return this.planSlots(army,center,sorted,ideals);
   }
   private deploy(
     army: Army,
@@ -501,7 +656,7 @@ export class Armies {
     members: Squad[],
     point: WorldPoint,
     flank = 0,
-  ): Map<number, WorldPoint> | null {
+  ): Map<number, WorldPoint> | null | undefined {
     const cached = march.deployment;
     if (
       cached &&
@@ -588,7 +743,7 @@ export class Armies {
         ideals.set(pending.shift()!.id, ideal);
       }
     }
-    const slots = this.world.armySlots(
+    const slots = this.planSlots(army,
       pointTile(this.world.map, point),
       members,
       ideals,
@@ -606,8 +761,20 @@ export class Armies {
     army: Army,
     march: March,
     members: Squad[],
-    slots: Map<number, WorldPoint> | null,
+    slots: Map<number, WorldPoint> | null | undefined,
   ): boolean {
+    if(slots===undefined)return false;
+    if(this.cohorts && slots){
+      if([...this.cohortArmies.values()].some(link=>link.armyId===army.id))return false;
+      const needs=members.some(s=>distanceSquared(s,slots.get(s.id)!)>(FIXED/5)**2 &&
+        (!march.planned.has(s.id) || distanceSquared(march.planned.get(s.id)!,slots.get(s.id)!)>(FIXED/3)**2));
+      if(needs){
+        const id=this.cohorts.start(army.playerId,members,pointTile(this.world.map,slots.values().next().value!),slots);
+        if(id!==undefined)this.cohortArmies.set(id,{armyId:army.id,revision:army.revision});
+        return false;
+      }
+      march.slots=slots;return true;
+    }
     if (!slots) {
       march.speed = 0;
       army.state = "blocked";
@@ -635,8 +802,7 @@ export class Armies {
           pointTile(this.world.map, planned) ===
           pointTile(this.world.map, point)
         ) {
-          s.order.x = point.x;
-          s.order.y = point.y;
+          this.world.updateSquad(s.id, { order: { ...s.order, x: point.x, y: point.y } });
           continue;
         }
       }
@@ -818,7 +984,7 @@ export class Armies {
         }
         continue;
       }
-      if (army.state === "blocked") continue;
+      if (army.state === "blocked" || [...this.leaderAdmissions.values()].some(plan=>plan.armyId===army.id) || [...this.cohortArmies.values()].some(link=>link.armyId===army.id)) continue;
       const target = this.target(army);
       if (attackOrder(army.order) && !target) {
         available.forEach((s) => this.world.setArmyHold(s));

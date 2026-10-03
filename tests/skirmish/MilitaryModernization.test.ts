@@ -22,11 +22,10 @@ function setup() {
   p.gold = 1000000;
   p.reserves = 0;
   for (const squad of m.squads) {
-    squad.x = ((squad.playerId === 2 ? p.base % 96 : 2) + 0.5) * FIXED;
-    squad.y =
-      ((squad.playerId === 2 ? Math.floor(p.base / 96) : 2) + 0.5) * FIXED;
+    m.updateSquad(squad.id, { x: ((squad.playerId === 2 ? p.base % 96 : 2) + 0.5) * FIXED });
+    m.updateSquad(squad.id, { y: ((squad.playerId === 2 ? Math.floor(p.base / 96) : 2) + 0.5) * FIXED });
   }
-  const b: Building = {
+  const b: Building = m.addBuilding({
     id: m.allocateId(),
     type: "arms-factory",
     tile: p.base,
@@ -35,8 +34,8 @@ function setup() {
     remainingTicks: 0,
     health: 2000,
     maxHealth: 2000,
-  };
-  m.buildings.push(b);
+  });
+
   return { m, e, p, stock, b };
 }
 describe("AI equipment production and refit rotation", () => {
@@ -95,8 +94,8 @@ describe("AI equipment production and refit rotation", () => {
       own = m.squads.filter((s) => s.playerId === p.id);
     stock["equipment:modern"] = 1;
     for (const s of own) {
-      s.moved = true;
-      s.order = { type: "move", tile: p.base };
+      m.updateSquad(s.id, { moved: true });
+      m.updateSquad(s.id, { order: { type: "move", tile: p.base } });
     }
     for (let i = 0; i < 55; i++) m.step();
     expect(

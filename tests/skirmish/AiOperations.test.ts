@@ -1,4 +1,4 @@
-import { describe, expect, it } from "vitest";
+import { describe, expect, it, vi } from "vitest";
 import { GameMapImpl } from "../../src/core/game/GameMap";
 import { Skirmish } from "../../src/skirmish/Simulation";
 import { DamageLedger } from "../../src/skirmish/Conquest";
@@ -8,11 +8,38 @@ function fixture(enabled = true, count = 3) {
   const cells = new Uint8Array(160 * 96).fill(133), map = new GameMapImpl(160, 96, cells, cells.length);
   const m = new Skirmish(map, { seed: 47, aiCount: count, tribes: false, runAi: false, ruleset: "ages-v1", aiWarPolicy: enabled });
   for (const p of m.players) { p.base = map.ref(20 + (p.id % 8) * 15, 30 + Math.floor(p.id / 8) * 20); p.personalityId = "balanced"; }
+  // Readiness now requires real healthy troops and logistics, rather than
+  // accepting the synthetic candidate-count input as a physical roster.
+  for(const player of m.players){const template=m.squads.find(s=>s.playerId===player.id)!;player.reserves=2000;for(let i=1;i<12;i++)m.addSquad({...structuredClone(template),id:m.allocateId(),x:(map.x(player.base)+(i%4))*FIXED,y:(map.y(player.base)+Math.floor(i/4))*FIXED});}
   return { m, map, ops: m.expansion!.operations, forces: new Map(m.players.map(p => [p.id, 12])) };
 }
 function evaluate(f: ReturnType<typeof fixture>, tick: number) { f.m.tick = tick; f.ops.step(f.forces); }
 
 describe("optional AI strategic operations", () => {
+  it("shares footprint reads only within routing and invalidates ownership and permission changes", () => {
+    const f=fixture(), tile=f.map.ref(90,80), near=f.map.ref(87,80);
+    const internal=f.m as unknown as {aiFootprintAllowed(id:number,tile:number):boolean;changeOwner(tile:number,id:number):void;drainRoutes():void};
+    const enter=vi.spyOn(f.ops,"canEnter");
+    const step=vi.spyOn(f.m.routePlanner,"step").mockImplementation(()=>{
+      expect(internal.aiFootprintAllowed(2,near)).toBe(true);
+      const calls=enter.mock.calls.length;
+      expect(internal.aiFootprintAllowed(2,near)).toBe(true);
+      expect(enter.mock.calls.length).toBe(calls);
+      internal.changeOwner(tile,1);
+      expect(internal.aiFootprintAllowed(2,near)).toBe(false);
+      f.m.notifyHostileAction(2,1,tile);
+      expect(internal.aiFootprintAllowed(2,near)).toBe(true);
+      // Refreshing an existing threat changes entry permission even though it
+      // deliberately does not supersede all outstanding route jobs.
+      f.ops.threatened(2,1,f.map.ref(140,80));
+      expect(internal.aiFootprintAllowed(2,near)).toBe(false);
+      return 0;
+    });
+    internal.drainRoutes(); step.mockRestore();
+    internal.changeOwner(tile,3);
+    expect(internal.aiFootprintAllowed(2,near)).toBe(false);
+    expect(internal.aiFootprintAllowed(1,near)).toBe(true);
+  });
   it("prepares one geographic offensive target, declares once, and recovers after losses", () => {
     const f = fixture(); evaluate(f, 1200); evaluate(f, 1260);
     const state = f.ops.state(2)!;
@@ -47,7 +74,7 @@ describe("optional AI strategic operations", () => {
   it("detects capture-radius invasion before ownership changes and ignores allies", () => {
     const f = fixture(), s = f.m.squads.find(s => s.playerId === 1)!;
     const tile = f.map.ref(80, 80); f.m.owners.fill(0); f.m.owners[tile] = 2;
-    s.x = (f.map.x(tile) - 2) * FIXED + FIXED / 2; s.y = f.map.y(tile) * FIXED + FIXED / 2;
+    f.m.updateSquad(s.id, { x: (f.map.x(tile) - 2) * FIXED + FIXED / 2 }); f.m.updateSquad(s.id, { y: f.map.y(tile) * FIXED + FIXED / 2 });
     (f.m as unknown as {capture(): void}).capture();
     expect(f.m.owners[tile]).toBe(2); expect(f.ops.canTarget(2, 1)).toBe(true);
     f.m.expansion!.diplomacy.state.alliances.push({id: 100,a: 2,b: 3,expiresTick: 6000,renewal:[]});

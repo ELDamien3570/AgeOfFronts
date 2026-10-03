@@ -1,3 +1,4 @@
+import { retainSquads } from "./UnitFixtures";
 import { describe, expect, it, vi } from "vitest";
 import type { GameMap } from "../../src/core/game/GameMap";
 import {
@@ -79,10 +80,10 @@ describe("shared forest ground", () => {
       const map = fixture(),
         match = new Skirmish(map, { seed: 42, aiCount: 1, runAi: false });
       const squad = match.squads[0];
-      match.squads.splice(0, match.squads.length, squad);
-      squad.kind = kind;
-      squad.x = 40 * FIXED + FIXED / 2;
-      squad.y = 20 * FIXED + FIXED / 2;
+      retainSquads(match, [squad]);
+      match.updateSquad(squad.id, { kind: kind });
+      match.updateSquad(squad.id, { x: 40 * FIXED + FIXED / 2 });
+      match.updateSquad(squad.id, { y: 20 * FIXED + FIXED / 2 });
       const start = squad.x;
       expect(
         match.applyCommand({

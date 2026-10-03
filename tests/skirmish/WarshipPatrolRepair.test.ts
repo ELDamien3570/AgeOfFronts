@@ -39,7 +39,7 @@ function spawnWarship(
   yTile: number,
   playerId = 1,
 ): Ship {
-  const ship: Ship = {
+  const ship: Ship = match.addShip({
     id: (match as any).nextId++,
     playerId,
     kind: "warship",
@@ -55,14 +55,14 @@ function spawnWarship(
     patrolTile: match.map.ref(xTile, yTile),
     repairState: "patrolling",
     patrolDwellTicks: 100,
-  };
-  match.ships.push(ship);
+  });
+
   return ship;
 }
 
 function addPort(match: Skirmish, xTile: number, yTile: number, playerId = 1) {
   const tile = match.map.ref(xTile, yTile);
-  const port = {
+  const port = match.addBuilding({
     id: (match as any).nextId++,
     playerId,
     type: "port" as const,
@@ -70,9 +70,8 @@ function addPort(match: Skirmish, xTile: number, yTile: number, playerId = 1) {
     remainingTicks: 0,
     health: 1000,
     maxHealth: 1000,
-  };
-  match.buildings.push(port);
-  (match as any).buildingIndex.add(port);
+  });
+
   return port;
 }
 
@@ -81,7 +80,7 @@ describe("Warship patrol and dock repair logic", () => {
     const { match } = createMatch(true), port = addPort(match, 19, 25);
     const ship = spawnWarship(match, 35, 25);
     const anchor = ship.patrolTile;
-    ship.health = 500; ship.lastCombatTick = -WARSHIP_COMBAT_COOLDOWN;
+    match.updateShip(ship.id, { health: 500 }); match.updateShip(ship.id, { lastCombatTick: -WARSHIP_COMBAT_COOLDOWN });
     const search = vi.spyOn(match.waterPaths, "find");
     for (let i = 0; i < 15 && ship.repairState === "patrolling"; i++) match.step();
     expect(ship.repairState).toBe("returning-to-dock");
@@ -123,7 +122,7 @@ describe("Warship patrol and dock repair logic", () => {
     expect(match.tileOf(ship)).toBe(targetTile);
 
     // Force dwell timer to expire
-    ship.patrolDwellTicks = 0;
+    match.updateShip(ship.id, { patrolDwellTicks: 0 });
     match.step();
 
     // Ship should have picked a wander tile within small patrol radius (<= 2 cells)
@@ -141,19 +140,19 @@ describe("Warship patrol and dock repair logic", () => {
     // Port at coast tile (19, 25) bordering water at (20, 25)
     const port = addPort(match, 19, 25);
     const ship = spawnWarship(match, 30, 25);
-    ship.patrolTile = match.map.ref(30, 25);
+    match.updateShip(ship.id, { patrolTile: match.map.ref(30, 25) });
 
     // Deal damage
-    ship.health = 500;
-    ship.lastCombatTick = match.tick;
-    ship.fighting = true;
+    match.updateShip(ship.id, { health: 500 });
+    match.updateShip(ship.id, { lastCombatTick: match.tick });
+    match.updateShip(ship.id, { fighting: true });
 
     // While in active combat, ship must not retreat
     match.step();
     expect(ship.repairState).toBe("patrolling");
 
     // Combat ends
-    ship.fighting = false;
+    match.updateShip(ship.id, { fighting: false });
 
     // Advance past combat cooldown (WARSHIP_COMBAT_COOLDOWN)
     for (let i = 0; i < WARSHIP_COMBAT_COOLDOWN + 15; i++) {
@@ -180,10 +179,10 @@ describe("Warship patrol and dock repair logic", () => {
     const ship2 = spawnWarship(match, 26, 25);
 
     // Damage both ships
-    ship1.health = 400;
-    ship1.lastCombatTick = -WARSHIP_COMBAT_COOLDOWN;
-    ship2.health = 300;
-    ship2.lastCombatTick = -WARSHIP_COMBAT_COOLDOWN;
+    match.updateShip(ship1.id, { health: 400 });
+    match.updateShip(ship1.id, { lastCombatTick: -WARSHIP_COMBAT_COOLDOWN });
+    match.updateShip(ship2.id, { health: 300 });
+    match.updateShip(ship2.id, { lastCombatTick: -WARSHIP_COMBAT_COOLDOWN });
 
     // Step simulation so ships evaluate dock capacity
     for (let i = 0; i < 15; i++) {
@@ -234,10 +233,10 @@ describe("Warship patrol and dock repair logic", () => {
     const ship1 = spawnWarship(match, 25, 25);
     const ship2 = spawnWarship(match, 26, 25);
 
-    ship1.health = 500;
-    ship1.lastCombatTick = -WARSHIP_COMBAT_COOLDOWN;
-    ship2.health = 600;
-    ship2.lastCombatTick = -WARSHIP_COMBAT_COOLDOWN;
+    match.updateShip(ship1.id, { health: 500 });
+    match.updateShip(ship1.id, { lastCombatTick: -WARSHIP_COMBAT_COOLDOWN });
+    match.updateShip(ship2.id, { health: 600 });
+    match.updateShip(ship2.id, { lastCombatTick: -WARSHIP_COMBAT_COOLDOWN });
 
     for (let i = 0; i < 15; i++) {
       match.step();
@@ -272,11 +271,11 @@ describe("Warship patrol and dock repair logic", () => {
     addPort(match, 19, 25);
     const patrolStation = match.map.ref(35, 30);
     const ship = spawnWarship(match, 35, 30);
-    ship.patrolTile = patrolStation;
+    match.updateShip(ship.id, { patrolTile: patrolStation });
 
     // Damage ship
-    ship.health = 500;
-    ship.lastCombatTick = -WARSHIP_COMBAT_COOLDOWN;
+    match.updateShip(ship.id, { health: 500 });
+    match.updateShip(ship.id, { lastCombatTick: -WARSHIP_COMBAT_COOLDOWN });
 
     // Step until docked and repaired
     for (let i = 0; i < 500 && ship.health < 1000; i++) {
@@ -303,8 +302,8 @@ describe("Warship patrol and dock repair logic", () => {
     const { match } = createMatch();
     addPort(match, 19, 25);
     const ship = spawnWarship(match, 35, 25);
-    ship.health = 500;
-    ship.lastCombatTick = -WARSHIP_COMBAT_COOLDOWN;
+    match.updateShip(ship.id, { health: 500 });
+    match.updateShip(ship.id, { lastCombatTick: -WARSHIP_COMBAT_COOLDOWN });
 
     for (let i = 0; i < 15; i++) {
       match.step();

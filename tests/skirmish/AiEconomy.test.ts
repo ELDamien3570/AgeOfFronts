@@ -150,10 +150,10 @@ describe("coordinated AI economy", () => {
       ["StoneAge", "BronzeAge"].includes(t.age),
     ).map((t) => t.id);
     for (const squad of game.squads.filter((s) => s.playerId === player.id)) {
-      squad.kind = "infantry";
-      squad.definitionId = "stoneage-infantry";
-      squad.x = (game.map.x(player.base) + 0.5) * 256;
-      squad.y = (game.map.y(player.base) + 0.5) * 256;
+      game.updateSquad(squad.id, { kind: "infantry" });
+      game.updateSquad(squad.id, { definitionId: "stoneage-infantry" });
+      game.updateSquad(squad.id, { x: (game.map.x(player.base) + 0.5) * 256 });
+      game.updateSquad(squad.id, { y: (game.map.y(player.base) + 0.5) * 256 });
     }
     player.gold = 100000;
     expansion.supply.inventories[player.id]["equipment:bronzeage"] = 20;

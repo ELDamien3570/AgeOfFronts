@@ -25,7 +25,9 @@ export interface PreviewBounds {
 const CHUNK = 16;
 interface Chunk {
   cursor: number;
-  sites: { tile: number; wallGold: number }[];
+  sites: Map<number, number>;
+  owners?: Uint8Array;
+  rescan?: boolean;
 }
 /** Visible, resumable presentation work. A canceled mode cannot publish stale sites. */
 export class PlacementPreview {
@@ -40,6 +42,7 @@ export class PlacementPreview {
   private readonly wallTiles = new Set<number>();
   private troopTiles = new Set<number>();
   private geometry = "";
+  private buildingGeometry = new Map<number, { tile: number; key: string }>();
   readonly diagnostics = { tested: 0, invalidations: 0 };
   constructor(private readonly map: GameMap) {
     this.buildings = new BuildingIndex(map);
@@ -61,61 +64,84 @@ export class PlacementPreview {
     this.type = undefined;
     this.chunks.clear();
     this.geometry = "";
+    this.buildingGeometry.clear();
+    this.troopTiles.clear();
+  }
+  private invalidate(key: number): void {
+    const chunk = this.chunks.get(key);
+    if (!chunk) return;
+    // Retain legal sites while new work resumes; a packet cannot starve an
+    // already-partial scan by restarting it.
+    if (chunk.cursor === CHUNK * CHUNK) chunk.cursor = 0;
+    else chunk.rescan = true;
+    for (const tile of chunk.sites.keys()) {
+      const quote = this.placement(this.type!, tile);
+      this.diagnostics.tested++;
+      if (quote.reason) chunk.sites.delete(tile);
+      else chunk.sites.set(tile, quote.wallGold);
+    }
+  }
+  private invalidateNear(tile: number, radius: number): void {
+    const x = this.map.x(tile), y = this.map.y(tile);
+    for (let cy = Math.max(0, Math.floor((y-radius)/CHUNK)); cy <= Math.min(Math.ceil(this.map.height()/CHUNK)-1, Math.floor((y+radius)/CHUNK)); cy++)
+      for (let cx = Math.max(0, Math.floor((x-radius)/CHUNK)); cx <= Math.min(Math.ceil(this.map.width()/CHUNK)-1, Math.floor((x+radius)/CHUNK)); cx++)
+        this.invalidate(cy * Math.ceil(this.map.width()/CHUNK) + cx);
   }
   update(snapshot: Snapshot): void {
     this.snapshot = snapshot;
     if (!this.type) return;
     const resourceChanged = this.resources.update(
       snapshot.expansion?.deposits ?? [],
+      snapshot.expansion?.depositGeometryRevision,
+      snapshot.expansion?.depositOwnershipRevision,
     );
-    const geometry =
-      (snapshot.expansion?.progression[this.playerId]?.age ?? "StoneAge") + "/" +
-      snapshot.buildings
-        .map(
-          (b) =>
-            `${b.id}:${b.tile}:${b.playerId}:${b.type}:${b.age ?? "StoneAge"}:${Number(!b.remainingTicks)}:${Number((b.health ?? 1) > 0)}`,
-        )
-        .join("|") +
-      "/" +
-      (snapshot.expansion?.barriers ?? [])
-        .filter((b) => b.health > 0)
-        .map((b) => `${b.id}:${b.playerId}:${b.tiles.join(",")}`)
-        .join("|") +
-      "/" +
-      (snapshot.expansion?.diplomacy.alliances ?? [])
-        .map((t) => `${t.a}:${t.b}`)
-        .join("|");
-    if (
-      geometry !== this.geometry ||
-      resourceChanged ||
-      !snapshot.changedTiles
-    ) {
-      this.geometry = geometry;
-      this.chunks.clear();
+    const nextBuildings = new Map(snapshot.buildings.map(b => [b.id, {
+      tile: b.tile,
+      key: [b.tile,b.playerId,b.type,b.age ?? "StoneAge",!b.remainingTicks,(b.health ?? 1)>0].join(":"),
+    }]));
+    const changedBuildings = [...new Set([...this.buildingGeometry.keys(), ...nextBuildings.keys()])]
+      .filter(id => this.buildingGeometry.get(id)?.key !== nextBuildings.get(id)?.key);
+    const geometry = (snapshot.expansion?.progression[this.playerId]?.age ?? "StoneAge") + "/" +
+      JSON.stringify(snapshot.expansion?.barriers.filter(b => b.health > 0).map(b => [b.id,b.playerId,b.tiles]) ?? []) + "/" +
+      JSON.stringify(snapshot.expansion?.diplomacy.alliances.map(t => [t.a,t.b]) ?? []);
+    const globalChange = geometry !== this.geometry || resourceChanged;
+    if (globalChange || changedBuildings.length) {
       this.buildings.rebuild(snapshot.buildings);
       this.blocked.clear();
       this.wallTiles.clear();
       const diplomacy = new Diplomacy();
-      if (snapshot.expansion)
-        diplomacy.state.alliances = snapshot.expansion.diplomacy.alliances;
+      if (snapshot.expansion) diplomacy.state.alliances = snapshot.expansion.diplomacy.alliances;
       for (const barrier of snapshot.expansion?.barriers ?? [])
-        if (barrier.health > 0)
-          for (const tile of barrier.tiles) {
-            this.wallTiles.add(tile);
-            if (!diplomacy.allied(barrier.playerId, this.playerId))
-              this.blocked.add(tile);
-          }
+        if (barrier.health > 0) for (const tile of barrier.tiles) {
+          this.wallTiles.add(tile);
+          if (!diplomacy.allied(barrier.playerId, this.playerId)) this.blocked.add(tile);
+        }
       for (const building of snapshot.buildings)
-        if (
-          building.type === "tower" &&
-          (building.health ?? 1) > 0 &&
-          !diplomacy.allied(building.playerId, this.playerId)
-        )
+        if (building.type === "tower" && (building.health ?? 1) > 0 && !diplomacy.allied(building.playerId, this.playerId))
           this.blocked.add(building.tile);
+      if (globalChange) for (const key of this.chunks.keys()) this.invalidate(key);
+      else for (const id of changedBuildings) {
+        const before = this.buildingGeometry.get(id), after = nextBuildings.get(id);
+        if (before) this.invalidateNear(before.tile, this.type === "tower" ? 12 : 3);
+        if (after) this.invalidateNear(after.tile, this.type === "tower" ? 12 : 3);
+      }
       this.diagnostics.invalidations++;
-    } else {
-      for (const tile of snapshot.changedTiles)
-        this.chunks.delete(this.chunkKey(this.map.x(tile), this.map.y(tile)));
+    }
+    this.geometry = geometry;
+    this.buildingGeometry = nextBuildings;
+    // Compare ownership only inside retained visible chunks, including full
+    // solo snapshots without changedTiles. Never reset the grid every packet.
+    const columns = Math.ceil(this.map.width()/CHUNK);
+    for (const [key, chunk] of this.chunks) {
+      const owners = new Uint8Array(CHUNK*CHUNK);
+      let changed = false;
+      for (let at=0; at<owners.length; at++) {
+        const x=(key%columns)*CHUNK+at%CHUNK, y=Math.floor(key/columns)*CHUNK+Math.floor(at/CHUNK);
+        owners[at] = this.map.isValidCoord(x,y) ? snapshot.owners[this.map.ref(x,y)] : 0;
+        if (chunk.owners && owners[at] !== chunk.owners[at]) changed=true;
+      }
+      chunk.owners=owners;
+      if (changed) this.invalidate(key);
     }
     if (this.type === "tower" && snapshot.expansion) {
       const occupied = new Set(
@@ -125,8 +151,10 @@ export class PlacementPreview {
             this.map.ref(Math.floor(s.x / FIXED), Math.floor(s.y / FIXED)),
           ),
       );
-      for (const tile of new Set([...this.troopTiles, ...occupied])) {
-        if (this.troopTiles.has(tile) === occupied.has(tile)) continue;
+      const previous = this.troopTiles;
+      this.troopTiles = occupied;
+      for (const tile of new Set([...previous, ...occupied])) {
+        if (previous.has(tile) === occupied.has(tile)) continue;
         // A tower can link only within twelve tiles. A changed troop cell can
         // therefore affect only these neighbouring visible placement chunks.
         const x = this.map.x(tile),
@@ -149,7 +177,7 @@ export class PlacementPreview {
             );
             cx++
           )
-            this.chunks.delete(cy * Math.ceil(this.map.width() / CHUNK) + cx);
+            this.invalidate(cy * Math.ceil(this.map.width() / CHUNK) + cx);
       }
       this.troopTiles = occupied;
     }
@@ -300,8 +328,15 @@ export class PlacementPreview {
     for (let cy = top; cy <= bottom; cy++)
       for (let cx = left; cx <= right; cx++) {
         const key = cy * columns + cx,
-          chunk = this.chunks.get(key) ?? { cursor: 0, sites: [] };
+          chunk = this.chunks.get(key) ?? { cursor: 0, sites: new Map<number, number>() };
         this.chunks.set(key, chunk);
+        if (!chunk.owners) {
+          chunk.owners = new Uint8Array(CHUNK * CHUNK);
+          for (let at=0; at<chunk.owners.length; at++) {
+            const x=cx*CHUNK+at%CHUNK, y=cy*CHUNK+Math.floor(at/CHUNK);
+            chunk.owners[at]=this.map.isValidCoord(x,y)?this.snapshot.owners[this.map.ref(x,y)]:0;
+          }
+        }
         while (chunk.cursor < CHUNK * CHUNK && budget > 0) {
           const at = chunk.cursor++,
             x = cx * CHUNK + (at % CHUNK),
@@ -312,10 +347,12 @@ export class PlacementPreview {
             const tile = this.map.ref(x, y);
             const placement = this.placement(this.type, tile);
             if (!placement.reason)
-              chunk.sites.push({ tile, wallGold: placement.wallGold });
+              chunk.sites.set(tile, placement.wallGold);
+            else chunk.sites.delete(tile);
           }
         }
-        for (const { tile, wallGold } of chunk.sites)
+        if (chunk.cursor === CHUNK * CHUNK && chunk.rescan) {chunk.cursor=0;chunk.rescan=false;}
+        for (const [tile, wallGold] of chunk.sites)
           if (
             (!expansion || player.gold >= baseGold + wallGold) &&
             this.map.x(tile) >= bounds.left &&

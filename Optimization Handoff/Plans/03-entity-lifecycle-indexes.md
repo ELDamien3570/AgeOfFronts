@@ -1,6 +1,6 @@
 # P03: Maintain entity and ownership indexes
 
-Status: **remaining work, not implemented by this handoff**. Read
+Status: **local implementation complete at cd4a46c; broader capacity qualification remains open**. Read
 [`../agent-workflow.md`](../agent-workflow.md) and [`../handoff.md`](../handoff.md).
 
 ## Dependencies and ownership
@@ -53,3 +53,25 @@ If a required dependency, hardware test, source asset or authorization is
 unavailable, record the exact blocker and stop only that dependent work. Do not
 turn a refused or unverified test into a pass, broaden authority, or enable a
 production feature merely to demonstrate that code exists.
+
+## Local continuation checkpoint
+
+The building lifecycle slice is implemented at `1fe9ede1b8ee9c093032d0257423fb90c4e022ab`.
+See [exact source, counters and validation](../Evidence/03-building-lifecycle.md).
+At the building-only checkpoint, squad/ship/cargo ownership and the local
+full-suite timing gate remained open. The subsequent unit checkpoint below
+updates that boundary; this plan still has broader acceptance work. The user approved read-only domain records/collections and explicit
+mutation methods, including migration of affected fixtures.
+
+## Unit checkpoint and requested pause
+
+Code checkpoint `a0e2aa1587b29c7101ebade7d85698ea7a45d657` implements squad/ship membership and cargo ownership.
+See [source, work counters and validation](../Evidence/03-unit-lifecycle.md).
+The final local suite passed 1,034 tests in 158 files, TypeScript and the build;
+remaining consumer migration and runtime/browser/ARM qualification remain open.
+The user requested a pause after this gate. P11 and P14 stay reserved for the
+parallel session; no next dependent implementation has begun.
+
+## Nightly integration checkpoint
+
+See [cd4a46c implementation scope and exact local validation](../Evidence/nightly-batch-01.md). External acceptance remains open.

@@ -12,6 +12,9 @@ export interface AiFrontRecord {
   stableSince: number;
   observed: number;
 }
+export interface AiDefensiveRegion {
+ id:string;playerId:number;rival:number;sectors:string[];representative:string;anchor:number;edges:number;since:number;observed:number;
+}
 interface Scan {
   id: string;
   revision: number;
@@ -34,6 +37,38 @@ export class AiFrontRecords {
       return r ? [r] : [];
     });
   }
+  private readonly regions=new Map<number,AiDefensiveRegion[]>();
+  private readonly regionSignatures=new Map<number,string>();
+  private regionSerial=0;
+  regionsForPlayer(playerId:number):readonly AiDefensiveRegion[] {
+    const records=this.forPlayer(playerId).filter(r=>this.valid(r));
+    const signature=records.map(r=>`${r.id}:${r.revision}:${r.rival}:${r.anchor}`).join(";");
+    if(this.regionSignatures.get(playerId)===signature)return this.regions.get(playerId)??[];
+    const old=this.regions.get(playerId)??[],unused=new Set(old.map(r=>r.id)),pending=new Map(records.map(r=>[r.id,r])),result:AiDefensiveRegion[]=[];
+    // The source envelope is eight stable sectors per faction, so connectivity
+    // is bounded by 64 comparisons and never floods world terrain.
+    while(pending.size){
+      const first=pending.values().next().value!,group=[first];pending.delete(first.id);
+      for(let cursor=0;cursor<group.length;cursor++){
+        const current=group[cursor],chunk=this.economy.boundaries!.chunk(current.id)!;
+        for(const [id,candidate] of pending){
+          const other=this.economy.boundaries!.chunk(id)!;
+          if(candidate.rival===first.rival && Math.abs(chunk.x-other.x)+Math.abs(chunk.y-other.y)<=1 &&
+            this.expansion.world.paths.connected(current.anchor,candidate.anchor)){group.push(candidate);pending.delete(id);}
+        }
+      }
+      group.sort((a,b)=>b.edges-a.edges || a.stableSince-b.stableSince || a.anchor-b.anchor);
+      const ids=group.map(r=>r.id),matches=old.filter(r=>unused.has(r.id)&&r.rival===first.rival)
+        .map(r=>({record:r,overlap:r.sectors.filter(id=>ids.includes(id)).length})).filter(r=>r.overlap>0)
+        .sort((a,b)=>b.overlap-a.overlap||a.record.since-b.record.since||a.record.id.localeCompare(b.record.id));
+      const previous=matches[0]?.record;if(previous)unused.delete(previous.id);
+      const retained=previous&&group.find(r=>r.id===previous.representative),representative=retained??group[0];
+      result.push({id:previous?.id??`region:${playerId}:${++this.regionSerial}`,playerId,rival:first.rival,sectors:ids,
+        representative:representative.id,anchor:representative.anchor,edges:group.reduce((n,r)=>n+r.edges,0),since:previous?.since??this.expansion.world.tick,observed:this.expansion.world.tick});
+    }
+    result.sort((a,b)=>b.edges-a.edges||a.since-b.since||a.anchor-b.anchor);
+    this.regions.set(playerId,result);this.regionSignatures.set(playerId,signature);return result;
+  }
   private readonly cursors = new Map<number, string | undefined>();
   private player = 0;
   private scan?: Scan;
@@ -48,11 +83,15 @@ export class AiFrontRecords {
       cursors: [...this.cursors],
       player: this.player,
       scan: this.scan,
+      regions:[...this.regions],regionSignatures:[...this.regionSignatures],regionSerial:this.regionSerial,
     });
   }
   restore(saved: ReturnType<AiFrontRecords["checkpoint"]>): void {
     this.records.clear();
-    this.owned.clear();
+    this.owned.clear();this.regions.clear();this.regionSignatures.clear();
+    this.regionSerial=saved.regionSerial??0;
+    for(const [id,regions] of structuredClone(saved.regions??[]))this.regions.set(id,regions);
+    for(const [id,signature] of saved.regionSignatures??[])this.regionSignatures.set(id,signature);
     for (const [id, r] of structuredClone(saved.records)) {
       this.records.set(id, r);
       const own = this.owned.get(r.playerId) ?? [];
@@ -66,7 +105,7 @@ export class AiFrontRecords {
   }
   release(playerId: number): void {
     for (const id of this.owned.get(playerId) ?? []) this.records.delete(id);
-    this.owned.delete(playerId);
+    this.owned.delete(playerId);this.regions.delete(playerId);this.regionSignatures.delete(playerId);
     this.cursors.delete(playerId);
     if (this.scan?.playerId === playerId) this.scan = undefined;
   }

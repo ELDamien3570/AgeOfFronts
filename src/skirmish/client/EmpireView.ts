@@ -6,6 +6,7 @@ import { BUILDING_RULES } from "../Rules";
 
 import { UNIT } from "../content/Units";
 
+import { AllianceRenewalView } from "./AllianceRenewalView";
 import { AgeThemeView } from "./AgeThemeView";
 import { AGE_UI_THEMES } from "./AgeUiTheme";
 import { EmpireHudView } from "./EmpireHudView";
@@ -51,6 +52,7 @@ export class EmpireView {
   private readonly dock: EmpireHudView;
   private readonly researchOpportunities: ResearchOpportunitiesView;
   private readonly ageTheme: AgeThemeView;
+  private readonly allianceRenewals: AllianceRenewalView;
   readonly buildAges: Partial<Record<BuildingType, Age>> = {};
   readonly choices: Partial<Record<SquadType | ShipType, string>> = {};
 
@@ -83,6 +85,7 @@ export class EmpireView {
   ) {
     this.ageTheme = new AgeThemeView(root);
     const main = root.querySelector(".battlefield")!;
+    this.allianceRenewals = new AllianceRenewalView(main, command => this.actions.command(command));
     this.researchOpportunities = new ResearchOpportunitiesView(
       main,
       (command) => this.actions.command(command),
@@ -177,6 +180,7 @@ export class EmpireView {
 
   reset(): void {
     this.ageTheme.reset();
+    this.allianceRenewals.reset();
     this.researchOpportunities.reset();
     this.dock.reset();
     this.close();
@@ -247,6 +251,7 @@ export class EmpireView {
 
     this.dock.update(vm);
     this.researchOpportunities.update(vm);
+    this.allianceRenewals.update(vm);
 
     const focus = this.actions.focusedRef();
 
@@ -275,10 +280,10 @@ export class EmpireView {
     if (
       !buildingUpgrade && refit &&
       actions.dataset.key !==
-        `${refit.reason}:${refit.target?.id}:${refit.selected.map((s) => s.id).join()}`
+        `${refit.reason}:${refit.target?.id}:${refit.eligibleCount}:${refit.cost?.gold}:${JSON.stringify(refit.cost?.items)}:${refit.selected.map((s) => s.id).join()}`
     ) {
-      actions.dataset.key = `${refit.reason}:${refit.target?.id}:${refit.selected.map((s) => s.id).join()}`;
-      actions.innerHTML = `<button ${refit.reason || !refit.target ? "disabled" : ""}>Upgrade ${refit.selected.length} <kbd>U</kbd></button><small>${escape(refit.reason ?? `${refit.target!.name} · ${fmt(refit.cost!.gold)} gold · 10 sec · promotion resets`)}</small>`;
+      actions.dataset.key = `${refit.reason}:${refit.target?.id}:${refit.eligibleCount}:${refit.cost?.gold}:${JSON.stringify(refit.cost?.items)}:${refit.selected.map((s) => s.id).join()}`;
+      actions.innerHTML = `<button ${refit.reason || !refit.target ? "disabled" : ""}>Upgrade ${refit.affordable.length}/${refit.eligibleCount} <kbd>U</kbd></button><small>${escape(refit.reason ?? `${refit.target!.name} · ${fmt(refit.cost!.gold ?? 0)} gold · ${refit.affordable.length} of ${refit.eligibleCount} eligible · 10 sec · promotion resets`)}</small>`;
     }
 
     if (this.panel && performance.now() - this.lastRender > 500)

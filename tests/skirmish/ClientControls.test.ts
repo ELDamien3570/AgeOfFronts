@@ -1,4 +1,5 @@
 import { describe, expect, it } from "vitest";
+import { updateSnapshotBuilding } from "./BuildingFixtures";
 import { GameMapImpl } from "../../src/core/game/GameMap";
 import { ControlGroups } from "../../src/skirmish/client/ControlGroups";
 import { hotkeyAction } from "../../src/skirmish/client/Controls";
@@ -49,7 +50,7 @@ function build(m: Skirmish, type: BuildingType, x: number, y: number) {
     m.applyCommand({ type: "build", playerId: 1, buildingType: type, tile }),
   ).toBeNull();
   const building = m.buildings[m.buildings.length - 1];
-  building.remainingTicks = 0;
+  m.updateBuilding((building).id, { remainingTicks: 0 });
   return building;
 }
 
@@ -127,18 +128,18 @@ describe("automatic recruitment and selective replenishment", () => {
       second = build(m, "archery", 45, 20);
     s.selectedBuilding = m.buildings.find((b) => b.playerId === 2)!.id;
     const army = m.squads[0];
-    army.x = 44 * FIXED;
-    army.y = 20 * FIXED;
+    m.updateSquad(army.id, { x: 44 * FIXED });
+    m.updateSquad(army.id, { y: 20 * FIXED });
     s.selected.add(army.id);
     let vm = new SkirmishViewModel(m.snapshot(), s);
     expect(vm.recruitment("archer").building?.id).toBe(second.id);
     expect(vm.recruitment("archer").enabled).toBe(true);
     expect(vm.recruitment("infantry").enabled).toBe(true);
     expect(vm.recruitment("cavalry").enabled).toBe(false);
-    second.remainingTicks = 1;
+    m.updateBuilding((second).id, { remainingTicks: 1 });
     vm = new SkirmishViewModel(m.snapshot(), s);
     expect(vm.recruitment("archer").building?.id).toBe(first.id);
-    first.playerId = 2;
+    m.updateBuilding((first).id, { playerId: 2 });
     expect(
       new SkirmishViewModel(m.snapshot(), s).recruitment("archer").enabled,
     ).toBe(false);
@@ -169,8 +170,8 @@ describe("automatic recruitment and selective replenishment", () => {
       first = build(m, "port", 20, 6),
       second = build(m, "port", 50, 6);
     const army = m.squads[0];
-    army.x = 49 * FIXED;
-    army.y = 7 * FIXED;
+    m.updateSquad(army.id, { x: 49 * FIXED });
+    m.updateSquad(army.id, { y: 7 * FIXED });
     s.selected.add(army.id);
     const snapshot = m.snapshot(),
       vm = new SkirmishViewModel(snapshot, s);
@@ -179,7 +180,7 @@ describe("automatic recruitment and selective replenishment", () => {
     snapshot.players[0].gold = 300;
     expect(vm.recruitment("transport").enabled).toBe(true);
     expect(vm.recruitment("warship").enabled).toBe(false);
-    snapshot.buildings.find((b) => b.id === second.id)!.remainingTicks = 1;
+    updateSnapshotBuilding(snapshot, (snapshot.buildings.find((b) => b.id === second.id)!).id, { remainingTicks: 1 });
     expect(vm.recruitment("transport").building?.id).toBe(first.id);
     m.applyCommand({
       type: "recruit-ship",
@@ -202,17 +203,17 @@ describe("automatic recruitment and selective replenishment", () => {
         (unit) => unit.playerId === 1,
       );
     for (const unit of [friendly, hostile, full, aboard]) {
-      unit.troops = 800;
+      m.updateSquad(unit.id, { troops: 800 });
       s.selected.add(unit.id);
     }
-    full.troops = 1000;
-    aboard.embarkedOn = 900;
+    m.updateSquad(full.id, { troops: 1000 });
+    m.updateSquad(aboard.id, { embarkedOn: 900 });
     own(m, m.tileOf(friendly));
     own(m, m.tileOf(hostile), 2);
-    hostile.order = {
+    m.updateSquad(hostile.id, { order: {
       type: "attack",
       targetId: m.squads.find((unit) => unit.playerId === 2)!.id,
-    };
+    } });
     const vm = new SkirmishViewModel(m.snapshot(), s);
     expect(vm.replenishableSquads.map((unit) => unit.id)).toEqual([
       friendly.id,
@@ -245,8 +246,8 @@ describe("automatic recruitment and selective replenishment", () => {
     const s = selection();
     const barracks = build(m, "barracks", 20, 10);
     const city = build(m, "city", 25, 10);
-    barracks.health = 600;
-    city.health = 800;
+    m.updateBuilding((barracks).id, { health: 600 });
+    m.updateBuilding((city).id, { health: 800 });
     m.players[0].gold = 5000;
 
     s.selectedBuildings = new Set([barracks.id, city.id]);
@@ -317,12 +318,12 @@ describe("control group selection", () => {
     s.selected.add(enemy.id);
     groups.bind(0, s, m.snapshot(), true);
     expect(groups.count(0)).toBe(1);
-    ownUnit.embarkedOn = 50;
+    m.updateSquad(ownUnit.id, { embarkedOn: 50 });
     expect(groups.recall(0, m.snapshot()).selected.size).toBe(0);
     expect(groups.count(0)).toBe(1);
-    ownUnit.embarkedOn = null;
+    m.updateSquad(ownUnit.id, { embarkedOn: null });
     expect(groups.recall(0, m.snapshot()).selected.has(ownUnit.id)).toBe(true);
-    m.squads.splice(m.squads.indexOf(ownUnit), 1);
+    for (const record of m.squads.slice(m.squads.indexOf(ownUnit), (m.squads.indexOf(ownUnit)) + (1))) m.removeSquad(record.id);
     expect(groups.recall(0, m.snapshot()).selected.size).toBe(0);
     expect(groups.count(0)).toBe(0);
     groups.bind(
@@ -350,19 +351,19 @@ describe("viewport and travel-facing presentation", () => {
       presentation = new UnitPresentation();
     presentation.update(m.snapshot());
     expect(presentation.angle(unit.id)).toBe(0);
-    unit.x += FIXED;
+    m.updateSquad(unit.id, { x: unit.x + (FIXED) });
     presentation.update(m.snapshot());
     expect(presentation.angle(unit.id)).toBeCloseTo(-Math.PI / 2);
     presentation.update(m.snapshot());
     expect(presentation.angle(unit.id)).toBeCloseTo(-Math.PI / 2);
-    unit.y -= FIXED;
+    m.updateSquad(unit.id, { y: unit.y - (FIXED) });
     presentation.update(m.snapshot());
     expect(presentation.angle(unit.id)).toBeCloseTo(-Math.PI);
-    unit.embarkedOn = 50;
-    unit.x += 10 * FIXED;
+    m.updateSquad(unit.id, { embarkedOn: 50 });
+    m.updateSquad(unit.id, { x: unit.x + (10 * FIXED) });
     presentation.update(m.snapshot());
-    unit.embarkedOn = null;
-    unit.y += 5 * FIXED;
+    m.updateSquad(unit.id, { embarkedOn: null });
+    m.updateSquad(unit.id, { y: unit.y + (5 * FIXED) });
     presentation.update(m.snapshot());
     expect(presentation.angle(unit.id)).toBeCloseTo(-Math.PI);
     presentation.reset();

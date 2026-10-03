@@ -27,15 +27,15 @@ function fixture(researched = true) {
       (t) => t.id,
     );
   const add = (type: BuildingType = "factory") => {
-    const building = {
+    const building = m.addBuilding({
       id: m.allocateId(),
       type,
       tile: m.map.ref(10, 10),
       playerId: 1,
       remainingTicks: 0,
       health: 2000,
-    };
-    m.buildings.push(building);
+    });
+
     return building;
   };
   const building = add(),
@@ -82,11 +82,11 @@ function fixture(researched = true) {
 
 describe("grouped production priorities", () => {
   it("shows one control per owned building type with counts instead of individual cards", () => {
-    const { root, add, render, group } = fixture();
+    const { m, root, add, render, group } = fixture();
     add();
-    add().remainingTicks = 100;
-    add().playerId = 2;
-    add().health = 0;
+    m.updateBuilding((add()).id, { remainingTicks: 100 });
+    m.updateBuilding((add()).id, { playerId: 2 });
+    m.updateBuilding((add()).id, { health: 0 });
     add("blacksmith");
     render();
     expect(root.querySelectorAll(".producer")).toHaveLength(2);
@@ -204,7 +204,7 @@ describe("grouped production priorities", () => {
     expect(button("refine-steel").textContent).toContain("Requires research:");
     button("refine-steel").click();
     expect(command).not.toHaveBeenCalled();
-    building.remainingTicks = 100;
+    m.updateBuilding((building).id, { remainingTicks: 100 });
     m.expansion!.progression.states[1].completed = TECHNOLOGIES.map(
       (t) => t.id,
     );
@@ -213,7 +213,7 @@ describe("grouped production priorities", () => {
     expect(button("refine-bronze").disabled).toBe(false);
     button("refine-bronze").click();
     expect(command).toHaveLastReturnedWith(null);
-    building.health = 0;
+    m.updateBuilding((building).id, { health: 0 });
     render();
     expect(root.querySelector(".producer")).toBeNull();
   });

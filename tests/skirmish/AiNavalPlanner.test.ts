@@ -30,7 +30,7 @@ function fixture(split = false) {
   expansion.progression.states[player.id].completed.push(
     ...TECHNOLOGIES.filter((t) => t.age === "StoneAge").map((t) => t.id),
   );
-  const port = {
+  const port = game.addBuilding({
     id: game.allocateId(),
     playerId: player.id,
     type: "port" as const,
@@ -38,10 +38,10 @@ function fixture(split = false) {
     age: "StoneAge" as const,
     health: 1000,
     remainingTicks: 0,
-  };
-  game.buildings.push(port);
+  });
+
   const addShip = (owner = player.id, x = 10, health = 1000): Ship => {
-    const ship: Ship = {
+    const ship: Ship = game.addShip({
       id: game.allocateId(),
       playerId: owner,
       kind: "warship",
@@ -56,8 +56,8 @@ function fixture(split = false) {
       fighting: false,
       boarding: null,
       repairState: "patrolling",
-    };
-    game.ships.push(ship);
+    });
+
     return ship;
   };
   game.restore(game.checkpoint());
@@ -94,16 +94,23 @@ function fixture(split = false) {
   };
 }
 describe("persistent concentrated port defense", () => {
+  it("physically patrols while the mission retains movement ownership",()=>{
+    const f=fixture(),ship=f.addShip();f.refresh();f.assess();
+    const start={x:ship.x,y:ship.y};
+    for(let i=0;i<120;i++){f.game.step();f.facts.step(f.game.tick,32);f.planner.step(16);}
+    expect(Math.hypot(f.game.ship(ship.id)!.x-start.x,f.game.ship(ship.id)!.y-start.y)).toBeGreaterThan(FIXED);
+    expect(f.planner.missions.get(f.player.id)?.members).toContain(ship.id);
+  });
   it("selects an owned gathering port across seas instead of aborting in the first sea with unrelated facts", () => {
     const f = fixture(true);
-    f.game.building(f.port.id)!.type = "factory";
-    const port = {
+    f.game.updateBuilding((f.game.building(f.port.id)!).id, { type: "factory" });
+    const port = f.game.addBuilding({
       ...f.game.building(f.port.id)!,
       type: "port" as const,
       id: f.game.allocateId(),
       tile: f.map.ref(80, 19),
-    };
-    f.game.buildings.push(port);
+    });
+
     const west = f.addShip(f.player.id, 10),
       east = f.addShip(f.player.id, 80);
     f.refresh();
@@ -134,7 +141,7 @@ describe("persistent concentrated port defense", () => {
       f.game.tick++;
     }
     expect(facts.mock.calls.every((c) => c[1] === 48)).toBe(true);
-    expect(naval.mock.calls.every((c) => c[0] === 32)).toBe(true);
+    expect(naval.mock.calls.every((c) => c[0] === 16)).toBe(true);
     expect(cities.mock.calls.every((c) => c[1]! >= 16)).toBe(true);
   });
   it("keeps a recovery slot and reattaches its repaired ship without replacing dock orders", () => {
@@ -144,9 +151,9 @@ describe("persistent concentrated port defense", () => {
     f.refresh();
     let mission = f.assess();
     const recovering = f.game.ship(first.id)!;
-    recovering.health = 500;
-    recovering.repairState = "returning-to-dock";
-    recovering.repairPortId = mission.port;
+    f.game.updateShip(recovering.id, { health: 500 });
+    f.game.updateShip(recovering.id, { repairState: "returning-to-dock" });
+    f.game.updateShip(recovering.id, { repairPortId: mission.port });
     const before = structuredClone({
       state: recovering.repairState,
       port: recovering.repairPortId,
@@ -174,8 +181,8 @@ describe("persistent concentrated port defense", () => {
     clone.restore(saved);
     expect(clone.checkpoint()).toEqual(saved);
     const healed = f.game.ship(first.id)!;
-    healed.health = 1000;
-    healed.repairState = "patrolling";
+    f.game.updateShip(healed.id, { health: 1000 });
+    f.game.updateShip(healed.id, { repairState: "patrolling" });
     f.game.tick += 100;
     f.refresh();
     mission = f.assess();
@@ -189,7 +196,7 @@ describe("persistent concentrated port defense", () => {
     const mission = f.assess(),
       anchor = mission.anchor;
     f.player.base = f.map.ref(80, 5);
-    f.game.buildings.push({
+    f.game.addBuilding({
       ...f.game.building(mission.port!)!,
       id: f.game.allocateId(),
       tile: f.map.ref(80, 19),
@@ -214,7 +221,7 @@ describe("persistent concentrated port defense", () => {
     expect(f.planner.missions.get(f.player.id)!.assessment!.target).toBe(
       enemy.id,
     );
-    f.game.ship(enemy.id)!.x = 90.5 * FIXED;
+    f.game.updateShip(f.game.ship(enemy.id)!.id, { x: 90.5 * FIXED });
     const apply = vi.spyOn(f.game, "applyCommand"),
       mission = f.assess();
     expect(mission.reason).toBe("target legality changed");
@@ -230,7 +237,7 @@ describe("persistent concentrated port defense", () => {
     f.game.tick += 100;
     f.assess();
     expect(first.purchases).toBe(2);
-    for (const job of f.game.recruitment.jobs) job.remainingTicks = 1;
+    for (const job of f.game.recruitment.jobs) f.game.recruitment.updateJob(job.id, {remainingTicks: 1});
     const complete = () => {
       f.addShip(f.player.id, 12, 0);
       return true;
@@ -269,7 +276,7 @@ describe("persistent concentrated port defense", () => {
     const first = f.facts.readSea("ships", sea),
       cursor = first.next;
     const ship = f.game.ships[0];
-    ship.x = 40.5 * FIXED;
+    f.game.updateShip(ship.id, { x: 40.5 * FIXED });
     f.facts.observeShip(ship);
     expect(f.facts.readSea("ships", sea, cursor).invalid).toBe(false);
     const before = f.facts.checkpoint();
@@ -303,7 +310,7 @@ describe("persistent concentrated port defense", () => {
     const f = fixture(),
       own = f.addShip();
     const recovering = f.addShip(f.player.id, 12);
-    recovering.repairState = "returning-to-dock";
+    f.game.updateShip(recovering.id, { repairState: "returning-to-dock" });
     for (let i = 0; i < 5; i++) f.addShip(1, 20 + i);
     f.refresh();
     const apply = vi.spyOn(f.game, "applyCommand"),
@@ -334,7 +341,7 @@ describe("persistent concentrated port defense", () => {
     expect(sails).toHaveLength(1);
     expect(sails[0].shipIds).toHaveLength(2);
     expect(f.game.shipAdmission.pendingCount).toBe(1);
-    f.game.building(mission.port!)!.playerId = 1;
+    f.game.updateBuilding((f.game.building(mission.port!)!).id, { playerId: 1 });
     f.planner.step();
     expect(mission.state).toBe("abort");
     expect(f.game.shipAdmission.pendingCount).toBe(0);

@@ -1,3 +1,4 @@
+import { retainSquads } from "./UnitFixtures";
 import { describe, expect, it } from "vitest";
 import { GameMapImpl } from "../../src/core/game/GameMap";
 import type { BuildingType, Squad } from "../../src/skirmish/Protocol";
@@ -30,9 +31,10 @@ function match(coastal = false): Skirmish {
 function step(m: Skirmish, ticks: number): void {
   for (let i = 0; i < ticks; i++) m.step();
 }
-function place(s: Pick<Squad, "x" | "y">, x: number, y: number): void {
-  s.x = x * FIXED + FIXED / 2;
-  s.y = y * FIXED + FIXED / 2;
+function place(world: Skirmish, s: Pick<Squad, "id" | "x" | "y">, x: number, y: number): void {
+  const changes = { x: x * FIXED + FIXED / 2, y: y * FIXED + FIXED / 2 };
+  if (world.squad(s.id)) world.updateSquad(s.id, changes);
+  else world.updateShip(s.id, changes);
 }
 function own(m: Skirmish, tile: number, id = 1): void {
   const old = m.owners[tile];
@@ -57,9 +59,9 @@ function single(m: Skirmish): Squad {
   for (const removed of m.squads)
     if (removed !== s && removed !== e)
       m.player(removed.playerId)!.losses += removed.troops;
-  m.squads.splice(0, m.squads.length, s, e);
-  place(s, 30, 25);
-  place(e, 65, 35);
+  retainSquads(m, [s, e]);
+  place(m, s, 30, 25);
+  place(m, e, 65, 35);
   return s;
 }
 function account(m: Skirmish): number {
@@ -172,11 +174,12 @@ describe("queued orders", () => {
       order: { type: "move", tile: m.map.ref(40, 25) },
       append: true,
     });
-    m.squads.splice(m.squads.indexOf(enemy), 1);
+    for (const record of m.squads.slice(m.squads.indexOf(enemy), (m.squads.indexOf(enemy)) + (1))) m.removeSquad(record.id);
     m.step();
     expect(s.order).toEqual({ type: "move", tile: m.map.ref(40, 25) });
     const snapshot = m.snapshot();
-    snapshot.squads[0].queuedOrders.push({ type: "hold" });
+    // Deliberately mutate the actual DTO queue to prove snapshot isolation.
+    (snapshot.squads[0].queuedOrders as unknown as { type: "hold" }[]).push({ type: "hold" });
     expect(s.queuedOrders).toHaveLength(0);
   });
 });
@@ -259,9 +262,9 @@ describe("construction, recruitment, and economy", () => {
     const m = match(),
       s = single(m),
       b = build(m, "stables", 30, 25);
-    place(s, 15, 25);
+    place(m, s, 15, 25);
     const enemy = m.squads[1];
-    place(enemy, 30, 25);
+    place(m, enemy, 30, 25);
     step(m, 30);
     expect(b.playerId).toBe(2);
     expect(b.remainingTicks).toBe(BUILDING_RULES.stables.ticks - 30);
@@ -289,8 +292,8 @@ describe("construction, recruitment, and economy", () => {
     expect(m.players[0].gold - baseGold).toBe(
       10 + Math.floor(m.players[0].land / 40),
     );
-    city.remainingTicks = 0;
-    factory.remainingTicks = 0;
+    m.updateBuilding((city).id, { remainingTicks: 0 });
+    m.updateBuilding((factory).id, { remainingTicks: 0 });
     const beforeReserves = m.players[0].reserves,
       beforeGold = m.players[0].gold;
     step(m, 20);
@@ -308,7 +311,7 @@ describe("squad classes and replenishment", () => {
     const m = match(),
       s = single(m);
     own(m, m.tileOf(s));
-    s.troops = 900;
+    m.updateSquad(s.id, { troops: 900 });
     m.applyCommand({
       type: "order",
       playerId: 1,
@@ -335,22 +338,22 @@ describe("squad classes and replenishment", () => {
     const m = match(),
       archer = single(m),
       enemy = m.squads[1];
-    archer.kind = "archer";
-    place(enemy, 35, 25);
+    m.updateSquad(archer.id, { kind: "archer" });
+    place(m, enemy, 35, 25);
     step(m, 20);
     expect(enemy.troops).toBe(975);
     expect(archer.troops).toBe(1000);
-    place(enemy, 31, 25);
-    enemy.kind = "archer";
-    enemy.troops = 1000;
+    place(m, enemy, 31, 25);
+    m.updateSquad(enemy.id, { kind: "archer" });
+    m.updateSquad(enemy.id, { troops: 1000 });
     step(m, 20);
     expect(enemy.troops).toBe(990);
     expect(archer.troops).toBe(990);
     const before = m.movementSpeed(archer);
-    archer.kind = "cavalry";
+    m.updateSquad(archer.id, { kind: "cavalry" });
     expect(m.movementSpeed(archer)).toBeGreaterThan(before);
-    place(enemy, 65, 35);
-    archer.kind = "archer";
+    place(m, enemy, 65, 35);
+    m.updateSquad(archer.id, { kind: "archer" });
     expect(
       m.applyCommand({
         type: "order",
@@ -370,11 +373,11 @@ describe("squad classes and replenishment", () => {
     const m = match(),
       s = single(m);
     own(m, m.tileOf(s));
-    s.troops = 800;
+    m.updateSquad(s.id, { troops: 800 });
     m.players[0].losses += 200;
     step(m, 20);
     expect(s.troops).toBe(800);
-    s.lastCombatTick = m.tick;
+    m.updateSquad(s.id, { lastCombatTick: m.tick });
     expect(
       m.applyCommand({
         type: "order",
@@ -416,7 +419,7 @@ describe("squad classes and replenishment", () => {
     const m = match(),
       s = single(m);
     own(m, m.tileOf(s));
-    s.troops = 990;
+    m.updateSquad(s.id, { troops: 990 });
     m.players[0].losses += 10;
     m.applyCommand({
       type: "order",
@@ -428,9 +431,9 @@ describe("squad classes and replenishment", () => {
     expect(s.troops).toBe(1000);
     expect(s.order.type).toBe("hold");
     const enemy = m.squads[1];
-    enemy.kind = "archer";
-    place(enemy, 35, 25);
-    s.troops = 800;
+    m.updateSquad(enemy.id, { kind: "archer" });
+    place(m, enemy, 35, 25);
+    m.updateSquad(s.id, { troops: 800 });
     m.applyCommand({
       type: "order",
       playerId: 1,
@@ -449,12 +452,12 @@ describe("archer volleys and positioning", () => {
       moving = match();
     const still = single(stationary),
       walker = single(moving);
-    still.kind = "archer";
-    walker.kind = "archer";
-    place(still, 28, 21);
-    place(walker, 28, 21);
-    place(stationary.squads[1], 32, 25);
-    place(moving.squads[1], 32, 25);
+    stationary.updateSquad(still.id, { kind: "archer" });
+    moving.updateSquad(walker.id, { kind: "archer" });
+    place(stationary, still, 28, 21);
+    place(moving, walker, 28, 21);
+    place(stationary, stationary.squads[1], 32, 25);
+    place(moving, moving.squads[1], 32, 25);
     const corners = [
       [36, 21],
       [36, 29],
@@ -498,8 +501,8 @@ describe("archer volleys and positioning", () => {
     const m = match(),
       archer = single(m),
       enemy = m.squads[1];
-    archer.kind = "archer";
-    place(enemy, 50, 25);
+    m.updateSquad(archer.id, { kind: "archer" });
+    place(m, enemy, 50, 25);
     expect(
       m.applyCommand({
         type: "order",
@@ -516,10 +519,10 @@ describe("archer volleys and positioning", () => {
     step(m, 20);
     expect([archer.x, archer.y]).toEqual(position);
     expect(archer.moved).toBe(false);
-    place(enemy, 49, 25);
+    place(m, enemy, 49, 25);
     step(m, 20);
     expect([archer.x, archer.y]).toEqual(position);
-    place(enemy, 60, 25);
+    place(m, enemy, 60, 25);
     step(m, 100);
     expect([archer.x, archer.y]).not.toEqual(position);
     expect(
@@ -532,8 +535,8 @@ describe("archer volleys and positioning", () => {
     const m = match(),
       archer = single(m),
       enemy = m.squads[1];
-    archer.kind = "archer";
-    place(enemy, 35, 25);
+    m.updateSquad(archer.id, { kind: "archer" });
+    place(m, enemy, 35, 25);
     step(m, 19);
     expect(m.snapshot().volleys).toEqual([]);
     m.step();
@@ -549,7 +552,7 @@ describe("archer volleys and positioning", () => {
     });
     shot.fromX = -1;
     expect(m.volleys[0].fromX).toBe(archer.x);
-    place(enemy, 65, 35);
+    place(m, enemy, 65, 35);
     step(m, 13);
     expect(m.volleys).toEqual([]);
     expect(archer.firingCharge).toBe(0);
@@ -561,7 +564,7 @@ describe("naval transport and combat", () => {
     const m = match(true),
       s = single(m),
       port = build(m, "port", 30, 8);
-    port.remainingTicks = 0;
+    m.updateBuilding((port).id, { remainingTicks: 0 });
     expect(
       m.applyCommand({
         type: "recruit-ship",
@@ -571,7 +574,7 @@ describe("naval transport and combat", () => {
       }),
     ).toBeNull();
     const ship = m.ships[0];
-    place(s, 30, 8);
+    place(m, s, 30, 8);
     own(m, m.tileOf(s));
     return { m, s, ship, port };
   }
@@ -587,8 +590,8 @@ describe("naval transport and combat", () => {
         }),
       ).toBeNull();
     const selected = m.squads.filter((unit) => unit.playerId === 1);
-    selected.forEach((unit, i) => place(unit, 40 + i, 25));
-    place(ship, 60, 4);
+    selected.forEach((unit, i) => place(m, unit, 40 + i, 25));
+    place(m, ship, 60, 4);
     const initial = { landX: s.x, landY: s.y, seaX: ship.x, seaY: ship.y };
     expect(
       m.applyCommand({
@@ -601,7 +604,8 @@ describe("naval transport and combat", () => {
     const shore = ship.boarding!.landTile,
       sea = ship.boarding!.waterTile;
     const snapshot = m.snapshot();
-    snapshot.ships[0].boarding!.squadIds.length = 0;
+    // Deliberately bypass readonly DTO typing to prove snapshot isolation.
+    (snapshot.ships[0].boarding as unknown as { squadIds: number[] }).squadIds.length = 0;
     expect(ship.boarding!.squadIds).toHaveLength(6);
     step(m, 10);
     expect(s.x !== initial.landX || s.y !== initial.landY).toBe(true);
@@ -649,7 +653,7 @@ describe("naval transport and combat", () => {
     const selected = m.squads.filter(
       (unit) => unit.playerId === 1 && unit.embarkedOn === null,
     );
-    selected.forEach((unit, i) => place(unit, 35 + i, 20));
+    selected.forEach((unit, i) => place(m, unit, 35 + i, 20));
     expect(
       m.applyCommand({
         type: "board",
@@ -709,7 +713,7 @@ describe("naval transport and combat", () => {
       { seed: 42, aiCount: 1, runAi: false },
     );
     const port = build(islands, "port", 37, 20);
-    port.remainingTicks = 0;
+    islands.updateBuilding(port.id, { remainingTicks: 0 });
     islands.applyCommand({
       type: "recruit-ship",
       playerId: 1,
@@ -717,8 +721,8 @@ describe("naval transport and combat", () => {
       shipType: "transport",
     });
     const units = islands.squads.filter((unit) => unit.playerId === 1);
-    place(units[0], 30, 20);
-    place(units[1], 45, 20);
+    place(islands, units[0], 30, 20);
+    place(islands, units[1], 45, 20);
     const old = islands.snapshot();
     expect(
       islands.applyCommand({
@@ -733,7 +737,7 @@ describe("naval transport and combat", () => {
 
   it("lets new ship and squad orders cancel the rendezvous without later surprise boarding", () => {
     const { m, s, ship } = navy();
-    place(s, 40, 25);
+    place(m, s, 40, 25);
     const board = () =>
       expect(
         m.applyCommand({
@@ -771,7 +775,7 @@ describe("naval transport and combat", () => {
 
   it("releases unembarked squads when their rendezvous transport sinks", () => {
     const { m, s, ship } = navy();
-    place(s, 40, 25);
+    place(m, s, 40, 25);
     m.applyCommand({
       type: "board",
       playerId: 1,
@@ -779,15 +783,15 @@ describe("naval transport and combat", () => {
       squadIds: [s.id],
     });
     const port = build(m, "port", 40, 8, 2);
-    port.remainingTicks = 0;
+    m.updateBuilding((port).id, { remainingTicks: 0 });
     m.applyCommand({
       type: "recruit-ship",
       playerId: 2,
       buildingId: port.id,
       shipType: "warship",
     });
-    place(m.ships[1], 32, 7);
-    ship.health = 1;
+    place(m, m.ships[1], 32, 7);
+    m.updateShip(ship.id, { health: 1 });
     m.step();
     expect(m.ships.some((unit) => unit.id === ship.id)).toBe(false);
     expect(s.embarkedOn).toBeNull();
@@ -824,7 +828,7 @@ describe("naval transport and combat", () => {
         tile: m.map.ref(40, 7),
       }),
     ).toMatch(/own ships/);
-    port.remainingTicks = 1;
+    m.updateBuilding((port).id, { remainingTicks: 1 });
     expect(
       m.applyCommand({
         type: "recruit-ship",
@@ -883,7 +887,7 @@ describe("naval transport and combat", () => {
 
   it("rejects remote loading and overloaded cargo without partially embarking squads", () => {
     const { m, s, ship } = navy();
-    place(s, 45, 25);
+    place(m, s, 45, 25);
     expect(
       m.applyCommand({
         type: "load",
@@ -893,7 +897,7 @@ describe("naval transport and combat", () => {
       }),
     ).toMatch(/three tiles/);
     expect(s.embarkedOn).toBeNull();
-    place(s, 30, 8);
+    place(m, s, 30, 8);
     const reserves = m.players[0].reserves;
     for (let i = 0; i < 4; i++) {
       m.applyCommand({
@@ -902,7 +906,7 @@ describe("naval transport and combat", () => {
         buildingId: m.buildings[0].id,
       });
       const added = m.squads[m.squads.length - 1];
-      place(added, 30, 8);
+      place(m, added, 30, 8);
     }
     expect(m.players[0].reserves).toBe(reserves - 4000);
     const selected = m.squads.filter((s) => s.playerId === 1);
@@ -926,7 +930,7 @@ describe("naval transport and combat", () => {
       squadIds: [s.id],
     });
     const enemyPort = build(m, "port", 40, 8, 2);
-    enemyPort.remainingTicks = 0;
+    m.updateBuilding((enemyPort).id, { remainingTicks: 0 });
     m.applyCommand({
       type: "recruit-ship",
       playerId: 2,
@@ -934,8 +938,8 @@ describe("naval transport and combat", () => {
       shipType: "warship",
     });
     const enemyShip = m.ships[1];
-    place(enemyShip, 32, 7);
-    ship.health = 8;
+    place(m, enemyShip, 32, 7);
+    m.updateShip(ship.id, { health: 8 });
     const before = account(m),
       production = m.producedTroops,
       losses = m.players[0].losses;
@@ -954,10 +958,10 @@ describe("naval transport and combat", () => {
       shipType: "warship",
     });
     const friendlyShip = m.ships.find((b) => b.playerId === 1)!;
-    friendlyShip.health = 1;
-    enemyShip.health = 1;
-    place(friendlyShip, 30, 7);
-    place(enemyShip, 32, 7);
+    m.updateShip(friendlyShip.id, { health: 1 });
+    m.updateShip(enemyShip.id, { health: 1 });
+    place(m, friendlyShip, 30, 7);
+    place(m, enemyShip, 32, 7);
     m.step();
     expect(m.ships).toHaveLength(0);
   });

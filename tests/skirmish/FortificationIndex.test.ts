@@ -1,4 +1,5 @@
 import { describe, expect, it } from "vitest";
+import { buildingOwner } from "./BuildingFixtures";
 import { GameMapImpl } from "../../src/core/game/GameMap";
 import { BuildingIndex } from "../../src/skirmish/BuildingIndex";
 import type { Building } from "../../src/skirmish/Protocol";
@@ -98,7 +99,10 @@ describe("exact local fortification endpoint index", () => {
         tile: map.ref(90, 70),
         remainingTicks: 0,
       });
-    index.rebuild(buildings);
+    const owner = buildingOwner(buildings, {
+      added: record => index.add(record), changed: record => index.changed(record),
+      removed: id => index.remove(id), restored: records => index.rebuild(records),
+    });
     const local = {
       at: (tile: number) => index.at(tile),
       nearby: (tile: number, radius: number) =>
@@ -111,15 +115,15 @@ describe("exact local fortification endpoint index", () => {
       [30, 24],
     ])
       expect(forts.towerPlan(map.ref(x, y), 1, "StoneAge", local)).toEqual(
-        forts.towerPlan(map.ref(x, y), 1, "StoneAge", buildings),
+        forts.towerPlan(map.ref(x, y), 1, "StoneAge", owner.values),
       );
-    buildings[0].health = 0;
+    owner.update(buildings[0].id, { health: 0 });
     expect(
       forts
         .towerPlan(map.ref(24, 23), 1, "StoneAge", local)
         .links.some((l) => l.a === 1),
     ).toBe(false);
-    buildings[1].remainingTicks = 0;
+    owner.update(buildings[1].id, { remainingTicks: 0 });
     expect(
       forts
         .towerPlan(map.ref(22, 23), 1, "StoneAge", local)

@@ -1,3 +1,4 @@
+import { FormationOccupancy } from "./FormationOccupancy";
 import type { GameMap } from "../core/game/GameMap";
 import {
   FormationPlanning,
@@ -6,6 +7,7 @@ import {
 import type { LandPaths } from "./Pathfinding";
 import { FIXED, type Order, type Squad } from "./Protocol";
 import type { ExactRouteOutcome } from "./RoutePlanner";
+import { limitedRouteRetry, ROUTE_CAPACITY_REASON } from "./RouteRetryPolicy";
 import type { WorldPoint } from "./SpatialGrid";
 import { distanceSquared, pointTile, tilePoint } from "./SquadGeometry";
 
@@ -50,9 +52,10 @@ export interface MovementAdmissionEvent {
 }
 export interface MovementAdmissionPorts {
   squads(): readonly Squad[];
+  priority?(playerId: number): boolean;
   squad(id: number): Squad | undefined;
   generation(playerId: number): number;
-  revision(): string;
+  revision(playerId: number): string;
   blocked(playerId: number): ((tile: number) => boolean) | undefined;
   request(
     id: number,
@@ -91,6 +94,8 @@ export class MovementAdmission {
   readonly events: MovementAdmissionEvent[] = [];
   onEvent?: (event: MovementAdmissionEvent) => void;
   private nextId = 1;
+  private readonly occupancy: FormationOccupancy;
+  hasPending(squadId: number): boolean { return this.pendingBySquad.has(squadId); }
   get pendingCount(): number {
     return this.pending.size;
   }
@@ -98,7 +103,7 @@ export class MovementAdmission {
     private readonly map: GameMap,
     private readonly paths: LandPaths,
     private readonly ports: MovementAdmissionPorts,
-  ) {}
+  ) { this.occupancy = new FormationOccupancy(map); }
   checkpoint() {
     return structuredClone({
       pending: [...this.pending],
@@ -111,6 +116,7 @@ export class MovementAdmission {
     this.pending.clear();
     this.pendingBySquad.clear();
     for (const [id, admission] of structuredClone(saved.pending)) {
+      FormationPlanning.normalizeCheckpoint(admission.formation);
       this.pending.set(id, admission);
       for (const member of admission.members)
         this.pendingBySquad.set(member.id, id);
@@ -118,8 +124,10 @@ export class MovementAdmission {
     this.intents.clear();
     this.intentsBySquad.clear();
     this.intentsByAdmission.clear();
-    for (const [, intent] of structuredClone(saved.intents ?? []))
+    for (const [, intent] of structuredClone(saved.intents ?? [])) {
+      if (intent.formation) FormationPlanning.normalizeCheckpoint(intent.formation);
       this.addIntent(intent);
+    }
     this.nextId = saved.nextId;
     this.events.splice(0, this.events.length, ...structuredClone(saved.events));
   }
@@ -183,7 +191,7 @@ export class MovementAdmission {
       generation: this.ports.generation(squad.playerId),
       order: { ...order },
       members,
-      revision: this.ports.revision(),
+      revision: this.ports.revision(squad.playerId),
     };
     this.addIntent(intent);
     this.event(intent, tick, "deferred");
@@ -231,7 +239,7 @@ export class MovementAdmission {
         current.tile === tile &&
         current.generation === this.ports.generation(playerId) &&
         current.members.length === squads.length &&
-        squads.every((s) => current.formation.selected.has(s.id)) &&
+        squads.every((s) => this.pendingBySquad.get(s.id) === current.id) &&
         current.members.every((m) => !m.queued.length)
       )
         return current.id;
@@ -241,6 +249,19 @@ export class MovementAdmission {
       tick,
     );
     return this.create(playerId, squads, tile, tick, preferred);
+  }
+  /** Re-admit an occupied destination while retaining later player intentions. */
+  recoverDestination(squad: Squad, tile: number, tick: number): void {
+    if (this.hasPending(squad.id)) return;
+    const id = this.create(squad.playerId, [squad], tile, tick);
+    this.pending.get(id)!.members[0].queued = squad.queuedOrders.map(order=>({...order}));
+    for (const intentId of this.intentsBySquad.get(squad.id) ?? []) {
+      const intent = this.intents.get(intentId)!;
+      for (const member of intent.members) if (member.id === squad.id && member.admissionId === undefined) {
+        member.admissionId = id;
+        this.addIntentReference(this.intentsByAdmission, id, intent.id);
+      }
+    }
   }
   /** An idle member of a mixed Shift command needs its first route admitted,
    * while later Shift intents stay attached to the newly created cohort. */
@@ -292,7 +313,7 @@ export class MovementAdmission {
       playerId,
       generation: this.ports.generation(playerId),
       tile,
-      revision: this.ports.revision(),
+      revision: this.ports.revision(playerId),
       members: squads.map((s) => ({
         id: s.id,
         cursor: 0,
@@ -320,7 +341,7 @@ export class MovementAdmission {
       squad.embarkedOn === null &&
       !squad.refit &&
       admission.generation === this.ports.generation(admission.playerId) &&
-      admission.formation.selected.has(squadId)
+      this.pendingBySquad.get(squadId) === id
     );
   }
   completed(
@@ -348,10 +369,11 @@ export class MovementAdmission {
         "A formation destination cannot be reached by land",
       );
     else if (outcome === "limited") {
-      member.limitedAttempts = (member.limitedAttempts ?? 0) + 1;
-      if (member.limitedAttempts >= 3) this.finish(admission, tick, "rejected",
-        "Route planning capacity exhausted; try a shorter waypoint");
-      else member.retryAt = tick + 20 * member.limitedAttempts;
+      const retry = limitedRouteRetry(member.limitedAttempts ?? 0, tick);
+      member.limitedAttempts = retry.attempts;
+      if (retry.exhausted)
+        this.finish(admission, tick, "rejected", ROUTE_CAPACITY_REASON);
+      else member.retryAt = retry.retryAt;
     }
     // Resource exhaustion is an explicit planning rejection, never disconnection.
   }
@@ -430,7 +452,7 @@ export class MovementAdmission {
         used++;
         break;
       }
-      const revision = this.ports.revision();
+      const revision = this.ports.revision(intent.playerId);
       if (intent.revision !== revision) {
         intent.formation = undefined;
         intent.revision = revision;
@@ -533,12 +555,22 @@ export class MovementAdmission {
   step(tick: number, budget = 128): number {
     if (!Number.isInteger(budget) || budget < 0)
       throw new Error("Invalid admission work budget");
-    const validated = new Set<number>(),
-      revision = this.ports.revision();
-    let used = this.stepIntents(tick, Math.min(32, budget)),
-      idle = 0;
+    if (this.pending.size) this.occupancy.rebuild(this.ports.squads());
+    let used = this.stepIntents(tick, Math.min(32, budget));
+    // Reserve half of the allowance for interactive commands. Unused work
+    // returns to the ordinary round-robin, which continues serving the AI.
+    used += this.stepAdmissions(tick, Math.floor((budget-used)/2), true);
+    return used + this.stepAdmissions(tick, budget-used, false);
+  }
+  private stepAdmissions(tick: number, budget: number, priority: boolean): number {
+    const validated = new Set<number>();
+    let used = 0, idle = 0;
     while (this.pending.size && used < budget) {
-      const [id, admission] = this.pending.entries().next().value!;
+      const entry = priority
+        ? [...this.pending].find(([, admission]) => this.ports.priority?.(admission.playerId))
+        : this.pending.entries().next().value;
+      if (!entry) break;
+      const [id, admission] = entry;
       this.pending.delete(id);
       this.pending.set(id, admission);
       if (
@@ -555,7 +587,7 @@ export class MovementAdmission {
         continue;
       }
       validated.add(id);
-      if (admission.revision !== revision) {
+      if (admission.revision !== this.ports.revision(admission.playerId)) {
         const squads = admission.members.map((m) => this.ports.squad(m.id)!);
         for (const member of admission.members) {
           this.ports.cancel(id, member.id);
@@ -569,7 +601,7 @@ export class MovementAdmission {
           squads.map((squad) => ({ squad, origin: squad })),
           () => this.ports.squads(),
         ).state;
-        admission.revision = revision;
+        admission.revision = this.ports.revision(admission.playerId);
         admission.phase = "formation";
         admission.member = 0;
       }
@@ -583,6 +615,8 @@ export class MovementAdmission {
           Infinity,
           undefined,
           admission.formation,
+          undefined,
+          this.occupancy,
         );
         used += formation.step(
           Math.min(16, budget - used),
@@ -611,7 +645,9 @@ export class MovementAdmission {
           idle = 0;
         }
       } else if (admission.phase === "routes") {
-        const member = admission.members.find((m) => !m.path && !m.requested && (m.retryAt ?? 0) <= tick);
+        const member = admission.members.find(
+          (m) => !m.path && !m.requested && (m.retryAt ?? 0) <= tick,
+        );
         if (member) {
           const squad = this.ports.squad(member.id)!;
           member.start = pointTile(this.map, squad);
@@ -690,7 +726,7 @@ export class MovementAdmission {
             );
             continue;
           }
-          for (const m of admission.members)
+          for (const m of admission.members) {
             this.ports.commit(
               this.ports.squad(m.id)!,
               m.destination!,
@@ -698,6 +734,8 @@ export class MovementAdmission {
               m.connector!,
               m.queued,
             );
+            this.occupancy.refresh(this.ports.squad(m.id)!);
+          }
           this.finish(admission, tick, "executed");
         }
       }

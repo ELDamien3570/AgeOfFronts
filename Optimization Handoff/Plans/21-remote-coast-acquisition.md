@@ -1,7 +1,13 @@
 # P21: Plan reachable remote coast acquisition
 
-Status: **remaining work, not implemented by this handoff**. Read
+Status: **implemented locally; full-run plus focused-repair validation recorded**. Read
 [`../agent-workflow.md`](../agent-workflow.md) and [`../handoff.md`](../handoff.md).
+
+## Current implementation - 3 October 2026
+
+A bounded coast opportunity scan selects a useful foreign-market sea, leases an available land force, certifies a land route or uses the existing researched physical shore transport, waits for normal occupation, and funds normal port/factory construction only on owned land. Failure releases objectives and surviving assets.
+
+The user resumed this plan and requested one combined test run with the remaining tuneups and lobby fixes. See [combined batch evidence](../Evidence/remaining-five-combined-validation.md) for results and qualification limits.
 
 ## Dependencies and ownership
 

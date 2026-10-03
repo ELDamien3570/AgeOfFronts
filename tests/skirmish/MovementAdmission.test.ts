@@ -19,6 +19,27 @@ function status(match: Skirmish) {
   return events[events.length - 1]?.status;
 }
 describe("transactional replacement movement", () => {
+  it("recovers an occupied final destination without dropping later player orders", () => {
+    const {match,map,own}=fixture(), mover=own[0], blocker=own[1];
+    const goal=map.ref(70,35);
+    expect(match.applyCommand({type:"order",playerId:1,squadIds:[mover.id],order:{type:"move",tile:goal}})).toBeNull();
+    for(let i=0;i<400 && match.movementAdmission.pendingCount;i++)match.step();
+    expect(mover.order.type).toBe("move");
+    const order=mover.order as Extract<typeof mover.order,{type:"move"}>;
+    match.updateSquad(blocker.id,{x:order.x ?? (map.x(order.tile)+.5)*256,y:order.y ?? (map.y(order.tile)+.5)*256,order:{type:"hold"}});
+    const later={type:"move" as const,tile:map.ref(65,45)};
+    match.updateSquad(mover.id,{queuedOrders:[later]});
+    let replacement=false;
+    for(let i=0;i<800;i++){
+      match.step();
+      if(mover.order.type==="move" && (mover.order.tile!==order.tile || mover.order.x!==order.x || mover.order.y!==order.y))replacement=true;
+      if(mover.order.type==="hold")break;
+    }
+    expect(replacement).toBe(true);
+    expect(mover.order.type).toBe("hold");
+    expect(Math.hypot(mover.x-blocker.x,mover.y-blocker.y)).toBeGreaterThan(100);
+    expect(Math.abs(mover.y-(45.5*256))).toBeLessThan(256);
+  });
   it("backs off limited replacement routes and rejects capacity exhaustion without changing current orders", () => {
     const { match, map, own } = fixture();
     const orders = own.map(s => structuredClone(s.order));
@@ -37,7 +58,7 @@ describe("transactional replacement movement", () => {
   it("activates committed land waypoints without synchronous searches and retains later legs across restore", () => {
     const { match, map, own } = fixture(), squad = own[0];
     const first = map.ref(45, 35), second = map.ref(48, 35);
-    squad.queuedOrders = [{ type: "move", tile: first }, { type: "move", tile: second }];
+    match.updateSquad(squad.id, { queuedOrders: [{ type: "move", tile: first }, { type: "move", tile: second }] });
     const sync = vi.spyOn(match.paths, "find");
     (match as unknown as { finishOrder(s: typeof squad): void }).finishOrder(squad);
     expect(sync).not.toHaveBeenCalled();

@@ -1,5 +1,32 @@
 # Optimization handoff
 
+
+## Friendly crowd recovery continuation — 3 October 2026
+
+The repeated “Waiting for clearance” groups are reciprocal movement deadlocks. Bounded local right of way and short collision-checked yield legs now release the reproduced frozen groups, preserve queued orders and share recovery with formal armies. The army domain permits automatic formation-slot yielding while explicit player Hold remains immovable. Full/sparse snapshots and the HUD expose actual blockers, waiting age and planning/terrain/restriction reasons. The implementation is deployed in **8965f3db10cdd72412bec90a3302518ca1babe5d**. All 1,143 skirmish tests pass; all ten previously frozen mature-game squads now move, and the remaining occupied endpoints recover in the continued replay. See [crowd recovery findings and acceptance evidence](Evidence/crowd-recovery-20261003.md). One-CPU ARM tick tails still exceed the 50 ms target.
+
+## Transport and naval navigation continuation - 3 October 2026
+
+The water-destination rejection, repeated crossing cancellation, cross-faction route invalidation, expensive whole-coast rankings, premature mid-water landing and missing replicated transfer phases are corrected in **2b44a7356ce3bf6a96d69649c893976d817178e7**, deployed on Oracle. Normal troops can embark to open water and subsequently sail/unload. AI civilian trade and researched crossings now progress; leased defensive fleets patrol, and unsupported missions no longer purchase idle transports. Occupied standalone squad destinations recover while preserving queued orders, and online rejection notifications leave the header geometry fixed. Immediate validation for impossible deferred landings is deployed in **1ebaec057304b79fddb4f52f1a118aa5e02d8ef8**; the mature ARM replay completed 48 physical ferry trips, while tick tails remain above the 50 ms budget. See [transport/navigation findings and acceptance evidence](Evidence/transport-navigation-20261003.md).
+
+## Building placement regression continuation — 3 October 2026
+
+A valid placement returns a null rejection. A client-side fallback incorrectly converted that success into “No active match”, making valid previews red and stopping their commands before submission. The UI now distinguishes a missing preview from an accepted site. The correction is deployed on Oracle in `f86c9fa186be892eabda08d984fa1a5d9ad6ec01`. A rendered public 500 Valles / ten-AI Stone Age check placed a City and inspected it as Ready; local and public two-client Modern smoke checks require a normal Barracks command to succeed and its new building to finish construction. See the [placement correction and evidence](Evidence/multiplayer-stability-20261003.md). The earlier rejected-action checks did not cover successful client placement; this is a corrected acceptance gap.
+
+## Movement regression continuation — 3 October 2026
+
+A public playtest exposed movement-admission starvation that the earlier tick/synchronization smoke missed. The repair shares formation occupancy across planning batches and reserves bounded work for human commands. Ten public test players and ten regular AI now physically move, and normal right-click movement is verified in rendered Chromium. A further routing-batch permission cache reduces repeated AI footprint work while retaining ownership/threat invalidation. The actual moving/contested workload reached 35 simulated minutes locally and on one-CPU Oracle ARM; complete final checkpoints match. See the corrected [movement and performance evidence](Evidence/multiplayer-stability-20261003.md). The final repair is deployed on Oracle in `ad39860f8875b3700ee51cb00762744e60113a61`; a repeated ten-peer public movement/reconnect/state-agreement smoke passes. Native Opera and ten-rendering-browser/concurrent-match acceptance remain open.
+
+## Multiplayer stability continuation — 3 October 2026
+
+The six playtest issues, AI progression deadlocks and a browser startup resize error are addressed and deployed on Oracle in `8b9fa8caef7082e34eaf23317e9dd23ab7b94015`. Normal solo/online creation now enables all five AI policies. Mature-game ARM replay passed through 38 simulated minutes; a ten-authenticated-peer public smoke passed state agreement, rejected-action and reconnect checks, followed by two rendered online clients and final browser startup verification. See [implementation, profiling, validation and remaining acceptance limits](Evidence/multiplayer-stability-20261003.md). The opt-in/no-deployment wording below describes the earlier checkpoint, not the current release posture. P02 largest-world memory and native/ten-browser P29–P30 acceptance remain separate gates.
+
+## Local continuation - 3 October 2026
+
+The five previously deferred plans **P17, P20, P21, P22 and P25** and the remaining Antigravity tuneups/lobby fixes are now implemented locally in source commit `fd34e956513686fc66523ff313d940ad31666b41` on `codex/optimization-lifecycle-indexes`. The combined full run covered 1,101 tests; its 11 failures were resolved in the affected-file group, whose final **132 tests pass**. TypeScript, build, whitespace and scoped Oxlint pass; scoped ESLint retains one pre-existing unused local. See [exact combined validation and limits](Evidence/remaining-five-combined-validation.md). This evidence is cumulative full-run plus focused repairs, not a repeated all-green exhaustive run. P02 largest-world memory, P29 native browser qualification and P30 actual ARM/ten-browser capacity remain open. Experimental defaults remain opt-in; no push, merge or deployment occurred.
+
+## Historical handoff - 2 October 2026
+
 Updated 2 October 2026. Repository: [ELDamien3570/AgeOfFronts](https://github.com/ELDamien3570/AgeOfFronts).
 Working/publishing branch: **`v1-phased-ai-optimization`**.
 

@@ -1,4 +1,6 @@
 import { describe, expect, it } from "vitest";
+import { unitOwner } from "./UnitFixtures";
+import { buildingOwner } from "./BuildingFixtures";
 import { GameMapImpl } from "../../src/core/game/GameMap";
 import { HudViewModel } from "../../src/skirmish/client/HudViewModel";
 import {
@@ -16,6 +18,9 @@ function setup() {
     runAi: false,
   });
   const snapshot = match.snapshot();
+  const buildings = buildingOwner(snapshot.buildings), squads = unitOwner(snapshot.squads);
+  snapshot.squads = [...squads.values];
+  snapshot.buildings = [...buildings.values];
   const selection: SelectionState = {
     selected: new Set(),
     selectedShips: new Set(),
@@ -23,13 +28,34 @@ function setup() {
   };
   const vm = () => new HudViewModel(new SkirmishViewModel(snapshot, selection));
   const own = snapshot.squads.filter((s) => s.playerId === 1);
-  return { snapshot, selection, vm, own };
+  return { snapshot, selection, vm, own, buildings, squads };
 }
 describe("snapshot-driven HUD selection", () => {
+  it("reports a stationary move order as waiting for clearance", () => {
+    const {selection,vm,own,squads}=setup();
+    squads.update(own[0].id,{order:{type:"move",tile:20},moved:false});selection.selected.add(own[0].id);
+    const card=vm().selectionCard(null);if(card.mode!=="detail")throw Error("Expected detail");
+    expect(card.card.status).toBe("Waiting for clearance");
+    squads.update(own[0].id,{moved:true});
+    const moving=vm().selectionCard(null);if(moving.mode!=="detail")throw Error("Expected detail");
+    expect(moving.card.status).toBe("Moving");
+  });
+  it("shows the replicated blocker reason, IDs and wait duration", () => {
+    const {selection,vm,own,squads,snapshot}=setup();snapshot.tick=100;
+    squads.update(own[0].id,{order:{type:"move",tile:20},moved:false,movementStatus:{reason:"crowd",since:40,blockerIds:[17,23]}});
+    selection.selected.add(own[0].id);const selected=vm().selectionCard(null);
+    if(selected.mode!=="detail")throw Error("Expected detail");
+    expect(selected.card.status).toBe("Waiting for nearby squads");
+    expect(selected.card.stats).toContainEqual({label:"Blocking squads",value:"#17, #23"});
+    expect(selected.card.stats).toContainEqual({label:"Waiting",value:"3s"});
+    squads.update(own[0].id,{moved:true,movementStatus:{reason:"yielding",since:100,blockerIds:[]}});
+    const yielding=vm().selectionCard(null);if(yielding.mode!=="detail")throw Error("Expected detail");
+    expect(yielding.card.status).toBe("Making room for nearby squads");
+  });
   it("hides an empty selection and shows real troop health for a single squad", () => {
-    const { selection, vm, own } = setup();
+    const { selection, vm, own , squads } = setup();
     expect(vm().selectionCard(null).mode).toBe("empty");
-    own[0].troops = 640;
+    squads.update(own[0].id, { troops: 640 });
     selection.selected.add(own[0].id);
     const card = vm().selectionCard(null);
     expect(card.mode).toBe("detail");
@@ -42,10 +68,10 @@ describe("snapshot-driven HUD selection", () => {
     expect(card.card.count).toBe(1);
   });
   it("aggregates same-type health and count without merging units or orders", () => {
-    const { snapshot, selection, vm, own } = setup();
-    own[0].troops = 640;
-    own[1].troops = 810;
-    own[1].order = { type: "move", tile: 20 };
+    const { snapshot, selection, vm, own , squads } = setup();
+    squads.update(own[0].id, { troops: 640 });
+    squads.update(own[1].id, { troops: 810 });
+    squads.update(own[1].id, { order: { type: "move", tile: 20 } });
     selection.selected = new Set([own[0].id, own[1].id]);
     const before = structuredClone(snapshot);
     const card = vm().selectionCard(null);
@@ -59,8 +85,8 @@ describe("snapshot-driven HUD selection", () => {
     expect(snapshot).toEqual(before);
   });
   it("uses individual mixed cells and inspects one without changing the selected army", () => {
-    const { selection, vm, own, snapshot } = setup();
-    own[1].kind = "archer";
+    const { selection, vm, own, snapshot , squads } = setup();
+    squads.update(own[1].id, { kind: "archer" });
     selection.selected = new Set([own[0].id, own[1].id]);
     const before = new Set(selection.selected);
     expect(vm().selectionCard(null).mode).toBe("mixed");
@@ -74,22 +100,23 @@ describe("snapshot-driven HUD selection", () => {
     expect(vm().selectionCard(`squad:${own[1].id}`).entities.length).toBe(1);
   });
   it("projects a 200-squad army with current health, selection and order stats", () => {
-    const { selection, vm, own, snapshot } = setup();
+    const { selection, vm, own, snapshot , squads } = setup();
     snapshot.squads = Array.from({ length: 200 }, (_, index) => ({
       ...own[0],
       id: 1000 + index,
       troops: 750,
       queuedOrders: [],
     }));
+    squads.restore(snapshot.squads); snapshot.squads = [...squads.values];
     selection.selected = new Set(snapshot.squads.map((s) => s.id));
     const hud = vm();
     const group = hud.selectionCard(null);
     if (group.mode !== "group") throw new Error("Expected group");
     expect(group.card.count).toBe(200);
     expect(group.card.meter?.value).toBe(150000);
-    snapshot.squads[0].kind = "archer";
-    snapshot.squads[0].troops = 250;
-    snapshot.squads[0].queuedOrders.push({ type: "move", tile: 20 });
+    squads.update(snapshot.squads[0].id, { kind: "archer" });
+    squads.update(snapshot.squads[0].id, { troops: 250 });
+    squads.update(snapshot.squads[0].id, { queuedOrders: [...snapshot.squads[0].queuedOrders, { type: "move", tile: 20 }] });
     const current = hud.entities;
     expect(hud.selectionCard(null, current).mode).toBe("mixed");
     const detail = hud.selectionCard("squad:1000", current);
@@ -110,8 +137,8 @@ describe("snapshot-driven HUD selection", () => {
     ).toBe(true);
   });
   it("excludes enemy and embarked squads even if stale IDs remain selected", () => {
-    const { selection, vm, own, snapshot } = setup();
-    own[0].embarkedOn = 999;
+    const { selection, vm, own, snapshot , squads } = setup();
+    squads.update(own[0].id, { embarkedOn: 999 });
     selection.selected = new Set([
       own[0].id,
       snapshot.squads.find((s) => s.playerId === 2)!.id,
@@ -119,7 +146,7 @@ describe("snapshot-driven HUD selection", () => {
     expect(vm().selectionCard(null).mode).toBe("empty");
   });
   it("aggregates ship hulls and reports actual transport cargo in individual inspection", () => {
-    const { selection, vm, own, snapshot } = setup();
+    const { selection, vm, own, snapshot , squads } = setup();
     snapshot.ships = [1, 2].map((id) => ({
       id,
       playerId: 1,
@@ -132,7 +159,7 @@ describe("snapshot-driven HUD selection", () => {
       fighting: false,
       boarding: null,
     }));
-    own[0].embarkedOn = 1;
+    squads.update(own[0].id, { embarkedOn: 1 });
     selection.selectedShips = new Set([1, 2]);
     const group = vm().selectionCard(null);
     expect(group.mode).toBe("group");
@@ -150,10 +177,10 @@ describe("snapshot-driven HUD selection", () => {
     expect(selection.selectedShips.size).toBe(2);
   });
   it("shows building construction and ownership without inventing building health", () => {
-    const { selection, vm, snapshot } = setup();
+    const { selection, vm, snapshot, buildings } = setup();
     const building = snapshot.buildings.find((b) => b.playerId === 2)!;
-    building.type = "city";
-    building.remainingTicks = 40;
+    buildings.update(building.id, { type: "city" });
+    buildings.update(building.id, { remainingTicks: 40 });
     selection.selectedBuilding = building.id;
     const result = vm().selectionCard(null);
     if (result.mode !== "detail") throw new Error("Expected detail");
@@ -166,7 +193,7 @@ describe("snapshot-driven HUD selection", () => {
     expect(
       result.card.stats.find((s) => s.label === "Reserve income")?.value,
     ).toBe("+40 / sec");
-    building.remainingTicks = 0;
+    buildings.update(building.id, { remainingTicks: 0 });
     const ready = vm().selectionCard(null);
     if (ready.mode !== "detail") throw new Error("Expected detail");
     expect(ready.card.meter).toBeUndefined();
@@ -202,8 +229,8 @@ describe("HUD action costs and availability", () => {
     ).toBe("700 gold");
   });
   it("reports replenishment only for eligible selected squads", () => {
-    const { snapshot, selection, own, vm } = setup();
-    own[0].troops = 500;
+    const { snapshot, selection, own, vm , squads } = setup();
+    squads.update(own[0].id, { troops: 500 });
     snapshot.owners[
       Math.floor(own[0].y / FIXED) * snapshot.width +
         Math.floor(own[0].x / FIXED)
@@ -217,12 +244,12 @@ describe("HUD action costs and availability", () => {
   });
 
   it("reports building repair when buildings are selected", () => {
-    const { snapshot, selection, vm } = setup();
+    const { snapshot, selection, vm, buildings } = setup();
     const building = snapshot.buildings[0];
-    building.playerId = 1;
-    building.health = 600;
-    building.maxHealth = 1200;
-    building.remainingTicks = 0;
+    buildings.update(building.id, { playerId: 1 });
+    buildings.update(building.id, { health: 600 });
+    buildings.update(building.id, { maxHealth: 1200 });
+    buildings.update(building.id, { remainingTicks: 0 });
     selection.selectedBuilding = building.id;
 
     const card = vm().actionCard("replenish");
@@ -230,7 +257,7 @@ describe("HUD action costs and availability", () => {
     expect(card?.subtitle).toContain("structure repair");
     expect(card?.status).toBe("Ready");
 
-    building.health = 1200;
+    buildings.update(building.id, { health: 1200 });
     expect(vm().actionCard("replenish")?.status).toBe("No repair needed");
   });
 });

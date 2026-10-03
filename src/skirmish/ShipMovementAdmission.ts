@@ -3,6 +3,7 @@ import type { MovementAdmissionEvent } from "./MovementAdmission";
 import type { WaterPaths } from "./Pathfinding";
 import { MAX_QUEUED_ORDERS, type Player, type Ship } from "./Protocol";
 import type { ExactRouteOutcome } from "./RoutePlanner";
+import { limitedRouteRetry, ROUTE_CAPACITY_REASON } from "./RouteRetryPolicy";
 
 interface Member {
   id: number;
@@ -24,6 +25,7 @@ interface Admission {
   selected: Set<number>;
   member: number;
   execution?: boolean;
+  paused?: boolean;
   recovery?: { state: Ship["repairState"]; port: Ship["repairPortId"] };
 }
 export interface ShipMovementAdmissionPorts {
@@ -48,6 +50,7 @@ export interface ShipMovementAdmissionPorts {
     recovery?: boolean,
   ): void;
   queue(ship: Ship, goal: number): void;
+  paused?(ship: Ship, paused: boolean): void;
 }
 
 /** Water routes use the same exact scheduler as land. Replacement activation
@@ -58,6 +61,7 @@ export class ShipMovementAdmission {
   private readonly replacementByShip = new Map<number, number>();
   private readonly executionByShip = new Map<number, number>();
   private nextId = 1;
+  private pauseCommitted = true;
   readonly events: MovementAdmissionEvent[] = [];
   onEvent?: (event: MovementAdmissionEvent) => void;
   get pendingCount(): number {
@@ -73,9 +77,16 @@ export class ShipMovementAdmission {
       pending: [...this.pending],
       nextId: this.nextId,
       events: this.events,
+      pauseCommitted: this.pauseCommitted,
     });
   }
-  restore(saved: ReturnType<ShipMovementAdmission["checkpoint"]>): void {
+  restore(
+    saved: Omit<
+      ReturnType<ShipMovementAdmission["checkpoint"]>,
+      "pauseCommitted"
+    > & { pauseCommitted?: boolean },
+  ): void {
+    this.pauseCommitted = saved.pauseCommitted ?? false;
     this.pending.clear();
     this.replacementByShip.clear();
     this.executionByShip.clear();
@@ -113,6 +124,10 @@ export class ShipMovementAdmission {
     for (const member of admission.members) {
       if (index.get(member.id) === admission.id) index.delete(member.id);
       this.ports.cancel(admission.id, member.id);
+      if (admission.paused) {
+        const ship = this.ports.ship(member.id);
+        if (ship) this.ports.paused?.(ship, false);
+      }
     }
     if (!admission.execution) this.event(admission, tick, status, reason);
   }
@@ -179,6 +194,14 @@ export class ShipMovementAdmission {
    * repair owner. A newer human replacement may continue planning alongside it. */
   recover(ship: Ship, goal: number, tick: number): void {
     const previous = this.pending.get(this.executionByShip.get(ship.id) ?? -1);
+    if (
+      this.pauseCommitted &&
+      previous?.recovery &&
+      previous.goal === goal &&
+      previous.recovery.state === ship.repairState &&
+      previous.recovery.port === ship.repairPortId
+    )
+      return;
     if (previous) this.finish(previous, tick, "superseded");
     this.resume(ship, goal, true);
   }
@@ -223,6 +246,7 @@ export class ShipMovementAdmission {
       )
     )
       return "A ship can queue 32 waypoints";
+    if(!append && members.length && members.every(m=>m.admission && !m.admission.execution && m.admission.goal===goal && m.admission.generation===this.ports.generation(player.id) && m.admission.id===members[0].admission?.id && m.admission.selected.size===ships.length)){this.event(members[0].admission!,tick,"deferred");return null;}
     const initial: Ship[] = [];
     if (append) {
       for (const m of members) {
@@ -270,7 +294,7 @@ export class ShipMovementAdmission {
       ship.health > 0 &&
       ship.playerId === admission.playerId &&
       !ship.refit &&
-      !ship.shoreTransfer &&
+      (!ship.shoreTransfer || ["landing", "afloat"].includes(ship.shoreTransfer.phase)) &&
       (admission.recovery
         ? ship.repairState === admission.recovery.state &&
           ship.repairPortId === admission.recovery.port
@@ -290,7 +314,7 @@ export class ShipMovementAdmission {
   ): void {
     const admission = this.pending.get(id),
       member = admission?.members.find((m) => m.id === shipId);
-    if (!admission || !member) return;
+    if (!admission || !member || admission.paused) return;
     member.requested = false;
     if (outcome === "complete") {
       member.limitedAttempts = 0;
@@ -301,10 +325,24 @@ export class ShipMovementAdmission {
     } else if (outcome === "unreachable")
       this.finish(admission, tick, "rejected", "Water route is disconnected");
     else if (outcome === "limited") {
-      member.limitedAttempts = (member.limitedAttempts ?? 0) + 1;
-      if (!admission.execution && member.limitedAttempts >= 3)
-        this.finish(admission, tick, "rejected", "Route planning capacity exhausted; try a shorter waypoint");
-      else member.retryAt = tick + 20 * Math.min(10, member.limitedAttempts);
+      const retry = limitedRouteRetry(
+        member.limitedAttempts ?? 0,
+        tick,
+        !admission.execution || this.pauseCommitted,
+      );
+      member.limitedAttempts = retry.attempts;
+      if (retry.exhausted && !admission.execution)
+        this.finish(admission, tick, "rejected", ROUTE_CAPACITY_REASON);
+      else if (retry.exhausted) {
+        admission.paused = true;
+        for (const m of admission.members) {
+          this.ports.cancel(admission.id, m.id);
+          m.requested = false;
+          const ship = this.ports.ship(m.id);
+          if (ship) this.ports.paused?.(ship, true);
+        }
+        this.event(admission, tick, "deferred", ROUTE_CAPACITY_REASON);
+      } else member.retryAt = retry.retryAt;
     }
   }
   step(tick: number, budget = 64): number {
@@ -326,7 +364,14 @@ export class ShipMovementAdmission {
         continue;
       }
       validated.add(id);
-      const unplanned = admission.members.find((m) => !m.path && !m.requested && (m.retryAt ?? 0) <= tick);
+      if (admission.paused) {
+        used++;
+        if (++idle >= this.pending.size) break;
+        continue;
+      }
+      const unplanned = admission.members.find(
+        (m) => !m.path && !m.requested && (m.retryAt ?? 0) <= tick,
+      );
       if (unplanned) {
         unplanned.start = this.ports.tileOf(this.ports.ship(unplanned.id)!);
         unplanned.requested = this.ports.request(

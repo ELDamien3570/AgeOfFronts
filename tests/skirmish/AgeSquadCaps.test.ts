@@ -24,9 +24,9 @@ describe("age-based squad capacity", () => {
     });
     const player = game.players[0],
       template = game.squads.find((s) => s.playerId === player.id)!;
-    game.squads.length = 0;
+    for (const record of game.squads) game.removeSquad(record.id);
     for (let i = 0; i < 60; i++)
-      game.squads.push({
+      game.addSquad({
         ...template,
         id: 10000 + i,
         embarkedOn: i < 4 ? 999 : null,
@@ -34,15 +34,15 @@ describe("age-based squad capacity", () => {
         path: [],
       });
     player.reserves = 10000;
-    const building = {
+    const building = game.addBuilding({
       id: game.allocateId(),
       playerId: player.id,
       type: "barracks" as const,
       tile: player.base,
       age: "StoneAge" as const,
       remainingTicks: 0,
-    };
-    game.buildings.push(building);
+    });
+
     const quote = () =>
       new SkirmishViewModel(game.snapshot(), {
         selected: new Set(),

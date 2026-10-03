@@ -1,0 +1,514 @@
+{
+  "sourceBase": "14fafeb",
+  "runtimeId": "0ab1914af298824ea28f450586520247ccb67c9eb6231a41ec0fb4e7165aa705",
+  "environment": {
+    "node": "v24.18.0",
+    "platform": "win32",
+    "architecture": "x64"
+  },
+  "fixture": {
+    "width": 128,
+    "height": 96,
+    "options": {
+      "seed": 47,
+      "aiCount": 1,
+      "tribes": false,
+      "runAi": false,
+      "ruleset": "ages-v1",
+      "deferredPlanning": true
+    },
+    "tick": 1,
+    "squads": 6,
+    "ships": 0,
+    "buildings": 0,
+    "plannerUsed": 0,
+    "arenaCapacity": 65536,
+    "arenaUsed": 2
+  },
+  "before": {
+    "rss": 121638912,
+    "heapTotal": 54956032,
+    "heapUsed": 24642480,
+    "external": 8837062,
+    "arrayBuffers": 6381923
+  },
+  "sampledPeaks": {
+    "pack": {
+      "rss": 142413824,
+      "heapUsed": 37128120,
+      "heapTotal": 59633664,
+      "external": 15338418,
+      "arrayBuffers": 11177783
+    },
+    "json": {
+      "rss": 142413824,
+      "heapUsed": 37146384,
+      "heapTotal": 59633664,
+      "external": 15338736,
+      "arrayBuffers": 11178101
+    },
+    "bufferCopy": {
+      "rss": 142675968,
+      "heapUsed": 37148096,
+      "heapTotal": 59633664,
+      "external": 15601262,
+      "arrayBuffers": 11440627
+    },
+    "compression": {
+      "rss": 142983168,
+      "heapUsed": 37510768,
+      "heapTotal": 59633664,
+      "external": 16811741,
+      "arrayBuffers": 12651106
+    },
+    "hash": {
+      "rss": 142983168,
+      "heapUsed": 36368192,
+      "heapTotal": 59633664,
+      "external": 16811773,
+      "arrayBuffers": 12651106
+    },
+    "base64": {
+      "rss": 141193216,
+      "heapUsed": 40891944,
+      "heapTotal": 59854848,
+      "external": 16811773,
+      "arrayBuffers": 10939763
+    },
+    "unpack": {
+      "rss": 142413824,
+      "heapUsed": 36509912,
+      "heapTotal": 59633664,
+      "external": 15469506,
+      "arrayBuffers": 11308871
+    },
+    "idle": {
+      "rss": 141365248,
+      "heapUsed": 40927432,
+      "heapTotal": 59854848,
+      "external": 15426280,
+      "arrayBuffers": 11265645
+    }
+  },
+  "timings": {
+    "pack": {
+      "samples": 18,
+      "mean": 1.041772222222259,
+      "p95": 6.851599999999962,
+      "p99": 6.851599999999962,
+      "maximum": 6.851599999999962
+    },
+    "json": {
+      "samples": 36,
+      "mean": 0.179213888888872,
+      "p95": 0.453499999999849,
+      "p99": 0.46450000000004366,
+      "maximum": 0.46450000000004366
+    },
+    "bufferCopy": {
+      "samples": 18,
+      "mean": 0.08232777777779018,
+      "p95": 0.22040000000015425,
+      "p99": 0.22040000000015425,
+      "maximum": 0.22040000000015425
+    },
+    "compression": {
+      "samples": 18,
+      "mean": 9.675111111111127,
+      "p95": 69.41190000000006,
+      "p99": 69.41190000000006,
+      "maximum": 69.41190000000006
+    },
+    "hash": {
+      "samples": 36,
+      "mean": 0.42825000000002295,
+      "p95": 0.8361999999999625,
+      "p99": 3.569800000000214,
+      "maximum": 3.569800000000214
+    },
+    "base64": {
+      "samples": 36,
+      "mean": 2.275636111111118,
+      "p95": 10.253300000000081,
+      "p99": 10.907899999999927,
+      "maximum": 10.907899999999927
+    },
+    "decompression": {
+      "samples": 18,
+      "mean": 3.2479777777778054,
+      "p95": 10.085100000000011,
+      "p99": 10.085100000000011,
+      "maximum": 10.085100000000011
+    },
+    "unpack": {
+      "samples": 18,
+      "mean": 0.5601833333333212,
+      "p95": 1.4652000000000953,
+      "p99": 1.4652000000000953,
+      "maximum": 1.4652000000000953
+    }
+  },
+  "observations": [
+    {
+      "kind": "snapshot",
+      "cycle": 0,
+      "payloadChars": 2668,
+      "stats": {
+        "wireBytes": 8842,
+        "arrayBytes": 2288,
+        "arrays": 6,
+        "metadataBytes": 6546,
+        "metadataTokens": 940
+      },
+      "after": {
+        "rss": 124542976,
+        "heapTotal": 57053184,
+        "heapUsed": 29307376,
+        "external": 10742520,
+        "arrayBuffers": 6581917
+      }
+    },
+    {
+      "kind": "snapshot",
+      "cycle": 1,
+      "payloadChars": 2668,
+      "stats": {
+        "wireBytes": 8842,
+        "arrayBytes": 2288,
+        "arrays": 6,
+        "metadataBytes": 6546,
+        "metadataTokens": 940
+      },
+      "after": {
+        "rss": 124596224,
+        "heapTotal": 57053184,
+        "heapUsed": 30041816,
+        "external": 10871170,
+        "arrayBuffers": 6710503
+      }
+    },
+    {
+      "kind": "snapshot",
+      "cycle": 2,
+      "payloadChars": 2668,
+      "stats": {
+        "wireBytes": 8842,
+        "arrayBytes": 2288,
+        "arrays": 6,
+        "metadataBytes": 6546,
+        "metadataTokens": 940
+      },
+      "after": {
+        "rss": 125124608,
+        "heapTotal": 57053184,
+        "heapUsed": 30924792,
+        "external": 10999820,
+        "arrayBuffers": 6839089
+      }
+    },
+    {
+      "kind": "snapshot",
+      "cycle": 3,
+      "payloadChars": 2668,
+      "stats": {
+        "wireBytes": 8842,
+        "arrayBytes": 2288,
+        "arrays": 6,
+        "metadataBytes": 6546,
+        "metadataTokens": 940
+      },
+      "after": {
+        "rss": 126332928,
+        "heapTotal": 57053184,
+        "heapUsed": 31638384,
+        "external": 11062934,
+        "arrayBuffers": 6902139
+      }
+    },
+    {
+      "kind": "snapshot",
+      "cycle": 4,
+      "payloadChars": 2668,
+      "stats": {
+        "wireBytes": 8842,
+        "arrayBytes": 2288,
+        "arrays": 6,
+        "metadataBytes": 6546,
+        "metadataTokens": 940
+      },
+      "after": {
+        "rss": 127234048,
+        "heapTotal": 57315328,
+        "heapUsed": 32519144,
+        "external": 11191584,
+        "arrayBuffers": 7030725
+      }
+    },
+    {
+      "kind": "snapshot",
+      "cycle": 5,
+      "payloadChars": 2668,
+      "stats": {
+        "wireBytes": 8842,
+        "arrayBytes": 2288,
+        "arrays": 6,
+        "metadataBytes": 6546,
+        "metadataTokens": 940
+      },
+      "after": {
+        "rss": 128004096,
+        "heapTotal": 57315328,
+        "heapUsed": 33233240,
+        "external": 11320234,
+        "arrayBuffers": 7159311
+      }
+    },
+    {
+      "kind": "checkpoint",
+      "cycle": 0,
+      "payloadChars": 5488,
+      "stats": {
+        "wireBytes": 18239,
+        "arrayBytes": 38400,
+        "arrays": 5,
+        "metadataBytes": 16255,
+        "metadataTokens": 2578
+      },
+      "after": {
+        "rss": 130080768,
+        "heapTotal": 57577472,
+        "heapUsed": 35115400,
+        "external": 11594177,
+        "arrayBuffers": 7433190
+      }
+    },
+    {
+      "kind": "checkpoint",
+      "cycle": 1,
+      "payloadChars": 5488,
+      "stats": {
+        "wireBytes": 18239,
+        "arrayBytes": 38400,
+        "arrays": 5,
+        "metadataBytes": 16255,
+        "metadataTokens": 2578
+      },
+      "after": {
+        "rss": 131723264,
+        "heapTotal": 57577472,
+        "heapUsed": 36510488,
+        "external": 11826648,
+        "arrayBuffers": 7665597
+      }
+    },
+    {
+      "kind": "checkpoint",
+      "cycle": 2,
+      "payloadChars": 5488,
+      "stats": {
+        "wireBytes": 18239,
+        "arrayBytes": 38400,
+        "arrays": 5,
+        "metadataBytes": 16255,
+        "metadataTokens": 2578
+      },
+      "after": {
+        "rss": 132898816,
+        "heapTotal": 58101760,
+        "heapUsed": 25332608,
+        "external": 11162726,
+        "arrayBuffers": 7002123
+      }
+    },
+    {
+      "kind": "checkpoint",
+      "cycle": 3,
+      "payloadChars": 5488,
+      "stats": {
+        "wireBytes": 18239,
+        "arrayBytes": 38400,
+        "arrays": 5,
+        "metadataBytes": 16255,
+        "metadataTokens": 2578
+      },
+      "after": {
+        "rss": 132898816,
+        "heapTotal": 58101760,
+        "heapUsed": 26725304,
+        "external": 11395197,
+        "arrayBuffers": 7234530
+      }
+    },
+    {
+      "kind": "checkpoint",
+      "cycle": 4,
+      "payloadChars": 5488,
+      "stats": {
+        "wireBytes": 18239,
+        "arrayBytes": 38400,
+        "arrays": 5,
+        "metadataBytes": 16255,
+        "metadataTokens": 2578
+      },
+      "after": {
+        "rss": 133287936,
+        "heapTotal": 58101760,
+        "heapUsed": 28168552,
+        "external": 11627668,
+        "arrayBuffers": 7466937
+      }
+    },
+    {
+      "kind": "checkpoint",
+      "cycle": 5,
+      "payloadChars": 5488,
+      "stats": {
+        "wireBytes": 18239,
+        "arrayBytes": 38400,
+        "arrays": 5,
+        "metadataBytes": 16255,
+        "metadataTokens": 2578
+      },
+      "after": {
+        "rss": 133287936,
+        "heapTotal": 58101760,
+        "heapUsed": 29577792,
+        "external": 11860139,
+        "arrayBuffers": 7699344
+      }
+    },
+    {
+      "kind": "active-arena",
+      "cycle": 0,
+      "payloadChars": 217252,
+      "stats": {
+        "wireBytes": 262526,
+        "arrayBytes": 262200,
+        "arrays": 7,
+        "metadataBytes": 318,
+        "metadataTokens": 62
+      },
+      "after": {
+        "rss": 136470528,
+        "heapTotal": 59633664,
+        "heapUsed": 27566528,
+        "external": 13464106,
+        "arrayBuffers": 9303503
+      }
+    },
+    {
+      "kind": "active-arena",
+      "cycle": 1,
+      "payloadChars": 217252,
+      "stats": {
+        "wireBytes": 262526,
+        "arrayBytes": 262200,
+        "arrays": 7,
+        "metadataBytes": 318,
+        "metadataTokens": 62
+      },
+      "after": {
+        "rss": 137842688,
+        "heapTotal": 59633664,
+        "heapUsed": 25062376,
+        "external": 13006444,
+        "arrayBuffers": 8845873
+      }
+    },
+    {
+      "kind": "active-arena",
+      "cycle": 2,
+      "payloadChars": 217252,
+      "stats": {
+        "wireBytes": 262526,
+        "arrayBytes": 262200,
+        "arrays": 7,
+        "metadataBytes": 318,
+        "metadataTokens": 62
+      },
+      "after": {
+        "rss": 140984320,
+        "heapTotal": 58970112,
+        "heapUsed": 36234688,
+        "external": 14944470,
+        "arrayBuffers": 10783835
+      }
+    },
+    {
+      "kind": "active-arena",
+      "cycle": 3,
+      "payloadChars": 217252,
+      "stats": {
+        "wireBytes": 262526,
+        "arrayBytes": 262200,
+        "arrays": 7,
+        "metadataBytes": 318,
+        "metadataTokens": 62
+      },
+      "after": {
+        "rss": 141303808,
+        "heapTotal": 59191296,
+        "heapUsed": 33056424,
+        "external": 15272866,
+        "arrayBuffers": 11112231
+      }
+    },
+    {
+      "kind": "active-arena",
+      "cycle": 4,
+      "payloadChars": 217252,
+      "stats": {
+        "wireBytes": 262526,
+        "arrayBytes": 262200,
+        "arrays": 7,
+        "metadataBytes": 318,
+        "metadataTokens": 62
+      },
+      "after": {
+        "rss": 142413824,
+        "heapTotal": 59412480,
+        "heapUsed": 29763000,
+        "external": 15338418,
+        "arrayBuffers": 11177783
+      }
+    },
+    {
+      "kind": "active-arena",
+      "cycle": 5,
+      "payloadChars": 217252,
+      "stats": {
+        "wireBytes": 262526,
+        "arrayBytes": 262200,
+        "arrays": 7,
+        "metadataBytes": 318,
+        "metadataTokens": 62
+      },
+      "after": {
+        "rss": 141959168,
+        "heapTotal": 59633664,
+        "heapUsed": 26748872,
+        "external": 15469506,
+        "arrayBuffers": 11308871
+      }
+    }
+  ],
+  "limits": {
+    "generic": {
+      "maxWireBytes": 64000000,
+      "maxPayloadChars": 32000000,
+      "maxArrayBytes": 256000000,
+      "maxMetadataBytes": 64000000,
+      "maxMetadataTokens": 4000000,
+      "maxArrays": 100000
+    },
+    "snapshot": {
+      "maxWireBytes": 64000000,
+      "maxPayloadChars": 8388608,
+      "maxArrayBytes": 64000000,
+      "maxMetadataBytes": 64000000,
+      "maxMetadataTokens": 4000000,
+      "maxArrays": 100000
+    }
+  },
+  "qualification": "Sampled local observations only; not exact transient maxima, GC convergence, ARM, browser or target-capacity certification."
+}

@@ -20,7 +20,7 @@ function match(aiCount = 1) {
   });
 }
 function tower(m: Skirmish, x: number, y: number): Building {
-  const b: Building = {
+  const b: Building = m.addBuilding({
     id: m.allocateId(),
     playerId: 1,
     type: "tower",
@@ -29,8 +29,8 @@ function tower(m: Skirmish, x: number, y: number): Building {
     remainingTicks: 0,
     health: 2000,
     maxHealth: 2000,
-  };
-  m.buildings.push(b);
+  });
+
   return b;
 }
 function barrier(a: Building, b: Building, tiles: number[], id = 1): Barrier {
@@ -172,7 +172,7 @@ describe("friendly fortification passage", () => {
     const revision = forts.version;
     expect(forts.blocked(a.tile, 1)).toBe(false);
     expect(forts.blocked(a.tile, 2)).toBe(true);
-    a.playerId = 2;
+    m.updateBuilding((a).id, { playerId: 2 });
     forts.step(2, m.buildings);
     expect(forts.version).toBeGreaterThan(revision);
     expect(forts.blocked(a.tile, 1)).toBe(true);
@@ -184,7 +184,7 @@ describe("friendly fortification passage", () => {
     const m = match(2),
       forts = m.expansion!.fortifications;
     // Isolate the wall corridor from the resource-site placement restriction.
-    m.expansion!.supply.deposits.splice(0);
+    m.expansion!.supply.replaceDeposits([]);
     for (const p of m.players) {
       p.gold = 1e7;
       m.expansion!.progression.states[p.id].completed = TECHNOLOGIES.map(
@@ -208,11 +208,11 @@ describe("friendly fortification passage", () => {
           age: "StoneAge",
         }),
       ).toBeNull();
-      m.buildings[m.buildings.length - 1].remainingTicks = 0;
+      m.updateBuilding((m.buildings[m.buildings.length - 1]).id, { remainingTicks: 0 });
     }
     // The completed towers form the wall; keep their weapons inactive in this navigation fixture.
     for (const b of m.buildings)
-      if (b.type === "tower") b.remainingTicks = 100000;
+      if (b.type === "tower") m.updateBuilding((b).id, { remainingTicks: 100000 });
     forts.step(1, m.buildings);
     expect(
       m.applyCommand({
@@ -231,16 +231,16 @@ describe("friendly fortification passage", () => {
       }),
     ).toBeNull();
     for (const s of m.squads) {
-      s.x = (5 + s.playerId * 15) * FIXED;
-      s.y = (4 + (s.id % 3) * 2) * FIXED;
+      m.updateSquad(s.id, { x: (5 + s.playerId * 15) * FIXED });
+      m.updateSquad(s.id, { y: (4 + (s.id % 3) * 2) * FIXED });
     }
     const own = m.squads.find((s) => s.playerId === 1)!,
       ally = m.squads.find((s) => s.playerId === 3)!,
       enemy = m.squads.find((s) => s.playerId === 2)!;
-    own.x = 20.5 * FIXED;
-    ally.x = 50.5 * FIXED;
-    enemy.x = 40.5 * FIXED;
-    own.y = ally.y = enemy.y = 20.5 * FIXED;
+    m.updateSquad(own.id, { x: 20.5 * FIXED });
+    m.updateSquad(ally.id, { x: 50.5 * FIXED });
+    m.updateSquad(enemy.id, { x: 40.5 * FIXED });
+    for (const squad of [own, ally, enemy]) m.updateSquad(squad.id, { y: 20.5 * FIXED });
     for (let x = 0; x < 64; x++) {
       expect(forts.blocked(m.map.ref(x, 24), 1)).toBe(false);
       expect(forts.blocked(m.map.ref(x, 24), 3)).toBe(false);

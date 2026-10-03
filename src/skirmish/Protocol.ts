@@ -188,35 +188,44 @@ export type Command =
       append?: boolean;
     };
 
+export type MovementBlockReason = "crowd" | "yielding" | "terrain" | "restricted" | "planning" | "blocked";
+export interface MovementStatus {
+  reason: MovementBlockReason;
+  since: number;
+  blockerIds: readonly number[];
+}
+
 export interface Squad {
-  id: number;
-  playerId: number;
-  x: number;
-  y: number;
-  troops: number;
-  kind: SquadType;
-  embarkedOn: number | null;
-  lastCombatTick: number;
-  moved: boolean;
-  firingCharge: number;
-  order: Order;
-  queuedOrders: Order[];
-  path: number[];
-  nextPathIndex: number;
-  plannedTile: number;
-  lastPlanTick: number;
-  fighting: boolean;
+  readonly id: number;
+  readonly playerId: number;
+  readonly x: number;
+  readonly y: number;
+  readonly troops: number;
+  readonly kind: SquadType;
+  readonly embarkedOn: number | null;
+  readonly lastCombatTick: number;
+  readonly moved: boolean;
+  readonly firingCharge: number;
+  readonly order: Readonly<Order>;
+  readonly queuedOrders: readonly Readonly<Order>[];
+  readonly path: readonly number[];
+  readonly nextPathIndex: number;
+  readonly plannedTile: number;
+  readonly lastPlanTick: number;
+  readonly fighting: boolean;
   // The simulation's chosen attack target; taking damage alone is not an attack.
-  combatTargetId: number | null;
-  definitionId?: string;
-  xp?: number;
-  nextAttackTick?: number;
-  lastAttackTick?: number;
-  refit?: RefitJob | null;
-  charge?: ChargeState | null;
-  chargeReadyTick?: number;
-  deploymentTicks?: number;
-  structureTarget?: { buildingId?: number; barrierId?: number } | null;
+  readonly combatTargetId: number | null;
+  readonly definitionId?: string;
+  readonly xp?: number;
+  readonly nextAttackTick?: number;
+  readonly lastAttackTick?: number;
+  readonly planningPaused?: boolean;
+  readonly movementStatus?: Readonly<MovementStatus>;
+  readonly refit?: Readonly<RefitJob> | null;
+  readonly charge?: Readonly<ChargeState> | null;
+  readonly chargeReadyTick?: number;
+  readonly deploymentTicks?: number;
+  readonly structureTarget?: Readonly<{ buildingId?: number; barrierId?: number }> | null;
 }
 
 export interface Player {
@@ -263,52 +272,55 @@ export type BuildingType =
 export type ShipType = "transport" | "warship";
 
 export interface Building {
-  id: number;
-  playerId: number;
-  type: BuildingType;
-  tile: number;
-  remainingTicks: number;
-  buildTicks?: number;
-  age?: Age;
-  health?: number;
-  maxHealth?: number;
-  nextAttackTick?: number;
-  launchReadyTick?: number;
+  readonly id: number;
+  readonly playerId: number;
+  readonly type: BuildingType;
+  readonly tile: number;
+  readonly remainingTicks: number;
+  readonly buildTicks?: number;
+  readonly age?: Age;
+  readonly health?: number;
+  readonly maxHealth?: number;
+  readonly nextAttackTick?: number;
+  readonly launchReadyTick?: number;
 }
 
 export interface Ship {
-  id: number;
-  playerId: number;
-  kind: ShipType;
-  x: number;
-  y: number;
-  health: number;
-  destination: number | null;
-  waypoints: number[];
-  path: number[];
-  nextPathIndex: number;
-  fighting: boolean;
-  boarding: BoardingMeeting | null;
+  readonly id: number;
+  readonly playerId: number;
+  readonly kind: ShipType;
+  readonly x: number;
+  readonly y: number;
+  readonly health: number;
+  readonly destination: number | null;
+  readonly waypoints: readonly number[];
+  readonly path: readonly number[];
+  readonly nextPathIndex: number;
+  readonly fighting: boolean;
+  readonly boarding: BoardingMeeting | null;
   // Domain-owned temporary voyage; these vessels cannot become a free navy.
-  shoreTransfer?: {
-    destinationTile: number;
-    landingTile: number;
-    waterPath: number[];
-    capacity: number;
-    phase: "boarding" | "sailing" | "landing";
-    queued: { squadId: number; orders: Order[] }[];
+  readonly shoreTransfer?: {
+    readonly destinationTile: number;
+    readonly landingTile: number | null;
+    departureTile?: number;
+    returning?: boolean;
+    readonly waterPath: readonly number[];
+    readonly capacity: number;
+    readonly phase: "boarding" | "sailing" | "landing" | "afloat";
+    readonly queued: readonly { readonly squadId: number; readonly orders: readonly Readonly<Order>[] }[];
   };
-  definitionId?: string;
-  nextAttackTick?: number;
-  xp?: number;
-  refit?: RefitJob | null;
-  attackTargetId?: number | null;
-  lastPlanTick?: number;
-  patrolTile?: number | null;
-  patrolDwellTicks?: number;
-  lastCombatTick?: number;
-  repairPortId?: number | null;
-  repairState?:
+  readonly definitionId?: string;
+  readonly nextAttackTick?: number;
+  readonly xp?: number;
+  readonly planningPaused?: boolean;
+  readonly refit?: Readonly<RefitJob> | null;
+  readonly attackTargetId?: number | null;
+  readonly lastPlanTick?: number;
+  readonly patrolTile?: number | null;
+  readonly patrolDwellTicks?: number;
+  readonly lastCombatTick?: number;
+  readonly repairPortId?: number | null;
+  readonly repairState?:
     | "idle"
     | "patrolling"
     | "returning-to-dock"
@@ -318,9 +330,9 @@ export interface Ship {
 }
 
 export interface BoardingMeeting {
-  landTile: number;
-  waterTile: number;
-  squadIds: number[];
+  readonly landTile: number;
+  readonly waterTile: number;
+  readonly squadIds: readonly number[];
 }
 
 // An actual released volley, retained briefly for presentation. Damage is
@@ -357,9 +369,9 @@ export interface MatchOptions {
   resourceOutput?: 1 | 2 | 3 | 5;
   alliances?: boolean;
   runAi?: boolean;
-  /** Experimental policy; stays opt-in until the ARM performance gate passes. */
+  /** Economic demand policy. Normal games enable the shared AI policy defaults. */
   aiEconomy?: boolean;
-  /** Transactional route admission; opt-in until planning gates pass. */
+  /** Bounded transactional route admission. Explicit false preserves legacy replay. */
   deferredPlanning?: boolean;
   /** City defense trials require the shared opt-in economy coordinator. */
   aiDefenses?: boolean;
@@ -409,6 +421,10 @@ export interface Snapshot {
 
 export interface SnapshotPacket {
   reset: boolean;
+  /** Absent in legacy packets, which carry complete squad/ship views. */
+  entityMode?: "full" | "delta";
+  removedSquads?: Int32Array;
+  removedShips?: Int32Array;
   tick: number;
   width: number;
   height: number;
@@ -422,7 +438,8 @@ export interface SnapshotPacket {
   volleys: ArcherVolley[];
   winner: number | null;
   combatTicks: number;
-  expansion?: Omit<ExpansionSnapshot, "deposits"> & {
+  expansionMode?: "full" | "delta";
+  expansion?: Partial<Omit<ExpansionSnapshot, "deposits">> & {
     /** Full resource facts at a baseline or geometry revision only. */
     deposits?: ExpansionSnapshot["deposits"];
     /** Resource id/owner pairs applied to retained canonical facts. */
@@ -433,6 +450,8 @@ export interface SnapshotPacket {
     definitionId?: string;
     xp?: number;
     nextAttackTick?: number;
+    planningPaused?: boolean;
+    movementStatus?: MovementStatus;
     refit?: RefitJob | null;
     charge?: ChargeState | null;
     chargeReadyTick?: number;

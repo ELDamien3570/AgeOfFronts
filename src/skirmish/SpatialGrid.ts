@@ -70,6 +70,22 @@ export class SpatialGrid<T extends WorldPoint> {
     if (index >= 0) bucket!.splice(index, 1);
   }
 
+  /** Conservative occupied-cell test. Rebuild/insert makes a new arrival visible
+   * immediately; exact circle/hostility/LOS selection stays in the caller. */
+  mayContain(x: number, y: number, radius: number, excludedPartition?: number): boolean {
+    const left = Math.max(0, Math.floor((x - radius) / this.cellSize));
+    const right = Math.min(this.columns - 1, Math.floor((x + radius) / this.cellSize));
+    const top = Math.max(0, Math.floor((y - radius) / this.cellSize));
+    const bottom = Math.min(this.rows - 1, Math.floor((y + radius) / this.cellSize));
+    for (let cy = top; cy <= bottom; cy++)
+      for (let cx = left; cx <= right; cx++) {
+        const key = cx + cy * this.columns;
+        if (this.buckets[key]?.length &&
+            (excludedPartition === undefined || this.partitions[key] !== excludedPartition)) return true;
+      }
+    return false;
+  }
+
   query(
     x: number,
     y: number,

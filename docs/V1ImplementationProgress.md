@@ -1,4 +1,12 @@
 # V1 integrated implementation and qualification
+## Latest local checkpoint - 3 October 2026
+
+The remaining in-scope code pass is committed locally as `a4145f4230cabe58023bc60d58b835407a111956` on `codex/optimization-lifecycle-indexes`. **1,075 tests across 164 files pass**, with TypeScript, production build, whitespace and scoped Oxlint also passing. Scoped ESLint retains one pre-existing unused variable. Local implementation is closed for P04, P06-P10, P12, P15-P16, P18-P19, P23-P24, P26-P27; P28's local integration gate passes. P17, P20, P21, P22 and P25 are deferred. P29 has partial real-browser evidence; P30 actual ARM/ten-browser capacity remains unverified. P02 mature-world memory and acceptance involving deferred features remain open. Existing P01-P03/P05/P11/P13/P14 work is retained, including the supplied P11/P14 integration. See the final evidence below. No push, merge, production flag change or deployment was performed. This section supersedes historical per-slice gate/pause text below.
+
+
+[Final validation](../Optimization%20Handoff/Evidence/nightly-final-validation.md) · [Browser observations](../Optimization%20Handoff/Evidence/nightly-browser-observations.md)
+
+## Historical implementation record
 
 Updated 2 October 2026. Base: `bca41f59a8b2b3d23dbe391d964fc2bffd3d6708`
 (`V1`, More Naval work). Work branch: `v1-phased-ai-optimization`.
@@ -429,3 +437,134 @@ P02-P30 remain open at this checkpoint. No experimental default, target-capacity
 tier, artwork integration, remote publication or deployment was authorized by
 this local code gate. Real-browser acceptance and actual ARM capacity are still
 unverified.
+
+### P02 structural consumer envelope and recovery slice
+
+`codex/optimization-consumer-envelopes-local` implements coordinated producer/decoder
+envelopes, sparse active arena saves, an explicit reader for legacy full arenas,
+finite pending-formation values with legacy sentinel migration, and close-time
+cleanup for stalled renderer projections and receipt history. Exact transport
+boundaries, malformed partitions, restored free order and deterministic pending
+movement are covered by focused tests. Shared limits enter runtime compatibility
+identity; experimental defaults and existing protective ceilings are retained.
+
+The inventory and reproducible small local memory samples are in
+`Optimization Handoff/Evidence/02-consumer-envelope.md` and its JSON companion.
+Runtime identity: `0ab1914af298824ea28f450586520247ccb67c9eb6231a41ec0fb4e7165aa705`.
+The fixture is Windows x64 Node 24.18.0, 128 by 96, seed 47, ages-v1, one AI,
+no tribes, AI disabled, deferred planning enabled, tick 1 after a human move.
+The active arena fixture has 65,536 slots with two in use; its typed save bytes
+fall from 2,097,152 to 262,200 while preserving exact future allocation order.
+Sampled memory is neither an exact transient peak nor convergence/capacity proof.
+
+Focused regression tests, TypeScript, script typechecking, production build,
+whitespace and scoped lint pass. The full unchanged-timeout suite ran all 1024
+tests in 156 files: 1019 passed, five timed out in VallesKairuliaMap, ShoreTransport,
+Tribes and Movement. The affected four files were rerun unchanged: 34 of 39
+passed, with five timeouts (Movement passed). With all P02 files temporarily
+set aside, identical P01 source from `14fafeb` produced six timeouts in the same
+map/tribe/shore files, 33 of 39 passed. The concurrent Art-only parent `59c4eeb`
+was preserved and its simulation/tests were verified identical to `14fafeb`.
+This demonstrates baseline timing failures in the current environment; it does
+not turn the full suite into a clean pass. Timeouts and assertions are unchanged.
+The green full-suite timing gate and mature-world/browser/ARM memory qualification
+remain open. P03 is independent of P02 and can proceed with this evidence retained.
+
+The user explicitly approved enforcing read-only entity collections/records with
+domain mutation methods and migrating affected fixtures for P03. P03-P30 still
+require implementation and their own acceptance evidence.
+
+### P03 building lifecycle checkpoint
+
+Local code commit `1fe9ede1b8ee9c093032d0257423fb90c4e022ab` on
+`codex/optimization-lifecycle-indexes` owns building spawn/update/remove/restore
+through explicit domain methods. Stable records have TypeScript read-only fields;
+public arrays and index views are frozen. Identity, ownership, type, stack/tower,
+income, producer revisions and highest live ID update incrementally. Restore
+rebuilds derived facts; optional comparison mode detects drift without repairing
+canonical state or entering checkpoints. Affected writers and fixtures use the
+owner. Squad, ship and cargo lifecycle ownership remain open, so P03 is partial.
+
+Six independent lifecycle tests include 300 seeded mutations, same-length
+replacement, unfinished producer death/revival, 240 warm owner queries with no
+new rebuild scan rows, and exact restored continuation. The six-file focused
+gate passed 37 tests. Full suite: 1,030 tests, 1,029 passed and one unchanged tribe
+frontier timeout; all eight tests in that file passed on an unchanged rerun.
+The same frontier timeout occurred on the pre-P02 baseline. The full-suite timing
+gate remains open. TypeScript, build, whitespace and scoped lint passed, retaining
+the known old Simulation unused-local lint exception. Evidence:
+`Optimization Handoff/Evidence/03-building-lifecycle.md`. Runtime identity:
+`f1a19b5fb9ef323f43bd24912791dd21961533d75a50622119e36c0f06fb4d28`.
+
+The user reserved P11 planner progress/fairness and P14 browser rendering for a
+separate session. This session retains P03 and subsequent unassigned plans;
+shared Simulation/Protocol integration is serialized here. Reservation is not
+implementation or acceptance evidence. Parallel sessions need separate worktrees.
+
+### P03 unit lifecycle checkpoint and requested pause
+
+Code `a0e2aa1587b29c7101ebade7d85698ea7a45d657` adds canonical squad/ship ownership, exact owner/kind/definition,
+alive and cargo groups, distinct revisions, immediate removal cleanup and
+restore reconstruction. Domain writers and affected fixtures use explicit
+methods; finalized internal routes avoid another full copy on scalar movement.
+Repeated force/economic/fleet/cargo consumers use maintained facts. Further
+legacy consumer migration and broader P03 acceptance remain open.
+
+Four independent lifecycle tests include 400 seeded mutations with at most 32
+squads and 32 ships, route/input isolation, reclaimed groups, twelve warm ticks
+and 240 owner queries without new index rebuild scan rows, and exact restored
+continuation. The final local gate passed **1,034 tests in 158 files**, TypeScript,
+production build, whitespace and scoped lint, with only the known unchanged
+Simulation unused-local exception and Vite chunk warning. No assertion or
+timeout was weakened. This closes the current continuation's local full-suite
+timing gate; mature-world/browser/ARM and integrated experimental qualification
+remain open. Evidence: `Optimization Handoff/Evidence/03-unit-lifecycle.md`.
+Runtime: `783e9d22c21cc358506b0b2551b0c9220e738c794fe8aaa935fa4df6d689e3c2`.
+
+The user requested implementation pause after this testing gate and a rough code
+estimate. Work pauses at this checkpoint; no next dependent phase is started.
+P11/P14 remain reserved for the user's separate session. No push, merge, default
+change, artwork integration or deployment was performed by this checkpoint.
+
+## Nightly continuation scope
+
+The user resumed implementation with larger dependency-compatible batches and
+focused checks between milestones. Run the full suite at major integration
+boundaries, not after every small slice. Practical changes to the existing
+modules are authorized; preserve deterministic simulation, canonical ownership,
+transactional paid work and ordered replication.
+
+P11 and P14 were supplied from `codex/p11-p14-optimization` (94be373, 710d337,
+44ceb21) and cherry-picked here as 4eae4d7, a24b7a0 and e8e4eb5. Their shared
+Simulation/Protocol/codec patch has been adapted to this continuation's entity
+ownership. Local integration is checked; external performance gates stay open.
+
+The user deferred **P17, P20, P21, P22 and P25** to the next update. P18/P23/P26
+can use the existing mechanics, but acceptance that specifically requires these
+deferred features remains open. P28 cannot claim the original all-roadmap gate
+without them. Notify the user by plan document as local implementation closes.
+
+The active first batch covers the remaining P03 consumers, P04 resource/producer
+facts, P05 local combat queries, P12 entity/resource replication and P13 exact
+recovery baseline reuse. Its combined test milestone and evidence supersede the
+historical pause below once recorded.
+
+## Nightly integration checkpoint: cd4a46c
+
+Local implementation is complete for **P03, P05 and P13**. Supplied **P11 and
+P14** are integrated. **P04** has resource/producer-lookup code with completed
+producer capability work still open. **P12** has compact entity/resource deltas;
+broader domain metadata reduction remains open. The current larger-batch work
+continues with P07/P06 and P08/P09/P10 in dependency order.
+
+The combined suite covered 1,062 tests in 163 files: 1,061 passed and one new
+collision-cache fixture failed because it assumed a building before camp spawn.
+After explicitly creating the building, that file's five tests passed. No
+production repair or weakened assertion/timeout was needed. TypeScript, build,
+whitespace and scoped lint pass except the known Simulation unused local.
+See [full scope, source and validation](../Optimization%20Handoff/Evidence/nightly-batch-01.md). External
+qualification remains open. P17/P20/P21/P22/P25 stay deferred by user request.
+
+## Final-pass validation instruction
+
+The user's latest instruction supersedes intermediate validation cadence: implement all remaining in-scope code in one pass, excluding P17/P20/P21/P22/P25, and run tests/typecheck/build at the end. Do not stop for per-slice test suites. Continue reporting plan-document implementation milestones, distinguishing code written from final acceptance.

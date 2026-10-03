@@ -17,9 +17,9 @@ function fixture() {
   e.progression.states[1].completed = TECHNOLOGIES.map(t => t.id);
   m.owners.fill(1);
   function building(type: Building["type"] = "barracks") {
-    const b: Building = { id: m.allocateId(), playerId: 1, type, tile: m.map.ref(20, 20),
-      age: "StoneAge", health: buildingIntegrity(type, "StoneAge"), maxHealth: buildingIntegrity(type, "StoneAge"), remainingTicks: 0 };
-    m.buildings.push(b); return b;
+    const b: Building = m.addBuilding({ id: m.allocateId(), playerId: 1, type, tile: m.map.ref(20, 20),
+      age: "StoneAge", health: buildingIntegrity(type, "StoneAge"), maxHealth: buildingIntegrity(type, "StoneAge"), remainingTicks: 0 });
+     return b;
   }
   const upgrade = (...buildingIds: number[]) => m.applyCommand({ type: "upgrade-building", playerId: 1, buildingIds });
   return { m, e, p, building, upgrade };
@@ -55,7 +55,7 @@ describe("explicit paid building upgrades", () => {
     p.gold = price;
     expect(upgrade(a.id, b.id)).toMatch(/gold/);
     expect(p.gold).toBe(price); expect(a.age).toBe("StoneAge"); expect(b.age).toBe("StoneAge");
-    b.playerId = 2;
+    m.updateBuilding((b).id, { playerId: 2 });
     p.gold = 1e6;
     expect(upgrade(a.id, b.id)).toMatch(/own territory/);
     expect(a.age).toBe("StoneAge"); expect(p.gold).toBe(1e6);
@@ -63,11 +63,11 @@ describe("explicit paid building upgrades", () => {
     expect(m.applyCommand({ type: "upgrade-building", playerId: 1, buildingIds: [] })).not.toBeNull();
   });
   it("does not heal damaged buildings or grant upgrades without researched prerequisites", () => {
-    const { e, p, building, upgrade } = fixture(), b = building(), gold = p.gold;
-    b.health!--;
+    const { m, e, p, building, upgrade } = fixture(), b = building(), gold = p.gold;
+    m.updateBuilding((b).id, { health: b.health! - 1 });
     expect(upgrade(b.id)).toMatch(/repair/);
     expect(p.gold).toBe(gold);
-    b.health = b.maxHealth;
+    m.updateBuilding((b).id, { health: b.maxHealth });
     e.progression.states[1].completed = [];
     expect(upgrade(b.id)).toMatch(/Research/);
     expect(b.age).toBe("StoneAge");

@@ -1,3 +1,4 @@
+import { retainSquads } from "./UnitFixtures";
 import { describe, expect, it } from "vitest";
 import { GameMapImpl } from "../../src/core/game/GameMap";
 import { ARTWORK_CATALOG } from "../../src/skirmish/client/ArtworkCatalog";
@@ -33,9 +34,9 @@ describe("read-only enemy inspection and weapon presentation", () => {
   it("shows an enemy's actual owner research and strength without putting it in command selections", () => {
     const m = setup(),
       enemy = m.squads.find((s) => s.playerId === 2)!;
-    enemy.definitionId = "modern-archer";
-    enemy.kind = "archer";
-    enemy.troops = 600;
+    m.updateSquad(enemy.id, { definitionId: "modern-archer" });
+    m.updateSquad(enemy.id, { kind: "archer" });
+    m.updateSquad(enemy.id, { troops: 600 });
     m.expansion!.progression.states[2].completed = TECHNOLOGIES.map(
       (t) => t.id,
     );
@@ -128,13 +129,13 @@ describe("read-only enemy inspection and weapon presentation", () => {
     const m = setup(),
       source = m.squads[0],
       target = m.squads.find((s) => s.playerId === 2)!;
-    m.squads.splice(0, m.squads.length, source, target);
-    source.definitionId = "modern-cavalry";
-    source.kind = "cavalry";
-    source.x = 10 * FIXED;
-    source.y = 10 * FIXED;
-    target.x = 12 * FIXED;
-    target.y = 10 * FIXED;
+    retainSquads(m, [source, target]);
+    m.updateSquad(source.id, { definitionId: "modern-cavalry" });
+    m.updateSquad(source.id, { kind: "cavalry" });
+    m.updateSquad(source.id, { x: 10 * FIXED });
+    m.updateSquad(source.id, { y: 10 * FIXED });
+    m.updateSquad(target.id, { x: 12 * FIXED });
+    m.updateSquad(target.id, { y: 10 * FIXED });
     m.expansion!.battle.fight([]);
     const projectile = m.expansion!.battle.projectiles[0];
     expect(projectile.definitionId).toBe("modern-cavalry");
@@ -157,10 +158,10 @@ describe("read-only enemy inspection and weapon presentation", () => {
   it("shows the release pose on the shot tick and winds up just before the next ranged shot", () => {
     const m = setup(),
       squad = m.squads[0];
-    squad.definitionId = "earlymodern-archer";
-    squad.lastAttackTick = 100;
-    squad.nextAttackTick = 140;
-    squad.fighting = true;
+    m.updateSquad(squad.id, { definitionId: "earlymodern-archer" });
+    m.updateSquad(squad.id, { lastAttackTick: 100 });
+    m.updateSquad(squad.id, { nextAttackTick: 140 });
+    m.updateSquad(squad.id, { fighting: true });
     expect(squadArtworkPose(squad, 100)).toEqual({
       clip: "attack",
       elapsed: 10,

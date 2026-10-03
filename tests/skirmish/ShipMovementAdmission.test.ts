@@ -16,10 +16,10 @@ function fixture() {
       runAi: false,
       deferredPlanning: true,
     });
-  const ships: Ship[] = [5, 8].map((x) => ({
+  const ships: Ship[] = ([5, 8].map((x) => ({
     id: match.allocateId(),
     playerId: 1,
-    kind: "transport",
+    kind: "transport" as const,
     x: (x + 0.5) * FIXED,
     y: 30.5 * FIXED,
     health: SHIP_RULES.transport.health,
@@ -29,8 +29,8 @@ function fixture() {
     nextPathIndex: 0,
     fighting: false,
     boarding: null,
-  }));
-  match.ships.push(...ships);
+  }))).map(record => match.addShip(record));
+
   return { map, match, ships, ids: ships.map((s) => s.id) };
 }
 function finish(match: Skirmish) {
@@ -39,15 +39,96 @@ function finish(match: Skirmish) {
   expect(match.shipAdmission.pendingCount).toBe(0);
 }
 describe("transactional sailing admission", () => {
+  it("restores legacy committed retry policy without silently introducing pauses", () => {
+    const { map, match, ships } = fixture(),
+      ship = ships[0],
+      goal = map.ref(70, 50);
+    const saved = match.shipAdmission.checkpoint();
+    const { pauseCommitted, ...legacy } = saved;
+    expect(pauseCommitted).toBe(true);
+    match.shipAdmission.restore(legacy);
+    match.updateShip(ship.id, { destination: goal });
+    match.shipAdmission.resume(ship, goal);
+    const id = match.shipAdmission.checkpoint().pending[0][0];
+    for (const tick of [10, 40, 100])
+      match.shipAdmission.completed(id, ship.id, "limited", [], tick);
+    expect(
+      match.shipAdmission.checkpoint().pending[0][1].paused,
+    ).toBeUndefined();
+    expect(match.shipAdmission.checkpoint().pauseCommitted).toBe(false);
+  });
+
+  it("pauses a committed voyage after bounded capacity retries and retains later waypoints", () => {
+    const { map, match, ships } = fixture(),
+      ship = ships[0],
+      goal = map.ref(70, 50);
+    match.updateShip(ship.id, { destination: goal });
+    match.updateShip(ship.id, { waypoints: [map.ref(75, 50)] });
+    match.shipAdmission.resume(ship, goal);
+    const id = match.shipAdmission.checkpoint().pending[0][0];
+    for (const tick of [10, 40, 100])
+      match.shipAdmission.completed(id, ship.id, "limited", [], tick);
+    expect(match.shipAdmission.checkpoint().pending[0][1]).toMatchObject({
+      paused: true,
+      execution: true,
+    });
+    expect(ship.waypoints).toEqual([map.ref(75, 50)]);
+    const request = vi.spyOn(match.routePlanner, "request");
+    match.shipAdmission.step(1000);
+    expect(request).not.toHaveBeenCalled();
+    const saved = match.checkpoint(),
+      restored = new Skirmish(map, match.options);
+    restored.restore(saved);
+    expect(restored.shipAdmission.checkpoint()).toEqual(
+      match.shipAdmission.checkpoint(),
+    );
+    const restoredRequest = vi.spyOn(restored.routePlanner, "request");
+    restored.shipAdmission.step(2000);
+    expect(restoredRequest).not.toHaveBeenCalled();
+    expect(
+      match.applyCommand({
+        type: "sail",
+        playerId: 1,
+        shipIds: [ship.id],
+        tile: map.ref(20, 30),
+      }),
+    ).toBeNull();
+    expect(match.shipAdmission.pendingCount).toBe(2);
+  });
+  it("coalesces unchanged recovery intentions while retaining paused or unfinished progress", () => {
+    const { map, match, ships } = fixture(),
+      ship = ships[0],
+      goal = map.ref(20, 30);
+    match.updateShip(ship.id, { destination: goal });
+    match.updateShip(ship.id, { repairState: "returning-to-dock", repairPortId: 123 });
+    match.shipAdmission.recover(ship, goal, 1);
+    const saved = match.shipAdmission.checkpoint();
+    match.shipAdmission.recover(ship, goal, 2);
+    expect(match.shipAdmission.checkpoint()).toEqual(saved);
+  });
   it("terminates repeatedly limited replacements with an explicit capacity outcome and leaves voyages intact", () => {
     const { map, match, ships, ids } = fixture();
-    const voyages = ships.map(s => ({ destination: s.destination, path: [...s.path] }));
-    match.applyCommand({ type: "sail", playerId: 1, shipIds: ids, tile: map.ref(50, 40) });
+    const voyages = ships.map((s) => ({
+      destination: s.destination,
+      path: [...s.path],
+    }));
+    match.applyCommand({
+      type: "sail",
+      playerId: 1,
+      shipIds: ids,
+      tile: map.ref(50, 40),
+    });
     const id = match.shipAdmission.events.slice(-1)[0]!.id;
-    for (const tick of [10, 40, 100]) match.shipAdmission.completed(id, ids[0], "limited", [], tick);
+    for (const tick of [10, 40, 100])
+      match.shipAdmission.completed(id, ids[0], "limited", [], tick);
     expect(match.shipAdmission.pendingCount).toBe(0);
-    expect(match.shipAdmission.events.slice(-1)[0]).toMatchObject({ status: "rejected", reason: expect.stringContaining("capacity") });
-    expect(ships.map(s => ({ destination: s.destination, path: s.path }))).toEqual(voyages);
+    expect(match.shipAdmission.events.slice(-1)[0]).toMatchObject({
+      status: "rejected",
+      reason: expect.stringContaining("capacity"),
+    });
+    expect(
+      ships.map((s) => ({ destination: s.destination, path: s.path })),
+    ).toEqual(voyages);
   });
   it("plans later waypoints without synchronous searches and preserves committed legs on takeover", () => {
     const { map, match, ships, ids } = fixture(),
@@ -184,8 +265,8 @@ describe("transactional sailing admission", () => {
   it("refuses AI movement that would overwrite a returning or repairing ship", () => {
     const { map, match, ships, ids } = fixture();
     match.setAiController(1, true);
-    ships[0].repairState = "returning-to-dock";
-    ships[0].repairPortId = 99;
+    match.updateShip(ships[0].id, { repairState: "returning-to-dock" });
+    match.updateShip(ships[0].id, { repairPortId: 99 });
     expect(
       match.applyCommand({
         type: "sail",

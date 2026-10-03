@@ -1,7 +1,13 @@
 # P17: Complete flank, breach, escort and recovery
 
-Status: **remaining work, not implemented by this handoff**. Read
+Status: **implemented locally; full-run plus focused-repair validation recorded**. Read
 [`../agent-workflow.md`](../agent-workflow.md) and [`../handoff.md`](../handoff.md).
+
+## Current implementation - 3 October 2026
+
+Bounded exact side/rear flank candidates, siege approaches with weapon/clearance checks and escorts, and survivor regroup/replenish/paid refit/one rejoin through existing Army and recruitment owners. Objectives, cursors and asset leases remain checkpointed.
+
+The user resumed this plan and requested one combined test run with the remaining tuneups and lobby fixes. See [combined batch evidence](../Evidence/remaining-five-combined-validation.md) for results and qualification limits.
 
 ## Dependencies and ownership
 

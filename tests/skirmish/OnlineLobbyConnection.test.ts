@@ -174,3 +174,28 @@ describe("bounded match connection", () => {
     expect(saved).not.toHaveBeenCalled();
   });
 });
+
+describe("reserved match reconnect window",()=>{
+  it("fences old pending commands, retries only within 15 seconds and terminates a hung authentication",async()=>{
+    const exhausted=vi.fn();
+    connection=new OnlineLobbyConnection("http://localhost",vi.fn(),vi.fn(),vi.fn(),{matchId:"match",reconnectWindowMs:15000,replayPending:false,onExhausted:exhausted});
+    await connection.connect();const first=Socket.instances[0];first.onopen?.();
+    expect(JSON.parse(first.send.mock.calls[0][0])).toMatchObject({type:"authenticate",matchId:"match"});
+    const pending=connection.request({type:"watch-match",requestId:"old",matchId:"match"}).catch(e=>e.message);
+    first.onclose?.({code:1013,reason:"Connection too slow"});
+    expect(await pending).toContain("Connection lost");
+    await vi.advanceTimersByTimeAsync(500);
+    const second=Socket.instances[1];second.onopen?.();
+    expect(second.send).toHaveBeenCalledTimes(1);
+    await vi.advanceTimersByTimeAsync(14500);
+    expect(exhausted).toHaveBeenCalledOnce();
+    expect(second.close).toHaveBeenCalled();
+    await vi.advanceTimersByTimeAsync(60000);expect(Socket.instances).toHaveLength(2);
+  });
+  it("notifies the match session on a terminal identity rejection",async()=>{
+    const exhausted=vi.fn();
+    connection=new OnlineLobbyConnection("http://localhost",vi.fn(),vi.fn(),vi.fn(),{onExhausted:exhausted});
+    await connection.connect();Socket.instances[0].onclose?.({code:4001,reason:"Match already open"});
+    expect(exhausted).toHaveBeenCalledOnce();
+  });
+});

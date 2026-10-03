@@ -1,6 +1,44 @@
 import { describe, expect, it } from "vitest";
 import { PlanningWorkspace } from "../../src/skirmish/PlanningWorkspace";
 
+it("copies only active slot records and preserves exact free-slot order across sparse restore", () => {
+  const arena = new PlanningWorkspace(1024), restored = new PlanningWorkspace(1024);
+  const first = arena.allocate(12, 8, -1, 10)!;
+  const retired = arena.allocate(13, 9, first, 11)!;
+  const third = arena.allocate(14, 10, first, 12)!;
+  arena.release(retired);
+  const saved = arena.checkpoint();
+  expect(saved).toMatchObject({ empty: false, sparse: true });
+  if (saved.empty || !saved.sparse) throw new Error("Expected sparse active checkpoint");
+  expect(saved.slots.length).toBe(2);
+  const bytes = Object.values(saved).reduce((sum, value) => sum + (ArrayBuffer.isView(value) ? value.byteLength : 0), 0);
+  expect(bytes).toBe(2 * 32 + 1022 * 4);
+  expect(bytes).toBeLessThan(arena.bytes / 4);
+  restored.restore(saved);
+  expect(restored.checkpoint()).toEqual(saved);
+  expect(restored.tile[first]).toBe(12);
+  expect(restored.parent[third]).toBe(first);
+  for (let i = 0; i < 100; i++) expect(restored.allocate(i, 3, first, 4)).toBe(arena.allocate(i, 3, first, 4));
+  expect(restored.checkpoint()).toEqual(arena.checkpoint());
+});
+
+it("restores legacy full arenas and rejects malformed sparse free/active partitions", () => {
+  const arena = new PlanningWorkspace(8);
+  arena.allocate(20, 4, -1, 7);
+  const legacy = { empty: false as const, capacity: 8, freeCount: 7,
+    tile: arena.tile.slice(), parent: arena.parent.slice(), cost: arena.cost.slice(),
+    score: arena.score.slice(), position: arena.position.slice(), free: arena.free.slice() };
+  const restored = new PlanningWorkspace(8);
+  restored.restore(legacy);
+  expect(restored.checkpoint()).toEqual(arena.checkpoint());
+  const saved = arena.checkpoint();
+  if (saved.empty || !saved.sparse) throw new Error("Expected sparse active checkpoint");
+  const before = restored.checkpoint();
+  saved.free[0] = saved.slots[0];
+  expect(() => restored.restore(saved)).toThrow("partition");
+  expect(restored.checkpoint()).toEqual(before);
+});
+
 describe("planning arena recovery", () => {
   it("omits untouched buffers and restores into a previously used arena", () => {
     const fresh = new PlanningWorkspace(8),

@@ -1,0 +1,509 @@
+
+ RUN  v4.1.11 C:/Users/Damien/.codex/worktrees/optimization-roadmap/AgeOfFronts
+
+ ❯ tests/skirmish/VallesKairuliaMap.test.ts (6 tests | 1 failed) 19248ms
+     × loads all three square sizes with finite calibrated elevations and coherent water 6209ms
+Match executor operation failed advance Error: Match command batch exceeds its budget
+    at <anonymous> (C:\Users\Damien\.codex\worktrees\optimization-roadmap\AgeOfFronts\src\skirmish\multiplayer\infrastructure\serverMatchWorker.ts:234:21)
+Match executor operation failed advance Error: Invalid match advance
+    at <anonymous> (C:\Users\Damien\.codex\worktrees\optimization-roadmap\AgeOfFronts\src\skirmish\multiplayer\infrastructure\serverMatchWorker.ts:232:21)
+ ❯ tests/skirmish/ReservedMatchWorker.test.ts (5 tests | 1 failed) 4855ms
+     × correlates deferred execution and supersession, rejects oversized batches before advancing, and deduplicates completed commands 940ms
+ ❯ tests/skirmish/EntityReplicationJournal.test.ts (4 tests | 1 failed) 5352ms
+     × matches full extraction through lifecycle changes, reverts, removed/re-added IDs and recovery 5259ms
+ ❯ tests/skirmish/StateCodec.test.ts (14 tests | 1 failed) 2322ms
+     × encodes and restores a pending formation without nonfinite sentinel state 108ms
+Match executor operation failed join-barrier Error: This faction is no longer available
+    at <anonymous> (C:\Users\Damien\.codex\worktrees\optimization-roadmap\AgeOfFronts\src\skirmish\multiplayer\infrastructure\serverMatchWorker.ts:200:21)
+Match executor operation failed join-barrier Error: This faction is no longer available
+    at <anonymous> (C:\Users\Damien\.codex\worktrees\optimization-roadmap\AgeOfFronts\src\skirmish\multiplayer\infrastructure\serverMatchWorker.ts:200:21)
+ ❯ tests/skirmish/MovementAdmission.test.ts (13 tests | 10 failed) 820ms
+     × keeps an unchanged AI route while another faction has pending Shift intentions, including after restore 125ms
+     × admits ordinary AI moves without restarting the same pending intention 17ms
+     × retains later Shift legs when a mixed idle member begins its first deferred move 16ms
+     × supersedes an overlapping pending Shift without losing the other cohort's replacement 21ms
+     × keeps subset Shift orders attached to those units across a pending replacement 13ms
+     × uses one Shift formation across different pending cohorts and restores its continuation 93ms
+     × preserves a mixed Shift selection containing a pending unit and an idle unit 13ms
+     × continues the old orders and commits the entire selection after planning 45ms
+     × preserves Shift formation intent during pending replacement and restores identically 23ms
+     × keeps moving along an active order while its replacement is deferred 32ms
+ ❯ tests/skirmish/AiModernFronts.test.ts (6 tests | 4 failed) 2643ms
+     × funds real structures, staffs trenches/support/reserve, and preserves paid work on takeover 896ms
+     × withdraws from lost fronts and reuses paid sections without duplicate purchases 630ms
+     × does not spend without reserves, support or a safe construction window 150ms
+     × withdraws a depleted garrison instead of spending more on an unstaffed front 725ms
+ ❯ tests/skirmish/AllianceFeed.test.ts (3 tests | 1 failed) 366ms
+     × logs AI-to-AI rejections, reciprocal acceptance, renewal and expiration 69ms
+ ❯ tests/skirmish/CommandApplications.test.ts (5 tests | 1 failed) 136ms
+     × continues current orders, queues Shift intent and resumes original receipts from a simulation checkpoint 104ms
+
+⎯⎯⎯⎯⎯⎯ Failed Tests 20 ⎯⎯⎯⎯⎯⎯⎯
+
+ FAIL  tests/skirmish/AiModernFronts.test.ts > stable staffed Modern fronts > funds real structures, staffs trenches/support/reserve, and preserves paid work on takeover
+AssertionError: expected false to be true // Object.is equality
+
+- Expected
++ Received
+
+- true
++ false
+
+ ❯ tests/skirmish/AiModernFronts.test.ts:167:22
+    165|     }
+    166|     const section = f.controller.sections.get(2)!;
+    167|     expect(restored).toBe(true);
+       |                      ^
+    168|     expect(section.phase).toBe("holding");
+    169|     expect(section.paid).toHaveLength(3);
+
+⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯[1/20]⎯
+
+ FAIL  tests/skirmish/AiModernFronts.test.ts > stable staffed Modern fronts > withdraws from lost fronts and reuses paid sections without duplicate purchases
+TypeError: Cannot read properties of undefined (reading 'phase')
+ ❯ tests/skirmish/AiModernFronts.test.ts:208:20
+    206|     }
+    207|     const section = f.controller.sections.get(2)!;
+    208|     expect(section.phase).toBe("holding");
+       |                    ^
+    209|     const paid = [...section.paid],
+    210|       alliance = { id: 55, a: 1, b: 2, expiresTick: 20000, renewal: []…
+
+⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯[2/20]⎯
+
+ FAIL  tests/skirmish/AiModernFronts.test.ts > stable staffed Modern fronts > does not spend without reserves, support or a safe construction window
+AssertionError: expected undefined to be 'No safe construction window' // Object.is equality
+
+- Expected:
+"No safe construction window"
+
++ Received:
+undefined
+
+ ❯ tests/skirmish/AiModernFronts.test.ts:257:56
+    255|     }
+    256|     expect(contact.game.buildings).toHaveLength(0);
+    257|     expect(contact.controller.sections.get(2)?.reason).toBe(
+       |                                                        ^
+    258|       "No safe construction window",
+    259|     );
+
+⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯[3/20]⎯
+
+ FAIL  tests/skirmish/AiModernFronts.test.ts > stable staffed Modern fronts > withdraws a depleted garrison instead of spending more on an unstaffed front
+TypeError: Cannot read properties of undefined (reading 'phase')
+ ❯ tests/skirmish/AiModernFronts.test.ts:271:20
+    269|     }
+    270|     const section = f.controller.sections.get(2)!;
+    271|     expect(section.phase).toBe("holding");
+       |                    ^
+    272|     f.game.updateSquad(f.game.squad(section.members[0])!.id, { troops:…
+    273|     f.game.updateSquad(f.game.squad(section.members[1])!.id, { troops:…
+
+⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯[4/20]⎯
+
+ FAIL  tests/skirmish/AllianceFeed.test.ts > world alliance logger > logs AI-to-AI rejections, reciprocal acceptance, renewal and expiration
+AssertionError: expected 'AI contact window is closed' to be null
+
+- Expected:
+null
+
++ Received:
+"AI contact window is closed"
+
+ ❯ Object.action tests/skirmish/AllianceFeed.test.ts:60:7
+     58|         action: value,
+     59|       }),
+     60|     ).toBeNull();
+       |       ^
+     61|     update();
+     62|   };
+ ❯ tests/skirmish/AllianceFeed.test.ts:102:7
+
+⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯[5/20]⎯
+
+ FAIL  tests/skirmish/CommandApplications.test.ts > command receipts > continues current orders, queues Shift intent and resumes original receipts from a simulation checkpoint
+AssertionError: expected [ [ 'move', 'superseded' ], …(1) ] to deeply equal [ [ 'move', 'executed' ], …(1) ]
+
+- Expected
++ Received
+
+  [
+    [
+      "move",
+-     "executed",
++     "superseded",
+    ],
+    [
+      "shift",
+-     "executed",
++     "superseded",
+    ],
+  ]
+
+ ❯ tests/skirmish/CommandApplications.test.ts:58:58
+     56|     )
+     57|       restored.step();
+     58|     expect(outcomes.map((o) => [o.id, o.status]).sort()).toEqual([
+       |                                                          ^
+     59|       ["move", "executed"],
+     60|       ["shift", "executed"],
+
+⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯[6/20]⎯
+
+ FAIL  tests/skirmish/EntityReplicationJournal.test.ts > independent bounded entity replication > matches full extraction through lifecycle changes, reverts, removed/re-added IDs and recovery
+Error: Test timed out in 5000ms.
+If this is a long-running test, pass a timeout value as the last argument or configure it globally with "testTimeout".
+ ❯ tests/skirmish/EntityReplicationJournal.test.ts:30:3
+     28| }
+     29| describe("independent bounded entity replication", () => {
+     30|   it("matches full extraction through lifecycle changes, reverts, remo…
+       |   ^
+     31|     const game = fixture(),
+     32|       encoder = new SnapshotEncoder(true),
+
+⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯[7/20]⎯
+
+ FAIL  tests/skirmish/MovementAdmission.test.ts > transactional replacement movement > keeps an unchanged AI route while another faction has pending Shift intentions, including after restore
+AssertionError: expected { version: 1, width: 100, …(39) } to deeply equal { version: 1, width: 100, …(39) }
+
+- Expected
++ Received
+
+@@ -21,10 +21,24 @@
+          "playerId": 1,
+          "reason": undefined,
+          "status": "deferred",
+          "tick": 0,
+        },
++       {
++         "id": 3,
++         "playerId": 1,
++         "reason": "Replaced by a newer command",
++         "status": "superseded",
++         "tick": 0,
++       },
++       {
++         "id": 4,
++         "playerId": 1,
++         "reason": undefined,
++         "status": "deferred",
++         "tick": 0,
++       },
+      ],
+      "intents": [
+        [
+          2,
+          {
+@@ -55,11 +69,11 @@
+            "playerId": 2,
+            "revision": "0:0:",
+          },
+        ],
+      ],
+-     "nextId": 4,
++     "nextId": 5,
+      "pending": [
+        [
+          1,
+          {
+            "formation": {
+@@ -241,11 +255,11 @@
+            "revision": "0:0:",
+            "tile": 3055,
+          },
+        ],
+        [
+-         3,
++         4,
+          {
+            "formation": {
+              "additionalOrders": undefined,
+              "bestDistance": undefined,
+              "bucket": 0,
+@@ -389,11 +403,11 @@
+                "sumY": 0,
+              },
+              "slots": Map {},
+            },
+            "generation": 1,
+-           "id": 3,
++           "id": 4,
+            "member": 0,
+            "members": [
+              {
+                "cursor": 0,
+                "id": 2,
+
+ ❯ tests/skirmish/MovementAdmission.test.ts:69:32
+     67|     expect(clone.movementAdmission.queued(human.squadIds)).toBe(1);
+     68|     expect(match.applyCommand(ai)).toBeNull();expect(clone.applyComman…
+     69|     expect(match.checkpoint()).toEqual(saved);expect(clone.checkpoint(…
+       |                                ^
+     70|   });
+     71|   it("admits ordinary AI moves without restarting the same pending int…
+
+⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯[8/20]⎯
+
+ FAIL  tests/skirmish/MovementAdmission.test.ts > transactional replacement movement > admits ordinary AI moves without restarting the same pending intention
+AssertionError: expected { pending: [ [ 2, …(1) ] ], …(3) } to deeply equal { pending: [ [ 1, …(1) ] ], …(3) }
+
+- Expected
++ Received
+
+@@ -5,16 +5,30 @@
+        "playerId": 1,
+        "reason": undefined,
+        "status": "deferred",
+        "tick": 0,
+      },
++     {
++       "id": 1,
++       "playerId": 1,
++       "reason": "Replaced by a newer command",
++       "status": "superseded",
++       "tick": 0,
++     },
++     {
++       "id": 2,
++       "playerId": 1,
++       "reason": undefined,
++       "status": "deferred",
++       "tick": 0,
++     },
+    ],
+    "intents": [],
+-   "nextId": 2,
++   "nextId": 3,
+    "pending": [
+      [
+-       1,
++       2,
+        {
+          "formation": {
+            "additionalOrders": undefined,
+            "bestDistance": undefined,
+            "bucket": 0,
+@@ -158,11 +172,11 @@
+              "sumY": 0,
+            },
+            "slots": Map {},
+          },
+          "generation": 1,
+-         "id": 1,
++         "id": 2,
+          "member": 0,
+          "members": [
+            {
+              "cursor": 0,
+              "id": 2,
+
+ ❯ tests/skirmish/MovementAdmission.test.ts:87:50
+     85|     const saved = match.movementAdmission.checkpoint();
+     86|     expect(match.applyCommand(command)).toBeNull();
+     87|     expect(match.movementAdmission.checkpoint()).toEqual(saved);
+       |                                                  ^
+     88|     for (let i = 0; i < 400 && match.movementAdmission.pendingCount; i…
+     89|       match.step();
+
+⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯[9/20]⎯
+
+ FAIL  tests/skirmish/MovementAdmission.test.ts > transactional replacement movement > retains later Shift legs when a mixed idle member begins its first deferred move
+AssertionError: expected [] to have a length of 2 but got +0
+
+- Expected
++ Received
+
+- 2
++ 0
+
+ ❯ tests/skirmish/MovementAdmission.test.ts:116:33
+    114|       match.step();
+    115|     expect(match.movementAdmission.pendingCount).toBe(0);
+    116|     expect(own[0].queuedOrders).toHaveLength(2);
+       |                                 ^
+    117|     expect(own[1].queuedOrders).toHaveLength(1);
+    118|     expect(own[1].queuedOrders[0].type).toBe("move");
+
+⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯[10/20]⎯
+
+ FAIL  tests/skirmish/MovementAdmission.test.ts > transactional replacement movement > supersedes an overlapping pending Shift without losing the other cohort's replacement
+AssertionError: expected 'hold' to be 'move' // Object.is equality
+
+Expected: "move"
+Received: "hold"
+
+ ❯ tests/skirmish/MovementAdmission.test.ts:148:31
+    146|     for (let i = 0; i < 400 && match.movementAdmission.pendingCount; i…
+    147|       match.step();
+    148|     expect(own[0].order.type).toBe("move");
+       |                               ^
+    149|     expect(own[0].queuedOrders).toHaveLength(0);
+    150|     expect(own[1].order.type).toBe("hold");
+
+⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯[11/20]⎯
+
+ FAIL  tests/skirmish/MovementAdmission.test.ts > transactional replacement movement > keeps subset Shift orders attached to those units across a pending replacement
+AssertionError: expected [] to have a length of 1 but got +0
+
+- Expected
++ Received
+
+- 1
++ 0
+
+ ❯ tests/skirmish/MovementAdmission.test.ts:173:33
+    171|       match.step();
+    172|     expect(match.movementAdmission.checkpoint().pending).toHaveLength(…
+    173|     expect(own[0].queuedOrders).toHaveLength(1);
+       |                                 ^
+    174|     expect(own.slice(1).every((s) => s.queuedOrders.length === 0)).toB…
+    175|   });
+
+⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯[12/20]⎯
+
+ FAIL  tests/skirmish/MovementAdmission.test.ts > transactional replacement movement > uses one Shift formation across different pending cohorts and restores its continuation
+AssertionError: expected [] to have a length of 1 but got +0
+
+- Expected
++ Received
+
+- 1
++ 0
+
+ ❯ tests/skirmish/MovementAdmission.test.ts:203:33
+    201|     expect(match.movementAdmission.checkpoint().pending).toHaveLength(…
+    202|     expect(clone.checkpoint()).toEqual(match.checkpoint());
+    203|     expect(own[0].queuedOrders).toHaveLength(1);
+       |                                 ^
+    204|     expect(own[1].queuedOrders).toHaveLength(1);
+    205|     expect(own[0].queuedOrders[0]).not.toEqual(own[1].queuedOrders[0]);
+
+⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯[13/20]⎯
+
+ FAIL  tests/skirmish/MovementAdmission.test.ts > transactional replacement movement > preserves a mixed Shift selection containing a pending unit and an idle unit
+AssertionError: expected [] to have a length of 1 but got +0
+
+- Expected
++ Received
+
+- 1
++ 0
+
+ ❯ tests/skirmish/MovementAdmission.test.ts:227:33
+    225|       match.step();
+    226|     expect(match.movementAdmission.checkpoint().pending).toHaveLength(…
+    227|     expect(own[0].queuedOrders).toHaveLength(1);
+       |                                 ^
+    228|     expect(own[1].order.type).toBe("move");
+    229|     expect(own[1].order).not.toEqual(own[0].queuedOrders[0]);
+
+⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯[14/20]⎯
+
+ FAIL  tests/skirmish/MovementAdmission.test.ts > transactional replacement movement > continues the old orders and commits the entire selection after planning
+AssertionError: expected false to be true // Object.is equality
+
+- Expected
++ Received
+
+- true
++ false
+
+ ❯ tests/skirmish/MovementAdmission.test.ts:255:22
+    253|       }
+    254|     }
+    255|     expect(executed).toBe(true);
+       |                      ^
+    256|     expect(own.every((s) => s.order.type === "move")).toBe(true);
+    257|   });
+
+⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯[15/20]⎯
+
+ FAIL  tests/skirmish/MovementAdmission.test.ts > transactional replacement movement > preserves Shift formation intent during pending replacement and restores identically
+TypeError: Cannot read properties of undefined (reading '0')
+ ❯ tests/skirmish/MovementAdmission.test.ts:279:72
+    277|     ).toBeNull();
+    278|     for (let i = 0; i < 3; i++) match.step();
+    279|     const replacementId = match.movementAdmission.checkpoint().pending…
+       |                                                                        ^
+    280|     const clone = new Skirmish(map, match.options);
+    281|     clone.restore(match.checkpoint());
+
+⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯[16/20]⎯
+
+ FAIL  tests/skirmish/MovementAdmission.test.ts > transactional replacement movement > keeps moving along an active order while its replacement is deferred
+AssertionError: expected 'superseded' to be 'executed' // Object.is equality
+
+Expected: "executed"
+Received: "superseded"
+
+ ❯ tests/skirmish/MovementAdmission.test.ts:331:27
+    329|     });
+    330|     for (let i = 0; i < 300 && status(match) !== "executed"; i++) matc…
+    331|     expect(status(match)).toBe("executed");
+       |                           ^
+    332|     const orders = own.map((s) => ({ ...s.order })),
+    333|       positions = own.map((s) => ({ x: s.x, y: s.y }));
+
+⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯[17/20]⎯
+
+ FAIL  tests/skirmish/ReservedMatchWorker.test.ts > reserved authoritative worker > correlates deferred execution and supersession, rejects oversized batches before advancing, and deduplicates completed commands
+AssertionError: expected [ { id: 'original', …(4) } ] to deep equally contain ObjectContaining{…}
+
+- Expected:
+ObjectContaining {
+  "id": "original",
+  "status": "deferred",
+}
+
++ Received:
+[
+  {
+    "id": "original",
+    "playerId": 1,
+    "reason": "Control or selected units changed",
+    "status": "superseded",
+    "tick": 1,
+  },
+]
+
+ ❯ tests/skirmish/ReservedMatchWorker.test.ts:106:38
+    104|       });
+    105|       expect(update.tick).toBe(1);
+    106|       expect(update.commandOutcomes).toContainEqual(
+       |                                      ^
+    107|         expect.objectContaining({ id: "original", status: "deferred" }…
+    108|       );
+
+⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯[18/20]⎯
+
+ FAIL  tests/skirmish/StateCodec.test.ts > portable recovery transport > encodes and restores a pending formation without nonfinite sentinel state
+AssertionError: expected 0 to be greater than 0
+ ❯ tests/skirmish/StateCodec.test.ts:18:50
+     16|     expect(first.applyCommand({ type: "order", playerId: 1, squadIds: …
+     17|     first.step();
+     18|     expect(first.movementAdmission.pendingCount).toBeGreaterThan(0);
+       |                                                  ^
+     19|     const saved = await decodeState<ReturnType<Skirmish["checkpoint"]>…
+     20|     const second = make(); second.restore(saved);
+
+⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯[19/20]⎯
+
+ FAIL  tests/skirmish/VallesKairuliaMap.test.ts > Valles Kairulia source-calibrated map > loads all three square sizes with finite calibrated elevations and coherent water
+Error: Test timed out in 5000ms.
+If this is a long-running test, pass a timeout value as the last argument or configure it globally with "testTimeout".
+ ❯ tests/skirmish/VallesKairuliaMap.test.ts:47:3
+     45|
+     46| describe("Valles Kairulia source-calibrated map", () => {
+     47|   it("loads all three square sizes with finite calibrated elevations a…
+       |   ^
+     48|     for (const size of [250, 500, 1000]) {
+     49|       const loaded = load(size),
+
+⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯[20/20]⎯
+
+
+ Test Files  8 failed | 156 passed (164)
+      Tests  20 failed | 1055 passed (1075)
+   Start at  00:45:15
+   Duration  326.92s (transform 14.29s, setup 0ms, import 65.78s, tests 175.06s, environment 17.46s)

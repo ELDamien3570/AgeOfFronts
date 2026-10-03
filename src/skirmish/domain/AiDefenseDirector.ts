@@ -1,3 +1,4 @@
+import { UNITS } from "../content/Units";
 import { AiDefenseOutline, type DefenseOutlineState } from "./AiDefenseOutline";
 import type { Player } from "../Protocol";
 import { FIXED } from "../Protocol";
@@ -176,12 +177,11 @@ export class AiDefenseDirector {
       state = progression.states[player.id],
       technology = buildingTechnology("tower", state.age);
     if (!technology || !state.completed.includes(technology)) return;
-    const own = world.buildings.filter((b) => b.playerId === player.id),
+    const own = world.buildingFacts().byOwner(player.id),
       towers = own.filter((b) => b.type === "tower").length;
     if (
       towers >= 32 ||
-      fortifications.barriers
-        .filter((b) => b.playerId === player.id)
+      fortifications.byOwner(player.id)
         .reduce((n, b) => n + b.tiles.length, 0) >= 384
     )
       return;
@@ -212,6 +212,9 @@ export class AiDefenseDirector {
       right: city.bounds.right + 4,
       bottom: city.bounds.bottom + 4,
     });
+    // Circuits have a hard 384-tile footprint envelope. Oversized rectangles
+    // go directly to the resumable outline instead of scanning their perimeter.
+    if(2*(city.bounds.right-city.bounds.left+city.bounds.bottom-city.bounds.top+16)>384)tiles=null;
     let perimeter = new Set<number>();
     const usable = (tile: number) => world.owners[tile] === player.id && world.paths.walkable(tile) &&
       !world.buildingsAt(tile).length && !fortifications.intactWallAt(tile) &&
@@ -246,8 +249,7 @@ export class AiDefenseDirector {
     if (!tiles) return;
     if (
       perimeter.size +
-        fortifications.barriers
-          .filter((b) => b.playerId === player.id)
+        fortifications.byOwner(player.id)
           .reduce((n, b) => n + b.tiles.length, 0) >
       384
     )
@@ -277,7 +279,7 @@ export class AiDefenseDirector {
       [link.a, firstId + index].sort((a,b) => a-b).join(":"))));
     if (sites.some((_, index) => !edges.has([firstId + index, firstId + (index + 1) % sites.length].sort((a,b) => a-b).join(":")))) return;
     for (const step of quote.steps) for (const link of step.links) for (const tile of link.tiles) perimeter.add(tile);
-    if (perimeter.size + fortifications.barriers.filter(b => b.playerId === player.id).reduce((n,b) => n + b.tiles.length, 0) > 384) return;
+    if (perimeter.size + fortifications.byOwner(player.id).reduce((n,b) => n + b.tiles.length, 0) > 384) return;
     this.diagnostics.proposed++;
     return {
       id: `defense:${player.id}:${city.anchorTile}`,
@@ -303,7 +305,7 @@ export class AiDefenseDirector {
   private staff(project: DefenseProject, player: Player): boolean {
     const { world } = this.expansion,
       assets = this.economy.assets,
-      suitable = world.squads
+      suitable = world.squadFacts().byOwner(player.id)
         .filter(
           (s) =>
             s.playerId === player.id &&
@@ -321,7 +323,7 @@ export class AiDefenseDirector {
             world.paths.connected(world.tileOf(s), project.sites[0].tile),
         )
         .sort((a, b) => a.id - b.id),
-      total = world.squads.filter(
+      total = world.squadFacts().aliveByOwner(player.id).filter(
         (s) =>
           s.playerId === player.id &&
           s.embarkedOn === null &&
@@ -401,7 +403,7 @@ export class AiDefenseDirector {
       for (const link of step.links)
         for (const tile of link.tiles) tiles.add(tile);
     const footprint = [...tiles];
-    return world.squads.some(
+    return world.squadFacts().byOwner(project.playerId).some(
       (s) =>
         s.embarkedOn === null &&
         footprint.some(
@@ -430,7 +432,7 @@ export class AiDefenseDirector {
     project.repair = undefined;
     const candidates: ["building" | "wall", number, number, number, number][] =
       [];
-    const walls = fortifications.barriers.filter(
+    const walls = fortifications.byOwner(player.id).filter(
       (b) =>
         b.playerId === player.id &&
         project.paid.includes(b.a) &&
@@ -438,9 +440,8 @@ export class AiDefenseDirector {
         b.health > 0 &&
         !b.remainingTicks,
     );
-    for (const b of world.buildings.filter(
-      (b) =>
-        project.paid.includes(b.id) && !b.remainingTicks && (b.health ?? 1) > 0,
+    for (const b of world.buildingFacts().byIds(project.paid).filter(
+      (b) => b.playerId===player.id && !b.remainingTicks && (b.health ?? 1) > 0,
     )) {
       const health = b.health ?? b.maxHealth ?? 1200,
         missing = (b.maxHealth ?? 1200) - health;
@@ -580,16 +581,14 @@ export class AiDefenseDirector {
       this.economy.ledger.release(project.id);
       return;
     }
-    const latest = world.buildings.find(
-      (b) => b.id === project.paid[project.paid.length - 1],
-    );
+    const latest = world.building(project.paid[project.paid.length - 1]);
     if (latest?.remainingTicks) {
       project.phase = "building";
       project.lastProgress = world.tick;
       return;
     }
     if (project.next >= project.sites.length) {
-      const walls = this.expansion.fortifications.barriers.filter(
+      const walls = this.expansion.fortifications.byOwner(player.id).filter(
         (b) => b.playerId === player.id && b.health > 0 && !b.remainingTicks,
       );
       if (
@@ -644,7 +643,9 @@ export class AiDefenseDirector {
       this.abandon(project, quote);
       return;
     }
-    for (const enemy of world.squads)
+    const extent=Math.max(40,Math.ceil((quote.ticks+100)*Math.ceil(56*Math.max(...UNITS.map(u=>Math.max(u.speedPercent,u.charge?.speedPercent??0)))/100)/FIXED)+Math.ceil(Math.max(...UNITS.map(u=>u.attack.range))/FIXED)+12);
+    const candidates=world.nearbyArmyEnemies({x:(world.map.x(city.anchorTile)+.5)*FIXED,y:(world.map.y(city.anchorTile)+.5)*FIXED},extent*FIXED,player.id);
+    for (const enemy of candidates)
       if (
         enemy.embarkedOn === null &&
         world.hostile(player.id, enemy.playerId)

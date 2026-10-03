@@ -15,8 +15,7 @@ it("projects current fleet promotions and avoids a false uniform aggregate", () 
     ruleset: "ages-v1",
   });
   const def = VESSEL.get("stoneage-warship")!;
-  match.ships.push(
-    ...[0, 20000].map((xp) => ({
+  [0, 20000].forEach(xp => match.addShip({
       id: match.allocateId(),
       playerId: 1,
       kind: "warship" as const,
@@ -31,8 +30,7 @@ it("projects current fleet promotions and avoids a false uniform aggregate", () 
       nextPathIndex: 0,
       fighting: false,
       boarding: null,
-    })),
-  );
+    }));
   const selection = {
     selected: new Set<number>(),
     selectedShips: new Set(match.ships.map((s) => s.id)),
@@ -49,7 +47,7 @@ it("projects current fleet promotions and avoids a false uniform aggregate", () 
   expect(attack(match.ships[1].id)).toBe(
     String(Math.floor(def.attack!.damage * 1.2)),
   );
-  match.ships[0].xp = 20000;
+  match.updateShip(match.ships[0].id, { xp: 20000 });
   const group = model().selectionCard(null);
   expect(group.mode).toBe("group");
   if (group.mode === "group")

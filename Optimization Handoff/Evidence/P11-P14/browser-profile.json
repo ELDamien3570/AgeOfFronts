@@ -1,0 +1,43 @@
+{
+  "source": "59c4eeb4696e6c8f91c730704ec9537f7f351a1b",
+  "browser": "Chrome 154 IAB, Windows x64",
+  "viewport": [
+    1280,
+    720
+  ],
+  "map": "TrainingSquare 256x256",
+  "seed": 42,
+  "age": "StoneAge",
+  "factions": 24,
+  "ai": 3,
+  "tribes": 20,
+  "speed": 1,
+  "inputs": "Starting camera, closed roster and panels, no gameplay commands",
+  "flags": "Default deferred planning and optimization gates unchanged/off; diagnostics=1&seed=42",
+  "sampleWindow": 256,
+  "baseline": {
+    "tick": 601,
+    "utc": "2026-10-03T02:49:57.962Z",
+    "frameP95Ms": 3.4,
+    "frameP99Ms": 4.2,
+    "intervalP95Ms": 29.9,
+    "intervalP99Ms": 30.2,
+    "presentationP95Ms": 1.1,
+    "hudP95Ms": 5.1,
+    "hudP99Ms": 5.8,
+    "heapUsedBytes": 44760969
+  },
+  "optimized": {
+    "tick": 600,
+    "utc": "2026-10-03T02:55:02.782Z",
+    "frameP95Ms": 4.5,
+    "frameP99Ms": 5.1,
+    "intervalP95Ms": 40.1,
+    "intervalP99Ms": 50.1,
+    "presentationP95Ms": 1.4,
+    "hudP95Ms": 3.0,
+    "hudP99Ms": 3.3,
+    "heapUsedBytes": 47035027
+  },
+  "interpretation": "HUD p95 improved 41 percent. Frame timing and heap did not improve. Local CPU/browser scheduling was uncontrolled. This is not proof of an overall rendering improvement. Sample predates final numeric coarse-bound and ship-culling refinements."
+}

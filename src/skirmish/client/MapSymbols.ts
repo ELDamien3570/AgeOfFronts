@@ -1,4 +1,4 @@
-import type { BuildingType, ShipType } from "../Protocol";
+import { CAPTURE_RADIUS, type BuildingType, type ShipType } from "../Protocol";
 import type { FormationType } from "./FormationArtwork";
 import {
   MAX_MELEE_LUNGE_RATIO,
@@ -48,12 +48,27 @@ export function squadSymbol(
   };
 }
 
+/** Conservative pre-artwork bound, including fallback formations and the
+ * selected capture indicator. Uses the same LOD contract as final symbols. */
+export function squadViewRadius(scale: number, troops: number, selected = false): number {
+  const size = squadSpriteSize(scale, troops);
+  return Math.max(
+    (size / SPRITE_FOOTPRINT) * Math.SQRT1_2 + size * MAX_MELEE_LUNGE_RATIO,
+    Math.max(6, Math.min(28, size)) * Math.SQRT1_2,
+    selected ? CAPTURE_RADIUS * scale : 0,
+  );
+}
+
 export function shipSpriteSize(
   scale: number,
   kind: ShipType = "warship",
 ): number {
   const cap = kind === "warship" ? 125 : 87.5;
   return Math.min(cap, scale * 2.4);
+}
+
+export function shipViewRadius(scale: number, kind: ShipType): number {
+  return Math.max(60, ((shipSpriteSize(scale, kind) * 4) / 3) * 0.5 + 12);
 }
 
 export function shipSymbol(

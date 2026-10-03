@@ -1,3 +1,4 @@
+import { retainSquads } from "./UnitFixtures";
 import { describe, expect, it, vi } from "vitest";
 import { GameMapImpl } from "../../src/core/game/GameMap";
 import { TECHNOLOGIES } from "../../src/skirmish/content/Technology";
@@ -41,8 +42,8 @@ describe("AI foundation policies", () => {
       game.options.runAi = false;
       const a = game.squads.find((s) => s.playerId === 1)!,
         b = game.squads.find((s) => s.playerId === 2)!;
-      game.squads.splice(0, game.squads.length, a, b);
-      game.buildings.splice(0, game.buildings.length, {
+      retainSquads(game, [a, b]);
+      { for (const building of game.buildings) game.removeBuilding(building.id); game.addBuilding({
         id: game.allocateId(),
         playerId: 2,
         type: "tower",
@@ -51,11 +52,11 @@ describe("AI foundation policies", () => {
         remainingTicks: 0,
         health: 2000,
         maxHealth: 2000,
-      });
-      a.kind = kind;
-      a.definitionId = `stoneage-${kind}`;
-      Object.assign(a, tilePoint(map, map.ref(37, 40)));
-      Object.assign(b, tilePoint(map, map.ref(43, 40)));
+      }); }
+      game.updateSquad(a.id, { kind: kind });
+      game.updateSquad(a.id, { definitionId: `stoneage-${kind}` });
+      game.updateSquad(a.id, tilePoint(map, map.ref(37, 40)));
+      game.updateSquad(b.id, tilePoint(map, map.ref(43, 40)));
       game.expansion!.fortifications.step(1, game.buildings);
       expect(game.expansion!.fortifications.clear(a, b, 1)).toBe(false);
       expect(
@@ -67,7 +68,7 @@ describe("AI foundation policies", () => {
         }),
       ).toBeNull();
       for (let i = 0; i < 240; i++) {
-        a.troops = b.troops = 1000;
+        game.updateSquad(a.id, { troops: 1000 }); game.updateSquad(b.id, { troops: 1000 });
         game.step();
       }
       expect(a.lastAttackTick).toBeDefined();
@@ -88,9 +89,9 @@ describe("AI foundation policies", () => {
   it("counts paid queued specialists toward role quotas without displacing core archers", () => {
     const { game, player } = fixture();
     const squad = game.squads.find((s) => s.playerId === player.id)!;
-    squad.definitionId = "modern-siege";
-    squad.kind = "archer";
-    game.squads.splice(0, game.squads.length, squad);
+    game.updateSquad(squad.id, { definitionId: "modern-siege" });
+    game.updateSquad(squad.id, { kind: "archer" });
+    retainSquads(game, [squad]);
     game.recruitment.enqueue({
       playerId: player.id,
       buildingId: 1,
@@ -107,7 +108,7 @@ describe("AI foundation policies", () => {
     );
     expect(force.role("siege")).toBe(2);
     expect(force.core.archer).toBe(0);
-    game.recruitment.jobs.splice(0);
+    game.recruitment.restore({...game.recruitment.checkpoint(), jobs: []});
     expect(
       new AiForceInventory(player.id, game.squads, game.recruitment.jobs).role(
         "siege",
@@ -119,15 +120,15 @@ describe("AI foundation policies", () => {
     const { game, player, think, expansion } = fixture();
     player.gold = 100000;
     player.reserves = 100000;
-    const building: Building = {
+    const building: Building = game.addBuilding({
       id: game.allocateId(),
       playerId: player.id,
       tile: player.base,
       type: "siege-workshop",
       age: "Modern",
       remainingTicks: 0,
-    };
-    game.buildings.push(building);
+    });
+
     const quota = 3; // at least every existing personality's specialist quota
     for (const role of [
       "siege",
@@ -187,15 +188,15 @@ describe("AI foundation policies", () => {
     const { game, player } = fixture();
     const unit = game.squads.find((s) => s.playerId === player.id)!;
     const enemy = game.squads.find((s) => s.playerId !== player.id)!;
-    game.squads.splice(0, game.squads.length, unit, enemy);
-    unit.definitionId = "modern-anti-air";
-    unit.kind = "cavalry";
-    unit.troops = 100;
-    Object.assign(unit, tilePoint(game.map, player.base));
-    enemy.x = unit.x + 5 * FIXED;
-    enemy.y = unit.y;
-    unit.order = { type: "hold" };
-    unit.structureTarget = null;
+    retainSquads(game, [unit, enemy]);
+    game.updateSquad(unit.id, { definitionId: "modern-anti-air" });
+    game.updateSquad(unit.id, { kind: "cavalry" });
+    game.updateSquad(unit.id, { troops: 100 });
+    game.updateSquad(unit.id, tilePoint(game.map, player.base));
+    game.updateSquad(enemy.id, { x: unit.x + 5 * FIXED });
+    game.updateSquad(enemy.id, { y: unit.y });
+    game.updateSquad(unit.id, { order: { type: "hold" } });
+    game.updateSquad(unit.id, { structureTarget: null });
     game.tick = (15 - (unit.id % 15)) % 15;
     game.step();
     expect(unit.order.type).not.toBe("attack");
@@ -253,8 +254,8 @@ describe("AI foundation policies", () => {
   it("selects only unblocked firing cells with a clear shot", () => {
     const { game, map } = fixture();
     const [squad, target] = game.squads;
-    Object.assign(squad, tilePoint(map, map.ref(20, 30)));
-    Object.assign(target, tilePoint(map, map.ref(26, 30)));
+    game.updateSquad(squad.id, tilePoint(map, map.ref(20, 30)));
+    game.updateSquad(target.id, tilePoint(map, map.ref(26, 30)));
     const goal = firingPosition(
       map,
       game.paths,

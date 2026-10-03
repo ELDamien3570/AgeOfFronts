@@ -65,4 +65,6 @@ node node_modules/vitest/vitest.mjs run --config vite.skirmish.config.ts --maxWo
 node node_modules/vite/bin/vite.js build --config vite.skirmish.config.ts
 ```
 
-Local route: `/skirmish/index.html?map=old-world`. No commit, push or deployment.
+Local route: `/skirmish/index.html?map=old-world`. The original review was local.
+The [combined map review](RegionalMapImportsReview.md#workspace-integration-3-october-2026)
+records subsequent workspace integration and current multiplayer validation.

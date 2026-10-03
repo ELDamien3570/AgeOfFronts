@@ -1,3 +1,4 @@
+import { DEFAULT_AI_POLICIES } from "../../content/AiPolicies";
 import { SPAWN_SECONDS } from "../../domain/SpawnSelection";
 import { RuntimeDiagnostics, RuntimeProgress } from "../../RuntimeDiagnostics";
 import {ClientStateFlow} from "./ClientStateFlow";
@@ -140,6 +141,7 @@ export class LiveMatch {
       }),
     );
     this.options = {
+      ...DEFAULT_AI_POLICIES,
       seed: Math.floor(Math.random() * 0x7fffffff),
       humanNames: reservation.members.map((member) => member.profile.name),
       aiCount: settings.aiCount,
@@ -215,7 +217,7 @@ export class LiveMatch {
     }
     if (!this.running) {
       if (!owned) throw new Error("This match is still starting");
-      if (this.emptyDeadline !== undefined && this.now() >= this.emptyDeadline)
+      if (this.emptyExpired())
         throw new Error("This match has expired");
       if (!this.admissions.has(guest))
         this.admissions.set(guest, {
@@ -277,7 +279,7 @@ export class LiveMatch {
       this.sync.admission.playerId === playerId
     )
       throw new Error("Another player is claiming this empire");
-    if (this.emptyDeadline !== undefined && this.now() >= this.emptyDeadline)
+    if (this.emptyExpired())
       throw new Error("This match has expired");
   }
   announce(guest: string): void {
@@ -312,7 +314,7 @@ export class LiveMatch {
           !admission ||
           !seat ||
           this.now() >= admission.expiresAt ||
-          (this.emptyDeadline !== undefined && this.now() >= this.emptyDeadline)
+          this.emptyExpired()
         )
           throw new Error(
             "Loading timed out. Return to the lobby and try again.",
@@ -463,7 +465,7 @@ export class LiveMatch {
   }
   private syncPhase(sync:Sync,phase:"waiting-worker"|"capturing-baseline"|"applying-baseline"):void {
     clearTimeout(this.syncTimer);sync.phase=phase;sync.phaseStartedAt=this.now();
-    const timeout=phase==="applying-baseline" ? (this.config.syncTimeoutMs??5_000) : (this.config.preparationTimeoutMs??30_000);
+    const timeout=phase==="applying-baseline" ? (this.config.syncTimeoutMs??15_000) : (this.config.preparationTimeoutMs??30_000);
     sync.expiresAt=this.now()+timeout;
     this.syncTimer=setTimeout(()=>void this.cancelSync(sync,
       `${phase==="waiting-worker" ? "Waiting for the match worker" : phase==="capturing-baseline" ? "Preparing your empire" : "Applying your empire"} timed out. Please rejoin from the lobby.`),timeout);
@@ -589,9 +591,16 @@ export class LiveMatch {
         "Join canceled because the connection closed",
       );
   }
+  private emptyExpired():boolean {
+    if(this.emptyDeadline===undefined||this.now()<this.emptyDeadline)return false;
+    // A qualified returning seat gets its existing bounded admission/sync window.
+    // Failed attempts do not reset the original empty timer.
+    if(this.sync&&!this.sync.restoring&&this.now()<this.sync.expiresAt)return false;
+    return ![...this.admissions.values()].some(a=>!!this.seat(a.guest)&&this.now()<a.expiresAt);
+  }
   async advance(): Promise<void> {
     if (this.stopped) return;
-    if (this.emptyDeadline !== undefined && this.now() >= this.emptyDeadline) {
+    if (this.emptyExpired()) {
       await this.end("No players returned before the reconnect grace expired");
       return;
     }

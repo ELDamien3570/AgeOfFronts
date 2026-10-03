@@ -39,17 +39,18 @@ describe("bounded and local AI diplomacy", () => {
     });
     const [a, b] = m.players; a.base = map.ref(10, 20); b.base = map.ref(200, 80);
     const e = m.expansion!, change = (tile: number, owner: number) => (m as unknown as { changeOwner(t: number, o: number): void }).changeOwner(tile, owner);
-    const ports = [map.ref(80, 39), map.ref(85, 60)].map((tile, i) => ({ id: m.allocateId(), tile, playerId: i + 1,
-      type: "port" as const, remainingTicks: 0, health: 1200 }));
-    for (const p of ports) { change(p.tile, p.playerId); m.buildings.push(p); }
-    m.buildingFacts(); for (const p of ports) e.economy.navalFacts.observeBuilding(p);
+    const ports = [map.ref(80, 39), map.ref(85, 60)].map((tile, i) => {
+      change(tile, i + 1);
+      return m.addBuilding({ id: m.allocateId(), tile, playerId: i + 1,
+        type: "port", remainingTicks: 0, health: 1200 });
+    });
     expect(e.geography.eligible(a, b)).toBe(true);
     for (let i = 0; i < 50; i++) e.geography.eligible(a, b);
     expect(e.geography.workUsed).toBeLessThanOrEqual(32);
     const state = e.geography.checkpoint(); e.geography.restore(state); expect(e.geography.checkpoint()).toEqual(state);
-    ports[1].tile = map.ref(124, 60); change(ports[1].tile, b.id); e.economy.navalFacts.observeBuilding(ports[1]);
+    m.updateBuilding(ports[1].id, { tile: map.ref(124, 60) }); change(ports[1].tile, b.id);
     expect(e.geography.eligible(a, b)).toBe(false);
-    ports[1].tile = map.ref(85, 60); ports[1].remainingTicks = 1;
+    m.updateBuilding(ports[1].id, { tile: map.ref(85, 60), remainingTicks: 1 });
     expect(e.geography.eligible(a, b)).toBe(false);
   });
 });

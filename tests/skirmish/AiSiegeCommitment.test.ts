@@ -1,3 +1,4 @@
+import { retainSquads } from "./UnitFixtures";
 import { describe, expect, it, vi } from "vitest";
 import { GameMapImpl } from "../../src/core/game/GameMap";
 import { TECHNOLOGIES } from "../../src/skirmish/content/Technology";
@@ -17,18 +18,19 @@ function fixture() {
   player.gold = 0;
   player.reserves = 0;
   const unit = game.squads.find((s) => s.playerId === player.id)!;
-  unit.definitionId = "modern-siege";
-  unit.kind = "archer";
-  unit.x = 20.5 * FIXED;
-  unit.y = 30.5 * FIXED;
-  unit.order = { type: "hold" };
-  unit.path = [];
-  unit.queuedOrders = [];
-  game.squads.splice(0, game.squads.length, unit);
+  game.updateSquad(unit.id, { definitionId: "modern-siege" });
+  game.updateSquad(unit.id, { kind: "archer" });
+  game.updateSquad(unit.id, { x: 20.5 * FIXED });
+  game.updateSquad(unit.id, { y: 30.5 * FIXED });
+  game.updateSquad(unit.id, { order: { type: "hold" } });
+  game.updateSquad(unit.id, { path: [] });
+  game.updateSquad(unit.id, { queuedOrders: [] });
+  retainSquads(game, [unit]);
   const state = game.expansion!.progression.states[player.id];
   state.age = "Modern";
   state.completed = TECHNOLOGIES.map((t) => t.id);
-  const target: Building = {
+  for (const building of game.buildings) game.removeBuilding(building.id);
+  const target: Building = game.addBuilding({
     id: game.allocateId(),
     type: "barracks",
     playerId: 1,
@@ -37,8 +39,7 @@ function fixture() {
     remainingTicks: 0,
     health: 10000,
     maxHealth: 10000,
-  };
-  game.buildings.splice(0, game.buildings.length, target);
+  });
   const think = () => {
     game.tick = game.tick ? game.tick + 60 : (player.id % 20) * 3;
     game.expansion!.beforeStep();
@@ -54,7 +55,7 @@ describe("AI siege target commitment", () => {
     expect(unit.structureTarget?.buildingId).toBe(target.id);
     expect(find).toHaveBeenCalled();
     const path = unit.path;
-    unit.nextPathIndex = 1;
+    game.updateSquad(unit.id, { nextPathIndex: 1 });
     find.mockClear();
     think();
     expect(find).not.toHaveBeenCalled();
@@ -64,10 +65,10 @@ describe("AI siege target commitment", () => {
 
   it("keeps a deployed gun firing without restarting its approach", () => {
     const { game, unit, target, think } = fixture();
-    unit.x = 65.5 * FIXED;
-    unit.y = 30.5 * FIXED;
-    unit.structureTarget = { buildingId: target.id };
-    unit.order = { type: "hold" };
+    game.updateSquad(unit.id, { x: 65.5 * FIXED });
+    game.updateSquad(unit.id, { y: 30.5 * FIXED });
+    game.updateSquad(unit.id, { structureTarget: { buildingId: target.id } });
+    game.updateSquad(unit.id, { order: { type: "hold" } });
     const find = vi.spyOn(game.paths, "find");
     think();
     expect(find).not.toHaveBeenCalled();
@@ -82,15 +83,15 @@ describe("AI siege target commitment", () => {
     (reason) => {
       const { game, player, unit, target, think } = fixture();
       think();
-      const replacement = {
+      const replacement = game.addBuilding({
         ...target,
         id: game.allocateId(),
         tile: game.map.ref(80, 30),
-      };
-      game.buildings.push(replacement);
-      if (reason === "destroyed") target.health = 0;
-      else if (reason === "captured") target.playerId = player.id;
-      else game.buildings.splice(game.buildings.indexOf(target), 1);
+      });
+
+      if (reason === "destroyed") game.updateBuilding((target).id, { health: 0 });
+      else if (reason === "captured") game.updateBuilding((target).id, { playerId: player.id });
+      else game.removeBuilding(target.id);
       const find = vi.spyOn(game.paths, "find");
       think();
       expect(find).toHaveBeenCalled();
@@ -102,12 +103,12 @@ describe("AI siege target commitment", () => {
   it("preserves the existing policy of choosing a newly closer structure", () => {
     const { game, unit, target, think } = fixture();
     think();
-    const closer = {
+    const closer = game.addBuilding({
       ...target,
       id: game.allocateId(),
       tile: game.map.ref(45, 30),
-    };
-    game.buildings.push(closer);
+    });
+
     think();
     expect(unit.structureTarget?.buildingId).toBe(closer.id);
   });

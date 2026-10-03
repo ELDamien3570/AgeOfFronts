@@ -1,14 +1,16 @@
+import { unitOwner } from "./UnitFixtures";
 import { expect, it } from "vitest";
 import { cargoByShip } from "../../src/skirmish/CargoIndex";
 import type { Squad } from "../../src/skirmish/Protocol";
 
 it("groups exact live cargo and refreshes embark, unload, removal and restored identities", () => {
-  const squads = [null, 10, 10, 20].map((embarkedOn, id) => ({ id, embarkedOn }) as Squad);
+  const owner = unitOwner([null, 10, 10, 20].map((embarkedOn, id) => ({ id, embarkedOn }) as Squad));
+  let squads = owner.values;
   let index = cargoByShip(squads);
   expect(index.get(10)).toEqual([squads[1], squads[2]]);
   expect(index.get(20)).toEqual([squads[3]]);
-  squads[1].embarkedOn = null; squads[0].embarkedOn = 20;
-  squads.splice(2, 1); index = cargoByShip(squads);
+  owner.update(squads[1].id, { embarkedOn: null }); owner.update(squads[0].id, { embarkedOn: 20 });
+  owner.remove(squads[2].id); squads = owner.values; index = cargoByShip(squads);
   expect(index.has(10)).toBe(false); expect(index.get(20)).toEqual([squads[0], squads[2]]);
   const restored = structuredClone(squads), fresh = cargoByShip(restored);
   expect(fresh.get(20)).toEqual(index.get(20));
@@ -23,7 +25,7 @@ it("does not retain a removed unit's navigation generation", async () => {
   const squad = match.squads[0];
   match.applyCommand({ type: "order", playerId: squad.playerId, squadIds: [squad.id], order: { type: "hold" } });
   expect(match.checkpoint().orderRevisions.has(squad.id)).toBe(true);
-  match.squads.splice(match.squads.indexOf(squad), 1); match.step();
+  for (const record of match.squads.slice(match.squads.indexOf(squad), (match.squads.indexOf(squad)) + (1))) match.removeSquad(record.id); match.step();
   const saved = match.checkpoint();
   expect(saved.orderRevisions.has(squad.id)).toBe(false);
   expect(saved.queuedLegs.has(squad.id)).toBe(false);

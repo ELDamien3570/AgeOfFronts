@@ -3,6 +3,7 @@ import { DiplomaticGeography } from "./DiplomaticGeography";
 import { restoreArray } from "../StateTransfer";
 import type { GameMap } from "../../core/game/GameMap";
 import type { BuildingQueries } from "../BuildingIndex";
+import type { UnitQueries } from "../UnitIndex";
 import { DamageLedger } from "../Conquest";
 import type { LandPaths, WaterPaths } from "../Pathfinding";
 import type {
@@ -53,6 +54,7 @@ import {
   advanceRejection,
   researchRejection,
 } from "./Progression";
+import { affordableRefitCount, vesselRefitCost } from "./RefitQuote";
 import { unitRefitCost } from "./Refitting";
 import { vesselEffects } from "./ResearchEffects";
 import { Roads } from "./Roads";
@@ -89,6 +91,10 @@ export interface ExpansionWorld extends BattleWorld, ArmyWorld {
   ship(id:number):Ship | undefined;
   building(id:number):Building | undefined;
   buildingFacts(): BuildingQueries;
+  squadFacts(): UnitQueries<Squad>;
+  shipFacts(): UnitQueries<Ship>;
+  installSquadPath(id: number, path: readonly number[]): void;
+  removeBuilding(id: number): boolean;
   factionAdjacent(a: number, b: number): boolean;
 }
 // Match-level application coordinator; each domain service owns its own rules.
@@ -96,6 +102,7 @@ export interface ExpansionWorld extends BattleWorld, ArmyWorld {
 export class Expansion {
   checkpoint() { return structuredClone({progression:this.progression.checkpoint(),diplomacy:this.diplomacy.checkpoint(),fortifications:this.fortifications.checkpoint(),supply:this.supply.checkpoint(),trade:this.trade.checkpoint(),roads:this.roads.checkpoint(),battle:this.battle.checkpoint(),armies:this.armies.checkpoint(),modernization:this.modernization.checkpoint(),economy:this.economy.checkpoint(),aircraft:this.aircraft,winners:this.winners,events:this.events,nextEvent:this.nextEvent,tribePlans:[...this.tribePlans],geography:this.geography.checkpoint(),operations:this.operations.checkpoint()}); }
   restore(saved: ReturnType<Expansion["checkpoint"]>): void {
+    this.metadataIdentity={};
     const state=structuredClone(saved);
     this.tribePlans.clear();
     for (const [id, plan] of state.tribePlans ?? []) this.tribePlans.set(id, plan);
@@ -252,7 +259,6 @@ export class Expansion {
       return "Move troops clear of the tower and planned wall tiles";
     if (this.fortifications.blocked(tile, player.id))
       return "Cannot build on an intact wall";
-    this.supply.resourceSites.update(this.supply.deposits);
     const node = this.supply.resourceSites.at(tile);
     const visible = node && resourceVisibleAtAge(node.resource, this.progression.states[player.id].age);
     if (
@@ -264,9 +270,7 @@ export class Expansion {
       return "Oil extraction needs an oil deposit";
     const resourceSite = this.supply.resourceSites.rejection(type,tile);
     if (resourceSite) return resourceSite;
-    const existingCount = this.world.buildings.filter(
-      (b) => b.playerId === player.id && b.type === type,
-    ).length;
+    const existingCount = this.world.buildingFacts().countOfType(player.id, type);
     const cost = buildingCost(type, age, existingCount),
       wallCost =
         type === "tower"
@@ -290,18 +294,15 @@ export class Expansion {
         : null;
     const existingCount = Math.max(
       0,
-      this.world.buildings.filter(
-        (b) => b.playerId === player.id && b.type === building.type,
-      ).length - 1,
+      this.world.buildingFacts().countOfType(player.id, building.type) - 1,
     );
     const cost = buildingCost(building.type, age, existingCount);
     spend(player, this.supply.inventories[player.id], {
       ...cost,
       gold: (cost.gold ?? 0) + (plan?.gold ?? 0),
     });
-    building.age = age;
-    building.maxHealth = buildingIntegrity(building.type, age);
-    building.health = building.maxHealth;
+    const maxHealth = buildingIntegrity(building.type, age);
+    this.world.updateBuilding(building.id, { age, maxHealth, health: maxHealth });
     if (plan) this.fortifications.addTower(building, plan);
   }
   command(player: Player, command: Command): string | null | undefined {
@@ -315,10 +316,9 @@ export class Expansion {
       for (const { building, age, ticks } of quote.upgrades) {
         const maximum = building.maxHealth ?? buildingIntegrity(building.type, building.age ?? "StoneAge");
         const ratio = Math.min(1, (building.health ?? maximum) / maximum);
-        building.age = age;
-        building.maxHealth = buildingIntegrity(building.type, age);
-        building.health = Math.max(1, Math.floor(building.maxHealth * ratio));
-        building.remainingTicks = ticks;
+        const maxHealth = buildingIntegrity(building.type, age);
+        world.updateBuilding(building.id, { age, maxHealth,
+          health: Math.max(1, Math.floor(maxHealth * ratio)), remainingTicks: ticks });
       }
       return null;
     }
@@ -342,7 +342,7 @@ export class Expansion {
     if (command.type === "produce")
       return this.supply.setProduction(
         player,
-        world.buildings.find((b) => b.id === command.buildingId),
+        world.building(command.buildingId!),
         command.recipeId,
       );
     if (command.type === "alliance") {
@@ -372,13 +372,13 @@ export class Expansion {
             s.charge?.targetId &&
             !this.diplomacy.hostile(
               s.playerId,
-              world.squads.find((t) => t.id === s.charge!.targetId)?.playerId ??
+              world.squad(s.charge!.targetId!)?.playerId ??
                 0,
             )
           ) {
-            s.charge = null;
-            s.order = { type: "hold" };
-            s.path = [];
+            this.world.updateSquad(s.id, { charge: null });
+            this.world.updateSquad(s.id, { order: { type: "hold" } });
+            this.world.installSquadPath(s.id, []);
           }
           if (s.structureTarget) {
             const target =
@@ -392,31 +392,29 @@ export class Expansion {
               !target ||
               !this.diplomacy.hostile(s.playerId, target.playerId)
             ) {
-              s.structureTarget = null;
-              s.order = { type: "hold" };
-              s.path = [];
+              this.world.updateSquad(s.id, { structureTarget: null });
+              this.world.updateSquad(s.id, { order: { type: "hold" } });
+              this.world.installSquadPath(s.id, []);
             }
           }
           if (
             s.order.type === "attack" &&
             !this.diplomacy.hostile(
               s.playerId,
-              world.squads.find(
-                (t) => t.id === (s.order as { targetId: number }).targetId,
-              )?.playerId ?? 0,
+              world.squad((s.order as { targetId: number }).targetId)?.playerId ?? 0,
             )
           ) {
-            s.order = { type: "hold" };
-            s.path = [];
+            this.world.updateSquad(s.id, { order: { type: "hold" } });
+            this.world.installSquadPath(s.id, []);
           }
-          s.queuedOrders = s.queuedOrders.filter(
+          this.world.updateSquad(s.id, { queuedOrders: s.queuedOrders.filter(
             (o) =>
               o.type !== "attack" ||
               this.diplomacy.hostile(
                 s.playerId,
-                world.squads.find((t) => t.id === o.targetId)?.playerId ?? 0,
+                world.squad(o.targetId)?.playerId ?? 0,
               ),
-          );
+          ) });
         }
         for (let tile = 0; tile < world.owners.length; tile++)
           if (
@@ -439,7 +437,7 @@ export class Expansion {
         for (const buildingId of ids) {
           const res = this.fortifications.repair(
             player,
-            world.buildings.find((b) => b.id === buildingId),
+            world.building(buildingId),
             undefined,
           );
           if (res === null) anySuccess = true;
@@ -493,7 +491,7 @@ export class Expansion {
     if (command.type === "refit-ships") {
       const target = VESSEL.get(command.definitionId),
         selected = [...new Set(command.shipIds)].map((id) =>
-          world.ships.find((s) => s.id === id),
+          world.ship(id),
         );
       if (
         !target ||
@@ -501,51 +499,22 @@ export class Expansion {
         !this.progression.has(player.id, target.technologyId)
       )
         return "Research a military vessel refit first";
-      if (
-        !selected.length ||
-        selected.some(
-          (s) =>
-            !s ||
-            s.playerId !== player.id ||
-            Boolean(s.refit) ||
-            s.fighting ||
-            s.destination !== null ||
-            Boolean(s.boarding) ||
-            s.kind !== target.kind ||
-            AGES.indexOf(this.vessel(s).age) >= AGES.indexOf(target.age),
-        )
-      )
-        return "Refit a compatible stationary fleet out of combat";
-      const cost = {
-        gold: (500 + AGES.indexOf(target.age) * 300) * selected.length,
-        items: Object.fromEntries(
-          Object.entries(target.cost.items ?? {}).map(([id, n]) => [
-            id,
-            n * selected.length,
-          ]),
-        ),
-      };
-      const reason = costRejection(
-        player,
-        this.supply.inventories[player.id],
-        cost,
-      );
-      if (reason) return reason;
-      spend(player, this.supply.inventories[player.id], cost);
-      for (const s of selected as Ship[]) {
-        s.refit = { targetId: target.id, remainingTicks: 200, totalTicks: 200 };
-        s.waypoints = [];
-        s.path = [];
-        s.attackTargetId = null;
+      const eligible=selected.filter((s):s is Ship=>!!s&&s.playerId===player.id&&!s.refit&&!s.fighting&&s.destination===null&&!s.boarding&&!s.shoreTransfer&&s.kind===target.kind&&AGES.indexOf(this.vessel(s).age)<AGES.indexOf(target.age)).sort((a,b)=>a.id-b.id);
+      if(!eligible.length)return "Refit a compatible stationary fleet out of combat";
+      const count=affordableRefitCount(vesselRefitCost(target),player.gold,this.supply.inventories[player.id],eligible.length);
+      if(!count)return costRejection(player,this.supply.inventories[player.id],vesselRefitCost(target))??"No affordable vessel refit";
+      spend(player,this.supply.inventories[player.id],vesselRefitCost(target,count));
+      for(const s of eligible.slice(0,count)){
+        world.updateShip(s.id,{refit:{targetId:target.id,remainingTicks:200,totalTicks:200},waypoints:[],path:[],attackTargetId:null});
       }
       return null;
     }
     if (command.type === "naval-attack") {
       const target =
-          world.ships.find((s) => s.id === command.targetId) ??
-          world.buildings.find((b) => b.id === command.targetId),
+          world.ship(command.targetId) ??
+          world.building(command.targetId),
         selected = [...new Set(command.shipIds)].map((id) =>
-          world.ships.find((s) => s.id === id),
+          world.ship(id),
         );
       if (!target || !this.diplomacy.hostile(player.id, target.playerId))
         return "Choose an enemy vessel or coastal structure";
@@ -557,56 +526,34 @@ export class Expansion {
         )
       )
         return "Select your available warships";
+      if(selected.some(s=>!this.vessel(s!).attack?.targets.includes("tile" in target ? "structure" : "ship"))) return "This vessel cannot attack that target";
       for (const s of selected as Ship[]) {
-        s.attackTargetId = target.id;
-        s.lastPlanTick = -60;
+        this.world.updateShip(s.id, { attackTargetId: target.id });
+        this.world.updateShip(s.id, { lastPlanTick: -60 });
       }
       return null;
     }
     if (command.type === "refit") {
       const target = UNIT.get(command.definitionId),
         selected = [...new Set(command.squadIds)].map((id) =>
-          world.squads.find((s) => s.id === id),
+          world.squad(id),
         );
       if (!target || !this.progression.has(player.id, target.technologyId))
         return "Research the requested refit first";
-      if (
-        !selected.length ||
-        selected.some(
-          (s) =>
-            !s ||
-            s.playerId !== player.id ||
-            s.embarkedOn !== null ||
-            Boolean(s.refit) ||
-            s.moved ||
-            s.fighting ||
-            world.owners[world.tileOf(s)] !== player.id ||
-            this.unit(s).line !== target.line ||
-            this.unit(s).role !== target.role ||
-            AGES.indexOf(this.unit(s).age) >= AGES.indexOf(target.age),
-        )
-      )
-        return "Refit a compatible stationary group on owned land, out of combat";
-      const cost = unitRefitCost(target, selected.length);
-      const rejection = costRejection(
-        player,
-        this.supply.inventories[player.id],
-        cost,
-      );
-      if (rejection) return rejection;
-      spend(player, this.supply.inventories[player.id], cost);
-      for (const s of selected as Squad[]) {
-        s.refit = { targetId: target.id, totalTicks: 200, remainingTicks: 200 };
-        s.order = { type: "hold" };
-        s.queuedOrders = [];
-        s.path = [];
-        s.charge = null;
+      const eligible=selected.filter((s):s is Squad=>!!s&&s.playerId===player.id&&s.embarkedOn===null&&!s.refit&&!s.moved&&!s.fighting&&world.owners[world.tileOf(s)]===player.id&&this.unit(s).line===target.line&&this.unit(s).role===target.role&&AGES.indexOf(this.unit(s).age)<AGES.indexOf(target.age)).sort((a,b)=>a.id-b.id);
+      if(!eligible.length)return "Refit a compatible stationary group on owned land, out of combat";
+      const count=affordableRefitCount(unitRefitCost(target),player.gold,this.supply.inventories[player.id],eligible.length);
+      if(!count)return costRejection(player,this.supply.inventories[player.id],unitRefitCost(target))??"No affordable refit";
+      spend(player,this.supply.inventories[player.id],unitRefitCost(target,count));
+      for(const s of eligible.slice(0,count)){
+        world.updateSquad(s.id,{refit:{targetId:target.id,totalTicks:200,remainingTicks:200},order:{type:"hold"},queuedOrders:[],charge:null});
+        world.installSquadPath(s.id,[]);
       }
       return null;
     }
     if (command.type === "charge") {
       const selected = [...new Set(command.squadIds)].map((id) =>
-        world.squads.find((s) => s.id === id),
+        world.squad(id),
       );
       if (!selected.length || !this.validPosition(command.x, command.y))
         return "Choose units and a valid charge destination";
@@ -639,29 +586,21 @@ export class Expansion {
         command.targetId !== undefined &&
         !this.diplomacy.hostile(
           player.id,
-          world.squads.find((s) => s.id === command.targetId)?.playerId ?? 0,
+          world.squad(command.targetId)?.playerId ?? 0,
         )
       )
         return "Choose a hostile charge target";
       selected.forEach((s, i) => {
-        s!.charge = {
-          phase: "approach",
-          x: command.x,
-          y: command.y,
-          startTick: world.tick,
-          committedTick: 0,
-          targetId: command.targetId,
-        };
-        s!.order = { type: "move", tile };
-        s!.path = paths[i]!;
-        s!.nextPathIndex = 0;
-        s!.queuedOrders = [];
-        s!.structureTarget = null;
+        world.updateSquad(s!.id, {
+          charge: { phase: "approach", x: command.x, y: command.y, startTick: world.tick, committedTick: 0, targetId: command.targetId },
+          order: { type: "move", tile }, nextPathIndex: 0, queuedOrders: [], structureTarget: null,
+        });
+        world.installSquadPath(s!.id, paths[i]!);
       });
       return null;
     }
     if (command.type === "attack-structure") {
-      const building = world.buildings.find((b) => b.id === command.buildingId),
+      const building = world.building(command.buildingId!),
         barrier = this.fortifications.barriers.find(
           (w) => w.id === command.barrierId,
         ),
@@ -669,7 +608,7 @@ export class Expansion {
       if (!target || !this.diplomacy.hostile(player.id, target.playerId))
         return "Choose an enemy structure";
       const selected = [...new Set(command.squadIds)].map((id) =>
-        world.squads.find((s) => s.id === id),
+        world.squad(id),
       );
       if (
         !selected.length ||
@@ -682,6 +621,11 @@ export class Expansion {
       const orders: { s: Squad; tile: number; path: number[] }[] = [];
       for (const s of selected as Squad[]) {
         const targetTiles = building ? [building.tile] : barrier!.tiles;
+        const profile=this.unit(s).attack;
+        if(!profile.targets.includes(building ? "structure" : "wall")) return "This weapon cannot attack that structure";
+        if(structureAim(s,targetTiles,profile.range,player.id,world.map.width(),this.fortifications)){
+          orders.push({s,tile:world.tileOf(s),path:[]});continue;
+        }
         const approaches = new Set<number>();
         const extent = Math.ceil(this.unit(s).attack.range / FIXED);
         for (const tile of targetTiles)
@@ -728,15 +672,15 @@ export class Expansion {
         orders.push({ s, ...found });
       }
       for (const { s, tile, path } of orders) {
-        s.order = { type: "move", tile };
-        s.path = path;
-        s.nextPathIndex = 0;
-        s.queuedOrders = [];
-        s.charge = null;
-        s.structureTarget = {
+        this.world.updateSquad(s.id, { order: { type: "move", tile } });
+        this.world.installSquadPath(s.id, path);
+        this.world.updateSquad(s.id, { nextPathIndex: 0 });
+        this.world.updateSquad(s.id, { queuedOrders: [] });
+        this.world.updateSquad(s.id, { charge: null });
+        this.world.updateSquad(s.id, { structureTarget: {
           buildingId: building?.id,
           barrierId: barrier?.id,
-        };
+        } });
       }
       return null;
     }
@@ -867,8 +811,8 @@ export class Expansion {
     if (this.battle.projectiles.length >= 4092)
       return "Strategic flight capacity reached";
     spend(player, this.supply.inventories[player.id], cost);
-    if (building) building.launchReadyTick = this.world.tick + 1200;
-    else unit!.chargeReadyTick = this.world.tick + 1200;
+    if (building) this.world.updateBuilding(building.id, { launchReadyTick: this.world.tick + 1200 });
+    else this.world.updateSquad(unit!.id, { chargeReadyTick: this.world.tick + 1200 });
     const position = building ? this.battle.position(building) : unit!;
     this.battle.fire(
       {
@@ -929,30 +873,33 @@ export class Expansion {
           otherId: treaty.b,
           action: "expire",
         });
-    this.fortifications.step(world.tick, world.buildings);
-    this.supply.step(world.tick, world.players, world.buildings, world.owners, world.squads);
-    for (const s of world.ships)
-      if (s.refit && --s.refit.remainingTicks <= 0) {
-        s.definitionId = s.refit.targetId;
-        s.xp = 0;
-        s.refit = null;
-      }
+    this.fortifications.step(world.tick, world.buildings,
+      (id, health) => world.updateBuilding(id, { health }));
+    this.supply.step(world.tick, world.players, world.buildings, world.owners, world.squads,
+      {buildings: world.buildingFacts(), squads: world.squadFacts()});
+    for (const s of world.ships) {
+      if (!s.refit) continue;
+      const remainingTicks = s.refit.remainingTicks - 1;
+      world.updateShip(s.id, remainingTicks <= 0
+        ? { definitionId: s.refit.targetId, xp: 0, refit: null }
+        : { refit: { ...s.refit, remainingTicks } });
+    }
     for (const s of world.squads) {
-      if (s.refit && --s.refit.remainingTicks <= 0) {
-        const target = UNIT.get(s.refit.targetId)!;
-        s.definitionId = target.id;
-        s.kind = target.line;
-        s.xp = 0;
-        s.nextAttackTick = world.tick;
-        s.refit = null;
+      if (s.refit) {
+        const remainingTicks = s.refit.remainingTicks - 1;
+        if (remainingTicks <= 0) {
+          const target = UNIT.get(s.refit.targetId)!;
+          world.updateSquad(s.id, { definitionId: target.id, kind: target.line, xp: 0, nextAttackTick: world.tick, refit: null });
+        } else world.updateSquad(s.id, { refit: { ...s.refit, remainingTicks } });
       }
       if (
         s.charge?.phase === "approach" &&
         world.tick - s.charge.startTick >= this.unit(s).charge!.runupTicks
       ) {
-        s.charge.phase = "committed";
-        s.charge.committedTick = world.tick;
-        s.chargeReadyTick = world.tick + this.unit(s).charge!.cooldownTicks;
+        world.updateSquad(s.id, {
+          charge: { ...s.charge, phase: "committed", committedTick: world.tick },
+          chargeReadyTick: world.tick + this.unit(s).charge!.cooldownTicks,
+        });
       }
     }
     this.modernization.clean(world.squads, world.tick);
@@ -963,8 +910,7 @@ export class Expansion {
   afterMovement(): void {
     for (const s of this.world.squads)
       if (this.unit(s).role === "launcher")
-        s.deploymentTicks =
-          s.troops > 0 &&
+        this.world.updateSquad(s.id, { deploymentTicks: s.troops > 0 &&
           !s.refit &&
           !s.charge &&
           s.embarkedOn === null &&
@@ -972,13 +918,13 @@ export class Expansion {
           !s.fighting &&
           s.order.type === "hold"
             ? Math.min(100, (s.deploymentTicks ?? 0) + 1)
-            : 0;
+            : 0 });
     this.advanceAircraft();
     this.trade.step();
     this.battle.advanceProjectiles();
     for (let i = this.world.buildings.length - 1; i >= 0; i--)
       if ((this.world.buildings[i].health ?? 1) <= 0)
-        this.world.buildings.splice(i, 1);
+        this.world.removeBuilding(this.world.buildings[i].id);
     for (let i = this.aircraft.length - 1; i >= 0; i--)
       if (
         this.aircraft[i].health <= 0 ||
@@ -1116,13 +1062,13 @@ export class Expansion {
             technologyId: next.id,
           });
       }
-      const own = this.world.buildings.filter((b) => b.playerId === player.id);
+      const own = this.world.buildingFacts().byOwner(player.id);
       // One paid infrastructure improvement per strategic pass; no hidden grants.
       const upgrade = own.find(building => !building.remainingTicks &&
         (building.health ?? 1) >= (building.maxHealth ?? 1) &&
         nextBuildingAge(building.type, building.age ?? "StoneAge", state.age, state.completed));
       if (upgrade) this.world.applyCommand({ type: "upgrade-building", playerId: player.id, buildingIds: [upgrade.id] });
-      const squadCount = this.world.squads.filter((s) => s.playerId === player.id).length;
+      const squadCount = this.world.squadFacts().byOwner(player.id).length;
       // Nearest owned land is order-independent (it is derived from ownership),
       // so checkpoints never need the per-player tile sets.
       let nearestOwned: number[] | undefined;
@@ -1278,7 +1224,7 @@ export class Expansion {
     const next = TECHNOLOGIES.find(t => t.age === this.startingAge &&
       !researchRejection(state, player.gold, t.id, this.progression.technologySpeed));
     if (next) this.world.applyCommand({ type: "research", playerId: player.id, technologyId: next.id });
-    const own = this.world.buildings.filter(b => b.playerId === player.id);
+    const own = this.world.buildingFacts().byOwner(player.id);
     const plan = this.tribePlans.get(player.id) ?? { nextType: 0, tiles: {} };
     this.tribePlans.set(player.id, plan);
     // One type and at most sixteen legal site attempts per strategic pass.
@@ -1306,13 +1252,9 @@ export class Expansion {
   }
   private thinkCapabilities(player: Player): void {
     const personality = personalityOf(player);
-    const force = new AiForceInventory(player.id, this.world.squads, this.world.recruitment.jobs);
-    const own = this.world.buildings.filter(
-        (b) => b.playerId === player.id && !b.remainingTicks,
-      ),
-      squads = this.world.squads.filter(
-        (s) => s.playerId === player.id && s.embarkedOn === null,
-      ),
+    const force = new AiForceInventory(player.id, this.world.squadFacts().byOwner(player.id), this.world.recruitment.byOwner(player.id));
+    const own = this.world.buildingFacts().byOwner(player.id).filter(b => !b.remainingTicks),
+      squads = this.world.squadFacts().byOwner(player.id).filter(s => s.embarkedOn === null),
       stock = this.supply.inventories[player.id];
     const enemies = this.world.squads.filter((s) =>
       this.diplomacy.hostile(player.id, s.playerId),
@@ -1436,9 +1378,7 @@ export class Expansion {
         });
     }
     for (const kind of ["warship", "transport"] as const) {
-      const count = this.world.ships.filter(
-        (s) => s.playerId === player.id && s.kind === kind,
-      ).length + force.queuedShips(kind);
+      const count = this.world.shipFacts().byKind(player.id, kind).length + force.queuedShips(kind);
       if (
         count >=
         Math.min(
@@ -1569,6 +1509,13 @@ export class Expansion {
       return null;
     return live.map((p) => p.id);
   }
+  private metadataIdentity={};
+  replicationMetadata(){return {identity:this.metadataIdentity,revisions:{
+    rulesetId:1,startingAge:1,contentHash:1,technologySpeed:1,victoryMode:1,
+    progression:this.progression.revision,diplomacy:this.diplomacy.revision,
+    productionPlans:this.supply.controlRevision,productionPriorities:this.supply.controlRevision,
+    events:this.nextEvent,roadRevision:this.roads.revision,fortificationRevision:this.fortifications.version,
+  }};}
   snapshot(): ExpansionSnapshot {
     return {
       armies: this.armies.snapshot(),

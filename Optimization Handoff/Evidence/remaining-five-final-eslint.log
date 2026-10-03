@@ -1,0 +1,5 @@
+
+C:\Users\Damien\.codex\worktrees\optimization-roadmap\AgeOfFronts\src\skirmish\Simulation.ts
+  1039:15  error  'tile' is assigned a value but never used  @typescript-eslint/no-unused-vars
+
+✖ 1 problem (1 error, 0 warnings)

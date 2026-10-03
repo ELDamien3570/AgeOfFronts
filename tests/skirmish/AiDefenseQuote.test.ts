@@ -23,8 +23,8 @@ function fixture() {
       ruleset: "ages-v1",
     });
   game.owners.fill(1);
-  game.buildings.length = 0;
-  game.expansion!.supply.deposits.length = 0;
+  for (const building of game.buildings) game.removeBuilding(building.id);
+  game.expansion!.supply.replaceDeposits([]);
   game.expansion!.supply.resourceSites.update([]);
   return {
     map,
@@ -79,7 +79,7 @@ describe("exact funded defense quotation", () => {
         }),
       ).toBeNull();
       const building = game.buildingsAt(step.tile)[0];
-      building.remainingTicks = 0;
+      game.updateBuilding((building).id, { remainingTicks: 0 });
       input.fortifications.step(game.tick, game.buildings);
     }
     expect(gold - game.players[0].gold).toBe(quote.cost.gold);

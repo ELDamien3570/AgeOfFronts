@@ -58,9 +58,9 @@ describe("large match domain", () => {
       runAi: false,
     });
     const template = match.squads.find((s) => s.playerId === 1)!;
-    match.squads.length = 0;
+    for (const record of match.squads) match.removeSquad(record.id);
     for (let i = 0; i < MAX_SQUADS; i++)
-      match.squads.push({
+      match.addSquad({
         ...template,
         id: 10000 + i,
         x: (20 + (i % 20) * 2) * FIXED,
@@ -78,7 +78,7 @@ describe("large match domain", () => {
         buildingId: building.id,
       }),
     ).toMatch(/limit/);
-    match.squads.pop();
+    match.removeSquad(match.squads[match.squads.length - 1].id);
     expect(
       match.applyCommand({
         type: "recruit",

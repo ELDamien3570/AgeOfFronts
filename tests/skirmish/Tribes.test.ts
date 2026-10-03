@@ -108,7 +108,7 @@ describe("minor tribes", () => {
           buildingId: camp.id,
         }),
       ).toBeNull();
-    own[0].embarkedOn = 999;
+    game.updateSquad(own[0].id, { embarkedOn: 999 });
     expect(
       game.applyCommand({
         type: "recruit",
@@ -116,8 +116,8 @@ describe("minor tribes", () => {
         buildingId: camp.id,
       }),
     ).toContain("10-squad limit");
-    own[0].embarkedOn = null;
-    game.squads.splice(game.squads.indexOf(own[0]), 1);
+    game.updateSquad(own[0].id, { embarkedOn: null });
+    for (const record of game.squads.slice(game.squads.indexOf(own[0]), (game.squads.indexOf(own[0])) + (1))) game.removeSquad(record.id);
     tribe.losses += own[0].troops;
     for (let tick = 0; tick < 180; tick++) game.step();
     expect(game.squads.filter((s) => s.playerId === tribe.id)).toHaveLength(10);

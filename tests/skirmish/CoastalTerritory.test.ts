@@ -60,7 +60,7 @@ describe("scaled coastal water rights and offshore oil", () => {
     m.players[0].gold = 50000;
     for (const resource of RESOURCES)
       expansion.supply.inventories[1][resource] = 5000;
-    expansion.supply.deposits.push({
+    expansion.supply.addDeposit({
       id: 999,
       tile: site,
       owner: 0,
@@ -85,7 +85,7 @@ describe("scaled coastal water rights and offshore oil", () => {
         tile: site,
       }),
     ).toBeNull();
-    m.buildings.find((b) => b.type === "oil-rig")!.remainingTicks = 0;
+    m.updateBuilding((m.buildings.find((b) => b.type === "oil-rig")!).id, { remainingTicks: 0 });
     const oil = expansion.supply.inventories[1].oil;
     for (let i = 0; i < 20; i++) m.step();
     expect(expansion.supply.inventories[1].oil).toBeGreaterThan(oil);

@@ -1,6 +1,6 @@
 # P11: Guarantee limited-search progress and fairness
 
-Status: **remaining work, not implemented by this handoff**. Read
+Status: **local implementation and shared integration complete at cd4a46c; capacity qualification remains open**. Read
 [`../agent-workflow.md`](../agent-workflow.md) and [`../handoff.md`](../handoff.md).
 
 ## Dependencies and ownership
@@ -53,3 +53,66 @@ If a required dependency, hardware test, source asset or authorization is
 unavailable, record the exact blocker and stop only that dependent work. Do not
 turn a refused or unverified test into a pass, broaden authority, or enable a
 production feature merely to demonstrate that code exists.
+
+## Local P11 slice 1 evidence (2 October 2026)
+
+Source: `59c4eeb4696e6c8f91c730704ec9537f7f351a1b`, including integrated P01.
+Branch: `codex/p11-p14-optimization`. No default admission flag changed.
+New matches use checkpointed player round-robin, caller round-robin within each
+player, and FIFO rotation within each caller. At most 128 queued jobs are
+examined per quantum; cursor state is bounded to the existing 256-player domain.
+Historical checkpoints without scheduling metadata explicitly restore FIFO.
+Diagnostics remain read-only and excluded from checkpoints.
+
+Focused planner/fairness/land/ship admission: 32 tests passed. TypeScript,
+scoped Oxlint/ESLint and production build passed. Full suite with four workers:
+1011 passed, ten existing five-second timeouts. Serial suite: 1020 passed,
+one timeout in `ShoreTransport.test.ts` (waiting island-slot test). The same
+test timed out against the untouched HEAD planner (5814 ms, original 5000 ms
+limit). No deadline or assertion was weakened. Common full-suite acceptance
+remains open on this Windows x64 environment; this is not a clean full gate.
+Fairness fixtures use 80x80 all-land maps, no runtime AI flags, fixed topology,
+budget/quantum 1, and 12 deterministic turns. Sparse faction: 6 of 12 turns;
+one-player admission/defense/trade: 4 each. Restore preserves exact turns.
+This earlier slice is superseded by the final local implementation below.
+
+
+## P11 final local implementation (2026-10-03)
+
+New checkpoint scheduling version 3 shares quanta by player and caller, with FIFO
+rotation inside each cohort. Legacy missing metadata restores FIFO (version 1);
+version 2 keeps its prior fair scheduling without the new escalation policy.
+Queue maximum remains 128; scheduler selection uses at most three scans of that
+queue per quantum, separately from charged search work. Cursor state is bounded
+to 256 players. Diagnostic cohorts are bounded by player/caller combinations.
+
+After charged cleanup, a limited search retries once with exclusive access to
+the existing fixed arena. New allocations wait while existing holders finish;
+no existing search progress is discarded. Full-arena exhaustion remains limited,
+never unreachable. Reservations, cleanup and fairness cursors survive restore.
+The ordinary scheduler stays fair; exclusive escalation temporarily reserves
+service until a finite terminal outcome, including up to 32 existing finalists.
+
+After three limited results, new committed ship legs pause, retain later
+waypoints and stop submitting searches. Replacements reject without changing
+active orders. Unchanged recovery intentions retain progress. Legacy ship
+checkpoints restore the previous retry/coalescing policy. The user chose
+stability; land pause and visible land/ship status are supplied in the reserved
+Simulation/protocol/codec integration patch rather than overwriting those files.
+
+The new tests cover 54 players with two classes (108 jobs, two turns each across
+216 one-unit turns), contested 128-slot capacity, full-arena terminal failure,
+cancellation with arrivals, exact mid-escalation restore, ship pause/replacement,
+and legacy policy. The shared patch's regression covers land pause, retained
+later orders, restore, no further requests, wire status and clearing status.
+79 focused tests passed with the integration patch; a further 12 passed after
+adding the legacy ship case. TypeScript, scoped lint, production build and diff
+checks passed. Final serial full suite: 1035 tests passed across 158 files in
+279.86 seconds; no deadline changes. See Evidence/P11-P14/README.md.
+
+This does not qualify future P06-P10 callers before they migrate to this planner,
+the largest map, the ARM host or ten real browser clients. Default gates stay off.
+
+## Nightly integration checkpoint
+
+See [cd4a46c implementation scope and exact local validation](../Evidence/nightly-batch-01.md). External acceptance remains open.

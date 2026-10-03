@@ -1,11 +1,12 @@
-import { describe, expect, it } from "vitest";
+import { retainSquads } from "./UnitFixtures";
+import { describe, expect, it, vi } from "vitest";
 import { GameMapImpl } from "../../src/core/game/GameMap";
 import { FIXED, type Squad } from "../../src/skirmish/Protocol";
 import { Skirmish } from "../../src/skirmish/Simulation";
 import { shoreTransportCapacity } from "../../src/skirmish/content/ShoreTransport";
 import { VESSELS } from "../../src/skirmish/content/Units";
 
-function make(count = 4, rivers = [30], island = false) {
+function make(count = 4, rivers = [30], island = false, deferredPlanning = false) {
   const width = 96,
     height = 64,
     data = new Uint8Array(width * height).fill(133);
@@ -20,10 +21,10 @@ function make(count = 4, rivers = [30], island = false) {
   }
   const match = new Skirmish(
     new GameMapImpl(width, height, data, data.filter((t) => t & 128).length),
-    { seed: 47, aiCount: 1, tribes: false, runAi: false, ruleset: "ages-v1" },
+    { seed: 47, aiCount: 1, tribes: false, runAi: false, ruleset: "ages-v1", deferredPlanning },
   );
   const original = match.squads.find((s) => s.playerId === 1)!;
-  const own = Array.from(
+  let own = Array.from(
     { length: count },
     (_, i): Squad => ({
       ...original,
@@ -35,15 +36,10 @@ function make(count = 4, rivers = [30], island = false) {
       queuedOrders: [],
     }),
   );
-  match.squads.splice(
-    0,
-    match.squads.length,
-    ...match.squads.filter((s) => s.playerId !== 1),
-    ...own,
-  );
+  own = retainSquads(match, [...match.squads.filter((s) => s.playerId !== 1), ...own]).filter(s => s.playerId === 1);
   for (const s of match.squads.filter((s) => s.playerId !== 1)) {
-    s.x = 85 * FIXED;
-    s.y = 55 * FIXED;
+    match.updateSquad(s.id, { x: 85 * FIXED });
+    match.updateSquad(s.id, { y: 55 * FIXED });
   }
   match.owners.fill(0); // Shore embarkation must also work from neutral territory.
   return { match, own, target: match.map.ref(75, 25) };
@@ -67,6 +63,60 @@ function run(m: ReturnType<typeof make>, ticks = 2500) {
 }
 
 describe("automatic researched shore transport", () => {
+  it("returns real cargo to departure after landing permission is withdrawn during passage",()=>{
+    const m=make(4,[30],false,true);unlock(m);m.match.options.aiWarPolicy=true;m.match.setAiController(1,true);
+    let withdrawn=false;
+    vi.spyOn(m.match.expansion!.operations,"canEnter").mockImplementation((_id,_rival,tile)=>!withdrawn || m.match.map.x(tile)<30);
+    expect(move(m)).toBeNull();let embarked=false,returned=false;
+    for(let i=0;i<3000;i++){
+      m.match.step();
+      if(m.own.every(s=>s.embarkedOn!==null)){embarked=true;withdrawn=true;}
+      if(embarked && m.own.every(s=>s.embarkedOn===null && m.match.map.x(m.match.tileOf(s))<30)){returned=true;break;}
+    }
+    expect(embarked).toBe(true);expect(returned).toBe(true);expect(m.match.ships).toHaveLength(0);
+  });
+  it.each([false, true])("embarks to open water, retains cargo afloat, then sails and manually lands (deferred=%s)", deferred => {
+    const m = make(4, [30], false, deferred); unlock(m);
+    m.target = m.match.map.ref(31, 45);
+    const troops = m.own.reduce((sum,s) => sum+s.troops,0);
+    expect(move(m)).toBeNull();
+    for(let i=0;i<3000 && !m.match.ships.some(s=>s.shoreTransfer?.phase === "afloat");i++) m.match.step();
+    const ship = m.match.ships.find(s=>s.shoreTransfer?.phase === "afloat")!;
+    expect(ship).toBeDefined();
+    expect(m.match.tileOf(ship)).toBe(m.target);
+    expect(m.own.every(s=>s.embarkedOn === ship.id)).toBe(true);
+    const restored = new Skirmish(m.match.map, m.match.options); restored.restore(m.match.checkpoint());
+    expect(restored.ship(ship.id)?.shoreTransfer?.phase).toBe("afloat");
+    const beforeInvalid = m.match.checkpoint();
+    expect(m.match.applyCommand({type:"unload",playerId:1,shipId:ship.id,tile:m.target}))
+      .toBe("Choose passable coastal land directly beside the transport");
+    expect(m.match.checkpoint()).toEqual(beforeInvalid);
+    const end = m.match.map.ref(30,25);
+    expect(m.match.applyCommand({type:"sail",playerId:1,shipIds:[ship.id],tile:end})).toBeNull();
+    for(let i=0;i<100 && ship.destination===null;i++)m.match.step();
+    expect(ship.destination).not.toBeNull();
+    expect(m.match.applyCommand({type:"unload",playerId:1,shipId:ship.id,tile:m.match.map.ref(29,25)}))
+      .toBe("Stop beside the landing coast before unloading");
+    for(let i=0;i<1200 && m.match.tileOf(ship)!==end;i++)m.match.step();
+    expect(m.match.tileOf(ship)).toBe(end);
+    // Sail completes at the tile center before unloading from an adjacent shore.
+    for(let i=0;i<20;i++)m.match.step();
+    expect(m.match.applyCommand({type:"unload",playerId:1,shipId:ship.id,tile:m.match.map.ref(29,25)})).toBeNull();
+    for(let i=0;i<500 && m.own.some(s=>s.embarkedOn!==null);i++)m.match.step();
+    expect(m.own.every(s=>s.embarkedOn===null && m.match.map.x(m.match.tileOf(s))<30)).toBe(true);
+    expect(m.own.reduce((sum,s)=>sum+s.troops,0)).toBe(troops);
+    expect(m.match.ships).toHaveLength(0);
+  });
+  it("preserves an unchanged pending shore query through repeated AI orders and completes the crossing", () => {
+    const m = make(4,[30],false,true); unlock(m); m.match.setAiController(1,true);
+    expect(move(m)).toBeNull(); const id=m.match.checkpoint().shorePlanning.pending[0][0];
+    for(let i=0;i<30 && m.match.checkpoint().shorePlanning.pending.length;i++){
+      expect(m.match.checkpoint().shorePlanning.pending[0][0]).toBe(id);
+      expect(move(m)).toBeNull();m.match.step();
+    }
+    run(m,3000);
+    expect(m.own.every(s=>s.embarkedOn===null && m.match.map.x(m.match.tileOf(s))>65)).toBe(true);
+  });
   it("lands another waiting squad when a previously occupied island slot clears", () => {
     const m = make(10, [], true);
     unlock(m);
@@ -75,11 +125,11 @@ describe("automatic researched shore transport", () => {
     run(m, 2500);
     const evacuated = m.own.find((s) => s.embarkedOn === null)!;
     // Fixture evacuation: free one footprint without changing waiting cargo.
-    evacuated.x = 15 * FIXED + FIXED / 2;
-    evacuated.y = 15 * FIXED + FIXED / 2;
-    evacuated.order = { type: "hold" };
-    evacuated.path = [];
-    evacuated.queuedOrders = [];
+    m.match.updateSquad(evacuated.id, { x: 15 * FIXED + FIXED / 2 });
+    m.match.updateSquad(evacuated.id, { y: 15 * FIXED + FIXED / 2 });
+    m.match.updateSquad(evacuated.id, { order: { type: "hold" } });
+    m.match.updateSquad(evacuated.id, { path: [] });
+    m.match.updateSquad(evacuated.id, { queuedOrders: [] });
     run(m, 100);
     expect(m.own.filter((s) => s.embarkedOn === ship.id)).toHaveLength(5);
     expect(
@@ -227,15 +277,9 @@ describe("automatic researched shore transport", () => {
     );
     m.match = match;
     m.own = match.squads.filter((s) => s.playerId === 1).slice(0, 2);
-    match.squads.splice(
-      0,
-      match.squads.length,
-      ...match.squads.filter((s) => s.playerId !== 1),
-      ...m.own,
-    );
+    retainSquads(match, [...match.squads.filter((s) => s.playerId !== 1), ...m.own]);
     m.own.forEach((s, i) => {
-      s.x = (20 + i) * FIXED + FIXED / 2;
-      s.y = 40 * FIXED + FIXED / 2;
+      match.updateSquad(s.id, { x: (20 + i) * FIXED + FIXED / 2, y: 40 * FIXED + FIXED / 2 });
     });
     m.target = match.map.ref(42, 40);
     unlock(m);
@@ -336,9 +380,10 @@ describe("automatic researched shore transport", () => {
     const view = m.match.snapshot().ships[0];
     expect("waterPath" in view.shoreTransfer!).toBe(false);
     expect("queued" in view.shoreTransfer!).toBe(false);
-    view.shoreTransfer!.capacity = 999;
+    // Deliberately mutate the actual DTO to verify its isolation from domain state.
+    (view.shoreTransfer as unknown as { capacity: number }).capacity = 999;
     expect(ship.shoreTransfer!.capacity).toBe(10);
-    ship.health = 0;
+    m.match.updateShip(ship.id, { health: 0 });
     m.match.step();
     expect(m.match.ships).toHaveLength(0);
     expect(m.match.squads.some((s) => m.own.includes(s))).toBe(false);

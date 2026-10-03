@@ -1,6 +1,6 @@
 # P08: Resume shared shore and crossing searches
 
-Status: **remaining work, not implemented by this handoff**. Read
+Status: **local implementation complete and tested; broader qualification remains open**. Read
 [`../agent-workflow.md`](../agent-workflow.md) and [`../handoff.md`](../handoff.md).
 
 ## Dependencies and ownership
@@ -52,3 +52,9 @@ If a required dependency, hardware test, source asset or authorization is
 unavailable, record the exact blocker and stop only that dependent work. Do not
 turn a refused or unverified test into a pass, broaden authority, or enable a
 production feature merely to demonstrate that code exists.
+
+## Final implementation pass - 3 October 2026
+
+Shared crossing graphs, stable edge ranking, exact approach/arrival/water searches, subscriber cancellation and connected-land travel-time comparisons persist and yield.
+
+The user superseded per-slice validation with one complete code pass and a final gate. Source commit `a4145f4230cabe58023bc60d58b835407a111956` passes 1,075 tests across 164 files, TypeScript, the production build, whitespace and scoped Oxlint. Scoped ESLint retains one pre-existing unused variable. See [final evidence](../Evidence/nightly-final-validation.md) for exact inputs, failures repaired, timeout settings and limits. Experimental flags retain their existing defaults. Deferred-feature cases, remaining real-browser checks and actual target hardware qualification are separate open gates.

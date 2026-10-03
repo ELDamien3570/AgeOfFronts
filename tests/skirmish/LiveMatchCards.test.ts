@@ -127,7 +127,7 @@ describe("live match directory", () => {
     )!;
     expect(link.textContent).toContain("Rejoin your empire");
     expect(link.getAttribute("href")).toBe(
-      "/skirmish/index.html?match=match-one",
+      "/skirmish/index.html?match=match-one&seat=2",
     );
     expect(root.querySelectorAll(".live-seat-link")).toHaveLength(0);
     expect(root.textContent).toContain("this browser’s guest identity");

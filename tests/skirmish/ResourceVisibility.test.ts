@@ -184,10 +184,10 @@ describe("age-based strategic resource discovery", () => {
       (d) => d.resource === "oil",
     )!;
     expect(deposit).toBeDefined();
-    deposit.owner = 2;
+    expansion.supply.updateDeposit(deposit.id, {owner: 2});
     expansion.progression.states[2].age = "Modern";
     expansion.supply.inventories[2].oil = 12345;
-    const mine = {
+    const mine = match.addBuilding({
       id: match.allocateId(),
       tile: deposit.tile,
       playerId: 2,
@@ -196,8 +196,8 @@ describe("age-based strategic resource discovery", () => {
       health: 2000,
       maxHealth: 2000,
       age: "Modern" as const,
-    };
-    match.buildings.push(mine);
+    });
+
     const selection = {
       selected: new Set<number>(),
       selectedShips: new Set<number>(),

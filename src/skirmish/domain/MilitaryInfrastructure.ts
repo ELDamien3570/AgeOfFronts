@@ -27,6 +27,7 @@ export const MILITARY_BUILDINGS = [
 export function modernizeMilitaryBuildings(
   buildings: readonly Building[],
   states: Readonly<Record<number, ProgressionState>>,
+  updateBuilding: (id: number, changes: Partial<Omit<Building, "id">>) => void,
 ): void {
   const targets = new Map<string, (typeof AGES)[number] | undefined>();
   for (const building of buildings) {
@@ -60,8 +61,8 @@ export function modernizeMilitaryBuildings(
       1,
       (building.health ?? previousMaximum) / previousMaximum,
     );
-    building.age = age;
-    building.maxHealth = buildingIntegrity(building.type, age);
-    building.health = Math.max(1, Math.floor(building.maxHealth * ratio));
+    const maxHealth = buildingIntegrity(building.type, age);
+    updateBuilding(building.id, { age, maxHealth,
+      health: Math.max(1, Math.floor(maxHealth * ratio)) });
   }
 }

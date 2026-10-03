@@ -27,6 +27,7 @@ const coordinatorUrl =
 vm.online = Boolean(coordinatorUrl);
 const requestId = () => crypto.randomUUID();
 let connection: OnlineLobbyConnection | undefined;
+let restoreExplicitRoom = false;
 const reportError = (error: unknown) => {
   vm.message = (error as Error).message;
   view.render(vm);
@@ -213,7 +214,7 @@ function route(): void {
   if (connection && vm.guestId) {
     const joined = vm.joinedOnlineRoom;
     const desired = lobby ? vm.onlineRoom : undefined;
-    if (desired && desired.id !== joined?.id)
+    if (desired && (desired.id !== joined?.id || !desired.members.some(m=>m.guestId===vm.guestId&&m.connected)))
       void connection
         .request({ type: "join", requestId: requestId(), roomId: desired.id })
         .catch(reportError);
@@ -260,41 +261,35 @@ if (coordinatorUrl) {
             profile: vm.profile,
           })
           .catch(reportError);
-        const currentRoom = message.state.rooms.find((room) =>
-          room.members.some((member) => member.guestId === message.guestId),
-        );
-        if (currentRoom) {
-          window.location.hash =
-            currentRoom.kind === "default"
-              ? `lobby=${currentRoom.settings.mapId}`
-              : `room=${currentRoom.id}`;
-          route();
-        } else {
-          const hash = window.location.hash;
-          const roomId =
-            hash.startsWith("#lobby=") && isLobbyMapId(hash.slice(7))
-              ? `default-${hash.slice(7)}`
-              : hash.startsWith("#room=")
-                ? hash.slice(6)
-                : undefined;
-          if (roomId)
-            void connection!
-              .request({ type: "join", requestId: requestId(), roomId })
-              .then(() => route())
-              .catch(reportError);
-        }
+        const hash=window.location.hash;
+        const roomId=hash.startsWith("#lobby=")&&isLobbyMapId(hash.slice(7))?`default-${hash.slice(7)}`:
+          hash.startsWith("#room=")?hash.slice(6):undefined;
+        if(roomId)void connection!.request({type:"join",requestId:requestId(),roomId}).then(()=>route()).catch(reportError);
+
       }
+      if(restoreExplicitRoom&&!firstState){restoreExplicitRoom=false;route();}
+      else restoreExplicitRoom=false;
       if (!vm.dialog) view.render(vm);
     },
     (status, connected) => {
+      if(connected&&!vm.connected)restoreExplicitRoom=true;
       vm.connected = connected;
       vm.message = status;
       if (!vm.dialog) view.render(vm);
     },
     (message) => {
-      if (message.type === "match")
-        window.location.href = `/skirmish/index.html?match=${encodeURIComponent(message.manifest.id)}`;
+      if (message.type === "match") { connection?.stop();
+        window.location.href = `/skirmish/index.html?match=${encodeURIComponent(message.manifest.id)}`; }
     },
   );
   void connection.connect();
 }
+
+window.addEventListener("pagehide",()=>connection?.stop());
+window.addEventListener("pageshow",event=>{if(event.persisted)window.location.reload();});
+document.addEventListener("click",event=>{
+  const anchor=(event.target as Element).closest<HTMLAnchorElement>("a[href]");
+  if(!anchor||event.defaultPrevented||event.button!==0||event.ctrlKey||event.metaKey||event.shiftKey||event.altKey||anchor.target==="_blank")return;
+  const url=new URL(anchor.href,window.location.href);
+  if(url.origin!==window.location.origin||url.pathname!==window.location.pathname)connection?.stop();
+},true);

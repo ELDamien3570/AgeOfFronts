@@ -1,7 +1,13 @@
 # P22: Share complete trade cycle and risk quotes
 
-Status: **remaining work, not implemented by this handoff**. Read
+Status: **implemented locally; full-run plus focused-repair validation recorded**. Read
 [`../agent-workflow.md`](../agent-workflow.md) and [`../handoff.md`](../handoff.md).
+
+## Current implementation - 3 October 2026
+
+Execution and AI use a shared physical-stock/capacity/payout contract. Deferred admission certifies all committed market legs and the return before loading. Streaming route costs include handling and round-trip travel; observed local non-owned traffic supplies a conservative uncertain risk haircut. Quotes invalidate on stock, ownership, route, port, research and treaty changes.
+
+The user resumed this plan and requested one combined test run with the remaining tuneups and lobby fixes. See [combined batch evidence](../Evidence/remaining-five-combined-validation.md) for results and qualification limits.
 
 ## Dependencies and ownership
 

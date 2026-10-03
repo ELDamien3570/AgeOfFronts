@@ -1,3 +1,4 @@
+import { retainSquads } from "./UnitFixtures";
 import { describe, expect, it } from "vitest";
 import { GameMapImpl } from "../../src/core/game/GameMap";
 import { technologyAt } from "../../src/skirmish/content/Technology";
@@ -69,20 +70,20 @@ describe("flat troop armour and authored tier superiority", () => {
         expect(freshDps, "full-strength effective DPS").toBeGreaterThan(oldDps);
         const fresh = m.squads.find((s) => s.playerId === 1)!,
           old = m.squads.find((s) => s.playerId === 2)!;
-        m.squads.splice(0, m.squads.length, fresh, old);
+        retainSquads(m, [fresh, old]);
         for (const [s, definition, x] of [
           [fresh, newer, 20],
           [old, older, 21],
         ] as const) {
-          s.kind = line;
-          s.definitionId = definition.id;
-          s.x = x * FIXED;
-          s.y = 20 * FIXED;
-          s.order = { type: "hold" };
-          s.path = [];
-          s.moved = false;
+          m.updateSquad(s.id, { kind: line });
+          m.updateSquad(s.id, { definitionId: definition.id });
+          m.updateSquad(s.id, { x: x * FIXED });
+          m.updateSquad(s.id, { y: 20 * FIXED });
+          m.updateSquad(s.id, { order: { type: "hold" } });
+          m.updateSquad(s.id, { path: [] });
+          m.updateSquad(s.id, { moved: false });
         }
-        old.xp = 20000;
+        m.updateSquad(old.id, { xp: 20000 });
         m.expansion!.progression.states[1].completed = [newer.technologyId];
         m.expansion!.progression.states[2].completed = [
           older.technologyId,
@@ -131,11 +132,11 @@ describe("flat troop armour and authored tier superiority", () => {
       });
     const source = m.squads[0],
       target = m.squads.find((s) => s.playerId === 2)!;
-    m.squads.splice(0, m.squads.length, source, target);
-    source.x = 10 * FIXED;
-    source.y = target.y = 20 * FIXED;
-    target.x = 20 * FIXED;
-    target.definitionId = "bronzeage-infantry";
+    retainSquads(m, [source, target]);
+    m.updateSquad(source.id, { x: 10 * FIXED });
+    m.updateSquad(source.id, { y: 20 * FIXED }); m.updateSquad(target.id, { y: 20 * FIXED });
+    m.updateSquad(target.id, { x: 20 * FIXED });
+    m.updateSquad(target.id, { definitionId: "bronzeage-infantry" });
     const profile = {
       ...defaultUnit("infantry").attack,
       channel: "ranged" as const,
@@ -154,7 +155,7 @@ describe("flat troop armour and authored tier superiority", () => {
       profile,
       profile.damage,
     );
-    m.squads.splice(0, 1); // Damage retains firing strength after the source dies.
+    for (const record of m.squads.slice(0, (0) + (1))) m.removeSquad(record.id); // Damage retains firing strength after the source dies.
     m.tick++;
     m.expansion!.battle.advanceProjectiles();
     expect(target.troops).toBe(1000 - expected);

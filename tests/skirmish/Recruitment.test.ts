@@ -26,7 +26,7 @@ function game() {
   });
   m.players[0].reserves = 100000;
   m.players[0].gold = 100000;
-  m.buildings.push({
+  m.addBuilding({
     id: 9000,
     playerId: 1,
     type: "barracks",
@@ -78,12 +78,9 @@ describe("authoritative recruitment queues", () => {
       const m = game();
       expect(train(m)).toBeNull();
       if (mode === "capture")
-        m.buildings.find((b) => b.id === 9000)!.playerId = 2;
+        m.updateBuilding((m.buildings.find((b) => b.id === 9000)!).id, { playerId: 2 });
       else
-        m.buildings.splice(
-          m.buildings.findIndex((b) => b.id === 9000),
-          1,
-        );
+        m.removeBuilding(m.buildings[m.buildings.findIndex((b) => b.id === 9000)].id);
       m.step();
       expect(m.recruitment.jobs).toHaveLength(0);
       expect(m.players[0].gold).toBe(100000);
@@ -137,8 +134,8 @@ describe("authoritative recruitment queues", () => {
         cost: {},
         totalTicks,
       });
-    m.recruitment.jobs[0].remainingTicks = 80;
-    m.recruitment.jobs[1].remainingTicks = 20;
+    m.recruitment.updateJob(m.recruitment.jobs[0].id, {remainingTicks: 80});
+    m.recruitment.updateJob(m.recruitment.jobs[1].id, {remainingTicks: 20});
     const vm = new RecruitmentQueueViewModel(m.snapshot());
     expect(vm.entries).toHaveLength(3);
     expect(vm.entries[0]).toMatchObject({
@@ -151,7 +148,7 @@ describe("authoritative recruitment queues", () => {
   });
   it("distributes automatic batches across eligible barracks while preserving explicit producer orders", () => {
     const m = game();
-    m.buildings.push({ ...m.buildings.find((b) => b.id === 9000)!, id: 9001 });
+    m.addBuilding({ ...m.buildings.find((b) => b.id === 9000)!, id: 9001 });
     for (let i = 0; i < 5; i++)
       expect(
         m.applyCommand({
@@ -192,7 +189,7 @@ describe("authoritative recruitment queues", () => {
       [9021, "airstrip", m.players[0].base],
     ] as const) {
       m.owners[tile] = 1;
-      m.buildings.push({
+      m.addBuilding({
         id,
         type,
         tile,

@@ -1,0 +1,12 @@
+
+ RUN  v4.1.11 C:/Users/Damien/.codex/worktrees/optimization-roadmap/AgeOfFronts
+
+Match executor operation failed advance Error: Match command batch exceeds its budget
+    at <anonymous> (C:\Users\Damien\.codex\worktrees\optimization-roadmap\AgeOfFronts\src\skirmish\multiplayer\infrastructure\serverMatchWorker.ts:234:21)
+Match executor operation failed advance Error: Invalid match advance
+    at <anonymous> (C:\Users\Damien\.codex\worktrees\optimization-roadmap\AgeOfFronts\src\skirmish\multiplayer\infrastructure\serverMatchWorker.ts:232:21)
+
+ Test Files  9 passed (9)
+      Tests  69 passed (69)
+   Start at  00:53:15
+   Duration  48.10s (transform 5.94s, setup 0ms, import 9.73s, tests 33.47s, environment 1.30s)

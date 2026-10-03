@@ -1,3 +1,4 @@
+import { retainSquads } from "./UnitFixtures";
 import { describe, expect, it } from "vitest";
 import { GameMapImpl } from "../../src/core/game/GameMap";
 import { UnitPresentation } from "../../src/skirmish/client/UnitPresentation";
@@ -21,17 +22,17 @@ function fixture(id = "bronzeage-siege") {
   const unit = m.squads.find((s) => s.playerId === 1)!,
     enemy = m.squads.find((s) => s.playerId === 2)!;
   m.owners.fill(0); // Neutral occupation arena, independent of random camp positions.
-  m.squads.splice(0, m.squads.length, unit, enemy);
-  unit.definitionId = id;
-  unit.kind = UNIT.get(id)!.line;
-  unit.x = 30.5 * FIXED;
-  unit.y = 20.5 * FIXED;
-  enemy.x = 65.5 * FIXED;
-  enemy.y = 40.5 * FIXED;
+  retainSquads(m, [unit, enemy]);
+  m.updateSquad(unit.id, { definitionId: id });
+  m.updateSquad(unit.id, { kind: UNIT.get(id)!.line });
+  m.updateSquad(unit.id, { x: 30.5 * FIXED });
+  m.updateSquad(unit.id, { y: 20.5 * FIXED });
+  m.updateSquad(enemy.id, { x: 65.5 * FIXED });
+  m.updateSquad(enemy.id, { y: 40.5 * FIXED });
   for (const s of m.squads) {
-    s.order = { type: "hold" };
-    s.path = [];
-    s.queuedOrders = [];
+    m.updateSquad(s.id, { order: { type: "hold" } });
+    m.updateSquad(s.id, { path: [] });
+    m.updateSquad(s.id, { queuedOrders: [] });
   }
   return { m, unit, enemy, tile: m.tileOf(unit) };
 }
@@ -42,7 +43,7 @@ function building(
   y: number,
   health = 1200,
 ): Building {
-  const b = {
+  const b = m.addBuilding({
     id: m.allocateId(),
     playerId: 2,
     type,
@@ -51,8 +52,8 @@ function building(
     age: "StoneAge" as const,
     health,
     maxHealth: health,
-  };
-  m.buildings.push(b);
+  });
+
   return b;
 }
 
@@ -80,12 +81,12 @@ describe("slow assault occupation", () => {
   it("denies accelerated capture under resistance from a noncapturing enemy unit", () => {
     const { m, enemy, tile } = fixture();
     m.owners[tile] = 2;
-    enemy.definitionId = "modern-launcher";
-    enemy.x = 35.5 * FIXED;
-    enemy.y = 20.5 * FIXED;
+    m.updateSquad(enemy.id, { definitionId: "modern-launcher" });
+    m.updateSquad(enemy.id, { x: 35.5 * FIXED });
+    m.updateSquad(enemy.id, { y: 20.5 * FIXED });
     for (let i = 0; i < 4; i++) m.step();
     expect(m.owners[tile]).toBe(2);
-    enemy.embarkedOn = 999;
+    m.updateSquad(enemy.id, { embarkedOn: 999 });
     m.step();
     expect(m.owners[tile]).toBe(1);
   });
@@ -94,10 +95,10 @@ describe("slow assault occupation", () => {
     (type) => {
       const { m, tile } = fixture();
       const b = building(m, type, 35, 20);
-      b.nextAttackTick = 1000; // Isolate occupation resistance from lethal gunfire.
+      m.updateBuilding((b).id, { nextAttackTick: 1000 }); // Isolate occupation resistance from lethal gunfire.
       for (let i = 0; i < 4; i++) m.step();
       expect(m.owners[tile]).toBe(0);
-      b.health = 0;
+      m.updateBuilding((b).id, { health: 0 });
       m.step();
       expect(m.owners[tile]).toBe(1);
     },
@@ -112,8 +113,8 @@ describe("slow assault occupation", () => {
     const tile = m.map.ref(33, 20);
     for (let i = 0; i < 4; i++) m.step();
     expect(m.owners[tile]).toBe(0);
-    a.health = 0;
-    b.health = 0;
+    m.updateBuilding((a).id, { health: 0 });
+    m.updateBuilding((b).id, { health: 0 });
     forts.barriers[0].health = 0;
     for (let i = 0; i < 4; i++) m.step();
     expect(m.owners[tile]).toBe(1);
@@ -137,7 +138,7 @@ describe("structural damage and firing presentation", () => {
         20,
         2000,
       );
-      unit.structureTarget = { buildingId: b.id };
+      m.updateSquad(unit.id, { structureTarget: { buildingId: b.id } });
       const encoder = new SnapshotEncoder(),
         decoder = new SnapshotDecoder();
       decoder.decode(encoder.encode(m.snapshot()));
@@ -160,8 +161,8 @@ describe("structural damage and firing presentation", () => {
   it("faces building and nearest wall targets, preserving the authoritative shot heading during recovery", () => {
     const { m, unit } = fixture("modern-siege");
     const b = building(m, "city", 35, 20);
-    unit.structureTarget = { buildingId: b.id };
-    unit.fighting = true;
+    m.updateSquad(unit.id, { structureTarget: { buildingId: b.id } });
+    m.updateSquad(unit.id, { fighting: true });
     const presentation = new UnitPresentation(),
       before = JSON.stringify(m.snapshot());
     presentation.update(m.snapshot());
@@ -177,14 +178,14 @@ describe("structural damage and firing presentation", () => {
       0,
       unit.definitionId,
     );
-    unit.lastAttackTick = m.tick;
-    unit.moved = true;
+    m.updateSquad(unit.id, { lastAttackTick: m.tick });
+    m.updateSquad(unit.id, { moved: true });
     presentation.update(m.snapshot());
     expect(presentation.firingAngle(unit.id, m.tick)).toBeCloseTo(-Math.PI);
     expect(presentation.firingAngle(unit.id, m.tick + 100)).toBeCloseTo(
       -Math.PI / 2,
     );
-    unit.structureTarget = { barrierId: 500 };
+    m.updateSquad(unit.id, { structureTarget: { barrierId: 500 } });
     m.expansion!.fortifications.barriers.push({
       id: 500,
       a: 1,

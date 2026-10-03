@@ -1,4 +1,6 @@
+import { DEFAULT_AI_POLICIES } from "../content/AiPolicies";
 let localPlayerId = 1;
+let diagnosticSeed: number | undefined;
 import { OnlineMatchSession } from "./OnlineMatchSession";
 import { RuntimeDiagnostics } from "../RuntimeDiagnostics";
 const browserDiagnostics = new RuntimeDiagnostics();
@@ -107,6 +109,7 @@ document.querySelector<HTMLDivElement>("#app")!.innerHTML = `
 
   ${empireMarkup()}
 
+  <div id="toast" role="status" class="toast" hidden></div>
   <main class="battlefield" aria-label="Battlefield">
 
     <canvas id="battlefield" aria-label="Map with selectable troop squads" tabindex="0"></canvas>
@@ -118,7 +121,7 @@ document.querySelector<HTMLDivElement>("#app")!.innerHTML = `
 
     <div id="result" class="result" hidden><div><span class="eyebrow">SKIRMISH COMPLETE</span><h2 id="result-title"></h2><p id="result-description"></p><button id="play-again" class="primary">Play again</button></div></div>
 
-    <div id="toast" role="status" class="toast" hidden></div><div id="placement-hint" class="placement-hint" hidden></div>
+    <div id="placement-hint" class="placement-hint" hidden></div>
 
     <div class="map-context"><div class="map-badge"><span class="live-dot"></span><span id="map-name">Loading battlefield…</span></div><div class="terrain-legend"><span><i class="plains"></i>Plains · fast</span><span><i class="hills"></i>Highlands · slower</span><span><i class="mountains"></i>Mountains · slowest</span><span id="hover-terrain"></span></div></div>
 
@@ -507,7 +510,7 @@ async function start(): Promise<void> {
 
       paused = message.paused;
 
-      renderer.update(snapshot);
+      browserDiagnostics.measure("presentation", () => renderer.update(snapshot!));
 
       groups.prune(snapshot);
 
@@ -527,10 +530,14 @@ async function start(): Promise<void> {
       if (snapshot.winner !== null) showResult(snapshot.winner);
     };
 
-    const seed = Math.floor(Math.random() * 0x7fffffff);
+    const requestedSeed = onlineQuery.has("diagnostics") && onlineQuery.has("seed") ? Number(onlineQuery.get("seed")) : NaN;
+    const seed = Number.isSafeInteger(requestedSeed) && requestedSeed >= 0 && requestedSeed <= 0x7fffffff
+      ? requestedSeed : Math.floor(Math.random() * 0x7fffffff);
+    diagnosticSeed = seed;
     const startingAge =
       (element<HTMLSelectElement>("starting-age")?.value as Age) || "StoneAge";
     const spawnOptions: MatchOptions = {
+      ...DEFAULT_AI_POLICIES,
       seed,
       aiCount: Number(element<HTMLSelectElement>("opponents").value),
       tribes: true,
@@ -553,6 +560,7 @@ async function start(): Promise<void> {
       resourceTerrain: loaded.resourceTerrain,
 
       options: {
+        ...DEFAULT_AI_POLICIES,
         seed,
 
         aiCount: Number(element<HTMLSelectElement>("opponents").value),
@@ -629,6 +637,7 @@ async function startOnlineMatch(): Promise<void> {
     });
     loading.append(title, detail, cancel);
   };
+  document.querySelector(".brand p")!.textContent = "Online match · server hosted";
   if (onlineSeat !== undefined && (!Number.isSafeInteger(onlineSeat) || onlineSeat < 1)) {
     showOnlineLoading("This empire link is invalid. Choose an available empire from the lobby.", true);
     return;
@@ -666,7 +675,6 @@ async function startOnlineMatch(): Promise<void> {
     },
     (id) => localPlayerId = id,
     (message) => {
-      document.querySelector(".brand p")!.textContent = message;
       if (failure || (!session.commandsAvailable && !renderer.spawn))
         showOnlineLoading(message, failure);
     },
@@ -698,7 +706,7 @@ async function startOnlineMatch(): Promise<void> {
     snapshot.localPlayerId = localPlayerId;
     snapshot.disconnectedPlayerIds = session.disconnectedPlayerIds;
     paused = event.data.paused;
-    renderer.update(snapshot);
+    browserDiagnostics.measure("presentation", () => renderer.update(snapshot!));
     groups.prune(snapshot);
     updateHud();
     if (startingCamera) {
@@ -762,9 +770,10 @@ function updateHud(): void {
     element<HTMLButtonElement>(id).disabled = !recruitment.enabled;
   }
 
+  const empireVm = empireModel();
   for (const { kind: type } of CONSTRUCTION)
     element<HTMLButtonElement>(`build-${type}`).disabled =
-      !!empireModel()?.buildChoice(type).reason ||
+      !!empireVm?.buildChoice(type).reason ||
       player.eliminated ||
       snapshot.winner !== null;
 
@@ -775,8 +784,17 @@ function updateHud(): void {
   armyView.update(armyVm);
   if (armyVm.selectedArmy) element("selection-card").hidden = true;
 
-  if (snapshot.expansion) empire.update(empireModel()!);
+  if (empireVm) empire.update(empireVm);
 
+  updateRoster();
+  } finally { browserDiagnostics.record("hud", performance.now() - started); }
+}
+
+// The view consumes current facts when opened, including same-tick command
+// publications. Hidden foreign-faction details need no formatting or DOM work.
+element("roster-toggle").addEventListener("click", () => updateRoster());
+function updateRoster(): void {
+  if (!snapshot || element("roster-popover").hidden) return;
   // One pass over squads instead of a filter per faction (O(players x squads)).
   const squadStats = new Map<number, { count: number; troops: number }>();
   for (const s of snapshot.squads) {
@@ -815,7 +833,6 @@ function updateHud(): void {
       (label) => ({ playerId: Number(label.dataset.campLoss), label }),
     );
   }
-  } finally { browserDiagnostics.record("hud", performance.now() - started); }
 }
 let lastRosterHtml = "";
 
@@ -1149,7 +1166,9 @@ for (const { kind } of LAND_RECRUITMENT)
 element("replenish").addEventListener("click", replenish);
 
 function placementRejection(type: BuildingType, tile: number): string | null {
-  return renderer.buildPreview?.rejection(type,tile)??"No active match";
+  const preview = renderer.buildPreview;
+  // A null rejection means the site is valid; only a missing preview has no match.
+  return preview ? preview.rejection(type, tile) : "No active match";
 }
 
 function placeBuilding(type: BuildingType, age?: Age): void {
@@ -1409,6 +1428,8 @@ canvas.addEventListener("pointerup", (event) => {
 
     if (tile !== null) {
       if (placementType) {
+        const rejection = placementRejection(placementType, tile);
+        if (rejection) { notify(rejection); return; }
         const now = performance.now();
         if (now - lastPlacementTime >= 80) {
           lastPlacementTime = now;
@@ -1921,9 +1942,15 @@ function frame(now: number): void {
   if (pan.x || pan.y) renderer.pan(pan.x, pan.y);
   if (renderer.draw(now, speed, paused)) updateCampLossLabels(now);
   browserDiagnostics.record("frame", performance.now() - started);
-  if (worker instanceof OnlineMatchSession && snapshot && now >= nextClientDiagnosticsAt) {
+  if (snapshot && now >= nextClientDiagnosticsAt && (worker instanceof OnlineMatchSession || onlineQuery.has("diagnostics"))) {
     nextClientDiagnosticsAt = now + 30_000;
-    console.info(JSON.stringify({ event: "browser-runtime-diagnostics", ...worker.runtimeDiagnostics() }));
+    const heap = (performance as Performance & { memory?: { usedJSHeapSize: number; totalJSHeapSize: number } }).memory;
+    console.info(JSON.stringify({ event: "browser-runtime-diagnostics", tick: snapshot.tick, seed: diagnosticSeed,
+      browser: { userAgent: navigator.userAgent, width: window.innerWidth, height: window.innerHeight },
+      map: element<HTMLSelectElement>("map").value, timings: browserDiagnostics.snapshot(),
+      heap: heap ? { used: heap.usedJSHeapSize, total: heap.totalJSHeapSize } : undefined,
+      ...(worker instanceof OnlineMatchSession ? worker.runtimeDiagnostics() : {}),
+      clientTimings: browserDiagnostics.snapshot() }));
   }
 
   requestAnimationFrame(frame);

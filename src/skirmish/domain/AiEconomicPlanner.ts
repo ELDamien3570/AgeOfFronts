@@ -1,3 +1,5 @@
+import { researchUtility, usableNextAge, type ResearchOpportunity } from "./AiResearchUtility";
+import { AI_DOCTRINES } from "../content/AiDoctrines";
 import type { BuildingType, Command } from "../Protocol";
 import {
   buildingCost,
@@ -52,6 +54,7 @@ export function economicCandidates(
   demand: AiProductionDemand,
   speed: 1 | 2 | 3,
   investments: readonly AiInvestment[],
+  opportunity: ResearchOpportunity = { resources: [], usableCoast: false, seaThreat: 0, goods: 0, protectedItems: {} },
 ): AiEconomicIntent[] {
   const candidates: AiEconomicIntent[] = [];
   const emit = (
@@ -79,7 +82,7 @@ export function economicCandidates(
         snapshot.threatTroops > snapshot.readyTroops / 2 && kind === "recruit"
           ? "emergency"
           : "growth",
-      score: Math.floor((benefit * 2400) / Math.max(2400, delay)) - opportunity,
+      score: Math.floor((benefit * 2400) / Math.max(2400, delay+(kind==="construct" && ["blacksmith","armory","arms-factory"].includes((command as {buildingType?:string}).buildingType??"") ? Math.min(2400,demand.timeToOutput??0)/4:0))) - opportunity,
       reason,
       earliestTick: snapshot.tick,
       expiresTick: snapshot.tick + 2400,
@@ -129,7 +132,7 @@ export function economicCandidates(
     const count = snapshot.buildings.filter((b) => b.type === site.type).length;
     const cost = buildingCost(site.type, snapshot.age, count),
       ticks = buildingTicks(site.type, count);
-    let value = site.objective;
+    let value = Math.floor(site.objective*(AI_DOCTRINES[personality.id].economy[site.type]??100)/100);
     if (site.type === "city")
       value +=
         reserveShortage > 0
@@ -280,13 +283,13 @@ export function economicCandidates(
     );
   }
   for (const tree of personality.researchOrder) {
-    const technology = TECHNOLOGIES.find(
-      (t) =>
-        t.tree === tree &&
-        !researchRejection(state, Number.MAX_SAFE_INTEGER, t.id, speed),
-    );
-    if (!technology) continue;
-    const survival = snapshot.threatTroops > snapshot.readyTroops ? 0 : 1500;
+    const eligible = TECHNOLOGIES.filter(t => t.tree === tree && !researchRejection(state, Number.MAX_SAFE_INTEGER, t.id, speed))
+      .map(technology => ({technology,utility:researchUtility(technology,snapshot,demand,opportunity)}))
+      .sort((a,b) => b.utility.benefit-a.utility.benefit || a.technology.slot-b.technology.slot);
+    const best = eligible.find(row=>row.utility.benefit>0);
+    if (!best) continue;
+    const {technology,utility} = best;
+    const survival = snapshot.threatTroops > snapshot.readyTroops && technology.tree !== "warfare" ? 0 : utility.benefit;
     const bias = personality.id === "scholar" ? 1600 : 0;
     emit(
       "research",
@@ -300,14 +303,15 @@ export function economicCandidates(
       survival +
         bias +
         Math.max(0, 600 - personality.researchOrder.indexOf(tree) * 200),
-      `research:${tree}`,
+      `research:${tree}:${utility.reason}`,
       researchTerms(technology, speed).ticks,
     );
   }
   if (
     !advanceRejection(state, Number.MAX_SAFE_INTEGER, speed) &&
     snapshot.threatTroops < snapshot.readyTroops &&
-    (!materialShortage || availableKits >= 2)
+    (!materialShortage || availableKits >= 2) &&
+    usableNextAge(snapshot, opportunity)
   ) {
     const terms = researchTerms(ADVANCES[AGES.indexOf(state.age)], speed);
     emit(
@@ -322,10 +326,12 @@ export function economicCandidates(
   }
   // Saving is selected by the coordinator when the best useful step exceeds
   // current liquid stock; gold here never grants forecast purchasing credit.
-  return candidates
-    .filter((c) => c.score > 0)
-    .sort(
-      (a, b) => b.score - a.score || (a.id < b.id ? -1 : a.id > b.id ? 1 : 0),
-    )
-    .slice(0, 4);
+  const ordered = candidates.filter(c => c.score > 0).sort(
+    (a,b) => b.score-a.score || (a.id < b.id ? -1 : a.id > b.id ? 1 : 0),
+  );
+  const choices = ordered.slice(0,4);
+  // A reserve-starved recruit must not hide every gold-only development option.
+  const development = ordered.find(c => c.kind === "research" || c.kind === "advance");
+  if (development && !choices.includes(development)) choices[choices.length-1] = development;
+  return choices;
 }

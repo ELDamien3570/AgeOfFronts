@@ -4,6 +4,12 @@ import { decodeHeightmap } from "../../src/skirmish/HeightmapMap";
 import { LandPaths, WaterPaths } from "../../src/skirmish/Pathfinding";
 import { Skirmish } from "../../src/skirmish/Simulation";
 import { LOBBY_MAPS } from "../../src/skirmish/client/lobby/MapCatalog";
+import { generateForestCover } from "../../src/skirmish/ForestGeneration";
+import { resourceTerrainData } from "../../src/skirmish/ResourceTerrain";
+import type { HeightmapId } from "../../src/skirmish/content/Maps";
+import { defaultLobbySettings } from "../../src/skirmish/lobby/LobbyDirectory";
+import { mapIdentity } from "../../src/skirmish/multiplayer/application/MapIdentity";
+import { loadServerMap } from "../../src/skirmish/multiplayer/infrastructure/ServerMap";
 
 function load(id: string, size: number) {
   const root = `resources/maps/${id}`;
@@ -25,7 +31,31 @@ function load(id: string, size: number) {
 }
 
 describe("Down Unda, updated Old World and Middle East imports", () => {
-  for (const id of ["down-unda", "old-world", "middle-east"]) {
+  for (const id of [
+    "down-unda",
+    "old-world",
+    "middle-east",
+  ] satisfies HeightmapId[]) {
+    it(`${id} loads identical solo and multiplayer world inputs at every size`, async () => {
+      for (const size of [250, 500, 1000] as const) {
+        const { loaded } = load(id, size);
+        const server = await loadServerMap(defaultLobbySettings(id, size));
+        expect(server.territoryIncomeScale).toBe(loaded.territoryIncomeScale);
+        expect(server.map.width).toBe(loaded.map.width());
+        expect(server.map.height).toBe(loaded.map.height());
+        expect(await mapIdentity(server.map)).toBe(
+          await mapIdentity({
+            width: loaded.map.width(),
+            height: loaded.map.height(),
+            terrain: loaded.terrain,
+            elevation: loaded.elevation,
+            forest: generateForestCover(loaded.map, loaded.environment!),
+            resourceTerrain: resourceTerrainData(loaded.map, loaded.environment!),
+          }),
+        );
+      }
+    });
+
     it(`${id} loads every size with navigable inland water and land-only biome fields`, () => {
       for (const size of [250, 500, 1000]) {
         const { manifest, loaded } = load(id, size);

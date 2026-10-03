@@ -1,5 +1,15 @@
 import type { PathTopology } from "./PathTopology";
 
+interface WorkspaceValues {
+  tile: Int32Array; parent: Int32Array; cost: Float64Array; score: Float64Array;
+  position: Int32Array; free: Int32Array;
+}
+export type PlanningWorkspaceCheckpoint =
+  | { empty: true; capacity?: number; free?: Int32Array }
+  | (WorkspaceValues & { empty: false; capacity?: number; freeCount: number } &
+    ({ sparse: true; slots: Int32Array } | { sparse?: false }));
+const ACTIVE_FIELDS = ["tile", "parent", "cost", "score", "position"] as const;
+
 /** One match-wide sparse search arena. JS lookup/heap/path containers are also
  * bounded by these slots; their runtime overhead is measured separately. */
 export class PlanningWorkspace {
@@ -50,7 +60,7 @@ export class PlanningWorkspace {
   release(slot: number): void {
     this.free[this.freeCount++] = slot;
   }
-  checkpoint() {
+  checkpoint(): PlanningWorkspaceCheckpoint {
     if (!this.used)
       return {
         empty: true as const,
@@ -58,19 +68,21 @@ export class PlanningWorkspace {
         // Preserve reused allocation order, but an untouched arena is implicit.
         free: this.pristine ? undefined : this.free.slice(),
       };
-    return structuredClone({
-      empty: false as const,
-      capacity: this.capacity,
-      tile: this.tile,
-      parent: this.parent,
-      cost: this.cost,
-      score: this.score,
-      position: this.position,
-      free: this.free,
-      freeCount: this.freeCount,
-    });
+    // Free order determines future slot identities. Inactive record values do
+    // not: omit them, and retain active records in stable numeric slot order.
+    const freeSlots = new Uint8Array(this.capacity);
+    for (let at = 0; at < this.freeCount; at++) freeSlots[this.free[at]] = 1;
+    const slots = new Int32Array(this.used);
+    let count = 0;
+    for (let slot = 0; slot < this.capacity; slot++) if (!freeSlots[slot]) slots[count++] = slot;
+    const values = { tile: new Int32Array(count), parent: new Int32Array(count), cost: new Float64Array(count),
+      score: new Float64Array(count), position: new Int32Array(count) };
+    for (const name of ACTIVE_FIELDS)
+      for (let at = 0; at < count; at++) values[name][at] = this[name][slots[at]];
+    return { empty: false, sparse: true, capacity: this.capacity, slots, ...values,
+      free: this.free.slice(0, this.freeCount), freeCount: this.freeCount };
   }
-  restore(saved: ReturnType<PlanningWorkspace["checkpoint"]>): void {
+  restore(saved: PlanningWorkspaceCheckpoint): void {
     if (saved.capacity !== undefined && saved.capacity !== this.capacity)
       throw new Error("Planning workspace size changed");
     if (saved.empty) {
@@ -84,25 +96,37 @@ export class PlanningWorkspace {
           this.free[i] = this.capacity - 1 - i;
       return;
     }
-    this.pristine = false;
-    for (const name of [
-      "tile",
-      "parent",
-      "cost",
-      "score",
-      "position",
-      "free",
-    ] as const) {
-      if (saved[name].length !== this.capacity)
-        throw new Error("Planning workspace size changed");
-      this[name].set(saved[name]);
-    }
     if (
       !Number.isInteger(saved.freeCount) ||
       saved.freeCount < 0 ||
       saved.freeCount > this.capacity
     )
       throw new Error("Invalid planning workspace free count");
+    if (saved.sparse) {
+      const count = this.capacity - saved.freeCount;
+      if (saved.slots.length !== count || saved.free.length !== saved.freeCount ||
+        ACTIVE_FIELDS.some(name => saved[name].length !== count)) throw new Error("Planning workspace size changed");
+      const partition = new Uint8Array(this.capacity);
+      for (const slot of saved.free) {
+        if (slot < 0 || slot >= this.capacity || partition[slot]) throw new Error("Invalid planning workspace partition");
+        partition[slot] = 1;
+      }
+      let previous = -1;
+      for (const slot of saved.slots) {
+        if (slot <= previous || slot >= this.capacity || partition[slot]) throw new Error("Invalid planning workspace partition");
+        previous = slot; partition[slot] = 1;
+      }
+      // Validate the entire partition before changing any live arena field.
+      for (const name of ACTIVE_FIELDS)
+        for (let at = 0; at < count; at++) this[name][saved.slots[at]] = saved[name][at];
+      this.free.set(saved.free);
+    } else {
+      // Explicit backward-compatible reader for the original full-buffer shape.
+      for (const name of [...ACTIVE_FIELDS, "free"] as const)
+        if (saved[name].length !== this.capacity) throw new Error("Planning workspace size changed");
+      for (const name of [...ACTIVE_FIELDS, "free"] as const) this[name].set(saved[name]);
+    }
+    this.pristine = false;
     this.freeCount = saved.freeCount;
   }
 }

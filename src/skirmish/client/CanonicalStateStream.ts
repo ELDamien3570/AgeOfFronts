@@ -14,6 +14,9 @@ export class CanonicalStateStream {
   private sequence = 0;
   private presented = 0;
   private resetSequence = 0;
+  private depositRevision = 0;
+  private projectedDepositRevision = -1;
+  private projectedDeposits: NonNullable<Snapshot["expansion"]>["deposits"] = [];
   private readonly dirty = new Map<number, number>();
   constructor(
     private readonly maxMapCells = 64_000_000,
@@ -37,6 +40,12 @@ export class CanonicalStateStream {
       cells > this.maxMapCells
     )
       throw new Error("Canonical map exceeds the decoded memory budget");
+    if(packet.expansionMode!==undefined && packet.expansionMode!=="full" && packet.expansionMode!=="delta")throw new Error("Invalid canonical metadata mode");
+    if (packet.entityMode !== undefined && packet.entityMode !== "full" && packet.entityMode !== "delta")
+      throw new Error("Invalid canonical entity mode");
+    for (const removed of [packet.removedSquads, packet.removedShips])
+      if (removed !== undefined && (!(removed instanceof Int32Array) || removed.length > MAX_SQUADS * 255))
+        throw new Error("Invalid canonical entity removals");
     if (!(packet.tiles instanceof Uint32Array) || packet.tiles.length % 2)
       throw new Error("Invalid canonical tile changes");
     if (
@@ -92,10 +101,33 @@ export class CanonicalStateStream {
         }
       }
     this.latest = this.decoder.decode(packet, false, false);
+    if (packet.reset || packet.expansion?.deposits || packet.expansion?.depositOwners?.length)
+      this.depositRevision++;
   }
   presentation(): { snapshot: Snapshot; canonicalSequence: number } {
+    return this.project(false);
+  }
+  /** Only for immediate synchronous postMessage. Its structured clone isolates
+   * recipients. Roads are replaced, never mutated by the decoder; deposit
+   * views are replaced on an explicit baseline/ownership revision. Neither
+   * fact buffer may be transferred, mutated or retained by the sender. */
+  presentationForTransfer(): { snapshot: Snapshot; canonicalSequence: number } {
+    return this.project(true);
+  }
+  private project(forTransfer: boolean): { snapshot: Snapshot; canonicalSequence: number } {
     if (!this.latest) throw new Error("Canonical state is unavailable");
-    const snapshot = structuredClone(this.latest);
+    const expansion = this.latest.expansion;
+    const snapshot = structuredClone(forTransfer && expansion
+      ? { ...this.latest, expansion: { ...expansion, roads: undefined, deposits: undefined } }
+      : this.latest) as Snapshot;
+    if (forTransfer && expansion) {
+      if (this.projectedDepositRevision !== this.depositRevision) {
+        this.projectedDeposits = expansion.deposits.map(deposit => ({ ...deposit }));
+        this.projectedDepositRevision = this.depositRevision;
+      }
+      snapshot.expansion!.roads = expansion.roads;
+      snapshot.expansion!.deposits = this.projectedDeposits;
+    }
     snapshot.changedTiles =
       this.resetSequence > this.presented
         ? undefined

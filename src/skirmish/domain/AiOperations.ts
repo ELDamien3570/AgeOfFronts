@@ -1,3 +1,5 @@
+import { forceReadiness } from "./AiForceReadiness";
+import { AI_DOCTRINES } from "../content/AiDoctrines";
 import { personalityOf } from "../content/AiPersonalities";
 import type { Player } from "../Protocol";
 import type { Expansion } from "./Expansion";
@@ -14,21 +16,33 @@ export interface AiOperation {
   cursor: number;
   candidate?: number;
   score: number;
+  readiness?:import("./AiForceReadiness").AiForceReadiness;
+  sleepKey?:string;
+  territorialRevision?:number;
 }
 /** Decision policy only. Never replaces Diplomacy.hostile or legal damage. */
 export class AiOperations {
   private readonly records = new Map<number, AiOperation>();
   revision = 0;
+  // Read-cache invalidation also observes refreshed threats, without restarting
+  // route jobs every time combat extends an existing retaliation window.
+  permissionRevision = 0;
   private work = 0;
+  private territorialRevision=0;
+  territoryChanged(oldOwner:number,newOwner:number):void{
+    this.territorialRevision++;
+    for(const id of [oldOwner,newOwner]){const record=this.records.get(id);if(record){record.sleepKey=undefined;record.territorialRevision=this.territorialRevision;record.nextThink=Math.min(record.nextThink,this.expansion.world.tick);}}
+  }
   constructor(private readonly expansion: Expansion) {}
   enabled(player: Player | undefined): boolean {
     return !!this.expansion.world.options?.aiWarPolicy && !!player?.ai && player.kind === "regular" && !player.eliminated;
   }
   state(playerId: number): Readonly<AiOperation> | undefined { return this.records.get(playerId); }
-  checkpoint() { return structuredClone({ records: [...this.records], revision: this.revision }); }
+  checkpoint() { return structuredClone({ records: [...this.records], revision: this.revision,territorialRevision:this.territorialRevision }); }
   restore(saved: ReturnType<AiOperations["checkpoint"]>): void {
     this.records.clear(); for (const [id, record] of structuredClone(saved.records)) this.records.set(id, record);
-    this.revision = saved.revision;
+    this.permissionRevision++;
+    this.revision = saved.revision;this.territorialRevision=saved.territorialRevision??0;
   }
   release(playerId: number): void { if (this.records.delete(playerId)) this.revision++; }
   private record(playerId: number): AiOperation {
@@ -48,6 +62,7 @@ export class AiOperations {
     const record = this.record(victim), threat = record.threats.find(t => t.rival === rival);
     if (threat) { threat.tile = tile; threat.until = world.tick + 600; }
     else { record.threats.push({ rival, tile, until: world.tick + 600 }); this.revision++; }
+    this.permissionRevision++;
     record.nextThink = Math.min(record.nextThink, world.tick);
   }
   /** Offensive permission and remembered defensive retaliation are separate. */
@@ -63,6 +78,15 @@ export class AiOperations {
     return record?.phase === "war" ? record.target : undefined;
   }
   /** Defensive pursuit remains local to observed aggression, not a free raid. */
+  /** Only this faction's actual entry permissions fence its route work. */
+  navigationRevision(playerId: number): string {
+    const record = this.records.get(playerId), tick = this.expansion.world.tick;
+    if (!record || !this.enabled(this.expansion.world.players.find(p => p.id === playerId))) return "unrestricted";
+    return JSON.stringify([
+      record.phase === "war" ? record.target : record.phase === "recovery" ? record.retreatFrom : null,
+      record.threats.filter(t => t.until >= tick).map(t => [t.rival, t.tile]),
+    ]);
+  }
   canEnter(playerId: number, rival: number, tile: number): boolean {
     if (!rival || rival === playerId || !this.expansion.diplomacy.hostile(playerId, rival)) return true;
     if (!this.enabled(this.expansion.world.players.find(p => p.id === playerId))) return true;
@@ -101,6 +125,9 @@ export class AiOperations {
         this.transition(player, r, "recovery"); continue;
       }
       if (tick < r.nextThink) continue;
+      const sleepKey=`${strength}:${player.land}:${this.expansion.progression.states[player.id]?.completed.length}:${this.expansion.progression.states[player.id]?.age}:${player.reserves>=1000}:${diplomacy.revision}:${r.territorialRevision??0}`;
+      if(r.phase==="peace" && !r.threats.length && r.sleepKey===sleepKey){r.nextThink=tick+200;continue;}
+      r.readiness=forceReadiness(this.expansion,player,profile.minimumRaidSquads);
       if (r.phase === "war") {
         if (strength < Math.max(2, Math.floor(profile.minimumRaidSquads / 2)) || tick - r.since >= 2400)
           this.transition(player, r, "recovery");
@@ -113,13 +140,13 @@ export class AiOperations {
         continue;
       }
       if (r.phase === "preparing") {
-        if (tick - r.since >= 400 && strength >= profile.minimumRaidSquads && !r.threats.some(t => t.rival !== r.target))
+        if (tick - r.since >= AI_DOCTRINES[profile.id].assemblyTicks+240 && strength >= profile.minimumRaidSquads && r.readiness.reason==="ready" && !r.threats.some(t => t.rival !== r.target))
           this.transition(player, r, "war", r.target);
         else if (tick - r.since >= 1200 || strength < 2) this.transition(player, r, "recovery");
         else r.nextThink = tick + 60;
         continue;
       }
-      if (r.threats.length || strength < profile.minimumRaidSquads || tick < profile.raidAfterTicks) {
+      if (r.threats.length || strength < profile.minimumRaidSquads || r.readiness.reason!=="ready" || tick < profile.raidAfterTicks) {
         r.nextThink = tick + 60 + player.id % 20; continue;
       }
       let slice = 0;
@@ -133,7 +160,7 @@ export class AiOperations {
       }
       if (r.cursor === world.players.length) {
         if (r.candidate !== undefined) this.transition(player, r, "preparing", r.candidate);
-        else { r.cursor = 0; r.score = Infinity; r.nextThink = tick + 60 + player.id % 20; }
+        else { r.cursor = 0; r.score = Infinity;r.sleepKey=sleepKey; r.nextThink = tick + 60 + player.id % 20; }
       }
     }
   }

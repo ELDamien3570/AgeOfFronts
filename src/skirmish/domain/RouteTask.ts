@@ -3,7 +3,9 @@ export interface ArmyRouteRequest {
   squadId: number;
   revision: number;
 }
+import type { DomainRouteTask } from "./DomainRoutePorts";
 export type MatchRouteTask =
+  | DomainRouteTask
   | { kind: "army"; request: ArmyRouteRequest }
   | { kind: "ship-admission"; admissionId: number; shipId: number; playerId: number }
   | {

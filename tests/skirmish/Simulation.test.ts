@@ -1,3 +1,4 @@
+import { retainSquads } from "./UnitFixtures";
 import fs from "node:fs";
 import { describe, expect, it } from "vitest";
 import { GameMapImpl } from "../../src/core/game/GameMap";
@@ -18,12 +19,12 @@ function create(terrain = 133, ai = false, seed = 42): Skirmish {
     runAi: ai,
   });
 }
-function place(squad: Skirmish["squads"][number], x: number, y: number): void {
-  squad.x = x * FIXED + FIXED / 2;
-  squad.y = y * FIXED + FIXED / 2;
-  squad.order = { type: "hold" };
-  squad.path = [];
-  squad.nextPathIndex = 0;
+function place(world: Skirmish, squad: Skirmish["squads"][number], x: number, y: number): void {
+  world.updateSquad(squad.id, { x: x * FIXED + FIXED / 2 });
+  world.updateSquad(squad.id, { y: y * FIXED + FIXED / 2 });
+  world.updateSquad(squad.id, { order: { type: "hold" } });
+  world.updateSquad(squad.id, { path: [] });
+  world.updateSquad(squad.id, { nextPathIndex: 0 });
 }
 function step(match: Skirmish, count: number): void {
   for (let i = 0; i < count; i++) match.step();
@@ -31,9 +32,9 @@ function step(match: Skirmish, count: number): void {
 function isolate(match: Skirmish): void {
   const a = match.squads.find((s) => s.playerId === 1)!;
   const b = match.squads.find((s) => s.playerId === 2)!;
-  match.squads.splice(0, match.squads.length, a, b);
-  place(a, 28, 20);
-  place(b, 55, 10);
+  retainSquads(match, [a, b]);
+  place(match, a, 28, 20);
+  place(match, b, 55, 10);
 }
 
 describe("land squad skirmish", () => {
@@ -107,11 +108,11 @@ describe("land squad skirmish", () => {
     match.owners[tile] = 0;
     step(match, 12);
     expect(match.progress[tile]).toBe(12);
-    place(match.squads[0], 10, 30);
+    place(match, match.squads[0], 10, 30);
     match.step();
     expect(match.progress[tile]).toBe(0);
-    place(match.squads[0], 28, 20);
-    place(match.squads[1], 32, 20);
+    place(match, match.squads[0], 28, 20);
+    place(match, match.squads[1], 32, 20);
     const contested = match.map.ref(30, 20);
     match.owners[contested] = 0;
     step(match, CAPTURE_TICKS + 5);
@@ -126,7 +127,7 @@ describe("land squad skirmish", () => {
     for (const match of [plains, hills, mountains]) {
       isolate(match);
       const squad = match.squads[0];
-      place(squad, 20, 20);
+      place(match, squad, 20, 20);
       expect(
         match.applyCommand({
           type: "order",
@@ -179,10 +180,10 @@ describe("land squad skirmish", () => {
   it("fights automatically and applies equal melee hits simultaneously", () => {
     const match = create();
     isolate(match);
-    place(match.squads[0], 28, 20);
-    place(match.squads[1], 29, 20);
-    match.squads[0].troops = 1;
-    match.squads[1].troops = 1;
+    place(match, match.squads[0], 28, 20);
+    place(match, match.squads[1], 29, 20);
+    match.updateSquad(match.squads[0].id, { troops: 1 });
+    match.updateSquad(match.squads[1].id, { troops: 1 });
     match.step();
     expect(match.squads).toHaveLength(0);
     expect(match.players.map((p) => p.losses)).toEqual([1, 1]);
@@ -205,7 +206,7 @@ describe("land squad skirmish", () => {
     const start = squad.x;
     step(match, 20);
     expect(squad.x).toBeGreaterThan(start);
-    match.squads.splice(match.squads.indexOf(target), 1);
+    for (const record of match.squads.slice(match.squads.indexOf(target), (match.squads.indexOf(target)) + (1))) match.removeSquad(record.id);
     match.step();
     expect(squad.order.type).toBe("hold");
   });
@@ -214,7 +215,7 @@ describe("land squad skirmish", () => {
     const match = create();
     const player = match.players[0];
     match.owners[player.base] = 2;
-    match.buildings[0].playerId = 2;
+    match.updateBuilding((match.buildings[0]).id, { playerId: 2 });
     expect(
       match.applyCommand({
         type: "recruit",
@@ -225,7 +226,7 @@ describe("land squad skirmish", () => {
     match.step();
     expect(player.eliminated).toBe(false);
     for (let i = match.squads.length - 1; i >= 0; i--)
-      if (match.squads[i].playerId === 1) match.squads.splice(i, 1);
+      if (match.squads[i].playerId === 1) for (const record of match.squads.slice(i, (i) + (1))) match.removeSquad(record.id);
     match.owners[player.base] = 2;
     match.step();
     expect(player.eliminated).toBe(true);

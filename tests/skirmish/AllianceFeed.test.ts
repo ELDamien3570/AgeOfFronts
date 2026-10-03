@@ -98,7 +98,8 @@ describe("world alliance logger", () => {
     expect(f.messages().slice(-1)[0]).toBe(
       "Moss Dominion declined an alliance with Blue Bay",
     );
-    f.match.tick = 1200; // AI recipient cooldown is shared across proposers.
+    f.match.tick = f.match.expansion!.diplomacy.aiPolicy.declinedPairTicks;
+    // A declined AI pair waits for the authored pair and proposer windows.
     f.action(2, 3, "offer");
     f.action(3, 2, "offer");
     expect(f.messages().slice(-1)[0]).toBe(

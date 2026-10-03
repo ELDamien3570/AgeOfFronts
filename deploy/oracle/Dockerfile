@@ -27,6 +27,8 @@ COPY --from=build /usr/src/app/resources ./resources
 COPY --from=build /usr/src/app/src ./src
 COPY --from=build /usr/src/app/tsconfig.json ./tsconfig.json
 COPY --from=build /usr/src/app/package.json ./package.json
+ARG SOURCE_REVISION
+ENV GIT_COMMIT=$SOURCE_REVISION
 ENV HOST=0.0.0.0 PORT=8080 NODE_ENV=production
 ENV STATIC_DIR=/usr/src/app/build/skirmish MULTIPLAYER_DB=/data/multiplayer.sqlite
 USER node

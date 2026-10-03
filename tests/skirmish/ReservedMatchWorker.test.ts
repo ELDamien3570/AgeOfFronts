@@ -29,6 +29,23 @@ const advance = (ticks: number, publish = true) => ({
 });
 
 describe("reserved authoritative worker", () => {
+  it("reuses exact baselines and invalidates same-tick controller changes", async () => {
+    const worker = new ReservedMatchWorker();
+    try {
+      await worker.request<MatchAdvance>(initialize);
+      const first = await worker.request<EncodedState>({type: "baseline"});
+      const second = await worker.request<EncodedState>({type: "baseline"});
+      expect(second).toEqual(first);
+      await worker.request({type: "set-controller", playerId: 1, ai: true});
+      const changed = await worker.request<EncodedState>({type: "baseline"});
+      expect(changed.hash).not.toBe(first.hash);
+      const state = new SnapshotDecoder().decode(await decodeState<SnapshotPacket>(changed));
+      expect(state.tick).toBe(0); expect(state.players[0].ai).toBe(true);
+      const update = await worker.request<MatchAdvance>(advance(1));
+      expect(update.diagnostics?.replication?.baselineCache).toEqual({hits: 1, misses: 2, retainedBytes: 0});
+    } finally { await worker.close(); }
+  }, 20_000);
+
   it("streams ordered coherent publications outside advance results and drains before join barriers", async () => {
     const worker = new ReservedMatchWorker(), publications: { tick: number; packet: EncodedState }[] = [];
     const unsubscribe = worker.onPublication(publication => publications.push(publication));
@@ -43,13 +60,13 @@ describe("reserved authoritative worker", () => {
       expect(publications.map(p => p.tick)).toEqual([1]);
       const packet = await decodeState<SnapshotPacket>(publications[0].packet);
       expect(packet.tick).toBe(1);
-      expect(packet.expansion!.progression[1].research.naval!.remainingTicks).toBe(599);
+      expect(packet.expansion!.progression![1].research.naval!.remainingTicks).toBe(599);
       decoder.decode(packet);
       const shared = decoder.decode(await decodeState<SnapshotPacket>(joined.packet));
       const baseline = new SnapshotDecoder().decode(await decodeState<SnapshotPacket>(joined.baseline));
       expect(shared.owners).toEqual(baseline.owners); expect(shared.squads).toEqual(baseline.squads);
       expect(shared.tick).toBe(2);
-      expect(baseline.expansion!.progression[1].research.naval!.remainingTicks).toBe(598);
+      expect(baseline.expansion!.progression![1].research.naval!.remainingTicks).toBe(598);
       await worker.request<MatchAdvance>(advance(3));
       await vi.waitFor(() => expect(publications.map(p => p.tick)).toEqual([1, 5]));
       expect((await decodeState<SnapshotPacket>(publications[1].packet)).tick).toBe(5);
@@ -200,12 +217,12 @@ describe("reserved authoritative worker", () => {
       });
       const packet = await decodeState<SnapshotPacket>(update.packet!);
       expect(
-        Object.values(packet.expansion!.progression[2].research).some(
+        Object.values(packet.expansion!.progression![2].research).some(
           (job) => job?.technologyId === "stoneage-shorecraft",
         ),
       ).toBe(true);
       expect(
-        Object.values(packet.expansion!.progression[1].research).some(
+        Object.values(packet.expansion!.progression![1].research).some(
           (job) => job?.technologyId === "stoneage-shorecraft",
         ),
       ).toBe(false);

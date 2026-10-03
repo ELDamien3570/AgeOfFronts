@@ -11,12 +11,12 @@ function fixture() {
   const match = new Skirmish(map, { seed: 42, aiCount: 1, tribes: false,
     runAi: false, ruleset: "ages-v1" });
   match.owners.fill(1);
-  match.buildings.length = 0;
+  for (const building of match.buildings) match.removeBuilding(building.id);
   match.players[0].gold = 1e6;
   const state = match.expansion!.progression.states[1];
   state.completed = TECHNOLOGIES.map(t => t.id);
-  match.expansion!.supply.deposits.splice(0, Infinity,
-    ...(["stone", "copper", "tin", "ironOre", "oil"] as Resource[]).map((resource, id) => ({
+  match.expansion!.supply.replaceDeposits(
+    (["stone", "copper", "tin", "ironOre", "oil"] as Resource[]).map((resource, id) => ({
       id: id + 1, tile: map.ref(20 + id * 5, 20), resource, owner: 1, yieldPerSecond: 1,
     })));
   return { match, map, state, deposits: match.expansion!.supply.deposits };

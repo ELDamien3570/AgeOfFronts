@@ -29,7 +29,8 @@ interface Theater {
   ships: Set<number>;
   jobs: Set<number>;
 }
-type Registry = "buildings" | "ships" | "jobs";
+type RegistryValues = {buildings:Building;ships:Ship;jobs:RecruitmentJob};
+type Registry = keyof RegistryValues;
 
 /** One shared, resumable entity pass, plus O(1) authoritative mutation hooks.
  * Ports use the SAME first navigable neighbour as normal ship production.
@@ -198,6 +199,8 @@ export class AiNavalFacts {
       .find((t) => this.world.waterPaths.walkable(t));
     return tile === undefined ? 0 : this.world.waterPaths.component[tile];
   }
+  forgetBuilding(id: number): void { this.remove("buildings", id); }
+  forgetShip(id: number): void { this.remove("ships", id); }
   observeBuilding(building: Building): void {
     const sea = this.portSea(building);
     if (!sea || (building.health ?? 1) <= 0) {
@@ -352,7 +355,7 @@ export class AiNavalFacts {
     };
     return {
       ...read,
-      value: read.id === undefined ? undefined : this[kind].get(read.id)?.ref,
+      value: (read.id === undefined ? undefined : this[kind].get(read.id)?.ref) as RegistryValues[K] | undefined,
     };
   }
   readOwnedBuilding(owner: number, cursor?: number | null) {

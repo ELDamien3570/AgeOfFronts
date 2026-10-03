@@ -5,24 +5,32 @@ import { AiProductionDependencies } from "./AiProductionDependencies";
 import { AGES, type Inventory, type UnitDefinition } from "./Definitions";
 import { unitRefitCost } from "./Refitting";
 
+export interface AiDemandPreparation {equipment:Inventory;units:Partial<Record<UnitDefinition["role"],number>>;quote:import("./AiProductionDependencies").AiDependencyQuote;availabilityDeferred:boolean;}
 export interface AiProductionDemand {
+  planning?:AiDemandPreparation;
   equipment: Inventory;
   materials: Inventory;
   units: Partial<Record<UnitDefinition["role"], number>>;
   deferred?: boolean;
+  bottlenecks?:readonly {item:string;reason:import("./AiProductionDependencies").AiBottleneckReason}[];
+  timeToOutput?:number;
 }
 export function militaryDemand(
   snapshot: AiEconomicSnapshot,
   personality: AiPersonality,
   renewable: ReadonlySet<string>,
   replacements = 0,
+  protectedStock:Readonly<Inventory>={},
+  allowance=256,
+  saved?:AiDemandPreparation,
 ): AiProductionDemand {
-  const dependencies = new AiProductionDependencies(snapshot, renewable);
+  const dependencies = new AiProductionDependencies(snapshot, renewable,protectedStock);
   const result: AiProductionDemand = {
     equipment: {},
     materials: {},
     units: {},
   };
+  if(!saved){
   const total = Math.min(
     snapshot.cap,
     Math.max(
@@ -95,7 +103,12 @@ export function militaryDemand(
     for (const [id, n] of Object.entries(unitRefitCost(target).items ?? {}))
       result.equipment[id] = (result.equipment[id] ?? 0) + n;
   }
-  result.materials = dependencies.materials(result.equipment);
-  if (dependencies.deferred) result.deferred = true;
+  }
+  const preparation=saved??{equipment:result.equipment,units:result.units,quote:dependencies.beginMaterials(result.equipment),availabilityDeferred:dependencies.deferred};
+  result.equipment=preparation.equipment;result.units=preparation.units;
+  dependencies.stepMaterials(preparation.quote,allowance);
+  result.materials=preparation.quote.materials;result.bottlenecks=preparation.quote.reasons;result.timeToOutput=preparation.quote.ticks;
+  if(preparation.quote.phase!=="done"){result.planning=preparation;result.deferred=true;}
+  else if(preparation.availabilityDeferred||dependencies.deferred||preparation.quote.status==="deferred")result.deferred=true;
   return result;
 }

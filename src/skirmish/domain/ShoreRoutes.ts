@@ -1,11 +1,15 @@
+import { ShorePlanning } from "./ShorePlanning";
+import type { DomainRoutePorts } from "./DomainRoutePorts";
 import type { GameMap } from "../../core/game/GameMap";
 import type { Coast, CoastIndex } from "../CoastIndex";
 import type { LandPaths, WaterPaths } from "../Pathfinding";
 
 export interface ShoreLeg {
   departure: Coast;
-  arrival: Coast;
+  arrival?: Coast;
   waterPath: number[];
+  approachPath?:number[];
+  arrivalPath?:number[];
 }
 
 // Static component graph chooses the first voyage of a land/water itinerary.
@@ -22,6 +26,9 @@ export class ShoreRoutes {
     this.connections = coast.connections();
   }
 
+  createPlanner(ports:DomainRoutePorts,blocked:(tile:number,owner:number)=>boolean):ShorePlanning {
+    return new ShorePlanning(this.map,this.land,this.water,this.connections,ports,blocked);
+  }
   firstLeg(
     origin: number,
     destination: number,
@@ -29,6 +36,21 @@ export class ShoreRoutes {
   ): ShoreLeg | null {
     const from = this.land.component[origin],
       to = this.land.component[destination];
+    if (this.water.walkable(destination)) {
+      const link = this.connections.find(c => c.landComponent === from && c.waterComponent === this.water.component[destination]);
+      if (!link) return null;
+      const departures = [...link.edges].sort((a,b) =>
+        this.map.manhattanDist(origin,a.landTile)+this.map.manhattanDist(a.waterTile,destination) -
+        this.map.manhattanDist(origin,b.landTile)-this.map.manhattanDist(b.waterTile,destination) || a.landTile-b.landTile);
+      for (const departure of departures) {
+        if (blocked?.(departure.landTile)) continue;
+        const approachPath = this.land.find(origin,departure.landTile,blocked);
+        if (approachPath === null) continue;
+        const waterPath = this.water.find(departure.waterTile,destination);
+        if (waterPath !== null) return {departure,waterPath,approachPath};
+      }
+      return null;
+    }
     if (from < 0 || to < 0) return null;
     if (from === to) {
       let best: ShoreLeg | null = null,
@@ -48,7 +70,7 @@ export class ShoreRoutes {
           const candidate =
             this.map.manhattanDist(origin, leg.departure.landTile) +
             leg.waterPath.length +
-            this.map.manhattanDist(leg.arrival.landTile, destination);
+            this.map.manhattanDist(leg.arrival!.landTile, destination);
           if (candidate < cost) {
             best = leg;
             cost = candidate;

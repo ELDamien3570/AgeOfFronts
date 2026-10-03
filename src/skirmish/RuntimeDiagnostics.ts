@@ -94,7 +94,9 @@ export interface MatchDiagnostics {
   ticksAdvanced: number;
   payloadBytes: number;
   replication?: { pending: number; skipped: number; encoderMemory?: { heapUsed: number; external: number; arrayBuffers: number };
-    encoderTimings?: Partial<Record<RuntimePhase, TimingSummary>>; encoderRetainedBytes?: number; encoderFailureCause?: string; encodedTick?: number };
+    encoderTimings?: Partial<Record<RuntimePhase, TimingSummary>>; encoderRetainedBytes?: number; encoderFailureCause?: string; encodedTick?: number;
+    baselineCache?: {hits: number; misses: number; retainedBytes: number};
+    extraction?: {squadReads: number; shipReads: number; buildingReads: number; resourceReads: number; entityFallbacks: number} };
   entities: { squads: number; ships: number; buildings: number; traders: number; projectiles: number; recruitment: number };
   planner: { pending: number; oldestAge: number; limited: number; workspaceBytes: number; workspaceUsed: number; receipts: number;
     work?: number; completed?: number; superseded?: number; admissionDeferred?: number;
@@ -104,7 +106,7 @@ export interface MatchDiagnostics {
   memory: { heapUsed: number; heapTotal: number; external: number; arrayBuffers: number; processRss: number };
 }
 
-export const PLANNER_CALLERS = ["navigation", "admission", "ship-admission", "army", "trade", "shore", "defense", "other"] as const;
+export const PLANNER_CALLERS = ["navigation", "admission", "ship-admission", "army", "trade", "shore", "defense", "other", "strategy"] as const;
 export type PlannerCaller = (typeof PLANNER_CALLERS)[number];
 export interface PlannerCohort {
   playerId: number; caller: PlannerCaller; pending: number; oldestAge: number;
