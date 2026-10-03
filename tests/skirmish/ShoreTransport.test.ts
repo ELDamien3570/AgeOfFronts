@@ -61,8 +61,100 @@ function unlock(m: ReturnType<typeof make>) {
 function run(m: ReturnType<typeof make>, ticks = 2500) {
   for (let i = 0; i < ticks; i++) m.match.step();
 }
+function afloat(m:ReturnType<typeof make>) {
+  unlock(m);m.target=m.match.map.ref(31,45);expect(move(m)).toBeNull();
+  for(let i=0;i<3000&&!m.match.ships.some(s=>s.shoreTransfer?.phase==="afloat");i++)m.match.step();
+  const ship=m.match.ships.find(s=>s.shoreTransfer?.phase==="afloat")!;
+  expect(ship).toBeDefined();return ship;
+}
 
 describe("automatic researched shore transport", () => {
+  it.each([false,true])("a land sail order chooses the nearest reachable shore, unloads and continues inland (deferred=%s)",deferred=>{
+    const m=make(4,[30],false,deferred),ship=afloat(m),destination=m.match.map.ref(75,25);
+    const troops=m.own.reduce((sum,s)=>sum+s.troops,0);
+    expect(m.match.applyCommand({type:"sail",playerId:1,shipIds:[ship.id],tile:destination})).toBeNull();
+    for(let i=0;i<400 && ship.shoreTransfer?.phase!=="sailing";i++)m.match.step();
+    expect(ship.shoreTransfer?.landingTile).toBe(m.match.map.ref(33,25));
+    expect(ship.shoreTransfer?.destinationTile).toBe(destination);
+    run(m,2200);
+    expect(m.own.every(s=>s.embarkedOn===null&&m.match.map.x(m.match.tileOf(s))>65)).toBe(true);
+    expect(m.own.reduce((sum,s)=>sum+s.troops,0)).toBe(troops);
+    expect(m.match.ships).toHaveLength(0);
+  });
+  it("accepts a player's land redirect during the initial voyage but preserves AI crossing ownership",()=>{
+    const m=make(4,[30],false,true);unlock(m);m.target=m.match.map.ref(31,55);expect(move(m)).toBeNull();
+    for(let i=0;i<1800&&!m.match.ships.some(s=>s.shoreTransfer?.phase==="sailing");i++)m.match.step();
+    const ship=m.match.ships[0];expect(ship.shoreTransfer?.phase).toBe("sailing");
+    m.match.setAiController(1,true);
+    expect(m.match.applyCommand({type:"sail",playerId:1,shipIds:[ship.id],tile:m.match.map.ref(75,25)})).toContain("automatically");
+    m.match.setAiController(1,false);
+    expect(m.match.applyCommand({type:"sail",playerId:1,shipIds:[ship.id],tile:m.match.map.ref(75,25)})).toBeNull();
+    run(m,2500);expect(m.own.every(s=>s.embarkedOn===null&&m.match.map.x(m.match.tileOf(s))>65)).toBe(true);
+  });
+  it.each([false,true])("preserves a permanent transport hull after automatic landing (deferred=%s)",deferred=>{
+    const m=make(4,[30],false,deferred),ship=afloat(m);
+    m.match.updateShip(ship.id,{shoreTransfer:undefined});
+    expect(m.match.applyCommand({type:"sail",playerId:1,shipIds:[ship.id],tile:m.match.map.ref(75,25)})).toBeNull();
+    run(m,2500);
+    expect(m.own.every(s=>s.embarkedOn===null&&m.match.map.x(m.match.tileOf(s))>65)).toBe(true);
+    expect(m.match.ship(ship.id)).toBeDefined();expect(m.match.tileOf(ship)).toBe(m.match.map.ref(32,25));
+    expect(m.match.checkpoint().shorePlanning.landingVoyages).toHaveLength(0);
+  });
+  it("checkpoints a pending landing and reports its original command executed only after water admission",()=>{
+    const m=make(4,[30],false,true),ship=afloat(m);
+    const command={type:"sail" as const,playerId:1,shipIds:[ship.id],tile:m.match.map.ref(75,25)};
+    expect(m.match.commandApplications.apply("land",command).status).toBe("deferred");
+    for(let i=0;i<3;i++)m.match.step();
+    const restored=new Skirmish(m.match.map,m.match.options);restored.restore(m.match.checkpoint());
+    for(let i=0;i<2300;i++){m.match.step();restored.step();}
+    expect(restored.checkpoint()).toEqual(m.match.checkpoint());
+    expect(restored.commandApplications.apply("land",command).status).toBe("executed");
+    expect(restored.squads.filter(s=>s.playerId===1).every(s=>s.embarkedOn===null&&restored.map.x(restored.tileOf(s))>65)).toBe(true);
+  });
+  it("stop supersedes a pending landing and does not restart an automatic unload",()=>{
+    const m=make(4,[30],false,true),ship=afloat(m);
+    const command={type:"sail" as const,playerId:1,shipIds:[ship.id],tile:m.match.map.ref(75,25)};
+    expect(m.match.commandApplications.apply("land",command).status).toBe("deferred");
+    expect(m.match.applyCommand({type:"stop-ships",playerId:1,shipIds:[ship.id]})).toBeNull();
+    expect(m.match.commandApplications.apply("land",command).status).toBe("superseded");
+    run(m,500);expect(ship.destination).toBeNull();expect(ship.shoreTransfer?.phase).toBe("afloat");
+    expect(m.own.every(s=>s.embarkedOn===ship.id)).toBe(true);
+  });
+  it("an unreachable target preserves cargo and the current voyage",()=>{
+    const m=make(4,[30,55],false,true),ship=afloat(m),before=m.match.checkpoint();
+    expect(m.match.applyCommand({type:"sail",playerId:1,shipIds:[ship.id],tile:m.match.map.ref(75,25)})).toContain("No reachable coastline");
+    expect(m.match.checkpoint()).toEqual(before);
+  });
+  it("replacing an admitted land voyage with a water order retains cargo afloat",()=>{
+    const m=make(4,[30],false,true),ship=afloat(m);
+    expect(m.match.applyCommand({type:"sail",playerId:1,shipIds:[ship.id],tile:m.match.map.ref(75,25)})).toBeNull();
+    for(let i=0;i<400&&ship.shoreTransfer?.phase!=="sailing";i++)m.match.step();
+    expect(ship.shoreTransfer?.phase).toBe("sailing");
+    const water=m.match.map.ref(31,52);
+    expect(m.match.applyCommand({type:"sail",playerId:1,shipIds:[ship.id],tile:water})).toBeNull();
+    run(m,800);
+    expect(m.match.tileOf(ship)).toBe(water);expect(ship.shoreTransfer?.phase).toBe("afloat");
+    expect(m.own.every(s=>s.embarkedOn===ship.id)).toBe(true);
+  });
+  it("restores a permanent ship's committed landing itinerary",()=>{
+    const m=make(4,[30],false,true),ship=afloat(m);m.match.updateShip(ship.id,{shoreTransfer:undefined});
+    expect(m.match.applyCommand({type:"sail",playerId:1,shipIds:[ship.id],tile:m.match.map.ref(75,25)})).toBeNull();
+    for(let i=0;i<400&&m.match.checkpoint().shorePlanning.landingVoyages[0]?.[1].phase!=="sailing";i++)m.match.step();
+    expect(m.match.checkpoint().shorePlanning.landingVoyages[0]?.[1].phase).toBe("sailing");
+    const restored=new Skirmish(m.match.map,m.match.options);restored.restore(m.match.checkpoint());
+    for(let i=0;i<2300;i++){m.match.step();restored.step();}
+    expect(restored.checkpoint()).toEqual(m.match.checkpoint());expect(restored.ship(ship.id)).toBeDefined();
+    expect(restored.squads.filter(s=>s.playerId===1).every(s=>s.embarkedOn===null&&restored.map.x(restored.tileOf(s))>65)).toBe(true);
+  });
+  it("Shift land intent waits for a pending water waypoint before landing",()=>{
+    const m=make(4,[30],false,true),ship=afloat(m),water=m.match.map.ref(31,55);
+    expect(m.match.applyCommand({type:"sail",playerId:1,shipIds:[ship.id],tile:water})).toBeNull();
+    expect(ship.destination).toBeNull();
+    expect(m.match.applyCommand({type:"sail",playerId:1,shipIds:[ship.id],tile:m.match.map.ref(75,25),append:true})).toBeNull();
+    let visited=false;
+    for(let i=0;i<2500;i++){m.match.step();if(m.match.tileOf(ship)===water)visited=true;}
+    expect(visited).toBe(true);expect(m.own.every(s=>s.embarkedOn===null&&m.match.map.x(m.match.tileOf(s))>65)).toBe(true);
+  });
   it("returns real cargo to departure after landing permission is withdrawn during passage",()=>{
     const m=make(4,[30],false,true);unlock(m);m.match.options.aiWarPolicy=true;m.match.setAiController(1,true);
     let withdrawn=false;

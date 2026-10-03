@@ -2,7 +2,7 @@ import { describe, expect, it } from "vitest";
 import { updateSnapshotBuilding } from "./BuildingFixtures";
 import { GameMapImpl } from "../../src/core/game/GameMap";
 import { ControlGroups } from "../../src/skirmish/client/ControlGroups";
-import { hotkeyAction } from "../../src/skirmish/client/Controls";
+import { hotkeyAction, shipMoveCommand } from "../../src/skirmish/client/Controls";
 import {
   SkirmishViewModel,
   type SelectionState,
@@ -28,6 +28,20 @@ function match() {
     runAi: false,
   });
 }
+describe("ship right-click intent",()=>{
+  it("sends water orders for own ships and land orders only for loaded transports",()=>{
+    const m=match(),squad=m.squads.find(s=>s.playerId===1)!;
+    const ships=["transport","warship","transport"] as const;
+    const owned=ships.map((kind,i)=>m.addShip({id:m.allocateId(),playerId:1,kind,x:(i+10.5)*FIXED,y:3.5*FIXED,
+      health:100,destination:null,waypoints:[],path:[],nextPathIndex:0,fighting:false,boarding:null}));
+    const rival=m.addShip({...owned[0],id:m.allocateId(),playerId:2});
+    m.updateSquad(squad.id,{embarkedOn:owned[0].id});
+    const snapshot=m.snapshot(),selected=new Set([...owned,rival].map(s=>s.id));
+    expect(shipMoveCommand(snapshot,selected,1,900,false,false)).toEqual({type:"sail",playerId:1,shipIds:[owned[0].id],tile:900,append:false});
+    expect(shipMoveCommand(snapshot,selected,1,80,true,true)?.shipIds).toEqual(owned.map(s=>s.id));
+    expect(shipMoveCommand(snapshot,new Set([owned[1].id,owned[2].id,rival.id]),1,900,false,false)).toBeNull();
+  });
+});
 function selection(): SelectionState {
   return {
     selected: new Set(),

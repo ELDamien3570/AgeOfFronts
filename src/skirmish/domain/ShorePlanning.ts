@@ -40,6 +40,8 @@ interface Crossing {
   arrivalLink?: number;
   reachesDestination: boolean;
   waterDestination?: boolean;
+  waterOrigin?: boolean;
+  landing?: Coast;
   departures: RankingState<RankedEdge>;
   arrivals: RankingState<RankedEdge>;
   departureSearch?: CoastSearchState;
@@ -73,6 +75,7 @@ interface Crossing {
 export interface CrossingResult {
   status: "pending" | "complete" | "unreachable" | "limited" | "superseded";
   leg?: ShoreLeg;
+  landing?: Coast;
   reason?: string;
 }
 /** Shared immutable coast graph/rankings with per-owner dynamic permission
@@ -150,7 +153,9 @@ export class ShorePlanning {
     const from = this.land.component[origin],
       to = this.land.component[destination],
       waterDestination = this.water.walkable(destination),
-      departureLink = waterDestination ? this.pairLinks.get(`${from}:${this.water.component[destination]}`) : undefined;
+      waterOrigin = this.water.walkable(origin) && !waterDestination,
+      departureLink = waterDestination ? this.pairLinks.get(`${from}:${this.water.component[destination]}`) : undefined,
+      arrivalLink = waterOrigin ? this.pairLinks.get(`${to}:${this.water.component[origin]}`) : undefined;
     id = this.nextId++;
     s = {
       id,
@@ -169,20 +174,21 @@ export class ShorePlanning {
       head: 0,
       link: 0,
       next: 0,
-      reachesDestination: false,
+      reachesDestination: waterOrigin,
       ...(waterDestination ? {waterDestination:true,departureLink,departureSearch:coastSearch()} : {}),
+      ...(waterOrigin ? {waterOrigin:true,arrivalLink,arrivalSearch:coastSearch()} : {}),
       departures: ranking([]),
       arrivals: ranking([]),
       edge: 0,
       departure: 0,
       arrival: 0,
-      phase: waterDestination ? "departures" : from === to ? "links" : "graph",
+      phase: waterOrigin ? "arrivals" : waterDestination ? "departures" : from === to ? "links" : "graph",
       attempts: 0,
       retryAt: 0,
       arrivalReaches: new Map(),
       clients: new Set([client]),
     };
-    if (from < 0 || (waterDestination ? departureLink === undefined : to < 0)) {
+    if (waterOrigin ? arrivalLink === undefined : from < 0 || (waterDestination ? departureLink === undefined : to < 0)) {
       s.phase = "done";
       s.failure = "unreachable";
     }
@@ -192,6 +198,7 @@ export class ShorePlanning {
   }
   private result(s: Crossing): CrossingResult {
     if (s.phase !== "done") return { status: "pending" };
+    if (s.landing) return { status: "complete", landing: s.landing };
     return s.best
       ? { status: "complete", leg: s.best }
       : {
@@ -409,7 +416,7 @@ export class ShorePlanning {
         const departure=s.phase==="departures",ranked=departure?s.departures:s.arrivals;
         this.rankNext(s,departure);
         if(!ranked.rows.length&&!ranked.done)continue;
-        s.phase=departure&&!s.waterDestination?"arrivals":"approach";
+        s.phase=s.waterOrigin?"arrival":departure&&!s.waterDestination?"arrivals":"approach";
       } else if (s.phase === "approach") {
         const edge = s.departures.rows[s.departure]?.edge;
         if (!edge) {
@@ -432,6 +439,7 @@ export class ShorePlanning {
         const end = s.arrivals.rows[s.arrival]?.edge;
         if (!end) {
           if(s.arrivalSearch && !s.arrivals.done){this.rankNext(s,false);continue;}
+          if (s.waterOrigin) { s.phase = "done"; s.failure = "unreachable"; continue; }
           s.departure++;
           s.phase = "approach";
           continue;
@@ -455,6 +463,7 @@ export class ShorePlanning {
             continue;
           }
         }
+        if (s.waterOrigin) { s.landing = end; s.phase = "done"; continue; }
         s.phase = "water";
         s.outcome = undefined;
         s.path = undefined;
@@ -501,7 +510,7 @@ export class ShorePlanning {
     for (const [id, s] of structuredClone(saved?.jobs ?? [])) {
       // Older checkpoints may contain a partially collected whole-coast sort.
       // Restart only that ranking phase against the immutable spatial index.
-      if ((s.phase==="departures" || s.phase==="arrivals") && !s.departureSearch) {
+      if (!s.waterOrigin && (s.phase==="departures" || s.phase==="arrivals") && !s.departureSearch) {
         s.departures=ranking([]);s.arrivals=ranking([]);
         s.departureSearch=coastSearch();s.arrivalSearch=coastSearch();s.phase="departures";
       }

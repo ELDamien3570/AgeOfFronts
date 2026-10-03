@@ -497,7 +497,9 @@ export class Skirmish {
     });
     this.shipAdmission = new ShipMovementAdmission(map,this.waterPaths,{
       ship:id=>this.ship(id), tileOf:ship=>this.tileOf(ship),generation:id=>this.aiGeneration(id),
-      available:ship=>!this.player(ship.playerId)?.ai || (!ship.boarding && !["returning-to-dock","waiting-for-dock","repairing","returning-to-patrol"].includes(ship.repairState??"")),
+      available:ship=>(!ship.shoreTransfer || ["landing","afloat"].includes(ship.shoreTransfer.phase) ||
+        (!this.player(ship.playerId)?.ai && ship.shoreTransfer.phase!=="boarding")) &&
+        (!this.player(ship.playerId)?.ai || (!ship.boarding && !["returning-to-dock","waiting-for-dock","repairing","returning-to-patrol"].includes(ship.repairState??""))),
       request:(id,playerId,shipId,start,goal)=>this.routePlanner.request({key:`ship-admission:${id}:${shipId}`,start,goal,water:true,createdTick:this.tick,
         obstacleRevision:"water",context:{kind:"ship-admission",admissionId:id,playerId,shipId}}),
       cancel:(id,shipId)=>this.routePlanner.cancel(`ship-admission:${id}:${shipId}`),
@@ -540,7 +542,7 @@ export class Skirmish {
       },
     });
     this.movementAdmission.onEvent = event => this.commandApplications.observe("land", event);
-    this.shipAdmission.onEvent = event => this.commandApplications.observe("water", event);
+    this.shipAdmission.onEvent = event => {this.commandApplications.observe("water", event);this.shoreTransport?.observeSailing(event);};
     this.avoidance = new LocalAvoidance(map);
     this.passageTraffic = new PassageTraffic(map, this.paths);
     this.spatial = new SpatialGrid(
@@ -599,6 +601,17 @@ export class Skirmish {
         (!this.expansion?.operations.enabled(this.player(id)) || this.expansion.operations.state(id)?.phase!=="recovery" || this.owners[tile]===id),
       unload: (ship,tile) => this.unload(this.player(ship.playerId)!,ship.id,tile),
       unloadPrepared:(ship,members,tile)=>this.unloadPrepared(ship,members,tile),
+      sailForLanding:(ship,tile)=>{
+        if(this.options.deferredPlanning){
+          const rejection=this.shipAdmission.command(this.player(ship.playerId)!,[ship],tile,false,this.tick);
+          return {rejection,admissionId:rejection===null?this.shipAdmission.replacement(ship.id):undefined};
+        }
+        const path=this.waterPaths.find(this.tileOf(ship),tile);
+        if(path===null)return {rejection:"That coast cannot be reached by this transport"};
+        this.setShipVoyage(ship,tile,[this.tileOf(ship),...path],0,[]);
+        return {rejection:null};
+      },
+      sailingPending:ship=>this.shipAdmission.replacement(ship.id)!==undefined||this.shipAdmission.executing(ship.id),
       resume: (squad,tile) => {
         if(this.options.deferredPlanning&&this.paths.connected(this.tileOf(squad),tile)){this.movementAdmission.start(squad.playerId,[squad],tile,this.tick,undefined,this.player(squad.playerId)?.ai);return;}
         const completed = this.expansion?.progression.states[squad.playerId]?.completed ?? [];
@@ -816,7 +829,7 @@ export class Skirmish {
       command.type === "stop-ships" || command.type === "unload";
     if (shipIds.some(id => this.ships.some(s =>
       s.id === id && s.shoreTransfer &&
-      !(["landing", "afloat"].includes(s.shoreTransfer.phase) && landingControl))))
+      !(landingControl && (["landing", "afloat"].includes(s.shoreTransfer.phase) || (!player.ai && s.shoreTransfer.phase!=="boarding"))))))
       return "Shore transports complete their crossing automatically";
     if (player.kind === "tribe" && this.expansion && command.type === "build") {
       const limit = tribeBuildingLimit(command.buildingType, this.expansion.startingAge);
@@ -905,6 +918,7 @@ export class Skirmish {
         this.shipEntities.updateOwned(ship.id, { waypoints: [] });
         this.shipEntities.updateOwned(ship.id, { path: [] });
         this.shipEntities.updateOwned(ship.id, { nextPathIndex: 0 });
+        if(ship.shoreTransfer)this.shipEntities.updateOwned(ship.id,{shoreTransfer:{...ship.shoreTransfer,phase:"afloat"}});
         if (ship.kind === "warship") {
           this.shipEntities.updateOwned(ship.id, { patrolTile: null });
           this.shipEntities.updateOwned(ship.id, { repairPortId: null });
@@ -921,9 +935,11 @@ export class Skirmish {
     if (command.type === "unload") {
       const candidate = this.ship(command.shipId);
       const ship = candidate?.playerId === player.id ? candidate : undefined;
-      return ship?.shoreTransfer
+      const result=ship?.shoreTransfer
         ? this.shoreTransport.land(ship, command.tile, true)
         : this.unload(player, command.shipId, command.tile);
+      if(result===null && ship)this.shoreTransport.cancelVoyage(ship.id,"Manual unloading");
+      return result;
     }
     if (
       command.type !== "order" ||
@@ -1613,9 +1629,14 @@ export class Skirmish {
       ships.some((s) => !s || s.playerId !== player.id || s.refit)
     )
       return "Select your own ships";
-    if (!this.waterPaths.walkable(tile))
-      return "Ships sail on water; use Unload to land troops";
-    if(this.options.deferredPlanning && (ships as Ship[]).every(s=>!s.shoreTransfer || ["landing", "afloat"].includes(s.shoreTransfer.phase))){
+    if (!this.waterPaths.walkable(tile)){
+      if(player.ai)return "Ships sail on water; use Unload to land troops";
+      // Validate the complete landing selection before canceling any current route.
+      const result=this.shoreTransport.moveToLand(ships as Ship[],tile,append);
+      if(result===null&&!append)this.shipAdmission.cancel(ids,this.tick);
+      return result;
+    }
+    if(this.options.deferredPlanning && (ships as Ship[]).every(s=>!s.shoreTransfer || ["landing", "afloat"].includes(s.shoreTransfer.phase) || (!player.ai && s.shoreTransfer.phase!=="boarding"))){
       const result=this.shipAdmission.command(player,ships as Ship[],tile,append,this.tick);
       if(result===null&&!append)for(const ship of ships as Ship[])this.shoreTransport.cancelShip(ship.id);
       return result;
@@ -1635,7 +1656,7 @@ export class Skirmish {
       if (path === null) return "That water cannot be reached by this ship";
       planned.push({ ship, path });
     }
-    if(!append)this.shipAdmission.cancel(ids,this.tick);
+    if(!append){this.shipAdmission.cancel(ids,this.tick);for(const ship of ships as Ship[])this.shoreTransport.cancelShip(ship.id);}
     for (const { ship, path } of planned) {
       this.shipEntities.updateOwned(ship.id, { attackTargetId: null });
       this.cancelBoarding(ship);
@@ -1659,6 +1680,7 @@ export class Skirmish {
     this.shipEntities.updateOwned(ship.id, { waypoints: append });
     this.shipEntities.updateOwned(ship.id, { path: path });
     this.shipEntities.updateOwned(ship.id, { nextPathIndex: index });
+    this.shoreTransport?.voyageCommitted(ship,tile);
     if (ship.kind === "warship") {
       this.shipEntities.updateOwned(ship.id, { patrolTile: tile });
       this.shipEntities.updateOwned(ship.id, { repairPortId: null });

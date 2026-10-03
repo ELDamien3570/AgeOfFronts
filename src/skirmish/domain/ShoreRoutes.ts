@@ -21,13 +21,25 @@ export class ShoreRoutes {
     private readonly map: GameMap,
     private readonly land: LandPaths,
     private readonly water: WaterPaths,
-    coast: CoastIndex,
+    private readonly coast: CoastIndex,
   ) {
     this.connections = coast.connections();
   }
 
   createPlanner(ports:DomainRoutePorts,blocked:(tile:number,owner:number)=>boolean):ShorePlanning {
     return new ShorePlanning(this.map,this.land,this.water,this.connections,ports,blocked);
+  }
+  canLand(origin: number, destination: number): boolean {
+    return this.land.walkable(destination) && this.water.walkable(origin) &&
+      this.coast.candidates(this.land.component[destination], this.water.component[origin]).length > 0;
+  }
+  /** Legacy synchronous policy; multiplayer uses the shared resumable planner. */
+  nearestLanding(origin: number, destination: number, blocked: (tile: number) => boolean): Coast | undefined {
+    const edges = this.coast.candidates(this.land.component[destination], this.water.component[origin]);
+    const candidates = [...edges].sort((a, b) =>
+      this.map.manhattanDist(a.landTile, destination) - this.map.manhattanDist(b.landTile, destination) ||
+      a.landTile - b.landTile || a.waterTile - b.waterTile);
+    return candidates.find(edge => !blocked(edge.landTile) && this.land.find(edge.landTile, destination, blocked) !== null);
   }
   firstLeg(
     origin: number,

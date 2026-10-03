@@ -160,11 +160,16 @@ try{
     const invalidUnload=p.outcomes.find(o=>o.id===invalidUnloadId&&o.status==="rejected");
     if(invalidUnload.reason!=="Choose passable coastal land directly beside the transport")throw new Error("Unexpected water landing rejection: "+JSON.stringify(invalidUnload));
     if(p.snapshot.squads.find(s=>s.id===squad.id)?.embarkedOn!==boatId)throw new Error("Invalid landing lost cargo");
-    send(p,{type:"match-command",requestId:rid(),matchId,command:{type:"sail",playerId:p.manifest.playerId,shipIds:[boatId],tile:edge.waterTile}});
-    await wait(()=>{const b=p.snapshot.ships.find(s=>s.id===boatId);return b&&b.destination===null&&Math.floor(b.x/256)+Math.floor(b.y/256)*map.width()===edge.waterTile;},"manual afloat return",30000);
-    const unloadId=rid();send(p,{type:"match-command",requestId:unloadId,matchId,command:{type:"unload",playerId:p.manifest.playerId,shipId:boatId,tile:edge.landTile}});
-    await wait(()=>p.snapshot.squads.find(s=>s.id===squad.id)?.embarkedOn===null&&!p.snapshot.ships.some(s=>s.id===boatId),"physical manual landing",30000);
-    waterTransport={squadId:squad.id,boatId,commandTick,afloatTick,landedTick:p.tick,destination:goal,landing:edge.landTile,outcome,invalidUnload};
+    // A normal land right-click sends sail with the inland destination. The
+    // server chooses the coast, sails, safely unloads and resumes the ground leg.
+    const landingId=rid();send(p,{type:"match-command",requestId:landingId,matchId,command:{type:"sail",playerId:p.manifest.playerId,shipIds:[boatId],tile:originTile}});
+    await wait(()=>p.outcomes.some(o=>o.id===landingId&&["executed","rejected","superseded"].includes(o.status)),"automatic landing receipt",30000);
+    const landingOutcome=p.outcomes.find(o=>o.id===landingId&&["executed","rejected","superseded"].includes(o.status));
+    if(landingOutcome.status!=="executed")throw new Error("Land order failed: "+JSON.stringify(landingOutcome));
+    await wait(()=>p.snapshot.squads.find(s=>s.id===squad.id)?.embarkedOn===null&&!p.snapshot.ships.some(s=>s.id===boatId),"physical automatic landing",30000);
+    const landedTick=p.tick;
+    await wait(()=>{const s=p.snapshot.squads.find(s=>s.id===squad.id);return s&&Math.hypot(s.x-(map.x(originTile)+0.5)*256,s.y-(map.y(originTile)+0.5)*256)<512;},"inland continuation",60000);
+    waterTransport={squadId:squad.id,boatId,commandTick,afloatTick,landedTick,inlandTick:p.tick,destination:goal,landDestination:originTile,outcome,landingOutcome,invalidUnload};
     console.log(JSON.stringify({stage:"water-transport",waterTransport}));
   }
   const invalidId=rid();let badTile=p.snapshot.owners.findIndex(owner=>owner!==p.manifest.playerId);

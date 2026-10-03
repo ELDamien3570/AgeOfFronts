@@ -155,6 +155,9 @@ export class ShipMovementAdmission {
   executing(shipId: number): boolean {
     return this.executionByShip.has(shipId);
   }
+  replacement(shipId: number): number | undefined {
+    return this.replacementByShip.get(shipId);
+  }
   private index(admission: Admission): void {
     this.pending.set(admission.id, admission);
     const index = admission.execution
@@ -294,7 +297,6 @@ export class ShipMovementAdmission {
       ship.health > 0 &&
       ship.playerId === admission.playerId &&
       !ship.refit &&
-      (!ship.shoreTransfer || ["landing", "afloat"].includes(ship.shoreTransfer.phase)) &&
       (admission.recovery
         ? ship.repairState === admission.recovery.state &&
           ship.repairPortId === admission.recovery.port

@@ -56,6 +56,7 @@ import {
   hotkeyAction,
   LAND_RECRUITMENT,
   NAVAL_RECRUITMENT,
+  shipMoveCommand,
 } from "./Controls";
 
 import { hudMarkup, HudView } from "./HudView";
@@ -1626,16 +1627,15 @@ canvas.addEventListener("pointerup", (event) => {
     const enemyShip = snapshot.ships.find(
       (s) => s.id === clickedShipId && s.playerId !== localPlayerId,
     );
+    const selectedWarships=[...renderer.selectedShips].filter(id=>snapshot!.ships.find(s=>s.id===id)?.kind==="warship");
     if (
-      renderer.selectedShips.size &&
+      selectedWarships.length &&
       (enemyShip || (coastal && coastal.playerId !== localPlayerId))
     ) {
       command({
         type: "naval-attack",
         playerId: localPlayerId,
-        shipIds: [...renderer.selectedShips].filter(
-          (id) => snapshot!.ships.find((s) => s.id === id)?.kind === "warship",
-        ),
+        shipIds: selectedWarships,
         targetId: (enemyShip ?? coastal)!.id,
       });
       return;
@@ -1667,29 +1667,15 @@ canvas.addEventListener("pointerup", (event) => {
 
     const tile = renderer.tileAt(p.x, p.y);
 
-    if (
-      renderer.selectedShips.size &&
-      tile !== null &&
-      currentMap?.map.isWater(tile)
-    ) {
-      command({
-        type: "sail",
-
-        playerId: localPlayerId,
-
-        shipIds: [...renderer.selectedShips],
-
-        tile,
-
-        append: start.shift,
-      });
-
+    const shipOrder=tile!==null&&currentMap ? shipMoveCommand(snapshot,renderer.selectedShips,localPlayerId,tile,currentMap.map.isWater(tile),start.shift) : null;
+    if (shipOrder) {
+      command(shipOrder);
       return;
     }
 
     if (!renderer.selected.size) {
       notify(
-        "Ships sail on water. Choose a transport’s landing coast to unload.",
+        "Right-click water to sail, or land with a loaded transport to disembark.",
       );
 
       return;
