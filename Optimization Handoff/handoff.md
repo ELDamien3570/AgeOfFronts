@@ -1,5 +1,13 @@
 # Optimization handoff
 
+## Local continuation - 3 October 2026
+
+The remaining non-deferred code pass is implemented and tested locally in source commit `a4145f4230cabe58023bc60d58b835407a111956`, branch `codex/optimization-lifecycle-indexes`. The final combined gate passes **1,075 tests across 164 files**, TypeScript, build, whitespace and scoped Oxlint. Scoped ESLint has one pre-existing unused variable. [Final evidence](Evidence/nightly-final-validation.md) records the exact source/runtime and limits; [current plan status](remaining-work-index.md) supersedes the historical record below.
+
+P17, P20, P21, P22 and P25 are deferred. P28's local integration gate passes; deferred-feature acceptance remains open. P29 has partial ordinary browser evidence, including exact single recruitment cancellation/refund and the final-tier U guard. P02 mature-world memory and P30 actual ARM/ten-browser capacity remain unqualified. No remote push, merge, default experimental flag change or deployment was performed. Concurrent Art was not modified.
+
+## Historical handoff - 2 October 2026
+
 Updated 2 October 2026. Repository: [ELDamien3570/AgeOfFronts](https://github.com/ELDamien3570/AgeOfFronts).
 Working/publishing branch: **`v1-phased-ai-optimization`**.
 

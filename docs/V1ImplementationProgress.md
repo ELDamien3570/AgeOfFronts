@@ -1,4 +1,12 @@
 # V1 integrated implementation and qualification
+## Latest local checkpoint - 3 October 2026
+
+The remaining in-scope code pass is committed locally as `a4145f4230cabe58023bc60d58b835407a111956` on `codex/optimization-lifecycle-indexes`. **1,075 tests across 164 files pass**, with TypeScript, production build, whitespace and scoped Oxlint also passing. Scoped ESLint retains one pre-existing unused variable. Local implementation is closed for P04, P06-P10, P12, P15-P16, P18-P19, P23-P24, P26-P27; P28's local integration gate passes. P17, P20, P21, P22 and P25 are deferred. P29 has partial real-browser evidence; P30 actual ARM/ten-browser capacity remains unverified. P02 mature-world memory and acceptance involving deferred features remain open. Existing P01-P03/P05/P11/P13/P14 work is retained, including the supplied P11/P14 integration. See the final evidence below. No push, merge, production flag change or deployment was performed. This section supersedes historical per-slice gate/pause text below.
+
+
+[Final validation](../Optimization%20Handoff/Evidence/nightly-final-validation.md) · [Browser observations](../Optimization%20Handoff/Evidence/nightly-browser-observations.md)
+
+## Historical implementation record
 
 Updated 2 October 2026. Base: `bca41f59a8b2b3d23dbe391d964fc2bffd3d6708`
 (`V1`, More Naval work). Work branch: `v1-phased-ai-optimization`.

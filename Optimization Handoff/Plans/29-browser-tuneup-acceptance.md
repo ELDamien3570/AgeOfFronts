@@ -1,6 +1,6 @@
 # P29: Verify real-browser tuneups and presentation
 
-Status: **remaining work, not implemented by this handoff**. Read
+Status: **partial local browser acceptance recorded; remaining cases open**. Read
 [`../agent-workflow.md`](../agent-workflow.md) and [`../handoff.md`](../handoff.md).
 
 ## Dependencies and ownership
@@ -53,3 +53,7 @@ If a required dependency, hardware test, source asset or authorization is
 unavailable, record the exact blocker and stop only that dependent work. Do not
 turn a refused or unverified test into a pass, broaden authority, or enable a
 production feature merely to demonstrate that code exists.
+
+## Local observations - 3 October 2026
+
+[Browser evidence](../Evidence/nightly-browser-observations.md) records Stone/Bronze/Modern openings, normal paid construction, exact single-item cancellation/refund, final-tier U rejection and the missing marker atlas. Positive upgrade/production pause, all-age/tribe cases, multiple producers and reconnect/performance acceptance remain open. [Final source validation](../Evidence/nightly-final-validation.md) passes locally; it does not replace those browser checks.

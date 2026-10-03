@@ -1,6 +1,6 @@
 # P30: Qualify the requested capacity and release boundary
 
-Status: **remaining work, not implemented by this handoff**. Read
+Status: **external hardware/client qualification open; no release or deployment authorized**. Read
 [`../agent-workflow.md`](../agent-workflow.md) and [`../handoff.md`](../handoff.md).
 
 ## Dependencies and ownership
@@ -54,3 +54,7 @@ If a required dependency, hardware test, source asset or authorization is
 unavailable, record the exact blocker and stop only that dependent work. Do not
 turn a refused or unverified test into a pass, broaden authority, or enable a
 production feature merely to demonstrate that code exists.
+
+## Current boundary - 3 October 2026
+
+The final local source is `a4145f4230cabe58023bc60d58b835407a111956`; [local evidence](../Evidence/nightly-final-validation.md) reports 1,075 passing tests, type/build checks and partial browser observations. No actual ARM or ten-browser mature-world qualification was run. No push, merge, default experimental flag change or deployment was authorized/performed. This plan remains unaccepted; local functional evidence is not the requested capacity proof.
