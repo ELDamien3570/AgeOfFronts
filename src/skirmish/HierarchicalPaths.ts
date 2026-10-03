@@ -55,6 +55,13 @@ export class HierarchicalPaths {
     number,
     { tree: LocalTree; revision: number }
   >();
+  private crossingBytes = 0;
+  get residency() {
+    let treeBytes = this.crossingBytes;
+    // The start cache is capped at 512; portal bytes are maintained at mutation.
+    for (const { tree } of this.startTrees.values()) treeBytes += tree.cost.byteLength + tree.parent.byteLength;
+    return { clusters: this.clusters.length, portals: this.portals.length, startTrees: this.startTrees.size, treeBytes };
+  }
   constructor(private readonly topology: PathTopology) {
     const map = topology.map;
     this.columns = Math.ceil(map.width() / CLUSTER);
@@ -122,8 +129,11 @@ export class HierarchicalPaths {
       const changed = new Set(tiles.map((tile) => this.cluster(tile)));
       for (const cluster of changed) {
         this.clusterRevision[cluster]++;
-        for (const portal of this.clusters[cluster].portals)
+        for (const portal of this.clusters[cluster].portals) {
+          const tree = this.portals[portal].tree;
+          if (tree) this.crossingBytes -= tree.cost.byteLength + tree.parent.byteLength;
           this.portals[portal].tree = undefined;
+        }
       }
     });
   }
@@ -213,9 +223,11 @@ export class HierarchicalPaths {
   }
   private crossing(id: number): LocalTree {
     const portal = this.portals[id];
-    return (
-      portal.tree ?? (portal.tree = this.localTree(portal.tile, portal.cluster))
-    );
+    if (!portal.tree) {
+      portal.tree = this.localTree(portal.tile, portal.cluster);
+      this.crossingBytes += portal.tree.cost.byteLength + portal.tree.parent.byteLength;
+    }
+    return portal.tree;
   }
   // Preparation happens while a match loads, keeping cache construction out of
   // ordinary combat ticks. Local search arrays remain cluster-sized.

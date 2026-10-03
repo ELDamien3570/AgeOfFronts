@@ -60,6 +60,7 @@ export type ExecutorRequest =
   | {
       type: "initialize" | "prepare";
       streamPublications?: boolean;
+      diagnosticContext?: { matchId: string; runtimeId: string };
       settings: LobbySettings;
       options: MatchOptions;
       map?: RuntimeMap;

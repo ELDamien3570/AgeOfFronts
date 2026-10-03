@@ -1,4 +1,5 @@
 import { SPAWN_SECONDS } from "../../domain/SpawnSelection";
+import { RuntimeDiagnostics, RuntimeProgress } from "../../RuntimeDiagnostics";
 import {ClientStateFlow} from "./ClientStateFlow";
 import type {ClientBaseline} from "./MatchExecutor";
 import type { EmpireProfile } from "../../lobby/EmpireProfile";
@@ -64,6 +65,13 @@ export interface LiveMatchOptions {
 
 /** One authoritative world, stable faction IDs, and at most one bounded admission barrier. */
 export class LiveMatch {
+  readonly diagnostics = new RuntimeDiagnostics();
+  private readonly cadence = new RuntimeProgress(TICK_MS);
+  runtimeDiagnostics() {
+    return { matchId: this.reservation.id, runtimeId: this.runtimeId, tick: this.tick,
+      publicationSequence: this.publicationSequence, timings: this.diagnostics.snapshot(),
+      retainedBytes: this.diagnostics.retainedBytes, progress: this.cadence.snapshot(), worker: this.latestDiagnostics };
+  }
   private loaded = new Set<string>();
   private seats = new Map<number, Seat>();
   private runtimeSeats: RuntimeSeat[] = [];
@@ -150,6 +158,7 @@ export class LiveMatch {
     const prepared = await this.executor.request<PreparedMatch>({
       type: "prepare",
       streamPublications: Boolean(this.executor.onPublication),
+      diagnosticContext: { matchId: this.reservation.id, runtimeId: this.runtimeId },
       settings: this.reservation.settings,
       options: this.options,
     });
@@ -470,6 +479,7 @@ export class LiveMatch {
     this.nextSyncAt = this.now() + (this.config.cooldownMs ?? 2_000);
     this.nextTickAt = this.now() + TICK_MS;
     this.nextSnapshotAt = this.now() + SNAPSHOT_MS;
+    this.cadence.reset(this.tick, this.now());
     if (!this.stopped)
       this.status(
         this.emptyDeadline === undefined
@@ -525,6 +535,9 @@ export class LiveMatch {
     else this.broadcast(message);
   }
   command(guest: string, id: string, input: Record<string, unknown>): void {
+    this.diagnostics.measure("validation", () => this.admitCommand(guest, id, input));
+  }
+  private admitCommand(guest: string, id: string, input: Record<string, unknown>): void {
     if (this.stopped) throw new Error("This match has ended");
     if (!this.running)
       throw new Error("Choose your spawn before issuing orders");
@@ -547,7 +560,7 @@ export class LiveMatch {
     this.seen.add(id);
     if (this.seen.size > MAX_RECENT_COMMANDS)
       this.seen.delete(this.seen.values().next().value!);
-    this.commands.push({ id, command });
+    this.diagnostics.measure("admission", () => this.commands.push({ id, command }));
   }
   async disconnect(guest: string): Promise<void> {
     this.flows.delete(guest);
@@ -650,11 +663,13 @@ export class LiveMatch {
       this.runtimeSeats = initial.seats ?? [];
       this.nextTickAt = this.now() + TICK_MS;
       this.nextSnapshotAt = this.now() + SNAPSHOT_MS;
+      this.cadence.reset(this.tick, this.now());
       this.publicationSequence++;
       this.broadcast(this.state(initial.packet!));
       return;
     }
     if (now < this.nextTickAt) return;
+    this.diagnostics.record("scheduler", now - this.nextTickAt);
     const due = Math.floor((now - this.nextTickAt) / TICK_MS) + 1,
       ticks = Math.min(MAX_ADVANCE_TICKS, due);
     this.nextTickAt =
@@ -679,6 +694,7 @@ export class LiveMatch {
     if (this.stopped) return;
     if (result.tick > this.tick) this.lastProgressAt = this.now();
     this.tick = result.tick;
+    this.cadence.record(this.tick, this.now());
     if (result.diagnostics) this.latestDiagnostics = result.diagnostics;
     if (result.seats) this.runtimeSeats = result.seats;
     if (result.packet) {
@@ -795,10 +811,12 @@ export class LiveMatch {
     };
   }
   private broadcast(message: ServerMessage): void {
+    this.diagnostics.measure("fanout", () => {
     for (const seat of this.seats.values())
       if (seat.connected && this.loaded.has(seat.guestId))
         if(message.type==="match-state")this.sendState(seat.guestId,message);
         else this.send(seat.guestId, message);
+    });
   }
   private sendState(guest:string,message:Extract<ServerMessage,{type:"match-state"}>,baseline=false):void {
     const flow=this.flows.get(guest);

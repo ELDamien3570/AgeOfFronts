@@ -403,3 +403,29 @@ remaining-task plans. No later land/economy/naval phase was started. Experimenta
 features remain opt-in; no deployment readiness or ARM capacity is asserted.
 Concurrent remote `Art/` additions are the user's in-progress artwork and must
 be preserved without wiring them into gameplay or treating them as this scope.
+
+## Local roadmap continuation, 2 October 2026
+
+The user subsequently authorized the full remaining roadmap, staged in dependency
+order. The prior stopping point remains historical evidence. The continuation
+starts from published branch source `357fa7d5f8a8b2c54b55812f860b4918591693a3`.
+
+P01 production-path observers are implemented on
+`codex/optimization-runtime-diagnostics`: bounded codec/worker/coordinator/client
+stages, active simulation cadence, planner faction/caller outcomes and residency,
+worker-local GC, lifecycle failure categories, and correlated periodic summaries.
+The observers do not enter checkpoints or select gameplay work. See
+`Optimization Handoff/Plans/01-runtime-diagnostics.md` for measurement definitions,
+exact local evidence and open external acceptance.
+
+The local gate passed 1018 tests in 156 files, TypeScript, production build,
+whitespace and scoped lint. Windows x64 Node 24.18.0 required one-worker tests to
+avoid the unchanged five-second baseline timeouts under four workers. Full-file
+Simulation ESLint still reports its pre-existing unused `tile`; this was not
+changed or counted as a clean full-file lint result. Runtime compatibility hash:
+`c2e8bcc5908cd6870c6bf56be1ecce887aa80f9387ac2d25b46ac9c9822b571d`.
+
+P02-P30 remain open at this checkpoint. No experimental default, target-capacity
+tier, artwork integration, remote publication or deployment was authorized by
+this local code gate. Real-browser acceptance and actual ARM capacity are still
+unverified.

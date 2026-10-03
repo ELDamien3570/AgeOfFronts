@@ -28,6 +28,7 @@ export class ReservedMatchWorker implements MatchExecutor {
   }
   private nextId = 1;
   private closed = false;
+  readonly lifecycle: { state: "running" | "stopped"; cause?: "closed" | "error" | "exit" | "timeout" | "publication"; operation?: string; exitCode?: number } = { state: "running" };
   private pending = new Map<
     number,
     {
@@ -40,7 +41,7 @@ export class ReservedMatchWorker implements MatchExecutor {
     this.worker.on(
       "message",
       (message: { id: number; result: ExecutorResult; error?: string; fatal?: string; publication?: MatchPublication }) => {
-        if (message.fatal) { this.fail(new Error(message.fatal)); void this.worker.terminate(); return; }
+        if (message.fatal) { this.fail(new Error(message.fatal), "publication"); void this.worker.terminate(); return; }
         if (message.publication) {
           if (!this.closed) for (const listener of this.publications) listener(message.publication);
           return;
@@ -53,9 +54,9 @@ export class ReservedMatchWorker implements MatchExecutor {
         else task.resolve(message.result);
       },
     );
-    this.worker.on("error", (error) => this.fail(error));
+    this.worker.on("error", (error) => this.fail(error, "error"));
     this.worker.on("exit", (code) =>
-      this.fail(new Error(`Match executor stopped (exit ${code})`)),
+      { this.lifecycle.exitCode = code; this.fail(new Error(`Match executor stopped (exit ${code})`), "exit"); },
     );
   }
   request<T extends ExecutorResult>(request: ExecutorRequest): Promise<T> {
@@ -65,7 +66,8 @@ export class ReservedMatchWorker implements MatchExecutor {
     return new Promise<T>((resolve, reject) => {
       const id = this.nextId++;
       const timeout = setTimeout(() => {
-        this.fail(new Error(`Match executor timed out during ${request.type}`));
+        this.lifecycle.operation = request.type;
+        this.fail(new Error(`Match executor timed out during ${request.type}`), "timeout");
         void this.worker.terminate();
       }, 30_000);
       this.pending.set(id, {
@@ -77,10 +79,12 @@ export class ReservedMatchWorker implements MatchExecutor {
     });
   }
   async close(): Promise<void> {
-    this.fail(new Error("Match executor stopped"));
+    this.fail(new Error("Match executor stopped"), "closed");
     await this.worker.terminate();
   }
-  private fail(error: Error): void {
+  private fail(error: Error, cause: NonNullable<ReservedMatchWorker["lifecycle"]["cause"]>): void {
+    this.lifecycle.cause ??= cause;
+    this.lifecycle.state = "stopped";
     this.closed = true;
     for (const task of this.pending.values()) {
       clearTimeout(task.timeout);

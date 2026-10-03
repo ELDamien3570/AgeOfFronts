@@ -6,6 +6,7 @@ import type {
   WorkerResponse,
 } from "../../src/skirmish/Protocol";
 import { OnlineMatchSession } from "../../src/skirmish/client/OnlineMatchSession";
+import { RUNTIME_PHASES } from "../../src/skirmish/RuntimeDiagnostics";
 import { defaultLobbySettings } from "../../src/skirmish/lobby/LobbyDirectory";
 import type {
   MatchManifest,
@@ -38,7 +39,8 @@ vi.mock("../../src/skirmish/client/lobby/OnlineLobbyConnection", () => ({
 
 class DecoderWorker {
   static instances: DecoderWorker[] = [];
-  onmessage?: (event: { data: { packet: SnapshotPacket;canonicalOnly?:boolean;snapshot?:Snapshot;canonicalSequence?:number } }) => void;
+  onmessage?: (event: { data: { packet: SnapshotPacket;canonicalOnly?:boolean;snapshot?:Snapshot;canonicalSequence?:number;
+    decodeMs?:number;applyMs?:number;projectionMs?:number } }) => void;
   onerror?: (event: { message: string }) => void;
   postMessage = vi.fn();
   terminate = vi.fn();
@@ -111,6 +113,23 @@ afterEach(() => {
 });
 
 describe("server-only match client", () => {
+  it("correlates bounded browser observations and leaves missing stage samples absent", async () => {
+    await initialize();
+    expect(session.runtimeDiagnostics().timings.decode).toBeUndefined();
+    const worker = DecoderWorker.instances[0];
+    connection().message({ ...state(0), publicationSequence: 1 });
+    await vi.waitFor(() => expect(worker.postMessage).toHaveBeenCalledTimes(1));
+    worker.onmessage!({ data: { packet: packet(0), snapshot: { tick: 0 } as Snapshot,
+      canonicalSequence: 1, decodeMs: 3, applyMs: 1, projectionMs: 2 } });
+    await vi.waitFor(() => expect(session.diagnostics.pendingStates).toBe(0));
+    const observed = session.runtimeDiagnostics();
+    expect(observed).toMatchObject({ matchId: manifest.id, runtimeId: manifest.runtimeId, tick: 0, publicationSequence: 1 });
+    expect(observed.timings.decode?.mean).toBe(3);
+    expect(observed.timings.apply?.mean).toBe(1);
+    expect(observed.timings.projection?.mean).toBe(2);
+    expect(observed.timings.presentation?.samples).toBe(1);
+    expect(observed.retainedBytes).toBeLessThanOrEqual(RUNTIME_PHASES.length * 256 * 8);
+  });
   it("asks for no copied views while rendering and requests one latest view after acknowledgement", async () => {
     await initialize(); const worker = DecoderWorker.instances[0]; let finish!: () => void;
     const presented: number[] = [];

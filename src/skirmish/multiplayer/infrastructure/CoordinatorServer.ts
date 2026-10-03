@@ -15,6 +15,7 @@ import { clientMessageSchema, type ServerMessage } from "../Protocol";
 import { CoordinatorStore } from "./CoordinatorStore";
 import { ReservedMatchWorker } from "./ReservedMatchWorker";
 import { computeRuntimeBuild } from "./RuntimeBuild";
+import { RuntimeDiagnostics } from "../../RuntimeDiagnostics";
 
 export interface CoordinatorServerOptions {
   store: CoordinatorStore;
@@ -75,6 +76,7 @@ export function createCoordinatorServer(options: CoordinatorServerOptions) {
   const staticDir = options.staticDir ?? resolve("build/skirmish");
   const matches = new Map<string, LiveMatch>();
   const runtimeId = computeRuntimeBuild();
+  const diagnostics = new RuntimeDiagnostics();
   let rooms = new RoomCoordinator(now(), capacity, options.store.read());
   const restored = rooms.snapshot();
   for (const room of [...restored.rooms, ...restored.reservations])
@@ -182,8 +184,10 @@ export function createCoordinatorServer(options: CoordinatorServerOptions) {
       client.close(1013, "Connection too slow");
       return;
     }
-    if (client.readyState === WebSocket.OPEN)
-      client.send(JSON.stringify(message));
+    if (client.readyState === WebSocket.OPEN) {
+      const text = diagnostics.measure("json", () => JSON.stringify(message));
+      diagnostics.measure("socket", () => client.send(text));
+    }
   };
   const publish = () => {
     const state = rooms.snapshot();
@@ -200,8 +204,10 @@ export function createCoordinatorServer(options: CoordinatorServerOptions) {
       });
   };
   const sendGuest = (guest: string, message: ServerMessage) => {
+    diagnostics.measure("fanout", () => {
     for (const [client, session] of sessions)
       if (session.guestId === guest) send(client, message);
+    });
   };
   ws.on("connection", (client) => {
     const authenticationDeadline = setTimeout(
@@ -478,8 +484,20 @@ export function createCoordinatorServer(options: CoordinatorServerOptions) {
     for (const [key, attempt] of attempts)
       if (now() - attempt.windowAt > 60_000) attempts.delete(key);
   }, 5000);
+  const diagnosticClock = setInterval(() => {
+    if (!matches.size) return;
+    console.info(JSON.stringify({ event: "coordinator-runtime-diagnostics", source: process.env.GIT_COMMIT ?? "unknown",
+      runtime: process.version, runtimeId, processRss: process.memoryUsage().rss,
+      timings: diagnostics.snapshot(), retainedBytes: diagnostics.retainedBytes,
+      connections: sessions.size, bufferedBytes: [...ws.clients].reduce((sum, client) => sum + client.bufferedAmount, 0),
+      matches: [...matches.values()].map(match => match.runtimeDiagnostics()) }));
+  }, 30_000);
+  diagnosticClock.unref();
   return {
     http,
+    runtimeDiagnostics: () => ({ runtimeId, timings: diagnostics.snapshot(), retainedBytes: diagnostics.retainedBytes,
+      connections: sessions.size, bufferedBytes: [...ws.clients].reduce((sum, client) => sum + client.bufferedAmount, 0),
+      matches: [...matches.values()].map(match => match.runtimeDiagnostics()) }),
     get rooms() {
       return rooms;
     },
@@ -487,6 +505,7 @@ export function createCoordinatorServer(options: CoordinatorServerOptions) {
       clearInterval(clock);
       clearInterval(directoryClock);
       clearInterval(heartbeat);
+      clearInterval(diagnosticClock);
       await Promise.all(
         [...matches.values()].map((match) =>
           match.end("Server is shutting down"),

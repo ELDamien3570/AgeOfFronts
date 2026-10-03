@@ -27,8 +27,11 @@ self.onmessage = (
       else {
         try {
           if (!stream) throw new Error("Canonical state is unavailable");
+          const projectionStarted = performance.now();
           const view = stream.presentation();
-          self.postMessage({ packet: { tick: view.snapshot.tick, reset: view.snapshot.changedTiles === undefined }, ...view },
+          const projected = performance.now();
+          self.postMessage({ packet: { tick: view.snapshot.tick, reset: view.snapshot.changedTiles === undefined }, ...view,
+            projectionMs: projected - projectionStarted },
             { transfer: [view.snapshot.owners.buffer, view.snapshot.claims.buffer, view.snapshot.progress.buffer] });
         } catch (error) {
           self.postMessage({ error: error instanceof Error ? error.message : "Invalid presentation request" });
@@ -81,12 +84,14 @@ self.onmessage = (
         return;
       }
       const view = stream.presentation();
+      const projected = performance.now();
       self.postMessage(
         {
           packet: { tick: packet.tick, reset: packet.reset },
           ...view,
           decodeMs: decoded - started,
           applyMs: applied - decoded,
+          projectionMs: projected - applied,
           decodeStats,
         },
         {

@@ -39,6 +39,29 @@ function fixture() {
   return { map, land, planner, results, validity, revision, request };
 }
 describe("fair resumable exact planning", () => {
+  it("attributes bounded work and cancellation to faction/caller cohorts outside checkpoints", () => {
+    const { map, land } = fixture();
+    const planner = new RoutePlanner<{ playerId: number }>(land, new WaterPaths(map, false), {
+      identity: request => ({ playerId: request.context.playerId, caller: "admission" }),
+      valid: () => true, obstacleRevision: () => "0", blocked: () => undefined, completed: () => {},
+    });
+    for (const playerId of [1, 2, -3]) planner.request({ key: `player:${playerId}`, start: 0, goal: map.ref(20, 20),
+      water: false, createdTick: 0, obstacleRevision: "0", context: { playerId } });
+    const before = planner.checkpoint();
+    const initial = planner.diagnosticCohorts(10);
+    expect(initial.map(cohort => cohort.playerId)).toEqual([1, 2, 0]);
+    expect(initial.every(cohort => cohort.pending === 1 && cohort.oldestAge === 10)).toBe(true);
+    initial[0].pending = 999;
+    expect(planner.checkpoint()).toEqual(before);
+    expect(planner.diagnosticCohorts(10)[0].pending).toBe(1);
+    expect(planner.step(10, 9, 3)).toBe(9);
+    expect(planner.diagnosticCohorts(10).reduce((sum, cohort) => sum + cohort.work, 0)).toBe(9);
+    planner.cancel("player:1");
+    while (planner.diagnostics.pending) planner.step(10, 32, 4);
+    const final = planner.diagnosticCohorts(10);
+    expect(final.find(cohort => cohort.playerId === 1)?.superseded).toBe(1);
+    expect(final.every(cohort => cohort.pending === 0)).toBe(true);
+  });
   it("bounds shared storage, reports exhaustion as unknown and charges cancellation cleanup", () => {
     const { map, land } = fixture(),
       outcomes: ExactRouteOutcome[] = [];

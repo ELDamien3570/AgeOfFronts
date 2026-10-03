@@ -17,6 +17,7 @@ import { PublicationQueue } from "../application/PublicationQueue";
 import { SnapshotEncodingWorker } from "./SnapshotEncodingWorker";
 import type { SnapshotPacket } from "../../Protocol";
 import { loadServerMap } from "./ServerMap";
+import { observeGarbageCollection } from "./WorkerRuntimeDiagnostics";
 
 if (!parentPort) throw new Error("The match executor requires a worker thread");
 let match: Skirmish | undefined;
@@ -24,6 +25,10 @@ let streamPublications = false;
 const encoding = new SnapshotEncodingWorker();
 parentPort.on("close", () => { void encoding.close(); });
 const diagnostics = new RuntimeDiagnostics();
+const stopObserving = observeGarbageCollection(diagnostics);
+parentPort.on("close", stopObserving);
+let diagnosticContext = { matchId: "unassigned", runtimeId: "unknown" };
+let captureSequence = 0, capturedTick = 0;
 let nextDiagnosticTick = 600;
 const observeMatch = () => { match!.onPhase = (phase, ms) => diagnostics.record(phase, ms); };
 const encoder = new SnapshotEncoder(true);
@@ -50,31 +55,34 @@ const makeMap = (map: RuntimeMap) =>
     map.resourceTerrain,
   );
 const capture = () => {
-  const start = performance.now();
-  const packet = encoder.encode(match!.snapshot(false), match!.tileChanges);
-  diagnostics.record("snapshot", performance.now() - start);
+  const state = diagnostics.measure("extraction", () => match!.snapshot(false));
+  const packet = diagnostics.measure("snapshot", () => encoder.encode(state, match!.tileChanges));
+  capturedTick = packet.tick;
+  captureSequence++;
   return packet;
 };
-const encodePacket = async (packet: SnapshotPacket) => {
-  const start = performance.now();
-  const result = await encoding.encode(packet);
-  diagnostics.record("encoding", performance.now() - start);
-  return result;
-};
+const encodePacket = (packet: SnapshotPacket) => diagnostics.measureAsync("encoding", () => encoding.encode(packet));
 const snapshot = () => encodePacket(capture());
 const publications = new PublicationQueue(encodePacket,
-  (tick, packet) => parentPort!.postMessage({ publication: { tick, packet } }),
+  (tick, packet) => diagnostics.measure("transfer", () => parentPort!.postMessage({ publication: { tick, packet } })),
   error => parentPort!.postMessage({ fatal: `Snapshot publication failed: ${error.message}` }));
 const diagnosticSnapshot = (commands: number, ticksAdvanced: number, payloadBytes: number): MatchDiagnostics => {
   const m = match!, memory = process.memoryUsage(), planning = m.routePlanner.diagnostics;
   return { tick: m.tick, timings: diagnostics.snapshot(), retainedBytes: diagnostics.retainedBytes,
+    correlation: { ...diagnosticContext, source: process.env.GIT_COMMIT ?? "unknown", runtime: process.version,
+      threadId, tick: capturedTick, captureSequence },
     commands, ticksAdvanced, payloadBytes,
-    replication: { pending: publications.pending, skipped: publications.skipped, encoderMemory: encoding.memory },
+    replication: { pending: publications.pending, skipped: publications.skipped, encoderMemory: encoding.memory,
+      encoderTimings: { ...encoding.timings, ...encoding.diagnostics.snapshot() },
+      encoderRetainedBytes: encoding.retainedBytes + encoding.diagnostics.retainedBytes, encoderFailureCause: encoding.failureCause },
+    paths: { land: m.paths.residency, water: m.waterPaths.residency },
     entities: { squads: m.squads.length, ships: m.ships.length, buildings: m.buildings.length,
       traders: m.expansion?.trade.actors.length ?? 0, projectiles: m.expansion?.battle.projectiles.length ?? 0,
       recruitment: m.recruitment.jobs.length },
     planner: { pending: planning.pending, oldestAge: planning.oldestAge, limited: planning.limited,
-      workspaceBytes: planning.workspaceBytes, workspaceUsed: planning.workspaceUsed, receipts: m.commandApplications.diagnostics.pending },
+      workspaceBytes: planning.workspaceBytes, workspaceUsed: planning.workspaceUsed, receipts: m.commandApplications.diagnostics.pending,
+      work: planning.work, completed: planning.completed, superseded: planning.superseded, admissionDeferred: planning.admissionDeferred,
+      cohorts: m.routePlanner.diagnosticCohorts(m.tick) },
     memory: { heapUsed: memory.heapUsed, heapTotal: memory.heapTotal, external: memory.external,
       arrayBuffers: memory.arrayBuffers, processRss: memory.rss } };
 };
@@ -100,6 +108,7 @@ parentPort.on(
         if (request.type === "initialize" || request.type === "prepare") {
           if (match || setup) throw new Error("Executor already initialized");
           streamPublications = request.streamPublications === true;
+          diagnosticContext = request.diagnosticContext ?? diagnosticContext;
           const loaded = request.map
             ? {
                 map: request.map,
@@ -178,8 +187,9 @@ parentPort.on(
             match.setAiController(player.id, false);
             // Both packets describe exactly S. Advancing the shared cursor here is
             // essential: a tile that changes back after this barrier must be sent.
-            const state = match.snapshot(false);
-            const aligned = encoder.encodeJoinBarrier(state, match.tileChanges);
+            const state = diagnostics.measure("extraction", () => match!.snapshot(false));
+            const aligned = diagnostics.measure("snapshot", () => encoder.encodeJoinBarrier(state, match!.tileChanges));
+            capturedTick = state.tick; captureSequence++;
             const packet = await encodePacket(aligned.shared);
             const baseline = await encodePacket(aligned.baseline);
             result = {
@@ -191,13 +201,17 @@ parentPort.on(
             };
           } else if (request.type === "client-baseline") {
             const tick=match.tick,winner=match.winner;
-            const baseline=await encodePacket(new SnapshotEncoder(true).encode(match.snapshot(false)));
+            const state = diagnostics.measure("extraction", () => match!.snapshot(false));
+            const captured = diagnostics.measure("snapshot", () => new SnapshotEncoder(true).encode(state));
+            capturedTick = state.tick; captureSequence++;
+            const baseline=await encodePacket(captured);
             result={tick,winner,baseline};
           } else if (request.type === "baseline") {
             // A late initial subscriber must not reset everyone else's delta cursor.
-            result = await encodePacket(
-              new SnapshotEncoder(true).encode(match.snapshot(false)),
-            );
+            const state = diagnostics.measure("extraction", () => match!.snapshot(false));
+            const captured = diagnostics.measure("snapshot", () => new SnapshotEncoder(true).encode(state));
+            capturedTick = state.tick; captureSequence++;
+            result = await encodePacket(captured);
           } else if (request.type === "advance") {
             if (
               !Number.isInteger(request.ticks) ||
@@ -259,7 +273,7 @@ parentPort.on(
             commandOutcomes.clear();
           } else throw new Error("Unknown match operation");
         }
-        parentPort!.postMessage({ id: message.id, result });
+        diagnostics.measure("transfer", () => parentPort!.postMessage({ id: message.id, result }));
       } catch (error) {
         // Retain the stack and operation on the server; client transport keeps
         // the safe message and never receives private stack details.

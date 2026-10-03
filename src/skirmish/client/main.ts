@@ -1,5 +1,7 @@
 let localPlayerId = 1;
 import { OnlineMatchSession } from "./OnlineMatchSession";
+import { RuntimeDiagnostics } from "../RuntimeDiagnostics";
+const browserDiagnostics = new RuntimeDiagnostics();
 const onlineQuery = new URLSearchParams(window.location.search);
 const onlineMatchId = onlineQuery.get("match");
 const onlineSeat = onlineQuery.has("seat") ? Number(onlineQuery.get("seat")) : undefined;
@@ -669,6 +671,7 @@ async function startOnlineMatch(): Promise<void> {
         showOnlineLoading(message, failure);
     },
     onlineSeat,
+    browserDiagnostics,
   );
   worker = session;
   for (const control of document.querySelectorAll<HTMLInputElement>(".match-settings select,.match-settings button,#speed,#pause,#play-again")) control.disabled = true;
@@ -711,6 +714,8 @@ async function startOnlineMatch(): Promise<void> {
 
 function updateHud(): void {
   if (!snapshot) return;
+  const started = performance.now();
+  try {
 
   updateTerrainHover();
   recruitmentFeed.update(new RecruitmentQueueViewModel(snapshot, localPlayerId, renderer.selectedBuildings));
@@ -810,6 +815,7 @@ function updateHud(): void {
       (label) => ({ playerId: Number(label.dataset.campLoss), label }),
     );
   }
+  } finally { browserDiagnostics.record("hud", performance.now() - started); }
 }
 let lastRosterHtml = "";
 
@@ -1901,7 +1907,12 @@ document.addEventListener("keydown", (event) => {
   }
 });
 
+let previousFrame: number | undefined;
+let nextClientDiagnosticsAt = 0;
 function frame(now: number): void {
+  const started = performance.now();
+  if (previousFrame !== undefined) browserDiagnostics.record("frameInterval", now - previousFrame);
+  previousFrame = now;
   if (renderer.spawn) {
     const hint = renderer.spawn.hint(now);
     if (element("spawn-hint").textContent !== hint) element("spawn-hint").textContent = hint;
@@ -1909,6 +1920,11 @@ function frame(now: number): void {
   const pan = cameraPan.step(now);
   if (pan.x || pan.y) renderer.pan(pan.x, pan.y);
   if (renderer.draw(now, speed, paused)) updateCampLossLabels(now);
+  browserDiagnostics.record("frame", performance.now() - started);
+  if (worker instanceof OnlineMatchSession && snapshot && now >= nextClientDiagnosticsAt) {
+    nextClientDiagnosticsAt = now + 30_000;
+    console.info(JSON.stringify({ event: "browser-runtime-diagnostics", ...worker.runtimeDiagnostics() }));
+  }
 
   requestAnimationFrame(frame);
 }

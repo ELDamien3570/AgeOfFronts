@@ -119,6 +119,22 @@ async function fixture(stream = false) {
 }
 
 describe("server-authoritative live match", () => {
+  it("observes scheduler debt, admission and active progress without publishing diagnostics", async () => {
+    const f = await fixture();
+    f.setTime(10_500);
+    await f.match.advance();
+    const observed = f.match.runtimeDiagnostics();
+    expect(observed).toMatchObject({ matchId: "test", runtimeId: "version", tick: 4,
+      progress: { simulatedMs: 200, wallMs: 500, ratio: 0.4 } });
+    expect(observed.timings.scheduler?.maximum).toBe(450);
+    expect(() => f.match.command("a", "bad", { type: "invalid" })).toThrow();
+    f.match.command("a", "accepted", { type: "advance-age" });
+    expect(f.match.runtimeDiagnostics().timings.validation?.samples).toBeGreaterThanOrEqual(3);
+    expect(f.match.runtimeDiagnostics().timings.admission?.samples).toBe(1);
+    expect(f.messages.some(({ message }) => "diagnostics" in message)).toBe(false);
+    expect(f.requests.find(request => request.type === "advance")).toMatchObject({ ticks: 4 });
+    await f.match.end("test complete");
+  });
   it("labels delayed publication with its capture tick without rewinding simulation progress", async () => {
     const f = await fixture(true);
     f.setTime(10_200); await f.match.advance();

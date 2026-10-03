@@ -35,6 +35,10 @@ class TilePaths {
     { revision: number; path: Int32Array | null; work: number }
   >();
   private routeTiles = 0;
+  get residency() {
+    return { routes: this.routes.size, routeTiles: this.routeTiles, routeBytes: this.routeTiles * Int32Array.BYTES_PER_ELEMENT,
+      hierarchy: this.hierarchy?.residency ?? { clusters: 0, portals: 0, startTrees: 0, treeBytes: 0 } };
+  }
 
   constructor(
     protected readonly map: GameMap,

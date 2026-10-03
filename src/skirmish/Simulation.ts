@@ -343,6 +343,8 @@ export class Skirmish {
     this.adjacency = new FactionAdjacency(map, this.owners, tile => this.paths.walkable(tile));
     this.waterPaths = new WaterPaths(map, false);
     this.routePlanner = new RoutePlanner(this.paths,this.waterPaths,{
+      identity:request=>({playerId:request.context.playerId ?? 0,
+        caller:request.context.kind}),
       prepare:(request,budget,rays)=>{
         const task=request.context;
         if(task.kind!=="navigation")return {work:1,failed:true};

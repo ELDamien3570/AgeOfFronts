@@ -11,10 +11,11 @@ import type { StateDecodeStats } from "../multiplayer/StateCodec";
 import type { CommandOutcome } from "../CommandApplications";
 import { mapIdentity } from "../multiplayer/application/MapIdentity";
 import { OnlineLobbyConnection } from "./lobby/OnlineLobbyConnection";
+import { RuntimeDiagnostics } from "../RuntimeDiagnostics";
 
 const MAX_PENDING_STATES = 8;
 const MAX_PENDING_BYTES=16*1024*1024;
-interface DecodedState {canonicalOnly?:boolean;packet:SnapshotPacket;snapshot?:Snapshot;canonicalSequence?:number;decodeMs?:number;applyMs?:number;decodeStats?:StateDecodeStats;}
+interface DecodedState {canonicalOnly?:boolean;packet:SnapshotPacket;snapshot?:Snapshot;canonicalSequence?:number;decodeMs?:number;applyMs?:number;projectionMs?:number;decodeStats?:StateDecodeStats;}
 interface Presentation {data:Extract<WorkerResponse,{type:"state"}>;sequence?:number;}
 
 /** Thin presentation client. The server alone advances the simulation. */
@@ -41,6 +42,7 @@ export class OnlineMatchSession {
   private pendingBytes=0;
   private receiveGeneration=0;
   private recovering=false;
+  private recoveryStarted?: number;
   private flowEpoch=0;
   private presenting?:Promise<void>;
   private latestPresentation?:Presentation;
@@ -62,6 +64,7 @@ export class OnlineMatchSession {
     private identity: (playerId: number) => void,
     private status: (message: string) => void,
     private playerId?: number,
+    readonly timings = new RuntimeDiagnostics(),
   ) {
     this.connection = new OnlineLobbyConnection(
       endpoint,
@@ -129,6 +132,7 @@ export class OnlineMatchSession {
         this.incoming = this.incoming
           .then(() => {
             this.diagnostics.oldestAgeMs=performance.now()-receivedAt;
+            if (state) this.timings.record("queue", this.diagnostics.oldestAgeMs);
             return this.stopped || (state && generation!==this.receiveGeneration) ? undefined : this.receive(message);
           })
           .catch((error) => this.fail(error.message))
@@ -141,6 +145,11 @@ export class OnlineMatchSession {
   }
   connect(): void {
     if (!this.stopped) void this.connection.connect();
+  }
+  runtimeDiagnostics() {
+    return { matchId: this.matchId, runtimeId: this.manifest?.runtimeId, tick: this.lastTick,
+      publicationSequence: this.lastPublicationSequence, ...this.diagnostics,
+      timings: this.timings.snapshot(), retainedBytes: this.timings.retainedBytes };
   }
   postMessage(message: WorkerRequest): void {
     if (this.stopped) return;
@@ -222,6 +231,7 @@ export class OnlineMatchSession {
   }
   private recover():void {
     if(this.recovering || this.stopped)return;
+    this.recoveryStarted=performance.now();
     this.recovering=true;this.receiveGeneration++;this.latestPresentation=undefined;this.pendingView=undefined;this.diagnostics.recoveries++;
     this.setCommandsAvailable(false);this.status("Catching up with the match · requesting a fresh state…");
     void this.request({type:"match-state-resync",matchId:this.matchId}).catch(error=>this.fail(error.message));
@@ -231,6 +241,7 @@ export class OnlineMatchSession {
     const task=Promise.resolve().then(()=>this.stopped ? undefined : this.onmessage?.({data:update.data} as MessageEvent<WorkerResponse>))
       .then(()=>{
         this.diagnostics.presentationMs=performance.now()-started;
+        this.timings.record("presentation", this.diagnostics.presentationMs);
         if(!this.stopped && update.sequence!==undefined)this.decoder?.postMessage({type:"presented",sequence:update.sequence});
       });
     this.presenting=task;
@@ -253,6 +264,7 @@ export class OnlineMatchSession {
       const context = this.pendingView; this.pendingView = undefined;
       if (!context) return;
       const decoded = await this.decoderRequest({ type: "presentation" });
+      if (decoded.projectionMs !== undefined) this.timings.record("projection", decoded.projectionMs);
       if (this.stopped || context.generation !== this.receiveGeneration) return;
       if (!decoded.snapshot) throw new Error("Missing canonical presentation");
       this.queuePresentation({ data: { type: "state", packet: decoded.packet, snapshot: decoded.snapshot,
@@ -365,6 +377,9 @@ export class OnlineMatchSession {
       this.lastTick = packet.tick;
       if(message.flowEpoch!==undefined)this.flowEpoch=message.flowEpoch;
       this.diagnostics.decodeMs=decoded.decodeMs??0;this.diagnostics.applyMs=decoded.applyMs??0;
+      if (decoded.decodeMs !== undefined) this.timings.record("decode", decoded.decodeMs);
+      if (decoded.applyMs !== undefined) this.timings.record("apply", decoded.applyMs);
+      if (decoded.projectionMs !== undefined) this.timings.record("projection", decoded.projectionMs);
       this.diagnostics.wireBytes=decoded.decodeStats?.wireBytes??0;
       this.diagnostics.decodedArrayBytes=decoded.decodeStats?.arrayBytes??0;
       this.diagnostics.metadataBytes=decoded.decodeStats?.metadataBytes??0;
@@ -388,7 +403,11 @@ export class OnlineMatchSession {
       } else if(message.syncId || message.rebase){
         await this.presenting;if(this.stopped)return;this.latestPresentation=undefined;
         await this.present(update);
-        if(message.rebase){this.recovering=false;this.setCommandsAvailable(!message.paused && !this.pendingSync);}
+        if(message.rebase){
+          if (this.recoveryStarted !== undefined) this.timings.record("recovery", performance.now() - this.recoveryStarted);
+          this.recoveryStarted = undefined;
+          this.recovering=false;this.setCommandsAvailable(!message.paused && !this.pendingSync);
+        }
       }else if(decoded.snapshot)this.queuePresentation(update);
       else await this.onmessage?.({data:update.data} as MessageEvent<WorkerResponse>);
       if (this.stopped) return;

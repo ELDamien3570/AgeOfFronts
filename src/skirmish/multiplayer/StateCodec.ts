@@ -1,3 +1,6 @@
+import { RuntimeDiagnostics } from "../RuntimeDiagnostics";
+
+const NO_DIAGNOSTICS = new RuntimeDiagnostics(1, false);
 export interface EncodedState {
   hash: string;
   payload: string;
@@ -145,6 +148,8 @@ export interface StateDecodeStats {
   metadataTokens: number;
 }
 export interface StateDecodeLimits {
+  /** Optional observer, never encoded into canonical state. */
+  diagnostics?: RuntimeDiagnostics;
   /** Aggregate output allocation, including repeated references to one buffer. */
   maxArrayBytes?: number;
   /** Checked on UTF-8 bytes before constructing a string or JSON object tree. */
@@ -323,15 +328,16 @@ async function digest(bytes: Uint8Array<ArrayBuffer>): Promise<string> {
     .map((byte) => byte.toString(16).padStart(2, "0"))
     .join("");
 }
-export async function encodeState(value: unknown): Promise<EncodedState> {
+export async function encodeState(value: unknown, diagnostics = NO_DIAGNOSTICS): Promise<EncodedState> {
   const buffers: Uint8Array[] = [];
-  const valueTree = pack(value, buffers);
-  const metadata = enc.encode(
+  const valueTree = diagnostics.measure("pack", () => pack(value, buffers));
+  const metadata = diagnostics.measure("json", () => enc.encode(
     JSON.stringify({
       value: valueTree,
       lengths: buffers.map((buffer) => buffer.byteLength),
     }),
-  );
+  ));
+  const bytes = diagnostics.measure("bufferCopy", () => {
   const bytes = new Uint8Array(
     8 +
       metadata.length +
@@ -348,17 +354,21 @@ export async function encodeState(value: unknown): Promise<EncodedState> {
     bytes.set(buffer, at);
     at += buffer.length;
   }
-  const compressed = new Uint8Array(
+  return bytes;
+  });
+  const compressed = await diagnostics.measureAsync("compression", async () => new Uint8Array(
     await new Response(
       new Response(bytes).body!.pipeThrough(new CompressionStream("gzip")),
     ).arrayBuffer(),
-  );
-  return { hash: await digest(bytes), payload: base64(compressed) };
+  ));
+  return { hash: await diagnostics.measureAsync("hash", () => digest(bytes)),
+    payload: diagnostics.measure("base64", () => base64(compressed)) };
 }
 export async function decodeState<T>(
   state: EncodedState,
   limits: StateDecodeLimits = {},
 ): Promise<T> {
+  const diagnostics = limits.diagnostics ?? NO_DIAGNOSTICS;
   for (const limit of [
     limits.maxArrayBytes,
     limits.maxMetadataBytes,
@@ -368,7 +378,8 @@ export async function decodeState<T>(
       throw new Error("Invalid decoded memory budget");
   if (!/^[a-f0-9]{64}$/u.test(state.hash) || state.payload.length > 32_000_000)
     throw new Error("Invalid encoded checkpoint");
-  const compressed = unbase64(state.payload);
+  const compressed = diagnostics.measure("base64", () => unbase64(state.payload));
+  const decompressStarted = diagnostics.enabled ? performance.now() : 0;
   const reader = new Response(compressed)
     .body!.pipeThrough(new DecompressionStream("gzip"))
     .getReader();
@@ -391,7 +402,8 @@ export async function decodeState<T>(
     at += chunk.length;
   }
   chunks.length = 0;
-  if ((await digest(bytes)) !== state.hash)
+  if (diagnostics.enabled) diagnostics.record("decompression", performance.now() - decompressStarted);
+  if ((await diagnostics.measureAsync("hash", () => digest(bytes))) !== state.hash)
     throw new Error("Checkpoint hash mismatch");
   if (bytes.length < 8) throw new Error("Invalid checkpoint header");
   const header = new DataView(bytes.buffer);
@@ -408,7 +420,7 @@ export async function decodeState<T>(
     metadataBytes,
     limits.maxMetadataTokens ?? 4_000_000,
   );
-  const metadata = JSON.parse(dec.decode(metadataBytes));
+  const metadata = diagnostics.measure("json", () => JSON.parse(dec.decode(metadataBytes)));
   if (
     !metadata ||
     typeof metadata !== "object" ||
@@ -437,7 +449,7 @@ export async function decodeState<T>(
     arrays: 0,
     limit: limits.maxArrayBytes ?? 256_000_000,
   };
-  const result = unpack(metadata.value, buffers, budget) as T;
+  const result = diagnostics.measure("unpack", () => unpack(metadata.value, buffers, budget)) as T;
   limits.onDecoded?.({
     wireBytes: bytes.byteLength,
     arrayBytes: budget.bytes,

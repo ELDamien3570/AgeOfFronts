@@ -1,4 +1,5 @@
 import { describe, expect, it, vi } from "vitest";
+import { RUNTIME_PHASES } from "../../src/skirmish/RuntimeDiagnostics";
 import { defaultLobbySettings } from "../../src/skirmish/lobby/LobbyDirectory";
 import type { MatchAdvance } from "../../src/skirmish/multiplayer/application/MatchExecutor";
 import { ReservedMatchWorker } from "../../src/skirmish/multiplayer/infrastructure/ReservedMatchWorker";
@@ -144,7 +145,11 @@ describe("reserved authoritative worker", () => {
       expect(update.diagnostics!.timings.tick!.samples).toBe(4);
       expect(update.diagnostics!.memory.heapUsed).toBeGreaterThan(0);
       expect(update.diagnostics!.payloadBytes).toBe(update.packet!.payload.length);
-      expect(update.diagnostics!.retainedBytes).toBeLessThanOrEqual(16 * 256 * 8);
+      expect(update.diagnostics!.retainedBytes).toBeLessThanOrEqual(RUNTIME_PHASES.length * 256 * 8);
+      expect(update.diagnostics!.correlation).toMatchObject({ tick: 4, captureSequence: 2, runtime: process.version });
+      for (const phase of ["pack", "json", "compression", "hash", "base64", "transfer"] as const)
+        expect(update.diagnostics!.replication!.encoderTimings![phase]?.samples).toBeGreaterThan(0);
+      expect(update.diagnostics!.paths!.land.routeBytes).toBeGreaterThanOrEqual(0);
       expect(Object.keys(update).sort()).toEqual([
         "diagnostics",
         "packet",
@@ -173,6 +178,7 @@ describe("reserved authoritative worker", () => {
     await expect(worker.request({ type: "baseline" })).rejects.toThrow(
       "stopped",
     );
+    expect(worker.lifecycle).toMatchObject({ state: "stopped", cause: "closed" });
   }, 20_000);
 
   it("applies player commands once, preserves domain ownership and converts departures to AI", async () => {

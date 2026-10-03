@@ -1,5 +1,6 @@
 import type { LandPaths, WaterPaths } from "./Pathfinding";
 import { PlanningWorkspace, type PlanningPathState } from "./PlanningWorkspace";
+import { PLANNER_CALLERS, type PlannerCaller, type PlannerCohort } from "./RuntimeDiagnostics";
 
 export interface ExactRouteRequest<T> {
   key: string;
@@ -29,6 +30,8 @@ export type ExactRouteOutcome =
   | "limited"
   | "superseded";
 export interface RoutePlannerPorts<T> {
+  /** Read-only diagnostic attribution; never retained in job checkpoints. */
+  identity?(request: ExactRouteRequest<T>): { playerId: number; caller: PlannerCaller };
   prepare?(
     request: ExactRouteRequest<T>,
     budget: number,
@@ -58,6 +61,7 @@ export interface RoutePlannerPorts<T> {
  */
 export class RoutePlanner<T> {
   private readonly jobs = new Map<string, Job<T>>();
+  private readonly cohorts = new Map<string, PlannerCohort>();
   private readonly workspace: PlanningWorkspace;
   readonly diagnostics = {
     work: 0,
@@ -114,6 +118,28 @@ export class RoutePlanner<T> {
     const job = this.jobs.get(key);
     return !!job && (!job.discard || !!job.replacement);
   }
+  private cohort(request: ExactRouteRequest<T>): PlannerCohort {
+    const identity = this.ports.identity?.(request);
+    const playerId = identity && Number.isInteger(identity.playerId) && identity.playerId >= 0 && identity.playerId < 256 ? identity.playerId : 0;
+    const caller = identity && PLANNER_CALLERS.includes(identity.caller) ? identity.caller : "other";
+    const key = `${playerId}:${caller}`;
+    let cohort = this.cohorts.get(key);
+    if (!cohort) {
+      cohort = { playerId, caller, pending: 0, oldestAge: 0, work: 0, complete: 0, unreachable: 0, limited: 0, superseded: 0 };
+      this.cohorts.set(key, cohort);
+    }
+    return cohort;
+  }
+  diagnosticCohorts(tick: number): PlannerCohort[] {
+    for (const cohort of this.cohorts.values()) { cohort.pending = 0; cohort.oldestAge = 0; }
+    // The authoritative queue has at most 128 entries, independent of world size.
+    for (const job of this.jobs.values()) {
+      const cohort = this.cohort(job);
+      cohort.pending++;
+      cohort.oldestAge = Math.max(cohort.oldestAge, tick - job.createdTick, 0);
+    }
+    return [...this.cohorts.values()].map(cohort => ({ ...cohort }));
+  }
   cancel(key: string): void {
     const job = this.jobs.get(key);
     if (job) {
@@ -169,6 +195,8 @@ export class RoutePlanner<T> {
     while (this.jobs.size && used < budget) {
       const [key, job] = this.jobs.entries().next().value!;
       this.jobs.delete(key);
+      const cohort = this.cohort(job), before = used;
+      try {
       let outcome: ExactRouteOutcome | undefined;
       const paths = job.water ? this.water : this.land;
       if (job.releasing) {
@@ -188,6 +216,8 @@ export class RoutePlanner<T> {
         outcome = job.releasing;
         job.releasing = undefined;
         if (job.discard) {
+          this.diagnostics.superseded++;
+          cohort.superseded++;
           if (job.replacement) this.request(job.replacement);
           continue;
         }
@@ -288,6 +318,7 @@ export class RoutePlanner<T> {
         } else if (job.uncertain) outcome = "limited";
       }
       if (outcome) {
+        cohort[outcome]++;
         if (outcome === "complete") this.diagnostics.completed++;
         if (outcome === "limited") this.diagnostics.limited++;
         if (outcome === "superseded") this.diagnostics.superseded++;
@@ -297,6 +328,7 @@ export class RoutePlanner<T> {
           outcome === "complete" ? job.output : [],
         );
       } else this.jobs.set(key, job);
+      } finally { cohort.work += used - before; }
     }
     this.diagnostics.work = used;
     this.diagnostics.pending = this.jobs.size;
