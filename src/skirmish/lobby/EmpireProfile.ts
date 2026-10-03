@@ -1,8 +1,11 @@
+import { validFactionColor } from "./FactionPalette";
+
 export const MAX_EMPIRE_NAME_LENGTH = 20;
 
 export interface EmpireProfile {
   readonly name: string;
   readonly flagCode: string | null;
+  readonly colorIndex?: number | null;
 }
 
 export const DEFAULT_EMPIRE_PROFILE: EmpireProfile = Object.freeze({
@@ -13,6 +16,7 @@ export const DEFAULT_EMPIRE_PROFILE: EmpireProfile = Object.freeze({
 export function createEmpireProfile(
   name: string,
   flagCode: string | null,
+  colorIndex?: number | null,
 ): EmpireProfile {
   const normalized = name.trim().normalize("NFC");
   if (!normalized || Array.from(normalized).length > MAX_EMPIRE_NAME_LENGTH)
@@ -22,5 +26,11 @@ export function createEmpireProfile(
   // eslint-disable-next-line no-control-regex -- rejects control characters on purpose
   if (/[\u0000-\u001f\u007f]/u.test(normalized))
     throw new Error("Empire names cannot contain control characters.");
-  return Object.freeze({ name: normalized, flagCode });
+  if (colorIndex != null && !validFactionColor(colorIndex))
+    throw new Error("Choose a faction color from the palette or Automatic.");
+  return Object.freeze({
+    name: normalized,
+    flagCode,
+    ...(colorIndex === undefined ? {} : { colorIndex }),
+  });
 }

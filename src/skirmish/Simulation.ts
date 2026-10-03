@@ -1,3 +1,4 @@
+import { validFactionColor } from "./lobby/FactionPalette";
 import { DEFENSIVE_BUILDINGS } from "./content/Buildings";
 import { domainRouteKey, type DomainRouteOwner, type DomainRoutePorts, type DomainRouteConsumer } from "./domain/DomainRoutePorts";
 import { EntityCollection } from "./EntityCollection";
@@ -170,6 +171,7 @@ export class Skirmish {
   restore(saved: ReturnType<Skirmish["checkpoint"]>): void {
     if (saved.version!==1 || saved.width!==this.map.width() || saved.height!==this.map.height() || JSON.stringify(saved.options)!==JSON.stringify(this.options) || Boolean(saved.expansion)!==Boolean(this.expansion)) throw new Error("Checkpoint does not match this simulation");
     const state=structuredClone(saved);
+    for (const player of state.players) player.colorKind ??= FACTIONS.find(faction => faction.id === player.factionId)?.kind ?? player.kind;
     restoreArray(this.players,state.players);
     this.squadEntities.restoreOwned(state.squads);
     this.buildingEntities.restoreOwned(state.buildings);
@@ -428,6 +430,11 @@ export class Skirmish {
     this.territoryAbsorption = new TerritoryAbsorption(map);
     this.coastalTerritory = new CoastalTerritory(map);
     const humanCount = options.humanNames?.length ?? 1;
+    if (options.humanColors) {
+      const chosen = options.humanColors.filter(color => color !== null);
+      if (options.humanColors.length !== humanCount || chosen.some(color => !validFactionColor(color)) || new Set(chosen).size !== chosen.length)
+        throw new Error("Human faction colors must be valid, unique palette choices for the human seats.");
+    }
     if (humanCount < 1 || humanCount > MAX_HUMAN_PLAYERS || options.humanNames?.some(name => typeof name !== "string" || !name.trim() || Array.from(name).length > 20))
       throw new Error("Invalid human faction roster");
     if (
@@ -737,9 +744,11 @@ export class Skirmish {
     const player: Player = {
       id,
       name,
+      ...(this.options.humanColors?.[id - 1] != null ? { colorIndex: this.options.humanColors[id - 1]! } : {}),
       ...(factionId ? { factionId, personalityId } : {}),
       ai: id > (this.options.humanNames?.length ?? 1),
       kind,
+      colorKind: kind,
       base,
       reserves: opening?.reserves ?? (
         kind === "tribe"

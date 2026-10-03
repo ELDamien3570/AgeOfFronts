@@ -213,7 +213,7 @@ describe("custom settings and empire identity in preview", () => {
       },
     };
     const vm = new LobbyViewModel(store);
-    expect(vm.saveProfile("Golden Eagles", "us")).toBe(true);
+    expect(vm.saveProfile("Golden Eagles", "us", 4)).toBe(true);
     for (const id of ["one", "two", "three", "four"])
       vm.createRoom(
         id,
@@ -228,6 +228,8 @@ describe("custom settings and empire identity in preview", () => {
     const restored = new LobbyViewModel(store);
     expect(restored.profile.name).toBe("Golden Eagles");
     expect(restored.profile.flagCode).toBe("us");
+    expect(restored.profile.colorIndex).toBe(4);
+    expect(restored.directory.visible[0].owner.colorIndex).toBe(4);
     expect(restored.directory.visible).toHaveLength(3);
     expect(restored.directory.queue[0].id).toBe("four");
     restored.showCustomRoom("one", 0);

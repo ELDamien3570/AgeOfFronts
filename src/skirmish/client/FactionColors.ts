@@ -1,4 +1,5 @@
 import { MAX_PLAYER_ID, MAX_TRIBES } from "../FactionRules";
+import { FACTION_PALETTE, validFactionColor } from "../lobby/FactionPalette";
 import type { Player } from "../Protocol";
 
 function tribeColor(index: number): string {
@@ -41,53 +42,73 @@ function paletteColor(
 // subdued palette, covering every owner ID without renderer-specific rules.
 export const COLORS = [
   "#667e77",
-  "#62d5cc",
-  "#ee776b",
-  "#edbb62",
-  "#b39aeb",
-  "#96c776",
-  "#e39abd",
-  "#6599e8",
-  "#b5805e",
-  "#bec5df",
-  "#59b9f0",
-  "#c94452",
-  "#b8bf59",
-  "#e7dbc1",
-  "#3f7ea8",
-  "#e89c7c",
-  "#caa52f",
-  "#cd73dc",
-  "#a3b5bd",
-  "#ef8e36",
-  "#4b9664",
+  ...FACTION_PALETTE.map((entry) => entry.hex),
   ...Array.from({ length: MAX_PLAYER_ID - 20 }, (_, index) =>
     tribeColor(index % MAX_TRIBES),
   ),
 ];
-const HAND_PICKED_REGULAR = COLORS.slice(1, 21);
+export const RGB = COLORS.map(hexRgb);
+export const BUILDING_PAD_COLORS = new Map<string, string>();
+export let factionColorRevision = 0;
 let assignedRoster = "";
+function hexRgb(color: string): number[] {
+  return [1, 3, 5].map((offset) =>
+    parseInt(color.slice(offset, offset + 2), 16),
+  );
+}
+function updateDerivedColors(): void {
+  BUILDING_PAD_COLORS.clear();
+  for (const [index, color] of COLORS.entries()) {
+    RGB[index] = hexRgb(color);
+    BUILDING_PAD_COLORS.set(
+      color,
+      `rgb(${RGB[index].map((channel) => Math.round(channel + (255 - channel) * 0.22)).join(",")})`,
+    );
+  }
+}
+updateDerivedColors();
 
-/**
- * Colors by faction kind, by player ID. Regular factions take the hand-picked
- * palette in order, then generated bright colors; tribes take the subdued
- * palette in order. Updates COLORS in place so every renderer lookup by ID
- * stays a plain array read. Cheap to call per snapshot.
- */
+/** Assign once per roster/composition/reservation change; all derived colors
+ * update together. Explicit human choices reserve palette entries before AI. */
 export function assignFactionColors(
-  players: readonly Pick<Player, "id" | "kind">[],
+  players: readonly Pick<Player, "id" | "kind" | "colorKind" | "colorIndex">[],
 ): void {
-  // Keyed by IDs only: a promoted tribe keeps the color it started with.
-  const roster = players.map((p) => p.id).join(",");
+  const ordered = [...players].sort((a, b) => a.id - b.id);
+  const roster = ordered
+    .map((p) => `${p.id}:${p.colorKind ?? p.kind}:${p.colorIndex ?? "auto"}`)
+    .join(",");
   if (roster === assignedRoster) return;
   assignedRoster = roster;
+  const reserved = new Set(
+    ordered
+      .filter((p) => validFactionColor(p.colorIndex))
+      .map((p) => p.colorIndex!),
+  );
   let regular = 0,
     tribe = 0;
-  for (const player of [...players].sort((a, b) => a.id - b.id))
-    COLORS[player.id] =
-      player.kind === "tribe"
-        ? tribeColor(tribe++)
-        : regular < HAND_PICKED_REGULAR.length
-          ? HAND_PICKED_REGULAR[regular++]
-          : regularColor(regular++ - HAND_PICKED_REGULAR.length);
+  const used = new Set(
+    [...reserved].map((index) => FACTION_PALETTE[index].hex as string),
+  );
+  for (const player of ordered) {
+    if (validFactionColor(player.colorIndex)) {
+      COLORS[player.id] = FACTION_PALETTE[player.colorIndex].hex;
+      continue;
+    }
+    let color: string;
+    do {
+      if ((player.colorKind ?? player.kind) === "tribe")
+        color = tribeColor(tribe++);
+      else {
+        color =
+          regular < FACTION_PALETTE.length
+            ? FACTION_PALETTE[regular].hex
+            : regularColor(regular - FACTION_PALETTE.length);
+        regular++;
+      }
+    } while (used.has(color));
+    used.add(color);
+    COLORS[player.id] = color;
+  }
+  updateDerivedColors();
+  factionColorRevision++;
 }

@@ -1,3 +1,4 @@
+import { FACTION_PALETTE } from "../lobby/FactionPalette";
 import { z } from "zod";
 import {
   MAX_AI_OPPONENTS,
@@ -35,6 +36,7 @@ export interface MatchManifest {
 const profile = z
   .object({
     name: z.string().min(1).max(80),
+    colorIndex: z.number().int().min(0).max(FACTION_PALETTE.length - 1).nullable().optional(),
     flagCode: z
       .string()
       .regex(/^[a-zA-Z0-9_-]{1,64}$/u)

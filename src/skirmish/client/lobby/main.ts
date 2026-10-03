@@ -130,6 +130,21 @@ const view = new LobbyView(
     draftName: (name) => {
       vm.draftEmpireName = name;
     },
+    chooseColor: (index) => {
+      const previous = vm.profile;
+      if (!vm.chooseColor(index)) { view.render(vm); return; }
+      const submitted = vm.profile;
+      if (connection && vm.connected) {
+        void connection.request({ type: "profile", requestId: requestId(), profile: submitted })
+          .catch(error => {
+            if (vm.profile !== submitted) return;
+            vm.chooseColor(previous.colorIndex ?? null);
+            vm.colorError = (error as Error).message;
+            reportError(error);
+          });
+      }
+      view.render(vm);
+    },
     saveProfile: (name) => {
       if (vm.saveProfile(name) && connection)
         void connection

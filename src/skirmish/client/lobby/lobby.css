@@ -227,7 +227,7 @@ h1[tabindex="-1"]:focus {
 }
 .customization-bar {
   display: grid;
-  grid-template-columns: 170px minmax(170px, 1fr) minmax(230px, 1fr) auto;
+  grid-template-columns: 130px minmax(140px, 1fr) minmax(180px, 1fr) minmax(140px, 0.8fr) auto;
   gap: 27px;
   align-items: center;
   padding: 22px 25px;
@@ -255,6 +255,7 @@ h1[tabindex="-1"]:focus {
   font-size: 10px;
 }
 .customization-bar input,
+.faction-color-field select,
 .directory-dialog input:not([type="checkbox"]),
 .directory-dialog select {
   min-width: 0;
@@ -1078,7 +1079,7 @@ h1[tabindex="-1"]:focus {
     width: calc(100% - 56px);
   }
   .customization-bar {
-    grid-template-columns: 135px 1fr 1fr auto;
+    grid-template-columns: 110px 1fr 1fr minmax(130px, 0.8fr) auto;
     gap: 18px;
     padding: 20px;
   }
@@ -1454,3 +1455,10 @@ h1[tabindex="-1"]:focus {
     scroll-behavior: auto !important;
   }
 }
+
+.faction-color-field { display: grid; gap: 7px; font-size: 12px; }
+.faction-color-field small { color: var(--muted); font-size: 10px; }
+.faction-color-swatch { display: inline-block; width: 15px; height: 15px; border: 1px solid #ffffff66; vertical-align: middle; margin-left: 6px; flex-shrink: 0; }
+.room-roster > .faction-color-field { margin-bottom: 18px; max-width: 260px; }
+
+.faction-color-field .faction-color-error { color: #ee776b; }

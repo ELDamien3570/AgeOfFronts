@@ -56,16 +56,29 @@ export class TerritoryLayer {
   constructor(
     private readonly width: number,
     private readonly height: number,
-    private readonly colors: number[][],
+    private colors: number[][],
   ) {
     this.columns = Math.ceil(width / CHUNK);
     this.owners = new Uint8Array(width * height).fill(255);
     this.claims = new Uint8Array(width * height);
     this.progress = new Uint8Array(width * height);
+    this.colors = colors.map(color => [...color]);
     this.borderColors = colors.map(
       (color) =>
         `rgb(${color.map((c) => Math.round(c + (255 - c) * 0.18)).join(",")})`,
     );
+  }
+  /** Own a palette copy so in-place global changes can be detected. Palette
+   * changes repaint all ownership pixels, including incremental snapshots. */
+  setColors(colors: number[][]): void {
+    if (colors.length === this.colors.length && colors.every((color, i) =>
+      color.every((channel, j) => channel === this.colors[i][j]))) return;
+    this.colors = colors.map(color => [...color]);
+    this.borderColors.splice(0, this.borderColors.length, ...colors.map(color =>
+      `rgb(${color.map(c => Math.round(c + (255 - c) * 0.18)).join(",")})`));
+    this.initialized = false;
+    this.owners.fill(255);
+    for (const chunk of this.chunks.values()) chunk.borderDirty = true;
   }
   private key(tile: number) {
     return (

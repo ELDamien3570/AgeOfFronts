@@ -1,3 +1,4 @@
+import { FACTION_PALETTE } from "../../lobby/FactionPalette";
 import {
   createEmpireProfile,
   DEFAULT_EMPIRE_PROFILE,
@@ -26,6 +27,7 @@ export interface PreviewSeat {
   kind: "you" | "sample" | "open" | "ai";
   name: string;
   detail: string;
+  colorIndex?: number | null;
 }
 
 /** Projects either the local preview or the server-owned room directory. */
@@ -137,6 +139,7 @@ export class LobbyViewModel {
   profile: EmpireProfile = DEFAULT_EMPIRE_PROFILE;
   draftEmpireName = this.profile.name;
   message = "";
+  colorError = "";
   dialog: "create" | "flags" | null = null;
   flagSearch = "";
   flagLimit = 48;
@@ -220,14 +223,37 @@ export class LobbyViewModel {
     return this.flagMatches.slice(0, this.flagLimit);
   }
 
+  get colorChoices() {
+    return FACTION_PALETTE.map((entry, index) => ({ ...entry, index,
+      reserved: this.onlineRoom?.members.some(member => member.guestId !== this.guestId && member.profile.colorIndex === index) ?? false,
+    }));
+  }
+  get selectedColorIndex(): number | null {
+    const member = this.onlineRoom?.members.find(member => member.guestId === this.guestId);
+    return member ? member.profile.colorIndex ?? null : this.profile.colorIndex ?? null;
+  }
+
+  chooseColor(index: number | null): boolean {
+    // Changing a cosmetic preference must not submit or erase a name draft.
+    this.colorError = "";
+    const draft = this.draftEmpireName;
+    const saved = this.saveProfile(this.profile.name, this.profile.flagCode, index);
+    this.draftEmpireName = draft;
+    if (!saved) this.colorError = this.message;
+    return saved;
+  }
+
   saveProfile(
     name: string,
     flagCode: string | null = this.profile.flagCode,
+    colorIndex: number | null | undefined = this.profile.colorIndex,
   ): boolean {
     try {
       if (flagCode !== null && !empireFlag(flagCode))
         throw new Error("Choose a flag from the local catalog.");
-      this.profile = createEmpireProfile(name, flagCode);
+      if (colorIndex != null && this.colorChoices[colorIndex]?.reserved)
+        throw new Error("That faction color is reserved by another player.");
+      this.profile = createEmpireProfile(name, flagCode, colorIndex);
       this.draftEmpireName = this.profile.name;
       this.persist("Empire customization saved in this browser.");
       return true;
@@ -307,7 +333,7 @@ export class LobbyViewModel {
     const validProfile = (profile: EmpireProfile) => {
       if (profile.flagCode !== null && !empireFlag(profile.flagCode))
         throw new Error("Unknown saved flag");
-      return createEmpireProfile(profile.name, profile.flagCode);
+      return createEmpireProfile(profile.name, profile.flagCode, profile.colorIndex);
     };
     try {
       if (saved.profile) this.profile = validProfile(saved.profile);
@@ -448,7 +474,7 @@ export class LobbyViewModel {
   }
 
   get skirmishHref(): string {
-    return `/skirmish/index.html?map=${this.mapId}`;
+    return `/skirmish/index.html?map=${this.mapId}${this.profile.colorIndex != null ? `&color=${this.profile.colorIndex}` : ""}`;
   }
 
   get seats(): PreviewSeat[] {
@@ -463,6 +489,7 @@ export class LobbyViewModel {
               : "sample"
             : "open",
           name: member?.profile.name ?? "Open seat",
+          colorIndex: member?.profile.colorIndex,
           detail: member
             ? member.connected
               ? member.guestId === this.guestId
@@ -488,6 +515,7 @@ export class LobbyViewModel {
           number,
           kind: "you",
           name: this.profile.name,
+          colorIndex: this.profile.colorIndex,
           detail: "You · preview seat",
         };
       if (index < this.humans)

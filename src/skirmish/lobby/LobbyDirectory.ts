@@ -192,7 +192,7 @@ export class LobbyDirectory {
     const entry = Object.freeze({
       ...room,
       title,
-      owner: createEmpireProfile(room.owner.name, room.owner.flagCode),
+      owner: createEmpireProfile(room.owner.name, room.owner.flagCode, room.owner.colorIndex),
       settings: validateLobbySettings(room.settings),
     });
     if (!this.full) {

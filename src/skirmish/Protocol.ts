@@ -233,6 +233,10 @@ export interface Squad {
 export interface Player {
   id: number;
   name: string;
+  /** Optional lobby palette reservation; absent in older matches. */
+  colorIndex?: number;
+  /** Starting palette category, retained when a tribe becomes a civilization. */
+  colorKind?: "regular" | "tribe";
   factionId?: string;
   personalityId?: import("./domain/AiPersonality").AiPersonalityId;
   ai: boolean;
@@ -365,6 +369,8 @@ export interface MatchOptions {
   aiCount: number;
   /** Ordered human seats; IDs are 1..N. Omitted for the existing solo game. */
   humanNames?: readonly string[];
+  /** Palette reservations corresponding to the ordered human seats. */
+  humanColors?: readonly (number | null)[];
   /** Human reservations accepted during setup; absent seats use seeded fallback. */
   humanSpawns?: readonly { playerId: number; tile: number }[];
   resourceDensity?: 1 | 2 | 3 | 5;

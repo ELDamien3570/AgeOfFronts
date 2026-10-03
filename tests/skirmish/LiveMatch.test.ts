@@ -14,7 +14,7 @@ import type {
 import type { ServerMessage } from "../../src/skirmish/multiplayer/Protocol";
 
 const packet = { hash: "0".repeat(64), payload: "test" };
-async function fixture(stream = false) {
+async function fixture(stream = false, colorIndex?: number) {
   let now = 0,
     tick = 0,
     released = 0,
@@ -72,7 +72,7 @@ async function fixture(stream = false) {
       },
       members: ["a", "b"].map((guestId) => ({
         guestId,
-        profile: { name: guestId, flagCode: null },
+        profile: { name: guestId, flagCode: null, ...(guestId === "a" && colorIndex !== undefined ? { colorIndex } : {}) },
         joinedAt: 0,
         connected: true,
       })),
@@ -119,6 +119,12 @@ async function fixture(stream = false) {
 }
 
 describe("server-authoritative live match", () => {
+  it("passes lobby color reservations to the authoritative match setup", async () => {
+    const f = await fixture(false, 7);
+    expect(f.match.options.humanColors).toEqual([7, null]);
+    await f.match.end("color setup tested");
+  });
+
   it("observes scheduler debt, admission and active progress without publishing diagnostics", async () => {
     const f = await fixture();
     f.setTime(10_500);

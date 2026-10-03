@@ -1,3 +1,5 @@
+import { BrowserLobbyPreviewStore } from "./lobby/LobbyPreviewStore";
+import { validFactionColor } from "../lobby/FactionPalette";
 import { DEFAULT_AI_POLICIES } from "../content/AiPolicies";
 let localPlayerId = 1;
 let diagnosticSeed: number | undefined;
@@ -5,6 +7,9 @@ import { OnlineMatchSession } from "./OnlineMatchSession";
 import { RuntimeDiagnostics } from "../RuntimeDiagnostics";
 const browserDiagnostics = new RuntimeDiagnostics();
 const onlineQuery = new URLSearchParams(window.location.search);
+const savedLobbyProfile = new BrowserLobbyPreviewStore().read() as { profile?: { colorIndex?: unknown } } | undefined;
+const preferredFactionColor = onlineQuery.has("color") ? Number(onlineQuery.get("color")) : savedLobbyProfile?.profile?.colorIndex;
+
 const onlineMatchId = onlineQuery.get("match");
 const onlineSeat = onlineQuery.has("seat") ? Number(onlineQuery.get("seat")) : undefined;
 
@@ -71,7 +76,6 @@ import { ArmyViewModel } from "./ArmyViewModel";
 import { HudViewModel } from "./HudViewModel";
 import { OrderGesture } from "./OrderGesture";
 
-import { assignFactionColors } from "./FactionColors";
 import { COLORS, Renderer } from "./Renderer";
 
 import { SkirmishViewModel } from "./SkirmishViewModel";
@@ -505,7 +509,6 @@ async function start(): Promise<void> {
       element<HTMLButtonElement>("pause").disabled = false;
 
       snapshot = decoder.decode(message.packet);
-      assignFactionColors(snapshot.players);
       snapshot.localPlayerId=localPlayerId;
 
 
@@ -563,6 +566,8 @@ async function start(): Promise<void> {
       options: {
         ...DEFAULT_AI_POLICIES,
         seed,
+        ...(validFactionColor(preferredFactionColor)
+          ? { humanColors: [preferredFactionColor] } : {}),
 
         aiCount: Number(element<HTMLSelectElement>("opponents").value),
 

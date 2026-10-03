@@ -1,3 +1,4 @@
+import { RoomCoordinator } from "../../src/skirmish/multiplayer/domain/RoomCoordinator";
 // @vitest-environment jsdom
 import { describe, expect, it, vi } from "vitest";
 import { LobbyView } from "../../src/skirmish/client/lobby/LobbyView";
@@ -22,6 +23,7 @@ function fixture() {
     moreFlags: vi.fn(),
     draftName: vi.fn(),
     saveProfile: vi.fn(),
+    chooseColor: vi.fn(),
     createRoom: vi.fn(),
     removeRoom: vi.fn(),
   };
@@ -36,6 +38,44 @@ function fixture() {
 }
 
 describe("lobby page", () => {
+  it("disables colors reserved by other guests while showing the server-owned selection", () => {
+    const { root, view, vm } = fixture();
+    const rooms = new RoomCoordinator(0, 1);
+    rooms.join("default-africa", "a", { name: "A", flagCode: null, colorIndex: 1 }, 0);
+    rooms.join("default-africa", "b", { name: "B", flagCode: null, colorIndex: 3 }, 0);
+    vm.online = true; vm.connected = true; vm.showLobby("africa");
+    vm.applyOnlineState(rooms.snapshot(), "a", Date.now());
+    view.render(vm);
+    const select = root.querySelector<HTMLSelectElement>("#faction-color")!;
+    expect(select.value).toBe("1");
+    expect(select.querySelector<HTMLOptionElement>('[value="3"]')!.disabled).toBe(true);
+    expect(vm.chooseColor(3)).toBe(false);
+    expect(vm.message).toContain("reserved");
+    view.render(vm);
+    expect(root.querySelector(".faction-color-error")!.textContent).toContain("reserved");
+  });
+
+  it("provides an accessible color selector on both lobby pages and routes changes through actions", () => {
+    const { root, view, vm, actions } = fixture();
+    let select = root.querySelector<HTMLSelectElement>("#faction-color")!;
+    expect(select.options.length).toBe(21);
+    select.value = "3";
+    select.dispatchEvent(new Event("change", { bubbles: true }));
+    expect(actions.chooseColor).toHaveBeenCalledWith(3);
+    vm.draftEmpireName = "Unsaved name";
+    vm.chooseColor(3);
+    expect(vm.draftEmpireName).toBe("Unsaved name");
+    view.render(vm);
+    expect(root.querySelector<HTMLSelectElement>("#faction-color")!.value).toBe("3");
+    expect(vm.skirmishHref).toContain("color=3");
+    vm.showLobby("africa");
+    view.render(vm);
+    select = root.querySelector<HTMLSelectElement>("#faction-color")!;
+    select.value = "";
+    select.dispatchEvent(new Event("change", { bubbles: true }));
+    expect(actions.chooseColor).toHaveBeenCalledWith(null);
+  });
+
   it("rotates only featured cards, preserves draft identity, and defers replacement of a focused link", () => {
     const { root, view, vm } = fixture();
     const holder = root.querySelector<HTMLElement>("[data-featured-maps]")!;

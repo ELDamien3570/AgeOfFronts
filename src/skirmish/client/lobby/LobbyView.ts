@@ -1,3 +1,4 @@
+import { FACTION_PALETTE } from "../../lobby/FactionPalette";
 import { AGE_NAMES, AGES } from "../../domain/Definitions";
 import {
   factionCountRange,
@@ -34,6 +35,7 @@ export interface LobbyActions {
   moreFlags(): void;
   draftName(name: string): void;
   saveProfile(name: string): void;
+  chooseColor(index: number | null): void;
   createRoom(data: FormData): void;
   removeRoom(id: string): void;
 }
@@ -97,6 +99,12 @@ function roomCard(
   </article>`;
 }
 
+function colorSelector(vm: LobbyViewModel): string {
+  const selected = vm.selectedColorIndex;
+  const color = selected == null ? "transparent" : FACTION_PALETTE[selected].hex;
+  return `<label class="faction-color-field" for="faction-color"><span>Faction color <i class="faction-color-swatch" style="background:${color}" aria-hidden="true"></i></span><select id="faction-color" aria-describedby="faction-color-help"${vm.online && !vm.connected && vm.joinedOnlineRoom ? " disabled" : ""}><option value=""${selected == null ? " selected" : ""}>Automatic</option>${vm.colorChoices.map(entry => `<option value="${entry.index}"${selected === entry.index ? " selected" : ""}${entry.reserved ? " disabled" : ""}>${entry.name}${entry.reserved ? " - Reserved" : ""}</option>`).join("")}</select><small id="faction-color-help">Colors are unique within each lobby.</small>${vm.colorError ? `<small class="faction-color-error" role="alert">${e(vm.colorError)}</small>` : ""}</label>`;
+}
+
 function header(): string {
   return `<a class="skip-link" href="#main-content">Skip to content</a><header class="lobby-header"><a class="lobby-brand" href="/" data-home aria-label="Age of Fronts home"><img class="lobby-brand-mark" src="/images/age-of-fronts-stone-logo.png" alt="" width="96" height="96" /><span>AGE <small>OF</small> FRONTS</span></a><nav aria-label="Main navigation"><a href="/" data-home>Lobbies</a><a href="/skirmish/troops.html">Troop almanac</a><a class="lobby-button outline" href="/skirmish/index.html">Play vs AI ${arrow}</a></nav></header>`;
 }
@@ -115,7 +123,7 @@ function home(vm: LobbyViewModel): string {
   const custom = vm.directory.visible;
   return `<main id="main-content" class="directory-page">
     <div class="directory-heading"><div><p class="overline">GATHER YOUR EMPIRE</p><h1>Battlefield Lobbies</h1><p>Choose a battlefield or make a room of your own.</p></div><button id="create-lobby" class="lobby-button brass large" data-open-create><span aria-hidden="true">＋</span> Create lobby</button></div>
-    <form id="empire-customization" class="customization-bar" aria-label="Empire customization"><div class="customization-label"><span class="overline">YOUR EMPIRE</span><span>Customize your lobby identity</span></div><label class="empire-name-field" for="empire-name">Empire name<input id="empire-name" name="empireName" value="${e(vm.draftEmpireName)}" placeholder="Name your empire" autocomplete="off" required aria-describedby="empire-name-help" /><small id="empire-name-help">Up to ${MAX_EMPIRE_NAME_LENGTH} characters</small></label><div class="flag-field"><span>Empire flag</span><button type="button" id="choose-flag" data-open-flags aria-label="Choose empire flag">${flag(vm.profile.flagCode, vm.profile.name)}<span>${e(vm.selectedFlag?.name ?? "Choose a flag")}<small>Change flag ▾</small></span></button></div><button id="save-empire" type="submit" class="lobby-button outline">Save empire</button></form>
+    <form id="empire-customization" class="customization-bar" aria-label="Empire customization"><div class="customization-label"><span class="overline">YOUR EMPIRE</span><span>Customize your lobby identity</span></div><label class="empire-name-field" for="empire-name">Empire name<input id="empire-name" name="empireName" value="${e(vm.draftEmpireName)}" placeholder="Name your empire" autocomplete="off" required aria-describedby="empire-name-help" /><small id="empire-name-help">Up to ${MAX_EMPIRE_NAME_LENGTH} characters</small></label><div class="flag-field"><span>Empire flag</span><button type="button" id="choose-flag" data-open-flags aria-label="Choose empire flag">${flag(vm.profile.flagCode, vm.profile.name)}<span>${e(vm.selectedFlag?.name ?? "Choose a flag")}<small>Change flag ▾</small></span></button></div>${colorSelector(vm)}<button id="save-empire" type="submit" class="lobby-button outline">Save empire</button></form>
     <div class="directory-preview-label"><span class="planned-label">${vm.online ? "SHARED LOBBIES" : "LOCAL PREVIEW"}</span><p>${vm.online ? "Join a room with friends. The match starts when enough humans join and the countdown ends, or the room fills." : "Rooms and the queue are saved in this browser. Online joining will be connected next. The AI skirmish is playable now."}</p></div>
     <p id="directory-message" class="directory-message" role="status">${e(vm.message)}</p>
     ${liveMatchesMarkup(vm)}
@@ -130,7 +138,7 @@ function lobby(vm: LobbyViewModel): string {
   const map = vm.selectedMap;
   return `<main id="main-content" class="room-page"><a class="back-link" href="#" data-home>← All lobbies</a><div class="preview-notice"><span class="planned-label">${vm.online ? "ONLINE LOBBY" : "LOCAL PREVIEW"}</span><p>${vm.online ? "Your guest identity reserves one seat. You have 60 seconds to reconnect after a disconnect." : "This lobby is a demonstration. Sample players are simulated; online joining is not available yet."}</p></div>
     <div class="room-heading"><div><p class="overline">${map.name.toUpperCase()} / ${vm.online ? "LOBBY" : "LOBBY PREVIEW"}</p><h1>${e(vm.roomTitle)}</h1><p>${map.terrain} · ${vm.rules.alliances ? "Alliances allowed" : "Free for all"}</p></div><div class="room-capacity"><strong data-human-count>${vm.humanCount} <span>/ ${vm.rules.slots}</span></strong><span>${vm.online ? "connected humans" : "human seats in preview"}</span></div></div>
-    ${vm.queuePosition ? `<p class="room-queue-note">This room is waiting at display queue position ${vm.queuePosition}. You can review its preview while it waits.</p>` : ""}<div class="room-columns"><section class="room-roster" aria-labelledby="roster-title"><div class="panel-heading"><h2 id="roster-title">The war room</h2><span>${vm.rules.slots} FACTION SLOTS</span></div><div class="countdown-panel" data-phase="${vm.phase}"><div><span class="overline">${vm.online ? "LIVE LOBBY" : "LOBBY FLOW PREVIEW"}</span><h3 data-status role="status">${e(vm.status)}</h3><p data-status-detail>${e(vm.statusDetail)}</p></div><div class="countdown-clock"><strong data-countdown>${vm.countdown}</strong><span>${vm.rules.countdownSeconds}-second timer</span></div></div>${vm.online ? `<div class="start-vote-panel"><button id="vote-start" class="lobby-button brass" data-vote-start ${vm.canVoteToStart ? "" : "disabled"}>${vm.hasVotedToStart ? "Voted to start" : "Vote to start"}</button><div><strong>${vm.startVotes} / ${vm.humanCount} humans voted</strong><p>Start early when every connected human votes (even with 1 human). Available match capacity required.</p></div></div>` : ""}<div class="roster-legend"><span><i class="legend-you"></i>Your empire</span><span><i class="legend-human"></i>${vm.online ? "Player" : "Sample player"}</span><span><i class="legend-open"></i>Open human seat</span></div><ol class="seat-grid" aria-label="${vm.online ? "Lobby faction seats" : "Preview faction seats"}">${seatMarkup(vm)}</ol><div class="preview-controls" ${vm.online ? "hidden" : ""}><span>TRY THE LOBBY FLOW</span><div><button id="add-sample" class="lobby-button outline" data-add ${vm.canAddSample ? "" : "disabled"}>+ Add sample player</button><button id="remove-sample" class="lobby-button subtle" data-remove ${vm.canRemoveSample ? "" : "disabled"}>Remove sample</button><button id="reset-preview" class="lobby-button subtle" data-reset>Reset preview</button></div></div></section>
+    ${vm.queuePosition ? `<p class="room-queue-note">This room is waiting at display queue position ${vm.queuePosition}. You can review its preview while it waits.</p>` : ""}<div class="room-columns"><section class="room-roster" aria-labelledby="roster-title">${colorSelector(vm)}<div class="panel-heading"><h2 id="roster-title">The war room</h2><span>${vm.rules.slots} FACTION SLOTS</span></div><div class="countdown-panel" data-phase="${vm.phase}"><div><span class="overline">${vm.online ? "LIVE LOBBY" : "LOBBY FLOW PREVIEW"}</span><h3 data-status role="status">${e(vm.status)}</h3><p data-status-detail>${e(vm.statusDetail)}</p></div><div class="countdown-clock"><strong data-countdown>${vm.countdown}</strong><span>${vm.rules.countdownSeconds}-second timer</span></div></div>${vm.online ? `<div class="start-vote-panel"><button id="vote-start" class="lobby-button brass" data-vote-start ${vm.canVoteToStart ? "" : "disabled"}>${vm.hasVotedToStart ? "Voted to start" : "Vote to start"}</button><div><strong>${vm.startVotes} / ${vm.humanCount} humans voted</strong><p>Start early when every connected human votes (even with 1 human). Available match capacity required.</p></div></div>` : ""}<div class="roster-legend"><span><i class="legend-you"></i>Your empire</span><span><i class="legend-human"></i>${vm.online ? "Player" : "Sample player"}</span><span><i class="legend-open"></i>Open human seat</span></div><ol class="seat-grid" aria-label="${vm.online ? "Lobby faction seats" : "Preview faction seats"}">${seatMarkup(vm)}</ol><div class="preview-controls" ${vm.online ? "hidden" : ""}><span>TRY THE LOBBY FLOW</span><div><button id="add-sample" class="lobby-button outline" data-add ${vm.canAddSample ? "" : "disabled"}>+ Add sample player</button><button id="remove-sample" class="lobby-button subtle" data-remove ${vm.canRemoveSample ? "" : "disabled"}>Remove sample</button><button id="reset-preview" class="lobby-button subtle" data-reset>Reset preview</button></div></div></section>
     <aside class="room-sidebar" aria-label="Selected battlefield and rules"><div class="room-map"><img src="${map.image}" alt="${map.name} terrain overview" width="500" height="250" /><div><span class="overline">SELECTED BATTLEFIELD</span><h2>${map.name}</h2><p>${map.description}</p><small>${map.imageCredit}</small></div></div><div class="room-rules"><p class="overline">${vm.online ? "MATCH RULES" : "PREVIEW MATCH RULES"}</p>${rules(vm)}<p class="room-rule-note">${vm.online ? "The timer starts at the minimum connected human count and resets below it. A room can also start early when all connected humans vote (including 1 human). A match also requires reserved fallback capacity." : "The sample timer starts at the minimum human count and resets below it. The coordinator will enforce the real start rules when connected."}</p></div><div class="room-play"><a class="lobby-button brass" href="${vm.skirmishHref}">Play this map vs AI ${arrow}</a><p>Launches the existing local game with 3 AI opponents and its own match settings. Online matches use this lobby’s rules. AI practice uses its own settings.</p></div></aside></div>
   </main>`;
 }
@@ -139,7 +147,7 @@ function seatMarkup(vm: LobbyViewModel): string {
   return vm.seats
     .map(
       (seat) =>
-        `<li class="seat" data-kind="${seat.kind}"><span class="seat-number">${seat.number}</span><span class="seat-copy"><strong>${e(seat.name)}</strong><small>${e(seat.detail)}</small></span>${seat.kind === "you" && vm.selectedFlag ? flag(vm.profile.flagCode, vm.profile.name, "seat-flag") : `<span class="seat-emblem" aria-hidden="true">${seat.kind === "you" ? "◆" : seat.kind === "sample" ? "◇" : seat.kind === "ai" ? "▣" : "+"}</span>`}</li>`,
+        `<li class="seat" data-kind="${seat.kind}"><span class="seat-number">${seat.number}</span>${seat.colorIndex != null ? `<i class="faction-color-swatch" style="background:${FACTION_PALETTE[seat.colorIndex].hex}" aria-label="${FACTION_PALETTE[seat.colorIndex].name} faction color"></i>` : ""}<span class="seat-copy"><strong>${e(seat.name)}</strong><small>${e(seat.detail)}</small></span>${seat.kind === "you" && vm.selectedFlag ? flag(vm.profile.flagCode, vm.profile.name, "seat-flag") : `<span class="seat-emblem" aria-hidden="true">${seat.kind === "you" ? "◆" : seat.kind === "sample" ? "◇" : seat.kind === "ai" ? "▣" : "+"}</span>`}</li>`,
     )
     .join("");
 }
@@ -228,6 +236,10 @@ export class LobbyView {
     // Each map size has its own base AI and tribe counts.
     root.addEventListener("change", (event) => {
       const select = event.target;
+      if (select instanceof HTMLSelectElement && select.id === "faction-color") {
+        this.actions.chooseColor(select.value === "" ? null : Number(select.value));
+        return;
+      }
       if (
         !(select instanceof HTMLSelectElement) ||
         select.name !== "worldSize" ||
@@ -271,6 +283,7 @@ export class LobbyView {
       const nextEditor = nextHome.querySelector("#empire-customization")!;
       const name = editor.querySelector<HTMLInputElement>("#empire-name")!;
       if (name.value !== vm.draftEmpireName) name.value = vm.draftEmpireName;
+      editor.querySelector(".faction-color-field")!.innerHTML = nextEditor.querySelector(".faction-color-field")!.innerHTML;
       editor.querySelector("#choose-flag")!.innerHTML =
         nextEditor.querySelector("#choose-flag")!.innerHTML;
       for (const child of Array.from(currentHome.childNodes))

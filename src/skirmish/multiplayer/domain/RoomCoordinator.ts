@@ -114,7 +114,7 @@ export class RoomCoordinator {
         "All custom spaces are occupied. Opt into the queue to wait.",
       );
     settings = validateLobbySettings(settings);
-    profile = createEmpireProfile(profile.name, profile.flagCode);
+    profile = createEmpireProfile(profile.name, profile.flagCode, profile.colorIndex);
     this.assertNotInMatch(guestId);
     this.leave(guestId, now);
     const room: OnlineRoom = {
@@ -136,7 +136,8 @@ export class RoomCoordinator {
   join(id: string, guestId: string, profile: EmpireProfile, now: number): void {
     this.assertNotInMatch(guestId);
     const room = this.room(id);
-    profile = createEmpireProfile(profile.name, profile.flagCode);
+    profile = createEmpireProfile(profile.name, profile.flagCode, profile.colorIndex);
+    this.assertColorAvailable(room, guestId, profile);
     const existing = room.members.find((member) => member.guestId === guestId);
     if (existing) {
       existing.connected = true;
@@ -259,8 +260,16 @@ export class RoomCoordinator {
     }
   }
 
+  private assertColorAvailable(room: OnlineRoom, guestId: string, profile: EmpireProfile): void {
+    if (profile.colorIndex != null && room.members.some(member =>
+      member.guestId !== guestId && member.profile.colorIndex === profile.colorIndex))
+      throw new Error("That faction color is reserved by another player. Choose another color or Automatic.");
+  }
+
   updateProfile(guestId: string, profile: EmpireProfile): void {
-    profile = createEmpireProfile(profile.name, profile.flagCode);
+    profile = createEmpireProfile(profile.name, profile.flagCode, profile.colorIndex);
+    for (const room of this.state.rooms)
+      if (room.members.some(member => member.guestId === guestId)) this.assertColorAvailable(room, guestId, profile);
     for (const room of this.state.rooms)
       for (const member of room.members)
         if (member.guestId === guestId) member.profile = profile;

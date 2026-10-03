@@ -31,7 +31,7 @@ import {
   type TargetMarker,
 } from "./CombatEffectsViewModel";
 import { EraArtwork } from "./EraArtwork";
-import { COLORS } from "./FactionColors";
+import { COLORS, RGB, BUILDING_PAD_COLORS, assignFactionColors, factionColorRevision } from "./FactionColors";
 import { FormationArtwork, squadFormationType } from "./FormationArtwork";
 import {
   bakeGroundColors,
@@ -67,17 +67,6 @@ import { WallArtwork, type WallFrame } from "./WallArtwork";
 import { WallPresentation } from "./WallPresentation";
 export { COLORS } from "./FactionColors";
 
-const RGB = COLORS.map((color) => [
-  parseInt(color.slice(1, 3), 16),
-  parseInt(color.slice(3, 5), 16),
-  parseInt(color.slice(5, 7), 16),
-]);
-const BUILDING_PAD_COLORS = new Map(
-  COLORS.map((color, index) => [
-    color,
-    `rgb(${RGB[index].map((channel) => Math.round(channel + (255 - channel) * 0.22)).join(",")})`,
-  ]),
-);
 const SELECTED_UNIT_COLOR = "#c4ff36";
 
 export class Renderer {
@@ -117,6 +106,7 @@ export class Renderer {
   private groundColors?: Uint8Array;
   private ground?: PaintedTerrain;
   private territory?: TerritoryLayer;
+  private colorRevision = -1;
   private territoryLabels?: TerritoryLabelViewModel;
   private buildingStacks: {
     building: Snapshot["buildings"][number];
@@ -292,6 +282,11 @@ export class Renderer {
 
   update(snapshot: Snapshot): void {
     if (!this.map) return;
+    assignFactionColors(snapshot.players);
+    if (this.colorRevision !== factionColorRevision) {
+      this.territory!.setColors(RGB);
+      this.colorRevision = factionColorRevision;
+    }
     this.buildPreview?.update(snapshot);
     if (snapshot.tick !== this.snapshot?.tick) this.previousTick = this.snapshot?.tick;
     this.squadSamples.update(snapshot.squads, snapshot.tick);

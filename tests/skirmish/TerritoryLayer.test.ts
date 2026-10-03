@@ -194,6 +194,23 @@ function setup(width: number, height: number, owners?: number[]) {
 }
 
 describe("territory zoom styling", () => {
+  it("repaints pixels and border accents after a palette change even with no changed tiles", () => {
+    const { layer, snapshot, render, canvases } = setup(2, 1, [1, 2]);
+    layer.update(snapshot);
+    const colors = COLORS.map(color => [...color]);
+    colors[1] = [40, 180, 70];
+    snapshot.changedTiles = new Uint32Array();
+    layer.setColors(colors);
+    layer.update(snapshot);
+    const image = canvases[0].ctx.putImageData.mock.calls[canvases[0].ctx.putImageData.mock.calls.length - 1][0] as unknown as ImageData;
+    expect([...image.data.slice(0, 3)]).toEqual(colors[1]);
+    expect(render().strokes.some(stroke => stroke.color === "rgb(79,194,103)")).toBe(true);
+    const calls = canvases[0].ctx.putImageData.mock.calls.length;
+    layer.setColors(colors);
+    layer.update(snapshot);
+    expect(canvases[0].ctx.putImageData.mock.calls.length).toBe(calls);
+  });
+
   it("keeps the strategic wash and smoothly fades to five percent at tactical scale", () => {
     expect(territoryStyle(0.1).fillAlpha).toBe(TERRITORY_ALPHA);
     expect(territoryStyle(2).fillAlpha).toBe(TERRITORY_ALPHA);
