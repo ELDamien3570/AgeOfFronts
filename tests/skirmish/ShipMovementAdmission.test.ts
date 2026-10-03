@@ -39,15 +39,97 @@ function finish(match: Skirmish) {
   expect(match.shipAdmission.pendingCount).toBe(0);
 }
 describe("transactional sailing admission", () => {
+  it("restores legacy committed retry policy without silently introducing pauses", () => {
+    const { map, match, ships } = fixture(),
+      ship = ships[0],
+      goal = map.ref(70, 50);
+    const saved = match.shipAdmission.checkpoint();
+    const { pauseCommitted, ...legacy } = saved;
+    expect(pauseCommitted).toBe(true);
+    match.shipAdmission.restore(legacy);
+    ship.destination = goal;
+    match.shipAdmission.resume(ship, goal);
+    const id = match.shipAdmission.checkpoint().pending[0][0];
+    for (const tick of [10, 40, 100])
+      match.shipAdmission.completed(id, ship.id, "limited", [], tick);
+    expect(
+      match.shipAdmission.checkpoint().pending[0][1].paused,
+    ).toBeUndefined();
+    expect(match.shipAdmission.checkpoint().pauseCommitted).toBe(false);
+  });
+
+  it("pauses a committed voyage after bounded capacity retries and retains later waypoints", () => {
+    const { map, match, ships } = fixture(),
+      ship = ships[0],
+      goal = map.ref(70, 50);
+    ship.destination = goal;
+    ship.waypoints = [map.ref(75, 50)];
+    match.shipAdmission.resume(ship, goal);
+    const id = match.shipAdmission.checkpoint().pending[0][0];
+    for (const tick of [10, 40, 100])
+      match.shipAdmission.completed(id, ship.id, "limited", [], tick);
+    expect(match.shipAdmission.checkpoint().pending[0][1]).toMatchObject({
+      paused: true,
+      execution: true,
+    });
+    expect(ship.waypoints).toEqual([map.ref(75, 50)]);
+    const request = vi.spyOn(match.routePlanner, "request");
+    match.shipAdmission.step(1000);
+    expect(request).not.toHaveBeenCalled();
+    const saved = match.checkpoint(),
+      restored = new Skirmish(map, match.options);
+    restored.restore(saved);
+    expect(restored.shipAdmission.checkpoint()).toEqual(
+      match.shipAdmission.checkpoint(),
+    );
+    const restoredRequest = vi.spyOn(restored.routePlanner, "request");
+    restored.shipAdmission.step(2000);
+    expect(restoredRequest).not.toHaveBeenCalled();
+    expect(
+      match.applyCommand({
+        type: "sail",
+        playerId: 1,
+        shipIds: [ship.id],
+        tile: map.ref(20, 30),
+      }),
+    ).toBeNull();
+    expect(match.shipAdmission.pendingCount).toBe(2);
+  });
+  it("coalesces unchanged recovery intentions while retaining paused or unfinished progress", () => {
+    const { map, match, ships } = fixture(),
+      ship = ships[0],
+      goal = map.ref(20, 30);
+    ship.destination = goal;
+    ship.repairState = "returning-to-dock";
+    ship.repairPortId = 123;
+    match.shipAdmission.recover(ship, goal, 1);
+    const saved = match.shipAdmission.checkpoint();
+    match.shipAdmission.recover(ship, goal, 2);
+    expect(match.shipAdmission.checkpoint()).toEqual(saved);
+  });
   it("terminates repeatedly limited replacements with an explicit capacity outcome and leaves voyages intact", () => {
     const { map, match, ships, ids } = fixture();
-    const voyages = ships.map(s => ({ destination: s.destination, path: [...s.path] }));
-    match.applyCommand({ type: "sail", playerId: 1, shipIds: ids, tile: map.ref(50, 40) });
+    const voyages = ships.map((s) => ({
+      destination: s.destination,
+      path: [...s.path],
+    }));
+    match.applyCommand({
+      type: "sail",
+      playerId: 1,
+      shipIds: ids,
+      tile: map.ref(50, 40),
+    });
     const id = match.shipAdmission.events.slice(-1)[0]!.id;
-    for (const tick of [10, 40, 100]) match.shipAdmission.completed(id, ids[0], "limited", [], tick);
+    for (const tick of [10, 40, 100])
+      match.shipAdmission.completed(id, ids[0], "limited", [], tick);
     expect(match.shipAdmission.pendingCount).toBe(0);
-    expect(match.shipAdmission.events.slice(-1)[0]).toMatchObject({ status: "rejected", reason: expect.stringContaining("capacity") });
-    expect(ships.map(s => ({ destination: s.destination, path: s.path }))).toEqual(voyages);
+    expect(match.shipAdmission.events.slice(-1)[0]).toMatchObject({
+      status: "rejected",
+      reason: expect.stringContaining("capacity"),
+    });
+    expect(
+      ships.map((s) => ({ destination: s.destination, path: s.path })),
+    ).toEqual(voyages);
   });
   it("plans later waypoints without synchronous searches and preserves committed legs on takeover", () => {
     const { map, match, ships, ids } = fixture(),

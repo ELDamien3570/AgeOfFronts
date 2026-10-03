@@ -343,7 +343,9 @@ function vesselCard(
 // HUD projections only observe domain rules and snapshots. Focused inspection
 // belongs to the view and never changes the selected army or its commands.
 export class HudViewModel {
-  get playerId(): number { return this.game.playerId; }
+  get playerId(): number {
+    return this.game.playerId;
+  }
 
   constructor(readonly game: SkirmishViewModel) {}
 
@@ -360,7 +362,8 @@ export class HudViewModel {
             ? unitCard(
                 unitEffects(
                   UNIT.get(choice.definitionId)!,
-                  this.game.state.expansion!.progression[this.playerId].completed,
+                  this.game.state.expansion!.progression[this.playerId]
+                    .completed,
                 ),
               )
             : vesselCard(
@@ -433,14 +436,20 @@ export class HudViewModel {
           title: "Repair selected buildings",
           subtitle: "R · structure repair",
           stats: [
-            stat("Selected buildings", String(this.game.selectedBuildings.length)),
+            stat(
+              "Selected buildings",
+              String(this.game.selectedBuildings.length),
+            ),
             stat("Damaged buildings", String(repairable.length)),
           ],
           description:
             "Repairs damaged selected friendly buildings over time using gold.",
-          status: repairable.length > 0
-            ? (this.game.player.gold > 0 ? "Ready" : "Not enough gold")
-            : "No repair needed",
+          status:
+            repairable.length > 0
+              ? this.game.player.gold > 0
+                ? "Ready"
+                : "Not enough gold"
+              : "No repair needed",
         };
       }
       return {
@@ -523,7 +532,10 @@ export class HudViewModel {
         stat(
           "Stock",
           deposit.owner === 1
-            ? fmt(state.expansion.inventories[this.playerId][deposit.resource] ?? 0)
+            ? fmt(
+                state.expansion.inventories[this.playerId][deposit.resource] ??
+                  0,
+              )
             : "Foreign inventory hidden",
         ),
       ],
@@ -560,21 +572,24 @@ export class HudViewModel {
           ? "1 squad selected"
           : `${state.players.find((p) => p.id === s.playerId)?.name ?? "Enemy"} · ${AGE_NAMES[AGES.indexOf(UNIT.get(s.definitionId ?? "")?.age ?? "StoneAge")]} · read only`,
       meter: { label: "Troop strength", value: s.troops, max: SQUAD_TROOPS },
-      status: s.refit
-        ? `Refitting · ${Math.ceil(s.refit.remainingTicks / 20)}s`
-        : s.charge
-          ? `Charge · ${s.charge.phase}`
-          : s.fighting
-            ? "In combat"
-            : s.order.type === "board"
-              ? "Meeting transport"
-              : s.order.type === "replenish"
-                ? "Replenishing"
-                : s.order.type === "attack"
-                  ? "Attack order"
-                  : s.order.type === "move"
-                    ? "Moving"
-                    : "Holding",
+      status:
+        "planningPaused" in s && s.planningPaused === true
+          ? "Route paused - choose a shorter waypoint"
+          : s.refit
+            ? `Refitting · ${Math.ceil(s.refit.remainingTicks / 20)}s`
+            : s.charge
+              ? `Charge · ${s.charge.phase}`
+              : s.fighting
+                ? "In combat"
+                : s.order.type === "board"
+                  ? "Meeting transport"
+                  : s.order.type === "replenish"
+                    ? "Replenishing"
+                    : s.order.type === "attack"
+                      ? "Attack order"
+                      : s.order.type === "move"
+                        ? "Moving"
+                        : "Holding",
       promotion: state.expansion
         ? {
             level: promotionLevel(s.xp ?? 0),
@@ -616,7 +631,10 @@ export class HudViewModel {
     }));
     if (inspected) return squads;
     const ships: SelectedEntity[] = state.ships
-      .filter((s) => s.playerId === this.playerId && selection.selectedShips.has(s.id))
+      .filter(
+        (s) =>
+          s.playerId === this.playerId && selection.selectedShips.has(s.id),
+      )
       .map((s) => ({
         ...(s.definitionId
           ? vesselCard(
@@ -639,15 +657,18 @@ export class HudViewModel {
             VESSEL.get(s.definitionId ?? "")?.health ??
             SHIP_RULES[s.kind].health,
         },
-        status: s.refit
-          ? `Refitting · ${Math.ceil(s.refit.remainingTicks / 20)} sec`
-          : s.fighting
-            ? "In combat"
-            : s.boarding
-              ? "Meeting squads"
-              : s.destination !== null
-                ? "Sailing"
-                : "Holding",
+        status:
+          "planningPaused" in s && s.planningPaused === true
+            ? "Route paused - choose a shorter waypoint"
+            : s.refit
+              ? `Refitting · ${Math.ceil(s.refit.remainingTicks / 20)} sec`
+              : s.fighting
+                ? "In combat"
+                : s.boarding
+                  ? "Meeting squads"
+                  : s.destination !== null
+                    ? "Sailing"
+                    : "Holding",
         stats: [
           stat(
             "Squads aboard",
@@ -784,12 +805,15 @@ export class HudViewModel {
           : {}),
         ...(remaining
           ? (() => {
-              const constructing = stack.filter((other) => other.remainingTicks > 0);
+              const constructing = stack.filter(
+                (other) => other.remainingTicks > 0,
+              );
               const totalConstructingTicks = Math.max(
                 remaining,
                 constructing.reduce(
                   (sum, other) =>
-                    sum + (other.buildTicks ?? BUILDING_RULES[other.type].ticks),
+                    sum +
+                    (other.buildTicks ?? BUILDING_RULES[other.type].ticks),
                   0,
                 ),
               );
@@ -805,7 +829,10 @@ export class HudViewModel {
       };
     });
     const aircraft: SelectedEntity[] = (state.expansion?.aircraft ?? [])
-      .filter((a) => a.playerId === this.playerId && selection.selectedAircraft?.has(a.id))
+      .filter(
+        (a) =>
+          a.playerId === this.playerId && selection.selectedAircraft?.has(a.id),
+      )
       .map((a) => ({
         ref: `aircraft:${a.id}`,
         kind: a.definitionId,

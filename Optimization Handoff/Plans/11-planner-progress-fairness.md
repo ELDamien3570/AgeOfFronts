@@ -1,6 +1,6 @@
 # P11: Guarantee limited-search progress and fairness
 
-Status: **P11 implementation in progress in the isolated local worktree**. Read
+Status: **components implemented locally; shared integration and capacity qualification pending**. Read
 [`../agent-workflow.md`](../agent-workflow.md) and [`../handoff.md`](../handoff.md).
 
 ## Dependencies and ownership
@@ -74,4 +74,41 @@ remains open on this Windows x64 environment; this is not a clean full gate.
 Fairness fixtures use 80x80 all-land maps, no runtime AI flags, fixed topology,
 budget/quantum 1, and 12 deterministic turns. Sparse faction: 6 of 12 turns;
 one-player admission/defense/trade: 4 each. Restore preserves exact turns.
-Workspace exhaustion escalation and wider callers are the next P11 slice.
+This earlier slice is superseded by the final local implementation below.
+
+
+## P11 final local implementation (2026-10-03)
+
+New checkpoint scheduling version 3 shares quanta by player and caller, with FIFO
+rotation inside each cohort. Legacy missing metadata restores FIFO (version 1);
+version 2 keeps its prior fair scheduling without the new escalation policy.
+Queue maximum remains 128; scheduler selection uses at most three scans of that
+queue per quantum, separately from charged search work. Cursor state is bounded
+to 256 players. Diagnostic cohorts are bounded by player/caller combinations.
+
+After charged cleanup, a limited search retries once with exclusive access to
+the existing fixed arena. New allocations wait while existing holders finish;
+no existing search progress is discarded. Full-arena exhaustion remains limited,
+never unreachable. Reservations, cleanup and fairness cursors survive restore.
+The ordinary scheduler stays fair; exclusive escalation temporarily reserves
+service until a finite terminal outcome, including up to 32 existing finalists.
+
+After three limited results, new committed ship legs pause, retain later
+waypoints and stop submitting searches. Replacements reject without changing
+active orders. Unchanged recovery intentions retain progress. Legacy ship
+checkpoints restore the previous retry/coalescing policy. The user chose
+stability; land pause and visible land/ship status are supplied in the reserved
+Simulation/protocol/codec integration patch rather than overwriting those files.
+
+The new tests cover 54 players with two classes (108 jobs, two turns each across
+216 one-unit turns), contested 128-slot capacity, full-arena terminal failure,
+cancellation with arrivals, exact mid-escalation restore, ship pause/replacement,
+and legacy policy. The shared patch's regression covers land pause, retained
+later orders, restore, no further requests, wire status and clearing status.
+79 focused tests passed with the integration patch; a further 12 passed after
+adding the legacy ship case. TypeScript, scoped lint, production build and diff
+checks passed. Final serial full suite: 1035 tests passed across 158 files in
+279.86 seconds; no deadline changes. See Evidence/P11-P14/README.md.
+
+This does not qualify future P06-P10 callers before they migrate to this planner,
+the largest map, the ARM host or ten real browser clients. Default gates stay off.

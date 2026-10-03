@@ -6,6 +6,7 @@ import {
 import type { LandPaths } from "./Pathfinding";
 import { FIXED, type Order, type Squad } from "./Protocol";
 import type { ExactRouteOutcome } from "./RoutePlanner";
+import { limitedRouteRetry, ROUTE_CAPACITY_REASON } from "./RouteRetryPolicy";
 import type { WorldPoint } from "./SpatialGrid";
 import { distanceSquared, pointTile, tilePoint } from "./SquadGeometry";
 
@@ -351,10 +352,11 @@ export class MovementAdmission {
         "A formation destination cannot be reached by land",
       );
     else if (outcome === "limited") {
-      member.limitedAttempts = (member.limitedAttempts ?? 0) + 1;
-      if (member.limitedAttempts >= 3) this.finish(admission, tick, "rejected",
-        "Route planning capacity exhausted; try a shorter waypoint");
-      else member.retryAt = tick + 20 * member.limitedAttempts;
+      const retry = limitedRouteRetry(member.limitedAttempts ?? 0, tick);
+      member.limitedAttempts = retry.attempts;
+      if (retry.exhausted)
+        this.finish(admission, tick, "rejected", ROUTE_CAPACITY_REASON);
+      else member.retryAt = retry.retryAt;
     }
     // Resource exhaustion is an explicit planning rejection, never disconnection.
   }
@@ -614,7 +616,9 @@ export class MovementAdmission {
           idle = 0;
         }
       } else if (admission.phase === "routes") {
-        const member = admission.members.find((m) => !m.path && !m.requested && (m.retryAt ?? 0) <= tick);
+        const member = admission.members.find(
+          (m) => !m.path && !m.requested && (m.retryAt ?? 0) <= tick,
+        );
         if (member) {
           const squad = this.ports.squad(member.id)!;
           member.start = pointTile(this.map, squad);
