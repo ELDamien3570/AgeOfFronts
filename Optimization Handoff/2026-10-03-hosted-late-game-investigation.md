@@ -180,3 +180,25 @@ Release qualification must explicitly distinguish the short idle-only ARM replay
 Final local short smoke passed with this harness: both humans and all ten AI moved, construction and trade controls replicated, rejection and reconnect worked, 24 common canonical state samples agreed. Two periodic orders reached observed movement in 123 and 129 ms; publication gap p95 was 255 ms. This is only a 40-second monitoring check, useful for validating the soak tool rather than proving long-session behavior.
 
 Oracle long soak label: `overnight-hosted-soak`; remote output `/home/ubuntu/perf-v11/results/overnight-hosted-soak`, console sibling `overnight-hosted-soak-console.log`. Duration 2400 monitoring seconds. Production remains on the baseline revision until the soak and deployment gates are reviewed. Do not deploy while this isolated benchmark is running.
+
+The soak completed successfully and its container exited before deployment started. Collected evidence: `out/overnight-1000/oracle-hosted-soak/smoke.json` and `server.log`.
+
+- 2422.90 wall seconds including setup; final client tick 48168 (40.14 simulation minutes).
+- 158 periodic movement orders: input-to-observed-state first motion p95 **329 ms**, maximum **381 ms**.
+- Both clients advanced and reconnected successfully; 300 retained common state samples agreed; no recorded smoke errors.
+- Publication gap p95 222/223 ms, maximum 513/515 ms; client decode p95 6.62/9.53 ms.
+- Last diagnostic progress ratio **0.999924**; last tick mean 17.36 ms and p95 28.94 ms.
+- Largest reported rolling tick p95 across the soak: 34.08 ms. Largest sampled tick maximum: 114.77 ms. Worker queue p95 stayed at or below 0.0111 ms; sampled socket buffered bytes stayed zero.
+- Final diagnostic world: **133 squads, eight ships, 148 buildings and eight traders**. This is much smaller than the captured heavy production match and the 50-minute replay. The soak establishes sustained protocol stability and responsive ordinary orders for this controlled scenario; it does **not** certify a 600-squad/1400-building battle, large formations or rendered browser behavior.
+
+Deployment qualification: the tested stability revision can be released as a measured improvement, with the heavy-world tick-budget limitation explicitly retained. No claim is made that all late-game networking or CPU problems are solved. Release started only after production `activeMatches: 0`; public verification is recorded below.
+
+## Oracle release and public verification
+
+Deployed exact gameplay revision **`20a6a78fd669edeadf2aaa3b5baa71d84508178a`**, published on `V1.1.5` and `V1.1-`. Build-first release succeeded after its idle check. Application image and revision marker match the tested commit; application health is healthy and proxy is running. The public browser bundle `assets/home-ySgpYPJ6.js` identifies the same source revision. Runtime identity **`fd59c1a64d82793c8564da80e787bcdbbfd50cbb3b87182fee6672c4a792a4a9`** matches the isolated candidate soak.
+
+SQLite release backup: `/opt/ageoffronts/backups/multiplayer-20261003T232805Z.sqlite`; `PRAGMA integrity_check` returned `ok`. Previous revision marker preserved for rollback.
+
+Public HTTPS/WSS two-client smoke passed on Valles Kairulia 500, Modern, 10 AI and 25 tribes: movement, construction, all five AI defaults, trade controls, rejection, water embarkation, automatic shore landing, inland continuation, reconnect and 55 common canonical state samples. Periodic movement p95 was 226 ms (two samples only). Publication gap p95 216–217 ms, maximum 452 ms. No recorded failures. Artifact: `out/overnight-1000/public-release-smoke.json`; owned smoke match `match-154` is allowed to expire through the normal empty-match grace period.
+
+The overnight follow-up remains active for one heavier capacity diagnostic: replay the original 50-minute checkpoint through minute 60 on ARM with the production encoding worker/publication queue enabled. This isolates CPU and replication costs in the denser world; it does not add rendered clients or reproduce actual player battle history. Label `overnight-heavy-encoding`, idle-only and abort-on-live-match as before. No second gameplay pass is implemented.
