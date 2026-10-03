@@ -492,3 +492,28 @@ The user reserved P11 planner progress/fairness and P14 browser rendering for a
 separate session. This session retains P03 and subsequent unassigned plans;
 shared Simulation/Protocol integration is serialized here. Reservation is not
 implementation or acceptance evidence. Parallel sessions need separate worktrees.
+
+### P03 unit lifecycle checkpoint and requested pause
+
+Code `a0e2aa1587b29c7101ebade7d85698ea7a45d657` adds canonical squad/ship ownership, exact owner/kind/definition,
+alive and cargo groups, distinct revisions, immediate removal cleanup and
+restore reconstruction. Domain writers and affected fixtures use explicit
+methods; finalized internal routes avoid another full copy on scalar movement.
+Repeated force/economic/fleet/cargo consumers use maintained facts. Further
+legacy consumer migration and broader P03 acceptance remain open.
+
+Four independent lifecycle tests include 400 seeded mutations with at most 32
+squads and 32 ships, route/input isolation, reclaimed groups, twelve warm ticks
+and 240 owner queries without new index rebuild scan rows, and exact restored
+continuation. The final local gate passed **1,034 tests in 158 files**, TypeScript,
+production build, whitespace and scoped lint, with only the known unchanged
+Simulation unused-local exception and Vite chunk warning. No assertion or
+timeout was weakened. This closes the current continuation's local full-suite
+timing gate; mature-world/browser/ARM and integrated experimental qualification
+remain open. Evidence: `Optimization Handoff/Evidence/03-unit-lifecycle.md`.
+Runtime: `783e9d22c21cc358506b0b2551b0c9220e738c794fe8aaa935fa4df6d689e3c2`.
+
+The user requested implementation pause after this testing gate and a rough code
+estimate. Work pauses at this checkpoint; no next dependent phase is started.
+P11/P14 remain reserved for the user's separate session. No push, merge, default
+change, artwork integration or deployment was performed by this checkpoint.

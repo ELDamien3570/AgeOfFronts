@@ -1,6 +1,6 @@
 # P03: Maintain entity and ownership indexes
 
-Status: **partially implemented locally: building lifecycle checkpoint; squad/ship/cargo and full acceptance remain open**. Read
+Status: **building and squad/ship/cargo lifecycle checkpoints implemented locally; remaining consumer migration and broader qualification are open**. Read
 [`../agent-workflow.md`](../agent-workflow.md) and [`../handoff.md`](../handoff.md).
 
 ## Dependencies and ownership
@@ -58,7 +58,16 @@ production feature merely to demonstrate that code exists.
 
 The building lifecycle slice is implemented at `1fe9ede1b8ee9c093032d0257423fb90c4e022ab`.
 See [exact source, counters and validation](../Evidence/03-building-lifecycle.md).
-Squad, ship and cargo ownership and the green full-suite timing gate remain open.
-This plan has not reached full acceptance, and dependent integration must retain
-that boundary. The user approved read-only domain records/collections and explicit
+At the building-only checkpoint, squad/ship/cargo ownership and the local
+full-suite timing gate remained open. The subsequent unit checkpoint below
+updates that boundary; this plan still has broader acceptance work. The user approved read-only domain records/collections and explicit
 mutation methods, including migration of affected fixtures.
+
+## Unit checkpoint and requested pause
+
+Code checkpoint `a0e2aa1587b29c7101ebade7d85698ea7a45d657` implements squad/ship membership and cargo ownership.
+See [source, work counters and validation](../Evidence/03-unit-lifecycle.md).
+The final local suite passed 1,034 tests in 158 files, TypeScript and the build;
+remaining consumer migration and runtime/browser/ARM qualification remain open.
+The user requested a pause after this gate. P11 and P14 stay reserved for the
+parallel session; no next dependent implementation has begun.

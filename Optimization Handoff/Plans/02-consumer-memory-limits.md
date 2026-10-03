@@ -1,7 +1,7 @@
 # P02: Qualify consumer limits and transient memory
 
 Status: **local envelope, sparse recovery and teardown slice implemented;
-full-suite timing and runtime qualification remain open**. Read
+runtime memory qualification remains open**. Read
 [`../agent-workflow.md`](../agent-workflow.md) and [`../handoff.md`](../handoff.md).
 
 ## Dependencies and ownership
@@ -75,3 +75,11 @@ If a required dependency, hardware test, source asset or authorization is
 unavailable, record the exact blocker and stop only that dependent work. Do not
 turn a refused or unverified test into a pass, broaden authority, or enable a
 production feature merely to demonstrate that code exists.
+
+## Subsequent local correctness gate
+
+The P03 unit source checkpoint `a0e2aa1587b29c7101ebade7d85698ea7a45d657` subsequently passed all 1,034 tests
+in 158 files with unchanged timeouts. This closes the current local full-suite
+timing gate, including P02 regressions. Earlier failed runs remain historical
+evidence. Transient peaks, memory convergence, mature-world/browser and ARM
+qualification remain open.
