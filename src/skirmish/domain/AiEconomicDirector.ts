@@ -288,16 +288,14 @@ export class AiEconomicDirector {
         )
         .reduce((n, s) => n + s.troops, 0),
     });
-    const renewable = new Set(
+    // Planning may invest in an owned, researched deposit before its mine is
+    // built. Execution still spends only liquid stock through normal commands.
+    const attainable = new Set(
       supply.deposits
         .filter(
           (d) =>
             world.owners[d.tile] === player.id &&
-            state.completed.includes(resourceTechnology(d.resource).id) &&
-            (d.resource === "horses" ||
-              snapshot.buildings.some(
-                (b) => b.tile === d.tile && !b.remainingTicks,
-              )),
+            state.completed.includes(resourceTechnology(d.resource).id),
         )
         .map((d) => d.resource),
     );
@@ -306,7 +304,7 @@ export class AiEconomicDirector {
     const demand = militaryDemand(
       snapshot,
       personalityOf(player),
-      renewable,
+      attainable,
       Math.min(
         8,
         Math.ceil(
@@ -319,11 +317,6 @@ export class AiEconomicDirector {
     if(demand.planning)this.demandPlanning.set(player.id,{key:demandKey,state:demand.planning});else this.demandPlanning.delete(player.id);
     if (demand.deferred) return;
     this.demands.set(player.id, demand);
-    if (
-      snapshot.threatTroops <= snapshot.readyTroops / 2 &&
-      this.military.decide(player)
-    )
-      return;
     const opportunity = {
       resources: supply.deposits.filter(d => world.owners[d.tile] === player.id).map(d => d.resource),
       usableCoast: this.placements.coasts(player.id).length > 0,
@@ -340,6 +333,10 @@ export class AiEconomicDirector {
       this.placements.candidates(player, snapshot, demand),
       opportunity,
     );
+    // Refitting existing troops must not consume each development slot while
+    // the workshop needed for the remaining troops is still missing.
+    if (!candidates.some(c => c.reason.includes("production-prerequisite:")) &&
+      snapshot.threatTroops <= snapshot.readyTroops / 2 && this.military.decide(player)) return;
     this.diagnostics.candidates += candidates.length;
     let goal = this.saving.get(player.id);
     if (
@@ -359,7 +356,7 @@ export class AiEconomicDirector {
     if (
       goal &&
       challenger &&
-      (challenger.priority === "emergency" ||
+      (challenger.priority === "emergency" || challenger.reason.includes("production-prerequisite:") ||
         (goal.intent.kind !== "research" && goal.intent.kind !== "advance" && challenger.score * 5 > goal.intent.score * 6))
     ) {
       this.ledger.release(goal.intent.id);

@@ -16,7 +16,7 @@ export function quoteTowerPlan(
   buildings: readonly Building[] | TowerSiteIndex,
   wallAt: (tile: number) => boolean,
 ) {
-  const links: { a: number; tiles: number[] }[] = [];
+  const links: { a: number; tiles: number[]; remainingTicks?: number }[] = [];
   const indexed = Array.isArray(buildings)
       ? undefined
       : (buildings as TowerSiteIndex),
@@ -32,7 +32,6 @@ export function quoteTowerPlan(
         b.type === "tower" &&
         b.playerId === owner &&
         (b.health ?? 1) > 0 &&
-        !b.remainingTicks &&
         (b.age ?? "StoneAge") === age &&
         b.tile !== tile &&
         map.euclideanDistSquared(b.tile, tile) <= 144,
@@ -66,7 +65,7 @@ export function quoteTowerPlan(
           !links.some((l) => l.tiles.includes(t)),
       )
     )
-      links.push({ a: other.id, tiles });
+      links.push({ a: other.id, tiles, ...(other.remainingTicks ? { remainingTicks: other.remainingTicks } : {}) });
     if (links.length === 2) break;
   }
   return {

@@ -22,8 +22,12 @@ interface Member {
   limitedAttempts?: number;
   retryAt?: number;
   queued: Order[];
+  shared?: { stage: "entry" | "exit"; entry?: number[]; spine: number[] };
+  independent?: boolean;
+  structureTarget?: Squad["structureTarget"];
 }
 interface Admission {
+  corridorId?: number;
   id: number;
   playerId: number;
   generation: number;
@@ -33,6 +37,7 @@ interface Admission {
   formation: FormationPlanningState;
   phase: "formation" | "queued" | "routes" | "connectors";
   member: number;
+  placementRetries?: number;
 }
 interface QueuedIntent {
   id: number;
@@ -71,6 +76,7 @@ export interface MovementAdmissionPorts {
     squad: Squad,
     point: WorldPoint,
     selected: ReadonlySet<number>,
+    structureTarget?: Squad["structureTarget"],
   ): boolean;
   commit(
     squad: Squad,
@@ -78,6 +84,7 @@ export interface MovementAdmissionPorts {
     path: number[],
     nextIndex: number,
     append: readonly Order[],
+    structureTarget?: Squad["structureTarget"],
   ): void;
 }
 
@@ -95,6 +102,7 @@ export class MovementAdmission {
   onEvent?: (event: MovementAdmissionEvent) => void;
   private nextId = 1;
   private readonly occupancy: FormationOccupancy;
+  private readonly corridors = new Map<number, { path: number[]; kind: Squad["kind"]; revision: string }>();
   hasPending(squadId: number): boolean { return this.pendingBySquad.has(squadId); }
   get pendingCount(): number {
     return this.pending.size;
@@ -110,10 +118,13 @@ export class MovementAdmission {
       intents: [...this.intents],
       nextId: this.nextId,
       events: this.events,
+      corridors: [...this.corridors],
     });
   }
   restore(saved: ReturnType<MovementAdmission["checkpoint"]>): void {
     this.pending.clear();
+    this.corridors.clear();
+    for (const [id, corridor] of structuredClone(saved.corridors ?? [])) this.corridors.set(id, corridor);
     this.pendingBySquad.clear();
     for (const [id, admission] of structuredClone(saved.pending)) {
       FormationPlanning.normalizeCheckpoint(admission.formation);
@@ -154,6 +165,7 @@ export class MovementAdmission {
     reason?: string,
   ): void {
     this.pending.delete(admission.id);
+    if (admission.corridorId !== undefined && ![...this.pending.values()].some(a => a.corridorId === admission.corridorId)) this.corridors.delete(admission.corridorId);
     for (const member of admission.members) {
       if (this.pendingBySquad.get(member.id) === admission.id)
         this.pendingBySquad.delete(member.id);
@@ -184,6 +196,16 @@ export class MovementAdmission {
         admissionId: this.pendingBySquad.get(id),
       }));
     if (!members.some((m) => m.admissionId !== undefined)) return false;
+    if (selected.length > 30) {
+      for (let start = 0; start < selected.length; start += 30) {
+        const chunk = members.slice(start, start + 30), squad = this.ports.squad(chunk[0].id)!;
+        const intent: QueuedIntent = { id: this.nextId++, playerId: squad.playerId,
+          generation: this.ports.generation(squad.playerId), order: { ...order }, members: chunk,
+          revision: this.ports.revision(squad.playerId) };
+        this.addIntent(intent); this.event(intent, tick, "deferred");
+      }
+      return true;
+    }
     const squad = this.ports.squad(selected[0])!;
     const intent: QueuedIntent = {
       id: this.nextId++,
@@ -220,6 +242,7 @@ export class MovementAdmission {
     tick: number,
     preferred?: Map<number, WorldPoint>,
     repeatIntent = false,
+    structureTarget?: Squad["structureTarget"],
   ): number {
     // A periodic AI controller restating its unchanged intention must not
     // throw away a long-running search. Deliberate manual replacements retain
@@ -230,30 +253,42 @@ export class MovementAdmission {
       squads.length &&
       squads.every((s) => !this.intentsBySquad.get(s.id)?.size)
     ) {
-      const current = this.pending.get(
-        this.pendingBySquad.get(squads[0].id) ?? -1,
-      );
-      if (
-        current &&
-        current.playerId === playerId &&
-        current.tile === tile &&
-        current.generation === this.ports.generation(playerId) &&
-        current.members.length === squads.length &&
-        squads.every((s) => this.pendingBySquad.get(s.id) === current.id) &&
-        current.members.every((m) => !m.queued.length)
-      )
-        return current.id;
+      const selected = new Set(squads.map(s => s.id)), cohorts = new Set<number>();
+      const unchanged = squads.every(s => {
+        const current = this.pending.get(this.pendingBySquad.get(s.id) ?? -1);
+        if (!current || current.playerId !== playerId || current.tile !== tile ||
+          current.generation !== this.ports.generation(playerId) ||
+          current.members.some(m => !selected.has(m.id) || m.queued.length)) return false;
+        cohorts.add(current.id); return true;
+      });
+      if (unchanged) return cohorts.values().next().value!;
     }
     this.cancel(
       squads.map((s) => s.id),
       tick,
     );
-    return this.create(playerId, squads, tile, tick, preferred);
+    if (squads.length > 30) {
+      const ordered = [...squads].sort((a, b) => a.x - b.x || a.y - b.y || a.id - b.id),
+        columns = Math.ceil(Math.sqrt(ordered.length)), rows = Math.ceil(ordered.length / columns),
+        center = tilePoint(this.map, tile), points = preferred ?? new Map<number, WorldPoint>();
+      if (!preferred) for (let i = 0; i < ordered.length; i++) points.set(ordered[i].id, {
+        x: Math.round(center.x + ((i % columns) - (columns - 1) / 2) * 1.25 * FIXED),
+        y: Math.round(center.y + (Math.floor(i / columns) - (rows - 1) / 2) * 1.25 * FIXED),
+      });
+      let first = 0;
+      const corridorId = this.nextId;
+      for (let start = 0; start < ordered.length; start += 30) {
+        const id = this.create(playerId, ordered.slice(start, start + 30), tile, tick, points, structureTarget, corridorId);
+        first ||= id;
+      }
+      return first;
+    }
+    return this.create(playerId, squads, tile, tick, preferred, structureTarget);
   }
   /** Re-admit an occupied destination while retaining later player intentions. */
   recoverDestination(squad: Squad, tile: number, tick: number): void {
     if (this.hasPending(squad.id)) return;
-    const id = this.create(squad.playerId, [squad], tile, tick);
+    const id = this.create(squad.playerId, [squad], tile, tick, undefined, squad.structureTarget ?? undefined);
     this.pending.get(id)!.members[0].queued = squad.queuedOrders.map(order=>({...order}));
     for (const intentId of this.intentsBySquad.get(squad.id) ?? []) {
       const intent = this.intents.get(intentId)!;
@@ -297,6 +332,8 @@ export class MovementAdmission {
     tile: number,
     tick: number,
     preferred?: Map<number, WorldPoint>,
+    structureTarget?: Squad["structureTarget"],
+    corridorId?: number,
   ): number {
     const id = this.nextId++,
       formation = new FormationPlanning(
@@ -310,6 +347,7 @@ export class MovementAdmission {
       );
     const admission: Admission = {
       id,
+      corridorId,
       playerId,
       generation: this.ports.generation(playerId),
       tile,
@@ -319,6 +357,7 @@ export class MovementAdmission {
         cursor: 0,
         requested: false,
         queued: [],
+        ...(structureTarget ? { structureTarget: { ...structureTarget } } : {}),
       })),
       formation: formation.state,
       phase: "formation",
@@ -358,9 +397,19 @@ export class MovementAdmission {
     if (outcome === "complete") {
       member.limitedAttempts = 0;
       member.retryAt = undefined;
-      member.path = path;
+      if (member.shared?.stage === "entry") {
+        member.shared.entry = path; member.shared.stage = "exit"; return;
+      }
+      member.path = member.shared ? [...member.shared.entry!, ...member.shared.spine.slice(1), ...path.slice(1)] : path;
+      if (!member.shared && admission.corridorId === admission.id && member === admission.members[0])
+        this.corridors.set(admission.id, { path, kind: this.ports.squad(member.id)!.kind, revision: admission.revision });
+      member.shared = undefined;
       member.cursor = 0;
       member.connector = undefined;
+    } else if (outcome === "unreachable" && member.shared) {
+      // A shared corridor is an optimization, never proof that an individual
+      // route is impossible. Try that member's ordinary exact route once.
+      member.shared = undefined; member.independent = true;
     } else if (outcome === "unreachable")
       this.finish(
         admission,
@@ -557,9 +606,9 @@ export class MovementAdmission {
       throw new Error("Invalid admission work budget");
     if (this.pending.size) this.occupancy.rebuild(this.ports.squads());
     let used = this.stepIntents(tick, Math.min(32, budget));
-    // Reserve half of the allowance for interactive commands. Unused work
+    // Reserve two thirds of the allowance for interactive commands. Unused work
     // returns to the ordinary round-robin, which continues serving the AI.
-    used += this.stepAdmissions(tick, Math.floor((budget-used)/2), true);
+    used += this.stepAdmissions(tick, Math.floor((budget-used)*2/3), true);
     return used + this.stepAdmissions(tick, budget-used, false);
   }
   private stepAdmissions(tick: number, budget: number, priority: boolean): number {
@@ -588,11 +637,15 @@ export class MovementAdmission {
       }
       validated.add(id);
       if (admission.revision !== this.ports.revision(admission.playerId)) {
+        if (admission.corridorId !== undefined) this.corridors.delete(admission.corridorId);
         const squads = admission.members.map((m) => this.ports.squad(m.id)!);
+        const preferred = admission.formation.preferred;
         for (const member of admission.members) {
           this.ports.cancel(id, member.id);
           member.requested = false;
           member.path = undefined;
+          member.shared = undefined;
+          member.independent = undefined;
         }
         admission.formation = new FormationPlanning(
           this.map,
@@ -600,6 +653,8 @@ export class MovementAdmission {
           admission.tile,
           squads.map((squad) => ({ squad, origin: squad })),
           () => this.ports.squads(),
+          Infinity,
+          preferred,
         ).state;
         admission.revision = this.ports.revision(admission.playerId);
         admission.phase = "formation";
@@ -645,18 +700,36 @@ export class MovementAdmission {
           idle = 0;
         }
       } else if (admission.phase === "routes") {
+        // Nearby members share the first member's long corridor. Entry and
+        // exit connectors retain exact obstacle checks under the same queue.
+        const leader = admission.members[0], corridor = admission.corridorId === undefined ? undefined : this.corridors.get(admission.corridorId),
+          original = admission.corridorId === undefined ? undefined : this.pending.get(admission.corridorId);
+        if (original && original !== admission && !corridor &&
+          this.ports.squad(leader.id)!.kind === this.ports.squad(original.members[0].id)!.kind) {
+          if (++idle >= this.pending.size) break; continue;
+        }
+        if (!leader.path && leader.requested) { if (++idle >= this.pending.size) break; continue; }
         const member = admission.members.find(
           (m) => !m.path && !m.requested && (m.retryAt ?? 0) <= tick,
         );
         if (member) {
           const squad = this.ports.squad(member.id)!;
-          member.start = pointTile(this.map, squad);
+          if (member.shared?.stage !== "exit") member.start = pointTile(this.map, squad);
+          const sharedCorridor = corridor?.revision === admission.revision && corridor.kind === squad.kind ? corridor.path : undefined,
+            spine = sharedCorridor ?? leader.path;
+          if ((member !== leader || sharedCorridor) && spine && spine !== member.path && spine.length >= 32 &&
+            squad.kind === this.ports.squad(leader.id)!.kind && !member.independent && !member.shared &&
+            this.map.euclideanDistSquared(member.start!, spine[0]) <= 32 ** 2 &&
+            this.map.euclideanDistSquared(pointTile(this.map, member.destination!), spine[spine.length - 1]) <= 32 ** 2)
+            member.shared = { stage: "entry", spine };
+          const start = member.shared?.stage === "exit" ? member.shared.spine[member.shared.spine.length - 1] : member.start!,
+            goal = member.shared?.stage === "entry" ? member.shared.spine[0] : pointTile(this.map, member.destination!);
           member.requested = this.ports.request(
             id,
             admission.playerId,
             member.id,
-            member.start,
-            pointTile(this.map, member.destination!),
+            start,
+            goal,
           );
           used++;
           idle = 0;
@@ -715,15 +788,19 @@ export class MovementAdmission {
                   this.ports.squad(m.id)!,
                   m.destination!,
                   selected,
+                  m.structureTarget,
                 ),
             )
           ) {
-            this.finish(
-              admission,
-              tick,
-              "rejected",
-              "Formation destination became occupied",
-            );
+            if ((admission.placementRetries ?? 0) < 3) {
+              admission.placementRetries = (admission.placementRetries ?? 0) + 1;
+              const preferred = admission.formation.preferred;
+              admission.formation = new FormationPlanning(this.map, this.paths, admission.tile,
+                admission.members.map(m => { const squad = this.ports.squad(m.id)!; return { squad, origin: squad }; }),
+                () => this.ports.squads(), Infinity, preferred).state;
+              for (const m of admission.members) { m.path = undefined; m.start = undefined; m.shared = undefined; m.independent = undefined; m.cursor = 0; }
+              admission.phase = "formation"; admission.member = 0;
+            } else this.finish(admission, tick, "rejected", "Formation destination remains occupied");
             continue;
           }
           for (const m of admission.members) {
@@ -733,6 +810,7 @@ export class MovementAdmission {
               m.path!,
               m.connector!,
               m.queued,
+              m.structureTarget,
             );
             this.occupancy.refresh(this.ports.squad(m.id)!);
           }

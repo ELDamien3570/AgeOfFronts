@@ -200,7 +200,7 @@ export function economicCandidates(
     if (
       value <= 0 ||
       (snapshot.headroom === 0 &&
-        !["city", "factory", "mine", "port", "oil-well", "oil-rig"].includes(
+        !["city", "factory", "mine", "port", "oil-well", "oil-rig", "blacksmith", "armory", "arms-factory"].includes(
           site.type,
         ))
     )
@@ -327,7 +327,9 @@ export function economicCandidates(
   // Saving is selected by the coordinator when the best useful step exceeds
   // current liquid stock; gold here never grants forecast purchasing credit.
   const ordered = candidates.filter(c => c.score > 0).sort(
-    (a,b) => b.score-a.score || (a.id < b.id ? -1 : a.id > b.id ? 1 : 0),
+    (a,b) => Number(b.priority === "emergency") - Number(a.priority === "emergency") ||
+      Number(b.reason.includes("production-prerequisite:")) - Number(a.reason.includes("production-prerequisite:")) ||
+      b.score-a.score || (a.id < b.id ? -1 : a.id > b.id ? 1 : 0),
   );
   const choices = ordered.slice(0,4);
   // A reserve-starved recruit must not hide every gold-only development option.

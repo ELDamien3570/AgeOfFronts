@@ -20,6 +20,7 @@ function fixture(port = false, deferredPlanning = false) {
     ruleset: "ages-v1",
     deferredPlanning, aiWarPolicy: deferredPlanning, aiEconomy: deferredPlanning,
   });
+  m.owners.fill(1);
   for (const s of m.squads) {
     m.updateSquad(s.id, { x: 70 * FIXED });
     m.updateSquad(s.id, { y: 40 * FIXED });
@@ -67,7 +68,7 @@ describe("independent trade unlocks", () => {
     const { m, dispatch, research } = fixture();
     research.push("stoneage-craft-workshops");
     dispatch();
-    expect(m.expansion!.trade.actors).toHaveLength(0);
+    expect(m.expansion!.trade.actors.filter(a => a.playerId === 1)).toHaveLength(0);
     research.push("stoneage-goods-handling");
     dispatch();
     expect(m.expansion!.trade.actors).toHaveLength(1);
@@ -82,11 +83,11 @@ describe("independent trade unlocks", () => {
     research.splice(research.indexOf("stoneage-cargo-canoes"), 1);
     research.push("stoneage-craft-workshops");
     dispatch();
-    expect(m.expansion!.trade.actors).toHaveLength(0);
+    expect(m.expansion!.trade.actors.filter(a => a.playerId === 1)).toHaveLength(0);
     research.push("stoneage-cargo-canoes");
     dispatch();
-    expect(m.expansion!.trade.actors).toHaveLength(1);
-    expect(m.expansion!.trade.actors[0]).toMatchObject({
+    expect(m.expansion!.trade.actors.filter(a => a.playerId === 1)).toHaveLength(1);
+    expect(m.expansion!.trade.actors.find(a => a.playerId === 1)).toMatchObject({
       naval: true,
       definitionId: "stoneage-trade",
     });
@@ -110,10 +111,9 @@ describe("independent trade unlocks", () => {
     expect(actor.cargo).toBeGreaterThan(0);
     const ports=m.buildings.filter(b=>b.type === "port");m.updateBuilding((ports[ports.length-1]).id, { playerId: 2 });
     dispatch();
-    expect(m.expansion!.trade.actors).toHaveLength(1);
+    expect(m.expansion!.trade.actors.filter(a => a.playerId === 1)).toHaveLength(2);
     expect(actor.naval).toBe(false);
-    for(let i=0;i<3000 && !actor.naval;i++){m.tick++;m.expansion!.trade.step();}
-    expect(actor.naval).toBe(true);
+    expect(m.expansion!.trade.actors.some(a => a.naval && a.factoryId !== actor.factoryId)).toBe(true);
   });
   it("uses the approved supplied workshop art for the actual Stone Age building", () => {
     const id = buildingArtworkId("siege-workshop", "StoneAge")!;

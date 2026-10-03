@@ -14,6 +14,7 @@ import {
   type EquipmentKind,
 } from "./Equipment";
 import { technologyAt } from "./Technology";
+import { damageAmount } from "../domain/Combat";
 const ground: readonly TargetTag[] = [
   "infantry",
   "ranged",
@@ -327,7 +328,10 @@ for (const [index, age] of AGES.entries())
       cost: {
         gold: (kind === "warship" ? 700 : 300) * (index + 1),
       },
-      health: Math.round((kind === "warship" ? 1000 : 600) * 1.3 ** index),
+      health: kind === "transport"
+        ? Math.round(damageAmount({ ...profile("ranged", Math.round(160 * 1.3 ** index), 7 + index, 2), targets: ["ship"] },
+          { tags: ["ship"], meleeArmour: 1000, rangedArmour: 2000, bonusResistance: {} }) * (1 + index * 0.5))
+        : Math.round((kind === "warship" ? 1000 : 600) * 1.3 ** index),
       speed: (kind === "warship" ? 55 : 70) + index * 6,
       capacity:
         kind === "transport"

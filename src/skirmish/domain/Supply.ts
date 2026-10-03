@@ -332,7 +332,7 @@ export class Supply {
       }
       if (tick % 20 !== 0) continue;
       const index = AGES.indexOf(b.age ?? "StoneAge");
-      if (b.type === "factory") {
+      if (b.type === "factory" || b.type === "port") {
         this.goodsOwners.set(b.id, player.id);
         this.goods.set(
           b.id,

@@ -8,6 +8,7 @@ import { economicSnapshot } from "../../src/skirmish/domain/AiEconomicSnapshot";
 import { militaryDemand } from "../../src/skirmish/domain/AiMilitaryDemand";
 import { AiProductionDependencies } from "../../src/skirmish/domain/AiProductionDependencies";
 import { automaticProduction } from "../../src/skirmish/domain/AutomaticProduction";
+import { economicCandidates } from "../../src/skirmish/domain/AiEconomicPlanner";
 
 function fixture() {
   const map = new GameMapImpl(
@@ -29,6 +30,89 @@ function fixture() {
   return { game, player, expansion };
 }
 describe("coordinated AI economy", () => {
+  it("finds a workshop beyond a saturated capital and resumes the placement page after restore", () => {
+    const {game,player,expansion}=fixture();
+    const territory=game.checkpoint();
+    territory.owners.fill(player.id);
+    game.restore(territory);
+    const research=TECHNOLOGIES.filter(t=>["StoneAge","BronzeAge"].includes(t.age)).map(t=>t.id);
+    expansion.progression.states[player.id].age="BronzeAge";
+    expansion.progression.states[player.id].completed=research;
+    const inner=game.ownedLandNearest(player.id,player.base,64);
+    for(const tile of inner)game.addBuilding({id:game.allocateId(),playerId:player.id,type:"barracks",tile,age:"BronzeAge",remainingTicks:0});
+    const snapshot=economicSnapshot({player,tick:0,generation:0,age:"BronzeAge",research,inventory:{bronze:100},
+      buildings:game.buildingFacts().byOwner(player.id),squads:[],ships:[],jobs:[],production:{},cap:0,threatTroops:0});
+    const demand={equipment:{"equipment:bronzeage":10},materials:{},units:{}};
+    let found:ReturnType<typeof expansion.economy.placements.candidates>[number]|undefined;
+    for(let i=0;i<300&&!found;i++) {
+      found=expansion.economy.placements.candidates(player,snapshot,demand).find(c=>c.type==="blacksmith");
+      if(i===50){const saved=expansion.economy.placements.checkpoint();expansion.economy.placements.restore(saved);}
+    }
+    expect(found).toBeDefined();
+    expect(inner).not.toContain(found!.tile);
+    expect(game.buildingSite(player.id,"blacksmith",found!.tile,"BronzeAge")).toBeNull();
+  });
+  it("builds an equipment chain from owned unmined deposits instead of staying on Stone Age troops", () => {
+    const {game,player,expansion}=fixture();
+    game.options.runAi=false;
+    const state=expansion.progression.states[player.id];
+    state.age="BronzeAge";
+    state.completed=TECHNOLOGIES.filter(t=>["StoneAge","BronzeAge"].includes(t.age)).map(t=>t.id);
+    player.gold=200000;
+    player.reserves=20000;
+    for(const b of [...game.buildings].filter(b=>b.playerId===player.id))game.removeBuilding(b.id);
+    const tiles=game.ownedLandNearest(player.id,player.base,64);
+    const barracks=game.addBuilding({id:game.allocateId(),playerId:player.id,type:"barracks",tile:tiles[0],remainingTicks:0,age:"BronzeAge"});
+    const copper=tiles.find(t=>game.map.euclideanDistSquared(t,barracks.tile)>=16)!;
+    const tin=tiles.find(t=>game.map.euclideanDistSquared(t,barracks.tile)>=16&&game.map.euclideanDistSquared(t,copper)>=16)!;
+    expansion.supply.replaceDeposits([
+      {id:1,tile:copper,resource:"copper",owner:player.id,yieldPerSecond:3},
+      {id:2,tile:tin,resource:"tin",owner:player.id,yieldPerSecond:3},
+    ]);
+    for(const id of Object.keys(expansion.supply.inventories[player.id]))expansion.supply.inventories[player.id][id]=0;
+    let madeKit=false;
+    for(let i=0;i<6000&&!madeKit;i++){
+      if(i%60===0)expansion.economy.decide(player);
+      game.step();
+      madeKit=(expansion.supply.inventories[player.id]["equipment:bronzeage"]??0)>0;
+    }
+    for(const tile of [copper,tin])expect(game.buildings.some(b=>b.playerId===player.id&&b.type==="mine"&&b.tile===tile)).toBe(true);
+    expect(game.buildings.some(b=>b.playerId===player.id&&b.type==="factory"&&!b.remainingTicks)).toBe(true);
+    expect(game.buildings.some(b=>b.playerId===player.id&&b.type==="blacksmith"&&!b.remainingTicks)).toBe(true);
+    expect(madeKit).toBe(true);
+    expect(game.building(barracks.id)).toBeDefined();
+  });
+  for (const type of ["blacksmith", "armory", "arms-factory"] as const)
+    it(`can fund a missing ${type} with no recruitment headroom`, () => {
+      const { player } = fixture(), research = TECHNOLOGIES.map(t => t.id),
+        age = type === "blacksmith" ? "BronzeAge" : type === "armory" ? "EarlyModern" : "Modern";
+      const recipe = PRODUCTION_RECIPES.find(r => r.building === type)!;
+      const snapshot = economicSnapshot({ player, tick: 0, generation: 0, age, research,
+        inventory: { ...recipe.inputs }, buildings: [], squads: [], ships: [], jobs: [], production: {}, cap: 0, threatTroops: 0 });
+      const candidates = economicCandidates(snapshot, { age, completed: research, cultureId: "default", research: {}, advancement: null }, personalityOf(player),
+        { equipment: Object.fromEntries(Object.keys(recipe.outputs).map(id => [id, 100])), materials: {}, units: {} }, 1,
+        [{ type, tile: player.base, objective: 12000, reason: `production-prerequisite:${type}` }]);
+      expect(snapshot.headroom).toBe(0);
+      expect(candidates.some(c => c.command.type === "build" && c.command.buildingType === type)).toBe(true);
+    });
+  it("offers a first coastal port without any foreign port", () => {
+    const data = new Uint8Array(96 * 64).fill(133);
+    for (let y = 0; y < 64; y++) for (let x = 80; x < 96; x++) data[y * 96 + x] = 0;
+    const game = new Skirmish(new GameMapImpl(96, 64, data, data.length), {
+      seed: 47, aiCount: 1, tribes: false, ruleset: "ages-v1", aiEconomy: true, runAi: false });
+    const player = game.players[1], expansion = game.expansion!, research = TECHNOLOGIES.map(t => t.id);
+    expansion.supply.replaceDeposits([]);
+    for (let y = 0; y < 64; y++) {
+      const tile = game.map.ref(79, y);
+      game.owners[tile] = player.id;
+      expansion.economy.placements.changed(tile, player.id);
+    }
+    const snapshot = economicSnapshot({ player, tick: 0, generation: 0, age: "Modern", research,
+      inventory: {}, buildings: [], squads: [], ships: [], jobs: [], production: {}, cap: 20, threatTroops: 0 });
+    const candidates = Array.from({ length: 14 }, () => expansion.economy.placements.candidates(player, snapshot)).flat();
+    expect(game.buildings.some(b => b.type === "port")).toBe(false);
+    expect(candidates.some(c => c.type === "port" && c.objective > 0)).toBe(true);
+  });
   it("expires ownership before controllers even on ticks with no economic decision", () => {
     const { game, player, expansion } = fixture(),
       economy = expansion.economy;

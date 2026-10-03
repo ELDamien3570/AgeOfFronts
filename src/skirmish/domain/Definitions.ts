@@ -331,6 +331,7 @@ export interface ExpansionSnapshot {
   deliveredGold: Record<number, number>;
   tradeCapturedValue?: Record<number, number>;
   tradeLostValue?: Record<number, number>;
+  tradeControls?: Record<number, { landPaused: boolean; seaPaused: boolean; blocked: number[] }>;
 }
 export type ArmyOrder =
   | { type: "move" | "deploy" | "regroup"; tile: number }

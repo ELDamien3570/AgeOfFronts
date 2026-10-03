@@ -344,13 +344,14 @@ export class Skirmish {
     });
     this.routePlanner.step(this.tick);
     if(this.options.deferredPlanning) {
-      const armyWork=this.expansion?.armies.stepPlanning(32)??0;
-      const shoreWork=this.shoreTransport.stepPlanning(32);
-      const tradeWork=this.expansion?.trade.stepPlanning(32)??0;
-      const remaining=128-armyWork-shoreWork-tradeWork;
-      const landBudget = this.shipAdmission.pendingCount ? Math.floor(remaining/2) : remaining;
-      const used = this.movementAdmission.step(this.tick, landBudget);
-      this.shipAdmission.step(this.tick,remaining-used);
+      const landWork = this.movementAdmission.step(this.tick, 32);
+      const shipWork = this.shipAdmission.step(this.tick, 16);
+      const shoreWork = this.shoreTransport.stepPlanning(32);
+      const armyWork = this.expansion?.armies.stepPlanning(16) ?? 0;
+      const tradeWork = this.expansion?.trade.stepPlanning(16) ?? 0;
+      const remaining = 128 - landWork - shipWork - shoreWork - armyWork - tradeWork;
+      const used = this.movementAdmission.step(this.tick, remaining);
+      this.shipAdmission.step(this.tick, remaining - used);
     }
   }
   private readonly routeWork = new RouteWork<Exclude<MatchRouteTask,{kind:"admission"|"ship-admission"}>>(task => this.executeRouteTask(task));
@@ -383,6 +384,18 @@ export class Skirmish {
   private routingObstacleRevision(playerId?: number, military = true):string {
     const policy = !military ? "civilian" : playerId === undefined ? this.expansion?.operations.revision ?? 0 : this.expansion?.operations.navigationRevision(playerId) ?? "unrestricted";
     return `${policy}:${this.expansion?.fortifications.version ?? 0}:${this.expansion?.diplomacy.state.alliances.map(t=>`${t.a},${t.b}`).join(";") ?? ""}`;
+  }
+  admitStructureAttack(playerId: number, squads: readonly Squad[], points: Map<number, WorldPoint>, target: NonNullable<Squad["structureTarget"]>): void {
+    if (squads.every(s => points.get(s.id)?.x === s.x && points.get(s.id)?.y === s.y)) {
+      this.movementAdmission.cancel(squads.map(s => s.id), this.tick);
+      for (const s of squads) {
+        this.activateOrder(s, { type: "hold" });
+        this.updateSquad(s.id, { queuedOrders: [], charge: null, structureTarget: { ...target } });
+      }
+      return;
+    }
+    const first = points.values().next().value!;
+    this.movementAdmission.start(playerId, squads, pointTile(this.map, first), this.tick, points, false, target);
   }
   private readonly orderRevisions = new Map<number, number>();
   private readonly queuedLegs = new Map<number, { attempts: number; retryAt: number; paused?: boolean }>();
@@ -440,6 +453,8 @@ export class Skirmish {
     this.adjacency = new FactionAdjacency(map, this.owners, tile => this.paths.walkable(tile));
     this.waterPaths = new WaterPaths(map, false);
     this.routePlanner = new RoutePlanner(this.paths,this.waterPaths,{
+      priority: request => !this.player(request.context.playerId ?? 0)?.ai && request.context.playerId !== 0 &&
+        (request.context.kind !== "domain" || !["trade", "strategy"].includes(request.context.owner)),
       identity:request=>({playerId:request.context.playerId ?? 0,
         caller:request.context.kind === "domain" ? request.context.owner : request.context.kind}),
       prepare:(request,budget,rays)=>{
@@ -468,7 +483,7 @@ export class Skirmish {
             : (squad.order.type==="move" || squad.order.type==="board") && squad.order.tile===request.goal);
       },
       obstacleRevision:request=>request.water ? "water" : request.context.kind === "domain" ? this.domainRoutePorts.revision(request.context.playerId, request.context.owner) : this.routingObstacleRevision(request.context.playerId),
-      blocked:request=>{if(request.water)return undefined;if(request.context.kind==="domain"){const task=request.context;if(task.owner==="trade"){const forts=this.expansion?.fortifications;return forts?.hasObstacles ? tile=>forts.blocked(tile,task.playerId) : undefined;}return this.obstacleTest(task.playerId);}if(request.context.kind==="ship-admission")return undefined;const squad=this.squad(request.context.squadId);return squad ? this.obstacleTest(squad.playerId) : undefined;},
+      blocked:request=>{if(request.water)return undefined;if(request.context.kind==="domain"){const task=request.context;if(task.owner==="trade")return this.expansion?.trade.routeBlocked(task);return this.obstacleTest(task.playerId);}if(request.context.kind==="ship-admission")return undefined;const squad=this.squad(request.context.squadId);return squad ? this.obstacleTest(squad.playerId) : undefined;},
       completed:(request,outcome,path)=>{
         if (request.context.kind === "domain") { this.domainConsumer(request.context.owner)?.completedRoute(request.context,outcome,path); return; }
         if(request.context.kind==="ship-admission") {
@@ -496,6 +511,7 @@ export class Skirmish {
       },
     });
     this.shipAdmission = new ShipMovementAdmission(map,this.waterPaths,{
+      priority: id => !this.player(id)?.ai,
       ship:id=>this.ship(id), tileOf:ship=>this.tileOf(ship),generation:id=>this.aiGeneration(id),
       available:ship=>(!ship.shoreTransfer || ["landing","afloat"].includes(ship.shoreTransfer.phase) ||
         (!this.player(ship.playerId)?.ai && ship.shoreTransfer.phase!=="boarding")) &&
@@ -530,15 +546,22 @@ export class Skirmish {
       },
       clear:(squad,end)=>traversable(map,squad,end,squadRadius(squad.kind)) &&
         (!this.expansion || this.expansion.fortifications.clearMovement(squad,end,squad.playerId,squadRadius(squad.kind))),
-      destinationValid:(squad,point,selected)=>{
+      destinationValid:(squad,point,selected,structureTarget)=>{
         if(!this.aiFootprintAllowed(squad.playerId, pointTile(map,point)) || !standable(map,point,squadRadius(squad.kind)) || (this.expansion && !this.expansion.fortifications.clearMovement(point,point,squad.playerId,squadRadius(squad.kind))))return false;
+        if (structureTarget && this.expansion) {
+          const building = structureTarget.buildingId === undefined ? undefined : this.building(structureTarget.buildingId),
+            wall = structureTarget.barrierId === undefined ? undefined : this.expansion.fortifications.barrier(structureTarget.barrierId), target = building ?? wall;
+          if (!target || (target.health ?? 1) <= 0 || !this.hostile(squad.playerId, target.playerId) ||
+            !structureAim(point, building ? [building.tile] : wall!.tiles, this.expansion.unit(squad).attack.range,
+              squad.playerId, map.width(), this.expansion.fortifications)) return false;
+        }
         const nearby:Squad[]=[];this.spatial.query(point.x,point.y,2*FIXED,nearby);
         return nearby.every(other=>selected.has(other.id) || distanceSquared(point,other)>=squadSeparation(squad,other)**2);
       },
-      commit:(squad,point,path,index,append)=>{
+      commit:(squad,point,path,index,append,structureTarget)=>{
         this.activateOrder(squad,this.formationMove(point));
         this.squadEntities.updateOwned(squad.id, { path: path });this.squadEntities.updateOwned(squad.id, { nextPathIndex: index });this.squadEntities.updateOwned(squad.id, { lastPlanTick: this.tick });
-        this.squadEntities.updateOwned(squad.id, { queuedOrders: append.map(order=>({...order})) });this.squadEntities.updateOwned(squad.id, { charge: null });this.squadEntities.updateOwned(squad.id, { structureTarget: null });
+        this.squadEntities.updateOwned(squad.id, { queuedOrders: append.map(order=>({...order})) });this.squadEntities.updateOwned(squad.id, { charge: null });this.squadEntities.updateOwned(squad.id, { structureTarget: structureTarget ?? null });
       },
     });
     this.movementAdmission.onEvent = event => this.commandApplications.observe("land", event);
@@ -1307,10 +1330,11 @@ export class Skirmish {
       tiles.add(tile);
     }
   }
-  ownedLandNearest(playerId: number, anchor: number, limit: number): number[] {
+  ownedLandNearest(playerId: number, anchor: number, limit: number, after?: number): number[] {
     // Bounded max-heap of (distance, tile): O(n log limit), no full sort.
     const distances: number[] = [],
       tiles: number[] = [];
+    const afterDistance = after === undefined ? -1 : this.map.euclideanDistSquared(after, anchor);
     const worse = (a: number, b: number) =>
       distances[a] > distances[b] ||
       (distances[a] === distances[b] && tiles[a] > tiles[b]);
@@ -1332,6 +1356,7 @@ export class Skirmish {
     };
     for (const tile of this.ownedTiles.get(playerId) ?? []) {
       const d = this.map.euclideanDistSquared(tile, anchor);
+      if (d < afterDistance || (d === afterDistance && tile <= after!)) continue;
       if (tiles.length < limit) {
         distances.push(d);
         tiles.push(tile);
@@ -3040,18 +3065,24 @@ export class Skirmish {
       squad.order.type === "move"
         ? this.moveDestination(squad.order)
         : tilePoint(this.map, squad.order.tile);
-    const detour = this.localDetours.find(squad, destination, (other) =>
+    // A smaller friendly clearance lets units share a coarse terrain cell.
+    // Repair from the actual position to a nearby corridor join, rather than
+    // asking the coarse search to start at an occupied cell centre.
+    const join = Math.min(squad.path.length - 1, squad.nextPathIndex + 7),
+      localGoal = distanceSquared(squad, destination) > (8 * FIXED) ** 2 && join >= 0
+        ? tilePoint(this.map, squad.path[join]) : destination;
+    const detour = this.localDetours.find(squad, localGoal, (other) =>
       this.holding(other),
     );
     if (detour) {
       this.detours.set(squad.id, detour);
+      if (localGoal !== destination) this.updateSquad(squad.id, { nextPathIndex: join + 1 });
       return;
     }
     const nearby: Squad[] = [];
     const heldTiles = new Map<number, boolean>();
     // Repair toward a nearby point on the existing corridor. Moving units are
     // local obstacles, not a reason to search the entire continent again.
-    const join = Math.min(squad.path.length - 1, squad.nextPathIndex + 8);
     const goal = squad.path[join] ?? squad.order.tile;
     const path = this.paths.findExact(
       this.tileOf(squad),

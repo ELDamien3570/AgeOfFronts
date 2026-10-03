@@ -63,6 +63,7 @@ function building(
     health: 2000,
     maxHealth: 2000,
   });
+  if (type === "factory") for (let y = 0; y < 20; y++) for (let x = 0; x < 32; x++) m.owners[m.map.ref(x, y)] = 1;
 
   return b;
 }
@@ -189,7 +190,7 @@ describe("integrated shipments and military progression", () => {
     expect(CONTENT_HASH).toMatch(/^[a-f0-9]{8}$/);
     expect(match().snapshot().expansion!.contentHash).toBe(CONTENT_HASH);
   });
-  it("returns a finite load when its remaining stop disappears, without paying returned cargo", () => {
+  it("returns the whole finite load when its single destination disappears before delivery", () => {
     const m = match(),
       e = m.expansion!,
       factory = building(m, "factory", 10, 10),
@@ -200,15 +201,14 @@ describe("integrated shipments and military progression", () => {
     tradeStep(m, 22);
     const actor = e.trade.actors[0];
     expect(actor.loaded).toBe(20);
-    for (let i = 0; i < 1000 && !actor.delivered; i++) tradeStep(m);
-    expect(actor.visited).toEqual([a.id]);
-    const gold = e.trade.deliveredGold[1];
+    m.removeBuilding(a.id);
     m.removeBuilding(b.id);
+    for (const city of m.buildings.filter(b => b.type === "city")) m.removeBuilding(city.id);
     for (let i = 0; i < 1000 && !actor.returned; i++) tradeStep(m);
-    expect(actor.returned).toBe(10);
+    expect(actor.returned).toBe(20);
     expect(actor.cargo).toBe(0);
-    expect(e.supply.goods.get(factory.id)).toBe(10);
-    expect(e.trade.deliveredGold[1]).toBe(gold);
+    expect(e.supply.goods.get(factory.id)).toBe(20);
+    expect(e.trade.deliveredGold[1] ?? 0).toBe(0);
     expect(actor.loaded).toBe(
       actor.cargo + actor.delivered + actor.returned + actor.lost,
     );
@@ -223,9 +223,9 @@ describe("integrated shipments and military progression", () => {
     e.supply.goods.set(factory.id, 20);
     tradeStep(m, 22);
     const actor = e.trade.actors[0];
-    expect(actor.valuePerGood).toBe(50);
+    expect(actor.valuePerGood).toBe(5);
     e.progression.states[1].age = "Modern";
-    expect(actor.valuePerGood).toBe(50);
+    expect(actor.valuePerGood).toBe(5);
     const captor = m.squads.find((s) => s.playerId === 2)!;
     m.updateSquad(captor.id, { x: actor.x });
     m.updateSquad(captor.id, { y: actor.y });
@@ -233,12 +233,13 @@ describe("integrated shipments and military progression", () => {
     tradeStep(m);
     expect(actor.state).toBe("prize");
     expect(actor.playerId).toBe(2);
+    tradeStep(m, 23);
     expect(actor.destination).toBe(prize.id);
     m.updateSquad(captor.id, { x: 85 * FIXED });
     for (let i = 0; i < 200 && e.trade.actors.includes(actor); i++)
       tradeStep(m);
     expect(e.trade.actors).not.toContain(actor);
-    expect(e.trade.deliveredGold[2]).toBe(1000);
+    expect(e.trade.deliveredGold[2]).toBe(100);
     const paid = m.players[1].gold;
     tradeStep(m, 100);
     expect(m.players[1].gold).toBe(paid);

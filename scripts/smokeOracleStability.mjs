@@ -123,6 +123,24 @@ try{
   await wait(()=>{built=p.snapshot.buildings.find(b=>!existingBuildings.has(b.id)&&b.playerId===p.manifest.playerId&&b.type==="barracks"&&b.tile===buildTile);return built?.remainingTicks===0;},"completed authoritative building",15000);
   const validBuild={commandTick:buildTick,completedTick:p.tick,buildingId:built.id,tile:buildTile,age,outcome:buildOutcome};
   console.log(JSON.stringify({stage:"construction",validBuild}));
+  const tradeControls=[], otherTrader=peers[1].manifest.playerId;
+  for(const command of [
+    {type:"trade-pause",playerId:p.manifest.playerId,naval:false,paused:true},
+    {type:"trade-pause",playerId:p.manifest.playerId,naval:true,paused:true},
+    {type:"trade-block",playerId:p.manifest.playerId,otherId:otherTrader,blocked:true},
+    {type:"trade-pause",playerId:p.manifest.playerId,naval:false,paused:false},
+    {type:"trade-pause",playerId:p.manifest.playerId,naval:true,paused:false},
+    {type:"trade-block",playerId:p.manifest.playerId,otherId:otherTrader,blocked:false},
+  ]) {
+    const id=rid();send(p,{type:"match-command",requestId:id,matchId,command});
+    await wait(()=>p.outcomes.some(o=>o.id===id&&["executed","rejected","superseded"].includes(o.status)),"trade-control receipt",15000);
+    const outcome=p.outcomes.find(o=>o.id===id&&["executed","rejected","superseded"].includes(o.status));
+    if(outcome.status!=="executed")throw new Error("Trade control failed: "+JSON.stringify(outcome));
+    await wait(()=>peers.every(peer=>{const c=peer.snapshot.expansion.tradeControls?.[command.playerId];return c &&
+      (command.type==="trade-block" ? c.blocked.includes(command.otherId)===command.blocked :
+        (command.naval?c.seaPaused:c.landPaused)===command.paused);}),"replicated trade control",15000);
+    tradeControls.push({command,outcome});
+  }
   let waterTransport;
   if(args.includes("--water")) {
     const land=new LandPaths(map,false),water=new WaterPaths(map,false),coast=new CoastIndex(map,land,water);
@@ -187,7 +205,7 @@ try{
   const common=[...checks].filter(([,row])=>row.size===count);
   if(common.length<5)throw new Error("Too few common tick agreement samples");
   if(peers.some(p=>Boolean(p.closed)||Boolean(p.packets<10)||Boolean(Date.now()-p.lastAt>10000)))throw new Error("A peer stopped advancing");
-  const result={passed:true,title,matchId,roomId,base,mapId,worldSize,clients:count,seconds,elapsedSeconds:(Date.now()-started)/1000,flags:Object.fromEntries(flags.map(f=>[f,true])),runtimeId:manifests[0].runtimeId,mapHash:manifests[0].mapHash,moves,validBuild,waterTransport,aiMoved:[...aiMoved].sort((a,b)=>a-b),rejection,reconnected,commonStateSamples:common.length,peers:peers.map(p=>({id:p.id,tick:p.tick,packets:p.packets,syncs:p.syncs,bytes:p.bytes,decodeP95:percentile(p.decodeMs,.95),publicationGapP95:percentile(p.gaps,.95),publicationGapMax:Math.max(...p.gaps)})),failures};
+  const result={passed:true,title,matchId,roomId,base,mapId,worldSize,clients:count,seconds,elapsedSeconds:(Date.now()-started)/1000,flags:Object.fromEntries(flags.map(f=>[f,true])),runtimeId:manifests[0].runtimeId,mapHash:manifests[0].mapHash,moves,validBuild,tradeControls,waterTransport,aiMoved:[...aiMoved].sort((a,b)=>a-b),rejection,reconnected,commonStateSamples:common.length,peers:peers.map(p=>({id:p.id,tick:p.tick,packets:p.packets,syncs:p.syncs,bytes:p.bytes,decodeP95:percentile(p.decodeMs,.95),publicationGapP95:percentile(p.gaps,.95),publicationGapMax:Math.max(...p.gaps)})),failures};
   fs.mkdirSync(path.dirname(out),{recursive:true});
   completed=true;fs.writeFileSync(out,JSON.stringify(result,null,2)+"\n");console.log(JSON.stringify(result));
 } finally {

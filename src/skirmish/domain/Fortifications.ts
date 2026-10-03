@@ -246,7 +246,7 @@ export class Fortifications {
     owner: number,
     age: Age,
     buildings: readonly Building[] | TowerSiteIndex,
-  ): { links: { a: number; tiles: number[] }[]; gold: number } {
+  ): ReturnType<typeof quoteTowerPlan> {
     return quoteTowerPlan(this.map, tile, owner, age, buildings, t => this.intactWallAt(t));
   }
   addTower(
@@ -266,7 +266,9 @@ export class Fortifications {
         tiles: link.tiles,
         health,
         maxHealth: health,
-        remainingTicks: tower.remainingTicks,
+        // The link is quoted and paid once at placement, including unfinished
+        // neighbours. Its construction cannot finish before either endpoint.
+        remainingTicks: Math.max(tower.remainingTicks, link.remainingTicks ?? 0),
       });
     }
     this.reindex();

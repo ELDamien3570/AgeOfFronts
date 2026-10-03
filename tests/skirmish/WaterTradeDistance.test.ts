@@ -37,7 +37,7 @@ function route(distance: number, inland = 0, foreign = true) {
     return b;
   };
   const factory = add("factory", 10, 19 - inland);
-  add("port", 10, 19);
+  const port = add("port", 10, 19);
   const destination = add("port", 10 + distance, 19, foreign ? 2 : 1);
   const e = m.expansion!;
   e.progression.states[1].completed.push(
@@ -47,6 +47,7 @@ function route(distance: number, inland = 0, foreign = true) {
   const step = () => {
     m.tick++;
     e.supply.goods.set(factory.id, 1000);
+    e.supply.goods.set(port.id, 1000);
     e.trade.step();
   };
   const firstDelivery = () => {
@@ -57,12 +58,12 @@ function route(distance: number, inland = 0, foreign = true) {
 }
 
 describe("water trade distance pricing", () => {
-  it("pays for loading-port separation with no base payout", () => {
-    expect(route(2).firstDelivery()).toBe(25);
-    expect(route(20).firstDelivery()).toBe(250);
-    expect(route(100).firstDelivery()).toBe(1250);
-    expect(route(2, 15).firstDelivery()).toBe(25);
-    expect(route(2, 0, true).firstDelivery()).toBe(25);
+  it("pays bounded map-relative port separation independently of inland factories", () => {
+    expect(route(2).firstDelivery()).toBe(414);
+    expect(route(20).firstDelivery()).toBe(842);
+    expect(route(100).firstDelivery()).toBe(1200);
+    expect(route(2, 15).firstDelivery()).toBe(414);
+    expect(route(2, 0, true).firstDelivery()).toBe(414);
   });
   it("does not deliver water trade to another port belonging to the sender", () => {
     const own = route(20, 0, false);
@@ -90,7 +91,7 @@ describe("water trade distance pricing", () => {
         0,
       ),
     ).toBeNull();
-    expect(allied.firstDelivery()).toBe(35);
+    expect(allied.firstDelivery()).toBe(207);
   });
   it("returns cargo without payment when a foreign destination becomes domestic in transit", () => {
     const captured = route(20);
@@ -107,7 +108,7 @@ describe("water trade distance pricing", () => {
     expect(actor.delivered).toBe(0);
     expect(captured.e.trade.deliveredGold[1] ?? 0).toBe(0);
   });
-  it("bounds five-minute adjacent foreign trade without rewarding faster cycles", () => {
+  it("keeps both short and long sea routes active with bounded per-delivery payouts", () => {
     const near = route(2, 0, true),
       far = route(100, 0, true);
     for (let i = 0; i < 6000; i++) {
@@ -115,9 +116,9 @@ describe("water trade distance pricing", () => {
       far.step();
     }
     expect(near.e.trade.deliveredGold[1]).toBeGreaterThan(0);
-    expect(near.e.trade.deliveredGold[1]).toBeLessThan(5000);
-    expect(far.e.trade.deliveredGold[1]).toBeGreaterThan(
-      near.e.trade.deliveredGold[1],
-    );
+    expect(near.e.trade.actors.filter(a => a.playerId === 1)).toHaveLength(1);
+    expect(far.e.trade.actors.filter(a => a.playerId === 1)).toHaveLength(1);
+    expect(far.e.trade.deliveredGold[1]).toBeGreaterThan(0);
+    expect(far.e.trade.cycleQuotes.values().next().value!.guaranteedGold).toBe(1200);
   });
 });

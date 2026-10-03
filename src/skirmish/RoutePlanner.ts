@@ -36,6 +36,7 @@ export type ExactRouteOutcome =
   | "limited"
   | "superseded";
 export interface RoutePlannerPorts<T> {
+  priority?(request: ExactRouteRequest<T>): boolean;
   /** Domain attribution for fair scheduling and bounded cohort diagnostics. */
   identity?(request: ExactRouteRequest<T>): {
     playerId: number;
@@ -76,6 +77,7 @@ export class RoutePlanner<T> {
   private schedulingVersion = 3;
   private exclusiveKey?: string;
   private lastPlayer = -1;
+  private priorityTurn = 0;
   private readonly lastCaller = new Map<number, number>();
   readonly diagnostics = {
     work: 0,
@@ -110,6 +112,7 @@ export class RoutePlanner<T> {
       scheduling: {
         version: this.schedulingVersion,
         lastPlayer: this.lastPlayer,
+        priorityTurn: this.priorityTurn,
         lastCaller: [...this.lastCaller],
         exclusiveKey: this.exclusiveKey,
       },
@@ -132,6 +135,7 @@ export class RoutePlanner<T> {
     if (
       scheduling &&
       (![1, 2, 3].includes(scheduling.version) ||
+        (scheduling.priorityTurn !== undefined && (!Number.isSafeInteger(scheduling.priorityTurn) || scheduling.priorityTurn < 0)) ||
         !Number.isInteger(scheduling.lastPlayer) ||
         scheduling.lastPlayer < -1 ||
         scheduling.lastPlayer >= 256 ||
@@ -164,6 +168,7 @@ export class RoutePlanner<T> {
       throw new Error("Unknown planner scheduling version");
     this.exclusiveKey = saved.scheduling?.exclusiveKey;
     this.lastPlayer = saved.scheduling?.lastPlayer ?? -1;
+    this.priorityTurn = saved.scheduling?.priorityTurn ?? 0;
     this.lastCaller.clear();
     for (const [player, caller] of saved.scheduling?.lastCaller ?? [])
       this.lastCaller.set(player, caller);
@@ -257,6 +262,16 @@ export class RoutePlanner<T> {
     eligible: (job: Job<T>) => boolean = () => true,
   ): [string, Job<T>] {
     if (this.schedulingVersion === 1) return this.jobs.entries().next().value!;
+    if (this.ports.priority) {
+      let human = false, background = false;
+      for (const job of this.jobs.values()) if (eligible(job)) {
+        if (this.ports.priority(job)) human = true; else background = true;
+      }
+      if (human && background) {
+        const priority = this.priorityTurn++ % 3 < 2, prior = eligible;
+        eligible = job => prior(job) && this.ports.priority!(job) === priority;
+      }
+    }
     // Three bounded scans of <=128 jobs, with no per-quantum group allocation.
     // Select a player first, then a command class, then its oldest queue entry.
     let firstPlayer = Infinity,
@@ -316,6 +331,9 @@ export class RoutePlanner<T> {
     if (!this.jobs.has(request.key) && this.jobs.size >= this.jobLimit) {
       this.diagnostics.admissionDeferred++;
       return false;
+    }
+    if (this.ports.priority && !this.ports.priority(request) && this.jobLimit >= 16 && this.jobs.size >= this.jobLimit - 8) {
+      this.diagnostics.admissionDeferred++; return false;
     }
     const paths = request.water ? this.water : this.land;
     const search = paths.beginPlanning(

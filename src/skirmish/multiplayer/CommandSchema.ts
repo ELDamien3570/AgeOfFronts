@@ -61,6 +61,8 @@ export const commandSchema = z.discriminatedUnion("type", [
     recipeIds: z.array(text).max(100).nullable(),
   }),
   command("reset-production-priorities"),
+  command("trade-pause", { naval: z.boolean(), paused: z.boolean() }),
+  command("trade-block", { otherId: id, blocked: z.boolean() }),
   command("refit", { squadIds: ids, definitionId: text }),
   command("charge", { squadIds: ids, ...point, targetId: id.optional() }),
   command("attack-structure", {

@@ -5,6 +5,7 @@ import { AGES, AGE_NAMES, type Age, type Tree } from "../domain/Definitions";
 import { BUILDING_RULES } from "../Rules";
 
 import { UNIT } from "../content/Units";
+import { TRADE_RULES } from "../content/Economy";
 
 import { AllianceRenewalView } from "./AllianceRenewalView";
 import { AgeThemeView } from "./AgeThemeView";
@@ -377,6 +378,15 @@ export class EmpireView {
         this.buildAges[d.build as BuildingType] ?? (d.buildAge as Age),
       );
 
+    if (d.tradeMode) {
+      const naval = d.tradeMode === "sea", control = this.vm.expansion.tradeControls?.[this.playerId];
+      this.actions.command({ type: "trade-pause", playerId: this.playerId, naval, paused: !(naval ? control?.seaPaused : control?.landPaused) });
+      return;
+    }
+    if (d.tradeFaction) {
+      const otherId = Number(d.tradeFaction), blocked = this.vm.expansion.tradeControls?.[this.playerId]?.blocked.includes(otherId) ?? false;
+      this.actions.command({ type: "trade-block", playerId: this.playerId, otherId, blocked: !blocked }); return;
+    }
     if (d.priorityRecipe && d.productionType) {
       const buildingType = d.productionType as BuildingType;
       const group = this.productionGroups.find((g) => g.type === buildingType);
@@ -551,7 +561,7 @@ export class EmpireView {
         ? this.technologyContent()
         : this.panel === "supplies"
           ? this.supplyContent()
-          : this.diplomacyContent();
+          : this.diplomacyContent() + this.tradeDiplomacyControl();
 
     const footer =
       this.panel === "technology"
@@ -661,6 +671,7 @@ export class EmpireView {
         groups.some((g) => g.mode !== "auto") ||
         (this.pendingProductionResetTick === undefined &&
           vm.hasManualProduction);
+    const trade = vm.expansion.tradeControls?.[this.playerId];
     const walls = vm.expansion.barriers.filter(
       (w) => w.playerId === this.playerId && w.health > 0,
     );
@@ -675,7 +686,7 @@ export class EmpireView {
     return `<p>Resources and equipment are folded into the top bar. Recruitment and construction are in the main command dock.</p><h3>Production</h3><p>${escape(productionText("automatic_help"))}</p><p>${escape(productionText("balancing_help"))}</p><div class="production-toolbar"><span>${escape(productionText("groups_count", { groups: groups.length, buildings: groups.reduce((sum, group) => sum + group.count, 0) }))}</span><button data-reset-production="yes" ${hasManual ? "" : "disabled"} title="${escape(productionText("reset_all_title"))}">${escape(productionText("reset_all"))}</button></div>${
       groups.map((group) => this.producerContent(group)).join("") ||
       `<p>${escape(productionText("no_producers"))}</p>`
-    }<h3>Trade</h3><p>Delivered gold: ${fmt(vm.expansion.deliveredGold[this.playerId] ?? 0)} · ${vm.expansion.traders.filter((a) => a.playerId === this.playerId).length}/64 traders</p>${vm.expansion.traders
+    }<h3>Trade</h3><p>Delivered gold: ${fmt(vm.expansion.deliveredGold[this.playerId] ?? 0)} · ${vm.expansion.traders.filter((a) => a.playerId === this.playerId).length}/${TRADE_RULES.actorCap} traders</p><button data-trade-mode="land" aria-pressed="${!!trade?.landPaused}">${trade?.landPaused ? "Resume" : "Stop"} overland trade</button><button data-trade-mode="sea" aria-pressed="${!!trade?.seaPaused}">${trade?.seaPaused ? "Resume" : "Stop"} overseas trade</button>${vm.expansion.traders
       .filter((a) => a.playerId === this.playerId)
       .slice(0, 16)
       .map(
@@ -721,6 +732,12 @@ export class EmpireView {
     return `<article class="producer" data-production-type-group="${group.type}" data-production-mode="${group.mode}"><div class="production-group-heading"><b>${escape(BUILDING_RULES[group.type].name)}</b><span>${escape(productionText("group_count", { count: group.count, ready: group.ready }))}</span></div><small>${escape(productionText(group.mode === "auto" ? "group_auto" : group.mode === "manual" ? "group_manual" : "paused"))}</small><div class="production-mode"><button data-priority-reset="${group.type}" aria-pressed="${group.mode === "auto"}" title="${escape(productionText("automatic_title"))}">${escape(productionText("automatic"))}</button></div>${running ? `<small class="production-running">${escape(productionText("running", { batches: running }))}</small>` : ""}${group.mode === "paused" ? `<small>${escape(productionText("no_priorities"))}</small>` : ""}<div class="production-patterns"><small>${escape(productionText("patterns"))}</small>${patterns}</div></article>`;
   }
 
+  private tradeDiplomacyControl(): string {
+    const vm = this.vm!, p = vm.faction(this.inspectedPlayer)?.player;
+    if (!p || p.id === this.playerId || p.kind === "tribe" || p.eliminated) return "";
+    const blocked = vm.expansion.tradeControls?.[this.playerId]?.blocked.includes(p.id) ?? false;
+    return `<button data-trade-faction="${p.id}" aria-pressed="${blocked}">${blocked ? "Resume" : "Stop"} trade with ${escape(p.name)}</button>`;
+  }
   private diplomacyContent(): string {
     const vm = this.vm!,
       faction = vm.faction(this.inspectedPlayer);

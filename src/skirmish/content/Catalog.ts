@@ -14,6 +14,7 @@ import {
   RESERVE_GROWTH,
   STARTING_AGE_TROOPS,
   WATER_TRADE_PRICING,
+  TRADE_RULES,
 } from "./Economy";
 import { STARTING_ECONOMY } from "./StartingEconomy";
 import { FACTIONS } from "./Factions";
@@ -113,6 +114,7 @@ export const CONTENT_HASH = hash({
     startingEconomy: STARTING_ECONOMY,
     tribeDevelopmentRevision: 1,
     waterTrade: WATER_TRADE_PRICING,
+    trade: TRADE_RULES,
     waterTradeDestinations: "foreign-only",
     militaryInfrastructureRevision: 1,
   },

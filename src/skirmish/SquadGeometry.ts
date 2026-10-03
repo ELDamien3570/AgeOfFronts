@@ -14,7 +14,7 @@ export type SquadGeometry = Pick<Squad, "kind" | "playerId">;
 export function squadSeparation(a: SquadGeometry, b: SquadGeometry): number {
   const radius = squadRadius(a.kind) + squadRadius(b.kind);
   return (
-    Math.round(radius * (a.playerId === b.playerId ? 0.7 : 1)) + COLLISION_SKIN
+    Math.round(radius * (a.playerId === b.playerId ? 0.5 : 1)) + COLLISION_SKIN
   );
 }
 export function meleeContact(a: SquadType, b: SquadType): number {

@@ -322,7 +322,7 @@ describe("remaining strategic plans", () => {
       usableNextAge(snapshot, { ...opportunity, resources: ["copper", "tin"] }),
     ).toBe(true);
   });
-  it("quotes a complete safe cycle using settlement pricing, physical capacity and returned cargo", () => {
+  it("quotes a single-destination cycle using settlement pricing and physical capacity", () => {
     const legs = [
       {
         marketId: 1,
@@ -350,20 +350,15 @@ describe("remaining strategic plans", () => {
       observedRisk: 0,
     });
     expect(quote.guaranteedGold).toBe(
-      legs.reduce(
-        (n, l) =>
-          n +
-          tradePayout({ ...l, naval: true, quantity: 10, valuePerGood: 100 }),
-        0,
-      ),
+      tradePayout({ ...legs[0], naval: true, quantity: 25, valuePerGood: 100 }),
     );
     expect(quote).toMatchObject({
       quantity: 25,
-      delivered: 20,
-      returned: 5,
-      handlingTicks: 80,
-      travelTicks: 1200,
-      cycleTicks: 1280,
+      delivered: 25,
+      returned: 0,
+      handlingTicks: 60,
+      travelTicks: 1000,
+      cycleTicks: 1060,
     });
     expect(quote.riskAdjustedGoldPer1000Ticks).toBe(quote.goldPer1000Ticks);
     expect(
@@ -412,8 +407,8 @@ describe("remaining strategic plans", () => {
         },
       ],
     });
-    expect(quote.delivered).toBe(10);
-    expect(quote.returned).toBe(30);
+    expect(quote.delivered).toBe(40);
+    expect(quote.returned).toBe(0);
   });
   it("finds a useful neutral coast but does not fabricate ownership or pay before occupation", () => {
     const f = fixture(true),

@@ -29,6 +29,7 @@ interface Admission {
   recovery?: { state: Ship["repairState"]; port: Ship["repairPortId"] };
 }
 export interface ShipMovementAdmissionPorts {
+  priority?(playerId: number): boolean;
   ship(id: number): Ship | undefined;
   tileOf(ship: Ship): number;
   generation(playerId: number): number;
@@ -352,9 +353,11 @@ export class ShipMovementAdmission {
       throw new Error("Invalid sailing admission budget");
     const validated = new Set<number>();
     let used = 0,
-      idle = 0;
+      idle = 0, turn = 0;
     while (this.pending.size && used < budget) {
-      const [id, admission] = this.pending.entries().next().value!;
+      const interactive = turn++ % 3 < 2 && this.ports.priority,
+        entry = interactive ? [...this.pending].find(([, a]) => this.ports.priority!(a.playerId)) : undefined,
+        [id, admission] = entry ?? this.pending.entries().next().value!;
       this.pending.delete(id);
       this.pending.set(id, admission);
       if (
@@ -368,7 +371,7 @@ export class ShipMovementAdmission {
       validated.add(id);
       if (admission.paused) {
         used++;
-        if (++idle >= this.pending.size) break;
+        if (++idle >= this.pending.size * 3) break;
         continue;
       }
       const unplanned = admission.members.find(
@@ -388,7 +391,7 @@ export class ShipMovementAdmission {
         continue;
       }
       if (admission.members.some((m) => !m.path)) {
-        if (++idle >= this.pending.size) break;
+        if (++idle >= this.pending.size * 3) break;
         continue;
       }
       idle = 0;

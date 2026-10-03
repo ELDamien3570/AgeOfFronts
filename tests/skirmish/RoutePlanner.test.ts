@@ -39,6 +39,18 @@ function fixture() {
   return { map, land, planner, results, validity, revision, request };
 }
 describe("fair resumable exact planning", () => {
+  it("gives human routes two thirds of contested work, without starving background routes", () => {
+    const {map,land}=fixture(), planner=new RoutePlanner<{playerId:number}>(land,new WaterPaths(map,false),{
+      identity:r=>({playerId:r.context.playerId,caller:"admission"}), priority:r=>r.context.playerId===1,
+      valid:()=>true,obstacleRevision:()=>"0",blocked:()=>undefined,completed:()=>{},
+    });
+    for(const playerId of [1,2]) planner.request({key:`p${playerId}`,start:0,goal:17999,water:false,createdTick:0,obstacleRevision:"0",context:{playerId}});
+    expect(planner.step(1,60,1)).toBe(60);
+    const cohorts=planner.diagnosticCohorts(1);
+    expect(cohorts.find(c=>c.playerId===1)?.work).toBe(40);
+    expect(cohorts.find(c=>c.playerId===2)?.work).toBe(20);
+    expect(planner.checkpoint().scheduling.priorityTurn).toBe(60);
+  });
   it("attributes bounded work and cancellation to faction/caller cohorts outside checkpoints", () => {
     const { map, land } = fixture();
     const planner = new RoutePlanner<{ playerId: number }>(land, new WaterPaths(map, false), {

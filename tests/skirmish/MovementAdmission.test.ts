@@ -1,6 +1,8 @@
 import { describe, expect, it, vi } from "vitest";
 import { GameMapImpl } from "../../src/core/game/GameMap";
 import { Skirmish } from "../../src/skirmish/Simulation";
+import { retainSquads } from "./UnitFixtures";
+import { FIXED } from "../../src/skirmish/Protocol";
 
 function fixture() {
   const data = new Uint8Array(100 * 70).fill(133),
@@ -19,6 +21,35 @@ function status(match: Skirmish) {
   return events[events.length - 1]?.status;
 }
 describe("transactional replacement movement", () => {
+  it("splits a 100-squad command into resumable cohorts and preserves unchanged AI intentions", () => {
+    const {match,map,own}=fixture(), template=own[0];
+    const selected = retainSquads(match, [...match.squads.filter(s=>s.playerId!==1), ...Array.from({length:100},(_,i)=>({
+      ...template, id: match.allocateId(), x:(10.5+i%10)*FIXED, y:(10.5+Math.floor(i/10))*FIXED,
+      order:{type:"hold" as const}, path:[], queuedOrders:[],
+    }))]).filter(s=>s.playerId===1);
+    match.setAiController(1,true);
+    const command={type:"order" as const,playerId:1,squadIds:selected.map(s=>s.id),order:{type:"move" as const,tile:map.ref(75,50)}};
+    expect(match.applyCommand(command)).toBeNull();
+    const saved=match.movementAdmission.checkpoint();
+    expect(saved.pending).toHaveLength(4);
+    expect(saved.pending.every(([,a])=>a.members.length<=30)).toBe(true);
+    expect(match.applyCommand(command)).toBeNull(); expect(match.movementAdmission.checkpoint()).toEqual(saved);
+    for(let i=0;i<800&&match.movementAdmission.pendingCount;i++)match.step();
+    expect(match.movementAdmission.pendingCount).toBe(0);
+    expect(match.movementAdmission.events.filter(e=>e.status==="executed")).toHaveLength(4);
+    expect(match.movementAdmission.events.some(e=>e.status==="rejected")).toBe(false);
+  });
+  it("shares a long formation corridor, with deterministic entry/exit connectors after restore", () => {
+    const {match,map,own}=fixture();
+    own.forEach((s,i)=>match.updateSquad(s.id,{x:(10.5+i)*FIXED,y:10.5*FIXED}));
+    expect(match.applyCommand({type:"order",playerId:1,squadIds:own.map(s=>s.id),order:{type:"move",tile:map.ref(80,55)}})).toBeNull();
+    for(let i=0;i<25;i++)match.step();
+    const clone=new Skirmish(map,match.options); clone.restore(match.checkpoint());
+    for(let i=0;i<160;i++){match.step();clone.step();}
+    expect(clone.checkpoint()).toEqual(match.checkpoint());
+    expect(match.movementAdmission.events.slice(-1)[0]?.status).toBe("executed");
+    expect(match.routePlanner.diagnosticCohorts(match.tick).find(c=>c.caller==="admission")?.complete).toBeGreaterThan(own.length);
+  });
   it("recovers an occupied final destination without dropping later player orders", () => {
     const {match,map,own}=fixture(), mover=own[0], blocker=own[1];
     const goal=map.ref(70,35);

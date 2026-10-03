@@ -100,7 +100,7 @@ describe("bounded placement preview", () => {
     snapshot = game.snapshot();
     snapshot.changedTiles = new Uint32Array();
     preview.update(snapshot);
-    expect(preview.sites(bounds, 256)).toContain(tile);
+    expect(preview.sites(bounds, 256)).not.toContain(tile);
     game.updateBuilding((endpoint).id, { remainingTicks: 0 });
     snapshot = game.snapshot();
     snapshot.changedTiles = new Uint32Array();

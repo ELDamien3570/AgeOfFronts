@@ -5,6 +5,7 @@ import { GameMapImpl } from "../../src/core/game/GameMap";
 import { wallTier } from "../../src/skirmish/client/WallArtwork";
 import { WallPresentation } from "../../src/skirmish/client/WallPresentation";
 import { TECHNOLOGIES } from "../../src/skirmish/content/Technology";
+import { buildingCost } from "../../src/skirmish/content/Buildings";
 import { AGES, type Barrier } from "../../src/skirmish/domain/Definitions";
 import { FIXED, type Building } from "../../src/skirmish/Protocol";
 import { Skirmish } from "../../src/skirmish/Simulation";
@@ -162,6 +163,31 @@ describe("wall artwork topology", () => {
 });
 
 describe("friendly fortification passage", () => {
+  it("quotes and charges a link to a tower still under construction, without a third tower", () => {
+    const m = match(), forts = m.expansion!.fortifications;
+    m.expansion!.supply.replaceDeposits([]);
+    m.expansion!.progression.states[1].completed = TECHNOLOGIES.map(t => t.id);
+    m.players[0].gold = 100000;
+    for (const x of [10, 16]) m.owners[m.map.ref(x, 20)] = 1;
+    expect(m.applyCommand({ type: "build", playerId: 1, buildingType: "tower", tile: m.map.ref(10, 20) })).toBeNull();
+    const first = m.buildings[m.buildings.length - 1];
+    expect(first.remainingTicks).toBeGreaterThan(0);
+    const secondTile = m.map.ref(16, 20), quoted = forts.towerPlan(secondTile, 1, "StoneAge", m.buildings);
+    expect(quoted.links).toHaveLength(1);
+    expect(quoted.gold).toBe(125);
+    const beforeSecond = m.players[0].gold;
+    expect(m.applyCommand({ type: "build", playerId: 1, buildingType: "tower", tile: secondTile })).toBeNull();
+    expect(forts.barriers).toHaveLength(1);
+    expect(beforeSecond - m.players[0].gold).toBe(buildingCost("tower", "StoneAge", 1).gold! + 125);
+    const second = m.buildings[m.buildings.length - 1], saved = forts.checkpoint();
+    forts.restore(saved);
+    expect(forts.barriers[0].remainingTicks).toBe(Math.max(first.remainingTicks, second.remainingTicks));
+    for (const b of [first, second]) m.updateBuilding(b.id, { remainingTicks: 0 });
+    for (let tick = 1; tick <= saved.barriers[0].remainingTicks; tick++) forts.step(tick, m.buildings);
+    expect(forts.barriers).toHaveLength(1);
+    expect(forts.barriers[0].remainingTicks).toBe(0);
+    expect(forts.towerPlan(secondTile, 1, "StoneAge", m.buildings).links).toHaveLength(0);
+  });
   it("updates tower passage and removes its old wall when ownership changes on the same tile", () => {
     const m = match(),
       a = tower(m, 5, 5),

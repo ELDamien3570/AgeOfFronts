@@ -64,7 +64,7 @@ import { Supply, costRejection, spend } from "./Supply";
 import { Trade } from "./Trade";
 import { quoteBuildingUpgrades } from "./BuildingUpgrades";
 import { structureAim } from "./StructureTargeting";
-import { squadRadius, standable, tilePoint } from "../SquadGeometry";
+import { squadRadius, squadSeparation, standable, tilePoint } from "../SquadGeometry";
 import type { CoastIndex } from "../CoastIndex";
 import { AiEconomicDirector } from "./AiEconomicDirector";
 export interface ExpansionWorld extends BattleWorld, ArmyWorld {
@@ -84,7 +84,7 @@ export interface ExpansionWorld extends BattleWorld, ArmyWorld {
   tileOf(squad: { x: number; y: number }): number;
   ownedLand(playerId: number): Iterable<number>;
   /** The `limit` owned tiles closest to `anchor`, ordered by distance then id. */
-  ownedLandNearest(playerId: number, anchor: number, limit: number): number[];
+  ownedLandNearest(playerId: number, anchor: number, limit: number, after?: number): number[];
   buildingSite(playerId: number, type: BuildingType, tile: number, age?: Age): string | null;
   squadCapacity(player: Player): number;
   aiGeneration(playerId: number): number;
@@ -96,6 +96,7 @@ export interface ExpansionWorld extends BattleWorld, ArmyWorld {
   installSquadPath(id: number, path: readonly number[]): void;
   removeBuilding(id: number): boolean;
   factionAdjacent(a: number, b: number): boolean;
+  admitStructureAttack?(playerId: number, squads: readonly Squad[], points: Map<number, {x:number;y:number}>, target: NonNullable<Squad["structureTarget"]>): void;
 }
 // Match-level application coordinator; each domain service owns its own rules.
 // All services operate on the same authoritative world, never a parallel game.
@@ -166,6 +167,13 @@ export class Expansion {
       this.diplomacy,
       this.fortifications,
       this.roads,
+      (a, b) => {
+        if (this.diplomacy.allied(a, b)) return false;
+        const pa = world.players.find(p => p.id === a), pb = world.players.find(p => p.id === b);
+        if (!this.operations.enabled(pa) && !this.operations.enabled(pb)) return true;
+        return (this.operations.enabled(pa) && this.operations.canTarget(a, b)) ||
+          (this.operations.enabled(pb) && this.operations.canTarget(b, a));
+      },
     );
     this.battle = new Battle(
       world,
@@ -338,6 +346,15 @@ export class Expansion {
     if (command.type === "reset-production-priorities") {
       this.supply.resetPriorities(player.id);
       return null;
+    }
+    if (command.type === "trade-pause") {
+      if (typeof command.naval !== "boolean" || typeof command.paused !== "boolean") return "Invalid trade control";
+      this.trade.setPaused(player.id, command.naval, command.paused); return null;
+    }
+    if (command.type === "trade-block") {
+      const other = world.players.find(p => p.id === command.otherId);
+      if (!other || other.id === player.id || other.eliminated || other.kind === "tribe" || typeof command.blocked !== "boolean") return "Choose a living regular trading faction";
+      this.trade.setBlocked(player.id, other.id, command.blocked); return null;
     }
     if (command.type === "produce")
       return this.supply.setProduction(
@@ -619,6 +636,41 @@ export class Expansion {
       )
         return "Select your available troops";
       const orders: { s: Squad; tile: number; path: number[] }[] = [];
+      if (world.options?.deferredPlanning && world.admitStructureAttack) {
+        const points = new Map<number, {x:number;y:number}>(), reserved: (Squad & {x:number;y:number})[] = [],
+          approaches = new Map<string, number[]>(), sides = [0, 0, 0, 0], targetTiles = building ? [building.tile] : barrier!.tiles,
+          centre = tilePoint(world.map, targetTiles[Math.floor(targetTiles.length / 2)]);
+        const side = (point: {x:number;y:number}) => Math.min(3, Math.floor((Math.atan2(point.y - centre.y, point.x - centre.x) + Math.PI) * 2 / Math.PI));
+        for (const s of selected as Squad[]) {
+          const profile = this.unit(s).attack;
+          if (!profile.targets.includes(building ? "structure" : "wall")) return "This weapon cannot attack that structure";
+          const clear = (point: {x:number;y:number}) => reserved.every(other =>
+            (point.x - other.x) ** 2 + (point.y - other.y) ** 2 >= squadSeparation(s, other) ** 2);
+          let point: {x:number;y:number} | undefined;
+          if (structureAim(s, targetTiles, profile.range, player.id, world.map.width(), this.fortifications) && clear(s)) point = {x:s.x,y:s.y};
+          else {
+            const key = `${s.kind}:${profile.range}`; let candidates = approaches.get(key);
+            if (!candidates) {
+              const set = new Set<number>(), extent = Math.ceil(profile.range / FIXED);
+              for (const tile of targetTiles) for (let y = Math.max(0, world.map.y(tile) - extent); y <= Math.min(world.map.height() - 1, world.map.y(tile) + extent); y++)
+                for (let x = Math.max(0, world.map.x(tile) - extent); x <= Math.min(world.map.width() - 1, world.map.x(tile) + extent); x++) {
+                  const t = world.map.ref(x, y), p = tilePoint(world.map, t);
+                  if (world.paths.walkable(t) && !this.fortifications.blocked(t, player.id) && standable(world.map, p, squadRadius(s.kind)) &&
+                    structureAim(p, targetTiles, profile.range, player.id, world.map.width(), this.fortifications)) set.add(t);
+                }
+              candidates = [...set]; approaches.set(key, candidates);
+            }
+            const reachable = candidates.filter(t => world.paths.connected(world.tileOf(s), t) && clear(tilePoint(world.map, t)));
+            reachable.sort((a, b) => sides[side(tilePoint(world.map, a))] - sides[side(tilePoint(world.map, b))] ||
+              world.map.euclideanDistSquared(a, world.tileOf(s)) - world.map.euclideanDistSquared(b, world.tileOf(s)) || a - b);
+            if (reachable.length) point = tilePoint(world.map, reachable[0]);
+          }
+          if (!point) return "No free firing position around this structure";
+          points.set(s.id, point); reserved.push({ ...s, ...point }); sides[side(point)]++;
+        }
+        world.admitStructureAttack(player.id, selected as Squad[], points, {buildingId:building?.id,barrierId:barrier?.id});
+        return null;
+      }
       for (const s of selected as Squad[]) {
         const targetTiles = building ? [building.tile] : barrier!.tiles;
         const profile=this.unit(s).attack;
@@ -1514,6 +1566,7 @@ export class Expansion {
     rulesetId:1,startingAge:1,contentHash:1,technologySpeed:1,victoryMode:1,
     progression:this.progression.revision,diplomacy:this.diplomacy.revision,
     productionPlans:this.supply.controlRevision,productionPriorities:this.supply.controlRevision,
+    tradeControls:this.trade.controlRevision,
     events:this.nextEvent,roadRevision:this.roads.revision,fortificationRevision:this.fortifications.version,
   }};}
   snapshot(): ExpansionSnapshot {
@@ -1546,6 +1599,7 @@ export class Expansion {
       deliveredGold: this.trade.deliveredGold,
       tradeCapturedValue: this.trade.capturedValue,
       tradeLostValue: this.trade.lostValue,
+      tradeControls: this.trade.controls,
     };
   }
 }

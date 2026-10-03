@@ -1,4 +1,5 @@
 import { retainSquads } from "./UnitFixtures";
+import { squadSeparation } from "../../src/skirmish/SquadGeometry";
 import { describe, expect, it, vi } from "vitest";
 import { GameMapImpl } from "../../src/core/game/GameMap";
 import { ArmyViewModel } from "../../src/skirmish/client/ArmyViewModel";
@@ -363,7 +364,7 @@ describe("persistent armies and Bronze tree", () => {
     for(let tick=0;tick<1000;tick++) {
       m.step();
       for(let i=0;i<own.length;i++)for(let j=i+1;j<own.length;j++)
-        expect((own[i].x-own[j].x)**2+(own[i].y-own[j].y)**2).toBeGreaterThanOrEqual(163**2);
+        expect((own[i].x-own[j].x)**2+(own[i].y-own[j].y)**2).toBeGreaterThanOrEqual(squadSeparation(own[i], own[j])**2);
     }
     expect(army.state).toBe("holding");expect(own.every(s=>s.x>60*FIXED)).toBe(true);
     expect(army.memberIds).toEqual(own.map(s=>s.id));

@@ -2,7 +2,7 @@ import { retainSquads } from "./UnitFixtures";
 import { describe, expect, it } from "vitest";
 import { GameMapImpl } from "../../src/core/game/GameMap";
 import { technologyAt } from "../../src/skirmish/content/Technology";
-import { defaultUnit } from "../../src/skirmish/content/Units";
+import { defaultUnit, VESSELS } from "../../src/skirmish/content/Units";
 import { damageAmount, defenceOf } from "../../src/skirmish/domain/Combat";
 import { AGES } from "../../src/skirmish/domain/Definitions";
 import { unitEffects } from "../../src/skirmish/domain/ResearchEffects";
@@ -10,6 +10,15 @@ import { FIXED } from "../../src/skirmish/Protocol";
 import { Skirmish } from "../../src/skirmish/Simulation";
 
 describe("flat troop armour and authored tier superiority", () => {
+  it("gives transports one same-age warship hit-equivalent, plus half per age", () => {
+    for (const [index, age] of AGES.entries()) {
+      const transport = VESSELS.find(v => v.kind === "transport" && v.age === age)!,
+        warship = VESSELS.find(v => v.kind === "warship" && v.age === age)!;
+      const hit = damageAmount(warship.attack!, { tags: ["ship"], meleeArmour: 1000, rangedArmour: 2000, bonusResistance: {} });
+      expect(transport.health).toBe(Math.round(hit * (1 + index * 0.5)));
+      expect(Math.ceil(transport.health / hit)).toBe(Math.ceil(1 + index * 0.5));
+    }
+  });
   it("subtracts base and matching bonus armour independently, preserves minimum damage and percentage hulls", () => {
     const attack = {
       ...defaultUnit("infantry").attack,

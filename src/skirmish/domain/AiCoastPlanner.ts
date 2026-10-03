@@ -214,6 +214,15 @@ export class AiCoastPlanner {
             (land ? 0 : 1500),
         };
         g.marketCursor = undefined;
+        if (!world.buildingFacts().byOwner(player.id).some(b => b.type === "port" && (b.health ?? 1) > 0)) {
+          // First access to the sea has strategic value before any foreign
+          // port exists. The normal quote, occupation and payment gates apply.
+          g.shortlist.push(g.pending);
+          g.shortlist.sort((a, b) => b.score - a.score || a.tile - b.tile);
+          g.shortlist.length = Math.min(8, g.shortlist.length);
+          g.phase = "scan";
+          continue;
+        }
         g.phase = "markets";
       } else if (g.phase === "markets") {
         const read = this.economy.navalFacts.readSea(

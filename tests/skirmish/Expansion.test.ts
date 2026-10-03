@@ -819,7 +819,7 @@ describe("naval transport and combat", () => {
         shipIds: [ship.id],
         tile: port.tile,
       }),
-    ).toMatch(/water/);
+    ).toMatch(/loaded transport/);
     expect(
       m.applyCommand({
         type: "sail",

@@ -36,6 +36,7 @@ function building(m: Skirmish, type: Building["type"], x: number, owner = 1) {
     health: 2000,
     maxHealth: 2000,
   });
+  if (type === "factory") for (let y = 0; y < 20; y++) for (let x = 0; x < 32; x++) m.owners[m.map.ref(x, y)] = 1;
 
   return b;
 }
@@ -135,25 +136,25 @@ describe("authoritative match metrics", () => {
     actor.waitTicks = 0;
     e.progression.states[1].age = "Modern";
     tradeStep(m);
-    expect(e.trade.capturedValue[2]).toBe(1000);
-    expect(e.trade.lostValue[1]).toBe(1000);
+    expect(e.trade.capturedValue[2]).toBe(100);
+    expect(e.trade.lostValue[1]).toBe(100);
     expect(m.players[1].gold).toBe(gold);
     tradeStep(m, 10);
-    expect(e.trade.capturedValue[2]).toBe(1000);
+    expect(e.trade.capturedValue[2]).toBe(100);
     m.updateSquad(captor.id, { x: 85 * FIXED });
     const recaptor = m.squads.find((s) => s.playerId === 1)!;
     m.updateSquad(recaptor.id, { x: actor.x });
     m.updateSquad(recaptor.id, { y: actor.y });
     actor.waitTicks = 0;
     tradeStep(m);
-    expect(e.trade.capturedValue[1]).toBe(1000);
-    expect(e.trade.lostValue[2]).toBe(1000);
+    expect(e.trade.capturedValue[1]).toBe(100);
+    expect(e.trade.lostValue[2]).toBe(100);
   });
   it("records discarded cargo once and preserves shipment conservation", () => {
     const { m, e, actor } = shipment();
     m.players[0].eliminated = true;
     tradeStep(m, 2);
-    expect(e.trade.lostValue[1]).toBe(1000);
+    expect(e.trade.lostValue[1]).toBe(100);
     expect(actor.cargo).toBe(0);
     expect(actor.loaded).toBe(actor.delivered + actor.returned + actor.lost);
     expect(e.trade.capturedValue[2] ?? 0).toBe(0);
@@ -194,12 +195,12 @@ describe("authoritative match metrics", () => {
     expect(metrics).toMatchObject({
       kills: 42,
       deaths: 0,
-      tradeCaptured: 1000,
+      tradeCaptured: 100,
       tradeLost: 0,
     });
     expect(new MatchMetricsViewModel(snapshot, 1)).toMatchObject({
       deaths: 42,
-      tradeLost: 1000,
+      tradeLost: 100,
     });
     delete snapshot.players[1].kills;
     delete snapshot.expansion!.tradeCapturedValue;

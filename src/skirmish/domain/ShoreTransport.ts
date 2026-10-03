@@ -345,11 +345,15 @@ export class ShoreTransport {
   }
   stepPlanning(budget:number):number {
     if(!this.planning || !this.cohorts)return 0;
-    let used=this.planning.step(Math.min(8,budget));
-    used+=this.stepBoards(Math.min(8,budget-used));
-    used+=this.stepLandingVoyages(Math.min(8,budget-used));
+    // Each stage gets a slice even when another stage has a full backlog.
+    // In particular, boarding must never consume the landing/staging budget.
+    const slice=Math.floor(budget/5);
+    let used=this.planning.step(slice);
+    used+=this.stepBoards(slice);
+    used+=this.stepLandingVoyages(slice);
+    const startsEnd=used+slice;
     for(const plan of [...this.pendingStarts.values()]){
-      if(used>=budget)break;used++;
+      if(used>=startsEnd)break;used++;
       if(!this.validStart(plan)){this.finishStart(plan,"superseded","Units or transport permission changed");continue;}
       const group=plan.groups[plan.cursor];
       if(!group){this.commitStart(plan);continue;}
