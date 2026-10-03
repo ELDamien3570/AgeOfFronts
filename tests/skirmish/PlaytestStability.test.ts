@@ -1,3 +1,7 @@
+import { loadServerMap } from "../../src/skirmish/multiplayer/infrastructure/ServerMap";
+import { defaultLobbySettings } from "../../src/skirmish/lobby/LobbyDirectory";
+import { createSkirmishMap } from "../../src/skirmish/Elevation";
+import { DEFAULT_AI_POLICIES } from "../../src/skirmish/content/AiPolicies";
 import { economicSnapshot } from "../../src/skirmish/domain/AiEconomicSnapshot";
 import { usableNextAge } from "../../src/skirmish/domain/AiResearchUtility";
 import { ShoreTransport } from "../../src/skirmish/domain/ShoreTransport";
@@ -17,6 +21,22 @@ function fixture() {
   return {game,map};
 }
 describe("playtest stability regressions", () => {
+  it.each(["StoneAge", "Modern"] as const)("moves the player and every AI on 500 Valles in %s with all policies enabled", async startingAge => {
+    const loaded = await loadServerMap(defaultLobbySettings("valles-kairulia",500));
+    const map = createSkirmishMap(loaded.map.width,loaded.map.height,loaded.map.terrain,loaded.map.elevation,loaded.map.forest,loaded.map.resourceTerrain);
+    const game = new Skirmish(map,{seed:42,aiCount:10,tribeCount:25,tribes:true,ruleset:"ages-v1",startingAge,...DEFAULT_AI_POLICIES});
+    const initial = new Map(game.squads.map(s=>[s.id,{x:s.x,y:s.y}]));
+    const own = game.squads.filter(s=>s.playerId===1), target=game.players[0].base-6*map.width();
+    expect(game.applyCommand({type:"order",playerId:1,squadIds:own.map(s=>s.id),order:{type:"move",tile:target}})).toBeNull();
+    let firstMove: number | undefined;
+    for(let tick=0;tick<80;tick++) {
+      game.step();
+      if(firstMove===undefined && own.some(s=>s.x!==initial.get(s.id)!.x || s.y!==initial.get(s.id)!.y)) firstMove=game.tick;
+    }
+    expect(firstMove).toBeLessThanOrEqual(20);
+    const moved = new Set(game.squads.filter(s=>initial.has(s.id) && (s.x!==initial.get(s.id)!.x || s.y!==initial.get(s.id)!.y)).map(s=>s.playerId));
+    for(const ai of game.players.filter(p=>p.ai&&p.kind==="regular")) expect(moved.has(ai.id),"AI "+ai.id+" displaced").toBe(true);
+  });
   it.each(["tower", "trench", "gun-nest", "missile-defence"] as const)("defeats an AI whose sole surviving building is %s", type => {
     const {game} = fixture(), ai = game.players.find(p=>p.ai)!;
     for (const s of [...game.squads]) if(s.playerId===ai.id) game.removeSquad(s.id);

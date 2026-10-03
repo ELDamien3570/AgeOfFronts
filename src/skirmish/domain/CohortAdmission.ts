@@ -1,3 +1,4 @@
+import { FormationOccupancy } from "../FormationOccupancy";
 import type { GameMap } from "../../core/game/GameMap";
 import {
   FormationPlanning,
@@ -68,10 +69,11 @@ export interface CohortPorts {
 export class CohortAdmission {
   private readonly pending = new Map<number, CohortPlan>();
   private nextId = 1;
+  private readonly occupancy: FormationOccupancy;
   constructor(
     readonly owner: DomainRouteOwner,
     private readonly ports: CohortPorts,
-  ) {}
+  ) { this.occupancy = new FormationOccupancy(ports.map); }
   get pendingCount(): number {
     return this.pending.size;
   }
@@ -221,6 +223,7 @@ export class CohortAdmission {
   step(budget: number): number {
     if (!Number.isInteger(budget) || budget < 0)
       throw new Error("Invalid cohort allowance");
+    if (this.pending.size) this.occupancy.rebuild(this.ports.squads());
     let work = 0,
       idle = 0;
     while (work < budget && this.pending.size) {
@@ -260,6 +263,8 @@ export class CohortAdmission {
           Infinity,
           undefined,
           plan.formation,
+          undefined,
+          this.occupancy,
         );
         work += formation.step(
           Math.min(16, budget - work),
@@ -399,6 +404,7 @@ export class CohortAdmission {
             plan.cursor = 0;
           } else {
             const committed = this.ports.commit(plan, accepted);
+            if (committed !== false) for (const member of accepted) this.occupancy.refresh(member.squad);
             this.finish(
               plan,
               committed === false ? "rejected" : "executed",

@@ -485,7 +485,7 @@ export class Skirmish {
     });
     this.formations = new Formations(map, this.paths);
     this.movementAdmission = new MovementAdmission(map,this.paths,{
-      squads:()=>this.squads,squad:id=>this.squad(id),generation:id=>this.aiGeneration(id),revision:()=>this.routingObstacleRevision(),
+      squads:()=>this.squads,priority:id=>!this.player(id)?.ai,squad:id=>this.squad(id),generation:id=>this.aiGeneration(id),revision:()=>this.routingObstacleRevision(),
       blocked:id=>this.obstacleTest(id),
       request:(id,playerId,squadId,start,goal)=>this.routePlanner.request({key:`admission:${id}:${squadId}`,start,goal,water:false,createdTick:this.tick,
         obstacleRevision:this.routingObstacleRevision(),context:{kind:"admission",admissionId:id,playerId,squadId}}),

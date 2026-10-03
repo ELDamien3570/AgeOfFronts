@@ -1,3 +1,4 @@
+import { FormationOccupancy } from "./FormationOccupancy";
 import type { GameMap } from "../core/game/GameMap";
 import {
   FormationPlanning,
@@ -51,6 +52,7 @@ export interface MovementAdmissionEvent {
 }
 export interface MovementAdmissionPorts {
   squads(): readonly Squad[];
+  priority?(playerId: number): boolean;
   squad(id: number): Squad | undefined;
   generation(playerId: number): number;
   revision(): string;
@@ -92,6 +94,7 @@ export class MovementAdmission {
   readonly events: MovementAdmissionEvent[] = [];
   onEvent?: (event: MovementAdmissionEvent) => void;
   private nextId = 1;
+  private readonly occupancy: FormationOccupancy;
   get pendingCount(): number {
     return this.pending.size;
   }
@@ -99,7 +102,7 @@ export class MovementAdmission {
     private readonly map: GameMap,
     private readonly paths: LandPaths,
     private readonly ports: MovementAdmissionPorts,
-  ) {}
+  ) { this.occupancy = new FormationOccupancy(map); }
   checkpoint() {
     return structuredClone({
       pending: [...this.pending],
@@ -538,12 +541,22 @@ export class MovementAdmission {
   step(tick: number, budget = 128): number {
     if (!Number.isInteger(budget) || budget < 0)
       throw new Error("Invalid admission work budget");
-    const validated = new Set<number>(),
-      revision = this.ports.revision();
-    let used = this.stepIntents(tick, Math.min(32, budget)),
-      idle = 0;
+    if (this.pending.size) this.occupancy.rebuild(this.ports.squads());
+    let used = this.stepIntents(tick, Math.min(32, budget));
+    // Reserve half of the allowance for interactive commands. Unused work
+    // returns to the ordinary round-robin, which continues serving the AI.
+    used += this.stepAdmissions(tick, Math.floor((budget-used)/2), true);
+    return used + this.stepAdmissions(tick, budget-used, false);
+  }
+  private stepAdmissions(tick: number, budget: number, priority: boolean): number {
+    const validated = new Set<number>(), revision = this.ports.revision();
+    let used = 0, idle = 0;
     while (this.pending.size && used < budget) {
-      const [id, admission] = this.pending.entries().next().value!;
+      const entry = priority
+        ? [...this.pending].find(([, admission]) => this.ports.priority?.(admission.playerId))
+        : this.pending.entries().next().value;
+      if (!entry) break;
+      const [id, admission] = entry;
       this.pending.delete(id);
       this.pending.set(id, admission);
       if (
@@ -588,6 +601,8 @@ export class MovementAdmission {
           Infinity,
           undefined,
           admission.formation,
+          undefined,
+          this.occupancy,
         );
         used += formation.step(
           Math.min(16, budget - used),
@@ -697,7 +712,7 @@ export class MovementAdmission {
             );
             continue;
           }
-          for (const m of admission.members)
+          for (const m of admission.members) {
             this.ports.commit(
               this.ports.squad(m.id)!,
               m.destination!,
@@ -705,6 +720,8 @@ export class MovementAdmission {
               m.connector!,
               m.queued,
             );
+            this.occupancy.refresh(this.ports.squad(m.id)!);
+          }
           this.finish(admission, tick, "executed");
         }
       }

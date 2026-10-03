@@ -1,3 +1,4 @@
+import { FormationOccupancy } from "../FormationOccupancy";
 import { CohortAdmission } from "./CohortAdmission";
 import { FormationPlanning, type FormationPlanningState } from "../FormationPlanning";
 import { limitedRouteRetry, ROUTE_CAPACITY_REASON } from "../RouteRetryPolicy";
@@ -119,6 +120,7 @@ export class Armies {
   private nextAdmission = 1;
   private readonly leaderAdmissions=new Map<number,ArmyLeaderAdmission>();
   private readonly cohortArmies=new Map<number,{armyId:number;revision:number;leaderId?:number}>();
+  private occupancy?: FormationOccupancy;
   private readonly slotPlanning=new Map<number,{revision:number;formation:FormationPlanningState}>();
   private readonly cohorts?:CohortAdmission;
   constructor(
@@ -201,6 +203,8 @@ export class Armies {
   }
   stepPlanning(budget:number):number {
     const routes=this.world.domainRoutes;if(!routes)return 0;
+    const occupancy = this.occupancy ??= new FormationOccupancy(this.world.map);
+    if (this.slotPlanning.size) occupancy.rebuild(this.world.squads);
     let used=0;
     for(const plan of [...this.leaderAdmissions.values()]){
       if(used>=budget)break;
@@ -231,7 +235,7 @@ export class Armies {
       if(used>=budget)break;
       const army=this.byArmyId.get(id);
       if(!army || army.revision!==plan.revision){this.slotPlanning.delete(id);continue;}
-      const formation=new FormationPlanning(this.world.map,this.world.paths,plan.formation.center,[],()=>this.world.squads,Infinity,undefined,plan.formation);
+      const formation=new FormationPlanning(this.world.map,this.world.paths,plan.formation.center,[],()=>this.world.squads,Infinity,undefined,plan.formation,undefined,occupancy);
       used+=formation.step(Math.min(16,budget-used),t=>this.world.armyBlocked(t,army.playerId));
     }
     return used+(this.cohorts?.step(budget-used)??0);

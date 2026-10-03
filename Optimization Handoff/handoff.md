@@ -1,5 +1,9 @@
 # Optimization handoff
 
+## Movement regression continuation — 3 October 2026
+
+A public playtest exposed movement-admission starvation that the earlier tick/synchronization smoke missed. The local repair shares formation occupancy across planning batches and reserves bounded work for human commands. Physical player and AI displacement now pass on the production-sized Valles map and through authenticated local multiplayer. Updated Oracle movement smoke and active-movement profiling are required before repeating release readiness claims; see the correction at the top of [the evidence report](Evidence/multiplayer-stability-20261003.md).
+
 ## Multiplayer stability continuation — 3 October 2026
 
 The six playtest issues, AI progression deadlocks and a browser startup resize error are addressed and deployed on Oracle in `8b9fa8caef7082e34eaf23317e9dd23ab7b94015`. Normal solo/online creation now enables all five AI policies. Mature-game ARM replay passed through 38 simulated minutes; a ten-authenticated-peer public smoke passed state agreement, rejected-action and reconnect checks, followed by two rendered online clients and final browser startup verification. See [implementation, profiling, validation and remaining acceptance limits](Evidence/multiplayer-stability-20261003.md). The opt-in/no-deployment wording below describes the earlier checkpoint, not the current release posture. P02 largest-world memory and native/ten-browser P29–P30 acceptance remain separate gates.

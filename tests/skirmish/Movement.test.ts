@@ -2,6 +2,7 @@ import { retainSquads } from "./UnitFixtures";
 import { describe, expect, it } from "vitest";
 import { GameMapImpl } from "../../src/core/game/GameMap";
 import { Formations, formationRingPoint } from "../../src/skirmish/Formations";
+import { FormationOccupancy } from "../../src/skirmish/FormationOccupancy";
 import { FormationPlanning } from "../../src/skirmish/FormationPlanning";
 import { LandPaths } from "../../src/skirmish/Pathfinding";
 import { FIXED, type Squad } from "../../src/skirmish/Protocol";
@@ -84,20 +85,30 @@ function run(match: Skirmish, ticks: number) {
 }
 
 describe("compact formations and local avoidance", () => {
+  it("rejects off-map formation candidates before converting them to a tile", () => {
+    const {match,map,own}=create(false), paths=new LandPaths(map,false);
+    const center=map.ref(0,25), members=own.map(squad=>({squad,origin:squad}));
+    const preferred=new Map(own.map(s=>[s.id,{x:-128,y:25*FIXED}]));
+    const job=new FormationPlanning(map,paths,center,members,()=>match.squads,Infinity,preferred);
+    for(let i=0;i<10000&&job.state.phase!=="done"&&job.state.phase!=="failed";i++) job.step(16);
+    expect(["done","failed"]).toContain(job.state.phase);
+  });
   it("resumes formation clearance and fallback with the same slots as synchronous planning", () => {
-    for (const narrow of [false, true]) {
+    for (const narrow of [false, true]) for (const shared of [false, true]) {
       const { match, map, own } = create(narrow), paths = new LandPaths(map, false),
         members = own.map(squad => ({ squad, origin: { x: squad.x, y: squad.y } })),
         center = map.ref(narrow ? 40 : 65, 25),
         expected = new Formations(map, paths).plan(center, members, match.squads),
-        job = new FormationPlanning(map, paths, center, members, () => match.squads);
+        occupancy = shared ? new FormationOccupancy(map) : undefined;
+      occupancy?.rebuild(match.squads);
+      const job = new FormationPlanning(map, paths, center, members, () => match.squads, Infinity, undefined, undefined, undefined, occupancy);
       let restored: FormationPlanning | undefined;
       for (let slices = 0; job.state.phase !== "done" && job.state.phase !== "failed"; slices++) {
         expect(slices).toBeLessThan(10000);
         const used = job.step(7);
         expect(used).toBeLessThanOrEqual(7);
         if (restored) expect(restored.step(7)).toBe(used);
-        else if (slices === 9) restored = new FormationPlanning(map, paths, center, [], () => match.squads, Infinity, undefined, job.checkpoint());
+        else if (slices === 9) restored = new FormationPlanning(map, paths, center, [], () => match.squads, Infinity, undefined, job.checkpoint(), undefined, occupancy);
       }
       expect(job.state.phase === "failed" ? null : job.state.result).toEqual(expected);
       expect(restored?.state).toEqual(job.state);

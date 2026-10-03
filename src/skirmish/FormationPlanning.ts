@@ -1,3 +1,4 @@
+import type { FormationOccupancy } from "./FormationOccupancy";
 import type { GameMap } from "../core/game/GameMap";
 import { formationRingPoint, type FormationMember } from "./Formations";
 import type { LandPaths } from "./Pathfinding";
@@ -84,6 +85,7 @@ export class FormationPlanning {
     preferred?: Map<number, WorldPoint>,
     saved?: FormationPlanningState,
     additionalOrders?: Map<number, Order[]>,
+    private readonly sharedOccupancy?: FormationOccupancy,
   ) {
     if (saved) {
       this.state = saved;
@@ -192,6 +194,10 @@ export class FormationPlanning {
           [s.pending[at-1], s.pending[at]] = [s.pending[at], s.pending[at-1]];
         } else { setup.sort++; setup.insert = setup.sort; }
       } else if (s.phase === "occupancy") {
+        if (this.sharedOccupancy && !s.additionalOrders?.size) {
+          s.phase = "slot";
+          continue;
+        }
         const squad = this.others()[s.other];
         if (!squad) {
           s.phase = "slot";
@@ -296,13 +302,12 @@ export class FormationPlanning {
           if (distanceSquared(s.candidate, s.ideal!) >= (s.bestDistance ?? Infinity))
             continue;
         }
-        const point = s.candidate!,
-          tile = pointTile(this.map, point);
+        const point = s.candidate!;
         if (
           (s.maximumRadius !== undefined && distanceSquared(point, target) > s.maximumRadius ** 2) ||
           !standable(this.map, point, squadRadius(s.member!.kind)) ||
-          blocked?.(tile) ||
-          !this.paths.connected(s.center, tile)
+          blocked?.(pointTile(this.map, point)) ||
+          !this.paths.connected(s.center, pointTile(this.map, point))
         ) {
           this.tested(false);
           continue;
@@ -316,7 +321,7 @@ export class FormationPlanning {
           x = Math.floor(point.x / (4 * FIXED)),
           y = Math.floor(point.y / (4 * FIXED)),
           key = `${x - 1 + (s.bucket % 3)}:${y - 1 + Math.floor(s.bucket / 3)}`,
-          bucket = (s.checkingSlots ? s.slots : s.occupied).get(key),
+          bucket = (s.checkingSlots ? s.slots : this.sharedOccupancy && !s.additionalOrders?.size ? this.sharedOccupancy.buckets : s.occupied).get(key),
           other = bucket?.[s.entry++];
         if (
           other &&

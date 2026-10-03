@@ -1,5 +1,17 @@
 # Multiplayer stability investigation — 3 October 2026
 
+## Movement regression correction
+
+The first public smoke and the earlier mature-game profiles verified clock progress, synchronization and resource behavior, but did **not** verify physical movement. They must not be treated as proof of a playable moving-army workload. The subsequent report that nobody could move exposed that acceptance gap.
+
+Reproduction on 500 Valles Kairulia with ten regular AI and 25 tribes showed 269 pending land admissions. Each admission separately scanned the entire growing squad collection before choosing a formation slot. A player command remained stationary through 1,100 ticks (55 seconds); a global permission revision then restarted its formation scan. The exact route planner was mostly idle because requests had not reached it.
+
+The repair shares one derived bucket index of live squads and committed destinations across each admission batch, including army and transport cohorts. Formation clearance and exact searches retain their existing bounded allowances. Interactive commands receive half of the land admission allowance, with unused work returned to the normal AI round-robin. Published orders refresh the shared index, and checkpoints rebuild this derived state. Off-map fallback candidates are rejected before converting coordinates to a tile.
+
+Validation: 81 focused movement, army, shoreline, checkpoint and playtest tests pass, including real player and all ten regular-AI displacement on the actual 500 Valles map in both Stone and Modern starts. Shared-index formation slots match synchronous planning and survive continuation restore. TypeScript and the production build pass. The original one-squad reproduction now moves at tick 2 (0.1 seconds); all 35 regular-AI/tribe factions displaced within 50 ticks. An authenticated two-peer local multiplayer smoke verifies executed receipts and movement of all selected human squads, movement of all ten regular AI, synchronized snapshots, rejection and reconnect.
+
+The public smoke harness now requires those physical movement checks. A new mature-game run with active movement is underway; the earlier low routing timings remain historical measurements of the restricted workload. Oracle release and updated public results will be recorded after verification.
+
 ## Scope and implementation
 
 Playtest report: 500 Valles Kairulia, ten regular AI, 25 tribes, Opera and Chrome, severe slowdown around 20–30 minutes and a stall around 32 minutes. The Opera symptom was a battlefield flash/jump while the match continued.
