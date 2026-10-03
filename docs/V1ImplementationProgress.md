@@ -465,3 +465,30 @@ remain open. P03 is independent of P02 and can proceed with this evidence retain
 The user explicitly approved enforcing read-only entity collections/records with
 domain mutation methods and migrating affected fixtures for P03. P03-P30 still
 require implementation and their own acceptance evidence.
+
+### P03 building lifecycle checkpoint
+
+Local code commit `1fe9ede1b8ee9c093032d0257423fb90c4e022ab` on
+`codex/optimization-lifecycle-indexes` owns building spawn/update/remove/restore
+through explicit domain methods. Stable records have TypeScript read-only fields;
+public arrays and index views are frozen. Identity, ownership, type, stack/tower,
+income, producer revisions and highest live ID update incrementally. Restore
+rebuilds derived facts; optional comparison mode detects drift without repairing
+canonical state or entering checkpoints. Affected writers and fixtures use the
+owner. Squad, ship and cargo lifecycle ownership remain open, so P03 is partial.
+
+Six independent lifecycle tests include 300 seeded mutations, same-length
+replacement, unfinished producer death/revival, 240 warm owner queries with no
+new rebuild scan rows, and exact restored continuation. The six-file focused
+gate passed 37 tests. Full suite: 1,030 tests, 1,029 passed and one unchanged tribe
+frontier timeout; all eight tests in that file passed on an unchanged rerun.
+The same frontier timeout occurred on the pre-P02 baseline. The full-suite timing
+gate remains open. TypeScript, build, whitespace and scoped lint passed, retaining
+the known old Simulation unused-local lint exception. Evidence:
+`Optimization Handoff/Evidence/03-building-lifecycle.md`. Runtime identity:
+`f1a19b5fb9ef323f43bd24912791dd21961533d75a50622119e36c0f06fb4d28`.
+
+The user reserved P11 planner progress/fairness and P14 browser rendering for a
+separate session. This session retains P03 and subsequent unassigned plans;
+shared Simulation/Protocol integration is serialized here. Reservation is not
+implementation or acceptance evidence. Parallel sessions need separate worktrees.

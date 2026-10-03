@@ -1,6 +1,6 @@
 # P03: Maintain entity and ownership indexes
 
-Status: **remaining work, not implemented by this handoff**. Read
+Status: **partially implemented locally: building lifecycle checkpoint; squad/ship/cargo and full acceptance remain open**. Read
 [`../agent-workflow.md`](../agent-workflow.md) and [`../handoff.md`](../handoff.md).
 
 ## Dependencies and ownership
@@ -53,3 +53,12 @@ If a required dependency, hardware test, source asset or authorization is
 unavailable, record the exact blocker and stop only that dependent work. Do not
 turn a refused or unverified test into a pass, broaden authority, or enable a
 production feature merely to demonstrate that code exists.
+
+## Local continuation checkpoint
+
+The building lifecycle slice is implemented at `1fe9ede1b8ee9c093032d0257423fb90c4e022ab`.
+See [exact source, counters and validation](../Evidence/03-building-lifecycle.md).
+Squad, ship and cargo ownership and the green full-suite timing gate remain open.
+This plan has not reached full acceptance, and dependent integration must retain
+that boundary. The user approved read-only domain records/collections and explicit
+mutation methods, including migration of affected fixtures.

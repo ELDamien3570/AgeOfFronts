@@ -61,3 +61,14 @@ TypeScript and build pass.
 - Tuneups: domain/UI code and automated tests are complete. P29 performs the still-unverified real-browser acceptance, including all-age opening and tribe checks with the final first-node research choice
 - Largest map / 14 AI / 30 tribes / at least 10 humans: P28 supplies legitimate bounded correctness scenarios; P29 browser evidence; P30 actual authorized hardware/client capacity evidence. This remains a target, not a result
 - Concurrent artwork: intentionally outside all tasks. Preserve existing remote Art files; the user will implement that work later
+
+## Current local continuation ownership
+
+The user reserved P11 and P14 for a separate parallel session. This session owns
+P03 and the remaining unassigned roadmap. Use separate branch/worktrees and
+serialize shared Simulation/Protocol/Expansion integration here. The coherent
+local code checkpoint `1fe9ede1b8ee9c093032d0257423fb90c4e022ab` contains P01, the local P02 slice,
+and P03 building ownership; P03 unit/cargo work and qualification remain open.
+P11 and P14 are reserved, not reported as implemented or accepted. P11 can unlock
+P07 then P06; P14 can proceed independently. Do not implement the same reserved
+plan in both sessions.
