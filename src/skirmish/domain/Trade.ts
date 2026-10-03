@@ -12,7 +12,6 @@ import {
   type Squad,
 } from "../Protocol";
 import type { ExactRouteOutcome } from "../RoutePlanner";
-import { limitedRouteRetry } from "../RouteRetryPolicy";
 import { SpatialGrid } from "../SpatialGrid";
 import { restoreArray, restoreRecord, restoreSet } from "../StateTransfer";
 import { AGES, type TradeActor } from "./Definitions";
@@ -110,6 +109,7 @@ export class Trade {
   >();
   private readonly siteNext = new Map<string, number>();
   private readonly corridors = new Map<string, number[]>();
+  private readonly routeFailures = new Map<string, { attempts: number; retryAt: number }>();
   private readonly retired = new Set<number>();
   private nextShipment = 1;
   private nextEpoch = 1;
@@ -157,6 +157,7 @@ export class Trade {
       retries: [...this.retries],
       siteNext: [...this.siteNext],
       corridors: [...this.corridors],
+      routeFailures: [...this.routeFailures],
     });
   }
   restore(saved: ReturnType<Trade["checkpoint"]>): void {
@@ -179,6 +180,8 @@ export class Trade {
     this.siteNext.clear();
     for (const [key, tick] of s.siteNext ?? []) this.siteNext.set(key, tick);
     this.corridors.clear();
+    this.routeFailures.clear();
+    for (const [key, failure] of s.routeFailures ?? []) this.routeFailures.set(key, failure);
     this.corridorTiles = 0;
     for (const [key, path] of s.corridors ?? []) {
       this.corridors.set(key, path);
@@ -372,7 +375,7 @@ export class Trade {
     const tile = this.tile(a),
       own = this.markets.get(a.playerId),
       source = this.source(a);
-    if (returning && source) return [source.source];
+    if (returning && source) return (this.routeFailures.get(this.failureKey(a, source.source, true))?.retryAt ?? 0) <= this.world.tick ? [source.source] : [];
     const rows = a.naval
       ? (this.seaMarkets.get(this.world.waterPaths.component[tile]) ?? [])
       : [...this.markets.values()].flatMap((m) => m.markets);
@@ -388,6 +391,7 @@ export class Trade {
       .filter(
         (b) =>
           this.allowedMarket(a, b, returning) &&
+          (this.routeFailures.get(this.failureKey(a, b, returning))?.retryAt ?? 0) <= this.world.tick &&
           (a.naval || this.world.paths.connected(tile, b.tile)),
       )
       .map((b) => ({
@@ -413,8 +417,24 @@ export class Trade {
           : landDistance(a) - landDistance(b)) || a.b.id - b.b.id,
     );
     if (!a.naval && returning && !source && own?.factories.length)
-      return own.factories.slice(0, 8) as Building[];
+      return own.factories.filter(b =>
+        this.allowedMarket(a, b, true) &&
+        (this.routeFailures.get(this.failureKey(a, b, true))?.retryAt ?? 0) <= this.world.tick,
+      ).slice(0, 8) as Building[];
     return result.slice(0, 8).map((r) => r.b);
+  }
+  private failureKey(a: TradeActor, market: Building, returning: boolean): string {
+    return `${a.playerId}:${a.naval ? 1 : 0}:${this.tile(a)}:${market.id}:${market.playerId}:${returning ? 1 : 0}:${a.naval ? this.controlRevision : this.revision(a.playerId)}`;
+  }
+  private deferMarket(a: TradeActor, market: Building, returning: boolean): void {
+    const key = this.failureKey(a, market, returning), previous = this.routeFailures.get(key);
+    const attempts = Math.min(5, (previous?.attempts ?? 0) + 1);
+    // Capacity is not proof of impossibility. Try another market now, and
+    // retain backoff across actor admissions so fleets do not repeat the same
+    // expensive failed search every few seconds.
+    this.routeFailures.delete(key);
+    this.routeFailures.set(key, { attempts, retryAt: this.world.tick + Math.min(6000, 400 * 2 ** (attempts - 1)) });
+    while (this.routeFailures.size > 512) this.routeFailures.delete(this.routeFailures.keys().next().value!);
   }
   routeBlocked(task: DomainRouteTask): ((tile: number) => boolean) | undefined {
     const plan = this.admissions.get(task.admissionId),
@@ -571,6 +591,7 @@ export class Trade {
       }
       if (!b || b.id !== p.candidates[p.index]) continue;
       if (p.outcome === "complete") {
+        this.routeFailures.delete(this.failureKey(a, b, p.state === "returning"));
         if (p.loading && !this.load(a)) {
           this.cancel(id);
           a.waitTicks = 20;
@@ -595,21 +616,22 @@ export class Trade {
         p.outcome = undefined;
         p.path = undefined;
         if (outcome === "limited") {
-          const r = limitedRouteRetry(p.attempts, this.world.tick, true);
-          p.attempts = r.attempts;
-          p.retryAt = r.retryAt;
-          if (r.exhausted) {
-            this.retries.set(id, {
-              attempts: r.attempts,
-              retryAt: this.world.tick + 200,
-            });
-            this.cancel(id);
-          }
+          this.deferMarket(a, b, p.state === "returning");
+          p.index++;
+          p.goal = undefined;
         } else if (outcome === "superseded") this.cancel(id);
         else {
+          this.deferMarket(a, b, p.state === "returning");
           p.index++;
           p.goal = undefined;
         }
+        continue;
+      }
+      // Another merchant may have discovered this corridor's failure after
+      // this admission was created. Share that result before starting work.
+      if ((this.routeFailures.get(this.failureKey(a, b, p.state === "returning"))?.retryAt ?? 0) > this.world.tick) {
+        p.index++;
+        p.goal = undefined;
         continue;
       }
       p.goal ??= a.naval

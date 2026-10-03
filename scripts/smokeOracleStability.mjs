@@ -12,7 +12,7 @@ import { createSkirmishMap } from "../src/skirmish/Elevation.ts";
 import { isLobbyMapId } from "../src/skirmish/lobby/LobbyRules.ts";
 
 const args=process.argv.slice(2), arg=(key,fallback)=>{const i=args.indexOf(key);return i<0?fallback:args[i+1];};
-const smokeSwitches=new Set(["--public","--water"]),smokeValues=new Set(["--url","--clients","--seconds","--age","--out","--map","--size"]);
+const smokeSwitches=new Set(["--public","--water"]),smokeValues=new Set(["--url","--clients","--seconds","--age","--out","--map","--size","--order-interval"]);
 for(let at=0;at<args.length;at++) {
   if(smokeSwitches.has(args[at]))continue;
   if(smokeValues.has(args[at]) && at+1<args.length){at++;continue;}
@@ -20,6 +20,8 @@ for(let at=0;at<args.length;at++) {
 }
 const base=arg("--url","http://127.0.0.1:9010"), count=Number(arg("--clients","10")), seconds=Number(arg("--seconds","180"));
 const mapId=arg("--map","valles-kairulia"), worldSize=Number(arg("--size","500"));
+const orderInterval=Number(arg("--order-interval","0"));
+if(!Number.isFinite(orderInterval)||orderInterval<0||(orderInterval>0&&orderInterval<5))throw new Error("Order interval must be zero or at least five seconds");
 if(!isLobbyMapId(mapId)||![250,500,1000].includes(worldSize))throw new Error("Invalid smoke map or size");
 if(!Number.isInteger(count)||count<2||count>20||!Number.isFinite(seconds)||seconds<10||seconds>2400)throw new Error("Invalid smoke limits");
 if(!/^http:\/\/(localhost|127\.0\.0\.1)(:\d+)?$/.test(base)&&!args.includes("--public"))throw new Error("External smoke requires --public");
@@ -27,6 +29,7 @@ const out=arg("--out","data/oracle-smoke.json"), origin=new URL(base).origin, so
 const peers=[], checks=new Map(), failures=[], started=Date.now(), title="Stability smoke "+new Date().toISOString().replace(/[:.]/g,"-");
 let matchId, roomId, request=0, completed=false;
 let aiInitial; const aiMoved=new Set(), moves=[];
+const pendingMoves=new Map(), periodicMoves=[];
 const sleep=ms=>new Promise(r=>setTimeout(r,ms)), rid=()=> "smoke-"+(++request);
 const wait=async(predicate,label,timeout=90000)=>{const at=Date.now();while(!predicate()){if(failures.length)throw new Error(failures[0]);if(Date.now()-at>timeout)throw new Error("Timed out: "+label);await sleep(50);}};
 const percentile=(xs,p)=>[...xs].sort((a,b)=>a-b)[Math.min(xs.length-1,Math.floor(xs.length*p))]??0;
@@ -52,6 +55,12 @@ const connect=async(p,reconnect=false)=>{
       if(start && Math.hypot(s.x-start.x,s.y-start.y)>=256) aiMoved.add(s.playerId);
     }
     p.decodeMs.push(performance.now()-before);p.bytes+=raw.length;p.packets++;p.snapshot=snapshot;
+    for(const [id,movement] of pendingMoves)if(movement.peer===p.id&&snapshot.squads.some(s=>{
+      const start=movement.starts.get(s.id);return start&&Math.hypot(s.x-start.x,s.y-start.y)>8;
+    })) {
+      periodicMoves.push({id,playerId:movement.playerId,commandTick:movement.tick,observedTick:m.tick,firstMotionMs:Date.now()-movement.at});
+      pendingMoves.delete(id);
+    }
     if(p.lastAt)p.gaps.push(Date.now()-p.lastAt);p.lastAt=Date.now();p.tick=m.tick;
     if(m.syncId){p.syncs++;send(p,{type:"match-sync-applied",requestId:rid(),matchId:m.matchId,syncId:m.syncId,publicationSequence:m.publicationSequence});}
     else send(p,{type:"match-state-applied",requestId:rid(),matchId:m.matchId,publicationSequence:m.publicationSequence,flowEpoch:m.flowEpoch});
@@ -194,9 +203,31 @@ try{
   send(p,{type:"match-command",requestId:invalidId,matchId,command:{type:"build",playerId:p.manifest.playerId,buildingType:"city",tile:badTile}});
   await wait(()=>p.outcomes.some(o=>o.id===invalidId&&o.status==="rejected"),"invalid build rejection");
   const rejection=p.outcomes.find(o=>o.id===invalidId&&o.status==="rejected");
-  const until=Date.now()+seconds*1000;let reconnected=false,nextReport=Date.now()+30000;
+  const until=Date.now()+seconds*1000;let reconnected=false,nextReport=Date.now()+30000,nextOrder=Date.now()+orderInterval*1000;
   while(Date.now()<until){
     if(failures.length)throw new Error(failures[0]);
+    for(const [id,movement] of pendingMoves) {
+      const outcome=peers[movement.peer].outcomes.find(o=>o.id===id&&["rejected","superseded"].includes(o.status));
+      if(outcome){periodicMoves.push({id,playerId:movement.playerId,commandTick:movement.tick,outcome});pendingMoves.delete(id);}
+      else if(Date.now()-movement.at>15000)throw new Error("Periodic movement did not start within 15 seconds: "+id);
+    }
+    if(orderInterval&&Date.now()>=nextOrder) {
+      for(const peer of peers) {
+        if([...pendingMoves.values()].some(m=>m.peer===peer.id))continue;
+        const units=peer.snapshot.squads.filter(s=>s.playerId===peer.manifest.playerId&&s.embarkedOn===null&&!s.refit).sort((a,b)=>b.troops-a.troops||a.id-b.id).slice(0,30);
+        if(!units.length)continue;
+        const width=peer.snapshot.width,goals=[];
+        for(let tile=0;tile<peer.snapshot.owners.length;tile++)if(peer.snapshot.owners[tile]===peer.manifest.playerId&&map.isLand(tile)&&!map.isImpassable(tile)) {
+          const distance=Math.hypot((tile%width+.5)*256-units[0].x,(Math.floor(tile/width)+.5)*256-units[0].y);
+          if(distance>=4*256&&distance<=8*256)goals.push({tile,distance});
+        }
+        goals.sort((a,b)=>a.distance-b.distance||a.tile-b.tile);
+        if(!goals.length)continue;
+        const id=rid();pendingMoves.set(id,{peer:peer.id,playerId:peer.manifest.playerId,tick:peer.tick,at:Date.now(),starts:new Map(units.map(s=>[s.id,{x:s.x,y:s.y}]))});
+        send(peer,{type:"match-command",requestId:id,matchId,command:{type:"order",playerId:peer.manifest.playerId,squadIds:units.map(s=>s.id),order:{type:"move",tile:goals[0].tile}}});
+      }
+      nextOrder=Date.now()+orderInterval*1000;
+    }
     if(!reconnected&&Date.now()>until-seconds*500){p.ws.close();await wait(()=>p.closed,"close reconnect socket");await connect(p,true);await wait(()=>p.manifest&&p.tick>20,"reconnected state");reconnected=true;}
     if(Date.now()>=nextReport){console.log(JSON.stringify({stage:"monitor",matchId,ticks:peers.map(p=>p.tick),elapsedSeconds:Math.round((Date.now()-started)/1000)}));nextReport=Date.now()+30000;}
     await sleep(100);
@@ -205,7 +236,7 @@ try{
   const common=[...checks].filter(([,row])=>row.size===count);
   if(common.length<5)throw new Error("Too few common tick agreement samples");
   if(peers.some(p=>Boolean(p.closed)||Boolean(p.packets<10)||Boolean(Date.now()-p.lastAt>10000)))throw new Error("A peer stopped advancing");
-  const result={passed:true,title,matchId,roomId,base,mapId,worldSize,clients:count,seconds,elapsedSeconds:(Date.now()-started)/1000,flags:Object.fromEntries(flags.map(f=>[f,true])),runtimeId:manifests[0].runtimeId,mapHash:manifests[0].mapHash,moves,validBuild,tradeControls,waterTransport,aiMoved:[...aiMoved].sort((a,b)=>a-b),rejection,reconnected,commonStateSamples:common.length,peers:peers.map(p=>({id:p.id,tick:p.tick,packets:p.packets,syncs:p.syncs,bytes:p.bytes,decodeP95:percentile(p.decodeMs,.95),publicationGapP95:percentile(p.gaps,.95),publicationGapMax:Math.max(...p.gaps)})),failures};
+  const result={passed:true,title,matchId,roomId,base,mapId,worldSize,clients:count,seconds,elapsedSeconds:(Date.now()-started)/1000,flags:Object.fromEntries(flags.map(f=>[f,true])),runtimeId:manifests[0].runtimeId,mapHash:manifests[0].mapHash,moves,periodicMoves,periodicMotionP95:percentile(periodicMoves.map(m=>m.firstMotionMs).filter(Number.isFinite),.95),validBuild,tradeControls,waterTransport,aiMoved:[...aiMoved].sort((a,b)=>a-b),rejection,reconnected,commonStateSamples:common.length,peers:peers.map(p=>({id:p.id,tick:p.tick,packets:p.packets,syncs:p.syncs,bytes:p.bytes,decodeP95:percentile(p.decodeMs,.95),publicationGapP95:percentile(p.gaps,.95),publicationGapMax:Math.max(...p.gaps)})),failures};
   fs.mkdirSync(path.dirname(out),{recursive:true});
   completed=true;fs.writeFileSync(out,JSON.stringify(result,null,2)+"\n");console.log(JSON.stringify(result));
 } finally {

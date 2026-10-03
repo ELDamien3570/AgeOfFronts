@@ -39,6 +39,59 @@ function fixture() {
   return { map, land, planner, results, validity, revision, request };
 }
 describe("fair resumable exact planning", () => {
+  it("releases a restored background arena reservation so a human route can start", () => {
+    const { map, land } = fixture();
+    const outcomes: { key: string; outcome: ExactRouteOutcome }[] = [];
+    const ports = {
+      priority: (r: { context: number }) => r.context === 1,
+      valid: () => true, obstacleRevision: () => "0", blocked: () => undefined,
+      completed: (r: { key: string }, outcome: ExactRouteOutcome) => outcomes.push({ key: r.key, outcome }),
+    };
+    const old = new RoutePlanner<number>(land, new WaterPaths(map, false), ports, 128, 64);
+    old.request({ key: "ai", start: 0, goal: 17999, water: false, createdTick: 0, obstacleRevision: "0", context: 2 });
+    for (let tick = 0; tick < 1000 && !old.checkpoint().jobs[0]?.waitingForWorkspace; tick++) old.step(tick, 1, 1);
+    expect(old.checkpoint().jobs[0]?.waitingForWorkspace).toBe(true);
+    const restored = new RoutePlanner<number>(land, new WaterPaths(map, false), ports, 128, 64);
+    restored.restore(old.checkpoint());
+    restored.request({ key: "human", start: map.ref(1, 1), goal: map.ref(2, 1), water: false, createdTick: 1000, obstacleRevision: "0", context: 1 });
+    for (let tick = 1000; tick < 1020 && !outcomes.some(o => o.key === "human"); tick++) restored.step(tick, 32, 4);
+    expect(outcomes).toContainEqual({ key: "human", outcome: "complete" });
+  });
+  it("returns capacity-limited background work without taking an exclusive arena retry", () => {
+    const {map,land}=fixture(), outcomes:ExactRouteOutcome[]=[];
+    const planner=new RoutePlanner<number>(land,new WaterPaths(map,false),{
+      allowExclusiveRetry:()=>false,valid:()=>true,obstacleRevision:()=>"0",blocked:()=>undefined,
+      completed:(_request,outcome)=>outcomes.push(outcome),
+    },128,64);
+    planner.request({key:"trade",start:0,goal:17999,water:false,createdTick:0,obstacleRevision:"0",context:1});
+    for(let tick=0;planner.diagnostics.pending&&tick<1000;tick++)planner.step(tick,32,4);
+    expect(outcomes).toEqual(["limited"]);
+    expect(planner.diagnostics.escalated).toBe(0);
+    expect(planner.diagnostics.workspaceUsed).toBe(0);
+  });
+  it("preempts an active AI arena retry with charged cleanup and preserves its retry across restore", () => {
+    const { map, land } = fixture(), outcomes: { key: string; outcome: ExactRouteOutcome }[] = [];
+    const ports = {
+      priority: (r: { context: number }) => r.context === 1,
+      valid: () => true, obstacleRevision: () => "0", blocked: () => undefined,
+      completed: (r: { key: string }, outcome: ExactRouteOutcome) => outcomes.push({ key: r.key, outcome }),
+    };
+    const planner = new RoutePlanner<number>(land, new WaterPaths(map, false), ports, 128, 64);
+    planner.request({ key: "ai", start: 0, goal: 17999, water: false, createdTick: 0, obstacleRevision: "0", context: 2 });
+    for (let tick = 0; tick < 1000 && !planner.checkpoint().scheduling.exclusiveKey; tick++) planner.step(tick, 1, 1);
+    expect(planner.checkpoint().scheduling.exclusiveKey).toBe("ai");
+    expect(planner.checkpoint().jobs[0].search.nodes.size).toBeGreaterThan(0);
+    planner.request({ key: "human", start: map.ref(1, 1), goal: map.ref(2, 1), water: false, createdTick: 1000, obstacleRevision: "0", context: 1 });
+    expect(planner.step(1000, 1, 1)).toBe(1);
+    const checkpoint = planner.checkpoint();
+    expect(checkpoint.jobs.find(j => j.key === "ai")?.resumeExclusiveAfterRelease).toBe(true);
+    const restored = new RoutePlanner<number>(land, new WaterPaths(map, false), ports, 128, 64);
+    restored.restore(checkpoint);
+    for (let tick = 1001; tick < 1020 && !outcomes.some(o => o.key === "human"); tick++) expect(restored.step(tick, 16, 4)).toBeLessThanOrEqual(16);
+    expect(outcomes).toContainEqual({ key: "human", outcome: "complete" });
+    expect(outcomes.some(o => o.key === "ai")).toBe(false);
+    expect(restored.checkpoint().jobs.find(j => j.key === "ai")?.exclusiveRetry).toBe(true);
+  });
   it("gives human routes two thirds of contested work, without starving background routes", () => {
     const {map,land}=fixture(), planner=new RoutePlanner<{playerId:number}>(land,new WaterPaths(map,false),{
       identity:r=>({playerId:r.context.playerId,caller:"admission"}), priority:r=>r.context.playerId===1,

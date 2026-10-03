@@ -471,6 +471,37 @@ describe("remaining roadmap integration", () => {
     }
     expect(other.checkpoint()).toEqual(f.game.checkpoint());
   });
+  it("revalidates cargo and hulls lost during resumable transport assessment before committing leases", () => {
+    const f = fixture(true, 8), now = 5000, planner = f.expansion.economy.transports;
+    f.game.tick = now;
+    const port = f.game.addBuilding({id:f.game.allocateId(),playerId:2,type:"port",tile:f.map.ref(39,30),age:"StoneAge",remainingTicks:0,health:1000});
+    f.game.owners[port.tile] = 2;
+    const hull = (kind: "transport" | "warship") => f.game.addShip({id:f.game.allocateId(),playerId:2,kind,
+      definitionId:`stoneage-${kind}`,x:43.5*FIXED,y:30.5*FIXED,health:1000,destination:null,
+      waypoints:[],path:[],nextPathIndex:0,fighting:false,boarding:null});
+    const transport = hull("transport"), escort = hull("warship"), lostHull = hull("transport");
+    f.game.removeSquad(f.own[0].id);
+    f.game.updateSquad(f.own[1].id,{playerId:1});
+    f.game.removeShip(lostHull.id);
+    for(let i=0;i<200&&!f.expansion.economy.navalFacts.ready;i++)f.expansion.economy.navalFacts.step(now,64);
+    planner.restore({cursor:0,serial:1,spending:[],history:[],missions:[[2,{
+      id:"transport:stale-roster",playerId:2,generation:f.game.aiGeneration(2),sea:f.game.waterPaths.component[f.game.tileOf(transport)],
+      port:port.id,target:1,phase:"assess",since:now,deadline:now+1000,nextThink:now,cursor:8,shipCursor:null,
+      coastCursor:f.game.coast.waterEdges(f.game.waterPaths.component[f.game.tileOf(transport)]).length,
+      roster:f.own.map(s=>s.id),eligible:f.own.map(s=>s.id),transports:[lostHull.id,transport.id],escorts:[escort.id],
+      groups:[],landing:{landTile:f.map.ref(48,30),waterTile:f.map.ref(47,30)},enemyPower:0,
+      reason:"fixture",purchases:0,handedOff:false,initialTroops:0,lostTroops:0,
+    }]]});
+    expect(()=>planner.step(16)).not.toThrow();
+    const mission=planner.missions.get(2)!;
+    expect(mission.phase).toBe("assemble");
+    expect(mission.transports).toEqual([transport.id]);
+    expect(mission.groups.flatMap(g=>g.members)).not.toContain(f.own[0].id);
+    expect(mission.groups.flatMap(g=>g.members)).not.toContain(f.own[1].id);
+    expect(mission.initialTroops).toBe(mission.groups.flatMap(g=>g.members).reduce((n,id)=>n+f.game.squad(id)!.troops,0));
+    expect(f.expansion.economy.assets.held(`squad:${f.own[0].id}`)).toBe(false);
+    expect(f.expansion.economy.assets.held(`squad:${f.own[1].id}`)).toBe(false);
+  });
   it("transport recovery preserves real loaded cargo when the strategic target disappears", () => {
     const f = fixture(true, 6),
       ship = f.game.addShip({

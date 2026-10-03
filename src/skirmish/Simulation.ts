@@ -472,6 +472,7 @@ export class Skirmish {
     this.adjacency = new FactionAdjacency(map, this.owners, tile => this.paths.walkable(tile));
     this.waterPaths = new WaterPaths(map, false);
     this.routePlanner = new RoutePlanner(this.paths,this.waterPaths,{
+      allowExclusiveRetry: request => request.context.kind !== "domain" || request.context.owner !== "trade",
       priority: request => !this.player(request.context.playerId ?? 0)?.ai && request.context.playerId !== 0 &&
         (request.context.kind !== "domain" || !["trade", "strategy"].includes(request.context.owner)),
       identity:request=>({playerId:request.context.playerId ?? 0,

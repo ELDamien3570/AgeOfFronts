@@ -29,6 +29,7 @@ interface Job<T> extends ExactRouteRequest<T> {
   replacement?: ExactRouteRequest<T>;
   exclusiveRetry?: boolean;
   waitingForWorkspace?: boolean;
+  resumeExclusiveAfterRelease?: boolean;
 }
 export type ExactRouteOutcome =
   | "complete"
@@ -37,6 +38,9 @@ export type ExactRouteOutcome =
   | "superseded";
 export interface RoutePlannerPorts<T> {
   priority?(request: ExactRouteRequest<T>): boolean;
+  /** Autonomous callers can decline exclusive arena retries without claiming
+   * that a capacity-limited result means geographic impossibility. */
+  allowExclusiveRetry?(request: ExactRouteRequest<T>): boolean;
   /** Domain attribution for fair scheduling and bounded cohort diagnostics. */
   identity?(request: ExactRouteRequest<T>): {
     playerId: number;
@@ -173,7 +177,14 @@ export class RoutePlanner<T> {
     for (const [player, caller] of saved.scheduling?.lastCaller ?? [])
       this.lastCaller.set(player, caller);
     this.jobs.clear();
-    for (const job of structuredClone(saved.jobs)) this.jobs.set(job.key, job);
+    for (const job of structuredClone(saved.jobs)) {
+      if (this.ports.allowExclusiveRetry?.(job) === false) {
+        job.waitingForWorkspace = false;
+        job.resumeExclusiveAfterRelease = undefined;
+        if (this.exclusiveKey === job.key) this.exclusiveKey = undefined;
+      }
+      this.jobs.set(job.key, job);
+    }
     this.diagnostics.pending = this.jobs.size;
     this.diagnostics.workspaceUsed = this.workspace.used;
   }
@@ -230,19 +241,31 @@ export class RoutePlanner<T> {
   }
   private selectJob(): [string, Job<T>] {
     if (this.schedulingVersion < 3) return this.nextJob();
+    let humanPending = false;
+    if (this.ports.priority) for (const job of this.jobs.values())
+      if (!job.discard && this.ports.priority(job)) { humanPending = true; break; }
     const exclusive = this.exclusiveKey && this.jobs.get(this.exclusiveKey);
-    if (exclusive) return [exclusive.key, exclusive];
+    if (exclusive && (!humanPending || this.ports.priority!(exclusive))) return [exclusive.key, exclusive];
+    if (exclusive && !exclusive.releasing && exclusive.search.phase !== "done") {
+      // An interactive request preempts an autonomous full-arena search.
+      // Reclamation is charged normally; resume its retry after human work,
+      // without publishing a false route failure to its domain owner.
+      exclusive.releasing = "limited";
+      exclusive.resumeExclusiveAfterRelease = true;
+    }
     this.exclusiveKey = undefined;
+    const canReserve = (job: Job<T>) => !!job.waitingForWorkspace && !job.discard &&
+      (!humanPending || this.ports.priority!(job));
     let waiting = false;
     for (const job of this.jobs.values())
-      if (job.waitingForWorkspace && !job.discard) {
+      if (canReserve(job)) {
         waiting = true;
         break;
       }
-    if (!waiting) return this.nextJob();
+    if (!waiting) return this.nextJob(job => !job.waitingForWorkspace || job.releasing !== undefined || !!job.discard);
     if (!this.workspace.used) {
       const next = this.nextJob(
-        (job) => !!job.waitingForWorkspace && !job.discard,
+        canReserve,
       );
       next[1].waitingForWorkspace = false;
       this.exclusiveKey = next[0];
@@ -406,6 +429,17 @@ export class RoutePlanner<T> {
             this.ports.obstacleRevision(job) !== job.obstacleRevision
           )
             outcome = "superseded";
+          if (job.resumeExclusiveAfterRelease) {
+            job.resumeExclusiveAfterRelease = undefined;
+            if (outcome !== "superseded") {
+              job.search = paths.beginPlanning(this.workspace, job.start, job.goal).state;
+              job.output = [job.start];
+              job.copied = 0;
+              job.waitingForWorkspace = true;
+              this.jobs.set(key, job);
+              continue;
+            }
+          }
         } else if (
           !this.ports.valid(job) ||
           paths.revision !== job.search.revision ||
@@ -481,6 +515,7 @@ export class RoutePlanner<T> {
         if (
           outcome === "limited" &&
           this.schedulingVersion >= 3 &&
+          this.ports.allowExclusiveRetry?.(job) !== false &&
           !job.exclusiveRetry
         ) {
           // Retry exactly once with the full arena, after charged reclamation.

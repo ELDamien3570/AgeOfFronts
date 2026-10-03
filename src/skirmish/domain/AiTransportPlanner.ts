@@ -1,4 +1,4 @@
-import { FIXED, type Player, type Ship } from "../Protocol";
+import { FIXED, type Building, type Player, type Ship, type Squad } from "../Protocol";
 import { AI_DOCTRINES } from "../content/AiDoctrines";
 import { personalityOf } from "../content/AiPersonalities";
 import { VESSELS } from "../content/Units";
@@ -174,6 +174,21 @@ export class AiTransportPlanner {
       world.waterPaths.component[world.tileOf(s)] === m.sea
       ? s
       : undefined;
+  }
+  private cargoCandidate(playerId: number, id: number, port: Building | undefined): Squad | undefined {
+    const { world } = this.expansion, squad = world.squad(id);
+    return squad && squad.playerId === playerId && squad.troops >= 700 &&
+      squad.embarkedOn === null && !squad.refit && !squad.charge && !squad.fighting &&
+      squad.order.type === "hold" && !this.expansion.armies.armyOf(id) &&
+      !this.economy.assets.held(`squad:${id}`) && port &&
+      world.paths.connected(world.tileOf(squad), port.tile) ? squad : undefined;
+  }
+  private availableHull(m: AiTransportMission, id: number): Ship | undefined {
+    const ship = this.ownShip(m, id);
+    return ship && ship.health * 5 >= this.expansion.vessel(ship).health * 3 &&
+      !ship.refit && !ship.boarding && !ship.shoreTransfer &&
+      (!this.economy.assets.held(`ship:${id}`) ||
+        ["patrol", "operation"].includes(this.economy.assets.leases.get(`ship:${id}`)!.priority)) ? ship : undefined;
   }
   private sail(m: AiTransportMission, ships: Ship[], tile: number): void {
     const { world } = this.expansion,
@@ -393,21 +408,8 @@ export class AiTransportPlanner {
       while (this.diagnostics.work < budget) {
         this.diagnostics.work++;
         if (m.cursor < m.roster.length) {
-          const squad = world.squad(m.roster[m.cursor++]);
-          if (
-            squad &&
-            squad.playerId === player.id &&
-            squad.troops >= 700 &&
-            squad.embarkedOn === null &&
-            !squad.refit &&
-            !squad.charge &&
-            !squad.fighting &&
-            squad.order.type === "hold" &&
-            !this.expansion.armies.armyOf(squad.id) &&
-            !this.economy.assets.held(`squad:${squad.id}`) &&
-            port &&
-            world.paths.connected(world.tileOf(squad), port.tile)
-          )
+          const squad = this.cargoCandidate(player.id, m.roster[m.cursor++], port);
+          if (squad)
             m.eligible.push(squad.id);
           continue;
         }
@@ -473,6 +475,17 @@ export class AiTransportPlanner {
             m.landing = { ...edge };
           continue;
         }
+        // Assessment yields across ticks. Revalidate the complete uncommitted
+        // roster immediately before deriving capacity and acquiring ownership.
+        m.eligible = m.eligible.filter(id => !!this.cargoCandidate(player.id, id, port));
+        m.transports = m.transports.filter(id => {
+          const ship = this.availableHull(m!, id);
+          return !!ship && ship.kind === "transport" && !world.squadFacts().cargo(id).length;
+        });
+        m.escorts = m.escorts.filter(id => {
+          const ship = this.availableHull(m!, id);
+          return !!ship && navalReady(ship, this.expansion.vessel(ship));
+        });
         const reserve = Math.max(
           2,
           Math.ceil(

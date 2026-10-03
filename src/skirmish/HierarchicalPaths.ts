@@ -194,7 +194,9 @@ export class HierarchicalPaths {
           !this.topology.walkable(next)
         )
           continue;
-        const nextIndex = this.index(c, next),
+        // Coordinates were already decoded for cluster bounds above. Reuse
+        // them instead of decoding the tile again in this hot crossing loop.
+        const nextIndex = x - c.x + (y - c.y) * c.width,
           candidate = cost[index] + this.topology.cost(tile, next);
         if (closed[nextIndex] || candidate >= cost[nextIndex]) continue;
         cost[nextIndex] = candidate;

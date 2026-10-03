@@ -19,6 +19,11 @@ case "$mode" in
   transport) command=(scripts/profileV11LateLatency.mjs --transport --follow-through --restore /benchmark/input/checkpoint-final.v8 --out "/benchmark/results/$label/result.json"); result=result.json ;;
   movement) command=(scripts/profileV11Movement.mjs --out "/benchmark/results/$label/result.json"); result=result.json ;;
   retarget) command=(scripts/profileV11Retargeting.mjs --out "/benchmark/results/$label/result.json"); result=result.json ;;
+  oldworld) command=(scripts/profileSkirmishStability.mjs --restore /benchmark/input/oldworld-50.v8 --map old-world --size 1000 --humans 2 --all-ai --inspect-churn --ticks 62400 --profile-at 60000 --max-seconds 900 --out "/benchmark/results/$label");
+    [[ "$variant" == stable ]] && command+=(--filter-stale-transport-candidates)
+    result=summary.json ;;
+  oldworld-latency) command=(scripts/profileV11LateLatency.mjs --restore /benchmark/input/oldworld-50.v8 --map old-world --size 1000 --count 30 --out "/benchmark/results/$label/result.json"); result=result.json ;;
+  hosted-soak) command=(scripts/runHostedStabilitySoak.mjs --seconds 2400 --out "/benchmark/results/$label"); result=smoke.json ;;
   *) exit 2 ;;
 esac
 container=$(sudo docker run -d --rm --network none --cpus "$cores" --memory 2g --pids-limit 128 --read-only --tmpfs /tmp --user 1001:1001 \

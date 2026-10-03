@@ -13,7 +13,7 @@ import {
   SnapshotEncoder,
 } from "../../src/skirmish/SnapshotCodec";
 
-function fleet(factories = 1, ports = 1, aiWarPolicy = false) {
+function fleet(factories = 1, ports = 1, aiWarPolicy = false, deferredPlanning = false) {
   const terrain = new Uint8Array(120 * 80).fill(133);
   for (let y = 40; y < 50; y++) terrain.fill(0, y * 120, (y + 1) * 120);
   const game = new Skirmish(new GameMapImpl(120, 80, terrain, terrain.length), {
@@ -23,6 +23,7 @@ function fleet(factories = 1, ports = 1, aiWarPolicy = false) {
     runAi: false,
     ruleset: "ages-v1",
     aiWarPolicy,
+    deferredPlanning,
   });
   for (const b of [...game.buildings]) game.removeBuilding(b.id);
   for (const s of game.squads)
@@ -69,6 +70,23 @@ function fleet(factories = 1, ports = 1, aiWarPolicy = false) {
 }
 
 describe("bounded civilian trade", () => {
+  it("retains failed-corridor backoff across admissions and restore without loading or losing cargo", () => {
+    const {game,trade,step,sources,expansion}=fleet(1,0,false,true);
+    const tasks:Parameters<NonNullable<typeof game.domainRoutes>["request"]>[0][]=[];
+    const request=vi.spyOn(game.domainRoutes!,"request").mockImplementation(task=>{tasks.push(task);return true;});
+    step(20);trade.stepPlanning(32);
+    expect(tasks).toHaveLength(1);
+    trade.completedRoute(tasks[0],"limited",[]);
+    trade.stepPlanning(32);
+    expect(trade.actors[0].cargo).toBe(0);
+    expect(expansion.supply.goods.get(sources[0].id)).toBe(1000);
+    expect(trade.checkpoint().routeFailures).toHaveLength(1);
+    trade.restore(trade.checkpoint());
+    step(300);trade.stepPlanning(32);
+    expect(request).toHaveBeenCalledTimes(1);
+    step(200);trade.stepPlanning(32);
+    expect(request.mock.calls.length).toBeGreaterThan(1);
+  });
   it("leaves an unrelated active fleet alone when pausing or blocking trade", () => {
     const { trade, step } = fleet(1, 1);
     step(100);
