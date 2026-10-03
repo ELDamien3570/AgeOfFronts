@@ -1,4 +1,5 @@
 let localPlayerId = 1;
+let diagnosticSeed: number | undefined;
 import { OnlineMatchSession } from "./OnlineMatchSession";
 import { RuntimeDiagnostics } from "../RuntimeDiagnostics";
 const browserDiagnostics = new RuntimeDiagnostics();
@@ -507,7 +508,7 @@ async function start(): Promise<void> {
 
       paused = message.paused;
 
-      renderer.update(snapshot);
+      browserDiagnostics.measure("presentation", () => renderer.update(snapshot!));
 
       groups.prune(snapshot);
 
@@ -527,7 +528,10 @@ async function start(): Promise<void> {
       if (snapshot.winner !== null) showResult(snapshot.winner);
     };
 
-    const seed = Math.floor(Math.random() * 0x7fffffff);
+    const requestedSeed = onlineQuery.has("diagnostics") && onlineQuery.has("seed") ? Number(onlineQuery.get("seed")) : NaN;
+    const seed = Number.isSafeInteger(requestedSeed) && requestedSeed >= 0 && requestedSeed <= 0x7fffffff
+      ? requestedSeed : Math.floor(Math.random() * 0x7fffffff);
+    diagnosticSeed = seed;
     const startingAge =
       (element<HTMLSelectElement>("starting-age")?.value as Age) || "StoneAge";
     const spawnOptions: MatchOptions = {
@@ -698,7 +702,7 @@ async function startOnlineMatch(): Promise<void> {
     snapshot.localPlayerId = localPlayerId;
     snapshot.disconnectedPlayerIds = session.disconnectedPlayerIds;
     paused = event.data.paused;
-    renderer.update(snapshot);
+    browserDiagnostics.measure("presentation", () => renderer.update(snapshot!));
     groups.prune(snapshot);
     updateHud();
     if (startingCamera) {
@@ -762,9 +766,10 @@ function updateHud(): void {
     element<HTMLButtonElement>(id).disabled = !recruitment.enabled;
   }
 
+  const empireVm = empireModel();
   for (const { kind: type } of CONSTRUCTION)
     element<HTMLButtonElement>(`build-${type}`).disabled =
-      !!empireModel()?.buildChoice(type).reason ||
+      !!empireVm?.buildChoice(type).reason ||
       player.eliminated ||
       snapshot.winner !== null;
 
@@ -775,8 +780,17 @@ function updateHud(): void {
   armyView.update(armyVm);
   if (armyVm.selectedArmy) element("selection-card").hidden = true;
 
-  if (snapshot.expansion) empire.update(empireModel()!);
+  if (empireVm) empire.update(empireVm);
 
+  updateRoster();
+  } finally { browserDiagnostics.record("hud", performance.now() - started); }
+}
+
+// The view consumes current facts when opened, including same-tick command
+// publications. Hidden foreign-faction details need no formatting or DOM work.
+element("roster-toggle").addEventListener("click", () => updateRoster());
+function updateRoster(): void {
+  if (!snapshot || element("roster-popover").hidden) return;
   // One pass over squads instead of a filter per faction (O(players x squads)).
   const squadStats = new Map<number, { count: number; troops: number }>();
   for (const s of snapshot.squads) {
@@ -815,7 +829,6 @@ function updateHud(): void {
       (label) => ({ playerId: Number(label.dataset.campLoss), label }),
     );
   }
-  } finally { browserDiagnostics.record("hud", performance.now() - started); }
 }
 let lastRosterHtml = "";
 
@@ -1921,9 +1934,15 @@ function frame(now: number): void {
   if (pan.x || pan.y) renderer.pan(pan.x, pan.y);
   if (renderer.draw(now, speed, paused)) updateCampLossLabels(now);
   browserDiagnostics.record("frame", performance.now() - started);
-  if (worker instanceof OnlineMatchSession && snapshot && now >= nextClientDiagnosticsAt) {
+  if (snapshot && now >= nextClientDiagnosticsAt && (worker instanceof OnlineMatchSession || onlineQuery.has("diagnostics"))) {
     nextClientDiagnosticsAt = now + 30_000;
-    console.info(JSON.stringify({ event: "browser-runtime-diagnostics", ...worker.runtimeDiagnostics() }));
+    const heap = (performance as Performance & { memory?: { usedJSHeapSize: number; totalJSHeapSize: number } }).memory;
+    console.info(JSON.stringify({ event: "browser-runtime-diagnostics", tick: snapshot.tick, seed: diagnosticSeed,
+      browser: { userAgent: navigator.userAgent, width: window.innerWidth, height: window.innerHeight },
+      map: element<HTMLSelectElement>("map").value, timings: browserDiagnostics.snapshot(),
+      heap: heap ? { used: heap.usedJSHeapSize, total: heap.totalJSHeapSize } : undefined,
+      ...(worker instanceof OnlineMatchSession ? worker.runtimeDiagnostics() : {}),
+      clientTimings: browserDiagnostics.snapshot() }));
   }
 
   requestAnimationFrame(frame);

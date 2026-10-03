@@ -1,0 +1,48 @@
+{
+  "status": "PASS",
+  "utc": "2026-10-03T03:04:32.850Z",
+  "browser": "Chrome 154 IAB Windows x64",
+  "map": "64x48 all land",
+  "seed": 42,
+  "canonicalPackets": 4,
+  "hiddenSnapshots": 0,
+  "checks": [
+    "baseline acknowledgement",
+    "two canonical updates while view held",
+    "changed-back dirty tile retained",
+    "building removal retained",
+    "latest sequence 3",
+    "older acknowledgement retains newer dirt",
+    "current acknowledgement clears dirt",
+    "recovery baseline sequence 4 requests full presentation"
+  ],
+  "trace": [
+    {
+      "tick": 0,
+      "canonicalOnly": false,
+      "decodeMs": 94.9,
+      "applyMs": 0.6,
+      "projectionMs": 0.2
+    },
+    {
+      "tick": 1,
+      "canonicalOnly": true,
+      "decodeMs": 0.8,
+      "applyMs": 0.2
+    },
+    {
+      "tick": 2,
+      "canonicalOnly": true,
+      "decodeMs": 0.4,
+      "applyMs": 0.1
+    },
+    {
+      "tick": 2,
+      "canonicalOnly": false,
+      "decodeMs": 0.9,
+      "applyMs": 0,
+      "projectionMs": 0.2
+    }
+  ],
+  "limitations": "Actual browser module worker and structured cloning, not a live multiplayer WebSocket join or ten-client hardware qualification."
+}

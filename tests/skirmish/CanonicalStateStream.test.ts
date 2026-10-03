@@ -9,6 +9,37 @@ import { CanonicalStateStream } from "../../src/skirmish/client/CanonicalStateSt
 import { ClientStateFlow } from "../../src/skirmish/multiplayer/application/ClientStateFlow";
 
 describe("ordered canonical state and fenced flow control", () => {
+  it("reuses unchanged transfer facts while isolating ownership changes and ordinary views", () => {
+    const map = new GameMapImpl(64, 48, new Uint8Array(3072).fill(133), 3072);
+    const match = new Skirmish(map, {seed:42, aiCount:1, tribes:false, runAi:false, ruleset:"ages-v1"});
+    const encoder = new SnapshotEncoder(true), stream = new CanonicalStateStream(3072);
+    const baseline = encoder.encode(match.snapshot());
+    stream.apply(baseline);
+    const first = stream.presentationForTransfer();
+    // Model the actual synchronous postMessage structured-clone boundary.
+    const delivered = structuredClone(first);
+    stream.acknowledge(first.canonicalSequence);
+    match.tick++;
+    stream.apply(encoder.encode(match.snapshot()));
+    const second = stream.presentationForTransfer();
+    expect(second.snapshot.expansion!.roads).toBe(first.snapshot.expansion!.roads);
+    expect(second.snapshot.expansion!.deposits).toBe(first.snapshot.expansion!.deposits);
+    const source = match.snapshot(), deposit = source.expansion!.deposits[0];
+    expect(deposit).toBeDefined();
+    const changed = structuredClone(source); changed.tick++;
+    changed.expansion!.deposits[0].owner = deposit.owner === 1 ? 2 : 1;
+    stream.apply(encoder.encode(changed));
+    const third = stream.presentationForTransfer();
+    expect(third.snapshot.expansion!.deposits).not.toBe(second.snapshot.expansion!.deposits);
+    expect(delivered.snapshot.expansion!.deposits[0].owner).toBe(deposit.owner);
+    expect(second.snapshot.expansion!.deposits[0].owner).toBe(deposit.owner);
+    expect(third.snapshot.expansion!.deposits[0].owner).toBe(changed.expansion!.deposits[0].owner);
+    const isolated = stream.presentation();
+    isolated.snapshot.expansion!.deposits[0].owner = 200;
+    expect(stream.presentation().snapshot.expansion!.deposits[0].owner).not.toBe(200);
+    stream.apply(new SnapshotEncoder(true).encode(changed));
+    expect(stream.presentationForTransfer().snapshot.expansion!.deposits).not.toBe(third.snapshot.expansion!.deposits);
+  });
   it("fences the first baseline to the loaded map even when forged dimensions have the same cell count", () => {
     const map = new GameMapImpl(64, 48, new Uint8Array(3072).fill(133), 3072);
     const match = new Skirmish(map, {

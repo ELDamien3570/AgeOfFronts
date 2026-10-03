@@ -44,13 +44,16 @@ import {
   buildingSymbol,
   shipSpriteSize,
   shipSymbol,
+  shipViewRadius,
   squadSymbol,
+  squadViewRadius,
   traderSymbol,
 } from "./MapSymbols";
 import { PaintedTerrain } from "./PaintedTerrain";
 import { PromotionArtwork } from "./PromotionArtwork";
 import { ResourceViewModel } from "./ResourceViewModel";
 import { RoadLayer } from "./RoadLayer";
+import { RenderSamples } from "./RenderSamples";
 import type { SpawnSelectionViewModel } from "./SpawnSelectionViewModel";
 import { StrategicSprites } from "./StrategicSprites";
 import { bakeTerrainFields } from "./TerrainFields";
@@ -126,9 +129,8 @@ export class Renderer {
   private snapshot?: Snapshot;
   private resources?: ResourceViewModel;
   private occupiedBuildingTiles = new Set<number>();
-  private previous?: Snapshot;
-  private previousSquads = new Map<number, Snapshot["squads"][number]>();
-  private currentSquads = new Map<number, Snapshot["squads"][number]>();
+  private previousTick?: number;
+  private readonly squadSamples = new RenderSamples<Snapshot["squads"][number]>();
   private readonly cargoCounts = new Map<number, number>();
   private receivedAt = 0;
   // Smoothed real time between snapshots. Interpolating over this, not over the
@@ -261,11 +263,10 @@ export class Renderer {
     this.snapshot = undefined;
     this.spawn = undefined;
     this.resources = undefined;
-    this.previous = undefined;
+    this.previousTick = undefined;
     this.arrivalMs = 0;
     this.receivedAt = 0;
-    this.previousSquads.clear();
-    this.currentSquads.clear();
+    this.squadSamples.clear();
     this.presentation.reset();
     this.boats.reset();
     this.impacts.reset();
@@ -292,9 +293,8 @@ export class Renderer {
   update(snapshot: Snapshot): void {
     if (!this.map) return;
     this.buildPreview?.update(snapshot);
-    this.previous = this.snapshot;
-    this.previousSquads = this.currentSquads;
-    this.currentSquads = new Map(snapshot.squads.map((s) => [s.id, s]));
+    if (snapshot.tick !== this.snapshot?.tick) this.previousTick = this.snapshot?.tick;
+    this.squadSamples.update(snapshot.squads, snapshot.tick);
     this.combatMarkers = combatTargets(snapshot);
     this.cargoCounts.clear();
     for (const squad of snapshot.squads)
@@ -339,8 +339,8 @@ export class Renderer {
     this.animationClock.update(snapshot.tick, this.receivedAt);
     for (const id of this.selected)
       if (
-        this.currentSquads.get(id)?.playerId !== this.playerId ||
-        this.currentSquads.get(id)?.embarkedOn !== null
+        this.squadSamples.get(id)?.current.playerId !== this.playerId ||
+        this.squadSamples.get(id)?.current.embarkedOn !== null
       )
         this.selected.delete(id);
     for (const id of this.selectedShips)
@@ -1166,12 +1166,11 @@ export class Renderer {
         );
     }
 
-    const previousById = this.previousSquads;
     const interval = this.arrivalMs
       ? Math.min(600, Math.max(50, this.arrivalMs))
       : Math.max(
           50,
-          (snapshot.tick - (this.previous?.tick ?? snapshot.tick - 1)) * 50,
+          (snapshot.tick - (this.previousTick ?? snapshot.tick - 1)) * 50,
         );
     const blend = paused ? 1 : Math.min(1, (now - this.receivedAt) / interval);
     this.aircraftBlend = blend;
@@ -1193,13 +1192,16 @@ export class Renderer {
     const renderedSquads = snapshot.squads
       .filter((squad) => squad.embarkedOn === null)
       .map((squad) => {
-        const old = previousById.get(squad.id) ?? squad;
+        const sample = this.squadSamples.get(squad.id)!;
         const p = this.screen(
-          (old.x + (squad.x - old.x) * blend) / FIXED,
-          (old.y + (squad.y - old.y) * blend) / FIXED,
+          (sample.previousX + (squad.x - sample.previousX) * blend) / FIXED,
+          (sample.previousY + (squad.y - sample.previousY) * blend) / FIXED,
         );
         const selected =
           this.selected.has(squad.id) || this.inspectedSquadId === squad.id;
+        if (!visibleInViewport(p, squadViewRadius(this.scale, squad.troops, selected), this.width, this.height))
+          return undefined;
+        const formationType = squadFormationType(squad);
         const pose = squadArtworkPose(squad, visualTick);
         const activeImage = squad.definitionId
           ? this.eraArtwork.get(squad.definitionId, pose.clip, pose.elapsed)
@@ -1211,7 +1213,7 @@ export class Renderer {
           this.scale,
           squad.troops,
           !!activeImage,
-          squadFormationType(squad),
+          formationType,
         );
         if (
           !visibleInViewport(
@@ -1229,7 +1231,7 @@ export class Renderer {
           ? UNIT.get(squad.definitionId)
           : undefined;
         const image = symbol.artwork ? activeImage : undefined;
-        return { squad, p, selected, symbol, image, definition };
+        return { squad, p, selected, symbol, image, definition, formationType };
       })
       .filter(
         (entry): entry is NonNullable<typeof entry> => entry !== undefined,
@@ -1284,7 +1286,7 @@ export class Renderer {
                 : this.map.y(order.tile) + 0.5,
             );
           if (order.type === "attack") {
-            const target = this.currentSquads.get(order.targetId);
+            const target = this.squadSamples.get(order.targetId)?.current;
             if (target) goal = this.screen(target.x / FIXED, target.y / FIXED);
           }
           if (!goal) continue;
@@ -1332,6 +1334,7 @@ export class Renderer {
       symbol,
       image,
       definition,
+      formationType,
     } of renderedSquads) {
       if (
         definition &&
@@ -1419,7 +1422,6 @@ export class Renderer {
           3,
         );
       } else {
-        const formationType = squadFormationType(squad);
         const formation = this.formationArtwork.get(
           formationType,
           this.strategic.available ? "#ffffff" : COLORS[squad.playerId],
@@ -1535,7 +1537,7 @@ export class Renderer {
           ? definition.attack.channel === "melee"
           : squad.kind !== "archer")
       ) {
-        const target = this.currentSquads.get(squad.combatTargetId ?? -1);
+        const target = this.squadSamples.get(squad.combatTargetId ?? -1)?.current;
         if (target) {
           const contact = this.screen(
             (squad.x + target.x) / (2 * FIXED),
@@ -1563,6 +1565,7 @@ export class Renderer {
     for (const ship of snapshot.ships) {
       const pose = this.boats.shipPose(ship.id) ?? ship;
       const p = this.screen(pose.x / FIXED, pose.y / FIXED);
+      if (!visibleInViewport(p, shipViewRadius(this.scale, ship.kind), this.width, this.height)) continue;
       const formation = this.formationArtwork.get(
         ship.kind,
         this.strategic.available ? "#ffffff" : COLORS[ship.playerId],

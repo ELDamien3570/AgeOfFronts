@@ -28,7 +28,7 @@ self.onmessage = (
         try {
           if (!stream) throw new Error("Canonical state is unavailable");
           const projectionStarted = performance.now();
-          const view = stream.presentation();
+          const view = stream.presentationForTransfer();
           const projected = performance.now();
           self.postMessage({ packet: { tick: view.snapshot.tick, reset: view.snapshot.changedTiles === undefined }, ...view,
             projectionMs: projected - projectionStarted },
@@ -83,7 +83,7 @@ self.onmessage = (
           decodeMs: decoded - started, applyMs: applied - decoded, decodeStats });
         return;
       }
-      const view = stream.presentation();
+      const view = stream.presentationForTransfer();
       const projected = performance.now();
       self.postMessage(
         {
