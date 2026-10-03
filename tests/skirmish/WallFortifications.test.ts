@@ -184,7 +184,7 @@ describe("friendly fortification passage", () => {
     const m = match(2),
       forts = m.expansion!.fortifications;
     // Isolate the wall corridor from the resource-site placement restriction.
-    m.expansion!.supply.deposits.splice(0);
+    m.expansion!.supply.replaceDeposits([]);
     for (const p of m.players) {
       p.gold = 1e7;
       m.expansion!.progression.states[p.id].completed = TECHNOLOGIES.map(

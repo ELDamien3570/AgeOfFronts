@@ -184,7 +184,7 @@ describe("age-based strategic resource discovery", () => {
       (d) => d.resource === "oil",
     )!;
     expect(deposit).toBeDefined();
-    deposit.owner = 2;
+    expansion.supply.updateDeposit(deposit.id, {owner: 2});
     expansion.progression.states[2].age = "Modern";
     expansion.supply.inventories[2].oil = 12345;
     const mine = match.addBuilding({

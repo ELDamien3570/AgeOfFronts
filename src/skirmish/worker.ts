@@ -21,22 +21,7 @@ function send(message: WorkerResponse): void {
 function publish(): void {
   if (!match) return;
   lastPublishedAt = performance.now();
-  const packet = encoder.encode({
-    tick: match.tick,
-    width: match.map.width(),
-    height: match.map.height(),
-    owners: match.owners,
-    claims: match.claims,
-    progress: match.progress,
-    players: match.players,
-    buildings: match.buildings,
-    ships: match.ships,
-    squads: match.squads,
-    volleys: match.volleys,
-    winner: match.winner,
-    combatTicks: match.combatTicks,
-    expansion: match.expansion?.snapshot(),
-  });
+  const packet = encoder.encode(match.replicationSource(), match.tileChanges, match.replicationFacts());
   self.postMessage(
     { type: "state", packet, paused, speed } satisfies WorkerResponse,
     { transfer: snapshotTransfers(packet) },

@@ -15,8 +15,8 @@ function fixture() {
   match.players[0].gold = 1e6;
   const state = match.expansion!.progression.states[1];
   state.completed = TECHNOLOGIES.map(t => t.id);
-  match.expansion!.supply.deposits.splice(0, Infinity,
-    ...(["stone", "copper", "tin", "ironOre", "oil"] as Resource[]).map((resource, id) => ({
+  match.expansion!.supply.replaceDeposits(
+    (["stone", "copper", "tin", "ironOre", "oil"] as Resource[]).map((resource, id) => ({
       id: id + 1, tile: map.ref(20 + id * 5, 20), resource, owner: 1, yieldPerSecond: 1,
     })));
   return { match, map, state, deposits: match.expansion!.supply.deposits };

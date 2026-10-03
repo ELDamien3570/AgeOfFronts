@@ -230,7 +230,7 @@ describe("persistent concentrated port defense", () => {
     f.game.tick += 100;
     f.assess();
     expect(first.purchases).toBe(2);
-    for (const job of f.game.recruitment.jobs) job.remainingTicks = 1;
+    for (const job of f.game.recruitment.jobs) f.game.recruitment.updateJob(job.id, {remainingTicks: 1});
     const complete = () => {
       f.addShip(f.player.id, 12, 0);
       return true;

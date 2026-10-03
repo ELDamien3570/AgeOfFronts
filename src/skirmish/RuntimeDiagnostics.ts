@@ -94,7 +94,9 @@ export interface MatchDiagnostics {
   ticksAdvanced: number;
   payloadBytes: number;
   replication?: { pending: number; skipped: number; encoderMemory?: { heapUsed: number; external: number; arrayBuffers: number };
-    encoderTimings?: Partial<Record<RuntimePhase, TimingSummary>>; encoderRetainedBytes?: number; encoderFailureCause?: string; encodedTick?: number };
+    encoderTimings?: Partial<Record<RuntimePhase, TimingSummary>>; encoderRetainedBytes?: number; encoderFailureCause?: string; encodedTick?: number;
+    baselineCache?: {hits: number; misses: number; retainedBytes: number};
+    extraction?: {squadReads: number; shipReads: number; buildingReads: number; resourceReads: number; entityFallbacks: number} };
   entities: { squads: number; ships: number; buildings: number; traders: number; projectiles: number; recruitment: number };
   planner: { pending: number; oldestAge: number; limited: number; workspaceBytes: number; workspaceUsed: number; receipts: number;
     work?: number; completed?: number; superseded?: number; admissionDeferred?: number;

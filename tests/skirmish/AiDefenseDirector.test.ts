@@ -21,7 +21,7 @@ function fixture() {
   game.owners.fill(player.id);
   player.gold = 100000;
   player.land = data.length;
-  game.expansion!.supply.deposits.splice(0);
+  game.expansion!.supply.replaceDeposits([]);
   game.expansion!.supply.resourceSites.update([]);
   game.expansion!.progression.states[player.id].completed.push(
     ...TECHNOLOGIES.filter((t) => t.age === "StoneAge").map((t) => t.id),

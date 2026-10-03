@@ -36,6 +36,9 @@ export class Fortifications {
   readonly barriers: Barrier[] = [];
   version = 0;
   private readonly tileIndex = new Map<number, Barrier[]>();
+  private readonly barrierIds = new Map<number, Barrier>();
+  private readonly barrierOrder = new Map<number, number>();
+  readonly queryDiagnostics = {nearbyTiles: 0, nearbyCandidates: 0};
   private nextId = 1;
   private towers = new Map<number, Set<number>>();
   private occupancy = new Uint8Array(0);
@@ -51,6 +54,25 @@ export class Fortifications {
   get hasObstacles(): boolean {
     return !!(this.tileIndex.size || this.towers.size);
   }
+  barrier(id: number): Barrier | undefined { return this.barrierIds.get(id); }
+  barriersAt(tile: number): readonly Barrier[] { return this.tileIndex.get(tile) ?? NO_BARRIERS; }
+  /** Exact circle candidates in canonical barrier order. A wall touching several
+   * cells is returned once; damage budgets retain their original ordering. */
+  nearbyBarriers(x: number, y: number, radius: number): readonly Barrier[] {
+    const found = new Map<number, Barrier>();
+    const left = Math.max(0, Math.ceil((x - radius) / FIXED - 0.5));
+    const right = Math.min(this.map.width() - 1, Math.floor((x + radius) / FIXED - 0.5));
+    const top = Math.max(0, Math.ceil((y - radius) / FIXED - 0.5));
+    const bottom = Math.min(this.map.height() - 1, Math.floor((y + radius) / FIXED - 0.5));
+    for (let cy = top; cy <= bottom; cy++)
+      for (let cx = left; cx <= right; cx++) {
+        this.queryDiagnostics.nearbyTiles++;
+        if (((cx + 0.5) * FIXED - x) ** 2 + ((cy + 0.5) * FIXED - y) ** 2 > radius ** 2) continue;
+        for (const wall of this.barriersAt(this.map.ref(cx, cy))) found.set(wall.id, wall);
+      }
+    this.queryDiagnostics.nearbyCandidates += found.size;
+    return [...found.values()].sort((a, b) => this.barrierOrder.get(a.id)! - this.barrierOrder.get(b.id)!);
+  }
   intactWallAt(tile: number): boolean {
     return (this.tileIndex.get(tile) ?? NO_BARRIERS).some(w=>w.health>0);
   }
@@ -64,7 +86,11 @@ export class Fortifications {
     );
   }
   private reindex(): void {
-    this.tileIndex.clear();
+    this.tileIndex.clear(); this.barrierIds.clear(); this.barrierOrder.clear();
+    for (let i = 0; i < this.barriers.length; i++) {
+      const wall = this.barriers[i];
+      this.barrierIds.set(wall.id, wall); this.barrierOrder.set(wall.id, i);
+    }
     for (const wall of this.barriers)
       for (const tile of wall.tiles) {
         let list = this.tileIndex.get(tile);

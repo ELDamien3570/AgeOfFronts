@@ -42,7 +42,7 @@ describe("bounded placement preview", () => {
         ruleset: "ages-v1",
       });
     game.owners.fill(1);
-    game.expansion!.supply.deposits.length = 0;
+    game.expansion!.supply.replaceDeposits([]);
     game.expansion!.progression.states[1].completed.push(
       buildingTechnology("tower", "StoneAge")!,
     );
@@ -179,9 +179,9 @@ describe("bounded placement preview", () => {
       expect(index.rejection("factory", tile)).toBe(
         resourceSiteRejection(map, deposits, "factory", tile),
       );
-    deposits[0].owner = 2;
+    game.expansion!.supply.updateDeposit(deposits[0].id, {owner: 2});
     expect(index.update(deposits)).toBe(false);
-    deposits[0].tile = map.ref(3, 3);
+    game.expansion!.supply.updateDeposit(deposits[0].id, {tile: map.ref(3, 3)});
     expect(index.update(deposits)).toBe(true);
     expect(index.at(deposits[0].tile)).toBe(deposits[0]);
   });

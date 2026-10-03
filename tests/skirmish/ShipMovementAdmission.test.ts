@@ -47,7 +47,7 @@ describe("transactional sailing admission", () => {
     const { pauseCommitted, ...legacy } = saved;
     expect(pauseCommitted).toBe(true);
     match.shipAdmission.restore(legacy);
-    ship.destination = goal;
+    match.updateShip(ship.id, { destination: goal });
     match.shipAdmission.resume(ship, goal);
     const id = match.shipAdmission.checkpoint().pending[0][0];
     for (const tick of [10, 40, 100])
@@ -62,8 +62,8 @@ describe("transactional sailing admission", () => {
     const { map, match, ships } = fixture(),
       ship = ships[0],
       goal = map.ref(70, 50);
-    ship.destination = goal;
-    ship.waypoints = [map.ref(75, 50)];
+    match.updateShip(ship.id, { destination: goal });
+    match.updateShip(ship.id, { waypoints: [map.ref(75, 50)] });
     match.shipAdmission.resume(ship, goal);
     const id = match.shipAdmission.checkpoint().pending[0][0];
     for (const tick of [10, 40, 100])
@@ -99,9 +99,8 @@ describe("transactional sailing admission", () => {
     const { map, match, ships } = fixture(),
       ship = ships[0],
       goal = map.ref(20, 30);
-    ship.destination = goal;
-    ship.repairState = "returning-to-dock";
-    ship.repairPortId = 123;
+    match.updateShip(ship.id, { destination: goal });
+    match.updateShip(ship.id, { repairState: "returning-to-dock", repairPortId: 123 });
     match.shipAdmission.recover(ship, goal, 1);
     const saved = match.shipAdmission.checkpoint();
     match.shipAdmission.recover(ship, goal, 2);

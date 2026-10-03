@@ -1,4 +1,8 @@
 import { EntityCollection } from "./EntityCollection";
+import { EntityChangeJournal } from "./EntityChangeJournal";
+import type { ReplicatedEntities } from "./ReplicatedEntities";
+import type { SnapshotSource } from "./SnapshotCodec";
+import { limitedRouteRetry } from "./RouteRetryPolicy";
 import { FactionAdjacency } from "./FactionAdjacency";
 import { TileChangeJournal } from "./TileChangeJournal";
 import { CapturePressure } from "./CapturePressure";
@@ -176,6 +180,7 @@ export class Skirmish {
     this.adjacency.rebuild();
     restoreMap(this.detours,state.detours);
     restoreMap(this.navigationProgress,state.navigationProgress);
+    this.navigationCleanupNeeded = true;
     restoreMap(this.orderRevisions,state.orderRevisions);
     restoreMap(this.queuedLegs,state.queuedLegs ?? new Map());
     restoreMap(this.controlGenerations,state.controlGenerations ?? new Map());
@@ -212,34 +217,37 @@ export class Skirmish {
   readonly players: Player[] = [];
   private readonly squadIndex = new UnitIndex<Squad>();
   private readonly shipIndex = new UnitIndex<Ship>();
+  private readonly squadChanges = new EntityChangeJournal();
+  private readonly shipChanges = new EntityChangeJournal();
+  private readonly buildingChanges = new EntityChangeJournal();
   private readonly squadEntities = new EntityCollection<Squad>({
-    added: squad => this.squadIndex.add(squad),
-    changed: squad => this.squadIndex.changed(squad),
+    added: squad => { this.squadIndex.add(squad); this.squadChanges.record(squad.id, "add"); },
+    changed: squad => { this.squadIndex.changed(squad); this.squadChanges.record(squad.id, "change"); },
     removed: id => {
-      this.squadIndex.remove(id);
+      this.squadIndex.remove(id); this.squadChanges.record(id, "remove");
       this.navigationProgress.delete(id); this.detours.delete(id);
       this.orderRevisions.delete(id); this.queuedLegs.delete(id);
       this.routeWork.cancel(`navigation:${id}`); this.routePlanner.cancel(`navigation:${id}`);
     },
-    restored: squads => this.squadIndex.rebuild(squads),
+    restored: squads => { this.squadIndex.rebuild(squads); this.squadChanges.invalidate(); },
   });
   get squads(): readonly Squad[] { return this.squadEntities.values; }
   private readonly buildingEntities = new EntityCollection<Building>({
-    added: building => { this.buildingIndex.add(building); this.expansion?.economy.navalFacts.observeBuilding(building); },
+    added: building => { this.buildingIndex.add(building); this.buildingChanges.record(building.id, "add"); this.expansion?.economy.navalFacts.observeBuilding(building); },
     changed: building => {
       const revision = this.buildingIndex.producerRevision;
-      this.buildingIndex.changed(building);
+      this.buildingIndex.changed(building); this.buildingChanges.record(building.id, "change");
       if (revision !== this.buildingIndex.producerRevision) this.expansion?.economy.navalFacts.observeBuilding(building);
     },
-    removed: id => { this.buildingIndex.remove(id); this.expansion?.economy.navalFacts.forgetBuilding(id); },
-    restored: buildings => this.buildingIndex.rebuild(buildings),
+    removed: id => { this.buildingIndex.remove(id); this.buildingChanges.record(id, "remove"); this.expansion?.economy.navalFacts.forgetBuilding(id); },
+    restored: buildings => { this.buildingIndex.rebuild(buildings); this.buildingChanges.invalidate(); },
   });
   get buildings(): readonly Building[] { return this.buildingEntities.values; }
   private readonly shipEntities = new EntityCollection<Ship>({
-    added: ship => this.shipIndex.add(ship),
-    changed: ship => this.shipIndex.changed(ship),
-    removed: id => { this.shipIndex.remove(id); this.expansion?.economy.navalFacts.forgetShip(id); },
-    restored: ships => this.shipIndex.rebuild(ships),
+    added: ship => { this.shipIndex.add(ship); this.shipChanges.record(ship.id, "add"); },
+    changed: ship => { this.shipIndex.changed(ship); this.shipChanges.record(ship.id, "change"); },
+    removed: id => { this.shipIndex.remove(id); this.shipChanges.record(id, "remove"); this.expansion?.economy.navalFacts.forgetShip(id); },
+    restored: ships => { this.shipIndex.rebuild(ships); this.shipChanges.invalidate(); },
   });
   get ships(): readonly Ship[] { return this.shipEntities.values; }
   readonly volleys: ArcherVolley[] = [];
@@ -320,11 +328,12 @@ export class Skirmish {
     return `${this.expansion?.operations.revision ?? 0}:${this.expansion?.fortifications.version ?? 0}:${this.expansion?.diplomacy.state.alliances.map(t=>`${t.a},${t.b}`).join(";") ?? ""}`;
   }
   private readonly orderRevisions = new Map<number, number>();
-  private readonly queuedLegs = new Map<number, { attempts: number; retryAt: number }>();
+  private readonly queuedLegs = new Map<number, { attempts: number; retryAt: number; paused?: boolean }>();
   private readonly localDetours: LocalDetours;
   private readonly homeTerritory: HomeTerritory;
   private readonly conquest = new ConquestCredit();
   private readonly detours = new Map<number, WorldPoint[]>();
+  private navigationCleanupNeeded = false;
   private readonly navigationProgress = new Map<
     number,
     { x: number; y: number; tick: number; recovery: number }
@@ -416,7 +425,9 @@ export class Skirmish {
           this.queuedLegs.delete(squad.id); this.finishOrder(squad); return;
         }
         if (queued && outcome === "limited") {
-          queued.attempts++; queued.retryAt = this.tick + 20 * Math.min(10, queued.attempts);
+          const retry = limitedRouteRetry(queued.attempts, this.tick, this.routePlanner.pausesCommittedLimits);
+          queued.attempts = retry.attempts; queued.retryAt = retry.retryAt;
+          if (retry.exhausted) { queued.paused = true; this.squadEntities.updateOwned(squad.id, { planningPaused: true }); }
         }
         if(outcome!=="complete" || this.tileOf(squad)!==request.start)return;
         this.queuedLegs.delete(squad.id);
@@ -431,7 +442,9 @@ export class Skirmish {
       request:(id,playerId,shipId,start,goal)=>this.routePlanner.request({key:`ship-admission:${id}:${shipId}`,start,goal,water:true,createdTick:this.tick,
         obstacleRevision:"water",context:{kind:"ship-admission",admissionId:id,playerId,shipId}}),
       cancel:(id,shipId)=>this.routePlanner.cancel(`ship-admission:${id}:${shipId}`),
+      paused:(ship,paused)=>{ if (paused || ship.planningPaused !== undefined) this.shipEntities.updateOwned(ship.id, { planningPaused: paused ? true : undefined }); },
       commit:(ship,goal,path,index,append,recovery)=>{
+        if (ship.planningPaused !== undefined) this.shipEntities.updateOwned(ship.id, { planningPaused: undefined });
         if(recovery){this.shipEntities.updateOwned(ship.id, { destination: goal });this.shipEntities.updateOwned(ship.id, { path: path });this.shipEntities.updateOwned(ship.id, { nextPathIndex: index });this.shipEntities.updateOwned(ship.id, { waypoints: append });}
         else this.setShipVoyage(ship,goal,path,index,append);
       },
@@ -803,7 +816,7 @@ export class Skirmish {
       if (!Array.isArray(command.shipIds) || !command.shipIds.length)
         return "Select your ships";
       const ships = [...new Set(command.shipIds)].map((id) =>
-        this.ships.find((s) => s.id === id),
+        this.ship(id),
       );
       if (ships.some((s) => !s || s.playerId !== player.id))
         return "Select your own ships";
@@ -829,7 +842,8 @@ export class Skirmish {
     if (command.type === "board")
       return this.board(player, command.shipId, command.squadIds);
     if (command.type === "unload") {
-      const ship = this.ships.find(s => s.id === command.shipId && s.playerId === player.id);
+      const candidate = this.ship(command.shipId);
+      const ship = candidate?.playerId === player.id ? candidate : undefined;
       return ship?.shoreTransfer
         ? this.shoreTransport.land(ship, command.tile, true)
         : this.unload(player, command.shipId, command.tile);
@@ -1012,6 +1026,7 @@ export class Skirmish {
   private activateOrder(squad: Squad, order: Order, path: number[] = []): void {
     this.routePlanner.cancel(`navigation:${squad.id}`);
     this.queuedLegs.delete(squad.id);
+    if (squad.planningPaused !== undefined) this.squadEntities.updateOwned(squad.id, { planningPaused: undefined });
     this.navigationProgress.delete(squad.id);
     this.detours.delete(squad.id);
     this.squadEntities.updateOwned(squad.id, { order: structuredClone(order) });
@@ -1372,7 +1387,7 @@ export class Skirmish {
       if (job.category === "ship")
         return this.recruitShip(player, job.buildingId, job.kind as ShipType, job.definitionId, true) === null;
       return this.expansion!.completeAircraft(job);
-    }, job => this.refundRecruitment(job));
+    }, job => this.refundRecruitment(job), id => this.building(id));
   }
 
   private refundRecruitment(job: RecruitmentJob): void {
@@ -1503,7 +1518,7 @@ export class Skirmish {
   ): string | null {
     if (!Array.isArray(ids)) return "Invalid ship selection";
     const ships = [...new Set(ids)].map((id) =>
-      this.ships.find((s) => s.id === id),
+      this.ship(id),
     );
     if (
       !ships.length ||
@@ -1572,10 +1587,8 @@ export class Skirmish {
   }
 
   private board(player: Player, shipId: number, ids: number[]): string | null {
-    const ship = this.ships.find(
-      (s) =>
-        s.id === shipId && s.playerId === player.id && s.kind === "transport",
-    );
+    const candidate = this.ship(shipId);
+    const ship = candidate?.playerId === player.id && candidate.kind === "transport" ? candidate : undefined;
     if (!ship) return "Choose your transport";
     if (ship.refit) return "Your transport is refitting";
     if (!Array.isArray(ids)) return "Invalid squad selection";
@@ -1751,9 +1764,8 @@ export class Skirmish {
   }
 
   private load(player: Player, shipId: number, ids: number[]): string | null {
-    const ship = this.ships.find(
-      (s) => s.id === shipId && s.playerId === player.id,
-    );
+    const candidate = this.ship(shipId);
+    const ship = candidate?.playerId === player.id ? candidate : undefined;
     if (!ship || ship.kind !== "transport") return "Choose your transport";
     if (ship.destination !== null)
       return "Stop the transport at a coast before loading";
@@ -1799,9 +1811,8 @@ export class Skirmish {
     if (!this.aiFootprintAllowed(player.id, tile) || (this.expansion?.operations.enabled(player) &&
       this.expansion.operations.state(player.id)?.phase === "recovery" && this.owners[tile] !== player.id))
       return "AI landing requires a declared operation or local defensive response";
-    const ship = this.ships.find(
-      (s) => s.id === shipId && s.playerId === player.id,
-    );
+    const candidate = this.ship(shipId);
+    const ship = candidate?.playerId === player.id ? candidate : undefined;
     if (!ship || ship.kind !== "transport") return "Choose your transport";
     if (ship.destination !== null)
       return "Stop beside the landing coast before unloading";
@@ -1957,7 +1968,7 @@ export class Skirmish {
         }
       }
       const explicit = ship.attackTargetId
-        ? (this.ships.find((s) => s.id === ship.attackTargetId) ??
+        ? (this.ship(ship.attackTargetId) ??
           this.building(ship.attackTargetId!))
         : undefined;
       if (
@@ -2509,18 +2520,22 @@ export class Skirmish {
     this.fight();
     this.fightShips();
     this.expansion?.afterMovement();
-    const liveIds = new Set(this.squads.map((s) => s.id));
-    for (const id of this.navigationProgress.keys())
-      if (!liveIds.has(id)) this.navigationProgress.delete(id);
-    for (const id of this.detours.keys())
-      if (!liveIds.has(id)) this.detours.delete(id);
-    for (const id of this.orderRevisions.keys())
-      if (!liveIds.has(id)) {
-        this.orderRevisions.delete(id);
-        this.queuedLegs.delete(id);
-        this.routeWork.cancel(`navigation:${id}`);
-        this.routePlanner.cancel(`navigation:${id}`);
-      }
+    // Live removals clean their navigation state immediately. Legacy/imported
+    // orphan rows retain the old first-step cleanup boundary.
+    if (this.navigationCleanupNeeded) {
+      this.navigationCleanupNeeded = false;
+      for (const id of this.navigationProgress.keys())
+        if (!this.squad(id)) this.navigationProgress.delete(id);
+      for (const id of this.detours.keys())
+        if (!this.squad(id)) this.detours.delete(id);
+      for (const id of this.orderRevisions.keys())
+        if (!this.squad(id)) {
+          this.orderRevisions.delete(id);
+          this.queuedLegs.delete(id);
+          this.routeWork.cancel(`navigation:${id}`);
+          this.routePlanner.cancel(`navigation:${id}`);
+        }
+    }
     this.replenish();
     phaseStart = this.diagnosticPhase("combat", phaseStart);
     this.capture();
@@ -2913,7 +2928,7 @@ export class Skirmish {
   private navigation(squad: Squad): MovementIntent | null {
     const queued = this.queuedLegs.get(squad.id);
     if (queued) {
-      if (this.tick >= queued.retryAt) this.requestNavigationRoute(squad, "blocked");
+      if (!queued.paused && this.tick >= queued.retryAt) this.requestNavigationRoute(squad, "blocked");
       return null;
     }
     if (squad.refit || squad.charge?.phase === "recovery") return null;
@@ -3298,6 +3313,7 @@ export class Skirmish {
     }
     if (old && land) this.player(old)!.land--;
     this.owners[tile] = id;
+    this.expansion?.supply.territoryChanged(tile, id);
     this.tileChanges.record(tile);
     this.adjacency.changed(tile, old);
     this.expansion?.economy.boundaries?.changed(tile, old, this.tick);
@@ -3357,7 +3373,7 @@ export class Skirmish {
         own.length < this.squadCapacity(player)
       ) {
         const lines = recruitmentOrder(personality, this.expansion
-          ? new AiForceInventory(player.id, this.squadIndex.byOwner(player.id), this.recruitment.jobs).core
+          ? new AiForceInventory(player.id, this.squadIndex.byOwner(player.id), this.recruitment.byOwner(player.id)).core
           : {
           infantry: own.filter((s) => s.kind === "infantry").length,
           archer: own.filter((s) => s.kind === "archer").length,
@@ -3966,6 +3982,26 @@ export class Skirmish {
     b: Pick<Squad, "x" | "y">,
   ): number {
     return (a.x - b.x) ** 2 + (a.y - b.y) ** 2;
+  }
+
+  replicationFacts(): ReplicatedEntities {
+    const supply = this.expansion?.supply;
+    return {
+      squads: {journal: this.squadChanges, byId: id => this.squad(id)},
+      ships: {journal: this.shipChanges, byId: id => this.ship(id)},
+      buildings: {journal: this.buildingChanges, byId: id => this.building(id)},
+      resources: supply ? {geometryRevision: supply.geometryRevision, ownershipRevision: supply.ownershipRevision,
+        journal: supply.resourceChanges, byId: id => supply.deposit(id)} : undefined,
+    };
+  }
+  /** Borrow only until synchronous encoding/postMessage. Public snapshot() keeps
+   * its DTO projection; this path avoids projecting every unchanged entity. */
+  replicationSource(): SnapshotSource {
+    return {tick: this.tick, width: this.map.width(), height: this.map.height(),
+      owners: this.owners, claims: this.claims, progress: this.progress,
+      players: this.players, buildings: this.buildings, ships: this.ships, squads: this.squads,
+      winner: this.winner, combatTicks: this.combatTicks, volleys: this.volleys,
+      expansion: this.expansion?.snapshot()};
   }
 
   snapshot(copyTiles = true): Snapshot {

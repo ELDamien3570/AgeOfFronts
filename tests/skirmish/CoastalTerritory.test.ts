@@ -60,7 +60,7 @@ describe("scaled coastal water rights and offshore oil", () => {
     m.players[0].gold = 50000;
     for (const resource of RESOURCES)
       expansion.supply.inventories[1][resource] = 5000;
-    expansion.supply.deposits.push({
+    expansion.supply.addDeposit({
       id: 999,
       tile: site,
       owner: 0,

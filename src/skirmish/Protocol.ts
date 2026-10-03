@@ -212,6 +212,7 @@ export interface Squad {
   readonly xp?: number;
   readonly nextAttackTick?: number;
   readonly lastAttackTick?: number;
+  readonly planningPaused?: boolean;
   readonly refit?: Readonly<RefitJob> | null;
   readonly charge?: Readonly<ChargeState> | null;
   readonly chargeReadyTick?: number;
@@ -301,6 +302,7 @@ export interface Ship {
   readonly definitionId?: string;
   readonly nextAttackTick?: number;
   readonly xp?: number;
+  readonly planningPaused?: boolean;
   readonly refit?: Readonly<RefitJob> | null;
   readonly attackTargetId?: number | null;
   readonly lastPlanTick?: number;
@@ -409,6 +411,10 @@ export interface Snapshot {
 
 export interface SnapshotPacket {
   reset: boolean;
+  /** Absent in legacy packets, which carry complete squad/ship views. */
+  entityMode?: "full" | "delta";
+  removedSquads?: Int32Array;
+  removedShips?: Int32Array;
   tick: number;
   width: number;
   height: number;
@@ -433,6 +439,7 @@ export interface SnapshotPacket {
     definitionId?: string;
     xp?: number;
     nextAttackTick?: number;
+    planningPaused?: boolean;
     refit?: RefitJob | null;
     charge?: ChargeState | null;
     chargeReadyTick?: number;

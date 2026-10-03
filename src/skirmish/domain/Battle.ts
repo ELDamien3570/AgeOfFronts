@@ -5,6 +5,7 @@ import { UNIT, defaultUnit } from "../content/Units";
 import type { ArcherVolley, Building, Player, Ship, Squad } from "../Protocol";
 import { FIXED } from "../Protocol";
 import { SpatialGrid } from "../SpatialGrid";
+import type { BuildingQueries } from "../BuildingIndex";
 import {
   attackInterval,
   attackStrength,
@@ -30,6 +31,10 @@ import { structureAim } from "./StructureTargeting";
 export interface BattleWorld {
   tick: number;
   squads: readonly Squad[];
+  squad(id: number): Squad | undefined;
+  ship(id: number): Ship | undefined;
+  building(id: number): Building | undefined;
+  buildingFacts(): BuildingQueries;
   updateSquad(id: number, changes: Partial<Omit<Squad, "id">>): Squad | undefined;
   updateShip(id: number, changes: Partial<Omit<Ship, "id">>): Ship | undefined;
   players: Player[];
@@ -47,6 +52,7 @@ export interface BattleWorld {
   ): void;
 }
 type Position = { x: number; y: number };
+type StructureBody = Position & Pick<Building, "id" | "playerId" | "tile">;
 type Contributions = Map<number, { id: string; damage: number }[]>;
 function segmentBoxEntry(
   from: Position,
@@ -85,17 +91,21 @@ export class Battle {
     const state=structuredClone(saved);
     restoreArray(this.projectiles,state.projectiles);
     this.definitions.clear();
+    this.structureBodies.clear(); this.structureRevision = -1;
   }
 
   readonly projectiles: Projectile[] = [];
   // Read-only diagnostics: cache warmth and counters never drive simulation.
-  readonly telemetry = { indexRebuilds: 0, trenchCandidates: 0, nestSearches: 0 };
+  readonly telemetry = { indexRebuilds: 0, trenchCandidates: 0, nestSearches: 0, emptyNestSkips: 0, structureRebuilds: 0, structureAllocations: 0 };
   private readonly spatial: SpatialGrid<Squad>;
   private readonly naval: SpatialGrid<Ship>;
-  private readonly structures: SpatialGrid<Building & Position>;
+  private readonly structures: SpatialGrid<StructureBody>;
   private readonly nearby: Squad[] = [];
   private readonly nearbyShips: Ship[] = [];
-  private readonly nearbyStructures: (Building & Position)[] = [];
+  private readonly nearbyStructures: StructureBody[] = [];
+  private readonly structureBodies = new Map<number, StructureBody>();
+  private structureRevision = -1;
+  private structureGeometryRevision = -1;
   private readonly structureById = new Map<number, Building>();
   private readonly covered = new Set<number>();
   private readonly definitions = new Map<
@@ -132,7 +142,7 @@ export class Battle {
     );
   }
   setWidth(width: number): void {
-    this.mapWidth = width;
+    if (this.mapWidth !== width) { this.mapWidth = width; this.structureRevision = -1; }
   }
   definition(s: Squad): UnitDefinition {
     const base = UNIT.get(s.definitionId ?? "") ?? defaultUnit(s.kind),
@@ -144,7 +154,7 @@ export class Battle {
     this.definitions.set(key, { revision: research.length, unit });
     return unit;
   }
-  position(b: Building): Position {
+  position(b: Pick<Building, "tile">): Position {
     return {
       x: ((b.tile % this.mapWidth) + 0.5) * FIXED,
       y: (Math.floor(b.tile / this.mapWidth) + 0.5) * FIXED,
@@ -159,13 +169,32 @@ export class Battle {
       this.world.squads.filter((s) => s.embarkedOn === null),
     );
     this.naval.rebuild(this.world.ships);
-    this.structureById.clear();
-    for (const b of this.world.buildings) this.structureById.set(b.id, b);
-    this.structures.rebuild(
-      this.world.buildings
-        .filter((b) => (b.health ?? 1) > 0)
-        .map((b) => ({ ...b, ...this.position(b) })),
-    );
+    const facts = this.world.buildingFacts();
+    if (this.structureRevision !== facts.producerRevision || this.structureGeometryRevision !== facts.geometryRevision) {
+      this.telemetry.structureRebuilds++;
+      this.structureRevision = facts.producerRevision;
+      this.structureGeometryRevision = facts.geometryRevision;
+      this.structureById.clear();
+      const bodies: StructureBody[] = [];
+      for (const b of this.world.buildings) {
+        this.structureById.set(b.id, b);
+        if ((b.health ?? 1) <= 0) continue;
+        let body = this.structureBodies.get(b.id);
+        if (!body) {
+          body = {...this.position(b), id: b.id, playerId: b.playerId, tile: b.tile};
+          this.structureBodies.set(b.id, body); this.telemetry.structureAllocations++;
+        } else {
+          const point = this.position(b);
+          body.x = point.x; body.y = point.y;
+          // The body fields are derived; the canonical building stays read-only.
+          Object.assign(body, {playerId: b.playerId, tile: b.tile});
+        }
+        bodies.push(body);
+      }
+      for (const id of this.structureBodies.keys())
+        if (!this.world.building(id)) this.structureBodies.delete(id);
+      this.structures.rebuild(bodies);
+    }
     this.covered.clear();
     for (const b of this.world.buildings)
       if (b.type === "trench" && !b.remainingTicks && (b.health ?? 1) > 0) {
@@ -283,15 +312,8 @@ export class Battle {
     else this.world.updateShip(source.id, changes);
   }
   awardDamage(damage: DamageLedger, contributions: Contributions): void {
-    const byId = new Map<number, Squad | Ship>(
-      [...this.world.squads, ...this.world.ships].map((s) => [s.id, s]),
-    );
-    const sources = new Map<string, Squad | Ship>([
-      ...this.world.squads.map((s) => [`squad:${s.id}`, s] as const),
-      ...this.world.ships.map((s) => [`ship:${s.id}`, s] as const),
-    ]);
     for (const [id, list] of contributions) {
-      const target = byId.get(id);
+      const target = this.world.squad(id) ?? this.world.ship(id);
       if (!target) continue;
       const health = "troops" in target ? target.troops : target.health;
       const applied = Math.min(health, damage.damage(id)),
@@ -303,7 +325,8 @@ export class Battle {
         if (killer) shares.set(killer[0], killer[1] + 50);
       }
       for (const [attacker, xp] of shares) {
-        const s = sources.get(attacker);
+        const [kind, id] = attacker.split(":");
+        const s = kind === "squad" ? this.world.squad(Number(id)) : kind === "ship" ? this.world.ship(Number(id)) : undefined;
         if (s) this.updateSource(s, { xp: Math.min(20000, (s.xp ?? 0) + xp) });
       }
     }
@@ -332,15 +355,11 @@ export class Battle {
     if (applied > 0) this.world.notifyHostileAction?.(target.playerId, attacker, "tile" in target ? target.tile : target.tiles[0]);
     const s =
       kind === "squad"
-        ? this.world.squads.find(
-            (s) => s.id === source && s.playerId === attacker,
-          )
+        ? this.world.squad(source)
         : kind === "ship"
-          ? this.world.ships.find(
-              (s) => s.id === source && s.playerId === attacker,
-            )
+          ? this.world.ship(source)
           : undefined;
-    if (s)
+    if (s?.playerId === attacker)
       this.updateSource(s, { xp: Math.min(
         20000,
         (s.xp ?? 0) + applied + (health <= 0 ? 50 : 0),
@@ -355,8 +374,7 @@ export class Battle {
     this.rebuild();
     const { tick, squads } = this.world,
       damage = new DamageLedger(),
-      contributions: Contributions = new Map(),
-      byId = new Map(squads.map((s) => [s.id, s]));
+      contributions: Contributions = new Map();
     for (const squad of squads
       .filter((s) => s.embarkedOn === null)
       .sort((a, b) => a.id - b.id)) {
@@ -488,7 +506,7 @@ export class Battle {
             this.distance(squad, a) - this.distance(squad, b) || a.id - b.id,
         )[0];
       if (squad.order.type === "attack") {
-        const wanted = byId.get(squad.order.targetId);
+        const wanted = this.world.squad(squad.order.targetId);
         if (wanted && eligible(wanted)) target = wanted;
       }
       if (!target) continue;
@@ -536,6 +554,10 @@ export class Battle {
         tick >= (b.nextAttackTick ?? 0)
       ) {
         const p = this.position(b);
+        if (!this.spatial.mayContain(p.x, p.y, GUN_NEST_ATTACK.range, b.playerId)) {
+          this.telemetry.emptyNestSkips++;
+          continue;
+        }
         this.telemetry.nestSearches++;
         this.spatial.query(p.x, p.y, GUN_NEST_ATTACK.range, this.nearby);
         const target = this.nearby
@@ -573,12 +595,8 @@ export class Battle {
   private attackStructure(squad: Squad, profile: AttackProfile): void {
     const target =
       squad.structureTarget!.buildingId !== undefined
-        ? this.world.buildings.find(
-            (b) => b.id === squad.structureTarget!.buildingId,
-          )
-        : this.forts.barriers.find(
-            (w) => w.id === squad.structureTarget!.barrierId,
-          );
+        ? this.world.building(squad.structureTarget!.buildingId)
+        : this.forts.barrier(squad.structureTarget!.barrierId!);
     if (
       !target ||
       !this.diplomacy.hostile(squad.playerId, target.playerId) ||
@@ -640,7 +658,9 @@ export class Battle {
       p.x = Math.round(p.fromX + (p.toX - p.fromX) * progress);
       p.y = Math.round(p.fromY + (p.toY - p.fromY) * progress);
       if (["icbm", "mirv", "warhead"].includes(p.kind)) {
-        const interceptor = this.world.buildings
+        this.structures.query(p.x, p.y, 14 * FIXED, this.nearbyStructures);
+        const interceptor = this.nearbyStructures
+          .map(body => this.structureById.get(body.id)!)
           .filter(
             (b) =>
               b.type === "missile-defence" &&
@@ -810,9 +830,8 @@ export class Battle {
                 b.health! > 0 &&
                 this.diplomacy.hostile(b.playerId, p.playerId),
             ) ??
-            this.forts.barriers.find(
+            this.forts.barriersAt(wall.tile).find(
               (b) =>
-                b.tiles.includes(wall.tile) &&
                 b.health > 0 &&
                 this.diplomacy.hostile(b.playerId, p.playerId),
             );
@@ -1006,7 +1025,7 @@ export class Battle {
         this.structuralHit(b, p.playerId, p.sourceId, hit, p.sourceKind);
         budget -= hit;
       }
-      for (const wall of this.forts.barriers)
+      for (const wall of this.forts.nearbyBarriers(p.x, p.y, radius))
         if (
           this.diplomacy.hostile(wall.playerId, p.playerId) &&
           wall.tiles.some(

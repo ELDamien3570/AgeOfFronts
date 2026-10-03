@@ -79,7 +79,7 @@ async function test() {
       tribes: false,
       ruleset: "ages-v1",
     });
-    match.buildings.push({
+    match.addBuilding({
       id: 999,
       playerId: 1,
       type: "barracks",
@@ -96,10 +96,7 @@ async function test() {
     });
     match.tick = 1;
     match.owners[tile] = original === 1 ? 2 : 1;
-    match.buildings.splice(
-      match.buildings.findIndex((b) => b.id === 999),
-      1,
-    );
+    match.removeBuilding(999);
     const first = await send(encoder.encode(match.snapshot()), false);
     match.tick = 2;
     match.owners[tile] = original;

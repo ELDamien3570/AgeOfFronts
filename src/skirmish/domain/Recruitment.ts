@@ -1,3 +1,4 @@
+import { EntityCollection } from "../EntityCollection";
 import type { Building } from "../Protocol";
 import type { RecruitmentJob } from "./Definitions";
 
@@ -11,16 +12,132 @@ export const RECRUITMENT_SECONDS = Object.freeze({
   transport: 10,
   warship: 20,
 });
+type Job = Readonly<Omit<RecruitmentJob, "cost">> & {
+  readonly cost: Readonly<RecruitmentJob["cost"]> & {
+    readonly items?: Readonly<NonNullable<RecruitmentJob["cost"]["items"]>>;
+  };
+};
+const EMPTY: readonly Job[] = Object.freeze([]);
+interface Membership {
+  playerId: number;
+  buildingId: number;
+  ordinal: number;
+}
+interface Bucket {
+  rows: Job[];
+  view?: readonly Job[];
+}
+
+/** Paid jobs retain canonical queue order. Membership changes maintain local
+ * producer/player views; countdowns never rebuild those views. */
 export class Recruitment {
-  readonly jobs: RecruitmentJob[] = [];
-  private readonly ids = new Map<number, RecruitmentJob>();
+  private readonly owners = new Map<number, Bucket>();
+  private readonly producers = new Map<number, Bucket>();
+  private readonly membership = new Map<number, Membership>();
+  private ordinal = 0;
   private nextId = 1;
-  private readonly listeners = new Set<
-    (job: RecruitmentJob, added: boolean) => void
-  >();
-  onChange(
-    listener: (job: RecruitmentJob, added: boolean) => void,
-  ): () => void {
+  private readonly entities = new EntityCollection<Job>({
+    added: (job) => this.index(job),
+    changed: (job) => this.changed(job),
+    removed: (id) => this.unindex(id),
+    restored: (jobs) => {
+      this.owners.clear();
+      this.producers.clear();
+      this.membership.clear();
+      this.ordinal = 0;
+      for (const job of jobs) this.index(job);
+    },
+  });
+  private readonly listeners = new Set<(job: Job, added: boolean) => void>();
+  get jobs(): readonly Job[] {
+    return this.entities.values;
+  }
+  byOwner(playerId: number): readonly Job[] {
+    return this.view(this.owners.get(playerId));
+  }
+  byProducer(buildingId: number): readonly Job[] {
+    return this.view(this.producers.get(buildingId));
+  }
+  byId(id: number): Job | undefined {
+    return this.entities.get(id);
+  }
+  private view(bucket?: Bucket): readonly Job[] {
+    return bucket
+      ? (bucket.view ??= Object.freeze(bucket.rows.slice()))
+      : EMPTY;
+  }
+  private insert(groups: Map<number, Bucket>, key: number, job: Job): void {
+    let bucket = groups.get(key);
+    if (!bucket) groups.set(key, (bucket = { rows: [] }));
+    const ordinal = this.membership.get(job.id)!.ordinal;
+    let low = 0,
+      high = bucket.rows.length;
+    while (low < high) {
+      const middle = (low + high) >>> 1;
+      if (this.membership.get(bucket.rows[middle].id)!.ordinal < ordinal)
+        low = middle + 1;
+      else high = middle;
+    }
+    bucket.rows.splice(low, 0, job);
+    bucket.view = undefined;
+  }
+  private erase(groups: Map<number, Bucket>, key: number, id: number): void {
+    const bucket = groups.get(key)!;
+    bucket.rows.splice(
+      bucket.rows.findIndex((job) => job.id === id),
+      1,
+    );
+    bucket.view = undefined;
+    if (!bucket.rows.length) groups.delete(key);
+  }
+  private index(job: Job): void {
+    this.membership.set(job.id, {
+      playerId: job.playerId,
+      buildingId: job.buildingId,
+      ordinal: this.ordinal++,
+    });
+    this.insert(this.owners, job.playerId, job);
+    this.insert(this.producers, job.buildingId, job);
+  }
+  private changed(job: Job): void {
+    const old = this.membership.get(job.id)!;
+    if (old.playerId !== job.playerId) {
+      this.erase(this.owners, old.playerId, job.id);
+      old.playerId = job.playerId;
+      this.insert(this.owners, job.playerId, job);
+    }
+    if (old.buildingId !== job.buildingId) {
+      this.erase(this.producers, old.buildingId, job.id);
+      old.buildingId = job.buildingId;
+      this.insert(this.producers, job.buildingId, job);
+    }
+  }
+  private unindex(id: number): void {
+    const old = this.membership.get(id)!;
+    this.erase(this.owners, old.playerId, id);
+    this.erase(this.producers, old.buildingId, id);
+    this.membership.delete(id);
+  }
+  updateJob(
+    id: number,
+    changes: Partial<Omit<RecruitmentJob, "id">>,
+  ): Job | undefined {
+    const before = this.byId(id);
+    const membershipChanged =
+      before &&
+      (
+        ["playerId", "buildingId", "category", "kind", "definitionId"] as const
+      ).some((key) => key in changes && before[key] !== changes[key]);
+    const previous = membershipChanged ? structuredClone(before) : undefined;
+    const job = this.entities.update(id, changes);
+    if (previous && job)
+      for (const listener of this.listeners) {
+        listener(previous, false);
+        listener(job, true);
+      }
+    return job;
+  }
+  onChange(listener: (job: Job, added: boolean) => void): () => void {
     this.listeners.add(listener);
     return () => this.listeners.delete(listener);
   }
@@ -29,55 +146,67 @@ export class Recruitment {
   }
   restore(saved: ReturnType<Recruitment["checkpoint"]>): void {
     const state = structuredClone(saved);
-    this.jobs.splice(0, this.jobs.length, ...state.jobs);
-    this.ids.clear();
-    for (const job of this.jobs) this.ids.set(job.id, job);
+    const previous = this.jobs;
+    this.entities.restoreOwned(state.jobs);
     this.nextId = state.nextId;
+    for (const listener of this.listeners) {
+      for (const job of previous) listener(job, false);
+      for (const job of this.jobs) listener(job, true);
+    }
   }
   count(
     playerId: number,
     category: RecruitmentJob["category"],
     buildingId?: number,
   ): number {
-    return this.jobs.filter(
-      (j) =>
-        j.playerId === playerId &&
-        j.category === category &&
-        (buildingId === undefined || j.buildingId === buildingId),
-    ).length;
-  }
-  byId(id: number): RecruitmentJob | undefined {
-    return this.ids.get(id);
+    const jobs =
+      buildingId === undefined
+        ? this.byOwner(playerId)
+        : this.byProducer(buildingId);
+    let count = 0;
+    for (const job of jobs)
+      if (job.playerId === playerId && job.category === category) count++;
+    return count;
   }
   chooseProducer(
     candidates: readonly Building[],
     distance: (tile: number) => number,
   ): Building | undefined {
-    const workload = new Map<number, number>();
-    for (const job of this.jobs)
-      workload.set(
-        job.buildingId,
-        (workload.get(job.buildingId) ?? 0) + job.remainingTicks,
-      );
-    return [...candidates].sort(
-      (a, b) =>
-        (workload.get(a.id) ?? 0) - (workload.get(b.id) ?? 0) ||
-        distance(a.tile) - distance(b.tile) ||
-        a.id - b.id,
-    )[0];
+    let best: Building | undefined,
+      bestWork = Infinity,
+      bestDistance = Infinity;
+    for (const candidate of candidates) {
+      let work = 0;
+      for (const job of this.byProducer(candidate.id))
+        work += job.remainingTicks;
+      const d = distance(candidate.tile);
+      if (
+        !best ||
+        work < bestWork ||
+        (work === bestWork &&
+          (d < bestDistance || (d === bestDistance && candidate.id < best.id)))
+      ) {
+        best = candidate;
+        bestWork = work;
+        bestDistance = d;
+      }
+    }
+    return best;
   }
   enqueue(job: Omit<RecruitmentJob, "id" | "remainingTicks">): void {
-    const paid: RecruitmentJob = {
+    const paid = this.entities.add({
       ...job,
-      id: this.nextId++,
+      id: this.nextId,
       remainingTicks: job.totalTicks,
-    };
-    this.jobs.push(paid);
-    this.ids.set(paid.id, paid);
+    });
+    this.nextId++;
     for (const listener of this.listeners) listener(paid, true);
   }
-  /** Cancel exactly one paid job. Producer heads are determined before filtering,
-   * so a different unit at the front still protects its ongoing training. */
+  private remove(job: Job): void {
+    this.entities.remove(job.id);
+    for (const listener of this.listeners) listener(job, false);
+  }
+  /** Cancel exactly one paid job, preferring the last waiting job over a head. */
   cancel(
     playerId: number,
     filter: {
@@ -86,27 +215,30 @@ export class Recruitment {
       kind?: string;
       buildingIds?: ReadonlySet<number>;
     },
-    refund: (job: RecruitmentJob) => void,
-  ): RecruitmentJob | undefined {
-    const heads = new Set<number>();
-    let inactive: RecruitmentJob | undefined;
-    let active: RecruitmentJob | undefined;
-    for (const job of this.jobs) {
-      const head = !heads.has(job.buildingId);
-      heads.add(job.buildingId);
-      if (job.playerId !== playerId ||
-          (filter.category !== undefined && job.category !== filter.category) ||
-          (filter.definitionId !== undefined && job.definitionId !== filter.definitionId) ||
-          (filter.kind !== undefined && job.kind !== filter.kind) ||
-          (filter.buildingIds && !filter.buildingIds.has(job.buildingId))) continue;
+    refund: (job: Job) => void,
+  ): Job | undefined {
+    let inactive: Job | undefined, active: Job | undefined;
+    for (const job of this.byOwner(playerId)) {
+      if (
+        (filter.category !== undefined && job.category !== filter.category) ||
+        (filter.definitionId !== undefined &&
+          job.definitionId !== filter.definitionId) ||
+        (filter.kind !== undefined && job.kind !== filter.kind) ||
+        (filter.buildingIds && !filter.buildingIds.has(job.buildingId))
+      )
+        continue;
+      const head = this.byProducer(job.buildingId)[0] === job;
       if (!head) inactive = job;
-      else if (!active || job.remainingTicks > active.remainingTicks ||
-          (job.remainingTicks === active.remainingTicks && job.id > active.id)) active = job;
+      else if (
+        !active ||
+        job.remainingTicks > active.remainingTicks ||
+        (job.remainingTicks === active.remainingTicks && job.id > active.id)
+      )
+        active = job;
     }
     const job = inactive ?? active;
     if (!job) return undefined;
-    this.jobs.splice(this.jobs.indexOf(job), 1);
-    this.ids.delete(job.id);
+    this.entities.remove(job.id);
     refund(job);
     for (const listener of this.listeners) listener(job, false);
     return job;
@@ -114,14 +246,19 @@ export class Recruitment {
   step(
     buildings: readonly Building[],
     owners: Uint8Array,
-    complete: (job: RecruitmentJob) => boolean,
-    refund: (job: RecruitmentJob) => void,
+    complete: (job: Job) => boolean,
+    refund: (job: Job) => void,
+    lookup?: (id: number) => Building | undefined,
   ): void {
-    const producers = new Map(buildings.map((b) => [b.id, b]));
+    const producers =
+      lookup ??
+      (() => {
+        const rows = new Map(buildings.map((b) => [b.id, b]));
+        return (id: number) => rows.get(id);
+      })();
     const busy = new Set<number>();
-    for (let i = 0; i < this.jobs.length; ) {
-      const job = this.jobs[i],
-        producer = producers.get(job.buildingId);
+    for (const job of this.jobs) {
+      const producer = producers(job.buildingId);
       if (
         !producer ||
         producer.playerId !== job.playerId ||
@@ -129,23 +266,16 @@ export class Recruitment {
         (producer.health ?? 1) <= 0
       ) {
         refund(job);
-        this.jobs.splice(i, 1);
-        this.ids.delete(job.id);
-        for (const listener of this.listeners) listener(job, false);
+        this.remove(job);
         continue;
       }
       if (!busy.has(job.buildingId) && !producer.remainingTicks) {
         busy.add(job.buildingId);
-        job.remainingTicks = Math.max(0, job.remainingTicks - 1);
-        // Completed training waits for a safe spawn position without charging again.
-        if (!job.remainingTicks && complete(job)) {
-          this.jobs.splice(i, 1);
-          this.ids.delete(job.id);
-          for (const listener of this.listeners) listener(job, false);
-          continue;
-        }
+        this.entities.updateOwned(job.id, {
+          remainingTicks: Math.max(0, job.remainingTicks - 1),
+        });
+        if (!job.remainingTicks && complete(job)) this.remove(job);
       }
-      i++;
     }
   }
 }

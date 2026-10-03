@@ -134,8 +134,8 @@ describe("authoritative recruitment queues", () => {
         cost: {},
         totalTicks,
       });
-    m.recruitment.jobs[0].remainingTicks = 80;
-    m.recruitment.jobs[1].remainingTicks = 20;
+    m.recruitment.updateJob(m.recruitment.jobs[0].id, {remainingTicks: 80});
+    m.recruitment.updateJob(m.recruitment.jobs[1].id, {remainingTicks: 20});
     const vm = new RecruitmentQueueViewModel(m.snapshot());
     expect(vm.entries).toHaveLength(3);
     expect(vm.entries[0]).toMatchObject({

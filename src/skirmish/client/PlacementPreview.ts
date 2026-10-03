@@ -67,6 +67,8 @@ export class PlacementPreview {
     if (!this.type) return;
     const resourceChanged = this.resources.update(
       snapshot.expansion?.deposits ?? [],
+      snapshot.expansion?.depositGeometryRevision,
+      snapshot.expansion?.depositOwnershipRevision,
     );
     const geometry =
       (snapshot.expansion?.progression[this.playerId]?.age ?? "StoneAge") + "/" +

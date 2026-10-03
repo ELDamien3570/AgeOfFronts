@@ -24,7 +24,7 @@ function fixture() {
     });
   game.owners.fill(1);
   for (const building of game.buildings) game.removeBuilding(building.id);
-  game.expansion!.supply.deposits.length = 0;
+  game.expansion!.supply.replaceDeposits([]);
   game.expansion!.supply.resourceSites.update([]);
   return {
     map,

@@ -14,6 +14,7 @@ import {
   type RuntimeMap,
 } from "../application/MatchExecutor";
 import { PublicationQueue } from "../application/PublicationQueue";
+import { RecoveryBaselineCache } from "../application/RecoveryBaselineCache";
 import { SnapshotEncodingWorker } from "./SnapshotEncodingWorker";
 import type { SnapshotPacket } from "../../Protocol";
 import { loadServerMap } from "./ServerMap";
@@ -23,6 +24,10 @@ if (!parentPort) throw new Error("The match executor requires a worker thread");
 let match: Skirmish | undefined;
 let streamPublications = false;
 const encoding = new SnapshotEncodingWorker();
+const baselines = new RecoveryBaselineCache();
+let canonicalVersion = 0;
+const invalidateBaselines = () => { canonicalVersion++; baselines.invalidate(); };
+parentPort.on("close", () => baselines.close());
 parentPort.on("close", () => { void encoding.close(); });
 const diagnostics = new RuntimeDiagnostics();
 const stopObserving = observeGarbageCollection(diagnostics);
@@ -55,14 +60,20 @@ const makeMap = (map: RuntimeMap) =>
     map.resourceTerrain,
   );
 const capture = () => {
-  const state = diagnostics.measure("extraction", () => match!.snapshot(false));
-  const packet = diagnostics.measure("snapshot", () => encoder.encode(state, match!.tileChanges));
+  const state = diagnostics.measure("extraction", () => match!.replicationSource());
+  const packet = diagnostics.measure("snapshot", () => encoder.encode(state, match!.tileChanges, match!.replicationFacts()));
   capturedTick = packet.tick;
   captureSequence++;
   return packet;
 };
 const encodePacket = (packet: SnapshotPacket) => diagnostics.measureAsync("encoding", () => encoding.encode(packet));
 const snapshot = () => encodePacket(capture());
+const recoveryBaseline = () => baselines.get(canonicalVersion, () => {
+  const state = diagnostics.measure("extraction", () => match!.replicationSource());
+  const packet = diagnostics.measure("snapshot", () => new SnapshotEncoder(true).encode(state, match!.tileChanges, match!.replicationFacts()));
+  capturedTick = state.tick; captureSequence++;
+  return encodePacket(packet);
+});
 const publications = new PublicationQueue(encodePacket,
   (tick, packet) => diagnostics.measure("transfer", () => parentPort!.postMessage({ publication: { tick, packet } })),
   error => parentPort!.postMessage({ fatal: `Snapshot publication failed: ${error.message}` }));
@@ -74,7 +85,9 @@ const diagnosticSnapshot = (commands: number, ticksAdvanced: number, payloadByte
     commands, ticksAdvanced, payloadBytes,
     replication: { pending: publications.pending, skipped: publications.skipped, encoderMemory: encoding.memory,
       encoderTimings: { ...encoding.timings, ...encoding.diagnostics.snapshot() },
-      encoderRetainedBytes: encoding.retainedBytes + encoding.diagnostics.retainedBytes, encoderFailureCause: encoding.failureCause },
+      encoderRetainedBytes: encoding.retainedBytes + encoding.diagnostics.retainedBytes, encoderFailureCause: encoding.failureCause,
+      baselineCache: {...baselines.diagnostics, retainedBytes: baselines.retainedBytes},
+      extraction: {...encoder.diagnostics} },
     paths: { land: m.paths.residency, water: m.waterPaths.residency },
     entities: { squads: m.squads.length, ships: m.ships.length, buildings: m.buildings.length,
       traders: m.expansion?.trade.actors.length ?? 0, projectiles: m.expansion?.battle.projectiles.length ?? 0,
@@ -173,6 +186,7 @@ parentPort.on(
           if (request.type === "seat-status") {
             result = { seats: seats() };
           } else if (request.type === "set-controller") {
+            invalidateBaselines();
             match.setAiController(request.playerId, request.ai);
             result = { seats: seats() };
           } else if (request.type === "join-barrier") {
@@ -184,14 +198,16 @@ parentPort.on(
               match.winner !== null
             )
               throw new Error("This faction is no longer available");
+            invalidateBaselines();
             match.setAiController(player.id, false);
             // Both packets describe exactly S. Advancing the shared cursor here is
             // essential: a tile that changes back after this barrier must be sent.
-            const state = diagnostics.measure("extraction", () => match!.snapshot(false));
-            const aligned = diagnostics.measure("snapshot", () => encoder.encodeJoinBarrier(state, match!.tileChanges));
+            const state = diagnostics.measure("extraction", () => match!.replicationSource());
+            const aligned = diagnostics.measure("snapshot", () => encoder.encodeJoinBarrier(state, match!.tileChanges, match!.replicationFacts()));
             capturedTick = state.tick; captureSequence++;
             const packet = await encodePacket(aligned.shared);
             const baseline = await encodePacket(aligned.baseline);
+            baselines.remember(canonicalVersion, baseline);
             result = {
               tick: match.tick,
               winner: match.winner,
@@ -201,18 +217,13 @@ parentPort.on(
             };
           } else if (request.type === "client-baseline") {
             const tick=match.tick,winner=match.winner;
-            const state = diagnostics.measure("extraction", () => match!.snapshot(false));
-            const captured = diagnostics.measure("snapshot", () => new SnapshotEncoder(true).encode(state));
-            capturedTick = state.tick; captureSequence++;
-            const baseline=await encodePacket(captured);
+            const baseline = await recoveryBaseline();
             result={tick,winner,baseline};
           } else if (request.type === "baseline") {
             // A late initial subscriber must not reset everyone else's delta cursor.
-            const state = diagnostics.measure("extraction", () => match!.snapshot(false));
-            const captured = diagnostics.measure("snapshot", () => new SnapshotEncoder(true).encode(state));
-            capturedTick = state.tick; captureSequence++;
-            result = await encodePacket(captured);
+            result = await recoveryBaseline();
           } else if (request.type === "advance") {
+            invalidateBaselines();
             if (
               !Number.isInteger(request.ticks) ||
               request.ticks < 1 ||

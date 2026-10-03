@@ -40,6 +40,11 @@ export class CanonicalStateStream {
       cells > this.maxMapCells
     )
       throw new Error("Canonical map exceeds the decoded memory budget");
+    if (packet.entityMode !== undefined && packet.entityMode !== "full" && packet.entityMode !== "delta")
+      throw new Error("Invalid canonical entity mode");
+    for (const removed of [packet.removedSquads, packet.removedShips])
+      if (removed !== undefined && (!(removed instanceof Int32Array) || removed.length > MAX_SQUADS * 255))
+        throw new Error("Invalid canonical entity removals");
     if (!(packet.tiles instanceof Uint32Array) || packet.tiles.length % 2)
       throw new Error("Invalid canonical tile changes");
     if (

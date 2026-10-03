@@ -314,10 +314,13 @@ export interface ExpansionSnapshot {
   progression: Record<number, ProgressionState>;
   inventories: Record<number, Inventory>;
   production: Record<number, ProductionJob | undefined>;
-  recruitment?: RecruitmentJob[];
+  recruitment?: readonly Readonly<RecruitmentJob>[];
   productionPlans: Record<number, { owner: number; recipeId: string }>;
   productionPriorities?: Record<number, Partial<Record<BuildingType, string[]>>>;
-  deposits: Deposit[];
+  deposits: readonly Deposit[];
+  /** Decoder-owned transport revisions; unversioned imports use exact scans. */
+  depositGeometryRevision?: number;
+  depositOwnershipRevision?: number;
   diplomacy: DiplomacyState;
   traders: Omit<TradeActor, "path" | "nextPathIndex">[];
   barriers: Barrier[];

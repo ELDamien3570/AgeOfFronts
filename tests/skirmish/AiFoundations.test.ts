@@ -108,7 +108,7 @@ describe("AI foundation policies", () => {
     );
     expect(force.role("siege")).toBe(2);
     expect(force.core.archer).toBe(0);
-    game.recruitment.jobs.splice(0);
+    game.recruitment.restore({...game.recruitment.checkpoint(), jobs: []});
     expect(
       new AiForceInventory(player.id, game.squads, game.recruitment.jobs).role(
         "siege",

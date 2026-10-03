@@ -235,7 +235,7 @@ export class AiEconomicDirector {
       buildings: world.buildingFacts().byOwner(player.id),
       squads: world.squadFacts().byOwner(player.id),
       ships: world.shipFacts().byOwner(player.id),
-      jobs: world.recruitment.jobs,
+      jobs: world.recruitment.byOwner(player.id),
       production: supply.jobs,
       cap: world.squadCapacity(player),
       territoryIncomeScale: world.options?.territoryIncomeScale,

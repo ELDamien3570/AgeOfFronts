@@ -16,7 +16,7 @@ describe("single paid recruitment cancellation", () => {
   it("removes the newest inactive matching job while retaining head progress and notifying indexes", () => {
     const { q, add } = queue();
     add(); add(); add();
-    q.jobs[0].remainingTicks = 20;
+    q.updateJob(q.jobs[0].id, {remainingTicks: 20});
     const head = q.jobs[0], tail = q.jobs[2];
     const refund = vi.fn(), change = vi.fn();
     q.onChange(change);
@@ -39,8 +39,8 @@ describe("single paid recruitment cancellation", () => {
   it("chooses the least advanced active job and handles the final job exactly once", () => {
     const { q, add } = queue();
     add(1); add(2);
-    q.jobs[0].remainingTicks = 20;
-    q.jobs[1].remainingTicks = 80;
+    q.updateJob(q.jobs[0].id, {remainingTicks: 20});
+    q.updateJob(q.jobs[1].id, {remainingTicks: 80});
     const last = q.jobs[0];
     expect(q.cancel(1, {}, () => {})?.buildingId).toBe(2);
     expect(q.cancel(1, {}, () => {})).toBe(last);

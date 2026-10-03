@@ -257,7 +257,6 @@ export class Expansion {
       return "Move troops clear of the tower and planned wall tiles";
     if (this.fortifications.blocked(tile, player.id))
       return "Cannot build on an intact wall";
-    this.supply.resourceSites.update(this.supply.deposits);
     const node = this.supply.resourceSites.at(tile);
     const visible = node && resourceVisibleAtAge(node.resource, this.progression.states[player.id].age);
     if (
@@ -371,7 +370,7 @@ export class Expansion {
             s.charge?.targetId &&
             !this.diplomacy.hostile(
               s.playerId,
-              world.squads.find((t) => t.id === s.charge!.targetId)?.playerId ??
+              world.squad(s.charge!.targetId!)?.playerId ??
                 0,
             )
           ) {
@@ -400,9 +399,7 @@ export class Expansion {
             s.order.type === "attack" &&
             !this.diplomacy.hostile(
               s.playerId,
-              world.squads.find(
-                (t) => t.id === (s.order as { targetId: number }).targetId,
-              )?.playerId ?? 0,
+              world.squad((s.order as { targetId: number }).targetId)?.playerId ?? 0,
             )
           ) {
             this.world.updateSquad(s.id, { order: { type: "hold" } });
@@ -413,7 +410,7 @@ export class Expansion {
               o.type !== "attack" ||
               this.diplomacy.hostile(
                 s.playerId,
-                world.squads.find((t) => t.id === o.targetId)?.playerId ?? 0,
+                world.squad(o.targetId)?.playerId ?? 0,
               ),
           ) });
         }
@@ -492,7 +489,7 @@ export class Expansion {
     if (command.type === "refit-ships") {
       const target = VESSEL.get(command.definitionId),
         selected = [...new Set(command.shipIds)].map((id) =>
-          world.ships.find((s) => s.id === id),
+          world.ship(id),
         );
       if (
         !target ||
@@ -541,10 +538,10 @@ export class Expansion {
     }
     if (command.type === "naval-attack") {
       const target =
-          world.ships.find((s) => s.id === command.targetId) ??
+          world.ship(command.targetId) ??
           world.building(command.targetId),
         selected = [...new Set(command.shipIds)].map((id) =>
-          world.ships.find((s) => s.id === id),
+          world.ship(id),
         );
       if (!target || !this.diplomacy.hostile(player.id, target.playerId))
         return "Choose an enemy vessel or coastal structure";
@@ -565,7 +562,7 @@ export class Expansion {
     if (command.type === "refit") {
       const target = UNIT.get(command.definitionId),
         selected = [...new Set(command.squadIds)].map((id) =>
-          world.squads.find((s) => s.id === id),
+          world.squad(id),
         );
       if (!target || !this.progression.has(player.id, target.technologyId))
         return "Research the requested refit first";
@@ -605,7 +602,7 @@ export class Expansion {
     }
     if (command.type === "charge") {
       const selected = [...new Set(command.squadIds)].map((id) =>
-        world.squads.find((s) => s.id === id),
+        world.squad(id),
       );
       if (!selected.length || !this.validPosition(command.x, command.y))
         return "Choose units and a valid charge destination";
@@ -638,7 +635,7 @@ export class Expansion {
         command.targetId !== undefined &&
         !this.diplomacy.hostile(
           player.id,
-          world.squads.find((s) => s.id === command.targetId)?.playerId ?? 0,
+          world.squad(command.targetId)?.playerId ?? 0,
         )
       )
         return "Choose a hostile charge target";
@@ -660,7 +657,7 @@ export class Expansion {
       if (!target || !this.diplomacy.hostile(player.id, target.playerId))
         return "Choose an enemy structure";
       const selected = [...new Set(command.squadIds)].map((id) =>
-        world.squads.find((s) => s.id === id),
+        world.squad(id),
       );
       if (
         !selected.length ||
@@ -922,7 +919,8 @@ export class Expansion {
         });
     this.fortifications.step(world.tick, world.buildings,
       (id, health) => world.updateBuilding(id, { health }));
-    this.supply.step(world.tick, world.players, world.buildings, world.owners, world.squads);
+    this.supply.step(world.tick, world.players, world.buildings, world.owners, world.squads,
+      {buildings: world.buildingFacts(), squads: world.squadFacts()});
     for (const s of world.ships) {
       if (!s.refit) continue;
       const remainingTicks = s.refit.remainingTicks - 1;
@@ -1298,7 +1296,7 @@ export class Expansion {
   }
   private thinkCapabilities(player: Player): void {
     const personality = personalityOf(player);
-    const force = new AiForceInventory(player.id, this.world.squadFacts().byOwner(player.id), this.world.recruitment.jobs);
+    const force = new AiForceInventory(player.id, this.world.squadFacts().byOwner(player.id), this.world.recruitment.byOwner(player.id));
     const own = this.world.buildingFacts().byOwner(player.id).filter(b => !b.remainingTicks),
       squads = this.world.squadFacts().byOwner(player.id).filter(s => s.embarkedOn === null),
       stock = this.supply.inventories[player.id];
