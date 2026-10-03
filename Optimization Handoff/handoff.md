@@ -1,5 +1,10 @@
 # Optimization handoff
 
+
+## Friendly crowd recovery continuation — 3 October 2026
+
+The repeated “Waiting for clearance” groups are reciprocal movement deadlocks. Bounded local right of way and short collision-checked yield legs now release the reproduced frozen groups, preserve queued orders and share recovery with formal armies. The army domain permits automatic formation-slot yielding while explicit player Hold remains immovable. Full/sparse snapshots and the HUD expose actual blockers, waiting age and planning/terrain/restriction reasons. The implementation is deployed in **8965f3db10cdd72412bec90a3302518ca1babe5d**. All 1,143 skirmish tests pass; all ten previously frozen mature-game squads now move, and the remaining occupied endpoints recover in the continued replay. See [crowd recovery findings and acceptance evidence](Evidence/crowd-recovery-20261003.md). One-CPU ARM tick tails still exceed the 50 ms target.
+
 ## Transport and naval navigation continuation - 3 October 2026
 
 The water-destination rejection, repeated crossing cancellation, cross-faction route invalidation, expensive whole-coast rankings, premature mid-water landing and missing replicated transfer phases are corrected in **2b44a7356ce3bf6a96d69649c893976d817178e7**, deployed on Oracle. Normal troops can embark to open water and subsequently sail/unload. AI civilian trade and researched crossings now progress; leased defensive fleets patrol, and unsupported missions no longer purchase idle transports. Occupied standalone squad destinations recover while preserving queued orders, and online rejection notifications leave the header geometry fixed. Immediate validation for impossible deferred landings is deployed in **1ebaec057304b79fddb4f52f1a118aa5e02d8ef8**; the mature ARM replay completed 48 physical ferry trips, while tick tails remain above the 50 ms budget. See [transport/navigation findings and acceptance evidence](Evidence/transport-navigation-20261003.md).

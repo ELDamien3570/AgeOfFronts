@@ -11,6 +11,12 @@ import { LandPaths, WaterPaths } from "../src/skirmish/Pathfinding.ts";
 import { createSkirmishMap } from "../src/skirmish/Elevation.ts";
 
 const args=process.argv.slice(2), arg=(key,fallback)=>{const i=args.indexOf(key);return i<0?fallback:args[i+1];};
+const smokeSwitches=new Set(["--public","--water"]),smokeValues=new Set(["--url","--clients","--seconds","--age","--out"]);
+for(let at=0;at<args.length;at++) {
+  if(smokeSwitches.has(args[at]))continue;
+  if(smokeValues.has(args[at]) && at+1<args.length){at++;continue;}
+  throw new Error("Unknown or incomplete smoke option: "+args[at]);
+}
 const base=arg("--url","http://127.0.0.1:9010"), count=Number(arg("--clients","10")), seconds=Number(arg("--seconds","180"));
 if(!Number.isInteger(count)||count<2||count>20||!Number.isFinite(seconds)||seconds<10||seconds>2400)throw new Error("Invalid smoke limits");
 if(!/^http:\/\/(localhost|127\.0\.0\.1)(:\d+)?$/.test(base)&&!args.includes("--public"))throw new Error("External smoke requires --public");

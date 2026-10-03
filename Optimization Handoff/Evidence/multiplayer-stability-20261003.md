@@ -1,5 +1,10 @@
 # Multiplayer stability investigation — 3 October 2026
 
+
+## Friendly crowd recovery continuation
+
+A mature checkpoint exposed mutually stopped standalone movers that ordinary path-admission and crossing smokes had not covered. Local cooperative yielding and blocker diagnostics now recover the ten reproduced groups' squads, retain army slot authority and explicit Hold, and pass the complete 1,143-test skirmish batch. See [the reproduction, algorithm and measured acceptance](crowd-recovery-20261003.md). Late-game tick tails remain above budget on one ARM CPU.
+
 ## Transport/navigation acceptance continuation
 
 Further playtesting exposed unfinished shore-work cancellation, broad war-policy invalidation, missing replicated transfer phases and prematurely stopped water passages. The extended acceptance now requires successful water embarkation, physical sailing and manual landing, in addition to ordinary movement and placement. See [the implementation and exact evidence](transport-navigation-20261003.md). Earlier successful ordinary movement smokes do not prove those transport behaviors.
