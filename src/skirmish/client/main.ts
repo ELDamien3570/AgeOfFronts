@@ -1166,7 +1166,9 @@ for (const { kind } of LAND_RECRUITMENT)
 element("replenish").addEventListener("click", replenish);
 
 function placementRejection(type: BuildingType, tile: number): string | null {
-  return renderer.buildPreview?.rejection(type,tile)??"No active match";
+  const preview = renderer.buildPreview;
+  // A null rejection means the site is valid; only a missing preview has no match.
+  return preview ? preview.rejection(type, tile) : "No active match";
 }
 
 function placeBuilding(type: BuildingType, age?: Age): void {

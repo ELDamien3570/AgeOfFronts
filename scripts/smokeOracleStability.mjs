@@ -4,6 +4,9 @@ import { createHash } from "node:crypto";
 import WebSocket from "ws";
 import { decodeState } from "../src/skirmish/multiplayer/StateCodec.ts";
 import { SnapshotDecoder } from "../src/skirmish/SnapshotCodec.ts";
+import { PlacementPreview } from "../src/skirmish/client/PlacementPreview.ts";
+import { loadServerMap } from "../src/skirmish/multiplayer/infrastructure/ServerMap.ts";
+import { createSkirmishMap } from "../src/skirmish/Elevation.ts";
 
 const args=process.argv.slice(2), arg=(key,fallback)=>{const i=args.indexOf(key);return i<0?fallback:args[i+1];};
 const base=arg("--url","http://127.0.0.1:9010"), count=Number(arg("--clients","10")), seconds=Number(arg("--seconds","180"));
@@ -92,7 +95,24 @@ try{
     moves.push({playerId:peer.manifest.playerId,commandTick,observedTick:peer.tick,tile,squadIds:units.map(s=>s.id),outcome});
   }
   console.log(JSON.stringify({stage:"movement",moves}));
-  const invalidId=rid(), p=peers[0];let badTile=p.snapshot.owners.findIndex(owner=>owner!==p.manifest.playerId);
+  // Exercise an affordable, already-unlocked building through the normal command
+  // path, and require the new authoritative building to finish construction.
+  const p=peers[0], loaded=await loadServerMap(p.manifest.settings), terrain=loaded.map;
+  const map=createSkirmishMap(terrain.width,terrain.height,terrain.terrain,terrain.elevation,terrain.forest,terrain.resourceTerrain);
+  const preview=new PlacementPreview(map), age=p.snapshot.expansion.progression[p.manifest.playerId].age;
+  preview.begin(p.snapshot,p.manifest.playerId,"barracks",age);
+  const buildTile=p.snapshot.owners.findIndex((owner,tile)=>owner===p.manifest.playerId && preview.rejection("barracks",tile)===null);
+  if(buildTile<0)throw new Error("No affordable valid barracks site");
+  const existingBuildings=new Set(p.snapshot.buildings.map(b=>b.id)), buildId=rid(), buildTick=p.tick;
+  send(p,{type:"match-command",requestId:buildId,matchId,command:{type:"build",playerId:p.manifest.playerId,buildingType:"barracks",age,tile:buildTile}});
+  await wait(()=>p.outcomes.some(o=>o.id===buildId&&["executed","rejected","superseded"].includes(o.status)),"valid build receipt",15000);
+  const buildOutcome=p.outcomes.find(o=>o.id===buildId&&["executed","rejected","superseded"].includes(o.status));
+  if(buildOutcome.status!=="executed")throw new Error("Valid build failed: "+JSON.stringify(buildOutcome));
+  let built;
+  await wait(()=>{built=p.snapshot.buildings.find(b=>!existingBuildings.has(b.id)&&b.playerId===p.manifest.playerId&&b.type==="barracks"&&b.tile===buildTile);return built?.remainingTicks===0;},"completed authoritative building",15000);
+  const validBuild={commandTick:buildTick,completedTick:p.tick,buildingId:built.id,tile:buildTile,age,outcome:buildOutcome};
+  console.log(JSON.stringify({stage:"construction",validBuild}));
+  const invalidId=rid();let badTile=p.snapshot.owners.findIndex(owner=>owner!==p.manifest.playerId);
   send(p,{type:"match-command",requestId:invalidId,matchId,command:{type:"build",playerId:p.manifest.playerId,buildingType:"city",tile:badTile}});
   await wait(()=>p.outcomes.some(o=>o.id===invalidId&&o.status==="rejected"),"invalid build rejection");
   const rejection=p.outcomes.find(o=>o.id===invalidId&&o.status==="rejected");
@@ -107,7 +127,7 @@ try{
   const common=[...checks].filter(([,row])=>row.size===count);
   if(common.length<5)throw new Error("Too few common tick agreement samples");
   if(peers.some(p=>Boolean(p.closed)||Boolean(p.packets<10)||Boolean(Date.now()-p.lastAt>10000)))throw new Error("A peer stopped advancing");
-  const result={passed:true,title,matchId,roomId,base,clients:count,seconds,elapsedSeconds:(Date.now()-started)/1000,flags:Object.fromEntries(flags.map(f=>[f,true])),runtimeId:manifests[0].runtimeId,mapHash:manifests[0].mapHash,moves,aiMoved:[...aiMoved].sort((a,b)=>a-b),rejection,reconnected,commonStateSamples:common.length,peers:peers.map(p=>({id:p.id,tick:p.tick,packets:p.packets,syncs:p.syncs,bytes:p.bytes,decodeP95:percentile(p.decodeMs,.95),publicationGapP95:percentile(p.gaps,.95),publicationGapMax:Math.max(...p.gaps)})),failures};
+  const result={passed:true,title,matchId,roomId,base,clients:count,seconds,elapsedSeconds:(Date.now()-started)/1000,flags:Object.fromEntries(flags.map(f=>[f,true])),runtimeId:manifests[0].runtimeId,mapHash:manifests[0].mapHash,moves,validBuild,aiMoved:[...aiMoved].sort((a,b)=>a-b),rejection,reconnected,commonStateSamples:common.length,peers:peers.map(p=>({id:p.id,tick:p.tick,packets:p.packets,syncs:p.syncs,bytes:p.bytes,decodeP95:percentile(p.decodeMs,.95),publicationGapP95:percentile(p.gaps,.95),publicationGapMax:Math.max(...p.gaps)})),failures};
   fs.mkdirSync(path.dirname(out),{recursive:true});
   completed=true;fs.writeFileSync(out,JSON.stringify(result,null,2)+"\n");console.log(JSON.stringify(result));
 } finally {
