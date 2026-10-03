@@ -2,7 +2,7 @@
 
 ## Multiplayer stability continuation — 3 October 2026
 
-The six playtest issues, normal all-policy AI defaults, and progression deadlocks are addressed in the current stability candidate. Real local/Oracle ARM profiling reproduced and removed the multi-second legacy river-routing stall; controlled public release verification follows the tested candidate. See [implementation, profiling, validation and remaining acceptance limits](Evidence/multiplayer-stability-20261003.md). The opt-in/no-deployment wording below describes the earlier checkpoint, not the current release posture. P02 largest-world memory and native/ten-browser P29–P30 acceptance remain separate gates.
+The six playtest issues, AI progression deadlocks and a browser startup resize error are addressed and deployed on Oracle in `8b9fa8caef7082e34eaf23317e9dd23ab7b94015`. Normal solo/online creation now enables all five AI policies. Mature-game ARM replay passed through 38 simulated minutes; a ten-authenticated-peer public smoke passed state agreement, rejected-action and reconnect checks, followed by two rendered online clients and final browser startup verification. See [implementation, profiling, validation and remaining acceptance limits](Evidence/multiplayer-stability-20261003.md). The opt-in/no-deployment wording below describes the earlier checkpoint, not the current release posture. P02 largest-world memory and native/ten-browser P29–P30 acceptance remain separate gates.
 
 ## Local continuation - 3 October 2026
 
