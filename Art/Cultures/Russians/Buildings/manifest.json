@@ -109,13 +109,14 @@
       "category": "Barracks",
       "age": "BronzeAge",
       "role": "Infantry recruitment",
-      "status": "draft",
+      "status": "approved",
       "file": "BronzeAge/Barracks/Icon.png",
       "original": "../../../Building Icons/Barracks/Top-Down-Correction/Barracks_BronzeAge.png",
       "visualFeatures": [
         "Small timber palisade",
         "Training dummies and bronze weapon racks"
-      ]
+      ],
+      "approvedDate": "2026-10-02"
     },
     {
       "id": "city",
@@ -123,13 +124,14 @@
       "category": "City",
       "age": "BronzeAge",
       "role": "Population and reserve growth",
-      "status": "draft",
+      "status": "approved",
       "file": "BronzeAge/City/Icon.png",
       "original": "../../../Building Icons/City/Top-Down-Correction/City_BronzeAge.png",
       "visualFeatures": [
         "Small timber palisade",
         "Five household roofs and central well"
-      ]
+      ],
+      "approvedDate": "2026-10-02"
     },
     {
       "id": "archery",
@@ -137,13 +139,14 @@
       "category": "Archery Range",
       "age": "BronzeAge",
       "role": "Ranged recruitment",
-      "status": "draft",
+      "status": "approved",
       "file": "BronzeAge/Archery Range/Icon.png",
       "original": "../../../Building Icons/Archery Range/Top-Down-Correction/Archery_BronzeAge.png",
       "visualFeatures": [
         "Small timber palisade",
         "Three target lanes"
-      ]
+      ],
+      "approvedDate": "2026-10-02"
     },
     {
       "id": "stables",
@@ -151,13 +154,14 @@
       "category": "Stables",
       "age": "BronzeAge",
       "role": "Cavalry recruitment and horse production",
-      "status": "draft",
+      "status": "approved",
       "file": "BronzeAge/Stables/Icon.png",
       "original": "../../../Building Icons/Stables/Top-Down-Correction/Stables_BronzeAge.png",
       "visualFeatures": [
         "Small timber palisade",
         "Three horses in U-shaped paddock"
-      ]
+      ],
+      "approvedDate": "2026-10-02"
     },
     {
       "id": "factory",
@@ -165,13 +169,14 @@
       "category": "Factory",
       "age": "BronzeAge",
       "role": "Trade goods and gold income",
-      "status": "draft",
+      "status": "approved",
       "file": "BronzeAge/Factory/Icon.png",
       "original": "../../../Building Icons/Factory/Top-Down-Correction/Factory_BronzeAge.png",
       "visualFeatures": [
         "Three clay kiln chimneys",
         "Trade goods yard"
-      ]
+      ],
+      "approvedDate": "2026-10-02"
     },
     {
       "id": "port",
@@ -179,13 +184,14 @@
       "category": "Port",
       "age": "BronzeAge",
       "role": "Naval recruitment and maritime trade",
-      "status": "draft",
+      "status": "approved",
       "file": "BronzeAge/Port/Icon.png",
       "original": "../../../Building Icons/Port/Top-Down-Correction/Port_BronzeAge.png",
       "visualFeatures": [
         "One larger wooden cargo boat",
         "Two finger piers"
-      ]
+      ],
+      "approvedDate": "2026-10-02"
     },
     {
       "id": "mine",
@@ -193,9 +199,10 @@
       "category": "Mine",
       "age": "BronzeAge",
       "role": "Resource extraction",
-      "status": "draft",
+      "status": "approved",
       "file": "BronzeAge/Mine/Icon.png",
-      "original": "../../../Building Icons/Mine/Top-Down-Correction/Mine_BronzeAge.png"
+      "original": "../../../Building Icons/Mine/Top-Down-Correction/Mine_BronzeAge.png",
+      "approvedDate": "2026-10-02"
     },
     {
       "id": "siege-workshop",
@@ -203,13 +210,14 @@
       "category": "Siege",
       "age": "BronzeAge",
       "role": "Siege equipment and recruitment",
-      "status": "draft",
+      "status": "approved",
       "file": "BronzeAge/Siege Workshop/Icon.png",
       "original": "../../../Building Icons/Siege/Top-Down-Correction/Siege_BronzeAge.png",
       "visualFeatures": [
         "Mobile siege tower",
         "Battering ram"
-      ]
+      ],
+      "approvedDate": "2026-10-02"
     },
     {
       "id": "tower",
@@ -217,10 +225,11 @@
       "category": "Tower",
       "age": "BronzeAge",
       "role": "Automatic ground defense",
-      "status": "draft",
+      "status": "approved",
       "file": "BronzeAge/Tower/Icon.png",
       "original": "../../../Terrain/Wall Kit/Palisades/Tower.png",
-      "originalNote": "Base artwork · shared palisade tower"
+      "originalNote": "Base artwork · shared palisade tower",
+      "approvedDate": "2026-10-02"
     },
     {
       "id": "blacksmith",
@@ -228,13 +237,156 @@
       "category": "Blacksmith",
       "age": "BronzeAge",
       "role": "Troop equipment production",
-      "status": "draft",
+      "status": "approved",
       "file": "BronzeAge/Blacksmith/Icon.png",
-      "original": "../../../Building Icons/Blacksmith/Top-Down-Correction/Blacksmith_BronzeAge.png"
+      "original": "../../../Building Icons/Blacksmith/Top-Down-Correction/Blacksmith_BronzeAge.png",
+      "approvedDate": "2026-10-02"
+    },
+    {
+      "id": "barracks",
+      "label": "Barracks",
+      "category": "Barracks",
+      "age": "ClassicalAge",
+      "role": "Infantry recruitment",
+      "status": "draft",
+      "file": "ClassicalAge/Barracks/Icon.png",
+      "original": "../../../Building Icons/Barracks/Top-Down-Correction/Barracks_ClassicalAge.png",
+      "visualFeatures": [
+        "Pale stone enclosure and terracotta barrack roof",
+        "Two training dummies, iron spear racks and flat shields"
+      ]
+    },
+    {
+      "id": "city",
+      "label": "City",
+      "category": "City",
+      "age": "ClassicalAge",
+      "role": "Population and reserve growth",
+      "status": "draft",
+      "file": "ClassicalAge/City/Icon.png",
+      "original": "../../../Building Icons/City/Top-Down-Correction/City_ClassicalAge.png",
+      "visualFeatures": [
+        "Four tiled courtyard households and central cistern",
+        "Stone-walled paved settlement block"
+      ]
+    },
+    {
+      "id": "archery",
+      "label": "Archery Range",
+      "category": "Archery Range",
+      "age": "ClassicalAge",
+      "role": "Ranged recruitment",
+      "status": "draft",
+      "file": "ClassicalAge/Archery Range/Icon.png",
+      "original": "../../../Building Icons/Archery Range/Top-Down-Correction/Archery_ClassicalAge.png",
+      "visualFeatures": [
+        "Three prominent straw targets and straight lanes",
+        "Terracotta side shelter and stone perimeter"
+      ]
+    },
+    {
+      "id": "stables",
+      "label": "Stables",
+      "category": "Stables",
+      "age": "ClassicalAge",
+      "role": "Cavalry recruitment and horse production",
+      "status": "draft",
+      "file": "ClassicalAge/Stables/Icon.png",
+      "original": "../../../Building Icons/Stables/Top-Down-Correction/Stables_ClassicalAge.png",
+      "visualFeatures": [
+        "U-shaped tiled stable roof and three overhead horses",
+        "Hay, water trough, tack and stone enclosure"
+      ]
+    },
+    {
+      "id": "factory",
+      "label": "Factory",
+      "category": "Factory",
+      "age": "ClassicalAge",
+      "role": "Trade goods and gold income",
+      "status": "draft",
+      "file": "ClassicalAge/Factory/Icon.png",
+      "original": "../../../Building Icons/Factory/Top-Down-Correction/Factory_ClassicalAge.png",
+      "visualFeatures": [
+        "Three masonry kiln chimneys",
+        "Pottery, amphorae and woven goods in open craft yard"
+      ]
+    },
+    {
+      "id": "port",
+      "label": "Port",
+      "category": "Port",
+      "age": "ClassicalAge",
+      "role": "Naval recruitment and maritime trade",
+      "status": "draft",
+      "file": "ClassicalAge/Port/Icon.png",
+      "original": "../../../Building Icons/Port/Top-Down-Correction/Port_ClassicalAge.png",
+      "visualFeatures": [
+        "One larger planked cargo vessel",
+        "Two quays, tiled warehouse and amphora cargo"
+      ]
+    },
+    {
+      "id": "mine",
+      "label": "Mine",
+      "category": "Mine",
+      "age": "ClassicalAge",
+      "role": "Resource extraction",
+      "status": "draft",
+      "file": "ClassicalAge/Mine/Icon.png",
+      "original": "../../../Building Icons/Mine/Top-Down-Correction/Mine_ClassicalAge.png",
+      "visualFeatures": [
+        "Stepped pale rock quarry and masonry shaft",
+        "Overhead hoist beam, ore baskets and cart"
+      ]
+    },
+    {
+      "id": "siege-workshop",
+      "label": "Siege Workshop",
+      "category": "Siege",
+      "age": "ClassicalAge",
+      "role": "Siege equipment and recruitment",
+      "status": "draft",
+      "file": "ClassicalAge/Siege Workshop/Icon.png",
+      "original": "../../../Building Icons/Siege/Top-Down-Correction/Siege_ClassicalAge.png",
+      "visualFeatures": [
+        "Prominent torsion stone thrower",
+        "Timber siege tower, iron-capped ram and tiled workshop"
+      ]
+    },
+    {
+      "id": "tower",
+      "label": "Tower",
+      "category": "Tower",
+      "age": "ClassicalAge",
+      "role": "Automatic ground defense",
+      "status": "draft",
+      "file": "ClassicalAge/Tower/Icon.png",
+      "original": "../../../Terrain/Wall Kit/StoneWalls/Tower.png",
+      "originalNote": "Base artwork · shared stone tower",
+      "visualFeatures": [
+        "Compact square limestone parapet deck",
+        "Iron spear supplies and unobstructed defensive platform"
+      ]
+    },
+    {
+      "id": "blacksmith",
+      "label": "Blacksmith",
+      "category": "Blacksmith",
+      "age": "ClassicalAge",
+      "role": "Troop equipment production",
+      "status": "draft",
+      "file": "ClassicalAge/Blacksmith/Icon.png",
+      "original": "../../../Building Icons/Blacksmith/Top-Down-Correction/Blacksmith_ClassicalAge.png",
+      "visualFeatures": [
+        "Large glowing masonry forge and iron anvil",
+        "Iron weapons, bars, bellows and tiled smithy"
+      ]
     }
   ],
   "ageArtDirections": {
     "StoneAge": "Prehistoric forest settlements using timber, thatch, earth, hides and subtle regional character.",
-    "BronzeAge": "Evolved northern forest settlements with palisaded city and recruitment compounds, bronze equipment, multiple factory kiln chimneys, a larger cargo boat and siege assembly showing both tower and ram. Regional research informs selected craft and extraction cues."
+    "BronzeAge": "Evolved northern forest settlements with palisaded city and recruitment compounds, bronze equipment, multiple factory kiln chimneys, a larger cargo boat and siege assembly showing both tower and ram. Regional research informs selected craft and extraction cues.",
+    "ClassicalAge": "User-selected Black Sea stone-building influence: limestone footings and wall caps, terracotta tile roofs, pale paved courts, ironwork and distinct building role silhouettes in strict overhead view."
   }
 }

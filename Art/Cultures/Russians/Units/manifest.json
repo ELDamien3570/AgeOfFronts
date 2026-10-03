@@ -7,7 +7,7 @@
     {
       "id": "StoneAge",
       "label": "Stone Age",
-      "subtitle": "Five-man clubmen formation · straight overhead view · four charge phases"
+      "subtitle": "Clubmen formation and single javelinist · straight overhead view"
     },
     {
       "id": "BronzeAge",
@@ -48,6 +48,14 @@
       "metadata": "StoneAge/Clubman/Formation/animations.json",
       "review": "StoneAge/Clubman/Formation/Formation_Review.html",
       "actorCount": 5
+    },
+    {
+      "id": "russian-stoneage-javelinist",
+      "age": "StoneAge",
+      "label": "Russian javelinist · single soldier",
+      "metadata": "StoneAge/Javelinist/animations.json",
+      "review": "StoneAge/Javelinist/Actor_Review.html",
+      "actorCount": 1
     }
   ]
 }

@@ -1,9 +1,12 @@
 # Russian civilization: Bronze Age buildings
 
-This draft set evolves the approved Stone Age forest-settlement language with
+This approved set evolves the approved Stone Age forest-settlement language with
 heavier fitted timber, more organized work areas and bronze equipment. All
 images are intended for a directly overhead orthographic view and small-size
 role recognition. Keep the existing base art and approved Stone Age set intact.
+
+The user approved all ten selected Bronze Age images on October 2, 2026.
+`Approval.json` records the approval and selected-image SHA256 hashes.
 
 The user requested stronger age progression: small palisades around the city,
 barracks, archery range and stables; a siege tower alongside the ram; three

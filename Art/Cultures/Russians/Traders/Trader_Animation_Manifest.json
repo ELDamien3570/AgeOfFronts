@@ -1,0 +1,43 @@
+{
+  "schemaVersion": 1,
+  "cultureId": "russian",
+  "traderCount": 2,
+  "clipCount": 0,
+  "camera": "vertical-overhead-orthographic",
+  "facing": "screen-down",
+  "status": "static-masters-awaiting-approval",
+  "assets": [
+    {
+      "age": "BronzeAge",
+      "ageLabel": "Bronze Age",
+      "label": "Handcart merchant · four secured cargo masses · copper goods",
+      "category": "OverlandTrader",
+      "poster": "BronzeAge/SourceArt/Trader_Russian_BronzeAge_v1.png",
+      "status": "static-master-awaiting-approval",
+      "memberCounts": {
+        "merchants": 1,
+        "wagons": 1,
+        "pullingAnimals": 0,
+        "packAnimals": 0,
+        "trucks": 0
+      },
+      "clips": []
+    },
+    {
+      "age": "StoneAge",
+      "ageLabel": "Stone Age",
+      "label": "Basket carrier · strapped hide bundles and flint goods",
+      "category": "OverlandTrader",
+      "poster": "StoneAge/SourceArt/Trader_Russian_StoneAge_v1.png",
+      "status": "static-master-awaiting-approval",
+      "memberCounts": {
+        "merchants": 1,
+        "wagons": 0,
+        "pullingAnimals": 0,
+        "packAnimals": 0,
+        "trucks": 0
+      },
+      "clips": []
+    }
+  ]
+}

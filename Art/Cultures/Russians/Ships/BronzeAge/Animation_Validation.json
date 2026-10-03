@@ -1,0 +1,666 @@
+{
+  "schemaVersion": 1,
+  "shipCount": 3,
+  "primaryClipCount": 7,
+  "frameCount": 70,
+  "assetContractsPassed": true,
+  "approvedMastersUnchanged": true,
+  "baseFleetFilesUnchanged": true,
+  "baseFleetFilesChecked": 309,
+  "clips": [
+    {
+      "role": "Warship",
+      "motion": "idle",
+      "file": "BronzeAge\\Warship\\Idle.png",
+      "sha256": "cff5e1993756525f323f880d40b6a7b1ad38b99b3330ec7615e3f7da87b4e3e7",
+      "dimensionsCorrect": true,
+      "rgba": true,
+      "nonemptyFrames": 10,
+      "distinctFrames": 10,
+      "eightPixelGuardClear": true,
+      "passCompositionMatches": true,
+      "loop": true,
+      "loopSeamComparable": true,
+      "adjacentFrameDifference": [
+        1.87614,
+        1.25763,
+        0.20501,
+        1.34265,
+        1.94568,
+        1.89098,
+        1.24371,
+        0.20429,
+        1.33172,
+        1.95455
+      ],
+      "bounds": [
+        [
+          141,
+          51,
+          370,
+          458
+        ],
+        [
+          141,
+          51,
+          370,
+          459
+        ],
+        [
+          142,
+          52,
+          370,
+          459
+        ],
+        [
+          142,
+          52,
+          370,
+          459
+        ],
+        [
+          141,
+          51,
+          370,
+          458
+        ],
+        [
+          140,
+          51,
+          369,
+          458
+        ],
+        [
+          140,
+          49,
+          369,
+          457
+        ],
+        [
+          140,
+          49,
+          369,
+          456
+        ],
+        [
+          140,
+          49,
+          369,
+          456
+        ],
+        [
+          140,
+          50,
+          369,
+          457
+        ]
+      ],
+      "correctFrameGrid": true,
+      "effectPassFormatsCorrect": true,
+      "passed": true
+    },
+    {
+      "role": "Warship",
+      "motion": "sailing",
+      "file": "BronzeAge\\Warship\\Sailing.png",
+      "sha256": "2c63c727041fbac82ed395e07f82f738f655e97eb9c737d64a60654e085f15c2",
+      "dimensionsCorrect": true,
+      "rgba": true,
+      "nonemptyFrames": 10,
+      "distinctFrames": 10,
+      "eightPixelGuardClear": true,
+      "passCompositionMatches": true,
+      "loop": true,
+      "loopSeamComparable": true,
+      "adjacentFrameDifference": [
+        4.77039,
+        3.11419,
+        0.25742,
+        3.24649,
+        4.8682,
+        4.76101,
+        3.1358,
+        0.24318,
+        3.28414,
+        4.88153
+      ],
+      "bounds": [
+        [
+          141,
+          51,
+          370,
+          494
+        ],
+        [
+          147,
+          51,
+          364,
+          499
+        ],
+        [
+          151,
+          51,
+          360,
+          497
+        ],
+        [
+          151,
+          51,
+          360,
+          496
+        ],
+        [
+          147,
+          51,
+          364,
+          495
+        ],
+        [
+          140,
+          51,
+          369,
+          494
+        ],
+        [
+          135,
+          50,
+          375,
+          499
+        ],
+        [
+          132,
+          50,
+          378,
+          497
+        ],
+        [
+          132,
+          50,
+          378,
+          496
+        ],
+        [
+          135,
+          50,
+          375,
+          495
+        ]
+      ],
+      "correctFrameGrid": true,
+      "effectPassFormatsCorrect": true,
+      "passed": true
+    },
+    {
+      "role": "Warship",
+      "motion": "attack",
+      "file": "BronzeAge\\Warship\\Attack.png",
+      "sha256": "d40431c9f9730fa1011fe9206e3441417437943312ef5ce041dba25457061e53",
+      "dimensionsCorrect": true,
+      "rgba": true,
+      "nonemptyFrames": 10,
+      "distinctFrames": 10,
+      "eightPixelGuardClear": true,
+      "passCompositionMatches": true,
+      "loop": false,
+      "loopSeamComparable": true,
+      "adjacentFrameDifference": [
+        1.86671,
+        1.65371,
+        0.94577,
+        1.5124,
+        2.97346,
+        2.55284,
+        1.84148,
+        0.56247,
+        1.33277,
+        1.94614
+      ],
+      "bounds": [
+        [
+          141,
+          51,
+          370,
+          458
+        ],
+        [
+          141,
+          51,
+          370,
+          459
+        ],
+        [
+          142,
+          52,
+          370,
+          459
+        ],
+        [
+          142,
+          52,
+          370,
+          459
+        ],
+        [
+          141,
+          44,
+          370,
+          460
+        ],
+        [
+          140,
+          38,
+          370,
+          458
+        ],
+        [
+          140,
+          32,
+          370,
+          458
+        ],
+        [
+          140,
+          28,
+          369,
+          457
+        ],
+        [
+          140,
+          22,
+          369,
+          456
+        ],
+        [
+          140,
+          50,
+          369,
+          457
+        ]
+      ],
+      "correctFrameGrid": true,
+      "effectPassFormatsCorrect": true,
+      "passed": true
+    },
+    {
+      "role": "Transport",
+      "motion": "idle",
+      "file": "BronzeAge\\Transport\\Idle.png",
+      "sha256": "666af4fd01fab19d5a5bf9f4be11394332e4bc5e095c077a322c1eac9cd6f21d",
+      "dimensionsCorrect": true,
+      "rgba": true,
+      "nonemptyFrames": 10,
+      "distinctFrames": 10,
+      "eightPixelGuardClear": true,
+      "passCompositionMatches": true,
+      "loop": true,
+      "loopSeamComparable": true,
+      "adjacentFrameDifference": [
+        2.08086,
+        1.34362,
+        0.20233,
+        1.46411,
+        2.16554,
+        2.11245,
+        1.31434,
+        0.2023,
+        1.43605,
+        2.19319
+      ],
+      "bounds": [
+        [
+          173,
+          60,
+          340,
+          439
+        ],
+        [
+          171,
+          60,
+          340,
+          439
+        ],
+        [
+          173,
+          61,
+          340,
+          440
+        ],
+        [
+          173,
+          61,
+          340,
+          440
+        ],
+        [
+          171,
+          61,
+          341,
+          439
+        ],
+        [
+          172,
+          60,
+          339,
+          439
+        ],
+        [
+          172,
+          59,
+          341,
+          438
+        ],
+        [
+          172,
+          59,
+          339,
+          438
+        ],
+        [
+          172,
+          59,
+          339,
+          438
+        ],
+        [
+          171,
+          60,
+          341,
+          438
+        ]
+      ],
+      "correctFrameGrid": true,
+      "effectPassFormatsCorrect": true,
+      "passed": true
+    },
+    {
+      "role": "Transport",
+      "motion": "sailing",
+      "file": "BronzeAge\\Transport\\Sailing.png",
+      "sha256": "1799f9c93104db487e24205c8997700613283b5f8798182f85ed98df56b31471",
+      "dimensionsCorrect": true,
+      "rgba": true,
+      "nonemptyFrames": 10,
+      "distinctFrames": 10,
+      "eightPixelGuardClear": true,
+      "passCompositionMatches": true,
+      "loop": true,
+      "loopSeamComparable": true,
+      "adjacentFrameDifference": [
+        0.84305,
+        0.46093,
+        0.26204,
+        0.68161,
+        0.9914,
+        0.86128,
+        0.46864,
+        0.26201,
+        0.68998,
+        1.00679
+      ],
+      "bounds": [
+        [
+          173,
+          60,
+          340,
+          480
+        ],
+        [
+          173,
+          60,
+          340,
+          485
+        ],
+        [
+          171,
+          60,
+          340,
+          484
+        ],
+        [
+          171,
+          60,
+          340,
+          483
+        ],
+        [
+          171,
+          61,
+          341,
+          482
+        ],
+        [
+          172,
+          60,
+          339,
+          480
+        ],
+        [
+          172,
+          60,
+          341,
+          485
+        ],
+        [
+          172,
+          59,
+          341,
+          484
+        ],
+        [
+          172,
+          59,
+          341,
+          483
+        ],
+        [
+          171,
+          60,
+          341,
+          482
+        ]
+      ],
+      "correctFrameGrid": true,
+      "effectPassFormatsCorrect": true,
+      "passed": true
+    },
+    {
+      "role": "Trade",
+      "motion": "idle",
+      "file": "BronzeAge\\Trade\\Idle.png",
+      "sha256": "9533584eeb675b3786cce85c2e39f15bb4d77be7d594a0ebfe5cceb1db121358",
+      "dimensionsCorrect": true,
+      "rgba": true,
+      "nonemptyFrames": 10,
+      "distinctFrames": 10,
+      "eightPixelGuardClear": true,
+      "passCompositionMatches": true,
+      "loop": true,
+      "loopSeamComparable": true,
+      "adjacentFrameDifference": [
+        3.60666,
+        2.24764,
+        0.3072,
+        2.40695,
+        3.70006,
+        3.6411,
+        2.22575,
+        0.30864,
+        2.38624,
+        3.73488
+      ],
+      "bounds": [
+        [
+          136,
+          58,
+          417,
+          453
+        ],
+        [
+          136,
+          58,
+          417,
+          454
+        ],
+        [
+          136,
+          60,
+          417,
+          454
+        ],
+        [
+          136,
+          60,
+          417,
+          454
+        ],
+        [
+          136,
+          59,
+          417,
+          453
+        ],
+        [
+          135,
+          58,
+          416,
+          453
+        ],
+        [
+          135,
+          57,
+          417,
+          452
+        ],
+        [
+          135,
+          57,
+          416,
+          451
+        ],
+        [
+          135,
+          57,
+          417,
+          451
+        ],
+        [
+          135,
+          58,
+          417,
+          452
+        ]
+      ],
+      "correctFrameGrid": true,
+      "effectPassFormatsCorrect": true,
+      "passed": true
+    },
+    {
+      "role": "Trade",
+      "motion": "sailing",
+      "file": "BronzeAge\\Trade\\Sailing.png",
+      "sha256": "152a0e3090a5185f2e720fbd6627acdf12f73a2150d34b6eea9e49c460433531",
+      "dimensionsCorrect": true,
+      "rgba": true,
+      "nonemptyFrames": 10,
+      "distinctFrames": 10,
+      "eightPixelGuardClear": true,
+      "passCompositionMatches": true,
+      "loop": true,
+      "loopSeamComparable": true,
+      "adjacentFrameDifference": [
+        1.40084,
+        0.85419,
+        0.37265,
+        1.13199,
+        1.54984,
+        1.41559,
+        0.86168,
+        0.37466,
+        1.14274,
+        1.5606
+      ],
+      "bounds": [
+        [
+          136,
+          58,
+          417,
+          489
+        ],
+        [
+          136,
+          58,
+          417,
+          494
+        ],
+        [
+          136,
+          58,
+          417,
+          492
+        ],
+        [
+          136,
+          58,
+          417,
+          491
+        ],
+        [
+          136,
+          59,
+          417,
+          490
+        ],
+        [
+          135,
+          58,
+          416,
+          489
+        ],
+        [
+          135,
+          58,
+          417,
+          494
+        ],
+        [
+          135,
+          57,
+          417,
+          492
+        ],
+        [
+          135,
+          57,
+          417,
+          491
+        ],
+        [
+          135,
+          58,
+          417,
+          490
+        ]
+      ],
+      "correctFrameGrid": true,
+      "effectPassFormatsCorrect": true,
+      "passed": true
+    }
+  ],
+  "visualReview": "Asset checks only. Browser evidence is recorded separately in Review/Browser_Validation.json; no game-match integration claimed.",
+  "rigidOarAudit": {
+    "passed": true,
+    "rigidLayers": 8,
+    "stationaryExteriorOarPixels": 0,
+    "neutralMasterPremultipliedMeanDifference": 0.013739880174398422,
+    "motion": "rigid rotation only; no mesh deformation"
+  },
+  "approvedStoneAgeMastersAndClipsUnchanged": true,
+  "crossAgeManifestRebuildAudit": {
+    "passed": true,
+    "bronzeEntriesPreserved": true,
+    "futureFieldPreserved": true,
+    "combinedClipCount": 13,
+    "unicodePreserved": true,
+    "writesDisabled": true
+  }
+}

@@ -3,7 +3,7 @@
   "cultureId": "russian",
   "age": "BronzeAge",
   "tool": "built-in image_gen",
-  "status": "static-masters-awaiting-approval",
+  "status": "static-masters-approved; animations-exported",
   "artDirection": "Regional prehistoric forest and river inspiration; role configurations are gameplay interpretations.",
   "references": {
     "Warship": "C:/Users/Damien/Documents/GitHub/AgeOfFronts/AgeOfFronts/Art/Cultures/Russians/Ships/StoneAge/Warship/SourceArt/Warship_Russian_StoneAge_v1.png",
@@ -109,5 +109,10 @@
         "status": "queued"
       }
     ]
+  },
+  "animationApproval": {
+    "age": "BronzeAge",
+    "date": "2026-10-02",
+    "userMessage": "Okay those are good, animate them"
   }
 }

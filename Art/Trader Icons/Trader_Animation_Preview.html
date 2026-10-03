@@ -35,6 +35,8 @@
     .checker .stage { background-color: #33443b; background-image: linear-gradient(45deg,#405348 25%,transparent 25%),linear-gradient(-45deg,#405348 25%,transparent 25%),linear-gradient(45deg,transparent 75%,#405348 75%),linear-gradient(-45deg,transparent 75%,#405348 75%); background-size: 24px 24px; background-position: 0 0,0 12px,12px -12px,-12px 0; }
     .white .stage { background: #f0f1eb; }
     .dark .stage { background: #0b130e; }
+    button:disabled,select:disabled,input:disabled { cursor: default; opacity: .55; }
+    #ground-scene { display: block; width: 100%; height: 390px; aspect-ratio: auto; border-radius: 12px; }
     canvas { display: block; width: min(var(--sprite-size,256px),100%); height: auto; aspect-ratio: 1; }
     article footer { display: flex; justify-content: space-between; gap: 8px; padding: 8px 14px; color: #aabfb0; font-size: 11px; }
     .frame { font-variant-numeric: tabular-nums; }
@@ -54,6 +56,7 @@
     </header>
     <nav class="age-tabs" id="ages" role="tablist" aria-label="Trader age"></nav>
     <div class="toolbar">
+      <label>Culture <select id="culture" aria-label="Culture"></select></label>
       <button id="play" type="button">Pause</button>
       <button id="previous" type="button" aria-label="Previous frame">‹</button>
       <button id="next" type="button" aria-label="Next frame">›</button>
@@ -67,122 +70,17 @@
     </div>
     <section id="age-panel" role="tabpanel" aria-busy="true"><div class="grid" id="clips"></div></section>
     <p id="status" role="status">Loading traders…</p>
-    <p class="review-links"><a href="../Ship%20Icons/Ship_Animation_Preview.html">Ship preview ↗</a><a href="../Soldier%20Icons/StoneAge_Animation_Preview.html">Soldier preview ↗</a><a href="Trader_Animation_Manifest.json" target="_blank" rel="noopener">Asset manifest ↗</a><a href="README.md" target="_blank" rel="noopener">Animation notes ↗</a></p>
+    <section id="ground-scale" hidden>
+      <h2>Game-scale comparison</h2>
+      <p class="subtitle">Land trader screen sizes and opacity from the current game. Base artwork provides a still comparison. These are art studies before match integration.</p>
+      <div class="toolbar">
+        <label>Zoom <select id="ground-zoom"><option value="14">Distant · 14 px/cell</option><option value="24" selected>Tactical · 24 px/cell</option><option value="48">Close · 48 px/cell</option></select></label>
+        <label><input id="compare-base" type="checkbox" checked>Compare Base</label>
+      </div>
+      <canvas id="ground-scene" width="960" height="390" role="img" aria-label="Russian overland traders and base art at game screen sizes"></canvas>
+    </section>
+    <p class="review-links"><a href="../Ship%20Icons/Ship_Animation_Preview.html">Ship preview ↗</a><a href="../Soldier%20Icons/StoneAge_Animation_Preview.html">Soldier preview ↗</a><a id="manifest-link" href="Trader_Animation_Manifest.json" target="_blank" rel="noopener">Asset manifest ↗</a><a href="README.md" target="_blank" rel="noopener">Animation notes ↗</a></p>
   </main>
-  <script>
-    // Review-only MVVM: asset loading, playback state and canvas presentation.
-    const assetModel = {
-      assets: [], version: Date.now(),
-      async initialize() {
-        const response = await fetch(`Trader_Animation_Manifest.json?review=${this.version}`);
-        if (!response.ok) throw new Error(`Manifest unavailable (${response.status})`);
-        const manifest = await response.json(); this.assets = manifest.assets;
-        return manifest;
-      },
-      async load(asset) {
-        const response = await fetch(`${asset.metadata}?review=${this.version}`);
-        if (!response.ok) throw new Error(`Metadata unavailable (${response.status})`);
-        const metadata = await response.json();
-        if (metadata.frameSize.width !== 512 || metadata.frameSize.height !== 512) throw new Error('Unexpected frame dimensions');
-        return metadata;
-      },
-    };
-    const playback = { playing: true, seconds: 0, frame: 0, speed: 1, pivot: false, selection: 'Overview', clips: [], revision: 0 };
-    const elements = Object.fromEntries(['clips','ages','age-panel','play','frame','frame-output','status','review-title'].map(id => [id,document.getElementById(id)]));
-    const titleCase = text => text[0].toUpperCase() + text.slice(1);
-    function selectFrame(frame) {
-      playback.playing = false; playback.frame = (frame + 10) % 10; playback.seconds = 0;
-      elements.play.textContent = 'Play'; elements.frame.value = playback.frame;
-    }
-    function restart() { playback.seconds = 0; playback.frame = 0; elements.frame.value = 0; }
-    const canvasView = {
-      create(asset,state) {
-        const article = document.createElement('article');
-        const header = document.createElement('header');
-        const heading = document.createElement('h2'); heading.textContent = `${asset.ageLabel} · ${titleCase(state)}`;
-        const description = document.createElement('div'); description.className = 'description'; description.textContent = asset.label;
-        header.append(heading,description);
-        const stage = document.createElement('div'); stage.className = 'stage';
-        const canvas = document.createElement('canvas'); canvas.width = 512; canvas.height = 512; canvas.setAttribute('aria-label',`${asset.ageLabel} ${state} animation`); stage.append(canvas);
-        const footer = document.createElement('footer'); const link = document.createElement('a');
-        link.href = `${asset.age}/${titleCase(state)}.png`; link.textContent = 'Sprite sheet ↗'; link.target = '_blank'; link.rel = 'noopener';
-        const counter = document.createElement('span'); counter.className = 'frame'; counter.textContent = 'Loading…'; footer.append(link,counter);
-        article.append(header,stage,footer); elements.clips.append(article);
-        return { canvas,context: canvas.getContext('2d'),counter };
-      },
-      draw(clip) {
-        const { context,metadata,data,image,counter } = clip;
-        const index = playback.playing ? Math.floor(playback.seconds * data.suggestedFramesPerSecond) % data.frameCount : playback.frame;
-        const frame = data.frames[index]; context.clearRect(0,0,512,512);
-        context.drawImage(image,frame.x,frame.y,frame.width,frame.height,0,0,512,512);
-        if (playback.pivot) {
-          const {x,y} = metadata.pivot; context.strokeStyle = '#f4d97d'; context.lineWidth = 1;
-          context.beginPath(); context.moveTo(x-12,y); context.lineTo(x+12,y); context.moveTo(x,y-12); context.lineTo(x,y+12); context.stroke();
-        }
-        counter.textContent = `${index+1} / ${data.frameCount}`;
-      },
-    };
-    async function selectAge(selection,updateLocation = true) {
-      const revision = ++playback.revision; playback.selection = selection; playback.clips = []; restart();
-      const overview = selection === 'Overview';
-      const selectedAssets = overview ? assetModel.assets : assetModel.assets.filter(asset => asset.age === selection);
-      if (!selectedAssets.length) throw new Error('Unknown trader age');
-      document.body.classList.toggle('single-age',!overview);
-      const label = overview ? 'Overland Traders · All Ages' : `${selectedAssets[0].ageLabel} · Overland Traders`;
-      elements['review-title'].textContent = label; document.title = label;
-      elements['age-panel'].setAttribute('aria-labelledby',`tab-${selection}`); elements['age-panel'].setAttribute('aria-busy','true');
-      for (const tab of elements.ages.children) { const active = tab.dataset.age === selection; tab.setAttribute('aria-selected',String(active)); tab.tabIndex = active ? 0 : -1; }
-      if (updateLocation) history.replaceState(null,'',`#${selection}`);
-      elements.clips.replaceChildren(); elements.status.textContent = 'Loading trader animations…';
-      let loaded = 0,failed = 0;
-      const requests = selectedAssets.flatMap(asset => (overview ? ['travel'] : ['idle','travel']).map(state => ({asset,state,view:canvasView.create(asset,state)})));
-      await Promise.all(requests.map(async ({asset,state,view}) => {
-        try {
-          const metadata = await assetModel.load(asset); const data = metadata.animations[state];
-          if (!data || data.frameCount !== 10) throw new Error('Unexpected animation metadata');
-          const image = new Image(); image.src = `${asset.age}/${data.file}?review=${assetModel.version}`; await image.decode();
-          if (image.naturalWidth !== metadata.sheetSize.width || image.naturalHeight !== metadata.sheetSize.height) throw new Error('Unexpected sprite sheet dimensions');
-          if (revision !== playback.revision) return;
-          playback.clips.push({...view,metadata,data,image}); loaded++;
-        } catch (error) { if (revision !== playback.revision) return; view.counter.textContent = error.message; failed++; }
-      }));
-      if (revision !== playback.revision) return;
-      elements['age-panel'].setAttribute('aria-busy','false');
-      elements.status.textContent = `${loaded} / ${requests.length} animations loaded${failed ? ` · ${failed} failed` : ''} · ${overview ? 'Select an age to compare idle and travel' : 'Idle at 8 fps · travel at 12 fps'} · overhead, facing down`;
-    }
-    elements.play.addEventListener('click',() => { if (!playback.playing) playback.seconds = playback.frame / 12; playback.playing = !playback.playing; elements.play.textContent = playback.playing ? 'Pause' : 'Play'; });
-    elements.frame.addEventListener('input',() => selectFrame(Number(elements.frame.value)));
-    document.getElementById('previous').addEventListener('click',() => selectFrame(playback.frame-1));
-    document.getElementById('next').addEventListener('click',() => selectFrame(playback.frame+1));
-    document.getElementById('restart').addEventListener('click',restart);
-    document.getElementById('speed').addEventListener('change',event => { playback.speed = Number(event.target.value); });
-    document.getElementById('size').addEventListener('change',event => { const size = Number(event.target.value); document.documentElement.style.setProperty('--sprite-size',`${size}px`); document.body.classList.toggle('large',size>256); });
-    document.getElementById('background').addEventListener('change',event => { for (const value of ['checker','white','dark']) document.body.classList.toggle(value,event.target.value===value); });
-    document.getElementById('pivot').addEventListener('change',event => { playback.pivot = event.target.checked; });
-    document.getElementById('ages').addEventListener('keydown',event => {
-      const tabs = [...elements.ages.children]; let index = tabs.indexOf(document.activeElement);
-      if (index<0 || !['ArrowRight','ArrowLeft','Home','End'].includes(event.key)) return;
-      event.preventDefault(); index = event.key === 'Home' ? 0 : event.key === 'End' ? tabs.length-1 : (index+(event.key==='ArrowRight' ? 1 : -1)+tabs.length)%tabs.length;
-      tabs[index].focus(); selectAge(tabs[index].dataset.age);
-    });
-    window.addEventListener('hashchange',() => { const requested = location.hash.slice(1); const selection = assetModel.assets.some(asset => asset.age === requested) ? requested : 'Overview'; selectAge(selection,false); });
-    let previousTime;
-    function render(time) {
-      if (previousTime !== undefined && playback.playing) playback.seconds += Math.min((time-previousTime)/1000,.1)*playback.speed;
-      previousTime = time;
-      if (playback.playing) playback.frame = Math.floor(playback.seconds*12)%10;
-      elements.frame.value = playback.frame; elements['frame-output'].textContent = `${playback.frame+1} / 10`;
-      for (const clip of playback.clips) canvasView.draw(clip);
-      requestAnimationFrame(render);
-    }
-    assetModel.initialize().then(manifest => {
-      document.getElementById('trader-count').textContent = `${manifest.traderCount} traders · ${manifest.clipCount} clips · transparent PNG`;
-      for (const [age,label] of [['Overview','All ages'],...assetModel.assets.map(asset => [asset.age,asset.ageLabel])]) {
-        const tab = document.createElement('button'); tab.type = 'button'; tab.id = `tab-${age}`; tab.dataset.age = age; tab.textContent = label; tab.setAttribute('role','tab'); tab.setAttribute('aria-controls','age-panel'); tab.addEventListener('click',() => selectAge(age)); elements.ages.append(tab);
-      }
-      const requested = location.hash.slice(1); selectAge(assetModel.assets.some(asset => asset.age === requested) ? requested : 'Overview',false);
-      requestAnimationFrame(render);
-    }).catch(error => { elements.status.textContent = `Could not load traders: ${error.message}`; elements['age-panel'].setAttribute('aria-busy','false'); });
-  </script>
+  <script type="module" src="./trader-review.js"></script>
 </body>
 </html>

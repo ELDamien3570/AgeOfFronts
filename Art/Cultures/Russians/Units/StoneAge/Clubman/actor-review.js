@@ -19,7 +19,7 @@ class ActorReviewModel {
     this.playing = true;
     this.completed = false;
     this.speed = 1;
-    this.repeat = false;
+    this.repeat = elements.repeat.checked;
     this.angle = 0;
     this.anchor = false;
   }
@@ -175,7 +175,7 @@ const results = await Promise.allSettled(clips.map(async clip => {
 }));
 const failures = results.flatMap((result, index) => result.status === "rejected" ? [clips[index].label] : []);
 elements.status.textContent = failures.length ? "Could not load: " + failures.join(", ") :
-  "All seven clips loaded · one soldier · reactions hold their final frame.";
+  "All " + clips.length + " clips loaded · one soldier · reactions hold their final frame.";
 elements["actor-panel"].setAttribute("aria-busy", "false");
 let previous = performance.now();
 function animate(now) {

@@ -9,11 +9,12 @@ from __future__ import annotations
 import hashlib
 import importlib.util
 import json
+import math
 import sys
 from pathlib import Path
 
 import numpy as np
-from PIL import Image, ImageDraw
+from PIL import Image, ImageDraw, ImageFilter
 
 ROOT = Path(__file__).resolve().parent
 AGE_ROOT = ROOT / "StoneAge"
@@ -34,6 +35,99 @@ def sha(path):
 
 def json_write(path, value):
     path.write_text(json.dumps(value, indent=2) + "\n", encoding="utf-8")
+
+
+def source_fit(size):
+    scale = 420 / max(size)
+    return scale, ((512 - size[0] * scale) / 2, (512 - size[1] * scale) / 2)
+
+
+def canonical_point(point, size):
+    scale, offset = source_fit(size)
+    return [(point[i] * scale + offset[i] - 46) / PIPELINE.SCALE for i in range(2)]
+
+
+def fit_native(image):
+    scale, offset = source_fit(image.size)
+    return image.transform((512, 512), Image.Transform.AFFINE,
+                           (1 / scale, 0, -offset[0] / scale, 0, 1 / scale, -offset[1] / scale),
+                           Image.Resampling.BICUBIC)
+
+
+def articulated_rig(source, spec):
+    """Export the approved oars as eight rigid pieces, with an authored underlay."""
+    layers = []
+    union = Image.new("L", source.size, 0)
+    oars = spec.get("oars", [])
+    if oars:
+        fill_path = AGE_ROOT / spec["underlay"]
+        if sha(fill_path) != spec["underlaySha256"]:
+            raise ValueError(f"Authored underlay changed: {fill_path}")
+        underlay = Image.open(fill_path).convert("RGBA").resize(source.size, Image.Resampling.LANCZOS)
+        hull_footprint = np.asarray(underlay.getchannel("A").filter(ImageFilter.MaxFilter(9))) > 1
+        exterior = (np.asarray(source.getchannel("A")) > 0) & ~hull_footprint
+        yy, xx = np.indices((source.height, source.width), dtype=np.float32)
+        nearest = np.full(xx.shape, np.inf, dtype=np.float32)
+        owner = np.zeros(xx.shape, dtype=np.uint8)
+        for ordinal, oar in enumerate(oars):
+            gx, gy = oar["grip"]
+            vx, vy = np.subtract(oar["tip"], oar["grip"])
+            projection = np.clip(((xx - gx) * vx + (yy - gy) * vy) / (vx * vx + vy * vy), 0, 1)
+            distance = (xx - gx - projection * vx) ** 2 + (yy - gy - projection * vy) ** 2
+            closer = distance < nearest
+            owner[closer] = ordinal
+            nearest[closer] = distance[closer]
+    for ordinal, oar in enumerate(oars):
+        mask = Image.new("L", source.size, 0)
+        draw = ImageDraw.Draw(mask)
+        draw.line([tuple(oar["grip"]), tuple(oar["bladeRoot"])], fill=255, width=oar["shaftMaskWidth"])
+        radius = oar["shaftMaskWidth"] / 2
+        gx, gy = oar["grip"]
+        draw.ellipse((gx - radius, gy - radius, gx + radius, gy + radius), fill=255)
+        draw.polygon([tuple(point) for point in oar["bladeMask"]], fill=255)
+        # All exterior paint belongs to one whole working oar. Assigning it by
+        # the closest shaft axis retains rounded blade edges and antialiasing
+        # that a hand-traced polygon alone can miss.
+        mask = Image.fromarray(np.maximum(np.asarray(mask), np.where(exterior & (owner == ordinal), 255, 0).astype(np.uint8)))
+        pixels = np.asarray(source).copy()
+        pixels[:, :, 3] = (pixels[:, :, 3].astype(np.float32) * np.asarray(mask) / 255).astype(np.uint8)
+        layer = {**oar, "image": Image.fromarray(pixels), "mask": mask}
+        layers.append(layer)
+        union = Image.fromarray(np.maximum(np.asarray(union), np.asarray(mask)))
+    base = source.copy()
+    if layers:
+        # The generated image supplies only newly exposed surfaces. All original
+        # pixels outside the oar masks remain exact, including fixed equipment.
+        fill = np.asarray(underlay).copy()
+        fill[:, :, 3] = (fill[:, :, 3].astype(np.float32) * np.asarray(union) / 255).astype(np.uint8)
+        original = np.asarray(source).copy()
+        original[:, :, 3] = (original[:, :, 3].astype(np.float32) * (1 - np.asarray(union) / 255)).astype(np.uint8)
+        base = Image.fromarray(fill)
+        base.alpha_composite(Image.fromarray(original))
+    canonical = {
+        "age": CONFIG["age"], "layers": [
+            {**layer, "pivot": canonical_point(layer["pivot"], source.size),
+             "tip": canonical_point(layer["tip"], source.size)} for layer in layers
+        ],
+    }
+    return {"source": source, "base": base, "layers": layers,
+            "nativeFit": True, "canonical": canonical}
+
+
+def render_native(rig, motion, index):
+    phase = PIPELINE.TAU * index / 10
+    vessel = rig["base"].copy()
+    for layer in rig["layers"]:
+        sign = 1 if layer["side"] == "port" else -1
+        amplitude = layer["amplitude"] if motion == "Sailing" else layer.get("idleAmplitude", 0.3)
+        rotated = layer["image"].rotate(sign * amplitude * math.sin(phase),
+                                        Image.Resampling.BICUBIC, center=tuple(layer["pivot"]))
+        vessel.alpha_composite(rotated)
+    vessel = fit_native(vessel)
+    dy = (1.1 if motion == "Idle" else 0.35) * math.sin(phase)
+    return vessel.transform((512, 512), Image.Transform.AFFINE,
+                            (1, 0, -0.2 * math.sin(phase + 0.5), 0, 1, -dy),
+                            Image.Resampling.BICUBIC)
 
 
 def spear_effect(spec, index):
@@ -57,7 +151,7 @@ def spear_effect(spec, index):
                   point(bx, head_y + 10), point(bx + 3, head_y + 7)],
                  fill=tuple(attack["headColor"]) + (alpha,))
     draw.line([point(bx, head_y + 2), point(bx, head_y + 8)],
-              fill=(207, 204, 182, alpha), width=factor)
+              fill=tuple(attack.get("highlightColor", [207, 204, 182])) + (alpha,), width=factor)
     return layer.resize((512, 512), Image.Resampling.LANCZOS)
 
 
@@ -65,7 +159,12 @@ def render(spec, rig, motion, index):
     # Reuse the established source fit and buoyancy renderer. A ranged attack
     # uses a steady hull and a release effect, rather than the legacy ram thrust.
     hull_motion = "Idle" if motion == "Attack" else motion
-    _, vessel, _, _ = PIPELINE.render_frame(rig, hull_motion, index)
+    if rig.get("nativeFit"):
+        vessel = render_native(rig, hull_motion, index)
+        spec = {**spec, "bows": [canonical_point(point, rig["source"].size) for point in spec["bows"]],
+                "sterns": [canonical_point(point, rig["source"].size) for point in spec["sterns"]]}
+    else:
+        _, vessel, _, _ = PIPELINE.render_frame(rig, hull_motion, index)
     if motion == "Attack":
         kick = [0, 0, 0.10, 0.35, 1, 0.65, 0.30, 0.10, 0, 0][index]
         attack = spec["attack"]
@@ -79,7 +178,7 @@ def render(spec, rig, motion, index):
         # Each pontoon owns its bow ripple and stern wake. Reuse the base water
         # renderer separately so a twin hull never emits a fictitious centre wake.
         for bow, stern in zip(spec["bows"], spec["sterns"]):
-            water_rig = {**rig, "bows": [bow], "stern": stern}
+            water_rig = {**rig.get("canonical", rig), "bows": [bow], "stern": stern}
             water.alpha_composite(PIPELINE.water_effects(water_rig, PIPELINE.TAU * index / 10, motion, 0))
     weapons = spear_effect(spec, index) if motion == "Attack" else Image.new("RGBA", (512, 512), EMPTY)
     composite = water.copy()
@@ -93,22 +192,30 @@ def export_vessel(spec, expected_hash):
     if sha(source_path) != expected_hash:
         raise ValueError(f"Approved master changed: {source_path}")
     source = Image.open(source_path)
-    if source.mode != "RGBA" or source.size != (1254, 1254):
+    if source.mode != "RGBA" or source.size != tuple(spec.get("sourceSize", [1254, 1254])):
         raise ValueError(f"Unexpected approved source format: {source_path}")
     output = AGE_ROOT / spec["role"]
     layers = output / "layers"
     layers.mkdir(exist_ok=True)
-    source.save(layers / "Hull.png", optimize=True)
     source.save(output / "Source_Transparent.png", optimize=True)
-    rig = {"source": source, "base": source, "layers": [], "original": source_path,
-           "hull": [], "category": spec["category"], "age": "StoneAge",
-           "bows": spec["bows"], "stern": spec["sterns"][0]}
+    rig = articulated_rig(source, spec) if CONFIG["age"] == "BronzeAge" else {
+        "source": source, "base": source, "layers": [], "original": source_path,
+        "hull": [], "category": spec["category"], "age": CONFIG["age"],
+        "bows": spec["bows"], "stern": spec["sterns"][0]}
+    rig["base"].save(layers / "Hull.png", optimize=True)
+    for layer in rig["layers"]:
+        layer["image"].save(layers / f"{layer['name']}.png", optimize=True)
+        layer["mask"].save(layers / f"{layer['name']}-mask.png", optimize=True)
+    scale, offset = source_fit(source.size)
     json_write(output / "rig.json", {
         "schemaVersion": 1, "cultureId": "russian", "source": spec["source"],
-        "sourceSha256": expected_hash, "sourceSize": {"width": 1254, "height": 1254},
+        "sourceSha256": expected_hash, "sourceSize": {"width": source.width, "height": source.height},
         "frameSize": {"width": 512, "height": 512},
-        "sourceToFrame": {"scale": PIPELINE.SCALE, "offset": [46, 46]},
-        "layers": [{"name": "Hull", "file": "layers/Hull.png", "kind": "rigid-approved-master"}],
+        "sourceToFrame": {"scale": scale, "offset": list(offset)},
+        "layers": [{"name": "Hull", "file": "layers/Hull.png", "kind": "rigid-approved-hull"}] + [
+            {**{key: value for key, value in layer.items() if key not in ("image", "mask")},
+             "file": f"layers/{layer['name']}.png", "maskFile": f"layers/{layer['name']}-mask.png",
+             "kind": "rigid-oar"} for layer in rig["layers"]],
         "bows": spec["bows"], "sterns": spec["sterns"], "attack": spec.get("attack"),
         "attachmentPolicy": CONFIG["attachmentPolicy"],
         "motionSource": "../rig-authoring.json",
@@ -142,7 +249,7 @@ def export_vessel(spec, expected_hash):
         animations[motion.lower()] = data
     json_write(output / "animations.json", {
         "schemaVersion": 1, "cultureId": "russian", "unit": spec["role"],
-        "age": "StoneAge", "category": spec["category"],
+        "age": CONFIG["age"], "category": spec["category"],
         "camera": "vertical-overhead-orthographic", "facing": "screen-up",
         "frameSize": {"width": 512, "height": 512},
         "sheetSize": {"width": 2560, "height": 1024},
@@ -162,7 +269,7 @@ def validate(approved_hashes, base_hashes):
     overview_frames = []
     for spec in CONFIG["vessels"]:
         folder = AGE_ROOT / spec["role"]
-        metadata = json.loads((folder / "animations.json").read_text())
+        metadata = json.loads((folder / "animations.json").read_text(encoding="utf-8"))
         for motion, clip in metadata["animations"].items():
             sheet = Image.open(folder / clip["file"])
             frames = [sheet.crop((f["x"], f["y"], f["x"] + 512, f["y"] + 512)) for f in clip["frames"]]
@@ -223,28 +330,38 @@ def validate(approved_hashes, base_hashes):
     return report
 
 
-def main():
-    static = json.loads((AGE_ROOT / "Static_Art_Validation.json").read_text())
+def main(age="StoneAge"):
+    global AGE_ROOT, CONFIG
+    if age not in ("StoneAge", "BronzeAge"):
+        raise ValueError(f"Unsupported authored age: {age}")
+    AGE_ROOT = ROOT / age
+    CONFIG = json.loads((AGE_ROOT / "rig-authoring.json").read_text(encoding="utf-8"))
+    static = json.loads((AGE_ROOT / "Static_Art_Validation.json").read_text(encoding="utf-8"))
     approved_hashes = {item["file"]: item["sha256"] for item in static["masters"]}
     # Snapshot existing fleet files rather than rewriting or rebuilding them.
-    baseline = json.loads((BASE_ROOT / "existing-fleet-hashes.json").read_text())
+    baseline = json.loads((BASE_ROOT / "existing-fleet-hashes.json").read_text(encoding="utf-8"))
     base_hashes = {file: sha(BASE_ROOT / file) for file in baseline}
     for spec in CONFIG["vessels"]:
         export_vessel(spec, approved_hashes[spec["source"]])
     report = validate(approved_hashes, base_hashes)
-    manifest = json.loads((ROOT / "Ship_Animation_Manifest.json").read_text())
+    manifest = json.loads((ROOT / "Ship_Animation_Manifest.json").read_text(encoding="utf-8"))
     for asset in manifest["assets"]:
         if asset["age"] != CONFIG["age"]:
             continue
         role = next(spec["role"] for spec in CONFIG["vessels"] if spec["category"] == asset["category"])
-        asset["metadata"] = f"StoneAge/{role}/animations.json"
+        asset["metadata"] = f"{CONFIG['age']}/{role}/animations.json"
         asset["status"] = "animated-from-approved-master"
-        metadata = json.loads((AGE_ROOT / role / "animations.json").read_text())
+        metadata = json.loads((AGE_ROOT / role / "animations.json").read_text(encoding="utf-8"))
         asset["clips"] = [clip["file"] for clip in metadata["animations"].values()]
     manifest["clipCount"] = sum(len(asset["clips"]) for asset in manifest["assets"])
-    manifest["animationApproval"] = {"age": CONFIG["age"], "date": "2026-10-02", "userMessage": "these are perfect, you're clear to animate them."}
+    approvals = manifest.setdefault("animationApprovals", {})
+    previous_approval = manifest.get("animationApproval")
+    if previous_approval:
+        approvals.setdefault(previous_approval["age"], previous_approval)
+    manifest["animationApproval"] = CONFIG.get("animationApproval", {"age": CONFIG["age"], "date": "2026-10-02", "userMessage": "these are perfect, you're clear to animate them."})
+    approvals[CONFIG["age"]] = manifest["animationApproval"]
     json_write(ROOT / "Ship_Animation_Manifest.json", manifest)
-    generation = json.loads((AGE_ROOT / "Generation-Manifest.json").read_text())
+    generation = json.loads((AGE_ROOT / "Generation-Manifest.json").read_text(encoding="utf-8"))
     generation["status"] = "static-masters-approved; animations-exported"
     generation["animationApproval"] = manifest["animationApproval"]
     json_write(AGE_ROOT / "Generation-Manifest.json", generation)
@@ -252,4 +369,7 @@ def main():
 
 
 if __name__ == "__main__":
-    main()
+    import argparse
+    parser = argparse.ArgumentParser(description=__doc__)
+    parser.add_argument("--age", choices=("StoneAge", "BronzeAge"), default="StoneAge")
+    main(parser.parse_args().age)
