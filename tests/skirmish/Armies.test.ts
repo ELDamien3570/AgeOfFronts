@@ -353,6 +353,29 @@ describe("persistent armies and Bronze tree", () => {
     expect(m.expansion!.armies.armies[0].state).toBe("holding");
     expect(own.every((s) => s.x > 50 * FIXED)).toBe(true);
   });
+  it("recovers crowded army members without changing the army order or queued leg", () => {
+    const m=make(4),own=m.squads.filter(s=>s.playerId===1),offsets=[[0,0],[146,-75],[40,-200],[-105,-125]];
+    own.forEach((s,i)=>m.updateSquad(s.id,{x:15*FIXED+offsets[i][0],y:30*FIXED+offsets[i][1]}));
+    expect(create(m)).toBeNull();
+    expect(m.applyCommand({type:"army-order",playerId:1,armyId:1,order:{type:"move",tile:m.map.ref(45,30)}})).toBeNull();
+    expect(m.applyCommand({type:"army-order",playerId:1,armyId:1,order:{type:"move",tile:m.map.ref(65,35)},append:true})).toBeNull();
+    const army=m.expansion!.armies.armies[0];
+    for(let tick=0;tick<1000;tick++) {
+      m.step();
+      for(let i=0;i<own.length;i++)for(let j=i+1;j<own.length;j++)
+        expect((own[i].x-own[j].x)**2+(own[i].y-own[j].y)**2).toBeGreaterThanOrEqual(163**2);
+    }
+    expect(army.state).toBe("holding");expect(own.every(s=>s.x>60*FIXED)).toBe(true);
+    expect(army.memberIds).toEqual(own.map(s=>s.id));
+  });
+  it("withdraws automatic slot-yield permission when a player explicitly holds a member", () => {
+    const m=make(4);expect(create(m)).toBeNull();
+    expect(m.applyCommand({type:"army-order",playerId:1,armyId:1,order:{type:"move",tile:m.map.ref(55,30)}})).toBeNull();
+    step(m,30);const member=m.squad(ids(m)[0])!;
+    expect(m.applyCommand({type:"order",playerId:1,squadIds:[member.id],order:{type:"hold"}})).toBeNull();
+    const point={x:member.x,y:member.y};expect(m.expansion!.armies.yieldSlot(member)).toBeUndefined();
+    step(m,150);expect({x:member.x,y:member.y}).toEqual(point);
+  });
   it("budgets 50-member work fairly and cancels stale routes after new orders", () => {
     const m = make(50, true);
     create(m);

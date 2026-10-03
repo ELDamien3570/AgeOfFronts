@@ -188,6 +188,13 @@ export type Command =
       append?: boolean;
     };
 
+export type MovementBlockReason = "crowd" | "yielding" | "terrain" | "restricted" | "planning" | "blocked";
+export interface MovementStatus {
+  reason: MovementBlockReason;
+  since: number;
+  blockerIds: readonly number[];
+}
+
 export interface Squad {
   readonly id: number;
   readonly playerId: number;
@@ -213,6 +220,7 @@ export interface Squad {
   readonly nextAttackTick?: number;
   readonly lastAttackTick?: number;
   readonly planningPaused?: boolean;
+  readonly movementStatus?: Readonly<MovementStatus>;
   readonly refit?: Readonly<RefitJob> | null;
   readonly charge?: Readonly<ChargeState> | null;
   readonly chargeReadyTick?: number;
@@ -443,6 +451,7 @@ export interface SnapshotPacket {
     xp?: number;
     nextAttackTick?: number;
     planningPaused?: boolean;
+    movementStatus?: MovementStatus;
     refit?: RefitJob | null;
     charge?: ChargeState | null;
     chargeReadyTick?: number;

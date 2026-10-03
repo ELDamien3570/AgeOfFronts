@@ -1116,6 +1116,7 @@ export class Skirmish {
     if (squad.planningPaused !== undefined) this.squadEntities.updateOwned(squad.id, { planningPaused: undefined });
     this.navigationProgress.delete(squad.id);
     this.detours.delete(squad.id);
+    if(squad.movementStatus)this.squadEntities.updateOwned(squad.id,{movementStatus:undefined});
     this.squadEntities.updateOwned(squad.id, { order: structuredClone(order) });
     this.orderRevisions.set(squad.id, (this.orderRevisions.get(squad.id) ?? 0) + 1);
     this.squadEntities.updateOwned(squad.id, { path: order.type === "move" ? [this.tileOf(squad), ...path] : path });
@@ -2584,13 +2585,21 @@ export class Skirmish {
     const intents: MovementIntent[] = [];
     for (const squad of land) {
       const intent = this.navigation(squad);
-      if (intent) intents.push(intent);
+      if (intent) intents.push({...intent,revision:this.orderRevisions.get(squad.id)??0});
+      else {
+        const slot=this.expansion?.armies.yieldSlot(squad);
+        if(slot)intents.push({squad,goal:slot,speed:this.movementSpeed(squad),yieldOnly:true,revision:this.orderRevisions.get(squad.id)??0});
+      }
     }
     this.passageTraffic.coordinate(intents);
     const previous = this.expansion
       ? new Map(land.map((s) => [s.id, { x: s.x, y: s.y }]))
       : undefined;
-    this.avoidance.step(land, intents, this.spatial, (id, changes) => this.squadEntities.updateOwned(id, changes));
+    this.avoidance.step(land, intents, this.spatial, (id, changes) => this.squadEntities.updateOwned(id, changes),
+      this.tick, (squad,end) => !this.expansion || (this.expansion.fortifications.clearMovement(squad,end,squad.playerId,squadRadius(squad.kind)) &&
+        (this.aiFootprintAllowed(squad.playerId,this.tileOf(end)) || (!this.aiFootprintAllowed(squad.playerId,this.tileOf(squad)) &&
+          distanceSquared(end,tilePoint(this.map,this.player(squad.playerId)!.base)) < distanceSquared(squad,tilePoint(this.map,this.player(squad.playerId)!.base))))),
+      squad => this.movementAdmission.hasPending(squad.id) || this.queuedLegs.has(squad.id) || this.routePlanner.has(`navigation:${squad.id}`) ? "planning" : "blocked");
     if (this.expansion)
       for (const squad of land)
         if (
@@ -2615,6 +2624,7 @@ export class Skirmish {
     for (const squad of this.squads) {
       if (squad.embarkedOn !== null) {
         this.squadEntities.updateOwned(squad.id, { moved: false });
+        if(squad.movementStatus)this.squadEntities.updateOwned(squad.id,{movementStatus:undefined});
         continue;
       }
       this.advanceNavigation(squad);
@@ -2969,6 +2979,10 @@ export class Skirmish {
         return;
       }
     }
+    // Repeating the same route repair cannot resolve active friendly blockers.
+    // Yield legs finish before requesting another repair; blocked members still
+    // retain the bounded local route fallback and occupied-slot admission above.
+    if(squad.movementStatus?.reason === "yielding")return;
     this.queueNavigation(squad, "repair");
   }
 

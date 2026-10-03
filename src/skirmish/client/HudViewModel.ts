@@ -581,6 +581,7 @@ export class HudViewModel {
               ? `Charge · ${s.charge.phase}`
               : s.fighting
                 ? "In combat"
+                : s.movementStatus?.reason === "yielding" ? "Making room for nearby squads"
                 : s.order.type === "board"
                   ? "Meeting transport"
                   : s.order.type === "replenish"
@@ -588,7 +589,12 @@ export class HudViewModel {
                     : s.order.type === "attack"
                       ? "Attack order"
                       : s.order.type === "move"
-                        ? s.moved ? "Moving" : "Waiting for clearance"
+                        ? s.moved ? "Moving" :
+                          s.movementStatus?.reason === "crowd" ? "Waiting for nearby squads" :
+                          s.movementStatus?.reason === "planning" ? "Planning route" :
+                          s.movementStatus?.reason === "terrain" ? "Blocked by terrain" :
+                          s.movementStatus?.reason === "restricted" ? "Passage restricted" :
+                          s.movementStatus?.reason === "blocked" ? "Route blocked" : "Waiting for clearance"
                         : "Holding",
       promotion: state.expansion
         ? {
@@ -609,6 +615,9 @@ export class HudViewModel {
             ]
           : []),
         stat("Queued orders", String(s.queuedOrders.length)),
+        ...(s.movementStatus ? [stat("Movement", s.movementStatus.reason),
+          stat("Waiting", `${Math.max(0,Math.floor((state.tick-s.movementStatus.since)/20))}s`),
+          ...(s.movementStatus.blockerIds.length ? [stat("Blocking squads",s.movementStatus.blockerIds.map(id=>`#${id}`).join(", "))] : [])] : []),
         ...(s.definitionId
           ? [
               ...unitCard(

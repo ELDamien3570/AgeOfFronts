@@ -246,6 +246,16 @@ export class Armies {
   armyOf(squadId: number): Army | undefined {
     return this.byArmyId.get(this.membership.get(squadId) ?? -1);
   }
+  // An arrived formation slot is provisional while the army is assembling.
+  // Explicit member orders detach or stop the army through observeOrder, so
+  // this permission cannot override a player-issued Hold.
+  yieldSlot(squad: Squad): WorldPoint | undefined {
+    const army=this.armyOf(squad.id),march=army && this.marches.get(army.id);
+    if(!army || !march || this.externalActions.has(army.id) || squad.order.type!=="hold" ||
+      (army.state!=="assembling" && army.state!=="marching" && army.state!=="regrouping") ||
+      (army.order.type!=="move" && army.order.type!=="regroup"))return undefined;
+    return march.slots.get(squad.id);
+  }
   groupOrder(
     ids: readonly number[],
     order: Order,

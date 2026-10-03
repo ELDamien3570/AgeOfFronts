@@ -40,6 +40,18 @@ describe("snapshot-driven HUD selection", () => {
     const moving=vm().selectionCard(null);if(moving.mode!=="detail")throw Error("Expected detail");
     expect(moving.card.status).toBe("Moving");
   });
+  it("shows the replicated blocker reason, IDs and wait duration", () => {
+    const {selection,vm,own,squads,snapshot}=setup();snapshot.tick=100;
+    squads.update(own[0].id,{order:{type:"move",tile:20},moved:false,movementStatus:{reason:"crowd",since:40,blockerIds:[17,23]}});
+    selection.selected.add(own[0].id);const selected=vm().selectionCard(null);
+    if(selected.mode!=="detail")throw Error("Expected detail");
+    expect(selected.card.status).toBe("Waiting for nearby squads");
+    expect(selected.card.stats).toContainEqual({label:"Blocking squads",value:"#17, #23"});
+    expect(selected.card.stats).toContainEqual({label:"Waiting",value:"3s"});
+    squads.update(own[0].id,{moved:true,movementStatus:{reason:"yielding",since:100,blockerIds:[]}});
+    const yielding=vm().selectionCard(null);if(yielding.mode!=="detail")throw Error("Expected detail");
+    expect(yielding.card.status).toBe("Making room for nearby squads");
+  });
   it("hides an empty selection and shows real troop health for a single squad", () => {
     const { selection, vm, own , squads } = setup();
     expect(vm().selectionCard(null).mode).toBe("empty");

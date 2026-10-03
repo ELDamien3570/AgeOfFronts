@@ -291,7 +291,7 @@ export class SnapshotEncoder {
       players: source.players.map((p) => ({ ...p })),
       expansion,
       expansionMode:metadata?(metadata.full?"full":"delta"):undefined,
-      squadDetails: source.expansion || selected.squads.rows.some(s => s.planningPaused)
+      squadDetails: source.expansion || selected.squads.rows.some(s => s.planningPaused || s.movementStatus)
         ? selected.squads.rows.map((s) => ({
             id: s.id,
             definitionId: s.definitionId,
@@ -300,6 +300,7 @@ export class SnapshotEncoder {
             nextAttackTick: s.nextAttackTick,
             lastAttackTick: s.lastAttackTick,
             planningPaused: s.planningPaused,
+            movementStatus: s.movementStatus ? {...s.movementStatus,blockerIds:[...s.movementStatus.blockerIds]} : undefined,
             refit: s.refit ? {...s.refit} : s.refit,
             charge: s.charge ? {...s.charge} : s.charge,
             chargeReadyTick: s.chargeReadyTick,
