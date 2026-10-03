@@ -1,3 +1,4 @@
+import { DEFENSIVE_BUILDINGS } from "./content/Buildings";
 import { domainRouteKey, type DomainRouteOwner, type DomainRoutePorts, type DomainRouteConsumer } from "./domain/DomainRoutePorts";
 import { EntityCollection } from "./EntityCollection";
 import { EntityChangeJournal } from "./EntityChangeJournal";
@@ -971,7 +972,7 @@ export class Skirmish {
     const transportCompleted = this.expansion?.progression.states[player.id]?.completed ?? [];
     const transportDefinition = shoreTransportDefinition(transportCompleted);
     if (order.type === "move" && selected.some(s => !this.paths.connected(this.tileOf(s!),order.tile) ||
-      (transportDefinition && this.shoreTransport.useful(s!,order.tile,transportDefinition)))) {
+      (!this.options.deferredPlanning && transportDefinition && this.shoreTransport.useful(s!,order.tile,transportDefinition)))) {
       const completed = this.expansion?.progression.states[player.id]?.completed ?? [];
       const definition = shoreTransportDefinition(completed);
       if (!definition) return "Research Cargo Canoes to cross water automatically";
@@ -2797,6 +2798,9 @@ export class Skirmish {
     return this.shoreTransport.start(playerId,squads,tile,definition,shoreTransportCapacity(completed));
   }
   preferArmyTransport(squads: Squad[], tile: number): boolean {
+    // Connected army moves stay on bounded land admission; disconnected moves
+    // enter the resumable shore planner through transportArmy.
+    if (this.options.deferredPlanning) return false;
     const completed = this.expansion?.progression.states[squads[0].playerId]?.completed ?? [];
     const definition = shoreTransportDefinition(completed);
     return !!definition && squads.some(squad=>this.shoreTransport.useful(squad,tile,definition));
@@ -3932,7 +3936,10 @@ export class Skirmish {
             ]
           : []),
       ]),
-      buildings = new Set(this.buildings.filter(b=>!b.remainingTicks&&(b.health??1)>0).map((b) => b.playerId)),
+      buildings = new Set(this.buildings.filter(b =>
+        !b.remainingTicks && (b.health ?? 1) > 0 &&
+        (!this.players.find(p => p.id === b.playerId)?.ai || !DEFENSIVE_BUILDINGS.includes(b.type))
+      ).map(b => b.playerId)),
       defeated = this.players.filter(
         (p) => !p.eliminated && !armies.has(p.id) && !buildings.has(p.id),
       );

@@ -254,11 +254,13 @@ export class ShoreTransport {
       const members=group.ids.map(id=>this.squad(id)!);
       let leg:ShoreLeg|undefined;
       const origin=pointTile(this.world.map,members[0]),connected=this.world.paths.connected(origin,plan.destination);
-      if(!connected || this.useful(members[0],plan.destination,plan.definition)){
+      // A shortcut is quoted by the resumable shore planner, never by the
+      // synchronous legacy coastline search inside this bounded work slice.
+      {
         const result=this.planning.request(`transfer:${plan.id}:${plan.cursor}`,plan.playerId,pointTile(this.world.map,members[0]),plan.destination);
         if(result.status==="pending")continue;
         if(result.status!=="complete"){
-          if(!connected||result.status==="limited"||result.status==="superseded"){this.finishStart(plan,result.status==="superseded"?"superseded":"rejected",result.reason??"No reachable water crossing");continue;}
+          if(!connected||result.status==="superseded"){this.finishStart(plan,result.status==="superseded"?"superseded":"rejected",result.reason??"No reachable water crossing");continue;}
         }else leg=result.leg;
       }
       if(connected&&leg){

@@ -169,7 +169,7 @@ describe("shared automatic production allocation", () => {
       }).values(),
     ];
     expect(values.filter((v) => v === "make-modern-equipment")).toHaveLength(
-      12,
+      40,
     );
     expect(
       values.filter((v) => v === "make-modern-siege-equipment"),
@@ -387,9 +387,9 @@ describe("persistent building-type priorities", () => {
         },
       }).values(),
     ];
-    expect(values.filter((v) => v === "make-modern-equipment")).toHaveLength(6);
+    expect(values.filter((v) => v === "make-modern-equipment")).toHaveLength(15);
     expect(values.filter((v) => v === "make-bronzeage-equipment")).toHaveLength(
-      6,
+      15,
     );
     const scarce = plan({
       buildings: [building(1, "depot"), building(2, "arms-factory")],

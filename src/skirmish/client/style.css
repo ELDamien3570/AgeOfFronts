@@ -2248,3 +2248,10 @@ footer span:last-child {
 }
 .spawn-selection[hidden] { display: none; }
 .spawn-selection p { margin: 6px 0 0; font-size: 14px; }
+
+.alliance-renewals { position: absolute; top: 12px; left: 50%; transform: translateX(-50%); z-index: 16; width: min(530px, calc(100% - 24px)); display: grid; gap: 8px; pointer-events: none; }
+.alliance-renewals[hidden] { display: none; }
+.alliance-renewal { padding: 12px 42px 12px 16px; position: relative; pointer-events: auto; display: grid; gap: 6px; border: 2px solid var(--age-rim, #c9ad70); background: #16252ef5; color: #fff2cf; box-shadow: 0 4px 20px #0009; }
+.alliance-renewal span { font-size: 12px; }
+.alliance-renewal [data-action="renew"] { justify-self: start; }
+.alliance-renewal [data-action="dismiss"] { position: absolute; right: 8px; top: 8px; }

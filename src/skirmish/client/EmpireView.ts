@@ -6,6 +6,7 @@ import { BUILDING_RULES } from "../Rules";
 
 import { UNIT } from "../content/Units";
 
+import { AllianceRenewalView } from "./AllianceRenewalView";
 import { AgeThemeView } from "./AgeThemeView";
 import { AGE_UI_THEMES } from "./AgeUiTheme";
 import { EmpireHudView } from "./EmpireHudView";
@@ -51,6 +52,7 @@ export class EmpireView {
   private readonly dock: EmpireHudView;
   private readonly researchOpportunities: ResearchOpportunitiesView;
   private readonly ageTheme: AgeThemeView;
+  private readonly allianceRenewals: AllianceRenewalView;
   readonly buildAges: Partial<Record<BuildingType, Age>> = {};
   readonly choices: Partial<Record<SquadType | ShipType, string>> = {};
 
@@ -83,6 +85,7 @@ export class EmpireView {
   ) {
     this.ageTheme = new AgeThemeView(root);
     const main = root.querySelector(".battlefield")!;
+    this.allianceRenewals = new AllianceRenewalView(main, command => this.actions.command(command));
     this.researchOpportunities = new ResearchOpportunitiesView(
       main,
       (command) => this.actions.command(command),
@@ -177,6 +180,7 @@ export class EmpireView {
 
   reset(): void {
     this.ageTheme.reset();
+    this.allianceRenewals.reset();
     this.researchOpportunities.reset();
     this.dock.reset();
     this.close();
@@ -247,6 +251,7 @@ export class EmpireView {
 
     this.dock.update(vm);
     this.researchOpportunities.update(vm);
+    this.allianceRenewals.update(vm);
 
     const focus = this.actions.focusedRef();
 

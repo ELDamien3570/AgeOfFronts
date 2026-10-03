@@ -190,7 +190,10 @@ export function automaticProduction(
   }
 
   const targets = new Map<ProductionRecipe, number>();
-  const troopTarget = Math.min(36, Math.max(12, Math.ceil(squadCount / 3)));
+  const troopCapacity = automatic.filter(b => ["blacksmith", "armory", "arms-factory"].includes(b.type)).length;
+  // Keep several batches per workshop ready for a human recruitment/refit burst.
+  // AI demand below replaces these buffers with its exact economic quote.
+  const troopTarget = Math.min(180, Math.max(12, troopCapacity * 3, Math.ceil(squadCount / 3)));
   const vehicleTarget = Math.min(6, Math.max(2, Math.ceil(squadCount / 12)));
   const siegeTarget = Math.min(4, Math.max(2, Math.ceil(squadCount / 16)));
   for (const kind of ["troop", "vehicle", "siege"] as const) {
@@ -354,19 +357,20 @@ export function automaticProduction(
         if (refiners.has(id))
           materialTargets[id] = Math.max(materialTargets[id] ?? 0, n * 2);
   }
+  const metalBuffer = context.ai ? 60 : Math.max(60, Math.min(3000, automatic.filter(b => b.type === "factory").length * 60));
   const newestMetal = smelting.find(
-    (r) => held(Object.keys(r.outputs)[0]) >= 60 || sustainable(r),
+    (r) => held(Object.keys(r.outputs)[0]) >= metalBuffer || sustainable(r),
   );
   if (newestMetal && !(context.ai && context.aiDemand))
     materialTargets[output(newestMetal)] = Math.max(
-      60,
+      metalBuffer,
       materialTargets[output(newestMetal)] ?? 0,
     );
 
   for (const r of smelting)
     if (priorities.factory?.includes(r.id))
       materialTargets[output(r)] = Math.max(
-        60,
+        metalBuffer,
         materialTargets[output(r)] ?? 0,
       );
 

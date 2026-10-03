@@ -375,6 +375,19 @@ export class EmpireViewModel {
     const selected=this.state.ships.filter(s=>s.playerId===this.playerId&&this.selection.selectedShips.has(s.id));
     return quoteShipRefits(selected,focusedId,{player:this.player,research:this.progression.completed,inventory:this.inventory});
   }
+  get allianceRenewals() {
+    return this.expansion.diplomacy.alliances
+      .filter(t => (t.a === this.playerId || t.b === this.playerId) &&
+        t.expiresTick > this.state.tick && t.expiresTick - this.state.tick <= 600)
+      .flatMap(t => {
+        const otherId = t.a === this.playerId ? t.b : t.a;
+        const other = this.state.players.find(p => p.id === otherId && !p.eliminated);
+        return other ? [{key: t.id + ":" + t.expiresTick, otherId, name: other.name,
+          seconds: Math.ceil((t.expiresTick - this.state.tick) / 20),
+          requested: t.renewal.includes(this.playerId)}] : [];
+      });
+  }
+
   get incoming() {
     return this.expansion.diplomacy.offers.filter(
       (o) => o.recipient === this.playerId,

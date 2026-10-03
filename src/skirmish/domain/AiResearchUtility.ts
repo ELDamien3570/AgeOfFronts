@@ -1,7 +1,7 @@
-import { buildingCost, buildingTechnology } from "../content/Buildings";
+import { buildingTechnology } from "../content/Buildings";
 import { PRODUCTION_RECIPES } from "../content/Production";
 import { RESOURCE_TECHNOLOGIES } from "../content/Resources";
-import { ADVANCES, TECHNOLOGIES } from "../content/Technology";
+import { TECHNOLOGIES } from "../content/Technology";
 import { UNITS, VESSELS } from "../content/Units";
 import type { AiEconomicSnapshot } from "./AiEconomicSnapshot";
 import type { AiProductionDemand } from "./AiMilitaryDemand";
@@ -176,11 +176,6 @@ export function usableNextAge(
         (b) =>
           b.type === u.building && !b.remainingTicks && (b.health ?? 1) > 0,
       ) &&
-      (snapshot.liquid.gold ?? 0) >=
-        (ADVANCES[AGES.indexOf(snapshot.age)]?.gold ?? 0) +
-          (u.cost.gold ?? 0) +
-          (buildingCost(u.building, age).gold ?? 0) +
-          (TECHNOLOGIES.find((t) => t.id === u.technologyId)?.gold ?? 0) &&
       Object.entries(u.cost.items ?? {}).every(([id, n]) =>
         dependencies.available(id, n),
       ),

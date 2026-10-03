@@ -1,3 +1,4 @@
+import { DEFAULT_AI_POLICIES } from "../content/AiPolicies";
 let localPlayerId = 1;
 let diagnosticSeed: number | undefined;
 import { OnlineMatchSession } from "./OnlineMatchSession";
@@ -536,6 +537,7 @@ async function start(): Promise<void> {
     const startingAge =
       (element<HTMLSelectElement>("starting-age")?.value as Age) || "StoneAge";
     const spawnOptions: MatchOptions = {
+      ...DEFAULT_AI_POLICIES,
       seed,
       aiCount: Number(element<HTMLSelectElement>("opponents").value),
       tribes: true,
@@ -558,6 +560,7 @@ async function start(): Promise<void> {
       resourceTerrain: loaded.resourceTerrain,
 
       options: {
+        ...DEFAULT_AI_POLICIES,
         seed,
 
         aiCount: Number(element<HTMLSelectElement>("opponents").value),
@@ -1423,6 +1426,8 @@ canvas.addEventListener("pointerup", (event) => {
 
     if (tile !== null) {
       if (placementType) {
+        const rejection = placementRejection(placementType, tile);
+        if (rejection) { notify(rejection); return; }
         const now = performance.now();
         if (now - lastPlacementTime >= 80) {
           lastPlacementTime = now;

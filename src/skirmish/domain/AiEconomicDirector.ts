@@ -280,8 +280,11 @@ export class AiEconomicDirector {
             s.troops > 0 &&
             s.embarkedOn === null &&
             this.expansion.diplomacy.hostile(player.id, s.playerId) &&
-            world.map.euclideanDistSquared(world.tileOf(s), player.base) <
-              40 ** 2,
+            world.map.euclideanDistSquared(world.tileOf(s), player.base) < 40 ** 2 &&
+            (world.owners[world.tileOf(s)] === player.id ||
+              world.map.euclideanDistSquared(world.tileOf(s), player.base) < 12 ** 2 ||
+              (s.order.type === "move" && world.owners[s.order.tile] === player.id) ||
+              (s.order.type === "attack" && world.squad(s.order.targetId)?.playerId === player.id)),
         )
         .reduce((n, s) => n + s.troops, 0),
     });
@@ -409,6 +412,17 @@ export class AiEconomicDirector {
         lastProgress:
           !goal || funded > goal.funded ? world.tick : goal.lastProgress,
       });
+      // The current goal retains its partial reservation. Independent research
+      // may use only unreserved liquid gold while troop/material supply catches up.
+      if (chosen.kind === "recruit") {
+        const development = candidates.find(candidate =>
+          (candidate.kind === "research" || candidate.kind === "advance") &&
+          affordableAiCost(this.ledger.spendable(player.id, snapshot.liquid, candidate.id, candidate.priority), candidate.cost));
+        if (development) {
+          this.diagnostics.commands++;
+          if (world.applyCommand(development.command)) this.diagnostics.rejected++;
+        }
+      }
       return;
     }
     this.diagnostics.commands++;

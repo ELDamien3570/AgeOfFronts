@@ -283,14 +283,12 @@ export function economicCandidates(
     );
   }
   for (const tree of personality.researchOrder) {
-    const technology = TECHNOLOGIES.find(
-      (t) =>
-        t.tree === tree &&
-        !researchRejection(state, Number.MAX_SAFE_INTEGER, t.id, speed),
-    );
-    if (!technology) continue;
-    const utility = researchUtility(technology, snapshot, demand, opportunity);
-    if (!utility.benefit) continue;
+    const eligible = TECHNOLOGIES.filter(t => t.tree === tree && !researchRejection(state, Number.MAX_SAFE_INTEGER, t.id, speed))
+      .map(technology => ({technology,utility:researchUtility(technology,snapshot,demand,opportunity)}))
+      .sort((a,b) => b.utility.benefit-a.utility.benefit || a.technology.slot-b.technology.slot);
+    const best = eligible.find(row=>row.utility.benefit>0);
+    if (!best) continue;
+    const {technology,utility} = best;
     const survival = snapshot.threatTroops > snapshot.readyTroops && technology.tree !== "warfare" ? 0 : utility.benefit;
     const bias = personality.id === "scholar" ? 1600 : 0;
     emit(
@@ -328,10 +326,12 @@ export function economicCandidates(
   }
   // Saving is selected by the coordinator when the best useful step exceeds
   // current liquid stock; gold here never grants forecast purchasing credit.
-  return candidates
-    .filter((c) => c.score > 0)
-    .sort(
-      (a, b) => b.score - a.score || (a.id < b.id ? -1 : a.id > b.id ? 1 : 0),
-    )
-    .slice(0, 4);
+  const ordered = candidates.filter(c => c.score > 0).sort(
+    (a,b) => b.score-a.score || (a.id < b.id ? -1 : a.id > b.id ? 1 : 0),
+  );
+  const choices = ordered.slice(0,4);
+  // A reserve-starved recruit must not hide every gold-only development option.
+  const development = ordered.find(c => c.kind === "research" || c.kind === "advance");
+  if (development && !choices.includes(development)) choices[choices.length-1] = development;
+  return choices;
 }

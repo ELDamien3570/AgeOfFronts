@@ -358,8 +358,11 @@ export class RoutePlanner<T> {
         if (job.releasing) {
           const slice = Math.min(quantum, budget - used);
           let count = 0;
+          // Reuse one iterator for this charged slice. Recreating it per node
+          // repeatedly walks the deleted prefix of a large search map.
+          const entries = job.search.nodes.entries();
           while (job.search.nodes.size && count < slice) {
-            const [tile, slot] = job.search.nodes.entries().next().value!;
+            const [tile, slot] = entries.next().value!;
             this.workspace.release(slot);
             job.search.nodes.delete(tile);
             count++;

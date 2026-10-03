@@ -1,3 +1,4 @@
+import { DEFAULT_AI_POLICIES } from "../../content/AiPolicies";
 import { SPAWN_SECONDS } from "../../domain/SpawnSelection";
 import { RuntimeDiagnostics, RuntimeProgress } from "../../RuntimeDiagnostics";
 import {ClientStateFlow} from "./ClientStateFlow";
@@ -140,6 +141,7 @@ export class LiveMatch {
       }),
     );
     this.options = {
+      ...DEFAULT_AI_POLICIES,
       seed: Math.floor(Math.random() * 0x7fffffff),
       humanNames: reservation.members.map((member) => member.profile.name),
       aiCount: settings.aiCount,

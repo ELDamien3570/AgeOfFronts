@@ -359,9 +359,9 @@ export interface MatchOptions {
   resourceOutput?: 1 | 2 | 3 | 5;
   alliances?: boolean;
   runAi?: boolean;
-  /** Experimental policy; stays opt-in until the ARM performance gate passes. */
+  /** Economic demand policy. Normal games enable the shared AI policy defaults. */
   aiEconomy?: boolean;
-  /** Transactional route admission; opt-in until planning gates pass. */
+  /** Bounded transactional route admission. Explicit false preserves legacy replay. */
   deferredPlanning?: boolean;
   /** City defense trials require the shared opt-in economy coordinator. */
   aiDefenses?: boolean;
