@@ -111,6 +111,7 @@ export class MovementAdmission {
     this.pending.clear();
     this.pendingBySquad.clear();
     for (const [id, admission] of structuredClone(saved.pending)) {
+      FormationPlanning.normalizeCheckpoint(admission.formation);
       this.pending.set(id, admission);
       for (const member of admission.members)
         this.pendingBySquad.set(member.id, id);
@@ -118,8 +119,10 @@ export class MovementAdmission {
     this.intents.clear();
     this.intentsBySquad.clear();
     this.intentsByAdmission.clear();
-    for (const [, intent] of structuredClone(saved.intents ?? []))
+    for (const [, intent] of structuredClone(saved.intents ?? [])) {
+      if (intent.formation) FormationPlanning.normalizeCheckpoint(intent.formation);
       this.addIntent(intent);
+    }
     this.nextId = saved.nextId;
     this.events.splice(0, this.events.length, ...structuredClone(saved.events));
   }

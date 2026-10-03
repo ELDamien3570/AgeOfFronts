@@ -429,3 +429,39 @@ P02-P30 remain open at this checkpoint. No experimental default, target-capacity
 tier, artwork integration, remote publication or deployment was authorized by
 this local code gate. Real-browser acceptance and actual ARM capacity are still
 unverified.
+
+### P02 structural consumer envelope and recovery slice
+
+`codex/optimization-consumer-envelopes-local` implements coordinated producer/decoder
+envelopes, sparse active arena saves, an explicit reader for legacy full arenas,
+finite pending-formation values with legacy sentinel migration, and close-time
+cleanup for stalled renderer projections and receipt history. Exact transport
+boundaries, malformed partitions, restored free order and deterministic pending
+movement are covered by focused tests. Shared limits enter runtime compatibility
+identity; experimental defaults and existing protective ceilings are retained.
+
+The inventory and reproducible small local memory samples are in
+`Optimization Handoff/Evidence/02-consumer-envelope.md` and its JSON companion.
+Runtime identity: `0ab1914af298824ea28f450586520247ccb67c9eb6231a41ec0fb4e7165aa705`.
+The fixture is Windows x64 Node 24.18.0, 128 by 96, seed 47, ages-v1, one AI,
+no tribes, AI disabled, deferred planning enabled, tick 1 after a human move.
+The active arena fixture has 65,536 slots with two in use; its typed save bytes
+fall from 2,097,152 to 262,200 while preserving exact future allocation order.
+Sampled memory is neither an exact transient peak nor convergence/capacity proof.
+
+Focused regression tests, TypeScript, script typechecking, production build,
+whitespace and scoped lint pass. The full unchanged-timeout suite ran all 1024
+tests in 156 files: 1019 passed, five timed out in VallesKairuliaMap, ShoreTransport,
+Tribes and Movement. The affected four files were rerun unchanged: 34 of 39
+passed, with five timeouts (Movement passed). With all P02 files temporarily
+set aside, identical P01 source from `14fafeb` produced six timeouts in the same
+map/tribe/shore files, 33 of 39 passed. The concurrent Art-only parent `59c4eeb`
+was preserved and its simulation/tests were verified identical to `14fafeb`.
+This demonstrates baseline timing failures in the current environment; it does
+not turn the full suite into a clean pass. Timeouts and assertions are unchanged.
+The green full-suite timing gate and mature-world/browser/ARM memory qualification
+remain open. P03 is independent of P02 and can proceed with this evidence retained.
+
+The user explicitly approved enforcing read-only entity collections/records with
+domain mutation methods and migrating affected fixtures for P03. P03-P30 still
+require implementation and their own acceptance evidence.

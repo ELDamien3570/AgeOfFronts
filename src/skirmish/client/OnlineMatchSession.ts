@@ -12,9 +12,10 @@ import type { CommandOutcome } from "../CommandApplications";
 import { mapIdentity } from "../multiplayer/application/MapIdentity";
 import { OnlineLobbyConnection } from "./lobby/OnlineLobbyConnection";
 import { RuntimeDiagnostics } from "../RuntimeDiagnostics";
+import { SNAPSHOT_QUEUE_LIMITS } from "../multiplayer/StateLimits";
 
-const MAX_PENDING_STATES = 8;
-const MAX_PENDING_BYTES=16*1024*1024;
+const MAX_PENDING_STATES = SNAPSHOT_QUEUE_LIMITS.states;
+const MAX_PENDING_BYTES=SNAPSHOT_QUEUE_LIMITS.bytes;
 interface DecodedState {canonicalOnly?:boolean;packet:SnapshotPacket;snapshot?:Snapshot;canonicalSequence?:number;decodeMs?:number;applyMs?:number;projectionMs?:number;decodeStats?:StateDecodeStats;}
 interface Presentation {data:Extract<WorkerResponse,{type:"state"}>;sequence?:number;}
 
@@ -149,6 +150,8 @@ export class OnlineMatchSession {
   runtimeDiagnostics() {
     return { matchId: this.matchId, runtimeId: this.manifest?.runtimeId, tick: this.lastTick,
       publicationSequence: this.lastPublicationSequence, ...this.diagnostics,
+      queuedPresentations: Number(!!this.latestPresentation), projectionPending: Number(!!this.pendingView),
+      commandOutcomeEntries: this.commandOutcomes.size,
       timings: this.timings.snapshot(), retainedBytes: this.timings.retainedBytes };
   }
   postMessage(message: WorkerRequest): void {
@@ -200,6 +203,10 @@ export class OnlineMatchSession {
     this.decoder?.terminate();
     this.decoding?.reject(new Error("Session stopped"));
     this.decoding = undefined;
+    this.latestPresentation = undefined;
+    this.pendingView = undefined;
+    this.recoveryStarted = undefined;
+    this.commandOutcomes.clear();
   }
   private recordCommandOutcome(outcome: CommandOutcome): void {
     this.commandOutcomes.delete(outcome.id);
@@ -238,11 +245,16 @@ export class OnlineMatchSession {
   }
   private present(update:Presentation):Promise<void> {
     const started=performance.now();
-    const task=Promise.resolve().then(()=>this.stopped ? undefined : this.onmessage?.({data:update.data} as MessageEvent<WorkerResponse>))
+    const sequence = update.sequence;
+    let data: Presentation["data"] | undefined = update.data;
+    const task=Promise.resolve().then(()=>{
+      const delivered = data; data = undefined;
+      return this.stopped ? undefined : this.onmessage?.({data:delivered} as MessageEvent<WorkerResponse>);
+    })
       .then(()=>{
         this.diagnostics.presentationMs=performance.now()-started;
         this.timings.record("presentation", this.diagnostics.presentationMs);
-        if(!this.stopped && update.sequence!==undefined)this.decoder?.postMessage({type:"presented",sequence:update.sequence});
+        if(!this.stopped && sequence!==undefined)this.decoder?.postMessage({type:"presented",sequence});
       });
     this.presenting=task;
     void task.catch(error=>this.fail(error.message)).finally(()=>{

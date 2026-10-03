@@ -113,6 +113,28 @@ afterEach(() => {
 });
 
 describe("server-only match client", () => {
+  it("releases queued views and receipt history on close while a renderer callback is stalled", async () => {
+    await initialize();
+    const decoder = DecoderWorker.instances[0];
+    let finish!: () => void;
+    session.onmessage = () => new Promise<void>(resolve => { finish = resolve; });
+    connection().message(state(0));
+    await vi.waitFor(() => expect(decoder.postMessage).toHaveBeenCalledTimes(1));
+    decoder.deliver(packet(0), { tick: 0 } as Snapshot, 1);
+    await vi.waitFor(() => expect(finish).toBeTypeOf("function"));
+    connection().message(state(4));
+    await vi.waitFor(() => expect(decoder.postMessage).toHaveBeenCalledTimes(2));
+    decoder.deliver(packet(4), { tick: 4 } as Snapshot, 2);
+    await vi.waitFor(() => expect(session.runtimeDiagnostics().queuedPresentations).toBe(1));
+    connection().message({ type: "match-command-outcome", matchId: manifest.id,
+      outcome: { id: "receipt", playerId: 2, tick: 4, status: "executed" } });
+    expect(session.runtimeDiagnostics().commandOutcomeEntries).toBe(1);
+    session.terminate();
+    expect(session.runtimeDiagnostics()).toMatchObject({ queuedPresentations: 0, projectionPending: 0, commandOutcomeEntries: 0 });
+    finish();
+    await Promise.resolve(); await Promise.resolve();
+    expect(decoder.postMessage).not.toHaveBeenCalledWith({ type: "presented", sequence: 1 });
+  });
   it("correlates bounded browser observations and leaves missing stage samples absent", async () => {
     await initialize();
     expect(session.runtimeDiagnostics().timings.decode).toBeUndefined();

@@ -17,7 +17,8 @@ type Member = Pick<Squad, "id" | "kind" | "playerId"> & { origin: WorldPoint };
 type Reservation = Pick<Squad, "id" | "kind" | "playerId"> & WorldPoint;
 export interface FormationPlanningState {
   center: number;
-  maximumRadius: number;
+  /** Undefined means no radius limit; persisted state contains no Infinity sentinel. */
+  maximumRadius: number | undefined;
   pending: Member[];
   selected: Set<number>;
   preferred?: Map<number, WorldPoint>;
@@ -47,7 +48,8 @@ export interface FormationPlanningState {
   ring: number;
   perimeter: number;
   best?: WorldPoint;
-  bestDistance: number;
+  /** Undefined until a legal candidate exists. */
+  bestDistance: number | undefined;
   candidate?: WorldPoint;
   bucket: number;
   entry: number;
@@ -59,6 +61,12 @@ export interface FormationPlanningState {
  * The owner must revalidate live occupancy before admitting the whole order.
  */
 export class FormationPlanning {
+  static normalizeCheckpoint(state: FormationPlanningState): void {
+    // Earlier structured checkpoints used positive Infinity for these two
+    // explicit unset states. Preserve their exact meaning on migration.
+    if (state.maximumRadius === Infinity) state.maximumRadius = undefined;
+    if (state.bestDistance === Infinity) state.bestDistance = undefined;
+  }
   readonly state: FormationPlanningState;
   constructor(
     private readonly map: GameMap,
@@ -73,6 +81,7 @@ export class FormationPlanning {
   ) {
     if (saved) {
       this.state = saved;
+      FormationPlanning.normalizeCheckpoint(this.state);
       return;
     }
     const target = tilePoint(map, center),
@@ -86,7 +95,7 @@ export class FormationPlanning {
       columns = Math.ceil(Math.sqrt(members.length));
     this.state = {
       center,
-      maximumRadius,
+      maximumRadius: maximumRadius === Infinity ? undefined : maximumRadius,
       preferred,
       additionalOrders,
       pending: members
@@ -113,7 +122,7 @@ export class FormationPlanning {
       nearestCursor: 1,
       ring: -1,
       perimeter: 0,
-      bestDistance: Infinity,
+      bestDistance: undefined,
       bucket: 0,
       entry: 0,
       checkingSlots: false,
@@ -152,7 +161,7 @@ export class FormationPlanning {
       s.ring = 0;
       s.perimeter = 0;
       s.best = undefined;
-      s.bestDistance = Infinity;
+      s.bestDistance = undefined;
     } else if (free) {
       s.best = s.candidate;
       s.bestDistance = distanceSquared(s.candidate!, s.ideal!);
@@ -264,13 +273,13 @@ export class FormationPlanning {
             x: tile.x * FIXED + FIXED / 2,
             y: tile.y * FIXED + FIXED / 2,
           };
-          if (distanceSquared(s.candidate, s.ideal!) >= s.bestDistance)
+          if (distanceSquared(s.candidate, s.ideal!) >= (s.bestDistance ?? Infinity))
             continue;
         }
         const point = s.candidate!,
           tile = pointTile(this.map, point);
         if (
-          distanceSquared(point, target) > s.maximumRadius ** 2 ||
+          (s.maximumRadius !== undefined && distanceSquared(point, target) > s.maximumRadius ** 2) ||
           !standable(this.map, point, squadRadius(s.member!.kind)) ||
           blocked?.(tile) ||
           !this.paths.connected(s.center, tile)

@@ -1,4 +1,5 @@
 import { RuntimeDiagnostics } from "../RuntimeDiagnostics";
+import { MAX_RLE_ELEMENTS, stateEnvelope, type StateEnvelope } from "./StateLimits";
 
 const NO_DIAGNOSTICS = new RuntimeDiagnostics(1, false);
 export interface EncodedState {
@@ -86,7 +87,8 @@ function unbase64(text: string): Uint8Array<ArrayBuffer> {
   }
   return output;
 }
-function pack(value: unknown, buffers: Uint8Array[]): WireValue {
+function pack(value: unknown, buffers: Uint8Array[], budget: DecodeAllocation, depth = 0): WireValue {
+  if (depth > 64) throw new Error("Checkpoint nesting exceeds the limit");
   if (value === undefined) return { $: "undefined" };
   if (value === null || typeof value === "boolean" || typeof value === "string")
     return value;
@@ -96,18 +98,20 @@ function pack(value: unknown, buffers: Uint8Array[]): WireValue {
     if (Object.is(value, -0)) return { $: "-0" };
     return value;
   }
-  if (Array.isArray(value)) return value.map((item) => pack(item, buffers));
+  if (Array.isArray(value)) return value.map((item) => pack(item, buffers, budget, depth + 1));
   if (value instanceof Map)
     return {
       $: "map",
       entries: [...value].map(([key, item]) => [
-        pack(key, buffers),
-        pack(item, buffers),
+        pack(key, buffers, budget, depth + 1),
+        pack(item, buffers, budget, depth + 1),
       ]),
     };
   if (value instanceof Set)
-    return { $: "set", entries: [...value].map((item) => pack(item, buffers)) };
+    return { $: "set", entries: [...value].map((item) => pack(item, buffers, budget, depth + 1)) };
   if (value instanceof Uint8Array || value instanceof Uint16Array) {
+    if (value.length > MAX_RLE_ELEMENTS) throw new Error("Invalid checkpoint array");
+    allocate(budget, value.byteLength);
     const runs = runLength(value);
     if (runs) {
       const index = buffers.length;
@@ -121,6 +125,7 @@ function pack(value: unknown, buffers: Uint8Array[]): WireValue {
   }
   for (const [name, type] of Object.entries(types))
     if (value instanceof type) {
+      if (!(value instanceof Uint8Array || value instanceof Uint16Array)) allocate(budget, value.byteLength);
       const index = buffers.length;
       buffers.push(
         new Uint8Array(value.buffer, value.byteOffset, value.byteLength),
@@ -136,7 +141,7 @@ function pack(value: unknown, buffers: Uint8Array[]): WireValue {
   for (const [key, item] of Object.entries(value)) {
     if (["$", "__proto__", "constructor", "prototype"].includes(key))
       throw new Error("Invalid checkpoint key");
-    result[key] = pack(item, buffers);
+    result[key] = pack(item, buffers, budget, depth + 1);
   }
   return result;
 }
@@ -147,7 +152,7 @@ export interface StateDecodeStats {
   metadataBytes: number;
   metadataTokens: number;
 }
-export interface StateDecodeLimits {
+export interface StateDecodeLimits extends Partial<StateEnvelope> {
   /** Optional observer, never encoded into canonical state. */
   diagnostics?: RuntimeDiagnostics;
   /** Aggregate output allocation, including repeated references to one buffer. */
@@ -162,6 +167,7 @@ interface DecodeAllocation {
   bytes: number;
   arrays: number;
   limit: number;
+  arrayLimit: number;
 }
 /** A preflight, not a second JSON parser: JSON.parse still validates syntax.
  * Strings and escapes are skipped as a unit, so brackets inside text cannot
@@ -212,6 +218,7 @@ function metadataTokens(bytes: Uint8Array, limit: number): number {
   return tokens;
 }
 function allocate(budget: DecodeAllocation, bytes: number): void {
+  if (budget.arrays >= budget.arrayLimit) throw new Error("Decoded arrays exceed the array count budget");
   if (
     !Number.isSafeInteger(bytes) ||
     bytes < 0 ||
@@ -257,7 +264,7 @@ function unpack(
       typeof length !== "number" ||
       !Number.isInteger(length) ||
       length < 0 ||
-      length > 64_000_000
+      length > MAX_RLE_ELEMENTS
     )
       throw new Error("Invalid checkpoint array");
     const bytes = buffers[index];
@@ -328,23 +335,25 @@ async function digest(bytes: Uint8Array<ArrayBuffer>): Promise<string> {
     .map((byte) => byte.toString(16).padStart(2, "0"))
     .join("");
 }
-export async function encodeState(value: unknown, diagnostics = NO_DIAGNOSTICS): Promise<EncodedState> {
+export async function encodeState(value: unknown, diagnostics = NO_DIAGNOSTICS, limits: Partial<StateEnvelope> = {}): Promise<EncodedState> {
+  const envelope = stateEnvelope(limits);
   const buffers: Uint8Array[] = [];
-  const valueTree = diagnostics.measure("pack", () => pack(value, buffers));
+  const budget = { bytes: 0, arrays: 0, limit: envelope.maxArrayBytes, arrayLimit: envelope.maxArrays };
+  const valueTree = diagnostics.measure("pack", () => pack(value, buffers, budget));
   const metadata = diagnostics.measure("json", () => enc.encode(
     JSON.stringify({
       value: valueTree,
       lengths: buffers.map((buffer) => buffer.byteLength),
     }),
   ));
+  if (metadata.byteLength > envelope.maxMetadataBytes) throw new Error("Checkpoint metadata exceeds the byte budget");
+  metadataTokens(metadata, envelope.maxMetadataTokens);
   const bytes = diagnostics.measure("bufferCopy", () => {
+  const size = 8 + metadata.length + buffers.reduce((total, buffer) => total + buffer.length, 0);
+  if (!Number.isSafeInteger(size) || size > envelope.maxWireBytes) throw new Error("Checkpoint exceeds the size limit");
   const bytes = new Uint8Array(
-    8 +
-      metadata.length +
-      buffers.reduce((total, buffer) => total + buffer.length, 0),
+    size,
   );
-  if (bytes.length > 64_000_000)
-    throw new Error("Checkpoint exceeds the size limit");
   const header = new DataView(bytes.buffer);
   header.setUint32(0, 0x414f4601, false);
   header.setUint32(4, metadata.length, true);
@@ -361,6 +370,8 @@ export async function encodeState(value: unknown, diagnostics = NO_DIAGNOSTICS):
       new Response(bytes).body!.pipeThrough(new CompressionStream("gzip")),
     ).arrayBuffer(),
   ));
+  if (4 * Math.ceil(compressed.byteLength / 3) > envelope.maxPayloadChars)
+    throw new Error("Checkpoint exceeds the encoded payload limit");
   return { hash: await diagnostics.measureAsync("hash", () => digest(bytes)),
     payload: diagnostics.measure("base64", () => base64(compressed)) };
 }
@@ -369,14 +380,8 @@ export async function decodeState<T>(
   limits: StateDecodeLimits = {},
 ): Promise<T> {
   const diagnostics = limits.diagnostics ?? NO_DIAGNOSTICS;
-  for (const limit of [
-    limits.maxArrayBytes,
-    limits.maxMetadataBytes,
-    limits.maxMetadataTokens,
-  ])
-    if (limit !== undefined && (!Number.isSafeInteger(limit) || limit < 0))
-      throw new Error("Invalid decoded memory budget");
-  if (!/^[a-f0-9]{64}$/u.test(state.hash) || state.payload.length > 32_000_000)
+  const envelope = stateEnvelope(limits);
+  if (!/^[a-f0-9]{64}$/u.test(state.hash) || state.payload.length > envelope.maxPayloadChars)
     throw new Error("Invalid encoded checkpoint");
   const compressed = diagnostics.measure("base64", () => unbase64(state.payload));
   const decompressStarted = diagnostics.enabled ? performance.now() : 0;
@@ -389,7 +394,7 @@ export async function decodeState<T>(
     const chunk = await reader.read();
     if (chunk.done) break;
     size += chunk.value.byteLength;
-    if (size > 64_000_000) {
+    if (size > envelope.maxWireBytes) {
       await reader.cancel();
       throw new Error("Checkpoint exceeds the size limit");
     }
@@ -413,12 +418,12 @@ export async function decodeState<T>(
     metadataLength > bytes.length - 8
   )
     throw new Error("Unsupported checkpoint format");
-  if (metadataLength > (limits.maxMetadataBytes ?? 64_000_000))
+  if (metadataLength > envelope.maxMetadataBytes)
     throw new Error("Checkpoint metadata exceeds the byte budget");
   const metadataBytes = bytes.subarray(8, 8 + metadataLength);
   const tokens = metadataTokens(
     metadataBytes,
-    limits.maxMetadataTokens ?? 4_000_000,
+    envelope.maxMetadataTokens,
   );
   const metadata = diagnostics.measure("json", () => JSON.parse(dec.decode(metadataBytes)));
   if (
@@ -428,7 +433,7 @@ export async function decodeState<T>(
     !("value" in metadata)
   )
     throw new Error("Invalid checkpoint metadata");
-  if (!Array.isArray(metadata.lengths) || metadata.lengths.length > 100_000)
+  if (!Array.isArray(metadata.lengths) || metadata.lengths.length > envelope.maxArrays)
     throw new Error("Invalid checkpoint buffers");
   const buffers: Uint8Array[] = [];
   let offset = 8 + metadataLength;
@@ -447,7 +452,8 @@ export async function decodeState<T>(
   const budget = {
     bytes: 0,
     arrays: 0,
-    limit: limits.maxArrayBytes ?? 256_000_000,
+    limit: envelope.maxArrayBytes,
+    arrayLimit: envelope.maxArrays,
   };
   const result = diagnostics.measure("unpack", () => unpack(metadata.value, buffers, budget)) as T;
   limits.onDecoded?.({

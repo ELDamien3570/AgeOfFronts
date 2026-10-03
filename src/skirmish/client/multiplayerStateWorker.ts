@@ -5,14 +5,14 @@ import {
   type StateDecodeStats,
 } from "../multiplayer/StateCodec";
 import { CanonicalStateStream } from "./CanonicalStateStream";
+import { SNAPSHOT_STATE_LIMITS } from "../multiplayer/StateLimits";
 
 // Network decompression, hashing and parsing stay off the rendering thread.
 // OnlineMatchSession admits one decode at a time and bounds queued states.
 let stream: CanonicalStateStream | undefined;
 let expectedMap: { width: number; height: number } | undefined;
-// SnapshotPacket uses word arrays, not expanded RLE map arrays: a valid
-// encoder's aggregate typed output is already below its 64 MB wire ceiling.
-const MAX_SNAPSHOT_ARRAY_BYTES = 64_000_000;
+// Snapshot transport uses the same array, metadata and payload profile at
+// both ends; the wire ceiling alone cannot bound decoded RLE allocation.
 let incoming = Promise.resolve();
 self.onmessage = (
   event: MessageEvent<
@@ -68,7 +68,7 @@ self.onmessage = (
       let decodeStats: StateDecodeStats | undefined;
       const started = performance.now(),
         packet = await decodeState<SnapshotPacket>(event.data, {
-          maxArrayBytes: MAX_SNAPSHOT_ARRAY_BYTES,
+          ...SNAPSHOT_STATE_LIMITS,
           onDecoded: (stats) => {
             decodeStats = stats;
           },

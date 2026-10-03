@@ -8,6 +8,50 @@ import {
 } from "../../src/skirmish/multiplayer/StateCodec";
 import { Skirmish } from "../../src/skirmish/Simulation";
 describe("portable recovery transport", () => {
+  it("encodes and restores a pending formation without nonfinite sentinel state", async () => {
+    const terrain = new Uint8Array(128 * 96).fill(133);
+    const options = { seed: 47, aiCount: 1, tribes: false, runAi: false, ruleset: "ages-v1" as const, deferredPlanning: true };
+    const make = () => new Skirmish(createSkirmishMap(128, 96, terrain), options);
+    const first = make(), squad = first.squads.find(unit => unit.playerId === 1)!;
+    expect(first.applyCommand({ type: "order", playerId: 1, squadIds: [squad.id], order: { type: "move", tile: first.map.ref(100, 70) } })).toBeNull();
+    first.step();
+    expect(first.movementAdmission.pendingCount).toBeGreaterThan(0);
+    const saved = await decodeState<ReturnType<Skirmish["checkpoint"]>>(await encodeState(first.checkpoint()));
+    const second = make(); second.restore(saved);
+    expect(second.checkpoint()).toEqual(first.checkpoint());
+    const legacy = structuredClone(saved);
+    for (const [, admission] of legacy.admission!.pending) {
+      admission.formation.maximumRadius ??= Infinity;
+      admission.formation.bestDistance ??= Infinity;
+    }
+    const migrated = make(); migrated.restore(legacy);
+    expect(await decodeState(await encodeState(migrated.checkpoint()))).toEqual(saved);
+    for (let tick = 0; tick < 30; tick++) { first.step(); second.step(); migrated.step(); }
+    expect(second.checkpoint()).toEqual(first.checkpoint());
+    expect(migrated.checkpoint()).toEqual(first.checkpoint());
+  });
+  it("enforces the same wire envelope before materialization and before decoder output allocation", async () => {
+    const value = { data: new Uint32Array(1024).fill(42) };
+    await expect(encodeState(value, undefined, { maxWireBytes: 128 })).rejects.toThrow("size limit");
+    const encoded = await encodeState(value);
+    const wireBytes = gunzipSync(Buffer.from(encoded.payload, "base64")).byteLength;
+    const exact = { maxWireBytes: wireBytes, maxPayloadChars: encoded.payload.length };
+    expect(await decodeState(await encodeState(value, undefined, exact), exact)).toEqual(value);
+    await expect(encodeState(value, undefined, { maxWireBytes: wireBytes - 1 })).rejects.toThrow("size limit");
+    await expect(decodeState(encoded, { maxWireBytes: wireBytes - 1 })).rejects.toThrow("size limit");
+    await expect(encodeState(value, undefined, { maxPayloadChars: encoded.payload.length - 1 })).rejects.toThrow("encoded payload");
+    await expect(decodeState(encoded, { maxWireBytes: 128 })).rejects.toThrow("size limit");
+    await expect(encodeState(value, undefined, { maxPayloadChars: 4 })).rejects.toThrow("encoded payload");
+    await expect(decodeState(encoded, { maxPayloadChars: 4 })).rejects.toThrow("encoded checkpoint");
+    await expect(encodeState(value, undefined, { maxWireBytes: NaN })).rejects.toThrow("memory budget");
+  });
+  it("preflights aggregate producer output and accepts exact decoder allocation boundaries", async () => {
+    const value = { a: new Uint16Array(5000).fill(3), b: new Uint16Array(5000).fill(4) };
+    const limits = { maxArrayBytes: 20_000 };
+    await expect(encodeState(value, undefined, { maxArrayBytes: 19_999 })).rejects.toThrow("memory budget");
+    expect(await decodeState(await encodeState(value, undefined, limits), limits)).toEqual(value);
+    await expect(encodeState(value, undefined, { maxMetadataTokens: 1 })).rejects.toThrow("token budget");
+  });
   it("accepts canonical base64 with every padding length and rejects noncanonical or interior padding", async () => {
     for (let i = 0; i < 24; i++) {
       const value = { text: "x".repeat(i), array: new Uint32Array([i]) };
