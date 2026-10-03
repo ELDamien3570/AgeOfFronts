@@ -407,7 +407,7 @@ export class Renderer {
   private resize(): void {
     const rect = this.canvas.parentElement!.getBoundingClientRect();
     const ratio = window.devicePixelRatio || 1;
-    const initialized=this.width>0&&this.height>0;
+    const initialized=!!this.map&&this.width>0&&this.height>0;
     if(initialized&&Math.abs(rect.width-this.width)<1&&Math.abs(rect.height-this.height)<1&&
       this.canvas.width===Math.round(rect.width*ratio)&&this.canvas.height===Math.round(rect.height*ratio))return;
     const centerX=(this.width/2-this.offsetX)/this.scale,centerY=(Math.max(100,this.height-this.hudBottomInset)/2-this.offsetY)/this.scale;
