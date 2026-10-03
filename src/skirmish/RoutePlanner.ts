@@ -30,7 +30,7 @@ export type ExactRouteOutcome =
   | "limited"
   | "superseded";
 export interface RoutePlannerPorts<T> {
-  /** Read-only diagnostic attribution; never retained in job checkpoints. */
+  /** Domain attribution for fair scheduling and bounded cohort diagnostics. */
   identity?(request: ExactRouteRequest<T>): { playerId: number; caller: PlannerCaller };
   prepare?(
     request: ExactRouteRequest<T>,
@@ -63,6 +63,10 @@ export class RoutePlanner<T> {
   private readonly jobs = new Map<string, Job<T>>();
   private readonly cohorts = new Map<string, PlannerCohort>();
   private readonly workspace: PlanningWorkspace;
+  // Version 1 restores historical FIFO checkpoints without changing their outcomes.
+  private schedulingVersion = 2;
+  private lastPlayer = -1;
+  private readonly lastCaller = new Map<number, number>();
   readonly diagnostics = {
     work: 0,
     pending: 0,
@@ -92,10 +96,13 @@ export class RoutePlanner<T> {
       waterRevision: this.water.revision,
       jobs: [...this.jobs.values()],
       workspace: this.workspace.checkpoint(),
+      scheduling: { version: this.schedulingVersion, lastPlayer: this.lastPlayer,
+        lastCaller: [...this.lastCaller] },
     });
   }
   restore(
-    saved: Omit<ReturnType<RoutePlanner<T>["checkpoint"]>, "workspace"> & {
+    saved: Omit<ReturnType<RoutePlanner<T>["checkpoint"]>, "workspace" | "scheduling"> & {
+      scheduling?: ReturnType<RoutePlanner<T>["checkpoint"]>["scheduling"];
       workspace?: ReturnType<PlanningWorkspace["checkpoint"]>;
     },
   ): void {
@@ -109,6 +116,11 @@ export class RoutePlanner<T> {
       saved.workspace ??
         new PlanningWorkspace(this.workspace.capacity).checkpoint(),
     );
+    this.schedulingVersion = saved.scheduling?.version ?? 1;
+    if (![1, 2].includes(this.schedulingVersion)) throw new Error("Unknown planner scheduling version");
+    this.lastPlayer = saved.scheduling?.lastPlayer ?? -1;
+    this.lastCaller.clear();
+    for (const [player, caller] of saved.scheduling?.lastCaller ?? []) this.lastCaller.set(player, caller);
     this.jobs.clear();
     for (const job of structuredClone(saved.jobs)) this.jobs.set(job.key, job);
     this.diagnostics.pending = this.jobs.size;
@@ -139,6 +151,28 @@ export class RoutePlanner<T> {
       cohort.oldestAge = Math.max(cohort.oldestAge, tick - job.createdTick, 0);
     }
     return [...this.cohorts.values()].map(cohort => ({ ...cohort }));
+  }
+  private nextJob(): [string, Job<T>] {
+    if (this.schedulingVersion === 1) return this.jobs.entries().next().value!;
+    // At most 128 jobs. Select the next active player, then the next active
+    // command class. Adding jobs to a crowded cohort cannot buy extra turns.
+    const players = new Map<number, Map<number, [string, Job<T>]>>();
+    for (const [key, job] of this.jobs) {
+      const { playerId, caller } = this.cohort(job);
+      let classes = players.get(playerId);
+      if (!classes) players.set(playerId, classes = new Map());
+      const index = PLANNER_CALLERS.indexOf(caller);
+      if (!classes.has(index)) classes.set(index, [key, job]);
+    }
+    const ids = [...players.keys()].sort((a, b) => a - b);
+    const player = ids.find(id => id > this.lastPlayer) ?? ids[0];
+    const classes = players.get(player)!;
+    const callers = [...classes.keys()].sort((a, b) => a - b);
+    const previous = this.lastCaller.get(player) ?? -1;
+    const caller = callers.find(index => index > previous) ?? callers[0];
+    this.lastPlayer = player;
+    this.lastCaller.set(player, caller);
+    return classes.get(caller)!;
   }
   cancel(key: string): void {
     const job = this.jobs.get(key);
@@ -193,7 +227,7 @@ export class RoutePlanner<T> {
       rayBudget = 32,
       idle = 0;
     while (this.jobs.size && used < budget) {
-      const [key, job] = this.jobs.entries().next().value!;
+      const [key, job] = this.nextJob();
       this.jobs.delete(key);
       const cohort = this.cohort(job), before = used;
       try {

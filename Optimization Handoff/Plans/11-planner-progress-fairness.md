@@ -1,6 +1,6 @@
 # P11: Guarantee limited-search progress and fairness
 
-Status: **remaining work, not implemented by this handoff**. Read
+Status: **P11 implementation in progress in the isolated local worktree**. Read
 [`../agent-workflow.md`](../agent-workflow.md) and [`../handoff.md`](../handoff.md).
 
 ## Dependencies and ownership
@@ -53,3 +53,25 @@ If a required dependency, hardware test, source asset or authorization is
 unavailable, record the exact blocker and stop only that dependent work. Do not
 turn a refused or unverified test into a pass, broaden authority, or enable a
 production feature merely to demonstrate that code exists.
+
+## Local P11 slice 1 evidence (2 October 2026)
+
+Source: `59c4eeb4696e6c8f91c730704ec9537f7f351a1b`, including integrated P01.
+Branch: `codex/p11-p14-optimization`. No default admission flag changed.
+New matches use checkpointed player round-robin, caller round-robin within each
+player, and FIFO rotation within each caller. At most 128 queued jobs are
+examined per quantum; cursor state is bounded to the existing 256-player domain.
+Historical checkpoints without scheduling metadata explicitly restore FIFO.
+Diagnostics remain read-only and excluded from checkpoints.
+
+Focused planner/fairness/land/ship admission: 32 tests passed. TypeScript,
+scoped Oxlint/ESLint and production build passed. Full suite with four workers:
+1011 passed, ten existing five-second timeouts. Serial suite: 1020 passed,
+one timeout in `ShoreTransport.test.ts` (waiting island-slot test). The same
+test timed out against the untouched HEAD planner (5814 ms, original 5000 ms
+limit). No deadline or assertion was weakened. Common full-suite acceptance
+remains open on this Windows x64 environment; this is not a clean full gate.
+Fairness fixtures use 80x80 all-land maps, no runtime AI flags, fixed topology,
+budget/quantum 1, and 12 deterministic turns. Sparse faction: 6 of 12 turns;
+one-player admission/defense/trade: 4 each. Restore preserves exact turns.
+Workspace exhaustion escalation and wider callers are the next P11 slice.
