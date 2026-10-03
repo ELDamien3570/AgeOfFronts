@@ -29,11 +29,13 @@ import { unitEffects } from "./ResearchEffects";
 import { structureAim } from "./StructureTargeting";
 export interface BattleWorld {
   tick: number;
-  squads: Squad[];
+  squads: readonly Squad[];
+  updateSquad(id: number, changes: Partial<Omit<Squad, "id">>): Squad | undefined;
+  updateShip(id: number, changes: Partial<Omit<Ship, "id">>): Ship | undefined;
   players: Player[];
   buildings: readonly Building[];
   updateBuilding(id: number, changes: Partial<Omit<Building, "id">>): Building | undefined;
-  ships: Ship[];
+  ships: readonly Ship[];
   volleys: ArcherVolley[];
   allocateId(): number;
   notifyHostileAction?(victim: number, attacker: number, tile: number): void;
@@ -276,6 +278,10 @@ export class Battle {
     if (!list) map.set(target, (list = []));
     list.push({ id: `${kind}:${attacker}`, damage });
   }
+  private updateSource(source: Squad | Ship, changes: { xp: number }): void {
+    if ("troops" in source) this.world.updateSquad(source.id, changes);
+    else this.world.updateShip(source.id, changes);
+  }
   awardDamage(damage: DamageLedger, contributions: Contributions): void {
     const byId = new Map<number, Squad | Ship>(
       [...this.world.squads, ...this.world.ships].map((s) => [s.id, s]),
@@ -298,7 +304,7 @@ export class Battle {
       }
       for (const [attacker, xp] of shares) {
         const s = sources.get(attacker);
-        if (s) s.xp = Math.min(20000, (s.xp ?? 0) + xp);
+        if (s) this.updateSource(s, { xp: Math.min(20000, (s.xp ?? 0) + xp) });
       }
     }
   }
@@ -335,10 +341,10 @@ export class Battle {
             )
           : undefined;
     if (s)
-      s.xp = Math.min(
+      this.updateSource(s, { xp: Math.min(
         20000,
         (s.xp ?? 0) + applied + (health <= 0 ? 50 : 0),
-      );
+      ) });
     if (health <= 0) {
       const ledger = new DamageLedger();
       ledger.add(target.id, attacker, applied);
@@ -356,8 +362,8 @@ export class Battle {
       .sort((a, b) => a.id - b.id)) {
       const definition = this.definition(squad),
         profile = definition.attack;
-      squad.fighting = false;
-      squad.combatTargetId = null;
+      this.world.updateSquad(squad.id, { fighting: false });
+      this.world.updateSquad(squad.id, { combatTargetId: null });
       if (squad.refit) continue;
       if (squad.charge?.phase === "committed") {
         const charge = definition.charge!;
@@ -400,11 +406,11 @@ export class Battle {
             this.contribution(contributions, target.id, squad.id, hit);
             remaining -= hit;
           }
-          squad.charge.phase = "recovery";
-          squad.chargeReadyTick = tick + charge.cooldownTicks;
-          squad.order = { type: "hold" };
-          squad.path = [];
-          squad.queuedOrders = [];
+          this.world.updateSquad(squad.id, { charge: { ...squad.charge, phase: "recovery" } });
+          this.world.updateSquad(squad.id, { chargeReadyTick: tick + charge.cooldownTicks });
+          this.world.updateSquad(squad.id, { order: { type: "hold" } });
+          this.world.updateSquad(squad.id, { path: [] });
+          this.world.updateSquad(squad.id, { queuedOrders: [] });
         }
         continue;
       }
@@ -413,7 +419,7 @@ export class Battle {
           tick >=
           (squad.chargeReadyTick ?? 0) - (definition.charge!.cooldownTicks - 10)
         )
-          squad.charge = null;
+          this.world.updateSquad(squad.id, { charge: null });
         else continue;
       }
       if (profile.targets.includes("aircraft")) {
@@ -444,12 +450,12 @@ export class Battle {
             ),
           );
           target.health -= hit;
-          squad.xp = Math.min(20000, (squad.xp ?? 0) + hit);
+          this.world.updateSquad(squad.id, { xp: Math.min(20000, (squad.xp ?? 0) + hit) });
           this.volley(squad, target);
-          squad.lastAttackTick = tick;
-          squad.nextAttackTick = tick + attackInterval(profile, squad.moved);
-          squad.fighting = true;
-          squad.lastCombatTick = tick;
+          this.world.updateSquad(squad.id, { lastAttackTick: tick });
+          this.world.updateSquad(squad.id, { nextAttackTick: tick + attackInterval(profile, squad.moved) });
+          this.world.updateSquad(squad.id, { fighting: true });
+          this.world.updateSquad(squad.id, { lastCombatTick: tick });
           if (target.health <= 0) {
             const ledger = new DamageLedger();
             ledger.add(target.id, squad.playerId, hit);
@@ -486,13 +492,13 @@ export class Battle {
         if (wanted && eligible(wanted)) target = wanted;
       }
       if (!target) continue;
-      squad.fighting = true;
-      squad.combatTargetId = target.id;
-      squad.lastCombatTick = tick;
-      target.lastCombatTick = tick;
+      this.world.updateSquad(squad.id, { fighting: true });
+      this.world.updateSquad(squad.id, { combatTargetId: target.id });
+      this.world.updateSquad(squad.id, { lastCombatTick: tick });
+      this.world.updateSquad(target.id, { lastCombatTick: tick });
       if (tick < (squad.nextAttackTick ?? 0)) continue;
-      squad.lastAttackTick = tick;
-      squad.nextAttackTick = tick + attackInterval(profile, squad.moved);
+      this.world.updateSquad(squad.id, { lastAttackTick: tick });
+      this.world.updateSquad(squad.id, { nextAttackTick: tick + attackInterval(profile, squad.moved) });
       if (profile.projectile) {
         const weapon = scaledAttack(profile, 1000, 1000, squad.xp);
         this.fire(
@@ -519,7 +525,7 @@ export class Battle {
       );
       damage.add(target.id, squad.playerId, hit);
       this.contribution(contributions, target.id, squad.id, hit);
-      squad.firingCharge = 0;
+      this.world.updateSquad(squad.id, { firingCharge: 0 });
     }
     // Fixed gun nests have their own weapon, never a mobile squad's reserves.
     for (const b of this.world.buildings)
@@ -578,18 +584,17 @@ export class Battle {
       !this.diplomacy.hostile(squad.playerId, target.playerId) ||
       (target.health ?? 1) <= 0
     ) {
-      squad.structureTarget = null;
+      this.world.updateSquad(squad.id, { structureTarget: null });
       return;
     }
     const p = structureAim(squad, "tile" in target ? [target.tile] : target.tiles,
       profile.range, squad.playerId, this.mapWidth, this.forts);
     if (!p) return;
-    squad.fighting = true;
-    squad.lastCombatTick = this.world.tick;
+    this.world.updateSquad(squad.id, { fighting: true });
+    this.world.updateSquad(squad.id, { lastCombatTick: this.world.tick });
     if (this.world.tick < (squad.nextAttackTick ?? 0)) return;
-    squad.lastAttackTick = this.world.tick;
-    squad.nextAttackTick =
-      this.world.tick + attackInterval(profile, squad.moved);
+    this.world.updateSquad(squad.id, { lastAttackTick: this.world.tick });
+    this.world.updateSquad(squad.id, { nextAttackTick: this.world.tick + attackInterval(profile, squad.moved) });
     if (profile.projectile) {
       const weapon = scaledAttack(profile, 1000, 1000, squad.xp);
       this.fire(

@@ -19,9 +19,9 @@ function match() {
     ruleset: "ages-v1",
   });
   for (const s of m.squads) {
-    s.x = 85 * FIXED;
-    s.y = s.playerId * 15 * FIXED;
-    s.order = { type: "hold" };
+    m.updateSquad(s.id, { x: 85 * FIXED });
+    m.updateSquad(s.id, { y: s.playerId * 15 * FIXED });
+    m.updateSquad(s.id, { order: { type: "hold" } });
   }
   return m;
 }
@@ -63,7 +63,7 @@ describe("authoritative match metrics", () => {
     const m = match(),
       victim = m.squads.find((s) => s.playerId === 2)!,
       hits = new DamageLedger();
-    victim.troops = 101;
+    m.updateSquad(victim.id, { troops: 101 });
     hits.add(victim.id, 1, 300);
     hits.add(victim.id, 3, 100);
     m.resolveLandDamage(hits);
@@ -82,8 +82,8 @@ describe("authoritative match metrics", () => {
     m.resolveLandDamage(partial);
     expect(m.players[0].kills).toBe(40);
     expect(m.players[1].losses).toBe(40);
-    a.troops = 80;
-    b.troops = 90;
+    m.updateSquad(a.id, { troops: 80 });
+    m.updateSquad(b.id, { troops: 90 });
     const mutual = new DamageLedger();
     mutual.add(a.id, 2, 999);
     mutual.add(b.id, 1, 999);
@@ -96,7 +96,7 @@ describe("authoritative match metrics", () => {
   it("counts embarked soldiers on sinking, excluding ship health", () => {
     const m = match(),
       passenger = m.squads.find((s) => s.playerId === 2)!;
-    const ship: Ship = {
+    const ship: Ship = m.addShip({
       id: m.allocateId(),
       playerId: 2,
       kind: "transport",
@@ -109,10 +109,10 @@ describe("authoritative match metrics", () => {
       nextPathIndex: 0,
       fighting: false,
       boarding: null,
-    };
-    m.ships.push(ship);
-    passenger.embarkedOn = ship.id;
-    passenger.troops = 700;
+    });
+
+    m.updateSquad(passenger.id, { embarkedOn: ship.id });
+    m.updateSquad(passenger.id, { troops: 700 });
     const hits = new DamageLedger();
     hits.add(ship.id, 1, 300);
     hits.add(ship.id, 3, 100);
@@ -120,7 +120,7 @@ describe("authoritative match metrics", () => {
     expect(m.players[1].losses).toBe(700);
     expect(m.players[0].kills).toBe(525);
     expect(m.players[2].kills).toBe(175);
-    m.ships.push({ ...ship, id: m.allocateId(), health: 100 });
+    m.addShip({ ...ship, id: m.allocateId(), health: 100 });
     const empty = new DamageLedger();
     empty.add(m.ships[0].id, 1, 1000);
     m.resolveNavalDamage(empty);
@@ -130,8 +130,8 @@ describe("authoritative match metrics", () => {
     const { m, e, actor } = shipment(),
       captor = m.squads.find((s) => s.playerId === 2)!;
     const gold = m.players[1].gold;
-    captor.x = actor.x;
-    captor.y = actor.y;
+    m.updateSquad(captor.id, { x: actor.x });
+    m.updateSquad(captor.id, { y: actor.y });
     actor.waitTicks = 0;
     e.progression.states[1].age = "Modern";
     tradeStep(m);
@@ -140,10 +140,10 @@ describe("authoritative match metrics", () => {
     expect(m.players[1].gold).toBe(gold);
     tradeStep(m, 10);
     expect(e.trade.capturedValue[2]).toBe(1000);
-    captor.x = 85 * FIXED;
+    m.updateSquad(captor.id, { x: 85 * FIXED });
     const recaptor = m.squads.find((s) => s.playerId === 1)!;
-    recaptor.x = actor.x;
-    recaptor.y = actor.y;
+    m.updateSquad(recaptor.id, { x: actor.x });
+    m.updateSquad(recaptor.id, { y: actor.y });
     actor.waitTicks = 0;
     tradeStep(m);
     expect(e.trade.capturedValue[1]).toBe(1000);
@@ -176,8 +176,8 @@ describe("authoritative match metrics", () => {
   it("preserves totals through checkpoints and snapshot encoding for the inspected player", () => {
     const { m, e, actor } = shipment(),
       captor = m.squads.find((s) => s.playerId === 2)!;
-    captor.x = actor.x;
-    captor.y = actor.y;
+    m.updateSquad(captor.id, { x: actor.x });
+    m.updateSquad(captor.id, { y: actor.y });
     actor.waitTicks = 0;
     tradeStep(m);
     const hits = new DamageLedger();

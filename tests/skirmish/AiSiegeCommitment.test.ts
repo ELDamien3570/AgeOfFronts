@@ -1,3 +1,4 @@
+import { retainSquads } from "./UnitFixtures";
 import { describe, expect, it, vi } from "vitest";
 import { GameMapImpl } from "../../src/core/game/GameMap";
 import { TECHNOLOGIES } from "../../src/skirmish/content/Technology";
@@ -17,14 +18,14 @@ function fixture() {
   player.gold = 0;
   player.reserves = 0;
   const unit = game.squads.find((s) => s.playerId === player.id)!;
-  unit.definitionId = "modern-siege";
-  unit.kind = "archer";
-  unit.x = 20.5 * FIXED;
-  unit.y = 30.5 * FIXED;
-  unit.order = { type: "hold" };
-  unit.path = [];
-  unit.queuedOrders = [];
-  game.squads.splice(0, game.squads.length, unit);
+  game.updateSquad(unit.id, { definitionId: "modern-siege" });
+  game.updateSquad(unit.id, { kind: "archer" });
+  game.updateSquad(unit.id, { x: 20.5 * FIXED });
+  game.updateSquad(unit.id, { y: 30.5 * FIXED });
+  game.updateSquad(unit.id, { order: { type: "hold" } });
+  game.updateSquad(unit.id, { path: [] });
+  game.updateSquad(unit.id, { queuedOrders: [] });
+  retainSquads(game, [unit]);
   const state = game.expansion!.progression.states[player.id];
   state.age = "Modern";
   state.completed = TECHNOLOGIES.map((t) => t.id);
@@ -54,7 +55,7 @@ describe("AI siege target commitment", () => {
     expect(unit.structureTarget?.buildingId).toBe(target.id);
     expect(find).toHaveBeenCalled();
     const path = unit.path;
-    unit.nextPathIndex = 1;
+    game.updateSquad(unit.id, { nextPathIndex: 1 });
     find.mockClear();
     think();
     expect(find).not.toHaveBeenCalled();
@@ -64,10 +65,10 @@ describe("AI siege target commitment", () => {
 
   it("keeps a deployed gun firing without restarting its approach", () => {
     const { game, unit, target, think } = fixture();
-    unit.x = 65.5 * FIXED;
-    unit.y = 30.5 * FIXED;
-    unit.structureTarget = { buildingId: target.id };
-    unit.order = { type: "hold" };
+    game.updateSquad(unit.id, { x: 65.5 * FIXED });
+    game.updateSquad(unit.id, { y: 30.5 * FIXED });
+    game.updateSquad(unit.id, { structureTarget: { buildingId: target.id } });
+    game.updateSquad(unit.id, { order: { type: "hold" } });
     const find = vi.spyOn(game.paths, "find");
     think();
     expect(find).not.toHaveBeenCalled();

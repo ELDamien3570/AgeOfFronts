@@ -118,12 +118,12 @@ describe("tribe promotion", () => {
     const own = game.squads.filter((s) => s.playerId === tribe.id);
     const tiers = own.map((s) => s.definitionId);
     for (let i = game.squads.length - 1; i >= 0; i--)
-      if (game.squads[i].playerId === donor.id) game.squads.splice(i, 1);
+      if (game.squads[i].playerId === donor.id) for (const record of game.squads.slice(i, (i) + (1))) game.removeSquad(record.id);
     const attacker = own[0];
-    attacker.x = (game.map.x(donor.base) + 0.5) * FIXED;
-    attacker.y = (game.map.y(donor.base) + 0.5) * FIXED;
-    attacker.order = { type: "hold" };
-    attacker.path = [];
+    game.updateSquad(attacker.id, { x: (game.map.x(donor.base) + 0.5) * FIXED });
+    game.updateSquad(attacker.id, { y: (game.map.y(donor.base) + 0.5) * FIXED });
+    game.updateSquad(attacker.id, { order: { type: "hold" } });
+    game.updateSquad(attacker.id, { path: [] });
     for (let i = 0; i < 32; i++) game.step();
     expect(donor.eliminated).toBe(true);
     expect(tribe.land / game.map.numLandTiles()).toBeLessThan(0.1);

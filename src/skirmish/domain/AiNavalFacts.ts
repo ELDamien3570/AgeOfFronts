@@ -199,6 +199,7 @@ export class AiNavalFacts {
     return tile === undefined ? 0 : this.world.waterPaths.component[tile];
   }
   forgetBuilding(id: number): void { this.remove("buildings", id); }
+  forgetShip(id: number): void { this.remove("ships", id); }
   observeBuilding(building: Building): void {
     const sea = this.portSea(building);
     if (!sea || (building.health ?? 1) <= 0) {

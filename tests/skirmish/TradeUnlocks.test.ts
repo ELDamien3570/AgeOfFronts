@@ -20,8 +20,8 @@ function fixture(port = false) {
     ruleset: "ages-v1",
   });
   for (const s of m.squads) {
-    s.x = 70 * FIXED;
-    s.y = 40 * FIXED;
+    m.updateSquad(s.id, { x: 70 * FIXED });
+    m.updateSquad(s.id, { y: 40 * FIXED });
   }
   const factory = m.addBuilding({
     id: m.allocateId(),

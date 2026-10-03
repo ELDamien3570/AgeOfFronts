@@ -231,16 +231,16 @@ describe("friendly fortification passage", () => {
       }),
     ).toBeNull();
     for (const s of m.squads) {
-      s.x = (5 + s.playerId * 15) * FIXED;
-      s.y = (4 + (s.id % 3) * 2) * FIXED;
+      m.updateSquad(s.id, { x: (5 + s.playerId * 15) * FIXED });
+      m.updateSquad(s.id, { y: (4 + (s.id % 3) * 2) * FIXED });
     }
     const own = m.squads.find((s) => s.playerId === 1)!,
       ally = m.squads.find((s) => s.playerId === 3)!,
       enemy = m.squads.find((s) => s.playerId === 2)!;
-    own.x = 20.5 * FIXED;
-    ally.x = 50.5 * FIXED;
-    enemy.x = 40.5 * FIXED;
-    own.y = ally.y = enemy.y = 20.5 * FIXED;
+    m.updateSquad(own.id, { x: 20.5 * FIXED });
+    m.updateSquad(ally.id, { x: 50.5 * FIXED });
+    m.updateSquad(enemy.id, { x: 40.5 * FIXED });
+    for (const squad of [own, ally, enemy]) m.updateSquad(squad.id, { y: 20.5 * FIXED });
     for (let x = 0; x < 64; x++) {
       expect(forts.blocked(m.map.ref(x, 24), 1)).toBe(false);
       expect(forts.blocked(m.map.ref(x, 24), 3)).toBe(false);

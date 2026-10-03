@@ -15,8 +15,8 @@ function route(distance: number, inland = 0, foreign = true) {
     ruleset: "ages-v1",
   });
   for (const s of m.squads) {
-    s.x = 130 * FIXED;
-    s.y = 35 * FIXED;
+    m.updateSquad(s.id, { x: 130 * FIXED });
+    m.updateSquad(s.id, { y: 35 * FIXED });
   }
   for (const building of m.buildings) m.removeBuilding(building.id);
   const add = (

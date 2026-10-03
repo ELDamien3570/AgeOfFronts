@@ -189,34 +189,34 @@ export type Command =
     };
 
 export interface Squad {
-  id: number;
-  playerId: number;
-  x: number;
-  y: number;
-  troops: number;
-  kind: SquadType;
-  embarkedOn: number | null;
-  lastCombatTick: number;
-  moved: boolean;
-  firingCharge: number;
-  order: Order;
-  queuedOrders: Order[];
-  path: number[];
-  nextPathIndex: number;
-  plannedTile: number;
-  lastPlanTick: number;
-  fighting: boolean;
+  readonly id: number;
+  readonly playerId: number;
+  readonly x: number;
+  readonly y: number;
+  readonly troops: number;
+  readonly kind: SquadType;
+  readonly embarkedOn: number | null;
+  readonly lastCombatTick: number;
+  readonly moved: boolean;
+  readonly firingCharge: number;
+  readonly order: Readonly<Order>;
+  readonly queuedOrders: readonly Readonly<Order>[];
+  readonly path: readonly number[];
+  readonly nextPathIndex: number;
+  readonly plannedTile: number;
+  readonly lastPlanTick: number;
+  readonly fighting: boolean;
   // The simulation's chosen attack target; taking damage alone is not an attack.
-  combatTargetId: number | null;
-  definitionId?: string;
-  xp?: number;
-  nextAttackTick?: number;
-  lastAttackTick?: number;
-  refit?: RefitJob | null;
-  charge?: ChargeState | null;
-  chargeReadyTick?: number;
-  deploymentTicks?: number;
-  structureTarget?: { buildingId?: number; barrierId?: number } | null;
+  readonly combatTargetId: number | null;
+  readonly definitionId?: string;
+  readonly xp?: number;
+  readonly nextAttackTick?: number;
+  readonly lastAttackTick?: number;
+  readonly refit?: Readonly<RefitJob> | null;
+  readonly charge?: Readonly<ChargeState> | null;
+  readonly chargeReadyTick?: number;
+  readonly deploymentTicks?: number;
+  readonly structureTarget?: Readonly<{ buildingId?: number; barrierId?: number }> | null;
 }
 
 export interface Player {
@@ -277,38 +277,38 @@ export interface Building {
 }
 
 export interface Ship {
-  id: number;
-  playerId: number;
-  kind: ShipType;
-  x: number;
-  y: number;
-  health: number;
-  destination: number | null;
-  waypoints: number[];
-  path: number[];
-  nextPathIndex: number;
-  fighting: boolean;
-  boarding: BoardingMeeting | null;
+  readonly id: number;
+  readonly playerId: number;
+  readonly kind: ShipType;
+  readonly x: number;
+  readonly y: number;
+  readonly health: number;
+  readonly destination: number | null;
+  readonly waypoints: readonly number[];
+  readonly path: readonly number[];
+  readonly nextPathIndex: number;
+  readonly fighting: boolean;
+  readonly boarding: BoardingMeeting | null;
   // Domain-owned temporary voyage; these vessels cannot become a free navy.
-  shoreTransfer?: {
-    destinationTile: number;
-    landingTile: number;
-    waterPath: number[];
-    capacity: number;
-    phase: "boarding" | "sailing" | "landing";
-    queued: { squadId: number; orders: Order[] }[];
+  readonly shoreTransfer?: {
+    readonly destinationTile: number;
+    readonly landingTile: number;
+    readonly waterPath: readonly number[];
+    readonly capacity: number;
+    readonly phase: "boarding" | "sailing" | "landing";
+    readonly queued: readonly { readonly squadId: number; readonly orders: readonly Readonly<Order>[] }[];
   };
-  definitionId?: string;
-  nextAttackTick?: number;
-  xp?: number;
-  refit?: RefitJob | null;
-  attackTargetId?: number | null;
-  lastPlanTick?: number;
-  patrolTile?: number | null;
-  patrolDwellTicks?: number;
-  lastCombatTick?: number;
-  repairPortId?: number | null;
-  repairState?:
+  readonly definitionId?: string;
+  readonly nextAttackTick?: number;
+  readonly xp?: number;
+  readonly refit?: Readonly<RefitJob> | null;
+  readonly attackTargetId?: number | null;
+  readonly lastPlanTick?: number;
+  readonly patrolTile?: number | null;
+  readonly patrolDwellTicks?: number;
+  readonly lastCombatTick?: number;
+  readonly repairPortId?: number | null;
+  readonly repairState?:
     | "idle"
     | "patrolling"
     | "returning-to-dock"
@@ -318,9 +318,9 @@ export interface Ship {
 }
 
 export interface BoardingMeeting {
-  landTile: number;
-  waterTile: number;
-  squadIds: number[];
+  readonly landTile: number;
+  readonly waterTile: number;
+  readonly squadIds: readonly number[];
 }
 
 // An actual released volley, retained briefly for presentation. Damage is

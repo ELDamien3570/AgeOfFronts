@@ -1,3 +1,4 @@
+import { retainSquads } from "./UnitFixtures";
 import { describe, expect, it } from "vitest";
 import { GameMapImpl } from "../../src/core/game/GameMap";
 import {
@@ -21,12 +22,12 @@ function duel(kind: "infantry" | "archer" | "cavalry") {
   });
   const unit = match.squads[0],
     enemy = match.squads.find((s) => s.playerId === 2)!;
-  match.squads.splice(0, match.squads.length, unit, enemy);
-  unit.kind = kind;
-  unit.x = 30 * FIXED;
-  unit.y = 20 * FIXED;
-  enemy.x = (kind === "archer" ? 35 : 31) * FIXED;
-  enemy.y = unit.y;
+  retainSquads(match, [unit, enemy]);
+  match.updateSquad(unit.id, { kind: kind });
+  match.updateSquad(unit.id, { x: 30 * FIXED });
+  match.updateSquad(unit.id, { y: 20 * FIXED });
+  match.updateSquad(enemy.id, { x: (kind === "archer" ? 35 : 31) * FIXED });
+  match.updateSquad(enemy.id, { y: unit.y });
   return { match, unit, enemy };
 }
 
@@ -113,7 +114,7 @@ describe("simulation-driven unit animation", () => {
 
   it("lunges toward the target with bounded clearance without mutating the simulation snapshot", () => {
     const { match, unit, enemy } = duel("infantry");
-    enemy.x = unit.x + meleeContact(unit.kind, enemy.kind);
+    match.updateSquad(enemy.id, { x: unit.x + meleeContact(unit.kind, enemy.kind) });
     match.step();
     const snapshot = match.snapshot(),
       before = JSON.stringify(snapshot);
@@ -145,46 +146,46 @@ describe("simulation-driven unit animation", () => {
 
   it("restarts the wind-up on retargeting and cancels the lunge on movement, boarding, or target removal", () => {
     const { match, unit, enemy } = duel("infantry");
-    enemy.x = unit.x + meleeContact(unit.kind, enemy.kind);
+    match.updateSquad(enemy.id, { x: unit.x + meleeContact(unit.kind, enemy.kind) });
     match.step();
     const presentation = new UnitPresentation();
     presentation.update(match.snapshot());
-    const next = {
+    const next = match.addSquad({
       ...enemy,
       id: 999,
       x: unit.x,
       y: unit.y + meleeContact(unit.kind, enemy.kind),
-    };
-    match.squads.push(next);
-    unit.combatTargetId = next.id;
+    });
+
+    match.updateSquad(unit.id, { combatTargetId: next.id });
     match.tick = 12;
     presentation.update(match.snapshot());
     expect(presentation.animation(unit.id, 12).frame).toBe(0);
     const strike = presentation.meleeLunge(unit.id, 22, 20, 40);
     expect(strike.x).toBeCloseTo(0);
     expect(strike.y).toBeGreaterThan(0);
-    unit.moved = true;
+    match.updateSquad(unit.id, { moved: true });
     presentation.update(match.snapshot());
     expect(presentation.meleeLunge(unit.id, 22, 20, 40)).toEqual({
       x: 0,
       y: 0,
     });
-    unit.moved = false;
-    next.embarkedOn = 100;
+    match.updateSquad(unit.id, { moved: false });
+    match.updateSquad(next.id, { embarkedOn: 100 });
     presentation.update(match.snapshot());
     expect(presentation.animation(unit.id, 22).clip).toBe("idle");
     expect(presentation.meleeLunge(unit.id, 22, 20, 40)).toEqual({
       x: 0,
       y: 0,
     });
-    next.embarkedOn = null;
-    unit.embarkedOn = 100;
+    match.updateSquad(next.id, { embarkedOn: null });
+    match.updateSquad(unit.id, { embarkedOn: 100 });
     presentation.update(match.snapshot());
     expect(presentation.meleeLunge(unit.id, 22, 20, 40)).toEqual({
       x: 0,
       y: 0,
     });
-    match.squads.length = 0;
+    for (const record of match.squads) match.removeSquad(record.id);
     presentation.update(match.snapshot());
     expect(presentation.meleeLunge(unit.id, 22, 20, 40)).toEqual({
       x: 0,
@@ -197,21 +198,21 @@ describe("simulation-driven unit animation", () => {
     const presentation = new UnitPresentation();
     presentation.update(match.snapshot());
     expect(presentation.animation(unit.id, 0).clip).toBe("idle");
-    unit.moved = true;
-    unit.x += FIXED / 2;
+    match.updateSquad(unit.id, { moved: true });
+    match.updateSquad(unit.id, { x: unit.x + (FIXED / 2) });
     match.tick = 1;
     presentation.update(match.snapshot());
     expect(presentation.animation(unit.id, 6)).toEqual({
       clip: "running",
       frame: 3,
     });
-    unit.moved = false;
+    match.updateSquad(unit.id, { moved: false });
     match.step();
     presentation.update(match.snapshot());
     expect(presentation.animation(unit.id, match.tick).clip).toBe("attack");
     expect(presentation.angle(unit.id)).toBeCloseTo(-Math.PI / 2);
-    enemy.kind = "archer";
-    enemy.x = unit.x + 5 * FIXED;
+    match.updateSquad(enemy.id, { kind: "archer" });
+    match.updateSquad(enemy.id, { x: unit.x + 5 * FIXED });
     for (let i = 0; i < 20; i++) match.step();
     expect(unit.fighting).toBe(true);
     expect(unit.combatTargetId).toBeNull();
@@ -253,11 +254,11 @@ describe("simulation-driven unit animation", () => {
       clip: "attack",
       frame: 9,
     });
-    unit.embarkedOn = 9;
-    unit.firingCharge = 0;
-    unit.combatTargetId = null;
+    match.updateSquad(unit.id, { embarkedOn: 9 });
+    match.updateSquad(unit.id, { firingCharge: 0 });
+    match.updateSquad(unit.id, { combatTargetId: null });
     presentation.update(match.snapshot());
-    unit.embarkedOn = null;
+    match.updateSquad(unit.id, { embarkedOn: null });
     presentation.update(match.snapshot());
     expect(presentation.animation(unit.id, 22).clip).toBe("idle");
   });
@@ -265,21 +266,21 @@ describe("simulation-driven unit animation", () => {
     const { match, unit } = duel("archer");
     const presentation = new UnitPresentation();
     match.tick = 60;
-    unit.moved = true;
-    unit.firingCharge = 60;
-    unit.combatTargetId = match.squads[1].id;
+    match.updateSquad(unit.id, { moved: true });
+    match.updateSquad(unit.id, { firingCharge: 60 });
+    match.updateSquad(unit.id, { combatTargetId: match.squads[1].id });
     presentation.update(match.snapshot());
     expect(presentation.animation(unit.id, 60).clip).toBe("running");
-    unit.firingCharge = 95;
+    match.updateSquad(unit.id, { firingCharge: 95 });
     match.tick = 95;
     presentation.update(match.snapshot());
     expect(presentation.animation(unit.id, 95)).toEqual({
       clip: "attack",
       frame: 2,
     });
-    unit.embarkedOn = 9;
+    match.updateSquad(unit.id, { embarkedOn: 9 });
     presentation.update(match.snapshot());
-    match.squads.splice(0, 1);
+    for (const record of match.squads.slice(0, (0) + (1))) match.removeSquad(record.id);
     presentation.update(match.snapshot());
     expect(presentation.angle(unit.id)).toBe(0);
     expect(presentation.animation(unit.id, 100)).toEqual({

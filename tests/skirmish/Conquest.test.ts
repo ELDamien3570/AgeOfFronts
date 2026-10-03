@@ -18,22 +18,23 @@ function fixture() {
     runAi: false,
   });
 }
-function place(unit: Pick<Squad, "x" | "y">, x: number, y: number) {
-  unit.x = (x + 0.5) * FIXED;
-  unit.y = (y + 0.5) * FIXED;
+function place(world: Skirmish, unit: Pick<Squad, "id" | "x" | "y">, x: number, y: number) {
+  const changes = { x: (x + 0.5) * FIXED, y: (y + 0.5) * FIXED };
+  if (world.squad(unit.id)) world.updateSquad(unit.id, changes);
+  else world.updateShip(unit.id, changes);
 }
 function removeDefenders(game: Skirmish, keep?: Squad) {
   for (let i = game.squads.length - 1; i >= 0; i--)
     if (game.squads[i].playerId === 2 && game.squads[i] !== keep)
-      game.squads.splice(i, 1);
+      for (const record of game.squads.slice(i, (i) + (1))) game.removeSquad(record.id);
 }
 function occupy(game: Skirmish, tile: number, playerId = 1) {
   const attacker = game.squads.find(
     (s) => s.playerId === playerId && s.embarkedOn === null,
   )!;
-  place(attacker, game.map.x(tile), game.map.y(tile));
-  attacker.order = { type: "hold" };
-  attacker.path = [];
+  place(game, attacker, game.map.x(tile), game.map.y(tile));
+  game.updateSquad(attacker.id, { order: { type: "hold" } });
+  game.updateSquad(attacker.id, { path: [] });
   for (let tick = 0; tick < 32; tick++) game.step();
   expect(game.owners[tile]).toBe(playerId);
 }
@@ -109,14 +110,14 @@ describe("complete conquest", () => {
       enemy = game.players[1],
       survivor = game.squads.find((s) => s.playerId === 2)!;
     removeDefenders(game, survivor);
-    place(survivor, 75, 45);
+    place(game, survivor, 75, 45);
     occupy(game, enemy.base);
     expect(game.buildings.some((b) => b.playerId === 2)).toBe(false);
     expect(enemy.eliminated).toBe(false);
     const old = game.owners.slice(),
       killer = game.squads.find((s) => s.playerId === 3)!;
-    survivor.troops = 1;
-    place(killer, 74, 45);
+    game.updateSquad(survivor.id, { troops: 1 });
+    place(game, killer, 74, 45);
     game.step();
     expect(enemy.eliminated).toBe(true);
     for (let tile = 0; tile < old.length; tile++)
@@ -129,17 +130,17 @@ describe("complete conquest", () => {
       enemy = game.players[1],
       cargo = game.squads.find((s) => s.playerId === 2)!;
     removeDefenders(game, cargo);
-    const transport = emptyShip(10001, 2, "transport", 1),
-      warship = emptyShip(10002, 3, "warship", SHIP_RULES.warship.health);
-    place(transport, 75, 4);
-    cargo.embarkedOn = transport.id;
-    place(cargo, 75, 4);
-    game.ships.push(transport);
+    const transport = game.addShip(emptyShip(10001, 2, "transport", 1)),
+      warship = game.addShip(emptyShip(10002, 3, "warship", SHIP_RULES.warship.health));
+    place(game, transport, 75, 4);
+    game.updateSquad(cargo.id, { embarkedOn: transport.id });
+    place(game, cargo, 75, 4);
+
     occupy(game, enemy.base);
     expect(enemy.eliminated).toBe(false);
     const old = game.owners.slice();
-    place(warship, 76, 4);
-    game.ships.push(warship);
+    place(game, warship, 76, 4);
+
     game.step();
     expect(enemy.eliminated).toBe(true);
     expect(game.squads.some((s) => s.playerId === 2)).toBe(false);

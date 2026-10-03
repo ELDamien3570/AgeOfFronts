@@ -1,3 +1,4 @@
+import { retainSquads } from "./UnitFixtures";
 import { describe, expect, it } from "vitest";
 import { GameMapImpl } from "../../src/core/game/GameMap";
 import { Formations, formationRingPoint } from "../../src/skirmish/Formations";
@@ -22,11 +23,17 @@ function create(narrow = false) {
   const map = new GameMapImpl(80, 50, data, data.length);
   const match = new Skirmish(map, { seed: 42, aiCount: 1, runAi: false });
   const own = match.squads.filter((s) => s.playerId === 1);
-  own.forEach((s, i) => place(s, 10 + (i % 2) * 2, 22 + Math.floor(i / 2) * 2));
+  own.forEach((s, i) => place(match, s, 10 + (i % 2) * 2, 22 + Math.floor(i / 2) * 2));
   match.squads
     .filter((s) => s.playerId === 2)
-    .forEach((s, i) => place(s, 72, 4 + i * 2));
+    .forEach((s, i) => place(match, s, 72, 4 + i * 2));
   return { match, map, own };
+}
+function reverseStorage(scenario: ReturnType<typeof create>): void {
+  const saved = scenario.match.checkpoint();
+  saved.squads = [...saved.squads].reverse();
+  scenario.match.restore(saved);
+  scenario.own = scenario.own.map(squad => scenario.match.squad(squad.id)!);
 }
 it("enumerates only formation perimeter cells in the original deterministic tie order", () => {
   for (let ring=0;ring<=25;ring++) {
@@ -36,9 +43,9 @@ it("enumerates only formation perimeter cells in the original deterministic tie 
     expect(Array.from({length:ring?8*ring:1},(_,at)=>formationRingPoint(12,8,ring,at))).toEqual(expected);
   }
 });
-function place(s: Squad, x: number, y: number) {
-  s.x = (x + 0.5) * FIXED;
-  s.y = (y + 0.5) * FIXED;
+function place(world: Skirmish, s: Squad, x: number, y: number) {
+  world.updateSquad(s.id, { x: (x + 0.5) * FIXED });
+  world.updateSquad(s.id, { y: (y + 0.5) * FIXED });
 }
 function move(
   match: Skirmish,
@@ -108,19 +115,21 @@ describe("compact formations and local avoidance", () => {
         runAi: false,
       });
       const [mover, a, b] = match.squads;
-      match.squads.splice(0, match.squads.length, mover, a, b);
-      mover.playerId = 1;
-      for (const unit of [mover, a, b]) unit.kind = "infantry";
-      mover.x = 10.5 * FIXED;
-      mover.y = 21.5 * FIXED;
-      a.x = b.x = 30.5 * FIXED;
-      a.y = 20.75 * FIXED;
-      b.y = 22.25 * FIXED;
-      a.playerId = b.playerId = friendly ? 1 : 2;
+      retainSquads(match, [mover, a, b]);
+      match.updateSquad(mover.id, { playerId: 1 });
+      for (const unit of [mover, a, b]) match.updateSquad(unit.id, { kind: "infantry" });
+      match.updateSquad(mover.id, { x: 10.5 * FIXED });
+      match.updateSquad(mover.id, { y: 21.5 * FIXED });
+      match.updateSquad(a.id, { x: 30.5 * FIXED });
+      match.updateSquad(b.id, { x: 30.5 * FIXED });
+      match.updateSquad(a.id, { y: 20.75 * FIXED });
+      match.updateSquad(b.id, { y: 22.25 * FIXED });
+      match.updateSquad(a.id, { playerId: friendly ? 1 : 2 });
+      match.updateSquad(b.id, { playerId: friendly ? 1 : 2 });
       const held = [a.x, a.y, b.x, b.y];
       move(match, [mover], 50, 21);
       for (let tick = 0; tick < 200; tick++) {
-        for (const unit of match.squads) unit.troops = 1000;
+        for (const unit of match.squads) match.updateSquad(unit.id, { troops: 1000 });
         match.step();
         separated(match);
       }
@@ -159,10 +168,10 @@ describe("compact formations and local avoidance", () => {
       ).toBeNull();
     const army = match.squads.filter((s) => s.playerId === 1);
     army.forEach((s, i) =>
-      place(s, 14 + (i % 4) * 2, 21 + Math.floor(i / 4) * 2),
+      place(match, s, 14 + (i % 4) * 2, 21 + Math.floor(i / 4) * 2),
     );
-    own[1].kind = "archer";
-    own[2].kind = "cavalry";
+    match.updateSquad(own[1].id, { kind: "archer" });
+    match.updateSquad(own[2].id, { kind: "cavalry" });
     move(match, army, 60, 25);
     run(match, 900);
     expect(army.every((s) => s.order.type === "hold")).toBe(true);
@@ -184,12 +193,12 @@ describe("compact formations and local avoidance", () => {
     for (const scenario of [a, b]) {
       const shooter = scenario.own[0],
         enemies = scenario.match.squads.filter((s) => s.playerId === 2);
-      place(shooter, 40, 20);
-      shooter.kind = "archer";
-      place(enemies[0], 35, 20);
-      place(enemies[1], 45, 20);
+      place(scenario.match, shooter, 40, 20);
+      scenario.match.updateSquad(shooter.id, { kind: "archer" });
+      place(scenario.match, enemies[0], 35, 20);
+      place(scenario.match, enemies[1], 45, 20);
     }
-    b.match.squads.reverse();
+    reverseStorage(b);
     a.match.step();
     b.match.step();
     const expected = Math.min(
@@ -241,8 +250,8 @@ describe("compact formations and local avoidance", () => {
     const { match, own } = create();
     const mover = own[0],
       blocker = own[1];
-    place(mover, 10, 20);
-    place(blocker, 20, 20);
+    place(match, mover, 10, 20);
+    place(match, blocker, 20, 20);
     const fixed = [blocker.x, blocker.y];
     move(match, [mover], 30, 20);
     run(match, 250);
@@ -252,8 +261,8 @@ describe("compact formations and local avoidance", () => {
   });
   it("lets friendly opposing traffic pass rather than stack", () => {
     const { match, own } = create();
-    place(own[0], 15, 15);
-    place(own[1], 35, 15);
+    place(match, own[0], 15, 15);
+    place(match, own[1], 35, 15);
     move(match, [own[0]], 35, 15);
     move(match, [own[1]], 15, 15);
     run(match, 300);
@@ -276,8 +285,8 @@ describe("compact formations and local avoidance", () => {
     const { match, own } = create();
     const attacker = own[0],
       enemy = match.squads.find((s) => s.playerId === 2)!;
-    place(attacker, 30, 20);
-    place(enemy, 35, 20);
+    place(match, attacker, 30, 20);
+    place(match, enemy, 35, 20);
     expect(
       match.applyCommand({
         type: "order",
@@ -303,7 +312,7 @@ describe("compact formations and local avoidance", () => {
   it("replays identically even when storage and selection arrays are reversed", () => {
     const a = create(),
       b = create();
-    b.match.squads.reverse();
+    reverseStorage(b);
     b.own.reverse();
     move(a.match, a.own, 40, 25);
     move(b.match, b.own, 40, 25);

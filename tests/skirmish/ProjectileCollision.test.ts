@@ -19,13 +19,13 @@ function match() {
     ruleset: "ages-v1",
   });
   for (const s of m.squads) {
-    s.x = 55 * FIXED;
-    s.y = (s.playerId === 1 ? 2 : 28) * FIXED;
-    s.order = { type: "hold" };
+    m.updateSquad(s.id, { x: 55 * FIXED });
+    m.updateSquad(s.id, { y: (s.playerId === 1 ? 2 : 28) * FIXED });
+    m.updateSquad(s.id, { order: { type: "hold" } });
   }
   const source = m.squads.find((s) => s.playerId === 1)!;
-  source.x = 5 * FIXED;
-  source.y = 15 * FIXED;
+  m.updateSquad(source.id, { x: 5 * FIXED });
+  m.updateSquad(source.id, { y: 15 * FIXED });
   return {
     m,
     source,
@@ -84,10 +84,10 @@ describe("swept projectile contacts", () => {
   });
   it("hits only the first eligible formation, once, without an artificial blast", () => {
     const { m, source, enemies, battle } = match();
-    enemies[0].x = 10 * FIXED;
-    enemies[0].y = source.y;
-    enemies[1].x = 10.8 * FIXED;
-    enemies[1].y = source.y;
+    m.updateSquad(enemies[0].id, { x: 10 * FIXED });
+    m.updateSquad(enemies[0].id, { y: source.y });
+    m.updateSquad(enemies[1].id, { x: 10.8 * FIXED });
+    m.updateSquad(enemies[1].id, { y: source.y });
     battle.fire(source, { x: 30 * FIXED, y: source.y }, profile, 100);
     m.tick++;
     battle.advanceProjectiles();
@@ -103,14 +103,14 @@ describe("swept projectile contacts", () => {
   });
   it("does not intercept a shot with an ineligible type or grant XP for a miss", () => {
     const { m, source, enemies, battle } = match();
-    enemies[0].kind = "infantry";
-    enemies[0].definitionId = defaultUnit("infantry").id;
-    enemies[0].x = 10 * FIXED;
-    enemies[0].y = source.y;
-    enemies[1].kind = "archer";
-    enemies[1].definitionId = defaultUnit("archer").id;
-    enemies[1].x = 15 * FIXED;
-    enemies[1].y = source.y;
+    m.updateSquad(enemies[0].id, { kind: "infantry" });
+    m.updateSquad(enemies[0].id, { definitionId: defaultUnit("infantry").id });
+    m.updateSquad(enemies[0].id, { x: 10 * FIXED });
+    m.updateSquad(enemies[0].id, { y: source.y });
+    m.updateSquad(enemies[1].id, { kind: "archer" });
+    m.updateSquad(enemies[1].id, { definitionId: defaultUnit("archer").id });
+    m.updateSquad(enemies[1].id, { x: 15 * FIXED });
+    m.updateSquad(enemies[1].id, { y: source.y });
     battle.fire(
       source,
       { x: 30 * FIXED, y: source.y },
@@ -129,8 +129,8 @@ describe("swept projectile contacts", () => {
   });
   it("preserves building source identity through a MIRV split and awards no squad XP", () => {
     const { m, source, enemies, battle } = match();
-    enemies[0].x = 20 * FIXED;
-    enemies[0].y = 15 * FIXED;
+    m.updateSquad(enemies[0].id, { x: 20 * FIXED });
+    m.updateSquad(enemies[0].id, { y: 15 * FIXED });
     battle.fire(
       { ...source, domain: "building" },
       { x: 20 * FIXED, y: 15 * FIXED },
@@ -185,9 +185,9 @@ describe("swept projectile contacts", () => {
         maxHealth: 2000,
       });
     forts.step(1, m.buildings);
-    source.y = 14.9 * FIXED;
-    enemies[0].x = 20 * FIXED;
-    enemies[0].y = source.y;
+    m.updateSquad(source.id, { y: 14.9 * FIXED });
+    m.updateSquad(enemies[0].id, { x: 20 * FIXED });
+    m.updateSquad(enemies[0].id, { y: source.y });
     battle.fire(source, { x: 30 * FIXED, y: source.y }, profile, 100);
     m.tick++;
     battle.advanceProjectiles();
@@ -216,7 +216,7 @@ describe("swept projectile contacts", () => {
       maxHealth: 2000,
     });
 
-    source.y = 15.5 * FIXED;
+    m.updateSquad(source.id, { y: 15.5 * FIXED });
     battle.fire(
       { ...source, domain: "building" },
       { x: 30 * FIXED, y: source.y },

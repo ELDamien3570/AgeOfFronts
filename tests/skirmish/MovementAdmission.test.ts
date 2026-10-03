@@ -37,7 +37,7 @@ describe("transactional replacement movement", () => {
   it("activates committed land waypoints without synchronous searches and retains later legs across restore", () => {
     const { match, map, own } = fixture(), squad = own[0];
     const first = map.ref(45, 35), second = map.ref(48, 35);
-    squad.queuedOrders = [{ type: "move", tile: first }, { type: "move", tile: second }];
+    match.updateSquad(squad.id, { queuedOrders: [{ type: "move", tile: first }, { type: "move", tile: second }] });
     const sync = vi.spyOn(match.paths, "find");
     (match as unknown as { finishOrder(s: typeof squad): void }).finishOrder(squad);
     expect(sync).not.toHaveBeenCalled();

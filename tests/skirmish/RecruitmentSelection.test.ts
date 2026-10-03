@@ -38,9 +38,9 @@ function fixture(water = false, legacy = false) {
         match.expansion.supply.inventories[1][item] = 10000;
   }
   for (const squad of match.squads) {
-    squad.x = 85 * FIXED;
-    squad.y = (squad.playerId === 1 ? 3 : 55) * FIXED;
-    squad.order = { type: "hold" };
+    match.updateSquad(squad.id, { x: 85 * FIXED });
+    match.updateSquad(squad.id, { y: (squad.playerId === 1 ? 3 : 55) * FIXED });
+    match.updateSquad(squad.id, { order: { type: "hold" } });
   }
   const selection: SelectionState = {
     selected: new Set(),
@@ -319,8 +319,8 @@ describe("selected recruitment building", () => {
     const army = building("barracks", 55);
     expect(vm().recruitment("infantry").building?.id).toBe(camp.id);
     const squad = match.squads.find((s) => s.playerId === 1)!;
-    squad.x = 55 * FIXED;
-    squad.y = 18 * FIXED;
+    match.updateSquad(squad.id, { x: 55 * FIXED });
+    match.updateSquad(squad.id, { y: 18 * FIXED });
     selection.selected.add(squad.id);
     expect(vm().recruitment("infantry").building?.id).toBe(army.id);
     selection.selectedBuilding = camp.id;

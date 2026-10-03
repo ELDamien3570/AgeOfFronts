@@ -47,7 +47,7 @@ describe("optional AI strategic operations", () => {
   it("detects capture-radius invasion before ownership changes and ignores allies", () => {
     const f = fixture(), s = f.m.squads.find(s => s.playerId === 1)!;
     const tile = f.map.ref(80, 80); f.m.owners.fill(0); f.m.owners[tile] = 2;
-    s.x = (f.map.x(tile) - 2) * FIXED + FIXED / 2; s.y = f.map.y(tile) * FIXED + FIXED / 2;
+    f.m.updateSquad(s.id, { x: (f.map.x(tile) - 2) * FIXED + FIXED / 2 }); f.m.updateSquad(s.id, { y: f.map.y(tile) * FIXED + FIXED / 2 });
     (f.m as unknown as {capture(): void}).capture();
     expect(f.m.owners[tile]).toBe(2); expect(f.ops.canTarget(2, 1)).toBe(true);
     f.m.expansion!.diplomacy.state.alliances.push({id: 100,a: 2,b: 3,expiresTick: 6000,renewal:[]});

@@ -128,8 +128,8 @@ describe("automatic recruitment and selective replenishment", () => {
       second = build(m, "archery", 45, 20);
     s.selectedBuilding = m.buildings.find((b) => b.playerId === 2)!.id;
     const army = m.squads[0];
-    army.x = 44 * FIXED;
-    army.y = 20 * FIXED;
+    m.updateSquad(army.id, { x: 44 * FIXED });
+    m.updateSquad(army.id, { y: 20 * FIXED });
     s.selected.add(army.id);
     let vm = new SkirmishViewModel(m.snapshot(), s);
     expect(vm.recruitment("archer").building?.id).toBe(second.id);
@@ -170,8 +170,8 @@ describe("automatic recruitment and selective replenishment", () => {
       first = build(m, "port", 20, 6),
       second = build(m, "port", 50, 6);
     const army = m.squads[0];
-    army.x = 49 * FIXED;
-    army.y = 7 * FIXED;
+    m.updateSquad(army.id, { x: 49 * FIXED });
+    m.updateSquad(army.id, { y: 7 * FIXED });
     s.selected.add(army.id);
     const snapshot = m.snapshot(),
       vm = new SkirmishViewModel(snapshot, s);
@@ -203,17 +203,17 @@ describe("automatic recruitment and selective replenishment", () => {
         (unit) => unit.playerId === 1,
       );
     for (const unit of [friendly, hostile, full, aboard]) {
-      unit.troops = 800;
+      m.updateSquad(unit.id, { troops: 800 });
       s.selected.add(unit.id);
     }
-    full.troops = 1000;
-    aboard.embarkedOn = 900;
+    m.updateSquad(full.id, { troops: 1000 });
+    m.updateSquad(aboard.id, { embarkedOn: 900 });
     own(m, m.tileOf(friendly));
     own(m, m.tileOf(hostile), 2);
-    hostile.order = {
+    m.updateSquad(hostile.id, { order: {
       type: "attack",
       targetId: m.squads.find((unit) => unit.playerId === 2)!.id,
-    };
+    } });
     const vm = new SkirmishViewModel(m.snapshot(), s);
     expect(vm.replenishableSquads.map((unit) => unit.id)).toEqual([
       friendly.id,
@@ -318,12 +318,12 @@ describe("control group selection", () => {
     s.selected.add(enemy.id);
     groups.bind(0, s, m.snapshot(), true);
     expect(groups.count(0)).toBe(1);
-    ownUnit.embarkedOn = 50;
+    m.updateSquad(ownUnit.id, { embarkedOn: 50 });
     expect(groups.recall(0, m.snapshot()).selected.size).toBe(0);
     expect(groups.count(0)).toBe(1);
-    ownUnit.embarkedOn = null;
+    m.updateSquad(ownUnit.id, { embarkedOn: null });
     expect(groups.recall(0, m.snapshot()).selected.has(ownUnit.id)).toBe(true);
-    m.squads.splice(m.squads.indexOf(ownUnit), 1);
+    for (const record of m.squads.slice(m.squads.indexOf(ownUnit), (m.squads.indexOf(ownUnit)) + (1))) m.removeSquad(record.id);
     expect(groups.recall(0, m.snapshot()).selected.size).toBe(0);
     expect(groups.count(0)).toBe(0);
     groups.bind(
@@ -351,19 +351,19 @@ describe("viewport and travel-facing presentation", () => {
       presentation = new UnitPresentation();
     presentation.update(m.snapshot());
     expect(presentation.angle(unit.id)).toBe(0);
-    unit.x += FIXED;
+    m.updateSquad(unit.id, { x: unit.x + (FIXED) });
     presentation.update(m.snapshot());
     expect(presentation.angle(unit.id)).toBeCloseTo(-Math.PI / 2);
     presentation.update(m.snapshot());
     expect(presentation.angle(unit.id)).toBeCloseTo(-Math.PI / 2);
-    unit.y -= FIXED;
+    m.updateSquad(unit.id, { y: unit.y - (FIXED) });
     presentation.update(m.snapshot());
     expect(presentation.angle(unit.id)).toBeCloseTo(-Math.PI);
-    unit.embarkedOn = 50;
-    unit.x += 10 * FIXED;
+    m.updateSquad(unit.id, { embarkedOn: 50 });
+    m.updateSquad(unit.id, { x: unit.x + (10 * FIXED) });
     presentation.update(m.snapshot());
-    unit.embarkedOn = null;
-    unit.y += 5 * FIXED;
+    m.updateSquad(unit.id, { embarkedOn: null });
+    m.updateSquad(unit.id, { y: unit.y + (5 * FIXED) });
     presentation.update(m.snapshot());
     expect(presentation.angle(unit.id)).toBeCloseTo(-Math.PI);
     presentation.reset();

@@ -21,7 +21,7 @@ describe("independent dirty tile cursors", () => {
     const game = new Skirmish(map, { seed: 47, aiCount: 1, tribes: false, runAi: false, ruleset: "ages-v1" });
     const fast = new SnapshotEncoder(true), reference = new SnapshotEncoder(true);
     const neutral = game.owners.indexOf(0), squad = game.squads[0];
-    squad.x = (map.x(neutral) + 0.5) * FIXED; squad.y = (map.y(neutral) + 0.5) * FIXED;
+    game.updateSquad(squad.id, { x: (map.x(neutral) + 0.5) * FIXED }); game.updateSquad(squad.id, { y: (map.y(neutral) + 0.5) * FIXED });
     expect(fast.encode(game.snapshot(false), game.tileChanges)).toEqual(reference.encode(game.snapshot()));
     const initialRevision = game.tileChanges.revision;
     for (let tick = 0; tick < 12; tick++) {

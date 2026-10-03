@@ -86,6 +86,7 @@ export class LocalAvoidance {
     squads: readonly Squad[],
     intents: MovementIntent[],
     grid: SpatialGrid<Squad>,
+    apply: (id: number, changes: Pick<Squad, "x" | "y" | "moved">) => void,
   ): void {
     const active = squads
       .filter((squad) => squad.embarkedOn === null)
@@ -346,9 +347,7 @@ export class LocalAvoidance {
     const live = new Set<number>();
     for (const squad of active) {
       const velocity = proposed.get(squad.id)!;
-      squad.x += velocity.x;
-      squad.y += velocity.y;
-      squad.moved = velocity.x !== 0 || velocity.y !== 0;
+      apply(squad.id, { x: squad.x + velocity.x, y: squad.y + velocity.y, moved: velocity.x !== 0 || velocity.y !== 0 });
       this.previous.set(squad.id, velocity);
       live.add(squad.id);
     }

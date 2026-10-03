@@ -1,3 +1,4 @@
+import { retainSquads } from "./UnitFixtures";
 import { describe, expect, it } from "vitest";
 import { GameMapImpl } from "../../src/core/game/GameMap";
 import { HudViewModel } from "../../src/skirmish/client/HudViewModel";
@@ -152,8 +153,8 @@ describe("large-match indexes and routing work", () => {
       match = new Skirmish(map, { seed: 42, aiCount: 1, runAi: false });
     const squads = match.squads.slice(0, 4);
     squads.forEach((s, i) => {
-      s.x = (10 + i * 4 + 0.5) * FIXED;
-      s.y = 25.5 * FIXED;
+      match.updateSquad(s.id, { x: (10 + i * 4 + 0.5) * FIXED });
+      match.updateSquad(s.id, { y: 25.5 * FIXED });
     });
     const ship: Ship = {
       id: 900,
@@ -207,7 +208,7 @@ describe("large-match indexes and routing work", () => {
         boardingMeeting(map, land, water, match.owners, ship, squads, coast),
       ).toEqual(best);
     }
-    squads[0].y = 50.5 * FIXED;
+    match.updateSquad(squads[0].id, { y: 50.5 * FIXED });
     expect(
       boardingMeeting(map, land, water, match.owners, ship, squads, coast),
     ).toBeNull();
@@ -220,9 +221,9 @@ describe("large-match indexes and routing work", () => {
       aiCount: 1,
       runAi: false,
     });
-    match.squads.length = 0;
+    for (const record of match.squads) match.removeSquad(record.id);
     for (let i = 0; i < 128; i++)
-      match.ships.push({
+      match.addShip({
         id: 1000 + i,
         playerId: (i % 2) + 1,
         kind: i % 5 ? "warship" : "transport",
@@ -266,15 +267,15 @@ describe("transferable presentation snapshots", () => {
       encoder = new SnapshotEncoder(),
       decoder = new SnapshotDecoder();
     const squad = match.squads[0];
-    squad.order = { type: "move", tile: 10, x: 2400, y: 1200 };
-    squad.queuedOrders = [
+    match.updateSquad(squad.id, { order: { type: "move", tile: 10, x: 2400, y: 1200 } });
+    match.updateSquad(squad.id, { queuedOrders: [
       { type: "attack", targetId: match.squads[match.squads.length - 1].id },
       { type: "board", tile: 20, shipId: 1000 },
       { type: "replenish" },
       { type: "hold" },
-    ];
-    squad.firingCharge = 80;
-    squad.combatTargetId = match.squads[match.squads.length - 1].id;
+    ] });
+    match.updateSquad(squad.id, { firingCharge: 80 });
+    match.updateSquad(squad.id, { combatTargetId: match.squads[match.squads.length - 1].id });
     const firstPacket = encoder.encode(match.snapshot()),
       received = structuredClone(firstPacket, {
         transfer: snapshotTransfers(firstPacket),
@@ -286,7 +287,7 @@ describe("transferable presentation snapshots", () => {
       changedTiles: undefined,
     });
     const previous = structuredClone(first);
-    squad.troops = 777;
+    match.updateSquad(squad.id, { troops: 777 });
     match.owners[20] = 2;
     match.claims[21] = 1;
     match.progress[21] = 15;
@@ -321,7 +322,7 @@ describe("stacked buildings and large fleets", () => {
     const match = plains(),
       tile = match.map.ref(30, 25),
       player = match.players[0];
-    match.squads.splice(0); // Isolate construction/income from randomly placed camp defenders.
+    for (const record of match.squads) match.removeSquad(record.id); // Isolate construction/income from randomly placed camp defenders.
     match.owners[tile] = 1;
     player.gold = 100000;
     const before = player.gold;
@@ -404,9 +405,9 @@ describe("stacked buildings and large fleets", () => {
         }),
       ).toBeNull();
     const enemy = match.squads.find((s) => s.playerId === 2)!;
-    match.squads.splice(0, match.squads.length, enemy);
-    enemy.x = 30.5 * FIXED;
-    enemy.y = 25.5 * FIXED;
+    retainSquads(match, [enemy]);
+    match.updateSquad(enemy.id, { x: 30.5 * FIXED });
+    match.updateSquad(enemy.id, { y: 25.5 * FIXED });
     for (let i = 0; i < 60; i++) match.step();
     const stack = match.buildings.filter((b) => b.tile === tile);
     expect(stack).toHaveLength(3);

@@ -1,4 +1,5 @@
 import { describe, expect, it } from "vitest";
+import { unitOwner } from "./UnitFixtures";
 import { buildingOwner } from "./BuildingFixtures";
 import { GameMapImpl } from "../../src/core/game/GameMap";
 import { WaterPaths } from "../../src/skirmish/Pathfinding";
@@ -44,9 +45,9 @@ function fixture() {
     fighting: false,
     boarding: null,
   }));
-  const ownedBuildings = buildingOwner(buildings);
+  const ownedBuildings = buildingOwner(buildings), ownedShips = unitOwner(ships);
   const buildingIds = new Map(ownedBuildings.values.map((b) => [b.id, b])),
-    shipIds = new Map(ships.map((s) => [s.id, s])),
+    shipIds = new Map(ownedShips.values.map((s) => [s.id, s])),
     recruitment = new Recruitment();
   const world = {
     map,
@@ -55,7 +56,8 @@ function fixture() {
     get buildings() { return ownedBuildings.values; },
     updateBuilding: (id: number, changes: Partial<Omit<Building, "id">>) => ownedBuildings.update(id, changes),
     removeBuilding: (id: number) => { ownedBuildings.remove(id); buildingIds.delete(id); },
-    ships,
+    get ships() { return ownedShips.values; },
+    updateShip: (id: number, changes: Partial<Omit<Ship, "id">>) => ownedShips.update(id, changes),
     recruitment,
     building: (id: number) => buildingIds.get(id),
     ship: (id: number) => shipIds.get(id),
@@ -163,7 +165,7 @@ describe("shared naval facts", () => {
     expect([...facts.nearbyShips(west, near, FIXED)].map((s) => s.id)).toEqual([
       101,
     ]);
-    enemy.x = 2.5 * FIXED;
+    world.updateShip(enemy.id, { x: 2.5 * FIXED });
     facts.observeShip(enemy);
     restored.observeShip(enemy);
     expect([...facts.nearbyShips(west, near, FIXED)]).toEqual([]);

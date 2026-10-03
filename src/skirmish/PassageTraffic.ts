@@ -39,7 +39,7 @@ export class PassageTraffic {
 
   private readonly tiles: (Passage | undefined)[];
   private readonly leaders = new Map<string, number>();
-  private readonly routes = new WeakMap<number[], Crossing[]>();
+  private readonly routes = new WeakMap<readonly number[], Crossing[]>();
 
   constructor(
     private readonly map: GameMap,
@@ -95,7 +95,7 @@ export class PassageTraffic {
     }
   }
 
-  private crossings(path: number[]): Crossing[] {
+  private crossings(path: readonly number[]): Crossing[] {
     const cached = this.routes.get(path);
     if (cached) return cached;
     const result: Crossing[] = [],

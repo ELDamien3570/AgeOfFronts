@@ -20,8 +20,8 @@ export interface TradeWorld {
   waterPaths: WaterPaths;
   buildings: readonly Building[];
   players: Player[];
-  squads: Squad[];
-  ships: Ship[];
+  squads: readonly Squad[];
+  ships: readonly Ship[];
   tick: number;
   allocateId(): number;
 }

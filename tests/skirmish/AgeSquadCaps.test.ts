@@ -24,9 +24,9 @@ describe("age-based squad capacity", () => {
     });
     const player = game.players[0],
       template = game.squads.find((s) => s.playerId === player.id)!;
-    game.squads.length = 0;
+    for (const record of game.squads) game.removeSquad(record.id);
     for (let i = 0; i < 60; i++)
-      game.squads.push({
+      game.addSquad({
         ...template,
         id: 10000 + i,
         embarkedOn: i < 4 ? 999 : null,

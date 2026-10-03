@@ -43,22 +43,19 @@ function fixture() {
     }); }
   const own = game.squads.filter((s) => s.playerId === player.id);
   for (let i = own.length; i < 10; i++) {
-    const squad = structuredClone(own[0]);
-    squad.id = game.allocateId();
-    squad.kind = "infantry";
-    squad.definitionId = "stoneage-infantry";
-    game.squads.push(squad);
+    const squad = game.addSquad({ ...structuredClone(own[0]), id: game.allocateId(), kind: "infantry", definitionId: "stoneage-infantry" });
+
     own.push(squad);
   }
   own.forEach((s, i) => {
-    s.x = (i < 2 ? 12.5 + i * 2 : 60.5 + (i % 3) * 2) * FIXED;
-    s.y = (i < 2 ? 25.5 : 20.5 + Math.floor(i / 3) * 2) * FIXED;
+    game.updateSquad(s.id, { x: (i < 2 ? 12.5 + i * 2 : 60.5 + (i % 3) * 2) * FIXED });
+    game.updateSquad(s.id, { y: (i < 2 ? 25.5 : 20.5 + Math.floor(i / 3) * 2) * FIXED });
   });
   game.squads
     .filter((s) => s.playerId !== player.id)
     .forEach((s, i) => {
-      s.x = 90.5 * FIXED;
-      s.y = (50.5 + i * 2) * FIXED;
+      game.updateSquad(s.id, { x: 90.5 * FIXED });
+      game.updateSquad(s.id, { y: (50.5 + i * 2) * FIXED });
     });
   game.restore(game.checkpoint());
   for (let tick = 0; tick < 10000; tick++) {

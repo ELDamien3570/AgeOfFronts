@@ -16,10 +16,10 @@ function fixture() {
       runAi: false,
       deferredPlanning: true,
     });
-  const ships: Ship[] = [5, 8].map((x) => ({
+  const ships: Ship[] = ([5, 8].map((x) => ({
     id: match.allocateId(),
     playerId: 1,
-    kind: "transport",
+    kind: "transport" as const,
     x: (x + 0.5) * FIXED,
     y: 30.5 * FIXED,
     health: SHIP_RULES.transport.health,
@@ -29,8 +29,8 @@ function fixture() {
     nextPathIndex: 0,
     fighting: false,
     boarding: null,
-  }));
-  match.ships.push(...ships);
+  }))).map(record => match.addShip(record));
+
   return { map, match, ships, ids: ships.map((s) => s.id) };
 }
 function finish(match: Skirmish) {
@@ -184,8 +184,8 @@ describe("transactional sailing admission", () => {
   it("refuses AI movement that would overwrite a returning or repairing ship", () => {
     const { map, match, ships, ids } = fixture();
     match.setAiController(1, true);
-    ships[0].repairState = "returning-to-dock";
-    ships[0].repairPortId = 99;
+    match.updateShip(ships[0].id, { repairState: "returning-to-dock" });
+    match.updateShip(ships[0].id, { repairPortId: 99 });
     expect(
       match.applyCommand({
         type: "sail",

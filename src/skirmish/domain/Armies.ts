@@ -28,7 +28,8 @@ import type { ArmyRouteRequest } from "./RouteTask";
 export interface ArmyWorld {
   map: GameMap;
   paths: LandPaths;
-  squads: Squad[];
+  squads: readonly Squad[];
+  updateSquad(id: number, changes: Partial<Omit<Squad, "id">>): Squad | undefined;
   players: Player[];
   tick: number;
   squad(id: number): Squad | undefined;
@@ -380,9 +381,9 @@ export class Armies {
     army.x = leader.x;
     army.y = leader.y;
     for (const s of members) {
-      s.charge = null;
-      s.structureTarget = null;
-      s.queuedOrders = [];
+      this.world.updateSquad(s.id, { charge: null });
+      this.world.updateSquad(s.id, { structureTarget: null });
+      this.world.updateSquad(s.id, { queuedOrders: [] });
       this.world.setArmyHold(s);
     }
     if (order.type === "hold") {
@@ -635,8 +636,7 @@ export class Armies {
           pointTile(this.world.map, planned) ===
           pointTile(this.world.map, point)
         ) {
-          s.order.x = point.x;
-          s.order.y = point.y;
+          this.world.updateSquad(s.id, { order: { ...s.order, x: point.x, y: point.y } });
           continue;
         }
       }

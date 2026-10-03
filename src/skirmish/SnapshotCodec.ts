@@ -9,7 +9,11 @@ import type {
 } from "./Protocol";
 import { BUILDING_RULES } from "./Rules";
 
-type SnapshotSource = Omit<Snapshot, "buildings"> & { readonly buildings: readonly Building[] };
+type SnapshotSource = Omit<Snapshot, "buildings" | "squads" | "ships"> & {
+  readonly buildings: readonly Building[];
+  readonly squads: readonly Snapshot["squads"][number][];
+  readonly ships: readonly Snapshot["ships"][number][];
+};
 
 export const SNAPSHOT_LAYOUT = Object.freeze({ squadStride: 14, orderStride: 6, buildingStride: 5 });
 const { squadStride: SQUAD_STRIDE, orderStride: ORDER_STRIDE, buildingStride: BUILDING_STRIDE } = SNAPSHOT_LAYOUT;

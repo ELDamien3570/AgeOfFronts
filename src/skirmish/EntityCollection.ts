@@ -27,6 +27,19 @@ export class EntityCollection<T extends { readonly id: number }> {
     return record;
   }
   update(id: number, changes: Partial<Omit<T, "id">>): T | undefined {
+    return this.apply(id, changes, true);
+  }
+  /** Transfer finalized domain containers without another route-sized copy.
+   * Callers must retain no writable alias; the collection itself stays private
+   * to its owning aggregate. External mutation APIs always use update(). */
+  updateOwned(id: number, changes: Partial<Omit<T, "id">>): T | undefined {
+    return this.apply(id, changes, false);
+  }
+  private apply(
+    id: number,
+    changes: Partial<Omit<T, "id">>,
+    copy: boolean,
+  ): T | undefined {
     if (
       Object.keys(changes).some((key) =>
         ["id", "__proto__", "prototype", "constructor"].includes(key),
@@ -40,7 +53,7 @@ export class EntityCollection<T extends { readonly id: number }> {
       entries.every(([key, value]) => Object.is(record[key as keyof T], value))
     )
       return record;
-    Object.assign(record, structuredClone(changes));
+    Object.assign(record, copy ? structuredClone(changes) : changes);
     this.hooks.changed(record);
     return record;
   }
@@ -51,7 +64,14 @@ export class EntityCollection<T extends { readonly id: number }> {
     return true;
   }
   restore(inputs: readonly T[]): void {
-    const records = structuredClone(inputs),
+    this.restoreInputs(inputs, true);
+  }
+  /** Adopt rows from an aggregate's already cloned checkpoint. */
+  restoreOwned(inputs: readonly T[]): void {
+    this.restoreInputs(inputs, false);
+  }
+  private restoreInputs(inputs: readonly T[], copy: boolean): void {
+    const records = copy ? structuredClone(inputs) : inputs,
       ids = new Set<number>();
     for (const record of records) {
       if (ids.has(record.id)) throw new Error("Duplicate entity identity");

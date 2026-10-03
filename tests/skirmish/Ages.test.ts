@@ -1,3 +1,4 @@
+import { retainSquads } from "./UnitFixtures";
 import { describe, expect, it } from "vitest";
 import { GameMapImpl } from "../../src/core/game/GameMap";
 import {
@@ -35,12 +36,9 @@ const make = () => {
     ruleset: "ages-v1",
   });
 };
-const pos = (s: Squad, x: number, y: number) => {
-  s.x = (x + 0.5) * FIXED;
-  s.y = (y + 0.5) * FIXED;
-  s.order = { type: "hold" };
-  s.path = [];
-  s.moved = false;
+const pos = (m: Skirmish, s: Squad, x: number, y: number) => {
+  m.updateSquad(s.id, { x: (x + 0.5) * FIXED, y: (y + 0.5) * FIXED,
+    order: { type: "hold" }, path: [], moved: false });
 };
 const complete = (m: Skirmish) => {
   for (const p of m.players) {
@@ -277,8 +275,8 @@ describe("supply conservation and deployment", () => {
     const own = m.squads.filter((s) => s.playerId === 1),
       p = m.players[0],
       inv = m.expansion!.supply.inventories[1];
-    own[0].troops = 450;
-    own[0].xp = 7000;
+    m.updateSquad(own[0].id, { troops: 450 });
+    m.updateSquad(own[0].id, { xp: 7000 });
     inv["equipment:bronzeage"] = 1;
     const gold = p.gold;
     expect(
@@ -349,18 +347,18 @@ describe("bonuses, promotions, volleys and finite impacts", () => {
     const m = make(),
       s = m.squads[0],
       t = m.squads.find((s) => s.playerId === 2)!;
-    m.squads.splice(0, m.squads.length, s, t);
-    s.kind = "archer";
-    s.definitionId = "stoneage-archer";
-    pos(s, 30, 20);
-    pos(t, 34, 20);
-    s.moved = true;
+    retainSquads(m, [s, t]);
+    m.updateSquad(s.id, { kind: "archer" });
+    m.updateSquad(s.id, { definitionId: "stoneage-archer" });
+    pos(m, s, 30, 20);
+    pos(m, t, 34, 20);
+    m.updateSquad(s.id, { moved: true });
     m.expansion!.battle.fight([]);
     expect(m.volleys).toHaveLength(1);
     expect(s.nextAttackTick).toBe(200);
     m.expansion!.battle.fight([]);
     expect(m.volleys).toHaveLength(1);
-    s.moved = false;
+    m.updateSquad(s.id, { moved: false });
     m.tick = 200;
     m.expansion!.battle.fight([]);
     expect(s.nextAttackTick).toBe(240);
@@ -369,9 +367,9 @@ describe("bonuses, promotions, volleys and finite impacts", () => {
     const m = make(),
       s = m.squads[0],
       t = m.squads.find((s) => s.playerId === 2)!;
-    m.squads.splice(0, m.squads.length, s, t);
-    pos(s, 10, 20);
-    pos(t, 20, 20);
+    retainSquads(m, [s, t]);
+    pos(m, s, 10, 20);
+    pos(m, t, 20, 20);
     const p = {
       ...defaultUnit("infantry").attack,
       channel: "ranged" as const,
@@ -430,9 +428,9 @@ describe("bonuses, promotions, volleys and finite impacts", () => {
     complete(m);
     const s = m.squads[0],
       t = m.squads.find((s) => s.playerId === 2)!;
-    s.definitionId = "modern-anti-air";
-    pos(s, 20, 20);
-    pos(t, 21, 20);
+    m.updateSquad(s.id, { definitionId: "modern-anti-air" });
+    pos(m, s, 20, 20);
+    pos(m, t, 21, 20);
     const health = t.troops;
     m.expansion!.battle.fight([]);
     expect(t.troops).toBe(health);
@@ -476,8 +474,8 @@ describe("allied protection and fortifications", () => {
     ).toBeNull();
     const s = m.squads[0],
       t = m.squads.find((s) => s.playerId === 2)!;
-    pos(s, 30, 20);
-    pos(t, 31, 20);
+    pos(m, s, 30, 20);
+    pos(m, t, 31, 20);
     expect(
       m.applyCommand({
         type: "order",
@@ -536,11 +534,11 @@ describe("allied protection and fortifications", () => {
     complete(m);
     const p = m.players[1],
       s = m.squads[0];
-    m.squads.splice(0, m.squads.length, s);
+    retainSquads(m, [s]);
     const b = building(m, "city", p.base, 2);
     m.updateBuilding((b).id, { health: 1 });
-    pos(s, (p.base % 96) - 1, Math.floor(p.base / 96));
-    s.structureTarget = { buildingId: b.id };
+    pos(m, s, (p.base % 96) - 1, Math.floor(p.base / 96));
+    m.updateSquad(s.id, { structureTarget: { buildingId: b.id } });
     const remnant = m.owners.findIndex((owner) => owner === 2);
     m.expansion!.battle.fight([]);
     m.expansion!.afterMovement();
@@ -552,8 +550,8 @@ describe("allied protection and fortifications", () => {
     const m = make();
     complete(m);
     const b = building(m, "city", m.players[0].base, 1, "Modern");
-    m.squads[0].xp = 3500;
-    m.squads[0].lastAttackTick = 77;
+    m.updateSquad(m.squads[0].id, { xp: 3500 });
+    m.updateSquad(m.squads[0].id, { lastAttackTick: 77 });
     const encoder = new SnapshotEncoder(),
       packet = encoder.encode(m.snapshot());
     const decoded = new SnapshotDecoder().decode(packet);

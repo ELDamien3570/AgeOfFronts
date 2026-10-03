@@ -10,8 +10,8 @@ describe("live battle index work", () => {
       { seed: 47, aiCount: 1, tribes: false, runAi: false, ruleset: "ages-v1" },
     );
     for (const squad of game.squads) {
-      squad.x = (squad.playerId === 1 ? 10 : 80) * FIXED;
-      squad.y = 20 * FIXED;
+      game.updateSquad(squad.id, { x: (squad.playerId === 1 ? 10 : 80) * FIXED });
+      game.updateSquad(squad.id, { y: 20 * FIXED });
     }
     const battle = game.expansion!.battle,
       before = battle.telemetry.indexRebuilds;

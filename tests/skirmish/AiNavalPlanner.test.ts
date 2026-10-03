@@ -41,7 +41,7 @@ function fixture(split = false) {
   });
 
   const addShip = (owner = player.id, x = 10, health = 1000): Ship => {
-    const ship: Ship = {
+    const ship: Ship = game.addShip({
       id: game.allocateId(),
       playerId: owner,
       kind: "warship",
@@ -56,8 +56,8 @@ function fixture(split = false) {
       fighting: false,
       boarding: null,
       repairState: "patrolling",
-    };
-    game.ships.push(ship);
+    });
+
     return ship;
   };
   game.restore(game.checkpoint());
@@ -144,9 +144,9 @@ describe("persistent concentrated port defense", () => {
     f.refresh();
     let mission = f.assess();
     const recovering = f.game.ship(first.id)!;
-    recovering.health = 500;
-    recovering.repairState = "returning-to-dock";
-    recovering.repairPortId = mission.port;
+    f.game.updateShip(recovering.id, { health: 500 });
+    f.game.updateShip(recovering.id, { repairState: "returning-to-dock" });
+    f.game.updateShip(recovering.id, { repairPortId: mission.port });
     const before = structuredClone({
       state: recovering.repairState,
       port: recovering.repairPortId,
@@ -174,8 +174,8 @@ describe("persistent concentrated port defense", () => {
     clone.restore(saved);
     expect(clone.checkpoint()).toEqual(saved);
     const healed = f.game.ship(first.id)!;
-    healed.health = 1000;
-    healed.repairState = "patrolling";
+    f.game.updateShip(healed.id, { health: 1000 });
+    f.game.updateShip(healed.id, { repairState: "patrolling" });
     f.game.tick += 100;
     f.refresh();
     mission = f.assess();
@@ -214,7 +214,7 @@ describe("persistent concentrated port defense", () => {
     expect(f.planner.missions.get(f.player.id)!.assessment!.target).toBe(
       enemy.id,
     );
-    f.game.ship(enemy.id)!.x = 90.5 * FIXED;
+    f.game.updateShip(f.game.ship(enemy.id)!.id, { x: 90.5 * FIXED });
     const apply = vi.spyOn(f.game, "applyCommand"),
       mission = f.assess();
     expect(mission.reason).toBe("target legality changed");
@@ -269,7 +269,7 @@ describe("persistent concentrated port defense", () => {
     const first = f.facts.readSea("ships", sea),
       cursor = first.next;
     const ship = f.game.ships[0];
-    ship.x = 40.5 * FIXED;
+    f.game.updateShip(ship.id, { x: 40.5 * FIXED });
     f.facts.observeShip(ship);
     expect(f.facts.readSea("ships", sea, cursor).invalid).toBe(false);
     const before = f.facts.checkpoint();
@@ -303,7 +303,7 @@ describe("persistent concentrated port defense", () => {
     const f = fixture(),
       own = f.addShip();
     const recovering = f.addShip(f.player.id, 12);
-    recovering.repairState = "returning-to-dock";
+    f.game.updateShip(recovering.id, { repairState: "returning-to-dock" });
     for (let i = 0; i < 5; i++) f.addShip(1, 20 + i);
     f.refresh();
     const apply = vi.spyOn(f.game, "applyCommand"),

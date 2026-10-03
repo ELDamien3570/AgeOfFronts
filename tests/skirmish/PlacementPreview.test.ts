@@ -57,8 +57,8 @@ describe("bounded placement preview", () => {
       health: 2000,
     });
     for (const squad of game.squads) {
-      squad.x = 60.5 * FIXED;
-      squad.y = 50.5 * FIXED;
+      game.updateSquad(squad.id, { x: 60.5 * FIXED });
+      game.updateSquad(squad.id, { y: 50.5 * FIXED });
     }
     game.expansion!.fortifications.step(game.tick, game.buildings);
     const player = game.players.find((p) => p.id === 1)!,
@@ -81,8 +81,8 @@ describe("bounded placement preview", () => {
     expect(preview.sites(bounds, 1)).toContain(tile);
     expect(preview.diagnostics.tested).toBe(tested);
     expect(preview.rejection("tower", tile)).toBeNull();
-    game.squads[0].x = 22.5 * FIXED;
-    game.squads[0].y = 20.5 * FIXED;
+    game.updateSquad(game.squads[0].id, { x: 22.5 * FIXED });
+    game.updateSquad(game.squads[0].id, { y: 20.5 * FIXED });
     snapshot = game.snapshot();
     snapshot.changedTiles = new Uint32Array();
     preview.update(snapshot);
@@ -90,7 +90,7 @@ describe("bounded placement preview", () => {
       game.buildingPlacement(1, "tower", tile, "StoneAge"),
     );
     expect(preview.sites(bounds, 256)).not.toContain(tile);
-    game.squads[0].x = 60.5 * FIXED;
+    game.updateSquad(game.squads[0].id, { x: 60.5 * FIXED });
     snapshot = game.snapshot();
     snapshot.changedTiles = new Uint32Array();
     preview.update(snapshot);

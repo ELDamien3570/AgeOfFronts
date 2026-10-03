@@ -1,3 +1,4 @@
+import { retainSquads } from "./UnitFixtures";
 import { describe, expect, it, vi } from "vitest";
 import { GameMapImpl } from "../../src/core/game/GameMap";
 import { FIXED } from "../../src/skirmish/Protocol";
@@ -36,10 +37,7 @@ function fixture() {
     coal: 1000,
   });
   const original = game.squads.find((s) => s.playerId === 2)!;
-  game.squads.splice(
-    0,
-    game.squads.length,
-    ...Array.from({ length: 9 }, (_, i) => ({
+  retainSquads(game, [...Array.from({ length: 9 }, (_, i) => ({
       ...structuredClone(original),
       id: game.allocateId(),
       playerId: i < 8 ? 2 : 1,
@@ -48,8 +46,7 @@ function fixture() {
       x: (i < 8 ? 40.5 + (i % 4) * 2 : 110.5) * FIXED,
       y: (35.5 + Math.floor(i / 4) * 3) * FIXED,
       troops: 1000,
-    })),
-  );
+    }))]);
   game.restore(game.checkpoint());
   economy.boundaries!.resetForRebuild();
   while (!economy.boundaries!.ready) economy.boundaries!.step(0, 512);
@@ -230,7 +227,7 @@ describe("stable staffed Modern fronts", () => {
   });
   it("does not spend without reserves, support or a safe construction window", () => {
     const f = fixture();
-    f.game.squads.splice(4);
+    for (const record of f.game.squads.slice(4)) f.game.removeSquad(record.id);
     const gold = f.player.gold;
     for (let i = 0; i < 100; i++) {
       f.controller.step(8);
@@ -241,8 +238,7 @@ describe("stable staffed Modern fronts", () => {
     expect(f.economy.ledger.reservations.size).toBe(0);
     const support = fixture();
     support.game.squads.forEach((s) => {
-      s.kind = "infantry";
-      s.definitionId = "modern-infantry";
+      support.game.updateSquad(s.id, { kind: "infantry", definitionId: "modern-infantry" });
     });
     for (let i = 0; i < 100; i++) {
       support.controller.step(8);
@@ -251,8 +247,8 @@ describe("stable staffed Modern fronts", () => {
     expect(support.game.buildings).toHaveLength(0);
     const contact = fixture(),
       enemy = contact.game.squads.find((s) => s.playerId === 1)!;
-    enemy.x = 70.5 * FIXED;
-    enemy.y = 16.5 * FIXED;
+    contact.game.updateSquad(enemy.id, { x: 70.5 * FIXED });
+    contact.game.updateSquad(enemy.id, { y: 16.5 * FIXED });
     for (let i = 0; i < 100; i++) {
       contact.controller.step(16);
       contact.game.tick++;
@@ -273,8 +269,8 @@ describe("stable staffed Modern fronts", () => {
     }
     const section = f.controller.sections.get(2)!;
     expect(section.phase).toBe("holding");
-    f.game.squad(section.members[0])!.troops = 100;
-    f.game.squad(section.members[1])!.troops = 100;
+    f.game.updateSquad(f.game.squad(section.members[0])!.id, { troops: 100 });
+    f.game.updateSquad(f.game.squad(section.members[1])!.id, { troops: 100 });
     f.game.tick = section.nextDecision;
     f.controller.step(32);
     expect(section.phase).toBe("withdrawn");

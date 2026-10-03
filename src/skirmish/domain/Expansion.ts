@@ -3,6 +3,7 @@ import { DiplomaticGeography } from "./DiplomaticGeography";
 import { restoreArray } from "../StateTransfer";
 import type { GameMap } from "../../core/game/GameMap";
 import type { BuildingQueries } from "../BuildingIndex";
+import type { UnitQueries } from "../UnitIndex";
 import { DamageLedger } from "../Conquest";
 import type { LandPaths, WaterPaths } from "../Pathfinding";
 import type {
@@ -89,6 +90,9 @@ export interface ExpansionWorld extends BattleWorld, ArmyWorld {
   ship(id:number):Ship | undefined;
   building(id:number):Building | undefined;
   buildingFacts(): BuildingQueries;
+  squadFacts(): UnitQueries<Squad>;
+  shipFacts(): UnitQueries<Ship>;
+  installSquadPath(id: number, path: readonly number[]): void;
   removeBuilding(id: number): boolean;
   factionAdjacent(a: number, b: number): boolean;
 }
@@ -371,9 +375,9 @@ export class Expansion {
                 0,
             )
           ) {
-            s.charge = null;
-            s.order = { type: "hold" };
-            s.path = [];
+            this.world.updateSquad(s.id, { charge: null });
+            this.world.updateSquad(s.id, { order: { type: "hold" } });
+            this.world.installSquadPath(s.id, []);
           }
           if (s.structureTarget) {
             const target =
@@ -387,9 +391,9 @@ export class Expansion {
               !target ||
               !this.diplomacy.hostile(s.playerId, target.playerId)
             ) {
-              s.structureTarget = null;
-              s.order = { type: "hold" };
-              s.path = [];
+              this.world.updateSquad(s.id, { structureTarget: null });
+              this.world.updateSquad(s.id, { order: { type: "hold" } });
+              this.world.installSquadPath(s.id, []);
             }
           }
           if (
@@ -401,17 +405,17 @@ export class Expansion {
               )?.playerId ?? 0,
             )
           ) {
-            s.order = { type: "hold" };
-            s.path = [];
+            this.world.updateSquad(s.id, { order: { type: "hold" } });
+            this.world.installSquadPath(s.id, []);
           }
-          s.queuedOrders = s.queuedOrders.filter(
+          this.world.updateSquad(s.id, { queuedOrders: s.queuedOrders.filter(
             (o) =>
               o.type !== "attack" ||
               this.diplomacy.hostile(
                 s.playerId,
                 world.squads.find((t) => t.id === o.targetId)?.playerId ?? 0,
               ),
-          );
+          ) });
         }
         for (let tile = 0; tile < world.owners.length; tile++)
           if (
@@ -528,10 +532,10 @@ export class Expansion {
       if (reason) return reason;
       spend(player, this.supply.inventories[player.id], cost);
       for (const s of selected as Ship[]) {
-        s.refit = { targetId: target.id, remainingTicks: 200, totalTicks: 200 };
-        s.waypoints = [];
-        s.path = [];
-        s.attackTargetId = null;
+        this.world.updateShip(s.id, { refit: { targetId: target.id, remainingTicks: 200, totalTicks: 200 } });
+        this.world.updateShip(s.id, { waypoints: [] });
+        this.world.installSquadPath(s.id, []);
+        this.world.updateShip(s.id, { attackTargetId: null });
       }
       return null;
     }
@@ -553,8 +557,8 @@ export class Expansion {
       )
         return "Select your available warships";
       for (const s of selected as Ship[]) {
-        s.attackTargetId = target.id;
-        s.lastPlanTick = -60;
+        this.world.updateShip(s.id, { attackTargetId: target.id });
+        this.world.updateShip(s.id, { lastPlanTick: -60 });
       }
       return null;
     }
@@ -591,11 +595,11 @@ export class Expansion {
       if (rejection) return rejection;
       spend(player, this.supply.inventories[player.id], cost);
       for (const s of selected as Squad[]) {
-        s.refit = { targetId: target.id, totalTicks: 200, remainingTicks: 200 };
-        s.order = { type: "hold" };
-        s.queuedOrders = [];
-        s.path = [];
-        s.charge = null;
+        this.world.updateSquad(s.id, { refit: { targetId: target.id, totalTicks: 200, remainingTicks: 200 } });
+        this.world.updateSquad(s.id, { order: { type: "hold" } });
+        this.world.updateSquad(s.id, { queuedOrders: [] });
+        this.world.installSquadPath(s.id, []);
+        this.world.updateSquad(s.id, { charge: null });
       }
       return null;
     }
@@ -639,19 +643,11 @@ export class Expansion {
       )
         return "Choose a hostile charge target";
       selected.forEach((s, i) => {
-        s!.charge = {
-          phase: "approach",
-          x: command.x,
-          y: command.y,
-          startTick: world.tick,
-          committedTick: 0,
-          targetId: command.targetId,
-        };
-        s!.order = { type: "move", tile };
-        s!.path = paths[i]!;
-        s!.nextPathIndex = 0;
-        s!.queuedOrders = [];
-        s!.structureTarget = null;
+        world.updateSquad(s!.id, {
+          charge: { phase: "approach", x: command.x, y: command.y, startTick: world.tick, committedTick: 0, targetId: command.targetId },
+          order: { type: "move", tile }, nextPathIndex: 0, queuedOrders: [], structureTarget: null,
+        });
+        world.installSquadPath(s!.id, paths[i]!);
       });
       return null;
     }
@@ -723,15 +719,15 @@ export class Expansion {
         orders.push({ s, ...found });
       }
       for (const { s, tile, path } of orders) {
-        s.order = { type: "move", tile };
-        s.path = path;
-        s.nextPathIndex = 0;
-        s.queuedOrders = [];
-        s.charge = null;
-        s.structureTarget = {
+        this.world.updateSquad(s.id, { order: { type: "move", tile } });
+        this.world.installSquadPath(s.id, path);
+        this.world.updateSquad(s.id, { nextPathIndex: 0 });
+        this.world.updateSquad(s.id, { queuedOrders: [] });
+        this.world.updateSquad(s.id, { charge: null });
+        this.world.updateSquad(s.id, { structureTarget: {
           buildingId: building?.id,
           barrierId: barrier?.id,
-        };
+        } });
       }
       return null;
     }
@@ -863,7 +859,7 @@ export class Expansion {
       return "Strategic flight capacity reached";
     spend(player, this.supply.inventories[player.id], cost);
     if (building) this.world.updateBuilding(building.id, { launchReadyTick: this.world.tick + 1200 });
-    else unit!.chargeReadyTick = this.world.tick + 1200;
+    else this.world.updateSquad(unit!.id, { chargeReadyTick: this.world.tick + 1200 });
     const position = building ? this.battle.position(building) : unit!;
     this.battle.fire(
       {
@@ -927,28 +923,29 @@ export class Expansion {
     this.fortifications.step(world.tick, world.buildings,
       (id, health) => world.updateBuilding(id, { health }));
     this.supply.step(world.tick, world.players, world.buildings, world.owners, world.squads);
-    for (const s of world.ships)
-      if (s.refit && --s.refit.remainingTicks <= 0) {
-        s.definitionId = s.refit.targetId;
-        s.xp = 0;
-        s.refit = null;
-      }
+    for (const s of world.ships) {
+      if (!s.refit) continue;
+      const remainingTicks = s.refit.remainingTicks - 1;
+      world.updateShip(s.id, remainingTicks <= 0
+        ? { definitionId: s.refit.targetId, xp: 0, refit: null }
+        : { refit: { ...s.refit, remainingTicks } });
+    }
     for (const s of world.squads) {
-      if (s.refit && --s.refit.remainingTicks <= 0) {
-        const target = UNIT.get(s.refit.targetId)!;
-        s.definitionId = target.id;
-        s.kind = target.line;
-        s.xp = 0;
-        s.nextAttackTick = world.tick;
-        s.refit = null;
+      if (s.refit) {
+        const remainingTicks = s.refit.remainingTicks - 1;
+        if (remainingTicks <= 0) {
+          const target = UNIT.get(s.refit.targetId)!;
+          world.updateSquad(s.id, { definitionId: target.id, kind: target.line, xp: 0, nextAttackTick: world.tick, refit: null });
+        } else world.updateSquad(s.id, { refit: { ...s.refit, remainingTicks } });
       }
       if (
         s.charge?.phase === "approach" &&
         world.tick - s.charge.startTick >= this.unit(s).charge!.runupTicks
       ) {
-        s.charge.phase = "committed";
-        s.charge.committedTick = world.tick;
-        s.chargeReadyTick = world.tick + this.unit(s).charge!.cooldownTicks;
+        world.updateSquad(s.id, {
+          charge: { ...s.charge, phase: "committed", committedTick: world.tick },
+          chargeReadyTick: world.tick + this.unit(s).charge!.cooldownTicks,
+        });
       }
     }
     this.modernization.clean(world.squads, world.tick);
@@ -959,8 +956,7 @@ export class Expansion {
   afterMovement(): void {
     for (const s of this.world.squads)
       if (this.unit(s).role === "launcher")
-        s.deploymentTicks =
-          s.troops > 0 &&
+        this.world.updateSquad(s.id, { deploymentTicks: s.troops > 0 &&
           !s.refit &&
           !s.charge &&
           s.embarkedOn === null &&
@@ -968,7 +964,7 @@ export class Expansion {
           !s.fighting &&
           s.order.type === "hold"
             ? Math.min(100, (s.deploymentTicks ?? 0) + 1)
-            : 0;
+            : 0 });
     this.advanceAircraft();
     this.trade.step();
     this.battle.advanceProjectiles();
@@ -1118,7 +1114,7 @@ export class Expansion {
         (building.health ?? 1) >= (building.maxHealth ?? 1) &&
         nextBuildingAge(building.type, building.age ?? "StoneAge", state.age, state.completed));
       if (upgrade) this.world.applyCommand({ type: "upgrade-building", playerId: player.id, buildingIds: [upgrade.id] });
-      const squadCount = this.world.squads.filter((s) => s.playerId === player.id).length;
+      const squadCount = this.world.squadFacts().byOwner(player.id).length;
       // Nearest owned land is order-independent (it is derived from ownership),
       // so checkpoints never need the per-player tile sets.
       let nearestOwned: number[] | undefined;
@@ -1302,11 +1298,9 @@ export class Expansion {
   }
   private thinkCapabilities(player: Player): void {
     const personality = personalityOf(player);
-    const force = new AiForceInventory(player.id, this.world.squads, this.world.recruitment.jobs);
+    const force = new AiForceInventory(player.id, this.world.squadFacts().byOwner(player.id), this.world.recruitment.jobs);
     const own = this.world.buildingFacts().byOwner(player.id).filter(b => !b.remainingTicks),
-      squads = this.world.squads.filter(
-        (s) => s.playerId === player.id && s.embarkedOn === null,
-      ),
+      squads = this.world.squadFacts().byOwner(player.id).filter(s => s.embarkedOn === null),
       stock = this.supply.inventories[player.id];
     const enemies = this.world.squads.filter((s) =>
       this.diplomacy.hostile(player.id, s.playerId),
@@ -1430,9 +1424,7 @@ export class Expansion {
         });
     }
     for (const kind of ["warship", "transport"] as const) {
-      const count = this.world.ships.filter(
-        (s) => s.playerId === player.id && s.kind === kind,
-      ).length + force.queuedShips(kind);
+      const count = this.world.shipFacts().byKind(player.id, kind).length + force.queuedShips(kind);
       if (
         count >=
         Math.min(

@@ -10,9 +10,12 @@ import type { ShoreLeg, ShoreRoutes } from "./ShoreRoutes";
 export interface ShoreTransportWorld {
   map: GameMap;
   paths: LandPaths;
-  squads: Squad[];
-  ships: Ship[];
-  removed?(ship: Ship): void;
+  squads: readonly Squad[];
+  ships: readonly Ship[];
+  updateSquad(id: number, changes: Partial<Omit<Squad, "id">>): Squad | undefined;
+  updateShip(id: number, changes: Partial<Omit<Ship, "id">>): Ship | undefined;
+  removeShip(id: number): boolean;
+  cargo(shipId: number): readonly Squad[];
   blocked(tile: number, playerId: number): boolean;
   /** False when no tower or wall exists, so unobstructed (cached) routes apply. */
   hasObstacles?(): boolean;
@@ -173,26 +176,20 @@ export class ShoreTransport {
         ? w.launch(playerId, definition, plan.leg.departure.waterTile)
         : undefined;
       if (ship) {
-        ship.shoreTransfer = {
-          destinationTile: destination,
-          landingTile: plan.leg!.arrival.landTile,
-          waterPath: plan.leg!.waterPath,
-          capacity,
-          phase: "boarding",
-          queued: plan.members.map((s) => ({
-            squadId: s.id,
-            orders: preserveQueue ? [...s.queuedOrders] : [],
-          })),
-        };
-        ship.boarding = {
-          ...plan.leg!.departure,
-          squadIds: plan.members.map((s) => s.id),
-        };
+        w.updateShip(ship.id, {
+          shoreTransfer: {
+            destinationTile: destination,
+            landingTile: plan.leg!.arrival.landTile,
+            waterPath: plan.leg!.waterPath,
+            capacity,
+            phase: "boarding",
+            queued: plan.members.map(s => ({ squadId: s.id, orders: preserveQueue ? [...s.queuedOrders] : [] })),
+          },
+          boarding: { ...plan.leg!.departure, squadIds: plan.members.map(s => s.id) },
+        });
       }
       plan.members.forEach((s, index) => {
-        s.queuedOrders = [];
-        s.charge = null;
-        s.structureTarget = null;
+        w.updateSquad(s.id, { queuedOrders: [], charge: null, structureTarget: null });
         const point = plan.slots.get(s.id)!,
           tile = pointTile(w.map, point);
         w.activate(
@@ -211,56 +208,48 @@ export class ShoreTransport {
 
   land(ship: Ship, tile: number, redirected = false): string | null {
     const w = this.world;
-    const transfer = ship.shoreTransfer!;
-    const cargo = w.squads.filter((s) => s.embarkedOn === ship.id);
+    let transfer = ship.shoreTransfer!;
+    const cargo = w.cargo(ship.id);
     const result = w.unload(ship, tile);
     if (result !== null) return result;
     if (redirected) {
-      transfer.landingTile = tile;
-      transfer.destinationTile = tile;
-      transfer.queued = [];
+      w.updateShip(ship.id, { shoreTransfer: { ...transfer, landingTile: tile, destinationTile: tile, queued: [] } });
+      transfer = ship.shoreTransfer!;
     }
     for (const squad of cargo) {
       if (squad.embarkedOn === ship.id) continue;
-      squad.queuedOrders = redirected
-        ? []
-        : (transfer.queued.find((q) => q.squadId === squad.id)?.orders ?? []);
+      w.updateSquad(squad.id, { queuedOrders: redirected
+        ? [] : (transfer.queued.find(q => q.squadId === squad.id)?.orders ?? []) });
       w.resume(squad, transfer.destinationTile);
     }
-    if (!w.squads.some((s) => s.embarkedOn === ship.id)) {
-      w.ships.splice(w.ships.indexOf(ship), 1);
-      w.removed?.(ship);
-    }
+    if (!w.cargo(ship.id).length) w.removeShip(ship.id);
     return null;
   }
 
   step(): void {
     const w = this.world;
     for (const ship of [...w.ships]) {
-      const transfer = ship.shoreTransfer;
+      let transfer = ship.shoreTransfer;
       if (!transfer) continue;
-      const cargo = w.squads.filter((s) => s.embarkedOn === ship.id);
+      const cargo = w.cargo(ship.id);
       if (transfer.phase !== "boarding" && !cargo.length) {
-        w.ships.splice(w.ships.indexOf(ship), 1);
-        w.removed?.(ship);
+        w.removeShip(ship.id);
         continue;
       }
       if (transfer.phase === "boarding" && !ship.boarding) {
         if (!cargo.length) {
-          w.ships.splice(w.ships.indexOf(ship), 1);
-          w.removed?.(ship);
+          w.removeShip(ship.id);
           continue;
         }
-        transfer.phase = "sailing";
-        const end =
-          transfer.waterPath[transfer.waterPath.length - 1] ??
-          pointTile(w.map, ship);
-        ship.destination = end;
-        ship.path = [pointTile(w.map, ship), ...transfer.waterPath];
-        ship.nextPathIndex = 0;
+        const end = transfer.waterPath[transfer.waterPath.length - 1] ?? pointTile(w.map, ship);
+        w.updateShip(ship.id, { shoreTransfer: { ...transfer, phase: "sailing" },
+          destination: end, path: [pointTile(w.map, ship), ...transfer.waterPath], nextPathIndex: 0 });
+        transfer = ship.shoreTransfer!;
       }
-      if (transfer.phase === "sailing" && ship.destination === null)
-        transfer.phase = "landing";
+      if (transfer.phase === "sailing" && ship.destination === null) {
+        w.updateShip(ship.id, { shoreTransfer: { ...transfer, phase: "landing" } });
+        transfer = ship.shoreTransfer!;
+      }
       if (transfer.phase !== "landing" || ship.destination !== null) continue;
       // A newly occupied landing is retried; never force units into blockers.
       if (
