@@ -20,6 +20,16 @@ const smooth = value => {
 };
 const mix = (a, b, amount) => a + (b - a) * amount;
 
+function trackValue(keys, timeMs, fallback) {
+  if (!keys?.length) return fallback;
+  if (timeMs <= keys[0].timeMs) return keys[0].value;
+  for (let index = 1; index < keys.length; index++) {
+    const from = keys[index - 1], to = keys[index];
+    if (timeMs <= to.timeMs) return mix(from.value, to.value, smooth((timeMs - from.timeMs) / (to.timeMs - from.timeMs)));
+  }
+  return keys.at(-1).value;
+}
+
 function layer(clips, id, time, weight = 1, frame) {
   const clip = clips.get(id);
   if (!clip) throw new Error("Missing actor clip: " + id);
@@ -33,7 +43,7 @@ export function sampleFormation(definition, clips, id, elapsedMs) {
   const elapsed = animation.loop ? Math.max(0, elapsedMs) % animation.durationMs :
     Math.max(0, Math.min(animation.durationMs, elapsedMs));
   const amount = animation.layoutFrom === animation.layoutTo ? 0 :
-    smooth(elapsed / animation.layoutTransitionMs);
+    smooth((elapsed - (animation.layoutTransitionDelayMs || 0)) / animation.layoutTransitionMs);
   return definition.members.map(member => {
     const from = definition.layouts[animation.layoutFrom][member.id];
     const to = definition.layouts[animation.layoutTo][member.id];
@@ -59,8 +69,12 @@ export function sampleFormation(definition, clips, id, elapsedMs) {
         layers.push(layer(clips, animation.blendOut.source, member.phaseMs, blend));
       }
     }
-    return { id: member.id, rank: member.rank, x: mix(from.x, to.x, amount),
-      y: mix(from.y, to.y, amount), layers: layers.filter(item => item.weight > 0) };
+    const track = animation.layoutTracks?.[member.id];
+    const trackTime = elapsed - (animation.layoutTransitionDelayMs || 0);
+    return { id: member.id, rank: member.rank,
+      x: trackValue(track?.x, trackTime, mix(from.x, to.x, amount)),
+      y: trackValue(track?.y, trackTime, mix(from.y, to.y, amount)),
+      layers: layers.filter(item => item.weight > 0) };
   }).sort((a, b) => a.y - b.y || a.x - b.x);
 }
 
@@ -119,4 +133,32 @@ export function chargeReviewPose(definition, elapsedMs) {
   }
   const last = steps.at(-1);
   return { id: last.id, timeMs: last.durationMs, phaseIndex: steps.length - 1, done: true };
+}
+
+// Inspection reference only: the camera follows the formation while the ground moves.
+// These distances never offset baked sprites or move a game entity.
+export function reviewTravelDistance(definition, id, elapsedMs) {
+  const animation = definition.animations.find(item => item.id === id);
+  const travel = animation?.reviewTravel;
+  if (!travel) return 0;
+  const time = Math.max(0, animation.loop ? elapsedMs : Math.min(animation.durationMs, elapsedMs));
+  const integral = (elapsed, duration) => {
+    const t = Math.max(0, Math.min(1, elapsed / duration));
+    return duration * (t ** 3 - t ** 4 / 2);
+  };
+  let distance = time;
+  if (travel.rampInMs) distance = integral(time, travel.rampInMs) + Math.max(0, time - travel.rampInMs);
+  if (travel.rampOutMs) distance -= integral(time - (animation.durationMs - travel.rampOutMs), travel.rampOutMs);
+  return distance * travel.forwardPixelsPerSecond / 1000;
+}
+
+export function chargeReviewTravelDistance(definition, elapsedMs) {
+  let remaining = Math.max(0, elapsedMs), distance = 0;
+  for (const step of chargeReviewSteps(definition)) {
+    const time = Math.min(remaining, step.durationMs);
+    distance += reviewTravelDistance(definition, step.id, time);
+    remaining -= time;
+    if (!remaining) break;
+  }
+  return distance;
 }

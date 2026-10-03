@@ -1,5 +1,11 @@
 // Art review only. These display rules mirror the cited production
 // sources in the Russian Generation-Manifest; no simulation or match assets change.
+export function masterFrameRect(image, frameSize = 512) {
+  const extent = (420 / 512) * frameSize, longest = Math.max(image.naturalWidth, image.naturalHeight);
+  const width = extent * (image.naturalWidth / longest), height = extent * (image.naturalHeight / longest);
+  return [(frameSize - width) / 2, (frameSize - height) / 2, width, height];
+}
+
 export class FleetScaleReview {
   constructor(section, canvas, zoom, compare, motion) {
     this.section = section;
@@ -54,15 +60,15 @@ export class FleetScaleReview {
     context.imageSmoothingEnabled = true; context.imageSmoothingQuality = 'high';
     if (frame) context.drawImage(image, frame.x, frame.y, frame.width, frame.height, 0, 0, 128, 128);
     else if (runtimeFrame) context.drawImage(image, 0, 0, 128, 128);
-    else context.drawImage(image, 46 / 4, 46 / 4, 420 / 4, 420 / 4);
+    else context.drawImage(image, ...masterFrameRect(image, 128));
     frames.set(key, atlas);
     return atlas;
   }
 
   drawMaster(ctx, image, x, y, size, category, runtimeFrame = false, frame = null) {
     if (!image?.complete || !image.naturalWidth) return;
-    // The ship authoring pipeline fits the 1254px source into a 420px square
-    // within a 512px frame. Preview that same framing at the runtime atlas size.
+    // Fit native master proportions within the authoring pipeline's 420px extent
+    // inside a 512px frame, then preview it at the runtime atlas size.
     const atlas = this.atlas(image, frame, runtimeFrame);
     ctx.save(); ctx.translate(x, y);
     ctx.globalAlpha = category === 'Trade' ? 0.85 : 1;

@@ -234,13 +234,15 @@ def main():
     report = validate(approved_hashes, base_hashes)
     manifest = json.loads((ROOT / "Ship_Animation_Manifest.json").read_text())
     for asset in manifest["assets"]:
+        if asset["age"] != CONFIG["age"]:
+            continue
         role = next(spec["role"] for spec in CONFIG["vessels"] if spec["category"] == asset["category"])
         asset["metadata"] = f"StoneAge/{role}/animations.json"
         asset["status"] = "animated-from-approved-master"
         metadata = json.loads((AGE_ROOT / role / "animations.json").read_text())
         asset["clips"] = [clip["file"] for clip in metadata["animations"].values()]
-    manifest["clipCount"] = report["primaryClipCount"]
-    manifest["animationApproval"] = {"date": "2026-10-02", "userMessage": "these are perfect, you're clear to animate them."}
+    manifest["clipCount"] = sum(len(asset["clips"]) for asset in manifest["assets"])
+    manifest["animationApproval"] = {"age": CONFIG["age"], "date": "2026-10-02", "userMessage": "these are perfect, you're clear to animate them."}
     json_write(ROOT / "Ship_Animation_Manifest.json", manifest)
     generation = json.loads((AGE_ROOT / "Generation-Manifest.json").read_text())
     generation["status"] = "static-masters-approved; animations-exported"

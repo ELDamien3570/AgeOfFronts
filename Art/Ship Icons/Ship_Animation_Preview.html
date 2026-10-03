@@ -94,7 +94,7 @@
     <p class="review-links"><a href="../Soldier%20Icons/StoneAge_Animation_Preview.html">Soldier preview ↗</a><a id="manifest-link" href="Ship_Animation_Manifest.json" target="_blank" rel="noopener">Asset manifest ↗</a><a href="README.md" target="_blank" rel="noopener">Animation notes ↗</a></p>
   </main>
   <script type="module">
-    import { FleetScaleReview } from './Fleet_Scale_Review.js';
+    import { FleetScaleReview, masterFrameRect } from './Fleet_Scale_Review.js';
     // Review-only MVVM: asset model, playback view model, and canvas view.
     const assetModel = {
       cultures: [
@@ -311,7 +311,7 @@
       for (const clip of playback.clips) {
         const ctx = clip.context; ctx.clearRect(0, 0, 512, 512);
         if (!clip.failed && clip.still && clip.image.complete && clip.image.naturalWidth) {
-          loaded++; ctx.drawImage(clip.image, 46, 46, 420, 420);
+          loaded++; ctx.drawImage(clip.image, ...masterFrameRect(clip.image));
         } else if (!clip.failed && clip.data && clip.image.complete && clip.image.naturalWidth) {
           loaded++;
           const progress = Math.floor(playback.frame + (playback.playing ? playback.seconds * clip.data.suggestedFramesPerSecond : 0));

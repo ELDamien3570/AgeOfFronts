@@ -30,7 +30,7 @@ function cardFor(unit, metadata, definition, metadataUrl) {
   const url = new URL(definition.file, metadataUrl); url.searchParams.set("review", String(reviewLoad)); sheet.href = url.href;
   footer.append(position, sheet);
   if (unit.review) {
-    const review = document.createElement("a"); review.textContent = "Inspect actor ↗";
+    const review = document.createElement("a"); review.textContent = unit.actorCount > 1 ? "Inspect formation ↗" : "Inspect actor ↗";
     const reviewUrl = new URL(unit.review, model.manifest.url); reviewUrl.hash = definition.id;
     review.href = reviewUrl.href; footer.append(review);
   }
@@ -48,7 +48,8 @@ function cardFor(unit, metadata, definition, metadataUrl) {
   }
   image.onerror = () => { clip.failed = true; };
   image.onload = () => {
-    if (image.naturalWidth !== metadata.sheetSize.width || image.naturalHeight !== metadata.sheetSize.height) clip.failed = true;
+    const size = definition.sheetSize || metadata.sheetSize;
+    if (image.naturalWidth !== size.width || image.naturalHeight !== size.height) clip.failed = true;
   };
   image.src = url.href;
   return clip;

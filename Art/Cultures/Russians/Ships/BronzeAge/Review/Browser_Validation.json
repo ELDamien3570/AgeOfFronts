@@ -1,0 +1,22 @@
+{
+  "schemaVersion": 1,
+  "date": "2026-10-02",
+  "url": "http://127.0.0.1:9018/Ship%20Icons/Ship_Animation_Preview.html?culture=russian#BronzeAge",
+  "warshipRevision": "v7",
+  "bronzeStaticMasters": 3,
+  "animationApprovalPending": true,
+  "checks": {
+    "russianBronzePostersResolved": true,
+    "staticAnimationControlsDisabled": true,
+    "russianStoneAgeClipsLoaded": 7,
+    "baseBronzeAgeClipsLoaded": 7,
+    "largeAndTacticalVisualReview": true,
+    "nativeMasterProportionsPreserved": true
+  },
+  "consoleWarningsAndErrors": [],
+  "screenshots": [
+    "First_Masters_Large.jpg",
+    "Revised_Warship_Review.jpg"
+  ],
+  "limitation": "Browser art review only; Bronze Age animations and engine integration have not started."
+}

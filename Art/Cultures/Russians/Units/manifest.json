@@ -7,7 +7,7 @@
     {
       "id": "StoneAge",
       "label": "Stone Age",
-      "subtitle": "Single soldiers · straight overhead view · build formations after actor review"
+      "subtitle": "Five-man clubmen formation · straight overhead view · four charge phases"
     },
     {
       "id": "BronzeAge",
@@ -44,10 +44,10 @@
     {
       "id": "russian-stoneage-clubman",
       "age": "StoneAge",
-      "label": "Russian clubman",
-      "metadata": "StoneAge/Clubman/animations.json",
-      "review": "StoneAge/Clubman/Actor_Review.html",
-      "actorCount": 1
+      "label": "Russian clubmen · 5 men",
+      "metadata": "StoneAge/Clubman/Formation/animations.json",
+      "review": "StoneAge/Clubman/Formation/Formation_Review.html",
+      "actorCount": 5
     }
   ]
 }
