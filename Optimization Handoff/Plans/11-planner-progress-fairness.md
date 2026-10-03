@@ -1,6 +1,6 @@
 # P11: Guarantee limited-search progress and fairness
 
-Status: **components implemented locally; shared integration and capacity qualification pending**. Read
+Status: **local implementation and shared integration complete at cd4a46c; capacity qualification remains open**. Read
 [`../agent-workflow.md`](../agent-workflow.md) and [`../handoff.md`](../handoff.md).
 
 ## Dependencies and ownership
@@ -112,3 +112,7 @@ checks passed. Final serial full suite: 1035 tests passed across 158 files in
 
 This does not qualify future P06-P10 callers before they migrate to this planner,
 the largest map, the ARM host or ten real browser clients. Default gates stay off.
+
+## Nightly integration checkpoint
+
+See [cd4a46c implementation scope and exact local validation](../Evidence/nightly-batch-01.md). External acceptance remains open.

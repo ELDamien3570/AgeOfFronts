@@ -1,6 +1,6 @@
 # P03: Maintain entity and ownership indexes
 
-Status: **building and squad/ship/cargo lifecycle checkpoints implemented locally; remaining consumer migration and broader qualification are open**. Read
+Status: **local implementation complete at cd4a46c; broader capacity qualification remains open**. Read
 [`../agent-workflow.md`](../agent-workflow.md) and [`../handoff.md`](../handoff.md).
 
 ## Dependencies and ownership
@@ -71,3 +71,7 @@ The final local suite passed 1,034 tests in 158 files, TypeScript and the build;
 remaining consumer migration and runtime/browser/ARM qualification remain open.
 The user requested a pause after this gate. P11 and P14 stay reserved for the
 parallel session; no next dependent implementation has begun.
+
+## Nightly integration checkpoint
+
+See [cd4a46c implementation scope and exact local validation](../Evidence/nightly-batch-01.md). External acceptance remains open.

@@ -1,6 +1,6 @@
 # P13: Cache coherent recovery and join baselines
 
-Status: **remaining work, not implemented by this handoff**. Read
+Status: **local implementation complete at cd4a46c; external fan-out/capacity qualification remains open**. Read
 [`../agent-workflow.md`](../agent-workflow.md) and [`../handoff.md`](../handoff.md).
 
 ## Dependencies and ownership
@@ -52,3 +52,7 @@ If a required dependency, hardware test, source asset or authorization is
 unavailable, record the exact blocker and stop only that dependent work. Do not
 turn a refused or unverified test into a pass, broaden authority, or enable a
 production feature merely to demonstrate that code exists.
+
+## Nightly integration checkpoint
+
+See [cd4a46c implementation scope and exact local validation](../Evidence/nightly-batch-01.md). External acceptance remains open.

@@ -1,6 +1,6 @@
 # P21: Plan reachable remote coast acquisition
 
-Status: **remaining work, not implemented by this handoff**. Read
+Status: **deferred to the next update by the user; no implementation in the current nightly batch**. Read
 [`../agent-workflow.md`](../agent-workflow.md) and [`../handoff.md`](../handoff.md).
 
 ## Dependencies and ownership

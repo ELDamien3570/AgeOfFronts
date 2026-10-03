@@ -92,3 +92,7 @@ hardware performance acceptance remain unverified. Details: browser-profile.json
 
 Final common gates: 1035 tests passed (158 files), TypeScript, scoped lint,
 production build and diff checks passed. Full-suite log: Evidence/P11-P14/final-tests.txt.
+
+## Nightly integration checkpoint
+
+See [cd4a46c implementation scope and exact local validation](../Evidence/nightly-batch-01.md). External acceptance remains open.

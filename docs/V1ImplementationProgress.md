@@ -517,3 +517,46 @@ The user requested implementation pause after this testing gate and a rough code
 estimate. Work pauses at this checkpoint; no next dependent phase is started.
 P11/P14 remain reserved for the user's separate session. No push, merge, default
 change, artwork integration or deployment was performed by this checkpoint.
+
+## Nightly continuation scope
+
+The user resumed implementation with larger dependency-compatible batches and
+focused checks between milestones. Run the full suite at major integration
+boundaries, not after every small slice. Practical changes to the existing
+modules are authorized; preserve deterministic simulation, canonical ownership,
+transactional paid work and ordered replication.
+
+P11 and P14 were supplied from `codex/p11-p14-optimization` (94be373, 710d337,
+44ceb21) and cherry-picked here as 4eae4d7, a24b7a0 and e8e4eb5. Their shared
+Simulation/Protocol/codec patch has been adapted to this continuation's entity
+ownership. Local integration is checked; external performance gates stay open.
+
+The user deferred **P17, P20, P21, P22 and P25** to the next update. P18/P23/P26
+can use the existing mechanics, but acceptance that specifically requires these
+deferred features remains open. P28 cannot claim the original all-roadmap gate
+without them. Notify the user by plan document as local implementation closes.
+
+The active first batch covers the remaining P03 consumers, P04 resource/producer
+facts, P05 local combat queries, P12 entity/resource replication and P13 exact
+recovery baseline reuse. Its combined test milestone and evidence supersede the
+historical pause below once recorded.
+
+## Nightly integration checkpoint: cd4a46c
+
+Local implementation is complete for **P03, P05 and P13**. Supplied **P11 and
+P14** are integrated. **P04** has resource/producer-lookup code with completed
+producer capability work still open. **P12** has compact entity/resource deltas;
+broader domain metadata reduction remains open. The current larger-batch work
+continues with P07/P06 and P08/P09/P10 in dependency order.
+
+The combined suite covered 1,062 tests in 163 files: 1,061 passed and one new
+collision-cache fixture failed because it assumed a building before camp spawn.
+After explicitly creating the building, that file's five tests passed. No
+production repair or weakened assertion/timeout was needed. TypeScript, build,
+whitespace and scoped lint pass except the known Simulation unused local.
+See [full scope, source and validation](../Optimization%20Handoff/Evidence/nightly-batch-01.md). External
+qualification remains open. P17/P20/P21/P22/P25 stay deferred by user request.
+
+## Final-pass validation instruction
+
+The user's latest instruction supersedes intermediate validation cadence: implement all remaining in-scope code in one pass, excluding P17/P20/P21/P22/P25, and run tests/typecheck/build at the end. Do not stop for per-slice test suites. Continue reporting plan-document implementation milestones, distinguishing code written from final acceptance.
