@@ -18,7 +18,7 @@ export interface TradeWorld {
   map: GameMap;
   paths: LandPaths;
   waterPaths: WaterPaths;
-  buildings: Building[];
+  buildings: readonly Building[];
   players: Player[];
   squads: Squad[];
   ships: Ship[];

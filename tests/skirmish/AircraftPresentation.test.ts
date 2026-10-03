@@ -171,9 +171,7 @@ describe("aircraft flight presentation", () => {
 
   it("follows a real simulation sortie through cruise, return and landing without changing aircraft state", () => {
     const { aircraft, snapshot, presentation, match } = fixture();
-    match.buildings.push(
-      snapshot.buildings.find((b) => b.id === aircraft.airfieldId)!,
-    );
+    match.addBuilding(snapshot.buildings.find((b) => b.id === aircraft.airfieldId)!);
     const departure = { x: aircraft.x, y: aircraft.y };
     expect(
       match.applyCommand({

@@ -174,7 +174,7 @@ describe("swept projectile contacts", () => {
       [800, 10],
       [801, 12],
     ])
-      m.buildings.push({
+      m.addBuilding({
         id,
         type: "tower",
         tile: m.map.ref(x, 18),
@@ -206,7 +206,7 @@ describe("swept projectile contacts", () => {
   });
   it("damages an eligible structure at contact without granting building-shot XP to a squad", () => {
     const { m, source, battle } = match();
-    const b = {
+    const b = m.addBuilding({
       id: m.allocateId(),
       type: "city" as const,
       tile: m.map.ref(15, 15),
@@ -214,8 +214,8 @@ describe("swept projectile contacts", () => {
       remainingTicks: 0,
       health: 2000,
       maxHealth: 2000,
-    };
-    m.buildings.push(b);
+    });
+
     source.y = 15.5 * FIXED;
     battle.fire(
       { ...source, domain: "building" },

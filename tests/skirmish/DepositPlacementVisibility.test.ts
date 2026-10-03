@@ -11,7 +11,7 @@ function fixture() {
   const match = new Skirmish(map, { seed: 42, aiCount: 1, tribes: false,
     runAi: false, ruleset: "ages-v1" });
   match.owners.fill(1);
-  match.buildings.length = 0;
+  for (const building of match.buildings) match.removeBuilding(building.id);
   match.players[0].gold = 1e6;
   const state = match.expansion!.progression.states[1];
   state.completed = TECHNOLOGIES.map(t => t.id);

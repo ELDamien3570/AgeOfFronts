@@ -71,8 +71,8 @@ function setup() {
   p.gold = 1_000_000;
   p.reserves = 100_000;
   const add = (type: BuildingType) => {
-    const b = { ...building(m.allocateId(), type), tile: p.base };
-    m.buildings.push(b);
+    const b = m.addBuilding({ ...building(m.allocateId(), type), tile: p.base });
+
     return b;
   };
   const step = (tick: number) =>
@@ -286,10 +286,10 @@ describe("automatic paid-batch lifecycle", () => {
         b = add("arms-factory");
       Object.assign(stock, { steel: 12, gunpowder: 10 });
       step(20);
-      if (reason === "capture") b.playerId = 2;
+      if (reason === "capture") m.updateBuilding((b).id, { playerId: 2 });
       else if (reason === "destroy")
-        m.buildings.splice(m.buildings.indexOf(b), 1);
-      else if (reason === "health") b.health = 0;
+        m.removeBuilding(b.id);
+      else if (reason === "health") m.updateBuilding((b).id, { health: 0 });
       else p.eliminated = true;
       step(21);
       expect(e.supply.jobs[b.id]).toBeUndefined();
@@ -343,7 +343,7 @@ describe("automatic paid-batch lifecycle", () => {
         definitionId: "modern-siege",
       }),
     ).not.toBeNull();
-    b.playerId = 2;
+    m.updateBuilding((b).id, { playerId: 2 });
     m.step();
     expect(stock[kit]).toBe(1);
     expect(m.recruitment.jobs).toHaveLength(0);
@@ -460,7 +460,7 @@ describe("persistent building-type priorities", () => {
   it("validates ownership, research and compatibility atomically, but allows settings during construction", () => {
     const { m, e, p, add } = setup(),
       a = add("arms-factory");
-    a.remainingTicks = 100;
+    m.updateBuilding((a).id, { remainingTicks: 100 });
     const set = (recipeIds: string[] | null) =>
       m.applyCommand({
         type: "production-priority",
@@ -535,10 +535,10 @@ it("transports manual priorities through snapshot deltas and preserves a paid ba
     encoded.expansion!.productionPriorities?.[p.id]["arms-factory"],
   ).toEqual(["make-modern-equipment"]);
   const remaining = e.supply.jobs[b.id]!.remainingTicks;
-  b.remainingTicks = 50;
+  m.updateBuilding((b).id, { remainingTicks: 50 });
   step(21);
   expect(e.supply.jobs[b.id]!.remainingTicks).toBe(remaining);
-  b.remainingTicks = 0;
+  m.updateBuilding((b).id, { remainingTicks: 0 });
   e.supply.jobs[b.id]!.remainingTicks = 1;
   step(22);
   expect(stock[equipmentItem("Modern")]).toBe(1);

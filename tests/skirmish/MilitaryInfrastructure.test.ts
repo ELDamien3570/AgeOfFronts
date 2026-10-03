@@ -1,4 +1,5 @@
 import { describe, expect, it } from "vitest";
+import { buildingOwner } from "./BuildingFixtures";
 import { GameMapImpl } from "../../src/core/game/GameMap";
 import type { Building } from "../../src/skirmish/Protocol";
 import { Skirmish } from "../../src/skirmish/Simulation";
@@ -35,33 +36,34 @@ describe("research-linked military infrastructure", () => {
       const technology = buildingTechnology(type, age);
       if (!technology) continue;
       const state = { ...startingProgression(), age };
-      const b = building(type);
-      modernizeMilitaryBuildings([b], { 1: state });
+      const owner = buildingOwner([building(type)]), b = owner.values[0];
+      modernizeMilitaryBuildings(owner.values, { 1: state }, (id, changes) => owner.update(id, changes));
       expect(b.age).toBe("StoneAge");
       state.completed.push(technology);
-      modernizeMilitaryBuildings([b], { 1: state });
+      modernizeMilitaryBuildings(owner.values, { 1: state }, (id, changes) => owner.update(id, changes));
       expect(b.age).toBe(age);
       expect(b.health).toBe(Math.floor(buildingIntegrity(type, age) / 2));
       const before = structuredClone(b);
-      modernizeMilitaryBuildings([b], { 1: state });
+      modernizeMilitaryBuildings(owner.values, { 1: state }, (id, changes) => owner.update(id, changes));
       expect(b).toEqual(before);
     }
   });
   it("keeps unrelated, unbuilt, destroyed and foreign buildings unchanged", () => {
     const state = { ...startingProgression(), age: "BronzeAge" as const };
     state.completed.push(technologyAt("BronzeAge", "warfare", 1).id);
-    const buildings = [
+    const owner = buildingOwner([
       building("city"),
       building("barracks", { remainingTicks: 1 }),
       building("barracks", { health: 0 }),
       building("barracks", { playerId: 2 }),
-    ];
+    ].map((record, index) => ({ ...record, id: index + 1 })));
+    const buildings = owner.values;
     const before = structuredClone(buildings);
-    modernizeMilitaryBuildings(buildings, { 1: state });
+    modernizeMilitaryBuildings(buildings, { 1: state }, (id, changes) => owner.update(id, changes));
     expect(buildings).toEqual(before);
-    buildings[1].remainingTicks = 0;
-    buildings[3].playerId = 1;
-    modernizeMilitaryBuildings(buildings, { 1: state });
+    owner.update(buildings[1].id, { remainingTicks: 0 });
+    owner.update(buildings[3].id, { playerId: 1 });
+    modernizeMilitaryBuildings(buildings, { 1: state }, (id, changes) => owner.update(id, changes));
     expect(buildings[1].age).toBe("BronzeAge");
     expect(buildings[3].age).toBe("BronzeAge");
   });
@@ -80,8 +82,8 @@ describe("research-linked military infrastructure", () => {
     e.progression.states[1].completed.push(...t.prerequisites);
     expect(t.gold).toBe(12000);
     match.players[0].gold = 12000;
-    const b = building("barracks", { id: match.allocateId() });
-    match.buildings.push(b);
+    const b = match.addBuilding(building("barracks", { id: match.allocateId() }));
+
     expect(
       match.applyCommand({ type: "research", playerId: 1, technologyId: t.id }),
     ).toBeNull();

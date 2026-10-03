@@ -263,17 +263,17 @@ export type BuildingType =
 export type ShipType = "transport" | "warship";
 
 export interface Building {
-  id: number;
-  playerId: number;
-  type: BuildingType;
-  tile: number;
-  remainingTicks: number;
-  buildTicks?: number;
-  age?: Age;
-  health?: number;
-  maxHealth?: number;
-  nextAttackTick?: number;
-  launchReadyTick?: number;
+  readonly id: number;
+  readonly playerId: number;
+  readonly type: BuildingType;
+  readonly tile: number;
+  readonly remainingTicks: number;
+  readonly buildTicks?: number;
+  readonly age?: Age;
+  readonly health?: number;
+  readonly maxHealth?: number;
+  readonly nextAttackTick?: number;
+  readonly launchReadyTick?: number;
 }
 
 export interface Ship {

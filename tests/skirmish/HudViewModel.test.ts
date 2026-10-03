@@ -1,4 +1,5 @@
 import { describe, expect, it } from "vitest";
+import { buildingOwner } from "./BuildingFixtures";
 import { GameMapImpl } from "../../src/core/game/GameMap";
 import { HudViewModel } from "../../src/skirmish/client/HudViewModel";
 import {
@@ -16,6 +17,8 @@ function setup() {
     runAi: false,
   });
   const snapshot = match.snapshot();
+  const buildings = buildingOwner(snapshot.buildings);
+  snapshot.buildings = [...buildings.values];
   const selection: SelectionState = {
     selected: new Set(),
     selectedShips: new Set(),
@@ -23,7 +26,7 @@ function setup() {
   };
   const vm = () => new HudViewModel(new SkirmishViewModel(snapshot, selection));
   const own = snapshot.squads.filter((s) => s.playerId === 1);
-  return { snapshot, selection, vm, own };
+  return { snapshot, selection, vm, own, buildings };
 }
 describe("snapshot-driven HUD selection", () => {
   it("hides an empty selection and shows real troop health for a single squad", () => {
@@ -150,10 +153,10 @@ describe("snapshot-driven HUD selection", () => {
     expect(selection.selectedShips.size).toBe(2);
   });
   it("shows building construction and ownership without inventing building health", () => {
-    const { selection, vm, snapshot } = setup();
+    const { selection, vm, snapshot, buildings } = setup();
     const building = snapshot.buildings.find((b) => b.playerId === 2)!;
-    building.type = "city";
-    building.remainingTicks = 40;
+    buildings.update(building.id, { type: "city" });
+    buildings.update(building.id, { remainingTicks: 40 });
     selection.selectedBuilding = building.id;
     const result = vm().selectionCard(null);
     if (result.mode !== "detail") throw new Error("Expected detail");
@@ -166,7 +169,7 @@ describe("snapshot-driven HUD selection", () => {
     expect(
       result.card.stats.find((s) => s.label === "Reserve income")?.value,
     ).toBe("+40 / sec");
-    building.remainingTicks = 0;
+    buildings.update(building.id, { remainingTicks: 0 });
     const ready = vm().selectionCard(null);
     if (ready.mode !== "detail") throw new Error("Expected detail");
     expect(ready.card.meter).toBeUndefined();
@@ -217,12 +220,12 @@ describe("HUD action costs and availability", () => {
   });
 
   it("reports building repair when buildings are selected", () => {
-    const { snapshot, selection, vm } = setup();
+    const { snapshot, selection, vm, buildings } = setup();
     const building = snapshot.buildings[0];
-    building.playerId = 1;
-    building.health = 600;
-    building.maxHealth = 1200;
-    building.remainingTicks = 0;
+    buildings.update(building.id, { playerId: 1 });
+    buildings.update(building.id, { health: 600 });
+    buildings.update(building.id, { maxHealth: 1200 });
+    buildings.update(building.id, { remainingTicks: 0 });
     selection.selectedBuilding = building.id;
 
     const card = vm().actionCard("replenish");
@@ -230,7 +233,7 @@ describe("HUD action costs and availability", () => {
     expect(card?.subtitle).toContain("structure repair");
     expect(card?.status).toBe("Ready");
 
-    building.health = 1200;
+    buildings.update(building.id, { health: 1200 });
     expect(vm().actionCard("replenish")?.status).toBe("No repair needed");
   });
 });

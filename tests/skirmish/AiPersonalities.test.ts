@@ -12,7 +12,6 @@ import {
   economicBuildingTarget,
   recruitmentOrder,
 } from "../../src/skirmish/domain/AiPersonality";
-import type { Building } from "../../src/skirmish/Protocol";
 import { Skirmish } from "../../src/skirmish/Simulation";
 
 const profile = (id: Parameters<typeof AI_PERSONALITY.get>[0]) =>
@@ -114,15 +113,15 @@ describe("AI personality policies", () => {
     const stock = expansion.supply.inventories[player.id];
     stock.horses = 100;
     for (const type of ["barracks", "archery", "stables"] as const) {
-      const b: Building = {
+      game.addBuilding({
         id: game.allocateId(),
         type,
         playerId: player.id,
         tile: player.base,
         age: "StoneAge",
         remainingTicks: 0,
-      };
-      game.buildings.push(b);
+      });
+
     }
     const gold = player.gold,
       reserves = player.reserves,

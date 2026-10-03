@@ -85,7 +85,7 @@ describe("scaled coastal water rights and offshore oil", () => {
         tile: site,
       }),
     ).toBeNull();
-    m.buildings.find((b) => b.type === "oil-rig")!.remainingTicks = 0;
+    m.updateBuilding((m.buildings.find((b) => b.type === "oil-rig")!).id, { remainingTicks: 0 });
     const oil = expansion.supply.inventories[1].oil;
     for (let i = 0; i < 20; i++) m.step();
     expect(expansion.supply.inventories[1].oil).toBeGreaterThan(oil);

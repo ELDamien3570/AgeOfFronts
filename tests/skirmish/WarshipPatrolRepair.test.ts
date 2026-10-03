@@ -62,7 +62,7 @@ function spawnWarship(
 
 function addPort(match: Skirmish, xTile: number, yTile: number, playerId = 1) {
   const tile = match.map.ref(xTile, yTile);
-  const port = {
+  const port = match.addBuilding({
     id: (match as any).nextId++,
     playerId,
     type: "port" as const,
@@ -70,9 +70,8 @@ function addPort(match: Skirmish, xTile: number, yTile: number, playerId = 1) {
     remainingTicks: 0,
     health: 1000,
     maxHealth: 1000,
-  };
-  match.buildings.push(port);
-  (match as any).buildingIndex.add(port);
+  });
+
   return port;
 }
 

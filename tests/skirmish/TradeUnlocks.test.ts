@@ -23,20 +23,19 @@ function fixture(port = false) {
     s.x = 70 * FIXED;
     s.y = 40 * FIXED;
   }
-  const factory = {
+  const factory = m.addBuilding({
     id: m.allocateId(),
     type: "factory" as const,
     tile: m.map.ref(10, 15),
     playerId: 1,
     remainingTicks: 0,
     age: "StoneAge" as const,
-  };
-  m.buildings.push(factory);
-  if (port)
-    m.buildings.push(
-      { ...factory, id: m.allocateId(), type: "port", tile: m.map.ref(10, 19) },
-      { ...factory, id: m.allocateId(), type: "port", tile: m.map.ref(30, 19), playerId: 2 },
-    );
+  });
+
+  if (port) {
+    m.addBuilding({ ...factory, id: m.allocateId(), type: "port", tile: m.map.ref(10, 19) });
+    m.addBuilding({ ...factory, id: m.allocateId(), type: "port", tile: m.map.ref(30, 19), playerId: 2 });
+  }
   m.expansion!.supply.goods.set(factory.id, 100);
   const dispatch = () => {
     m.tick += 20;
@@ -86,7 +85,7 @@ describe("independent trade unlocks", () => {
   });
   it("waits for a foreign water market and uses independently unlocked overland trade meanwhile", () => {
     const {m,dispatch,research} = fixture(true);
-    for (const port of m.buildings.filter(b=>b.type === "port")) port.playerId = 1;
+    for (const port of m.buildings.filter(b=>b.type === "port")) m.updateBuilding((port).id, { playerId: 1 });
     expect(m.expansion!.trade.hasForeignMarket(1,m.map.ref(10,20))).toBe(false);
     expect(research).not.toContain("stoneage-goods-handling");
     research.push("stoneage-cargo-canoes"); dispatch();
@@ -95,7 +94,7 @@ describe("independent trade unlocks", () => {
     const actor = m.expansion!.trade.actors[0];
     expect(actor.naval).toBe(false);
     expect(actor.cargo).toBeGreaterThan(0);
-    const ports=m.buildings.filter(b=>b.type === "port");ports[ports.length-1].playerId=2;
+    const ports=m.buildings.filter(b=>b.type === "port");m.updateBuilding((ports[ports.length-1]).id, { playerId: 2 });
     dispatch();
     expect(m.expansion!.trade.actors).toHaveLength(1);
     expect(actor.naval).toBe(false);

@@ -26,7 +26,7 @@ function match() {
   return m;
 }
 function building(m: Skirmish, type: Building["type"], x: number, owner = 1) {
-  const b: Building = {
+  const b: Building = m.addBuilding({
     id: m.allocateId(),
     type,
     tile: m.map.ref(x, 10),
@@ -35,8 +35,8 @@ function building(m: Skirmish, type: Building["type"], x: number, owner = 1) {
     remainingTicks: 0,
     health: 2000,
     maxHealth: 2000,
-  };
-  m.buildings.push(b);
+  });
+
   return b;
 }
 function tradeStep(m: Skirmish, n = 1) {

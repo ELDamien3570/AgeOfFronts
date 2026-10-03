@@ -24,7 +24,7 @@ function fixture() {
   player.base = map.ref(20, 30);
   player.gold = 500000;
   player.land = 64 * 96;
-  game.buildings.splice(0);
+  { for (const building of game.buildings) game.removeBuilding(building.id);  }
   game.expansion!.supply.deposits.splice(0);
   game.expansion!.supply.resourceSites.update([]);
   game.expansion!.progression.states[2].completed = TECHNOLOGIES.map(

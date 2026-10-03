@@ -263,7 +263,8 @@ export class Fortifications {
   repairing(kind:"building"|"wall",id:number):boolean {
     return this.repairs.has(`${kind==="building"?"b":"w"}:${id}`);
   }
-  step(tick: number, buildings: readonly Building[]): void {
+  step(tick: number, buildings: readonly Building[],
+    updateBuilding?: (id: number, health: number) => void): void {
     const byId = new Map(buildings.map((b) => [b.id, b]));
     let dirty = false;
     const towers = new Map<number, Set<number>>();
@@ -323,7 +324,11 @@ export class Fortifications {
         repair.remaining,
         (target.maxHealth ?? 1200) - (target.health ?? 1200),
       );
-      target.health = (target.health ?? 1200) + amount;
+      const health = (target.health ?? 1200) + amount;
+      if ("tile" in target) {
+        if (!updateBuilding) throw new Error("Building repairs require their lifecycle owner");
+        updateBuilding(target.id, health);
+      } else target.health = health;
       repair.remaining -= amount;
       if (repair.remaining <= 0 || amount <= 0) this.repairs.delete(key);
     }

@@ -232,7 +232,7 @@ export class AiEconomicDirector {
       age: state.age,
       research: state.completed,
       inventory: supply.inventories[player.id],
-      buildings: world.buildings,
+      buildings: world.buildingFacts().byOwner(player.id),
       squads: world.squads,
       ships: world.ships,
       jobs: world.recruitment.jobs,

@@ -20,7 +20,7 @@ function match(aiCount = 1) {
   });
 }
 function tower(m: Skirmish, x: number, y: number): Building {
-  const b: Building = {
+  const b: Building = m.addBuilding({
     id: m.allocateId(),
     playerId: 1,
     type: "tower",
@@ -29,8 +29,8 @@ function tower(m: Skirmish, x: number, y: number): Building {
     remainingTicks: 0,
     health: 2000,
     maxHealth: 2000,
-  };
-  m.buildings.push(b);
+  });
+
   return b;
 }
 function barrier(a: Building, b: Building, tiles: number[], id = 1): Barrier {
@@ -172,7 +172,7 @@ describe("friendly fortification passage", () => {
     const revision = forts.version;
     expect(forts.blocked(a.tile, 1)).toBe(false);
     expect(forts.blocked(a.tile, 2)).toBe(true);
-    a.playerId = 2;
+    m.updateBuilding((a).id, { playerId: 2 });
     forts.step(2, m.buildings);
     expect(forts.version).toBeGreaterThan(revision);
     expect(forts.blocked(a.tile, 1)).toBe(true);
@@ -208,11 +208,11 @@ describe("friendly fortification passage", () => {
           age: "StoneAge",
         }),
       ).toBeNull();
-      m.buildings[m.buildings.length - 1].remainingTicks = 0;
+      m.updateBuilding((m.buildings[m.buildings.length - 1]).id, { remainingTicks: 0 });
     }
     // The completed towers form the wall; keep their weapons inactive in this navigation fixture.
     for (const b of m.buildings)
-      if (b.type === "tower") b.remainingTicks = 100000;
+      if (b.type === "tower") m.updateBuilding((b).id, { remainingTicks: 100000 });
     forts.step(1, m.buildings);
     expect(
       m.applyCommand({

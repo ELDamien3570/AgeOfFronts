@@ -26,26 +26,21 @@ function fixture() {
   game.expansion!.progression.states[player.id].completed.push(
     ...TECHNOLOGIES.filter((t) => t.age === "StoneAge").map((t) => t.id),
   );
-  game.buildings.splice(
-    0,
-    game.buildings.length,
-    {
+  { for (const building of game.buildings) game.removeBuilding(building.id); game.addBuilding({
       id: game.allocateId(),
       playerId: player.id,
       type: "city",
       tile: map.ref(12, 25),
       remainingTicks: 0,
       age: "StoneAge",
-    },
-    {
+    }); game.addBuilding({
       id: game.allocateId(),
       playerId: player.id,
       type: "factory",
       tile: map.ref(28, 41),
       remainingTicks: 0,
       age: "StoneAge",
-    },
-  );
+    }); }
   const own = game.squads.filter((s) => s.playerId === player.id);
   for (let i = own.length; i < 10; i++) {
     const squad = structuredClone(own[0]);
@@ -129,7 +124,7 @@ describe("persistent funded city defenses", () => {
       ),
     ).toBe(true);
     const tower = game.buildings.find((b) => b.id === project.paid[0])!;
-    tower.health = tower.maxHealth! - 40;
+    game.updateBuilding((tower).id, { health: tower.maxHealth! - 40 });
     game.tick = project.nextDecision + 3 - (project.nextDecision % 3);
     const gold = player.gold;
     defenses.step();

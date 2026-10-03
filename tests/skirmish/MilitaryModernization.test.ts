@@ -26,7 +26,7 @@ function setup() {
     squad.y =
       ((squad.playerId === 2 ? Math.floor(p.base / 96) : 2) + 0.5) * FIXED;
   }
-  const b: Building = {
+  const b: Building = m.addBuilding({
     id: m.allocateId(),
     type: "arms-factory",
     tile: p.base,
@@ -35,8 +35,8 @@ function setup() {
     remainingTicks: 0,
     health: 2000,
     maxHealth: 2000,
-  };
-  m.buildings.push(b);
+  });
+
   return { m, e, p, stock, b };
 }
 describe("AI equipment production and refit rotation", () => {

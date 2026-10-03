@@ -289,8 +289,8 @@ describe("construction, recruitment, and economy", () => {
     expect(m.players[0].gold - baseGold).toBe(
       10 + Math.floor(m.players[0].land / 40),
     );
-    city.remainingTicks = 0;
-    factory.remainingTicks = 0;
+    m.updateBuilding((city).id, { remainingTicks: 0 });
+    m.updateBuilding((factory).id, { remainingTicks: 0 });
     const beforeReserves = m.players[0].reserves,
       beforeGold = m.players[0].gold;
     step(m, 20);
@@ -561,7 +561,7 @@ describe("naval transport and combat", () => {
     const m = match(true),
       s = single(m),
       port = build(m, "port", 30, 8);
-    port.remainingTicks = 0;
+    m.updateBuilding((port).id, { remainingTicks: 0 });
     expect(
       m.applyCommand({
         type: "recruit-ship",
@@ -709,7 +709,7 @@ describe("naval transport and combat", () => {
       { seed: 42, aiCount: 1, runAi: false },
     );
     const port = build(islands, "port", 37, 20);
-    port.remainingTicks = 0;
+    islands.updateBuilding(port.id, { remainingTicks: 0 });
     islands.applyCommand({
       type: "recruit-ship",
       playerId: 1,
@@ -779,7 +779,7 @@ describe("naval transport and combat", () => {
       squadIds: [s.id],
     });
     const port = build(m, "port", 40, 8, 2);
-    port.remainingTicks = 0;
+    m.updateBuilding((port).id, { remainingTicks: 0 });
     m.applyCommand({
       type: "recruit-ship",
       playerId: 2,
@@ -824,7 +824,7 @@ describe("naval transport and combat", () => {
         tile: m.map.ref(40, 7),
       }),
     ).toMatch(/own ships/);
-    port.remainingTicks = 1;
+    m.updateBuilding((port).id, { remainingTicks: 1 });
     expect(
       m.applyCommand({
         type: "recruit-ship",
@@ -926,7 +926,7 @@ describe("naval transport and combat", () => {
       squadIds: [s.id],
     });
     const enemyPort = build(m, "port", 40, 8, 2);
-    enemyPort.remainingTicks = 0;
+    m.updateBuilding((enemyPort).id, { remainingTicks: 0 });
     m.applyCommand({
       type: "recruit-ship",
       playerId: 2,

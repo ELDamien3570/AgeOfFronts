@@ -100,7 +100,7 @@ describe("ordered canonical state and fenced flow control", () => {
     stream.acknowledge(1);
     game.tick = 4;
     game.owners[100] = 2;
-    game.buildings.push({
+    game.addBuilding({
       id: 999,
       playerId: 1,
       type: "factory",
@@ -112,7 +112,7 @@ describe("ordered canonical state and fenced flow control", () => {
     decoder.decode(first);
     game.tick = 8;
     game.owners[100] = 0;
-    game.buildings.pop();
+    game.removeBuilding(game.buildings[game.buildings.length - 1].id);
     const last = encoder.encode(game.snapshot());
     stream.apply(last);
     const expected = decoder.decode(last),

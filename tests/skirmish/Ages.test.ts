@@ -58,7 +58,7 @@ const building = (
   playerId = 1,
   age: (typeof AGES)[number] = "StoneAge",
 ) => {
-  const b: Building = {
+  const b: Building = m.addBuilding({
     id: m.allocateId(),
     type,
     tile,
@@ -67,8 +67,8 @@ const building = (
     age,
     health: 2000,
     maxHealth: 2000,
-  };
-  m.buildings.push(b);
+  });
+
   return b;
 };
 const step = (m: Skirmish, n: number) => {
@@ -229,7 +229,7 @@ describe("supply conservation and deployment", () => {
     inv.copper = 8;
     inv.tin = 2;
     e.supply.step(400, m.players, m.buildings, m.owners);
-    b.playerId = 2;
+    m.updateBuilding((b).id, { playerId: 2 });
     for (let i = 401; i < 700; i++)
       e.supply.step(i, m.players, m.buildings, m.owners);
     expect(inv.bronze).toBe(10);
@@ -538,7 +538,7 @@ describe("allied protection and fortifications", () => {
       s = m.squads[0];
     m.squads.splice(0, m.squads.length, s);
     const b = building(m, "city", p.base, 2);
-    b.health = 1;
+    m.updateBuilding((b).id, { health: 1 });
     pos(s, (p.base % 96) - 1, Math.floor(p.base / 96));
     s.structureTarget = { buildingId: b.id };
     const remnant = m.owners.findIndex((owner) => owner === 2);

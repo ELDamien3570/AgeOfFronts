@@ -22,7 +22,7 @@ it("projects a waiting production pattern with exact inputs, then a funded job t
       ruleset: "ages-v1",
     });
   m.expansion!.progression.states[1].completed = TECHNOLOGIES.map((t) => t.id);
-  const b = {
+  const b = m.addBuilding({
     id: m.allocateId(),
     type: "factory" as const,
     tile: m.map.ref(10, 10),
@@ -30,8 +30,8 @@ it("projects a waiting production pattern with exact inputs, then a funded job t
     remainingTicks: 0,
     health: 2000,
     maxHealth: 2000,
-  };
-  m.buildings.push(b);
+  });
+
   const command = {
     type: "produce" as const,
     playerId: 1,
@@ -70,7 +70,7 @@ it("projects a waiting production pattern with exact inputs, then a funded job t
       .productionChoice(b.id, "refine-bronze")
       .inputs.find((i) => i.id === "copper")?.available,
   ).toBe(0);
-  b.playerId = 2;
+  m.updateBuilding((b).id, { playerId: 2 });
   m.expansion!.beforeStep();
   expect(m.snapshot().expansion!.productionPlans[b.id]).toBeUndefined();
   expect(m.snapshot().expansion!.production[b.id]).toBeUndefined();

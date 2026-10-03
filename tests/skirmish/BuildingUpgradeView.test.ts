@@ -15,9 +15,9 @@ it("building card and U action dispatch the shared paid selection quote, and ref
   m.players[0].gold = 10000;
   m.expansion!.progression.states[1].age = "BronzeAge";
   m.expansion!.progression.states[1].completed = TECHNOLOGIES.map(t => t.id);
-  const b = { id: 999, playerId: 1, type: "barracks" as const, age: "StoneAge" as const,
-    tile: m.players[0].base, remainingTicks: 0, health: 1200, maxHealth: 1200 };
-  m.buildings.push(b);
+  const b = m.addBuilding({ id: 999, playerId: 1, type: "barracks" as const, age: "StoneAge" as const,
+    tile: m.players[0].base, remainingTicks: 0, health: 1200, maxHealth: 1200 });
+
   const root = document.createElement("div"); root.id = "app";
   root.innerHTML = `${empireMarkup()}<main class="battlefield">${hudMarkup()}</main>`;
   document.body.replaceChildren(root);
@@ -30,7 +30,7 @@ it("building card and U action dispatch the shared paid selection quote, and ref
   button.click();
   expect(command).toHaveBeenCalledExactlyOnceWith({ type: "upgrade-building", playerId: 1, buildingIds: [b.id] });
   view.upgrade(); expect(command).toHaveBeenCalledTimes(2);
-  b.health = 1000; view.update(model());
+  m.updateBuilding((b).id, { health: 1000 }); view.update(model());
   expect(root.querySelector<HTMLButtonElement>("#refit-actions button")!.disabled).toBe(true);
   expect(root.querySelector("#refit-actions")!.textContent).toContain("repair");
   view.upgrade(); expect(command).toHaveBeenCalledTimes(2);

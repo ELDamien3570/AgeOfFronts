@@ -1,3 +1,4 @@
+import { EntityCollection } from "./EntityCollection";
 import { FactionAdjacency } from "./FactionAdjacency";
 import { TileChangeJournal } from "./TileChangeJournal";
 import { CapturePressure } from "./CapturePressure";
@@ -133,6 +134,8 @@ export const WARSHIP_REPAIR_FRACTION = 0.10;
 export class Skirmish {
   /** Optional observer; excluded from save state and authoritative decisions. */
   onPhase?: (phase: RuntimePhase, milliseconds: number) => void;
+  /** Development-only full-reference comparisons; excluded from checkpoints. */
+  compareBuildingIndexes = false;
   private diagnosticPhase(phase: RuntimePhase, start: number): number {
     if (!this.onPhase) return 0;
     const now = performance.now();
@@ -159,7 +162,7 @@ export class Skirmish {
     const state=structuredClone(saved);
     restoreArray(this.players,state.players);
     restoreArray(this.squads,state.squads);
-    restoreArray(this.buildings,state.buildings);
+    this.buildingEntities.restore(state.buildings);
     restoreArray(this.ships,state.ships);
     this.recruitment.restore(state.recruitment);
     restoreArray(this.volleys,state.volleys);
@@ -194,7 +197,7 @@ export class Skirmish {
     this.routePlanner.restore(state.planning ?? {landRevision:this.paths.revision,waterRevision:this.waterPaths.revision,jobs:[]});
     this.movementAdmission.restore(state.admission ?? {pending:[],nextId:1,events:[]});
     this.shipAdmission.restore(state.shipAdmission ?? {pending:[],nextId:1,events:[]});
-    this.tickSquads=undefined; this.tickShips=undefined; this.buildingIndex.rebuild(this.buildings); this.spatial.rebuild(this.squads.filter(s=>s.embarkedOn===null)); this.navalSpatial.rebuild(this.ships);
+    this.tickSquads=undefined; this.tickShips=undefined; this.spatial.rebuild(this.squads.filter(s=>s.embarkedOn===null)); this.navalSpatial.rebuild(this.ships);
   }
 
   readonly recruitment = new Recruitment();
@@ -207,7 +210,17 @@ export class Skirmish {
   readonly progress: Uint8Array;
   readonly players: Player[] = [];
   readonly squads: Squad[] = [];
-  readonly buildings: Building[] = [];
+  private readonly buildingEntities = new EntityCollection<Building>({
+    added: building => { this.buildingIndex.add(building); this.expansion?.economy.navalFacts.observeBuilding(building); },
+    changed: building => {
+      const revision = this.buildingIndex.producerRevision;
+      this.buildingIndex.changed(building);
+      if (revision !== this.buildingIndex.producerRevision) this.expansion?.economy.navalFacts.observeBuilding(building);
+    },
+    removed: id => { this.buildingIndex.remove(id); this.expansion?.economy.navalFacts.forgetBuilding(id); },
+    restored: buildings => this.buildingIndex.rebuild(buildings),
+  });
+  get buildings(): readonly Building[] { return this.buildingEntities.values; }
   readonly ships: Ship[] = [];
   readonly volleys: ArcherVolley[] = [];
   readonly defenseZones: DefenseZone[] = [];
@@ -586,21 +599,14 @@ export class Skirmish {
       this.deployStartingSquads(player, 3, this.expansion.startingAge);
       return;
     }
-    const barracks: Building = {
-      id: this.nextId++,
-      playerId: player.id,
-      type: "barracks",
-      tile: base,
-      remainingTicks: 0,
-    };
-    this.buildings.push(barracks);
-    this.buildingIndex.add(barracks);
+    const age = this.expansion && kind === "tribe" ? this.expansion.startingAge : undefined;
+    const barracks = this.addBuilding({
+      id: this.nextId++, playerId: player.id, type: "barracks", tile: base, remainingTicks: 0,
+      ...(age ? { age, maxHealth: buildingIntegrity("barracks", age), health: buildingIntegrity("barracks", age) } : {}),
+    });
     forestOf(this.map)?.occupy(this.map, base, "barracks");
-    if (this.expansion && kind === "tribe") {
-      barracks.age = this.expansion.startingAge;
-      barracks.maxHealth = buildingIntegrity("barracks", barracks.age);
-      barracks.health = barracks.maxHealth;
-      this.deployStartingSquads(player, TRIBE_STARTING_SQUADS, barracks.age);
+    if (age) {
+      this.deployStartingSquads(player, TRIBE_STARTING_SQUADS, age);
       return;
     }
     for (let i = 0; i < (kind === "tribe" ? TRIBE_STARTING_SQUADS : 4); i++)
@@ -661,8 +667,15 @@ export class Skirmish {
     return this.squads.find((s) => s.id === id);
   }
   ship(id: number): Ship | undefined { return this.tickShips ? this.tickShips.get(id) : this.ships.find(s=>s.id===id); }
-  building(id: number): Building | undefined { return this.buildingIndex.byId(id); }
-  buildingFacts(): BuildingQueries {this.buildingIndex.ensure(this.buildings);return this.buildingIndex;}
+  building(id: number): Building | undefined { return this.buildingEntities.get(id); }
+  buildingFacts(): BuildingQueries {
+    if (this.compareBuildingIndexes) this.verifyBuildingIndexes();
+    return this.buildingIndex;
+  }
+  addBuilding(building: Building): Building { return this.buildingEntities.add(building); }
+  updateBuilding(id: number, changes: Partial<Omit<Building, "id">>): Building | undefined { return this.buildingEntities.update(id, changes); }
+  removeBuilding(id: number): boolean { return this.buildingEntities.remove(id); }
+  verifyBuildingIndexes(): void { this.buildingIndex.verify(this.buildings); }
   tileOf(squad: Pick<Squad, "x" | "y">): number {
     return this.map.ref(
       Math.floor(squad.x / FIXED),
@@ -686,7 +699,7 @@ export class Skirmish {
     if (player.kind === "tribe" && this.expansion && command.type === "build") {
       const limit = tribeBuildingLimit(command.buildingType, this.expansion.startingAge);
       if (!limit) return "Tribes cannot build this structure in their starting age";
-      const count = this.buildings.filter(b => b.playerId === player.id && b.type === command.buildingType).length;
+      const count = this.buildingIndex.countOfType(player.id, command.buildingType);
       if (count >= limit) return `Tribes can only build ${limit} ${command.buildingType}`;
     }
     if (player.kind === "tribe" && !this.expansion) {
@@ -695,7 +708,7 @@ export class Skirmish {
       if (command.type === "build") {
         if (command.buildingType !== "city" && command.buildingType !== "barracks")
           return "Tribes can only build 1 city and 1 extra barracks";
-        const own = this.buildings.filter((b) => b.playerId === player.id);
+        const own = this.buildingIndex.byOwner(player.id);
         if (command.buildingType === "city" && own.some((b) => b.type === "city"))
           return "Tribes can only build 1 city";
         if (
@@ -1019,7 +1032,7 @@ export class Skirmish {
     automatic = false,
     buildingIds?: readonly number[],
   ): string | null {
-    let building = this.buildings.find((b) => b.id === buildingId);
+    let building = this.building(buildingId);
     if (buildingIds) {
       const definition = UNIT.get(definitionId ?? "");
       building = this.automaticRecruitmentBuilding(player.id, building?.tile ?? player.base, definition?.building ?? building?.type ?? "barracks", definition?.age ?? "StoneAge", buildingIds);
@@ -1249,11 +1262,9 @@ export class Skirmish {
     const rejection = this.expansion?.buildRejection(player, type, tile,
       age ?? this.expansion.progression.states[playerId].age, true);
     if (rejection) return rejection;
-    this.buildingIndex.ensure(this.buildings);
     return constructionRejection(this.map, this.owners, this.buildingIndex, player, type, tile, false);
   }
   towersNear(tile:number,radius:number):Iterable<Building> {
-    this.buildingIndex.ensure(this.buildings);
     return this.buildingIndex.towersNearby(tile,radius);
   }
   buildingPlacement(
@@ -1273,7 +1284,6 @@ export class Skirmish {
       );
       if (rejection) return rejection;
     }
-    this.buildingIndex.ensure(this.buildings);
     return constructionRejection(
       this.map,
       this.owners,
@@ -1291,16 +1301,14 @@ export class Skirmish {
   ): string | null {
     const rejection = this.buildingPlacement(player.id, type, tile, age);
     if (rejection) return rejection;
-    const existingCount = this.buildings.filter(
-      (b) => b.playerId === player.id && b.type === type,
-    ).length;
+    const existingCount = this.buildingIndex.countOfType(player.id, type);
     if (!this.expansion) {
       player.gold -= Math.round(
         BUILDING_RULES[type].cost * buildingCostMultiplier(existingCount),
       );
     }
     const ticks = buildingTicks(type, existingCount);
-    this.buildings.push({
+    const building = this.addBuilding({
       id: this.nextId++,
       playerId: player.id,
       type,
@@ -1311,17 +1319,14 @@ export class Skirmish {
         ? { age: age ?? this.expansion.progression.states[player.id].age }
         : {}),
     });
-    this.expansion?.built(player, this.buildings[this.buildings.length - 1]);
-    this.buildingIndex.add(this.buildings[this.buildings.length - 1]);
-    this.expansion?.economy.navalFacts.observeBuilding(this.buildings[this.buildings.length - 1]);
+    this.expansion?.built(player, building);
     forestOf(this.map)?.occupy(this.map, tile, type);
     return null;
   }
 
   private automaticRecruitmentBuilding(playerId: number, anchorTile: number, type: BuildingType, age: Age, buildingIds?: readonly number[]): Building | undefined {
-    return this.recruitment.chooseProducer(this.buildings.filter(b => b.playerId === playerId
-      && (!buildingIds || buildingIds.includes(b.id))
-      && this.owners[b.tile] === playerId && b.type === type && !b.remainingTicks && (b.health ?? 1) > 0
+    return this.recruitment.chooseProducer(this.buildingIndex.byType(playerId, type).filter(b => (!buildingIds || buildingIds.includes(b.id))
+      && this.owners[b.tile] === playerId && !b.remainingTicks && (b.health ?? 1) > 0
       && AGES.indexOf(b.age ?? "StoneAge") >= AGES.indexOf(age)
       && (type !== "port" || this.map.neighbors(b.tile).some(t => this.waterPaths.walkable(t)))),
       tile => this.map.euclideanDistSquared(tile, anchorTile));
@@ -1383,7 +1388,7 @@ export class Skirmish {
   ): string | null {
     if (!Object.prototype.hasOwnProperty.call(SHIP_RULES, kind))
       return "Unknown ship type";
-    let port = this.buildings.find((b) => b.id === buildingId);
+    let port = this.building(buildingId);
     if (buildingIds) port = this.automaticRecruitmentBuilding(player.id, port?.tile ?? player.base, "port", VESSEL.get(definitionId ?? `stoneage-${kind}`)?.age ?? "StoneAge", buildingIds);
     if (
       !port ||
@@ -1921,7 +1926,7 @@ export class Skirmish {
       }
       const explicit = ship.attackTargetId
         ? (this.ships.find((s) => s.id === ship.attackTargetId) ??
-          this.buildings.find((b) => b.id === ship.attackTargetId))
+          this.building(ship.attackTargetId!))
         : undefined;
       if (
         explicit &&
@@ -2387,11 +2392,10 @@ export class Skirmish {
       if (building.remainingTicks > 0) {
         if (!activeTiles.has(building.tile)) {
           activeTiles.add(building.tile);
-          building.remainingTicks--;
+          this.updateBuilding(building.id, { remainingTicks: building.remainingTicks - 1 });
         }
       }
     }
-    this.buildingIndex.rebuild(this.buildings);
     this.promoteTribes();
     phaseStart = this.diagnosticPhase("setup", phaseStart);
     this.expansion?.beforeStep();
@@ -2520,6 +2524,7 @@ export class Skirmish {
     this.checkWinner();
     this.expansion?.armies.reconcile();
     this.tickSquads = undefined;
+    if (this.compareBuildingIndexes) this.verifyBuildingIndexes();
     this.diagnosticPhase("cleanup", phaseStart);
     this.diagnosticPhase("tick", tickStart);
   }
@@ -2529,10 +2534,7 @@ export class Skirmish {
     if (this.expansion) {
       for (const player of this.players) {
         if (player.eliminated) continue;
-        const cities = this.buildings.filter(
-          (b) =>
-            b.playerId === player.id && b.type === "city" && !b.remainingTicks,
-        );
+        const cities = this.buildingIndex.byType(player.id, "city").filter(b => !b.remainingTicks);
         const amount = Math.max(
           0,
           Math.min(
@@ -3190,7 +3192,6 @@ export class Skirmish {
   private capture(): void {
     this.pressure.begin();
     const accelerated = new Map<number, number>();
-    this.buildingIndex.ensure(this.buildings);
     for (const squad of this.squads) {
       if (squad.embarkedOn !== null) continue;
       const definition = this.expansion?.unit(squad);
@@ -3283,14 +3284,12 @@ export class Skirmish {
     this.coastalTerritory.changed(tile);
     this.expansion?.economy.placements.changed(tile, id);
     if (id && land) this.player(id)!.land++;
-    this.buildingIndex.ensure(this.buildings);
     const buildings = this.buildingIndex.at(tile);
     const captured = buildings.some(
       (building) => building.playerId === old && old !== 0,
     );
     for (const building of buildings) {
-      building.playerId = id;
-      this.expansion?.economy.navalFacts.observeBuilding(building);
+      this.updateBuilding(building.id, { playerId: id });
     }
     if (captured && this.expansion && id && this.hostile(old, id)) {
       const captor = this.squads
@@ -3590,7 +3589,7 @@ export class Skirmish {
 
   private developAi(player: Player): void {
     if (this.expansion) return;
-    const own = this.buildings.filter((b) => b.playerId === player.id);
+    const own = this.buildingIndex.byOwner(player.id);
     for (const type of buildingPriority(personalityOf(player), [
       "archery",
       "stables",
@@ -3643,7 +3642,7 @@ export class Skirmish {
   }
 
   private developTribeAi(player: Player): void {
-    const own = this.buildings.filter((b) => b.playerId === player.id);
+    const own = this.buildingIndex.byOwner(player.id);
     const targets: BuildingType[] = [];
     if (!own.some((b) => b.type === "city")) targets.push("city");
     if (own.filter((b) => b.type === "barracks").length < 2) targets.push("barracks");

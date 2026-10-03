@@ -46,7 +46,8 @@ describe("bounded placement preview", () => {
     game.expansion!.progression.states[1].completed.push(
       buildingTechnology("tower", "StoneAge")!,
     );
-    const endpoint: Building = {
+    for (const building of game.buildings) game.removeBuilding(building.id);
+    const endpoint: Building = game.addBuilding({
       id: game.allocateId(),
       playerId: 1,
       type: "tower",
@@ -54,8 +55,7 @@ describe("bounded placement preview", () => {
       tile: map.ref(20, 20),
       remainingTicks: 0,
       health: 2000,
-    };
-    game.buildings.splice(0, game.buildings.length, endpoint);
+    });
     for (const squad of game.squads) {
       squad.x = 60.5 * FIXED;
       squad.y = 50.5 * FIXED;
@@ -96,17 +96,17 @@ describe("bounded placement preview", () => {
     preview.update(snapshot);
     expect(preview.sites(bounds, 256)).toContain(tile);
     player.gold = base;
-    endpoint.remainingTicks = 1;
+    game.updateBuilding((endpoint).id, { remainingTicks: 1 });
     snapshot = game.snapshot();
     snapshot.changedTiles = new Uint32Array();
     preview.update(snapshot);
     expect(preview.sites(bounds, 256)).toContain(tile);
-    endpoint.remainingTicks = 0;
+    game.updateBuilding((endpoint).id, { remainingTicks: 0 });
     snapshot = game.snapshot();
     snapshot.changedTiles = new Uint32Array();
     preview.update(snapshot);
     expect(preview.sites(bounds, 256)).not.toContain(tile);
-    endpoint.age = "BronzeAge";
+    game.updateBuilding((endpoint).id, { age: "BronzeAge" });
     snapshot = game.snapshot();
     snapshot.changedTiles = new Uint32Array();
     preview.update(snapshot);

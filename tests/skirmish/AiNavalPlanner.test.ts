@@ -30,7 +30,7 @@ function fixture(split = false) {
   expansion.progression.states[player.id].completed.push(
     ...TECHNOLOGIES.filter((t) => t.age === "StoneAge").map((t) => t.id),
   );
-  const port = {
+  const port = game.addBuilding({
     id: game.allocateId(),
     playerId: player.id,
     type: "port" as const,
@@ -38,8 +38,8 @@ function fixture(split = false) {
     age: "StoneAge" as const,
     health: 1000,
     remainingTicks: 0,
-  };
-  game.buildings.push(port);
+  });
+
   const addShip = (owner = player.id, x = 10, health = 1000): Ship => {
     const ship: Ship = {
       id: game.allocateId(),
@@ -96,14 +96,14 @@ function fixture(split = false) {
 describe("persistent concentrated port defense", () => {
   it("selects an owned gathering port across seas instead of aborting in the first sea with unrelated facts", () => {
     const f = fixture(true);
-    f.game.building(f.port.id)!.type = "factory";
-    const port = {
+    f.game.updateBuilding((f.game.building(f.port.id)!).id, { type: "factory" });
+    const port = f.game.addBuilding({
       ...f.game.building(f.port.id)!,
       type: "port" as const,
       id: f.game.allocateId(),
       tile: f.map.ref(80, 19),
-    };
-    f.game.buildings.push(port);
+    });
+
     const west = f.addShip(f.player.id, 10),
       east = f.addShip(f.player.id, 80);
     f.refresh();
@@ -189,7 +189,7 @@ describe("persistent concentrated port defense", () => {
     const mission = f.assess(),
       anchor = mission.anchor;
     f.player.base = f.map.ref(80, 5);
-    f.game.buildings.push({
+    f.game.addBuilding({
       ...f.game.building(mission.port!)!,
       id: f.game.allocateId(),
       tile: f.map.ref(80, 19),
@@ -334,7 +334,7 @@ describe("persistent concentrated port defense", () => {
     expect(sails).toHaveLength(1);
     expect(sails[0].shipIds).toHaveLength(2);
     expect(f.game.shipAdmission.pendingCount).toBe(1);
-    f.game.building(mission.port!)!.playerId = 1;
+    f.game.updateBuilding((f.game.building(mission.port!)!).id, { playerId: 1 });
     f.planner.step();
     expect(mission.state).toBe("abort");
     expect(f.game.shipAdmission.pendingCount).toBe(0);

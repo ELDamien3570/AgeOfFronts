@@ -44,7 +44,7 @@ describe("opening economy and troop catalogue", () => {
           .reduce((n, s) => n + s.troops, 0),
     ).toBe(STARTING_AGE_TROOPS + 3000);
     const before = p.reserves;
-    game.buildings.push({
+    game.addBuilding({
       id: 9999,
       playerId: p.id,
       type: "city",
@@ -62,15 +62,15 @@ describe("opening economy and troop catalogue", () => {
       p = game.players[1];
     p.gold = 99;
     p.reserves = 5000;
-    const b = {
+    const b = game.addBuilding({
       id: 9999,
       playerId: p.id,
       type: "barracks" as const,
       tile: p.base,
       age: "StoneAge" as const,
       remainingTicks: 0,
-    };
-    game.buildings.push(b);
+    });
+
     expect(game.expansion!.recruitment(p, "infantry")).toBeUndefined();
     const before = p.reserves;
     expect(

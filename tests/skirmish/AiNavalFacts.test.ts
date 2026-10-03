@@ -1,4 +1,5 @@
 import { describe, expect, it } from "vitest";
+import { buildingOwner } from "./BuildingFixtures";
 import { GameMapImpl } from "../../src/core/game/GameMap";
 import { WaterPaths } from "../../src/skirmish/Pathfinding";
 import { FIXED, type Building, type Ship } from "../../src/skirmish/Protocol";
@@ -43,14 +44,17 @@ function fixture() {
     fighting: false,
     boarding: null,
   }));
-  const buildingIds = new Map(buildings.map((b) => [b.id, b])),
+  const ownedBuildings = buildingOwner(buildings);
+  const buildingIds = new Map(ownedBuildings.values.map((b) => [b.id, b])),
     shipIds = new Map(ships.map((s) => [s.id, s])),
     recruitment = new Recruitment();
   const world = {
     map,
     waterPaths,
     owners,
-    buildings,
+    get buildings() { return ownedBuildings.values; },
+    updateBuilding: (id: number, changes: Partial<Omit<Building, "id">>) => ownedBuildings.update(id, changes),
+    removeBuilding: (id: number) => { ownedBuildings.remove(id); buildingIds.delete(id); },
     ships,
     recruitment,
     building: (id: number) => buildingIds.get(id),
@@ -74,7 +78,7 @@ describe("shared naval facts", () => {
     const first = facts.readOwnedBuilding(1),
       cursor = first.next;
     expect(first.value!.id).toBe(1);
-    world.buildings[0].playerId = 2;
+    world.updateBuilding(world.buildings[0].id, { playerId: 2 });
     world.owners[world.buildings[0].tile] = 2;
     facts.observeBuilding(world.buildings[0]);
     expect(facts.readOwnedBuilding(1, cursor).value!.id).toBe(2);
@@ -130,7 +134,7 @@ describe("shared naval facts", () => {
     expect(world.recruitment.byId(paid[0].id)).toBeUndefined();
   });
   it("retains a live producer skipped by a shrinking array cursor", () => {
-    const { world, facts, east, buildingIds } = fixture();
+    const { world, facts, east } = fixture();
     complete(facts);
     world.recruitment.enqueue({
       playerId: 1,
@@ -142,8 +146,7 @@ describe("shared naval facts", () => {
       totalTicks: 400,
     });
     expect(facts.step(100, 1)).toBe(1);
-    const removed = world.buildings.shift()!;
-    buildingIds.delete(removed.id);
+    world.removeBuilding(world.buildings[0].id);
     complete(facts, 100);
     expect([...facts.ports(1, east)].map((b) => b.id)).toContain(2);
     expect([...facts.paidShips(1, east)]).toHaveLength(1);

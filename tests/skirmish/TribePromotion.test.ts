@@ -107,7 +107,7 @@ describe("tribe promotion", () => {
     const state = game.expansion!.progression.states[donor.id];
     state.age = "ClassicalAge";
     state.completed.push("bronzeage-armies");
-    game.buildings.push({
+    game.addBuilding({
       id: 99999,
       playerId: donor.id,
       type: "barracks",

@@ -28,7 +28,8 @@ function fixture() {
   const state = game.expansion!.progression.states[player.id];
   state.age = "Modern";
   state.completed = TECHNOLOGIES.map((t) => t.id);
-  const target: Building = {
+  for (const building of game.buildings) game.removeBuilding(building.id);
+  const target: Building = game.addBuilding({
     id: game.allocateId(),
     type: "barracks",
     playerId: 1,
@@ -37,8 +38,7 @@ function fixture() {
     remainingTicks: 0,
     health: 10000,
     maxHealth: 10000,
-  };
-  game.buildings.splice(0, game.buildings.length, target);
+  });
   const think = () => {
     game.tick = game.tick ? game.tick + 60 : (player.id % 20) * 3;
     game.expansion!.beforeStep();
@@ -82,15 +82,15 @@ describe("AI siege target commitment", () => {
     (reason) => {
       const { game, player, unit, target, think } = fixture();
       think();
-      const replacement = {
+      const replacement = game.addBuilding({
         ...target,
         id: game.allocateId(),
         tile: game.map.ref(80, 30),
-      };
-      game.buildings.push(replacement);
-      if (reason === "destroyed") target.health = 0;
-      else if (reason === "captured") target.playerId = player.id;
-      else game.buildings.splice(game.buildings.indexOf(target), 1);
+      });
+
+      if (reason === "destroyed") game.updateBuilding((target).id, { health: 0 });
+      else if (reason === "captured") game.updateBuilding((target).id, { playerId: player.id });
+      else game.removeBuilding(target.id);
       const find = vi.spyOn(game.paths, "find");
       think();
       expect(find).toHaveBeenCalled();
@@ -102,12 +102,12 @@ describe("AI siege target commitment", () => {
   it("preserves the existing policy of choosing a newly closer structure", () => {
     const { game, unit, target, think } = fixture();
     think();
-    const closer = {
+    const closer = game.addBuilding({
       ...target,
       id: game.allocateId(),
       tile: game.map.ref(45, 30),
-    };
-    game.buildings.push(closer);
+    });
+
     think();
     expect(unit.structureTarget?.buildingId).toBe(closer.id);
   });

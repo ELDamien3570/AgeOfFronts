@@ -42,7 +42,7 @@ describe("AI foundation policies", () => {
       const a = game.squads.find((s) => s.playerId === 1)!,
         b = game.squads.find((s) => s.playerId === 2)!;
       game.squads.splice(0, game.squads.length, a, b);
-      game.buildings.splice(0, game.buildings.length, {
+      { for (const building of game.buildings) game.removeBuilding(building.id); game.addBuilding({
         id: game.allocateId(),
         playerId: 2,
         type: "tower",
@@ -51,7 +51,7 @@ describe("AI foundation policies", () => {
         remainingTicks: 0,
         health: 2000,
         maxHealth: 2000,
-      });
+      }); }
       a.kind = kind;
       a.definitionId = `stoneage-${kind}`;
       Object.assign(a, tilePoint(map, map.ref(37, 40)));
@@ -119,15 +119,15 @@ describe("AI foundation policies", () => {
     const { game, player, think, expansion } = fixture();
     player.gold = 100000;
     player.reserves = 100000;
-    const building: Building = {
+    const building: Building = game.addBuilding({
       id: game.allocateId(),
       playerId: player.id,
       tile: player.base,
       type: "siege-workshop",
       age: "Modern",
       remainingTicks: 0,
-    };
-    game.buildings.push(building);
+    });
+
     const quota = 3; // at least every existing personality's specialist quota
     for (const role of [
       "siege",

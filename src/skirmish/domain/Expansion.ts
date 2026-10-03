@@ -89,6 +89,7 @@ export interface ExpansionWorld extends BattleWorld, ArmyWorld {
   ship(id:number):Ship | undefined;
   building(id:number):Building | undefined;
   buildingFacts(): BuildingQueries;
+  removeBuilding(id: number): boolean;
   factionAdjacent(a: number, b: number): boolean;
 }
 // Match-level application coordinator; each domain service owns its own rules.
@@ -264,9 +265,7 @@ export class Expansion {
       return "Oil extraction needs an oil deposit";
     const resourceSite = this.supply.resourceSites.rejection(type,tile);
     if (resourceSite) return resourceSite;
-    const existingCount = this.world.buildings.filter(
-      (b) => b.playerId === player.id && b.type === type,
-    ).length;
+    const existingCount = this.world.buildingFacts().countOfType(player.id, type);
     const cost = buildingCost(type, age, existingCount),
       wallCost =
         type === "tower"
@@ -290,18 +289,15 @@ export class Expansion {
         : null;
     const existingCount = Math.max(
       0,
-      this.world.buildings.filter(
-        (b) => b.playerId === player.id && b.type === building.type,
-      ).length - 1,
+      this.world.buildingFacts().countOfType(player.id, building.type) - 1,
     );
     const cost = buildingCost(building.type, age, existingCount);
     spend(player, this.supply.inventories[player.id], {
       ...cost,
       gold: (cost.gold ?? 0) + (plan?.gold ?? 0),
     });
-    building.age = age;
-    building.maxHealth = buildingIntegrity(building.type, age);
-    building.health = building.maxHealth;
+    const maxHealth = buildingIntegrity(building.type, age);
+    this.world.updateBuilding(building.id, { age, maxHealth, health: maxHealth });
     if (plan) this.fortifications.addTower(building, plan);
   }
   command(player: Player, command: Command): string | null | undefined {
@@ -315,10 +311,9 @@ export class Expansion {
       for (const { building, age, ticks } of quote.upgrades) {
         const maximum = building.maxHealth ?? buildingIntegrity(building.type, building.age ?? "StoneAge");
         const ratio = Math.min(1, (building.health ?? maximum) / maximum);
-        building.age = age;
-        building.maxHealth = buildingIntegrity(building.type, age);
-        building.health = Math.max(1, Math.floor(building.maxHealth * ratio));
-        building.remainingTicks = ticks;
+        const maxHealth = buildingIntegrity(building.type, age);
+        world.updateBuilding(building.id, { age, maxHealth,
+          health: Math.max(1, Math.floor(maxHealth * ratio)), remainingTicks: ticks });
       }
       return null;
     }
@@ -342,7 +337,7 @@ export class Expansion {
     if (command.type === "produce")
       return this.supply.setProduction(
         player,
-        world.buildings.find((b) => b.id === command.buildingId),
+        world.building(command.buildingId!),
         command.recipeId,
       );
     if (command.type === "alliance") {
@@ -439,7 +434,7 @@ export class Expansion {
         for (const buildingId of ids) {
           const res = this.fortifications.repair(
             player,
-            world.buildings.find((b) => b.id === buildingId),
+            world.building(buildingId),
             undefined,
           );
           if (res === null) anySuccess = true;
@@ -543,7 +538,7 @@ export class Expansion {
     if (command.type === "naval-attack") {
       const target =
           world.ships.find((s) => s.id === command.targetId) ??
-          world.buildings.find((b) => b.id === command.targetId),
+          world.building(command.targetId),
         selected = [...new Set(command.shipIds)].map((id) =>
           world.ships.find((s) => s.id === id),
         );
@@ -661,7 +656,7 @@ export class Expansion {
       return null;
     }
     if (command.type === "attack-structure") {
-      const building = world.buildings.find((b) => b.id === command.buildingId),
+      const building = world.building(command.buildingId!),
         barrier = this.fortifications.barriers.find(
           (w) => w.id === command.barrierId,
         ),
@@ -867,7 +862,7 @@ export class Expansion {
     if (this.battle.projectiles.length >= 4092)
       return "Strategic flight capacity reached";
     spend(player, this.supply.inventories[player.id], cost);
-    if (building) building.launchReadyTick = this.world.tick + 1200;
+    if (building) this.world.updateBuilding(building.id, { launchReadyTick: this.world.tick + 1200 });
     else unit!.chargeReadyTick = this.world.tick + 1200;
     const position = building ? this.battle.position(building) : unit!;
     this.battle.fire(
@@ -929,7 +924,8 @@ export class Expansion {
           otherId: treaty.b,
           action: "expire",
         });
-    this.fortifications.step(world.tick, world.buildings);
+    this.fortifications.step(world.tick, world.buildings,
+      (id, health) => world.updateBuilding(id, { health }));
     this.supply.step(world.tick, world.players, world.buildings, world.owners, world.squads);
     for (const s of world.ships)
       if (s.refit && --s.refit.remainingTicks <= 0) {
@@ -978,7 +974,7 @@ export class Expansion {
     this.battle.advanceProjectiles();
     for (let i = this.world.buildings.length - 1; i >= 0; i--)
       if ((this.world.buildings[i].health ?? 1) <= 0)
-        this.world.buildings.splice(i, 1);
+        this.world.removeBuilding(this.world.buildings[i].id);
     for (let i = this.aircraft.length - 1; i >= 0; i--)
       if (
         this.aircraft[i].health <= 0 ||
@@ -1116,7 +1112,7 @@ export class Expansion {
             technologyId: next.id,
           });
       }
-      const own = this.world.buildings.filter((b) => b.playerId === player.id);
+      const own = this.world.buildingFacts().byOwner(player.id);
       // One paid infrastructure improvement per strategic pass; no hidden grants.
       const upgrade = own.find(building => !building.remainingTicks &&
         (building.health ?? 1) >= (building.maxHealth ?? 1) &&
@@ -1278,7 +1274,7 @@ export class Expansion {
     const next = TECHNOLOGIES.find(t => t.age === this.startingAge &&
       !researchRejection(state, player.gold, t.id, this.progression.technologySpeed));
     if (next) this.world.applyCommand({ type: "research", playerId: player.id, technologyId: next.id });
-    const own = this.world.buildings.filter(b => b.playerId === player.id);
+    const own = this.world.buildingFacts().byOwner(player.id);
     const plan = this.tribePlans.get(player.id) ?? { nextType: 0, tiles: {} };
     this.tribePlans.set(player.id, plan);
     // One type and at most sixteen legal site attempts per strategic pass.
@@ -1307,9 +1303,7 @@ export class Expansion {
   private thinkCapabilities(player: Player): void {
     const personality = personalityOf(player);
     const force = new AiForceInventory(player.id, this.world.squads, this.world.recruitment.jobs);
-    const own = this.world.buildings.filter(
-        (b) => b.playerId === player.id && !b.remainingTicks,
-      ),
+    const own = this.world.buildingFacts().byOwner(player.id).filter(b => !b.remainingTicks),
       squads = this.world.squads.filter(
         (s) => s.playerId === player.id && s.embarkedOn === null,
       ),

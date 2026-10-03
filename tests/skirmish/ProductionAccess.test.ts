@@ -140,7 +140,7 @@ describe("production resource accessibility", () => {
       expect(site, type).toBeDefined();
       const b = m.buildings[m.buildings.length - 1]!;
       // Focus this test on paid production; construction timing is independently covered.
-      b.remainingTicks = 0;
+      m.updateBuilding((b).id, { remainingTicks: 0 });
       // Keep this manual single-batch fixture independent of automatic stock balancing.
       if (
         PRODUCTION_RECIPES.some((r) => producerCompatible(b.type, r.building))
@@ -288,7 +288,7 @@ describe("shared equipment contracts", () => {
     researchAll(m);
     const p = m.players[0];
     p.reserves = 0;
-    m.buildings.push({
+    m.addBuilding({
       id: m.allocateId(),
       playerId: p.id,
       type: "airstrip",

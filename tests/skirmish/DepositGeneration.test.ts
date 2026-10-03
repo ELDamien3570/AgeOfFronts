@@ -3,7 +3,6 @@ import { createSkirmishMap } from "../../src/skirmish/Elevation";
 import { generateDeposits } from "../../src/skirmish/domain/DepositGeneration";
 import { PRODUCTION_RECIPES } from "../../src/skirmish/domain/Supply";
 import { Skirmish } from "../../src/skirmish/Simulation";
-import type { Building } from "../../src/skirmish/Protocol";
 
 function world() {
   const width = 600, height = 300;
@@ -66,8 +65,8 @@ describe("seeded terrain-weighted deposits", () => {
     const match = new Skirmish(map, { seed: 47, aiCount: 1, tribes: false, runAi: false, ruleset: "ages-v1" });
     const expansion = match.expansion!, deposit = expansion.supply.deposits.find(d => d.resource === "gunpowder")!;
     match.owners[deposit.tile] = 1;
-    const mine: Building = { id: match.allocateId(), type: "mine", tile: deposit.tile, playerId: 1, remainingTicks: 0, age: "LateMedieval" };
-    match.buildings.push(mine);
+    match.addBuilding({ id: match.allocateId(), type: "mine", tile: deposit.tile, playerId: 1, remainingTicks: 0, age: "LateMedieval" });
+
     expansion.progression.states[1].age = "LateMedieval";
     expansion.supply.step(20, match.players, match.buildings, match.owners);
     expect(expansion.supply.inventories[1].gunpowder).toBe(0);

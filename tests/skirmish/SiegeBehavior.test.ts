@@ -42,7 +42,7 @@ function building(
   y: number,
   health = 1200,
 ): Building {
-  const b = {
+  const b = m.addBuilding({
     id: m.allocateId(),
     playerId: 2,
     type,
@@ -51,8 +51,8 @@ function building(
     age: "StoneAge" as const,
     health,
     maxHealth: health,
-  };
-  m.buildings.push(b);
+  });
+
   return b;
 }
 
@@ -94,10 +94,10 @@ describe("slow assault occupation", () => {
     (type) => {
       const { m, tile } = fixture();
       const b = building(m, type, 35, 20);
-      b.nextAttackTick = 1000; // Isolate occupation resistance from lethal gunfire.
+      m.updateBuilding((b).id, { nextAttackTick: 1000 }); // Isolate occupation resistance from lethal gunfire.
       for (let i = 0; i < 4; i++) m.step();
       expect(m.owners[tile]).toBe(0);
-      b.health = 0;
+      m.updateBuilding((b).id, { health: 0 });
       m.step();
       expect(m.owners[tile]).toBe(1);
     },
@@ -112,8 +112,8 @@ describe("slow assault occupation", () => {
     const tile = m.map.ref(33, 20);
     for (let i = 0; i < 4; i++) m.step();
     expect(m.owners[tile]).toBe(0);
-    a.health = 0;
-    b.health = 0;
+    m.updateBuilding((a).id, { health: 0 });
+    m.updateBuilding((b).id, { health: 0 });
     forts.barriers[0].health = 0;
     for (let i = 0; i < 4; i++) m.step();
     expect(m.owners[tile]).toBe(1);

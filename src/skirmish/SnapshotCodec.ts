@@ -9,6 +9,8 @@ import type {
 } from "./Protocol";
 import { BUILDING_RULES } from "./Rules";
 
+type SnapshotSource = Omit<Snapshot, "buildings"> & { readonly buildings: readonly Building[] };
+
 export const SNAPSHOT_LAYOUT = Object.freeze({ squadStride: 14, orderStride: 6, buildingStride: 5 });
 const { squadStride: SQUAD_STRIDE, orderStride: ORDER_STRIDE, buildingStride: BUILDING_STRIDE } = SNAPSHOT_LAYOUT;
 const SQUAD_TYPES: SquadType[] = ["infantry", "archer", "cavalry"];
@@ -66,7 +68,7 @@ export class SnapshotEncoder {
   private width = 0;
   private height = 0;
   /** Align existing subscribers and a newcomer to the same immutable tick boundary. */
-  encodeJoinBarrier(source: Snapshot, journal?: TileChangeJournal): {
+  encodeJoinBarrier(source: SnapshotSource, journal?: TileChangeJournal): {
     shared: SnapshotPacket;
     baseline: SnapshotPacket;
   } {
@@ -75,7 +77,7 @@ export class SnapshotEncoder {
       baseline: new SnapshotEncoder(true).encode(source),
     };
   }
-  encode(source: Snapshot, journal?: TileChangeJournal): SnapshotPacket {
+  encode(source: SnapshotSource, journal?: TileChangeJournal): SnapshotPacket {
     const reset =
       !this.previousTiles ||
       this.width !== source.width ||

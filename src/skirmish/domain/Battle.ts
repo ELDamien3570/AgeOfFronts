@@ -31,7 +31,8 @@ export interface BattleWorld {
   tick: number;
   squads: Squad[];
   players: Player[];
-  buildings: Building[];
+  buildings: readonly Building[];
+  updateBuilding(id: number, changes: Partial<Omit<Building, "id">>): Building | undefined;
   ships: Ship[];
   volleys: ArcherVolley[];
   allocateId(): number;
@@ -319,7 +320,9 @@ export class Battle {
   ): void {
     if ((target.health ?? 1) <= 0) return;
     const applied = Math.min(target.health ?? target.maxHealth ?? 1200, hit);
-    target.health = (target.health ?? target.maxHealth ?? 1200) - applied;
+    const health = (target.health ?? target.maxHealth ?? 1200) - applied;
+    if ("tile" in target) this.world.updateBuilding(target.id, { health });
+    else target.health = health;
     if (applied > 0) this.world.notifyHostileAction?.(target.playerId, attacker, "tile" in target ? target.tile : target.tiles[0]);
     const s =
       kind === "squad"
@@ -334,9 +337,9 @@ export class Battle {
     if (s)
       s.xp = Math.min(
         20000,
-        (s.xp ?? 0) + applied + (target.health <= 0 ? 50 : 0),
+        (s.xp ?? 0) + applied + (health <= 0 ? 50 : 0),
       );
-    if (target.health <= 0) {
+    if (health <= 0) {
       const ledger = new DamageLedger();
       ledger.add(target.id, attacker, applied);
       this.world.recordMilitaryLosses([target], ledger);
@@ -555,7 +558,7 @@ export class Battle {
             },
             target,
           );
-          b.nextAttackTick = tick + GUN_NEST_ATTACK.reloadTicks;
+          this.world.updateBuilding(b.id, { nextAttackTick: tick + GUN_NEST_ATTACK.reloadTicks });
         }
       }
     this.awardDamage(damage, contributions);
@@ -644,7 +647,7 @@ export class Battle {
           )
           .sort((a, b) => a.id - b.id)[0];
         if (interceptor) {
-          interceptor.nextAttackTick = tick + 60;
+          this.world.updateBuilding(interceptor.id, { nextAttackTick: tick + 60 });
           p.impacted = true;
           p.impactAt = tick;
           p.damage = 0;

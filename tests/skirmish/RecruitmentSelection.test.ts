@@ -49,7 +49,7 @@ function fixture(water = false, legacy = false) {
   };
   function building(type: Building["type"], x: number, age: Age = "StoneAge") {
     const y = type === "port" ? 24 : 18;
-    const result: Building = {
+    const result: Building = match.addBuilding({
       id: match.allocateId(),
       type,
       tile: match.map.ref(x, y),
@@ -58,8 +58,8 @@ function fixture(water = false, legacy = false) {
       health: 2000,
       maxHealth: 2000,
       age,
-    };
-    match.buildings.push(result);
+    });
+
     for (let dy = -7; dy <= 7; dy++)
       for (let dx = -7; dx <= 7; dx++) {
         const tile = match.map.ref(x + dx, y + dy);
@@ -184,7 +184,7 @@ describe("selected recruitment building", () => {
     selection.selectedBuildings = new Set([a.id, b.id]);
     selection.selectedBuilding = a.id;
     const quote = vm().recruitment("infantry");
-    a.playerId = 2;
+    match.updateBuilding((a).id, { playerId: 2 });
     const command = {
       type: "recruit" as const,
       playerId: 1,
@@ -194,7 +194,7 @@ describe("selected recruitment building", () => {
     };
     expect(match.applyCommand(command)).toBeNull();
     expect(match.recruitment.jobs[0].buildingId).toBe(b.id);
-    b.health = 0;
+    match.updateBuilding((b).id, { health: 0 });
     const gold = match.players[0].gold;
     expect(match.applyCommand(command)).toMatch(/completed friendly/);
     expect(match.players[0].gold).toBe(gold);
@@ -267,11 +267,11 @@ describe("selected recruitment building", () => {
         55,
       );
       selection.selectedBuilding = selected.id;
-      if (reason === "enemy") selected.playerId = 2;
+      if (reason === "enemy") match.updateBuilding((selected).id, { playerId: 2 });
       if (reason === "unowned") match.owners[selected.tile] = 2;
-      if (reason === "unfinished") selected.remainingTicks = 20;
+      if (reason === "unfinished") match.updateBuilding((selected).id, { remainingTicks: 20 });
       if (reason === "missing")
-        match.buildings.splice(match.buildings.indexOf(selected), 1);
+        match.removeBuilding(selected.id);
       expect(vm(true).recruitment("infantry").building?.id).toBe(nearest.id);
     },
   );

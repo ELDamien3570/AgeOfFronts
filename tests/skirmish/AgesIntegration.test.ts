@@ -53,7 +53,7 @@ function building(
   playerId = 1,
   age: Building["age"] = "StoneAge",
 ) {
-  const b: Building = {
+  const b: Building = m.addBuilding({
     id: m.allocateId(),
     type,
     tile: m.map.ref(x, y),
@@ -62,8 +62,8 @@ function building(
     remainingTicks: 0,
     health: 2000,
     maxHealth: 2000,
-  };
-  m.buildings.push(b);
+  });
+
   return b;
 }
 function ship(m: Skirmish, x: number, playerId = 1) {
@@ -203,7 +203,7 @@ describe("integrated shipments and military progression", () => {
     for (let i = 0; i < 1000 && !actor.delivered; i++) tradeStep(m);
     expect(actor.visited).toEqual([a.id]);
     const gold = e.trade.deliveredGold[1];
-    m.buildings.splice(m.buildings.indexOf(b), 1);
+    m.removeBuilding(b.id);
     for (let i = 0; i < 1000 && !actor.returned; i++) tradeStep(m);
     expect(actor.returned).toBe(10);
     expect(actor.cargo).toBe(0);
@@ -519,7 +519,7 @@ describe("integrated shipments and military progression", () => {
     expect(m.applyCommand(command)).toBeNull();
     expect(stock["payload:mirv"]).toBe(0);
     const silo = building(m, "missile-silo", 10, 10, 1, "Modern");
-    silo.health = 0;
+    m.updateBuilding((silo).id, { health: 0 });
     stock["payload:icbm"] = 1;
     expect(
       m.applyCommand({ ...command, launcherId: silo.id, payload: "icbm" }),

@@ -290,8 +290,8 @@ describe("transferable presentation snapshots", () => {
     match.owners[20] = 2;
     match.claims[21] = 1;
     match.progress[21] = 15;
-    match.buildings[0].remainingTicks = 10;
-    match.buildings.pop();
+    match.updateBuilding((match.buildings[0]).id, { remainingTicks: 10 });
+    match.removeBuilding(match.buildings[match.buildings.length - 1].id);
     const secondPacket = encoder.encode(match.snapshot());
     expect(secondPacket.tiles).toHaveLength(4);
     expect(secondPacket.removedBuildings).toHaveLength(1);
@@ -435,7 +435,7 @@ describe("stacked buildings and large fleets", () => {
       }),
     ).toBeNull();
     const port = match.buildings[match.buildings.length - 1];
-    port.remainingTicks = 0;
+    match.updateBuilding((port).id, { remainingTicks: 0 });
     for (let i = 0; i < MAX_SHIPS; i++)
       expect(
         match.applyCommand({

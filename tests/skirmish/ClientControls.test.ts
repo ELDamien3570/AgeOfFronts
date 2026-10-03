@@ -1,4 +1,5 @@
 import { describe, expect, it } from "vitest";
+import { updateSnapshotBuilding } from "./BuildingFixtures";
 import { GameMapImpl } from "../../src/core/game/GameMap";
 import { ControlGroups } from "../../src/skirmish/client/ControlGroups";
 import { hotkeyAction } from "../../src/skirmish/client/Controls";
@@ -49,7 +50,7 @@ function build(m: Skirmish, type: BuildingType, x: number, y: number) {
     m.applyCommand({ type: "build", playerId: 1, buildingType: type, tile }),
   ).toBeNull();
   const building = m.buildings[m.buildings.length - 1];
-  building.remainingTicks = 0;
+  m.updateBuilding((building).id, { remainingTicks: 0 });
   return building;
 }
 
@@ -135,10 +136,10 @@ describe("automatic recruitment and selective replenishment", () => {
     expect(vm.recruitment("archer").enabled).toBe(true);
     expect(vm.recruitment("infantry").enabled).toBe(true);
     expect(vm.recruitment("cavalry").enabled).toBe(false);
-    second.remainingTicks = 1;
+    m.updateBuilding((second).id, { remainingTicks: 1 });
     vm = new SkirmishViewModel(m.snapshot(), s);
     expect(vm.recruitment("archer").building?.id).toBe(first.id);
-    first.playerId = 2;
+    m.updateBuilding((first).id, { playerId: 2 });
     expect(
       new SkirmishViewModel(m.snapshot(), s).recruitment("archer").enabled,
     ).toBe(false);
@@ -179,7 +180,7 @@ describe("automatic recruitment and selective replenishment", () => {
     snapshot.players[0].gold = 300;
     expect(vm.recruitment("transport").enabled).toBe(true);
     expect(vm.recruitment("warship").enabled).toBe(false);
-    snapshot.buildings.find((b) => b.id === second.id)!.remainingTicks = 1;
+    updateSnapshotBuilding(snapshot, (snapshot.buildings.find((b) => b.id === second.id)!).id, { remainingTicks: 1 });
     expect(vm.recruitment("transport").building?.id).toBe(first.id);
     m.applyCommand({
       type: "recruit-ship",
@@ -245,8 +246,8 @@ describe("automatic recruitment and selective replenishment", () => {
     const s = selection();
     const barracks = build(m, "barracks", 20, 10);
     const city = build(m, "city", 25, 10);
-    barracks.health = 600;
-    city.health = 800;
+    m.updateBuilding((barracks).id, { health: 600 });
+    m.updateBuilding((city).id, { health: 800 });
     m.players[0].gold = 5000;
 
     s.selectedBuildings = new Set([barracks.id, city.id]);

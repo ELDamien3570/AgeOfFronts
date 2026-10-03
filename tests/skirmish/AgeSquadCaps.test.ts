@@ -34,15 +34,15 @@ describe("age-based squad capacity", () => {
         path: [],
       });
     player.reserves = 10000;
-    const building = {
+    const building = game.addBuilding({
       id: game.allocateId(),
       playerId: player.id,
       type: "barracks" as const,
       tile: player.base,
       age: "StoneAge" as const,
       remainingTicks: 0,
-    };
-    game.buildings.push(building);
+    });
+
     const quote = () =>
       new SkirmishViewModel(game.snapshot(), {
         selected: new Set(),
