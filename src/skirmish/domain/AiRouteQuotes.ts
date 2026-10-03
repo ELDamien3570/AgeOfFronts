@@ -55,7 +55,7 @@ export class AiRouteQuotes implements DomainRouteConsumer {
     if (!ports)
       return { pending: false, reason: "Exact strategic routing unavailable" };
     const generation = world.aiGeneration(playerId),
-      revision = water ? "water" : ports.revision();
+      revision = water ? "water" : ports.revision(playerId, "strategy");
     let quote = this.quotes.get(key);
     if (
       quote &&
@@ -129,7 +129,7 @@ export class AiRouteQuotes implements DomainRouteConsumer {
       quote.requested &&
       quote.generation === world.aiGeneration(quote.playerId) &&
       quote.expires > world.tick &&
-      (quote.water || quote.revision === world.domainRoutes?.revision())
+      (quote.water || quote.revision === world.domainRoutes?.revision(quote.playerId, "strategy"))
     );
   }
   completedRoute(

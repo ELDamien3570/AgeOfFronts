@@ -366,9 +366,9 @@ export class Skirmish {
   }
   private readonly domainRoutePorts: DomainRoutePorts = {
     request:(task,start,goal,water=false)=>this.routePlanner.request({key:domainRouteKey(task),start,goal,water,createdTick:this.tick,
-      obstacleRevision:water ? "water" : this.routingObstacleRevision(),context:task}),
+      obstacleRevision:water ? "water" : this.domainRoutePorts.revision(task.playerId, task.owner),context:task}),
     cancel:task=>this.routePlanner.cancel(domainRouteKey(task)),
-    generation:id=>this.aiGeneration(id), revision:()=>this.routingObstacleRevision(),
+    generation:id=>this.aiGeneration(id), revision:(id,owner)=>this.routingObstacleRevision(id, owner !== "trade"),
     tick:()=>this.tick, orderRevision:id=>this.orderRevisions.get(id)??0,
     clear:(squad,end)=>distanceSquared(squad,end)<= (3*FIXED)**2 && traversable(this.map,squad,end,squadRadius(squad.kind)) &&
       (!this.expansion || this.expansion.fortifications.clearMovement(squad,end,squad.playerId,squadRadius(squad.kind))),
@@ -380,8 +380,9 @@ export class Skirmish {
     },
     event:(owner,event)=>{if(owner!=="strategy")this.commandApplications.observe(owner,event);},
   };
-  private routingObstacleRevision():string {
-    return `${this.expansion?.operations.revision ?? 0}:${this.expansion?.fortifications.version ?? 0}:${this.expansion?.diplomacy.state.alliances.map(t=>`${t.a},${t.b}`).join(";") ?? ""}`;
+  private routingObstacleRevision(playerId?: number, military = true):string {
+    const policy = !military ? "civilian" : playerId === undefined ? this.expansion?.operations.revision ?? 0 : this.expansion?.operations.navigationRevision(playerId) ?? "unrestricted";
+    return `${policy}:${this.expansion?.fortifications.version ?? 0}:${this.expansion?.diplomacy.state.alliances.map(t=>`${t.a},${t.b}`).join(";") ?? ""}`;
   }
   private readonly orderRevisions = new Map<number, number>();
   private readonly queuedLegs = new Map<number, { attempts: number; retryAt: number; paused?: boolean }>();
@@ -466,8 +467,8 @@ export class Skirmish {
             ? squad.order.type==="attack" && squad.order.targetId===task.targetId && !!this.squad(task.targetId??-1) && this.squad(task.targetId!)!.embarkedOn===null && this.hostile(squad.playerId,this.squad(task.targetId!)!.playerId) && this.tileOf(this.squad(task.targetId!)!)===task.targetTile
             : (squad.order.type==="move" || squad.order.type==="board") && squad.order.tile===request.goal);
       },
-      obstacleRevision:request=>request.water ? "water" : this.routingObstacleRevision(),
-      blocked:request=>{if(request.water)return undefined;if(request.context.kind==="domain")return this.obstacleTest(request.context.playerId);if(request.context.kind==="ship-admission")return undefined;const squad=this.squad(request.context.squadId);return squad ? this.obstacleTest(squad.playerId) : undefined;},
+      obstacleRevision:request=>request.water ? "water" : request.context.kind === "domain" ? this.domainRoutePorts.revision(request.context.playerId, request.context.owner) : this.routingObstacleRevision(request.context.playerId),
+      blocked:request=>{if(request.water)return undefined;if(request.context.kind==="domain"){const task=request.context;if(task.owner==="trade"){const forts=this.expansion?.fortifications;return forts?.hasObstacles ? tile=>forts.blocked(tile,task.playerId) : undefined;}return this.obstacleTest(task.playerId);}if(request.context.kind==="ship-admission")return undefined;const squad=this.squad(request.context.squadId);return squad ? this.obstacleTest(squad.playerId) : undefined;},
       completed:(request,outcome,path)=>{
         if (request.context.kind === "domain") { this.domainConsumer(request.context.owner)?.completedRoute(request.context,outcome,path); return; }
         if(request.context.kind==="ship-admission") {
@@ -502,6 +503,7 @@ export class Skirmish {
       cancel:(id,shipId)=>this.routePlanner.cancel(`ship-admission:${id}:${shipId}`),
       paused:(ship,paused)=>{ if (paused || ship.planningPaused !== undefined) this.shipEntities.updateOwned(ship.id, { planningPaused: paused ? true : undefined }); },
       commit:(ship,goal,path,index,append,recovery)=>{
+        if(ship.shoreTransfer)this.shipEntities.updateOwned(ship.id,{shoreTransfer:{...ship.shoreTransfer,phase:"afloat"}});
         if (ship.planningPaused !== undefined) this.shipEntities.updateOwned(ship.id, { planningPaused: undefined });
         if(recovery){this.shipEntities.updateOwned(ship.id, { destination: goal });this.shipEntities.updateOwned(ship.id, { path: path });this.shipEntities.updateOwned(ship.id, { nextPathIndex: index });this.shipEntities.updateOwned(ship.id, { waypoints: append });}
         else this.setShipVoyage(ship,goal,path,index,append);
@@ -510,10 +512,10 @@ export class Skirmish {
     });
     this.formations = new Formations(map, this.paths);
     this.movementAdmission = new MovementAdmission(map,this.paths,{
-      squads:()=>this.squads,priority:id=>!this.player(id)?.ai,squad:id=>this.squad(id),generation:id=>this.aiGeneration(id),revision:()=>this.routingObstacleRevision(),
+      squads:()=>this.squads,priority:id=>!this.player(id)?.ai,squad:id=>this.squad(id),generation:id=>this.aiGeneration(id),revision:id=>this.routingObstacleRevision(id),
       blocked:id=>this.obstacleTest(id),
       request:(id,playerId,squadId,start,goal)=>this.routePlanner.request({key:`admission:${id}:${squadId}`,start,goal,water:false,createdTick:this.tick,
-        obstacleRevision:this.routingObstacleRevision(),context:{kind:"admission",admissionId:id,playerId,squadId}}),
+        obstacleRevision:this.routingObstacleRevision(playerId),context:{kind:"admission",admissionId:id,playerId,squadId}}),
       cancel:(id,squadId)=>this.routePlanner.cancel(`admission:${id}:${squadId}`),
       queue:(squad,order)=>{
         if (squad.order.type === "hold" && order.type === "move") {
@@ -593,6 +595,8 @@ export class Skirmish {
           nextPathIndex:0,fighting:false,boarding:null};
         return this.addShip(ship);
       },
+      landingAllowed:(id,tile)=>this.aiFootprintAllowed(id,tile) &&
+        (!this.expansion?.operations.enabled(this.player(id)) || this.expansion.operations.state(id)?.phase!=="recovery" || this.owners[tile]===id),
       unload: (ship,tile) => this.unload(this.player(ship.playerId)!,ship.id,tile),
       unloadPrepared:(ship,members,tile)=>this.unloadPrepared(ship,members,tile),
       resume: (squad,tile) => {
@@ -812,7 +816,7 @@ export class Skirmish {
       command.type === "stop-ships" || command.type === "unload";
     if (shipIds.some(id => this.ships.some(s =>
       s.id === id && s.shoreTransfer &&
-      !(s.shoreTransfer.phase === "landing" && landingControl))))
+      !(["landing", "afloat"].includes(s.shoreTransfer.phase) && landingControl))))
       return "Shore transports complete their crossing automatically";
     if (player.kind === "tribe" && this.expansion && command.type === "build") {
       const limit = tribeBuildingLimit(command.buildingType, this.expansion.startingAge);
@@ -960,8 +964,18 @@ export class Skirmish {
       )
         return "Choose an enemy squad";
     }
-    if (order.type === "move" && !this.paths.walkable(order.tile))
-      return "Choose passable land. Use a transport to cross water.";
+    if (order.type === "move" && !this.paths.walkable(order.tile)) {
+      if (!this.waterPaths.walkable(order.tile)) return "Choose passable land or navigable water";
+      const completed = this.expansion?.progression.states[player.id]?.completed ?? [], definition = shoreTransportDefinition(completed);
+      if (!definition) return "Research Cargo Canoes to embark on water";
+      if (append && selected.some(s => s!.order.type !== "hold")) {
+        for (const squad of selected as Squad[]) this.squadEntities.updateOwned(squad.id, { queuedOrders: [...squad.queuedOrders, {...order}] });
+        return null;
+      }
+      const result = this.shoreTransport.start(player.id, selected as Squad[], order.tile, definition, shoreTransportCapacity(completed));
+      if (result === null) this.expansion?.armies.observeOrder(command.squadIds);
+      return result;
+    }
     if(this.options.deferredPlanning && append && this.movementAdmission.queued(command.squadIds)>=MAX_QUEUED_ORDERS)
       return "A squad can queue up to 32 additional orders";
     if(this.options.deferredPlanning && append && this.movementAdmission.append(command.squadIds,order,this.tick)) {
@@ -1600,7 +1614,7 @@ export class Skirmish {
       return "Select your own ships";
     if (!this.waterPaths.walkable(tile))
       return "Ships sail on water; use Unload to land troops";
-    if(this.options.deferredPlanning && (ships as Ship[]).every(s=>!s.shoreTransfer)){
+    if(this.options.deferredPlanning && (ships as Ship[]).every(s=>!s.shoreTransfer || ["landing", "afloat"].includes(s.shoreTransfer.phase))){
       const result=this.shipAdmission.command(player,ships as Ship[],tile,append,this.tick);
       if(result===null&&!append)for(const ship of ships as Ship[])this.shoreTransport.cancelShip(ship.id);
       return result;
@@ -1639,6 +1653,7 @@ export class Skirmish {
   private setShipVoyage(ship: Ship, tile: number, path: number[], index: number, append: number[]): void {
     this.shipEntities.updateOwned(ship.id, { attackTargetId: null });
     this.cancelBoarding(ship);
+    if(ship.shoreTransfer)this.shipEntities.updateOwned(ship.id,{shoreTransfer:{...ship.shoreTransfer,phase:"afloat"}});
     this.shipEntities.updateOwned(ship.id, { destination: tile });
     this.shipEntities.updateOwned(ship.id, { waypoints: append });
     this.shipEntities.updateOwned(ship.id, { path: path });
@@ -1953,9 +1968,8 @@ export class Skirmish {
       : SHIP_RULES[ship.kind].speed;
     while (budget > 0 && ship.nextPathIndex < ship.path.length) {
       const tile = ship.path[ship.nextPathIndex];
-      if (!this.aiCanEnter(ship.playerId, tile)) {
-        this.shipEntities.updateOwned(ship.id, { destination: null }); this.shipEntities.updateOwned(ship.id, { path: [] }); this.shipEntities.updateOwned(ship.id, { waypoints: [] }); this.shipEntities.updateOwned(ship.id, { nextPathIndex: 0 }); break;
-      }
+      // Coastal ownership does not obstruct navigable water. Naval attacks
+      // and physical landings retain their separate live war-policy checks.
       const dx = this.map.x(tile) * FIXED + FIXED / 2 - ship.x;
       const dy = this.map.y(tile) * FIXED + FIXED / 2 - ship.y;
       const distance = Math.abs(dx) + Math.abs(dy);
@@ -1974,7 +1988,7 @@ export class Skirmish {
     }
     if (ship.destination !== null && ship.nextPathIndex >= ship.path.length && !this.shipAdmission.executing(ship.id)) {
       this.shipEntities.updateOwned(ship.id, { destination: ship.waypoints[0] ?? null, waypoints: ship.waypoints.slice(1) });
-      if (ship.destination !== null && this.options.deferredPlanning && !ship.shoreTransfer) {
+      if (ship.destination !== null && this.options.deferredPlanning && (!ship.shoreTransfer || ["landing", "afloat"].includes(ship.shoreTransfer.phase))) {
         this.shipEntities.updateOwned(ship.id, { path: [] });
         this.shipAdmission.resume(ship,ship.destination);
       } else this.shipEntities.updateOwned(ship.id, { path: ship.destination === null ? [] :
@@ -2943,6 +2957,18 @@ export class Skirmish {
     if (this.tick - progress.tick < 20 || this.tick - progress.recovery < 20)
       return;
     progress.recovery = this.tick;
+    if (this.options.deferredPlanning && squad.order.type === "move" &&
+        !this.expansion?.armies.armyOf(squad.id) && !this.movementAdmission.hasPending(squad.id)) {
+      const goal = this.moveDestination(squad.order), nearby: Squad[] = [];
+      this.spatial.query(goal.x, goal.y, 2 * FIXED, nearby);
+      // A later arrival can occupy an earlier reserved destination. Admit a
+      // fresh nearby slot instead of repairing a corridor to an occupied point.
+      if (nearby.some(other => other.id !== squad.id && other.embarkedOn === null &&
+          distanceSquared(other, goal) < squadSeparation(squad, other) ** 2)) {
+        this.movementAdmission.recoverDestination(squad, squad.order.tile, this.tick);
+        return;
+      }
+    }
     this.queueNavigation(squad, "repair");
   }
 
@@ -3161,7 +3187,7 @@ export class Skirmish {
       current=this.tileOf(squad),targetTile=this.tileOf(target),firing=ranged?new FiringPositions(this.map,this.paths,current,squad.kind,target,
         this.expansion?.unit(squad).attack.range??SQUAD_RULES.archer.range).state:undefined;
     this.routePlanner.request({key,start:current,goal:targetTile,water:false,prepare:ranged,createdTick:this.tick,
-      obstacleRevision:this.routingObstacleRevision(),context:{kind:"navigation",operation:"pursuit",squadId:squad.id,
+      obstacleRevision:this.routingObstacleRevision(squad.playerId),context:{kind:"navigation",operation:"pursuit",squadId:squad.id,
         revision:this.orderRevisions.get(squad.id)??0,targetId:target.id,targetTile,firing,
         playerId:squad.playerId,generation:this.player(squad.playerId)?.ai?this.aiGeneration(squad.playerId):undefined}});
     this.squadEntities.updateOwned(squad.id, { lastPlanTick: this.tick });
@@ -3197,7 +3223,7 @@ export class Skirmish {
     const key=`navigation:${squad.id}`;
     if(this.routePlanner.has(key))return;
     this.routePlanner.request({key,start:this.tileOf(squad),goal:squad.order.tile,water:false,createdTick:this.tick,
-      obstacleRevision:this.routingObstacleRevision(),context:{kind:"navigation",squadId:squad.id,operation,revision:this.orderRevisions.get(squad.id)??0,
+      obstacleRevision:this.routingObstacleRevision(squad.playerId),context:{kind:"navigation",squadId:squad.id,operation,revision:this.orderRevisions.get(squad.id)??0,
         playerId:squad.playerId,generation:this.player(squad.playerId)?.ai?this.aiGeneration(squad.playerId):undefined}});
   }
 
@@ -3635,7 +3661,7 @@ export class Skirmish {
             });
           continue;
         }
-        if (squad.order.type !== "hold") continue;
+        if (squad.order.type !== "hold" || this.shoreTransport.pending(squad.id)) continue;
         if (recovering) {
           if (this.map.euclideanDistSquared(current, player.base) > 8 ** 2)
             this.routeWork.request(`ai:${squad.id}`, 1, {kind:"ai-move",playerId:player.id,generation:this.aiGeneration(player.id),squadIds:[squad.id],tile:player.base});

@@ -294,7 +294,7 @@ export class ShipMovementAdmission {
       ship.health > 0 &&
       ship.playerId === admission.playerId &&
       !ship.refit &&
-      !ship.shoreTransfer &&
+      (!ship.shoreTransfer || ["landing", "afloat"].includes(ship.shoreTransfer.phase)) &&
       (admission.recovery
         ? ship.repairState === admission.recovery.state &&
           ship.repairPortId === admission.recovery.port

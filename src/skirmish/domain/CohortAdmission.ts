@@ -104,7 +104,7 @@ export class CohortAdmission {
       id,
       playerId,
       generation: routes.generation(playerId),
-      revision: routes.revision(),
+      revision: routes.revision(playerId, this.owner),
       tile,
       members: members.map((s) => ({
         id: s.id,
@@ -238,7 +238,7 @@ export class CohortAdmission {
         work++;
         continue;
       }
-      if (plan.revision !== this.ports.routes.revision()) {
+      if (plan.revision !== this.ports.routes.revision(plan.playerId, this.owner)) {
         this.finish(plan, "superseded", "Obstacles or permission changed");
         work++;
         continue;

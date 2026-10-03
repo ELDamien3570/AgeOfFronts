@@ -28,7 +28,7 @@ export interface DomainRoutePorts {
   generation(playerId: number): number;
   tick(): number;
   orderRevision(squadId: number): number;
-  revision(): string;
+  revision(playerId?: number, owner?: DomainRouteOwner): string;
   clear(squad: Squad, end: WorldPoint): boolean;
   destinationValid(
     squad: Squad,

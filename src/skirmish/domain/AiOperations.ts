@@ -78,6 +78,15 @@ export class AiOperations {
     return record?.phase === "war" ? record.target : undefined;
   }
   /** Defensive pursuit remains local to observed aggression, not a free raid. */
+  /** Only this faction's actual entry permissions fence its route work. */
+  navigationRevision(playerId: number): string {
+    const record = this.records.get(playerId), tick = this.expansion.world.tick;
+    if (!record || !this.enabled(this.expansion.world.players.find(p => p.id === playerId))) return "unrestricted";
+    return JSON.stringify([
+      record.phase === "war" ? record.target : record.phase === "recovery" ? record.retreatFrom : null,
+      record.threats.filter(t => t.until >= tick).map(t => [t.rival, t.tile]),
+    ]);
+  }
   canEnter(playerId: number, rival: number, tile: number): boolean {
     if (!rival || rival === playerId || !this.expansion.diplomacy.hostile(playerId, rival)) return true;
     if (!this.enabled(this.expansion.world.players.find(p => p.id === playerId))) return true;

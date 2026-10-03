@@ -7,7 +7,7 @@ import {
 import { FIXED } from "../../src/skirmish/Protocol";
 import { Skirmish } from "../../src/skirmish/Simulation";
 
-function fixture(port = false) {
+function fixture(port = false, deferredPlanning = false) {
   const terrain = new Uint8Array(80 * 50).fill(133);
   if (port)
     for (let y = 20; y < 30; y++)
@@ -18,6 +18,7 @@ function fixture(port = false) {
     tribes: false,
     runAi: false,
     ruleset: "ages-v1",
+    deferredPlanning, aiWarPolicy: deferredPlanning, aiEconomy: deferredPlanning,
   });
   for (const s of m.squads) {
     m.updateSquad(s.id, { x: 70 * FIXED });
@@ -49,6 +50,19 @@ function fixture(port = false) {
 }
 
 describe("independent trade unlocks", () => {
+  it("physically dispatches a naval trader despite unrelated military-policy revisions", () => {
+    const {m,research}=fixture(true,true);research.push("stoneage-cargo-canoes","stoneage-craft-workshops");
+    let origin: {id:number;x:number;y:number}|undefined, travelled=false;
+    const operations=m.expansion!.operations;
+    for(let i=0;i<1200 && !travelled;i++){
+      // An unrelated war policy generation must not restart civilian trade routes.
+      operations.revision++;
+      m.step();
+      const actor=m.expansion!.trade.actors.find(a=>a.naval);
+      if(actor){origin??={id:actor.id,x:actor.x,y:actor.y};travelled=Math.hypot(actor.x-origin.x,actor.y-origin.y)>2*FIXED;}
+    }
+    expect(origin).toBeDefined();expect(travelled).toBe(true);
+  });
   it("keeps workshop production separate from land dispatch, then unlocks a visible trader with Goods Handling", () => {
     const { m, dispatch, research } = fixture();
     research.push("stoneage-craft-workshops");

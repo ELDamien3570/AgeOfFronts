@@ -219,7 +219,8 @@ export class OnlineMatchSession {
       this.commandOutcomes.delete(this.commandOutcomes.keys().next().value!);
     this.lastCommandOutcome = {...outcome};
     this.oncommandoutcome?.({...outcome});
-    if (outcome.status === "rejected" && outcome.reason) this.status(outcome.reason);
+    if (outcome.status === "rejected" && outcome.reason)
+      this.onmessage?.({ data: { type: "rejected", message: outcome.reason } } as MessageEvent<WorkerResponse>);
   }
   private request(message: object): Promise<string | undefined> {
     return this.connection.request({
@@ -482,7 +483,7 @@ export class OnlineMatchSession {
       this.terminate();
     } else if (message.type === "error") {
       if (this.pendingSync || this.lastTick < 0) this.fail(message.message);
-      else this.status(message.message);
+      else this.onmessage?.({ data: { type: "rejected", message: message.message } } as MessageEvent<WorkerResponse>);
     }
   }
   private fail(message: string): void {

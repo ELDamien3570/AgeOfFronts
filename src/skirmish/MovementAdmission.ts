@@ -55,7 +55,7 @@ export interface MovementAdmissionPorts {
   priority?(playerId: number): boolean;
   squad(id: number): Squad | undefined;
   generation(playerId: number): number;
-  revision(): string;
+  revision(playerId: number): string;
   blocked(playerId: number): ((tile: number) => boolean) | undefined;
   request(
     id: number,
@@ -95,6 +95,7 @@ export class MovementAdmission {
   onEvent?: (event: MovementAdmissionEvent) => void;
   private nextId = 1;
   private readonly occupancy: FormationOccupancy;
+  hasPending(squadId: number): boolean { return this.pendingBySquad.has(squadId); }
   get pendingCount(): number {
     return this.pending.size;
   }
@@ -190,7 +191,7 @@ export class MovementAdmission {
       generation: this.ports.generation(squad.playerId),
       order: { ...order },
       members,
-      revision: this.ports.revision(),
+      revision: this.ports.revision(squad.playerId),
     };
     this.addIntent(intent);
     this.event(intent, tick, "deferred");
@@ -249,6 +250,19 @@ export class MovementAdmission {
     );
     return this.create(playerId, squads, tile, tick, preferred);
   }
+  /** Re-admit an occupied destination while retaining later player intentions. */
+  recoverDestination(squad: Squad, tile: number, tick: number): void {
+    if (this.hasPending(squad.id)) return;
+    const id = this.create(squad.playerId, [squad], tile, tick);
+    this.pending.get(id)!.members[0].queued = squad.queuedOrders.map(order=>({...order}));
+    for (const intentId of this.intentsBySquad.get(squad.id) ?? []) {
+      const intent = this.intents.get(intentId)!;
+      for (const member of intent.members) if (member.id === squad.id && member.admissionId === undefined) {
+        member.admissionId = id;
+        this.addIntentReference(this.intentsByAdmission, id, intent.id);
+      }
+    }
+  }
   /** An idle member of a mixed Shift command needs its first route admitted,
    * while later Shift intents stay attached to the newly created cohort. */
   startQueued(
@@ -299,7 +313,7 @@ export class MovementAdmission {
       playerId,
       generation: this.ports.generation(playerId),
       tile,
-      revision: this.ports.revision(),
+      revision: this.ports.revision(playerId),
       members: squads.map((s) => ({
         id: s.id,
         cursor: 0,
@@ -438,7 +452,7 @@ export class MovementAdmission {
         used++;
         break;
       }
-      const revision = this.ports.revision();
+      const revision = this.ports.revision(intent.playerId);
       if (intent.revision !== revision) {
         intent.formation = undefined;
         intent.revision = revision;
@@ -549,7 +563,7 @@ export class MovementAdmission {
     return used + this.stepAdmissions(tick, budget-used, false);
   }
   private stepAdmissions(tick: number, budget: number, priority: boolean): number {
-    const validated = new Set<number>(), revision = this.ports.revision();
+    const validated = new Set<number>();
     let used = 0, idle = 0;
     while (this.pending.size && used < budget) {
       const entry = priority
@@ -573,7 +587,7 @@ export class MovementAdmission {
         continue;
       }
       validated.add(id);
-      if (admission.revision !== revision) {
+      if (admission.revision !== this.ports.revision(admission.playerId)) {
         const squads = admission.members.map((m) => this.ports.squad(m.id)!);
         for (const member of admission.members) {
           this.ports.cancel(id, member.id);
@@ -587,7 +601,7 @@ export class MovementAdmission {
           squads.map((squad) => ({ squad, origin: squad })),
           () => this.ports.squads(),
         ).state;
-        admission.revision = revision;
+        admission.revision = this.ports.revision(admission.playerId);
         admission.phase = "formation";
         admission.member = 0;
       }

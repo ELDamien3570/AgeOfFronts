@@ -637,6 +637,7 @@ async function startOnlineMatch(): Promise<void> {
     });
     loading.append(title, detail, cancel);
   };
+  document.querySelector(".brand p")!.textContent = "Online match · server hosted";
   if (onlineSeat !== undefined && (!Number.isSafeInteger(onlineSeat) || onlineSeat < 1)) {
     showOnlineLoading("This empire link is invalid. Choose an available empire from the lobby.", true);
     return;
@@ -674,7 +675,6 @@ async function startOnlineMatch(): Promise<void> {
     },
     (id) => localPlayerId = id,
     (message) => {
-      document.querySelector(".brand p")!.textContent = message;
       if (failure || (!session.commandsAvailable && !renderer.spawn))
         showOnlineLoading(message, failure);
     },

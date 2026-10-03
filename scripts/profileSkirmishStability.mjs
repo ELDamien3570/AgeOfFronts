@@ -27,6 +27,19 @@ if (restore) {
   if(allAi) Object.assign(saved.options, options);
   game.restore(saved);
 }
+const navigationOrigin = args.includes("--inspect-navigation") ? {
+  squads:game.squads.map(s=>({id:s.id,x:s.x,y:s.y})),
+  ships:game.ships.map(s=>({id:s.id,x:s.x,y:s.y})),
+  traders:game.expansion?.trade.actors.map(s=>({id:s.id,x:s.x,y:s.y}))??[]
+} : undefined;
+const shipTrips = new Map(navigationOrigin?.ships.map(s=>[s.id,{...s,maximum:0,phases:new Set()}])??[]);
+const navigation = () => navigationOrigin ? {
+  squads: navigationOrigin.squads.map(p=>{const s=game.squad(p.id);return s?{id:s.id,delta:Math.round(Math.hypot(s.x-p.x,s.y-p.y)),order:s.order,embarkedOn:s.embarkedOn}: {id:p.id,removed:true};}),
+  ships: game.ships.map(s=>{const p=navigationOrigin.ships.find(p=>p.id===s.id);return {id:s.id,playerId:s.playerId,kind:s.kind,delta:p?Math.round(Math.hypot(s.x-p.x,s.y-p.y)):null,destination:s.destination,transfer:s.shoreTransfer?.phase,boarding:s.boarding};}),
+  traders: game.expansion?.trade.actors.map(s=>{const p=navigationOrigin.traders.find(p=>p.id===s.id);return {id:s.id,playerId:s.playerId,naval:s.naval,delta:p?Math.round(Math.hypot(s.x-p.x,s.y-p.y)):null,state:s.state,destination:s.destination,stops:s.stops};}),
+  shipTrips:[...shipTrips.values()].map(s=>({...s,phases:[...s.phases]})),
+  shore:game.checkpoint().shorePlanning,
+} : undefined;
 const phases = new RuntimeDiagnostics(256, true);
 game.onPhase = (phase, ms) => phases.record(phase, ms);
 const encoder = new SnapshotEncoder(true);
@@ -50,6 +63,7 @@ try {
   while(game.tick < total && game.winner === null) {
     if(!profiling && game.tick >= profileAt){await post("Profiler.enable");await post("Profiler.start");profiling=true;}
     game.step();
+    if(navigationOrigin)for(const s of game.ships){let trip=shipTrips.get(s.id);if(!trip)shipTrips.set(s.id,trip={id:s.id,x:s.x,y:s.y,maximum:0,phases:new Set()});trip.maximum=Math.max(trip.maximum,Math.round(Math.hypot(s.x-trip.x,s.y-trip.y)));if(s.shoreTransfer)trip.phases.add(s.shoreTransfer.phase);}
     if (game.tick%4===0) phases.measure("snapshot",()=>encoder.encode(game.replicationSource(),game.tileChanges,game.replicationFacts()));
     if(game.tick%600===0){
       const row=summary();fs.appendFileSync(path.join(out,"timeline.jsonl"),JSON.stringify(row)+"\n");
@@ -61,6 +75,7 @@ try {
   }
   fs.writeFileSync(path.join(out,"checkpoint-final.v8"),serialize(game.checkpoint()));
   write("summary.json",{...summary(),timeLimit:finished});
+  if(navigationOrigin) write("navigation.json",navigation());
 } finally {
   if(profiling){const result=await post("Profiler.stop");write("simulation.cpuprofile",result.profile);}
   session.disconnect();

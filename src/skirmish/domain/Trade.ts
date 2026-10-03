@@ -81,7 +81,7 @@ export class Trade {
     const maxStops=[2,3,4,5,6,8,12][logisticsTier(this.progression.states[actor.playerId].completed)];
     const returning=actor.state!=="prize" && (!actor.cargo || actor.stops.every(id=>actor.visited.includes(id)));
     const targetState=actor.state==="prize"?"prize":purpose==="load"?"outbound":returning?"returning":"outbound";
-    const plan:TradeAdmission={id:actor.id,epoch:this.admissionEpoch++,playerId:actor.playerId,generation:routes.generation(actor.playerId),revision:routes.revision(),shipmentId:actor.shipmentId,naval:actor.naval,start:this.tile(actor),purpose,
+    const plan:TradeAdmission={id:actor.id,epoch:this.admissionEpoch++,playerId:actor.playerId,generation:routes.generation(actor.playerId),revision:routes.revision(actor.playerId, "trade"),shipmentId:actor.shipmentId,naval:actor.naval,start:this.tile(actor),purpose,
       phase:purpose==="load"&&actor.naval?"supply":"candidates",sourceId:source?.id??actor.factoryId,candidateCursor:0,candidateRows:[],index:0,waterIndex:0,requested:false,best:[],
       targetState,maxStops:purpose==="load"?Math.min(maxStops,Math.ceil(Math.min(actor.capacity,this.supply.goods.get(actor.factoryId)??0)/10)):1,attempts:retry?.attempts??0,retryAt:0};
     this.admissions.set(actor.id,plan);
@@ -89,7 +89,7 @@ export class Trade {
   validRoute(task:DomainRouteTask):boolean {
     const plan=this.admissions.get(task.admissionId),actor=this.actors.find(a=>a.id===task.admissionId),routes=this.world.domainRoutes;
     return !!plan && !!actor && !!routes && (task.stage==="check" || (task.stage===this.currentTradeTask(plan).stage && task.memberId===this.currentTradeTask(plan).memberId)) && task.epoch===plan.epoch && actor.playerId===plan.playerId && actor.shipmentId===plan.shipmentId && actor.naval===plan.naval &&
-      routes.generation(plan.playerId)===plan.generation && routes.revision()===plan.revision && this.tile(actor)===plan.start;
+      routes.generation(plan.playerId)===plan.generation && routes.revision(plan.playerId, "trade")===plan.revision && this.tile(actor)===plan.start;
   }
   completedRoute(task:DomainRouteTask,outcome:ExactRouteOutcome,path:number[]):void {
     const plan=this.admissions.get(task.admissionId);if(!plan||!this.validRoute(task))return;
@@ -135,7 +135,7 @@ export class Trade {
         if(plan.ranked!.done){plan.candidateRows=plan.ranked!.rows;plan.ranked=undefined;plan.phase="routes";}
       }else if(plan.phase==="routes"){
         const candidate=plan.candidateRows[plan.index],building=candidate&&this.world.buildings.find(b=>b.id===candidate.id);
-        if(!candidate){plan.phase=plan.purpose==="load" && plan.best.length ? "cycle" : "commit";plan.cycleIndex=0;plan.cycleLegs=[];continue;}
+        if(!candidate || plan.best.length>=plan.maxStops){plan.phase=plan.purpose==="load" && plan.best.length ? "cycle" : "commit";plan.cycleIndex=0;plan.cycleLegs=[];continue;}
         if(!building||!this.tradeCandidate(actor,plan,building)){plan.index++;plan.waterIndex=0;continue;}
         if(plan.outcome!==undefined){
           const outcome=plan.outcome;plan.outcome=undefined;

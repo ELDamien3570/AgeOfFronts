@@ -94,6 +94,13 @@ function fixture(split = false) {
   };
 }
 describe("persistent concentrated port defense", () => {
+  it("physically patrols while the mission retains movement ownership",()=>{
+    const f=fixture(),ship=f.addShip();f.refresh();f.assess();
+    const start={x:ship.x,y:ship.y};
+    for(let i=0;i<120;i++){f.game.step();f.facts.step(f.game.tick,32);f.planner.step(16);}
+    expect(Math.hypot(f.game.ship(ship.id)!.x-start.x,f.game.ship(ship.id)!.y-start.y)).toBeGreaterThan(FIXED);
+    expect(f.planner.missions.get(f.player.id)?.members).toContain(ship.id);
+  });
   it("selects an owned gathering port across seas instead of aborting in the first sea with unrelated facts", () => {
     const f = fixture(true);
     f.game.updateBuilding((f.game.building(f.port.id)!).id, { type: "factory" });

@@ -43,6 +43,7 @@ export interface ShoreTransportWorld {
   unload(ship: Ship, tile: number): string | null;
   unloadPrepared?(ship:Ship,members:readonly {squad:Squad;point:WorldPoint}[],tile:number):string|null;
   resume(squad: Squad, tile: number): void;
+  landingAllowed?(playerId:number,tile:number):boolean;
 }
 interface PreparedSquad {id:number;point:WorldPoint;path:number[];index:number}
 interface BoardAdmission {
@@ -128,7 +129,7 @@ export class ShoreTransport {
     for(const plan of [...this.pendingBoards.values()])if(plan.shipId===ship.id || plan.members.some(m=>selected.has(m.id)))this.finishBoard(plan,"superseded","Replacement boarding request");
     const candidates=this.world.boardCandidates(ship,members);
     if(!candidates.length)return "No shared reachable coast";
-    const id=1_000_000_000+this.nextAdmission++,plan:BoardAdmission={id,playerId,shipId:ship.id,generation:routes.generation(playerId),revision:routes.revision(),fence:this.shipFence(ship),
+    const id=1_000_000_000+this.nextAdmission++,plan:BoardAdmission={id,playerId,shipId:ship.id,generation:routes.generation(playerId),revision:routes.revision(playerId, "shore"),fence:this.shipFence(ship),
       cargoIds:this.world.cargo(ship.id).map(s=>s.id),members:members.map(s=>({id:s.id,revision:routes.orderRevision(s.id)})),
       phase:"extrema",cursor:0,extrema:[undefined,undefined,undefined,undefined],candidate:0,seaStart:pointTile(this.world.map,ship),requested:false,attempts:0,retryAt:0,connectorCursor:0};
     this.pendingBoards.set(id,plan);this.boardEdges.set(id,candidates);routes.event("shore",{id,playerId,tick:routes.tick(),status:"deferred"});return null;
@@ -136,7 +137,7 @@ export class ShoreTransport {
   private boardValid(plan:BoardAdmission):boolean{
     const ship=this.world.ship?.(plan.shipId)??this.world.ships.find(s=>s.id===plan.shipId),routes=this.world.domainRoutes!;
     return !!ship && ship.health>0 && !ship.refit && ship.playerId===plan.playerId && this.shipFence(ship)===plan.fence &&
-      routes.generation(plan.playerId)===plan.generation && routes.revision()===plan.revision &&
+      routes.generation(plan.playerId)===plan.generation && routes.revision(plan.playerId, "shore")===plan.revision &&
       this.world.cargo(ship.id).map(s=>s.id).join(",")===plan.cargoIds.join(",") &&
       this.world.capacity!(ship)>=plan.cargoIds.length+plan.members.length &&
       plan.members.every(m=>{const squad=this.squad(m.id);return squad && squad.playerId===plan.playerId && squad.troops>0 && !squad.refit && squad.embarkedOn===null && routes.orderRevision(m.id)===m.revision;});
@@ -206,24 +207,32 @@ export class ShoreTransport {
   private readonly cohorts?:CohortAdmission;
   private readonly cohortGroups=new Map<number,{admissionId:number;group:number}>();
   private readonly landingGroups=new Map<number,{shipId:number;cargoIds:number[];tile:number;redirected:boolean}>();
+  pending(squadId: number): boolean {
+    return [...this.pendingStarts.values()].some(p => p.members.some(m => m.id === squadId)) ||
+      [...this.pendingBoards.values()].some(p => p.members.some(m => m.id === squadId));
+  }
   private startDeferred(playerId:number,members:Squad[],destination:number,definition:VesselDefinition,capacity:number,preserveQueue:boolean):string|null {
     const routes=this.world.domainRoutes!;
     if(!Number.isInteger(capacity)||capacity<1||!members.length)return "Invalid transport capacity";
-    if(this.pendingStarts.size>=128)return "Transport planning is full";
     const selected=new Set(members.map(s=>s.id));
+    const existing=[...this.pendingStarts.values()].find(p=>p.playerId===playerId && p.destination===destination &&
+      p.definition.id===definition.id && p.capacity===capacity && p.preserveQueue===preserveQueue &&
+      p.members.length===selected.size && p.members.every(m=>selected.has(m.id)) && this.validStart(p));
+    if(existing){routes.event("shore",{id:existing.id,playerId,tick:routes.tick(),status:"deferred"});return null;}
+    if(this.pendingStarts.size>=128)return "Transport planning is full";
     for(const plan of [...this.pendingStarts.values()])if(plan.members.some(m=>selected.has(m.id)))this.finishStart(plan,"superseded","Replacement transfer");
     const grouped=new Map<number,number[]>();
     for(const squad of [...members].sort((a,b)=>a.id-b.id)){const component=this.world.paths.component[pointTile(this.world.map,squad)],group=grouped.get(component)??[];group.push(squad.id);grouped.set(component,group);}
     const groups:TransferAdmission["groups"]=[];
     for(const group of grouped.values())for(let i=0;i<group.length;i+=capacity)groups.push({ids:group.slice(i,i+capacity)});
     const id=1_000_000_000+this.nextAdmission++;
-    const plan:TransferAdmission={id,playerId,generation:routes.generation(playerId),revision:routes.revision(),destination,definition,capacity,preserveQueue,
+    const plan:TransferAdmission={id,playerId,generation:routes.generation(playerId),revision:routes.revision(playerId, "shore"),destination,definition,capacity,preserveQueue,
       members:members.map(s=>({id:s.id,revision:routes.orderRevision(s.id),queued:preserveQueue?[...s.queuedOrders]:[]})),groups,cursor:0};
     this.pendingStarts.set(id,plan);routes.event("shore",{id,playerId,tick:routes.tick(),status:"deferred"});return null;
   }
   private validStart(plan:TransferAdmission):boolean {
     const routes=this.world.domainRoutes!;
-    return routes.generation(plan.playerId)===plan.generation && routes.revision()===plan.revision &&
+    return routes.generation(plan.playerId)===plan.generation && routes.revision(plan.playerId, "shore")===plan.revision &&
       plan.members.every(m=>{const s=this.squad(m.id);return s && s.playerId===plan.playerId && s.troops>0 && s.embarkedOn===null && !s.refit && routes.orderRevision(s.id)===m.revision;});
   }
   private finishStart(plan:TransferAdmission,status:"executed"|"rejected"|"superseded",reason?:string):void {
@@ -299,7 +308,7 @@ export class ShoreTransport {
     })){this.finishStart(plan,"rejected","Departure changed while staging");return;}
     for(const group of plan.groups){
       const ship=group.leg?this.world.launch(plan.playerId,plan.definition,group.leg.departure.waterTile):undefined;
-      if(ship)this.world.updateShip(ship.id,{shoreTransfer:{destinationTile:plan.destination,landingTile:group.leg!.arrival.landTile,
+      if(ship)this.world.updateShip(ship.id,{shoreTransfer:{destinationTile:plan.destination,landingTile:group.leg!.arrival?.landTile ?? null,departureTile:group.leg!.departure.landTile,
         waterPath:group.leg!.waterPath,capacity:plan.capacity,phase:"boarding",queued:group.ids.map(id=>({squadId:id,orders:plan.members.find(m=>m.id===id)!.queued}))},
         boarding:{...group.leg!.departure,squadIds:group.ids}});
       for(const row of group.prepared!){
@@ -351,7 +360,7 @@ export class ShoreTransport {
       origin = pointTile(w.map, squad),
       blocked = this.obstacleTest(squad.playerId);
     const leg = this.routes.firstLeg(origin, destination, blocked);
-    if (!leg || !w.paths.connected(origin, destination)) return leg;
+    if (!leg || !leg.arrival || !w.paths.connected(origin, destination)) return leg;
     const land = w.paths.find(origin, destination, blocked);
     const approach = w.paths.find(origin, leg.departure.landTile, blocked);
     const departure = w.paths.find(leg.arrival.landTile, destination, blocked);
@@ -469,7 +478,8 @@ export class ShoreTransport {
         w.updateShip(ship.id, {
           shoreTransfer: {
             destinationTile: destination,
-            landingTile: plan.leg!.arrival.landTile,
+            landingTile: plan.leg!.arrival?.landTile ?? null,
+            departureTile: plan.leg!.departure.landTile,
             waterPath: plan.leg!.waterPath,
             capacity,
             phase: "boarding",
@@ -538,10 +548,24 @@ export class ShoreTransport {
         transfer = ship.shoreTransfer!;
       }
       if (transfer.phase === "sailing" && ship.destination === null) {
-        w.updateShip(ship.id, { shoreTransfer: { ...transfer, phase: "landing" } });
+        w.updateShip(ship.id, { shoreTransfer: { ...transfer, phase: transfer.landingTile === null ? "afloat" : "landing" } });
         transfer = ship.shoreTransfer!;
       }
-      if (transfer.phase !== "landing" || ship.destination !== null) continue;
+      if (transfer.phase !== "landing" || transfer.landingTile === null || ship.destination !== null) continue;
+      const end=transfer.waterPath[transfer.waterPath.length-1];
+      if (end!==undefined && pointTile(w.map,ship)!==end) {
+        // Historical policy stops must resume their admitted physical passage.
+        const at=transfer.waterPath.indexOf(pointTile(w.map,ship));
+        if(at>=0){w.updateShip(ship.id,{shoreTransfer:{...transfer,phase:"sailing"},destination:end,path:transfer.waterPath.slice(at),nextPathIndex:0});continue;}
+      }
+      if (w.landingAllowed && !w.landingAllowed(ship.playerId,transfer.landingTile)) {
+        const departure=transfer.departureTile ?? w.map.neighbors(transfer.waterPath[0]).find(t=>w.paths.walkable(t)&&w.landingAllowed!(ship.playerId,t));
+        if(!transfer.returning && departure!==undefined && w.landingAllowed(ship.playerId,departure)) {
+          const path=[...transfer.waterPath].reverse();
+          w.updateShip(ship.id,{shoreTransfer:{...transfer,phase:"sailing",returning:true,landingTile:departure,destinationTile:departure,waterPath:path,queued:[]},destination:path[path.length-1],path,nextPathIndex:0});
+        } else w.updateShip(ship.id,{shoreTransfer:{...transfer,phase:"afloat"}});
+        continue;
+      }
       // A newly occupied landing is retried; never force units into blockers.
       if (
         w.blocked(transfer.landingTile, ship.playerId) ||

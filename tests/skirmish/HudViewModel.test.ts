@@ -31,6 +31,15 @@ function setup() {
   return { snapshot, selection, vm, own, buildings, squads };
 }
 describe("snapshot-driven HUD selection", () => {
+  it("reports a stationary move order as waiting for clearance", () => {
+    const {selection,vm,own,squads}=setup();
+    squads.update(own[0].id,{order:{type:"move",tile:20},moved:false});selection.selected.add(own[0].id);
+    const card=vm().selectionCard(null);if(card.mode!=="detail")throw Error("Expected detail");
+    expect(card.card.status).toBe("Waiting for clearance");
+    squads.update(own[0].id,{moved:true});
+    const moving=vm().selectionCard(null);if(moving.mode!=="detail")throw Error("Expected detail");
+    expect(moving.card.status).toBe("Moving");
+  });
   it("hides an empty selection and shows real troop health for a single squad", () => {
     const { selection, vm, own , squads } = setup();
     expect(vm().selectionCard(null).mode).toBe("empty");

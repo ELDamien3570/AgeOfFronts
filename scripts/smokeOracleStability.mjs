@@ -6,6 +6,8 @@ import { decodeState } from "../src/skirmish/multiplayer/StateCodec.ts";
 import { SnapshotDecoder } from "../src/skirmish/SnapshotCodec.ts";
 import { PlacementPreview } from "../src/skirmish/client/PlacementPreview.ts";
 import { loadServerMap } from "../src/skirmish/multiplayer/infrastructure/ServerMap.ts";
+import { CoastIndex } from "../src/skirmish/CoastIndex.ts";
+import { LandPaths, WaterPaths } from "../src/skirmish/Pathfinding.ts";
 import { createSkirmishMap } from "../src/skirmish/Elevation.ts";
 
 const args=process.argv.slice(2), arg=(key,fallback)=>{const i=args.indexOf(key);return i<0?fallback:args[i+1];};
@@ -112,6 +114,36 @@ try{
   await wait(()=>{built=p.snapshot.buildings.find(b=>!existingBuildings.has(b.id)&&b.playerId===p.manifest.playerId&&b.type==="barracks"&&b.tile===buildTile);return built?.remainingTicks===0;},"completed authoritative building",15000);
   const validBuild={commandTick:buildTick,completedTick:p.tick,buildingId:built.id,tile:buildTile,age,outcome:buildOutcome};
   console.log(JSON.stringify({stage:"construction",validBuild}));
+  let waterTransport;
+  if(args.includes("--water")) {
+    const land=new LandPaths(map,false),water=new WaterPaths(map,false),coast=new CoastIndex(map,land,water);
+    const squad=p.snapshot.squads.find(s=>s.playerId===p.manifest.playerId&&s.embarkedOn===null);
+    if(!squad)throw new Error("No available embarkation squad");
+    const originTile=map.ref(Math.floor(squad.x/256),Math.floor(squad.y/256));
+    const shores=coast.connections().filter(c=>c.landComponent===land.component[originTile]).flatMap(c=>c.edges);
+    shores.sort((a,b)=>map.manhattanDist(originTile,a.landTile)-map.manhattanDist(originTile,b.landTile)||a.landTile-b.landTile);
+    const edge=shores[0];if(!edge)throw new Error("No same-land coast");
+    let goal;
+    for(let radius=5;radius<=7&&goal===undefined;radius++)for(let dy=-radius;dy<=radius&&goal===undefined;dy++)for(let dx=-radius;dx<=radius;dx++) {
+      if(Math.abs(dx)+Math.abs(dy)!==radius)continue;
+      const x=map.x(edge.waterTile)+dx,y=map.y(edge.waterTile)+dy;if(!map.isValidCoord(x,y))continue;
+      const tile=map.ref(x,y);if(water.walkable(tile)&&water.component[tile]===water.component[edge.waterTile]){const path=water.find(edge.waterTile,tile);if(path && path.length<=12){goal=tile;break;}}
+    }
+    if(goal===undefined)throw new Error("No nearby water destination");
+    const id=rid(),commandTick=p.tick;
+    send(p,{type:"match-command",requestId:id,matchId,command:{type:"order",playerId:p.manifest.playerId,squadIds:[squad.id],order:{type:"move",tile:goal}}});
+    await wait(()=>p.outcomes.some(o=>o.id===id&&["executed","rejected","superseded"].includes(o.status)),"water embarkation receipt",30000);
+    const outcome=p.outcomes.find(o=>o.id===id&&["executed","rejected","superseded"].includes(o.status));if(outcome.status!=="executed")throw new Error("Water move failed: "+JSON.stringify(outcome));
+    let boat;
+    await wait(()=>{const live=p.snapshot.squads.find(s=>s.id===squad.id);boat=live&&p.snapshot.ships.find(s=>s.id===live.embarkedOn);return boat?.shoreTransfer?.phase==="afloat" && Math.floor(boat.x/256)+Math.floor(boat.y/256)*map.width()===goal;},"physical water arrival",120000);
+    const boatId=boat.id,afloatTick=p.tick;
+    send(p,{type:"match-command",requestId:rid(),matchId,command:{type:"sail",playerId:p.manifest.playerId,shipIds:[boatId],tile:edge.waterTile}});
+    await wait(()=>{const b=p.snapshot.ships.find(s=>s.id===boatId);return b&&b.destination===null&&Math.floor(b.x/256)+Math.floor(b.y/256)*map.width()===edge.waterTile;},"manual afloat return",30000);
+    const unloadId=rid();send(p,{type:"match-command",requestId:unloadId,matchId,command:{type:"unload",playerId:p.manifest.playerId,shipId:boatId,tile:edge.landTile}});
+    await wait(()=>p.snapshot.squads.find(s=>s.id===squad.id)?.embarkedOn===null&&!p.snapshot.ships.some(s=>s.id===boatId),"physical manual landing",30000);
+    waterTransport={squadId:squad.id,boatId,commandTick,afloatTick,landedTick:p.tick,destination:goal,landing:edge.landTile,outcome};
+    console.log(JSON.stringify({stage:"water-transport",waterTransport}));
+  }
   const invalidId=rid();let badTile=p.snapshot.owners.findIndex(owner=>owner!==p.manifest.playerId);
   send(p,{type:"match-command",requestId:invalidId,matchId,command:{type:"build",playerId:p.manifest.playerId,buildingType:"city",tile:badTile}});
   await wait(()=>p.outcomes.some(o=>o.id===invalidId&&o.status==="rejected"),"invalid build rejection");
@@ -127,10 +159,10 @@ try{
   const common=[...checks].filter(([,row])=>row.size===count);
   if(common.length<5)throw new Error("Too few common tick agreement samples");
   if(peers.some(p=>Boolean(p.closed)||Boolean(p.packets<10)||Boolean(Date.now()-p.lastAt>10000)))throw new Error("A peer stopped advancing");
-  const result={passed:true,title,matchId,roomId,base,clients:count,seconds,elapsedSeconds:(Date.now()-started)/1000,flags:Object.fromEntries(flags.map(f=>[f,true])),runtimeId:manifests[0].runtimeId,mapHash:manifests[0].mapHash,moves,validBuild,aiMoved:[...aiMoved].sort((a,b)=>a-b),rejection,reconnected,commonStateSamples:common.length,peers:peers.map(p=>({id:p.id,tick:p.tick,packets:p.packets,syncs:p.syncs,bytes:p.bytes,decodeP95:percentile(p.decodeMs,.95),publicationGapP95:percentile(p.gaps,.95),publicationGapMax:Math.max(...p.gaps)})),failures};
+  const result={passed:true,title,matchId,roomId,base,clients:count,seconds,elapsedSeconds:(Date.now()-started)/1000,flags:Object.fromEntries(flags.map(f=>[f,true])),runtimeId:manifests[0].runtimeId,mapHash:manifests[0].mapHash,moves,validBuild,waterTransport,aiMoved:[...aiMoved].sort((a,b)=>a-b),rejection,reconnected,commonStateSamples:common.length,peers:peers.map(p=>({id:p.id,tick:p.tick,packets:p.packets,syncs:p.syncs,bytes:p.bytes,decodeP95:percentile(p.decodeMs,.95),publicationGapP95:percentile(p.gaps,.95),publicationGapMax:Math.max(...p.gaps)})),failures};
   fs.mkdirSync(path.dirname(out),{recursive:true});
   completed=true;fs.writeFileSync(out,JSON.stringify(result,null,2)+"\n");console.log(JSON.stringify(result));
 } finally {
   for(const p of peers)p.ws?.close();
-  if(!completed)process.exitCode=1;
+  if(!completed){fs.mkdirSync(path.dirname(out),{recursive:true});fs.writeFileSync(out,JSON.stringify({passed:false,matchId,failures,peers:peers.map(p=>({tick:p.tick,playerId:p.manifest?.playerId,outcomes:p.outcomes,squads:p.snapshot?.squads.filter(s=>s.playerId===p.manifest?.playerId),ships:p.snapshot?.ships.filter(s=>s.playerId===p.manifest?.playerId)}))},null,2));process.exitCode=1;}
 }

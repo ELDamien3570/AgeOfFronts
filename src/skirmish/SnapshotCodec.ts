@@ -340,6 +340,10 @@ export class SnapshotEncoder {
         patrolTile: s.patrolTile,
         repairPortId: s.repairPortId,
         repairState: s.repairState,
+        shoreTransfer: s.shoreTransfer ? {
+          capacity:s.shoreTransfer.capacity,phase:s.shoreTransfer.phase,
+          destinationTile:s.shoreTransfer.destinationTile,landingTile:s.shoreTransfer.landingTile,
+        } : undefined,
       })),
       volleys: source.volleys.map((v) => ({ ...v })),
       winner: source.winner,

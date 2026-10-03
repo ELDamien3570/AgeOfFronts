@@ -293,10 +293,12 @@ export interface Ship {
   // Domain-owned temporary voyage; these vessels cannot become a free navy.
   readonly shoreTransfer?: {
     readonly destinationTile: number;
-    readonly landingTile: number;
+    readonly landingTile: number | null;
+    departureTile?: number;
+    returning?: boolean;
     readonly waterPath: readonly number[];
     readonly capacity: number;
-    readonly phase: "boarding" | "sailing" | "landing";
+    readonly phase: "boarding" | "sailing" | "landing" | "afloat";
     readonly queued: readonly { readonly squadId: number; readonly orders: readonly Readonly<Order>[] }[];
   };
   readonly definitionId?: string;

@@ -1,7 +1,8 @@
 import type { GameMap } from "../../core/game/GameMap";
 import type { Coast } from "../CoastIndex";
 import type { LandPaths, WaterPaths } from "../Pathfinding";
-import { ranking, rankStep, type RankingState } from "../RankedWork";
+import { ranking, type RankingState } from "../RankedWork";
+import { CoastSearch, coastSearch, type CoastSearchState } from "./CoastSearch";
 import type { ExactRouteOutcome } from "../RoutePlanner";
 import { limitedRouteRetry, ROUTE_CAPACITY_REASON } from "../RouteRetryPolicy";
 import type { DomainRoutePorts, DomainRouteTask } from "./DomainRoutePorts";
@@ -38,8 +39,11 @@ interface Crossing {
   departureLink?: number;
   arrivalLink?: number;
   reachesDestination: boolean;
+  waterDestination?: boolean;
   departures: RankingState<RankedEdge>;
   arrivals: RankingState<RankedEdge>;
+  departureSearch?: CoastSearchState;
+  arrivalSearch?: CoastSearchState;
   edge: number;
   departure: number;
   arrival: number;
@@ -80,6 +84,7 @@ export class ShorePlanning {
   private readonly waterLinks = new Map<number, number[]>();
   private readonly pairLinks = new Map<string, number>();
   private nextId = 1;
+  private readonly coastIndexes: CoastSearch[];
   readonly diagnostics = {
     work: 0,
     shared: 0,
@@ -94,6 +99,7 @@ export class ShorePlanning {
     private readonly ports: DomainRoutePorts,
     private readonly blocked: (tile: number, owner: number) => boolean,
   ) {
+    this.coastIndexes=links.map(link=>new CoastSearch(map,link.edges));
     links.forEach((link, i) => {
       this.pairLinks.set(`${link.landComponent}:${link.waterComponent}`, i);
       const land = this.landLinks.get(link.landComponent) ?? [];
@@ -114,7 +120,7 @@ export class ShorePlanning {
     destination: number,
   ): CrossingResult {
     const generation = this.ports.generation(playerId),
-      revision = this.ports.revision(),
+      revision = this.ports.revision(playerId, "shore"),
       key = `${playerId}:${generation}:${revision}:${origin}:${destination}`;
     for (const s of [...this.jobs.values()])
       if (s.key !== key && s.clients.has(client)) {
@@ -142,7 +148,9 @@ export class ShorePlanning {
     if (this.jobs.size >= 128)
       return { status: "limited", reason: "Crossing admission is full" };
     const from = this.land.component[origin],
-      to = this.land.component[destination];
+      to = this.land.component[destination],
+      waterDestination = this.water.walkable(destination),
+      departureLink = waterDestination ? this.pairLinks.get(`${from}:${this.water.component[destination]}`) : undefined;
     id = this.nextId++;
     s = {
       id,
@@ -162,18 +170,19 @@ export class ShorePlanning {
       link: 0,
       next: 0,
       reachesDestination: false,
+      ...(waterDestination ? {waterDestination:true,departureLink,departureSearch:coastSearch()} : {}),
       departures: ranking([]),
       arrivals: ranking([]),
       edge: 0,
       departure: 0,
       arrival: 0,
-      phase: from === to ? "links" : "graph",
+      phase: waterDestination ? "departures" : from === to ? "links" : "graph",
       attempts: 0,
       retryAt: 0,
       arrivalReaches: new Map(),
       clients: new Set([client]),
     };
-    if (from < 0 || to < 0) {
+    if (from < 0 || (waterDestination ? departureLink === undefined : to < 0)) {
       s.phase = "done";
       s.failure = "unreachable";
     }
@@ -219,7 +228,7 @@ export class ShorePlanning {
       !!s &&
       task.stage === `crossing:${s.waiting}` &&
       s.generation === this.ports.generation(s.playerId) &&
-      s.revision === this.ports.revision()
+      s.revision === this.ports.revision(s.playerId, "shore")
     );
   }
   completedRoute(
@@ -288,6 +297,8 @@ export class ShorePlanning {
     s.reachesDestination = reaches;
     s.departures = ranking([]);
     s.arrivals = ranking([]);
+    s.departureSearch=coastSearch();
+    s.arrivalSearch=coastSearch();
     s.edge = 0;
     s.departure = 0;
     s.arrival = 0;
@@ -296,18 +307,19 @@ export class ShorePlanning {
     s.approachPath = undefined;
     s.phase = "departures";
   }
-  private compare(a: RankedEdge, b: RankedEdge): number {
-    return (
-      a.key - b.key ||
-      a.edge.landTile - b.edge.landTile ||
-      a.ordinal - b.ordinal
-    );
+  private rankNext(s: Crossing, departure: boolean): void {
+    const state=departure?s.departureSearch:s.arrivalSearch;
+    if(!state)return; // A fully ranked historical checkpoint needs no frontier.
+    const ranked=departure?s.departures:s.arrivals;
+    const row=this.coastIndexes[departure?s.departureLink!:s.arrivalLink!].step(state,s.destination,departure?s.origin:undefined);
+    if(row){ranked.rows.push(row);this.diagnostics.rankedEdges++;}
+    ranked.done=state.done;
   }
   private nextPair(s: Crossing): void {
-    s.arrival++;
+    if(s.waterDestination)s.departure++;else s.arrival++;
     s.outcome = undefined;
     s.path = undefined;
-    s.phase = "arrival";
+    s.phase = s.waterDestination ? "approach" : "arrival";
   }
   step(budget: number): number {
     let work = 0,
@@ -322,7 +334,7 @@ export class ShorePlanning {
       }
       if (
         s.generation !== this.ports.generation(s.playerId) ||
-        s.revision !== this.ports.revision()
+        s.revision !== this.ports.revision(s.playerId, "shore")
       ) {
         this.cancelSearch(s);
         s.phase = "done";
@@ -394,39 +406,15 @@ export class ShorePlanning {
         }
         this.beginBetween(s, link, link, true);
       } else if (s.phase === "departures" || s.phase === "arrivals") {
-        const departure = s.phase === "departures",
-          edges =
-            this.links[departure ? s.departureLink! : s.arrivalLink!].edges,
-          ranked = departure ? s.departures : s.arrivals;
-        if (s.edge < edges.length) {
-          const edge = edges[s.edge];
-          ranked.rows.push({
-            edge,
-            key: departure
-              ? this.map.manhattanDist(s.origin, edge.landTile) +
-                this.map.manhattanDist(edge.waterTile, s.destination)
-              : this.map.manhattanDist(edge.landTile, s.destination),
-            ordinal: s.edge++,
-          });
-          this.diagnostics.rankedEdges++;
-          ranked.done = false;
-          continue;
-        }
-        if (ranked.rows.length < 2) ranked.done = true;
-        if (!ranked.done) {
-          work += rankStep(
-            ranked,
-            (a, b) => this.compare(a, b),
-            Math.min(16, budget - work),
-          );
-          continue;
-        }
-        s.edge = 0;
-        s.phase = departure ? "arrivals" : "approach";
+        const departure=s.phase==="departures",ranked=departure?s.departures:s.arrivals;
+        this.rankNext(s,departure);
+        if(!ranked.rows.length&&!ranked.done)continue;
+        s.phase=departure&&!s.waterDestination?"arrivals":"approach";
       } else if (s.phase === "approach") {
         const edge = s.departures.rows[s.departure]?.edge;
         if (!edge) {
-          s.phase = s.from === s.to ? "links" : "done";
+          if(s.departureSearch && !s.departures.done){this.rankNext(s,true);continue;}
+          s.phase = !s.waterDestination && s.from === s.to ? "links" : "done";
           continue;
         }
         if (this.blocked(edge.landTile, s.playerId)) {
@@ -437,12 +425,13 @@ export class ShorePlanning {
         if (ok === true) {
           s.approachPath = s.path;
           s.arrival = 0;
-          s.phase = "arrival";
+          s.phase = s.waterDestination ? "water" : "arrival";
           s.path = undefined;
         } else if (ok === false) s.departure++;
       } else if (s.phase === "arrival") {
         const end = s.arrivals.rows[s.arrival]?.edge;
         if (!end) {
+          if(s.arrivalSearch && !s.arrivals.done){this.rankNext(s,false);continue;}
           s.departure++;
           s.phase = "approach";
           continue;
@@ -471,8 +460,8 @@ export class ShorePlanning {
         s.path = undefined;
       } else {
         const start = s.departures.rows[s.departure].edge,
-          end = s.arrivals.rows[s.arrival].edge,
-          ok = this.route(s, "water", start.waterTile, end.waterTile, true);
+          end = s.waterDestination ? undefined : s.arrivals.rows[s.arrival].edge,
+          ok = this.route(s, "water", start.waterTile, end?.waterTile ?? s.destination, true);
         if (ok === undefined) continue;
         if (!ok) {
           this.nextPair(s);
@@ -483,12 +472,12 @@ export class ShorePlanning {
             arrival: end,
             waterPath: s.path!,
             approachPath: s.approachPath,
-            arrivalPath: s.arrivalPaths?.get(end.landTile),
+            arrivalPath: end ? s.arrivalPaths?.get(end.landTile) : undefined,
           },
           cost =
             this.map.manhattanDist(s.origin, start.landTile) +
             leg.waterPath.length +
-            this.map.manhattanDist(end.landTile, s.destination);
+            (end ? this.map.manhattanDist(end.landTile, s.destination) : 0);
         if (s.cost === undefined || cost < s.cost) {
           s.best = leg;
           s.cost = cost;
@@ -510,6 +499,12 @@ export class ShorePlanning {
     if (saved && saved.jobs.length > 128)
       throw new Error("Crossing checkpoint exceeds envelope");
     for (const [id, s] of structuredClone(saved?.jobs ?? [])) {
+      // Older checkpoints may contain a partially collected whole-coast sort.
+      // Restart only that ranking phase against the immutable spatial index.
+      if ((s.phase==="departures" || s.phase==="arrivals") && !s.departureSearch) {
+        s.departures=ranking([]);s.arrivals=ranking([]);
+        s.departureSearch=coastSearch();s.arrivalSearch=coastSearch();s.phase="departures";
+      }
       this.jobs.set(id, s);
       this.keys.set(s.key, id);
     }

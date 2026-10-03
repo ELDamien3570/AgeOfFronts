@@ -588,7 +588,7 @@ export class HudViewModel {
                     : s.order.type === "attack"
                       ? "Attack order"
                       : s.order.type === "move"
-                        ? "Moving"
+                        ? s.moved ? "Moving" : "Waiting for clearance"
                         : "Holding",
       promotion: state.expansion
         ? {

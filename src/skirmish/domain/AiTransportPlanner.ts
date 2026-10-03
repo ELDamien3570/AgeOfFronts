@@ -489,6 +489,11 @@ export class AiTransportPlanner {
             0,
           ),
         );
+        // Do not buy a boat for a mission that has no legal cargo, landing,
+        // or escort. Such purchases previously remained unused at the port.
+        if (!m.landing || m.eligible.length-reserve<2 || !m.escorts.length) {
+          this.transition(m,"abort","No supported legal cargo, escort or landing");break;
+        }
         if (!m.transports.length) {
           this.fund(m, player);
           m.shipCursor = undefined;

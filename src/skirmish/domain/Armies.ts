@@ -158,7 +158,7 @@ export class Armies {
   private leaderValid(plan:ArmyLeaderAdmission):boolean {
     const army=this.byArmyId.get(plan.armyId),routes=this.world.domainRoutes;
     return !!routes && !!army && army.revision===plan.revision && routes.generation(plan.playerId)===plan.generation &&
-      routes.revision()===plan.obstacles && army.memberIds.length===plan.memberIds.length &&
+      routes.revision(plan.playerId, "army")===plan.obstacles && army.memberIds.length===plan.memberIds.length &&
       plan.memberIds.every((id,i)=>{const s=this.world.squad(id);return !!s && active(s) && s.playerId===plan.playerId && this.membership.get(id)===army.id && routes.orderRevision(id)===plan.memberRevisions[i];}) &&
       (!attackOrder(plan.order) || (()=>{const s=this.world.squad(plan.order.targetId);return !!s && active(s) && this.world.hostile(plan.playerId,s.playerId) && pointTile(this.world.map,s)===plan.tile;})());
   }
@@ -501,7 +501,7 @@ export class Armies {
       this.cancelPlanning(army.id);
       if(this.leaderAdmissions.size>=128)return "Army planning is full";
       const routes=this.world.domainRoutes,id=1_000_000_000+this.nextAdmission++;
-      const plan:ArmyLeaderAdmission={id,armyId:army.id,revision:army.revision,playerId:army.playerId,generation:routes.generation(army.playerId),obstacles:routes.revision(),order:{...order},leaderId:leader.id,
+      const plan:ArmyLeaderAdmission={id,armyId:army.id,revision:army.revision,playerId:army.playerId,generation:routes.generation(army.playerId),obstacles:routes.revision(army.playerId, "army"),order:{...order},leaderId:leader.id,
         memberIds:members.map(s=>s.id),memberRevisions:members.map(s=>routes.orderRevision(s.id)),tile,start:pointTile(this.world.map,leader),requested:false,route:[{x:leader.x,y:leader.y}],lengths:[0],cursor:0,attempts:0,retryAt:0,queueLength:army.queuedOrders.length};
       this.leaderAdmissions.set(id,plan);routes.event("army",{id,playerId:army.playerId,tick:this.world.tick,status:"deferred"});return null;
     }

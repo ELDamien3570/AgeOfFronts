@@ -642,7 +642,21 @@ export class AiNavalPlanner {
         this.transition(m, "stage", "holding a stable port defense anchor");
       else if (enough)
         this.transition(m, "stage", "concentrating before interception");
-      this.sail(m, ships, a.anchor!);
+      let goal=a.anchor!;
+      if (enough && !target && gathered && !recovering.length) {
+        // The fleet owns movement while staging, so it also owns its local
+        // defensive patrol. Normal ship admission still validates each leg.
+        const offsets=[[0,6],[6,0],[0,-6],[-6,0]],start=Math.floor((world.tick-(m.phaseSince??m.createdTick))/120)%4;
+        for(let i=0;i<4;i++){
+          const [dx,dy]=offsets[(start+i)%4],x=world.map.x(a.anchor!)+dx,y=world.map.y(a.anchor!)+dy;
+          if(!world.map.isValidCoord(x,y))continue;
+          const tile=world.map.ref(x,y);
+          if(world.waterPaths.walkable(tile) && world.waterPaths.component[tile]===m.sea &&
+             this.expansion.operations.canEnter(player.id,world.owners[tile],tile)){goal=tile;break;}
+        }
+        m.reason="Patrolling the gathering port's nearby water";
+      }
+      this.sail(m, ships, goal);
     }
   }
   private sail(m: AiFleetMission, ships: Ship[], tile: number): void {

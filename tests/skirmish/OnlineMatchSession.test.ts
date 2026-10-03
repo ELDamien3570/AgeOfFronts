@@ -113,6 +113,12 @@ afterEach(() => {
 });
 
 describe("server-only match client", () => {
+  it("shows command rejections as notifications without replacing connection status", async () => {
+    await initialize(); status.mockClear(); updates.mockClear();
+    connection().message({type:"match-command-outcome",matchId:manifest.id,outcome:{id:"water-rejected",playerId:2,tick:4,status:"rejected",reason:"Research Cargo Canoes to embark on water"}});
+    expect(status).not.toHaveBeenCalled();
+    expect(updates).toHaveBeenCalledWith(expect.objectContaining({data:{type:"rejected",message:"Research Cargo Canoes to embark on water"}}));
+  });
   it("releases queued views and receipt history on close while a renderer callback is stalled", async () => {
     await initialize();
     const decoder = DecoderWorker.instances[0];
