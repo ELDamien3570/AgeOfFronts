@@ -298,14 +298,31 @@ export class Skirmish {
   private aiCanEnter(playerId: number, tile: number): boolean {
     return !this.options.aiWarPolicy || (this.expansion?.operations.canEnter(playerId, this.owners[tile], tile) ?? true);
   }
+  private routeFootprints?: Map<number, Map<number, boolean>>;
+  private footprintOperationRevision = -1;
+  private footprintDiplomacyRevision = -1;
   /** Capture/contact radius, not only the unit centre, defines foreign entry. */
   private aiFootprintAllowed(playerId: number, tile: number): boolean {
     if (!this.options.aiWarPolicy || !this.expansion?.operations.enabled(this.player(playerId))) return true;
+    const cache = this.routeFootprints;
+    if (cache) {
+      const operations = this.expansion.operations.revision, diplomacy = this.expansion.diplomacy.revision;
+      if (operations !== this.footprintOperationRevision || diplomacy !== this.footprintDiplomacyRevision) {
+        cache.clear(); this.footprintOperationRevision = operations; this.footprintDiplomacyRevision = diplomacy;
+      }
+      const known = cache.get(playerId)?.get(tile);
+      if (known !== undefined) return known;
+    }
     let allowed = true;
     const component = this.paths.component[tile];
     this.eachInRadius(tile, CAPTURE_RADIUS, neighbor => {
       if (this.paths.component[neighbor] === component && !this.aiCanEnter(playerId, neighbor)) allowed = false;
     });
+    if (cache) {
+      let tiles = cache.get(playerId);
+      if (!tiles) cache.set(playerId, tiles = new Map());
+      tiles.set(tile, allowed);
+    }
     return allowed;
   }
   notifyHostileAction(victim: number, attacker: number, tile: number): void {
@@ -313,6 +330,13 @@ export class Skirmish {
   }
   private pathsWarm = false;
   private drainRoutes(): void {
+    // Share repeated footprint reads only inside this synchronous routing batch.
+    // No answer survives a simulation phase, restore, or external command.
+    this.routeFootprints = new Map();
+    try { this.drainRouteBatch(); }
+    finally { this.routeFootprints = undefined; }
+  }
+  private drainRouteBatch(): void {
     this.routeWork.drain(24, {
       read: () => this.paths.work,
       limit: ROUTE_EFFORT_LIMIT,
@@ -3382,6 +3406,7 @@ export class Skirmish {
     }
     if (old && land) this.player(old)!.land--;
     this.owners[tile] = id;
+    this.routeFootprints?.clear();
     this.expansion?.supply.territoryChanged(tile, id);
     this.expansion?.operations.territoryChanged(old,id);
     for(const owner of new Set(this.map.neighbors(tile).map(t=>this.owners[t])))if(owner!==old&&owner!==id)this.expansion?.operations.territoryChanged(owner,owner);

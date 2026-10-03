@@ -1,4 +1,4 @@
-import { describe, expect, it } from "vitest";
+import { describe, expect, it, vi } from "vitest";
 import { GameMapImpl } from "../../src/core/game/GameMap";
 import { Skirmish } from "../../src/skirmish/Simulation";
 import { DamageLedger } from "../../src/skirmish/Conquest";
@@ -16,6 +16,26 @@ function fixture(enabled = true, count = 3) {
 function evaluate(f: ReturnType<typeof fixture>, tick: number) { f.m.tick = tick; f.ops.step(f.forces); }
 
 describe("optional AI strategic operations", () => {
+  it("shares footprint reads only within routing and invalidates ownership and permission changes", () => {
+    const f=fixture(), tile=f.map.ref(90,80), near=f.map.ref(87,80);
+    const internal=f.m as unknown as {aiFootprintAllowed(id:number,tile:number):boolean;changeOwner(tile:number,id:number):void;drainRoutes():void};
+    const enter=vi.spyOn(f.ops,"canEnter");
+    const step=vi.spyOn(f.m.routePlanner,"step").mockImplementation(()=>{
+      expect(internal.aiFootprintAllowed(2,near)).toBe(true);
+      const calls=enter.mock.calls.length;
+      expect(internal.aiFootprintAllowed(2,near)).toBe(true);
+      expect(enter.mock.calls.length).toBe(calls);
+      internal.changeOwner(tile,1);
+      expect(internal.aiFootprintAllowed(2,near)).toBe(false);
+      f.m.notifyHostileAction(2,1,tile);
+      expect(internal.aiFootprintAllowed(2,near)).toBe(true);
+      return 0;
+    });
+    internal.drainRoutes(); step.mockRestore();
+    internal.changeOwner(tile,3);
+    expect(internal.aiFootprintAllowed(2,near)).toBe(false);
+    expect(internal.aiFootprintAllowed(1,near)).toBe(true);
+  });
   it("prepares one geographic offensive target, declares once, and recovers after losses", () => {
     const f = fixture(); evaluate(f, 1200); evaluate(f, 1260);
     const state = f.ops.state(2)!;
