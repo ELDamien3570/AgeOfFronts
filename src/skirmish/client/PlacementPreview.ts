@@ -1,3 +1,4 @@
+import { availableGold } from "../domain/Gold";
 import type { GameMap } from "../../core/game/GameMap";
 import { BuildingIndex } from "../BuildingIndex";
 import { constructionRejection } from "../Construction";
@@ -195,7 +196,7 @@ export class PlacementPreview {
       player = snapshot.players.find((p) => p.id === this.playerId);
     if (!player) return "Unknown player";
     if (!snapshot.expansion)
-      return player.gold <
+      return availableGold(player) <
         Math.round(
           BUILDING_RULES[type].cost *
             buildingCostMultiplier(
@@ -354,7 +355,7 @@ export class PlacementPreview {
         if (chunk.cursor === CHUNK * CHUNK && chunk.rescan) {chunk.cursor=0;chunk.rescan=false;}
         for (const [tile, wallGold] of chunk.sites)
           if (
-            (!expansion || player.gold >= baseGold + wallGold) &&
+            (!expansion || availableGold(player) >= baseGold + wallGold) &&
             this.map.x(tile) >= bounds.left &&
             this.map.x(tile) <= bounds.right &&
             this.map.y(tile) >= bounds.top &&

@@ -1,3 +1,4 @@
+import { hasInfiniteGold } from "../domain/Gold";
 import { BrowserLobbyPreviewStore } from "./lobby/LobbyPreviewStore";
 import { validFactionColor } from "../lobby/FactionPalette";
 import { DEFAULT_AI_POLICIES } from "../content/AiPolicies";
@@ -106,7 +107,7 @@ document.querySelector<HTMLDivElement>("#app")!.innerHTML = `
 
       .join(
         "",
-      )}</select></label><label>Map size<select id="world-size"><option value="250">250 cells · longest edge</option><option value="500" selected>500 cells · longest edge</option><option value="1000">1000 cells · longest edge</option></select></label><label>Starting age<select id="starting-age">${AGES.map((a, i) => `<option value="${a}" ${a === "StoneAge" ? "selected" : ""}>${AGE_NAMES[i]}</option>`).join("")}</select></label><label>Victory<select id="victory-mode"><option value="solo">Solo conquest</option><option value="allied">Allied conquest</option></select></label><label title="New skirmishes divide all research and age-advancement costs and times by this setting, for every faction.">Tech speed<select id="technology-speed" aria-label="Technology speed"><option value="1">1×</option><option value="2">2×</option><option value="3">3×</option></select></label><button id="restart" class="primary">New skirmish</button></div>
+      )}</select></label><label>Map size<select id="world-size"><option value="250">250 cells · longest edge</option><option value="500" selected>500 cells · longest edge</option><option value="1000">1000 cells · longest edge</option></select></label><label>Starting age<select id="starting-age">${AGES.map((a, i) => `<option value="${a}" ${a === "StoneAge" ? "selected" : ""}>${AGE_NAMES[i]}</option>`).join("")}</select></label><label>Victory<select id="victory-mode"><option value="solo">Solo conquest</option><option value="allied">Allied conquest</option></select></label><label title="New skirmishes divide all research and age-advancement costs and times by this setting, for every faction.">Tech speed<select id="technology-speed" aria-label="Technology speed"><option value="1">1×</option><option value="2">2×</option><option value="3">3×</option></select></label><label><input type="checkbox" id="infinite-gold" />Infinite Gold for Players</label><button id="restart" class="primary">New skirmish</button></div>
 
     <div class="time-controls"><button id="wasd-mode" type="button" aria-pressed="false" title="WASD pans the map; Shift for building/single recruitment shortcuts, Space for five recruits.">WASD Mode</button><span id="clock">0:00</span><select id="ground-style" aria-label="Ground style" title="Ground style"><option value="animated">Animated sea</option><option value="still">Still sea</option><option value="classic">Classic</option></select><select id="speed" aria-label="Game speed"><option value="1">1× speed</option><option value="2">2× speed</option><option value="4">4× speed</option></select><button id="pause" aria-label="Pause game">Pause</button><button id="home" aria-label="Fit battlefield">Fit map <kbd>Home</kbd></button></div>
 
@@ -184,6 +185,7 @@ const groups = new ControlGroups();
 
 const hud = new HudView(element("app"), (height) =>
   renderer.setHudBottomInset(height),
+  command => post({type: "command", command}),
 );
 const cameraPan = new CameraPanViewModel(new BrowserControlPreferences(() => localStorage));
 element("wasd-mode").setAttribute("aria-pressed", String(cameraPan.enabled));
@@ -547,6 +549,7 @@ async function start(): Promise<void> {
       tribes: true,
       ruleset: "ages-v1",
       startingAge,
+      infiniteGoldForPlayers: element<HTMLInputElement>("infinite-gold").checked,
     };
 
     post({
@@ -576,6 +579,7 @@ async function start(): Promise<void> {
         ruleset: "ages-v1",
 
         startingAge,
+        infiniteGoldForPlayers: element<HTMLInputElement>("infinite-gold").checked,
 
         victoryMode: element<HTMLSelectElement>("victory-mode").value as
           | "solo"
@@ -672,6 +676,8 @@ async function startOnlineMatch(): Promise<void> {
       element<HTMLSelectElement>("victory-mode").value = manifest.settings.victory;
       element<HTMLSelectElement>("starting-age").value = manifest.settings.startingAge ?? "StoneAge";
       element<HTMLSelectElement>("technology-speed").value = String(manifest.settings.technologySpeed);
+      element<HTMLInputElement>("infinite-gold").checked = Boolean(manifest.options.infiniteGoldForPlayers);
+      element<HTMLInputElement>("infinite-gold").disabled = true;
       const loaded = await loadMap(manifest.settings.mapId, manifest.settings.worldSize);
       currentMap = loaded;
       terrainView = new TerrainViewModel(loaded.map);
@@ -744,7 +750,7 @@ function updateHud(): void {
 
   element("reserves").textContent = format(player.reserves);
 
-  element("gold").textContent = format(player.gold);
+  element("gold").textContent = hasInfiniteGold(player) ? "∞" : format(player.gold);
 
   element("squad-count").textContent = `${own.length} / ${squadCap(player, snapshot.expansion?.progression[player.id]?.age)}`;
 
@@ -785,12 +791,12 @@ function updateHud(): void {
 
   updateSelection();
 
+  if (empireVm) empire.update(empireVm);
   hud.update(new HudViewModel(vm));
   const armyVm = new ArmyViewModel(snapshot, renderer.selected, localPlayerId);
   armyView.update(armyVm);
   if (armyVm.selectedArmy) element("selection-card").hidden = true;
 
-  if (empireVm) empire.update(empireVm);
 
   updateRoster();
   } finally { browserDiagnostics.record("hud", performance.now() - started); }

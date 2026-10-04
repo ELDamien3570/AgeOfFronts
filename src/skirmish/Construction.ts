@@ -1,3 +1,4 @@
+import { availableGold } from "./domain/Gold";
 import type { GameMap } from "../core/game/GameMap";
 import type { BuildingIndex } from "./BuildingIndex";
 import type { Building, BuildingType, Player } from "./Protocol";
@@ -71,7 +72,7 @@ export function constructionRejection(
   const cost = Math.round(
     BUILDING_RULES[type].cost * buildingCostMultiplier(existingCount),
   );
-  if (checkFunds && player.gold < cost)
+  if (checkFunds && availableGold(player) < cost)
     return "Not enough gold for this building";
   return null;
 }

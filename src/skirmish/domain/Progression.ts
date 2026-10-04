@@ -1,3 +1,4 @@
+import { availableGold, spendGold } from "./Gold";
 import { restoreRecord } from "../StateTransfer";
 import { DEFAULT_CULTURE } from "../content/Catalog";
 import {
@@ -125,14 +126,14 @@ export class Progression {
     const state = this.states[player.id];
     const rejection = researchRejection(
       state,
-      player.gold,
+      availableGold(player),
       id,
       this.technologySpeed,
     );
     if (rejection) return rejection;
     const t = TECHNOLOGY.get(id)!,
       terms = researchTerms(t, this.technologySpeed);
-    player.gold -= terms.gold;this.revision++;
+    spendGold(player, terms.gold);this.revision++;
     state.research[t.tree] = {
       technologyId: id,
       remainingTicks: terms.ticks,
@@ -142,11 +143,11 @@ export class Progression {
   }
   advance(player: Player): string | null {
     const state = this.states[player.id],
-      rejection = advanceRejection(state, player.gold, this.technologySpeed);
+      rejection = advanceRejection(state, availableGold(player), this.technologySpeed);
     if (rejection) return rejection;
     const index = AGES.indexOf(state.age),
       cost = researchTerms(ADVANCES[index], this.technologySpeed);
-    player.gold -= cost.gold;this.revision++;
+    spendGold(player, cost.gold);this.revision++;
     state.advancement = {
       target: AGES[index + 1],
       remainingTicks: cost.ticks,

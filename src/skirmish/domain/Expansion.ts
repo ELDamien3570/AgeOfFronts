@@ -1,4 +1,6 @@
+import { availableGold, paidCost } from "./Gold";
 import { AiOperations } from "./AiOperations";
+import { AutomaticBuildingTiers } from "./AutomaticBuildingTiers";
 import { DiplomaticGeography } from "./DiplomaticGeography";
 import { restoreArray } from "../StateTransfer";
 import type { GameMap } from "../../core/game/GameMap";
@@ -103,6 +105,7 @@ export interface ExpansionWorld extends BattleWorld, ArmyWorld {
 export class Expansion {
   checkpoint() { return structuredClone({progression:this.progression.checkpoint(),diplomacy:this.diplomacy.checkpoint(),fortifications:this.fortifications.checkpoint(),supply:this.supply.checkpoint(),trade:this.trade.checkpoint(),roads:this.roads.checkpoint(),battle:this.battle.checkpoint(),armies:this.armies.checkpoint(),modernization:this.modernization.checkpoint(),economy:this.economy.checkpoint(),aircraft:this.aircraft,winners:this.winners,events:this.events,nextEvent:this.nextEvent,tribePlans:[...this.tribePlans],geography:this.geography.checkpoint(),operations:this.operations.checkpoint()}); }
   restore(saved: ReturnType<Expansion["checkpoint"]>): void {
+    this.automaticTiers.reset();
     this.metadataIdentity={};
     const state=structuredClone(saved);
     this.tribePlans.clear();
@@ -123,6 +126,7 @@ export class Expansion {
   }
 
   readonly progression: Progression;
+  private readonly automaticTiers = new AutomaticBuildingTiers();
   readonly diplomacy = new Diplomacy();
   readonly fortifications: Fortifications;
   readonly supply: Supply;
@@ -518,7 +522,7 @@ export class Expansion {
         return "Research a military vessel refit first";
       const eligible=selected.filter((s):s is Ship=>!!s&&s.playerId===player.id&&!s.refit&&!s.fighting&&s.destination===null&&!s.boarding&&!s.shoreTransfer&&s.kind===target.kind&&AGES.indexOf(this.vessel(s).age)<AGES.indexOf(target.age)).sort((a,b)=>a.id-b.id);
       if(!eligible.length)return "Refit a compatible stationary fleet out of combat";
-      const count=affordableRefitCount(vesselRefitCost(target),player.gold,this.supply.inventories[player.id],eligible.length);
+      const count=affordableRefitCount(vesselRefitCost(target),availableGold(player),this.supply.inventories[player.id],eligible.length);
       if(!count)return costRejection(player,this.supply.inventories[player.id],vesselRefitCost(target))??"No affordable vessel refit";
       spend(player,this.supply.inventories[player.id],vesselRefitCost(target,count));
       for(const s of eligible.slice(0,count)){
@@ -559,7 +563,7 @@ export class Expansion {
         return "Research the requested refit first";
       const eligible=selected.filter((s):s is Squad=>!!s&&s.playerId===player.id&&s.embarkedOn===null&&!s.refit&&!s.moved&&!s.fighting&&world.owners[world.tileOf(s)]===player.id&&this.unit(s).line===target.line&&this.unit(s).role===target.role&&AGES.indexOf(this.unit(s).age)<AGES.indexOf(target.age)).sort((a,b)=>a.id-b.id);
       if(!eligible.length)return "Refit a compatible stationary group on owned land, out of combat";
-      const count=affordableRefitCount(unitRefitCost(target),player.gold,this.supply.inventories[player.id],eligible.length);
+      const count=affordableRefitCount(unitRefitCost(target),availableGold(player),this.supply.inventories[player.id],eligible.length);
       if(!count)return costRejection(player,this.supply.inventories[player.id],unitRefitCost(target))??"No affordable refit";
       spend(player,this.supply.inventories[player.id],unitRefitCost(target,count));
       for(const s of eligible.slice(0,count)){
@@ -791,7 +795,7 @@ export class Expansion {
     if (rejection) return rejection;
     spend(player, this.supply.inventories[player.id], cost);
     this.world.recruitment.enqueue({ playerId: player.id, buildingId: field.id, category: "aircraft", kind,
-      definitionId: kind, cost, totalTicks: RECRUITMENT_SECONDS.aircraft * TICKS_PER_SECOND });
+      definitionId: kind, cost: paidCost(player, cost), totalTicks: RECRUITMENT_SECONDS.aircraft * TICKS_PER_SECOND });
     return null;
   }
   completeAircraft(job: RecruitmentJob): boolean {
@@ -914,7 +918,8 @@ export class Expansion {
     this.progression.step(world.players, (player, age) =>
       this.announce({ kind: "age", actorId: player.id, age }),
     );
-    // Infrastructure upgrades are explicit paid commands, never a research side effect.
+    this.automaticTiers.step(world.players, this.progression.states, world.buildingFacts(),
+      (id, patch) => world.updateBuilding(id, patch));
     const treaties = [...this.diplomacy.state.alliances];
     this.diplomacy.step(world.tick, world.players);
     for (const treaty of treaties)
@@ -1093,7 +1098,7 @@ export class Expansion {
       const personality = personalityOf(player);
       if (!this.economy.enabled(player)) {
       if (
-        !advanceRejection(state, player.gold, this.progression.technologySpeed)
+        !advanceRejection(state, availableGold(player), this.progression.technologySpeed)
       )
         this.world.applyCommand({ type: "advance-age", playerId: player.id });
       for (const tree of personality.researchOrder) {
@@ -1102,7 +1107,7 @@ export class Expansion {
             t.tree === tree &&
             !researchRejection(
               state,
-              player.gold,
+              availableGold(player),
               t.id,
               this.progression.technologySpeed,
             ),
@@ -1274,7 +1279,7 @@ export class Expansion {
   private thinkTribeDevelopment(player: Player): void {
     const state = this.progression.states[player.id];
     const next = TECHNOLOGIES.find(t => t.age === this.startingAge &&
-      !researchRejection(state, player.gold, t.id, this.progression.technologySpeed));
+      !researchRejection(state, availableGold(player), t.id, this.progression.technologySpeed));
     if (next) this.world.applyCommand({ type: "research", playerId: player.id, technologyId: next.id });
     const own = this.world.buildingFacts().byOwner(player.id);
     const plan = this.tribePlans.get(player.id) ?? { nextType: 0, tiles: {} };

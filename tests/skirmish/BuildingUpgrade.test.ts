@@ -16,7 +16,7 @@ function fixture() {
   e.progression.states[1].age = "Modern";
   e.progression.states[1].completed = TECHNOLOGIES.map(t => t.id);
   m.owners.fill(1);
-  function building(type: Building["type"] = "barracks") {
+  function building(type: Building["type"] = "city") {
     const b: Building = m.addBuilding({ id: m.allocateId(), playerId: 1, type, tile: m.map.ref(20, 20),
       age: "StoneAge", health: buildingIntegrity(type, "StoneAge"), maxHealth: buildingIntegrity(type, "StoneAge"), remainingTicks: 0 });
      return b;
@@ -28,8 +28,8 @@ function fixture() {
 describe("explicit paid building upgrades", () => {
   it("advances only one tier with shared half-price gold and rounded-up item costs", () => {
     const all = TECHNOLOGIES.map(t => t.id);
-    expect(nextBuildingAge("barracks", "StoneAge", "Modern", all)).toBe("BronzeAge");
-    expect(nextBuildingAge("barracks", "StoneAge", "Modern", [])).toBeNull();
+    expect(nextBuildingAge("city", "StoneAge", "Modern", all)).toBe("BronzeAge");
+    expect(nextBuildingAge("city", "StoneAge", "Modern", [])).toBeNull();
     expect(nextBuildingAge("tower", "EarlyModern", "Modern", all)).toBeNull();
     const full = buildingCost("tower", "BronzeAge", 1), half = buildingUpgradeCost("tower", "BronzeAge", 1);
     expect(half.gold).toBe(Math.round(full.gold! / 2));
@@ -43,15 +43,15 @@ describe("explicit paid building upgrades", () => {
     expect(upgrade(b.id, b.id)).toBeNull();
     expect(p.gold).toBe(before - quote.cost.gold!);
     expect(b.age).toBe("BronzeAge");
-    expect(b.health).toBe(buildingIntegrity("barracks", "BronzeAge"));
+    expect(b.health).toBe(buildingIntegrity("city", "BronzeAge"));
     expect(b.remainingTicks).toBe(quote.upgrades[0].ticks);
     expect(m.buildings).toHaveLength(1);
-    expect(m.applyCommand({ type: "recruit", playerId: 1, buildingId: b.id, definitionId: "stoneage-infantry" })).toMatch(/completed/);
+    expect(b.remainingTicks).toBeGreaterThan(0);
     expect(upgrade(b.id)).toMatch(/construction/);
   });
   it("validates all identities and aggregate affordability before any mutation", () => {
     const { m, p, building, upgrade } = fixture(), a = building(), b = building();
-    const price = buildingUpgradeCost("barracks", "BronzeAge", 2).gold!;
+    const price = buildingUpgradeCost("city", "BronzeAge", 2).gold!;
     p.gold = price;
     expect(upgrade(a.id, b.id)).toMatch(/gold/);
     expect(p.gold).toBe(price); expect(a.age).toBe("StoneAge"); expect(b.age).toBe("StoneAge");

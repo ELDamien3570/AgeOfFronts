@@ -92,6 +92,7 @@ export const commandSchema = z.discriminatedUnion("type", [
     ...point,
   }),
   command("upgrade-building", { buildingIds: ids }),
+  command("delete-building", { buildingId: id }),
   command("cancel-recruitment", {
     category: z.enum(["land", "ship", "aircraft"]).optional(),
     definitionId: text.optional(),

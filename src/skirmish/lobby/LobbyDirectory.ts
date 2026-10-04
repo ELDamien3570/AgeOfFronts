@@ -37,6 +37,7 @@ export interface LobbySettings {
   readonly victory: "solo" | "allied";
   /** Explicit opt-in to newcomers taking an unclaimed regular AI. */
   readonly publicAiTakeover?: boolean;
+  readonly infiniteGoldForPlayers?: boolean;
 }
 
 export function defaultLobbySettings(
@@ -129,6 +130,8 @@ export function validateLobbySettings(settings: LobbySettings): LobbySettings {
     !AGES.includes(settings.startingAge)
   )
     throw new Error("Choose a supported starting age.");
+  if (settings.infiniteGoldForPlayers !== undefined && typeof settings.infiniteGoldForPlayers !== "boolean")
+    throw new Error("Invalid infinite gold rule");
   if (settings.publicAiTakeover !== undefined && typeof settings.publicAiTakeover !== "boolean")
     throw new Error("Choose whether public AI takeover is allowed.");
   return Object.freeze({ ...settings, publicAiTakeover: settings.publicAiTakeover ?? true });

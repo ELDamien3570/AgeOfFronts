@@ -1,25 +1,8 @@
 import type { Building } from "../Protocol";
-import { buildingIntegrity, buildingTechnology } from "../content/Buildings";
+import { AUTOMATIC_TIER_BUILDINGS, automaticBuildingTier, buildingIntegrity } from "../content/Buildings";
 import { AGES, type ProgressionState } from "./Definitions";
 
-export const MILITARY_BUILDINGS = [
-  "barracks",
-  "archery",
-  "stables",
-  "siege-workshop",
-  "tower",
-  "port",
-  "airstrip",
-  "blacksmith",
-  "armory",
-  "arms-factory",
-  "depot",
-  "gun-nest",
-  "trench",
-  "missile-silo",
-  "mirv-launcher",
-  "missile-defence",
-] as const satisfies readonly Building["type"][];
+export const MILITARY_BUILDINGS = AUTOMATIC_TIER_BUILDINGS;
 
 /** Infrastructure follows the current owner's earned unlocks, including captures
  * and construction completed after research. Upgrading never repairs damage,
@@ -43,14 +26,7 @@ export function modernizeMilitaryBuildings(
     if (!targets.has(key))
       targets.set(
         key,
-        [...AGES].reverse().find((age) => {
-          const technology = buildingTechnology(building.type, age);
-          return (
-            AGES.indexOf(age) <= AGES.indexOf(state.age) &&
-            !!technology &&
-            state.completed.includes(technology)
-          );
-        }),
+        automaticBuildingTier(building.type, state.age, state.completed),
       );
     const age = targets.get(key);
     const previousAge = building.age ?? "StoneAge";

@@ -283,11 +283,11 @@ kbd {
   display: none;
 }
 .dock-age::after {
-  content: " · Open";
+  content: " Â· Open";
   letter-spacing: normal;
 }
 [data-hud-mode="dynamic"] .dock-age::after {
-  content: " · Dynamic";
+  content: " Â· Dynamic";
 }
 .command-category {
   border-right: 1px solid var(--line);
@@ -2255,3 +2255,13 @@ footer span:last-child {
 .alliance-renewal span { font-size: 12px; }
 .alliance-renewal [data-action="renew"] { justify-self: start; }
 .alliance-renewal [data-action="dismiss"] { position: absolute; right: 8px; top: 8px; }
+
+/* Building counts are presentation of individual owned structures, including stacks. */
+.hud-action { position: relative; }
+.building-count { position: absolute; top: 2px; left: 3px; z-index: 2; min-width: 18px; padding: 1px 3px; border-radius: 3px; background: #171a20e8; color: #fff; font-size: 12px; font-weight: 700; line-height: 16px; pointer-events: none; }
+.building-delete-dialog { max-width: 360px; padding: 24px; border: 1px solid #a4936b; border-radius: 8px; background: #20252d; color: #eee; }
+.building-delete-dialog::backdrop { background: #0009; }
+.building-delete-dialog h2 { margin-top: 0; padding-right: 24px; }
+#delete-building-close { position: absolute; right: 8px; top: 8px; }
+.building-delete-dialog button { padding: 7px 12px; cursor: pointer; }
+#delete-building-confirm { margin-left: 10px; }

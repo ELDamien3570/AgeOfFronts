@@ -1,3 +1,4 @@
+import { availableGold, spendGold } from "./Gold";
 import type { GameMap } from "../../core/game/GameMap";
 import { producerCompatible } from "../content/Buildings";
 import { PRODUCTION_RECIPES } from "../content/Production";
@@ -34,11 +35,11 @@ export function productionTicks(
 export { PRODUCTION_RECIPES, REFINING } from "../content/Production";
 const RECIPES = new Map(PRODUCTION_RECIPES.map(recipe => [recipe.id, recipe]));
 export function costRejection(
-  player: Pick<Player, "gold" | "reserves">,
+  player: Pick<Player, "gold" | "reserves"> & Partial<Pick<Player, "ai" | "infiniteGold">>,
   inventory: Inventory,
   cost: Cost,
 ): string | null {
-  if (player.gold < (cost.gold ?? 0)) return "Not enough gold";
+  if (availableGold(player) < (cost.gold ?? 0)) return "Not enough gold";
   if (player.reserves < (cost.reserves ?? 0))
     return "Not enough reserve troops";
   for (const [item, amount] of Object.entries(cost.items ?? {}))
@@ -47,7 +48,7 @@ export function costRejection(
   return null;
 }
 export function spend(player: Player, inventory: Inventory, cost: Cost): void {
-  player.gold -= cost.gold ?? 0;
+  spendGold(player, cost.gold ?? 0);
   player.reserves -= cost.reserves ?? 0;
   for (const [item, amount] of Object.entries(cost.items ?? {}))
     inventory[item] = (inventory[item] ?? 0) - amount;
@@ -81,6 +82,11 @@ export class Supply {
     {};
   readonly inventories: Record<number, Inventory> = {};
   readonly jobs: Record<number, ProductionJob | undefined> = {};
+  forgetProducer(id: number): void {
+    delete this.jobs[id];
+    if (this.selectedRecipes.delete(id)) this.controlRevision++;
+    this.goods.delete(id); this.goodsOwners.delete(id);
+  }
   private readonly depositFacts = new Map<number, Pick<Deposit, "tile" | "resource" | "owner" | "yieldPerSecond">>();
   readonly resourceChanges = new EntityChangeJournal();
   private readonly depositEntities = new EntityCollection<Readonly<Deposit>>({

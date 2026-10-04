@@ -138,6 +138,7 @@ export type Command =
       y: number;
     }
   | { type: "upgrade-building"; playerId: number; buildingIds: number[] }
+  | { type: "delete-building"; playerId: number; buildingId: number }
   | {
       type: "cancel-recruitment";
       playerId: number;
@@ -244,6 +245,8 @@ export interface Player {
   base: number;
   reserves: number;
   gold: number;
+  /** Human-only purchasing rule; actual gold balances remain finite. */
+  infiniteGold?: boolean;
   land: number;
   losses: number;
   /** Individual enemy soldiers killed; absent in older snapshots. */
@@ -375,6 +378,7 @@ export interface MatchOptions {
   humanSpawns?: readonly { playerId: number; tile: number }[];
   resourceDensity?: 1 | 2 | 3 | 5;
   resourceOutput?: 1 | 2 | 3 | 5;
+  infiniteGoldForPlayers?: boolean;
   alliances?: boolean;
   runAi?: boolean;
   /** Economic demand policy. Normal games enable the shared AI policy defaults. */

@@ -1,3 +1,4 @@
+import { availableGold, spendGold, paidCost } from "./domain/Gold";
 import { validFactionColor } from "./lobby/FactionPalette";
 import { DEFENSIVE_BUILDINGS } from "./content/Buildings";
 import { domainRouteKey, type DomainRouteOwner, type DomainRoutePorts, type DomainRouteConsumer } from "./domain/DomainRoutePorts";
@@ -168,6 +169,7 @@ export class Skirmish {
     const player = this.player(playerId);
     if (!player || player.ai === ai) return;
     player.ai = ai;
+    if (this.options.infiniteGoldForPlayers) player.infiniteGold = !ai;
     for(const squad of this.squadIndex.byOwner(playerId))this.playerAttacks.forget(squad.id);
     this.controlGenerations.set(playerId, (this.controlGenerations.get(playerId) ?? 0) + 1);
     this.expansion?.economy.release(playerId);
@@ -780,6 +782,7 @@ export class Skirmish {
           : this.expansion && kind === "regular"
             ? STARTING_AGE_TROOPS
             : STARTING_TROOPS),
+      ...(this.options.infiniteGoldForPlayers && id <= (this.options.humanNames?.length ?? 1) ? { infiniteGold: true } : {}),
       gold: opening?.gold ?? (kind === "tribe" ? TRIBE_STARTING_GOLD : STARTING_GOLD),
       land: 0,
       losses: 0,
@@ -899,6 +902,18 @@ export class Skirmish {
     const player = this.player(command.playerId);
     if (!player || player.eliminated || this.winner !== null)
       return "This player cannot issue orders";
+    if (command.type === "delete-building") {
+      if (player.ai) return "AI factions cannot delete buildings";
+      const building = this.building(command.buildingId);
+      if (!building || building.playerId !== player.id || this.owners[building.tile] !== player.id)
+        return "Select a building on your own territory";
+      this.removeBuilding(building.id);
+      this.expansion?.supply.forgetProducer(building.id);
+      this.expansion?.fortifications.forgetBuilding(building, this.buildings);
+      while (this.recruitment.cancel(player.id, {buildingIds: new Set([building.id])},
+        job => this.refundRecruitment(job))) { /* Apply the ordinary paid-job cancellation policy. */ }
+      return null;
+    }
     const shipIds = "shipIds" in command ? command.shipIds : "shipId" in command ? [command.shipId] : [];
     const landingControl = command.type === "sail" ||
       command.type === "stop-ships" || command.type === "unload";
@@ -1311,7 +1326,7 @@ export class Skirmish {
       const seconds = definition!.tags.includes("vehicle") ? RECRUITMENT_SECONDS.vehicle
         : definition!.tags.includes("siege") ? RECRUITMENT_SECONDS.siege : RECRUITMENT_SECONDS[kind];
       this.recruitment.enqueue({ playerId: player.id, buildingId: building.id, category: "land", kind,
-        definitionId: definition!.id, cost, totalTicks: seconds * TICKS_PER_SECOND });
+        definitionId: definition!.id, cost: paidCost(player, cost), totalTicks: seconds * TICKS_PER_SECOND });
       return null;
     }
     const candidates: number[] = [];
@@ -1532,9 +1547,9 @@ export class Skirmish {
     if (rejection) return rejection;
     const existingCount = this.buildingIndex.countOfType(player.id, type);
     if (!this.expansion) {
-      player.gold -= Math.round(
+      spendGold(player, Math.round(
         BUILDING_RULES[type].cost * buildingCostMultiplier(existingCount),
-      );
+      ));
     }
     const ticks = buildingTicks(type, existingCount);
     const building = this.addBuilding({
@@ -1650,7 +1665,7 @@ export class Skirmish {
     const rules = vessel
       ? { ...vessel, cost: vessel.cost.gold ?? 0 }
       : SHIP_RULES[kind];
-    if (!completing && player.gold < rules.cost) return "Not enough gold for this ship";
+    if (!completing && availableGold(player) < rules.cost) return "Not enough gold for this ship";
     if (!completing && this.shipIndex.byOwner(player.id).length + this.recruitment.count(player.id, "ship") >= MAX_SHIPS)
       return `This skirmish allows ${MAX_SHIPS} ships per player`;
     const tile = this.map
@@ -1660,12 +1675,12 @@ export class Skirmish {
     if (this.expansion && !completing) {
       spend(player, this.expansion.supply.inventories[player.id], vessel!.cost);
       this.recruitment.enqueue({ playerId: player.id, buildingId: port.id, category: "ship", kind,
-        definitionId: vessel!.id, cost: vessel!.cost, totalTicks: RECRUITMENT_SECONDS[kind] * TICKS_PER_SECOND });
+        definitionId: vessel!.id, cost: paidCost(player, vessel!.cost), totalTicks: RECRUITMENT_SECONDS[kind] * TICKS_PER_SECOND });
       return null;
     }
     if (vessel && !completing)
       spend(player, this.expansion!.supply.inventories[player.id], vessel.cost);
-    else if (!completing) player.gold -= rules.cost;
+    else if (!completing) spendGold(player, rules.cost);
     const completedShip = this.addShip({
       id: this.nextId++,
       playerId: player.id,
@@ -3963,7 +3978,7 @@ export class Skirmish {
       const cost = Math.round(
         BUILDING_RULES[type].cost * buildingCostMultiplier(existing),
       );
-      if (player.gold < cost) continue;
+      if (availableGold(player) < cost) continue;
       let tile: number | undefined,
         distance = Infinity;
       for (const t of this.ownedTiles.get(player.id) ?? []) {

@@ -12,7 +12,7 @@ import { createSkirmishMap } from "../src/skirmish/Elevation.ts";
 import { isLobbyMapId } from "../src/skirmish/lobby/LobbyRules.ts";
 
 const args=process.argv.slice(2), arg=(key,fallback)=>{const i=args.indexOf(key);return i<0?fallback:args[i+1];};
-const smokeSwitches=new Set(["--public","--water"]),smokeValues=new Set(["--url","--clients","--seconds","--age","--out","--map","--size","--order-interval"]);
+const smokeSwitches=new Set(["--public","--water","--infinite-gold"]),smokeValues=new Set(["--url","--clients","--seconds","--age","--out","--map","--size","--order-interval"]);
 for(let at=0;at<args.length;at++) {
   if(smokeSwitches.has(args[at]))continue;
   if(smokeValues.has(args[at]) && at+1<args.length){at++;continue;}
@@ -25,6 +25,7 @@ if(!Number.isFinite(orderInterval)||orderInterval<0||(orderInterval>0&&orderInte
 if(!isLobbyMapId(mapId)||![250,500,1000].includes(worldSize))throw new Error("Invalid smoke map or size");
 if(!Number.isInteger(count)||count<2||count>20||!Number.isFinite(seconds)||seconds<10||seconds>2400)throw new Error("Invalid smoke limits");
 if(!/^http:\/\/(localhost|127\.0\.0\.1)(:\d+)?$/.test(base)&&!args.includes("--public"))throw new Error("External smoke requires --public");
+if(args.includes("--infinite-gold") && args.includes("--public"))throw new Error("Infinite gold smoke is local-only");
 const out=arg("--out","data/oracle-smoke.json"), origin=new URL(base).origin, socketUrl=base.replace(/^http/,"ws")+"/socket";
 const peers=[], checks=new Map(), failures=[], started=Date.now(), title="Stability smoke "+new Date().toISOString().replace(/[:.]/g,"-");
 let matchId, roomId, request=0, completed=false;
@@ -83,7 +84,7 @@ try{
     const {token}=await res.json();const p={id:i,token,acks:new Map(),outcomes:[],decodeMs:[],gaps:[],bytes:0,packets:0,tick:0,syncs:0};
     peers.push(p);await connect(p);
   }
-  const createId=rid();send(peers[0],{type:"create",requestId:createId,title,willingToWait:false,settings:{mapId,mode:"free-for-all",slots:count,minimumHumans:count,countdownSeconds:15,worldSize,aiCount:10,tribeCount:25,technologySpeed:1,startingAge:arg("--age","Modern"),resourceDensity:1,resourceOutput:1,alliances:true,victory:"solo",publicAiTakeover:false}});
+  const createId=rid();send(peers[0],{type:"create",requestId:createId,title,willingToWait:false,settings:{mapId,mode:"free-for-all",slots:count,minimumHumans:count,countdownSeconds:15,worldSize,aiCount:10,tribeCount:25,technologySpeed:1,startingAge:arg("--age","Modern"),resourceDensity:1,resourceOutput:1,alliances:true,victory:"solo",publicAiTakeover:false,infiniteGoldForPlayers:args.includes("--infinite-gold")}});
   await wait(()=>peers[0].acks.has(createId),"create");roomId=peers[0].acks.get(createId).roomId;
   for(const p of peers.slice(1)){const id=rid();send(p,{type:"join",requestId:id,roomId});await wait(()=>p.acks.has(id),"join "+p.id);}
   await wait(()=>peers.every(p=>p.manifest&&p.tick>20),"all peers advancing",120000);
@@ -132,6 +133,18 @@ try{
   await wait(()=>{built=p.snapshot.buildings.find(b=>!existingBuildings.has(b.id)&&b.playerId===p.manifest.playerId&&b.type==="barracks"&&b.tile===buildTile);return built?.remainingTicks===0;},"completed authoritative building",15000);
   const validBuild={commandTick:buildTick,completedTick:p.tick,buildingId:built.id,tile:buildTile,age,outcome:buildOutcome};
   console.log(JSON.stringify({stage:"construction",validBuild}));
+  let passOne;
+  if(args.includes("--infinite-gold")) {
+    const humans=p.snapshot.players.filter(player=>!player.ai), ai=p.snapshot.players.filter(player=>player.ai);
+    if(humans.some(player=>player.infiniteGold!==true)||ai.some(player=>player.infiniteGold===true))throw new Error("Infinite gold controller scope mismatch");
+    const id=rid();send(p,{type:"match-command",requestId:id,matchId,command:{type:"delete-building",playerId:p.manifest.playerId,buildingId:built.id}});
+    await wait(()=>p.outcomes.some(o=>o.id===id&&["executed","rejected","superseded"].includes(o.status)),"deletion receipt",15000);
+    const outcome=p.outcomes.find(o=>o.id===id&&["executed","rejected","superseded"].includes(o.status));
+    if(outcome.status!=="executed")throw new Error("Deletion failed: "+JSON.stringify(outcome));
+    await wait(()=>peers.every(peer=>!peer.snapshot.buildings.some(b=>b.id===built.id)),"replicated deletion",15000);
+    passOne={infiniteGoldHumans:humans.map(player=>player.id),finiteAi:ai.map(player=>player.id),deletedBuildingId:built.id,deletionOutcome:outcome};
+    console.log(JSON.stringify({stage:"pass-one",passOne}));
+  }
   const tradeControls=[], otherTrader=peers[1].manifest.playerId;
   for(const command of [
     {type:"trade-pause",playerId:p.manifest.playerId,naval:false,paused:true},
@@ -238,7 +251,7 @@ try{
   const common=[...checks].filter(([,row])=>row.size===count);
   if(common.length<5)throw new Error("Too few common tick agreement samples");
   if(peers.some(p=>Boolean(p.closed)||Boolean(p.packets<10)||Boolean(Date.now()-p.lastAt>10000)))throw new Error("A peer stopped advancing");
-  const result={passed:true,title,matchId,roomId,base,mapId,worldSize,clients:count,seconds,elapsedSeconds:(Date.now()-started)/1000,flags:Object.fromEntries(flags.map(f=>[f,true])),runtimeId:manifests[0].runtimeId,mapHash:manifests[0].mapHash,moves,periodicMoves,periodicMotionP95:percentile(periodicMoves.map(m=>m.firstMotionMs).filter(Number.isFinite),.95),validBuild,tradeControls,waterTransport,aiMoved:[...aiMoved].sort((a,b)=>a-b),rejection,reconnected,commonStateSamples:common.length,peers:peers.map(p=>({id:p.id,tick:p.tick,packets:p.packets,syncs:p.syncs,bytes:p.bytes,decodeP95:percentile(p.decodeMs,.95),publicationGapP95:percentile(p.gaps,.95),publicationGapMax:Math.max(...p.gaps)})),failures};
+  const result={passed:true,title,matchId,roomId,base,mapId,worldSize,clients:count,seconds,elapsedSeconds:(Date.now()-started)/1000,flags:Object.fromEntries(flags.map(f=>[f,true])),runtimeId:manifests[0].runtimeId,mapHash:manifests[0].mapHash,moves,periodicMoves,periodicMotionP95:percentile(periodicMoves.map(m=>m.firstMotionMs).filter(Number.isFinite),.95),validBuild,passOne,tradeControls,waterTransport,aiMoved:[...aiMoved].sort((a,b)=>a-b),rejection,reconnected,commonStateSamples:common.length,peers:peers.map(p=>({id:p.id,tick:p.tick,packets:p.packets,syncs:p.syncs,bytes:p.bytes,decodeP95:percentile(p.decodeMs,.95),publicationGapP95:percentile(p.gaps,.95),publicationGapMax:Math.max(...p.gaps)})),failures};
   fs.mkdirSync(path.dirname(out),{recursive:true});
   completed=true;fs.writeFileSync(out,JSON.stringify(result,null,2)+"\n");console.log(JSON.stringify(result));
 } finally {

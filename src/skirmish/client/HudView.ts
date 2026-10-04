@@ -7,6 +7,8 @@ import { CONSTRUCTION, CONSTRUCTION_SHORTCUTS, LAND_RECRUITMENT, NAVAL_RECRUITME
 import { eraPortrait } from "./EraArtwork";
 import { HudViewModel, type HudCard, type HudKind } from "./HudViewModel";
 import { HudDrawerViewModel } from "./HudDrawerViewModel";
+import { BuildingDeletionViewModel } from "./BuildingDeletionViewModel";
+import type { Command } from "../Protocol";
 import { promotionUrl } from "./PromotionArtwork";
 import { resourceIcon } from "./ResourceIcon";
 import { UNIT_ANIMATIONS } from "./UnitAnimation";
@@ -113,7 +115,9 @@ export function hudMarkup(): string {
       <div id="selection-mixed" hidden><h2 id="mixed-title"></h2><p class="card-description">Hover for stats. Click to inspect while keeping your army selected.</p><div id="selection-cells" class="selection-cells"></div></div>
       <div class="selection-orders"><strong id="selected"></strong><p id="selected-orders"></p></div>
       <div id="naval-orders" class="naval-orders" hidden><span id="ship-selection"></span><button id="load">Meet & board</button><button id="unload">Unload at coast</button></div>
+      <button id="delete-building" type="button" hidden>Delete building</button>
     </aside>
+    <dialog id="delete-building-dialog" class="building-delete-dialog" aria-labelledby="delete-building-title"><button type="button" id="delete-building-close" aria-label="Close deletion confirmation">×</button><h2 id="delete-building-title">Are you sure?</h2><p id="delete-building-message"></p><p>This removes one building. There is no building refund.</p><div><button type="button" id="delete-building-cancel" autofocus>Cancel</button><button type="button" id="delete-building-confirm">Confirm Delete</button></div></dialog>
     <section class="command-dock hud-surface" aria-label="Resources and commands">
       <div class="resource-row"><div class="resource gold-resource"><span class="resource-symbol" aria-hidden="true">◈</span><span>Gold<strong id="gold">—</strong></span></div><div class="resource"><span>Troops in field<strong id="troop-total">—</strong></span></div><div class="resource"><span>Reserve troops<strong id="reserves">—</strong></span></div><div class="resource small-resource"><span>Squads<strong id="squad-count">—</strong></span></div><div class="resource small-resource"><span>Land<strong id="land">—</strong></span></div><div class="resource small-resource match-metric" title="Individual enemy soldiers killed, including troops aboard sunk transports."><span>Kills<strong id="kills">—</strong></span></div><div class="resource small-resource match-metric" title="Cumulative individual soldier casualties, including troops aboard sunk transports. Ship damage is excluded."><span>Deaths<strong id="losses">—</strong></span></div><div class="resource small-resource match-metric" title="Base gold value of enemy cargo captured this match; excludes delivery bonuses. Each capture counts, including recaptures."><span>Trade captured<strong id="trade-captured">—</strong></span></div><div class="resource small-resource match-metric" title="Base gold value of your cargo captured by enemies or discarded this match. Delivered and returned cargo are excluded."><span>Trade lost<strong id="trade-lost">—</strong></span></div><button type="button" class="dock-age" aria-controls="hud-command-sections" aria-expanded="true" aria-pressed="false">STONE AGE</button></div>
       <div id="hud-command-sections" class="command-row"><div class="command-category economy"><h3>Economy</h3><div class="category-actions">${buildings(true)}</div></div><div class="command-category military"><h3>Military buildings</h3><div class="category-actions">${buildings(false)}</div></div><div class="command-category troops"><h3>Troops</h3><div class="category-actions">${LAND_RECRUITMENT.map((a) => action(`recruit-${a.kind}`, a.label, a.key, a.kind)).join("")}</div></div><div class="command-category ships"><h3>Ships</h3><div class="category-actions">${NAVAL_RECRUITMENT.map((a) => action(a.kind, SHIP_RULES[a.kind].name, a.key, a.kind)).join("")}</div></div><div class="command-category orders"><h3>Orders</h3><div class="category-actions">${action("replenish", "Replenish", "R", undefined, "+")}${action("hold", "Hold", "T", undefined, "■")}${action("all", "Select all", "Ctrl A", undefined, "▦")}</div></div></div>
@@ -130,6 +134,8 @@ function cardMarkup(card: HudCard) {
 }
 
 export class HudView {
+  private readonly deletion = new BuildingDeletionViewModel();
+  private deletableId: number | null = null;
   private playerId = 1;
 
   private readonly drawer = new HudDrawerViewModel();
@@ -152,7 +158,22 @@ export class HudView {
   constructor(
     private readonly root: HTMLElement,
     onDockResize: (height: number) => void = () => {},
+    private readonly command: (command: Command) => void = () => {},
   ) {
+    const dialog = this.el("delete-building-dialog") as HTMLDialogElement;
+    const close = () => { this.deletion.cancel(); dialog.close(); };
+    for (const id of ["delete-building-cancel", "delete-building-close"]) this.el(id).addEventListener("click", close);
+    dialog.addEventListener("cancel", () => this.deletion.cancel());
+    dialog.addEventListener("close", () => this.deletion.cancel());
+    this.el("delete-building").addEventListener("click", () => {
+      if (!this.vm || this.deletableId === null || !this.deletion.request(this.vm.game.state, this.playerId, this.deletableId)) return;
+      this.el("delete-building-message").textContent = `Delete building #${this.deletableId}?`;
+      dialog.showModal();
+    });
+    this.el("delete-building-confirm").addEventListener("click", () => {
+      const command = this.vm && this.deletion.confirm(this.vm.game.state, this.playerId);
+      dialog.close(); if (command) this.command(command);
+    });
     root.querySelector(".dock-age")!.addEventListener("click", () => {
       this.drawer.toggleMode();
       this.renderDrawer();
@@ -284,6 +305,10 @@ export class HudView {
     }
   }
   reset() {
+    this.deletion.cancel();
+    const dialog = this.el("delete-building-dialog") as HTMLDialogElement;
+    if (dialog.open) dialog.close();
+    this.deletableId = null;
     this.vm = undefined;
     this.focusedRef = null;
     this.selectionFingerprint = "";
@@ -305,6 +330,18 @@ export class HudView {
   update(vm: HudViewModel) {
     this.playerId = vm.playerId;
     this.vm = vm;
+    this.deletion.reconcile(vm.game.state, vm.playerId);
+    const dialog = this.el("delete-building-dialog") as HTMLDialogElement;
+    if (dialog.open && this.deletion.pendingId === null) dialog.close();
+    for (const button of this.root.querySelectorAll<HTMLElement>('button[id^="build-"], button[data-dock-action="build"]')) {
+      const type = (button.dataset.value ?? button.id.slice(6)) as import("../Protocol").BuildingType;
+      const count = vm.buildingCounts.get(type) ?? {total: 0, ready: 0};
+      let badge = button.querySelector<HTMLElement>(".building-count");
+      if (!badge) { badge = document.createElement("span"); badge.className = "building-count"; button.append(badge); }
+      badge.textContent = String(count.total);
+      badge.title = `${count.ready} ready · ${count.total - count.ready} under construction`;
+      badge.setAttribute("aria-label", `${count.total} owned buildings`);
+    }
     for (const slot of this.root.querySelectorAll<HTMLElement>(
       ".action-slot",
     )) {
@@ -338,6 +375,10 @@ export class HudView {
     if (refs !== this.selectionFingerprint) this.focusedRef = null;
     this.selectionFingerprint = refs;
     const selection = this.vm.selectionCard(this.focusedRef, entities);
+    this.deletableId = selection.mode !== "empty" && selection.mode !== "mixed" &&
+      selection.card.category === "building" && selection.card.playerId === this.playerId && !this.vm.game.player.ai
+      ? Number(selection.card.ref.split(":")[1]) : null;
+    this.el("delete-building").hidden = this.deletableId === null;
     this.el("selection-card").hidden = selection.mode === "empty";
     if (selection.mode === "empty") return;
     const mixed = selection.mode === "mixed";

@@ -55,3 +55,14 @@ Evidence: [hosted smoke](Evidence/2026-10-04-query-reuse/hosted-smoke.json).
 The matched dense fixture still has roughly **63 ms tick p95 against a 50 ms budget**. Exact planning remains about 17 ms mean; these changes do not establish universally sub-second large orders, river transport, rendered browser responsiveness or heavy-world real-time simulation. The separate eleven-item pathfinding/AI/progression passes remain necessary and were not implemented here. Keep Oracle's one-match admission limit.
 
 This candidate is prepared on `V1.1.5` for an exact-revision release. Oracle production has not been restarted or modified. Final read-only health returned `status: ok`, `activeMatches: 0`, and only the existing production app/proxy containers remained; all isolated comparisons had exited. Deployment must still recheck idleness, use the release script, then verify source/runtime identity, public HTTPS/WSS behavior and database backup integrity.
+
+
+## Oracle release acceptance — 2026-10-04
+
+The authorized exact gameplay revision `a7ef865bfdf869578c2068061b07935842ce690e` is now deployed through the Oracle release script. Source marker, image tag, `GIT_COMMIT` and healthy runtime agree. Production retains one simultaneous match.
+
+Public HTTPS and the two-client WSS release smoke passed movement, construction, all five AI flags, trade controls, invalid-command rejection, open-water embarkation, coastal landing, inland continuation, reconnect and 16 shared canonical comparisons. Six periodic movement probes had 274 ms p95 first observed movement; publication gap p95 was 220/218 ms. These short release checks do not replace the dense-world performance limitations above.
+
+Backup `/opt/ageoffronts/backups/multiplayer-20261004T105542Z.sqlite` passed SQLite integrity verification (`ok`). Final health after the smoke's ordinary disconnect grace was `status: ok`, `activeMatches: 0`, with zero running/stalled/preparing matches. Public smoke evidence is retained locally at `out/query-reuse/public-release-smoke.json`.
+
+`V1.1.5` was fast-forwarded into `main` and published at this revision. User-requested branch `1.2` starts from it; subsequent progression/UI/test-rule work is not part of this Oracle release.

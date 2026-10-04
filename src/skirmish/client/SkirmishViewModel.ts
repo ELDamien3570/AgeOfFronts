@@ -1,3 +1,4 @@
+import { availableGold } from "../domain/Gold";
 import { squadCap } from "../FactionRules";
 import type { ShipType, Snapshot, SquadType } from "../Protocol";
 import { FIXED, SQUAD_TROOPS } from "../Protocol";
@@ -178,7 +179,7 @@ export class SkirmishViewModel {
         : "Unit definition unavailable";
     else if (!building)
       reason = `Needs a completed friendly ${BUILDING_RULES[landDefinition?.building ?? (naval ? "port" : kind === "infantry" ? "barracks" : kind === "archer" ? "archery" : "stables")].name.toLowerCase()}${definition ? ` (${AGE_NAMES[AGES.indexOf(definition.age)]} or later)` : ""}`;
-    else if (naval && this.player.gold < SHIP_RULES[kind].cost)
+    else if (naval && availableGold(this.player) < SHIP_RULES[kind].cost)
       reason = "Not enough gold";
     else if (!naval && this.player.reserves < SQUAD_TROOPS)
       reason = "Needs 1,000 reserve troops";
@@ -257,7 +258,7 @@ export class SkirmishViewModel {
       this.selectedBuildings.some((b) => b.playerId === this.playerId) &&
       this.state.winner === null &&
       !this.player.eliminated &&
-      this.player.gold > 0
+      availableGold(this.player) > 0
     );
   }
 }

@@ -173,6 +173,7 @@ const view = new LobbyView(
         alliances: data.get("alliances") === "allowed",
         victory: String(data.get("victory")),
         publicAiTakeover: data.has("publicAiTakeover"),
+        infiniteGoldForPlayers: data.has("infiniteGoldForPlayers"),
       } as LobbySettings & { publicAiTakeover: boolean };
       if (connection) {
         void connection

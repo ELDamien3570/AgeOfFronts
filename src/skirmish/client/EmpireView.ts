@@ -274,7 +274,9 @@ export class EmpireView {
         actions.dataset.key = key;
         const tiers = [...new Set(upgrades.map(u => AGE_NAMES[AGES.indexOf(u.age)]))].join(" / ");
         const items = Object.entries(cost.items ?? {}).map(([id, n]) => `${n} ${id}`).join(" · ");
-        actions.innerHTML = `<button ${reason ? "disabled" : ""}>Upgrade ${upgrades.length} Building${upgrades.length === 1 ? "" : "s"}${tiers ? ` to ${tiers}` : ""} <kbd>U</kbd></button><small>${escape(reason ?? `${fmt(cost.gold ?? 0)} gold${items ? ` · ${items}` : ""} · production pauses${skipped ? ` · ${skipped} ineligible skipped` : ""}`)}</small>`;
+        actions.innerHTML = !upgrades.length && reason === "Military buildings upgrade automatically with research"
+          ? `<small>${escape(reason)}</small>`
+          : `<button ${reason ? "disabled" : ""}>Upgrade ${upgrades.length} Building${upgrades.length === 1 ? "" : "s"}${tiers ? ` to ${tiers}` : ""} <kbd>U</kbd></button><small>${escape(reason ?? `${fmt(cost.gold ?? 0)} gold${items ? ` · ${items}` : ""} · production pauses${skipped ? ` · ${skipped} ineligible skipped` : ""}`)}</small>`;
       }
     }
 

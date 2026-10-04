@@ -71,6 +71,7 @@ const settings = z
     alliances: z.boolean(),
     victory: z.enum(["solo", "allied"]),
     publicAiTakeover: z.boolean().optional(),
+    infiniteGoldForPlayers: z.boolean().optional(),
   })
   .strict();
 const requestId = z.string().regex(/^[a-zA-Z0-9-]{1,80}$/u);

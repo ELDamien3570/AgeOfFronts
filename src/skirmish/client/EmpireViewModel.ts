@@ -1,3 +1,4 @@
+import { availableGold } from "../domain/Gold";
 import { quoteLandRefits, quoteShipRefits } from "../domain/RefitQuote";
 import type { BuildingType, ShipType, Snapshot, SquadType } from "../Protocol";
 import {
@@ -92,7 +93,7 @@ export class EmpireViewModel {
       researching: this.progression.research[t.tree]?.technologyId === t.id,
       reason: researchRejection(
         this.progression,
-        this.player.gold,
+        availableGold(this.player),
         t.id,
         this.technologySpeed,
       ),
@@ -102,7 +103,7 @@ export class EmpireViewModel {
     return TREES.map(
       (tree) =>
         `${tree[0].toUpperCase()}${tree.slice(1)} ${treeCompletion(this.progression, tree)}/${treeWorkload(this.progression.age, tree)}`,
-    ).join(" · ");
+    ).join(" Â· ");
   }
   get advance() {
     const definition = ADVANCES[AGES.indexOf(this.progression.age)],
@@ -111,7 +112,7 @@ export class EmpireViewModel {
       cost,
       reason: advanceRejection(
         this.progression,
-        this.player.gold,
+        availableGold(this.player),
         this.technologySpeed,
       ),
     };

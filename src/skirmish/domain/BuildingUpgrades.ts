@@ -1,5 +1,5 @@
 import type { Building, Player } from "../Protocol";
-import { buildingIntegrity, buildingTechnology, buildingTicks, buildingUpgradeCost, nextBuildingAge } from "../content/Buildings";
+import { AUTOMATIC_TIER_BUILDINGS, buildingIntegrity, buildingTechnology, buildingTicks, buildingUpgradeCost, nextBuildingAge } from "../content/Buildings";
 import { AGES, type Age, type Cost, type Inventory, type ProgressionState } from "./Definitions";
 import { costRejection } from "./Supply";
 
@@ -35,6 +35,10 @@ export function quoteBuildingUpgrades(
     if (!building || building.playerId !== player.id || owners[building.tile] !== player.id)
       return result("Select buildings on your own territory");
     const current = building.age ?? "StoneAge";
+    if (AUTOMATIC_TIER_BUILDINGS.includes(building.type)) {
+      unavailable = "Military buildings upgrade automatically with research";
+      continue;
+    }
     const maximum = building.maxHealth ?? buildingIntegrity(building.type, current);
     if (building.remainingTicks || (building.health ?? maximum) < maximum) {
       unavailable = "Complete construction and repair damage before upgrading";

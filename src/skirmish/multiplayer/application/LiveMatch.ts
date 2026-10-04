@@ -155,6 +155,7 @@ export class LiveMatch {
       startingAge: settings.startingAge,
       resourceDensity: settings.resourceDensity,
       resourceOutput: settings.resourceOutput,
+      infiniteGoldForPlayers: settings.infiniteGoldForPlayers,
       alliances: settings.alliances,
     };
   }

@@ -1,3 +1,4 @@
+import { availableGold } from "../domain/Gold";
 import type { BuildingType, ShipType, SquadType } from "../Protocol";
 import { FIXED, SQUAD_TROOPS, TICKS_PER_SECOND } from "../Protocol";
 import {
@@ -347,7 +348,15 @@ export class HudViewModel {
     return this.game.playerId;
   }
 
-  constructor(readonly game: SkirmishViewModel) {}
+  readonly buildingCounts = new Map<import("../Protocol").BuildingType, {total: number; ready: number}>();
+  constructor(readonly game: SkirmishViewModel) {
+    for (const building of game.state.buildings) {
+      if (building.playerId !== game.playerId || (building.health ?? 1) <= 0) continue;
+      const count = this.buildingCounts.get(building.type) ?? {total: 0, ready: 0};
+      count.total++; if (!building.remainingTicks) count.ready++;
+      this.buildingCounts.set(building.type, count);
+    }
+  }
 
   actionCard(id: string): HudCard | undefined {
     const land = LAND_RECRUITMENT.find((a) => `recruit-${a.kind}` === id);
@@ -424,7 +433,7 @@ export class HudViewModel {
           this.game.state.winner !== null || this.game.player.eliminated
             ? "Skirmish finished"
             : (choice?.reason ??
-              (this.game.player.gold < rule.cost
+              (availableGold(this.game.player) < rule.cost
                 ? "Not enough gold"
                 : "Choose a location on friendly land")),
       };
@@ -446,7 +455,7 @@ export class HudViewModel {
             "Repairs damaged selected friendly buildings over time using gold.",
           status:
             repairable.length > 0
-              ? this.game.player.gold > 0
+              ? availableGold(this.game.player) > 0
                 ? "Ready"
                 : "Not enough gold"
               : "No repair needed",

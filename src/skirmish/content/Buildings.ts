@@ -8,6 +8,18 @@ export const DEFENSIVE_BUILDINGS: readonly BuildingType[] = [
   "trench",
   "missile-defence",
 ];
+/** Production/defence tiers follow researched military or naval technology.
+ * Economic infrastructure retains its distinct paid upgrades. */
+export const AUTOMATIC_TIER_BUILDINGS: readonly BuildingType[] = [
+  "port", "barracks", "archery", "stables", "tower", "blacksmith",
+  "armory", "arms-factory", "siege-workshop", "depot", "airstrip", "gun-nest",
+  "trench", "missile-silo", "mirv-launcher", "missile-defence",
+];
+export function automaticBuildingTier(type: BuildingType, playerAge: Age, completed: readonly string[]): Age | undefined {
+  if (!AUTOMATIC_TIER_BUILDINGS.includes(type)) return undefined;
+  return [...AGES].reverse().find(age => AGES.indexOf(age) <= AGES.indexOf(playerAge) &&
+    !!buildingTechnology(type, age) && completed.includes(buildingTechnology(type, age)!));
+}
 export function buildingTechnology(
   type: BuildingType,
   age: Age,
@@ -102,6 +114,7 @@ export function buildingCost(
 }
 /** A paid upgrade advances one catalogue tier; it never jumps missing tiers. */
 export function nextBuildingAge(type: BuildingType, currentAge: Age, playerAge: Age, completedTechs: readonly string[]): Age | null {
+  if (AUTOMATIC_TIER_BUILDINGS.includes(type)) return null;
   const next = AGES[AGES.indexOf(currentAge) + 1];
   if (!next || AGES.indexOf(next) > AGES.indexOf(playerAge)) return null;
   const technology = buildingTechnology(type, next);

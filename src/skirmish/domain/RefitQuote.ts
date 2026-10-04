@@ -1,3 +1,4 @@
+import { availableGold } from "./Gold";
 import type { Player, Ship, Squad } from "../Protocol";
 import { defaultUnit, UNIT, UNITS, VESSEL, VESSELS } from "../content/Units";
 import {
@@ -112,7 +113,7 @@ function choose<T extends { id: number }, D>(
     };
   const count = affordableRefitCount(
     price(target, 1),
-    context.player.gold,
+    availableGold(context.player),
     context.inventory,
     valid.length,
   );

@@ -1,0 +1,252 @@
+{
+  "passed": true,
+  "title": "Stability smoke 2026-10-04T11-27-58-545Z",
+  "matchId": "match-4",
+  "roomId": "room-3",
+  "base": "http://127.0.0.1:9010",
+  "mapId": "valles-kairulia",
+  "worldSize": 500,
+  "clients": 2,
+  "seconds": 10,
+  "elapsedSeconds": 30.942,
+  "flags": {
+    "aiEconomy": true,
+    "deferredPlanning": true,
+    "aiDefenses": true,
+    "aiNaval": true,
+    "aiWarPolicy": true
+  },
+  "runtimeId": "f04072e0d87ef0bc46eaeed8b99d24298ea65eca40b34b0203e8a7f716942f0e",
+  "mapHash": "4ba4ea5bd411c84a9dc0d24f8801e6f09d0ca4032588589e2e069e1555d3c07f",
+  "moves": [
+    {
+      "playerId": 1,
+      "commandTick": 24,
+      "observedTick": 32,
+      "tile": 74532,
+      "squadIds": [
+        1,
+        2,
+        3
+      ],
+      "outcome": {
+        "id": "smoke-19",
+        "playerId": 1,
+        "tick": 29,
+        "status": "executed"
+      }
+    },
+    {
+      "playerId": 2,
+      "commandTick": 32,
+      "observedTick": 40,
+      "tile": 96530,
+      "squadIds": [
+        4,
+        5,
+        6
+      ],
+      "outcome": {
+        "id": "smoke-24",
+        "playerId": 2,
+        "tick": 38,
+        "status": "executed"
+      }
+    }
+  ],
+  "periodicMoves": [],
+  "periodicMotionP95": 0,
+  "validBuild": {
+    "commandTick": 40,
+    "completedTick": 144,
+    "buildingId": 206,
+    "tile": 75530,
+    "age": "Modern",
+    "outcome": {
+      "id": "smoke-29",
+      "playerId": 1,
+      "tick": 43,
+      "status": "executed"
+    }
+  },
+  "passOne": {
+    "infiniteGoldHumans": [
+      1,
+      2
+    ],
+    "finiteAi": [
+      3,
+      4,
+      5,
+      6,
+      7,
+      8,
+      9,
+      10,
+      11,
+      12,
+      13,
+      14,
+      15,
+      16,
+      17,
+      18,
+      19,
+      20,
+      21,
+      22,
+      23,
+      24,
+      25,
+      26,
+      27,
+      28,
+      29,
+      30,
+      31,
+      32,
+      33,
+      34,
+      35,
+      36,
+      37
+    ],
+    "deletedBuildingId": 206,
+    "deletionOutcome": {
+      "id": "smoke-82",
+      "playerId": 1,
+      "tick": 145,
+      "status": "executed"
+    }
+  },
+  "tradeControls": [
+    {
+      "command": {
+        "type": "trade-pause",
+        "playerId": 1,
+        "naval": false,
+        "paused": true
+      },
+      "outcome": {
+        "id": "smoke-85",
+        "playerId": 1,
+        "tick": 149,
+        "status": "executed"
+      }
+    },
+    {
+      "command": {
+        "type": "trade-pause",
+        "playerId": 1,
+        "naval": true,
+        "paused": true
+      },
+      "outcome": {
+        "id": "smoke-88",
+        "playerId": 1,
+        "tick": 154,
+        "status": "executed"
+      }
+    },
+    {
+      "command": {
+        "type": "trade-block",
+        "playerId": 1,
+        "otherId": 2,
+        "blocked": true
+      },
+      "outcome": {
+        "id": "smoke-91",
+        "playerId": 1,
+        "tick": 157,
+        "status": "executed"
+      }
+    },
+    {
+      "command": {
+        "type": "trade-pause",
+        "playerId": 1,
+        "naval": false,
+        "paused": false
+      },
+      "outcome": {
+        "id": "smoke-94",
+        "playerId": 1,
+        "tick": 161,
+        "status": "executed"
+      }
+    },
+    {
+      "command": {
+        "type": "trade-pause",
+        "playerId": 1,
+        "naval": true,
+        "paused": false
+      },
+      "outcome": {
+        "id": "smoke-97",
+        "playerId": 1,
+        "tick": 166,
+        "status": "executed"
+      }
+    },
+    {
+      "command": {
+        "type": "trade-block",
+        "playerId": 1,
+        "otherId": 2,
+        "blocked": false
+      },
+      "outcome": {
+        "id": "smoke-100",
+        "playerId": 1,
+        "tick": 170,
+        "status": "executed"
+      }
+    }
+  ],
+  "aiMoved": [
+    3,
+    4,
+    5,
+    6,
+    7,
+    8,
+    9,
+    10,
+    11,
+    12
+  ],
+  "rejection": {
+    "id": "smoke-103",
+    "playerId": 1,
+    "tick": 173,
+    "status": "rejected",
+    "reason": "Research this building's technology first"
+  },
+  "reconnected": true,
+  "commonStateSamples": 8,
+  "peers": [
+    {
+      "id": 0,
+      "tick": 371,
+      "packets": 93,
+      "syncs": 1,
+      "bytes": 1451943,
+      "decodeP95": 11.20180000000255,
+      "publicationGapP95": 261,
+      "publicationGapMax": 425
+    },
+    {
+      "id": 1,
+      "tick": 371,
+      "packets": 94,
+      "syncs": 0,
+      "bytes": 1443326,
+      "decodeP95": 13.766300000002957,
+      "publicationGapP95": 262,
+      "publicationGapMax": 272
+    }
+  ],
+  "failures": []
+}

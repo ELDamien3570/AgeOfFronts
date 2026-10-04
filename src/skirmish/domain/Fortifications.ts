@@ -1,3 +1,4 @@
+import { availableGold, spendGold } from "./Gold";
 import type { GameMap } from "../../core/game/GameMap";
 import type { Building, Player } from "../Protocol";
 import { FIXED } from "../Protocol";
@@ -246,6 +247,22 @@ export class Fortifications {
     return !this.blockingTilesOnSweep(from,to,owner,radius).some(tile =>
       boxSweepEntry(from,to,{x:this.map.x(tile)*FIXED,y:this.map.y(tile)*FIXED},FIXED,radius)!==null);
   }
+  forgetBuilding(building: Building, remaining: readonly Building[]): void {
+    this.repairs.delete(`b:${building.id}`);
+    let dirty = false;
+    for (let i = this.barriers.length - 1; i >= 0; i--) {
+      const wall = this.barriers[i];
+      if (wall.a !== building.id && wall.b !== building.id) continue;
+      this.repairs.delete(`w:${wall.id}`); this.barriers.splice(i, 1); dirty = true;
+    }
+    if (building.type === "tower" && !remaining.some(b => b.type === "tower" &&
+      b.tile === building.tile && b.playerId === building.playerId && (b.health ?? 1) > 0)) {
+      const owners = this.towers.get(building.tile);
+      if (owners?.delete(building.playerId)) dirty = true;
+      if (!owners?.size) this.towers.delete(building.tile);
+    }
+    if (dirty) this.reindex();
+  }
   towerPlan(
     tile: number,
     owner: number,
@@ -291,8 +308,8 @@ export class Fortifications {
     if (missing <= 0 || this.repairs.has(key))
       return "No repair needed or repair already in progress";
     const gold = Math.ceil(missing / 5);
-    if (player.gold < gold) return "Not enough gold for repairs";
-    player.gold -= gold;
+    if (availableGold(player) < gold) return "Not enough gold for repairs";
+    spendGold(player, gold);
     this.repairs.set(key, { owner: player.id, remaining: missing });
     return null;
   }

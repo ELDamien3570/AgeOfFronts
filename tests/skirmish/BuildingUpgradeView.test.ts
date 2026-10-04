@@ -15,7 +15,7 @@ it("building card and U action dispatch the shared paid selection quote, and ref
   m.players[0].gold = 10000;
   m.expansion!.progression.states[1].age = "BronzeAge";
   m.expansion!.progression.states[1].completed = TECHNOLOGIES.map(t => t.id);
-  const b = m.addBuilding({ id: 999, playerId: 1, type: "barracks" as const, age: "StoneAge" as const,
+  const b = m.addBuilding({ id: 999, playerId: 1, type: "city" as const, age: "StoneAge" as const,
     tile: m.players[0].base, remainingTicks: 0, health: 1200, maxHealth: 1200 });
 
   const root = document.createElement("div"); root.id = "app";
