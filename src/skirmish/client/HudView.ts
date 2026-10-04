@@ -167,7 +167,7 @@ export class HudView {
     dialog.addEventListener("close", () => this.deletion.cancel());
     this.el("delete-building").addEventListener("click", () => {
       if (!this.vm || this.deletableId === null || !this.deletion.request(this.vm.game.state, this.playerId, this.deletableId)) return;
-      this.el("delete-building-message").textContent = `Delete building #${this.deletableId}?`;
+      this.el("delete-building-message").textContent = this.deletion.message(this.vm.game.state);
       dialog.showModal();
     });
     this.el("delete-building-confirm").addEventListener("click", () => {
@@ -333,6 +333,7 @@ export class HudView {
     this.deletion.reconcile(vm.game.state, vm.playerId);
     const dialog = this.el("delete-building-dialog") as HTMLDialogElement;
     if (dialog.open && this.deletion.pendingId === null) dialog.close();
+    if (dialog.open) this.el("delete-building-message").textContent = this.deletion.message(vm.game.state);
     for (const button of this.root.querySelectorAll<HTMLElement>('button[id^="build-"], button[data-dock-action="build"]')) {
       const type = (button.dataset.value ?? button.id.slice(6)) as import("../Protocol").BuildingType;
       const count = vm.buildingCounts.get(type) ?? {total: 0, ready: 0};

@@ -1,4 +1,6 @@
 import type { Command, Snapshot } from "../Protocol";
+import { BUILDING_RULES } from "../Rules";
+import { AGES, AGE_NAMES } from "../domain/Definitions";
 
 /** Confirmation intent pins one identity, never a stack or current selection. */
 export class BuildingDeletionViewModel {
@@ -25,6 +27,12 @@ export class BuildingDeletionViewModel {
       !this.eligible(state, playerId, this.pendingId)
     )
       this.cancel();
+  }
+  message(state: Snapshot): string {
+    const building = state.buildings.find((b) => b.id === this.pendingId);
+    if (!building) return "";
+    const tier = AGES.indexOf(building.age ?? "StoneAge");
+    return `Delete ${BUILDING_RULES[building.type].name} — Level ${tier + 1} (${AGE_NAMES[tier]})?`;
   }
   cancel(): void {
     this.pendingId = null;

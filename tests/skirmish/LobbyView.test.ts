@@ -38,6 +38,30 @@ function fixture() {
 }
 
 describe("lobby page", () => {
+  it.each(["home", "room"])("retains the connected native color selector and options during %s publications", page => {
+    const {root,view,vm,actions}=fixture();
+    if (page === "room") { vm.showLobby("africa"); view.render(vm); }
+    const select=root.querySelector<HTMLSelectElement>("#faction-color")!;
+    const options=Array.from(select.options);
+    const ancestors: Element[]=[];
+    for(let parent:Element|null=select;parent&&parent!==root;parent=parent.parentElement) ancestors.push(parent);
+    const removed:Node[]=[];
+    const observer=new MutationObserver(()=>{});
+    observer.observe(root,{childList:true,subtree:true});
+    select.focus();
+    for(let i=0;i<5;i++) view.render(vm);
+    for(const record of observer.takeRecords()) removed.push(...record.removedNodes);
+    observer.disconnect();
+    expect(root.querySelector("#faction-color")).toBe(select);
+    expect(Array.from(select.options)).toEqual(options);
+    expect(document.activeElement).toBe(select);
+    for(const ancestor of ancestors) expect(removed).not.toContain(ancestor);
+    vm.chooseColor(3);view.render(vm);
+    expect(select.value).toBe("3");
+    select.value="5";select.dispatchEvent(new Event("change",{bubbles:true}));
+    expect(actions.chooseColor).toHaveBeenCalledExactlyOnceWith(5);
+  });
+
   it("disables colors reserved by other guests while showing the server-owned selection", () => {
     const { root, view, vm } = fixture();
     const rooms = new RoomCoordinator(0, 1);
@@ -49,6 +73,17 @@ describe("lobby page", () => {
     const select = root.querySelector<HTMLSelectElement>("#faction-color")!;
     expect(select.value).toBe("1");
     expect(select.querySelector<HTMLOptionElement>('[value="3"]')!.disabled).toBe(true);
+    const reservedOption = select.querySelector<HTMLOptionElement>('[value="3"]')!;
+    rooms.leave("b", Date.now());
+    vm.applyOnlineState(rooms.snapshot(), "a", Date.now());
+    view.render(vm);
+    expect(root.querySelector("#faction-color")).toBe(select);
+    expect(select.querySelector('[value="3"]')).toBe(reservedOption);
+    expect(reservedOption.disabled).toBe(false);
+    rooms.join("default-africa", "b", { name: "B", flagCode: null, colorIndex: 3 }, Date.now());
+    vm.applyOnlineState(rooms.snapshot(), "a", Date.now());
+    view.render(vm);
+    expect(reservedOption.disabled).toBe(true);
     expect(vm.chooseColor(3)).toBe(false);
     expect(vm.message).toContain("reserved");
     view.render(vm);

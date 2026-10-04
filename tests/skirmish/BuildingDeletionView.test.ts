@@ -20,7 +20,7 @@ it("requires confirm, supports Cancel/X/Escape, pins one stack member and closes
     type: "barracks",
     playerId: 1,
     tile: m.players[0].base,
-    age: "StoneAge",
+    age: "BronzeAge",
     remainingTicks: 0,
   });
   m.addBuilding({
@@ -75,6 +75,7 @@ it("requires confirm, supports Cancel/X/Escape, pins one stack member and closes
   for (const id of ["delete-building-cancel", "delete-building-close"]) {
     click("delete-building");
     expect(dialog.open).toBe(true);
+    expect(root.querySelector("#delete-building-message")!.textContent).toBe("Delete Barracks — Level 2 (Bronze Age)?");
     expect(command).not.toHaveBeenCalled();
     click(id);
     expect(dialog.open).toBe(false);
@@ -82,6 +83,9 @@ it("requires confirm, supports Cancel/X/Escape, pins one stack member and closes
     expect(command).not.toHaveBeenCalled();
   }
   click("delete-building");
+  m.updateBuilding(b.id, { age: "ClassicalAge" });
+  view.update(model());
+  expect(root.querySelector("#delete-building-message")!.textContent).toBe("Delete Barracks — Level 3 (Classical Age)?");
   dialog.dispatchEvent(new Event("cancel"));
   dialog.close();
   click("delete-building-confirm");

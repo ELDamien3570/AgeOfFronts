@@ -260,6 +260,45 @@ export class LobbyView {
     });
   }
 
+  /** Keep the live selector and its ancestors mounted: removing even an
+   * ancestor closes a browser-native dropdown. Only surrounding publications
+   * are replaced; option nodes update in place when their facts change. */
+  private refreshColorField(current: Element, next: Element): void {
+    const select = current.querySelector<HTMLSelectElement>("select")!;
+    const nextSelect = next.querySelector<HTMLSelectElement>("select")!;
+    if (select.disabled !== nextSelect.disabled) select.disabled = nextSelect.disabled;
+    for (let i = 0; i < nextSelect.options.length; i++) {
+      const option = select.options[i], incoming = nextSelect.options[i];
+      if (option.disabled !== incoming.disabled) option.disabled = incoming.disabled;
+      if (option.textContent !== incoming.textContent) option.textContent = incoming.textContent;
+    }
+    if (select.value !== nextSelect.value) select.value = nextSelect.value;
+    const swatch = current.querySelector<HTMLElement>(".faction-color-swatch")!;
+    const nextSwatch = next.querySelector<HTMLElement>(".faction-color-swatch")!;
+    if (swatch.style.background !== nextSwatch.style.background)
+      swatch.style.background = nextSwatch.style.background;
+    const error = current.querySelector(".faction-color-error");
+    const nextError = next.querySelector(".faction-color-error");
+    if (!nextError) error?.remove();
+    else if (!error) current.append(nextError);
+    else if (error.textContent !== nextError.textContent) error.textContent = nextError.textContent;
+  }
+
+  private replaceAround(current: Element, next: Element, retained: Element, nextRetained: Element): void {
+    if (current === retained) return;
+    const branch = Array.from(current.children).find(child => child === retained || child.contains(retained))!;
+    const nextBranch = Array.from(next.children).find(child => child === nextRetained || child.contains(nextRetained))!;
+    this.replaceAround(branch, nextBranch, retained, nextRetained);
+    for (const child of Array.from(current.childNodes))
+      if (child !== branch) child.remove();
+    let before = true;
+    for (const child of Array.from(next.childNodes)) {
+      if (child === nextBranch) { before = false; continue; }
+      if (before) current.insertBefore(child, branch);
+      else current.appendChild(child);
+    }
+  }
+
   render(vm: LobbyViewModel): void {
     const focusedId = this.root.contains(document.activeElement)
       ? document.activeElement?.id
@@ -283,20 +322,19 @@ export class LobbyView {
       const nextEditor = nextHome.querySelector("#empire-customization")!;
       const name = editor.querySelector<HTMLInputElement>("#empire-name")!;
       if (name.value !== vm.draftEmpireName) name.value = vm.draftEmpireName;
-      editor.querySelector(".faction-color-field")!.innerHTML = nextEditor.querySelector(".faction-color-field")!.innerHTML;
+      this.refreshColorField(editor.querySelector(".faction-color-field")!, nextEditor.querySelector(".faction-color-field")!);
       editor.querySelector("#choose-flag")!.innerHTML =
         nextEditor.querySelector("#choose-flag")!.innerHTML;
-      for (const child of Array.from(currentHome.childNodes))
-        if (child !== editor) child.remove();
-      let beforeEditor = true;
-      for (const child of Array.from(nextHome.childNodes)) {
-        if (child === nextEditor) {
-          beforeEditor = false;
-          continue;
-        }
-        if (beforeEditor) currentHome.insertBefore(child, editor);
-        else currentHome.appendChild(child);
-      }
+      this.replaceAround(currentHome, nextHome, editor, nextEditor);
+    } else if (vm.page !== "home" && this.root.querySelector("main.room-page")) {
+      const currentRoom = this.root.querySelector("main.room-page")!;
+      const template = document.createElement("template");
+      template.innerHTML = lobby(vm);
+      const nextRoom = template.content.querySelector("main")!;
+      const field = currentRoom.querySelector(".faction-color-field")!;
+      const nextField = nextRoom.querySelector(".faction-color-field")!;
+      this.refreshColorField(field, nextField);
+      this.replaceAround(currentRoom, nextRoom, field, nextField);
     } else {
       this.root.innerHTML = `${header()}${vm.page === "home" ? home(vm) : lobby(vm)}${footer(this.sourceUrl)}<div id="dialog-holder"></div>`;
     }
