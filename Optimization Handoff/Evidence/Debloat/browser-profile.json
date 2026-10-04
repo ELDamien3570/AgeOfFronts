@@ -1,0 +1,41 @@
+{
+  "status": "PASS",
+  "browser": "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/154.0.0.0 Safari/537.36",
+  "scene": "1500 stationary squads, 192x128 all land; no AI, sockets or simulated load",
+  "visibleLabels": "Browser verification",
+  "sampledFrames": 150,
+  "drawn": 92,
+  "admittedAt60Hz": 60,
+  "frameTextMeasurements": 0,
+  "legacyStructuredClone": {
+    "mean": 2.096666666636399,
+    "p95": 2.6999999997206032,
+    "maximum": 6.7999999998137355
+  },
+  "packedEncode": {
+    "mean": 0.8566666666651145,
+    "p95": 1.599999999627471,
+    "maximum": 3.8999999999068677
+  },
+  "packedTransfer": {
+    "mean": 0.26250000005044666,
+    "p95": 0.5,
+    "maximum": 0.900000000372529
+  },
+  "packedDecode": {
+    "mean": 1.4491666666426075,
+    "p95": 2.7999999998137355,
+    "maximum": 8.5
+  },
+  "frameDraw": {
+    "mean": 1.9336956521880853,
+    "p95": 3.7999999998137355,
+    "maximum": 40.799999999813735
+  },
+  "drawInterval": {
+    "mean": 26.5010989010989,
+    "p95": 20.100000000000364,
+    "maximum": 710.4999999999999
+  },
+  "limitations": "Synthetic browser checks and local synchronous clone/transfer timings; no DevTools allocation trace, real worker round-trip timing, or sustained multiplayer 60FPS qualification."
+}

@@ -338,6 +338,30 @@ export class Skirmish {
   private readonly spatial: SpatialGrid<Squad>;
   private readonly navalSpatial: SpatialGrid<Ship>;
   private readonly heldSpatial: SpatialGrid<Squad>;
+  private readonly landScratch: Squad[] = [];
+  private readonly heldScratch: Squad[] = [];
+  private landMembership = -1;
+  private landCargo = -1;
+  private movementSpatialRevision = -1;
+  private previousPositions = new Float64Array(0);
+  private readonly rollbackPoint: WorldPoint = { x: 0, y: 0 };
+  private readonly approachRevisions = new Map<number, string>();
+  private movementLand(): Squad[] {
+    if (this.landMembership !== this.squadIndex.membershipRevision ||
+        this.landCargo !== this.squadIndex.cargoRevision) {
+      this.landScratch.length = 0;
+      for (const squad of this.squads)
+        if (squad.embarkedOn === null) this.landScratch.push(squad);
+      this.landScratch.sort((a, b) => a.id - b.id);
+      this.landMembership = this.squadIndex.membershipRevision;
+      this.landCargo = this.squadIndex.cargoRevision;
+    }
+    if (this.movementSpatialRevision !== this.squadIndex.spatialRevision) {
+      this.spatial.rebuild(this.landScratch);
+      this.movementSpatialRevision = this.squadIndex.spatialRevision;
+    }
+    return this.landScratch;
+  }
   private readonly buildingIndex: BuildingIndex;
   readonly coast: CoastIndex;
   private readonly shoreTransport: ShoreTransport;
@@ -2734,11 +2758,7 @@ export class Skirmish {
     this.produceReserves();
     phaseStart = this.diagnosticPhase("economy", phaseStart);
     if (this.options.runAi !== false) {
-      this.spatial.rebuild(
-        this.squads
-          .filter((s) => s.embarkedOn === null)
-          .sort((a, b) => a.id - b.id),
-      );
+      this.movementLand();
       this.formations.beginBatch(this.squads);
       try {
         this.thinkAi();
@@ -2754,10 +2774,7 @@ export class Skirmish {
         this.expansion?.economy.navalFacts.observeShip(ship);
     }
     phaseStart = this.diagnosticPhase("ships", phaseStart);
-    const land = this.squads
-      .filter((s) => s.embarkedOn === null)
-      .sort((a, b) => a.id - b.id);
-    this.spatial.rebuild(land);
+    const land = this.movementLand();
     // At most 24 squad route jobs per fixed tick. Requests retain FIFO priority
     // while their targets refresh; queued units keep following their old path.
     // Army slots and their connector jobs share one occupancy index for this
@@ -2772,18 +2789,28 @@ export class Skirmish {
       }
     } else this.drainRoutes();
     phaseStart = this.diagnosticPhase("routing", phaseStart);
-    this.heldSpatial.rebuild(land.filter((s) => this.holding(s)));
+    this.heldScratch.length = 0;
+    for (const squad of land) if (this.holding(squad)) this.heldScratch.push(squad);
+    this.heldSpatial.rebuild(this.heldScratch);
     const intents: MovementIntent[] = [];
     const approachEnemies:Squad[]=[];
+    this.approachRevisions.clear();
     this.attackApproaches.rebuild(land, s => this.expansion ? this.expansion.unit(s).attack.channel === "melee" : s.kind !== "archer",(s,point)=>{
       if(!standable(this.map,point,squadRadius(s.kind)) || this.expansion?.fortifications.blocked(this.tileOf(point),s.playerId))return false;
       this.spatial.query(point.x,point.y,2*FIXED,approachEnemies,s.playerId);
       return !approachEnemies.some(other=>other.embarkedOn===null && this.hostile(s.playerId,other.playerId) &&
         distanceSquared(point,other)<squadSeparation(s,other,this.collisionHostile)**2);
-    },(target,owner)=>{
+    },(target,owner,output)=>{
       this.spatial.query(target.x,target.y,6*FIXED,approachEnemies,owner);
-      return `${this.routingObstacleRevision(owner)}:${approachEnemies.filter(other=>other.embarkedOn===null&&this.hostile(owner,other.playerId))
-        .map(other=>`${other.id}:${other.kind}:${other.x}:${other.y}`).join(";")}`;
+      let revision = this.approachRevisions.get(owner);
+      if (revision === undefined) {
+        revision = this.routingObstacleRevision(owner);
+        this.approachRevisions.set(owner, revision);
+      }
+      output.revision = revision;
+      for (const other of approachEnemies)
+        if (other.embarkedOn === null && this.hostile(owner, other.playerId))
+          output.values.push(other.id, other.kind === "infantry" ? 0 : other.kind === "archer" ? 1 : 2, other.x, other.y);
     });
     for (const squad of land) {
       const intent = this.navigation(squad);
@@ -2795,28 +2822,36 @@ export class Skirmish {
     }
     // Friendly overlap removes the need for single-file passage reservations.
     // Enemy swept collisions remain enforced by LocalAvoidance.
-    const previous = this.expansion
-      ? new Map(land.map((s) => [s.id, { x: s.x, y: s.y }]))
-      : undefined;
+    // Dense tick ordinals, not lifetime IDs; Float64 preserves exact coordinates.
+    if (this.expansion) {
+      if (this.previousPositions.length < land.length * 2)
+        this.previousPositions = new Float64Array(Math.max(32, land.length * 4));
+      for (let at = 0; at < land.length; at++) {
+        this.previousPositions[at * 2] = land[at].x;
+        this.previousPositions[at * 2 + 1] = land[at].y;
+      }
+    }
     this.avoidance.step(land, intents, this.spatial, (id, changes) => this.squadEntities.updateOwned(id, changes),
       this.tick, (squad,end) => !this.expansion || (this.expansion.fortifications.clearMovement(squad,end,squad.playerId,squadRadius(squad.kind)) &&
         (this.aiFootprintAllowed(squad.playerId,this.tileOf(end)) || (!this.aiFootprintAllowed(squad.playerId,this.tileOf(squad)) &&
           distanceSquared(end,tilePoint(this.map,this.player(squad.playerId)!.base)) < distanceSquared(squad,tilePoint(this.map,this.player(squad.playerId)!.base))))),
       squad => this.movementAdmission.hasPending(squad.id) || this.queuedLegs.has(squad.id) || this.routePlanner.has(`navigation:${squad.id}`) ? "planning" : "blocked");
     if (this.expansion)
-      for (const squad of land)
+      for (let at = 0; at < land.length; at++) {
+        const squad = land[at], old = this.rollbackPoint;
+        old.x = this.previousPositions[at * 2];
+        old.y = this.previousPositions[at * 2 + 1];
         if (
           (!this.expansion.fortifications.clearMovement(
-            previous!.get(squad.id)!,
+            old,
             squad,
             squad.playerId,
             squadRadius(squad.kind),
           ) || (!this.aiFootprintAllowed(squad.playerId, this.tileOf(squad)) &&
-            (this.aiFootprintAllowed(squad.playerId, this.tileOf(previous!.get(squad.id)!)) ||
+            (this.aiFootprintAllowed(squad.playerId, this.tileOf(old)) ||
              distanceSquared(squad, tilePoint(this.map, this.player(squad.playerId)!.base)) >=
-             distanceSquared(previous!.get(squad.id)!, tilePoint(this.map, this.player(squad.playerId)!.base)))))
+             distanceSquared(old, tilePoint(this.map, this.player(squad.playerId)!.base)))))
         ) {
-          const old = previous!.get(squad.id)!;
           this.squadEntities.updateOwned(squad.id, { x: old.x });
           this.squadEntities.updateOwned(squad.id, { y: old.y });
           this.squadEntities.updateOwned(squad.id, { moved: false });
@@ -2824,6 +2859,7 @@ export class Skirmish {
           this.squadEntities.updateOwned(squad.id, { plannedTile: -1 });
           this.squadEntities.updateOwned(squad.id, { lastPlanTick: -20 });
         }
+      }
     for (const squad of this.squads) {
       if (squad.embarkedOn !== null) {
         this.squadEntities.updateOwned(squad.id, { moved: false });
@@ -2832,7 +2868,7 @@ export class Skirmish {
       }
       this.advanceNavigation(squad);
     }
-    this.spatial.rebuild(land);
+    this.movementLand();
     phaseStart = this.diagnosticPhase("movement", phaseStart);
     this.fight();
     this.fightShips();

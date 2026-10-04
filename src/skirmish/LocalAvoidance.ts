@@ -38,6 +38,13 @@ interface Obstacle {
   comfortSquared: number;
   moving: boolean;
 }
+interface MotionScratch {
+  intent?: MovementIntent;
+  preferred: Velocity;
+  proposed: Velocity;
+  forecast: { x: number; y: number; length: number; moving: boolean };
+  blockers: number[];
+}
 const ZERO: Velocity = { x: 0, y: 0 };
 const HORIZON = 6;
 // Prefer passing on the right. The small turn steps also give stable headings.
@@ -59,7 +66,13 @@ function closestDistanceSquared(
     : 0;
   return (dx + vx * time) ** 2 + (dy + vy * time) ** 2;
 }
-function crossing(a: Squad, av: Velocity, b: Squad, bv: Velocity, hostile?: FactionHostility): boolean {
+function crossing(
+  a: Squad,
+  av: Velocity,
+  b: Squad,
+  bv: Velocity,
+  hostile?: FactionHostility,
+): boolean {
   const dx = a.x - b.x,
     dy = a.y - b.y;
   const minimum = squadSeparation(a, b, hostile);
@@ -92,6 +105,9 @@ export class LocalAvoidance {
   restore(saved: ReturnType<LocalAvoidance["checkpoint"]>): void {
     const state = structuredClone(saved);
     restoreMap(this.previous, state.previous);
+    // Older checkpoints can share ZERO/desired objects between several IDs.
+    for (const [id, velocity] of this.previous)
+      this.previous.set(id, { x: velocity.x, y: velocity.y });
     // Historical friendly yield leases no longer constrain the overlap policy.
     this.recovery.restore();
   }
@@ -100,7 +116,15 @@ export class LocalAvoidance {
   private readonly obstacles: Obstacle[] = [];
   private readonly crowd = new CrowdVelocity();
   private readonly recovery = new CrowdRecovery();
-  constructor(private readonly map: GameMap, private readonly hostile?: FactionHostility) {}
+  private readonly active: Squad[] = [];
+  private readonly rows: MotionScratch[] = [];
+  private readonly motion = new Map<number, MotionScratch>();
+  private readonly neighbors: Squad[] = [];
+  private readonly stopped: Squad[] = [];
+  constructor(
+    private readonly map: GameMap,
+    private readonly hostile?: FactionHostility,
+  ) {}
 
   step(
     squads: readonly Squad[],
@@ -119,16 +143,34 @@ export class LocalAvoidance {
     const allowed = (squad: Squad, end: WorldPoint) =>
       traversable(this.map, squad, end, squadRadius(squad.kind)) &&
       (!restrictions || restrictions(squad, end));
-    const active = squads
-      .filter((squad) => squad.embarkedOn === null)
-      .sort((a, b) => a.id - b.id);
-    const byId = new Map(intents.map((intent) => [intent.squad.id, intent]));
-    const preferred = new Map<number, Velocity>();
+    const active = this.active,
+      motion = this.motion;
+    active.length = 0;
+    for (const squad of squads)
+      if (squad.embarkedOn === null) active.push(squad);
+    active.sort((a, b) => a.id - b.id);
+    motion.clear();
+    for (let at = 0; at < active.length; at++) {
+      const row =
+        this.rows[at] ??
+        (this.rows[at] = {
+          preferred: { x: 0, y: 0 },
+          proposed: { x: 0, y: 0 },
+          forecast: { x: 0, y: 0, length: 0, moving: false },
+          blockers: [],
+        });
+      row.intent = undefined;
+      row.preferred.x = row.preferred.y = 0;
+      row.proposed.x = row.proposed.y = 0;
+      row.blockers.length = 0;
+      motion.set(active[at].id, row);
+    }
     for (const intent of intents) {
-      if (intent.yieldOnly) {
-        preferred.set(intent.squad.id, ZERO);
-        continue;
-      }
+      const row = motion.get(intent.squad.id);
+      if (!row) continue;
+      row.intent = intent;
+      row.preferred.x = row.preferred.y = 0;
+      if (intent.yieldOnly) continue;
       const dx = intent.goal.x - intent.squad.x,
         dy = intent.goal.y - intent.squad.y;
       const distance = Math.hypot(dx, dy);
@@ -136,30 +178,22 @@ export class LocalAvoidance {
         intent.speed,
         Math.max(0, distance - (intent.stopDistance ?? 0)),
       );
-      preferred.set(
-        intent.squad.id,
-        distance
-          ? {
-              x: Math.round((dx * travel) / distance),
-              y: Math.round((dy * travel) / distance),
-            }
-          : ZERO,
-      );
+      row.preferred.x = distance ? Math.round((dx * travel) / distance) : 0;
+      row.preferred.y = distance ? Math.round((dy * travel) / distance) : 0;
     }
-    const blocked = new Map<number, Set<number>>();
     const addBlocker = (a: number, b: number) => {
-      let ids = blocked.get(a);
-      if (!ids) blocked.set(a, (ids = new Set()));
-      if (ids.size < 8) ids.add(b);
+      const ids = motion.get(a)!.blockers;
+      if (ids.length < 8 && !ids.includes(b)) ids.push(b);
     };
-    const proposed = new Map<number, Velocity>();
-    const forecasts = new Map<
-      number,
-      { x: number; y: number; length: number; moving: boolean }
-    >();
+    const propose = (id: number, velocity: Velocity) => {
+      const output = motion.get(id)!.proposed;
+      output.x = velocity.x;
+      output.y = velocity.y;
+    };
     let maximumForecast = 0;
     for (const squad of active) {
-      const desired = preferred.get(squad.id);
+      const row = motion.get(squad.id)!;
+      const desired = row.intent ? row.preferred : undefined;
       const moving = !!desired && !!(desired.x || desired.y);
       const velocity = moving
         ? (this.previous.get(squad.id) ?? desired!)
@@ -167,40 +201,72 @@ export class LocalAvoidance {
       const length = Math.sqrt(
         velocity.x * velocity.x + velocity.y * velocity.y,
       );
-      forecasts.set(squad.id, { x: velocity.x, y: velocity.y, length, moving });
+      row.forecast.x = velocity.x;
+      row.forecast.y = velocity.y;
+      row.forecast.length = length;
+      row.forecast.moving = moving;
       maximumForecast = Math.max(maximumForecast, length);
     }
-    const neighbors: Squad[] = [];
+    const neighbors = this.neighbors;
     const obstacles = this.obstacles;
     const end: WorldPoint = { x: 0, y: 0 };
     for (const squad of active) {
-      let desired = preferred.get(squad.id) ?? ZERO;
+      const row = motion.get(squad.id)!;
+      let desired = row.intent ? row.preferred : ZERO;
       if (!desired.x && !desired.y) {
-        proposed.set(squad.id, ZERO);
+        propose(squad.id, ZERO);
         continue;
       }
       // Grid cell order is deterministic; each bucket is populated in ID order.
       // Sorting every neighborhood would repeat the same work for every unit.
       const last = this.previous.get(squad.id) ?? desired;
-      const intent = byId.get(squad.id)!;
+      const intent = row.intent!;
       // Friendly bodies are a bounded soft steering preference, not hard
       // obstacles. Terrain failure falls back to the original trajectory;
       // hostile trajectories still pass the exact swept guard below.
-      grid.sample(squad.x,squad.y,1.15*FIXED,neighbors,other=>other.id!==squad.id && squadSeparation(squad,other,this.hostile)===0,8,64);
-      let pushX=0,pushY=0,read=0;
-      for(const other of neighbors) {
-        if(other.id===squad.id || squadSeparation(squad,other,this.hostile)!==0)continue;
-        const dx=squad.x-other.x,dy=squad.y-other.y,distance=Math.hypot(dx,dy);
-        if(distance>=1.15*FIXED)continue;
-        const strength=(1-distance/(1.15*FIXED))*intent.speed*0.3;
-        pushX+=(distance ? dx/distance : squad.id<other.id ? -1 : 1)*strength;
-        pushY+=(distance ? dy/distance : squad.id<other.id ? 0.5 : -0.5)*strength;
-        if(++read>=8)break;
+      grid.sample(
+        squad.x,
+        squad.y,
+        1.15 * FIXED,
+        neighbors,
+        (other) =>
+          other.id !== squad.id &&
+          squadSeparation(squad, other, this.hostile) === 0,
+        8,
+        64,
+      );
+      let pushX = 0,
+        pushY = 0,
+        read = 0;
+      for (const other of neighbors) {
+        if (
+          other.id === squad.id ||
+          squadSeparation(squad, other, this.hostile) !== 0
+        )
+          continue;
+        const dx = squad.x - other.x,
+          dy = squad.y - other.y,
+          distance = Math.hypot(dx, dy);
+        if (distance >= 1.15 * FIXED) continue;
+        const strength = (1 - distance / (1.15 * FIXED)) * intent.speed * 0.3;
+        pushX +=
+          (distance ? dx / distance : squad.id < other.id ? -1 : 1) * strength;
+        pushY +=
+          (distance ? dy / distance : squad.id < other.id ? 0.5 : -0.5) *
+          strength;
+        if (++read >= 8) break;
       }
-      if(read) {
-        const x=desired.x+pushX,y=desired.y+pushY,length=Math.hypot(x,y),scale=Math.min(1,intent.speed/Math.max(1,length));
-        const steering={x:Math.round(x*scale),y:Math.round(y*scale)};
-        if(steering.x*desired.x+steering.y*desired.y>0 && allowed(squad,{x:squad.x+steering.x,y:squad.y+steering.y}))desired=steering;
+      if (read) {
+        const x = desired.x + pushX,
+          y = desired.y + pushY,
+          length = Math.hypot(x, y),
+          scale = Math.min(1, intent.speed / Math.max(1, length));
+        const steering = { x: Math.round(x * scale), y: Math.round(y * scale) };
+        if (
+          steering.x * desired.x + steering.y * desired.y > 0 &&
+          allowed(squad, { x: squad.x + steering.x, y: squad.y + steering.y })
+        )
+          desired = steering;
       }
       const horizon = Math.min(
         HORIZON,
@@ -229,7 +295,7 @@ export class LocalAvoidance {
       // samples. Cull only pairs that cannot reach even the comfort boundary.
       for (const other of neighbors) {
         if (other.id === squad.id) continue;
-        const otherVelocity = forecasts.get(other.id)!;
+        const otherVelocity = motion.get(other.id)!.forecast;
         const dx = squad.x - other.x,
           dy = squad.y - other.y,
           initial = dx * dx + dy * dy;
@@ -289,7 +355,7 @@ export class LocalAvoidance {
         end.x = squad.x + desired.x;
         end.y = squad.y + desired.y;
         if (allowed(squad, end)) {
-          proposed.set(squad.id, desired);
+          propose(squad.id, desired);
           continue;
         }
       }
@@ -321,7 +387,7 @@ export class LocalAvoidance {
         end.y = squad.y + reciprocal.y;
         if (allowed(squad, end)) {
           if (!reciprocal.x && !reciprocal.y) recordConstraints();
-          proposed.set(squad.id, reciprocal);
+          propose(squad.id, reciprocal);
           continue;
         }
       }
@@ -379,24 +445,28 @@ export class LocalAvoidance {
         }
       }
       if (!bestX && !bestY) recordConstraints();
-      proposed.set(squad.id, bestX || bestY ? { x: bestX, y: bestY } : ZERO);
+      row.proposed.x = bestX;
+      row.proposed.y = bestY;
     }
     // Friendly squads can overlap, so friendly jam leases require no solver work.
     // Cancel conflicting trajectories simultaneously. A stopped squad may block
     // another proposal: propagate those cancellations before committing anyone.
-    const stopped: Squad[] = [];
+    const stopped = this.stopped;
+    stopped.length = 0;
     let maximumMotion = 0;
-    for (const velocity of proposed.values())
+    for (const row of motion.values()) {
+      const velocity = row.proposed;
       maximumMotion = Math.max(
         maximumMotion,
         Math.sqrt(velocity.x * velocity.x + velocity.y * velocity.y),
       );
+    }
     const guardRadius =
       2 * squadRadius("cavalry") + COLLISION_SKIN + 2 * maximumMotion;
     const cancel = (squad: Squad) => {
-      const velocity = proposed.get(squad.id)!;
+      const velocity = motion.get(squad.id)!.proposed;
       if (velocity.x || velocity.y) {
-        proposed.set(squad.id, ZERO);
+        velocity.x = velocity.y = 0;
         stopped.push(squad);
       }
     };
@@ -407,9 +477,9 @@ export class LocalAvoidance {
           other.id > squad.id &&
           crossing(
             squad,
-            proposed.get(squad.id)!,
+            motion.get(squad.id)!.proposed,
             other,
-            proposed.get(other.id)!,
+            motion.get(other.id)!.proposed,
             this.hostile,
           )
         ) {
@@ -425,18 +495,25 @@ export class LocalAvoidance {
       for (const other of neighbors)
         if (
           other.id !== squad.id &&
-          crossing(squad, ZERO, other, proposed.get(other.id)!, this.hostile)
+          crossing(
+            squad,
+            ZERO,
+            other,
+            motion.get(other.id)!.proposed,
+            this.hostile,
+          )
         ) {
           addBlocker(other.id, squad.id);
           cancel(other);
         }
     }
-    const live = new Set<number>();
     for (const squad of active) {
-      const velocity = proposed.get(squad.id)!;
+      const row = motion.get(squad.id)!,
+        velocity = row.proposed;
       const moved = velocity.x !== 0 || velocity.y !== 0;
-      const desired = preferred.get(squad.id),
-        ids = [...(blocked.get(squad.id) ?? [])].sort((a, b) => a - b);
+      const desired = row.intent ? row.preferred : undefined;
+      const ids = row.blockers;
+      ids.sort((a, b) => a - b);
       let reason: MovementBlockReason | undefined;
       if (!moved && desired && (desired.x || desired.y)) {
         if (ids.length) reason = "crowd";
@@ -455,33 +532,39 @@ export class LocalAvoidance {
       )
         reason = idleReason?.(squad) ?? "blocked";
       const previous = squad.movementStatus;
-      const movementStatus = reason
-        ? {
-            reason,
-            since: previous?.reason === reason ? previous.since : tick,
-            blockerIds: ids,
-          }
-        : undefined;
       // Preserve the status object unless its meaning changed; waiting time is
       // derived from snapshot.tick, not replicated as a counter every tick.
       const same =
-        previous?.reason === movementStatus?.reason &&
-        previous?.since === movementStatus?.since &&
-        (previous?.blockerIds.length ?? 0) ===
-          (movementStatus?.blockerIds.length ?? 0) &&
+        previous?.reason === reason &&
+        (previous?.blockerIds.length ?? 0) === (reason ? ids.length : 0) &&
         (previous?.blockerIds ?? []).every(
-          (id, at) => id === movementStatus?.blockerIds[at],
+          (id, at) => reason !== undefined && id === ids[at],
         );
+      const movementStatus = same
+        ? previous
+        : reason
+          ? {
+              reason,
+              since: previous?.reason === reason ? previous.since : tick,
+              blockerIds: ids.slice(),
+            }
+          : undefined;
       apply(squad.id, {
         x: squad.x + velocity.x,
         y: squad.y + velocity.y,
         moved,
         ...(same ? {} : { movementStatus }),
       });
-      this.previous.set(squad.id, velocity);
-      live.add(squad.id);
+      // Persistent history must never alias reusable proposal storage.
+      let history = this.previous.get(squad.id);
+      if (!history) this.previous.set(squad.id, (history = { x: 0, y: 0 }));
+      history.x = velocity.x;
+      history.y = velocity.y;
     }
     for (const id of this.previous.keys())
-      if (!live.has(id)) this.previous.delete(id);
+      if (!motion.has(id)) this.previous.delete(id);
+    // Intents carry live squad/goal references; scratch must not retain retired units.
+    for (const row of this.rows) row.intent = undefined;
+    active.length = neighbors.length = stopped.length = 0;
   }
 }

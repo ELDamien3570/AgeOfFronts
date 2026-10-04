@@ -433,6 +433,8 @@ export interface Snapshot {
 }
 
 export interface SnapshotPacket {
+  /** Versioned transferable presentation records; legacy object details remain readable. */
+  details?: import("./SnapshotDetails").PackedSnapshotDetails;
   barrierChanges?: { reset: boolean; rows: NonNullable<Snapshot["expansion"]>["barriers"]; removed: Int32Array;
     states?: readonly { id: number; health: number; remainingTicks: number }[] };
   reset: boolean;
@@ -464,6 +466,8 @@ export interface SnapshotPacket {
     id: number;
     definitionId?: string;
     xp?: number;
+    deploymentTicks?: number;
+    lastAttackTick?: number;
     nextAttackTick?: number;
     planningPaused?: boolean;
     movementStatus?: MovementStatus;

@@ -72,6 +72,7 @@ import { squadRadius, standable, tilePoint } from "../SquadGeometry";
 import type { CoastIndex } from "../CoastIndex";
 import { AiEconomicDirector } from "./AiEconomicDirector";
 export interface ExpansionWorld extends BattleWorld, ArmyWorld {
+  spatialFacts(phase: import("../PhaseSpatialViews").SpatialPhase): import("../PhaseSpatialViews").PhaseSpatialFacts;
   recruitment: Recruitment;
   options?: { runAi?: boolean; aiEconomy?: boolean; aiDefenses?:boolean; aiNaval?:boolean; aiWarPolicy?:boolean; deferredPlanning?:boolean; territoryIncomeScale?:number; resourceDensity?: 1 | 2 | 3 | 5; resourceOutput?: 1 | 2 | 3 | 5; alliances?: boolean; startingAge?: Age };
   map: GameMap;

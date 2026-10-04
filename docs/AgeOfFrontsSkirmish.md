@@ -20,12 +20,44 @@ the stack; its inspection card combines completed income and construction.
 
 ## Ownership and architecture
 
+Skirmish architecture is driven by gameplay and measured runtime cost. DDD and
+MVVM are not requirements for new features. Prefer a direct function or a small
+game system; introduce another interface, adapter or projection only when it
+serves an actual independent caller, ownership rule or transport boundary.
+Keep deterministic simulation separate from browser timing and rendering, and
+keep command authorization and dependent snapshot deltas intact.
+
 The fixed-step domain owns orders, movement, capture, costs, income and combat.
 AI and human commands use the same domain validation. View models project the
 domain snapshot into recruitment, resource and selection cards. Painted terrain,
 camera LOD, marker batching and frame pacing are view concerns and cannot alter
 the domain map, travel speed or combat rules. Forest cover is shared map data;
 the domain applies its movement cost, and the view models read that same field.
+
+The movement grid is reused while its unit spatial revision is unchanged;
+boarding and movement still refresh it before later queries. Avoidance uses
+reusable dense live-unit scratch rows, and rollback coordinates are Float64
+buffers indexed by tick ordinal rather than lifetime entity IDs. Melee approach
+cache invalidation compares exact numeric facts instead of concatenated enemy
+strings or collision-prone hashes. Trade requires the simulation's shared
+spatial views instead of maintaining fallback grids.
+The exact-route scheduler records each eligible cohort's FIFO head in one
+queue scan per quantum, preserving player/caller rotation and priority rules.
+
+Snapshot entity details (including ships and volleys) use versioned Float64
+buffers and a per-packet string table. Optional and null fields remain distinct;
+the decoder also accepts older object packets. Transferable buffers belong to
+the packet, including copied road geometry, so worker transfers cannot detach
+simulation state. Expansion metadata and players still use structured cloning;
+this is not a claim that the entire message is zero-copy.
+
+HUD projections are refreshed in place, displayed totals and queue/badge DOM
+writes are guarded by value comparisons, and territory glyph widths are cached
+at a reference font size and scaled during drawing. Font loading invalidates
+those widths. The renderer targets 60 Hz regardless of population; achievable
+frame rate remains dependent on the scene and hardware. Browser verification
+is available at `tests/skirmish/browser/DebloatProfile.html` and the canonical
+worker regression at `tests/skirmish/browser/P14Projection.html`.
 
 `BuildingIndex` derives tile stacks, placement neighbors and completed income
 from independently owned buildings. Land, held formations and naval units have

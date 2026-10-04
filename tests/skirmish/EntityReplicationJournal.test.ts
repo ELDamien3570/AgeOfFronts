@@ -86,7 +86,7 @@ describe("independent bounded entity replication", () => {
     );
     expect(quiet.squads.length).toBe(0);
     expect(quiet.ships.length).toBe(0);
-    expect(quiet.buildingDetails?.length).toBe(0);
+    expect(quiet.details?.buildings?.length).toBe(0);
     expect(encoder.diagnostics).toMatchObject({
       squadReads: 0,
       shipReads: 0,

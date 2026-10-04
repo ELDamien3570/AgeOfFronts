@@ -349,7 +349,12 @@ export class HudViewModel {
   }
 
   readonly buildingCounts = new Map<import("../Protocol").BuildingType, {total: number; ready: number}>();
-  constructor(readonly game: SkirmishViewModel) {
+  constructor(public game: SkirmishViewModel) {
+    this.update(game);
+  }
+  update(game: SkirmishViewModel): void {
+    this.game = game;
+    this.buildingCounts.clear();
     for (const building of game.state.buildings) {
       if (building.playerId !== game.playerId || (building.health ?? 1) <= 0) continue;
       const count = this.buildingCounts.get(building.type) ?? {total: 0, ready: 0};

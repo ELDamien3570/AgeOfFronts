@@ -4,6 +4,7 @@ import type { RecruitmentQueueEntry, RecruitmentQueueViewModel } from "./Recruit
 
 export class RecruitmentQueueView {
   private readonly cells = new Map<string, HTMLElement>();
+  private readonly entries = new Map<string, RecruitmentQueueEntry>();
   constructor(
     private readonly root: HTMLElement,
     app: HTMLElement,
@@ -22,8 +23,10 @@ export class RecruitmentQueueView {
       if (!keys.has(key)) {
         cell.remove();
         this.cells.delete(key);
+        this.entries.delete(key);
       }
-    this.root.hidden = !vm.entries.length;
+    const hidden = !vm.entries.length;
+    if (this.root.hidden !== hidden) this.root.hidden = hidden;
     for (const entry of vm.entries) {
       let cell = this.cells.get(entry.key);
       if (!cell) {
@@ -48,20 +51,19 @@ export class RecruitmentQueueView {
           .setAttribute("aria-valuemax", "100");
         this.root.append(cell);
         this.cells.set(entry.key, cell);
+        cell.oncontextmenu = event => { event.preventDefault(); const current = this.entries.get(entry.key); if (current) this.onCancel?.(current); };
       }
-      cell.oncontextmenu = event => { event.preventDefault(); this.onCancel?.(entry); };
-      cell.title = `${entry.name}: ${entry.count} queued · Right-click to cancel 1 · ${entry.seconds === null ? "Waiting for producer" : entry.seconds === 0 ? "Training complete; waiting for deployment" : `Next in ${entry.seconds}s (game time)`}`;
-      cell.querySelector(".recruitment-count")!.textContent = String(
-        entry.count,
-      );
+      this.entries.set(entry.key, entry);
+      const title = `${entry.name}: ${entry.count} queued · Right-click to cancel 1 · ${entry.seconds === null ? "Waiting for producer" : entry.seconds === 0 ? "Training complete; waiting for deployment" : `Next in ${entry.seconds}s (game time)`}`;
+      if (cell.title !== title) cell.title = title;
+      const count = cell.querySelector(".recruitment-count")!, text = String(entry.count);
+      if (count.textContent !== text) count.textContent = text;
       const bar = cell.querySelector<HTMLElement>("[role=progressbar]")!;
-      bar.setAttribute("aria-label", cell.title);
-      bar.setAttribute(
-        "aria-valuenow",
-        String(Math.round(entry.progress * 100)),
-      );
-      bar.querySelector<HTMLElement>("i")!.style.width =
-        `${entry.progress * 100}%`;
+      if (bar.getAttribute("aria-label") !== title) bar.setAttribute("aria-label", title);
+      const value = String(Math.round(entry.progress * 100));
+      if (bar.getAttribute("aria-valuenow") !== value) bar.setAttribute("aria-valuenow", value);
+      const progress = bar.querySelector<HTMLElement>("i")!, width = `${entry.progress * 100}%`;
+      if (progress.style.width !== width) progress.style.width = width;
     }
   }
 }

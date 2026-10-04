@@ -1,0 +1,9 @@
+{
+  "checks": [
+    "Training Square loaded",
+    "three squads selected: 3000 troops",
+    "pause text changed to Resume then back to Pause"
+  ],
+  "errors": [],
+  "limitations": "Short local gameplay smoke test; recruitment was unavailable without a barracks and not exercised."
+}

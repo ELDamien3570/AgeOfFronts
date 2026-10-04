@@ -69,7 +69,6 @@ import {
 import { hudMarkup, HudView } from "./HudView";
 
 import { RecruitmentControlsViewModel } from "./RecruitmentControlsViewModel";
-import { MatchMetricsViewModel } from "./MatchMetricsViewModel";
 import { RecruitmentQueueView } from "./RecruitmentQueueView";
 import { RecruitmentQueueViewModel } from "./RecruitmentQueueViewModel";
 
@@ -731,6 +730,17 @@ async function startOnlineMatch(): Promise<void> {
   session.connect();
 }
 
+let recruitmentProjection: RecruitmentQueueViewModel | undefined;
+let hudProjection: HudViewModel | undefined;
+let armyProjection: ArmyViewModel | undefined;
+function hudText(id: string, value: string): void {
+  const target = element(id);
+  if (target.textContent !== value) target.textContent = value;
+}
+function hudDisabled(id: string, value: boolean): void {
+  const target = element<HTMLButtonElement>(id);
+  if (target.disabled !== value) target.disabled = value;
+}
 function updateHud(): void {
   if (!snapshot) return;
   limitSquadSelection(renderer.selected, snapshot.squads, localPlayerId);
@@ -738,37 +748,35 @@ function updateHud(): void {
   try {
 
   updateTerrainHover();
-  recruitmentFeed.update(new RecruitmentQueueViewModel(snapshot, localPlayerId, renderer.selectedBuildings));
+  if (recruitmentProjection) recruitmentProjection.update(snapshot, localPlayerId, renderer.selectedBuildings);
+  else recruitmentProjection = new RecruitmentQueueViewModel(snapshot, localPlayerId, renderer.selectedBuildings);
+  recruitmentFeed.update(recruitmentProjection);
 
   const player = snapshot.players.find(player => player.id === localPlayerId)!;
 
-  const own = snapshot.squads.filter((s) => s.playerId === localPlayerId);
+  let troops = 0, count = 0;
+  for (const squad of snapshot.squads) if (squad.playerId === localPlayerId) { troops += squad.troops; count++; }
 
-  element("troop-total").textContent = format(
-    own.reduce((sum, s) => sum + s.troops, 0),
-  );
+  hudText("troop-total", format(troops));
 
-  element("reserves").textContent = format(player.reserves);
+  hudText("reserves", format(player.reserves));
 
-  element("gold").textContent = hasInfiniteGold(player) ? "∞" : format(player.gold);
+  hudText("gold", hasInfiniteGold(player) ? "∞" : format(player.gold));
 
-  element("squad-count").textContent = `${own.length} / ${squadCap(player, snapshot.expansion?.progression[player.id]?.age)}`;
+  hudText("squad-count", `${count} / ${squadCap(player, snapshot.expansion?.progression[player.id]?.age)}`);
 
-  element("land").textContent = format(player.land);
+  hudText("land", format(player.land));
 
-  const metrics = new MatchMetricsViewModel(snapshot, localPlayerId);
-  element("losses").textContent = format(metrics.deaths);
-  element("kills").textContent = format(metrics.kills);
-  element("trade-captured").textContent = format(metrics.tradeCaptured);
-  element("trade-lost").textContent = format(metrics.tradeLost);
+  hudText("losses", format(player.losses ?? 0));
+  hudText("kills", format(player.kills ?? 0));
+  hudText("trade-captured", format(snapshot.expansion?.tradeCapturedValue?.[localPlayerId] ?? 0));
+  hudText("trade-lost", format(snapshot.expansion?.tradeLostValue?.[localPlayerId] ?? 0));
 
   const seconds = Math.floor(snapshot.tick / TICKS_PER_SECOND);
 
-  element("clock").textContent =
-    `${Math.floor(seconds / 60)}:${String(seconds % 60).padStart(2, "0")}`;
+  hudText("clock", `${Math.floor(seconds / 60)}:${String(seconds % 60).padStart(2, "0")}`);
 
-  element("pause").innerHTML =
-    `${paused ? "Resume" : "Pause"}`;
+  hudText("pause", paused ? "Resume" : "Pause");
 
   const vm = viewModel()!;
 
@@ -779,21 +787,25 @@ function updateHud(): void {
 
     const id = naval ? kind : `recruit-${kind}`;
 
-    element<HTMLButtonElement>(id).disabled = !recruitment.enabled;
+    hudDisabled(id, !recruitment.enabled);
   }
 
   const empireVm = empireModel();
   for (const { kind: type } of CONSTRUCTION)
-    element<HTMLButtonElement>(`build-${type}`).disabled =
+    hudDisabled(`build-${type}`,
       !!empireVm?.buildChoice(type).reason ||
       player.eliminated ||
-      snapshot.winner !== null;
+      snapshot.winner !== null);
 
   updateSelection();
 
   if (empireVm) empire.update(empireVm);
-  hud.update(new HudViewModel(vm));
-  const armyVm = new ArmyViewModel(snapshot, renderer.selected, localPlayerId);
+  if (hudProjection) hudProjection.update(vm);
+  else hudProjection = new HudViewModel(vm);
+  hud.update(hudProjection);
+  if (armyProjection) armyProjection.update(snapshot, renderer.selected, localPlayerId);
+  else armyProjection = new ArmyViewModel(snapshot, renderer.selected, localPlayerId);
+  const armyVm = armyProjection;
   armyView.update(armyVm);
   if (armyVm.selectedArmy) element("selection-card").hidden = true;
 

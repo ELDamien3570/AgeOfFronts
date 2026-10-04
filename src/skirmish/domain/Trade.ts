@@ -12,7 +12,6 @@ import {
   type Squad,
 } from "../Protocol";
 import type { ExactRouteOutcome } from "../RoutePlanner";
-import { SpatialGrid } from "../SpatialGrid";
 import { restoreArray, restoreRecord, restoreSet } from "../StateTransfer";
 import { AGES, type TradeActor } from "./Definitions";
 import type { Diplomacy } from "./Diplomacy";
@@ -30,7 +29,7 @@ import {
 } from "./TradeQuote";
 
 export interface TradeWorld {
-  spatialFacts?(phase: SpatialPhase): PhaseSpatialFacts;
+  spatialFacts(phase: SpatialPhase): PhaseSpatialFacts;
   readonly domainRoutes?: DomainRoutePorts;
   building?(id: number): Building | undefined;
   buildingFacts?(): BuildingQueries;
@@ -122,8 +121,6 @@ export class Trade {
   private tickStartWork = 0;
   private land: SpatialQueries<Squad>;
   private sea: SpatialQueries<Ship>;
-  private localLand?: SpatialGrid<Squad>;
-  private localSea?: SpatialGrid<Ship>;
   private readonly nearby: (Squad | Ship)[] = [];
   constructor(
     private readonly world: TradeWorld,
@@ -134,10 +131,7 @@ export class Trade {
     private readonly roads?: Roads,
     private readonly enemy: (a: number, b: number) => boolean = (a, b) =>
       diplomacy.hostile(a, b),
-  ) {
-    this.land = new SpatialGrid<Squad>(0, 0, 4 * FIXED);
-    this.sea = new SpatialGrid<Ship>(0, 0, 4 * FIXED);
-  }
+  ) {}
   checkpoint() {
     return structuredClone({
       actors: this.actors,
@@ -944,15 +938,8 @@ export class Trade {
       if (actor.state !== "prize") owner[actor.naval ? "sea" : "land"].total++;
     }
     if (this.actors.length) {
-      const facts = this.world.spatialFacts?.("trade");
-      if (facts) { this.land = facts.groundAlive; this.sea = facts.warshipsAlive; }
-      else {
-        this.localLand ??= new SpatialGrid(this.world.map.width() * FIXED, this.world.map.height() * FIXED, 4 * FIXED, (s: Squad) => s.playerId);
-        this.localSea ??= new SpatialGrid(this.world.map.width() * FIXED, this.world.map.height() * FIXED, 4 * FIXED, (s: Ship) => s.playerId);
-        this.localLand.rebuild(this.world.squads.filter((s) => s.embarkedOn === null && s.troops > 0));
-        this.localSea.rebuild(this.world.ships.filter((s) => s.kind === "warship" && s.health > 0));
-        this.land = this.localLand; this.sea = this.localSea;
-      }
+      const facts = this.world.spatialFacts("trade");
+      this.land = facts.groundAlive; this.sea = facts.warshipsAlive;
     }
     for (const a of this.actors) {
       const quotaGroup = quotas.get(a.playerId)![a.naval ? "sea" : "land"];

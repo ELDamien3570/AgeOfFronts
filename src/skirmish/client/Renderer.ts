@@ -108,6 +108,19 @@ export class Renderer {
   private territory?: TerritoryLayer;
   private colorRevision = -1;
   private territoryLabels?: TerritoryLabelViewModel;
+  private readonly territoryText = new Map<string, { letters: string[]; advances: number[]; width: number }>();
+  private cacheTerritoryText(snapshot: Snapshot): void {
+    const names = new Set(snapshot.players.map(player => player.name));
+    for (const name of this.territoryText.keys()) if (!names.has(name)) this.territoryText.delete(name);
+    this.ctx.save();
+    this.ctx.font = "600 64px Georgia, Cambria, serif";
+    for (const name of names) if (!this.territoryText.has(name)) {
+      const letters = Array.from(name.toLocaleUpperCase());
+      const advances = letters.map(letter => this.ctx.measureText(letter).width / 64);
+      this.territoryText.set(name, { letters, advances, width: advances.reduce((sum, value) => sum + value, 0) });
+    }
+    this.ctx.restore();
+  }
   private buildingStacks: {
     building: Snapshot["buildings"][number];
     count: number;
@@ -209,6 +222,10 @@ export class Renderer {
     private readonly campLoss = new CampLossPresentation(),
   ) {
     this.ctx = canvas.getContext("2d")!;
+    document.fonts?.addEventListener("loadingdone", () => {
+      this.territoryText.clear();
+      if (this.snapshot) this.cacheTerritoryText(this.snapshot);
+    });
     this.groundLayer = new GroundLayer(canvas);
     this.strategic = new StrategicSprites(canvas);
     this.aircraftLayer = new AircraftLayer(canvas);
@@ -299,6 +316,7 @@ export class Renderer {
           (this.cargoCounts.get(squad.embarkedOn) ?? 0) + 1,
         );
     this.snapshot = snapshot;
+    this.cacheTerritoryText(snapshot);
     this.buildingSelection.reconcile(snapshot.buildings, this.playerId);
     this.roads!.update(snapshot);
     this.walls.update(snapshot);
@@ -638,7 +656,8 @@ export class Renderer {
       const height = label.height * this.scale;
       const radius = Math.hypot(width, height) / 2;
       if (!visibleInViewport(p, radius, this.width, this.height)) continue;
-      const letters = Array.from(label.name.toLocaleUpperCase());
+      const metrics = this.territoryText.get(label.name)!;
+      const { letters, advances } = metrics;
       let font = Math.min(64, height * 0.42, width / (letters.length * 0.9));
       if (font < 7) continue;
       ctx.save();
@@ -653,15 +672,12 @@ export class Renderer {
         ctx.strokeText("zzz", 0, -Math.max(16, font));
         ctx.fillText("zzz", 0, -Math.max(16, font));
       }
-      ctx.font = `600 ${font}px Georgia, Cambria, serif`;
-      let advances = letters.map((letter) => ctx.measureText(letter).width);
-      let inkWidth = advances.reduce((sum, advance) => sum + advance, 0);
+      let inkWidth = metrics.width * font;
       if (inkWidth > width) {
         font *= width / inkWidth;
-        ctx.font = `600 ${font}px Georgia, Cambria, serif`;
-        advances = letters.map((letter) => ctx.measureText(letter).width);
-        inkWidth = advances.reduce((sum, advance) => sum + advance, 0);
+        inkWidth = metrics.width * font;
       }
+      ctx.font = `600 ${font}px Georgia, Cambria, serif`;
       // Track letters across the available interior, without distorting glyphs.
       const spacing =
         letters.length > 1
@@ -678,7 +694,7 @@ export class Renderer {
       for (let i = 0; i < letters.length; i++) {
         ctx.strokeText(letters[i], x, 0);
         ctx.fillText(letters[i], x, 0);
-        x += advances[i] + spacing;
+        x += advances[i] * font + spacing;
       }
       ctx.restore();
     }
@@ -872,15 +888,7 @@ export class Renderer {
 
   draw(now: number, speed: number, paused: boolean): boolean {
     if (now < this.nextFrame) return false;
-    // Preserve CPU time for the fixed-step worker when armies are large. The
-    // presentation target is 30 FPS at high population, 60 FPS in small matches.
-    const frameInterval =
-      1000 /
-      ((this.snapshot?.squads.length ?? 0) +
-        (this.snapshot?.ships.length ?? 0) >
-      1000
-        ? 30
-        : 60);
+    const frameInterval = 1000 / 60;
     this.nextFrame =
       now + frameInterval - ((now - this.nextFrame) % frameInterval);
     this.strategic.begin();

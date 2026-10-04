@@ -18,6 +18,10 @@ export interface RecruitmentQueueEntry {
 export class RecruitmentQueueViewModel {
   readonly entries: RecruitmentQueueEntry[] = [];
   constructor(snapshot: Pick<Snapshot, "expansion">, playerId = 1, buildingIds?: ReadonlySet<number>) {
+    this.update(snapshot, playerId, buildingIds);
+  }
+  update(snapshot: Pick<Snapshot, "expansion">, playerId = 1, buildingIds?: ReadonlySet<number>): void {
+    this.entries.length = 0;
     const jobs = (snapshot.expansion?.recruitment ?? []).filter(
       (j) => j.playerId === playerId && (!buildingIds?.size || buildingIds.has(j.buildingId)),
     );

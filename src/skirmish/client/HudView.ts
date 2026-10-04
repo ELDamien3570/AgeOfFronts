@@ -339,16 +339,18 @@ export class HudView {
       const count = vm.buildingCounts.get(type) ?? {total: 0, ready: 0};
       let badge = button.querySelector<HTMLElement>(".building-count");
       if (!badge) { badge = document.createElement("span"); badge.className = "building-count"; button.append(badge); }
-      badge.textContent = String(count.total);
-      badge.title = `${count.ready} ready · ${count.total - count.ready} under construction`;
-      badge.setAttribute("aria-label", `${count.total} owned buildings`);
+      const text = String(count.total), title = `${count.ready} ready · ${count.total - count.ready} under construction`, label = `${count.total} owned buildings`;
+      if (badge.textContent !== text) badge.textContent = text;
+      if (badge.title !== title) badge.title = title;
+      if (badge.getAttribute("aria-label") !== label) badge.setAttribute("aria-label", label);
     }
     for (const slot of this.root.querySelectorAll<HTMLElement>(
       ".action-slot",
     )) {
-      slot.tabIndex = slot.querySelector<HTMLButtonElement>("button")!.disabled
+      const tabIndex = slot.querySelector<HTMLButtonElement>("button")!.disabled
         ? 0
         : -1;
+      if (slot.tabIndex !== tabIndex) slot.tabIndex = tabIndex;
     }
     this.renderSelection();
     this.renderTooltip();
