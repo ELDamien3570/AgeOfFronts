@@ -126,6 +126,17 @@ export class CommandApplications {
       reason: event.reason,
     });
   }
+  /** A domain itinerary can replace its planning owner without completing the
+   * external receipt before the replacement admissions execute. */
+  handoff(source: "shore", id:number, playerId:number, action:()=>void):void {
+    const key=this.plans.get(`${source}:${id}`),receipt=key===undefined?undefined:this.pending.get(key);
+    if(!receipt||receipt.outcome.playerId!==playerId){action();return;}
+    if(this.applying)throw new Error("Nested command planning handoff");
+    const applying={key:key!,playerId,plans:new Set<string>()};
+    this.applying=applying;
+    try {action();} finally {this.applying=undefined;}
+    for(const plan of applying.plans){receipt.plans.add(plan);this.plans.set(plan,key!);}
+  }
   release(playerId: number, tick: number): void {
     for (const [key, receipt] of this.pending)
       if (receipt.outcome.playerId === playerId) {

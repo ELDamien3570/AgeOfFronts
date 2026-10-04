@@ -910,18 +910,13 @@ describe("shared peninsula shortcut", () => {
       .mockReturnValue({ status: "pending" });
     const origin = { x: own[0].x, y: own[0].y },
       target = game.map.ref(75, 25);
-    expect(
-      game.applyCommand({
-        type: "order",
-        playerId: 1,
-        squadIds: own.map((s) => s.id),
-        order: { type: "move", tile: target },
-      }),
-    ).toBeNull();
+    const command={type:"order" as const,playerId:1,squadIds:own.map(s=>s.id),order:{type:"move" as const,tile:target}};
+    expect(game.commandApplications.apply("shortcut",command).status).toBe("deferred");
     for (let i = 0; i < 11; i++) game.step();
     expect(transport.checkpoint().pending).toHaveLength(1);
     game.step();
     expect(transport.checkpoint().pending).toHaveLength(0);
+    expect(game.commandApplications.apply("shortcut",command).status).toBe("deferred");
     for (let i = 0; i < 4; i++) game.step();
     expect(
       Math.hypot(own[0].x - origin.x, own[0].y - origin.y),

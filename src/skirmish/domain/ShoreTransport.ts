@@ -15,7 +15,7 @@ import type { VesselDefinition } from "./Definitions";
 import type { ShoreLeg, ShoreRoutes } from "./ShoreRoutes";
 
 export interface ShoreTransportWorld {
-  continueByLand?(playerId:number,members:Squad[],destination:number,preserveQueue:boolean):void;
+  continueByLand?(admissionId:number,playerId:number,members:Squad[],destination:number,preserveQueue:boolean):void;
   readonly domainRoutes?: DomainRoutePorts;
   squad?(id:number):Squad|undefined;
   ship?(id:number):Ship|undefined;
@@ -376,8 +376,8 @@ export class ShoreTransport {
         plan.groups.every(g=>g.cohortId===undefined) &&
         plan.members.every(m=>this.world.paths.connected(pointTile(this.world.map,this.squad(m.id)!),plan.destination))) {
         const members=plan.members.map(m=>this.squad(m.id)!);
+        this.world.continueByLand(plan.id,plan.playerId,members,plan.destination,plan.preserveQueue);
         this.finishStart(plan,"executed");
-        this.world.continueByLand(plan.playerId,members,plan.destination,plan.preserveQueue);
         continue;
       }
       const group=plan.groups[plan.cursor];

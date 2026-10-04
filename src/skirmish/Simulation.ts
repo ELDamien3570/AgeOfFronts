@@ -694,10 +694,10 @@ export class Skirmish {
         return {rejection:null};
       },
       sailingPending:ship=>this.shipAdmission.replacement(ship.id)!==undefined||this.shipAdmission.executing(ship.id),
-      continueByLand: (playerId,members,tile,preserveQueue) => {
+      continueByLand: (admissionId,playerId,members,tile,preserveQueue) => this.commandApplications.handoff("shore",admissionId,playerId,()=>{
         if(preserveQueue)for(const squad of members)this.movementAdmission.recoverDestination(squad,tile,this.tick);
         else this.movementAdmission.start(playerId,members,tile,this.tick,undefined,this.player(playerId)?.ai);
-      },
+      }),
       resume: (squad,tile) => {
         if(this.options.deferredPlanning&&this.paths.connected(this.tileOf(squad),tile)){this.movementAdmission.start(squad.playerId,[squad],tile,this.tick,undefined,this.player(squad.playerId)?.ai);return;}
         const completed = this.expansion?.progression.states[squad.playerId]?.completed ?? [];

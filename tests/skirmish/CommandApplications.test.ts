@@ -14,6 +14,23 @@ const move: Command = {
   order: { type: "move", tile: 12 },
 };
 describe("command receipts", () => {
+  it.each(["executed","rejected","superseded"] as const)("preserves a shore-to-land handoff through restore until its %s result",status=>{
+    let receipts:CommandApplications;
+    receipts=new CommandApplications({tick:()=>0,apply:()=>{receipts.observe("shore",{id:17,playerId:1,tick:0,status:"deferred"});return null;}});
+    expect(receipts.apply("crossing",move).status).toBe("deferred");
+    receipts.handoff("shore",17,1,()=>{
+      receipts.observe("land",{id:1,playerId:1,tick:12,status:"deferred"});
+      receipts.observe("land",{id:2,playerId:1,tick:12,status:"deferred"});
+    });
+    receipts.observe("shore",{id:17,playerId:1,tick:12,status:"executed"});
+    receipts.observe("land",{id:1,playerId:1,tick:13,status:"executed"});
+    expect(receipts.apply("crossing",move).status).toBe("deferred");
+    const restored=new CommandApplications({tick:()=>14,apply:()=>{throw new Error("receipt replay must not reapply the command");}});
+    restored.restore(receipts.checkpoint());
+    restored.observe("land",{id:2,playerId:1,tick:14,status,reason:status==="rejected"?"Destination blocked":undefined});
+    expect(restored.apply("crossing",move)).toMatchObject({id:"crossing",playerId:1,tick:14,status});
+    expect(restored.diagnostics.pending).toBe(0);
+  });
   it("continues current orders, queues Shift intent and resumes original receipts from a simulation checkpoint", () => {
     const create = () => {
       const terrain = new Uint8Array(7000).fill(133);
