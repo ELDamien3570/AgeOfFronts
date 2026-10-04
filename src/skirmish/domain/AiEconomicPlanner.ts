@@ -68,8 +68,14 @@ export function economicCandidates(
     prerequisites: string[] = [],
   ) => {
     if (candidates.length >= 24) return;
+    // Development utility uses the same scale across ages. Normalize its gold
+    // opportunity cost to the authored age-price scale, preserving Stone Age
+    // rankings while avoiding permanently negative later advances. Reservation
+    // and command payment still require the full authoritative gold price.
+    const development = kind === "research" || kind === "advance";
+    const agePrice = ADVANCES[Math.min(AGES.indexOf(snapshot.age), ADVANCES.length - 1)].gold;
     const opportunity =
-      Math.floor((cost.gold ?? 0) / 20) +
+      Math.floor(((cost.gold ?? 0) / 20) * (development ? ADVANCES[0].gold / agePrice : 1)) +
       Object.values(cost.items ?? {}).reduce((n, v) => n + v * 25, 0);
     candidates.push({
       id: `${snapshot.playerId}:${kind}:${key}`,
