@@ -213,13 +213,13 @@ All **3000** offered publications completed: zero skipped, zero pending at exit,
 
 CPU self samples over this replay: anonymous simulation frames 101.91 s, `eachInRadius` 60.05 s, GC 31.87 s, exact `PlanningWorkspace.step` 29.60 s, `canCaptureTile` 19.99 s and swept fortification checks 18.81 s. These are sampled function attribution, not subsystem-inclusive totals. They support targeting repeated capture-area geometry and collision queries alongside routing, rather than treating every symptom as a network issue.
 
-A focused radial scan candidate hoists map bounds and enumerates precomputed disk row spans. It preserves row-major tile order, clipping and walkability. Tests compare against a whole-map geometric oracle, including edges and radii beyond the precomputed range. The controlled A/B/B/A harness restores the same 50-minute checkpoint, uses the original loop for its legacy mode, and compares full canonical snapshot hashes after 400 ticks. Local hashes match in all four trials; ARM comparison and release checks are pending. No capture rules, friendly collision behavior or troop limits are changed by this optimization.
+A focused radial scan candidate hoists map bounds and enumerates precomputed disk row spans. It preserves row-major tile order, clipping and walkability. Tests compare against a whole-map geometric oracle, including edges and radii beyond the precomputed range. The controlled A/B/B/A harness restores the same 50-minute checkpoint, uses the original loop for its legacy mode, and compares full canonical snapshot hashes after 400 ticks. Local and ARM hashes match in all four trials. No capture rules, friendly collision behavior or troop limits are changed by this optimization.
 
 ### Radial scan result
 
 ARM A/B/B/A completed with the **same canonical snapshot hash in all four trials**. Original capture means: 7.825 and 7.698 ms; candidate: 7.687 and 7.540 ms. Mean capture cost fell approximately **1.9%**. Mean overall elapsed time fell approximately **4.0%**, but startup/JIT/order effects contribute: the warm original versus warm candidate pair differs by about 2.2%. Local capture means improved only about 1.9% as well. This is a modest hot-loop improvement, not a cure for the heavy-world 80 ms tick p95.
 
-The change is retained because it removes repeated work while preserving exact authoritative behavior, not because the short wall-time difference proves a universal speedup. Artifacts: `radius-comparison.json`, `radius-comparison-arm.json`, and `scripts/profileRadiusScan.mjs`. Full release tests/build and final idle-safe deployment are recorded after completion.
+The change is retained because it removes repeated work while preserving exact authoritative behavior, not because the short wall-time difference proves a universal speedup. Artifacts: `radius-comparison.json`, `radius-comparison-arm.json`, and `scripts/profileRadiusScan.mjs`. Final TypeScript, build and broad release suite passed **1221/1221 tests**.
 
 ## Final bottleneck assessment and next focused work
 
@@ -231,3 +231,13 @@ The change is retained because it removes repeated work while preserving exact a
 6. **AI behavior:** concentrated rebuild/recapture spam is plausible from the legal-site policy but was not reproduced by this seed. Army disabling did not help the matched CPU fixture. Island investment, productive trade targets, recovery/stragglers and combat spacing remain the separate requested design pass; its deliverables are documented, not silently implemented here.
 
 One simultaneous match remains the supported Oracle admission setting. Faster single-core CPU can provide headroom; increasing core count alone does not eliminate the serial tick bottleneck. Prefer the measured focused passes above before declaring public-consumption readiness for the largest battles.
+
+## Final release acceptance
+
+Final deployed gameplay revision: **`3f99dbdd0a020a35fc8cd1426caa3264bd47c6b1`** on `V1.1.5`, including the previous stability changes and the state-equivalent radial scan. TypeScript, build and **1221/1221** tests passed. Application container is healthy; proxy is running. Public `assets/home-DT9rrk0a.js`, the image tag, application `GIT_COMMIT` and revision marker identify the tested commit.
+
+Final runtime identity: `5f5f55264eefa9999bbbd13f0cca007204cdf4f027f79b1bc520c1037dacc8f7`. Final public two-client WSS smoke passed movement, construction, all ten regular AI moving, five policy defaults, trade controls, rejection, water embarkation, automatic shore landing/inland continuation, reconnect and 25 common canonical state samples. Two periodic commands started in observed state after 311/314 ms; publication gap p95 was 216/219 ms. No recorded failures. Artifact: `out/overnight-1000/public-radius-smoke.json`.
+
+Final SQLite backup `/opt/ageoffronts/backups/multiplayer-20261004T003713Z.sqlite` passed integrity checking. The previous release marker preserves `20a6a78` for rollback. Smoke match `match-156` expired through the normal grace period; no match was forcibly stopped. Final public health returned `status: ok`, `activeMatches: 0`, with no running, stalled or preparing matches.
+
+The profiling investigation and separate eleven-item review are complete. Final idle health is verified; the hourly follow-up is disabled to avoid redundant tests or releases. The next gameplay passes remain review deliverables awaiting the user's next direction, not unreported implementation.
