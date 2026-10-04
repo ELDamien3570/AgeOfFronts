@@ -13,13 +13,14 @@ import {
   SnapshotEncoder,
 } from "../../src/skirmish/SnapshotCodec";
 
-function fleet(factories = 1, ports = 1, aiWarPolicy = false, deferredPlanning = false) {
+function fleet(factories = 1, ports = 1, aiWarPolicy = false, deferredPlanning = false, tribe = false) {
   const terrain = new Uint8Array(120 * 80).fill(133);
   for (let y = 40; y < 50; y++) terrain.fill(0, y * 120, (y + 1) * 120);
   const game = new Skirmish(new GameMapImpl(120, 80, terrain, terrain.length), {
     seed: 42,
     aiCount: 1,
-    tribes: false,
+    tribes: tribe,
+    tribeCount: tribe ? 1 : undefined,
     runAi: false,
     ruleset: "ages-v1",
     aiWarPolicy,
@@ -70,6 +71,60 @@ function fleet(factories = 1, ports = 1, aiWarPolicy = false, deferredPlanning =
 }
 
 describe("bounded civilian trade", () => {
+  it.each(["eliminated", "no foreign port"] as const)("does not dispatch a tribe merchant when %s", (reason) => {
+    const { game, expansion, trade, sources, step } = fleet(0, 1, false, false, true);
+    const tribe = game.players.find((p) => p.kind === "tribe")!;
+    for (const source of sources) game.updateBuilding(source.id, { playerId: tribe.id });
+    expansion.progression.states[tribe.id].completed.push("stoneage-cargo-canoes");
+    if (reason === "eliminated") tribe.eliminated = true;
+    else for (const port of game.buildings.filter((b) => b.type === "port"))
+      game.updateBuilding(port.id, { playerId: tribe.id });
+    step(40);
+    expect(trade.actors.filter((a) => a.playerId === tribe.id)).toHaveLength(0);
+  });
+  it("lets a researched tribe dispatch and deliver naval cargo with the ordinary site cooldown", () => {
+    const { game, expansion, trade, sources, step } = fleet(0, 2, false, false, true);
+    const tribe = game.players.find((p) => p.kind === "tribe")!;
+    expect(tribe).toBeDefined();
+    for (const source of sources) game.updateBuilding(source.id, { playerId: tribe.id, tile: sources[0].tile });
+    const destination = game.buildings.find((b) => b.type === "port" && !sources.includes(b))!;
+    game.updateBuilding(destination.id, { playerId: 1 });
+    const research = expansion.progression.states[tribe.id].completed;
+    research.splice(0, research.length);
+    step(20);
+    expect(trade.actors.filter((a) => a.playerId === tribe.id)).toHaveLength(0);
+    research.push("stoneage-cargo-canoes");
+    step(20);
+    const actors = trade.actors.filter((a) => a.playerId === tribe.id);
+    // Two stacked ports share one physical spawn site, not two timers.
+    expect(actors).toHaveLength(1);
+    expect(actors[0]).toMatchObject({ naval: true, definitionId: "stoneage-trade" });
+    const origin = { x: actors[0].x, y: actors[0].y };
+    step(TRADE_RULES.spawnCooldownTicks - 1);
+    expect(trade.actors.filter((a) => a.playerId === tribe.id)).toHaveLength(1);
+    expect(Math.hypot(actors[0].x - origin.x, actors[0].y - origin.y)).toBeGreaterThan(FIXED);
+    step();
+    expect(trade.actors.filter((a) => a.playerId === tribe.id)).toHaveLength(2);
+    step(1800);
+    expect(trade.deliveredGold[tribe.id]).toBeGreaterThan(0);
+  });
+  it("includes tribes in the global fleet ceiling while retaining each faction's 48-actor limit", () => {
+    const { game, expansion, trade, sources, step } = fleet(40, 20, false, false, true);
+    step(20);
+    expect(trade.actors.filter((a) => a.playerId === 1)).toHaveLength(48);
+    const tribe = game.players.find((p) => p.kind === "tribe")!;
+    game.players.find((p) => p.id === 2)!.eliminated = true;
+    for (const source of sources) game.updateBuilding(source.id, { playerId: tribe.id });
+    const destination = game.buildings.find((b) => b.type === "port" && !sources.includes(b))!;
+    game.updateBuilding(destination.id, { playerId: 1 });
+    expansion.progression.states[tribe.id].completed.push("stoneage-goods-handling", "stoneage-cargo-canoes");
+    step(20);
+    expect(trade.actors.filter((a) => a.playerId === tribe.id && !a.naval)).toHaveLength(32);
+    expect(trade.actors.filter((a) => a.playerId === tribe.id && a.naval)).toHaveLength(16);
+    step(800);
+    expect(trade.actors.filter((a) => a.playerId === tribe.id)).toHaveLength(TRADE_RULES.actorCap);
+    expect(trade.actors.length).toBeLessThanOrEqual(2 * TRADE_RULES.actorCap);
+  });
   it("retains failed-corridor backoff across admissions and restore without loading or losing cargo", () => {
     const {game,trade,step,sources,expansion}=fleet(1,0,false,true);
     const tasks:Parameters<NonNullable<typeof game.domainRoutes>["request"]>[0][]=[];

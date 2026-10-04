@@ -766,11 +766,9 @@ export class Trade {
   private spawn(): void {
     // Prizes are transferred couriers, not new actors. Their brief arrival
     // overflow never lifts the world's total cap, including all prizes.
-    const globalCap =
-      this.world.players.filter((p) => !p.eliminated && p.kind === "regular")
-        .length * TRADE_RULES.actorCap;
-    for (const player of this.world.players) {
-      if (player.eliminated || player.kind !== "regular") continue;
+    const eligible = this.world.players.filter((p) => !p.eliminated),
+      globalCap = eligible.length * TRADE_RULES.actorCap;
+    for (const player of eligible) {
       const quotas = this.quotas(player.id),
         own = this.actors.filter((a) => a.playerId === player.id),
         counts = {
