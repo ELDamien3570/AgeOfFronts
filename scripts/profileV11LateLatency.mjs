@@ -56,7 +56,8 @@ for(let trial=0;trial<Number(value("--trials","4"));trial++){
     if(firstBoatTicks===undefined&&game.ships.some(s=>!originalBoats.has(s.id)&&s.playerId===player.id)){firstBoatTicks=game.tick-startTick;firstBoatWallMs=performance.now()-start;}
     if(firstMotionTicks===undefined&&squads.some(s=>Math.hypot(s.x-positions.get(s.id).x,s.y-positions.get(s.id).y)>8)){firstMotionTicks=game.tick-startTick;firstMotionWallMs=performance.now()-start;}
     if(firstMotionTicks!==undefined&&!followThrough)break;
-    if(game.winner!==null||["executed","rejected","superseded"].includes(game.commandApplications.apply("late-latency",command).status))break;
+    const status=game.commandApplications.apply("late-latency",command).status;
+    if(game.winner!==null||["rejected","superseded"].includes(status)||(followThrough&&status==="executed"&&firstMotionTicks!==undefined))break;
   }
   results.push({trial,transport,armyFixture,fixtureArmies,playerId:player.id,count:squads.length,goal,firstMotionTicks,firstMotionWallMs,firstBoatTicks,firstBoatWallMs,completionTicks:game.tick-startTick,admitted:admitted.size,wallMs:performance.now()-start,initial,receipt:game.commandApplications.apply("late-latency",command),planner:game.routePlanner.diagnostics});
 }

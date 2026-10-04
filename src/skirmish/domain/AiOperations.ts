@@ -1,4 +1,5 @@
 import { forceReadiness } from "./AiForceReadiness";
+import { canFinishConquest, conquestBuildings } from "./AiConquestObjective";
 import { AI_DOCTRINES } from "../content/AiDoctrines";
 import { personalityOf } from "../content/AiPersonalities";
 import type { Player } from "../Protocol";
@@ -19,6 +20,8 @@ export interface AiOperation {
   readiness?:import("./AiForceReadiness").AiForceReadiness;
   sleepKey?:string;
   territorialRevision?:number;
+  finishCount?: number;
+  finishProgressAt?: number;
 }
 /** Decision policy only. Never replaces Diplomacy.hostile or legal damage. */
 export class AiOperations {
@@ -77,6 +80,11 @@ export class AiOperations {
     const record = this.records.get(playerId);
     return record?.phase === "war" ? record.target : undefined;
   }
+  finishing(playerId: number, rival: number): boolean {
+    const r = this.records.get(playerId);
+    return r?.phase === "war" && r.target === rival && r.finishProgressAt !== undefined &&
+      this.expansion.world.tick - r.finishProgressAt < 1200;
+  }
   /** Defensive pursuit remains local to observed aggression, not a free raid. */
   /** Only this faction's actual entry permissions fence its route work. */
   navigationRevision(playerId: number): string {
@@ -105,6 +113,7 @@ export class AiOperations {
     const previous = record.phase, oldTarget = record.target, tick = this.expansion.world.tick;
     record.retreatFrom = phase === "recovery" && previous === "war" ? oldTarget : undefined;
     record.phase = phase; record.target = target; record.since = tick;
+    record.finishCount = undefined; record.finishProgressAt = undefined;
     record.nextThink = tick + (phase === "war" ? 20 : 60 + player.id % 20);
     record.cursor = 0; record.candidate = undefined; record.score = Infinity; this.revision++;
     if (phase === "war") this.expansion.announce({ kind: "war", actorId: player.id, otherId: target, action: "declare" });
@@ -129,7 +138,15 @@ export class AiOperations {
       if(r.phase==="peace" && !r.threats.length && r.sleepKey===sleepKey){r.nextThink=tick+200;continue;}
       r.readiness=forceReadiness(this.expansion,player,profile.minimumRaidSquads);
       if (r.phase === "war") {
-        if (strength < Math.max(2, Math.floor(profile.minimumRaidSquads / 2)) || tick - r.since >= 2400)
+        const buildings = target ? conquestBuildings(world.buildingFacts().byOwner(target.id), target.ai).length : Infinity;
+        const enemies = target ? world.squadFacts().byOwner(target.id).filter(s => s.troops > 0).length : Infinity;
+        if (canFinishConquest(buildings, enemies, strength)) {
+          const count = buildings + enemies;
+          if (r.finishCount === undefined || count < r.finishCount) r.finishProgressAt = tick;
+          r.finishCount = count;
+        } else { r.finishCount = undefined; r.finishProgressAt = undefined; }
+        if (strength < Math.max(2, Math.floor(profile.minimumRaidSquads / 2)) ||
+          (tick - r.since >= 2400 && !this.finishing(player.id, r.target!)))
           this.transition(player, r, "recovery");
         else r.nextThink = tick + 20;
         continue;

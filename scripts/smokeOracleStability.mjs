@@ -23,7 +23,7 @@ const mapId=arg("--map","valles-kairulia"), worldSize=Number(arg("--size","500")
 const orderInterval=Number(arg("--order-interval","0"));
 if(!Number.isFinite(orderInterval)||orderInterval<0||(orderInterval>0&&orderInterval<5))throw new Error("Order interval must be zero or at least five seconds");
 if(!isLobbyMapId(mapId)||![250,500,1000].includes(worldSize))throw new Error("Invalid smoke map or size");
-if(!Number.isInteger(count)||count<2||count>20||!Number.isFinite(seconds)||seconds<10||seconds>2400)throw new Error("Invalid smoke limits");
+if(!Number.isInteger(count)||count<2||count>20||!Number.isFinite(seconds)||seconds<10||seconds>5400)throw new Error("Invalid smoke limits");
 if(!/^http:\/\/(localhost|127\.0\.0\.1)(:\d+)?$/.test(base)&&!args.includes("--public"))throw new Error("External smoke requires --public");
 if(args.includes("--infinite-gold") && args.includes("--public"))throw new Error("Infinite gold smoke is local-only");
 const out=arg("--out","data/oracle-smoke.json"), origin=new URL(base).origin, socketUrl=base.replace(/^http/,"ws")+"/socket";

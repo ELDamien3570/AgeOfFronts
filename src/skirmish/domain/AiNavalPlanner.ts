@@ -157,7 +157,8 @@ export class AiNavalPlanner {
   ) {}
   enabled(player: Player): boolean {
     return (
-      this.economy.enabled(player) &&
+      (this.economy.enabled(player) || (player.ai && player.kind === "tribe" && !player.eliminated &&
+        this.expansion.world.options?.aiEconomy === true)) &&
       this.expansion.world.options?.aiNaval === true &&
       this.expansion.world.options.deferredPlanning === true
     );

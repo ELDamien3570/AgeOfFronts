@@ -9,6 +9,7 @@ import { coastalWaterDistances } from "./domain/CoastalReach";
 
 // Shared domain validation also drives placement previews. A preview is advisory;
 // applyCommand checks again against the current authoritative simulation state.
+export const MAX_BUILDING_STACK = 15;
 export function constructionRejection(
   map: GameMap,
   owners: Uint8Array,
@@ -49,8 +50,8 @@ export function constructionRejection(
       : [];
   if (stack.length > 0 && stack[0].type !== type)
     return "Only buildings of the same type can share a tile";
-  if (stack.length >= 10)
-    return "A single site can support at most 10 stacked buildings";
+  if (stack.length >= MAX_BUILDING_STACK)
+    return `A single site can support at most ${MAX_BUILDING_STACK} stacked buildings`;
   const nearby =
     "nearby" in buildings
       ? buildings.nearby(tile, BUILDING_SPACING)

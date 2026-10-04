@@ -93,6 +93,7 @@ export type Command =
       x: number;
       y: number;
       targetId?: number;
+      fallbackOrder?: { type: "move"; tile: number } | { type: "attack"; targetId: number };
     }
   | {
       type: "attack-structure";

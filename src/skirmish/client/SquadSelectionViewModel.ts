@@ -1,6 +1,7 @@
 import type { Squad } from "../Protocol";
+import { MAX_ORDER_SQUADS } from "../FactionRules";
 
-export const MAX_SELECTED_SQUADS = 30;
+export const MAX_SELECTED_SQUADS = MAX_ORDER_SQUADS;
 
 interface DragSelection {
   selected: Set<number>;

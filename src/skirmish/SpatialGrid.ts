@@ -127,6 +127,20 @@ export class SpatialGrid<T extends WorldPoint> {
       }
   }
 
+  /** Bounded advisory neighborhood. Exact collision queries must use query(). */
+  sample(x:number,y:number,radius:number,result:T[],accept:(item:T)=>boolean,limit:number,maximumReads:number):void {
+    result.length=0;
+    let reads=0;
+    const left=Math.max(0,Math.floor((x-radius)/this.cellSize)),right=Math.min(this.columns-1,Math.floor((x+radius)/this.cellSize));
+    const top=Math.max(0,Math.floor((y-radius)/this.cellSize)),bottom=Math.min(this.rows-1,Math.floor((y+radius)/this.cellSize));
+    for(let cy=top;cy<=bottom;cy++)for(let cx=left;cx<=right;cx++)for(const item of this.buckets[cx+cy*this.columns] ?? []) {
+      if(++reads>maximumReads)return;
+      if((item.x-x)**2+(item.y-y)**2<=radius**2 && accept(item)) {
+        result.push(item);if(result.length>=limit)return;
+      }
+    }
+  }
+
   nearest(x: number, y: number, accept: (item: T) => boolean): T | undefined {
     const cx = Math.floor(x / this.cellSize),
       cy = Math.floor(y / this.cellSize);

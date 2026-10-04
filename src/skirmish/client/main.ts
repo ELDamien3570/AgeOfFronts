@@ -1706,11 +1706,6 @@ canvas.addEventListener("pointerup", (event) => {
 
     const position = renderer.world(p.x, p.y);
 
-    const chargers = snapshot.squads.filter(
-      (s) =>
-        renderer.selected.has(s.id) && UNIT.get(s.definitionId ?? "")?.charge,
-    );
-
     const building = snapshot.buildings.find(
       (b) => b.id === renderer.buildingAt(p.x, p.y),
     );
@@ -1748,9 +1743,10 @@ canvas.addEventListener("pointerup", (event) => {
     orderGesture.submit({time:performance.now(),...p,context,single:()=>{
       if (snapshot?.winner === null && context === `${matchSequence}:${[...renderer.selected].sort((a,b)=>a-b).join(",")}`)
         command(ordinary);
-    }}, !start.shift && chargers.length ? ()=>command({
-      type:"charge",playerId:localPlayerId,squadIds:chargers.map(s=>s.id),
+    }}, !start.shift && !structureOrder ? ()=>command({
+      type:"charge",playerId:localPlayerId,squadIds:ids,
       x:Math.round(position.x*FIXED),y:Math.round(position.y*FIXED),targetId:enemy ? target.id : undefined,
+      fallbackOrder: enemy ? {type:"attack",targetId:target.id} : {type:"move",tile:tile!},
     }) : undefined);
 
     const world = renderer.world(p.x, p.y);

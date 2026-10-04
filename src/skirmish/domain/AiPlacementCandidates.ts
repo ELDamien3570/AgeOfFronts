@@ -8,6 +8,8 @@ import type { AiInvestment } from "./AiEconomicPlanner";
 import type { AiEconomicSnapshot } from "./AiEconomicSnapshot";
 import type { AiProductionDemand } from "./AiMilitaryDemand";
 import type { Expansion } from "./Expansion";
+import { extractionPriority, stoneExtractionAllowed } from "./AiExtractionPolicy";
+import { TRADE_RULES } from "../content/Economy";
 
 interface LandPage { anchor: number; tiles: number[]; cursor: number; }
 
@@ -129,6 +131,15 @@ export class AiPlacementCandidates {
         objective += 5000;
       if (type === "city" && !count) objective = 5000;
       if (missingProducer) objective = Math.max(objective, 12000);
+      const safeGrowth = snapshot.threatTroops <= snapshot.readyTroops / 2 && snapshot.readyTroops >= 4000;
+      const factories = snapshot.buildings.filter(b => b.type === "factory").length;
+      const ports = snapshot.buildings.filter(b => b.type === "port").length;
+      const productiveLand = this.expansion.economy.tradeQuotes.best(player.id,false);
+      const productiveSea = this.expansion.economy.tradeQuotes.best(player.id,true);
+      const tradeGrowth = safeGrowth && factories + ports < TRADE_RULES.actorCap &&
+        ((productiveLand?.quote.riskAdjustedGoldPer1000Ticks ?? 0) > 0 || (productiveSea?.quote.riskAdjustedGoldPer1000Ticks ?? 0) > 0);
+      if (type === "factory" && tradeGrowth) objective = Math.max(objective,5500);
+      if (snapshot.isolated && type === "city" && count < 3) objective = Math.max(objective,6000);
       const extraction = ["mine", "oil-well", "oil-rig"].includes(type);
       let tiles: readonly number[];
       let page: LandPage | undefined;
@@ -145,10 +156,12 @@ export class AiPlacementCandidates {
           .filter(
             (d) =>
               !snapshot.buildings.some((b) => b.tile === d.tile) &&
+              (d.resource !== "stone" || (stoneExtractionAllowed(snapshot.buildings) &&
+                ![...needed].some(resource => extractionPriority(resource) === 0))) &&
               (type === "mine"
                 ? !["horses", "oil"].includes(d.resource)
                 : d.resource === "oil"),
-          ).sort((a,b) => a.tile - b.tile);
+          ).sort((a,b) => extractionPriority(a.resource) - extractionPriority(b.resource) || a.tile - b.tile);
         const neededDeposits = availableDeposits.filter(d => needed.has(d.resource));
         const deposits = neededDeposits.length ? neededDeposits : availableDeposits;
         tiles = deposits.map(d => d.tile);
@@ -157,10 +170,11 @@ export class AiPlacementCandidates {
       } else if (type === "port") {
         // Bootstrap navigation without waiting for another faction to build
         // the first market. Further sites support growing factory capacity.
-        const desired = Math.max(1, Math.ceil(snapshot.buildings.filter(b => b.type === "factory").length / 8));
+        const desired = Math.max(snapshot.isolated ? 2 : 1, Math.ceil(factories / 3),
+          tradeGrowth && productiveSea ? ports + 1 : 0);
         if (count >= desired) continue;
         tiles = this.coasts(player.id);
-        objective = tiles.length ? (!count ? 7000 : 4000) : 0;
+        objective = tiles.length ? (!count ? snapshot.isolated ? 11000 : 7000 : tradeGrowth ? 5500 : 4000) : 0;
       } else {
         if (!objective && count >= 2) continue;
         // Advance past a filled capital rather than revisiting its nearest
@@ -189,6 +203,7 @@ export class AiPlacementCandidates {
         this.siteCursors.set(key, (cursor + j + 1) % tiles.length);
         if (page) page.cursor = cursor + j + 1;
         tested++;
+        if (!this.expansion.economy.recovery.canBuild(player.id,type,tile)) continue;
         if (world.buildingSite(player.id, type, tile, snapshot.age) === null) {
           output.push({ type, tile, objective, reason: `${missingProducer ? "production-prerequisite" : "capacity"}:${type}` });
           break;

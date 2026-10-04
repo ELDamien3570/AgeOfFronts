@@ -1,4 +1,5 @@
 import { availableGold, paidCost } from "./Gold";
+import { extractionPriority, stoneExtractionAllowed } from "./AiExtractionPolicy";
 import { AiOperations } from "./AiOperations";
 import { AutomaticBuildingTiers } from "./AutomaticBuildingTiers";
 import { DiplomaticGeography } from "./DiplomaticGeography";
@@ -573,6 +574,12 @@ export class Expansion {
       return null;
     }
     if (command.type === "charge") {
+      const fallback = (reason: string) => command.fallbackOrder
+        ? world.applyCommand({type: "order", playerId: player.id, squadIds: command.squadIds,
+          order: command.fallbackOrder.type === "attack" && !world.squad(command.fallbackOrder.targetId)
+            ? {type: "move", tile: world.map.ref(Math.floor(command.x / FIXED), Math.floor(command.y / FIXED))}
+            : command.fallbackOrder})
+        : reason;
       const selected = [...new Set(command.squadIds)].map((id) =>
         world.squad(id),
       );
@@ -592,7 +599,7 @@ export class Expansion {
               this.unit(s).charge!.maximumDistance,
         )
       )
-        return "Every requested unit must have a ready charge in range";
+        return fallback("Every requested unit must have a ready charge in range");
       const tile = world.map.ref(
         Math.floor(command.x / FIXED),
         Math.floor(command.y / FIXED),
@@ -602,7 +609,7 @@ export class Expansion {
           this.fortifications.blocked(t, player.id),
         ),
       );
-      if (paths.some((p) => !p)) return "Charge destination is blocked";
+      if (paths.some((p) => !p)) return fallback("Charge destination is blocked");
       if (
         command.targetId !== undefined &&
         !this.diplomacy.hostile(
@@ -610,7 +617,7 @@ export class Expansion {
           world.squad(command.targetId)?.playerId ?? 0,
         )
       )
-        return "Choose a hostile charge target";
+        return fallback("Choose a hostile charge target");
       selected.forEach((s, i) => {
         world.updateSquad(s!.id, {
           charge: { phase: "approach", x: command.x, y: command.y, startTick: world.tick, committedTick: 0, targetId: command.targetId },
@@ -1173,20 +1180,23 @@ export class Expansion {
                 .filter(
                   (d) =>
                     d.owner === player.id &&
+                    (d.resource !== "stone" || stoneExtractionAllowed(own)) &&
                     !own.some((b) => b.tile === d.tile && b.type === type),
                 )
+                .sort((a,b) => extractionPriority(a.resource) - extractionPriority(b.resource) || a.tile - b.tile)
                 .map((d) => d.tile)
             : (nearestOwned ??= this.world.ownedLandNearest(
                 player.id,
                 player.base,
                 256,
               )).slice();
-        for (const tile of candidates.sort(
+        for (const tile of (extraction ? candidates : candidates.sort(
           (a, b) =>
             this.world.map.euclideanDistSquared(a, player.base) -
               this.world.map.euclideanDistSquared(b, player.base) || a - b,
-        ))
+        )))
           if (
+            this.economy.recovery.canBuild(player.id,type,tile) &&
             this.world.applyCommand({
               type: "build",
               playerId: player.id,
@@ -1282,6 +1292,13 @@ export class Expansion {
       !researchRejection(state, availableGold(player), t.id, this.progression.technologySpeed));
     if (next) this.world.applyCommand({ type: "research", playerId: player.id, technologyId: next.id });
     const own = this.world.buildingFacts().byOwner(player.id);
+    // Coastal tribes fund one useful sea entrance before additional land capacity.
+    const coastal = this.economy.placements.coasts(player.id);
+    if(coastal.length && !own.some(b=>b.type==="port") && state.completed.includes(buildingTechnology("port",this.startingAge)!)) {
+      const site=coastal.slice(0,8).find(tile=>this.economy.recovery.canBuild(player.id,"port",tile) &&
+        this.world.buildingSite(player.id,"port",tile,this.startingAge)===null);
+      if(site!==undefined && this.world.applyCommand({type:"build",playerId:player.id,buildingType:"port",tile:site,age:this.startingAge})===null)return;
+    }
     const plan = this.tribePlans.get(player.id) ?? { nextType: 0, tiles: {} };
     this.tribePlans.set(player.id, plan);
     // One type and at most sixteen legal site attempts per strategic pass.
@@ -1294,13 +1311,16 @@ export class Expansion {
           !state.completed.includes(technology) ||
           costRejection(player, this.supply.inventories[player.id], buildingCost(type, this.startingAge, count))) continue;
       const extraction = type === "mine" || type === "oil-well" || type === "oil-rig";
-      const candidates = extraction
-        ? this.supply.deposits.filter(d => this.world.owners[d.tile] === player.id && resourceVisibleAtAge(d.resource, state.age)).map(d => d.tile)
+      const candidates = type === "port" ? this.economy.placements.coasts(player.id) : extraction
+        ? this.supply.deposits.filter(d => this.world.owners[d.tile] === player.id && resourceVisibleAtAge(d.resource, state.age) &&
+          (d.resource !== "stone" || stoneExtractionAllowed(own)))
+          .sort((a,b) => extractionPriority(a.resource) - extractionPriority(b.resource) || a.tile - b.tile).map(d => d.tile)
         : this.world.ownedLandNearest(player.id, player.base, 256);
       if (!candidates.length) continue;
       for (let i = 0; i < Math.min(16, candidates.length); i++) {
         const cursor = plan.tiles[type] ?? 0;
         plan.tiles[type] = (cursor + 1) % candidates.length;
+        if (!this.economy.recovery.canBuild(player.id,type,candidates[cursor % candidates.length])) continue;
         if (this.world.applyCommand({ type: "build", playerId: player.id,
           buildingType: type, tile: candidates[cursor % candidates.length], age: this.startingAge }) === null) return;
       }
@@ -1545,6 +1565,7 @@ export class Expansion {
     return this.captureEligible(squad, tile, false);
   }
   private captureEligible(squad: Squad, tile: number, obstacleFree: boolean): boolean {
+    if (!this.operations.canEnter(squad.playerId, this.world.owners[tile], tile)) return false;
     if (
       this.world.owners[tile] !== squad.playerId &&
       this.diplomacy.allied(squad.playerId, this.world.owners[tile])

@@ -206,7 +206,7 @@ describe("bounded civilian trade", () => {
     expect(trade.actors.filter((a) => a.playerId === 1)).toHaveLength(0);
     expect(clone.expansion!.trade.checkpoint()).toEqual(trade.checkpoint());
     expect(trade.actors).not.toContain(actor);
-    expect(trade.deliveredGold[2]).toBe(100);
+    expect(trade.deliveredGold[2]).toBe(200);
     step();
     expect(trade.actors.filter((a) => a.playerId === 1)).toHaveLength(1);
     expect(expansion.supply.goods.get(sources[0].id)).toBeLessThanOrEqual(1000);

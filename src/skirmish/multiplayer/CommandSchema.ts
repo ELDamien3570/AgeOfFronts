@@ -1,8 +1,10 @@
 import { z } from "zod";
 import { AGES } from "../domain/Definitions";
 import { BUILDING_RULES } from "../Rules";
+import { MAX_ORDER_SQUADS } from "../FactionRules";
 const id = z.number().int().nonnegative().max(10_000_000);
 const ids = z.array(id).min(1).max(200);
+const squadOrderIds = z.array(id).min(1).max(MAX_ORDER_SQUADS);
 const text = z.string().min(1).max(100);
 const point = {
   x: z.number().int().min(-1000000).max(1000000),
@@ -64,9 +66,12 @@ export const commandSchema = z.discriminatedUnion("type", [
   command("trade-pause", { naval: z.boolean(), paused: z.boolean() }),
   command("trade-block", { otherId: id, blocked: z.boolean() }),
   command("refit", { squadIds: ids, definitionId: text }),
-  command("charge", { squadIds: ids, ...point, targetId: id.optional() }),
+  command("charge", { squadIds: squadOrderIds, ...point, targetId: id.optional(), fallbackOrder: z.union([
+    z.object({type: z.literal("move"), tile: id}).strict(),
+    z.object({type: z.literal("attack"), targetId: id}).strict(),
+  ]).optional() }),
   command("attack-structure", {
-    squadIds: ids,
+    squadIds: squadOrderIds,
     buildingId: id.optional(),
     barrierId: id.optional(),
   }),
@@ -123,5 +128,5 @@ export const commandSchema = z.discriminatedUnion("type", [
   command("load", { shipId: id, squadIds: ids }),
   command("board", { shipId: id, squadIds: ids }),
   command("unload", { shipId: id, tile: id }),
-  command("order", { squadIds: ids, order, append: z.boolean().optional() }),
+  command("order", { squadIds: squadOrderIds, order, append: z.boolean().optional() }),
 ]);

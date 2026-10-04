@@ -41,7 +41,7 @@ export class PlayerAttackContinuation {
     if(!state.progress||distanceSquared(squad,state.progress)>(FIXED/4)**2)state.progress={x:squad.x,y:squad.y,tick};
     return tick-state.progress.tick>=40;
   }
-  choose(squad:Squad,tick:number,nearby:()=>readonly Squad[],eligible:(target:Squad)=>boolean,tileOf:(target:Squad)=>number,lost=true):Squad|undefined {
+  choose(squad:Squad,tick:number,nearby:()=>readonly Squad[],eligible:(target:Squad)=>boolean,tileOf:(target:Squad)=>number,lost=true,targetLoad:(target:Squad)=>number=()=>0):Squad|undefined {
     let state=this.pursuits.get(squad.id);
     if(!state){this.observe(squad,undefined);state=this.pursuits.get(squad.id)!;}
     if(lost)state.missingSince??=tick;
@@ -55,7 +55,9 @@ export class PlayerAttackContinuation {
       const distance=distanceSquared(squad,target);
       if(distance>(12*FIXED)**2||distanceSquared(state.anchor,target)>(16*FIXED)**2||
         this.blocked(squad,target,tick,tileOf(target))||!eligible(target))continue;
-      if(distance<bestDistance||(distance===bestDistance&&target.id<(best?.id??Infinity))){best=target;bestDistance=distance;}
+      // Prefer nearby opponents with room for another attacker, without global scans.
+      const score=distance + Math.min(16,targetLoad(target))*(2*FIXED)**2;
+      if(score<bestDistance||(score===bestDistance&&target.id<(best?.id??Infinity))){best=target;bestDistance=score;}
     }
     if(best){state.missingSince=undefined;state.progress={x:squad.x,y:squad.y,tick};this.diagnostics.retargets++;}
     return best;

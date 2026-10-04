@@ -4,6 +4,8 @@ import { tilePoint } from "../SquadGeometry";
 import { UNITS } from "../content/Units";
 import { AGES } from "./Definitions";
 import { unitRefitCost } from "./Refitting";
+import { conquestBuildings } from "./AiConquestObjective";
+import { MAX_ORDER_SQUADS } from "../FactionRules";
 import { affordableAiCost } from "./AiBudgetLedger";
 import { AI_DOCTRINES } from "../content/AiDoctrines";
 import { personalityOf } from "../content/AiPersonalities";
@@ -69,7 +71,11 @@ export class AiArmyPlanner {
   }
   release(playerId: number): void {
     const plan = this.objectives.get(playerId);
-    if (plan) { this.economy.assets.release(plan.id); this.economy.routes.release(plan.id); }
+    if (plan) {
+      this.economy.assets.release(plan.id); this.economy.routes.release(plan.id);
+      const army=this.expansion.armies.armies.find(a=>a.id===plan.armyId && a.playerId===playerId);
+      if(army)this.expansion.world.applyCommand({type:"disband-army",playerId,armyId:army.id});
+    }
     this.objectives.delete(playerId);
   }
   adoptBeachhead(
@@ -93,7 +99,7 @@ export class AiArmyPlanner {
           !armies.armyOf(s.id) &&
           !this.economy.assets.held(`squad:${s.id}`),
       )
-      .slice(0, armies.capacity(player.id));
+      .slice(0, Math.min(MAX_ORDER_SQUADS,armies.capacity(player.id)));
     if (!members.length) return false;
     const plan: ArmyObjective = {
       id: `land-army:${player.id}:${++this.serial}`,
@@ -214,6 +220,12 @@ export class AiArmyPlanner {
     }
     if (!player) return 0;
     let plan = this.objectives.get(player.id);
+    const abandoned=armies.armies.find(a=>a.playerId===player!.id && a.id!==plan?.armyId && a.state==="holding" &&
+      a.memberIds.every(id=>!this.economy.assets.held(`squad:${id}`)));
+    if(abandoned) {
+      world.applyCommand({type:"disband-army",playerId:player.id,armyId:abandoned.id});
+      this.diagnostics.work=1;return 1;
+    }
     if (
       plan &&
       (plan.generation !== world.aiGeneration(player.id) ||
@@ -293,6 +305,7 @@ export class AiArmyPlanner {
           Math.ceil((available.length * doctrine.reservePercent) / 100),
         ),
         maximum = Math.min(
+          MAX_ORDER_SQUADS,
           armies.capacity(player.id),
           available.length - reserve,
         );
@@ -329,7 +342,7 @@ export class AiArmyPlanner {
             controller: plan!.id,
             priority: "operation" as const,
             createdTick: world.tick,
-            expiresTick: plan!.deadline,
+            expiresTick: plan!.deadline+800,
           })),
         )
       ) {
@@ -393,9 +406,13 @@ export class AiArmyPlanner {
     }
     const target = world.players.find((p) => p.id === plan!.target),
       troops = members.reduce((n, s) => n + s.troops, 0);
+    if(operations.finishing(player.id,plan.target ?? 0) && plan.deadline < world.tick+200) {
+      plan.deadline=world.tick+200;
+      this.economy.assets.acquire(members.map(s=>({...this.economy.assets.leases.get(`squad:${s.id}`)!,expiresTick:plan!.deadline+800})));
+    }
     if (
       !["recover","replenish","refit"].includes(plan.phase) &&
-      (world.tick >= plan.deadline ||
+      ((world.tick >= plan.deadline && !operations.finishing(player.id,plan.target ?? 0)) ||
         (plan.purpose !== "coast" && (!target || target.eliminated || !world.hostile(player.id, target.id) ||
           (operations.enabled(player) && !operations.canTarget(player.id,target.id)))) ||
         (plan.purpose === "coast" && plan.targetTile !== undefined &&
@@ -534,9 +551,22 @@ export class AiArmyPlanner {
           this.order(plan,{type:"hold"});plan.phase="flank";plan.maneuver={enemy:enemy.id,targetTile:world.tileOf(enemy),start:world.tileOf(army!),cursor:0,since:world.tick};
           plan.reason="Certifying a supported flank rather than only offsetting formation slots";
         } else {this.order(plan,{type:doctrine.engagement==="fire-retreat"?"fire-retreat":"attack",targetId:enemy.id});plan.phase="engage";plan.since=world.tick;}
-      } else if (
+      } else if (!enemy && plan.purpose !== "coast" && target) {
+        const remaining = conquestBuildings(world.buildingFacts().byOwner(target.id), target.ai)
+          .filter(b => operations.canEnter(player.id, target.id, b.tile))
+          .sort((a,b) => world.map.euclideanDistSquared(world.tileOf(army ?? members[0]),a.tile) -
+            world.map.euclideanDistSquared(world.tileOf(army ?? members[0]),b.tile) || a.id-b.id);
+        const objective = remaining[0];
+        if (objective && (plan.targetTile !== objective.tile || members.every(s => s.order.type === "hold"))) {
+          if (this.order(plan, {type:"move",tile:objective.tile})) {
+            plan.targetTile = objective.tile; plan.phase = "advance"; plan.reason = "Securing remaining conquest buildings";
+          }
+        }
+      }
+      if (
         (plan.phase === "advance" || plan.phase === "engage") &&
         world.tick - plan.since >= doctrine.commitmentTicks &&
+        !operations.finishing(player.id, plan.target ?? 0) &&
         this.order(plan, { type: "regroup", tile: plan.home ?? player.base })
       ) {
         plan.phase = "recover";

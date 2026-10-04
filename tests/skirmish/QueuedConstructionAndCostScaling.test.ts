@@ -60,10 +60,10 @@ describe("building construction duration scaling", () => {
 });
 
 describe("tile stacking limit", () => {
-  it("allows up to 10 buildings stacked on one tile and rejects the 11th", () => {
+  it("allows up to 15 buildings stacked on one tile and rejects the 16th", () => {
     const { match } = createMatch();
     const tile = match.map.ref(10, 10);
-    for (let i = 0; i < 10; i++) {
+    for (let i = 0; i < 15; i++) {
       const rejection = match.applyCommand({
         type: "build",
         playerId: 1,
@@ -72,15 +72,15 @@ describe("tile stacking limit", () => {
       });
       expect(rejection).toBeNull();
     }
-    expect(match.buildings.filter((b) => b.tile === tile)).toHaveLength(10);
-    const rejection11 = match.applyCommand({
+    expect(match.buildings.filter((b) => b.tile === tile)).toHaveLength(15);
+    const rejection16 = match.applyCommand({
       type: "build",
       playerId: 1,
       buildingType: "barracks",
       tile,
     });
-    expect(rejection11).toBe(
-      "A single site can support at most 10 stacked buildings",
+    expect(rejection16).toBe(
+      "A single site can support at most 15 stacked buildings",
     );
   });
 });

@@ -33,6 +33,7 @@ export function militaryDemand(
   if(!saved){
   const total = Math.min(
     snapshot.cap,
+    snapshot.isolated && snapshot.threatTroops === 0 ? Math.max(personality.minimumRaidSquads,12) : Infinity,
     Math.max(
       personality.minimumRaidSquads,
       Object.values(snapshot.force.core).reduce((n, v) => n + v, 0) +

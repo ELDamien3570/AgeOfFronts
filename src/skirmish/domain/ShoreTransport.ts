@@ -15,6 +15,7 @@ import type { VesselDefinition } from "./Definitions";
 import type { ShoreLeg, ShoreRoutes } from "./ShoreRoutes";
 
 export interface ShoreTransportWorld {
+  continueByLand?(playerId:number,members:Squad[],destination:number,preserveQueue:boolean):void;
   readonly domainRoutes?: DomainRoutePorts;
   squad?(id:number):Squad|undefined;
   ship?(id:number):Ship|undefined;
@@ -62,9 +63,10 @@ interface BoardAdmission {
  seaStart:number;requested:boolean;path?:number[];outcome?:ExactRouteOutcome;attempts:number;retryAt:number;connectorCursor:number;cohortId?:number;prepared?:PreparedSquad[];
 }
 interface TransferAdmission {
+  startedTick?:number;
   id:number;playerId:number;generation:number;revision:string;destination:number;definition:VesselDefinition;capacity:number;preserveQueue:boolean;
   members:{id:number;revision:number;queued:Order[];committed?:boolean}[];cursor:number;
-  groups:{ids:number[];committed?:boolean;leg?:ShoreLeg;shortcut?:{requested:boolean;path?:number[];outcome?:ExactRouteOutcome;cursor:number;part:number;landTicks:number;crossingTicks:number;attempts:number;retryAt:number;done:boolean};cohortId?:number;prepared?:{id:number;point:WorldPoint;path:number[];index:number}[]}[];
+  groups:{ids:number[];crossingOrigin?:number;committed?:boolean;leg?:ShoreLeg;shortcut?:{requested:boolean;path?:number[];outcome?:ExactRouteOutcome;cursor:number;part:number;landTicks:number;crossingTicks:number;attempts:number;retryAt:number;done:boolean};cohortId?:number;prepared?:{id:number;point:WorldPoint;path:number[];index:number}[]}[];
 }
 interface Plan {
   members: Squad[];
@@ -320,9 +322,12 @@ export class ShoreTransport {
     const grouped=new Map<number,number[]>();
     for(const squad of [...members].sort((a,b)=>a.id-b.id)){const component=this.world.paths.component[pointTile(this.world.map,squad)],group=grouped.get(component)??[];group.push(squad.id);grouped.set(component,group);}
     const groups:TransferAdmission["groups"]=[];
-    for(const group of grouped.values())for(let i=0;i<group.length;i+=capacity)groups.push({ids:group.slice(i,i+capacity)});
+    for(const group of grouped.values()) {
+      const crossingOrigin=pointTile(this.world.map,this.squad(group[0])!);
+      for(let i=0;i<group.length;i+=capacity)groups.push({ids:group.slice(i,i+capacity),crossingOrigin});
+    }
     const id=1_000_000_000+this.nextAdmission++;
-    const plan:TransferAdmission={id,playerId,generation:routes.generation(playerId),revision:routes.revision(playerId, "shore"),destination,definition,capacity,preserveQueue,
+    const plan:TransferAdmission={id,playerId,startedTick:routes.tick(),generation:routes.generation(playerId),revision:routes.revision(playerId, "shore"),destination,definition,capacity,preserveQueue,
       members:members.map(s=>({id:s.id,revision:routes.orderRevision(s.id),queued:preserveQueue?[...s.queuedOrders]:[]})),groups,cursor:0};
     this.pendingStarts.set(id,plan);routes.event("shore",{id,playerId,tick:routes.tick(),status:"deferred"});return null;
   }
@@ -365,6 +370,16 @@ export class ShoreTransport {
       if(used>=startsEnd)break;used++;
       this.pendingStarts.delete(plan.id);this.pendingStarts.set(plan.id,plan);
       if(!this.validStart(plan)){this.finishStart(plan,"superseded","Units or transport permission changed");continue;}
+      // An optional shortcut may not monopolize an otherwise legal land order.
+      // Only hand off before any group stages/commits, preserving one itinerary.
+      if(this.world.continueByLand && this.world.domainRoutes!.tick()-(plan.startedTick??this.world.domainRoutes!.tick())>=12 &&
+        plan.groups.every(g=>g.cohortId===undefined) &&
+        plan.members.every(m=>this.world.paths.connected(pointTile(this.world.map,this.squad(m.id)!),plan.destination))) {
+        const members=plan.members.map(m=>this.squad(m.id)!);
+        this.finishStart(plan,"executed");
+        this.world.continueByLand(plan.playerId,members,plan.destination,plan.preserveQueue);
+        continue;
+      }
       const group=plan.groups[plan.cursor];
       if(!group){this.finishStart(plan,"executed");continue;}
       if(group.prepared){if(!group.committed&&!this.commitGroup(plan,group))continue;plan.cursor++;continue;}
@@ -375,24 +390,35 @@ export class ShoreTransport {
       // A shortcut is quoted by the resumable shore planner, never by the
       // synchronous legacy coastline search inside this bounded work slice.
       {
-        const result=this.planning.request(`transfer:${plan.id}:${plan.cursor}`,plan.playerId,pointTile(this.world.map,members[0]),plan.destination);
+        // One representative quotes the order's crossing; every boat certifies
+        // its actual member connectors through CohortAdmission.
+        const searchOrigin=group.crossingOrigin ?? origin;
+        const result=this.planning.request(`transfer:${plan.id}:${plan.cursor}`,plan.playerId,searchOrigin,plan.destination);
         if(result.status==="pending")continue;
         if(result.status!=="complete"){
           if(!connected||result.status==="superseded"){this.finishStart(plan,result.status==="superseded"?"superseded":"rejected",result.reason??"No reachable water crossing");continue;}
         }else leg=result.leg;
       }
       if(connected&&leg){
-        const quote=group.shortcut??={requested:false,cursor:0,part:0,landTicks:0,crossingTicks:leg.waterPath.length*FIXED/plan.definition.speed+20,attempts:0,retryAt:0,done:false};
+        const quote=group.shortcut??=(plan.groups.find(prior=>prior!==group && prior.crossingOrigin===group.crossingOrigin && prior.shortcut)?.shortcut ??
+          {requested:false,cursor:0,part:0,landTicks:0,crossingTicks:leg.waterPath.length*FIXED/plan.definition.speed+20,attempts:0,retryAt:0,done:false});
         if(!quote.done){
           if(!quote.path){
             if(quote.outcome==="unreachable"){quote.done=true;}
             else if(quote.outcome==="superseded"){this.finishStart(plan,"superseded","Shortcut facts changed");continue;}
-            else{quote.outcome=undefined;if(!quote.requested&&quote.retryAt<=this.world.domainRoutes!.tick())quote.requested=this.world.domainRoutes!.request(this.shortcutTask(plan),origin,plan.destination);continue;}
+            else{quote.outcome=undefined;if(!quote.requested&&quote.retryAt<=this.world.domainRoutes!.tick())quote.requested=this.world.domainRoutes!.request(this.shortcutTask(plan),group.crossingOrigin ?? origin,plan.destination);continue;}
           }
           if(!quote.done){
-            const paths=[quote.path!,leg.approachPath??[],leg.arrivalPath??[]],path=paths[quote.part],tile=path[quote.cursor++];
-            if(tile!==undefined){if(quote.part===0)quote.landTicks+=FIXED/terrainSpeed(this.world.map,tile);else quote.crossingTicks+=FIXED/terrainSpeed(this.world.map,tile);continue;}
-            quote.cursor=0;if(++quote.part<3)continue;quote.done=true;
+            const paths=[quote.path!,leg.approachPath??[],leg.arrivalPath??[]];
+            // Terrain-cost reads are cheap; one tile per tick added seconds of
+            // latency despite an already completed path. Keep a bounded batch.
+            for(let reads=0;reads<64 && quote.part<3;reads++) {
+              const tile=paths[quote.part][quote.cursor++];
+              if(tile===undefined){quote.cursor=0;quote.part++;continue;}
+              if(quote.part===0)quote.landTicks+=FIXED/terrainSpeed(this.world.map,tile);
+              else quote.crossingTicks+=FIXED/terrainSpeed(this.world.map,tile);
+            }
+            quote.done=quote.part>=3;if(!quote.done)continue;
           }
         }
         if(quote.path&&quote.crossingTicks>=quote.landTicks)leg=undefined;
@@ -511,7 +537,7 @@ export class ShoreTransport {
     const w = this.world,
       origin = pointTile(w.map, squad);
     if (!w.paths.connected(origin, destination)) return true;
-    if(w.domainRoutes)return (this.planning?.hasCoast(origin)??false)&&w.map.manhattanDist(origin,destination)>=24;
+    if(w.domainRoutes && (!(this.planning?.hasCoast(origin)??false) || w.map.manhattanDist(origin,destination)<24))return false;
     const ax = w.map.x(origin),
       ay = w.map.y(origin),
       bx = w.map.x(destination),
@@ -531,7 +557,7 @@ export class ShoreTransport {
         break;
       }
     return (
-      crosses && this.preferredLeg(squad, destination, definition) !== null
+      crosses && (w.domainRoutes ? true : this.preferredLeg(squad, destination, definition) !== null)
     );
   }
 

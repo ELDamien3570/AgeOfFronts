@@ -1,5 +1,6 @@
 import { createSkirmishMap } from "./Elevation";
 import type { WorkerRequest, WorkerResponse } from "./Protocol";
+import { MAX_ORDER_SQUADS } from "./FactionRules";
 import { TICKS_PER_SECOND } from "./Protocol";
 import { Skirmish } from "./Simulation";
 import { SnapshotEncoder, snapshotTransfers } from "./SnapshotCodec";
@@ -100,7 +101,10 @@ self.onmessage = (event: MessageEvent<WorkerRequest>) => {
         });
         return;
       }
-      const rejection = match?.applyCommand(message.command);
+      const command=message.command;
+      const oversized=["order","charge","attack-structure"].includes(command.type) &&
+        "squadIds" in command && command.squadIds.length>MAX_ORDER_SQUADS;
+      const rejection = oversized ? `Select at most ${MAX_ORDER_SQUADS} squads` : match?.applyCommand(command);
       if (rejection) send({ type: "rejected", message: rejection });
       if (paused || performance.now() - lastPublishedAt >= 30) publish();
     } else if (message.type === "pause") {

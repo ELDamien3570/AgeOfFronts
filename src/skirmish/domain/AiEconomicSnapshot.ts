@@ -30,6 +30,7 @@ export interface AiEconomicSnapshot {
   trainingTicks: number;
   readyTroops: number;
   threatTroops: number;
+  isolated?: boolean;
 }
 export function economicSnapshot(input: {
   player: Player;
@@ -45,6 +46,7 @@ export function economicSnapshot(input: {
   production: Record<number, ProductionJob | undefined>;
   cap: number;
   threatTroops: number;
+  isolated?: boolean;
   territoryIncomeScale?: number;
 }): AiEconomicSnapshot {
   const { player, age } = input;
@@ -68,6 +70,7 @@ export function economicSnapshot(input: {
   );
   return {
     playerId: player.id,
+    isolated: input.isolated,
     tick: input.tick,
     generation: input.generation,
     age,

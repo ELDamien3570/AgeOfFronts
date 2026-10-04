@@ -9,6 +9,7 @@ import { AiModernFronts } from "./AiModernFronts";
 import type { Player } from "../Protocol";
 import { personalityOf } from "../content/AiPersonalities";
 import { resourceTechnology } from "../content/Resources";
+import { AiRecovery } from "./AiRecovery";
 import { AiAssetLeases } from "./AiAssetLeases";
 import { AiBoundaryIndex } from "./AiBoundaryIndex";
 import { AiBudgetLedger, affordableAiCost } from "./AiBudgetLedger";
@@ -42,6 +43,7 @@ export class AiEconomicDirector {
   readonly placements: AiPlacementCandidates;
   readonly military: AiMilitaryDirector;
   readonly losses = new AiLossWindow();
+  readonly recovery: AiRecovery;
   readonly cities: AiCityRecords;
   readonly defenses: AiDefenseDirector;
   readonly fronts: AiFrontRecords;
@@ -64,6 +66,8 @@ export class AiEconomicDirector {
     abandoned: 0,
   };
   constructor(private readonly expansion: Expansion) {
+    this.recovery = new AiRecovery(expansion);
+    this.recovery.rebuild(expansion.world.buildings);
     this.routes = new AiRouteQuotes(expansion);
     this.tradeQuotes = new AiTradeOpportunities(expansion, this);
     this.placements = new AiPlacementCandidates(expansion);
@@ -106,6 +110,7 @@ export class AiEconomicDirector {
       ledger: this.ledger.checkpoint(),
       assets: this.assets.checkpoint(),
       losses: this.losses.checkpoint(),
+      recovery: this.recovery.checkpoint(),
       cities: this.cities.checkpoint(),
       defenses: this.defenses.checkpoint(),
       fronts: this.fronts.checkpoint(),
@@ -135,6 +140,7 @@ export class AiEconomicDirector {
     this.saving.clear();
     this.assets.restore(saved.assets ?? []);
     this.losses.restore(saved.losses ?? []);
+    this.recovery.restore(saved.recovery);
     this.cities.restore(
       saved.cities ?? {
         scan: undefined,
@@ -194,6 +200,7 @@ export class AiEconomicDirector {
     if (world.options?.aiEconomy !== true || world.options.runAi === false)
       return;
     this.expireOwnership();
+    this.recovery.step();
     // Read models and naval assessment share one allowance. Preserve at least
     // sixteen units for city work even during simultaneous cold boundary and
     // naval passes; more becomes available when another consumer is idle.
@@ -287,6 +294,8 @@ export class AiEconomicDirector {
               (s.order.type === "attack" && world.squad(s.order.targetId)?.playerId === player.id)),
         )
         .reduce((n, s) => n + s.troops, 0),
+      isolated: this.placements.coasts(player.id).length > 0 && !world.players.some(p =>
+        p.id !== player.id && !p.eliminated && world.hostile(player.id,p.id) && world.paths.connected(player.base,p.base)),
     });
     // Planning may invest in an owned, researched deposit before its mine is
     // built. Execution still spends only liquid stock through normal commands.

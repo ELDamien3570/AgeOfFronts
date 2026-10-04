@@ -223,9 +223,9 @@ describe("integrated shipments and military progression", () => {
     e.supply.goods.set(factory.id, 20);
     tradeStep(m, 22);
     const actor = e.trade.actors[0];
-    expect(actor.valuePerGood).toBe(5);
+    expect(actor.valuePerGood).toBe(10);
     e.progression.states[1].age = "Modern";
-    expect(actor.valuePerGood).toBe(5);
+    expect(actor.valuePerGood).toBe(10);
     const captor = m.squads.find((s) => s.playerId === 2)!;
     m.updateSquad(captor.id, { x: actor.x });
     m.updateSquad(captor.id, { y: actor.y });
@@ -239,7 +239,7 @@ describe("integrated shipments and military progression", () => {
     for (let i = 0; i < 200 && e.trade.actors.includes(actor); i++)
       tradeStep(m);
     expect(e.trade.actors).not.toContain(actor);
-    expect(e.trade.deliveredGold[2]).toBe(100);
+    expect(e.trade.deliveredGold[2]).toBe(200);
     const paid = m.players[1].gold;
     tradeStep(m, 100);
     expect(m.players[1].gold).toBe(paid);

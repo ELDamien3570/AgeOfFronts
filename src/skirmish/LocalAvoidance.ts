@@ -174,7 +174,7 @@ export class LocalAvoidance {
     const obstacles = this.obstacles;
     const end: WorldPoint = { x: 0, y: 0 };
     for (const squad of active) {
-      const desired = preferred.get(squad.id) ?? ZERO;
+      let desired = preferred.get(squad.id) ?? ZERO;
       if (!desired.x && !desired.y) {
         proposed.set(squad.id, ZERO);
         continue;
@@ -183,6 +183,25 @@ export class LocalAvoidance {
       // Sorting every neighborhood would repeat the same work for every unit.
       const last = this.previous.get(squad.id) ?? desired;
       const intent = byId.get(squad.id)!;
+      // Friendly bodies are a bounded soft steering preference, not hard
+      // obstacles. Terrain failure falls back to the original trajectory;
+      // hostile trajectories still pass the exact swept guard below.
+      grid.sample(squad.x,squad.y,1.15*FIXED,neighbors,other=>other.id!==squad.id && squadSeparation(squad,other,this.hostile)===0,8,64);
+      let pushX=0,pushY=0,read=0;
+      for(const other of neighbors) {
+        if(other.id===squad.id || squadSeparation(squad,other,this.hostile)!==0)continue;
+        const dx=squad.x-other.x,dy=squad.y-other.y,distance=Math.hypot(dx,dy);
+        if(distance>=1.15*FIXED)continue;
+        const strength=(1-distance/(1.15*FIXED))*intent.speed*0.3;
+        pushX+=(distance ? dx/distance : squad.id<other.id ? -1 : 1)*strength;
+        pushY+=(distance ? dy/distance : squad.id<other.id ? 0.5 : -0.5)*strength;
+        if(++read>=8)break;
+      }
+      if(read) {
+        const x=desired.x+pushX,y=desired.y+pushY,length=Math.hypot(x,y),scale=Math.min(1,intent.speed/Math.max(1,length));
+        const steering={x:Math.round(x*scale),y:Math.round(y*scale)};
+        if(steering.x*desired.x+steering.y*desired.y>0 && allowed(squad,{x:squad.x+steering.x,y:squad.y+steering.y}))desired=steering;
+      }
       const horizon = Math.min(
         HORIZON,
         Math.max(

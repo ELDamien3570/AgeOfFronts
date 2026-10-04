@@ -9,7 +9,7 @@ export const TRADE_RULES = {
   baseCargoPercent: 100,
   maximumCargoPercent: 300,
   cargoExponent: 0.5,
-  valuePerGood: 5,
+  valuePerGood: 10,
   selfPercent: 100,
   alliedPercent: 200,
   foreignPercent: 400,

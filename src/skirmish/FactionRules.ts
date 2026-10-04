@@ -23,6 +23,7 @@ export type FactionWorldSize = keyof typeof WORLD_FACTION_DEFAULTS;
 export const MAX_HUMAN_PLAYERS = 20;
 export const MAX_AI_OPPONENTS = 14;
 export const MAX_TRIBES = 30;
+export const MAX_ORDER_SQUADS = 30;
 /** Humans + AI + tribes; owner IDs share a byte with the 255 contested marker. */
 export const MAX_PLAYER_ID = MAX_HUMAN_PLAYERS + MAX_AI_OPPONENTS + MAX_TRIBES;
 
