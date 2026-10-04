@@ -131,6 +131,13 @@ import { terrainSpeed } from "./Terrain";
 
 const STARTING_TROOPS = 12_000;
 const BASE_RADIUS = 6;
+// Capture uses radius three on every active squad, every tick. Preserve the
+// original row-major disk while avoiding repeated corner tests/map bounds.
+const RADIAL_SPANS = Array.from({ length: BASE_RADIUS + 1 }, (_, radius) =>
+  Array.from({ length: radius * 2 + 1 }, (_, row) =>
+    Math.floor(Math.sqrt(radius * radius - (row - radius) ** 2)),
+  ),
+);
 const ROUTE_EFFORT_LIMIT = 20_000;
 // Crossing trees built per tick until every portal has one (land, then water).
 const PATH_WARM_TREES = 4;
@@ -4216,18 +4223,19 @@ export class Skirmish {
     fn: (tile: number) => void,
   ): void {
     const cx = this.map.x(center),
-      cy = this.map.y(center);
+      cy = this.map.y(center),
+      maxX = this.map.width() - 1,
+      lastY = Math.min(this.map.height() - 1, cy + radius),
+      spans = RADIAL_SPANS[radius];
     for (
       let y = Math.max(0, cy - radius);
-      y <= Math.min(this.map.height() - 1, cy + radius);
+      y <= lastY;
       y++
     ) {
-      for (
-        let x = Math.max(0, cx - radius);
-        x <= Math.min(this.map.width() - 1, cx + radius);
-        x++
-      ) {
-        if ((x - cx) ** 2 + (y - cy) ** 2 > radius ** 2) continue;
+      const span = spans?.[y - cy + radius] ??
+        Math.floor(Math.sqrt(radius * radius - (y - cy) ** 2));
+      const lastX = Math.min(maxX, cx + span);
+      for (let x = Math.max(0, cx - span); x <= lastX; x++) {
         const tile = this.map.ref(x, y);
         if (this.paths.walkable(tile)) fn(tile);
       }

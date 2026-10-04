@@ -202,3 +202,32 @@ SQLite release backup: `/opt/ageoffronts/backups/multiplayer-20261003T232805Z.sq
 Public HTTPS/WSS two-client smoke passed on Valles Kairulia 500, Modern, 10 AI and 25 tribes: movement, construction, all five AI defaults, trade controls, rejection, water embarkation, automatic shore landing, inland continuation, reconnect and 55 common canonical state samples. Periodic movement p95 was 226 ms (two samples only). Publication gap p95 216–217 ms, maximum 452 ms. No recorded failures. Artifact: `out/overnight-1000/public-release-smoke.json`; owned smoke match `match-154` is allowed to expire through the normal empty-match grace period.
 
 The overnight follow-up remains active for one heavier capacity diagnostic: replay the original 50-minute checkpoint through minute 60 on ARM with the production encoding worker/publication queue enabled. This isolates CPU and replication costs in the denser world; it does not add rendered clients or reproduce actual player battle history. Label `overnight-heavy-encoding`, idle-only and abort-on-live-match as before. No second gameplay pass is implemented.
+
+## Heavier 50–60-minute ARM encoding replay
+
+Completed tick 72000 in **633.61 wall seconds** for 600 simulation seconds of work (about 94.7% of real-time throughput when run without pacing). Final world: 566 squads, five ships, 655 buildings and 28 traders. This fixture retains the original Stone/Bronze progression instead of starting in Modern.
+
+Last rolling tick mean **57.30 ms**, p95 **80.29 ms**, maximum 134.60 ms. Worst reported rolling p95 across the run: **102.69 ms**. Last phase means: routing 20.63 ms, movement 11.32 ms, capture 8.92 ms. Planner ended with 49 pending routes, oldest 36 ticks; 11083 completed, 21 capacity-limited and 15913 superseded. New route creation/cancellation and tactical churn remain significant even after starvation is fixed.
+
+All **3000** offered publications completed: zero skipped, zero pending at exit, 45.62 MB encoded output. Last encoder compression p95 7.70 ms. This rules out a persistent encoding backlog in this replay but excludes actual sockets/browser rendering. It does not establish the encoding worker is free of CPU contention.
+
+CPU self samples over this replay: anonymous simulation frames 101.91 s, `eachInRadius` 60.05 s, GC 31.87 s, exact `PlanningWorkspace.step` 29.60 s, `canCaptureTile` 19.99 s and swept fortification checks 18.81 s. These are sampled function attribution, not subsystem-inclusive totals. They support targeting repeated capture-area geometry and collision queries alongside routing, rather than treating every symptom as a network issue.
+
+A focused radial scan candidate hoists map bounds and enumerates precomputed disk row spans. It preserves row-major tile order, clipping and walkability. Tests compare against a whole-map geometric oracle, including edges and radii beyond the precomputed range. The controlled A/B/B/A harness restores the same 50-minute checkpoint, uses the original loop for its legacy mode, and compares full canonical snapshot hashes after 400 ticks. Local hashes match in all four trials; ARM comparison and release checks are pending. No capture rules, friendly collision behavior or troop limits are changed by this optimization.
+
+### Radial scan result
+
+ARM A/B/B/A completed with the **same canonical snapshot hash in all four trials**. Original capture means: 7.825 and 7.698 ms; candidate: 7.687 and 7.540 ms. Mean capture cost fell approximately **1.9%**. Mean overall elapsed time fell approximately **4.0%**, but startup/JIT/order effects contribute: the warm original versus warm candidate pair differs by about 2.2%. Local capture means improved only about 1.9% as well. This is a modest hot-loop improvement, not a cure for the heavy-world 80 ms tick p95.
+
+The change is retained because it removes repeated work while preserving exact authoritative behavior, not because the short wall-time difference proves a universal speedup. Artifacts: `radius-comparison.json`, `radius-comparison-arm.json`, and `scripts/profileRadiusScan.mjs`. Full release tests/build and final idle-safe deployment are recorded after completion.
+
+## Final bottleneck assessment and next focused work
+
+1. **Interactive latency:** the confirmed planner reservation starvation is fixed and measured. Full large-order transport/deployment and rendered browser latency still need the separate movement pass; a first moving leader is not proof all followers are ready.
+2. **Serial routing:** approximately 20.6 ms mean in the final dense window. Measure duplicate route preparation, corridor/connector reuse and invalidation/supersession before increasing budgets. Raising work per tick can make commands queue less while slowing the simulation further.
+3. **Movement and obstacle geometry:** approximately 11.3 ms mean movement in that window, with swept fortification checks in CPU samples. Reuse local broad-phase candidates and pure geometry under obstacle revisions; preserve enemy blocking. Do not solve this by globally disabling collision or AI Armies.
+4. **Capture:** approximately 8.9 ms mean. The radial loop improvement removes a small amount of repeated geometry. Next measure repeated defensive-building and barrier-ray checks within the same capture footprint, and consider a revisioned per-owner/tile exclusion projection. Invalidate it on construction, destruction, capture and diplomacy changes; a stale cache would alter conquest rules.
+5. **Replication/network:** no persistent publication backlog in the dense replay, no buffered-socket accumulation in captured diagnostics, and responsive WSS movement in the lighter 40-minute soak. Browser main-thread work, actual RTT and player-driven world growth remain unqualified. The game cannot yet claim universally sub-second late-game inputs.
+6. **AI behavior:** concentrated rebuild/recapture spam is plausible from the legal-site policy but was not reproduced by this seed. Army disabling did not help the matched CPU fixture. Island investment, productive trade targets, recovery/stragglers and combat spacing remain the separate requested design pass; its deliverables are documented, not silently implemented here.
+
+One simultaneous match remains the supported Oracle admission setting. Faster single-core CPU can provide headroom; increasing core count alone does not eliminate the serial tick bottleneck. Prefer the measured focused passes above before declaring public-consumption readiness for the largest battles.
