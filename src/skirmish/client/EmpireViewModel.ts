@@ -103,7 +103,7 @@ export class EmpireViewModel {
     return TREES.map(
       (tree) =>
         `${tree[0].toUpperCase()}${tree.slice(1)} ${treeCompletion(this.progression, tree)}/${treeWorkload(this.progression.age, tree)}`,
-    ).join(" Â· ");
+    ).join(" · ");
   }
   get advance() {
     const definition = ADVANCES[AGES.indexOf(this.progression.age)],

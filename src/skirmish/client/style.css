@@ -283,11 +283,11 @@ kbd {
   display: none;
 }
 .dock-age::after {
-  content: " Â· Open";
+  content: " · Open";
   letter-spacing: normal;
 }
 [data-hud-mode="dynamic"] .dock-age::after {
-  content: " Â· Dynamic";
+  content: " · Dynamic";
 }
 .command-category {
   border-right: 1px solid var(--line);

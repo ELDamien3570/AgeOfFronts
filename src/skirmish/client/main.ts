@@ -110,7 +110,7 @@ document.querySelector<HTMLDivElement>("#app")!.innerHTML = `
         "",
       )}</select></label><label>Map size<select id="world-size"><option value="250">250 cells · longest edge</option><option value="500" selected>500 cells · longest edge</option><option value="1000">1000 cells · longest edge</option></select></label><label>Starting age<select id="starting-age">${AGES.map((a, i) => `<option value="${a}" ${a === "StoneAge" ? "selected" : ""}>${AGE_NAMES[i]}</option>`).join("")}</select></label><label>Victory<select id="victory-mode"><option value="solo">Solo conquest</option><option value="allied">Allied conquest</option></select></label><label title="New skirmishes divide all research and age-advancement costs and times by this setting, for every faction.">Tech speed<select id="technology-speed" aria-label="Technology speed"><option value="1">1×</option><option value="2">2×</option><option value="3">3×</option></select></label><label><input type="checkbox" id="infinite-gold" />Infinite Gold for Players</label><button id="restart" class="primary">New skirmish</button></div>
 
-    <div class="time-controls"><button id="wasd-mode" type="button" aria-pressed="false" title="WASD pans the map; Shift for building/single recruitment shortcuts, Space for five recruits.">WASD Mode</button><span id="clock">0:00</span><select id="ground-style" aria-label="Ground style" title="Ground style"><option value="animated">Animated sea</option><option value="still">Still sea</option><option value="classic">Classic</option></select><select id="speed" aria-label="Game speed"><option value="1">1× speed</option><option value="2">2× speed</option><option value="4">4× speed</option></select><button id="pause" aria-label="Pause game">Pause</button><button id="home" aria-label="Fit battlefield">Fit map <kbd>Home</kbd></button></div>
+    <div class="time-controls"><button id="wasd-mode" type="button" aria-pressed="false" title="WASD pans the map; Shift for building/single recruitment shortcuts, Space for five recruits.">WASD</button><span id="clock">0:00</span><select id="speed" aria-label="Game speed"><option value="1">1× speed</option><option value="2">2× speed</option><option value="4">4× speed</option></select><button id="pause" aria-label="Pause game">Pause</button></div>
 
   </header>
 
@@ -162,23 +162,16 @@ const renderer = new Renderer(canvas, campLoss);
 // Ground style is a per-browser preference: animated or still water on the
 // WebGL ground, or the classic painted ground.
 const GROUND_KEY = "skirmish.groundStyle";
-const groundSelect = element<HTMLSelectElement>("ground-style");
+let groundStyle: GroundStyle = "animated";
 try {
   const saved = localStorage.getItem(GROUND_KEY);
   if (saved === "animated" || saved === "still" || saved === "classic")
-    groundSelect.value = saved;
+    groundStyle = saved;
 } catch {
   // Storage can be blocked; the default style applies.
 }
-renderer.setGroundStyle(groundSelect.value as GroundStyle);
-groundSelect.addEventListener("change", () => {
-  renderer.setGroundStyle(groundSelect.value as GroundStyle);
-  try {
-    localStorage.setItem(GROUND_KEY, groundSelect.value);
-  } catch {
-    // Not persisted; the choice still applies to this session.
-  }
-});
+// Retain saved styles and Renderer.setGroundStyle for the later settings panel.
+renderer.setGroundStyle(groundStyle);
 
 let campLossLabels: { playerId: number; label: HTMLElement }[] = [];
 
@@ -1282,7 +1275,6 @@ element("all").addEventListener("click", selectAll);
 
 element("pause").addEventListener("click", togglePause);
 
-element("home").addEventListener("click", () => renderer.home());
 
 element("speed").addEventListener("change", () => {
   speed = Number(element<HTMLSelectElement>("speed").value) as 1 | 2 | 4;
