@@ -10,8 +10,8 @@ const cleanups: (() => Promise<void> | void)[] = [];
 afterEach(async () => {
   for (const cleanup of cleanups.splice(0).reverse()) await cleanup();
 });
-async function start(store = new CoordinatorStore(":memory:")) {
-  const server = createCoordinatorServer({ store, origins: [origin] });
+async function start(store = new CoordinatorStore(":memory:"), now?: () => number) {
+  const server = createCoordinatorServer({ store, origins: [origin], now });
   await new Promise<void>((resolve) =>
     server.http.listen(0, "127.0.0.1", resolve),
   );
@@ -58,6 +58,31 @@ async function client(socket: string, token: string) {
 }
 
 describe("durable authenticated lobby transport", () => {
+  it("rejects rapid recruitment without disconnecting or starving state receipts", async () => {
+    let clock = Date.now();
+    const { url, socket, store } = await start(undefined, () => clock);
+    cleanups.unshift(() => store.close());
+    const identity = await guest(url);
+    const peer = await client(socket, identity.token);
+    for (let i = 0; i < 150; i++) peer.ws.send(JSON.stringify({
+      type: "match-command", requestId: `spam-${i}`, matchId: "missing-match",
+      command: { type: "recruit", playerId: 1, buildingId: 1,
+        definitionId: "stoneage-infantry" },
+    }));
+    const rejected = await peer.next(m => m.type === "error" && m.requestId === "spam-149");
+    expect(rejected.type === "error" && rejected.message).toContain("Request rate exceeded");
+    expect(peer.ws.readyState).toBe(WebSocket.OPEN);
+    for (const type of ["match-state-applied", "match-sync-applied"] as const) {
+      peer.ws.send(JSON.stringify({ type, requestId: type, matchId: "missing-match",
+        publicationSequence: 1, ...(type === "match-state-applied" ? {flowEpoch: 1} : {syncId: "sync-one"}) }));
+      const receipt = await peer.next(m => m.type === "error" && m.requestId === type);
+      expect(receipt.type === "error" && receipt.message).toContain("This match is no longer available");
+    }
+    clock += 1001;
+    peer.ws.send(JSON.stringify({ type: "join", requestId: "after-cooldown", roomId: "default-africa" }));
+    expect((await peer.next(m => m.type === "ack" && m.requestId === "after-cooldown")).type).toBe("ack");
+    expect(peer.ws.readyState).toBe(WebSocket.OPEN);
+  });
   it("shares rooms between independent guests and fences duplicate controlling tabs", async () => {
     const { store, server, url, socket } = await start();
     cleanups.unshift(() => store.close());

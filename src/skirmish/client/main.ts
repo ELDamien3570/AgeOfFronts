@@ -1,4 +1,5 @@
 import { hasInfiniteGold } from "../domain/Gold";
+import { limitSquadSelection } from "./SquadSelectionViewModel";
 import { BrowserLobbyPreviewStore } from "./lobby/LobbyPreviewStore";
 import { validFactionColor } from "../lobby/FactionPalette";
 import { DEFAULT_AI_POLICIES } from "../content/AiPolicies";
@@ -346,6 +347,11 @@ function post(message: WorkerRequest): void {
 }
 
 function command(message: Command): void {
+  if (snapshot && "squadIds" in message) {
+    const ids = new Set(message.squadIds);
+    limitSquadSelection(ids, snapshot.squads, localPlayerId);
+    message = { ...message, squadIds: [...ids] };
+  }
   orderGesture.cancel();
   post({ type: "command", command: message });
 }
@@ -734,6 +740,7 @@ async function startOnlineMatch(): Promise<void> {
 
 function updateHud(): void {
   if (!snapshot) return;
+  limitSquadSelection(renderer.selected, snapshot.squads, localPlayerId);
   const started = performance.now();
   try {
 

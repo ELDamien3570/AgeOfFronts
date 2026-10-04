@@ -277,11 +277,12 @@ export function createCoordinatorServer(options: CoordinatorServerOptions) {
           session.windowAt = now();
           session.count = 0;
         }
-        if (++session.count > 50) {
+        // State receipts release publication/backpressure; player action bursts
+        // must not consume their budget or prevent the client staying current.
+        const stateReceipt = message.type === "match-state-applied" ||
+          message.type === "match-sync-applied";
+        if (!stateReceipt && ++session.count > 50) {
           send(client,{type:"error",requestId:message.requestId,message:"Request rate exceeded. This action was not accepted; retry after one second."});
-          if (session.count > 100) {
-            client.close(1008, "Too many requests");
-          }
           return;
         }
         if ("matchId" in message) {

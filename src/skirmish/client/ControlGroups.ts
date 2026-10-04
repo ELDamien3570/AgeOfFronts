@@ -1,4 +1,5 @@
 import type { Snapshot } from "../Protocol";
+import { limitSquadSelection } from "./SquadSelectionViewModel";
 
 export interface UnitSelection {
   selected: Set<number>;
@@ -45,12 +46,13 @@ export class ControlGroups {
       ]),
     });
     this.prune(snapshot);
+    limitSquadSelection(this.groups.get(digit)!.selected, snapshot.squads, snapshot.localPlayerId ?? 1);
   }
 
   recall(digit: number, snapshot: Snapshot): UnitSelection {
     this.prune(snapshot);
     const group = this.groups.get(digit);
-    return {
+    const selection = {
       selected: new Set(
         snapshot.squads
           .filter(
@@ -63,6 +65,8 @@ export class ControlGroups {
       ),
       selectedShips: new Set(group?.selectedShips ?? []),
     };
+    limitSquadSelection(selection.selected, snapshot.squads, snapshot.localPlayerId ?? 1);
+    return selection;
   }
 
   count(digit: number): number {
