@@ -16,6 +16,25 @@ function fixture(enabled = true, count = 3) {
 function evaluate(f: ReturnType<typeof fixture>, tick: number) { f.m.tick = tick; f.ops.step(f.forces); }
 
 describe("optional AI strategic operations", () => {
+  it("reuses overlapping entry tiles and drops the projection at each drain boundary", () => {
+    const f=fixture(), enter=vi.spyOn(f.ops,"canEnter");
+    const internal=f.m as unknown as {aiFootprintAllowed(id:number,tile:number):boolean;drainRoutes():void;changeOwner(tile:number,id:number):void};
+    const first=f.map.ref(90,80), second=f.map.ref(91,80);
+    for(let y=77;y<=83;y++)for(let x=87;x<=94;x++)internal.changeOwner(f.map.ref(x,y),1);
+    f.m.expansion!.diplomacy.state.alliances.push({id:1,a:1,b:2,expiresTick:1000,renewal:[]});
+    f.m.expansion!.diplomacy.revision++;
+    const step=vi.spyOn(f.m.routePlanner,"step").mockImplementation(()=>{
+      expect(internal.aiFootprintAllowed(2,first)).toBe(true);
+      const before=enter.mock.calls.length;
+      expect(before).toBeGreaterThan(0);
+      expect(internal.aiFootprintAllowed(2,second)).toBe(true);
+      expect(enter.mock.calls.length-before).toBeLessThan(29);
+      return 0;
+    });
+    internal.drainRoutes(); const firstDrain=enter.mock.calls.length;
+    internal.drainRoutes(); expect(enter.mock.calls.length).toBe(firstDrain*2);
+    step.mockRestore(); enter.mockRestore();
+  });
   it("shares footprint reads only within routing and invalidates ownership and permission changes", () => {
     const f=fixture(), tile=f.map.ref(90,80), near=f.map.ref(87,80);
     const internal=f.m as unknown as {aiFootprintAllowed(id:number,tile:number):boolean;changeOwner(tile:number,id:number):void;drainRoutes():void};
@@ -32,6 +51,11 @@ describe("optional AI strategic operations", () => {
       // Refreshing an existing threat changes entry permission even though it
       // deliberately does not supersede all outstanding route jobs.
       f.ops.threatened(2,1,f.map.ref(140,80));
+      expect(internal.aiFootprintAllowed(2,near)).toBe(false);
+      f.m.expansion!.diplomacy.state.alliances.push({id:1,a:1,b:2,expiresTick:1000,renewal:[]});
+      f.m.expansion!.diplomacy.revision++;
+      expect(internal.aiFootprintAllowed(2,near)).toBe(true);
+      f.m.expansion!.diplomacy.state.alliances=[];f.m.expansion!.diplomacy.revision++;
       expect(internal.aiFootprintAllowed(2,near)).toBe(false);
       return 0;
     });

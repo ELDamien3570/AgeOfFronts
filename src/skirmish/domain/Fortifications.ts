@@ -206,6 +206,11 @@ export class Fortifications {
       this.blocked(tile, owner),
     );
   }
+  /** Conservative area proof for batches of capture rays. An occupied block
+   * requires the existing exact ray checks, even if its walls are allied. */
+  obstacleFreeArea(left: number, top: number, right: number, bottom: number): boolean {
+    return !this.hasObstacles || !this.mayBlock({x:left,y:top}, {x:right,y:bottom});
+  }
   blockingTilesOnSweep(
     from: { x: number; y: number },
     to: { x: number; y: number },

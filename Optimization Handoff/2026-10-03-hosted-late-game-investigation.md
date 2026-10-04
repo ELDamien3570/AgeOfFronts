@@ -241,3 +241,7 @@ Final runtime identity: `5f5f55264eefa9999bbbd13f0cca007204cdf4f027f79b1bc520c10
 Final SQLite backup `/opt/ageoffronts/backups/multiplayer-20261004T003713Z.sqlite` passed integrity checking. The previous release marker preserves `20a6a78` for rollback. Smoke match `match-156` expired through the normal grace period; no match was forcibly stopped. Final public health returned `status: ok`, `activeMatches: 0`, with no running, stalled or preparing matches.
 
 The profiling investigation and separate eleven-item review are complete. Final idle health is verified; the hourly follow-up is disabled to avoid redundant tests or releases. The next gameplay passes remain review deliverables awaiting the user's next direction, not unreported implementation.
+
+## Authorized follow-up: permission and capture query reuse
+
+The user's next direction authorized two measured read optimizations before the eleven-item gameplay work. See [the 2026-10-04 comparison and release-candidate report](2026-10-04-query-reuse-performance.md). The final matched ARM comparison preserves canonical snapshot hashes and planner outcomes in all eight trials, reduces processing elapsed about 7%, and reduces mean trial tick p95 about 5%. Dense tick p95 remains above the 50 ms budget. This follow-up prepares a candidate; it does not replace the deployed revision recorded above.

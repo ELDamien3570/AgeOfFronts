@@ -26,6 +26,7 @@ case "$mode" in
   hosted-soak) command=(scripts/runHostedStabilitySoak.mjs --seconds 2400 --out "/benchmark/results/$label"); result=smoke.json ;;
   heavy-encoding) command=(scripts/profileSkirmishStability.mjs --restore /benchmark/input/oldworld-50.v8 --map old-world --size 1000 --humans 2 --all-ai --inspect-churn --worker-encoding --ticks 72000 --profile-at 60000 --max-seconds 1200 --out "/benchmark/results/$label"); result=summary.json ;;
   radius) command=(scripts/profileRadiusScan.mjs --restore /benchmark/input/oldworld-50.v8 --out "/benchmark/results/$label/result.json"); result=result.json ;;
+  queries) command=(scripts/profileQueryReuse.mjs --compare --restore /benchmark/input/oldworld-50.v8 --out "/benchmark/results/$label/result.json"); result=result.json ;;
   *) exit 2 ;;
 esac
 container=$(sudo docker run -d --rm --network none --cpus "$cores" --memory 2g --pids-limit 128 --read-only --tmpfs /tmp --user 1001:1001 \

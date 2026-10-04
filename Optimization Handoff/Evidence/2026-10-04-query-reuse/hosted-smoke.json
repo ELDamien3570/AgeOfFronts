@@ -1,0 +1,217 @@
+{
+  "passed": true,
+  "title": "Stability smoke 2026-10-04T10-36-51-716Z",
+  "matchId": "match-2",
+  "roomId": "room-1",
+  "base": "http://127.0.0.1:9145",
+  "mapId": "old-world",
+  "worldSize": 1000,
+  "clients": 2,
+  "seconds": 60,
+  "elapsedSeconds": 80.946,
+  "flags": {
+    "aiEconomy": true,
+    "deferredPlanning": true,
+    "aiDefenses": true,
+    "aiNaval": true,
+    "aiWarPolicy": true
+  },
+  "runtimeId": "bdcc1a49e36483c6278177c19aad0841b9669d5ab4d705aa6346caa66883f196",
+  "mapHash": "b18e20ac5233366dc215b74ffdb7f580f4e0341b526fc28201891dfec4a35160",
+  "moves": [
+    {
+      "playerId": 1,
+      "commandTick": 24,
+      "observedTick": 32,
+      "tile": 320678,
+      "squadIds": [
+        1,
+        2,
+        3
+      ],
+      "outcome": {
+        "id": "smoke-19",
+        "playerId": 1,
+        "tick": 28,
+        "status": "executed"
+      }
+    },
+    {
+      "playerId": 2,
+      "commandTick": 29,
+      "observedTick": 36,
+      "tile": 311150,
+      "squadIds": [
+        4,
+        5,
+        6
+      ],
+      "outcome": {
+        "id": "smoke-23",
+        "playerId": 2,
+        "tick": 35,
+        "status": "executed"
+      }
+    }
+  ],
+  "periodicMoves": [
+    {
+      "id": "smoke-401",
+      "playerId": 1,
+      "commandTick": 768,
+      "observedTick": 776,
+      "firstMotionMs": 178
+    },
+    {
+      "id": "smoke-402",
+      "playerId": 2,
+      "commandTick": 768,
+      "observedTick": 776,
+      "firstMotionMs": 170
+    }
+  ],
+  "periodicMotionP95": 178,
+  "validBuild": {
+    "commandTick": 36,
+    "completedTick": 144,
+    "buildingId": 188,
+    "tile": 321678,
+    "age": "Modern",
+    "outcome": {
+      "id": "smoke-27",
+      "playerId": 1,
+      "tick": 42,
+      "status": "executed"
+    }
+  },
+  "tradeControls": [
+    {
+      "command": {
+        "type": "trade-pause",
+        "playerId": 1,
+        "naval": false,
+        "paused": true
+      },
+      "outcome": {
+        "id": "smoke-82",
+        "playerId": 1,
+        "tick": 145,
+        "status": "executed"
+      }
+    },
+    {
+      "command": {
+        "type": "trade-pause",
+        "playerId": 1,
+        "naval": true,
+        "paused": true
+      },
+      "outcome": {
+        "id": "smoke-85",
+        "playerId": 1,
+        "tick": 150,
+        "status": "executed"
+      }
+    },
+    {
+      "command": {
+        "type": "trade-block",
+        "playerId": 1,
+        "otherId": 2,
+        "blocked": true
+      },
+      "outcome": {
+        "id": "smoke-88",
+        "playerId": 1,
+        "tick": 153,
+        "status": "executed"
+      }
+    },
+    {
+      "command": {
+        "type": "trade-pause",
+        "playerId": 1,
+        "naval": false,
+        "paused": false
+      },
+      "outcome": {
+        "id": "smoke-91",
+        "playerId": 1,
+        "tick": 157,
+        "status": "executed"
+      }
+    },
+    {
+      "command": {
+        "type": "trade-pause",
+        "playerId": 1,
+        "naval": true,
+        "paused": false
+      },
+      "outcome": {
+        "id": "smoke-94",
+        "playerId": 1,
+        "tick": 161,
+        "status": "executed"
+      }
+    },
+    {
+      "command": {
+        "type": "trade-block",
+        "playerId": 1,
+        "otherId": 2,
+        "blocked": false
+      },
+      "outcome": {
+        "id": "smoke-97",
+        "playerId": 1,
+        "tick": 166,
+        "status": "executed"
+      }
+    }
+  ],
+  "aiMoved": [
+    3,
+    4,
+    5,
+    6,
+    7,
+    8,
+    9,
+    10,
+    11,
+    12
+  ],
+  "rejection": {
+    "id": "smoke-100",
+    "playerId": 1,
+    "tick": 170,
+    "status": "rejected",
+    "reason": "Research this building's technology first"
+  },
+  "reconnected": true,
+  "commonStateSamples": 34,
+  "peers": [
+    {
+      "id": 0,
+      "tick": 1366,
+      "packets": 342,
+      "syncs": 1,
+      "bytes": 5572957,
+      "decodeP95": 6.619999999995343,
+      "publicationGapP95": 252,
+      "publicationGapMax": 335
+    },
+    {
+      "id": 1,
+      "tick": 1366,
+      "packets": 343,
+      "syncs": 0,
+      "bytes": 5521773,
+      "decodeP95": 8.692500000001019,
+      "publicationGapP95": 252,
+      "publicationGapMax": 330
+    }
+  ],
+  "failures": []
+}

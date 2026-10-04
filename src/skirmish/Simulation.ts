@@ -312,6 +312,9 @@ export class Skirmish {
     return !this.options.aiWarPolicy || (this.expansion?.operations.canEnter(playerId, this.owners[tile], tile) ?? true);
   }
   private routeFootprints?: Map<number, Map<number, boolean>>;
+  // Neighbouring footprint tests share tile permissions within the same
+  // synchronous tick/drain. The footprint revision fences invalidate both.
+  private routeEntries?: Map<number, Map<number, boolean>>;
   readonly playerAttacks=new PlayerAttackContinuation();
   private footprintOperationRevision = -1;
   private footprintDiplomacyRevision = -1;
@@ -323,15 +326,27 @@ export class Skirmish {
     if (cache) {
       const operations = this.expansion.operations.revision, diplomacy = this.expansion.diplomacy.revision, threats = this.expansion.operations.permissionRevision;
       if (operations !== this.footprintOperationRevision || diplomacy !== this.footprintDiplomacyRevision || threats !== this.footprintThreatRevision) {
-        cache.clear(); this.footprintOperationRevision = operations; this.footprintDiplomacyRevision = diplomacy; this.footprintThreatRevision = threats;
+        cache.clear(); this.routeEntries?.clear(); this.footprintOperationRevision = operations; this.footprintDiplomacyRevision = diplomacy; this.footprintThreatRevision = threats;
       }
       const known = cache.get(playerId)?.get(tile);
       if (known !== undefined) return known;
     }
     let allowed = true;
+    let entries = this.routeEntries?.get(playerId);
+    if (this.routeEntries && !entries) this.routeEntries.set(playerId, entries = new Map());
     const component = this.paths.component[tile];
     this.eachInRadius(tile, CAPTURE_RADIUS, neighbor => {
-      if (this.paths.component[neighbor] === component && !this.aiCanEnter(playerId, neighbor)) allowed = false;
+      if (!allowed || this.paths.component[neighbor] !== component) return;
+      // These two permissions are unconditional in AiOperations.canEnter;
+      // avoid hashing the overwhelmingly common home/unclaimed tile reads.
+      const owner = this.owners[neighbor];
+      if (!owner || owner === playerId) return;
+      let entry = entries?.get(neighbor);
+      if (entry === undefined) {
+        entry = this.aiCanEnter(playerId, neighbor);
+        entries?.set(neighbor, entry);
+      }
+      if (!entry) allowed = false;
     });
     if (cache) {
       let tiles = cache.get(playerId);
@@ -348,7 +363,8 @@ export class Skirmish {
     if(this.routeFootprints){this.drainRouteBatch();return;}
     // Standalone drains used by domain tools retain a synchronous cache too.
     this.routeFootprints=new Map();
-    try{this.drainRouteBatch();}finally{this.routeFootprints=undefined;}
+    this.routeEntries=new Map();
+    try{this.drainRouteBatch();}finally{this.routeFootprints=undefined;this.routeEntries=undefined;}
   }
   private drainRouteBatch(): void {
     this.routeWork.drain(24, {
@@ -2602,8 +2618,9 @@ export class Skirmish {
     // Derived permissions are shared across this tick only. Ownership writes
     // and operation/diplomacy/threat revisions invalidate them immediately.
     this.routeFootprints = new Map();
+    this.routeEntries = new Map();
     try { this.performTick(); }
-    finally { this.routeFootprints = undefined; }
+    finally { this.routeFootprints = undefined; this.routeEntries = undefined; }
   }
 
   private performTick(): void {
@@ -3486,6 +3503,7 @@ export class Skirmish {
       if (definition && !definition.canCapture) continue;
       const position = this.tileOf(squad),
         component = this.paths.component[position];
+      const canCapture = this.expansion?.captureQuery(squad, CAPTURE_RADIUS);
       const captureTicks =
         definition?.undefendedCaptureTicks &&
         !this.occupation.resisted(
@@ -3501,7 +3519,7 @@ export class Skirmish {
       this.eachInRadius(position, CAPTURE_RADIUS, (tile) => {
         if (
           this.paths.component[tile] !== component ||
-          (this.expansion && !this.expansion.canCaptureTile(squad, tile))
+          (canCapture && !canCapture(tile))
         )
           return;
         if (this.owners[tile] && this.hostile(this.owners[tile], squad.playerId))
@@ -3566,6 +3584,7 @@ export class Skirmish {
     if (old && land) this.player(old)!.land--;
     this.owners[tile] = id;
     this.routeFootprints?.clear();
+    this.routeEntries?.clear();
     this.expansion?.supply.territoryChanged(tile, id);
     this.expansion?.operations.territoryChanged(old,id);
     for(const owner of new Set(this.map.neighbors(tile).map(t=>this.owners[t])))if(owner!==old&&owner!==id)this.expansion?.operations.territoryChanged(owner,owner);

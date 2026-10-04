@@ -1,5 +1,5 @@
 import { retainSquads } from "./UnitFixtures";
-import { describe, expect, it, vi } from "vitest";
+import { describe, expect, it } from "vitest";
 import { GameMapImpl } from "../../src/core/game/GameMap";
 import { FIXED, type Squad } from "../../src/skirmish/Protocol";
 import { Skirmish } from "../../src/skirmish/Simulation";
@@ -195,12 +195,20 @@ describe("automatic researched shore transport", () => {
   });
   it("returns real cargo to departure after landing permission is withdrawn during passage",()=>{
     const m=make(4,[30],false,true);unlock(m);m.match.options.aiWarPolicy=true;m.match.setAiController(1,true);
-    let withdrawn=false;
-    vi.spyOn(m.match.expansion!.operations,"canEnter").mockImplementation((_id,_rival,tile)=>!withdrawn || m.match.map.x(tile)<30);
+    // Entry to neutral/home land is unconditional. Exercise withdrawal from
+    // actual foreign land through the domain's war permission and revision.
+    const world=m.match as unknown as {changeOwner(tile:number,id:number):void};
+    for(let y=0;y<64;y++)for(let x=33;x<96;x++)world.changeOwner(m.match.map.ref(x,y),2);
+    const operations=m.match.expansion!.operations, initial=operations.checkpoint();
+    operations.restore({...initial,revision:initial.revision+1,records:[[1,{phase:"war",since:0,nextThink:10000,target:2,threats:[],cursor:0,score:Infinity}]]});
     expect(move(m)).toBeNull();let embarked=false,returned=false;
     for(let i=0;i<3000;i++){
       m.match.step();
-      if(m.own.every(s=>s.embarkedOn!==null)){embarked=true;withdrawn=true;}
+      if(!embarked&&m.own.every(s=>s.embarkedOn!==null)){
+        embarked=true;const saved=operations.checkpoint();
+        saved.records[0][1].phase="peace";saved.records[0][1].target=undefined;
+        saved.revision++;operations.restore(saved);
+      }
       if(embarked && m.own.every(s=>s.embarkedOn===null && m.match.map.x(m.match.tileOf(s))<30)){returned=true;break;}
     }
     expect(embarked).toBe(true);expect(returned).toBe(true);expect(m.match.ships).toHaveLength(0);

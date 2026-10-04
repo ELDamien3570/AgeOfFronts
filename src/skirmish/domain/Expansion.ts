@@ -1520,7 +1520,26 @@ export class Expansion {
       }
     }
   }
+  /** Synchronous capture batch: prove the complete ray rectangle empty once.
+   * Building/diplomacy eligibility remains live for each visited tile. */
+  captureQuery(squad: Squad, radius: number): (tile: number) => boolean {
+    const position = this.world.tileOf(squad), map = this.world.map;
+    const cx = map.x(position), cy = map.y(position);
+    const obstacleFree = this.fortifications.obstacleFreeArea(
+      Math.min(squad.x, (cx - radius + 0.5) * FIXED),
+      Math.min(squad.y, (cy - radius + 0.5) * FIXED),
+      Math.max(squad.x, (cx + radius + 0.5) * FIXED),
+      Math.max(squad.y, (cy + radius + 0.5) * FIXED),
+    );
+    const version = this.fortifications.version, x = squad.x, y = squad.y;
+    return tile => this.captureEligible(squad, tile, obstacleFree &&
+      version === this.fortifications.version && squad.x === x && squad.y === y &&
+      Math.abs(map.x(tile) - cx) <= radius && Math.abs(map.y(tile) - cy) <= radius);
+  }
   canCaptureTile(squad: Squad, tile: number): boolean {
+    return this.captureEligible(squad, tile, false);
+  }
+  private captureEligible(squad: Squad, tile: number, obstacleFree: boolean): boolean {
     if (
       this.world.owners[tile] !== squad.playerId &&
       this.diplomacy.allied(squad.playerId, this.world.owners[tile])
@@ -1538,7 +1557,7 @@ export class Expansion {
         )
     )
       return false;
-    if (!this.fortifications.hasObstacles) return true;
+    if (obstacleFree || !this.fortifications.hasObstacles) return true;
     return this.fortifications.clear(
       squad,
       {

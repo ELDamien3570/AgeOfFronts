@@ -228,7 +228,9 @@ try{
       }
       nextOrder=Date.now()+orderInterval*1000;
     }
-    if(!reconnected&&Date.now()>until-seconds*500){p.ws.close();await wait(()=>p.closed,"close reconnect socket");await connect(p,true);await wait(()=>p.manifest&&p.tick>20,"reconnected state");reconnected=true;}
+    // Do not deliberately close immediately after injecting an unacknowledged
+    // order: that tests a lost client send, rather than server motion latency.
+    if(!reconnected&&Date.now()>until-seconds*500&&![...pendingMoves.values()].some(m=>m.peer===p.id)){p.ws.close();await wait(()=>p.closed,"close reconnect socket");await connect(p,true);await wait(()=>p.manifest&&p.tick>20,"reconnected state");reconnected=true;}
     if(Date.now()>=nextReport){console.log(JSON.stringify({stage:"monitor",matchId,ticks:peers.map(p=>p.tick),elapsedSeconds:Math.round((Date.now()-started)/1000)}));nextReport=Date.now()+30000;}
     await sleep(100);
   }

@@ -1,0 +1,572 @@
+{
+  "trials": [
+    {
+      "mode": "baseline",
+      "wallMs": 19575.347101,
+      "counters": {
+        "requests": 0,
+        "replacements": 0,
+        "equivalentGeometry": 0,
+        "entryQueries": 0,
+        "captureQueries": 0,
+        "fortificationRays": 0
+      },
+      "phases": {
+        "setup": {
+          "mean": 2.8331183099999917,
+          "p95": 4.178165999999692
+        },
+        "economy": {
+          "mean": 1.5613107175000538,
+          "p95": 4.196486000000732
+        },
+        "ai": {
+          "mean": 7.050969617500067,
+          "p95": 10.700439000000188
+        },
+        "ships": {
+          "mean": 0.09286160999994991,
+          "p95": 0.13224199999967823
+        },
+        "routing": {
+          "mean": 17.306575924999933,
+          "p95": 29.68384900000092
+        },
+        "movement": {
+          "mean": 7.9025536375000955,
+          "p95": 10.430036000000655
+        },
+        "combat": {
+          "mean": 3.3925724199999716,
+          "p95": 4.699452000000747
+        },
+        "capture": {
+          "mean": 7.944732167500074,
+          "p95": 14.021475999998074
+        },
+        "transport": {
+          "mean": 0.4740742649999072,
+          "p95": 0.999091000000135
+        },
+        "cleanup": {
+          "mean": 0.363909842499952,
+          "p95": 0.49724500000047556
+        },
+        "tick": {
+          "mean": 48.92360112000008,
+          "p95": 69.14204600000085
+        }
+      },
+      "hash": "5cd32ba914ec1539699330c7c9970bc969a73d1e96876f2a7af596ab7c7db1d1",
+      "planner": {
+        "work": 4096,
+        "pending": 58,
+        "oldestAge": 134,
+        "completed": 521,
+        "limited": 3,
+        "superseded": 742,
+        "admissionDeferred": 5327,
+        "escalated": 15,
+        "workspaceBytes": 2097152,
+        "workspaceUsed": 46458
+      }
+    },
+    {
+      "mode": "route",
+      "wallMs": 18538.627755,
+      "counters": {
+        "requests": 0,
+        "replacements": 0,
+        "equivalentGeometry": 0,
+        "entryQueries": 0,
+        "captureQueries": 0,
+        "fortificationRays": 0
+      },
+      "phases": {
+        "setup": {
+          "mean": 2.8569127649999713,
+          "p95": 4.204085999999734
+        },
+        "economy": {
+          "mean": 1.5256062075000478,
+          "p95": 3.9664840000004915
+        },
+        "ai": {
+          "mean": 4.976292917499959,
+          "p95": 6.409750999999233
+        },
+        "ships": {
+          "mean": 0.09391153500002701,
+          "p95": 0.13240100000075472
+        },
+        "routing": {
+          "mean": 16.977781824999983,
+          "p95": 28.663516999999956
+        },
+        "movement": {
+          "mean": 7.723159275000033,
+          "p95": 9.835068999999748
+        },
+        "combat": {
+          "mean": 3.2604284349999206,
+          "p95": 4.379689000001235
+        },
+        "capture": {
+          "mean": 8.157109935,
+          "p95": 13.420749000000797
+        },
+        "transport": {
+          "mean": 0.4565613950000659,
+          "p95": 0.9961709999997765
+        },
+        "cleanup": {
+          "mean": 0.3047089424999183,
+          "p95": 0.45780500000000757
+        },
+        "tick": {
+          "mean": 46.33348494000007,
+          "p95": 66.23129399999743
+        }
+      },
+      "hash": "5cd32ba914ec1539699330c7c9970bc969a73d1e96876f2a7af596ab7c7db1d1",
+      "planner": {
+        "work": 4096,
+        "pending": 58,
+        "oldestAge": 134,
+        "completed": 521,
+        "limited": 3,
+        "superseded": 742,
+        "admissionDeferred": 5327,
+        "escalated": 15,
+        "workspaceBytes": 2097152,
+        "workspaceUsed": 46458
+      }
+    },
+    {
+      "mode": "capture",
+      "wallMs": 18949.165521,
+      "counters": {
+        "requests": 0,
+        "replacements": 0,
+        "equivalentGeometry": 0,
+        "entryQueries": 0,
+        "captureQueries": 0,
+        "fortificationRays": 0
+      },
+      "phases": {
+        "setup": {
+          "mean": 2.8614080524999985,
+          "p95": 4.202446000001146
+        },
+        "economy": {
+          "mean": 1.5207619324999881,
+          "p95": 4.269808000000921
+        },
+        "ai": {
+          "mean": 6.761568199999999,
+          "p95": 8.780857999998261
+        },
+        "ships": {
+          "mean": 0.09115022250011748,
+          "p95": 0.129081999999471
+        },
+        "routing": {
+          "mean": 17.15443019999991,
+          "p95": 29.2834440000006
+        },
+        "movement": {
+          "mean": 7.903661745000018,
+          "p95": 10.330993999999919
+        },
+        "combat": {
+          "mean": 3.2083332524999535,
+          "p95": 4.301846999998816
+        },
+        "capture": {
+          "mean": 7.048974777500023,
+          "p95": 12.542059000001245
+        },
+        "transport": {
+          "mean": 0.4597375199999794,
+          "p95": 1.9545820000003005
+        },
+        "cleanup": {
+          "mean": 0.34867725500007735,
+          "p95": 0.4768049999984214
+        },
+        "tick": {
+          "mean": 47.359639762499974,
+          "p95": 66.04141199999958
+        }
+      },
+      "hash": "5cd32ba914ec1539699330c7c9970bc969a73d1e96876f2a7af596ab7c7db1d1",
+      "planner": {
+        "work": 4096,
+        "pending": 58,
+        "oldestAge": 134,
+        "completed": 521,
+        "limited": 3,
+        "superseded": 742,
+        "admissionDeferred": 5327,
+        "escalated": 15,
+        "workspaceBytes": 2097152,
+        "workspaceUsed": 46458
+      }
+    },
+    {
+      "mode": "both",
+      "wallMs": 18077.702601,
+      "counters": {
+        "requests": 0,
+        "replacements": 0,
+        "equivalentGeometry": 0,
+        "entryQueries": 0,
+        "captureQueries": 0,
+        "fortificationRays": 0
+      },
+      "phases": {
+        "setup": {
+          "mean": 2.840681350000009,
+          "p95": 4.195605999999316
+        },
+        "economy": {
+          "mean": 1.5437025175000463,
+          "p95": 3.8188829999999143
+        },
+        "ai": {
+          "mean": 4.894710057499953,
+          "p95": 6.361790999999357
+        },
+        "ships": {
+          "mean": 0.08993717749999973,
+          "p95": 0.13072099999953934
+        },
+        "routing": {
+          "mean": 17.209797702500033,
+          "p95": 29.228643999998894
+        },
+        "movement": {
+          "mean": 7.805767597499983,
+          "p95": 10.352074000002176
+        },
+        "combat": {
+          "mean": 3.245862754999948,
+          "p95": 4.532809999996971
+        },
+        "capture": {
+          "mean": 6.759087907500023,
+          "p95": 11.07232299999987
+        },
+        "transport": {
+          "mean": 0.465163760000014,
+          "p95": 1.514016999999967
+        },
+        "cleanup": {
+          "mean": 0.3253675324999847,
+          "p95": 0.48284600000033606
+        },
+        "tick": {
+          "mean": 45.180989562499946,
+          "p95": 62.12696800000049
+        }
+      },
+      "hash": "5cd32ba914ec1539699330c7c9970bc969a73d1e96876f2a7af596ab7c7db1d1",
+      "planner": {
+        "work": 4096,
+        "pending": 58,
+        "oldestAge": 134,
+        "completed": 521,
+        "limited": 3,
+        "superseded": 742,
+        "admissionDeferred": 5327,
+        "escalated": 15,
+        "workspaceBytes": 2097152,
+        "workspaceUsed": 46458
+      }
+    },
+    {
+      "mode": "both",
+      "wallMs": 18105.656566999998,
+      "counters": {
+        "requests": 0,
+        "replacements": 0,
+        "equivalentGeometry": 0,
+        "entryQueries": 0,
+        "captureQueries": 0,
+        "fortificationRays": 0
+      },
+      "phases": {
+        "setup": {
+          "mean": 2.88819040999996,
+          "p95": 4.23284700000022
+        },
+        "economy": {
+          "mean": 1.5980460074999758,
+          "p95": 4.500329999999849
+        },
+        "ai": {
+          "mean": 4.9872840600000234,
+          "p95": 7.1720399999999245
+        },
+        "ships": {
+          "mean": 0.09070561249997468,
+          "p95": 0.1404820000007021
+        },
+        "routing": {
+          "mean": 17.101044025000093,
+          "p95": 30.35013599999911
+        },
+        "movement": {
+          "mean": 7.6593984924999505,
+          "p95": 10.189833000000363
+        },
+        "combat": {
+          "mean": 3.316432402499994,
+          "p95": 4.478610000000117
+        },
+        "capture": {
+          "mean": 6.828895297500019,
+          "p95": 12.198894999999993
+        },
+        "transport": {
+          "mean": 0.455752162499947,
+          "p95": 0.9879710000000159
+        },
+        "cleanup": {
+          "mean": 0.31883271250001144,
+          "p95": 0.49272500000006403
+        },
+        "tick": {
+          "mean": 45.24533249499989,
+          "p95": 64.75667799999974
+        }
+      },
+      "hash": "5cd32ba914ec1539699330c7c9970bc969a73d1e96876f2a7af596ab7c7db1d1",
+      "planner": {
+        "work": 4096,
+        "pending": 58,
+        "oldestAge": 134,
+        "completed": 521,
+        "limited": 3,
+        "superseded": 742,
+        "admissionDeferred": 5327,
+        "escalated": 15,
+        "workspaceBytes": 2097152,
+        "workspaceUsed": 46458
+      }
+    },
+    {
+      "mode": "capture",
+      "wallMs": 19174.080302,
+      "counters": {
+        "requests": 0,
+        "replacements": 0,
+        "equivalentGeometry": 0,
+        "entryQueries": 0,
+        "captureQueries": 0,
+        "fortificationRays": 0
+      },
+      "phases": {
+        "setup": {
+          "mean": 2.886586202499858,
+          "p95": 4.212366999999176
+        },
+        "economy": {
+          "mean": 1.5679218699999966,
+          "p95": 4.54845000000023
+        },
+        "ai": {
+          "mean": 6.909095575000094,
+          "p95": 9.991351000000577
+        },
+        "ships": {
+          "mean": 0.1009691374999602,
+          "p95": 0.15028200000051584
+        },
+        "routing": {
+          "mean": 17.371522012500037,
+          "p95": 29.52488799999992
+        },
+        "movement": {
+          "mean": 8.011325092499959,
+          "p95": 10.885481000000254
+        },
+        "combat": {
+          "mean": 3.266906412500016,
+          "p95": 4.598371000000043
+        },
+        "capture": {
+          "mean": 7.018178890000058,
+          "p95": 13.68919199999982
+        },
+        "transport": {
+          "mean": 0.44585090999999694,
+          "p95": 2.547708000001876
+        },
+        "cleanup": {
+          "mean": 0.3389969374999714,
+          "p95": 0.4855250000000524
+        },
+        "tick": {
+          "mean": 47.918375557499985,
+          "p95": 64.89559999999983
+        }
+      },
+      "hash": "5cd32ba914ec1539699330c7c9970bc969a73d1e96876f2a7af596ab7c7db1d1",
+      "planner": {
+        "work": 4096,
+        "pending": 58,
+        "oldestAge": 134,
+        "completed": 521,
+        "limited": 3,
+        "superseded": 742,
+        "admissionDeferred": 5327,
+        "escalated": 15,
+        "workspaceBytes": 2097152,
+        "workspaceUsed": 46458
+      }
+    },
+    {
+      "mode": "route",
+      "wallMs": 18722.796156,
+      "counters": {
+        "requests": 0,
+        "replacements": 0,
+        "equivalentGeometry": 0,
+        "entryQueries": 0,
+        "captureQueries": 0,
+        "fortificationRays": 0
+      },
+      "phases": {
+        "setup": {
+          "mean": 2.8442117174999875,
+          "p95": 4.193567000000257
+        },
+        "economy": {
+          "mean": 1.5239949974999876,
+          "p95": 4.224687000000358
+        },
+        "ai": {
+          "mean": 4.980702185000072,
+          "p95": 6.234509000001708
+        },
+        "ships": {
+          "mean": 0.09536125749999996,
+          "p95": 0.13944100000117032
+        },
+        "routing": {
+          "mean": 17.26788957249999,
+          "p95": 29.520927000001393
+        },
+        "movement": {
+          "mean": 8.16176639250002,
+          "p95": 10.434116000000358
+        },
+        "combat": {
+          "mean": 3.335661844999988,
+          "p95": 4.648731999997835
+        },
+        "capture": {
+          "mean": 7.792290607499943,
+          "p95": 12.92022299999735
+        },
+        "transport": {
+          "mean": 0.4784089700000482,
+          "p95": 2.4601079999997637
+        },
+        "cleanup": {
+          "mean": 0.31266166999997724,
+          "p95": 0.4950859999989916
+        },
+        "tick": {
+          "mean": 46.79399052499996,
+          "p95": 63.70778600000085
+        }
+      },
+      "hash": "5cd32ba914ec1539699330c7c9970bc969a73d1e96876f2a7af596ab7c7db1d1",
+      "planner": {
+        "work": 4096,
+        "pending": 58,
+        "oldestAge": 134,
+        "completed": 521,
+        "limited": 3,
+        "superseded": 742,
+        "admissionDeferred": 5327,
+        "escalated": 15,
+        "workspaceBytes": 2097152,
+        "workspaceUsed": 46458
+      }
+    },
+    {
+      "mode": "baseline",
+      "wallMs": 19316.678473,
+      "counters": {
+        "requests": 0,
+        "replacements": 0,
+        "equivalentGeometry": 0,
+        "entryQueries": 0,
+        "captureQueries": 0,
+        "fortificationRays": 0
+      },
+      "phases": {
+        "setup": {
+          "mean": 2.842917432500027,
+          "p95": 4.213365999999951
+        },
+        "economy": {
+          "mean": 1.569152962499885,
+          "p95": 4.408089000000473
+        },
+        "ai": {
+          "mean": 6.795653217500066,
+          "p95": 9.10758099999839
+        },
+        "ships": {
+          "mean": 0.09774679499988452,
+          "p95": 0.13084200000002966
+        },
+        "routing": {
+          "mean": 17.23521813000002,
+          "p95": 29.857731000000058
+        },
+        "movement": {
+          "mean": 7.832819437500036,
+          "p95": 10.810280000000603
+        },
+        "combat": {
+          "mean": 3.37558732499999,
+          "p95": 4.736732999999731
+        },
+        "capture": {
+          "mean": 7.736873039999982,
+          "p95": 13.93567400000029
+        },
+        "transport": {
+          "mean": 0.4636649375000161,
+          "p95": 2.5531879999998637
+        },
+        "cleanup": {
+          "mean": 0.31918316249999745,
+          "p95": 0.47292600000037055
+        },
+        "tick": {
+          "mean": 48.269842047499885,
+          "p95": 64.57579600000008
+        }
+      },
+      "hash": "5cd32ba914ec1539699330c7c9970bc969a73d1e96876f2a7af596ab7c7db1d1",
+      "planner": {
+        "work": 4096,
+        "pending": 58,
+        "oldestAge": 134,
+        "completed": 521,
+        "limited": 3,
+        "superseded": 742,
+        "admissionDeferred": 5327,
+        "escalated": 15,
+        "workspaceBytes": 2097152,
+        "workspaceUsed": 46458
+      }
+    }
+  ]
+}
