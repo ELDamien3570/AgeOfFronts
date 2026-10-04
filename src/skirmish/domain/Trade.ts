@@ -22,6 +22,7 @@ import type { Progression } from "./Progression";
 import { cargoHandlingPercent, logisticsTier } from "./ResearchEffects";
 import type { Roads } from "./Roads";
 import type { Supply } from "./Supply";
+import type { PhaseSpatialFacts, SpatialPhase, SpatialQueries } from "../PhaseSpatialViews";
 import {
   tradeCycleQuote,
   tradePayout,
@@ -29,6 +30,7 @@ import {
 } from "./TradeQuote";
 
 export interface TradeWorld {
+  spatialFacts?(phase: SpatialPhase): PhaseSpatialFacts;
   readonly domainRoutes?: DomainRoutePorts;
   building?(id: number): Building | undefined;
   buildingFacts?(): BuildingQueries;
@@ -98,6 +100,9 @@ export class Trade {
     routeRequests: 0,
     routeHits: 0,
     spawned: 0,
+    spawnActorReads: 0,
+    playerReads: 0,
+    quotaActorReads: 0,
   };
   private readonly markets = new Map<number, OwnerMarkets>();
   private marketGeometry = -1;
@@ -115,8 +120,10 @@ export class Trade {
   private nextEpoch = 1;
   private corridorTiles = 0;
   private tickStartWork = 0;
-  private readonly land: SpatialGrid<Squad>;
-  private readonly sea: SpatialGrid<Ship>;
+  private land: SpatialQueries<Squad>;
+  private sea: SpatialQueries<Ship>;
+  private localLand?: SpatialGrid<Squad>;
+  private localSea?: SpatialGrid<Ship>;
   private readonly nearby: (Squad | Ship)[] = [];
   constructor(
     private readonly world: TradeWorld,
@@ -128,18 +135,8 @@ export class Trade {
     private readonly enemy: (a: number, b: number) => boolean = (a, b) =>
       diplomacy.hostile(a, b),
   ) {
-    this.land = new SpatialGrid(
-      world.map.width() * FIXED,
-      world.map.height() * FIXED,
-      4 * FIXED,
-      (a) => a.playerId,
-    );
-    this.sea = new SpatialGrid(
-      world.map.width() * FIXED,
-      world.map.height() * FIXED,
-      4 * FIXED,
-      (a) => a.playerId,
-    );
+    this.land = new SpatialGrid<Squad>(0, 0, 4 * FIXED);
+    this.sea = new SpatialGrid<Ship>(0, 0, 4 * FIXED);
   }
   checkpoint() {
     return structuredClone({
@@ -768,19 +765,26 @@ export class Trade {
     // overflow never lifts the world's total cap, including all prizes.
     const eligible = this.world.players.filter((p) => !p.eliminated),
       globalCap = eligible.length * TRADE_RULES.actorCap;
+    // This pass-local tally avoids a persistent index over publicly mutable
+    // actors. Prizes occupy the owner/global cap but not a mode quota.
+    const tally = new Map<number, { total: number; land: number; sea: number }>();
+    this.diagnostics.spawnActorReads = 0;
+    for (const actor of this.actors) {
+      this.diagnostics.spawnActorReads++;
+      let counts = tally.get(actor.playerId);
+      if (!counts) tally.set(actor.playerId, counts = { total: 0, land: 0, sea: 0 });
+      counts.total++;
+      if (actor.state !== "prize") counts[actor.naval ? "sea" : "land"]++;
+    }
     for (const player of eligible) {
       const quotas = this.quotas(player.id),
-        own = this.actors.filter((a) => a.playerId === player.id),
-        counts = {
-          land: own.filter((a) => !a.naval && a.state !== "prize").length,
-          sea: own.filter((a) => a.naval && a.state !== "prize").length,
-        };
+        counts = tally.get(player.id) ?? { total: 0, land: 0, sea: 0 };
       for (const site of this.markets.get(player.id)?.sites ?? []) {
         const mode = site.naval ? "sea" : "land",
           key = this.siteKey(player.id, site.naval, site.source.tile);
         if (
           counts[mode] >= quotas[mode] ||
-          own.length >= TRADE_RULES.actorCap ||
+          counts.total >= TRADE_RULES.actorCap ||
           this.actors.length >= globalCap ||
           (this.siteNext.get(key) ?? 0) > this.world.tick ||
           (site.naval &&
@@ -825,7 +829,7 @@ export class Trade {
             quoteAllies: [],
           };
         this.actors.push(actor);
-        own.push(actor);
+        counts.total++;
         counts[mode]++;
         this.siteNext.set(
           key,
@@ -920,19 +924,40 @@ export class Trade {
   }
   step(): void {
     const { map, tick } = this.world;
+    // Rebuild at the tick boundary: promotion, control transfer and restore
+    // can replace player records without changing their stable identities.
+    const players = new Map<number, Player>();
+    this.diagnostics.playerReads = 0;
+    for (const player of this.world.players) {
+      this.diagnostics.playerReads++;
+      if (!players.has(player.id)) players.set(player.id, player);
+    }
     this.refreshMarkets();
     this.tickStartWork = this.world.paths.work + this.world.waterPaths.work;
     if (tick % 20 === 0) this.spawn();
+    const quotas = new Map<number, { land: { total: number; seen: number }; sea: { total: number; seen: number } }>();
+    this.diagnostics.quotaActorReads = 0;
+    for (const actor of this.actors) {
+      this.diagnostics.quotaActorReads++;
+      let owner = quotas.get(actor.playerId);
+      if (!owner) quotas.set(actor.playerId, owner = { land: { total: 0, seen: 0 }, sea: { total: 0, seen: 0 } });
+      if (actor.state !== "prize") owner[actor.naval ? "sea" : "land"].total++;
+    }
     if (this.actors.length) {
-      this.land.rebuild(
-        this.world.squads.filter((s) => s.embarkedOn === null && s.troops > 0),
-      );
-      this.sea.rebuild(
-        this.world.ships.filter((s) => s.kind === "warship" && s.health > 0),
-      );
+      const facts = this.world.spatialFacts?.("trade");
+      if (facts) { this.land = facts.groundAlive; this.sea = facts.warshipsAlive; }
+      else {
+        this.localLand ??= new SpatialGrid(this.world.map.width() * FIXED, this.world.map.height() * FIXED, 4 * FIXED, (s: Squad) => s.playerId);
+        this.localSea ??= new SpatialGrid(this.world.map.width() * FIXED, this.world.map.height() * FIXED, 4 * FIXED, (s: Ship) => s.playerId);
+        this.localLand.rebuild(this.world.squads.filter((s) => s.embarkedOn === null && s.troops > 0));
+        this.localSea.rebuild(this.world.ships.filter((s) => s.kind === "warship" && s.health > 0));
+        this.land = this.localLand; this.sea = this.localSea;
+      }
     }
     for (const a of this.actors) {
-      const player = this.world.players.find((p) => p.id === a.playerId);
+      const quotaGroup = quotas.get(a.playerId)![a.naval ? "sea" : "land"];
+      if (a.state !== "prize") quotaGroup.seen++;
+      const player = players.get(a.playerId);
       if (!player || player.eliminated) {
         this.discard(a);
         this.retired.add(a.id);
@@ -953,6 +978,7 @@ export class Trade {
         )
         .sort((a, b) => a.id - b.id)[0];
       if (captor && a.cargo) {
+        if (a.state !== "prize") { quotaGroup.total--; quotaGroup.seen--; }
         this.cancel(a.id);
         this.retries.delete(a.id);
         const value = a.cargo * a.valuePerGood;
@@ -978,21 +1004,16 @@ export class Trade {
         // Losing the source does not kill its loaded merchant. Salvage its
         // cargo at an owned receiver, then leave service like a captured courier.
         this.cancel(a.id);
+        quotaGroup.total--; quotaGroup.seen--;
         a.state = "prize";
         a.destination = null;
         a.path = [];
       }
       if (a.state === "loading") {
-        const own = this.actors.filter(
-            (other) =>
-              other.playerId === a.playerId &&
-              other.naval === a.naval &&
-              other.state !== "prize",
-          ),
-          quota = this.quotas(a.playerId)[a.naval ? "sea" : "land"];
+        const quota = this.quotas(a.playerId)[a.naval ? "sea" : "land"];
         if (
-          own.length > quota &&
-          own.indexOf(a) >= quota &&
+          quotaGroup.total > quota &&
+          quotaGroup.seen - 1 >= quota &&
           !this.paused(a.playerId, a.naval)
         ) {
           this.retired.add(a.id);

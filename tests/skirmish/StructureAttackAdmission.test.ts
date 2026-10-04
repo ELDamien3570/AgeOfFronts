@@ -44,6 +44,11 @@ describe("bounded structure attack approaches", () => {
       }),
     ).toBeNull();
     expect(synchronous).not.toHaveBeenCalled();
+    expect(game.movementAdmission.checkpoint().pending[0][1].phase).toBe("preparation");
+    expect(game.movementAdmission.checkpoint().pending[0][1].preparation!.consumed).toBe(0);
+    for (let i = 0; i < 1000 && game.movementAdmission.preparationCount; i++)
+      game.movementAdmission.step(game.tick, 128);
+    expect(game.movementAdmission.preparationCount).toBe(0);
     const points =
       game.movementAdmission.checkpoint().pending[0][1].formation.preferred!;
     const sides = new Set(

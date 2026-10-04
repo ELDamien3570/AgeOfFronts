@@ -2,6 +2,8 @@ import type { Ship, Squad } from "./Protocol";
 
 type Unit = Squad | Ship;
 interface Facts {
+  x: number;
+  y: number;
   owner: number;
   kind: string;
   definition: string | undefined;
@@ -47,6 +49,7 @@ export type UnitQueries<T extends Unit> = Readonly<
     | "membershipRevision"
     | "cargoRevision"
     | "dynamicRevision"
+    | "spatialRevision"
     | "diagnostics"
   >
 >;
@@ -74,6 +77,7 @@ export class UnitIndex<T extends Unit> {
   membershipRevision = 0;
   cargoRevision = 0;
   dynamicRevision = 0;
+  spatialRevision = 0;
   get diagnostics() {
     return {
       ...this.counters,
@@ -88,6 +92,8 @@ export class UnitIndex<T extends Unit> {
   }
   private describe(record: T, ordinal: number): Facts {
     return {
+      x: record.x,
+      y: record.y,
       owner: record.playerId,
       kind: record.kind,
       definition: record.definitionId,
@@ -136,6 +142,7 @@ export class UnitIndex<T extends Unit> {
     this.membershipRevision++;
     this.cargoRevision++;
     this.dynamicRevision++;
+    this.spatialRevision++;
     this.counters.incrementalUpdates++;
   }
   changed(record: T): void {
@@ -143,6 +150,9 @@ export class UnitIndex<T extends Unit> {
     if (!before || this.records.get(record.id) !== record)
       throw new Error("Unowned unit change");
     const after = this.describe(record, before.ordinal);
+    if (before.x !== after.x || before.y !== after.y || before.owner !== after.owner ||
+      before.kind !== after.kind || before.alive !== after.alive || before.carrier !== after.carrier)
+      this.spatialRevision++;
     if (
       before.owner !== after.owner ||
       before.kind !== after.kind ||
@@ -175,6 +185,7 @@ export class UnitIndex<T extends Unit> {
     this.membershipRevision++;
     this.cargoRevision++;
     this.dynamicRevision++;
+    this.spatialRevision++;
     this.counters.incrementalUpdates++;
   }
   rebuild(records: readonly T[]): void {
@@ -191,6 +202,7 @@ export class UnitIndex<T extends Unit> {
     this.membershipRevision++;
     this.cargoRevision++;
     this.dynamicRevision++;
+    this.spatialRevision++;
     for (const record of records) this.add(record);
   }
   byId(id: number): T | undefined {

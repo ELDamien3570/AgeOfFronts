@@ -158,7 +158,7 @@ describe("swept projectile contacts", () => {
     const { m, source, enemies, battle } = match();
     const forts = m.expansion!.fortifications;
     const tile = m.map.ref(10, 15);
-    forts.barriers.push({
+    forts.addBarrier({
       id: 900,
       playerId: 2,
       age: "StoneAge",

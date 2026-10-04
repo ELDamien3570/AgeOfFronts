@@ -249,15 +249,15 @@ export interface TradeActor {
   quoteAllies: number[];
 }
 export interface Barrier {
-  id: number;
-  playerId: number;
-  age: Age;
-  a: number;
-  b: number;
-  tiles: number[];
-  health: number;
-  maxHealth: number;
-  remainingTicks: number;
+  readonly id: number;
+  readonly playerId: number;
+  readonly age: Age;
+  readonly a: number;
+  readonly b: number;
+  readonly tiles: readonly number[];
+  readonly health: number;
+  readonly maxHealth: number;
+  readonly remainingTicks: number;
 }
 export type CombatSourceKind = "squad" | "ship" | "building" | "aircraft";
 export interface Projectile {
@@ -323,7 +323,7 @@ export interface ExpansionSnapshot {
   depositOwnershipRevision?: number;
   diplomacy: DiplomacyState;
   traders: Omit<TradeActor, "path" | "nextPathIndex">[];
-  barriers: Barrier[];
+  barriers: readonly Barrier[];
   projectiles: Projectile[];
   aircraft: Aircraft[];
   victoryMode: "solo" | "allied";

@@ -67,7 +67,8 @@ import { Supply, costRejection, spend } from "./Supply";
 import { Trade } from "./Trade";
 import { quoteBuildingUpgrades } from "./BuildingUpgrades";
 import { structureAim } from "./StructureTargeting";
-import { squadRadius, squadSeparation, standable, tilePoint } from "../SquadGeometry";
+import { StructureAttackPreparation, type StructureAttackPreparationState } from "./StructureAttackPreparation";
+import { squadRadius, standable, tilePoint } from "../SquadGeometry";
 import type { CoastIndex } from "../CoastIndex";
 import { AiEconomicDirector } from "./AiEconomicDirector";
 export interface ExpansionWorld extends BattleWorld, ArmyWorld {
@@ -100,6 +101,7 @@ export interface ExpansionWorld extends BattleWorld, ArmyWorld {
   removeBuilding(id: number): boolean;
   factionAdjacent(a: number, b: number): boolean;
   admitStructureAttack?(playerId: number, squads: readonly Squad[], points: Map<number, {x:number;y:number}>, target: NonNullable<Squad["structureTarget"]>): void;
+  prepareStructureAttack?(playerId: number, squads: readonly Squad[], target: NonNullable<Squad["structureTarget"]>): string | null;
 }
 // Match-level application coordinator; each domain service owns its own rules.
 // All services operate on the same authoritative world, never a parallel game.
@@ -202,6 +204,31 @@ export class Expansion {
   }
   unit(squad: Squad): UnitDefinition {
     return this.battle.definition(squad);
+  }
+  stepStructurePreparation(state: StructureAttackPreparationState, budget: number): number {
+    if (budget === 0) return 0;
+    const building = state.target.buildingId === undefined ? undefined : this.world.building(state.target.buildingId),
+      wall = state.target.barrierId === undefined ? undefined : this.fortifications.barrier(state.target.barrierId), target = building ?? wall;
+    if (!target || (target.health ?? 1) <= 0 || !this.diplomacy.hostile(state.playerId, target.playerId)) {
+      state.stage = "failed"; state.reason = "Structure target is no longer hostile or available"; return 1;
+    }
+    const key = building ? `b:${building.id}:${building.playerId}:${building.tile}` : `w:${wall!.id}:${wall!.playerId}:${this.fortifications.version}`;
+    if (state.targetKey !== undefined && state.targetKey !== key) {
+      const restarts = (state.geometryRestarts ?? 0) + 1, consumed = state.consumed;
+      if (restarts > 3) { state.stage = "failed"; state.reason = "Structure geometry kept changing during preparation"; return 1; }
+      const members = state.members.map(member => { const squad = this.world.squad(member.id)!; return { ...member, origin: { x: squad.x, y: squad.y } }; });
+      Object.assign(state, StructureAttackPreparation.create(state.playerId, members, state.target), {
+        aim: undefined, candidate: undefined, best: undefined, centre: undefined, consumed: consumed + 1, geometryRestarts: restarts, targetKey: key });
+      return 1;
+    }
+    state.targetKey = key;
+    for (const member of state.members) {
+      const squad = this.world.squad(member.id), profile = squad && this.unit(squad).attack;
+      if (!squad || squad.kind !== member.kind || profile!.range !== member.range || !profile!.targets.includes(building ? "structure" : "wall")) {
+        state.stage = "failed"; state.reason = "Selected weapon changed during structure preparation"; return 1;
+      }
+    }
+    return new StructureAttackPreparation(this.world.map, this.world.paths, this.fortifications, building ? [building.tile] : wall!.tiles, state).step(budget);
   }
   available(player: Player, line: Squad["kind"]): UnitDefinition | undefined {
     return UNITS.filter(
@@ -647,40 +674,10 @@ export class Expansion {
       )
         return "Select your available troops";
       const orders: { s: Squad; tile: number; path: number[] }[] = [];
-      if (world.options?.deferredPlanning && world.admitStructureAttack) {
-        const points = new Map<number, {x:number;y:number}>(), reserved: (Squad & {x:number;y:number})[] = [],
-          approaches = new Map<string, number[]>(), sides = [0, 0, 0, 0], targetTiles = building ? [building.tile] : barrier!.tiles,
-          centre = tilePoint(world.map, targetTiles[Math.floor(targetTiles.length / 2)]);
-        const side = (point: {x:number;y:number}) => Math.min(3, Math.floor((Math.atan2(point.y - centre.y, point.x - centre.x) + Math.PI) * 2 / Math.PI));
-        for (const s of selected as Squad[]) {
-          const profile = this.unit(s).attack;
-          if (!profile.targets.includes(building ? "structure" : "wall")) return "This weapon cannot attack that structure";
-          const clear = (point: {x:number;y:number}) => reserved.every(other =>
-            (point.x - other.x) ** 2 + (point.y - other.y) ** 2 >= squadSeparation(s, other) ** 2);
-          let point: {x:number;y:number} | undefined;
-          if (structureAim(s, targetTiles, profile.range, player.id, world.map.width(), this.fortifications) && clear(s)) point = {x:s.x,y:s.y};
-          else {
-            const key = `${s.kind}:${profile.range}`; let candidates = approaches.get(key);
-            if (!candidates) {
-              const set = new Set<number>(), extent = Math.ceil(profile.range / FIXED);
-              for (const tile of targetTiles) for (let y = Math.max(0, world.map.y(tile) - extent); y <= Math.min(world.map.height() - 1, world.map.y(tile) + extent); y++)
-                for (let x = Math.max(0, world.map.x(tile) - extent); x <= Math.min(world.map.width() - 1, world.map.x(tile) + extent); x++) {
-                  const t = world.map.ref(x, y), p = tilePoint(world.map, t);
-                  if (world.paths.walkable(t) && !this.fortifications.blocked(t, player.id) && standable(world.map, p, squadRadius(s.kind)) &&
-                    structureAim(p, targetTiles, profile.range, player.id, world.map.width(), this.fortifications)) set.add(t);
-                }
-              candidates = [...set]; approaches.set(key, candidates);
-            }
-            const reachable = candidates.filter(t => world.paths.connected(world.tileOf(s), t) && clear(tilePoint(world.map, t)));
-            reachable.sort((a, b) => sides[side(tilePoint(world.map, a))] - sides[side(tilePoint(world.map, b))] ||
-              world.map.euclideanDistSquared(a, world.tileOf(s)) - world.map.euclideanDistSquared(b, world.tileOf(s)) || a - b);
-            if (reachable.length) point = tilePoint(world.map, reachable[0]);
-          }
-          if (!point) return "No free firing position around this structure";
-          points.set(s.id, point); reserved.push({ ...s, ...point }); sides[side(point)]++;
-        }
-        world.admitStructureAttack(player.id, selected as Squad[], points, {buildingId:building?.id,barrierId:barrier?.id});
-        return null;
+      if (world.options?.deferredPlanning && world.prepareStructureAttack) {
+        for (const s of selected as Squad[])
+          if (!this.unit(s).attack.targets.includes(building ? "structure" : "wall")) return "This weapon cannot attack that structure";
+        return world.prepareStructureAttack(player.id, selected as Squad[], { buildingId: building?.id, barrierId: barrier?.id });
       }
       for (const s of selected as Squad[]) {
         const targetTiles = building ? [building.tile] : barrier!.tiles;

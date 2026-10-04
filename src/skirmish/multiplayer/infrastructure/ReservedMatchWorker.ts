@@ -28,7 +28,7 @@ export class ReservedMatchWorker implements MatchExecutor {
   }
   private nextId = 1;
   private closed = false;
-  readonly lifecycle: { state: "running" | "stopped"; cause?: "closed" | "error" | "exit" | "timeout" | "publication"; operation?: string; exitCode?: number } = { state: "running" };
+  readonly lifecycle: { state: "running" | "stopped"; cause?: "closed" | "error" | "exit" | "timeout" | "publication" | "recovery"; operation?: string; exitCode?: number } = { state: "running" };
   private pending = new Map<
     number,
     {
@@ -40,8 +40,8 @@ export class ReservedMatchWorker implements MatchExecutor {
   constructor() {
     this.worker.on(
       "message",
-      (message: { id: number; result: ExecutorResult; error?: string; fatal?: string; publication?: MatchPublication }) => {
-        if (message.fatal) { this.fail(new Error(message.fatal), "publication"); void this.worker.terminate(); return; }
+      (message: { id: number; result: ExecutorResult; error?: string; fatal?: string; failureCause?: "recovery"; publication?: MatchPublication }) => {
+        if (message.fatal) { this.fail(new Error(message.fatal), message.failureCause ?? "publication"); void this.worker.terminate(); return; }
         if (message.publication) {
           if (!this.closed) for (const listener of this.publications) listener(message.publication);
           return;

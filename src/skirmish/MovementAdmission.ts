@@ -10,6 +10,7 @@ import type { ExactRouteOutcome } from "./RoutePlanner";
 import { limitedRouteRetry, ROUTE_CAPACITY_REASON } from "./RouteRetryPolicy";
 import type { WorldPoint } from "./SpatialGrid";
 import { distanceSquared, pointTile, tilePoint } from "./SquadGeometry";
+import { StructureAttackPreparation, STRUCTURE_PREPARATION_LIMITS, type StructureAttackPreparationState } from "./domain/StructureAttackPreparation";
 
 interface Member {
   id: number;
@@ -35,7 +36,9 @@ interface Admission {
   revision: string;
   members: Member[];
   formation: FormationPlanningState;
-  phase: "formation" | "queued" | "routes" | "connectors";
+  phase: "preparation" | "formation" | "queued" | "routes" | "connectors";
+  preparation?: StructureAttackPreparationState;
+  preparationRestarts?: number;
   member: number;
   placementRetries?: number;
 }
@@ -56,6 +59,9 @@ export interface MovementAdmissionEvent {
   reason?: string;
 }
 export interface MovementAdmissionPorts {
+  prepareStructure?(state: StructureAttackPreparationState, budget: number): number;
+  activateStructure?(playerId: number, squads: readonly Squad[], points: Map<number, WorldPoint>, target: NonNullable<Squad["structureTarget"]>): void;
+  handoffStructure?(id: number, playerId: number, action: () => void): void;
   squads(): readonly Squad[];
   hostile?(a: number, b: number): boolean;
   priority?(playerId: number): boolean;
@@ -107,6 +113,31 @@ export class MovementAdmission {
   hasPending(squadId: number): boolean { return this.pendingBySquad.has(squadId); }
   get pendingCount(): number {
     return this.pending.size;
+  }
+  get preparationCount(): number { return [...this.pending.values()].filter(a => a.phase === "preparation").length; }
+  readonly preparationDiagnostics = { work: 0, completed: 0, rejected: 0, restarts: 0, coalesced: 0, superseded: 0, discardedWork: 0 };
+  startStructure(playerId: number, squads: readonly Squad[], tile: number, tick: number,
+    state: StructureAttackPreparationState): string | null {
+    // A think-cycle restatement by an autonomous controller retains the exact
+    // objective's progress. Human replacements and queued intents always keep
+    // their separate command identity and normal cancellation semantics.
+    if (!this.ports.priority?.(playerId) && squads.length) {
+      const current = this.pending.get(this.pendingBySquad.get(squads[0].id) ?? -1), previous = current?.preparation;
+      if (current?.phase === "preparation" && previous && current.playerId === playerId &&
+        current.generation === this.ports.generation(playerId) && current.revision === this.ports.revision(playerId) &&
+        previous.target.buildingId === state.target.buildingId && previous.target.barrierId === state.target.barrierId &&
+        previous.members.length === state.members.length && state.members.every(member =>
+          !this.intentsBySquad.get(member.id)?.size && previous.members.some(old => old.id === member.id && old.kind === member.kind && old.range === member.range))) {
+        this.preparationDiagnostics.coalesced++;
+        return null;
+      }
+    }
+    if (this.preparationCount >= STRUCTURE_PREPARATION_LIMITS.jobs)
+      return "Structure preparation is full; retry after pending orders finish";
+    this.cancel(squads.map(s => s.id), tick);
+    const id = this.create(playerId, squads, tile, tick, undefined, state.target), admission = this.pending.get(id)!;
+    admission.phase = "preparation"; admission.preparation = state;
+    return null;
   }
   constructor(
     private readonly map: GameMap,
@@ -165,6 +196,10 @@ export class MovementAdmission {
     status: MovementAdmissionEvent["status"],
     reason?: string,
   ): void {
+    if (admission.phase === "preparation" && status === "superseded") {
+      this.preparationDiagnostics.superseded++;
+      this.preparationDiagnostics.discardedWork += admission.preparation?.consumed ?? 0;
+    }
     this.pending.delete(admission.id);
     if (admission.corridorId !== undefined && ![...this.pending.values()].some(a => a.corridorId === admission.corridorId)) this.corridors.delete(admission.corridorId);
     for (const member of admission.members) {
@@ -659,6 +694,42 @@ export class MovementAdmission {
         continue;
       }
       validated.add(id);
+      if (admission.phase === "preparation") {
+        const state = admission.preparation!;
+        if (admission.revision !== this.ports.revision(admission.playerId)) {
+          if ((admission.preparationRestarts ?? 0) >= 3) {
+            this.preparationDiagnostics.rejected++;
+            this.finish(admission, tick, "rejected", "Structure preparation dependencies kept changing"); used++; continue;
+          }
+          admission.preparationRestarts = (admission.preparationRestarts ?? 0) + 1;
+          this.preparationDiagnostics.restarts++;
+          const members = state.members.map(member => ({ ...member, origin: { x: this.ports.squad(member.id)!.x, y: this.ports.squad(member.id)!.y } }));
+          admission.preparation = StructureAttackPreparation.create(admission.playerId, members, state.target);
+          admission.preparation.consumed = state.consumed + 1;
+          this.preparationDiagnostics.work++;
+          admission.revision = this.ports.revision(admission.playerId);
+          used++; continue;
+        }
+        const work = this.ports.prepareStructure!(state, Math.min(STRUCTURE_PREPARATION_LIMITS.quantum, budget - used));
+        used += work; this.preparationDiagnostics.work += work; idle = 0;
+        if (state.stage === "failed") {
+          this.preparationDiagnostics.rejected++;
+          this.finish(admission, tick, "rejected", state.reason);
+        } else if (state.stage === "done") {
+          const squads = admission.members.map(m => this.ports.squad(m.id)!);
+          // The original allocator hands off to the same route/cohort policy.
+          // Retire only this preparation, then attach every replacement plan to
+          // its external receipt before publishing the preparation completion.
+          this.pending.delete(id);
+          for (const member of admission.members) this.pendingBySquad.delete(member.id);
+          const activate = () => this.ports.activateStructure!(admission.playerId, squads, state.points, state.target);
+          if (this.ports.handoffStructure) this.ports.handoffStructure(id, admission.playerId, activate);
+          else activate();
+          this.preparationDiagnostics.completed++;
+          this.event(admission, tick, "executed");
+        }
+        continue;
+      }
       if (admission.revision !== this.ports.revision(admission.playerId)) {
         if (admission.corridorId !== undefined) this.corridors.delete(admission.corridorId);
         const squads = admission.members.map((m) => this.ports.squad(m.id)!);

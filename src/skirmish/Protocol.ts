@@ -433,6 +433,8 @@ export interface Snapshot {
 }
 
 export interface SnapshotPacket {
+  barrierChanges?: { reset: boolean; rows: NonNullable<Snapshot["expansion"]>["barriers"]; removed: Int32Array;
+    states?: readonly { id: number; health: number; remainingTicks: number }[] };
   reset: boolean;
   /** Absent in legacy packets, which carry complete squad/ship views. */
   entityMode?: "full" | "delta";

@@ -1,6 +1,6 @@
 import { describe, expect, it } from "vitest";
 import { GameMapImpl } from "../../src/core/game/GameMap";
-import { RUNTIME_PHASES, RuntimeDiagnostics, RuntimeProgress } from "../../src/skirmish/RuntimeDiagnostics";
+import { RUNTIME_PHASES, RuntimeDiagnostics, RuntimeProgress, TIMING_BUCKET_LIMITS } from "../../src/skirmish/RuntimeDiagnostics";
 import { decodeState, encodeState } from "../../src/skirmish/multiplayer/StateCodec";
 import { Skirmish } from "../../src/skirmish/Simulation";
 
@@ -14,7 +14,7 @@ describe("bounded non-authoritative runtime diagnostics", () => {
     expect(await decodeState(observed, { diagnostics })).toEqual(value);
     for (const phase of ["pack", "json", "compression", "hash", "base64", "decompression", "unpack"] as const)
       expect(diagnostics.snapshot()[phase]?.samples).toBeGreaterThan(0);
-    expect(diagnostics.retainedBytes).toBeLessThanOrEqual(RUNTIME_PHASES.length * 3 * 8);
+    expect(diagnostics.retainedBytes).toBeLessThanOrEqual(RUNTIME_PHASES.length * (3 + TIMING_BUCKET_LIMITS.length) * 8);
   });
   it("keeps failed measurements and disabled observers outside execution semantics", async () => {
     const diagnostics = new RuntimeDiagnostics(2);
@@ -47,11 +47,25 @@ describe("bounded non-authoritative runtime diagnostics", () => {
     for (const value of [1, 2, 3, 4, 10]) d.record("tick", value);
     d.record("tick", NaN); d.record("tick", -1); d.record("tick", Infinity);
     expect(d.snapshot().tick).toEqual({ samples: 4, mean: 4.75, p95: 10, p99: 10, maximum: 10 });
-    expect(d.retainedBytes).toBe(32);
+    expect(d.retainedBytes).toBe((4 + TIMING_BUCKET_LIMITS.length) * 8);
     for (const phase of RUNTIME_PHASES) for (let i = 0; i < 100; i++) d.record(phase, i);
-    expect(d.retainedBytes).toBe(RUNTIME_PHASES.length * 4 * 8);
+    expect(d.retainedBytes).toBe(RUNTIME_PHASES.length * (4 + TIMING_BUCKET_LIMITS.length) * 8);
     expect(Object.values(d.snapshot()).every(s => s.samples === 4)).toBe(true);
     expect(() => new RuntimeDiagnostics(0)).toThrow();
+  });
+  it("preserves whole-run tails after spikes leave the rolling window", () => {
+    const d = new RuntimeDiagnostics(2);
+    for (const ms of [0, 1, 50, 50.1, 100, 100.1, 1200, 2, 3]) d.record("tick", ms);
+    d.record("tick", NaN);
+    const whole = d.lifetimeSnapshot().tick!;
+    expect(d.snapshot().tick).toMatchObject({ samples: 2, maximum: 3 });
+    expect(whole).toMatchObject({ samples: 9, maximum: 1200, above50Ms: 4, above100Ms: 2 });
+    expect(whole.mean).toBeCloseTo(1506.2 / 9);
+    expect(whole.buckets.reduce((sum, bucket) => sum + bucket.samples, 0)).toBe(9);
+    expect(whole.buckets[0].samples).toBe(2);
+    expect(whole.buckets[whole.buckets.length - 1]).toEqual({ upperMs: null, samples: 1 });
+    whole.buckets[0].samples = 500;
+    expect(d.lifetimeSnapshot().tick!.buckets[0].samples).toBe(2);
   });
   it("observes every simulation stage without changing deterministic checkpoints", () => {
     const make = () => {

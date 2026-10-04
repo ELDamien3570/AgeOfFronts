@@ -49,7 +49,7 @@ function barrier(a: Building, b: Building, tiles: number[], id = 1): Barrier {
 }
 it("blocks physical corner contact while preserving weapon rays and owner passage",()=>{
   const m=match(),a=tower(m,10,5),b=tower(m,12,5),forts=m.expansion!.fortifications;
-  forts.barriers.push(barrier(a,b,[m.map.ref(10,5),m.map.ref(11,5),m.map.ref(12,5)]));
+  forts.addBarrier(barrier(a,b,[m.map.ref(10,5),m.map.ref(11,5),m.map.ref(12,5)]));
   forts.step(m.tick,m.buildings);
   const from={x:9.5*FIXED,y:4.8*FIXED},to={x:13.5*FIXED,y:4.8*FIXED};
   expect(forts.clear(from,to,2)).toBe(true);
@@ -120,7 +120,7 @@ describe("wall artwork topology", () => {
     const cached = view.tiles;
     view.update(m.snapshot());
     expect(view.tiles).toBe(cached);
-    forts.barriers[0].health = 0;
+    forts.updateBarrier(forts.barriers[0].id, { health: 0 });
     forts.step(2, m.buildings);
     view.update(m.snapshot());
     expect(view.tiles).toHaveLength(0);
@@ -133,7 +133,7 @@ describe("wall artwork topology", () => {
       d = tower(m, 10, 6),
       e = tower(m, 10, 10);
     const forts = m.expansion!.fortifications;
-    forts.barriers.push(
+    [
       barrier(
         a,
         b,
@@ -151,7 +151,7 @@ describe("wall artwork topology", () => {
         [9, 8, 7, 6].map((y) => m.map.ref(10, y)),
         3,
       ),
-    );
+    ].forEach(wall => forts.addBarrier(wall));
     forts.step(1, m.buildings);
     const view = new WallPresentation();
     view.update(m.snapshot());

@@ -70,7 +70,7 @@ export class LiveMatch {
   private readonly cadence = new RuntimeProgress(TICK_MS);
   runtimeDiagnostics() {
     return { matchId: this.reservation.id, runtimeId: this.runtimeId, tick: this.tick,
-      publicationSequence: this.publicationSequence, timings: this.diagnostics.snapshot(),
+      publicationSequence: this.publicationSequence, timings: this.diagnostics.snapshot(), lifetimeTimings: this.diagnostics.lifetimeSnapshot(),
       retainedBytes: this.diagnostics.retainedBytes, progress: this.cadence.snapshot(), worker: this.latestDiagnostics };
   }
   private loaded = new Set<string>();

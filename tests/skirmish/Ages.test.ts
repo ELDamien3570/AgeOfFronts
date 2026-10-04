@@ -527,7 +527,7 @@ describe("allied protection and fortifications", () => {
     });
     expect(e.fortifications.blocked(tile, 2)).toBe(true);
     expect(e.fortifications.blocked(a.tile, 2)).toBe(true);
-    w.health = 0;
+    e.fortifications.updateBarrier(w.id, { health: 0 });
     expect(e.fortifications.blocked(tile, 2)).toBe(false);
   });
   it("destruction of the final building awards all remnant land to the finishing faction", () => {

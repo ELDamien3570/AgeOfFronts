@@ -27,6 +27,8 @@ import { AttackApproaches } from "./AttackApproaches";
 import { ShoreRoutes } from "./domain/ShoreRoutes";
 import { ShoreTransport } from "./domain/ShoreTransport";
 import { structureAim } from "./domain/StructureTargeting";
+import { PhaseSpatialViews, type SpatialPhase } from "./PhaseSpatialViews";
+import { StructureAttackPreparation } from "./domain/StructureAttackPreparation";
 import { ConquestCredit, DamageLedger } from "./Conquest";
 import { constructionRejection } from "./Construction";
 import { buildingCostMultiplier, buildingTicks, buildingIntegrity } from "./content/Buildings";
@@ -156,6 +158,11 @@ export class Skirmish {
   /** Development-only full-reference comparisons; excluded from checkpoints. */
   compareBuildingIndexes = false;
   compareUnitIndexes = false;
+  private restoreFailure?: Error;
+  get failureReason(): string | undefined { return this.restoreFailure?.message; }
+  private assertAvailable(): void {
+    if (this.restoreFailure) throw new Error(`Simulation stopped after checkpoint installation failed: ${this.restoreFailure.message}`);
+  }
   private diagnosticPhase(phase: RuntimePhase, start: number): number {
     if (!this.onPhase) return 0;
     const now = performance.now();
@@ -164,6 +171,11 @@ export class Skirmish {
   }
 
   readonly commandApplications = new CommandApplications({apply: command => this.applyCommand(command), tick: () => this.tick});
+  private phaseSpatial?: PhaseSpatialViews;
+  get spatialDiagnostics() { return this.phaseSpatial?.diagnostics; }
+  spatialFacts(phase: SpatialPhase) {
+    return (this.phaseSpatial ??= new PhaseSpatialViews(this.map.width(), this.map.height(), this)).facts(phase);
+  }
   private readonly controlGenerations = new Map<number, number>();
   aiGeneration(playerId: number): number { return this.controlGenerations.get(playerId) ?? 0; }
   /** Transfer control without replacing any domain state or legitimate orders. */
@@ -178,8 +190,38 @@ export class Skirmish {
     this.expansion?.operations.release(playerId);
     this.commandApplications.release(playerId, this.tick);
   }
-  checkpoint() { return structuredClone({playerAttacks:this.playerAttacks.checkpoint(),version:1 as const,width:this.map.width(),height:this.map.height(),options:this.options,players:this.players,squads:this.squads,buildings:this.buildings,ships:this.ships,volleys:this.volleys,defenseZones:this.defenseZones,owners:this.owners,claims:this.claims,progress:this.progress,detours:this.detours,navigationProgress:this.navigationProgress,orderRevisions:this.orderRevisions,queuedLegs:this.queuedLegs,controlGenerations:this.controlGenerations,activeClaims:this.activeClaims,tick:this.tick,winner:this.winner,combatTicks:this.combatTicks,producedTroops:this.producedTroops,nextId:this.nextId,nextVolleyId:this.nextVolleyId,random:this.random.getState(),forest:forestOf(this.map)?.checkpoint(),routeWork:this.routeWork.checkpoint(),planning:this.routePlanner.checkpoint(),admission:this.movementAdmission.checkpoint(),shipAdmission:this.shipAdmission.checkpoint(),commandApplications:this.commandApplications.checkpoint(),shorePlanning:this.shoreTransport.checkpoint(),recruitment:this.recruitment.checkpoint(),expansion:this.expansion?.checkpoint(),territoryAbsorption:this.territoryAbsorption.checkpoint(),coastalTerritory:this.coastalTerritory.checkpoint(),homeTerritory:this.homeTerritory.checkpoint(),avoidance:this.avoidance.checkpoint(),passageTraffic:this.passageTraffic.checkpoint(),conquest:this.conquest.checkpoint()}); }
+  checkpoint() { this.assertAvailable(); return structuredClone({playerAttacks:this.playerAttacks.checkpoint(),version:1 as const,width:this.map.width(),height:this.map.height(),options:this.options,players:this.players,squads:this.squads,buildings:this.buildings,ships:this.ships,volleys:this.volleys,defenseZones:this.defenseZones,owners:this.owners,claims:this.claims,progress:this.progress,detours:this.detours,navigationProgress:this.navigationProgress,orderRevisions:this.orderRevisions,queuedLegs:this.queuedLegs,controlGenerations:this.controlGenerations,activeClaims:this.activeClaims,tick:this.tick,winner:this.winner,combatTicks:this.combatTicks,producedTroops:this.producedTroops,nextId:this.nextId,nextVolleyId:this.nextVolleyId,random:this.random.getState(),forest:forestOf(this.map)?.checkpoint(),routeWork:this.routeWork.checkpoint(),planning:this.routePlanner.checkpoint(),admission:this.movementAdmission.checkpoint(),shipAdmission:this.shipAdmission.checkpoint(),commandApplications:this.commandApplications.checkpoint(),shorePlanning:this.shoreTransport.checkpoint(),recruitment:this.recruitment.checkpoint(),expansion:this.expansion?.checkpoint(),territoryAbsorption:this.territoryAbsorption.checkpoint(),coastalTerritory:this.coastalTerritory.checkpoint(),homeTerritory:this.homeTerritory.checkpoint(),avoidance:this.avoidance.checkpoint(),passageTraffic:this.passageTraffic.checkpoint(),conquest:this.conquest.checkpoint()}); }
   restore(saved: ReturnType<Skirmish["checkpoint"]>): void {
+    this.assertAvailable();
+    if (saved.version !== 1 || saved.width !== this.map.width() || saved.height !== this.map.height() ||
+      JSON.stringify(saved.options) !== JSON.stringify(this.options) || Boolean(saved.expansion) !== Boolean(this.expansion))
+      throw new Error("Checkpoint does not match this simulation");
+    for (const tiles of [saved.owners, saved.claims, saved.progress])
+      if (!(tiles instanceof Uint8Array) || tiles.length !== this.owners.length) throw new Error("Invalid checkpoint tile array");
+    const players = new Set<number>();
+    for (const player of saved.players) {
+      if (!Number.isSafeInteger(player.id) || player.id < 1 || player.id >= 255 || players.has(player.id))
+        throw new Error("Invalid checkpoint faction identity");
+      players.add(player.id);
+    }
+    for (const records of [saved.squads, saved.ships, saved.buildings, saved.expansion?.fortifications.barriers ?? []]) {
+      const ids = new Set<number>();
+      for (const record of records) {
+        if (!Number.isSafeInteger(record.id) || record.id < 0 || ids.has(record.id) || (record.playerId !== 0 && !players.has(record.playerId)))
+          throw new Error("Invalid checkpoint entity identity");
+        ids.add(record.id);
+      }
+    }
+    if (saved.forest && !forestOf(this.map)) throw new Error("Missing forest field");
+    try { this.installCheckpoint(saved); }
+    catch (error) {
+      // Deep subsystem validation may still fail after installation begins.
+      // A stopped aggregate can never continue with partially restored indexes.
+      this.restoreFailure = error instanceof Error ? error : new Error("Checkpoint installation failed");
+      throw error;
+    }
+  }
+  private installCheckpoint(saved: ReturnType<Skirmish["checkpoint"]>): void {
     if (saved.version!==1 || saved.width!==this.map.width() || saved.height!==this.map.height() || JSON.stringify(saved.options)!==JSON.stringify(this.options) || Boolean(saved.expansion)!==Boolean(this.expansion)) throw new Error("Checkpoint does not match this simulation");
     const state=structuredClone(saved);
     for (const player of state.players) player.colorKind ??= FACTIONS.find(faction => faction.id === player.factionId)?.kind ?? player.kind;
@@ -443,6 +485,12 @@ export class Skirmish {
     const first = points.values().next().value!;
     this.movementAdmission.start(playerId, squads, pointTile(this.map, first), this.tick, points, false, target);
   }
+  prepareStructureAttack(playerId: number, squads: readonly Squad[], target: NonNullable<Squad["structureTarget"]>): string | null {
+    const tiles = target.buildingId === undefined ? this.expansion!.fortifications.barrier(target.barrierId!)!.tiles : [this.building(target.buildingId)!.tile];
+    const state = StructureAttackPreparation.create(playerId, squads.map(squad => ({ id: squad.id, kind: squad.kind,
+      range: this.expansion!.unit(squad).attack.range, origin: { x: squad.x, y: squad.y } })), target);
+    return this.movementAdmission.startStructure(playerId, squads, tiles[0], this.tick, state);
+  }
   private readonly orderRevisions = new Map<number, number>();
   private readonly queuedLegs = new Map<number, { attempts: number; retryAt: number; paused?: boolean }>();
   private readonly localDetours: LocalDetours;
@@ -586,6 +634,9 @@ export class Skirmish {
     });
     this.formations = new Formations(map, this.paths, this.collisionHostile);
     this.movementAdmission = new MovementAdmission(map,this.paths,{
+      prepareStructure:(state,budget)=>this.expansion!.stepStructurePreparation(state,budget),
+      activateStructure:(playerId,squads,points,target)=>this.admitStructureAttack(playerId,squads,points,target),
+      handoffStructure:(id,playerId,action)=>this.commandApplications.handoff("land",id,playerId,action),
       hostile: this.collisionHostile,
       squads:()=>this.squads,priority:id=>!this.player(id)?.ai,squad:id=>this.squad(id),generation:id=>this.aiGeneration(id),revision:id=>this.routingObstacleRevision(id),
       blocked:id=>this.obstacleTest(id),
@@ -908,6 +959,7 @@ export class Skirmish {
   }
 
   applyCommand(command: Command): string | null {
+    this.assertAvailable();
     const invalid = commandRejection(command);
     if (invalid) return invalid;
     const player = this.player(command.playerId);
@@ -2643,6 +2695,7 @@ export class Skirmish {
   }
 
   step(): void {
+    this.assertAvailable();
     // Derived permissions are shared across this tick only. Ownership writes
     // and operation/diplomacy/threat revisions invalidate them immediately.
     this.routeFootprints = new Map();
@@ -4334,6 +4387,7 @@ export class Skirmish {
     const supply = this.expansion?.supply;
     return {
       metadata:this.expansion?.replicationMetadata(),
+      barriers:this.expansion ? {journal:this.expansion.fortifications.barrierChanges, byId:id=>this.expansion!.fortifications.barrier(id)} : undefined,
       squads: {journal: this.squadChanges, byId: id => this.squad(id)},
       ships: {journal: this.shipChanges, byId: id => this.ship(id)},
       buildings: {journal: this.buildingChanges, byId: id => this.building(id)},

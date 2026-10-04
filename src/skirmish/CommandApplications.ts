@@ -65,7 +65,7 @@ export class CommandApplications {
       status: "executed",
     };
     const mayDefer =
-      command.type === "army-order" || command.type === "board" || command.type === "unload" ||
+      command.type === "attack-structure" || command.type === "army-order" || command.type === "board" || command.type === "unload" ||
       command.type === "sail" ||
       (command.type === "order" &&
         ((command.append ?? false) || command.order.type === "move"));
@@ -128,7 +128,7 @@ export class CommandApplications {
   }
   /** A domain itinerary can replace its planning owner without completing the
    * external receipt before the replacement admissions execute. */
-  handoff(source: "shore", id:number, playerId:number, action:()=>void):void {
+  handoff(source: "shore" | "land", id:number, playerId:number, action:()=>void):void {
     const key=this.plans.get(`${source}:${id}`),receipt=key===undefined?undefined:this.pending.get(key);
     if(!receipt||receipt.outcome.playerId!==playerId){action();return;}
     if(this.applying)throw new Error("Nested command planning handoff");

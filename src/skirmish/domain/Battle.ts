@@ -28,7 +28,9 @@ import type { Progression } from "./Progression";
 import { boxSweepEntry, circleSweepEntry } from "./ProjectileCollision";
 import { unitEffects } from "./ResearchEffects";
 import { structureAim } from "./StructureTargeting";
+import type { PhaseSpatialFacts, SpatialPhase, SpatialQueries } from "../PhaseSpatialViews";
 export interface BattleWorld {
+  spatialFacts?(phase: SpatialPhase): PhaseSpatialFacts;
   tick: number;
   squads: readonly Squad[];
   squad(id: number): Squad | undefined;
@@ -97,8 +99,11 @@ export class Battle {
   readonly projectiles: Projectile[] = [];
   // Read-only diagnostics: cache warmth and counters never drive simulation.
   readonly telemetry = { indexRebuilds: 0, trenchCandidates: 0, nestSearches: 0, emptyNestSkips: 0, structureRebuilds: 0, structureAllocations: 0 };
-  private readonly spatial: SpatialGrid<Squad>;
-  private readonly naval: SpatialGrid<Ship>;
+  private spatial: SpatialQueries<Squad>;
+  private naval: SpatialQueries<Ship>;
+  private localSpatial?: SpatialGrid<Squad>;
+  private localNaval?: SpatialGrid<Ship>;
+  private readonly mapHeight: number;
   private readonly structures: SpatialGrid<StructureBody>;
   private readonly nearby: Squad[] = [];
   private readonly nearbyShips: Ship[] = [];
@@ -122,18 +127,9 @@ export class Battle {
     private readonly progression: Progression,
   ) {
     this.mapWidth = width;
-    this.spatial = new SpatialGrid(
-      width * FIXED,
-      height * FIXED,
-      4 * FIXED,
-      (s) => s.playerId,
-    );
-    this.naval = new SpatialGrid(
-      width * FIXED,
-      height * FIXED,
-      4 * FIXED,
-      (s) => s.playerId,
-    );
+    this.mapHeight = height;
+    this.spatial = new SpatialGrid<Squad>(0, 0, 4 * FIXED);
+    this.naval = new SpatialGrid<Ship>(0, 0, 4 * FIXED);
     this.structures = new SpatialGrid(
       width * FIXED,
       height * FIXED,
@@ -163,12 +159,17 @@ export class Battle {
   private distance(a: Position, b: Position): number {
     return (a.x - b.x) ** 2 + (a.y - b.y) ** 2;
   }
-  private rebuild(): void {
+  private rebuild(phase: SpatialPhase): void {
     this.telemetry.indexRebuilds++;
-    this.spatial.rebuild(
-      this.world.squads.filter((s) => s.embarkedOn === null),
-    );
-    this.naval.rebuild(this.world.ships);
+    const spatialFacts = this.world.spatialFacts?.(phase);
+    if (spatialFacts) { this.spatial = spatialFacts.ground; this.naval = spatialFacts.ships; }
+    else {
+      this.localSpatial ??= new SpatialGrid(this.mapWidth * FIXED, this.mapHeight * FIXED, 4 * FIXED, (s: Squad) => s.playerId);
+      this.localNaval ??= new SpatialGrid(this.mapWidth * FIXED, this.mapHeight * FIXED, 4 * FIXED, (s: Ship) => s.playerId);
+      this.localSpatial.rebuild(this.world.squads.filter((s) => s.embarkedOn === null));
+      this.localNaval.rebuild(this.world.ships);
+      this.spatial = this.localSpatial; this.naval = this.localNaval;
+    }
     const facts = this.world.buildingFacts();
     if (this.structureRevision !== facts.producerRevision || this.structureGeometryRevision !== facts.geometryRevision) {
       this.telemetry.structureRebuilds++;
@@ -351,7 +352,7 @@ export class Battle {
     const applied = Math.min(target.health ?? target.maxHealth ?? 1200, hit);
     const health = (target.health ?? target.maxHealth ?? 1200) - applied;
     if ("tile" in target) this.world.updateBuilding(target.id, { health });
-    else target.health = health;
+    else this.forts.updateBarrier(target.id, { health });
     if (applied > 0) this.world.notifyHostileAction?.(target.playerId, attacker, "tile" in target ? target.tile : target.tiles[0]);
     const s =
       kind === "squad"
@@ -371,7 +372,7 @@ export class Battle {
     }
   }
   fight(aircraft: Aircraft[]): void {
-    this.rebuild();
+    this.rebuild("combat");
     const { tick, squads } = this.world,
       damage = new DamageLedger(),
       contributions: Contributions = new Map();
@@ -644,7 +645,7 @@ export class Battle {
   advanceProjectiles(): void {
     // Retained impact visuals still expire below, but no collision/cover query
     // consumes these indexes when every projectile has already impacted.
-    if (this.projectiles.some(p => !p.impacted)) this.rebuild();
+    if (this.projectiles.some(p => !p.impacted)) this.rebuild("projectiles");
     const { tick } = this.world,
       impacts = new DamageLedger(),
       naval = new DamageLedger(),

@@ -17,6 +17,8 @@ export class CanonicalStateStream {
   private depositRevision = 0;
   private projectedDepositRevision = -1;
   private projectedDeposits: NonNullable<Snapshot["expansion"]>["deposits"] = [];
+  private readonly barrierViews = new Map<number, NonNullable<Snapshot["expansion"]>["barriers"][number]>();
+  private projectedBarriers?: NonNullable<Snapshot["expansion"]>["barriers"];
   private readonly dirty = new Map<number, number>();
   constructor(
     private readonly maxMapCells = 64_000_000,
@@ -24,6 +26,7 @@ export class CanonicalStateStream {
     private readonly expectedMap?: { width: number; height: number },
   ) {}
   apply(packet: SnapshotPacket): void {
+    this.decoder.validate(packet);
     if (
       this.expectedMap &&
       (packet.width !== this.expectedMap.width ||
@@ -101,6 +104,18 @@ export class CanonicalStateStream {
         }
       }
     this.latest = this.decoder.decode(packet, false, false);
+    if (packet.reset || packet.expansion?.barriers) {
+      this.barrierViews.clear();
+      for (const wall of this.latest.expansion?.barriers ?? []) this.barrierViews.set(wall.id, { ...wall, tiles: [...wall.tiles] });
+      this.projectedBarriers = undefined;
+    }
+    if (packet.barrierChanges) {
+      if (packet.barrierChanges.reset) this.barrierViews.clear();
+      for (const id of packet.barrierChanges.removed) this.barrierViews.delete(id);
+      for (const wall of packet.barrierChanges.rows) this.barrierViews.set(wall.id, { ...wall, tiles: [...wall.tiles] });
+      for (const state of packet.barrierChanges.states ?? []) this.barrierViews.set(state.id, { ...this.barrierViews.get(state.id)!, ...state });
+      this.projectedBarriers = undefined;
+    }
     if (packet.reset || packet.expansion?.deposits || packet.expansion?.depositOwners?.length)
       this.depositRevision++;
   }
@@ -109,7 +124,9 @@ export class CanonicalStateStream {
   }
   /** Only for immediate synchronous postMessage. Its structured clone isolates
    * recipients. Roads are replaced, never mutated by the decoder; deposit
-   * views are replaced on an explicit baseline/ownership revision. Neither
+   * views are replaced on an explicit baseline/ownership revision. Barrier
+   * records are replaced through complete deltas while their immutable geometry
+   * is retained. None of these
    * fact buffer may be transferred, mutated or retained by the sender. */
   presentationForTransfer(): { snapshot: Snapshot; canonicalSequence: number } {
     return this.project(true);
@@ -118,7 +135,7 @@ export class CanonicalStateStream {
     if (!this.latest) throw new Error("Canonical state is unavailable");
     const expansion = this.latest.expansion;
     const snapshot = structuredClone(forTransfer && expansion
-      ? { ...this.latest, expansion: { ...expansion, roads: undefined, deposits: undefined } }
+      ? { ...this.latest, expansion: { ...expansion, roads: undefined, deposits: undefined, barriers: undefined } }
       : this.latest) as Snapshot;
     if (forTransfer && expansion) {
       if (this.projectedDepositRevision !== this.depositRevision) {
@@ -127,6 +144,7 @@ export class CanonicalStateStream {
       }
       snapshot.expansion!.roads = expansion.roads;
       snapshot.expansion!.deposits = this.projectedDeposits;
+      snapshot.expansion!.barriers = this.projectedBarriers ??= [...this.barrierViews.values()];
     }
     snapshot.changedTiles =
       this.resetSequence > this.presented

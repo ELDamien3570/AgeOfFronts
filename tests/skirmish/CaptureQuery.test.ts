@@ -54,7 +54,7 @@ describe("batched capture eligibility", () => {
       health: 2000,
       maxHealth: 2000,
     });
-    forts.barriers.push({
+    forts.addBarrier({
       id: 1,
       playerId: 2,
       age: "StoneAge",
@@ -104,7 +104,7 @@ describe("batched capture eligibility", () => {
     expansion.diplomacy.state.alliances = [];
     expansion.diplomacy.revision++;
     game.updateBuilding(tower.id, { playerId: 1 });
-    forts.barriers[0].health = 0;
+    forts.updateBarrier(forts.barriers[0].id, { health: 0 });
     compare();
     game.removeBuilding(tower.id);
     compare();

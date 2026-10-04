@@ -1,0 +1,57 @@
+{
+  "baseline": "6409654",
+  "baselineErrors": [
+    {
+      "file": "src/skirmish/Simulation.ts",
+      "ruleId": "eqeqeq",
+      "message": "Expected '!==' and instead saw '!='.",
+      "sourceLine": "...(this.options.humanColors?.[id - 1] != null ? { colorIndex: this.options.humanColors[id - 1]! } : {}),"
+    },
+    {
+      "file": "src/skirmish/Simulation.ts",
+      "ruleId": "@typescript-eslint/no-unused-vars",
+      "message": "'tile' is assigned a value but never used.",
+      "sourceLine": "const tile = pointTile(this.map, destination);"
+    },
+    {
+      "file": "src/skirmish/SnapshotCodec.ts",
+      "ruleId": "@typescript-eslint/prefer-nullish-coalescing",
+      "message": "Prefer using nullish coalescing operator (`??`) instead of a logical or (`||`), as it is a safer operator.",
+      "sourceLine": "squadDetails: source.expansion || selected.squads.rows.some(s => s.planningPaused || s.movementStatus)"
+    },
+    {
+      "file": "src/skirmish/multiplayer/application/LiveMatch.ts",
+      "ruleId": "eqeqeq",
+      "message": "Expected '!==' and instead saw '!='.",
+      "sourceLine": "...(reservation.members.some(member => member.profile.colorIndex != null)"
+    }
+  ],
+  "currentErrors": [
+    {
+      "file": "src/skirmish/Simulation.ts",
+      "ruleId": "eqeqeq",
+      "message": "Expected '!==' and instead saw '!='.",
+      "sourceLine": "...(this.options.humanColors?.[id - 1] != null ? { colorIndex: this.options.humanColors[id - 1]! } : {}),"
+    },
+    {
+      "file": "src/skirmish/Simulation.ts",
+      "ruleId": "@typescript-eslint/no-unused-vars",
+      "message": "'tile' is assigned a value but never used.",
+      "sourceLine": "const tile = pointTile(this.map, destination);"
+    },
+    {
+      "file": "src/skirmish/SnapshotCodec.ts",
+      "ruleId": "@typescript-eslint/prefer-nullish-coalescing",
+      "message": "Prefer using nullish coalescing operator (`??`) instead of a logical or (`||`), as it is a safer operator.",
+      "sourceLine": "squadDetails: source.expansion || selected.squads.rows.some(s => s.planningPaused || s.movementStatus)"
+    },
+    {
+      "file": "src/skirmish/multiplayer/application/LiveMatch.ts",
+      "ruleId": "eqeqeq",
+      "message": "Expected '!==' and instead saw '!='.",
+      "sourceLine": "...(reservation.members.some(member => member.profile.colorIndex != null)"
+    }
+  ],
+  "introduced": [],
+  "scope": "new files and changed files compared to their frozen original source lines; full-file legacy errors stay open"
+}
