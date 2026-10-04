@@ -52,6 +52,55 @@ function fixture() {
   return { game, player, e, squads, target, cost };
 }
 describe("mass refit and completed-asset survival", () => {
+  it("refits Stone Age troops directly to affordable Early Medieval equipment", () => {
+    const f = fixture();
+    f.e.progression.states[1].age = "EarlyMedieval";
+    f.e.progression.states[1].completed = TECHNOLOGIES.filter((t) =>
+      ["StoneAge", "BronzeAge", "ClassicalAge", "EarlyMedieval"].includes(t.age),
+    ).map((t) => t.id);
+    const target = UNITS.find((u) => u.id === "earlymedieval-infantry")!;
+    const cost = unitRefitCost(target);
+    f.player.gold = 10000;
+    f.e.supply.inventories[1] = { ...cost.items };
+    f.game.updateSquad(f.squads[0].id, { troops: 450, xp: 7000 });
+    const vm = new EmpireViewModel(f.game.snapshot(), {
+      selected: new Set(f.squads.map((s) => s.id)),
+      selectedShips: new Set(), selectedBuilding: null,
+    });
+    const quote = vm.refit()!;
+    expect(quote.target?.id).toBe(target.id);
+    expect(quote.affordable).toHaveLength(1);
+    expect(f.game.applyCommand({ type: "refit", playerId: 1,
+      squadIds: quote.selected.map((s) => s.id), definitionId: quote.target!.id,
+    })).toBeNull();
+    expect(f.player.gold).toBe(10000 - cost.gold!);
+    expect(f.e.supply.inventories[1][target.equipment!]).toBe(0);
+    expect(f.game.squad(f.squads[0].id)!.definitionId).toBe("stoneage-infantry");
+    for (let i = 0; i < 200; i++) f.game.step();
+    const upgraded = f.game.squad(f.squads[0].id)!;
+    expect(upgraded.definitionId).toBe(target.id);
+    expect(upgraded.troops).toBe(450);
+    expect(upgraded.xp).toBe(0);
+    expect(upgraded.refit).toBeNull();
+  });
+  it("falls back to an affordable tier and never offers unresearched equipment", () => {
+    const f = fixture();
+    const medieval = UNITS.find((u) => u.id === "earlymedieval-infantry")!;
+    const vm = () => new EmpireViewModel(f.game.snapshot(), {
+      selected: new Set(f.squads.map((s) => s.id)),
+      selectedShips: new Set(), selectedBuilding: null,
+    });
+    f.e.supply.inventories[1][medieval.equipment!] = 5;
+    f.player.gold = 10000;
+    expect(vm().refit()!.target!.id).toBe(f.target.id);
+    f.e.progression.states[1].completed.push(medieval.technologyId);
+    f.player.gold = 800;
+    expect(vm().refit()!.target!.id).toBe(f.target.id);
+    f.player.gold = 10000;
+    expect(vm().refit()!.target!.id).toBe(medieval.id);
+    f.e.supply.inventories[1][medieval.equipment!] = 0;
+    expect(vm().refit()!.target!.id).toBe(f.target.id);
+  });
   it("quotes and pays only the affordable stationary subset, leaving the selection intact", () => {
     const f = fixture();
     f.game.updateSquad(f.squads[0].id, { fighting: true });

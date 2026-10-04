@@ -150,13 +150,17 @@ export function quoteLandRefits<T extends RefitSquad>(
     (s) => definition(s).id,
     (s) => {
       const current = definition(s);
-      return UNITS.find(
+      const targets = UNITS.filter(
         (u) =>
           u.line === current.line &&
           u.role === current.role &&
           AGES.indexOf(u.age) > AGES.indexOf(current.age) &&
           context.research.includes(u.technologyId),
-      );
+      ).sort((a, b) => AGES.indexOf(b.age) - AGES.indexOf(a.age));
+      return targets.find((u) =>
+        affordableRefitCount(unitRefitCost(u), availableGold(context.player),
+          context.inventory, 1) > 0,
+      ) ?? targets[0];
     },
     (s) =>
       s.playerId === context.player.id &&
@@ -170,7 +174,7 @@ export function quoteLandRefits<T extends RefitSquad>(
     context,
     selected.every((s) => AGES.indexOf(definition(s).age) === AGES.length - 1)
       ? "Maximum tier reached"
-      : "Research the next tier to unlock a refit",
+      : "Research a later tier to unlock a refit",
   );
 }
 export function quoteShipRefits<T extends RefitShip>(
