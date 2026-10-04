@@ -45,7 +45,7 @@ const connect=async(p,reconnect=false)=>{
     if(m.type==="directory")p.directory=m;
     if(m.type==="error")failures.push("Peer "+p.id+" server: "+m.message);
     if(m.type==="ack")p.acks.set(m.requestId,m);
-    if(m.type==="match"){p.manifest=m.manifest;matchId=m.manifest.id;send(p,{type:"match-ready",requestId:rid(),matchId,runtimeId:m.manifest.runtimeId,flowControl:true});}
+    if(m.type==="match"){p.manifest=m.manifest;p.factionId=m.manifest.playerId;matchId=m.manifest.id;send(p,{type:"match-ready",requestId:rid(),matchId,runtimeId:m.manifest.runtimeId,flowControl:true});}
     if(m.type==="match-command-outcome")p.outcomes.push(m.outcome);
     if(m.type==="match-ended")failures.push("Unexpected match ended: "+m.message);
     if(m.type!=="match-state")return;
@@ -243,7 +243,12 @@ try{
     }
     // Do not deliberately close immediately after injecting an unacknowledged
     // order: that tests a lost client send, rather than server motion latency.
-    if(!reconnected&&Date.now()>until-seconds*500&&![...pendingMoves.values()].some(m=>m.peer===p.id)){p.ws.close();await wait(()=>p.closed,"close reconnect socket");await connect(p,true);await wait(()=>p.manifest&&p.tick>20,"reconnected state");reconnected=true;}
+    if(!reconnected&&Date.now()>until-seconds*500){
+      const available=peers.filter(peer=>peer.snapshot?.players.some(f=>f.id===peer.factionId&&!f.eliminated));
+      if(!available.length)throw new Error("No living human faction remains for reconnect qualification");
+      const reconnectPeer=available.find(peer=>![...pendingMoves.values()].some(m=>m.peer===peer.id));
+      if(reconnectPeer){reconnectPeer.ws.close();await wait(()=>reconnectPeer.closed,"close reconnect socket");await connect(reconnectPeer,true);await wait(()=>reconnectPeer.manifest&&reconnectPeer.tick>20,"reconnected state");reconnected=true;}
+    }
     if(Date.now()>=nextReport){console.log(JSON.stringify({stage:"monitor",matchId,ticks:peers.map(p=>p.tick),elapsedSeconds:Math.round((Date.now()-started)/1000)}));nextReport=Date.now()+30000;}
     await sleep(100);
   }
@@ -254,7 +259,10 @@ try{
   const result={passed:true,title,matchId,roomId,base,mapId,worldSize,clients:count,seconds,elapsedSeconds:(Date.now()-started)/1000,flags:Object.fromEntries(flags.map(f=>[f,true])),runtimeId:manifests[0].runtimeId,mapHash:manifests[0].mapHash,moves,periodicMoves,periodicMotionP95:percentile(periodicMoves.map(m=>m.firstMotionMs).filter(Number.isFinite),.95),validBuild,passOne,tradeControls,waterTransport,aiMoved:[...aiMoved].sort((a,b)=>a-b),rejection,reconnected,commonStateSamples:common.length,peers:peers.map(p=>({id:p.id,tick:p.tick,packets:p.packets,syncs:p.syncs,bytes:p.bytes,decodeP95:percentile(p.decodeMs,.95),publicationGapP95:percentile(p.gaps,.95),publicationGapMax:Math.max(...p.gaps)})),failures};
   fs.mkdirSync(path.dirname(out),{recursive:true});
   completed=true;fs.writeFileSync(out,JSON.stringify(result,null,2)+"\n");console.log(JSON.stringify(result));
+} catch(error) {
+  if(!failures.includes(error.message))failures.push(error.message);
+  throw error;
 } finally {
   for(const p of peers)p.ws?.close();
-  if(!completed){fs.mkdirSync(path.dirname(out),{recursive:true});fs.writeFileSync(out,JSON.stringify({passed:false,matchId,failures,peers:peers.map(p=>({tick:p.tick,playerId:p.manifest?.playerId,outcomes:p.outcomes,squads:p.snapshot?.squads.filter(s=>s.playerId===p.manifest?.playerId),ships:p.snapshot?.ships.filter(s=>s.playerId===p.manifest?.playerId)}))},null,2));process.exitCode=1;}
+  if(!completed){fs.mkdirSync(path.dirname(out),{recursive:true});fs.writeFileSync(out,JSON.stringify({passed:false,matchId,failures,peers:peers.map(p=>({tick:p.tick,playerId:p.factionId,faction:p.snapshot?.players.find(f=>f.id===p.factionId),outcomes:p.outcomes,squads:p.snapshot?.squads.filter(s=>s.playerId===p.factionId),ships:p.snapshot?.ships.filter(s=>s.playerId===p.factionId)}))},null,2));process.exitCode=1;}
 }
