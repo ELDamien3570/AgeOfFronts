@@ -1,5 +1,5 @@
 import { hasInfiniteGold } from "../domain/Gold";
-import { limitSquadSelection } from "./SquadSelectionViewModel";
+import { applyDragSelection, limitSquadSelection } from "./SquadSelectionViewModel";
 import { BrowserLobbyPreviewStore } from "./lobby/LobbyPreviewStore";
 import { validFactionColor } from "../lobby/FactionPalette";
 import { DEFAULT_AI_POLICIES } from "../content/AiPolicies";
@@ -1485,6 +1485,7 @@ canvas.addEventListener("pointerup", (event) => {
     }
 
     if (start.moved) {
+      const candidates = { squads: [] as number[], ships: [] as number[], aircraft: [] as number[] };
       for (const aircraft of snapshot.expansion?.aircraft ?? []) {
         if (aircraft.playerId !== localPlayerId) continue;
         const position = renderer.screen(
@@ -1497,7 +1498,7 @@ canvas.addEventListener("pointerup", (event) => {
           position.y >= Math.min(p.y, start.y) &&
           position.y <= Math.max(p.y, start.y)
         )
-          renderer.selectedAircraft.add(aircraft.id);
+          candidates.aircraft.push(aircraft.id);
       }
       for (const squad of snapshot.squads) {
         if (squad.playerId !== localPlayerId || squad.embarkedOn !== null) continue;
@@ -1510,7 +1511,7 @@ canvas.addEventListener("pointerup", (event) => {
           position.y >= Math.min(p.y, start.y) &&
           position.y <= Math.max(p.y, start.y)
         )
-          renderer.selected.add(squad.id);
+          candidates.squads.push(squad.id);
       }
 
       for (const ship of snapshot.ships) {
@@ -1524,8 +1525,10 @@ canvas.addEventListener("pointerup", (event) => {
           position.y >= Math.min(p.y, start.y) &&
           position.y <= Math.max(p.y, start.y)
         )
-          renderer.selectedShips.add(ship.id);
+          candidates.ships.push(ship.id);
       }
+      applyDragSelection(renderer, candidates, start.shift);
+      renderer.selectedBuilding = null;
     } else {
       const army = renderer.armyAt(p.x, p.y);
       const aircraft = renderer.aircraftAt(p.x, p.y);
