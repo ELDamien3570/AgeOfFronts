@@ -1,4 +1,5 @@
 import type { ClientMessage, ServerMessage } from "../../multiplayer/Protocol";
+import { decodeSnapshotFrame } from "../../multiplayer/SnapshotWireCodec";
 type LobbyRequest = Exclude<ClientMessage, { type: "authenticate" }>;
 
 /** Browser transport port. Remembered credentials are private and independent of empire cosmetics. */
@@ -52,16 +53,17 @@ export class OnlineLobbyConnection {
       const url = new URL("socket", this.baseUrl());
       url.protocol = url.protocol === "https:" ? "wss:" : "ws:";
       const socket = (this.socket = new WebSocket(url));
+      socket.binaryType = "arraybuffer";
       let authenticated = false;
       const authenticationTimer = (this.authenticationTimer = window.setTimeout(
         () => socket.close(),
         10_000,
       ));
       socket.onopen = () =>
-        socket.send(JSON.stringify({ type: "authenticate", token, ...(this.options.matchId?{matchId:this.options.matchId}:{}) }));
+        socket.send(JSON.stringify({ type: "authenticate", token, snapshotTransport: "binary-v1", ...(this.options.matchId?{matchId:this.options.matchId}:{}) }));
       socket.onmessage = (event) => {
         try {
-          const message = JSON.parse(event.data) as ServerMessage;
+          const message = typeof event.data === "string" ? JSON.parse(event.data) as ServerMessage : decodeSnapshotFrame(event.data);
           if (message.type === "directory") {
             clearTimeout(authenticationTimer);
             this.failures = 0;this.retryStarted=undefined;clearTimeout(this.retryDeadlineTimer);this.retryDeadlineTimer=undefined;

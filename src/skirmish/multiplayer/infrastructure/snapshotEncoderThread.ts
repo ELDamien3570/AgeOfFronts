@@ -13,10 +13,10 @@ parentPort.on("close", stopObserving);
 parentPort.on("message", (message: { id: number; packet: SnapshotPacket }) => {
   pending = pending.then(async () => {
     try {
-      const packet = await encodeState(message.packet, diagnostics, SNAPSHOT_STATE_LIMITS);
+      const packet = await encodeState(message.packet, diagnostics, SNAPSHOT_STATE_LIMITS, true);
       const { heapUsed, external, arrayBuffers } = process.memoryUsage();
       parentPort!.postMessage({ id: message.id, packet, tick: message.packet.tick, timings: diagnostics.snapshot(),
-        retainedBytes: diagnostics.retainedBytes, memory: { heapUsed, external, arrayBuffers } });
+        retainedBytes: diagnostics.retainedBytes, memory: { heapUsed, external, arrayBuffers } }, [packet.binary!.buffer]);
     } catch (error) {
       parentPort!.postMessage({ id: message.id, error: error instanceof Error ? error.message : "Snapshot encoding failed" });
     }

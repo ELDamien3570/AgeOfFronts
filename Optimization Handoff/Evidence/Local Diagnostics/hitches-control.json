@@ -1,0 +1,352 @@
+{
+  "profile": false,
+  "node": "v24.18.0",
+  "initialTick": 60000,
+  "finalTick": 61600,
+  "inputSha256": "fc910c746e756c2c28ad76ddfd20b0fdc95c4f57313ceef8ec94009dc731c15f",
+  "elapsedMs": 32953.563200000004,
+  "step": {
+    "samples": 1600,
+    "mean": 20.32781387500004,
+    "p95": 27.173399999999674,
+    "p99": 33.197000000000116,
+    "maximum": 115.08600000000001
+  },
+  "coldFirst20": {
+    "samples": 20,
+    "mean": 33.073615000000075,
+    "p95": 48.00869999999986,
+    "p99": 115.08600000000001,
+    "maximum": 115.08600000000001
+  },
+  "warmAfter80": {
+    "samples": 1520,
+    "mean": 20.0784708552632,
+    "p95": 26.791000000000167,
+    "p99": 30.7003999999979,
+    "maximum": 41.1900999999998
+  },
+  "phases": {
+    "setup": {
+      "samples": 1600,
+      "mean": 0.9570476874999998,
+      "p95": 1.3326999999990221,
+      "p99": 1.8070999999999913,
+      "maximum": 6.541099999999915
+    },
+    "economy": {
+      "samples": 1600,
+      "mean": 0.8767381249999973,
+      "p95": 2.1388000000006286,
+      "p99": 3.478399999999965,
+      "maximum": 17.39520000000016
+    },
+    "ai": {
+      "samples": 1600,
+      "mean": 2.921137375000007,
+      "p95": 4.2775000000001455,
+      "p99": 9.78859999999986,
+      "maximum": 21.935999999999922
+    },
+    "ships": {
+      "samples": 1600,
+      "mean": 0.09290750000001623,
+      "p95": 0.15720000000146683,
+      "p99": 0.2312000000001717,
+      "maximum": 0.5808999999999287
+    },
+    "routing": {
+      "samples": 1600,
+      "mean": 7.093584812500015,
+      "p95": 11.495100000000093,
+      "p99": 14.205900000000838,
+      "maximum": 25.881200000000263
+    },
+    "movement": {
+      "samples": 1600,
+      "mean": 2.3406956249999604,
+      "p95": 3.814299999998184,
+      "p99": 5.074900000000071,
+      "maximum": 16.000299999999697
+    },
+    "combat": {
+      "samples": 1600,
+      "mean": 1.7333658124999907,
+      "p95": 2.233800000001793,
+      "p99": 3.320600000000013,
+      "maximum": 9.223199999999906
+    },
+    "capture": {
+      "samples": 1600,
+      "mean": 3.7924734375000253,
+      "p95": 6.3443999999981315,
+      "p99": 8.730999999999767,
+      "maximum": 17.81150000000025
+    },
+    "transport": {
+      "samples": 1600,
+      "mean": 0.3020720624999788,
+      "p95": 0.3915999999990163,
+      "p99": 3.781600000002072,
+      "maximum": 6.811200000000099
+    },
+    "cleanup": {
+      "samples": 1600,
+      "mean": 0.2114968125000496,
+      "p95": 0.30409999999983484,
+      "p99": 0.5045000000000073,
+      "maximum": 2.6411000000007334
+    },
+    "tick": {
+      "samples": 1600,
+      "mean": 20.32200537500003,
+      "p95": 27.168499999999767,
+      "p99": 33.1915999999992,
+      "maximum": 114.69280000000003
+    }
+  },
+  "subphases": {
+    "landWarm": {
+      "samples": 1600,
+      "mean": 0.9280163125000062,
+      "p95": 1.2973999999994703,
+      "p99": 1.7472999999990861,
+      "maximum": 6.485500000000229
+    },
+    "routeStep": {
+      "samples": 1600,
+      "mean": 5.460853250000029,
+      "p95": 9.533900000002177,
+      "p99": 11.82079999999769,
+      "maximum": 24.072000000000116
+    },
+    "tradePlanning": {
+      "samples": 1600,
+      "mean": 0.05542931250001999,
+      "p95": 0.15900000000146974,
+      "p99": 0.30719999999928405,
+      "maximum": 0.9562000000000808
+    },
+    "capture": {
+      "samples": 1600,
+      "mean": 3.3739728124999817,
+      "p95": 5.408800000001065,
+      "p99": 6.183600000000297,
+      "maximum": 14.326100000000224
+    }
+  },
+  "gc": {
+    "samples": 441,
+    "mean": 2.280034920635745,
+    "p95": 2.9759999997913837,
+    "p99": 7.56110000051558,
+    "maximum": 10.307299999520183,
+    "totalMs": 1005.4954000003636,
+    "hitchesWithGC": 1
+  },
+  "hitches": [
+    {
+      "tick": 60001,
+      "start": 1990.9264,
+      "phases": {
+        "setup": 3.8509999999998854,
+        "economy": 17.39520000000016,
+        "ai": 21.935999999999922,
+        "ships": 0.5808999999999287,
+        "routing": 25.881200000000263,
+        "movement": 16.000299999999697,
+        "combat": 9.223199999999906,
+        "capture": 17.81150000000025,
+        "transport": 0.9358999999999469,
+        "cleanup": 1.070600000000013,
+        "tick": 114.69280000000003
+      },
+      "subphases": {
+        "landWarm": 3.4167999999999665,
+        "routeStep": 12.541099999999915,
+        "tradePlanning": 0.3002999999998792,
+        "capture": 14.326100000000224
+      },
+      "end": 2106.0124,
+      "ms": 115.08600000000001,
+      "snapshotMs": 16.365499999999884,
+      "gc": [
+        {
+          "start": 1995.4608,
+          "duration": 5.55629999935627,
+          "kind": 1
+        },
+        {
+          "start": 2090.8885,
+          "duration": 3.7524999994784594,
+          "kind": 1
+        }
+      ],
+      "gcOverlapMs": 9.30879999883473,
+      "cpu": []
+    }
+  ],
+  "cpuTop": [],
+  "allocationTop": [],
+  "sampledAllocationBytes": 0,
+  "eventLoopDelay": {
+    "meanMs": 81.80432402010051,
+    "p95Ms": 101.580799,
+    "maxMs": 119.734271
+  },
+  "memory": [
+    {
+      "tick": 60001,
+      "at": 2122.3951,
+      "rss": 400076800,
+      "heapTotal": 267366400,
+      "heapUsed": 141105880,
+      "external": 93734341,
+      "arrayBuffers": 91078131
+    },
+    {
+      "tick": 60101,
+      "at": 4465.694,
+      "rss": 491450368,
+      "heapTotal": 352169984,
+      "heapUsed": 256841064,
+      "external": 93919529,
+      "arrayBuffers": 91263279
+    },
+    {
+      "tick": 60201,
+      "at": 6463.9921,
+      "rss": 523440128,
+      "heapTotal": 370659328,
+      "heapUsed": 204176904,
+      "external": 95461275,
+      "arrayBuffers": 92805025
+    },
+    {
+      "tick": 60301,
+      "at": 8395.814,
+      "rss": 589418496,
+      "heapTotal": 437755904,
+      "heapUsed": 347509392,
+      "external": 97921915,
+      "arrayBuffers": 95265657
+    },
+    {
+      "tick": 60401,
+      "at": 10286.637,
+      "rss": 669548544,
+      "heapTotal": 506277888,
+      "heapUsed": 117719368,
+      "external": 100326107,
+      "arrayBuffers": 97669849
+    },
+    {
+      "tick": 60501,
+      "at": 12269.3685,
+      "rss": 685293568,
+      "heapTotal": 519667712,
+      "heapUsed": 264034256,
+      "external": 102787275,
+      "arrayBuffers": 100131017
+    },
+    {
+      "tick": 60601,
+      "at": 14289.462,
+      "rss": 701415424,
+      "heapTotal": 531939328,
+      "heapUsed": 355873976,
+      "external": 105243667,
+      "arrayBuffers": 102587409
+    },
+    {
+      "tick": 60701,
+      "at": 16331.8253,
+      "rss": 707899392,
+      "heapTotal": 542052352,
+      "heapUsed": 152943856,
+      "external": 107603571,
+      "arrayBuffers": 104947313
+    },
+    {
+      "tick": 60801,
+      "at": 18471.0794,
+      "rss": 721326080,
+      "heapTotal": 549212160,
+      "heapUsed": 272815624,
+      "external": 110062315,
+      "arrayBuffers": 107406057
+    },
+    {
+      "tick": 60901,
+      "at": 20658.3283,
+      "rss": 734679040,
+      "heapTotal": 557101056,
+      "heapUsed": 420648136,
+      "external": 112452931,
+      "arrayBuffers": 109796673
+    },
+    {
+      "tick": 61001,
+      "at": 22706.5902,
+      "rss": 733552640,
+      "heapTotal": 557682688,
+      "heapUsed": 209332880,
+      "external": 114736584,
+      "arrayBuffers": 112085177
+    },
+    {
+      "tick": 61101,
+      "at": 24633.0764,
+      "rss": 744779776,
+      "heapTotal": 568033280,
+      "heapUsed": 287070008,
+      "external": 117181200,
+      "arrayBuffers": 114529793
+    },
+    {
+      "tick": 61201,
+      "at": 26695.1831,
+      "rss": 756625408,
+      "heapTotal": 576135168,
+      "heapUsed": 431008888,
+      "external": 119640392,
+      "arrayBuffers": 116988985
+    },
+    {
+      "tick": 61301,
+      "at": 28818.5052,
+      "rss": 738242560,
+      "heapTotal": 553979904,
+      "heapUsed": 220943712,
+      "external": 122107192,
+      "arrayBuffers": 119455785
+    },
+    {
+      "tick": 61401,
+      "at": 30892.2321,
+      "rss": 748204032,
+      "heapTotal": 560476160,
+      "heapUsed": 346348176,
+      "external": 124554800,
+      "arrayBuffers": 121903393
+    },
+    {
+      "tick": 61501,
+      "at": 32919.8019,
+      "rss": 757911552,
+      "heapTotal": 569380864,
+      "heapUsed": 461737464,
+      "external": 127008104,
+      "arrayBuffers": 124356697
+    }
+  ],
+  "entities": {
+    "squads": 478,
+    "buildings": 639,
+    "ships": 22,
+    "traders": 72
+  },
+  "snapshotHash": "530c5a739012d62b92783807388c534cfd555616b5feebfd4b57fb20d6f44291",
+  "checkpointHash": "2f6a86a430da39ef8b3ca7f5635d370615e885bf16addffe4b7044c3fe25b3ac",
+  "limitations": "Headless fixed-step continuation; profiling and diagnostic wrappers add overhead. Sampled bytes estimate JS allocations, not retained heap or total process allocation. CPU-to-tick alignment is approximate within inspector-start latency; GC overlap uses perf_hooks timestamps. First 80 ticks separated as cold. Event-loop delay reflects this unpaced batch harness, not a live server."
+}

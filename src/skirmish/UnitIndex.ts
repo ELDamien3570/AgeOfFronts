@@ -149,10 +149,14 @@ export class UnitIndex<T extends Unit> {
     const before = this.facts.get(record.id);
     if (!before || this.records.get(record.id) !== record)
       throw new Error("Unowned unit change");
-    const after = this.describe(record, before.ordinal);
-    if (before.x !== after.x || before.y !== after.y || before.owner !== after.owner ||
-      before.kind !== after.kind || before.alive !== after.alive || before.carrier !== after.carrier)
+    const alive = "troops" in record ? record.troops > 0 : record.health > 0;
+    const carrier = "embarkedOn" in record ? record.embarkedOn : null;
+    if (before.x !== record.x || before.y !== record.y || before.owner !== record.playerId ||
+      before.kind !== record.kind || before.alive !== alive || before.carrier !== carrier)
       this.spatialRevision++;
+    const after = before.owner !== record.playerId || before.kind !== record.kind ||
+      before.definition !== record.definitionId || before.alive !== alive || before.carrier !== carrier
+      ? this.describe(record, before.ordinal) : before;
     if (
       before.owner !== after.owner ||
       before.kind !== after.kind ||
@@ -172,6 +176,8 @@ export class UnitIndex<T extends Unit> {
       this.cargoRevision++;
     }
     this.facts.set(record.id, after);
+    after.x = record.x;
+    after.y = record.y;
     this.dynamicRevision++;
     this.counters.incrementalUpdates++;
   }

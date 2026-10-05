@@ -116,6 +116,7 @@ export function hudMarkup(): string {
       <div class="selection-orders"><strong id="selected"></strong><p id="selected-orders"></p></div>
       <div id="naval-orders" class="naval-orders" hidden><span id="ship-selection"></span><button id="load">Meet & board</button><button id="unload">Unload at coast</button></div>
       <button id="delete-building" type="button" hidden>Delete building</button>
+      <button id="delete-ship" type="button" title="Remove this warship without a refund" hidden>Delete warship</button>
     </aside>
     <dialog id="delete-building-dialog" class="building-delete-dialog" aria-labelledby="delete-building-title"><button type="button" id="delete-building-close" aria-label="Close deletion confirmation">×</button><h2 id="delete-building-title">Are you sure?</h2><p id="delete-building-message"></p><p>This removes one building. There is no building refund.</p><div><button type="button" id="delete-building-cancel" autofocus>Cancel</button><button type="button" id="delete-building-confirm">Confirm Delete</button></div></dialog>
     <section class="command-dock hud-surface" aria-label="Resources and commands">
@@ -123,7 +124,7 @@ export function hudMarkup(): string {
       <div id="hud-command-sections" class="command-row"><div class="command-category economy"><h3>Economy</h3><div class="category-actions">${buildings(true)}</div></div><div class="command-category military"><h3>Military buildings</h3><div class="category-actions">${buildings(false)}</div></div><div class="command-category troops"><h3>Troops</h3><div class="category-actions">${LAND_RECRUITMENT.map((a) => action(`recruit-${a.kind}`, a.label, a.key, a.kind)).join("")}</div></div><div class="command-category ships"><h3>Ships</h3><div class="category-actions">${NAVAL_RECRUITMENT.map((a) => action(a.kind, SHIP_RULES[a.kind].name, a.key, a.kind)).join("")}</div></div><div class="command-category orders"><h3>Orders</h3><div class="category-actions">${action("replenish", "Replenish", "R", undefined, "+")}${action("hold", "Hold", "T", undefined, "■")}${action("all", "Select all", "Ctrl A", undefined, "▦")}</div></div></div>
       <div class="dock-utility"><div class="control-groups"><span>Groups</span>${[1, 2, 3, 4, 5, 6, 7, 8, 9, 0].map((d) => `<button id="group-${d}" aria-label="Control group ${d}"><b>${d}</b><small>0</small></button>`).join("")}</div><span class="group-help">Shift adds · Ctrl replaces</span><button id="controls-toggle" aria-expanded="false">Controls <span>?</span></button><button id="roster-toggle" aria-expanded="false">Factions</button></div>
     </section>
-    <section id="controls-popover" class="hud-popover hud-surface" aria-label="Game controls" hidden><div class="popover-heading"><h2>Battlefield controls</h2><button data-close="controls-popover" aria-label="Close controls">×</button></div><dl class="stat-list"><dt>Left click / drag</dt><dd>Select units</dd><dt>Shift + select</dt><dd>Add units</dd><dt>Double click</dt><dd>Select visible units of type</dd><dt>Right click</dt><dd>Move / attack / board</dd><dt>Shift + right click</dt><dd>Queue waypoints</dd><dt>1–0</dt><dd>Recall control group</dd><dt>Shift + 1–0</dt><dd>Add to control group</dd><dt>Ctrl + 1–0</dt><dd>Replace / clear group</dd><dt>Wheel / middle drag</dt><dd>Zoom / pan</dd><dt>Shift + recruit</dt><dd>Queue five (normal mode)</dd><dt>Space + recruit</dt><dd>Queue five (WASD mode)</dd><dt>Pause button</dt><dd>Pause / resume</dd><dt>Home</dt><dd>Fit battlefield</dd><dt>Escape</dt><dd>Cancel placement / inspection</dd></dl><p class="card-description">Recruit and construction keys are shown on every command button. R replenishes eligible squads or repairs selected buildings; T holds units; Ctrl A selects all land squads.</p><a href="/age-of-fronts-source.zip" download>Download corresponding source</a></section>
+    <section id="controls-popover" class="hud-popover hud-surface" aria-label="Game controls" hidden><div class="popover-heading"><h2>Battlefield controls</h2><button data-close="controls-popover" aria-label="Close controls">×</button></div><dl class="stat-list"><dt>Left click / drag</dt><dd>Select units</dd><dt>Shift + select</dt><dd>Add units</dd><dt>Double click</dt><dd>Select visible units of type</dd><dt>Right click</dt><dd>Move / attack / board</dd><dt>Shift + right click</dt><dd>Queue waypoints</dd><dt>1–0</dt><dd>Recall control group</dd><dt>Shift + 1–0</dt><dd>Add to control group</dd><dt>Ctrl + 1–0</dt><dd>Replace / clear group</dd><dt>Wheel / middle drag</dt><dd>Zoom / pan</dd><dt>Shift + recruit</dt><dd>Queue five (normal mode)</dd><dt>Space + recruit</dt><dd>Queue five (WASD mode)</dd><dt>Pause button</dt><dd>Pause / resume</dd><dt>Home</dt><dd>Fit battlefield</dd><dt>Escape</dt><dd>Cancel placement / inspection</dd></dl><p class="card-description">Recruit and construction keys are shown on every command button. R replenishes eligible squads or repairs selected buildings; T holds units; Ctrl A selects all land squads. P targets one ready plane for a sortie; Shift-click Sortie or its target launches up to five.</p><a href="/age-of-fronts-source.zip" download>Download corresponding source</a></section>
     <section id="roster-popover" class="hud-popover hud-surface" aria-label="Factions" hidden><div class="popover-heading"><h2>Factions & territory</h2><button data-close="roster-popover" aria-label="Close factions">×</button></div><div id="roster"></div></section>
     <div id="hud-tooltip" class="hud-tooltip hud-surface" role="tooltip" hidden></div>
     <div id="deposit-tooltip" class="hud-tooltip compact-tooltip hud-surface" role="tooltip" hidden></div>`;
@@ -136,6 +137,7 @@ function cardMarkup(card: HudCard) {
 export class HudView {
   private readonly deletion = new BuildingDeletionViewModel();
   private deletableId: number | null = null;
+  private deletableShipId: number | null = null;
   private playerId = 1;
 
   private readonly drawer = new HudDrawerViewModel();
@@ -173,6 +175,12 @@ export class HudView {
     this.el("delete-building-confirm").addEventListener("click", () => {
       const command = this.vm && this.deletion.confirm(this.vm.game.state, this.playerId);
       dialog.close(); if (command) this.command(command);
+    });
+    this.el("delete-ship").addEventListener("click", () => {
+      if (!this.vm || this.deletableShipId === null) return;
+      const ship = this.vm.game.state.ships.find(s => s.id === this.deletableShipId);
+      if (ship?.playerId === this.playerId && ship.kind === "warship")
+        this.command({type: "delete-ship", playerId: this.playerId, shipId: ship.id});
     });
     root.querySelector(".dock-age")!.addEventListener("click", () => {
       this.drawer.toggleMode();
@@ -382,6 +390,11 @@ export class HudView {
       selection.card.category === "building" && selection.card.playerId === this.playerId && !this.vm.game.player.ai
       ? Number(selection.card.ref.split(":")[1]) : null;
     this.el("delete-building").hidden = this.deletableId === null;
+    this.deletableShipId = selection.mode !== "empty" && selection.mode !== "mixed" &&
+      selection.card.category === "ship" && selection.card.kind === "warship" &&
+      selection.card.playerId === this.playerId && !this.vm.game.player.ai
+      ? Number(selection.card.ref.split(":")[1]) : null;
+    this.el("delete-ship").hidden = this.deletableShipId === null;
     this.el("selection-card").hidden = selection.mode === "empty";
     if (selection.mode === "empty") return;
     const mixed = selection.mode === "mixed";

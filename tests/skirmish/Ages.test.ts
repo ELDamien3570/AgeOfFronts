@@ -388,7 +388,7 @@ describe("bonuses, promotions, volleys and finite impacts", () => {
     expect(t.troops).toBe(troops);
     expect(s.xp).toBe(xp);
   });
-  it("MIRV splits into exactly four warheads without a parent impact", () => {
+  it("MIRV splits into exactly eight warheads without a parent impact", () => {
     const m = make();
     complete(m);
     const s = m.squads[0],
@@ -408,13 +408,13 @@ describe("bonuses, promotions, volleys and finite impacts", () => {
       24000,
       "mirv",
       720,
-      4,
+      8,
     );
     m.tick = 360;
     e.battle.advanceProjectiles();
     expect(
       e.battle.projectiles.filter((p) => p.kind === "warhead"),
-    ).toHaveLength(4);
+    ).toHaveLength(8);
     expect(e.battle.projectiles.find((p) => p.kind === "mirv")!.impacted).toBe(
       true,
     );

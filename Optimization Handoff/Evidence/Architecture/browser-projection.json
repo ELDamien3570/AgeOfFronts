@@ -1,0 +1,37 @@
+{
+  "status": "PASS",
+  "browser": "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/154.0.0.0 Safari/537.36",
+  "map": "64x48 all land",
+  "seed": 42,
+  "canonicalPackets": 4,
+  "transport": "binary-v1 / packed presentation",
+  "hiddenSnapshots": 0,
+  "trace": [
+    {
+      "canonicalOnly": false,
+      "tick": 0,
+      "decodeMs": 2.099999999627471,
+      "applyMs": 1.900000000372529,
+      "projectionMs": 1.5
+    },
+    {
+      "canonicalOnly": true,
+      "tick": 1,
+      "decodeMs": 0.5,
+      "applyMs": 0.30000000074505806
+    },
+    {
+      "canonicalOnly": true,
+      "tick": 2,
+      "decodeMs": 0.40000000037252903,
+      "applyMs": 0.2000000011175871
+    },
+    {
+      "canonicalOnly": false,
+      "tick": 2,
+      "decodeMs": 0.599999999627471,
+      "applyMs": 0.2000000011175871,
+      "projectionMs": 0.2999999988824129
+    }
+  ]
+}

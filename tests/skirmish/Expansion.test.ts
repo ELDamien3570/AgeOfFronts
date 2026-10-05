@@ -923,6 +923,7 @@ describe("naval transport and combat", () => {
 
   it("warships fire simultaneously, sink transports, and account for all embarked casualties", () => {
     const { m, s, ship } = navy();
+    m.addBuilding({id:m.allocateId(),playerId:1,type:"city",tile:m.player(1)!.base,remainingTicks:0});
     m.applyCommand({
       type: "load",
       playerId: 1,

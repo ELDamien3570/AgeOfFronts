@@ -96,7 +96,7 @@ export class Fortifications {
     return [...found.values()].sort((a, b) => this.barrierOrder.get(a.id)! - this.barrierOrder.get(b.id)!);
   }
   intactWallAt(tile: number): boolean {
-    return (this.tileIndex.get(tile) ?? NO_BARRIERS).some(w=>w.health>0);
+    return (this.tileIndex.get(tile) ?? NO_BARRIERS).some(w=>w.health>0 && w.kind !== "trench");
   }
   blocked(tile: number, owner: number): boolean {
     const towerOwners = this.towers.get(tile);
@@ -104,7 +104,7 @@ export class Fortifications {
       for (const towerOwner of towerOwners)
         if (!this.diplomacy.allied(towerOwner, owner)) return true;
     return (this.tileIndex.get(tile) ?? NO_BARRIERS).some(
-      (w) => w.health > 0 && !this.diplomacy.allied(w.playerId, owner),
+      (w) => w.kind !== "trench" && w.health > 0 && !this.diplomacy.allied(w.playerId, owner),
     );
   }
   /** Resumable obstruction predicate for preparation. Tower ownership is
@@ -117,7 +117,7 @@ export class Fortifications {
     }
     const wall = this.tileIndex.get(tile)?.[cursor];
     if (!wall) return { blocked: false, done: true, next: cursor };
-    const blocked = wall.health > 0 && !this.diplomacy.allied(wall.playerId, owner);
+    const blocked = wall.kind !== "trench" && wall.health > 0 && !this.diplomacy.allied(wall.playerId, owner);
     return { blocked, done: blocked, next: cursor + 1 };
   }
   private reindex(): void {
@@ -151,7 +151,8 @@ export class Fortifications {
       ] = 1;
     };
     for (const tile of this.towers.keys()) mark(tile);
-    for (const tile of this.tileIndex.keys()) mark(tile);
+    for (const [tile, walls] of this.tileIndex)
+      if (walls.some(w => w.kind !== "trench")) mark(tile);
   }
   private mayBlock(
     from: { x: number; y: number },
@@ -276,8 +277,21 @@ export class Fortifications {
   }
   /** Physical clearance uses a squad's swept radius. Weapon rays retain clear(). */
   clearMovement(from:{x:number;y:number},to:{x:number;y:number},owner:number,radius:number):boolean {
-    return !this.blockingTilesOnSweep(from,to,owner,radius).some(tile =>
-      boxSweepEntry(from,to,{x:this.map.x(tile)*FIXED,y:this.map.y(tile)*FIXED},FIXED,radius)!==null);
+    // The proof must include the full swept body, including adjacent cells.
+    const extent = Math.ceil(radius / FIXED);
+    // Include the collecting query's cell expansion at exact tile/block edges.
+    const pad = (extent + 1) * FIXED;
+    if (this.obstacleFreeArea(Math.min(from.x,to.x)-pad, Math.min(from.y,to.y)-pad,
+      Math.max(from.x,to.x)+pad, Math.max(from.y,to.y)+pad)) return true;
+    for (const centre of this.segmentTiles(from, to)) {
+      const x = this.map.x(centre), y = this.map.y(centre);
+      for (let yy=Math.max(0,y-extent); yy<=Math.min(this.map.height()-1,y+extent); yy++)
+        for (let xx=Math.max(0,x-extent); xx<=Math.min(this.map.width()-1,x+extent); xx++) {
+          const tile = this.map.ref(xx,yy);
+          if (this.blocked(tile,owner) && boxSweepEntry(from,to,{x:xx*FIXED,y:yy*FIXED},FIXED,radius)!==null) return false;
+        }
+    }
+    return true;
   }
   forgetBuilding(building: Building, remaining: readonly Building[]): void {
     this.repairs.delete(`b:${building.id}`);
@@ -300,8 +314,11 @@ export class Fortifications {
     owner: number,
     age: Age,
     buildings: readonly Building[] | TowerSiteIndex,
+    siteType: "tower" | "trench" = "tower",
+    allowed: (tile: number) => boolean = () => true,
   ): ReturnType<typeof quoteTowerPlan> {
-    return quoteTowerPlan(this.map, tile, owner, age, buildings, t => this.intactWallAt(t));
+    return quoteTowerPlan(this.map, tile, owner, age, buildings,
+      t => !allowed(t) || this.barriersAt(t).some(b => b.health > 0), siteType);
   }
   addTower(
     tower: Building,
@@ -313,6 +330,7 @@ export class Fortifications {
       );
       this.barrierEntities.add({
         id: this.nextId++,
+        ...(tower.type === "trench" ? {kind: "trench" as const} : {}),
         playerId: tower.playerId,
         age: tower.age ?? "StoneAge",
         a: link.a,

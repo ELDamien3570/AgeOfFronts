@@ -1,0 +1,43 @@
+{
+  "baseline": "234d62a74ac32275c1d99cb693bec97110347a05",
+  "baselineArchiveSha256": "1683d041132c8cc86e8f7151d82487912cebf7654ea59d86af81a36b0cedb72d",
+  "candidateFiles": {
+    "src/skirmish/EntityCollection.ts": "89f85353779b176007867f37f2015273c2590a110226cf063f416c2cbb19f122",
+    "src/skirmish/PathTopology.ts": "3de93c4e3ee3e5a2f83bc9abd1609bf980f52ca6d1ccff0fe0485d61b39d9ab0",
+    "src/skirmish/Simulation.ts": "b8195a1464820030a6da8dd19cdb34d444dee5e2a5c0fa4519179e59fe61604f",
+    "src/skirmish/SnapshotCodec.ts": "01244ed3e8bb416a24631a0bfc12c2835b7b839208002a72882fd6333c72e2a4",
+    "src/skirmish/UnitIndex.ts": "7e0bb930e4e088ad004ad8f6d8b58dcf15ed57cfa990e6e962bc9897ee380dcf",
+    "src/skirmish/client/CanonicalStateStream.ts": "004c5c74d207f99ce2263cefa206eef241df15da6ca84eac68dbad6e7950d3aa",
+    "src/skirmish/client/OnlineMatchSession.ts": "e73b7ef5ab7ac80db2c79dbfc334a24cbbc4ae70b6939e19a9dc385302bb06d6",
+    "src/skirmish/client/Renderer.ts": "ee6cdb7f488721a3afa6ad84afe3a0d7f06ce9fb8ad93a69d222ea05f03551de",
+    "src/skirmish/client/lobby/OnlineLobbyConnection.ts": "d2df4eb8a8a094f9beff80f33bb6dc7d04e2b1563f100f627fa6c2206a84215c",
+    "src/skirmish/client/main.ts": "0631001e17027dfa20a6fa765087326b003290a3eb985931c17acb570905fad0",
+    "src/skirmish/client/multiplayerStateWorker.ts": "71fdedf7d9086059a3df1b4e4793a94ff8853a32f6a65891a789e0fb4255c705",
+    "src/skirmish/domain/AiOperations.ts": "ce29334817645996bc6a75978315504d3f8d9892c91025a1105f2bde9b504dad",
+    "src/skirmish/domain/Battle.ts": "60442444d0d718ba4495fd96ce097e43512c679f3039444b3b448ad69b725c65",
+    "src/skirmish/domain/Fortifications.ts": "9863a3e6a1078f51f40d159677e3ff3341cfc7f4e8fbd444301fff24217bc657",
+    "src/skirmish/multiplayer/Protocol.ts": "95c1018aab0219ee640b266c21807f2a3b30ec9881d272b0b51185a5f19e0fff",
+    "src/skirmish/multiplayer/StateCodec.ts": "87aadb174ed526ca00b08dd9af80d8500976c73a64dfb347d88f4129cdac7d1d",
+    "src/skirmish/multiplayer/application/RecoveryBaselineCache.ts": "a343550137286c166ac686f17c1a5f998df0c6b6ee0f27dd880333ec66f1dc1e",
+    "src/skirmish/multiplayer/infrastructure/CoordinatorServer.ts": "27f17fad13524af0674eb65439ac097fd3a49c5956668d30d9aae9569a9cdd91",
+    "src/skirmish/multiplayer/infrastructure/serverMatchWorker.ts": "dda72ea404684056526e95a27783b5b854681e8a806a8de0d05f11e8556028b1",
+    "src/skirmish/multiplayer/infrastructure/snapshotEncoderThread.ts": "d7afa5702ece2926bedd47590405e36016a0920721dda25c959f51b2851cae2d",
+    "tests/skirmish/AiOperations.test.ts": "dfbf472301f272015183d35cb952b977e347195dcd52be46b34a77051f769af9",
+    "tests/skirmish/CoordinatorServer.test.ts": "c79324a3cf6b043fa499024c9d19b80c7c26ca2e2d760b719f41b95e3d02ddc7",
+    "tests/skirmish/MultiplayerStateWorker.test.ts": "43c26976b0b88f2790908de734a01cc7936b3376a5642108e5da74dc901f0c67",
+    "tests/skirmish/OnlineMatchSession.test.ts": "58df46d9fcbbd14497c5e44e1c31358d9bc8edd4f0f66a7e5a1295c7727d90f1",
+    "tests/skirmish/ReservedMatchWorker.test.ts": "3c8a68c8dd9c3c20310f092e35c2a3875952cd01b34fc884d4199128f9850233",
+    "tests/skirmish/browser/P14Projection.ts": "a54a1694050edb7ca3d4a7b825bd8121fd0e9d6759d4d7fe5f6022b9c64e0b30",
+    "src/skirmish/client/BuildingFacts.ts": "17ec2f3704d8e1cb07ccc5b64d53e55ec3aca65beb47035538daf93aad77b925",
+    "src/skirmish/multiplayer/SnapshotWireCodec.ts": "e469e6dced71cd26784f0d3fe501ef560417fcb0aa7d9a36ba7ce1bd2f2300ae",
+    "tests/skirmish/ArchitectureOptimization.test.ts": "fbbfa0fdd3199e44835dc798fd045b9abd876311206f96b0215c2ec0c0d7b915",
+    "tests/skirmish/architecturePipelineBenchmark.ts": "ef326c099a9e9836e0b6d48492ded8e8b2c6ec5f4862789ef517ae99af52cc44"
+  },
+  "machine": {
+    "platform": "win32",
+    "arch": "x64",
+    "node": "v24.18.0",
+    "cpu": "AMD Ryzen 7 3700X 8-Core Processor             "
+  },
+  "notes": "Benchmark runs finished before final whitespace/comment edits and preserving rejection of unsupported external scalar values; gameplay paths unchanged. No allocation-rate or release-capacity claim."
+}

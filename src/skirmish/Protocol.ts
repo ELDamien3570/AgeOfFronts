@@ -135,11 +135,13 @@ export type Command =
       playerId: number;
       launcherId: number;
       payload: "icbm" | "hydrogen" | "mirv";
+      buildingId?: number;
       x: number;
       y: number;
     }
   | { type: "upgrade-building"; playerId: number; buildingIds: number[] }
   | { type: "delete-building"; playerId: number; buildingId: number }
+  | { type: "delete-ship"; playerId: number; shipId: number }
   | {
       type: "cancel-recruitment";
       playerId: number;

@@ -92,11 +92,16 @@ export class Battle {
   restore(saved: ReturnType<Battle["checkpoint"]>): void {
     const state=structuredClone(saved);
     restoreArray(this.projectiles,state.projectiles);
+    this.reservedWarheads = this.projectiles.reduce((n,p) => n + (!p.impacted && p.kind === "mirv" ? p.warheads : 0),0);
     this.definitions.clear();
     this.structureBodies.clear(); this.structureRevision = -1;
   }
 
   readonly projectiles: Projectile[] = [];
+  private reservedWarheads = 0;
+  canFire(warheads = 0): boolean {
+    return this.projectiles.length + this.reservedWarheads + 1 + warheads <= 4096;
+  }
   // Read-only diagnostics: cache warmth and counters never drive simulation.
   readonly telemetry = { indexRebuilds: 0, trenchCandidates: 0, nestSearches: 0, emptyNestSkips: 0, structureRebuilds: 0, structureAllocations: 0 };
   private spatial: SpatialQueries<Squad>;
@@ -113,10 +118,7 @@ export class Battle {
   private structureGeometryRevision = -1;
   private readonly structureById = new Map<number, Building>();
   private readonly covered = new Set<number>();
-  private readonly definitions = new Map<
-    string,
-    { revision: number; unit: UnitDefinition }
-  >();
+  private readonly definitions = new Map<number, Map<string, { revision: number; unit: UnitDefinition }>>();
   private mapWidth: number;
   constructor(
     private readonly world: BattleWorld,
@@ -142,12 +144,14 @@ export class Battle {
   }
   definition(s: Squad): UnitDefinition {
     const base = UNIT.get(s.definitionId ?? "") ?? defaultUnit(s.kind),
-      key = `${s.playerId}:${base.id}`,
       research = this.progression.states[s.playerId]?.completed ?? [],
-      cached = this.definitions.get(key);
+      byDefinition = this.definitions.get(s.playerId),
+      cached = byDefinition?.get(base.id);
     if (cached?.revision === research.length) return cached.unit;
     const unit = unitEffects(base, research);
-    this.definitions.set(key, { revision: research.length, unit });
+    const entries = byDefinition ?? new Map<string, { revision: number; unit: UnitDefinition }>();
+    if (!byDefinition) this.definitions.set(s.playerId, entries);
+    entries.set(base.id, { revision: research.length, unit });
     return unit;
   }
   position(b: Pick<Building, "tile">): Position {
@@ -197,22 +201,25 @@ export class Battle {
       this.structures.rebuild(bodies);
     }
     this.covered.clear();
+    const coverTiles = new Set<string>();
+    const coverTile = (owner: number, tile: number) => {
+      const key = `${owner}:${tile}`;
+      if (coverTiles.has(key)) return;
+      coverTiles.add(key);
+      const p = this.position({tile});
+      this.spatial.query(p.x, p.y, FIXED, this.nearby);
+      this.telemetry.trenchCandidates += this.nearby.length;
+      for (const s of this.nearby.filter(s => s.playerId === owner && s.embarkedOn === null &&
+        this.definition(s).tags.includes("infantry") && this.distance(s,p) <= TRENCH_COVER.radius ** 2)
+        .sort((a,b) => a.id-b.id).slice(0,TRENCH_COVER.slots)) this.covered.add(s.id);
+    };
     for (const b of this.world.buildings)
       if (b.type === "trench" && !b.remainingTicks && (b.health ?? 1) > 0) {
-        const p = this.position(b);
-        this.spatial.query(p.x, p.y, FIXED, this.nearby);
-        this.telemetry.trenchCandidates += this.nearby.length;
-        for (const s of this.nearby
-          .filter(
-            (s) =>
-              s.playerId === b.playerId &&
-              this.definition(s).tags.includes("infantry") &&
-              this.distance(s, p) <= TRENCH_COVER.radius ** 2,
-          )
-          .sort((a, b) => a.id - b.id)
-          .slice(0, TRENCH_COVER.slots))
-          this.covered.add(s.id);
+        coverTile(b.playerId, b.tile);
       }
+    for (const run of this.forts.barriers)
+      if (run.kind === "trench" && run.health > 0 && !run.remainingTicks)
+        for (const tile of run.tiles) coverTile(run.playerId, tile);
   }
   cover(s: Squad): number {
     return this.covered.has(s.id) ? TRENCH_COVER.reduction : 0;
@@ -234,8 +241,10 @@ export class Battle {
     flightTicks?: number,
     warheads = 0,
     definitionId?: string,
+    targetBuildingId?: number,
   ): boolean {
-    if (this.projectiles.length >= 4096) return false;
+    if (!this.canFire(kind === "mirv" ? warheads : 0)) return false;
+    if (kind === "mirv") this.reservedWarheads += warheads;
     this.projectiles.push({
       id: this.world.allocateId(),
       playerId: source.playerId,
@@ -243,6 +252,7 @@ export class Battle {
       sourceKind: source.domain ?? "squad",
       attackScale: source.attackScale,
       definitionId,
+      ...(targetBuildingId === undefined ? {} : {targetBuildingId}),
       originTile: source.originTile,
       fromX: source.x,
       fromY: source.y,
@@ -674,6 +684,7 @@ export class Battle {
           .sort((a, b) => a.id - b.id)[0];
         if (interceptor) {
           this.world.updateBuilding(interceptor.id, { nextAttackTick: tick + 60 });
+          if (p.kind === "mirv") this.reservedWarheads = Math.max(0,this.reservedWarheads-p.warheads);
           p.impacted = true;
           p.impactAt = tick;
           p.damage = 0;
@@ -681,10 +692,14 @@ export class Battle {
         }
       }
       if (p.kind === "mirv" && progress >= 0.5) {
+        this.reservedWarheads = Math.max(0,this.reservedWarheads-p.warheads);
         p.impacted = true;
         p.impactAt = tick;
+        const targets = p.targetBuildingId === undefined ? this.world.buildings
+          .filter(b => (b.health ?? 1) > 0 && this.diplomacy.hostile(p.playerId,b.playerId))
+          .sort((a,b) => this.distance(this.position(a), {x:p.toX,y:p.toY}) -
+            this.distance(this.position(b), {x:p.toX,y:p.toY}) || a.id-b.id).slice(0,8) : [];
         for (let i = 0; i < p.warheads; i++) {
-          const angle = (i * Math.PI * 2) / p.warheads;
           this.fire(
             {
               id: p.sourceId,
@@ -694,8 +709,7 @@ export class Battle {
               domain: p.sourceKind,
             },
             {
-              x: p.toX + Math.round(Math.cos(angle) * FIXED * 2),
-              y: p.toY + Math.round(Math.sin(angle) * FIXED * 2),
+              ...(targets.length ? this.position(targets[i % targets.length]) : {x:p.toX,y:p.toY}),
             },
             {
               channel: p.channel,
@@ -833,7 +847,7 @@ export class Battle {
             ) ??
             this.forts.barriersAt(wall.tile).find(
               (b) =>
-                b.health > 0 &&
+                b.kind !== "trench" && b.health > 0 &&
                 this.diplomacy.hostile(b.playerId, p.playerId),
             );
         } else if (structure && (!hit || structure.t <= hit.t)) {

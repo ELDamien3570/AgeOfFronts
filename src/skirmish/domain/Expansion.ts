@@ -280,12 +280,14 @@ export class Expansion {
     if (!technology || (!placementOnly && !this.progression.has(player.id, technology)))
       return "Research this building's technology first";
     const plan =
-      type === "tower"
+      (type === "tower" || type === "trench")
         ? this.fortifications.towerPlan(
             tile,
             player.id,
             age,
-            this.towerSites,
+            type === "tower" ? this.towerSites : this.world.buildingFacts(),
+            type,
+            t => type !== "trench" || this.world.owners[t] === player.id,
           )
         : null;
     if (
@@ -314,9 +316,7 @@ export class Expansion {
     const existingCount = this.world.buildingFacts().countOfType(player.id, type);
     const cost = buildingCost(type, age, existingCount),
       wallCost =
-        type === "tower"
-          ? plan!.gold
-          : 0;
+        plan?.gold ?? 0;
     return placementOnly ? null : costRejection(player, this.supply.inventories[player.id], {
       ...cost,
       gold: (cost.gold ?? 0) + wallCost,
@@ -325,12 +325,14 @@ export class Expansion {
   built(player: Player, building: Building): void {
     const age = building.age ?? this.progression.states[player.id].age;
     const plan =
-      building.type === "tower"
+      (building.type === "tower" || building.type === "trench")
         ? this.fortifications.towerPlan(
               building.tile,
               player.id,
               age,
-              this.towerSites,
+              building.type === "tower" ? this.towerSites : this.world.buildingFacts(),
+              building.type,
+              t => building.type !== "trench" || this.world.owners[t] === player.id,
             )
         : null;
     const existingCount = Math.max(
@@ -518,7 +520,12 @@ export class Expansion {
       if (
         !selected.length ||
         selected.some(
-          (a) => !a || a.playerId !== player.id || a.state !== "ready",
+          (a) => {
+            const field = a && world.building(a.airfieldId);
+            return !a || a.health <= 0 || a.playerId !== player.id || a.state !== "ready" ||
+              !field || field.playerId !== player.id || field.type !== "airstrip" ||
+              field.remainingTicks > 0 || (field.health ?? 1) <= 0;
+          },
         ) ||
         !this.validPosition(command.x, command.y)
       )
@@ -537,6 +544,7 @@ export class Expansion {
         command.payload,
         command.x,
         command.y,
+        command.buildingId,
       );
     if (command.type === "refit-ships") {
       const target = VESSEL.get(command.definitionId),
@@ -826,7 +834,15 @@ export class Expansion {
     payload: "icbm" | "hydrogen" | "mirv",
     x: number,
     y: number,
+    targetBuildingId?: number,
   ): string | null {
+    if (targetBuildingId !== undefined) {
+      const target = this.world.building(targetBuildingId);
+      if (!target || (target.health ?? 1) <= 0 || !this.diplomacy.hostile(player.id, target.playerId))
+        return "Choose an enemy building";
+      x = ((target.tile % this.world.map.width()) + .5) * FIXED;
+      y = (Math.floor(target.tile / this.world.map.width()) + .5) * FIXED;
+    }
     if (
       !["icbm", "hydrogen", "mirv"].includes(payload) ||
       !this.validPosition(x, y) ||
@@ -869,7 +885,7 @@ export class Expansion {
         cost,
       );
     if (rejection) return rejection;
-    if (this.battle.projectiles.length >= 4092)
+    if (!this.battle.canFire(payload === "mirv" ? 8 : 0))
       return "Strategic flight capacity reached";
     spend(player, this.supply.inventories[player.id], cost);
     if (building) this.world.updateBuilding(building.id, { launchReadyTick: this.world.tick + 1200 });
@@ -906,14 +922,15 @@ export class Expansion {
           diameter: FIXED / 2,
           speed: FIXED,
           blastRadius:
-            (payload === "hydrogen" ? 7 : payload === "mirv" ? 3 : 5) * FIXED,
+            (payload === "hydrogen" ? 28 : payload === "mirv" ? 3 : 5) * FIXED,
         },
       },
       payload === "hydrogen" ? 40000 : 24000,
       payload === "mirv" ? "mirv" : "icbm",
       720,
-      payload === "mirv" ? 4 : 0,
+      payload === "mirv" ? 8 : 0,
       payload,
+      targetBuildingId,
     );
     return null;
   }
@@ -1074,7 +1091,7 @@ export class Expansion {
               projectile: {
                 diameter: FIXED / 3,
                 speed: FIXED,
-                blastRadius: 2 * FIXED,
+                blastRadius: 4 * FIXED,
               },
             },
             2500,

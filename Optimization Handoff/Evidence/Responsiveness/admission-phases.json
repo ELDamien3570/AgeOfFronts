@@ -1,0 +1,582 @@
+{
+  "seed": 42,
+  "runAi": false,
+  "before": [
+    {
+      "tick": 1,
+      "executedCommands": [],
+      "movedSquads": [],
+      "pending": [
+        {
+          "player": 6,
+          "phase": "formation",
+          "formationPhase": "clearance"
+        },
+        {
+          "player": 1,
+          "phase": "formation",
+          "formationPhase": "nearest"
+        },
+        {
+          "player": 2,
+          "phase": "formation",
+          "formationPhase": "nearest"
+        },
+        {
+          "player": 3,
+          "phase": "formation",
+          "formationPhase": "nearest"
+        },
+        {
+          "player": 4,
+          "phase": "formation",
+          "formationPhase": "clearance"
+        },
+        {
+          "player": 5,
+          "phase": "formation",
+          "formationPhase": "clearance"
+        }
+      ]
+    },
+    {
+      "tick": 2,
+      "executedCommands": [],
+      "movedSquads": [],
+      "pending": [
+        {
+          "player": 6,
+          "phase": "routes",
+          "formationPhase": "done"
+        },
+        {
+          "player": 1,
+          "phase": "routes",
+          "formationPhase": "done"
+        },
+        {
+          "player": 2,
+          "phase": "routes",
+          "formationPhase": "done"
+        },
+        {
+          "player": 3,
+          "phase": "routes",
+          "formationPhase": "done"
+        },
+        {
+          "player": 4,
+          "phase": "routes",
+          "formationPhase": "done"
+        },
+        {
+          "player": 5,
+          "phase": "routes",
+          "formationPhase": "done"
+        }
+      ]
+    },
+    {
+      "tick": 3,
+      "executedCommands": [],
+      "movedSquads": [],
+      "pending": [
+        {
+          "player": 6,
+          "phase": "routes",
+          "formationPhase": "done"
+        },
+        {
+          "player": 1,
+          "phase": "routes",
+          "formationPhase": "done"
+        },
+        {
+          "player": 2,
+          "phase": "routes",
+          "formationPhase": "done"
+        },
+        {
+          "player": 3,
+          "phase": "routes",
+          "formationPhase": "done"
+        },
+        {
+          "player": 4,
+          "phase": "routes",
+          "formationPhase": "done"
+        },
+        {
+          "player": 5,
+          "phase": "routes",
+          "formationPhase": "done"
+        }
+      ]
+    },
+    {
+      "tick": 4,
+      "executedCommands": [
+        "trace-6",
+        "trace-1",
+        "trace-2",
+        "trace-3",
+        "trace-4",
+        "trace-5"
+      ],
+      "movedSquads": [
+        1,
+        2,
+        3,
+        4,
+        5,
+        6,
+        7,
+        8,
+        9,
+        10,
+        11,
+        12,
+        13,
+        14,
+        15,
+        16,
+        17,
+        18
+      ],
+      "pending": []
+    },
+    {
+      "tick": 5,
+      "executedCommands": [],
+      "movedSquads": [
+        1,
+        2,
+        3,
+        4,
+        5,
+        6,
+        7,
+        8,
+        9,
+        10,
+        11,
+        12,
+        13,
+        14,
+        15,
+        16,
+        17,
+        18
+      ],
+      "pending": []
+    },
+    {
+      "tick": 6,
+      "executedCommands": [],
+      "movedSquads": [
+        1,
+        2,
+        3,
+        4,
+        5,
+        6,
+        7,
+        8,
+        9,
+        10,
+        11,
+        12,
+        13,
+        14,
+        15,
+        16,
+        17,
+        18
+      ],
+      "pending": []
+    },
+    {
+      "tick": 7,
+      "executedCommands": [],
+      "movedSquads": [
+        1,
+        2,
+        3,
+        4,
+        5,
+        6,
+        7,
+        8,
+        9,
+        10,
+        11,
+        12,
+        13,
+        14,
+        15,
+        16,
+        17,
+        18
+      ],
+      "pending": []
+    },
+    {
+      "tick": 8,
+      "executedCommands": [],
+      "movedSquads": [
+        1,
+        2,
+        3,
+        4,
+        5,
+        6,
+        7,
+        8,
+        9,
+        10,
+        11,
+        12,
+        13,
+        14,
+        15,
+        16,
+        17,
+        18
+      ],
+      "pending": []
+    },
+    {
+      "tick": 9,
+      "executedCommands": [],
+      "movedSquads": [
+        1,
+        2,
+        3,
+        4,
+        5,
+        6,
+        7,
+        8,
+        9,
+        10,
+        11,
+        12,
+        13,
+        14,
+        15,
+        16,
+        17,
+        18
+      ],
+      "pending": []
+    },
+    {
+      "tick": 10,
+      "executedCommands": [],
+      "movedSquads": [
+        1,
+        2,
+        3,
+        4,
+        5,
+        6,
+        7,
+        8,
+        9,
+        10,
+        11,
+        12,
+        13,
+        14,
+        15,
+        16,
+        17,
+        18
+      ],
+      "pending": []
+    }
+  ],
+  "after": [
+    {
+      "tick": 1,
+      "executedCommands": [],
+      "movedSquads": [],
+      "pending": [
+        {
+          "player": 6,
+          "phase": "formation",
+          "formationPhase": "clearance"
+        },
+        {
+          "player": 1,
+          "phase": "formation",
+          "formationPhase": "nearest"
+        },
+        {
+          "player": 2,
+          "phase": "formation",
+          "formationPhase": "nearest"
+        },
+        {
+          "player": 3,
+          "phase": "formation",
+          "formationPhase": "nearest"
+        },
+        {
+          "player": 4,
+          "phase": "formation",
+          "formationPhase": "clearance"
+        },
+        {
+          "player": 5,
+          "phase": "formation",
+          "formationPhase": "clearance"
+        }
+      ]
+    },
+    {
+      "tick": 2,
+      "executedCommands": [],
+      "movedSquads": [],
+      "pending": [
+        {
+          "player": 6,
+          "phase": "routes",
+          "formationPhase": "done"
+        },
+        {
+          "player": 1,
+          "phase": "routes",
+          "formationPhase": "done"
+        },
+        {
+          "player": 2,
+          "phase": "routes",
+          "formationPhase": "done"
+        },
+        {
+          "player": 3,
+          "phase": "routes",
+          "formationPhase": "done"
+        },
+        {
+          "player": 4,
+          "phase": "routes",
+          "formationPhase": "done"
+        },
+        {
+          "player": 5,
+          "phase": "routes",
+          "formationPhase": "done"
+        }
+      ]
+    },
+    {
+      "tick": 3,
+      "executedCommands": [
+        "trace-6",
+        "trace-1",
+        "trace-2",
+        "trace-3",
+        "trace-4",
+        "trace-5"
+      ],
+      "movedSquads": [
+        1,
+        2,
+        3,
+        4,
+        5,
+        6,
+        7,
+        8,
+        9,
+        10,
+        11,
+        12,
+        13,
+        14,
+        15,
+        16,
+        17,
+        18
+      ],
+      "pending": []
+    },
+    {
+      "tick": 4,
+      "executedCommands": [],
+      "movedSquads": [
+        1,
+        2,
+        3,
+        4,
+        5,
+        6,
+        7,
+        8,
+        9,
+        10,
+        11,
+        12,
+        13,
+        14,
+        15,
+        16,
+        17,
+        18
+      ],
+      "pending": []
+    },
+    {
+      "tick": 5,
+      "executedCommands": [],
+      "movedSquads": [
+        1,
+        2,
+        3,
+        4,
+        5,
+        6,
+        7,
+        8,
+        9,
+        10,
+        11,
+        12,
+        13,
+        14,
+        15,
+        16,
+        17,
+        18
+      ],
+      "pending": []
+    },
+    {
+      "tick": 6,
+      "executedCommands": [],
+      "movedSquads": [
+        1,
+        2,
+        3,
+        4,
+        5,
+        6,
+        7,
+        8,
+        9,
+        10,
+        11,
+        12,
+        13,
+        14,
+        15,
+        16,
+        17,
+        18
+      ],
+      "pending": []
+    },
+    {
+      "tick": 7,
+      "executedCommands": [],
+      "movedSquads": [
+        1,
+        2,
+        3,
+        4,
+        5,
+        6,
+        7,
+        8,
+        9,
+        10,
+        11,
+        12,
+        13,
+        14,
+        15,
+        16,
+        17,
+        18
+      ],
+      "pending": []
+    },
+    {
+      "tick": 8,
+      "executedCommands": [],
+      "movedSquads": [
+        1,
+        2,
+        3,
+        4,
+        5,
+        6,
+        7,
+        8,
+        9,
+        10,
+        11,
+        12,
+        13,
+        14,
+        15,
+        16,
+        17,
+        18
+      ],
+      "pending": []
+    },
+    {
+      "tick": 9,
+      "executedCommands": [],
+      "movedSquads": [
+        1,
+        2,
+        3,
+        4,
+        5,
+        6,
+        7,
+        8,
+        9,
+        10,
+        11,
+        12,
+        13,
+        14,
+        15,
+        16,
+        17,
+        18
+      ],
+      "pending": []
+    },
+    {
+      "tick": 10,
+      "executedCommands": [],
+      "movedSquads": [
+        1,
+        2,
+        3,
+        4,
+        5,
+        6,
+        7,
+        8,
+        9,
+        10,
+        11,
+        12,
+        13,
+        14,
+        15,
+        16,
+        17,
+        18
+      ],
+      "pending": []
+    }
+  ]
+}

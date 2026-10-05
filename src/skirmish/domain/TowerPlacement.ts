@@ -15,6 +15,7 @@ export function quoteTowerPlan(
   age: Age,
   buildings: readonly Building[] | TowerSiteIndex,
   wallAt: (tile: number) => boolean,
+  siteType: "tower" | "trench" = "tower",
 ) {
   const links: { a: number; tiles: number[]; remainingTicks?: number }[] = [];
   const indexed = Array.isArray(buildings)
@@ -29,7 +30,7 @@ export function quoteTowerPlan(
   const nearby = facts
     .filter(
       (b) =>
-        b.type === "tower" &&
+        b.type === siteType &&
         b.playerId === owner &&
         (b.health ?? 1) > 0 &&
         (b.age ?? "StoneAge") === age &&

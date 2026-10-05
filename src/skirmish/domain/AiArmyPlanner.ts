@@ -487,7 +487,7 @@ export class AiArmyPlanner {
         while(b.scan<81 && this.diagnostics.work<Math.min(budget,8)){
           const x=world.map.x(b.start)+(b.scan%9)-4,y=world.map.y(b.start)+Math.floor(b.scan/9)-4;b.scan++;this.diagnostics.work++;
           if(x<0||y<0||x>=world.map.width()||y>=world.map.height())continue;
-          const tile=world.map.ref(x,y),barrier=forts.barriersAt(tile).find(w=>w.health>0&&world.hostile(player.id,w.playerId)&&
+          const tile=world.map.ref(x,y),barrier=forts.barriersAt(tile).find(w=>w.kind!=="trench"&&w.health>0&&world.hostile(player.id,w.playerId)&&
             (!operations.enabled(player)||operations.canTarget(player.id,w.playerId)));
           if(barrier){b.barrier=barrier.id;break;}
           const tower=world.buildingsAt(tile).find(t=>t.type==="tower"&&(t.health??1)>0&&world.hostile(player.id,t.playerId)&&
@@ -556,10 +556,16 @@ export class AiArmyPlanner {
           .filter(b => operations.canEnter(player.id, target.id, b.tile))
           .sort((a,b) => world.map.euclideanDistSquared(world.tileOf(army ?? members[0]),a.tile) -
             world.map.euclideanDistSquared(world.tileOf(army ?? members[0]),b.tile) || a.id-b.id);
-        const objective = remaining[0];
+        const lastSquad = !remaining.length && operations.finishing(player.id,target.id)
+          ? world.squads.filter(s => s.playerId === target.id && s.troops > 0 && s.embarkedOn === null &&
+            operations.canEnter(player.id,target.id,world.tileOf(s)))
+            .sort((a,b) => world.map.euclideanDistSquared(world.tileOf(army ?? members[0]),world.tileOf(a)) -
+              world.map.euclideanDistSquared(world.tileOf(army ?? members[0]),world.tileOf(b)) || a.id-b.id)[0]
+          : undefined;
+        const objective = remaining[0] ?? (lastSquad ? {tile:world.tileOf(lastSquad)} : undefined);
         if (objective && (plan.targetTile !== objective.tile || members.every(s => s.order.type === "hold"))) {
           if (this.order(plan, {type:"move",tile:objective.tile})) {
-            plan.targetTile = objective.tile; plan.phase = "advance"; plan.reason = "Securing remaining conquest buildings";
+            plan.targetTile = objective.tile; plan.phase = "advance"; plan.reason = "Securing remaining cities and ground squads";
           }
         }
       }

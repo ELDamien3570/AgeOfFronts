@@ -93,6 +93,7 @@ describe("keyboard command mapping", () => {
       T: { type: "hold" },
       B: { type: "recruit-ship", kind: "warship" },
       R: { type: "replenish" },
+      P: { type: "sortie" },
       Z: { type: "construct", kind: "mine" },
       X: { type: "construct", kind: "oil-well" },
       C: { type: "construct", kind: "blacksmith" },

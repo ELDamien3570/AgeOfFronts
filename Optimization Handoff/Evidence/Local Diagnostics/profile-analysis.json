@@ -1,0 +1,888 @@
+{
+  "hashesMatch": true,
+  "profilingStepOverheadPercent": 24.039766241217976,
+  "control": {
+    "step": {
+      "samples": 1600,
+      "mean": 20.32781387500004,
+      "p95": 27.173399999999674,
+      "p99": 33.197000000000116,
+      "maximum": 115.08600000000001
+    },
+    "warm": {
+      "samples": 1520,
+      "mean": 20.0784708552632,
+      "p95": 26.791000000000167,
+      "p99": 30.7003999999979,
+      "maximum": 41.1900999999998
+    },
+    "gc": {
+      "samples": 441,
+      "mean": 2.280034920635745,
+      "p95": 2.9759999997913837,
+      "p99": 7.56110000051558,
+      "maximum": 10.307299999520183,
+      "totalMs": 1005.4954000003636,
+      "hitchesWithGC": 1
+    },
+    "hitches": [
+      {
+        "tick": 60001,
+        "start": 1990.9264,
+        "phases": {
+          "setup": 3.8509999999998854,
+          "economy": 17.39520000000016,
+          "ai": 21.935999999999922,
+          "ships": 0.5808999999999287,
+          "routing": 25.881200000000263,
+          "movement": 16.000299999999697,
+          "combat": 9.223199999999906,
+          "capture": 17.81150000000025,
+          "transport": 0.9358999999999469,
+          "cleanup": 1.070600000000013,
+          "tick": 114.69280000000003
+        },
+        "subphases": {
+          "landWarm": 3.4167999999999665,
+          "routeStep": 12.541099999999915,
+          "tradePlanning": 0.3002999999998792,
+          "capture": 14.326100000000224
+        },
+        "end": 2106.0124,
+        "ms": 115.08600000000001,
+        "snapshotMs": 16.365499999999884,
+        "gc": [
+          {
+            "start": 1995.4608,
+            "duration": 5.55629999935627,
+            "kind": 1
+          },
+          {
+            "start": 2090.8885,
+            "duration": 3.7524999994784594,
+            "kind": 1
+          }
+        ],
+        "gcOverlapMs": 9.30879999883473,
+        "cpu": []
+      }
+    ]
+  },
+  "cpuSelf": [
+    {
+      "function": "(anonymous)",
+      "url": "file:///C:/Users/Damien/Documents/GitHub/AgeOfFronts/AgeOfFronts/src/skirmish/Simulation.ts",
+      "samples": 1544,
+      "percent": 5.556555223665743
+    },
+    {
+      "function": "step",
+      "url": "file:///C:/Users/Damien/Documents/GitHub/AgeOfFronts/AgeOfFronts/src/skirmish/PlanningWorkspace.ts",
+      "samples": 1520,
+      "percent": 5.4701838989455505
+    },
+    {
+      "function": "step",
+      "url": "file:///C:/Users/Damien/Documents/GitHub/AgeOfFronts/AgeOfFronts/src/skirmish/RoutePlanner.ts",
+      "samples": 1249,
+      "percent": 4.494907690646706
+    },
+    {
+      "function": "capture",
+      "url": "file:///C:/Users/Damien/Documents/GitHub/AgeOfFronts/AgeOfFronts/src/skirmish/Simulation.ts",
+      "samples": 1209,
+      "percent": 4.350955482779717
+    },
+    {
+      "function": "(garbage collector)",
+      "url": "",
+      "samples": 1177,
+      "percent": 4.235793716486127
+    },
+    {
+      "function": "aiFootprintAllowed",
+      "url": "file:///C:/Users/Damien/Documents/GitHub/AgeOfFronts/AgeOfFronts/src/skirmish/Simulation.ts",
+      "samples": 892,
+      "percent": 3.210134235433836
+    },
+    {
+      "function": "neighbors",
+      "url": "file:///C:/Users/Damien/Documents/GitHub/AgeOfFronts/AgeOfFronts/src/skirmish/PathTopology.ts",
+      "samples": 779,
+      "percent": 2.8034692482095944
+    },
+    {
+      "function": "eachInRadius",
+      "url": "file:///C:/Users/Damien/Documents/GitHub/AgeOfFronts/AgeOfFronts/src/skirmish/Simulation.ts",
+      "samples": 763,
+      "percent": 2.745888365062799
+    },
+    {
+      "function": "performTick",
+      "url": "file:///C:/Users/Damien/Documents/GitHub/AgeOfFronts/AgeOfFronts/src/skirmish/Simulation.ts",
+      "samples": 745,
+      "percent": 2.6811098715226547
+    },
+    {
+      "function": "localTree",
+      "url": "file:///C:/Users/Damien/Documents/GitHub/AgeOfFronts/AgeOfFronts/src/skirmish/HierarchicalPaths.ts",
+      "samples": 698,
+      "percent": 2.5119660272789432
+    },
+    {
+      "function": "query",
+      "url": "file:///C:/Users/Damien/Documents/GitHub/AgeOfFronts/AgeOfFronts/src/skirmish/SpatialGrid.ts",
+      "samples": 670,
+      "percent": 2.411199481772052
+    },
+    {
+      "function": "owner.<computed>",
+      "url": "file:///C:/Users/Damien/Documents/GitHub/AgeOfFronts/AgeOfFronts/scripts/profileLocalHitches.mjs",
+      "samples": 591,
+      "percent": 2.12689387123475
+    },
+    {
+      "function": "captureEligible",
+      "url": "file:///C:/Users/Damien/Documents/GitHub/AgeOfFronts/AgeOfFronts/src/skirmish/domain/Expansion.ts",
+      "samples": 568,
+      "percent": 2.0441213517112318
+    },
+    {
+      "function": "rebuild",
+      "url": "file:///C:/Users/Damien/Documents/GitHub/AgeOfFronts/AgeOfFronts/src/skirmish/SpatialGrid.ts",
+      "samples": 565,
+      "percent": 2.0333249361212076
+    },
+    {
+      "function": "blocked",
+      "url": "file:///C:/Users/Damien/Documents/GitHub/AgeOfFronts/AgeOfFronts/src/skirmish/domain/Fortifications.ts",
+      "samples": 563,
+      "percent": 2.0261273257278583
+    },
+    {
+      "function": "refresh",
+      "url": "file:///C:/Users/Damien/Documents/GitHub/AgeOfFronts/AgeOfFronts/src/skirmish/FormationOccupancy.ts",
+      "samples": 550,
+      "percent": 1.9793428581710872
+    },
+    {
+      "function": "set TextDecoder",
+      "url": "",
+      "samples": 476,
+      "percent": 1.7130312736171591
+    },
+    {
+      "function": "cohort",
+      "url": "file:///C:/Users/Damien/Documents/GitHub/AgeOfFronts/AgeOfFronts/src/skirmish/RoutePlanner.ts",
+      "samples": 470,
+      "percent": 1.691438442437111
+    },
+    {
+      "function": "step",
+      "url": "file:///C:/Users/Damien/Documents/GitHub/AgeOfFronts/AgeOfFronts/src/skirmish/LocalAvoidance.ts",
+      "samples": 445,
+      "percent": 1.6014683125202434
+    },
+    {
+      "function": "nextJob",
+      "url": "file:///C:/Users/Damien/Documents/GitHub/AgeOfFronts/AgeOfFronts/src/skirmish/RoutePlanner.ts",
+      "samples": 431,
+      "percent": 1.5510850397667975
+    },
+    {
+      "function": "selectJob",
+      "url": "file:///C:/Users/Damien/Documents/GitHub/AgeOfFronts/AgeOfFronts/src/skirmish/RoutePlanner.ts",
+      "samples": 408,
+      "percent": 1.4683125202432792
+    },
+    {
+      "function": "refresh",
+      "url": "file:///C:/Users/Damien/Documents/GitHub/AgeOfFronts/AgeOfFronts/src/skirmish/Formations.ts",
+      "samples": 393,
+      "percent": 1.4143304422931586
+    },
+    {
+      "function": "pop",
+      "url": "file:///C:/Users/Damien/Documents/GitHub/AgeOfFronts/AgeOfFronts/src/skirmish/PlanningWorkspace.ts",
+      "samples": 344,
+      "percent": 1.237988987656098
+    },
+    {
+      "function": "canEnter",
+      "url": "file:///C:/Users/Damien/Documents/GitHub/AgeOfFronts/AgeOfFronts/src/skirmish/domain/AiOperations.ts",
+      "samples": 324,
+      "percent": 1.166012883722604
+    },
+    {
+      "function": "fight",
+      "url": "file:///C:/Users/Damien/Documents/GitHub/AgeOfFronts/AgeOfFronts/src/skirmish/domain/Battle.ts",
+      "samples": 317,
+      "percent": 1.1408212473458812
+    },
+    {
+      "function": "allied",
+      "url": "file:///C:/Users/Damien/Documents/GitHub/AgeOfFronts/AgeOfFronts/src/skirmish/domain/Diplomacy.ts",
+      "samples": 279,
+      "percent": 1.0040666498722424
+    },
+    {
+      "function": "thinkAi",
+      "url": "file:///C:/Users/Damien/Documents/GitHub/AgeOfFronts/AgeOfFronts/src/skirmish/Simulation.ts",
+      "samples": 272,
+      "percent": 0.9788750134955195
+    },
+    {
+      "function": "step",
+      "url": "file:///C:/Users/Damien/Documents/GitHub/AgeOfFronts/AgeOfFronts/src/skirmish/domain/NeutralTerritoryClaims.ts",
+      "samples": 269,
+      "percent": 0.9680785979054953
+    },
+    {
+      "function": "reset",
+      "url": "file:///C:/Users/Damien/Documents/GitHub/AgeOfFronts/AgeOfFronts/src/skirmish/Formations.ts",
+      "samples": 250,
+      "percent": 0.899701299168676
+    },
+    {
+      "function": "__name",
+      "url": "file:///C:/Users/Damien/Documents/GitHub/AgeOfFronts/AgeOfFronts/src/skirmish/domain/Fortifications.ts",
+      "samples": 246,
+      "percent": 0.8853060783819772
+    }
+  ],
+  "estimatedAllocationBytes": 28549777848,
+  "allocationSelf": [
+    {
+      "function": "(anonymous)",
+      "url": "file:///C:/Users/Damien/Documents/GitHub/AgeOfFronts/AgeOfFronts/src/skirmish/Simulation.ts",
+      "estimatedBytes": 5024451480,
+      "percent": 17.59891620435841
+    },
+    {
+      "function": "capture",
+      "url": "file:///C:/Users/Damien/Documents/GitHub/AgeOfFronts/AgeOfFronts/src/skirmish/Simulation.ts",
+      "estimatedBytes": 3541230360,
+      "percent": 12.403705481890725
+    },
+    {
+      "function": "canEnter",
+      "url": "file:///C:/Users/Damien/Documents/GitHub/AgeOfFronts/AgeOfFronts/src/skirmish/domain/AiOperations.ts",
+      "estimatedBytes": 1825071184,
+      "percent": 6.392593293428558
+    },
+    {
+      "function": "aiFootprintAllowed",
+      "url": "file:///C:/Users/Damien/Documents/GitHub/AgeOfFronts/AgeOfFronts/src/skirmish/Simulation.ts",
+      "estimatedBytes": 1463355520,
+      "percent": 5.125628394696992
+    },
+    {
+      "function": "next",
+      "url": "",
+      "estimatedBytes": 1385939512,
+      "percent": 4.8544668871988765
+    },
+    {
+      "function": "set",
+      "url": "",
+      "estimatedBytes": 1216533520,
+      "percent": 4.261096273592273
+    },
+    {
+      "function": "frontier",
+      "url": "file:///C:/Users/Damien/Documents/GitHub/AgeOfFronts/AgeOfFronts/src/skirmish/HomeTerritory.ts",
+      "estimatedBytes": 1116825880,
+      "percent": 3.9118548870888574
+    },
+    {
+      "function": "segmentTiles",
+      "url": "file:///C:/Users/Damien/Documents/GitHub/AgeOfFronts/AgeOfFronts/src/skirmish/domain/Fortifications.ts",
+      "estimatedBytes": 1045560144,
+      "percent": 3.6622356557959863
+    },
+    {
+      "function": "refresh",
+      "url": "file:///C:/Users/Damien/Documents/GitHub/AgeOfFronts/AgeOfFronts/src/skirmish/FormationOccupancy.ts",
+      "estimatedBytes": 1034471976,
+      "percent": 3.6233976373040955
+    },
+    {
+      "function": "refresh",
+      "url": "file:///C:/Users/Damien/Documents/GitHub/AgeOfFronts/AgeOfFronts/src/skirmish/Formations.ts",
+      "estimatedBytes": 1019077216,
+      "percent": 3.5694751161483715
+    },
+    {
+      "function": "clear",
+      "url": "file:///C:/Users/Damien/Documents/GitHub/AgeOfFronts/AgeOfFronts/src/skirmish/domain/Fortifications.ts",
+      "estimatedBytes": 887070568,
+      "percent": 3.107101472812833
+    },
+    {
+      "function": "step",
+      "url": "file:///C:/Users/Damien/Documents/GitHub/AgeOfFronts/AgeOfFronts/src/skirmish/domain/NeutralTerritoryClaims.ts",
+      "estimatedBytes": 787077144,
+      "percent": 2.756859083774402
+    },
+    {
+      "function": "step",
+      "url": "file:///C:/Users/Damien/Documents/GitHub/AgeOfFronts/AgeOfFronts/src/skirmish/LocalAvoidance.ts",
+      "estimatedBytes": 775810024,
+      "percent": 2.7173942583036523
+    },
+    {
+      "function": "nextJob",
+      "url": "file:///C:/Users/Damien/Documents/GitHub/AgeOfFronts/AgeOfFronts/src/skirmish/RoutePlanner.ts",
+      "estimatedBytes": 578415512,
+      "percent": 2.025989536869618
+    },
+    {
+      "function": "fight",
+      "url": "file:///C:/Users/Damien/Documents/GitHub/AgeOfFronts/AgeOfFronts/src/skirmish/domain/Battle.ts",
+      "estimatedBytes": 539749328,
+      "percent": 1.8905552641202463
+    },
+    {
+      "function": "clearMovement",
+      "url": "file:///C:/Users/Damien/Documents/GitHub/AgeOfFronts/AgeOfFronts/src/skirmish/domain/Fortifications.ts",
+      "estimatedBytes": 463209232,
+      "percent": 1.6224617734895939
+    },
+    {
+      "function": "captureQuery",
+      "url": "file:///C:/Users/Damien/Documents/GitHub/AgeOfFronts/AgeOfFronts/src/skirmish/domain/Expansion.ts",
+      "estimatedBytes": 445569616,
+      "percent": 1.560676297981119
+    },
+    {
+      "function": "aiCanEnter",
+      "url": "file:///C:/Users/Damien/Documents/GitHub/AgeOfFronts/AgeOfFronts/src/skirmish/Simulation.ts",
+      "estimatedBytes": 394037448,
+      "percent": 1.3801769320163153
+    },
+    {
+      "function": "step",
+      "url": "file:///C:/Users/Damien/Documents/GitHub/AgeOfFronts/AgeOfFronts/src/skirmish/RoutePlanner.ts",
+      "estimatedBytes": 377126216,
+      "percent": 1.320942733802809
+    },
+    {
+      "function": "traversable",
+      "url": "file:///C:/Users/Damien/Documents/GitHub/AgeOfFronts/AgeOfFronts/src/skirmish/SquadGeometry.ts",
+      "estimatedBytes": 333999496,
+      "percent": 1.1698847457876023
+    },
+    {
+      "function": "rebuild",
+      "url": "file:///C:/Users/Damien/Documents/GitHub/AgeOfFronts/AgeOfFronts/src/skirmish/SpatialGrid.ts",
+      "estimatedBytes": 314162216,
+      "percent": 1.1004016131845595
+    },
+    {
+      "function": "hostile",
+      "url": "file:///C:/Users/Damien/Documents/GitHub/AgeOfFronts/AgeOfFronts/src/skirmish/domain/Diplomacy.ts",
+      "estimatedBytes": 206472920,
+      "percent": 0.7232032455708375
+    },
+    {
+      "function": "thinkAi",
+      "url": "file:///C:/Users/Damien/Documents/GitHub/AgeOfFronts/AgeOfFronts/src/skirmish/Simulation.ts",
+      "estimatedBytes": 185058480,
+      "percent": 0.6481958668304101
+    },
+    {
+      "function": "filter",
+      "url": "",
+      "estimatedBytes": 172254352,
+      "percent": 0.603347433794715
+    },
+    {
+      "function": "goal",
+      "url": "file:///C:/Users/Damien/Documents/GitHub/AgeOfFronts/AgeOfFronts/src/skirmish/HomeTerritory.ts",
+      "estimatedBytes": 159380832,
+      "percent": 0.5582559445770438
+    },
+    {
+      "function": "mayBlock",
+      "url": "file:///C:/Users/Damien/Documents/GitHub/AgeOfFronts/AgeOfFronts/src/skirmish/domain/Fortifications.ts",
+      "estimatedBytes": 148606736,
+      "percent": 0.5205180117028839
+    },
+    {
+      "function": "delete",
+      "url": "",
+      "estimatedBytes": 139485584,
+      "percent": 0.48856977011389036
+    },
+    {
+      "function": "rebuild",
+      "url": "file:///C:/Users/Damien/Documents/GitHub/AgeOfFronts/AgeOfFronts/src/skirmish/AttackApproaches.ts",
+      "estimatedBytes": 128867152,
+      "percent": 0.4513770744069994
+    },
+    {
+      "function": "push",
+      "url": "",
+      "estimatedBytes": 121988976,
+      "percent": 0.42728520218081384
+    },
+    {
+      "function": "allied",
+      "url": "file:///C:/Users/Damien/Documents/GitHub/AgeOfFronts/AgeOfFronts/src/skirmish/domain/Diplomacy.ts",
+      "estimatedBytes": 119600392,
+      "percent": 0.41891881834162287
+    }
+  ],
+  "allocationCallSites": [
+    {
+      "function": "capture",
+      "url": "file:///C:/Users/Damien/Documents/GitHub/AgeOfFronts/AgeOfFronts/src/skirmish/Simulation.ts",
+      "estimatedBytes": 1822367552,
+      "stack": [
+        "(root) ()",
+        "processImmediate (node:internal/timers)",
+        "(anonymous) ()",
+        "(anonymous) (file:///C:/Users/Damien/Documents/GitHub/AgeOfFronts/AgeOfFronts/scripts/profileLocalHitches.mjs)",
+        "step (file:///C:/Users/Damien/Documents/GitHub/AgeOfFronts/AgeOfFronts/src/skirmish/Simulation.ts)",
+        "performTick (file:///C:/Users/Damien/Documents/GitHub/AgeOfFronts/AgeOfFronts/src/skirmish/Simulation.ts)",
+        "owner.<computed> (file:///C:/Users/Damien/Documents/GitHub/AgeOfFronts/AgeOfFronts/scripts/profileLocalHitches.mjs)",
+        "capture (file:///C:/Users/Damien/Documents/GitHub/AgeOfFronts/AgeOfFronts/src/skirmish/Simulation.ts)"
+      ]
+    },
+    {
+      "function": "capture",
+      "url": "file:///C:/Users/Damien/Documents/GitHub/AgeOfFronts/AgeOfFronts/src/skirmish/Simulation.ts",
+      "estimatedBytes": 1596090568,
+      "stack": [
+        "processImmediate (node:internal/timers)",
+        "runNextTicks (node:internal/process/task_queues)",
+        "(anonymous) ()",
+        "(anonymous) (file:///C:/Users/Damien/Documents/GitHub/AgeOfFronts/AgeOfFronts/scripts/profileLocalHitches.mjs)",
+        "step (file:///C:/Users/Damien/Documents/GitHub/AgeOfFronts/AgeOfFronts/src/skirmish/Simulation.ts)",
+        "performTick (file:///C:/Users/Damien/Documents/GitHub/AgeOfFronts/AgeOfFronts/src/skirmish/Simulation.ts)",
+        "owner.<computed> (file:///C:/Users/Damien/Documents/GitHub/AgeOfFronts/AgeOfFronts/scripts/profileLocalHitches.mjs)",
+        "capture (file:///C:/Users/Damien/Documents/GitHub/AgeOfFronts/AgeOfFronts/src/skirmish/Simulation.ts)"
+      ]
+    },
+    {
+      "function": "canEnter",
+      "url": "file:///C:/Users/Damien/Documents/GitHub/AgeOfFronts/AgeOfFronts/src/skirmish/domain/AiOperations.ts",
+      "estimatedBytes": 1117260424,
+      "stack": [
+        "runNextTicks (node:internal/process/task_queues)",
+        "(anonymous) ()",
+        "(anonymous) (file:///C:/Users/Damien/Documents/GitHub/AgeOfFronts/AgeOfFronts/scripts/profileLocalHitches.mjs)",
+        "step (file:///C:/Users/Damien/Documents/GitHub/AgeOfFronts/AgeOfFronts/src/skirmish/Simulation.ts)",
+        "performTick (file:///C:/Users/Damien/Documents/GitHub/AgeOfFronts/AgeOfFronts/src/skirmish/Simulation.ts)",
+        "owner.<computed> (file:///C:/Users/Damien/Documents/GitHub/AgeOfFronts/AgeOfFronts/scripts/profileLocalHitches.mjs)",
+        "capture (file:///C:/Users/Damien/Documents/GitHub/AgeOfFronts/AgeOfFronts/src/skirmish/Simulation.ts)",
+        "canEnter (file:///C:/Users/Damien/Documents/GitHub/AgeOfFronts/AgeOfFronts/src/skirmish/domain/AiOperations.ts)"
+      ]
+    },
+    {
+      "function": "(anonymous)",
+      "url": "file:///C:/Users/Damien/Documents/GitHub/AgeOfFronts/AgeOfFronts/src/skirmish/Simulation.ts",
+      "estimatedBytes": 1057692720,
+      "stack": [
+        "performTick (file:///C:/Users/Damien/Documents/GitHub/AgeOfFronts/AgeOfFronts/src/skirmish/Simulation.ts)",
+        "drainRoutes (file:///C:/Users/Damien/Documents/GitHub/AgeOfFronts/AgeOfFronts/src/skirmish/Simulation.ts)",
+        "drainRouteBatch (file:///C:/Users/Damien/Documents/GitHub/AgeOfFronts/AgeOfFronts/src/skirmish/Simulation.ts)",
+        "owner.<computed> (file:///C:/Users/Damien/Documents/GitHub/AgeOfFronts/AgeOfFronts/scripts/profileLocalHitches.mjs)",
+        "step (file:///C:/Users/Damien/Documents/GitHub/AgeOfFronts/AgeOfFronts/src/skirmish/RoutePlanner.ts)",
+        "step (file:///C:/Users/Damien/Documents/GitHub/AgeOfFronts/AgeOfFronts/src/skirmish/PlanningWorkspace.ts)",
+        "neighbors (file:///C:/Users/Damien/Documents/GitHub/AgeOfFronts/AgeOfFronts/src/skirmish/PathTopology.ts)",
+        "(anonymous) (file:///C:/Users/Damien/Documents/GitHub/AgeOfFronts/AgeOfFronts/src/skirmish/Simulation.ts)"
+      ]
+    },
+    {
+      "function": "(anonymous)",
+      "url": "file:///C:/Users/Damien/Documents/GitHub/AgeOfFronts/AgeOfFronts/src/skirmish/Simulation.ts",
+      "estimatedBytes": 1057636056,
+      "stack": [
+        "step (file:///C:/Users/Damien/Documents/GitHub/AgeOfFronts/AgeOfFronts/src/skirmish/Simulation.ts)",
+        "performTick (file:///C:/Users/Damien/Documents/GitHub/AgeOfFronts/AgeOfFronts/src/skirmish/Simulation.ts)",
+        "drainRoutes (file:///C:/Users/Damien/Documents/GitHub/AgeOfFronts/AgeOfFronts/src/skirmish/Simulation.ts)",
+        "drainRouteBatch (file:///C:/Users/Damien/Documents/GitHub/AgeOfFronts/AgeOfFronts/src/skirmish/Simulation.ts)",
+        "owner.<computed> (file:///C:/Users/Damien/Documents/GitHub/AgeOfFronts/AgeOfFronts/scripts/profileLocalHitches.mjs)",
+        "step (file:///C:/Users/Damien/Documents/GitHub/AgeOfFronts/AgeOfFronts/src/skirmish/RoutePlanner.ts)",
+        "step (file:///C:/Users/Damien/Documents/GitHub/AgeOfFronts/AgeOfFronts/src/skirmish/PlanningWorkspace.ts)",
+        "(anonymous) (file:///C:/Users/Damien/Documents/GitHub/AgeOfFronts/AgeOfFronts/src/skirmish/Simulation.ts)"
+      ]
+    },
+    {
+      "function": "(anonymous)",
+      "url": "file:///C:/Users/Damien/Documents/GitHub/AgeOfFronts/AgeOfFronts/src/skirmish/Simulation.ts",
+      "estimatedBytes": 799452648,
+      "stack": [
+        "performTick (file:///C:/Users/Damien/Documents/GitHub/AgeOfFronts/AgeOfFronts/src/skirmish/Simulation.ts)",
+        "drainRoutes (file:///C:/Users/Damien/Documents/GitHub/AgeOfFronts/AgeOfFronts/src/skirmish/Simulation.ts)",
+        "drainRouteBatch (file:///C:/Users/Damien/Documents/GitHub/AgeOfFronts/AgeOfFronts/src/skirmish/Simulation.ts)",
+        "owner.<computed> (file:///C:/Users/Damien/Documents/GitHub/AgeOfFronts/AgeOfFronts/scripts/profileLocalHitches.mjs)",
+        "step (file:///C:/Users/Damien/Documents/GitHub/AgeOfFronts/AgeOfFronts/src/skirmish/RoutePlanner.ts)",
+        "step (file:///C:/Users/Damien/Documents/GitHub/AgeOfFronts/AgeOfFronts/src/skirmish/PlanningWorkspace.ts)",
+        "neighbors (file:///C:/Users/Damien/Documents/GitHub/AgeOfFronts/AgeOfFronts/src/skirmish/PathTopology.ts)",
+        "(anonymous) (file:///C:/Users/Damien/Documents/GitHub/AgeOfFronts/AgeOfFronts/src/skirmish/Simulation.ts)"
+      ]
+    },
+    {
+      "function": "(anonymous)",
+      "url": "file:///C:/Users/Damien/Documents/GitHub/AgeOfFronts/AgeOfFronts/src/skirmish/Simulation.ts",
+      "estimatedBytes": 788393608,
+      "stack": [
+        "step (file:///C:/Users/Damien/Documents/GitHub/AgeOfFronts/AgeOfFronts/src/skirmish/Simulation.ts)",
+        "performTick (file:///C:/Users/Damien/Documents/GitHub/AgeOfFronts/AgeOfFronts/src/skirmish/Simulation.ts)",
+        "drainRoutes (file:///C:/Users/Damien/Documents/GitHub/AgeOfFronts/AgeOfFronts/src/skirmish/Simulation.ts)",
+        "drainRouteBatch (file:///C:/Users/Damien/Documents/GitHub/AgeOfFronts/AgeOfFronts/src/skirmish/Simulation.ts)",
+        "owner.<computed> (file:///C:/Users/Damien/Documents/GitHub/AgeOfFronts/AgeOfFronts/scripts/profileLocalHitches.mjs)",
+        "step (file:///C:/Users/Damien/Documents/GitHub/AgeOfFronts/AgeOfFronts/src/skirmish/RoutePlanner.ts)",
+        "step (file:///C:/Users/Damien/Documents/GitHub/AgeOfFronts/AgeOfFronts/src/skirmish/PlanningWorkspace.ts)",
+        "(anonymous) (file:///C:/Users/Damien/Documents/GitHub/AgeOfFronts/AgeOfFronts/src/skirmish/Simulation.ts)"
+      ]
+    },
+    {
+      "function": "canEnter",
+      "url": "file:///C:/Users/Damien/Documents/GitHub/AgeOfFronts/AgeOfFronts/src/skirmish/domain/AiOperations.ts",
+      "estimatedBytes": 637205400,
+      "stack": [
+        "processImmediate (node:internal/timers)",
+        "(anonymous) ()",
+        "(anonymous) (file:///C:/Users/Damien/Documents/GitHub/AgeOfFronts/AgeOfFronts/scripts/profileLocalHitches.mjs)",
+        "step (file:///C:/Users/Damien/Documents/GitHub/AgeOfFronts/AgeOfFronts/src/skirmish/Simulation.ts)",
+        "performTick (file:///C:/Users/Damien/Documents/GitHub/AgeOfFronts/AgeOfFronts/src/skirmish/Simulation.ts)",
+        "owner.<computed> (file:///C:/Users/Damien/Documents/GitHub/AgeOfFronts/AgeOfFronts/scripts/profileLocalHitches.mjs)",
+        "capture (file:///C:/Users/Damien/Documents/GitHub/AgeOfFronts/AgeOfFronts/src/skirmish/Simulation.ts)",
+        "canEnter (file:///C:/Users/Damien/Documents/GitHub/AgeOfFronts/AgeOfFronts/src/skirmish/domain/AiOperations.ts)"
+      ]
+    },
+    {
+      "function": "segmentTiles",
+      "url": "file:///C:/Users/Damien/Documents/GitHub/AgeOfFronts/AgeOfFronts/src/skirmish/domain/Fortifications.ts",
+      "estimatedBytes": 559310936,
+      "stack": [
+        "(anonymous) ()",
+        "(anonymous) (file:///C:/Users/Damien/Documents/GitHub/AgeOfFronts/AgeOfFronts/scripts/profileLocalHitches.mjs)",
+        "step (file:///C:/Users/Damien/Documents/GitHub/AgeOfFronts/AgeOfFronts/src/skirmish/Simulation.ts)",
+        "performTick (file:///C:/Users/Damien/Documents/GitHub/AgeOfFronts/AgeOfFronts/src/skirmish/Simulation.ts)",
+        "owner.<computed> (file:///C:/Users/Damien/Documents/GitHub/AgeOfFronts/AgeOfFronts/scripts/profileLocalHitches.mjs)",
+        "capture (file:///C:/Users/Damien/Documents/GitHub/AgeOfFronts/AgeOfFronts/src/skirmish/Simulation.ts)",
+        "clear (file:///C:/Users/Damien/Documents/GitHub/AgeOfFronts/AgeOfFronts/src/skirmish/domain/Fortifications.ts)",
+        "segmentTiles (file:///C:/Users/Damien/Documents/GitHub/AgeOfFronts/AgeOfFronts/src/skirmish/domain/Fortifications.ts)"
+      ]
+    },
+    {
+      "function": "frontier",
+      "url": "file:///C:/Users/Damien/Documents/GitHub/AgeOfFronts/AgeOfFronts/src/skirmish/HomeTerritory.ts",
+      "estimatedBytes": 552269120,
+      "stack": [
+        "processImmediate (node:internal/timers)",
+        "runNextTicks (node:internal/process/task_queues)",
+        "(anonymous) ()",
+        "(anonymous) (file:///C:/Users/Damien/Documents/GitHub/AgeOfFronts/AgeOfFronts/scripts/profileLocalHitches.mjs)",
+        "step (file:///C:/Users/Damien/Documents/GitHub/AgeOfFronts/AgeOfFronts/src/skirmish/Simulation.ts)",
+        "performTick (file:///C:/Users/Damien/Documents/GitHub/AgeOfFronts/AgeOfFronts/src/skirmish/Simulation.ts)",
+        "thinkAi (file:///C:/Users/Damien/Documents/GitHub/AgeOfFronts/AgeOfFronts/src/skirmish/Simulation.ts)",
+        "frontier (file:///C:/Users/Damien/Documents/GitHub/AgeOfFronts/AgeOfFronts/src/skirmish/HomeTerritory.ts)"
+      ]
+    },
+    {
+      "function": "frontier",
+      "url": "file:///C:/Users/Damien/Documents/GitHub/AgeOfFronts/AgeOfFronts/src/skirmish/HomeTerritory.ts",
+      "estimatedBytes": 534049112,
+      "stack": [
+        "(root) ()",
+        "processImmediate (node:internal/timers)",
+        "(anonymous) ()",
+        "(anonymous) (file:///C:/Users/Damien/Documents/GitHub/AgeOfFronts/AgeOfFronts/scripts/profileLocalHitches.mjs)",
+        "step (file:///C:/Users/Damien/Documents/GitHub/AgeOfFronts/AgeOfFronts/src/skirmish/Simulation.ts)",
+        "performTick (file:///C:/Users/Damien/Documents/GitHub/AgeOfFronts/AgeOfFronts/src/skirmish/Simulation.ts)",
+        "thinkAi (file:///C:/Users/Damien/Documents/GitHub/AgeOfFronts/AgeOfFronts/src/skirmish/Simulation.ts)",
+        "frontier (file:///C:/Users/Damien/Documents/GitHub/AgeOfFronts/AgeOfFronts/src/skirmish/HomeTerritory.ts)"
+      ]
+    },
+    {
+      "function": "clear",
+      "url": "file:///C:/Users/Damien/Documents/GitHub/AgeOfFronts/AgeOfFronts/src/skirmish/domain/Fortifications.ts",
+      "estimatedBytes": 478192472,
+      "stack": [
+        "runNextTicks (node:internal/process/task_queues)",
+        "(anonymous) ()",
+        "(anonymous) (file:///C:/Users/Damien/Documents/GitHub/AgeOfFronts/AgeOfFronts/scripts/profileLocalHitches.mjs)",
+        "step (file:///C:/Users/Damien/Documents/GitHub/AgeOfFronts/AgeOfFronts/src/skirmish/Simulation.ts)",
+        "performTick (file:///C:/Users/Damien/Documents/GitHub/AgeOfFronts/AgeOfFronts/src/skirmish/Simulation.ts)",
+        "owner.<computed> (file:///C:/Users/Damien/Documents/GitHub/AgeOfFronts/AgeOfFronts/scripts/profileLocalHitches.mjs)",
+        "capture (file:///C:/Users/Damien/Documents/GitHub/AgeOfFronts/AgeOfFronts/src/skirmish/Simulation.ts)",
+        "clear (file:///C:/Users/Damien/Documents/GitHub/AgeOfFronts/AgeOfFronts/src/skirmish/domain/Fortifications.ts)"
+      ]
+    },
+    {
+      "function": "refresh",
+      "url": "file:///C:/Users/Damien/Documents/GitHub/AgeOfFronts/AgeOfFronts/src/skirmish/FormationOccupancy.ts",
+      "estimatedBytes": 473429720,
+      "stack": [
+        "(anonymous) (file:///C:/Users/Damien/Documents/GitHub/AgeOfFronts/AgeOfFronts/scripts/profileLocalHitches.mjs)",
+        "step (file:///C:/Users/Damien/Documents/GitHub/AgeOfFronts/AgeOfFronts/src/skirmish/Simulation.ts)",
+        "performTick (file:///C:/Users/Damien/Documents/GitHub/AgeOfFronts/AgeOfFronts/src/skirmish/Simulation.ts)",
+        "drainRoutes (file:///C:/Users/Damien/Documents/GitHub/AgeOfFronts/AgeOfFronts/src/skirmish/Simulation.ts)",
+        "drainRouteBatch (file:///C:/Users/Damien/Documents/GitHub/AgeOfFronts/AgeOfFronts/src/skirmish/Simulation.ts)",
+        "step (file:///C:/Users/Damien/Documents/GitHub/AgeOfFronts/AgeOfFronts/src/skirmish/MovementAdmission.ts)",
+        "rebuild (file:///C:/Users/Damien/Documents/GitHub/AgeOfFronts/AgeOfFronts/src/skirmish/FormationOccupancy.ts)",
+        "refresh (file:///C:/Users/Damien/Documents/GitHub/AgeOfFronts/AgeOfFronts/src/skirmish/FormationOccupancy.ts)"
+      ]
+    },
+    {
+      "function": "refresh",
+      "url": "file:///C:/Users/Damien/Documents/GitHub/AgeOfFronts/AgeOfFronts/src/skirmish/Formations.ts",
+      "estimatedBytes": 467074912,
+      "stack": [
+        "processImmediate (node:internal/timers)",
+        "runNextTicks (node:internal/process/task_queues)",
+        "(anonymous) ()",
+        "(anonymous) (file:///C:/Users/Damien/Documents/GitHub/AgeOfFronts/AgeOfFronts/scripts/profileLocalHitches.mjs)",
+        "step (file:///C:/Users/Damien/Documents/GitHub/AgeOfFronts/AgeOfFronts/src/skirmish/Simulation.ts)",
+        "performTick (file:///C:/Users/Damien/Documents/GitHub/AgeOfFronts/AgeOfFronts/src/skirmish/Simulation.ts)",
+        "reset (file:///C:/Users/Damien/Documents/GitHub/AgeOfFronts/AgeOfFronts/src/skirmish/Formations.ts)",
+        "refresh (file:///C:/Users/Damien/Documents/GitHub/AgeOfFronts/AgeOfFronts/src/skirmish/Formations.ts)"
+      ]
+    },
+    {
+      "function": "refresh",
+      "url": "file:///C:/Users/Damien/Documents/GitHub/AgeOfFronts/AgeOfFronts/src/skirmish/Formations.ts",
+      "estimatedBytes": 456648072,
+      "stack": [
+        "(root) ()",
+        "processImmediate (node:internal/timers)",
+        "(anonymous) ()",
+        "(anonymous) (file:///C:/Users/Damien/Documents/GitHub/AgeOfFronts/AgeOfFronts/scripts/profileLocalHitches.mjs)",
+        "step (file:///C:/Users/Damien/Documents/GitHub/AgeOfFronts/AgeOfFronts/src/skirmish/Simulation.ts)",
+        "performTick (file:///C:/Users/Damien/Documents/GitHub/AgeOfFronts/AgeOfFronts/src/skirmish/Simulation.ts)",
+        "reset (file:///C:/Users/Damien/Documents/GitHub/AgeOfFronts/AgeOfFronts/src/skirmish/Formations.ts)",
+        "refresh (file:///C:/Users/Damien/Documents/GitHub/AgeOfFronts/AgeOfFronts/src/skirmish/Formations.ts)"
+      ]
+    },
+    {
+      "function": "step",
+      "url": "file:///C:/Users/Damien/Documents/GitHub/AgeOfFronts/AgeOfFronts/src/skirmish/domain/NeutralTerritoryClaims.ts",
+      "estimatedBytes": 442767640,
+      "stack": [
+        "(root) ()",
+        "processImmediate (node:internal/timers)",
+        "(anonymous) ()",
+        "(anonymous) (file:///C:/Users/Damien/Documents/GitHub/AgeOfFronts/AgeOfFronts/scripts/profileLocalHitches.mjs)",
+        "step (file:///C:/Users/Damien/Documents/GitHub/AgeOfFronts/AgeOfFronts/src/skirmish/Simulation.ts)",
+        "performTick (file:///C:/Users/Damien/Documents/GitHub/AgeOfFronts/AgeOfFronts/src/skirmish/Simulation.ts)",
+        "step (file:///C:/Users/Damien/Documents/GitHub/AgeOfFronts/AgeOfFronts/src/skirmish/domain/TerritoryAbsorption.ts)",
+        "step (file:///C:/Users/Damien/Documents/GitHub/AgeOfFronts/AgeOfFronts/src/skirmish/domain/NeutralTerritoryClaims.ts)"
+      ]
+    },
+    {
+      "function": "refresh",
+      "url": "file:///C:/Users/Damien/Documents/GitHub/AgeOfFronts/AgeOfFronts/src/skirmish/FormationOccupancy.ts",
+      "estimatedBytes": 427370840,
+      "stack": [
+        "(anonymous) (file:///C:/Users/Damien/Documents/GitHub/AgeOfFronts/AgeOfFronts/scripts/profileLocalHitches.mjs)",
+        "step (file:///C:/Users/Damien/Documents/GitHub/AgeOfFronts/AgeOfFronts/src/skirmish/Simulation.ts)",
+        "performTick (file:///C:/Users/Damien/Documents/GitHub/AgeOfFronts/AgeOfFronts/src/skirmish/Simulation.ts)",
+        "drainRoutes (file:///C:/Users/Damien/Documents/GitHub/AgeOfFronts/AgeOfFronts/src/skirmish/Simulation.ts)",
+        "drainRouteBatch (file:///C:/Users/Damien/Documents/GitHub/AgeOfFronts/AgeOfFronts/src/skirmish/Simulation.ts)",
+        "step (file:///C:/Users/Damien/Documents/GitHub/AgeOfFronts/AgeOfFronts/src/skirmish/MovementAdmission.ts)",
+        "rebuild (file:///C:/Users/Damien/Documents/GitHub/AgeOfFronts/AgeOfFronts/src/skirmish/FormationOccupancy.ts)",
+        "refresh (file:///C:/Users/Damien/Documents/GitHub/AgeOfFronts/AgeOfFronts/src/skirmish/FormationOccupancy.ts)"
+      ]
+    },
+    {
+      "function": "step",
+      "url": "file:///C:/Users/Damien/Documents/GitHub/AgeOfFronts/AgeOfFronts/src/skirmish/LocalAvoidance.ts",
+      "estimatedBytes": 387555008,
+      "stack": [
+        "(root) ()",
+        "processImmediate (node:internal/timers)",
+        "runNextTicks (node:internal/process/task_queues)",
+        "(anonymous) ()",
+        "(anonymous) (file:///C:/Users/Damien/Documents/GitHub/AgeOfFronts/AgeOfFronts/scripts/profileLocalHitches.mjs)",
+        "step (file:///C:/Users/Damien/Documents/GitHub/AgeOfFronts/AgeOfFronts/src/skirmish/Simulation.ts)",
+        "performTick (file:///C:/Users/Damien/Documents/GitHub/AgeOfFronts/AgeOfFronts/src/skirmish/Simulation.ts)",
+        "step (file:///C:/Users/Damien/Documents/GitHub/AgeOfFronts/AgeOfFronts/src/skirmish/LocalAvoidance.ts)"
+      ]
+    },
+    {
+      "function": "segmentTiles",
+      "url": "file:///C:/Users/Damien/Documents/GitHub/AgeOfFronts/AgeOfFronts/src/skirmish/domain/Fortifications.ts",
+      "estimatedBytes": 362292144,
+      "stack": [
+        "(anonymous) ()",
+        "(anonymous) (file:///C:/Users/Damien/Documents/GitHub/AgeOfFronts/AgeOfFronts/scripts/profileLocalHitches.mjs)",
+        "step (file:///C:/Users/Damien/Documents/GitHub/AgeOfFronts/AgeOfFronts/src/skirmish/Simulation.ts)",
+        "performTick (file:///C:/Users/Damien/Documents/GitHub/AgeOfFronts/AgeOfFronts/src/skirmish/Simulation.ts)",
+        "owner.<computed> (file:///C:/Users/Damien/Documents/GitHub/AgeOfFronts/AgeOfFronts/scripts/profileLocalHitches.mjs)",
+        "capture (file:///C:/Users/Damien/Documents/GitHub/AgeOfFronts/AgeOfFronts/src/skirmish/Simulation.ts)",
+        "clear (file:///C:/Users/Damien/Documents/GitHub/AgeOfFronts/AgeOfFronts/src/skirmish/domain/Fortifications.ts)",
+        "segmentTiles (file:///C:/Users/Damien/Documents/GitHub/AgeOfFronts/AgeOfFronts/src/skirmish/domain/Fortifications.ts)"
+      ]
+    },
+    {
+      "function": "step",
+      "url": "file:///C:/Users/Damien/Documents/GitHub/AgeOfFronts/AgeOfFronts/src/skirmish/LocalAvoidance.ts",
+      "estimatedBytes": 361411288,
+      "stack": [
+        "(root) ()",
+        "processImmediate (node:internal/timers)",
+        "(anonymous) ()",
+        "(anonymous) (file:///C:/Users/Damien/Documents/GitHub/AgeOfFronts/AgeOfFronts/scripts/profileLocalHitches.mjs)",
+        "step (file:///C:/Users/Damien/Documents/GitHub/AgeOfFronts/AgeOfFronts/src/skirmish/Simulation.ts)",
+        "performTick (file:///C:/Users/Damien/Documents/GitHub/AgeOfFronts/AgeOfFronts/src/skirmish/Simulation.ts)",
+        "step (file:///C:/Users/Damien/Documents/GitHub/AgeOfFronts/AgeOfFronts/src/skirmish/LocalAvoidance.ts)"
+      ]
+    },
+    {
+      "function": "clear",
+      "url": "file:///C:/Users/Damien/Documents/GitHub/AgeOfFronts/AgeOfFronts/src/skirmish/domain/Fortifications.ts",
+      "estimatedBytes": 330025432,
+      "stack": [
+        "processImmediate (node:internal/timers)",
+        "(anonymous) ()",
+        "(anonymous) (file:///C:/Users/Damien/Documents/GitHub/AgeOfFronts/AgeOfFronts/scripts/profileLocalHitches.mjs)",
+        "step (file:///C:/Users/Damien/Documents/GitHub/AgeOfFronts/AgeOfFronts/src/skirmish/Simulation.ts)",
+        "performTick (file:///C:/Users/Damien/Documents/GitHub/AgeOfFronts/AgeOfFronts/src/skirmish/Simulation.ts)",
+        "owner.<computed> (file:///C:/Users/Damien/Documents/GitHub/AgeOfFronts/AgeOfFronts/scripts/profileLocalHitches.mjs)",
+        "capture (file:///C:/Users/Damien/Documents/GitHub/AgeOfFronts/AgeOfFronts/src/skirmish/Simulation.ts)",
+        "clear (file:///C:/Users/Damien/Documents/GitHub/AgeOfFronts/AgeOfFronts/src/skirmish/domain/Fortifications.ts)"
+      ]
+    },
+    {
+      "function": "step",
+      "url": "file:///C:/Users/Damien/Documents/GitHub/AgeOfFronts/AgeOfFronts/src/skirmish/domain/NeutralTerritoryClaims.ts",
+      "estimatedBytes": 320641056,
+      "stack": [
+        "processImmediate (node:internal/timers)",
+        "runNextTicks (node:internal/process/task_queues)",
+        "(anonymous) ()",
+        "(anonymous) (file:///C:/Users/Damien/Documents/GitHub/AgeOfFronts/AgeOfFronts/scripts/profileLocalHitches.mjs)",
+        "step (file:///C:/Users/Damien/Documents/GitHub/AgeOfFronts/AgeOfFronts/src/skirmish/Simulation.ts)",
+        "performTick (file:///C:/Users/Damien/Documents/GitHub/AgeOfFronts/AgeOfFronts/src/skirmish/Simulation.ts)",
+        "step (file:///C:/Users/Damien/Documents/GitHub/AgeOfFronts/AgeOfFronts/src/skirmish/domain/TerritoryAbsorption.ts)",
+        "step (file:///C:/Users/Damien/Documents/GitHub/AgeOfFronts/AgeOfFronts/src/skirmish/domain/NeutralTerritoryClaims.ts)"
+      ]
+    },
+    {
+      "function": "nextJob",
+      "url": "file:///C:/Users/Damien/Documents/GitHub/AgeOfFronts/AgeOfFronts/src/skirmish/RoutePlanner.ts",
+      "estimatedBytes": 294474208,
+      "stack": [
+        "step (file:///C:/Users/Damien/Documents/GitHub/AgeOfFronts/AgeOfFronts/src/skirmish/Simulation.ts)",
+        "performTick (file:///C:/Users/Damien/Documents/GitHub/AgeOfFronts/AgeOfFronts/src/skirmish/Simulation.ts)",
+        "drainRoutes (file:///C:/Users/Damien/Documents/GitHub/AgeOfFronts/AgeOfFronts/src/skirmish/Simulation.ts)",
+        "drainRouteBatch (file:///C:/Users/Damien/Documents/GitHub/AgeOfFronts/AgeOfFronts/src/skirmish/Simulation.ts)",
+        "owner.<computed> (file:///C:/Users/Damien/Documents/GitHub/AgeOfFronts/AgeOfFronts/scripts/profileLocalHitches.mjs)",
+        "step (file:///C:/Users/Damien/Documents/GitHub/AgeOfFronts/AgeOfFronts/src/skirmish/RoutePlanner.ts)",
+        "selectJob (file:///C:/Users/Damien/Documents/GitHub/AgeOfFronts/AgeOfFronts/src/skirmish/RoutePlanner.ts)",
+        "nextJob (file:///C:/Users/Damien/Documents/GitHub/AgeOfFronts/AgeOfFronts/src/skirmish/RoutePlanner.ts)"
+      ]
+    },
+    {
+      "function": "fight",
+      "url": "file:///C:/Users/Damien/Documents/GitHub/AgeOfFronts/AgeOfFronts/src/skirmish/domain/Battle.ts",
+      "estimatedBytes": 270481784,
+      "stack": [
+        "processImmediate (node:internal/timers)",
+        "runNextTicks (node:internal/process/task_queues)",
+        "(anonymous) ()",
+        "(anonymous) (file:///C:/Users/Damien/Documents/GitHub/AgeOfFronts/AgeOfFronts/scripts/profileLocalHitches.mjs)",
+        "step (file:///C:/Users/Damien/Documents/GitHub/AgeOfFronts/AgeOfFronts/src/skirmish/Simulation.ts)",
+        "performTick (file:///C:/Users/Damien/Documents/GitHub/AgeOfFronts/AgeOfFronts/src/skirmish/Simulation.ts)",
+        "fight (file:///C:/Users/Damien/Documents/GitHub/AgeOfFronts/AgeOfFronts/src/skirmish/Simulation.ts)",
+        "fight (file:///C:/Users/Damien/Documents/GitHub/AgeOfFronts/AgeOfFronts/src/skirmish/domain/Battle.ts)"
+      ]
+    },
+    {
+      "function": "fight",
+      "url": "file:///C:/Users/Damien/Documents/GitHub/AgeOfFronts/AgeOfFronts/src/skirmish/domain/Battle.ts",
+      "estimatedBytes": 249337912,
+      "stack": [
+        "(root) ()",
+        "processImmediate (node:internal/timers)",
+        "(anonymous) ()",
+        "(anonymous) (file:///C:/Users/Damien/Documents/GitHub/AgeOfFronts/AgeOfFronts/scripts/profileLocalHitches.mjs)",
+        "step (file:///C:/Users/Damien/Documents/GitHub/AgeOfFronts/AgeOfFronts/src/skirmish/Simulation.ts)",
+        "performTick (file:///C:/Users/Damien/Documents/GitHub/AgeOfFronts/AgeOfFronts/src/skirmish/Simulation.ts)",
+        "fight (file:///C:/Users/Damien/Documents/GitHub/AgeOfFronts/AgeOfFronts/src/skirmish/Simulation.ts)",
+        "fight (file:///C:/Users/Damien/Documents/GitHub/AgeOfFronts/AgeOfFronts/src/skirmish/domain/Battle.ts)"
+      ]
+    },
+    {
+      "function": "nextJob",
+      "url": "file:///C:/Users/Damien/Documents/GitHub/AgeOfFronts/AgeOfFronts/src/skirmish/RoutePlanner.ts",
+      "estimatedBytes": 230888504,
+      "stack": [
+        "step (file:///C:/Users/Damien/Documents/GitHub/AgeOfFronts/AgeOfFronts/src/skirmish/Simulation.ts)",
+        "performTick (file:///C:/Users/Damien/Documents/GitHub/AgeOfFronts/AgeOfFronts/src/skirmish/Simulation.ts)",
+        "drainRoutes (file:///C:/Users/Damien/Documents/GitHub/AgeOfFronts/AgeOfFronts/src/skirmish/Simulation.ts)",
+        "drainRouteBatch (file:///C:/Users/Damien/Documents/GitHub/AgeOfFronts/AgeOfFronts/src/skirmish/Simulation.ts)",
+        "owner.<computed> (file:///C:/Users/Damien/Documents/GitHub/AgeOfFronts/AgeOfFronts/scripts/profileLocalHitches.mjs)",
+        "step (file:///C:/Users/Damien/Documents/GitHub/AgeOfFronts/AgeOfFronts/src/skirmish/RoutePlanner.ts)",
+        "selectJob (file:///C:/Users/Damien/Documents/GitHub/AgeOfFronts/AgeOfFronts/src/skirmish/RoutePlanner.ts)",
+        "nextJob (file:///C:/Users/Damien/Documents/GitHub/AgeOfFronts/AgeOfFronts/src/skirmish/RoutePlanner.ts)"
+      ]
+    },
+    {
+      "function": "captureQuery",
+      "url": "file:///C:/Users/Damien/Documents/GitHub/AgeOfFronts/AgeOfFronts/src/skirmish/domain/Expansion.ts",
+      "estimatedBytes": 222704424,
+      "stack": [
+        "runNextTicks (node:internal/process/task_queues)",
+        "(anonymous) ()",
+        "(anonymous) (file:///C:/Users/Damien/Documents/GitHub/AgeOfFronts/AgeOfFronts/scripts/profileLocalHitches.mjs)",
+        "step (file:///C:/Users/Damien/Documents/GitHub/AgeOfFronts/AgeOfFronts/src/skirmish/Simulation.ts)",
+        "performTick (file:///C:/Users/Damien/Documents/GitHub/AgeOfFronts/AgeOfFronts/src/skirmish/Simulation.ts)",
+        "owner.<computed> (file:///C:/Users/Damien/Documents/GitHub/AgeOfFronts/AgeOfFronts/scripts/profileLocalHitches.mjs)",
+        "capture (file:///C:/Users/Damien/Documents/GitHub/AgeOfFronts/AgeOfFronts/src/skirmish/Simulation.ts)",
+        "captureQuery (file:///C:/Users/Damien/Documents/GitHub/AgeOfFronts/AgeOfFronts/src/skirmish/domain/Expansion.ts)"
+      ]
+    },
+    {
+      "function": "captureQuery",
+      "url": "file:///C:/Users/Damien/Documents/GitHub/AgeOfFronts/AgeOfFronts/src/skirmish/domain/Expansion.ts",
+      "estimatedBytes": 206529760,
+      "stack": [
+        "processImmediate (node:internal/timers)",
+        "(anonymous) ()",
+        "(anonymous) (file:///C:/Users/Damien/Documents/GitHub/AgeOfFronts/AgeOfFronts/scripts/profileLocalHitches.mjs)",
+        "step (file:///C:/Users/Damien/Documents/GitHub/AgeOfFronts/AgeOfFronts/src/skirmish/Simulation.ts)",
+        "performTick (file:///C:/Users/Damien/Documents/GitHub/AgeOfFronts/AgeOfFronts/src/skirmish/Simulation.ts)",
+        "owner.<computed> (file:///C:/Users/Damien/Documents/GitHub/AgeOfFronts/AgeOfFronts/scripts/profileLocalHitches.mjs)",
+        "capture (file:///C:/Users/Damien/Documents/GitHub/AgeOfFronts/AgeOfFronts/src/skirmish/Simulation.ts)",
+        "captureQuery (file:///C:/Users/Damien/Documents/GitHub/AgeOfFronts/AgeOfFronts/src/skirmish/domain/Expansion.ts)"
+      ]
+    },
+    {
+      "function": "aiFootprintAllowed",
+      "url": "file:///C:/Users/Damien/Documents/GitHub/AgeOfFronts/AgeOfFronts/src/skirmish/Simulation.ts",
+      "estimatedBytes": 193986712,
+      "stack": [
+        "drainRoutes (file:///C:/Users/Damien/Documents/GitHub/AgeOfFronts/AgeOfFronts/src/skirmish/Simulation.ts)",
+        "drainRouteBatch (file:///C:/Users/Damien/Documents/GitHub/AgeOfFronts/AgeOfFronts/src/skirmish/Simulation.ts)",
+        "owner.<computed> (file:///C:/Users/Damien/Documents/GitHub/AgeOfFronts/AgeOfFronts/scripts/profileLocalHitches.mjs)",
+        "step (file:///C:/Users/Damien/Documents/GitHub/AgeOfFronts/AgeOfFronts/src/skirmish/RoutePlanner.ts)",
+        "step (file:///C:/Users/Damien/Documents/GitHub/AgeOfFronts/AgeOfFronts/src/skirmish/PlanningWorkspace.ts)",
+        "neighbors (file:///C:/Users/Damien/Documents/GitHub/AgeOfFronts/AgeOfFronts/src/skirmish/PathTopology.ts)",
+        "(anonymous) (file:///C:/Users/Damien/Documents/GitHub/AgeOfFronts/AgeOfFronts/src/skirmish/Simulation.ts)",
+        "aiFootprintAllowed (file:///C:/Users/Damien/Documents/GitHub/AgeOfFronts/AgeOfFronts/src/skirmish/Simulation.ts)"
+      ]
+    },
+    {
+      "function": "aiFootprintAllowed",
+      "url": "file:///C:/Users/Damien/Documents/GitHub/AgeOfFronts/AgeOfFronts/src/skirmish/Simulation.ts",
+      "estimatedBytes": 190590112,
+      "stack": [
+        "performTick (file:///C:/Users/Damien/Documents/GitHub/AgeOfFronts/AgeOfFronts/src/skirmish/Simulation.ts)",
+        "drainRoutes (file:///C:/Users/Damien/Documents/GitHub/AgeOfFronts/AgeOfFronts/src/skirmish/Simulation.ts)",
+        "drainRouteBatch (file:///C:/Users/Damien/Documents/GitHub/AgeOfFronts/AgeOfFronts/src/skirmish/Simulation.ts)",
+        "owner.<computed> (file:///C:/Users/Damien/Documents/GitHub/AgeOfFronts/AgeOfFronts/scripts/profileLocalHitches.mjs)",
+        "step (file:///C:/Users/Damien/Documents/GitHub/AgeOfFronts/AgeOfFronts/src/skirmish/RoutePlanner.ts)",
+        "step (file:///C:/Users/Damien/Documents/GitHub/AgeOfFronts/AgeOfFronts/src/skirmish/PlanningWorkspace.ts)",
+        "(anonymous) (file:///C:/Users/Damien/Documents/GitHub/AgeOfFronts/AgeOfFronts/src/skirmish/Simulation.ts)",
+        "aiFootprintAllowed (file:///C:/Users/Damien/Documents/GitHub/AgeOfFronts/AgeOfFronts/src/skirmish/Simulation.ts)"
+      ]
+    }
+  ],
+  "limitations": "CPU self samples merged by function and source URL, not inclusive CPU. Allocation samples include collected objects and estimate transient JS allocation; not retained memory or a leak. Transformed TypeScript line numbers are not source locations. Profiler timing is diagnostic only; use control timings for performance claims."
+}

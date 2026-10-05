@@ -59,7 +59,7 @@ for (const [index, age] of AGES.entries()) {
         ...(kind === "vehicle" ? { oil: 20 } : {}),
       },
       outputs: { [item]: 1 },
-      ticks: (15 + index * 5) * TICKS_PER_SECOND,
+      ticks: (15 + index * 5) * TICKS_PER_SECOND / (kind === "troop" ? 2 : 1),
     });
   }
 }

@@ -14,7 +14,7 @@ describe("portable recovery transport", () => {
     const make = () => new Skirmish(createSkirmishMap(128, 96, terrain), options);
     const first = make(), squad = first.squads.find(unit => unit.playerId === 1)!;
     expect(first.applyCommand({ type: "order", playerId: 1, squadIds: [squad.id], order: { type: "move", tile: first.map.ref(100, 70) } })).toBeNull();
-    first.step();
+    // Capture pending preparation before the first tick can admit this simple route.
     expect(first.movementAdmission.pendingCount).toBeGreaterThan(0);
     const saved = await decodeState<ReturnType<Skirmish["checkpoint"]>>(await encodeState(first.checkpoint()));
     const second = make(); second.restore(saved);

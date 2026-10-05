@@ -24,7 +24,7 @@ try {
     await new Promise(resolve=>setTimeout(resolve,100));
   }
   if(!ready)throw new Error("Soak server readiness timed out");
-  smoke=spawn(process.execPath,["--import","tsx","scripts/smokeOracleStability.mjs","--url","http://127.0.0.1:9145","--clients","2","--seconds",seconds,"--map","old-world","--size","1000","--order-interval","30","--out",path.join(out,"smoke.json")],{stdio:"inherit",windowsHide:true});
+  smoke=spawn(process.execPath,["--import","tsx","scripts/smokeOracleStability.mjs","--url","http://127.0.0.1:9145","--clients",value("--clients","2"),"--binary-clients",value("--binary-clients","0"),"--seconds",seconds,"--map","old-world","--size","1000","--order-interval",value("--order-interval","30"),"--out",path.join(out,"smoke.json"),...(args.includes("--exercise-backpressure")?["--exercise-backpressure"]:[])],{stdio:"inherit",windowsHide:true});
   const code=await new Promise((resolve,reject)=>{smoke.on("error",reject);smoke.on("exit",resolve);});
   if(code!==0)throw new Error("Hosted soak failed; inspect smoke.json and server.log");
 } finally {

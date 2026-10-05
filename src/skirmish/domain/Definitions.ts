@@ -249,6 +249,7 @@ export interface TradeActor {
   quoteAllies: number[];
 }
 export interface Barrier {
+  readonly kind?: "trench";
   readonly id: number;
   readonly playerId: number;
   readonly age: Age;
@@ -285,6 +286,7 @@ export interface Projectile {
   targets?: readonly TargetTag[];
   kind: "shell" | "bomb" | "icbm" | "mirv" | "warhead";
   warheads: number;
+  targetBuildingId?: number;
   impacted: boolean;
   impactAt?: number;
 }

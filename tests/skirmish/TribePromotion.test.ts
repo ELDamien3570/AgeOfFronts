@@ -110,7 +110,7 @@ describe("tribe promotion", () => {
     game.addBuilding({
       id: 99999,
       playerId: donor.id,
-      type: "barracks",
+      type: "city",
       tile: donor.base,
       age: "StoneAge",
       remainingTicks: 0,

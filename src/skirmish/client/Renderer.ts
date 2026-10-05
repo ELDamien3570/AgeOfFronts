@@ -1,5 +1,6 @@
 import type { GameMap } from "../../core/game/GameMap";
 import { PlacementPreview } from "./PlacementPreview";
+import { BuildingFacts } from "./BuildingFacts";
 import { UNIT, VESSEL } from "../content/Units";
 import { promotionLevel } from "../domain/Combat";
 import type { Age } from "../domain/Definitions";
@@ -78,6 +79,7 @@ export class Renderer {
   private roads?: RoadLayer;
   private readonly wallArtwork = new WallArtwork();
   private readonly walls = new WallPresentation();
+  private readonly trenches = new WallPresentation("trench");
   private readonly promotionArtwork = new PromotionArtwork();
   private readonly impacts = new ImpactPresentation();
   private readonly combatEffects = new CombatEffectsView();
@@ -132,6 +134,7 @@ export class Renderer {
   private snapshot?: Snapshot;
   private resources?: ResourceViewModel;
   private occupiedBuildingTiles = new Set<number>();
+  private readonly buildingFacts = new BuildingFacts();
   private previousTick?: number;
   private readonly squadSamples = new RenderSamples<Snapshot["squads"][number]>();
   private readonly cargoCounts = new Map<number, number>();
@@ -266,7 +269,10 @@ export class Renderer {
       map.height(),
     );
     this.buildingStacks = [];
+    this.buildingFacts.reset();
+    this.occupiedBuildingTiles.clear();
     this.walls.reset();
+    this.trenches.reset();
     this.snapshot = undefined;
     this.spawn = undefined;
     this.resources = undefined;
@@ -320,6 +326,7 @@ export class Renderer {
     this.buildingSelection.reconcile(snapshot.buildings, this.playerId);
     this.roads!.update(snapshot);
     this.walls.update(snapshot);
+    this.trenches.update(snapshot);
     this.impacts.update(snapshot.expansion?.projectiles ?? [], snapshot.tick);
     this.resources = snapshot.expansion
       ? new ResourceViewModel(
@@ -327,7 +334,6 @@ export class Renderer {
           snapshot.expansion.inventories[this.playerId],
         )
       : undefined;
-    this.occupiedBuildingTiles = new Set(snapshot.buildings.map((b) => b.tile));
     for (const id of this.selectedAircraft)
       if (
         !snapshot.expansion?.aircraft.some(
@@ -363,50 +369,53 @@ export class Renderer {
         this.selectedShips.delete(id);
     this.territory!.update(snapshot);
     this.territoryLabels!.update(snapshot);
-    const stacks = new Map<
-      string,
-      {
-        building: Snapshot["buildings"][number];
-        count: number;
-        remainingTicks: number;
-        buildTicks: number;
-        health: number;
-        maxHealth: number;
+    if (this.buildingFacts.changed(snapshot.buildings)) {
+      this.occupiedBuildingTiles = new Set(snapshot.buildings.map((b) => b.tile));
+      const stacks = new Map<
+        string,
+        {
+          building: Snapshot["buildings"][number];
+          count: number;
+          remainingTicks: number;
+          buildTicks: number;
+          health: number;
+          maxHealth: number;
+        }
+      >();
+      for (const building of snapshot.buildings) {
+        const key = `${building.tile}:${building.type}`;
+        let stack = stacks.get(key);
+        if (!stack) {
+          stack = {
+            building,
+            count: 0,
+            remainingTicks: 0,
+            buildTicks:
+              building.buildTicks ?? BUILDING_RULES[building.type].ticks,
+            health: 0,
+            maxHealth: 0,
+          };
+          stacks.set(key, stack);
+        }
+        stack.count++;
+        stack.health += building.health ?? 0;
+        stack.maxHealth += building.maxHealth ?? 0;
+        if (building.remainingTicks > 0 && stack.remainingTicks === 0) {
+          stack.remainingTicks = building.remainingTicks;
+          stack.buildTicks =
+            building.buildTicks ??
+            buildingTicks(building.type, stack.count - 1);
+        }
       }
-    >();
-    for (const building of snapshot.buildings) {
-      const key = `${building.tile}:${building.type}`;
-      let stack = stacks.get(key);
-      if (!stack) {
-        stack = {
-          building,
-          count: 0,
-          remainingTicks: 0,
-          buildTicks:
-            building.buildTicks ?? BUILDING_RULES[building.type].ticks,
-          health: 0,
-          maxHealth: 0,
-        };
-        stacks.set(key, stack);
-      }
-      stack.count++;
-      stack.health += building.health ?? 0;
-      stack.maxHealth += building.maxHealth ?? 0;
-      if (building.remainingTicks > 0 && stack.remainingTicks === 0) {
-        stack.remainingTicks = building.remainingTicks;
-        stack.buildTicks =
-          building.buildTicks ??
-          buildingTicks(building.type, stack.count - 1);
-      }
-    }
-    this.buildingStacks = Array.from(stacks.values());
-    const cleared = this.ground!.updateBuildings(
-      this.buildingStacks.map((stack) => stack.building),
-    );
-    if (cleared.length && this.groundSource && this.groundColors)
-      this.groundLayer.updateColors(
-        rebakeGroundColors(this.groundSource, this.groundColors, cleared),
+      this.buildingStacks = Array.from(stacks.values());
+      const cleared = this.ground!.updateBuildings(
+        this.buildingStacks.map((stack) => stack.building),
       );
+      if (cleared.length && this.groundSource && this.groundColors)
+        this.groundLayer.updateColors(
+          rebakeGroundColors(this.groundSource, this.groundColors, cleared),
+        );
+    }
   }
 
   // Animated and still water use the WebGL2 ground; classic keeps the
@@ -1057,6 +1066,26 @@ export class Renderer {
       ctx.imageSmoothingEnabled = true;
       ctx.globalAlpha = wall.constructing ? 0.55 : 1;
       this.drawWallFrame(frame, wall.tile);
+    }
+    ctx.restore();
+
+    ctx.save();
+    ctx.lineCap = "round";
+    ctx.lineJoin = "round";
+    for (const trench of this.trenches.tiles) {
+      const p = this.screen(this.map.x(trench.tile)+0.5, this.map.y(trench.tile)+0.5);
+      if (!visibleInViewport(p,this.scale,this.width,this.height)) continue;
+      ctx.globalAlpha = trench.constructing ? 0.55 : 1;
+      for (const [width,color] of [[0.46,"#ad9270"],[0.28,"#302b25"]] as const) {
+        ctx.strokeStyle = color; ctx.lineWidth = this.scale*width;
+        ctx.beginPath();
+        for (const [bit,dx,dy] of [[1,0,-0.5],[2,0.5,0],[4,0,0.5],[8,-0.5,0]]) {
+          if (!(trench.mask & bit)) continue;
+          const end = this.screen(this.map.x(trench.tile)+0.5+dx,this.map.y(trench.tile)+0.5+dy);
+          ctx.moveTo(p.x,p.y); ctx.lineTo(end.x,end.y);
+        }
+        ctx.stroke();
+      }
     }
     ctx.restore();
 

@@ -30,7 +30,7 @@ const escape = (s: string) =>
 const fmt = (n: number) => Math.floor(n).toLocaleString("en-US");
 
 export function empireMarkup(): string {
-  return `<div id="resource-strip" class="resource-strip" aria-label="Empire resources"><div id="treasury"></div><div id="strategic-stocks"></div><button id="technology-toggle">Technology <kbd>Y</kbd></button><button id="supplies-toggle">Supplies <kbd>I</kbd></button><span id="empire-age">Stone Age</span></div>`;
+  return `<div id="resource-strip" class="resource-strip" aria-label="Empire resources"><div id="treasury"></div><div id="strategic-stocks"></div><span id="clock" aria-label="Game time">0:00</span><button id="technology-toggle">Technology <kbd>Y</kbd></button><button id="supplies-toggle">Supplies <kbd>I</kbd></button><button id="empire-age" type="button" aria-controls="match-topbar" aria-expanded="true" title="Show or hide the top bar">Stone Age</button></div>`;
 }
 
 export interface EmpireActions {
@@ -40,7 +40,7 @@ export interface EmpireActions {
   build(type: BuildingType, age?: Age): void;
   notify(text: string): void;
   focusedRef(): string | null;
-  target(action: (x: number, y: number) => void, hint: string): void;
+  target(action: (x: number, y: number, gesture?: {shift:boolean; buildingId?:number}) => void, hint: string): void;
 }
 
 export class EmpireView {
@@ -212,6 +212,7 @@ export class EmpireView {
       this.render(true);
     }
   }
+  sortie(shift = false): void { this.dock.sortie(shift); }
 
   close(): boolean {
     if (!this.panel) return false;
@@ -475,27 +476,14 @@ export class EmpireView {
       });
 
     if (d.sortie) {
-      const ids = this.vm.expansion.aircraft
-        .filter((a) => a.playerId === this.playerId && a.state === "ready")
-        .map((a) => a.id);
-      this.actions.target(
-        (x, y) =>
-          this.actions.command({
-            type: "sortie",
-            playerId: this.playerId,
-            aircraftIds: ids,
-            x,
-            y,
-          }),
-        "Click a sortie target · Escape cancels",
-      );
+      this.sortie();
     }
 
     if (d.launch) {
       const id = Number(d.launcher),
         payload = d.launch as "icbm" | "hydrogen" | "mirv";
       this.actions.target(
-        (x, y) =>
+        (x, y, gesture) =>
           this.actions.command({
             type: "launch",
             playerId: this.playerId,
@@ -503,6 +491,7 @@ export class EmpireView {
             payload,
             x,
             y,
+            buildingId: gesture?.buildingId,
           }),
         `Click ${payload.toUpperCase()} target · Escape cancels`,
       );
@@ -697,11 +686,11 @@ export class EmpireView {
       )
       .join(
         "",
-      )}<h3>Fortification controls</h3><p>Your troops and allies can cross friendly walls anywhere. Gates appear automatically and are visual only.</p>${repair ? `<button data-repair="${repair.id}">Repair selected ${BUILDING_RULES[repair.type].name}</button>` : "<p>Select an owned building to repair it.</p>"}<p>${walls.length} wall segments · page ${wallPage + 1} / ${Math.max(1, Math.ceil(walls.length / 16))}</p><button data-wall-page="${Math.max(0, wallPage - 1)}" ${wallPage === 0 ? "disabled" : ""}>Previous walls</button><button data-wall-page="${wallPage + 1}" ${(wallPage + 1) * 16 >= walls.length ? "disabled" : ""}>Next walls</button>${walls
+      )}<h3>Fortification controls</h3><p>Your troops and allies can cross friendly walls anywhere. Gates appear automatically and are visual only.</p>${repair ? `<button data-repair="${repair.id}">Repair selected ${BUILDING_RULES[repair.type].name}</button>` : "<p>Select an owned building to repair it.</p>"}<p>${walls.length} wall / trench connections · page ${wallPage + 1} / ${Math.max(1, Math.ceil(walls.length / 16))}</p><button data-wall-page="${Math.max(0, wallPage - 1)}" ${wallPage === 0 ? "disabled" : ""}>Previous connections</button><button data-wall-page="${wallPage + 1}" ${(wallPage + 1) * 16 >= walls.length ? "disabled" : ""}>Next connections</button>${walls
       .slice(wallPage * 16, wallPage * 16 + 16)
       .map(
         (w) =>
-          `<button data-wall-repair="${w.id}">Repair wall #${w.id}</button>`,
+          `<button data-wall-repair="${w.id}">Repair ${w.kind === "trench" ? "trench run" : "wall"} #${w.id}</button>`,
       )
       .join("")}`;
   }

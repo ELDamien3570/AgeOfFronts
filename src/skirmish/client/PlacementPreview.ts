@@ -103,7 +103,7 @@ export class PlacementPreview {
     const changedBuildings = [...new Set([...this.buildingGeometry.keys(), ...nextBuildings.keys()])]
       .filter(id => this.buildingGeometry.get(id)?.key !== nextBuildings.get(id)?.key);
     const geometry = (snapshot.expansion?.progression[this.playerId]?.age ?? "StoneAge") + "/" +
-      JSON.stringify(snapshot.expansion?.barriers.filter(b => b.health > 0).map(b => [b.id,b.playerId,b.tiles]) ?? []) + "/" +
+      JSON.stringify(snapshot.expansion?.barriers.filter(b => b.health > 0).map(b => [b.id,b.playerId,b.kind,b.tiles]) ?? []) + "/" +
       JSON.stringify(snapshot.expansion?.diplomacy.alliances.map(t => [t.a,t.b]) ?? []);
     const globalChange = geometry !== this.geometry || resourceChanged;
     if (globalChange || changedBuildings.length) {
@@ -115,7 +115,7 @@ export class PlacementPreview {
       for (const barrier of snapshot.expansion?.barriers ?? [])
         if (barrier.health > 0) for (const tile of barrier.tiles) {
           this.wallTiles.add(tile);
-          if (!diplomacy.allied(barrier.playerId, this.playerId)) this.blocked.add(tile);
+          if (barrier.kind !== "trench" && !diplomacy.allied(barrier.playerId, this.playerId)) this.blocked.add(tile);
         }
       for (const building of snapshot.buildings)
         if (building.type === "tower" && (building.health ?? 1) > 0 && !diplomacy.allied(building.playerId, this.playerId))
@@ -123,8 +123,8 @@ export class PlacementPreview {
       if (globalChange) for (const key of this.chunks.keys()) this.invalidate(key);
       else for (const id of changedBuildings) {
         const before = this.buildingGeometry.get(id), after = nextBuildings.get(id);
-        if (before) this.invalidateNear(before.tile, this.type === "tower" ? 12 : 3);
-        if (after) this.invalidateNear(after.tile, this.type === "tower" ? 12 : 3);
+        if (before) this.invalidateNear(before.tile, this.type === "tower" || this.type === "trench" ? 12 : 3);
+        if (after) this.invalidateNear(after.tile, this.type === "tower" || this.type === "trench" ? 12 : 3);
       }
       this.diagnostics.invalidations++;
     }
@@ -263,7 +263,7 @@ export class PlacementPreview {
         return { reason: "Choose an oil deposit", wallGold: 0 };
       if (this.blocked.has(tile))
         return { reason: "Intact wall occupies this site", wallGold: 0 };
-      if (type === "tower") {
+      if (type === "tower" || type === "trench") {
         const age =
           this.age ?? snapshot.expansion.progression[this.playerId].age;
         const plan = quoteTowerPlan(
@@ -273,16 +273,17 @@ export class PlacementPreview {
           age,
           {
             at: (t) => this.buildings.at(t),
-            nearby: (t, radius) => this.buildings.towersNearby(t, radius),
+            nearby: (t, radius) => type === "tower" ? this.buildings.towersNearby(t, radius) : this.buildings.nearby(t, radius),
           },
-          (t) => this.wallTiles.has(t),
+          (t) => this.wallTiles.has(t) || (type === "trench" && snapshot.owners[t] !== this.playerId),
+          type,
         );
         wallGold = plan.gold;
         if (
-          this.troopTiles.has(tile) ||
+          type === "tower" && (this.troopTiles.has(tile) ||
           plan.links.some((link) =>
             link.tiles.some((t) => this.troopTiles.has(t)),
-          )
+          ))
         )
           return {
             reason: "Move troops clear of the tower and planned wall tiles",

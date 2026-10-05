@@ -1,0 +1,12 @@
+{
+  "status": "PASS",
+  "url": "http://127.0.0.1:9000/skirmish/index.html?map=africa&diagnostics=1&seed=42",
+  "checks": [
+    "Africa 500x500 match advanced beyond 40 seconds",
+    "3 squads selected through Select all",
+    "Hold command accepted and HUD selection stayed current",
+    "Terrain and units visibly rendered",
+    "No browser error or warning logs"
+  ],
+  "errors": []
+}

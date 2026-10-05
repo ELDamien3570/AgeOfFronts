@@ -178,7 +178,7 @@ describe("server-only match client", () => {
       await vi.waitFor(() => expect(session.diagnostics.pendingStates).toBe(0));
     }
     expect(presented).toEqual([0]); finish();
-    await vi.waitFor(() => expect(worker.postMessage).toHaveBeenCalledWith({ type: "presentation" }));
+    await vi.waitFor(() => expect(worker.postMessage).toHaveBeenCalledWith({ type: "presentation", packed: true }));
     worker.deliver(packet(8), { tick: 8 } as Snapshot, 3);
     await vi.waitFor(() => expect(presented).toEqual([0, 8]));
     expect(errors).not.toHaveBeenCalled();

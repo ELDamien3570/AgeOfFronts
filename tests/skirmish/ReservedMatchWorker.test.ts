@@ -29,6 +29,34 @@ const advance = (ticks: number, publish = true) => ({
 });
 
 describe("reserved authoritative worker", () => {
+  it("publishes committed human movement before the background snapshot deadline", async () => {
+    const worker = new ReservedMatchWorker(), publications: {tick:number;packet:EncodedState}[] = [];
+    const unsubscribe=worker.onPublication(publication=>publications.push(publication));
+    try {
+      const initial=await worker.request<MatchAdvance>({...initialize,streamPublications:true,
+        options:{...initialize.options,deferredPlanning:true}});
+      const decoder=new SnapshotDecoder(),state=decoder.decode(await decodeState<SnapshotPacket>(initial.packet!));
+      const squad=state.squads.find(s=>s.playerId===1)!;
+      let update=await worker.request<MatchAdvance>({...advance(1,false),commands:[{id:"prompt-move",
+        command:{type:"order",playerId:1,squadIds:[squad.id],order:{type:"move",tile:80*160+120}}}]});
+      if(!update.commandOutcomes?.some(o=>o.id==="prompt-move"&&o.status==="executed")) {
+        expect(update.commandOutcomes).toContainEqual(expect.objectContaining({id:"prompt-move",status:"deferred"}));
+        expect(publications).toHaveLength(0);
+      }
+      for(let at=0;at<100&&!update.commandOutcomes?.some(o=>o.id==="prompt-move"&&o.status==="executed");at++)
+        update=await worker.request<MatchAdvance>(advance(1,false));
+      expect(update.commandOutcomes).toContainEqual(expect.objectContaining({id:"prompt-move",status:"executed"}));
+      await vi.waitFor(()=>expect(publications).toHaveLength(1));
+      const visible=decoder.decode(await decodeState<SnapshotPacket>(publications[0].packet));
+      expect(visible.tick).toBe(update.tick);
+      expect(visible.squads.find(s=>s.id===squad.id)!.order.type).toBe("move");
+      expect(visible.squads.find(s=>s.id===squad.id)!.x===squad.x&&visible.squads.find(s=>s.id===squad.id)!.y===squad.y).toBe(false);
+      await worker.request(advance(1,false));
+      await worker.request({type:"baseline"});
+      expect(publications).toHaveLength(1);
+    } finally {unsubscribe();await worker.close();}
+  },20_000);
+
   it("reuses exact baselines and invalidates same-tick controller changes", async () => {
     const worker = new ReservedMatchWorker();
     try {
@@ -161,11 +189,13 @@ describe("reserved authoritative worker", () => {
       expect(update.diagnostics).toMatchObject({ tick: 4, ticksAdvanced: 3, commands: 0 });
       expect(update.diagnostics!.timings.tick!.samples).toBe(4);
       expect(update.diagnostics!.memory.heapUsed).toBeGreaterThan(0);
-      expect(update.diagnostics!.payloadBytes).toBe(update.packet!.payload.length);
+      expect(update.diagnostics!.payloadBytes).toBe(update.packet!.binary!.byteLength);
+      expect(update.packet!.payload).toBe("");
       expect(update.diagnostics!.retainedBytes).toBeLessThanOrEqual(RUNTIME_PHASES.length * 256 * 8);
       expect(update.diagnostics!.correlation).toMatchObject({ tick: 4, captureSequence: 2, runtime: process.version });
-      for (const phase of ["pack", "json", "compression", "hash", "base64", "transfer"] as const)
+      for (const phase of ["pack", "json", "compression", "hash", "transfer"] as const)
         expect(update.diagnostics!.replication!.encoderTimings![phase]?.samples).toBeGreaterThan(0);
+      expect(update.diagnostics!.replication!.encoderTimings!.base64).toBeUndefined();
       expect(update.diagnostics!.paths!.land.routeBytes).toBeGreaterThanOrEqual(0);
       expect(Object.keys(update).sort()).toEqual([
         "diagnostics",

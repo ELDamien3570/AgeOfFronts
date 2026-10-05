@@ -1,5 +1,6 @@
 import type { EncodedState } from "../StateCodec";
-/** One exact executor-version baseline. Encoded strings are immutable; client
+/** One exact executor-version baseline. Encoded payloads are shared read-only;
+ * transports copy binary frames rather than transferring cached buffers. Client
  * sequence/epoch envelopes remain per client and are never cached here. */
 export class RecoveryBaselineCache {
   private entry?: {
@@ -39,7 +40,7 @@ export class RecoveryBaselineCache {
       (value) => {
         const frozen = Object.freeze({ ...value });
         if (this.entry === entry)
-          entry.bytes = frozen.payload.length * 2 + frozen.hash.length * 2;
+          entry.bytes = (frozen.binary?.byteLength ?? frozen.payload.length * 2) + frozen.hash.length * 2;
         return frozen;
       },
       (error) => {
@@ -56,7 +57,7 @@ export class RecoveryBaselineCache {
     this.entry = {
       version,
       value: Promise.resolve(frozen),
-      bytes: frozen.payload.length * 2 + frozen.hash.length * 2,
+      bytes: (frozen.binary?.byteLength ?? frozen.payload.length * 2) + frozen.hash.length * 2,
     };
   }
   invalidate(): void {

@@ -16,6 +16,7 @@ import { CoordinatorStore } from "./CoordinatorStore";
 import { ReservedMatchWorker } from "./ReservedMatchWorker";
 import { computeRuntimeBuild } from "./RuntimeBuild";
 import { RuntimeDiagnostics } from "../../RuntimeDiagnostics";
+import { encodeSnapshotFrame, textSnapshotPacket } from "../SnapshotWireCodec";
 
 export interface CoordinatorServerOptions {
   store: CoordinatorStore;
@@ -88,7 +89,7 @@ export function createCoordinatorServer(options: CoordinatorServerOptions) {
   const authenticationClaims=new Set<string>();
   const sessions = new Map<
     WebSocket,
-    { guestId: string; alive: boolean; count: number; windowAt: number }
+    { guestId: string; alive: boolean; count: number; windowAt: number; binarySnapshots: boolean }
   >();
   const attempts = new Map<string, { count: number; windowAt: number }>();
   const trustedOrigin = (req: IncomingMessage) => {
@@ -186,6 +187,15 @@ export function createCoordinatorServer(options: CoordinatorServerOptions) {
       return;
     }
     if (client.readyState === WebSocket.OPEN) {
+      if (message.type === "match-state" && message.packet.binary) {
+        if (sessions.get(client)?.binarySnapshots) {
+          const state = message;
+          const frame = diagnostics.measure("transport", () => encodeSnapshotFrame(state));
+          diagnostics.measure("socket", () => client.send(frame));
+          return;
+        }
+        message = { ...message, packet: textSnapshotPacket(message.packet) };
+      }
       const text = diagnostics.measure("json", () => JSON.stringify(message));
       diagnostics.measure("socket", () => client.send(text));
     }
@@ -257,6 +267,7 @@ export function createCoordinatorServer(options: CoordinatorServerOptions) {
             }
           sessions.set(client, {
             guestId,
+            binarySnapshots: message.snapshotTransport === "binary-v1",
             alive: true,
             count: 0,
             windowAt: now(),

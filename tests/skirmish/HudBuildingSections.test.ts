@@ -1,12 +1,12 @@
 // @vitest-environment jsdom
-import { describe, expect, it } from "vitest";
+import { describe, expect, it, vi } from "vitest";
 import { GameMapImpl } from "../../src/core/game/GameMap";
 import { Skirmish } from "../../src/skirmish/Simulation";
-import { empireMarkup, EmpireView } from "../../src/skirmish/client/EmpireView";
+import { empireMarkup, EmpireView, type EmpireActions } from "../../src/skirmish/client/EmpireView";
 import { EmpireViewModel } from "../../src/skirmish/client/EmpireViewModel";
 import { hudMarkup } from "../../src/skirmish/client/HudView";
 import { TECHNOLOGIES } from "../../src/skirmish/content/Technology";
-function fixture() {
+function fixture(actions: Partial<EmpireActions> = {}) {
   const data = new Uint8Array(48 * 48).fill(133);
   const m = new Skirmish(new GameMapImpl(48, 48, data, data.length), {
     seed: 42,
@@ -26,6 +26,7 @@ function fixture() {
     notify: () => {},
     focusedRef: () => null,
     target: () => {},
+    ...actions,
   });
   const vm = () =>
     new EmpireViewModel(m.snapshot(), {
@@ -37,6 +38,30 @@ function fixture() {
   return { m, root, view, vm };
 }
 describe("HUD building categories and visibility", () => {
+  it("targets without selection and carries Shift from either the Sortie button or its target", () => {
+    let target: Parameters<EmpireActions["target"]>[0] | undefined;
+    const command=vi.fn();
+    const {m,root,view,vm}=fixture({command,target:action=>{target=action;}});
+    const e=m.expansion!;
+    e.progression.states[1].age="Modern";
+    e.progression.states[1].completed=TECHNOLOGIES.map(t=>t.id);
+    const field=m.addBuilding({id:m.allocateId(),playerId:1,type:"airstrip",tile:m.player(1)!.base,
+      age:"Modern",remainingTicks:0,health:1000});
+    for(let i=0;i<6;i++) e.aircraft.push({id:m.allocateId(),playerId:1,definitionId:"bomber",airfieldId:field.id,
+      x:128,y:128,health:1000,target:null,state:"ready",reloadTick:0,fuelTicks:1200});
+    view.update(vm());
+    const button=root.querySelector<HTMLButtonElement>('[data-dock-action="sortie"]')!;
+    expect(button.disabled).toBe(false);
+    button.click(); target!(1024,1024,{shift:false});
+    expect(command.mock.lastCall![0].aircraftIds).toHaveLength(1);
+    button.dispatchEvent(new MouseEvent("click",{bubbles:true,shiftKey:true}));
+    target!(1024,1024,{shift:false});
+    expect(command.mock.lastCall![0].aircraftIds).toHaveLength(5);
+    button.click(); target!(1024,1024,{shift:true});
+    expect(command.mock.lastCall![0].aircraftIds).toHaveLength(5);
+    view.sortie(); target!(1024,1024,{shift:false});
+    expect(command.mock.lastCall![0].aircraftIds).toHaveLength(1);
+  });
   it("shows the new construction shortcuts once in their existing categories, including saved WASD mode", () => {
     const { m, root, view, vm } = fixture();
     m.expansion!.progression.states[1].age = "Modern";

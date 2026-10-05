@@ -200,6 +200,9 @@ describe("production resource accessibility", () => {
     batch("refine-bronze", factory.id);
     batch("refine-bronze", factory.id);
     batch("make-bronzeage-equipment", arms.id);
+    batch("refine-bronze", factory.id);
+    batch("refine-bronze", factory.id);
+    batch("make-bronzeage-equipment", arms.id);
     const kit = equipmentItem("BronzeAge");
     for (const id of [
       "bronzeage-infantry",

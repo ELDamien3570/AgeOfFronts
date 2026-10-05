@@ -1,0 +1,92 @@
+{
+  "passed": true,
+  "seconds": 60,
+  "elapsedSeconds": 82.194,
+  "clients": 6,
+  "binaryClients": 5,
+  "runtimeId": "8ada19c23a169acb2faa0e8fad616e84b6dff0d3dce8d71e54e161061c936da9",
+  "backpressureCompleted": true,
+  "reconnected": true,
+  "commonStateSamples": 35,
+  "peers": [
+    {
+      "id": 0,
+      "tick": 1377,
+      "packets": 365,
+      "syncs": 1,
+      "rebases": 2,
+      "binaryFrames": 365,
+      "textFrames": 0,
+      "bytes": 4289023,
+      "decodeP95": 13.196300000003248,
+      "publicationGapP95": 254,
+      "publicationGapMax": 365
+    },
+    {
+      "id": 1,
+      "tick": 1377,
+      "packets": 365,
+      "syncs": 0,
+      "rebases": 0,
+      "binaryFrames": 365,
+      "textFrames": 0,
+      "bytes": 4199928,
+      "decodeP95": 17.506099999998696,
+      "publicationGapP95": 254,
+      "publicationGapMax": 366
+    },
+    {
+      "id": 2,
+      "tick": 1377,
+      "packets": 365,
+      "syncs": 0,
+      "rebases": 0,
+      "binaryFrames": 365,
+      "textFrames": 0,
+      "bytes": 4199928,
+      "decodeP95": 21.05449999999837,
+      "publicationGapP95": 257,
+      "publicationGapMax": 367
+    },
+    {
+      "id": 3,
+      "tick": 1377,
+      "packets": 365,
+      "syncs": 0,
+      "rebases": 0,
+      "binaryFrames": 365,
+      "textFrames": 0,
+      "bytes": 4199928,
+      "decodeP95": 24.098900000000867,
+      "publicationGapP95": 255,
+      "publicationGapMax": 366
+    },
+    {
+      "id": 4,
+      "tick": 1377,
+      "packets": 365,
+      "syncs": 0,
+      "rebases": 0,
+      "binaryFrames": 365,
+      "textFrames": 0,
+      "bytes": 4199928,
+      "decodeP95": 28.742599999997765,
+      "publicationGapP95": 255,
+      "publicationGapMax": 369
+    },
+    {
+      "id": 5,
+      "tick": 1377,
+      "packets": 358,
+      "syncs": 0,
+      "rebases": 1,
+      "binaryFrames": 0,
+      "textFrames": 358,
+      "bytes": 5504437,
+      "decodeP95": 33.60080000000016,
+      "publicationGapP95": 257,
+      "publicationGapMax": 1539
+    }
+  ],
+  "failures": []
+}

@@ -1,15 +1,13 @@
 import type { Building } from "../Protocol";
-import { DEFENSIVE_BUILDINGS } from "../content/Buildings";
 
 export function conquestBuildings(
   buildings: readonly Building[],
-  ai: boolean,
+  _ai: boolean,
 ): readonly Building[] {
   return buildings.filter(
     (b) =>
-      !b.remainingTicks &&
-      (b.health ?? 1) > 0 &&
-      (!ai || !DEFENSIVE_BUILDINGS.includes(b.type)),
+      b.type === "city" && !b.remainingTicks &&
+      (b.health ?? 1) > 0,
   );
 }
 export function canFinishConquest(

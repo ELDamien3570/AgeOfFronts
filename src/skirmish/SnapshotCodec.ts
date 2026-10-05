@@ -41,6 +41,7 @@ export function validateBarrierChanges(packet: SnapshotPacket): void {
   const seen = new Set<number>(), size = packet.width * packet.height;
   for (const id of changes.removed) if (!Number.isSafeInteger(id) || id < 0) throw new Error("Invalid canonical barrier identity");
   for (const wall of changes.rows) {
+      if (wall.kind !== undefined && wall.kind !== "trench") throw new Error("Invalid canonical barrier kind");
     if (!Number.isSafeInteger(wall.id) || wall.id < 0 || seen.has(wall.id) ||
       !Number.isSafeInteger(wall.playerId) || wall.playerId < 0 || wall.playerId >= 255 ||
       !Number.isFinite(wall.health) || !Number.isFinite(wall.maxHealth) || !Number.isFinite(wall.remainingTicks) ||
@@ -164,20 +165,21 @@ export class SnapshotEncoder {
       baseline: new SnapshotEncoder(true).encode(source, journal, facts),
     };
   }
-  encode(source: SnapshotSource, journal?: TileChangeJournal, facts?: ReplicatedEntities): SnapshotPacket {
+  encode(source: SnapshotSource, journal?: TileChangeJournal, facts?: ReplicatedEntities,
+    presentation?: { tiles: Uint32Array; reset: boolean; resourcesChanged?: boolean; roadsChanged?: boolean }): SnapshotPacket {
     const reset =
-      !this.previousTiles ||
+      presentation?.reset ?? (!this.previousTiles ||
       this.width !== source.width ||
-      this.height !== source.height;
+      this.height !== source.height);
     if (reset) {
-      this.previousTiles = new Uint32Array(source.owners.length);
+      this.previousTiles = presentation ? new Uint32Array(0) : new Uint32Array(source.owners.length);
       this.buildings.clear();
       this.width = source.width;
       this.height = source.height;
     }
     const tileChanges: number[] = [];
     const dirtyTiles = !reset && journal && journal === this.journal ? journal.since(this.journalRevision)?.sort((a, b) => a - b) : undefined;
-    const count = dirtyTiles?.length ?? source.owners.length;
+    const count = presentation ? 0 : dirtyTiles?.length ?? source.owners.length;
     this.diagnostics.tileReads = count;
     for (let index = 0; index < count; index++) {
       const tile = dirtyTiles ? dirtyTiles[index] : index;
@@ -269,18 +271,18 @@ export class SnapshotEncoder {
     const resources = facts?.resources;
     const nodes = source.expansion?.deposits ?? [];
     let geometry = this.depositGeometry;
-    if (!resources) {
+    if (!resources && presentation?.resourcesChanged !== false) {
       this.diagnostics.resourceSignatureRows += nodes.length;
       geometry = nodes.map(d => `${d.id}:${d.tile}:${d.resource}:${d.yieldPerSecond}`).join("|");
     }
-    const resourceReset = reset || (resources
+    const resourceReset = reset || (presentation ? presentation.resourcesChanged !== false : resources
       ? this.resourceJournal !== resources.journal || this.resourceGeometryRevision !== resources.geometryRevision
       : geometry !== this.depositGeometry || this.resourceJournal !== undefined);
     const changes = !resourceReset && resources && this.resourceJournal === resources.journal
       ? resources.journal.since(this.resourceCursor) : undefined;
     const resourceRows = changes ? changes.flatMap(change => {
       const node = resources!.byId(change.id); return node ? [node] : [];
-    }) : nodes;
+    }) : presentation?.resourcesChanged === false ? [] : nodes;
     this.diagnostics.resourceReads = resourceRows.length;
     const depositOwners: number[] = [];
     if (resourceReset) this.depositOwners.clear();
@@ -320,7 +322,7 @@ export class SnapshotEncoder {
           deposits: resourceReset ? source.expansion.deposits.map(d => ({...d})) : undefined,
           depositOwners: depositOwners.length ? new Int32Array(depositOwners) : undefined,
           roads:
-            reset || this.previousRoadRevision !== source.expansion.roadRevision
+            reset || (presentation ? presentation.roadsChanged !== false : this.previousRoadRevision !== source.expansion.roadRevision)
               ? source.expansion.roads?.slice()
               : undefined,
         }
@@ -335,7 +337,7 @@ export class SnapshotEncoder {
       tick: source.tick,
       width: source.width,
       height: source.height,
-      tiles: new Uint32Array(tileChanges),
+      tiles: presentation?.tiles ?? new Uint32Array(tileChanges),
       squads,
       orders,
       buildingChanges: new Int32Array(changed),

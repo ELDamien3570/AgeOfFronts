@@ -5,7 +5,7 @@ import { buildingPreviewArtworkId } from "./ArtworkCatalog";
 import type { EmpireActions } from "./EmpireView";
 import type { EmpireViewModel } from "./EmpireViewModel";
 import { eraPortrait } from "./EraArtwork";
-import { CONSTRUCTION_SHORTCUTS, recruitmentBatch } from "./Controls";
+import { CONSTRUCTION_SHORTCUTS, recruitmentBatch, sortieCommand } from "./Controls";
 import { icon } from "./HudView";
 import { SkirmishViewModel } from "./SkirmishViewModel";
 import { BUILDING_SECTION, type BuildingSection } from "./BuildingSections";
@@ -73,6 +73,16 @@ export class EmpireHudView {
   private lastEvent = 0;
   private readonly log: HTMLElement;
   private readonly tip: HTMLElement;
+  sortie(shift = false): void {
+    if (!this.vm) return;
+    this.actions.target((x,y,gesture) => {
+      if (!this.vm) return;
+      const command = sortieCommand(this.vm.state, this.playerId, x, y, shift || gesture?.shift,
+        this.vm.selection.selectedAircraft);
+      if (command) this.actions.command(command);
+      else this.actions.notify("No ready bombers at an operational airfield");
+    }, "Click a bombing target · Shift-click launches up to 5 · Escape cancels");
+  }
   constructor(
     private root: HTMLElement,
     private actions: EmpireActions,
@@ -139,7 +149,8 @@ export class EmpireHudView {
       const action = button.dataset.dockAction!;
       const count = action === "support" || action === "aircraft"
         ? (this.actions.recruitmentBatch?.(event.shiftKey) ?? recruitmentBatch(event.shiftKey, false)) : 1;
-      for (let i = 0; i < count; i++) this.dispatch(action, button.dataset.value);
+      if (action === "sortie") this.sortie(event.shiftKey);
+      else for (let i = 0; i < count; i++) this.dispatch(action, button.dataset.value);
     });
     root.addEventListener("pointerover", (event) =>
       this.showTip(
@@ -219,8 +230,8 @@ export class EmpireHudView {
     portrait?: string,
   ): string {
     const art = portrait && eraPortrait(portrait);
-    const shortcut = action === "build" ? CONSTRUCTION_SHORTCUTS.find(a => a.kind === value) : undefined;
-    const key = shortcut ? `<kbd>${this.root.dataset.wasdMode === "true" ? "⇧" : ""}${shortcut.key}</kbd>` : "";
+    const shortcut = action === "build" ? CONSTRUCTION_SHORTCUTS.find(a => a.kind === value) : action === "sortie" ? {key:"P"} : undefined;
+    const key = shortcut ? `<kbd>${action === "build" && this.root.dataset.wasdMode === "true" ? "⇧" : ""}${shortcut.key}</kbd>` : "";
     return `<div class="action-slot" data-dock-tip="${esc(`${label}\n${tip}${reason ? `\n${reason}` : ""}`)}" tabindex="${reason ? 0 : -1}"><button class="hud-action" data-dock-action="${action}" data-value="${value}" ${reason ? "disabled" : ""} aria-label="${esc(label)}">${art ? `<img class="hud-art" src="${art}" alt="">` : `<span class="command-symbol">${esc(label.slice(0, 2))}</span>`}${key}<span class="action-name">${esc(label)}</span></button></div>`;
   }
   update(vm: EmpireViewModel): void {
@@ -344,12 +355,7 @@ export class EmpireHudView {
         );
       })
       .join("");
-    const ready = vm.expansion.aircraft.filter(
-      (a) =>
-        a.playerId === this.playerId &&
-        a.state === "ready" &&
-        vm.selection.selectedAircraft?.has(a.id),
-    );
+    const ready = sortieCommand(vm.state, this.playerId, 0, 0, false, vm.selection.selectedAircraft);
     const aviation =
       (["fighter", "bomber"] as const)
         .map((kind) => {
@@ -368,8 +374,8 @@ export class EmpireHudView {
         "Sortie",
         "sortie",
         "",
-        ready.length ? null : "Select ready aircraft",
-        "Selected aircraft fly to the target and return to base.",
+        ready ? null : "No ready aircraft at an operational airfield",
+        "One ready plane from the nearest airfield. Shift-click Sortie or its target for up to five. Shortcut: P.",
       ) +
       (["icbm", "hydrogen", "mirv"] as const)
         .map((payload) => {
@@ -379,7 +385,7 @@ export class EmpireHudView {
             "launch",
             payload,
             q.reason,
-            `10,000 gold · 1 ${payload.toUpperCase()} payload\nResearch: Strategic Weapons\nLauncher: ${payload === "mirv" ? "MIRV launch complex or deployed mobile launcher" : "Missile silo"}\n36s flight · 60s launcher reload${payload === "mirv" ? " · 4 warheads" : ""}`,
+            `10,000 gold · 1 ${payload.toUpperCase()} payload\nResearch: Strategic Weapons\nLauncher: ${payload === "mirv" ? "MIRV launch complex or deployed mobile launcher" : "Missile silo"}\n36s flight · 60s launcher reload${payload === "mirv" ? " · 8 warheads · Right-click a building to focus all eight" : ""}`,
             payload,
           );
         })
@@ -478,33 +484,14 @@ export class EmpireHudView {
         });
     }
     if (action === "sortie") {
-      const ids = vm.expansion.aircraft
-        .filter(
-          (a) =>
-            a.playerId === this.playerId &&
-            a.state === "ready" &&
-            vm.selection.selectedAircraft?.has(a.id),
-        )
-        .map((a) => a.id);
-      if (ids.length)
-        this.actions.target(
-          (x, y) =>
-            this.actions.command({
-              type: "sortie",
-              playerId: this.playerId,
-              aircraftIds: ids,
-              x,
-              y,
-            }),
-          "Click sortie target · Escape cancels",
-        );
+      this.sortie();
     }
     if (action === "launch") {
       const payload = value as "icbm" | "hydrogen" | "mirv",
         q = vm.launcher(payload);
       if (q.launcher && !q.reason)
         this.actions.target(
-          (x, y) =>
+          (x, y, gesture) =>
             this.actions.command({
               type: "launch",
               playerId: this.playerId,
@@ -512,6 +499,7 @@ export class EmpireHudView {
               payload,
               x,
               y,
+              buildingId: gesture?.buildingId,
             }),
           `Click ${payload.toUpperCase()} target · Escape cancels`,
         );

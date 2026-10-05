@@ -1,0 +1,171 @@
+{
+  "before": {
+    "passed": true,
+    "runtimeId": "07d3ce16a80b8d0049f5b0d909ccf24101f0868e75265b30cb5c5f9b2fb236f5",
+    "mapHash": "b18e20ac5233366dc215b74ffdb7f580f4e0341b526fc28201891dfec4a35160",
+    "seconds": 120,
+    "elapsedSeconds": 143.599,
+    "latency": {
+      "firstMotionMs": {
+        "samples": 138,
+        "mean": 271.9130434782609,
+        "p50": 274,
+        "p95": 374,
+        "maximum": 401
+      },
+      "receiptMs": {
+        "samples": 138,
+        "mean": 40.971014492753625,
+        "p50": 40,
+        "p95": 67,
+        "maximum": 84
+      },
+      "executionReceiptMs": {
+        "samples": 138,
+        "mean": 190.1159420289855,
+        "p50": 196,
+        "p95": 245,
+        "maximum": 262
+      },
+      "planningTicks": {
+        "samples": 138,
+        "mean": 3.8405797101449277,
+        "p50": 4,
+        "p95": 4,
+        "maximum": 4
+      },
+      "executionToObservationMs": {
+        "samples": 138,
+        "mean": 81.79710144927536,
+        "p50": 83,
+        "p95": 166,
+        "maximum": 217
+      }
+    },
+    "commonStateSamples": 65,
+    "reconnected": true,
+    "backpressureCompleted": false,
+    "packets": 3899,
+    "snapshotBytes": 51852104,
+    "lastTick": 2110,
+    "progress": {
+      "simulatedMs": 105500,
+      "wallMs": 105618,
+      "ratio": 0.9988827661951561
+    },
+    "peakEntities": {
+      "squads": 301,
+      "ships": 0,
+      "buildings": 60,
+      "traders": 0,
+      "projectiles": 0
+    },
+    "tickLifetime": {
+      "samples": 2110,
+      "mean": 10.139043033175493,
+      "maximum": 52.00959999999941,
+      "above50Ms": 1
+    },
+    "tickRecent": {
+      "samples": 256,
+      "mean": 10.98204726562517,
+      "p95": 15.134699999995064,
+      "p99": 18.3127000000095,
+      "maximum": 27.09790000000794
+    },
+    "publication": {
+      "pending": 1,
+      "skipped": 0
+    },
+    "bufferedBytes": {
+      "peak": 0,
+      "last": 0
+    }
+  },
+  "after": {
+    "passed": true,
+    "runtimeId": "8ada19c23a169acb2faa0e8fad616e84b6dff0d3dce8d71e54e161061c936da9",
+    "mapHash": "b18e20ac5233366dc215b74ffdb7f580f4e0341b526fc28201891dfec4a35160",
+    "seconds": 120,
+    "elapsedSeconds": 142.369,
+    "latency": {
+      "firstMotionMs": {
+        "samples": 138,
+        "mean": 187.36231884057972,
+        "p50": 190,
+        "p95": 258,
+        "maximum": 270
+      },
+      "receiptMs": {
+        "samples": 138,
+        "mean": 44.072463768115945,
+        "p50": 45,
+        "p95": 65,
+        "maximum": 75
+      },
+      "executionReceiptMs": {
+        "samples": 138,
+        "mean": 169.231884057971,
+        "p50": 166,
+        "p95": 244,
+        "maximum": 265
+      },
+      "planningTicks": {
+        "samples": 138,
+        "mean": 3.4130434782608696,
+        "p50": 3,
+        "p95": 4,
+        "maximum": 4
+      },
+      "executionToObservationMs": {
+        "samples": 138,
+        "mean": 18.130434782608695,
+        "p50": 18,
+        "p95": 32,
+        "maximum": 39
+      }
+    },
+    "commonStateSamples": 67,
+    "reconnected": true,
+    "backpressureCompleted": false,
+    "packets": 4025,
+    "snapshotBytes": 52967489,
+    "lastTick": 2122,
+    "progress": {
+      "simulatedMs": 106200,
+      "wallMs": 106327,
+      "ratio": 0.9988055714917189
+    },
+    "peakEntities": {
+      "squads": 291,
+      "ships": 0,
+      "buildings": 63,
+      "traders": 0,
+      "projectiles": 0
+    },
+    "tickLifetime": {
+      "samples": 2122,
+      "mean": 9.588793166823734,
+      "maximum": 45.285400000000664,
+      "above50Ms": 0
+    },
+    "tickRecent": {
+      "samples": 256,
+      "mean": 10.154792187499652,
+      "p95": 13.797500000000582,
+      "p99": 20.09419999999227,
+      "maximum": 28.139400000000023
+    },
+    "publication": {
+      "pending": 1,
+      "skipped": 0
+    },
+    "bufferedBytes": {
+      "peak": 0,
+      "last": 0
+    }
+  },
+  "firstMotionP95ReductionPercent": 31.016042780748666,
+  "snapshotBytesIncreasePercent": 2.1510891824177536,
+  "packetsIncreasePercent": 3.2315978456014305
+}

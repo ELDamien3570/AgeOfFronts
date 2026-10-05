@@ -322,7 +322,11 @@ describe("stacked buildings and large fleets", () => {
     const match = plains(),
       tile = match.map.ref(30, 25),
       player = match.players[0];
-    for (const record of match.squads) match.removeSquad(record.id); // Isolate construction/income from randomly placed camp defenders.
+    // Keep factions alive, with defenders distant from the construction site.
+    for (const record of match.squads) match.updateSquad(record.id, {
+      x:(match.map.x(match.player(record.playerId)!.base)+.5)*FIXED,
+      y:(match.map.y(match.player(record.playerId)!.base)+.5)*FIXED,order:{type:"hold"},path:[],
+    });
     match.owners[tile] = 1;
     player.gold = 100000;
     const before = player.gold;
@@ -406,6 +410,8 @@ describe("stacked buildings and large fleets", () => {
       ).toBeNull();
     const enemy = match.squads.find((s) => s.playerId === 2)!;
     retainSquads(match, [enemy]);
+    // Unfinished cities alone no longer keep the builder alive.
+    match.addBuilding({id:match.allocateId(),playerId:1,type:"city",tile:match.player(1)!.base,remainingTicks:0});
     match.updateSquad(enemy.id, { x: 30.5 * FIXED });
     match.updateSquad(enemy.id, { y: 25.5 * FIXED });
     for (let i = 0; i < 60; i++) match.step();

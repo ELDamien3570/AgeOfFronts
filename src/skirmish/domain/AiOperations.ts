@@ -87,13 +87,25 @@ export class AiOperations {
   }
   /** Defensive pursuit remains local to observed aggression, not a free raid. */
   /** Only this faction's actual entry permissions fence its route work. */
+  private readonly navigationKeys = new Map<number, {target: number | null | undefined; threats: number[]; value: string}>();
   navigationRevision(playerId: number): string {
     const record = this.records.get(playerId), tick = this.expansion.world.tick;
     if (!record || !this.enabled(this.expansion.world.players.find(p => p.id === playerId))) return "unrestricted";
-    return JSON.stringify([
-      record.phase === "war" ? record.target : record.phase === "recovery" ? record.retreatFrom : null,
-      record.threats.filter(t => t.until >= tick).map(t => [t.rival, t.tile]),
-    ]);
+    const target = record.phase === "war" ? record.target : record.phase === "recovery" ? record.retreatFrom : null;
+    const previous = this.navigationKeys.get(playerId);
+    let at = 0, same = previous?.target === target;
+    for (const threat of record.threats) if (threat.until >= tick) {
+      same &&= previous?.threats[at] === threat.rival && previous?.threats[at+1] === threat.tile;
+      at += 2;
+    }
+    if (same && previous!.threats.length === at) return previous!.value;
+    const threats: number[] = [], rows: number[][] = [];
+    for (const threat of record.threats) if (threat.until >= tick) {
+      threats.push(threat.rival, threat.tile); rows.push([threat.rival, threat.tile]);
+    }
+    const value = JSON.stringify([target, rows]);
+    this.navigationKeys.set(playerId, {target, threats, value});
+    return value;
   }
   canEnter(playerId: number, rival: number, tile: number): boolean {
     if (!rival || rival === playerId || !this.expansion.diplomacy.hostile(playerId, rival)) return true;
@@ -145,8 +157,8 @@ export class AiOperations {
           if (r.finishCount === undefined || count < r.finishCount) r.finishProgressAt = tick;
           r.finishCount = count;
         } else { r.finishCount = undefined; r.finishProgressAt = undefined; }
-        if (strength < Math.max(2, Math.floor(profile.minimumRaidSquads / 2)) ||
-          (tick - r.since >= 2400 && !this.finishing(player.id, r.target!)))
+        if (strength < 2 || (!this.finishing(player.id, r.target!) &&
+          (strength < Math.max(2, Math.floor(profile.minimumRaidSquads / 2)) || tick - r.since >= 2400)))
           this.transition(player, r, "recovery");
         else r.nextThink = tick + 20;
         continue;

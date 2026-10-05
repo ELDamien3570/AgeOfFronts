@@ -16,6 +16,43 @@ function fixture(enabled = true, count = 3) {
 function evaluate(f: ReturnType<typeof fixture>, tick: number) { f.m.tick = tick; f.ops.step(f.forces); }
 
 describe("optional AI strategic operations", () => {
+  it("keeps two surviving squads committed to the last ground squad despite unrelated buildings", () => {
+    const f=fixture();
+    const target=1;
+    const own=f.m.squads.filter(s=>s.playerId===2).slice(0,2);
+    const last=f.m.squads.find(s=>s.playerId===target)!;
+    for(const s of [...f.m.squads]) if((s.playerId===2&&!own.includes(s)) ||
+      (s.playerId===target&&s!==last)) f.m.removeSquad(s.id);
+    for(const b of [...f.m.buildings]) if(b.playerId===target) f.m.removeBuilding(b.id);
+    for(let i=0;i<8;i++) f.m.addBuilding({id:f.m.allocateId(),playerId:target,type:"factory",
+      tile:f.map.ref(80+i*4,70),remainingTicks:0,health:1200});
+    f.ops.restore({records:[[2,{phase:"war",since:100,nextThink:0,target,
+      threats:[],cursor:0,score:0}]],revision:0,territorialRevision:0});
+    f.forces.set(2,2);
+    evaluate(f,4000);
+    expect(f.ops.state(2)!.phase).toBe("war");
+    expect(f.ops.state(2)!.finishCount).toBe(1);
+    expect(f.ops.finishing(2,target)).toBe(true);
+    // The same commitment is reconstructed on deterministic restore.
+    const saved=f.m.checkpoint();f.m.restore(saved);
+    expect(f.ops.finishing(2,target)).toBe(true);
+    f.forces.set(2,1); evaluate(f,4020);
+    expect(f.ops.state(2)!.phase).toBe("recovery");
+  });
+  it("keeps cached navigation keys identical through threat refresh, expiration, alliance changes and restore", () => {
+    const f=fixture(),ops=f.ops;
+    const expected=()=>{const r=ops.state(2)!;return JSON.stringify([r.phase==="war"?r.target:r.phase==="recovery"?r.retreatFrom:null,r.threats.filter(t=>t.until>=f.m.tick).map(t=>[t.rival,t.tile])]);};
+    f.m.notifyHostileAction(2,1,f.map.ref(80,30));
+    expect(ops.navigationRevision(2)).toBe(expected());expect(ops.navigationRevision(2)).toBe(expected());
+    const saved=f.m.checkpoint();f.m.tick=599;ops.threatened(2,1,f.map.ref(81,30));expect(ops.navigationRevision(2)).toBe(expected());
+    f.m.tick=1200;expect(ops.navigationRevision(2)).toBe(expected());
+    f.m.restore(saved);expect(ops.navigationRevision(2)).toBe(expected());
+    const internal=f.m as unknown as {routingObstacleRevision(id:number):string};
+    const original=internal.routingObstacleRevision(2);
+    f.m.expansion!.diplomacy.state.alliances.push({id:1,a:1,b:2,expiresTick:2000,renewal:[]});
+    expect(internal.routingObstacleRevision(2)).toBe(`${expected()}:${f.m.expansion!.fortifications.version}:1,2`);
+    f.m.expansion!.diplomacy.state.alliances=[];expect(internal.routingObstacleRevision(2)).toBe(original);
+  });
   it("reuses overlapping entry tiles and drops the projection at each drain boundary", () => {
     const f=fixture(), enter=vi.spyOn(f.ops,"canEnter");
     const internal=f.m as unknown as {aiFootprintAllowed(id:number,tile:number):boolean;drainRoutes():void;changeOwner(tile:number,id:number):void};

@@ -9,13 +9,14 @@ import {
   SnapshotEncoder,
 } from "../../src/skirmish/SnapshotCodec";
 
-function fixture() {
+function fixture(ruleset?: "ages-v1") {
   const terrain = new Uint8Array(160 * 100).fill(133);
   terrain.fill(0, 0, 160 * 8);
   return new Skirmish(new GameMapImpl(160, 100, terrain, terrain.length), {
     seed: 42,
     aiCount: 2,
     runAi: false,
+    ruleset,
   });
 }
 function place(world: Skirmish, unit: Pick<Squad, "id" | "x" | "y">, x: number, y: number) {
@@ -61,6 +62,98 @@ function emptyShip(
 }
 
 describe("complete conquest", () => {
+  it("deletes only an owned warship without changing territory or refunding gold", () => {
+    const game = fixture("ages-v1");
+    const own = game.addShip(emptyShip(game.allocateId(), 1, "warship", 1000));
+    const enemy = game.addShip(emptyShip(game.allocateId(), 2, "warship", 1000));
+    const transport = game.addShip(emptyShip(game.allocateId(), 1, "transport", 1000));
+    const gold = game.player(1)!.gold, owners = game.owners.slice();
+    expect(game.applyCommand({type:"delete-ship", playerId:1, shipId:enemy.id})).not.toBeNull();
+    expect(game.applyCommand({type:"delete-ship", playerId:1, shipId:transport.id})).not.toBeNull();
+    expect(game.applyCommand({type:"delete-ship", playerId:1, shipId:own.id})).toBeNull();
+    expect(game.ship(own.id)).toBeUndefined();
+    expect(game.ship(enemy.id)).toBeDefined();
+    expect(game.ship(transport.id)).toBeDefined();
+    expect(game.player(1)!.gold).toBe(gold);
+    expect(game.owners).toEqual(owners);
+  });
+  it.each(["transport", "warship"] as const)(
+    "conquers an AI's last city despite a surviving %s, including after restore",
+    (kind) => {
+      const original = fixture("ages-v1"), enemyId = 2;
+      removeDefenders(original);
+      original.addBuilding({id: original.allocateId(), playerId: enemyId, type: "city",
+        tile: original.player(enemyId)!.base, remainingTicks: 0, health: 1000});
+      const ship = original.addShip(emptyShip(original.allocateId(), enemyId, kind, SHIP_RULES[kind].health));
+      place(original, ship, 20, 2);
+      const game = fixture("ages-v1");
+      game.restore(original.checkpoint());
+      const enemy = game.player(enemyId)!;
+      const old = game.owners.slice(), encoder = new SnapshotEncoder(), decoder = new SnapshotDecoder();
+      decoder.decode(encoder.encode(game.snapshot()));
+
+      occupy(game, enemy.base);
+
+      expect(enemy.eliminated).toBe(true);
+      expect(game.ship(ship.id)).toBeUndefined();
+      expect(game.ships.some(s => s.playerId === enemyId)).toBe(false);
+      expect(enemy.land).toBe(0);
+      for (let tile = 0; tile < old.length; tile++)
+        if (old[tile] === enemyId) expect(game.owners[tile]).toBe(1);
+      expect(game.expansion!.events).toContainEqual(expect.objectContaining({kind: "conquest", actorId: 1, otherId: enemyId}));
+      const replicated = decoder.decode(encoder.encode(game.snapshot()));
+      expect(replicated.owners).toEqual(game.owners);
+      expect(replicated.players.find(p => p.id === enemyId)!.eliminated).toBe(true);
+      expect(replicated.ships.some(s => s.id === ship.id)).toBe(false);
+    },
+  );
+
+  it("eliminates a human fleet after the last city is captured with no ground squads", () => {
+    const game = fixture("ages-v1"), enemy = game.players[1];
+    enemy.ai = false;
+    removeDefenders(game);
+    game.addBuilding({id:game.allocateId(),playerId:enemy.id,type:"city",tile:enemy.base,
+      remainingTicks:0,health:1200});
+    const ship = game.addShip(emptyShip(game.allocateId(), enemy.id, "warship", SHIP_RULES.warship.health));
+    place(game, ship, 20, 2);
+    occupy(game, enemy.base);
+    expect(game.buildings.some(b => b.playerId === enemy.id)).toBe(false);
+    expect(enemy.eliminated).toBe(true);
+    expect(game.ship(ship.id)).toBeUndefined();
+  });
+
+  it("removes surviving AI aircraft when its final city is conquered", () => {
+    const game = fixture("ages-v1"), enemy = game.players[1];
+    removeDefenders(game);
+    game.addBuilding({id:game.allocateId(),playerId:enemy.id,type:"city",tile:enemy.base,
+      remainingTicks:0,health:1200});
+    const airstrip = game.addBuilding({id: game.allocateId(), playerId: enemy.id, type: "airstrip",
+      tile: enemy.base, age: "Modern", remainingTicks: 0, health: 2000});
+    game.expansion!.aircraft.push({id: game.allocateId(), playerId: enemy.id,
+      definitionId: "fighter", airfieldId: airstrip.id, x: game.map.x(enemy.base) * FIXED,
+      y: game.map.y(enemy.base) * FIXED, health: 1000, target: null,
+      state: "ready", reloadTick: 0, fuelTicks: 1000});
+    occupy(game, enemy.base);
+    expect(enemy.eliminated).toBe(true);
+    expect(game.expansion!.aircraft.some(a => a.playerId === enemy.id)).toBe(false);
+  });
+
+  it.each(["regular", "tribe"] as const)("settles conquest and victory after the last %s AI squads die, despite its warship", (kind) => {
+    const game = fixture("ages-v1"), enemy = game.players[1];
+    enemy.kind = kind;
+    const ship = game.addShip(emptyShip(game.allocateId(), enemy.id, "warship", SHIP_RULES.warship.health));
+    place(game, ship, 20, 2);
+    const victims = game.squads.filter(s => s.playerId !== 1), damage = new DamageLedger();
+    for (const squad of victims) damage.add(squad.id, 1, squad.troops);
+    game.resolveLandDamage(damage);
+    game.step();
+    expect(enemy.eliminated).toBe(true);
+    expect(game.ship(ship.id)).toBeUndefined();
+    expect(game.owners.includes(enemy.id)).toBe(false);
+    expect(game.winner).toBe(1);
+    expect(game.expansion!.winners).toEqual([1]);
+  });
+
   it("requires every completed building, then transfers all remnants and snapshot deltas to the final captor", () => {
     const game = fixture(),
       enemy = game.players[1],
@@ -126,8 +219,8 @@ describe("complete conquest", () => {
     expect(game.owners.includes(2)).toBe(false);
   });
 
-  it("counts embarked survivors and credits the warship that sinks their transport", () => {
-    const game = fixture(),
+  it.each([undefined, "ages-v1"] as const)("counts embarked survivors and credits their transport's killer (%s)", (ruleset) => {
+    const game = fixture(ruleset),
       enemy = game.players[1],
       cargo = game.squads.find((s) => s.playerId === 2)!;
     removeDefenders(game, cargo);

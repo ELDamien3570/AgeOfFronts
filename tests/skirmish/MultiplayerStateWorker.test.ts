@@ -3,7 +3,7 @@ import { gunzipSync, gzipSync } from "node:zlib";
 import { afterEach, describe, expect, it, vi } from "vitest";
 import { GameMapImpl } from "../../src/core/game/GameMap";
 import { Skirmish } from "../../src/skirmish/Simulation";
-import { SnapshotEncoder } from "../../src/skirmish/SnapshotCodec";
+import { SnapshotEncoder, SnapshotDecoder } from "../../src/skirmish/SnapshotCodec";
 import { encodeState } from "../../src/skirmish/multiplayer/StateCodec";
 
 afterEach(() => vi.unstubAllGlobals());
@@ -32,6 +32,25 @@ function fixture() {
   };
 }
 describe("real network state decode worker", () => {
+  it("transfers packed views while retaining worker canonical buffers through binary decode and hidden updates", async () => {
+    const surface=await worker(), {match,encoder,expectedMap}=fixture(), decoder=new SnapshotDecoder();
+    const send=async(presentation:boolean) => surface.onmessage!({data:{...(await encodeState(encoder.encode(match.snapshot()),undefined,{},true)),expectedMap,packed:true,presentation}});
+    await send(true); await vi.waitFor(()=>expect(surface.postMessage).toHaveBeenCalledTimes(1));
+    const baseline=surface.postMessage.mock.calls[0][0];
+    expect(baseline.snapshot).toBeUndefined(); expect(decoder.decode(baseline.viewPacket).tick).toBe(0);
+    structuredClone(baseline.viewPacket,{transfer:surface.postMessage.mock.calls[0][1].transfer});
+    surface.onmessage!({data:{type:"presented",sequence:1}});
+    const tile=100, original=match.owners[tile];
+    match.tick=1;match.owners[tile]=original===1?2:1;await send(false);
+    match.tick=2;match.owners[tile]=original;await send(false);
+    await vi.waitFor(()=>expect(surface.postMessage).toHaveBeenCalledTimes(3));
+    surface.onmessage!({data:{type:"presentation",packed:true}});
+    await vi.waitFor(()=>expect(surface.postMessage).toHaveBeenCalledTimes(4));
+    const latest=surface.postMessage.mock.calls[3][0];
+    expect(latest.snapshot).toBeUndefined();expect(latest.viewPacket.tiles[0]).toBe(tile);
+    expect(decoder.decode(latest.viewPacket).owners[tile]).toBe(original);
+    expect(latest.viewPacket.tick).toBe(2);
+  });
   it("applies hidden canonical updates without cloning views and projects the latest state on demand", async () => {
     const surface = await worker(), { match, encoder, expectedMap } = fixture();
     const tile = match.map.ref(30, 20), original = match.owners[tile];

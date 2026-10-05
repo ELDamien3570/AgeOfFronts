@@ -1,6 +1,6 @@
 import type { Snapshot, SnapshotPacket } from "../Protocol";
 import { MAX_QUEUED_ORDERS, MAX_SQUADS } from "../Protocol";
-import { SNAPSHOT_LAYOUT, SnapshotDecoder } from "../SnapshotCodec";
+import { SNAPSHOT_LAYOUT, SnapshotDecoder, SnapshotEncoder } from "../SnapshotCodec";
 const {
   squadStride: SQUAD_STRIDE,
   orderStride: ORDER_STRIDE,
@@ -10,6 +10,9 @@ const {
 /** Worker-owned canonical state. Network deltas are never presentation frames. */
 export class CanonicalStateStream {
   private readonly decoder = new SnapshotDecoder();
+  private acknowledgedRoadRevision = -1;
+  private acknowledgedDepositRevision = -1;
+  private readonly pendingGeometry = new Map<number, { roads: number; deposits: number }>();
   private latest?: Snapshot;
   private sequence = 0;
   private presented = 0;
@@ -131,6 +134,38 @@ export class CanonicalStateStream {
   presentationForTransfer(): { snapshot: Snapshot; canonicalSequence: number } {
     return this.project(true);
   }
+  /** Packed, packet-owned presentation. Tile obligations are fenced by the
+   * presentation ACK, not an encoder cursor, so dropped views cannot lose dirt.
+   * Full entity rows make any latest-only view independently applicable. */
+  presentationPacket(): { viewPacket: SnapshotPacket; canonicalSequence: number } {
+    if (!this.latest) throw new Error("Canonical state is unavailable");
+    const source = this.latest, reset = this.resetSequence > this.presented;
+    const tiles: number[] = [];
+    const append = (tile: number) => {
+      const value = source.owners[tile] | (source.claims[tile] << 8) | (source.progress[tile] << 16);
+      if (!reset || value !== 0) tiles.push(tile, value);
+    };
+    if (reset) for (let tile = 0; tile < source.owners.length; tile++) append(tile);
+    else for (const tile of this.dirty.keys()) append(tile);
+    // Each view is independently complete. Encoder cursors must never fence
+    // changes against a projected view that the main thread might discard.
+    const viewPacket = new SnapshotEncoder(true).encode(source, undefined, undefined,
+      { tiles: new Uint32Array(tiles), reset,
+        roadsChanged: reset || source.expansion?.roadRevision !== this.acknowledgedRoadRevision,
+        resourcesChanged: reset || this.depositRevision !== this.acknowledgedDepositRevision });
+    viewPacket.entityMode = "full";
+    if (!reset && viewPacket.expansion) {
+      if (source.expansion?.roadRevision === this.acknowledgedRoadRevision) delete viewPacket.expansion.roads;
+      if (this.depositRevision === this.acknowledgedDepositRevision) {
+        delete viewPacket.expansion.deposits;
+        delete viewPacket.expansion.depositOwners;
+      }
+    }
+    this.pendingGeometry.set(this.sequence, { roads: source.expansion?.roadRevision ?? -1, deposits: this.depositRevision });
+    // Retained views are bounded like the online transport's presentation queue.
+    if (this.pendingGeometry.size > 4) this.pendingGeometry.delete(this.pendingGeometry.keys().next().value!);
+    return { viewPacket, canonicalSequence: this.sequence };
+  }
   private project(forTransfer: boolean): { snapshot: Snapshot; canonicalSequence: number } {
     if (!this.latest) throw new Error("Canonical state is unavailable");
     const expansion = this.latest.expansion;
@@ -155,6 +190,12 @@ export class CanonicalStateStream {
   acknowledge(sequence: number): void {
     if (sequence <= this.presented || sequence > this.sequence) return;
     this.presented = sequence;
+    const geometry = this.pendingGeometry.get(sequence);
+    if (geometry) {
+      this.acknowledgedRoadRevision = geometry.roads;
+      this.acknowledgedDepositRevision = geometry.deposits;
+    }
+    for (const key of this.pendingGeometry.keys()) if (key <= sequence) this.pendingGeometry.delete(key);
     for (const [tile, changed] of this.dirty)
       if (changed <= sequence) this.dirty.delete(tile);
   }
