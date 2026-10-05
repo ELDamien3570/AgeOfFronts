@@ -10,7 +10,7 @@ import type { AiEconomicSnapshot } from "./AiEconomicSnapshot";
 import type { AiProductionDemand } from "./AiMilitaryDemand";
 import type { Expansion } from "./Expansion";
 import { extractionPriority, stoneExtractionAllowed } from "./AiExtractionPolicy";
-import { TRADE_RULES } from "../content/Economy";
+import { TRADE_RULES, tradeStockPerSecond } from "../content/Economy";
 import { militaryPosture } from "./AiMilitaryPosture";
 import { personalityOf } from "../content/AiPersonalities";
 import { cityReserveIncome } from "../content/Economy";
@@ -113,6 +113,11 @@ export class AiPlacementCandidates {
       "mirv-launcher",
     ];
     const start = this.cursors.get(player.id) ?? 0;
+    const sourceGoods = {factory: 0, port: 0};
+    for (const b of snapshot.buildings)
+      if (!b.remainingTicks && (b.type === "factory" || b.type === "port"))
+        sourceGoods[b.type] += this.expansion.supply.goods.get(b.id) ?? 0;
+    const traders = this.expansion.trade.actors.filter(a=>a.playerId===player.id).length;
     const posture=militaryPosture(snapshot,personalityOf(player),this.expansion.progression.technologySpeed);
     const missing=Math.max(0,posture.target-snapshot.squads.length-snapshot.recruitment.filter(j=>j.category==="land").length);
     const support=new Map<BuildingType,number>();
@@ -193,14 +198,27 @@ export class AiPlacementCandidates {
       const ports = snapshot.buildings.filter(b => b.type === "port").length;
       const productiveLand = this.expansion.economy.tradeQuotes.best(player.id,false);
       const productiveSea = this.expansion.economy.tradeQuotes.best(player.id,true);
-      const tradeGrowth = safeGrowth && factories + ports < TRADE_RULES.actorCap &&
-        ((productiveLand?.quote.riskAdjustedGoldPer1000Ticks ?? 0) > 0 || (productiveSea?.quote.riskAdjustedGoldPer1000Ticks ?? 0) > 0);
-      if (type === "factory" && tradeGrowth) objective = Math.max(objective,5500);
+      // More producers help only when existing couriers actually exhaust stock.
+      // Positive revenue alone says nothing about marginal sale capacity.
+      const sourceStock = (naval: boolean) => sourceGoods[naval ? "port" : "factory"];
+      const growth = (naval: boolean) => {
+        const evidence = naval ? productiveSea : productiveLand;
+        return safeGrowth && factories + ports < TRADE_RULES.actorCap && traders < TRADE_RULES.actorCap && !!evidence &&
+          evidence.quote.riskAdjustedGoldPer1000Ticks > 0 && evidence.quote.returned === 0 &&
+          sourceStock(naval) < TRADE_RULES.minimumDrop;
+      };
+      const landGrowth = growth(false), seaGrowth = growth(true);
+      if (type === "factory" && landGrowth) objective = Math.max(objective,3000);
       // Repeated unsold land cargo is receiving-capacity evidence, not a reason
       // to keep adding factories. Cities create sale capacity as well as reserves.
+      const cityCapacity = snapshot.buildings.filter(b=>b.type==="city" && !b.remainingTicks).length *
+        TRADE_RULES.receivingGoodsPerSecondPerBuilding;
+      const goodsOutput = snapshot.buildings.filter(b=>b.type==="factory" && !b.remainingTicks)
+        .reduce((n,b)=>n+tradeStockPerSecond(b.age ?? "StoneAge"),0);
       if (type === "city" && safeGrowth && count < 12 && productiveLand &&
-        productiveLand.quote.returned > productiveLand.quote.delivered)
-        objective = Math.max(objective,6500);
+        productiveLand.quote.returned > 0 && sourceStock(false) >= TRADE_RULES.minimumDrop &&
+        goodsOutput > cityCapacity)
+        objective = Math.max(objective,3500);
       if (snapshot.isolated && type === "city" && count < 3) objective = Math.max(objective,6000);
       const extraction = ["mine", "oil-well", "oil-rig"].includes(type);
       let tiles: readonly number[];
@@ -245,9 +263,9 @@ export class AiPlacementCandidates {
         objective = missingProducer ? 12000 : !count ? 5000 : 1000;
       } else if (type === "port") {
         // Bootstrap navigation without waiting for another faction to build
-        // the first market. Further sites support growing factory capacity.
-        const desired = Math.max(snapshot.isolated ? 2 : 1, Math.ceil(factories / 3),
-          tradeGrowth && productiveSea ? ports + 1 : 0);
+        // the first market. Further trade sites need actual producer starvation.
+        const desired = Math.max(snapshot.isolated ? 2 : 1,
+          seaGrowth ? ports + 1 : 0);
         if (count >= desired) continue;
         // Any occupied perimeter cell may meet the coast; the anchor itself
         // may be one cell inland on east/south-facing shores.
@@ -261,14 +279,14 @@ export class AiPlacementCandidates {
         const stack=source?.type === "port" && snapshot.buildings.filter(b=>b.type==="port" && b.tile===source.tile).length<TRADE_RULES.maximumStack ? source.tile : undefined;
         preferredTile=stack;
         tiles = [...anchors].sort((a,b)=>Number(b===stack)-Number(a===stack) || a-b);
-        objective = tiles.length ? (!count ? snapshot.isolated ? 11000 : 7000 : tradeGrowth ? 5500 : 4000) : 0;
+        objective = tiles.length ? (!count ? snapshot.isolated ? 11000 : 7000 : seaGrowth ? 3000 : 2000) : 0;
       } else {
         if (!objective && count >= 2) continue;
         // Advance past a filled capital rather than revisiting its nearest
         // 64 tiles forever. Each page and exact-check allowance remain bounded.
         page = this.landPage(player, key);
         tiles = page.tiles;
-        if(type === "factory" && tradeGrowth) {
+        if(type === "factory" && landGrowth) {
           const source=world.building(productiveLand?.source ?? productiveSea?.source ?? -1);
           if(source?.type==="factory" && snapshot.buildings.filter(b=>b.type==="factory" && b.tile===source.tile).length<TRADE_RULES.maximumStack)
             preferredTile=source.tile;

@@ -103,7 +103,7 @@ describe("age-up pacing", () => {
       const player = game.players[0];
       player.gold = 1_000_000;
       const terms = researchTerms(ADVANCES[i], speed);
-      const factor = i === 0 ? 1 : 0.75;
+      const factor = i === 0 ? 1 : 0.25;
       expect(terms).toEqual({ gold: Math.ceil(original[i].gold * factor / speed), ticks: Math.ceil((700 + i * 100) / speed) });
       expect(progression.advance(player)).toBeNull();
       expect(state.advancement?.totalTicks).toBe(terms.ticks);

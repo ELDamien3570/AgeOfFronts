@@ -88,11 +88,11 @@ export function economicCandidates(
       priority:
         snapshot.threatTroops > snapshot.readyTroops / 2 && kind === "recruit"
           ? "emergency"
-          : "growth",
+          : kind === "research" || kind === "advance" ? "committed" : "growth",
       score: Math.floor((benefit * 2400) / Math.max(2400, delay+(kind==="construct" && ["blacksmith","armory","arms-factory"].includes((command as {buildingType?:string}).buildingType??"") ? Math.min(2400,demand.timeToOutput??0)/4:0))) - opportunity,
       reason,
       earliestTick: snapshot.tick,
-      expiresTick: snapshot.tick + 2400,
+      expiresTick: snapshot.tick + (kind === "research" || kind === "advance" ? 12000 : 2400),
       prerequisites,
     });
   };
@@ -336,6 +336,9 @@ export function economicCandidates(
   const ordered = candidates.filter(c => c.score > 0).sort(
     (a,b) => Number(b.priority === "emergency") - Number(a.priority === "emergency") ||
       Number(b.reason.includes("production-prerequisite:")) - Number(a.reason.includes("production-prerequisite:")) ||
+      Number(b.kind === "advance") - Number(a.kind === "advance") ||
+      (snapshot.readyTroops >= 4000 && snapshot.threatTroops <= snapshot.readyTroops / 2 ?
+        Number(b.priority === "committed") - Number(a.priority === "committed") : 0) ||
       b.score-a.score || (a.id < b.id ? -1 : a.id > b.id ? 1 : 0),
   );
   const choices = ordered.slice(0,4);

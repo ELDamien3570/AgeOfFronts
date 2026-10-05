@@ -11,6 +11,7 @@ import { militaryDemand } from "../../src/skirmish/domain/AiMilitaryDemand";
 import { AiProductionDependencies } from "../../src/skirmish/domain/AiProductionDependencies";
 import { automaticProduction } from "../../src/skirmish/domain/AutomaticProduction";
 import { economicCandidates } from "../../src/skirmish/domain/AiEconomicPlanner";
+import { tradeCycleQuote } from "../../src/skirmish/domain/TradeQuote";
 
 function fixture() {
   const map = new GameMapImpl(
@@ -32,6 +33,38 @@ function fixture() {
   return { game, player, expansion };
 }
 describe("coordinated AI economy", () => {
+  it("expands markets rather than producers when profitable couriers return unsold cargo", () => {
+    const {game,player,expansion}=fixture();
+    const territory=game.checkpoint();territory.owners.fill(player.id);game.restore(territory);
+    const research=TECHNOLOGIES.filter(t=>["StoneAge","BronzeAge"].includes(t.age)).map(t=>t.id);
+    expansion.progression.states[player.id].age="BronzeAge";
+    expansion.progression.states[player.id].completed=research;
+    const tiles=game.ownedLandNearest(player.id,player.base,64);
+    for(const b of [...game.buildings])game.removeBuilding(b.id);
+    const city=game.addBuilding({id:game.allocateId(),playerId:player.id,type:"city",tile:tiles[0],age:"BronzeAge",remainingTicks:0});
+    const factories=[tiles[20],tiles[40]].map(tile=>game.addBuilding({id:game.allocateId(),playerId:player.id,type:"factory",tile,age:"BronzeAge",remainingTicks:0}));
+    for(const b of factories)expansion.supply.goods.set(b.id,100);
+    const snapshot=economicSnapshot({player,tick:0,generation:0,age:"BronzeAge",research,inventory:{},
+      buildings:game.buildingFacts().byOwner(player.id),squads:game.squads,ships:[],jobs:[],production:{},cap:20,threatTroops:0});
+    snapshot.readyTroops=6000;
+    const quote=tradeCycleQuote({naval:false,stock:30,capacity:30,valuePerGood:10,supplyTicks:0,
+      legs:[{marketId:city.id,quantity:10,distance:10,foreign:false,allied:false,travelTicks:60}],returnTicks:60,observedRisk:0});
+    const best=vi.spyOn(expansion.economy.tradeQuotes,"best").mockImplementation((_id,naval)=>naval?undefined:
+      {source:factories[0].id,market:city.id,quote,tick:0,generation:game.aiGeneration(player.id)});
+    try {
+      const candidates=Array.from({length:300},()=>expansion.economy.placements.candidates(player,snapshot,{equipment:{},materials:{},units:{}})).flat();
+      expect(candidates.some(c=>c.type==="factory"&&c.objective>0)).toBe(false);
+      expect(candidates.some(c=>c.type==="city"&&c.objective>=3500)).toBe(true);
+      // A fully sold trip is still no reason to grow if existing sources have
+      // stock waiting: it may simply be the best trader at a congested market.
+      quote.returned=0;quote.delivered=30;
+      expect(Array.from({length:300},()=>expansion.economy.placements.candidates(player,snapshot)).flat()
+        .some(c=>c.type==="factory"&&c.objective>0)).toBe(false);
+      for(const b of factories)expansion.supply.goods.set(b.id,0);
+      expect(Array.from({length:300},()=>expansion.economy.placements.candidates(player,snapshot)).flat()
+        .some(c=>c.type==="factory"&&c.objective>=3000)).toBe(true);
+    } finally {best.mockRestore();}
+  });
   it("finds a workshop beyond a saturated capital and resumes the placement page after restore", () => {
     const {game,player,expansion}=fixture();
     const territory=game.checkpoint();

@@ -366,7 +366,9 @@ export class AiEconomicDirector {
     }
     // Refitting existing troops must not consume each development slot while
     // the workshop needed for the remaining troops is still missing.
-    if (!candidates.some(c => c.reason.includes("production-prerequisite:")) &&
+    const developing = candidates[0]?.kind === "research" || candidates[0]?.kind === "advance" ||
+      this.saving.get(player.id)?.intent.kind === "research" || this.saving.get(player.id)?.intent.kind === "advance";
+    if (!developing && !candidates.some(c => c.reason.includes("production-prerequisite:")) &&
       snapshot.threatTroops <= snapshot.readyTroops / 2 && this.military.decide(player) && !posture.wealthy) return;
     snapshot.liquid={gold:player.gold,reserves:player.reserves,items:{...supply.inventories[player.id]}};
     this.diagnostics.candidates += candidates.length;
@@ -389,6 +391,9 @@ export class AiEconomicDirector {
       goal &&
       challenger &&
       (challenger.priority === "emergency" || challenger.reason.includes("production-prerequisite:") ||
+        (challenger.kind === "advance" && goal.intent.kind === "research") ||
+        (challenger.priority === "committed" && goal.intent.priority === "growth" &&
+          !goal.intent.reason.includes("production-prerequisite:")) ||
         (goal.intent.kind !== "research" && goal.intent.kind !== "advance" && challenger.score * 5 > goal.intent.score * 6))
     ) {
       this.ledger.release(goal.intent.id);

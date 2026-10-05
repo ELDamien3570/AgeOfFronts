@@ -35,6 +35,60 @@ function fixture(age: Age) {
 }
 
 describe("AI progression scoring", () => {
+  it("chooses prerequisite research over optional growth once a safe standing force exists", () => {
+    const {state,snapshot}=fixture("BronzeAge");
+    const unfinished=TECHNOLOGIES.filter(t=>t.age==="BronzeAge" && t.slot>=4).map(t=>t.id);
+    state.completed=state.completed.filter(id=>!unfinished.includes(id));
+    snapshot.research=state.completed;
+    snapshot.readyTroops=6000;
+    snapshot.liquid.gold=1000;
+    const candidates=economicCandidates(snapshot,state,AI_PERSONALITIES[0],
+      {units:{},equipment:{},materials:{}},1,
+      [{type:"factory",tile:0,objective:5500,reason:"capacity:factory"}]);
+    expect(candidates[0].kind).toBe("research");
+    expect(candidates[0].priority).toBe("committed");
+    expect(candidates[0].cost.gold).toBeGreaterThan(snapshot.liquid.gold!);
+  });
+  it("saves for a viable age-up instead of repeatedly buying profitable infrastructure", () => {
+    const {game,player,state,snapshot}=fixture("BronzeAge");
+    game.options.aiEconomy=true;
+    game.owners.fill(player.id);
+    const template=game.squads[0];
+    for (const squad of [...game.squads])game.removeSquad(squad.id);
+    for(let i=0;i<4;i++)game.addSquad({...template,id:game.allocateId(),playerId:player.id,
+      definitionId:"bronzeage-infantry",troops:1000,embarkedOn:null,refit:null});
+    game.expansion!.supply.inventories[player.id]={...snapshot.liquid.items};
+    player.gold=1000;
+    const capacity=vi.spyOn(game,"squadCapacity").mockReturnValue(4);
+    const placements=vi.spyOn(game.expansion!.economy.placements,"candidates").mockReturnValue([
+      {type:"factory",tile:player.base,objective:5500,reason:"capacity:factory"}]);
+    const refitting=vi.spyOn(game.expansion!.economy.military,"decide").mockReturnValue(false);
+    try {
+      game.expansion!.economy.decide(player);
+      expect(player.gold).toBe(1000);
+      expect(game.expansion!.economy.ledger.protected(player.id).gold).toBe(1000);
+      const saved=game.expansion!.economy.checkpoint();
+      game.expansion!.economy.restore(saved);
+      while(player.gold<ADVANCES[1].gold) {
+        player.gold=Math.min(ADVANCES[1].gold,player.gold+1000);
+        game.tick+=60;
+        game.expansion!.economy.decide(player);
+        if(state.advancement)break;
+      }
+      expect(state.advancement?.target).toBe("ClassicalAge");
+      expect(player.gold).toBe(0);
+      expect(refitting).not.toHaveBeenCalled();
+    } finally {capacity.mockRestore();placements.mockRestore();refitting.mockRestore();}
+  });
+  it("prioritizes affordable emergency troops over an age-up", () => {
+    const {state,snapshot}=fixture("BronzeAge");
+    snapshot.headroom=10;
+    snapshot.threatTroops=600;
+    const candidates=economicCandidates(snapshot,state,AI_PERSONALITIES[0],
+      {units:{frontline:10},equipment:{},materials:{}},1,[]);
+    expect(candidates[0].priority).toBe("emergency");
+    expect(candidates[0].kind).toBe("recruit");
+  });
   it.each(AGES.slice(0, -1))("keeps a viable funded %s age transition selectable", age => {
     const { choices } = fixture(age);
     const advance = choices().find(c => c.kind === "advance");

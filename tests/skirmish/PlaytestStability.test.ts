@@ -286,7 +286,10 @@ describe("playtest stability regressions", () => {
     for (const squad of [...game.squads])
       if (squad.playerId !== ai.id) game.removeSquad(squad.id);
     e.progression.states[ai.id].completed = TECHNOLOGIES.filter(
-      (t) => t.age === "StoneAge" && t.id !== "stoneage-field-engineering",
+      // Keep advancement unavailable: a viable age-up now intentionally wins
+      // over completing an optional third tree.
+      (t) => t.age === "StoneAge" && t.id !== "stoneage-field-engineering" &&
+        !(t.tree === "naval" && t.slot === 4),
     ).map((t) => t.id);
     for (const b of game.buildings)
       if (b.playerId === ai.id)
