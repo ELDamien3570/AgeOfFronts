@@ -2,6 +2,9 @@ import { AGES, type Age } from "../domain/Definitions";
 
 // Shared opening and growth rules used by simulation and presentation.
 export const STARTING_AGE_TROOPS = 6_000;
+export const LAND_TRADE_CAPACITIES = [20, 30, 40, 50, 60, 80, 120] as const;
+export const tradeStockPerSecond = (age: Age) => 2 * (AGES.indexOf(age) + 1);
+export const extractionYieldMultiplier = (age: Age) => 1 + Math.floor(AGES.indexOf(age) / 2);
 export const TRADE_RULES = {
   actorCap: 48,
   spawnCooldownTicks: 400,
@@ -26,12 +29,13 @@ export function stackCargoPercent(level: number): number {
           TRADE_RULES.cargoExponent,
   );
 }
-// Below one percent of map width, income tapers linearly. Long voyages
-// reach at most three times base income at twenty-five percent of map width.
+// Successful long voyages earn 1.5x equivalent land income per cycle.
+// Short crossings taper; capture and fleet costs reduce actual income.
 export const WATER_TRADE_PRICING = {
   baseWidthPercent: 1,
-  maximumWidthPercent: 25,
-  maximumPercent: 300,
+  longWidthPercent: 10,
+  shortRatePercent: 75,
+  longRatePercent: 150,
 } as const;
 export const RESERVE_GROWTH = {
   base: [12, 18, 26, 36, 48, 64, 80],

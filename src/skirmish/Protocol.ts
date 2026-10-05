@@ -7,6 +7,7 @@ import type { MapGeography } from "./Geography";
 import type { ResourceTerrainData } from "./ResourceTerrain";
 import type {
   Age,
+  StartingAge,
   ArmyOrder,
   ChargeState,
   ExpansionSnapshot,
@@ -106,7 +107,7 @@ export type Command =
       type: "alliance";
       playerId: number;
       otherId: number;
-      action: "offer" | "accept" | "reject" | "renew" | "break";
+      action: "offer" | "offer-long-term" | "accept" | "reject" | "renew" | "break" | "declare" | "end-long-term";
     }
   | {
       type: "repair";
@@ -330,6 +331,9 @@ export interface Ship {
   readonly lastPlanTick?: number;
   readonly patrolTile?: number | null;
   readonly patrolDwellTicks?: number;
+  readonly navalTargetId?: number;
+  readonly navalTargetKind?: "ship" | "trade";
+  readonly autonomousVoyage?: boolean;
   readonly lastCombatTick?: number;
   readonly repairPortId?: number | null;
   readonly repairState?:
@@ -401,7 +405,7 @@ export interface MatchOptions {
   ruleset?: "sandbox-v1" | "ages-v1";
   victoryMode?: "solo" | "allied";
   technologySpeed?: TechnologySpeed;
-  startingAge?: Age;
+  startingAge?: StartingAge;
 }
 
 export interface Snapshot {

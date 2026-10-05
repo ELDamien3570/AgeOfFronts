@@ -1,6 +1,16 @@
-import type { BuildingType } from "../Protocol";
+import type { BuildingType, Player } from "../Protocol";
 import { buildingTechnology } from "../content/Buildings";
-import type { Age } from "./Definitions";
+import { AGES, type Age, type ProgressionState } from "./Definitions";
+
+/** Unlock only; ordinary research, payment and advancement jobs still apply. */
+export function tribeAdvanceRejection(player: Player, players: readonly Player[], states: Record<number, ProgressionState>): string | null {
+  if (player.kind !== "tribe") return null;
+  const next = AGES.indexOf(states[player.id].age) + 1;
+  if (next >= AGES.length) return null;
+  const survivors = players.filter(p => p.kind !== "tribe" && !p.eliminated);
+  return survivors.length && survivors.every(p => AGES.indexOf(states[p.id].age) >= next)
+    ? null : "Every surviving non-tribe faction must reach the next age first";
+}
 
 const MILITARY = new Set<BuildingType>([
   "barracks", "archery", "stables", "siege-workshop", "tower", "gun-nest",

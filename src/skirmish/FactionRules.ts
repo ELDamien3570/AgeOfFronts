@@ -1,6 +1,7 @@
 import type { Player } from "./Protocol";
 import { MAX_SQUADS } from "./Protocol";
-import type { Age } from "./domain/Definitions";
+import { AGES, type Age } from "./domain/Definitions";
+import { TRADE_RULES } from "./content/Economy";
 
 export const AGE_SQUAD_CAPS: Readonly<Record<Age, number>> = {
   StoneAge: 60,
@@ -41,6 +42,13 @@ export const TRIBE_STARTING_SQUADS = 4;
 export const TRIBE_STARTING_RESERVES = 1500;
 export const TRIBE_STARTING_GOLD = 150;
 export const TRIBE_SQUAD_CAP = 10;
+export const TRIBE_SQUADS_PER_AGE = 5;
+export const TRIBE_TRADER_CAP = 16;
+export const TRIBE_TRADERS_PER_AGE = 2;
+
+export function tradeActorCap(player: Pick<Player, "kind">, age?: Age): number {
+  return player.kind === "tribe" ? TRIBE_TRADER_CAP + TRIBE_TRADERS_PER_AGE * (age ? AGES.indexOf(age) : 0) : TRADE_RULES.actorCap;
+}
 export const TRIBE_BASE_RADIUS = 3;
 export const TRIBE_INTERCEPT_RANGE = 8;
 export const TRIBE_PURSUIT_RANGE = 12;
@@ -77,7 +85,7 @@ export function matchTribeCount(
 export function squadCap(player: Pick<Player, "kind">, age?: Age): number {
   // The legacy sandbox has no progression; its diagnostic ceiling remains 200.
   return player.kind === "tribe"
-    ? TRIBE_SQUAD_CAP
+    ? TRIBE_SQUAD_CAP + TRIBE_SQUADS_PER_AGE * (age ? AGES.indexOf(age) : 0)
     : age
       ? AGE_SQUAD_CAPS[age]
       : MAX_SQUADS;

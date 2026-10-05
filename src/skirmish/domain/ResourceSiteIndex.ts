@@ -1,6 +1,6 @@
 import type { GameMap } from "../../core/game/GameMap";
+import { boundsOverlap, buildingReservationBounds } from "../BuildingFootprint";
 import type { BuildingType } from "../Protocol";
-import { BUILDING_SPACING } from "../Rules";
 import type { Deposit } from "./Definitions";
 
 type Node = Readonly<Deposit>;
@@ -13,7 +13,6 @@ interface OwnerBucket {
  * mutation. Unversioned DTO callers retain exact content validation. */
 export class ResourceSiteIndex {
   private readonly nodes = new Map<number, Node>();
-  private readonly exclusion = new Set<number>();
   private readonly ownerGroups = new Map<number, OwnerBucket>();
   private readonly facts = new Map<
     number,
@@ -60,19 +59,6 @@ export class ResourceSiteIndex {
     if (!rebuild) return false;
     this.counters.geometryRebuilds++;
     this.counters.geometryRows += deposits.length;
-    this.exclusion.clear();
-    for (const node of deposits) {
-      if (node.resource === "horses" || !this.map.isLand(node.tile)) continue;
-      const x = this.map.x(node.tile),
-        y = this.map.y(node.tile);
-      for (let dy = -BUILDING_SPACING + 1; dy < BUILDING_SPACING; dy++)
-        for (let dx = -BUILDING_SPACING + 1; dx < BUILDING_SPACING; dx++)
-          if (
-            dx * dx + dy * dy < BUILDING_SPACING ** 2 &&
-            this.map.isValidCoord(x + dx, y + dy)
-          )
-            this.exclusion.add(this.map.ref(x + dx, y + dy));
-    }
     return true;
   }
   private refreshRecords(deposits: readonly Node[]): void {
@@ -132,9 +118,32 @@ export class ResourceSiteIndex {
     return this.nodes.get(tile);
   }
   rejection(type: BuildingType, tile: number): string | null {
-    return !["mine", "oil-well", "oil-rig"].includes(type) &&
-      this.exclusion.has(tile)
-      ? "Leave room for resource extraction sites"
-      : null;
+    if (["mine", "oil-well", "oil-rig"].includes(type)) return null;
+    const bounds = buildingReservationBounds(this.map, tile, type);
+    // Extraction footprints are 2x2 plus their one-cell borders. Discover only
+    // deposit anchors whose reservation could intersect this local rectangle.
+    for (
+      let y = Math.max(0, bounds.top - 2);
+      y <= Math.min(this.map.height() - 1, bounds.bottom);
+      y++
+    )
+      for (
+        let x = Math.max(0, bounds.left - 2);
+        x <= Math.min(this.map.width() - 1, bounds.right);
+        x++
+      ) {
+        const node = this.nodes.get(this.map.ref(x, y));
+        if (
+          node &&
+          node.resource !== "horses" &&
+          this.map.isLand(node.tile) &&
+          boundsOverlap(
+            bounds,
+            buildingReservationBounds(this.map, node.tile, "mine"),
+          )
+        )
+          return "Leave room for resource extraction sites";
+      }
+    return null;
   }
 }

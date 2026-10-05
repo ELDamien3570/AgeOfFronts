@@ -19,6 +19,15 @@ export const AGE_NAMES = [
   "Early Modern",
   "Modern",
 ];
+/** Starting presets do not add tiers to the gameplay content catalogue. */
+export const STARTING_AGES = [...AGES, "PostModern"] as const;
+export type StartingAge = (typeof STARTING_AGES)[number];
+export function startingGameplayAge(start: StartingAge): Age {
+  return start === "PostModern" ? "Modern" : start;
+}
+export function startingAgeName(start: StartingAge): string {
+  return start === "PostModern" ? "Post-Modern" : AGE_NAMES[AGES.indexOf(start)];
+}
 export const TREES = ["naval", "warfare", "economic"] as const;
 export type Tree = (typeof TREES)[number];
 export type TechnologySpeed = 1 | 2 | 3;
@@ -207,6 +216,7 @@ export interface AllianceOffer {
   proposer: number;
   recipient: number;
   expiresTick: number;
+  longTerm?: boolean;
 }
 export interface Alliance {
   id: number;
@@ -214,12 +224,15 @@ export interface Alliance {
   b: number;
   expiresTick: number;
   renewal: number[];
+  longTerm?: boolean;
+  ending?: boolean;
 }
 export interface DiplomacyState {
   offers: AllianceOffer[];
   alliances: Alliance[];
   betrayal: Record<number, number>;
   cooldowns: Record<string, number>;
+  wars?: { a: number; b: number }[];
 }
 export interface TradeActor {
   id: number;
@@ -247,6 +260,9 @@ export interface TradeActor {
   nextPathIndex: number;
   waitTicks: number;
   quoteAllies: number[];
+  pricedRouteTiles?: number;
+  pricedSeaSpeed?: number;
+  pricedCargoRatio?: number;
 }
 export interface Barrier {
   readonly kind?: "trench";
@@ -373,5 +389,5 @@ export interface MatchEvent {
   otherId?: number;
   kind: "age" | "conquest" | "diplomacy" | "promotion" | "war";
   age?: Age;
-  action?: "offer" | "accept" | "reject" | "renew" | "break" | "expire" | "declare" | "withdraw";
+  action?: "offer" | "offer-long-term" | "accept" | "reject" | "renew" | "break" | "end-long-term" | "expire" | "declare" | "withdraw";
 }

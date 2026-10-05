@@ -1,3 +1,4 @@
+import { claimBuildingFootprint } from "./BuildingFixtures";
 import { startingEconomy } from "../../src/skirmish/content/StartingEconomy";
 import { describe, expect, it } from "vitest";
 import { GameMapImpl } from "../../src/core/game/GameMap";
@@ -193,7 +194,8 @@ describe("minor tribes", () => {
       owner === tribe.id && game.map.euclideanDistSquared(tile, tribe.base) >= 9 ? [tile] : []
     );
     expect(owned.length).toBeGreaterThan(0);
-    const cityTile = owned[0];
+    const cityTile = game.map.ref(game.map.x(tribe.base)+6,game.map.y(tribe.base));
+    claimBuildingFootprint(game,cityTile,"city",tribe.id);
     expect(
       game.applyCommand({
         type: "build",
@@ -202,9 +204,8 @@ describe("minor tribes", () => {
         tile: cityTile,
       }),
     ).toBeNull();
-    const nextTile = owned.find(
-      (t) => game.map.euclideanDistSquared(t, cityTile) >= 9 && game.map.euclideanDistSquared(t, tribe.base) >= 9
-    )!;
+    const nextTile = game.map.ref(game.map.x(tribe.base)-6,game.map.y(tribe.base));
+    claimBuildingFootprint(game,nextTile,"barracks",tribe.id);
     expect(
       game.applyCommand({
         type: "build",

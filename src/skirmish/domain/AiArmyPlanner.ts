@@ -1,4 +1,5 @@
 import { flankCandidate, approachCandidate } from "./AiTacticalRoutes";
+import { AiInvasionResponse } from "./AiInvasionResponse";
 import { structureAim } from "./StructureTargeting";
 import { tilePoint } from "../SquadGeometry";
 import { UNITS } from "../content/Units";
@@ -47,6 +48,7 @@ interface ArmyObjective {
   breach?: { scan: number; start: number; barrier?: number; building?: number; cursor: number; tile?: number; shooters: number[]; since: number };
 }
 export class AiArmyPlanner {
+  readonly invasion: AiInvasionResponse;
   readonly objectives = new Map<number, ArmyObjective>();
   private cursor = 0;
   private serial = 0;
@@ -54,15 +56,17 @@ export class AiArmyPlanner {
   constructor(
     private readonly expansion: Expansion,
     private readonly economy: AiEconomicDirector,
-  ) {}
+  ) { this.invasion = new AiInvasionResponse(expansion, economy); }
   checkpoint() {
     return structuredClone({
       objectives: [...this.objectives],
       cursor: this.cursor,
       serial: this.serial,
+      invasion: this.invasion.checkpoint(),
     });
   }
   restore(saved?: ReturnType<AiArmyPlanner["checkpoint"]>): void {
+    this.invasion.restore(saved?.invasion);
     this.objectives.clear();
     this.cursor = saved?.cursor ?? 0;
     this.serial = saved?.serial ?? 0;
@@ -70,6 +74,7 @@ export class AiArmyPlanner {
       this.objectives.set(id, plan);
   }
   release(playerId: number): void {
+    this.invasion.release(playerId);
     const plan = this.objectives.get(playerId);
     if (plan) {
       this.economy.assets.release(plan.id); this.economy.routes.release(plan.id);
@@ -219,6 +224,8 @@ export class AiArmyPlanner {
       }
     }
     if (!player) return 0;
+    const defenseWork = this.invasion.step(player, budget, () => this.release(player!.id));
+    if (this.invasion.active(player.id)) { this.diagnostics.work = defenseWork; return defenseWork; }
     let plan = this.objectives.get(player.id);
     const abandoned=armies.armies.find(a=>a.playerId===player!.id && a.id!==plan?.armyId && a.state==="holding" &&
       a.memberIds.every(id=>!this.economy.assets.held(`squad:${id}`)));
@@ -301,8 +308,8 @@ export class AiArmyPlanner {
         .map((id) => world.squad(id)!)
         .filter((s) => s && this.eligible(s, plan!));
       const reserve = Math.max(
-          2,
-          Math.ceil((available.length * doctrine.reservePercent) / 100),
+          operations.offensiveTarget(player.id) !== undefined ? 0 : 2,
+          operations.offensiveTarget(player.id) !== undefined && available.length < profile.minimumRaidSquads ? 0 : Math.ceil((available.length * doctrine.reservePercent) / 100),
         ),
         maximum = Math.min(
           MAX_ORDER_SQUADS,
@@ -311,7 +318,7 @@ export class AiArmyPlanner {
         );
       if (
         maximum <
-        Math.min(profile.minimumRaidSquads, armies.capacity(player.id))
+        Math.min(operations.offensiveTarget(player.id) !== undefined ? 2 : profile.minimumRaidSquads, armies.capacity(player.id))
       ) {
         plan.cursor = 0;
         plan.rosterIds = world

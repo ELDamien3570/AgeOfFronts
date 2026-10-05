@@ -1637,12 +1637,43 @@ footer span:last-child {
   font-size: 11px;
 }
 .technology-detail-body {
-  max-height: clamp(48px, 10vh, 100px);
+  height: var(--technology-description-height);
   overflow: auto;
+  overscroll-behavior: contain;
+  scrollbar-gutter: stable;
   line-height: 1.4;
+}
+.technology-detail {
+  --technology-description-height: clamp(48px, 8vh, 80px);
+}
+.technology-detail-actions {
+  display: flex;
+  align-items: center;
+  flex-wrap: wrap;
+  justify-content: flex-end;
+  gap: 4px;
+}
+.technology-detail[data-expanded="true"] .technology-detail-body {
+  height: clamp(100px, 24vh, 240px);
 }
 .technology-detail-body p {
   margin: 6px 0;
+}
+.technology-detail-body .technology-description {
+  box-sizing: border-box;
+  min-height: var(--technology-description-height);
+  margin: 0;
+  padding: 6px 0;
+}
+.technology-detail-extra {
+  padding-top: 6px;
+}
+.technology-stats {
+  margin: 6px 0 10px;
+  padding-left: 18px;
+}
+.technology-stats li {
+  margin: 4px 0;
 }
 .technology-drawer #empire-panel-footer {
   display: flex;

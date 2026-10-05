@@ -4,7 +4,7 @@ import {
   MAX_HUMAN_PLAYERS,
 } from "../FactionRules";
 import { createEmpireProfile, type EmpireProfile } from "./EmpireProfile";
-import { AGES, type Age } from "../domain/Definitions";
+import { STARTING_AGES, type StartingAge } from "../domain/Definitions";
 import {
   FRIENDS_MATCH_RULES,
   isLobbyMapId,
@@ -30,7 +30,7 @@ export interface LobbySettings {
   /** Minor tribes. Base by map size; 0–30. */
   readonly tribeCount: number;
   readonly technologySpeed: 1 | 2 | 3;
-  readonly startingAge?: Age;
+  readonly startingAge?: StartingAge;
   readonly resourceDensity: ResourceMultiplier;
   readonly resourceOutput: ResourceMultiplier;
   readonly alliances: boolean;
@@ -127,7 +127,7 @@ export function validateLobbySettings(settings: LobbySettings): LobbySettings {
     throw new Error("Allied conquest requires alliances to be allowed.");
   if (
     settings.startingAge !== undefined &&
-    !AGES.includes(settings.startingAge)
+    !STARTING_AGES.includes(settings.startingAge)
   )
     throw new Error("Choose a supported starting age.");
   if (settings.infiniteGoldForPlayers !== undefined && typeof settings.infiniteGoldForPlayers !== "boolean")

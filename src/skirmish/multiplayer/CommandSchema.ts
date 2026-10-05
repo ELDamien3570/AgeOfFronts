@@ -77,7 +77,7 @@ export const commandSchema = z.discriminatedUnion("type", [
   }),
   command("alliance", {
     otherId: id,
-    action: z.enum(["offer", "accept", "reject", "renew", "break"]),
+    action: z.enum(["offer", "offer-long-term", "accept", "reject", "renew", "break", "declare", "end-long-term"]),
   }),
   command("repair", {
     buildingId: id.optional(),

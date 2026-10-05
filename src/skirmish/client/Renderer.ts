@@ -1,5 +1,7 @@
+import { buildingFootprint, buildingGroundBounds } from "../BuildingFootprint";
 import type { GameMap } from "../../core/game/GameMap";
 import { PlacementPreview } from "./PlacementPreview";
+import { PlacementCoverage } from "./PlacementCoverage";
 import { BuildingFacts } from "./BuildingFacts";
 import { UNIT, VESSEL } from "../content/Units";
 import { promotionLevel } from "../domain/Combat";
@@ -216,6 +218,7 @@ export class Renderer {
   selectedDeposit: number | null = null;
   placement?: { tile: number; type: BuildingType; friendly: boolean };
   buildSites: number[] = [];
+  private readonly placementCoverage = new PlacementCoverage();
   buildPreview?:PlacementPreview;
   selectionBox?: { x1: number; y1: number; x2: number; y2: number };
   marker?: { x: number; y: number; until: number; attack: boolean };
@@ -370,7 +373,12 @@ export class Renderer {
     this.territory!.update(snapshot);
     this.territoryLabels!.update(snapshot);
     if (this.buildingFacts.changed(snapshot.buildings)) {
-      this.occupiedBuildingTiles = new Set(snapshot.buildings.map((b) => b.tile));
+      this.occupiedBuildingTiles = new Set<number>();
+      for (const b of snapshot.buildings) {
+        const bounds = buildingGroundBounds(this.map!, b.tile, b.type);
+        for (let y=bounds.top; y<Math.min(this.map!.height(),bounds.bottom); y++)
+          for (let x=bounds.left; x<Math.min(this.map!.width(),bounds.right); x++) this.occupiedBuildingTiles.add(this.map!.ref(x,y));
+      }
       const stacks = new Map<
         string,
         {
@@ -599,7 +607,7 @@ export class Renderer {
           b.type === type &&
           (b.health ?? 1) > 0 &&
           visibleInViewport(
-            this.screen(this.map!.x(b.tile) + 0.5, this.map!.y(b.tile) + 0.5),
+            this.buildingCenter(b.tile, b.type),
             this.buildingHalfSize(b),
             this.width,
             this.height,
@@ -609,24 +617,25 @@ export class Renderer {
   }
 
   private buildingHalfSize(building: Snapshot["buildings"][number]): number {
-    return building.type === "tower"
-      ? Math.max(6, this.scale / 2)
-      : Math.max(9, this.scale / 2);
+    const shape = buildingFootprint(building.type);
+    return Math.max(9, Math.hypot(shape.width, shape.height) * this.scale / 2);
+  }
+
+  private buildingCenter(tile: number, type: BuildingType) {
+    const shape = buildingFootprint(type);
+    return this.screen(this.map!.x(tile) + shape.width/2, this.map!.y(tile) + shape.height/2);
   }
 
   buildingAt(x: number, y: number): number | null {
     let nearest: number | null = null;
     let distance = Infinity;
     for (const { building } of this.buildingStacks) {
-      const p = this.screen(
-        this.map!.x(building.tile) + 0.5,
-        this.map!.y(building.tile) + 0.5,
-      );
+      const p = this.buildingCenter(building.tile, building.type);
       const d = (p.x - x) ** 2 + (p.y - y) ** 2;
-      const half = this.buildingHalfSize(building);
+      const shape = buildingFootprint(building.type);
       if (
-        Math.abs(p.x - x) <= half &&
-        Math.abs(p.y - y) <= half &&
+        Math.abs(p.x - x) <= Math.max(9, shape.width * this.scale/2) &&
+        Math.abs(p.y - y) <= Math.max(9, shape.height * this.scale/2) &&
         d < distance
       ) {
         nearest = building.id;
@@ -728,7 +737,7 @@ export class Renderer {
       ? this.eraArtwork.get(definitionId, "idle", elapsedTicks)
       : undefined;
     const image = definitionId ? era?.source : this.buildingArtwork.get(type);
-    const { artwork, size, footprintSize, inset, backdropAlpha } = buildingSymbol(
+    const { artwork, size, footprintWidth, footprintHeight, inset, backdropAlpha } = buildingSymbol(
       this.scale,
       !!image,
       type,
@@ -752,7 +761,7 @@ export class Renderer {
       ctx.fillStyle = artwork
         ? (BUILDING_PAD_COLORS.get(color) ?? color)
         : "#142c37";
-      ctx.fillRect(p.x - footprintSize / 2, p.y - footprintSize / 2, footprintSize, footprintSize);
+      ctx.fillRect(p.x - footprintWidth / 2, p.y - footprintHeight / 2, footprintWidth, footprintHeight);
       ctx.globalAlpha = 1;
     }
     if (artwork && image) {
@@ -761,7 +770,7 @@ export class Renderer {
         width: era?.width ?? (image as HTMLImageElement).naturalWidth,
         height: era?.height ?? (image as HTMLImageElement).naturalHeight,
       });
-      const destination = fittedBuildingSprite(bounds, p.x, p.y, size - inset * 2);
+      const destination = fittedBuildingSprite(bounds, p.x, p.y, footprintWidth - inset * 2, footprintHeight - inset * 2);
       ctx.globalAlpha = ghost ? 0.65 : remainingTicks ? 0.55 : 1;
       ctx.imageSmoothingEnabled = true;
       ctx.drawImage(
@@ -787,7 +796,14 @@ export class Renderer {
       ctx.globalAlpha = 1;
     }
     if (selected || ghost || (!artwork && !marker))
-      ctx.strokeRect(p.x - footprintSize / 2, p.y - footprintSize / 2, footprintSize, footprintSize);
+      ctx.strokeRect(p.x - footprintWidth / 2, p.y - footprintHeight / 2, footprintWidth, footprintHeight);
+    if (selected) {
+      ctx.setLineDash([3, 3]);
+      ctx.globalAlpha = 0.45;
+      ctx.strokeRect(p.x-footprintWidth/2-this.scale, p.y-footprintHeight/2-this.scale,
+        footprintWidth+2*this.scale, footprintHeight+2*this.scale);
+      ctx.globalAlpha = 1;
+    }
     if (remainingTicks) {
       const totalTicks = Math.max(1, buildTicks);
       const fraction = Math.max(
@@ -831,8 +847,8 @@ export class Renderer {
     ghost = false,
     buildTicks = BUILDING_RULES.tower.ticks,
   ): number {
-    const p = this.screen(this.map!.x(tile) + 0.5, this.map!.y(tile) + 0.5),
-      size = this.scale,
+    const p = this.buildingCenter(tile, "tower"),
+      size = this.scale * 2,
       ctx = this.ctx;
     ctx.save();
     if (selected || ghost) {
@@ -989,22 +1005,33 @@ export class Renderer {
       this.map.width() * this.scale + 2,
       this.map.height() * this.scale + 2,
     );
-    const sites=this.buildPreview?.sites({left:Math.floor(-this.offsetX/this.scale),top:Math.floor(-this.offsetY/this.scale),
-      right:Math.ceil((this.width-this.offsetX)/this.scale),bottom:Math.ceil((this.height-this.offsetY)/this.scale)})??this.buildSites;
-    for (const tile of sites) {
-      const p = this.screen(this.map.x(tile), this.map.y(tile));
-      if (
-        p.x + this.scale < 0 ||
-        p.x > this.width ||
-        p.y + this.scale < 0 ||
-        p.y > this.height
-      )
-        continue;
+    const viewport = {
+      left: Math.floor(-this.offsetX / this.scale),
+      top: Math.floor(-this.offsetY / this.scale),
+      right: Math.ceil((this.width - this.offsetX) / this.scale),
+      bottom: Math.ceil((this.height - this.offsetY) / this.scale),
+    };
+    const placementType = this.buildPreview?.activeType ?? this.placement?.type;
+    if (placementType) {
+      const shape = buildingFootprint(placementType);
+      // Anchors just outside the viewport can still occupy visible cells.
+      const sites = this.buildPreview?.sites({
+        ...viewport,
+        left: viewport.left - shape.width + 1,
+        top: viewport.top - shape.height + 1,
+      }, undefined, this.placement?.tile) ?? this.buildSites;
+      const coverage = this.placementCoverage.runs(this.map, sites, placementType, viewport);
       ctx.fillStyle = "#9bffe066";
-      ctx.fillRect(p.x, p.y, this.scale, this.scale);
       ctx.strokeStyle = "#baffebbb";
       ctx.lineWidth = 1;
-      ctx.strokeRect(p.x + 0.5, p.y + 0.5, this.scale - 1, this.scale - 1);
+      ctx.beginPath();
+      for (const run of coverage) {
+        const p = this.screen(run.left, run.y);
+        ctx.fillRect(p.x, p.y, (run.right - run.left) * this.scale, this.scale);
+        for (let x = run.left; x < run.right; x++)
+          ctx.rect(p.x + (x - run.left) * this.scale + 0.5, p.y + 0.5, this.scale - 1, this.scale - 1);
+      }
+      ctx.stroke();
     }
 
     for (const player of snapshot.players) {
@@ -1102,12 +1129,9 @@ export class Renderer {
       health,
       maxHealth,
     } of this.buildingStacks) {
-      const p = this.screen(
-        this.map.x(building.tile) + 0.5,
-        this.map.y(building.tile) + 0.5,
-      );
+      const p = this.buildingCenter(building.tile, building.type);
       const rules = BUILDING_RULES[building.type];
-      if (!visibleInViewport(p, 70, this.width, this.height)) continue;
+      if (!visibleInViewport(p, Math.max(70, this.buildingHalfSize(building)), this.width, this.height)) continue;
       const selected =
         this.selectedBuildings.has(building.id) ||
         (selectedBuilding?.tile === building.tile &&
@@ -1175,10 +1199,7 @@ export class Renderer {
       }
     }
     if (this.placement) {
-      const p = this.screen(
-        this.map.x(this.placement.tile) + 0.5,
-        this.map.y(this.placement.tile) + 0.5,
-      );
+      const p = this.buildingCenter(this.placement.tile, this.placement.type);
       if (this.placement.type === "tower")
         this.drawTower(
           this.placement.tile,
@@ -1200,6 +1221,22 @@ export class Renderer {
           0,
           ownerUiAge(snapshot, 1),
         );
+      const bounds = buildingGroundBounds(this.map, this.placement.tile, this.placement.type);
+      const corner = this.screen(bounds.left, bounds.top);
+      const width = (bounds.right - bounds.left) * this.scale;
+      const height = (bounds.bottom - bounds.top) * this.scale;
+      ctx.save();
+      ctx.strokeStyle = this.placement.friendly ? "#a0ffe0" : "#ff8f84";
+      ctx.globalAlpha = 1;
+      ctx.lineWidth = 2;
+      ctx.setLineDash([]);
+      ctx.strokeRect(corner.x, corner.y, width, height);
+      ctx.lineWidth = 1;
+      ctx.globalAlpha = 0.45;
+      ctx.setLineDash([3, 3]);
+      ctx.strokeRect(corner.x - this.scale, corner.y - this.scale,
+        width + 2 * this.scale, height + 2 * this.scale);
+      ctx.restore();
     }
 
     const interval = this.arrivalMs

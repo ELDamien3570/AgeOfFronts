@@ -22,11 +22,11 @@ export const STARTING_TECHNOLOGIES = [
 ];
 export const ADVANCES = [
   { gold: 3_000, ticks: 2000 },
-  { gold: 75_000, ticks: 900 },
-  { gold: 110_000, ticks: 1000 },
-  { gold: 160_000, ticks: 1100 },
-  { gold: 230_000, ticks: 1200 },
-  { gold: 330_000, ticks: 1300 },
+  { gold: 56_250, ticks: 675 },
+  { gold: 82_500, ticks: 750 },
+  { gold: 120_000, ticks: 825 },
+  { gold: 172_500, ticks: 900 },
+  { gold: 247_500, ticks: 975 },
 ] as const;
 export function treeWorkload(age: Age, tree: Tree): number {
   return TECHNOLOGIES.filter((t) => t.age === age && t.tree === tree).length;

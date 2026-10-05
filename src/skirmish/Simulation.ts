@@ -1,3 +1,4 @@
+import { portWaterTiles } from "./PortWaterAccess";
 import { availableGold, spendGold, paidCost } from "./domain/Gold";
 import { validFactionColor } from "./lobby/FactionPalette";
 import { DEFENSIVE_BUILDINGS } from "./content/Buildings";
@@ -14,6 +15,7 @@ import { UnitIndex, type UnitQueries } from "./UnitIndex";
 import type { RuntimePhase } from "./RuntimeDiagnostics";
 import { startingEconomy } from "./content/StartingEconomy";
 import { tribeBuildingLimit } from "./domain/TribeDevelopment";
+import { navalLocalRoute, navalInterceptTile } from "./NavalLocalRoute";
 import type { RecruitmentJob } from "./domain/Definitions";
 import { restoreArray, restoreMap, restoreSet } from "./StateTransfer";
 import type { GameMap } from "../core/game/GameMap";
@@ -30,7 +32,7 @@ import { structureAim } from "./domain/StructureTargeting";
 import { PhaseSpatialViews, type SpatialPhase } from "./PhaseSpatialViews";
 import { StructureAttackPreparation } from "./domain/StructureAttackPreparation";
 import { ConquestCredit, DamageLedger } from "./Conquest";
-import { constructionRejection } from "./Construction";
+import { buildingTerrainRejection, constructionRejection } from "./Construction";
 import { buildingCostMultiplier, buildingTicks, buildingIntegrity } from "./content/Buildings";
 import { defaultUnit, UNIT, VESSEL } from "./content/Units";
 import { STARTING_AGE_TROOPS, baseReserveIncome, cityReserveIncome } from "./content/Economy";
@@ -872,7 +874,7 @@ export class Skirmish {
     factionId?: string,
     personalityId?: AiPersonalityId,
   ): void {
-    const opening = this.expansion ? startingEconomy(this.expansion.startingAge, kind === "tribe") : undefined;
+    const opening = this.expansion ? startingEconomy(this.expansion.progression.startingAge, kind === "tribe") : undefined;
     const player: Player = {
       id,
       name,
@@ -911,11 +913,14 @@ export class Skirmish {
       return;
     }
     const age = this.expansion && kind === "tribe" ? this.expansion.startingAge : undefined;
+    const barracksTile = this.ownedLandNearest(player.id, base, 256).find(tile =>
+      buildingTerrainRejection(this.map, this.owners, player.id, "barracks", tile) === null);
+    if (barracksTile === undefined) throw new Error("Starting camp lacks a passable 3x3 barracks site");
     const barracks = this.addBuilding({
-      id: this.nextId++, playerId: player.id, type: "barracks", tile: base, remainingTicks: 0,
+      id: this.nextId++, playerId: player.id, type: "barracks", tile: barracksTile, remainingTicks: 0,
       ...(age ? { age, maxHealth: buildingIntegrity("barracks", age), health: buildingIntegrity("barracks", age) } : {}),
     });
-    forestOf(this.map)?.occupy(this.map, base, "barracks");
+    forestOf(this.map)?.occupy(this.map, barracks.tile, "barracks");
     if (age) {
       this.deployStartingSquads(player, TRIBE_STARTING_SQUADS, age);
       return;
@@ -1036,8 +1041,8 @@ export class Skirmish {
       !(landingControl && (["landing", "afloat"].includes(s.shoreTransfer.phase) || (!player.ai && s.shoreTransfer.phase!=="boarding"))))))
       return "Shore transports complete their crossing automatically";
     if (player.kind === "tribe" && this.expansion && command.type === "build") {
-      const limit = tribeBuildingLimit(command.buildingType, this.expansion.startingAge);
-      if (!limit) return "Tribes cannot build this structure in their starting age";
+      const limit = tribeBuildingLimit(command.buildingType, this.expansion.progression.states[player.id].age);
+      if (!limit) return "Tribes cannot build this structure in their current age";
       const count = this.buildingIndex.countOfType(player.id, command.buildingType);
       if (count >= limit) return `Tribes can only build ${limit} ${command.buildingType}`;
     }
@@ -1695,7 +1700,7 @@ export class Skirmish {
     return this.recruitment.chooseProducer(this.buildingIndex.byType(playerId, type).filter(b => (!buildingIds || buildingIds.includes(b.id))
       && this.owners[b.tile] === playerId && !b.remainingTicks && (b.health ?? 1) > 0
       && AGES.indexOf(b.age ?? "StoneAge") >= AGES.indexOf(age)
-      && (type !== "port" || this.map.neighbors(b.tile).some(t => this.waterPaths.walkable(t)))),
+      && (type !== "port" || portWaterTiles(this.map, b.tile).some(t => this.waterPaths.walkable(t)))),
       tile => this.map.euclideanDistSquared(tile, anchorTile));
   }
 
@@ -1791,8 +1796,7 @@ export class Skirmish {
     if (!completing && availableGold(player) < rules.cost) return "Not enough gold for this ship";
     if (!completing && this.shipIndex.byOwner(player.id).length + this.recruitment.count(player.id, "ship") >= MAX_SHIPS)
       return `This skirmish allows ${MAX_SHIPS} ships per player`;
-    const tile = this.map
-      .neighbors(port.tile)
+    const tile = portWaterTiles(this.map, port.tile)
       .find((n) => this.waterPaths.walkable(n));
     if (tile === undefined) return "This port has no navigable water";
     if (this.expansion && !completing) {
@@ -1889,6 +1893,7 @@ export class Skirmish {
   }
 
   private setShipVoyage(ship: Ship, tile: number, path: number[], index: number, append: number[]): void {
+    this.shipEntities.updateOwned(ship.id, { autonomousVoyage: false, navalTargetId: undefined, navalTargetKind: undefined });
     this.shipEntities.updateOwned(ship.id, { attackTargetId: null });
     this.cancelBoarding(ship);
     if(ship.shoreTransfer)this.shipEntities.updateOwned(ship.id,{shoreTransfer:{...ship.shoreTransfer,phase:"afloat"}});
@@ -2200,8 +2205,23 @@ export class Skirmish {
     return null;
   }
 
+  private quietPatrolWindow(ship: Ship): boolean {
+    // Stagger five seconds of ordinary patrol with five seconds on station.
+    // Contacts and missions bypass this duty cycle; no four-tick position jumps
+    // are introduced into capture or combat geometry.
+    return (this.tick + ship.id * 37) % 200 < 100 ||
+      ship.fighting || ship.navalTargetId !== undefined ||
+      this.tick - (ship.lastCombatTick ?? -60) < WARSHIP_COMBAT_COOLDOWN ||
+      this.hasNavalOpponents(ship.playerId);
+  }
   private moveShip(ship: Ship, cargo: readonly Squad[]): void {
     if (ship.refit) return;
+    if (ship.kind === "warship" && ship.autonomousVoyage &&
+      ship.repairState === "patrolling" && !ship.attackTargetId &&
+      !ship.boarding && !ship.shoreTransfer && !cargo.length &&
+      ship.health >= this.shipMaxHealth(ship) &&
+      !this.expansion?.economy.assets.held(`ship:${ship.id}`) &&
+      !this.quietPatrolWindow(ship)) return;
     let budget = this.expansion
       ? this.expansion.vessel(ship).speed
       : SHIP_RULES[ship.kind].speed;
@@ -2254,6 +2274,9 @@ export class Skirmish {
     for (const ship of this.ships) {
       this.shipEntities.setOwned(ship.id, "fighting", false);
       if (ship.refit || ship.health <= 0 || ship.boarding || ship.shoreTransfer) continue;
+      // A peace-time fleet has no automatic naval firing candidates. Explicit
+      // structure attacks still run through their normal authoritative checks.
+      if (!ship.attackTargetId && !this.hasNavalOpponents(ship.playerId)) continue;
       const vessel = this.expansion?.vessel(ship);
       const profile = vessel?.attack;
       const effectiveAttack = profile
@@ -2487,7 +2510,7 @@ export class Skirmish {
       const freePort = portStack.find((p) => !occupiedPorts.has(p.id));
       if (!freePort) continue;
 
-      const waterNeighbors = this.map.neighbors(tile).filter(
+      const waterNeighbors = portWaterTiles(this.map, tile).filter(
         (n) => this.waterPaths.walkable(n) && this.waterPaths.component[n] === shipComp,
       );
       if (!waterNeighbors.length) continue;
@@ -2522,7 +2545,7 @@ export class Skirmish {
 
     let best: { port: Building; berth: number; dist: number } | null = null;
     for (const port of friendlyPorts) {
-      const waterNeighbors = this.map.neighbors(port.tile).filter(
+      const waterNeighbors = portWaterTiles(this.map, port.tile).filter(
         (n) => this.waterPaths.walkable(n) && this.waterPaths.component[n] === shipComp,
       );
       if (!waterNeighbors.length) continue;
@@ -2574,6 +2597,74 @@ export class Skirmish {
     } else {
       this.shipEntities.updateOwned(ship.id, { path: [this.tileOf(ship), ...(this.waterPaths.find(this.tileOf(ship), goal) ?? [])] });
     }
+  }
+
+  private readonly navalShipCandidates: Ship[] = [];
+  private readonly navalTradeCandidates: import("./domain/Definitions").TradeActor[] = [];
+  private autonomousVoyage(ship: Ship, goal: number): boolean {
+    if (this.shipAdmission.replacement(ship.id) !== undefined) return false;
+    if (ship.destination === goal || this.shipAdmission.executing(ship.id)) return true;
+    const path = navalLocalRoute(this.map,this.waterPaths,this.tileOf(ship),goal);
+    if (path) {
+      this.shipEntities.updateOwned(ship.id,{destination:goal,path,nextPathIndex:0,waypoints:[],autonomousVoyage:true});
+      return true;
+    }
+    // Keep following the old path while the ordinary bounded queue prepares
+    // the replacement. Do not reset an active request every acquisition tick.
+    if (ship.destination === null) {
+      this.shipAdmission.recover(ship,goal,this.tick);
+      this.shipEntities.updateOwned(ship.id,{autonomousVoyage:true});
+    }
+    return false;
+  }
+  private navalOwnersTick = -1;
+  private navalOwnersRevision = -1;
+  private readonly navalOpponents = new Set<number>();
+  private hasNavalOpponents(owner:number):boolean {
+    if (this.navalOwnersTick !== this.tick || this.navalOwnersRevision !== this.shipFacts().membershipRevision) {
+      this.navalOwnersRevision=this.shipFacts().membershipRevision;
+      this.navalOwnersTick=this.tick;this.navalOpponents.clear();
+      const owners=new Set(this.players.filter(p=>this.shipFacts().byOwner(p.id).length>0).map(p=>p.id));
+      for(const actor of this.expansion?.trade.actors ?? []) if(actor.naval && actor.cargo>0) owners.add(actor.playerId);
+      for(const p of this.players) if([...owners].some(id=>this.hostile(p.id,id))) this.navalOpponents.add(p.id);
+    }
+    return this.navalOpponents.has(owner);
+  }
+  private autonomousNavalPursuit(ship: Ship): boolean {
+    if (!this.expansion || this.shipAdmission.replacement(ship.id) !== undefined || ship.attackTargetId || ship.waypoints.length || ship.shoreTransfer ||
+        (ship.destination !== null && !ship.autonomousVoyage)) return false;
+    if ((this.tick+ship.id)%10!==0) return ship.navalTargetId!==undefined;
+    if (!this.hasNavalOpponents(ship.playerId)) return false;
+    const anchor = ship.patrolTile ?? this.tileOf(ship), sea = this.waterPaths.component[this.tileOf(ship)];
+    const legal = (target:{x:number;y:number;playerId:number}) => this.hostile(ship.playerId,target.playerId) &&
+      this.aiCanPursue(ship.playerId,target.playerId,this.tileOf(target)) &&
+      this.waterPaths.component[this.tileOf(target)]===sea &&
+      this.map.euclideanDistSquared(anchor,this.tileOf(target))<=32**2;
+    let target: {id:number;x:number;y:number;playerId:number} | undefined = ship.navalTargetKind==="ship"
+      ? this.ship(ship.navalTargetId ?? -1) : this.expansion.trade.seaActor(ship.navalTargetId ?? -1);
+    if (!target || !legal(target) || (ship.navalTargetKind === "ship" && (this.ship(target.id)?.health ?? 0) <= 0) || (ship.navalTargetKind==="trade" && !this.expansion.trade.seaActor(target.id)?.cargo)) target=undefined;
+    if (!target) {
+      this.spatialFacts("combat").ships.sample(ship.x,ship.y,16*FIXED,this.navalShipCandidates,
+        s=>s.id!==ship.id && s.health>0 && legal(s),32,256,(Math.floor(this.tick/10)+ship.id)*256);
+      this.navalShipCandidates.sort((a,b)=>(a.kind==="transport"?0:1)-(b.kind==="transport"?0:1) || this.distanceSquared(ship,a)-this.distanceSquared(ship,b) || a.id-b.id);
+      target=this.navalShipCandidates[0];
+      let kind:"ship"|"trade"="ship";
+      if (!target) {
+        this.expansion.trade.raidTargets(ship.x,ship.y,16*FIXED,ship.playerId,this.navalTradeCandidates);
+        target=this.navalTradeCandidates.filter(legal).sort((a,b)=>this.distanceSquared(ship,a)-this.distanceSquared(ship,b)||a.id-b.id)[0];
+        kind="trade";
+      }
+      this.shipEntities.updateOwned(ship.id,{navalTargetId:target?.id,navalTargetKind:target?kind:undefined});
+    }
+    if (!target) return false;
+    const range = ship.navalTargetKind==="trade" ? FIXED*.8 : (this.expansion.vessel(ship).attack?.range ?? FIXED)*.75;
+    if (this.distanceSquared(ship,target)>range**2) {
+      const actor=ship.navalTargetKind==="trade" ? this.expansion.trade.seaActor(target.id) : undefined;
+      const goal=actor ? navalInterceptTile(this.map,{...ship,speed:this.expansion.vessel(ship).speed},
+        {...actor,speed:VESSEL.get(actor.definitionId)?.speed ?? 70},FIXED,anchor) : this.tileOf(target);
+      this.autonomousVoyage(ship,goal);
+    }
+    return true;
   }
 
   private stepWarships(): void {
@@ -2695,7 +2786,7 @@ export class Skirmish {
           (ship.patrolTile !== null && shipTile === ship.patrolTile)
         ) {
           this.shipEntities.updateOwned(ship.id, { repairState: "patrolling" });
-          this.shipEntities.updateOwned(ship.id, { patrolDwellTicks: 60 + (ship.id % 40) });
+          this.shipEntities.updateOwned(ship.id, { patrolDwellTicks: 0 });
           this.shipEntities.updateOwned(ship.id, { destination: null });
           this.shipEntities.updateOwned(ship.id, { path: [] });
         }
@@ -2728,25 +2819,27 @@ export class Skirmish {
 
       // A mission owns its healthy ship's stable anchor; normal recovery above
       // remains authoritative and is never cleared by the strategic planner.
-      if (this.expansion?.economy.assets.held(`ship:${ship.id}`)) continue;
+      if (this.expansion?.economy.assets.held(`ship:${ship.id}`)) {
+        if (this.expansion.economy.naval.allowsLocalPursuit(ship)) this.autonomousNavalPursuit(ship);
+        continue;
+      }
+      if (this.autonomousNavalPursuit(ship)) continue;
+      if (!this.quietPatrolWindow(ship)) continue;
       // 6. Patrolling around patrolTile ("Move around a bit")
       if (
         ship.repairState === "patrolling" &&
         ship.destination === null &&
-        !ship.fighting &&
         !ship.attackTargetId &&
         !isDamaged &&
         ship.patrolTile !== null &&
         ship.patrolTile !== undefined
       ) {
-        if ((ship.patrolDwellTicks ?? 0) > 0) {
-          this.shipEntities.updateOwned(ship.id, { patrolDwellTicks: ship.patrolDwellTicks! - 1 });
-        } else {
+        {
           const wanderTile = this.pickPatrolWanderTile(ship.patrolTile, shipTile);
           if (wanderTile !== null && wanderTile !== shipTile) {
-            this.startRecoveryVoyage(ship, wanderTile);
+            this.autonomousVoyage(ship, wanderTile);
           }
-          this.shipEntities.updateOwned(ship.id, { patrolDwellTicks: 120 + ((ship.id * 17) % 80) });
+          this.shipEntities.updateOwned(ship.id, { patrolDwellTicks: 0 });
         }
       }
     }
@@ -4016,7 +4109,7 @@ export class Skirmish {
         else if (
           player.kind === "regular" &&
           enemyPlayers.length &&
-          (finishing || (!homeNeedsLand && own.length >= personality.minimumRaidSquads)) &&
+          (finishing || (!homeNeedsLand && own.length >= (this.expansion?.operations.offensiveTarget(player.id)!==undefined ? 2 : personality.minimumRaidSquads))) &&
           i % 8 < personality.raidSlots &&
           this.tick > personality.raidAfterTicks
         ) {

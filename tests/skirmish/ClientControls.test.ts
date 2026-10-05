@@ -1,3 +1,4 @@
+import { claimBuildingFootprint } from "./BuildingFixtures";
 import { describe, expect, it } from "vitest";
 import { updateSnapshotBuilding } from "./BuildingFixtures";
 import { GameMapImpl } from "../../src/core/game/GameMap";
@@ -58,7 +59,7 @@ function own(m: Skirmish, tile: number, id = 1) {
 }
 function build(m: Skirmish, type: BuildingType, x: number, y: number) {
   const tile = m.map.ref(x, y);
-  own(m, tile);
+  claimBuildingFootprint(m,tile,type);
   m.players[0].gold = 10000;
   expect(
     m.applyCommand({ type: "build", playerId: 1, buildingType: type, tile }),

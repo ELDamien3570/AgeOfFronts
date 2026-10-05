@@ -1,3 +1,4 @@
+import { claimBuildingFootprint } from "./BuildingFixtures";
 import { describe, expect, it } from "vitest";
 import { GameMapImpl } from "../../src/core/game/GameMap";
 import { ConquestCredit, DamageLedger } from "../../src/skirmish/Conquest";
@@ -158,7 +159,8 @@ describe("complete conquest", () => {
     const game = fixture(),
       enemy = game.players[1],
       base = enemy.base,
-      city = game.map.ref(game.map.x(base) - 5, game.map.y(base));
+      city = game.map.ref(game.map.x(base) - 6, game.map.y(base));
+    claimBuildingFootprint(game,city,"city",2);
     expect(
       game.applyCommand({
         type: "build",

@@ -6,12 +6,12 @@ import { SkirmishViewModel } from "../../src/skirmish/client/SkirmishViewModel";
 import { AGES } from "../../src/skirmish/domain/Definitions";
 
 describe("age-based squad capacity", () => {
-  it("uses the authored caps and leaves tribes capped at ten", () => {
+  it("uses the authored regular caps and increases tribe capacity by five per age", () => {
     expect(AGES.map((age) => squadCap({ kind: "regular" }, age))).toEqual([
       60, 80, 100, 120, 140, 160, 200,
     ]);
     expect(AGES.map((age) => squadCap({ kind: "tribe" }, age))).toEqual(
-      AGES.map(() => 10),
+      [10, 15, 20, 25, 30, 35, 40],
     );
   });
   it("opens capacity on advancement in both domain commands and HUD quotes", () => {

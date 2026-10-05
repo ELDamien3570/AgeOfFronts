@@ -1,3 +1,5 @@
+import { TICKS_PER_SECOND } from "../../src/skirmish/Protocol";
+import { productionTicks } from "../../src/skirmish/domain/Supply";
 import { describe, expect, it, vi } from "vitest";
 import { GameMapImpl } from "../../src/core/game/GameMap";
 import { Skirmish } from "../../src/skirmish/Simulation";
@@ -71,14 +73,22 @@ describe("coordinated AI economy", () => {
     ]);
     for(const id of Object.keys(expansion.supply.inventories[player.id]))expansion.supply.inventories[player.id][id]=0;
     let madeKit=false;
-    for(let i=0;i<6000&&!madeKit;i++){
-      if(i%60===0)expansion.economy.decide(player);
+    const advance=()=>{
+      if(game.tick%60===0)expansion.economy.decide(player);
       game.step();
       madeKit=(expansion.supply.inventories[player.id]["equipment:bronzeage"]??0)>0;
-    }
+    };
+    for(let i=0;i<6000&&!madeKit;i++)advance();
     for(const tile of [copper,tin])expect(game.buildings.some(b=>b.playerId===player.id&&b.type==="mine"&&b.tile===tile)).toBe(true);
     expect(game.buildings.some(b=>b.playerId===player.id&&b.type==="factory"&&!b.remainingTicks)).toBe(true);
     expect(game.buildings.some(b=>b.playerId===player.id&&b.type==="blacksmith"&&!b.remainingTicks)).toBe(true);
+    // Placement and construction have their own deadline. A newly completed
+    // refinery still owes two paid batches before a 12-bronze kit can be crafted.
+    const refining=PRODUCTION_RECIPES.find(r=>r.id==="refine-bronze")!;
+    const equipment=PRODUCTION_RECIPES.find(r=>r.id==="make-bronzeage-equipment")!;
+    const batches=Math.ceil(equipment.inputs.bronze/refining.outputs.bronze);
+    const productionAllowance=(batches*Math.ceil(productionTicks(refining,state.completed)/TICKS_PER_SECOND)+Math.ceil(productionTicks(equipment,state.completed)/TICKS_PER_SECOND)+1)*TICKS_PER_SECOND;
+    for(let i=0;i<productionAllowance&&!madeKit;i++)advance();
     expect(madeKit).toBe(true);
     expect(game.building(barracks.id)).toBeDefined();
   });
@@ -103,9 +113,10 @@ describe("coordinated AI economy", () => {
     const player = game.players[1], expansion = game.expansion!, research = TECHNOLOGIES.map(t => t.id);
     expansion.supply.replaceDeposits([]);
     for (let y = 0; y < 64; y++) {
-      const tile = game.map.ref(79, y);
-      game.owners[tile] = player.id;
-      expansion.economy.placements.changed(tile, player.id);
+      for (const x of [78,79]) {
+        const tile = game.map.ref(x, y);
+        (game as unknown as {changeOwner(tile:number,owner:number):void}).changeOwner(tile,player.id);
+      }
     }
     const snapshot = economicSnapshot({ player, tick: 0, generation: 0, age: "Modern", research,
       inventory: {}, buildings: [], squads: [], ships: [], jobs: [], production: {}, cap: 20, threatTroops: 0 });

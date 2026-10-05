@@ -3,7 +3,7 @@ import { SpatialGrid } from "./SpatialGrid";
 import type { UnitQueries } from "./UnitIndex";
 
 export type SpatialQueries<T extends { x: number; y: number }> = Readonly<
-  Pick<SpatialGrid<T>, "query" | "mayContain">
+  Pick<SpatialGrid<T>, "query" | "mayContain" | "sample">
 >;
 export type SpatialPhase = "combat" | "trade" | "projectiles";
 export interface PhaseSpatialFacts {

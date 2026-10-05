@@ -393,7 +393,7 @@ export class LiveMatch {
       this.tick = result.tick;
       this.runtimeSeats = result.seats;
       if (result.winner !== null) {
-        await this.end("Match complete");
+        await this.end("Match complete", true);
         return;
       }
       sync.sequence = ++this.publicationSequence;
@@ -728,7 +728,7 @@ export class LiveMatch {
       if (guest && this.connected(guest))
         this.send(guest, { type: "error", message: rejection.message });
     }
-    if (result.winner !== null) await this.end("Match complete");
+    if (result.winner !== null) await this.end("Match complete", true);
   }
   summary(guest: string): LiveMatchSummary | undefined {
     const owner = this.seat(guest);
@@ -784,19 +784,21 @@ export class LiveMatch {
           : Math.max(0, this.emptyDeadline - this.now()),
     };
   }
-  async end(message: string): Promise<void> {
+  async end(message: string, completed = false): Promise<void> {
     if (this.stopped) return;
     this.stopped = true;
     this.unsubscribePublication?.();
     clearTimeout(this.syncTimer);
     this.broadcast({
       type: "match-ended",
+      completed,
       matchId: this.reservation.id,
       message,
     });
     for (const guest of this.admissions.keys())
       this.send(guest, {
         type: "match-ended",
+        completed,
         matchId: this.reservation.id,
         message,
       });

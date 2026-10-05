@@ -1,4 +1,4 @@
-import { AGE_SQUAD_CAPS, TRIBE_PROMOTION_PERCENT } from "../FactionRules";
+import { AGE_SQUAD_CAPS, TRIBE_PROMOTION_PERCENT, TRIBE_SQUAD_CAP, TRIBE_SQUADS_PER_AGE, TRIBE_TRADER_CAP, TRIBE_TRADERS_PER_AGE } from "../FactionRules";
 import { BUILDING_RULES } from "../Rules";
 import { MAX_ARMOUR, PROMOTION_ATTACK, XP_THRESHOLDS } from "../domain/Combat";
 import { RESOURCES } from "../domain/Definitions";
@@ -98,11 +98,14 @@ export const CONTENT_HASH = hash({
   },
   combatRevision: 3,
   shoreTransportRevision: 1,
+  navalAutonomyRevision: 3,
+  aiCombatPolicyRevision: 1,
   armyCaps: ARMY_CAPS,
   defences: { gunNest: GUN_NEST_ATTACK, trench: TRENCH_COVER },
   factions: FACTIONS,
   aiPersonalities: AI_PERSONALITIES,
   squadCaps: AGE_SQUAD_CAPS,
+  tribeCaps: { squads: TRIBE_SQUAD_CAP, squadsPerAge: TRIBE_SQUADS_PER_AGE, traders: TRIBE_TRADER_CAP, tradersPerAge: TRIBE_TRADERS_PER_AGE },
   territoryAbsorption: TERRITORY_ABSORPTION,
   coastalTerritory: COASTAL_TERRITORY_RULES,
   recruitment: RECRUITMENT_SECONDS,
@@ -112,7 +115,7 @@ export const CONTENT_HASH = hash({
     reserves: RESERVE_GROWTH,
     startingTroops: STARTING_AGE_TROOPS,
     startingEconomy: STARTING_ECONOMY,
-    tribeDevelopmentRevision: 1,
+    tribeDevelopmentRevision: 2,
     waterTrade: WATER_TRADE_PRICING,
     trade: TRADE_RULES,
     waterTradeDestinations: "foreign-only",

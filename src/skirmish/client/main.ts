@@ -47,6 +47,9 @@ import { UNIT } from "../content/Units";
 
 import {
   AGE_NAMES,
+  STARTING_AGES,
+  startingAgeName,
+  type StartingAge,
   AGES,
   type Age,
   type TechnologySpeed,
@@ -108,7 +111,7 @@ document.querySelector<HTMLDivElement>("#app")!.innerHTML = `
 
       .join(
         "",
-      )}</select></label><label>Map size<select id="world-size"><option value="250">250 cells · longest edge</option><option value="500" selected>500 cells · longest edge</option><option value="1000">1000 cells · longest edge</option></select></label><label>Starting age<select id="starting-age">${AGES.map((a, i) => `<option value="${a}" ${a === "StoneAge" ? "selected" : ""}>${AGE_NAMES[i]}</option>`).join("")}</select></label><label>Victory<select id="victory-mode"><option value="solo">Solo conquest</option><option value="allied">Allied conquest</option></select></label><label title="New skirmishes divide all research and age-advancement costs and times by this setting, for every faction.">Tech speed<select id="technology-speed" aria-label="Technology speed"><option value="1">1×</option><option value="2">2×</option><option value="3">3×</option></select></label><label><input type="checkbox" id="infinite-gold" />Infinite Gold for Players</label><button id="restart" class="primary">New skirmish</button></div>
+      )}</select></label><label>Map size<select id="world-size"><option value="250">250 cells · longest edge</option><option value="500" selected>500 cells · longest edge</option><option value="1000">1000 cells · longest edge</option></select></label><label>Starting age<select id="starting-age">${STARTING_AGES.map(a => `<option value="${a}" ${a === "StoneAge" ? "selected" : ""}>${startingAgeName(a)}</option>`).join("")}</select></label><label>Victory<select id="victory-mode"><option value="solo">Solo conquest</option><option value="allied">Allied conquest</option></select></label><label title="New skirmishes divide all research and age-advancement costs and times by this setting, for every faction.">Tech speed<select id="technology-speed" aria-label="Technology speed"><option value="1">1×</option><option value="2">2×</option><option value="3">3×</option></select></label><label><input type="checkbox" id="infinite-gold" />Infinite Gold for Players</label><button id="restart" class="primary">New skirmish</button></div>
 
     <div class="time-controls"><button id="wasd-mode" type="button" aria-pressed="false" title="WASD pans the map; Shift for building/single recruitment shortcuts, Space for five recruits.">WASD</button><select id="speed" aria-label="Game speed"><option value="1">1× speed</option><option value="2">2× speed</option><option value="4">4× speed</option></select><button id="pause" aria-label="Pause game">Pause</button></div>
 
@@ -546,7 +549,7 @@ async function start(): Promise<void> {
       ? requestedSeed : Math.floor(Math.random() * 0x7fffffff);
     diagnosticSeed = seed;
     const startingAge =
-      (element<HTMLSelectElement>("starting-age")?.value as Age) || "StoneAge";
+      (element<HTMLSelectElement>("starting-age")?.value as StartingAge) || "StoneAge";
     const spawnOptions: MatchOptions = {
       ...DEFAULT_AI_POLICIES,
       seed,

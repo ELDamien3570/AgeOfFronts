@@ -477,8 +477,8 @@ describe("remaining strategic plans", () => {
     const f = fixture(true);
     f.building(f.player.id, "factory", 60, 16);
     f.game.restore(f.game.checkpoint());
-    const tile = [60, 59, 61, 58, 62, 57, 63]
-      .map((x) => f.map.ref(x, 19))
+    const tile = [60, 59, 61, 58, 62, 57, 63, 56, 64, 55, 65]
+      .map((x) => f.map.ref(x, 18))
       .find((t) => !f.game.buildingSite(f.player.id, "port", t))!;
     expect(tile).toBeDefined();
     const controller = f.e.economy.coasts;

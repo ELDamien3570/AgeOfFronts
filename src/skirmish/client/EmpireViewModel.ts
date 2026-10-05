@@ -378,7 +378,7 @@ export class EmpireViewModel {
   }
   get allianceRenewals() {
     return this.expansion.diplomacy.alliances
-      .filter(t => (t.a === this.playerId || t.b === this.playerId) &&
+      .filter(t => !t.longTerm && (t.a === this.playerId || t.b === this.playerId) &&
         t.expiresTick > this.state.tick && t.expiresTick - this.state.tick <= 600)
       .flatMap(t => {
         const otherId = t.a === this.playerId ? t.b : t.a;

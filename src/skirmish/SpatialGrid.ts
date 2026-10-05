@@ -128,15 +128,23 @@ export class SpatialGrid<T extends WorldPoint> {
   }
 
   /** Bounded advisory neighborhood. Exact collision queries must use query(). */
-  sample(x:number,y:number,radius:number,result:T[],accept:(item:T)=>boolean,limit:number,maximumReads:number):void {
+  sample(x:number,y:number,radius:number,result:T[],accept:(item:T)=>boolean,limit:number,maximumReads:number,offset=0):void {
     result.length=0;
+    if(limit<=0 || maximumReads<=0)return;
     let reads=0;
     const left=Math.max(0,Math.floor((x-radius)/this.cellSize)),right=Math.min(this.columns-1,Math.floor((x+radius)/this.cellSize));
     const top=Math.max(0,Math.floor((y-radius)/this.cellSize)),bottom=Math.min(this.rows-1,Math.floor((y+radius)/this.cellSize));
-    for(let cy=top;cy<=bottom;cy++)for(let cx=left;cx<=right;cx++)for(const item of this.buckets[cx+cy*this.columns] ?? []) {
-      if(++reads>maximumReads)return;
-      if((item.x-x)**2+(item.y-y)**2<=radius**2 && accept(item)) {
-        result.push(item);if(result.length>=limit)return;
+    const width=right-left+1,cells=width*(bottom-top+1);
+    if(cells<=0)return;
+    for(let at=0;at<cells;at++) {
+      const cell=(at+offset)%cells,bucket=this.buckets[left+cell%width+(top+Math.floor(cell/width))*this.columns];
+      if(!bucket?.length)continue;
+      for(let index=0;index<bucket.length;index++) {
+        if(++reads>maximumReads)return;
+        const item=bucket[(index+offset)%bucket.length];
+        if((item.x-x)**2+(item.y-y)**2<=radius**2 && accept(item)) {
+          result.push(item);if(result.length>=limit)return;
+        }
       }
     }
   }

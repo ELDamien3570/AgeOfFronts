@@ -115,14 +115,11 @@ describe("Warship patrol and dock repair logic", () => {
     expect(ship.repairState).toBe("patrolling");
 
     // Advance until ship reaches destination
-    for (let i = 0; i < 200 && ship.destination !== null; i++) {
+    for (let i = 0; i < 200 && match.tileOf(ship) !== targetTile; i++) {
       match.step();
     }
-    expect(ship.destination).toBeNull();
     expect(match.tileOf(ship)).toBe(targetTile);
-
-    // Force dwell timer to expire
-    match.updateShip(ship.id, { patrolDwellTicks: 0 });
+    // Arrival immediately starts another local patrol leg.
     match.step();
 
     // Ship should have picked a wander tile within small patrol radius (<= 2 cells)

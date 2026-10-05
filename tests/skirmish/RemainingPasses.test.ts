@@ -167,7 +167,7 @@ describe("remaining gameplay passes", () => {
     expect(e.economy.naval.enabled(ai)).toBe(true);
     expect(
       game.applyCommand({ type: "advance-age", playerId: ai.id }),
-    ).toContain("Tribes");
+    ).toContain("Every surviving");
   });
   it("allows stack 15 and rejects 16 without extending trade cargo", () => {
     const { game, map } = fixture(),

@@ -106,8 +106,8 @@ describe("optional AI strategic operations", () => {
     const state = f.ops.state(2)!;
     expect(state.phase).toBe("preparing"); expect(state.target).toBeDefined();
     expect(f.ops.canTarget(2, state.target!)).toBe(false);
-    evaluate(f, 1659); expect(f.ops.state(2)!.phase).toBe("preparing");
-    evaluate(f, 1720); expect(f.ops.state(2)!.phase).toBe("war");
+    evaluate(f, 1439); expect(f.ops.state(2)!.phase).toBe("preparing");
+    evaluate(f, 1500); expect(f.ops.state(2)!.phase).toBe("war");
     const target = f.ops.state(2)!.target!;
     expect(f.ops.canTarget(2, target)).toBe(true);
     expect(f.ops.canTarget(2, f.m.players.find(p => p.id !== 2 && p.id !== target)!.id)).toBe(false);

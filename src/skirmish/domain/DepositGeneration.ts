@@ -14,7 +14,8 @@ export const DEPOSIT_RULES = Object.freeze({
   plainsHorseWeight: 3,
   desertOilWeight: 4,
   powderAbundance: 2,
-  startingReach: 24,
+  startingPreferredReach: 24,
+  startingReach: 36,
 });
 export const DEPOSIT_RESOURCES: readonly Resource[] = [
   "horses",

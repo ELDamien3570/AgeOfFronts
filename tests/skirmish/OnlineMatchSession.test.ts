@@ -113,6 +113,45 @@ afterEach(() => {
 });
 
 describe("server-only match client", () => {
+  it("projects a coalesced final allied victory after a stalled renderer finishes", async () => {
+    await initialize();
+    const decoder = DecoderWorker.instances[0];
+    let finish!: () => void;
+    session.onmessage = vi.fn().mockImplementationOnce(() => new Promise<void>(resolve => { finish = resolve; })).mockImplementation(updates);
+    connection().message(state(0));
+    await vi.waitFor(() => expect(decoder.postMessage).toHaveBeenCalledTimes(1));
+    decoder.deliver(packet(0), { tick: 0, winner: null } as Snapshot, 1);
+    await vi.waitFor(() => expect(finish).toBeTypeOf("function"));
+    connection().message(state(4));
+    await vi.waitFor(() => expect(decoder.postMessage).toHaveBeenCalledTimes(2));
+    connection().message({ type: "match-ended", matchId: manifest.id, completed: true, message: "Match complete" });
+    decoder.onmessage!({ data: { packet: packet(4), canonicalOnly: true, canonicalSequence: 2 } });
+    await vi.waitFor(() => expect(session.runtimeDiagnostics().tick).toBe(4));
+    expect(decoder.terminate).not.toHaveBeenCalled();
+    finish();
+    await vi.waitFor(() => expect(decoder.postMessage).toHaveBeenCalledWith({ type: "presentation", packed: true }));
+    decoder.deliver(packet(4), { tick: 4, winner: -1, expansion: { winners: [1, 2] } } as Snapshot, 2);
+    await vi.waitFor(() => expect(decoder.terminate).toHaveBeenCalled());
+    expect(updates).toHaveBeenCalledWith(expect.objectContaining({ data: expect.objectContaining({ snapshot: expect.objectContaining({ winner: -1 }) }) }));
+    expect(errors).not.toHaveBeenCalled();
+  });
+  it.each([1, -1])("presents the final winner %s before closing the decoder", async (winner) => {
+    await initialize();
+    const decoder = DecoderWorker.instances[0];
+    connection().message(state(0));
+    await vi.waitFor(() => expect(decoder.postMessage).toHaveBeenCalledTimes(1));
+    decoder.deliver(packet(0), { tick: 0, winner: null } as Snapshot, 1);
+    await vi.waitFor(() => expect(session.runtimeDiagnostics().tick).toBe(0));
+    updates.mockClear();
+    connection().message(state(4));
+    await vi.waitFor(() => expect(decoder.postMessage).toHaveBeenCalledTimes(2));
+    connection().message({ type: "match-ended", matchId: manifest.id, completed: true, message: "Match complete" });
+    expect(decoder.terminate).not.toHaveBeenCalled();
+    decoder.deliver(packet(4), { tick: 4, winner, expansion: { winners: [1, 2] } } as Snapshot, 2);
+    await vi.waitFor(() => expect(decoder.terminate).toHaveBeenCalled());
+    expect(updates).toHaveBeenCalledWith(expect.objectContaining({ data: expect.objectContaining({ snapshot: expect.objectContaining({ winner }) }) }));
+    expect(errors).not.toHaveBeenCalled();
+  });
   it("shows command rejections as notifications without replacing connection status", async () => {
     await initialize(); status.mockClear(); updates.mockClear();
     connection().message({type:"match-command-outcome",matchId:manifest.id,outcome:{id:"water-rejected",playerId:2,tick:4,status:"rejected",reason:"Research Cargo Canoes to embark on water"}});
@@ -365,7 +404,7 @@ describe("server-only match client", () => {
     connection().message({
       type: "match-ended",
       matchId: manifest.id,
-      message: "Match complete",
+      completed: true, message: "Match complete",
     });
     await vi.waitFor(() => expect(connection().stop).toHaveBeenCalled());
     reject(new Error("Lobby connection closed."));

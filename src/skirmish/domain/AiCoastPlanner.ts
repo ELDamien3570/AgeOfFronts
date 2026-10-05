@@ -1,3 +1,4 @@
+import { buildingGroundBounds, buildingFootprint } from "../BuildingFootprint";
 import { buildingCost, buildingTechnology } from "../content/Buildings";
 import { shoreTransportCapacity } from "../content/ShoreTransport";
 import { FIXED, type Player } from "../Protocol";
@@ -56,7 +57,19 @@ export class AiCoastPlanner {
     private readonly expansion: Expansion,
     private readonly economy: AiEconomicDirector,
   ) {
-    this.edges = expansion.world.coast.connections().flatMap((c) => c.edges);
+    const map=expansion.world.map, shape=buildingFootprint("port"), edges=new Map<string,{landTile:number;waterTile:number}>();
+    for(const connection of expansion.world.coast.connections())for(const edge of connection.edges) {
+      const x=map.x(edge.landTile),y=map.y(edge.landTile);
+      for(let dy=0;dy<shape.height;dy++)for(let dx=0;dx<shape.width;dx++) {
+        if(!map.isValidCoord(x-dx,y-dy) || !map.isValidCoord(x-dx+shape.width-1,y-dy+shape.height-1))continue;
+        const tile=map.ref(x-dx,y-dy),bounds=buildingGroundBounds(map,tile,"port");
+        let valid=true;
+        for(let yy=bounds.top;yy<bounds.bottom;yy++)for(let xx=bounds.left;xx<bounds.right;xx++)
+          if(!map.isLand(map.ref(xx,yy)) || map.isImpassable(map.ref(xx,yy)))valid=false;
+        if(valid)edges.set(tile+":"+edge.waterTile,{landTile:tile,waterTile:edge.waterTile});
+      }
+    }
+    this.edges=[...edges.values()];
   }
   checkpoint() {
     return structuredClone({
@@ -116,15 +129,20 @@ export class AiCoastPlanner {
     if (this.history.length > 128) this.history.shift();
   }
   private legal(player: Player, tile: number): boolean {
-    const { world, operations } = this.expansion,
-      owner = world.owners[tile];
-    return (
-      owner === 0 ||
-      owner === player.id ||
-      (world.hostile(player.id, owner) &&
-        (!operations.enabled(player) ||
-          operations.canEnter(player.id, owner, tile)))
-    );
+    const {world,operations}=this.expansion, bounds=buildingGroundBounds(world.map,tile,"port");
+    for(let y=bounds.top;y<bounds.bottom;y++)for(let x=bounds.left;x<bounds.right;x++){
+      if(!world.map.isValidCoord(x,y))return false;
+      const cell=world.map.ref(x,y),owner=world.owners[cell];
+      if(owner!==0 && owner!==player.id && (!world.hostile(player.id,owner) ||
+        (operations.enabled(player) && !operations.canEnter(player.id,owner,cell))))return false;
+    }
+    return true;
+  }
+  private owned(player: Player,tile:number): boolean {
+    const {world}=this.expansion,bounds=buildingGroundBounds(world.map,tile,"port");
+    for(let y=bounds.top;y<bounds.bottom;y++)for(let x=bounds.left;x<bounds.right;x++)
+      if(!world.map.isValidCoord(x,y) || world.owners[world.map.ref(x,y)]!==player.id)return false;
+    return true;
   }
   step(budget = 8): number {
     const { world, progression, operations } = this.expansion;
@@ -360,7 +378,7 @@ export class AiCoastPlanner {
           this.finish(g, "abort", "Coast access or acquisition force changed");
           break;
         }
-        if (world.owners[g.tile!] === player.id) {
+        if (this.owned(player,g.tile!)) {
           g.phase = "fund";
           g.reason =
             "Ownership acquired through occupation; funding the real port";
@@ -381,7 +399,7 @@ export class AiCoastPlanner {
         g.nextThink = world.tick + 40;
         break;
       } else if (g.phase === "fund") {
-        if (world.owners[g.tile!] !== player.id) {
+        if (!this.owned(player,g.tile!)) {
           this.finish(
             g,
             "abort",

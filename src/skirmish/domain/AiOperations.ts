@@ -1,4 +1,5 @@
 import { forceReadiness } from "./AiForceReadiness";
+import { combatCohorts, combatAdvantage } from "./AiCombatPower";
 import { canFinishConquest, conquestBuildings } from "./AiConquestObjective";
 import { AI_DOCTRINES } from "../content/AiDoctrines";
 import { personalityOf } from "../content/AiPersonalities";
@@ -72,6 +73,7 @@ export class AiOperations {
   canTarget(playerId: number, rival: number): boolean {
     const player = this.expansion.world.players.find(p => p.id === playerId);
     if (!this.enabled(player)) return true;
+    if (this.expansion.diplomacy.declaredWar(playerId, rival)) return true;
     const record = this.records.get(playerId);
     return !!record && ((record.phase === "war" && record.target === rival) ||
       record.threats.some(t => t.rival === rival && t.until >= this.expansion.world.tick));
@@ -87,13 +89,17 @@ export class AiOperations {
   }
   /** Defensive pursuit remains local to observed aggression, not a free raid. */
   /** Only this faction's actual entry permissions fence its route work. */
-  private readonly navigationKeys = new Map<number, {target: number | null | undefined; threats: number[]; value: string}>();
+  private readonly navigationKeys = new Map<number, {target: number | null | undefined; threats: number[]; wars: string; value: string}>();
   navigationRevision(playerId: number): string {
     const record = this.records.get(playerId), tick = this.expansion.world.tick;
-    if (!record || !this.enabled(this.expansion.world.players.find(p => p.id === playerId))) return "unrestricted";
+    if (!this.enabled(this.expansion.world.players.find(p => p.id === playerId))) return "unrestricted";
+    const wars = (this.expansion.diplomacy.state.wars ?? [])
+      .filter(w => w.a === playerId || w.b === playerId)
+      .map(w => w.a === playerId ? w.b : w.a).sort((a, b) => a - b).join(",");
+    if (!record) return wars ? JSON.stringify([null, [], wars]) : "unrestricted";
     const target = record.phase === "war" ? record.target : record.phase === "recovery" ? record.retreatFrom : null;
     const previous = this.navigationKeys.get(playerId);
-    let at = 0, same = previous?.target === target;
+    let at = 0, same = previous?.target === target && previous?.wars === wars;
     for (const threat of record.threats) if (threat.until >= tick) {
       same &&= previous?.threats[at] === threat.rival && previous?.threats[at+1] === threat.tile;
       at += 2;
@@ -103,13 +109,14 @@ export class AiOperations {
     for (const threat of record.threats) if (threat.until >= tick) {
       threats.push(threat.rival, threat.tile); rows.push([threat.rival, threat.tile]);
     }
-    const value = JSON.stringify([target, rows]);
-    this.navigationKeys.set(playerId, {target, threats, value});
+    const value = JSON.stringify(wars ? [target, rows, wars] : [target, rows]);
+    this.navigationKeys.set(playerId, {target, threats, wars, value});
     return value;
   }
   canEnter(playerId: number, rival: number, tile: number): boolean {
     if (!rival || rival === playerId || !this.expansion.diplomacy.hostile(playerId, rival)) return true;
     if (!this.enabled(this.expansion.world.players.find(p => p.id === playerId))) return true;
+    if (this.expansion.diplomacy.declaredWar(playerId, rival)) return true;
     const record = this.records.get(playerId);
     if ((record?.phase === "war" && record.target === rival) || (record?.phase === "recovery" && record.retreatFrom === rival)) return true;
     return !!record?.threats.some(t => t.rival === rival && t.until >= this.expansion.world.tick &&
@@ -117,6 +124,7 @@ export class AiOperations {
   }
   canPursue(playerId: number, rival: number, tile: number): boolean {
     if (!this.enabled(this.expansion.world.players.find(p => p.id === playerId))) return true;
+    if (this.expansion.diplomacy.declaredWar(playerId, rival)) return true;
     const r = this.records.get(playerId);
     return !!r && ((r.phase === "war" && r.target === rival) || r.threats.some(t => t.rival === rival &&
       t.until >= this.expansion.world.tick && this.expansion.world.map.euclideanDistSquared(t.tile, tile) <= 12 ** 2));
@@ -135,6 +143,13 @@ export class AiOperations {
    * Own force counts come from the caller's existing single grouping pass. */
   step(forces: ReadonlyMap<number, number>): void {
     const { world, diplomacy } = this.expansion, tick = world.tick; this.work = 0;
+    const compositions = new Map<number, ReturnType<typeof combatCohorts>>();
+    const composition = (id: number) => {
+      if (!compositions.has(id)) compositions.set(id, combatCohorts(this.expansion, world.squadFacts().aliveByOwner(id)));
+      return compositions.get(id)!;
+    };
+    const ageKey = world.players.map(p => `${p.id}:${this.expansion.progression.states[p.id]?.age}:${this.expansion.progression.states[p.id]?.completed.length}:${forces.get(p.id) ?? 0}:${p.eliminated}`).join(",");
+    const diplomacyKey = JSON.stringify([diplomacy.state.alliances,diplomacy.state.wars ?? []]);
     for (const [id] of this.records) if (!this.enabled(world.players.find(p => p.id === id))) this.release(id);
     for (const player of world.players) {
       if (!this.enabled(player)) continue;
@@ -146,9 +161,9 @@ export class AiOperations {
         this.transition(player, r, "recovery"); continue;
       }
       if (tick < r.nextThink) continue;
-      const sleepKey=`${strength}:${player.land}:${this.expansion.progression.states[player.id]?.completed.length}:${this.expansion.progression.states[player.id]?.age}:${player.reserves>=1000}:${diplomacy.revision}:${r.territorialRevision??0}`;
+      const sleepKey=`${strength}:${player.land}:${this.expansion.progression.states[player.id]?.completed.length}:${this.expansion.progression.states[player.id]?.age}:${player.reserves>=1000}:${diplomacyKey}:${r.territorialRevision??0}:${ageKey}`;
       if(r.phase==="peace" && !r.threats.length && r.sleepKey===sleepKey){r.nextThink=tick+200;continue;}
-      r.readiness=forceReadiness(this.expansion,player,profile.minimumRaidSquads);
+      r.readiness=forceReadiness(this.expansion,player,2);
       if (r.phase === "war") {
         const buildings = target ? conquestBuildings(world.buildingFacts().byOwner(target.id), target.ai).length : Infinity;
         const enemies = target ? world.squadFacts().byOwner(target.id).filter(s => s.troops > 0).length : Infinity;
@@ -158,7 +173,7 @@ export class AiOperations {
           r.finishCount = count;
         } else { r.finishCount = undefined; r.finishProgressAt = undefined; }
         if (strength < 2 || (!this.finishing(player.id, r.target!) &&
-          (strength < Math.max(2, Math.floor(profile.minimumRaidSquads / 2)) || tick - r.since >= 2400)))
+          ((strength < Math.max(2, Math.floor(profile.minimumRaidSquads / 2)) && (!target || combatAdvantage(composition(player.id),composition(target.id)) < 1.1)) || tick - r.since >= 2400)))
           this.transition(player, r, "recovery");
         else r.nextThink = tick + 20;
         continue;
@@ -169,13 +184,13 @@ export class AiOperations {
         continue;
       }
       if (r.phase === "preparing") {
-        if (tick - r.since >= AI_DOCTRINES[profile.id].assemblyTicks+240 && strength >= profile.minimumRaidSquads && r.readiness.reason==="ready" && !r.threats.some(t => t.rival !== r.target))
+        if (tick - r.since >= AI_DOCTRINES[profile.id].assemblyTicks+80 && strength >= 2 && r.readiness.reason==="ready" && !r.threats.some(t => t.rival !== r.target) && target && (combatAdvantage(composition(player.id),composition(target.id)) >= 1.1 || (strength >= profile.minimumRaidSquads && combatAdvantage(composition(player.id),composition(target.id)) >= .9)))
           this.transition(player, r, "war", r.target);
         else if (tick - r.since >= 1200 || strength < 2) this.transition(player, r, "recovery");
         else r.nextThink = tick + 60;
         continue;
       }
-      if (r.threats.length || strength < profile.minimumRaidSquads || r.readiness.reason!=="ready" || tick < profile.raidAfterTicks) {
+      if (r.threats.length || strength < 2 || r.readiness.reason!=="ready" || tick < profile.raidAfterTicks) {
         r.nextThink = tick + 60 + player.id % 20; continue;
       }
       let slice = 0;
@@ -184,7 +199,12 @@ export class AiOperations {
         if (rival.id === player.id || rival.kind !== "regular" || rival.eliminated || !diplomacy.hostile(player.id, rival.id) ||
           !this.expansion.geography.eligible(player, rival)) continue;
         const commitments = [...this.records.values()].filter(other => other.target === rival.id && ["preparing", "war"].includes(other.phase)).length;
-        const score = world.map.euclideanDistSquared(player.base, rival.base) + commitments * 4096;
+        const advantage = combatAdvantage(composition(player.id), composition(rival.id));
+        const required = ["warden","builder","diplomat"].includes(profile.id) ? 1.6 : profile.id === "conqueror" ? 1.1 : 1.25;
+        // Healthy parity-sized forces still commit; small forces need a clear
+        // equipment/strength advantage instead of waiting for eight squads.
+        if (advantage < required && !(advantage >= .9 && strength >= profile.minimumRaidSquads)) continue;
+        const score = Math.floor(world.map.euclideanDistSquared(player.base, rival.base) / Math.max(.25,advantage)) + commitments * 4096;
         if (score < r.score || (score === r.score && rival.id < (r.candidate ?? Infinity))) { r.score = score; r.candidate = rival.id; }
       }
       if (r.cursor === world.players.length) {

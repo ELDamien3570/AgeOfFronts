@@ -11,8 +11,9 @@ import {
 import type { Player } from "../Protocol";
 import {
   AGES,
+  startingGameplayAge,
+  type StartingAge,
   TREES,
-  type Age,
   type ProgressionState,
   type TechnologySpeed,
   type Tree,
@@ -29,19 +30,20 @@ export function researchTerms(
   };
 }
 export function startingProgression(
-  startingAge: Age = "StoneAge",
+  startingAge: StartingAge = "StoneAge",
 ): ProgressionState {
-  const ageIndex = AGES.indexOf(startingAge);
+  const age = startingGameplayAge(startingAge);
+  const ageIndex = AGES.indexOf(age);
   const completed = new Set<string>(DEFAULT_CULTURE.startingTechnologies);
   for (const t of TECHNOLOGIES) {
-    if (AGES.indexOf(t.age) < ageIndex) {
+    if (startingAge === "PostModern" || AGES.indexOf(t.age) < ageIndex) {
       completed.add(t.id);
     }
   }
-  for (const tree of TREES) completed.add(technologyAt(startingAge, tree, 1).id);
+  for (const tree of TREES) completed.add(technologyAt(age, tree, 1).id);
   return {
     cultureId: DEFAULT_CULTURE.id,
-    age: startingAge,
+    age,
     completed: [...completed],
     research: {},
     advancement: null,
@@ -99,12 +101,12 @@ export class Progression {
   readonly states: Record<number, ProgressionState> = {};
   constructor(
     readonly technologySpeed: TechnologySpeed = 1,
-    readonly startingAge: Age = "StoneAge",
+    readonly startingAge: StartingAge = "StoneAge",
   ) {
     if (![1, 2, 3].includes(technologySpeed))
       throw new Error("Technology speed must be 1×, 2× or 3×");
   }
-  add(playerId: number, startingAge: Age = this.startingAge): void {
+  add(playerId: number, startingAge: StartingAge = this.startingAge): void {
     this.states[playerId] = startingProgression(startingAge);this.revision++;
   }
   inheritCompleted(playerId: number, donorId: number): void {

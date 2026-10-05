@@ -7,7 +7,7 @@
     "slot": 2,
     "gold": 200,
     "ticks": 600,
-    "description": "Construct Stone ports. Port access alone creates no military vessel, sea trader, or passive trade income.",
+    "description": "Unlocks ports for shipbuilding and sea trade.",
     "prerequisites": ["stoneage-cargo-canoes"],
     "capabilities": ["stoneage-shorecraft"]
   },
@@ -19,7 +19,7 @@
     "slot": 1,
     "gold": 300,
     "ticks": 700,
-    "description": "Unlock automatic shore embarkation in free temporary transports carrying 10 whole squads. Move orders cross reachable water and resume on land; transports disappear after landing. Also unlock port-built permanent transports and automatic water trade from factories through reachable ports. Water trade does not require Goods Handling.",
+    "description": "Unlocks shore embarkation, permanent transports, and automatic port-to-port trade. Temporary shore transports disappear after landing.",
     "prerequisites": [],
     "capabilities": ["stoneage-cargo-canoes"]
   },
@@ -31,7 +31,7 @@
     "slot": 3,
     "gold": 300,
     "ticks": 700,
-    "description": "Stone warship definition for local escort/interception. Keep its combat stats independent of the transport.",
+    "description": "Unlocks war canoes for naval combat and interception of hostile trade ships.",
     "prerequisites": ["stoneage-shorecraft"],
     "capabilities": ["stoneage-war-canoes"]
   },
@@ -43,7 +43,7 @@
     "slot": 4,
     "gold": 450,
     "ticks": 900,
-    "description": "Improve Stone sailing and embark/disembark handling under authored values; complete Naval. Does not bypass coast/reachability rules.",
+    "description": "Improves permanent military transport capacity and military sailing speed; warships reload faster. Trade ships and temporary shore transports are unchanged.",
     "prerequisites": ["stoneage-cargo-canoes", "stoneage-war-canoes"],
     "capabilities": ["stoneage-coastal-navigation"]
   },
@@ -55,7 +55,7 @@
     "slot": 1,
     "gold": 0,
     "ticks": 0,
-    "description": "Stone barracks and clubmen/Flint infantry. No manufactured-weapon requirement.",
+    "description": "Unlocks barracks and clubmen.",
     "prerequisites": [],
     "capabilities": ["stoneage-flint-weapons"]
   },
@@ -67,7 +67,7 @@
     "slot": 2,
     "gold": 300,
     "ticks": 700,
-    "description": "Stone ranged camp and javelinists. Ranged damage, range, and reload define this role. No manufactured weapons.",
+    "description": "Unlocks archery ranges and javelinists.",
     "prerequisites": ["stoneage-flint-weapons"],
     "capabilities": ["stoneage-spear-throwing"]
   },
@@ -79,7 +79,7 @@
     "slot": 3,
     "gold": 250,
     "ticks": 500,
-    "description": "Horse-node exploitation, slow stable breeding, Stone stables and mounted spearmen. Recruitment costs reserves and horses. Proposed first charge-capable definition.",
+    "description": "Unlocks stables, mounted spearmen, horse gathering, and stable breeding.",
     "prerequisites": ["stoneage-flint-weapons"],
     "capabilities": ["stoneage-horsemanship"]
   },
@@ -91,7 +91,7 @@
     "slot": 4,
     "gold": 450,
     "ticks": 900,
-    "description": "Wooden towers and linked palisades use Art/Terrain/Wall Kit/Palisades; gate capability, Stone field-siege production and battering ram. Siege breaches independently of infantry. Gate and Stone siege art remain outstanding.",
+    "description": "Unlocks towers, palisades, gates, field rams, and siege equipment. Improves all Stone Age ground units.",
     "prerequisites": ["stoneage-spear-throwing", "stoneage-horsemanship"],
     "capabilities": ["stoneage-field-engineering"]
   },
@@ -103,7 +103,7 @@
     "slot": 1,
     "gold": 0,
     "ticks": 0,
-    "description": "Stone cities and their reserve-production capability. No free city appears at match start.",
+    "description": "Unlocks cities, which grow troop reserves.",
     "prerequisites": [],
     "capabilities": ["stoneage-settlements"]
   },
@@ -115,7 +115,7 @@
     "slot": 2,
     "gold": 300,
     "ticks": 700,
-    "description": "Construct workshops/factories and stock commercial goods. Overland deliveries require Goods Handling; water deliveries require Cargo Canoes and a reachable port.",
+    "description": "Unlocks factories producing goods for land trade.",
     "prerequisites": ["stoneage-settlements"],
     "capabilities": ["stoneage-craft-workshops"]
   },
@@ -127,7 +127,7 @@
     "slot": 3,
     "gold": 300,
     "ticks": 700,
-    "description": "Stone mine construction and stone extraction. No Horsemanship prerequisite; Stone mine art is missing.",
+    "description": "Unlocks mines and stone extraction from owned deposits.",
     "prerequisites": ["stoneage-settlements"],
     "capabilities": ["stoneage-stone-mining"]
   },
@@ -139,7 +139,7 @@
     "slot": 4,
     "gold": 450,
     "ticks": 900,
-    "description": "Unlock automatic overland traders with finite multi-stop factory loads and increased cargo capacity. Gold is paid on delivery at cities and ports. Water trade is unlocked separately by Cargo Canoes.",
+    "description": "Starts automatic land trade between reachable markets. Increases land and sea cargo capacity and speeds up production recipes.",
     "prerequisites": ["stoneage-craft-workshops", "stoneage-stone-mining"],
     "capabilities": ["stoneage-goods-handling"]
   },
@@ -151,7 +151,7 @@
     "slot": 1,
     "gold": 12000,
     "ticks": 800,
-    "description": "Bronze port/shipbuilding tier and Bronze military transport definition. Enables the new hull tier; does not refit old ships automatically. Automatically advances compatible military building tiers when researched, preserving damage and active production.",
+    "description": "Unlocks Bronze Age ports and transports. Existing ports advance automatically.",
     "prerequisites": ["stoneage-coastal-navigation"],
     "capabilities": ["bronzeage-planked-hulls"]
   },
@@ -163,7 +163,7 @@
     "slot": 2,
     "gold": 7000,
     "ticks": 900,
-    "description": "Bronze trade-ship definition and sailing/cargo capability. Dispatch remains automatic, free, bounded, and dependent on real factory cargo.",
+    "description": "Unlocks Bronze Age sea traders, with larger cargo holds.",
     "prerequisites": ["bronzeage-planked-hulls"],
     "capabilities": ["bronzeage-merchant-sailing"]
   },
@@ -175,7 +175,7 @@
     "slot": 3,
     "gold": 7000,
     "ticks": 900,
-    "description": "Bronze oared warship definition, using the galley-like art. Escort and interception are baseline military uses.",
+    "description": "Unlocks Bronze Age warships for naval combat and interception of hostile trade ships.",
     "prerequisites": ["bronzeage-planked-hulls"],
     "capabilities": ["bronzeage-oared-warships"]
   },
@@ -187,7 +187,7 @@
     "slot": 4,
     "gold": 10000,
     "ticks": 1100,
-    "description": "Better loading/transport capacity and coordinated naval handling. No sharing of allied units or inventory is implied.",
+    "description": "Improves permanent military transport capacity and military sailing speed; warships reload faster. Trade ships and temporary shore transports are unchanged.",
     "prerequisites": ["bronzeage-merchant-sailing", "bronzeage-oared-warships"],
     "capabilities": ["bronzeage-naval-organisation"]
   },
@@ -199,7 +199,7 @@
     "slot": 1,
     "gold": 12000,
     "ticks": 800,
-    "description": "Bronze blacksmith, barracks tier and bronze swordsmen. Manufacture shared Bronze Age equipment for infantry, archers and chariots. Automatically advances compatible military building tiers when researched, preserving damage and active production.",
+    "description": "Unlocks bronze swordsmen and blacksmiths producing troop equipment. Compatible military buildings advance automatically.",
     "prerequisites": ["stoneage-field-engineering"],
     "capabilities": ["bronzeage-bronze-equipment"]
   },
@@ -211,7 +211,7 @@
     "slot": 2,
     "gold": 14000,
     "ticks": 900,
-    "description": "Bronze archery range and archers. Uses the same Bronze Age equipment as other Bronze troops. Automatically advances compatible military building tiers when researched, preserving damage and active production.",
+    "description": "Unlocks bronze archers.",
     "prerequisites": ["bronzeage-bronze-equipment"],
     "capabilities": ["bronzeage-bowcraft"]
   },
@@ -223,7 +223,7 @@
     "slot": 3,
     "gold": 14000,
     "ticks": 900,
-    "description": "Bronze stables and chariots. Recruitment uses shared Bronze Age equipment, horses and reserves. Automatically advances compatible military building tiers when researched, preserving damage and active production.",
+    "description": "Unlocks chariots for mounted combat.",
     "prerequisites": ["bronzeage-bronze-equipment"],
     "capabilities": ["bronzeage-chariot-warfare"]
   },
@@ -235,7 +235,7 @@
     "slot": 4,
     "gold": 20000,
     "ticks": 1100,
-    "description": "Stone walls and round stone towers use Art/Terrain/Wall Kit/StoneWalls; gate capability, Bronze siege workshop, reinforced ram and siege-equipment pattern. Battering-ram and assault siege-tower art exists; assault/bridge behaviour needs its own contract. Automatically advances compatible military building tiers when researched, preserving damage and active production.",
+    "description": "Unlocks fortified walls, gates, towers, rams, siege towers, and siege equipment. Improves all Bronze Age ground units.",
     "prerequisites": ["bronzeage-bowcraft", "bronzeage-chariot-warfare"],
     "capabilities": ["bronzeage-fortified-settlements"]
   },
@@ -247,7 +247,7 @@
     "slot": 5,
     "gold": 7000,
     "ticks": 900,
-    "description": "Organize up to 20 existing squad formations into a persistent army. Cohesive marching columns, role-based deployment, flank and fire-and-retreat orders, optional automatic tactics. Later Warfare foundations raise capacity to 25, 30, 35, 40 and 50. No free troops or equipment.",
+    "description": "Organizes squads into armies with shared orders and formations. Army capacity counts squads, not soldiers.",
     "prerequisites": ["bronzeage-bronze-equipment"],
     "capabilities": ["persistent-armies"]
   },
@@ -259,7 +259,7 @@
     "slot": 1,
     "gold": 6000,
     "ticks": 800,
-    "description": "Additional raw mining and alloy refining to bronze; Bronze mine/factory processing tier. Bronze is manufactured, not a deposit.",
+    "description": "Unlocks copper and tin extraction, bronze smelting, and Bronze Age mines.",
     "prerequisites": ["stoneage-goods-handling"],
     "capabilities": ["bronzeage-bronze-metallurgy"]
   },
@@ -271,7 +271,7 @@
     "slot": 2,
     "gold": 7000,
     "ticks": 900,
-    "description": "Bronze city/commercial workshop tier, handcart merchant definition, and improved commercial output.",
+    "description": "Unlocks Bronze Age city and factory upgrades, increasing reserve growth and trade stock.",
     "prerequisites": ["bronzeage-bronze-metallurgy"],
     "capabilities": ["bronzeage-urban-workshops"]
   },
@@ -283,7 +283,7 @@
     "slot": 3,
     "gold": 7000,
     "ticks": 900,
-    "description": "Packed-dirt trade-road tier and researched route movement/handling improvement. Physical road authoring/placement policy remains open.",
+    "description": "Increases land trader cargo capacity. Adds cosmetic dirt roads along trade routes.",
     "prerequisites": ["bronzeage-bronze-metallurgy"],
     "capabilities": ["bronzeage-road-networks"]
   },
@@ -295,7 +295,7 @@
     "slot": 4,
     "gold": 10000,
     "ticks": 1100,
-    "description": "Higher delivery capacity and city reserve administration. No separate market/town-hall building is required.",
+    "description": "Speeds up equipment and refining recipes.",
     "prerequisites": ["bronzeage-urban-workshops", "bronzeage-road-networks"],
     "capabilities": ["bronzeage-civic-administration"]
   },
@@ -307,7 +307,7 @@
     "slot": 1,
     "gold": 20000,
     "ticks": 900,
-    "description": "Classical port and hull-production tier. No extra standalone shipyard art/building is assumed. Automatically advances compatible military building tiers when researched, preserving damage and active production.",
+    "description": "Unlocks Classical Age ports. Existing ports advance automatically.",
     "prerequisites": ["bronzeage-naval-organisation"],
     "capabilities": ["classicalage-shipyards"]
   },
@@ -319,7 +319,7 @@
     "slot": 2,
     "gold": 12000,
     "ticks": 1000,
-    "description": "Classical transport and trade-ship definitions, with larger authored troop/cargo capacity.",
+    "description": "Unlocks Classical Age sea traders and transports, with larger cargo holds and shore transport capacity.",
     "prerequisites": ["classicalage-shipyards"],
     "capabilities": ["classicalage-transport-fleets"]
   },
@@ -331,7 +331,7 @@
     "slot": 3,
     "gold": 12000,
     "ticks": 1000,
-    "description": "Classical galley warship definition; combat/escort capability appropriate to its oared art.",
+    "description": "Unlocks Classical Age warships for naval combat and interception of hostile trade ships.",
     "prerequisites": ["classicalage-shipyards"],
     "capabilities": ["classicalage-galley-warfare"]
   },
@@ -343,7 +343,7 @@
     "slot": 4,
     "gold": 16000,
     "ticks": 1200,
-    "description": "Improved naval load handling and delivery turnaround; maintain cargo conservation and actual arrival payments.",
+    "description": "Improves permanent military transport capacity and military sailing speed; warships reload faster. Trade ships and temporary shore transports are unchanged.",
     "prerequisites": [
       "classicalage-transport-fleets",
       "classicalage-galley-warfare"
@@ -358,7 +358,7 @@
     "slot": 1,
     "gold": 20000,
     "ticks": 900,
-    "description": "Classical blacksmith and barracks, sword-and-shield infantry and improved protection. Manufacture shared Classical Age equipment from iron. Automatically advances compatible military building tiers when researched, preserving damage and active production.",
+    "description": "Unlocks sword-and-shield infantry and Classical troop equipment. Raises army capacity after Armies is researched.",
     "prerequisites": ["bronzeage-fortified-settlements", "bronzeage-armies"],
     "capabilities": ["classicalage-professional-infantry"]
   },
@@ -370,7 +370,7 @@
     "slot": 2,
     "gold": 24000,
     "ticks": 1000,
-    "description": "Classical archers use shared Classical Age equipment. Mangonels and Onagers use shared Classical Age siege equipment, while retaining distinct research and combat profiles. Automatically advances compatible military building tiers when researched, preserving damage and active production.",
+    "description": "Unlocks Classical archers, mangonels, siege workshops, and siege equipment.",
     "prerequisites": ["classicalage-professional-infantry"],
     "capabilities": ["classicalage-ranged-warfare"]
   },
@@ -382,7 +382,7 @@
     "slot": 3,
     "gold": 24000,
     "ticks": 1000,
-    "description": "Classical stables and mounted swordsmen. Recruitment uses shared Classical Age equipment, horses and reserves. Automatically advances compatible military building tiers when researched, preserving damage and active production.",
+    "description": "Unlocks mounted swordsmen for cavalry combat.",
     "prerequisites": ["classicalage-professional-infantry"],
     "capabilities": ["classicalage-cavalry-tactics"]
   },
@@ -394,7 +394,7 @@
     "slot": 4,
     "gold": 32000,
     "ticks": 1200,
-    "description": "Massive stone walls and square bastions use Art/Terrain/Wall Kit/MassiveStoneWalls; gate capability, Classical siege facility and heavy Onager equipment/definition, distinct from Mangonel field support. Automatically advances compatible military building tiers when researched, preserving damage and active production.",
+    "description": "Unlocks towers, walls, gates, and onagers. Improves all Classical ground units.",
     "prerequisites": [
       "classicalage-ranged-warfare",
       "classicalage-cavalry-tactics"
@@ -409,7 +409,7 @@
     "slot": 1,
     "gold": 10000,
     "ticks": 900,
-    "description": "Iron-ore extraction and iron refining; Classical mine/factory processing tier.",
+    "description": "Unlocks iron extraction, iron smelting, and Classical mines.",
     "prerequisites": ["bronzeage-civic-administration"],
     "capabilities": ["classicalage-ironworking"]
   },
@@ -421,7 +421,7 @@
     "slot": 2,
     "gold": 12000,
     "ticks": 1000,
-    "description": "Classical city/workshop tier and improved commercial production/urban reserves.",
+    "description": "Unlocks Classical city and factory upgrades and faster horse breeding.",
     "prerequisites": ["classicalage-ironworking"],
     "capabilities": ["classicalage-urban-planning"]
   },
@@ -433,7 +433,7 @@
     "slot": 3,
     "gold": 12000,
     "ticks": 1000,
-    "description": "Compacted-gravel road tier and Classical merchant party: mule wagon plus pack donkey. Larger finite load and researched route efficiency.",
+    "description": "Increases land trader cargo capacity. Adds cosmetic gravel roads along trade routes.",
     "prerequisites": ["classicalage-ironworking"],
     "capabilities": ["classicalage-caravan-roads"]
   },
@@ -445,7 +445,7 @@
     "slot": 4,
     "gold": 16000,
     "ticks": 1200,
-    "description": "Improved horse breeding at eligible owned stables and better logistical handling. Research can complete without owning a stable.",
+    "description": "Speeds up equipment and refining recipes.",
     "prerequisites": [
       "classicalage-urban-planning",
       "classicalage-caravan-roads"
@@ -460,7 +460,7 @@
     "slot": 1,
     "gold": 32000,
     "ticks": 1000,
-    "description": "Early Medieval port and stronger hull-production tier. Automatically advances compatible military building tiers when researched, preserving damage and active production.",
+    "description": "Unlocks Early Medieval ports. Existing ports advance automatically.",
     "prerequisites": ["classicalage-naval-logistics"],
     "capabilities": ["earlymedieval-framed-hulls"]
   },
@@ -472,7 +472,7 @@
     "slot": 2,
     "gold": 18000,
     "ticks": 1100,
-    "description": "Early Medieval transport/trade ships and improved sailing performance.",
+    "description": "Unlocks Early Medieval sea traders and transports, with larger cargo holds and shore transport capacity.",
     "prerequisites": ["earlymedieval-framed-hulls"],
     "capabilities": ["earlymedieval-seafaring"]
   },
@@ -484,7 +484,7 @@
     "slot": 3,
     "gold": 18000,
     "ticks": 1100,
-    "description": "Early Medieval oared/sailing warship definition. Raiding is a use of military orders, not a new automatic gold generator.",
+    "description": "Unlocks Early Medieval warships for naval combat and interception of hostile trade ships.",
     "prerequisites": ["earlymedieval-framed-hulls"],
     "capabilities": ["earlymedieval-coastal-warships"]
   },
@@ -496,7 +496,7 @@
     "slot": 4,
     "gold": 26000,
     "ticks": 1300,
-    "description": "More efficient legal landing/embarkation and naval cargo handling.",
+    "description": "Improves permanent military transport capacity and military sailing speed; warships reload faster. Trade ships and temporary shore transports are unchanged.",
     "prerequisites": [
       "earlymedieval-seafaring",
       "earlymedieval-coastal-warships"
@@ -511,7 +511,7 @@
     "slot": 1,
     "gold": 32000,
     "ticks": 1000,
-    "description": "Early Medieval blacksmith and barracks, mail infantry and shared Early Medieval equipment manufactured from iron. Automatically advances compatible military building tiers when researched, preserving damage and active production.",
+    "description": "Unlocks mail infantry and Early Medieval troop equipment. Raises army capacity after Armies is researched.",
     "prerequisites": ["classicalage-masonry-engineering"],
     "capabilities": ["earlymedieval-mail-equipment"]
   },
@@ -523,7 +523,7 @@
     "slot": 2,
     "gold": 36000,
     "ticks": 1100,
-    "description": "Bowmen use shared Early Medieval equipment. Ballistas and Trebuchets use shared Early Medieval siege equipment, with separate recruitment research. Automatically advances compatible military building tiers when researched, preserving damage and active production.",
+    "description": "Unlocks bowmen, ballistas, siege workshops, and siege equipment.",
     "prerequisites": ["earlymedieval-mail-equipment"],
     "capabilities": ["earlymedieval-bow-and-bolt-warfare"]
   },
@@ -535,7 +535,7 @@
     "slot": 3,
     "gold": 36000,
     "ticks": 1100,
-    "description": "Early Medieval stables and mounted spearmen. Recruitment uses shared Early Medieval equipment, horses and reserves. Automatically advances compatible military building tiers when researched, preserving damage and active production.",
+    "description": "Unlocks mounted spearmen for cavalry combat.",
     "prerequisites": ["earlymedieval-mail-equipment"],
     "capabilities": ["earlymedieval-mounted-spearmen"]
   },
@@ -547,7 +547,7 @@
     "slot": 4,
     "gold": 52000,
     "ticks": 1300,
-    "description": "Improved masonry walls/towers/gates, Early Medieval siege workshop and Trebuchet equipment/definition. The current wall kit ends at Classical; a distinct Early Medieval visual tier is not verified. Automatically advances compatible military building tiers when researched, preserving damage and active production.",
+    "description": "Unlocks towers, walls, gates, and trebuchets. Improves all Early Medieval ground units.",
     "prerequisites": [
       "earlymedieval-bow-and-bolt-warfare",
       "earlymedieval-mounted-spearmen"
@@ -562,7 +562,7 @@
     "slot": 1,
     "gold": 16000,
     "ticks": 1000,
-    "description": "Early Medieval city/mine operating tier, improved reserve generation and extraction efficiency. No separate farm building is implied by this technology name.",
+    "description": "Unlocks Early Medieval city and mine upgrades.",
     "prerequisites": ["classicalage-husbandry"],
     "capabilities": ["earlymedieval-agricultural-organisation"]
   },
@@ -574,7 +574,7 @@
     "slot": 2,
     "gold": 18000,
     "ticks": 1100,
-    "description": "Early Medieval workshop/factory tier and higher commercial/refining production efficiency through separate jobs.",
+    "description": "Unlocks Early Medieval factory upgrades, increasing trade stock.",
     "prerequisites": ["earlymedieval-agricultural-organisation"],
     "capabilities": ["earlymedieval-craft-guilds"]
   },
@@ -586,7 +586,7 @@
     "slot": 3,
     "gold": 18000,
     "ticks": 1100,
-    "description": "Two-wagon horse caravan, rough-stone roads, and another stable breeding improvement. Commercial mounts do not charge the military horse inventory.",
+    "description": "Increases land trader cargo capacity and horse breeding. Upgrades cosmetic trade roads.",
     "prerequisites": ["earlymedieval-agricultural-organisation"],
     "capabilities": ["earlymedieval-caravan-breeding"]
   },
@@ -598,7 +598,7 @@
     "slot": 4,
     "gold": 26000,
     "ticks": 1300,
-    "description": "Larger funded multi-stop loads and shorter handling delays; improve throughput before increasing actor caps.",
+    "description": "Speeds up equipment and refining recipes.",
     "prerequisites": [
       "earlymedieval-craft-guilds",
       "earlymedieval-caravan-breeding"
@@ -613,7 +613,7 @@
     "slot": 1,
     "gold": 48000,
     "ticks": 1100,
-    "description": "Late Medieval port and sailing-hull production tier. Automatically advances compatible military building tiers when researched, preserving damage and active production.",
+    "description": "Unlocks Late Medieval ports. Existing ports advance automatically.",
     "prerequisites": ["earlymedieval-landing-logistics"],
     "capabilities": ["latemedieval-sailing-hulls"]
   },
@@ -625,7 +625,7 @@
     "slot": 2,
     "gold": 28000,
     "ticks": 1300,
-    "description": "Late Medieval transport/trade-ship definitions and expanded maritime capacity. Escort remains a military assignment, not automatic immunity.",
+    "description": "Unlocks Late Medieval sea traders and transports, with larger cargo holds and shore transport capacity.",
     "prerequisites": ["latemedieval-sailing-hulls"],
     "capabilities": ["latemedieval-merchant-convoys"]
   },
@@ -637,7 +637,7 @@
     "slot": 3,
     "gold": 28000,
     "ticks": 1300,
-    "description": "Cannon-armed Late Medieval warship and naval-ordnance capability. Powder supply is an operational input question, not an Economic research prerequisite.",
+    "description": "Unlocks Late Medieval warships for naval combat and interception of hostile trade ships.",
     "prerequisites": ["latemedieval-sailing-hulls"],
     "capabilities": ["latemedieval-naval-gunnery"]
   },
@@ -649,7 +649,7 @@
     "slot": 4,
     "gold": 40000,
     "ticks": 1500,
-    "description": "Improved naval gunnery/reload and formation handling. Port/starboard art supports a proposed broadside profile; firing arcs must be domain-defined.",
+    "description": "Improves permanent military transport capacity and military sailing speed; warships reload faster. Trade ships and temporary shore transports are unchanged.",
     "prerequisites": [
       "latemedieval-merchant-convoys",
       "latemedieval-naval-gunnery"
@@ -664,7 +664,7 @@
     "slot": 1,
     "gold": 48000,
     "ticks": 1100,
-    "description": "Late Medieval blacksmith and barracks, plate swordsmen and shared Late Medieval equipment manufactured from steel. Automatically advances compatible military building tiers when researched, preserving damage and active production.",
+    "description": "Unlocks plate swordsmen and Late Medieval troop equipment. Raises army capacity after Armies is researched.",
     "prerequisites": ["earlymedieval-trebuchet-engineering"],
     "capabilities": ["latemedieval-steel-equipment"]
   },
@@ -676,7 +676,7 @@
     "slot": 2,
     "gold": 56000,
     "ticks": 1300,
-    "description": "Crossbowmen use shared Late Medieval equipment. Organ Guns and Bombards use shared Late Medieval siege equipment made from steel and gunpowder. Automatically advances compatible military building tiers when researched, preserving damage and active production.",
+    "description": "Unlocks crossbowmen, organ guns, siege workshops, and siege equipment.",
     "prerequisites": ["latemedieval-steel-equipment"],
     "capabilities": ["latemedieval-crossbows-and-field-guns"]
   },
@@ -688,7 +688,7 @@
     "slot": 3,
     "gold": 56000,
     "ticks": 1300,
-    "description": "Knight stables and lance cavalry. Recruitment uses shared Late Medieval equipment, horses and reserves. Automatically advances compatible military building tiers when researched, preserving damage and active production.",
+    "description": "Unlocks lance knights for cavalry combat.",
     "prerequisites": ["latemedieval-steel-equipment"],
     "capabilities": ["latemedieval-lance-knights"]
   },
@@ -700,7 +700,7 @@
     "slot": 4,
     "gold": 80000,
     "ticks": 1500,
-    "description": "Stronger towers, walls and gates, siege workshops and Bombards. Bombards use shared Late Medieval siege equipment. Handheld firearm infantry starts in Early Modern. Automatically advances compatible military building tiers when researched, preserving damage and active production.",
+    "description": "Unlocks towers, walls, gates, and bombards. Improves all Late Medieval ground units.",
     "prerequisites": [
       "latemedieval-crossbows-and-field-guns",
       "latemedieval-lance-knights"
@@ -715,7 +715,7 @@
     "slot": 1,
     "gold": 24000,
     "ticks": 1100,
-    "description": "Carbon/fuel raw extraction as authored, steel refining, and Late Medieval mine/factory tier. No mineable steel deposit.",
+    "description": "Unlocks carbon extraction, steel production, and Late Medieval mines.",
     "prerequisites": ["earlymedieval-market-logistics"],
     "capabilities": ["latemedieval-steelmaking"]
   },
@@ -727,7 +727,7 @@
     "slot": 2,
     "gold": 28000,
     "ticks": 1300,
-    "description": "Unlock direct gunpowder extraction from deposits using mines, supplying shared Late Medieval siege equipment. No ingredient refining is needed. Handheld firearm infantry starts in Early Modern.",
+    "description": "Unlocks sulphur, nitrate, and gunpowder extraction from owned deposits.",
     "prerequisites": ["latemedieval-steelmaking"],
     "capabilities": ["latemedieval-powder-milling"]
   },
@@ -739,7 +739,7 @@
     "slot": 3,
     "gold": 28000,
     "ticks": 1300,
-    "description": "Late Medieval city/commercial production tier, three covered-wagon trader, and cobblestone roads.",
+    "description": "Unlocks Late Medieval city and factory upgrades and larger land trader cargo holds. Upgrades cosmetic trade roads.",
     "prerequisites": ["latemedieval-steelmaking"],
     "capabilities": ["latemedieval-guild-commerce"]
   },
@@ -751,7 +751,7 @@
     "slot": 4,
     "gold": 40000,
     "ticks": 1500,
-    "description": "Higher commercial load capacity, reserve administration, and producer handling efficiency.",
+    "description": "Speeds up equipment and refining recipes.",
     "prerequisites": [
       "latemedieval-powder-milling",
       "latemedieval-guild-commerce"
@@ -766,7 +766,7 @@
     "slot": 1,
     "gold": 70000,
     "ticks": 1300,
-    "description": "Early Modern port/hull tier and improved maritime navigation performance; no arbitrary global teleportation. Automatically advances compatible military building tiers when researched, preserving damage and active production.",
+    "description": "Unlocks Early Modern ports. Existing ports advance automatically.",
     "prerequisites": ["latemedieval-broadside-tactics"],
     "capabilities": ["earlymodern-ocean-navigation"]
   },
@@ -778,7 +778,7 @@
     "slot": 2,
     "gold": 40000,
     "ticks": 1500,
-    "description": "Early Modern ocean transport and merchant-ship definitions, larger legal load capacity.",
+    "description": "Unlocks Early Modern sea traders and transports, with larger cargo holds and shore transport capacity.",
     "prerequisites": ["earlymodern-ocean-navigation"],
     "capabilities": ["earlymodern-ocean-transport"]
   },
@@ -790,7 +790,7 @@
     "slot": 3,
     "gold": 40000,
     "ticks": 1500,
-    "description": "Early Modern gun warship definition and its gunnery capability.",
+    "description": "Unlocks Early Modern warships for naval combat and interception of hostile trade ships.",
     "prerequisites": ["earlymodern-ocean-navigation"],
     "capabilities": ["earlymodern-ships-of-the-line"]
   },
@@ -802,7 +802,7 @@
     "slot": 4,
     "gold": 55000,
     "ticks": 1800,
-    "description": "Better fleet handling, loading and gunnery coordination under explicit combat values.",
+    "description": "Improves permanent military transport capacity and military sailing speed; warships reload faster. Trade ships and temporary shore transports are unchanged.",
     "prerequisites": [
       "earlymodern-ocean-transport",
       "earlymodern-ships-of-the-line"
@@ -817,7 +817,7 @@
     "slot": 1,
     "gold": 70000,
     "ticks": 1300,
-    "description": "Armory, Early Modern barracks and short-gun infantry. Manufacture shared Early Modern equipment from iron and gunpowder for frontline, ranged and mounted troops. Automatically advances compatible military building tiers when researched, preserving damage and active production.",
+    "description": "Unlocks short-gun infantry and armories producing troop equipment. Raises army capacity after Armies is researched.",
     "prerequisites": ["latemedieval-siege-ordnance"],
     "capabilities": ["earlymodern-firearms"]
   },
@@ -829,7 +829,7 @@
     "slot": 2,
     "gold": 80000,
     "ticks": 1500,
-    "description": "Musketeers use shared Early Modern equipment. Field cannons and howitzers use shared Early Modern siege equipment, with distinct research and attack profiles. Automatically advances compatible military building tiers when researched, preserving damage and active production.",
+    "description": "Unlocks musketeers, field cannons, siege workshops, and siege equipment.",
     "prerequisites": ["earlymodern-firearms"],
     "capabilities": ["earlymodern-musket-and-artillery-drill"]
   },
@@ -841,7 +841,7 @@
     "slot": 3,
     "gold": 80000,
     "ticks": 1500,
-    "description": "Early Modern stables and mounted pistoliers. Recruitment uses shared Early Modern equipment, horses and reserves. Mounted firearms do not inherit melee charge. Automatically advances compatible military building tiers when researched, preserving damage and active production.",
+    "description": "Unlocks pistoliers for mounted gunfire.",
     "prerequisites": ["earlymodern-firearms"],
     "capabilities": ["earlymodern-pistoliers"]
   },
@@ -853,7 +853,7 @@
     "slot": 4,
     "gold": 110000,
     "ticks": 1800,
-    "description": "Gunpowder-era fortifications, Early Modern siege foundry and Early Howitzer equipment/definition, separate from the field cannon. Keep material/weapon requirements separate from research. Automatically advances compatible military building tiers when researched, preserving damage and active production.",
+    "description": "Unlocks towers, walls, gates, and early howitzers. Improves all Early Modern ground units.",
     "prerequisites": [
       "earlymodern-musket-and-artillery-drill",
       "earlymodern-pistoliers"
@@ -868,7 +868,7 @@
     "slot": 1,
     "gold": 35000,
     "ticks": 1300,
-    "description": "Higher-volume powder/refining recipes and Early Modern mine/factory tier; builds on Late Medieval powder capability.",
+    "description": "Unlocks Early Modern mine upgrades for higher deposit output.",
     "prerequisites": ["latemedieval-urban-administration"],
     "capabilities": ["earlymodern-powder-manufactories"]
   },
@@ -880,7 +880,7 @@
     "slot": 2,
     "gold": 40000,
     "ticks": 1500,
-    "description": "Early Modern city/commercial factory tier and improved production throughput. Shared infrastructure still separates commercial batches and strategic jobs.",
+    "description": "Unlocks Early Modern city and factory upgrades, increasing reserve growth and trade stock.",
     "prerequisites": ["earlymodern-powder-manufactories"],
     "capabilities": ["earlymodern-manufactories"]
   },
@@ -892,7 +892,7 @@
     "slot": 3,
     "gold": 40000,
     "ticks": 1500,
-    "description": "Four-wagon trader, dressed-stone roads, and improved finite route capacity/handling. Foreign/allied commerce already exists and is not gated here.",
+    "description": "Increases land trader cargo capacity. Adds cosmetic dressed-stone roads along trade routes.",
     "prerequisites": ["earlymodern-powder-manufactories"],
     "capabilities": ["earlymodern-long-distance-commerce"]
   },
@@ -904,7 +904,7 @@
     "slot": 4,
     "gold": 55000,
     "ticks": 1800,
-    "description": "Better equipment-production handling and stable breeding/logistics; larger supported deliveries without unbounded free trader creation.",
+    "description": "Speeds up equipment and refining recipes and increases horse breeding.",
     "prerequisites": [
       "earlymodern-manufactories",
       "earlymodern-long-distance-commerce"
@@ -919,7 +919,7 @@
     "slot": 1,
     "gold": 100000,
     "ticks": 1500,
-    "description": "Modern port and powered hull-production tier. Fuel/ship recipes require separate authoring. Automatically advances compatible military building tiers when researched, preserving damage and active production.",
+    "description": "Unlocks Modern ports. Existing ports advance automatically.",
     "prerequisites": ["earlymodern-fleet-coordination"],
     "capabilities": ["modern-powered-vessels"]
   },
@@ -931,7 +931,7 @@
     "slot": 2,
     "gold": 60000,
     "ticks": 1800,
-    "description": "Modern transport and container trade ship; authored transport capacity for heavier definitions such as tanks. No aircraft-carrier mechanics are inferred.",
+    "description": "Unlocks Modern sea traders and transports, with larger cargo holds and shore transport capacity.",
     "prerequisites": ["modern-powered-vessels"],
     "capabilities": ["modern-amphibious-transport"]
   },
@@ -943,7 +943,7 @@
     "slot": 3,
     "gold": 60000,
     "ticks": 1800,
-    "description": "Modern warship and naval gunnery; map its actual art to a combat definition rather than simply boosting a canoe's DPS.",
+    "description": "Unlocks Modern warships for naval combat and interception of hostile trade ships.",
     "prerequisites": ["modern-powered-vessels"],
     "capabilities": ["modern-modern-warships"]
   },
@@ -955,7 +955,7 @@
     "slot": 4,
     "gold": 90000,
     "ticks": 2400,
-    "description": "Final naval handling/capacity/combat coordination tier. Sensors/anti-air behaviour require explicit combat/visibility contracts before being advertised.",
+    "description": "Improves permanent military transport capacity and military sailing speed; warships reload faster. Trade ships and temporary shore transports are unchanged.",
     "prerequisites": ["modern-amphibious-transport", "modern-modern-warships"],
     "capabilities": ["modern-fleet-operations"]
   },
@@ -967,7 +967,7 @@
     "slot": 1,
     "gold": 100000,
     "ticks": 1500,
-    "description": "Arms Factory, Modern barracks and rifle infantry. Manufacture shared Modern equipment for rifle infantry, marksmen and machine-gun crews. Older researched equipment recipes remain available. Automatically advances compatible military building tiers when researched, preserving damage and active production.",
+    "description": "Unlocks rifle infantry and arms factories producing troop equipment. Raises army capacity after Armies is researched.",
     "prerequisites": ["earlymodern-howitzer-engineering"],
     "capabilities": ["modern-modern-armaments"]
   },
@@ -979,7 +979,7 @@
     "slot": 2,
     "gold": 120000,
     "ticks": 1800,
-    "description": "Marksmen, machine-gun crews, tanks, vehicle depots, howitzers and anti-air vehicles. Manufacture shared Modern siege and vehicle equipment. Tanks and other ground vehicles require one of each; howitzers require siege equipment. Gun nests and trenches replace the new wall tier. Automatically advances compatible military building tiers when researched, preserving damage and active production.",
+    "description": "Unlocks marksmen, tanks, machine-gun crews, howitzers, anti-air vehicles, gun nests, connected trenches, and missile defence.",
     "prerequisites": ["modern-modern-armaments"],
     "capabilities": ["modern-combined-arms"]
   },
@@ -991,7 +991,7 @@
     "slot": 3,
     "gold": 120000,
     "ticks": 1800,
-    "description": "Military Airstrips, fighters and bombers. Aircraft require gold and build time only, with no equipment, materials or reserve-troop cost. Airfield capacity and aviation research still apply. Automatically advances compatible military building tiers when researched, preserving damage and active production.",
+    "description": "Unlocks airstrips, fighters, and bombers. Sorties automatically select a ready squad and its runway.",
     "prerequisites": ["modern-modern-armaments"],
     "capabilities": ["modern-military-aviation"]
   },
@@ -1003,7 +1003,7 @@
     "slot": 4,
     "gold": 180000,
     "ticks": 2400,
-    "description": "Missile silos, fixed MIRV launchers, mobile MIRV launchers and strategic payload production. Mobile launchers require shared Modern siege and vehicle equipment. Payloads are manufactured separately and consumed when launched. Automatically advances compatible military building tiers when researched, preserving damage and active production.",
+    "description": "Unlocks missile silos, MIRV launchers, mobile launchers, and payload production. MIRVs target the nearest hostile buildings, or concentrate every warhead on an explicitly targeted building. Improves all Modern ground units.",
     "prerequisites": ["modern-combined-arms", "modern-military-aviation"],
     "capabilities": ["modern-strategic-weapons"]
   },
@@ -1015,7 +1015,7 @@
     "slot": 1,
     "gold": 50000,
     "ticks": 1500,
-    "description": "Oil deposits and late offshore Oil Rigs. Proposed onshore extraction uses the existing Oil Well art under this same node; placement/ownership must be explicit.",
+    "description": "Unlocks oil wells, offshore oil rigs, oil extraction, and Modern mine upgrades.",
     "prerequisites": ["earlymodern-military-provisioning"],
     "capabilities": ["modern-petroleum-extraction"]
   },
@@ -1027,7 +1027,7 @@
     "slot": 2,
     "gold": 60000,
     "ticks": 1800,
-    "description": "Modern city/factory/mine tier, higher existing-material refining/commercial output, and improved production throughput. No new obligatory metal.",
+    "description": "Unlocks Modern city and factory upgrades, increasing reserve growth and trade stock.",
     "prerequisites": ["modern-petroleum-extraction"],
     "capabilities": ["modern-industrial-production"]
   },
@@ -1039,7 +1039,7 @@
     "slot": 3,
     "gold": 60000,
     "ticks": 1800,
-    "description": "Modern civilian freight-truck trader and asphalt roads with larger finite load. Free factory dispatch does not silently deduct horses, oil or a military weapon kit.",
+    "description": "Increases land trader cargo capacity. Adds cosmetic asphalt roads along trade routes.",
     "prerequisites": ["modern-petroleum-extraction"],
     "capabilities": ["modern-motor-freight"]
   },
@@ -1051,7 +1051,7 @@
     "slot": 4,
     "gold": 90000,
     "ticks": 2400,
-    "description": "Highest proposed production/load-handling tier and final horse-breeding improvement on retained eligible horse stables. Modern vehicle-depot art is not a new horse-breeding building.",
+    "description": "Speeds up equipment, refining, and payload recipes and increases horse breeding.",
     "prerequisites": ["modern-industrial-production", "modern-motor-freight"],
     "capabilities": ["modern-integrated-logistics"]
   }

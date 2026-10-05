@@ -1,3 +1,4 @@
+import { buildingFootprint } from "../BuildingFootprint";
 import { CAPTURE_RADIUS, type BuildingType, type ShipType } from "../Protocol";
 import type { FormationType } from "./FormationArtwork";
 import {
@@ -50,7 +51,11 @@ export function squadSymbol(
 
 /** Conservative pre-artwork bound, including fallback formations and the
  * selected capture indicator. Uses the same LOD contract as final symbols. */
-export function squadViewRadius(scale: number, troops: number, selected = false): number {
+export function squadViewRadius(
+  scale: number,
+  troops: number,
+  selected = false,
+): number {
   const size = squadSpriteSize(scale, troops);
   return Math.max(
     (size / SPRITE_FOOTPRINT) * Math.SQRT1_2 + size * MAX_MELEE_LUNGE_RATIO,
@@ -104,14 +109,20 @@ export function buildingSymbol(
   type: BuildingType,
   selected = false,
 ) {
-  const artwork = hasArtwork && scale >= BUILDING_ART_MIN_PIXELS;
+  const shape = buildingFootprint(type);
+  const width = shape.width * scale,
+    height = shape.height * scale;
+  const artwork =
+    hasArtwork && Math.min(width, height) >= BUILDING_ART_MIN_PIXELS;
   const backdropAlpha = artwork ? (selected ? 0.2 : 0) : 0.9;
-  // One visual terrain cell, independent of domain clearing/placement rules.
+  // Artwork, hit bounds and the occupied pad share placement dimensions.
   const inset = type === "city" ? 0 : scale * 0.075;
   return {
     artwork,
-    size: artwork ? scale : 18,
-    footprintSize: scale,
+    size: artwork ? Math.max(width, height) : 18,
+    footprintSize: Math.max(width, height),
+    footprintWidth: width,
+    footprintHeight: height,
     inset,
     backdropAlpha,
   };

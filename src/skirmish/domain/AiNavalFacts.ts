@@ -1,3 +1,4 @@
+import { portWaterTiles } from "../PortWaterAccess";
 import type { GameMap } from "../../core/game/GameMap";
 import type { WaterPaths } from "../Pathfinding";
 import { FIXED, type Building, type Ship } from "../Protocol";
@@ -194,8 +195,7 @@ export class AiNavalFacts {
     }
   }
   private portSea(building: Building): number {
-    const tile = this.world.map
-      .neighbors(building.tile)
+    const tile = portWaterTiles(this.world.map, building.tile)
       .find((t) => this.world.waterPaths.walkable(t));
     return tile === undefined ? 0 : this.world.waterPaths.component[tile];
   }

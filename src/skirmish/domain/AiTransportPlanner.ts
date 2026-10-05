@@ -1,3 +1,4 @@
+import { portWaterTiles } from "../PortWaterAccess";
 import { FIXED, type Building, type Player, type Ship, type Squad } from "../Protocol";
 import { AI_DOCTRINES } from "../content/AiDoctrines";
 import { personalityOf } from "../content/AiPersonalities";
@@ -343,8 +344,7 @@ export class AiTransportPlanner {
         [...this.economy.navalFacts.ports(player!.id, sea)].slice(0, 1),
       )[0];
       if (!port) return 0;
-      const water = world.map
-        .neighbors(port.tile)
+      const water = portWaterTiles(world.map, port.tile)
         .find((t) => world.waterPaths.walkable(t));
       if (water === undefined) return 0;
       m = {
@@ -591,8 +591,7 @@ export class AiTransportPlanner {
         this.transition(m, "recover", "Departure port lost");
         return 1;
       }
-      const berth = world.map
-        .neighbors(port.tile)
+      const berth = portWaterTiles(world.map, port.tile)
         .find(
           (t) =>
             world.waterPaths.walkable(t) &&

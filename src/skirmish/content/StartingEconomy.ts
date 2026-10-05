@@ -1,7 +1,7 @@
 import type { BuildingType } from "../Protocol";
 import { buildingCost, buildingTechnology } from "./Buildings";
 import { defaultUnit } from "./Units";
-import { AGES, type Age, type Inventory } from "../domain/Definitions";
+import { AGES, startingGameplayAge, type StartingAge, type Age, type Inventory } from "../domain/Definitions";
 
 /** Opening banks are content, not income multipliers or research grants.
  * EarlyModern is the catalogue name for the attachment's sixth-age package. */
@@ -15,7 +15,8 @@ export const STARTING_ECONOMY: Readonly<Record<Age, { gold: number; reserves: nu
   Modern: { gold: 32000, reserves: 18000, items: { steel: 100, oil: 60, carbon: 50, gunpowder: 50, "equipment:modern": 3 } },
 };
 
-export function startingEconomy(age: Age, tribe = false) {
+export function startingEconomy(start: StartingAge, tribe = false) {
+  const age = startingGameplayAge(start);
   const bank = STARTING_ECONOMY[age], factor = AGES.indexOf(age) + 1;
   const types: BuildingType[] = tribe
     ? ["city", "port", "factory", "mine", "barracks"]
@@ -39,7 +40,7 @@ export function startingEconomy(age: Age, tribe = false) {
   // The supplied table predates V1's workshop/city prices. Fund the actual
   // requested opening instead of changing construction prices to fit it.
   return {
-    gold: Math.max(tribe ? 3000 * factor : bank.gold, Math.ceil(gold / 500) * 500),
+    gold: start === "PostModern" ? 1_000_000 : Math.max(tribe ? 3000 * factor : bank.gold, Math.ceil(gold / 500) * 500),
     reserves: tribe ? 2000 * factor : bank.reserves,
     items,
   };

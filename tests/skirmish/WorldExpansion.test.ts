@@ -1,3 +1,4 @@
+import { claimBuildingFootprint } from "./BuildingFixtures";
 import { retainSquads } from "./UnitFixtures";
 import { describe, expect, it } from "vitest";
 import { GameMapImpl } from "../../src/core/game/GameMap";
@@ -327,7 +328,7 @@ describe("stacked buildings and large fleets", () => {
       x:(match.map.x(match.player(record.playerId)!.base)+.5)*FIXED,
       y:(match.map.y(match.player(record.playerId)!.base)+.5)*FIXED,order:{type:"hold"},path:[],
     });
-    match.owners[tile] = 1;
+    claimBuildingFootprint(match,tile,"city");
     player.gold = 100000;
     const before = player.gold;
     for (let i = 0; i < 15; i++)
@@ -362,7 +363,7 @@ describe("stacked buildings and large fleets", () => {
         tile,
       }),
     ).toMatch(/same type/);
-    match.owners[tile + 1] = 1;
+    claimBuildingFootprint(match,tile+1,"city");
     expect(
       match.applyCommand({
         type: "build",
@@ -370,7 +371,7 @@ describe("stacked buildings and large fleets", () => {
         buildingType: "city",
         tile: tile + 1,
       }),
-    ).toMatch(/three tiles/);
+    ).toMatch(/border/);
     const totalTicks = cities.reduce(
       (sum, b) => sum + (b.buildTicks ?? b.remainingTicks),
       0,
@@ -397,7 +398,7 @@ describe("stacked buildings and large fleets", () => {
   it("captures every copy while preserving independent construction progress", () => {
     const match = plains(),
       tile = match.map.ref(30, 25);
-    match.owners[tile] = 1;
+    claimBuildingFootprint(match,tile,"city");
     match.players[0].gold = 10000;
     for (let i = 0; i < 3; i++)
       expect(
@@ -431,7 +432,7 @@ describe("stacked buildings and large fleets", () => {
         runAi: false,
       }),
       tile = match.map.ref(30, 20);
-    match.owners[tile] = 1;
+    claimBuildingFootprint(match,tile,"port");
     match.players[0].gold = 100000;
     expect(
       match.applyCommand({

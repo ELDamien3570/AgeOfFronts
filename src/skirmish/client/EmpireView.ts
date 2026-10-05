@@ -70,6 +70,7 @@ export class EmpireView {
   private browsedAge: Age = "StoneAge";
 
   private inspectedTechnology = "";
+  private technologyDetailsExpanded = false;
   private inspectedTree: Tree = "warfare";
 
   private inspectedPlayer = 0;
@@ -188,6 +189,7 @@ export class EmpireView {
     this.previousAge = undefined;
     this.fingerprint = "";
     this.wallPage = 0;
+    this.technologyDetailsExpanded = false;
     this.pendingProduction.clear();
     this.pendingProductionResetTick = undefined;
     for (const key of Object.keys(this.buildAges))
@@ -334,13 +336,24 @@ export class EmpireView {
   }
 
   private click(event: Event): void {
+    const target = event.target as HTMLElement;
     const button = (event.target as HTMLElement).closest<HTMLButtonElement>(
       "button",
     );
+    if (this.vm && this.panel === "technology" &&
+      (button?.hasAttribute("data-details-toggle") ||
+        (!button && target.closest(".technology-detail")))) {
+      this.technologyDetailsExpanded = !this.technologyDetailsExpanded;
+      this.render(true);
+      if (!this.technologyDetailsExpanded)
+        this.root.querySelector<HTMLElement>(".technology-detail-body")!.scrollTop = 0;
+      return;
+    }
     if (!button || button.disabled || !this.vm) return;
 
     const d = button.dataset;
     if (d.tree) {
+      this.technologyDetailsExpanded = false;
       this.inspectedTree = d.tree as Tree;
       this.inspectedTechnology = "";
       this.render(true);
@@ -352,12 +365,14 @@ export class EmpireView {
       return;
     }
     if (d.age) {
+      this.technologyDetailsExpanded = false;
       this.browsedAge = d.age as Age;
       this.inspectedTechnology = "";
       this.render(true);
     }
 
     if (d.node) {
+      if (this.inspectedTechnology !== d.node) this.technologyDetailsExpanded = false;
       this.inspectedTechnology = d.node;
       this.inspectedTree = this.vm
         .nodes(this.browsedAge)
@@ -457,10 +472,13 @@ export class EmpireView {
         otherId: Number(d.other),
         action: d.diplomacy as
           | "offer"
+          | "offer-long-term"
           | "accept"
           | "reject"
           | "renew"
-          | "break",
+          | "break"
+          | "declare"
+          | "end-long-term",
       });
 
     if (d.inspect) this.inspectPlayer(Number(d.inspect));
@@ -580,11 +598,16 @@ export class EmpireView {
         content.querySelector<HTMLElement>(".technology-tree-scroll") ?? content
       ).scrollTop;
 
+    const oldDetail = content.querySelector<HTMLElement>(".technology-detail");
+    const detailScroll = oldDetail?.querySelector<HTMLElement>(".technology-detail-body")?.scrollTop ?? 0;
     content.innerHTML = html;
     this.root.querySelector("#empire-panel-footer")!.innerHTML = footer;
     (
       content.querySelector<HTMLElement>(".technology-tree-scroll") ?? content
     ).scrollTop = scroll;
+    const newDetail = content.querySelector<HTMLElement>(".technology-detail");
+    if (newDetail && newDetail.dataset.detailNode === oldDetail?.dataset.detailNode)
+      newDetail.querySelector<HTMLElement>(".technology-detail-body")!.scrollTop = detailScroll;
 
     if (identity)
       panel
@@ -597,6 +620,7 @@ export class EmpireView {
       new TechnologyViewModel(this.vm!, this.browsedAge),
       this.inspectedTechnology,
       this.inspectedTree,
+      this.technologyDetailsExpanded,
     );
   }
 
@@ -742,6 +766,18 @@ export class EmpireView {
       ),
       incoming = vm.incoming.find((o) => o.proposer === p.id);
 
-    return `<div class="diplomacy-identity" data-faction-kind="${p.kind === "tribe" ? "tribe" : p.ai ? "nation" : "player"}"><span class="diplomacy-kind">${p.kind === "tribe" ? "Tribe" : p.ai ? "AI nation" : "Player nation"}</span><h3>${escape(p.name)}</h3></div>${p.ai ? `<p><strong>${escape(faction.identity.personalityName)}</strong>${faction.identity.originName ? ` · ${escape(faction.identity.originName)}` : ""}</p><p>${escape(faction.identity.description)}</p>` : ""}<p class="faction-age"><strong>Current age: ${faction.ageName}</strong></p><p>${p.kind === "tribe" ? "Tribes do not negotiate" : treaty ? `Allied · ${Math.ceil((treaty.expiresTick - vm.state.tick) / 20)}s remaining` : "Independent faction"}</p><p>${fmt(p.land)} land · ${fmt(p.gold)} gold</p>${p.kind === "tribe" || p.eliminated ? "" : treaty ? `<button data-diplomacy="renew" data-other="${p.id}">Agree to renewal</button><button data-diplomacy="break" data-other="${p.id}">Break alliance · 30s betrayal penalty</button>` : incoming ? `<button data-diplomacy="accept" data-other="${p.id}">Accept alliance</button><button data-diplomacy="reject" data-other="${p.id}">Reject</button>` : `<button data-diplomacy="offer" data-other="${p.id}">Offer alliance</button>`}<p>Allies retain their own units, supplies, buildings and research.</p>`;
+    const outgoing = vm.expansion.diplomacy.offers.find(o => o.proposer === this.playerId && o.recipient === p.id),
+      atWar = (vm.expansion.diplomacy.wars ?? []).some(w => (w.a === this.playerId && w.b === p.id) || (w.b === this.playerId && w.a === p.id)),
+      seconds = treaty ? Math.max(0, Math.ceil((treaty.expiresTick - vm.state.tick) / 20)) : 0,
+      status = treaty?.longTerm ? (treaty.ending ? `Alliance ends in ${seconds}s` : "Long Term Alliance · renews automatically") : treaty ? `Allied · ${seconds}s remaining` : atWar ? "At war" : "Independent faction";
+    let buttons = "";
+    if (p.kind !== "tribe" && !p.eliminated && p.id !== this.playerId) {
+      if (incoming) buttons += `<button data-diplomacy="accept" data-other="${p.id}">Accept ${incoming.longTerm ? "Long Term Alliance" : "alliance"}</button><button data-diplomacy="reject" data-other="${p.id}">Reject</button>`;
+      else if (outgoing) buttons += `<p>${outgoing.longTerm ? "Long Term Alliance" : "Alliance"} offered · awaiting acceptance</p>`;
+      else if (!treaty?.longTerm) buttons += `${treaty ? "" : `<button data-diplomacy="offer" data-other="${p.id}">Offer alliance</button>`}<button data-diplomacy="offer-long-term" data-other="${p.id}">Long Term Alliance</button>`;
+      if (treaty) buttons += `${treaty.longTerm ? (treaty.ending ? "" : `<button data-diplomacy="end-long-term" data-other="${p.id}">End alliance in 3 minutes</button>`) : `<button data-diplomacy="renew" data-other="${p.id}">Agree to renewal</button>`}<button data-diplomacy="break" data-other="${p.id}">Break alliance · ${treaty.longTerm ? 60 : 30}s betrayal penalty</button>`;
+      if (!atWar) buttons += `<button data-diplomacy="declare" data-other="${p.id}">Declare War${treaty ? ` · ${treaty.longTerm ? 120 : 30}s betrayal penalty` : ""}</button>`;
+    }
+    return `<div class="diplomacy-identity" data-faction-kind="${p.kind === "tribe" ? "tribe" : p.ai ? "nation" : "player"}"><span class="diplomacy-kind">${p.kind === "tribe" ? "Tribe" : p.ai ? "AI nation" : "Player nation"}</span><h3>${escape(p.name)}</h3></div>${p.ai ? `<p><strong>${escape(faction.identity.personalityName)}</strong>${faction.identity.originName ? ` · ${escape(faction.identity.originName)}` : ""}</p><p>${escape(faction.identity.description)}</p>` : ""}<p class="faction-age"><strong>Current age: ${faction.ageName}</strong></p><p>${p.kind === "tribe" ? "Tribes do not negotiate" : status}</p><p>${fmt(p.land)} land · ${fmt(p.gold)} gold</p>${buttons}${treaty?.longTerm ? "" : "<p>Long Term Alliance requires mutual acceptance, renews automatically, and carries a 60s betrayal penalty.</p>"}`;
   }
 }

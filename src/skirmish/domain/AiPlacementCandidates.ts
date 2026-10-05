@@ -1,3 +1,4 @@
+import { buildingFootprint } from "../BuildingFootprint";
 import type { Coast } from "../CoastIndex";
 import type { BuildingType, Player } from "../Protocol";
 import { buildingTechnology, producerCompatible } from "../content/Buildings";
@@ -173,7 +174,15 @@ export class AiPlacementCandidates {
         const desired = Math.max(snapshot.isolated ? 2 : 1, Math.ceil(factories / 3),
           tradeGrowth && productiveSea ? ports + 1 : 0);
         if (count >= desired) continue;
-        tiles = this.coasts(player.id);
+        // Any occupied perimeter cell may meet the coast; the anchor itself
+        // may be one cell inland on east/south-facing shores.
+        const shape = buildingFootprint("port"), anchors = new Set<number>();
+        for (const coast of this.coasts(player.id)) {
+          const x=world.map.x(coast), y=world.map.y(coast);
+          for(let dy=0;dy<shape.height;dy++) for(let dx=0;dx<shape.width;dx++)
+            if(world.map.isValidCoord(x-dx,y-dy)) anchors.add(world.map.ref(x-dx,y-dy));
+        }
+        tiles = [...anchors].sort((a,b)=>a-b);
         objective = tiles.length ? (!count ? snapshot.isolated ? 11000 : 7000 : tradeGrowth ? 5500 : 4000) : 0;
       } else {
         if (!objective && count >= 2) continue;

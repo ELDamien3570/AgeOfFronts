@@ -263,7 +263,6 @@ export const SHIP_RULES: Record<
 export const STARTING_GOLD = 3000;
 export const MAX_BUILDINGS = Infinity;
 export const MAX_SHIPS = 64;
-export const BUILDING_SPACING = 3;
 export const REPLENISH_DELAY = 3 * TICKS_PER_SECOND;
 export const REPLENISH_PER_SECOND = 50;
 

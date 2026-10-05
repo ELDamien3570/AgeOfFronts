@@ -1,4 +1,5 @@
 import type { GameMap } from "../../core/game/GameMap";
+import { buildingGroundBounds } from "../BuildingFootprint";
 import type { Snapshot } from "../Protocol";
 import { RoadArtwork } from "./RoadArtwork";
 
@@ -86,7 +87,25 @@ export class RoadLayer {
       }
       this.revision = revision;
     }
-    const occupied = new Set(snapshot.buildings.map((b) => b.tile));
+    const occupied = new Set<number>();
+    for (const building of snapshot.buildings) {
+      const bounds = buildingGroundBounds(
+        this.map,
+        building.tile,
+        building.type,
+      );
+      for (
+        let y = bounds.top;
+        y < Math.min(this.map.height(), bounds.bottom);
+        y++
+      )
+        for (
+          let x = bounds.left;
+          x < Math.min(this.map.width(), bounds.right);
+          x++
+        )
+          occupied.add(this.map.ref(x, y));
+    }
     for (const tile of occupied)
       if (!this.occupied.has(tile) && this.roads.has(tile))
         this.invalidateTile(tile, dirty);
