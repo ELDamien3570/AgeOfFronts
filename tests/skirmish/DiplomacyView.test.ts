@@ -23,6 +23,7 @@ it("shows mutual long-term terms, the notice countdown, and immediate war's 120-
   };
   const button = (action: string) => root.querySelector<HTMLButtonElement>(`[data-diplomacy="${action}"]`);
   update(); view.inspectPlayer(2); update();
+  expect(root.textContent).toContain(`${game.squads.filter(s=>s.playerId===2).length} squads · 0 warships · 0 plane squadrons`);
   expect(button("declare")!.textContent).toBe("Declare War");
   expect(button("end-long-term")).toBeNull();
   button("offer-long-term")!.click(); update();
@@ -42,4 +43,16 @@ it("shows mutual long-term terms, the notice countdown, and immediate war's 120-
   expect(button("declare")).toBeNull();
   expect(game.expansion!.diplomacy.state.betrayal[1]).toBe(game.tick + 2400);
   expect(command).toHaveBeenLastCalledWith({type: "alliance", playerId: 1, otherId: 2, action: "declare"});
+});
+it("counts embarked land squads, warships only, and ready plus deployed planes",()=>{
+  const cells=new Uint8Array(48*48).fill(133);
+  const game=new Skirmish(new GameMapImpl(48,48,cells,cells.length),{seed:42,aiCount:1,tribes:false,runAi:false,ruleset:"ages-v1"});
+  const state=game.snapshot(),template=state.squads.find(s=>s.playerId===2)!;
+  state.squads=[{...template,embarkedOn:123}];
+  const ship={id:123,playerId:2,x:0,y:0,health:1000,destination:null,waypoints:[],fighting:false,boarding:null};
+  state.ships=[{...ship,kind:"transport"},{...ship,id:124,kind:"warship"}];
+  const plane={id:125,playerId:2,definitionId:"bomber" as const,airfieldId:1,x:0,y:0,health:100,target:null,reloadTick:0,fuelTicks:100};
+  state.expansion!.aircraft=[{...plane,state:"ready"},{...plane,id:126,state:"outbound"}];
+  const vm=new EmpireViewModel(state,{selected:new Set(),selectedShips:new Set(),selectedBuilding:null});
+  expect(vm.militaryCounts(2)).toEqual({squads:1,boats:1,planes:2});
 });

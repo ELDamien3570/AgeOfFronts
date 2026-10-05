@@ -53,7 +53,7 @@ export class AiTradeOpportunities {
       !market.remainingTicks &&
       (source.health ?? 1) > 0 &&
       (market.health ?? 1) > 0 &&
-      trade.permitted(playerId, market.playerId)
+      trade.permitted(playerId, market.playerId, naval)
       ? row
       : undefined;
   }
@@ -67,7 +67,7 @@ export class AiTradeOpportunities {
       used++;
       const player = world.players.find((p) => p.id === actor.playerId),
         quote = trade.cycleQuotes.get(actor.id),
-        market = actor.visited[0];
+        market = quote?.marketId ?? actor.visited[0];
       if (
         !player ||
         !this.economy.enabled(player) ||
@@ -85,7 +85,7 @@ export class AiTradeOpportunities {
       )
         continue;
       this.evidence.set(key, {
-        source: actor.factoryId,
+        source: quote.sourceId ?? actor.factoryId,
         market,
         quote,
         tick: world.tick,

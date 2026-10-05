@@ -72,6 +72,36 @@ function fleet(factories = 1, ports = 1, aiWarPolicy = false, deferredPlanning =
 }
 
 describe("bounded civilian trade", () => {
+  it("delivers a ship's cargo across distinct ports and returns leftovers without duplicating goods", () => {
+    const {game,trade,sources,expansion,step}=fleet(0,1,true);
+    for(let i=0;i<9;i++) {
+      const b=game.addBuilding({...sources[0],id:game.allocateId()});expansion.supply.goods.set(b.id,1000);
+    }
+    const first=game.buildings.find(b=>b.playerId===2 && b.type==="port")!;
+    const second=game.addBuilding({...first,id:game.allocateId(),tile:game.map.ref(70,39)});
+    step(22);
+    const a=trade.actors.find(a=>a.playerId===1)!;expect(a.loaded).toBe(75);
+    const arrive=(b:typeof first)=>{
+      a.state="outbound";a.destination=b.id;a.path=[];a.waitTicks=0;
+      a.x=(game.map.x(b.tile)+.5)*FIXED;a.y=40.5*FIXED;step();
+    };
+    arrive(first);expect(a.delivered).toBe(30);expect(a.cargo).toBe(45);
+    arrive(second);expect(a.delivered).toBe(60);expect(a.cargo).toBe(15);
+    arrive(first);expect(a.delivered).toBe(60);
+    a.state="returning";a.destination=a.factoryId;a.path=[];a.waitTicks=0;step();
+    expect(a.returned).toBe(15);
+    expect(a.loaded).toBe(a.delivered+a.returned+a.lost+a.cargo);
+  });
+  it("automatically rejects a sea destination when war begins in transit and preserves trade preferences", () => {
+    const {game,trade,step}=fleet(0,1,true);step(22);
+    const a=trade.actors.find(a=>a.playerId===1)!;expect(a.cargo).toBeGreaterThan(0);
+    expect(game.applyCommand({type:"alliance",playerId:1,otherId:2,action:"declare"})).toBeNull();
+    a.waitTicks=0;a.path=[];step();
+    expect(trade.deliveredGold[1]??0).toBe(0);
+    expect(a.state).toBe("returning");
+    expect(trade.controls[1]?.blocked ?? []).toEqual([]);
+    expect(trade.permitted(1,2,true)).toBe(false);
+  });
   it.each([false, true])("commits completed loading routes identically after cold restore (naval=%s)", (naval) => {
     const { game, trade, step } = fleet(naval ? 0 : 1, naval ? 1 : 0, false, true);
     step(20);
@@ -388,7 +418,7 @@ describe("bounded civilian trade", () => {
     expect(trade.actors[0].capacity).toBe(75);
     expect(trade.actors.filter((a) => a.playerId === 1)).toHaveLength(1);
   });
-  it("uses age-independent 1:2:4 land pricing and bounded map-relative sea pricing", () => {
+  it("uses age-independent 1:1.5:2 land pricing and bounded per-good sea pricing", () => {
     const base = {
       naval: false,
       quantity: 20,
@@ -400,21 +430,21 @@ describe("bounded civilian trade", () => {
     };
     expect(tradePayout(base)).toBe(100);
     expect(tradePayout({ ...base, distance: 300 })).toBe(100);
-    expect(tradePayout({ ...base, foreign: true, allied: true })).toBe(200);
-    expect(tradePayout({ ...base, foreign: true })).toBe(400);
+    expect(tradePayout({ ...base, foreign: true, allied: true })).toBe(150);
+    expect(tradePayout({ ...base, foreign: true })).toBe(200);
     expect(tradePayout({ ...base, naval: true })).toBe(0);
     expect(
       tradePayout({ ...base, naval: true, foreign: true, distance: 0 }),
-    ).toBe(1);
+    ).toBe(150);
     expect(
       tradePayout({ ...base, naval: true, foreign: true, distance: 2.5 }),
-    ).toBe(39);
+    ).toBe(157);
     expect(
       tradePayout({ ...base, naval: true, foreign: true, distance: 5 }),
-    ).toBe(100);
+    ).toBe(165);
     expect(
       tradePayout({ ...base, naval: true, foreign: true, distance: 500 }),
-    ).toBe(7057);
+    ).toBe(300);
   });
   it("returns paused cargo, blocks both directions, and replicates controls through deltas", () => {
     const { game, trade, step } = fleet(0, 1);
@@ -451,6 +481,8 @@ describe("bounded civilian trade", () => {
       landPaused: false,
       seaPaused: true,
       blocked: [2],
+      landBlocked: [2],
+      seaBlocked: [2],
     });
     expect(
       commandSchema.safeParse({
@@ -467,7 +499,7 @@ describe("bounded civilian trade", () => {
   it("reuses route corridors without consuming another factory's goods for sea trade", () => {
     const { trade, expansion, sources, step } = fleet(1, 1);
     trade.setPaused(1, false, true);
-    step(2000);
+    step(6000);
     expect(expansion.supply.goods.get(sources[0].id)).toBe(1000);
     expect(trade.deliveredGold[1]).toBeGreaterThan(0);
     expect(trade.diagnostics.routeHits).toBeGreaterThan(0);

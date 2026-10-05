@@ -26,6 +26,9 @@ import { AiNavalPlanner } from "./AiNavalPlanner";
 import { AiPlacementCandidates } from "./AiPlacementCandidates";
 import type { Cost, Inventory } from "./Definitions";
 import type { Expansion } from "./Expansion";
+import { militaryPosture } from "./AiMilitaryPosture";
+import { UNIT } from "../content/Units";
+import { FIXED } from "../Protocol";
 
 interface Saving {
   intent: AiEconomicIntent;
@@ -308,7 +311,9 @@ export class AiEconomicDirector {
         )
         .map((d) => d.resource),
     );
-    const demandKey=JSON.stringify([generation,state.age,state.completed,snapshot.buildings.map(b=>[b.id,b.type,b.age,!b.remainingTicks&&(b.health??1)>0]),this.ledger.protected(player.id).items]);
+    const posture=militaryPosture(snapshot,personalityOf(player),progression.technologySpeed);
+    this.guardCities(player);
+    const demandKey=JSON.stringify([generation,state.age,state.completed,posture.target,snapshot.buildings.map(b=>[b.id,b.type,b.age,!b.remainingTicks&&(b.health??1)>0]),this.ledger.protected(player.id).items]);
     const pending=this.demandPlanning.get(player.id);
     const demand = militaryDemand(
       snapshot,
@@ -342,10 +347,28 @@ export class AiEconomicDirector {
       this.placements.candidates(player, snapshot, demand),
       opportunity,
     );
+    if (posture.wealthy) {
+      // A separate bounded lane prevents research/refits starving recruitment.
+      // Re-read liquid stock after every accepted command, respecting leases.
+      let admitted=0;
+      const paid=new Set<string>();
+      for (const candidate of candidates.filter(c=>c.kind==="recruit")) {
+        if (admitted>=3) break;
+        const liquid={gold:player.gold,reserves:player.reserves,items:supply.inventories[player.id]};
+        const available=this.ledger.spendable(player.id,liquid,candidate.id,candidate.priority);
+        if ((available.gold??0)-(candidate.cost.gold??0)<posture.protectedGold || !affordableAiCost(available,candidate.cost)) continue;
+        this.diagnostics.commands++;
+        if (world.applyCommand(candidate.command)) this.diagnostics.rejected++; else {admitted++;paid.add(candidate.id);}
+      }
+      // Quotes below must use current liquid funds, not pre-recruitment credit.
+      snapshot.liquid={gold:player.gold,reserves:player.reserves,items:{...supply.inventories[player.id]}};
+      for (let i=candidates.length-1;i>=0;i--) if (paid.has(candidates[i].id)) candidates.splice(i,1);
+    }
     // Refitting existing troops must not consume each development slot while
     // the workshop needed for the remaining troops is still missing.
     if (!candidates.some(c => c.reason.includes("production-prerequisite:")) &&
-      snapshot.threatTroops <= snapshot.readyTroops / 2 && this.military.decide(player)) return;
+      snapshot.threatTroops <= snapshot.readyTroops / 2 && this.military.decide(player) && !posture.wealthy) return;
+    snapshot.liquid={gold:player.gold,reserves:player.reserves,items:{...supply.inventories[player.id]}};
     this.diagnostics.candidates += candidates.length;
     let goal = this.saving.get(player.id);
     if (
@@ -440,6 +463,25 @@ export class AiEconomicDirector {
     if (rejection) this.diagnostics.rejected++;
   }
   private ownershipTick = -1;
+  private guardCities(player: Player): void {
+    const {world,progression}=this.expansion;
+    if (!world.options?.aiDefenses || progression.states[player.id].age!=="Modern") return;
+    const controller=`city-air:${player.id}`,selected=new Set<import("./AiAssetLeases").AiAsset>();
+    const available=world.squadFacts().aliveByOwner(player.id).filter(s=>UNIT.get(s.definitionId??"")?.role==="anti-air" && !s.refit && s.embarkedOn===null);
+    const cities=world.buildingFacts().byOwner(player.id).filter(b=>b.type==="city" && !b.remainingTicks && (b.health??1)>0).sort((a,b)=>a.id-b.id);
+    for (const city of cities) for (let slot=0;slot<2;slot++) {
+      const squad=available.filter(s=>!selected.has(`squad:${s.id}`)).sort((a,b)=>world.map.euclideanDistSquared(world.tileOf(a),city.tile)-world.map.euclideanDistSquared(world.tileOf(b),city.tile) || a.id-b.id)
+        .find(s=>this.assets.acquire([{asset:`squad:${s.id}`,playerId:player.id,generation:world.aiGeneration(player.id),controller,priority:"city-defense",createdTick:world.tick,expiresTick:world.tick+100}]));
+      if (!squad) break;
+      selected.add(`squad:${squad.id}`);
+      if (world.map.euclideanDistSquared(world.tileOf(squad),city.tile)>6**2 && !(squad.order.type==="move" && world.map.euclideanDistSquared(squad.order.tile,city.tile)<=6**2)) {
+        const tile=world.ownedLandNearest(player.id,city.tile,16).find(t=>world.paths.walkable(t));
+        if (tile!==undefined) world.applyCommand({type:"order",playerId:player.id,squadIds:[squad.id],order:{type:"move",tile,x:(world.map.x(tile)+0.5)*FIXED,y:(world.map.y(tile)+0.5)*FIXED}});
+      } else if (squad.troops<900 && squad.order.type!=="replenish" && world.owners[world.tileOf(squad)]===player.id && player.reserves>=1000-squad.troops)
+        world.applyCommand({type:"order",playerId:player.id,squadIds:[squad.id],order:{type:"replenish"}});
+    }
+    this.assets.retain(controller,selected);
+  }
   private expireOwnership(): void {
     const { world } = this.expansion;
     if (this.ownershipTick === world.tick) return;

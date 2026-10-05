@@ -53,6 +53,8 @@ function fixture(port = false, deferredPlanning = false) {
 describe("independent trade unlocks", () => {
   it("physically dispatches a naval trader despite unrelated military-policy revisions", () => {
     const {m,research}=fixture(true,true);research.push("stoneage-cargo-canoes","stoneage-craft-workshops");
+    m.expansion!.diplomacy.action(m.players[0],m.players[1],"offer",0);
+    m.expansion!.diplomacy.action(m.players[1],m.players[0],"accept",0);
     let origin: {id:number;x:number;y:number}|undefined, travelled=false;
     const operations=m.expansion!.operations;
     for(let i=0;i<1200 && !travelled;i++){

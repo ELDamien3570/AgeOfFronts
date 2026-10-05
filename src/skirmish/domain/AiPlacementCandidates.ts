@@ -11,6 +11,10 @@ import type { AiProductionDemand } from "./AiMilitaryDemand";
 import type { Expansion } from "./Expansion";
 import { extractionPriority, stoneExtractionAllowed } from "./AiExtractionPolicy";
 import { TRADE_RULES } from "../content/Economy";
+import { militaryPosture } from "./AiMilitaryPosture";
+import { personalityOf } from "../content/AiPersonalities";
+import { cityReserveIncome } from "../content/Economy";
+import { productionTicks } from "./Supply";
 
 interface LandPage { anchor: number; tiles: number[]; cursor: number; }
 
@@ -59,6 +63,17 @@ export class AiPlacementCandidates {
   coasts(playerId: number): readonly number[] {
     return [...(this.ownedCoast.get(playerId) ?? [])].sort((a, b) => a - b);
   }
+  /** Coarse coverage sectors summarize coastline, never constrain water routes. */
+  navalAnchors(playerId:number,sea:number):number[] {
+    const {world}=this.expansion,sectors=new Map<string,number>();
+    for(const land of this.coasts(playerId)) {
+      const edge=this.coast.get(land)?.find(e=>world.waterPaths.component[e.waterTile]===sea);
+      if(!edge)continue;
+      const key=`${Math.floor(world.map.x(land)/32)}:${Math.floor(world.map.y(land)/32)}`;
+      if(!sectors.has(key))sectors.set(key,edge.waterTile);
+    }
+    return [...sectors.values()];
+  }
   private landPage(player: Player, key: string): LandPage {
     let page = this.landPages.get(key);
     if (!page || page.anchor !== player.base || page.cursor >= page.tiles.length) {
@@ -92,12 +107,46 @@ export class AiPlacementCandidates {
       "port",
       "oil-well",
       "oil-rig",
+      "airstrip",
+      "missile-defence",
+      "missile-silo",
+      "mirv-launcher",
     ];
     const start = this.cursors.get(player.id) ?? 0;
-    this.cursors.set(player.id, (start + 4) % types.length);
+    const posture=militaryPosture(snapshot,personalityOf(player),this.expansion.progression.technologySpeed);
+    const missing=Math.max(0,posture.target-snapshot.squads.length-snapshot.recruitment.filter(j=>j.category==="land").length);
+    const support=new Map<BuildingType,number>();
+    if (posture.wealthy && demand) {
+      const required=new Map<string,number>();
+      for (const [role,desired] of Object.entries(demand.units)) {
+        const unit=[...UNITS].reverse().find(u=>u.role===role && snapshot.research.includes(u.technologyId));
+        if (!unit) continue;
+        const deficit=Math.max(0,(desired??0)-snapshot.force.role(unit.role));
+        for (const [item,n] of Object.entries(unit.cost.items??{})) {
+          required.set(item,(required.get(item)??0)+deficit*n);
+        }
+      }
+      const stocked={...snapshot.liquid.items};
+      // Include upstream steel/gunpowder refining, not just the final workshop.
+      // Otherwise twelve arms factories still starve behind two refineries.
+      const capacity=(item:string,quantity:number,chain:ReadonlySet<string>)=>{
+        const available=Math.min(quantity,stocked[item]??0);stocked[item]=(stocked[item]??0)-available;quantity-=available;
+        if(!quantity || chain.has(item))return;
+        const recipe=[...PRODUCTION_RECIPES].reverse().find(r=>r.outputs[item] && snapshot.research.includes(r.technologyId));
+        if(!recipe)return;
+        const batches=Math.ceil(quantity/recipe.outputs[item]);
+        support.set(recipe.building,(support.get(recipe.building)??0)+batches*productionTicks(recipe,snapshot.research)/6000);
+        const next=new Set(chain);next.add(item);
+        for(const [input,n] of Object.entries(recipe.inputs))capacity(input,batches*n,next);
+      };
+      for(const [item,n] of required)capacity(item,n,new Set());
+    }
     let tested = 0;
     for (let i = 0; i < types.length && tested < 8; i++) {
       const type = types[(start + i) % types.length];
+      // Resume after the type that consumed the allowance, rather than a fixed
+      // stride that can repeatedly miss prerequisite producers as the catalog grows.
+      this.cursors.set(player.id,(start+i+1)%types.length);
       const key = `${player.id}:${type}`;
       if (!buildingTechnology(type, snapshot.age)) continue;
       const count = snapshot.buildings.filter((b) => b.type === type).length;
@@ -132,6 +181,13 @@ export class AiPlacementCandidates {
         objective += 5000;
       if (type === "city" && !count) objective = 5000;
       if (missingProducer) objective = Math.max(objective, 12000);
+      if (posture.wealthy && Math.min(12,support.get(type)??0)>count) objective=Math.max(objective,9000);
+      if (posture.wealthy && type==="city" && missing>0 && snapshot.reserveIncome+(snapshot.liquid.reserves??0)/300<missing*1000/300 && count<12)
+        objective=Math.max(objective,9000+Math.min(4000,Math.ceil((missing*1000/300-snapshot.reserveIncome)/cityReserveIncome(snapshot.age))*500));
+      if (type === "airstrip" && snapshot.age === "Modern" && count < 2)
+        objective=Math.max(objective,8000);
+      if (["missile-silo","mirv-launcher"].includes(type) && snapshot.age === "Modern" && count < 2)
+        objective=Math.max(objective,7000);
       const safeGrowth = snapshot.threatTroops <= snapshot.readyTroops / 2 && snapshot.readyTroops >= 4000;
       const factories = snapshot.buildings.filter(b => b.type === "factory").length;
       const ports = snapshot.buildings.filter(b => b.type === "port").length;
@@ -140,18 +196,37 @@ export class AiPlacementCandidates {
       const tradeGrowth = safeGrowth && factories + ports < TRADE_RULES.actorCap &&
         ((productiveLand?.quote.riskAdjustedGoldPer1000Ticks ?? 0) > 0 || (productiveSea?.quote.riskAdjustedGoldPer1000Ticks ?? 0) > 0);
       if (type === "factory" && tradeGrowth) objective = Math.max(objective,5500);
+      // Repeated unsold land cargo is receiving-capacity evidence, not a reason
+      // to keep adding factories. Cities create sale capacity as well as reserves.
+      if (type === "city" && safeGrowth && count < 12 && productiveLand &&
+        productiveLand.quote.returned > productiveLand.quote.delivered)
+        objective = Math.max(objective,6500);
       if (snapshot.isolated && type === "city" && count < 3) objective = Math.max(objective,6000);
       const extraction = ["mine", "oil-well", "oil-rig"].includes(type);
       let tiles: readonly number[];
       let page: LandPage | undefined;
-      if (extraction) {
+      let preferredTile: number | undefined;
+      if (type==="missile-defence") {
+        const cities=snapshot.buildings.filter(b=>b.type==="city" && !b.remainingTicks && (b.health??1)>0);
+        const desired=posture.wealthy ? 10 : 1;
+        const site=cities.map(city=>{
+          const defenses=snapshot.buildings.filter(b=>b.type===type && (b.health??1)>0 && world.map.euclideanDistSquared(city.tile,b.tile)<=8**2);
+          const groups=new Map<number,number>();for(const defense of defenses)groups.set(defense.tile,(groups.get(defense.tile)??0)+1);
+          const stack=[...groups].sort((a,b)=>b[1]-a[1] || a[0]-b[0])[0];
+          return {city,stackTile:stack?.[0],stackCount:stack?.[1]??0};
+        }).filter(row=>row.stackCount<desired).sort((a,b)=>a.stackCount-b.stackCount || a.city.id-b.city.id)[0];
+        if (!site) continue;
+        preferredTile=site.stackTile;
+        tiles=world.ownedLandNearest(player.id,site.city.tile,64).filter(tile=>world.map.euclideanDistSquared(tile,site.city.tile)<=8**2);
+        objective=posture.wealthy ? 9000 : 7000;
+      } else if (extraction) {
         const ownedDeposits = this.expansion.supply.deposits.filter(d => world.owners[d.tile] === player.id);
         const needed = new Set(ownedDeposits.filter(d =>
           snapshot.research.includes(resourceTechnology(d.resource).id) &&
           (demand?.materials[d.resource] ?? demand?.equipment[d.resource] ?? 0) >
             (snapshot.liquid.items?.[d.resource] ?? 0) + (snapshot.incoming[d.resource] ?? 0) &&
-          !ownedDeposits.some(other => other.resource === d.resource && snapshot.buildings.some(b => b.tile === other.tile &&
-            (b.type === "mine" || b.type === "oil-well" || b.type === "oil-rig")))
+          (d.resource === "oil" || !ownedDeposits.some(other => other.resource === d.resource && snapshot.buildings.some(b => b.tile === other.tile &&
+            (b.type === "mine" || b.type === "oil-well" || b.type === "oil-rig"))))
         ).map(d => d.resource));
         const availableDeposits = ownedDeposits
           .filter(
@@ -182,7 +257,10 @@ export class AiPlacementCandidates {
           for(let dy=0;dy<shape.height;dy++) for(let dx=0;dx<shape.width;dx++)
             if(world.map.isValidCoord(x-dx,y-dy)) anchors.add(world.map.ref(x-dx,y-dy));
         }
-        tiles = [...anchors].sort((a,b)=>a-b);
+        const source=productiveSea && world.building(productiveSea.source);
+        const stack=source?.type === "port" && snapshot.buildings.filter(b=>b.type==="port" && b.tile===source.tile).length<TRADE_RULES.maximumStack ? source.tile : undefined;
+        preferredTile=stack;
+        tiles = [...anchors].sort((a,b)=>Number(b===stack)-Number(a===stack) || a-b);
         objective = tiles.length ? (!count ? snapshot.isolated ? 11000 : 7000 : tradeGrowth ? 5500 : 4000) : 0;
       } else {
         if (!objective && count >= 2) continue;
@@ -190,6 +268,11 @@ export class AiPlacementCandidates {
         // 64 tiles forever. Each page and exact-check allowance remain bounded.
         page = this.landPage(player, key);
         tiles = page.tiles;
+        if(type === "factory" && tradeGrowth) {
+          const source=world.building(productiveLand?.source ?? productiveSea?.source ?? -1);
+          if(source?.type==="factory" && snapshot.buildings.filter(b=>b.type==="factory" && b.tile===source.tile).length<TRADE_RULES.maximumStack)
+            preferredTile=source.tile;
+        }
       }
       if (
         !objective &&
@@ -206,6 +289,14 @@ export class AiPlacementCandidates {
       )
         continue;
       const cursor = page?.cursor ?? this.siteCursors.get(key) ?? 0;
+      if(preferredTile!==undefined && tested<8) {
+        tested++;
+        if(this.expansion.economy.recovery.canBuild(player.id,type,preferredTile) &&
+          world.buildingSite(player.id,type,preferredTile,snapshot.age)===null) {
+          output.push({type,tile:preferredTile,objective,reason:`capacity:${type}`});
+          continue;
+        }
+      }
       const attempts = Math.min(page ? tiles.length - cursor : tiles.length, 8 - tested);
       for (let j = 0; j < attempts; j++) {
         const tile = tiles[(cursor + j) % tiles.length];

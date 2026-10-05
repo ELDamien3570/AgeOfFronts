@@ -4,6 +4,7 @@ import { tilePoint } from "../SquadGeometry";
 import { DEFENSIVE_BUILDINGS } from "../content/Buildings";
 import { shoreTransportDefinition } from "../content/ShoreTransport";
 import type { Expansion } from "./Expansion";
+import { FALLOUT_TROOP_LOSS_PER_CELL } from "./NuclearWasteland";
 
 interface Episode {
   nextThink: number;
@@ -21,6 +22,7 @@ export class AiRecovery {
     number,
     { since: number; x: number; y: number; order: string }
   >();
+  private readonly cleanup=new Map<number,{squadId:number;tile:number}>();
   readonly diagnostics = {
     losses: 0,
     deniedBuilds: 0,
@@ -109,6 +111,7 @@ export class AiRecovery {
   step(): void {
     const { world, economy } = this.expansion;
     if (world.tick % 60) return;
+    if(world.wasteland.size || this.cleanup.size)this.clearFallout();
     const alive = new Set<number>();
     for (const squad of world.squads) {
       if (
@@ -242,6 +245,7 @@ export class AiRecovery {
       blocked: [...this.blocked],
       episodes: [...this.episodes],
       restricted: [...this.restricted],
+      cleanup:[...this.cleanup],
     });
   }
   restore(saved?: ReturnType<AiRecovery["checkpoint"]>): void {
@@ -249,11 +253,48 @@ export class AiRecovery {
     this.blocked.clear();
     this.episodes.clear();
     this.restricted.clear();
+    this.cleanup.clear();
+    for(const [id,value] of saved?.cleanup??[])this.cleanup.set(id,{...value});
     for (const [key, value] of saved?.blocked ?? [])
       this.blocked.set(key, value);
     for (const [id, value] of structuredClone(saved?.episodes ?? []))
       this.episodes.set(id, value);
     for (const [id, value] of structuredClone(saved?.restricted ?? []))
       this.restricted.set(id, value);
+  }
+  private clearFallout():void {
+    const {world,economy}=this.expansion;
+    for(const player of world.players) {
+      const controller=`fallout:${player.id}`,own=world.squadFacts().aliveByOwner(player.id),old=this.cleanup.get(player.id);
+      const release=()=>{
+        const assignment=this.cleanup.get(player.id),squad=assignment && world.squad(assignment.squadId);
+        if(squad && economy.assets.owns(`squad:${squad.id}`,controller) && squad.order.type==="move" && squad.order.tile===assignment!.tile)
+          world.applyCommand({type:"order",playerId:player.id,squadIds:[squad.id],order:{type:"hold"}});
+        economy.assets.release(controller);this.cleanup.delete(player.id);
+      };
+      if(!player.ai || player.eliminated){release();continue;}
+      if(own.length<5 || player.reserves<29*FALLOUT_TROOP_LOSS_PER_CELL || economy.military.armyPlanner.invasion.active(player.id)) {release();continue;}
+      const squad=old && world.squad(old.squadId) || own.find(s=>s.embarkedOn===null && !s.refit && !s.fighting && s.order.type==="hold" && this.expansion.unit(s).canCapture && !economy.assets.held(`squad:${s.id}`) && !this.expansion.armies.armyOf(s.id));
+      if(!squad || squad.playerId!==player.id || squad.embarkedOn!==null || squad.refit || squad.fighting || world.nearbyArmyEnemies(squad,12*FIXED,player.id).length) {release();continue;}
+      if(!economy.assets.acquire([{asset:`squad:${squad.id}`,playerId:player.id,generation:world.aiGeneration(player.id),controller,priority:"patrol",createdTick:world.tick,expiresTick:world.tick+180}])){release();continue;}
+      this.cleanup.set(player.id,{squadId:squad.id,tile:old?.tile??world.tileOf(squad)});
+      if(squad.troops<800) {
+        const tile=world.ownedLandNearest(player.id,world.tileOf(squad),32).find(t=>world.paths.walkable(t) && world.paths.connected(world.tileOf(squad),t));
+        if(tile===undefined){release();continue;}
+        if(world.owners[world.tileOf(squad)]===player.id) {
+          if(squad.order.type!=="replenish")world.applyCommand({type:"order",playerId:player.id,squadIds:[squad.id],order:{type:"replenish"}});
+        } else if(squad.order.type!=="move" || squad.order.tile!==tile)world.applyCommand({type:"order",playerId:player.id,squadIds:[squad.id],order:{type:"move",tile}});
+        continue;
+      }
+      // Preserve a committed capture until cleared instead of retargeting as
+      // neighboring cells change. Candidates are bounded and owner-indexed.
+      const tile=old && world.wasteland.has(old.tile) ? old.tile : [...world.wasteland.recoveryCandidates(player.id)]
+        .filter(t=>world.paths.connected(world.tileOf(squad),t) && !world.nearbyArmyEnemies(tilePoint(world.map,t),12*FIXED,player.id).length)
+        .sort((a,b)=>world.map.euclideanDistSquared(world.tileOf(squad),a)-world.map.euclideanDistSquared(world.tileOf(squad),b) || a-b)[0];
+      if(tile===undefined){release();continue;}
+      this.cleanup.set(player.id,{squadId:squad.id,tile});
+      if(world.map.euclideanDistSquared(world.tileOf(squad),tile)>1 && (squad.order.type!=="move" || squad.order.tile!==tile))
+        if(world.applyCommand({type:"order",playerId:player.id,squadIds:[squad.id],order:{type:"move",tile}})!==null)release();
+    }
   }
 }

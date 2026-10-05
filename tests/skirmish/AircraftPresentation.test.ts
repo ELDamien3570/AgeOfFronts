@@ -51,7 +51,7 @@ function fixture() {
 }
 
 describe("aircraft flight presentation", () => {
-  it("smoothly grows to twice parked size and shrinks through the final landing step", () => {
+  it("smoothly grows to 1.5 times parked size and shrinks through the final landing step", () => {
     const { aircraft, presentation, update } = fixture();
     expect(presentation.pose(aircraft.id)!.size).toBe(28);
     aircraft.state = "outbound";
@@ -63,11 +63,11 @@ describe("aircraft flight presentation", () => {
       sizes.push(presentation.pose(aircraft.id)!.size);
     }
     expect(sizes.every((size, i) => !i || size > sizes[i - 1])).toBe(true);
-    expect(sizes[5]).toBe(42);
-    expect(sizes[11]).toBe(56);
+    expect(sizes[5]).toBe(35);
+    expect(sizes[11]).toBe(42);
     aircraft.x += FIXED;
     update();
-    expect(presentation.pose(aircraft.id)!.size).toBe(56);
+    expect(presentation.pose(aircraft.id)!.size).toBe(42);
     aircraft.state = "returning";
     for (let i = 0; i < 12; i++) {
       aircraft.x -= FIXED;
@@ -131,11 +131,11 @@ describe("aircraft flight presentation", () => {
     update();
     const halfway = presentation.pose(aircraft.id, 0.5)!;
     expect(halfway.x).toBe(26.5 * FIXED);
-    expect(halfway.size).toBe(42);
+    expect(halfway.size).toBe(35);
     presentation.update(snapshot);
     expect(presentation.pose(aircraft.id, 0.5)).toEqual(halfway);
     expect(presentation.pose(aircraft.id, -1)!.size).toBe(28);
-    expect(presentation.pose(aircraft.id, 2)!.size).toBe(56);
+    expect(presentation.pose(aircraft.id, 2)!.size).toBe(42);
     snapshot.expansion!.aircraft.length = 0;
     update();
     expect(presentation.pose(aircraft.id)).toBeUndefined();
@@ -159,10 +159,10 @@ describe("aircraft flight presentation", () => {
       offsetX: 0,
       offsetY: 0,
     }) as Renderer;
-    expect(renderer.aircraftAt(32.5 + 40, 20.5)).toBe(aircraft.id);
+    expect(renderer.aircraftAt(32.5 + 25, 20.5)).toBe(aircraft.id);
     const pose = presentation.pose(aircraft.id)!;
     expect(renderer.aircraftAt(32.5 + pose.radius + 1, 20.5)).toBeNull();
-    expect(visibleInViewport({ x: -40, y: 50 }, pose.radius, 100, 100)).toBe(
+    expect(visibleInViewport({ x: -25, y: 50 }, pose.radius, 100, 100)).toBe(
       true,
     );
     aircraft.playerId = 2;
@@ -195,7 +195,7 @@ describe("aircraft flight presentation", () => {
       if (aircraft.state === "ready") break;
     }
     expect([...states]).toEqual(["outbound", "returning", "ready"]);
-    expect(Math.max(...sizes)).toBe(56);
+    expect(Math.max(...sizes)).toBe(42);
     expect(sizes[sizes.length - 1]).toBe(28);
     expect({ x: aircraft.x, y: aircraft.y }).toEqual(departure);
     expect(presentation.pose(aircraft.id)!.angle).toBeCloseTo(

@@ -1,4 +1,5 @@
 import { portWaterTiles } from "./PortWaterAccess";
+import { NuclearWasteland, NUCLEAR_RESERVE_LOSS_PER_CELL, FALLOUT_TROOP_LOSS_PER_CELL } from "./domain/NuclearWasteland";
 import { availableGold, spendGold, paidCost } from "./domain/Gold";
 import { validFactionColor } from "./lobby/FactionPalette";
 import { DEFENSIVE_BUILDINGS } from "./content/Buildings";
@@ -126,6 +127,7 @@ import {
   FORMATION_SPACING,
   meleeContact,
   pointTile,
+  COLLISION_SKIN,
   squadRadius,
   squadSeparation,
   standable,
@@ -192,9 +194,14 @@ export class Skirmish {
     this.expansion?.operations.release(playerId);
     this.commandApplications.release(playerId, this.tick);
   }
-  checkpoint() { this.assertAvailable(); return structuredClone({playerAttacks:this.playerAttacks.checkpoint(),version:1 as const,width:this.map.width(),height:this.map.height(),options:this.options,players:this.players,squads:this.squads,buildings:this.buildings,ships:this.ships,volleys:this.volleys,defenseZones:this.defenseZones,owners:this.owners,claims:this.claims,progress:this.progress,detours:this.detours,navigationProgress:this.navigationProgress,orderRevisions:this.orderRevisions,queuedLegs:this.queuedLegs,controlGenerations:this.controlGenerations,activeClaims:this.activeClaims,tick:this.tick,winner:this.winner,combatTicks:this.combatTicks,producedTroops:this.producedTroops,nextId:this.nextId,nextVolleyId:this.nextVolleyId,random:this.random.getState(),forest:forestOf(this.map)?.checkpoint(),routeWork:this.routeWork.checkpoint(),planning:this.routePlanner.checkpoint(),admission:this.movementAdmission.checkpoint(),shipAdmission:this.shipAdmission.checkpoint(),commandApplications:this.commandApplications.checkpoint(),shorePlanning:this.shoreTransport.checkpoint(),recruitment:this.recruitment.checkpoint(),expansion:this.expansion?.checkpoint(),territoryAbsorption:this.territoryAbsorption.checkpoint(),coastalTerritory:this.coastalTerritory.checkpoint(),homeTerritory:this.homeTerritory.checkpoint(),avoidance:this.avoidance.checkpoint(),passageTraffic:this.passageTraffic.checkpoint(),conquest:this.conquest.checkpoint()}); }
+  checkpoint() { this.assertAvailable(); return structuredClone({playerAttacks:this.playerAttacks.checkpoint(),version:1 as const,width:this.map.width(),height:this.map.height(),options:this.options,players:this.players,squads:this.squads,buildings:this.buildings,ships:this.ships,volleys:this.volleys,defenseZones:this.defenseZones,owners:this.owners,claims:this.claims,progress:this.progress,detours:this.detours,navigationProgress:this.navigationProgress,orderRevisions:this.orderRevisions,queuedLegs:this.queuedLegs,controlGenerations:this.controlGenerations,activeClaims:this.activeClaims,tick:this.tick,winner:this.winner,combatTicks:this.combatTicks,producedTroops:this.producedTroops,nextId:this.nextId,nextVolleyId:this.nextVolleyId,random:this.random.getState(),forest:forestOf(this.map)?.checkpoint(),routeWork:this.routeWork.checkpoint(),planning:this.routePlanner.checkpoint(),admission:this.movementAdmission.checkpoint(),shipAdmission:this.shipAdmission.checkpoint(),commandApplications:this.commandApplications.checkpoint(),shorePlanning:this.shoreTransport.checkpoint(),recruitment:this.recruitment.checkpoint(),expansion:this.expansion?.checkpoint(),territoryAbsorption:this.territoryAbsorption.checkpoint(),coastalTerritory:this.coastalTerritory.checkpoint(),homeTerritory:this.homeTerritory.checkpoint(),wasteland:this.wasteland.checkpoint(),avoidance:this.avoidance.checkpoint(),passageTraffic:this.passageTraffic.checkpoint(),conquest:this.conquest.checkpoint()}); }
   restore(saved: ReturnType<Skirmish["checkpoint"]>): void {
     this.assertAvailable();
+    this.captureContributions.clear();
+    this.captureCenters.clear();
+    this.captureBuildings.clear();
+    this.movementClearance.clear();
+    this.pressure.begin();
     if (saved.version !== 1 || saved.width !== this.map.width() || saved.height !== this.map.height() ||
       JSON.stringify(saved.options) !== JSON.stringify(this.options) || Boolean(saved.expansion) !== Boolean(this.expansion))
       throw new Error("Checkpoint does not match this simulation");
@@ -234,7 +241,7 @@ export class Skirmish {
     this.recruitment.restore(state.recruitment);
     restoreArray(this.volleys,state.volleys);
     restoreArray(this.defenseZones,state.defenseZones);
-    if (state.owners.length!==this.owners.length) throw new Error("Invalid checkpoint tile array"); this.owners.set(state.owners);
+    if (state.owners.length!==this.owners.length) throw new Error("Invalid checkpoint tile array"); this.owners.set(state.owners); this.wasteland.restore(state.wasteland??[]);
     if (state.claims.length!==this.claims.length) throw new Error("Invalid checkpoint tile array"); this.claims.set(state.claims);
     if (state.progress.length!==this.progress.length) throw new Error("Invalid checkpoint tile array"); this.progress.set(state.progress);
     this.rebuildOwnedTiles();
@@ -276,6 +283,7 @@ export class Skirmish {
   private readonly adjacency: FactionAdjacency;
   factionAdjacent(a: number, b: number): boolean { return this.adjacency.adjacent(a, b); }
   readonly owners: Uint8Array;
+  readonly wasteland: NuclearWasteland;
   readonly claims: Uint8Array;
   readonly progress: Uint8Array;
   readonly players: Player[] = [];
@@ -347,6 +355,7 @@ export class Skirmish {
   private movementSpatialRevision = -1;
   private previousPositions = new Float64Array(0);
   private readonly rollbackPoint: WorldPoint = { x: 0, y: 0 };
+  private readonly movementClearance = new Map<number,{tick:number;x:number;y:number;allowed:boolean}>();
   private readonly approachRevisions = new Map<number, string>();
   private movementLand(): Squad[] {
     if (this.landMembership !== this.squadIndex.membershipRevision ||
@@ -591,6 +600,7 @@ export class Skirmish {
     const size = map.width() * map.height();
     this.tileChanges = new TileChangeJournal(size);
     this.owners = new Uint8Array(size);
+    this.wasteland = new NuclearWasteland(map);
     this.claims = new Uint8Array(size);
     this.progress = new Uint8Array(size);
     this.pressure = new CapturePressure(size);
@@ -684,7 +694,7 @@ export class Skirmish {
       activateStructure:(playerId,squads,points,target)=>this.admitStructureAttack(playerId,squads,points,target),
       handoffStructure:(id,playerId,action)=>this.commandApplications.handoff("land",id,playerId,action),
       hostile: this.collisionHostile,
-      squads:()=>this.squads,priority:id=>!this.player(id)?.ai,squad:id=>this.squad(id),generation:id=>this.aiGeneration(id),revision:id=>this.routingObstacleRevision(id),
+      squads:()=>this.squads,occupancyRevision:()=>this.squadIndex.dynamicRevision,priority:id=>!this.player(id)?.ai,squad:id=>this.squad(id),generation:id=>this.aiGeneration(id),revision:id=>this.routingObstacleRevision(id),
       blocked:id=>this.obstacleTest(id),
       request:(id,playerId,squadId,start,goal)=>this.routePlanner.request({key:`admission:${id}:${squadId}`,start,goal,water:false,createdTick:this.tick,
         obstacleRevision:this.routingObstacleRevision(playerId),context:{kind:"admission",admissionId:id,playerId,squadId}}),
@@ -986,7 +996,7 @@ export class Skirmish {
   updateShip(id: number, changes: Partial<Omit<Ship, "id">>): Ship | undefined { return this.shipEntities.update(id, changes); }
   /** @internal Transfer a finalized domain path; the caller releases writable aliases. */
   installSquadPath(id: number, path: readonly number[]): void { this.squadEntities.updateOwned(id, { path }); }
-  removeSquad(id: number): boolean { this.playerAttacks.forget(id);return this.squadEntities.remove(id); }
+  removeSquad(id: number): boolean { this.movementClearance.delete(id);this.playerAttacks.forget(id);return this.squadEntities.remove(id); }
   removeShip(id: number): boolean { return this.shipEntities.remove(id); }
   squadFacts(): UnitQueries<Squad> { if (this.compareUnitIndexes) this.verifyUnitIndexes(); return this.squadIndex; }
   shipFacts(): UnitQueries<Ship> { if (this.compareUnitIndexes) this.verifyUnitIndexes(); return this.shipIndex; }
@@ -1460,28 +1470,26 @@ export class Skirmish {
     });
     let best = -1,
       score = -Infinity;
-    const landSquads = this.squads.filter((s) => s.embarkedOn === null);
-    const ownSquads = landSquads.filter((s) => s.playerId === player.id);
+    this.movementLand();
+    const ownTiles = [...new Set(this.squadIndex.byOwner(player.id)
+      .filter(s=>s.embarkedOn===null).map(s=>this.tileOf(s)))];
+    const nearbyRecruit: Squad[] = [];
     const recruitGeometry = { kind, playerId: player.id };
     for (const tile of candidates) {
       const point = tilePoint(this.map, tile),
         radius = squadRadius(kind);
+      this.spatial.query(point.x,point.y,2*squadRadius("cavalry")+COLLISION_SKIN,nearbyRecruit,player.id);
       if (
         !standable(this.map, point, radius) ||
-        landSquads.some(
+        nearbyRecruit.some(
           (s) =>
             distanceSquared(point, s) <
             squadSeparation(recruitGeometry, s, this.collisionHostile) ** 2,
         )
       )
         continue;
-      const separation = ownSquads.length
-        ? Math.min(
-            ...ownSquads.map((s) =>
-              this.map.euclideanDistSquared(tile, this.tileOf(s)),
-            ),
-          )
-        : 0;
+      let separation=ownTiles.length ? Infinity : 0;
+      for(const ownTile of ownTiles)separation=Math.min(separation,this.map.euclideanDistSquared(tile,ownTile));
       const candidateScore =
         separation * 100 - this.map.euclideanDistSquared(tile, building.tile);
       if (candidateScore > score) {
@@ -2225,12 +2233,19 @@ export class Skirmish {
     let budget = this.expansion
       ? this.expansion.vessel(ship).speed
       : SHIP_RULES[ship.kind].speed;
+    // Four stable sub-cell lanes keep shared water routes readable without
+    // collision queries. Each remains inside its validated water cell.
+    const spread = ship.kind === "warship" && !cargo.length && !ship.boarding &&
+      !ship.shoreTransfer && ship.repairState === "patrolling";
+    const lane=spread ? this.expansion?.economy.naval.fleetLane(ship) ?? ship.id%4 : 0;
+    const offsetX = spread ? (lane % 2 ? FIXED / 4 : -FIXED / 4) : 0;
+    const offsetY = spread ? (Math.floor(lane / 2) % 2 ? FIXED / 4 : -FIXED / 4) : 0;
     while (budget > 0 && ship.nextPathIndex < ship.path.length) {
       const tile = ship.path[ship.nextPathIndex];
       // Coastal ownership does not obstruct navigable water. Naval attacks
       // and physical landings retain their separate live war-policy checks.
-      const dx = this.map.x(tile) * FIXED + FIXED / 2 - ship.x;
-      const dy = this.map.y(tile) * FIXED + FIXED / 2 - ship.y;
+      const dx = this.map.x(tile) * FIXED + FIXED / 2 + offsetX - ship.x;
+      const dy = this.map.y(tile) * FIXED + FIXED / 2 + offsetY - ship.y;
       const distance = Math.abs(dx) + Math.abs(dy);
       if (distance <= budget) {
         this.shipEntities.setOwned(ship.id, "x", ship.x + (dx));
@@ -2959,15 +2974,26 @@ export class Skirmish {
       }
     }
     this.avoidance.step(land, intents, this.spatial, (id, changes) => this.squadEntities.updateOwned(id, changes),
-      this.tick, (squad,end) => !this.expansion || (this.expansion.fortifications.clearMovement(squad,end,squad.playerId,squadRadius(squad.kind)) &&
+      this.tick, (squad,end) => {
+        const allowed=!this.expansion || (this.expansion.fortifications.clearMovement(squad,end,squad.playerId,squadRadius(squad.kind)) &&
         (this.aiFootprintAllowed(squad.playerId,this.tileOf(end)) || (!this.aiFootprintAllowed(squad.playerId,this.tileOf(squad)) &&
-          distanceSquared(end,tilePoint(this.map,this.player(squad.playerId)!.base)) < distanceSquared(squad,tilePoint(this.map,this.player(squad.playerId)!.base))))),
+          distanceSquared(end,tilePoint(this.map,this.player(squad.playerId)!.base)) < distanceSquared(squad,tilePoint(this.map,this.player(squad.playerId)!.base)))));
+        let proof=this.movementClearance.get(squad.id);
+        if(!proof)this.movementClearance.set(squad.id,proof={tick:this.tick,x:end.x,y:end.y,allowed});
+        else {proof.tick=this.tick;proof.x=end.x;proof.y=end.y;proof.allowed=allowed;}
+        return allowed;
+      },
       squad => this.movementAdmission.hasPending(squad.id) || this.queuedLegs.has(squad.id) || this.routePlanner.has(`navigation:${squad.id}`) ? "planning" : "blocked");
     if (this.expansion)
       for (let at = 0; at < land.length; at++) {
         const squad = land[at], old = this.rollbackPoint;
         old.x = this.previousPositions[at * 2];
         old.y = this.previousPositions[at * 2 + 1];
+        // The solver checked this exact endpoint against unchanged terrain,
+        // fortifications and entry policy. Cancellation to another endpoint
+        // (including an illegal stationary start) still uses the full guard.
+        const proof=this.movementClearance.get(squad.id);
+        if(proof?.tick===this.tick && proof.x===squad.x && proof.y===squad.y && proof.allowed)continue;
         if (
           (!this.expansion.fortifications.clearMovement(
             old,
@@ -3766,6 +3792,30 @@ export class Skirmish {
   }
 
   private readonly captureFootprints = new Map<number, readonly number[]>();
+  private readonly captureContributions = new Map<number, {
+    x: number; y: number; owner: number; position: number; key: string;
+    tiles: readonly number[]; originIndependent: boolean; dirty: boolean; seen: number;
+  }>();
+  private readonly captureCenters = new Map<number, Set<number>>();
+  private readonly captureBuildings = new Map<number, {tile: number; key: string}>();
+  readonly captureWork = { refreshed: 0, reused: 0 };
+  private capturePass = 0;
+  private invalidateCapture(tile: number): void {
+    const cx=this.map.x(tile),cy=this.map.y(tile);
+    for(let dy=-CAPTURE_RADIUS;dy<=CAPTURE_RADIUS;dy++) for(let dx=-CAPTURE_RADIUS;dx<=CAPTURE_RADIUS;dx++) {
+      if(dx*dx+dy*dy>CAPTURE_RADIUS**2 || !this.map.isValidCoord(cx+dx,cy+dy))continue;
+      for(const id of this.captureCenters.get(this.map.ref(cx+dx,cy+dy)) ?? []) {
+        const row=this.captureContributions.get(id);if(row)row.dirty=true;
+      }
+    }
+  }
+  private forgetCapture(id: number): void {
+    const row=this.captureContributions.get(id);if(!row)return;
+    for(const tile of row.tiles)this.pressure.withdraw(tile,row.owner);
+    const center=this.captureCenters.get(row.position)!;
+    center.delete(id);if(!center.size)this.captureCenters.delete(row.position);
+    this.captureContributions.delete(id);
+  }
   private captureFootprint(position: number): readonly number[] {
     const hit = this.captureFootprints.get(position);
     if (hit) return hit;
@@ -3773,20 +3823,72 @@ export class Skirmish {
     this.eachInRadius(position, CAPTURE_RADIUS, tile => {
       if (this.paths.component[tile] === component) tiles.push(tile);
     });
-    if (this.captureFootprints.size >= 1024)
+    if (this.captureFootprints.size >= Math.max(1024, this.squads.length * 2))
       this.captureFootprints.delete(this.captureFootprints.keys().next().value!);
     this.captureFootprints.set(position, tiles);
     return tiles;
   }
   private capture(): void {
-    this.pressure.begin();
+    const pass=++this.capturePass;
+    this.captureWork.refreshed=this.captureWork.reused=0;
+    // Only defensive anchor eligibility depends on building lifecycle here;
+    // barrier geometry has its own revision below. Damage above zero is inert.
+    const defenses=new Set<number>();
+    for(const building of this.buildings)if(DEFENSIVE_BUILDINGS.includes(building.type)) {
+      defenses.add(building.id);
+      const key=`${building.playerId}:${building.tile}:${building.type}:${(building.health??1)>0}`;
+      const old=this.captureBuildings.get(building.id);
+      if(old?.key!==key){if(old)this.invalidateCapture(old.tile);this.invalidateCapture(building.tile);this.captureBuildings.set(building.id,{tile:building.tile,key});}
+    }
+    for(const [id,old] of this.captureBuildings)if(!defenses.has(id)){this.invalidateCapture(old.tile);this.captureBuildings.delete(id);}
+    const environment=`${this.paths.revision}:${this.expansion?.fortifications.version??0}:`+
+      (this.expansion?.diplomacy.state.alliances.map(t=>`${t.a},${t.b}`).join(";")??"");
+    const permissions=new Map<number,{revision:number;key:string}>();
     const accelerated = new Map<number, number>();
+    const cleanup=this.wasteland.size ? new Map<number,{id:number;distance:number}>() : undefined;
+    const exposure=new DamageLedger();
     for (const squad of this.squads) {
       if (squad.embarkedOn !== null) continue;
       const definition = this.expansion?.unit(squad);
       if (definition && !definition.canCapture) continue;
       const position = this.tileOf(squad);
-      const canCapture = this.expansion?.captureQuery(squad, CAPTURE_RADIUS);
+      const revision=this.expansion?.operations.permissionRevision??0;
+      let permission=permissions.get(squad.playerId);
+      if(!permission || permission.revision!==revision) {
+        permission={revision,key:this.expansion?.operations.navigationRevision(squad.playerId)??""};
+        permissions.set(squad.playerId,permission);
+      }
+      const key=`${environment}:${permission.key}`;
+      let row=this.captureContributions.get(squad.id);
+      if(!row || row.dirty || row.position!==position ||
+        (!row.originIndependent && (row.x!==squad.x || row.y!==squad.y)) ||
+        row.owner!==squad.playerId || row.key!==key) {
+        const canCapture=this.expansion?.captureQuery(squad,CAPTURE_RADIUS);
+        const tiles=this.captureFootprint(position).filter(tile=>!canCapture || canCapture(tile));
+        // Footprints are row-major. Preserve common contributions instead of
+        // tearing down and reallocating every tile's owner counts on movement.
+        if(row && row.owner===squad.playerId) {
+          let before=0,after=0;
+          while(before<row.tiles.length || after<tiles.length) {
+            const oldTile=row.tiles[before]??Infinity,newTile=tiles[after]??Infinity;
+            if(oldTile===newTile){before++;after++;}
+            else if(oldTile<newTile){this.pressure.withdraw(oldTile,row.owner);before++;}
+            else {this.pressure.retain(newTile,squad.playerId);after++;}
+          }
+          if(row.position!==position) {
+            const previous=this.captureCenters.get(row.position)!;
+            previous.delete(squad.id);if(!previous.size)this.captureCenters.delete(row.position);
+          }
+        } else {
+          this.forgetCapture(squad.id);
+          for(const tile of tiles)this.pressure.retain(tile,squad.playerId);
+        }
+        row={x:squad.x,y:squad.y,owner:squad.playerId,position,key,tiles,originIndependent:canCapture?.originIndependent??true,dirty:false,seen:pass};
+        this.captureContributions.set(squad.id,row);
+        let center=this.captureCenters.get(position);if(!center)this.captureCenters.set(position,center=new Set());
+        center.add(squad.id);
+        this.captureWork.refreshed++;
+      } else {row.seen=pass;this.captureWork.reused++;}
       const captureTicks =
         definition?.undefendedCaptureTicks &&
         !this.occupation.resisted(
@@ -3799,11 +3901,13 @@ export class Skirmish {
         )
           ? definition.undefendedCaptureTicks
           : undefined;
-      for (const tile of this.captureFootprint(position)) {
-        if (canCapture && !canCapture(tile)) continue;
+      for (const tile of row.tiles) {
+        if(cleanup && this.wasteland.has(tile)) {
+          const distance=this.distanceSquared(squad,tilePoint(this.map,tile)),old=cleanup.get(tile);
+          if(!old || distance<old.distance || (distance===old.distance && squad.id<old.id))cleanup.set(tile,{id:squad.id,distance});
+        }
         if (this.owners[tile] && this.hostile(this.owners[tile], squad.playerId))
           this.notifyHostileAction(this.owners[tile], squad.playerId, tile);
-        this.pressure.add(tile, squad.playerId);
         if (captureTicks)
           accelerated.set(
             tile,
@@ -3812,6 +3916,7 @@ export class Skirmish {
         if (squad.playerId !== this.owners[tile]) this.activeClaims.add(tile);
       }
     }
+    for(const [id,row] of this.captureContributions)if(row.seen!==pass)this.forgetCapture(id);
     for (const tile of this.activeClaims) {
       this.tileChanges.record(tile);
       const claimant = this.pressure.at(tile);
@@ -3837,11 +3942,22 @@ export class Skirmish {
             ? Math.ceil(CAPTURE_TICKS * 0.8)
             : CAPTURE_TICKS))
       ) {
-        this.changeOwner(tile, claimant);
+        if(this.wasteland.has(tile)) {
+          const captor=cleanup?.get(tile),squad=captor && this.squad(captor.id);
+          if(!squad || squad.playerId!==claimant || squad.troops<=exposure.damage(squad.id))continue;
+          if(this.wasteland.clear(tile))exposure.add(squad.id,0,FALLOUT_TROOP_LOSS_PER_CELL);
+        }
+        this.changeOwner(tile, claimant,{squadCapture:true});
         this.progress[tile] = 0;
         this.claims[tile] = 0;
         this.activeClaims.delete(tile);
       }
+    }
+    if(exposure.size)for(const squad of [...this.squads]) {
+      const loss=Math.min(squad.troops,exposure.damage(squad.id));if(!loss)continue;
+      this.squadEntities.setOwned(squad.id,"troops",squad.troops-loss);
+      this.recordSoldierCasualties(squad.playerId,loss,squad.id,exposure);
+      if(squad.troops<=0){this.forgetCapture(squad.id);this.removeSquad(squad.id);}
     }
   }
 
@@ -3849,7 +3965,21 @@ export class Skirmish {
     return this.buildingIndex.at(tile);
   }
 
-  private changeOwner(tile: number, id: number): void {
+  nuclearBlast(x:number,y:number,radius:number):void {
+    this.wasteland.scorch(x,y,radius,tile=>this.owners[tile],(tile,previous)=>{
+      if(previous) {
+        const player=this.player(previous)!;
+        player.reserves=Math.max(0,player.reserves-NUCLEAR_RESERVE_LOSS_PER_CELL);
+        // Surviving edge buildings retain their faction until squad capture;
+        // neutral land is not a neutral faction that can operate buildings.
+        this.changeOwner(tile,0,{preserveStructures:true});
+      }
+      this.progress[tile]=this.claims[tile]=0;this.activeClaims.delete(tile);
+      this.tileChanges.record(tile);
+    });
+  }
+  private changeOwner(tile: number, id: number, options:{squadCapture?:boolean;preserveStructures?:boolean}={}): void {
+    if(id && this.wasteland.has(tile) && !options.squadCapture)return;
     const old = this.owners[tile];
     if (old === id) return;
     const land = this.map.isLand(tile);
@@ -3862,6 +3992,7 @@ export class Skirmish {
     }
     if (old && land) this.player(old)!.land--;
     this.owners[tile] = id;
+    this.invalidateCapture(tile);
     this.routeFootprints?.clear();
     this.routeEntries?.clear();
     this.expansion?.supply.territoryChanged(tile, id);
@@ -3874,14 +4005,16 @@ export class Skirmish {
     this.coastalTerritory.changed(tile);
     this.expansion?.economy.placements.changed(tile, id);
     if (id && land) this.player(id)!.land++;
+    if(options.preserveStructures)return;
     const buildings = this.buildingIndex.at(tile);
+    const formerOwners=new Set(buildings.filter(b=>b.playerId && b.playerId!==id).map(b=>b.playerId));
     const captured = buildings.some(
-      (building) => building.playerId === old && old !== 0,
+      (building) => building.playerId !== id && building.playerId !== 0,
     );
     for (const building of buildings) {
       this.updateBuilding(building.id, { playerId: id });
     }
-    if (captured && this.expansion && id && this.hostile(old, id)) {
+    if (captured && this.expansion && id && [...formerOwners].some(owner=>this.hostile(owner,id))) {
       const captor = this.squads
         .filter((s) => s.playerId === id && s.embarkedOn === null)
         .sort(
@@ -3891,11 +4024,10 @@ export class Skirmish {
         )[0];
       if (captor) this.squadEntities.updateOwned(captor.id, { xp: Math.min(20000, (captor.xp ?? 0) + 50) });
     }
-    if (
-      captured && buildings.some(b => b.type === "city" && !b.remainingTicks && (b.health ?? 1) > 0) && old !== 0 &&
-      !this.buildings.some((building) => building.playerId === old && building.type === "city" && !building.remainingTicks && (building.health??1)>0)
-    )
-      this.conquest.capture(old, id);
+    for(const owner of formerOwners) if (
+      captured && buildings.some(b => b.type === "city" && !b.remainingTicks && (b.health ?? 1) > 0) &&
+      !this.buildings.some((building) => building.playerId === owner && building.type === "city" && !building.remainingTicks && (building.health??1)>0)
+    ) this.conquest.capture(owner, id);
   }
 
   private thinkAi(): void {
@@ -4038,7 +4170,7 @@ export class Skirmish {
               order: { type: "hold" },
             });
         }
-        let nearest: Squad | undefined,
+        let nearest: Squad | undefined, acrossWater: Squad | undefined,
           distance = Number.MAX_SAFE_INTEGER,
           threatDistance = Number.MAX_SAFE_INTEGER,
           targetScore = Number.MAX_SAFE_INTEGER;
@@ -4061,11 +4193,45 @@ export class Skirmish {
           if (!this.aiCanPursue(player.id, enemy.playerId, enemyTile) || !this.aiCanEnter(player.id, enemyTile)) continue;
           if (this.expansion && !this.expansion.unit(squad).attack.targets.some(
             tag => this.expansion!.unit(enemy).tags.includes(tag))) continue;
+          const attack=this.expansion?.unit(squad).attack;
+          const canReturnFire=attack?.channel === "ranged" && d<=attack.range**2 &&
+            this.expansion!.fortifications.clear(squad,enemy,player.id);
+          if(!this.paths.connected(current,enemyTile) && !canReturnFire) {
+            if(!acrossWater || d<this.distanceSquared(squad,acrossWater)) acrossWater=enemy;
+            continue;
+          }
           const score=d+Math.min(16,this.attackApproaches.load(player.id,enemy.id))*(2*FIXED)**2;
           if (score < targetScore || (score === targetScore && enemy.id < nearest!.id)) {
             targetScore = score;
             distance = d;
             nearest = enemy;
+          }
+        }
+        if (!nearest && acrossWater && !this.shoreTransport.pending(squad.id)) {
+          const completed=this.expansion?.progression.states[player.id]?.completed ?? [];
+          if(shoreTransportDefinition(completed)) {
+            // Attack orders are land pursuit; a move order invokes the normal
+            // researched embark/landing pipeline, then local interception resumes.
+            if(squad.order.type !== "move") this.applyCommand({type:"order",playerId:player.id,
+              squadIds:[squad.id],order:{type:"move",tile:this.tileOf(acrossWater)}});
+            continue;
+          }
+          const hostileRange=this.expansion?.unit(acrossWater).attack.range ?? SQUAD_RULES.archer.range;
+          if(this.tick-squad.lastCombatTick<=100 && this.distanceSquared(squad,acrossWater)<=hostileRange**2) {
+            // Without embarkation, leave the firing envelope instead of issuing
+            // the same impossible attack indefinitely. Normal admission validates travel.
+            let escape=current,best=this.distanceSquared(squad,acrossWater);
+            for(const radius of [4,8,12]) for(const [dx,dy] of [[-1,-1],[-1,0],[-1,1],[0,-1],[0,1],[1,-1],[1,0],[1,1]]) {
+              const x=this.map.x(current)+dx*radius,y=this.map.y(current)+dy*radius;
+              if(!this.map.isValidCoord(x,y))continue;
+              const tile=this.map.ref(x,y);
+              if(!this.paths.walkable(tile) || !this.paths.connected(current,tile) || !this.aiCanEnter(player.id,tile))continue;
+              const point={x:(x+.5)*FIXED,y:(y+.5)*FIXED},d=distanceSquared(point,acrossWater);
+              if(d>best){best=d;escape=tile;}
+            }
+            if(escape!==current && (squad.order.type!=="move" || squad.order.tile!==escape))
+              this.applyCommand({type:"order",playerId:player.id,squadIds:[squad.id],order:{type:"move",tile:escape}});
+            continue;
           }
         }
         if (

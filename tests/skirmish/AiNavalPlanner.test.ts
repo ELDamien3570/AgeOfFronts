@@ -7,11 +7,12 @@ import { VESSEL } from "../../src/skirmish/content/Units";
 import { navalPower } from "../../src/skirmish/domain/AiNavalPlanner";
 import { NavalFactSequence } from "../../src/skirmish/domain/NavalFactSequence";
 
-function fixture(split = false, compact = false) {
+function fixture(split = false, compact = false, island = false) {
   const data = new Uint8Array(100 * 70).fill(133);
   for (let y = 20; y < (compact ? 36 : 70); y++)
     for (let x = 0; x < (compact ? 16 : 100); x++) data[y * 100 + x] = 0;
   if (split) for (let y = 20; y < 70; y++) data[y * 100 + 50] = 133;
+  if(island){data.fill(0);for(let y=20;y<55;y++)for(let x=25;x<75;x++)data[y*100+x]=133;}
   const map = new GameMapImpl(100, 70, data, 2000),
     game = new Skirmish(map, {
       seed: 42,
@@ -34,7 +35,7 @@ function fixture(split = false, compact = false) {
     id: game.allocateId(),
     playerId: player.id,
     type: "port" as const,
-    tile: map.ref(10, 19),
+    tile: island ? map.ref(25,30) : map.ref(10, 19),
     age: "StoneAge" as const,
     health: 1000,
     remainingTicks: 0,
@@ -94,6 +95,59 @@ function fixture(split = false, compact = false) {
   };
 }
 describe("persistent concentrated port defense", () => {
+  it("covers different approaches around an island instead of clustering at its only port",()=>{
+    const f=fixture(false,false,true);for(let i=0;i<32;i++)f.addShip();
+    f.refresh();const groups=f.assess().patrolGroups!;
+    expect(groups).toHaveLength(4);
+    expect(groups.some(g=>f.map.x(g.anchor)<25)).toBe(true);
+    expect(groups.some(g=>f.map.x(g.anchor)>=75)).toBe(true);
+    expect(groups.some(g=>f.map.y(g.anchor)<20)).toBe(true);
+    expect(groups.some(g=>f.map.y(g.anchor)>=55)).toBe(true);
+  });
+  it("divides a quiet navy into groups of at most eight covering separated coastal sectors",()=>{
+    const f=fixture();for(let i=0;i<32;i++)f.addShip(f.player.id,10+i%4);
+    f.refresh();const mission=f.assess();
+    expect(mission.patrolGroups).toHaveLength(4);
+    expect(mission.patrolGroups!.every(group=>group.members.length===8)).toBe(true);
+    expect(new Set(mission.patrolGroups!.flatMap(group=>group.members)).size).toBe(32);
+    expect(new Set(mission.patrolGroups!.map(group=>group.anchor)).size).toBe(4);
+    expect(Math.max(...mission.patrolGroups!.map(group=>f.map.euclideanDistSquared(group.anchor,mission.anchor!)))).toBeGreaterThan(64**2);
+    const saved=f.game.checkpoint(),cold=new Skirmish(f.map,f.game.options);cold.restore(saved);
+    expect(cold.expansion!.economy.naval.missions.get(f.player.id)?.patrolGroups).toEqual(mission.patrolGroups);
+    for(const group of mission.patrolGroups!)expect(group.members.map(id=>cold.expansion!.economy.naval.fleetLane(cold.ship(id)!))).toEqual([0,1,2,3,0,1,2,3]);
+  });
+  it("patrols friendly shore despite a stronger fleet elsewhere in the sea", () => {
+    const f=fixture(); f.addShip();
+    for(let i=0;i<6;i++)f.addShip(1,80+i);
+    f.refresh();const mission=f.assess();
+    expect(mission.state).toBe("stage");
+    expect(mission.target).toBeUndefined();
+    expect(mission.patrolRoute!.length).toBeGreaterThan(2);
+    expect(f.map.euclideanDistSquared(mission.anchor!,mission.patrolGoal!)).toBeGreaterThan(16**2);
+    for(const tile of mission.patrolRoute!) {
+      expect(f.map.y(tile)).toBeLessThanOrEqual(22);
+      expect(f.game.waterPaths.walkable(tile)).toBe(true);
+    }
+    const saved=f.game.checkpoint(); f.game.restore(saved);
+    expect(f.game.expansion!.economy.naval.missions.get(f.player.id)?.patrolRoute).toEqual(mission.patrolRoute);
+  });
+  it("uses separate patrol arrival cells for small flotillas", () => {
+    const f=fixture();for(let i=0;i<16;i++) {
+      f.addShip(f.player.id,10+i%4);
+      for(let j=0;j<3;j++)f.game.allocateId();
+    }
+    f.refresh(); const apply=vi.spyOn(f.game,"applyCommand"); f.assess();
+    const sails=apply.mock.calls.map(([c])=>c).filter(c=>c.type==="sail");
+    expect(sails).toHaveLength(4);
+    expect(new Set(sails.map(c=>c.tile)).size).toBe(4);
+    expect(sails.every(c=>c.shipIds.length===4)).toBe(true);
+    const mission=f.planner.missions.get(f.player.id)!;
+    expect(mission.members.slice(0,4).map(id=>f.planner.fleetLane(f.game.ship(id)!))).toEqual([0,1,2,3]);
+    const saved=f.game.checkpoint(),cold=new Skirmish(f.map,f.game.options);cold.restore(saved);
+    for(let i=0;i<350;i++){f.game.step();cold.step();}
+    expect(cold.checkpoint()).toEqual(f.game.checkpoint());
+    expect(f.game.ships.every(s=>f.map.euclideanDistSquared(f.game.tileOf(s),mission.anchor!)>12**2)).toBe(true);
+  });
   it("keeps an outbound interception when healthy ships spread beyond the assembly radius", () => {
     const f=fixture(), first=f.addShip(), second=f.addShip(f.player.id,12), enemy=f.addShip(1,25);
     f.refresh();

@@ -63,6 +63,8 @@ export interface MovementAdmissionPorts {
   activateStructure?(playerId: number, squads: readonly Squad[], points: Map<number, WorldPoint>, target: NonNullable<Squad["structureTarget"]>): void;
   handoffStructure?(id: number, playerId: number, action: () => void): void;
   squads(): readonly Squad[];
+  /** Conservative canonical roster revision, including position and orders. */
+  occupancyRevision?(): number;
   hostile?(a: number, b: number): boolean;
   priority?(playerId: number): boolean;
   squad(id: number): Squad | undefined;
@@ -109,6 +111,14 @@ export class MovementAdmission {
   onEvent?: (event: MovementAdmissionEvent) => void;
   private nextId = 1;
   private readonly occupancy: FormationOccupancy;
+  private occupancyRevision: number | undefined;
+  private refreshOccupancy(): void {
+    const revision=this.ports.occupancyRevision?.();
+    if(revision===undefined || revision!==this.occupancyRevision) {
+      this.occupancy.rebuild(this.ports.squads());
+      this.occupancyRevision=revision;
+    }
+  }
   private readonly corridors = new Map<number, { path: number[]; kind: Squad["kind"]; revision: string }>();
   hasPending(squadId: number): boolean { return this.pendingBySquad.has(squadId); }
   get pendingCount(): number {
@@ -154,6 +164,7 @@ export class MovementAdmission {
     });
   }
   restore(saved: ReturnType<MovementAdmission["checkpoint"]>): void {
+    this.occupancyRevision=undefined;
     this.pending.clear();
     this.corridors.clear();
     for (const [id, corridor] of structuredClone(saved.corridors ?? [])) this.corridors.set(id, corridor);
@@ -654,7 +665,7 @@ export class MovementAdmission {
   step(tick: number, budget = 128): number {
     if (!Number.isInteger(budget) || budget < 0)
       throw new Error("Invalid admission work budget");
-    if (this.pending.size) this.occupancy.rebuild(this.ports.squads());
+    if (this.pending.size) this.refreshOccupancy();
     let used = this.stepIntents(tick, Math.min(32, budget));
     // Reserve two thirds of the allowance for interactive commands. Unused work
     // returns to the ordinary round-robin, which continues serving the AI.
@@ -666,7 +677,7 @@ export class MovementAdmission {
   stepInteractive(tick:number,budget:number):number {
     if(!Number.isInteger(budget)||budget<0)throw new Error("Invalid interactive admission allowance");
     if(![...this.pending.values()].some(p=>this.ports.priority?.(p.playerId)))return 0;
-    this.occupancy.rebuild(this.ports.squads());
+    this.refreshOccupancy();
     return this.stepAdmissions(tick,budget,true);
   }
   private stepAdmissions(tick: number, budget: number, priority: boolean): number {

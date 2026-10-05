@@ -254,15 +254,15 @@ export interface TradeActor {
   shipmentId: number;
   stops: number[];
   visited: number[];
+  visitedTiles?: number[];
+  tripStartedTick?: number;
+  tripGold?: number;
   destination: number | null;
   state: "loading" | "outbound" | "returning" | "prize" | "waiting";
   path: number[];
   nextPathIndex: number;
   waitTicks: number;
   quoteAllies: number[];
-  pricedRouteTiles?: number;
-  pricedSeaSpeed?: number;
-  pricedCargoRatio?: number;
 }
 export interface Barrier {
   readonly kind?: "trench";
@@ -305,6 +305,7 @@ export interface Projectile {
   targetBuildingId?: number;
   impacted: boolean;
   impactAt?: number;
+  interception?: { defenseId: number; playerId: number; tick: number; impactTick: number; fromX: number; fromY: number; toX: number; toY: number };
 }
 export interface Aircraft {
   id: number;
@@ -320,6 +321,7 @@ export interface Aircraft {
   fuelTicks: number;
 }
 export interface ExpansionSnapshot {
+  fallout?: Uint32Array;
   startingAge?: Age;
   armies: Army[];
   rulesetId: string;
@@ -349,7 +351,8 @@ export interface ExpansionSnapshot {
   deliveredGold: Record<number, number>;
   tradeCapturedValue?: Record<number, number>;
   tradeLostValue?: Record<number, number>;
-  tradeControls?: Record<number, { landPaused: boolean; seaPaused: boolean; blocked: number[] }>;
+  tradeControls?: Record<number, { landPaused: boolean; seaPaused: boolean; blocked: number[]; landBlocked?: number[]; seaBlocked?: number[] }>;
+  tradeEnemies?: Record<number, number[]>;
 }
 export type ArmyOrder =
   | { type: "move" | "deploy" | "regroup"; tile: number }

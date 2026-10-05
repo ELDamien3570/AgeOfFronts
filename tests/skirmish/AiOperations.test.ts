@@ -16,6 +16,30 @@ function fixture(enabled = true, count = 3) {
 function evaluate(f: ReturnType<typeof fixture>, tick: number) { f.m.tick = tick; f.ops.step(f.forces); }
 
 describe("optional AI strategic operations", () => {
+  it("selects an eligible tribe for an offensive instead of excluding it from strategic rivalry",()=>{
+    const f=fixture(true,1);f.m.players[0].kind="tribe";
+    evaluate(f,1200);evaluate(f,1260);
+    expect(f.ops.state(2)).toMatchObject({phase:"preparing",target:1});
+    evaluate(f,1500);expect(f.ops.state(2)).toMatchObject({phase:"war",target:1});
+  });
+  it("coalesces expansion wakes without delaying losses or new aggression, including restore",()=>{
+    const f=fixture();
+    f.ops.restore({records:[[2,{phase:"peace",since:0,nextThink:500,threats:[],cursor:0,score:Infinity}]],revision:0,territorialRevision:0});
+    f.m.tick=100;f.ops.territoryChanged(0,2);
+    expect(f.ops.state(2)!.nextThink).toBe(122);
+    f.m.tick=110;f.ops.territoryChanged(0,2);f.ops.territoryChanged(2,2);
+    expect(f.ops.state(2)!.nextThink).toBe(122);
+    const saved=f.ops.checkpoint();f.ops.restore(saved);
+    expect(f.ops.checkpoint()).toEqual(saved);
+    f.ops.territoryChanged(2,3);expect(f.ops.state(2)!.nextThink).toBe(110);
+    f.ops.restore({...saved,records:saved.records.map(([id,r])=>[id,{...r,nextThink:500}])});
+    f.ops.threatened(2,1,f.map.ref(60,30));expect(f.ops.state(2)!.nextThink).toBe(110);
+    const attacked=f.ops.checkpoint();attacked.records[0][1].nextThink=170;f.ops.restore(attacked);
+    f.m.tick=120;f.ops.threatened(2,1,f.map.ref(61,30));
+    expect(f.ops.state(2)!.nextThink).toBe(170);
+    expect(f.ops.state(2)!.threats[0].tile).toBe(f.map.ref(61,30));
+    f.ops.threatened(2,3,f.map.ref(62,30));expect(f.ops.state(2)!.nextThink).toBe(120);
+  });
   it("keeps two surviving squads committed to the last ground squad despite unrelated buildings", () => {
     const f=fixture();
     const target=1;

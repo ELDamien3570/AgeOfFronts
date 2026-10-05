@@ -46,7 +46,7 @@ describe("quick research opportunities", () => {
     m.players[0].gold = 67;
     const node = cards().find((c) => c.id === "stoneage-shorecraft")!;
     expect(node.gold).toBe(67);
-    expect(node.seconds).toBe(10);
+    expect(node.seconds).toBe(6);
     expect(node.reason).toBeNull();
     m.players[0].gold = 0;
     expect(cards()).toEqual([]);

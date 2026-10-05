@@ -82,6 +82,13 @@ export class EmpireViewModel {
         : null,
     };
   }
+  militaryCounts(id: number) {
+    return {
+      squads: this.state.squads.filter(s => s.playerId === id && s.troops > 0).length,
+      boats: this.state.ships.filter(s => s.playerId === id && s.kind === "warship" && s.health > 0).length,
+      planes: this.expansion.aircraft.filter(a => a.playerId === id && a.health > 0).length,
+    };
+  }
   has(id: string): boolean {
     return this.progression.completed.includes(id);
   }

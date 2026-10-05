@@ -28,6 +28,8 @@ import type { Progression } from "./Progression";
 import { boxSweepEntry, circleSweepEntry } from "./ProjectileCollision";
 import { unitEffects } from "./ResearchEffects";
 import { structureAim } from "./StructureTargeting";
+import { missileDefenseRange, MISSILE_DEFENSE_RELOAD_TICKS } from "../content/MissileDefense";
+import { interceptionPoint } from "./MissileInterception";
 import type { PhaseSpatialFacts, SpatialPhase, SpatialQueries } from "../PhaseSpatialViews";
 export interface BattleWorld {
   spatialFacts?(phase: SpatialPhase): PhaseSpatialFacts;
@@ -48,6 +50,7 @@ export interface BattleWorld {
   notifyHostileAction?(victim: number, attacker: number, tile: number): void;
   resolveLandDamage(damage: DamageLedger): void;
   resolveNavalDamage(damage: DamageLedger): void;
+  nuclearBlast?(x:number,y:number,radius:number):void;
   recordMilitaryLosses(
     victims: { id: number; playerId: number }[],
     damage: DamageLedger,
@@ -510,12 +513,15 @@ export class Battle {
         profile.targets.some((tag) => this.definition(s).tags.includes(tag)) &&
         this.distance(squad, s) <= profile.range ** 2 &&
         this.forts.clear(squad, s, squad.playerId);
-      let target = this.nearby
-        .filter(eligible)
-        .sort(
-          (a, b) =>
-            this.distance(squad, a) - this.distance(squad, b) || a.id - b.id,
-        )[0];
+      let target: Squad | undefined;
+      let nearest = Infinity;
+      for (const candidate of this.nearby) {
+        const distance = this.distance(squad, candidate);
+        if (distance > nearest || (distance === nearest && target && candidate.id >= target.id)) continue;
+        if (!eligible(candidate)) continue;
+        target = candidate;
+        nearest = distance;
+      }
       if (squad.order.type === "attack") {
         const wanted = this.world.squad(squad.order.targetId);
         if (wanted && eligible(wanted)) target = wanted;
@@ -655,11 +661,45 @@ export class Battle {
   advanceProjectiles(): void {
     // Retained impact visuals still expire below, but no collision/cover query
     // consumes these indexes when every projectile has already impacted.
-    if (this.projectiles.some(p => !p.impacted)) this.rebuild("projectiles");
+    if (this.projectiles.some(p => !p.impacted && !p.interception)) this.rebuild("projectiles");
     const { tick } = this.world,
       impacts = new DamageLedger(),
       naval = new DamageLedger(),
       contributions: Contributions = new Map();
+    const incoming = this.projectiles.filter(p => !p.impacted && !p.interception && (p.kind === "icbm" || p.kind === "warhead"));
+    if (incoming.length) {
+      const stacks = new Map<string, Building[]>();
+      const fired = new Set<number>();
+      for (const player of this.world.players) for (const b of this.world.buildingFacts().completed(player.id,"missile-defence")) {
+        const key = `${b.playerId}:${b.tile}`;
+        const stack = stacks.get(key) ?? [];
+        stack.push(b); stacks.set(key,stack);
+      }
+      // Imminent impacts first. One persisted claim per warhead prevents
+      // overlapping sites wasting reloads, including after checkpoint restore.
+      for (const p of incoming.sort((a,b)=>a.impactTick-b.impactTick || b.blastRadius-a.blastRadius || a.id-b.id)) {
+        if (p.interception) continue;
+        let chosen: {building: Building; point: NonNullable<ReturnType<typeof interceptionPoint>>} | undefined;
+        const duration=p.impactTick-p.tick, fraction=Math.min(1,(tick-p.tick)/duration),x=p.fromX+(p.toX-p.fromX)*fraction,y=p.fromY+(p.toY-p.fromY)*fraction;
+        const nearby=new Set<string>();
+        this.structures.query(x,y,missileDefenseRange(10),this.nearbyStructures);
+        for (const body of this.nearbyStructures) if (this.structureById.get(body.id)?.type==="missile-defence") nearby.add(`${body.playerId}:${body.tile}`);
+        for (const key of nearby) {
+          const stack=stacks.get(key);
+          if (!stack) continue;
+          const building = stack.filter(b=>!fired.has(b.id) && tick >= (b.nextAttackTick ?? 0)).sort((a,b)=>a.id-b.id)[0];
+          if (!building || !this.diplomacy.hostile(building.playerId,p.playerId)) continue;
+          const from = this.position(building), point = interceptionPoint(p,tick,from.x,from.y,missileDefenseRange(stack.length));
+          if (point && (!chosen || point.impactTick < chosen.point.impactTick || (point.impactTick === chosen.point.impactTick && building.id < chosen.building.id))) chosen={building,point};
+        }
+        if (chosen) {
+          const from=this.position(chosen.building);
+          p.interception={defenseId:chosen.building.id,playerId:chosen.building.playerId,tick,fromX:from.x,fromY:from.y,...chosen.point};
+          this.world.updateBuilding(chosen.building.id,{nextAttackTick:tick+MISSILE_DEFENSE_RELOAD_TICKS});
+          fired.add(chosen.building.id);
+        }
+      }
+    }
     for (const p of [...this.projectiles].sort((a, b) => a.id - b.id)) {
       if (p.impacted) continue;
       const hitDamage = (attack: AttackProfile, defence: Defence) =>
@@ -668,28 +708,13 @@ export class Battle {
         old = { x: p.x, y: p.y };
       p.x = Math.round(p.fromX + (p.toX - p.fromX) * progress);
       p.y = Math.round(p.fromY + (p.toY - p.fromY) * progress);
-      if (["icbm", "mirv", "warhead"].includes(p.kind)) {
-        this.structures.query(p.x, p.y, 14 * FIXED, this.nearbyStructures);
-        const interceptor = this.nearbyStructures
-          .map(body => this.structureById.get(body.id)!)
-          .filter(
-            (b) =>
-              b.type === "missile-defence" &&
-              !b.remainingTicks &&
-              (b.health ?? 1) > 0 &&
-              this.diplomacy.hostile(b.playerId, p.playerId) &&
-              this.distance(this.position(b), p) <= (14 * FIXED) ** 2 &&
-              tick >= (b.nextAttackTick ?? 0),
-          )
-          .sort((a, b) => a.id - b.id)[0];
-        if (interceptor) {
-          this.world.updateBuilding(interceptor.id, { nextAttackTick: tick + 60 });
-          if (p.kind === "mirv") this.reservedWarheads = Math.max(0,this.reservedWarheads-p.warheads);
+      if (p.interception && tick >= p.interception.impactTick) {
           p.impacted = true;
           p.impactAt = tick;
+          p.x = p.interception.toX;
+          p.y = p.interception.toY;
           p.damage = 0;
           continue;
-        }
       }
       if (p.kind === "mirv" && progress >= 0.5) {
         this.reservedWarheads = Math.max(0,this.reservedWarheads-p.warheads);
@@ -966,6 +991,30 @@ export class Battle {
       this.spatial.query(p.x, p.y, radius, this.nearby);
       this.naval.query(p.x, p.y, radius, this.nearbyShips);
       this.structures.query(p.x, p.y, radius, this.nearbyStructures);
+      if (p.kind === "icbm" || p.kind === "warhead") {
+        // Nuclear effects are per victim, independent of conventional armour,
+        // shared damage budgets, or the ordinary 64-target splash envelope.
+        const inside = (s: {playerId:number;x:number;y:number}) => this.diplomacy.hostile(s.playerId,p.playerId) && this.distance(s,p)<=radius**2;
+        for (const target of this.nearby.filter(inside).sort((a,b)=>a.id-b.id)) {
+          impacts.add(target.id,p.playerId,target.troops);
+          this.contribution(contributions,target.id,p.sourceId,target.troops,p.sourceKind);
+        }
+        for (const target of this.nearbyShips.filter(inside).sort((a,b)=>a.id-b.id)) {
+          naval.add(target.id,p.playerId,target.health);
+          this.contribution(contributions,target.id,p.sourceId,target.health,p.sourceKind);
+        }
+        const structuralDamage = (health:number,distance:number) => Math.ceil(health*(distance<=radius*0.8 ? 1 : 1-(distance/radius-0.8)*0.5));
+        for (const body of this.nearbyStructures.filter(inside).sort((a,b)=>a.id-b.id)) {
+          const building=this.structureById.get(body.id)!;
+          this.structuralHit(building,p.playerId,p.sourceId,structuralDamage(building.maxHealth??building.health??1200,Math.sqrt(this.distance(body,p))),p.sourceKind);
+        }
+        for (const wall of this.forts.nearbyBarriers(p.x,p.y,radius)) if (this.diplomacy.hostile(wall.playerId,p.playerId)) {
+          const distance=Math.min(...wall.tiles.map(tile=>Math.hypot(((tile%this.mapWidth)+0.5)*FIXED-p.x,(Math.floor(tile/this.mapWidth)+0.5)*FIXED-p.y)));
+          if (distance<=radius) this.structuralHit(wall,p.playerId,p.sourceId,structuralDamage(wall.maxHealth,distance),p.sourceKind);
+        }
+        this.world.nuclearBlast?.(p.x,p.y,radius);
+        continue;
+      }
       let budget =
         (p.damage + Object.values(p.bonuses).reduce((sum, n) => sum + n, 0)) *
         4;

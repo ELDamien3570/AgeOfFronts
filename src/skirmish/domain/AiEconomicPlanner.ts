@@ -23,6 +23,7 @@ import {
   researchTerms,
 } from "./Progression";
 import { PRODUCTION_RECIPES } from "./Supply";
+import { militaryPosture } from "./AiMilitaryPosture";
 
 export interface AiEconomicIntent {
   id: string;
@@ -72,7 +73,7 @@ export function economicCandidates(
     // opportunity cost to the authored age-price scale, preserving Stone Age
     // rankings while avoiding permanently negative later advances. Reservation
     // and command payment still require the full authoritative gold price.
-    const development = kind === "research" || kind === "advance";
+    const development = kind === "research" || kind === "advance" || kind === "construct" || kind === "upgrade";
     const agePrice = ADVANCES[Math.min(AGES.indexOf(snapshot.age), ADVANCES.length - 1)].gold;
     const opportunity =
       Math.floor(((cost.gold ?? 0) / 20) * (development ? ADVANCES[0].gold / agePrice : 1)) +
@@ -206,7 +207,7 @@ export function economicCandidates(
     if (
       value <= 0 ||
       (snapshot.headroom === 0 &&
-        !["city", "factory", "mine", "port", "oil-well", "oil-rig", "blacksmith", "armory", "arms-factory"].includes(
+        !["city", "factory", "mine", "port", "oil-well", "oil-rig", "blacksmith", "armory", "arms-factory", "depot", "siege-workshop", "airstrip", "missile-silo", "mirv-launcher", "missile-defence"].includes(
           site.type,
         ))
     )
@@ -341,5 +342,7 @@ export function economicCandidates(
   // A reserve-starved recruit must not hide every gold-only development option.
   const development = ordered.find(c => c.kind === "research" || c.kind === "advance");
   if (development && !choices.includes(development)) choices[choices.length-1] = development;
+  if (militaryPosture(snapshot,personality,speed).wealthy)
+    for (const recruit of ordered.filter(c=>c.kind==="recruit").slice(0,3)) if (!choices.includes(recruit)) choices.push(recruit);
   return choices;
 }

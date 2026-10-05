@@ -1,0 +1,81 @@
+{
+  "date": "2026-10-05",
+  "scope": "Local validation; no Oracle deployment or long-match release qualification",
+  "validation": {
+    "typecheck": "passed",
+    "frontendBuild": "passed",
+    "testFiles": 211,
+    "localHealth": "ok",
+    "tests": 1482
+  },
+  "rules": {
+    "troopLossPerClearedFalloutCell": 10,
+    "ageUpSeconds": [
+      35,
+      40,
+      45,
+      50,
+      55,
+      60
+    ],
+    "missileRangeCells": [
+      14,
+      18,
+      22,
+      26,
+      32,
+      40,
+      48,
+      56,
+      64,
+      72
+    ],
+    "reloadSeconds": 20,
+    "aircraftCruiseScale": 1.5,
+    "reserveLossPerNewlyUnclaimedCell": 100
+  },
+  "ordinaryProfile": {
+    "initialShips": 1024,
+    "before": {
+      "mean": 38.56405850000002,
+      "p95": 56.19750000000022,
+      "p99": 66.95750000000044,
+      "max": 99.66849999999977
+    },
+    "finalShips": 583,
+    "after": {
+      "mean": 34.70164550000002,
+      "p95": 50.68459999999686,
+      "p99": 60.00460000000021,
+      "max": 64.31910000000062
+    },
+    "regularFactions": 16,
+    "warmup": 100,
+    "beforeBundle": "out/naval-full-profile.mjs",
+    "finalSquads": 3459,
+    "afterBundle": "out/strategic-current-profile.mjs",
+    "limitation": "Short baseline with few strategic systems active; timing variation is not proof of a performance gain",
+    "ticks": 500,
+    "tribes": 30
+  },
+  "strategicProfile": {
+    "scope": "Local isolated Battle phase, 320 launchers and 128 simultaneous warheads; not a full-match release gate",
+    "launchers": 320,
+    "warheads": 128,
+    "battle": {
+      "activeTicks": 18,
+      "meanMs": 0.5629944444444467,
+      "p95Ms": 9.383799999999951,
+      "maxMs": 9.383799999999951
+    },
+    "hydrogenTerritory": {
+      "milliseconds": 11.905000000000086,
+      "cells": 2453
+    }
+  },
+  "remaining": [
+    "Single offensive objective per faction remains a tactical limit",
+    "Long-match balance and sustained nuclear-war profiling remain",
+    "One online test run failed during starting-resource placement; focused rerun and final full suite passed; spawn code unchanged"
+  ]
+}

@@ -1,6 +1,5 @@
 import { describe, expect, it, vi } from "vitest";
 import { GameMapImpl } from "../../src/core/game/GameMap";
-import { LAND_TRADE_CAPACITIES } from "../../src/skirmish/content/Economy";
 import { VESSELS } from "../../src/skirmish/content/Units";
 import {
   combatAdvantage,
@@ -305,17 +304,15 @@ describe("responsive AI and naval movement", () => {
 });
 describe("successful long sea trade contract", () => {
   it.each(AGES)(
-    "targets 1.5 times equal-technology land income in %s",
+    "pays a bounded 1.5 times land value per good on long sea voyages in %s",
     (age) => {
-      const index = AGES.indexOf(age),
-        vessel = VESSELS.find((v) => v.kind === "trade" && v.age === age)!;
+      const vessel = VESSELS.find((v) => v.kind === "trade" && v.age === age)!;
       const width = 1000,
-        landCargo = LAND_TRADE_CAPACITIES[index],
         seaCargo = vessel.capacity!,
         distance = 300;
       const land = tradePayout({
         naval: false,
-        quantity: landCargo,
+        quantity: seaCargo,
         valuePerGood: 10,
         distance: 50,
         foreign: true,
@@ -331,16 +328,11 @@ describe("successful long sea trade contract", () => {
         allied: false,
         mapWidth: width,
         seaSpeed: vessel.speed,
-        referenceCargoRatio: landCargo / seaCargo,
       });
-      const ratio =
-        sea /
-        (60 + (2 * distance * FIXED) / vessel.speed) /
-        (land / (60 + (2 * 50 * FIXED) / 50));
-      expect(ratio).toBeCloseTo(1.5, 2);
+      expect(sea / land).toBeCloseTo(1.5, 2);
     },
   );
-  it("bounds detour credits, scales partial cargo, and gives short trips less income per cycle", () => {
+  it("ignores detours, scales partial cargo, and allows journey time to outweigh the voyage premium", () => {
     const base = {
       naval: true,
       quantity: 100,
@@ -360,7 +352,9 @@ describe("successful long sea trade contract", () => {
     ).toBeLessThan(1);
     const income = (d: number) =>
       tradePayout({ ...base, distance: d }) / (60 + (2 * d * FIXED) / 106);
-    expect(income(2)).toBeLessThan(income(50));
-    expect(income(50)).toBeLessThan(income(300));
+    expect(tradePayout({...base,distance:2})).toBeLessThan(tradePayout({...base,distance:50}));
+    expect(tradePayout({...base,distance:50})).toBeLessThan(tradePayout(base));
+    expect(income(2)).toBeGreaterThan(income(50));
+    expect(income(50)).toBeGreaterThan(income(300));
   });
 });

@@ -402,8 +402,11 @@ export class EmpireView {
       return;
     }
     if (d.tradeFaction) {
-      const otherId = Number(d.tradeFaction), blocked = this.vm.expansion.tradeControls?.[this.playerId]?.blocked.includes(otherId) ?? false;
-      this.actions.command({ type: "trade-block", playerId: this.playerId, otherId, blocked: !blocked }); return;
+      const otherId = Number(d.tradeFaction), naval = d.tradePartnerMode === "sea";
+      if (this.vm.expansion.tradeEnemies?.[this.playerId]?.includes(otherId)) return;
+      const control = this.vm.expansion.tradeControls?.[this.playerId];
+      const blocked = (naval ? control?.seaBlocked : control?.landBlocked)?.includes(otherId) ?? control?.blocked.includes(otherId) ?? false;
+      this.actions.command({ type: "trade-block", playerId: this.playerId, otherId, naval, blocked: !blocked }); return;
     }
     if (d.priorityRecipe && d.productionType) {
       const buildingType = d.productionType as BuildingType;
@@ -750,14 +753,17 @@ export class EmpireView {
   private tradeDiplomacyControl(): string {
     const vm = this.vm!, p = vm.faction(this.inspectedPlayer)?.player;
     if (!p || p.id === this.playerId || p.kind === "tribe" || p.eliminated) return "";
-    const blocked = vm.expansion.tradeControls?.[this.playerId]?.blocked.includes(p.id) ?? false;
-    return `<button data-trade-faction="${p.id}" aria-pressed="${blocked}">${blocked ? "Resume" : "Stop"} trade with ${escape(p.name)}</button>`;
+    const control = vm.expansion.tradeControls?.[this.playerId], atWar = vm.expansion.tradeEnemies?.[this.playerId]?.includes(p.id);
+    return ["land", "sea"].map(mode=>{
+      const blocked = (mode === "sea" ? control?.seaBlocked : control?.landBlocked)?.includes(p.id) ?? control?.blocked.includes(p.id) ?? false;
+      return `<button data-trade-faction="${p.id}" data-trade-partner-mode="${mode}" aria-pressed="${blocked}" ${atWar ? "disabled" : ""}>${mode === "sea" ? "Sea" : "Overland"} trade · ${atWar ? "Unavailable during war" : blocked ? "Resume" : "Stop"}</button>`;
+    }).join("");
   }
   private diplomacyContent(): string {
     const vm = this.vm!,
       faction = vm.faction(this.inspectedPlayer);
     if (!faction) return "Choose a faction";
-    const p = faction.player;
+    const p = faction.player, forces = vm.militaryCounts(p.id);
 
     const treaty = vm.expansion.diplomacy.alliances.find(
         (t) =>
@@ -778,6 +784,6 @@ export class EmpireView {
       if (treaty) buttons += `${treaty.longTerm ? (treaty.ending ? "" : `<button data-diplomacy="end-long-term" data-other="${p.id}">End alliance in 3 minutes</button>`) : `<button data-diplomacy="renew" data-other="${p.id}">Agree to renewal</button>`}<button data-diplomacy="break" data-other="${p.id}">Break alliance · ${treaty.longTerm ? 60 : 30}s betrayal penalty</button>`;
       if (!atWar) buttons += `<button data-diplomacy="declare" data-other="${p.id}">Declare War${treaty ? ` · ${treaty.longTerm ? 120 : 30}s betrayal penalty` : ""}</button>`;
     }
-    return `<div class="diplomacy-identity" data-faction-kind="${p.kind === "tribe" ? "tribe" : p.ai ? "nation" : "player"}"><span class="diplomacy-kind">${p.kind === "tribe" ? "Tribe" : p.ai ? "AI nation" : "Player nation"}</span><h3>${escape(p.name)}</h3></div>${p.ai ? `<p><strong>${escape(faction.identity.personalityName)}</strong>${faction.identity.originName ? ` · ${escape(faction.identity.originName)}` : ""}</p><p>${escape(faction.identity.description)}</p>` : ""}<p class="faction-age"><strong>Current age: ${faction.ageName}</strong></p><p>${p.kind === "tribe" ? "Tribes do not negotiate" : status}</p><p>${fmt(p.land)} land · ${fmt(p.gold)} gold</p>${buttons}${treaty?.longTerm ? "" : "<p>Long Term Alliance requires mutual acceptance, renews automatically, and carries a 60s betrayal penalty.</p>"}`;
+    return `<div class="diplomacy-identity" data-faction-kind="${p.kind === "tribe" ? "tribe" : p.ai ? "nation" : "player"}"><span class="diplomacy-kind">${p.kind === "tribe" ? "Tribe" : p.ai ? "AI nation" : "Player nation"}</span><h3>${escape(p.name)}</h3></div>${p.ai ? `<p><strong>${escape(faction.identity.personalityName)}</strong>${faction.identity.originName ? ` · ${escape(faction.identity.originName)}` : ""}</p><p>${escape(faction.identity.description)}</p>` : ""}<p class="faction-age"><strong>Current age: ${faction.ageName}</strong></p><p>${p.kind === "tribe" ? "Tribes do not negotiate" : status}</p><p>${fmt(p.land)} land · ${fmt(p.gold)} gold</p><p>${fmt(forces.squads)} squads · ${fmt(forces.boats)} warships · ${fmt(forces.planes)} plane squadrons</p>${buttons}${treaty?.longTerm ? "" : "<p>Long Term Alliance requires mutual acceptance, renews automatically, and carries a 60s betrayal penalty.</p>"}`;
   }
 }

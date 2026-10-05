@@ -13,6 +13,7 @@ import {
 } from "../Rules";
 import { buildingTechnology } from "../content/Buildings";
 import { GUN_NEST_ATTACK, TRENCH_COVER } from "../content/Defences";
+import { missileDefenseRange, MISSILE_DEFENSE_RELOAD_TICKS } from "../content/MissileDefense";
 import { cityReserveIncome } from "../content/Economy";
 import { supplyItemName } from "../content/Equipment";
 import { resourceTechnology } from "../content/Resources";
@@ -797,6 +798,11 @@ export class HudViewModel {
                 stat("Age", AGE_NAMES[AGES.indexOf(b.age ?? "StoneAge")]),
                 stat("Buildings", `${completed}/${stack.length} ready`),
                 ...this.buildingDetails(b),
+                ...(b.type === "missile-defence" ? [
+                  stat("Interception radius",`${completed ? missileDefenseRange(completed)/FIXED : 0} cells`),
+                  stat("Ready interceptors",`${stack.filter(other=>!other.remainingTicks && state.tick >= (other.nextAttackTick??0)).length}/${completed}`),
+                  stat("Reload per launcher",`${MISSILE_DEFENSE_RELOAD_TICKS/TICKS_PER_SECOND} sec`),
+                ] : []),
                 ...(b.type === "city"
                   ? [
                       stat(

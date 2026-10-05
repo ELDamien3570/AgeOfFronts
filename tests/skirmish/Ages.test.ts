@@ -73,6 +73,20 @@ const step = (m: Skirmish, n: number) => {
   for (let i = 0; i < n; i++) m.step();
 };
 describe("age progression and authoritative definitions", () => {
+  it("requires completed Fortified Settlements before researching Armies", () => {
+    const m = make(),
+      p = m.players[0],
+      s = m.expansion!.progression.states[p.id];
+    s.age = "BronzeAge";
+    s.completed.push("bronzeage-bronze-equipment", "bronzeage-bowcraft", "bronzeage-chariot-warfare");
+    p.gold = 1000000;
+    const command = { type: "research" as const, playerId: p.id, technologyId: "bronzeage-armies" };
+    expect(m.applyCommand(command)).toBe("Complete the prerequisites first");
+    expect(s.research.warfare).toBeUndefined();
+    s.completed.push("bronzeage-fortified-settlements");
+    expect(m.applyCommand(command)).toBeNull();
+    expect(s.research.warfare?.technologyId).toBe("bronzeage-armies");
+  });
   it("validates 85 named nodes, including the fifth Bronze Warfare technology", () => {
     expect(() => validateTechnologies()).not.toThrow();
     expect(TECHNOLOGIES).toHaveLength(85);

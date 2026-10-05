@@ -49,7 +49,7 @@ describe("age-scaled opening resources and tribes", () => {
     expect(units.every(s => s.definitionId === defaultUnit("infantry", age).id)).toBe(true);
     expect(m.buildings.find(b => b.playerId === tribe.id)!.age).toBe(age);
     for (const tech of TECHNOLOGIES.filter(t => AGES.indexOf(t.age) < AGES.indexOf(age))) expect(state.completed).toContain(tech.id);
-    expect(m.applyCommand({ type: "advance-age", playerId: tribe.id })).toContain(age === "Modern" ? "final age" : "Every surviving");
+    expect(m.applyCommand({ type: "advance-age", playerId: tribe.id })).toContain(age === "Modern" ? "final age" : "75%");
     tribe.gold = 1e6;
     const research = TECHNOLOGIES.find(t => t.age === age && !state.completed.includes(t.id) && t.prerequisites.every(id => state.completed.includes(id)))!;
     expect(m.applyCommand({ type: "research", playerId: tribe.id, technologyId: research.id })).toBeNull();

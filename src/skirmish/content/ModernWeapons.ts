@@ -8,6 +8,7 @@ export const AIRCRAFT_RULES = {
   factionCapacity: 32,
   health: 1000,
   fuelTicks: 1200,
+  speed: 180,
 } as const;
 export const BOMBER_ATTACK: AttackProfile = {
   channel: "ranged",

@@ -97,7 +97,7 @@ describe("battlefield research drawer", () => {
     expect(future.ages.find((a) => a.age === "Modern")?.state).toBe("future");
     expect(m.snapshot()).toEqual(before);
   });
-  it("renders real Bronze prerequisite edges including the independent Armies branch", () => {
+  it("renders the Armies prerequisite edge from Fortified Settlements", () => {
     const { m, vm } = fixture();
     m.expansion!.progression.states[1].age = "BronzeAge";
     const model = new TechnologyViewModel(vm(), "BronzeAge");
@@ -129,7 +129,7 @@ describe("battlefield research drawer", () => {
     expect(model.tree("warfare").total).toBe(5);
     expect(
       document.querySelector(
-        '[data-edge="bronzeage-bronze-equipment:bronzeage-armies"]',
+        '[data-edge="bronzeage-fortified-settlements:bronzeage-armies"]',
       ),
     ).not.toBeNull();
     expect(

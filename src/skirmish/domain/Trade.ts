@@ -22,12 +22,11 @@ import type { DomainRoutePorts, DomainRouteTask } from "./DomainRoutePorts";
 import type { Fortifications } from "./Fortifications";
 import type { Progression } from "./Progression";
 import { cargoHandlingPercent, logisticsTier } from "./ResearchEffects";
+import { TradeReceiving } from "./TradeReceiving";
 import type { Roads } from "./Roads";
 import type { Supply } from "./Supply";
 import type { PhaseSpatialFacts, SpatialPhase, SpatialQueries } from "../PhaseSpatialViews";
 import {
-  tradeCycleQuote,
-  seaIncomeFactor,
   tradePayout,
   type TradeCycleQuote,
 } from "./TradeQuote";
@@ -53,6 +52,8 @@ export interface TradeControls {
   landPaused: boolean;
   seaPaused: boolean;
   blocked: number[];
+  landBlocked?: number[];
+  seaBlocked?: number[];
 }
 interface Site {
   source: Building;
@@ -88,9 +89,10 @@ interface Admission {
   path?: number[];
 }
 
-/** Single-destination couriers. Markets share lifecycle indexes, route pairs
+/** Bounded multi-stop couriers. Markets share lifecycle indexes, route pairs
  * share bounded corridors, and cargo changes hands only at authoritative commits. */
 export class Trade {
+  readonly receiving = new TradeReceiving();
   private seaActorTick = -1;
   private readonly seaActorIds = new Map<number, TradeActor>();
   private readonly seaActors: SpatialGrid<TradeActor>;
@@ -113,6 +115,7 @@ export class Trade {
   private readonly markets = new Map<number, OwnerMarkets>();
   private marketGeometry = -1;
   private readonly seaMarkets = new Map<number, Building[]>();
+  private readonly landMarkets: Building[] = [];
   private readonly admissions = new Map<number, Admission>();
   private readonly retries = new Map<
     number,
@@ -138,6 +141,7 @@ export class Trade {
     private readonly roads?: Roads,
     private readonly enemy: (a: number, b: number) => boolean = (a, b) =>
       diplomacy.hostile(a, b),
+    private readonly war: (a: number, b: number) => boolean = (a,b)=>diplomacy.declaredWar(a,b),
   ) { this.seaActors = new SpatialGrid(world.map.width()*FIXED,world.map.height()*FIXED,8*FIXED,a=>a.playerId); }
   private indexSeaActors(): void {
     if (this.seaActorTick === this.world.tick) return;
@@ -158,6 +162,7 @@ export class Trade {
       capturedValue: this.capturedValue,
       lostValue: this.lostValue,
       controls: this.controls,
+      receiving: this.receiving.checkpoint(),
       controlRevision: this.controlRevision,
       cycleQuotes: [...this.cycleQuotes],
       retired: this.retired,
@@ -178,6 +183,7 @@ export class Trade {
     restoreRecord(this.capturedValue, s.capturedValue ?? {});
     restoreRecord(this.lostValue, s.lostValue ?? {});
     restoreRecord(this.controls, s.controls ?? {});
+    this.receiving.restore(s.receiving);
     this.controlRevision = s.controlRevision ?? 0;
     restoreSet(this.retired, s.retired);
     this.nextShipment = s.nextShipment;
@@ -200,6 +206,7 @@ export class Trade {
     }
     this.markets.clear();
     this.seaMarkets.clear();
+    this.landMarkets.length = 0;
     this.marketGeometry = -1;
   }
   setPaused(playerId: number, naval: boolean, paused: boolean): void {
@@ -210,16 +217,23 @@ export class Trade {
     this.controlRevision++;
     if (paused) this.redirect(playerId, naval);
   }
-  setBlocked(playerId: number, other: number, blocked: boolean): void {
+  setBlocked(playerId: number, other: number, blocked: boolean, naval?: boolean): void {
     const c = this.control(playerId);
-    if (c.blocked.includes(other) === blocked) return;
-    c.blocked = blocked
-      ? [...c.blocked, other].sort((a, b) => a - b)
-      : c.blocked.filter((id) => id !== other);
+    // Legacy commands still control both modes; new buttons preserve each mode.
+    if (naval === undefined) {
+      this.setBlocked(playerId, other, blocked, false);
+      this.setBlocked(playerId, other, blocked, true);
+      return;
+    }
+    const field = naval ? "seaBlocked" : "landBlocked";
+    c.landBlocked ??= [...c.blocked]; c.seaBlocked ??= [...c.blocked];
+    if (c[field]!.includes(other) === blocked) return;
+    c[field] = blocked ? [...c[field]!, other].sort((a,b)=>a-b) : c[field]!.filter(id=>id!==other);
+    c.blocked = c.landBlocked.filter(id=>c.seaBlocked!.includes(id));
     this.controlRevision++;
     if (blocked) {
-      this.redirect(playerId, undefined, other);
-      this.redirect(other, undefined, playerId);
+      this.redirect(playerId, naval, other);
+      this.redirect(other, naval, playerId);
     }
   }
   private control(id: number): TradeControls {
@@ -233,10 +247,13 @@ export class Trade {
     const c = this.controls[id];
     return !!(naval ? c?.seaPaused : c?.landPaused);
   }
-  permitted(a: number, b: number): boolean {
+  atWar(a: number, b: number): boolean { return a !== b && this.war(a, b); }
+  permitted(a: number, b: number, naval = true): boolean {
+    const field = naval ? "seaBlocked" : "landBlocked";
     return (
-      !this.controls[a]?.blocked.includes(b) &&
-      !this.controls[b]?.blocked.includes(a)
+      !this.atWar(a, b) &&
+      !(this.controls[a]?.[field] ?? this.controls[a]?.blocked)?.includes(b) &&
+      !(this.controls[b]?.[field] ?? this.controls[b]?.blocked)?.includes(a)
     );
   }
   private redirect(owner: number, naval?: boolean, other?: number): void {
@@ -321,9 +338,24 @@ export class Trade {
     }
     this.marketGeometry = facts?.geometryRevision ?? -1;
     if (!changed) return;
+    const receivers = new Map<string, number>();
+    for (const m of this.markets.values()) for (const b of m.markets) {
+      const key = TradeReceiving.key(b.playerId, b.tile);
+      receivers.set(key, (receivers.get(key) ?? 0) + 1);
+    }
+    for (const [key, stack] of receivers) this.receiving.configure(key, stack, this.world.tick);
+    this.receiving.retain(new Set(receivers.keys()));
+    this.landMarkets.length = 0;
+    for (const m of this.markets.values()) {
+      const tiles = new Set<number>();
+      for (const b of m.markets) if (!tiles.has(b.tile)) { tiles.add(b.tile); this.landMarkets.push(b); }
+    }
     this.seaMarkets.clear();
-    for (const owner of this.markets.values())
+    for (const owner of this.markets.values()) {
+      const tiles = new Set<number>();
       for (const port of owner.ports) {
+        if (tiles.has(port.tile)) continue;
+        tiles.add(port.tile);
         const seas = new Set(
           portWaterTiles(this.world.map, port.tile)
             .map((t) => this.world.waterPaths.component[t])
@@ -335,6 +367,7 @@ export class Trade {
           this.seaMarkets.set(sea, list);
         }
       }
+    }
   }
   private pruneSiteTimers(): void {
     // Expiry is authoritative maintenance, not a side effect of rebuilding a
@@ -366,9 +399,12 @@ export class Trade {
       return false;
     if (a.state === "prize" || returning) return b.playerId === a.playerId;
     if (
-      !this.permitted(a.playerId, b.playerId) ||
+      !this.permitted(a.playerId, b.playerId, a.naval) ||
       this.paused(a.playerId, a.naval)
     )
+      return false;
+    if (a.state !== "loading" && ((a.visitedTiles ?? []).includes(b.tile) ||
+      (a.visitedTiles?.length ?? 0) >= TRADE_RULES.maximumStops))
       return false;
     if (a.naval) return b.type === "port" && b.playerId !== a.playerId;
     if (b.type !== "city" && b.type !== "port") return false;
@@ -391,57 +427,51 @@ export class Trade {
     if (returning && source) return (this.routeFailures.get(this.failureKey(a, source.source, true))?.retryAt ?? 0) <= this.world.tick ? [source.source] : [];
     const rows = a.naval
       ? (this.seaMarkets.get(this.world.waterPaths.component[tile]) ?? [])
-      : [...this.markets.values()].flatMap((m) => m.markets);
-    const rank = (b: Building) =>
-      a.state === "prize" || returning
-        ? 0
-        : this.diplomacy.allied(a.playerId, b.playerId)
-          ? 0
-          : this.enemy(a.playerId, b.playerId)
-            ? 2
-            : 1;
+      : this.landMarkets;
+    const seen = new Set<number>();
     const result = rows
       .filter(
         (b) =>
           this.allowedMarket(a, b, returning) &&
+          !seen.has(b.tile) && !!seen.add(b.tile) &&
           (this.routeFailures.get(this.failureKey(a, b, returning))?.retryAt ?? 0) <= this.world.tick &&
           (a.naval || this.world.paths.connected(tile, b.tile)),
       )
       .map((b) => ({
         b,
-        rank: rank(b),
         distance: this.world.map.euclideanDistSquared(tile, b.tile),
       }));
     this.diagnostics.marketReads += rows.length;
-    // Sea fleets prefer diplomacy tiers. Nearby foreign land markets can lure
-    // couriers across a shared border, proportional to the payout premium.
-    const landDistance = (r: (typeof result)[number]) =>
-      r.distance /
-      (r.b.playerId === a.playerId
-        ? 1
-        : this.diplomacy.allied(a.playerId, r.b.playerId)
-          ? 4
-          : 16);
-    const naval = a.naval;
-    const seaPricing = naval && !returning ? this.seaPricing(a.playerId) : undefined;
-    const seaRates = new Map<number,number>();
-    if (seaPricing) for(const row of result) {
-      const distance=Math.sqrt(row.distance);
-      seaRates.set(row.b.id,seaIncomeFactor({distance,mapWidth:this.world.map.width(),...seaPricing}) /
-        (60+2*distance*FIXED/seaPricing.seaSpeed));
+    // Score incremental gold against the extra travel needed before returning.
+    // No path searches here: exact routes enter the existing bounded planner.
+    const rates = new Map<number, number>();
+    const speed = a.naval ? this.seaPricing(a.playerId).seaSpeed : 50;
+    const originDistance = Math.sqrt(this.world.map.euclideanDistSquared(tile, a.originTile));
+    const stock = a.cargo > 0 ? a.cargo : source?.buildings.reduce((n,b)=>n+(this.supply.goods.get(b.id) ?? 0),0) ?? 0;
+    const availableCargo = Math.min(stock, a.cargo > 0 ? a.cargo : a.capacity);
+    if (!returning && a.state !== "prize") for (const row of result) {
+      const foreign = row.b.playerId !== a.playerId, allied = foreign && this.diplomacy.allied(a.playerId,row.b.playerId);
+      const quantity = Math.min(availableCargo, this.receiving.available(TradeReceiving.key(row.b.playerId,row.b.tile),
+        this.world.tick, a.naval, foreign, allied));
+      const distance = Math.sqrt(this.world.map.euclideanDistSquared(a.originTile,row.b.tile));
+      const extraTravel = Math.max(0, Math.sqrt(row.distance) + distance - originDistance);
+      rates.set(row.b.id, tradePayout({ naval:a.naval,quantity,valuePerGood:a.valuePerGood,distance,foreign,allied,
+        mapWidth:this.world.map.width() }) / (20 + extraTravel * FIXED / speed));
     }
     result.sort(
       (a, b) =>
-        (naval
-          ? a.rank - b.rank || ((seaRates.get(b.b.id) ?? 0)-(seaRates.get(a.b.id) ?? 0)) || a.distance - b.distance
-          : landDistance(a) - landDistance(b)) || a.b.id - b.b.id,
+        ((rates.get(b.b.id) ?? 0) - (rates.get(a.b.id) ?? 0)) || a.distance - b.distance || a.b.id - b.b.id,
     );
     if (!a.naval && returning && !source && own?.factories.length)
       return own.factories.filter(b =>
         this.allowedMarket(a, b, true) &&
         (this.routeFailures.get(this.failureKey(a, b, true))?.retryAt ?? 0) <= this.world.tick,
       ).slice(0, 8) as Building[];
-    return result.slice(0, 8).map((r) => r.b);
+    const minimumRate = a.state === "outbound" && a.visited.length ?
+      (this.cycleQuotes.get(a.id)?.goldPer1000Ticks ?? 0) / 1000 : 0;
+    return result.filter(r=>returning || a.state === "prize" ||
+      ((rates.get(r.b.id) ?? 0)>0 && (rates.get(r.b.id) ?? 0)>=minimumRate))
+      .slice(0, 8).map((r) => r.b);
   }
   private failureKey(a: TradeActor, market: Building, returning: boolean): string {
     return `${a.playerId}:${a.naval ? 1 : 0}:${this.tile(a)}:${market.id}:${market.playerId}:${returning ? 1 : 0}:${a.naval ? this.controlRevision : this.revision(a.playerId)}`;
@@ -535,11 +565,14 @@ export class Trade {
       (this.retries.get(a.id)?.retryAt ?? 0) > this.world.tick
     )
       return;
-    const returning =
+    let returning =
         !loading &&
         a.state !== "prize" &&
         (!a.cargo || a.state === "returning"),
       rows = this.candidates(a, returning);
+    if (!rows.length && !loading && !returning && a.state !== "prize") {
+      a.state = "returning"; returning = true; rows = this.candidates(a, true);
+    }
     if (!rows.length) {
       a.destination = null;
       a.waitTicks = 100;
@@ -610,6 +643,7 @@ export class Trade {
         this.cancel(id);
         a.destination = null;
         a.waitTicks = 100;
+        if (!p.loading && a.state === "outbound") a.state = "returning";
         continue;
       }
       if (!b || b.id !== p.candidates[p.index]) continue;
@@ -622,11 +656,6 @@ export class Trade {
         }
         a.destination = b.id;
         a.path = p.path!;
-        if (p.loading && a.naval) {
-          a.pricedRouteTiles = Math.max(0,a.path.length-1);
-          a.pricedSeaSpeed = VESSELS.find(v=>v.id===a.definitionId)?.speed ?? 70;
-          a.pricedCargoRatio = this.cargoRatio(a.playerId,a.definitionId);
-        }
         a.nextPathIndex = 0;
         a.state = p.state;
         this.remember(this.corridorKey(p, p.goal!), p.path!);
@@ -727,14 +756,10 @@ export class Trade {
       definition: vessel?.id ?? `${AGES[tier].toLowerCase()}-trader`,
     };
   }
-  private cargoRatio(owner:number,definition:string):number {
-    const research=this.progression.states[owner].completed;
-    return LAND_TRADE_CAPACITIES[logisticsTier(research)] / Math.max(1,VESSELS.find(v=>v.id===definition)?.capacity ?? 20);
-  }
   private seaPricing(owner:number) {
     const research=this.progression.states[owner].completed;
     const vessel=VESSELS.filter(v=>v.kind==="trade" && research.includes(v.technologyId)).slice(-1)[0];
-    return {seaSpeed:vessel?.speed ?? 70,referenceCargoRatio:this.cargoRatio(owner,vessel?.id ?? "")};
+    return {seaSpeed:vessel?.speed ?? 70};
   }
   private load(a: TradeActor): boolean {
     const site = this.source(a);
@@ -763,6 +788,9 @@ export class Trade {
     a.valuePerGood = TRADE_RULES.valuePerGood;
     a.shipmentId = this.nextShipment++;
     a.visited = [];
+    a.visitedTiles = [];
+    a.tripStartedTick = this.world.tick;
+    a.tripGold = 0;
     let remaining = a.cargo;
     for (const b of site.buildings) {
       const goods = this.supply.goods.get(b.id) ?? 0,
@@ -924,6 +952,7 @@ export class Trade {
     valuePerGood: number,
     capacity: number,
   ) {
+    this.refreshMarkets();
     if (
       port.playerId !== owner ||
       foreign.playerId === owner ||
@@ -932,6 +961,9 @@ export class Trade {
       !this.permitted(owner, foreign.playerId)
     )
       return null;
+    const quantity = Math.min(capacity, this.receiving.available(TradeReceiving.key(foreign.playerId,foreign.tile),
+      this.world.tick,true,true,this.diplomacy.allied(owner,foreign.playerId)));
+    if (!quantity) return null;
     for (const start of portWaterTiles(this.world.map, port.tile))
       for (const goal of portWaterTiles(this.world.map, foreign.tile)) {
         if (!this.world.waterPaths.connected(start, goal)) continue;
@@ -944,7 +976,7 @@ export class Trade {
           routeTiles: path.length,
           payout: tradePayout({
             naval: true,
-            quantity: capacity,
+            quantity,
             valuePerGood,
             distance: Math.sqrt(
               this.world.map.euclideanDistSquared(port.tile, foreign.tile),
@@ -955,7 +987,7 @@ export class Trade {
             routeTiles: Math.max(0,path.length-1),
             ...this.seaPricing(owner),
           }),
-          quantity: capacity,
+          quantity,
         };
       }
     return null;
@@ -1123,6 +1155,12 @@ export class Trade {
         continue;
       }
       if (a.state === "returning") {
+        const cycleTicks = Math.max(1, this.world.tick - (a.tripStartedTick ?? this.world.tick));
+        const handlingTicks = 40 + a.visited.length * 20;
+        const goldPer1000Ticks = Math.floor((a.tripGold ?? 0) * 1000 / cycleTicks);
+        this.cycleQuotes.set(a.id, { marketId:a.visited[0],sourceId:a.factoryId,quantity:a.loaded,delivered:a.delivered,returned:a.cargo,
+          guaranteedGold:a.tripGold ?? 0,supplyTicks:0,handlingTicks,travelTicks:Math.max(0,cycleTicks-handlingTicks),
+          cycleTicks,goldPer1000Ticks,observedRisk:0,riskAdjustedGoldPer1000Ticks:goldPer1000Ticks });
         if (a.cargo && site) {
           this.supply.goods.set(
             site.source.id,
@@ -1136,13 +1174,14 @@ export class Trade {
         a.waitTicks = 20;
         continue;
       }
-      const quantity = a.cargo,
-        distance = Math.sqrt(map.euclideanDistSquared(a.originTile, b.tile)),
+      const distance = Math.sqrt(map.euclideanDistSquared(a.originTile, b.tile)),
         foreign = b.playerId !== a.playerId,
         allied =
           foreign &&
           a.quoteAllies.includes(b.playerId) &&
           this.diplomacy.allied(a.playerId, b.playerId);
+      const quantity = a.state === "prize" ? a.cargo : this.receiving.take(
+        TradeReceiving.key(b.playerId,b.tile), this.world.tick, a.cargo, a.naval, foreign, allied);
       const gold =
         a.state === "prize"
           ? quantity * a.valuePerGood
@@ -1154,39 +1193,12 @@ export class Trade {
               foreign,
               allied,
               mapWidth: map.width(),
-              routeTiles: a.pricedRouteTiles,
-              seaSpeed: a.pricedSeaSpeed,
-              referenceCargoRatio: a.pricedCargoRatio,
             });
-      if (a.state !== "prize")
-        this.cycleQuotes.set(
-          a.id,
-          tradeCycleQuote({
-            naval: a.naval,
-            stock: a.loaded,
-            capacity: a.capacity,
-            valuePerGood: a.valuePerGood,
-            supplyTicks: 0,
-            legs: [
-              {
-                marketId: b.id,
-                distance,
-                foreign,
-                allied,
-                travelTicks: Math.ceil((a.path.length-1)*FIXED/(a.naval ? a.pricedSeaSpeed ?? 70 : 50)),
-                routeTiles: a.pricedRouteTiles,
-              },
-            ],
-            returnTicks: Math.ceil((a.path.length-1)*FIXED/(a.naval ? a.pricedSeaSpeed ?? 70 : 50)),
-            seaSpeed: a.pricedSeaSpeed,
-            referenceCargoRatio: a.pricedCargoRatio,
-            observedRisk: 0,
-            mapWidth: map.width(),
-          }),
-        );
       a.delivered += quantity;
-      a.cargo = 0;
+      a.cargo -= quantity;
+      a.tripGold = (a.tripGold ?? 0) + gold;
       a.visited.push(b.id);
+      (a.visitedTiles ??= []).push(b.tile);
       player.gold += gold;
       this.deliveredGold[a.playerId] =
         (this.deliveredGold[a.playerId] ?? 0) + gold;
@@ -1194,7 +1206,7 @@ export class Trade {
       a.path = [];
       a.waitTicks = 20;
       if (a.state === "prize") this.retired.add(a.id);
-      else a.state = "returning";
+      else a.state = a.cargo && a.visitedTiles.length < TRADE_RULES.maximumStops ? "outbound" : "returning";
     }
     if (!this.world.domainRoutes) this.stepPlanning(32);
     for (let i = this.actors.length - 1; i >= 0; i--)

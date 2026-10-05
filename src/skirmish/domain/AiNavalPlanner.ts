@@ -1,4 +1,5 @@
 import { portWaterTiles } from "../PortWaterAccess";
+import { coastalPatrol } from "./CoastalPatrol";
 import { stepBombardment, type Bombardment } from "./AiNavalBombardment";
 import { AI_DOCTRINES } from "../content/AiDoctrines";
 import { MAX_SHIPS } from "../Rules";
@@ -32,11 +33,13 @@ interface Assessment {
   anchor?: number;
   members: number[];
   enemyPower: number;
+  localEnemyPower?: number;
   target?: number;
   targetDistance: number;
   futurePower: number;
   recoveringPower?: number;
 }
+interface PatrolGroup {members:number[];anchor:number;route:number[];leg:number;goal?:number;}
 export interface AiFleetMission {
   id: string;
   playerId: number;
@@ -54,6 +57,10 @@ export interface AiFleetMission {
   target?: number;
   patrolGoal?: number;
   patrolLeg?: number;
+  patrolRoute?: number[];
+  patrolAnchor?: number;
+  patrolGroups?:PatrolGroup[];
+  patrolSectors?:string;
   members: number[];
   recovering?: number[];
   purchases: number;
@@ -87,6 +94,11 @@ export function navalReady(ship: Ship, vessel: VesselDefinition): boolean {
  * Landing, escort and coastal bombardment are separate subsequent objectives. */
 export class AiNavalPlanner {
   readonly missions = new Map<number, AiFleetMission>();
+  private readonly lanes = new Map<number, number>();
+  fleetLane(ship: Ship): number | undefined {
+    const m=this.missions.get(ship.playerId);
+    return m && this.economy.assets.owns(`ship:${ship.id}`,m.id) ? this.lanes.get(ship.id) : undefined;
+  }
   private readonly funding = new Map<
     string,
     {
@@ -183,8 +195,13 @@ export class AiNavalPlanner {
   restore(saved?: ReturnType<AiNavalPlanner["checkpoint"]>): void {
     saved ??= {missions:[],funding:[],theaters:[],history:[],cursor:0,serial:0};
     this.missions.clear();
+    this.lanes.clear();
     for (const [id, mission] of structuredClone(saved.missions))
       this.missions.set(id, mission);
+    for(const mission of this.missions.values()) {
+      if(mission.patrolGroups)for(const group of mission.patrolGroups)group.members.forEach((id,i)=>this.lanes.set(id,i%4));
+      else mission.members.forEach((id,i)=>this.lanes.set(id,i%4));
+    }
     this.funding.clear();
     for (const [key, evidence] of structuredClone(saved.funding ?? []))
       this.funding.set(key, evidence);
@@ -235,6 +252,7 @@ export class AiNavalPlanner {
           shipIds: owned,
         });
       this.economy.assets.release(m.id);
+      for(const id of m.members)this.lanes.delete(id);
       this.economy.ledger.release(m.id);
       m.assessment = undefined;
       m.nextAssessment = this.expansion.world.tick + 400;
@@ -354,7 +372,7 @@ export class AiNavalPlanner {
             !value.remainingTicks &&
             (value.health ?? 1) > 0
           ) {
-            const distance = world.map.euclideanDistSquared(
+            let distance = world.map.euclideanDistSquared(
               value.tile,
               player.base,
             );
@@ -410,17 +428,23 @@ export class AiNavalPlanner {
             ship.health > 0 &&
             this.expansion.diplomacy.hostile(player.id, ship.playerId)
           ) {
-            const distance = world.map.euclideanDistSquared(
+            let distance = world.map.euclideanDistSquared(
               world.tileOf(ship),
               a.anchor,
             );
+            for(const group of m.patrolGroups ?? []) {
+              const leader=world.ship(group.members[0]);
+              if(leader)distance=Math.min(distance,world.map.euclideanDistSquared(world.tileOf(ship),world.tileOf(leader)));
+            }
             {
               if (distance <= 32 ** 2) this.expansion.operations.threatened(player.id, ship.playerId, a.anchor);
               a.enemyPower += navalPower(definition, ship.health);
+              if(distance <= 32 ** 2 || (m.state === "execute" && m.target === ship.id))
+                a.localEnemyPower=(a.localEnemyPower ?? 0)+navalPower(definition,ship.health);
               if (
-                distance < a.targetDistance ||
+                (distance <= 32 ** 2 || (m.state === "execute" && m.target === ship.id)) && (distance < a.targetDistance ||
                 (distance === a.targetDistance &&
-                  ship.id < (a.target ?? Infinity))
+                  ship.id < (a.target ?? Infinity)))
               ) {
                 a.target = ship.id;
                 a.targetDistance = distance;
@@ -521,17 +545,8 @@ export class AiNavalPlanner {
         world.waterPaths.component[world.tileOf(target)] !== m.sea)
     ) {
       this.transition(m, "assess", "target legality changed");
-      const held = m.members
-        .map((id) => world.ship(id))
-        .filter(
-          (ship): ship is Ship =>
-            !!ship &&
-            ship.playerId === m.playerId &&
-            navalReady(ship, this.expansion.vessel(ship)) &&
-            world.waterPaths.component[world.tileOf(ship)] === m.sea &&
-            this.economy.assets.owns(`ship:${ship.id}`, m.id),
-        );
-      if (held.length) this.sail(m, held, a.anchor);
+      // Losing an interception target does not require a healthy fleet to dock.
+      // Keep its admitted voyage until the next live assessment resumes patrol.
       return;
     }
     const required = Math.ceil(
@@ -539,6 +554,7 @@ export class AiNavalPlanner {
         100,
     );
     const enough = readyPower > 0 && readyPower >= required;
+    const canIntercept = readyPower > 0 && readyPower >= Math.ceil((a.localEnemyPower ?? a.enemyPower)*1.3);
     const evidence = this.funding.get(`${player.id}:${m.sea}`);
     if (evidence) {
       if (!a.enemyPower) {
@@ -613,7 +629,9 @@ export class AiNavalPlanner {
         shipIds: dropped,
       });
     this.economy.assets.retain(m.id, selected);
+    for(const id of m.members)this.lanes.delete(id);
     m.members = ships.map((s) => s.id);
+    m.members.forEach((id,i)=>this.lanes.set(id,i%4));
     m.recovering = recovering.map((s) => s.id);
     if(enough && !target && ships.length && !recovering.length) {
       const raids: import("./Definitions").TradeActor[] = [];
@@ -634,10 +652,26 @@ export class AiNavalPlanner {
     }
     const gathered = ships.every(
       (s) =>
-        world.map.euclideanDistSquared(world.tileOf(s), a.anchor!) <= 6 ** 2,
+        world.map.euclideanDistSquared(world.tileOf(s), world.tileOf(ships[0])) <= 12 ** 2,
     );
+    if(target && canIntercept && m.patrolGroups?.length) {
+      if (!this.expansion.operations.canTarget(player.id,target.playerId))
+        world.applyCommand({type:"alliance",playerId:player.id,otherId:target.playerId,action:"declare"});
+      const groups=m.patrolGroups.map(group=>({group,ships:group.members.map(id=>world.ship(id)).filter((s):s is Ship=>!!s && ships.some(ready=>ready.id===s.id))}))
+        .filter(group=>group.ships.length)
+        .sort((a,b)=>world.map.euclideanDistSquared(world.tileOf(a.ships[0]),world.tileOf(target))-
+          world.map.euclideanDistSquared(world.tileOf(b.ships[0]),world.tileOf(target)) || a.ships[0].id-b.ships[0].id);
+      const intercept:Ship[]=[];let power=0;
+      const needed=Math.ceil((a.localEnemyPower ?? a.enemyPower)*1.3);
+      for(const group of groups){intercept.push(...group.ships);power+=group.ships.reduce((n,s)=>n+navalPower(this.expansion.vessel(s),s.health),0);if(power>=needed)break;}
+      this.transition(m,"execute","Nearby navies intercept; other coastal sectors retain coverage");
+      this.sail(m,intercept,world.tileOf(target));
+      const engaged=new Set(intercept.map(s=>s.id));
+      this.patrol(m,ships.filter(s=>!engaged.has(s.id)),a.anchor!);
+      return;
+    }
     if (
-      enough &&
+      canIntercept &&
       target &&
       // Assembly is a launch requirement. Path lengths and local interception
       // naturally spread an outbound fleet; they must not send it back to port.
@@ -652,31 +686,59 @@ export class AiNavalPlanner {
       );
       this.sail(m, ships, world.tileOf(target));
     } else {
-      if (enough && !target)
-        this.transition(m, "stage", "holding a stable port defense anchor");
+      if (!target)
+        this.transition(m, "stage", "patrolling friendly coastal waters");
       else if (enough)
         this.transition(m, "stage", "concentrating before interception");
       let goal=a.anchor!;
-      if (enough && !target && !recovering.length) {
-        // The fleet owns movement while staging, so it also owns its local
-        // offshore patrol. Normal ship admission still validates each leg.
-        if (m.patrolGoal !== undefined && ships.some(s=>world.map.euclideanDistSquared(world.tileOf(s),m.patrolGoal!)>3**2)) {
-          this.sail(m,ships,m.patrolGoal); return;
-        }
-        const directions=[[0,1],[1,0],[0,-1],[-1,0]],start=m.patrolLeg ?? 0;
-        m.patrolLeg=(start+1)%4;
-        // Prefer offshore coverage; small bays retain a bounded, shorter leg.
-        patrol: for(const radius of [32,16,8,4]) for(let i=0;i<4;i++){
-          const [dx,dy]=directions[(start+i)%4],x=world.map.x(a.anchor!)+dx*radius,y=world.map.y(a.anchor!)+dy*radius;
-          if(!world.map.isValidCoord(x,y))continue;
-          const tile=world.map.ref(x,y);
-          if(world.waterPaths.walkable(tile) && world.waterPaths.component[tile]===m.sea &&
-             this.expansion.operations.canEnter(player.id,world.owners[tile],tile)){goal=tile;break patrol;}
-        }
-        m.patrolGoal=goal; m.reason="Maintaining an offshore patrol in the gathering port's sea";
+      if(target && canIntercept) goal=world.tileOf(ships[0]);
+      if (!target && ships.length) {
+        this.patrol(m,ships,a.anchor!);return;
       }
       this.sail(m, ships, goal);
     }
+  }
+  private patrol(m:AiFleetMission,ships:Ship[],anchor:number):void {
+    if(!ships.length)return;
+    const {world}=this.expansion;
+    // Membership uses the complete roster so temporary interceptions do not
+    // repartition the navies or reset the other sectors' patrol progress.
+    const roster=[...m.members].sort((a,b)=>a-b),anchors=this.economy.placements.navalAnchors(m.playerId,m.sea);
+    if(!anchors.length)anchors.push(anchor);
+    const sectorKey=anchors.join(","),count=Math.ceil(roster.length/8);
+    if(m.patrolSectors!==sectorKey || !m.patrolGroups || m.patrolGroups.flatMap(g=>g.members).join(",")!==roster.join(",")) {
+      const selected:number[]=[];
+      for(let i=0;i<Math.min(count,anchors.length);i++) {
+        const remaining=anchors.filter(t=>!selected.includes(t));
+        remaining.sort((a,b)=>selected.length ?
+          Math.min(...selected.map(t=>world.map.euclideanDistSquared(b,t)))-Math.min(...selected.map(t=>world.map.euclideanDistSquared(a,t))) || a-b :
+          world.map.euclideanDistSquared(a,anchor)-world.map.euclideanDistSquared(b,anchor) || a-b);
+        selected.push(remaining[0]);
+      }
+      const previous=m.patrolGroups ?? [];
+      m.patrolGroups=Array.from({length:count},(_,i)=>{
+        const members=roster.slice(i*8,i*8+8),station=selected[i%selected.length];
+        const retained=previous.find(g=>g.anchor===station && g.members.join(",")===members.join(","));
+        return retained ?? {members,anchor:station,route:coastalPatrol(world.map,world.waterPaths,world.owners,m.playerId,station),leg:i};
+      });
+      m.patrolSectors=sectorKey;
+    }
+    for(const group of m.patrolGroups)group.members.forEach((id,i)=>this.lanes.set(id,i%4));
+    const available=new Set(ships.map(s=>s.id));
+    for(const group of m.patrolGroups) {
+      const navy=group.members.filter(id=>available.has(id)).map(id=>world.ship(id)!);
+      if(!navy.length)continue;
+      if(group.goal===undefined || navy.every(s=>s.destination===null && world.map.euclideanDistSquared(world.tileOf(s),group.goal!)<=6**2)) {
+        const route=group.route;
+        group.goal=route.length ? route[group.leg%route.length] : group.anchor;
+        group.leg=route.length ? (group.leg+1)%route.length : 0;
+      }
+      m.patrolGoal ??= group.goal;
+      this.sail(m,navy,group.goal,true);
+    }
+    // Retain the first itinerary for older diagnostics and save readers.
+    m.patrolRoute=m.patrolGroups[0].route;m.patrolAnchor=m.patrolGroups[0].anchor;
+    m.patrolGoal=m.patrolGroups[0].goal;
   }
   allowsLocalPursuit(ship:Ship):boolean {
     const m=this.missions.get(ship.playerId);
@@ -684,7 +746,27 @@ export class AiNavalPlanner {
       (m.state==="stage" && m.target===undefined && m.patrolGoal!==undefined)) && m.members.includes(ship.id) &&
       this.economy.assets.owns(`ship:${ship.id}`,m.id);
   }
-  private sail(m: AiFleetMission, ships: Ship[], tile: number): void {
+  private sail(m: AiFleetMission, ships: Ship[], tile: number, patrol=false): void {
+    const { world } = this.expansion;
+    if((patrol || (m.state === "stage" && m.target === undefined && m.patrolGoal !== undefined)) && ships.length > 4) {
+      // Small flotillas share an itinerary but not an arrival cell. Bounded
+      // candidate slots require no pairwise repulsion or collision solver.
+      const slots: number[]=[];
+      for(let radius=0;radius<=6 && slots.length<Math.ceil(ships.length/4);radius+=2)
+        for(let dy=-radius;dy<=radius;dy+=2) for(let dx=-radius;dx<=radius;dx+=2) {
+          if(Math.max(Math.abs(dx),Math.abs(dy))!==radius)continue;
+          const x=world.map.x(tile)+dx,y=world.map.y(tile)+dy;
+          if(!world.map.isValidCoord(x,y))continue;
+          const candidate=world.map.ref(x,y);
+          if(world.waterPaths.walkable(candidate) && world.waterPaths.component[candidate]===m.sea &&
+            this.expansion.operations.canEnter(m.playerId,world.owners[candidate],candidate)) slots.push(candidate);
+        }
+      for(let i=0;i<ships.length;i+=4) this.sailGroup(m,ships.slice(i,i+4),slots[Math.floor(i/4)] ?? tile);
+      return;
+    }
+    this.sailGroup(m,ships,tile);
+  }
+  private sailGroup(m: AiFleetMission, ships: Ship[], tile: number): void {
     const { world } = this.expansion;
     if (
       ships.every(

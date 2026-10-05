@@ -80,7 +80,7 @@ export type Command =
     }
   | { type: "reset-production-priorities"; playerId: number }
   | { type: "trade-pause"; playerId: number; naval: boolean; paused: boolean }
-  | { type: "trade-block"; playerId: number; otherId: number; blocked: boolean }
+  | { type: "trade-block"; playerId: number; otherId: number; blocked: boolean; naval?: boolean }
   | {
       type: "refit";
       playerId: number;

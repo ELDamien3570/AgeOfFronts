@@ -83,13 +83,27 @@ describe("trade controls presentation", () => {
       playerId: 1,
       otherId: 2,
       blocked: true,
+      naval: false,
     });
-    expect(game.expansion!.trade.controls[1].blocked).toEqual([2]);
+    expect(game.expansion!.trade.controls[1].landBlocked).toEqual([2]);
+    expect(game.expansion!.trade.controls[1].seaBlocked).toEqual([]);
     expect(button('[data-trade-faction="2"]').textContent).toContain("Resume");
     button('[data-trade-faction="2"]').click();
     update();
-    expect(game.expansion!.trade.controls[1].blocked).toEqual([]);
+    expect(game.expansion!.trade.controls[1].landBlocked).toEqual([]);
     view.inspectPlayer(1);
     expect(button("[data-trade-faction]")).toBeNull();
+  });
+  it("keeps land and sea preferences separate and disables both during war", () => {
+    const {game,view,button,update}=fixture();view.inspectPlayer(2);
+    button('[data-trade-partner-mode="sea"]').click();update();
+    expect(game.expansion!.trade.controls[1].seaBlocked).toEqual([2]);
+    expect(game.expansion!.trade.controls[1].landBlocked).toEqual([]);
+    expect(game.applyCommand({type:"alliance",playerId:1,otherId:2,action:"declare"})).toBeNull();update();
+    expect(button('[data-trade-partner-mode="sea"]').disabled).toBe(true);
+    expect(button('[data-trade-partner-mode="land"]').disabled).toBe(true);
+    expect(button('[data-trade-partner-mode="land"]').textContent).toContain("Unavailable during war");
+    expect(game.expansion!.trade.controls[1].seaBlocked).toEqual([2]);
+    expect(game.expansion!.trade.permitted(1,2,false)).toBe(false);
   });
 });

@@ -35,7 +35,16 @@ export class AiOperations {
   private territorialRevision=0;
   territoryChanged(oldOwner:number,newOwner:number):void{
     this.territorialRevision++;
-    for(const id of [oldOwner,newOwner]){const record=this.records.get(id);if(record){record.sleepKey=undefined;record.territorialRevision=this.territorialRevision;record.nextThink=Math.min(record.nextThink,this.expansion.world.tick);}}
+    const tick=this.expansion.world.tick;
+    for(const id of new Set([oldOwner,newOwner])) {
+      const record=this.records.get(id);if(!record)continue;
+      record.sleepKey=undefined;record.territorialRevision=this.territorialRevision;
+      // Losing territory is urgent. Expansion and neighboring ownership
+      // changes coalesce at a faction-staggered deadline; repeated changes
+      // can bring it forward, but can never postpone an already queued think.
+      const deadline=oldOwner!==newOwner && id===oldOwner ? tick : tick+20+id%20;
+      record.nextThink=Math.min(record.nextThink,deadline);
+    }
   }
   constructor(private readonly expansion: Expansion) {}
   enabled(player: Player | undefined): boolean {
@@ -64,10 +73,13 @@ export class AiOperations {
     if (!world.options?.aiWarPolicy) return;
     if (!this.enabled(world.players.find(p => p.id === victim)) || !diplomacy.hostile(victim, rival)) return;
     const record = this.record(victim), threat = record.threats.find(t => t.rival === rival);
+    const firstAttack=!threat || threat.until<world.tick;
     if (threat) { threat.tile = tile; threat.until = world.tick + 600; }
     else { record.threats.push({ rival, tile, until: world.tick + 600 }); this.revision++; }
     this.permissionRevision++;
-    record.nextThink = Math.min(record.nextThink, world.tick);
+    // Tactical defense reads refreshed threats immediately. Continuing fire
+    // must not turn strategic readiness/target selection into per-tick work.
+    if(firstAttack)record.nextThink = Math.min(record.nextThink, world.tick);
   }
   /** Offensive permission and remembered defensive retaliation are separate. */
   canTarget(playerId: number, rival: number): boolean {
@@ -164,6 +176,10 @@ export class AiOperations {
       const sleepKey=`${strength}:${player.land}:${this.expansion.progression.states[player.id]?.completed.length}:${this.expansion.progression.states[player.id]?.age}:${player.reserves>=1000}:${diplomacyKey}:${r.territorialRevision??0}:${ageKey}`;
       if(r.phase==="peace" && !r.threats.length && r.sleepKey===sleepKey){r.nextThink=tick+200;continue;}
       r.readiness=forceReadiness(this.expansion,player,2);
+      const invasionTroops=r.threats.reduce((sum,t)=>sum+world.squadFacts().aliveByOwner(t.rival)
+        .filter(s=>s.embarkedOn===null && world.owners[world.tileOf(s)]===player.id &&
+          world.map.euclideanDistSquared(world.tileOf(s),t.tile)<=16**2).reduce((n,s)=>n+s.troops,0),0);
+      const defending=invasionTroops>Math.max(2000,r.readiness.troops/3);
       if (r.phase === "war") {
         const buildings = target ? conquestBuildings(world.buildingFacts().byOwner(target.id), target.ai).length : Infinity;
         const enemies = target ? world.squadFacts().byOwner(target.id).filter(s => s.troops > 0).length : Infinity;
@@ -184,19 +200,19 @@ export class AiOperations {
         continue;
       }
       if (r.phase === "preparing") {
-        if (tick - r.since >= AI_DOCTRINES[profile.id].assemblyTicks+80 && strength >= 2 && r.readiness.reason==="ready" && !r.threats.some(t => t.rival !== r.target) && target && (combatAdvantage(composition(player.id),composition(target.id)) >= 1.1 || (strength >= profile.minimumRaidSquads && combatAdvantage(composition(player.id),composition(target.id)) >= .9)))
+        if (tick - r.since >= AI_DOCTRINES[profile.id].assemblyTicks+80 && strength >= 2 && r.readiness.reason==="ready" && !defending && target && (combatAdvantage(composition(player.id),composition(target.id)) >= 1.1 || (strength >= profile.minimumRaidSquads && combatAdvantage(composition(player.id),composition(target.id)) >= .9)))
           this.transition(player, r, "war", r.target);
         else if (tick - r.since >= 1200 || strength < 2) this.transition(player, r, "recovery");
         else r.nextThink = tick + 60;
         continue;
       }
-      if (r.threats.length || strength < 2 || r.readiness.reason!=="ready" || tick < profile.raidAfterTicks) {
+      if (defending || strength < 2 || r.readiness.reason!=="ready" || tick < profile.raidAfterTicks) {
         r.nextThink = tick + 60 + player.id % 20; continue;
       }
       let slice = 0;
       while (r.cursor < world.players.length && this.work < 16 && slice++ < 4) {
         const rival = world.players[r.cursor++]; this.work++;
-        if (rival.id === player.id || rival.kind !== "regular" || rival.eliminated || !diplomacy.hostile(player.id, rival.id) ||
+        if (rival.id === player.id || rival.eliminated || !diplomacy.hostile(player.id, rival.id) ||
           !this.expansion.geography.eligible(player, rival)) continue;
         const commitments = [...this.records.values()].filter(other => other.target === rival.id && ["preparing", "war"].includes(other.phase)).length;
         const advantage = combatAdvantage(composition(player.id), composition(rival.id));
@@ -204,7 +220,8 @@ export class AiOperations {
         // Healthy parity-sized forces still commit; small forces need a clear
         // equipment/strength advantage instead of waiting for eight squads.
         if (advantage < required && !(advantage >= .9 && strength >= profile.minimumRaidSquads)) continue;
-        const score = Math.floor(world.map.euclideanDistSquared(player.base, rival.base) / Math.max(.25,advantage)) + commitments * 4096;
+        const opportunity = rival.kind === "tribe" && advantage>=2 ? 2 : 1;
+        const score = Math.floor(world.map.euclideanDistSquared(player.base, rival.base) / (Math.max(.25,advantage)*opportunity)) + commitments * 4096;
         if (score < r.score || (score === r.score && rival.id < (r.candidate ?? Infinity))) { r.score = score; r.candidate = rival.id; }
       }
       if (r.cursor === world.players.length) {

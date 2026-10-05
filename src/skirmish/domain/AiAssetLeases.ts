@@ -6,6 +6,7 @@ export type AiControlPriority =
   | "patrol"
   | "operation"
   | "defense"
+  | "city-defense"
   | "emergency-defense"
   | "recovery"
   | "modernization"
@@ -15,6 +16,7 @@ const priority: Record<AiControlPriority, number> = {
   patrol: 0,
   operation: 1,
   defense: 2,
+  "city-defense": 2.5,
   "emergency-defense": 3,
   recovery: 4,
   modernization: 5,

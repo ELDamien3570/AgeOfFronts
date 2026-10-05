@@ -1,5 +1,4 @@
 import { TRADE_RULES, WATER_TRADE_PRICING } from "../content/Economy";
-import { FIXED } from "../Protocol";
 export interface SeaPricing {
   routeTiles?: number;
   seaSpeed?: number;
@@ -11,16 +10,6 @@ export function seaIncomeFactor(
 ): number {
   const width = Math.max(1, input.mapWidth ?? 500),
     distance = Math.max(0, input.distance);
-  const route = Math.min(
-    width * 2,
-    Math.max(distance, input.routeTiles ?? distance),
-  );
-  const landRadius = Math.max(
-    TRADE_RULES.minimumLandMarketRadius,
-    (width * TRADE_RULES.landMarketWidthPercent) / 100,
-  );
-  const landCycle = 60 + (2 * landRadius * FIXED) / 50;
-  const seaCycle = 60 + (2 * route * FIXED) / Math.max(1, input.seaSpeed ?? 70);
   const premium =
     (WATER_TRADE_PRICING.shortRatePercent +
       (WATER_TRADE_PRICING.longRatePercent -
@@ -30,13 +19,7 @@ export function seaIncomeFactor(
           distance / ((width * WATER_TRADE_PRICING.longWidthPercent) / 100),
         )) /
     100;
-  const taper = Math.min(
-    1,
-    distance / ((width * WATER_TRADE_PRICING.baseWidthPercent) / 100),
-  );
-  return (
-    (premium * taper * (input.referenceCargoRatio ?? 1) * seaCycle) / landCycle
-  );
+  return premium;
 }
 
 /** The settlement formula is also the planner's payout authority. */
@@ -67,6 +50,8 @@ export function tradePayout(
 }
 
 export interface TradeCycleQuote {
+  marketId?: number;
+  sourceId?: number;
   quantity: number;
   delivered: number;
   returned: number;
@@ -90,6 +75,8 @@ export function tradeCycleQuote(
     supplyTicks: number;
     legs: readonly {
       marketId: number;
+      location?: number;
+      quantity?: number;
       distance: number;
       foreign: boolean;
       allied: boolean;
@@ -108,9 +95,11 @@ export function tradeCycleQuote(
     outwardTicks = 0;
   const visited = new Set<number>();
   for (const leg of input.legs) {
-    if (visited.has(leg.marketId) || (input.naval && !leg.foreign)) continue;
-    visited.add(leg.marketId);
-    const count = left;
+    const location = leg.location ?? leg.marketId;
+    if (visited.has(location) || (input.naval && !leg.foreign)) continue;
+    if (visited.size >= TRADE_RULES.maximumStops) break;
+    visited.add(location);
+    const count = Math.max(0, Math.min(left, leg.quantity ?? left));
     guaranteedGold += tradePayout({
       ...leg,
       naval: input.naval,

@@ -18,6 +18,22 @@ function fixture() {
 }
 
 describe("tribe catch-up progression", () => {
+  it("unlocks at three of four survivors and remains a paid advancement",()=>{
+    const {game,tribe,progression}=fixture();
+    const regular=game.players.filter(p=>p.kind!=="tribe");
+    const more=[{...regular[0],id:20},{...regular[0],id:21}];
+    for(const p of more)progression.add(p.id,"StoneAge");
+    const players=[...game.players,...more];
+    for(const p of regular)progression.states[p.id].age="BronzeAge";
+    expect(tribeAdvanceRejection(tribe,players,progression.states)).not.toBeNull();
+    progression.states[20].age="BronzeAge";
+    expect(tribeAdvanceRejection(tribe,players,progression.states)).toBeNull();
+    progression.states[tribe.id].completed=TECHNOLOGIES.filter(t=>t.age==="StoneAge").map(t=>t.id);
+    tribe.gold=2999;expect(progression.advance(tribe)).toBe("Needs 1 more gold");
+    tribe.gold=3000;expect(progression.advance(tribe)).toBeNull();expect(tribe.gold).toBe(0);
+    more[0].eliminated=true;
+    expect(tribeAdvanceRejection(tribe,players,progression.states)).not.toBeNull();
+  });
   it("the tribe AI starts an ordinary advancement when the gate opens", () => {
     const { game, tribe, progression, state } = fixture();
     tribe.gold = 100_000;
@@ -29,12 +45,12 @@ describe("tribe catch-up progression", () => {
     for (const player of game.players.filter(p => p.kind !== "tribe")) progression.states[player.id].age = "BronzeAge";
     game.tick += 60;
     game.expansion!.beforeStep();
-    expect(state.advancement).toMatchObject({ target: "BronzeAge", remainingTicks: 2000 });
+    expect(state.advancement).toMatchObject({ target: "BronzeAge", remainingTicks: 700 });
   });
-  it("requires every surviving regular faction and ignores eliminated factions", () => {
+  it("rounds the 75% threshold up and ignores eliminated factions", () => {
     const { game, tribe, progression, state } = fixture();
     progression.states[1].age = "BronzeAge";
-    expect(tribeAdvanceRejection(tribe, game.players, progression.states)).toContain("Every surviving");
+    expect(tribeAdvanceRejection(tribe, game.players, progression.states)).toContain("75%");
     game.players[1].eliminated = true;
     expect(tribeAdvanceRejection(tribe, game.players, progression.states)).toBeNull();
     state.age = "BronzeAge";
@@ -49,7 +65,7 @@ describe("tribe catch-up progression", () => {
     const { game, tribe, progression, state } = fixture();
     tribe.gold = 100_000;
     const command = { type: "advance-age" as const, playerId: tribe.id };
-    expect(game.applyCommand(command)).toContain("Every surviving");
+    expect(game.applyCommand(command)).toContain("75%");
     for (const player of game.players.filter(p => p.kind !== "tribe")) progression.states[player.id].age = "BronzeAge";
     expect(game.applyCommand(command)).toContain("two current-age trees");
     state.completed = TECHNOLOGIES.filter(t => t.age === "StoneAge" && t.tree !== "naval").map(t => t.id);
@@ -59,8 +75,8 @@ describe("tribe catch-up progression", () => {
     expect(game.applyCommand(command)).toBeNull();
     expect(tribe.gold).toBe(97_000);
     expect(state.age).toBe("StoneAge");
-    expect(state.advancement?.remainingTicks).toBe(2000);
-    for (let i = 0; i < 2000; i++) progression.step(game.players);
+    expect(state.advancement?.remainingTicks).toBe(700);
+    for (let i = 0; i < 700; i++) progression.step(game.players);
     expect(state.age).toBe("BronzeAge");
     const technology = TECHNOLOGIES.find(t => t.age === "BronzeAge" && t.tree === "warfare" && t.slot === 1)!;
     expect(game.applyCommand({ type: "research", playerId: tribe.id, technologyId: technology.id })).toBeNull();
@@ -75,7 +91,7 @@ describe("tribe catch-up progression", () => {
 });
 
 describe("age-up pacing", () => {
-  it("discounts every post-Bronze quote and job at every technology speed", () => {
+  it("preserves gold discounts with 35 to 60 second advancement at every technology speed", () => {
     const original = [{ gold: 3000, ticks: 2000 }, { gold: 75000, ticks: 900 }, { gold: 110000, ticks: 1000 },
       { gold: 160000, ticks: 1100 }, { gold: 230000, ticks: 1200 }, { gold: 330000, ticks: 1300 }];
     for (const speed of [1, 2, 3] as const) for (let i = 0; i < ADVANCES.length; i++) {
@@ -88,7 +104,7 @@ describe("age-up pacing", () => {
       player.gold = 1_000_000;
       const terms = researchTerms(ADVANCES[i], speed);
       const factor = i === 0 ? 1 : 0.75;
-      expect(terms).toEqual({ gold: Math.ceil(original[i].gold * factor / speed), ticks: Math.ceil(original[i].ticks * factor / speed) });
+      expect(terms).toEqual({ gold: Math.ceil(original[i].gold * factor / speed), ticks: Math.ceil((700 + i * 100) / speed) });
       expect(progression.advance(player)).toBeNull();
       expect(state.advancement?.totalTicks).toBe(terms.ticks);
       expect(player.gold).toBe(1_000_000 - terms.gold);

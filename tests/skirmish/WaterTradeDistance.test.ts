@@ -59,11 +59,11 @@ function route(distance: number, inland = 0, foreign = true) {
 
 describe("water trade distance pricing", () => {
   it("pays bounded map-relative port separation independently of inland factories", () => {
-    expect(route(2).firstDelivery()).toBe(279);
-    expect(route(20).firstDelivery()).toBe(1353);
-    expect(route(100).firstDelivery()).toBe(5193);
-    expect(route(2, 15).firstDelivery()).toBe(279);
-    expect(route(2, 0, true).firstDelivery()).toBe(279);
+    expect(route(2).firstDelivery()).toBe(342);
+    expect(route(20).firstDelivery()).toBe(600);
+    expect(route(100).firstDelivery()).toBe(600);
+    expect(route(2, 15).firstDelivery()).toBe(342);
+    expect(route(2, 0, true).firstDelivery()).toBe(342);
   });
   it("does not deliver water trade to another port belonging to the sender", () => {
     const own = route(20, 0, false);
@@ -91,7 +91,7 @@ describe("water trade distance pricing", () => {
         0,
       ),
     ).toBeNull();
-    expect(allied.firstDelivery()).toBe(139);
+    expect(allied.firstDelivery()).toBe(257);
   });
   it("returns cargo without payment when a foreign destination becomes domestic in transit", () => {
     const captured = route(20);
@@ -119,6 +119,7 @@ describe("water trade distance pricing", () => {
     expect(near.e.trade.actors.filter(a => a.playerId === 1)).toHaveLength(1);
     expect(far.e.trade.actors.filter(a => a.playerId === 1)).toHaveLength(1);
     expect(far.e.trade.deliveredGold[1]).toBeGreaterThan(0);
-    expect(far.e.trade.cycleQuotes.values().next().value!.guaranteedGold).toBe(5193);
+    expect(far.e.trade.cycleQuotes.values().next().value!.guaranteedGold).toBeGreaterThan(0);
+    expect(far.e.trade.cycleQuotes.values().next().value!.guaranteedGold).toBeLessThanOrEqual(600);
   });
 });

@@ -3,6 +3,7 @@ import { BUILDING_RULES } from "../Rules";
 import { MAX_ARMOUR, PROMOTION_ATTACK, XP_THRESHOLDS } from "../domain/Combat";
 import { RESOURCES } from "../domain/Definitions";
 import { DEPOSIT_RULES } from "../domain/DepositGeneration";
+import { TRIBE_ADVANCE_PERCENT } from "../domain/TribeDevelopment";
 import { RECRUITMENT_SECONDS } from "../domain/Recruitment";
 import { PRODUCTION_RECIPES } from "../domain/Supply";
 import { TERRITORY_ABSORPTION } from "../domain/TerritoryAbsorption";
@@ -10,6 +11,8 @@ import { AI_PERSONALITIES } from "./AiPersonalities";
 import { COASTAL_TERRITORY_RULES } from "./CoastalTerritory";
 import { ARMY_CAPS } from "./Armies";
 import { GUN_NEST_ATTACK, TRENCH_COVER } from "./Defences";
+import { missileDefenseRange, MISSILE_DEFENSE_RELOAD_TICKS, MISSILE_DEFENSE_SPEED } from "./MissileDefense";
+import {NUCLEAR_RESERVE_LOSS_PER_CELL,FALLOUT_TROOP_LOSS_PER_CELL} from "../domain/NuclearWasteland";
 import {
   RESERVE_GROWTH,
   STARTING_AGE_TROOPS,
@@ -96,16 +99,17 @@ export const CONTENT_HASH = hash({
     attack: PROMOTION_ATTACK,
     maxArmour: MAX_ARMOUR,
   },
-  combatRevision: 3,
+  combatRevision: 4,
+  nuclearLand:{reserveLossPerCell:NUCLEAR_RESERVE_LOSS_PER_CELL,troopLossPerCell:FALLOUT_TROOP_LOSS_PER_CELL},
   shoreTransportRevision: 1,
   navalAutonomyRevision: 3,
-  aiCombatPolicyRevision: 1,
+  aiCombatPolicyRevision: 2,
   armyCaps: ARMY_CAPS,
-  defences: { gunNest: GUN_NEST_ATTACK, trench: TRENCH_COVER },
+  defences: { gunNest: GUN_NEST_ATTACK, trench: TRENCH_COVER, missile: {ranges:Array.from({length:10},(_,i)=>missileDefenseRange(i+1)),reloadTicks:MISSILE_DEFENSE_RELOAD_TICKS,speed:MISSILE_DEFENSE_SPEED} },
   factions: FACTIONS,
   aiPersonalities: AI_PERSONALITIES,
   squadCaps: AGE_SQUAD_CAPS,
-  tribeCaps: { squads: TRIBE_SQUAD_CAP, squadsPerAge: TRIBE_SQUADS_PER_AGE, traders: TRIBE_TRADER_CAP, tradersPerAge: TRIBE_TRADERS_PER_AGE },
+  tribeCaps: { squads: TRIBE_SQUAD_CAP, squadsPerAge: TRIBE_SQUADS_PER_AGE, traders: TRIBE_TRADER_CAP, tradersPerAge: TRIBE_TRADERS_PER_AGE, advancementPercent: TRIBE_ADVANCE_PERCENT },
   territoryAbsorption: TERRITORY_ABSORPTION,
   coastalTerritory: COASTAL_TERRITORY_RULES,
   recruitment: RECRUITMENT_SECONDS,
@@ -118,6 +122,7 @@ export const CONTENT_HASH = hash({
     tribeDevelopmentRevision: 2,
     waterTrade: WATER_TRADE_PRICING,
     trade: TRADE_RULES,
+    tradeRoutingRevision: 2,
     waterTradeDestinations: "foreign-only",
     militaryInfrastructureRevision: 1,
   },

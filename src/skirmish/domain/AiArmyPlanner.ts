@@ -225,13 +225,14 @@ export class AiArmyPlanner {
     }
     if (!player) return 0;
     const defenseWork = this.invasion.step(player, budget, () => this.release(player!.id));
-    if (this.invasion.active(player.id)) { this.diagnostics.work = defenseWork; return defenseWork; }
+    this.diagnostics.work=defenseWork;
+    if (this.invasion.blocking(player.id) || defenseWork>=budget) return defenseWork;
     let plan = this.objectives.get(player.id);
     const abandoned=armies.armies.find(a=>a.playerId===player!.id && a.id!==plan?.armyId && a.state==="holding" &&
       a.memberIds.every(id=>!this.economy.assets.held(`squad:${id}`)));
     if(abandoned) {
       world.applyCommand({type:"disband-army",playerId:player.id,armyId:abandoned.id});
-      this.diagnostics.work=1;return 1;
+      this.diagnostics.work++;return this.diagnostics.work;
     }
     if (
       plan &&
@@ -239,18 +240,18 @@ export class AiArmyPlanner {
         !armies.capacity(player.id))
     ) {
       this.release(player.id);
-      return 0;
+      return this.diagnostics.work;
     }
     const profile = personalityOf(player),
       doctrine = AI_DOCTRINES[profile.id];
     if (plan && plan.phase === "complete") {
-      if (world.tick < plan.nextThink) return 0;
+      if (world.tick < plan.nextThink) return this.diagnostics.work;
       this.release(player.id);
       plan = undefined;
     }
     if (!plan) {
       if (!armies.capacity(player.id) || world.tick < profile.raidAfterTicks)
-        return 0;
+        return this.diagnostics.work;
       const target = operations.enabled(player)
         ? operations.offensiveTarget(player.id)
         : world.players
@@ -258,7 +259,6 @@ export class AiArmyPlanner {
               (p) =>
                 p.id !== player!.id &&
                 !p.eliminated &&
-                p.kind === "regular" &&
                 world.hostile(player!.id, p.id) &&
                 world.paths.connected(player!.base, p.base),
             )
@@ -269,7 +269,7 @@ export class AiArmyPlanner {
                 a.id - b.id,
             )[0]?.id;
       const threat = operations.state(player.id)?.threats[0];
-      if (target === undefined && !threat) return 0;
+      if (target === undefined && !threat) return this.diagnostics.work;
       plan = {
         id: `land-army:${player.id}:${++this.serial}`,
         playerId: player.id,
@@ -295,7 +295,7 @@ export class AiArmyPlanner {
       };
       this.objectives.set(player.id, plan);
     }
-    if (world.tick < plan.nextThink) return 0;
+    if (world.tick < plan.nextThink) return this.diagnostics.work;
     if (plan.phase === "select") {
       const own = plan.rosterIds;
       while (plan.cursor < own.length && this.diagnostics.work < budget) {

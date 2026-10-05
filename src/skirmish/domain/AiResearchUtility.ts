@@ -127,6 +127,10 @@ export function researchUtility(
       reasons.push("actual-trade-throughput");
     }
   }
+  if(snapshot.age === "Modern" && ["airstrip","missile-silo","mirv-launcher"].some(type=>
+    buildingTechnology(type as Parameters<typeof buildingTechnology>[0],snapshot.age)===technology.id)) {
+    benefit+=8000;reasons.push("late-game-capability");
+  }
   if (
     snapshot.threatTroops > 0 &&
     technology.tree === "warfare" &&

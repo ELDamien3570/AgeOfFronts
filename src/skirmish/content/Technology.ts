@@ -21,12 +21,12 @@ export const STARTING_TECHNOLOGIES = [
   technologyAt("StoneAge", "economic", 1).id,
 ];
 export const ADVANCES = [
-  { gold: 3_000, ticks: 2000 },
-  { gold: 56_250, ticks: 675 },
-  { gold: 82_500, ticks: 750 },
-  { gold: 120_000, ticks: 825 },
-  { gold: 172_500, ticks: 900 },
-  { gold: 247_500, ticks: 975 },
+  { gold: 3_000, ticks: 700 },
+  { gold: 56_250, ticks: 800 },
+  { gold: 82_500, ticks: 900 },
+  { gold: 120_000, ticks: 1000 },
+  { gold: 172_500, ticks: 1100 },
+  { gold: 247_500, ticks: 1200 },
 ] as const;
 export function treeWorkload(age: Age, tree: Tree): number {
   return TECHNOLOGIES.filter((t) => t.age === age && t.tree === tree).length;

@@ -43,6 +43,7 @@ import {
 } from "./GroundBake";
 import { GroundLayer, type GroundStyle } from "./GroundLayer";
 import { ImpactPresentation } from "./ImpactPresentation";
+import { NuclearWastelandView } from "./NuclearWastelandView";
 import {
   buildingSymbol,
   shipSpriteSize,
@@ -84,6 +85,7 @@ export class Renderer {
   private readonly trenches = new WallPresentation("trench");
   private readonly promotionArtwork = new PromotionArtwork();
   private readonly impacts = new ImpactPresentation();
+  private wastelandView?: NuclearWastelandView;
   private readonly combatEffects = new CombatEffectsView();
   private combatMarkers: TargetMarker[] = [];
   private legacyArtwork?: UnitArtwork;
@@ -995,6 +997,7 @@ export class Renderer {
       this.width,
       this.height,
     );
+    (this.wastelandView??=new NuclearWastelandView()).draw(ctx,this.snapshot?.expansion?.fallout,this.map.width(),this.map.height(),this.scale,this.offsetX,this.offsetY);
     this.territoryLabels!.advance(now);
     this.drawTerritoryNames();
     ctx.strokeStyle = "#b4c6cf26";
@@ -1933,6 +1936,12 @@ export class Renderer {
         impactVisuals = this.impacts.frames(impactTick),
         impactIds = new Set(impactVisuals.map((e) => e.id));
       for (const projectile of snapshot.expansion.projectiles) {
+        const interception = projectile.interception;
+        if (interception && !projectile.impacted && visualTick >= interception.tick && visualTick < interception.impactTick) {
+          const fraction = Math.max(0,Math.min(1,(visualTick-interception.tick)/(interception.impactTick-interception.tick)));
+          const rocket = this.screen((interception.fromX+(interception.toX-interception.fromX)*fraction)/FIXED,(interception.fromY+(interception.toY-interception.fromY)*fraction)/FIXED);
+          if (visibleInViewport(rocket,16,this.width,this.height)) this.combatEffects.projectile(ctx,"rocket",rocket,Math.atan2(interception.toY-interception.fromY,interception.toX-interception.fromX),4,0.5);
+        }
         if (
           (projectile.kind === "mirv" || projectile.damage === 0) &&
           projectile.impacted

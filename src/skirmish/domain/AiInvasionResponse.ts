@@ -6,6 +6,7 @@ import type { AiEconomicDirector } from "./AiEconomicDirector";
 import type { Expansion } from "./Expansion";
 
 interface Response {
+  blocking?: boolean;
   id: string;
   generation: number;
   rival: number;
@@ -42,6 +43,7 @@ export class AiInvasionResponse {
   active(playerId: number) {
     return this.responses.has(playerId);
   }
+  blocking(playerId:number) { return this.responses.get(playerId)?.blocking ?? false; }
   step(player: Player, budget: number, releaseOffense: () => void): number {
     const { world, operations, armies } = this.expansion;
     this.diagnostics.work = 0;
@@ -64,13 +66,20 @@ export class AiInvasionResponse {
       this.release(player.id);
       return 0;
     }
+    const localEnemies=world.squadFacts().aliveByOwner(threat.rival).filter(s=>s.embarkedOn===null &&
+      world.map.euclideanDistSquared(world.tileOf(s),threat.tile)<=16**2);
+    const pressure=localEnemies.reduce((n,s)=>n+s.troops,0);
+    const ready=world.squadFacts().aliveByOwner(player.id).reduce((n,s)=>n+(s.embarkedOn===null && !s.refit ? s.troops : 0),0);
+    const cities=world.buildingFacts().completed(player.id,"city").filter(b=>(b.health ?? 1)>0);
+    const lastCityDanger=cities.length<=1 && cities.some(b=>world.map.euclideanDistSquared(b.tile,threat.tile)<=16**2);
+    const blocking=lastCityDanger || pressure>Math.max(2000,ready/3);
     if (
       !response ||
       response.generation !== world.aiGeneration(player.id) ||
-      response.rival !== threat.rival
+      response.rival !== threat.rival || response.blocking !== blocking
     ) {
       this.release(player.id);
-      releaseOffense();
+      if(blocking)releaseOffense();
       response = {
         id: `invasion:${player.id}`,
         generation: world.aiGeneration(player.id),
@@ -82,6 +91,7 @@ export class AiInvasionResponse {
         members: [],
         nextThink: 0,
         until: threat.until,
+        blocking,
       };
       this.responses.set(player.id, response);
     }
@@ -156,7 +166,8 @@ export class AiInvasionResponse {
     const reserve = lastCity
       ? 0
       : Math.floor((members.length * doctrine.reservePercent) / 200);
-    const chosen = members.slice(0, Math.max(1, members.length - reserve));
+    const required=blocking ? members.length-reserve : Math.min(members.length,Math.max(4,Math.ceil(pressure/1000)*2));
+    const chosen = members.slice(0, Math.max(1, required));
     if (
       this.economy.assets.acquire(
         chosen.map((s) => ({

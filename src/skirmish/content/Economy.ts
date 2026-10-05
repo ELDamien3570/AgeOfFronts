@@ -14,11 +14,31 @@ export const TRADE_RULES = {
   cargoExponent: 0.5,
   valuePerGood: 10,
   selfPercent: 100,
-  alliedPercent: 200,
-  foreignPercent: 400,
+  alliedPercent: 150,
+  foreignPercent: 200,
+  maximumStops: 8,
+  minimumDrop: 10,
+  maximumDrop: 50,
+  alliedAcceptancePercent: 125,
+  foreignAcceptancePercent: 150,
+  seaDropMultiplier: 2,
+  receivingUnitsPerGood: 300,
+  receivingGoodsPerSecondPerBuilding: 1,
   landMarketWidthPercent: 5,
   minimumLandMarketRadius: 12,
 } as const;
+export function marketDropCapacity(stack: number): number {
+  return Math.round(TRADE_RULES.minimumDrop +
+    (TRADE_RULES.maximumDrop - TRADE_RULES.minimumDrop) *
+    (Math.max(1, Math.min(10, stack)) - 1) / 9);
+}
+export function marketAcceptancePercent(foreign: boolean, allied: boolean): number {
+  return foreign ? allied ? TRADE_RULES.alliedAcceptancePercent : TRADE_RULES.foreignAcceptancePercent : 100;
+}
+export function marketDropLimit(stack: number, naval: boolean, foreign: boolean, allied: boolean): number {
+  return Math.round(marketDropCapacity(stack) * marketAcceptancePercent(foreign, allied) / 100 *
+    (naval ? TRADE_RULES.seaDropMultiplier : 1));
+}
 export function stackCargoPercent(level: number): number {
   // Diminishing gains: 1x at one building, 3x at ten; never exponential.
   return Math.round(
@@ -29,10 +49,8 @@ export function stackCargoPercent(level: number): number {
           TRADE_RULES.cargoExponent,
   );
 }
-// Successful long voyages earn 1.5x equivalent land income per cycle.
-// Short crossings taper; capture and fleet costs reduce actual income.
+// Bounded per-good voyage premium; detours and additional stops cannot inflate it.
 export const WATER_TRADE_PRICING = {
-  baseWidthPercent: 1,
   longWidthPercent: 10,
   shortRatePercent: 75,
   longRatePercent: 150,
