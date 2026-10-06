@@ -106,7 +106,7 @@ function colorSelector(vm: LobbyViewModel): string {
 }
 
 function header(): string {
-  return `<a class="skip-link" href="#main-content">Skip to content</a><header class="lobby-header"><a class="lobby-brand" href="/" data-home aria-label="Age of Fronts home"><img class="lobby-brand-mark" src="/images/age-of-fronts-stone-logo.png" alt="" width="96" height="96" /><span>AGE <small>OF</small> FRONTS<span class="brand-caption">b1.4.0</span></span></a><nav aria-label="Main navigation"><a href="/" data-home>Lobbies</a><a href="/skirmish/troops.html">Troop almanac</a><a class="lobby-button outline" href="/skirmish/index.html">Play vs AI ${arrow}</a></nav></header>`;
+  return `<a class="skip-link" href="#main-content">Skip to content</a><header class="lobby-header"><a class="lobby-brand" href="/" data-home aria-label="Age of Fronts home"><img class="lobby-brand-mark" src="/images/age-of-fronts-stone-logo.png" alt="" width="96" height="96" /><span>AGE <small>OF</small> FRONTS<span class="brand-caption">b1.4.1</span></span></a><nav aria-label="Main navigation"><a href="/" data-home>Lobbies</a><a href="/skirmish/troops.html">Troop almanac</a><a class="lobby-button outline" href="/skirmish/index.html">Play vs AI ${arrow}</a></nav></header>`;
 }
 
 function footer(sourceUrl?: string): string {
