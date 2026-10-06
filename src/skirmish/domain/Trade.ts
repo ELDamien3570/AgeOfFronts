@@ -519,32 +519,21 @@ export class Trade {
     while (this.routeFailures.size > 512) this.routeFailures.delete(this.routeFailures.keys().next().value!);
   }
   routeBlocked(task: DomainRouteTask): ((tile: number) => boolean) | undefined {
-    const plan = this.admissions.get(task.admissionId),
-      b = this.building(task.memberId);
+    const plan = this.admissions.get(task.admissionId);
     if (!plan || plan.naval) return undefined;
-    return this.landBlocked(
-      plan.playerId,
-      b?.playerId ?? plan.playerId,
-      plan.state === "prize",
-      this.world.owners?.[plan.start]??plan.playerId,
-    );
+    return this.landBlocked(plan.playerId, this.world.owners?.[plan.start] ?? plan.playerId);
   }
-  private landBlocked(
-    owner: number,
-    destinationOwner: number,
-    prize: boolean,
-    departureOwner=owner,
-  ): (tile: number) => boolean {
+  /** Caravans never head for an enemy's market (see allowedMarket) and may
+   * cross any land whose owner's trade rules admit them. A courier caught in
+   * land that no longer does (war, a blocked or paused partner) may still
+   * cross that land to leave it, toward a market outside it. Walls always
+   * obstruct; enemy units can still seize a loaded courier they catch. */
+  private landBlocked(owner: number, departureOwner = owner): (tile: number) => boolean {
     return (tile) => {
       if (this.fortifications.blocked(tile, owner)) return true;
       const territory = this.world.owners?.[tile] ?? owner;
-      return (
-        !prize &&
-        territory !== 0 &&
-        territory !== owner &&
-        (this.war(owner,territory) ||
-          (territory !== destinationOwner && territory !== departureOwner && !this.diplomacy.allied(owner, territory)))
-      );
+      return territory !== 0 && territory !== owner && territory !== departureOwner &&
+        !this.permitted(owner, territory, false);
     };
   }
   private task(p: Admission): DomainRouteTask {
@@ -783,7 +772,7 @@ export class Trade {
             p.goal,
             p.naval
               ? undefined
-              : this.landBlocked(p.playerId, b.playerId, p.state === "prize",this.world.owners?.[p.start]??p.playerId),
+              : this.landBlocked(p.playerId, this.world.owners?.[p.start] ?? p.playerId),
             4096,
           );
         this.diagnostics.routeRequests++;
@@ -1077,6 +1066,14 @@ export class Trade {
     a.lost += a.cargo;
     a.cargo = 0;
   }
+  private creditDelivery(player: Player, tile: number, gold: number): void {
+    if (gold <= 0) return;
+    player.gold += gold;
+    this.deliveredGold[player.id] = (this.deliveredGold[player.id] ?? 0) + gold;
+    this.receipts.set(`${player.id}:${tile}`, { id: this.nextReceipt++, tick: this.world.tick,
+      playerId: player.id, tile, gold });
+    this.receiptRevision++;
+  }
   step(): void {
     if(this.world.tick%20===0)for(const [key,receipt] of this.receipts)
       if(this.world.tick-receipt.tick>=100){this.receipts.delete(key);this.receiptRevision++;}
@@ -1183,12 +1180,7 @@ export class Trade {
         };
         if (
           !a.naval &&
-          (this.landBlocked(
-            a.playerId,
-            b.playerId,
-            a.state === "prize",
-            a.routeOriginOwner,
-          )(tile) ||
+          (this.landBlocked(a.playerId, a.routeOriginOwner ?? a.playerId)(tile) ||
             !this.fortifications.clear(a, goal, a.playerId))
         ) {
           // Territory can change without a fortification/treaty revision.
@@ -1263,14 +1255,11 @@ export class Trade {
       a.tripGold = (a.tripGold ?? 0) + gold;
       a.visited.push(b.id);
       (a.visitedTiles ??= []).push(b.tile);
-      player.gold += gold;
-      if(gold>0) {
-        this.receipts.set(`${a.playerId}:${b.tile}`,{id:this.nextReceipt++,tick:this.world.tick,
-          playerId:a.playerId,tile:b.tile,gold});
-        this.receiptRevision++;
-      }
-      this.deliveredGold[a.playerId] =
-        (this.deliveredGold[a.playerId] ?? 0) + gold;
+      this.creditDelivery(player, b.tile, gold);
+      // Foreign settlement rewards both participants equally. Prize unloading
+      // is salvage, and a domestic delivery must never pay the same owner twice.
+      const recipient = foreign && a.state !== "prize" ? players.get(b.playerId) : undefined;
+      if (recipient && !recipient.eliminated) this.creditDelivery(recipient, b.tile, gold);
       a.destination = null;
       a.path = [];
       a.waitTicks = 20;

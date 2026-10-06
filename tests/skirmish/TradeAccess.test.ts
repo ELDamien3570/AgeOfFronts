@@ -4,7 +4,6 @@ import {FIXED} from "../../src/skirmish/Protocol";
 import {Skirmish} from "../../src/skirmish/Simulation";
 import {SnapshotEncoder,SnapshotDecoder} from "../../src/skirmish/SnapshotCodec";
 import type {TradeActor} from "../../src/skirmish/domain/Definitions";
-import {TradeReceiving} from "../../src/skirmish/domain/TradeReceiving";
 
 function fixture(){
   const map=new GameMapImpl(180,64,new Uint8Array(180*64).fill(133),180*64);
@@ -39,7 +38,7 @@ describe("overland trade access and bilateral relations",()=>{
     expect(a.loaded).toBe(a.cargo+a.delivered+a.returned+a.lost);
     expect(adjacency).not.toHaveBeenCalled();
   });
-  it("shares bounded market discovery and eventually considers distant markets when nearer ones are full",()=>{
+  it("shares bounded market discovery and eventually considers distant markets",()=>{
     const f=fixture();
     for(let i=0;i<70;i++)f.game.addBuilding({...f.market,id:f.game.allocateId(),tile:f.map.ref(60+i,32)});
     f.step(22);
@@ -52,19 +51,48 @@ describe("overland trade access and bilateral relations",()=>{
     const seen=new Set<number>();
     for(let epoch=0;epoch<20;epoch++){
       f.game.tick=epoch*200+22;
-      for(const b of f.game.buildings.filter(b=>b.type==="city" && b.id!==f.market.id))
-        f.trade.receiving.restore(f.trade.receiving.checkpoint().map(([k,v])=>
-          k===TradeReceiving.key(b.playerId,b.tile)?[k,{...v,units:0,tick:f.game.tick}]:[k,v]));
-      if(query.candidates(a).some(b=>b.id===f.market.id))seen.add(f.market.id);
+      if(query.landCandidates(a).some(b=>b.id===f.market.id))seen.add(f.market.id);
     }
     expect(seen.has(f.market.id)).toBe(true);
   });
-  it("does not route through an unrelated neutral nation",()=>{
-    const f=fixture();for(let y=0;y<64;y++)f.game.owners[f.map.ref(80,y)]=3;
-    f.step(500);
-    expect(f.trade.actors.every(a=>a.loaded===0)).toBe(true);
-    expect(f.expansion.supply.goods.get(f.source.id)).toBe(25);
-    expect(f.trade.deliveredGold[1]??0).toBe(0);
+  it("crosses a neutral nation that admits its trade, but not one that refuses it",()=>{
+    const open=fixture();for(let y=0;y<64;y++)open.game.owners[open.map.ref(80,y)]=3;
+    open.step(22);const a=open.trade.actors[0];
+    expect(a.path.some(t=>open.game.owners[t]===3)).toBe(true);
+    for(let i=0;i<4000 && !a.delivered;i++)open.step();
+    expect(a.delivered).toBeGreaterThan(0);
+    const closed=fixture();for(let y=0;y<64;y++)closed.game.owners[closed.map.ref(80,y)]=3;
+    closed.trade.setBlocked(3,1,true,false);
+    closed.step(500);
+    expect(closed.trade.actors.every(a=>a.loaded===0)).toBe(true);
+    expect(closed.expansion.supply.goods.get(closed.source.id)).toBe(25);
+    expect(closed.trade.deliveredGold[1]??0).toBe(0);
+  });
+  it("walks out of a market's land when its owner declares war, never back into it",()=>{
+    const f=fixture();
+    f.step(22);const a=f.trade.actors[0];
+    for(let i=0;i<4000 && !a.delivered;i++)f.step();
+    expect(f.game.owners[f.game.tileOf(a)]).toBe(2);
+    expect(f.expansion.diplomacy.action(f.game.players[1],f.game.players[0],"declare",f.game.tick)).toBeNull();
+    for(let i=0;i<6000 && a.state!=="loading";i++){
+      f.step();
+      // Once outside the enemy's land the courier never re-enters it.
+      if(f.map.x(f.game.tileOf(a))<145)expect(a.path.slice(a.nextPathIndex).every(t=>f.game.owners[t]!==2)).toBe(true);
+    }
+    expect(a.state).toBe("loading");
+    expect(f.trade.actors.every(c=>c.destination===null || f.game.building(c.destination)?.playerId!==2)).toBe(true);
+  });
+  it("brings a courier home across a neutral border that closed behind it",()=>{
+    const f=fixture();
+    f.step(22);const a=f.trade.actors[0];
+    for(let i=0;i<4000 && !a.delivered;i++)f.step();
+    expect(a.delivered).toBeGreaterThan(0);
+    // An unrelated nation now spans the whole route home. Outbound trade would
+    // refuse this transit; an empty courier heading home must not be stranded.
+    for(let y=0;y<64;y++)f.game.owners[f.map.ref(80,y)]=3;
+    for(let i=0;i<6000 && a.state!=="loading";i++)f.step();
+    expect(a.state).toBe("loading");
+    expect(f.map.x(f.trade.actors[0].originTile)).toBe(8);
   });
   it("allows allied transit then stops at a newly hostile transit border without losing cargo",()=>{
     const f=fixture();for(let y=0;y<64;y++)f.game.owners[f.map.ref(80,y)]=3;

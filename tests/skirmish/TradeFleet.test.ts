@@ -6,6 +6,7 @@ import {
   TRADE_RULES,
 } from "../../src/skirmish/content/Economy";
 import { tradePayout } from "../../src/skirmish/domain/TradeQuote";
+import { TradePayoutPresentation } from "../../src/skirmish/client/TradePayoutPresentation";
 import { commandSchema } from "../../src/skirmish/multiplayer/CommandSchema";
 import { FIXED } from "../../src/skirmish/Protocol";
 import { Skirmish } from "../../src/skirmish/Simulation";
@@ -72,6 +73,43 @@ function fleet(factories = 1, ports = 1, aiWarPolicy = false, deferredPlanning =
 }
 
 describe("bounded civilian trade", () => {
+  it.each([[false,false],[false,true],[true,false],[true,true]])("pays both participants equally and publishes the recipient's income label (naval=%s, allied=%s)",(naval,allied)=>{
+    const {game,trade,step}=fleet(naval?0:1,naval?1:0);
+    if(allied){
+      game.expansion!.diplomacy.action(game.players[0],game.players[1],"offer",0);
+      game.expansion!.diplomacy.action(game.players[1],game.players[0],"accept",0);
+    }
+    step(22);
+    const actor=trade.actors.find(a=>a.playerId===1)!;
+    const market=game.buildings.find(b=>b.playerId===2 && b.type===(naval?"port":"city"))!;
+    const before=game.players.map(p=>p.gold);
+    Object.assign(actor,{state:"outbound",destination:market.id,path:[],nextPathIndex:0,waitTicks:0,
+      x:(game.map.x(market.tile)+.5)*FIXED,y:(game.map.y(market.tile)+.5)*FIXED});
+    step();
+    const income=game.players[0].gold-before[0];
+    expect(income).toBeGreaterThan(0);
+    expect(game.players[1].gold-before[1]).toBe(income);
+    expect(trade.deliveredGold[1]).toBe(income);
+    expect(trade.deliveredGold[2]).toBe(income);
+    const snapshot=new SnapshotDecoder().decode(new SnapshotEncoder().encode(game.snapshot()));
+    const receiverLabels=new TradePayoutPresentation();
+    receiverLabels.update(snapshot.expansion!.tradeReceipts!,2,100);
+    expect(receiverLabels.amount(market.tile,100)).toBe(income);
+    // Visiting the same physical market again cannot repeat either payment.
+    Object.assign(actor,{state:"outbound",destination:market.id,path:[],waitTicks:0});
+    step();
+    expect(game.players[0].gold-before[0]).toBe(income);
+    expect(game.players[1].gold-before[1]).toBe(income);
+  });
+  it("pays domestic deliveries once rather than doubling the owner's income",()=>{
+    const {game,trade,step}=fleet(1,0);step(22);
+    const actor=trade.actors[0],market=game.buildings.find(b=>b.playerId===1 && b.type==="city")!;
+    const before=game.players[0].gold;
+    Object.assign(actor,{destination:market.id,path:[],waitTicks:0});step();
+    expect(game.players[0].gold-before).toBe(actor.tripGold);
+    expect(trade.deliveredGold[1]).toBe(actor.tripGold);
+    expect([...trade.receipts.values()].filter(r=>r.tile===market.tile)).toHaveLength(1);
+  });
   it("borrows land slots when paused and restores the reservation without interrupting sea voyages", () => {
     const {trade,step}=fleet(1,50);
     trade.setPaused(1,false,true);
@@ -137,7 +175,7 @@ describe("bounded civilian trade", () => {
     expect(trade.actors).toHaveLength(1);expect(a.id).toBe(id);
     expect(a.loaded).toBe(25);expect(a.tripSupplyTicks).toBeGreaterThan(0);
   });
-  it("unloads a full stacked ship at one unstacked port without duplicating goods", () => {
+  it("partially unloads a stacked ship once per unstacked port and returns unsold cargo", () => {
     const {game,trade,sources,expansion,step}=fleet(0,1,true);
     for(let i=0;i<9;i++) {
       const b=game.addBuilding({...sources[0],id:game.allocateId()});expansion.supply.goods.set(b.id,1000);
@@ -149,11 +187,11 @@ describe("bounded civilian trade", () => {
       a.state="outbound";a.destination=b.id;a.path=[];a.waitTicks=0;
       a.x=(game.map.x(b.tile)+.5)*FIXED;a.y=40.5*FIXED;step();
     };
-    arrive(first);expect(a.delivered).toBe(75);expect(a.cargo).toBe(0);
+    arrive(first);expect(a.delivered).toBe(30);expect(a.cargo).toBe(45);
     const gold=trade.deliveredGold[1];
-    arrive(first);expect(a.delivered).toBe(75);expect(trade.deliveredGold[1]).toBe(gold);
+    arrive(first);expect(a.delivered).toBe(30);expect(trade.deliveredGold[1]).toBe(gold);
     a.state="returning";a.destination=a.factoryId;a.path=[];a.waitTicks=0;step();
-    expect(a.returned).toBe(0);
+    expect(a.returned).toBe(45);
     expect(a.loaded).toBe(a.delivered+a.returned+a.lost+a.cargo);
   });
   it("finishes an accepted sea leg when war begins, but blocks new enemy voyages", () => {

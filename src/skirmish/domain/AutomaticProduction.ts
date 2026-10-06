@@ -190,6 +190,7 @@ export function automaticProduction(
   }
 
   const targets = new Map<ProductionRecipe, number>();
+  const continuous = new Set<ProductionRecipe>();
   const troopCapacity = automatic.filter(b => ["blacksmith", "armory", "arms-factory"].includes(b.type)).length;
   // Keep several batches per workshop ready for a human recruitment/refit burst.
   // AI demand below replaces these buffers with its exact economic quote.
@@ -236,7 +237,9 @@ export function automaticProduction(
     for (const recipe of defaults)
       if (!targets.has(recipe)) targets.set(recipe, 2);
   }
-  // Explicit payload priorities are still bounded and lowest-priority work.
+  // Explicit payload orders keep running. A common weight balances finished
+  // plus already-paid output equally across the selected payload recipes.
+  // Unselected AI payloads retain their two-item automatic reserve.
   for (const r of automaticRecipes)
     if (
       Object.keys(r.outputs)[0].startsWith("payload:") &&
@@ -245,11 +248,17 @@ export function automaticProduction(
           (priorities[b.type]?.includes(r.id) ?? false) ||
           (context.ai && priorities[b.type] === undefined && compatible(b, r)),
       )
-    )
-      targets.set(r, 2);
+    ) {
+      const selected = automatic.some(
+        (b) => priorities[b.type]?.includes(r.id) && compatible(b, r),
+      );
+      targets.set(r, selected ? 1 : 2);
+      if (selected) continuous.add(r);
+    }
 
   if (context.ai && context.aiDemand) {
     targets.clear();
+    continuous.clear();
     for (const recipe of automaticRecipes) {
       const requested = context.aiDemand.equipment[Object.keys(recipe.outputs)[0]] ?? 0;
       if (requested > 0) targets.set(recipe, requested);
@@ -268,7 +277,7 @@ export function automaticProduction(
   const amount = (r: ProductionRecipe) =>
     (inventory[output(r)] ?? 0) + (allocated[output(r)] ?? 0);
   const deficit = (r: ProductionRecipe, target: number) =>
-    Math.max(0, target - amount(r));
+    continuous.has(r) ? 1 : Math.max(0, target - amount(r));
   const producer = (r: ProductionRecipe) =>
     byCapability.find((b) => idle.has(b.id) && compatible(b, r));
   const affordable = (r: ProductionRecipe) =>

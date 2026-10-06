@@ -4,7 +4,7 @@
     "manual": "Manual priorities",
     "paused": "No priorities",
     "automatic_help": "Priorities apply to every building of a type, including new ones. Automatic choices favor advanced researched equipment. Toggle highlighted patterns to set manual priorities; manual choices stay unchanged when you advance an age.",
-    "balancing_help": "Production balances shared stocks. Factories may refine prerequisite materials; automatic equipment can fall back to an older tier when advanced inputs have no source. Paid batches finish before new priorities take effect.",
+    "balancing_help": "Production balances shared stocks. Selected strategic payloads are produced continuously while supplied, balancing finished and in-progress counts equally across selected payload types. Factories may refine prerequisite materials; automatic equipment can fall back to an older tier when advanced inputs have no source. Paid batches finish before new priorities take effect.",
     "automatic_title": "Clear manual priorities for this building type and follow researched ages again",
     "reset_all": "Reset all to automatic",
     "reset_all_title": "Erase all manual production selections and restore automatic age priorities",

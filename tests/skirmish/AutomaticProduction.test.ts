@@ -400,6 +400,69 @@ describe("automatic paid-batch lifecycle", () => {
 });
 
 describe("persistent building-type priorities", () => {
+  it("keeps selected payloads running beyond two and balances stock plus paid output", () => {
+    const buildings = Array.from({ length: 6 }, (_, i) =>
+      building(i + 1, "arms-factory"),
+    );
+    const overrides = {
+      buildings,
+      inventory: {
+        ...goods, steel: 10000, gunpowder: 10000, oil: 10000,
+        "payload:icbm": 5, "payload:hydrogen": 3, "payload:mirv": 4,
+      },
+      incoming: { "payload:hydrogen": 2, "payload:mirv": 1 },
+      priorities: { "arms-factory": ["make-icbm", "make-hydrogen", "make-mirv"] },
+    };
+    const result = plan(overrides);
+    for (const id of overrides.priorities["arms-factory"])
+      expect([...result.values()].filter(value => value === id)).toHaveLength(2);
+    expect([...plan({ ...overrides, buildings: [...buildings].reverse() })])
+      .toEqual([...result]);
+    expect(plan({ ...overrides, buildings: [buildings[0]],
+      incoming: { "payload:icbm": 4, "payload:hydrogen": 2, "payload:mirv": 0 },
+    }).get(1)).toBe("make-mirv");
+  });
+  it("keeps automatic AI payloads bounded and skips unaffordable continuous orders", () => {
+    expect(plan({
+      buildings: [building(1, "arms-factory")], ai: true,
+      inventory: { ...goods, [equipmentItem("Modern")]: 12,
+        "payload:icbm": 2, "payload:hydrogen": 2, "payload:mirv": 2 },
+    }).size).toBe(0);
+    const result = plan({
+      buildings: [building(1, "arms-factory"), building(2, "arms-factory")],
+      priorities: { "arms-factory": ["make-icbm", "make-mirv"] },
+      inventory: { steel: 200, gunpowder: 150, oil: 100,
+        "payload:icbm": 10, "payload:mirv": 0 },
+    });
+    expect([...result.values()]).toEqual(["make-icbm"]);
+  });
+  it("repeats a faction payload order until inputs run out and finishes paid work when deselected", () => {
+    const { e, p, stock, add, step } = setup();
+    const b = add("arms-factory");
+    stock["payload:icbm"] = 2;
+    Object.assign(stock, { steel: 400, gunpowder: 300, oil: 200 });
+    expect(e.supply.setPriorities(p, [b], "arms-factory", ["make-icbm"])).toBeNull();
+    step(20);
+    expect(e.supply.jobs[b.id]?.recipeId).toBe("make-icbm");
+    const firstTicks = e.supply.jobs[b.id]!.totalTicks;
+    for (let t = 21; t <= 20 + firstTicks + 20; t++) step(t);
+    expect(stock["payload:icbm"]).toBe(3);
+    expect(e.supply.jobs[b.id]?.recipeId).toBe("make-icbm");
+    expect(stock.steel).toBe(0);
+    expect(stock.gunpowder).toBe(0);
+    expect(stock.oil).toBe(0);
+    for (let t = 21 + firstTicks + 20; t <= 20 + firstTicks * 2 + 60; t++) step(t);
+    expect(stock["payload:icbm"]).toBe(4);
+    expect(e.supply.jobs[b.id]).toBeUndefined();
+    Object.assign(stock, { steel: 200, gunpowder: 150, oil: 100 });
+    const restart = Math.ceil((20 + firstTicks * 2 + 80) / 20) * 20;
+    step(restart);
+    expect(e.supply.jobs[b.id]?.recipeId).toBe("make-icbm");
+    expect(e.supply.setPriorities(p, [b], "arms-factory", [])).toBeNull();
+    for (let t = restart + 1; t <= restart + firstTicks + 40; t++) step(t);
+    expect(stock["payload:icbm"]).toBe(5);
+    expect(e.supply.jobs[b.id]).toBeUndefined();
+  });
   it("splits a shared troop buffer across manual patterns and keeps vehicle competition bounded", () => {
     const buildings = Array.from({ length: 30 }, (_, i) =>
       building(i, "arms-factory"),

@@ -41,8 +41,9 @@ it("replicates live stack cargo and port receiving bars without changing simulat
     show([port.id]);
     expect(bars()).toHaveLength(2);
     expect(bars()[0].getAttribute("aria-valuenow")).toBe("80");
-    expect(bars()[1].getAttribute("aria-valuenow")).toBe("20");
-    expect(root.querySelector("#selection-stats")!.textContent).toContain("Unlimited");
+    expect(bars()[1].getAttribute("aria-valuenow")).toBe("10");
+    expect(bars()[1].getAttribute("aria-valuemax")).toBe("50");
+    expect(root.querySelector("#selection-stats")!.textContent).toContain("26 allied · 30 foreign");
     e.supply.goods.set(port.id,12);
     e.trade.receiving.take(TradeReceiving.key(1,port.tile),game.tick,10,false,false,false);
     snapshot=decoder.decode(encoder.encode(game.snapshot()));
@@ -52,7 +53,7 @@ it("replicates live stack cargo and port receiving bars without changing simulat
     expect(root.querySelector("#selection-trade-meters")!.textContent).toContain("12 / 1,000");
     show([city.id]);
     expect(bars()).toHaveLength(1);
-    expect(bars()[0].getAttribute("aria-valuenow")).toBe("20");
+    expect(bars()[0].getAttribute("aria-valuenow")).toBe("10");
     e.trade.receiving.take(TradeReceiving.key(1,city.tile),game.tick,10,false,false,false);
     snapshot=decoder.decode(encoder.encode(game.snapshot()));
     show([city.id]);

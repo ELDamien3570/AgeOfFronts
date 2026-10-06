@@ -1,54 +1,34 @@
-import { marketDropCapacity, marketDropLimit, marketAcceptancePercent, TRADE_RULES } from "../content/Economy";
-import { TICKS_PER_SECOND } from "../Protocol";
+import { marketDropCapacity, marketDropLimit, TRADE_RULES } from "../content/Economy";
 
-interface Budget { stack: number; units: number; tick: number }
-/** Land receiving budget per owner/tile. Sea deliveries bypass this budget;
- * untouched markets need no per-tick work. */
+// Legacy units/tick fields are accepted on restore, but no longer limit intake.
+interface Market { stack: number; units?: number; tick?: number }
+/** Per-visit limits by physical market. The shipment's visitedTiles enforces
+ * one delivery per location until reload; other traders never consume its limit. */
 export class TradeReceiving {
-  private readonly budgets = new Map<string, Budget>();
+  private readonly markets = new Map<string, Market>();
   static key(owner: number, tile: number): string { return `${owner}:${tile}`; }
-  checkpoint(): [string, Budget][] { return structuredClone([...this.budgets]); }
-  restore(saved: [string, Budget][] = []): void {
-    this.budgets.clear();
-    for (const [key, budget] of saved) this.budgets.set(key, structuredClone(budget));
+  checkpoint(): [string, Market][] { return structuredClone([...this.markets]); }
+  restore(saved: [string, Market][] = []): void {
+    this.markets.clear();
+    for (const [key, market] of saved) this.markets.set(key, { stack: market.stack });
   }
-  private maximum(stack: number): number {
-    return marketDropCapacity(stack) * TRADE_RULES.seaDropMultiplier * TRADE_RULES.receivingUnitsPerGood;
-  }
-  private balance(b: Budget, tick: number): number {
-    return Math.min(this.maximum(b.stack), b.units + Math.max(0, tick - b.tick) * b.stack *
-      TRADE_RULES.receivingGoodsPerSecondPerBuilding * TRADE_RULES.receivingUnitsPerGood / TICKS_PER_SECOND);
-  }
-  configure(key: string, stack: number, tick: number): void {
-    stack = Math.max(1, Math.min(10, stack));
-    const b = this.budgets.get(key);
-    if (!b) this.budgets.set(key, { stack, units: this.maximum(stack), tick });
-    else if (b.stack !== stack) this.budgets.set(key,
-      { stack, units: Math.min(this.maximum(stack), this.balance(b, tick)), tick });
+  configure(key: string, stack: number, _tick: number): void {
+    stack = Math.max(1, Math.min(TRADE_RULES.maximumStack, stack));
+    if (this.markets.get(key)?.stack !== stack) this.markets.set(key, { stack });
   }
   retain(keys: ReadonlySet<string>): void {
-    for (const key of this.budgets.keys()) if (!keys.has(key)) this.budgets.delete(key);
+    for (const key of this.markets.keys()) if (!keys.has(key)) this.markets.delete(key);
   }
-  status(key: string, tick: number): { value: number; max: number } | undefined {
-    const b = this.budgets.get(key);
-    return b && { value: this.balance(b, tick) / TRADE_RULES.receivingUnitsPerGood,
-      max: this.maximum(b.stack) / TRADE_RULES.receivingUnitsPerGood };
+  status(key: string, _tick: number): { value: number; max: number } | undefined {
+    const market = this.markets.get(key);
+    return market && { value: marketDropCapacity(market.stack),
+      max: marketDropCapacity(TRADE_RULES.maximumStack) };
   }
-  available(key: string, tick: number, naval: boolean, foreign: boolean, allied: boolean): number {
-    if (naval) return Infinity;
-    const b = this.budgets.get(key);
-    if (!b) return 0;
-    const cost = TRADE_RULES.receivingUnitsPerGood * 100 / marketAcceptancePercent(foreign, allied);
-    return Math.min(marketDropLimit(b.stack, naval, foreign, allied), Math.floor(this.balance(b, tick) / cost));
+  available(key: string, _tick: number, naval: boolean, foreign: boolean, allied: boolean): number {
+    const market = this.markets.get(key);
+    return market ? marketDropLimit(market.stack, naval, foreign, allied) : 0;
   }
   take(key: string, tick: number, cargo: number, naval: boolean, foreign: boolean, allied: boolean): number {
-    if (naval) return Math.max(0, Math.floor(cargo));
-    const b = this.budgets.get(key);
-    if (!b) return 0;
-    const quantity = Math.min(Math.max(0, Math.floor(cargo)), this.available(key, tick, naval, foreign, allied));
-    b.units = this.balance(b, tick) - quantity * TRADE_RULES.receivingUnitsPerGood * 100 /
-      marketAcceptancePercent(foreign, allied);
-    b.tick = tick;
-    return quantity;
+    return Math.min(Math.max(0, Math.floor(cargo)), this.available(key, tick, naval, foreign, allied));
   }
 }

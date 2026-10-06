@@ -14,7 +14,7 @@ import {
 import { buildingTechnology } from "../content/Buildings";
 import { GUN_NEST_ATTACK, TRENCH_COVER } from "../content/Defences";
 import { missileDefenseRange, MISSILE_DEFENSE_RELOAD_TICKS } from "../content/MissileDefense";
-import { cityReserveIncome } from "../content/Economy";
+import { cityReserveIncome, TRADE_RULES } from "../content/Economy";
 import { supplyItemName } from "../content/Equipment";
 import { resourceTechnology } from "../content/Resources";
 import { TECHNOLOGY } from "../content/Technology";
@@ -750,7 +750,7 @@ export class HudViewModel {
         category: "building",
         ...(tradeSite ? { tradeMeters: [
           ...(b.type === "city" ? [] : [{ label: "Cargo stock", value: tradeSite.cargo, max: tradeSite.maxCargo }]),
-          ...(tradeSite.receiving ? [{ label: "Land receiving capacity (base)", ...tradeSite.receiving }] : []),
+          ...(tradeSite.receiving ? [{ label: "Land cargo per trip (base)", ...tradeSite.receiving }] : []),
         ] } : {}),
         playerId: b.playerId,
         count: stack.length,
@@ -796,7 +796,10 @@ export class HudViewModel {
                 stat("Buildings", `${completed}/${stack.length} ready`),
                 ...this.buildingDetails(b),
                 ...(tradeSite && b.type !== "city" ? [stat("Cargo per departure", fmt(tradeSite.shipmentCapacity))] : []),
-                ...(b.type === "port" ? [stat("Sea receiving", "Unlimited")] : []),
+                ...(tradeSite?.receiving ? [stat("Land cargo per trip",
+                  `${tradeSite.receiving.value} home · ${Math.round(tradeSite.receiving.value*TRADE_RULES.alliedAcceptancePercent/100)} allied · ${Math.round(tradeSite.receiving.value*TRADE_RULES.foreignAcceptancePercent/100)} foreign`)] : []),
+                ...(b.type === "port" && tradeSite?.receiving ? [stat("Sea cargo per trip",
+                  `${Math.round(tradeSite.receiving.value*TRADE_RULES.alliedAcceptancePercent/100)*TRADE_RULES.seaDropMultiplier} allied · ${Math.round(tradeSite.receiving.value*TRADE_RULES.foreignAcceptancePercent/100)*TRADE_RULES.seaDropMultiplier} foreign`)] : []),
                 ...(b.type === "missile-defence" ? [
                   stat("Interception radius",`${completed ? missileDefenseRange(completed)/FIXED : 0} cells`),
                   stat("Ready interceptors",`${stack.filter(other=>!other.remainingTicks && state.tick >= (other.nextAttackTick??0)).length}/${completed}`),

@@ -10,7 +10,7 @@ import type { AiEconomicSnapshot } from "./AiEconomicSnapshot";
 import type { AiProductionDemand } from "./AiMilitaryDemand";
 import type { Expansion } from "./Expansion";
 import { extractionPriority, stoneExtractionAllowed } from "./AiExtractionPolicy";
-import { TRADE_RULES, tradeStockPerSecond } from "../content/Economy";
+import { TRADE_RULES, marketDropCapacity } from "../content/Economy";
 import { tradeSupplyLimited } from "./AiTradeOpportunities";
 import { militaryPosture } from "./AiMilitaryPosture";
 import { personalityOf } from "../content/AiPersonalities";
@@ -146,6 +146,10 @@ export class AiPlacementCandidates {
       };
       for(const [item,n] of required)capacity(item,n,new Set());
     }
+    const receivingStacks = new Map<number,number>();
+    for (const b of snapshot.buildings) if (["city","port"].includes(b.type) && (b.health??1)>0)
+      receivingStacks.set(b.tile,(receivingStacks.get(b.tile)??0)+1);
+    const cityCapacity = [...receivingStacks.values()].reduce((n,stack)=>n+marketDropCapacity(stack),0);
     let tested = 0;
     for (let i = 0; i < types.length && tested < 8; i++) {
       const type = types[(start + i) % types.length];
@@ -210,17 +214,12 @@ export class AiPlacementCandidates {
       };
       const landGrowth = growth(false), seaGrowth = growth(true);
       if (type === "factory" && landGrowth) objective = Math.max(objective,3000);
-      // Repeated unsold land cargo is receiving-capacity evidence, not a reason
-      // to keep adding factories. Cities create sale capacity as well as reserves.
-      // Funded receiving capacity counts too; do not queue the same remedy
-      // repeatedly while its construction is still in progress.
-      const cityCapacity = snapshot.buildings.filter(b=>b.type==="city" && (b.health??1)>0).length *
-        TRADE_RULES.receivingGoodsPerSecondPerBuilding;
-      const goodsOutput = snapshot.buildings.filter(b=>b.type==="factory" && !b.remainingTicks)
-        .reduce((n,b)=>n+tradeStockPerSecond(b.age ?? "StoneAge"),0);
+      // Unsold cargo now indicates too few distinct stops per trip, not a
+      // shared receiving rate. Include paid receivers under construction so
+      // the AI cannot order the same capacity remedy every decision.
       if (type === "city" && safeGrowth && count < 12 && productiveLand &&
         productiveLand.quote.returned > 0 && sourceStock(false) >= TRADE_RULES.minimumDrop &&
-        goodsOutput > cityCapacity)
+        productiveLand.quote.quantity > cityCapacity)
         objective = Math.max(objective,3500);
       if (snapshot.isolated && type === "city" && count < 3) objective = Math.max(objective,6000);
       const extraction = ["mine", "oil-well", "oil-rig"].includes(type);

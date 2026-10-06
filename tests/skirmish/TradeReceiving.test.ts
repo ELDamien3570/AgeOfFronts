@@ -7,37 +7,34 @@ import { Skirmish } from "../../src/skirmish/Simulation";
 import { FIXED } from "../../src/skirmish/Protocol";
 import { TECHNOLOGIES } from "../../src/skirmish/content/Technology";
 
-describe("shared market receiving and multi-stop trade", () => {
-  it("scales land drops and leaves sea drops unlimited", () => {
+describe("per-trip market limits and multi-stop trade", () => {
+  it("scales drops by stack and gives sea traders twice the land allowance", () => {
     expect([1,5,10].map(s=>marketDropLimit(s,false,false,false))).toEqual([10,28,50]);
     expect(marketDropLimit(10,false,true,true)).toBe(63);
     expect(marketDropLimit(10,false,true,false)).toBe(75);
-    expect(marketDropLimit(1,true,true,true)).toBe(Infinity);
-    expect(marketDropLimit(10,true,true,false)).toBe(Infinity);
+    expect(marketDropLimit(1,true,true,true)).toBe(26);
+    expect(marketDropLimit(10,true,true,false)).toBe(150);
+    expect([1,5,10].map(s=>marketDropLimit(s,true,false,false))).toEqual([20,56,100]);
   });
-  it("shares land throughput while sea deliveries neither use nor require it", () => {
+  it("does not deplete a market when many traders deliver during the same tick", () => {
     const r = new TradeReceiving(); r.configure("1:10",10,0);
     const initial = r.checkpoint();
-    expect(r.take("1:10",0,450,true,true,false)).toBe(450);
-    expect(r.take("1:10",0,450,true,true,false)).toBe(450);
+    for (let i=0;i<1000;i++) {
+      expect(r.take("1:10",0,450,false,true,false)).toBe(75);
+      expect(r.take("1:10",0,450,false,false,false)).toBe(50);
+      expect(r.take("1:10",0,450,true,true,false)).toBe(Math.min(450,marketDropLimit(10,true,true,false)));
+    }
     expect(r.checkpoint()).toEqual(initial);
-    expect(r.take("1:10",0,450,false,true,false)).toBe(75);
-    expect(r.take("1:10",0,450,false,true,false)).toBe(75);
-    expect(r.take("1:10",0,450,false,false,false)).toBe(0);
-    expect(r.take("1:10",20,450,false,false,false)).toBe(10);
-    expect(r.take("1:10",40,450,false,true,true)).toBe(12);
-    expect(r.take("1:10",60,450,false,true,true)).toBe(13);
+    expect(r.available("1:10",10000,false,true,false)).toBe(75);
     const cold = new TradeReceiving(); cold.restore(r.checkpoint());
-    expect(cold.take("1:10",1000,450,true,true,false)).toBe(r.take("1:10",1000,450,true,true,false));
     expect(cold.checkpoint()).toEqual(r.checkpoint());
   });
-  it("does not grant a fresh burst when a market grows or when its derived index is rebuilt", () => {
-    const r = new TradeReceiving(); r.configure("1:10",1,0);
-    r.take("1:10",0,100,false,true,false);
-    r.take("1:10",0,100,false,true,false);
+  it("changes per-trip limits immediately when the stack changes and ignores obsolete depleted budgets", () => {
+    const r = new TradeReceiving();
+    r.restore([["1:10",{stack:1,units:0,tick:0}]]);
+    expect(r.available("1:10",0,false,false,false)).toBe(10);
     r.configure("1:10",10,0);
-    expect(r.available("1:10",0,false,true,false)).toBe(0);
-    expect(r.available("1:10",20,false,true,false)).toBe(15);
+    expect(r.available("1:10",0,false,false,false)).toBe(50);
     const saved=r.checkpoint(); r.configure("1:10",10,20);
     expect(r.checkpoint()).toEqual(saved);
   });
@@ -86,5 +83,13 @@ describe("shared market receiving and multi-stop trade", () => {
     expect(a.returned).toBe(350);
     expect(a.loaded).toBe(a.delivered+a.returned+a.lost+a.cargo);
     expect(trade.cycleQuotes.get(a.id)?.guaranteedGold).toBe(2000);
+    const trip = a.shipmentId;
+    for(let i=0;i<100 && a.shipmentId===trip;i++){game.tick++;trade.step();}
+    expect(a.shipmentId).toBeGreaterThan(trip);
+    expect(a.visitedTiles).toEqual([]);
+    const income=trade.deliveredGold[1];
+    arrive(first);
+    expect(a.delivered).toBe(50);
+    expect(trade.deliveredGold[1]-income).toBe(1000);
   });
 });

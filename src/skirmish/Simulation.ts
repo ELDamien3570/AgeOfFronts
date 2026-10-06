@@ -351,6 +351,11 @@ export class Skirmish {
    * tree, thousands of trees), and bounded exact search already answers
    * crossings within a few ticks, so it never serves the corridor. */
   private corridorTicks = { land: 0, water: 0, amphibious: 0 };
+  /** Human-commanded route work, which takes the planner's interactive share. */
+  private interactiveRoute(task: { playerId?: number; kind: string; owner?: string }): boolean {
+    return !this.player(task.playerId ?? 0)?.ai && task.playerId !== 0 &&
+      (task.kind !== "domain" || !["trade", "strategy"].includes(task.owner ?? ""));
+  }
   /** Whether a faction's squads may move onto water. */
   amphibious(playerId: number): boolean {
     return !!this.transportVessel(playerId);
@@ -650,9 +655,12 @@ export class Skirmish {
     }
     this.routePlanner = new RoutePlanner(this.paths,this.waterPaths,{
       allowExclusiveRetry: request => request.context.kind !== "domain" || request.context.owner !== "trade",
-      corridorReady: request => this.tick >= (request.water ? this.corridorTicks.water : request.amphibious ? this.corridorTicks.amphibious : this.corridorTicks.land),
-      priority: request => !this.player(request.context.playerId ?? 0)?.ai && request.context.playerId !== 0 &&
-        (request.context.kind !== "domain" || !["trade", "strategy"].includes(request.context.owner)),
+      // Interactive orders and trade use a warmed corridor. Long trade legs
+      // (sea lanes, caravans heading home across a continent) otherwise exceed
+      // the bounded arena, fail as "limited" and strand couriers in backoff.
+      corridorReady: request => (this.interactiveRoute(request.context) || request.context.kind === "domain" && request.context.owner === "trade") &&
+        this.tick >= (request.water ? this.corridorTicks.water : request.amphibious ? this.corridorTicks.amphibious : this.corridorTicks.land),
+      priority: request => this.interactiveRoute(request.context),
       identity:request=>({playerId:request.context.playerId ?? 0,
         caller:request.context.kind === "domain" ? request.context.owner : request.context.kind}),
       prepare:(request,budget,rays)=>{

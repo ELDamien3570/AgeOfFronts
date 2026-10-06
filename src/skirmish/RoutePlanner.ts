@@ -52,9 +52,10 @@ export interface RoutePlannerPorts<T> {
   /** Autonomous callers can decline exclusive arena retries without claiming
    * that a capacity-limited result means geographic impossibility. */
   allowExclusiveRetry?(request: ExactRouteRequest<T>): boolean;
-  /** Whether the HPA* corridor may answer an interactive request. A cold
-   * hierarchy builds crossing trees inside the query, outside any budget; the
-   * owner gates this on a deterministic schedule, never on cache state. */
+  /** Whether the HPA* corridor may answer this request (default: interactive
+   * requests only). A cold hierarchy builds crossing trees inside the query,
+   * outside any budget; owners gate this on a deterministic schedule, never
+   * on cache state. */
   corridorReady?(request: ExactRouteRequest<T>): boolean;
   /** Domain attribution for fair scheduling and bounded cohort diagnostics. */
   identity?(request: ExactRouteRequest<T>): {
@@ -546,10 +547,9 @@ export class RoutePlanner<T> {
             job.search.phase === "search" &&
             !job.search.nodes.size &&
             budget - used >= CORRIDOR_RESERVE &&
-            this.ports.priority?.(job) &&
-            (this.ports.corridorReady?.(job) ?? true)
+            (this.ports.corridorReady?.(job) ?? !!this.ports.priority?.(job))
           ) {
-            // An interactive order first tries the static HPA* corridor, which
+            // An eligible request first tries the static HPA* corridor, which
             // costs a few cluster crossings instead of a tile-level search of
             // the whole map. Any failure resumes the exact search unchanged.
             // It is attempted only with a reserve left, so one corridor query
