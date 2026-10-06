@@ -12,7 +12,7 @@ it("shows Delete warship for an owned side-card ship and routes deletion through
     seed:42, aiCount:1, runAi:false, tribes:false, ruleset:"ages-v1",
   });
   const ship = match.addShip({id:match.allocateId(), playerId:1, kind:"warship", health:1000,
-    x:128, y:128, destination:null, waypoints:[], path:[], nextPathIndex:0, fighting:false, boarding:null});
+    x:128, y:128, destination:null, waypoints:[], path:[], nextPathIndex:0, fighting:false});
   const root = document.createElement("div");
   root.innerHTML = hudMarkup();
   document.body.replaceChildren(root);
@@ -27,7 +27,7 @@ it("shows Delete warship for an owned side-card ship and routes deletion through
   expect(button.hidden).toBe(false);
   expect(button.closest(".selection-heading")).not.toBeNull();
   const other = match.addShip({id:match.allocateId(), playerId:1, kind:"warship", health:1000,
-    x:144, y:128, destination:null, waypoints:[], path:[], nextPathIndex:0, fighting:false, boarding:null});
+    x:144, y:128, destination:null, waypoints:[], path:[], nextPathIndex:0, fighting:false});
   view.update(new HudViewModel(new SkirmishViewModel(match.snapshot(), {
     selected:new Set(), selectedShips:new Set([ship.id, other.id]), selectedBuilding:null,
   })));

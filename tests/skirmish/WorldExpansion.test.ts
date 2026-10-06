@@ -26,7 +26,6 @@ import {
   snapshotTransfers,
 } from "../../src/skirmish/SnapshotCodec";
 import { buildingTicks } from "../../src/skirmish/content/Buildings";
-import { boardingMeeting } from "../../src/skirmish/TacticalRoutes";
 
 const selection = () => ({
   selected: new Set<number>(),
@@ -143,77 +142,6 @@ describe("large-match indexes and routing work", () => {
     queue.drain(10);
     expect(ran).toEqual(["new", "b"]);
   });
-  it("returns the same boarding coast as an exhaustive search, including component filtering and friendly preference", () => {
-    const data = new Uint8Array(80 * 60).fill(133);
-    for (let y = 0; y < 20; y++) data.fill(0, y * 80, (y + 1) * 80);
-    for (let y = 35; y < 40; y++) data.fill(0, y * 80, (y + 1) * 80);
-    const map = new GameMapImpl(80, 60, data, 0),
-      land = new LandPaths(map),
-      water = new WaterPaths(map),
-      coast = new CoastIndex(map, land, water),
-      match = new Skirmish(map, { seed: 42, aiCount: 1, runAi: false });
-    const squads = match.squads.slice(0, 4);
-    squads.forEach((s, i) => {
-      match.updateSquad(s.id, { x: (10 + i * 4 + 0.5) * FIXED });
-      match.updateSquad(s.id, { y: 25.5 * FIXED });
-    });
-    const ship: Ship = {
-      id: 900,
-      playerId: 1,
-      kind: "transport",
-      x: 55.5 * FIXED,
-      y: 10.5 * FIXED,
-      health: 1000,
-      destination: null,
-      path: [],
-      nextPathIndex: 0,
-      waypoints: [],
-      fighting: false,
-      boarding: null,
-    };
-    const tileOf = (s: { x: number; y: number }) =>
-      map.ref(Math.floor(s.x / FIXED), Math.floor(s.y / FIXED));
-    for (const friendly of [false, true]) {
-      match.owners.fill(0);
-      if (friendly) match.owners[map.ref(70, 20)] = 1;
-      let best: {
-          landTile: number;
-          waterTile: number;
-          squadIds: number[];
-        } | null = null,
-        score = Infinity;
-      for (let tile = 0; tile < data.length; tile++) {
-        if (
-          !land.walkable(tile) ||
-          !squads.every((s) => land.connected(tileOf(s), tile))
-        )
-          continue;
-        for (const sea of map.neighbors(tile)) {
-          if (!water.connected(tileOf(ship), sea)) continue;
-          const cost =
-            (match.owners[tile] === 1 ? 0 : 100000) +
-            Math.max(...squads.map((s) => map.manhattanDist(tileOf(s), tile))) *
-              70 +
-            map.manhattanDist(tileOf(ship), sea) * 56;
-          if (cost < score) {
-            score = cost;
-            best = {
-              landTile: tile,
-              waterTile: sea,
-              squadIds: squads.map((s) => s.id),
-            };
-          }
-        }
-      }
-      expect(
-        boardingMeeting(map, land, water, match.owners, ship, squads, coast),
-      ).toEqual(best);
-    }
-    match.updateSquad(squads[0].id, { y: 50.5 * FIXED });
-    expect(
-      boardingMeeting(map, land, water, match.owners, ship, squads, coast),
-    ).toBeNull();
-  });
   it("resolves indexed naval combat like brute-force nearest targeting with simultaneous damage", () => {
     const data = new Uint8Array(100 * 80).fill(133);
     data.fill(0, 0, 100 * 40);
@@ -227,7 +155,7 @@ describe("large-match indexes and routing work", () => {
       match.addShip({
         id: 1000 + i,
         playerId: (i % 2) + 1,
-        kind: i % 5 ? "warship" : "transport",
+        kind: "warship",
         x: (10 + (i % 16) * 2 + 0.5) * FIXED,
         y: (5 + Math.floor(i / 16) * 2 + 0.5) * FIXED,
         health: 1000,
@@ -236,7 +164,6 @@ describe("large-match indexes and routing work", () => {
         nextPathIndex: 0,
         waypoints: [],
         fighting: false,
-        boarding: null,
       });
     const hits = new Map<number, number>();
     for (const ship of match.ships) {
@@ -271,7 +198,7 @@ describe("transferable presentation snapshots", () => {
     match.updateSquad(squad.id, { order: { type: "move", tile: 10, x: 2400, y: 1200 } });
     match.updateSquad(squad.id, { queuedOrders: [
       { type: "attack", targetId: match.squads[match.squads.length - 1].id },
-      { type: "board", tile: 20, shipId: 1000 },
+      { type: "move", tile: 20 },
       { type: "replenish" },
       { type: "hold" },
     ] });

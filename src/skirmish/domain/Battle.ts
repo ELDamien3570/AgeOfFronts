@@ -11,6 +11,7 @@ import {
   attackStrength,
   damageAmount,
   defenceOf,
+  SHIP_DEFENCE,
   effectiveDamageShares,
   scaledAttack,
   type Defence,
@@ -212,7 +213,7 @@ export class Battle {
       const p = this.position({tile});
       this.spatial.query(p.x, p.y, FIXED, this.nearby);
       this.telemetry.trenchCandidates += this.nearby.length;
-      for (const s of this.nearby.filter(s => s.playerId === owner && s.embarkedOn === null &&
+      for (const s of this.nearby.filter(s => s.playerId === owner && s.embarkedOn === null && !s.afloat &&
         this.definition(s).tags.includes("infantry") && this.distance(s,p) <= TRENCH_COVER.radius ** 2)
         .sort((a,b) => a.id-b.id).slice(0,TRENCH_COVER.slots)) this.covered.add(s.id);
     };
@@ -226,6 +227,14 @@ export class Battle {
   }
   cover(s: Squad): number {
     return this.covered.has(s.id) ? TRENCH_COVER.reduction : 0;
+  }
+  /** A squad afloat is a hull: only weapons that engage ships can hit it,
+   * and they meet ship armour rather than the soldiers' own. */
+  private targetTags(s: Squad): readonly string[] {
+    return s.afloat ? SHIP_DEFENCE.tags : this.definition(s).tags;
+  }
+  private targetDefence(s: Squad) {
+    return s.afloat ? SHIP_DEFENCE : defenceOf(this.definition(s), this.cover(s));
   }
   fire(
     source: {
@@ -329,7 +338,7 @@ export class Battle {
     for (const [id, list] of contributions) {
       const target = this.world.squad(id) ?? this.world.ship(id);
       if (!target) continue;
-      const health = "troops" in target ? target.troops : target.health;
+      const health = "troops" in target ? (target.afloat?.hull ?? target.troops) : target.health;
       const applied = Math.min(health, damage.damage(id)),
         shares = effectiveDamageShares(applied, list);
       if (applied === health) {
@@ -396,7 +405,8 @@ export class Battle {
         profile = definition.attack;
       this.world.updateSquad(squad.id, { fighting: false });
       this.world.updateSquad(squad.id, { combatTargetId: null });
-      if (squad.refit) continue;
+      // Transports carry soldiers; they do not fight from the water.
+      if (squad.refit || squad.afloat) continue;
       if (squad.charge?.phase === "committed") {
         const charge = definition.charge!;
         this.spatial.query(
@@ -408,6 +418,7 @@ export class Battle {
         const targets = this.nearby.filter(
           (s) =>
             this.diplomacy.hostile(squad.playerId, s.playerId) &&
+            !s.afloat &&
             this.distance(squad, s) <= (charge.radius + FIXED / 2) ** 2 &&
             this.forts.clear(squad, s, squad.playerId),
         );
@@ -429,7 +440,7 @@ export class Battle {
                   damage: charge.damage,
                   penetration: charge.penetration,
                 },
-                defenceOf(this.definition(target), this.cover(target)),
+                this.targetDefence(target),
                 squad.troops,
                 squad.xp,
               ),
@@ -510,7 +521,7 @@ export class Battle {
       );
       const eligible = (s: Squad) =>
         this.diplomacy.hostile(squad.playerId, s.playerId) &&
-        profile.targets.some((tag) => this.definition(s).tags.includes(tag)) &&
+        profile.targets.some((tag) => this.targetTags(s).includes(tag)) &&
         this.distance(squad, s) <= profile.range ** 2 &&
         this.forts.clear(squad, s, squad.playerId);
       let target: Squad | undefined;
@@ -554,7 +565,7 @@ export class Battle {
       if (profile.channel === "ranged") this.volley(squad, target);
       const hit = damageAmount(
         profile,
-        defenceOf(this.definition(target), this.cover(target)),
+        this.targetDefence(target),
         squad.troops,
         squad.xp,
       );
@@ -590,7 +601,7 @@ export class Battle {
         if (target) {
           const hit = damageAmount(
             GUN_NEST_ATTACK,
-            defenceOf(this.definition(target), this.cover(target)),
+            this.targetDefence(target),
           );
           damage.add(target.id, b.playerId, hit);
           this.contribution(contributions, target.id, b.id, hit, "building");
@@ -799,7 +810,7 @@ export class Battle {
             (s) =>
               this.diplomacy.hostile(s.playerId, p.playerId) &&
               (p.targets ?? GROUND).some((tag) =>
-                ("troops" in s ? this.definition(s).tags : ["ship"]).includes(
+                ("troops" in s ? this.targetTags(s) : SHIP_DEFENCE.tags).includes(
                   tag,
                 ),
               ),
@@ -908,7 +919,7 @@ export class Battle {
               targets: p.targets ?? GROUND,
             },
             "troops" in directHit
-              ? defenceOf(this.definition(directHit), this.cover(directHit))
+              ? this.targetDefence(directHit)
               : {
                   tags: ["ship"],
                   meleeArmour: 1000,
@@ -1030,7 +1041,7 @@ export class Battle {
           budget,
           hitDamage(
             scaled(target),
-            defenceOf(this.definition(target), this.cover(target)),
+            this.targetDefence(target),
           ),
         );
         if (hit <= 0) continue;

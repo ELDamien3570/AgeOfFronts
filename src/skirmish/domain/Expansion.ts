@@ -1,3 +1,4 @@
+import { shoreTransportDefinition } from "../content/ShoreTransport";
 import { buildingGroundBounds } from "../BuildingFootprint";
 import { availableGold, paidCost } from "./Gold";
 import { extractionPriority, stoneExtractionAllowed } from "./AiExtractionPolicy";
@@ -67,7 +68,7 @@ import { unitRefitCost } from "./Refitting";
 import { vesselEffects } from "./ResearchEffects";
 import { Roads } from "./Roads";
 import { Recruitment, RECRUITMENT_SECONDS } from "./Recruitment";
-import type { RecruitmentJob } from "./Definitions";
+import type { RecruitmentJob, VesselDefinition } from "./Definitions";
 import { Supply, costRejection, spend } from "./Supply";
 import { Trade } from "./Trade";
 import { quoteBuildingUpgrades } from "./BuildingUpgrades";
@@ -268,6 +269,13 @@ export class Expansion {
       if (building) return { unit, building };
     }
     return undefined;
+  }
+  /** The researched transport a faction's squads become on water, with its
+   * research effects, or undefined when the faction cannot take to water. */
+  transport(playerId: number): VesselDefinition | undefined {
+    const completed = this.progression.states[playerId]?.completed ?? [],
+      definition: VesselDefinition | undefined = shoreTransportDefinition(completed);
+    return definition && vesselEffects(definition, completed);
   }
   vessel(ship: Ship) {
     const definition = VESSEL.get(ship.definitionId ?? "") ??
@@ -562,7 +570,7 @@ export class Expansion {
         !this.progression.has(player.id, target.technologyId)
       )
         return "Research a military vessel refit first";
-      const eligible=selected.filter((s):s is Ship=>!!s&&s.playerId===player.id&&!s.refit&&!s.fighting&&s.destination===null&&!s.boarding&&!s.shoreTransfer&&s.kind===target.kind&&AGES.indexOf(this.vessel(s).age)<AGES.indexOf(target.age)).sort((a,b)=>a.id-b.id);
+      const eligible=selected.filter((s):s is Ship=>!!s&&s.playerId===player.id&&!s.refit&&!s.fighting&&s.destination===null&&s.kind===target.kind&&AGES.indexOf(this.vessel(s).age)<AGES.indexOf(target.age)).sort((a,b)=>a.id-b.id);
       if(!eligible.length)return "Refit a compatible stationary fleet out of combat";
       const count=affordableRefitCount(vesselRefitCost(target),availableGold(player),this.supply.inventories[player.id],eligible.length);
       if(!count)return costRejection(player,this.supply.inventories[player.id],vesselRefitCost(target))??"No affordable vessel refit";
@@ -573,9 +581,11 @@ export class Expansion {
       return null;
     }
     if (command.type === "naval-attack") {
-      const target =
+      const afloat = world.squad(command.targetId),
+        target =
           world.ship(command.targetId) ??
-          world.building(command.targetId),
+          world.building(command.targetId) ??
+          (afloat?.afloat ? afloat : undefined),
         selected = [...new Set(command.shipIds)].map((id) =>
           world.ship(id),
         );
@@ -603,7 +613,7 @@ export class Expansion {
         );
       if (!target || !this.progression.has(player.id, target.technologyId))
         return "Research the requested refit first";
-      const eligible=selected.filter((s):s is Squad=>!!s&&s.playerId===player.id&&s.embarkedOn===null&&!s.refit&&!s.moved&&!s.fighting&&world.owners[world.tileOf(s)]===player.id&&this.unit(s).line===target.line&&this.unit(s).role===target.role&&AGES.indexOf(this.unit(s).age)<AGES.indexOf(target.age)).sort((a,b)=>a.id-b.id);
+      const eligible=selected.filter((s):s is Squad=>!!s&&s.playerId===player.id&&s.embarkedOn===null&&!s.afloat&&!s.refit&&!s.moved&&!s.fighting&&world.owners[world.tileOf(s)]===player.id&&this.unit(s).line===target.line&&this.unit(s).role===target.role&&AGES.indexOf(this.unit(s).age)<AGES.indexOf(target.age)).sort((a,b)=>a.id-b.id);
       if(!eligible.length)return "Refit a compatible stationary group on owned land, out of combat";
       const count=affordableRefitCount(unitRefitCost(target),availableGold(player),this.supply.inventories[player.id],eligible.length);
       if(!count)return costRejection(player,this.supply.inventories[player.id],unitRefitCost(target))??"No affordable refit";
@@ -1453,7 +1463,7 @@ export class Expansion {
           buildingId: target.id,
         });
     }
-    for (const kind of ["warship", "transport"] as const) {
+    for (const kind of ["warship"] as const) {
       const count = this.world.shipFacts().byKind(player.id, kind).length + force.queuedShips(kind);
       if (
         count >=

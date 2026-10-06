@@ -46,7 +46,7 @@ it("updates affordable fleet and building counts and dispatches the same subset 
   m.expansion!.progression.states[1].completed = TECHNOLOGIES.map(t => t.id);
   const ships = Array.from({length:3}, () => m.addShip({id:m.allocateId(), playerId:1,
     kind:"warship", definitionId:"stoneage-warship", health:1000, x:128, y:128,
-    destination:null, waypoints:[], path:[], nextPathIndex:0, fighting:false, boarding:null}));
+    destination:null, waypoints:[], path:[], nextPathIndex:0, fighting:false}));
   const root = document.createElement("div");
   root.innerHTML = `${empireMarkup()}<main class="battlefield">${hudMarkup()}</main>`;
   document.body.replaceChildren(root);

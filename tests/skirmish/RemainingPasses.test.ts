@@ -98,11 +98,11 @@ describe("remaining gameplay passes", () => {
       );
     },
   );
-  it("clears a permission-stalled AI board order within a bounded interval across restore", () => {
+  it("clears a permission-stalled AI move order within a bounded interval across restore", () => {
     const { game, e, map } = fixture(),
       squad = game.squads.find((s) => s.playerId === 2)!;
     game.updateSquad(squad.id, {
-      order: { type: "board", shipId: 99999, tile: map.ref(30, 30) },
+      order: { type: "move", tile: map.ref(30, 30) },
       movementStatus: { reason: "restricted", since: 0, blockerIds: [] },
     });
     game.tick = 60;
@@ -147,14 +147,26 @@ describe("remaining gameplay passes", () => {
     const ids = game.squads
       .filter((s) => s.playerId === ai.id)
       .map((s) => s.id);
+    const planner = e.economy.military.armyPlanner;
+    expect(planner.acquireCoast(ai, map.ref(20, 20))).toBe(true);
+    const plan = planner.objectives.get(ai.id)!;
     expect(
-      e.economy.military.armyPlanner.adoptBeachhead(
-        ai,
-        ids,
-        map.ref(20, 20),
-        1,
+      e.economy.assets.acquire(
+        ids.map((id) => ({
+          asset: `squad:${id}` as const,
+          playerId: ai.id,
+          generation: plan.generation,
+          controller: plan.id,
+          priority: "operation" as const,
+          createdTick: game.tick,
+          expiresTick: plan.deadline,
+        })),
       ),
     ).toBe(true);
+    expect(
+      game.applyCommand({ type: "create-army", playerId: ai.id, squadIds: ids }),
+    ).toBeNull();
+    plan.armyId = e.armies.armyOf(ids[0])!.id;
     expect(e.armies.armies.filter((a) => a.playerId === ai.id)).toHaveLength(1);
     e.economy.military.release(ai.id);
     expect(e.armies.armies.filter((a) => a.playerId === ai.id)).toHaveLength(0);
@@ -320,7 +332,7 @@ describe("remaining gameplay passes", () => {
       }),
     ).toBeNull();
     for (let i = 0; i < 400; i++) game.step();
-    expect(own.some((s) => s.embarkedOn !== null)).toBe(true);
+    expect(own.some((s) => !!s.afloat)).toBe(true);
     expect(
       own.filter((s) => s.movementStatus?.reason === "restricted"),
     ).toHaveLength(0);

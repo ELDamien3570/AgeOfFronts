@@ -78,7 +78,7 @@ describe("map symbol readability", () => {
     expect(near.hitRadius).toBeGreaterThan(near.underlayRadius);
     expect(squadSymbol(10, 1_000, false).artwork).toBe(false);
   });
-  it("scales warships 2.5x and transports 1.75x at max zoom with proportional hit and view radii", () => {
+  it("scales warships 2.5x and afloat transport sprites 1.75x at max zoom with proportional hit and view radii", () => {
     // Zoom threshold where era artwork appears is scale >= 12
     expect(shipSpriteSize(12, "warship")).toBeCloseTo(28.8);
     expect(shipSpriteSize(12, "transport")).toBeCloseTo(28.8);
@@ -91,15 +91,10 @@ describe("map symbol readability", () => {
 
     // With 4/3 artwork extent
     const warshipSym = shipSymbol(96, true, "warship", true);
-    const transportSym = shipSymbol(96, true, "transport", true);
 
     expect(warshipSym.width).toBeCloseTo((125 * 4) / 3);
     expect(warshipSym.hitRadius).toBeCloseTo(warshipSym.width * 0.38);
     expect(warshipSym.viewRadius).toBeGreaterThan(warshipSym.width / 2);
-
-    expect(transportSym.width).toBeCloseTo((87.5 * 4) / 3);
-    expect(transportSym.hitRadius).toBeCloseTo(transportSym.width * 0.38);
-    expect(transportSym.viewRadius).toBeGreaterThan(transportSym.width / 2);
 
     // Distant without shipArt retains formation marker
     const distant = shipSymbol(8, true, "warship", false);

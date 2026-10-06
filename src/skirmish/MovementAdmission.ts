@@ -62,6 +62,8 @@ export interface MovementAdmissionEvent {
   tile?: number;
 }
 export interface MovementAdmissionPorts {
+  /** The route graph for a faction's squads (amphibious with transports). */
+  paths?(playerId: number): LandPaths;
   prepareStructure?(state: StructureAttackPreparationState, budget: number): number;
   activateStructure?(playerId: number, squads: readonly Squad[], points: Map<number, WorldPoint>, target: NonNullable<Squad["structureTarget"]>): void;
   handoffStructure?(id: number, playerId: number, action: () => void): void;
@@ -125,6 +127,14 @@ export class MovementAdmission {
     }
   }
   private readonly corridors = new Map<number, { path: number[]; kind: Squad["kind"]; revision: string }>();
+  /** An order onto land keeps its formation ashore; squads become afloat
+   * only on the way or when ordered onto water itself. */
+  private destination(formation: FormationPlanningState): void {
+    if (this.map.isLand(formation.center)) formation.landSlots = true;
+  }
+  private pathsOf(playerId: number): LandPaths {
+    return this.ports.paths?.(playerId) ?? this.paths;
+  }
   hasPending(squadId: number): boolean { return this.pendingBySquad.has(squadId); }
   get pendingCount(): number {
     return this.pending.size;
@@ -404,13 +414,14 @@ export class MovementAdmission {
     const id = this.nextId++,
       formation = new FormationPlanning(
         this.map,
-        this.paths,
+        this.pathsOf(playerId),
         tile,
         squads.map((squad) => ({ squad, origin: squad })),
         () => this.ports.squads(),
         Infinity,
         preferred,
       );
+    this.destination(formation.state);
     const admission: Admission = {
       id,
       corridorId,
@@ -540,7 +551,7 @@ export class MovementAdmission {
       // A shared spine is spliced in without search, so check it here.
       if (member.shared) {
         work += member.shared.spine.length;
-        if (!this.paths.routeClear(member.shared.spine, blocked)) {
+        if (!this.pathsOf(admission.playerId).routeClear(member.shared.spine, blocked)) {
           if (member.requested) this.ports.cancel(admission.id, member.id);
           member.requested = false;
           member.shared = undefined;
@@ -548,7 +559,7 @@ export class MovementAdmission {
       }
       if (!member.path) continue;
       work += member.path.length;
-      if (!this.paths.routeClear(member.path, blocked)) {
+      if (!this.pathsOf(admission.playerId).routeClear(member.path, blocked)) {
         member.path = undefined;
         member.cursor = 0;
         dropped = true;
@@ -557,7 +568,7 @@ export class MovementAdmission {
     const corridor = admission.corridorId === undefined ? undefined : this.corridors.get(admission.corridorId);
     if (corridor && corridor.revision === admission.revision) {
       work += corridor.path.length;
-      if (this.paths.routeClear(corridor.path, blocked)) corridor.revision = revision;
+      if (this.pathsOf(admission.playerId).routeClear(corridor.path, blocked)) corridor.revision = revision;
       else this.corridors.delete(admission.corridorId!);
     }
     if (dropped && admission.phase === "connectors") {
@@ -650,7 +661,7 @@ export class MovementAdmission {
             ]);
         intent.formation = new FormationPlanning(
           this.map,
-          this.paths,
+          this.pathsOf(intent.playerId),
           order.tile,
           members,
           () => this.ports.squads(),
@@ -659,11 +670,12 @@ export class MovementAdmission {
           undefined,
           additional,
         ).state;
+        this.destination(intent.formation);
       }
       if (order.type === "move") {
         const formation = new FormationPlanning(
           this.map,
-          this.paths,
+          this.pathsOf(intent.playerId),
           order.tile,
           [],
           () => this.ports.squads(),
@@ -807,13 +819,14 @@ export class MovementAdmission {
         }
         admission.formation = new FormationPlanning(
           this.map,
-          this.paths,
+          this.pathsOf(admission.playerId),
           admission.tile,
           squads.map((squad) => ({ squad, origin: squad })),
           () => this.ports.squads(),
           Infinity,
           preferred,
         ).state;
+        this.destination(admission.formation);
         admission.revision = this.ports.revision(admission.playerId);
         admission.phase = "formation";
         admission.member = 0;
@@ -821,7 +834,7 @@ export class MovementAdmission {
       if (admission.phase === "formation") {
         const formation = new FormationPlanning(
           this.map,
-          this.paths,
+          this.pathsOf(admission.playerId),
           admission.tile,
           [],
           () => this.ports.squads(),
@@ -964,9 +977,10 @@ export class MovementAdmission {
             if ((admission.placementRetries ?? 0) < 3) {
               admission.placementRetries = (admission.placementRetries ?? 0) + 1;
               const preferred = admission.formation.preferred;
-              admission.formation = new FormationPlanning(this.map, this.paths, admission.tile,
+              admission.formation = new FormationPlanning(this.map, this.pathsOf(admission.playerId), admission.tile,
                 admission.members.map(m => { const squad = this.ports.squad(m.id)!; return { squad, origin: squad }; }),
                 () => this.ports.squads(), Infinity, preferred).state;
+              this.destination(admission.formation);
               for (const m of admission.members) { m.path = undefined; m.start = undefined; m.shared = undefined; m.independent = undefined; m.cursor = 0; }
               admission.phase = "formation"; admission.member = 0;
             } else this.finish(admission, tick, "rejected", "Formation destination remains occupied");

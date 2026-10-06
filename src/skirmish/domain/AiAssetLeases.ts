@@ -10,7 +10,6 @@ export type AiControlPriority =
   | "emergency-defense"
   | "recovery"
   | "modernization"
-  | "boarding"
   | "manual";
 const priority: Record<AiControlPriority, number> = {
   patrol: 0,
@@ -20,7 +19,6 @@ const priority: Record<AiControlPriority, number> = {
   "emergency-defense": 3,
   recovery: 4,
   modernization: 5,
-  boarding: 6,
   manual: 7,
 };
 export interface AiAssetLease {

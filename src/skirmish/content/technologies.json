@@ -19,7 +19,7 @@
     "slot": 1,
     "gold": 300,
     "ticks": 400,
-    "description": "Unlocks shore embarkation, permanent transports, and automatic port-to-port trade. Temporary shore transports disappear after landing.",
+    "description": "Lets squads cross water as canoe transports and unlocks automatic port-to-port trade. A transport sinks with every soldier aboard.",
     "prerequisites": [],
     "capabilities": ["stoneage-cargo-canoes"]
   },
@@ -43,7 +43,7 @@
     "slot": 4,
     "gold": 450,
     "ticks": 500,
-    "description": "Improves permanent military transport capacity and military sailing speed; warships reload faster. Trade ships and temporary shore transports are unchanged.",
+    "description": "Improves transport hulls and sailing speed for squads afloat, and military sailing speed; warships reload faster. Trade ships are unchanged.",
     "prerequisites": ["stoneage-cargo-canoes", "stoneage-war-canoes"],
     "capabilities": ["stoneage-coastal-navigation"]
   },
@@ -151,7 +151,7 @@
     "slot": 1,
     "gold": 4000,
     "ticks": 400,
-    "description": "Unlocks Bronze Age ports and transports. Existing ports advance automatically.",
+    "description": "Unlocks Bronze Age ports; squads afloat use sturdier Bronze Age transport hulls. Existing ports advance automatically.",
     "prerequisites": ["stoneage-coastal-navigation"],
     "capabilities": ["bronzeage-planked-hulls"]
   },
@@ -187,7 +187,7 @@
     "slot": 4,
     "gold": 3334,
     "ticks": 500,
-    "description": "Improves permanent military transport capacity and military sailing speed; warships reload faster. Trade ships and temporary shore transports are unchanged.",
+    "description": "Improves transport hulls and sailing speed for squads afloat, and military sailing speed; warships reload faster. Trade ships are unchanged.",
     "prerequisites": ["bronzeage-merchant-sailing", "bronzeage-oared-warships"],
     "capabilities": ["bronzeage-naval-organisation"]
   },
@@ -319,7 +319,7 @@
     "slot": 2,
     "gold": 4000,
     "ticks": 560,
-    "description": "Unlocks Classical Age sea traders and transports, with larger cargo holds and shore transport capacity.",
+    "description": "Unlocks Classical Age sea traders with larger cargo holds; squads afloat use sturdier Classical Age transport hulls.",
     "prerequisites": ["classicalage-shipyards"],
     "capabilities": ["classicalage-transport-fleets"]
   },
@@ -343,7 +343,7 @@
     "slot": 4,
     "gold": 5334,
     "ticks": 700,
-    "description": "Improves permanent military transport capacity and military sailing speed; warships reload faster. Trade ships and temporary shore transports are unchanged.",
+    "description": "Improves transport hulls and sailing speed for squads afloat, and military sailing speed; warships reload faster. Trade ships are unchanged.",
     "prerequisites": [
       "classicalage-transport-fleets",
       "classicalage-galley-warfare"
@@ -472,7 +472,7 @@
     "slot": 2,
     "gold": 6000,
     "ticks": 660,
-    "description": "Unlocks Early Medieval sea traders and transports, with larger cargo holds and shore transport capacity.",
+    "description": "Unlocks Early Medieval sea traders with larger cargo holds; squads afloat use sturdier Early Medieval transport hulls.",
     "prerequisites": ["earlymedieval-framed-hulls"],
     "capabilities": ["earlymedieval-seafaring"]
   },
@@ -496,7 +496,7 @@
     "slot": 4,
     "gold": 8667,
     "ticks": 800,
-    "description": "Improves permanent military transport capacity and military sailing speed; warships reload faster. Trade ships and temporary shore transports are unchanged.",
+    "description": "Improves transport hulls and sailing speed for squads afloat, and military sailing speed; warships reload faster. Trade ships are unchanged.",
     "prerequisites": [
       "earlymedieval-seafaring",
       "earlymedieval-coastal-warships"
@@ -625,7 +625,7 @@
     "slot": 2,
     "gold": 9334,
     "ticks": 800,
-    "description": "Unlocks Late Medieval sea traders and transports, with larger cargo holds and shore transport capacity.",
+    "description": "Unlocks Late Medieval sea traders with larger cargo holds; squads afloat use sturdier Late Medieval transport hulls.",
     "prerequisites": ["latemedieval-sailing-hulls"],
     "capabilities": ["latemedieval-merchant-convoys"]
   },
@@ -649,7 +649,7 @@
     "slot": 4,
     "gold": 13334,
     "ticks": 900,
-    "description": "Improves permanent military transport capacity and military sailing speed; warships reload faster. Trade ships and temporary shore transports are unchanged.",
+    "description": "Improves transport hulls and sailing speed for squads afloat, and military sailing speed; warships reload faster. Trade ships are unchanged.",
     "prerequisites": [
       "latemedieval-merchant-convoys",
       "latemedieval-naval-gunnery"
@@ -778,7 +778,7 @@
     "slot": 2,
     "gold": 13334,
     "ticks": 880,
-    "description": "Unlocks Early Modern sea traders and transports, with larger cargo holds and shore transport capacity.",
+    "description": "Unlocks Early Modern sea traders with larger cargo holds; squads afloat use sturdier Early Modern transport hulls.",
     "prerequisites": ["earlymodern-ocean-navigation"],
     "capabilities": ["earlymodern-ocean-transport"]
   },
@@ -802,7 +802,7 @@
     "slot": 4,
     "gold": 18334,
     "ticks": 1000,
-    "description": "Improves permanent military transport capacity and military sailing speed; warships reload faster. Trade ships and temporary shore transports are unchanged.",
+    "description": "Improves transport hulls and sailing speed for squads afloat, and military sailing speed; warships reload faster. Trade ships are unchanged.",
     "prerequisites": [
       "earlymodern-ocean-transport",
       "earlymodern-ships-of-the-line"
@@ -931,7 +931,7 @@
     "slot": 2,
     "gold": 20000,
     "ticks": 1000,
-    "description": "Unlocks Modern sea traders and transports, with larger cargo holds and shore transport capacity.",
+    "description": "Unlocks Modern sea traders with larger cargo holds; squads afloat use sturdier Modern transport hulls.",
     "prerequisites": ["modern-powered-vessels"],
     "capabilities": ["modern-amphibious-transport"]
   },
@@ -955,7 +955,7 @@
     "slot": 4,
     "gold": 30000,
     "ticks": 1200,
-    "description": "Improves permanent military transport capacity and military sailing speed; warships reload faster. Trade ships and temporary shore transports are unchanged.",
+    "description": "Improves transport hulls and sailing speed for squads afloat, and military sailing speed; warships reload faster. Trade ships are unchanged.",
     "prerequisites": ["modern-amphibious-transport", "modern-modern-warships"],
     "capabilities": ["modern-fleet-operations"]
   },

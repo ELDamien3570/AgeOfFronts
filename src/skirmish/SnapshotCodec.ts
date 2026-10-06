@@ -26,7 +26,6 @@ const BUILDING_TYPES = Object.keys(BUILDING_RULES) as BuildingType[];
 const ORDER_TYPES: Order["type"][] = [
   "hold",
   "replenish",
-  "board",
   "move",
   "attack",
 ];
@@ -60,9 +59,7 @@ export function validateBarrierChanges(packet: SnapshotPacket): void {
 
 function writeOrder(output: Int32Array, at: number, order: Order) {
   output[at] = ORDER_TYPES.indexOf(order.type);
-  if (order.type === "move" || order.type === "board")
-    output[at + 1] = order.tile;
-  if (order.type === "board") output[at + 2] = order.shipId;
+  if (order.type === "move") output[at + 1] = order.tile;
   if (order.type === "attack") output[at + 2] = order.targetId;
   if (order.type === "move" && order.x !== undefined) {
     output[at + 3] = order.x;
@@ -73,8 +70,6 @@ function writeOrder(output: Int32Array, at: number, order: Order) {
 function readOrder(input: Int32Array, at: number): Order {
   const type = ORDER_TYPES[input[at]];
   if (type === "attack") return { type, targetId: input[at + 2] };
-  if (type === "board")
-    return { type, tile: input[at + 1], shipId: input[at + 2] };
   if (type === "move")
     return {
       type,

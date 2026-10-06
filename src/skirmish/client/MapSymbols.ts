@@ -66,7 +66,7 @@ export function squadViewRadius(
 
 export function shipSpriteSize(
   scale: number,
-  kind: ShipType = "warship",
+  kind: ShipType | "transport" = "warship",
 ): number {
   const cap = kind === "warship" ? 125 : 87.5;
   return Math.min(cap, scale * 2.4);

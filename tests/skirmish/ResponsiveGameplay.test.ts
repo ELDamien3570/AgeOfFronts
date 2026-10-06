@@ -68,7 +68,6 @@ function fixture(sea = false) {
       path: [],
       nextPathIndex: 0,
       fighting: false,
-      boarding: null,
       repairState: "patrolling",
       patrolTile: map.ref(x, 40),
     });

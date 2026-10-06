@@ -15,8 +15,7 @@ export function sortieCommand(snapshot: Snapshot, playerId: number, x: number, y
 
 /** Translate selection intent only; the match chooses and admits the landing coast. */
 export function shipMoveCommand(snapshot:Pick<Snapshot,"ships"|"squads">,selected:ReadonlySet<number>,playerId:number,tile:number,water:boolean,append:boolean):Extract<Command,{type:"sail"}>|null {
-  const loaded=new Set(snapshot.squads.filter(s=>s.playerId===playerId&&s.embarkedOn!==null).map(s=>s.embarkedOn));
-  const shipIds=snapshot.ships.filter(s=>selected.has(s.id)&&s.playerId===playerId && (water || (s.kind==="transport"&&loaded.has(s.id)))).map(s=>s.id);
+  const shipIds=water ? snapshot.ships.filter(s=>selected.has(s.id)&&s.playerId===playerId).map(s=>s.id) : [];
   return shipIds.length ? {type:"sail",playerId,shipIds,tile,append} : null;
 }
 

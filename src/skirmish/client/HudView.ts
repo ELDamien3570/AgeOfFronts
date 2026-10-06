@@ -25,10 +25,6 @@ const cavalry = new URL(
   "../../../Art/Soldier Icons/Cavalry/StoneAge/Idle.png",
   import.meta.url,
 ).href;
-const transport = new URL(
-  "../../../Art/Formation Icons/png/transport-ship.png",
-  import.meta.url,
-).href;
 const warship = new URL(
   "../../../Art/Formation Icons/png/warship.png",
   import.meta.url,
@@ -38,7 +34,6 @@ const icons: Partial<Record<HudKind, string>> = {
   infantry,
   archer,
   cavalry,
-  transport,
   warship,
 };
 const numberFormat = new Intl.NumberFormat("en-US", {
@@ -114,7 +109,7 @@ export function hudMarkup(): string {
       </div>
       <div id="selection-mixed" hidden><h2 id="mixed-title"></h2><p class="card-description">Hover for stats. Click to inspect while keeping your army selected.</p><div id="selection-cells" class="selection-cells"></div></div>
       <div class="selection-orders"><strong id="selected"></strong><p id="selected-orders"></p></div>
-      <div id="naval-orders" class="naval-orders" hidden><span id="ship-selection"></span><button id="load">Meet & board</button><button id="unload">Unload at coast</button></div>
+      <div id="naval-orders" class="naval-orders" hidden><span id="ship-selection"></span></div>
       <button id="delete-building" type="button" hidden>Delete building</button>
     </aside>
     <dialog id="delete-building-dialog" class="building-delete-dialog" aria-labelledby="delete-building-title"><button type="button" id="delete-building-close" aria-label="Close deletion confirmation">×</button><h2 id="delete-building-title">Are you sure?</h2><p id="delete-building-message"></p><p>This removes one building. There is no building refund.</p><div><button type="button" id="delete-building-cancel" autofocus>Cancel</button><button type="button" id="delete-building-confirm">Confirm Delete</button></div></dialog>

@@ -18,7 +18,7 @@ import {
 } from "../content/ModernWeapons";
 import { PRODUCTION_RECIPES } from "../content/Production";
 import { RESOURCE_TECHNOLOGIES } from "../content/Resources";
-import { TRANSPORT_CAPACITIES, UNITS, VESSELS } from "../content/Units";
+import { UNITS, VESSELS } from "../content/Units";
 import { attackInterval } from "../domain/Combat";
 import {
   AGE_NAMES,
@@ -109,6 +109,8 @@ export function technologyDetails(technology: Technology): string[] {
       );
       continue;
     }
+    // Transports are the hulls of squads afloat, described below, not recruits.
+    if (vessel.kind === "transport") continue;
     lines.push(
       `${vessel.name}: ${cost(vessel.cost)} · ${RECRUITMENT_SECONDS[vessel.kind]}s recruitment · ${number(vessel.health)} HP · ${number((vessel.speed * TICKS_PER_SECOND) / FIXED)} tiles/s${vessel.capacity ? ` · ${vessel.capacity} squads capacity` : ""}`,
     );
@@ -178,7 +180,7 @@ export function technologyDetails(technology: Technology): string[] {
     )) {
       const upgraded = vesselEffects(vessel, [id]);
       lines.push(
-        `${vessel.kind === "transport" ? "Permanent transport" : "Warship"}: ${number((vessel.speed * TICKS_PER_SECOND) / FIXED)} → ${number((upgraded.speed * TICKS_PER_SECOND) / FIXED)} tiles/s${vessel.capacity ? ` · ${vessel.capacity} → ${upgraded.capacity} squads` : ""}${vessel.attack ? ` · ${number(vessel.attack.reloadTicks / TICKS_PER_SECOND)} → ${number(upgraded.attack!.reloadTicks / TICKS_PER_SECOND)}s reload` : ""}`,
+        `${vessel.kind === "transport" ? "Squads afloat" : "Warship"}: ${number((vessel.speed * TICKS_PER_SECOND) / FIXED)} → ${number((upgraded.speed * TICKS_PER_SECOND) / FIXED)} tiles/s${vessel.kind === "transport" ? ` · hull ${vessel.health} → ${upgraded.health}` : ""}${vessel.attack ? ` · ${number(vessel.attack.reloadTicks / TICKS_PER_SECOND)} → ${number(upgraded.attack!.reloadTicks / TICKS_PER_SECOND)}s reload` : ""}`,
       );
     }
   }
@@ -190,7 +192,7 @@ export function technologyDetails(technology: Technology): string[] {
   );
   if (transport)
     lines.push(
-      `Automatic shore transport: ${TRANSPORT_CAPACITIES[ageIndex]} squads · free embarkation`,
+      `Squads cross water as ${transport.name}: ${transport.health} hull · ${number((transport.speed * TICKS_PER_SECOND) / FIXED)} tiles/s · sinks with all aboard`,
     );
   if (id === "modern-combined-arms") {
     lines.push(`Gun nest: ${weapon(GUN_NEST_ATTACK)}`);

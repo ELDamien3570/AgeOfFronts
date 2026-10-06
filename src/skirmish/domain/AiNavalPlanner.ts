@@ -85,8 +85,6 @@ export function navalReady(ship: Ship, vessel: VesselDefinition): boolean {
     ship.kind === "warship" &&
     ship.health * 5 >= vessel.health * 3 &&
     !ship.refit &&
-    !ship.boarding &&
-    !ship.shoreTransfer &&
     (!ship.repairState || ["idle", "patrolling"].includes(ship.repairState))
   );
 }
@@ -145,7 +143,7 @@ export class AiNavalPlanner {
         if(!b.remainingTicks&&(b.health??1)>0){if(b.playerId===player.id)theater.ownedValue+=Math.min(1000,(this.expansion.supply.goods.get(b.id)??0)*10)+(b.type==="port"?300:100);else if(world.hostile(player.id,b.playerId))theater.ownedValue+=Math.min(500,(this.expansion.supply.goods.get(b.id)??0)*5)+100;}
       }else if(read.value && "destination" in read.value){
         const s=read.value,theater=scan.seas[scan.index],power=navalPower(this.expansion.vessel(s),s.health);
-        if(s.playerId===player.id){if(navalReady(s,this.expansion.vessel(s)))theater.fleetPower+=power;if(s.kind==="transport")theater.cargoValue+=world.squadFacts().cargo(s.id).length*1000;}
+        if(s.playerId===player.id){if(navalReady(s,this.expansion.vessel(s)))theater.fleetPower+=power;}
         else if(world.hostile(player.id,s.playerId))theater.enemyPower+=power;
       }else if(read.value && "category" in read.value && read.value.playerId===player.id){
         const definition=VESSEL.get(read.value.definitionId??"");if(definition)scan.seas[scan.index].futurePower+=navalPower(vesselEffects(definition,this.expansion.progression.states[player.id].completed),definition.health);
@@ -812,8 +810,6 @@ export class AiNavalPlanner {
       ship.kind === "warship" &&
       ship.health > 0 &&
       !ship.refit &&
-      !ship.boarding &&
-      !ship.shoreTransfer &&
       [
         "returning-to-dock",
         "waiting-for-dock",

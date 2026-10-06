@@ -99,7 +99,6 @@ function fixture(water = false) {
       path: [],
       nextPathIndex: 0,
       fighting: false,
-      boarding: null,
       repairState: "patrolling",
     });
   return {
@@ -513,7 +512,7 @@ describe("remaining strategic plans", () => {
     controller.step(8);
     expect(controller.goals.get(f.player.id)?.phase).toBe("complete");
   });
-  it("bombards with real weapon cooldown and rejects a transport as an attacker", () => {
+  it("bombards with real weapon cooldown", () => {
     const f = fixture(true),
       target = f.building(1, "port", 60, 19),
       ship = f.ship(f.player.id, 60, 21);
@@ -530,19 +529,6 @@ describe("remaining strategic plans", () => {
     expect(damaged).toBeLessThan(1000);
     f.game.step();
     expect(f.game.building(target.id)!.health).toBe(damaged);
-    f.game.updateShip(ship.id, {
-      kind: "transport",
-      definitionId: "stoneage-transport",
-      attackTargetId: null,
-    });
-    expect(
-      f.game.applyCommand({
-        type: "naval-attack",
-        playerId: f.player.id,
-        shipIds: [ship.id],
-        targetId: target.id,
-      }),
-    ).toMatch(/warships/);
   });
   it("does not fire through a wall and does not bypass weapon target eligibility", () => {
     const f = fixture(true),

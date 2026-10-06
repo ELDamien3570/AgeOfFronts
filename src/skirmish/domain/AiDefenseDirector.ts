@@ -315,12 +315,11 @@ export class AiDefenseDirector {
             (!s.fighting || assets.owns(`squad:${s.id}`, project.id)) &&
             !s.charge &&
             !s.structureTarget &&
-            s.order.type !== "board" &&
             !this.expansion.armies.armyOf(s.id) &&
             (!assets.held(`squad:${s.id}`) ||
               assets.owns(`squad:${s.id}`, project.id)) &&
             ["frontline", "ranged"].includes(this.expansion.unit(s).role) &&
-            world.paths.connected(world.tileOf(s), project.sites[0].tile),
+            world.squadPaths(player.id).connected(world.tileOf(s), project.sites[0].tile),
         )
         .sort((a, b) => a.id - b.id),
       total = world.squadFacts().aliveByOwner(player.id).filter(

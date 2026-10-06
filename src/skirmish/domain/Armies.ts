@@ -65,8 +65,8 @@ export interface ArmyWorld {
   ): void;
   setArmyAttack(squad: Squad, targetId: number): void;
   setArmyHold(squad: Squad): void;
-  transportArmy(squads: Squad[], tile: number): string | null;
-  preferArmyTransport(squads: Squad[], tile: number): boolean;
+  /** A faction's squad graph: armies of factions with transports cross water. */
+  squadPaths(playerId: number): LandPaths;
 }
 interface ArmyLeaderAdmission {
   id:number;armyId:number;revision:number;playerId:number;generation:number;obstacles:string;
@@ -128,7 +128,7 @@ export class Armies {
     private readonly progression: Progression,
   ) {
     if(world.domainRoutes)this.cohorts=new CohortAdmission("army",{
-      map:world.map,paths:world.paths,squads:()=>world.squads,squad:id=>world.squad(id),routes:world.domainRoutes,
+      map:world.map,paths:world.paths,squadPaths:id=>world.squadPaths(id),squads:()=>world.squads,squad:id=>world.squad(id),routes:world.domainRoutes,
       blocked:id=>t=>world.armyBlocked(t,id),
       valid:(plan,squad)=>{const link=this.cohortArmies.get(plan.id),army=link&&this.byArmyId.get(link.armyId);return !!army && army.revision===link!.revision && this.membership.get(squad.id)===army.id;},
       commit:(plan,members)=>{
@@ -194,7 +194,7 @@ export class Armies {
     let plan=this.slotPlanning.get(army.id);
     if(plan && plan.revision!==army.revision){this.slotPlanning.delete(army.id);plan=undefined;}
     if(!plan){
-      plan={revision:army.revision,formation:new FormationPlanning(this.world.map,this.world.paths,center,members.map(squad=>({squad,origin:squad})),()=>this.world.squads,Infinity,ideals).state};
+      plan={revision:army.revision,formation:new FormationPlanning(this.world.map,this.world.squadPaths(army.playerId),center,members.map(squad=>({squad,origin:squad})),()=>this.world.squads,Infinity,ideals).state};
       this.slotPlanning.set(army.id,plan);return undefined;
     }
     if(plan.formation.phase!=="done" && plan.formation.phase!=="failed")return undefined;
@@ -238,7 +238,7 @@ export class Armies {
       if(used>=budget)break;
       const army=this.byArmyId.get(id);
       if(!army || army.revision!==plan.revision){this.slotPlanning.delete(id);continue;}
-      const formation=new FormationPlanning(this.world.map,this.world.paths,plan.formation.center,[],()=>this.world.squads,Infinity,undefined,plan.formation,undefined,occupancy);
+      const formation=new FormationPlanning(this.world.map,this.world.squadPaths(army.playerId),plan.formation.center,[],()=>this.world.squads,Infinity,undefined,plan.formation,undefined,occupancy);
       used+=formation.step(Math.min(16,budget-used),t=>this.world.armyBlocked(t,army.playerId));
     }
     return used+(this.cohorts?.step(budget-used)??0);
@@ -479,31 +479,15 @@ export class Armies {
       if (!target) return "Choose a hostile land squad";
       tile = pointTile(this.world.map, target);
     } else tile = order.tile;
-    if (!this.world.paths.walkable(tile))
-      return "Choose passable land for the army";
+    const paths = this.world.squadPaths(army.playerId);
+    if (!paths.walkable(tile))
+      return paths.amphibious ? "Choose passable land or navigable water for the army" : "Choose passable land for the army";
     if (append && army.order.type!=="hold") {
       if(army.queuedOrders.length>=MAX_QUEUED_ORDERS)return "Army queue is full";
       army.queuedOrders.push({...order});return null;
     }
-    if (
-      members.some(
-        (s) => !this.world.paths.connected(pointTile(this.world.map, s), tile),
-      ) || (order.type === "move" && this.world.preferArmyTransport(members,tile))
-    ) {
-      if (order.type !== "move") return "Use a move order to transport the army across water";
-      if (append && army.order.type !== "hold") {
-        if (army.queuedOrders.length >= MAX_QUEUED_ORDERS) return "Army order queue is full";
-        army.queuedOrders.push({...order}); return null;
-      }
-      const result = this.world.transportArmy(members,tile);
-      if (result === null) {
-        this.stop(army);
-        army.manual = true;
-        army.reason = "Crossing water";
-        this.externalActions.add(army.id);
-      }
-      return result;
-    }
+    if (members.some((s) => !paths.connected(pointTile(this.world.map, s), tile)))
+      return paths.amphibious ? "The army cannot reach that destination" : "Research Cargo Canoes to take the army across water";
     const objective = tilePoint(this.world.map, tile);
     const leader = [...members].sort(
       (a, b) =>
@@ -518,7 +502,7 @@ export class Armies {
         memberIds:members.map(s=>s.id),memberRevisions:members.map(s=>routes.orderRevision(s.id)),tile,start:pointTile(this.world.map,leader),requested:false,route:[{x:leader.x,y:leader.y}],lengths:[0],cursor:0,attempts:0,retryAt:0,queueLength:army.queuedOrders.length};
       this.leaderAdmissions.set(id,plan);routes.event("army",{id,playerId:army.playerId,tick:this.world.tick,status:"deferred"});return null;
     }
-    const path = order.type==="hold"?[]:prepared?.path ?? this.world.paths.find(
+    const path = order.type==="hold"?[]:prepared?.path ?? this.world.squadPaths(army.playerId).find(
       pointTile(this.world.map, leader),
       tile,
       (t) => this.world.armyBlocked(t, army.playerId),
@@ -639,12 +623,12 @@ export class Armies {
       }
       // Single file in narrow corridors; never offset a slot across a coast or wall.
       if (
-        !standable(this.world.map, point, squadRadius(sorted[i].kind)) ||
+        !standable(this.world.map, point, squadRadius(sorted[i].kind), this.world.squadPaths(army.playerId).amphibious) ||
         this.world.armyBlocked(
           pointTile(this.world.map, point),
           army.playerId,
         ) ||
-        !traversable(this.world.map, center, point, squadRadius(sorted[i].kind))
+        !traversable(this.world.map, center, point, squadRadius(sorted[i].kind), this.world.squadPaths(army.playerId).amphibious)
       )
         point = this.onRoute(march, march.cursor - i * FIXED * 0.95);
       ideals.set(sorted[i].id, point);
@@ -834,7 +818,7 @@ export class Armies {
         const current = march.slots.get(s.id);
         if (!current) return;
         let via: WorldPoint[] | undefined;
-        let path = this.world.paths.find(
+        let path = this.world.squadPaths(army.playerId).find(
           pointTile(this.world.map, s),
           pointTile(this.world.map, current),
           (t) => this.world.armyBlocked(t, army.playerId),
@@ -876,7 +860,7 @@ export class Armies {
             y: Math.round(current.y + ny * FIXED * 4),
           };
           const safe = (p: WorldPoint) =>
-            standable(this.world.map, p, squadRadius(s.kind))
+            standable(this.world.map, p, squadRadius(s.kind), this.world.squadPaths(army.playerId).amphibious)
               ? this.world
                   .armySlots(
                     pointTile(this.world.map, p),
@@ -891,17 +875,17 @@ export class Armies {
           if (exit && rear) {
             const blocked = (t: number) =>
               this.world.armyBlocked(t, army.playerId);
-            const head = this.world.paths.find(
+            const head = this.world.squadPaths(army.playerId).find(
               pointTile(this.world.map, s),
               pointTile(this.world.map, exit),
               blocked,
             );
-            const middle = this.world.paths.find(
+            const middle = this.world.squadPaths(army.playerId).find(
               pointTile(this.world.map, exit),
               pointTile(this.world.map, rear),
               blocked,
             );
-            const tail = this.world.paths.find(
+            const tail = this.world.squadPaths(army.playerId).find(
               pointTile(this.world.map, rear),
               pointTile(this.world.map, current),
               blocked,

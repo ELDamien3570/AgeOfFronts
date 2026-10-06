@@ -304,7 +304,6 @@ let terrainPointer: { x: number; y: number } | undefined;
 
 let placementType: BuildingType | undefined;
 
-let landingShip: number | undefined;
 
 let placementAge: Age | undefined;
 
@@ -795,7 +794,7 @@ function updateHud(): void {
   for (const { kind } of [...LAND_RECRUITMENT, ...NAVAL_RECRUITMENT]) {
     const recruitment = vm.recruitment(kind);
 
-    const naval = kind === "transport" || kind === "warship";
+    const naval = kind === "warship";
 
     const id = naval ? kind : `recruit-${kind}`;
 
@@ -894,7 +893,7 @@ function updateTerrainHover(): void {
     tile === null ? "" : terrainView.describe(tile);
   const bounds = canvas.getBoundingClientRect();
   hud.hoverDeposit(
-    drag || placementType || landingShip !== undefined || targetedAction
+    drag || placementType || targetedAction
       ? null
       : renderer.depositAt(terrainPointer.x, terrainPointer.y),
     { x: bounds.left + terrainPointer.x, y: bounds.top + terrainPointer.y },
@@ -941,21 +940,12 @@ function updateSelection(): void {
     element("selected-orders").textContent +=
       " Replenishing: remains stopped until full, Hold, or a new order.";
 
-  if (selected.some((s) => s.order.type === "board"))
-    element("selected-orders").textContent +=
-      " Meeting transport at the blue shore marker. Excess squads hold ashore.";
-
   const ships =
     snapshot?.ships.filter((s) => renderer.selectedShips.has(s.id)) ?? [];
 
   element("ship-selection").textContent = ships.length
-    ? `${ships.length} ship${ships.length === 1 ? "" : "s"}${vm?.transport ? ` · ${vm.cargo.length}/4 squads aboard` : ""}`
+    ? `${ships.length} ship${ships.length === 1 ? "" : "s"}`
     : "No ships selected";
-
-  element<HTMLButtonElement>("load").disabled =
-    !vm?.transport || !vm.selectedSquads.length;
-
-  element<HTMLButtonElement>("unload").disabled = !vm?.cargo.length;
 
   element("naval-orders").hidden = !ships.length;
 
@@ -1151,8 +1141,6 @@ function cancelPlacement(): void {
 
   targetedAction = undefined;
 
-  landingShip = undefined;
-
   renderer.placement = undefined;
 
   renderer.buildSites = [];
@@ -1263,35 +1251,6 @@ for (const digit of [1, 2, 3, 4, 5, 6, 7, 8, 9, 0])
           : "recall",
     ),
   );
-
-element("load").addEventListener("click", () => {
-  const ship = viewModel()?.transport;
-
-  if (ship)
-    command({
-      type: "board",
-
-      playerId: localPlayerId,
-
-      shipId: ship.id,
-
-      squadIds: [...renderer.selected],
-    });
-});
-
-element("unload").addEventListener("click", () => {
-  const ship = viewModel()?.transport;
-
-  if (ship) {
-    cancelPlacement();
-
-    landingShip = ship.id;
-
-    canvas.style.cursor = "crosshair";
-
-    notify("Click coastal land directly beside the transport to unload");
-  }
-});
 
 element("hold").addEventListener("click", hold);
 
@@ -1439,7 +1398,7 @@ canvas.addEventListener("pointerup", (event) => {
 
   if (
     start.button === 2 &&
-    (placementType || landingShip !== undefined)
+    placementType
   ) {
     cancelPlacement();
 
@@ -1460,7 +1419,7 @@ canvas.addEventListener("pointerup", (event) => {
 
   if (
     start.button === 0 &&
-    (placementType || landingShip !== undefined || targetedAction)
+    (placementType || targetedAction)
   ) {
     const tile = renderer.tileAt(p.x, p.y);
 
@@ -1479,7 +1438,7 @@ canvas.addEventListener("pointerup", (event) => {
             tile,
           });
         }
-      } else command({ type: "unload", playerId: localPlayerId, shipId: landingShip!, tile });
+      }
 
       cancelPlacement();
     }
@@ -1651,9 +1610,10 @@ canvas.addEventListener("pointerup", (event) => {
     const coastal = snapshot.buildings.find(
       (b) => b.id === renderer.buildingAt(p.x, p.y),
     );
+    // Squads afloat are hulls: warships engage them like enemy vessels.
     const enemyShip = snapshot.ships.find(
       (s) => s.id === clickedShipId && s.playerId !== localPlayerId,
-    );
+    ) ?? (target && target.afloat && target.playerId !== localPlayerId ? target : undefined);
     const selectedWarships=[...renderer.selectedShips].filter(id=>snapshot!.ships.find(s=>s.id===id)?.kind==="warship");
     if (
       selectedWarships.length &&
@@ -1667,31 +1627,6 @@ canvas.addEventListener("pointerup", (event) => {
       });
       return;
     }
-    const transport = snapshot.ships.find(
-      (s) =>
-        s.id === clickedShipId && s.playerId === localPlayerId && s.kind === "transport",
-    );
-
-    if (transport && renderer.selected.size) {
-      command({
-        type: "board",
-
-        playerId: localPlayerId,
-
-        shipId: transport.id,
-
-        squadIds: [...renderer.selected],
-      });
-
-      renderer.selectedShips = new Set([transport.id]);
-
-      notify(
-        "Squads and transport will meet at a reachable coast. Excess squads wait ashore.",
-      );
-
-      return;
-    }
-
     const tile = renderer.tileAt(p.x, p.y);
 
     const shipOrder=tile!==null&&currentMap ? shipMoveCommand(snapshot,renderer.selectedShips,localPlayerId,tile,currentMap.map.isWater(tile),start.shift) : null;
@@ -1702,7 +1637,7 @@ canvas.addEventListener("pointerup", (event) => {
 
     if (!renderer.selected.size) {
       notify(
-        "Right-click water to sail, or land with a loaded transport to disembark.",
+        "Right-click water to sail. Squads cross water themselves.",
       );
 
       return;
@@ -1777,8 +1712,7 @@ canvas.addEventListener("dblclick", (event) => {
   if (
     !snapshot ||
     snapshot.winner !== null ||
-    placementType ||
-    landingShip !== undefined
+    placementType
   )
     return;
 

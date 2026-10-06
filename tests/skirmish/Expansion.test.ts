@@ -560,7 +560,7 @@ describe("archer volleys and positioning", () => {
   });
 });
 
-describe("naval transport and combat", () => {
+describe("naval combat", () => {
   function navy() {
     const m = match(true),
       s = single(m),
@@ -571,7 +571,7 @@ describe("naval transport and combat", () => {
         type: "recruit-ship",
         playerId: 1,
         buildingId: port.id,
-        shipType: "transport",
+        shipType: "warship",
       }),
     ).toBeNull();
     const ship = m.ships[0];
@@ -579,227 +579,6 @@ describe("naval transport and combat", () => {
     own(m, m.tileOf(s));
     return { m, s, ship, port };
   }
-
-  it("moves both sides to a reachable coast, fills four slots, and holds excess squads ashore", () => {
-    const { m, s, ship } = navy();
-    for (let i = 0; i < 5; i++)
-      expect(
-        m.applyCommand({
-          type: "recruit",
-          playerId: 1,
-          buildingId: m.buildings[0].id,
-        }),
-      ).toBeNull();
-    const selected = m.squads.filter((unit) => unit.playerId === 1);
-    selected.forEach((unit, i) => place(m, unit, 40 + i, 25));
-    place(m, ship, 60, 4);
-    const initial = { landX: s.x, landY: s.y, seaX: ship.x, seaY: ship.y };
-    expect(
-      m.applyCommand({
-        type: "board",
-        playerId: 1,
-        shipId: ship.id,
-        squadIds: selected.map((unit) => unit.id),
-      }),
-    ).toBeNull();
-    const shore = ship.boarding!.landTile,
-      sea = ship.boarding!.waterTile;
-    const snapshot = m.snapshot();
-    // Deliberately bypass readonly DTO typing to prove snapshot isolation.
-    (snapshot.ships[0].boarding as unknown as { squadIds: number[] }).squadIds.length = 0;
-    expect(ship.boarding!.squadIds).toHaveLength(6);
-    step(m, 10);
-    expect(s.x !== initial.landX || s.y !== initial.landY).toBe(true);
-    expect(ship.x !== initial.seaX || ship.y !== initial.seaY).toBe(true);
-    step(m, 450);
-    expect(selected.filter((unit) => unit.embarkedOn === ship.id)).toHaveLength(
-      4,
-    );
-    const excess = selected.filter((unit) => unit.embarkedOn === null);
-    expect(excess).toHaveLength(2);
-    expect(
-      excess.every(
-        (unit) => unit.order.type === "hold" && unit.queuedOrders.length === 0,
-      ),
-    ).toBe(true);
-    expect(
-      excess.every(
-        (unit) => m.map.euclideanDistSquared(m.tileOf(unit), shore) <= 9,
-      ),
-    ).toBe(true);
-    expect(m.tileOf(ship)).toBe(sea);
-    expect(ship.boarding).toBeNull();
-    const positions = excess.map((unit) => [unit.x, unit.y]);
-    step(m, 40);
-    expect(excess.map((unit) => [unit.x, unit.y])).toEqual(positions);
-    expect(account(m)).toBe(24000 + m.producedTroops);
-  });
-
-  it("preserves existing cargo and takes only the remaining whole-squad slots", () => {
-    const { m, s, ship } = navy();
-    expect(
-      m.applyCommand({
-        type: "load",
-        playerId: 1,
-        shipId: ship.id,
-        squadIds: [s.id],
-      }),
-    ).toBeNull();
-    for (let i = 0; i < 5; i++)
-      m.applyCommand({
-        type: "recruit",
-        playerId: 1,
-        buildingId: m.buildings[0].id,
-      });
-    const selected = m.squads.filter(
-      (unit) => unit.playerId === 1 && unit.embarkedOn === null,
-    );
-    selected.forEach((unit, i) => place(m, unit, 35 + i, 20));
-    expect(
-      m.applyCommand({
-        type: "board",
-        playerId: 1,
-        shipId: ship.id,
-        squadIds: selected.map((unit) => unit.id),
-      }),
-    ).toBeNull();
-    step(m, 400);
-    expect(s.embarkedOn).toBe(ship.id);
-    expect(m.squads.filter((unit) => unit.embarkedOn === ship.id)).toHaveLength(
-      4,
-    );
-    expect(selected.filter((unit) => unit.embarkedOn === null)).toHaveLength(2);
-    expect(selected.every((unit) => unit.troops === 1000)).toBe(true);
-    expect(account(m)).toBe(24000 + m.producedTroops);
-  });
-
-  it("validates selections and shared coast before replacing either side's orders", () => {
-    const { m, s, ship } = navy();
-    m.applyCommand({
-      type: "order",
-      playerId: 1,
-      squadIds: [s.id],
-      order: { type: "move", tile: m.map.ref(35, 20) },
-    });
-    m.applyCommand({
-      type: "sail",
-      playerId: 1,
-      shipIds: [ship.id],
-      tile: m.map.ref(40, 7),
-    });
-    const before = m.snapshot();
-    const enemy = m.squads.find((unit) => unit.playerId === 2)!;
-    expect(
-      m.applyCommand({
-        type: "board",
-        playerId: 1,
-        shipId: ship.id,
-        squadIds: [s.id, enemy.id],
-      }),
-    ).toMatch(/your land squads/);
-    expect(
-      m.applyCommand({
-        type: "board",
-        playerId: 2,
-        shipId: ship.id,
-        squadIds: [enemy.id],
-      }),
-    ).toMatch(/your transport/);
-    expect(m.snapshot()).toEqual(before);
-    const terrain = new Uint8Array(80 * 50).fill(133);
-    for (let y = 0; y < 50; y++)
-      for (let x = 38; x <= 41; x++) terrain[y * 80 + x] = 0;
-    const islands = new Skirmish(
-      new GameMapImpl(80, 50, terrain, terrain.length),
-      { seed: 42, aiCount: 1, runAi: false },
-    );
-    const port = build(islands, "port", 36, 20);
-    islands.updateBuilding(port.id, { remainingTicks: 0 });
-    islands.applyCommand({
-      type: "recruit-ship",
-      playerId: 1,
-      buildingId: port.id,
-      shipType: "transport",
-    });
-    const units = islands.squads.filter((unit) => unit.playerId === 1);
-    place(islands, units[0], 30, 20);
-    place(islands, units[1], 45, 20);
-    const old = islands.snapshot();
-    expect(
-      islands.applyCommand({
-        type: "board",
-        playerId: 1,
-        shipId: islands.ships[0].id,
-        squadIds: units.slice(0, 2).map((unit) => unit.id),
-      }),
-    ).toMatch(/shared reachable coast/);
-    expect(islands.snapshot()).toEqual(old);
-  });
-
-  it("lets new ship and squad orders cancel the rendezvous without later surprise boarding", () => {
-    const { m, s, ship } = navy();
-    place(m, s, 40, 25);
-    const board = () =>
-      expect(
-        m.applyCommand({
-          type: "board",
-          playerId: 1,
-          shipId: ship.id,
-          squadIds: [s.id],
-        }),
-      ).toBeNull();
-    board();
-    m.applyCommand({
-      type: "sail",
-      playerId: 1,
-      shipIds: [ship.id],
-      tile: m.map.ref(50, 7),
-    });
-    expect(ship.boarding).toBeNull();
-    expect(s.order.type).toBe("hold");
-    board();
-    m.applyCommand({ type: "stop-ships", playerId: 1, shipIds: [ship.id] });
-    expect(ship.boarding).toBeNull();
-    expect(s.order.type).toBe("hold");
-    board();
-    m.applyCommand({
-      type: "order",
-      playerId: 1,
-      squadIds: [s.id],
-      order: { type: "hold" },
-    });
-    step(m, 400);
-    expect(ship.boarding).toBeNull();
-    expect(ship.destination).toBeNull();
-    expect(s.embarkedOn).toBeNull();
-  });
-
-  it("releases unembarked squads when their rendezvous transport sinks", () => {
-    const { m, s, ship } = navy();
-    place(m, s, 40, 25);
-    m.applyCommand({
-      type: "board",
-      playerId: 1,
-      shipId: ship.id,
-      squadIds: [s.id],
-    });
-    const port = build(m, "port", 40, 8, 2);
-    m.updateBuilding((port).id, { remainingTicks: 0 });
-    m.applyCommand({
-      type: "recruit-ship",
-      playerId: 2,
-      buildingId: port.id,
-      shipType: "warship",
-    });
-    place(m, m.ships[1], 32, 7);
-    m.updateShip(ship.id, { health: 1 });
-    m.step();
-    expect(m.ships.some((unit) => unit.id === ship.id)).toBe(false);
-    expect(s.embarkedOn).toBeNull();
-    expect(s.order.type).toBe("hold");
-    expect(s.queuedOrders).toEqual([]);
-    expect(account(m)).toBe(24000 + m.producedTroops);
-  });
 
   it("launches only from a ready owned port and charges gold; ships cannot sail on land", () => {
     const { m, ship, port } = navy();
@@ -820,7 +599,7 @@ describe("naval transport and combat", () => {
         shipIds: [ship.id],
         tile: port.tile,
       }),
-    ).toMatch(/loaded transport/);
+    ).toMatch(/on water/);
     expect(
       m.applyCommand({
         type: "sail",
@@ -840,97 +619,12 @@ describe("naval transport and combat", () => {
     ).toMatch(/completed/);
   });
 
-  it("embarks squads, follows queued sea waypoints, and lands them on a hostile coast without duplicating troops", () => {
+  it("warships fire simultaneously, sink afloat squads, and account for all their troops", () => {
     const { m, s, ship } = navy();
-    expect(
-      m.applyCommand({
-        type: "load",
-        playerId: 1,
-        shipId: ship.id,
-        squadIds: [s.id],
-      }),
-    ).toBeNull();
-    expect(s.embarkedOn).toBe(ship.id);
-    m.applyCommand({
-      type: "sail",
-      playerId: 1,
-      shipIds: [ship.id],
-      tile: m.map.ref(34, 7),
-    });
-    m.applyCommand({
-      type: "sail",
-      playerId: 1,
-      shipIds: [ship.id],
-      tile: m.map.ref(40, 7),
-      append: true,
-    });
-    const hostile = m.map.ref(40, 8);
-    own(m, hostile, 2);
-    step(m, 100);
-    expect(ship.destination).toBeNull();
-    expect(m.tileOf(ship)).toBe(m.map.ref(40, 7));
-    expect(m.owners[hostile]).toBe(2);
-    expect(s.troops).toBe(1000);
-    expect(
-      m.applyCommand({
-        type: "unload",
-        playerId: 1,
-        shipId: ship.id,
-        tile: hostile,
-      }),
-    ).toBeNull();
-    expect(s.embarkedOn).toBeNull();
-    expect(m.tileOf(s)).toBe(hostile);
-    step(m, 30);
-    expect(m.owners[hostile]).toBe(1);
-    expect(account(m)).toBe(24000 + m.producedTroops);
-  });
-
-  it("rejects remote loading and overloaded cargo without partially embarking squads", () => {
-    const { m, s, ship } = navy();
-    place(m, s, 45, 25);
-    expect(
-      m.applyCommand({
-        type: "load",
-        playerId: 1,
-        shipId: ship.id,
-        squadIds: [s.id],
-      }),
-    ).toMatch(/three tiles/);
-    expect(s.embarkedOn).toBeNull();
-    place(m, s, 30, 8);
-    const reserves = m.players[0].reserves;
-    for (let i = 0; i < 4; i++) {
-      m.applyCommand({
-        type: "recruit",
-        playerId: 1,
-        buildingId: m.buildings[0].id,
-      });
-      const added = m.squads[m.squads.length - 1];
-      place(m, added, 30, 8);
-    }
-    expect(m.players[0].reserves).toBe(reserves - 4000);
-    const selected = m.squads.filter((s) => s.playerId === 1);
-    expect(
-      m.applyCommand({
-        type: "load",
-        playerId: 1,
-        shipId: ship.id,
-        squadIds: selected.map((s) => s.id),
-      }),
-    ).toMatch(/4 squads/);
-    expect(selected.every((s) => s.embarkedOn === null)).toBe(true);
-  });
-
-  it("warships fire simultaneously, sink transports, and account for all embarked casualties", () => {
-    const { m, s, ship } = navy();
+    m.removeShip(ship.id);
     m.addBuilding({id:m.allocateId(),playerId:1,type:"city",tile:m.player(1)!.base,remainingTicks:0});
-    m.applyCommand({
-      type: "load",
-      playerId: 1,
-      shipId: ship.id,
-      squadIds: [s.id],
-    });
+    place(m, s, 30, 7);
+    m.updateSquad(s.id, { afloat: { hull: 8, maxHull: 100, vesselId: "stoneage-transport" } });
     const enemyPort = build(m, "port", 40, 8, 2);
     m.updateBuilding((enemyPort).id, { remainingTicks: 0 });
     m.applyCommand({
@@ -939,14 +633,12 @@ describe("naval transport and combat", () => {
       buildingId: enemyPort.id,
       shipType: "warship",
     });
-    const enemyShip = m.ships[1];
+    const enemyShip = m.ships.find((b) => b.playerId === 2)!;
     place(m, enemyShip, 32, 7);
-    m.updateShip(ship.id, { health: 8 });
     const before = account(m),
       production = m.producedTroops,
       losses = m.players[0].losses;
     m.step();
-    expect(m.ships.some((b) => b.id === ship.id)).toBe(false);
     expect(m.squad(s.id)).toBeUndefined();
     expect(m.players[0].losses).toBe(losses + 1000);
     expect(account(m)).toBe(before + m.producedTroops - production);

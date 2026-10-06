@@ -9,7 +9,6 @@ import { TECHNOLOGIES } from "../../src/skirmish/content/Technology";
 import { economicSnapshot } from "../../src/skirmish/domain/AiEconomicSnapshot";
 import { usableNextAge } from "../../src/skirmish/domain/AiResearchUtility";
 import { automaticProduction } from "../../src/skirmish/domain/AutomaticProduction";
-import { ShoreTransport } from "../../src/skirmish/domain/ShoreTransport";
 import {
   PRODUCTION_RECIPES,
   productionTicks,
@@ -184,36 +183,6 @@ describe("playtest stability regressions", () => {
     preview.update(game.snapshot());
     expect(preview.sites(bounds, 1)).not.toContain(sites[0]);
     expect(preview.sites(bounds, 1).length).toBeGreaterThan(sites.length - 3);
-  });
-  it("keeps connected army moves out of the synchronous shore-shortcut search", () => {
-    const { game } = fixture(),
-      own = game.squads.filter((s) => s.playerId === 1);
-    game.expansion!.progression.states[1].completed = TECHNOLOGIES.filter((t) =>
-      ["StoneAge", "BronzeAge"].includes(t.age),
-    ).map((t) => t.id);
-    expect(
-      game.applyCommand({
-        type: "create-army",
-        playerId: 1,
-        squadIds: own.map((s) => s.id),
-      }),
-    ).toBeNull();
-    const legacy = ShoreTransport.prototype as unknown as {
-      preferredLeg: () => unknown;
-    };
-    const shortcut = vi.spyOn(legacy, "preferredLeg").mockImplementation(() => {
-      throw Error("unbounded shortcut");
-    });
-    expect(
-      game.applyCommand({
-        type: "order",
-        playerId: 1,
-        squadIds: own.map((s) => s.id),
-        order: { type: "move", tile: game.map.ref(50, 30) },
-      }),
-    ).toBeNull();
-    expect(shortcut).not.toHaveBeenCalled();
-    shortcut.mockRestore();
   });
   it("uses a large human industry beyond the old 60-metal/12-equipment plateau", () => {
     const buildings: Building[] = Array.from({ length: 60 }, (_, id) => ({

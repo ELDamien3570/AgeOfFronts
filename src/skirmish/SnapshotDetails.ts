@@ -23,9 +23,9 @@ export interface PackedSnapshotDetails {
   ids: Float64Array;
 }
 export const DETAIL_STRIDES = {
-  squad: 24,
+  squad: 27,
   building: 7,
-  ship: 30,
+  ship: 22,
   volley: 9,
 } as const;
 const reasons = [
@@ -45,7 +45,6 @@ const repairs = [
   "repairing",
   "returning-to-patrol",
 ] as const;
-const shores = ["boarding", "sailing", "landing", "afloat"] as const;
 const number = (value: number | undefined) => value ?? NaN;
 const optional = (value: number): number | undefined =>
   Number.isNaN(value) ? undefined : value;
@@ -80,7 +79,7 @@ export function packSnapshotDetails(
   for (const squad of squads ?? [])
     count += squad.movementStatus?.blockerIds.length ?? 0;
   for (const ship of ships)
-    count += ship.waypoints.length + (ship.boarding?.squadIds.length ?? 0);
+    count += ship.waypoints.length;
   const ids = new Float64Array(count);
   let cursor = 0;
   const list = (values: readonly number[]) => {
@@ -143,6 +142,10 @@ export function packSnapshotDetails(
             : 1;
       b[at + 22] = number(s.structureTarget?.buildingId);
       b[at + 23] = number(s.structureTarget?.barrierId);
+      // Afloat: hull, its maximum and the carrying vessel (NaN on land).
+      b[at + 24] = s.afloat === undefined ? NaN : s.afloat === null ? Infinity : s.afloat.hull;
+      b[at + 25] = number(s.afloat?.maxHull);
+      b[at + 26] = string(s.afloat?.vesselId);
     }
   const buildingData =
     buildings && new Float64Array(buildings.length * DETAIL_STRIDES.building);
@@ -166,7 +169,7 @@ export function packSnapshotDetails(
       b = shipData;
     b[at] = s.id;
     b[at + 1] = s.playerId;
-    b[at + 2] = s.kind === "transport" ? 0 : 1;
+    b[at + 2] = 0; // Hull class: warship is the only fleet vessel.
     b[at + 3] = s.x;
     b[at + 4] = s.y;
     b[at + 5] = s.health;
@@ -174,28 +177,17 @@ export function packSnapshotDetails(
     b[at + 7] = list(s.waypoints);
     b[at + 8] = s.waypoints.length;
     b[at + 9] = Number(s.fighting);
-    b[at + 10] = s.boarding ? s.boarding.landTile : Infinity;
-    b[at + 11] = number(s.boarding?.waterTile);
-    b[at + 12] = list(s.boarding?.squadIds ?? []);
-    b[at + 13] = s.boarding?.squadIds.length ?? 0;
-    b[at + 14] = string(s.definitionId);
-    b[at + 15] = number(s.xp);
-    b[at + 16] = boolean(s.planningPaused);
-    writeRefit(b, at + 17, s.refit);
-    b[at + 20] = nullable(s.attackTargetId);
-    b[at + 21] = number(s.lastPlanTick);
-    b[at + 22] = number(s.nextAttackTick);
-    b[at + 23] = nullable(s.patrolTile);
-    b[at + 24] = nullable(s.repairPortId);
-    b[at + 25] =
+    b[at + 10] = string(s.definitionId);
+    b[at + 11] = number(s.xp);
+    b[at + 12] = boolean(s.planningPaused);
+    writeRefit(b, at + 13, s.refit);
+    b[at + 16] = nullable(s.attackTargetId);
+    b[at + 17] = number(s.lastPlanTick);
+    b[at + 18] = number(s.nextAttackTick);
+    b[at + 19] = nullable(s.patrolTile);
+    b[at + 20] = nullable(s.repairPortId);
+    b[at + 21] =
       s.repairState === undefined ? NaN : repairs.indexOf(s.repairState);
-    b[at + 26] =
-      s.shoreTransfer === undefined
-        ? NaN
-        : shores.indexOf(s.shoreTransfer.phase);
-    b[at + 27] = number(s.shoreTransfer?.capacity);
-    b[at + 28] = number(s.shoreTransfer?.destinationTile);
-    b[at + 29] = nullable(s.shoreTransfer?.landingTile);
   }
   const volleyData = new Float64Array(volleys.length * DETAIL_STRIDES.volley);
   for (let row = 0; row < volleys.length; row++) {
@@ -314,6 +306,11 @@ export function validateSnapshotDetails(data: PackedSnapshotDetails): void {
       if (Number.isFinite(b[at + 11])) finite(b, at + 12, 2);
       if (Number.isFinite(b[at + 14])) finite(b, at + 15, 4);
       if (Number.isFinite(b[at + 7])) finite(b, at + 8, 1);
+      if (Number.isFinite(b[at + 24])) {
+        finite(b, at + 25, 1);
+        string(b[at + 26]);
+      } else if (!Number.isNaN(b[at + 24]) && b[at + 24] !== Infinity)
+        throw new Error("Invalid packed snapshot number");
     }
   if (data.buildings)
     for (let at = 0; at < data.buildings.length; at += DETAIL_STRIDES.building)
@@ -321,18 +318,14 @@ export function validateSnapshotDetails(data: PackedSnapshotDetails): void {
   for (let at = 0; at < data.ships.length; at += DETAIL_STRIDES.ship) {
     const b = data.ships;
     range(b[at + 7], b[at + 8], 100_000);
-    range(b[at + 12], b[at + 13], MAX_SQUADS);
     finite(b, at + 1, 5);
-    enumeration(b[at + 2], 2, false);
+    enumeration(b[at + 2], 1, false);
     enumeration(b[at + 9], 2, false);
-    string(b[at + 14]);
-    string(b[at + 17], true);
-    enumeration(b[at + 16], 2);
-    enumeration(b[at + 25], repairs.length);
-    enumeration(b[at + 26], shores.length);
-    if (Number.isFinite(b[at + 17])) finite(b, at + 18, 2);
-    if (b[at + 10] !== Infinity) finite(b, at + 10, 2);
-    if (Number.isFinite(b[at + 26])) finite(b, at + 27, 2);
+    string(b[at + 10]);
+    string(b[at + 13], true);
+    enumeration(b[at + 12], 2);
+    enumeration(b[at + 21], repairs.length);
+    if (Number.isFinite(b[at + 13])) finite(b, at + 14, 2);
   }
   for (let at = 0; at < data.volleys.length; at += DETAIL_STRIDES.volley) {
     string(data.volleys[at + 3]);
@@ -405,6 +398,11 @@ export function unpackSnapshotDetails(
                 buildingId: optional(b[at + 22]),
                 barrierId: optional(b[at + 23]),
               },
+        afloat: Number.isNaN(b[at + 24])
+          ? undefined
+          : b[at + 24] === Infinity
+            ? null
+            : { hull: b[at + 24], maxHull: b[at + 25], vesselId: string(b[at + 26])! },
       });
     }
   const buildingDetails: SnapshotPacket["buildingDetails"] = data.buildings
@@ -433,39 +431,23 @@ export function unpackSnapshotDetails(
     ships.push({
       id: b[at],
       playerId: b[at + 1],
-      kind: b[at + 2] ? "warship" : "transport",
+      kind: "warship",
       x: b[at + 3],
       y: b[at + 4],
       health: b[at + 5],
       destination: readNullable(b[at + 6])!,
       waypoints: list(b[at + 7], b[at + 8]),
       fighting: !!b[at + 9],
-      boarding:
-        b[at + 10] === Infinity
-          ? null
-          : {
-              landTile: b[at + 10],
-              waterTile: b[at + 11],
-              squadIds: list(b[at + 12], b[at + 13]),
-            },
-      definitionId: string(b[at + 14]),
-      xp: optional(b[at + 15]),
-      planningPaused: readBoolean(b[at + 16]),
-      refit: refit(b, at + 17),
-      attackTargetId: readNullable(b[at + 20]),
-      lastPlanTick: optional(b[at + 21]),
-      nextAttackTick: optional(b[at + 22]),
-      patrolTile: readNullable(b[at + 23]),
-      repairPortId: readNullable(b[at + 24]),
-      repairState: Number.isNaN(b[at + 25]) ? undefined : repairs[b[at + 25]],
-      shoreTransfer: Number.isNaN(b[at + 26])
-        ? undefined
-        : {
-            phase: shores[b[at + 26]],
-            capacity: b[at + 27],
-            destinationTile: b[at + 28],
-            landingTile: readNullable(b[at + 29])!,
-          },
+      definitionId: string(b[at + 10]),
+      xp: optional(b[at + 11]),
+      planningPaused: readBoolean(b[at + 12]),
+      refit: refit(b, at + 13),
+      attackTargetId: readNullable(b[at + 16]),
+      lastPlanTick: optional(b[at + 17]),
+      nextAttackTick: optional(b[at + 18]),
+      patrolTile: readNullable(b[at + 19]),
+      repairPortId: readNullable(b[at + 20]),
+      repairState: Number.isNaN(b[at + 21]) ? undefined : repairs[b[at + 21]],
     });
   }
   const volleys: ArcherVolley[] = [];

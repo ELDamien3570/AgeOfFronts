@@ -70,7 +70,7 @@ describe("formation artwork", () => {
     const ship = {
       id: 500,
       playerId: 1,
-      kind: "transport" as const,
+      kind: "warship" as const,
       x: 20 * FIXED,
       y: 20 * FIXED,
       health: 1000,
@@ -79,7 +79,6 @@ describe("formation artwork", () => {
       path: [],
       nextPathIndex: 0,
       fighting: false,
-      boarding: null,
     };
     snapshot.ships.push(ship);
     const presentation = new UnitPresentation();

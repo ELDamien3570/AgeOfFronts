@@ -29,7 +29,6 @@ export const MAX_QUEUED_ORDERS = 32;
 export type Order =
   | { type: "hold" }
   | { type: "replenish" }
-  | { type: "board"; shipId: number; tile: number }
   // Formation coordinates are assigned by the domain, never trusted from commands.
   | { type: "move"; tile: number; x?: number; y?: number }
   | { type: "attack"; targetId: number };
@@ -184,9 +183,6 @@ export type Command =
       append?: boolean;
     }
   | { type: "stop-ships"; playerId: number; shipIds: number[] }
-  | { type: "load"; playerId: number; shipId: number; squadIds: number[] }
-  | { type: "board"; playerId: number; shipId: number; squadIds: number[] }
-  | { type: "unload"; playerId: number; shipId: number; tile: number }
   | {
       type: "order";
       playerId: number;
@@ -233,6 +229,17 @@ export interface Squad {
   readonly chargeReadyTick?: number;
   readonly deploymentTicks?: number;
   readonly structureTarget?: Readonly<{ buildingId?: number; barrierId?: number }> | null;
+  /** Present while the squad is on water, travelling as its transport. */
+  readonly afloat?: Readonly<Afloat> | null;
+}
+
+/** A squad on water is carried by its faction's current transport. The hull
+ * absorbs every hit; at zero it sinks with all troops aboard. A fresh hull is
+ * issued on each embarkation. */
+export interface Afloat {
+  hull: number;
+  maxHull: number;
+  vesselId: string;
 }
 
 export interface Player {
@@ -282,7 +289,8 @@ export type BuildingType =
   | "missile-silo"
   | "mirv-launcher"
   | "missile-defence";
-export type ShipType = "transport" | "warship";
+/** Squads cross water themselves (see Afloat); every fleet vessel is a warship. */
+export type ShipType = "warship";
 
 export interface Building {
   readonly id: number;
@@ -310,18 +318,6 @@ export interface Ship {
   readonly path: readonly number[];
   readonly nextPathIndex: number;
   readonly fighting: boolean;
-  readonly boarding: BoardingMeeting | null;
-  // Domain-owned temporary voyage; these vessels cannot become a free navy.
-  readonly shoreTransfer?: {
-    readonly destinationTile: number;
-    readonly landingTile: number | null;
-    departureTile?: number;
-    returning?: boolean;
-    readonly waterPath: readonly number[];
-    readonly capacity: number;
-    readonly phase: "boarding" | "sailing" | "landing" | "afloat";
-    readonly queued: readonly { readonly squadId: number; readonly orders: readonly Readonly<Order>[] }[];
-  };
   readonly definitionId?: string;
   readonly nextAttackTick?: number;
   readonly xp?: number;
@@ -343,12 +339,6 @@ export interface Ship {
     | "waiting-for-dock"
     | "repairing"
     | "returning-to-patrol";
-}
-
-export interface BoardingMeeting {
-  readonly landTile: number;
-  readonly waterTile: number;
-  readonly squadIds: readonly number[];
 }
 
 // An actual released volley, retained briefly for presentation. Damage is
@@ -420,12 +410,7 @@ export interface Snapshot {
   progress: Uint8Array;
   players: Player[];
   buildings: Building[];
-  ships: (Omit<Ship, "path" | "nextPathIndex" | "shoreTransfer"> & {
-    shoreTransfer?: Pick<
-      NonNullable<Ship["shoreTransfer"]>,
-      "capacity" | "phase" | "destinationTile" | "landingTile"
-    >;
-  })[];
+  ships: Omit<Ship, "path" | "nextPathIndex">[];
   squads: Omit<
     Squad,
     "path" | "nextPathIndex" | "plannedTile" | "lastPlanTick"
@@ -481,6 +466,7 @@ export interface SnapshotPacket {
     charge?: ChargeState | null;
     chargeReadyTick?: number;
     structureTarget?: Squad["structureTarget"];
+    afloat?: Afloat | null;
   }[];
   buildingDetails?: {
     id: number;

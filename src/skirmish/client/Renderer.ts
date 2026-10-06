@@ -144,7 +144,6 @@ export class Renderer {
   private readonly buildingFacts = new BuildingFacts();
   private previousTick?: number;
   private readonly squadSamples = new RenderSamples<Snapshot["squads"][number]>();
-  private readonly cargoCounts = new Map<number, number>();
   private receivedAt = 0;
   // Smoothed real time between snapshots. Interpolating over this, not over the
   // game-time gap, keeps movement continuous at 2x/4x and when commit cycles in
@@ -323,13 +322,6 @@ export class Renderer {
     if (snapshot.tick !== this.snapshot?.tick) this.previousTick = this.snapshot?.tick;
     this.squadSamples.update(snapshot.squads, snapshot.tick);
     this.combatMarkers = combatTargets(snapshot);
-    this.cargoCounts.clear();
-    for (const squad of snapshot.squads)
-      if (squad.embarkedOn !== null)
-        this.cargoCounts.set(
-          squad.embarkedOn,
-          (this.cargoCounts.get(squad.embarkedOn) ?? 0) + 1,
-        );
     this.snapshot = snapshot;
     this.tradePayouts.update(snapshot.expansion?.tradeReceipts??[],this.playerId,performance.now());
     this.cacheTerritoryText(snapshot);
@@ -1289,9 +1281,12 @@ export class Renderer {
           this.selected.has(squad.id) || this.inspectedSquadId === squad.id;
         if (!visibleInViewport(p, squadViewRadius(this.scale, squad.troops, selected), this.width, this.height))
           return undefined;
-        const formationType = squadFormationType(squad);
+        // Afloat, a squad is drawn as its faction's transport for this age.
+        const formationType = squad.afloat ? "transport" : squadFormationType(squad);
         const pose = squadArtworkPose(squad, visualTick);
-        const activeImage = squad.definitionId
+        const activeImage = squad.afloat
+          ? this.eraArtwork.get(squad.afloat.vesselId, squad.moved ? "running" : "idle", visualTick)
+          : squad.definitionId
           ? this.eraArtwork.get(squad.definitionId, pose.clip, pose.elapsed)
           : this.artwork.get(
               squad.kind,
@@ -1327,6 +1322,7 @@ export class Renderer {
     // All ground indicators precede every soldier, regardless of unit order.
     for (const { squad, p, selected, symbol, image } of renderedSquads) {
       if (
+        !squad.afloat &&
         (squad.definitionId
           ? UNIT.get(squad.definitionId)!.attack.channel === "ranged"
           : squad.kind === "archer") &&
@@ -1364,7 +1360,7 @@ export class Renderer {
         for (let index = 0; index < route.length; index++) {
           const order = route[index];
           let goal: { x: number; y: number } | undefined;
-          if (order.type === "move" || order.type === "board")
+          if (order.type === "move")
             goal = this.screen(
               order.type === "move" && order.x !== undefined
                 ? order.x / FIXED
@@ -1382,9 +1378,7 @@ export class Renderer {
           ctx.strokeStyle =
             order.type === "attack"
               ? "#ef9c8e99"
-              : order.type === "board"
-                ? "#8ed5ffcc"
-                : "#dffbf66e";
+              : "#dffbf66e";
           ctx.beginPath();
           ctx.moveTo(from.x, from.y);
           ctx.lineTo(goal.x, goal.y);
@@ -1460,10 +1454,12 @@ export class Renderer {
         }
       }
       const radius = 4 + (2 * squad.troops) / 1_000;
-      const spriteSize = this.spriteSize(squad.troops);
+      const spriteSize = squad.afloat ? shipSpriteSize(this.scale, "transport") : this.spriteSize(squad.troops);
+      // Afloat, the bar is the hull: every hit lands there until it sinks.
+      const strength = squad.afloat ? squad.afloat.hull / squad.afloat.maxHull : squad.troops / 1_000;
       if (image) {
         const lunge =
-          definition &&
+          !squad.afloat && definition &&
           (definition.attack.channel !== "melee" ||
             visualTick - (squad.lastAttackTick ?? 0) > 20)
             ? { x: 0, y: 0 }
@@ -1477,10 +1473,12 @@ export class Renderer {
         ctx.save();
         ctx.translate(p.x + lunge.x, p.y + lunge.y);
         ctx.rotate(
-          (squadArtworkPose(squad, visualTick).clip === "attack"
+          (!squad.afloat && squadArtworkPose(squad, visualTick).clip === "attack"
             ? this.presentation.firingAngle(squad.id, visualTick)
             : this.presentation.angle(squad.id)) +
-            (squad.definitionId
+            (squad.afloat
+              ? this.eraArtwork.facing(squad.afloat.vesselId)
+              : squad.definitionId
               ? this.eraArtwork.facing(squad.definitionId)
               : 0),
         );
@@ -1506,7 +1504,7 @@ export class Renderer {
         ctx.fillRect(
           p.x - barWidth / 2,
           barY,
-          (barWidth * squad.troops) / 1_000,
+          barWidth * strength,
           3,
         );
       } else {
@@ -1605,7 +1603,7 @@ export class Renderer {
         }
         // Distant formations retain a strength cue without thousands of text
         // labels competing for space at strategic zoom.
-        if (squad.troops < 1_000) {
+        if (strength < 1) {
           const barWidth = symbol.width,
             barY = p.y + symbol.height / 2 + 3;
           ctx.fillStyle = "#10212bdd";
@@ -1614,7 +1612,7 @@ export class Renderer {
           ctx.fillRect(
             p.x - barWidth / 2,
             barY,
-            (barWidth * squad.troops) / 1_000,
+            barWidth * strength,
             2,
           );
         }
@@ -1683,21 +1681,6 @@ export class Renderer {
         : SHIP_RULES[ship.kind];
       const selected = this.selectedShips.has(ship.id);
       if (selected) {
-        if (ship.boarding) {
-          const shore = this.screen(
-            this.map.x(ship.boarding.landTile) + 0.5,
-            this.map.y(ship.boarding.landTile) + 0.5,
-          );
-          ctx.beginPath();
-          ctx.arc(shore.x, shore.y, 10, 0, Math.PI * 2);
-          ctx.strokeStyle = "#8ed5ff";
-          ctx.lineWidth = 2;
-          ctx.stroke();
-          ctx.font = "600 10px system-ui";
-          ctx.textAlign = "center";
-          ctx.fillStyle = "#d2edff";
-          ctx.fillText("Board here", shore.x, shore.y - 15);
-        }
         let from = p;
         for (const tile of [
           ...(ship.destination === null ? [] : [ship.destination]),
@@ -1816,7 +1799,6 @@ export class Renderer {
         ctx.textAlign = "center";
         ctx.fillText(rules.glyph, p.x, p.y + 3);
       }
-      const cargo = this.cargoCounts.get(ship.id) ?? 0;
       if (!selected && this.scale < 14) {
         if (ship.health < rules.health) {
           const width = symbol.width;
@@ -1843,7 +1825,7 @@ export class Renderer {
             : ship.repairState === "waiting-for-dock"
               ? " · dock full"
               : "";
-      const label = `${ship.health} HP${repairInfo}${ship.kind === "transport" ? ` · ${cargo}/${ship.shoreTransfer?.capacity ?? rules.capacity ?? 4}` : ""}${ship.shoreTransfer ? ` · ${ship.shoreTransfer.phase}` : ship.boarding ? " · meeting" : ""}${ship.fighting ? " ⚔" : ""}`;
+      const label = `${ship.health} HP${repairInfo}${ship.fighting ? " ⚔" : ""}`;
       const labelY = p.y + (drawnShipSize ? drawnShipSize * 0.42 + 10 : 22);
       ctx.strokeText(label, p.x, labelY);
       ctx.fillStyle = "#eaf3ef";

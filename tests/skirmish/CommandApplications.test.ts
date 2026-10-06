@@ -31,15 +31,15 @@ describe("command receipts", () => {
     expect(progress).toEqual([1]);
     expect(outcomes).toEqual(["deferred", "executed"]);
   });
-  it.each(["executed","rejected","superseded"] as const)("preserves a shore-to-land handoff through restore until its %s result",status=>{
+  it.each(["executed","rejected","superseded"] as const)("preserves a land planning handoff through restore until its %s result",status=>{
     let receipts:CommandApplications;
-    receipts=new CommandApplications({tick:()=>0,apply:()=>{receipts.observe("shore",{id:17,playerId:1,tick:0,status:"deferred"});return null;}});
+    receipts=new CommandApplications({tick:()=>0,apply:()=>{receipts.observe("land",{id:17,playerId:1,tick:0,status:"deferred"});return null;}});
     expect(receipts.apply("crossing",move).status).toBe("deferred");
-    receipts.handoff("shore",17,1,()=>{
+    receipts.handoff("land",17,1,()=>{
       receipts.observe("land",{id:1,playerId:1,tick:12,status:"deferred"});
       receipts.observe("land",{id:2,playerId:1,tick:12,status:"deferred"});
     });
-    receipts.observe("shore",{id:17,playerId:1,tick:12,status:"executed"});
+    receipts.observe("land",{id:17,playerId:1,tick:12,status:"executed"});
     receipts.observe("land",{id:1,playerId:1,tick:13,status:"executed"});
     expect(receipts.apply("crossing",move).status).toBe("deferred");
     const restored=new CommandApplications({tick:()=>14,apply:()=>{throw new Error("receipt replay must not reapply the command");}});

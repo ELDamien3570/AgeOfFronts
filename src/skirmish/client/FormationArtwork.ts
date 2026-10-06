@@ -1,7 +1,8 @@
 import type { ShipType, SquadType } from "../Protocol";
 import { UNIT } from "../content/Units";
 
-export type FormationType = SquadType | ShipType | "siege";
+/** "transport" draws a squad afloat; fleet vessels are warships. */
+export type FormationType = SquadType | ShipType | "transport" | "siege";
 
 export function squadFormationType(squad: {
   kind: SquadType;

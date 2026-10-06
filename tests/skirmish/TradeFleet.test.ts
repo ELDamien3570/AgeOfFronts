@@ -204,7 +204,7 @@ describe("bounded civilian trade", () => {
       if (phase === "capture") {
         expect(diplomacy.action(game.players[1],game.players[0],"declare",game.tick)).toBeNull();
         a.waitTicks = 0;
-        game.addShip({id: game.allocateId(), playerId: 2, kind: "warship", definitionId: "stoneage-warship", x:a.x,y:a.y,health:1000,destination:null,waypoints:[],path:[],nextPathIndex:0,fighting:false,boarding:null});
+        game.addShip({id: game.allocateId(), playerId: 2, kind: "warship", definitionId: "stoneage-warship", x:a.x,y:a.y,health:1000,destination:null,waypoints:[],path:[],nextPathIndex:0,fighting:false});
       }
       if (phase === "source-loss") game.removeBuilding(a.factoryId);
       break;
@@ -249,7 +249,7 @@ describe("bounded civilian trade", () => {
     expect(game.expansion!.diplomacy.action(game.players[1],game.players[0],"declare",game.tick)).toBeNull();
     trade.setPaused(1,true,true);
     for (const port of game.buildings.filter(b => b.type === "port" && b.playerId === 2)) game.removeBuilding(port.id);
-    game.addShip({ id: game.allocateId(), playerId: 2, kind: "warship", definitionId: "stoneage-warship", x: actor.x, y: actor.y, health: 1000, destination: null, waypoints: [], path: [], nextPathIndex: 0, fighting: false, boarding: null });
+    game.addShip({ id: game.allocateId(), playerId: 2, kind: "warship", definitionId: "stoneage-warship", x: actor.x, y: actor.y, health: 1000, destination: null, waypoints: [], path: [], nextPathIndex: 0, fighting: false });
     actor.waitTicks = 0;
     step(25);
     expect(actor).toMatchObject({ playerId: 2, state: "prize", destination: null });
@@ -264,7 +264,7 @@ describe("bounded civilian trade", () => {
     const { game, trade, step } = fleet(0, 1, true);
     step(22);
     const actor = trade.actors.find(a => a.naval)!;
-    const ship = game.addShip({ id: game.allocateId(), playerId: 2, kind: "warship", definitionId: "stoneage-warship", x: actor.x, y: actor.y, health: 1000, destination: null, waypoints: [], path: [], nextPathIndex: 0, fighting: false, boarding: null });
+    const ship = game.addShip({ id: game.allocateId(), playerId: 2, kind: "warship", definitionId: "stoneage-warship", x: actor.x, y: actor.y, health: 1000, destination: null, waypoints: [], path: [], nextPathIndex: 0, fighting: false });
     actor.waitTicks = 0;
     step();
     expect(actor.playerId).toBe(1);

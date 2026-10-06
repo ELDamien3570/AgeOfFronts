@@ -22,7 +22,6 @@ const order = z.discriminatedUnion("type", [
     })
     .strict(),
   z.object({ type: z.literal("attack"), targetId: id }).strict(),
-  z.object({ type: z.literal("board"), shipId: id, tile: id }).strict(),
 ]);
 const command = <T extends string>(
   type: T,
@@ -122,13 +121,10 @@ export const commandSchema = z.discriminatedUnion("type", [
     buildingId: id,
     buildingIds: z.array(id).min(1).max(10_000).optional(),
     autoRecruit: z.boolean().optional(),
-    shipType: z.enum(["transport", "warship"]),
+    shipType: z.enum(["warship"]),
     definitionId: text.optional(),
   }),
   command("sail", { shipIds: ids, tile: id, append: z.boolean().optional() }),
   command("stop-ships", { shipIds: ids }),
-  command("load", { shipId: id, squadIds: ids }),
-  command("board", { shipId: id, squadIds: ids }),
-  command("unload", { shipId: id, tile: id }),
   command("order", { squadIds: squadOrderIds, order, append: z.boolean().optional() }),
 ]);

@@ -43,7 +43,6 @@ function fixture() {
     path: [],
     nextPathIndex: 0,
     fighting: false,
-    boarding: null,
   }));
   const ownedBuildings = buildingOwner(buildings), ownedShips = unitOwner(ships);
   const buildingIds = new Map(ownedBuildings.values.map((b) => [b.id, b])),

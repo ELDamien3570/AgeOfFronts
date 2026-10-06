@@ -1,7 +1,7 @@
 import { FlatBinaryHeap } from "../core/execution/utils/FlatBinaryHeap";
 import type { GameMap } from "../core/game/GameMap";
 import { HierarchicalPaths } from "./HierarchicalPaths";
-import { PathTopology } from "./PathTopology";
+import { PathTopology, type PathMedium } from "./PathTopology";
 import {IncrementalPath,type IncrementalPathState} from "./IncrementalPath";
 import { PlanningPath, type PlanningPathState, type PlanningWorkspace } from "./PlanningWorkspace";
 
@@ -42,12 +42,12 @@ class TilePaths {
 
   constructor(
     protected readonly map: GameMap,
-    private readonly water = false,
+    medium: PathMedium | boolean = false,
     prepare = true,
   ) {
     const size = map.width() * map.height();
     this.size = size;
-    this.topology = new PathTopology(map, water);
+    this.topology = new PathTopology(map, medium);
     this.topology.onCostsChanged(() => this.costRevision++);
     this.cost = new Int32Array(size);
     this.parent = new Int32Array(size);
@@ -87,6 +87,11 @@ class TilePaths {
     this.hierarchy?.prepare();
   }
 
+  /** Crossing trees a full warm builds: an upper bound on warm() calls' work. */
+  get hierarchyPortals(): number {
+    return this.hierarchy?.residency.portals ?? 0;
+  }
+
   /** Incremental form of `prepare()`; see HierarchicalPaths.warm. */
   warm(count: number): boolean {
     return this.hierarchy?.warm(count) ?? true;
@@ -109,6 +114,8 @@ class TilePaths {
     );
   }
   get revision():number {return this.costRevision;}
+  /** Land and water as one graph (squads of a faction with transports). */
+  get amphibious(): boolean { return this.topology.medium === "amphibious"; }
   /** Cost epochs are behavioral state for unfinished jobs, unlike route caches. */
   restoreRevision(revision:number):void {
     if(!Number.isSafeInteger(revision)||revision<0)throw new Error("Invalid routing revision");
@@ -311,8 +318,8 @@ class TilePaths {
 }
 
 export class LandPaths extends TilePaths {
-  constructor(map: GameMap, prepare = true) {
-    super(map, false, prepare);
+  constructor(map: GameMap, prepare = true, medium: "land" | "amphibious" = "land") {
+    super(map, medium, prepare);
   }
   get largestLand(): number[] {
     return this.largestComponent;
@@ -358,6 +365,14 @@ export class LandPaths extends TilePaths {
       if (!head || !tail) return null;
       return [...head, ...spine.slice(join + 1, leave + 1), ...tail];
     });
+  }
+}
+
+/** Squads of a faction with transport technology: land and water as one
+ * graph, with an embarkation cost at every shoreline step. */
+export class AmphibiousPaths extends LandPaths {
+  constructor(map: GameMap, prepare = true) {
+    super(map, prepare, "amphibious");
   }
 }
 

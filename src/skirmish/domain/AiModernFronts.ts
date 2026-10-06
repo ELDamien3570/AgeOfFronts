@@ -223,14 +223,13 @@ export class AiModernFronts {
       !squad.structureTarget &&
       (!squad.fighting ||
         this.economy.assets.owns(`squad:${squad.id}`, section.id)) &&
-      squad.order.type !== "board" &&
       !this.expansion.armies.armyOf(squad.id) &&
       (!this.economy.assets.held(`squad:${squad.id}`) ||
         this.economy.assets.owns(`squad:${squad.id}`, section.id)) &&
       ["frontline", "ranged", "artillery", "anti-air"].includes(
         this.expansion.unit(squad).role,
       ) &&
-      this.expansion.world.paths.connected(
+      this.expansion.world.squadPaths(squad.playerId).connected(
         this.expansion.world.tileOf(squad),
         section.reserve,
       )

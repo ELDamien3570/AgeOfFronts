@@ -55,7 +55,6 @@ function fixture(split = false, compact = false, island = false) {
       path: [],
       nextPathIndex: 0,
       fighting: false,
-      boarding: null,
       repairState: "patrolling",
     });
 

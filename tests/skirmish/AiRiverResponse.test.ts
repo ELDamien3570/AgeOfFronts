@@ -22,13 +22,30 @@ function fixture(transport: boolean) {
   const commands=vi.spyOn(game,"applyCommand");
   return {game,map,defender,enemy,commands,think:()=> (game as unknown as {thinkAi():void}).thinkAi()};
 }
-it("uses researched shore transport instead of unreachable land attack orders",()=>{
+it("crosses the river amphibiously when transport is researched",()=>{
   const f=fixture(true); f.think();
-  const transfers=f.game.checkpoint().shorePlanning.pending;
-  expect(transfers).toHaveLength(1);
-  expect(transfers[0][1].destination).toBe(f.game.tileOf(f.enemy));
-  expect(transfers[0][1].members.map(m=>m.id)).toEqual([f.defender.id]);
-  expect(f.commands.mock.calls.some(([c])=>c.type==="order" && c.playerId===2 && c.order.type==="attack")).toBe(false);
+  const orders=f.commands.mock.calls.map(([c])=>c).filter(c=>c.type==="order" && c.playerId===2 && c.squadIds.includes(f.defender.id));
+  const move=orders.find(c=>c.type==="order" && c.order.type==="move");
+  expect(move).toBeDefined();
+  if(move?.type==="order" && move.order.type==="move") {
+    // The destination is on the far bank: only reachable over water.
+    expect(f.map.isLand(move.order.tile)).toBe(true);
+    expect(f.map.y(move.order.tile)).toBeGreaterThan(25);
+    expect(f.game.paths.connected(f.game.tileOf(f.defender),move.order.tile)).toBe(false);
+    expect(f.game.squadPaths(2).connected(f.game.tileOf(f.defender),move.order.tile)).toBe(true);
+  }
+  expect(orders.some(c=>c.type==="order" && c.order.type==="attack")).toBe(false);
+  f.game.options.runAi=false;
+  let afloat=false;
+  for(let i=0;i<120 && !afloat;i++){f.game.step(); afloat=!!f.defender.afloat;}
+  expect(afloat).toBe(true);
+  expect(f.defender.afloat?.vesselId).toBe(VESSELS.find(v=>v.kind==="transport")!.id);
+  expect(f.defender.y).toBeGreaterThan(22.5*FIXED);
+  // A land destination keeps its slot ashore: the squad lands rather than
+  // idling afloat beside the enemy it cannot fight from the water.
+  for(let i=0;i<400 && (f.defender.afloat || f.defender.order.type!=="hold");i++)f.game.step();
+  const live=f.game.squad(f.defender.id);
+  if(live)expect(live.afloat ?? null).toBeNull();
 });
 it("withdraws from unreachable ranged fire when embarkation is unavailable",()=>{
   const f=fixture(false); f.think();

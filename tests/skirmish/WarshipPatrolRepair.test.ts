@@ -51,7 +51,6 @@ function spawnWarship(
     path: [],
     nextPathIndex: 0,
     fighting: false,
-    boarding: null,
     patrolTile: match.map.ref(xTile, yTile),
     repairState: "patrolling",
     patrolDwellTicks: 100,

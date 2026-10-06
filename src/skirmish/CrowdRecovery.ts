@@ -48,7 +48,6 @@ export class CrowdRecovery {
       !s.refit &&
       !s.charge &&
       (s.order.type === "move" ||
-        s.order.type === "board" ||
         intents.get(s.id)!.yieldOnly === true);
     for (const [id, intent] of intents) {
       const s = intent.squad;

@@ -61,7 +61,6 @@ function emptyShip(
     path: [],
     nextPathIndex: 0,
     fighting: false,
-    boarding: null,
   };
 }
 
@@ -70,18 +69,15 @@ describe("complete conquest", () => {
     const game = fixture("ages-v1");
     const own = game.addShip(emptyShip(game.allocateId(), 1, "warship", 1000));
     const enemy = game.addShip(emptyShip(game.allocateId(), 2, "warship", 1000));
-    const transport = game.addShip(emptyShip(game.allocateId(), 1, "transport", 1000));
     const gold = game.player(1)!.gold, owners = game.owners.slice();
     expect(game.applyCommand({type:"delete-ship", playerId:1, shipId:enemy.id})).not.toBeNull();
-    expect(game.applyCommand({type:"delete-ship", playerId:1, shipId:transport.id})).not.toBeNull();
     expect(game.applyCommand({type:"delete-ship", playerId:1, shipId:own.id})).toBeNull();
     expect(game.ship(own.id)).toBeUndefined();
     expect(game.ship(enemy.id)).toBeDefined();
-    expect(game.ship(transport.id)).toBeDefined();
     expect(game.player(1)!.gold).toBe(gold);
     expect(game.owners).toEqual(owners);
   });
-  it.each(["transport", "warship"] as const)(
+  it.each(["warship"] as const)(
     "conquers an AI's last city despite a surviving %s, including after restore",
     (kind) => {
       const original = fixture("ages-v1"), enemyId = 2;
@@ -224,15 +220,13 @@ describe("complete conquest", () => {
     expect(game.owners.includes(2)).toBe(false);
   });
 
-  it.each([undefined, "ages-v1"] as const)("counts embarked survivors and credits their transport's killer (%s)", (ruleset) => {
+  it.each([undefined, "ages-v1"] as const)("counts afloat survivors and credits the killer of their hull (%s)", (ruleset) => {
     const game = fixture(ruleset),
       enemy = game.players[1],
       cargo = game.squads.find((s) => s.playerId === 2)!;
     removeDefenders(game, cargo);
-    const transport = game.addShip(emptyShip(10001, 2, "transport", 1)),
-      warship = game.addShip(emptyShip(10002, 3, "warship", SHIP_RULES.warship.health));
-    place(game, transport, 75, 4);
-    game.updateSquad(cargo.id, { embarkedOn: transport.id });
+    const warship = game.addShip(emptyShip(10002, 3, "warship", SHIP_RULES.warship.health));
+    game.updateSquad(cargo.id, { afloat: { hull: 1, maxHull: 100, vesselId: "stoneage-transport" }, order: { type: "hold" }, path: [] });
     place(game, cargo, 75, 4);
 
     occupy(game, enemy.base);

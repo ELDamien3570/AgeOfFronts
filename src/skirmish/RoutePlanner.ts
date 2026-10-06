@@ -13,6 +13,8 @@ export interface ExactRouteRequest<T> {
   alternatives?: number[];
   prepare?: boolean;
   water: boolean;
+  /** Land route over the amphibious graph (squads that may cross water). */
+  amphibious?: boolean;
   createdTick: number;
   obstacleRevision: string;
   context: T;
@@ -50,6 +52,10 @@ export interface RoutePlannerPorts<T> {
   /** Autonomous callers can decline exclusive arena retries without claiming
    * that a capacity-limited result means geographic impossibility. */
   allowExclusiveRetry?(request: ExactRouteRequest<T>): boolean;
+  /** Whether the HPA* corridor may answer an interactive request. A cold
+   * hierarchy builds crossing trees inside the query, outside any budget; the
+   * owner gates this on a deterministic schedule, never on cache state. */
+  corridorReady?(request: ExactRouteRequest<T>): boolean;
   /** Domain attribution for fair scheduling and bounded cohort diagnostics. */
   identity?(request: ExactRouteRequest<T>): {
     playerId: number;
@@ -119,6 +125,7 @@ export class RoutePlanner<T> {
     private readonly ports: RoutePlannerPorts<T>,
     private readonly jobLimit = 128,
     workspaceCapacity = 65_536,
+    private readonly amphibious?: LandPaths,
   ) {
     if (!Number.isInteger(jobLimit) || jobLimit < 1 || jobLimit > 128)
       throw new Error("Invalid route queue limit");
@@ -129,6 +136,7 @@ export class RoutePlanner<T> {
     return structuredClone({
       landRevision: this.land.revision,
       waterRevision: this.water.revision,
+      amphibiousRevision: this.amphibious?.revision,
       jobs: [...this.jobs.values()],
       workspace: this.workspace.checkpoint(),
       scheduling: {
@@ -182,6 +190,7 @@ export class RoutePlanner<T> {
       throw new Error("Invalid planner scheduling checkpoint");
     this.land.restoreRevision(saved.landRevision);
     this.water.restoreRevision(saved.waterRevision);
+    if (saved.amphibiousRevision !== undefined) this.amphibious?.restoreRevision(saved.amphibiousRevision);
     this.workspace.restore(
       saved.workspace ??
         new PlanningWorkspace(this.workspace.capacity).checkpoint(),
@@ -209,6 +218,10 @@ export class RoutePlanner<T> {
     }
     this.diagnostics.pending = this.jobs.size;
     this.diagnostics.workspaceUsed = this.workspace.used;
+  }
+  private pathsFor(request: ExactRouteRequest<T>): LandPaths | WaterPaths {
+    if (request.water) return this.water;
+    return request.amphibious && this.amphibious ? this.amphibious : this.land;
   }
   get pausesCommittedLimits(): boolean {
     return this.schedulingVersion >= 3;
@@ -391,7 +404,7 @@ export class RoutePlanner<T> {
     if (this.ports.priority && !this.ports.priority(request) && this.jobLimit >= 16 && this.jobs.size >= this.jobLimit - 8) {
       this.diagnostics.admissionDeferred++; return false;
     }
-    const paths = request.water ? this.water : this.land;
+    const paths = this.pathsFor(request);
     const search = paths.beginPlanning(
       this.workspace,
       request.start,
@@ -428,7 +441,7 @@ export class RoutePlanner<T> {
         before = used;
       try {
         let outcome: ExactRouteOutcome | undefined;
-        const paths = job.water ? this.water : this.land;
+        const paths = this.pathsFor(job);
         if (job.releasing) {
           const slice = Math.min(quantum, budget - used);
           let count = 0;
@@ -533,7 +546,8 @@ export class RoutePlanner<T> {
             job.search.phase === "search" &&
             !job.search.nodes.size &&
             budget - used >= CORRIDOR_RESERVE &&
-            this.ports.priority?.(job)
+            this.ports.priority?.(job) &&
+            (this.ports.corridorReady?.(job) ?? true)
           ) {
             // An interactive order first tries the static HPA* corridor, which
             // costs a few cluster crossings instead of a tile-level search of

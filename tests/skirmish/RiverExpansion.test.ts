@@ -24,6 +24,7 @@ function fixture(connected=false) {
   game.restore(game.checkpoint());
   return {game,map,tribe:game.players.find(p=>p.kind==="tribe")!};
 }
+const afloat=(game:Skirmish,id:number)=>game.squads.filter(s=>s.playerId===id&&!!s.afloat).length;
 describe("bounded frontier and river expansion",()=>{
   it("rotates beyond the first 128 cells and backs off failed goals through restore",()=>{
     const data=new Uint8Array(180*20).fill(133),map=new GameMapImpl(180,20,data,data.length),home=new HomeTerritory(map),owners=new Uint8Array(data.length),base=map.ref(1,1);
@@ -44,29 +45,34 @@ describe("bounded frontier and river expansion",()=>{
     expect(index.destinations(f.map.ref(38,24))).toContain(f.map.ref(41,24));
     expect(index.destinations(f.map.ref(30,24))).toEqual([]);
   });
-  it("crosses with one small temporary transport and expands a disconnected bridgehead",()=>{
+  it("crosses with a small afloat cohort and expands a disconnected bridgehead",()=>{
     const {game,map,tribe}=fixture();let maximum=0,restored:Skirmish|undefined;
     for(let tick=0;tick<2200;tick++) {
-      game.step();maximum=Math.max(maximum,game.ships.filter(s=>s.playerId===tribe.id&&!!s.shoreTransfer).length);
-      if(!restored&&game.ships.some(s=>s.playerId===tribe.id&&!!s.shoreTransfer)) {
+      game.step();maximum=Math.max(maximum,afloat(game,tribe.id));
+      if(!restored&&afloat(game,tribe.id)>0) {
         restored=new Skirmish(map,game.options);restored.restore(game.checkpoint());
         for(let i=0;i<30;i++){game.step();restored.step();}
         expect(restored.checkpoint()).toEqual(game.checkpoint());
       }
     }
-    expect(restored).toBeDefined();expect(maximum).toBe(1);
+    expect(restored).toBeDefined();expect(maximum).toBeGreaterThan(0);expect(maximum).toBeLessThanOrEqual(4);
     const captured=Array.from(game.owners).flatMap((owner,tile)=>owner===tribe.id&&map.x(tile)>=41?[tile]:[]);
     expect(captured.length).toBeGreaterThan(60);
     expect(captured.some(t=>map.x(t)>46)).toBe(true);
   });
-  it("uses a short hop even when both banks connect by a distant land detour",()=>{
+  it("uses a short amphibious hop even when both banks connect by a distant land detour",()=>{
     const {game,map,tribe}=fixture(true);game.tick=56;
     expect(game.paths.connected(map.ref(38,24),map.ref(41,24))).toBe(true);
-    let crossings=0;
-    for(let tick=0;tick<800;tick++){game.step();crossings=Math.max(crossings,game.ships.filter(s=>s.playerId===tribe.id&&!!s.shoreTransfer).length);}
-    expect(crossings).toBe(1);
+    let crossings=0,landed=false;
+    for(let tick=0;tick<800;tick++){
+      game.step();crossings=Math.max(crossings,afloat(game,tribe.id));
+      landed||=game.squads.some(s=>s.playerId===tribe.id&&!s.afloat&&map.x(game.tileOf(s))>=41);
+    }
+    expect(crossings).toBeGreaterThan(0);expect(crossings).toBeLessThanOrEqual(4);
+    expect(landed).toBe(true);
+    // The landing must register a bridgehead so expansion continues there.
+    expect([...game.checkpoint().homeTerritory.bridgeheads.get(tribe.id)?.values()??[]].some(t=>map.x(t)>=41&&game.owners[t]===tribe.id)).toBe(true);
     expect(game.squads.some(s=>s.playerId===tribe.id&&map.x(game.tileOf(s))>=41)).toBe(true);
-    expect([...game.checkpoint().homeTerritory.bridgeheads.get(tribe.id)!.values()].some(t=>map.x(t)>=41&&game.owners[t]===tribe.id)).toBe(true);
   });
   it("sends a small reinforcement cohort to threatened owned land across a river",()=>{
     const {game,map,tribe}=fixture();
@@ -74,8 +80,8 @@ describe("bounded frontier and river expansion",()=>{
     const enemy=game.squads.find(s=>s.playerId===1)!;
     game.updateSquad(enemy.id,{x:43.5*FIXED,y:24.5*FIXED,troops:100});game.tick=56;
     let crossings=0;
-    for(let tick=0;tick<900;tick++){game.step();crossings=Math.max(crossings,game.ships.filter(s=>s.playerId===tribe.id&&!!s.shoreTransfer).length);}
-    expect(crossings).toBe(1);
+    for(let tick=0;tick<900;tick++){game.step();crossings=Math.max(crossings,afloat(game,tribe.id));}
+    expect(crossings).toBeGreaterThan(0);expect(crossings).toBeLessThanOrEqual(4);
     expect(game.squads.some(s=>s.playerId===tribe.id&&map.x(game.tileOf(s))>=41)).toBe(true);
   });
 });

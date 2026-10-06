@@ -380,7 +380,8 @@ describe("persistent armies and Bronze tree", () => {
   it("budgets 50-member work fairly and cancels stale routes after new orders", () => {
     const m = make(50, true);
     create(m);
-    const spy = vi.spyOn(m.paths, "find");
+    // Fully researched factions route over the amphibious graph.
+    const spy = vi.spyOn(m.squadPaths(1), "find");
     m.applyCommand({
       type: "army-order",
       playerId: 1,

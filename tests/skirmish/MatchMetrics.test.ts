@@ -100,7 +100,7 @@ describe("authoritative match metrics", () => {
     const ship: Ship = m.addShip({
       id: m.allocateId(),
       playerId: 2,
-      kind: "transport",
+      kind: "warship",
       x: 0,
       y: 0,
       health: 100,
@@ -109,7 +109,6 @@ describe("authoritative match metrics", () => {
       path: [],
       nextPathIndex: 0,
       fighting: false,
-      boarding: null,
     });
 
     m.updateSquad(passenger.id, { embarkedOn: ship.id });

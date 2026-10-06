@@ -19,16 +19,15 @@ function fixture() {
   const ships: Ship[] = ([5, 8].map((x) => ({
     id: match.allocateId(),
     playerId: 1,
-    kind: "transport" as const,
+    kind: "warship" as const,
     x: (x + 0.5) * FIXED,
     y: 30.5 * FIXED,
-    health: SHIP_RULES.transport.health,
+    health: SHIP_RULES.warship.health,
     destination: null,
     waypoints: [],
     path: [],
     nextPathIndex: 0,
     fighting: false,
-    boarding: null,
   }))).map(record => match.addShip(record));
 
   return { map, match, ships, ids: ships.map((s) => s.id) };
@@ -234,7 +233,14 @@ describe("transactional sailing admission", () => {
     ).toBeNull();
     for (let i = 0; i < 10; i++) match.step();
     expect(match.shipAdmission.pendingCount).toBe(0);
-    expect(ships.every((s) => s.destination === null)).toBe(true);
+    // Idle warships may resume their local patrol, but none sails the
+    // superseded voyage.
+    expect(
+      ships.every(
+        (s) => s.destination === null || s.repairState === "patrolling",
+      ),
+    ).toBe(true);
+    expect(ships.some((s) => s.destination === map.ref(70, 50))).toBe(false);
     expect(match.routePlanner.diagnostics.pending).toBe(0);
   });
   it("restores unfinished water planning and later waypoints in the same schedule", () => {

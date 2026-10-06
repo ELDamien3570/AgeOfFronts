@@ -156,8 +156,7 @@ export class AiModernization {
         this.holds(squad.id) ||
         squad.refit ||
         squad.fighting ||
-        squad.charge ||
-        squad.order.type === "board"
+        squad.charge
       )
         continue;
       const current = UNIT.get(squad.definitionId ?? "stoneage-" + squad.kind)!;

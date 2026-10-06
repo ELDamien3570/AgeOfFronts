@@ -68,7 +68,7 @@ export class CommandApplications {
       status: "executed",
     };
     const mayDefer =
-      command.type === "attack-structure" || command.type === "army-order" || command.type === "board" || command.type === "unload" ||
+      command.type === "attack-structure" || command.type === "army-order" ||
       command.type === "sail" ||
       (command.type === "order" &&
         ((command.append ?? false) || command.order.type === "move"));
@@ -106,7 +106,7 @@ export class CommandApplications {
     this.publish(result);
     return { ...result };
   }
-  observe(source: "land" | "water" | "army" | "shore" | "trade", event: MovementAdmissionEvent): void {
+  observe(source: "land" | "water" | "army" | "trade", event: MovementAdmissionEvent): void {
     const plan = `${source}:${event.id}`;
     if (event.status === "deferred") {
       if (this.applying?.playerId === event.playerId)
@@ -134,7 +134,7 @@ export class CommandApplications {
   }
   /** A domain itinerary can replace its planning owner without completing the
    * external receipt before the replacement admissions execute. */
-  handoff(source: "shore" | "land", id:number, playerId:number, action:()=>void):void {
+  handoff(source: "land", id:number, playerId:number, action:()=>void):void {
     const key=this.plans.get(`${source}:${id}`),receipt=key===undefined?undefined:this.pending.get(key);
     if(!receipt||receipt.outcome.playerId!==playerId){action();return;}
     if(this.applying)throw new Error("Nested command planning handoff");

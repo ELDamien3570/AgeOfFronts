@@ -145,21 +145,19 @@ describe("snapshot-driven HUD selection", () => {
     ]);
     expect(vm().selectionCard(null).mode).toBe("empty");
   });
-  it("aggregates ship hulls and reports actual transport cargo in individual inspection", () => {
-    const { selection, vm, own, snapshot , squads } = setup();
+  it("aggregates ship hulls in a group and shows a single ship's hull", () => {
+    const { selection, vm, snapshot } = setup();
     snapshot.ships = [1, 2].map((id) => ({
       id,
       playerId: 1,
-      kind: "transport",
+      kind: "warship",
       x: FIXED,
       y: FIXED,
       health: 450,
       destination: null,
       waypoints: [],
       fighting: false,
-      boarding: null,
     }));
-    squads.update(own[0].id, { embarkedOn: 1 });
     selection.selectedShips = new Set([1, 2]);
     const group = vm().selectionCard(null);
     expect(group.mode).toBe("group");
@@ -167,14 +165,24 @@ describe("snapshot-driven HUD selection", () => {
     expect(group.card.meter).toEqual({
       label: "Hull health",
       value: 900,
-      max: 1200,
+      max: 2000,
     });
     const solo = vm().selectionCard("ship:1");
     if (solo.mode !== "detail") throw new Error("Expected detail");
-    expect(
-      solo.card.stats.find((s) => s.label === "Squads aboard")?.value,
-    ).toBe("1");
+    expect(solo.card.meter).toEqual({ label: "Hull health", value: 450, max: 1000 });
     expect(selection.selectedShips.size).toBe(2);
+  });
+  it("shows an afloat squad's transport hull and troops aboard", () => {
+    const { selection, vm, own, squads } = setup();
+    squads.update(own[0].id, {
+      troops: 700,
+      afloat: { hull: 40, maxHull: 120, vesselId: "stoneage-transport" },
+    });
+    selection.selected.add(own[0].id);
+    const card = vm().selectionCard(null);
+    if (card.mode !== "detail") throw new Error("Expected detail");
+    expect(card.card.meter).toEqual({ label: "Hull health", value: 40, max: 120 });
+    expect(card.card.status).toMatch(/^Afloat · .* · 700 troops aboard$/);
   });
   it("shows building construction and ownership without inventing building health", () => {
     const { selection, vm, snapshot, buildings } = setup();

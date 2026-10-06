@@ -1,6 +1,5 @@
 import { buildingGroundBounds, buildingFootprint } from "../BuildingFootprint";
 import { buildingCost, buildingTechnology } from "../content/Buildings";
-import { shoreTransportCapacity } from "../content/ShoreTransport";
 import { FIXED, type Player } from "../Protocol";
 import { tilePoint } from "../SquadGeometry";
 import { affordableAiCost } from "./AiBudgetLedger";
@@ -213,12 +212,9 @@ export class AiCoastPlanner {
           this.expansion.supply.resourceSites.rejection("port", edge.landTile)
         )
           continue;
+        // Overseas coasts are reachable by amphibious squads, at a score cost.
         const land = world.paths.connected(player.base, edge.landTile);
-        const shore =
-          shoreTransportCapacity(state.completed) > 0 &&
-          world.coast.candidates(world.paths.component[player.base], sea)
-            .length > 0;
-        if (!land && !shore) continue;
+        if (!land && !world.squadPaths(player.id).connected(player.base, edge.landTile)) continue;
         g.pending = {
           tile: edge.landTile,
           water: edge.waterTile,
@@ -286,7 +282,7 @@ export class AiCoastPlanner {
           continue;
         }
         const land = world.paths.connected(player.base, candidate.tile);
-        if (land) {
+        if (world.squadPaths(player.id).connected(player.base, candidate.tile)) {
           const route = this.economy.routes.request(
             g.id,
             player.id,
@@ -313,7 +309,7 @@ export class AiCoastPlanner {
               s.order.type === "hold" &&
               !this.expansion.armies.armyOf(s.id) &&
               !this.economy.assets.held(`squad:${s.id}`) &&
-              world.paths.connected(player.base, world.tileOf(s)),
+              world.squadPaths(player.id).connected(player.base, world.tileOf(s)),
           );
         // Keep two squads at home. Foreign objectives require a supported larger party.
         const foreign =
@@ -362,7 +358,7 @@ export class AiCoastPlanner {
         g.phase = "move";
         g.reason = land
           ? "Moving the paid standing force to its certified coast"
-          : "Using researched physical shore transport for coastal acquisition";
+          : "Crossing water to the certified coast";
         this.economy.routes.release(g.id);
         break;
       } else if (g.phase === "move" || g.phase === "capture") {

@@ -54,8 +54,7 @@ type RefitShip = Pick<
   | "refit"
   | "fighting"
   | "destination"
-  | "boarding"
-> & { readonly shoreTransfer?: unknown };
+>;
 interface Context {
   player: Player;
   research: readonly string[];
@@ -202,9 +201,7 @@ export function quoteShipRefits<T extends RefitShip>(
       s.playerId === context.player.id &&
       !s.refit &&
       !s.fighting &&
-      s.destination === null &&
-      !s.boarding &&
-      !s.shoreTransfer,
+      s.destination === null,
     vesselRefitCost,
     context,
     "Research the next vessel tier",

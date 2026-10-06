@@ -220,7 +220,7 @@ export class AiNavalFacts {
       y = Math.floor(ship.y / FIXED),
       tile = this.world.map.ref(x, y),
       sea = this.world.waterPaths.component[tile];
-    if (!sea || ship.health <= 0 || ship.shoreTransfer) {
+    if (!sea || ship.health <= 0) {
       this.remove("ships", ship.id);
       return;
     }
@@ -394,8 +394,7 @@ export class AiNavalFacts {
       if (
         ship &&
         ship.playerId === owner &&
-        ship.health > 0 &&
-        !ship.shoreTransfer
+        ship.health > 0
       )
         yield ship;
     }
@@ -432,7 +431,6 @@ export class AiNavalFacts {
           if (
             ship &&
             ship.health > 0 &&
-            !ship.shoreTransfer &&
             (ship.x - point.x) ** 2 + (ship.y - point.y) ** 2 <= radius ** 2
           )
             yield ship;

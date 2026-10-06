@@ -53,7 +53,7 @@ export class AiInvasionResponse {
         (t) =>
           t.until >= world.tick &&
           world.hostile(player.id, t.rival) &&
-          world.paths.connected(player.base, t.tile),
+          world.squadPaths(player.id).connected(player.base, t.tile),
       )
       .sort(
         (a, b) =>
@@ -131,8 +131,7 @@ export class AiInvasionResponse {
         squad.troops < 200 ||
         squad.embarkedOn !== null ||
         squad.refit ||
-        squad.charge ||
-        squad.order.type === "board"
+        squad.charge
       )
         continue;
       const lease = this.economy.assets.leases.get(`squad:${squad.id}`);
@@ -142,7 +141,7 @@ export class AiInvasionResponse {
         !["patrol", "operation", "defense"].includes(lease.priority)
       )
         continue;
-      if (!world.paths.connected(world.tileOf(squad), response.rally)) continue;
+      if (!world.squadPaths(squad.playerId).connected(world.tileOf(squad), response.rally)) continue;
       const army = armies.armyOf(squad.id);
       if (army) continue;
       response.members.push(squad.id);

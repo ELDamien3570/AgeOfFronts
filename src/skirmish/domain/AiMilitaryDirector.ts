@@ -68,8 +68,7 @@ export class AiMilitaryDirector {
       if (
         !lease ||
         squad.refit ||
-        squad.fighting ||
-        squad.order.type === "board"
+        squad.fighting
       )
         continue;
       const controller = `modernize:${player.id}:${squad.id}`,
@@ -121,7 +120,7 @@ export class AiMilitaryDirector {
             : world.ownedLandNearest(player.id, player.base, 1)[0];
         if (
           home === undefined ||
-          !world.paths.connected(world.tileOf(squad), home)
+          !world.squadPaths(player.id).connected(world.tileOf(squad), home)
         ) {
           ledger.release(controller);
           assets.release(controller);

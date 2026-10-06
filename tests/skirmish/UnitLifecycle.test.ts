@@ -20,7 +20,7 @@ function vessel(id: number, playerId = 1): Ship {
   return {
     id,
     playerId,
-    kind: "transport",
+    kind: "warship",
     x: 20 * 256,
     y: 20 * 256,
     health: 1000,
@@ -29,7 +29,6 @@ function vessel(id: number, playerId = 1): Ship {
     path: [],
     nextPathIndex: 0,
     fighting: false,
-    boarding: null,
   };
 }
 
@@ -119,9 +118,7 @@ describe("authoritative unit membership and cargo lifecycle", () => {
               : op === 3
                 ? { health: pick(2) * 1000 }
                 : {
-                    kind: pick(2)
-                      ? ("warship" as const)
-                      : ("transport" as const),
+                    kind: "warship" as const,
                     definitionId: "test-" + pick(3),
                   };
           world.updateShip(row.id, changes);
@@ -174,7 +171,7 @@ describe("authoritative unit membership and cargo lifecycle", () => {
           expect(world.squadFacts().byKind(owner, kind)).toEqual(
             squads.filter((s) => s.playerId === owner && s.kind === kind),
           );
-        for (const kind of ["transport", "warship"] as const)
+        for (const kind of ["warship"] as const)
           expect(world.shipFacts().byKind(owner, kind)).toEqual(
             ships.filter((s) => s.playerId === owner && s.kind === kind),
           );

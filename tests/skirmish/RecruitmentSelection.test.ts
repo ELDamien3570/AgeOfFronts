@@ -128,7 +128,7 @@ describe("selected recruitment building", () => {
       b = building("port", 60);
     selection.selectedBuildings = new Set([a.id, b.id]);
     selection.selectedBuilding = a.id;
-    const quote = vm().recruitment("transport");
+    const quote = vm().recruitment("warship");
     for (let i = 0; i < 5; i++)
       expect(
         match.applyCommand({
@@ -136,7 +136,7 @@ describe("selected recruitment building", () => {
           playerId: 1,
           buildingId: a.id,
           buildingIds: quote.buildingIds,
-          shipType: "transport",
+          shipType: "warship",
           definitionId: quote.definitionId,
         }),
       ).toBeNull();
@@ -327,7 +327,7 @@ describe("selected recruitment building", () => {
     expect(vm().recruitment("infantry").building?.id).toBe(camp.id);
   });
 
-  it.each(["transport", "warship"] as const)(
+  it.each(["warship"] as const)(
     "launches a %s beside the selected port",
     (kind) => {
       const { match, selection, building, vm } = fixture(true);

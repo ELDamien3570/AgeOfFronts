@@ -81,7 +81,6 @@ function ship(m: Skirmish, x: number, playerId = 1) {
     path: [],
     nextPathIndex: 0,
     fighting: false,
-    boarding: null,
   });
 
   return s;

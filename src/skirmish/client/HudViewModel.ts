@@ -142,7 +142,7 @@ function createShipCard(kind: ShipType): HudCard {
   const rule = SHIP_RULES[kind];
   return {
     title: rule.name,
-    subtitle: kind === "transport" ? "Squad carrier" : "Naval combat",
+    subtitle: "Naval combat",
     kind,
     stats: [
       stat("Recruitment", `${fmt(rule.cost)} gold`),
@@ -151,16 +151,10 @@ function createShipCard(kind: ShipType): HudCard {
         "Sailing speed",
         `${fmt((rule.speed * TICKS_PER_SECOND) / FIXED)} cells / sec`,
       ),
-      ...(rule.capacity
-        ? [stat("Capacity", `${rule.capacity} whole squads`)]
-        : [
-            stat("Attack range", `${rule.range / FIXED} cells`),
-            stat("Damage / sec", fmt(rule.damage * TICKS_PER_SECOND)),
-          ]),
+      stat("Attack range", `${rule.range / FIXED} cells`),
+      stat("Damage / sec", fmt(rule.damage * TICKS_PER_SECOND)),
     ],
-    description: rule.capacity
-      ? "Right click a friendly transport with selected squads to meet at a coast and board. Excess squads wait ashore. Sunk transports lose their cargo."
-      : "Automatically attacks enemy ships in range. Damage decreases with hull health. Ships sail only on water.",
+    description: "Automatically attacks enemy ships and squads afloat in range. Damage decreases with hull health. Ships sail only on water.",
   };
 }
 function createBuildingCard(kind: BuildingType): HudCard {
@@ -182,7 +176,7 @@ function createBuildingCard(kind: BuildingType): HudCard {
         ? [stat("Recruitment", SQUAD_RULES[rule.squad].name)]
         : []),
       ...(kind === "port"
-        ? [stat("Recruitment", "Transports & warships")]
+        ? [stat("Recruitment", "Warships")]
         : []),
     ],
     description: `Place on friendly ${kind === "port" ? "coastal " : ""}land. Same-type copies can share a tile; each has its own cost, construction and full benefit. Capturing the tile transfers the entire stack.`,
@@ -197,7 +191,6 @@ const squadCards: Record<SquadType, HudCard> = {
   cavalry: createSquadCard("cavalry"),
 };
 const shipCards: Record<ShipType, HudCard> = {
-  transport: createShipCard("transport"),
   warship: createShipCard("warship"),
 };
 const buildingCards = Object.fromEntries(
@@ -587,7 +580,10 @@ export class HudViewModel {
         s.playerId === this.playerId
           ? "1 squad selected"
           : `${state.players.find((p) => p.id === s.playerId)?.name ?? "Enemy"} · ${AGE_NAMES[AGES.indexOf(UNIT.get(s.definitionId ?? "")?.age ?? "StoneAge")]} · read only`,
-      meter: { label: "Troop strength", value: s.troops, max: SQUAD_TROOPS },
+      // Afloat, the transport's hull takes every hit; soldiers are lost with it.
+      meter: s.afloat
+        ? { label: "Hull health", value: s.afloat.hull, max: s.afloat.maxHull }
+        : { label: "Troop strength", value: s.troops, max: SQUAD_TROOPS },
       status:
         "planningPaused" in s && s.planningPaused === true
           ? "Route paused - choose a shorter waypoint"
@@ -595,11 +591,11 @@ export class HudViewModel {
             ? `Refitting · ${Math.ceil(s.refit.remainingTicks / 20)}s`
             : s.charge
               ? `Charge · ${s.charge.phase}`
+              : s.afloat
+                ? `Afloat · ${VESSEL.get(s.afloat.vesselId)?.name ?? "Transport"} · ${fmt(s.troops)} troops aboard`
               : s.fighting
                 ? "In combat"
                 : s.movementStatus?.reason === "yielding" ? "Making room for nearby squads"
-                : s.order.type === "board"
-                  ? "Meeting transport"
                   : s.order.type === "replenish"
                     ? "Replenishing"
                     : s.order.type === "attack"
@@ -689,16 +685,10 @@ export class HudViewModel {
               ? `Refitting · ${Math.ceil(s.refit.remainingTicks / 20)} sec`
               : s.fighting
                 ? "In combat"
-                : s.boarding
-                  ? "Meeting squads"
-                  : s.destination !== null
+                : s.destination !== null
                     ? "Sailing"
                     : "Holding",
         stats: [
-          stat(
-            "Squads aboard",
-            String(state.squads.filter((u) => u.embarkedOn === s.id).length),
-          ),
           stat("Queued waypoints", String(s.waypoints.length)),
           ...(s.definitionId
             ? [

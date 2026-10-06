@@ -42,6 +42,8 @@ export interface CohortPlan {
 export interface CohortPorts {
   map: GameMap;
   paths: LandPaths;
+  /** A faction's squad graph (amphibious with transports). */
+  squadPaths?(playerId: number): LandPaths;
   squads(): readonly Squad[];
   squad(id: number): Squad | undefined;
   routes: DomainRoutePorts;
@@ -80,6 +82,9 @@ export class CohortAdmission {
   plan(id: number): CohortPlan | undefined {
     return this.pending.get(id);
   }
+  private pathsOf(playerId: number): LandPaths {
+    return this.ports.squadPaths?.(playerId) ?? this.ports.paths;
+  }
   start(
     playerId: number,
     members: readonly Squad[],
@@ -116,7 +121,7 @@ export class CohortAdmission {
       })),
       formation: new FormationPlanning(
         this.ports.map,
-        this.ports.paths,
+        this.pathsOf(playerId),
         tile,
         members.map((squad) => ({ squad, origin: squad })),
         () => this.ports.squads(),
@@ -263,7 +268,7 @@ export class CohortAdmission {
       if (plan.phase === "formation") {
         const formation = new FormationPlanning(
           this.ports.map,
-          this.ports.paths,
+          this.pathsOf(plan.playerId),
           plan.tile,
           [],
           () => this.ports.squads(),
@@ -392,7 +397,7 @@ export class CohortAdmission {
             const previous = plan.formation;
             plan.formation = new FormationPlanning(
               this.ports.map,
-              this.ports.paths,
+              this.pathsOf(plan.playerId),
               plan.tile,
               members.map((squad) => ({ squad: squad!, origin: squad! })),
               () => this.ports.squads(),

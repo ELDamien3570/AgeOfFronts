@@ -157,7 +157,8 @@ export interface VesselDefinition {
   id: string;
   name: string;
   age: Age;
-  kind: ShipType | "trade";
+  /** Transports are not fleet vessels: they are the hull of an afloat squad. */
+  kind: ShipType | "transport" | "trade";
   technologyId: string;
   cost: Cost;
   health: number;

@@ -84,11 +84,11 @@ export function commandRejection(command: Command): string | null {
     if (
       !order ||
       typeof order !== "object" ||
-      !["hold", "replenish", "board", "move", "attack"].includes(order.type)
+      !["hold", "replenish", "move", "attack"].includes(order.type)
     )
       return "Invalid order";
     if (
-      (order.type === "move" || order.type === "board") &&
+      order.type === "move" &&
       (!Number.isSafeInteger(order.tile) || order.tile < 0)
     )
       return "Choose a passable destination";
@@ -97,11 +97,6 @@ export function commandRejection(command: Command): string | null {
       (!Number.isSafeInteger(order.targetId) || order.targetId <= 0)
     )
       return "Invalid attack target";
-    if (
-      order.type === "board" &&
-      (!Number.isSafeInteger(order.shipId) || order.shipId <= 0)
-    )
-      return "Invalid boarding target";
   }
   if (
     command.type === "army-members" &&

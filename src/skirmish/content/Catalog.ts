@@ -1,5 +1,5 @@
 import { AGE_SQUAD_CAPS, AI_WARSHIP_CAP, TRIBE_WARSHIP_CAP, TRIBE_PROMOTION_PERCENT, TRIBE_SQUAD_CAP, TRIBE_SQUADS_PER_AGE, TRIBE_TRADER_CAP, TRIBE_TRADERS_PER_AGE } from "../FactionRules";
-import { BUILDING_RULES, MAX_SHIPS, MAX_TRANSPORTS } from "../Rules";
+import { BUILDING_RULES, MAX_SHIPS } from "../Rules";
 import { MAX_ARMOUR, PROMOTION_ATTACK, XP_THRESHOLDS } from "../domain/Combat";
 import { RESOURCES } from "../domain/Definitions";
 import { DEPOSIT_RULES } from "../domain/DepositGeneration";
@@ -109,7 +109,7 @@ export const CONTENT_HASH = hash({
   factions: FACTIONS,
   aiPersonalities: AI_PERSONALITIES,
   squadCaps: AGE_SQUAD_CAPS,
-  shipCaps: { humanWarships: MAX_SHIPS, aiWarships: AI_WARSHIP_CAP, tribeWarships: TRIBE_WARSHIP_CAP, transports: MAX_TRANSPORTS },
+  shipCaps: { humanWarships: MAX_SHIPS, aiWarships: AI_WARSHIP_CAP, tribeWarships: TRIBE_WARSHIP_CAP },
   tribeCaps: { squads: TRIBE_SQUAD_CAP, squadsPerAge: TRIBE_SQUADS_PER_AGE, traders: TRIBE_TRADER_CAP, tradersPerAge: TRIBE_TRADERS_PER_AGE, advancementPercent: TRIBE_ADVANCE_PERCENT },
   territoryAbsorption: TERRITORY_ABSORPTION,
   coastalTerritory: COASTAL_TERRITORY_RULES,

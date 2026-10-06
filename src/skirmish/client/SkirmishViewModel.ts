@@ -69,7 +69,7 @@ export class SkirmishViewModel {
     definitionId: string | undefined;
     buildingIds: number[] | undefined;
   } {
-    const naval = kind === "transport" || kind === "warship";
+    const naval = kind === "warship";
     if (this.autoTier && this.state.expansion) {
       const candidates = (
         naval
@@ -114,7 +114,7 @@ export class SkirmishViewModel {
     definitionId: string,
     selectedOnly = false,
   ) {
-    const naval = kind === "transport" || kind === "warship";
+    const naval = kind === "warship";
     const landDefinition =
       this.state.expansion && !naval ? UNIT.get(definitionId) : undefined;
     const vesselDefinition =
@@ -224,20 +224,6 @@ export class SkirmishViewModel {
       !this.player.eliminated &&
       this.player.reserves > 0
     );
-  }
-  get transport() {
-    if (this.selection.selectedShips.size !== 1) return undefined;
-    return this.state.ships.find(
-      (s) =>
-        this.selection.selectedShips.has(s.id) &&
-        s.playerId === this.playerId &&
-        s.kind === "transport",
-    );
-  }
-  get cargo() {
-    return this.transport
-      ? this.state.squads.filter((s) => s.embarkedOn === this.transport!.id)
-      : [];
   }
   get selectedBuildings() {
     const scope = this.selection.selectedBuildings;

@@ -238,16 +238,6 @@ export const SHIP_RULES: Record<
     damage: number;
   }
 > = {
-  transport: {
-    name: "Transport",
-    glyph: "T",
-    cost: 300,
-    health: 600,
-    speed: 70,
-    capacity: 4,
-    range: 0,
-    damage: 0,
-  },
   warship: {
     name: "Warship",
     glyph: "W",
@@ -263,8 +253,7 @@ export const SHIP_RULES: Record<
 export const STARTING_GOLD = 3000;
 export const MAX_BUILDINGS = Infinity;
 export const MAX_SHIPS = 64;
-export const MAX_TRANSPORTS = 64;
-export const MAX_FACTION_SHIPS = MAX_SHIPS + MAX_TRANSPORTS;
+export const MAX_FACTION_SHIPS = MAX_SHIPS;
 export const REPLENISH_DELAY = 3 * TICKS_PER_SECOND;
 export const REPLENISH_PER_SECOND = 50;
 

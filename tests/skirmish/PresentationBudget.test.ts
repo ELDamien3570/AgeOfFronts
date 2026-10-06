@@ -71,7 +71,7 @@ describe("P14 retained presentation samples", () => {
 
 it("coarse ship bounds enclose sprites and fallback formations before artwork lookup", () => {
   for (const scale of [0.1, 1, 4, 14, 28, 60, 100])
-    for (const kind of ["warship", "transport"] as const)
+    for (const kind of ["warship"] as const)
       for (const formation of [false, true])
         for (const art of [false, true])
           expect(shipViewRadius(scale, kind)).toBeGreaterThanOrEqual(

@@ -18,6 +18,7 @@ export class LocalDetours {
     private readonly map: GameMap,
     private readonly grid: SpatialGrid<Squad>,
     private readonly hostile?: FactionHostility,
+    private readonly amphibious: (playerId: number) => boolean = () => false,
   ) {}
 
   find(
@@ -36,9 +37,9 @@ export class LocalDetours {
     const fixed = obstacles.filter(
       (other) => other.id !== squad.id && holding(other) && !!squadSeparation(squad, other, this.hostile),
     );
-    const radius = squadRadius(squad.kind);
+    const radius = squadRadius(squad.kind), amphibious = this.amphibious(squad.playerId);
     const clear = (a: WorldPoint, b: WorldPoint) => {
-      if (!traversable(this.map, a, b, radius)) return false;
+      if (!traversable(this.map, a, b, radius, amphibious)) return false;
       const dx = b.x - a.x,
         dy = b.y - a.y,
         length = dx * dx + dy * dy;

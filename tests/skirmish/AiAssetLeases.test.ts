@@ -36,11 +36,11 @@ describe("AI movement ownership", () => {
       leases.acquire([lease("squad:2", "push"), lease("squad:1", "push")]),
     ).toBe(false);
     expect(leases.held("squad:2")).toBe(false);
-    expect(leases.acquire([lease("squad:1", "boarding", "boarding")])).toBe(
+    expect(leases.acquire([lease("squad:1", "upgrade", "modernization")])).toBe(
       true,
     );
     expect(leases.acquire([lease("squad:1", "human", "manual")])).toBe(true);
-    expect(leases.acquire([lease("squad:1", "boarding", "boarding")])).toBe(
+    expect(leases.acquire([lease("squad:1", "upgrade", "modernization")])).toBe(
       false,
     );
   });

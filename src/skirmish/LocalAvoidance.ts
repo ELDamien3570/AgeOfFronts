@@ -124,6 +124,8 @@ export class LocalAvoidance {
   constructor(
     private readonly map: GameMap,
     private readonly hostile?: FactionHostility,
+    /** Factions whose squads may move onto water. */
+    private readonly amphibious: (playerId: number) => boolean = () => false,
   ) {}
 
   step(
@@ -141,7 +143,7 @@ export class LocalAvoidance {
     idleReason?: (squad: Squad) => MovementBlockReason,
   ): void {
     const allowed = (squad: Squad, end: WorldPoint) =>
-      traversable(this.map, squad, end, squadRadius(squad.kind)) &&
+      traversable(this.map, squad, end, squadRadius(squad.kind), this.amphibious(squad.playerId)) &&
       (!restrictions || restrictions(squad, end));
     const active = this.active,
       motion = this.motion;
@@ -519,7 +521,7 @@ export class LocalAvoidance {
         if (ids.length) reason = "crowd";
         else {
           const end = { x: squad.x + desired.x, y: squad.y + desired.y };
-          reason = !traversable(this.map, squad, end, squadRadius(squad.kind))
+          reason = !traversable(this.map, squad, end, squadRadius(squad.kind), this.amphibious(squad.playerId))
             ? "terrain"
             : restrictions && !restrictions(squad, end)
               ? "restricted"
@@ -528,7 +530,7 @@ export class LocalAvoidance {
       } else if (
         !moved &&
         !desired &&
-        (squad.order.type === "move" || squad.order.type === "board")
+        squad.order.type === "move"
       )
         reason = idleReason?.(squad) ?? "blocked";
       const previous = squad.movementStatus;

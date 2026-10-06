@@ -30,17 +30,15 @@ function match() {
   });
 }
 describe("ship right-click intent",()=>{
-  it("sends water orders for own ships and land orders only for loaded transports",()=>{
-    const m=match(),squad=m.squads.find(s=>s.playerId===1)!;
-    const ships=["transport","warship","transport"] as const;
-    const owned=ships.map((kind,i)=>m.addShip({id:m.allocateId(),playerId:1,kind,x:(i+10.5)*FIXED,y:3.5*FIXED,
-      health:100,destination:null,waypoints:[],path:[],nextPathIndex:0,fighting:false,boarding:null}));
+  it("sends water orders for own ships only and never land orders",()=>{
+    const m=match();
+    const owned=[0,1,2].map(i=>m.addShip({id:m.allocateId(),playerId:1,kind:"warship",x:(i+10.5)*FIXED,y:3.5*FIXED,
+      health:100,destination:null,waypoints:[],path:[],nextPathIndex:0,fighting:false}));
     const rival=m.addShip({...owned[0],id:m.allocateId(),playerId:2});
-    m.updateSquad(squad.id,{embarkedOn:owned[0].id});
     const snapshot=m.snapshot(),selected=new Set([...owned,rival].map(s=>s.id));
-    expect(shipMoveCommand(snapshot,selected,1,900,false,false)).toEqual({type:"sail",playerId:1,shipIds:[owned[0].id],tile:900,append:false});
-    expect(shipMoveCommand(snapshot,selected,1,80,true,true)?.shipIds).toEqual(owned.map(s=>s.id));
-    expect(shipMoveCommand(snapshot,new Set([owned[1].id,owned[2].id,rival.id]),1,900,false,false)).toBeNull();
+    expect(shipMoveCommand(snapshot,selected,1,80,true,true)).toEqual({type:"sail",playerId:1,shipIds:owned.map(s=>s.id),tile:80,append:true});
+    expect(shipMoveCommand(snapshot,selected,1,900,false,false)).toBeNull();
+    expect(shipMoveCommand(snapshot,new Set([rival.id]),1,80,true,false)).toBeNull();
   });
 });
 function selection(): SelectionState {
@@ -191,18 +189,20 @@ describe("automatic recruitment and selective replenishment", () => {
     s.selected.add(army.id);
     const snapshot = m.snapshot(),
       vm = new SkirmishViewModel(snapshot, s);
-    expect(vm.recruitment("transport").building?.id).toBe(second.id);
+    expect(vm.recruitment("warship").building?.id).toBe(second.id);
     expect(vm.recruitment("warship").enabled).toBe(true);
-    snapshot.players[0].gold = 300;
-    expect(vm.recruitment("transport").enabled).toBe(true);
+    const gold = snapshot.players[0].gold;
+    snapshot.players[0].gold = 0;
     expect(vm.recruitment("warship").enabled).toBe(false);
+    snapshot.players[0].gold = gold;
+    expect(vm.recruitment("warship").enabled).toBe(true);
     updateSnapshotBuilding(snapshot, (snapshot.buildings.find((b) => b.id === second.id)!).id, { remainingTicks: 1 });
-    expect(vm.recruitment("transport").building?.id).toBe(first.id);
+    expect(vm.recruitment("warship").building?.id).toBe(first.id);
     m.applyCommand({
       type: "recruit-ship",
       playerId: 1,
       buildingId: first.id,
-      shipType: "transport",
+      shipType: "warship",
     });
     snapshot.ships = m.snapshot().ships;
     while (snapshot.ships.length < MAX_SHIPS)
@@ -210,7 +210,7 @@ describe("automatic recruitment and selective replenishment", () => {
         ...snapshot.ships[0],
         id: 1000 + snapshot.ships.length,
       });
-    expect(vm.recruitment("transport").reason).toMatch(/limit/);
+    expect(vm.recruitment("warship").reason).toMatch(/limit/);
   });
   it("R orders only damaged friendly selected land squads, preserving other units' orders", () => {
     const m = match(),
@@ -306,7 +306,7 @@ describe("control group selection", () => {
       type: "recruit-ship",
       playerId: 1,
       buildingId: port.id,
-      shipType: "transport",
+      shipType: "warship",
     });
     const [one, two] = m.squads.filter((unit) => unit.playerId === 1);
     s.selected.add(one.id);

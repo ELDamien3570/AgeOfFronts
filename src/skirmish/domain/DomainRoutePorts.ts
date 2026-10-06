@@ -2,7 +2,7 @@ import type { MovementAdmissionEvent } from "../MovementAdmission";
 import type { Squad } from "../Protocol";
 import type { ExactRouteOutcome } from "../RoutePlanner";
 import type { WorldPoint } from "../SpatialGrid";
-export type DomainRouteOwner = "army" | "shore" | "trade" | "strategy";
+export type DomainRouteOwner = "army" | "trade" | "strategy";
 export interface DomainRouteTask {
   kind: "domain";
   owner: DomainRouteOwner;

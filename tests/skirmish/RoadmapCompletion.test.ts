@@ -20,7 +20,6 @@ import type {
   DomainRoutePorts,
   DomainRouteTask,
 } from "../../src/skirmish/domain/DomainRoutePorts";
-import { ShoreRoutes } from "../../src/skirmish/domain/ShoreRoutes";
 import { retainSquads } from "./UnitFixtures";
 
 function fixture(water = false, count = 6) {
@@ -200,7 +199,7 @@ describe("remaining roadmap integration", () => {
     const f = fixture(),
       p = ports(f),
       commit = vi.fn();
-    const cohort = new CohortAdmission("shore", {
+    const cohort = new CohortAdmission("army", {
       map: f.map,
       paths: f.game.paths,
       squad: (id) => f.game.squad(id),
@@ -219,50 +218,6 @@ describe("remaining roadmap integration", () => {
     expect(p.events[p.events.length - 1]).toMatchObject({
       status: "superseded",
     });
-  });
-  it("shares crossing preparation while preserving another subscriber on cancellation and restore", () => {
-    const f = fixture(true, 3),
-      p = ports(f),
-      planner = new ShoreRoutes(
-        f.map,
-        f.game.paths,
-        f.game.waterPaths,
-        f.game.coast,
-      ).createPlanner(p.api, () => false);
-    const start = f.game.tileOf(f.own[0]),
-      goal = f.map.ref(70, 30);
-    expect(planner.request("first", 2, start, goal).status).toBe("pending");
-    expect(planner.request("second", 2, start, goal).status).toBe("pending");
-    expect(planner.diagnostics.shared).toBe(1);
-    planner.release("first");
-    for (
-      let i = 0;
-      i < 15000 &&
-      planner.request("second", 2, start, goal).status === "pending";
-      i++
-    ) {
-      expect(planner.step(7)).toBeLessThanOrEqual(7);
-      for (const request of p.tasks.splice(0)) {
-        const path = request.water
-          ? f.game.waterPaths.find(request.start, request.goal)
-          : f.game.paths.find(request.start, request.goal);
-        planner.completedRoute(
-          request.task,
-          path === null ? "unreachable" : "complete",
-          path ?? [],
-        );
-      }
-      if (i === 40) {
-        const saved = planner.checkpoint();
-        planner.restore(saved);
-        expect(planner.checkpoint()).toEqual(saved);
-      }
-    }
-    const result = planner.request("second", 2, start, goal);
-    expect(result.status).toBe("complete");
-    expect(result.leg!.waterPath.length).toBeGreaterThan(0);
-    planner.release("second");
-    expect(planner.checkpoint().jobs).toHaveLength(0);
   });
   it("admit Army corridors without synchronous route search, then commits the complete selected cohort", () => {
     const f = fixture(false, 4);
@@ -291,56 +246,6 @@ describe("remaining roadmap integration", () => {
     expect(army.order.type).toBe("move");
     expect(f.own.every((s) => s.order.type === "move")).toBe(true);
     expect(find).not.toHaveBeenCalled();
-  });
-  it("keeps boarding unpublished, deduplicates repeated intent, and fences Stop before acceptance", () => {
-    const f = fixture(true, 3),
-      ship = f.game.addShip({
-        id: f.game.allocateId(),
-        playerId: 2,
-        kind: "transport",
-        definitionId: "stoneage-transport",
-        x: 42.5 * FIXED,
-        y: 30.5 * FIXED,
-        health: 1000,
-        destination: null,
-        waypoints: [],
-        path: [],
-        nextPathIndex: 0,
-        fighting: false,
-        boarding: null,
-      });
-    const before = f.game.checkpoint();
-    const command = {
-      type: "board",
-      playerId: 2,
-      shipId: ship.id,
-      squadIds: f.own.map((s) => s.id),
-    } as const;
-    expect(
-      f.game.applyCommand({ ...command, squadIds: [...command.squadIds] }),
-    ).toBeNull();
-    expect(f.game.ships[0].boarding).toBeNull();
-    expect(f.own.every((s) => s.order.type === "hold")).toBe(true);
-    const pending = f.game.checkpoint().shorePlanning!.boards;
-    expect(
-      f.game.applyCommand({ ...command, squadIds: [...command.squadIds] }),
-    ).toBeNull();
-    expect(f.game.checkpoint().shorePlanning!.boards.map(([id]) => id)).toEqual(
-      pending.map(([id]) => id),
-    );
-    expect(
-      f.game.applyCommand({
-        type: "stop-ships",
-        playerId: 2,
-        shipIds: [ship.id],
-      }),
-    ).toBeNull();
-    expect(f.game.checkpoint().shorePlanning!.boards).toHaveLength(0);
-    expect(f.own.reduce((n, s) => n + s.troops, 0)).toBe(
-      before.squads
-        .filter((s) => s.playerId === 2)
-        .reduce((n, s) => n + s.troops, 0),
-    );
   });
   it("replicates changed metadata once while a new baseline and restored source remain complete", () => {
     const f = fixture(),
@@ -470,126 +375,5 @@ describe("remaining roadmap integration", () => {
       other.step();
     }
     expect(other.checkpoint()).toEqual(f.game.checkpoint());
-  });
-  it("revalidates cargo and hulls lost during resumable transport assessment before committing leases", () => {
-    const f = fixture(true, 8), now = 5000, planner = f.expansion.economy.transports;
-    f.game.tick = now;
-    const port = f.game.addBuilding({id:f.game.allocateId(),playerId:2,type:"port",tile:f.map.ref(39,30),age:"StoneAge",remainingTicks:0,health:1000});
-    f.game.owners[port.tile] = 2;
-    const hull = (kind: "transport" | "warship") => f.game.addShip({id:f.game.allocateId(),playerId:2,kind,
-      definitionId:`stoneage-${kind}`,x:43.5*FIXED,y:30.5*FIXED,health:1000,destination:null,
-      waypoints:[],path:[],nextPathIndex:0,fighting:false,boarding:null});
-    const transport = hull("transport"), escort = hull("warship"), lostHull = hull("transport");
-    f.game.removeSquad(f.own[0].id);
-    f.game.updateSquad(f.own[1].id,{playerId:1});
-    f.game.removeShip(lostHull.id);
-    for(let i=0;i<200&&!f.expansion.economy.navalFacts.ready;i++)f.expansion.economy.navalFacts.step(now,64);
-    planner.restore({cursor:0,serial:1,spending:[],history:[],missions:[[2,{
-      id:"transport:stale-roster",playerId:2,generation:f.game.aiGeneration(2),sea:f.game.waterPaths.component[f.game.tileOf(transport)],
-      port:port.id,target:1,phase:"assess",since:now,deadline:now+1000,nextThink:now,cursor:8,shipCursor:null,
-      coastCursor:f.game.coast.waterEdges(f.game.waterPaths.component[f.game.tileOf(transport)]).length,
-      roster:f.own.map(s=>s.id),eligible:f.own.map(s=>s.id),transports:[lostHull.id,transport.id],escorts:[escort.id],
-      groups:[],landing:{landTile:f.map.ref(48,30),waterTile:f.map.ref(47,30)},enemyPower:0,
-      reason:"fixture",purchases:0,handedOff:false,initialTroops:0,lostTroops:0,
-    }]]});
-    expect(()=>planner.step(16)).not.toThrow();
-    const mission=planner.missions.get(2)!;
-    expect(mission.phase).toBe("assemble");
-    expect(mission.transports).toEqual([transport.id]);
-    expect(mission.groups.flatMap(g=>g.members)).not.toContain(f.own[0].id);
-    expect(mission.groups.flatMap(g=>g.members)).not.toContain(f.own[1].id);
-    expect(mission.initialTroops).toBe(mission.groups.flatMap(g=>g.members).reduce((n,id)=>n+f.game.squad(id)!.troops,0));
-    expect(f.expansion.economy.assets.held(`squad:${f.own[0].id}`)).toBe(false);
-    expect(f.expansion.economy.assets.held(`squad:${f.own[1].id}`)).toBe(false);
-  });
-  it("transport recovery preserves real loaded cargo when the strategic target disappears", () => {
-    const f = fixture(true, 6),
-      ship = f.game.addShip({
-        id: f.game.allocateId(),
-        playerId: 2,
-        kind: "transport",
-        definitionId: "stoneage-transport",
-        x: 43.5 * FIXED,
-        y: 30.5 * FIXED,
-        health: 1000,
-        destination: null,
-        waypoints: [],
-        path: [],
-        nextPathIndex: 0,
-        fighting: false,
-        boarding: null,
-      });
-    for (const squad of f.own.slice(0, 2))
-      f.game.updateSquad(squad.id, {
-        embarkedOn: ship.id,
-        x: ship.x,
-        y: ship.y,
-      });
-    const planner = f.expansion.economy.transports,
-      now = 5000;
-    f.game.tick = now;
-    planner.restore({
-      cursor: 0,
-      serial: 1,
-      spending: [],
-      history: [],
-      missions: [
-        [
-          2,
-          {
-            id: "transport:test",
-            playerId: 2,
-            generation: f.game.aiGeneration(2),
-            sea: f.game.waterPaths.component[f.game.tileOf(ship)],
-            port: 999999,
-            target: 1,
-            phase: "sail",
-            since: now,
-            deadline: now + 100,
-            nextThink: now,
-            cursor: 0,
-            coastCursor: 0,
-            roster: [],
-            eligible: [],
-            transports: [ship.id],
-            escorts: [],
-            groups: [
-              {
-                shipId: ship.id,
-                members: f.own.slice(0, 2).map((s) => s.id),
-                boarded: true,
-                landed: false,
-              },
-            ],
-            enemyPower: 0,
-            reason: "fixture",
-            purchases: 0,
-            handedOff: false,
-            initialTroops: 2000,
-            lostTroops: 0,
-          },
-        ],
-      ],
-    });
-    f.expansion.economy.assets.acquire([
-      {
-        asset: `ship:${ship.id}`,
-        playerId: 2,
-        generation: f.game.aiGeneration(2),
-        controller: "transport:test",
-        priority: "boarding",
-        createdTick: now,
-        expiresTick: now + 2000,
-      },
-    ]);
-    for (let i = 0; i < 200 && !f.expansion.economy.navalFacts.ready; i++)
-      f.expansion.economy.navalFacts.step(now, 64);
-    expect(planner.step(16)).toBeLessThanOrEqual(16);
-    expect(planner.missions.get(2)!.phase).toBe("recover");
-    expect(f.game.squadFacts().cargo(ship.id)).toHaveLength(2);
-    expect(f.game.ship(ship.id)).toBeDefined();
-    const saved = planner.checkpoint();
-    planner.restore(saved);
-    expect(planner.checkpoint()).toEqual(saved);
   });
 });

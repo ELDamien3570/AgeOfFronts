@@ -38,7 +38,6 @@ for (const count of [256, 1024]) {
       path: [],
       nextPathIndex: 0,
       fighting: false,
-      boarding: null,
     });
   const samples: number[] = [];
   let moved = 0;

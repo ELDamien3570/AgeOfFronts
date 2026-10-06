@@ -1,5 +1,5 @@
 import type { Player, ShipType } from "./Protocol";
-import { MAX_SHIPS, MAX_TRANSPORTS } from "./Rules";
+import { MAX_SHIPS } from "./Rules";
 import { MAX_SQUADS } from "./Protocol";
 import { AGES, type Age } from "./domain/Definitions";
 import { TRADE_RULES } from "./content/Economy";
@@ -30,7 +30,6 @@ export const AI_WARSHIP_CAP = 32;
 export const TRIBE_WARSHIP_CAP = 24;
 /** Military hull classes have independent slots; civilian trade has its own cap. */
 export function shipCap(player: Pick<Player, "kind" | "ai">, kind: ShipType): number {
-  if (kind === "transport") return MAX_TRANSPORTS;
   return player.kind === "tribe" ? TRIBE_WARSHIP_CAP : player.ai ? AI_WARSHIP_CAP : MAX_SHIPS;
 }
 /** Humans + AI + tribes; owner IDs share a byte with the 255 contested marker. */

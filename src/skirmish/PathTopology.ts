@@ -9,28 +9,40 @@ const DIAGONALS = [
   [1, 1],
 ] as const;
 
+/** Land (8-way), water (4-way), or amphibious squads that cross both. */
+export type PathMedium = "land" | "water" | "amphibious";
+/** Extra amphibious cost of a step between land and water, about two open
+ * tiles: routes do not hop in and out of the water for marginal gains. */
+export const EMBARK_COST = 20;
+
 // One cost/passability contract for exact and hierarchical routing.
 export class PathTopology {
   private readonly cardinal: Uint8Array;
   private readonly diagonal: Uint8Array;
   private readonly passable: Uint8Array;
   private readonly listeners = new Set<(tiles: readonly number[]) => void>();
+  readonly medium: PathMedium;
+  readonly water: boolean;
+  private readonly amphibious: boolean;
   constructor(
     readonly map: GameMap,
-    readonly water: boolean,
+    medium: PathMedium | boolean,
   ) {
+    this.medium = typeof medium === "string" ? medium : medium ? "water" : "land";
+    this.water = this.medium === "water";
+    this.amphibious = this.medium === "amphibious";
     const size = map.width() * map.height();
     // Skirmish terrain/component geometry is immutable after map creation.
     // Forest clearing changes costs, and continues through the listener below.
     this.passable = new Uint8Array(size);
     for (let tile = 0; tile < size; tile++) this.passable[tile] = Number(
-      (water ? map.isWater(tile) : map.isLand(tile)) && !map.isImpassable(tile));
+      (this.water ? map.isWater(tile) : this.amphibious || map.isLand(tile)) && !map.isImpassable(tile));
     this.cardinal = new Uint8Array(size);
     this.diagonal = new Uint8Array(size);
     for (let tile = 0; tile < size; tile++) {
       this.updateCost(tile);
     }
-    if (!water)
+    if (!this.water)
       forestOf(map)?.onChange((tiles) => {
         for (const tile of tiles) this.updateCost(tile);
         for (const listener of this.listeners) listener(tiles);
@@ -38,8 +50,14 @@ export class PathTopology {
   }
   private updateCost(tile: number): void {
     if (!this.walkable(tile)) return;
-    const speed = this.water ? 56 : terrainSpeed(this.map, tile);
-    this.cardinal[tile] = this.water ? 10 : Math.ceil(560 / speed);
+    if (!this.map.isLand(tile)) {
+      // Open water: the octile heuristic's minimum step, so it stays admissible.
+      this.cardinal[tile] = 10;
+      this.diagonal[tile] = 14;
+      return;
+    }
+    const speed = terrainSpeed(this.map, tile);
+    this.cardinal[tile] = Math.ceil(560 / speed);
     this.diagonal[tile] = Math.ceil(792 / speed);
   }
   onCostsChanged(listener: (tiles: readonly number[]) => void): () => void {
@@ -72,14 +90,22 @@ export class PathTopology {
         blocked?.(sideY)
       )
         continue;
+      // Amphibious diagonals stay within one medium, so every embarkation is
+      // a cardinal step and never cuts a coastline corner.
+      if (this.amphibious) {
+        const land = this.map.isLand(tile);
+        if (this.map.isLand(sideX) !== land || this.map.isLand(sideY) !== land ||
+          this.map.isLand(this.map.ref(x + dx, y + dy)) !== land) continue;
+      }
       output[count++] = this.map.ref(x + dx, y + dy);
     }
     return count;
   }
   cost(a: number, b: number): number {
-    return this.map.x(a) !== this.map.x(b) && this.map.y(a) !== this.map.y(b)
+    const step = this.map.x(a) !== this.map.x(b) && this.map.y(a) !== this.map.y(b)
       ? this.diagonal[b]
       : this.cardinal[b];
+    return this.amphibious && this.map.isLand(a) !== this.map.isLand(b) ? step + EMBARK_COST : step;
   }
   estimate(a: number, b: number): number {
     const dx = Math.abs(this.map.x(a) - this.map.x(b)),

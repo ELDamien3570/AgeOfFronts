@@ -19,6 +19,9 @@ type Member = Pick<Squad, "id" | "kind" | "playerId"> & { origin: WorldPoint };
 type Reservation = Pick<Squad, "id" | "kind" | "playerId"> & WorldPoint;
 export interface FormationPlanningState {
   center: number;
+  /** A destination ordered on land: slots stay ashore even for squads that
+   * may cross water. March and assembly slots leave this unset. */
+  landSlots?: boolean;
   /** Undefined means no radius limit; persisted state contains no Infinity sentinel. */
   maximumRadius: number | undefined;
   pending: Member[];
@@ -309,7 +312,7 @@ export class FormationPlanning {
         const point = s.candidate!;
         if (
           (s.maximumRadius !== undefined && distanceSquared(point, target) > s.maximumRadius ** 2) ||
-          !standable(this.map, point, squadRadius(s.member!.kind)) ||
+          !standable(this.map, point, squadRadius(s.member!.kind), this.paths.amphibious && !s.landSlots) ||
           blocked?.(pointTile(this.map, point)) ||
           !this.paths.connected(s.center, pointTile(this.map, point))
         ) {

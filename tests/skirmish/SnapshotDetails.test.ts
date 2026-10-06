@@ -59,6 +59,7 @@ describe("transferable snapshot details", () => {
         },
         chargeReadyTick: 90,
         structureTarget: { barrierId: 100 },
+        afloat: { hull: 37.5, maxHull: 120, vesselId: "stoneage-transport" },
       },
       {
         ...original,
@@ -67,6 +68,12 @@ describe("transferable snapshot details", () => {
         charge: null,
         structureTarget: null,
         planningPaused: undefined,
+        afloat: null,
+      },
+      {
+        ...original,
+        id: original.id + 20_000,
+        afloat: undefined,
       },
     ];
     const buildings = [
@@ -88,14 +95,13 @@ describe("transferable snapshot details", () => {
       {
         id: 5000,
         playerId: 1,
-        kind: "transport",
+        kind: "warship",
         x: 2.5,
         y: -0,
         health: 450.125,
         destination: null,
         waypoints: [22, 33],
         fighting: false,
-        boarding: { landTile: 10, waterTile: 11, squadIds: [original.id] },
         definitionId: "next-definition",
         xp: 1.5,
         planningPaused: false,
@@ -106,12 +112,6 @@ describe("transferable snapshot details", () => {
         patrolTile: undefined,
         repairPortId: null,
         repairState: "waiting-for-dock",
-        shoreTransfer: {
-          phase: "landing",
-          capacity: 1000,
-          destinationTile: 55,
-          landingTile: null,
-        },
       },
     ];
     const volleys = [
@@ -145,6 +145,7 @@ describe("transferable snapshot details", () => {
         "charge",
         "chargeReadyTick",
         "structureTarget",
+        "afloat",
       ] as const)
         expect(decoded.squadDetails![at][key]).toEqual(squads[at][key]);
     expect(decoded.ships).toEqual(ships);

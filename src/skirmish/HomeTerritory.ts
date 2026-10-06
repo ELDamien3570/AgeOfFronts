@@ -43,6 +43,10 @@ export class HomeTerritory {
     if(previous===undefined || owners[previous]!==playerId)rows.set(component,tile);
     this.bridgeheads.set(playerId,rows);
   }
+  /** A landing registered by `anchor` that its faction does not own yet. */
+  landing(playerId:number,tile:number,owners:Uint8Array):boolean {
+    return this.bridgeheads.get(playerId)?.get(-tile-1)===tile && owners[tile]!==playerId;
+  }
   anchors(playerId:number,owners:Uint8Array):number[] {return [...(this.bridgeheads.get(playerId)?.values()??[])].filter(t=>owners[t]===playerId);}
   failed(playerId:number,tile:number,tick:number):void {
     this.failures.set(`${playerId}:${tile}`,tick+600);

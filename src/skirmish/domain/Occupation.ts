@@ -26,6 +26,7 @@ export class Occupation {
         (s) =>
           s.troops > 0 &&
           s.embarkedOn === null &&
+          !s.afloat &&
           diplomacy.hostile(squad.playerId, s.playerId),
       )
     )

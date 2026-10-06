@@ -26,7 +26,7 @@ for(const seed of [47,72]) {
     for(let y=398;y<400;y++)for(let dx=0;dx<2;dx++)
       (game as unknown as {changeOwner(tile:number,id:number):void}).changeOwner(game.map.ref(x+dx,y),p.id);
     game.expansion!.supply.goods.set(port.id,100000);
-    for(let i=0;i<64;i++)game.addShip({id:game.allocateId(),playerId:p.id,kind:"warship",definitionId:"modern-warship",x:(10+i*15+at%2+.5)*FIXED,y:(430+at*4+.5)*FIXED,health:game.expansion!.vessel({playerId:p.id,definitionId:"modern-warship",kind:"warship"} as never).health,destination:null,waypoints:[],path:[],nextPathIndex:0,fighting:false,boarding:null});
+    for(let i=0;i<64;i++)game.addShip({id:game.allocateId(),playerId:p.id,kind:"warship",definitionId:"modern-warship",x:(10+i*15+at%2+.5)*FIXED,y:(430+at*4+.5)*FIXED,health:game.expansion!.vessel({playerId:p.id,definitionId:"modern-warship",kind:"warship"} as never).health,destination:null,waypoints:[],path:[],nextPathIndex:0,fighting:false});
     if(at>0)game.applyCommand({type:"alliance",playerId:1,otherId:p.id,action:"declare"});
   }
   for(let i=0;i<ticks;i++) {

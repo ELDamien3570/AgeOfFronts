@@ -34,20 +34,20 @@ describe("technology inspection", () => {
       "12 steel + 10 gunpowder",
     );
   });
-  it("keeps fleet improvements separate from trade and automatic embarkation", () => {
+  it("keeps fleet improvements separate from trade and reports afloat squad hulls", () => {
     const node = technologyAt("ClassicalAge", "naval", 4);
     const transport = VESSELS.find(
       (v) => v.age === "ClassicalAge" && v.kind === "transport",
     )!;
+    const upgraded = vesselEffects(transport, [node.id]);
+    expect(upgraded.speed).toBeGreaterThan(transport.speed);
+    expect(text(node.id)).toContain("Squads afloat: ");
     expect(text(node.id)).toContain(
-      `${transport.capacity} → ${vesselEffects(transport, [node.id]).capacity} squads`,
-    );
-    expect(node.description).toContain(
-      "Trade ships and temporary shore transports are unchanged",
+      `hull ${transport.health} → ${upgraded.health}`,
     );
     expect(text(node.id)).not.toContain("Sea trade:");
     expect(text("classicalage-transport-fleets")).toContain(
-      "Automatic shore transport: 14 squads",
+      `Squads cross water as ${transport.name}: ${transport.health} hull`,
     );
   });
   it("reports logistics tiers as replacements and locates horse breeding on its real unlock", () => {

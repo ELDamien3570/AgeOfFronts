@@ -21,7 +21,6 @@ import { AiLossWindow } from "./AiLossWindow";
 import { militaryDemand, type AiProductionDemand } from "./AiMilitaryDemand";
 import { AiMilitaryDirector } from "./AiMilitaryDirector";
 import { AiNavalFacts } from "./AiNavalFacts";
-import { AiTransportPlanner } from "./AiTransportPlanner";
 import { AiNavalPlanner } from "./AiNavalPlanner";
 import { AiPlacementCandidates } from "./AiPlacementCandidates";
 import type { Cost, Inventory } from "./Definitions";
@@ -53,7 +52,6 @@ export class AiEconomicDirector {
   readonly modernFronts: AiModernFronts;
   readonly navalFacts: AiNavalFacts;
   readonly naval: AiNavalPlanner;
-  readonly transports: AiTransportPlanner;
   readonly boundaries?: AiBoundaryIndex;
   private readonly demands = new Map<number, AiProductionDemand>();
   private readonly demandPlanning=new Map<number,{key:string;state:import("./AiMilitaryDemand").AiDemandPreparation}>();
@@ -84,7 +82,6 @@ export class AiEconomicDirector {
     this.defenses = new AiDefenseDirector(expansion, this);
     this.navalFacts = new AiNavalFacts(expansion.world);
     this.naval = new AiNavalPlanner(expansion, this);
-    this.transports=new AiTransportPlanner(expansion,this);
     this.fronts = new AiFrontRecords(expansion, this);
     this.modernFronts = new AiModernFronts(expansion, this);
     if (
@@ -120,7 +117,6 @@ export class AiEconomicDirector {
       modernFronts: this.modernFronts.checkpoint(),
       navalFacts: this.navalFacts.checkpoint(),
       naval: this.naval.checkpoint(),
-      transports:this.transports.checkpoint(),
       military:this.military.checkpoint(),
       boundaries: this.boundaries?.checkpoint(),
       demands: [...this.demands],
@@ -168,7 +164,6 @@ export class AiEconomicDirector {
     this.modernFronts.restore(saved.modernFronts ?? { sections: [], player: 0, nextBuild: 0, retries: [] });
     if (saved.navalFacts) this.navalFacts.restore(saved.navalFacts);
     this.naval.restore(saved.naval);
-    this.transports.restore(saved.transports);
     if (saved.boundaries) this.boundaries?.restore(saved.boundaries);
     else this.boundaries?.resetForRebuild();
     for (const [id, demand] of saved.demands)
@@ -186,7 +181,6 @@ export class AiEconomicDirector {
     this.tradeQuotes.release(playerId);
     this.coasts.release(playerId);
     this.naval.release(playerId);
-    this.transports.release(playerId);
     this.defenses.release(playerId);
     this.fronts.release(playerId); this.modernFronts.release(playerId);
     this.military.release(playerId);
@@ -215,7 +209,7 @@ export class AiEconomicDirector {
         : 0;
     const controllerWork =
       world.options.aiNaval && world.options.deferredPlanning
-        ? this.naval.step(16)+this.transports.step(16)
+        ? this.naval.step(16)
         : 0;
     const armyWork=this.military.step(Math.max(0,Math.min(24,112-navalWork-boundaryWork-controllerWork-frontWork)));
     const tradeQuoteWork = this.tradeQuotes.step(Math.min(8, Math.max(0, 112-navalWork-boundaryWork-controllerWork-frontWork-armyWork)));
@@ -298,7 +292,7 @@ export class AiEconomicDirector {
         )
         .reduce((n, s) => n + s.troops, 0),
       isolated: this.placements.coasts(player.id).length > 0 && !world.players.some(p =>
-        p.id !== player.id && !p.eliminated && world.hostile(player.id,p.id) && world.paths.connected(player.base,p.base)),
+        p.id !== player.id && !p.eliminated && world.hostile(player.id,p.id) && world.squadPaths(player.id).connected(player.base,p.base)),
     });
     // Planning may invest in an owned, researched deposit before its mine is
     // built. Execution still spends only liquid stock through normal commands.

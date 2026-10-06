@@ -83,86 +83,9 @@ export class AiArmyPlanner {
     }
     this.objectives.delete(playerId);
   }
-  adoptBeachhead(
-    player: Player,
-    ids: readonly number[],
-    tile: number,
-    target: number,
-    targetTile?: number,
-  ): boolean {
-    const { world, armies } = this.expansion;
-    if (!armies.capacity(player.id) || this.objectives.has(player.id))
-      return false;
-    const members = ids
-      .map((id) => world.squad(id))
-      .filter(
-        (s): s is Squad =>
-          !!s &&
-          s.playerId === player.id &&
-          s.embarkedOn === null &&
-          !s.refit &&
-          !armies.armyOf(s.id) &&
-          !this.economy.assets.held(`squad:${s.id}`),
-      )
-      .slice(0, Math.min(MAX_ORDER_SQUADS,armies.capacity(player.id)));
-    if (!members.length) return false;
-    const plan: ArmyObjective = {
-      id: `land-army:${player.id}:${++this.serial}`,
-      playerId: player.id,
-      generation: world.aiGeneration(player.id),
-      phase: "assemble",
-      created: world.tick,
-      since: world.tick,
-      deadline: world.tick + 2400,
-      nextThink: world.tick,
-      cursor: 0,
-      rosterIds: members.map((s) => s.id),
-      members: members.map((s) => s.id),
-      target,
-      targetTile: targetTile ?? world.players.find((p) => p.id === target)?.base,
-      purpose: targetTile === undefined ? "combat" : "coast",
-      initialTroops: members.reduce((n, s) => n + s.troops, 0),
-      reason: "Taking ownership of the landed beachhead",
-      home: tile,
-    };
-    if (
-      !this.economy.assets.acquire(
-        plan.members.map((id) => ({
-          asset: `squad:${id}` as const,
-          playerId: player.id,
-          generation: plan.generation,
-          controller: plan.id,
-          priority: "operation" as const,
-          createdTick: world.tick,
-          expiresTick: plan.deadline + 800,
-        })),
-      )
-    )
-      return false;
-    if (
-      world.applyCommand({
-        type: "create-army",
-        playerId: player.id,
-        squadIds: plan.members,
-      })
-    ) {
-      this.economy.assets.release(plan.id);
-      return false;
-    }
-    plan.armyId = armies.armyOf(plan.members[0])!.id;
-    this.objectives.set(player.id, plan);
-    world.applyCommand({
-      type: "army-auto",
-      playerId: player.id,
-      armyId: plan.armyId,
-      enabled: false,
-    });
-    this.order(plan, { type: "regroup", tile });
-    return true;
-  }
   acquireCoast(player: Player, tile: number): boolean {
     const { world, armies } = this.expansion;
-    if (this.objectives.has(player.id) || !armies.capacity(player.id) || !world.paths.connected(player.base,tile)) return false;
+    if (this.objectives.has(player.id) || !armies.capacity(player.id) || !world.squadPaths(player.id).connected(player.base,tile)) return false;
     this.objectives.set(player.id, {
       id:`land-coast:${player.id}:${++this.serial}`,playerId:player.id,generation:world.aiGeneration(player.id),
       phase:"select",created:world.tick,since:world.tick,deadline:world.tick+3600,nextThink:world.tick,
@@ -187,7 +110,8 @@ export class AiArmyPlanner {
       squad.order.type === "hold" &&
       !this.expansion.armies.armyOf(squad.id) &&
       !this.economy.assets.held(`squad:${squad.id}`) &&
-      world.paths.connected(
+      // Reachable by this faction's squads: amphibious factions cross water.
+      world.squadPaths(plan.playerId).connected(
         world.tileOf(squad),
         world.players.find((p) => p.id === plan.playerId)!.base,
       )
@@ -260,7 +184,7 @@ export class AiArmyPlanner {
                 p.id !== player!.id &&
                 !p.eliminated &&
                 world.hostile(player!.id, p.id) &&
-                world.paths.connected(player!.base, p.base),
+                world.squadPaths(player!.id).connected(player!.base, p.base),
             )
             .sort(
               (a, b) =>
@@ -473,7 +397,7 @@ export class AiArmyPlanner {
       } else if(maneuver.tile===undefined){
         const tile=flankCandidate(world.map,tilePoint(world.map,maneuver.start),enemy,maneuver.cursor,doctrine.engagement==="flank-right"?1:-1);
         this.diagnostics.work++;
-        if(tile===undefined || !world.paths.connected(maneuver.start,tile) || this.expansion.fortifications.blocked(tile,player.id) ||
+        if(tile===undefined || !world.squadPaths(player.id).connected(maneuver.start,tile) || this.expansion.fortifications.blocked(tile,player.id) ||
           (operations.enabled(player)&&!operations.canEnter(player.id,world.owners[tile],tile))){maneuver.cursor++;}
         else {
           const route=this.economy.routes.request(plan.id,player.id,maneuver.start,tile);

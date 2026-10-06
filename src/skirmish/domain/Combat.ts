@@ -101,6 +101,13 @@ export function damageAmount(
     ),
   );
 }
+/** Every hull, including a squad afloat in its faction's transport. */
+export const SHIP_DEFENCE: Defence = {
+  tags: ["ship"],
+  meleeArmour: 1000,
+  rangedArmour: 2000,
+  bonusResistance: {},
+};
 export function defenceOf(definition: UnitDefinition, cover = 0): Defence {
   return { ...definition, cover };
 }

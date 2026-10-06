@@ -13,7 +13,7 @@ for(let i=0;i<250;i++){const start=performance.now();waypoints=coastalPatrol(map
 const data=new Uint8Array(256*64).fill(133);data.fill(0,10*256);
 const game=new Skirmish(new GameMapImpl(256,64,data,2560),{seed:42,aiCount:1,tribes:false,runAi:false,ruleset:"ages-v1"});
 const path=Array.from({length:201},(_,i)=>game.map.ref(20+i,25));
-for(let i=0;i<1024;i++)game.addShip({id:game.allocateId(),playerId:1,kind:"warship",definitionId:"stoneage-warship",x:20.5*FIXED,y:25.5*FIXED,health:1000,destination:path[path.length-1],waypoints:[],path:[...path],nextPathIndex:0,fighting:false,boarding:null,repairState:"patrolling"});
+for(let i=0;i<1024;i++)game.addShip({id:game.allocateId(),playerId:1,kind:"warship",definitionId:"stoneage-warship",x:20.5*FIXED,y:25.5*FIXED,health:1000,destination:path[path.length-1],waypoints:[],path:[...path],nextPathIndex:0,fighting:false,repairState:"patrolling"});
 const movement:number[]=[];
 for(let tick=0;tick<200;tick++){
   const start=performance.now();

@@ -34,10 +34,17 @@ export function distanceSquared(a: WorldPoint, b: WorldPoint): number {
   return (a.x - b.x) ** 2 + (a.y - b.y) ** 2;
 }
 
+/** Whether a footprint cell is open ground, or open water for amphibious
+ * squads (a faction with transport technology). */
+export function passableCell(map: GameMap, tile: number, amphibious = false): boolean {
+  return !map.isImpassable(tile) && (amphibious || map.isLand(tile));
+}
+
 export function standable(
   map: GameMap,
   point: WorldPoint,
   radius: number,
+  amphibious = false,
 ): boolean {
   const left = Math.floor((point.x - radius) / FIXED);
   const right = Math.floor((point.x + radius) / FIXED);
@@ -49,8 +56,7 @@ export function standable(
       const dy = Math.max(y * FIXED - point.y, 0, point.y - (y + 1) * FIXED);
       if (dx * dx + dy * dy >= radius * radius) continue;
       if (!map.isValidCoord(x, y)) return false;
-      const tile = map.ref(x, y);
-      if (!map.isLand(tile) || map.isImpassable(tile)) return false;
+      if (!passableCell(map, map.ref(x, y), amphibious)) return false;
     }
   return true;
 }
@@ -61,6 +67,7 @@ export function traversable(
   from: WorldPoint,
   to: WorldPoint,
   radius: number,
+  amphibious = false,
 ): boolean {
   if (
     Math.min(from.x, to.x) < radius ||
@@ -79,8 +86,7 @@ export function traversable(
   for (let y = top; y <= bottom; y++)
     for (let x = left; x <= right; x++) {
       if (map.isValidCoord(x, y)) {
-        const tile = map.ref(x, y);
-        if (map.isLand(tile) && !map.isImpassable(tile)) continue;
+        if (passableCell(map, map.ref(x, y), amphibious)) continue;
       }
       const x0 = x * FIXED,
         x1 = x0 + FIXED,

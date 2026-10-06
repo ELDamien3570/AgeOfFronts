@@ -29,7 +29,6 @@ it("projects current fleet promotions and avoids a false uniform aggregate", () 
       path: [],
       nextPathIndex: 0,
       fighting: false,
-      boarding: null,
     }));
   const selection = {
     selected: new Set<number>(),

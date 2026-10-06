@@ -91,6 +91,8 @@ export class Formations {
     private readonly map: GameMap,
     private readonly paths: LandPaths,
     private readonly hostile?: FactionHostility,
+    /** A faction's squad graph; amphibious factions may stand on water. */
+    private readonly squadPaths?: (playerId: number) => LandPaths,
   ) {}
 
   beginBatch(others: readonly Squad[]): void {
@@ -157,6 +159,7 @@ export class Formations {
     blocked: ((tile: number) => boolean) | undefined,
   ): Map<number, WorldPoint> | null {
     const target = tilePoint(this.map, center);
+    const paths = members.length ? this.squadPaths?.(members[0].squad.playerId) ?? this.paths : this.paths;
     const selected = new Set(members.map(({ squad }) => squad.id));
     // A formation owns only a handful of buckets, never another full-map grid.
     const slots = new Map<number, ReservedPoint[]>();
@@ -166,9 +169,9 @@ export class Formations {
     const nearbySlots: ReservedPoint[] = [];
     const free = (point: WorldPoint, squad: SquadGeometry) => {
       if (distanceSquared(point, target) > maximumRadius ** 2) return false;
-      if (!standable(this.map, point, squadRadius(squad.kind))) return false;
+      if (!standable(this.map, point, squadRadius(squad.kind), paths.amphibious)) return false;
       if (blocked?.(pointTile(this.map, point))) return false;
-      if (!this.paths.connected(center, pointTile(this.map, point)))
+      if (!paths.connected(center, pointTile(this.map, point)))
         return false;
       occupied.query(point.x, point.y, 2 * FIXED, neighbors);
       nearbySlots.length = 0;

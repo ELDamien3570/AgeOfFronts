@@ -2,7 +2,6 @@ import type { Building, BuildingType } from "../Protocol";
 import { FIXED } from "../Protocol";
 import { tilePoint } from "../SquadGeometry";
 import { DEFENSIVE_BUILDINGS } from "../content/Buildings";
-import { shoreTransportDefinition } from "../content/ShoreTransport";
 import type { Expansion } from "./Expansion";
 import { FALLOUT_TROOP_LOSS_PER_CELL } from "./NuclearWasteland";
 
@@ -117,7 +116,7 @@ export class AiRecovery {
       if (
         !world.players.find((p) => p.id === squad.playerId)?.ai ||
         squad.embarkedOn !== null ||
-        !["move", "board"].includes(squad.order.type) ||
+        squad.order.type !== "move" ||
         squad.movementStatus?.reason !== "restricted"
       )
         continue;
@@ -198,7 +197,7 @@ export class AiRecovery {
       if (core) {
         const members = own.filter(
           (s) =>
-            world.paths.connected(world.tileOf(s), core.tile) &&
+            world.squadPaths(id).connected(world.tileOf(s), core.tile) &&
             world.map.euclideanDistSquared(world.tileOf(s), core.tile) > 8 ** 2,
         );
         if (
@@ -213,9 +212,7 @@ export class AiRecovery {
           this.diagnostics.rallied += members.length;
       } else if (
         !episode.evacuationAttempted &&
-        shoreTransportDefinition(
-          this.expansion.progression.states[id].completed,
-        )
+        world.squadPaths(id).amphibious
       ) {
         episode.evacuationAttempted = true;
         const destination = world
@@ -279,7 +276,7 @@ export class AiRecovery {
       if(!economy.assets.acquire([{asset:`squad:${squad.id}`,playerId:player.id,generation:world.aiGeneration(player.id),controller,priority:"patrol",createdTick:world.tick,expiresTick:world.tick+180}])){release();continue;}
       this.cleanup.set(player.id,{squadId:squad.id,tile:old?.tile??world.tileOf(squad)});
       if(squad.troops<800) {
-        const tile=world.ownedLandNearest(player.id,world.tileOf(squad),32).find(t=>world.paths.walkable(t) && world.paths.connected(world.tileOf(squad),t));
+        const tile=world.ownedLandNearest(player.id,world.tileOf(squad),32).find(t=>world.paths.walkable(t) && world.squadPaths(player.id).connected(world.tileOf(squad),t));
         if(tile===undefined){release();continue;}
         if(world.owners[world.tileOf(squad)]===player.id) {
           if(squad.order.type!=="replenish")world.applyCommand({type:"order",playerId:player.id,squadIds:[squad.id],order:{type:"replenish"}});
@@ -289,7 +286,7 @@ export class AiRecovery {
       // Preserve a committed capture until cleared instead of retargeting as
       // neighboring cells change. Candidates are bounded and owner-indexed.
       const tile=old && world.wasteland.has(old.tile) ? old.tile : [...world.wasteland.recoveryCandidates(player.id)]
-        .filter(t=>world.paths.connected(world.tileOf(squad),t) && !world.nearbyArmyEnemies(tilePoint(world.map,t),12*FIXED,player.id).length)
+        .filter(t=>world.squadPaths(player.id).connected(world.tileOf(squad),t) && !world.nearbyArmyEnemies(tilePoint(world.map,t),12*FIXED,player.id).length)
         .sort((a,b)=>world.map.euclideanDistSquared(world.tileOf(squad),a)-world.map.euclideanDistSquared(world.tileOf(squad),b) || a-b)[0];
       if(tile===undefined){release();continue;}
       this.cleanup.set(player.id,{squadId:squad.id,tile});

@@ -50,7 +50,7 @@ describe("authoritative recruitment queues", () => {
     ["human", false, "regular", 64],
     ["AI nation", true, "regular", 32],
     ["tribe", true, "tribe", 24],
-  ] as const)("reserves independent warship and transport slots for %s", (_name, ai, kind, cap) => {
+  ] as const)("reserves the warship fleet cap for %s", (_name, ai, kind, cap) => {
     const m = game(), player = m.players[0];
     m.setAiController(player.id, ai);
     player.kind = kind;
@@ -58,34 +58,25 @@ describe("authoritative recruitment queues", () => {
     const tile = m.map.ref(10, 6);
     m.owners[tile] = player.id;
     const port = m.addBuilding({id:m.allocateId(),playerId:player.id,type:"port",tile,age:"StoneAge",remainingTicks:0});
-    const buy = (shipType:"warship"|"transport") => m.applyCommand({type:"recruit-ship",playerId:player.id,
-      buildingId:port.id,shipType,definitionId:`stoneage-${shipType}`});
-    const hull = (shipKind:"warship"|"transport") => m.addShip({id:m.allocateId(),playerId:player.id,
-      kind:shipKind,x:10*FIXED,y:5*FIXED,health:1000,destination:null,waypoints:[],path:[],nextPathIndex:0,fighting:false,boarding:null});
-    for(let i=0;i<cap-1;i++) hull("warship");
-    expect(buy("warship")).toBeNull();
+    const buy = () => m.applyCommand({type:"recruit-ship",playerId:player.id,
+      buildingId:port.id,shipType:"warship",definitionId:"stoneage-warship"});
+    const hull = () => m.addShip({id:m.allocateId(),playerId:player.id,
+      kind:"warship",x:10*FIXED,y:5*FIXED,health:1000,destination:null,waypoints:[],path:[],nextPathIndex:0,fighting:false});
+    for(let i=0;i<cap-1;i++) hull();
+    expect(buy()).toBeNull();
     const gold = player.gold;
-    expect(buy("warship")).toContain(`${cap} warships`);
+    expect(buy()).toContain(`${cap} warships`);
     expect(player.gold).toBe(gold);
-    for(let i=0;i<63;i++) hull("transport");
-    expect(buy("transport")).toBeNull();
-    const afterTransport = player.gold;
-    expect(buy("transport")).toContain("64 transports");
-    expect(player.gold).toBe(afterTransport);
-    expect(buy("warship")).toContain(`${cap} warships`);
     const saved = m.checkpoint();
     m.restore(saved);
-    expect(buy("warship")).toContain(`${cap} warships`);
-    expect(buy("transport")).toContain("64 transports");
+    expect(buy()).toContain(`${cap} warships`);
     const decoded = new SnapshotDecoder().decode(new SnapshotEncoder().encode(m.snapshot()));
-    expect(decoded.ships).toHaveLength(cap-1+63);
-    expect(decoded.expansion!.recruitment!.filter(j=>j.category==="ship")).toHaveLength(2);
+    expect(decoded.ships).toHaveLength(cap-1);
+    expect(decoded.expansion!.recruitment!.filter(j=>j.category==="ship")).toHaveLength(1);
     const vm = new SkirmishViewModel(decoded,{selected:new Set(),selectedShips:new Set(),selectedBuilding:port.id});
     expect(vm.recruitment("warship").reason).toBe("Warship limit reached");
-    expect(vm.recruitment("transport").reason).toBe("Transport limit reached");
-    decoded.expansion!.recruitment = decoded.expansion!.recruitment!.filter(j=>j.kind!=="transport");
-    expect(vm.recruitment("transport").enabled).toBe(true);
-    expect(vm.recruitment("warship").reason).toBe("Warship limit reached");
+    decoded.expansion!.recruitment = decoded.expansion!.recruitment!.filter(j=>j.kind!=="warship");
+    expect(vm.recruitment("warship").enabled).toBe(true);
     expect(m.applyCommand({type:"stop-ships",playerId:player.id,shipIds:decoded.ships.map(s=>s.id)})).toBeNull();
   });
   it("reserves costs and trains sequentially without charging twice", () => {

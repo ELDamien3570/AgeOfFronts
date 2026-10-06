@@ -203,7 +203,7 @@ describe("conquest credit", () => {
     for(const b of [...game.buildings]) if(b.playerId===2) game.removeBuilding(b.id);
     const factory=building(game,"factory",70,70,2);
     const hull=game.addShip({id:game.allocateId(),playerId:2,kind:"warship",health:1,x:0,y:0,
-      destination:null,waypoints:[],path:[],nextPathIndex:0,fighting:false,boarding:null});
+      destination:null,waypoints:[],path:[],nextPathIndex:0,fighting:false});
     const ground=new DamageLedger(); for(const s of game.squads) if(s.playerId===2)ground.add(s.id,1,s.troops);
     game.resolveLandDamage(ground);
     const unrelated=new DamageLedger(); unrelated.add(factory.id,3,5000); unrelated.add(hull.id,3,1);
