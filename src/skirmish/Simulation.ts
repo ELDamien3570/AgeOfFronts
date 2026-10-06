@@ -3446,6 +3446,9 @@ export class Skirmish {
     for (const squad of [...this.squads].reverse())
       if (squad.troops <= 0) this.removeSquad(squad.id);
   }
+  destroyTradersInBlast(attacker:number,x:number,y:number,radius:number):void {
+    this.expansion?.trade.destroyInBlast(attacker,x,y,radius);
+  }
 
   private readonly captureFootprints = new Map<number, readonly number[]>();
   private readonly captureContributions = new Map<number, {

@@ -1016,6 +1016,7 @@ export class Expansion {
     this.advanceAircraft();
     this.trade.step();
     this.battle.advanceProjectiles();
+    this.trade.removeRetired();
     for (let i = this.world.buildings.length - 1; i >= 0; i--)
       if ((this.world.buildings[i].health ?? 1) <= 0)
         this.world.removeBuilding(this.world.buildings[i].id);

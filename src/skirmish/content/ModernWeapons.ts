@@ -26,6 +26,7 @@ export const BOMBER_ATTACK: AttackProfile = {
     "siege",
     "structure",
     "wall",
+    "ship",
   ],
   projectile: { diameter: FIXED / 3, speed: FIXED, blastRadius: 4 * FIXED },
 };

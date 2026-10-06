@@ -100,6 +100,9 @@ export class Trade {
   private seaActorTick = -1;
   private readonly seaActorIds = new Map<number, TradeActor>();
   private readonly seaActors: SpatialGrid<TradeActor>;
+  private blastActorTick = -1;
+  private readonly blastActors: SpatialGrid<TradeActor>;
+  private readonly blastNearby: TradeActor[] = [];
   readonly actors: TradeActor[] = [];
   readonly deliveredGold: Record<number, number> = {};
   readonly capturedValue: Record<number, number> = {};
@@ -150,7 +153,27 @@ export class Trade {
       diplomacy.hostile(a, b),
     private readonly war: (a: number, b: number) => boolean = (a,b)=>diplomacy.declaredWar(a,b),
     private readonly relationRevision:(owner:number)=>string = ()=>String(diplomacy.revision),
-  ) { this.seaActors = new SpatialGrid(world.map.width()*FIXED,world.map.height()*FIXED,8*FIXED,a=>a.playerId); }
+  ) {
+    this.seaActors = new SpatialGrid(world.map.width()*FIXED,world.map.height()*FIXED,8*FIXED,a=>a.playerId);
+    this.blastActors = new SpatialGrid(world.map.width()*FIXED,world.map.height()*FIXED,8*FIXED,a=>a.playerId);
+  }
+  /** Build only on a blast tick, shared by all warheads. Cargo loss and actor
+   * retirement use the existing lifecycle; wrecks cannot move, load or pay. */
+  destroyInBlast(_attacker:number,x:number,y:number,radius:number):void {
+    if (this.blastActorTick !== this.world.tick) {
+      this.blastActorTick = this.world.tick;
+      this.blastActors.rebuild(this.actors);
+    }
+    this.blastActors.query(x,y,radius,this.blastNearby);
+    for (const actor of this.blastNearby.sort((a,b)=>a.id-b.id)) {
+      if (this.retired.has(actor.id) ||
+        (actor.x-x)**2+(actor.y-y)**2>radius**2) continue;
+      this.discard(actor);
+      this.cancel(actor.id);
+      this.retired.add(actor.id);
+    }
+    this.seaActorTick = -1;
+  }
   private indexSeaActors(): void {
     if (this.seaActorTick === this.world.tick) return;
     this.seaActorTick = this.world.tick; this.seaActorIds.clear();
@@ -187,6 +210,7 @@ export class Trade {
   }
   restore(saved: ReturnType<Trade["checkpoint"]>): void {
     this.seaActorTick = -1;
+    this.blastActorTick = -1;
     const s = structuredClone(saved);
     restoreArray(this.actors, s.actors);
     this.receipts.clear();for(const [key,receipt] of s.receipts??[])this.receipts.set(key,receipt);
@@ -1075,6 +1099,7 @@ export class Trade {
     this.receiptRevision++;
   }
   step(): void {
+    this.blastActorTick = -1;
     if(this.world.tick%20===0)for(const [key,receipt] of this.receipts)
       if(this.world.tick-receipt.tick>=100){this.receipts.delete(key);this.receiptRevision++;}
     const { map, tick } = this.world;
@@ -1096,6 +1121,7 @@ export class Trade {
       this.land = facts.groundAlive; this.sea = facts.warshipsAlive;
     }
     for (const a of this.actors) {
+      if (this.retired.has(a.id)) continue;
       const player = players.get(a.playerId);
       if (!player || player.eliminated) {
         this.discard(a);
@@ -1267,6 +1293,12 @@ export class Trade {
       else a.state = a.cargo && a.visitedTiles.length < TRADE_RULES.maximumStops ? "outbound" : "returning";
     }
     if (!this.world.domainRoutes) this.stepPlanning(32);
+    this.removeRetired();
+  }
+  /** One cleanup per phase, rather than an actor-array scan per warhead. */
+  removeRetired(): void {
+    if (!this.retired.size) return;
+    this.blastActorTick = -1;
     for (let i = this.actors.length - 1; i >= 0; i--)
       if (this.retired.has(this.actors[i].id)) {
         const id = this.actors[i].id;

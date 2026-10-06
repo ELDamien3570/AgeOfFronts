@@ -52,6 +52,7 @@ export interface BattleWorld {
   resolveLandDamage(damage: DamageLedger): void;
   resolveNavalDamage(damage: DamageLedger): void;
   nuclearBlast?(x:number,y:number,radius:number):void;
+  destroyTradersInBlast?(attacker:number,x:number,y:number,radius:number):void;
   recordMilitaryLosses(
     victims: { id: number; playerId: number }[],
     damage: DamageLedger,
@@ -1002,13 +1003,18 @@ export class Battle {
       this.spatial.query(p.x, p.y, radius, this.nearby);
       this.naval.query(p.x, p.y, radius, this.nearbyShips);
       this.structures.query(p.x, p.y, radius, this.nearbyStructures);
+      const indiscriminate = p.kind === "bomb" || p.kind === "icbm" || p.kind === "warhead";
+      const blastVictim = (owner:number) => indiscriminate || this.diplomacy.hostile(owner,p.playerId);
+      if (indiscriminate)
+        this.world.destroyTradersInBlast?.(p.playerId,p.x,p.y,radius);
       if (p.kind === "icbm" || p.kind === "warhead") {
         // Nuclear effects are per victim, independent of conventional armour,
         // shared damage budgets, or the ordinary 64-target splash envelope.
-        const inside = (s: {playerId:number;x:number;y:number}) => this.diplomacy.hostile(s.playerId,p.playerId) && this.distance(s,p)<=radius**2;
+        const inside = (s: {playerId:number;x:number;y:number}) => this.distance(s,p)<=radius**2;
         for (const target of this.nearby.filter(inside).sort((a,b)=>a.id-b.id)) {
-          impacts.add(target.id,p.playerId,target.troops);
-          this.contribution(contributions,target.id,p.sourceId,target.troops,p.sourceKind);
+          const lethal = target.afloat?.hull ?? target.troops;
+          impacts.add(target.id,p.playerId,lethal);
+          this.contribution(contributions,target.id,p.sourceId,lethal,p.sourceKind);
         }
         for (const target of this.nearbyShips.filter(inside).sort((a,b)=>a.id-b.id)) {
           naval.add(target.id,p.playerId,target.health);
@@ -1019,7 +1025,7 @@ export class Battle {
           const building=this.structureById.get(body.id)!;
           this.structuralHit(building,p.playerId,p.sourceId,structuralDamage(building.maxHealth??building.health??1200,Math.sqrt(this.distance(body,p))),p.sourceKind);
         }
-        for (const wall of this.forts.nearbyBarriers(p.x,p.y,radius)) if (this.diplomacy.hostile(wall.playerId,p.playerId)) {
+        for (const wall of this.forts.nearbyBarriers(p.x,p.y,radius)) {
           const distance=Math.min(...wall.tiles.map(tile=>Math.hypot(((tile%this.mapWidth)+0.5)*FIXED-p.x,(Math.floor(tile/this.mapWidth)+0.5)*FIXED-p.y)));
           if (distance<=radius) this.structuralHit(wall,p.playerId,p.sourceId,structuralDamage(wall.maxHealth,distance),p.sourceKind);
         }
@@ -1027,16 +1033,17 @@ export class Battle {
         continue;
       }
       let budget =
-        (p.damage + Object.values(p.bonuses).reduce((sum, n) => sum + n, 0)) *
-        4;
+        p.kind === "bomb" ? Infinity :
+        (p.damage + Object.values(p.bonuses).reduce((sum, n) => sum + n, 0)) * 4;
+      const targetLimit = p.kind === "bomb" ? Infinity : 64;
       const eligible = (s: { playerId: number; x: number; y: number }) =>
-        this.diplomacy.hostile(s.playerId, p.playerId) &&
+        blastVictim(s.playerId) &&
         this.distance(s, p) <= radius ** 2 &&
         (p.kind !== "shell" || this.forts.clear(p, s, p.playerId));
       for (const target of this.nearby
         .filter(eligible)
         .sort((a, b) => a.id - b.id)
-        .slice(0, 64)) {
+        .slice(0, targetLimit)) {
         const hit = Math.min(
           budget,
           hitDamage(
@@ -1058,7 +1065,7 @@ export class Battle {
       for (const target of this.nearbyShips
         .filter(eligible)
         .sort((a, b) => a.id - b.id)
-        .slice(0, 64)) {
+        .slice(0, targetLimit)) {
         const hit = Math.min(
           budget,
           hitDamage(scaled(target), {
@@ -1082,7 +1089,7 @@ export class Battle {
       for (const body of this.nearbyStructures
         .filter(
           (b) =>
-            this.diplomacy.hostile(b.playerId, p.playerId) &&
+            blastVictim(b.playerId) &&
             this.distance(this.position(b), p) <= radius ** 2 &&
             (p.kind !== "shell" ||
               this.forts
@@ -1102,7 +1109,7 @@ export class Battle {
       }
       for (const wall of this.forts.nearbyBarriers(p.x, p.y, radius))
         if (
-          this.diplomacy.hostile(wall.playerId, p.playerId) &&
+          blastVictim(wall.playerId) &&
           wall.tiles.some(
             (t) =>
               this.distance(
