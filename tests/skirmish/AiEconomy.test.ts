@@ -113,6 +113,11 @@ describe("coordinated AI economy", () => {
   it("builds an equipment chain from owned unmined deposits instead of staying on Stone Age troops", () => {
     const {game,player,expansion}=fixture();
     game.options.runAi=false;
+    // Progression may now precede the workshop chain. Give the fixture room for
+    // the larger subsequent-age footprints while retaining real placement rules.
+    const claim=(game as unknown as {changeOwner(tile:number,owner:number):void}).changeOwner.bind(game);
+    for(let y=Math.max(0,game.map.y(player.base)-12);y<Math.min(game.map.height(),game.map.y(player.base)+12);y++)
+      for(let x=Math.max(0,game.map.x(player.base)-12);x<Math.min(game.map.width(),game.map.x(player.base)+12);x++)claim(game.map.ref(x,y),player.id);
     const state=expansion.progression.states[player.id];
     state.age="BronzeAge";
     state.completed=TECHNOLOGIES.filter(t=>["StoneAge","BronzeAge"].includes(t.age)).map(t=>t.id);
@@ -134,7 +139,10 @@ describe("coordinated AI economy", () => {
       game.step();
       madeKit=(expansion.supply.inventories[player.id]["equipment:bronzeage"]??0)>0;
     };
-    for(let i=0;i<6000&&!madeKit;i++)advance();
+    // Legal age-ups now take precedence; this scenario can advance twice before
+    // finishing its Bronze chain. Allow paid transitions and bounded placement,
+    // while still requiring real extraction and crafted output.
+    for(let i=0;i<18000&&!madeKit;i++)advance();
     for(const tile of [copper,tin])expect(game.buildings.some(b=>b.playerId===player.id&&b.type==="mine"&&b.tile===tile)).toBe(true);
     expect(game.buildings.some(b=>b.playerId===player.id&&b.type==="factory"&&!b.remainingTicks)).toBe(true);
     expect(game.buildings.some(b=>b.playerId===player.id&&b.type==="blacksmith"&&!b.remainingTicks)).toBe(true);

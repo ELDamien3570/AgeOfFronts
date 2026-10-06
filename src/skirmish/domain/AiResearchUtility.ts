@@ -9,6 +9,8 @@ import { AiProductionDependencies } from "./AiProductionDependencies";
 import { AGES, type Resource, type Technology } from "./Definitions";
 
 export interface ResearchOpportunity {
+  /** A faction has completed two trees in this age, or reached a later age. */
+  progressionRace?: boolean;
   resources: readonly Resource[];
   usableCoast: boolean;
   seaThreat: number;

@@ -64,7 +64,7 @@ import { StrategicSprites } from "./StrategicSprites";
 import { bakeTerrainFields } from "./TerrainFields";
 import { TerritoryLabelViewModel } from "./TerritoryLabelViewModel";
 import { TerritoryLayer } from "./TerritoryLayer";
-import { TraderPresentation } from "./TraderPresentation";
+import { TraderPresentation, traderActivity } from "./TraderPresentation";
 import { TradePayoutPresentation } from "./TradePayoutPresentation";
 import { PresentationClock, squadSpriteSize } from "./UnitAnimation";
 import { UnitArtwork } from "./UnitArtwork";
@@ -1880,6 +1880,8 @@ export class Renderer {
           }
         }
       for (const actor of snapshot.expansion.traders) {
+        const activity = traderActivity(actor);
+        if (activity === "hidden") continue;
         const boat = actor.naval ? this.boats.traderPose(actor.id) : undefined;
         const pose =
           boat ?? this.traderPresentation.pose(actor.id, visualTick, blend);
@@ -1939,6 +1941,18 @@ export class Renderer {
           ctx.fillText("$", p.x, p.y + 3);
         }
         ctx.restore();
+        const loading = this.traderPresentation.loadingProgress(actor, this.scale);
+        if (loading !== undefined) {
+          // Unlabelled screen-space cargo bar, visible only at building-art zoom.
+          ctx.save();
+          const width = Math.min(32, symbol.size), left = p.x-width/2,
+            top = p.y-symbol.size/2-7;
+          ctx.fillStyle = "#10212be8";
+          ctx.fillRect(left,top,width,3);
+          ctx.fillStyle = "#f1d68a";
+          ctx.fillRect(left,top,width*loading,3);
+          ctx.restore();
+        }
       }
       const impactTick = this.impacts.clock(
           visualTick,

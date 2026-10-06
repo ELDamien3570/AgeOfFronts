@@ -2,7 +2,7 @@ import { afterEach, describe, expect, it, vi } from "vitest";
 import { GameMapImpl } from "../../src/core/game/GameMap";
 import { EraArtwork } from "../../src/skirmish/client/EraArtwork";
 import { traderSymbol } from "../../src/skirmish/client/MapSymbols";
-import { TraderPresentation } from "../../src/skirmish/client/TraderPresentation";
+import { TraderPresentation, traderActivity } from "../../src/skirmish/client/TraderPresentation";
 import { AGES } from "../../src/skirmish/domain/Definitions";
 import { FIXED, type Snapshot } from "../../src/skirmish/Protocol";
 import { Skirmish } from "../../src/skirmish/Simulation";
@@ -47,6 +47,16 @@ function fixture() {
 afterEach(() => vi.unstubAllGlobals());
 
 describe("trader presentation", () => {
+  it.each([false,true])("hides pooled couriers but marks cargo waiting for land and sea (naval=%s)",naval=>{
+    const {trader}=fixture();trader.naval=naval;
+    expect(traderActivity(trader)).toBe("active");
+    trader.state="loading";
+    expect(traderActivity(trader)).toBe("hidden");
+    trader.waitingForCargo=true;
+    expect(traderActivity(trader)).toBe("loading");
+    trader.state="returning";
+    expect(traderActivity(trader)).toBe("active");
+  });
   it("faces actual travel, interpolates position, and keeps heading when stopped", () => {
     const { snapshot, trader, presentation } = fixture();
     expect(presentation.pose(trader.id, 20)?.clip).toBe("idle");

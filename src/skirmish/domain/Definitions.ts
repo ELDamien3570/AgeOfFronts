@@ -325,7 +325,7 @@ export interface Aircraft {
   fuelTicks: number;
 }
 export interface ExpansionSnapshot {
-  tradeSites?: { playerId: number; tile: number; naval: boolean; cargo: number;
+  tradeSites?: { kind?: "city"; playerId: number; tile: number; naval: boolean; cargo: number;
     maxCargo: number; shipmentCapacity: number; receiving?: { value: number; max: number } }[];
   tradeReceipts?: TradeReceipt[];
   fallout?: Uint32Array;
@@ -352,7 +352,7 @@ export interface ExpansionSnapshot {
   /** Undirected active AI offensive pairs; presentation only, separate from wars. */
   activeOffensives?: { a: number; b: number }[];
   pairRelations?: import("./PairRelations").PairRelationRow[];
-  traders: Omit<TradeActor, "path" | "nextPathIndex">[];
+  traders: (Omit<TradeActor, "path" | "nextPathIndex"> & { waitingForCargo?: boolean })[];
   barriers: readonly Barrier[];
   projectiles: Projectile[];
   aircraft: Aircraft[];

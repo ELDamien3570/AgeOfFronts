@@ -1670,7 +1670,8 @@ export class Expansion {
       pairRelations: this.relations.snapshot(),
       traders: this.trade.actors.map(
         ({ path: _path, nextPathIndex: _index, supplyWaitTicks: _supplyWait,
-          supplyWaitStartedTick: _waitStart, tripSupplyTicks: _tripSupply, routeOriginOwner: _routeOwner, ...actor }) => actor,
+          supplyWaitStartedTick: _waitStart, tripSupplyTicks: _tripSupply, routeOriginOwner: _routeOwner, ...actor }) =>
+          ({ ...actor, waitingForCargo: actor.state === "loading" && _waitStart !== undefined }),
       ),
       barriers: this.fortifications.barriers,
       projectiles: this.battle.projectiles,

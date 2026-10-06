@@ -230,6 +230,9 @@ export class Trade {
     else c.landPaused = paused;
     this.controlRevision++;
     if (paused) this.redirect(playerId, naval);
+    const player = this.world.players.find(p => p.id === playerId);
+    if (player) this.releaseIdleCouriers(new Map([[playerId, player]]), new Map([[playerId,
+      this.actors.reduce((n, actor) => n + Number(actor.playerId === playerId && actor.naval), 0)]]));
   }
   setBlocked(playerId: number, other: number, blocked: boolean, naval?: boolean): void {
     const c = this.control(playerId);
@@ -866,6 +869,28 @@ export class Trade {
   private actorCap(player: Player): number {
     return player.kind === "tribe" ? tradeActorCap(player, this.progression.states[player.id]?.age) : TRADE_RULES.actorCap;
   }
+  private seaCap(player: Player): number {
+    return Math.max(0, this.actorCap(player) -
+      (this.paused(player.id, false) ? 0 : TRADE_RULES.reservedLandActors));
+  }
+  private releaseIdleCouriers(players: ReadonlyMap<number, Player>, seaTally: Map<number, number>,
+    tally?: Map<number, number>, idleSites?: Set<string>): void {
+    // Mode changes release empty pools immediately; loaded voyages retain their
+    // slots until returning. The spawn pass reuses its existing owner counts.
+    for (let i = this.actors.length - 1; i >= 0; i--) {
+      const actor = this.actors[i], player = players.get(actor.playerId);
+      if (!player || actor.state !== "loading" || actor.cargo > 0 ||
+        (!this.paused(player.id, actor.naval) &&
+          !(actor.naval && (seaTally.get(player.id) ?? 0) > this.seaCap(player)))) continue;
+      this.cancel(actor.id);
+      this.retries.delete(actor.id);
+      this.cycleQuotes.delete(actor.id);
+      this.actors.splice(i, 1);
+      if (tally) tally.set(player.id, (tally.get(player.id) ?? 0) - 1);
+      if (actor.naval) seaTally.set(player.id, (seaTally.get(player.id) ?? 0) - 1);
+      idleSites?.delete(this.siteKey(player.id, actor.naval, actor.originTile));
+    }
+  }
   private modeEnabled(owner: number, naval: boolean): boolean {
     const research = this.progression.states[owner]?.completed ?? [];
     return !this.paused(owner, naval) && (naval
@@ -882,13 +907,17 @@ export class Trade {
       capacity: this.capacity(site).value };
   }
   siteSnapshot(): NonNullable<import("./Definitions").ExpansionSnapshot["tradeSites"]> {
-    return [...this.markets.values()].flatMap(m => m.sites.map(site => ({
+    return [...this.markets.values()].flatMap(m => [...m.sites.map(site => ({
       playerId: site.source.playerId, tile: site.source.tile, naval: site.naval,
       cargo: site.buildings.reduce((n,b) => n + (this.supply.goods.get(b.id) ?? 0), 0),
       maxCargo: 1000 * site.buildings.length,
       shipmentCapacity: this.capacity(site).value,
       ...(site.naval ? { receiving: this.receiving.status(TradeReceiving.key(site.source.playerId, site.source.tile), this.world.tick) } : {}),
-    })));
+    })), ...m.cities.filter((b,i,all) => all.findIndex(other => other.tile === b.tile) === i).map(b => ({
+      kind: "city" as const, playerId: b.playerId, tile: b.tile, naval: false,
+      cargo: 0, maxCargo: 0, shipmentCapacity: 0,
+      receiving: this.receiving.status(TradeReceiving.key(b.playerId,b.tile),this.world.tick),
+    }))]);
   }
   private spawn(): void {
     // Prizes are transferred couriers, not new actors. Their brief arrival
@@ -898,13 +927,16 @@ export class Trade {
     // This pass-local tally avoids a persistent index over publicly mutable
     // actors. Prizes occupy the owner/global cap but not a mode quota.
     const tally = new Map<number, number>();
+    const seaTally = new Map<number, number>();
     const idleSites = new Set<string>();
     this.diagnostics.spawnActorReads = 0;
     for (const actor of this.actors) {
       this.diagnostics.spawnActorReads++;
       tally.set(actor.playerId, (tally.get(actor.playerId) ?? 0) + 1);
+      if (actor.naval) seaTally.set(actor.playerId, (seaTally.get(actor.playerId) ?? 0) + 1);
       if (actor.state === "loading") idleSites.add(this.siteKey(actor.playerId,actor.naval,actor.originTile));
     }
+    this.releaseIdleCouriers(new Map(eligible.map(player => [player.id, player])), seaTally, tally, idleSites);
     for (const player of eligible) {
       const cap = this.actorCap(player), sites = this.markets.get(player.id)?.sites ?? [];
       let count = tally.get(player.id) ?? 0;
@@ -912,6 +944,7 @@ export class Trade {
       for (let offset=0; offset<sites.length; offset++) {
         const site = sites[(cursor+offset)%sites.length], key = this.siteKey(player.id,site.naval,site.source.tile);
         if (count >= cap || this.actors.length >= globalCap) break;
+        if (site.naval && (seaTally.get(player.id) ?? 0) >= this.seaCap(player)) continue;
         if (!this.modeEnabled(player.id,site.naval) || idleSites.has(key) ||
           site.buildings.reduce((n,b)=>n+(this.supply.goods.get(b.id) ?? 0),0) < this.capacity(site).value) continue;
         const cargo = this.capacity(site),
@@ -948,6 +981,7 @@ export class Trade {
         actor.id = this.world.allocateId();
         this.actors.push(actor);
         count++;
+        if (site.naval) seaTally.set(player.id,(seaTally.get(player.id) ?? 0)+1);
         idleSites.add(key);
         this.spawnCursor.set(player.id,(cursor+offset+1)%sites.length);
         this.diagnostics.spawned++;

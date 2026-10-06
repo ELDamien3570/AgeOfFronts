@@ -72,6 +72,46 @@ function fleet(factories = 1, ports = 1, aiWarPolicy = false, deferredPlanning =
 }
 
 describe("bounded civilian trade", () => {
+  it("borrows land slots when paused and restores the reservation without interrupting sea voyages", () => {
+    const {trade,step}=fleet(1,50);
+    trade.setPaused(1,false,true);
+    step(200);
+    const sea=()=>trade.actors.filter(a=>a.playerId===1 && a.naval);
+    expect(sea()).toHaveLength(48);
+    const ships=sea().map(a=>a.id);
+    trade.setPaused(1,false,false);
+    step(20);
+    expect(sea().map(a=>a.id)).toEqual(ships);
+    expect(trade.actors.filter(a=>a.playerId===1 && !a.naval)).toHaveLength(0);
+    // Complete eight voyages through the real returning/loading transition.
+    for(const actor of sea().slice(-8))Object.assign(actor,{state:"returning",destination:actor.factoryId,
+      path:[],nextPathIndex:0,waitTicks:0,cargo:0});
+    step(40);
+    expect(sea()).toHaveLength(40);
+    expect(trade.actors.filter(a=>a.playerId===1 && !a.naval).length).toBeGreaterThan(0);
+    expect(trade.actors.filter(a=>a.playerId===1).length).toBeLessThanOrEqual(48);
+  });
+  it("releases paused empty land couriers so their slots can be used at sea", () => {
+    const {trade,step}=fleet(8,50);
+    step(200);
+    const land=trade.actors.filter(a=>a.playerId===1 && !a.naval);
+    expect(land).toHaveLength(8);
+    for(const actor of land)Object.assign(actor,{state:"loading",destination:null,path:[],cargo:0,waitTicks:0});
+    trade.setPaused(1,false,true);
+    step(40);
+    expect(trade.actors.filter(a=>a.playerId===1 && !a.naval)).toHaveLength(0);
+    expect(trade.actors.filter(a=>a.playerId===1 && a.naval)).toHaveLength(48);
+  });
+  it("reserves eight owner slots for factories even when ports fill first", () => {
+    const {trade,expansion,sources,step}=fleet(1,50);
+    expansion.supply.goods.set(sources[0].id,0);
+    step(200);
+    expect(trade.actors.filter(a=>a.playerId===1 && a.naval)).toHaveLength(40);
+    expansion.supply.goods.set(sources[0].id,1000);
+    step(200);
+    expect(trade.actors.filter(a=>a.playerId===1 && !a.naval)).toHaveLength(8);
+    expect(trade.actors.filter(a=>a.playerId===1)).toHaveLength(48);
+  });
   it.each([false,true])("dispatches only a full load and permits additional couriers from one stocked site (naval=%s)", naval => {
     const {trade,expansion,sources,step}=fleet(naval?0:1,naval?1:0);
     expansion.supply.goods.set(sources[0].id,24);
@@ -85,13 +125,14 @@ describe("bounded civilian trade", () => {
     expect(trade.actors.every(a=>a.loaded===25)).toBe(true);
   });
   it("reuses a returning courier and tops up its unsold cargo before departure",()=>{
-    const {trade,expansion,sources,step}=fleet(1,0);
+    const {game,trade,expansion,sources,step}=fleet(1,0);
     expansion.supply.goods.set(sources[0].id,25);step(22);
     const a=trade.actors[0],id=a.id;
     Object.assign(a,{state:"returning",destination:sources[0].id,path:[],waitTicks:0,cargo:15,delivered:10});
     step();expect(expansion.supply.goods.get(sources[0].id)).toBe(15);
     expansion.supply.goods.set(sources[0].id,24);step(40);
     expect(a.state).toBe("loading");expect(a.cargo).toBe(0);
+    expect(game.snapshot().expansion!.traders.find(t=>t.id===id)?.waitingForCargo).toBe(true);
     expansion.supply.goods.set(sources[0].id,25);step(4);
     expect(trade.actors).toHaveLength(1);expect(a.id).toBe(id);
     expect(a.loaded).toBe(25);expect(a.tripSupplyTicks).toBeGreaterThan(0);

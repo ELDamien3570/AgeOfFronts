@@ -36,6 +36,10 @@ it.each([true, false])(
     const layer = new AircraftLayer(battlefield);
     const canvas = parent.querySelector<HTMLCanvasElement>(".aircraft-layer")!;
     const appearance = getComputedStyle(canvas);
+    const details = document.createElement("aside");
+    details.className = "selection-card";
+    parent.append(details);
+    expect(Number(getComputedStyle(details).zIndex)).toBeGreaterThan(Number(appearance.zIndex));
     expect(appearance.pointerEvents).toBe("none");
     expect(appearance.position).toBe("absolute");
     expect(Number(appearance.zIndex)).toBeGreaterThan(

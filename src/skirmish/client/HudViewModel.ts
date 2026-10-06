@@ -748,8 +748,8 @@ export class HudViewModel {
         (sum, other) => sum + other.remainingTicks,
         0,
       );
-      const tradeSite = (b.type === "factory" || b.type === "port") && state.expansion?.tradeSites?.find(
-        s => s.playerId === b.playerId && s.tile === b.tile && s.naval === (b.type === "port"));
+      const tradeSite = state.expansion?.tradeSites?.find(
+        s => s.playerId === b.playerId && s.tile === b.tile && (s.kind ?? (s.naval ? "port" : "factory")) === b.type);
       return {
         ...buildingCards[b.type],
         ref: `building:${b.id}`,
@@ -759,7 +759,7 @@ export class HudViewModel {
           : undefined,
         category: "building",
         ...(tradeSite ? { tradeMeters: [
-          { label: "Cargo stock", value: tradeSite.cargo, max: tradeSite.maxCargo },
+          ...(b.type === "city" ? [] : [{ label: "Cargo stock", value: tradeSite.cargo, max: tradeSite.maxCargo }]),
           ...(tradeSite.receiving ? [{ label: "Land receiving capacity (base)", ...tradeSite.receiving }] : []),
         ] } : {}),
         playerId: b.playerId,
@@ -805,7 +805,7 @@ export class HudViewModel {
                 stat("Age", AGE_NAMES[AGES.indexOf(b.age ?? "StoneAge")]),
                 stat("Buildings", `${completed}/${stack.length} ready`),
                 ...this.buildingDetails(b),
-                ...(tradeSite ? [stat("Cargo per departure", fmt(tradeSite.shipmentCapacity))] : []),
+                ...(tradeSite && b.type !== "city" ? [stat("Cargo per departure", fmt(tradeSite.shipmentCapacity))] : []),
                 ...(b.type === "port" ? [stat("Sea receiving", "Unlimited")] : []),
                 ...(b.type === "missile-defence" ? [
                   stat("Interception radius",`${completed ? missileDefenseRange(completed)/FIXED : 0} cells`),

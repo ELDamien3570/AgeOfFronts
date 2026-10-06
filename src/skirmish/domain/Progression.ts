@@ -89,6 +89,14 @@ export function advanceRejection(
   const price = researchTerms(ADVANCES[AGES.indexOf(state.age)], speed).gold;
   return gold < price ? `Needs ${price - gold} more gold` : null;
 }
+/** Completed achievements persist after advancement/elimination and restore,
+ * so the first qualifying faction starts a race that cannot switch off. */
+export function progressionRaceStarted(states: Record<number, ProgressionState>, age: ProgressionState["age"]): boolean {
+  return age !== "Modern" && Object.values(states).some(state =>
+    AGES.indexOf(state.age) > AGES.indexOf(age) || TREES.filter(tree =>
+      TECHNOLOGIES.filter(t => t.age === age && t.tree === tree)
+        .every(t => state.completed.includes(t.id))).length >= 2);
+}
 export class Progression {
   revision=0;
   checkpoint() { return structuredClone({states:this.states}); }

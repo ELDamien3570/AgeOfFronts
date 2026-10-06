@@ -6,7 +6,8 @@ import { UNITS } from "../../src/skirmish/content/Units";
 import { economicCandidates } from "../../src/skirmish/domain/AiEconomicPlanner";
 import { economicSnapshot } from "../../src/skirmish/domain/AiEconomicSnapshot";
 import { AGES, type Age } from "../../src/skirmish/domain/Definitions";
-import { advanceRejection } from "../../src/skirmish/domain/Progression";
+import { advanceRejection, progressionRaceStarted, startingProgression } from "../../src/skirmish/domain/Progression";
+import { AiProductionDependencies } from "../../src/skirmish/domain/AiProductionDependencies";
 import { Skirmish } from "../../src/skirmish/Simulation";
 
 function fixture(age: Age) {
@@ -126,19 +127,53 @@ describe("AI progression scoring", () => {
       capacity.mockRestore(); placements.mockRestore(); refitting.mockRestore();
     }
   });
-  it("does not bypass payment, production viability, tree prerequisites or immediate danger", () => {
+  it("keeps a legal age-up selectable despite material shortages or danger, without bypassing payment or trees", () => {
     const { game, player, state, snapshot, choices } = fixture("BronzeAge");
     player.gold = ADVANCES[1].gold - 1;
     expect(advanceRejection(state, player.gold)).toBe("Needs 1 more gold");
     expect(game.expansion!.progression.advance(player)).toBe("Needs 1 more gold");
     expect(state.advancement).toBeNull();
     snapshot.liquid.items = {};
-    expect(choices().some(c => c.kind === "advance")).toBe(false);
+    expect(choices().some(c => c.kind === "advance")).toBe(true);
     snapshot.liquid.items = { ...UNITS.find(u => u.id === "classicalage-infantry")!.cost.items };
     snapshot.threatTroops = snapshot.readyTroops;
-    expect(choices().some(c => c.kind === "advance")).toBe(false);
+    expect(choices().some(c => c.kind === "advance")).toBe(true);
     snapshot.threatTroops = 0;
     state.completed = state.completed.filter(id => !id.startsWith("bronzeage-"));
     expect(choices().some(c => c.kind === "advance")).toBe(false);
+  });
+  it("ages up despite an inconclusive bounded equipment query", () => {
+    const {game,player,state}=fixture("BronzeAge");
+    game.options.aiEconomy=true;
+    game.expansion!.supply.inventories[player.id]={};
+    const query=vi.spyOn(AiProductionDependencies.prototype,"availability").mockImplementation(function (this: AiProductionDependencies) {
+      this.deferred=true; return "deferred";
+    });
+    try {
+      game.expansion!.economy.decide(player);
+      expect(query).toHaveBeenCalled();
+      expect(state.advancement?.target).toBe("ClassicalAge");
+    } finally { query.mockRestore(); }
+  });
+  it("starts the race at two completed trees, retains it across advancement and restore, and ignores one tree", () => {
+    const state=startingProgression();
+    const finish=(tree:string)=>state.completed.push(...TECHNOLOGIES.filter(t=>t.age==="StoneAge" && t.tree===tree).map(t=>t.id));
+    finish("naval");
+    expect(progressionRaceStarted({1:state},"StoneAge")).toBe(false);
+    finish("economic");
+    expect(progressionRaceStarted({1:state},"StoneAge")).toBe(true);
+    state.age="BronzeAge";
+    expect(progressionRaceStarted(structuredClone({1:state}),"StoneAge")).toBe(true);
+    expect(progressionRaceStarted({1:state},"BronzeAge")).toBe(false);
+  });
+  it("races toward two trees even with a small army and useful economic expansion available", () => {
+    const {snapshot}=fixture("StoneAge"),state=startingProgression();
+    snapshot.research=state.completed;snapshot.readyTroops=1000;snapshot.liquid.gold=200;
+    const choices=economicCandidates(snapshot,state,AI_PERSONALITIES[0],{units:{},equipment:{},materials:{}},1,
+      [{type:"factory",tile:0,objective:9000,reason:"capacity:factory"}],
+      {resources:[],usableCoast:false,seaThreat:0,goods:0,protectedItems:{},progressionRace:true});
+    expect(choices[0].kind).toBe("research");
+    expect(choices[0].reason).toContain("progression-race:");
+    expect(choices[0].priority).toBe("committed");
   });
 });

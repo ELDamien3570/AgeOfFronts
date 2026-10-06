@@ -15,10 +15,11 @@ it("replicates live stack cargo and port receiving bars without changing simulat
     {seed:42,aiCount:1,tribes:false,runAi:false,ruleset:"ages-v1"});
   const e=game.expansion!;
   e.progression.states[1].completed=[];
-  const add=(type:"factory"|"port",x:number,y:number)=>game.addBuilding({id:game.allocateId(),
+  const add=(type:"factory"|"port"|"city",x:number,y:number)=>game.addBuilding({id:game.allocateId(),
     playerId:1,type,tile:game.map.ref(x,y),age:"StoneAge",remainingTicks:0});
   const factories=[add("factory",10,15),add("factory",10,15)];
   const port=add("port",10,19);
+  const city=add("city",30,15);
   factories.forEach((b,i)=>e.supply.goods.set(b.id,100+i*50));
   e.supply.goods.set(port.id,80);
   e.trade.step();
@@ -49,5 +50,12 @@ it("replicates live stack cargo and port receiving bars without changing simulat
     expect(bars()[0].getAttribute("aria-valuenow")).toBe("12");
     expect(bars()[1].getAttribute("aria-valuenow")).toBe("10");
     expect(root.querySelector("#selection-trade-meters")!.textContent).toContain("12 / 1,000");
+    show([city.id]);
+    expect(bars()).toHaveLength(1);
+    expect(bars()[0].getAttribute("aria-valuenow")).toBe("20");
+    e.trade.receiving.take(TradeReceiving.key(1,city.tile),game.tick,10,false,false,false);
+    snapshot=decoder.decode(encoder.encode(game.snapshot()));
+    show([city.id]);
+    expect(bars()[0].getAttribute("aria-valuenow")).toBe("10");
   } finally {vi.unstubAllGlobals();}
 });

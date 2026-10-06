@@ -1,6 +1,6 @@
-import { researchRejection, advanceRejection } from "./Progression";
+import { researchRejection, advanceRejection, progressionRaceStarted } from "./Progression";
 import { TECHNOLOGY } from "../content/Technology";
-import { researchUtility, usableNextAge } from "./AiResearchUtility";
+import { researchUtility } from "./AiResearchUtility";
 import { AiCoastPlanner } from "./AiCoastPlanner";
 import { AiTradeOpportunities, tradeSupplyLimited } from "./AiTradeOpportunities";
 import { AiRouteQuotes } from "./AiRouteQuotes";
@@ -329,9 +329,14 @@ export class AiEconomicDirector {
       64,pending?.key===demandKey?pending.state:undefined,
     );
     if(demand.planning)this.demandPlanning.set(player.id,{key:demandKey,state:demand.planning});else this.demandPlanning.delete(player.id);
-    if (demand.deferred) return;
-    this.demands.set(player.id, demand);
+    // An inconclusive equipment quote must not suspend unrelated decisions.
+    // Retain the last complete demand for production while bounded work resumes.
+    if (!demand.deferred) this.demands.set(player.id, demand);
+    const decisionDemand = demand.deferred
+      ? { ...(this.demands.get(player.id) ?? { equipment: {}, materials: {} }), units: demand.units }
+      : demand;
     const opportunity = {
+      progressionRace: progressionRaceStarted(progression.states, state.age),
       resources: supply.deposits.filter(d => world.owners[d.tile] === player.id).map(d => d.resource),
       usableCoast: this.placements.coasts(player.id).length > 0,
       seaThreat: this.naval.missions.get(player.id)?.assessment?.enemyPower ?? 0,
@@ -346,9 +351,9 @@ export class AiEconomicDirector {
       snapshot,
       state,
       personalityOf(player),
-      demand,
+      decisionDemand,
       progression.technologySpeed,
-      this.placements.candidates(player, snapshot, demand),
+      this.placements.candidates(player, snapshot, decisionDemand),
       opportunity,
     );
     if (posture.wealthy) {
@@ -382,8 +387,8 @@ export class AiEconomicDirector {
       (goal.intent.generation !== generation ||
         world.tick >= goal.intent.expiresTick ||
         world.tick - goal.lastProgress >= 1200 ||
-        (goal.intent.command.type === "research" && (!!researchRejection(state, Number.MAX_SAFE_INTEGER, goal.intent.command.technologyId, progression.technologySpeed) || !researchUtility(TECHNOLOGY.get(goal.intent.command.technologyId)!,snapshot,demand,opportunity).benefit)) ||
-        (goal.intent.kind === "advance" && (!!advanceRejection(state, Number.MAX_SAFE_INTEGER, progression.technologySpeed) || !usableNextAge(snapshot,opportunity))))
+        (goal.intent.command.type === "research" && (!!researchRejection(state, Number.MAX_SAFE_INTEGER, goal.intent.command.technologyId, progression.technologySpeed) || (!opportunity.progressionRace && !researchUtility(TECHNOLOGY.get(goal.intent.command.technologyId)!,snapshot,decisionDemand,opportunity).benefit))) ||
+        (goal.intent.kind === "advance" && !!advanceRejection(state, Number.MAX_SAFE_INTEGER, progression.technologySpeed)))
     ) {
       this.ledger.release(goal.intent.id);
       this.saving.delete(player.id);
@@ -394,8 +399,10 @@ export class AiEconomicDirector {
     if (
       goal &&
       challenger &&
-      (challenger.priority === "emergency" || challenger.reason.includes("production-prerequisite:") ||
-        (challenger.kind === "advance" && goal.intent.kind === "research") ||
+      (challenger.priority === "emergency" ||
+        (challenger.reason.includes("production-prerequisite:") && goal.intent.kind !== "advance" && !goal.intent.reason.includes("progression-race:")) ||
+        (challenger.kind === "advance" && goal.intent.kind !== "advance") ||
+        (challenger.reason.includes("progression-race:") && !goal.intent.reason.includes("progression-race:") && goal.intent.kind !== "advance") ||
         (challenger.priority === "committed" && goal.intent.priority === "growth" &&
           !goal.intent.reason.includes("production-prerequisite:")) ||
         (goal.intent.kind !== "research" && goal.intent.kind !== "advance" && challenger.score * 5 > goal.intent.score * 6))

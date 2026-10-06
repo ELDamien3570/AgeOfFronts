@@ -1,4 +1,4 @@
-import { researchUtility, usableNextAge, type ResearchOpportunity } from "./AiResearchUtility";
+import { researchUtility, type ResearchOpportunity } from "./AiResearchUtility";
 import { AI_DOCTRINES } from "../content/AiDoctrines";
 import type { BuildingType, Command } from "../Protocol";
 import {
@@ -16,7 +16,7 @@ import type { AiPriority } from "./AiBudgetLedger";
 import type { AiEconomicSnapshot } from "./AiEconomicSnapshot";
 import type { AiProductionDemand } from "./AiMilitaryDemand";
 import type { AiPersonality } from "./AiPersonality";
-import { AGES, type Cost, type ProgressionState } from "./Definitions";
+import { AGES, TREES, type Cost, type ProgressionState } from "./Definitions";
 import {
   advanceRejection,
   researchRejection,
@@ -290,11 +290,19 @@ export function economicCandidates(
       400,
     );
   }
+  // Finish the two cheapest remaining trees, with personality as a stable tie
+  // breaker. Completed trees count toward the two; no need to finish a third.
+  const raceTrees = [...TREES].sort((a, b) => {
+    const remaining = (tree: typeof a) => TECHNOLOGIES.filter(t => t.age === state.age && t.tree === tree && !state.completed.includes(t.id))
+      .reduce((sum, t) => sum + researchTerms(t, speed).gold, 0);
+    return remaining(a) - remaining(b) || personality.researchOrder.indexOf(a) - personality.researchOrder.indexOf(b);
+  }).slice(0, 2);
   for (const tree of personality.researchOrder) {
     const eligible = TECHNOLOGIES.filter(t => t.tree === tree && !researchRejection(state, Number.MAX_SAFE_INTEGER, t.id, speed))
       .map(technology => ({technology,utility:researchUtility(technology,snapshot,demand,opportunity)}))
       .sort((a,b) => b.utility.benefit-a.utility.benefit || a.technology.slot-b.technology.slot);
-    const best = eligible.find(row=>row.utility.benefit>0);
+    const racing = !!opportunity.progressionRace && raceTrees.includes(tree) && state.age !== "Modern";
+    const best = racing ? eligible.sort((a,b) => a.technology.slot-b.technology.slot)[0] : eligible.find(row=>row.utility.benefit>0);
     if (!best) continue;
     const {technology,utility} = best;
     const survival = snapshot.threatTroops > snapshot.readyTroops && technology.tree !== "warfare" ? 0 : utility.benefit;
@@ -308,18 +316,15 @@ export function economicCandidates(
         technologyId: technology.id,
       },
       { gold: researchTerms(technology, speed).gold },
-      survival +
+      survival + (racing ? 8000 : 0) +
         bias +
         Math.max(0, 600 - personality.researchOrder.indexOf(tree) * 200),
-      `research:${tree}:${utility.reason}`,
+      `research:${tree}:${racing ? "progression-race:" : ""}${utility.reason}`,
       researchTerms(technology, speed).ticks,
     );
   }
   if (
-    !advanceRejection(state, Number.MAX_SAFE_INTEGER, speed) &&
-    snapshot.threatTroops < snapshot.readyTroops &&
-    (!materialShortage || availableKits >= 2) &&
-    usableNextAge(snapshot, opportunity)
+    !advanceRejection(state, Number.MAX_SAFE_INTEGER, speed)
   ) {
     const terms = researchTerms(ADVANCES[AGES.indexOf(state.age)], speed);
     emit(
@@ -328,7 +333,7 @@ export function economicCandidates(
       { type: "advance-age", playerId: snapshot.playerId },
       { gold: terms.gold },
       2500 + (personality.id === "scholar" ? 1500 : 0),
-      "usable-age-transition",
+      "legal-age-transition",
       terms.ticks,
     );
   }
@@ -336,8 +341,9 @@ export function economicCandidates(
   // current liquid stock; gold here never grants forecast purchasing credit.
   const ordered = candidates.filter(c => c.score > 0).sort(
     (a,b) => Number(b.priority === "emergency") - Number(a.priority === "emergency") ||
-      Number(b.reason.includes("production-prerequisite:")) - Number(a.reason.includes("production-prerequisite:")) ||
       Number(b.kind === "advance") - Number(a.kind === "advance") ||
+      Number(b.reason.includes("progression-race:")) - Number(a.reason.includes("progression-race:")) ||
+      Number(b.reason.includes("production-prerequisite:")) - Number(a.reason.includes("production-prerequisite:")) ||
       (snapshot.readyTroops >= 4000 && snapshot.threatTroops <= snapshot.readyTroops / 2 ?
         Number(b.priority === "committed") - Number(a.priority === "committed") : 0) ||
       b.score-a.score || (a.id < b.id ? -1 : a.id > b.id ? 1 : 0),

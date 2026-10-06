@@ -7,6 +7,7 @@ export const tradeStockPerSecond = (age: Age) => 2 * (AGES.indexOf(age) + 1);
 export const extractionYieldMultiplier = (age: Age) => 1 + Math.floor(AGES.indexOf(age) / 2);
 export const TRADE_RULES = {
   actorCap: 48,
+  reservedLandActors: 8,
   maximumStack: 10,
   baseCargoPercent: 100,
   maximumCargoPercent: 300,

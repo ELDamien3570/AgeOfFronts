@@ -446,7 +446,7 @@ kbd {
   max-height: calc(100% - var(--dock-height) - var(--selection-top) - 22px);
   overflow: hidden;
   border-radius: 7px;
-  z-index: 2;
+  z-index: 4;
   padding: 13px;
   scrollbar-width: thin;
 }
