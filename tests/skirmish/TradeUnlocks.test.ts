@@ -51,6 +51,21 @@ function fixture(port = false, deferredPlanning = false) {
 }
 
 describe("independent trade unlocks", () => {
+  it("dispatches allied sea trade while land fortifications keep changing", () => {
+    const {m,research}=fixture(true,true);
+    const destination=m.buildings.find(b=>b.playerId===2 && b.type==="port")!;
+    m.updateBuilding(destination.id,{tile:m.map.ref(70,19)});
+    research.push("stoneage-cargo-canoes","stoneage-craft-workshops");
+    m.expansion!.diplomacy.action(m.players[0],m.players[1],"offer",0);
+    m.expansion!.diplomacy.action(m.players[1],m.players[0],"accept",0);
+    let delivered=false;
+    for(let i=0;i<600 && !delivered;i++) {
+      m.expansion!.fortifications.version++;
+      m.step();
+      delivered=(m.expansion!.trade.deliveredGold[1]??0)>0;
+    }
+    expect(delivered).toBe(true);
+  });
   it("physically dispatches a naval trader despite unrelated military-policy revisions", () => {
     const {m,research}=fixture(true,true);research.push("stoneage-cargo-canoes","stoneage-craft-workshops");
     m.expansion!.diplomacy.action(m.players[0],m.players[1],"offer",0);

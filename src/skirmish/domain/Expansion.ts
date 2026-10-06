@@ -1679,6 +1679,7 @@ export class Expansion {
       winners: this.winners,
       deliveredGold: this.trade.deliveredGold,
       tradeReceipts:[...this.trade.receipts.values()],
+      tradeSites:this.trade.siteSnapshot(),
       tradeCapturedValue: this.trade.capturedValue,
       tradeLostValue: this.trade.lostValue,
       tradeControls: this.trade.controls,

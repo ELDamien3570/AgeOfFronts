@@ -33,8 +33,8 @@ export function marketAcceptancePercent(foreign: boolean, allied: boolean): numb
   return foreign ? allied ? TRADE_RULES.alliedAcceptancePercent : TRADE_RULES.foreignAcceptancePercent : 100;
 }
 export function marketDropLimit(stack: number, naval: boolean, foreign: boolean, allied: boolean): number {
-  return Math.round(marketDropCapacity(stack) * marketAcceptancePercent(foreign, allied) / 100 *
-    (naval ? TRADE_RULES.seaDropMultiplier : 1));
+  if (naval) return Infinity;
+  return Math.round(marketDropCapacity(stack) * marketAcceptancePercent(foreign, allied) / 100);
 }
 export function stackCargoPercent(level: number): number {
   // Diminishing gains: 1x at one building, 3x at ten; never exponential.

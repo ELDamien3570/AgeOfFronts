@@ -2,8 +2,8 @@ import { marketDropCapacity, marketDropLimit, marketAcceptancePercent, TRADE_RUL
 import { TICKS_PER_SECOND } from "../Protocol";
 
 interface Budget { stack: number; units: number; tick: number }
-/** Shared per owner/tile. Integer accounting makes interleaved land/sea receipts
- * and checkpoint continuation exact; untouched markets need no per-tick work. */
+/** Land receiving budget per owner/tile. Sea deliveries bypass this budget;
+ * untouched markets need no per-tick work. */
 export class TradeReceiving {
   private readonly budgets = new Map<string, Budget>();
   static key(owner: number, tile: number): string { return `${owner}:${tile}`; }
@@ -29,13 +29,20 @@ export class TradeReceiving {
   retain(keys: ReadonlySet<string>): void {
     for (const key of this.budgets.keys()) if (!keys.has(key)) this.budgets.delete(key);
   }
+  status(key: string, tick: number): { value: number; max: number } | undefined {
+    const b = this.budgets.get(key);
+    return b && { value: this.balance(b, tick) / TRADE_RULES.receivingUnitsPerGood,
+      max: this.maximum(b.stack) / TRADE_RULES.receivingUnitsPerGood };
+  }
   available(key: string, tick: number, naval: boolean, foreign: boolean, allied: boolean): number {
+    if (naval) return Infinity;
     const b = this.budgets.get(key);
     if (!b) return 0;
     const cost = TRADE_RULES.receivingUnitsPerGood * 100 / marketAcceptancePercent(foreign, allied);
     return Math.min(marketDropLimit(b.stack, naval, foreign, allied), Math.floor(this.balance(b, tick) / cost));
   }
   take(key: string, tick: number, cargo: number, naval: boolean, foreign: boolean, allied: boolean): number {
+    if (naval) return Math.max(0, Math.floor(cargo));
     const b = this.budgets.get(key);
     if (!b) return 0;
     const quantity = Math.min(Math.max(0, Math.floor(cargo)), this.available(key, tick, naval, foreign, allied));

@@ -8,16 +8,21 @@ import { FIXED } from "../../src/skirmish/Protocol";
 import { TECHNOLOGIES } from "../../src/skirmish/content/Technology";
 
 describe("shared market receiving and multi-stop trade", () => {
-  it("scales drops and foreign acceptance without changing the per-good receiving cost for ships", () => {
+  it("scales land drops and leaves sea drops unlimited", () => {
     expect([1,5,10].map(s=>marketDropLimit(s,false,false,false))).toEqual([10,28,50]);
     expect(marketDropLimit(10,false,true,true)).toBe(63);
     expect(marketDropLimit(10,false,true,false)).toBe(75);
-    expect(marketDropLimit(10,true,true,true)).toBe(125);
-    expect(marketDropLimit(10,true,true,false)).toBe(150);
+    expect(marketDropLimit(1,true,true,true)).toBe(Infinity);
+    expect(marketDropLimit(10,true,true,false)).toBe(Infinity);
   });
-  it("shares burst and sustained throughput across traders and transport modes", () => {
+  it("shares land throughput while sea deliveries neither use nor require it", () => {
     const r = new TradeReceiving(); r.configure("1:10",10,0);
-    expect(r.take("1:10",0,450,true,true,false)).toBe(150);
+    const initial = r.checkpoint();
+    expect(r.take("1:10",0,450,true,true,false)).toBe(450);
+    expect(r.take("1:10",0,450,true,true,false)).toBe(450);
+    expect(r.checkpoint()).toEqual(initial);
+    expect(r.take("1:10",0,450,false,true,false)).toBe(75);
+    expect(r.take("1:10",0,450,false,true,false)).toBe(75);
     expect(r.take("1:10",0,450,false,false,false)).toBe(0);
     expect(r.take("1:10",20,450,false,false,false)).toBe(10);
     expect(r.take("1:10",40,450,false,true,true)).toBe(12);
@@ -28,10 +33,11 @@ describe("shared market receiving and multi-stop trade", () => {
   });
   it("does not grant a fresh burst when a market grows or when its derived index is rebuilt", () => {
     const r = new TradeReceiving(); r.configure("1:10",1,0);
-    r.take("1:10",0,100,true,true,false);
+    r.take("1:10",0,100,false,true,false);
+    r.take("1:10",0,100,false,true,false);
     r.configure("1:10",10,0);
-    expect(r.available("1:10",0,true,true,false)).toBe(0);
-    expect(r.available("1:10",20,true,true,false)).toBe(15);
+    expect(r.available("1:10",0,false,true,false)).toBe(0);
+    expect(r.available("1:10",20,false,true,false)).toBe(15);
     const saved=r.checkpoint(); r.configure("1:10",10,20);
     expect(r.checkpoint()).toEqual(saved);
   });

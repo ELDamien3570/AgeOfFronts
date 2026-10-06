@@ -110,7 +110,7 @@ export function hudMarkup(): string {
       <div id="selection-detail">
         <div class="unit-heading"><div id="selection-portrait" class="unit-portrait"></div><div><h2 id="selection-title"></h2><p id="selection-subtitle"></p><span id="selection-status" class="status-chip"></span></div></div><div id="selection-promotion" class="promotion-progress" hidden></div>
         <div id="selection-meter"><div class="meter-label"><span id="meter-name"></span><b id="meter-value"></b></div><div id="selection-health" class="health-track" role="progressbar"><i></i></div></div>
-        <dl id="selection-stats" class="stat-list"></dl><p id="selection-description" class="card-description"></p>
+        <div id="selection-trade-meters" hidden></div><dl id="selection-stats" class="stat-list"></dl><p id="selection-description" class="card-description"></p>
       </div>
       <div id="selection-mixed" hidden><h2 id="mixed-title"></h2><p class="card-description">Hover for stats. Click to inspect while keeping your army selected.</p><div id="selection-cells" class="selection-cells"></div></div>
       <div class="selection-orders"><strong id="selected"></strong><p id="selected-orders"></p></div>
@@ -489,6 +489,13 @@ export class HudView {
         bar.querySelector<HTMLElement>("i")!.style.width =
           `${Math.max(0, Math.min(100, (card.meter.value / card.meter.max) * 100))}%`;
       }
+      const tradeMeters = this.el("selection-trade-meters");
+      tradeMeters.hidden = !card.tradeMeters?.length;
+      const tradeHtml = (card.tradeMeters ?? []).map(m => {
+        const percent = m.max > 0 ? Math.max(0, Math.min(100, m.value / m.max * 100)) : 0;
+        return `<div class="trade-meter"><div class="meter-label"><span>${escape(m.label)}</span><b>${fmt(m.value)} / ${fmt(m.max)}</b></div><div class="health-track" role="progressbar" aria-label="${escape(m.label)}" aria-valuemin="0" aria-valuemax="${m.max}" aria-valuenow="${m.value}"><i style="width:${percent}%"></i></div></div>`;
+      }).join("");
+      if (tradeMeters.innerHTML !== tradeHtml) tradeMeters.innerHTML = tradeHtml;
       const stats = card.stats
         .map((s) => `<dt>${escape(s.label)}</dt><dd>${escape(s.value)}</dd>`)
         .join("");

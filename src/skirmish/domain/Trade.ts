@@ -275,6 +275,7 @@ export class Trade {
       if (
         a.playerId === owner &&
         a.state !== "prize" &&
+        !(a.naval && a.destination !== null && (a.state === "outbound" || a.state === "returning")) &&
         (naval === undefined || a.naval === naval) &&
         (other === undefined ||
           this.building(a.destination ?? -1)?.playerId === other)
@@ -407,10 +408,11 @@ export class Trade {
     )
       return false;
     if (a.state === "prize" || returning) return b.playerId === a.playerId;
-    if (
+    const committedSeaLeg = a.naval && a.state === "outbound" && a.destination === b.id;
+    if (!committedSeaLeg && (
       !this.permitted(a.playerId, b.playerId, a.naval) ||
       this.paused(a.playerId, a.naval)
-    )
+    ))
       return false;
     if (a.state !== "loading" && ((a.visitedTiles ?? []).includes(b.tile) ||
       (a.visitedTiles?.length ?? 0) >= TRADE_RULES.maximumStops))
@@ -554,7 +556,10 @@ export class Trade {
       epoch: p.epoch,
     };
   }
-  private revision(owner: number): string {
+  private revision(owner: number, naval = false): string {
+    // Water navigation ignores land fortifications and military policy. Those
+    // revisions can change every tick and starve longer sea-route admissions.
+    if (naval) return `water:${this.controlRevision}`;
     return `${this.world.domainRoutes?.revision(owner, "trade") ?? this.fortifications.version}:${this.controlRevision}:${this.relationRevision(owner)}`;
   }
   private cancel(id: number): void {
@@ -565,17 +570,19 @@ export class Trade {
   }
   validRoute(task: DomainRouteTask): boolean {
     const p = this.admissions.get(task.admissionId),
-      a = this.actors.find((a) => a.id === task.admissionId);
+      a = this.actors.find((a) => a.id === task.admissionId),
+      market = this.building(task.memberId);
     return (
       !!p &&
       !!a &&
+      !!market && this.allowedMarket(a, market, p.state === "returning") &&
       task.epoch === p.epoch &&
       task.memberId === p.candidates[p.index] &&
       a.playerId === p.playerId &&
       a.shipmentId === p.shipmentId &&
       this.tile(a) === p.start &&
       (this.world.domainRoutes?.generation(p.playerId) ?? 0) === p.generation &&
-      this.revision(p.playerId) === p.revision
+      this.revision(p.playerId, p.naval) === p.revision
     );
   }
   completedRoute(
@@ -618,7 +625,7 @@ export class Trade {
       epoch: this.nextEpoch++,
       playerId: a.playerId,
       generation: this.world.domainRoutes?.generation(a.playerId) ?? 0,
-      revision: this.revision(a.playerId),
+      revision: this.revision(a.playerId, a.naval),
       shipmentId: a.shipmentId,
       start: this.tile(a),
       originTile: a.originTile,
@@ -873,6 +880,15 @@ export class Trade {
     if (!site) return undefined;
     return { stock: site.buildings.reduce((n,b) => n + (this.supply.goods.get(b.id) ?? 0),0),
       capacity: this.capacity(site).value };
+  }
+  siteSnapshot(): NonNullable<import("./Definitions").ExpansionSnapshot["tradeSites"]> {
+    return [...this.markets.values()].flatMap(m => m.sites.map(site => ({
+      playerId: site.source.playerId, tile: site.source.tile, naval: site.naval,
+      cargo: site.buildings.reduce((n,b) => n + (this.supply.goods.get(b.id) ?? 0), 0),
+      maxCargo: 1000 * site.buildings.length,
+      shipmentCapacity: this.capacity(site).value,
+      ...(site.naval ? { receiving: this.receiving.status(TradeReceiving.key(site.source.playerId, site.source.tile), this.world.tick) } : {}),
+    })));
   }
   private spawn(): void {
     // Prizes are transferred couriers, not new actors. Their brief arrival

@@ -525,6 +525,9 @@ kbd {
 #selection-meter {
   margin: 14px 0;
 }
+.trade-meter {
+  margin: 14px 0;
+}
 .meter-label {
   display: flex;
   justify-content: space-between;

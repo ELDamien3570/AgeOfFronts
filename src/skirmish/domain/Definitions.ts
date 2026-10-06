@@ -325,6 +325,8 @@ export interface Aircraft {
   fuelTicks: number;
 }
 export interface ExpansionSnapshot {
+  tradeSites?: { playerId: number; tile: number; naval: boolean; cargo: number;
+    maxCargo: number; shipmentCapacity: number; receiving?: { value: number; max: number } }[];
   tradeReceipts?: TradeReceipt[];
   fallout?: Uint32Array;
   startingAge?: Age;
