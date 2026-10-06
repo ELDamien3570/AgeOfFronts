@@ -24,9 +24,10 @@ function fixture(transport: boolean) {
 }
 it("uses researched shore transport instead of unreachable land attack orders",()=>{
   const f=fixture(true); f.think();
-  expect(f.commands.mock.calls.some(([c])=>c.type==="order" && c.playerId===2 && c.order.type==="move" && c.order.tile===f.game.tileOf(f.enemy))).toBe(true);
-  const crossing=f.commands.mock.calls.findIndex(([c])=>c.type==="order" && c.playerId===2 && c.order.type==="move" && c.order.tile===f.game.tileOf(f.enemy));
-  expect(f.commands.mock.results[crossing].value).toBeNull();
+  const transfers=f.game.checkpoint().shorePlanning.pending;
+  expect(transfers).toHaveLength(1);
+  expect(transfers[0][1].destination).toBe(f.game.tileOf(f.enemy));
+  expect(transfers[0][1].members.map(m=>m.id)).toEqual([f.defender.id]);
   expect(f.commands.mock.calls.some(([c])=>c.type==="order" && c.playerId===2 && c.order.type==="attack")).toBe(false);
 });
 it("withdraws from unreachable ranged fire when embarkation is unavailable",()=>{

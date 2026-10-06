@@ -44,14 +44,7 @@ describe("opening economy and troop catalogue", () => {
           .reduce((n, s) => n + s.troops, 0),
     ).toBe(STARTING_AGE_TROOPS + 3000);
     const before = p.reserves;
-    game.addBuilding({
-      id: 9999,
-      playerId: p.id,
-      type: "city",
-      tile: p.base,
-      age: "StoneAge",
-      remainingTicks: 0,
-    });
+    expect(game.buildings.filter(b => b.playerId === p.id && b.type === "city")).toHaveLength(1);
     for (let i = 0; i < 20; i++) game.step();
     expect(p.reserves - before).toBe(
       baseReserveIncome("StoneAge") + cityReserveIncome("StoneAge"),

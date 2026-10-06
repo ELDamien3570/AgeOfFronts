@@ -140,8 +140,8 @@ describe("cached road rendering", () => {
       map.ref(31, 10),
       map.ref(32, 10),
       map.ref(33, 11),
-      map.ref(34, 13),
-      map.ref(35, 10),
+      map.ref(33, 12),
+      map.ref(34, 10),
     ];
     snapshot.expansion!.roads = packed(...tiles);
     const before = snapshot.expansion!.roads.slice();
@@ -156,7 +156,7 @@ describe("cached road rendering", () => {
     ];
     layer.update(snapshot);
     draw();
-    // The border at x35 stays visible; occupied cells span two chunk interiors and gutters.
+    // The border at x34 stays visible; occupied cells span two chunk interiors and gutters.
     expect(
       contexts.reduce((sum, c) => sum + c.drawImage.mock.calls.length, 0),
     ).toBe(1);

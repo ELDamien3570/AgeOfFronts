@@ -1,5 +1,6 @@
 import { claimBuildingFootprint } from "./BuildingFixtures";
 import { startingEconomy } from "../../src/skirmish/content/StartingEconomy";
+import { startingCamp } from "../../src/skirmish/domain/StartingCamp";
 import { describe, expect, it } from "vitest";
 import { GameMapImpl } from "../../src/core/game/GameMap";
 import { squadCap, tribeCountFor } from "../../src/skirmish/FactionRules";
@@ -163,9 +164,14 @@ describe("minor tribes", () => {
 
     const ageGame = match(1, false, true, 240, undefined, "ages-v1");
     const ageTribe = ageGame.players.find((p) => p.kind === "tribe")!;
-    const ageCamp = ageGame.buildings.find((b) => b.playerId === ageTribe.id)!;
     expect(ageTribe.reserves).toBe(2000);
     expect(ageTribe.gold).toBe(startingEconomy("StoneAge", true).gold);
+    expect(ageGame.buildings.find(b => b.playerId === ageTribe.id)?.type).toBe("city");
+    const site = startingCamp(ageGame.map, ageGame.paths, ageTribe.base, 6)!;
+    expect(ageGame.applyCommand({type: "build", playerId: ageTribe.id, buildingType: "barracks", tile: site.barracks})).toBeNull();
+    const ageCamp = ageGame.buildings.find(b => b.playerId === ageTribe.id && b.type === "barracks")!;
+    ageGame.updateBuilding(ageCamp.id, {remainingTicks: 0});
+    const fundedGold = ageTribe.gold;
     expect(
       ageGame.applyCommand({
         type: "recruit",
@@ -174,7 +180,7 @@ describe("minor tribes", () => {
       }),
     ).toBeNull();
     expect(ageTribe.reserves).toBe(1000);
-    expect(ageTribe.gold).toBe(startingEconomy("StoneAge", true).gold - 100);
+    expect(ageTribe.gold).toBe(fundedGold - 100);
     expect(
       ageGame.applyCommand({
         type: "recruit",
@@ -183,7 +189,7 @@ describe("minor tribes", () => {
       }),
     ).toBeNull();
     expect(ageTribe.reserves).toBe(0);
-    expect(ageTribe.gold).toBe(startingEconomy("StoneAge", true).gold - 200);
+    expect(ageTribe.gold).toBe(fundedGold - 200);
   });
 
   it("allows tribes to build 1 city and 1 extra barracks and rejects additional or invalid buildings", () => {

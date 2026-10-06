@@ -2,7 +2,7 @@ import { researchRejection, advanceRejection } from "./Progression";
 import { TECHNOLOGY } from "../content/Technology";
 import { researchUtility, usableNextAge } from "./AiResearchUtility";
 import { AiCoastPlanner } from "./AiCoastPlanner";
-import { AiTradeOpportunities } from "./AiTradeOpportunities";
+import { AiTradeOpportunities, tradeSupplyLimited } from "./AiTradeOpportunities";
 import { AiRouteQuotes } from "./AiRouteQuotes";
 import { AiFrontRecords } from "./AiFrontRecords";
 import { AiModernFronts } from "./AiModernFronts";
@@ -338,6 +338,10 @@ export class AiEconomicDirector {
       goods: snapshot.buildings.reduce((n, b) => n + (supply.goods.get(b.id) ?? 0), 0),
       protectedItems: this.ledger.protected(player.id).items ?? {},
     };
+    snapshot.supplyLimitedSources = [false,true].flatMap(naval => {
+      const evidence = this.tradeQuotes.best(player.id,naval);
+      return evidence && tradeSupplyLimited(evidence.quote,this.expansion.trade.sourceStatus(evidence.source)) ? [evidence.source] : [];
+    });
     const candidates = economicCandidates(
       snapshot,
       state,

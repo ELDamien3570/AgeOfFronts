@@ -25,9 +25,21 @@ it("shows Delete warship for an owned side-card ship and routes deletion through
   update();
   const button = root.querySelector<HTMLButtonElement>("#delete-ship")!;
   expect(button.hidden).toBe(false);
+  expect(button.closest(".selection-heading")).not.toBeNull();
+  const other = match.addShip({id:match.allocateId(), playerId:1, kind:"warship", health:1000,
+    x:144, y:128, destination:null, waypoints:[], path:[], nextPathIndex:0, fighting:false, boarding:null});
+  view.update(new HudViewModel(new SkirmishViewModel(match.snapshot(), {
+    selected:new Set(), selectedShips:new Set([ship.id, other.id]), selectedBuilding:null,
+  })));
+  expect(button.hidden).toBe(true);
+  button.click();
+  expect(command).not.toHaveBeenCalled();
+  update();
+  expect(button.hidden).toBe(false);
   button.click();
   expect(command).toHaveBeenCalledWith({type:"delete-ship", playerId:1, shipId:ship.id});
   expect(match.ship(ship.id)).toBeUndefined();
+  expect(match.ship(other.id)).toBeDefined();
   update();
   expect(button.hidden).toBe(true);
   vi.unstubAllGlobals();

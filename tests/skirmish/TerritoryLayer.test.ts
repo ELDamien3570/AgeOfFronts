@@ -6,6 +6,8 @@ import { TerritoryLayer } from "../../src/skirmish/client/TerritoryLayer";
 import {
   TERRITORY_ALPHA,
   TERRITORY_BORDER_LIGHT,
+  TERRITORY_RELATION_COLORS,
+  TERRITORY_OFFENSIVE_COLOR,
   territoryStyle,
 } from "../../src/skirmish/client/TerritoryStyle";
 
@@ -147,7 +149,9 @@ function setup(width: number, height: number, owners?: number[]) {
     draw.strokes.filter(
       (s) =>
         s.color === TERRITORY_BORDER_LIGHT ||
-        (s.color === "#ff302d" && s.alpha > 0.5),
+        ([TERRITORY_OFFENSIVE_COLOR, ...Object.values(TERRITORY_RELATION_COLORS)].includes(
+          s.color as (typeof TERRITORY_RELATION_COLORS)[keyof typeof TERRITORY_RELATION_COLORS],
+        ) && s.alpha > 0.5),
     );
   const segments = (draw: ReturnType<typeof render>) =>
     boundaries(draw)
@@ -308,39 +312,21 @@ describe("cached styled territory boundaries", () => {
     }
   });
 
-  it("paints country accents on opposite inboard sides and neutral gets none", () => {
+  it("shows diplomacy on shared borders while preserving outer country accents", () => {
     const f = setup(2, 1, [1, 2]);
     f.layer.update(f.snapshot);
-    const render = f.render(),
-      shared = render.strokes.filter(
-        (s) =>
-          s.path.segments.some((e) => e[0] === 1 && e[2] === 1) &&
-          s.color.startsWith("rgb"),
-      );
-    expect(shared).toHaveLength(2);
-    expect(shared.map((s) => Math.sign(s.x)).sort()).toEqual([-1, 1]);
-    expect(new Set(shared.map((s) => s.color)).size).toBe(2);
-    const firstLight = render.strokes.findIndex(
-      (s) => s.color === TERRITORY_BORDER_LIGHT,
-    );
-    expect(
-      render.strokes
-        .slice(firstLight)
-        .every(
-          (s) => s.color === TERRITORY_BORDER_LIGHT || s.color === "#ff302d",
-        ),
-    ).toBe(true);
+    const render = f.render();
+    const shared = (s: (typeof render.strokes)[number]) =>
+      s.path.segments.some(e => e[0] === 1 && e[2] === 1);
+    expect(render.strokes.filter(s => shared(s) && s.color.startsWith("rgb")))
+      .toHaveLength(0);
+    expect(render.strokes.filter(s => shared(s) &&
+      s.color === TERRITORY_RELATION_COLORS.neutral)).toHaveLength(1);
     f.snapshot.owners[1] = 0;
     f.layer.update(f.snapshot);
-    const neutral = f
-      .render()
-      .strokes.filter(
-        (s) =>
-          s.path.segments.some((e) => e[0] === 1 && e[2] === 1) &&
-          s.color.startsWith("rgb"),
-      );
-    expect(neutral).toHaveLength(1);
-    expect(neutral[0].x).toBeLessThan(0);
+    const outer = f.render().strokes.filter(s => shared(s) && s.color.startsWith("rgb"));
+    expect(outer).toHaveLength(1);
+    expect(outer[0].x).toBeLessThan(0);
   });
 
   it("keeps claim interpolation while claim-only updates preserve geometry", () => {
@@ -368,38 +354,104 @@ describe("cached styled territory boundaries", () => {
     expect(image.data[7]).toBe(0);
   });
 
-  it("glows only along hostile shared borders and updates treaties without rebuilding geometry", () => {
+  it("updates war, neutral, and allied borders without rebuilding ownership geometry", () => {
     const f = setup(3, 1, [1, 2, 3]);
     f.layer.update(f.snapshot);
-    const initial = f.render();
+    const edges = (color: string) => f.render().strokes
+      .filter(s => s.color === color && s.alpha > 0.5)
+      .flatMap(s => s.path.segments).map(e => e[0]).sort();
+    expect(edges(TERRITORY_RELATION_COLORS.neutral)).toEqual([1, 2]);
+    expect(edges(TERRITORY_RELATION_COLORS.war)).toEqual([]);
     const geometry = vi.spyOn(
-      f.layer as unknown as { border: (chunk: unknown) => void },
-      "border",
+      f.layer as unknown as { border: (chunk: unknown) => void }, "border",
     );
-    const glow = (draw: ReturnType<typeof f.render>) =>
-      draw.strokes.filter((s) => s.color === "#ff302d");
-    expect(glow(initial)).toHaveLength(2); // two strokes per visible chunk
-    const originalFronts = glow(initial)[0].path.segments;
+    const uploads = f.canvases[0].ctx.putImageData.mock.calls.length;
     f.snapshot.expansion = {
-      diplomacy: { alliances: [{ id: 1, a: 1, b: 2, expiresTick: 1000 }] },
-    } as Snapshot["expansion"];
+      diplomacy: { alliances: [], wars: [{ a: 2, b: 1 }] },
+    } as unknown as Snapshot["expansion"];
     f.snapshot.changedTiles = new Uint32Array();
     f.layer.update(f.snapshot);
-    const allied = f.render();
-    expect(glow(allied)).toHaveLength(2);
-    expect(glow(allied)[0].path.segments.length).toBeLessThan(
-      originalFronts.length,
-    );
-    expect(geometry).not.toHaveBeenCalled();
-    f.snapshot.expansion!.diplomacy.alliances = [];
+    expect(edges(TERRITORY_RELATION_COLORS.war)).toEqual([1]);
+    expect(edges(TERRITORY_RELATION_COLORS.neutral)).toEqual([2]);
+    f.snapshot.expansion!.diplomacy.alliances = [
+      { id: 1, a: 2, b: 1, expiresTick: 1000, renewal: [] },
+    ];
+    f.snapshot.expansion!.diplomacy.wars = [{ a: 3, b: 2 }];
     f.layer.update(f.snapshot);
-    expect(glow(f.render())[0].path.segments).toEqual(originalFronts);
+    expect(edges(TERRITORY_RELATION_COLORS.allied)).toEqual([1]);
+    expect(edges(TERRITORY_RELATION_COLORS.war)).toEqual([2]);
+    expect(edges(TERRITORY_RELATION_COLORS.neutral)).toEqual([]);
+    f.snapshot.expansion!.diplomacy.alliances = [];
+    f.snapshot.expansion!.diplomacy.wars = [];
+    f.layer.update(f.snapshot);
+    expect(edges(TERRITORY_RELATION_COLORS.neutral)).toEqual([1, 2]);
+    expect(edges(TERRITORY_RELATION_COLORS.war)).toEqual([]);
+    expect(edges(TERRITORY_RELATION_COLORS.allied)).toEqual([]);
+    expect(geometry).not.toHaveBeenCalled();
+    expect(f.canvases[0].ctx.putImageData.mock.calls.length).toBe(uploads);
     f.snapshot.owners[1] = 0;
     f.snapshot.changedTiles = Uint32Array.of(1);
     f.layer.update(f.snapshot);
-    expect(glow(f.render())).toHaveLength(0);
+    expect(edges(TERRITORY_RELATION_COLORS.neutral)).toEqual([]);
   });
 
+  it("glows only for active offensives and removes the glow on withdrawal", () => {
+    const f = setup(3, 1, [1, 2, 3]);
+    f.snapshot.expansion = {
+      diplomacy: { alliances: [], wars: [{ a: 1, b: 2 }] },
+      activeOffensives: [],
+    } as unknown as Snapshot["expansion"];
+    f.layer.update(f.snapshot);
+    const initial = f.render();
+    const geometry = vi.spyOn(
+      f.layer as unknown as { border: (chunk: unknown) => void }, "border",
+    );
+    const offensive = (draw: ReturnType<typeof f.render>) =>
+      draw.strokes.filter(s => s.color === TERRITORY_OFFENSIVE_COLOR);
+    expect(offensive(initial)).toHaveLength(0);
+    f.snapshot.expansion!.activeOffensives = [{ a: 3, b: 2 }];
+    f.snapshot.changedTiles = new Uint32Array();
+    f.layer.update(f.snapshot);
+    const active = f.render();
+    expect(offensive(active)).toHaveLength(1);
+    expect(offensive(active)[0].path.segments.map(e => e[0])).toEqual([2]);
+    expect(offensive(active)[0].width).toBeCloseTo(2 / 14);
+    const halos = active.strokes.filter(s => s.color === TERRITORY_RELATION_COLORS.war &&
+      (s.alpha === 0.10 || s.alpha === 0.22));
+    expect(halos.map(s => s.width * 14)).toEqual([7, 4]);
+    expect(halos.every(s => s.path.segments.every(e => e[0] === 2))).toBe(true);
+    expect(f.segments(active)).toEqual(f.reference());
+    expect(f.curves(active)).toEqual(f.referenceCurves());
+    f.snapshot.expansion!.activeOffensives = [];
+    f.layer.update(f.snapshot);
+    const withdrawn = f.render();
+    expect(offensive(withdrawn)).toHaveLength(0);
+    expect(withdrawn.strokes.filter(s => s.color === TERRITORY_RELATION_COLORS.war &&
+      s.alpha > 0.5).flatMap(s => s.path.segments).map(e => e[0])).toEqual([1]);
+    expect(geometry).not.toHaveBeenCalled();
+    // An alliance always wins over an offensive carried in an older packet.
+    f.snapshot.expansion!.activeOffensives = [{ a: 2, b: 3 }];
+    f.snapshot.expansion!.diplomacy.alliances = [{ id: 1, a: 2, b: 3, expiresTick: 1000, renewal: [] }];
+    f.layer.update(f.snapshot);
+    expect(offensive(f.render())).toHaveLength(0);
+  });
+
+  it("glows for retaliation-only conflict and becomes a quiet red war border when it expires",()=>{
+    const f=setup(2,1,[1,2]);
+    f.snapshot.expansion={diplomacy:{alliances:[],wars:[{a:1,b:2}]},activeOffensives:[],
+      pairRelations:[{a:1,b:2,state:"conflict"}]} as unknown as Snapshot["expansion"];
+    f.layer.update(f.snapshot);f.render();
+    const geometry=vi.spyOn(f.layer as unknown as {border:(chunk:unknown)=>void},"border");
+    expect(f.render().strokes.filter(s=>s.color===TERRITORY_OFFENSIVE_COLOR)).toHaveLength(1);
+    f.snapshot.expansion!.pairRelations=[{a:1,b:2,state:"war"}];
+    f.layer.update(f.snapshot);
+    expect(f.render().strokes.filter(s=>s.color===TERRITORY_OFFENSIVE_COLOR)).toHaveLength(0);
+    expect(f.render().strokes.some(s=>s.color===TERRITORY_RELATION_COLORS.war && s.alpha>.5)).toBe(true);
+    expect(geometry).not.toHaveBeenCalled();
+    f.snapshot.expansion!.diplomacy.wars=[];f.snapshot.expansion!.pairRelations=[];
+    f.layer.update(f.snapshot);
+    expect(f.render().strokes.some(s=>s.color===TERRITORY_RELATION_COLORS.neutral)).toBe(true);
+  });
   it("keeps the border fringe from offscreen chunks and rebuilds stale offscreen paths on return", () => {
     const f = setup(130, 70);
     f.snapshot.owners.fill(1);

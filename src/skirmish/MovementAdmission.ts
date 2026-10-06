@@ -57,6 +57,7 @@ export interface MovementAdmissionEvent {
   tick: number;
   status: "deferred" | "executed" | "rejected" | "superseded";
   reason?: string;
+  tile?: number;
 }
 export interface MovementAdmissionPorts {
   prepareStructure?(state: StructureAttackPreparationState, budget: number): number;
@@ -186,7 +187,7 @@ export class MovementAdmission {
     this.events.splice(0, this.events.length, ...structuredClone(saved.events));
   }
   private event(
-    admission: Pick<Admission, "id" | "playerId">,
+    admission: Pick<Admission, "id" | "playerId"> & {tile?:number},
     tick: number,
     status: MovementAdmissionEvent["status"],
     reason?: string,
@@ -197,6 +198,7 @@ export class MovementAdmission {
       tick,
       status,
       reason,
+      ...(admission.tile===undefined?{}:{tile:admission.tile}),
     });
     if (this.events.length > 128) this.events.shift();
     this.onEvent?.({ ...this.events[this.events.length - 1] });

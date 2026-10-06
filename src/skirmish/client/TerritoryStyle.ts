@@ -5,6 +5,12 @@ export { TERRITORY_ALPHA } from "./TerritoryBorders";
 export const TERRITORY_DETAIL_ALPHA = 0.05;
 export const TERRITORY_BORDER_INK = "#172825";
 export const TERRITORY_BORDER_LIGHT = "#f3e7c8";
+export const TERRITORY_OFFENSIVE_COLOR = "#ff4538";
+export const TERRITORY_RELATION_COLORS = {
+  war: "#ff302d",
+  neutral: "#a4a8ac",
+  allied: "#52d477",
+} as const;
 
 function transition(value: number, from: number, to: number): number {
   const t = Math.max(0, Math.min(1, (value - from) / (to - from)));

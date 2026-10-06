@@ -10,8 +10,8 @@ export interface BuildingUpgrade {
   ticks: number;
 }
 
-/** Shared preview/authority quote. The caller pays once, after every selected
- * identity is validated. Ineligible owned structures are reported as skipped. */
+/** Shared preview/authority quote. Validate every identity, then pay once for
+ * the affordable subset in ID order. Ineligible structures are reported separately. */
 export function quoteBuildingUpgrades(
   player: Player,
   state: ProgressionState,
@@ -19,11 +19,12 @@ export function quoteBuildingUpgrades(
   buildings: readonly Building[],
   owners: Uint8Array,
   ids: readonly number[],
-): { upgrades: BuildingUpgrade[]; cost: Cost; reason: string | null; skipped: number } {
+): { upgrades: BuildingUpgrade[]; cost: Cost; reason: string | null; skipped: number; eligibleCount: number } {
   const upgrades: BuildingUpgrade[] = [], items: Inventory = {};
   const cost: Cost = { gold: 0, items };
-  const unique = [...new Set(ids)];
-  const result = (reason: string | null) => ({ upgrades, cost, reason, skipped: unique.length - upgrades.length });
+  const unique = [...new Set(ids)].sort((a, b) => a - b);
+  let eligibleCount = 0;
+  const result = (reason: string | null) => ({ upgrades, cost, reason, skipped: unique.length - eligibleCount, eligibleCount });
   if (!unique.length) return result("Select buildings to upgrade");
   const byId = new Map(buildings.map(b => [b.id, b]));
   const counts = new Map<Building["type"], number>();
@@ -54,9 +55,14 @@ export function quoteBuildingUpgrades(
     }
     const count = counts.get(building.type) ?? 0;
     const price = buildingUpgradeCost(building.type, age, count);
+    eligibleCount++;
+    const proposedItems = { ...items };
+    for (const [item, n] of Object.entries(price.items ?? {})) proposedItems[item] = (proposedItems[item] ?? 0) + n;
+    const rejection = costRejection(player, inventory, { gold: cost.gold! + (price.gold ?? 0), items: proposedItems });
+    if (rejection) { unavailable = rejection; continue; }
     upgrades.push({ building, age, cost: price, ticks: Math.max(1, Math.round(buildingTicks(building.type, count) / 2)) });
     cost.gold! += price.gold ?? 0;
     for (const [item, n] of Object.entries(price.items ?? {})) items[item] = (items[item] ?? 0) + n;
   }
-  return result(upgrades.length ? costRejection(player, inventory, cost) : unavailable);
+  return result(upgrades.length ? null : unavailable);
 }

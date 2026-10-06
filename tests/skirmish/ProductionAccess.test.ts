@@ -1,3 +1,4 @@
+import { CAMP_RADIUS } from "../../src/skirmish/domain/SpawnSelection";
 import { describe, expect, it } from "vitest";
 import {
   boundsOverlap,
@@ -23,6 +24,7 @@ import {
 import { createSkirmishMap } from "../../src/skirmish/Elevation";
 import type { BuildingType } from "../../src/skirmish/Protocol";
 import { Skirmish } from "../../src/skirmish/Simulation";
+import { startingCamp } from "../../src/skirmish/domain/StartingCamp";
 
 function match(seed = 47, density: 1 | 2 | 3 | 5 = 1) {
   const map = createSkirmishMap(192, 128, new Uint8Array(192 * 128).fill(133));
@@ -112,7 +114,8 @@ describe("production resource accessibility", () => {
     );
     researchAll(m);
     for (const p of m.players.filter((p) => p.kind === "regular")) {
-      expect(m.buildingPlacement(p.id, "factory", p.base, "Modern")).toBeNull();
+      const camp=startingCamp(m.map,m.paths,p.base,6)!;
+      expect(m.buildingPlacement(p.id, "factory", camp.barracks, "Modern")).toBeNull();
     }
     const p = m.players[0],
       copper = m.expansion!.supply.deposits.find(
@@ -178,13 +181,15 @@ describe("production resource accessibility", () => {
       "carbon",
       "gunpowder",
       "oil",
-    ])
-      build(
-        resource === "oil" ? "oil-well" : "mine",
-        e.supply.deposits.find(
-          (d) => d.resource === resource && d.owner === p.id,
-        )!.tile,
-      );
+    ]) {
+      const deposit = e.supply.deposits.filter(d => d.resource === resource &&
+        m.paths.connected(p.base, d.tile) && (!m.owners[d.tile] || m.owners[d.tile] === p.id))
+        .sort((a,b) => m.map.euclideanDistSquared(a.tile,p.base)-m.map.euclideanDistSquared(b.tile,p.base))[0]!;
+      expect(deposit, resource).toBeDefined();
+      // The city and paid barracks reservation can put later resources outside the camp.
+      (m as unknown as {changeOwner(tile:number,owner:number):void}).changeOwner(deposit.tile,p.id);
+      build(resource === "oil" ? "oil-well" : "mine", deposit.tile);
+    }
     const factory = build("factory"),
       arms = build("arms-factory"),
       siege = build("siege-workshop"),

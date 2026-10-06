@@ -257,6 +257,10 @@ export interface TradeActor {
   visitedTiles?: number[];
   tripStartedTick?: number;
   tripGold?: number;
+  supplyWaitTicks?: number;
+  supplyWaitStartedTick?: number;
+  tripSupplyTicks?: number;
+  routeOriginOwner?: number;
   destination: number | null;
   state: "loading" | "outbound" | "returning" | "prize" | "waiting";
   path: number[];
@@ -321,6 +325,7 @@ export interface Aircraft {
   fuelTicks: number;
 }
 export interface ExpansionSnapshot {
+  tradeReceipts?: TradeReceipt[];
   fallout?: Uint32Array;
   startingAge?: Age;
   armies: Army[];
@@ -342,6 +347,9 @@ export interface ExpansionSnapshot {
   depositGeometryRevision?: number;
   depositOwnershipRevision?: number;
   diplomacy: DiplomacyState;
+  /** Undirected active AI offensive pairs; presentation only, separate from wars. */
+  activeOffensives?: { a: number; b: number }[];
+  pairRelations?: import("./PairRelations").PairRelationRow[];
   traders: Omit<TradeActor, "path" | "nextPathIndex">[];
   barriers: readonly Barrier[];
   projectiles: Projectile[];
@@ -385,6 +393,7 @@ export interface Army {
   revision: number;
   reason: string | null;
 }
+export interface TradeReceipt { id: number; tick: number; playerId: number; tile: number; gold: number }
 export interface MatchEvent {
   id: number;
   tick: number;

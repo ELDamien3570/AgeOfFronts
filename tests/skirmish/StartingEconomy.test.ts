@@ -61,8 +61,9 @@ describe("age-scaled opening resources and tribes", () => {
     e.progression.states[tribe.id].completed = TECHNOLOGIES.map(t => t.id);
     tribe.gold = 1e6; m.owners.fill(tribe.id); e.supply.replaceDeposits([]);
     const build = (type: BuildingType, x: number) => m.applyCommand({ type: "build", playerId: tribe.id, buildingType: type, tile: m.map.ref(x, 40), age: "BronzeAge" });
-    expect(build("city", 10)).toBeNull(); expect(build("city", 20)).toContain("only build 1");
-    expect(build("barracks", 30)).toBeNull(); expect(build("barracks", 40)).toContain("only build 2");
+    expect(build("city", 10)).toContain("only build 1");
+    expect(build("barracks", 30)).toBeNull(); expect(build("barracks", 40)).toBeNull();
+    expect(build("barracks", 50)).toContain("only build 2");
     expect(build("airstrip", 50)).toContain("current age");
     expect(tribeBuildingLimit("port", "BronzeAge")).toBe(1);
     expect(tribeBuildingLimit("tower", "BronzeAge")).toBe(2);

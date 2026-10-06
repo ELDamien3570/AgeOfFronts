@@ -2,7 +2,9 @@ import { describe, expect, it, vi } from "vitest";
 import { GameMapImpl } from "../../src/core/game/GameMap";
 import { Skirmish } from "../../src/skirmish/Simulation";
 import { DamageLedger } from "../../src/skirmish/Conquest";
-import { FIXED } from "../../src/skirmish/Protocol";
+import { FIXED, type SnapshotPacket } from "../../src/skirmish/Protocol";
+import { SnapshotEncoder, SnapshotDecoder } from "../../src/skirmish/SnapshotCodec";
+import { encodeState, decodeState } from "../../src/skirmish/multiplayer/StateCodec";
 
 function fixture(enabled = true, count = 3) {
   const cells = new Uint8Array(160 * 96).fill(133), map = new GameMapImpl(160, 96, cells, cells.length);
@@ -16,6 +18,33 @@ function fixture(enabled = true, count = 3) {
 function evaluate(f: ReturnType<typeof fixture>, tick: number) { f.m.tick = tick; f.ops.step(f.forces); }
 
 describe("optional AI strategic operations", () => {
+  it("publishes active offensive pairs through network deltas without declaring wars", async () => {
+    const f = fixture();
+    const encoder = new SnapshotEncoder(), decoder = new SnapshotDecoder();
+    const publish = async () => decoder.decode(await decodeState<SnapshotPacket>(
+      await encodeState(encoder.encode(f.m.snapshot(), undefined, f.m.replicationFacts())),
+    ));
+    expect((await publish()).expansion!.activeOffensives).toEqual([]);
+    const record = (phase: "war" | "preparing" | "recovery", target: number) =>
+      ({ phase, target, since: 0, nextThink: 100, threats: [], cursor: 0, score: 0 });
+    f.ops.restore({ records: [[2, record("war", 3)], [3, record("war", 2)],
+      [4, record("preparing", 1)]], revision: 1, territorialRevision: 0 });
+    const active = await publish();
+    expect(active.expansion!.activeOffensives).toEqual([{ a: 2, b: 3 }]);
+    expect(active.expansion!.diplomacy.wars).toEqual([]);
+    f.m.players.find(p => p.id === 3)!.eliminated = true;
+    expect((await publish()).expansion!.activeOffensives).toEqual([]);
+    f.m.players.find(p => p.id === 3)!.eliminated = false;
+    f.m.expansion!.diplomacy.state.alliances.push({ id: 1, a: 2, b: 3, expiresTick: 1000, renewal: [] });
+    expect((await publish()).expansion!.activeOffensives).toEqual([]);
+    f.m.expansion!.diplomacy.state.alliances = [];
+    expect((await publish()).expansion!.activeOffensives).toEqual([{ a: 2, b: 3 }]);
+    f.ops.restore({ records: [[2, record("recovery", 3)], [3, record("preparing", 2)]],
+      revision: 2, territorialRevision: 0 });
+    expect((await publish()).expansion!.activeOffensives).toEqual([]);
+    expect(f.m.expansion!.diplomacy.state.wars).toEqual([]);
+  });
+
   it("selects an eligible tribe for an offensive instead of excluding it from strategic rivalry",()=>{
     const f=fixture(true,1);f.m.players[0].kind="tribe";
     evaluate(f,1200);evaluate(f,1260);

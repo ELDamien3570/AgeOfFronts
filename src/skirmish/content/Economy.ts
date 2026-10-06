@@ -7,12 +7,11 @@ export const tradeStockPerSecond = (age: Age) => 2 * (AGES.indexOf(age) + 1);
 export const extractionYieldMultiplier = (age: Age) => 1 + Math.floor(AGES.indexOf(age) / 2);
 export const TRADE_RULES = {
   actorCap: 48,
-  spawnCooldownTicks: 400,
   maximumStack: 10,
   baseCargoPercent: 100,
   maximumCargoPercent: 300,
   cargoExponent: 0.5,
-  valuePerGood: 10,
+  valuePerGood: 20,
   selfPercent: 100,
   alliedPercent: 150,
   foreignPercent: 200,
@@ -24,8 +23,6 @@ export const TRADE_RULES = {
   seaDropMultiplier: 2,
   receivingUnitsPerGood: 300,
   receivingGoodsPerSecondPerBuilding: 1,
-  landMarketWidthPercent: 5,
-  minimumLandMarketRadius: 12,
 } as const;
 export function marketDropCapacity(stack: number): number {
   return Math.round(TRADE_RULES.minimumDrop +

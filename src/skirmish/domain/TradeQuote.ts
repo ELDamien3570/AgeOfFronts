@@ -50,6 +50,7 @@ export function tradePayout(
 }
 
 export interface TradeCycleQuote {
+  completedTick?: number;
   marketId?: number;
   sourceId?: number;
   quantity: number;

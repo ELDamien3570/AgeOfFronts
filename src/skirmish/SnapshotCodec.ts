@@ -9,7 +9,7 @@ import type {
   SnapshotPacket,
   SquadType,
 } from "./Protocol";
-import { BUILDING_RULES, MAX_SHIPS } from "./Rules";
+import { BUILDING_RULES, MAX_FACTION_SHIPS } from "./Rules";
 import { MAX_SQUADS } from "./Protocol";
 import { packSnapshotDetails, unpackSnapshotDetails, validateSnapshotDetails } from "./SnapshotDetails";
 
@@ -416,7 +416,7 @@ export class SnapshotDecoder {
       for (let at = 0; at < packet.squads.length; at += SQUAD_STRIDE) yield packet.squads[at];
     };
     checkCapacity(this.squads, squadIds(), packet.removedSquads, MAX_SQUADS * 255);
-    checkCapacity(this.ships, records.ships.map(ship => ship.id), packet.removedShips, MAX_SHIPS * 255);
+    checkCapacity(this.ships, records.ships.map(ship => ship.id), packet.removedShips, MAX_FACTION_SHIPS * 255);
     if (packet.reset) {
       this.barriers.clear();
       this.expansionMetadata=undefined;

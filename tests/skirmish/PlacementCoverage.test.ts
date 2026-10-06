@@ -6,14 +6,14 @@ const map = new GameMapImpl(20, 20, new Uint8Array(400).fill(133), 400);
 const viewport = { left: 0, top: 0, right: 20, bottom: 20 };
 
 describe("placement footprint coverage", () => {
-  it("shows all sixteen occupied city cells without painting its reserved border", () => {
+  it("shows all nine occupied city cells without painting its reserved border", () => {
     const runs = new PlacementCoverage().runs(
       map,
       [map.ref(5, 6)],
       "city",
       viewport,
     );
-    expect(runs).toEqual([6, 7, 8, 9].map((y) => ({ y, left: 5, right: 9 })));
+    expect(runs).toEqual([6, 7, 8].map((y) => ({ y, left: 5, right: 8 })));
   });
 
   it("unions overlapping footprints once and preserves gaps between disconnected sites", () => {
@@ -24,9 +24,9 @@ describe("placement footprint coverage", () => {
       viewport,
     );
     expect(runs).toEqual(
-      [3, 4, 5, 6].flatMap((y) => [
-        { y, left: 2, right: 7 },
-        { y, left: 12, right: 16 },
+      [3, 4, 5].flatMap((y) => [
+        { y, left: 2, right: 6 },
+        { y, left: 12, right: 15 },
       ]),
     );
   });
@@ -34,7 +34,7 @@ describe("placement footprint coverage", () => {
   it("retains the tall airstrip shape", () => {
     expect(
       new PlacementCoverage().runs(map, [map.ref(5, 6)], "airstrip", viewport),
-    ).toEqual([6, 7, 8, 9].map((y) => ({ y, left: 5, right: 8 })));
+    ).toEqual([6, 7, 8].map((y) => ({ y, left: 5, right: 7 })));
   });
 
   it("includes visible cells of offscreen anchors and clips at viewport and map edges", () => {
@@ -46,7 +46,7 @@ describe("placement footprint coverage", () => {
         right: 10,
         bottom: 10,
       }),
-    ).toEqual([5, 6].map((y) => ({ y, left: 5, right: 7 })));
+    ).toEqual([5].map((y) => ({ y, left: 5, right: 6 })));
     expect(
       coverage.runs(map, [map.ref(18, 18)], "city", {
         left: 16,

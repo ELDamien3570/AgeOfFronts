@@ -340,7 +340,7 @@ export class ShoreTransport {
     this.world.domainRoutes!.cancel(this.shortcutTask(plan));
     this.pendingStarts.delete(plan.id);
     plan.groups.forEach((group,i)=>{this.planning!.release(`transfer:${plan.id}:${i}`);if(group.cohortId!==undefined){this.cohortGroups.delete(group.cohortId);this.cohorts!.cancel(group.cohortId,reason);}});
-    this.world.domainRoutes!.event("shore",{id:plan.id,playerId:plan.playerId,tick:this.world.domainRoutes!.tick(),status,reason});
+    this.world.domainRoutes!.event("shore",{id:plan.id,playerId:plan.playerId,tick:this.world.domainRoutes!.tick(),status,reason,tile:plan.destination});
   }
   private shortcutTask(plan:TransferAdmission):DomainRouteTask{return {kind:"domain",owner:"shore",admissionId:plan.id,memberId:plan.cursor,stage:"shortcut",playerId:plan.playerId,generation:plan.generation};}
   validRoute(task:DomainRouteTask):boolean {if(task.stage==="shortcut"){const plan=this.pendingStarts.get(task.admissionId);return !!plan&&plan.cursor===task.memberId&&this.validStart(plan);}if(task.stage==="boarding-sea"){const plan=this.pendingBoards.get(task.admissionId);return !!plan&&this.boardValid(plan);}return task.stage.startsWith("crossing:") ? this.planning?.validRoute(task)??false : this.cohorts?.validRoute(task)??false;}

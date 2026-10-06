@@ -2,6 +2,7 @@ import { buildingFootprint, buildingGroundBounds } from "../BuildingFootprint";
 import type { GameMap } from "../../core/game/GameMap";
 import { PlacementPreview } from "./PlacementPreview";
 import { PlacementCoverage } from "./PlacementCoverage";
+import { portShoreRotation } from "./PortOrientation";
 import { BuildingFacts } from "./BuildingFacts";
 import { UNIT, VESSEL } from "../content/Units";
 import { promotionLevel } from "../domain/Combat";
@@ -61,9 +62,10 @@ import { RenderSamples } from "./RenderSamples";
 import type { SpawnSelectionViewModel } from "./SpawnSelectionViewModel";
 import { StrategicSprites } from "./StrategicSprites";
 import { bakeTerrainFields } from "./TerrainFields";
-import { ownsCamp, TerritoryLabelViewModel } from "./TerritoryLabelViewModel";
+import { TerritoryLabelViewModel } from "./TerritoryLabelViewModel";
 import { TerritoryLayer } from "./TerritoryLayer";
 import { TraderPresentation } from "./TraderPresentation";
+import { TradePayoutPresentation } from "./TradePayoutPresentation";
 import { PresentationClock, squadSpriteSize } from "./UnitAnimation";
 import { UnitArtwork } from "./UnitArtwork";
 import { UnitPresentation, visibleInViewport } from "./UnitPresentation";
@@ -98,6 +100,7 @@ export class Renderer {
   private readonly presentation = new UnitPresentation();
   private readonly boats = new BoatPresentation();
   private readonly traderPresentation = new TraderPresentation();
+  private readonly tradePayouts = new TradePayoutPresentation();
   private readonly aircraftPresentation = new AircraftPresentation();
   private readonly aircraftView = new AircraftView();
   private readonly aircraftLayer: AircraftLayer;
@@ -290,6 +293,7 @@ export class Renderer {
     this.impacts.reset();
     this.combatMarkers = [];
     this.traderPresentation.reset();
+    this.tradePayouts.reset();
     this.aircraftPresentation.reset();
     this.aircraftBlend = 1;
     this.aircraftLayer.clear();
@@ -327,6 +331,7 @@ export class Renderer {
           (this.cargoCounts.get(squad.embarkedOn) ?? 0) + 1,
         );
     this.snapshot = snapshot;
+    this.tradePayouts.update(snapshot.expansion?.tradeReceipts??[],this.playerId,performance.now());
     this.cacheTerritoryText(snapshot);
     this.buildingSelection.reconcile(snapshot.buildings, this.playerId);
     this.roads!.update(snapshot);
@@ -733,6 +738,7 @@ export class Renderer {
     elapsedTicks = 0,
     ownerAge?: Age,
     buildTicks = BUILDING_RULES[type].ticks,
+    tile?: number,
   ): number {
     const ctx = this.ctx;
     const era = definitionId
@@ -775,11 +781,19 @@ export class Renderer {
       const destination = fittedBuildingSprite(bounds, p.x, p.y, footprintWidth - inset * 2, footprintHeight - inset * 2);
       ctx.globalAlpha = ghost ? 0.65 : remainingTicks ? 0.55 : 1;
       ctx.imageSmoothingEnabled = true;
+      const rotation = type === "port" && tile !== undefined && this.map
+        ? portShoreRotation(this.map, tile) : 0;
+      if (rotation) {
+        ctx.save();
+        ctx.translate(p.x, p.y);
+        ctx.rotate(rotation);
+      }
       ctx.drawImage(
         image,
         bounds.x, bounds.y, bounds.width, bounds.height,
-        destination.x, destination.y, destination.width, destination.height,
+        destination.x - (rotation ? p.x : 0), destination.y - (rotation ? p.y : 0), destination.width, destination.height,
       );
+      if (rotation) ctx.restore();
       ctx.globalAlpha = 1;
     } else if (marker) {
       ctx.globalAlpha = ghost ? 0.65 : remainingTicks ? 0.55 : 1;
@@ -914,6 +928,7 @@ export class Renderer {
   }
 
   draw(now: number, speed: number, paused: boolean): boolean {
+    this.tradePayouts.prune(now);
     if (now < this.nextFrame) return false;
     const frameInterval = 1000 / 60;
     this.nextFrame =
@@ -1054,19 +1069,6 @@ export class Renderer {
         ctx.fillText("zzz", p.x, p.y - 18);
         ctx.restore();
       }
-      if (ownsCamp(snapshot, player)) {
-        ctx.fillStyle = COLORS[player.id];
-        ctx.strokeStyle = "#10212b";
-        ctx.lineWidth = 2;
-        ctx.fillRect(p.x - 6, p.y - 6, 12, 12);
-        ctx.strokeRect(p.x - 6, p.y - 6, 12, 12);
-        ctx.beginPath();
-        ctx.moveTo(p.x, p.y - 10);
-        ctx.lineTo(p.x + 4, p.y - 6);
-        ctx.lineTo(p.x - 4, p.y - 6);
-        ctx.closePath();
-        ctx.fill();
-      }
       const campOpacity = this.campLoss.opacity(player.id, now);
       if (campOpacity > 0) {
         ctx.save();
@@ -1163,6 +1165,7 @@ export class Renderer {
               snapshot.tick,
               ownerUiAge(snapshot, building.playerId),
               buildTicks,
+              building.tile,
             );
       if (count > 1) {
         ctx.font = "bold 10px system-ui";
@@ -1173,6 +1176,13 @@ export class Renderer {
         ctx.fillRect(p.x + size / 3 - width / 2, p.y - size / 2 - 6, width, 14);
         ctx.fillStyle = COLORS[building.playerId];
         ctx.fillText(badge, p.x + size / 3, p.y - size / 2 + 5);
+      }
+      const payout=this.tradePayouts.amount(building.tile,now);
+      if(payout!==undefined && (building.type==="city" || building.type==="port")) {
+        ctx.save();ctx.font="bold 13px system-ui";ctx.textAlign="center";ctx.textBaseline="bottom";
+        ctx.lineWidth=3;ctx.strokeStyle="#10212bd9";ctx.fillStyle="#ffe28a";
+        const text=`+$${payout.toLocaleString("en-US")}`,y=p.y-size/2-18;
+        ctx.strokeText(text,p.x,y);ctx.fillText(text,p.x,y);ctx.restore();
       }
       if (maxHealth > 0 && (selected || health < maxHealth)) {
         const width = Math.max(18, Math.min(48, size));
@@ -1223,6 +1233,8 @@ export class Renderer {
           undefined,
           0,
           ownerUiAge(snapshot, 1),
+          undefined,
+          this.placement.tile,
         );
       const bounds = buildingGroundBounds(this.map, this.placement.tile, this.placement.type);
       const corner = this.screen(bounds.left, bounds.top);

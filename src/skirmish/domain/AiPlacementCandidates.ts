@@ -11,6 +11,7 @@ import type { AiProductionDemand } from "./AiMilitaryDemand";
 import type { Expansion } from "./Expansion";
 import { extractionPriority, stoneExtractionAllowed } from "./AiExtractionPolicy";
 import { TRADE_RULES, tradeStockPerSecond } from "../content/Economy";
+import { tradeSupplyLimited } from "./AiTradeOpportunities";
 import { militaryPosture } from "./AiMilitaryPosture";
 import { personalityOf } from "../content/AiPersonalities";
 import { cityReserveIncome } from "../content/Economy";
@@ -117,7 +118,6 @@ export class AiPlacementCandidates {
     for (const b of snapshot.buildings)
       if (!b.remainingTicks && (b.type === "factory" || b.type === "port"))
         sourceGoods[b.type] += this.expansion.supply.goods.get(b.id) ?? 0;
-    const traders = this.expansion.trade.actors.filter(a=>a.playerId===player.id).length;
     const posture=militaryPosture(snapshot,personalityOf(player),this.expansion.progression.technologySpeed);
     const missing=Math.max(0,posture.target-snapshot.squads.length-snapshot.recruitment.filter(j=>j.category==="land").length);
     const support=new Map<BuildingType,number>();
@@ -203,15 +203,18 @@ export class AiPlacementCandidates {
       const sourceStock = (naval: boolean) => sourceGoods[naval ? "port" : "factory"];
       const growth = (naval: boolean) => {
         const evidence = naval ? productiveSea : productiveLand;
-        return safeGrowth && factories + ports < TRADE_RULES.actorCap && traders < TRADE_RULES.actorCap && !!evidence &&
-          evidence.quote.riskAdjustedGoldPer1000Ticks > 0 && evidence.quote.returned === 0 &&
-          sourceStock(naval) < TRADE_RULES.minimumDrop;
+        const source = evidence && this.expansion.trade.sourceStatus(evidence.source);
+        return safeGrowth && factories + ports < TRADE_RULES.actorCap &&
+          !snapshot.buildings.some(b=>b.type===(naval?"port":"factory") && b.remainingTicks>0) &&
+          !!evidence && tradeSupplyLimited(evidence.quote,source);
       };
       const landGrowth = growth(false), seaGrowth = growth(true);
       if (type === "factory" && landGrowth) objective = Math.max(objective,3000);
       // Repeated unsold land cargo is receiving-capacity evidence, not a reason
       // to keep adding factories. Cities create sale capacity as well as reserves.
-      const cityCapacity = snapshot.buildings.filter(b=>b.type==="city" && !b.remainingTicks).length *
+      // Funded receiving capacity counts too; do not queue the same remedy
+      // repeatedly while its construction is still in progress.
+      const cityCapacity = snapshot.buildings.filter(b=>b.type==="city" && (b.health??1)>0).length *
         TRADE_RULES.receivingGoodsPerSecondPerBuilding;
       const goodsOutput = snapshot.buildings.filter(b=>b.type==="factory" && !b.remainingTicks)
         .reduce((n,b)=>n+tradeStockPerSecond(b.age ?? "StoneAge"),0);

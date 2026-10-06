@@ -5,6 +5,8 @@ import type { LandPaths } from "../Pathfinding";
 import type { Building, BuildingType, Player } from "../Protocol";
 import type { Deposit } from "./Definitions";
 import { DEPOSIT_RESOURCES, DEPOSIT_RULES } from "./DepositGeneration";
+import { startingCamp } from "./StartingCamp";
+import { CAMP_RADIUS } from "./SpawnSelection";
 
 /** A seeded accessibility floor supplements the terrain-weighted world deposits.
  * Owned starting land comes first; cramped camps use nearby neutral land on the
@@ -20,18 +22,19 @@ export function startingResources(
   seed: number,
   output: number,
 ): Deposit[] {
-  const extractionSpan = buildingFootprint("mine").width + 2 * BUILDING_BORDER;
+  const extraction = buildingFootprint("mine");
+  const extractionSpan = extraction.width + 2 * BUILDING_BORDER;
   const blocked = new Uint8Array(map.width() * map.height());
-  // Mask candidate 2x2 extraction anchors, rather than occupied terrain cells.
+  // Mask candidate extraction anchors, rather than occupied terrain cells.
   const reserve = (tile: number, type: BuildingType = "mine") => {
     const bounds = buildingReservationBounds(map, tile, type);
     for (
-      let y = Math.max(0, bounds.top - 2);
+      let y = Math.max(0, bounds.top - extraction.height);
       y <= Math.min(map.height() - 1, bounds.bottom);
       y++
     )
       for (
-        let x = Math.max(0, bounds.left - 2);
+        let x = Math.max(0, bounds.left - extraction.width);
         x <= Math.min(map.width() - 1, bounds.right);
         x++
       ) {
@@ -42,16 +45,18 @@ export function startingResources(
           blocked[anchor] = 1;
       }
   };
-  for (const player of players)
-    if (!buildings.some((b) => b.playerId === player.id))
-      reserve(player.base, "barracks");
+  for (const player of players) {
+    const camp=startingCamp(map,paths,player.base,CAMP_RADIUS);
+    if(camp && !buildings.some(b=>b.playerId===player.id && b.type==="barracks"))
+      reserve(camp.barracks,"barracks");
+  }
   for (const building of buildings) reserve(building.tile, building.type);
   const extractionLand = (tile: number, playerId: number) => {
     const x = map.x(tile),
       y = map.y(tile);
-    if (!map.isValidCoord(x + 1, y + 1)) return false;
-    for (let yy = y; yy < y + 2; yy++)
-      for (let xx = x; xx < x + 2; xx++) {
+    if (!map.isValidCoord(x + extraction.width - 1, y + extraction.height - 1)) return false;
+    for (let yy = y; yy < y + extraction.height; yy++)
+      for (let xx = x; xx < x + extraction.width; xx++) {
         const cell = map.ref(xx, yy);
         if (
           !paths.walkable(cell) ||
@@ -108,9 +113,9 @@ export function startingResources(
       queue.filter(
         (tile) =>
           extractionLand(tile, player.id) &&
-          [tile, tile + 1, tile + map.width(), tile + map.width() + 1].every(
-            (cell) => owners[cell] === player.id,
-          ),
+          Array.from({length: extraction.height}, (_, dy) =>
+            Array.from({length: extraction.width}, (_, dx) => tile + dy * map.width() + dx))
+            .flat().every(cell => owners[cell] === player.id),
       ),
     );
     const candidates = queue.sort((a, b) => {
@@ -127,10 +132,12 @@ export function startingResources(
       );
     });
     // Pack the missing extraction sites together. A lattice phase guarantees
-    // disjoint 4x4 reservations, avoiding greedy perimeter choices that strand
+    // disjoint extraction reservations, avoiding greedy perimeter choices that strand
     // the final resource in a narrow camp. Choose the best viable phase by
     // the existing proximity/ownership ranking.
-    const required = DEPOSIT_RESOURCES.filter((r) => r !== "horses");
+    // A cramped island is a valid risky start. Allocate Bronze inputs before
+    // optional later-age resources when the complete floor cannot fit.
+    const required = ["copper", "tin", "ironOre", "carbon", "stone", "gunpowder", "oil"] as const;
     const reusable = new Map(
       required.flatMap((resource) => {
         const tile = candidates.find(
@@ -167,7 +174,6 @@ export function startingResources(
                 ) || rank.get(a)! - rank.get(b)!,
           )
           .slice(0, missing);
-        if (sites.length < missing) continue;
         const cost = sites.reduce(
           (sum, tile) =>
             sum +
@@ -177,7 +183,7 @@ export function startingResources(
               : 0),
           0,
         );
-        if (cost < score) {
+        if (sites.length > packed.length || (sites.length === packed.length && cost < score)) {
           score = cost;
           packed = sites;
         }
@@ -208,17 +214,26 @@ export function startingResources(
           if (result) return result;
         }
       };
-      packed =
-        search(
+      const complete = search(
           available
             .slice()
             .sort((a, b) => map.y(a) - map.y(b) || map.x(a) - map.x(b)),
           [],
-        ) ?? [];
+        );
+      if (complete) packed = complete;
+      else {
+        // Preserve the best partial lattice and use any compatible gaps.
+        // Missing resources stay missing; never overlap extraction footprints.
+        for (const tile of available) {
+          if (packed.length >= missing) break;
+          if (packed.every(other => Math.abs(map.x(other)-map.x(tile)) >= extractionSpan ||
+            Math.abs(map.y(other)-map.y(tile)) >= extractionSpan)) packed.push(tile);
+        }
+      }
     }
     // Minerals and oil require spaced buildings; horses are collected by ownership.
     for (const resource of [
-      ...DEPOSIT_RESOURCES.filter((r) => r !== "horses"),
+      ...required,
       "horses" as const,
     ]) {
       const eligible = (tile: number) =>
@@ -227,7 +242,9 @@ export function startingResources(
             extractionLand(tile, player.id))) &&
         (!occupied.has(tile) || occupied.get(tile)!.resource === resource) &&
         (resource === "horses" ||
-          [tile + 1, tile + map.width(), tile + map.width() + 1].every(
+          Array.from({length: extraction.height}, (_, dy) =>
+            Array.from({length: extraction.width}, (_, dx) => tile + dy * map.width() + dx))
+            .flat().every(
             (cell) =>
               !occupied.has(cell) || occupied.get(cell)!.resource === "horses",
           ));
@@ -235,10 +252,7 @@ export function startingResources(
         resource === "horses"
           ? candidates.find((t) => eligible(t))
           : (reusable.get(resource) ?? packed.shift());
-      if (tile === undefined)
-        throw new Error(
-          `Starting camp ${player.id} lacks nearby buildable land for ${resource}`,
-        );
+      if (tile === undefined) continue;
       if (!occupied.has(tile)) {
         const deposit: Deposit = {
           id: nextId++,
@@ -253,7 +267,7 @@ export function startingResources(
       if (resource !== "horses") reserve(tile);
     }
   }
-  // Preserve compatible world deposits. Reject sites whose occupied 2x2 patch
+  // Preserve compatible world deposits. Reject sites whose occupied patch
   // cannot support their extraction building, or whose reservation intersects
   // the allocated floor or a previously retained random site.
   for (const deposit of deposits) {
@@ -265,12 +279,12 @@ export function startingResources(
       continue;
     const x = map.x(deposit.tile),
       y = map.y(deposit.tile);
-    if (!map.isValidCoord(x + 1, y + 1)) continue;
+    if (!map.isValidCoord(x + extraction.width - 1, y + extraction.height - 1)) continue;
     const water = map.isWater(deposit.tile);
     if (water && deposit.resource !== "oil") continue;
     let valid = true;
-    for (let yy = y; yy < y + 2; yy++)
-      for (let xx = x; xx < x + 2; xx++) {
+    for (let yy = y; yy < y + extraction.height; yy++)
+      for (let xx = x; xx < x + extraction.width; xx++) {
         const cell = map.ref(xx, yy);
         if (
           map.isImpassable(cell) ||

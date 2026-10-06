@@ -213,6 +213,19 @@ describe("persistent concentrated port defense", () => {
     expect(f.game.recruitment.jobs).toHaveLength(4);expect(f.player.gold).toBe(gold);
     expect(f.planner.checkpoint().funding[0][1].windowSpent).toBe(spending.windowSpent);
   });
+  it.each([["regular",32],["tribe",24]] as const)("respects the %s warship cap across disconnected seas before requesting funds",(kind,cap)=>{
+    const f=fixture(true);
+    f.player.kind=kind;
+    for(let i=0;i<cap;i++)f.addShip(f.player.id,70+i%10);
+    for(let i=0;i<8;i++)f.addShip(1,25+i);
+    f.refresh();
+    const apply=vi.spyOn(f.game,"applyCommand"),gold=f.player.gold;
+    for(let i=0;i<4;i++){f.game.tick=i*100;f.assess();}
+    expect(apply.mock.calls.some(([c])=>c.type==="recruit-ship")).toBe(false);
+    expect(f.game.recruitment.jobs).toHaveLength(0);
+    expect(f.player.gold).toBe(gold);
+    expect(f.planner.checkpoint().funding).toHaveLength(0);
+  });
 
   it("physically patrols while the mission retains movement ownership",()=>{
     const f=fixture(),ship=f.addShip();f.refresh();f.assess();

@@ -71,12 +71,14 @@ describe("shared market receiving and multi-stop trade", () => {
     arrive(first); expect(a.delivered).toBe(50);
     arrive(second); expect(a.delivered).toBe(100);expect(a.cargo).toBe(350);
     const saved=game.checkpoint(),cold=new Skirmish(game.map,game.options);cold.restore(saved);
+    expect(trade.receipts.get(`1:${second.tile}`)?.gold).toBe(1000);
+    expect(game.snapshot().expansion?.tradeReceipts).toEqual([...trade.receipts.values()]);
     game.tick++;cold.tick++;trade.step();cold.expansion!.trade.step();
     expect(cold.expansion!.trade.checkpoint()).toEqual(trade.checkpoint());
     a.state="returning";a.destination=a.factoryId;a.path=[];a.waitTicks=0;
     game.tick++;trade.step();
     expect(a.returned).toBe(350);
     expect(a.loaded).toBe(a.delivered+a.returned+a.lost+a.cargo);
-    expect(trade.cycleQuotes.get(a.id)?.guaranteedGold).toBe(1000);
+    expect(trade.cycleQuotes.get(a.id)?.guaranteedGold).toBe(2000);
   });
 });

@@ -271,25 +271,25 @@ export class EmpireView {
     const buildingUpgrade = vm.buildingUpgrade();
     actions.hidden = !refit && !buildingUpgrade;
     if (buildingUpgrade) {
-      const { upgrades, reason, cost, skipped } = buildingUpgrade;
-      const key = JSON.stringify([reason, cost, skipped, upgrades.map(u => [u.building.id, u.age])]);
+      const { upgrades, reason, cost, skipped, eligibleCount } = buildingUpgrade;
+      const key = JSON.stringify([reason, cost, skipped, eligibleCount, upgrades.map(u => [u.building.id, u.age])]);
       if (actions.dataset.key !== key) {
         actions.dataset.key = key;
         const tiers = [...new Set(upgrades.map(u => AGE_NAMES[AGES.indexOf(u.age)]))].join(" / ");
         const items = Object.entries(cost.items ?? {}).map(([id, n]) => `${n} ${id}`).join(" · ");
         actions.innerHTML = !upgrades.length && reason === "Military buildings upgrade automatically with research"
           ? `<small>${escape(reason)}</small>`
-          : `<button ${reason ? "disabled" : ""}>Upgrade ${upgrades.length} Building${upgrades.length === 1 ? "" : "s"}${tiers ? ` to ${tiers}` : ""} <kbd>U</kbd></button><small>${escape(reason ?? `${fmt(cost.gold ?? 0)} gold${items ? ` · ${items}` : ""} · production pauses${skipped ? ` · ${skipped} ineligible skipped` : ""}`)}</small>`;
+          : `<button ${reason ? "disabled" : ""}>Upgrade ${upgrades.length}/${eligibleCount + skipped} Building${upgrades.length === 1 ? "" : "s"}${tiers ? ` to ${tiers}` : ""} <kbd>U</kbd></button><small>${escape(reason ?? `${fmt(cost.gold ?? 0)} gold${items ? ` · ${items}` : ""} · production pauses${skipped ? ` · ${skipped} ineligible skipped` : ""}`)}</small>`;
       }
     }
 
     if (
       !buildingUpgrade && refit &&
       actions.dataset.key !==
-        `${refit.reason}:${refit.target?.id}:${refit.eligibleCount}:${refit.cost?.gold}:${JSON.stringify(refit.cost?.items)}:${refit.selected.map((s) => s.id).join()}`
+        `${refit.reason}:${refit.target?.id}:${refit.eligibleCount}:${refit.totalCount}:${refit.cost?.gold}:${JSON.stringify(refit.cost?.items)}:${refit.selected.map((s) => s.id).join()}`
     ) {
-      actions.dataset.key = `${refit.reason}:${refit.target?.id}:${refit.eligibleCount}:${refit.cost?.gold}:${JSON.stringify(refit.cost?.items)}:${refit.selected.map((s) => s.id).join()}`;
-      actions.innerHTML = `<button ${refit.reason || !refit.target ? "disabled" : ""}>Upgrade ${refit.affordable.length}/${refit.eligibleCount} <kbd>U</kbd></button><small>${escape(refit.reason ?? `${refit.target!.name} · ${fmt(refit.cost!.gold ?? 0)} gold · ${refit.affordable.length} of ${refit.eligibleCount} eligible · 10 sec · promotion resets`)}</small>`;
+      actions.dataset.key = `${refit.reason}:${refit.target?.id}:${refit.eligibleCount}:${refit.totalCount}:${refit.cost?.gold}:${JSON.stringify(refit.cost?.items)}:${refit.selected.map((s) => s.id).join()}`;
+      actions.innerHTML = `<button ${refit.reason || !refit.target ? "disabled" : ""}>Upgrade ${refit.affordable.length}/${refit.totalCount} <kbd>U</kbd></button><small>${escape(refit.reason ?? `${refit.target!.name} · ${fmt(refit.cost!.gold ?? 0)} gold · ${refit.affordable.length} of ${refit.eligibleCount} eligible · 10 sec · promotion resets`)}</small>`;
     }
 
     if (this.panel && performance.now() - this.lastRender > 500)

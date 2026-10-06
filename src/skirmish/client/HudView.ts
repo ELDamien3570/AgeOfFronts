@@ -106,7 +106,7 @@ export function hudMarkup(): string {
       .join("");
   return `
     <aside id="selection-card" class="selection-card hud-surface" aria-label="Selection details" hidden>
-      <div class="selection-heading"><span class="eyebrow" id="selection-label">SELECTION</span><button id="selection-back" class="text-button" hidden>Back to selection</button></div>
+      <div class="selection-heading"><span class="eyebrow" id="selection-label">SELECTION</span><button id="selection-back" class="text-button" hidden>Back to selection</button><button id="delete-ship" type="button" title="Remove this warship without a refund" hidden>Delete warship</button></div>
       <div id="selection-detail">
         <div class="unit-heading"><div id="selection-portrait" class="unit-portrait"></div><div><h2 id="selection-title"></h2><p id="selection-subtitle"></p><span id="selection-status" class="status-chip"></span></div></div><div id="selection-promotion" class="promotion-progress" hidden></div>
         <div id="selection-meter"><div class="meter-label"><span id="meter-name"></span><b id="meter-value"></b></div><div id="selection-health" class="health-track" role="progressbar"><i></i></div></div>
@@ -116,7 +116,6 @@ export function hudMarkup(): string {
       <div class="selection-orders"><strong id="selected"></strong><p id="selected-orders"></p></div>
       <div id="naval-orders" class="naval-orders" hidden><span id="ship-selection"></span><button id="load">Meet & board</button><button id="unload">Unload at coast</button></div>
       <button id="delete-building" type="button" hidden>Delete building</button>
-      <button id="delete-ship" type="button" title="Remove this warship without a refund" hidden>Delete warship</button>
     </aside>
     <dialog id="delete-building-dialog" class="building-delete-dialog" aria-labelledby="delete-building-title"><button type="button" id="delete-building-close" aria-label="Close deletion confirmation">×</button><h2 id="delete-building-title">Are you sure?</h2><p id="delete-building-message"></p><p>This removes one building. There is no building refund.</p><div><button type="button" id="delete-building-cancel" autofocus>Cancel</button><button type="button" id="delete-building-confirm">Confirm Delete</button></div></dialog>
     <section class="command-dock hud-surface" aria-label="Resources and commands">
@@ -317,6 +316,7 @@ export class HudView {
     const dialog = this.el("delete-building-dialog") as HTMLDialogElement;
     if (dialog.open) dialog.close();
     this.deletableId = null;
+    this.deletableShipId = null;
     this.vm = undefined;
     this.focusedRef = null;
     this.selectionFingerprint = "";
@@ -390,7 +390,7 @@ export class HudView {
       selection.card.category === "building" && selection.card.playerId === this.playerId && !this.vm.game.player.ai
       ? Number(selection.card.ref.split(":")[1]) : null;
     this.el("delete-building").hidden = this.deletableId === null;
-    this.deletableShipId = selection.mode !== "empty" && selection.mode !== "mixed" &&
+    this.deletableShipId = selection.mode === "detail" &&
       selection.card.category === "ship" && selection.card.kind === "warship" &&
       selection.card.playerId === this.playerId && !this.vm.game.player.ai
       ? Number(selection.card.ref.split(":")[1]) : null;

@@ -7,7 +7,7 @@ import type {
   SnapshotPacket,
 } from "./Protocol";
 import { MAX_SQUADS } from "./Protocol";
-import { MAX_SHIPS } from "./Rules";
+import { MAX_FACTION_SHIPS } from "./Rules";
 
 /** Hot entity presentation fields. Float64 preserves JS numeric values exactly.
  * NaN denotes undefined; +Infinity denotes null in nullable fields. These are
@@ -257,7 +257,7 @@ export function validateSnapshotDetails(data: PackedSnapshotDetails): void {
   };
   rows(data.squads, DETAIL_STRIDES.squad, MAX_SQUADS * 255);
   rows(data.buildings, DETAIL_STRIDES.building, 1_000_000);
-  rows(data.ships, DETAIL_STRIDES.ship, MAX_SHIPS * 255, true);
+  rows(data.ships, DETAIL_STRIDES.ship, MAX_FACTION_SHIPS * 255, true);
   rows(data.volleys, DETAIL_STRIDES.volley, MAX_SQUADS * 255, true);
   const range = (offset: number, count: number, maximum: number) => {
     if (

@@ -12,35 +12,35 @@ export function buildingFootprintCells(type: BuildingType): number {
   return Math.max(shape.width, shape.height);
 }
 export const BUILDING_BORDER = 1;
-export const MAX_BUILDING_EXTENT = 4;
-const SMALL = Object.freeze({ width: 2, height: 2 });
-const MILITARY = Object.freeze({ width: 3, height: 3 });
+const SMALL = Object.freeze({ width: 1, height: 1 });
+const MILITARY = Object.freeze({ width: 2, height: 2 });
 const FOOTPRINTS: Record<
   BuildingType,
   Readonly<{ width: number; height: number }>
 > = {
-  city: { width: 4, height: 4 },
+  city: { width: 3, height: 3 },
   barracks: MILITARY,
   archery: MILITARY,
   stables: MILITARY,
   "siege-workshop": MILITARY,
   "arms-factory": MILITARY,
-  airstrip: { width: 3, height: 4 },
-  factory: SMALL,
-  port: SMALL,
+  airstrip: { width: 2, height: 3 },
+  factory: MILITARY,
+  port: MILITARY,
   mine: SMALL,
-  blacksmith: SMALL,
-  armory: SMALL,
-  depot: SMALL,
+  blacksmith: MILITARY,
+  armory: MILITARY,
+  depot: MILITARY,
   tower: SMALL,
   "oil-well": SMALL,
   "oil-rig": SMALL,
   "gun-nest": SMALL,
   trench: SMALL,
-  "missile-silo": SMALL,
-  "mirv-launcher": SMALL,
+  "missile-silo": MILITARY,
+  "mirv-launcher": MILITARY,
   "missile-defence": SMALL,
 };
+export const MAX_BUILDING_EXTENT = Math.max(...Object.values(FOOTPRINTS).flatMap(shape => [shape.width, shape.height]));
 export function buildingFootprint(type: BuildingType) {
   return FOOTPRINTS[type];
 }

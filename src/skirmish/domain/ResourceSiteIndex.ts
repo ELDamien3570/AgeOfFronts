@@ -1,5 +1,5 @@
 import type { GameMap } from "../../core/game/GameMap";
-import { boundsOverlap, buildingReservationBounds } from "../BuildingFootprint";
+import { boundsOverlap, buildingReservationBounds, buildingFootprint } from "../BuildingFootprint";
 import type { BuildingType } from "../Protocol";
 import type { Deposit } from "./Definitions";
 
@@ -120,15 +120,16 @@ export class ResourceSiteIndex {
   rejection(type: BuildingType, tile: number): string | null {
     if (["mine", "oil-well", "oil-rig"].includes(type)) return null;
     const bounds = buildingReservationBounds(this.map, tile, type);
-    // Extraction footprints are 2x2 plus their one-cell borders. Discover only
+    const extraction = buildingFootprint("mine");
+    // Discover only
     // deposit anchors whose reservation could intersect this local rectangle.
     for (
-      let y = Math.max(0, bounds.top - 2);
+      let y = Math.max(0, bounds.top - extraction.height);
       y <= Math.min(this.map.height() - 1, bounds.bottom);
       y++
     )
       for (
-        let x = Math.max(0, bounds.left - 2);
+        let x = Math.max(0, bounds.left - extraction.width);
         x <= Math.min(this.map.width() - 1, bounds.right);
         x++
       ) {

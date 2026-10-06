@@ -16,7 +16,7 @@ import type { Building, Player } from "../../src/skirmish/Protocol";
 const map = new GameMapImpl(96, 64, new Uint8Array(96 * 64).fill(133), 96 * 64);
 describe("building footprints and reservations", () => {
   it("defines cities, military production, ordinary buildings, and the tall airstrip", () => {
-    expect(buildingFootprint("city")).toEqual({ width: 4, height: 4 });
+    expect(buildingFootprint("city")).toEqual({ width: 3, height: 3 });
     for (const type of [
       "barracks",
       "archery",
@@ -24,30 +24,32 @@ describe("building footprints and reservations", () => {
       "siege-workshop",
       "arms-factory",
     ] as const)
-      expect(buildingFootprint(type)).toEqual({ width: 3, height: 3 });
-    expect(buildingFootprint("airstrip")).toEqual({ width: 3, height: 4 });
-    for (const type of ["factory", "mine", "port", "tower"] as const)
       expect(buildingFootprint(type)).toEqual({ width: 2, height: 2 });
+    expect(buildingFootprint("airstrip")).toEqual({ width: 2, height: 3 });
+    for (const type of ["blacksmith", "armory", "depot", "missile-silo", "mirv-launcher", "factory", "port"] as const)
+      expect(buildingFootprint(type)).toEqual({ width: 2, height: 2 });
+    for (const type of ["mine", "tower", "oil-well", "oil-rig", "gun-nest", "trench", "missile-defence"] as const)
+      expect(buildingFootprint(type)).toEqual({ width: 1, height: 1 });
   });
   it("reserves exactly one cell on each side of the occupied rectangle", () => {
     const tile = map.ref(10, 10);
     expect(buildingGroundBounds(map, tile, "city")).toEqual({
       left: 10,
       top: 10,
-      right: 14,
-      bottom: 14,
+      right: 13,
+      bottom: 13,
     });
     expect(buildingReservationBounds(map, tile, "city")).toEqual({
       left: 9,
       top: 9,
-      right: 15,
-      bottom: 15,
+      right: 14,
+      bottom: 14,
     });
     expect(buildingReservationBounds(map, tile, "airstrip")).toEqual({
       left: 9,
       top: 9,
-      right: 14,
-      bottom: 15,
+      right: 13,
+      bottom: 14,
     });
   });
   it("allows touching borders but rejects shared reserved cells, including diagonal corners", () => {
@@ -82,14 +84,14 @@ describe("building footprints and reservations", () => {
     }));
     index.rebuild(buildings);
     expect([
-      ...index.reservationConflicts(map.ref(20, 15), "factory"),
+      ...index.reservationConflicts(map.ref(19, 15), "factory"),
     ]).toHaveLength(1);
     expect([
-      ...index.reservationConflicts(map.ref(21, 15), "factory"),
+      ...index.reservationConflicts(map.ref(20, 15), "factory"),
     ]).toHaveLength(0);
     for (const building of buildings) index.remove(building.id);
     expect([
-      ...index.reservationConflicts(map.ref(20, 15), "factory"),
+      ...index.reservationConflicts(map.ref(19, 15), "factory"),
     ]).toHaveLength(0);
   });
   it("keeps the preexisting forest navigation clearance around the logical anchor", () => {
@@ -103,19 +105,19 @@ describe("building footprints and reservations", () => {
     const m = new GameMapImpl(20, 20, terrain, 400);
     const owners = new Uint8Array(400);
     const player = { id: 1, gold: 1_000_000 } as Player;
-    for (let y = 5; y < 9; y++)
-      for (let x = 5; x < 9; x++) owners[m.ref(x, y)] = 1;
+    for (let y = 5; y < 8; y++)
+      for (let x = 5; x < 8; x++) owners[m.ref(x, y)] = 1;
     const tile = m.ref(5, 5);
     expect(
       constructionRejection(m, owners, [], player, "city", tile),
     ).toBeNull();
-    owners[m.ref(8, 8)] = 2;
+    owners[m.ref(7, 7)] = 2;
     expect(
       constructionRejection(m, owners, [], player, "city", tile),
     ).toContain("friendly");
     owners.fill(1);
     expect(
-      constructionRejection(m, owners, [], player, "city", m.ref(17, 17)),
+      constructionRejection(m, owners, [], player, "city", m.ref(18, 18)),
     ).toContain("friendly");
     expect(
       constructionRejection(m, owners, [], player, "city", m.ref(0, 0)),
@@ -123,10 +125,10 @@ describe("building footprints and reservations", () => {
     terrain[m.ref(6, 6)] = 0;
     const coast = new GameMapImpl(20, 20, terrain, 399);
     expect(
-      constructionRejection(coast, owners, [], player, "factory", tile),
+      constructionRejection(coast, owners, [], player, "city", tile),
     ).toContain("friendly");
     expect(
-      constructionRejection(coast, owners, [], player, "port", m.ref(7, 5)),
+      constructionRejection(coast, owners, [], player, "port", m.ref(7, 6)),
     ).toBeNull();
   });
   it("enforces reservation separation consistently for array and indexed construction, including stacking", () => {
@@ -152,7 +154,7 @@ describe("building footprints and reservations", () => {
           source,
           player,
           "factory",
-          map.ref(15, 10),
+          map.ref(14, 10),
         ),
       ).toContain("border");
       expect(
@@ -162,7 +164,7 @@ describe("building footprints and reservations", () => {
           source,
           player,
           "factory",
-          map.ref(16, 10),
+          map.ref(15, 10),
         ),
       ).toBeNull();
     }

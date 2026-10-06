@@ -423,7 +423,7 @@ describe("stacked buildings and large fleets", () => {
     expect(stack[1].remainingTicks).toBe(buildingTicks("city", 1));
     expect(stack[2].remainingTicks).toBe(buildingTicks("city", 2));
   });
-  it("admits exactly 64 ships and rejects the next purchase without spending", () => {
+  it("admits exactly 64 human warships and rejects the next purchase without spending", () => {
     const data = new Uint8Array(100 * 80).fill(133);
     data.fill(0, 0, 100 * 20);
     const match = new Skirmish(new GameMapImpl(100, 80, data, 0), {
@@ -450,7 +450,7 @@ describe("stacked buildings and large fleets", () => {
           type: "recruit-ship",
           playerId: 1,
           buildingId: port.id,
-          shipType: i % 2 ? "warship" : "transport",
+          shipType: "warship",
         }),
       ).toBeNull();
     expect(match.ships).toHaveLength(64);

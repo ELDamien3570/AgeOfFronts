@@ -1,4 +1,5 @@
 import { portWaterTiles } from "../PortWaterAccess";
+import { shipCap } from "../FactionRules";
 import { FIXED, type Building, type Player, type Ship, type Squad } from "../Protocol";
 import { AI_DOCTRINES } from "../content/AiDoctrines";
 import { personalityOf } from "../content/AiPersonalities";
@@ -217,6 +218,9 @@ export class AiTransportPlanner {
     const { world, progression, supply } = this.expansion,
       key = `${player.id}:${m.sea}`,
       port = world.building(m.port);
+    const committed = world.shipFacts().byOwner(player.id).filter(s => s.kind === "transport").length +
+      world.recruitment.byOwner(player.id).filter(j => j.category === "ship" && j.kind === "transport").length;
+    if (committed >= shipCap(player, "transport")) return;
     if (
       !port ||
       port.playerId !== player.id ||

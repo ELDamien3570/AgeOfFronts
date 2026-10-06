@@ -105,6 +105,7 @@ describe("tribe promotion", () => {
       tribe = game.players.find((p) => p.kind === "tribe")!,
       donor = game.players[1];
     const state = game.expansion!.progression.states[donor.id];
+    for (const b of game.buildings.filter(b => b.playerId === donor.id)) game.removeBuilding(b.id);
     state.age = "ClassicalAge";
     state.completed.push("bronzeage-armies");
     game.addBuilding({

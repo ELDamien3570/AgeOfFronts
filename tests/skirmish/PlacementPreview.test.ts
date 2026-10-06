@@ -345,7 +345,7 @@ describe("bounded placement preview", () => {
   it("invalidates a cached anchor when ownership changes in a neighboring footprint chunk", () => {
     const { map, snapshot, preview } = fixture();
     snapshot.buildings = [];
-    preview.update(snapshot);
+    preview.begin(snapshot, 1, "blacksmith");
     const bounds = { left: 0, top: 0, right: 31, bottom: 31 },
       tile = map.ref(15, 15);
     expect(preview.sites(bounds, 1024)).toContain(tile);
@@ -360,7 +360,7 @@ describe("bounded placement preview", () => {
   it("tracks footprint ownership outside the scanned viewport", () => {
     const { map, snapshot, preview } = fixture();
     snapshot.buildings = [];
-    preview.update(snapshot);
+    preview.begin(snapshot, 1, "blacksmith");
     const bounds = { left: 0, top: 0, right: 15, bottom: 15 },
       tile = map.ref(15, 15);
     expect(preview.sites(bounds, 256)).toContain(tile);

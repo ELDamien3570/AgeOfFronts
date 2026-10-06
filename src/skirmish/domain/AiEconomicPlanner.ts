@@ -129,7 +129,8 @@ export function economicCandidates(
     if (!age || b.remainingTicks || (b.health ?? maximum) < maximum) continue;
     const cost = buildingUpgradeCost(b.type, age, counts.get(b.type) ?? 0);
     emit("upgrade", String(b.id), { type: "upgrade-building", playerId: snapshot.playerId, buildingIds: [b.id] },
-      cost, b.type === "city" ? 500 + reserveShortage / 10 : 1000,
+      cost, b.type === "city" ? 500 + reserveShortage / 10 :
+        snapshot.supplyLimitedSources?.includes(b.id) ? 5000 : 1000,
       "Modernize existing infrastructure without an extra site", Math.round(buildingTicks(b.type, counts.get(b.type) ?? 0) / 2));
     upgrades++;
   }

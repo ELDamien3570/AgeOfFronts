@@ -2,6 +2,7 @@ import { portWaterTiles } from "../PortWaterAccess";
 import { coastalPatrol } from "./CoastalPatrol";
 import { stepBombardment, type Bombardment } from "./AiNavalBombardment";
 import { AI_DOCTRINES } from "../content/AiDoctrines";
+import { shipCap } from "../FactionRules";
 import { MAX_SHIPS } from "../Rules";
 import { FIXED, type Player, type Ship } from "../Protocol";
 import { personalityOf } from "../content/AiPersonalities";
@@ -95,6 +96,12 @@ export function navalReady(ship: Ship, vessel: VesselDefinition): boolean {
 export class AiNavalPlanner {
   readonly missions = new Map<number, AiFleetMission>();
   private readonly lanes = new Map<number, number>();
+  private refreshLanes(m:AiFleetMission):void {
+    m.members.forEach((id,i)=>this.lanes.set(id,i%4));
+    // Retained patrol groups own their formation lanes even while the ready
+    // roster changes during interception. Rebuild and restore use one rule.
+    for(const group of m.patrolGroups??[])group.members.forEach((id,i)=>this.lanes.set(id,i%4));
+  }
   fleetLane(ship: Ship): number | undefined {
     const m=this.missions.get(ship.playerId);
     return m && this.economy.assets.owns(`ship:${ship.id}`,m.id) ? this.lanes.get(ship.id) : undefined;
@@ -198,10 +205,7 @@ export class AiNavalPlanner {
     this.lanes.clear();
     for (const [id, mission] of structuredClone(saved.missions))
       this.missions.set(id, mission);
-    for(const mission of this.missions.values()) {
-      if(mission.patrolGroups)for(const group of mission.patrolGroups)group.members.forEach((id,i)=>this.lanes.set(id,i%4));
-      else mission.members.forEach((id,i)=>this.lanes.set(id,i%4));
-    }
+    for(const mission of this.missions.values())this.refreshLanes(mission);
     this.funding.clear();
     for (const [key, evidence] of structuredClone(saved.funding ?? []))
       this.funding.set(key, evidence);
@@ -631,7 +635,7 @@ export class AiNavalPlanner {
     this.economy.assets.retain(m.id, selected);
     for(const id of m.members)this.lanes.delete(id);
     m.members = ships.map((s) => s.id);
-    m.members.forEach((id,i)=>this.lanes.set(id,i%4));
+    this.refreshLanes(m);
     m.recovering = recovering.map((s) => s.id);
     if(enough && !target && ships.length && !recovering.length) {
       const raids: import("./Definitions").TradeActor[] = [];
@@ -723,7 +727,7 @@ export class AiNavalPlanner {
       });
       m.patrolSectors=sectorKey;
     }
-    for(const group of m.patrolGroups)group.members.forEach((id,i)=>this.lanes.set(id,i%4));
+    this.refreshLanes(m);
     const available=new Set(ships.map(s=>s.id));
     for(const group of m.patrolGroups) {
       const navy=group.members.filter(id=>available.has(id)).map(id=>world.ship(id)!);
@@ -836,6 +840,10 @@ export class AiNavalPlanner {
   ): void {
     const { world, progression, supply } = this.expansion,
       port = world.building(portId)!;
+    const cap = shipCap(player, "warship");
+    const committed = world.shipFacts().byOwner(player.id).filter(s => s.kind === "warship").length +
+      world.recruitment.byOwner(player.id).filter(j => j.category === "ship" && j.kind === "warship").length;
+    if (committed >= cap) return;
     const definition = VESSELS.slice()
       .reverse()
       .find(
@@ -881,7 +889,7 @@ export class AiNavalPlanner {
       spending.lossPauseUntil=world.tick+400;spending.lostPower=Math.floor((spending.lostPower ?? 0)/2);
       this.funding.set(key,spending);this.transition(m,"recover","Recent naval losses require consolidation before reinvestment");return;
     }
-    if (future >= Math.max(power,Math.min(required,MAX_SHIPS*power))) return;
+    if (future >= Math.max(power,Math.min(required,cap*power))) return;
     this.funding.set(key,spending);
     const priority = this.expansion.operations.state(player.id)?.threats.some(t=>t.until>=world.tick && world.map.euclideanDistSquared(t.tile,port.tile)<=32**2) ? "emergency" as const : "growth" as const;
     const liquid = {

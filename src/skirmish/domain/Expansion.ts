@@ -1,6 +1,7 @@
 import { buildingGroundBounds } from "../BuildingFootprint";
 import { availableGold, paidCost } from "./Gold";
 import { extractionPriority, stoneExtractionAllowed } from "./AiExtractionPolicy";
+import { PairRelations } from "./PairRelations";
 import { AiOperations } from "./AiOperations";
 import { AutomaticBuildingTiers } from "./AutomaticBuildingTiers";
 import { DiplomaticGeography } from "./DiplomaticGeography";
@@ -113,7 +114,7 @@ export interface ExpansionWorld extends BattleWorld, ArmyWorld {
 // Match-level application coordinator; each domain service owns its own rules.
 // All services operate on the same authoritative world, never a parallel game.
 export class Expansion {
-  checkpoint() { return structuredClone({progression:this.progression.checkpoint(),diplomacy:this.diplomacy.checkpoint(),fortifications:this.fortifications.checkpoint(),supply:this.supply.checkpoint(),trade:this.trade.checkpoint(),roads:this.roads.checkpoint(),battle:this.battle.checkpoint(),armies:this.armies.checkpoint(),modernization:this.modernization.checkpoint(),economy:this.economy.checkpoint(),aircraft:this.aircraft,winners:this.winners,events:this.events,nextEvent:this.nextEvent,tribePlans:[...this.tribePlans],geography:this.geography.checkpoint(),operations:this.operations.checkpoint()}); }
+  checkpoint() { return structuredClone({progression:this.progression.checkpoint(),diplomacy:this.diplomacy.checkpoint(),fortifications:this.fortifications.checkpoint(),supply:this.supply.checkpoint(),trade:this.trade.checkpoint(),roads:this.roads.checkpoint(),battle:this.battle.checkpoint(),armies:this.armies.checkpoint(),modernization:this.modernization.checkpoint(),economy:this.economy.checkpoint(),aircraft:this.aircraft,winners:this.winners,events:this.events,nextEvent:this.nextEvent,tribePlans:[...this.tribePlans],geography:this.geography.checkpoint(),operations:this.operations.checkpoint(),relations:this.relations.checkpoint()}); }
   restore(saved: ReturnType<Expansion["checkpoint"]>): void {
     this.automaticTiers.reset();
     this.metadataIdentity={};
@@ -121,6 +122,7 @@ export class Expansion {
     this.tribePlans.clear();
     for (const [id, plan] of state.tribePlans ?? []) this.tribePlans.set(id, plan);
     if (state.operations) this.operations.restore(state.operations);
+    this.relations.restore(state.relations);
     if (state.geography) this.geography.restore(state.geography);
     this.progression.restore(state.progression);
     this.diplomacy.restore(state.diplomacy);
@@ -148,6 +150,7 @@ export class Expansion {
   readonly economy: AiEconomicDirector;
   readonly geography: DiplomaticGeography;
   readonly operations: AiOperations;
+  readonly relations: PairRelations;
   private readonly towerSites:TowerSiteIndex;
   readonly aircraft: Aircraft[] = [];
   readonly winners: number[] = [];
@@ -174,6 +177,8 @@ export class Expansion {
     this.fortifications = new Fortifications(world.map, this.diplomacy);
     this.supply = new Supply(world.map, this.progression, seed, world.options?.resourceDensity, world.options?.resourceOutput);
     this.roads = new Roads(world.map);
+    this.operations = new AiOperations(this);
+    this.relations = new PairRelations(world, this.diplomacy, this.operations);
     this.trade = new Trade(
       world,
       this.supply,
@@ -181,17 +186,9 @@ export class Expansion {
       this.diplomacy,
       this.fortifications,
       this.roads,
-      (a, b) => {
-        if (this.diplomacy.allied(a, b)) return false;
-        if (this.diplomacy.declaredWar(a, b)) return true;
-        const pa = world.players.find(p => p.id === a), pb = world.players.find(p => p.id === b);
-        if (!this.operations.enabled(pa) && !this.operations.enabled(pb)) return true;
-        return (this.operations.enabled(pa) && this.operations.canTarget(a, b)) ||
-          (this.operations.enabled(pb) && this.operations.canTarget(b, a));
-      },
-      (a,b)=>this.diplomacy.declaredWar(a,b) ||
-        (this.operations.enabled(world.players.find(p=>p.id===a)) && this.operations.canTarget(a,b)) ||
-        (this.operations.enabled(world.players.find(p=>p.id===b)) && this.operations.canTarget(b,a)),
+      (a,b)=>this.relations.atWar(a,b),
+      (a,b)=>this.relations.atWar(a,b),
+      owner=>this.relations.signatureFor(owner),
     );
     this.battle = new Battle(
       world,
@@ -205,7 +202,7 @@ export class Expansion {
     this.armies = new Armies(world, this.progression);
     this.economy = new AiEconomicDirector(this);
     this.geography = new DiplomaticGeography(world, this.economy.navalFacts);
-    this.operations = new AiOperations(this);
+
     this.supply.aiProduction = playerId => this.economy.production(playerId);
   }
   add(player: Player): void {
@@ -1644,6 +1641,8 @@ export class Expansion {
     progression:this.progression.revision,diplomacy:this.diplomacy.revision,
     productionPlans:this.supply.controlRevision,productionPriorities:this.supply.controlRevision,
     tradeControls:this.trade.controlRevision,
+    tradeReceipts:this.trade.receiptRevision,
+    pairRelations:this.relations.revision,
     events:this.nextEvent,roadRevision:this.roads.revision,fortificationRevision:this.fortifications.version,
     fallout:this.world.wasteland.revision,
   }};}
@@ -1667,8 +1666,11 @@ export class Expansion {
       productionPriorities: this.supply.priorities,
       deposits: this.supply.deposits,
       diplomacy: this.diplomacy.state,
+      activeOffensives: this.operations.activeOffensives(),
+      pairRelations: this.relations.snapshot(),
       traders: this.trade.actors.map(
-        ({ path: _path, nextPathIndex: _index, ...actor }) => actor,
+        ({ path: _path, nextPathIndex: _index, supplyWaitTicks: _supplyWait,
+          supplyWaitStartedTick: _waitStart, tripSupplyTicks: _tripSupply, routeOriginOwner: _routeOwner, ...actor }) => actor,
       ),
       barriers: this.fortifications.barriers,
       projectiles: this.battle.projectiles,
@@ -1676,6 +1678,7 @@ export class Expansion {
       victoryMode: this.victoryMode,
       winners: this.winners,
       deliveredGold: this.trade.deliveredGold,
+      tradeReceipts:[...this.trade.receipts.values()],
       tradeCapturedValue: this.trade.capturedValue,
       tradeLostValue: this.trade.lostValue,
       tradeControls: this.trade.controls,

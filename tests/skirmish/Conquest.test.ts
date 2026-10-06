@@ -13,12 +13,15 @@ import {
 function fixture(ruleset?: "ages-v1") {
   const terrain = new Uint8Array(160 * 100).fill(133);
   terrain.fill(0, 0, 160 * 8);
-  return new Skirmish(new GameMapImpl(160, 100, terrain, terrain.length), {
+  const game = new Skirmish(new GameMapImpl(160, 100, terrain, terrain.length), {
     seed: 42,
     aiCount: 2,
     runAi: false,
     ruleset,
   });
+  // Each case supplies the exact surviving buildings for its conquest scenario.
+  if (ruleset) for (const b of game.buildings.slice()) game.removeBuilding(b.id);
+  return game;
 }
 function place(world: Skirmish, unit: Pick<Squad, "id" | "x" | "y">, x: number, y: number) {
   const changes = { x: (x + 0.5) * FIXED, y: (y + 0.5) * FIXED };

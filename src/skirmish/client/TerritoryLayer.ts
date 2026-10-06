@@ -6,12 +6,13 @@ import {
   TERRITORY_ALPHA,
   TERRITORY_BORDER_INK,
   TERRITORY_BORDER_LIGHT,
+  TERRITORY_RELATION_COLORS,
+  TERRITORY_OFFENSIVE_COLOR,
   territoryStyle,
 } from "./TerritoryStyle";
 
 const CHUNK = 64;
-// Inward normals: north, east, south, west. Each canonical edge contributes
-// to its two owners, but never to neutral land or water.
+// Inward normals for country accents along unowned land and water edges.
 const NORMALS = [
   [0, -1],
   [1, 0],
@@ -35,8 +36,12 @@ interface Chunk {
   fronts: { a: number; b: number; path: Path2D }[];
   warFronts: Path2D[];
   warPath: Path2D;
+  offensivePath: Path2D;
+  offensiveFronts: number;
   outerPath: Path2D;
   peacePath: Path2D;
+  neutralPath: Path2D;
+  alliedPath: Path2D;
   borderDirty: boolean;
 }
 
@@ -52,7 +57,9 @@ export class TerritoryLayer {
   private initialized = false;
   // Snapshot-derived diplomacy only; never writes simulation state.
   private readonly diplomacy = new Diplomacy();
-  private allianceKey = "";
+  private relationKey = "";
+  private readonly activeOffensives = new Set<string>();
+  private readonly pairRelations = new Map<string,string>();
   constructor(
     private readonly width: number,
     private readonly height: number,
@@ -109,8 +116,12 @@ export class TerritoryLayer {
       fronts: [],
       warFronts: [],
       warPath: new Path2D(),
+      offensivePath: new Path2D(),
+      offensiveFronts: 0,
       outerPath: new Path2D(),
       peacePath: new Path2D(),
+      neutralPath: new Path2D(),
+      alliedPath: new Path2D(),
       borderDirty: true,
     };
     this.chunks.set(key, chunk);
@@ -119,13 +130,23 @@ export class TerritoryLayer {
   update(snapshot: Snapshot): void {
     this.diplomacy.state.alliances =
       snapshot.expansion?.diplomacy.alliances ?? [];
-    const allianceKey = this.diplomacy.state.alliances
-      .map((t) => `${Math.min(t.a, t.b)}:${Math.max(t.a, t.b)}`)
-      .sort()
-      .join(",");
-    if (allianceKey !== this.allianceKey) {
-      this.allianceKey = allianceKey;
-      for (const c of this.chunks.values()) this.updateWarFronts(c);
+    this.diplomacy.state.wars = snapshot.expansion?.diplomacy.wars ?? [];
+    const pairs = (rows: readonly { a: number; b: number }[]) =>
+      rows
+        .map(t => `${Math.min(t.a, t.b)}:${Math.max(t.a, t.b)}`)
+        .sort()
+        .join(",");
+    const offensives = snapshot.expansion?.activeOffensives ?? [];
+    const relations=snapshot.expansion?.pairRelations??[];
+    const relationKey = `${pairs(this.diplomacy.state.alliances)}|${pairs(this.diplomacy.state.wars)}|${pairs(offensives)}|`+
+      relations.map(r=>`${Math.min(r.a,r.b)}:${Math.max(r.a,r.b)}:${r.state}`).sort().join(",");
+    if (relationKey !== this.relationKey) {
+      this.relationKey = relationKey;
+      this.activeOffensives.clear();
+      this.pairRelations.clear();for(const r of relations)this.pairRelations.set(`${Math.min(r.a,r.b)}:${Math.max(r.a,r.b)}`,r.state);
+      for (const { a, b } of offensives)
+        this.activeOffensives.add(`${Math.min(a, b)}:${Math.max(a, b)}`);
+      for (const c of this.chunks.values()) this.updateRelations(c);
     }
     const dirty = new Set<number>();
     const update = (tile: number) => {
@@ -226,9 +247,10 @@ export class TerritoryLayer {
           fronts.set(key, front);
         }
         segment(front.path, x, y, dx, dy);
+        // Shared borders communicate diplomacy; faction accents belong outside.
+        return;
       } else segment(outerPath, x, y, dx, dy);
-      // a is the north/west owner; b is the south/east owner. Keeping both
-      // accents with this edge preserves the existing left/up invalidation.
+      // a is the north/west owner; b is the south/east owner.
       for (const [owner, direction] of [
         [a, horizontal ? 0 : 3],
         [b, horizontal ? 2 : 1],
@@ -258,19 +280,33 @@ export class TerritoryLayer {
     c.accents = [...accents.values()];
     c.fronts = [...fronts.values()];
     c.outerPath = outerPath;
-    this.updateWarFronts(c);
+    this.updateRelations(c);
     c.borderDirty = false;
   }
-  private updateWarFronts(c: Chunk): void {
-    c.warFronts = c.fronts
-      .filter((front) => this.diplomacy.hostile(front.a, front.b))
-      .map((front) => front.path);
+  private updateRelations(c: Chunk): void {
+    c.warFronts = [];
     c.warPath = new Path2D();
-    for (const path of c.warFronts) c.warPath.addPath(path);
+    c.offensivePath = new Path2D();
+    c.offensiveFronts = 0;
+    c.neutralPath = new Path2D();
+    c.alliedPath = new Path2D();
     c.peacePath = new Path2D(c.outerPath);
-    for (const front of c.fronts)
-      if (!this.diplomacy.hostile(front.a, front.b))
+    for (const front of c.fronts) {
+      if (this.diplomacy.allied(front.a, front.b)) {
+        c.alliedPath.addPath(front.path);
         c.peacePath.addPath(front.path);
+      } else if (this.pairRelations.get(`${Math.min(front.a,front.b)}:${Math.max(front.a,front.b)}`)==="conflict" ||
+        this.activeOffensives.has(`${Math.min(front.a, front.b)}:${Math.max(front.a, front.b)}`)) {
+        c.offensivePath.addPath(front.path);
+        c.offensiveFronts++;
+      } else if (this.diplomacy.declaredWar(front.a, front.b)) {
+        c.warFronts.push(front.path);
+        c.warPath.addPath(front.path);
+      } else {
+        c.neutralPath.addPath(front.path);
+        c.peacePath.addPath(front.path);
+      }
+    }
   }
   draw(
     ctx: CanvasRenderingContext2D,
@@ -315,7 +351,7 @@ export class TerritoryLayer {
       if (c.borderDirty) this.border(c);
       ctx.stroke(c.peacePath);
     }
-    ctx.strokeStyle = "#ff302d";
+    ctx.strokeStyle = TERRITORY_RELATION_COLORS.war;
     ctx.globalAlpha = alpha * 0.32;
     ctx.lineWidth = (style.casingWidth + 1.2) / scale;
     for (const c of visible) if (c.warFronts.length) ctx.stroke(c.warPath);
@@ -333,17 +369,35 @@ export class TerritoryLayer {
           ctx.restore();
         }
     }
+    // Two bounded screen-space halo strokes; cached paths avoid per-frame
+    // geometry work and canvas shadow blur on large multiplayer maps.
+    ctx.strokeStyle = TERRITORY_RELATION_COLORS.war;
+    for (const [width, opacity] of [[7, 0.10], [4, 0.22]]) {
+      ctx.lineWidth = width / scale;
+      ctx.globalAlpha = alpha * opacity;
+      for (const c of visible) if (c.offensiveFronts) ctx.stroke(c.offensivePath);
+    }
     // Final pass across all chunks keeps shared boundaries crisp at seams.
     ctx.globalAlpha = alpha * 0.72;
     ctx.strokeStyle = TERRITORY_BORDER_LIGHT;
     ctx.lineWidth = style.lineWidth / scale;
-    for (const c of visible) ctx.stroke(c.peacePath);
-    // Replace the ordinary casing and light strokes at hostile fronts rather
+    for (const c of visible) ctx.stroke(c.outerPath);
+    ctx.globalAlpha = alpha * 0.88;
+    ctx.lineWidth = 1.6 / scale;
+    ctx.strokeStyle = TERRITORY_RELATION_COLORS.neutral;
+    for (const c of visible) ctx.stroke(c.neutralPath);
+    ctx.strokeStyle = TERRITORY_RELATION_COLORS.allied;
+    for (const c of visible) ctx.stroke(c.alliedPath);
+    // Replace the ordinary casing and light strokes at declared-war fronts rather
     // than adding glow passes. All geometry and treaty classification is cached.
-    ctx.strokeStyle = "#ff302d";
+    ctx.strokeStyle = TERRITORY_RELATION_COLORS.war;
     ctx.globalAlpha = alpha * 0.88;
     ctx.lineWidth = 1.6 / scale;
     for (const c of visible) if (c.warFronts.length) ctx.stroke(c.warPath);
+    ctx.strokeStyle = TERRITORY_OFFENSIVE_COLOR;
+    ctx.globalAlpha = alpha * 0.96;
+    ctx.lineWidth = 2 / scale;
+    for (const c of visible) if (c.offensiveFronts) ctx.stroke(c.offensivePath);
     ctx.restore();
   }
 }

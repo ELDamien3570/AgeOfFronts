@@ -96,10 +96,11 @@ describe("age progression and authoritative definitions", () => {
           TECHNOLOGIES.filter((t) => t.age === age && t.tree === tree),
         ).toHaveLength(age === "BronzeAge" && tree === "warfare" ? 5 : 4);
   });
-  it("opens with exactly three flint infantry, three branch grants and no regular buildings", () => {
+  it("opens with three flint infantry, three branch grants and a completed city per faction", () => {
     const m = make();
-    expect(m.buildings).toHaveLength(0);
+    expect(m.buildings).toHaveLength(m.players.length);
     for (const p of m.players) {
+      expect(m.buildings.find(b => b.playerId === p.id)).toMatchObject({type: "city", remainingTicks: 0});
       expect(m.squads.filter((s) => s.playerId === p.id)).toHaveLength(3);
       expect(m.expansion!.progression.states[p.id].completed).toHaveLength(3);
       expect(
@@ -550,6 +551,7 @@ describe("allied protection and fortifications", () => {
     const p = m.players[1],
       s = m.squads[0];
     retainSquads(m, [s]);
+    for (const city of m.buildings.filter(b => b.playerId === p.id)) m.removeBuilding(city.id);
     const b = building(m, "city", p.base, 2);
     m.updateBuilding((b).id, { health: 1 });
     pos(m, s, (p.base % 96) - 1, Math.floor(p.base / 96));

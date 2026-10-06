@@ -90,9 +90,34 @@ export class AiOperations {
     return !!record && ((record.phase === "war" && record.target === rival) ||
       record.threats.some(t => t.rival === rival && t.until >= this.expansion.world.tick));
   }
+  /** Presentation projection only: an offensive never becomes a formal war. */
+  activeOffensives(): { a: number; b: number }[] {
+    const { world, diplomacy } = this.expansion;
+    const live = new Set(world.players.filter(p => !p.eliminated).map(p => p.id));
+    const pairs = new Map<string, { a: number; b: number }>();
+    for (const [id, record] of this.records) {
+      if (record.phase !== "war" || record.target === undefined ||
+        !this.enabled(world.players.find(p => p.id === id)) ||
+        !live.has(record.target) || diplomacy.allied(id, record.target)) continue;
+      const a = Math.min(id, record.target), b = Math.max(id, record.target);
+      pairs.set(`${a}:${b}`, { a, b });
+    }
+    return [...pairs.values()].sort((x, y) => x.a - y.a || x.b - y.b);
+  }
   offensiveTarget(playerId: number): number | undefined {
     const record = this.records.get(playerId);
     return record?.phase === "war" ? record.target : undefined;
+  }
+  /** Bilateral activity includes defensive retaliation, not only offensives. */
+  activeConflicts(): {a:number;b:number}[] {
+    const pairs=new Map<string,{a:number;b:number}>();
+    const add=(a:number,b:number)=>{if(a!==b && !this.expansion.diplomacy.allied(a,b)){
+      const row={a:Math.min(a,b),b:Math.max(a,b)};pairs.set(`${row.a}:${row.b}`,row);
+    }};
+    for(const row of this.activeOffensives())add(row.a,row.b);
+    for(const [id,r] of this.records)if(this.enabled(this.expansion.world.players.find(p=>p.id===id)))
+      for(const t of r.threats)if(t.until>=this.expansion.world.tick)add(id,t.rival);
+    return [...pairs.values()].sort((x,y)=>x.a-y.a||x.b-y.b);
   }
   finishing(playerId: number, rival: number): boolean {
     const r = this.records.get(playerId);

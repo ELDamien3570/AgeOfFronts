@@ -91,7 +91,7 @@ describe("late-game AI development",()=>{
     const f=fixture(),factory=f.add("factory",50),market=f.add("factory",100,50,1);
     const template=f.game.squadFacts().aliveByOwner(f.player.id)[0];
     for(let i=0;i<5;i++)f.game.addSquad({...structuredClone(template),id:f.game.allocateId()});
-    const quote=tradeCycleQuote({naval:false,stock:100,capacity:40,valuePerGood:10,supplyTicks:0,
+    const quote=tradeCycleQuote({naval:false,stock:100,capacity:40,valuePerGood:10,supplyTicks:400,
       legs:[{marketId:market.id,distance:50,foreign:true,allied:false,travelTicks:500}],returnTicks:500,observedRisk:0});
     f.expansion.economy.tradeQuotes.restore({cursor:0,evidence:[[`${f.player.id}:false`,{
       source:factory.id,market:market.id,quote,tick:f.game.tick,generation:f.game.aiGeneration(f.player.id)}]]});

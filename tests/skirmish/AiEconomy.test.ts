@@ -33,6 +33,23 @@ function fixture() {
   return { game, player, expansion };
 }
 describe("coordinated AI economy", () => {
+  it("does not refresh old trade evidence when the courier stops completing trips",()=>{
+    const {game,player,expansion}=fixture();
+    game.options.deferredPlanning=true;
+    expansion.progression.states[player.id].completed.push("stoneage-goods-handling","stoneage-craft-workshops");
+    const source=game.addBuilding({id:game.allocateId(),playerId:player.id,type:"factory",tile:player.base,age:"StoneAge",remainingTicks:0});
+    expansion.supply.goods.set(source.id,25);game.tick=20;expansion.trade.step();
+    const actor=expansion.trade.actors.find(a=>a.playerId===player.id)!;
+    expect(actor).toBeDefined();
+    const market=game.buildings.find(b=>b.playerId===player.id && b.type==="city")!;
+    expansion.trade.cycleQuotes.set(actor.id,{completedTick:20,sourceId:source.id,marketId:market.id,
+      quantity:25,delivered:25,returned:0,guaranteedGold:250,supplyTicks:40,handlingTicks:60,
+      travelTicks:60,cycleTicks:160,goldPer1000Ticks:1562,observedRisk:0,riskAdjustedGoldPer1000Ticks:1562});
+    expansion.economy.tradeQuotes.step(8);
+    expect(expansion.economy.tradeQuotes.best(player.id,false)).toBeDefined();
+    game.tick=621;expansion.economy.tradeQuotes.step(8);
+    expect(expansion.economy.tradeQuotes.best(player.id,false)).toBeUndefined();
+  });
   it("expands markets rather than producers when profitable couriers return unsold cargo", () => {
     const {game,player,expansion}=fixture();
     const territory=game.checkpoint();territory.owners.fill(player.id);game.restore(territory);
@@ -60,9 +77,15 @@ describe("coordinated AI economy", () => {
       quote.returned=0;quote.delivered=30;
       expect(Array.from({length:300},()=>expansion.economy.placements.candidates(player,snapshot)).flat()
         .some(c=>c.type==="factory"&&c.objective>0)).toBe(false);
+      quote.supplyTicks=60;
       for(const b of factories)expansion.supply.goods.set(b.id,0);
       expect(Array.from({length:300},()=>expansion.economy.placements.candidates(player,snapshot)).flat()
         .some(c=>c.type==="factory"&&c.objective>=3000)).toBe(true);
+      // Construction already paid for must finish before funding its remedy again.
+      const pendingSnapshot={...snapshot,buildings:snapshot.buildings.map(b=>
+        b.id===factories[1].id?{...b,remainingTicks:100}:b)};
+      expect(Array.from({length:300},()=>expansion.economy.placements.candidates(player,pendingSnapshot)).flat()
+        .some(c=>c.type==="factory"&&c.objective>=3000)).toBe(false);
     } finally {best.mockRestore();}
   });
   it("finds a workshop beyond a saturated capital and resumes the placement page after restore", () => {

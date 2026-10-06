@@ -267,7 +267,8 @@ describe("responsive AI and naval movement", () => {
       target = f.ship(f.player.id, 40),
       startX = own.x;
     f.game.players[1].ai = false;
-    for (let i = 0; i < 12; i++) f.game.step();
+    // Acquisition is staggered by entity ID; allow its first movement batch.
+    for (let i = 0; i < 40; i++) f.game.step();
     expect(f.game.ship(own.id)?.navalTargetId).toBe(target.id);
     expect(f.game.ship(own.id)?.x).toBeGreaterThan(startX);
     const port = f.game.addBuilding({

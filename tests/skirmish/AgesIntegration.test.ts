@@ -161,6 +161,7 @@ describe("integrated shipments and military progression", () => {
         victims = m.squads.filter((s) => s.playerId === 2),
         ledger = new DamageLedger();
       enemy.kind = tribal ? "tribe" : "regular";
+      for (const city of m.buildings.filter(b => b.playerId === enemy.id && b.type === "city")) m.removeBuilding(city.id);
       for (const victim of victims) ledger.add(victim.id, 1, 1000);
       m.resolveLandDamage(ledger);
       m.step();
@@ -197,17 +198,17 @@ describe("integrated shipments and military progression", () => {
       a = building(m, "city", 14, 10),
       b = building(m, "city", 18, 10);
     e.progression.states[1].completed.push("stoneage-goods-handling");
-    e.supply.goods.set(factory.id, 20);
+    e.supply.goods.set(factory.id, 25);
     tradeStep(m, 22);
     const actor = e.trade.actors[0];
-    expect(actor.loaded).toBe(20);
+    expect(actor.loaded).toBe(25);
     m.removeBuilding(a.id);
     m.removeBuilding(b.id);
     for (const city of m.buildings.filter(b => b.type === "city")) m.removeBuilding(city.id);
     for (let i = 0; i < 1000 && !actor.returned; i++) tradeStep(m);
-    expect(actor.returned).toBe(20);
+    expect(actor.returned).toBe(25);
     expect(actor.cargo).toBe(0);
-    expect(e.supply.goods.get(factory.id)).toBe(20);
+    expect(e.supply.goods.get(factory.id)).toBe(25);
     expect(e.trade.deliveredGold[1] ?? 0).toBe(0);
     expect(actor.loaded).toBe(
       actor.cargo + actor.delivered + actor.returned + actor.lost,
@@ -220,13 +221,14 @@ describe("integrated shipments and military progression", () => {
     building(m, "city", 20, 10);
     const prize = building(m, "city", 11, 10, 2);
     e.progression.states[1].completed.push("stoneage-goods-handling");
-    e.supply.goods.set(factory.id, 20);
+    e.supply.goods.set(factory.id, 25);
     tradeStep(m, 22);
     const actor = e.trade.actors[0];
-    expect(actor.valuePerGood).toBe(10);
+    expect(actor.valuePerGood).toBe(20);
     e.progression.states[1].age = "Modern";
-    expect(actor.valuePerGood).toBe(10);
+    expect(actor.valuePerGood).toBe(20);
     const captor = m.squads.find((s) => s.playerId === 2)!;
+    expect(e.diplomacy.action(m.players[1],m.players[0],"declare",m.tick)).toBeNull();
     m.updateSquad(captor.id, { x: actor.x });
     m.updateSquad(captor.id, { y: actor.y });
     actor.waitTicks = 0;
@@ -239,7 +241,7 @@ describe("integrated shipments and military progression", () => {
     for (let i = 0; i < 200 && e.trade.actors.includes(actor); i++)
       tradeStep(m);
     expect(e.trade.actors).not.toContain(actor);
-    expect(e.trade.deliveredGold[2]).toBe(200);
+    expect(e.trade.deliveredGold[2]).toBe(500);
     const paid = m.players[1].gold;
     tradeStep(m, 100);
     expect(m.players[1].gold).toBe(paid);

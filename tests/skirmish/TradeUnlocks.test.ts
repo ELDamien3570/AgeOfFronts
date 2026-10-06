@@ -38,7 +38,7 @@ function fixture(port = false, deferredPlanning = false) {
     m.addBuilding({ ...factory, id: m.allocateId(), type: "port", tile: m.map.ref(10, 19) });
     m.addBuilding({ ...factory, id: m.allocateId(), type: "port", tile: m.map.ref(30, 19), playerId: 2 });
   }
-  m.expansion!.supply.goods.set(factory.id, 100);
+  for (const b of m.buildings.filter(b=>b.playerId===1 && (b.type==="factory" || b.type==="port"))) m.expansion!.supply.goods.set(b.id,100);
   const dispatch = () => {
     m.tick += 20;
     m.expansion!.trade.step();
@@ -113,7 +113,7 @@ describe("independent trade unlocks", () => {
     expect(actor.cargo).toBeGreaterThan(0);
     const ports=m.buildings.filter(b=>b.type === "port");m.updateBuilding((ports[ports.length-1]).id, { playerId: 2 });
     dispatch();
-    expect(m.expansion!.trade.actors.filter(a => a.playerId === 1)).toHaveLength(2);
+    expect(m.expansion!.trade.actors.filter(a => a.playerId === 1 && a.naval)).toHaveLength(1);
     expect(actor.naval).toBe(false);
     expect(m.expansion!.trade.actors.some(a => a.naval && a.factoryId !== actor.factoryId)).toBe(true);
   });
