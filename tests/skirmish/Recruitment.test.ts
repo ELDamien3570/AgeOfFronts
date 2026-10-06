@@ -5,9 +5,10 @@ import {
   recruitmentBatch,
 } from "../../src/skirmish/client/Controls";
 import { RecruitmentQueueViewModel } from "../../src/skirmish/client/RecruitmentQueueViewModel";
+import { SkirmishViewModel } from "../../src/skirmish/client/SkirmishViewModel";
 import { TECHNOLOGIES } from "../../src/skirmish/content/Technology";
 import { Recruitment } from "../../src/skirmish/domain/Recruitment";
-import type { Building } from "../../src/skirmish/Protocol";
+import { FIXED, type Building } from "../../src/skirmish/Protocol";
 import { Skirmish } from "../../src/skirmish/Simulation";
 import {
   SnapshotDecoder,
@@ -45,6 +46,48 @@ const train = (m: Skirmish) =>
   });
 
 describe("authoritative recruitment queues", () => {
+  it.each([
+    ["human", false, "regular", 64],
+    ["AI nation", true, "regular", 32],
+    ["tribe", true, "tribe", 24],
+  ] as const)("reserves independent warship and transport slots for %s", (_name, ai, kind, cap) => {
+    const m = game(), player = m.players[0];
+    m.setAiController(player.id, ai);
+    player.kind = kind;
+    m.expansion!.progression.states[player.id].completed = TECHNOLOGIES.map(t => t.id);
+    const tile = m.map.ref(10, 6);
+    m.owners[tile] = player.id;
+    const port = m.addBuilding({id:m.allocateId(),playerId:player.id,type:"port",tile,age:"StoneAge",remainingTicks:0});
+    const buy = (shipType:"warship"|"transport") => m.applyCommand({type:"recruit-ship",playerId:player.id,
+      buildingId:port.id,shipType,definitionId:`stoneage-${shipType}`});
+    const hull = (shipKind:"warship"|"transport") => m.addShip({id:m.allocateId(),playerId:player.id,
+      kind:shipKind,x:10*FIXED,y:5*FIXED,health:1000,destination:null,waypoints:[],path:[],nextPathIndex:0,fighting:false,boarding:null});
+    for(let i=0;i<cap-1;i++) hull("warship");
+    expect(buy("warship")).toBeNull();
+    const gold = player.gold;
+    expect(buy("warship")).toContain(`${cap} warships`);
+    expect(player.gold).toBe(gold);
+    for(let i=0;i<63;i++) hull("transport");
+    expect(buy("transport")).toBeNull();
+    const afterTransport = player.gold;
+    expect(buy("transport")).toContain("64 transports");
+    expect(player.gold).toBe(afterTransport);
+    expect(buy("warship")).toContain(`${cap} warships`);
+    const saved = m.checkpoint();
+    m.restore(saved);
+    expect(buy("warship")).toContain(`${cap} warships`);
+    expect(buy("transport")).toContain("64 transports");
+    const decoded = new SnapshotDecoder().decode(new SnapshotEncoder().encode(m.snapshot()));
+    expect(decoded.ships).toHaveLength(cap-1+63);
+    expect(decoded.expansion!.recruitment!.filter(j=>j.category==="ship")).toHaveLength(2);
+    const vm = new SkirmishViewModel(decoded,{selected:new Set(),selectedShips:new Set(),selectedBuilding:port.id});
+    expect(vm.recruitment("warship").reason).toBe("Warship limit reached");
+    expect(vm.recruitment("transport").reason).toBe("Transport limit reached");
+    decoded.expansion!.recruitment = decoded.expansion!.recruitment!.filter(j=>j.kind!=="transport");
+    expect(vm.recruitment("transport").enabled).toBe(true);
+    expect(vm.recruitment("warship").reason).toBe("Warship limit reached");
+    expect(m.applyCommand({type:"stop-ships",playerId:player.id,shipIds:decoded.ships.map(s=>s.id)})).toBeNull();
+  });
   it("reserves costs and trains sequentially without charging twice", () => {
     const m = game(),
       p = m.players[0];
@@ -59,7 +102,7 @@ describe("authoritative recruitment queues", () => {
     expect(m.squads.filter((s) => s.playerId === 1)).toHaveLength(initial + 1);
     expect(m.recruitment.jobs).toHaveLength(4);
     expect(m.recruitment.jobs[0].remainingTicks).toBe(100);
-    expect(p.reserves).toBe(95060); // five seconds of normal Stone reserve income
+    expect(p.reserves).toBe(95100); // five seconds of base plus starting-city reserve income
     const decoded = new SnapshotDecoder().decode(
       new SnapshotEncoder().encode(m.snapshot()),
     );

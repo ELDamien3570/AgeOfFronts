@@ -1,5 +1,9 @@
+import { buildingFootprint, buildingGroundBounds } from "../BuildingFootprint";
 import type { GameMap } from "../../core/game/GameMap";
 import { PlacementPreview } from "./PlacementPreview";
+import { PlacementCoverage } from "./PlacementCoverage";
+import { portShoreRotation } from "./PortOrientation";
+import { BuildingFacts } from "./BuildingFacts";
 import { UNIT, VESSEL } from "../content/Units";
 import { promotionLevel } from "../domain/Combat";
 import type { Age } from "../domain/Definitions";
@@ -40,6 +44,7 @@ import {
 } from "./GroundBake";
 import { GroundLayer, type GroundStyle } from "./GroundLayer";
 import { ImpactPresentation } from "./ImpactPresentation";
+import { NuclearWastelandView } from "./NuclearWastelandView";
 import {
   buildingSymbol,
   shipSpriteSize,
@@ -57,9 +62,10 @@ import { RenderSamples } from "./RenderSamples";
 import type { SpawnSelectionViewModel } from "./SpawnSelectionViewModel";
 import { StrategicSprites } from "./StrategicSprites";
 import { bakeTerrainFields } from "./TerrainFields";
-import { ownsCamp, TerritoryLabelViewModel } from "./TerritoryLabelViewModel";
+import { TerritoryLabelViewModel } from "./TerritoryLabelViewModel";
 import { TerritoryLayer } from "./TerritoryLayer";
-import { TraderPresentation } from "./TraderPresentation";
+import { TraderPresentation, traderActivity } from "./TraderPresentation";
+import { TradePayoutPresentation } from "./TradePayoutPresentation";
 import { PresentationClock, squadSpriteSize } from "./UnitAnimation";
 import { UnitArtwork } from "./UnitArtwork";
 import { UnitPresentation, visibleInViewport } from "./UnitPresentation";
@@ -78,8 +84,10 @@ export class Renderer {
   private roads?: RoadLayer;
   private readonly wallArtwork = new WallArtwork();
   private readonly walls = new WallPresentation();
+  private readonly trenches = new WallPresentation("trench");
   private readonly promotionArtwork = new PromotionArtwork();
   private readonly impacts = new ImpactPresentation();
+  private wastelandView?: NuclearWastelandView;
   private readonly combatEffects = new CombatEffectsView();
   private combatMarkers: TargetMarker[] = [];
   private legacyArtwork?: UnitArtwork;
@@ -92,6 +100,7 @@ export class Renderer {
   private readonly presentation = new UnitPresentation();
   private readonly boats = new BoatPresentation();
   private readonly traderPresentation = new TraderPresentation();
+  private readonly tradePayouts = new TradePayoutPresentation();
   private readonly aircraftPresentation = new AircraftPresentation();
   private readonly aircraftView = new AircraftView();
   private readonly aircraftLayer: AircraftLayer;
@@ -108,6 +117,19 @@ export class Renderer {
   private territory?: TerritoryLayer;
   private colorRevision = -1;
   private territoryLabels?: TerritoryLabelViewModel;
+  private readonly territoryText = new Map<string, { letters: string[]; advances: number[]; width: number }>();
+  private cacheTerritoryText(snapshot: Snapshot): void {
+    const names = new Set(snapshot.players.map(player => player.name));
+    for (const name of this.territoryText.keys()) if (!names.has(name)) this.territoryText.delete(name);
+    this.ctx.save();
+    this.ctx.font = "600 64px Georgia, Cambria, serif";
+    for (const name of names) if (!this.territoryText.has(name)) {
+      const letters = Array.from(name.toLocaleUpperCase());
+      const advances = letters.map(letter => this.ctx.measureText(letter).width / 64);
+      this.territoryText.set(name, { letters, advances, width: advances.reduce((sum, value) => sum + value, 0) });
+    }
+    this.ctx.restore();
+  }
   private buildingStacks: {
     building: Snapshot["buildings"][number];
     count: number;
@@ -119,6 +141,7 @@ export class Renderer {
   private snapshot?: Snapshot;
   private resources?: ResourceViewModel;
   private occupiedBuildingTiles = new Set<number>();
+  private readonly buildingFacts = new BuildingFacts();
   private previousTick?: number;
   private readonly squadSamples = new RenderSamples<Snapshot["squads"][number]>();
   private readonly cargoCounts = new Map<number, number>();
@@ -200,6 +223,7 @@ export class Renderer {
   selectedDeposit: number | null = null;
   placement?: { tile: number; type: BuildingType; friendly: boolean };
   buildSites: number[] = [];
+  private readonly placementCoverage = new PlacementCoverage();
   buildPreview?:PlacementPreview;
   selectionBox?: { x1: number; y1: number; x2: number; y2: number };
   marker?: { x: number; y: number; until: number; attack: boolean };
@@ -209,6 +233,10 @@ export class Renderer {
     private readonly campLoss = new CampLossPresentation(),
   ) {
     this.ctx = canvas.getContext("2d")!;
+    document.fonts?.addEventListener("loadingdone", () => {
+      this.territoryText.clear();
+      if (this.snapshot) this.cacheTerritoryText(this.snapshot);
+    });
     this.groundLayer = new GroundLayer(canvas);
     this.strategic = new StrategicSprites(canvas);
     this.aircraftLayer = new AircraftLayer(canvas);
@@ -249,7 +277,10 @@ export class Renderer {
       map.height(),
     );
     this.buildingStacks = [];
+    this.buildingFacts.reset();
+    this.occupiedBuildingTiles.clear();
     this.walls.reset();
+    this.trenches.reset();
     this.snapshot = undefined;
     this.spawn = undefined;
     this.resources = undefined;
@@ -262,6 +293,7 @@ export class Renderer {
     this.impacts.reset();
     this.combatMarkers = [];
     this.traderPresentation.reset();
+    this.tradePayouts.reset();
     this.aircraftPresentation.reset();
     this.aircraftBlend = 1;
     this.aircraftLayer.clear();
@@ -299,9 +331,12 @@ export class Renderer {
           (this.cargoCounts.get(squad.embarkedOn) ?? 0) + 1,
         );
     this.snapshot = snapshot;
+    this.tradePayouts.update(snapshot.expansion?.tradeReceipts??[],this.playerId,performance.now());
+    this.cacheTerritoryText(snapshot);
     this.buildingSelection.reconcile(snapshot.buildings, this.playerId);
     this.roads!.update(snapshot);
     this.walls.update(snapshot);
+    this.trenches.update(snapshot);
     this.impacts.update(snapshot.expansion?.projectiles ?? [], snapshot.tick);
     this.resources = snapshot.expansion
       ? new ResourceViewModel(
@@ -309,7 +344,6 @@ export class Renderer {
           snapshot.expansion.inventories[this.playerId],
         )
       : undefined;
-    this.occupiedBuildingTiles = new Set(snapshot.buildings.map((b) => b.tile));
     for (const id of this.selectedAircraft)
       if (
         !snapshot.expansion?.aircraft.some(
@@ -345,50 +379,58 @@ export class Renderer {
         this.selectedShips.delete(id);
     this.territory!.update(snapshot);
     this.territoryLabels!.update(snapshot);
-    const stacks = new Map<
-      string,
-      {
-        building: Snapshot["buildings"][number];
-        count: number;
-        remainingTicks: number;
-        buildTicks: number;
-        health: number;
-        maxHealth: number;
+    if (this.buildingFacts.changed(snapshot.buildings)) {
+      this.occupiedBuildingTiles = new Set<number>();
+      for (const b of snapshot.buildings) {
+        const bounds = buildingGroundBounds(this.map!, b.tile, b.type);
+        for (let y=bounds.top; y<Math.min(this.map!.height(),bounds.bottom); y++)
+          for (let x=bounds.left; x<Math.min(this.map!.width(),bounds.right); x++) this.occupiedBuildingTiles.add(this.map!.ref(x,y));
       }
-    >();
-    for (const building of snapshot.buildings) {
-      const key = `${building.tile}:${building.type}`;
-      let stack = stacks.get(key);
-      if (!stack) {
-        stack = {
-          building,
-          count: 0,
-          remainingTicks: 0,
-          buildTicks:
-            building.buildTicks ?? BUILDING_RULES[building.type].ticks,
-          health: 0,
-          maxHealth: 0,
-        };
-        stacks.set(key, stack);
+      const stacks = new Map<
+        string,
+        {
+          building: Snapshot["buildings"][number];
+          count: number;
+          remainingTicks: number;
+          buildTicks: number;
+          health: number;
+          maxHealth: number;
+        }
+      >();
+      for (const building of snapshot.buildings) {
+        const key = `${building.tile}:${building.type}`;
+        let stack = stacks.get(key);
+        if (!stack) {
+          stack = {
+            building,
+            count: 0,
+            remainingTicks: 0,
+            buildTicks:
+              building.buildTicks ?? BUILDING_RULES[building.type].ticks,
+            health: 0,
+            maxHealth: 0,
+          };
+          stacks.set(key, stack);
+        }
+        stack.count++;
+        stack.health += building.health ?? 0;
+        stack.maxHealth += building.maxHealth ?? 0;
+        if (building.remainingTicks > 0 && stack.remainingTicks === 0) {
+          stack.remainingTicks = building.remainingTicks;
+          stack.buildTicks =
+            building.buildTicks ??
+            buildingTicks(building.type, stack.count - 1);
+        }
       }
-      stack.count++;
-      stack.health += building.health ?? 0;
-      stack.maxHealth += building.maxHealth ?? 0;
-      if (building.remainingTicks > 0 && stack.remainingTicks === 0) {
-        stack.remainingTicks = building.remainingTicks;
-        stack.buildTicks =
-          building.buildTicks ??
-          buildingTicks(building.type, stack.count - 1);
-      }
-    }
-    this.buildingStacks = Array.from(stacks.values());
-    const cleared = this.ground!.updateBuildings(
-      this.buildingStacks.map((stack) => stack.building),
-    );
-    if (cleared.length && this.groundSource && this.groundColors)
-      this.groundLayer.updateColors(
-        rebakeGroundColors(this.groundSource, this.groundColors, cleared),
+      this.buildingStacks = Array.from(stacks.values());
+      const cleared = this.ground!.updateBuildings(
+        this.buildingStacks.map((stack) => stack.building),
       );
+      if (cleared.length && this.groundSource && this.groundColors)
+        this.groundLayer.updateColors(
+          rebakeGroundColors(this.groundSource, this.groundColors, cleared),
+        );
+    }
   }
 
   // Animated and still water use the WebGL2 ground; classic keeps the
@@ -572,7 +614,7 @@ export class Renderer {
           b.type === type &&
           (b.health ?? 1) > 0 &&
           visibleInViewport(
-            this.screen(this.map!.x(b.tile) + 0.5, this.map!.y(b.tile) + 0.5),
+            this.buildingCenter(b.tile, b.type),
             this.buildingHalfSize(b),
             this.width,
             this.height,
@@ -582,24 +624,25 @@ export class Renderer {
   }
 
   private buildingHalfSize(building: Snapshot["buildings"][number]): number {
-    return building.type === "tower"
-      ? Math.max(6, this.scale / 2)
-      : Math.max(9, this.scale / 2);
+    const shape = buildingFootprint(building.type);
+    return Math.max(9, Math.hypot(shape.width, shape.height) * this.scale / 2);
+  }
+
+  private buildingCenter(tile: number, type: BuildingType) {
+    const shape = buildingFootprint(type);
+    return this.screen(this.map!.x(tile) + shape.width/2, this.map!.y(tile) + shape.height/2);
   }
 
   buildingAt(x: number, y: number): number | null {
     let nearest: number | null = null;
     let distance = Infinity;
     for (const { building } of this.buildingStacks) {
-      const p = this.screen(
-        this.map!.x(building.tile) + 0.5,
-        this.map!.y(building.tile) + 0.5,
-      );
+      const p = this.buildingCenter(building.tile, building.type);
       const d = (p.x - x) ** 2 + (p.y - y) ** 2;
-      const half = this.buildingHalfSize(building);
+      const shape = buildingFootprint(building.type);
       if (
-        Math.abs(p.x - x) <= half &&
-        Math.abs(p.y - y) <= half &&
+        Math.abs(p.x - x) <= Math.max(9, shape.width * this.scale/2) &&
+        Math.abs(p.y - y) <= Math.max(9, shape.height * this.scale/2) &&
         d < distance
       ) {
         nearest = building.id;
@@ -638,7 +681,8 @@ export class Renderer {
       const height = label.height * this.scale;
       const radius = Math.hypot(width, height) / 2;
       if (!visibleInViewport(p, radius, this.width, this.height)) continue;
-      const letters = Array.from(label.name.toLocaleUpperCase());
+      const metrics = this.territoryText.get(label.name)!;
+      const { letters, advances } = metrics;
       let font = Math.min(64, height * 0.42, width / (letters.length * 0.9));
       if (font < 7) continue;
       ctx.save();
@@ -653,15 +697,12 @@ export class Renderer {
         ctx.strokeText("zzz", 0, -Math.max(16, font));
         ctx.fillText("zzz", 0, -Math.max(16, font));
       }
-      ctx.font = `600 ${font}px Georgia, Cambria, serif`;
-      let advances = letters.map((letter) => ctx.measureText(letter).width);
-      let inkWidth = advances.reduce((sum, advance) => sum + advance, 0);
+      let inkWidth = metrics.width * font;
       if (inkWidth > width) {
         font *= width / inkWidth;
-        ctx.font = `600 ${font}px Georgia, Cambria, serif`;
-        advances = letters.map((letter) => ctx.measureText(letter).width);
-        inkWidth = advances.reduce((sum, advance) => sum + advance, 0);
+        inkWidth = metrics.width * font;
       }
+      ctx.font = `600 ${font}px Georgia, Cambria, serif`;
       // Track letters across the available interior, without distorting glyphs.
       const spacing =
         letters.length > 1
@@ -678,7 +719,7 @@ export class Renderer {
       for (let i = 0; i < letters.length; i++) {
         ctx.strokeText(letters[i], x, 0);
         ctx.fillText(letters[i], x, 0);
-        x += advances[i] + spacing;
+        x += advances[i] * font + spacing;
       }
       ctx.restore();
     }
@@ -697,13 +738,14 @@ export class Renderer {
     elapsedTicks = 0,
     ownerAge?: Age,
     buildTicks = BUILDING_RULES[type].ticks,
+    tile?: number,
   ): number {
     const ctx = this.ctx;
     const era = definitionId
       ? this.eraArtwork.get(definitionId, "idle", elapsedTicks)
       : undefined;
     const image = definitionId ? era?.source : this.buildingArtwork.get(type);
-    const { artwork, size, footprintSize, inset, backdropAlpha } = buildingSymbol(
+    const { artwork, size, footprintWidth, footprintHeight, inset, backdropAlpha } = buildingSymbol(
       this.scale,
       !!image,
       type,
@@ -727,7 +769,7 @@ export class Renderer {
       ctx.fillStyle = artwork
         ? (BUILDING_PAD_COLORS.get(color) ?? color)
         : "#142c37";
-      ctx.fillRect(p.x - footprintSize / 2, p.y - footprintSize / 2, footprintSize, footprintSize);
+      ctx.fillRect(p.x - footprintWidth / 2, p.y - footprintHeight / 2, footprintWidth, footprintHeight);
       ctx.globalAlpha = 1;
     }
     if (artwork && image) {
@@ -736,14 +778,22 @@ export class Renderer {
         width: era?.width ?? (image as HTMLImageElement).naturalWidth,
         height: era?.height ?? (image as HTMLImageElement).naturalHeight,
       });
-      const destination = fittedBuildingSprite(bounds, p.x, p.y, size - inset * 2);
+      const destination = fittedBuildingSprite(bounds, p.x, p.y, footprintWidth - inset * 2, footprintHeight - inset * 2);
       ctx.globalAlpha = ghost ? 0.65 : remainingTicks ? 0.55 : 1;
       ctx.imageSmoothingEnabled = true;
+      const rotation = type === "port" && tile !== undefined && this.map
+        ? portShoreRotation(this.map, tile) : 0;
+      if (rotation) {
+        ctx.save();
+        ctx.translate(p.x, p.y);
+        ctx.rotate(rotation);
+      }
       ctx.drawImage(
         image,
         bounds.x, bounds.y, bounds.width, bounds.height,
-        destination.x, destination.y, destination.width, destination.height,
+        destination.x - (rotation ? p.x : 0), destination.y - (rotation ? p.y : 0), destination.width, destination.height,
       );
+      if (rotation) ctx.restore();
       ctx.globalAlpha = 1;
     } else if (marker) {
       ctx.globalAlpha = ghost ? 0.65 : remainingTicks ? 0.55 : 1;
@@ -762,7 +812,14 @@ export class Renderer {
       ctx.globalAlpha = 1;
     }
     if (selected || ghost || (!artwork && !marker))
-      ctx.strokeRect(p.x - footprintSize / 2, p.y - footprintSize / 2, footprintSize, footprintSize);
+      ctx.strokeRect(p.x - footprintWidth / 2, p.y - footprintHeight / 2, footprintWidth, footprintHeight);
+    if (selected) {
+      ctx.setLineDash([3, 3]);
+      ctx.globalAlpha = 0.45;
+      ctx.strokeRect(p.x-footprintWidth/2-this.scale, p.y-footprintHeight/2-this.scale,
+        footprintWidth+2*this.scale, footprintHeight+2*this.scale);
+      ctx.globalAlpha = 1;
+    }
     if (remainingTicks) {
       const totalTicks = Math.max(1, buildTicks);
       const fraction = Math.max(
@@ -806,8 +863,8 @@ export class Renderer {
     ghost = false,
     buildTicks = BUILDING_RULES.tower.ticks,
   ): number {
-    const p = this.screen(this.map!.x(tile) + 0.5, this.map!.y(tile) + 0.5),
-      size = this.scale,
+    const p = this.buildingCenter(tile, "tower"),
+      size = this.scale * 2,
       ctx = this.ctx;
     ctx.save();
     if (selected || ghost) {
@@ -871,16 +928,9 @@ export class Renderer {
   }
 
   draw(now: number, speed: number, paused: boolean): boolean {
+    this.tradePayouts.prune(now);
     if (now < this.nextFrame) return false;
-    // Preserve CPU time for the fixed-step worker when armies are large. The
-    // presentation target is 30 FPS at high population, 60 FPS in small matches.
-    const frameInterval =
-      1000 /
-      ((this.snapshot?.squads.length ?? 0) +
-        (this.snapshot?.ships.length ?? 0) >
-      1000
-        ? 30
-        : 60);
+    const frameInterval = 1000 / 60;
     this.nextFrame =
       now + frameInterval - ((now - this.nextFrame) % frameInterval);
     this.strategic.begin();
@@ -962,6 +1012,7 @@ export class Renderer {
       this.width,
       this.height,
     );
+    (this.wastelandView??=new NuclearWastelandView()).draw(ctx,this.snapshot?.expansion?.fallout,this.map.width(),this.map.height(),this.scale,this.offsetX,this.offsetY);
     this.territoryLabels!.advance(now);
     this.drawTerritoryNames();
     ctx.strokeStyle = "#b4c6cf26";
@@ -972,22 +1023,33 @@ export class Renderer {
       this.map.width() * this.scale + 2,
       this.map.height() * this.scale + 2,
     );
-    const sites=this.buildPreview?.sites({left:Math.floor(-this.offsetX/this.scale),top:Math.floor(-this.offsetY/this.scale),
-      right:Math.ceil((this.width-this.offsetX)/this.scale),bottom:Math.ceil((this.height-this.offsetY)/this.scale)})??this.buildSites;
-    for (const tile of sites) {
-      const p = this.screen(this.map.x(tile), this.map.y(tile));
-      if (
-        p.x + this.scale < 0 ||
-        p.x > this.width ||
-        p.y + this.scale < 0 ||
-        p.y > this.height
-      )
-        continue;
+    const viewport = {
+      left: Math.floor(-this.offsetX / this.scale),
+      top: Math.floor(-this.offsetY / this.scale),
+      right: Math.ceil((this.width - this.offsetX) / this.scale),
+      bottom: Math.ceil((this.height - this.offsetY) / this.scale),
+    };
+    const placementType = this.buildPreview?.activeType ?? this.placement?.type;
+    if (placementType) {
+      const shape = buildingFootprint(placementType);
+      // Anchors just outside the viewport can still occupy visible cells.
+      const sites = this.buildPreview?.sites({
+        ...viewport,
+        left: viewport.left - shape.width + 1,
+        top: viewport.top - shape.height + 1,
+      }, undefined, this.placement?.tile) ?? this.buildSites;
+      const coverage = this.placementCoverage.runs(this.map, sites, placementType, viewport);
       ctx.fillStyle = "#9bffe066";
-      ctx.fillRect(p.x, p.y, this.scale, this.scale);
       ctx.strokeStyle = "#baffebbb";
       ctx.lineWidth = 1;
-      ctx.strokeRect(p.x + 0.5, p.y + 0.5, this.scale - 1, this.scale - 1);
+      ctx.beginPath();
+      for (const run of coverage) {
+        const p = this.screen(run.left, run.y);
+        ctx.fillRect(p.x, p.y, (run.right - run.left) * this.scale, this.scale);
+        for (let x = run.left; x < run.right; x++)
+          ctx.rect(p.x + (x - run.left) * this.scale + 0.5, p.y + 0.5, this.scale - 1, this.scale - 1);
+      }
+      ctx.stroke();
     }
 
     for (const player of snapshot.players) {
@@ -1006,19 +1068,6 @@ export class Renderer {
         ctx.strokeText("zzz", p.x, p.y - 18);
         ctx.fillText("zzz", p.x, p.y - 18);
         ctx.restore();
-      }
-      if (ownsCamp(snapshot, player)) {
-        ctx.fillStyle = COLORS[player.id];
-        ctx.strokeStyle = "#10212b";
-        ctx.lineWidth = 2;
-        ctx.fillRect(p.x - 6, p.y - 6, 12, 12);
-        ctx.strokeRect(p.x - 6, p.y - 6, 12, 12);
-        ctx.beginPath();
-        ctx.moveTo(p.x, p.y - 10);
-        ctx.lineTo(p.x + 4, p.y - 6);
-        ctx.lineTo(p.x - 4, p.y - 6);
-        ctx.closePath();
-        ctx.fill();
       }
       const campOpacity = this.campLoss.opacity(player.id, now);
       if (campOpacity > 0) {
@@ -1052,6 +1101,26 @@ export class Renderer {
     }
     ctx.restore();
 
+    ctx.save();
+    ctx.lineCap = "round";
+    ctx.lineJoin = "round";
+    for (const trench of this.trenches.tiles) {
+      const p = this.screen(this.map.x(trench.tile)+0.5, this.map.y(trench.tile)+0.5);
+      if (!visibleInViewport(p,this.scale,this.width,this.height)) continue;
+      ctx.globalAlpha = trench.constructing ? 0.55 : 1;
+      for (const [width,color] of [[0.46,"#ad9270"],[0.28,"#302b25"]] as const) {
+        ctx.strokeStyle = color; ctx.lineWidth = this.scale*width;
+        ctx.beginPath();
+        for (const [bit,dx,dy] of [[1,0,-0.5],[2,0.5,0],[4,0,0.5],[8,-0.5,0]]) {
+          if (!(trench.mask & bit)) continue;
+          const end = this.screen(this.map.x(trench.tile)+0.5+dx,this.map.y(trench.tile)+0.5+dy);
+          ctx.moveTo(p.x,p.y); ctx.lineTo(end.x,end.y);
+        }
+        ctx.stroke();
+      }
+    }
+    ctx.restore();
+
     // Buildings, including placement ghosts, are a layer beneath mobile units.
     const selectedBuilding =
       this.selectedBuilding === null
@@ -1065,12 +1134,9 @@ export class Renderer {
       health,
       maxHealth,
     } of this.buildingStacks) {
-      const p = this.screen(
-        this.map.x(building.tile) + 0.5,
-        this.map.y(building.tile) + 0.5,
-      );
+      const p = this.buildingCenter(building.tile, building.type);
       const rules = BUILDING_RULES[building.type];
-      if (!visibleInViewport(p, 70, this.width, this.height)) continue;
+      if (!visibleInViewport(p, Math.max(70, this.buildingHalfSize(building)), this.width, this.height)) continue;
       const selected =
         this.selectedBuildings.has(building.id) ||
         (selectedBuilding?.tile === building.tile &&
@@ -1099,6 +1165,7 @@ export class Renderer {
               snapshot.tick,
               ownerUiAge(snapshot, building.playerId),
               buildTicks,
+              building.tile,
             );
       if (count > 1) {
         ctx.font = "bold 10px system-ui";
@@ -1109,6 +1176,13 @@ export class Renderer {
         ctx.fillRect(p.x + size / 3 - width / 2, p.y - size / 2 - 6, width, 14);
         ctx.fillStyle = COLORS[building.playerId];
         ctx.fillText(badge, p.x + size / 3, p.y - size / 2 + 5);
+      }
+      const payout=this.tradePayouts.amount(building.tile,now);
+      if(payout!==undefined && (building.type==="city" || building.type==="port")) {
+        ctx.save();ctx.font="bold 13px system-ui";ctx.textAlign="center";ctx.textBaseline="bottom";
+        ctx.lineWidth=3;ctx.strokeStyle="#10212bd9";ctx.fillStyle="#ffe28a";
+        const text=`+$${payout.toLocaleString("en-US")}`,y=p.y-size/2-18;
+        ctx.strokeText(text,p.x,y);ctx.fillText(text,p.x,y);ctx.restore();
       }
       if (maxHealth > 0 && (selected || health < maxHealth)) {
         const width = Math.max(18, Math.min(48, size));
@@ -1138,10 +1212,7 @@ export class Renderer {
       }
     }
     if (this.placement) {
-      const p = this.screen(
-        this.map.x(this.placement.tile) + 0.5,
-        this.map.y(this.placement.tile) + 0.5,
-      );
+      const p = this.buildingCenter(this.placement.tile, this.placement.type);
       if (this.placement.type === "tower")
         this.drawTower(
           this.placement.tile,
@@ -1162,7 +1233,25 @@ export class Renderer {
           undefined,
           0,
           ownerUiAge(snapshot, 1),
+          undefined,
+          this.placement.tile,
         );
+      const bounds = buildingGroundBounds(this.map, this.placement.tile, this.placement.type);
+      const corner = this.screen(bounds.left, bounds.top);
+      const width = (bounds.right - bounds.left) * this.scale;
+      const height = (bounds.bottom - bounds.top) * this.scale;
+      ctx.save();
+      ctx.strokeStyle = this.placement.friendly ? "#a0ffe0" : "#ff8f84";
+      ctx.globalAlpha = 1;
+      ctx.lineWidth = 2;
+      ctx.setLineDash([]);
+      ctx.strokeRect(corner.x, corner.y, width, height);
+      ctx.lineWidth = 1;
+      ctx.globalAlpha = 0.45;
+      ctx.setLineDash([3, 3]);
+      ctx.strokeRect(corner.x - this.scale, corner.y - this.scale,
+        width + 2 * this.scale, height + 2 * this.scale);
+      ctx.restore();
     }
 
     const interval = this.arrivalMs
@@ -1791,6 +1880,8 @@ export class Renderer {
           }
         }
       for (const actor of snapshot.expansion.traders) {
+        const activity = traderActivity(actor);
+        if (activity === "hidden") continue;
         const boat = actor.naval ? this.boats.traderPose(actor.id) : undefined;
         const pose =
           boat ?? this.traderPresentation.pose(actor.id, visualTick, blend);
@@ -1850,6 +1941,18 @@ export class Renderer {
           ctx.fillText("$", p.x, p.y + 3);
         }
         ctx.restore();
+        const loading = this.traderPresentation.loadingProgress(actor, this.scale);
+        if (loading !== undefined) {
+          // Unlabelled screen-space cargo bar, visible only at building-art zoom.
+          ctx.save();
+          const width = Math.min(32, symbol.size), left = p.x-width/2,
+            top = p.y-symbol.size/2-7;
+          ctx.fillStyle = "#10212be8";
+          ctx.fillRect(left,top,width,3);
+          ctx.fillStyle = "#f1d68a";
+          ctx.fillRect(left,top,width*loading,3);
+          ctx.restore();
+        }
       }
       const impactTick = this.impacts.clock(
           visualTick,
@@ -1859,6 +1962,12 @@ export class Renderer {
         impactVisuals = this.impacts.frames(impactTick),
         impactIds = new Set(impactVisuals.map((e) => e.id));
       for (const projectile of snapshot.expansion.projectiles) {
+        const interception = projectile.interception;
+        if (interception && !projectile.impacted && visualTick >= interception.tick && visualTick < interception.impactTick) {
+          const fraction = Math.max(0,Math.min(1,(visualTick-interception.tick)/(interception.impactTick-interception.tick)));
+          const rocket = this.screen((interception.fromX+(interception.toX-interception.fromX)*fraction)/FIXED,(interception.fromY+(interception.toY-interception.fromY)*fraction)/FIXED);
+          if (visibleInViewport(rocket,16,this.width,this.height)) this.combatEffects.projectile(ctx,"rocket",rocket,Math.atan2(interception.toY-interception.fromY,interception.toX-interception.fromX),4,0.5);
+        }
         if (
           (projectile.kind === "mirv" || projectile.damage === 0) &&
           projectile.impacted

@@ -47,6 +47,9 @@ import { UNIT } from "../content/Units";
 
 import {
   AGE_NAMES,
+  STARTING_AGES,
+  startingAgeName,
+  type StartingAge,
   AGES,
   type Age,
   type TechnologySpeed,
@@ -64,12 +67,12 @@ import {
   LAND_RECRUITMENT,
   NAVAL_RECRUITMENT,
   shipMoveCommand,
+  sortieCommand,
 } from "./Controls";
 
 import { hudMarkup, HudView } from "./HudView";
 
 import { RecruitmentControlsViewModel } from "./RecruitmentControlsViewModel";
-import { MatchMetricsViewModel } from "./MatchMetricsViewModel";
 import { RecruitmentQueueView } from "./RecruitmentQueueView";
 import { RecruitmentQueueViewModel } from "./RecruitmentQueueViewModel";
 
@@ -91,11 +94,11 @@ import "./age-theme.css";
 
 document.querySelector<HTMLDivElement>("#app")!.innerHTML = `
 
-  <header class="topbar">
+  <header id="match-topbar" class="topbar">
 
-    <div class="brand"><a class="brand-mark" href="/" aria-label="Return to main lobby">AF</a><div><h1>Age of Fronts</h1><p>Local AI skirmish</p></div></div>
+    <div class="brand"><a class="brand-mark" href="/" aria-label="Return to main lobby"><img src="/images/age-of-fronts-stone-logo.png" alt="Age of Fronts"></a><div><h1>Age of Fronts</h1><p>Local AI skirmish</p></div></div>
 
-    <div class="match-settings"><label>Battlefield<select id="map">${MAPS.map((m) => `<option value="${m.id}">${m.name}</option>`).join("")}</select></label><label>Opponents<select id="opponents">${Array.from(
+    <div id="skirmish-settings" class="match-settings"><label>Battlefield<select id="map">${MAPS.map((m) => `<option value="${m.id}">${m.name}</option>`).join("")}</select></label><label>Opponents<select id="opponents">${Array.from(
       { length: MAX_AI_OPPONENTS },
 
       (_, i) => i + 1,
@@ -108,9 +111,9 @@ document.querySelector<HTMLDivElement>("#app")!.innerHTML = `
 
       .join(
         "",
-      )}</select></label><label>Map size<select id="world-size"><option value="250">250 cells · longest edge</option><option value="500" selected>500 cells · longest edge</option><option value="1000">1000 cells · longest edge</option></select></label><label>Starting age<select id="starting-age">${AGES.map((a, i) => `<option value="${a}" ${a === "StoneAge" ? "selected" : ""}>${AGE_NAMES[i]}</option>`).join("")}</select></label><label>Victory<select id="victory-mode"><option value="solo">Solo conquest</option><option value="allied">Allied conquest</option></select></label><label title="New skirmishes divide all research and age-advancement costs and times by this setting, for every faction.">Tech speed<select id="technology-speed" aria-label="Technology speed"><option value="1">1×</option><option value="2">2×</option><option value="3">3×</option></select></label><label><input type="checkbox" id="infinite-gold" />Infinite Gold for Players</label><button id="restart" class="primary">New skirmish</button></div>
+      )}</select></label><label>Map size<select id="world-size"><option value="250">250 cells · longest edge</option><option value="500" selected>500 cells · longest edge</option><option value="1000">1000 cells · longest edge</option></select></label><label>Starting age<select id="starting-age">${STARTING_AGES.map(a => `<option value="${a}" ${a === "StoneAge" ? "selected" : ""}>${startingAgeName(a)}</option>`).join("")}</select></label><label>Victory<select id="victory-mode"><option value="solo">Solo conquest</option><option value="allied">Allied conquest</option></select></label><label title="New skirmishes divide all research and age-advancement costs and times by this setting, for every faction.">Tech speed<select id="technology-speed" aria-label="Technology speed"><option value="1">1×</option><option value="2">2×</option><option value="3">3×</option></select></label><label><input type="checkbox" id="infinite-gold" />Infinite Gold for Players</label><button id="restart" class="primary">New skirmish</button></div>
 
-    <div class="time-controls"><button id="wasd-mode" type="button" aria-pressed="false" title="WASD pans the map; Shift for building/single recruitment shortcuts, Space for five recruits.">WASD</button><span id="clock">0:00</span><select id="speed" aria-label="Game speed"><option value="1">1× speed</option><option value="2">2× speed</option><option value="4">4× speed</option></select><button id="pause" aria-label="Pause game">Pause</button></div>
+    <div class="time-controls"><button id="wasd-mode" type="button" aria-pressed="false" title="WASD pans the map; Shift for building/single recruitment shortcuts, Space for five recruits.">WASD</button><select id="speed" aria-label="Game speed"><option value="1">1× speed</option><option value="2">2× speed</option><option value="4">4× speed</option></select><button id="pause" aria-label="Pause game">Pause</button></div>
 
   </header>
 
@@ -152,6 +155,12 @@ if (sourceUrl) {
 
 const element = <T extends HTMLElement>(id: string) =>
   document.getElementById(id)! as T;
+
+element("empire-age").addEventListener("click", () => {
+  const topbar = element("match-topbar");
+  topbar.hidden = !topbar.hidden;
+  element("empire-age").setAttribute("aria-expanded", String(!topbar.hidden));
+});
 
 const canvas = element<HTMLCanvasElement>("battlefield");
 
@@ -302,7 +311,7 @@ let placementAge: Age | undefined;
 let lastPlacementTime = 0;
 let lastPlacementAttempt = 0;
 
-let targetedAction: ((x: number, y: number) => void) | undefined;
+let targetedAction: ((x: number, y: number, gesture?: {shift:boolean; buildingId?:number}) => void) | undefined;
 
 const orderGesture = new OrderGesture();
 
@@ -310,7 +319,7 @@ const empireModel = () =>
   snapshot?.expansion ? new EmpireViewModel(snapshot, renderer) : undefined;
 
 function beginTarget(
-  action: (x: number, y: number) => void,
+  action: (x: number, y: number, gesture?: {shift:boolean; buildingId?:number}) => void,
   hint: string,
 ): void {
   cancelPlacement();
@@ -519,7 +528,7 @@ async function start(): Promise<void> {
 
       groups.prune(snapshot);
 
-      updateHud();
+      hudPending = true;
       if (startingCameraPending) {
         const player = snapshot.players.find((p) => p.id === localPlayerId);
         if (player) {
@@ -540,7 +549,7 @@ async function start(): Promise<void> {
       ? requestedSeed : Math.floor(Math.random() * 0x7fffffff);
     diagnosticSeed = seed;
     const startingAge =
-      (element<HTMLSelectElement>("starting-age")?.value as Age) || "StoneAge";
+      (element<HTMLSelectElement>("starting-age")?.value as StartingAge) || "StoneAge";
     const spawnOptions: MatchOptions = {
       ...DEFAULT_AI_POLICIES,
       seed,
@@ -713,13 +722,13 @@ async function startOnlineMatch(): Promise<void> {
     if (event.data.type !== "state") return;
     renderer.spawn = undefined;
     element("spawn-selection").hidden = true;
-    snapshot = event.data.snapshot??decoder.decode(event.data.packet);
+    snapshot = event.data.snapshot??decoder.decode(event.data.packet, false);
     snapshot.localPlayerId = localPlayerId;
     snapshot.disconnectedPlayerIds = session.disconnectedPlayerIds;
     paused = event.data.paused;
     browserDiagnostics.measure("presentation", () => renderer.update(snapshot!));
     groups.prune(snapshot);
-    updateHud();
+    hudPending = true;
     if (startingCamera) {
       const player = snapshot.players.find((p) => p.id === localPlayerId);
       if (player) { renderer.focusStartingLocation(player.base); startingCamera = false; }
@@ -731,44 +740,55 @@ async function startOnlineMatch(): Promise<void> {
   session.connect();
 }
 
+let recruitmentProjection: RecruitmentQueueViewModel | undefined;
+let hudProjection: HudViewModel | undefined;
+let armyProjection: ArmyViewModel | undefined;
+let hudPending = false;
+function hudText(id: string, value: string): void {
+  const target = element(id);
+  if (target.textContent !== value) target.textContent = value;
+}
+function hudDisabled(id: string, value: boolean): void {
+  const target = element<HTMLButtonElement>(id);
+  if (target.disabled !== value) target.disabled = value;
+}
 function updateHud(): void {
+  hudPending = false;
   if (!snapshot) return;
   limitSquadSelection(renderer.selected, snapshot.squads, localPlayerId);
   const started = performance.now();
   try {
 
   updateTerrainHover();
-  recruitmentFeed.update(new RecruitmentQueueViewModel(snapshot, localPlayerId, renderer.selectedBuildings));
+  if (recruitmentProjection) recruitmentProjection.update(snapshot, localPlayerId, renderer.selectedBuildings);
+  else recruitmentProjection = new RecruitmentQueueViewModel(snapshot, localPlayerId, renderer.selectedBuildings);
+  recruitmentFeed.update(recruitmentProjection);
 
   const player = snapshot.players.find(player => player.id === localPlayerId)!;
 
-  const own = snapshot.squads.filter((s) => s.playerId === localPlayerId);
+  let troops = 0, count = 0;
+  for (const squad of snapshot.squads) if (squad.playerId === localPlayerId) { troops += squad.troops; count++; }
 
-  element("troop-total").textContent = format(
-    own.reduce((sum, s) => sum + s.troops, 0),
-  );
+  hudText("troop-total", format(troops));
 
-  element("reserves").textContent = format(player.reserves);
+  hudText("reserves", format(player.reserves));
 
-  element("gold").textContent = hasInfiniteGold(player) ? "∞" : format(player.gold);
+  hudText("gold", hasInfiniteGold(player) ? "∞" : format(player.gold));
 
-  element("squad-count").textContent = `${own.length} / ${squadCap(player, snapshot.expansion?.progression[player.id]?.age)}`;
+  hudText("squad-count", `${count} / ${squadCap(player, snapshot.expansion?.progression[player.id]?.age)}`);
 
-  element("land").textContent = format(player.land);
+  hudText("land", format(player.land));
 
-  const metrics = new MatchMetricsViewModel(snapshot, localPlayerId);
-  element("losses").textContent = format(metrics.deaths);
-  element("kills").textContent = format(metrics.kills);
-  element("trade-captured").textContent = format(metrics.tradeCaptured);
-  element("trade-lost").textContent = format(metrics.tradeLost);
+  hudText("losses", format(player.losses ?? 0));
+  hudText("kills", format(player.kills ?? 0));
+  hudText("trade-captured", format(snapshot.expansion?.tradeCapturedValue?.[localPlayerId] ?? 0));
+  hudText("trade-lost", format(snapshot.expansion?.tradeLostValue?.[localPlayerId] ?? 0));
 
   const seconds = Math.floor(snapshot.tick / TICKS_PER_SECOND);
 
-  element("clock").textContent =
-    `${Math.floor(seconds / 60)}:${String(seconds % 60).padStart(2, "0")}`;
+  hudText("clock", `${Math.floor(seconds / 60)}:${String(seconds % 60).padStart(2, "0")}`);
 
-  element("pause").innerHTML =
-    `${paused ? "Resume" : "Pause"}`;
+  hudText("pause", paused ? "Resume" : "Pause");
 
   const vm = viewModel()!;
 
@@ -779,21 +799,25 @@ function updateHud(): void {
 
     const id = naval ? kind : `recruit-${kind}`;
 
-    element<HTMLButtonElement>(id).disabled = !recruitment.enabled;
+    hudDisabled(id, !recruitment.enabled);
   }
 
   const empireVm = empireModel();
   for (const { kind: type } of CONSTRUCTION)
-    element<HTMLButtonElement>(`build-${type}`).disabled =
+    hudDisabled(`build-${type}`,
       !!empireVm?.buildChoice(type).reason ||
       player.eliminated ||
-      snapshot.winner !== null;
+      snapshot.winner !== null);
 
   updateSelection();
 
   if (empireVm) empire.update(empireVm);
-  hud.update(new HudViewModel(vm));
-  const armyVm = new ArmyViewModel(snapshot, renderer.selected, localPlayerId);
+  if (hudProjection) hudProjection.update(vm);
+  else hudProjection = new HudViewModel(vm);
+  hud.update(hudProjection);
+  if (armyProjection) armyProjection.update(snapshot, renderer.selected, localPlayerId);
+  else armyProjection = new ArmyViewModel(snapshot, renderer.selected, localPlayerId);
+  const armyVm = armyProjection;
   armyView.update(armyVm);
   if (armyVm.selectedArmy) element("selection-card").hidden = true;
 
@@ -1415,19 +1439,22 @@ canvas.addEventListener("pointerup", (event) => {
 
   if (
     start.button === 2 &&
-    (placementType || landingShip !== undefined || targetedAction)
+    (placementType || landingShip !== undefined)
   ) {
     cancelPlacement();
 
     return;
   }
 
-  if (start.button === 0 && targetedAction) {
+  if ((start.button === 0 || start.button === 2) && targetedAction) {
     const world = renderer.world(p.x, p.y);
     const action = targetedAction;
 
     cancelPlacement();
-    action(Math.round(world.x * FIXED), Math.round(world.y * FIXED));
+    action(Math.round(world.x * FIXED), Math.round(world.y * FIXED), {
+      shift:start.shift,
+      buildingId:start.button === 2 ? renderer.buildingAt(p.x,p.y) ?? undefined : undefined,
+    });
     return;
   }
 
@@ -1603,25 +1630,12 @@ canvas.addEventListener("pointerup", (event) => {
     updateHud();
   } else if (start.button === 2) {
     if (renderer.selectedAircraft.size) {
-      const ids =
-        snapshot.expansion?.aircraft
-          .filter(
-            (a) =>
-              renderer.selectedAircraft.has(a.id) &&
-              a.playerId === localPlayerId &&
-              a.state === "ready",
-          )
-          .map((a) => a.id) ?? [];
-      if (ids.length) {
-        const position = renderer.world(p.x, p.y);
-        command({
-          type: "sortie",
-          playerId: localPlayerId,
-          aircraftIds: ids,
-          x: Math.round(position.x * FIXED),
-          y: Math.round(position.y * FIXED),
-        });
-      } else notify("Select ready aircraft for a sortie");
+      const position = renderer.world(p.x, p.y);
+      const order = sortieCommand(snapshot, localPlayerId,
+        Math.round(position.x * FIXED), Math.round(position.y * FIXED),
+        start.shift, renderer.selectedAircraft);
+      if (order) command(order);
+      else notify("No ready selected aircraft at an operational airfield");
       return;
     }
     if (!renderer.selected.size && !renderer.selectedShips.size) {
@@ -1874,6 +1888,9 @@ document.addEventListener("keydown", (event) => {
   event.preventDefault();
 
   switch (action.type) {
+    case "sortie":
+      empire.sortie(event.shiftKey);
+      break;
     case "recruit":
       recruit(action.kind, recruitmentControls.batch(event.shiftKey, cameraPan.enabled));
 
@@ -1927,6 +1944,7 @@ let previousFrame: number | undefined;
 let nextClientDiagnosticsAt = 0;
 function frame(now: number): void {
   const started = performance.now();
+  if (hudPending) updateHud();
   if (previousFrame !== undefined) browserDiagnostics.record("frameInterval", now - previousFrame);
   previousFrame = now;
   if (renderer.spawn) {

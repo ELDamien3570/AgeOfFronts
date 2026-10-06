@@ -1,0 +1,152 @@
+{
+  "baselineCommit": "5c778ef8065e5a1e831386bf189409d98f41e378",
+  "scope": "Preserve all gameplay features, deterministic timing, command validation, route fairness, checkpoint state and canonical snapshot values.",
+  "lateGame": {
+    "fixture": "fc910c746e756c2c28ad76ddfd20b0fdc95c4f57313ceef8ec94009dc731c15f",
+    "initial": {
+      "squads": 492,
+      "ships": 5,
+      "buildings": 619,
+      "traders": 25
+    },
+    "ticksPerRun": 400,
+    "trialsPerVersion": 3,
+    "baselineMeanMs": 24.315648583333328,
+    "candidateMeanMs": 22.299878499999988,
+    "reductionPercent": 8.290011580094182,
+    "baselineRuns": [
+      {
+        "mean": 24.732042249999996,
+        "p95": 33.615099999999074,
+        "p99": 44.07549999999992,
+        "maximum": 122.75709999999981
+      },
+      {
+        "mean": 24.20945225,
+        "p95": 31.812799999999697,
+        "p99": 43.897199999999884,
+        "maximum": 115.69529999999986
+      },
+      {
+        "mean": 24.005451249999993,
+        "p95": 33.03740000000016,
+        "p99": 39.482200000000375,
+        "maximum": 109.63059999999996
+      }
+    ],
+    "candidateRuns": [
+      {
+        "mean": 22.03833975000001,
+        "p95": 29.476299999998446,
+        "p99": 39.76630000000023,
+        "maximum": 127.86430000000018
+      },
+      {
+        "mean": 22.05720674999996,
+        "p95": 29.224500000000262,
+        "p99": 41.79950000000008,
+        "maximum": 120.88699999999994
+      },
+      {
+        "mean": 22.804088999999994,
+        "p95": 30.30699999999979,
+        "p99": 41.460299999999734,
+        "maximum": 111.59719999999993
+      }
+    ],
+    "canonicalSnapshotHash": "3b84f9bd028c60d66895a29c7f2d551a1af1b67aa2c9b0ff6a12d1f40ad36efa",
+    "checkpointHash": "266dba9ca2db8c770f1e2221f2a0dcfe2d20395707dbb9fa134e04df43731b2e",
+    "allHashesMatch": true,
+    "remainingPhaseMeanMs": {
+      "routing": 6.577216333333329,
+      "capture": 4.322944249999989,
+      "movement": 3.448850833333349
+    }
+  },
+  "massEntity": {
+    "fixture": "1500 marching squads; no AI or combat; 200 ticks; two trials per version",
+    "allHashesMatch": true,
+    "baselineMeanMs": 15.710350000000012,
+    "candidateMeanMs": 14.406067250000008,
+    "limits": "Synthetic movement workload; measured before the final route scheduler change; no active route jobs."
+  },
+  "browser": {
+    "status": "PASS",
+    "browser": "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/154.0.0.0 Safari/537.36",
+    "scene": "1500 stationary squads, 192x128 all land; no AI, sockets or simulated load",
+    "visibleLabels": "Browser verification",
+    "sampledFrames": 150,
+    "drawn": 92,
+    "admittedAt60Hz": 60,
+    "frameTextMeasurements": 0,
+    "legacyStructuredClone": {
+      "mean": 2.096666666636399,
+      "p95": 2.6999999997206032,
+      "maximum": 6.7999999998137355
+    },
+    "packedEncode": {
+      "mean": 0.8566666666651145,
+      "p95": 1.599999999627471,
+      "maximum": 3.8999999999068677
+    },
+    "packedTransfer": {
+      "mean": 0.26250000005044666,
+      "p95": 0.5,
+      "maximum": 0.900000000372529
+    },
+    "packedDecode": {
+      "mean": 1.4491666666426075,
+      "p95": 2.7999999998137355,
+      "maximum": 8.5
+    },
+    "frameDraw": {
+      "mean": 1.9336956521880853,
+      "p95": 3.7999999998137355,
+      "maximum": 40.799999999813735
+    },
+    "drawInterval": {
+      "mean": 26.5010989010989,
+      "p95": 20.100000000000364,
+      "maximum": 710.4999999999999
+    },
+    "limitations": "Synthetic browser checks and local synchronous clone/transfer timings; no DevTools allocation trace, real worker round-trip timing, or sustained multiplayer 60FPS qualification."
+  },
+  "gameplaySmoke": {
+    "checks": [
+      "Training Square loaded",
+      "three squads selected: 3000 troops",
+      "pause text changed to Resume then back to Pause"
+    ],
+    "errors": [],
+    "limitations": "Short local gameplay smoke test; recruitment was unavailable without a barracks and not exercised."
+  },
+  "planCorrections": [
+    "Main movement grid has three phase refreshes; held grid is separate. Preserve fresh boarding and post-movement query geometry.",
+    "Use Float64 and tick ordinal scratch to preserve JS precision and avoid lifetime-ID sized arrays.",
+    "Exact numeric cache facts avoid hash collisions.",
+    "Quotes are already functions in many cases; budgets, leases and admission own gameplay spending, control and fairness rules and remain.",
+    "Entity deltas already exist; copied packet-owned buffers preserve worker transfer ownership.",
+    "Players, expansion metadata and string tables still use structured cloning."
+  ],
+  "limitations": [
+    "Local x64 evidence, not release or sustained multiplayer performance qualification.",
+    "No Chrome DevTools allocation trace or object allocation rate measurement. CPU profile includes setup and still records GC.",
+    "Plan targets of 3.5x, sub-10ms ticks, flat heap and sustained 60FPS are not established.",
+    "Packed encode and decode still allocate; lower synchronous transfer cost alone is not a whole-pipeline speedup.",
+    "Production build retains existing large-chunk warning."
+  ],
+  "validation": {
+    "typecheck": "node node_modules/typescript/bin/tsc --noEmit: passed",
+    "build": "Skirmish production Vite build: passed",
+    "diffCheck": "git diff --check: passed",
+    "browserCanonicalProjection": "P14 projection PASS",
+    "tests": {
+      "passed": 1308,
+      "failed": 0,
+      "pending": 0,
+      "files": 194,
+      "success": true,
+      "command": "node node_modules/vitest/vitest.mjs run --config vite.skirmish.config.ts --maxWorkers=2"
+    }
+  }
+}

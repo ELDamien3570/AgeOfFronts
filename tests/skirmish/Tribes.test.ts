@@ -1,4 +1,6 @@
+import { claimBuildingFootprint } from "./BuildingFixtures";
 import { startingEconomy } from "../../src/skirmish/content/StartingEconomy";
+import { startingCamp } from "../../src/skirmish/domain/StartingCamp";
 import { describe, expect, it } from "vitest";
 import { GameMapImpl } from "../../src/core/game/GameMap";
 import { squadCap, tribeCountFor } from "../../src/skirmish/FactionRules";
@@ -162,9 +164,14 @@ describe("minor tribes", () => {
 
     const ageGame = match(1, false, true, 240, undefined, "ages-v1");
     const ageTribe = ageGame.players.find((p) => p.kind === "tribe")!;
-    const ageCamp = ageGame.buildings.find((b) => b.playerId === ageTribe.id)!;
     expect(ageTribe.reserves).toBe(2000);
     expect(ageTribe.gold).toBe(startingEconomy("StoneAge", true).gold);
+    expect(ageGame.buildings.find(b => b.playerId === ageTribe.id)?.type).toBe("city");
+    const site = startingCamp(ageGame.map, ageGame.paths, ageTribe.base, 6)!;
+    expect(ageGame.applyCommand({type: "build", playerId: ageTribe.id, buildingType: "barracks", tile: site.barracks})).toBeNull();
+    const ageCamp = ageGame.buildings.find(b => b.playerId === ageTribe.id && b.type === "barracks")!;
+    ageGame.updateBuilding(ageCamp.id, {remainingTicks: 0});
+    const fundedGold = ageTribe.gold;
     expect(
       ageGame.applyCommand({
         type: "recruit",
@@ -173,7 +180,7 @@ describe("minor tribes", () => {
       }),
     ).toBeNull();
     expect(ageTribe.reserves).toBe(1000);
-    expect(ageTribe.gold).toBe(startingEconomy("StoneAge", true).gold - 100);
+    expect(ageTribe.gold).toBe(fundedGold - 100);
     expect(
       ageGame.applyCommand({
         type: "recruit",
@@ -182,7 +189,7 @@ describe("minor tribes", () => {
       }),
     ).toBeNull();
     expect(ageTribe.reserves).toBe(0);
-    expect(ageTribe.gold).toBe(startingEconomy("StoneAge", true).gold - 200);
+    expect(ageTribe.gold).toBe(fundedGold - 200);
   });
 
   it("allows tribes to build 1 city and 1 extra barracks and rejects additional or invalid buildings", () => {
@@ -193,7 +200,8 @@ describe("minor tribes", () => {
       owner === tribe.id && game.map.euclideanDistSquared(tile, tribe.base) >= 9 ? [tile] : []
     );
     expect(owned.length).toBeGreaterThan(0);
-    const cityTile = owned[0];
+    const cityTile = game.map.ref(game.map.x(tribe.base)+6,game.map.y(tribe.base));
+    claimBuildingFootprint(game,cityTile,"city",tribe.id);
     expect(
       game.applyCommand({
         type: "build",
@@ -202,9 +210,8 @@ describe("minor tribes", () => {
         tile: cityTile,
       }),
     ).toBeNull();
-    const nextTile = owned.find(
-      (t) => game.map.euclideanDistSquared(t, cityTile) >= 9 && game.map.euclideanDistSquared(t, tribe.base) >= 9
-    )!;
+    const nextTile = game.map.ref(game.map.x(tribe.base)-6,game.map.y(tribe.base));
+    claimBuildingFootprint(game,nextTile,"barracks",tribe.id);
     expect(
       game.applyCommand({
         type: "build",

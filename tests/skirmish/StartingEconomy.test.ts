@@ -49,21 +49,22 @@ describe("age-scaled opening resources and tribes", () => {
     expect(units.every(s => s.definitionId === defaultUnit("infantry", age).id)).toBe(true);
     expect(m.buildings.find(b => b.playerId === tribe.id)!.age).toBe(age);
     for (const tech of TECHNOLOGIES.filter(t => AGES.indexOf(t.age) < AGES.indexOf(age))) expect(state.completed).toContain(tech.id);
-    expect(m.applyCommand({ type: "advance-age", playerId: tribe.id })).toContain("starting age");
+    expect(m.applyCommand({ type: "advance-age", playerId: tribe.id })).toContain(age === "Modern" ? "final age" : "75%");
     tribe.gold = 1e6;
     const research = TECHNOLOGIES.find(t => t.age === age && !state.completed.includes(t.id) && t.prerequisites.every(id => state.completed.includes(id)))!;
     expect(m.applyCommand({ type: "research", playerId: tribe.id, technologyId: research.id })).toBeNull();
-    const wrong = TECHNOLOGIES.find(t => t.age !== age)!;
-    expect(m.applyCommand({ type: "research", playerId: tribe.id, technologyId: wrong.id })).toContain("starting age");
+    const wrong = TECHNOLOGIES.find(t => age === "Modern" ? t.age !== age : AGES.indexOf(t.age) > AGES.indexOf(age))!;
+    expect(m.applyCommand({ type: "research", playerId: tribe.id, technologyId: wrong.id })).toContain(age === "Modern" ? "already completed" : "Advance to this age first");
   });
   it("enforces one economic and two military structures and rejects types unavailable in the starting age", () => {
     const { m, e, tribe } = fixture("BronzeAge");
     e.progression.states[tribe.id].completed = TECHNOLOGIES.map(t => t.id);
     tribe.gold = 1e6; m.owners.fill(tribe.id); e.supply.replaceDeposits([]);
     const build = (type: BuildingType, x: number) => m.applyCommand({ type: "build", playerId: tribe.id, buildingType: type, tile: m.map.ref(x, 40), age: "BronzeAge" });
-    expect(build("city", 10)).toBeNull(); expect(build("city", 20)).toContain("only build 1");
-    expect(build("barracks", 30)).toBeNull(); expect(build("barracks", 40)).toContain("only build 2");
-    expect(build("airstrip", 50)).toContain("starting age");
+    expect(build("city", 10)).toContain("only build 1");
+    expect(build("barracks", 30)).toBeNull(); expect(build("barracks", 40)).toBeNull();
+    expect(build("barracks", 50)).toContain("only build 2");
+    expect(build("airstrip", 50)).toContain("current age");
     expect(tribeBuildingLimit("port", "BronzeAge")).toBe(1);
     expect(tribeBuildingLimit("tower", "BronzeAge")).toBe(2);
   });

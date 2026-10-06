@@ -53,10 +53,10 @@ function shipment() {
   building(m, "city", 20);
   building(m, "city", 11, 2);
   e.progression.states[1].completed.push("stoneage-goods-handling");
-  e.supply.goods.set(factory.id, 20);
+  e.supply.goods.set(factory.id, 25);
   tradeStep(m, 22);
   const actor = e.trade.actors[0];
-  expect(actor.cargo).toBe(20);
+  expect(actor.cargo).toBe(25);
   return { m, e, factory, actor };
 }
 describe("authoritative match metrics", () => {
@@ -131,30 +131,31 @@ describe("authoritative match metrics", () => {
     const { m, e, actor } = shipment(),
       captor = m.squads.find((s) => s.playerId === 2)!;
     const gold = m.players[1].gold;
+    expect(e.diplomacy.action(m.players[1],m.players[0],"declare",m.tick)).toBeNull();
     m.updateSquad(captor.id, { x: actor.x });
     m.updateSquad(captor.id, { y: actor.y });
     actor.waitTicks = 0;
     e.progression.states[1].age = "Modern";
     tradeStep(m);
-    expect(e.trade.capturedValue[2]).toBe(200);
-    expect(e.trade.lostValue[1]).toBe(200);
+    expect(e.trade.capturedValue[2]).toBe(500);
+    expect(e.trade.lostValue[1]).toBe(500);
     expect(m.players[1].gold).toBe(gold);
     tradeStep(m, 10);
-    expect(e.trade.capturedValue[2]).toBe(200);
+    expect(e.trade.capturedValue[2]).toBe(500);
     m.updateSquad(captor.id, { x: 85 * FIXED });
     const recaptor = m.squads.find((s) => s.playerId === 1)!;
     m.updateSquad(recaptor.id, { x: actor.x });
     m.updateSquad(recaptor.id, { y: actor.y });
     actor.waitTicks = 0;
     tradeStep(m);
-    expect(e.trade.capturedValue[1]).toBe(200);
-    expect(e.trade.lostValue[2]).toBe(200);
+    expect(e.trade.capturedValue[1]).toBe(500);
+    expect(e.trade.lostValue[2]).toBe(500);
   });
   it("records discarded cargo once and preserves shipment conservation", () => {
     const { m, e, actor } = shipment();
     m.players[0].eliminated = true;
     tradeStep(m, 2);
-    expect(e.trade.lostValue[1]).toBe(200);
+    expect(e.trade.lostValue[1]).toBe(500);
     expect(actor.cargo).toBe(0);
     expect(actor.loaded).toBe(actor.delivered + actor.returned + actor.lost);
     expect(e.trade.capturedValue[2] ?? 0).toBe(0);
@@ -166,9 +167,9 @@ describe("authoritative match metrics", () => {
     actor.path = [];
     actor.waitTicks = 0;
     tradeStep(m);
-    expect(actor.returned).toBe(20);
+    expect(actor.returned).toBe(25);
     expect(e.trade.lostValue[1] ?? 0).toBe(0);
-    e.supply.goods.set(factory.id, 20);
+    e.supply.goods.set(factory.id, 25);
     tradeStep(m, 22);
     for (let i = 0; i < 1000 && !actor.delivered; i++) tradeStep(m);
     expect(actor.delivered).toBeGreaterThan(0);
@@ -177,6 +178,7 @@ describe("authoritative match metrics", () => {
   it("preserves totals through checkpoints and snapshot encoding for the inspected player", () => {
     const { m, e, actor } = shipment(),
       captor = m.squads.find((s) => s.playerId === 2)!;
+    expect(e.diplomacy.action(m.players[1],m.players[0],"declare",m.tick)).toBeNull();
     m.updateSquad(captor.id, { x: actor.x });
     m.updateSquad(captor.id, { y: actor.y });
     actor.waitTicks = 0;
@@ -195,12 +197,12 @@ describe("authoritative match metrics", () => {
     expect(metrics).toMatchObject({
       kills: 42,
       deaths: 0,
-      tradeCaptured: 200,
+      tradeCaptured: 500,
       tradeLost: 0,
     });
     expect(new MatchMetricsViewModel(snapshot, 1)).toMatchObject({
       deaths: 42,
-      tradeLost: 200,
+      tradeLost: 500,
     });
     delete snapshot.players[1].kills;
     delete snapshot.expansion!.tradeCapturedValue;

@@ -1,0 +1,98 @@
+{
+  "status": "implementation-in-progress-not-release-qualified",
+  "branch": "1.2.1-Continued-Optimization",
+  "baseline": "6409654",
+  "runtimeId": "6179a437597fa925cae564f068da93ee99d43cc879298dc8f5ff6a56a76aaa35",
+  "generatedAtUtc": "2026-10-04T20:17:54.6733004Z",
+  "checks": [
+    {
+      "exitCode": 0,
+      "name": "full-skirmish",
+      "tests": 1304,
+      "files": 193,
+      "seconds": 274.81,
+      "command": "node node_modules/vitest/vitest.mjs run --config vite.skirmish.config.ts --maxWorkers=1"
+    },
+    {
+      "name": "typescript",
+      "exitCode": 0,
+      "command": "node node_modules/typescript/bin/tsc --noEmit"
+    },
+    {
+      "name": "build",
+      "exitCode": 0,
+      "command": "node node_modules/vite/bin/vite.js build --config vite.skirmish.config.ts"
+    },
+    {
+      "name": "eslint-reference-comparison",
+      "legacyErrors": 4,
+      "exitCode": 0,
+      "introducedErrors": 0
+    },
+    {
+      "name": "scoped-oxlint",
+      "legacyErrors": 3,
+      "exitCode": 1
+    },
+    {
+      "exitCode": 0,
+      "name": "diff-whitespace"
+    }
+  ],
+  "oracleAccessed": false,
+  "deployed": false,
+  "pushed": false,
+  "paidServicesUsed": false,
+  "changedSourceHashes": {
+    "src/skirmish/client/CanonicalStateStream.ts": "75361aae673b0c7aacfcc52fc90dc23bf7a79de31c61629d50bab3a6ed02eec8",
+    "src/skirmish/CommandApplications.ts": "74225a5ff4680b0b3f31bd748361daa0524d02f9ad6cbff86f679899aac9c72f",
+    "src/skirmish/domain/Battle.ts": "3d0ee49a51c15af5837be6bf1728fbe674fac4046b6d9455f4e36d3fa4abc5fe",
+    "src/skirmish/domain/Definitions.ts": "78df8fa1e19af555dc5e43eaa463356a5fadca35c719020c9b34c586b14e8d7d",
+    "src/skirmish/domain/Expansion.ts": "9cae3e9f54610658c18a432ed3f742b5e5d1d7b5d031adf7b600d3094e448cbd",
+    "src/skirmish/domain/Fortifications.ts": "86c25ab5bc98fc8fc2ab998e23c52663354ec817028806c33a669c7bea4fd6a5",
+    "src/skirmish/domain/StructureAttackPreparation.ts": "ce063f6f3c3308eab97c3d268fca204108a25071fa32c8de79556aaf9498a9c0",
+    "src/skirmish/domain/Trade.ts": "6efacafc93c52f8643e8ec41be3d1c9bc97fe609aa2f70f8a650aac48a762f95",
+    "src/skirmish/EntityChangeJournal.ts": "d195ea90426b83f9ce0d3c8a63c0827567ef4c473379fa2b4fd65f781a9c0dac",
+    "src/skirmish/LatestChangeIndex.ts": "4d3a8bda50f72fd4b9a972e4f144f51f8e0c2b919923854f72ce2d28a3a50402",
+    "src/skirmish/MovementAdmission.ts": "0935fd393e2ea26065df65cfe4b3c31ac2e0c6e346fdbe78139283f64f4eb1ce",
+    "src/skirmish/multiplayer/application/LiveMatch.ts": "01cb5ccb49b01496356e07e450aa87cf839340f260734404849bdf22a983f8d1",
+    "src/skirmish/multiplayer/infrastructure/ReservedMatchWorker.ts": "dcddf6aaa9ad4486054ecc520ba6eb5b077ab95cd8fc17d8c1d7ce54a84d5bfc",
+    "src/skirmish/multiplayer/infrastructure/RuntimeBuild.ts": "257c73cd5b0c6f1d20a15cdf4ff7cc114bbfc8aacfcc2b5b78263a5023134ece",
+    "src/skirmish/multiplayer/infrastructure/serverMatchWorker.ts": "3111dd8f29326449e6031bf50ef164e19e7bf7723bf2be076eaa66d80a310eca",
+    "src/skirmish/PhaseSpatialViews.ts": "e0ea45471e614930bed0adf8470059a6d6bd32c56933a4f478a715eb32b3daf1",
+    "src/skirmish/Protocol.ts": "55b8705407129346c911482ac95e2ff847357c20811c59a261be3bb24ad2fc94",
+    "src/skirmish/ReplicatedEntities.ts": "458ed3732441c2754591d42af109e6c8c0d260857e198132644232c1d5a85a3a",
+    "src/skirmish/RuntimeDiagnostics.ts": "b45462945cf7a5dc9ddc0e65bc09465f54bfb2a31b01604c4dd659b7a5d7984d",
+    "src/skirmish/Simulation.ts": "862931e6258df618735a2fb4355c6ecf993b8378c2ff8177de44c58a0ab7ee25",
+    "src/skirmish/SnapshotCodec.ts": "09318b3241cddc1cfd5d1e1c2297051d3deb85cd29abfb5f5f64c092dea99bb1",
+    "src/skirmish/TileChangeJournal.ts": "76dc088f2e5072755a97870a6650ea08b2d1f843bb9580ca3d359fdd5a8a2066",
+    "src/skirmish/UnitIndex.ts": "36a0968f0bf20770311fc980a716595ef4ae53b538ad070d02062608fd6d00aa",
+    "tests/skirmish/Ages.test.ts": "a8a27149a8b9acf28ee61491fd4a62129112c8520e8008399089f953282cba42",
+    "tests/skirmish/BarrierReplication.test.ts": "104d77d3cf648054ead4cf1f1274cee19e729da654e287d57c2ecacb5c395b7c",
+    "tests/skirmish/captureExperiment.ts": "2281ca7e16ac8b9df8e99332100ba3d3df764718e0e40e7af28a0152e74e880a",
+    "tests/skirmish/CaptureQuery.test.ts": "75ad81beb87c355a049246f9c8e53b7665b35e33833cd2b87cdbeb15f016a3a4",
+    "tests/skirmish/ChangeJournalReference.test.ts": "c1615433b6b3fd302cd3680b469ff420300283f0fd515a5b7ecba798c72a24a3",
+    "tests/skirmish/FortificationIndex.test.ts": "8c486d59189661f02379032da15e41217c21d00f79175216f7f717e6f8b5e1e2",
+    "tests/skirmish/optimizationBenchmark.ts": "34df6d204482ab575a4b5f4b5db38c75e9a576368aa437b4fc85afdb5c1bdb94",
+    "tests/skirmish/optimizationLint.ts": "964daa42d079ec4a1bf0e0a8e545a2fe65d06dd0457ca3694ab291e52af0aab0",
+    "tests/skirmish/optimizationReplay.ts": "16058f6f9f08b352810df488b1752a784abb1b5ff63a53991517a7c90ea5bfea",
+    "tests/skirmish/PhaseSpatialViews.test.ts": "73f92f6e3784a2ecb6ccac3bf80e007f48c2eb2ac7cf59e0249680b1153f9312",
+    "tests/skirmish/ProgressionPassOne.test.ts": "0033b03f3943266fbc27f70480d8b39868af3c4a478cba2a9fe9334925ef7961",
+    "tests/skirmish/ProjectileCollision.test.ts": "58b2803538bdeb2abeb6ec2f2861d0f5b283c069dc186fcf4def16b1ef8c67b0",
+    "tests/skirmish/RemainingPlans.test.ts": "7772dd86dc82a2f13d6ac6bee39517f2967c1e2cb066fd468de560516138827e",
+    "tests/skirmish/RuntimeBuild.test.ts": "352e7e90b7492cf1753335992ec1dddad53337d70e8f0e16ae369dd2444a3d3f",
+    "tests/skirmish/RuntimeDiagnostics.test.ts": "96f92eb870a4f0bc45903b8087281c59b6ed37fded8442438d2b627bdbdc5e31",
+    "tests/skirmish/SiegeBehavior.test.ts": "26f7128d30c87742d4a587f44b6d37943fc8956ec9130178a3293ce191d90789",
+    "tests/skirmish/SimulationCheckpoint.test.ts": "911266171445124c5f6793f15db458ee2f48a8996e33ad9e742069d978f4fd74",
+    "tests/skirmish/StructureAttackAdmission.test.ts": "b5f47b1f2fca3729bce1efc94bdb6d457fa149922d5046ddddb3a57b6cf0a7e0",
+    "tests/skirmish/StructurePreparationLifecycle.test.ts": "bac709630d8c9ad3037b21e5d033ce91ba2df6caae843e29e6aa95675de7e955",
+    "tests/skirmish/StructurePreparationReference.test.ts": "d56586782391903bc9ebd63f3889956a6b857b4b22381947c8a170a488d9177c",
+    "tests/skirmish/WallFortifications.test.ts": "567d321fc9728af60519d6206d1b965bfae1540dfd5826b5d94c06687929336a"
+  },
+  "limitations": [
+    "All seven plans remain incomplete; see implementation handoff",
+    "Microbenchmarks are algorithm-specific",
+    "Four identical continuation hashes; mixed tail timing outcomes",
+    "Target ARM, active humans, long soak and rendered qualification not run"
+  ]
+}

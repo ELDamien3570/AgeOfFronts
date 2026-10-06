@@ -83,6 +83,8 @@ export class RoutePlanner<T> {
   private lastPlayer = -1;
   private priorityTurn = 0;
   private readonly lastCaller = new Map<number, number>();
+  private readonly selection = new Array<Job<T> | undefined>(256 * PLANNER_CALLERS.length);
+  private readonly selectionKeys: number[] = [];
   readonly diagnostics = {
     work: 0,
     pending: 0,
@@ -295,13 +297,21 @@ export class RoutePlanner<T> {
         eligible = job => prior(job) && this.ports.priority!(job) === priority;
       }
     }
-    // Three bounded scans of <=128 jobs, with no per-quantum group allocation.
-    // Select a player first, then a command class, then its oldest queue entry.
+    // One queue scan records each cohort's first eligible entry. Selection still
+    // rotates players, then callers, then takes that cohort's original FIFO head.
+    // Scratch is dense and bounded; cohort identity is re-read for every quantum.
+    for (const key of this.selectionKeys) this.selection[key] = undefined;
+    this.selectionKeys.length = 0;
     let firstPlayer = Infinity,
       nextPlayer = Infinity;
     for (const job of this.jobs.values())
       if (eligible(job)) {
-        const { playerId } = this.cohort(job);
+        const { playerId, caller } = this.cohort(job);
+        const key = playerId * PLANNER_CALLERS.length + PLANNER_CALLERS.indexOf(caller);
+        if (!this.selection[key]) {
+          this.selection[key] = job;
+          this.selectionKeys.push(key);
+        }
         firstPlayer = Math.min(firstPlayer, playerId);
         if (playerId > this.lastPlayer)
           nextPlayer = Math.min(nextPlayer, playerId);
@@ -310,27 +320,21 @@ export class RoutePlanner<T> {
     const previous = this.lastCaller.get(player) ?? -1;
     let firstCaller = Infinity,
       nextCaller = Infinity;
-    for (const job of this.jobs.values())
-      if (eligible(job)) {
-        const { playerId, caller } = this.cohort(job);
-        if (playerId !== player) continue;
-        const index = PLANNER_CALLERS.indexOf(caller);
+    for (let index = 0; index < PLANNER_CALLERS.length; index++)
+      if (this.selection[player * PLANNER_CALLERS.length + index]) {
         firstCaller = Math.min(firstCaller, index);
         if (index > previous) nextCaller = Math.min(nextCaller, index);
       }
     const caller = Number.isFinite(nextCaller) ? nextCaller : firstCaller;
-    for (const [key, job] of this.jobs)
-      if (eligible(job)) {
-        const cohort = this.cohort(job);
-        if (
-          cohort.playerId !== player ||
-          PLANNER_CALLERS.indexOf(cohort.caller) !== caller
-        )
-          continue;
-        this.lastPlayer = player;
-        this.lastCaller.set(player, caller);
-        return [key, job];
-      }
+    const selected = this.selection[player * PLANNER_CALLERS.length + caller];
+    // Do not retain retired search workspaces through derived scheduler scratch.
+    for (const key of this.selectionKeys) this.selection[key] = undefined;
+    this.selectionKeys.length = 0;
+    if (selected) {
+      this.lastPlayer = player;
+      this.lastCaller.set(player, caller);
+      return [selected.key, selected];
+    }
     throw new Error("Planner workspace has no eligible owner");
   }
   cancel(key: string): void {

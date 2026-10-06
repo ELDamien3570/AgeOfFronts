@@ -2,6 +2,7 @@ import { availableGold, spendGold } from "./Gold";
 import type { GameMap } from "../../core/game/GameMap";
 import { producerCompatible } from "../content/Buildings";
 import { PRODUCTION_RECIPES } from "../content/Production";
+import { extractionYieldMultiplier, tradeStockPerSecond } from "../content/Economy";
 import { resourceTechnology } from "../content/Resources";
 import type { LandPaths } from "../Pathfinding";
 import type { Building, BuildingType, Player, Squad } from "../Protocol";
@@ -12,7 +13,6 @@ import type { BuildingQueries } from "../BuildingIndex";
 import type { UnitQueries } from "../UnitIndex";
 import { automaticProducer, automaticProduction } from "./AutomaticProduction";
 import {
-  AGES,
   RESOURCES,
   type Cost,
   type Deposit,
@@ -337,12 +337,12 @@ export class Supply {
         }
       }
       if (tick % 20 !== 0) continue;
-      const index = AGES.indexOf(b.age ?? "StoneAge");
+      const age = b.age ?? "StoneAge";
       if (b.type === "factory" || b.type === "port") {
         this.goodsOwners.set(b.id, player.id);
         this.goods.set(
           b.id,
-          Math.min(1000, (this.goods.get(b.id) ?? 0) + 2 * (index + 1)),
+          Math.min(1000, (this.goods.get(b.id) ?? 0) + tradeStockPerSecond(age)),
         );
       }
       if (
@@ -360,7 +360,7 @@ export class Supply {
           this.progression.has(player.id, resourceTechnology(node.resource).id)
         )
           inventory[node.resource] +=
-            node.yieldPerSecond * (1 + Math.floor(index / 2));
+            node.yieldPerSecond * extractionYieldMultiplier(age);
       }
     }
     for (const node of this.deposits) {

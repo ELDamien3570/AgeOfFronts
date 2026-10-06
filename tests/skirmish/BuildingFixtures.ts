@@ -1,3 +1,6 @@
+import { buildingGroundBounds } from "../../src/skirmish/BuildingFootprint";
+import type { Skirmish } from "../../src/skirmish/Simulation";
+import type { BuildingType } from "../../src/skirmish/Protocol";
 import type { Building, Snapshot } from "../../src/skirmish/Protocol";
 import { EntityCollection } from "../../src/skirmish/EntityCollection";
 
@@ -32,4 +35,13 @@ export function updateSnapshotBuilding(
     ...snapshot.buildings[index],
     ...structuredClone(changes),
   });
+}
+
+/** Construction fixtures must claim the occupied rectangle, not just its anchor. */
+export function claimBuildingFootprint(world: Skirmish, tile: number, type: BuildingType, owner=1): void {
+  const bounds=buildingGroundBounds(world.map,tile,type);
+  for(let y=bounds.top;y<bounds.bottom;y++) for(let x=bounds.left;x<bounds.right;x++) {
+    if (!world.map.isValidCoord(x,y)) throw new Error("Fixture building outside map");
+    (world as unknown as {changeOwner(tile:number,owner:number):void}).changeOwner(world.map.ref(x,y),owner);
+  }
 }

@@ -1,3 +1,4 @@
+import { claimBuildingFootprint } from "./BuildingFixtures";
 import { retainSquads } from "./UnitFixtures";
 import { describe, expect, it, vi } from "vitest";
 import type { GameMap } from "../../src/core/game/GameMap";
@@ -106,7 +107,8 @@ describe("shared forest ground", () => {
       player = match.players[0],
       forest = forestOf(map)!;
     expect(forest.coverAt(player.base)).toBe(0); // starting barracks
-    const tile = map.ref(map.x(player.base) + 3, map.y(player.base));
+    const tile = map.ref(map.x(player.base) + 6, map.y(player.base));
+    claimBuildingFootprint(match,tile,"city");
     expect(match.owners[tile]).toBe(1);
     expect(forest.coverAt(tile)).toBe(1);
     player.gold = 10000;

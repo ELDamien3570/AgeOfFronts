@@ -7,6 +7,7 @@ import type { MapGeography } from "./Geography";
 import type { ResourceTerrainData } from "./ResourceTerrain";
 import type {
   Age,
+  StartingAge,
   ArmyOrder,
   ChargeState,
   ExpansionSnapshot,
@@ -79,7 +80,7 @@ export type Command =
     }
   | { type: "reset-production-priorities"; playerId: number }
   | { type: "trade-pause"; playerId: number; naval: boolean; paused: boolean }
-  | { type: "trade-block"; playerId: number; otherId: number; blocked: boolean }
+  | { type: "trade-block"; playerId: number; otherId: number; blocked: boolean; naval?: boolean }
   | {
       type: "refit";
       playerId: number;
@@ -106,7 +107,7 @@ export type Command =
       type: "alliance";
       playerId: number;
       otherId: number;
-      action: "offer" | "accept" | "reject" | "renew" | "break";
+      action: "offer" | "offer-long-term" | "accept" | "reject" | "renew" | "break" | "declare" | "end-long-term";
     }
   | {
       type: "repair";
@@ -135,11 +136,13 @@ export type Command =
       playerId: number;
       launcherId: number;
       payload: "icbm" | "hydrogen" | "mirv";
+      buildingId?: number;
       x: number;
       y: number;
     }
   | { type: "upgrade-building"; playerId: number; buildingIds: number[] }
   | { type: "delete-building"; playerId: number; buildingId: number }
+  | { type: "delete-ship"; playerId: number; shipId: number }
   | {
       type: "cancel-recruitment";
       playerId: number;
@@ -328,6 +331,9 @@ export interface Ship {
   readonly lastPlanTick?: number;
   readonly patrolTile?: number | null;
   readonly patrolDwellTicks?: number;
+  readonly navalTargetId?: number;
+  readonly navalTargetKind?: "ship" | "trade";
+  readonly autonomousVoyage?: boolean;
   readonly lastCombatTick?: number;
   readonly repairPortId?: number | null;
   readonly repairState?:
@@ -399,7 +405,7 @@ export interface MatchOptions {
   ruleset?: "sandbox-v1" | "ages-v1";
   victoryMode?: "solo" | "allied";
   technologySpeed?: TechnologySpeed;
-  startingAge?: Age;
+  startingAge?: StartingAge;
 }
 
 export interface Snapshot {
@@ -433,6 +439,10 @@ export interface Snapshot {
 }
 
 export interface SnapshotPacket {
+  /** Versioned transferable presentation records; legacy object details remain readable. */
+  details?: import("./SnapshotDetails").PackedSnapshotDetails;
+  barrierChanges?: { reset: boolean; rows: NonNullable<Snapshot["expansion"]>["barriers"]; removed: Int32Array;
+    states?: readonly { id: number; health: number; remainingTicks: number }[] };
   reset: boolean;
   /** Absent in legacy packets, which carry complete squad/ship views. */
   entityMode?: "full" | "delta";
@@ -462,6 +472,8 @@ export interface SnapshotPacket {
     id: number;
     definitionId?: string;
     xp?: number;
+    deploymentTicks?: number;
+    lastAttackTick?: number;
     nextAttackTick?: number;
     planningPaused?: boolean;
     movementStatus?: MovementStatus;

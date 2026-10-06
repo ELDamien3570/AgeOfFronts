@@ -65,7 +65,7 @@ function addEquipment(
     ...unit.cost,
     items: {
       ...unit.cost.items,
-      [item]: 1,
+      [item]: unit.tags.includes("mounted") ? 2 : 1,
       ...(kind === "vehicle" ? { [equipmentItem(unit.age, "siege")]: 1 } : {}),
     },
   };

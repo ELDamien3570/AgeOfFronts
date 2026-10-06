@@ -477,8 +477,8 @@ describe("remaining strategic plans", () => {
     const f = fixture(true);
     f.building(f.player.id, "factory", 60, 16);
     f.game.restore(f.game.checkpoint());
-    const tile = [60, 59, 61, 58, 62, 57, 63]
-      .map((x) => f.map.ref(x, 19))
+    const tile = [60, 59, 61, 58, 62, 57, 63, 56, 64, 55, 65]
+      .map((x) => f.map.ref(x, 18))
       .find((t) => !f.game.buildingSite(f.player.id, "port", t))!;
     expect(tile).toBeDefined();
     const controller = f.e.economy.coasts;
@@ -562,7 +562,7 @@ describe("remaining strategic plans", () => {
       remainingTicks: 0,
     };
     const saved = f.e.fortifications.checkpoint();
-    saved.barriers.push(wall);
+    saved.barriers = [...saved.barriers, wall];
     f.e.fortifications.restore(saved);
     expect(
       f.game.applyCommand({
@@ -707,6 +707,9 @@ describe("supported land breach and recovery ownership", () => {
     );
     const find = vi.spyOn(f.game.paths, "find");
     planner.step(8);
+    for (let i = 0; i < 1000 && f.game.movementAdmission.preparationCount; i++)
+      f.game.movementAdmission.step(f.game.tick, 128);
+    expect(f.game.movementAdmission.preparationCount).toBe(0);
     expect(f.game.squad(own[2].id)!.structureTarget?.buildingId).toBe(tower.id);
     expect(find).not.toHaveBeenCalled();
     f.game.removeSquad(own[0].id);

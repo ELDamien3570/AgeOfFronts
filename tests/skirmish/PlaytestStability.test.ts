@@ -92,7 +92,7 @@ describe("playtest stability regressions", () => {
         expect(moved.has(ai.id), "AI " + ai.id + " displaced").toBe(true);
     },
   );
-  it.each(["tower", "trench", "gun-nest", "missile-defence"] as const)(
+  it.each(["tower", "trench", "gun-nest", "missile-defence", "factory", "blacksmith", "barracks"] as const)(
     "defeats an AI whose sole surviving building is %s",
     (type) => {
       const { game } = fixture(),
@@ -113,7 +113,7 @@ describe("playtest stability regressions", () => {
       expect(ai.eliminated).toBe(true);
     },
   );
-  it.each(["city", "factory", "blacksmith", "barracks"] as const)(
+  it.each(["city"] as const)(
     "keeps an AI alive with a completed %s",
     (type) => {
       const { game } = fixture(),
@@ -134,7 +134,7 @@ describe("playtest stability regressions", () => {
       expect(ai.eliminated).toBe(false);
     },
   );
-  it("preserves the human survival rule", () => {
+  it("applies the same city-or-ground-squad survival rule to humans", () => {
     const { game } = fixture(),
       human = game.players.find((p) => !p.ai)!;
     for (const s of [...game.squads])
@@ -150,7 +150,7 @@ describe("playtest stability regressions", () => {
       health: 1000,
     });
     game.step();
-    expect(human.eliminated).toBe(false);
+    expect(human.eliminated).toBe(true);
   });
   it("does not erase a fully scanned grid on repeated full snapshots or a distant build", () => {
     const { game, map } = fixture();
@@ -286,7 +286,10 @@ describe("playtest stability regressions", () => {
     for (const squad of [...game.squads])
       if (squad.playerId !== ai.id) game.removeSquad(squad.id);
     e.progression.states[ai.id].completed = TECHNOLOGIES.filter(
-      (t) => t.age === "StoneAge" && t.id !== "stoneage-field-engineering",
+      // Keep advancement unavailable: a viable age-up now intentionally wins
+      // over completing an optional third tree.
+      (t) => t.age === "StoneAge" && t.id !== "stoneage-field-engineering" &&
+        !(t.tree === "naval" && t.slot === 4),
     ).map((t) => t.id);
     for (const b of game.buildings)
       if (b.playerId === ai.id)

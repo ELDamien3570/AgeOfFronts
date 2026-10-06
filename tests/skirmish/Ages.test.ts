@@ -73,6 +73,20 @@ const step = (m: Skirmish, n: number) => {
   for (let i = 0; i < n; i++) m.step();
 };
 describe("age progression and authoritative definitions", () => {
+  it("requires completed Fortified Settlements before researching Armies", () => {
+    const m = make(),
+      p = m.players[0],
+      s = m.expansion!.progression.states[p.id];
+    s.age = "BronzeAge";
+    s.completed.push("bronzeage-bronze-equipment", "bronzeage-bowcraft", "bronzeage-chariot-warfare");
+    p.gold = 1000000;
+    const command = { type: "research" as const, playerId: p.id, technologyId: "bronzeage-armies" };
+    expect(m.applyCommand(command)).toBe("Complete the prerequisites first");
+    expect(s.research.warfare).toBeUndefined();
+    s.completed.push("bronzeage-fortified-settlements");
+    expect(m.applyCommand(command)).toBeNull();
+    expect(s.research.warfare?.technologyId).toBe("bronzeage-armies");
+  });
   it("validates 85 named nodes, including the fifth Bronze Warfare technology", () => {
     expect(() => validateTechnologies()).not.toThrow();
     expect(TECHNOLOGIES).toHaveLength(85);
@@ -82,10 +96,11 @@ describe("age progression and authoritative definitions", () => {
           TECHNOLOGIES.filter((t) => t.age === age && t.tree === tree),
         ).toHaveLength(age === "BronzeAge" && tree === "warfare" ? 5 : 4);
   });
-  it("opens with exactly three flint infantry, three branch grants and no regular buildings", () => {
+  it("opens with three flint infantry, three branch grants and a completed city per faction", () => {
     const m = make();
-    expect(m.buildings).toHaveLength(0);
+    expect(m.buildings).toHaveLength(m.players.length);
     for (const p of m.players) {
+      expect(m.buildings.find(b => b.playerId === p.id)).toMatchObject({type: "city", remainingTicks: 0});
       expect(m.squads.filter((s) => s.playerId === p.id)).toHaveLength(3);
       expect(m.expansion!.progression.states[p.id].completed).toHaveLength(3);
       expect(
@@ -388,7 +403,7 @@ describe("bonuses, promotions, volleys and finite impacts", () => {
     expect(t.troops).toBe(troops);
     expect(s.xp).toBe(xp);
   });
-  it("MIRV splits into exactly four warheads without a parent impact", () => {
+  it("MIRV splits into exactly eight warheads without a parent impact", () => {
     const m = make();
     complete(m);
     const s = m.squads[0],
@@ -408,13 +423,13 @@ describe("bonuses, promotions, volleys and finite impacts", () => {
       24000,
       "mirv",
       720,
-      4,
+      8,
     );
     m.tick = 360;
     e.battle.advanceProjectiles();
     expect(
       e.battle.projectiles.filter((p) => p.kind === "warhead"),
-    ).toHaveLength(4);
+    ).toHaveLength(8);
     expect(e.battle.projectiles.find((p) => p.kind === "mirv")!.impacted).toBe(
       true,
     );
@@ -527,7 +542,7 @@ describe("allied protection and fortifications", () => {
     });
     expect(e.fortifications.blocked(tile, 2)).toBe(true);
     expect(e.fortifications.blocked(a.tile, 2)).toBe(true);
-    w.health = 0;
+    e.fortifications.updateBarrier(w.id, { health: 0 });
     expect(e.fortifications.blocked(tile, 2)).toBe(false);
   });
   it("destruction of the final building awards all remnant land to the finishing faction", () => {
@@ -536,6 +551,7 @@ describe("allied protection and fortifications", () => {
     const p = m.players[1],
       s = m.squads[0];
     retainSquads(m, [s]);
+    for (const city of m.buildings.filter(b => b.playerId === p.id)) m.removeBuilding(city.id);
     const b = building(m, "city", p.base, 2);
     m.updateBuilding((b).id, { health: 1 });
     pos(m, s, (p.base % 96) - 1, Math.floor(p.base / 96));

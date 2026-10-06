@@ -8,7 +8,7 @@ import {
 import type { MatchOptions, SpawnState } from "../Protocol";
 import type { LobbySettings } from "../lobby/LobbyDirectory";
 import { LOBBY_MAP_IDS } from "../lobby/LobbyRules";
-import { AGES } from "../domain/Definitions";
+import { STARTING_AGES } from "../domain/Definitions";
 import type { EncodedState } from "./StateCodec";
 import type { CoordinatorState } from "./domain/RoomCoordinator";
 export interface LiveMatchSummary {
@@ -55,7 +55,7 @@ const settings = z
     aiCount: z.number().int().min(0).max(MAX_AI_OPPONENTS),
     tribeCount: z.number().int().min(0).max(MAX_TRIBES),
     technologySpeed: z.union([z.literal(1), z.literal(2), z.literal(3)]),
-    startingAge: z.enum(AGES).optional(),
+    startingAge: z.enum(STARTING_AGES).optional(),
     resourceDensity: z.union([
       z.literal(1),
       z.literal(2),
@@ -122,7 +122,7 @@ export const clientMessageSchema = z.discriminatedUnion("type", [
     })
     .strict(),
   z
-    .object({ type: z.literal("authenticate"), token: z.string().length(43), matchId: z.string().min(1).max(128).optional() })
+    .object({ type: z.literal("authenticate"), token: z.string().length(43), matchId: z.string().min(1).max(128).optional(), snapshotTransport: z.literal("binary-v1").optional() })
     .strict(),
   z.object({ type: z.literal("profile"), requestId, profile }).strict(),
   z
@@ -169,7 +169,7 @@ export type ServerMessage =
     }
   | { type: "match-status"; matchId: string; message: string; paused: boolean }
   | { type: "match-sync-complete"; matchId: string; syncId: string }
-  | { type: "match-ended"; matchId: string; message: string }
+  | { type: "match-ended"; matchId: string; message: string; completed?: boolean }
   | {
       type: "directory";
       guestId: string;

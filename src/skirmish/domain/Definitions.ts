@@ -19,6 +19,15 @@ export const AGE_NAMES = [
   "Early Modern",
   "Modern",
 ];
+/** Starting presets do not add tiers to the gameplay content catalogue. */
+export const STARTING_AGES = [...AGES, "PostModern"] as const;
+export type StartingAge = (typeof STARTING_AGES)[number];
+export function startingGameplayAge(start: StartingAge): Age {
+  return start === "PostModern" ? "Modern" : start;
+}
+export function startingAgeName(start: StartingAge): string {
+  return start === "PostModern" ? "Post-Modern" : AGE_NAMES[AGES.indexOf(start)];
+}
 export const TREES = ["naval", "warfare", "economic"] as const;
 export type Tree = (typeof TREES)[number];
 export type TechnologySpeed = 1 | 2 | 3;
@@ -207,6 +216,7 @@ export interface AllianceOffer {
   proposer: number;
   recipient: number;
   expiresTick: number;
+  longTerm?: boolean;
 }
 export interface Alliance {
   id: number;
@@ -214,12 +224,15 @@ export interface Alliance {
   b: number;
   expiresTick: number;
   renewal: number[];
+  longTerm?: boolean;
+  ending?: boolean;
 }
 export interface DiplomacyState {
   offers: AllianceOffer[];
   alliances: Alliance[];
   betrayal: Record<number, number>;
   cooldowns: Record<string, number>;
+  wars?: { a: number; b: number }[];
 }
 export interface TradeActor {
   id: number;
@@ -241,6 +254,13 @@ export interface TradeActor {
   shipmentId: number;
   stops: number[];
   visited: number[];
+  visitedTiles?: number[];
+  tripStartedTick?: number;
+  tripGold?: number;
+  supplyWaitTicks?: number;
+  supplyWaitStartedTick?: number;
+  tripSupplyTicks?: number;
+  routeOriginOwner?: number;
   destination: number | null;
   state: "loading" | "outbound" | "returning" | "prize" | "waiting";
   path: number[];
@@ -249,15 +269,16 @@ export interface TradeActor {
   quoteAllies: number[];
 }
 export interface Barrier {
-  id: number;
-  playerId: number;
-  age: Age;
-  a: number;
-  b: number;
-  tiles: number[];
-  health: number;
-  maxHealth: number;
-  remainingTicks: number;
+  readonly kind?: "trench";
+  readonly id: number;
+  readonly playerId: number;
+  readonly age: Age;
+  readonly a: number;
+  readonly b: number;
+  readonly tiles: readonly number[];
+  readonly health: number;
+  readonly maxHealth: number;
+  readonly remainingTicks: number;
 }
 export type CombatSourceKind = "squad" | "ship" | "building" | "aircraft";
 export interface Projectile {
@@ -285,8 +306,10 @@ export interface Projectile {
   targets?: readonly TargetTag[];
   kind: "shell" | "bomb" | "icbm" | "mirv" | "warhead";
   warheads: number;
+  targetBuildingId?: number;
   impacted: boolean;
   impactAt?: number;
+  interception?: { defenseId: number; playerId: number; tick: number; impactTick: number; fromX: number; fromY: number; toX: number; toY: number };
 }
 export interface Aircraft {
   id: number;
@@ -302,6 +325,10 @@ export interface Aircraft {
   fuelTicks: number;
 }
 export interface ExpansionSnapshot {
+  tradeSites?: { kind?: "city"; playerId: number; tile: number; naval: boolean; cargo: number;
+    maxCargo: number; shipmentCapacity: number; receiving?: { value: number; max: number } }[];
+  tradeReceipts?: TradeReceipt[];
+  fallout?: Uint32Array;
   startingAge?: Age;
   armies: Army[];
   rulesetId: string;
@@ -322,8 +349,11 @@ export interface ExpansionSnapshot {
   depositGeometryRevision?: number;
   depositOwnershipRevision?: number;
   diplomacy: DiplomacyState;
-  traders: Omit<TradeActor, "path" | "nextPathIndex">[];
-  barriers: Barrier[];
+  /** Undirected active AI offensive pairs; presentation only, separate from wars. */
+  activeOffensives?: { a: number; b: number }[];
+  pairRelations?: import("./PairRelations").PairRelationRow[];
+  traders: (Omit<TradeActor, "path" | "nextPathIndex"> & { waitingForCargo?: boolean })[];
+  barriers: readonly Barrier[];
   projectiles: Projectile[];
   aircraft: Aircraft[];
   victoryMode: "solo" | "allied";
@@ -331,7 +361,8 @@ export interface ExpansionSnapshot {
   deliveredGold: Record<number, number>;
   tradeCapturedValue?: Record<number, number>;
   tradeLostValue?: Record<number, number>;
-  tradeControls?: Record<number, { landPaused: boolean; seaPaused: boolean; blocked: number[] }>;
+  tradeControls?: Record<number, { landPaused: boolean; seaPaused: boolean; blocked: number[]; landBlocked?: number[]; seaBlocked?: number[] }>;
+  tradeEnemies?: Record<number, number[]>;
 }
 export type ArmyOrder =
   | { type: "move" | "deploy" | "regroup"; tile: number }
@@ -364,6 +395,7 @@ export interface Army {
   revision: number;
   reason: string | null;
 }
+export interface TradeReceipt { id: number; tick: number; playerId: number; tile: number; gold: number }
 export interface MatchEvent {
   id: number;
   tick: number;
@@ -371,5 +403,5 @@ export interface MatchEvent {
   otherId?: number;
   kind: "age" | "conquest" | "diplomacy" | "promotion" | "war";
   age?: Age;
-  action?: "offer" | "accept" | "reject" | "renew" | "break" | "expire" | "declare" | "withdraw";
+  action?: "offer" | "offer-long-term" | "accept" | "reject" | "renew" | "break" | "end-long-term" | "expire" | "declare" | "withdraw";
 }

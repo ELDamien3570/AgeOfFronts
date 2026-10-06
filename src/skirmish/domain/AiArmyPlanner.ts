@@ -1,4 +1,5 @@
 import { flankCandidate, approachCandidate } from "./AiTacticalRoutes";
+import { AiInvasionResponse } from "./AiInvasionResponse";
 import { structureAim } from "./StructureTargeting";
 import { tilePoint } from "../SquadGeometry";
 import { UNITS } from "../content/Units";
@@ -47,6 +48,7 @@ interface ArmyObjective {
   breach?: { scan: number; start: number; barrier?: number; building?: number; cursor: number; tile?: number; shooters: number[]; since: number };
 }
 export class AiArmyPlanner {
+  readonly invasion: AiInvasionResponse;
   readonly objectives = new Map<number, ArmyObjective>();
   private cursor = 0;
   private serial = 0;
@@ -54,15 +56,17 @@ export class AiArmyPlanner {
   constructor(
     private readonly expansion: Expansion,
     private readonly economy: AiEconomicDirector,
-  ) {}
+  ) { this.invasion = new AiInvasionResponse(expansion, economy); }
   checkpoint() {
     return structuredClone({
       objectives: [...this.objectives],
       cursor: this.cursor,
       serial: this.serial,
+      invasion: this.invasion.checkpoint(),
     });
   }
   restore(saved?: ReturnType<AiArmyPlanner["checkpoint"]>): void {
+    this.invasion.restore(saved?.invasion);
     this.objectives.clear();
     this.cursor = saved?.cursor ?? 0;
     this.serial = saved?.serial ?? 0;
@@ -70,6 +74,7 @@ export class AiArmyPlanner {
       this.objectives.set(id, plan);
   }
   release(playerId: number): void {
+    this.invasion.release(playerId);
     const plan = this.objectives.get(playerId);
     if (plan) {
       this.economy.assets.release(plan.id); this.economy.routes.release(plan.id);
@@ -219,12 +224,15 @@ export class AiArmyPlanner {
       }
     }
     if (!player) return 0;
+    const defenseWork = this.invasion.step(player, budget, () => this.release(player!.id));
+    this.diagnostics.work=defenseWork;
+    if (this.invasion.blocking(player.id) || defenseWork>=budget) return defenseWork;
     let plan = this.objectives.get(player.id);
     const abandoned=armies.armies.find(a=>a.playerId===player!.id && a.id!==plan?.armyId && a.state==="holding" &&
       a.memberIds.every(id=>!this.economy.assets.held(`squad:${id}`)));
     if(abandoned) {
       world.applyCommand({type:"disband-army",playerId:player.id,armyId:abandoned.id});
-      this.diagnostics.work=1;return 1;
+      this.diagnostics.work++;return this.diagnostics.work;
     }
     if (
       plan &&
@@ -232,18 +240,18 @@ export class AiArmyPlanner {
         !armies.capacity(player.id))
     ) {
       this.release(player.id);
-      return 0;
+      return this.diagnostics.work;
     }
     const profile = personalityOf(player),
       doctrine = AI_DOCTRINES[profile.id];
     if (plan && plan.phase === "complete") {
-      if (world.tick < plan.nextThink) return 0;
+      if (world.tick < plan.nextThink) return this.diagnostics.work;
       this.release(player.id);
       plan = undefined;
     }
     if (!plan) {
       if (!armies.capacity(player.id) || world.tick < profile.raidAfterTicks)
-        return 0;
+        return this.diagnostics.work;
       const target = operations.enabled(player)
         ? operations.offensiveTarget(player.id)
         : world.players
@@ -251,7 +259,6 @@ export class AiArmyPlanner {
               (p) =>
                 p.id !== player!.id &&
                 !p.eliminated &&
-                p.kind === "regular" &&
                 world.hostile(player!.id, p.id) &&
                 world.paths.connected(player!.base, p.base),
             )
@@ -262,7 +269,7 @@ export class AiArmyPlanner {
                 a.id - b.id,
             )[0]?.id;
       const threat = operations.state(player.id)?.threats[0];
-      if (target === undefined && !threat) return 0;
+      if (target === undefined && !threat) return this.diagnostics.work;
       plan = {
         id: `land-army:${player.id}:${++this.serial}`,
         playerId: player.id,
@@ -288,7 +295,7 @@ export class AiArmyPlanner {
       };
       this.objectives.set(player.id, plan);
     }
-    if (world.tick < plan.nextThink) return 0;
+    if (world.tick < plan.nextThink) return this.diagnostics.work;
     if (plan.phase === "select") {
       const own = plan.rosterIds;
       while (plan.cursor < own.length && this.diagnostics.work < budget) {
@@ -301,8 +308,8 @@ export class AiArmyPlanner {
         .map((id) => world.squad(id)!)
         .filter((s) => s && this.eligible(s, plan!));
       const reserve = Math.max(
-          2,
-          Math.ceil((available.length * doctrine.reservePercent) / 100),
+          operations.offensiveTarget(player.id) !== undefined ? 0 : 2,
+          operations.offensiveTarget(player.id) !== undefined && available.length < profile.minimumRaidSquads ? 0 : Math.ceil((available.length * doctrine.reservePercent) / 100),
         ),
         maximum = Math.min(
           MAX_ORDER_SQUADS,
@@ -311,7 +318,7 @@ export class AiArmyPlanner {
         );
       if (
         maximum <
-        Math.min(profile.minimumRaidSquads, armies.capacity(player.id))
+        Math.min(operations.offensiveTarget(player.id) !== undefined ? 2 : profile.minimumRaidSquads, armies.capacity(player.id))
       ) {
         plan.cursor = 0;
         plan.rosterIds = world
@@ -487,7 +494,7 @@ export class AiArmyPlanner {
         while(b.scan<81 && this.diagnostics.work<Math.min(budget,8)){
           const x=world.map.x(b.start)+(b.scan%9)-4,y=world.map.y(b.start)+Math.floor(b.scan/9)-4;b.scan++;this.diagnostics.work++;
           if(x<0||y<0||x>=world.map.width()||y>=world.map.height())continue;
-          const tile=world.map.ref(x,y),barrier=forts.barriersAt(tile).find(w=>w.health>0&&world.hostile(player.id,w.playerId)&&
+          const tile=world.map.ref(x,y),barrier=forts.barriersAt(tile).find(w=>w.kind!=="trench"&&w.health>0&&world.hostile(player.id,w.playerId)&&
             (!operations.enabled(player)||operations.canTarget(player.id,w.playerId)));
           if(barrier){b.barrier=barrier.id;break;}
           const tower=world.buildingsAt(tile).find(t=>t.type==="tower"&&(t.health??1)>0&&world.hostile(player.id,t.playerId)&&
@@ -556,10 +563,16 @@ export class AiArmyPlanner {
           .filter(b => operations.canEnter(player.id, target.id, b.tile))
           .sort((a,b) => world.map.euclideanDistSquared(world.tileOf(army ?? members[0]),a.tile) -
             world.map.euclideanDistSquared(world.tileOf(army ?? members[0]),b.tile) || a.id-b.id);
-        const objective = remaining[0];
+        const lastSquad = !remaining.length && operations.finishing(player.id,target.id)
+          ? world.squads.filter(s => s.playerId === target.id && s.troops > 0 && s.embarkedOn === null &&
+            operations.canEnter(player.id,target.id,world.tileOf(s)))
+            .sort((a,b) => world.map.euclideanDistSquared(world.tileOf(army ?? members[0]),world.tileOf(a)) -
+              world.map.euclideanDistSquared(world.tileOf(army ?? members[0]),world.tileOf(b)) || a.id-b.id)[0]
+          : undefined;
+        const objective = remaining[0] ?? (lastSquad ? {tile:world.tileOf(lastSquad)} : undefined);
         if (objective && (plan.targetTile !== objective.tile || members.every(s => s.order.type === "hold"))) {
           if (this.order(plan, {type:"move",tile:objective.tile})) {
-            plan.targetTile = objective.tile; plan.phase = "advance"; plan.reason = "Securing remaining conquest buildings";
+            plan.targetTile = objective.tile; plan.phase = "advance"; plan.reason = "Securing remaining cities and ground squads";
           }
         }
       }

@@ -37,12 +37,15 @@ export function unitEffects(
     },
   };
 }
+const improvedVessels = new WeakMap<VesselDefinition, VesselDefinition>();
 export function vesselEffects(
   vessel: VesselDefinition,
   research: Research,
 ): VesselDefinition {
   if (!has(research, vessel.age, "naval", 4)) return vessel;
-  return {
+  const cached=improvedVessels.get(vessel);
+  if(cached)return cached;
+  const improved = {
     ...vessel,
     speed: Math.round(vessel.speed * 1.1),
     capacity: vessel.capacity ? Math.ceil(vessel.capacity * 1.25) : 0,
@@ -53,6 +56,8 @@ export function vesselEffects(
         }
       : undefined,
   };
+  improvedVessels.set(vessel,improved);
+  return improved;
 }
 export function logisticsTier(research: Research): number {
   let tier = 0;

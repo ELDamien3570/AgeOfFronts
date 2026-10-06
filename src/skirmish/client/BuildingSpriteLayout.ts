@@ -66,8 +66,9 @@ export function fittedBuildingSprite(
   x: number,
   y: number,
   size: number,
+  heightLimit = size,
 ): SpriteRect {
-  const ratio = size / Math.max(bounds.width, bounds.height);
+  const ratio = Math.min(size / bounds.width, heightLimit / bounds.height);
   const width = bounds.width * ratio,
     height = bounds.height * ratio;
   return { x: x - width / 2, y: y - height / 2, width, height };

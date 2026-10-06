@@ -4,10 +4,13 @@ import type { Army } from "../domain/Definitions";
 import { SQUAD_TROOPS, type Snapshot } from "../Protocol";
 export class ArmyViewModel {
   constructor(
-    readonly state: Snapshot,
-    readonly selected: ReadonlySet<number>,
-    readonly playerId = 1,
+    public state: Snapshot,
+    public selected: ReadonlySet<number>,
+    public playerId = 1,
   ) {}
+  update(state: Snapshot, selected: ReadonlySet<number>, playerId = 1): void {
+    this.state = state; this.selected = selected; this.playerId = playerId;
+  }
   get armies(): readonly Army[] {
     return (this.state.expansion?.armies ?? []).filter(
       (a) => a.playerId === this.playerId,

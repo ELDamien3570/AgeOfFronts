@@ -11,8 +11,9 @@ import {
 import type { Player } from "../Protocol";
 import {
   AGES,
+  startingGameplayAge,
+  type StartingAge,
   TREES,
-  type Age,
   type ProgressionState,
   type TechnologySpeed,
   type Tree,
@@ -29,19 +30,20 @@ export function researchTerms(
   };
 }
 export function startingProgression(
-  startingAge: Age = "StoneAge",
+  startingAge: StartingAge = "StoneAge",
 ): ProgressionState {
-  const ageIndex = AGES.indexOf(startingAge);
+  const age = startingGameplayAge(startingAge);
+  const ageIndex = AGES.indexOf(age);
   const completed = new Set<string>(DEFAULT_CULTURE.startingTechnologies);
   for (const t of TECHNOLOGIES) {
-    if (AGES.indexOf(t.age) < ageIndex) {
+    if (startingAge === "PostModern" || AGES.indexOf(t.age) < ageIndex) {
       completed.add(t.id);
     }
   }
-  for (const tree of TREES) completed.add(technologyAt(startingAge, tree, 1).id);
+  for (const tree of TREES) completed.add(technologyAt(age, tree, 1).id);
   return {
     cultureId: DEFAULT_CULTURE.id,
-    age: startingAge,
+    age,
     completed: [...completed],
     research: {},
     advancement: null,
@@ -87,6 +89,14 @@ export function advanceRejection(
   const price = researchTerms(ADVANCES[AGES.indexOf(state.age)], speed).gold;
   return gold < price ? `Needs ${price - gold} more gold` : null;
 }
+/** Completed achievements persist after advancement/elimination and restore,
+ * so the first qualifying faction starts a race that cannot switch off. */
+export function progressionRaceStarted(states: Record<number, ProgressionState>, age: ProgressionState["age"]): boolean {
+  return age !== "Modern" && Object.values(states).some(state =>
+    AGES.indexOf(state.age) > AGES.indexOf(age) || TREES.filter(tree =>
+      TECHNOLOGIES.filter(t => t.age === age && t.tree === tree)
+        .every(t => state.completed.includes(t.id))).length >= 2);
+}
 export class Progression {
   revision=0;
   checkpoint() { return structuredClone({states:this.states}); }
@@ -99,12 +109,12 @@ export class Progression {
   readonly states: Record<number, ProgressionState> = {};
   constructor(
     readonly technologySpeed: TechnologySpeed = 1,
-    readonly startingAge: Age = "StoneAge",
+    readonly startingAge: StartingAge = "StoneAge",
   ) {
     if (![1, 2, 3].includes(technologySpeed))
       throw new Error("Technology speed must be 1×, 2× or 3×");
   }
-  add(playerId: number, startingAge: Age = this.startingAge): void {
+  add(playerId: number, startingAge: StartingAge = this.startingAge): void {
     this.states[playerId] = startingProgression(startingAge);this.revision++;
   }
   inheritCompleted(playerId: number, donorId: number): void {

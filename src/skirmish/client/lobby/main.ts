@@ -1,6 +1,6 @@
 import type { LobbySettings } from "../../lobby/LobbyDirectory";
 import { isLobbyMapId } from "../../lobby/LobbyRules";
-import type { Age } from "../../domain/Definitions";
+import type { StartingAge } from "../../domain/Definitions";
 import { AGE_UI_THEMES } from "../AgeUiTheme";
 import "./lobby.css";
 import { BrowserLobbyPreviewStore } from "./LobbyPreviewStore";
@@ -166,7 +166,7 @@ const view = new LobbyView(
         worldSize: Number(data.get("worldSize")),
         aiCount: Number(data.get("aiCount")),
         tribeCount: Number(data.get("tribeCount")),
-        startingAge: (data.get("startingAge") as Age) || "StoneAge",
+        startingAge: (data.get("startingAge") as StartingAge) || "StoneAge",
         technologySpeed: Number(data.get("technologySpeed")),
         resourceDensity: Number(data.get("resourceDensity")),
         resourceOutput: Number(data.get("resourceOutput")),

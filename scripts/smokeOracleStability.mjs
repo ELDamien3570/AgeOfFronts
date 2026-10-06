@@ -4,6 +4,8 @@ import { createHash } from "node:crypto";
 import WebSocket from "ws";
 import { decodeState } from "../src/skirmish/multiplayer/StateCodec.ts";
 import { SnapshotDecoder } from "../src/skirmish/SnapshotCodec.ts";
+import { CanonicalStateStream } from "../src/skirmish/client/CanonicalStateStream.ts";
+import { decodeSnapshotFrame } from "../src/skirmish/multiplayer/SnapshotWireCodec.ts";
 import { PlacementPreview } from "../src/skirmish/client/PlacementPreview.ts";
 import { loadServerMap } from "../src/skirmish/multiplayer/infrastructure/ServerMap.ts";
 import { CoastIndex } from "../src/skirmish/CoastIndex.ts";
@@ -12,13 +14,15 @@ import { createSkirmishMap } from "../src/skirmish/Elevation.ts";
 import { isLobbyMapId } from "../src/skirmish/lobby/LobbyRules.ts";
 
 const args=process.argv.slice(2), arg=(key,fallback)=>{const i=args.indexOf(key);return i<0?fallback:args[i+1];};
-const smokeSwitches=new Set(["--public","--water","--infinite-gold"]),smokeValues=new Set(["--url","--clients","--seconds","--age","--out","--map","--size","--order-interval"]);
+const smokeSwitches=new Set(["--public","--water","--infinite-gold","--exercise-backpressure"]),smokeValues=new Set(["--url","--clients","--seconds","--age","--out","--map","--size","--order-interval","--binary-clients"]);
 for(let at=0;at<args.length;at++) {
   if(smokeSwitches.has(args[at]))continue;
   if(smokeValues.has(args[at]) && at+1<args.length){at++;continue;}
   throw new Error("Unknown or incomplete smoke option: "+args[at]);
 }
 const base=arg("--url","http://127.0.0.1:9010"), count=Number(arg("--clients","10")), seconds=Number(arg("--seconds","180"));
+const binaryClients=Number(arg("--binary-clients","0"));
+if(!Number.isInteger(binaryClients)||binaryClients<0||binaryClients>count)throw new Error("Binary client count must be within the client count");
 const mapId=arg("--map","valles-kairulia"), worldSize=Number(arg("--size","500"));
 const orderInterval=Number(arg("--order-interval","0"));
 if(!Number.isFinite(orderInterval)||orderInterval<0||(orderInterval>0&&orderInterval<5))throw new Error("Order interval must be zero or at least five seconds");
@@ -37,20 +41,32 @@ const percentile=(xs,p)=>[...xs].sort((a,b)=>a-b)[Math.min(xs.length-1,Math.floo
 const send=(p,msg)=>p.ws.send(JSON.stringify(msg));
 const connect=async(p,reconnect=false)=>{
   const playerId=p.manifest?.playerId;
-  p.decoder=new SnapshotDecoder();p.directory=undefined;p.manifest=undefined;p.closed=false;p.chain=Promise.resolve();
+  p.decoder=new SnapshotDecoder();p.canonical=undefined;p.directory=undefined;p.manifest=undefined;p.closed=false;p.chain=Promise.resolve();
   p.ws=new WebSocket(socketUrl,{origin});p.ws.on("error",e=>failures.push("Peer "+p.id+": "+e.message));
   p.ws.on("close",()=>p.closed=true);
-  p.ws.on("message",raw=>{p.chain=p.chain.then(async()=>{
-    const m=JSON.parse(raw.toString());
+  p.ws.on("message",(raw,binary)=>{p.chain=p.chain.then(async()=>{
+    const m=binary?decodeSnapshotFrame(Uint8Array.from(raw).buffer):JSON.parse(raw.toString());
     if(m.type==="directory")p.directory=m;
     if(m.type==="error")failures.push("Peer "+p.id+" server: "+m.message);
     if(m.type==="ack")p.acks.set(m.requestId,m);
     if(m.type==="match"){p.manifest=m.manifest;p.factionId=m.manifest.playerId;matchId=m.manifest.id;send(p,{type:"match-ready",requestId:rid(),matchId,runtimeId:m.manifest.runtimeId,flowControl:true});}
-    if(m.type==="match-command-outcome")p.outcomes.push(m.outcome);
+    if(m.type==="match-command-outcome"){
+      p.outcomes.push(m.outcome);
+      const previous=p.outcomeTimes.get(m.outcome.id),at=Date.now();
+      p.outcomeTimes.set(m.outcome.id,{firstAt:previous?.firstAt??at,firstTick:previous?.firstTick??m.outcome.tick,
+        ...(previous??{}),...(m.outcome.status==="executed"?{executedAt:at,executedTick:m.outcome.tick}:{})});
+      while(p.outcomeTimes.size>2048)p.outcomeTimes.delete(p.outcomeTimes.keys().next().value);
+    }
     if(m.type==="match-ended")failures.push("Unexpected match ended: "+m.message);
     if(m.type!=="match-state")return;
-    if(m.rebase)p.decoder=new SnapshotDecoder();
-    const before=performance.now(), packet=await decodeState(m.packet), snapshot=p.decoder.decode(packet,false,false);
+    if(m.rebase){p.decoder=new SnapshotDecoder();p.canonical=undefined;p.rebases++;}
+    if(binary)p.binaryFrames++;else p.textFrames++;
+    const before=performance.now(), packet=await decodeState(m.packet);
+    let snapshot;
+    if(p.id<binaryClients){
+      p.canonical??=new CanonicalStateStream(packet.width*packet.height,65536,{width:packet.width,height:packet.height});
+      p.canonical.apply(packet);const view=p.canonical.presentationPacket();snapshot=p.decoder.decode(view.viewPacket,false,false);p.canonical.acknowledge(view.canonicalSequence);
+    }else snapshot=p.decoder.decode(packet,false,false);
     if(p.id===0 && aiInitial) for(const s of snapshot.squads) {
       const start=aiInitial.get(s.id);
       if(start && Math.hypot(s.x-start.x,s.y-start.y)>=256) aiMoved.add(s.playerId);
@@ -59,12 +75,17 @@ const connect=async(p,reconnect=false)=>{
     for(const [id,movement] of pendingMoves)if(movement.peer===p.id&&snapshot.squads.some(s=>{
       const start=movement.starts.get(s.id);return start&&Math.hypot(s.x-start.x,s.y-start.y)>8;
     })) {
-      periodicMoves.push({id,playerId:movement.playerId,commandTick:movement.tick,observedTick:m.tick,firstMotionMs:Date.now()-movement.at});
+      periodicMoves.push({id,peer:p.id,playerId:movement.playerId,commandTick:movement.tick,observedTick:m.tick,
+        sentAt:movement.at,observedAt:Date.now(),firstMotionMs:Date.now()-movement.at});
       pendingMoves.delete(id);
     }
     if(p.lastAt)p.gaps.push(Date.now()-p.lastAt);p.lastAt=Date.now();p.tick=m.tick;
     if(m.syncId){p.syncs++;send(p,{type:"match-sync-applied",requestId:rid(),matchId:m.matchId,syncId:m.syncId,publicationSequence:m.publicationSequence});}
-    else send(p,{type:"match-state-applied",requestId:rid(),matchId:m.matchId,publicationSequence:m.publicationSequence,flowEpoch:m.flowEpoch});
+    else {
+      const receipt={type:"match-state-applied",requestId:rid(),matchId:m.matchId,publicationSequence:m.publicationSequence,flowEpoch:m.flowEpoch};
+      if(Date.now()<(p.holdCreditsUntil??0))p.pendingReceipt=receipt;
+      else send(p,receipt);
+    }
     if((m.publicationSequence??m.tick)%10===0){
       const hash=createHash("sha256").update(snapshot.owners).update(JSON.stringify([snapshot.squads,snapshot.ships,snapshot.buildings])).digest("hex");
       let row=checks.get(m.tick);if(!row)checks.set(m.tick,row=new Map());row.set(p.id,hash);
@@ -73,7 +94,7 @@ const connect=async(p,reconnect=false)=>{
     }
   }).catch(e=>failures.push("Peer "+p.id+" decode: "+e.message));});
   await new Promise((resolve,reject)=>{p.ws.once("open",resolve);p.ws.once("error",reject);});
-  send(p,{type:"authenticate",token:p.token,...(reconnect?{matchId}:{})});
+  send(p,{type:"authenticate",token:p.token,...(p.id<binaryClients?{snapshotTransport:"binary-v1"}:{}),...(reconnect?{matchId}:{})});
   await wait(()=>p.directory,"authentication "+p.id);
   if(reconnect)send(p,{type:"watch-match",requestId:rid(),matchId,playerId});
 };
@@ -81,7 +102,7 @@ try{
   const health=await (await fetch(base+"/healthz")).json();if(health.activeMatches!==0)throw new Error("Smoke requires an idle host; other matches were not touched");
   for(let i=0;i<count;i++){
     const res=await fetch(base+"/guest",{method:"POST",headers:{Origin:origin}});if(!res.ok)throw new Error("Guest HTTP "+res.status);
-    const {token}=await res.json();const p={id:i,token,acks:new Map(),outcomes:[],decodeMs:[],gaps:[],bytes:0,packets:0,tick:0,syncs:0};
+    const {token}=await res.json();const p={id:i,token,acks:new Map(),outcomes:[],outcomeTimes:new Map(),decodeMs:[],gaps:[],bytes:0,packets:0,tick:0,syncs:0,rebases:0,binaryFrames:0,textFrames:0};
     peers.push(p);await connect(p);
   }
   const createId=rid();send(peers[0],{type:"create",requestId:createId,title,willingToWait:false,settings:{mapId,mode:"free-for-all",slots:count,minimumHumans:count,countdownSeconds:15,worldSize,aiCount:10,tribeCount:25,technologySpeed:1,startingAge:arg("--age","Modern"),resourceDensity:1,resourceOutput:1,alliances:true,victory:"solo",publicAiTakeover:false,infiniteGoldForPlayers:args.includes("--infinite-gold")}});
@@ -216,9 +237,16 @@ try{
   send(p,{type:"match-command",requestId:invalidId,matchId,command:{type:"build",playerId:p.manifest.playerId,buildingType:"city",tile:badTile}});
   await wait(()=>p.outcomes.some(o=>o.id===invalidId&&o.status==="rejected"),"invalid build rejection");
   const rejection=p.outcomes.find(o=>o.id===invalidId&&o.status==="rejected");
-  const until=Date.now()+seconds*1000;let reconnected=false,nextReport=Date.now()+30000,nextOrder=Date.now()+orderInterval*1000;
+  const soakStart=Date.now(),until=soakStart+seconds*1000;let reconnected=false,nextReport=Date.now()+30000,nextOrder=Date.now()+orderInterval*1000,backpressureStarted=false,backpressureCompleted=false;
   while(Date.now()<until){
     if(failures.length)throw new Error(failures[0]);
+    if(args.includes("--exercise-backpressure")&&!backpressureStarted&&Date.now()-soakStart>=seconds*1000/3){
+      peers.at(-1).holdCreditsUntil=Date.now()+2000;backpressureStarted=true;
+      send(peers[0],{type:"match-state-resync",requestId:rid(),matchId});
+      console.log(JSON.stringify({stage:"backpressure",heldPeer:count-1,milliseconds:2000,explicitResyncPeer:0}));
+    }
+    const held=peers.at(-1);
+    if(backpressureStarted&&!backpressureCompleted&&Date.now()>=held.holdCreditsUntil&&held.pendingReceipt){send(held,held.pendingReceipt);held.pendingReceipt=undefined;backpressureCompleted=true;}
     for(const [id,movement] of pendingMoves) {
       const outcome=peers[movement.peer].outcomes.find(o=>o.id===id&&["rejected","superseded"].includes(o.status));
       if(outcome){periodicMoves.push({id,playerId:movement.playerId,commandTick:movement.tick,outcome});pendingMoves.delete(id);}
@@ -256,8 +284,22 @@ try{
   const common=[...checks].filter(([,row])=>row.size===count);
   if(common.length<5)throw new Error("Too few common tick agreement samples");
   if(peers.some(p=>Boolean(p.closed)||Boolean(p.packets<10)||Boolean(Date.now()-p.lastAt>10000)))throw new Error("A peer stopped advancing");
-  const result={passed:true,title,matchId,roomId,base,mapId,worldSize,clients:count,seconds,elapsedSeconds:(Date.now()-started)/1000,flags:Object.fromEntries(flags.map(f=>[f,true])),runtimeId:manifests[0].runtimeId,mapHash:manifests[0].mapHash,moves,periodicMoves,periodicMotionP95:percentile(periodicMoves.map(m=>m.firstMotionMs).filter(Number.isFinite),.95),validBuild,passOne,tradeControls,waterTransport,aiMoved:[...aiMoved].sort((a,b)=>a-b),rejection,reconnected,commonStateSamples:common.length,peers:peers.map(p=>({id:p.id,tick:p.tick,packets:p.packets,syncs:p.syncs,bytes:p.bytes,decodeP95:percentile(p.decodeMs,.95),publicationGapP95:percentile(p.gaps,.95),publicationGapMax:Math.max(...p.gaps)})),failures};
+  if(args.includes("--exercise-backpressure")&&(!backpressureCompleted||!peers.at(-1).rebases||!peers[0].rebases))throw new Error("Backpressure/resync baseline qualification failed");
+  if(peers.some(p=>p.id<binaryClients?p.binaryFrames===0||p.textFrames!==0:p.textFrames===0||p.binaryFrames!==0))throw new Error("Snapshot transport negotiation mismatch");
+  const latencySamples=periodicMoves.filter(m=>Number.isFinite(m.firstMotionMs)).map(m=>{
+    const receipt=peers[m.peer].outcomeTimes.get(m.id);
+    return {...m,receiptMs:receipt?receipt.firstAt-m.sentAt:undefined,
+      executionReceiptMs:receipt?.executedAt===undefined?undefined:receipt.executedAt-m.sentAt,
+      planningTicks:receipt?.executedTick===undefined?undefined:receipt.executedTick-receipt.firstTick,
+      executionToObservationMs:receipt?.executedAt===undefined?undefined:m.observedAt-receipt.executedAt};
+  });
+  const latency=Object.fromEntries(["firstMotionMs","receiptMs","executionReceiptMs","planningTicks","executionToObservationMs"].map(key=>{
+    const xs=latencySamples.map(m=>m[key]).filter(Number.isFinite);
+    return[key,{samples:xs.length,mean:xs.reduce((a,b)=>a+b,0)/xs.length,p50:percentile(xs,.5),p95:percentile(xs,.95),maximum:Math.max(...xs)}];
+  }));
+  const result={passed:true,title,matchId,roomId,base,mapId,worldSize,clients:count,binaryClients,backpressureCompleted,seconds,elapsedSeconds:(Date.now()-started)/1000,flags:Object.fromEntries(flags.map(f=>[f,true])),runtimeId:manifests[0].runtimeId,mapHash:manifests[0].mapHash,moves,periodicMoves,periodicMotionP95:percentile(periodicMoves.map(m=>m.firstMotionMs).filter(Number.isFinite),.95),validBuild,passOne,tradeControls,waterTransport,aiMoved:[...aiMoved].sort((a,b)=>a-b),rejection,reconnected,commonStateSamples:common.length,peers:peers.map(p=>({id:p.id,tick:p.tick,packets:p.packets,syncs:p.syncs,rebases:p.rebases,binaryFrames:p.binaryFrames,textFrames:p.textFrames,bytes:p.bytes,decodeP95:percentile(p.decodeMs,.95),publicationGapP95:percentile(p.gaps,.95),publicationGapMax:Math.max(...p.gaps)})),failures};
   fs.mkdirSync(path.dirname(out),{recursive:true});
+  Object.assign(result,{latency,latencySamples});
   completed=true;fs.writeFileSync(out,JSON.stringify(result,null,2)+"\n");console.log(JSON.stringify(result));
 } catch(error) {
   if(!failures.includes(error.message))failures.push(error.message);

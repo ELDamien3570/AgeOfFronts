@@ -1,0 +1,179 @@
+{
+  "status": "PASS",
+  "browser": "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/154.0.0.0 Safari/537.36",
+  "visibility": "visible",
+  "durationMs": 30004.700000001118,
+  "warmupMs": 3000,
+  "scene": "192x128 all land, seed 42, initial 1500 holding squads and 200 towers, 15 factions; real simulation/replication at 20Hz in worker; no AI decisions or sockets",
+  "packets": 592,
+  "lastTick": 591,
+  "finalSquads": 1500,
+  "draw": {
+    "samples": 1424,
+    "mean": 2.0548455056478008,
+    "p95": 2.900000000372529,
+    "p99": 3.599999999627471,
+    "maximum": 7.800000000745058,
+    "above50": 0
+  },
+  "frameInterval": {
+    "samples": 1755,
+    "mean": 15.395213675213677,
+    "p95": 20.100000000002183,
+    "p99": 20.200000000000728,
+    "maximum": 30.100000000002183,
+    "above50": 0
+  },
+  "rendererUpdate": {
+    "samples": 540,
+    "mean": 1.0811111110710987,
+    "p95": 1.699999999254942,
+    "p99": 1.900000000372529,
+    "maximum": 2.200000001117587,
+    "above50": 0
+  },
+  "decode": {
+    "samples": 540,
+    "mean": 0.13314814818678078,
+    "p95": 0.2000000011175871,
+    "p99": 0.30000000074505806,
+    "maximum": 0.40000000037252903,
+    "above50": 0
+  },
+  "simulation": {
+    "samples": 540,
+    "mean": 8.610000000045531,
+    "p95": 11.599999999627471,
+    "p99": 13.199999999254942,
+    "maximum": 21.699999999254942,
+    "above50": 0
+  },
+  "encode": {
+    "samples": 540,
+    "mean": 0.5238888888930281,
+    "p95": 0.7000000011175871,
+    "p99": 0.8000000007450581,
+    "maximum": 2.399999998509884,
+    "above50": 0
+  },
+  "workerDelivery": {
+    "samples": 540,
+    "mean": 0.44732078269675923,
+    "p95": 2.400146484375,
+    "p99": 3.400146484375,
+    "maximum": 5.7001953125,
+    "above50": 0
+  },
+  "longTasks": [],
+  "heapSamples": [
+    {
+      "at": 7327.5,
+      "used": 78111360
+    },
+    {
+      "at": 8328.2,
+      "used": 81017024
+    },
+    {
+      "at": 9338.8,
+      "used": 76724616
+    },
+    {
+      "at": 10339.5,
+      "used": 76889592
+    },
+    {
+      "at": 11340.2,
+      "used": 79858604
+    },
+    {
+      "at": 12350.9,
+      "used": 84136136
+    },
+    {
+      "at": 13361.6,
+      "used": 86082500
+    },
+    {
+      "at": 14362.2,
+      "used": 83120240
+    },
+    {
+      "at": 15363.1,
+      "used": 74662384
+    },
+    {
+      "at": 16363.7,
+      "used": 78697312
+    },
+    {
+      "at": 17364.4,
+      "used": 76830580
+    },
+    {
+      "at": 18365.2,
+      "used": 79677746
+    },
+    {
+      "at": 19365.7,
+      "used": 76400364
+    },
+    {
+      "at": 20366.4,
+      "used": 76300396
+    },
+    {
+      "at": 21367.1,
+      "used": 78351400
+    },
+    {
+      "at": 22377.7,
+      "used": 83250632
+    },
+    {
+      "at": 23388.5,
+      "used": 87438052
+    },
+    {
+      "at": 24389.2,
+      "used": 74068488
+    },
+    {
+      "at": 25389.9,
+      "used": 91597704
+    },
+    {
+      "at": 26390.5,
+      "used": 85002092
+    },
+    {
+      "at": 27401.2,
+      "used": 76306044
+    },
+    {
+      "at": 28401.9,
+      "used": 92962564
+    },
+    {
+      "at": 29402.6,
+      "used": 90321956
+    },
+    {
+      "at": 30403.3,
+      "used": 81781192
+    },
+    {
+      "at": 31414,
+      "used": 92090824
+    },
+    {
+      "at": 32414.6,
+      "used": 83571360
+    },
+    {
+      "at": 33435.4,
+      "used": 99930480
+    }
+  ],
+  "limitations": "Synthetic local render/worker load with ordinary combat/capture, fit-to-map overview; no online HUD or actual network. Draw timings count actual draw calls, excluding renderer frame-limit skips. Browser heap samples are opportunistic, not an allocation or leak proof. Frame timing depends on browser viewport/GPU and tool activity."
+}

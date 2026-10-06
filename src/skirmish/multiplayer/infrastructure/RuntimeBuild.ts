@@ -17,6 +17,8 @@ export function computeRuntimeBuild(root = process.cwd()): string {
   visit(join(root, "src/skirmish/domain"));
   visit(join(root, "src/skirmish/content"));
   visit(join(root, "src/skirmish/multiplayer/application"));
+  visit(join(root, "src/skirmish/multiplayer/infrastructure"));
+  visit(join(root, "src/skirmish/client"));
   files.push(join(root, "src/skirmish/multiplayer/StateCodec.ts"));
   files.push(join(root, "src/skirmish/multiplayer/StateLimits.ts"));
   files.push(join(root, "src/skirmish/multiplayer/Protocol.ts"));

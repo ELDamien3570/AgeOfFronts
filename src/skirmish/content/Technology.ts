@@ -21,12 +21,14 @@ export const STARTING_TECHNOLOGIES = [
   technologyAt("StoneAge", "economic", 1).id,
 ];
 export const ADVANCES = [
-  { gold: 3_000, ticks: 2000 },
-  { gold: 75_000, ticks: 900 },
-  { gold: 110_000, ticks: 1000 },
-  { gold: 160_000, ticks: 1100 },
-  { gold: 230_000, ticks: 1200 },
-  { gold: 330_000, ticks: 1300 },
+  // Post-Stone prices follow capped market throughput, not the former unlimited
+  // unload economy. Research catalogue prices use the same one-third rebalance.
+  { gold: 3_000, ticks: 700 },
+  { gold: 18_750, ticks: 800 },
+  { gold: 27_500, ticks: 900 },
+  { gold: 40_000, ticks: 1000 },
+  { gold: 57_500, ticks: 1100 },
+  { gold: 82_500, ticks: 1200 },
 ] as const;
 export function treeWorkload(age: Age, tree: Tree): number {
   return TECHNOLOGIES.filter((t) => t.age === age && t.tree === tree).length;

@@ -127,6 +127,8 @@ describe("compact formations and local avoidance", () => {
       });
       const [mover, a, b] = match.squads;
       retainSquads(match, [mover, a, b]);
+        // Keep the empty opponent alive while measuring movement.
+        match.addBuilding({id:match.allocateId(),playerId:2,type:"city",tile:21*80+70,remainingTicks:0});
       match.updateSquad(mover.id, { playerId: 1 });
       for (const unit of [mover, a, b]) match.updateSquad(unit.id, { kind: "infantry" });
       match.updateSquad(mover.id, { x: 10.5 * FIXED });

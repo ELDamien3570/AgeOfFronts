@@ -2,6 +2,15 @@ import { describe, expect, it } from "vitest";
 import { CapturePressure } from "../../src/skirmish/CapturePressure";
 
 describe("sparse capture pressure", () => {
+  it("withdraws duplicate defenders without losing the remaining owner or contested pressure",()=>{
+    const pressure=new CapturePressure(20);
+    pressure.retain(5,1);pressure.retain(5,1);pressure.retain(5,2);
+    expect(pressure.at(5)).toBe(255);
+    pressure.withdraw(5,1);expect(pressure.at(5)).toBe(255);
+    pressure.withdraw(5,2);expect(pressure.at(5)).toBe(1);
+    pressure.withdraw(5,1);expect(pressure.at(5)).toBe(0);
+    pressure.retain(6,3);pressure.begin();expect(pressure.at(6)).toBe(0);
+  });
   it("matches a full-array reference through contests, movement and empty ticks", () => {
     const pressure = new CapturePressure(4096), reference = new Uint8Array(4096);
     for (let tick = 0; tick < 40; tick++) {
@@ -22,7 +31,8 @@ describe("sparse capture pressure", () => {
     expect(pressure.at(500)).toBe(255); expect(pressure.diagnostics.touched).toBe(1);
     pressure.begin(); expect(pressure.diagnostics.cleared).toBe(1); expect(pressure.at(500)).toBe(0);
     for (let tile = 0; tile < 10000; tile++) pressure.add(tile, 54);
-    expect(pressure.retainedBytes).toBeLessThanOrEqual(50000);
+    // One owner byte, one persistent count and up to one touched ordinal.
+    expect(pressure.retainedBytes).toBeLessThanOrEqual(90000);
     pressure.begin(); pressure.begin(); expect(pressure.diagnostics.cleared).toBe(0);
   });
 });

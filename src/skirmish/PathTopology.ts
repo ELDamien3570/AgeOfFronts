@@ -13,12 +13,18 @@ const DIAGONALS = [
 export class PathTopology {
   private readonly cardinal: Uint8Array;
   private readonly diagonal: Uint8Array;
+  private readonly passable: Uint8Array;
   private readonly listeners = new Set<(tiles: readonly number[]) => void>();
   constructor(
     readonly map: GameMap,
     readonly water: boolean,
   ) {
     const size = map.width() * map.height();
+    // Skirmish terrain/component geometry is immutable after map creation.
+    // Forest clearing changes costs, and continues through the listener below.
+    this.passable = new Uint8Array(size);
+    for (let tile = 0; tile < size; tile++) this.passable[tile] = Number(
+      (water ? map.isWater(tile) : map.isLand(tile)) && !map.isImpassable(tile));
     this.cardinal = new Uint8Array(size);
     this.diagonal = new Uint8Array(size);
     for (let tile = 0; tile < size; tile++) {
@@ -43,9 +49,7 @@ export class PathTopology {
   walkable(tile: number): boolean {
     return (
       Number.isInteger(tile) &&
-      this.map.isValidRef(tile) &&
-      (this.water ? this.map.isWater(tile) : this.map.isLand(tile)) &&
-      !this.map.isImpassable(tile)
+      tile >= 0 && tile < this.passable.length && this.passable[tile] !== 0
     );
   }
   neighbors(

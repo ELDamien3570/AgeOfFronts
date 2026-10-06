@@ -106,11 +106,11 @@ export function hudMarkup(): string {
       .join("");
   return `
     <aside id="selection-card" class="selection-card hud-surface" aria-label="Selection details" hidden>
-      <div class="selection-heading"><span class="eyebrow" id="selection-label">SELECTION</span><button id="selection-back" class="text-button" hidden>Back to selection</button></div>
+      <div class="selection-heading"><span class="eyebrow" id="selection-label">SELECTION</span><button id="selection-back" class="text-button" hidden>Back to selection</button><button id="delete-ship" type="button" title="Remove this warship without a refund" hidden>Delete warship</button></div>
       <div id="selection-detail">
         <div class="unit-heading"><div id="selection-portrait" class="unit-portrait"></div><div><h2 id="selection-title"></h2><p id="selection-subtitle"></p><span id="selection-status" class="status-chip"></span></div></div><div id="selection-promotion" class="promotion-progress" hidden></div>
         <div id="selection-meter"><div class="meter-label"><span id="meter-name"></span><b id="meter-value"></b></div><div id="selection-health" class="health-track" role="progressbar"><i></i></div></div>
-        <dl id="selection-stats" class="stat-list"></dl><p id="selection-description" class="card-description"></p>
+        <div id="selection-trade-meters" hidden></div><dl id="selection-stats" class="stat-list"></dl><p id="selection-description" class="card-description"></p>
       </div>
       <div id="selection-mixed" hidden><h2 id="mixed-title"></h2><p class="card-description">Hover for stats. Click to inspect while keeping your army selected.</p><div id="selection-cells" class="selection-cells"></div></div>
       <div class="selection-orders"><strong id="selected"></strong><p id="selected-orders"></p></div>
@@ -123,7 +123,7 @@ export function hudMarkup(): string {
       <div id="hud-command-sections" class="command-row"><div class="command-category economy"><h3>Economy</h3><div class="category-actions">${buildings(true)}</div></div><div class="command-category military"><h3>Military buildings</h3><div class="category-actions">${buildings(false)}</div></div><div class="command-category troops"><h3>Troops</h3><div class="category-actions">${LAND_RECRUITMENT.map((a) => action(`recruit-${a.kind}`, a.label, a.key, a.kind)).join("")}</div></div><div class="command-category ships"><h3>Ships</h3><div class="category-actions">${NAVAL_RECRUITMENT.map((a) => action(a.kind, SHIP_RULES[a.kind].name, a.key, a.kind)).join("")}</div></div><div class="command-category orders"><h3>Orders</h3><div class="category-actions">${action("replenish", "Replenish", "R", undefined, "+")}${action("hold", "Hold", "T", undefined, "■")}${action("all", "Select all", "Ctrl A", undefined, "▦")}</div></div></div>
       <div class="dock-utility"><div class="control-groups"><span>Groups</span>${[1, 2, 3, 4, 5, 6, 7, 8, 9, 0].map((d) => `<button id="group-${d}" aria-label="Control group ${d}"><b>${d}</b><small>0</small></button>`).join("")}</div><span class="group-help">Shift adds · Ctrl replaces</span><button id="controls-toggle" aria-expanded="false">Controls <span>?</span></button><button id="roster-toggle" aria-expanded="false">Factions</button></div>
     </section>
-    <section id="controls-popover" class="hud-popover hud-surface" aria-label="Game controls" hidden><div class="popover-heading"><h2>Battlefield controls</h2><button data-close="controls-popover" aria-label="Close controls">×</button></div><dl class="stat-list"><dt>Left click / drag</dt><dd>Select units</dd><dt>Shift + select</dt><dd>Add units</dd><dt>Double click</dt><dd>Select visible units of type</dd><dt>Right click</dt><dd>Move / attack / board</dd><dt>Shift + right click</dt><dd>Queue waypoints</dd><dt>1–0</dt><dd>Recall control group</dd><dt>Shift + 1–0</dt><dd>Add to control group</dd><dt>Ctrl + 1–0</dt><dd>Replace / clear group</dd><dt>Wheel / middle drag</dt><dd>Zoom / pan</dd><dt>Shift + recruit</dt><dd>Queue five (normal mode)</dd><dt>Space + recruit</dt><dd>Queue five (WASD mode)</dd><dt>Pause button</dt><dd>Pause / resume</dd><dt>Home</dt><dd>Fit battlefield</dd><dt>Escape</dt><dd>Cancel placement / inspection</dd></dl><p class="card-description">Recruit and construction keys are shown on every command button. R replenishes eligible squads or repairs selected buildings; T holds units; Ctrl A selects all land squads.</p><a href="/age-of-fronts-source.zip" download>Download corresponding source</a></section>
+    <section id="controls-popover" class="hud-popover hud-surface" aria-label="Game controls" hidden><div class="popover-heading"><h2>Battlefield controls</h2><button data-close="controls-popover" aria-label="Close controls">×</button></div><dl class="stat-list"><dt>Left click / drag</dt><dd>Select units</dd><dt>Shift + select</dt><dd>Add units</dd><dt>Double click</dt><dd>Select visible units of type</dd><dt>Right click</dt><dd>Move / attack / board</dd><dt>Shift + right click</dt><dd>Queue waypoints</dd><dt>1–0</dt><dd>Recall control group</dd><dt>Shift + 1–0</dt><dd>Add to control group</dd><dt>Ctrl + 1–0</dt><dd>Replace / clear group</dd><dt>Wheel / middle drag</dt><dd>Zoom / pan</dd><dt>Shift + recruit</dt><dd>Queue five (normal mode)</dd><dt>Space + recruit</dt><dd>Queue five (WASD mode)</dd><dt>Pause button</dt><dd>Pause / resume</dd><dt>Home</dt><dd>Fit battlefield</dd><dt>Escape</dt><dd>Cancel placement / inspection</dd></dl><p class="card-description">Recruit and construction keys are shown on every command button. R replenishes eligible squads or repairs selected buildings; T holds units; Ctrl A selects all land squads. P targets one ready plane for a sortie; Shift-click Sortie or its target launches up to five.</p><a href="/age-of-fronts-source.zip" download>Download corresponding source</a></section>
     <section id="roster-popover" class="hud-popover hud-surface" aria-label="Factions" hidden><div class="popover-heading"><h2>Factions & territory</h2><button data-close="roster-popover" aria-label="Close factions">×</button></div><div id="roster"></div></section>
     <div id="hud-tooltip" class="hud-tooltip hud-surface" role="tooltip" hidden></div>
     <div id="deposit-tooltip" class="hud-tooltip compact-tooltip hud-surface" role="tooltip" hidden></div>`;
@@ -136,6 +136,7 @@ function cardMarkup(card: HudCard) {
 export class HudView {
   private readonly deletion = new BuildingDeletionViewModel();
   private deletableId: number | null = null;
+  private deletableShipId: number | null = null;
   private playerId = 1;
 
   private readonly drawer = new HudDrawerViewModel();
@@ -173,6 +174,12 @@ export class HudView {
     this.el("delete-building-confirm").addEventListener("click", () => {
       const command = this.vm && this.deletion.confirm(this.vm.game.state, this.playerId);
       dialog.close(); if (command) this.command(command);
+    });
+    this.el("delete-ship").addEventListener("click", () => {
+      if (!this.vm || this.deletableShipId === null) return;
+      const ship = this.vm.game.state.ships.find(s => s.id === this.deletableShipId);
+      if (ship?.playerId === this.playerId && ship.kind === "warship")
+        this.command({type: "delete-ship", playerId: this.playerId, shipId: ship.id});
     });
     root.querySelector(".dock-age")!.addEventListener("click", () => {
       this.drawer.toggleMode();
@@ -309,6 +316,7 @@ export class HudView {
     const dialog = this.el("delete-building-dialog") as HTMLDialogElement;
     if (dialog.open) dialog.close();
     this.deletableId = null;
+    this.deletableShipId = null;
     this.vm = undefined;
     this.focusedRef = null;
     this.selectionFingerprint = "";
@@ -339,16 +347,18 @@ export class HudView {
       const count = vm.buildingCounts.get(type) ?? {total: 0, ready: 0};
       let badge = button.querySelector<HTMLElement>(".building-count");
       if (!badge) { badge = document.createElement("span"); badge.className = "building-count"; button.append(badge); }
-      badge.textContent = String(count.total);
-      badge.title = `${count.ready} ready · ${count.total - count.ready} under construction`;
-      badge.setAttribute("aria-label", `${count.total} owned buildings`);
+      const text = String(count.total), title = `${count.ready} ready · ${count.total - count.ready} under construction`, label = `${count.total} owned buildings`;
+      if (badge.textContent !== text) badge.textContent = text;
+      if (badge.title !== title) badge.title = title;
+      if (badge.getAttribute("aria-label") !== label) badge.setAttribute("aria-label", label);
     }
     for (const slot of this.root.querySelectorAll<HTMLElement>(
       ".action-slot",
     )) {
-      slot.tabIndex = slot.querySelector<HTMLButtonElement>("button")!.disabled
+      const tabIndex = slot.querySelector<HTMLButtonElement>("button")!.disabled
         ? 0
         : -1;
+      if (slot.tabIndex !== tabIndex) slot.tabIndex = tabIndex;
     }
     this.renderSelection();
     this.renderTooltip();
@@ -380,6 +390,11 @@ export class HudView {
       selection.card.category === "building" && selection.card.playerId === this.playerId && !this.vm.game.player.ai
       ? Number(selection.card.ref.split(":")[1]) : null;
     this.el("delete-building").hidden = this.deletableId === null;
+    this.deletableShipId = selection.mode === "detail" &&
+      selection.card.category === "ship" && selection.card.kind === "warship" &&
+      selection.card.playerId === this.playerId && !this.vm.game.player.ai
+      ? Number(selection.card.ref.split(":")[1]) : null;
+    this.el("delete-ship").hidden = this.deletableShipId === null;
     this.el("selection-card").hidden = selection.mode === "empty";
     if (selection.mode === "empty") return;
     const mixed = selection.mode === "mixed";
@@ -474,6 +489,13 @@ export class HudView {
         bar.querySelector<HTMLElement>("i")!.style.width =
           `${Math.max(0, Math.min(100, (card.meter.value / card.meter.max) * 100))}%`;
       }
+      const tradeMeters = this.el("selection-trade-meters");
+      tradeMeters.hidden = !card.tradeMeters?.length;
+      const tradeHtml = (card.tradeMeters ?? []).map(m => {
+        const percent = m.max > 0 ? Math.max(0, Math.min(100, m.value / m.max * 100)) : 0;
+        return `<div class="trade-meter"><div class="meter-label"><span>${escape(m.label)}</span><b>${fmt(m.value)} / ${fmt(m.max)}</b></div><div class="health-track" role="progressbar" aria-label="${escape(m.label)}" aria-valuemin="0" aria-valuemax="${m.max}" aria-valuenow="${m.value}"><i style="width:${percent}%"></i></div></div>`;
+      }).join("");
+      if (tradeMeters.innerHTML !== tradeHtml) tradeMeters.innerHTML = tradeHtml;
       const stats = card.stats
         .map((s) => `<dt>${escape(s.label)}</dt><dd>${escape(s.value)}</dd>`)
         .join("");

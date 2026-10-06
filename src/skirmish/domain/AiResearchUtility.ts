@@ -9,6 +9,8 @@ import { AiProductionDependencies } from "./AiProductionDependencies";
 import { AGES, type Resource, type Technology } from "./Definitions";
 
 export interface ResearchOpportunity {
+  /** A faction has completed two trees in this age, or reached a later age. */
+  progressionRace?: boolean;
   resources: readonly Resource[];
   usableCoast: boolean;
   seaThreat: number;
@@ -126,6 +128,10 @@ export function researchUtility(
       benefit += 4500;
       reasons.push("actual-trade-throughput");
     }
+  }
+  if(snapshot.age === "Modern" && ["airstrip","missile-silo","mirv-launcher"].some(type=>
+    buildingTechnology(type as Parameters<typeof buildingTechnology>[0],snapshot.age)===technology.id)) {
+    benefit+=8000;reasons.push("late-game-capability");
   }
   if (
     snapshot.threatTroops > 0 &&

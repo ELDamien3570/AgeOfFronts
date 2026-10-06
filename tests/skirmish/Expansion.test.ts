@@ -1,3 +1,4 @@
+import { claimBuildingFootprint } from "./BuildingFixtures";
 import { retainSquads } from "./UnitFixtures";
 import { describe, expect, it } from "vitest";
 import { GameMapImpl } from "../../src/core/game/GameMap";
@@ -45,7 +46,7 @@ function own(m: Skirmish, tile: number, id = 1): void {
 }
 function build(m: Skirmish, type: BuildingType, x: number, y: number, id = 1) {
   const tile = m.map.ref(x, y);
-  own(m, tile, id);
+  claimBuildingFootprint(m,tile,type,id);
   m.player(id)!.gold = 10000;
   expect(
     m.applyCommand({ type: "build", playerId: id, buildingType: type, tile }),
@@ -228,7 +229,7 @@ describe("construction, recruitment, and economy", () => {
         tile: m.players[0].base,
       }),
     ).toMatch(/same type/);
-    own(m, m.map.ref(30, 25));
+    claimBuildingFootprint(m,m.map.ref(30,25),"city");
     expect(
       m.applyCommand({
         type: "build",
@@ -712,7 +713,7 @@ describe("naval transport and combat", () => {
       new GameMapImpl(80, 50, terrain, terrain.length),
       { seed: 42, aiCount: 1, runAi: false },
     );
-    const port = build(islands, "port", 37, 20);
+    const port = build(islands, "port", 36, 20);
     islands.updateBuilding(port.id, { remainingTicks: 0 });
     islands.applyCommand({
       type: "recruit-ship",
@@ -923,6 +924,7 @@ describe("naval transport and combat", () => {
 
   it("warships fire simultaneously, sink transports, and account for all embarked casualties", () => {
     const { m, s, ship } = navy();
+    m.addBuilding({id:m.allocateId(),playerId:1,type:"city",tile:m.player(1)!.base,remainingTicks:0});
     m.applyCommand({
       type: "load",
       playerId: 1,

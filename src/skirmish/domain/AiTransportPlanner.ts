@@ -1,3 +1,5 @@
+import { portWaterTiles } from "../PortWaterAccess";
+import { shipCap } from "../FactionRules";
 import { FIXED, type Building, type Player, type Ship, type Squad } from "../Protocol";
 import { AI_DOCTRINES } from "../content/AiDoctrines";
 import { personalityOf } from "../content/AiPersonalities";
@@ -216,6 +218,9 @@ export class AiTransportPlanner {
     const { world, progression, supply } = this.expansion,
       key = `${player.id}:${m.sea}`,
       port = world.building(m.port);
+    const committed = world.shipFacts().byOwner(player.id).filter(s => s.kind === "transport").length +
+      world.recruitment.byOwner(player.id).filter(j => j.category === "ship" && j.kind === "transport").length;
+    if (committed >= shipCap(player, "transport")) return;
     if (
       !port ||
       port.playerId !== player.id ||
@@ -343,8 +348,7 @@ export class AiTransportPlanner {
         [...this.economy.navalFacts.ports(player!.id, sea)].slice(0, 1),
       )[0];
       if (!port) return 0;
-      const water = world.map
-        .neighbors(port.tile)
+      const water = portWaterTiles(world.map, port.tile)
         .find((t) => world.waterPaths.walkable(t));
       if (water === undefined) return 0;
       m = {
@@ -591,8 +595,7 @@ export class AiTransportPlanner {
         this.transition(m, "recover", "Departure port lost");
         return 1;
       }
-      const berth = world.map
-        .neighbors(port.tile)
+      const berth = portWaterTiles(world.map, port.tile)
         .find(
           (t) =>
             world.waterPaths.walkable(t) &&

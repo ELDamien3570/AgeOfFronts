@@ -16,7 +16,7 @@ import { SNAPSHOT_QUEUE_LIMITS } from "../multiplayer/StateLimits";
 
 const MAX_PENDING_STATES = SNAPSHOT_QUEUE_LIMITS.states;
 const MAX_PENDING_BYTES=SNAPSHOT_QUEUE_LIMITS.bytes;
-interface DecodedState {canonicalOnly?:boolean;packet:SnapshotPacket;snapshot?:Snapshot;canonicalSequence?:number;decodeMs?:number;applyMs?:number;projectionMs?:number;decodeStats?:StateDecodeStats;}
+interface DecodedState {canonicalOnly?:boolean;packet:SnapshotPacket;viewPacket?:SnapshotPacket;snapshot?:Snapshot;canonicalSequence?:number;decodeMs?:number;applyMs?:number;projectionMs?:number;decodeStats?:StateDecodeStats;}
 interface Presentation {data:Extract<WorkerResponse,{type:"state"}>;sequence?:number;}
 
 /** Thin presentation client. The server alone advances the simulation. */
@@ -52,6 +52,7 @@ export class OnlineMatchSession {
   readonly diagnostics={pendingStates:0,pendingBytes:0,oldestAgeMs:0,decodeMs:0,applyMs:0,presentationMs:0,coalesced:0,recoveries:0,wireBytes:0,decodedArrayBytes:0,metadataBytes:0,metadataTokens:0};
   private initialized = false;
   private stopped = false;
+  private completing = false;
   private manifest?: MatchManifest;
   private lastTick = -1;
   private lastPublicationSequence = -1;
@@ -95,6 +96,10 @@ export class OnlineMatchSession {
       },
       (message) => {
         if (this.stopped) return;
+        if (message.type === "match-ended" && message.matchId === this.matchId && message.completed) {
+          this.completing = true;
+          this.setCommandsAvailable(false);
+        }
         // Small command results do not depend on map decoding or presentation.
         // Consume them directly so a slow baseline cannot accumulate an
         // unbounded promise chain of receipt metadata.
@@ -112,19 +117,19 @@ export class OnlineMatchSession {
           }
           if (
             message.type === "match-ended" &&
-            message.matchId === this.matchId
+            message.matchId === this.matchId && !message.completed
           ) {
             this.fail(`${message.message}. Return to the lobby to play again.`);
             return;
           }
         }
-        if(message.type==="match-ended" && message.matchId===this.matchId){
+        if(message.type==="match-ended" && message.matchId===this.matchId && !message.completed){
           this.status(`${message.message}. Return to the lobby to play again.`);this.terminate();return;
         }
         if(message.type==="error"){this.status(message.message);return;}
         const state = message.type === "match-state";
         if(state && this.recovering && !message.rebase)return;
-        const bytes=state ? message.packet.payload.length*2 : 0,receivedAt=performance.now();
+        const bytes=state ? message.packet.binary?.byteLength ?? message.packet.payload.length*2 : 0,receivedAt=performance.now();
         if(state){
           if(this.pendingStates>=MAX_PENDING_STATES || this.pendingBytes+bytes>MAX_PENDING_BYTES){
             if(bytes>MAX_PENDING_BYTES){this.fail("Match baseline exceeds this client's bounded state budget.");return;}
@@ -229,7 +234,7 @@ export class OnlineMatchSession {
     } as Parameters<OnlineLobbyConnection["request"]>[0]);
   }
   private decode(packet: EncodedState, presentation = true): Promise<DecodedState> {
-    return this.decoderRequest({ ...packet, expectedMap: this.expectedMap, presentation });
+    return this.decoderRequest({ ...packet, expectedMap: this.expectedMap, presentation, packed: true });
   }
   private decoderRequest(message: unknown): Promise<DecodedState> {
     return new Promise((resolve, reject) => {
@@ -238,7 +243,9 @@ export class OnlineMatchSession {
         return;
       }
       this.decoding = { resolve, reject };
-      this.decoder.postMessage(message);
+      const binary = (message as { binary?: Uint8Array<ArrayBuffer> }).binary;
+      if (binary) this.decoder.postMessage(message, [binary.buffer]);
+      else this.decoder.postMessage(message);
     });
   }
   private recover():void {
@@ -280,11 +287,11 @@ export class OnlineMatchSession {
       if (this.presenting || this.recovering || this.stopped) return;
       const context = this.pendingView; this.pendingView = undefined;
       if (!context) return;
-      const decoded = await this.decoderRequest({ type: "presentation" });
+      const decoded = await this.decoderRequest({ type: "presentation", packed: true });
       if (decoded.projectionMs !== undefined) this.timings.record("projection", decoded.projectionMs);
       if (this.stopped || context.generation !== this.receiveGeneration) return;
-      if (!decoded.snapshot) throw new Error("Missing canonical presentation");
-      this.queuePresentation({ data: { type: "state", packet: decoded.packet, snapshot: decoded.snapshot,
+      if (!decoded.snapshot && !decoded.viewPacket) throw new Error("Missing canonical presentation");
+      this.queuePresentation({ data: { type: "state", packet: decoded.viewPacket ?? decoded.packet, snapshot: decoded.snapshot,
         paused: context.paused, speed: 1 }, sequence: decoded.canonicalSequence });
     }).catch(error => this.fail(error.message));
   }
@@ -293,7 +300,7 @@ export class OnlineMatchSession {
     else this.present(update);
   }
   private setCommandsAvailable(available: boolean): void {
-    available=available&&!this.connectionLost&&!this.awaitingReconnectBaseline;
+    available=available&&!this.connectionLost&&!this.awaitingReconnectBaseline&&!this.completing;
     if (this.commandsAvailable === available) return;
     this.commandsAvailable = available;
     this.oncommandsavailable?.(available);
@@ -428,8 +435,9 @@ export class OnlineMatchSession {
         throw new Error(
           "The match view is unavailable. Return to the lobby to rejoin.",
         );
-      const update:Presentation={data:{type:"state",packet,snapshot:decoded.snapshot,paused:message.paused,speed:1},sequence:decoded.canonicalSequence};
-      if (decoded.snapshot) this.pendingView = undefined;
+      const hasView = !!(decoded.snapshot || decoded.viewPacket);
+      const update:Presentation={data:{type:"state",packet:decoded.viewPacket ?? packet,snapshot:decoded.snapshot,paused:message.paused,speed:1},sequence:decoded.canonicalSequence};
+      if (hasView) this.pendingView = undefined;
       if (decoded.canonicalOnly) {
         if (message.syncId || message.rebase) throw new Error("A synchronization baseline requires presentation");
         this.pendingView = { generation: this.receiveGeneration, paused: message.paused };
@@ -443,7 +451,7 @@ export class OnlineMatchSession {
           this.recoveryStarted = undefined;
           this.recovering=false;this.setCommandsAvailable(!message.paused && !this.pendingSync);
         }
-      }else if(decoded.snapshot)this.queuePresentation(update);
+      }else if(hasView)this.queuePresentation(update);
       else await this.onmessage?.({data:update.data} as MessageEvent<WorkerResponse>);
       if (this.stopped || generation!==this.receiveGeneration) return;
       if(message.flowEpoch!==undefined && message.publicationSequence!==undefined)
@@ -479,6 +487,17 @@ export class OnlineMatchSession {
       );
       this.status(message.message);
     } else if (message.type === "match-ended") {
+      // Completion follows the final state on the wire. Drain decoding and
+      // presentation before closing the worker, including a coalesced view.
+      while (this.presenting) await this.presenting;
+      const context = this.pendingView;
+      this.pendingView = undefined;
+      if (context && !this.stopped && context.generation === this.receiveGeneration) {
+        const decoded = await this.decoderRequest({ type: "presentation", packed: true });
+        if (!decoded.snapshot && !decoded.viewPacket) throw new Error("Missing final match presentation");
+        await this.present({ data: { type: "state", packet: decoded.viewPacket ?? decoded.packet,
+          snapshot: decoded.snapshot, paused: context.paused, speed: 1 }, sequence: decoded.canonicalSequence });
+      }
       this.status(`${message.message}. Return to the lobby to play again.`);
       this.terminate();
     } else if (message.type === "error") {

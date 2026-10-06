@@ -1,8 +1,8 @@
 import { availableGold } from "../domain/Gold";
-import { squadCap } from "../FactionRules";
+import { squadCap, shipCap } from "../FactionRules";
 import type { ShipType, Snapshot, SquadType } from "../Protocol";
 import { FIXED, SQUAD_TROOPS } from "../Protocol";
-import { BUILDING_RULES, MAX_SHIPS, SHIP_RULES } from "../Rules";
+import { BUILDING_RULES, SHIP_RULES } from "../Rules";
 import { TECHNOLOGY } from "../content/Technology";
 import { UNIT, UNITS, VESSEL, VESSELS } from "../content/Units";
 import { AGE_NAMES, AGES, type Age } from "../domain/Definitions";
@@ -185,9 +185,10 @@ export class SkirmishViewModel {
       reason = "Needs 1,000 reserve troops";
     else if (
       naval &&
-      this.state.ships.filter((s) => s.playerId === this.playerId).length + (this.state.expansion?.recruitment ?? []).filter(j => j.playerId === this.playerId && j.category === "ship").length >= MAX_SHIPS
+      this.state.ships.filter((s) => s.playerId === this.playerId && s.kind === kind).length +
+        (this.state.expansion?.recruitment ?? []).filter(j => j.playerId === this.playerId && j.category === "ship" && j.kind === kind).length >= shipCap(this.player, kind as ShipType)
     )
-      reason = "Fleet limit reached";
+      reason = `${kind === "warship" ? "Warship" : "Transport"} limit reached`;
     else if (!naval && this.ownSquads.length + (this.state.expansion?.recruitment ?? []).filter(j => j.playerId === this.playerId && j.category === "land").length >= this.squadCapacity)
       reason = "Squad limit reached";
     if (!reason && definition)

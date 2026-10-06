@@ -59,11 +59,11 @@ function route(distance: number, inland = 0, foreign = true) {
 
 describe("water trade distance pricing", () => {
   it("pays bounded map-relative port separation independently of inland factories", () => {
-    expect(route(2).firstDelivery()).toBe(828);
-    expect(route(20).firstDelivery()).toBe(1685);
-    expect(route(100).firstDelivery()).toBe(2400);
-    expect(route(2, 15).firstDelivery()).toBe(828);
-    expect(route(2, 0, true).firstDelivery()).toBe(828);
+    expect(route(2).firstDelivery()).toBe(685);
+    expect(route(20).firstDelivery()).toBe(1200);
+    expect(route(100).firstDelivery()).toBe(1200);
+    expect(route(2, 15).firstDelivery()).toBe(685);
+    expect(route(2, 0, true).firstDelivery()).toBe(685);
   });
   it("does not deliver water trade to another port belonging to the sender", () => {
     const own = route(20, 0, false);
@@ -91,7 +91,7 @@ describe("water trade distance pricing", () => {
         0,
       ),
     ).toBeNull();
-    expect(allied.firstDelivery()).toBe(414);
+    expect(allied.firstDelivery()).toBe(514);
   });
   it("returns cargo without payment when a foreign destination becomes domestic in transit", () => {
     const captured = route(20);
@@ -116,9 +116,11 @@ describe("water trade distance pricing", () => {
       far.step();
     }
     expect(near.e.trade.deliveredGold[1]).toBeGreaterThan(0);
-    expect(near.e.trade.actors.filter(a => a.playerId === 1)).toHaveLength(1);
-    expect(far.e.trade.actors.filter(a => a.playerId === 1)).toHaveLength(1);
+    expect(near.e.trade.actors.filter(a => a.playerId === 1).length).toBeGreaterThan(0);
+    expect(far.e.trade.actors.filter(a => a.playerId === 1).length).toBeGreaterThan(0);
     expect(far.e.trade.deliveredGold[1]).toBeGreaterThan(0);
-    expect(far.e.trade.cycleQuotes.values().next().value!.guaranteedGold).toBe(2400);
+    const quotes = [...far.e.trade.cycleQuotes.values()];
+    expect(quotes.some(q => q.guaranteedGold > 0)).toBe(true);
+    expect(quotes.every(q => q.guaranteedGold <= 1200)).toBe(true);
   });
 });

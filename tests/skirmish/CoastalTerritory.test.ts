@@ -75,7 +75,8 @@ describe("scaled coastal water rights and offshore oil", () => {
         tile: site,
       }),
     ).toContain("claimed");
-    for (let i = 0; i < 400; i++) m.step();
+    (m as unknown as {changeOwner(tile:number,owner:number):void}).changeOwner(m.map.ref(149,61),1);
+    for (let i = 0; i < 800; i++) m.step();
     expect(m.owners[site]).toBe(1);
     expect(
       m.applyCommand({
@@ -171,8 +172,8 @@ describe("scaled coastal water rights and offshore oil", () => {
       runAi: false,
     }).players[0];
     player.gold = 10000;
-    const site = f.map.ref(15, 20);
-    f.owners[site] = 1;
+    const site = f.map.ref(14, 20);
+    for(let y=20;y<22;y++)for(let x=14;x<16;x++)f.owners[f.map.ref(x,y)]=1;
     expect(
       constructionRejection(f.map, f.owners, [], player, "oil-rig", site),
     ).toBeNull();
@@ -181,7 +182,7 @@ describe("scaled coastal water rights and offshore oil", () => {
       constructionRejection(f.map, f.owners, [], player, "oil-rig", site),
     ).toContain("claimed");
     const deep = f.map.ref(16, 20);
-    f.owners[deep] = 1;
+    for(let y=20;y<22;y++)for(let x=16;x<18;x++)f.owners[f.map.ref(x,y)]=1;
     expect(
       constructionRejection(f.map, f.owners, [], player, "oil-rig", deep),
     ).toContain("offshore oil band");

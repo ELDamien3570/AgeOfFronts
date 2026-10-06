@@ -30,7 +30,7 @@ const escape = (s: string) =>
 const fmt = (n: number) => Math.floor(n).toLocaleString("en-US");
 
 export function empireMarkup(): string {
-  return `<div id="resource-strip" class="resource-strip" aria-label="Empire resources"><div id="treasury"></div><div id="strategic-stocks"></div><button id="technology-toggle">Technology <kbd>Y</kbd></button><button id="supplies-toggle">Supplies <kbd>I</kbd></button><span id="empire-age">Stone Age</span></div>`;
+  return `<div id="resource-strip" class="resource-strip" aria-label="Empire resources"><div id="treasury"></div><div id="strategic-stocks"></div><span id="clock" aria-label="Game time">0:00</span><button id="technology-toggle">Technology <kbd>Y</kbd></button><button id="supplies-toggle">Supplies <kbd>I</kbd></button><button id="empire-age" type="button" aria-controls="match-topbar" aria-expanded="true" title="Show or hide the top bar">Stone Age</button></div>`;
 }
 
 export interface EmpireActions {
@@ -40,7 +40,7 @@ export interface EmpireActions {
   build(type: BuildingType, age?: Age): void;
   notify(text: string): void;
   focusedRef(): string | null;
-  target(action: (x: number, y: number) => void, hint: string): void;
+  target(action: (x: number, y: number, gesture?: {shift:boolean; buildingId?:number}) => void, hint: string): void;
 }
 
 export class EmpireView {
@@ -70,6 +70,7 @@ export class EmpireView {
   private browsedAge: Age = "StoneAge";
 
   private inspectedTechnology = "";
+  private technologyDetailsExpanded = false;
   private inspectedTree: Tree = "warfare";
 
   private inspectedPlayer = 0;
@@ -188,6 +189,7 @@ export class EmpireView {
     this.previousAge = undefined;
     this.fingerprint = "";
     this.wallPage = 0;
+    this.technologyDetailsExpanded = false;
     this.pendingProduction.clear();
     this.pendingProductionResetTick = undefined;
     for (const key of Object.keys(this.buildAges))
@@ -212,6 +214,7 @@ export class EmpireView {
       this.render(true);
     }
   }
+  sortie(shift = false): void { this.dock.sortie(shift); }
 
   close(): boolean {
     if (!this.panel) return false;
@@ -268,25 +271,25 @@ export class EmpireView {
     const buildingUpgrade = vm.buildingUpgrade();
     actions.hidden = !refit && !buildingUpgrade;
     if (buildingUpgrade) {
-      const { upgrades, reason, cost, skipped } = buildingUpgrade;
-      const key = JSON.stringify([reason, cost, skipped, upgrades.map(u => [u.building.id, u.age])]);
+      const { upgrades, reason, cost, skipped, eligibleCount } = buildingUpgrade;
+      const key = JSON.stringify([reason, cost, skipped, eligibleCount, upgrades.map(u => [u.building.id, u.age])]);
       if (actions.dataset.key !== key) {
         actions.dataset.key = key;
         const tiers = [...new Set(upgrades.map(u => AGE_NAMES[AGES.indexOf(u.age)]))].join(" / ");
         const items = Object.entries(cost.items ?? {}).map(([id, n]) => `${n} ${id}`).join(" · ");
         actions.innerHTML = !upgrades.length && reason === "Military buildings upgrade automatically with research"
           ? `<small>${escape(reason)}</small>`
-          : `<button ${reason ? "disabled" : ""}>Upgrade ${upgrades.length} Building${upgrades.length === 1 ? "" : "s"}${tiers ? ` to ${tiers}` : ""} <kbd>U</kbd></button><small>${escape(reason ?? `${fmt(cost.gold ?? 0)} gold${items ? ` · ${items}` : ""} · production pauses${skipped ? ` · ${skipped} ineligible skipped` : ""}`)}</small>`;
+          : `<button ${reason ? "disabled" : ""}>Upgrade ${upgrades.length}/${eligibleCount + skipped} Building${upgrades.length === 1 ? "" : "s"}${tiers ? ` to ${tiers}` : ""} <kbd>U</kbd></button><small>${escape(reason ?? `${fmt(cost.gold ?? 0)} gold${items ? ` · ${items}` : ""} · production pauses${skipped ? ` · ${skipped} ineligible skipped` : ""}`)}</small>`;
       }
     }
 
     if (
       !buildingUpgrade && refit &&
       actions.dataset.key !==
-        `${refit.reason}:${refit.target?.id}:${refit.eligibleCount}:${refit.cost?.gold}:${JSON.stringify(refit.cost?.items)}:${refit.selected.map((s) => s.id).join()}`
+        `${refit.reason}:${refit.target?.id}:${refit.eligibleCount}:${refit.totalCount}:${refit.cost?.gold}:${JSON.stringify(refit.cost?.items)}:${refit.selected.map((s) => s.id).join()}`
     ) {
-      actions.dataset.key = `${refit.reason}:${refit.target?.id}:${refit.eligibleCount}:${refit.cost?.gold}:${JSON.stringify(refit.cost?.items)}:${refit.selected.map((s) => s.id).join()}`;
-      actions.innerHTML = `<button ${refit.reason || !refit.target ? "disabled" : ""}>Upgrade ${refit.affordable.length}/${refit.eligibleCount} <kbd>U</kbd></button><small>${escape(refit.reason ?? `${refit.target!.name} · ${fmt(refit.cost!.gold ?? 0)} gold · ${refit.affordable.length} of ${refit.eligibleCount} eligible · 10 sec · promotion resets`)}</small>`;
+      actions.dataset.key = `${refit.reason}:${refit.target?.id}:${refit.eligibleCount}:${refit.totalCount}:${refit.cost?.gold}:${JSON.stringify(refit.cost?.items)}:${refit.selected.map((s) => s.id).join()}`;
+      actions.innerHTML = `<button ${refit.reason || !refit.target ? "disabled" : ""}>Upgrade ${refit.affordable.length}/${refit.totalCount} <kbd>U</kbd></button><small>${escape(refit.reason ?? `${refit.target!.name} · ${fmt(refit.cost!.gold ?? 0)} gold · ${refit.affordable.length} of ${refit.eligibleCount} eligible · 10 sec · promotion resets`)}</small>`;
     }
 
     if (this.panel && performance.now() - this.lastRender > 500)
@@ -333,13 +336,24 @@ export class EmpireView {
   }
 
   private click(event: Event): void {
+    const target = event.target as HTMLElement;
     const button = (event.target as HTMLElement).closest<HTMLButtonElement>(
       "button",
     );
+    if (this.vm && this.panel === "technology" &&
+      (button?.hasAttribute("data-details-toggle") ||
+        (!button && target.closest(".technology-detail")))) {
+      this.technologyDetailsExpanded = !this.technologyDetailsExpanded;
+      this.render(true);
+      if (!this.technologyDetailsExpanded)
+        this.root.querySelector<HTMLElement>(".technology-detail-body")!.scrollTop = 0;
+      return;
+    }
     if (!button || button.disabled || !this.vm) return;
 
     const d = button.dataset;
     if (d.tree) {
+      this.technologyDetailsExpanded = false;
       this.inspectedTree = d.tree as Tree;
       this.inspectedTechnology = "";
       this.render(true);
@@ -351,12 +365,14 @@ export class EmpireView {
       return;
     }
     if (d.age) {
+      this.technologyDetailsExpanded = false;
       this.browsedAge = d.age as Age;
       this.inspectedTechnology = "";
       this.render(true);
     }
 
     if (d.node) {
+      if (this.inspectedTechnology !== d.node) this.technologyDetailsExpanded = false;
       this.inspectedTechnology = d.node;
       this.inspectedTree = this.vm
         .nodes(this.browsedAge)
@@ -386,8 +402,11 @@ export class EmpireView {
       return;
     }
     if (d.tradeFaction) {
-      const otherId = Number(d.tradeFaction), blocked = this.vm.expansion.tradeControls?.[this.playerId]?.blocked.includes(otherId) ?? false;
-      this.actions.command({ type: "trade-block", playerId: this.playerId, otherId, blocked: !blocked }); return;
+      const otherId = Number(d.tradeFaction), naval = d.tradePartnerMode === "sea";
+      if (this.vm.expansion.tradeEnemies?.[this.playerId]?.includes(otherId)) return;
+      const control = this.vm.expansion.tradeControls?.[this.playerId];
+      const blocked = (naval ? control?.seaBlocked : control?.landBlocked)?.includes(otherId) ?? control?.blocked.includes(otherId) ?? false;
+      this.actions.command({ type: "trade-block", playerId: this.playerId, otherId, naval, blocked: !blocked }); return;
     }
     if (d.priorityRecipe && d.productionType) {
       const buildingType = d.productionType as BuildingType;
@@ -456,10 +475,13 @@ export class EmpireView {
         otherId: Number(d.other),
         action: d.diplomacy as
           | "offer"
+          | "offer-long-term"
           | "accept"
           | "reject"
           | "renew"
-          | "break",
+          | "break"
+          | "declare"
+          | "end-long-term",
       });
 
     if (d.inspect) this.inspectPlayer(Number(d.inspect));
@@ -475,27 +497,14 @@ export class EmpireView {
       });
 
     if (d.sortie) {
-      const ids = this.vm.expansion.aircraft
-        .filter((a) => a.playerId === this.playerId && a.state === "ready")
-        .map((a) => a.id);
-      this.actions.target(
-        (x, y) =>
-          this.actions.command({
-            type: "sortie",
-            playerId: this.playerId,
-            aircraftIds: ids,
-            x,
-            y,
-          }),
-        "Click a sortie target · Escape cancels",
-      );
+      this.sortie();
     }
 
     if (d.launch) {
       const id = Number(d.launcher),
         payload = d.launch as "icbm" | "hydrogen" | "mirv";
       this.actions.target(
-        (x, y) =>
+        (x, y, gesture) =>
           this.actions.command({
             type: "launch",
             playerId: this.playerId,
@@ -503,6 +512,7 @@ export class EmpireView {
             payload,
             x,
             y,
+            buildingId: gesture?.buildingId,
           }),
         `Click ${payload.toUpperCase()} target · Escape cancels`,
       );
@@ -591,11 +601,16 @@ export class EmpireView {
         content.querySelector<HTMLElement>(".technology-tree-scroll") ?? content
       ).scrollTop;
 
+    const oldDetail = content.querySelector<HTMLElement>(".technology-detail");
+    const detailScroll = oldDetail?.querySelector<HTMLElement>(".technology-detail-body")?.scrollTop ?? 0;
     content.innerHTML = html;
     this.root.querySelector("#empire-panel-footer")!.innerHTML = footer;
     (
       content.querySelector<HTMLElement>(".technology-tree-scroll") ?? content
     ).scrollTop = scroll;
+    const newDetail = content.querySelector<HTMLElement>(".technology-detail");
+    if (newDetail && newDetail.dataset.detailNode === oldDetail?.dataset.detailNode)
+      newDetail.querySelector<HTMLElement>(".technology-detail-body")!.scrollTop = detailScroll;
 
     if (identity)
       panel
@@ -608,6 +623,7 @@ export class EmpireView {
       new TechnologyViewModel(this.vm!, this.browsedAge),
       this.inspectedTechnology,
       this.inspectedTree,
+      this.technologyDetailsExpanded,
     );
   }
 
@@ -697,11 +713,11 @@ export class EmpireView {
       )
       .join(
         "",
-      )}<h3>Fortification controls</h3><p>Your troops and allies can cross friendly walls anywhere. Gates appear automatically and are visual only.</p>${repair ? `<button data-repair="${repair.id}">Repair selected ${BUILDING_RULES[repair.type].name}</button>` : "<p>Select an owned building to repair it.</p>"}<p>${walls.length} wall segments · page ${wallPage + 1} / ${Math.max(1, Math.ceil(walls.length / 16))}</p><button data-wall-page="${Math.max(0, wallPage - 1)}" ${wallPage === 0 ? "disabled" : ""}>Previous walls</button><button data-wall-page="${wallPage + 1}" ${(wallPage + 1) * 16 >= walls.length ? "disabled" : ""}>Next walls</button>${walls
+      )}<h3>Fortification controls</h3><p>Your troops and allies can cross friendly walls anywhere. Gates appear automatically and are visual only.</p>${repair ? `<button data-repair="${repair.id}">Repair selected ${BUILDING_RULES[repair.type].name}</button>` : "<p>Select an owned building to repair it.</p>"}<p>${walls.length} wall / trench connections · page ${wallPage + 1} / ${Math.max(1, Math.ceil(walls.length / 16))}</p><button data-wall-page="${Math.max(0, wallPage - 1)}" ${wallPage === 0 ? "disabled" : ""}>Previous connections</button><button data-wall-page="${wallPage + 1}" ${(wallPage + 1) * 16 >= walls.length ? "disabled" : ""}>Next connections</button>${walls
       .slice(wallPage * 16, wallPage * 16 + 16)
       .map(
         (w) =>
-          `<button data-wall-repair="${w.id}">Repair wall #${w.id}</button>`,
+          `<button data-wall-repair="${w.id}">Repair ${w.kind === "trench" ? "trench run" : "wall"} #${w.id}</button>`,
       )
       .join("")}`;
   }
@@ -737,14 +753,17 @@ export class EmpireView {
   private tradeDiplomacyControl(): string {
     const vm = this.vm!, p = vm.faction(this.inspectedPlayer)?.player;
     if (!p || p.id === this.playerId || p.kind === "tribe" || p.eliminated) return "";
-    const blocked = vm.expansion.tradeControls?.[this.playerId]?.blocked.includes(p.id) ?? false;
-    return `<button data-trade-faction="${p.id}" aria-pressed="${blocked}">${blocked ? "Resume" : "Stop"} trade with ${escape(p.name)}</button>`;
+    const control = vm.expansion.tradeControls?.[this.playerId], atWar = vm.expansion.tradeEnemies?.[this.playerId]?.includes(p.id);
+    return ["land", "sea"].map(mode=>{
+      const blocked = (mode === "sea" ? control?.seaBlocked : control?.landBlocked)?.includes(p.id) ?? control?.blocked.includes(p.id) ?? false;
+      return `<button data-trade-faction="${p.id}" data-trade-partner-mode="${mode}" aria-pressed="${blocked}" ${atWar ? "disabled" : ""}>${mode === "sea" ? "Sea" : "Overland"} trade · ${atWar ? "Unavailable during war" : blocked ? "Resume" : "Stop"}</button>`;
+    }).join("");
   }
   private diplomacyContent(): string {
     const vm = this.vm!,
       faction = vm.faction(this.inspectedPlayer);
     if (!faction) return "Choose a faction";
-    const p = faction.player;
+    const p = faction.player, forces = vm.militaryCounts(p.id);
 
     const treaty = vm.expansion.diplomacy.alliances.find(
         (t) =>
@@ -753,6 +772,18 @@ export class EmpireView {
       ),
       incoming = vm.incoming.find((o) => o.proposer === p.id);
 
-    return `<div class="diplomacy-identity" data-faction-kind="${p.kind === "tribe" ? "tribe" : p.ai ? "nation" : "player"}"><span class="diplomacy-kind">${p.kind === "tribe" ? "Tribe" : p.ai ? "AI nation" : "Player nation"}</span><h3>${escape(p.name)}</h3></div>${p.ai ? `<p><strong>${escape(faction.identity.personalityName)}</strong>${faction.identity.originName ? ` · ${escape(faction.identity.originName)}` : ""}</p><p>${escape(faction.identity.description)}</p>` : ""}<p class="faction-age"><strong>Current age: ${faction.ageName}</strong></p><p>${p.kind === "tribe" ? "Tribes do not negotiate" : treaty ? `Allied · ${Math.ceil((treaty.expiresTick - vm.state.tick) / 20)}s remaining` : "Independent faction"}</p><p>${fmt(p.land)} land · ${fmt(p.gold)} gold</p>${p.kind === "tribe" || p.eliminated ? "" : treaty ? `<button data-diplomacy="renew" data-other="${p.id}">Agree to renewal</button><button data-diplomacy="break" data-other="${p.id}">Break alliance · 30s betrayal penalty</button>` : incoming ? `<button data-diplomacy="accept" data-other="${p.id}">Accept alliance</button><button data-diplomacy="reject" data-other="${p.id}">Reject</button>` : `<button data-diplomacy="offer" data-other="${p.id}">Offer alliance</button>`}<p>Allies retain their own units, supplies, buildings and research.</p>`;
+    const outgoing = vm.expansion.diplomacy.offers.find(o => o.proposer === this.playerId && o.recipient === p.id),
+      atWar = (vm.expansion.diplomacy.wars ?? []).some(w => (w.a === this.playerId && w.b === p.id) || (w.b === this.playerId && w.a === p.id)),
+      seconds = treaty ? Math.max(0, Math.ceil((treaty.expiresTick - vm.state.tick) / 20)) : 0,
+      status = treaty?.longTerm ? (treaty.ending ? `Alliance ends in ${seconds}s` : "Long Term Alliance · renews automatically") : treaty ? `Allied · ${seconds}s remaining` : atWar ? "At war" : "Independent faction";
+    let buttons = "";
+    if (p.kind !== "tribe" && !p.eliminated && p.id !== this.playerId) {
+      if (incoming) buttons += `<button data-diplomacy="accept" data-other="${p.id}">Accept ${incoming.longTerm ? "Long Term Alliance" : "alliance"}</button><button data-diplomacy="reject" data-other="${p.id}">Reject</button>`;
+      else if (outgoing) buttons += `<p>${outgoing.longTerm ? "Long Term Alliance" : "Alliance"} offered · awaiting acceptance</p>`;
+      else if (!treaty?.longTerm) buttons += `${treaty ? "" : `<button data-diplomacy="offer" data-other="${p.id}">Offer alliance</button>`}<button data-diplomacy="offer-long-term" data-other="${p.id}">Long Term Alliance</button>`;
+      if (treaty) buttons += `${treaty.longTerm ? (treaty.ending ? "" : `<button data-diplomacy="end-long-term" data-other="${p.id}">End alliance in 3 minutes</button>`) : `<button data-diplomacy="renew" data-other="${p.id}">Agree to renewal</button>`}<button data-diplomacy="break" data-other="${p.id}">Break alliance · ${treaty.longTerm ? 60 : 30}s betrayal penalty</button>`;
+      if (!atWar) buttons += `<button data-diplomacy="declare" data-other="${p.id}">Declare War${treaty ? ` · ${treaty.longTerm ? 120 : 30}s betrayal penalty` : ""}</button>`;
+    }
+    return `<div class="diplomacy-identity" data-faction-kind="${p.kind === "tribe" ? "tribe" : p.ai ? "nation" : "player"}"><span class="diplomacy-kind">${p.kind === "tribe" ? "Tribe" : p.ai ? "AI nation" : "Player nation"}</span><h3>${escape(p.name)}</h3></div>${p.ai ? `<p><strong>${escape(faction.identity.personalityName)}</strong>${faction.identity.originName ? ` · ${escape(faction.identity.originName)}` : ""}</p><p>${escape(faction.identity.description)}</p>` : ""}<p class="faction-age"><strong>Current age: ${faction.ageName}</strong></p><p>${p.kind === "tribe" ? "Tribes do not negotiate" : status}</p><p>${fmt(p.land)} land · ${fmt(p.gold)} gold</p><p>${fmt(forces.squads)} squads · ${fmt(forces.boats)} warships · ${fmt(forces.planes)} plane squadrons</p>${buttons}${treaty?.longTerm ? "" : "<p>Long Term Alliance requires mutual acceptance, renews automatically, and carries a 60s betrayal penalty.</p>"}`;
   }
 }

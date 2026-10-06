@@ -76,6 +76,16 @@ function addPort(match: Skirmish, xTile: number, yTile: number, playerId = 1) {
 }
 
 describe("Warship patrol and dock repair logic", () => {
+  it("separates shared voyages by half-cell lanes and restores them deterministically",()=>{
+    const {match}=createMatch(true),ships=Array.from({length:4},()=>spawnWarship(match,25,25));
+    const destination=match.map.ref(45,25);
+    expect(match.applyCommand({type:"sail",playerId:1,shipIds:ships.map(s=>s.id),tile:destination})).toBeNull();
+    for(let i=0;i<240;i++)match.step();
+    expect(new Set(ships.map(s=>`${s.x},${s.y}`)).size).toBe(4);
+    const saved=match.checkpoint(),cold=new Skirmish(match.map,match.options);cold.restore(saved);
+    for(let i=0;i<50;i++){match.step();cold.step();}
+    expect(cold.checkpoint()).toEqual(match.checkpoint());
+  });
   it("plans recovery and return voyages without clearing repair ownership or searching synchronously", () => {
     const { match } = createMatch(true), port = addPort(match, 19, 25);
     const ship = spawnWarship(match, 35, 25);
@@ -115,14 +125,11 @@ describe("Warship patrol and dock repair logic", () => {
     expect(ship.repairState).toBe("patrolling");
 
     // Advance until ship reaches destination
-    for (let i = 0; i < 200 && ship.destination !== null; i++) {
+    for (let i = 0; i < 200 && match.tileOf(ship) !== targetTile; i++) {
       match.step();
     }
-    expect(ship.destination).toBeNull();
     expect(match.tileOf(ship)).toBe(targetTile);
-
-    // Force dwell timer to expire
-    match.updateShip(ship.id, { patrolDwellTicks: 0 });
+    // Arrival immediately starts another local patrol leg.
     match.step();
 
     // Ship should have picked a wander tile within small patrol radius (<= 2 cells)

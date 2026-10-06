@@ -9,8 +9,9 @@ import type {
   SnapshotPacket,
   SquadType,
 } from "./Protocol";
-import { BUILDING_RULES, MAX_SHIPS } from "./Rules";
+import { BUILDING_RULES, MAX_FACTION_SHIPS } from "./Rules";
 import { MAX_SQUADS } from "./Protocol";
+import { packSnapshotDetails, unpackSnapshotDetails, validateSnapshotDetails } from "./SnapshotDetails";
 
 export type SnapshotSource = Omit<Snapshot, "buildings" | "squads" | "ships"> & {
   readonly buildings: readonly Building[];
@@ -29,6 +30,33 @@ const ORDER_TYPES: Order["type"][] = [
   "move",
   "attack",
 ];
+
+/** Validate the new family before either decoder or presentation obligations
+ * mutate. Retained-memory qualification remains governed by StateLimits. */
+export function validateBarrierChanges(packet: SnapshotPacket): void {
+  const changes = packet.barrierChanges;
+  if (!changes) return;
+  if (typeof changes.reset !== "boolean" || !Array.isArray(changes.rows) || !(changes.removed instanceof Int32Array))
+    throw new Error("Invalid canonical barrier changes");
+  const seen = new Set<number>(), size = packet.width * packet.height;
+  for (const id of changes.removed) if (!Number.isSafeInteger(id) || id < 0) throw new Error("Invalid canonical barrier identity");
+  for (const wall of changes.rows) {
+      if (wall.kind !== undefined && wall.kind !== "trench") throw new Error("Invalid canonical barrier kind");
+    if (!Number.isSafeInteger(wall.id) || wall.id < 0 || seen.has(wall.id) ||
+      !Number.isSafeInteger(wall.playerId) || wall.playerId < 0 || wall.playerId >= 255 ||
+      !Number.isFinite(wall.health) || !Number.isFinite(wall.maxHealth) || !Number.isFinite(wall.remainingTicks) ||
+      !Array.isArray(wall.tiles) || wall.tiles.some((tile: number) => !Number.isSafeInteger(tile) || tile < 0 || tile >= size))
+      throw new Error("Invalid canonical barrier record");
+    seen.add(wall.id);
+  }
+  const states = new Set<number>();
+  if (changes.states !== undefined && !Array.isArray(changes.states)) throw new Error("Invalid canonical barrier states");
+  for (const state of changes.states ?? []) {
+    if (!Number.isSafeInteger(state.id) || state.id < 0 || states.has(state.id) ||
+      !Number.isFinite(state.health) || !Number.isFinite(state.remainingTicks)) throw new Error("Invalid canonical barrier state");
+    states.add(state.id);
+  }
+}
 
 function writeOrder(output: Int32Array, at: number, order: Order) {
   output[at] = ORDER_TYPES.indexOf(order.type);
@@ -62,12 +90,14 @@ export class SnapshotEncoder {
   private journal?: TileChangeJournal;
   private journalRevision = 0;
   readonly diagnostics = { tileReads: 0, squadReads: 0, shipReads: 0, buildingReads: 0,
-    resourceReads: 0, resourceSignatureRows: 0, entityFallbacks: 0 };
+    resourceReads: 0, resourceSignatureRows: 0, entityFallbacks: 0, barrierReads: 0 };
   private entityCursors?: {squads: EntityChangeJournal; ships: EntityChangeJournal; buildings: EntityChangeJournal;
     squadRevision: number; shipRevision: number; buildingRevision: number};
   private resourceJournal?: EntityChangeJournal;
   private resourceCursor = 0;
   private resourceGeometryRevision = -1;
+  private barrierJournal?: EntityChangeJournal;
+  private barrierCursor = 0;
   private selectEntities(source: SnapshotSource, facts: ReplicatedEntities | undefined, reset: boolean) {
     const previous = this.entityCursors;
     const squadChanges = !reset && facts && previous?.squads === facts.squads.journal
@@ -108,6 +138,7 @@ export class SnapshotEncoder {
     const output:Partial<NonNullable<Snapshot["expansion"]>>={};
     for(const key of Object.keys(source) as (keyof typeof source)[]){
       if(key==="roads" || key==="deposits")continue;
+      if(key==="barriers" && facts?.barriers && !full)continue;
       const revision=metadata?.revisions[key];
       if(full || revision===undefined || this.metadataRevisions[key]!==revision)Object.assign(output,{[key]:source[key]});
     }
@@ -134,20 +165,21 @@ export class SnapshotEncoder {
       baseline: new SnapshotEncoder(true).encode(source, journal, facts),
     };
   }
-  encode(source: SnapshotSource, journal?: TileChangeJournal, facts?: ReplicatedEntities): SnapshotPacket {
+  encode(source: SnapshotSource, journal?: TileChangeJournal, facts?: ReplicatedEntities,
+    presentation?: { tiles: Uint32Array; reset: boolean; resourcesChanged?: boolean; roadsChanged?: boolean }): SnapshotPacket {
     const reset =
-      !this.previousTiles ||
+      presentation?.reset ?? (!this.previousTiles ||
       this.width !== source.width ||
-      this.height !== source.height;
+      this.height !== source.height);
     if (reset) {
-      this.previousTiles = new Uint32Array(source.owners.length);
+      this.previousTiles = presentation ? new Uint32Array(0) : new Uint32Array(source.owners.length);
       this.buildings.clear();
       this.width = source.width;
       this.height = source.height;
     }
     const tileChanges: number[] = [];
     const dirtyTiles = !reset && journal && journal === this.journal ? journal.since(this.journalRevision)?.sort((a, b) => a - b) : undefined;
-    const count = dirtyTiles?.length ?? source.owners.length;
+    const count = presentation ? 0 : dirtyTiles?.length ?? source.owners.length;
     this.diagnostics.tileReads = count;
     for (let index = 0; index < count; index++) {
       const tile = dirtyTiles ? dirtyTiles[index] : index;
@@ -239,18 +271,18 @@ export class SnapshotEncoder {
     const resources = facts?.resources;
     const nodes = source.expansion?.deposits ?? [];
     let geometry = this.depositGeometry;
-    if (!resources) {
+    if (!resources && presentation?.resourcesChanged !== false) {
       this.diagnostics.resourceSignatureRows += nodes.length;
       geometry = nodes.map(d => `${d.id}:${d.tile}:${d.resource}:${d.yieldPerSecond}`).join("|");
     }
-    const resourceReset = reset || (resources
+    const resourceReset = reset || (presentation ? presentation.resourcesChanged !== false : resources
       ? this.resourceJournal !== resources.journal || this.resourceGeometryRevision !== resources.geometryRevision
       : geometry !== this.depositGeometry || this.resourceJournal !== undefined);
     const changes = !resourceReset && resources && this.resourceJournal === resources.journal
       ? resources.journal.since(this.resourceCursor) : undefined;
     const resourceRows = changes ? changes.flatMap(change => {
       const node = resources!.byId(change.id); return node ? [node] : [];
-    }) : nodes;
+    }) : presentation?.resourcesChanged === false ? [] : nodes;
     this.diagnostics.resourceReads = resourceRows.length;
     const depositOwners: number[] = [];
     if (resourceReset) this.depositOwners.clear();
@@ -263,27 +295,49 @@ export class SnapshotEncoder {
     this.resourceCursor = resources?.journal.revision ?? 0;
     this.resourceGeometryRevision = resources?.geometryRevision ?? -1;
     const metadata=source.expansion?this.selectMetadata(source.expansion,facts,reset):undefined;
+    const barriers = facts?.barriers;
+    let barrierChanges: SnapshotPacket["barrierChanges"];
+    if (source.expansion && barriers && !metadata!.full) {
+      const changes = this.barrierJournal === barriers.journal ? barriers.journal.since(this.barrierCursor) : undefined;
+      if (!changes) barrierChanges = { reset: true, rows: source.expansion.barriers, removed: new Int32Array() };
+      else if (changes.length) {
+        const rows: NonNullable<Snapshot["expansion"]>["barriers"][number][] = [], removed: number[] = [], states: { id: number; health: number; remainingTicks: number }[] = [];
+        for (const change of changes) {
+          const wall = barriers.byId(change.id);
+          if (change.removed || !wall) removed.push(change.id);
+          if (wall) {
+            if (change.added > this.barrierCursor) rows.push(wall);
+            else states.push({ id: wall.id, health: wall.health, remainingTicks: wall.remainingTicks });
+          }
+        }
+        barrierChanges = { reset: false, rows, removed: new Int32Array(removed), states: states.length ? states : undefined };
+      }
+    }
+    this.barrierJournal = barriers?.journal; this.barrierCursor = barriers?.journal.revision ?? 0;
+    this.diagnostics.barrierReads = source.expansion ? metadata!.full || !barriers ? source.expansion.barriers.length :
+      (barrierChanges?.rows.length ?? 0) + (barrierChanges?.states?.length ?? 0) : 0;
     const expansion = source.expansion
       ? {
           ...metadata!.output,
           deposits: resourceReset ? source.expansion.deposits.map(d => ({...d})) : undefined,
           depositOwners: depositOwners.length ? new Int32Array(depositOwners) : undefined,
           roads:
-            reset || this.previousRoadRevision !== source.expansion.roadRevision
-              ? source.expansion.roads
+            reset || (presentation ? presentation.roadsChanged !== false : this.previousRoadRevision !== source.expansion.roadRevision)
+              ? source.expansion.roads?.slice()
               : undefined,
         }
       : undefined;
     this.previousRoadRevision = source.expansion?.roadRevision ?? -1;
     return {
       reset,
+      barrierChanges,
       entityMode: facts ? (selected.full ? "full" : "delta") : undefined,
       removedSquads: facts && selected.squads.removed.length ? new Int32Array(selected.squads.removed) : undefined,
       removedShips: facts && selected.ships.removed.length ? new Int32Array(selected.ships.removed) : undefined,
       tick: source.tick,
       width: source.width,
       height: source.height,
-      tiles: new Uint32Array(tileChanges),
+      tiles: presentation?.tiles ?? new Uint32Array(tileChanges),
       squads,
       orders,
       buildingChanges: new Int32Array(changed),
@@ -291,62 +345,13 @@ export class SnapshotEncoder {
       players: source.players.map((p) => ({ ...p })),
       expansion,
       expansionMode:metadata?(metadata.full?"full":"delta"):undefined,
-      squadDetails: source.expansion || selected.squads.rows.some(s => s.planningPaused || s.movementStatus)
-        ? selected.squads.rows.map((s) => ({
-            id: s.id,
-            definitionId: s.definitionId,
-            xp: s.xp,
-            deploymentTicks: s.deploymentTicks,
-            nextAttackTick: s.nextAttackTick,
-            lastAttackTick: s.lastAttackTick,
-            planningPaused: s.planningPaused,
-            movementStatus: s.movementStatus ? {...s.movementStatus,blockerIds:[...s.movementStatus.blockerIds]} : undefined,
-            refit: s.refit ? {...s.refit} : s.refit,
-            charge: s.charge ? {...s.charge} : s.charge,
-            chargeReadyTick: s.chargeReadyTick,
-            structureTarget: s.structureTarget ? {...s.structureTarget} : s.structureTarget,
-          }))
-        : undefined,
-      buildingDetails: source.expansion
-        ? selected.buildings.rows.map((b) => ({
-            id: b.id,
-            buildTicks: b.buildTicks,
-            age: b.age,
-            health: b.health,
-            maxHealth: b.maxHealth,
-            nextAttackTick: b.nextAttackTick,
-            launchReadyTick: b.launchReadyTick,
-          }))
-        : undefined,
-      ships: selected.ships.rows.map((s) => ({
-        id: s.id,
-        playerId: s.playerId,
-        kind: s.kind,
-        x: s.x,
-        y: s.y,
-        health: s.health,
-        destination: s.destination,
-        waypoints: [...s.waypoints],
-        fighting: s.fighting,
-        boarding: s.boarding
-          ? { ...s.boarding, squadIds: [...s.boarding.squadIds] }
-          : null,
-        definitionId: s.definitionId,
-        xp: s.xp,
-        planningPaused: s.planningPaused,
-        refit: s.refit ? {...s.refit} : s.refit,
-        attackTargetId: s.attackTargetId,
-        lastPlanTick: s.lastPlanTick,
-        nextAttackTick: s.nextAttackTick,
-        patrolTile: s.patrolTile,
-        repairPortId: s.repairPortId,
-        repairState: s.repairState,
-        shoreTransfer: s.shoreTransfer ? {
-          capacity:s.shoreTransfer.capacity,phase:s.shoreTransfer.phase,
-          destinationTile:s.shoreTransfer.destinationTile,landingTile:s.shoreTransfer.landingTile,
-        } : undefined,
-      })),
-      volleys: source.volleys.map((v) => ({ ...v })),
+      details: packSnapshotDetails(
+        source.expansion || selected.squads.rows.some(s => s.planningPaused || s.movementStatus) ? selected.squads.rows : undefined,
+        source.expansion ? selected.buildings.rows : undefined,
+        selected.ships.rows, source.volleys,
+      ),
+      ships: [],
+      volleys: [],
       winner: source.winner,
       combatTicks: source.combatTicks,
     };
@@ -354,14 +359,21 @@ export class SnapshotEncoder {
 }
 
 export function snapshotTransfers(packet: SnapshotPacket): ArrayBuffer[] {
+  const details = packet.details;
   return [
     packet.tiles, packet.squads, packet.orders, packet.buildingChanges, packet.removedBuildings,
     ...(packet.removedSquads ? [packet.removedSquads] : []),
     ...(packet.removedShips ? [packet.removedShips] : []),
+    ...(packet.expansion?.roads ? [packet.expansion.roads] : []),
+    ...(packet.expansion?.depositOwners ? [packet.expansion.depositOwners] : []),
+    ...(packet.barrierChanges ? [packet.barrierChanges.removed] : []),
+    ...(details ? [details.ships, details.volleys, details.ids,
+      ...(details.squads ? [details.squads] : []), ...(details.buildings ? [details.buildings] : [])] : []),
   ].map((array) => array.buffer as ArrayBuffer);
 }
 
 export class SnapshotDecoder {
+  private readonly barriers = new Map<number, NonNullable<Snapshot["expansion"]>["barriers"][number]>();
   private expansionMetadata?:Partial<NonNullable<Snapshot["expansion"]>>;
   private roads: Uint32Array = new Uint32Array();
   private readonly squads = new Map<number, Snapshot["squads"][number]>();
@@ -374,7 +386,23 @@ export class SnapshotDecoder {
   private claims = new Uint8Array();
   private progress = new Uint8Array();
   private readonly buildings = new Map<number, Building>();
+  validate(packet: SnapshotPacket): void {
+    if (packet.details) validateSnapshotDetails(packet.details);
+    validateBarrierChanges(packet);
+    if (packet.barrierChanges && !this.expansionMetadata && !packet.expansion?.barriers)
+      throw new Error("Barrier delta has no metadata baseline");
+    const changes = packet.barrierChanges;
+    if (changes?.states?.length) {
+      const removed = new Set(changes.removed), upserts = new Set(changes.rows.map(wall => wall.id));
+      const fresh = packet.expansion?.barriers && new Set(packet.expansion.barriers.map(wall => wall.id));
+      for (const state of changes.states)
+        if (!upserts.has(state.id) && (changes.reset || removed.has(state.id) || !(fresh ? fresh.has(state.id) : this.barriers.has(state.id))))
+          throw new Error("Barrier state has no geometry baseline");
+    }
+  }
   decode(packet: SnapshotPacket,copyArrays=true,includeChangedTiles=true): Snapshot {
+    this.validate(packet);
+    const records = packet.details ? unpackSnapshotDetails(packet.details) : packet;
     const full = packet.reset || packet.entityMode !== "delta";
     const checkCapacity = (current: ReadonlyMap<number, unknown>, ids: Iterable<number>,
       removed: Int32Array | undefined, limit: number) => {
@@ -388,8 +416,9 @@ export class SnapshotDecoder {
       for (let at = 0; at < packet.squads.length; at += SQUAD_STRIDE) yield packet.squads[at];
     };
     checkCapacity(this.squads, squadIds(), packet.removedSquads, MAX_SQUADS * 255);
-    checkCapacity(this.ships, packet.ships.map(ship => ship.id), packet.removedShips, MAX_SHIPS * 255);
+    checkCapacity(this.ships, records.ships.map(ship => ship.id), packet.removedShips, MAX_FACTION_SHIPS * 255);
     if (packet.reset) {
+      this.barriers.clear();
       this.expansionMetadata=undefined;
       this.roads = new Uint32Array();
       this.deposits = [];
@@ -457,10 +486,10 @@ export class SnapshotDecoder {
         queuedOrders,
       });
     }
-    const details = new Map(packet.squadDetails?.map((s) => [s.id, s]));
+    const details = new Map(records.squadDetails?.map((s) => [s.id, s]));
     for (const s of squads) { Object.assign(s, details.get(s.id)); this.squads.set(s.id, s); }
-    for (const ship of packet.ships) this.ships.set(ship.id, structuredClone(ship));
-    for (const b of packet.buildingDetails ?? [])
+    for (const ship of records.ships) this.ships.set(ship.id, packet.details ? ship : structuredClone(ship));
+    for (const b of records.buildingDetails ?? [])
       Object.assign(this.buildings.get(b.id) ?? {}, b);
     if(packet.expansion){
       if(packet.expansionMode!=="delta")this.expansionMetadata={};
@@ -469,6 +498,18 @@ export class SnapshotDecoder {
         if(key==="deposits" || key==="depositOwners" || key==="roads" || packet.expansion[key]===undefined)continue;
         Object.assign(this.expansionMetadata,{[key]:structuredClone(packet.expansion[key])});
       }
+    }
+    if (packet.expansion?.barriers) {
+      this.barriers.clear();
+      for (const wall of this.expansionMetadata!.barriers!) this.barriers.set(wall.id, wall);
+    }
+    if (packet.barrierChanges) {
+      if (!this.expansionMetadata) throw new Error("Barrier delta has no metadata baseline");
+      if (packet.barrierChanges.reset) this.barriers.clear();
+      for (const id of packet.barrierChanges.removed) this.barriers.delete(id);
+      for (const wall of packet.barrierChanges.rows) this.barriers.set(wall.id, structuredClone(wall));
+      for (const state of packet.barrierChanges.states ?? []) Object.assign(this.barriers.get(state.id)!, state);
+      this.expansionMetadata.barriers = [...this.barriers.values()];
     }
     if (packet.expansion?.roads) this.roads = packet.expansion.roads;
     if (packet.reset || packet.expansion?.deposits) this.depositGeometryRevision++;
@@ -497,7 +538,7 @@ export class SnapshotDecoder {
       players: packet.players,
       ships: copyArrays ? structuredClone([...this.ships.values()]) : [...this.ships.values()],
       buildings: copyArrays ? structuredClone([...this.buildings.values()]) : [...this.buildings.values()],
-      volleys: packet.volleys,
+      volleys: records.volleys,
       winner: packet.winner,
       combatTicks: packet.combatTicks,
       expansion: packet.expansion

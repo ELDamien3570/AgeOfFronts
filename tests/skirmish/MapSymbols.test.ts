@@ -8,7 +8,7 @@ import {
 import { SPRITE_FOOTPRINT } from "../../src/skirmish/client/UnitAnimation";
 
 describe("map symbol readability", () => {
-  it("shows bounded building art inside a square at close zoom and the original square marker at distant zoom", () => {
+  it("shows bounded building art inside its occupied footprint at close zoom and the original square marker at distant zoom", () => {
     expect(buildingSymbol(2, true, "barracks")).toMatchObject({
       artwork: false,
       size: 18,
@@ -16,22 +16,22 @@ describe("map symbol readability", () => {
     expect(buildingSymbol(32, true, "barracks")).toMatchObject({
       artwork: true,
     });
-    expect(buildingSymbol(32, true, "barracks").size).toBe(32);
+    expect(buildingSymbol(32, true, "barracks").size).toBe(64);
     expect(buildingSymbol(20, false, "barracks")).toMatchObject({
       artwork: false,
       size: 18,
     });
     for (const scale of [28, 40, 96]) {
       const symbol = buildingSymbol(scale, true, "barracks");
-      expect(symbol.size).toBe(scale);
-      expect(symbol.footprintSize).toBe(scale);
+      expect(symbol.size).toBe(scale * 2);
+      expect(symbol.footprintSize).toBe(scale * 2);
       expect(symbol.inset).toBeGreaterThan(0);
-      expect(symbol.size - symbol.inset * 2).toBeCloseTo(scale * 0.85);
+      expect(symbol.size - symbol.inset * 2).toBeCloseTo(scale * 1.85);
       const city = buildingSymbol(scale, true, "city");
-      expect(city.size).toBe(scale);
+      expect(city.size).toBe(scale * 3);
       expect(city.inset).toBe(0);
     }
-    expect(buildingSymbol(96, true, "city").size).toBe(96);
+    expect(buildingSymbol(96, true, "city").size).toBe(288);
     expect(buildingSymbol(2, true, "city").size).toBe(18);
   });
   it("keeps distant glyph pads opaque and only makes them transparent once artwork appears", () => {

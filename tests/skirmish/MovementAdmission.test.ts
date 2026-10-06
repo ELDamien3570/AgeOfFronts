@@ -21,6 +21,24 @@ function status(match: Skirmish) {
   return events[events.length - 1]?.status;
 }
 describe("transactional replacement movement", () => {
+  it("starts a small human formation within three ticks without increasing planning allowances", () => {
+    const {match,map,own}=fixture(),selected=own.slice(0,3);
+    own.forEach((s,i)=>match.updateSquad(s.id,{x:(10.5+i*1.5)*FIXED,y:10.5*FIXED}));
+    const origins=selected.map(s=>({x:s.x,y:s.y}));
+    const interactive=vi.spyOn(match.movementAdmission,"stepInteractive"),routes=vi.spyOn(match.routePlanner,"step");
+    expect(match.applyCommand({type:"order",playerId:1,squadIds:selected.map(s=>s.id),order:{type:"move",tile:map.ref(14,14)}})).toBeNull();
+    expect(selected.every((s,i)=>s.x===origins[i].x&&s.y===origins[i].y)).toBe(true);
+    for(let tick=0;tick<3;tick++){
+      const start=interactive.mock.results.length,routeStart=routes.mock.results.length;
+      match.step();
+      expect(interactive.mock.results.slice(start).reduce((sum,r)=>sum+(r.value as number),0)).toBeLessThanOrEqual(128);
+      expect(routes.mock.results.slice(routeStart)).toHaveLength(1);
+      expect(routes.mock.results[routeStart].value).toBeLessThanOrEqual(4096);
+    }
+    expect(status(match)).toBe("executed");
+    expect(selected.every((s,i)=>Math.hypot(s.x-origins[i].x,s.y-origins[i].y)>8)).toBe(true);
+  });
+
   it("splits a 100-squad command into resumable cohorts and preserves unchanged AI intentions", () => {
     const {match,map,own}=fixture(), template=own[0];
     const selected = retainSquads(match, [...match.squads.filter(s=>s.playerId!==1), ...Array.from({length:100},(_,i)=>({

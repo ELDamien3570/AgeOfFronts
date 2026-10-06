@@ -2,7 +2,8 @@ import { GameMapImpl } from "../../../src/core/game/GameMap";
 import { encodeState } from "../../../src/skirmish/multiplayer/StateCodec";
 import type { Snapshot, SnapshotPacket } from "../../../src/skirmish/Protocol";
 import { Skirmish } from "../../../src/skirmish/Simulation";
-import { SnapshotEncoder } from "../../../src/skirmish/SnapshotCodec";
+import { SnapshotEncoder, SnapshotDecoder } from "../../../src/skirmish/SnapshotCodec";
+import { encodeSnapshotFrame, decodeSnapshotFrame } from "../../../src/skirmish/multiplayer/SnapshotWireCodec";
 
 interface WorkerResponse {
   error?: string;
@@ -10,6 +11,7 @@ interface WorkerResponse {
   canonicalOnly?: boolean;
   canonicalSequence?: number;
   snapshot?: Snapshot;
+  viewPacket?: SnapshotPacket;
   decodeMs?: number;
   applyMs?: number;
   projectionMs?: number;
@@ -31,6 +33,7 @@ async function test() {
     { type: "module" },
   );
   const trace: unknown[] = [];
+  const packed = new URLSearchParams(location.search).has("packed"), decoder = new SnapshotDecoder();
   const receive = () =>
     new Promise<WorkerResponse>((resolve, reject) => {
       const timeout = setTimeout(
@@ -42,19 +45,25 @@ async function test() {
         (event: MessageEvent<WorkerResponse>) => {
           clearTimeout(timeout);
           if (event.data.error) reject(new Error(event.data.error));
-          else resolve(event.data);
+          else {
+            if (event.data.viewPacket) event.data.snapshot = decoder.decode(event.data.viewPacket, false);
+            resolve(event.data);
+          }
         },
         { once: true },
       );
     });
   async function send(packet: SnapshotPacket, presentation = true) {
-    const wire = await encodeState(packet),
+    const encoded = await encodeState(packet, undefined, {}, packed),
+      wire = packed ? decodeSnapshotFrame(encodeSnapshotFrame({ type: "match-state", matchId: "browser-test", packet: encoded,
+        tick: packet.tick, paused: false, disconnectedPlayerIds: [], executor: "server" }).buffer).packet : encoded,
       response = receive();
     worker.postMessage({
       ...wire,
       expectedMap: { width: 64, height: 48 },
       presentation,
-    });
+      packed,
+    }, wire.binary ? [wire.binary.buffer] : []);
     const value = await response;
     trace.push({
       canonicalOnly: value.canonicalOnly ?? false,
@@ -67,7 +76,7 @@ async function test() {
   }
   async function project() {
     const response = receive();
-    worker.postMessage({ type: "presentation" });
+    worker.postMessage({ type: "presentation", packed });
     return response;
   }
   try {
@@ -155,6 +164,7 @@ async function test() {
       map: "64x48 all land",
       seed: 42,
       canonicalPackets: 4,
+      transport: packed ? "binary-v1 / packed presentation" : "legacy text / cloned presentation",
       hiddenSnapshots: 0,
       trace,
     };

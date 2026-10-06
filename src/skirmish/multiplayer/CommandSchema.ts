@@ -64,7 +64,7 @@ export const commandSchema = z.discriminatedUnion("type", [
   }),
   command("reset-production-priorities"),
   command("trade-pause", { naval: z.boolean(), paused: z.boolean() }),
-  command("trade-block", { otherId: id, blocked: z.boolean() }),
+  command("trade-block", { otherId: id, blocked: z.boolean(), naval: z.boolean().optional() }),
   command("refit", { squadIds: ids, definitionId: text }),
   command("charge", { squadIds: squadOrderIds, ...point, targetId: id.optional(), fallbackOrder: z.union([
     z.object({type: z.literal("move"), tile: id}).strict(),
@@ -77,7 +77,7 @@ export const commandSchema = z.discriminatedUnion("type", [
   }),
   command("alliance", {
     otherId: id,
-    action: z.enum(["offer", "accept", "reject", "renew", "break"]),
+    action: z.enum(["offer", "offer-long-term", "accept", "reject", "renew", "break", "declare", "end-long-term"]),
   }),
   command("repair", {
     buildingId: id.optional(),
@@ -94,10 +94,12 @@ export const commandSchema = z.discriminatedUnion("type", [
   command("launch", {
     launcherId: id,
     payload: z.enum(["icbm", "hydrogen", "mirv"]),
+    buildingId: id.optional(),
     ...point,
   }),
   command("upgrade-building", { buildingIds: ids }),
   command("delete-building", { buildingId: id }),
+  command("delete-ship", { shipId: id }),
   command("cancel-recruitment", {
     category: z.enum(["land", "ship", "aircraft"]).optional(),
     definitionId: text.optional(),

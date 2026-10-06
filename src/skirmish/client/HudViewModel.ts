@@ -13,6 +13,7 @@ import {
 } from "../Rules";
 import { buildingTechnology } from "../content/Buildings";
 import { GUN_NEST_ATTACK, TRENCH_COVER } from "../content/Defences";
+import { missileDefenseRange, MISSILE_DEFENSE_RELOAD_TICKS } from "../content/MissileDefense";
 import { cityReserveIncome } from "../content/Economy";
 import { supplyItemName } from "../content/Equipment";
 import { resourceTechnology } from "../content/Resources";
@@ -57,6 +58,7 @@ export interface HudCard {
   compact?: { stats: HudStat[]; description: string };
   status?: string;
   meter?: { label: string; value: number; max: number };
+  tradeMeters?: { label: string; value: number; max: number }[];
   promotion?: { level: number; xp: number; next: number | null };
 }
 export interface SelectedEntity extends HudCard {
@@ -349,7 +351,12 @@ export class HudViewModel {
   }
 
   readonly buildingCounts = new Map<import("../Protocol").BuildingType, {total: number; ready: number}>();
-  constructor(readonly game: SkirmishViewModel) {
+  constructor(public game: SkirmishViewModel) {
+    this.update(game);
+  }
+  update(game: SkirmishViewModel): void {
+    this.game = game;
+    this.buildingCounts.clear();
     for (const building of game.state.buildings) {
       if (building.playerId !== game.playerId || (building.health ?? 1) <= 0) continue;
       const count = this.buildingCounts.get(building.type) ?? {total: 0, ready: 0};
@@ -741,6 +748,8 @@ export class HudViewModel {
         (sum, other) => sum + other.remainingTicks,
         0,
       );
+      const tradeSite = state.expansion?.tradeSites?.find(
+        s => s.playerId === b.playerId && s.tile === b.tile && (s.kind ?? (s.naval ? "port" : "factory")) === b.type);
       return {
         ...buildingCards[b.type],
         ref: `building:${b.id}`,
@@ -749,6 +758,10 @@ export class HudViewModel {
           ? `building-${b.age.toLowerCase()}-${b.type}`
           : undefined,
         category: "building",
+        ...(tradeSite ? { tradeMeters: [
+          ...(b.type === "city" ? [] : [{ label: "Cargo stock", value: tradeSite.cargo, max: tradeSite.maxCargo }]),
+          ...(tradeSite.receiving ? [{ label: "Land receiving capacity (base)", ...tradeSite.receiving }] : []),
+        ] } : {}),
         playerId: b.playerId,
         count: stack.length,
         title:
@@ -792,6 +805,13 @@ export class HudViewModel {
                 stat("Age", AGE_NAMES[AGES.indexOf(b.age ?? "StoneAge")]),
                 stat("Buildings", `${completed}/${stack.length} ready`),
                 ...this.buildingDetails(b),
+                ...(tradeSite && b.type !== "city" ? [stat("Cargo per departure", fmt(tradeSite.shipmentCapacity))] : []),
+                ...(b.type === "port" ? [stat("Sea receiving", "Unlimited")] : []),
+                ...(b.type === "missile-defence" ? [
+                  stat("Interception radius",`${completed ? missileDefenseRange(completed)/FIXED : 0} cells`),
+                  stat("Ready interceptors",`${stack.filter(other=>!other.remainingTicks && state.tick >= (other.nextAttackTick??0)).length}/${completed}`),
+                  stat("Reload per launcher",`${MISSILE_DEFENSE_RELOAD_TICKS/TICKS_PER_SECOND} sec`),
+                ] : []),
                 ...(b.type === "city"
                   ? [
                       stat(

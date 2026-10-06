@@ -38,6 +38,21 @@ function fixture() {
 }
 
 describe("lobby page", () => {
+  it("offers the Post-Modern starting preset with its opening rules", () => {
+    const { root, view, vm } = fixture();
+    vm.dialog = "create";
+    // jsdom does not provide the native modal-dialog API.
+    const original = Object.getOwnPropertyDescriptor(HTMLDialogElement.prototype, "showModal");
+    Object.defineProperty(HTMLDialogElement.prototype, "showModal", { configurable: true, value: vi.fn() });
+    try {
+      view.renderDialog(vm);
+    } finally {
+      if (original) Object.defineProperty(HTMLDialogElement.prototype, "showModal", original);
+      else Reflect.deleteProperty(HTMLDialogElement.prototype, "showModal");
+    }
+    expect(root.querySelector('select[name="startingAge"] option[value="PostModern"]')?.textContent).toBe("Post-Modern");
+    expect(root.querySelector("#lobby-dialog")?.textContent).toContain("all technologies and 1,000,000 gold");
+  });
   it.each(["home", "room"])("retains the connected native color selector and options during %s publications", page => {
     const {root,view,vm,actions}=fixture();
     if (page === "room") { vm.showLobby("africa"); view.render(vm); }

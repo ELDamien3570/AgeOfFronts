@@ -7,11 +7,12 @@ import { VESSEL } from "../../src/skirmish/content/Units";
 import { navalPower } from "../../src/skirmish/domain/AiNavalPlanner";
 import { NavalFactSequence } from "../../src/skirmish/domain/NavalFactSequence";
 
-function fixture(split = false) {
+function fixture(split = false, compact = false, island = false) {
   const data = new Uint8Array(100 * 70).fill(133);
-  for (let y = 20; y < 70; y++)
-    for (let x = 0; x < 100; x++) data[y * 100 + x] = 0;
+  for (let y = 20; y < (compact ? 36 : 70); y++)
+    for (let x = 0; x < (compact ? 16 : 100); x++) data[y * 100 + x] = 0;
   if (split) for (let y = 20; y < 70; y++) data[y * 100 + 50] = 133;
+  if(island){data.fill(0);for(let y=20;y<55;y++)for(let x=25;x<75;x++)data[y*100+x]=133;}
   const map = new GameMapImpl(100, 70, data, 2000),
     game = new Skirmish(map, {
       seed: 42,
@@ -34,7 +35,7 @@ function fixture(split = false) {
     id: game.allocateId(),
     playerId: player.id,
     type: "port" as const,
-    tile: map.ref(10, 19),
+    tile: island ? map.ref(25,30) : map.ref(10, 19),
     age: "StoneAge" as const,
     health: 1000,
     remainingTicks: 0,
@@ -94,6 +95,138 @@ function fixture(split = false) {
   };
 }
 describe("persistent concentrated port defense", () => {
+  it("covers different approaches around an island instead of clustering at its only port",()=>{
+    const f=fixture(false,false,true);for(let i=0;i<32;i++)f.addShip();
+    f.refresh();const groups=f.assess().patrolGroups!;
+    expect(groups).toHaveLength(4);
+    expect(groups.some(g=>f.map.x(g.anchor)<25)).toBe(true);
+    expect(groups.some(g=>f.map.x(g.anchor)>=75)).toBe(true);
+    expect(groups.some(g=>f.map.y(g.anchor)<20)).toBe(true);
+    expect(groups.some(g=>f.map.y(g.anchor)>=55)).toBe(true);
+  });
+  it("divides a quiet navy into groups of at most eight covering separated coastal sectors",()=>{
+    const f=fixture();for(let i=0;i<32;i++)f.addShip(f.player.id,10+i%4);
+    f.refresh();const mission=f.assess();
+    expect(mission.patrolGroups).toHaveLength(4);
+    expect(mission.patrolGroups!.every(group=>group.members.length===8)).toBe(true);
+    expect(new Set(mission.patrolGroups!.flatMap(group=>group.members)).size).toBe(32);
+    expect(new Set(mission.patrolGroups!.map(group=>group.anchor)).size).toBe(4);
+    expect(Math.max(...mission.patrolGroups!.map(group=>f.map.euclideanDistSquared(group.anchor,mission.anchor!)))).toBeGreaterThan(64**2);
+    const saved=f.game.checkpoint(),cold=new Skirmish(f.map,f.game.options);cold.restore(saved);
+    expect(cold.expansion!.economy.naval.missions.get(f.player.id)?.patrolGroups).toEqual(mission.patrolGroups);
+    for(const group of mission.patrolGroups!)expect(group.members.map(id=>cold.expansion!.economy.naval.fleetLane(cold.ship(id)!))).toEqual([0,1,2,3,0,1,2,3]);
+  });
+  it("patrols friendly shore despite a stronger fleet elsewhere in the sea", () => {
+    const f=fixture(); f.addShip();
+    for(let i=0;i<6;i++)f.addShip(1,80+i);
+    f.refresh();const mission=f.assess();
+    expect(mission.state).toBe("stage");
+    expect(mission.target).toBeUndefined();
+    expect(mission.patrolRoute!.length).toBeGreaterThan(2);
+    expect(f.map.euclideanDistSquared(mission.anchor!,mission.patrolGoal!)).toBeGreaterThan(16**2);
+    for(const tile of mission.patrolRoute!) {
+      expect(f.map.y(tile)).toBeLessThanOrEqual(22);
+      expect(f.game.waterPaths.walkable(tile)).toBe(true);
+    }
+    const saved=f.game.checkpoint(); f.game.restore(saved);
+    expect(f.game.expansion!.economy.naval.missions.get(f.player.id)?.patrolRoute).toEqual(mission.patrolRoute);
+  });
+  it("uses separate patrol arrival cells for small flotillas", () => {
+    const f=fixture();for(let i=0;i<16;i++) {
+      f.addShip(f.player.id,10+i%4);
+      for(let j=0;j<3;j++)f.game.allocateId();
+    }
+    f.refresh(); const apply=vi.spyOn(f.game,"applyCommand"); f.assess();
+    const sails=apply.mock.calls.map(([c])=>c).filter(c=>c.type==="sail");
+    expect(sails).toHaveLength(4);
+    expect(new Set(sails.map(c=>c.tile)).size).toBe(4);
+    expect(sails.every(c=>c.shipIds.length===4)).toBe(true);
+    const mission=f.planner.missions.get(f.player.id)!;
+    expect(mission.members.slice(0,4).map(id=>f.planner.fleetLane(f.game.ship(id)!))).toEqual([0,1,2,3]);
+    const saved=f.game.checkpoint(),cold=new Skirmish(f.map,f.game.options);cold.restore(saved);
+    for(let i=0;i<350;i++){f.game.step();cold.step();}
+    expect(cold.checkpoint()).toEqual(f.game.checkpoint());
+    expect(f.game.ships.every(s=>f.map.euclideanDistSquared(f.game.tileOf(s),mission.anchor!)>12**2)).toBe(true);
+  });
+  it("keeps an outbound interception when healthy ships spread beyond the assembly radius", () => {
+    const f=fixture(), first=f.addShip(), second=f.addShip(f.player.id,12), enemy=f.addShip(1,25);
+    f.refresh();
+    expect(f.assess().state).toBe("execute");
+    f.game.updateShip(first.id,{x:40.5*FIXED,destination:null});
+    f.game.updateShip(second.id,{x:52.5*FIXED,destination:null});
+    f.game.updateShip(enemy.id,{x:70.5*FIXED});
+    f.game.tick+=100;
+    f.refresh();
+    const apply=vi.spyOn(f.game,"applyCommand"),mission=f.assess();
+    expect(mission.state).toBe("execute");
+    const orders=apply.mock.calls.map(([c])=>c).filter(c=>c.type==="sail");
+    expect(orders.some(c=>c.tile===f.map.ref(70,21))).toBe(true);
+    expect(orders.some(c=>c.tile===mission.anchor)).toBe(false);
+  });
+  it("keeps a quiet offshore patrol active beyond the old port-defense timeout", () => {
+    const f=fixture(),ship=f.addShip();
+    f.refresh();
+    let mission=f.assess();
+    expect(f.map.euclideanDistSquared(mission.anchor!,mission.patrolGoal!)).toBeGreaterThanOrEqual(24**2);
+    for(let i=0;i<10;i++) {
+      const goal=mission.patrolGoal!;
+      f.game.updateShip(ship.id,{x:(f.map.x(goal)+.5)*FIXED,y:(f.map.y(goal)+.5)*FIXED,destination:null});
+      f.game.tick+=100;f.refresh();mission=f.assess();
+      expect(mission.state).toBe("stage");
+      expect(f.planner.allowsLocalPursuit(f.game.ship(ship.id)!)).toBe(true);
+    }
+  });
+  it("uses a shorter patrol leg when the sea cannot fit an offshore leg", () => {
+    const f=fixture(false,true);f.addShip();f.refresh();
+    const mission=f.assess();
+    expect(f.map.euclideanDistSquared(mission.anchor!,mission.patrolGoal!)).toBeGreaterThan(3**2);
+    expect(f.game.waterPaths.walkable(mission.patrolGoal!)).toBe(true);
+  });
+  it("concentrates a large fleet up to the existing faction vessel cap",()=>{
+    const f=fixture();for(let i=0;i<48;i++)f.addShip(f.player.id,10+i%10);
+    for(let i=0;i<20;i++)f.addShip(1,35+i%10);
+    f.refresh();const mission=f.assess();expect(mission.members).toHaveLength(48);
+    expect(f.game.shipAdmission.pendingCount).toBeGreaterThan(0);
+  });
+
+  it("uses sea dominance to raid loaded foreign trade outside capture contact",()=>{
+    const f=fixture(),own=f.addShip();f.game.options.aiWarPolicy=true;f.addShip(f.player.id,12);
+    const cargo={id:f.game.allocateId(),playerId:1,factoryId:f.port.id,originPortId:f.port.id,
+      definitionId:"stoneage-trade",naval:true,x:35.5*FIXED,y:21.5*FIXED,cargo:20,loaded:20,delivered:0,lost:0,returned:0,
+      valuePerGood:10,originTile:f.port.tile,capacity:20,shipmentId:1,stops:[],visited:[],destination:null,
+      state:"outbound" as const,path:[],nextPathIndex:0,waitTicks:0,quoteAllies:[]};
+    f.expansion.trade.actors.push(cargo);f.refresh();
+    const apply=vi.spyOn(f.game,"applyCommand"),mission=f.assess();
+    expect(mission.objective).toBe("raid-trade");
+    expect(f.planner.allowsLocalPursuit(f.game.ship(own.id)!)).toBe(true);
+    expect(apply.mock.calls.some(([c])=>c.type==="sail" && c.tile===f.game.tileOf(cargo))).toBe(true);
+    expect(f.expansion.diplomacy.declaredWar(f.player.id,1)).toBe(true);
+  });
+
+  it("invests beyond two purchases, preserves the spending window, and caps repeated funding",()=>{
+    const f=fixture();for(let i=0;i<8;i++)f.addShip(1,25+i);f.refresh();
+    for(let i=0;i<4;i++){f.game.tick=i*100;f.assess();}
+    expect(f.game.recruitment.jobs).toHaveLength(4);
+    const spending=f.planner.checkpoint().funding[0][1];expect(spending.purchases).toBe(4);
+    const gold=f.player.gold, saved=f.game.checkpoint();f.game.restore(saved);
+    f.game.tick=500;f.assess();
+    expect(f.game.recruitment.jobs).toHaveLength(4);expect(f.player.gold).toBe(gold);
+    expect(f.planner.checkpoint().funding[0][1].windowSpent).toBe(spending.windowSpent);
+  });
+  it.each([["regular",32],["tribe",24]] as const)("respects the %s warship cap across disconnected seas before requesting funds",(kind,cap)=>{
+    const f=fixture(true);
+    f.player.kind=kind;
+    for(let i=0;i<cap;i++)f.addShip(f.player.id,70+i%10);
+    for(let i=0;i<8;i++)f.addShip(1,25+i);
+    f.refresh();
+    const apply=vi.spyOn(f.game,"applyCommand"),gold=f.player.gold;
+    for(let i=0;i<4;i++){f.game.tick=i*100;f.assess();}
+    expect(apply.mock.calls.some(([c])=>c.type==="recruit-ship")).toBe(false);
+    expect(f.game.recruitment.jobs).toHaveLength(0);
+    expect(f.player.gold).toBe(gold);
+    expect(f.planner.checkpoint().funding).toHaveLength(0);
+  });
+
   it("physically patrols while the mission retains movement ownership",()=>{
     const f=fixture(),ship=f.addShip();f.refresh();f.assess();
     const start={x:ship.x,y:ship.y};
@@ -207,7 +340,7 @@ describe("persistent concentrated port defense", () => {
     expect(current.port).toBe(f.port.id);
     expect(current.anchor).toBe(anchor);
   });
-  it("fences a target that leaves the port's defended approach during a bounded assessment", () => {
+  it("keeps a legal same-sea target after it leaves the immediate port approach", () => {
     const f = fixture();
     f.addShip();
     f.addShip(f.player.id, 12);
@@ -224,10 +357,10 @@ describe("persistent concentrated port defense", () => {
     f.game.updateShip(f.game.ship(enemy.id)!.id, { x: 90.5 * FIXED });
     const apply = vi.spyOn(f.game, "applyCommand"),
       mission = f.assess();
-    expect(mission.reason).toBe("target legality changed");
-    expect(apply.mock.calls.filter(([c]) => c.type === "sail")).toHaveLength(0);
+    expect(mission.state).toBe("execute");
+    expect(apply.mock.calls.filter(([c]) => c.type === "sail")).toHaveLength(1);
   });
-  it("retains paid-loss spending evidence across mission expiry and recovery checkpoints", () => {
+  it("retains spending evidence through restore and replenishes the allowance after expiry", () => {
     const f = fixture();
     f.addShip(1, 25);
     f.refresh();
@@ -262,10 +395,9 @@ describe("persistent concentrated port defense", () => {
     expect(clone.checkpoint()).toEqual(saved);
     const next = f.assess();
     expect(next.id).not.toBe(first.id);
-    expect(next.reason).toContain("spending exhausted");
-    expect(next.purchases).toBe(0);
-    expect(f.game.recruitment.jobs).toHaveLength(0);
-    expect(f.player.gold).toBe(spent);
+    expect(next.purchases).toBe(1);
+    expect(f.game.recruitment.jobs).toHaveLength(1);
+    expect(f.player.gold).toBeLessThan(spent);
   });
   it("keeps cursors stable across ordinary ship movement and checkpoints", () => {
     const f = fixture();
@@ -324,7 +456,7 @@ describe("persistent concentrated port defense", () => {
         expect(command.tile).toBe(mission.anchor);
       }
     expect(f.game.ship(recovering.id)?.repairState).toBe("returning-to-dock");
-    expect(f.game.recruitment.jobs).toHaveLength(0);
+    expect(f.game.recruitment.jobs).toHaveLength(1);
   });
   it("intercepts as one concentrated selection and releases ownership when its port is captured", () => {
     const f = fixture();

@@ -1,6 +1,6 @@
 import type { Command } from "../Protocol";
 import { MAX_SQUADS } from "../Protocol";
-import { BUILDING_RULES, MAX_SHIPS } from "../Rules";
+import { BUILDING_RULES, MAX_FACTION_SHIPS } from "../Rules";
 import { AGES } from "./Definitions";
 // Runtime boundary shared by local worker and eventual authenticated transport.
 // Authentication is deliberately outside this pure shape validation policy.
@@ -34,7 +34,7 @@ export function commandRejection(command: Command): string | null {
           field === "buildingIds" ? 10_000 : field === "squadIds"
             ? MAX_SQUADS
             : field === "shipIds"
-              ? MAX_SHIPS
+              ? MAX_FACTION_SHIPS
               : 32;
       if (field === "buildingIds" && ids === undefined) continue;
       if (

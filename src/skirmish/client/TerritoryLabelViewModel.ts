@@ -36,6 +36,7 @@ export class TerritoryLabelViewModel {
   private readonly clearance: Uint16Array;
   private readonly queue: Uint32Array;
   private players: readonly Player[] = [];
+  private published: TerritoryLabel[] = [];
   private initialized = false;
   private generation = 0;
   private job?: { owner: number; work: Generator<void, Layout | undefined> };
@@ -57,15 +58,18 @@ export class TerritoryLabelViewModel {
   }
 
   get labels(): TerritoryLabel[] {
-    return this.players.flatMap((player) => {
+    return this.published;
+  }
+  private publishLabels(): void {
+    const labels: TerritoryLabel[] = [];
+    for (const player of this.players) {
       const layout = !player.eliminated && this.layouts.get(player.id);
-      return layout &&
+      if (layout &&
         this.owners[
           Math.floor(layout.y) * this.width + Math.floor(layout.x)
-        ] === player.id
-        ? [{ ...layout, name: player.name }]
-        : [];
-    });
+        ] === player.id) labels.push({ ...layout, name: player.name });
+    }
+    this.published = labels;
   }
 
   update(snapshot: Snapshot): void {
@@ -104,6 +108,7 @@ export class TerritoryLabelViewModel {
         this.dirty.delete(player.id);
         if (this.job?.owner === player.id) this.job = undefined;
       }
+    this.publishLabels();
   }
 
   // Continue while paused too. Each frame has a small time budget, with a hard
@@ -129,6 +134,7 @@ export class TerritoryLabelViewModel {
         else this.layouts.delete(this.job.owner);
         this.refreshed.set(this.job.owner, now);
         this.job = undefined;
+        this.publishLabels();
       }
       if (performance.now() >= deadline) break;
     }

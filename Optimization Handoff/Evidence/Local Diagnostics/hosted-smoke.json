@@ -1,0 +1,1332 @@
+{
+  "passed": true,
+  "title": "Stability smoke 2026-10-05T00-32-25-543Z",
+  "matchId": "match-2",
+  "roomId": "room-1",
+  "base": "http://127.0.0.1:9145",
+  "mapId": "old-world",
+  "worldSize": 1000,
+  "clients": 6,
+  "binaryClients": 5,
+  "backpressureCompleted": true,
+  "seconds": 600,
+  "elapsedSeconds": 623.605,
+  "flags": {
+    "aiEconomy": true,
+    "deferredPlanning": true,
+    "aiDefenses": true,
+    "aiNaval": true,
+    "aiWarPolicy": true
+  },
+  "runtimeId": "f9b3b691cb19304ab825e48be069abf31f95ff0fe77ce93787f914ef7ae40dcc",
+  "mapHash": "b18e20ac5233366dc215b74ffdb7f580f4e0341b526fc28201891dfec4a35160",
+  "moves": [
+    {
+      "playerId": 1,
+      "commandTick": 25,
+      "observedTick": 36,
+      "tile": 157775,
+      "squadIds": [
+        1,
+        2,
+        3
+      ],
+      "outcome": {
+        "id": "smoke-55",
+        "playerId": 1,
+        "tick": 31,
+        "status": "executed"
+      }
+    },
+    {
+      "playerId": 2,
+      "commandTick": 36,
+      "observedTick": 44,
+      "tile": 223600,
+      "squadIds": [
+        4,
+        5,
+        6
+      ],
+      "outcome": {
+        "id": "smoke-74",
+        "playerId": 2,
+        "tick": 41,
+        "status": "executed"
+      }
+    },
+    {
+      "playerId": 3,
+      "commandTick": 44,
+      "observedTick": 52,
+      "tile": 109106,
+      "squadIds": [
+        7,
+        8,
+        9
+      ],
+      "outcome": {
+        "id": "smoke-87",
+        "playerId": 3,
+        "tick": 49,
+        "status": "executed"
+      }
+    },
+    {
+      "playerId": 4,
+      "commandTick": 52,
+      "observedTick": 61,
+      "tile": 450281,
+      "squadIds": [
+        10,
+        11,
+        12
+      ],
+      "outcome": {
+        "id": "smoke-100",
+        "playerId": 4,
+        "tick": 56,
+        "status": "executed"
+      }
+    },
+    {
+      "playerId": 5,
+      "commandTick": 56,
+      "observedTick": 68,
+      "tile": 49388,
+      "squadIds": [
+        13,
+        14,
+        15
+      ],
+      "outcome": {
+        "id": "smoke-111",
+        "playerId": 5,
+        "tick": 64,
+        "status": "executed"
+      }
+    },
+    {
+      "playerId": 6,
+      "commandTick": 68,
+      "observedTick": 76,
+      "tile": 216316,
+      "squadIds": [
+        16,
+        17,
+        18
+      ],
+      "outcome": {
+        "id": "smoke-126",
+        "playerId": 6,
+        "tick": 72,
+        "status": "executed"
+      }
+    }
+  ],
+  "periodicMoves": [
+    {
+      "id": "smoke-795",
+      "playerId": 1,
+      "commandTick": 508,
+      "observedTick": 517,
+      "firstMotionMs": 369
+    },
+    {
+      "id": "smoke-796",
+      "playerId": 2,
+      "commandTick": 508,
+      "observedTick": 517,
+      "firstMotionMs": 364
+    },
+    {
+      "id": "smoke-798",
+      "playerId": 4,
+      "commandTick": 508,
+      "observedTick": 517,
+      "firstMotionMs": 355
+    },
+    {
+      "id": "smoke-797",
+      "playerId": 3,
+      "commandTick": 508,
+      "observedTick": 517,
+      "firstMotionMs": 366
+    },
+    {
+      "id": "smoke-799",
+      "playerId": 5,
+      "commandTick": 508,
+      "observedTick": 517,
+      "firstMotionMs": 365
+    },
+    {
+      "id": "smoke-800",
+      "playerId": 6,
+      "commandTick": 508,
+      "observedTick": 517,
+      "firstMotionMs": 366
+    },
+    {
+      "id": "smoke-1254",
+      "playerId": 1,
+      "commandTick": 812,
+      "observedTick": 817,
+      "firstMotionMs": 229
+    },
+    {
+      "id": "smoke-1255",
+      "playerId": 2,
+      "commandTick": 812,
+      "observedTick": 817,
+      "firstMotionMs": 226
+    },
+    {
+      "id": "smoke-1256",
+      "playerId": 3,
+      "commandTick": 808,
+      "observedTick": 817,
+      "firstMotionMs": 223
+    },
+    {
+      "id": "smoke-1257",
+      "playerId": 4,
+      "commandTick": 812,
+      "observedTick": 817,
+      "firstMotionMs": 224
+    },
+    {
+      "id": "smoke-1258",
+      "playerId": 5,
+      "commandTick": 808,
+      "observedTick": 817,
+      "firstMotionMs": 224
+    },
+    {
+      "id": "smoke-1259",
+      "playerId": 6,
+      "commandTick": 808,
+      "observedTick": 817,
+      "firstMotionMs": 224
+    },
+    {
+      "id": "smoke-1713",
+      "playerId": 1,
+      "commandTick": 1112,
+      "observedTick": 1120,
+      "firstMotionMs": 275
+    },
+    {
+      "id": "smoke-1714",
+      "playerId": 2,
+      "commandTick": 1112,
+      "observedTick": 1120,
+      "firstMotionMs": 270
+    },
+    {
+      "id": "smoke-1715",
+      "playerId": 3,
+      "commandTick": 1112,
+      "observedTick": 1120,
+      "firstMotionMs": 267
+    },
+    {
+      "id": "smoke-1716",
+      "playerId": 4,
+      "commandTick": 1112,
+      "observedTick": 1120,
+      "firstMotionMs": 267
+    },
+    {
+      "id": "smoke-1717",
+      "playerId": 5,
+      "commandTick": 1112,
+      "observedTick": 1120,
+      "firstMotionMs": 267
+    },
+    {
+      "id": "smoke-1718",
+      "playerId": 6,
+      "commandTick": 1112,
+      "observedTick": 1120,
+      "firstMotionMs": 266
+    },
+    {
+      "id": "smoke-2175",
+      "playerId": 1,
+      "commandTick": 1416,
+      "observedTick": 1420,
+      "firstMotionMs": 151
+    },
+    {
+      "id": "smoke-2176",
+      "playerId": 2,
+      "commandTick": 1416,
+      "observedTick": 1420,
+      "firstMotionMs": 146
+    },
+    {
+      "id": "smoke-2177",
+      "playerId": 4,
+      "commandTick": 1416,
+      "observedTick": 1424,
+      "firstMotionMs": 333
+    },
+    {
+      "id": "smoke-2178",
+      "playerId": 5,
+      "commandTick": 1416,
+      "observedTick": 1424,
+      "firstMotionMs": 333
+    },
+    {
+      "id": "smoke-2629",
+      "playerId": 1,
+      "commandTick": 1716,
+      "observedTick": 1724,
+      "firstMotionMs": 193
+    },
+    {
+      "id": "smoke-2630",
+      "playerId": 2,
+      "commandTick": 1716,
+      "observedTick": 1724,
+      "firstMotionMs": 188
+    },
+    {
+      "id": "smoke-2632",
+      "playerId": 5,
+      "commandTick": 1716,
+      "observedTick": 1724,
+      "firstMotionMs": 183
+    },
+    {
+      "id": "smoke-2631",
+      "playerId": 4,
+      "commandTick": 1716,
+      "observedTick": 1724,
+      "firstMotionMs": 190
+    },
+    {
+      "id": "smoke-3089",
+      "playerId": 1,
+      "commandTick": 2020,
+      "observedTick": 2028,
+      "firstMotionMs": 303
+    },
+    {
+      "id": "smoke-3090",
+      "playerId": 2,
+      "commandTick": 2020,
+      "observedTick": 2028,
+      "firstMotionMs": 298
+    },
+    {
+      "id": "smoke-3091",
+      "playerId": 4,
+      "commandTick": 2020,
+      "observedTick": 2028,
+      "firstMotionMs": 297
+    },
+    {
+      "id": "smoke-3092",
+      "playerId": 5,
+      "commandTick": 2020,
+      "observedTick": 2028,
+      "firstMotionMs": 297
+    },
+    {
+      "id": "smoke-3543",
+      "playerId": 1,
+      "commandTick": 2320,
+      "observedTick": 2325,
+      "firstMotionMs": 98
+    },
+    {
+      "id": "smoke-3544",
+      "playerId": 2,
+      "commandTick": 2320,
+      "observedTick": 2325,
+      "firstMotionMs": 94
+    },
+    {
+      "id": "smoke-3545",
+      "playerId": 4,
+      "commandTick": 2320,
+      "observedTick": 2328,
+      "firstMotionMs": 253
+    },
+    {
+      "id": "smoke-3546",
+      "playerId": 5,
+      "commandTick": 2320,
+      "observedTick": 2328,
+      "firstMotionMs": 253
+    },
+    {
+      "id": "smoke-4003",
+      "playerId": 1,
+      "commandTick": 2624,
+      "observedTick": 2632,
+      "firstMotionMs": 329
+    },
+    {
+      "id": "smoke-4004",
+      "playerId": 2,
+      "commandTick": 2624,
+      "observedTick": 2632,
+      "firstMotionMs": 329
+    },
+    {
+      "id": "smoke-4006",
+      "playerId": 5,
+      "commandTick": 2624,
+      "observedTick": 2632,
+      "firstMotionMs": 321
+    },
+    {
+      "id": "smoke-4005",
+      "playerId": 4,
+      "commandTick": 2624,
+      "observedTick": 2632,
+      "firstMotionMs": 327
+    },
+    {
+      "id": "smoke-4457",
+      "playerId": 1,
+      "commandTick": 2924,
+      "observedTick": 2929,
+      "firstMotionMs": 144
+    },
+    {
+      "id": "smoke-4458",
+      "playerId": 2,
+      "commandTick": 2924,
+      "observedTick": 2929,
+      "firstMotionMs": 139
+    },
+    {
+      "id": "smoke-4459",
+      "playerId": 4,
+      "commandTick": 2924,
+      "observedTick": 2929,
+      "firstMotionMs": 139
+    },
+    {
+      "id": "smoke-4460",
+      "playerId": 5,
+      "commandTick": 2924,
+      "observedTick": 2929,
+      "firstMotionMs": 137
+    },
+    {
+      "id": "smoke-4912",
+      "playerId": 2,
+      "commandTick": 3224,
+      "observedTick": 3233,
+      "firstMotionMs": 271
+    },
+    {
+      "id": "smoke-4911",
+      "playerId": 1,
+      "commandTick": 3224,
+      "observedTick": 3233,
+      "firstMotionMs": 285
+    },
+    {
+      "id": "smoke-4913",
+      "playerId": 4,
+      "commandTick": 3224,
+      "observedTick": 3233,
+      "firstMotionMs": 273
+    },
+    {
+      "id": "smoke-4914",
+      "playerId": 5,
+      "commandTick": 3224,
+      "observedTick": 3233,
+      "firstMotionMs": 278
+    },
+    {
+      "id": "smoke-5371",
+      "playerId": 1,
+      "commandTick": 3529,
+      "observedTick": 3536,
+      "firstMotionMs": 301
+    },
+    {
+      "id": "smoke-5373",
+      "playerId": 4,
+      "commandTick": 3529,
+      "observedTick": 3536,
+      "firstMotionMs": 292
+    },
+    {
+      "id": "smoke-5372",
+      "playerId": 2,
+      "commandTick": 3529,
+      "observedTick": 3536,
+      "firstMotionMs": 302
+    },
+    {
+      "id": "smoke-5374",
+      "playerId": 5,
+      "commandTick": 3529,
+      "observedTick": 3536,
+      "firstMotionMs": 294
+    },
+    {
+      "id": "smoke-5825",
+      "playerId": 1,
+      "commandTick": 3828,
+      "observedTick": 3836,
+      "firstMotionMs": 247
+    },
+    {
+      "id": "smoke-5827",
+      "playerId": 4,
+      "commandTick": 3828,
+      "observedTick": 3836,
+      "firstMotionMs": 234
+    },
+    {
+      "id": "smoke-5826",
+      "playerId": 2,
+      "commandTick": 3828,
+      "observedTick": 3836,
+      "firstMotionMs": 245
+    },
+    {
+      "id": "smoke-5828",
+      "playerId": 5,
+      "commandTick": 3828,
+      "observedTick": 3836,
+      "firstMotionMs": 240
+    },
+    {
+      "id": "smoke-6285",
+      "playerId": 1,
+      "commandTick": 4132,
+      "observedTick": 4137,
+      "firstMotionMs": 201
+    },
+    {
+      "id": "smoke-6286",
+      "playerId": 2,
+      "commandTick": 4132,
+      "observedTick": 4137,
+      "firstMotionMs": 195
+    },
+    {
+      "id": "smoke-6287",
+      "playerId": 4,
+      "commandTick": 4132,
+      "observedTick": 4137,
+      "firstMotionMs": 191
+    },
+    {
+      "id": "smoke-6288",
+      "playerId": 5,
+      "commandTick": 4132,
+      "observedTick": 4137,
+      "firstMotionMs": 190
+    },
+    {
+      "id": "smoke-6736",
+      "playerId": 1,
+      "commandTick": 4432,
+      "observedTick": 4436,
+      "firstMotionMs": 135
+    },
+    {
+      "id": "smoke-6737",
+      "playerId": 2,
+      "commandTick": 4432,
+      "observedTick": 4440,
+      "firstMotionMs": 318
+    },
+    {
+      "id": "smoke-6738",
+      "playerId": 4,
+      "commandTick": 4432,
+      "observedTick": 4440,
+      "firstMotionMs": 312
+    },
+    {
+      "id": "smoke-6739",
+      "playerId": 5,
+      "commandTick": 4432,
+      "observedTick": 4440,
+      "firstMotionMs": 310
+    },
+    {
+      "id": "smoke-7190",
+      "playerId": 1,
+      "commandTick": 4732,
+      "observedTick": 4741,
+      "firstMotionMs": 234
+    },
+    {
+      "id": "smoke-7192",
+      "playerId": 4,
+      "commandTick": 4732,
+      "observedTick": 4741,
+      "firstMotionMs": 212
+    },
+    {
+      "id": "smoke-7191",
+      "playerId": 2,
+      "commandTick": 4732,
+      "observedTick": 4741,
+      "firstMotionMs": 223
+    },
+    {
+      "id": "smoke-7193",
+      "playerId": 5,
+      "commandTick": 4732,
+      "observedTick": 4741,
+      "firstMotionMs": 213
+    },
+    {
+      "id": "smoke-7649",
+      "playerId": 1,
+      "commandTick": 5037,
+      "observedTick": 5040,
+      "firstMotionMs": 146
+    },
+    {
+      "id": "smoke-7650",
+      "playerId": 2,
+      "commandTick": 5037,
+      "observedTick": 5044,
+      "firstMotionMs": 320
+    },
+    {
+      "id": "smoke-7651",
+      "playerId": 4,
+      "commandTick": 5037,
+      "observedTick": 5044,
+      "firstMotionMs": 314
+    },
+    {
+      "id": "smoke-7652",
+      "playerId": 5,
+      "commandTick": 5037,
+      "observedTick": 5044,
+      "firstMotionMs": 313
+    },
+    {
+      "id": "smoke-8104",
+      "playerId": 1,
+      "commandTick": 5337,
+      "observedTick": 5344,
+      "firstMotionMs": 303
+    },
+    {
+      "id": "smoke-8105",
+      "playerId": 2,
+      "commandTick": 5337,
+      "observedTick": 5344,
+      "firstMotionMs": 298
+    },
+    {
+      "id": "smoke-8107",
+      "playerId": 5,
+      "commandTick": 5337,
+      "observedTick": 5344,
+      "firstMotionMs": 289
+    },
+    {
+      "id": "smoke-8106",
+      "playerId": 4,
+      "commandTick": 5337,
+      "observedTick": 5344,
+      "firstMotionMs": 296
+    },
+    {
+      "id": "smoke-8558",
+      "playerId": 1,
+      "commandTick": 5636,
+      "observedTick": 5644,
+      "firstMotionMs": 254
+    },
+    {
+      "id": "smoke-8560",
+      "playerId": 4,
+      "commandTick": 5636,
+      "observedTick": 5644,
+      "firstMotionMs": 244
+    },
+    {
+      "id": "smoke-8559",
+      "playerId": 2,
+      "commandTick": 5636,
+      "observedTick": 5644,
+      "firstMotionMs": 254
+    },
+    {
+      "id": "smoke-8561",
+      "playerId": 5,
+      "commandTick": 5636,
+      "observedTick": 5644,
+      "firstMotionMs": 241
+    },
+    {
+      "id": "smoke-9018",
+      "playerId": 1,
+      "commandTick": 5940,
+      "observedTick": 5944,
+      "firstMotionMs": 133
+    },
+    {
+      "id": "smoke-9019",
+      "playerId": 2,
+      "commandTick": 5940,
+      "observedTick": 5948,
+      "firstMotionMs": 313
+    },
+    {
+      "id": "smoke-9020",
+      "playerId": 4,
+      "commandTick": 5940,
+      "observedTick": 5948,
+      "firstMotionMs": 308
+    },
+    {
+      "id": "smoke-9021",
+      "playerId": 5,
+      "commandTick": 5940,
+      "observedTick": 5948,
+      "firstMotionMs": 306
+    },
+    {
+      "id": "smoke-9479",
+      "playerId": 1,
+      "commandTick": 6241,
+      "observedTick": 6246,
+      "firstMotionMs": 202
+    },
+    {
+      "id": "smoke-9480",
+      "playerId": 2,
+      "commandTick": 6241,
+      "observedTick": 6246,
+      "firstMotionMs": 197
+    },
+    {
+      "id": "smoke-9481",
+      "playerId": 4,
+      "commandTick": 6241,
+      "observedTick": 6246,
+      "firstMotionMs": 194
+    },
+    {
+      "id": "smoke-9482",
+      "playerId": 5,
+      "commandTick": 6241,
+      "observedTick": 6246,
+      "firstMotionMs": 190
+    },
+    {
+      "id": "smoke-9933",
+      "playerId": 1,
+      "commandTick": 6541,
+      "observedTick": 6549,
+      "firstMotionMs": 233
+    },
+    {
+      "id": "smoke-9934",
+      "playerId": 2,
+      "commandTick": 6541,
+      "observedTick": 6549,
+      "firstMotionMs": 224
+    },
+    {
+      "id": "smoke-9935",
+      "playerId": 5,
+      "commandTick": 6541,
+      "observedTick": 6549,
+      "firstMotionMs": 219
+    },
+    {
+      "id": "smoke-10386",
+      "playerId": 1,
+      "commandTick": 6842,
+      "observedTick": 6849,
+      "firstMotionMs": 188
+    },
+    {
+      "id": "smoke-10387",
+      "playerId": 2,
+      "commandTick": 6842,
+      "observedTick": 6849,
+      "firstMotionMs": 188
+    },
+    {
+      "id": "smoke-10388",
+      "playerId": 5,
+      "commandTick": 6842,
+      "observedTick": 6849,
+      "firstMotionMs": 188
+    },
+    {
+      "id": "smoke-10845",
+      "playerId": 1,
+      "commandTick": 7145,
+      "observedTick": 7153,
+      "firstMotionMs": 258
+    },
+    {
+      "id": "smoke-10846",
+      "playerId": 2,
+      "commandTick": 7145,
+      "observedTick": 7153,
+      "firstMotionMs": 258
+    },
+    {
+      "id": "smoke-10847",
+      "playerId": 5,
+      "commandTick": 7145,
+      "observedTick": 7153,
+      "firstMotionMs": 261
+    },
+    {
+      "id": "smoke-11299",
+      "playerId": 2,
+      "commandTick": 7445,
+      "observedTick": 7453,
+      "firstMotionMs": 229
+    },
+    {
+      "id": "smoke-11298",
+      "playerId": 1,
+      "commandTick": 7445,
+      "observedTick": 7453,
+      "firstMotionMs": 234
+    },
+    {
+      "id": "smoke-11300",
+      "playerId": 5,
+      "commandTick": 7445,
+      "observedTick": 7453,
+      "firstMotionMs": 236
+    },
+    {
+      "id": "smoke-11751",
+      "playerId": 1,
+      "commandTick": 7745,
+      "observedTick": 7753,
+      "firstMotionMs": 184
+    },
+    {
+      "id": "smoke-11752",
+      "playerId": 2,
+      "commandTick": 7745,
+      "observedTick": 7753,
+      "firstMotionMs": 183
+    },
+    {
+      "id": "smoke-11753",
+      "playerId": 5,
+      "commandTick": 7745,
+      "observedTick": 7753,
+      "firstMotionMs": 186
+    },
+    {
+      "id": "smoke-12210",
+      "playerId": 1,
+      "commandTick": 8049,
+      "observedTick": 8054,
+      "firstMotionMs": 178
+    },
+    {
+      "id": "smoke-12211",
+      "playerId": 2,
+      "commandTick": 8049,
+      "observedTick": 8054,
+      "firstMotionMs": 177
+    },
+    {
+      "id": "smoke-12212",
+      "playerId": 5,
+      "commandTick": 8049,
+      "observedTick": 8054,
+      "firstMotionMs": 181
+    },
+    {
+      "id": "smoke-12663",
+      "playerId": 1,
+      "commandTick": 8349,
+      "observedTick": 8354,
+      "firstMotionMs": 147
+    },
+    {
+      "id": "smoke-12664",
+      "playerId": 2,
+      "commandTick": 8349,
+      "observedTick": 8354,
+      "firstMotionMs": 146
+    },
+    {
+      "id": "smoke-12665",
+      "playerId": 5,
+      "commandTick": 8349,
+      "observedTick": 8354,
+      "firstMotionMs": 150
+    },
+    {
+      "id": "smoke-13116",
+      "playerId": 1,
+      "commandTick": 8650,
+      "observedTick": 8657,
+      "firstMotionMs": 245
+    },
+    {
+      "id": "smoke-13117",
+      "playerId": 2,
+      "commandTick": 8650,
+      "observedTick": 8657,
+      "firstMotionMs": 248
+    },
+    {
+      "id": "smoke-13118",
+      "playerId": 5,
+      "commandTick": 8650,
+      "observedTick": 8657,
+      "firstMotionMs": 246
+    },
+    {
+      "id": "smoke-13576",
+      "playerId": 2,
+      "commandTick": 8953,
+      "observedTick": 8957,
+      "firstMotionMs": 196
+    },
+    {
+      "id": "smoke-13575",
+      "playerId": 1,
+      "commandTick": 8953,
+      "observedTick": 8957,
+      "firstMotionMs": 203
+    },
+    {
+      "id": "smoke-13577",
+      "playerId": 5,
+      "commandTick": 8953,
+      "observedTick": 8957,
+      "firstMotionMs": 202
+    },
+    {
+      "id": "smoke-14028",
+      "playerId": 1,
+      "commandTick": 9253,
+      "observedTick": 9262,
+      "firstMotionMs": 331
+    },
+    {
+      "id": "smoke-14029",
+      "playerId": 2,
+      "commandTick": 9253,
+      "observedTick": 9262,
+      "firstMotionMs": 330
+    },
+    {
+      "id": "smoke-14030",
+      "playerId": 5,
+      "commandTick": 9253,
+      "observedTick": 9262,
+      "firstMotionMs": 334
+    },
+    {
+      "id": "smoke-14481",
+      "playerId": 1,
+      "commandTick": 9553,
+      "observedTick": 9561,
+      "firstMotionMs": 261
+    },
+    {
+      "id": "smoke-14482",
+      "playerId": 2,
+      "commandTick": 9553,
+      "observedTick": 9561,
+      "firstMotionMs": 266
+    },
+    {
+      "id": "smoke-14483",
+      "playerId": 5,
+      "commandTick": 9553,
+      "observedTick": 9561,
+      "firstMotionMs": 266
+    },
+    {
+      "id": "smoke-14941",
+      "playerId": 2,
+      "commandTick": 9857,
+      "observedTick": 9862,
+      "firstMotionMs": 194
+    },
+    {
+      "id": "smoke-14940",
+      "playerId": 1,
+      "commandTick": 9857,
+      "observedTick": 9862,
+      "firstMotionMs": 201
+    },
+    {
+      "id": "smoke-14942",
+      "playerId": 5,
+      "commandTick": 9857,
+      "observedTick": 9862,
+      "firstMotionMs": 201
+    },
+    {
+      "id": "smoke-15394",
+      "playerId": 2,
+      "commandTick": 10157,
+      "observedTick": 10165,
+      "firstMotionMs": 227
+    },
+    {
+      "id": "smoke-15393",
+      "playerId": 1,
+      "commandTick": 10157,
+      "observedTick": 10165,
+      "firstMotionMs": 233
+    },
+    {
+      "id": "smoke-15395",
+      "playerId": 5,
+      "commandTick": 10157,
+      "observedTick": 10165,
+      "firstMotionMs": 235
+    },
+    {
+      "id": "smoke-15846",
+      "playerId": 1,
+      "commandTick": 10458,
+      "observedTick": 10465,
+      "firstMotionMs": 185
+    },
+    {
+      "id": "smoke-15847",
+      "playerId": 2,
+      "commandTick": 10458,
+      "observedTick": 10465,
+      "firstMotionMs": 185
+    },
+    {
+      "id": "smoke-15848",
+      "playerId": 5,
+      "commandTick": 10458,
+      "observedTick": 10465,
+      "firstMotionMs": 191
+    },
+    {
+      "id": "smoke-16305",
+      "playerId": 1,
+      "commandTick": 10761,
+      "observedTick": 10766,
+      "firstMotionMs": 189
+    },
+    {
+      "id": "smoke-16306",
+      "playerId": 2,
+      "commandTick": 10761,
+      "observedTick": 10766,
+      "firstMotionMs": 193
+    },
+    {
+      "id": "smoke-16307",
+      "playerId": 5,
+      "commandTick": 10761,
+      "observedTick": 10766,
+      "firstMotionMs": 191
+    },
+    {
+      "id": "smoke-16758",
+      "playerId": 1,
+      "commandTick": 11062,
+      "observedTick": 11069,
+      "firstMotionMs": 244
+    },
+    {
+      "id": "smoke-16759",
+      "playerId": 2,
+      "commandTick": 11062,
+      "observedTick": 11069,
+      "firstMotionMs": 245
+    },
+    {
+      "id": "smoke-16760",
+      "playerId": 5,
+      "commandTick": 11062,
+      "observedTick": 11069,
+      "firstMotionMs": 247
+    },
+    {
+      "id": "smoke-17211",
+      "playerId": 1,
+      "commandTick": 11361,
+      "observedTick": 11369,
+      "firstMotionMs": 241
+    },
+    {
+      "id": "smoke-17212",
+      "playerId": 2,
+      "commandTick": 11361,
+      "observedTick": 11369,
+      "firstMotionMs": 243
+    },
+    {
+      "id": "smoke-17213",
+      "playerId": 5,
+      "commandTick": 11361,
+      "observedTick": 11369,
+      "firstMotionMs": 242
+    },
+    {
+      "id": "smoke-17670",
+      "playerId": 1,
+      "commandTick": 11665,
+      "observedTick": 11669,
+      "firstMotionMs": 139
+    },
+    {
+      "id": "smoke-17671",
+      "playerId": 2,
+      "commandTick": 11665,
+      "observedTick": 11673,
+      "firstMotionMs": 325
+    },
+    {
+      "id": "smoke-17672",
+      "playerId": 5,
+      "commandTick": 11665,
+      "observedTick": 11673,
+      "firstMotionMs": 325
+    },
+    {
+      "id": "smoke-18123",
+      "playerId": 1,
+      "commandTick": 11966,
+      "observedTick": 11973,
+      "firstMotionMs": 250
+    },
+    {
+      "id": "smoke-18124",
+      "playerId": 2,
+      "commandTick": 11966,
+      "observedTick": 11973,
+      "firstMotionMs": 250
+    },
+    {
+      "id": "smoke-18125",
+      "playerId": 5,
+      "commandTick": 11966,
+      "observedTick": 11973,
+      "firstMotionMs": 258
+    }
+  ],
+  "periodicMotionP95": 333,
+  "validBuild": {
+    "commandTick": 76,
+    "completedTick": 184,
+    "buildingId": 203,
+    "tile": 158775,
+    "age": "Modern",
+    "outcome": {
+      "id": "smoke-139",
+      "playerId": 1,
+      "tick": 83,
+      "status": "executed"
+    }
+  },
+  "tradeControls": [
+    {
+      "command": {
+        "type": "trade-pause",
+        "playerId": 1,
+        "naval": false,
+        "paused": true
+      },
+      "outcome": {
+        "id": "smoke-302",
+        "playerId": 1,
+        "tick": 185,
+        "status": "executed"
+      }
+    },
+    {
+      "command": {
+        "type": "trade-pause",
+        "playerId": 1,
+        "naval": true,
+        "paused": true
+      },
+      "outcome": {
+        "id": "smoke-309",
+        "playerId": 1,
+        "tick": 189,
+        "status": "executed"
+      }
+    },
+    {
+      "command": {
+        "type": "trade-block",
+        "playerId": 1,
+        "otherId": 2,
+        "blocked": true
+      },
+      "outcome": {
+        "id": "smoke-316",
+        "playerId": 1,
+        "tick": 193,
+        "status": "executed"
+      }
+    },
+    {
+      "command": {
+        "type": "trade-pause",
+        "playerId": 1,
+        "naval": false,
+        "paused": false
+      },
+      "outcome": {
+        "id": "smoke-323",
+        "playerId": 1,
+        "tick": 198,
+        "status": "executed"
+      }
+    },
+    {
+      "command": {
+        "type": "trade-pause",
+        "playerId": 1,
+        "naval": true,
+        "paused": false
+      },
+      "outcome": {
+        "id": "smoke-330",
+        "playerId": 1,
+        "tick": 201,
+        "status": "executed"
+      }
+    },
+    {
+      "command": {
+        "type": "trade-block",
+        "playerId": 1,
+        "otherId": 2,
+        "blocked": false
+      },
+      "outcome": {
+        "id": "smoke-337",
+        "playerId": 1,
+        "tick": 205,
+        "status": "executed"
+      }
+    }
+  ],
+  "aiMoved": [
+    7,
+    8,
+    9,
+    10,
+    11,
+    12,
+    13,
+    14,
+    15,
+    16
+  ],
+  "rejection": {
+    "id": "smoke-344",
+    "playerId": 1,
+    "tick": 208,
+    "status": "rejected",
+    "reason": "Research this building's technology first"
+  },
+  "reconnected": true,
+  "commonStateSamples": 299,
+  "peers": [
+    {
+      "id": 0,
+      "tick": 12205,
+      "packets": 3053,
+      "syncs": 1,
+      "rebases": 2,
+      "binaryFrames": 3053,
+      "textFrames": 0,
+      "bytes": 35134099,
+      "decodeP95": 9.308900000003632,
+      "publicationGapP95": 253,
+      "publicationGapMax": 338
+    },
+    {
+      "id": 1,
+      "tick": 12205,
+      "packets": 3053,
+      "syncs": 0,
+      "rebases": 0,
+      "binaryFrames": 3053,
+      "textFrames": 0,
+      "bytes": 34810349,
+      "decodeP95": 12.595800000002782,
+      "publicationGapP95": 254,
+      "publicationGapMax": 308
+    },
+    {
+      "id": 2,
+      "tick": 12205,
+      "packets": 3053,
+      "syncs": 0,
+      "rebases": 0,
+      "binaryFrames": 3053,
+      "textFrames": 0,
+      "bytes": 34810349,
+      "decodeP95": 15.95560000000114,
+      "publicationGapP95": 254,
+      "publicationGapMax": 307
+    },
+    {
+      "id": 3,
+      "tick": 12205,
+      "packets": 3053,
+      "syncs": 0,
+      "rebases": 0,
+      "binaryFrames": 3053,
+      "textFrames": 0,
+      "bytes": 34810349,
+      "decodeP95": 18.923600000009174,
+      "publicationGapP95": 254,
+      "publicationGapMax": 307
+    },
+    {
+      "id": 4,
+      "tick": 12205,
+      "packets": 3053,
+      "syncs": 0,
+      "rebases": 0,
+      "binaryFrames": 3053,
+      "textFrames": 0,
+      "bytes": 34810349,
+      "decodeP95": 22.393499999998312,
+      "publicationGapP95": 254,
+      "publicationGapMax": 307
+    },
+    {
+      "id": 5,
+      "tick": 12205,
+      "packets": 3048,
+      "syncs": 0,
+      "rebases": 1,
+      "binaryFrames": 0,
+      "textFrames": 3048,
+      "bytes": 46221523,
+      "decodeP95": 25.440300000002026,
+      "publicationGapP95": 254,
+      "publicationGapMax": 1441
+    }
+  ],
+  "failures": []
+}

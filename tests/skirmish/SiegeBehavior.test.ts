@@ -109,13 +109,13 @@ describe("slow assault occupation", () => {
       b = building(m, "tower", 32, 23);
     const forts = m.expansion!.fortifications;
     forts.addTower(b, forts.towerPlan(b.tile, 2, "StoneAge", [a, b]));
-    forts.barriers[0].remainingTicks = 0;
+    forts.updateBarrier(forts.barriers[0].id, { remainingTicks: 0 });
     const tile = m.map.ref(33, 20);
     for (let i = 0; i < 4; i++) m.step();
     expect(m.owners[tile]).toBe(0);
     m.updateBuilding((a).id, { health: 0 });
     m.updateBuilding((b).id, { health: 0 });
-    forts.barriers[0].health = 0;
+    forts.updateBarrier(forts.barriers[0].id, { health: 0 });
     for (let i = 0; i < 4; i++) m.step();
     expect(m.owners[tile]).toBe(1);
   });
@@ -186,7 +186,7 @@ describe("structural damage and firing presentation", () => {
       -Math.PI / 2,
     );
     m.updateSquad(unit.id, { structureTarget: { barrierId: 500 } });
-    m.expansion!.fortifications.barriers.push({
+    m.expansion!.fortifications.addBarrier({
       id: 500,
       a: 1,
       b: 2,

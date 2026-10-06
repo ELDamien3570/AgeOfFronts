@@ -88,7 +88,7 @@ export class AircraftPresentation {
         aircraft.ascentDistance,
     );
     const ascent = height * height * (3 - 2 * height);
-    const size = PARKED_SIZE * (1 + ascent);
+    const size = PARKED_SIZE * (1 + ascent * 0.5);
     // Include rotated sprite corners in culling and click selection.
     const radius = size * Math.SQRT1_2 + 2;
     return { x, y, angle: aircraft.angle, size, radius };

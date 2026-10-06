@@ -1,5 +1,5 @@
 import type { GameMap } from "../core/game/GameMap";
-import { buildingClearedBounds } from "./BuildingFootprint";
+import { buildingNavigationClearedBounds } from "./BuildingFootprint";
 import type { Building, BuildingType } from "./Protocol";
 
 export interface ForestData {
@@ -10,12 +10,19 @@ type Changed = (tiles: readonly number[]) => void;
 // Natural cover is immutable map data. Building occupancy is a separate match
 // overlay, updated by domain construction and mirrored from snapshots in views.
 export class ForestField {
-  checkpoint() { return structuredClone({cleared:this.cleared,sites:this.sites}); }
+  checkpoint() {
+    return structuredClone({ cleared: this.cleared, sites: this.sites });
+  }
   restore(state: ReturnType<ForestField["checkpoint"]>): void {
-    if (state.cleared.length !== this.cleared.length) throw new Error("Invalid forest checkpoint");
+    if (state.cleared.length !== this.cleared.length)
+      throw new Error("Invalid forest checkpoint");
     const changed = new Set<number>();
-    for (let tile=0;tile<this.cleared.length;tile++) if (Boolean(this.cleared[tile]) !== Boolean(state.cleared[tile])) changed.add(tile);
-    this.cleared.set(state.cleared); this.sites.clear(); for (const [tile,type] of state.sites) this.sites.set(tile,type);
+    for (let tile = 0; tile < this.cleared.length; tile++)
+      if (Boolean(this.cleared[tile]) !== Boolean(state.cleared[tile]))
+        changed.add(tile);
+    this.cleared.set(state.cleared);
+    this.sites.clear();
+    for (const [tile, type] of state.sites) this.sites.set(tile, type);
     this.publish(changed);
   }
   private readonly cover: Uint8Array;
@@ -48,9 +55,9 @@ export class ForestField {
     delta: number,
     changed: Set<number>,
   ) {
-    const bounds = buildingClearedBounds(map, tile, type);
-    // Any tile touched by the site is cleared. This same ground mask governs
-    // rendering, actual speed and path cost; camera LOD cannot change it.
+    const bounds = buildingNavigationClearedBounds(map, tile, type);
+    // Preserve the established navigation clearing mask. Occupied artwork and
+    // placement reservations do not enlarge soldier movement or path-cost effects.
     for (
       let y = Math.max(0, Math.floor(bounds.top));
       y < Math.min(map.height(), Math.ceil(bounds.bottom));

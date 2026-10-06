@@ -2,6 +2,13 @@ import type { AiEconomicDirector } from "./AiEconomicDirector";
 import type { Expansion } from "./Expansion";
 import type { TradeCycleQuote } from "./TradeQuote";
 
+/** Production is worth expanding only when a sold-out route spends a material
+ * part of its cycle waiting for a full load, and current stock still confirms it. */
+export function tradeSupplyLimited(quote: TradeCycleQuote, source: {stock:number;capacity:number} | undefined): boolean {
+  return !!source && quote.riskAdjustedGoldPer1000Ticks > 0 && quote.returned === 0 &&
+    quote.supplyTicks >= Math.max(20,quote.cycleTicks / 4) && source.stock < source.capacity;
+}
+
 interface Evidence {
   source: number;
   market: number;
@@ -53,7 +60,7 @@ export class AiTradeOpportunities {
       !market.remainingTicks &&
       (source.health ?? 1) > 0 &&
       (market.health ?? 1) > 0 &&
-      trade.permitted(playerId, market.playerId)
+      trade.permitted(playerId, market.playerId, naval)
       ? row
       : undefined;
   }
@@ -67,11 +74,12 @@ export class AiTradeOpportunities {
       used++;
       const player = world.players.find((p) => p.id === actor.playerId),
         quote = trade.cycleQuotes.get(actor.id),
-        market = actor.visited[0];
+        market = quote?.marketId ?? actor.visited[0];
       if (
         !player ||
         !this.economy.enabled(player) ||
         !quote ||
+        quote.completedTick === undefined || world.tick - quote.completedTick > 600 ||
         market === undefined ||
         actor.state === "prize"
       )
@@ -85,10 +93,10 @@ export class AiTradeOpportunities {
       )
         continue;
       this.evidence.set(key, {
-        source: actor.factoryId,
+        source: quote.sourceId ?? actor.factoryId,
         market,
         quote,
-        tick: world.tick,
+        tick: quote.completedTick,
         generation: world.aiGeneration(player.id),
         sea: actor.naval
           ? world.waterPaths.component[world.tileOf(actor)]

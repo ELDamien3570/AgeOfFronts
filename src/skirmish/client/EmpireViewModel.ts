@@ -82,6 +82,13 @@ export class EmpireViewModel {
         : null,
     };
   }
+  militaryCounts(id: number) {
+    return {
+      squads: this.state.squads.filter(s => s.playerId === id && s.troops > 0).length,
+      boats: this.state.ships.filter(s => s.playerId === id && s.kind === "warship" && s.health > 0).length,
+      planes: this.expansion.aircraft.filter(a => a.playerId === id && a.health > 0).length,
+    };
+  }
   has(id: string): boolean {
     return this.progression.completed.includes(id);
   }
@@ -378,7 +385,7 @@ export class EmpireViewModel {
   }
   get allianceRenewals() {
     return this.expansion.diplomacy.alliances
-      .filter(t => (t.a === this.playerId || t.b === this.playerId) &&
+      .filter(t => !t.longTerm && (t.a === this.playerId || t.b === this.playerId) &&
         t.expiresTick > this.state.tick && t.expiresTick - this.state.tick <= 600)
       .flatMap(t => {
         const otherId = t.a === this.playerId ? t.b : t.a;

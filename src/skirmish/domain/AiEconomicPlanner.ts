@@ -1,4 +1,4 @@
-import { researchUtility, usableNextAge, type ResearchOpportunity } from "./AiResearchUtility";
+import { researchUtility, type ResearchOpportunity } from "./AiResearchUtility";
 import { AI_DOCTRINES } from "../content/AiDoctrines";
 import type { BuildingType, Command } from "../Protocol";
 import {
@@ -16,13 +16,14 @@ import type { AiPriority } from "./AiBudgetLedger";
 import type { AiEconomicSnapshot } from "./AiEconomicSnapshot";
 import type { AiProductionDemand } from "./AiMilitaryDemand";
 import type { AiPersonality } from "./AiPersonality";
-import { AGES, type Cost, type ProgressionState } from "./Definitions";
+import { AGES, TREES, type Cost, type ProgressionState } from "./Definitions";
 import {
   advanceRejection,
   researchRejection,
   researchTerms,
 } from "./Progression";
 import { PRODUCTION_RECIPES } from "./Supply";
+import { militaryPosture } from "./AiMilitaryPosture";
 
 export interface AiEconomicIntent {
   id: string;
@@ -72,7 +73,7 @@ export function economicCandidates(
     // opportunity cost to the authored age-price scale, preserving Stone Age
     // rankings while avoiding permanently negative later advances. Reservation
     // and command payment still require the full authoritative gold price.
-    const development = kind === "research" || kind === "advance";
+    const development = kind === "research" || kind === "advance" || kind === "construct" || kind === "upgrade";
     const agePrice = ADVANCES[Math.min(AGES.indexOf(snapshot.age), ADVANCES.length - 1)].gold;
     const opportunity =
       Math.floor(((cost.gold ?? 0) / 20) * (development ? ADVANCES[0].gold / agePrice : 1)) +
@@ -87,11 +88,11 @@ export function economicCandidates(
       priority:
         snapshot.threatTroops > snapshot.readyTroops / 2 && kind === "recruit"
           ? "emergency"
-          : "growth",
+          : kind === "research" || kind === "advance" ? "committed" : "growth",
       score: Math.floor((benefit * 2400) / Math.max(2400, delay+(kind==="construct" && ["blacksmith","armory","arms-factory"].includes((command as {buildingType?:string}).buildingType??"") ? Math.min(2400,demand.timeToOutput??0)/4:0))) - opportunity,
       reason,
       earliestTick: snapshot.tick,
-      expiresTick: snapshot.tick + 2400,
+      expiresTick: snapshot.tick + (kind === "research" || kind === "advance" ? 12000 : 2400),
       prerequisites,
     });
   };
@@ -128,7 +129,8 @@ export function economicCandidates(
     if (!age || b.remainingTicks || (b.health ?? maximum) < maximum) continue;
     const cost = buildingUpgradeCost(b.type, age, counts.get(b.type) ?? 0);
     emit("upgrade", String(b.id), { type: "upgrade-building", playerId: snapshot.playerId, buildingIds: [b.id] },
-      cost, b.type === "city" ? 500 + reserveShortage / 10 : 1000,
+      cost, b.type === "city" ? 500 + reserveShortage / 10 :
+        snapshot.supplyLimitedSources?.includes(b.id) ? 5000 : 1000,
       "Modernize existing infrastructure without an extra site", Math.round(buildingTicks(b.type, counts.get(b.type) ?? 0) / 2));
     upgrades++;
   }
@@ -206,7 +208,7 @@ export function economicCandidates(
     if (
       value <= 0 ||
       (snapshot.headroom === 0 &&
-        !["city", "factory", "mine", "port", "oil-well", "oil-rig", "blacksmith", "armory", "arms-factory"].includes(
+        !["city", "factory", "mine", "port", "oil-well", "oil-rig", "blacksmith", "armory", "arms-factory", "depot", "siege-workshop", "airstrip", "missile-silo", "mirv-launcher", "missile-defence"].includes(
           site.type,
         ))
     )
@@ -288,11 +290,19 @@ export function economicCandidates(
       400,
     );
   }
+  // Finish the two cheapest remaining trees, with personality as a stable tie
+  // breaker. Completed trees count toward the two; no need to finish a third.
+  const raceTrees = [...TREES].sort((a, b) => {
+    const remaining = (tree: typeof a) => TECHNOLOGIES.filter(t => t.age === state.age && t.tree === tree && !state.completed.includes(t.id))
+      .reduce((sum, t) => sum + researchTerms(t, speed).gold, 0);
+    return remaining(a) - remaining(b) || personality.researchOrder.indexOf(a) - personality.researchOrder.indexOf(b);
+  }).slice(0, 2);
   for (const tree of personality.researchOrder) {
     const eligible = TECHNOLOGIES.filter(t => t.tree === tree && !researchRejection(state, Number.MAX_SAFE_INTEGER, t.id, speed))
       .map(technology => ({technology,utility:researchUtility(technology,snapshot,demand,opportunity)}))
       .sort((a,b) => b.utility.benefit-a.utility.benefit || a.technology.slot-b.technology.slot);
-    const best = eligible.find(row=>row.utility.benefit>0);
+    const racing = !!opportunity.progressionRace && raceTrees.includes(tree) && state.age !== "Modern";
+    const best = racing ? eligible.sort((a,b) => a.technology.slot-b.technology.slot)[0] : eligible.find(row=>row.utility.benefit>0);
     if (!best) continue;
     const {technology,utility} = best;
     const survival = snapshot.threatTroops > snapshot.readyTroops && technology.tree !== "warfare" ? 0 : utility.benefit;
@@ -306,18 +316,15 @@ export function economicCandidates(
         technologyId: technology.id,
       },
       { gold: researchTerms(technology, speed).gold },
-      survival +
+      survival + (racing ? 8000 : 0) +
         bias +
         Math.max(0, 600 - personality.researchOrder.indexOf(tree) * 200),
-      `research:${tree}:${utility.reason}`,
+      `research:${tree}:${racing ? "progression-race:" : ""}${utility.reason}`,
       researchTerms(technology, speed).ticks,
     );
   }
   if (
-    !advanceRejection(state, Number.MAX_SAFE_INTEGER, speed) &&
-    snapshot.threatTroops < snapshot.readyTroops &&
-    (!materialShortage || availableKits >= 2) &&
-    usableNextAge(snapshot, opportunity)
+    !advanceRejection(state, Number.MAX_SAFE_INTEGER, speed)
   ) {
     const terms = researchTerms(ADVANCES[AGES.indexOf(state.age)], speed);
     emit(
@@ -326,7 +333,7 @@ export function economicCandidates(
       { type: "advance-age", playerId: snapshot.playerId },
       { gold: terms.gold },
       2500 + (personality.id === "scholar" ? 1500 : 0),
-      "usable-age-transition",
+      "legal-age-transition",
       terms.ticks,
     );
   }
@@ -334,12 +341,18 @@ export function economicCandidates(
   // current liquid stock; gold here never grants forecast purchasing credit.
   const ordered = candidates.filter(c => c.score > 0).sort(
     (a,b) => Number(b.priority === "emergency") - Number(a.priority === "emergency") ||
+      Number(b.kind === "advance") - Number(a.kind === "advance") ||
+      Number(b.reason.includes("progression-race:")) - Number(a.reason.includes("progression-race:")) ||
       Number(b.reason.includes("production-prerequisite:")) - Number(a.reason.includes("production-prerequisite:")) ||
+      (snapshot.readyTroops >= 4000 && snapshot.threatTroops <= snapshot.readyTroops / 2 ?
+        Number(b.priority === "committed") - Number(a.priority === "committed") : 0) ||
       b.score-a.score || (a.id < b.id ? -1 : a.id > b.id ? 1 : 0),
   );
   const choices = ordered.slice(0,4);
   // A reserve-starved recruit must not hide every gold-only development option.
   const development = ordered.find(c => c.kind === "research" || c.kind === "advance");
   if (development && !choices.includes(development)) choices[choices.length-1] = development;
+  if (militaryPosture(snapshot,personality,speed).wealthy)
+    for (const recruit of ordered.filter(c=>c.kind==="recruit").slice(0,3)) if (!choices.includes(recruit)) choices.push(recruit);
   return choices;
 }

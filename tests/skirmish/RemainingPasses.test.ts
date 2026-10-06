@@ -167,7 +167,7 @@ describe("remaining gameplay passes", () => {
     expect(e.economy.naval.enabled(ai)).toBe(true);
     expect(
       game.applyCommand({ type: "advance-age", playerId: ai.id }),
-    ).toContain("Tribes");
+    ).toContain("75%");
   });
   it("allows stack 15 and rejects 16 without extending trade cargo", () => {
     const { game, map } = fixture(),
@@ -193,7 +193,7 @@ describe("remaining gameplay passes", () => {
       constructionRejection(map, game.owners, stack, player, "city", tile),
     ).toContain("at most 15");
     expect(stackCargoPercent(15)).toBe(stackCargoPercent(10));
-    expect(TRADE_RULES.valuePerGood).toBe(10);
+    expect(TRADE_RULES.valuePerGood).toBe(20);
   });
   it("charge intent falls back for unavailable charges across the entire selection", () => {
     const { game, map } = fixture();

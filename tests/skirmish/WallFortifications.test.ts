@@ -1,3 +1,4 @@
+import { claimBuildingFootprint } from "./BuildingFixtures";
 import { readFileSync } from "node:fs";
 import { describe, expect, it } from "vitest";
 import manifest from "../../Art/Terrain/Wall Kit/Wall_Kit_Manifest.json";
@@ -49,7 +50,7 @@ function barrier(a: Building, b: Building, tiles: number[], id = 1): Barrier {
 }
 it("blocks physical corner contact while preserving weapon rays and owner passage",()=>{
   const m=match(),a=tower(m,10,5),b=tower(m,12,5),forts=m.expansion!.fortifications;
-  forts.barriers.push(barrier(a,b,[m.map.ref(10,5),m.map.ref(11,5),m.map.ref(12,5)]));
+  forts.addBarrier(barrier(a,b,[m.map.ref(10,5),m.map.ref(11,5),m.map.ref(12,5)]));
   forts.step(m.tick,m.buildings);
   const from={x:9.5*FIXED,y:4.8*FIXED},to={x:13.5*FIXED,y:4.8*FIXED};
   expect(forts.clear(from,to,2)).toBe(true);
@@ -120,7 +121,7 @@ describe("wall artwork topology", () => {
     const cached = view.tiles;
     view.update(m.snapshot());
     expect(view.tiles).toBe(cached);
-    forts.barriers[0].health = 0;
+    forts.updateBarrier(forts.barriers[0].id, { health: 0 });
     forts.step(2, m.buildings);
     view.update(m.snapshot());
     expect(view.tiles).toHaveLength(0);
@@ -133,7 +134,7 @@ describe("wall artwork topology", () => {
       d = tower(m, 10, 6),
       e = tower(m, 10, 10);
     const forts = m.expansion!.fortifications;
-    forts.barriers.push(
+    [
       barrier(
         a,
         b,
@@ -151,7 +152,7 @@ describe("wall artwork topology", () => {
         [9, 8, 7, 6].map((y) => m.map.ref(10, y)),
         3,
       ),
-    );
+    ].forEach(wall => forts.addBarrier(wall));
     forts.step(1, m.buildings);
     const view = new WallPresentation();
     view.update(m.snapshot());
@@ -168,7 +169,7 @@ describe("friendly fortification passage", () => {
     m.expansion!.supply.replaceDeposits([]);
     m.expansion!.progression.states[1].completed = TECHNOLOGIES.map(t => t.id);
     m.players[0].gold = 100000;
-    for (const x of [10, 16]) m.owners[m.map.ref(x, 20)] = 1;
+    for (const x of [10, 16]) claimBuildingFootprint(m,m.map.ref(x,20),"tower");
     expect(m.applyCommand({ type: "build", playerId: 1, buildingType: "tower", tile: m.map.ref(10, 20) })).toBeNull();
     const first = m.buildings[m.buildings.length - 1];
     expect(first.remainingTicks).toBeGreaterThan(0);
@@ -224,17 +225,11 @@ describe("friendly fortification passage", () => {
       m.owners[tile] = 1;
       m.players[0].land++;
     }
+    // Author the boundary wall directly: this navigation fixture needs a
+    // terminal anchor at x63, independent of occupied-footprint placement.
     for (const x of [0, 10, 20, 30, 40, 50, 60, 63]) {
-      expect(
-        m.applyCommand({
-          type: "build",
-          playerId: 1,
-          buildingType: "tower",
-          tile: m.map.ref(x, 24),
-          age: "StoneAge",
-        }),
-      ).toBeNull();
-      m.updateBuilding((m.buildings[m.buildings.length - 1]).id, { remainingTicks: 0 });
+      const b=tower(m,x,24);
+      m.expansion!.built(m.players[0],b);
     }
     // The completed towers form the wall; keep their weapons inactive in this navigation fixture.
     for (const b of m.buildings)

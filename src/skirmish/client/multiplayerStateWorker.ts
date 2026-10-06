@@ -6,6 +6,7 @@ import {
 } from "../multiplayer/StateCodec";
 import { CanonicalStateStream } from "./CanonicalStateStream";
 import { SNAPSHOT_STATE_LIMITS } from "../multiplayer/StateLimits";
+import { snapshotTransfers } from "../SnapshotCodec";
 
 // Network decompression, hashing and parsing stay off the rendering thread.
 // OnlineMatchSession admits one decode at a time and bounds queued states.
@@ -16,9 +17,9 @@ let expectedMap: { width: number; height: number } | undefined;
 let incoming = Promise.resolve();
 self.onmessage = (
   event: MessageEvent<
-    | (EncodedState & { expectedMap: { width: number; height: number }; presentation?: boolean })
+    | (EncodedState & { expectedMap: { width: number; height: number }; presentation?: boolean; packed?: boolean })
     | { type: "presented"; sequence: number }
-    | { type: "presentation" }
+    | { type: "presentation"; packed?: boolean }
   >,
 ) => {
   incoming = incoming.then(async () => {
@@ -28,6 +29,12 @@ self.onmessage = (
         try {
           if (!stream) throw new Error("Canonical state is unavailable");
           const projectionStarted = performance.now();
+          if (event.data.packed) {
+            const view = stream.presentationPacket();
+            self.postMessage({ packet: { tick: view.viewPacket.tick, reset: view.viewPacket.reset }, ...view,
+              projectionMs: performance.now() - projectionStarted }, {transfer: snapshotTransfers(view.viewPacket)});
+            return;
+          }
           const view = stream.presentationForTransfer();
           const projected = performance.now();
           self.postMessage({ packet: { tick: view.snapshot.tick, reset: view.snapshot.changedTiles === undefined }, ...view,
@@ -81,6 +88,13 @@ self.onmessage = (
         // busy; no throwaway complete snapshot is cloned or transferred.
         self.postMessage({ packet: { tick: packet.tick, reset: packet.reset }, canonicalOnly: true,
           decodeMs: decoded - started, applyMs: applied - decoded, decodeStats });
+        return;
+      }
+      if (event.data.packed) {
+        const view = stream.presentationPacket();
+        self.postMessage({ packet: { tick: packet.tick, reset: packet.reset }, ...view,
+          decodeMs: decoded-started, applyMs: applied-decoded, projectionMs: performance.now()-applied, decodeStats },
+          {transfer: snapshotTransfers(view.viewPacket)});
         return;
       }
       const view = stream.presentationForTransfer();

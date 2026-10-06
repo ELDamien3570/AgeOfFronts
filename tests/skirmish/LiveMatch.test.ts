@@ -359,10 +359,10 @@ describe("server-authoritative live match", () => {
     ]);
   });
 
-  it("publishes the final state before ending and closing the worker", async () => {
+  it.each([1, -1])("publishes the final winner %s state before ending and closing the worker", async (winner) => {
     const f = await fixture();
     f.executor.request = async <T extends ExecutorResult>() =>
-      ({ tick: 1, winner: 1, packet, rejectedCommands: [] }) as unknown as T;
+      ({ tick: 1, winner, packet, rejectedCommands: [] }) as unknown as T;
     f.setTime(10_050);
     await f.match.advance();
     expect(f.messages.map((item) => item.message.type)).toEqual([
@@ -371,6 +371,7 @@ describe("server-authoritative live match", () => {
       "match-ended",
       "match-ended",
     ]);
+    expect(f.messages.filter(item => item.message.type === "match-ended").every(item => item.message.type === "match-ended" && item.message.completed)).toBe(true);
     expect(f.cleanup()).toEqual({ released: 1, closed: 1 });
   });
 });

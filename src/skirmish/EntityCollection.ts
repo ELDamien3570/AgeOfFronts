@@ -35,25 +35,34 @@ export class EntityCollection<T extends { readonly id: number }> {
   updateOwned(id: number, changes: Partial<Omit<T, "id">>): T | undefined {
     return this.apply(id, changes, false);
   }
+  /** Internal owned write: no patch object or enumeration for hot scalar fields. */
+  setOwned<K extends Exclude<keyof T, "id">>(id: number, key: K, value: T[K]): T | undefined {
+    if (key === "id" || key === "__proto__" || key === "prototype" || key === "constructor")
+      throw new Error("Entity identity cannot change");
+    const record = this.records.get(id);
+    if (!record || Object.is(record[key], value)) return record;
+    record[key] = value;
+    this.hooks.changed(record);
+    return record;
+  }
   private apply(
     id: number,
     changes: Partial<Omit<T, "id">>,
     copy: boolean,
   ): T | undefined {
-    if (
-      Object.keys(changes).some((key) =>
-        ["id", "__proto__", "prototype", "constructor"].includes(key),
-      )
-    )
-      throw new Error("Entity identity cannot change");
+    let changed = false, containers = false;
+    for (const key in changes) if (Object.prototype.hasOwnProperty.call(changes, key)) {
+      if (key === "id" || key === "__proto__" || key === "prototype" || key === "constructor")
+        throw new Error("Entity identity cannot change");
+      const value = changes[key as keyof typeof changes];
+      // Preserve structuredClone's rejection of unsupported external values.
+      containers ||= value !== null && (typeof value === "object" || typeof value === "function" || typeof value === "symbol");
+    }
     const record = this.records.get(id);
     if (!record) return undefined;
-    const entries = Object.entries(changes);
-    if (
-      entries.every(([key, value]) => Object.is(record[key as keyof T], value))
-    )
-      return record;
-    Object.assign(record, copy ? structuredClone(changes) : changes);
+    for (const key in changes) if (Object.prototype.hasOwnProperty.call(changes, key) && !Object.is(record[key as keyof T], changes[key as keyof typeof changes])) { changed = true; break; }
+    if (!changed) return record;
+    Object.assign(record, copy && containers ? structuredClone(changes) : changes);
     this.hooks.changed(record);
     return record;
   }

@@ -1,5 +1,6 @@
 import { AGE_NAMES, AGES, type Tree } from "../domain/Definitions";
 import type { TechnologyViewModel } from "./TechnologyViewModel";
+import { technologyDetails } from "./TechnologyDetails";
 
 const escape = (s: string) =>
   s.replace(
@@ -22,6 +23,7 @@ export function technologyTreeMarkup(
   vm: TechnologyViewModel,
   inspected: string,
   activeTree: Tree,
+  detailsExpanded = false,
 ): string {
   const trees = vm.trees,
     nodes = trees.flatMap((t) => t.nodes);
@@ -65,5 +67,5 @@ export function technologyTreeMarkup(
       })
       .join(
         "",
-      )}</div></div></div><article class="technology-detail" aria-label="Selected technology"><header class="technology-detail-header"><h3>${escape(detail.name)}</h3><button data-research="${detail.id}" ${detail.reason ? "disabled" : ""}>${detail.researching ? "Researching" : detail.completed ? "Completed" : `Research · ${fmt(detail.gold)} gold · ${detail.ticks / 20}s`}</button></header><div class="technology-detail-body"><p>${escape(detail.description)}</p><small>Requires: ${detail.prerequisites.map((id) => escape(vm.empire.technologyName(id))).join(", ") || "No prerequisites"}</small><p>${escape(detail.reason ?? "Unlocks capabilities; deployment has separate building and supply costs.")}</p></div></article>`;
+      )}</div></div></div><article class="technology-detail" data-detail-node="${detail.id}" data-expanded="${detailsExpanded}" aria-label="Selected technology"><header class="technology-detail-header"><h3>${escape(detail.name)}</h3><div class="technology-detail-actions"><button data-details-toggle aria-expanded="${detailsExpanded}" aria-controls="technology-detail-body">${detailsExpanded ? "Minimize ▴" : "Details ▾"}</button><button data-research="${detail.id}" ${detail.reason ? "disabled" : ""}>${detail.researching ? "Researching" : detail.completed ? "Completed" : `Research · ${fmt(detail.gold)} gold · ${detail.ticks / 20}s`}</button></div></header><div id="technology-detail-body" class="technology-detail-body" data-details-scroll tabindex="0" aria-label="Technology description and stats"><p class="technology-description">${escape(detail.description)}</p><div class="technology-detail-extra"><small>Base stats before research bonuses</small><ul class="technology-stats">${technologyDetails(detail).map(line => `<li>${escape(line)}</li>`).join("")}</ul><small>Requires: ${detail.prerequisites.map((id) => escape(vm.empire.technologyName(id))).join(", ") || "No prerequisites"}</small>${detail.reason ? `<p>${escape(detail.reason)}</p>` : ""}</div></div></article>`;
 }

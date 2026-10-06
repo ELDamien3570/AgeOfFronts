@@ -2,10 +2,12 @@ import { availableGold, spendGold } from "./Gold";
 import type { GameMap } from "../../core/game/GameMap";
 import type { Building, Player } from "../Protocol";
 import { FIXED } from "../Protocol";
-import { restoreArray, restoreMap } from "../StateTransfer";
+import { restoreMap } from "../StateTransfer";
 import { AGES, type Age, type Barrier } from "./Definitions";
 import type { Diplomacy } from "./Diplomacy";
 import { boxSweepEntry } from "./ProjectileCollision";
+import { EntityCollection } from "../EntityCollection";
+import { EntityChangeJournal } from "../EntityChangeJournal";
 const NO_BARRIERS: readonly Barrier[] = [];
 // Coarse occupancy blocks let segment tests skip obstacle-free neighbourhoods.
 const BLOCK_SHIFT = 3;
@@ -24,7 +26,7 @@ export class Fortifications {
   }
   restore(saved: ReturnType<Fortifications["checkpoint"]>): void {
     const state = structuredClone(saved);
-    restoreArray(this.barriers, state.barriers);
+    this.barrierEntities.restoreOwned(state.barriers);
     this.nextId = state.nextId;
     restoreMap(this.towers, state.towers);
     restoreMap(this.repairs, state.repairs);
@@ -34,7 +36,24 @@ export class Fortifications {
     this.version = version;
   }
 
-  readonly barriers: Barrier[] = [];
+  readonly barrierChanges = new EntityChangeJournal();
+  private readonly barrierEntities = new EntityCollection<Barrier>({
+    added: wall => { Object.freeze(wall.tiles); this.barrierChanges.record(wall.id, "add"); },
+    changed: wall => this.barrierChanges.record(wall.id, "change"),
+    removed: id => this.barrierChanges.record(id, "remove"),
+    restored: walls => { for (const wall of walls) Object.freeze(wall.tiles); this.barrierChanges.invalidate(); },
+  });
+  get barriers(): readonly Barrier[] { return this.barrierEntities.values; }
+  updateBarrier(id: number, changes: Partial<Pick<Barrier, "health" | "remainingTicks">>): Barrier | undefined {
+    return this.barrierEntities.update(id, changes);
+  }
+  /** Fixture/import boundary; ordinary construction uses addTower's quote. */
+  addBarrier(input: Barrier): Barrier {
+    const wall = this.barrierEntities.add(input);
+    this.nextId = Math.max(this.nextId, wall.id + 1);
+    this.reindex();
+    return wall;
+  }
   version = 0;
   private readonly tileIndex = new Map<number, Barrier[]>();
   private readonly barrierIds = new Map<number, Barrier>();
@@ -77,7 +96,7 @@ export class Fortifications {
     return [...found.values()].sort((a, b) => this.barrierOrder.get(a.id)! - this.barrierOrder.get(b.id)!);
   }
   intactWallAt(tile: number): boolean {
-    return (this.tileIndex.get(tile) ?? NO_BARRIERS).some(w=>w.health>0);
+    return (this.tileIndex.get(tile) ?? NO_BARRIERS).some(w=>w.health>0 && w.kind !== "trench");
   }
   blocked(tile: number, owner: number): boolean {
     const towerOwners = this.towers.get(tile);
@@ -85,8 +104,21 @@ export class Fortifications {
       for (const towerOwner of towerOwners)
         if (!this.diplomacy.allied(towerOwner, owner)) return true;
     return (this.tileIndex.get(tile) ?? NO_BARRIERS).some(
-      (w) => w.health > 0 && !this.diplomacy.allied(w.playerId, owner),
+      (w) => w.kind !== "trench" && w.health > 0 && !this.diplomacy.allied(w.playerId, owner),
     );
+  }
+  /** Resumable obstruction predicate for preparation. Tower ownership is
+   * bounded by the byte faction ID space; wall overlaps are visited singly. */
+  blockedStep(tile: number, owner: number, cursor: number): { blocked: boolean; done: boolean; next: number } {
+    if (cursor < 0) {
+      for (const towerOwner of this.towers.get(tile) ?? [])
+        if (!this.diplomacy.allied(towerOwner, owner)) return { blocked: true, done: true, next: 0 };
+      return { blocked: false, done: false, next: 0 };
+    }
+    const wall = this.tileIndex.get(tile)?.[cursor];
+    if (!wall) return { blocked: false, done: true, next: cursor };
+    const blocked = wall.kind !== "trench" && wall.health > 0 && !this.diplomacy.allied(wall.playerId, owner);
+    return { blocked, done: blocked, next: cursor + 1 };
   }
   private reindex(): void {
     this.tileIndex.clear(); this.barrierIds.clear(); this.barrierOrder.clear();this.ownerBarriers.clear();
@@ -119,7 +151,8 @@ export class Fortifications {
       ] = 1;
     };
     for (const tile of this.towers.keys()) mark(tile);
-    for (const tile of this.tileIndex.keys()) mark(tile);
+    for (const [tile, walls] of this.tileIndex)
+      if (walls.some(w => w.kind !== "trench")) mark(tile);
   }
   private mayBlock(
     from: { x: number; y: number },
@@ -244,8 +277,21 @@ export class Fortifications {
   }
   /** Physical clearance uses a squad's swept radius. Weapon rays retain clear(). */
   clearMovement(from:{x:number;y:number},to:{x:number;y:number},owner:number,radius:number):boolean {
-    return !this.blockingTilesOnSweep(from,to,owner,radius).some(tile =>
-      boxSweepEntry(from,to,{x:this.map.x(tile)*FIXED,y:this.map.y(tile)*FIXED},FIXED,radius)!==null);
+    // The proof must include the full swept body, including adjacent cells.
+    const extent = Math.ceil(radius / FIXED);
+    // Include the collecting query's cell expansion at exact tile/block edges.
+    const pad = (extent + 1) * FIXED;
+    if (this.obstacleFreeArea(Math.min(from.x,to.x)-pad, Math.min(from.y,to.y)-pad,
+      Math.max(from.x,to.x)+pad, Math.max(from.y,to.y)+pad)) return true;
+    for (const centre of this.segmentTiles(from, to)) {
+      const x = this.map.x(centre), y = this.map.y(centre);
+      for (let yy=Math.max(0,y-extent); yy<=Math.min(this.map.height()-1,y+extent); yy++)
+        for (let xx=Math.max(0,x-extent); xx<=Math.min(this.map.width()-1,x+extent); xx++) {
+          const tile = this.map.ref(xx,yy);
+          if (this.blocked(tile,owner) && boxSweepEntry(from,to,{x:xx*FIXED,y:yy*FIXED},FIXED,radius)!==null) return false;
+        }
+    }
+    return true;
   }
   forgetBuilding(building: Building, remaining: readonly Building[]): void {
     this.repairs.delete(`b:${building.id}`);
@@ -253,7 +299,7 @@ export class Fortifications {
     for (let i = this.barriers.length - 1; i >= 0; i--) {
       const wall = this.barriers[i];
       if (wall.a !== building.id && wall.b !== building.id) continue;
-      this.repairs.delete(`w:${wall.id}`); this.barriers.splice(i, 1); dirty = true;
+      this.repairs.delete(`w:${wall.id}`); this.barrierEntities.remove(wall.id); dirty = true;
     }
     if (building.type === "tower" && !remaining.some(b => b.type === "tower" &&
       b.tile === building.tile && b.playerId === building.playerId && (b.health ?? 1) > 0)) {
@@ -268,8 +314,11 @@ export class Fortifications {
     owner: number,
     age: Age,
     buildings: readonly Building[] | TowerSiteIndex,
+    siteType: "tower" | "trench" = "tower",
+    allowed: (tile: number) => boolean = () => true,
   ): ReturnType<typeof quoteTowerPlan> {
-    return quoteTowerPlan(this.map, tile, owner, age, buildings, t => this.intactWallAt(t));
+    return quoteTowerPlan(this.map, tile, owner, age, buildings,
+      t => !allowed(t) || this.barriersAt(t).some(b => b.health > 0), siteType);
   }
   addTower(
     tower: Building,
@@ -279,8 +328,9 @@ export class Fortifications {
       const health = Math.round(
         2000 * 1.3 ** AGES.indexOf(tower.age ?? "StoneAge"),
       );
-      this.barriers.push({
+      this.barrierEntities.add({
         id: this.nextId++,
+        ...(tower.type === "trench" ? {kind: "trench" as const} : {}),
         playerId: tower.playerId,
         age: tower.age ?? "StoneAge",
         a: link.a,
@@ -350,14 +400,17 @@ export class Fortifications {
         a.playerId !== wall.playerId ||
         b.playerId !== wall.playerId
       ) {
-        wall.health = 0;
+        this.updateBarrier(wall.id, { health: 0 });
         dirty = true;
       }
-      if (wall.remainingTicks > 0 && --wall.remainingTicks === 0) dirty = true;
+      if (wall.remainingTicks > 0) {
+        this.updateBarrier(wall.id, { remainingTicks: wall.remainingTicks - 1 });
+        if (wall.remainingTicks === 0) dirty = true;
+      }
     }
     if (this.barriers.some((w) => w.health <= 0)) {
       for (let i = this.barriers.length - 1; i >= 0; i--)
-        if (this.barriers[i].health <= 0) this.barriers.splice(i, 1);
+        if (this.barriers[i].health <= 0) this.barrierEntities.remove(this.barriers[i].id);
       dirty = true;
     }
     if (dirty) this.reindex();
@@ -381,7 +434,7 @@ export class Fortifications {
       if ("tile" in target) {
         if (!updateBuilding) throw new Error("Building repairs require their lifecycle owner");
         updateBuilding(target.id, health);
-      } else target.health = health;
+      } else this.updateBarrier(target.id, { health });
       repair.remaining -= amount;
       if (repair.remaining <= 0 || amount <= 0) this.repairs.delete(key);
     }

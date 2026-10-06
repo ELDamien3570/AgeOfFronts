@@ -2,6 +2,7 @@ import { Worker } from "node:worker_threads";
 import type { SnapshotPacket } from "../../Protocol";
 import type { EncodedState } from "../StateCodec";
 import { RuntimeDiagnostics, type RuntimePhase, type TimingSummary } from "../../RuntimeDiagnostics";
+import { snapshotTransfers } from "../../SnapshotCodec";
 
 /** Owns pure immutable snapshot encoding, never authoritative game state. */
 export class SnapshotEncodingWorker {
@@ -40,7 +41,7 @@ export class SnapshotEncodingWorker {
       // Clone synchronously at this tick boundary. Expansion fields can still
       // reference domain records, so never defer postMessage until a later tick.
       // The encoder owns its isolated copy; the simulation may then advance.
-      try { this.diagnostics.measure("transfer", () => this.worker.postMessage({ id, packet })); }
+      try { this.diagnostics.measure("transfer", () => this.worker.postMessage({ id, packet }, snapshotTransfers(packet))); }
       catch (error) { this.pending.delete(id); clearTimeout(timeout); reject(error as Error); }
     });
   }

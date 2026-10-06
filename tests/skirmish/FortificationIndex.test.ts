@@ -17,7 +17,7 @@ describe("exact local fortification endpoint index", () => {
         tile: map.ref(4, 4),
         remainingTicks: 0,
       };
-    forts.barriers.push({
+    forts.addBarrier({
       id: 1,
       playerId: 1,
       age: "StoneAge",
@@ -32,7 +32,7 @@ describe("exact local fortification endpoint index", () => {
     expect(
       forts.towerPlan(map.ref(8, 4), 1, "StoneAge", [tower]).links,
     ).toHaveLength(0);
-    forts.barriers[0].health = 0;
+    forts.updateBarrier(forts.barriers[0].id, { health: 0 });
     expect(
       forts.towerPlan(map.ref(8, 4), 1, "StoneAge", [tower]).links,
     ).toHaveLength(1);

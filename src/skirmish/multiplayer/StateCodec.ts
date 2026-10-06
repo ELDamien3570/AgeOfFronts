@@ -5,6 +5,8 @@ const NO_DIAGNOSTICS = new RuntimeDiagnostics(1, false);
 export interface EncodedState {
   hash: string;
   payload: string;
+  /** Live snapshot transport only; durable checkpoints retain text envelopes. */
+  binary?: Uint8Array<ArrayBuffer>;
 }
 type WireValue =
   | null
@@ -335,7 +337,7 @@ async function digest(bytes: Uint8Array<ArrayBuffer>): Promise<string> {
     .map((byte) => byte.toString(16).padStart(2, "0"))
     .join("");
 }
-export async function encodeState(value: unknown, diagnostics = NO_DIAGNOSTICS, limits: Partial<StateEnvelope> = {}): Promise<EncodedState> {
+export async function encodeState(value: unknown, diagnostics = NO_DIAGNOSTICS, limits: Partial<StateEnvelope> = {}, binary = false): Promise<EncodedState> {
   const envelope = stateEnvelope(limits);
   const buffers: Uint8Array[] = [];
   const budget = { bytes: 0, arrays: 0, limit: envelope.maxArrayBytes, arrayLimit: envelope.maxArrays };
@@ -373,7 +375,8 @@ export async function encodeState(value: unknown, diagnostics = NO_DIAGNOSTICS, 
   if (4 * Math.ceil(compressed.byteLength / 3) > envelope.maxPayloadChars)
     throw new Error("Checkpoint exceeds the encoded payload limit");
   return { hash: await diagnostics.measureAsync("hash", () => digest(bytes)),
-    payload: diagnostics.measure("base64", () => base64(compressed)) };
+    payload: binary ? "" : diagnostics.measure("base64", () => base64(compressed)),
+    ...(binary ? { binary: compressed } : {}) };
 }
 export async function decodeState<T>(
   state: EncodedState,
@@ -381,9 +384,11 @@ export async function decodeState<T>(
 ): Promise<T> {
   const diagnostics = limits.diagnostics ?? NO_DIAGNOSTICS;
   const envelope = stateEnvelope(limits);
-  if (!/^[a-f0-9]{64}$/u.test(state.hash) || state.payload.length > envelope.maxPayloadChars)
+  if (!/^[a-f0-9]{64}$/u.test(state.hash) || typeof state.payload !== "string" || state.payload.length > envelope.maxPayloadChars ||
+    (state.binary !== undefined && (!(state.binary instanceof Uint8Array) || state.payload !== "" ||
+      4 * Math.ceil(state.binary.byteLength / 3) > envelope.maxPayloadChars)))
     throw new Error("Invalid encoded checkpoint");
-  const compressed = diagnostics.measure("base64", () => unbase64(state.payload));
+  const compressed = state.binary ?? diagnostics.measure("base64", () => unbase64(state.payload));
   const decompressStarted = diagnostics.enabled ? performance.now() : 0;
   const reader = new Response(compressed)
     .body!.pipeThrough(new DecompressionStream("gzip"))

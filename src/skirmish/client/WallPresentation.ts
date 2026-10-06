@@ -12,6 +12,7 @@ export interface WallTile {
 // Read-only topology for the wall layer. Parallel adjacent runs do not become
 // connected merely because their tiles happen to touch.
 export class WallPresentation {
+  constructor(private readonly kind: "wall" | "trench" = "wall") {}
   tiles: readonly WallTile[] = [];
   private revision = -1;
   private width = 0;
@@ -34,12 +35,12 @@ export class WallPresentation {
     this.width = snapshot.width;
     const towers = new Map(
       snapshot.buildings
-        .filter((b) => b.type === "tower")
+        .filter((b) => b.type === (this.kind === "wall" ? "tower" : "trench"))
         .map((b) => [b.id, b]),
     );
     const nodes = new Map<string, WallTile>();
     for (const wall of expansion.barriers) {
-      if (wall.health <= 0) continue;
+      if (wall.health <= 0 || (wall.kind ?? "wall") !== this.kind) continue;
       const node = (tile: number) => {
         const key = `${wall.playerId}:${wall.age}:${tile}`;
         let value = nodes.get(key);
@@ -79,7 +80,7 @@ export class WallPresentation {
         node(b).mask |= reverse;
       }
       // A long run gets one automatic cosmetic gate on a straight cell.
-      if (wall.tiles.length >= 5) {
+      if (this.kind === "wall" && wall.tiles.length >= 5) {
         const centre = (wall.tiles.length - 1) / 2;
         const candidates = wall.tiles
           .map((tile, i) => ({

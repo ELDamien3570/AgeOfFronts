@@ -1,0 +1,41 @@
+{
+  "at": "2026-10-05T00:34:59.776Z",
+  "node": "v24.18.0",
+  "platform": "win32",
+  "arch": "x64",
+  "cpu": "AMD Ryzen 7 3700X 8-Core Processor             ",
+  "logicalCpus": 16,
+  "totalMemory": 51443150848,
+  "sourceSha256": {
+    "scripts/profileLocalHitches.mjs": "628603badd1a1ebaea21ad8bb42b43b204b490ea722ebc5fc53e9a420bdd0d86",
+    "scripts/smokeOracleStability.mjs": "3cca96f3d7674c460cec1747c752b8cfb153dc92d160abb996cb4f0797db2c89",
+    "scripts/runHostedStabilitySoak.mjs": "bcd47f4ca4d1a2025b2b19a8d57e28a80a00259e359e0e2210ca1aec246975ba",
+    "tests/skirmish/browser/LocalRuntimeProfile.ts": "76da3da8a6bc1aaa8e6d943a01983647d293745768fdefd5eea9e82a9d2b605b",
+    "tests/skirmish/browser/LocalRuntimeWorker.ts": "9540bd878311612b38c1bc9440cb5d14726c958a51dc0582ca7525b53ba650d9",
+    "src/skirmish/Simulation.ts": "b8195a1464820030a6da8dd19cdb34d444dee5e2a5c0fa4519179e59fe61604f",
+    "src/skirmish/RoutePlanner.ts": "33253b612c150890087ad329c614b98dd70c57c9c29c8e1c448249b25beba290",
+    "src/skirmish/domain/AiOperations.ts": "ce29334817645996bc6a75978315504d3f8d9892c91025a1105f2bde9b504dad",
+    "src/skirmish/domain/Fortifications.ts": "9863a3e6a1078f51f40d159677e3ff3341cfc7f4e8fbd444301fff24217bc657",
+    "src/skirmish/SnapshotCodec.ts": "01244ed3e8bb416a24631a0bfc12c2835b7b839208002a72882fd6333c72e2a4",
+    "src/skirmish/multiplayer/SnapshotWireCodec.ts": "e469e6dced71cd26784f0d3fe501ef560417fcb0aa7d9a36ba7ce1bd2f2300ae",
+    "src/skirmish/client/CanonicalStateStream.ts": "004c5c74d207f99ce2263cefa206eef241df15da6ca84eac68dbad6e7950d3aa",
+    "src/skirmish/client/Renderer.ts": "ee6cdb7f488721a3afa6ad84afe3a0d7f06ce9fb8ad93a69d222ea05f03551de"
+  },
+  "runOrder": [
+    "late checkpoint control 1600 ticks",
+    "same checkpoint CPU/allocation profile 1600 ticks",
+    "browser 1500 squads 30 seconds",
+    "hosted 6 clients 600 seconds"
+  ],
+  "scope": "Local diagnostic continuation and bounded qualification. Prior architecture changes retained. No gameplay filters added to these runs.",
+  "finalizedAt": "2026-10-05T00:47:15.531Z",
+  "browserCommand": "node node_modules/vite/bin/vite.js --config vite.skirmish.config.ts --host 127.0.0.1 --port 9000",
+  "validation": {
+    "pairedFinalHashesMatch": true,
+    "hostedSmokePassed": true,
+    "browserPassed": true,
+    "browserSceneVisiblyVerified": true,
+    "typeScriptPassed": true,
+    "diagnosticScriptSyntaxPassed": true
+  }
+}

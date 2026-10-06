@@ -79,7 +79,7 @@ const publications = new PublicationQueue(encodePacket,
   error => parentPort!.postMessage({ fatal: `Snapshot publication failed: ${error.message}` }));
 const diagnosticSnapshot = (commands: number, ticksAdvanced: number, payloadBytes: number): MatchDiagnostics => {
   const m = match!, memory = process.memoryUsage(), planning = m.routePlanner.diagnostics;
-  return { tick: m.tick, timings: diagnostics.snapshot(), retainedBytes: diagnostics.retainedBytes,
+  return { tick: m.tick, timings: diagnostics.snapshot(), lifetimeTimings: diagnostics.lifetimeSnapshot(), retainedBytes: diagnostics.retainedBytes,
     correlation: { ...diagnosticContext, source: process.env.GIT_COMMIT ?? "unknown", runtime: process.version,
       threadId, tick: capturedTick, captureSequence },
     commands, ticksAdvanced, payloadBytes,
@@ -89,10 +89,13 @@ const diagnosticSnapshot = (commands: number, ticksAdvanced: number, payloadByte
       baselineCache: {...baselines.diagnostics, retainedBytes: baselines.retainedBytes},
       extraction: {...encoder.diagnostics} },
     paths: { land: m.paths.residency, water: m.waterPaths.residency },
+    domainWork: { spatial: m.spatialDiagnostics && { ...m.spatialDiagnostics },
+      trade: m.expansion && { ...m.expansion.trade.diagnostics } },
     entities: { squads: m.squads.length, ships: m.ships.length, buildings: m.buildings.length,
       traders: m.expansion?.trade.actors.length ?? 0, projectiles: m.expansion?.battle.projectiles.length ?? 0,
       recruitment: m.recruitment.jobs.length },
     planner: { pending: planning.pending, oldestAge: planning.oldestAge, limited: planning.limited,
+      preparation: { pending: m.movementAdmission.preparationCount, ...m.movementAdmission.preparationDiagnostics },
       workspaceBytes: planning.workspaceBytes, workspaceUsed: planning.workspaceUsed, receipts: m.commandApplications.diagnostics.pending,
       work: planning.work, completed: planning.completed, superseded: planning.superseded, admissionDeferred: planning.admissionDeferred,
       cohorts: m.routePlanner.diagnosticCohorts(m.tick) },
@@ -264,7 +267,12 @@ parentPort.on(
               ...(outcomes.length ? {commandOutcomes: outcomes} : {}),
               seats: seats(),
             } satisfies MatchAdvance;
-            if (request.publish || match.winner !== null) {
+            // A committed player command should be visible in its authoritative
+            // result tick, rather than waiting for the 5 Hz background cadence.
+            // Deferred/rejected commands do not expose uncommitted intentions.
+            // Offer once per advance through the same bounded, ordered queue.
+            const publish = request.publish || outcomes.some(outcome => outcome.status === "executed");
+            if (publish || match.winner !== null) {
               if (streamPublications && match.winner === null) publications.offer(match.tick, capture);
               else {
                 await publications.flush();
@@ -272,9 +280,9 @@ parentPort.on(
               }
             }
             diagnostics.record("advance", performance.now() - advanceStarted);
-            if (request.publish || match.winner !== null) {
+            if (publish || match.winner !== null) {
               const advanced = result as MatchAdvance;
-              advanced.diagnostics = diagnosticSnapshot(request.commands.length, match.tick - previousTick, advanced.packet?.payload.length ?? 0);
+              advanced.diagnostics = diagnosticSnapshot(request.commands.length, match.tick - previousTick, advanced.packet?.binary?.byteLength ?? advanced.packet?.payload.length ?? 0);
               if (match.tick >= nextDiagnosticTick) {
                 nextDiagnosticTick = match.tick + 600;
                 console.info(JSON.stringify({ event: "match-runtime-diagnostics", threadId,
@@ -289,6 +297,7 @@ parentPort.on(
         // Retain the stack and operation on the server; client transport keeps
         // the safe message and never receives private stack details.
         console.error("Match executor operation failed",message.request.type,error);
+        if (match?.failureReason) parentPort!.postMessage({ fatal: `Simulation recovery failed: ${match.failureReason}`, failureCause: "recovery" });
         parentPort!.postMessage({
           id: message.id,
           error:

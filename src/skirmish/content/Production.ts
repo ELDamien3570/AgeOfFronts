@@ -41,7 +41,7 @@ export const REFINING: ProductionRecipe[] = [
       oil: 100 + i * 50,
     },
     outputs: { [`payload:${name}`]: 1 },
-    ticks: 2400 + i * 600,
+    ticks: (2400 + i * 600) / 2,
   })),
 ];
 export const PRODUCTION_RECIPES = [...REFINING, ...RECIPES];

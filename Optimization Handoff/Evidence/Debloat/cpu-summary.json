@@ -1,0 +1,113 @@
+{
+  "scope": "Whole process, including map setup; self sample time, not phase-exclusive cost. tsx generated lines are not source lines.",
+  "rows": [
+    {
+      "ms": 833,
+      "function": "",
+      "file": "skirmish/debloatBenchmark.ts",
+      "generatedLine": 1
+    },
+    {
+      "ms": 437,
+      "function": "step",
+      "file": "skirmish/PlanningWorkspace.ts",
+      "generatedLine": 1
+    },
+    {
+      "ms": 411,
+      "function": "",
+      "file": "skirmish/Simulation.ts",
+      "generatedLine": 1
+    },
+    {
+      "ms": 401,
+      "function": "(garbage collector)",
+      "file": "",
+      "generatedLine": 0
+    },
+    {
+      "ms": 397,
+      "function": "cohort",
+      "file": "skirmish/RoutePlanner.ts",
+      "generatedLine": 1
+    },
+    {
+      "ms": 378,
+      "function": "step",
+      "file": "skirmish/RoutePlanner.ts",
+      "generatedLine": 1
+    },
+    {
+      "ms": 321,
+      "function": "eachInRadius",
+      "file": "skirmish/Simulation.ts",
+      "generatedLine": 1
+    },
+    {
+      "ms": 265,
+      "function": "performTick",
+      "file": "skirmish/Simulation.ts",
+      "generatedLine": 1
+    },
+    {
+      "ms": 241,
+      "function": "",
+      "file": "skirmish/debloatBenchmark.ts",
+      "generatedLine": 1
+    },
+    {
+      "ms": 229,
+      "function": "selectJob",
+      "file": "skirmish/RoutePlanner.ts",
+      "generatedLine": 1
+    },
+    {
+      "ms": 229,
+      "function": "nextJob",
+      "file": "skirmish/RoutePlanner.ts",
+      "generatedLine": 1
+    },
+    {
+      "ms": 201,
+      "function": "eachInRadius",
+      "file": "skirmish/Simulation.ts",
+      "generatedLine": 1
+    },
+    {
+      "ms": 189,
+      "function": "next",
+      "file": "skirmish/StartingPositions.ts",
+      "generatedLine": 1
+    },
+    {
+      "ms": 177,
+      "function": "localTree",
+      "file": "skirmish/HierarchicalPaths.ts",
+      "generatedLine": 1
+    },
+    {
+      "ms": 173,
+      "function": "step",
+      "file": "skirmish/LocalAvoidance.ts",
+      "generatedLine": 1
+    },
+    {
+      "ms": 171,
+      "function": "neighbors",
+      "file": "skirmish/PathTopology.ts",
+      "generatedLine": 1
+    },
+    {
+      "ms": 140,
+      "function": "pop",
+      "file": "skirmish/PlanningWorkspace.ts",
+      "generatedLine": 1
+    },
+    {
+      "ms": 138,
+      "function": "fight",
+      "file": "domain/Battle.ts",
+      "generatedLine": 1
+    }
+  ]
+}

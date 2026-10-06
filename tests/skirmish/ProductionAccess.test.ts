@@ -1,4 +1,9 @@
+import { CAMP_RADIUS } from "../../src/skirmish/domain/SpawnSelection";
 import { describe, expect, it } from "vitest";
+import {
+  boundsOverlap,
+  buildingReservationBounds,
+} from "../../src/skirmish/BuildingFootprint";
 import { EmpireViewModel } from "../../src/skirmish/client/EmpireViewModel";
 import { producerCompatible } from "../../src/skirmish/content/Buildings";
 import {
@@ -18,8 +23,8 @@ import {
 } from "../../src/skirmish/domain/Supply";
 import { createSkirmishMap } from "../../src/skirmish/Elevation";
 import type { BuildingType } from "../../src/skirmish/Protocol";
-import { BUILDING_SPACING } from "../../src/skirmish/Rules";
 import { Skirmish } from "../../src/skirmish/Simulation";
+import { startingCamp } from "../../src/skirmish/domain/StartingCamp";
 
 function match(seed = 47, density: 1 | 2 | 3 | 5 = 1) {
   const map = createSkirmishMap(192, 128, new Uint8Array(192 * 128).fill(133));
@@ -82,8 +87,10 @@ describe("production resource accessibility", () => {
                   (other) =>
                     other.resource === "horses" ||
                     other.tile === d.tile ||
-                    m.map.euclideanDistSquared(d.tile, other.tile) >=
-                      BUILDING_SPACING ** 2,
+                    !boundsOverlap(
+                      buildingReservationBounds(m.map, d.tile, "mine"),
+                      buildingReservationBounds(m.map, other.tile, "mine"),
+                    ),
                 )),
           );
           expect(node, `${player.name}: ${resource}`).toBeDefined();
@@ -107,7 +114,8 @@ describe("production resource accessibility", () => {
     );
     researchAll(m);
     for (const p of m.players.filter((p) => p.kind === "regular")) {
-      expect(m.buildingPlacement(p.id, "factory", p.base, "Modern")).toBeNull();
+      const camp=startingCamp(m.map,m.paths,p.base,6)!;
+      expect(m.buildingPlacement(p.id, "factory", camp.barracks, "Modern")).toBeNull();
     }
     const p = m.players[0],
       copper = m.expansion!.supply.deposits.find(
@@ -116,6 +124,10 @@ describe("production resource accessibility", () => {
     expect(
       m.buildingPlacement(p.id, "factory", copper.tile, "Modern"),
     ).toContain("extraction");
+    // Claim the entire extraction footprint, including cells outside the initial camp.
+    for (let y = m.map.y(copper.tile); y < m.map.y(copper.tile) + 2; y++)
+      for (let x = m.map.x(copper.tile); x < m.map.x(copper.tile) + 2; x++)
+        (m as unknown as {changeOwner(tile:number,owner:number):void}).changeOwner(m.map.ref(x, y), p.id);
     expect(m.buildingPlacement(p.id, "mine", copper.tile, "Modern")).toBeNull();
   });
   it("extracts and refines local metals into interchangeable troop equipment and both vehicle components", () => {
@@ -124,6 +136,20 @@ describe("production resource accessibility", () => {
     const e = m.expansion!,
       p = m.players[0],
       stock = e.supply.inventories[p.id];
+    // Larger sites require expanded territory; this fixture isolates production.
+    for (
+      let y = Math.max(0, m.map.y(p.base) - 14);
+      y < Math.min(m.map.height(), m.map.y(p.base) + 15);
+      y++
+    )
+      for (
+        let x = Math.max(0, m.map.x(p.base) - 14);
+        x < Math.min(m.map.width(), m.map.x(p.base) + 15);
+        x++
+      ) {
+        const tile = m.map.ref(x, y);
+        if (!m.owners[tile] && m.map.isLand(tile)) (m as unknown as {changeOwner(tile:number,owner:number):void}).changeOwner(tile, p.id);
+      }
     const build = (type: BuildingType, tile?: number) => {
       const site = (
         tile === undefined ? m.ownedLandNearest(p.id, p.base, 256) : [tile]
@@ -140,7 +166,7 @@ describe("production resource accessibility", () => {
       expect(site, type).toBeDefined();
       const b = m.buildings[m.buildings.length - 1]!;
       // Focus this test on paid production; construction timing is independently covered.
-      m.updateBuilding((b).id, { remainingTicks: 0 });
+      m.updateBuilding(b.id, { remainingTicks: 0 });
       // Keep this manual single-batch fixture independent of automatic stock balancing.
       if (
         PRODUCTION_RECIPES.some((r) => producerCompatible(b.type, r.building))
@@ -155,13 +181,15 @@ describe("production resource accessibility", () => {
       "carbon",
       "gunpowder",
       "oil",
-    ])
-      build(
-        resource === "oil" ? "oil-well" : "mine",
-        e.supply.deposits.find(
-          (d) => d.resource === resource && d.owner === p.id,
-        )!.tile,
-      );
+    ]) {
+      const deposit = e.supply.deposits.filter(d => d.resource === resource &&
+        m.paths.connected(p.base, d.tile) && (!m.owners[d.tile] || m.owners[d.tile] === p.id))
+        .sort((a,b) => m.map.euclideanDistSquared(a.tile,p.base)-m.map.euclideanDistSquared(b.tile,p.base))[0]!;
+      expect(deposit, resource).toBeDefined();
+      // The city and paid barracks reservation can put later resources outside the camp.
+      (m as unknown as {changeOwner(tile:number,owner:number):void}).changeOwner(deposit.tile,p.id);
+      build(resource === "oil" ? "oil-well" : "mine", deposit.tile);
+    }
     const factory = build("factory"),
       arms = build("arms-factory"),
       siege = build("siege-workshop"),
@@ -197,6 +225,9 @@ describe("production resource accessibility", () => {
         e.supply.step(++tick, m.players, m.buildings, m.owners);
       expect(stock[item]).toBe(before + amount);
     };
+    batch("refine-bronze", factory.id);
+    batch("refine-bronze", factory.id);
+    batch("make-bronzeage-equipment", arms.id);
     batch("refine-bronze", factory.id);
     batch("refine-bronze", factory.id);
     batch("make-bronzeage-equipment", arms.id);

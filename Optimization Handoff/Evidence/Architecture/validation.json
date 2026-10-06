@@ -1,0 +1,14 @@
+{
+  "baseline": "234d62a74ac32275c1d99cb693bec97110347a05",
+  "tests": {
+    "success": true,
+    "passed": 1318,
+    "failed": 0,
+    "files": 195
+  },
+  "typescript": "PASS",
+  "productionBuild": "PASS; large-chunk warning",
+  "diffCheck": "PASS",
+  "browser": "PASS; worker regression and short gameplay smoke",
+  "releaseQualification": "Not performed"
+}

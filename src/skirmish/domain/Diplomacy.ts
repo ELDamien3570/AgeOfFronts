@@ -30,6 +30,7 @@ export class Diplomacy {
     alliances: [],
     betrayal: {},
     cooldowns: {},
+    wars: [],
   };
   private nextId = 1;
   allied(a: number, b: number): boolean {
@@ -43,10 +44,13 @@ export class Diplomacy {
   hostile(a: number, b: number): boolean {
     return !!a && !!b && !this.allied(a, b);
   }
+  declaredWar(a: number, b: number): boolean {
+    return (this.state.wars ?? []).some(w => (w.a === a && w.b === b) || (w.a === b && w.b === a));
+  }
   action(
     player: Player,
     other: Player | undefined,
-    action: "offer" | "accept" | "reject" | "renew" | "break",
+    action: "offer" | "offer-long-term" | "accept" | "reject" | "renew" | "break" | "declare" | "end-long-term",
     tick: number,
   ): string | null {
     if (
@@ -57,7 +61,7 @@ export class Diplomacy {
       other.kind === "tribe"
     )
       return "Choose a living regular faction";
-    if (!["offer", "accept", "reject", "renew", "break"].includes(action))
+    if (!["offer", "offer-long-term", "accept", "reject", "renew", "break", "declare", "end-long-term"].includes(action))
       return "Invalid diplomacy action";
     const treaty = this.state.alliances.find(
       (t) =>
@@ -70,14 +74,35 @@ export class Diplomacy {
         o.recipient === player.id &&
         o.expiresTick > tick,
     );
+    if (action === "declare") {
+      if (this.declaredWar(player.id, other.id)) return "Already at war";
+      if (treaty) {
+        this.state.alliances = this.state.alliances.filter(t => t !== treaty);
+        this.state.betrayal[player.id] = Math.max(this.state.betrayal[player.id] ?? 0, tick + (treaty.longTerm ? 2400 : 600));
+        if (player.ai || other.ai) this.pairNext[this.pair(player.id, other.id)] = tick + this.aiPolicy.brokenPairTicks;
+      }
+      (this.state.wars ??= []).push({ a: player.id, b: other.id });
+      this.state.offers = this.state.offers.filter(o => !((o.proposer === player.id && o.recipient === other.id) || (o.proposer === other.id && o.recipient === player.id)));
+      this.revision++; return null;
+    }
+    if (action === "end-long-term") {
+      if (!treaty?.longTerm) return "Choose a long-term alliance";
+      if (treaty.ending) return "Alliance is already ending";
+      treaty.ending = true;
+      treaty.expiresTick = tick + 3600;
+      treaty.renewal = [];
+      this.state.offers = this.state.offers.filter(o => !((o.proposer === player.id && o.recipient === other.id) || (o.proposer === other.id && o.recipient === player.id)));
+      this.revision++; return null;
+    }
     if (action === "break") {
       if (!treaty) return "No active alliance";
       this.state.alliances = this.state.alliances.filter((t) => t !== treaty);
-      this.state.betrayal[player.id] = tick + 600;
+      this.state.betrayal[player.id] = Math.max(this.state.betrayal[player.id] ?? 0, tick + (treaty.longTerm ? 1200 : 600));
       if(player.ai||other.ai)this.pairNext[this.pair(player.id,other.id)]=tick+this.aiPolicy.brokenPairTicks;
       this.revision++;return null;
     }
     if (action === "renew") {
+      if (treaty?.longTerm) return treaty.ending ? "This alliance is ending" : "Long-term alliances renew automatically";
       if (!treaty || treaty.expiresTick - tick > 600)
         return "Renewal opens in the final thirty seconds";
       if (!treaty.renewal.includes(player.id)) treaty.renewal.push(player.id);
@@ -93,9 +118,10 @@ export class Diplomacy {
       if(player.ai||other.ai)this.pairNext[this.pair(player.id,other.id)]=tick+this.aiPolicy.declinedPairTicks;
       this.revision++;return null;
     }
-    if (treaty) return "Already allied";
-    if (action === "accept" || incoming) {
+    if (treaty && (treaty.longTerm || (action !== "offer-long-term" && action !== "accept"))) return "Already allied";
+    if (action === "accept" || (incoming && (action === "offer-long-term") === !!incoming.longTerm)) {
       if (!incoming) return "No incoming offer";
+      if (treaty && !incoming.longTerm) return "Already allied";
       this.state.offers = this.state.offers.filter(
         (o) =>
           !(
@@ -103,15 +129,20 @@ export class Diplomacy {
             (o.proposer === other.id && o.recipient === player.id)
           ),
       );
-      this.state.alliances.push({
+      if (treaty) {
+        treaty.longTerm = true; treaty.ending = false; treaty.expiresTick = tick + 6000; treaty.renewal = [];
+      } else this.state.alliances.push({
         id: this.nextId++,
         a: player.id,
         b: other.id,
         expiresTick: tick + 6000,
         renewal: [],
+        ...(incoming.longTerm ? { longTerm: true } : {}),
       });
+      this.state.wars = (this.state.wars ?? []).filter(w => !((w.a === player.id && w.b === other.id) || (w.a === other.id && w.b === player.id)));
       this.revision++;return null;
     }
+    if (incoming) return "Accept or reject the pending alliance offer";
     if (
       this.state.offers.some(
         (o) => o.proposer === player.id && o.recipient === other.id,
@@ -137,6 +168,7 @@ export class Diplomacy {
       proposer: player.id,
       recipient: other.id,
       expiresTick: tick + 400,
+      ...(action === "offer-long-term" ? { longTerm: true } : {}),
     });
     this.revision++;return null;
   }
@@ -151,6 +183,15 @@ export class Diplomacy {
       (o) =>
         o.expiresTick > tick && live.has(o.proposer) && live.has(o.recipient),
     );
+    for (const treaty of this.state.alliances) {
+      if (treaty.longTerm && !treaty.ending && treaty.expiresTick <= tick && live.has(treaty.a) && live.has(treaty.b)) {
+        treaty.expiresTick += (Math.floor((tick - treaty.expiresTick) / 6000) + 1) * 6000;
+        this.revision++;
+      }
+    }
+    const wars = this.state.wars ?? [];
+    this.state.wars = wars.filter(w => live.has(w.a) && live.has(w.b));
+    if (this.state.wars.length !== wars.length) this.revision++;
     this.state.alliances = this.state.alliances.filter(
       (a) => a.expiresTick > tick && live.has(a.a) && live.has(a.b),
     );

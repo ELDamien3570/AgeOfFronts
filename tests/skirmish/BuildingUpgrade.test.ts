@@ -13,6 +13,7 @@ function fixture() {
     seed: 42, aiCount: 1, tribes: false, runAi: false, ruleset: "ages-v1",
   });
   const e = m.expansion!, p = m.players[0]; p.gold = 1e6;
+  for (const b of m.buildings.slice()) m.removeBuilding(b.id);
   e.progression.states[1].age = "Modern";
   e.progression.states[1].completed = TECHNOLOGIES.map(t => t.id);
   m.owners.fill(1);
@@ -49,16 +50,19 @@ describe("explicit paid building upgrades", () => {
     expect(b.remainingTicks).toBeGreaterThan(0);
     expect(upgrade(b.id)).toMatch(/construction/);
   });
-  it("validates all identities and aggregate affordability before any mutation", () => {
+  it("upgrades the affordable subset while validating all identities before mutation", () => {
     const { m, p, building, upgrade } = fixture(), a = building(), b = building();
     const price = buildingUpgradeCost("city", "BronzeAge", 2).gold!;
     p.gold = price;
-    expect(upgrade(a.id, b.id)).toMatch(/gold/);
-    expect(p.gold).toBe(price); expect(a.age).toBe("StoneAge"); expect(b.age).toBe("StoneAge");
+    const vm = new EmpireViewModel(m.snapshot(), { selected: new Set(), selectedShips: new Set(), selectedBuilding: a.id, selectedBuildings: new Set([a.id, b.id]) });
+    expect(vm.buildingUpgrade()!.eligibleCount).toBe(2);
+    expect(vm.buildingUpgrade()!.upgrades).toHaveLength(1);
+    expect(upgrade(b.id, a.id)).toBeNull();
+    expect(p.gold).toBe(0); expect(a.age).toBe("BronzeAge"); expect(b.age).toBe("StoneAge");
     m.updateBuilding((b).id, { playerId: 2 });
     p.gold = 1e6;
     expect(upgrade(a.id, b.id)).toMatch(/own territory/);
-    expect(a.age).toBe("StoneAge"); expect(p.gold).toBe(1e6);
+    expect(a.age).toBe("BronzeAge"); expect(p.gold).toBe(1e6);
     expect(commandSchema.safeParse({ type: "upgrade-building", playerId: 1, buildingIds: [a.id] }).success).toBe(true);
     expect(m.applyCommand({ type: "upgrade-building", playerId: 1, buildingIds: [] })).not.toBeNull();
   });

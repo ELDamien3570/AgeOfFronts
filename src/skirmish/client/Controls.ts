@@ -1,5 +1,18 @@
 import type { BuildingType, Command, ShipType, Snapshot, SquadType } from "../Protocol";
 
+/** Pick ready aircraft from their actual runways; never rebase them in the view. */
+export function sortieCommand(snapshot: Snapshot, playerId: number, x: number, y: number,
+  shift = false, selected: ReadonlySet<number> = new Set()): Extract<Command, {type:"sortie"}> | null {
+  const fields = new Set(snapshot.buildings.filter(b => b.playerId === playerId &&
+    b.type === "airstrip" && !b.remainingTicks && (b.health ?? 1) > 0).map(b => b.id));
+  const ready = (snapshot.expansion?.aircraft ?? []).filter(a => a.playerId === playerId &&
+    a.health > 0 && a.state === "ready" && fields.has(a.airfieldId) &&
+    (selected.size ? selected.has(a.id) : a.definitionId === "bomber"))
+    .sort((a,b) => (a.x-x)**2+(a.y-y)**2-((b.x-x)**2+(b.y-y)**2) ||
+      a.airfieldId-b.airfieldId || a.id-b.id).slice(0, shift ? 5 : 1);
+  return ready.length ? {type:"sortie", playerId, aircraftIds:ready.map(a => a.id), x, y} : null;
+}
+
 /** Translate selection intent only; the match chooses and admits the landing coast. */
 export function shipMoveCommand(snapshot:Pick<Snapshot,"ships"|"squads">,selected:ReadonlySet<number>,playerId:number,tile:number,water:boolean,append:boolean):Extract<Command,{type:"sail"}>|null {
   const loaded=new Set(snapshot.squads.filter(s=>s.playerId===playerId&&s.embarkedOn!==null).map(s=>s.embarkedOn));
@@ -48,7 +61,7 @@ export type HotkeyAction =
   | { type: "recruit"; kind: SquadType }
   | { type: "recruit-ship"; kind: ShipType }
   | { type: "construct"; kind: BuildingType }
-  | { type: "replenish" | "hold" | "fit" | "cancel" | "select-all" }
+  | { type: "replenish" | "hold" | "fit" | "cancel" | "select-all" | "sortie" }
   | { type: "group"; digit: number; mode: "add" | "replace" | "recall" };
 
 // Physical key codes also identify Shift+digits, whose key value is punctuation.
@@ -92,6 +105,8 @@ export function hotkeyAction(
   if (building)
     return commandsAllowed ? { type: "construct", kind: building.kind } : null;
   switch (event.code) {
+    case "KeyP":
+      return {type:"sortie"};
     case "KeyR":
       return { type: "replenish" };
     case "KeyT":

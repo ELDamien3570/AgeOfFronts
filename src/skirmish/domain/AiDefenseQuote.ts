@@ -99,7 +99,7 @@ export function quoteAiDefense(input: {
       stepCost = buildingCost(site.type, input.age, count),
       ticks = buildingTicks(site.type, count),
       plan =
-        site.type === "tower"
+        (site.type === "tower" || site.type === "trench")
           ? quoteTowerPlan(
               input.map,
               site.tile,
@@ -107,10 +107,12 @@ export function quoteAiDefense(input: {
               input.age,
               {
                 at: (tile) => index.at(tile),
-                nearby: (tile, radius) => index.towersNearby(tile, radius),
+                nearby: (tile, radius) => site.type === "tower" ? index.towersNearby(tile, radius) : index.nearby(tile, radius),
               },
               (tile) =>
-                walls.has(tile) || input.fortifications.intactWallAt(tile),
+                walls.has(tile) || input.fortifications.barriersAt(tile).some(b => b.health > 0) ||
+                (site.type === "trench" && input.owners[tile] !== input.player.id),
+              site.type,
             )
           : { links: [], gold: 0 };
     if (

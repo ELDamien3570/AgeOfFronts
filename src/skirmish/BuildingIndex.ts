@@ -1,4 +1,9 @@
 import type { GameMap } from "../core/game/GameMap";
+import {
+  boundsOverlap,
+  buildingReservationBounds,
+  MAX_BUILDING_EXTENT,
+} from "./BuildingFootprint";
 import type { Building } from "./Protocol";
 import { BUILDING_RULES } from "./Rules";
 const EMPTY_BUILDINGS: readonly Building[] = Object.freeze([]);
@@ -7,6 +12,7 @@ export type BuildingQueries = Readonly<
     BuildingIndex,
     | "at"
     | "nearby"
+    | "reservationConflicts"
     | "towersNearby"
     | "countOfType"
     | "highestId"
@@ -69,12 +75,16 @@ export class BuildingIndex {
     number,
     Map<Building["type"], Building>
   >();
+  private readonly placementSectors = new Map<number, Set<number>>();
   private readonly owners = new Map<number, Bucket>();
   private readonly ownerTypes = new Map<
     number,
     Map<Building["type"], Bucket>
   >();
-  private readonly readyTypes = new Map<number, Map<Building["type"], Bucket>>();
+  private readonly readyTypes = new Map<
+    number,
+    Map<Building["type"], Bucket>
+  >();
   private readonly income = new Map<
     number,
     { reserves: number; gold: number }
@@ -108,6 +118,7 @@ export class BuildingIndex {
     this.facts.clear();
     this.towerSectors.clear();
     this.representatives.clear();
+    this.placementSectors.clear();
     this.owners.clear();
     this.ownerTypes.clear();
     this.readyTypes.clear();
@@ -181,14 +192,22 @@ export class BuildingIndex {
     const stack = this.tiles.get(tile)?.members;
     if (!stack) {
       this.representatives.delete(tile);
+      const key = this.towerSector(this.map.x(tile), this.map.y(tile));
+      const sector = this.placementSectors.get(key);
+      sector?.delete(tile);
+      if (!sector?.size) this.placementSectors.delete(key);
       return;
     }
-    // Only the changed local stack is visited; legal stacks have at most ten rows.
+    // Only the changed local stack is visited; legal stacks have at most fifteen rows.
     // Map insertion order matches a full rebuild even in mixed-type fixtures.
     const representatives = new Map<Building["type"], Building>();
     for (const building of stack) representatives.set(building.type, building);
     this.counters.localGeometryRows += stack.length;
     this.representatives.set(tile, representatives);
+    const key = this.towerSector(this.map.x(tile), this.map.y(tile));
+    let sector = this.placementSectors.get(key);
+    if (!sector) this.placementSectors.set(key, (sector = new Set()));
+    sector.add(tile);
   }
   private changeIncome(facts: Facts, sign: 1 | -1): void {
     if (!facts.ready) return;
@@ -240,7 +259,10 @@ export class BuildingIndex {
     const tier = facts.age !== building.age;
     if (geometry) this.unbindGeometry(building.id, facts);
     if (owner) this.unbindOwner(building.id, facts);
-    if (production) { this.changeIncome(facts, -1); this.unbindReady(building.id, facts); }
+    if (production) {
+      this.changeIncome(facts, -1);
+      this.unbindReady(building.id, facts);
+    }
     facts.owner = building.playerId;
     facts.type = building.type;
     facts.tile = building.tile;
@@ -249,7 +271,10 @@ export class BuildingIndex {
     facts.age = building.age;
     if (geometry) this.bindGeometry(building, facts);
     if (owner) this.bindOwner(building, facts);
-    if (production) { this.changeIncome(facts, 1); this.bindReady(building, facts); }
+    if (production) {
+      this.changeIncome(facts, 1);
+      this.bindReady(building, facts);
+    }
     if (geometry) this.geometryRevision++;
     if (production || aliveChanged || tier || geometry) this.producerRevision++;
     this.dynamicRevision++;
@@ -330,7 +355,10 @@ export class BuildingIndex {
   /** A sparse producer pass retains the same spending order as canonical iteration. */
   byIds(ids: Iterable<number>): readonly Building[] {
     const rows = new Map<number, Building>();
-    for (const id of ids) { const row = this.ids.get(id); if (row) rows.set(id, row); }
+    for (const id of ids) {
+      const row = this.ids.get(id);
+      if (row) rows.set(id, row);
+    }
     return [...rows.values()].sort((a, b) => this.order(a) - this.order(b));
   }
   production(owner: number): Readonly<{ reserves: number; gold: number }> {
@@ -408,7 +436,17 @@ export class BuildingIndex {
         income.gold !== indexedIncome.gold
       )
         mismatch();
-      for (const [type, typed] of this.readyTypes.get(owner)??[])if(!same(typed.members,expected.filter(b=>b.type===type&&!b.remainingTicks&&(b.health??1)>0)))mismatch();
+      for (const [type, typed] of this.readyTypes.get(owner) ?? [])
+        if (
+          !same(
+            typed.members,
+            expected.filter(
+              (b) =>
+                b.type === type && !b.remainingTicks && (b.health ?? 1) > 0,
+            ),
+          )
+        )
+          mismatch();
       for (const [type, typed] of this.ownerTypes.get(owner)!) {
         const expectedType = expected.filter(
           (building) => building.type === type,
@@ -431,6 +469,25 @@ export class BuildingIndex {
           [...(this.representatives.get(tile)?.values() ?? [])],
           [...representatives.values()],
         )
+      )
+        mismatch();
+    }
+    const placement = new Map<number, Set<number>>();
+    for (const building of buildings) {
+      const sector = this.towerSector(
+        this.map.x(building.tile),
+        this.map.y(building.tile),
+      );
+      let anchors = placement.get(sector);
+      if (!anchors) placement.set(sector, (anchors = new Set()));
+      anchors.add(building.tile);
+    }
+    if (placement.size !== this.placementSectors.size) mismatch();
+    for (const [sector, anchors] of placement) {
+      const indexed = this.placementSectors.get(sector);
+      if (
+        indexed?.size !== anchors.size ||
+        [...anchors].some((tile) => !indexed!.has(tile))
       )
         mismatch();
     }
@@ -466,6 +523,54 @@ export class BuildingIndex {
     return (
       Math.floor(y / 16) * Math.ceil(this.map.width() / 16) + Math.floor(x / 16)
     );
+  }
+  /** One representative per physical site/type, never one query row per stack.
+   * Sector discovery is bounded by the maximum authored footprint dimensions. */
+  *reservationConflicts(
+    tile: number,
+    type: Building["type"],
+  ): Iterable<Building> {
+    const bounds = buildingReservationBounds(this.map, tile, type);
+    for (
+      let sy = Math.max(
+        0,
+        Math.floor((bounds.top - MAX_BUILDING_EXTENT - 1) / 16),
+      );
+      sy <=
+      Math.min(
+        Math.ceil(this.map.height() / 16) - 1,
+        Math.floor((bounds.bottom + 1) / 16),
+      );
+      sy++
+    )
+      for (
+        let sx = Math.max(
+          0,
+          Math.floor((bounds.left - MAX_BUILDING_EXTENT - 1) / 16),
+        );
+        sx <=
+        Math.min(
+          Math.ceil(this.map.width() / 16) - 1,
+          Math.floor((bounds.right + 1) / 16),
+        );
+        sx++
+      )
+        for (const anchor of this.placementSectors.get(
+          this.towerSector(sx * 16, sy * 16),
+        ) ?? [])
+          for (const building of this.representatives.get(anchor)?.values() ??
+            [])
+            if (
+              boundsOverlap(
+                bounds,
+                buildingReservationBounds(
+                  this.map,
+                  building.tile,
+                  building.type,
+                ),
+              )
+            )
+              yield building;
   }
   *towersNearby(tile: number, radius: number): Iterable<Building> {
     const x = this.map.x(tile),

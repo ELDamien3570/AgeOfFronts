@@ -1,9 +1,10 @@
 import type { GameMap } from "../../core/game/GameMap";
 import { PseudoRandom } from "../../core/PseudoRandom";
-import { TRIBE_BASE_RADIUS, matchTribeCount } from "../FactionRules";
+import { TRIBE_BASE_RADIUS, TRIBE_CITY_BASE_RADIUS, matchTribeCount } from "../FactionRules";
 import { LandPaths } from "../Pathfinding";
 import type { MatchOptions, SpawnState } from "../Protocol";
 import { StartingPositions } from "../StartingPositions";
+import { startingCamp } from "./StartingCamp";
 
 export const SPAWN_SECONDS = 10;
 export const CAMP_RADIUS = 6;
@@ -37,7 +38,7 @@ export class SpawnSelection {
               clear = false;
               break;
             }
-        if (clear) {
+        if (clear && (options.ruleset !== "ages-v1" || startingCamp(map, paths, tile, CAMP_RADIUS))) {
           this.candidates.push(tile);
           this.viable[tile] = 1;
         }
@@ -65,7 +66,7 @@ export class SpawnSelection {
     )
       return "Invalid human spawn seat";
     if (!Number.isSafeInteger(tile) || !this.viable[tile])
-      return "Choose viable land with room for your starting force";
+      return "Choose viable land with room for a starting city and barracks";
     if (
       reservations.some(
         (choice) =>
@@ -135,7 +136,7 @@ export class SpawnSelection {
           this.map.height(),
         );
         for (let i = 0; i < tribes; i++)
-          bases.push(placement.next(TRIBE_BASE_RADIUS));
+          bases.push(placement.next(this.options.ruleset === "ages-v1" ? TRIBE_CITY_BASE_RADIUS : TRIBE_BASE_RADIUS));
         return bases;
       } catch (failure) {
         error = failure;

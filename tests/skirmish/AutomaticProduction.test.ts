@@ -237,6 +237,31 @@ describe("shared automatic production allocation", () => {
 });
 
 describe("automatic paid-batch lifecycle", () => {
+  it.each([
+    ["make-bronzeage-equipment", 200],
+    ["make-classicalage-equipment", 250],
+    ["make-earlymedieval-equipment", 300],
+    ["make-latemedieval-equipment", 350],
+    ["make-earlymodern-equipment", 400],
+    ["make-modern-equipment", 450],
+    ["make-icbm", 1200], ["make-hydrogen", 1500], ["make-mirv", 1800],
+  ] as const)("finishes %s at its halved base duration (%i ticks)", (id, ticks) => {
+    const {e, p, stock, add, step} = setup();
+    const recipe = PRODUCTION_RECIPES.find(r => r.id === id)!;
+    e.progression.states[p.id].completed = [recipe.technologyId];
+    const b = add(recipe.building);
+    Object.assign(stock, recipe.inputs);
+    expect(e.supply.setProduction(p, b, id)).toBeNull();
+    step(1);
+    expect(e.supply.jobs[b.id]?.totalTicks).toBe(ticks);
+    expect(e.supply.setProduction(p, b, null)).toBeNull();
+    const output = Object.keys(recipe.outputs)[0];
+    for (let tick = 2; tick <= ticks; tick++) step(tick);
+    expect(stock[output] ?? 0).toBe(0);
+    step(ticks + 1);
+    expect(stock[output]).toBe(recipe.outputs[output]);
+    expect(e.supply.jobs[b.id]).toBeUndefined();
+  });
   it("starts without commands for either human or AI and debits exactly once", () => {
     for (const ai of [false, true]) {
       const { e, p, stock, add, step } = setup();

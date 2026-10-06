@@ -4,7 +4,8 @@ import {
   STARTING_TECHNOLOGIES,
   TECHNOLOGIES,
 } from "../../src/skirmish/content/Technology";
-import { AGES, type Age } from "../../src/skirmish/domain/Definitions";
+import { AGES, startingAgeName, type StartingAge } from "../../src/skirmish/domain/Definitions";
+import { clientMessageSchema } from "../../src/skirmish/multiplayer/Protocol";
 import { startingProgression } from "../../src/skirmish/domain/Progression";
 import {
   defaultLobbySettings,
@@ -13,7 +14,7 @@ import {
 } from "../../src/skirmish/lobby/LobbyDirectory";
 import { Skirmish } from "../../src/skirmish/Simulation";
 
-function createMatch(startingAge?: Age) {
+function createMatch(startingAge?: StartingAge) {
   const width = 64;
   const height = 64;
   const data = new Uint8Array(width * height);
@@ -35,6 +36,36 @@ function createMatch(startingAge?: Age) {
 }
 
 describe("Starting Tech Age Selector", () => {
+  it("starts every human, AI and tribe with all technology and exactly one million gold in Post-Modern", () => {
+    const { match } = createMatch("PostModern");
+    const expected = TECHNOLOGIES.map(t => t.id).sort();
+    expect(startingAgeName("PostModern")).toBe("Post-Modern");
+    expect(match.players.some(p => !p.ai)).toBe(true);
+    expect(match.players.some(p => p.ai && p.kind === "regular")).toBe(true);
+    expect(match.players.some(p => p.kind === "tribe")).toBe(true);
+    for (const player of match.players) {
+      expect(player.gold).toBe(1_000_000);
+      const state = match.expansion!.progression.states[player.id];
+      expect(state.age).toBe("Modern");
+      expect([...state.completed].sort()).toEqual(expected);
+      expect(state.research).toEqual({});
+      expect(state.advancement).toBeNull();
+      expect(match.applyCommand({type:"research",playerId:player.id,technologyId:TECHNOLOGIES[TECHNOLOGIES.length - 1].id})).toContain("already completed");
+    }
+    const saved = match.checkpoint();
+    match.restore(saved);
+    for (const player of match.players) {
+      expect(player.gold).toBe(1_000_000);
+      expect([...match.expansion!.progression.states[player.id].completed].sort()).toEqual(expected);
+    }
+  });
+  it("accepts the Post-Modern preset in lobby rules and multiplayer messages", () => {
+    const settings = { ...defaultLobbySettings("heightmap-test1"), startingAge: "PostModern" as const };
+    expect(validateLobbySettings(settings).startingAge).toBe("PostModern");
+    expect(clientMessageSchema.safeParse({
+      type: "create", requestId: "post-modern", title: "Post-Modern", settings, willingToWait: false,
+    }).success).toBe(true);
+  });
   it("defaults lobby settings to StoneAge and validates startingAge", () => {
     const settings = defaultLobbySettings("heightmap-test1");
     expect(settings.startingAge).toBe("StoneAge");

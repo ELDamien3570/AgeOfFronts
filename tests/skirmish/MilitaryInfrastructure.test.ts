@@ -80,8 +80,8 @@ describe("research-linked military infrastructure", () => {
     e.progression.states[1].age = "BronzeAge";
     const t = technologyAt("BronzeAge", "warfare", 1);
     e.progression.states[1].completed.push(...t.prerequisites);
-    expect(t.gold).toBe(12000);
-    match.players[0].gold = 12000;
+    expect(t.gold).toBe(4000);
+    match.players[0].gold = t.gold;
     const b = match.addBuilding(building("barracks", { id: match.allocateId() }));
 
     expect(

@@ -38,7 +38,7 @@ function fixture(port = false, deferredPlanning = false) {
     m.addBuilding({ ...factory, id: m.allocateId(), type: "port", tile: m.map.ref(10, 19) });
     m.addBuilding({ ...factory, id: m.allocateId(), type: "port", tile: m.map.ref(30, 19), playerId: 2 });
   }
-  m.expansion!.supply.goods.set(factory.id, 100);
+  for (const b of m.buildings.filter(b=>b.playerId===1 && (b.type==="factory" || b.type==="port"))) m.expansion!.supply.goods.set(b.id,100);
   const dispatch = () => {
     m.tick += 20;
     m.expansion!.trade.step();
@@ -51,8 +51,25 @@ function fixture(port = false, deferredPlanning = false) {
 }
 
 describe("independent trade unlocks", () => {
+  it("dispatches allied sea trade while land fortifications keep changing", () => {
+    const {m,research}=fixture(true,true);
+    const destination=m.buildings.find(b=>b.playerId===2 && b.type==="port")!;
+    m.updateBuilding(destination.id,{tile:m.map.ref(70,19)});
+    research.push("stoneage-cargo-canoes","stoneage-craft-workshops");
+    m.expansion!.diplomacy.action(m.players[0],m.players[1],"offer",0);
+    m.expansion!.diplomacy.action(m.players[1],m.players[0],"accept",0);
+    let delivered=false;
+    for(let i=0;i<600 && !delivered;i++) {
+      m.expansion!.fortifications.version++;
+      m.step();
+      delivered=(m.expansion!.trade.deliveredGold[1]??0)>0;
+    }
+    expect(delivered).toBe(true);
+  });
   it("physically dispatches a naval trader despite unrelated military-policy revisions", () => {
     const {m,research}=fixture(true,true);research.push("stoneage-cargo-canoes","stoneage-craft-workshops");
+    m.expansion!.diplomacy.action(m.players[0],m.players[1],"offer",0);
+    m.expansion!.diplomacy.action(m.players[1],m.players[0],"accept",0);
     let origin: {id:number;x:number;y:number}|undefined, travelled=false;
     const operations=m.expansion!.operations;
     for(let i=0;i<1200 && !travelled;i++){
@@ -111,7 +128,7 @@ describe("independent trade unlocks", () => {
     expect(actor.cargo).toBeGreaterThan(0);
     const ports=m.buildings.filter(b=>b.type === "port");m.updateBuilding((ports[ports.length-1]).id, { playerId: 2 });
     dispatch();
-    expect(m.expansion!.trade.actors.filter(a => a.playerId === 1)).toHaveLength(2);
+    expect(m.expansion!.trade.actors.filter(a => a.playerId === 1 && a.naval)).toHaveLength(1);
     expect(actor.naval).toBe(false);
     expect(m.expansion!.trade.actors.some(a => a.naval && a.factoryId !== actor.factoryId)).toBe(true);
   });

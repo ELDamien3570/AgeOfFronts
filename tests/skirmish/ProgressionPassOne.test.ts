@@ -195,7 +195,7 @@ describe("human demolition and confirmation", () => {
       stacked = building("tower"),
       b = building("tower", { tile: m.players[0].base + 1 });
     const forts = e.fortifications;
-    forts.barriers.push({
+    forts.addBarrier({
       id: 1,
       a: a.id,
       b: b.id,

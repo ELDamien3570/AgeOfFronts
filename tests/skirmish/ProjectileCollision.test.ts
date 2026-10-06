@@ -129,6 +129,8 @@ describe("swept projectile contacts", () => {
   });
   it("preserves building source identity through a MIRV split and awards no squad XP", () => {
     const { m, source, enemies, battle } = match();
+    // Isolate the ground target from automatically selected starting cities.
+    for (const b of m.buildings.slice()) m.removeBuilding(b.id);
     m.updateSquad(enemies[0].id, { x: 20 * FIXED });
     m.updateSquad(enemies[0].id, { y: 15 * FIXED });
     battle.fire(
@@ -158,7 +160,7 @@ describe("swept projectile contacts", () => {
     const { m, source, enemies, battle } = match();
     const forts = m.expansion!.fortifications;
     const tile = m.map.ref(10, 15);
-    forts.barriers.push({
+    forts.addBarrier({
       id: 900,
       playerId: 2,
       age: "StoneAge",

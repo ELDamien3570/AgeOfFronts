@@ -1,5 +1,7 @@
+import { buildingGroundBounds } from "../BuildingFootprint";
 import { availableGold, paidCost } from "./Gold";
 import { extractionPriority, stoneExtractionAllowed } from "./AiExtractionPolicy";
+import { PairRelations } from "./PairRelations";
 import { AiOperations } from "./AiOperations";
 import { AutomaticBuildingTiers } from "./AutomaticBuildingTiers";
 import { DiplomaticGeography } from "./DiplomaticGeography";
@@ -18,6 +20,7 @@ import type {
   Squad,
 } from "../Protocol";
 import { FIXED, TICKS_PER_SECOND } from "../Protocol";
+import { AIRCRAFT_RULES, BOMBER_ATTACK, STRATEGIC_PAYLOADS, STRATEGIC_RULES } from "../content/ModernWeapons";
 import { personalityOf } from "../content/AiPersonalities";
 import {
   DEFENSIVE_BUILDINGS,
@@ -27,7 +30,7 @@ import {
   nextBuildingAge,
 } from "../content/Buildings";
 import { startingEconomy } from "../content/StartingEconomy";
-import { TRIBE_BUILDING_ORDER, tribeBuildingLimit } from "./TribeDevelopment";
+import { TRIBE_BUILDING_ORDER, tribeBuildingLimit, tribeAdvanceRejection } from "./TribeDevelopment";
 import { resourceVisibleAtAge } from "../content/Resources";
 import { CONTENT_HASH } from "../content/Catalog";
 import { TECHNOLOGIES, technologyAt } from "../content/Technology";
@@ -43,6 +46,8 @@ import { Armies, type ArmyWorld } from "./Armies";
 import { Battle, type BattleWorld } from "./Battle";
 import {
   AGES,
+  startingGameplayAge,
+  type StartingAge,
   type Age,
   type Aircraft,
   type ExpansionSnapshot,
@@ -67,12 +72,16 @@ import { Supply, costRejection, spend } from "./Supply";
 import { Trade } from "./Trade";
 import { quoteBuildingUpgrades } from "./BuildingUpgrades";
 import { structureAim } from "./StructureTargeting";
-import { squadRadius, squadSeparation, standable, tilePoint } from "../SquadGeometry";
+import { StructureAttackPreparation, type StructureAttackPreparationState } from "./StructureAttackPreparation";
+import { squadRadius, standable, tilePoint } from "../SquadGeometry";
 import type { CoastIndex } from "../CoastIndex";
 import { AiEconomicDirector } from "./AiEconomicDirector";
+import type { NuclearWasteland } from "./NuclearWasteland";
 export interface ExpansionWorld extends BattleWorld, ArmyWorld {
+  wasteland: NuclearWasteland;
+  spatialFacts(phase: import("../PhaseSpatialViews").SpatialPhase): import("../PhaseSpatialViews").PhaseSpatialFacts;
   recruitment: Recruitment;
-  options?: { runAi?: boolean; aiEconomy?: boolean; aiDefenses?:boolean; aiNaval?:boolean; aiWarPolicy?:boolean; deferredPlanning?:boolean; territoryIncomeScale?:number; resourceDensity?: 1 | 2 | 3 | 5; resourceOutput?: 1 | 2 | 3 | 5; alliances?: boolean; startingAge?: Age };
+  options?: { runAi?: boolean; aiEconomy?: boolean; aiDefenses?:boolean; aiNaval?:boolean; aiWarPolicy?:boolean; deferredPlanning?:boolean; territoryIncomeScale?:number; resourceDensity?: 1 | 2 | 3 | 5; resourceOutput?: 1 | 2 | 3 | 5; alliances?: boolean; startingAge?: StartingAge };
   map: GameMap;
   owners: Uint8Array;
   claims: Uint8Array;
@@ -100,11 +109,12 @@ export interface ExpansionWorld extends BattleWorld, ArmyWorld {
   removeBuilding(id: number): boolean;
   factionAdjacent(a: number, b: number): boolean;
   admitStructureAttack?(playerId: number, squads: readonly Squad[], points: Map<number, {x:number;y:number}>, target: NonNullable<Squad["structureTarget"]>): void;
+  prepareStructureAttack?(playerId: number, squads: readonly Squad[], target: NonNullable<Squad["structureTarget"]>): string | null;
 }
 // Match-level application coordinator; each domain service owns its own rules.
 // All services operate on the same authoritative world, never a parallel game.
 export class Expansion {
-  checkpoint() { return structuredClone({progression:this.progression.checkpoint(),diplomacy:this.diplomacy.checkpoint(),fortifications:this.fortifications.checkpoint(),supply:this.supply.checkpoint(),trade:this.trade.checkpoint(),roads:this.roads.checkpoint(),battle:this.battle.checkpoint(),armies:this.armies.checkpoint(),modernization:this.modernization.checkpoint(),economy:this.economy.checkpoint(),aircraft:this.aircraft,winners:this.winners,events:this.events,nextEvent:this.nextEvent,tribePlans:[...this.tribePlans],geography:this.geography.checkpoint(),operations:this.operations.checkpoint()}); }
+  checkpoint() { return structuredClone({progression:this.progression.checkpoint(),diplomacy:this.diplomacy.checkpoint(),fortifications:this.fortifications.checkpoint(),supply:this.supply.checkpoint(),trade:this.trade.checkpoint(),roads:this.roads.checkpoint(),battle:this.battle.checkpoint(),armies:this.armies.checkpoint(),modernization:this.modernization.checkpoint(),economy:this.economy.checkpoint(),aircraft:this.aircraft,winners:this.winners,events:this.events,nextEvent:this.nextEvent,tribePlans:[...this.tribePlans],geography:this.geography.checkpoint(),operations:this.operations.checkpoint(),relations:this.relations.checkpoint()}); }
   restore(saved: ReturnType<Expansion["checkpoint"]>): void {
     this.automaticTiers.reset();
     this.metadataIdentity={};
@@ -112,6 +122,7 @@ export class Expansion {
     this.tribePlans.clear();
     for (const [id, plan] of state.tribePlans ?? []) this.tribePlans.set(id, plan);
     if (state.operations) this.operations.restore(state.operations);
+    this.relations.restore(state.relations);
     if (state.geography) this.geography.restore(state.geography);
     this.progression.restore(state.progression);
     this.diplomacy.restore(state.diplomacy);
@@ -139,6 +150,7 @@ export class Expansion {
   readonly economy: AiEconomicDirector;
   readonly geography: DiplomaticGeography;
   readonly operations: AiOperations;
+  readonly relations: PairRelations;
   private readonly towerSites:TowerSiteIndex;
   readonly aircraft: Aircraft[] = [];
   readonly winners: number[] = [];
@@ -156,15 +168,17 @@ export class Expansion {
     seed: number,
     mode: "solo" | "allied" = "solo",
     technologySpeed: TechnologySpeed = 1,
-    startingAge: Age = world.options?.startingAge ?? "StoneAge",
+    startingAge: StartingAge = world.options?.startingAge ?? "StoneAge",
   ) {
-    this.startingAge = startingAge;
+    this.startingAge = startingGameplayAge(startingAge);
     this.towerSites={at:tile=>world.buildingsAt(tile),nearby:(tile,radius)=>world.towersNear(tile,radius)};
     this.progression = new Progression(technologySpeed, startingAge);
     this.victoryMode = mode;
     this.fortifications = new Fortifications(world.map, this.diplomacy);
     this.supply = new Supply(world.map, this.progression, seed, world.options?.resourceDensity, world.options?.resourceOutput);
     this.roads = new Roads(world.map);
+    this.operations = new AiOperations(this);
+    this.relations = new PairRelations(world, this.diplomacy, this.operations);
     this.trade = new Trade(
       world,
       this.supply,
@@ -172,13 +186,9 @@ export class Expansion {
       this.diplomacy,
       this.fortifications,
       this.roads,
-      (a, b) => {
-        if (this.diplomacy.allied(a, b)) return false;
-        const pa = world.players.find(p => p.id === a), pb = world.players.find(p => p.id === b);
-        if (!this.operations.enabled(pa) && !this.operations.enabled(pb)) return true;
-        return (this.operations.enabled(pa) && this.operations.canTarget(a, b)) ||
-          (this.operations.enabled(pb) && this.operations.canTarget(b, a));
-      },
+      (a,b)=>this.relations.atWar(a,b),
+      (a,b)=>this.relations.atWar(a,b),
+      owner=>this.relations.signatureFor(owner),
     );
     this.battle = new Battle(
       world,
@@ -192,16 +202,41 @@ export class Expansion {
     this.armies = new Armies(world, this.progression);
     this.economy = new AiEconomicDirector(this);
     this.geography = new DiplomaticGeography(world, this.economy.navalFacts);
-    this.operations = new AiOperations(this);
+
     this.supply.aiProduction = playerId => this.economy.production(playerId);
   }
   add(player: Player): void {
-    this.progression.add(player.id, this.startingAge);
+    this.progression.add(player.id);
     this.supply.add(player.id);
-    Object.assign(this.supply.inventories[player.id], startingEconomy(this.startingAge, player.kind === "tribe").items);
+    Object.assign(this.supply.inventories[player.id], startingEconomy(this.progression.startingAge, player.kind === "tribe").items);
   }
   unit(squad: Squad): UnitDefinition {
     return this.battle.definition(squad);
+  }
+  stepStructurePreparation(state: StructureAttackPreparationState, budget: number): number {
+    if (budget === 0) return 0;
+    const building = state.target.buildingId === undefined ? undefined : this.world.building(state.target.buildingId),
+      wall = state.target.barrierId === undefined ? undefined : this.fortifications.barrier(state.target.barrierId), target = building ?? wall;
+    if (!target || (target.health ?? 1) <= 0 || !this.diplomacy.hostile(state.playerId, target.playerId)) {
+      state.stage = "failed"; state.reason = "Structure target is no longer hostile or available"; return 1;
+    }
+    const key = building ? `b:${building.id}:${building.playerId}:${building.tile}` : `w:${wall!.id}:${wall!.playerId}:${this.fortifications.version}`;
+    if (state.targetKey !== undefined && state.targetKey !== key) {
+      const restarts = (state.geometryRestarts ?? 0) + 1, consumed = state.consumed;
+      if (restarts > 3) { state.stage = "failed"; state.reason = "Structure geometry kept changing during preparation"; return 1; }
+      const members = state.members.map(member => { const squad = this.world.squad(member.id)!; return { ...member, origin: { x: squad.x, y: squad.y } }; });
+      Object.assign(state, StructureAttackPreparation.create(state.playerId, members, state.target), {
+        aim: undefined, candidate: undefined, best: undefined, centre: undefined, consumed: consumed + 1, geometryRestarts: restarts, targetKey: key });
+      return 1;
+    }
+    state.targetKey = key;
+    for (const member of state.members) {
+      const squad = this.world.squad(member.id), profile = squad && this.unit(squad).attack;
+      if (!squad || squad.kind !== member.kind || profile!.range !== member.range || !profile!.targets.includes(building ? "structure" : "wall")) {
+        state.stage = "failed"; state.reason = "Selected weapon changed during structure preparation"; return 1;
+      }
+    }
+    return new StructureAttackPreparation(this.world.map, this.world.paths, this.fortifications, building ? [building.tile] : wall!.tiles, state).step(budget);
   }
   available(player: Player, line: Squad["kind"]): UnitDefinition | undefined {
     return UNITS.filter(
@@ -235,11 +270,10 @@ export class Expansion {
     return undefined;
   }
   vessel(ship: Ship) {
-    return vesselEffects(
-      VESSEL.get(ship.definitionId ?? "") ??
-        VESSELS.find((v) => v.age === "StoneAge" && v.kind === ship.kind)!,
-      this.progression.states[ship.playerId].completed,
-    );
+    const definition = VESSEL.get(ship.definitionId ?? "") ??
+      VESSELS.find((v) => v.age === "StoneAge" && v.kind === ship.kind)!,
+      completed = this.progression.states[ship.playerId].completed;
+    return vesselEffects(definition, completed);
   }
   buildRejection(
     player: Player,
@@ -252,12 +286,14 @@ export class Expansion {
     if (!technology || (!placementOnly && !this.progression.has(player.id, technology)))
       return "Research this building's technology first";
     const plan =
-      type === "tower"
+      (type === "tower" || type === "trench")
         ? this.fortifications.towerPlan(
             tile,
             player.id,
             age,
-            this.towerSites,
+            type === "tower" ? this.towerSites : this.world.buildingFacts(),
+            type,
+            t => type !== "trench" || this.world.owners[t] === player.id,
           )
         : null;
     if (
@@ -270,8 +306,10 @@ export class Expansion {
       )
     )
       return "Move troops clear of the tower and planned wall tiles";
-    if (this.fortifications.blocked(tile, player.id))
-      return "Cannot build on an intact wall";
+    const bounds = buildingGroundBounds(this.world.map, tile, type);
+    for (let y=bounds.top; y<bounds.bottom; y++) for (let x=bounds.left; x<bounds.right; x++)
+      if (this.world.map.isValidCoord(x,y) && this.fortifications.blocked(this.world.map.ref(x,y), player.id))
+        return "Cannot build on an intact wall";
     const node = this.supply.resourceSites.at(tile);
     const visible = node && resourceVisibleAtAge(node.resource, this.progression.states[player.id].age);
     if (
@@ -286,9 +324,7 @@ export class Expansion {
     const existingCount = this.world.buildingFacts().countOfType(player.id, type);
     const cost = buildingCost(type, age, existingCount),
       wallCost =
-        type === "tower"
-          ? plan!.gold
-          : 0;
+        plan?.gold ?? 0;
     return placementOnly ? null : costRejection(player, this.supply.inventories[player.id], {
       ...cost,
       gold: (cost.gold ?? 0) + wallCost,
@@ -297,12 +333,14 @@ export class Expansion {
   built(player: Player, building: Building): void {
     const age = building.age ?? this.progression.states[player.id].age;
     const plan =
-      building.type === "tower"
+      (building.type === "tower" || building.type === "trench")
         ? this.fortifications.towerPlan(
               building.tile,
               player.id,
               age,
-              this.towerSites,
+              building.type === "tower" ? this.towerSites : this.world.buildingFacts(),
+              building.type,
+              t => building.type !== "trench" || this.world.owners[t] === player.id,
             )
         : null;
     const existingCount = Math.max(
@@ -320,7 +358,7 @@ export class Expansion {
   }
   command(player: Player, command: Command): string | null | undefined {
     const { world } = this;
-    if (command.type === "alliance" && world.options?.alliances === false) return "Alliances are disabled for this match";
+    if (command.type === "alliance" && command.action !== "declare" && world.options?.alliances === false) return "Alliances are disabled for this match";
     if (command.type === "upgrade-building") {
       const quote = quoteBuildingUpgrades(player, this.progression.states[player.id],
         this.supply.inventories[player.id], world.buildings, world.owners, command.buildingIds);
@@ -338,14 +376,10 @@ export class Expansion {
     const armyResult = this.armies.command(player, command);
     if (armyResult !== undefined) return armyResult;
     if (command.type === "research") {
-      if (player.kind === "tribe" && TECHNOLOGIES.find(t => t.id === command.technologyId)?.age !== this.startingAge)
-        return "Tribes can only research technologies from their starting age";
       return this.progression.research(player, command.technologyId);
     }
     if (command.type === "advance-age")
-      return player.kind === "tribe"
-        ? "Tribes cannot advance beyond their starting age"
-        : this.progression.advance(player);
+      return tribeAdvanceRejection(player, world.players, this.progression.states) ?? this.progression.advance(player);
     if (command.type === "production-priority")
       return this.supply.setPriorities(player, world.buildings, command.buildingType, command.recipeIds);
     if (command.type === "reset-production-priorities") {
@@ -359,7 +393,7 @@ export class Expansion {
     if (command.type === "trade-block") {
       const other = world.players.find(p => p.id === command.otherId);
       if (!other || other.id === player.id || other.eliminated || other.kind === "tribe" || typeof command.blocked !== "boolean") return "Choose a living regular trading faction";
-      this.trade.setBlocked(player.id, other.id, command.blocked); return null;
+      this.trade.setBlocked(player.id, other.id, command.blocked, command.naval); return null;
     }
     if (command.type === "produce")
       return this.supply.setProduction(
@@ -383,8 +417,9 @@ export class Expansion {
           // A reciprocal offer accepts the incoming offer. Record the outcome
           // now; later snapshots may arrive after this alliance already ends.
           action:
-            command.action === "offer" &&
-            this.diplomacy.allied(player.id, command.otherId)
+            (command.action === "offer" || command.action === "offer-long-term") &&
+            this.diplomacy.allied(player.id, command.otherId) &&
+            !this.diplomacy.state.offers.some(o => o.proposer === player.id && o.recipient === command.otherId)
               ? "accept"
               : command.action,
         });
@@ -490,7 +525,12 @@ export class Expansion {
       if (
         !selected.length ||
         selected.some(
-          (a) => !a || a.playerId !== player.id || a.state !== "ready",
+          (a) => {
+            const field = a && world.building(a.airfieldId);
+            return !a || a.health <= 0 || a.playerId !== player.id || a.state !== "ready" ||
+              !field || field.playerId !== player.id || field.type !== "airstrip" ||
+              field.remainingTicks > 0 || (field.health ?? 1) <= 0;
+          },
         ) ||
         !this.validPosition(command.x, command.y)
       )
@@ -498,7 +538,7 @@ export class Expansion {
       for (const a of selected as Aircraft[]) {
         a.target = { x: command.x, y: command.y };
         a.state = "outbound";
-        a.fuelTicks = 1200;
+        a.fuelTicks = AIRCRAFT_RULES.fuelTicks;
       }
       return null;
     }
@@ -509,6 +549,7 @@ export class Expansion {
         command.payload,
         command.x,
         command.y,
+        command.buildingId,
       );
     if (command.type === "refit-ships") {
       const target = VESSEL.get(command.definitionId),
@@ -647,40 +688,10 @@ export class Expansion {
       )
         return "Select your available troops";
       const orders: { s: Squad; tile: number; path: number[] }[] = [];
-      if (world.options?.deferredPlanning && world.admitStructureAttack) {
-        const points = new Map<number, {x:number;y:number}>(), reserved: (Squad & {x:number;y:number})[] = [],
-          approaches = new Map<string, number[]>(), sides = [0, 0, 0, 0], targetTiles = building ? [building.tile] : barrier!.tiles,
-          centre = tilePoint(world.map, targetTiles[Math.floor(targetTiles.length / 2)]);
-        const side = (point: {x:number;y:number}) => Math.min(3, Math.floor((Math.atan2(point.y - centre.y, point.x - centre.x) + Math.PI) * 2 / Math.PI));
-        for (const s of selected as Squad[]) {
-          const profile = this.unit(s).attack;
-          if (!profile.targets.includes(building ? "structure" : "wall")) return "This weapon cannot attack that structure";
-          const clear = (point: {x:number;y:number}) => reserved.every(other =>
-            (point.x - other.x) ** 2 + (point.y - other.y) ** 2 >= squadSeparation(s, other) ** 2);
-          let point: {x:number;y:number} | undefined;
-          if (structureAim(s, targetTiles, profile.range, player.id, world.map.width(), this.fortifications) && clear(s)) point = {x:s.x,y:s.y};
-          else {
-            const key = `${s.kind}:${profile.range}`; let candidates = approaches.get(key);
-            if (!candidates) {
-              const set = new Set<number>(), extent = Math.ceil(profile.range / FIXED);
-              for (const tile of targetTiles) for (let y = Math.max(0, world.map.y(tile) - extent); y <= Math.min(world.map.height() - 1, world.map.y(tile) + extent); y++)
-                for (let x = Math.max(0, world.map.x(tile) - extent); x <= Math.min(world.map.width() - 1, world.map.x(tile) + extent); x++) {
-                  const t = world.map.ref(x, y), p = tilePoint(world.map, t);
-                  if (world.paths.walkable(t) && !this.fortifications.blocked(t, player.id) && standable(world.map, p, squadRadius(s.kind)) &&
-                    structureAim(p, targetTiles, profile.range, player.id, world.map.width(), this.fortifications)) set.add(t);
-                }
-              candidates = [...set]; approaches.set(key, candidates);
-            }
-            const reachable = candidates.filter(t => world.paths.connected(world.tileOf(s), t) && clear(tilePoint(world.map, t)));
-            reachable.sort((a, b) => sides[side(tilePoint(world.map, a))] - sides[side(tilePoint(world.map, b))] ||
-              world.map.euclideanDistSquared(a, world.tileOf(s)) - world.map.euclideanDistSquared(b, world.tileOf(s)) || a - b);
-            if (reachable.length) point = tilePoint(world.map, reachable[0]);
-          }
-          if (!point) return "No free firing position around this structure";
-          points.set(s.id, point); reserved.push({ ...s, ...point }); sides[side(point)]++;
-        }
-        world.admitStructureAttack(player.id, selected as Squad[], points, {buildingId:building?.id,barrierId:barrier?.id});
-        return null;
+      if (world.options?.deferredPlanning && world.prepareStructureAttack) {
+        for (const s of selected as Squad[])
+          if (!this.unit(s).attack.targets.includes(building ? "structure" : "wall")) return "This weapon cannot attack that structure";
+        return world.prepareStructureAttack(player.id, selected as Squad[], { buildingId: building?.id, barrierId: barrier?.id });
       }
       for (const s of selected as Squad[]) {
         const targetTiles = building ? [building.tile] : barrier!.tiles;
@@ -778,7 +789,7 @@ export class Expansion {
     if (automatic || buildingIds) field = this.world.recruitment.chooseProducer(this.world.buildings.filter(b => b.playerId === player.id
       && (!buildingIds || buildingIds.includes(b.id))
       && this.world.owners[b.tile] === player.id && b.type === "airstrip" && !b.remainingTicks && (b.health ?? 1) > 0
-      && this.aircraft.filter(a => a.airfieldId === b.id).length + this.world.recruitment.count(player.id, "aircraft", b.id) < 6),
+      && this.aircraft.filter(a => a.airfieldId === b.id).length + this.world.recruitment.count(player.id, "aircraft", b.id) < AIRCRAFT_RULES.airfieldCapacity),
       tile => this.world.map.euclideanDistSquared(tile, anchorTile));
     if (
       !field ||
@@ -787,12 +798,12 @@ export class Expansion {
     )
       return "Needs researched aviation and a completed owned airstrip";
     if (
-      this.aircraft.filter((a) => a.airfieldId === field.id).length + this.world.recruitment.count(player.id, "aircraft", field.id) >= 6 ||
-      this.aircraft.filter((a) => a.playerId === player.id).length + this.world.recruitment.count(player.id, "aircraft") >= 32
+      this.aircraft.filter((a) => a.airfieldId === field.id).length + this.world.recruitment.count(player.id, "aircraft", field.id) >= AIRCRAFT_RULES.airfieldCapacity ||
+      this.aircraft.filter((a) => a.playerId === player.id).length + this.world.recruitment.count(player.id, "aircraft") >= AIRCRAFT_RULES.factionCapacity
     )
       return "Airfield or aircraft capacity reached";
     const cost = {
-        gold: 5000,
+        gold: AIRCRAFT_RULES.gold,
       },
       rejection = costRejection(
         player,
@@ -814,11 +825,11 @@ export class Expansion {
       definitionId: job.kind as "fighter" | "bomber",
       airfieldId: job.buildingId,
       ...this.battle.position(field),
-      health: 1000,
+      health: AIRCRAFT_RULES.health,
       target: null,
       state: "ready",
       reloadTick: 0,
-      fuelTicks: 1200,
+      fuelTicks: AIRCRAFT_RULES.fuelTicks,
     });
     return true;
   }
@@ -828,7 +839,15 @@ export class Expansion {
     payload: "icbm" | "hydrogen" | "mirv",
     x: number,
     y: number,
+    targetBuildingId?: number,
   ): string | null {
+    if (targetBuildingId !== undefined) {
+      const target = this.world.building(targetBuildingId);
+      if (!target || (target.health ?? 1) <= 0 || !this.diplomacy.hostile(player.id, target.playerId))
+        return "Choose an enemy building";
+      x = ((target.tile % this.world.map.width()) + .5) * FIXED;
+      y = (Math.floor(target.tile / this.world.map.width()) + .5) * FIXED;
+    }
     if (
       !["icbm", "hydrogen", "mirv"].includes(payload) ||
       !this.validPosition(x, y) ||
@@ -864,18 +883,19 @@ export class Expansion {
       return "Choose a compatible ready launcher; mobile launchers must stand clear of combat for five seconds";
     const ready = building?.launchReadyTick ?? unit?.chargeReadyTick ?? 0;
     if (ready > this.world.tick) return "Launcher is reloading";
-    const cost = { gold: 10000, items: { [`payload:${payload}`]: 1 } },
+    const definition = STRATEGIC_PAYLOADS[payload];
+    const cost = { gold: STRATEGIC_RULES.gold, items: { [`payload:${payload}`]: 1 } },
       rejection = costRejection(
         player,
         this.supply.inventories[player.id],
         cost,
       );
     if (rejection) return rejection;
-    if (this.battle.projectiles.length >= 4092)
+    if (!this.battle.canFire(definition.warheads))
       return "Strategic flight capacity reached";
     spend(player, this.supply.inventories[player.id], cost);
-    if (building) this.world.updateBuilding(building.id, { launchReadyTick: this.world.tick + 1200 });
-    else this.world.updateSquad(unit!.id, { chargeReadyTick: this.world.tick + 1200 });
+    if (building) this.world.updateBuilding(building.id, { launchReadyTick: this.world.tick + STRATEGIC_RULES.reloadTicks });
+    else this.world.updateSquad(unit!.id, { chargeReadyTick: this.world.tick + STRATEGIC_RULES.reloadTicks });
     const position = building ? this.battle.position(building) : unit!;
     this.battle.fire(
       {
@@ -888,9 +908,9 @@ export class Expansion {
       { x, y },
       {
         channel: "ranged",
-        damage: payload === "hydrogen" ? 40000 : 24000,
+        damage: definition.damage,
         range: 0,
-        reloadTicks: 1200,
+        reloadTicks: STRATEGIC_RULES.reloadTicks,
         movingReloadPercent: 100,
         bonuses: { structure: 10000, wall: 10000 },
         penetration: 5000,
@@ -907,15 +927,15 @@ export class Expansion {
         projectile: {
           diameter: FIXED / 2,
           speed: FIXED,
-          blastRadius:
-            (payload === "hydrogen" ? 7 : payload === "mirv" ? 3 : 5) * FIXED,
+          blastRadius: definition.blastRadius,
         },
       },
-      payload === "hydrogen" ? 40000 : 24000,
+      definition.damage,
       payload === "mirv" ? "mirv" : "icbm",
       720,
-      payload === "mirv" ? 4 : 0,
+      definition.warheads,
       payload,
+      targetBuildingId,
     );
     return null;
   }
@@ -1040,9 +1060,9 @@ export class Expansion {
         a.health = 0;
         continue;
       }
-      if (distance > 180) {
-        a.x += Math.round((dx * 180) / distance);
-        a.y += Math.round((dy * 180) / distance);
+      if (distance > AIRCRAFT_RULES.speed) {
+        a.x += Math.round((dx * AIRCRAFT_RULES.speed) / distance);
+        a.y += Math.round((dy * AIRCRAFT_RULES.speed) / distance);
         continue;
       }
       a.x = goal.x;
@@ -1050,36 +1070,14 @@ export class Expansion {
       if (a.state === "returning") {
         a.state = "ready";
         a.target = null;
-        a.fuelTicks = 1200;
+        a.fuelTicks = AIRCRAFT_RULES.fuelTicks;
       } else {
         if (a.definitionId === "bomber")
           this.battle.fire(
             { ...a, domain: "aircraft" },
             a.target,
-            {
-              channel: "ranged",
-              damage: 2500,
-              range: 0,
-              reloadTicks: 1,
-              movingReloadPercent: 100,
-              bonuses: { structure: 2000 },
-              penetration: 2000,
-              targets: [
-                "infantry",
-                "ranged",
-                "mounted",
-                "vehicle",
-                "siege",
-                "structure",
-                "wall",
-              ],
-              projectile: {
-                diameter: FIXED / 3,
-                speed: FIXED,
-                blastRadius: 2 * FIXED,
-              },
-            },
-            2500,
+            BOMBER_ATTACK,
+            BOMBER_ATTACK.damage,
             "bomb",
             20,
             0,
@@ -1208,6 +1206,7 @@ export class Expansion {
       }
       this.thinkCapabilities(player);
       }
+      this.thinkAirAndStrategic(player);
       for (const offer of this.diplomacy.state.offers.filter(
         (o) => o.recipient === player.id,
       )) {
@@ -1219,7 +1218,7 @@ export class Expansion {
           player,
           proposer,
           this.diplomacy.state.alliances.filter(
-            (t) => t.a === player.id || t.b === player.id,
+            (t) => (t.a === player.id || t.b === player.id) && t.a !== proposer.id && t.b !== proposer.id,
           ).length,
           (this.diplomacy.state.betrayal[proposer.id] ?? 0) > this.world.tick,
         );
@@ -1234,7 +1233,7 @@ export class Expansion {
         for (const treaty of this.diplomacy.state.alliances.filter(
           (t) => t.a === player.id || t.b === player.id,
         ))
-          if (treaty.expiresTick - this.world.tick <= 600)
+          if (!treaty.longTerm && treaty.expiresTick - this.world.tick <= 600)
             this.world.applyCommand({
               type: "alliance",
               playerId: player.id,
@@ -1288,16 +1287,19 @@ export class Expansion {
   }
   private thinkTribeDevelopment(player: Player): void {
     const state = this.progression.states[player.id];
-    const next = TECHNOLOGIES.find(t => t.age === this.startingAge &&
+    if (!tribeAdvanceRejection(player, this.world.players, this.progression.states) &&
+        !advanceRejection(state, availableGold(player), this.progression.technologySpeed))
+      this.world.applyCommand({ type: "advance-age", playerId: player.id });
+    const next = TECHNOLOGIES.find(t => t.age === state.age &&
       !researchRejection(state, availableGold(player), t.id, this.progression.technologySpeed));
     if (next) this.world.applyCommand({ type: "research", playerId: player.id, technologyId: next.id });
     const own = this.world.buildingFacts().byOwner(player.id);
     // Coastal tribes fund one useful sea entrance before additional land capacity.
     const coastal = this.economy.placements.coasts(player.id);
-    if(coastal.length && !own.some(b=>b.type==="port") && state.completed.includes(buildingTechnology("port",this.startingAge)!)) {
+    if(coastal.length && !own.some(b=>b.type==="port") && state.completed.includes(buildingTechnology("port",state.age)!)) {
       const site=coastal.slice(0,8).find(tile=>this.economy.recovery.canBuild(player.id,"port",tile) &&
-        this.world.buildingSite(player.id,"port",tile,this.startingAge)===null);
-      if(site!==undefined && this.world.applyCommand({type:"build",playerId:player.id,buildingType:"port",tile:site,age:this.startingAge})===null)return;
+        this.world.buildingSite(player.id,"port",tile,state.age)===null);
+      if(site!==undefined && this.world.applyCommand({type:"build",playerId:player.id,buildingType:"port",tile:site,age:state.age})===null)return;
     }
     const plan = this.tribePlans.get(player.id) ?? { nextType: 0, tiles: {} };
     this.tribePlans.set(player.id, plan);
@@ -1306,10 +1308,10 @@ export class Expansion {
       const type = TRIBE_BUILDING_ORDER[plan.nextType++ % TRIBE_BUILDING_ORDER.length];
       plan.nextType %= TRIBE_BUILDING_ORDER.length;
       const count = own.filter(b => b.type === type).length;
-      const technology = buildingTechnology(type, this.startingAge);
-      if (count >= tribeBuildingLimit(type, this.startingAge) || !technology ||
+      const technology = buildingTechnology(type, state.age);
+      if (count >= tribeBuildingLimit(type, state.age) || !technology ||
           !state.completed.includes(technology) ||
-          costRejection(player, this.supply.inventories[player.id], buildingCost(type, this.startingAge, count))) continue;
+          costRejection(player, this.supply.inventories[player.id], buildingCost(type, state.age, count))) continue;
       const extraction = type === "mine" || type === "oil-well" || type === "oil-rig";
       const candidates = type === "port" ? this.economy.placements.coasts(player.id) : extraction
         ? this.supply.deposits.filter(d => this.world.owners[d.tile] === player.id && resourceVisibleAtAge(d.resource, state.age) &&
@@ -1322,7 +1324,7 @@ export class Expansion {
         plan.tiles[type] = (cursor + 1) % candidates.length;
         if (!this.economy.recovery.canBuild(player.id,type,candidates[cursor % candidates.length])) continue;
         if (this.world.applyCommand({ type: "build", playerId: player.id,
-          buildingType: type, tile: candidates[cursor % candidates.length], age: this.startingAge }) === null) return;
+          buildingType: type, tile: candidates[cursor % candidates.length], age: state.age }) === null) return;
       }
       return;
     }
@@ -1333,9 +1335,6 @@ export class Expansion {
     const own = this.world.buildingFacts().byOwner(player.id).filter(b => !b.remainingTicks),
       squads = this.world.squadFacts().byOwner(player.id).filter(s => s.embarkedOn === null),
       stock = this.supply.inventories[player.id];
-    const enemies = this.world.squads.filter((s) =>
-      this.diplomacy.hostile(player.id, s.playerId),
-    );
     this.modernization.reserve(
       player,
       squads,
@@ -1494,6 +1493,15 @@ export class Expansion {
         }
       }
     }
+  }
+  private thinkAirAndStrategic(player: Player): void {
+    const own=this.world.buildingFacts().byOwner(player.id).filter(b=>!b.remainingTicks && (b.health ?? 1)>0);
+    const squads=this.world.squadFacts().aliveByOwner(player.id);
+    const force=new AiForceInventory(player.id,squads,this.world.recruitment.byOwner(player.id));
+    const stock=this.supply.inventories[player.id];
+    const atWar=(id:number)=>this.diplomacy.hostile(player.id,id) &&
+      (this.diplomacy.declaredWar(player.id,id) || this.operations.offensiveTarget(player.id)===id);
+    const enemies=this.world.squads.filter(s=>s.troops>0 && s.embarkedOn===null && atWar(s.playerId));
     const plannedAircraft = new Map<string, number>();
     for (const base of own.filter((b) => b.type === "airstrip"))
       for (const definitionId of ["fighter", "bomber"] as const)
@@ -1509,45 +1517,65 @@ export class Expansion {
             buildingId: base.id,
             definitionId,
           }) === null) plannedAircraft.set(definitionId, (plannedAircraft.get(definitionId) ?? 0) + 1);
-    const enemy = enemies.sort((a, b) => a.id - b.id)[0];
-    if (enemy) {
+    const enemy = enemies.sort((a, b) => b.troops-a.troops || a.id-b.id)[0];
+    const structures=this.world.buildings.filter(b=>atWar(b.playerId) && !b.remainingTicks && (b.health ?? 1)>0)
+      .sort((a,b)=>Number(b.type==="city")-Number(a.type==="city") || a.id-b.id);
+    const structure=structures[0];
+    const aim=enemy ?? (structure ? this.battle.position(structure) : undefined);
+    if (aim) {
       const ready = this.aircraft.filter(
         (a) => a.playerId === player.id && a.state === "ready",
       );
-      if (ready.length)
+      const airTargets=[...enemies.slice(0,16),...structures.slice(0,16).map(b=>this.battle.position(b))];
+      for(const aircraft of ready) {
+        const base=this.world.building(aircraft.airfieldId);
+        if(!base)continue;
+        const home=this.battle.position(base);
+        const target=airTargets.find(t=>Math.hypot(t.x-aircraft.x,t.y-aircraft.y)+Math.hypot(t.x-home.x,t.y-home.y)
+          <=(aircraft.fuelTicks-20)*AIRCRAFT_RULES.speed);
+        if(!target)continue;
         this.world.applyCommand({
           type: "sortie",
           playerId: player.id,
-          aircraftIds: ready.map((a) => a.id),
-          x: enemy.x,
-          y: enemy.y,
+          aircraftIds: [aircraft.id],
+          x: target.x,
+          y: target.y,
         });
-      for (const launcher of [
-        ...own.filter((b) =>
-          ["missile-silo", "mirv-launcher"].includes(b.type),
-        ),
-        ...squads.filter((s) => this.unit(s).role === "launcher"),
-      ]) {
-        const payload =
+      }
+      const launchers=[...own.filter(b=>["missile-silo","mirv-launcher"].includes(b.type)),
+        ...squads.filter(s=>this.unit(s).role==="launcher")];
+      if(!launchers.length)return;
+      const strategicTargets=[...structures.slice(0,16).map(b=>({...this.battle.position(b),buildingId:b.id})),
+        ...enemies.slice(0,16).map(s=>({x:s.x,y:s.y,buildingId:undefined}))];
+      const protectedPositions=[...this.world.squads.filter(s=>s.troops>0 && !atWar(s.playerId)),
+        ...this.world.ships.filter(s=>s.health>0 && !atWar(s.playerId)),
+        ...this.world.buildings.filter(b=>!atWar(b.playerId) && (b.health ?? 1)>0).map(b=>this.battle.position(b))];
+      for (const launcher of launchers) {
+        const payloads =
           "type" in launcher && launcher.type === "missile-silo"
-            ? stock["payload:hydrogen"]
-              ? "hydrogen"
-              : "icbm"
-            : "mirv";
+            ? ["hydrogen","icbm"] as const : ["mirv"] as const;
+        const strike=payloads.flatMap(payload=>{
+          if(!(stock[`payload:${payload}`]>0))return [];
+          const radius=STRATEGIC_PAYLOADS[payload].blastRadius;
+          const target=strategicTargets.find(t=>!protectedPositions.some(s=>(s.x-t.x)**2+(s.y-t.y)**2<=radius**2));
+          return target ? [{payload,target}] : [];
+        })[0];
+        if(!strike)continue;
         this.world.applyCommand({
           type: "launch",
           playerId: player.id,
           launcherId: launcher.id,
-          payload,
-          x: enemy.x,
-          y: enemy.y,
+          payload:strike.payload,
+          x: strike.target.x,
+          y: strike.target.y,
+          buildingId: strike.target.buildingId,
         });
       }
     }
   }
   /** Synchronous capture batch: prove the complete ray rectangle empty once.
    * Building/diplomacy eligibility remains live for each visited tile. */
-  captureQuery(squad: Squad, radius: number): (tile: number) => boolean {
+  captureQuery(squad: Squad, radius: number): ((tile: number) => boolean) & { originIndependent: boolean } {
     const position = this.world.tileOf(squad), map = this.world.map;
     const cx = map.x(position), cy = map.y(position);
     const obstacleFree = this.fortifications.obstacleFreeArea(
@@ -1557,9 +1585,10 @@ export class Expansion {
       Math.max(squad.y, (cy + radius + 0.5) * FIXED),
     );
     const version = this.fortifications.version, x = squad.x, y = squad.y;
-    return tile => this.captureEligible(squad, tile, obstacleFree &&
+    return Object.assign((tile:number) => this.captureEligible(squad, tile, obstacleFree &&
       version === this.fortifications.version && squad.x === x && squad.y === y &&
-      Math.abs(map.x(tile) - cx) <= radius && Math.abs(map.y(tile) - cy) <= radius);
+      Math.abs(map.x(tile) - cx) <= radius && Math.abs(map.y(tile) - cy) <= radius),
+      {originIndependent:obstacleFree && radius>=1});
   }
   canCaptureTile(squad: Squad, tile: number): boolean {
     return this.captureEligible(squad, tile, false);
@@ -1612,11 +1641,15 @@ export class Expansion {
     progression:this.progression.revision,diplomacy:this.diplomacy.revision,
     productionPlans:this.supply.controlRevision,productionPriorities:this.supply.controlRevision,
     tradeControls:this.trade.controlRevision,
+    tradeReceipts:this.trade.receiptRevision,
+    pairRelations:this.relations.revision,
     events:this.nextEvent,roadRevision:this.roads.revision,fortificationRevision:this.fortifications.version,
+    fallout:this.world.wasteland.revision,
   }};}
   snapshot(): ExpansionSnapshot {
     return {
       armies: this.armies.snapshot(),
+      fallout: this.world.wasteland.snapshot(),
       rulesetId: "ages-v1",
       startingAge: this.startingAge,
       contentHash: CONTENT_HASH,
@@ -1633,8 +1666,12 @@ export class Expansion {
       productionPriorities: this.supply.priorities,
       deposits: this.supply.deposits,
       diplomacy: this.diplomacy.state,
+      activeOffensives: this.operations.activeOffensives(),
+      pairRelations: this.relations.snapshot(),
       traders: this.trade.actors.map(
-        ({ path: _path, nextPathIndex: _index, ...actor }) => actor,
+        ({ path: _path, nextPathIndex: _index, supplyWaitTicks: _supplyWait,
+          supplyWaitStartedTick: _waitStart, tripSupplyTicks: _tripSupply, routeOriginOwner: _routeOwner, ...actor }) =>
+          ({ ...actor, waitingForCargo: actor.state === "loading" && _waitStart !== undefined }),
       ),
       barriers: this.fortifications.barriers,
       projectiles: this.battle.projectiles,
@@ -1642,9 +1679,13 @@ export class Expansion {
       victoryMode: this.victoryMode,
       winners: this.winners,
       deliveredGold: this.trade.deliveredGold,
+      tradeReceipts:[...this.trade.receipts.values()],
+      tradeSites:this.trade.siteSnapshot(),
       tradeCapturedValue: this.trade.capturedValue,
       tradeLostValue: this.trade.lostValue,
       tradeControls: this.trade.controls,
+      tradeEnemies: Object.fromEntries(this.world.players.filter(p=>!p.ai && !p.eliminated).map(p=>
+        [p.id,this.world.players.filter(q=>q.id!==p.id && !q.eliminated && this.trade.atWar(p.id,q.id)).map(q=>q.id)])),
     };
   }
 }
