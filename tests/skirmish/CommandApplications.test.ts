@@ -14,6 +14,23 @@ const move: Command = {
   order: { type: "move", tile: 12 },
 };
 describe("command receipts", () => {
+  it("reports a committed lead cohort as progress while the receipt stays deferred", () => {
+    const progress: number[] = [], outcomes: CommandOutcome["status"][] = [];
+    const receipts: CommandApplications = new CommandApplications({ tick: () => 0, apply: () => {
+      receipts.observe("land", { id: 1, playerId: 1, tick: 0, status: "deferred" });
+      receipts.observe("land", { id: 2, playerId: 1, tick: 0, status: "deferred" });
+      return null;
+    } });
+    receipts.onProgress = playerId => progress.push(playerId);
+    receipts.onOutcome = outcome => outcomes.push(outcome.status);
+    expect(receipts.apply("large", move).status).toBe("deferred");
+    receipts.observe("land", { id: 1, playerId: 1, tick: 2, status: "executed" });
+    expect(progress).toEqual([1]);
+    expect(outcomes).toEqual(["deferred"]);
+    receipts.observe("land", { id: 2, playerId: 1, tick: 5, status: "executed" });
+    expect(progress).toEqual([1]);
+    expect(outcomes).toEqual(["deferred", "executed"]);
+  });
   it.each(["executed","rejected","superseded"] as const)("preserves a shore-to-land handoff through restore until its %s result",status=>{
     let receipts:CommandApplications;
     receipts=new CommandApplications({tick:()=>0,apply:()=>{receipts.observe("shore",{id:17,playerId:1,tick:0,status:"deferred"});return null;}});

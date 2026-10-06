@@ -25,6 +25,9 @@ export class CommandApplications {
   private readonly recent = new Map<string, CommandOutcome>();
   private applying?: { key: string; playerId: number; plans: Set<string> };
   onOutcome?: (outcome: CommandOutcome) => void;
+  /** A plan of a still-deferred receipt committed, e.g. the lead cohort of a
+   * large selection started moving. The receipt itself stays deferred. */
+  onProgress?: (playerId: number) => void;
   readonly diagnostics = { pending: 0, rejectedAtCapacity: 0 };
   constructor(
     private readonly ports: Ports,
@@ -115,7 +118,10 @@ export class CommandApplications {
     if (!receipt || receipt.outcome.playerId !== event.playerId) return;
     this.plans.delete(plan);
     receipt.plans.delete(plan);
-    if (event.status === "executed" && receipt.plans.size) return;
+    if (event.status === "executed" && receipt.plans.size) {
+      this.onProgress?.(event.playerId);
+      return;
+    }
     for (const remaining of receipt.plans) this.plans.delete(remaining);
     this.pending.delete(key!);
     this.diagnostics.pending = this.pending.size;

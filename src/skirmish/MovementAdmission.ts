@@ -41,6 +41,8 @@ interface Admission {
   preparationRestarts?: number;
   member: number;
   placementRetries?: number;
+  /** Route passes that began beside a member yet found no clear connector. */
+  connectorMisses?: number;
 }
 interface QueuedIntent {
   id: number;
@@ -97,6 +99,8 @@ export interface MovementAdmissionPorts {
     structureTarget?: Squad["structureTarget"],
   ): void;
 }
+
+const CONNECTOR_REPLANS = 3;
 
 /** Transactional land admission: current orders run until every replacement
  * has a live, short connector. No member is activated after a partial success.
@@ -525,6 +529,44 @@ export class MovementAdmission {
       }
     }
   }
+  /** Keeps every finished route that remains clear under the current revision
+   * and re-requests the rest. Returns the work spent. */
+  private retainRoutes(admission: Admission): number {
+    const blocked = this.ports.blocked(admission.playerId),
+      revision = this.ports.revision(admission.playerId);
+    let work = 1, dropped = false;
+    for (const member of admission.members) {
+      // In-flight searches revalidate their own result against current walls.
+      // A shared spine is spliced in without search, so check it here.
+      if (member.shared) {
+        work += member.shared.spine.length;
+        if (!this.paths.routeClear(member.shared.spine, blocked)) {
+          if (member.requested) this.ports.cancel(admission.id, member.id);
+          member.requested = false;
+          member.shared = undefined;
+        }
+      }
+      if (!member.path) continue;
+      work += member.path.length;
+      if (!this.paths.routeClear(member.path, blocked)) {
+        member.path = undefined;
+        member.cursor = 0;
+        dropped = true;
+      }
+    }
+    const corridor = admission.corridorId === undefined ? undefined : this.corridors.get(admission.corridorId);
+    if (corridor && corridor.revision === admission.revision) {
+      work += corridor.path.length;
+      if (this.paths.routeClear(corridor.path, blocked)) corridor.revision = revision;
+      else this.corridors.delete(admission.corridorId!);
+    }
+    if (dropped && admission.phase === "connectors") {
+      admission.phase = "routes";
+      admission.member = 0;
+    }
+    admission.revision = revision;
+    return work;
+  }
   private waitingIntent(admissionId: number): boolean {
     return !!this.intentsByAdmission.get(admissionId)?.size;
   }
@@ -743,6 +785,15 @@ export class MovementAdmission {
         }
         continue;
       }
+      if (admission.revision !== this.ports.revision(admission.playerId) &&
+        admission.phase !== "formation" && this.ports.priority?.(admission.playerId)) {
+        // A human order has no AI navigation policy: its obstacle revision only
+        // tracks walls and alliances, which `blocked` reads live. A wall raised
+        // elsewhere must not discard fitted slots and finished routes.
+        // Tile reads are far cheaper than search expansions: one unit per 64,
+        // never more than the remaining allowance callers have budgeted.
+        used += Math.min(budget - used, Math.ceil(this.retainRoutes(admission) / 64));
+      }
       if (admission.revision !== this.ports.revision(admission.playerId)) {
         if (admission.corridorId !== undefined) this.corridors.delete(admission.corridorId);
         const squads = admission.members.map((m) => this.ports.squad(m.id)!);
@@ -860,6 +911,16 @@ export class MovementAdmission {
         used++;
         idle = 0;
         if (tile === undefined) {
+          // A unit wedged against terrain has no clear connector even to a
+          // route that starts beside it. Bound that replanning instead of
+          // spending the shared route allowance every tick. Units that merely
+          // drifted while their old order ran keep replanning normally.
+          const origin = tilePoint(this.map, member.path![0]);
+          if (distanceSquared(squad, origin) <= (3 * FIXED) ** 2 &&
+            (admission.connectorMisses = (admission.connectorMisses ?? 0) + 1) > CONNECTOR_REPLANS) {
+            this.finish(admission, tick, "rejected", "A selected unit is wedged against impassable ground");
+            continue;
+          }
           member.path = undefined;
           member.cursor = 0;
           admission.phase = "routes";

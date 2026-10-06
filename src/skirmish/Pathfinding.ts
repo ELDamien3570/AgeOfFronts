@@ -125,6 +125,32 @@ class TilePaths {
     return job;
   }
 
+  /** One HPA* corridor for an incremental planner, or null when the hierarchy
+   * has no route clear of `blocked`. Never falls back to an unbudgeted exact
+   * search; the caller resumes its own resumable search instead. Effort is
+   * reported through `work`. */
+  hierarchical(start: number, goal: number, blocked?: (tile: number) => boolean): number[] | null {
+    if (!this.hierarchy || !this.connected(start, goal) || blocked?.(start) || blocked?.(goal)) return null;
+    const route = this.hierarchy.find(start, goal);
+    if (!route || !route.length || route[route.length - 1] !== goal) return null;
+    return this.routeClear([start, ...route], blocked) ? route : null;
+  }
+
+  /** Whether every cell of `path`, and both corner cells of each diagonal
+   * step, is clear of `blocked`, exactly as exact search avoids them. */
+  routeClear(path: readonly number[], blocked?: (tile: number) => boolean): boolean {
+    if (!blocked) return true;
+    return path.every((tile, i, list) => {
+      this.telemetry.obstacleChecks++;
+      if (blocked(tile)) return false;
+      if (!i || this.map.x(tile) === this.map.x(list[i - 1]) ||
+        this.map.y(tile) === this.map.y(list[i - 1])) return true;
+      this.telemetry.obstacleChecks += 2;
+      return !blocked(this.map.ref(this.map.x(tile), this.map.y(list[i - 1]))) &&
+        !blocked(this.map.ref(this.map.x(list[i - 1]), this.map.y(tile)));
+    });
+  }
+
   find(
     start: number,
     goal: number,

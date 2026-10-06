@@ -188,19 +188,83 @@ describe("fair resumable exact planning", () => {
     expect(results[0].path[results[0].path.length - 1]).toBe(4);
     expect(planner.diagnostics.workspaceUsed).toBe(0);
   });
-  it("revalidates a completed route after incremental workspace release", () => {
+  it("publishes a completed route before its workspace release finishes", () => {
     const { planner, request, results, revision } = fixture();
     request("finished", 0, 4);
-    for (let tick = 0; tick < 50; tick++) {
-      planner.step(tick, 1, 1);
-      if (planner.checkpoint().jobs[0]?.releasing === "complete") break;
-    }
-    expect(planner.checkpoint().jobs[0]?.releasing).toBe("complete");
+    for (let tick = 0; tick < 50 && !results.length; tick++) planner.step(tick, 1, 1);
+    expect(results).toEqual([{ key: "finished", outcome: "complete", path: [0, 1, 2, 3, 4] }]);
+    // Reclamation continues under its own key, charged and checkpointed.
+    expect(planner.diagnostics.workspaceUsed).toBeGreaterThan(0);
+    expect(planner.has("finished")).toBe(false);
+    const restored = fixture();
+    restored.planner.restore(planner.checkpoint());
+    expect(restored.planner.checkpoint()).toEqual(planner.checkpoint());
+    // A later obstacle change cannot retract an already accepted route.
     revision.value = "changed";
-    while (planner.diagnostics.pending) planner.step(51, 2, 1);
-    expect(results).toEqual([
-      { key: "finished", outcome: "superseded", path: [] },
+    while (planner.diagnostics.pending) expect(planner.step(51, 2, 1)).toBeLessThanOrEqual(2);
+    expect(results).toHaveLength(1);
+    expect(planner.diagnostics.workspaceUsed).toBe(0);
+    expect(planner.diagnostics.superseded).toBe(0);
+  });
+  it("starts a same-key follow-up request while the previous search is still being reclaimed", () => {
+    const { planner, request, results } = fixture();
+    request("member", 0, 4);
+    for (let tick = 0; tick < 50 && !results.length; tick++) planner.step(tick, 1, 1);
+    expect(planner.diagnostics.workspaceUsed).toBeGreaterThan(0);
+    expect(request("member", 4, 8)).toBe(true);
+    expect(planner.has("member")).toBe(true);
+    while (planner.diagnostics.pending) planner.step(60, 3, 1);
+    expect(results.map(r => [r.key, r.outcome, r.path[0], r.path[r.path.length - 1]])).toEqual([
+      ["member", "complete", 0, 4], ["member", "complete", 4, 8],
     ]);
+    expect(planner.diagnostics.workspaceUsed).toBe(0);
+  });
+  it("completes a long interactive route through the HPA* corridor in one tick", () => {
+    const { map, land } = fixture(), outcomes: { key: string; path: number[] }[] = [];
+    const planner = new RoutePlanner<number>(land, new WaterPaths(map, false), {
+      priority: r => r.context === 1, valid: () => true, obstacleRevision: () => "0", blocked: () => undefined,
+      completed: (r, outcome, path) => { expect(outcome).toBe("complete"); outcomes.push({ key: r.key, path }); },
+    });
+    const start = map.ref(1, 1), goal = map.ref(175, 95);
+    planner.request({ key: "human", start, goal, water: false, createdTick: 0, obstacleRevision: "0", context: 1 });
+    planner.request({ key: "ai", start, goal, water: false, createdTick: 0, obstacleRevision: "0", context: 2 });
+    planner.step(0);
+    expect(outcomes.map(o => o.key)).toEqual(["human"]);
+    const path = outcomes[0].path;
+    expect(path[0]).toBe(start);
+    expect(path[path.length - 1]).toBe(goal);
+    for (let i = 1; i < path.length; i++)
+      expect(Math.max(Math.abs(map.x(path[i]) - map.x(path[i - 1])), Math.abs(map.y(path[i]) - map.y(path[i - 1])))).toBe(1);
+    // Near-optimal: an open map's octile distance is 174 steps.
+    expect(path.length - 1).toBeLessThanOrEqual(Math.ceil(174 * 1.1));
+    expect(planner.checkpoint().jobs.map(j => j.key)).toEqual(["ai"]);
+  });
+  it("falls back to exact search when a wall crosses the interactive corridor", () => {
+    const { map, land } = fixture(), outcomes: number[][] = [];
+    const wall = new Set<number>();
+    for (let y = 0; y < 99; y++) wall.add(map.ref(90, y));
+    const planner = new RoutePlanner<number>(land, new WaterPaths(map, false), {
+      priority: () => true, valid: () => true, obstacleRevision: () => "0", blocked: () => tile => wall.has(tile),
+      completed: (_r, outcome, path) => { expect(outcome).toBe("complete"); outcomes.push(path); },
+    });
+    planner.request({ key: "human", start: map.ref(1, 1), goal: map.ref(175, 2), water: false, createdTick: 0, obstacleRevision: "0", context: 1 });
+    for (let tick = 0; planner.diagnostics.pending && tick < 200; tick++) planner.step(tick);
+    expect(outcomes).toHaveLength(1);
+    expect(outcomes[0].some(tile => map.y(tile) === 99)).toBe(true);
+    expect(outcomes[0].every(tile => !wall.has(tile))).toBe(true);
+  });
+  it("keeps an unfinished search through terrain cost changes, which never alter walkability", () => {
+    const { map, land, planner, results, request } = fixture();
+    request("long", map.ref(1, 1), map.ref(175, 95));
+    planner.step(0, 300, 32);
+    expect(planner.checkpoint().jobs[0].search.nodes.size).toBeGreaterThan(0);
+    // Simulate a forest clearing elsewhere bumping the cost epoch mid-search.
+    land.restoreRevision(land.revision + 1);
+    while (planner.diagnostics.pending) planner.step(1, 512, 32);
+    expect(results).toHaveLength(1);
+    expect(results[0].outcome).toBe("complete");
+    expect(results[0].path[results[0].path.length - 1]).toBe(map.ref(175, 95));
+    expect(planner.diagnostics.superseded).toBe(0);
   });
   it("tests another firing finalist when the geometric favorite is enclosed by obstacles", () => {
     const { map, land } = fixture(),
@@ -266,18 +330,39 @@ describe("fair resumable exact planning", () => {
     expect(second.planner.checkpoint()).toEqual(first.planner.checkpoint());
     expect(second.results).toEqual(first.results);
   });
-  it("separates superseded revisions, physical disconnection and canceled work", () => {
-    const { planner, results, request, revision } = fixture();
+  it("separates superseded owners, revalidated revisions, physical disconnection and canceled work", () => {
+    const { planner, results, request, revision, validity } = fixture();
     request("changed", 0, 17999);
+    request("invalid", 0, 17999);
     planner.step(1, 2, 1);
+    // An obstacle revision no longer discards progress: the plain route keeps
+    // searching under the live mask and is revalidated when it completes.
     revision.value = "1";
+    validity.set("invalid", false);
     request("sea", 0, 100, true);
     request("canceled", 0, 5);
     planner.cancel("canceled");
     while (planner.diagnostics.pending) planner.step(2, 9, 2);
     expect(results.map((r) => [r.key, r.outcome])).toEqual([
       ["sea", "unreachable"],
-      ["changed", "superseded"],
+      ["invalid", "superseded"],
+      ["changed", "complete"],
     ]);
+  });
+  it("supersedes a search whose finished path crosses an obstacle added mid-search", () => {
+    const { map, land } = fixture(), outcomes: string[] = [];
+    let revision = "0";
+    const wall = new Set<number>();
+    const planner = new RoutePlanner<number>(land, new WaterPaths(map, false), {
+      valid: () => true, obstacleRevision: () => revision, blocked: () => tile => wall.has(tile),
+      completed: (_r, outcome) => outcomes.push(outcome),
+    });
+    planner.request({ key: "route", start: map.ref(1, 50), goal: map.ref(170, 50), water: false, createdTick: 0, obstacleRevision: "0", context: 1 });
+    // Let the search settle the start region, then wall a cell it already closed.
+    planner.step(0, 200, 32);
+    for (let y = 40; y <= 60; y++) wall.add(map.ref(2, y));
+    revision = "1";
+    while (planner.diagnostics.pending) planner.step(1, 512, 32);
+    expect(outcomes).toEqual(["superseded"]);
   });
 });

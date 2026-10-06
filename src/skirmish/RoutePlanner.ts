@@ -30,7 +30,16 @@ interface Job<T> extends ExactRouteRequest<T> {
   exclusiveRetry?: boolean;
   waitingForWorkspace?: boolean;
   resumeExclusiveAfterRelease?: boolean;
+  /** Interactive jobs try one hierarchical corridor before exact search. */
+  corridorTried?: boolean;
+  /** Already published; only its arena slots remain to be reclaimed. */
+  retired?: boolean;
+  /** Its obstacle revision changed mid-search; the result is revalidated. */
+  revalidate?: boolean;
 }
+/** Allowance an interactive HPA* corridor attempt needs left in the tick:
+ * about one start-cluster tree plus a short abstract search. */
+const CORRIDOR_RESERVE = 1024;
 export type ExactRouteOutcome =
   | "complete"
   | "unreachable"
@@ -69,9 +78,15 @@ export interface RoutePlannerPorts<T> {
   ): void;
 }
 
-/** Checkpointed, fair exact work shared by land and water callers. Search,
- * reconstruction and publication copies yield inside a job. Domain owners
- * validate its generation and revisions before atomically accepting a result.
+/** Checkpointed, fair exact work shared by land and water callers. Search
+ * and reconstruction yield inside a job. Domain owners validate its generation
+ * and revisions before atomically accepting a result.
+ *
+ * Terrain cost epochs (forest clearing under new buildings) never invalidate
+ * a job: they change travel cost, not walkability, so an unfinished search or
+ * a finished path stays legal. An obstacle revision restarts only jobs with
+ * prepared goals; plain routes keep searching under the live mask and are
+ * revalidated against it on completion.
  */
 export class RoutePlanner<T> {
   private readonly jobs = new Map<string, Job<T>>();
@@ -80,6 +95,7 @@ export class RoutePlanner<T> {
   // Version 1 restores historical FIFO checkpoints without changing their outcomes.
   private schedulingVersion = 3;
   private exclusiveKey?: string;
+  private retiredJobs = 0;
   private lastPlayer = -1;
   private priorityTurn = 0;
   private readonly lastCaller = new Map<number, number>();
@@ -121,6 +137,7 @@ export class RoutePlanner<T> {
         priorityTurn: this.priorityTurn,
         lastCaller: [...this.lastCaller],
         exclusiveKey: this.exclusiveKey,
+        retired: this.retiredJobs,
       },
     });
   }
@@ -173,6 +190,9 @@ export class RoutePlanner<T> {
     if (![1, 2, 3].includes(this.schedulingVersion))
       throw new Error("Unknown planner scheduling version");
     this.exclusiveKey = saved.scheduling?.exclusiveKey;
+    this.retiredJobs = saved.scheduling?.retired ?? 0;
+    if (!Number.isSafeInteger(this.retiredJobs) || this.retiredJobs < 0)
+      throw new Error("Invalid planner scheduling checkpoint");
     this.lastPlayer = saved.scheduling?.lastPlayer ?? -1;
     this.priorityTurn = saved.scheduling?.priorityTurn ?? 0;
     this.lastCaller.clear();
@@ -337,6 +357,15 @@ export class RoutePlanner<T> {
     }
     throw new Error("Planner workspace has no eligible owner");
   }
+  /** Walls and policy masks are read live by every search step. A plain route
+   * keeps its progress through an obstacle change and is checked against the
+   * current mask when it completes; prepared goals still restart. */
+  private adoptObstacleRevision(job: Job<T>): boolean {
+    if (job.prepare) return false;
+    job.obstacleRevision = this.ports.obstacleRevision(job);
+    job.revalidate = true;
+    return true;
+  }
   cancel(key: string): void {
     const job = this.jobs.get(key);
     if (job) {
@@ -419,6 +448,7 @@ export class RoutePlanner<T> {
           }
           outcome = job.releasing;
           job.releasing = undefined;
+          if (job.retired) continue;
           if (job.discard) {
             this.diagnostics.superseded++;
             cohort.superseded++;
@@ -429,7 +459,6 @@ export class RoutePlanner<T> {
           // still be current at publication, even though search already ended.
           if (
             !this.ports.valid(job) ||
-            paths.revision !== job.search.revision ||
             this.ports.obstacleRevision(job) !== job.obstacleRevision
           )
             outcome = "superseded";
@@ -446,8 +475,8 @@ export class RoutePlanner<T> {
           }
         } else if (
           !this.ports.valid(job) ||
-          paths.revision !== job.search.revision ||
-          this.ports.obstacleRevision(job) !== job.obstacleRevision
+          (this.ports.obstacleRevision(job) !== job.obstacleRevision &&
+            !this.adoptObstacleRevision(job))
         ) {
           outcome = "superseded";
           used++;
@@ -490,11 +519,35 @@ export class RoutePlanner<T> {
               job.prepared = true;
             }
           } else if (job.search.phase === "done") {
-            const count = Math.min(slice, job.search.path.length - job.copied);
-            for (let at = 0; at < count; at++)
-              job.output.push(job.search.path[job.copied++]);
-            used += Math.max(1, count);
-            if (job.copied === job.search.path.length) outcome = "complete";
+            // The reconstructed path is ordinary storage, independent of the
+            // arena, so it publishes before any slot reclamation.
+            job.output = [job.start, ...job.search.path];
+            job.copied = job.search.path.length;
+            used++;
+            outcome = job.revalidate && !paths.routeClear(job.output, this.ports.blocked(job))
+              ? "superseded" : "complete";
+          } else if (
+            !job.corridorTried &&
+            !job.exclusiveRetry &&
+            job.nextCandidate === 0 &&
+            job.search.phase === "search" &&
+            !job.search.nodes.size &&
+            budget - used >= CORRIDOR_RESERVE &&
+            this.ports.priority?.(job)
+          ) {
+            // An interactive order first tries the static HPA* corridor, which
+            // costs a few cluster crossings instead of a tile-level search of
+            // the whole map. Any failure resumes the exact search unchanged.
+            // It is attempted only with a reserve left, so one corridor query
+            // is the most a tick can exceed its allowance by.
+            job.corridorTried = true;
+            const before = paths.work,
+              route = paths.hierarchical(job.start, job.goal, this.ports.blocked(job));
+            used += Math.max(1, paths.work - before);
+            if (route) {
+              job.output = [job.start, ...route];
+              outcome = "complete";
+            }
           } else {
             const search = paths.beginPlanning(
               this.workspace,
@@ -504,14 +557,31 @@ export class RoutePlanner<T> {
             );
             used += Math.max(
               1,
-              search.step(slice, paths.revision, this.ports.blocked(job)),
+              search.step(slice, job.search.revision, this.ports.blocked(job)),
             );
-            if (search.state.phase === "unreachable") outcome = "unreachable";
+            // Disconnection proven partly under replaced obstacles is not proof.
+            if (search.state.phase === "unreachable") outcome = job.revalidate ? "superseded" : "unreachable";
             else if (search.state.phase === "limited") outcome = "limited";
             else if (search.state.phase === "stale") outcome = "superseded";
           }
         }
-        if (outcome && job.search.nodes.size) {
+        if (outcome === "complete" && job.search.nodes.size) {
+          // Publish now; reclaim the finished search under its own key so a
+          // follow-up request for the same owner starts without waiting.
+          const retiredKey = `${key}#retired:${this.retiredJobs++}`;
+          this.jobs.set(retiredKey, {
+            ...job,
+            key: retiredKey,
+            search: { ...job.search, path: [], heap: [] },
+            output: [],
+            retired: true,
+            discard: true,
+            releasing: "superseded",
+            replacement: undefined,
+            waitingForWorkspace: false,
+            resumeExclusiveAfterRelease: undefined,
+          });
+        } else if (outcome && job.search.nodes.size) {
           job.releasing = outcome;
           this.jobs.set(key, job);
           continue;

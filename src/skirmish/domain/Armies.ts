@@ -215,12 +215,15 @@ export class Armies {
         continue;
       }
       if(plan.cohortId!==undefined)continue;
-      while(plan.cursor<plan.path.length && used<budget){
+      // Arithmetic only: one tile per work unit made a long march wait a
+      // second before assembly could even start. Charge per 64 points.
+      const from=plan.cursor;
+      while(plan.cursor<plan.path.length){
         const point=tilePoint(this.world.map,plan.path[plan.cursor++]),last=plan.route[plan.route.length-1];
         plan.lengths.push(plan.lengths[plan.lengths.length-1]+Math.hypot(point.x-last.x,point.y-last.y));
-        plan.route.push(point);used++;
+        plan.route.push(point);
       }
-      if(plan.cursor<plan.path.length)continue;
+      used+=Math.ceil((plan.cursor-from)/64);
       if(plan.route.length===1){const end=tilePoint(this.world.map,plan.tile),last=plan.route[0];plan.route.push(end);plan.lengths.push(Math.hypot(end.x-last.x,end.y-last.y));}
       const army=this.byArmyId.get(plan.armyId)!,members=plan.memberIds.map(id=>this.world.squad(id)!);
       const leader=this.world.squad(plan.leaderId)!;

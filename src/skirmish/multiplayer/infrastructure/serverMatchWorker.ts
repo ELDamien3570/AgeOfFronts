@@ -50,6 +50,9 @@ const collectOutcome = (outcome: CommandOutcome) => {
     throw new Error("Command outcome drain budget exceeded");
   commandOutcomes.set(key, outcome);
 };
+// A deferred command whose first cohort committed is visible movement too.
+let commandProgress = false;
+const collectProgress = () => { commandProgress = true; };
 const makeMap = (map: RuntimeMap) =>
   createSkirmishMap(
     map.width,
@@ -143,6 +146,7 @@ parentPort.on(
           } else {
             match = new Skirmish(makeMap(loaded.map), options);
             match.commandApplications.onOutcome = collectOutcome;
+            match.commandApplications.onProgress = collectProgress;
             observeMatch();
             result = {
               tick: match.tick,
@@ -172,6 +176,7 @@ parentPort.on(
               humanSpawns: setup.choices,
             });
             match.commandApplications.onOutcome = collectOutcome;
+            match.commandApplications.onProgress = collectProgress;
             observeMatch();
             setup = undefined;
             preparedMap = undefined;
@@ -269,9 +274,11 @@ parentPort.on(
             } satisfies MatchAdvance;
             // A committed player command should be visible in its authoritative
             // result tick, rather than waiting for the 5 Hz background cadence.
-            // Deferred/rejected commands do not expose uncommitted intentions.
+            // Deferred/rejected commands do not expose uncommitted intentions;
+            // a committed lead cohort of a deferred selection is published.
             // Offer once per advance through the same bounded, ordered queue.
-            const publish = request.publish || outcomes.some(outcome => outcome.status === "executed");
+            const publish = request.publish || commandProgress || outcomes.some(outcome => outcome.status === "executed");
+            commandProgress = false;
             if (publish || match.winner !== null) {
               if (streamPublications && match.winner === null) publications.offer(match.tick, capture);
               else {
