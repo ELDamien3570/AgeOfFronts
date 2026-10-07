@@ -43,7 +43,6 @@ import { empireMarkup, EmpireView } from "./EmpireView";
 import { EmpireViewModel } from "./EmpireViewModel";
 import { FactionViewModel } from "./FactionViewModel";
 
-import { UNIT } from "../content/Units";
 
 import {
   AGE_NAMES,
@@ -80,6 +79,7 @@ import { ArmyView } from "./ArmyView";
 import { ArmyViewModel } from "./ArmyViewModel";
 import { HudViewModel } from "./HudViewModel";
 import { OrderGesture } from "./OrderGesture";
+import { canCharge } from "./ChargeReadiness";
 
 import { COLORS, Renderer } from "./Renderer";
 
@@ -1684,11 +1684,14 @@ canvas.addEventListener("pointerup", (event) => {
     orderGesture.submit({time:performance.now(),...p,context,single:()=>{
       if (snapshot?.winner === null && context === `${matchSequence}:${[...renderer.selected].sort((a,b)=>a-b).join(",")}`)
         command(ordinary);
-    }}, !start.shift && !structureOrder ? ()=>command({
-      type:"charge",playerId:localPlayerId,squadIds:ids,
-      x:Math.round(position.x*FIXED),y:Math.round(position.y*FIXED),targetId:enemy ? target.id : undefined,
-      fallbackOrder: enemy ? {type:"attack",targetId:target.id} : {type:"move",tile:tile!},
-    }) : undefined);
+    }}, !start.shift && !structureOrder ? ()=>{
+      // The first click's order is already under way. The second click charges
+      // only squads ready to charge here; the rest keep that order.
+      const x=Math.round(position.x*FIXED),y=Math.round(position.y*FIXED),tick=snapshot?.tick ?? 0;
+      const chargers=ids.filter(id=>{const s=snapshot?.squads.find(q=>q.id===id);return !!s && canCharge(s,tick,x,y);});
+      if(!chargers.length){notify("No selected squad has a ready charge in range");return;}
+      command({type:"charge",playerId:localPlayerId,squadIds:chargers,x,y,targetId:enemy ? target.id : undefined});
+    } : undefined);
 
     const world = renderer.world(p.x, p.y);
 

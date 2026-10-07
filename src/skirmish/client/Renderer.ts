@@ -59,6 +59,7 @@ import { PromotionArtwork } from "./PromotionArtwork";
 import { ResourceViewModel } from "./ResourceViewModel";
 import { RoadLayer } from "./RoadLayer";
 import { RenderSamples } from "./RenderSamples";
+import { chargeReadiness } from "./ChargeReadiness";
 import type { SpawnSelectionViewModel } from "./SpawnSelectionViewModel";
 import { StrategicSprites } from "./StrategicSprites";
 import { bakeTerrainFields } from "./TerrainFields";
@@ -142,13 +143,13 @@ export class Renderer {
   private resources?: ResourceViewModel;
   private occupiedBuildingTiles = new Set<number>();
   private readonly buildingFacts = new BuildingFacts();
-  private previousTick?: number;
   private readonly squadSamples = new RenderSamples<Snapshot["squads"][number]>();
   private receivedAt = 0;
   // Smoothed real time between snapshots. Interpolating over this, not over the
   // game-time gap, keeps movement continuous at 2x/4x and when commit cycles in
   // online matches arrive slower or more irregularly than 200 ms.
-  private arrivalMs = 0;
+  /** Game speed of the latest frame, timing glides in single-player. */
+  private drawSpeed = 1;
   private nextFrame = 0;
   private map?: GameMap;
   private scale = 1;
@@ -283,8 +284,6 @@ export class Renderer {
     this.snapshot = undefined;
     this.spawn = undefined;
     this.resources = undefined;
-    this.previousTick = undefined;
-    this.arrivalMs = 0;
     this.receivedAt = 0;
     this.squadSamples.clear();
     this.presentation.reset();
@@ -319,8 +318,11 @@ export class Renderer {
       this.colorRevision = factionColorRevision;
     }
     this.buildPreview?.update(snapshot);
-    if (snapshot.tick !== this.snapshot?.tick) this.previousTick = this.snapshot?.tick;
-    this.squadSamples.update(snapshot.squads, snapshot.tick);
+    // Each glide covers the server time its tick span represents.
+    const arrivedAt = performance.now(),
+      spanTicks = this.snapshot ? Math.max(1, snapshot.tick - this.snapshot.tick) : 1;
+    this.squadSamples.update(snapshot.squads, snapshot.tick, arrivedAt,
+      Math.min(600, Math.max(50, (spanTicks * 50) / Math.max(1, this.drawSpeed))));
     this.combatMarkers = combatTargets(snapshot);
     this.snapshot = snapshot;
     this.tradePayouts.update(snapshot.expansion?.tradeReceipts??[],this.playerId,performance.now());
@@ -348,13 +350,6 @@ export class Renderer {
     this.aircraftPresentation.update(snapshot);
     const arrived = performance.now();
     this.boats.update(snapshot, arrived);
-    if (this.receivedAt) {
-      const gap = arrived - this.receivedAt;
-      if (gap < 1000)
-        this.arrivalMs = this.arrivalMs
-          ? this.arrivalMs * 0.8 + gap * 0.2
-          : gap;
-    }
     this.receivedAt = arrived;
     this.campLoss.update(snapshot, this.receivedAt);
     this.animationClock.update(snapshot.tick, this.receivedAt);
@@ -919,7 +914,15 @@ export class Renderer {
     return null;
   }
 
+  /** Charge readiness, drawn in blue beneath the health bar. */
+  private chargeBar(ctx: CanvasRenderingContext2D, x: number, y: number, width: number, height: number, fraction: number): void {
+    ctx.fillStyle = "#10212bdd";
+    ctx.fillRect(x - width / 2, y, width, height);
+    ctx.fillStyle = fraction >= 1 ? "#4fb3ff" : "#2c6fae";
+    ctx.fillRect(x - width / 2, y, width * fraction, height);
+  }
   draw(now: number, speed: number, paused: boolean): boolean {
+    this.drawSpeed = speed;
     this.tradePayouts.prune(now);
     if (now < this.nextFrame) return false;
     const frameInterval = 1000 / 60;
@@ -1246,13 +1249,8 @@ export class Renderer {
       ctx.restore();
     }
 
-    const interval = this.arrivalMs
-      ? Math.min(600, Math.max(50, this.arrivalMs))
-      : Math.max(
-          50,
-          (snapshot.tick - (this.previousTick ?? snapshot.tick - 1)) * 50,
-        );
-    const blend = paused ? 1 : Math.min(1, (now - this.receivedAt) / interval);
+    // One presentation clock: aircraft and traders share the squads' segment.
+    const blend = paused ? 1 : this.squadSamples.progress(now);
     this.aircraftBlend = blend;
     const boatTick = this.boats.frame(
       now,
@@ -1457,6 +1455,9 @@ export class Renderer {
       const spriteSize = squad.afloat ? shipSpriteSize(this.scale, "transport") : this.spriteSize(squad.troops);
       // Afloat, the bar is the hull: every hit lands there until it sinks.
       const strength = squad.afloat ? squad.afloat.hull / squad.afloat.maxHull : squad.troops / 1_000;
+      // Recovered charge cooldown (full = ready); undefined hides the bar for
+      // units without a charge attack, and while afloat.
+      const charge = squad.afloat ? undefined : chargeReadiness(squad, snapshot.tick);
       if (image) {
         const lunge =
           !squad.afloat && definition &&
@@ -1507,6 +1508,7 @@ export class Renderer {
           barWidth * strength,
           3,
         );
+        if (charge !== undefined) this.chargeBar(ctx, p.x, barY + 4, barWidth, 2, charge);
       } else {
         const formation = this.formationArtwork.get(
           formationType,
@@ -1603,9 +1605,9 @@ export class Renderer {
         }
         // Distant formations retain a strength cue without thousands of text
         // labels competing for space at strategic zoom.
+        const barWidth = symbol.width,
+          barY = p.y + symbol.height / 2 + 3;
         if (strength < 1) {
-          const barWidth = symbol.width,
-            barY = p.y + symbol.height / 2 + 3;
           ctx.fillStyle = "#10212bdd";
           ctx.fillRect(p.x - barWidth / 2, barY, barWidth, 2);
           ctx.fillStyle = COLORS[squad.playerId];
@@ -1616,6 +1618,8 @@ export class Renderer {
             2,
           );
         }
+        if (charge !== undefined)
+          this.chargeBar(ctx, p.x, strength < 1 ? barY + 3 : barY, barWidth, 2, charge);
       }
       if (
         squad.fighting &&
@@ -1642,7 +1646,8 @@ export class Renderer {
         ctx.textAlign = "center";
         ctx.lineWidth = 3;
         ctx.strokeStyle = "#10212bd9";
-        const labelY = p.y + (image ? spriteSize / 2 + 16 : radius + 12);
+        // Leave room for the charge bar under the health bar.
+        const labelY = p.y + (image ? spriteSize / 2 + 16 : radius + 12) + (charge !== undefined ? 4 : 0);
         ctx.strokeText(String(squad.troops), p.x, labelY);
         ctx.fillStyle = "#f2f5ed";
         ctx.fillText(String(squad.troops), p.x, labelY);

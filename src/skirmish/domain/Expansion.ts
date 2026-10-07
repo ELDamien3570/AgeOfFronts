@@ -107,6 +107,8 @@ export interface ExpansionWorld extends BattleWorld, ArmyWorld {
   squadFacts(): UnitQueries<Squad>;
   shipFacts(): UnitQueries<Ship>;
   installSquadPath(id: number, path: readonly number[]): void;
+  /** Drops pending movement planning for these squads (a superseding order). */
+  cancelMovement?(squadIds: readonly number[]): void;
   removeBuilding(id: number): boolean;
   factionAdjacent(a: number, b: number): boolean;
   admitStructureAttack?(playerId: number, squads: readonly Squad[], points: Map<number, {x:number;y:number}>, target: NonNullable<Squad["structureTarget"]>): void;
@@ -669,6 +671,9 @@ export class Expansion {
         )
       )
         return fallback("Choose a hostile charge target");
+      // A charge supersedes a move still being planned (e.g. the first click of
+      // the double click that issued it), so that move can never commit later.
+      world.cancelMovement?.(selected.map((s) => s!.id));
       selected.forEach((s, i) => {
         world.updateSquad(s!.id, {
           charge: { phase: "approach", x: command.x, y: command.y, startTick: world.tick, committedTick: 0, targetId: command.targetId },

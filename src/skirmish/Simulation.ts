@@ -979,6 +979,14 @@ export class Skirmish {
   updateShip(id: number, changes: Partial<Omit<Ship, "id">>): Ship | undefined { return this.shipEntities.update(id, changes); }
   /** @internal Transfer a finalized domain path; the caller releases writable aliases. */
   installSquadPath(id: number, path: readonly number[]): void { this.squadEntities.updateOwned(id, { path }); }
+  cancelMovement(squadIds: readonly number[]): void {
+    this.movementAdmission.cancel(squadIds, this.tick);
+    for (const id of squadIds) {
+      this.queuedLegs.delete(id);
+      this.routeWork.cancel(`navigation:${id}`);
+      this.routePlanner.cancel(`navigation:${id}`);
+    }
+  }
   removeSquad(id: number): boolean { this.movementClearance.delete(id);this.playerAttacks.forget(id);return this.squadEntities.remove(id); }
   removeShip(id: number): boolean { return this.shipEntities.remove(id); }
   squadFacts(): UnitQueries<Squad> { if (this.compareUnitIndexes) this.verifyUnitIndexes(); return this.squadIndex; }

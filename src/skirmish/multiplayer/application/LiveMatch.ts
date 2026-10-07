@@ -642,7 +642,23 @@ export class LiveMatch {
       await this.advancing;
     } finally {
       this.advancing = undefined;
+      this.scheduleTick();
     }
+  }
+  /** A running match wakes exactly at its next tick deadline. The
+   * coordinator's fixed 50 ms poll alone aliased against the 50 ms deadline:
+   * jitter that landed just early cost a whole extra interval and then a
+   * two-tick catch-up batch. The poll remains as a backstop. */
+  private tickTimer?: ReturnType<typeof setTimeout>;
+  private scheduleTick(): void {
+    if (this.stopped || !this.running || this.tickTimer !== undefined) return;
+    const timer = setTimeout(() => {
+      this.tickTimer = undefined;
+      void this.advance().catch((error) =>
+        this.end(`Match stopped: ${(error as Error).message}`));
+    }, Math.max(0, this.nextTickAt - this.now()));
+    (timer as { unref?: () => void }).unref?.();
+    this.tickTimer = timer;
   }
   private async advanceWorld(): Promise<void> {
     const now = this.now();
@@ -787,6 +803,8 @@ export class LiveMatch {
   async end(message: string, completed = false): Promise<void> {
     if (this.stopped) return;
     this.stopped = true;
+    clearTimeout(this.tickTimer);
+    this.tickTimer = undefined;
     this.unsubscribePublication?.();
     clearTimeout(this.syncTimer);
     this.broadcast({

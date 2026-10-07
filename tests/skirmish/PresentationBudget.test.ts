@@ -40,8 +40,24 @@ describe("P14 retained presentation samples", () => {
     expect(samples.get(1)).toMatchObject({ previousX: 10, previousY: 20 });
     samples.update([{ id: 1, x: 35, y: 45 }], 2);
     expect(samples.get(1)).toMatchObject({ previousX: 10, previousY: 20 });
-    samples.update([{ id: 1, x: 35, y: 45 }], 3);
+    // A segment that has fully elapsed starts the next one at its target.
+    samples.update([{ id: 1, x: 35, y: 45 }], 3, 1000);
     expect(samples.get(1)).toMatchObject({ previousX: 35, previousY: 45 });
+  });
+  it("starts each new tick's glide from the drawn position, timed by its tick span", () => {
+    const samples = new RenderSamples<{ id: number; x: number; y: number }>();
+    samples.update([{ id: 1, x: 0, y: 0 }], 1, 0, 200);
+    samples.update([{ id: 1, x: 100, y: 0 }], 5, 0, 200);
+    // Halfway through a 200 ms segment the unit is drawn at x=50.
+    expect(samples.position(samples.get(1)!, 100).x).toBe(50);
+    // An early command-triggered publication starts from x=50, not from 0 or
+    // 100: no snap. Its one-tick span runs over 50 ms.
+    samples.update([{ id: 1, x: 110, y: 0 }], 6, 100, 50);
+    expect(samples.get(1)).toMatchObject({ previousX: 50 });
+    expect(samples.position(samples.get(1)!, 100).x).toBe(50);
+    expect(samples.position(samples.get(1)!, 125).x).toBe(80);
+    expect(samples.position(samples.get(1)!, 150).x).toBe(110);
+    expect(samples.progress(400)).toBe(1);
   });
   it("bounds retention by current entities across continuous arrivals and removals", () => {
     const samples = new RenderSamples<{ id: number; x: number; y: number }>();

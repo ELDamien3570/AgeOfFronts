@@ -454,8 +454,13 @@ export class OnlineMatchSession {
       }else if(hasView)this.queuePresentation(update);
       else await this.onmessage?.({data:update.data} as MessageEvent<WorkerResponse>);
       if (this.stopped || generation!==this.receiveGeneration) return;
+      // The receipt is credit for the server's publication window, not a gate
+      // on this client: awaiting its acknowledgement serialized every state
+      // behind a round trip, filled the window on distant links and forced
+      // full-map resyncs. Ordering is carried by sequence and flow epoch.
       if(message.flowEpoch!==undefined && message.publicationSequence!==undefined)
-        await this.request({type:"match-state-applied",matchId:this.matchId,publicationSequence:message.publicationSequence,flowEpoch:message.flowEpoch});
+        void this.request({type:"match-state-applied",matchId:this.matchId,publicationSequence:message.publicationSequence,flowEpoch:message.flowEpoch})
+          .catch(() => { /* A lost receipt only delays credit; flow control recovers. */ });
       // Receipt is not application: acknowledge only after both decoding and
       // the presentation callback have applied the complete baseline.
       if (message.syncId) {

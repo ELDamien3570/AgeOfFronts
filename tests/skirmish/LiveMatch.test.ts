@@ -1,4 +1,4 @@
-import { describe, expect, it } from "vitest";
+import { describe, expect, it, vi } from "vitest";
 import { defaultLobbySettings } from "../../src/skirmish/lobby/LobbyDirectory";
 import {
   LiveMatch,
@@ -119,6 +119,27 @@ async function fixture(stream = false, colorIndex?: number) {
 }
 
 describe("server-authoritative live match", () => {
+  it("advances on its own timer at each tick deadline, without the coordinator poll", async () => {
+    vi.useFakeTimers();
+    try {
+      const f = await fixture();
+      // The started match armed its own timer for the first tick deadline.
+      f.setTime(10_050);
+      await vi.advanceTimersByTimeAsync(50);
+      expect(f.requests.filter(r => r.type === "advance")).toHaveLength(1);
+      f.setTime(10_100);
+      await vi.advanceTimersByTimeAsync(50);
+      expect(f.requests.filter(r => r.type === "advance")).toHaveLength(2);
+      // Exactly one tick per deadline: no aliased two-tick catch-up batches.
+      expect(f.requests.filter(r => r.type === "advance").every(r => r.type === "advance" && r.ticks === 1)).toBe(true);
+      await f.match.end("done");
+      f.setTime(10_150);
+      await vi.advanceTimersByTimeAsync(100);
+      expect(f.requests.filter(r => r.type === "advance")).toHaveLength(2);
+    } finally {
+      vi.useRealTimers();
+    }
+  });
   it("passes lobby color reservations to the authoritative match setup", async () => {
     const f = await fixture(false, 7);
     expect(f.match.options.humanColors).toEqual([7, null]);
