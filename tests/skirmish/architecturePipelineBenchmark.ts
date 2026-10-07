@@ -45,12 +45,12 @@ for(let at=0;at<65;at++){
 const oldEncode:number[]=[],newEncode:number[]=[],oldDecode:number[]=[],newDecode:number[]=[],oldSend:number[]=[],newSend:number[]=[];
 let textBytes=0,binaryBytes=0;
 for(let at=0;at<25;at++){
-  const text=async()=>{let start=performance.now();const encoded=await oldCodec.encodeState(packet,undefined,SNAPSHOT_STATE_LIMITS),encodedAt=performance.now();
+  const text=async()=>{const start=performance.now();const encoded=await oldCodec.encodeState(packet,undefined,SNAPSHOT_STATE_LIMITS),encodedAt=performance.now();
     const message={type:"match-state",matchId:"pipeline",packet:encoded,tick:0,paused:false,disconnectedPlayerIds:[],executor:"server"};
     const wire=JSON.stringify(message),sentAt=performance.now();textBytes=Buffer.byteLength(wire);
     const decoded=await oldCodec.decodeState(JSON.parse(wire).packet,SNAPSHOT_STATE_LIMITS);if(!isDeepStrictEqual(decoded,packet))throw new Error("Text mismatch");
     return[encodedAt-start,sentAt-encodedAt,performance.now()-sentAt];};
-  const binary=async()=>{let start=performance.now();const encoded=await encodeState(packet,undefined,SNAPSHOT_STATE_LIMITS,true),encodedAt=performance.now();
+  const binary=async()=>{const start=performance.now();const encoded=await encodeState(packet,undefined,SNAPSHOT_STATE_LIMITS,true),encodedAt=performance.now();
     const wire=encodeSnapshotFrame({type:"match-state",matchId:"pipeline",packet:encoded,tick:0,paused:false,disconnectedPlayerIds:[],executor:"server"}),sentAt=performance.now();binaryBytes=wire.byteLength;
     const decoded=await decodeState<SnapshotPacket>(decodeSnapshotFrame(wire.buffer).packet,SNAPSHOT_STATE_LIMITS);if(!isDeepStrictEqual(decoded,packet))throw new Error("Binary mismatch");
     return[encodedAt-start,sentAt-encodedAt,performance.now()-sentAt];};

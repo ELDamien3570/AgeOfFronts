@@ -1,0 +1,18 @@
+{
+  "date": "2026-10-07",
+  "mode": "built-in-imagegen",
+  "records": [
+    {
+      "clip": "charge-attack",
+      "source": "ChargeAttack-LeatherPauldrons-Axe-Baked-v3.png",
+      "file": "ChargeAttack-LeatherPauldrons-Axe-v4.png",
+      "id": "charge-axe-clean-alpha-v4",
+      "prompt": "Background cleanup ONLY. This is a game sprite atlas with six512x512 cells in a1536x1024 image. Remove ALL brown haze/glow/gradient surrounding the soldiers and weapons; every pixel outside the actual soldier, axe and shield silhouettes must be exactly transparent alpha0. Retain only crisp antialiased object edges. Preserve the SIX characters exactly: current corrected side-mounted broad socketed bronze axe head, body poses and placement, leather, pauldrons, shields, all weapon anatomy and colors. NO redraw or weapon shape change. Transparent cutout sheet, NO cast shadows, glows, fog or gradients. Same1536x1024RGBA3columns2rows.",
+      "references": [
+        "ChargeAttack-LeatherPauldrons-Axe-Baked-v3.png"
+      ],
+      "generatedSource": "C:/Users/Damien/.codex/generated_images/01a0fea1-c63f-7343-92ca-6c21cc1c4296/exec-e03a9a06-8468-47dc-82c2-6cc93be59fbb.png",
+      "status": "composition-source"
+    }
+  ]
+}

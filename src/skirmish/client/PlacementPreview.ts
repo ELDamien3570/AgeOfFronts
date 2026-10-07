@@ -502,11 +502,11 @@ export class PlacementPreview {
         this.chunks.delete(key);
     }
     const focusX =
-        focus != null && this.map.isValidRef(focus)
+        typeof focus === "number" && this.map.isValidRef(focus)
           ? this.map.x(focus)
           : (bounds.left + bounds.right) / 2,
       focusY =
-        focus != null && this.map.isValidRef(focus)
+        typeof focus === "number" && this.map.isValidRef(focus)
           ? this.map.y(focus)
           : (bounds.top + bounds.bottom) / 2;
     const distance = (key: number) => {

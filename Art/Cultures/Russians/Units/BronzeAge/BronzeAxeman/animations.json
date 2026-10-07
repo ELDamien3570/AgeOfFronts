@@ -30,7 +30,7 @@
   "animations": [
     {
       "id": "idle",
-      "file": "Idle-RoughBronze-v1.png",
+      "file": "Idle-LeatherPauldrons-v1.png",
       "label": "Idle",
       "loop": true,
       "scale": 1,
@@ -129,7 +129,7 @@
     },
     {
       "id": "running",
-      "file": "Running-RoughBronze-v1.png",
+      "file": "Running-LeatherPauldrons-v1.png",
       "label": "Walk",
       "loop": true,
       "scale": 1,
@@ -228,7 +228,7 @@
     },
     {
       "id": "attack",
-      "file": "Attack-RoughBronze-v1.png",
+      "file": "Attack-LeatherPauldrons-v1.png",
       "label": "Axe chop",
       "loop": false,
       "scale": 1.018,
@@ -329,7 +329,7 @@
     },
     {
       "id": "hit",
-      "file": "Hit-RoughBronze-v2.png",
+      "file": "Hit-LeatherPauldrons-v1.png",
       "label": "Get hit",
       "loop": false,
       "scale": 1,
@@ -428,7 +428,7 @@
     },
     {
       "id": "charged",
-      "file": "Charged-RoughBronze-v2.png",
+      "file": "Charged-LeatherPauldrons-v1.png",
       "label": "Get charged",
       "loop": false,
       "scale": 1.23,
@@ -527,7 +527,7 @@
     },
     {
       "id": "charge",
-      "file": "Charge-RoughBronze-v1.png",
+      "file": "Charge-LeatherPauldrons-v1.png",
       "label": "Charge in / maintain",
       "loop": true,
       "scale": 0.96,
@@ -626,10 +626,10 @@
     },
     {
       "id": "charge-attack",
-      "file": "ChargeAttack-RoughBronze-v1.png",
+      "file": "ChargeAttack-LeatherPauldrons-Axe-Baked-v4.png",
       "label": "Charge attack",
       "loop": false,
-      "scale": 1.12,
+      "scale": 0.9,
       "durations": [
         130,
         190,
@@ -638,7 +638,7 @@
         180,
         240
       ],
-      "description": "Plant the lead foot, align the curved cutting edge and deliver a heavier lunging axe chop, then recover.",
+      "description": "Plant the lead foot and deliver a heavy bronze axe chop, keeping a solid broad head throughout windup, impact and recovery.",
       "frameCount": 6,
       "frames": [
         {
@@ -674,7 +674,7 @@
           "height": 512,
           "pivot": {
             "x": 269,
-            "y": 319
+            "y": 299
           }
         },
         {
@@ -723,11 +723,11 @@
         4,
         5
       ],
-      "axeOrientation": "Curved cutting bit rolled into chopping plane during windup, impact and follow-through."
+      "axeOrientation": "Same side-mounted socketed bronze axe head throughout swing; blade extends laterally from shaft rather than along its tip."
     },
     {
       "id": "death",
-      "file": "Death-RoughBronze-Baked-v1.png",
+      "file": "Death-LeatherPauldrons-Baked-v1.png",
       "label": "Death - side fall",
       "loop": false,
       "scale": 1,
@@ -798,7 +798,7 @@
           "width": 512,
           "height": 512,
           "pivot": {
-            "x": 242,
+            "x": 232,
             "y": 260
           }
         },
@@ -810,7 +810,7 @@
           "width": 512,
           "height": 512,
           "pivot": {
-            "x": 249,
+            "x": 236,
             "y": 260
           }
         }
@@ -826,7 +826,7 @@
     },
     {
       "id": "death-back",
-      "file": "Death-Back-RoughBronze-v2.png",
+      "file": "Death-Back-LeatherPauldrons-v1.png",
       "label": "Death - back fall",
       "loop": false,
       "scale": 1.026,
@@ -949,7 +949,39 @@
       ],
       "reason": "User requested rougher equipment and bronze cap crown.",
       "userApproval": "pending revised equipment review"
+    },
+    {
+      "date": "2026-10-07",
+      "clips": [
+        "idle",
+        "running",
+        "attack",
+        "hit",
+        "charged",
+        "charge",
+        "charge-attack",
+        "death",
+        "death-back"
+      ],
+      "reason": "Bronze pauldrons and leather top requested by user.",
+      "userApproval": "pending revised equipment review"
+    },
+    {
+      "date": "2026-10-07",
+      "clips": [
+        "charge-attack"
+      ],
+      "reason": "User feedback: axe became a sickle during charge attack. Solid broad head restored throughout the six poses.",
+      "userApproval": "pending charge axe shape review"
+    },
+    {
+      "date": "2026-10-07",
+      "clips": [
+        "charge-attack"
+      ],
+      "reason": "Frames 2 and 4 resembled a trowel; corrected side-mounted blade/socket in frames 2 through 5; retained frames 1 and 6 exactly.",
+      "userApproval": "pending v3 axe review"
     }
   ],
-  "equipmentFinish": "Hammered bronze cap crown, lightly worn bronze fittings, rough timber and worn leather; cream fur and red tunic retained."
+  "equipmentFinish": "Hammered bronze helmet and compact paired shoulder caps, stitched reddish-brown leather tunic and sleeves, cream fur collar, worn timber shield and bronze axe."
 }

@@ -1,0 +1,103 @@
+{
+  "date": "2026-10-07",
+  "mode": "authorized-sprite-composition",
+  "status": "selected",
+  "authorization": "User approved code composition and baking of existing soldier sprites.",
+  "file": "Death-LeatherPauldrons-Baked-v1.png",
+  "source": "Death-LeatherPauldrons-v1.png",
+  "sourceSha256": "cf4cee12cc7f6433b88b0c2a5441f659dea079a0dc3287f0946c44ead73e9862",
+  "alphaPolicy": "No alpha filtering/background removal. Whole source cells translated; only faint border residue outside the destination cell may be cropped. Native source retained.",
+  "frames": [
+    {
+      "frame": 0,
+      "sourceRect": [
+        0,
+        0,
+        512,
+        512
+      ],
+      "offset": [
+        0,
+        0
+      ],
+      "sourceCellSha256": "18b9c1c68cabb22faa7062e70936f63667c4a016ad477a03897fb371e946e0bb",
+      "bakedCellSha256": "18b9c1c68cabb22faa7062e70936f63667c4a016ad477a03897fb371e946e0bb"
+    },
+    {
+      "frame": 1,
+      "sourceRect": [
+        512,
+        0,
+        512,
+        512
+      ],
+      "offset": [
+        0,
+        0
+      ],
+      "sourceCellSha256": "fa5ff69017d8eb52d1a62db7693683036d50b034de940374d34fa1bbb3f605d3",
+      "bakedCellSha256": "fa5ff69017d8eb52d1a62db7693683036d50b034de940374d34fa1bbb3f605d3"
+    },
+    {
+      "frame": 2,
+      "sourceRect": [
+        1024,
+        0,
+        512,
+        512
+      ],
+      "offset": [
+        0,
+        0
+      ],
+      "sourceCellSha256": "fca990e7fa940d9b95e7c76271bdfbc113464eb2066834e06c8438efec534c3a",
+      "bakedCellSha256": "fca990e7fa940d9b95e7c76271bdfbc113464eb2066834e06c8438efec534c3a"
+    },
+    {
+      "frame": 3,
+      "sourceRect": [
+        0,
+        512,
+        512,
+        512
+      ],
+      "offset": [
+        0,
+        0
+      ],
+      "sourceCellSha256": "a55ca5fe640a1cf85dd747d4cdd7bfd3a3d9dcf8c19e3b79088a23fbd08a1d94",
+      "bakedCellSha256": "a55ca5fe640a1cf85dd747d4cdd7bfd3a3d9dcf8c19e3b79088a23fbd08a1d94"
+    },
+    {
+      "frame": 4,
+      "sourceRect": [
+        512,
+        512,
+        512,
+        512
+      ],
+      "offset": [
+        -10,
+        0
+      ],
+      "sourceCellSha256": "f7aa865cf7eef7abb636edf16f99ada446272a4355c249adf15fe60d6db22074",
+      "bakedCellSha256": "b38c348d42de4fb519bd11bf908936fcb291d2015cd5a98bdce0d8a5233eac67"
+    },
+    {
+      "frame": 5,
+      "sourceRect": [
+        1024,
+        512,
+        512,
+        512
+      ],
+      "offset": [
+        -13,
+        0
+      ],
+      "sourceCellSha256": "3aabb6c17a5f52f8d03e14df8361d55d184fa076552b2a8d0da19f6e3aa3cc1b",
+      "bakedCellSha256": "1370ce08bcf10939ac1c07050325465fc682d989513c3efd2003f73d32ac3617"
+    }
+  ],
+  "sha256": "a137bb6772ca2c06949b8b3a0ac8e387306be98d76cd829b9fb2e688782c0c04"
+}

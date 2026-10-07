@@ -60,7 +60,7 @@ describe("per-trip market limits and multi-stop trade", () => {
     const add=(type:"factory"|"city",x:number)=>game.addBuilding({id:game.allocateId(),playerId:1,type,
       tile:game.map.ref(x,10),age:"Modern",remainingTicks:0});
     for(let i=0;i<10;i++) { const b=add("factory",10); game.expansion!.supply.goods.set(b.id,1000); }
-    let first=add("city",11), second=add("city",18);
+    const first=add("city",11), second=add("city",18);
     for(let i=1;i<10;i++) {add("city",11); add("city",18);}
     const trade=game.expansion!.trade;
     game.tick=20;trade.step();

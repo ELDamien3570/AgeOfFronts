@@ -290,8 +290,7 @@ describe("playtest stability regressions", () => {
   });
   it("quotes an attainable next age without requiring later purchases upfront", () => {
     const { game } = fixture(),
-      player = game.players[1],
-      e = game.expansion!;
+      player = game.players[1];
     for (const b of game.buildings)
       if (b.playerId === player.id)
         game.updateBuilding(b.id, { remainingTicks: 0 });

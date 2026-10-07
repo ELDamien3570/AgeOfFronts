@@ -4,14 +4,12 @@ import { describe, expect, it } from "vitest";
 import { GameMapImpl } from "../../src/core/game/GameMap";
 import { HudViewModel } from "../../src/skirmish/client/HudViewModel";
 import { SkirmishViewModel } from "../../src/skirmish/client/SkirmishViewModel";
-import { CoastIndex } from "../../src/skirmish/CoastIndex";
 import { HierarchicalPaths } from "../../src/skirmish/HierarchicalPaths";
-import { LandPaths, WaterPaths } from "../../src/skirmish/Pathfinding";
+import { LandPaths } from "../../src/skirmish/Pathfinding";
 import { PathTopology } from "../../src/skirmish/PathTopology";
 import {
   FIXED,
   TICKS_PER_SECOND,
-  type Ship,
 } from "../../src/skirmish/Protocol";
 import { RouteWork } from "../../src/skirmish/RouteWork";
 import {

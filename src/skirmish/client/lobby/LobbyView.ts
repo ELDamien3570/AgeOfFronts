@@ -101,12 +101,12 @@ function roomCard(
 
 function colorSelector(vm: LobbyViewModel): string {
   const selected = vm.selectedColorIndex;
-  const color = selected == null ? "transparent" : FACTION_PALETTE[selected].hex;
-  return `<label class="faction-color-field" for="faction-color"><span>Faction color <i class="faction-color-swatch" style="background:${color}" aria-hidden="true"></i></span><select id="faction-color" aria-describedby="faction-color-help"${vm.online && !vm.connected && vm.joinedOnlineRoom ? " disabled" : ""}><option value=""${selected == null ? " selected" : ""}>Automatic</option>${vm.colorChoices.map(entry => `<option value="${entry.index}"${selected === entry.index ? " selected" : ""}${entry.reserved ? " disabled" : ""}>${entry.name}${entry.reserved ? " - Reserved" : ""}</option>`).join("")}</select><small id="faction-color-help">Colors are unique within each lobby.</small>${vm.colorError ? `<small class="faction-color-error" role="alert">${e(vm.colorError)}</small>` : ""}</label>`;
+  const color = selected === null ? "transparent" : FACTION_PALETTE[selected].hex;
+  return `<label class="faction-color-field" for="faction-color"><span>Faction color <i class="faction-color-swatch" style="background:${color}" aria-hidden="true"></i></span><select id="faction-color" aria-describedby="faction-color-help"${vm.online && !vm.connected && vm.joinedOnlineRoom ? " disabled" : ""}><option value=""${selected === null ? " selected" : ""}>Automatic</option>${vm.colorChoices.map(entry => `<option value="${entry.index}"${selected === entry.index ? " selected" : ""}${entry.reserved ? " disabled" : ""}>${entry.name}${entry.reserved ? " - Reserved" : ""}</option>`).join("")}</select><small id="faction-color-help">Colors are unique within each lobby.</small>${vm.colorError ? `<small class="faction-color-error" role="alert">${e(vm.colorError)}</small>` : ""}</label>`;
 }
 
 function header(): string {
-  return `<a class="skip-link" href="#main-content">Skip to content</a><header class="lobby-header"><a class="lobby-brand" href="/" data-home aria-label="Age of Fronts home"><img class="lobby-brand-mark" src="/images/age-of-fronts-stone-logo.png" alt="" width="96" height="96" /><span>AGE <small>OF</small> FRONTS<span class="brand-caption">V1.4.2</span></span></a><nav aria-label="Main navigation"><a href="/" data-home>Lobbies</a><a href="/skirmish/troops.html">Troop almanac</a><a class="lobby-button outline" href="/skirmish/index.html">Play vs AI ${arrow}</a></nav></header>`;
+  return `<a class="skip-link" href="#main-content">Skip to content</a><header class="lobby-header"><a class="lobby-brand" href="/" data-home aria-label="Age of Fronts home"><img class="lobby-brand-mark" src="/images/age-of-fronts-stone-logo.png" alt="" width="96" height="96" /><span>AGE <small>OF</small> FRONTS<span class="brand-caption">V1.4.2</span></span></a><nav aria-label="Main navigation"><a href="/" data-home>Lobbies</a><a href="/skirmish/troops.html">Troop almanac</a>${import.meta.env.DEV ? '<a href="/skirmish/technology-planner.html">Civilization workshop</a>' : ""}<a class="lobby-button outline" href="/skirmish/index.html">Play vs AI ${arrow}</a></nav></header>`;
 }
 
 function footer(sourceUrl?: string): string {
@@ -147,7 +147,7 @@ function seatMarkup(vm: LobbyViewModel): string {
   return vm.seats
     .map(
       (seat) =>
-        `<li class="seat" data-kind="${seat.kind}"><span class="seat-number">${seat.number}</span>${seat.colorIndex != null ? `<i class="faction-color-swatch" style="background:${FACTION_PALETTE[seat.colorIndex].hex}" aria-label="${FACTION_PALETTE[seat.colorIndex].name} faction color"></i>` : ""}<span class="seat-copy"><strong>${e(seat.name)}</strong><small>${e(seat.detail)}</small></span>${seat.kind === "you" && vm.selectedFlag ? flag(vm.profile.flagCode, vm.profile.name, "seat-flag") : `<span class="seat-emblem" aria-hidden="true">${seat.kind === "you" ? "◆" : seat.kind === "sample" ? "◇" : seat.kind === "ai" ? "▣" : "+"}</span>`}</li>`,
+        `<li class="seat" data-kind="${seat.kind}"><span class="seat-number">${seat.number}</span>${typeof seat.colorIndex === "number" ? `<i class="faction-color-swatch" style="background:${FACTION_PALETTE[seat.colorIndex].hex}" aria-label="${FACTION_PALETTE[seat.colorIndex].name} faction color"></i>` : ""}<span class="seat-copy"><strong>${e(seat.name)}</strong><small>${e(seat.detail)}</small></span>${seat.kind === "you" && vm.selectedFlag ? flag(vm.profile.flagCode, vm.profile.name, "seat-flag") : `<span class="seat-emblem" aria-hidden="true">${seat.kind === "you" ? "◆" : seat.kind === "sample" ? "◇" : seat.kind === "ai" ? "▣" : "+"}</span>`}</li>`,
     )
     .join("");
 }

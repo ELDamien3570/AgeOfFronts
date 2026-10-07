@@ -32,8 +32,7 @@ describe("command receipts", () => {
     expect(outcomes).toEqual(["deferred", "executed"]);
   });
   it.each(["executed","rejected","superseded"] as const)("preserves a land planning handoff through restore until its %s result",status=>{
-    let receipts:CommandApplications;
-    receipts=new CommandApplications({tick:()=>0,apply:()=>{receipts.observe("land",{id:17,playerId:1,tick:0,status:"deferred"});return null;}});
+    const receipts:CommandApplications=new CommandApplications({tick:()=>0,apply:()=>{receipts.observe("land",{id:17,playerId:1,tick:0,status:"deferred"});return null;}});
     expect(receipts.apply("crossing",move).status).toBe("deferred");
     receipts.handoff("land",17,1,()=>{
       receipts.observe("land",{id:1,playerId:1,tick:12,status:"deferred"});

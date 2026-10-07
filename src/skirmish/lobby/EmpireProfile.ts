@@ -26,7 +26,7 @@ export function createEmpireProfile(
   // eslint-disable-next-line no-control-regex -- rejects control characters on purpose
   if (/[\u0000-\u001f\u007f]/u.test(normalized))
     throw new Error("Empire names cannot contain control characters.");
-  if (colorIndex != null && !validFactionColor(colorIndex))
+  if (colorIndex !== null && colorIndex !== undefined && !validFactionColor(colorIndex))
     throw new Error("Choose a faction color from the palette or Automatic.");
   return Object.freeze({
     name: normalized,

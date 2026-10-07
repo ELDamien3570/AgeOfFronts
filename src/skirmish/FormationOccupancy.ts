@@ -35,8 +35,8 @@ export class FormationOccupancy {
     if(!points)this.points.set(squad.id,points=[]);
     let count=0;
     const append=(x:number,y:number)=>{
-      let point=points![count];
-      if(!point)points![count]=point={id:squad.id,kind:squad.kind,playerId:squad.playerId,x,y};
+      const point=points![count];
+      if(!point)points![count]={id:squad.id,kind:squad.kind,playerId:squad.playerId,x,y};
       else {point.kind=squad.kind;point.playerId=squad.playerId;point.x=x;point.y=y;}
       count++;
     };

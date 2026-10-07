@@ -1,6 +1,7 @@
 import fs from "node:fs";
 import path from "node:path";
 import { defineConfig } from "vitest/config";
+import { technologyPlanDevPlugin } from "./scripts/technologyPlanDevPlugin";
 import { computeRuntimeBuild } from "./src/skirmish/multiplayer/infrastructure/RuntimeBuild";
 
 let buildOutDir = path.resolve("build/skirmish");
@@ -14,6 +15,7 @@ export default defineConfig({
   publicDir: "resources",
   resolve: { tsconfigPaths: true },
   plugins: [
+    technologyPlanDevPlugin(),
     {
       name: "skirmish-entry",
       configResolved(config) {
@@ -119,6 +121,7 @@ export default defineConfig({
         home: "skirmish/home.html",
         game: "skirmish/index.html",
         troops: "skirmish/troops.html",
+        technologyPlanner: "skirmish/technology-planner.html",
       },
     },
   },

@@ -251,7 +251,7 @@ export class LobbyViewModel {
     try {
       if (flagCode !== null && !empireFlag(flagCode))
         throw new Error("Choose a flag from the local catalog.");
-      if (colorIndex != null && this.colorChoices[colorIndex]?.reserved)
+      if (typeof colorIndex === "number" && this.colorChoices[colorIndex]?.reserved)
         throw new Error("That faction color is reserved by another player.");
       this.profile = createEmpireProfile(name, flagCode, colorIndex);
       this.draftEmpireName = this.profile.name;
@@ -474,7 +474,7 @@ export class LobbyViewModel {
   }
 
   get skirmishHref(): string {
-    return `/skirmish/index.html?map=${this.mapId}${this.profile.colorIndex != null ? `&color=${this.profile.colorIndex}` : ""}`;
+    return `/skirmish/index.html?map=${this.mapId}${typeof this.profile.colorIndex === "number" ? `&color=${this.profile.colorIndex}` : ""}`;
   }
 
   get seats(): PreviewSeat[] {

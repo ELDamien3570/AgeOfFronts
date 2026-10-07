@@ -435,7 +435,7 @@ export class OnlineMatchSession {
         throw new Error(
           "The match view is unavailable. Return to the lobby to rejoin.",
         );
-      const hasView = !!(decoded.snapshot || decoded.viewPacket);
+      const hasView = !!(decoded.snapshot ?? decoded.viewPacket);
       const update:Presentation={data:{type:"state",packet:decoded.viewPacket ?? packet,snapshot:decoded.snapshot,paused:message.paused,speed:1},sequence:decoded.canonicalSequence};
       if (hasView) this.pendingView = undefined;
       if (decoded.canonicalOnly) {

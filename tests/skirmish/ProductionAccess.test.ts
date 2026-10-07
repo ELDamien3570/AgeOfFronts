@@ -1,4 +1,3 @@
-import { CAMP_RADIUS } from "../../src/skirmish/domain/SpawnSelection";
 import { describe, expect, it } from "vitest";
 import {
   boundsOverlap,

@@ -144,7 +144,7 @@ export class LiveMatch {
       ...DEFAULT_AI_POLICIES,
       seed: Math.floor(Math.random() * 0x7fffffff),
       humanNames: reservation.members.map((member) => member.profile.name),
-      ...(reservation.members.some(member => member.profile.colorIndex != null)
+      ...(reservation.members.some(member => typeof member.profile.colorIndex === "number")
         ? { humanColors: reservation.members.map(member => member.profile.colorIndex ?? null) } : {}),
       aiCount: settings.aiCount,
       tribes: settings.tribeCount > 0,

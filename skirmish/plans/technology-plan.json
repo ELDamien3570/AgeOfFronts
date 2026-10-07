@@ -1,0 +1,3146 @@
+{
+  "schemaVersion": 1,
+  "civilizations": [
+    {
+      "id": "base",
+      "name": "Base",
+      "notes": "Current shared gameplay baseline. The existing cavalry line is placed in the light/mobile lane for comparison; its Modern tank is not a confirmed light-cavalry design.",
+      "technologies": [
+        {
+          "id": "stoneage-shorecraft",
+          "name": "Shorecraft",
+          "age": "StoneAge",
+          "tree": "naval",
+          "order": 2,
+          "prerequisites": [
+            "stoneage-cargo-canoes"
+          ],
+          "description": "Unlocks ports for shipbuilding and sea trade.",
+          "notes": "",
+          "decision": "baseline"
+        },
+        {
+          "id": "stoneage-cargo-canoes",
+          "name": "Cargo Canoes",
+          "age": "StoneAge",
+          "tree": "naval",
+          "order": 1,
+          "prerequisites": [],
+          "description": "Lets squads cross water as canoe transports and unlocks automatic port-to-port trade. A transport sinks with every soldier aboard.",
+          "notes": "",
+          "decision": "baseline"
+        },
+        {
+          "id": "stoneage-war-canoes",
+          "name": "War Canoes",
+          "age": "StoneAge",
+          "tree": "naval",
+          "order": 3,
+          "prerequisites": [
+            "stoneage-shorecraft"
+          ],
+          "description": "Unlocks war canoes for naval combat and interception of hostile trade ships.",
+          "notes": "",
+          "decision": "baseline"
+        },
+        {
+          "id": "stoneage-coastal-navigation",
+          "name": "Coastal Navigation",
+          "age": "StoneAge",
+          "tree": "naval",
+          "order": 4,
+          "prerequisites": [
+            "stoneage-cargo-canoes",
+            "stoneage-war-canoes"
+          ],
+          "description": "Improves transport hulls and sailing speed for squads afloat, and military sailing speed; warships reload faster. Trade ships are unchanged.",
+          "notes": "",
+          "decision": "baseline"
+        },
+        {
+          "id": "stoneage-flint-weapons",
+          "name": "Flint Weapons",
+          "age": "StoneAge",
+          "tree": "warfare",
+          "order": 1,
+          "prerequisites": [],
+          "description": "Unlocks barracks and clubmen.",
+          "notes": "",
+          "decision": "baseline"
+        },
+        {
+          "id": "stoneage-spear-throwing",
+          "name": "Spear Throwing",
+          "age": "StoneAge",
+          "tree": "warfare",
+          "order": 2,
+          "prerequisites": [
+            "stoneage-flint-weapons"
+          ],
+          "description": "Unlocks archery ranges and javelinists.",
+          "notes": "",
+          "decision": "baseline"
+        },
+        {
+          "id": "stoneage-horsemanship",
+          "name": "Horsemanship",
+          "age": "StoneAge",
+          "tree": "warfare",
+          "order": 3,
+          "prerequisites": [
+            "stoneage-flint-weapons"
+          ],
+          "description": "Unlocks stables, mounted spearmen, horse gathering, and stable breeding.",
+          "notes": "",
+          "decision": "baseline"
+        },
+        {
+          "id": "stoneage-field-engineering",
+          "name": "Field Engineering",
+          "age": "StoneAge",
+          "tree": "warfare",
+          "order": 4,
+          "prerequisites": [
+            "stoneage-spear-throwing",
+            "stoneage-horsemanship"
+          ],
+          "description": "Unlocks towers, palisades, gates, field rams, and siege equipment. Improves all Stone Age ground units.",
+          "notes": "",
+          "decision": "baseline"
+        },
+        {
+          "id": "stoneage-settlements",
+          "name": "Settlements",
+          "age": "StoneAge",
+          "tree": "economic",
+          "order": 1,
+          "prerequisites": [],
+          "description": "Unlocks cities, which grow troop reserves.",
+          "notes": "",
+          "decision": "baseline"
+        },
+        {
+          "id": "stoneage-craft-workshops",
+          "name": "Craft Workshops",
+          "age": "StoneAge",
+          "tree": "economic",
+          "order": 2,
+          "prerequisites": [
+            "stoneage-settlements"
+          ],
+          "description": "Unlocks factories producing goods for land trade.",
+          "notes": "",
+          "decision": "baseline"
+        },
+        {
+          "id": "stoneage-stone-mining",
+          "name": "Stone Mining",
+          "age": "StoneAge",
+          "tree": "economic",
+          "order": 3,
+          "prerequisites": [
+            "stoneage-settlements"
+          ],
+          "description": "Unlocks mines and stone extraction from owned deposits.",
+          "notes": "",
+          "decision": "baseline"
+        },
+        {
+          "id": "stoneage-goods-handling",
+          "name": "Goods Handling",
+          "age": "StoneAge",
+          "tree": "economic",
+          "order": 4,
+          "prerequisites": [
+            "stoneage-craft-workshops",
+            "stoneage-stone-mining"
+          ],
+          "description": "Starts automatic land trade between reachable markets. Increases land and sea cargo capacity and speeds up production recipes.",
+          "notes": "",
+          "decision": "baseline"
+        },
+        {
+          "id": "bronzeage-planked-hulls",
+          "name": "Planked Hulls",
+          "age": "BronzeAge",
+          "tree": "naval",
+          "order": 1,
+          "prerequisites": [
+            "stoneage-coastal-navigation"
+          ],
+          "description": "Unlocks Bronze Age ports; squads afloat use sturdier Bronze Age transport hulls. Existing ports advance automatically.",
+          "notes": "",
+          "decision": "baseline"
+        },
+        {
+          "id": "bronzeage-merchant-sailing",
+          "name": "Merchant Sailing",
+          "age": "BronzeAge",
+          "tree": "naval",
+          "order": 2,
+          "prerequisites": [
+            "bronzeage-planked-hulls"
+          ],
+          "description": "Unlocks Bronze Age sea traders, with larger cargo holds.",
+          "notes": "",
+          "decision": "baseline"
+        },
+        {
+          "id": "bronzeage-oared-warships",
+          "name": "Oared Warships",
+          "age": "BronzeAge",
+          "tree": "naval",
+          "order": 3,
+          "prerequisites": [
+            "bronzeage-planked-hulls"
+          ],
+          "description": "Unlocks Bronze Age warships for naval combat and interception of hostile trade ships.",
+          "notes": "",
+          "decision": "baseline"
+        },
+        {
+          "id": "bronzeage-naval-organisation",
+          "name": "Naval Organisation",
+          "age": "BronzeAge",
+          "tree": "naval",
+          "order": 4,
+          "prerequisites": [
+            "bronzeage-merchant-sailing",
+            "bronzeage-oared-warships"
+          ],
+          "description": "Improves transport hulls and sailing speed for squads afloat, and military sailing speed; warships reload faster. Trade ships are unchanged.",
+          "notes": "",
+          "decision": "baseline"
+        },
+        {
+          "id": "bronzeage-bronze-equipment",
+          "name": "Bronze Equipment",
+          "age": "BronzeAge",
+          "tree": "warfare",
+          "order": 1,
+          "prerequisites": [
+            "stoneage-field-engineering"
+          ],
+          "description": "Unlocks bronze swordsmen and blacksmiths producing troop equipment. Compatible military buildings advance automatically.",
+          "notes": "",
+          "decision": "baseline"
+        },
+        {
+          "id": "bronzeage-bowcraft",
+          "name": "Bowcraft",
+          "age": "BronzeAge",
+          "tree": "warfare",
+          "order": 2,
+          "prerequisites": [
+            "bronzeage-bronze-equipment"
+          ],
+          "description": "Unlocks bronze archers.",
+          "notes": "",
+          "decision": "baseline"
+        },
+        {
+          "id": "bronzeage-chariot-warfare",
+          "name": "Chariot Warfare",
+          "age": "BronzeAge",
+          "tree": "warfare",
+          "order": 3,
+          "prerequisites": [
+            "bronzeage-bronze-equipment"
+          ],
+          "description": "Unlocks chariots for mounted combat.",
+          "notes": "",
+          "decision": "baseline"
+        },
+        {
+          "id": "bronzeage-fortified-settlements",
+          "name": "Fortified Settlements",
+          "age": "BronzeAge",
+          "tree": "warfare",
+          "order": 4,
+          "prerequisites": [
+            "bronzeage-bowcraft",
+            "bronzeage-chariot-warfare"
+          ],
+          "description": "Unlocks fortified walls, gates, towers, rams, siege towers, and siege equipment. Improves all Bronze Age ground units.",
+          "notes": "",
+          "decision": "baseline"
+        },
+        {
+          "id": "bronzeage-armies",
+          "name": "Armies",
+          "age": "BronzeAge",
+          "tree": "warfare",
+          "order": 5,
+          "prerequisites": [
+            "bronzeage-fortified-settlements"
+          ],
+          "description": "Organizes squads into armies with shared orders and formations. Army capacity counts squads, not soldiers.",
+          "notes": "",
+          "decision": "baseline"
+        },
+        {
+          "id": "bronzeage-bronze-metallurgy",
+          "name": "Bronze Metallurgy",
+          "age": "BronzeAge",
+          "tree": "economic",
+          "order": 1,
+          "prerequisites": [
+            "stoneage-goods-handling"
+          ],
+          "description": "Unlocks copper and tin extraction, bronze smelting, and Bronze Age mines.",
+          "notes": "",
+          "decision": "baseline"
+        },
+        {
+          "id": "bronzeage-urban-workshops",
+          "name": "Urban Workshops",
+          "age": "BronzeAge",
+          "tree": "economic",
+          "order": 2,
+          "prerequisites": [
+            "bronzeage-bronze-metallurgy"
+          ],
+          "description": "Unlocks Bronze Age city and factory upgrades, increasing reserve growth and trade stock.",
+          "notes": "",
+          "decision": "baseline"
+        },
+        {
+          "id": "bronzeage-road-networks",
+          "name": "Road Networks",
+          "age": "BronzeAge",
+          "tree": "economic",
+          "order": 3,
+          "prerequisites": [
+            "bronzeage-bronze-metallurgy"
+          ],
+          "description": "Increases land trader cargo capacity. Adds cosmetic dirt roads along trade routes.",
+          "notes": "",
+          "decision": "baseline"
+        },
+        {
+          "id": "bronzeage-civic-administration",
+          "name": "Civic Administration",
+          "age": "BronzeAge",
+          "tree": "economic",
+          "order": 4,
+          "prerequisites": [
+            "bronzeage-urban-workshops",
+            "bronzeage-road-networks"
+          ],
+          "description": "Speeds up equipment and refining recipes.",
+          "notes": "",
+          "decision": "baseline"
+        },
+        {
+          "id": "classicalage-shipyards",
+          "name": "Shipyards",
+          "age": "ClassicalAge",
+          "tree": "naval",
+          "order": 1,
+          "prerequisites": [
+            "bronzeage-naval-organisation"
+          ],
+          "description": "Unlocks Classical Age ports. Existing ports advance automatically.",
+          "notes": "",
+          "decision": "baseline"
+        },
+        {
+          "id": "classicalage-transport-fleets",
+          "name": "Transport Fleets",
+          "age": "ClassicalAge",
+          "tree": "naval",
+          "order": 2,
+          "prerequisites": [
+            "classicalage-shipyards"
+          ],
+          "description": "Unlocks Classical Age sea traders with larger cargo holds; squads afloat use sturdier Classical Age transport hulls.",
+          "notes": "",
+          "decision": "baseline"
+        },
+        {
+          "id": "classicalage-galley-warfare",
+          "name": "Galley Warfare",
+          "age": "ClassicalAge",
+          "tree": "naval",
+          "order": 3,
+          "prerequisites": [
+            "classicalage-shipyards"
+          ],
+          "description": "Unlocks Classical Age warships for naval combat and interception of hostile trade ships.",
+          "notes": "",
+          "decision": "baseline"
+        },
+        {
+          "id": "classicalage-naval-logistics",
+          "name": "Naval Logistics",
+          "age": "ClassicalAge",
+          "tree": "naval",
+          "order": 4,
+          "prerequisites": [
+            "classicalage-transport-fleets",
+            "classicalage-galley-warfare"
+          ],
+          "description": "Improves transport hulls and sailing speed for squads afloat, and military sailing speed; warships reload faster. Trade ships are unchanged.",
+          "notes": "",
+          "decision": "baseline"
+        },
+        {
+          "id": "classicalage-professional-infantry",
+          "name": "Professional Infantry",
+          "age": "ClassicalAge",
+          "tree": "warfare",
+          "order": 1,
+          "prerequisites": [
+            "bronzeage-fortified-settlements",
+            "bronzeage-armies"
+          ],
+          "description": "Unlocks sword-and-shield infantry and Classical troop equipment. Raises army capacity after Armies is researched.",
+          "notes": "",
+          "decision": "baseline"
+        },
+        {
+          "id": "classicalage-ranged-warfare",
+          "name": "Ranged Warfare",
+          "age": "ClassicalAge",
+          "tree": "warfare",
+          "order": 2,
+          "prerequisites": [
+            "classicalage-professional-infantry"
+          ],
+          "description": "Unlocks Classical archers, mangonels, siege workshops, and siege equipment.",
+          "notes": "",
+          "decision": "baseline"
+        },
+        {
+          "id": "classicalage-cavalry-tactics",
+          "name": "Cavalry Tactics",
+          "age": "ClassicalAge",
+          "tree": "warfare",
+          "order": 3,
+          "prerequisites": [
+            "classicalage-professional-infantry"
+          ],
+          "description": "Unlocks mounted swordsmen for cavalry combat.",
+          "notes": "",
+          "decision": "baseline"
+        },
+        {
+          "id": "classicalage-masonry-engineering",
+          "name": "Masonry Engineering",
+          "age": "ClassicalAge",
+          "tree": "warfare",
+          "order": 4,
+          "prerequisites": [
+            "classicalage-ranged-warfare",
+            "classicalage-cavalry-tactics"
+          ],
+          "description": "Unlocks towers, walls, gates, and onagers. Improves all Classical ground units.",
+          "notes": "",
+          "decision": "baseline"
+        },
+        {
+          "id": "classicalage-ironworking",
+          "name": "Ironworking",
+          "age": "ClassicalAge",
+          "tree": "economic",
+          "order": 1,
+          "prerequisites": [
+            "bronzeage-civic-administration"
+          ],
+          "description": "Unlocks iron extraction, iron smelting, and Classical mines.",
+          "notes": "",
+          "decision": "baseline"
+        },
+        {
+          "id": "classicalage-urban-planning",
+          "name": "Urban Planning",
+          "age": "ClassicalAge",
+          "tree": "economic",
+          "order": 2,
+          "prerequisites": [
+            "classicalage-ironworking"
+          ],
+          "description": "Unlocks Classical city and factory upgrades and faster horse breeding.",
+          "notes": "",
+          "decision": "baseline"
+        },
+        {
+          "id": "classicalage-caravan-roads",
+          "name": "Caravan Roads",
+          "age": "ClassicalAge",
+          "tree": "economic",
+          "order": 3,
+          "prerequisites": [
+            "classicalage-ironworking"
+          ],
+          "description": "Increases land trader cargo capacity. Adds cosmetic gravel roads along trade routes.",
+          "notes": "",
+          "decision": "baseline"
+        },
+        {
+          "id": "classicalage-husbandry",
+          "name": "Husbandry",
+          "age": "ClassicalAge",
+          "tree": "economic",
+          "order": 4,
+          "prerequisites": [
+            "classicalage-urban-planning",
+            "classicalage-caravan-roads"
+          ],
+          "description": "Speeds up equipment and refining recipes.",
+          "notes": "",
+          "decision": "baseline"
+        },
+        {
+          "id": "earlymedieval-framed-hulls",
+          "name": "Framed Hulls",
+          "age": "EarlyMedieval",
+          "tree": "naval",
+          "order": 1,
+          "prerequisites": [
+            "classicalage-naval-logistics"
+          ],
+          "description": "Unlocks Early Medieval ports. Existing ports advance automatically.",
+          "notes": "",
+          "decision": "baseline"
+        },
+        {
+          "id": "earlymedieval-seafaring",
+          "name": "Seafaring",
+          "age": "EarlyMedieval",
+          "tree": "naval",
+          "order": 2,
+          "prerequisites": [
+            "earlymedieval-framed-hulls"
+          ],
+          "description": "Unlocks Early Medieval sea traders with larger cargo holds; squads afloat use sturdier Early Medieval transport hulls.",
+          "notes": "",
+          "decision": "baseline"
+        },
+        {
+          "id": "earlymedieval-coastal-warships",
+          "name": "Coastal Warships",
+          "age": "EarlyMedieval",
+          "tree": "naval",
+          "order": 3,
+          "prerequisites": [
+            "earlymedieval-framed-hulls"
+          ],
+          "description": "Unlocks Early Medieval warships for naval combat and interception of hostile trade ships.",
+          "notes": "",
+          "decision": "baseline"
+        },
+        {
+          "id": "earlymedieval-landing-logistics",
+          "name": "Landing Logistics",
+          "age": "EarlyMedieval",
+          "tree": "naval",
+          "order": 4,
+          "prerequisites": [
+            "earlymedieval-seafaring",
+            "earlymedieval-coastal-warships"
+          ],
+          "description": "Improves transport hulls and sailing speed for squads afloat, and military sailing speed; warships reload faster. Trade ships are unchanged.",
+          "notes": "",
+          "decision": "baseline"
+        },
+        {
+          "id": "earlymedieval-mail-equipment",
+          "name": "Mail Equipment",
+          "age": "EarlyMedieval",
+          "tree": "warfare",
+          "order": 1,
+          "prerequisites": [
+            "classicalage-masonry-engineering"
+          ],
+          "description": "Unlocks mail infantry and Early Medieval troop equipment. Raises army capacity after Armies is researched.",
+          "notes": "",
+          "decision": "baseline"
+        },
+        {
+          "id": "earlymedieval-bow-and-bolt-warfare",
+          "name": "Bow and Bolt Warfare",
+          "age": "EarlyMedieval",
+          "tree": "warfare",
+          "order": 2,
+          "prerequisites": [
+            "earlymedieval-mail-equipment"
+          ],
+          "description": "Unlocks bowmen, ballistas, siege workshops, and siege equipment.",
+          "notes": "",
+          "decision": "baseline"
+        },
+        {
+          "id": "earlymedieval-mounted-spearmen",
+          "name": "Mounted Spearmen",
+          "age": "EarlyMedieval",
+          "tree": "warfare",
+          "order": 3,
+          "prerequisites": [
+            "earlymedieval-mail-equipment"
+          ],
+          "description": "Unlocks mounted spearmen for cavalry combat.",
+          "notes": "",
+          "decision": "baseline"
+        },
+        {
+          "id": "earlymedieval-trebuchet-engineering",
+          "name": "Trebuchet Engineering",
+          "age": "EarlyMedieval",
+          "tree": "warfare",
+          "order": 4,
+          "prerequisites": [
+            "earlymedieval-bow-and-bolt-warfare",
+            "earlymedieval-mounted-spearmen"
+          ],
+          "description": "Unlocks towers, walls, gates, and trebuchets. Improves all Early Medieval ground units.",
+          "notes": "",
+          "decision": "baseline"
+        },
+        {
+          "id": "earlymedieval-agricultural-organisation",
+          "name": "Agricultural Organisation",
+          "age": "EarlyMedieval",
+          "tree": "economic",
+          "order": 1,
+          "prerequisites": [
+            "classicalage-husbandry"
+          ],
+          "description": "Unlocks Early Medieval city and mine upgrades.",
+          "notes": "",
+          "decision": "baseline"
+        },
+        {
+          "id": "earlymedieval-craft-guilds",
+          "name": "Craft Guilds",
+          "age": "EarlyMedieval",
+          "tree": "economic",
+          "order": 2,
+          "prerequisites": [
+            "earlymedieval-agricultural-organisation"
+          ],
+          "description": "Unlocks Early Medieval factory upgrades, increasing trade stock.",
+          "notes": "",
+          "decision": "baseline"
+        },
+        {
+          "id": "earlymedieval-caravan-breeding",
+          "name": "Caravan Breeding",
+          "age": "EarlyMedieval",
+          "tree": "economic",
+          "order": 3,
+          "prerequisites": [
+            "earlymedieval-agricultural-organisation"
+          ],
+          "description": "Increases land trader cargo capacity and horse breeding. Upgrades cosmetic trade roads.",
+          "notes": "",
+          "decision": "baseline"
+        },
+        {
+          "id": "earlymedieval-market-logistics",
+          "name": "Market Logistics",
+          "age": "EarlyMedieval",
+          "tree": "economic",
+          "order": 4,
+          "prerequisites": [
+            "earlymedieval-craft-guilds",
+            "earlymedieval-caravan-breeding"
+          ],
+          "description": "Speeds up equipment and refining recipes.",
+          "notes": "",
+          "decision": "baseline"
+        },
+        {
+          "id": "latemedieval-sailing-hulls",
+          "name": "Sailing Hulls",
+          "age": "LateMedieval",
+          "tree": "naval",
+          "order": 1,
+          "prerequisites": [
+            "earlymedieval-landing-logistics"
+          ],
+          "description": "Unlocks Late Medieval ports. Existing ports advance automatically.",
+          "notes": "",
+          "decision": "baseline"
+        },
+        {
+          "id": "latemedieval-merchant-convoys",
+          "name": "Merchant Convoys",
+          "age": "LateMedieval",
+          "tree": "naval",
+          "order": 2,
+          "prerequisites": [
+            "latemedieval-sailing-hulls"
+          ],
+          "description": "Unlocks Late Medieval sea traders with larger cargo holds; squads afloat use sturdier Late Medieval transport hulls.",
+          "notes": "",
+          "decision": "baseline"
+        },
+        {
+          "id": "latemedieval-naval-gunnery",
+          "name": "Naval Gunnery",
+          "age": "LateMedieval",
+          "tree": "naval",
+          "order": 3,
+          "prerequisites": [
+            "latemedieval-sailing-hulls"
+          ],
+          "description": "Unlocks Late Medieval warships for naval combat and interception of hostile trade ships.",
+          "notes": "",
+          "decision": "baseline"
+        },
+        {
+          "id": "latemedieval-broadside-tactics",
+          "name": "Broadside Tactics",
+          "age": "LateMedieval",
+          "tree": "naval",
+          "order": 4,
+          "prerequisites": [
+            "latemedieval-merchant-convoys",
+            "latemedieval-naval-gunnery"
+          ],
+          "description": "Improves transport hulls and sailing speed for squads afloat, and military sailing speed; warships reload faster. Trade ships are unchanged.",
+          "notes": "",
+          "decision": "baseline"
+        },
+        {
+          "id": "latemedieval-steel-equipment",
+          "name": "Steel Equipment",
+          "age": "LateMedieval",
+          "tree": "warfare",
+          "order": 1,
+          "prerequisites": [
+            "earlymedieval-trebuchet-engineering"
+          ],
+          "description": "Unlocks plate swordsmen and Late Medieval troop equipment. Raises army capacity after Armies is researched.",
+          "notes": "",
+          "decision": "baseline"
+        },
+        {
+          "id": "latemedieval-crossbows-and-field-guns",
+          "name": "Crossbows and Field Guns",
+          "age": "LateMedieval",
+          "tree": "warfare",
+          "order": 2,
+          "prerequisites": [
+            "latemedieval-steel-equipment"
+          ],
+          "description": "Unlocks crossbowmen, organ guns, siege workshops, and siege equipment.",
+          "notes": "",
+          "decision": "baseline"
+        },
+        {
+          "id": "latemedieval-lance-knights",
+          "name": "Lance Knights",
+          "age": "LateMedieval",
+          "tree": "warfare",
+          "order": 3,
+          "prerequisites": [
+            "latemedieval-steel-equipment"
+          ],
+          "description": "Unlocks lance knights for cavalry combat.",
+          "notes": "",
+          "decision": "baseline"
+        },
+        {
+          "id": "latemedieval-siege-ordnance",
+          "name": "Siege Ordnance",
+          "age": "LateMedieval",
+          "tree": "warfare",
+          "order": 4,
+          "prerequisites": [
+            "latemedieval-crossbows-and-field-guns",
+            "latemedieval-lance-knights"
+          ],
+          "description": "Unlocks towers, walls, gates, and bombards. Improves all Late Medieval ground units.",
+          "notes": "",
+          "decision": "baseline"
+        },
+        {
+          "id": "latemedieval-steelmaking",
+          "name": "Steelmaking",
+          "age": "LateMedieval",
+          "tree": "economic",
+          "order": 1,
+          "prerequisites": [
+            "earlymedieval-market-logistics"
+          ],
+          "description": "Unlocks carbon extraction, steel production, and Late Medieval mines.",
+          "notes": "",
+          "decision": "baseline"
+        },
+        {
+          "id": "latemedieval-powder-milling",
+          "name": "Powder Milling",
+          "age": "LateMedieval",
+          "tree": "economic",
+          "order": 2,
+          "prerequisites": [
+            "latemedieval-steelmaking"
+          ],
+          "description": "Unlocks sulphur, nitrate, and gunpowder extraction from owned deposits.",
+          "notes": "",
+          "decision": "baseline"
+        },
+        {
+          "id": "latemedieval-guild-commerce",
+          "name": "Guild Commerce",
+          "age": "LateMedieval",
+          "tree": "economic",
+          "order": 3,
+          "prerequisites": [
+            "latemedieval-steelmaking"
+          ],
+          "description": "Unlocks Late Medieval city and factory upgrades and larger land trader cargo holds. Upgrades cosmetic trade roads.",
+          "notes": "",
+          "decision": "baseline"
+        },
+        {
+          "id": "latemedieval-urban-administration",
+          "name": "Urban Administration",
+          "age": "LateMedieval",
+          "tree": "economic",
+          "order": 4,
+          "prerequisites": [
+            "latemedieval-powder-milling",
+            "latemedieval-guild-commerce"
+          ],
+          "description": "Speeds up equipment and refining recipes.",
+          "notes": "",
+          "decision": "baseline"
+        },
+        {
+          "id": "earlymodern-ocean-navigation",
+          "name": "Ocean Navigation",
+          "age": "EarlyModern",
+          "tree": "naval",
+          "order": 1,
+          "prerequisites": [
+            "latemedieval-broadside-tactics"
+          ],
+          "description": "Unlocks Early Modern ports. Existing ports advance automatically.",
+          "notes": "",
+          "decision": "baseline"
+        },
+        {
+          "id": "earlymodern-ocean-transport",
+          "name": "Ocean Transport",
+          "age": "EarlyModern",
+          "tree": "naval",
+          "order": 2,
+          "prerequisites": [
+            "earlymodern-ocean-navigation"
+          ],
+          "description": "Unlocks Early Modern sea traders with larger cargo holds; squads afloat use sturdier Early Modern transport hulls.",
+          "notes": "",
+          "decision": "baseline"
+        },
+        {
+          "id": "earlymodern-ships-of-the-line",
+          "name": "Ships of the Line",
+          "age": "EarlyModern",
+          "tree": "naval",
+          "order": 3,
+          "prerequisites": [
+            "earlymodern-ocean-navigation"
+          ],
+          "description": "Unlocks Early Modern warships for naval combat and interception of hostile trade ships.",
+          "notes": "",
+          "decision": "baseline"
+        },
+        {
+          "id": "earlymodern-fleet-coordination",
+          "name": "Fleet Coordination",
+          "age": "EarlyModern",
+          "tree": "naval",
+          "order": 4,
+          "prerequisites": [
+            "earlymodern-ocean-transport",
+            "earlymodern-ships-of-the-line"
+          ],
+          "description": "Improves transport hulls and sailing speed for squads afloat, and military sailing speed; warships reload faster. Trade ships are unchanged.",
+          "notes": "",
+          "decision": "baseline"
+        },
+        {
+          "id": "earlymodern-firearms",
+          "name": "Firearms",
+          "age": "EarlyModern",
+          "tree": "warfare",
+          "order": 1,
+          "prerequisites": [
+            "latemedieval-siege-ordnance"
+          ],
+          "description": "Unlocks short-gun infantry and armories producing troop equipment. Raises army capacity after Armies is researched.",
+          "notes": "",
+          "decision": "baseline"
+        },
+        {
+          "id": "earlymodern-musket-and-artillery-drill",
+          "name": "Musket and Artillery Drill",
+          "age": "EarlyModern",
+          "tree": "warfare",
+          "order": 2,
+          "prerequisites": [
+            "earlymodern-firearms"
+          ],
+          "description": "Unlocks musketeers, field cannons, siege workshops, and siege equipment.",
+          "notes": "",
+          "decision": "baseline"
+        },
+        {
+          "id": "earlymodern-pistoliers",
+          "name": "Pistoliers",
+          "age": "EarlyModern",
+          "tree": "warfare",
+          "order": 3,
+          "prerequisites": [
+            "earlymodern-firearms"
+          ],
+          "description": "Unlocks pistoliers for mounted gunfire.",
+          "notes": "",
+          "decision": "baseline"
+        },
+        {
+          "id": "earlymodern-howitzer-engineering",
+          "name": "Howitzer Engineering",
+          "age": "EarlyModern",
+          "tree": "warfare",
+          "order": 4,
+          "prerequisites": [
+            "earlymodern-musket-and-artillery-drill",
+            "earlymodern-pistoliers"
+          ],
+          "description": "Unlocks towers, walls, gates, and early howitzers. Improves all Early Modern ground units.",
+          "notes": "",
+          "decision": "baseline"
+        },
+        {
+          "id": "earlymodern-powder-manufactories",
+          "name": "Powder Manufactories",
+          "age": "EarlyModern",
+          "tree": "economic",
+          "order": 1,
+          "prerequisites": [
+            "latemedieval-urban-administration"
+          ],
+          "description": "Unlocks Early Modern mine upgrades for higher deposit output.",
+          "notes": "",
+          "decision": "baseline"
+        },
+        {
+          "id": "earlymodern-manufactories",
+          "name": "Manufactories",
+          "age": "EarlyModern",
+          "tree": "economic",
+          "order": 2,
+          "prerequisites": [
+            "earlymodern-powder-manufactories"
+          ],
+          "description": "Unlocks Early Modern city and factory upgrades, increasing reserve growth and trade stock.",
+          "notes": "",
+          "decision": "baseline"
+        },
+        {
+          "id": "earlymodern-long-distance-commerce",
+          "name": "Long-Distance Commerce",
+          "age": "EarlyModern",
+          "tree": "economic",
+          "order": 3,
+          "prerequisites": [
+            "earlymodern-powder-manufactories"
+          ],
+          "description": "Increases land trader cargo capacity. Adds cosmetic dressed-stone roads along trade routes.",
+          "notes": "",
+          "decision": "baseline"
+        },
+        {
+          "id": "earlymodern-military-provisioning",
+          "name": "Military Provisioning",
+          "age": "EarlyModern",
+          "tree": "economic",
+          "order": 4,
+          "prerequisites": [
+            "earlymodern-manufactories",
+            "earlymodern-long-distance-commerce"
+          ],
+          "description": "Speeds up equipment and refining recipes and increases horse breeding.",
+          "notes": "",
+          "decision": "baseline"
+        },
+        {
+          "id": "modern-powered-vessels",
+          "name": "Powered Vessels",
+          "age": "Modern",
+          "tree": "naval",
+          "order": 1,
+          "prerequisites": [
+            "earlymodern-fleet-coordination"
+          ],
+          "description": "Unlocks Modern ports. Existing ports advance automatically.",
+          "notes": "",
+          "decision": "baseline"
+        },
+        {
+          "id": "modern-amphibious-transport",
+          "name": "Amphibious Transport",
+          "age": "Modern",
+          "tree": "naval",
+          "order": 2,
+          "prerequisites": [
+            "modern-powered-vessels"
+          ],
+          "description": "Unlocks Modern sea traders with larger cargo holds; squads afloat use sturdier Modern transport hulls.",
+          "notes": "",
+          "decision": "baseline"
+        },
+        {
+          "id": "modern-modern-warships",
+          "name": "Modern Warships",
+          "age": "Modern",
+          "tree": "naval",
+          "order": 3,
+          "prerequisites": [
+            "modern-powered-vessels"
+          ],
+          "description": "Unlocks Modern warships for naval combat and interception of hostile trade ships.",
+          "notes": "",
+          "decision": "baseline"
+        },
+        {
+          "id": "modern-fleet-operations",
+          "name": "Fleet Operations",
+          "age": "Modern",
+          "tree": "naval",
+          "order": 4,
+          "prerequisites": [
+            "modern-amphibious-transport",
+            "modern-modern-warships"
+          ],
+          "description": "Improves transport hulls and sailing speed for squads afloat, and military sailing speed; warships reload faster. Trade ships are unchanged.",
+          "notes": "",
+          "decision": "baseline"
+        },
+        {
+          "id": "modern-modern-armaments",
+          "name": "Modern Armaments",
+          "age": "Modern",
+          "tree": "warfare",
+          "order": 1,
+          "prerequisites": [
+            "earlymodern-howitzer-engineering"
+          ],
+          "description": "Unlocks rifle infantry and arms factories producing troop equipment. Raises army capacity after Armies is researched.",
+          "notes": "",
+          "decision": "baseline"
+        },
+        {
+          "id": "modern-combined-arms",
+          "name": "Combined Arms",
+          "age": "Modern",
+          "tree": "warfare",
+          "order": 2,
+          "prerequisites": [
+            "modern-modern-armaments"
+          ],
+          "description": "Unlocks marksmen, tanks, machine-gun crews, howitzers, anti-air vehicles, gun nests, connected trenches, and missile defence.",
+          "notes": "",
+          "decision": "baseline"
+        },
+        {
+          "id": "modern-military-aviation",
+          "name": "Military Aviation",
+          "age": "Modern",
+          "tree": "warfare",
+          "order": 3,
+          "prerequisites": [
+            "modern-modern-armaments"
+          ],
+          "description": "Unlocks airstrips, fighters, and bombers. Sorties automatically select a ready squad and its runway.",
+          "notes": "",
+          "decision": "baseline"
+        },
+        {
+          "id": "modern-strategic-weapons",
+          "name": "Strategic Weapons",
+          "age": "Modern",
+          "tree": "warfare",
+          "order": 4,
+          "prerequisites": [
+            "modern-combined-arms",
+            "modern-military-aviation"
+          ],
+          "description": "Unlocks missile silos, MIRV launchers, mobile launchers, and payload production. MIRVs target the nearest hostile buildings, or concentrate every warhead on an explicitly targeted building. Improves all Modern ground units.",
+          "notes": "",
+          "decision": "baseline"
+        },
+        {
+          "id": "modern-petroleum-extraction",
+          "name": "Petroleum Extraction",
+          "age": "Modern",
+          "tree": "economic",
+          "order": 1,
+          "prerequisites": [
+            "earlymodern-military-provisioning"
+          ],
+          "description": "Unlocks oil wells, offshore oil rigs, oil extraction, and Modern mine upgrades.",
+          "notes": "",
+          "decision": "baseline"
+        },
+        {
+          "id": "modern-industrial-production",
+          "name": "Industrial Production",
+          "age": "Modern",
+          "tree": "economic",
+          "order": 2,
+          "prerequisites": [
+            "modern-petroleum-extraction"
+          ],
+          "description": "Unlocks Modern city and factory upgrades, increasing reserve growth and trade stock.",
+          "notes": "",
+          "decision": "baseline"
+        },
+        {
+          "id": "modern-motor-freight",
+          "name": "Motor Freight",
+          "age": "Modern",
+          "tree": "economic",
+          "order": 3,
+          "prerequisites": [
+            "modern-petroleum-extraction"
+          ],
+          "description": "Increases land trader cargo capacity. Adds cosmetic asphalt roads along trade routes.",
+          "notes": "",
+          "decision": "baseline"
+        },
+        {
+          "id": "modern-integrated-logistics",
+          "name": "Integrated Logistics",
+          "age": "Modern",
+          "tree": "economic",
+          "order": 4,
+          "prerequisites": [
+            "modern-industrial-production",
+            "modern-motor-freight"
+          ],
+          "description": "Speeds up equipment, refining, and payload recipes and increases horse breeding.",
+          "notes": "",
+          "decision": "baseline"
+        }
+      ],
+      "units": [
+        {
+          "id": "stoneage-frontline",
+          "age": "StoneAge",
+          "role": "frontline",
+          "name": "Clubmen",
+          "availability": "available",
+          "prerequisites": [
+            "stoneage-flint-weapons"
+          ],
+          "notes": "",
+          "decision": "baseline"
+        },
+        {
+          "id": "stoneage-anticavalry",
+          "age": "StoneAge",
+          "role": "antiCavalry",
+          "name": "Anti-cavalry infantry",
+          "availability": "undecided",
+          "prerequisites": [],
+          "notes": "New class; not present in the current gameplay baseline. Unlock age and technology are undecided.",
+          "decision": "baseline"
+        },
+        {
+          "id": "stoneage-rangedinfantry",
+          "age": "StoneAge",
+          "role": "rangedInfantry",
+          "name": "Javelinists",
+          "availability": "available",
+          "prerequisites": [
+            "stoneage-spear-throwing"
+          ],
+          "notes": "",
+          "decision": "baseline"
+        },
+        {
+          "id": "stoneage-lightcavalry",
+          "age": "StoneAge",
+          "role": "lightCavalry",
+          "name": "Mounted spearmen",
+          "availability": "available",
+          "prerequisites": [
+            "stoneage-horsemanship"
+          ],
+          "notes": "Current unsplit cavalry/mobile line. Future class placement is undecided.",
+          "decision": "baseline"
+        },
+        {
+          "id": "stoneage-heavycavalry",
+          "age": "StoneAge",
+          "role": "heavyCavalry",
+          "name": "Heavy cavalry",
+          "availability": "undecided",
+          "prerequisites": [],
+          "notes": "New class; not present in the current gameplay baseline. Unlock age and technology are undecided.",
+          "decision": "baseline"
+        },
+        {
+          "id": "stoneage-rangedcavalry",
+          "age": "StoneAge",
+          "role": "rangedCavalry",
+          "name": "Ranged cavalry",
+          "availability": "undecided",
+          "prerequisites": [],
+          "notes": "New class; not present in the current gameplay baseline. Unlock age and technology are undecided.",
+          "decision": "baseline"
+        },
+        {
+          "id": "bronzeage-frontline",
+          "age": "BronzeAge",
+          "role": "frontline",
+          "name": "Bronze swordsmen",
+          "availability": "available",
+          "prerequisites": [
+            "bronzeage-bronze-equipment"
+          ],
+          "notes": "",
+          "decision": "baseline"
+        },
+        {
+          "id": "bronzeage-anticavalry",
+          "age": "BronzeAge",
+          "role": "antiCavalry",
+          "name": "Anti-cavalry infantry",
+          "availability": "undecided",
+          "prerequisites": [],
+          "notes": "New class; not present in the current gameplay baseline. Unlock age and technology are undecided.",
+          "decision": "baseline"
+        },
+        {
+          "id": "bronzeage-rangedinfantry",
+          "age": "BronzeAge",
+          "role": "rangedInfantry",
+          "name": "Bronze archers",
+          "availability": "available",
+          "prerequisites": [
+            "bronzeage-bowcraft"
+          ],
+          "notes": "",
+          "decision": "baseline"
+        },
+        {
+          "id": "bronzeage-lightcavalry",
+          "age": "BronzeAge",
+          "role": "lightCavalry",
+          "name": "Chariots",
+          "availability": "available",
+          "prerequisites": [
+            "bronzeage-chariot-warfare"
+          ],
+          "notes": "Current unsplit cavalry/mobile line. Future class placement is undecided.",
+          "decision": "baseline"
+        },
+        {
+          "id": "bronzeage-heavycavalry",
+          "age": "BronzeAge",
+          "role": "heavyCavalry",
+          "name": "Heavy cavalry",
+          "availability": "undecided",
+          "prerequisites": [],
+          "notes": "New class; not present in the current gameplay baseline. Unlock age and technology are undecided.",
+          "decision": "baseline"
+        },
+        {
+          "id": "bronzeage-rangedcavalry",
+          "age": "BronzeAge",
+          "role": "rangedCavalry",
+          "name": "Ranged cavalry",
+          "availability": "undecided",
+          "prerequisites": [],
+          "notes": "New class; not present in the current gameplay baseline. Unlock age and technology are undecided.",
+          "decision": "baseline"
+        },
+        {
+          "id": "classicalage-frontline",
+          "age": "ClassicalAge",
+          "role": "frontline",
+          "name": "Sword-and-shield infantry",
+          "availability": "available",
+          "prerequisites": [
+            "classicalage-professional-infantry"
+          ],
+          "notes": "",
+          "decision": "baseline"
+        },
+        {
+          "id": "classicalage-anticavalry",
+          "age": "ClassicalAge",
+          "role": "antiCavalry",
+          "name": "Anti-cavalry infantry",
+          "availability": "undecided",
+          "prerequisites": [],
+          "notes": "New class; not present in the current gameplay baseline. Unlock age and technology are undecided.",
+          "decision": "baseline"
+        },
+        {
+          "id": "classicalage-rangedinfantry",
+          "age": "ClassicalAge",
+          "role": "rangedInfantry",
+          "name": "Classical archers",
+          "availability": "available",
+          "prerequisites": [
+            "classicalage-ranged-warfare"
+          ],
+          "notes": "",
+          "decision": "baseline"
+        },
+        {
+          "id": "classicalage-lightcavalry",
+          "age": "ClassicalAge",
+          "role": "lightCavalry",
+          "name": "Mounted swordsmen",
+          "availability": "available",
+          "prerequisites": [
+            "classicalage-cavalry-tactics"
+          ],
+          "notes": "Current unsplit cavalry/mobile line. Future class placement is undecided.",
+          "decision": "baseline"
+        },
+        {
+          "id": "classicalage-heavycavalry",
+          "age": "ClassicalAge",
+          "role": "heavyCavalry",
+          "name": "Heavy cavalry",
+          "availability": "undecided",
+          "prerequisites": [],
+          "notes": "New class; not present in the current gameplay baseline. Unlock age and technology are undecided.",
+          "decision": "baseline"
+        },
+        {
+          "id": "classicalage-rangedcavalry",
+          "age": "ClassicalAge",
+          "role": "rangedCavalry",
+          "name": "Ranged cavalry",
+          "availability": "undecided",
+          "prerequisites": [],
+          "notes": "New class; not present in the current gameplay baseline. Unlock age and technology are undecided.",
+          "decision": "baseline"
+        },
+        {
+          "id": "earlymedieval-frontline",
+          "age": "EarlyMedieval",
+          "role": "frontline",
+          "name": "Mail infantry",
+          "availability": "available",
+          "prerequisites": [
+            "earlymedieval-mail-equipment"
+          ],
+          "notes": "",
+          "decision": "baseline"
+        },
+        {
+          "id": "earlymedieval-anticavalry",
+          "age": "EarlyMedieval",
+          "role": "antiCavalry",
+          "name": "Anti-cavalry infantry",
+          "availability": "undecided",
+          "prerequisites": [],
+          "notes": "New class; not present in the current gameplay baseline. Unlock age and technology are undecided.",
+          "decision": "baseline"
+        },
+        {
+          "id": "earlymedieval-rangedinfantry",
+          "age": "EarlyMedieval",
+          "role": "rangedInfantry",
+          "name": "Bowmen",
+          "availability": "available",
+          "prerequisites": [
+            "earlymedieval-bow-and-bolt-warfare"
+          ],
+          "notes": "",
+          "decision": "baseline"
+        },
+        {
+          "id": "earlymedieval-lightcavalry",
+          "age": "EarlyMedieval",
+          "role": "lightCavalry",
+          "name": "Mounted spearmen",
+          "availability": "available",
+          "prerequisites": [
+            "earlymedieval-mounted-spearmen"
+          ],
+          "notes": "Current unsplit cavalry/mobile line. Future class placement is undecided.",
+          "decision": "baseline"
+        },
+        {
+          "id": "earlymedieval-heavycavalry",
+          "age": "EarlyMedieval",
+          "role": "heavyCavalry",
+          "name": "Heavy cavalry",
+          "availability": "undecided",
+          "prerequisites": [],
+          "notes": "New class; not present in the current gameplay baseline. Unlock age and technology are undecided.",
+          "decision": "baseline"
+        },
+        {
+          "id": "earlymedieval-rangedcavalry",
+          "age": "EarlyMedieval",
+          "role": "rangedCavalry",
+          "name": "Ranged cavalry",
+          "availability": "undecided",
+          "prerequisites": [],
+          "notes": "New class; not present in the current gameplay baseline. Unlock age and technology are undecided.",
+          "decision": "baseline"
+        },
+        {
+          "id": "latemedieval-frontline",
+          "age": "LateMedieval",
+          "role": "frontline",
+          "name": "Plate swordsmen",
+          "availability": "available",
+          "prerequisites": [
+            "latemedieval-steel-equipment"
+          ],
+          "notes": "",
+          "decision": "baseline"
+        },
+        {
+          "id": "latemedieval-anticavalry",
+          "age": "LateMedieval",
+          "role": "antiCavalry",
+          "name": "Anti-cavalry infantry",
+          "availability": "undecided",
+          "prerequisites": [],
+          "notes": "New class; not present in the current gameplay baseline. Unlock age and technology are undecided.",
+          "decision": "baseline"
+        },
+        {
+          "id": "latemedieval-rangedinfantry",
+          "age": "LateMedieval",
+          "role": "rangedInfantry",
+          "name": "Crossbowmen",
+          "availability": "available",
+          "prerequisites": [
+            "latemedieval-crossbows-and-field-guns"
+          ],
+          "notes": "",
+          "decision": "baseline"
+        },
+        {
+          "id": "latemedieval-lightcavalry",
+          "age": "LateMedieval",
+          "role": "lightCavalry",
+          "name": "Lance knights",
+          "availability": "available",
+          "prerequisites": [
+            "latemedieval-lance-knights"
+          ],
+          "notes": "Current unsplit cavalry/mobile line. Future class placement is undecided.",
+          "decision": "baseline"
+        },
+        {
+          "id": "latemedieval-heavycavalry",
+          "age": "LateMedieval",
+          "role": "heavyCavalry",
+          "name": "Heavy cavalry",
+          "availability": "undecided",
+          "prerequisites": [],
+          "notes": "New class; not present in the current gameplay baseline. Unlock age and technology are undecided.",
+          "decision": "baseline"
+        },
+        {
+          "id": "latemedieval-rangedcavalry",
+          "age": "LateMedieval",
+          "role": "rangedCavalry",
+          "name": "Ranged cavalry",
+          "availability": "undecided",
+          "prerequisites": [],
+          "notes": "New class; not present in the current gameplay baseline. Unlock age and technology are undecided.",
+          "decision": "baseline"
+        },
+        {
+          "id": "earlymodern-frontline",
+          "age": "EarlyModern",
+          "role": "frontline",
+          "name": "Short-gun infantry",
+          "availability": "available",
+          "prerequisites": [
+            "earlymodern-firearms"
+          ],
+          "notes": "",
+          "decision": "baseline"
+        },
+        {
+          "id": "earlymodern-anticavalry",
+          "age": "EarlyModern",
+          "role": "antiCavalry",
+          "name": "Anti-cavalry infantry",
+          "availability": "undecided",
+          "prerequisites": [],
+          "notes": "New class; not present in the current gameplay baseline. Unlock age and technology are undecided.",
+          "decision": "baseline"
+        },
+        {
+          "id": "earlymodern-rangedinfantry",
+          "age": "EarlyModern",
+          "role": "rangedInfantry",
+          "name": "Musketeers",
+          "availability": "available",
+          "prerequisites": [
+            "earlymodern-musket-and-artillery-drill"
+          ],
+          "notes": "",
+          "decision": "baseline"
+        },
+        {
+          "id": "earlymodern-lightcavalry",
+          "age": "EarlyModern",
+          "role": "lightCavalry",
+          "name": "Pistoliers",
+          "availability": "available",
+          "prerequisites": [
+            "earlymodern-pistoliers"
+          ],
+          "notes": "Current unsplit cavalry/mobile line. Future class placement is undecided.",
+          "decision": "baseline"
+        },
+        {
+          "id": "earlymodern-heavycavalry",
+          "age": "EarlyModern",
+          "role": "heavyCavalry",
+          "name": "Heavy cavalry",
+          "availability": "undecided",
+          "prerequisites": [],
+          "notes": "New class; not present in the current gameplay baseline. Unlock age and technology are undecided.",
+          "decision": "baseline"
+        },
+        {
+          "id": "earlymodern-rangedcavalry",
+          "age": "EarlyModern",
+          "role": "rangedCavalry",
+          "name": "Ranged cavalry",
+          "availability": "undecided",
+          "prerequisites": [],
+          "notes": "New class; not present in the current gameplay baseline. Unlock age and technology are undecided.",
+          "decision": "baseline"
+        },
+        {
+          "id": "modern-frontline",
+          "age": "Modern",
+          "role": "frontline",
+          "name": "Rifle infantry",
+          "availability": "available",
+          "prerequisites": [
+            "modern-modern-armaments"
+          ],
+          "notes": "",
+          "decision": "baseline"
+        },
+        {
+          "id": "modern-anticavalry",
+          "age": "Modern",
+          "role": "antiCavalry",
+          "name": "Anti-cavalry infantry",
+          "availability": "undecided",
+          "prerequisites": [],
+          "notes": "New class; not present in the current gameplay baseline. Unlock age and technology are undecided.",
+          "decision": "baseline"
+        },
+        {
+          "id": "modern-rangedinfantry",
+          "age": "Modern",
+          "role": "rangedInfantry",
+          "name": "Marksmen",
+          "availability": "available",
+          "prerequisites": [
+            "modern-combined-arms"
+          ],
+          "notes": "",
+          "decision": "baseline"
+        },
+        {
+          "id": "modern-lightcavalry",
+          "age": "Modern",
+          "role": "lightCavalry",
+          "name": "Tanks",
+          "availability": "available",
+          "prerequisites": [
+            "modern-combined-arms"
+          ],
+          "notes": "Current unsplit cavalry/mobile line. Future class placement is undecided.",
+          "decision": "baseline"
+        },
+        {
+          "id": "modern-heavycavalry",
+          "age": "Modern",
+          "role": "heavyCavalry",
+          "name": "Heavy cavalry",
+          "availability": "undecided",
+          "prerequisites": [],
+          "notes": "New class; not present in the current gameplay baseline. Unlock age and technology are undecided.",
+          "decision": "baseline"
+        },
+        {
+          "id": "modern-rangedcavalry",
+          "age": "Modern",
+          "role": "rangedCavalry",
+          "name": "Ranged cavalry",
+          "availability": "undecided",
+          "prerequisites": [],
+          "notes": "New class; not present in the current gameplay baseline. Unlock age and technology are undecided.",
+          "decision": "baseline"
+        }
+      ]
+    },
+    {
+      "id": "russians",
+      "name": "Russians",
+      "notes": "Draft Russian civilization. Shared technologies are inherited as a starting proposal. Names after Bronze Age are proposals. Heavy cavalry and anti-cavalry starting ages remain open.",
+      "technologies": [
+        {
+          "id": "stoneage-shorecraft",
+          "name": "Shorecraft",
+          "age": "StoneAge",
+          "tree": "naval",
+          "order": 2,
+          "prerequisites": [
+            "stoneage-cargo-canoes"
+          ],
+          "description": "Unlocks ports for shipbuilding and sea trade.",
+          "notes": "",
+          "decision": "proposed"
+        },
+        {
+          "id": "stoneage-cargo-canoes",
+          "name": "Cargo Canoes",
+          "age": "StoneAge",
+          "tree": "naval",
+          "order": 1,
+          "prerequisites": [],
+          "description": "Lets squads cross water as canoe transports and unlocks automatic port-to-port trade. A transport sinks with every soldier aboard.",
+          "notes": "",
+          "decision": "proposed"
+        },
+        {
+          "id": "stoneage-war-canoes",
+          "name": "War Canoes",
+          "age": "StoneAge",
+          "tree": "naval",
+          "order": 3,
+          "prerequisites": [
+            "stoneage-shorecraft"
+          ],
+          "description": "Unlocks war canoes for naval combat and interception of hostile trade ships.",
+          "notes": "",
+          "decision": "proposed"
+        },
+        {
+          "id": "stoneage-coastal-navigation",
+          "name": "Coastal Navigation",
+          "age": "StoneAge",
+          "tree": "naval",
+          "order": 4,
+          "prerequisites": [
+            "stoneage-war-canoes"
+          ],
+          "description": "Improves transport hulls and sailing speed for squads afloat, and military sailing speed; warships reload faster. Trade ships are unchanged.",
+          "notes": "",
+          "decision": "proposed"
+        },
+        {
+          "id": "stoneage-flint-weapons",
+          "name": "Flint Weapons",
+          "age": "StoneAge",
+          "tree": "warfare",
+          "order": 1,
+          "prerequisites": [],
+          "description": "Unlocks barracks and clubmen.",
+          "notes": "",
+          "decision": "proposed"
+        },
+        {
+          "id": "stoneage-spear-throwing",
+          "name": "Spear Throwing",
+          "age": "StoneAge",
+          "tree": "warfare",
+          "order": 2,
+          "prerequisites": [
+            "stoneage-flint-weapons"
+          ],
+          "description": "Unlocks archery ranges and javelinists.",
+          "notes": "",
+          "decision": "proposed"
+        },
+        {
+          "id": "stoneage-horsemanship",
+          "name": "Horsemanship",
+          "age": "StoneAge",
+          "tree": "warfare",
+          "order": 3,
+          "prerequisites": [
+            "stoneage-spear-throwing",
+            "stoneage-field-engineering"
+          ],
+          "description": "Unlocks stables, mounted spearmen, horse gathering, and stable breeding.",
+          "notes": "",
+          "decision": "proposed"
+        },
+        {
+          "id": "stoneage-field-engineering",
+          "name": "Field Engineering",
+          "age": "StoneAge",
+          "tree": "warfare",
+          "order": 4,
+          "prerequisites": [
+            "stoneage-flint-weapons"
+          ],
+          "description": "Unlocks towers, palisades, gates, field rams, and siege equipment. Improves all Stone Age ground units.",
+          "notes": "",
+          "decision": "proposed"
+        },
+        {
+          "id": "stoneage-settlements",
+          "name": "Settlements",
+          "age": "StoneAge",
+          "tree": "economic",
+          "order": 1,
+          "prerequisites": [],
+          "description": "Unlocks cities, which grow troop reserves.",
+          "notes": "",
+          "decision": "proposed"
+        },
+        {
+          "id": "stoneage-craft-workshops",
+          "name": "Craft Workshops",
+          "age": "StoneAge",
+          "tree": "economic",
+          "order": 2,
+          "prerequisites": [
+            "stoneage-settlements"
+          ],
+          "description": "Unlocks factories producing goods for land trade.",
+          "notes": "",
+          "decision": "proposed"
+        },
+        {
+          "id": "stoneage-stone-mining",
+          "name": "Stone Mining",
+          "age": "StoneAge",
+          "tree": "economic",
+          "order": 3,
+          "prerequisites": [
+            "stoneage-settlements"
+          ],
+          "description": "Unlocks mines and stone extraction from owned deposits.",
+          "notes": "",
+          "decision": "proposed"
+        },
+        {
+          "id": "stoneage-goods-handling",
+          "name": "Foreign Markets",
+          "age": "StoneAge",
+          "tree": "economic",
+          "order": 4,
+          "prerequisites": [
+            "stoneage-craft-workshops",
+            "stoneage-stone-mining"
+          ],
+          "description": "Starts automatic land trade between reachable markets. Increases land and sea cargo capacity and speeds up production recipes.",
+          "notes": "",
+          "decision": "proposed"
+        },
+        {
+          "id": "bronzeage-planked-hulls",
+          "name": "Planked Hulls",
+          "age": "BronzeAge",
+          "tree": "naval",
+          "order": 1,
+          "prerequisites": [
+            "stoneage-coastal-navigation"
+          ],
+          "description": "Unlocks Bronze Age ports; squads afloat use sturdier Bronze Age transport hulls. Existing ports advance automatically.",
+          "notes": "",
+          "decision": "proposed"
+        },
+        {
+          "id": "bronzeage-merchant-sailing",
+          "name": "Merchant Sailing",
+          "age": "BronzeAge",
+          "tree": "naval",
+          "order": 2,
+          "prerequisites": [
+            "bronzeage-planked-hulls"
+          ],
+          "description": "Unlocks Bronze Age sea traders, with larger cargo holds.",
+          "notes": "",
+          "decision": "proposed"
+        },
+        {
+          "id": "bronzeage-oared-warships",
+          "name": "Oared Warships",
+          "age": "BronzeAge",
+          "tree": "naval",
+          "order": 3,
+          "prerequisites": [
+            "bronzeage-planked-hulls"
+          ],
+          "description": "Unlocks Bronze Age warships for naval combat and interception of hostile trade ships.",
+          "notes": "",
+          "decision": "proposed"
+        },
+        {
+          "id": "bronzeage-naval-organisation",
+          "name": "Naval Organisation",
+          "age": "BronzeAge",
+          "tree": "naval",
+          "order": 4,
+          "prerequisites": [
+            "bronzeage-merchant-sailing",
+            "bronzeage-oared-warships"
+          ],
+          "description": "Improves transport hulls and sailing speed for squads afloat, and military sailing speed; warships reload faster. Trade ships are unchanged.",
+          "notes": "",
+          "decision": "proposed"
+        },
+        {
+          "id": "bronzeage-bronze-equipment",
+          "name": "Bronze Equipment",
+          "age": "BronzeAge",
+          "tree": "warfare",
+          "order": 1,
+          "prerequisites": [
+            "stoneage-field-engineering"
+          ],
+          "description": "Unlocks bronze swordsmen and blacksmiths producing troop equipment. Compatible military buildings advance automatically.",
+          "notes": "",
+          "decision": "proposed"
+        },
+        {
+          "id": "bronzeage-bowcraft",
+          "name": "Bowcraft",
+          "age": "BronzeAge",
+          "tree": "warfare",
+          "order": 2,
+          "prerequisites": [
+            "bronzeage-bronze-equipment"
+          ],
+          "description": "Unlocks bronze archers.",
+          "notes": "",
+          "decision": "proposed"
+        },
+        {
+          "id": "bronzeage-chariot-warfare",
+          "name": "Bronze Horsemanship",
+          "age": "BronzeAge",
+          "tree": "warfare",
+          "order": 3,
+          "prerequisites": [
+            "bronzeage-bronze-equipment"
+          ],
+          "description": "Russian Bronze Age mounted warfare: spear riders and mounted archers. Exact unlock links are undecided.",
+          "notes": "Proposed replacement for the baseline chariot technology. The inherited ID is retained so existing prerequisite links remain stable.",
+          "decision": "proposed"
+        },
+        {
+          "id": "bronzeage-fortified-settlements",
+          "name": "Fortified Settlements",
+          "age": "BronzeAge",
+          "tree": "warfare",
+          "order": 4,
+          "prerequisites": [
+            "bronzeage-bowcraft",
+            "bronzeage-chariot-warfare"
+          ],
+          "description": "Unlocks fortified walls, gates, towers, rams, siege towers, and siege equipment. Improves all Bronze Age ground units.",
+          "notes": "",
+          "decision": "proposed"
+        },
+        {
+          "id": "bronzeage-armies",
+          "name": "Armies",
+          "age": "BronzeAge",
+          "tree": "warfare",
+          "order": 5,
+          "prerequisites": [
+            "bronzeage-fortified-settlements"
+          ],
+          "description": "Organizes squads into armies with shared orders and formations. Army capacity counts squads, not soldiers.",
+          "notes": "",
+          "decision": "proposed"
+        },
+        {
+          "id": "bronzeage-bronze-metallurgy",
+          "name": "Bronze Metallurgy",
+          "age": "BronzeAge",
+          "tree": "economic",
+          "order": 1,
+          "prerequisites": [
+            "stoneage-goods-handling"
+          ],
+          "description": "Unlocks copper and tin extraction, bronze smelting, and Bronze Age mines.",
+          "notes": "",
+          "decision": "proposed"
+        },
+        {
+          "id": "bronzeage-urban-workshops",
+          "name": "Urban Workshops",
+          "age": "BronzeAge",
+          "tree": "economic",
+          "order": 2,
+          "prerequisites": [
+            "bronzeage-bronze-metallurgy"
+          ],
+          "description": "Unlocks Bronze Age city and factory upgrades, increasing reserve growth and trade stock.",
+          "notes": "",
+          "decision": "proposed"
+        },
+        {
+          "id": "bronzeage-road-networks",
+          "name": "Road Networks",
+          "age": "BronzeAge",
+          "tree": "economic",
+          "order": 3,
+          "prerequisites": [
+            "bronzeage-bronze-metallurgy"
+          ],
+          "description": "Increases land trader cargo capacity. Adds cosmetic dirt roads along trade routes.",
+          "notes": "",
+          "decision": "proposed"
+        },
+        {
+          "id": "bronzeage-civic-administration",
+          "name": "Civic Administration",
+          "age": "BronzeAge",
+          "tree": "economic",
+          "order": 4,
+          "prerequisites": [
+            "bronzeage-urban-workshops",
+            "bronzeage-road-networks"
+          ],
+          "description": "Speeds up equipment and refining recipes.",
+          "notes": "",
+          "decision": "proposed"
+        },
+        {
+          "id": "classicalage-shipyards",
+          "name": "Shipyards",
+          "age": "ClassicalAge",
+          "tree": "naval",
+          "order": 1,
+          "prerequisites": [
+            "bronzeage-naval-organisation"
+          ],
+          "description": "Unlocks Classical Age ports. Existing ports advance automatically.",
+          "notes": "",
+          "decision": "proposed"
+        },
+        {
+          "id": "classicalage-transport-fleets",
+          "name": "Transport Fleets",
+          "age": "ClassicalAge",
+          "tree": "naval",
+          "order": 2,
+          "prerequisites": [
+            "classicalage-shipyards"
+          ],
+          "description": "Unlocks Classical Age sea traders with larger cargo holds; squads afloat use sturdier Classical Age transport hulls.",
+          "notes": "",
+          "decision": "proposed"
+        },
+        {
+          "id": "classicalage-galley-warfare",
+          "name": "Galley Warfare",
+          "age": "ClassicalAge",
+          "tree": "naval",
+          "order": 3,
+          "prerequisites": [
+            "classicalage-shipyards"
+          ],
+          "description": "Unlocks Classical Age warships for naval combat and interception of hostile trade ships.",
+          "notes": "",
+          "decision": "proposed"
+        },
+        {
+          "id": "classicalage-naval-logistics",
+          "name": "Naval Logistics",
+          "age": "ClassicalAge",
+          "tree": "naval",
+          "order": 4,
+          "prerequisites": [
+            "classicalage-transport-fleets",
+            "classicalage-galley-warfare"
+          ],
+          "description": "Improves transport hulls and sailing speed for squads afloat, and military sailing speed; warships reload faster. Trade ships are unchanged.",
+          "notes": "",
+          "decision": "proposed"
+        },
+        {
+          "id": "classicalage-professional-infantry",
+          "name": "Professional Infantry",
+          "age": "ClassicalAge",
+          "tree": "warfare",
+          "order": 1,
+          "prerequisites": [
+            "bronzeage-fortified-settlements",
+            "bronzeage-armies"
+          ],
+          "description": "Unlocks sword-and-shield infantry and Classical troop equipment. Raises army capacity after Armies is researched.",
+          "notes": "",
+          "decision": "proposed"
+        },
+        {
+          "id": "classicalage-ranged-warfare",
+          "name": "Ranged Warfare",
+          "age": "ClassicalAge",
+          "tree": "warfare",
+          "order": 2,
+          "prerequisites": [
+            "classicalage-professional-infantry"
+          ],
+          "description": "Unlocks Classical archers, mangonels, siege workshops, and siege equipment.",
+          "notes": "",
+          "decision": "proposed"
+        },
+        {
+          "id": "classicalage-cavalry-tactics",
+          "name": "Cavalry Tactics",
+          "age": "ClassicalAge",
+          "tree": "warfare",
+          "order": 3,
+          "prerequisites": [
+            "classicalage-professional-infantry"
+          ],
+          "description": "Unlocks mounted swordsmen for cavalry combat.",
+          "notes": "",
+          "decision": "proposed"
+        },
+        {
+          "id": "classicalage-masonry-engineering",
+          "name": "Masonry Engineering",
+          "age": "ClassicalAge",
+          "tree": "warfare",
+          "order": 4,
+          "prerequisites": [
+            "classicalage-ranged-warfare",
+            "classicalage-cavalry-tactics"
+          ],
+          "description": "Unlocks towers, walls, gates, and onagers. Improves all Classical ground units.",
+          "notes": "",
+          "decision": "proposed"
+        },
+        {
+          "id": "classicalage-ironworking",
+          "name": "Ironworking",
+          "age": "ClassicalAge",
+          "tree": "economic",
+          "order": 1,
+          "prerequisites": [
+            "bronzeage-civic-administration"
+          ],
+          "description": "Unlocks iron extraction, iron smelting, and Classical mines.",
+          "notes": "",
+          "decision": "proposed"
+        },
+        {
+          "id": "classicalage-urban-planning",
+          "name": "Urban Planning",
+          "age": "ClassicalAge",
+          "tree": "economic",
+          "order": 2,
+          "prerequisites": [
+            "classicalage-ironworking"
+          ],
+          "description": "Unlocks Classical city and factory upgrades and faster horse breeding.",
+          "notes": "",
+          "decision": "proposed"
+        },
+        {
+          "id": "classicalage-caravan-roads",
+          "name": "Caravan Roads",
+          "age": "ClassicalAge",
+          "tree": "economic",
+          "order": 3,
+          "prerequisites": [
+            "classicalage-ironworking"
+          ],
+          "description": "Increases land trader cargo capacity. Adds cosmetic gravel roads along trade routes.",
+          "notes": "",
+          "decision": "proposed"
+        },
+        {
+          "id": "classicalage-husbandry",
+          "name": "Husbandry",
+          "age": "ClassicalAge",
+          "tree": "economic",
+          "order": 4,
+          "prerequisites": [
+            "classicalage-urban-planning",
+            "classicalage-caravan-roads"
+          ],
+          "description": "Speeds up equipment and refining recipes.",
+          "notes": "",
+          "decision": "proposed"
+        },
+        {
+          "id": "earlymedieval-framed-hulls",
+          "name": "Framed Hulls",
+          "age": "EarlyMedieval",
+          "tree": "naval",
+          "order": 1,
+          "prerequisites": [
+            "classicalage-naval-logistics"
+          ],
+          "description": "Unlocks Early Medieval ports. Existing ports advance automatically.",
+          "notes": "",
+          "decision": "proposed"
+        },
+        {
+          "id": "earlymedieval-seafaring",
+          "name": "Seafaring",
+          "age": "EarlyMedieval",
+          "tree": "naval",
+          "order": 2,
+          "prerequisites": [
+            "earlymedieval-framed-hulls"
+          ],
+          "description": "Unlocks Early Medieval sea traders with larger cargo holds; squads afloat use sturdier Early Medieval transport hulls.",
+          "notes": "",
+          "decision": "proposed"
+        },
+        {
+          "id": "earlymedieval-coastal-warships",
+          "name": "Coastal Warships",
+          "age": "EarlyMedieval",
+          "tree": "naval",
+          "order": 3,
+          "prerequisites": [
+            "earlymedieval-framed-hulls"
+          ],
+          "description": "Unlocks Early Medieval warships for naval combat and interception of hostile trade ships.",
+          "notes": "",
+          "decision": "proposed"
+        },
+        {
+          "id": "earlymedieval-landing-logistics",
+          "name": "Landing Logistics",
+          "age": "EarlyMedieval",
+          "tree": "naval",
+          "order": 4,
+          "prerequisites": [
+            "earlymedieval-seafaring",
+            "earlymedieval-coastal-warships"
+          ],
+          "description": "Improves transport hulls and sailing speed for squads afloat, and military sailing speed; warships reload faster. Trade ships are unchanged.",
+          "notes": "",
+          "decision": "proposed"
+        },
+        {
+          "id": "earlymedieval-mail-equipment",
+          "name": "Mail Equipment",
+          "age": "EarlyMedieval",
+          "tree": "warfare",
+          "order": 1,
+          "prerequisites": [
+            "classicalage-masonry-engineering"
+          ],
+          "description": "Unlocks mail infantry and Early Medieval troop equipment. Raises army capacity after Armies is researched.",
+          "notes": "",
+          "decision": "proposed"
+        },
+        {
+          "id": "earlymedieval-bow-and-bolt-warfare",
+          "name": "Bow and Bolt Warfare",
+          "age": "EarlyMedieval",
+          "tree": "warfare",
+          "order": 2,
+          "prerequisites": [
+            "earlymedieval-mail-equipment"
+          ],
+          "description": "Unlocks bowmen, ballistas, siege workshops, and siege equipment.",
+          "notes": "",
+          "decision": "proposed"
+        },
+        {
+          "id": "earlymedieval-mounted-spearmen",
+          "name": "Mounted Spearmen",
+          "age": "EarlyMedieval",
+          "tree": "warfare",
+          "order": 3,
+          "prerequisites": [
+            "earlymedieval-mail-equipment"
+          ],
+          "description": "Unlocks mounted spearmen for cavalry combat.",
+          "notes": "",
+          "decision": "proposed"
+        },
+        {
+          "id": "earlymedieval-trebuchet-engineering",
+          "name": "Trebuchet Engineering",
+          "age": "EarlyMedieval",
+          "tree": "warfare",
+          "order": 4,
+          "prerequisites": [
+            "earlymedieval-bow-and-bolt-warfare",
+            "earlymedieval-mounted-spearmen"
+          ],
+          "description": "Unlocks towers, walls, gates, and trebuchets. Improves all Early Medieval ground units.",
+          "notes": "",
+          "decision": "proposed"
+        },
+        {
+          "id": "earlymedieval-agricultural-organisation",
+          "name": "Agricultural Organisation",
+          "age": "EarlyMedieval",
+          "tree": "economic",
+          "order": 1,
+          "prerequisites": [
+            "classicalage-husbandry"
+          ],
+          "description": "Unlocks Early Medieval city and mine upgrades.",
+          "notes": "",
+          "decision": "proposed"
+        },
+        {
+          "id": "earlymedieval-craft-guilds",
+          "name": "Craft Guilds",
+          "age": "EarlyMedieval",
+          "tree": "economic",
+          "order": 2,
+          "prerequisites": [
+            "earlymedieval-agricultural-organisation"
+          ],
+          "description": "Unlocks Early Medieval factory upgrades, increasing trade stock.",
+          "notes": "",
+          "decision": "proposed"
+        },
+        {
+          "id": "earlymedieval-caravan-breeding",
+          "name": "Caravan Breeding",
+          "age": "EarlyMedieval",
+          "tree": "economic",
+          "order": 3,
+          "prerequisites": [
+            "earlymedieval-agricultural-organisation"
+          ],
+          "description": "Increases land trader cargo capacity and horse breeding. Upgrades cosmetic trade roads.",
+          "notes": "",
+          "decision": "proposed"
+        },
+        {
+          "id": "earlymedieval-market-logistics",
+          "name": "Market Logistics",
+          "age": "EarlyMedieval",
+          "tree": "economic",
+          "order": 4,
+          "prerequisites": [
+            "earlymedieval-craft-guilds",
+            "earlymedieval-caravan-breeding"
+          ],
+          "description": "Speeds up equipment and refining recipes.",
+          "notes": "",
+          "decision": "proposed"
+        },
+        {
+          "id": "latemedieval-sailing-hulls",
+          "name": "Sailing Hulls",
+          "age": "LateMedieval",
+          "tree": "naval",
+          "order": 1,
+          "prerequisites": [
+            "earlymedieval-landing-logistics"
+          ],
+          "description": "Unlocks Late Medieval ports. Existing ports advance automatically.",
+          "notes": "",
+          "decision": "proposed"
+        },
+        {
+          "id": "latemedieval-merchant-convoys",
+          "name": "Merchant Convoys",
+          "age": "LateMedieval",
+          "tree": "naval",
+          "order": 2,
+          "prerequisites": [
+            "latemedieval-sailing-hulls"
+          ],
+          "description": "Unlocks Late Medieval sea traders with larger cargo holds; squads afloat use sturdier Late Medieval transport hulls.",
+          "notes": "",
+          "decision": "proposed"
+        },
+        {
+          "id": "latemedieval-naval-gunnery",
+          "name": "Naval Gunnery",
+          "age": "LateMedieval",
+          "tree": "naval",
+          "order": 3,
+          "prerequisites": [
+            "latemedieval-sailing-hulls"
+          ],
+          "description": "Unlocks Late Medieval warships for naval combat and interception of hostile trade ships.",
+          "notes": "",
+          "decision": "proposed"
+        },
+        {
+          "id": "latemedieval-broadside-tactics",
+          "name": "Broadside Tactics",
+          "age": "LateMedieval",
+          "tree": "naval",
+          "order": 4,
+          "prerequisites": [
+            "latemedieval-merchant-convoys",
+            "latemedieval-naval-gunnery"
+          ],
+          "description": "Improves transport hulls and sailing speed for squads afloat, and military sailing speed; warships reload faster. Trade ships are unchanged.",
+          "notes": "",
+          "decision": "proposed"
+        },
+        {
+          "id": "latemedieval-steel-equipment",
+          "name": "Steel Equipment",
+          "age": "LateMedieval",
+          "tree": "warfare",
+          "order": 1,
+          "prerequisites": [
+            "earlymedieval-trebuchet-engineering"
+          ],
+          "description": "Unlocks plate swordsmen and Late Medieval troop equipment. Raises army capacity after Armies is researched.",
+          "notes": "",
+          "decision": "proposed"
+        },
+        {
+          "id": "latemedieval-crossbows-and-field-guns",
+          "name": "Crossbows and Field Guns",
+          "age": "LateMedieval",
+          "tree": "warfare",
+          "order": 2,
+          "prerequisites": [
+            "latemedieval-steel-equipment"
+          ],
+          "description": "Unlocks crossbowmen, organ guns, siege workshops, and siege equipment.",
+          "notes": "",
+          "decision": "proposed"
+        },
+        {
+          "id": "latemedieval-lance-knights",
+          "name": "Lance Knights",
+          "age": "LateMedieval",
+          "tree": "warfare",
+          "order": 3,
+          "prerequisites": [
+            "latemedieval-steel-equipment"
+          ],
+          "description": "Unlocks lance knights for cavalry combat.",
+          "notes": "",
+          "decision": "proposed"
+        },
+        {
+          "id": "latemedieval-siege-ordnance",
+          "name": "Siege Ordnance",
+          "age": "LateMedieval",
+          "tree": "warfare",
+          "order": 4,
+          "prerequisites": [
+            "latemedieval-crossbows-and-field-guns",
+            "latemedieval-lance-knights"
+          ],
+          "description": "Unlocks towers, walls, gates, and bombards. Improves all Late Medieval ground units.",
+          "notes": "",
+          "decision": "proposed"
+        },
+        {
+          "id": "latemedieval-steelmaking",
+          "name": "Steelmaking",
+          "age": "LateMedieval",
+          "tree": "economic",
+          "order": 1,
+          "prerequisites": [
+            "earlymedieval-market-logistics"
+          ],
+          "description": "Unlocks carbon extraction, steel production, and Late Medieval mines.",
+          "notes": "",
+          "decision": "proposed"
+        },
+        {
+          "id": "latemedieval-powder-milling",
+          "name": "Powder Milling",
+          "age": "LateMedieval",
+          "tree": "economic",
+          "order": 2,
+          "prerequisites": [
+            "latemedieval-steelmaking"
+          ],
+          "description": "Unlocks sulphur, nitrate, and gunpowder extraction from owned deposits.",
+          "notes": "",
+          "decision": "proposed"
+        },
+        {
+          "id": "latemedieval-guild-commerce",
+          "name": "Guild Commerce",
+          "age": "LateMedieval",
+          "tree": "economic",
+          "order": 3,
+          "prerequisites": [
+            "latemedieval-steelmaking"
+          ],
+          "description": "Unlocks Late Medieval city and factory upgrades and larger land trader cargo holds. Upgrades cosmetic trade roads.",
+          "notes": "",
+          "decision": "proposed"
+        },
+        {
+          "id": "latemedieval-urban-administration",
+          "name": "Urban Administration",
+          "age": "LateMedieval",
+          "tree": "economic",
+          "order": 4,
+          "prerequisites": [
+            "latemedieval-powder-milling",
+            "latemedieval-guild-commerce"
+          ],
+          "description": "Speeds up equipment and refining recipes.",
+          "notes": "",
+          "decision": "proposed"
+        },
+        {
+          "id": "earlymodern-ocean-navigation",
+          "name": "Ocean Navigation",
+          "age": "EarlyModern",
+          "tree": "naval",
+          "order": 1,
+          "prerequisites": [
+            "latemedieval-broadside-tactics"
+          ],
+          "description": "Unlocks Early Modern ports. Existing ports advance automatically.",
+          "notes": "",
+          "decision": "proposed"
+        },
+        {
+          "id": "earlymodern-ocean-transport",
+          "name": "Ocean Transport",
+          "age": "EarlyModern",
+          "tree": "naval",
+          "order": 2,
+          "prerequisites": [
+            "earlymodern-ocean-navigation"
+          ],
+          "description": "Unlocks Early Modern sea traders with larger cargo holds; squads afloat use sturdier Early Modern transport hulls.",
+          "notes": "",
+          "decision": "proposed"
+        },
+        {
+          "id": "earlymodern-ships-of-the-line",
+          "name": "Ships of the Line",
+          "age": "EarlyModern",
+          "tree": "naval",
+          "order": 3,
+          "prerequisites": [
+            "earlymodern-ocean-navigation"
+          ],
+          "description": "Unlocks Early Modern warships for naval combat and interception of hostile trade ships.",
+          "notes": "",
+          "decision": "proposed"
+        },
+        {
+          "id": "earlymodern-fleet-coordination",
+          "name": "Fleet Coordination",
+          "age": "EarlyModern",
+          "tree": "naval",
+          "order": 4,
+          "prerequisites": [
+            "earlymodern-ocean-transport",
+            "earlymodern-ships-of-the-line"
+          ],
+          "description": "Improves transport hulls and sailing speed for squads afloat, and military sailing speed; warships reload faster. Trade ships are unchanged.",
+          "notes": "",
+          "decision": "proposed"
+        },
+        {
+          "id": "earlymodern-firearms",
+          "name": "Firearms",
+          "age": "EarlyModern",
+          "tree": "warfare",
+          "order": 1,
+          "prerequisites": [
+            "latemedieval-siege-ordnance"
+          ],
+          "description": "Unlocks short-gun infantry and armories producing troop equipment. Raises army capacity after Armies is researched.",
+          "notes": "",
+          "decision": "proposed"
+        },
+        {
+          "id": "earlymodern-musket-and-artillery-drill",
+          "name": "Musket and Artillery Drill",
+          "age": "EarlyModern",
+          "tree": "warfare",
+          "order": 2,
+          "prerequisites": [
+            "earlymodern-firearms"
+          ],
+          "description": "Unlocks musketeers, field cannons, siege workshops, and siege equipment.",
+          "notes": "",
+          "decision": "proposed"
+        },
+        {
+          "id": "earlymodern-pistoliers",
+          "name": "Pistoliers",
+          "age": "EarlyModern",
+          "tree": "warfare",
+          "order": 3,
+          "prerequisites": [
+            "earlymodern-firearms"
+          ],
+          "description": "Unlocks pistoliers for mounted gunfire.",
+          "notes": "",
+          "decision": "proposed"
+        },
+        {
+          "id": "earlymodern-howitzer-engineering",
+          "name": "Howitzer Engineering",
+          "age": "EarlyModern",
+          "tree": "warfare",
+          "order": 4,
+          "prerequisites": [
+            "earlymodern-musket-and-artillery-drill",
+            "earlymodern-pistoliers"
+          ],
+          "description": "Unlocks towers, walls, gates, and early howitzers. Improves all Early Modern ground units.",
+          "notes": "",
+          "decision": "proposed"
+        },
+        {
+          "id": "earlymodern-powder-manufactories",
+          "name": "Powder Manufactories",
+          "age": "EarlyModern",
+          "tree": "economic",
+          "order": 1,
+          "prerequisites": [
+            "latemedieval-urban-administration"
+          ],
+          "description": "Unlocks Early Modern mine upgrades for higher deposit output.",
+          "notes": "",
+          "decision": "proposed"
+        },
+        {
+          "id": "earlymodern-manufactories",
+          "name": "Manufactories",
+          "age": "EarlyModern",
+          "tree": "economic",
+          "order": 2,
+          "prerequisites": [
+            "earlymodern-powder-manufactories"
+          ],
+          "description": "Unlocks Early Modern city and factory upgrades, increasing reserve growth and trade stock.",
+          "notes": "",
+          "decision": "proposed"
+        },
+        {
+          "id": "earlymodern-long-distance-commerce",
+          "name": "Long-Distance Commerce",
+          "age": "EarlyModern",
+          "tree": "economic",
+          "order": 3,
+          "prerequisites": [
+            "earlymodern-powder-manufactories"
+          ],
+          "description": "Increases land trader cargo capacity. Adds cosmetic dressed-stone roads along trade routes.",
+          "notes": "",
+          "decision": "proposed"
+        },
+        {
+          "id": "earlymodern-military-provisioning",
+          "name": "Military Provisioning",
+          "age": "EarlyModern",
+          "tree": "economic",
+          "order": 4,
+          "prerequisites": [
+            "earlymodern-manufactories",
+            "earlymodern-long-distance-commerce"
+          ],
+          "description": "Speeds up equipment and refining recipes and increases horse breeding.",
+          "notes": "",
+          "decision": "proposed"
+        },
+        {
+          "id": "modern-powered-vessels",
+          "name": "Powered Vessels",
+          "age": "Modern",
+          "tree": "naval",
+          "order": 1,
+          "prerequisites": [
+            "earlymodern-fleet-coordination"
+          ],
+          "description": "Unlocks Modern ports. Existing ports advance automatically.",
+          "notes": "",
+          "decision": "proposed"
+        },
+        {
+          "id": "modern-amphibious-transport",
+          "name": "Amphibious Transport",
+          "age": "Modern",
+          "tree": "naval",
+          "order": 2,
+          "prerequisites": [
+            "modern-powered-vessels"
+          ],
+          "description": "Unlocks Modern sea traders with larger cargo holds; squads afloat use sturdier Modern transport hulls.",
+          "notes": "",
+          "decision": "proposed"
+        },
+        {
+          "id": "modern-modern-warships",
+          "name": "Modern Warships",
+          "age": "Modern",
+          "tree": "naval",
+          "order": 3,
+          "prerequisites": [
+            "modern-powered-vessels"
+          ],
+          "description": "Unlocks Modern warships for naval combat and interception of hostile trade ships.",
+          "notes": "",
+          "decision": "proposed"
+        },
+        {
+          "id": "modern-fleet-operations",
+          "name": "Fleet Operations",
+          "age": "Modern",
+          "tree": "naval",
+          "order": 4,
+          "prerequisites": [
+            "modern-amphibious-transport",
+            "modern-modern-warships"
+          ],
+          "description": "Improves transport hulls and sailing speed for squads afloat, and military sailing speed; warships reload faster. Trade ships are unchanged.",
+          "notes": "",
+          "decision": "proposed"
+        },
+        {
+          "id": "modern-modern-armaments",
+          "name": "Modern Armaments",
+          "age": "Modern",
+          "tree": "warfare",
+          "order": 1,
+          "prerequisites": [
+            "earlymodern-howitzer-engineering"
+          ],
+          "description": "Unlocks rifle infantry and arms factories producing troop equipment. Raises army capacity after Armies is researched.",
+          "notes": "",
+          "decision": "proposed"
+        },
+        {
+          "id": "modern-combined-arms",
+          "name": "Combined Arms",
+          "age": "Modern",
+          "tree": "warfare",
+          "order": 2,
+          "prerequisites": [
+            "modern-modern-armaments"
+          ],
+          "description": "Unlocks marksmen, tanks, machine-gun crews, howitzers, anti-air vehicles, gun nests, connected trenches, and missile defence.",
+          "notes": "",
+          "decision": "proposed"
+        },
+        {
+          "id": "modern-military-aviation",
+          "name": "Military Aviation",
+          "age": "Modern",
+          "tree": "warfare",
+          "order": 3,
+          "prerequisites": [
+            "modern-modern-armaments"
+          ],
+          "description": "Unlocks airstrips, fighters, and bombers. Sorties automatically select a ready squad and its runway.",
+          "notes": "",
+          "decision": "proposed"
+        },
+        {
+          "id": "modern-strategic-weapons",
+          "name": "Strategic Weapons",
+          "age": "Modern",
+          "tree": "warfare",
+          "order": 4,
+          "prerequisites": [
+            "modern-combined-arms",
+            "modern-military-aviation"
+          ],
+          "description": "Unlocks missile silos, MIRV launchers, mobile launchers, and payload production. MIRVs target the nearest hostile buildings, or concentrate every warhead on an explicitly targeted building. Improves all Modern ground units.",
+          "notes": "",
+          "decision": "proposed"
+        },
+        {
+          "id": "modern-petroleum-extraction",
+          "name": "Petroleum Extraction",
+          "age": "Modern",
+          "tree": "economic",
+          "order": 1,
+          "prerequisites": [
+            "earlymodern-military-provisioning"
+          ],
+          "description": "Unlocks oil wells, offshore oil rigs, oil extraction, and Modern mine upgrades.",
+          "notes": "",
+          "decision": "proposed"
+        },
+        {
+          "id": "modern-industrial-production",
+          "name": "Industrial Production",
+          "age": "Modern",
+          "tree": "economic",
+          "order": 2,
+          "prerequisites": [
+            "modern-petroleum-extraction"
+          ],
+          "description": "Unlocks Modern city and factory upgrades, increasing reserve growth and trade stock.",
+          "notes": "",
+          "decision": "proposed"
+        },
+        {
+          "id": "modern-motor-freight",
+          "name": "Motor Freight",
+          "age": "Modern",
+          "tree": "economic",
+          "order": 3,
+          "prerequisites": [
+            "modern-petroleum-extraction"
+          ],
+          "description": "Increases land trader cargo capacity. Adds cosmetic asphalt roads along trade routes.",
+          "notes": "",
+          "decision": "proposed"
+        },
+        {
+          "id": "modern-integrated-logistics",
+          "name": "Integrated Logistics",
+          "age": "Modern",
+          "tree": "economic",
+          "order": 4,
+          "prerequisites": [
+            "modern-industrial-production",
+            "modern-motor-freight"
+          ],
+          "description": "Speeds up equipment, refining, and payload recipes and increases horse breeding.",
+          "notes": "",
+          "decision": "proposed"
+        }
+      ],
+      "units": [
+        {
+          "id": "stoneage-frontline",
+          "age": "StoneAge",
+          "role": "frontline",
+          "name": "Clubmen",
+          "availability": "available",
+          "prerequisites": [],
+          "notes": "Proposed name. Unlocking technology is undecided.",
+          "decision": "proposed"
+        },
+        {
+          "id": "stoneage-anticavalry",
+          "age": "StoneAge",
+          "role": "antiCavalry",
+          "name": "Spearmen",
+          "availability": "unavailable",
+          "prerequisites": [],
+          "notes": "Confirmed: this class is not unlocked in Russian Stone Age.",
+          "decision": "confirmed"
+        },
+        {
+          "id": "stoneage-rangedinfantry",
+          "age": "StoneAge",
+          "role": "rangedInfantry",
+          "name": "Javelin Throwers",
+          "availability": "available",
+          "prerequisites": [],
+          "notes": "Proposed name. Unlocking technology is undecided.",
+          "decision": "proposed"
+        },
+        {
+          "id": "stoneage-lightcavalry",
+          "age": "StoneAge",
+          "role": "lightCavalry",
+          "name": "Mounted Spearmen",
+          "availability": "available",
+          "prerequisites": [],
+          "notes": "Proposed name. Unlocking technology is undecided.",
+          "decision": "proposed"
+        },
+        {
+          "id": "stoneage-heavycavalry",
+          "age": "StoneAge",
+          "role": "heavyCavalry",
+          "name": "Heavy cavalry",
+          "availability": "unavailable",
+          "prerequisites": [],
+          "notes": "Confirmed: this class is not unlocked in Russian Stone Age.",
+          "decision": "confirmed"
+        },
+        {
+          "id": "stoneage-rangedcavalry",
+          "age": "StoneAge",
+          "role": "rangedCavalry",
+          "name": "Ranged cavalry",
+          "availability": "unavailable",
+          "prerequisites": [],
+          "notes": "Confirmed: this class is not unlocked in Russian Stone Age.",
+          "decision": "confirmed"
+        },
+        {
+          "id": "bronzeage-frontline",
+          "age": "BronzeAge",
+          "role": "frontline",
+          "name": "Bronze Axemen",
+          "availability": "available",
+          "prerequisites": [],
+          "notes": "Proposed name. Unlocking technology is undecided.",
+          "decision": "proposed"
+        },
+        {
+          "id": "bronzeage-anticavalry",
+          "age": "BronzeAge",
+          "role": "antiCavalry",
+          "name": "Bronze Spearmen",
+          "availability": "undecided",
+          "prerequisites": [],
+          "notes": "Introduction age is undecided. Name is a proposal; no unlocking technology assigned.",
+          "decision": "proposed"
+        },
+        {
+          "id": "bronzeage-rangedinfantry",
+          "age": "BronzeAge",
+          "role": "rangedInfantry",
+          "name": "Bowmen",
+          "availability": "available",
+          "prerequisites": [],
+          "notes": "Proposed name. Unlocking technology is undecided.",
+          "decision": "proposed"
+        },
+        {
+          "id": "bronzeage-lightcavalry",
+          "age": "BronzeAge",
+          "role": "lightCavalry",
+          "name": "Spear Riders",
+          "availability": "available",
+          "prerequisites": [],
+          "notes": "Confirmed Bronze Age mounted role. No chariots. Unlocking technology is undecided.",
+          "decision": "confirmed"
+        },
+        {
+          "id": "bronzeage-heavycavalry",
+          "age": "BronzeAge",
+          "role": "heavyCavalry",
+          "name": "Heavy cavalry",
+          "availability": "undecided",
+          "prerequisites": [],
+          "notes": "Introduction age is undecided. Name is a proposal; no unlocking technology assigned.",
+          "decision": "proposed"
+        },
+        {
+          "id": "bronzeage-rangedcavalry",
+          "age": "BronzeAge",
+          "role": "rangedCavalry",
+          "name": "Mounted Archers",
+          "availability": "available",
+          "prerequisites": [],
+          "notes": "Confirmed Bronze Age mounted role. No chariots. Unlocking technology is undecided.",
+          "decision": "confirmed"
+        },
+        {
+          "id": "classicalage-frontline",
+          "age": "ClassicalAge",
+          "role": "frontline",
+          "name": "Shield Warriors",
+          "availability": "available",
+          "prerequisites": [],
+          "notes": "Proposed name. Unlocking technology is undecided.",
+          "decision": "proposed"
+        },
+        {
+          "id": "classicalage-anticavalry",
+          "age": "ClassicalAge",
+          "role": "antiCavalry",
+          "name": "Long Spearmen",
+          "availability": "undecided",
+          "prerequisites": [],
+          "notes": "Introduction age is undecided. Name is a proposal; no unlocking technology assigned.",
+          "decision": "proposed"
+        },
+        {
+          "id": "classicalage-rangedinfantry",
+          "age": "ClassicalAge",
+          "role": "rangedInfantry",
+          "name": "Archers",
+          "availability": "available",
+          "prerequisites": [],
+          "notes": "Proposed name. Unlocking technology is undecided.",
+          "decision": "proposed"
+        },
+        {
+          "id": "classicalage-lightcavalry",
+          "age": "ClassicalAge",
+          "role": "lightCavalry",
+          "name": "Light Horsemen",
+          "availability": "available",
+          "prerequisites": [],
+          "notes": "Proposed name. Unlocking technology is undecided.",
+          "decision": "proposed"
+        },
+        {
+          "id": "classicalage-heavycavalry",
+          "age": "ClassicalAge",
+          "role": "heavyCavalry",
+          "name": "Armoured Horsemen",
+          "availability": "undecided",
+          "prerequisites": [],
+          "notes": "Introduction age is undecided. Name is a proposal; no unlocking technology assigned.",
+          "decision": "proposed"
+        },
+        {
+          "id": "classicalage-rangedcavalry",
+          "age": "ClassicalAge",
+          "role": "rangedCavalry",
+          "name": "Horse Archers",
+          "availability": "available",
+          "prerequisites": [],
+          "notes": "Proposed name. Unlocking technology is undecided.",
+          "decision": "proposed"
+        },
+        {
+          "id": "earlymedieval-frontline",
+          "age": "EarlyMedieval",
+          "role": "frontline",
+          "name": "Rus Axemen",
+          "availability": "available",
+          "prerequisites": [],
+          "notes": "Proposed name. Unlocking technology is undecided.",
+          "decision": "proposed"
+        },
+        {
+          "id": "earlymedieval-anticavalry",
+          "age": "EarlyMedieval",
+          "role": "antiCavalry",
+          "name": "Rus Spearmen",
+          "availability": "undecided",
+          "prerequisites": [],
+          "notes": "Introduction age is undecided. Name is a proposal; no unlocking technology assigned.",
+          "decision": "proposed"
+        },
+        {
+          "id": "earlymedieval-rangedinfantry",
+          "age": "EarlyMedieval",
+          "role": "rangedInfantry",
+          "name": "Rus Bowmen",
+          "availability": "available",
+          "prerequisites": [],
+          "notes": "Proposed name. Unlocking technology is undecided.",
+          "decision": "proposed"
+        },
+        {
+          "id": "earlymedieval-lightcavalry",
+          "age": "EarlyMedieval",
+          "role": "lightCavalry",
+          "name": "Border Riders",
+          "availability": "available",
+          "prerequisites": [],
+          "notes": "Proposed name. Unlocking technology is undecided.",
+          "decision": "proposed"
+        },
+        {
+          "id": "earlymedieval-heavycavalry",
+          "age": "EarlyMedieval",
+          "role": "heavyCavalry",
+          "name": "Druzhina Cavalry",
+          "availability": "undecided",
+          "prerequisites": [],
+          "notes": "Introduction age is undecided. Name is a proposal; no unlocking technology assigned.",
+          "decision": "proposed"
+        },
+        {
+          "id": "earlymedieval-rangedcavalry",
+          "age": "EarlyMedieval",
+          "role": "rangedCavalry",
+          "name": "Mounted Bowmen",
+          "availability": "available",
+          "prerequisites": [],
+          "notes": "Proposed name. Unlocking technology is undecided.",
+          "decision": "proposed"
+        },
+        {
+          "id": "latemedieval-frontline",
+          "age": "LateMedieval",
+          "role": "frontline",
+          "name": "Boyar Guards",
+          "availability": "available",
+          "prerequisites": [],
+          "notes": "Proposed name. Unlocking technology is undecided.",
+          "decision": "proposed"
+        },
+        {
+          "id": "latemedieval-anticavalry",
+          "age": "LateMedieval",
+          "role": "antiCavalry",
+          "name": "Pikemen",
+          "availability": "undecided",
+          "prerequisites": [],
+          "notes": "Introduction age is undecided. Name is a proposal; no unlocking technology assigned.",
+          "decision": "proposed"
+        },
+        {
+          "id": "latemedieval-rangedinfantry",
+          "age": "LateMedieval",
+          "role": "rangedInfantry",
+          "name": "Crossbowmen",
+          "availability": "available",
+          "prerequisites": [],
+          "notes": "Proposed name. Unlocking technology is undecided.",
+          "decision": "proposed"
+        },
+        {
+          "id": "latemedieval-lightcavalry",
+          "age": "LateMedieval",
+          "role": "lightCavalry",
+          "name": "Cossack Riders",
+          "availability": "available",
+          "prerequisites": [],
+          "notes": "Proposed name. Unlocking technology is undecided.",
+          "decision": "proposed"
+        },
+        {
+          "id": "latemedieval-heavycavalry",
+          "age": "LateMedieval",
+          "role": "heavyCavalry",
+          "name": "Boyar Cavalry",
+          "availability": "undecided",
+          "prerequisites": [],
+          "notes": "Introduction age is undecided. Name is a proposal; no unlocking technology assigned.",
+          "decision": "proposed"
+        },
+        {
+          "id": "latemedieval-rangedcavalry",
+          "age": "LateMedieval",
+          "role": "rangedCavalry",
+          "name": "Mounted Archers",
+          "availability": "available",
+          "prerequisites": [],
+          "notes": "Proposed name. Unlocking technology is undecided.",
+          "decision": "proposed"
+        },
+        {
+          "id": "earlymodern-frontline",
+          "age": "EarlyModern",
+          "role": "frontline",
+          "name": "Grenadiers",
+          "availability": "available",
+          "prerequisites": [],
+          "notes": "Proposed name. Unlocking technology is undecided.",
+          "decision": "proposed"
+        },
+        {
+          "id": "earlymodern-anticavalry",
+          "age": "EarlyModern",
+          "role": "antiCavalry",
+          "name": "Pike Guards",
+          "availability": "undecided",
+          "prerequisites": [],
+          "notes": "Introduction age is undecided. Name is a proposal; no unlocking technology assigned.",
+          "decision": "proposed"
+        },
+        {
+          "id": "earlymodern-rangedinfantry",
+          "age": "EarlyModern",
+          "role": "rangedInfantry",
+          "name": "Streltsy",
+          "availability": "available",
+          "prerequisites": [],
+          "notes": "Proposed name. Unlocking technology is undecided.",
+          "decision": "proposed"
+        },
+        {
+          "id": "earlymodern-lightcavalry",
+          "age": "EarlyModern",
+          "role": "lightCavalry",
+          "name": "Cossack Lancers",
+          "availability": "available",
+          "prerequisites": [],
+          "notes": "Proposed name. Unlocking technology is undecided.",
+          "decision": "proposed"
+        },
+        {
+          "id": "earlymodern-heavycavalry",
+          "age": "EarlyModern",
+          "role": "heavyCavalry",
+          "name": "Cuirassiers",
+          "availability": "undecided",
+          "prerequisites": [],
+          "notes": "Introduction age is undecided. Name is a proposal; no unlocking technology assigned.",
+          "decision": "proposed"
+        },
+        {
+          "id": "earlymodern-rangedcavalry",
+          "age": "EarlyModern",
+          "role": "rangedCavalry",
+          "name": "Mounted Musketeers",
+          "availability": "available",
+          "prerequisites": [],
+          "notes": "Proposed name. Unlocking technology is undecided.",
+          "decision": "proposed"
+        },
+        {
+          "id": "modern-frontline",
+          "age": "Modern",
+          "role": "frontline",
+          "name": "Assault Infantry",
+          "availability": "available",
+          "prerequisites": [],
+          "notes": "Proposed name. Unlocking technology is undecided.",
+          "decision": "proposed"
+        },
+        {
+          "id": "modern-anticavalry",
+          "age": "Modern",
+          "role": "antiCavalry",
+          "name": "Tank Hunters",
+          "availability": "undecided",
+          "prerequisites": [],
+          "notes": "Introduction age is undecided. Name is a proposal; no unlocking technology assigned.",
+          "decision": "proposed"
+        },
+        {
+          "id": "modern-rangedinfantry",
+          "age": "Modern",
+          "role": "rangedInfantry",
+          "name": "Machine Gunners",
+          "availability": "available",
+          "prerequisites": [],
+          "notes": "Proposed name. Unlocking technology is undecided.",
+          "decision": "proposed"
+        },
+        {
+          "id": "modern-lightcavalry",
+          "age": "Modern",
+          "role": "lightCavalry",
+          "name": "Gun Trucks",
+          "availability": "available",
+          "prerequisites": [],
+          "notes": "Confirmed modern role: gun truck / armoured personnel carrier / tank. Name and unlocking technology remain editable.",
+          "decision": "confirmed"
+        },
+        {
+          "id": "modern-heavycavalry",
+          "age": "Modern",
+          "role": "heavyCavalry",
+          "name": "Armoured Personnel Carriers",
+          "availability": "available",
+          "prerequisites": [],
+          "notes": "Confirmed modern role: gun truck / armoured personnel carrier / tank. Name and unlocking technology remain editable.",
+          "decision": "confirmed"
+        },
+        {
+          "id": "modern-rangedcavalry",
+          "age": "Modern",
+          "role": "rangedCavalry",
+          "name": "Battle Tanks",
+          "availability": "available",
+          "prerequisites": [],
+          "notes": "Confirmed modern role: gun truck / armoured personnel carrier / tank. Name and unlocking technology remain editable.",
+          "decision": "confirmed"
+        }
+      ]
+    }
+  ]
+}

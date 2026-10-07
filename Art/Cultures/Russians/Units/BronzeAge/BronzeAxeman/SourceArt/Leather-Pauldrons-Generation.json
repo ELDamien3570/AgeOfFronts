@@ -1,0 +1,114 @@
+{
+  "date": "2026-10-07",
+  "mode": "built-in-imagegen",
+  "records": [
+    {
+      "clip": "idle",
+      "source": "Idle-RoughBronze-v1.png",
+      "file": "Idle-LeatherPauldrons-v1.png",
+      "id": "leather-pauldrons-idle-v1",
+      "prompt": "Use case: precise-object-edit\nEdit ONLY the clothing and shoulders of this exact six-frame Russian Bronze Axeman sprite sheet. Keep all existing idle poses, actor size, pixel positions, weapons, camera and padding.\nAdd TWO simple hand-hammered BRONZE PAULDRONS: rounded compact shoulder caps attached by leather straps, warm dull bronze matching the helmet, a few small rivets and dents. They must be clearly visible on BOTH outer shoulders outside the cream fur collar. Follow the shoulders naturally; no spikes, giant fantasy armor or extra arms. Retain fur collar and cap.\nChange the RED CLOTH TOP to rugged REDDISH-BROWN LEATHER: thick supple hide with clear grain, stitched panel seams, rubbed edges, leather folds and muted oxblood undertone. Torso and short sleeves are leather, not red wool. Keep existing belt and hem length. Preserve pale trousers, boots, wrist guards, helmet, axe and shield.\nExact1536x1024 RGBA, same3columns x2rows of512px cells, six complete soldiers, same root and scale throughout. Strict vertical overhead orthographic screen-down camera. Transparent background and cell gaps, no haze, shadows, grid, text or blood. Do not redraw the body, resize/translate poses, mirror weapons or change motion.",
+      "references": [
+        "Idle-RoughBronze-v1.png"
+      ],
+      "generatedSource": "C:\\Users\\Damien\\.codex\\generated_images\\01a0fea1-c63f-7343-92ca-6c21cc1c4296\\exec-5e63342d-1ec8-4fac-aee7-860918a0e0d6.png",
+      "status": "selected"
+    },
+    {
+      "clip": "running",
+      "source": "Running-RoughBronze-v1.png",
+      "file": "Running-LeatherPauldrons-v1.png",
+      "id": "leather-pauldrons-running-v1",
+      "prompt": "Use case: precise-object-edit\nEdit ONLY the clothing and shoulders of this exact six-frame Russian Bronze Axeman sprite sheet. Keep all existing motion poses, actor size, pixel positions, weapons, camera and padding.\nAdd TWO simple hand-hammered BRONZE PAULDRONS: rounded compact shoulder caps attached by leather straps, warm dull bronze matching the helmet, a few small rivets and dents. They must be clearly visible on BOTH outer shoulders outside the cream fur collar. Follow the shoulders naturally; no spikes, giant fantasy armor or extra arms. Retain fur collar and cap.\nChange the RED CLOTH TOP to rugged REDDISH-BROWN LEATHER: thick supple hide with clear grain, stitched panel seams, rubbed edges, leather folds and muted oxblood undertone. Torso and short sleeves are leather, not red wool. Keep existing belt and hem length. Preserve pale trousers, boots, wrist guards, helmet, axe and shield.\nExact1536x1024 RGBA, same3columns x2rows of512px cells, six complete soldiers, same root and scale throughout. Strict vertical overhead orthographic screen-down camera. Transparent background and cell gaps, no haze, shadows, grid, text or blood. Do not redraw the body, resize/translate poses, mirror weapons or change motion.\nRetain exactly this target's running sequence and chronological cell order. Keep corrected curved axe edge orientation during every swing; preserve foot reach and all planted/stagger poses.",
+      "references": [
+        "Running-RoughBronze-v1.png"
+      ],
+      "generatedSource": "C:\\Users\\Damien\\.codex\\generated_images\\01a0fea1-c63f-7343-92ca-6c21cc1c4296\\exec-139b8680-1f2b-4010-9dde-54944aeba052.png",
+      "status": "selected"
+    },
+    {
+      "clip": "attack",
+      "source": "Attack-RoughBronze-v1.png",
+      "file": "Attack-LeatherPauldrons-v1.png",
+      "id": "leather-pauldrons-attack-v1",
+      "prompt": "Use case: precise-object-edit\nEdit ONLY the clothing and shoulders of this exact six-frame Russian Bronze Axeman sprite sheet. Keep all existing motion poses, actor size, pixel positions, weapons, camera and padding.\nAdd TWO simple hand-hammered BRONZE PAULDRONS: rounded compact shoulder caps attached by leather straps, warm dull bronze matching the helmet, a few small rivets and dents. They must be clearly visible on BOTH outer shoulders outside the cream fur collar. Follow the shoulders naturally; no spikes, giant fantasy armor or extra arms. Retain fur collar and cap.\nChange the RED CLOTH TOP to rugged REDDISH-BROWN LEATHER: thick supple hide with clear grain, stitched panel seams, rubbed edges, leather folds and muted oxblood undertone. Torso and short sleeves are leather, not red wool. Keep existing belt and hem length. Preserve pale trousers, boots, wrist guards, helmet, axe and shield.\nExact1536x1024 RGBA, same3columns x2rows of512px cells, six complete soldiers, same root and scale throughout. Strict vertical overhead orthographic screen-down camera. Transparent background and cell gaps, no haze, shadows, grid, text or blood. Do not redraw the body, resize/translate poses, mirror weapons or change motion.\nRetain exactly this target's attack sequence and chronological cell order. Keep corrected curved axe edge orientation during every swing; preserve foot reach and all planted/stagger poses.",
+      "references": [
+        "Attack-RoughBronze-v1.png"
+      ],
+      "generatedSource": "C:\\Users\\Damien\\.codex\\generated_images\\01a0fea1-c63f-7343-92ca-6c21cc1c4296\\exec-2899e91a-8e1e-4ea2-99b8-450c1840924f.png",
+      "status": "selected"
+    },
+    {
+      "clip": "hit",
+      "source": "Hit-RoughBronze-v2.png",
+      "file": "Hit-LeatherPauldrons-v1.png",
+      "id": "leather-pauldrons-hit-v1",
+      "prompt": "Use case: precise-object-edit\nEdit ONLY the clothing and shoulders of this exact six-frame Russian Bronze Axeman sprite sheet. Keep all existing motion poses, actor size, pixel positions, weapons, camera and padding.\nAdd TWO simple hand-hammered BRONZE PAULDRONS: rounded compact shoulder caps attached by leather straps, warm dull bronze matching the helmet, a few small rivets and dents. They must be clearly visible on BOTH outer shoulders outside the cream fur collar. Follow the shoulders naturally; no spikes, giant fantasy armor or extra arms. Retain fur collar and cap.\nChange the RED CLOTH TOP to rugged REDDISH-BROWN LEATHER: thick supple hide with clear grain, stitched panel seams, rubbed edges, leather folds and muted oxblood undertone. Torso and short sleeves are leather, not red wool. Keep existing belt and hem length. Preserve pale trousers, boots, wrist guards, helmet, axe and shield.\nExact1536x1024 RGBA, same3columns x2rows of512px cells, six complete soldiers, same root and scale throughout. Strict vertical overhead orthographic screen-down camera. Transparent background and cell gaps, no haze, shadows, grid, text or blood. Do not redraw the body, resize/translate poses, mirror weapons or change motion.\nRetain exactly this target's hit sequence and chronological cell order. Keep corrected curved axe edge orientation during every swing; preserve foot reach and all planted/stagger poses.",
+      "references": [
+        "Hit-RoughBronze-v2.png"
+      ],
+      "generatedSource": "C:\\Users\\Damien\\.codex\\generated_images\\01a0fea1-c63f-7343-92ca-6c21cc1c4296\\exec-bb51d7a1-01a5-4414-a7f5-7d9839aa445d.png",
+      "status": "selected"
+    },
+    {
+      "clip": "charged",
+      "source": "Charged-RoughBronze-v2.png",
+      "file": "Charged-LeatherPauldrons-v1.png",
+      "id": "leather-pauldrons-charged-v1",
+      "prompt": "Use case: precise-object-edit\nEdit ONLY the clothing and shoulders of this exact six-frame Russian Bronze Axeman sprite sheet. Keep all existing motion poses, actor size, pixel positions, weapons, camera and padding.\nAdd TWO simple hand-hammered BRONZE PAULDRONS: rounded compact shoulder caps attached by leather straps, warm dull bronze matching the helmet, a few small rivets and dents. They must be clearly visible on BOTH outer shoulders outside the cream fur collar. Follow the shoulders naturally; no spikes, giant fantasy armor or extra arms. Retain fur collar and cap.\nChange the RED CLOTH TOP to rugged REDDISH-BROWN LEATHER: thick supple hide with clear grain, stitched panel seams, rubbed edges, leather folds and muted oxblood undertone. Torso and short sleeves are leather, not red wool. Keep existing belt and hem length. Preserve pale trousers, boots, wrist guards, helmet, axe and shield.\nExact1536x1024 RGBA, same3columns x2rows of512px cells, six complete soldiers, same root and scale throughout. Strict vertical overhead orthographic screen-down camera. Transparent background and cell gaps, no haze, shadows, grid, text or blood. Do not redraw the body, resize/translate poses, mirror weapons or change motion.\nRetain exactly this target's charged motion and physical cell order. Do not convert a run or stagger into idle. Preserve every bent knee, foot/boot position, lunge, shield angle and the narrow curved cutting edge of the axe during swings. Two compact bronze caps articulate on the moving shoulders.",
+      "references": [
+        "Charged-RoughBronze-v2.png"
+      ],
+      "generatedSource": "C:\\Users\\Damien\\.codex\\generated_images\\01a0fea1-c63f-7343-92ca-6c21cc1c4296\\exec-1d788f1c-9cef-4f07-acc0-78954d0228c8.png",
+      "status": "selected"
+    },
+    {
+      "clip": "charge",
+      "source": "Charge-RoughBronze-v1.png",
+      "file": "Charge-LeatherPauldrons-v1.png",
+      "id": "leather-pauldrons-charge-v1",
+      "prompt": "Use case: precise-object-edit\nEdit ONLY the clothing and shoulders of this exact six-frame Russian Bronze Axeman sprite sheet. Keep all existing motion poses, actor size, pixel positions, weapons, camera and padding.\nAdd TWO simple hand-hammered BRONZE PAULDRONS: rounded compact shoulder caps attached by leather straps, warm dull bronze matching the helmet, a few small rivets and dents. They must be clearly visible on BOTH outer shoulders outside the cream fur collar. Follow the shoulders naturally; no spikes, giant fantasy armor or extra arms. Retain fur collar and cap.\nChange the RED CLOTH TOP to rugged REDDISH-BROWN LEATHER: thick supple hide with clear grain, stitched panel seams, rubbed edges, leather folds and muted oxblood undertone. Torso and short sleeves are leather, not red wool. Keep existing belt and hem length. Preserve pale trousers, boots, wrist guards, helmet, axe and shield.\nExact1536x1024 RGBA, same3columns x2rows of512px cells, six complete soldiers, same root and scale throughout. Strict vertical overhead orthographic screen-down camera. Transparent background and cell gaps, no haze, shadows, grid, text or blood. Do not redraw the body, resize/translate poses, mirror weapons or change motion.\nRetain exactly this target's charge motion and physical cell order. Do not convert a run or stagger into idle. Preserve every bent knee, foot/boot position, lunge, shield angle and the narrow curved cutting edge of the axe during swings. Two compact bronze caps articulate on the moving shoulders.",
+      "references": [
+        "Charge-RoughBronze-v1.png"
+      ],
+      "generatedSource": "C:\\Users\\Damien\\.codex\\generated_images\\01a0fea1-c63f-7343-92ca-6c21cc1c4296\\exec-2207a4f8-b62c-4b17-8774-7f8a29e61816.png",
+      "status": "selected"
+    },
+    {
+      "clip": "charge-attack",
+      "source": "ChargeAttack-RoughBronze-v1.png",
+      "file": "ChargeAttack-LeatherPauldrons-v1.png",
+      "id": "leather-pauldrons-charge-attack-v1",
+      "prompt": "Use case: precise-object-edit\nEdit ONLY the clothing and shoulders of this exact six-frame Russian Bronze Axeman sprite sheet. Keep all existing motion poses, actor size, pixel positions, weapons, camera and padding.\nAdd TWO simple hand-hammered BRONZE PAULDRONS: rounded compact shoulder caps attached by leather straps, warm dull bronze matching the helmet, a few small rivets and dents. They must be clearly visible on BOTH outer shoulders outside the cream fur collar. Follow the shoulders naturally; no spikes, giant fantasy armor or extra arms. Retain fur collar and cap.\nChange the RED CLOTH TOP to rugged REDDISH-BROWN LEATHER: thick supple hide with clear grain, stitched panel seams, rubbed edges, leather folds and muted oxblood undertone. Torso and short sleeves are leather, not red wool. Keep existing belt and hem length. Preserve pale trousers, boots, wrist guards, helmet, axe and shield.\nExact1536x1024 RGBA, same3columns x2rows of512px cells, six complete soldiers, same root and scale throughout. Strict vertical overhead orthographic screen-down camera. Transparent background and cell gaps, no haze, shadows, grid, text or blood. Do not redraw the body, resize/translate poses, mirror weapons or change motion.\nRetain exactly this target's charge-attack motion and physical cell order. Do not convert a run or stagger into idle. Preserve every bent knee, foot/boot position, lunge, shield angle and the narrow curved cutting edge of the axe during swings. Two compact bronze caps articulate on the moving shoulders.",
+      "references": [
+        "ChargeAttack-RoughBronze-v1.png"
+      ],
+      "generatedSource": "C:\\Users\\Damien\\.codex\\generated_images\\01a0fea1-c63f-7343-92ca-6c21cc1c4296\\exec-71472d57-a06d-41fa-b103-04c0fe1ba6f2.png",
+      "status": "selected"
+    },
+    {
+      "clip": "death",
+      "source": "Death-RoughBronze-Baked-v1.png",
+      "file": "Death-LeatherPauldrons-v1.png",
+      "id": "leather-pauldrons-death-v1",
+      "prompt": "Use case: precise-object-edit\nEdit ONLY the clothing and shoulders of this exact six-frame Russian Bronze Axeman sprite sheet. Keep all existing motion poses, actor size, pixel positions, weapons, camera and padding.\nAdd TWO simple hand-hammered BRONZE PAULDRONS: rounded compact shoulder caps attached by leather straps, warm dull bronze matching the helmet, a few small rivets and dents. They must be clearly visible on BOTH outer shoulders outside the cream fur collar. Follow the shoulders naturally; no spikes, giant fantasy armor or extra arms. Retain fur collar and cap.\nChange the RED CLOTH TOP to rugged REDDISH-BROWN LEATHER: thick supple hide with clear grain, stitched panel seams, rubbed edges, leather folds and muted oxblood undertone. Torso and short sleeves are leather, not red wool. Keep existing belt and hem length. Preserve pale trousers, boots, wrist guards, helmet, axe and shield.\nExact1536x1024 RGBA, same3columns x2rows of512px cells, six complete soldiers, same root and scale throughout. Strict vertical overhead orthographic screen-down camera. Transparent background and cell gaps, no haze, shadows, grid, text or blood. Do not redraw the body, resize/translate poses, mirror weapons or change motion.\nThis target is the death death sequence. Preserve ALL six original standing, falling and corpse poses and dropped equipment. The reddish-brown leather top and TWO bronze shoulder caps remain on the body throughout the fall and final corpse. Shoulder caps rotate with the torso, not floating detached. Keep original corpse dimensions and body placement, and complete shield/axe inside cell with at least16px transparent padding. No new death motion.",
+      "references": [
+        "Death-RoughBronze-Baked-v1.png"
+      ],
+      "generatedSource": "C:\\Users\\Damien\\.codex\\generated_images\\01a0fea1-c63f-7343-92ca-6c21cc1c4296\\exec-d588a894-393b-4542-8b5e-253b95791f65.png",
+      "status": "composition-source"
+    },
+    {
+      "clip": "death-back",
+      "source": "Death-Back-RoughBronze-v2.png",
+      "file": "Death-Back-LeatherPauldrons-v1.png",
+      "id": "leather-pauldrons-death-back-v1",
+      "prompt": "Use case: precise-object-edit\nEdit ONLY the clothing and shoulders of this exact six-frame Russian Bronze Axeman sprite sheet. Keep all existing motion poses, actor size, pixel positions, weapons, camera and padding.\nAdd TWO simple hand-hammered BRONZE PAULDRONS: rounded compact shoulder caps attached by leather straps, warm dull bronze matching the helmet, a few small rivets and dents. They must be clearly visible on BOTH outer shoulders outside the cream fur collar. Follow the shoulders naturally; no spikes, giant fantasy armor or extra arms. Retain fur collar and cap.\nChange the RED CLOTH TOP to rugged REDDISH-BROWN LEATHER: thick supple hide with clear grain, stitched panel seams, rubbed edges, leather folds and muted oxblood undertone. Torso and short sleeves are leather, not red wool. Keep existing belt and hem length. Preserve pale trousers, boots, wrist guards, helmet, axe and shield.\nExact1536x1024 RGBA, same3columns x2rows of512px cells, six complete soldiers, same root and scale throughout. Strict vertical overhead orthographic screen-down camera. Transparent background and cell gaps, no haze, shadows, grid, text or blood. Do not redraw the body, resize/translate poses, mirror weapons or change motion.\nThis target is the death-back death sequence. Preserve ALL six original standing, falling and corpse poses and dropped equipment. The reddish-brown leather top and TWO bronze shoulder caps remain on the body throughout the fall and final corpse. Shoulder caps rotate with the torso, not floating detached. Keep original corpse dimensions and body placement, and complete shield/axe inside cell with at least16px transparent padding. No new death motion.",
+      "references": [
+        "Death-Back-RoughBronze-v2.png"
+      ],
+      "generatedSource": "C:\\Users\\Damien\\.codex\\generated_images\\01a0fea1-c63f-7343-92ca-6c21cc1c4296\\exec-6e635c85-f4dc-4cdd-be8a-8af4b6d3e644.png",
+      "status": "selected"
+    }
+  ]
+}

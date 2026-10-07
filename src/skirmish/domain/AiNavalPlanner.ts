@@ -374,7 +374,7 @@ export class AiNavalPlanner {
             !value.remainingTicks &&
             (value.health ?? 1) > 0
           ) {
-            let distance = world.map.euclideanDistSquared(
+            const distance = world.map.euclideanDistSquared(
               value.tile,
               player.base,
             );

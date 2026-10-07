@@ -871,7 +871,7 @@ export class Skirmish {
     const player: Player = {
       id,
       name,
-      ...(this.options.humanColors?.[id - 1] != null ? { colorIndex: this.options.humanColors[id - 1]! } : {}),
+      ...(typeof this.options.humanColors?.[id - 1] === "number" ? { colorIndex: this.options.humanColors[id - 1]! } : {}),
       ...(factionId ? { factionId, personalityId } : {}),
       ai: id > (this.options.humanNames?.length ?? 1),
       kind,
@@ -1259,7 +1259,6 @@ export class Skirmish {
       let path: number[] = [];
       if (order.type === "move") {
         const destination = destinations!.get(squad.id)!;
-        const tile = pointTile(this.map, destination);
         const found = groupPaths[i];
         if (found === null) return "That destination cannot be reached";
         path = found;
@@ -2631,8 +2630,8 @@ export class Skirmish {
         const allowed=!this.expansion || (this.expansion.fortifications.clearMovement(squad,end,squad.playerId,squadRadius(squad.kind)) &&
         (this.aiFootprintAllowed(squad.playerId,this.tileOf(end)) || (!this.aiFootprintAllowed(squad.playerId,this.tileOf(squad)) &&
           distanceSquared(end,tilePoint(this.map,this.player(squad.playerId)!.base)) < distanceSquared(squad,tilePoint(this.map,this.player(squad.playerId)!.base)))));
-        let proof=this.movementClearance.get(squad.id);
-        if(!proof)this.movementClearance.set(squad.id,proof={tick:this.tick,x:end.x,y:end.y,allowed});
+        const proof=this.movementClearance.get(squad.id);
+        if(!proof)this.movementClearance.set(squad.id,{tick:this.tick,x:end.x,y:end.y,allowed});
         else {proof.tick=this.tick;proof.x=end.x;proof.y=end.y;proof.allowed=allowed;}
         return allowed;
       },

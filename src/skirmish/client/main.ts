@@ -43,7 +43,6 @@ import { empireMarkup, EmpireView } from "./EmpireView";
 import { EmpireViewModel } from "./EmpireViewModel";
 import { FactionViewModel } from "./FactionViewModel";
 
-
 import {
   AGE_NAMES,
   STARTING_AGES,

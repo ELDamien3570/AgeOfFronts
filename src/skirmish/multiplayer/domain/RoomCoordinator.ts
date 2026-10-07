@@ -261,7 +261,7 @@ export class RoomCoordinator {
   }
 
   private assertColorAvailable(room: OnlineRoom, guestId: string, profile: EmpireProfile): void {
-    if (profile.colorIndex != null && room.members.some(member =>
+    if (typeof profile.colorIndex === "number" && room.members.some(member =>
       member.guestId !== guestId && member.profile.colorIndex === profile.colorIndex))
       throw new Error("That faction color is reserved by another player. Choose another color or Automatic.");
   }

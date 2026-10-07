@@ -4,7 +4,7 @@ import { boundsOverlap, buildingReservationBounds } from "../BuildingFootprint";
 import type { LandPaths } from "../Pathfinding";
 import type { Building, BuildingType, Player } from "../Protocol";
 import type { Deposit } from "./Definitions";
-import { DEPOSIT_RESOURCES, DEPOSIT_RULES } from "./DepositGeneration";
+import { DEPOSIT_RULES } from "./DepositGeneration";
 import { startingCamp } from "./StartingCamp";
 import { CAMP_RADIUS } from "./SpawnSelection";
 
