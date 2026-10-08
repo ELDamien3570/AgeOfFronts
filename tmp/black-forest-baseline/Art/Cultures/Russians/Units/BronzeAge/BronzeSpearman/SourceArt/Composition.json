@@ -1,0 +1,1060 @@
+{
+  "date": "2026-10-07",
+  "authorization": "User authorized composing and baking existing sprites; single actors only.",
+  "method": "Whole-pose crop, uniform scale, transparent atlas padding. No painted pixels or alpha cleanup in code.",
+  "clips": [
+    {
+      "clip": "idle",
+      "source": "SourceArt/Native-Idle-Animated-v1.png",
+      "sourceSha256": "5c27e96a210dbea7c78da7c022a8aa19fb03342c02a5bc9619be74660f5ac0d6",
+      "output": "Idle-Animated-v1.png",
+      "outputSha256": "7bbaca6c01597bd26e6cf339799336e98b0b537932e1bfc20dd1d65752156a83",
+      "tracks": [
+        {
+          "index": 0,
+          "sourceRect": [
+            0,
+            0,
+            512,
+            512
+          ],
+          "uniformScale": 0.8,
+          "destinationOffset": [
+            50,
+            50
+          ],
+          "sourceRoot": [
+            256,
+            280
+          ]
+        },
+        {
+          "index": 1,
+          "sourceRect": [
+            512,
+            0,
+            1024,
+            512
+          ],
+          "uniformScale": 0.8,
+          "destinationOffset": [
+            50,
+            50
+          ],
+          "sourceRoot": [
+            768,
+            280
+          ]
+        },
+        {
+          "index": 2,
+          "sourceRect": [
+            1024,
+            0,
+            1536,
+            512
+          ],
+          "uniformScale": 0.8,
+          "destinationOffset": [
+            50,
+            50
+          ],
+          "sourceRoot": [
+            1280,
+            280
+          ]
+        },
+        {
+          "index": 3,
+          "sourceRect": [
+            0,
+            512,
+            512,
+            1024
+          ],
+          "uniformScale": 0.8,
+          "destinationOffset": [
+            50,
+            50
+          ],
+          "sourceRoot": [
+            256,
+            792
+          ]
+        },
+        {
+          "index": 4,
+          "sourceRect": [
+            512,
+            512,
+            1024,
+            1024
+          ],
+          "uniformScale": 0.8,
+          "destinationOffset": [
+            50,
+            50
+          ],
+          "sourceRoot": [
+            768,
+            792
+          ]
+        },
+        {
+          "index": 5,
+          "sourceRect": [
+            1024,
+            512,
+            1536,
+            1024
+          ],
+          "uniformScale": 0.8,
+          "destinationOffset": [
+            50,
+            50
+          ],
+          "sourceRoot": [
+            1280,
+            792
+          ]
+        }
+      ]
+    },
+    {
+      "clip": "running",
+      "source": "SourceArt/Native-Running-v1.png",
+      "sourceSha256": "2751638bff133e200de22671cbe191be65fdd1e2954a5c4f16e929d314654e7c",
+      "output": "Running-v1.png",
+      "outputSha256": "a0c3573849c41bc642b389e2971ab07e22c4160616ce94b4e88458bf9a683cc5",
+      "tracks": [
+        {
+          "index": 0,
+          "sourceRect": [
+            0,
+            0,
+            512,
+            490
+          ],
+          "uniformScale": 0.8,
+          "destinationOffset": [
+            50,
+            50
+          ],
+          "sourceRoot": [
+            256,
+            280
+          ]
+        },
+        {
+          "index": 1,
+          "sourceRect": [
+            512,
+            0,
+            1024,
+            500
+          ],
+          "uniformScale": 0.8,
+          "destinationOffset": [
+            50,
+            50
+          ],
+          "sourceRoot": [
+            768,
+            280
+          ]
+        },
+        {
+          "index": 2,
+          "sourceRect": [
+            1024,
+            0,
+            1536,
+            490
+          ],
+          "uniformScale": 0.8,
+          "destinationOffset": [
+            50,
+            50
+          ],
+          "sourceRoot": [
+            1280,
+            280
+          ]
+        },
+        {
+          "index": 3,
+          "sourceRect": [
+            0,
+            490,
+            512,
+            1024
+          ],
+          "uniformScale": 0.8,
+          "destinationOffset": [
+            50,
+            32
+          ],
+          "sourceRoot": [
+            256,
+            792
+          ]
+        },
+        {
+          "index": 4,
+          "sourceRect": [
+            512,
+            500,
+            1024,
+            1024
+          ],
+          "uniformScale": 0.8,
+          "destinationOffset": [
+            50,
+            40
+          ],
+          "sourceRoot": [
+            768,
+            792
+          ]
+        },
+        {
+          "index": 5,
+          "sourceRect": [
+            1024,
+            490,
+            1536,
+            1024
+          ],
+          "uniformScale": 0.8,
+          "destinationOffset": [
+            50,
+            32
+          ],
+          "sourceRoot": [
+            1280,
+            792
+          ]
+        }
+      ]
+    },
+    {
+      "clip": "attack",
+      "source": "SourceArt/Native-Attack-v1.png",
+      "sourceSha256": "3359e9fde77e058a326bac703ae963b4b3135707ea67abe71229fe54dac5bc1e",
+      "output": "Attack-v1.png",
+      "outputSha256": "88793720eff1e733f5881f376eb697daf9b923a4c955bcff8b586b45bea3bdb2",
+      "tracks": [
+        {
+          "index": 0,
+          "sourceRect": [
+            0,
+            0,
+            512,
+            512
+          ],
+          "uniformScale": 0.8,
+          "destinationOffset": [
+            50,
+            50
+          ],
+          "sourceRoot": [
+            256,
+            280
+          ]
+        },
+        {
+          "index": 1,
+          "sourceRect": [
+            512,
+            0,
+            1024,
+            480
+          ],
+          "uniformScale": 0.8,
+          "destinationOffset": [
+            50,
+            50
+          ],
+          "sourceRoot": [
+            768,
+            280
+          ]
+        },
+        {
+          "index": 2,
+          "sourceRect": [
+            1024,
+            0,
+            1536,
+            512
+          ],
+          "uniformScale": 0.8,
+          "destinationOffset": [
+            50,
+            50
+          ],
+          "sourceRoot": [
+            1280,
+            280
+          ]
+        },
+        {
+          "index": 3,
+          "sourceRect": [
+            0,
+            512,
+            512,
+            1024
+          ],
+          "uniformScale": 0.8,
+          "destinationOffset": [
+            50,
+            50
+          ],
+          "sourceRoot": [
+            256,
+            792
+          ]
+        },
+        {
+          "index": 4,
+          "sourceRect": [
+            512,
+            480,
+            1024,
+            1024
+          ],
+          "uniformScale": 0.8,
+          "destinationOffset": [
+            50,
+            24
+          ],
+          "sourceRoot": [
+            768,
+            792
+          ]
+        },
+        {
+          "index": 5,
+          "sourceRect": [
+            1024,
+            512,
+            1536,
+            1024
+          ],
+          "uniformScale": 0.8,
+          "destinationOffset": [
+            50,
+            50
+          ],
+          "sourceRoot": [
+            1280,
+            792
+          ]
+        }
+      ]
+    },
+    {
+      "clip": "hit",
+      "source": "SourceArt/Native-Hit-v1.png",
+      "sourceSha256": "62629f0cf6350c00963e50efe4d13e4d783f32cce4b9ef8e5ba4cb25939acc06",
+      "output": "Hit-v1.png",
+      "outputSha256": "3cd661778397bc302782786bcd60da6fd8f3f354d21b9d80f83d4598ab584640",
+      "tracks": [
+        {
+          "index": 0,
+          "sourceRect": [
+            0,
+            0,
+            512,
+            512
+          ],
+          "uniformScale": 0.8,
+          "destinationOffset": [
+            50,
+            50
+          ],
+          "sourceRoot": [
+            256,
+            280
+          ]
+        },
+        {
+          "index": 1,
+          "sourceRect": [
+            512,
+            0,
+            1024,
+            512
+          ],
+          "uniformScale": 0.8,
+          "destinationOffset": [
+            50,
+            50
+          ],
+          "sourceRoot": [
+            768,
+            280
+          ]
+        },
+        {
+          "index": 2,
+          "sourceRect": [
+            1024,
+            0,
+            1536,
+            512
+          ],
+          "uniformScale": 0.8,
+          "destinationOffset": [
+            50,
+            50
+          ],
+          "sourceRoot": [
+            1280,
+            280
+          ]
+        },
+        {
+          "index": 3,
+          "sourceRect": [
+            0,
+            512,
+            512,
+            1024
+          ],
+          "uniformScale": 0.8,
+          "destinationOffset": [
+            50,
+            50
+          ],
+          "sourceRoot": [
+            256,
+            792
+          ]
+        },
+        {
+          "index": 4,
+          "sourceRect": [
+            512,
+            512,
+            1024,
+            1024
+          ],
+          "uniformScale": 0.8,
+          "destinationOffset": [
+            50,
+            50
+          ],
+          "sourceRoot": [
+            768,
+            792
+          ]
+        },
+        {
+          "index": 5,
+          "sourceRect": [
+            1024,
+            512,
+            1536,
+            1024
+          ],
+          "uniformScale": 0.8,
+          "destinationOffset": [
+            50,
+            50
+          ],
+          "sourceRoot": [
+            1280,
+            792
+          ]
+        }
+      ]
+    },
+    {
+      "clip": "charged",
+      "source": "SourceArt/Native-Charged-Impact-v1.png",
+      "sourceSha256": "219b1b46e3789aeeac4073517a324fd404e8fa5f82198522b05520a8c217835f",
+      "output": "Charged-Impact-v1.png",
+      "outputSha256": "0081db898bb368dd198f5b6a0634da45db3107df8d7710aa76c0c955e40c8e7e",
+      "tracks": [
+        {
+          "index": 0,
+          "sourceRect": [
+            0,
+            0,
+            512,
+            512
+          ],
+          "uniformScale": 0.8,
+          "destinationOffset": [
+            50,
+            50
+          ],
+          "sourceRoot": [
+            256,
+            280
+          ]
+        },
+        {
+          "index": 1,
+          "sourceRect": [
+            512,
+            0,
+            1024,
+            512
+          ],
+          "uniformScale": 0.8,
+          "destinationOffset": [
+            50,
+            50
+          ],
+          "sourceRoot": [
+            768,
+            280
+          ]
+        },
+        {
+          "index": 2,
+          "sourceRect": [
+            1024,
+            0,
+            1536,
+            512
+          ],
+          "uniformScale": 0.8,
+          "destinationOffset": [
+            50,
+            50
+          ],
+          "sourceRoot": [
+            1280,
+            280
+          ]
+        },
+        {
+          "index": 3,
+          "sourceRect": [
+            0,
+            512,
+            512,
+            1024
+          ],
+          "uniformScale": 0.8,
+          "destinationOffset": [
+            50,
+            50
+          ],
+          "sourceRoot": [
+            256,
+            792
+          ]
+        },
+        {
+          "index": 4,
+          "sourceRect": [
+            512,
+            512,
+            1024,
+            1024
+          ],
+          "uniformScale": 0.8,
+          "destinationOffset": [
+            50,
+            50
+          ],
+          "sourceRoot": [
+            768,
+            792
+          ]
+        },
+        {
+          "index": 5,
+          "sourceRect": [
+            1024,
+            512,
+            1536,
+            1024
+          ],
+          "uniformScale": 0.8,
+          "destinationOffset": [
+            50,
+            50
+          ],
+          "sourceRoot": [
+            1280,
+            792
+          ]
+        }
+      ]
+    },
+    {
+      "clip": "charge",
+      "source": "SourceArt/Native-Charge-v1.png",
+      "sourceSha256": "ca155409effb0a91e500d45b5201d5b0ef1eb65c478747d01c6a98d69d4ee434",
+      "output": "Charge-v1.png",
+      "outputSha256": "d3374bdaeb897d84ddda817aa4383c6254d0167c586f77d303c4124e9001554d",
+      "tracks": [
+        {
+          "index": 0,
+          "sourceRect": [
+            0,
+            0,
+            512,
+            512
+          ],
+          "uniformScale": 0.8,
+          "destinationOffset": [
+            50,
+            50
+          ],
+          "sourceRoot": [
+            256,
+            280
+          ]
+        },
+        {
+          "index": 1,
+          "sourceRect": [
+            512,
+            0,
+            1024,
+            512
+          ],
+          "uniformScale": 0.8,
+          "destinationOffset": [
+            50,
+            50
+          ],
+          "sourceRoot": [
+            768,
+            280
+          ]
+        },
+        {
+          "index": 2,
+          "sourceRect": [
+            1024,
+            0,
+            1536,
+            512
+          ],
+          "uniformScale": 0.8,
+          "destinationOffset": [
+            50,
+            50
+          ],
+          "sourceRoot": [
+            1280,
+            280
+          ]
+        },
+        {
+          "index": 3,
+          "sourceRect": [
+            0,
+            512,
+            512,
+            1024
+          ],
+          "uniformScale": 0.8,
+          "destinationOffset": [
+            50,
+            50
+          ],
+          "sourceRoot": [
+            256,
+            792
+          ]
+        },
+        {
+          "index": 4,
+          "sourceRect": [
+            512,
+            512,
+            1024,
+            1024
+          ],
+          "uniformScale": 0.8,
+          "destinationOffset": [
+            50,
+            50
+          ],
+          "sourceRoot": [
+            768,
+            792
+          ]
+        },
+        {
+          "index": 5,
+          "sourceRect": [
+            1024,
+            512,
+            1536,
+            1024
+          ],
+          "uniformScale": 0.8,
+          "destinationOffset": [
+            50,
+            50
+          ],
+          "sourceRoot": [
+            1280,
+            792
+          ]
+        }
+      ]
+    },
+    {
+      "clip": "charge-attack",
+      "source": "SourceArt/Native-Charge-Attack-v1.png",
+      "sourceSha256": "f8b90de6032528387cc80b19cdb622423749c869c5582157633a5b5d726b89f1",
+      "output": "Charge-Attack-v1.png",
+      "outputSha256": "851cc155e09af4586803f307b0787c40d2cbf758a559a7fa1ea81797faa40598",
+      "tracks": [
+        {
+          "index": 0,
+          "sourceRect": [
+            0,
+            0,
+            512,
+            470
+          ],
+          "uniformScale": 0.8,
+          "destinationOffset": [
+            50,
+            50
+          ],
+          "sourceRoot": [
+            256,
+            280
+          ]
+        },
+        {
+          "index": 1,
+          "sourceRect": [
+            512,
+            0,
+            1024,
+            512
+          ],
+          "uniformScale": 0.8,
+          "destinationOffset": [
+            50,
+            50
+          ],
+          "sourceRoot": [
+            768,
+            280
+          ]
+        },
+        {
+          "index": 2,
+          "sourceRect": [
+            1024,
+            0,
+            1536,
+            512
+          ],
+          "uniformScale": 0.8,
+          "destinationOffset": [
+            50,
+            50
+          ],
+          "sourceRoot": [
+            1280,
+            280
+          ]
+        },
+        {
+          "index": 3,
+          "sourceRect": [
+            0,
+            470,
+            512,
+            1024
+          ],
+          "uniformScale": 0.8,
+          "destinationOffset": [
+            50,
+            16
+          ],
+          "sourceRoot": [
+            256,
+            792
+          ]
+        },
+        {
+          "index": 4,
+          "sourceRect": [
+            512,
+            512,
+            1024,
+            1024
+          ],
+          "uniformScale": 0.8,
+          "destinationOffset": [
+            50,
+            50
+          ],
+          "sourceRoot": [
+            768,
+            792
+          ]
+        },
+        {
+          "index": 5,
+          "sourceRect": [
+            1024,
+            512,
+            1536,
+            1024
+          ],
+          "uniformScale": 0.8,
+          "destinationOffset": [
+            50,
+            50
+          ],
+          "sourceRoot": [
+            1280,
+            792
+          ]
+        }
+      ]
+    },
+    {
+      "clip": "death",
+      "source": "SourceArt/Native-Death-v1.png",
+      "sourceSha256": "fbe5c888d57f7e54bdf5afad51a252f70a0ef33520f36d006ce8b45c43b0eaa7",
+      "output": "Death-v1.png",
+      "outputSha256": "ddc4a9e41e0df770f2f14713c5767ab00ba931ca1315dc1f956f411f646c7e45",
+      "tracks": [
+        {
+          "index": 0,
+          "sourceRect": [
+            0,
+            0,
+            512,
+            512
+          ],
+          "uniformScale": 0.8,
+          "destinationOffset": [
+            50,
+            50
+          ],
+          "sourceRoot": [
+            256,
+            280
+          ]
+        },
+        {
+          "index": 1,
+          "sourceRect": [
+            512,
+            0,
+            1040,
+            512
+          ],
+          "uniformScale": 0.8,
+          "destinationOffset": [
+            50,
+            50
+          ],
+          "sourceRoot": [
+            768,
+            280
+          ]
+        },
+        {
+          "index": 2,
+          "sourceRect": [
+            1040,
+            0,
+            1536,
+            512
+          ],
+          "uniformScale": 0.8,
+          "destinationOffset": [
+            63,
+            50
+          ],
+          "sourceRoot": [
+            1280,
+            280
+          ]
+        },
+        {
+          "index": 3,
+          "sourceRect": [
+            0,
+            512,
+            512,
+            1024
+          ],
+          "uniformScale": 0.8,
+          "destinationOffset": [
+            50,
+            50
+          ],
+          "sourceRoot": [
+            256,
+            792
+          ]
+        },
+        {
+          "index": 4,
+          "sourceRect": [
+            512,
+            512,
+            1040,
+            1024
+          ],
+          "uniformScale": 0.8,
+          "destinationOffset": [
+            50,
+            50
+          ],
+          "sourceRoot": [
+            768,
+            792
+          ]
+        },
+        {
+          "index": 5,
+          "sourceRect": [
+            1040,
+            512,
+            1536,
+            1024
+          ],
+          "uniformScale": 0.8,
+          "destinationOffset": [
+            63,
+            50
+          ],
+          "sourceRoot": [
+            1280,
+            792
+          ]
+        }
+      ]
+    },
+    {
+      "clip": "death-back",
+      "source": "SourceArt/Native-Death-Back-v1.png",
+      "sourceSha256": "de933a57aea120fea7930de1e7b4e7a16f1e609a3018ce444381802b70d4ccfb",
+      "output": "Death-Back-v1.png",
+      "outputSha256": "b0ebb868262c3abfbaaaba833959082b39a3908c57f511ef5e5963041c4fc9a0",
+      "tracks": [
+        {
+          "index": 0,
+          "sourceRect": [
+            0,
+            0,
+            512,
+            512
+          ],
+          "uniformScale": 0.8,
+          "destinationOffset": [
+            50,
+            50
+          ],
+          "sourceRoot": [
+            256,
+            280
+          ]
+        },
+        {
+          "index": 1,
+          "sourceRect": [
+            512,
+            0,
+            1024,
+            512
+          ],
+          "uniformScale": 0.8,
+          "destinationOffset": [
+            50,
+            50
+          ],
+          "sourceRoot": [
+            768,
+            280
+          ]
+        },
+        {
+          "index": 2,
+          "sourceRect": [
+            1024,
+            0,
+            1536,
+            512
+          ],
+          "uniformScale": 0.8,
+          "destinationOffset": [
+            50,
+            50
+          ],
+          "sourceRoot": [
+            1280,
+            280
+          ]
+        },
+        {
+          "index": 3,
+          "sourceRect": [
+            0,
+            512,
+            512,
+            1024
+          ],
+          "uniformScale": 0.8,
+          "destinationOffset": [
+            50,
+            50
+          ],
+          "sourceRoot": [
+            256,
+            792
+          ]
+        },
+        {
+          "index": 4,
+          "sourceRect": [
+            512,
+            512,
+            1024,
+            1024
+          ],
+          "uniformScale": 0.8,
+          "destinationOffset": [
+            50,
+            50
+          ],
+          "sourceRoot": [
+            768,
+            792
+          ]
+        },
+        {
+          "index": 5,
+          "sourceRect": [
+            1024,
+            512,
+            1536,
+            1024
+          ],
+          "uniformScale": 0.8,
+          "destinationOffset": [
+            50,
+            50
+          ],
+          "sourceRoot": [
+            1280,
+            792
+          ]
+        }
+      ]
+    }
+  ]
+}

@@ -1,0 +1,18 @@
+{
+  "date": "2026-10-07",
+  "mode": "built-in-imagegen",
+  "records": [
+    {
+      "clip": "charge-attack",
+      "source": "ChargeAttack-LeatherPauldrons-Axe-v2.png",
+      "file": "ChargeAttack-LeatherPauldrons-Axe-v3.png",
+      "id": "charge-axe-shape-v3",
+      "prompt": "Precise object edit of the supplied overhead sprite atlas. Correct the AXE ONLY in frame 2 (top middle), frame 3 (top right), frame 4 (bottom left) and ensure frame 5 remains a consistent follow-through. Keep frames 1 and 6 exactly unchanged. Preserve all soldier anatomy, positions, hands, leather top, bronze pauldrons, shield and axes' shaft positions, six 512px cells in a 1536x1024 3x2 RGBA sheet. THE PROBLEM: frames 2 and 4 show a shovel/trowel terminal flat paddle aligned along the shaft. Replace with physically coherent SINGLE-BLADED SOCKETED BRONZE AXE. Axe geometry: wooden shaft continues into a short bronze cylindrical socket at the head, short blunt poll on one side, thick wedge-shaped cheek extends PERPENDICULAR from the SIDE of socket on opposite side, broad convex cutting edge at the outer end. Blade is a stout chopping wedge, not a semicircular scoop, not a trowel, no hooked sickle. Use frame 1's side-mounted axe as the geometry reference. In frame2, shaft points diagonally down-left; show socket along shaft, blade projecting sideways LEFT/upper-left from shaft, the sharpened edge leading the swing. In frame3 the raised axe is similarly side-mounted to the shaft, with short poll opposite blade and correct foreshortening. In frame4 downward chop, shaft points diagonally down-left toward screen bottom; bronze blade extends sideways to the LEFT of the socket, NOT a fan on the axial shaft tip. Show three-dimensional thick cheek, narrow side face and bright convex cutting edge, correct wrist roll so blade cuts down rather than sweeping flat like a paddle. Same rigid axe through rotation, never mirrored or detached. Do not add huge blade, decorative weapon or additional pose. All parts at least12px inside own cell; truly transparent background, no haze, labels or shadows outside sprites. Existing pixel placements and body sizes must not change.",
+      "references": [
+        "ChargeAttack-LeatherPauldrons-Axe-v2.png"
+      ],
+      "generatedSource": "C:/Users/Damien/.codex/generated_images/01a0fea1-c63f-7343-92ca-6c21cc1c4296/exec-99fe2238-1de4-4dc1-a5b2-e48c2e07e6c9.png",
+      "status": "composition-source"
+    }
+  ]
+}

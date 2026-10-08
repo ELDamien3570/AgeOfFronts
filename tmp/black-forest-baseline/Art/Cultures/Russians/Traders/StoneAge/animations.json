@@ -1,0 +1,755 @@
+{
+  "schemaVersion": 1,
+  "cultureId": "russian",
+  "unit": "Russian Stone Age basket merchant",
+  "age": "StoneAge",
+  "category": "OverlandTrader",
+  "memberCounts": {
+    "merchants": 1,
+    "wagons": 0,
+    "pullingAnimals": 0,
+    "packAnimals": 0,
+    "trucks": 0
+  },
+  "camera": "vertical-overhead-orthographic",
+  "facing": "screen-down",
+  "frameSize": {
+    "width": 512,
+    "height": 512
+  },
+  "sheetSize": {
+    "width": 2560,
+    "height": 1024
+  },
+  "grid": {
+    "columns": 5,
+    "rows": 2
+  },
+  "pivot": {
+    "x": 256,
+    "y": 256
+  },
+  "normalizedPivot": {
+    "x": 0.5,
+    "y": 0.5
+  },
+  "frameOrder": "left-to-right-then-next-row",
+  "animations": {
+    "idle": {
+      "file": "Idle.png",
+      "frameCount": 10,
+      "suggestedFramesPerSecond": 8,
+      "loop": true,
+      "frames": [
+        {
+          "index": 0,
+          "x": 0,
+          "y": 0,
+          "width": 512,
+          "height": 512
+        },
+        {
+          "index": 1,
+          "x": 512,
+          "y": 0,
+          "width": 512,
+          "height": 512
+        },
+        {
+          "index": 2,
+          "x": 1024,
+          "y": 0,
+          "width": 512,
+          "height": 512
+        },
+        {
+          "index": 3,
+          "x": 1536,
+          "y": 0,
+          "width": 512,
+          "height": 512
+        },
+        {
+          "index": 4,
+          "x": 2048,
+          "y": 0,
+          "width": 512,
+          "height": 512
+        },
+        {
+          "index": 5,
+          "x": 0,
+          "y": 512,
+          "width": 512,
+          "height": 512
+        },
+        {
+          "index": 6,
+          "x": 512,
+          "y": 512,
+          "width": 512,
+          "height": 512
+        },
+        {
+          "index": 7,
+          "x": 1024,
+          "y": 512,
+          "width": 512,
+          "height": 512
+        },
+        {
+          "index": 8,
+          "x": 1536,
+          "y": 512,
+          "width": 512,
+          "height": 512
+        },
+        {
+          "index": 9,
+          "x": 2048,
+          "y": 512,
+          "width": 512,
+          "height": 512
+        }
+      ],
+      "distinctPoseCount": 10
+    },
+    "travel": {
+      "file": "Travel.png",
+      "frameCount": 10,
+      "suggestedFramesPerSecond": 12,
+      "loop": true,
+      "frames": [
+        {
+          "index": 0,
+          "x": 0,
+          "y": 0,
+          "width": 512,
+          "height": 512
+        },
+        {
+          "index": 1,
+          "x": 512,
+          "y": 0,
+          "width": 512,
+          "height": 512
+        },
+        {
+          "index": 2,
+          "x": 1024,
+          "y": 0,
+          "width": 512,
+          "height": 512
+        },
+        {
+          "index": 3,
+          "x": 1536,
+          "y": 0,
+          "width": 512,
+          "height": 512
+        },
+        {
+          "index": 4,
+          "x": 2048,
+          "y": 0,
+          "width": 512,
+          "height": 512
+        },
+        {
+          "index": 5,
+          "x": 0,
+          "y": 512,
+          "width": 512,
+          "height": 512
+        },
+        {
+          "index": 6,
+          "x": 512,
+          "y": 512,
+          "width": 512,
+          "height": 512
+        },
+        {
+          "index": 7,
+          "x": 1024,
+          "y": 512,
+          "width": 512,
+          "height": 512
+        },
+        {
+          "index": 8,
+          "x": 1536,
+          "y": 512,
+          "width": 512,
+          "height": 512
+        },
+        {
+          "index": 9,
+          "x": 2048,
+          "y": 512,
+          "width": 512,
+          "height": 512
+        }
+      ],
+      "distinctPoseCount": 10
+    }
+  },
+  "source": "SourceArt/Trader_Russian_StoneAge_v1.png",
+  "sourceSha256": "6a18f962b49e84c0f628eddfedd9a2eb07ad9c3c67900e1ce506f61777ad1e50",
+  "animationApproval": {
+    "status": "approved",
+    "userMessage": "okay the boats are good, stone age trader lacks and animation and the bronze age one just looks like hes shuffling, hes not actually walking",
+    "scope": "Add the missing Stone Age trader animation."
+  },
+  "animationRevision": 2,
+  "gait": "articulated stance and swing",
+  "walkingGroundSpeed": 231.8181818181818,
+  "footTracks": {
+    "left": [
+      {
+        "side": "left",
+        "cycle": 0.5,
+        "stance": true,
+        "lift": 0,
+        "hip": [
+          570.0,
+          850.0,
+          265.1433574502669
+        ],
+        "knee": [
+          565.0,
+          916.8090944854243,
+          92.62801061399946
+        ],
+        "ankle": [
+          565,
+          768.3333333333333,
+          0
+        ],
+        "footCenter": [
+          565,
+          800.5333333333333
+        ],
+        "footPitch": 0.0,
+        "footYaw": -3.0
+      },
+      {
+        "side": "left",
+        "cycle": 0.6,
+        "stance": false,
+        "lift": 0.0,
+        "hip": [
+          572.0,
+          850.0,
+          308.36486325275274
+        ],
+        "knee": [
+          567.0,
+          828.9109973345952,
+          124.5708101210517
+        ],
+        "ankle": [
+          565.0,
+          706.0,
+          0.0
+        ],
+        "footCenter": [
+          565.0,
+          738.2
+        ],
+        "footPitch": 0.0,
+        "footYaw": -3.0
+      },
+      {
+        "side": "left",
+        "cycle": 0.7,
+        "stance": false,
+        "lift": 50.91168824543141,
+        "hip": [
+          573.0,
+          850.0,
+          334.8221750256229
+        ],
+        "knee": [
+          563.7573593128807,
+          903.1407955035409,
+          157.6187443216694
+        ],
+        "ankle": [
+          556.5147186257615,
+          764.4375,
+          50.91168824543141
+        ],
+        "footCenter": [
+          556.5147186257615,
+          796.6375
+        ],
+        "footPitch": 16.970562748477136,
+        "footYaw": -6.535533905932736
+      },
+      {
+        "side": "left",
+        "cycle": 0.8,
+        "stance": false,
+        "lift": 72.0,
+        "hip": [
+          573.0,
+          850.0,
+          348.35613960428486
+        ],
+        "knee": [
+          562.0,
+          984.4042808971186,
+          221.23222652524038
+        ],
+        "ankle": [
+          553.0,
+          893.0,
+          72.0
+        ],
+        "footCenter": [
+          553.0,
+          925.2
+        ],
+        "footPitch": 24.0,
+        "footYaw": -8.0
+      },
+      {
+        "side": "left",
+        "cycle": 0.9,
+        "stance": false,
+        "lift": 50.9116882454314,
+        "hip": [
+          572.0,
+          850.0,
+          350.46714856348837
+        ],
+        "knee": [
+          562.7573593128807,
+          982.6710490581113,
+          221.5354118117475
+        ],
+        "ankle": [
+          556.5147186257615,
+          1021.5625,
+          50.9116882454314
+        ],
+        "footCenter": [
+          556.5147186257615,
+          1053.7625
+        ],
+        "footPitch": 16.970562748477132,
+        "footYaw": -6.535533905932736
+      },
+      {
+        "side": "left",
+        "cycle": 0.0,
+        "stance": true,
+        "lift": 0,
+        "hip": [
+          570.0,
+          850.0,
+          265.1433574502669
+        ],
+        "knee": [
+          565.0,
+          998.5615045423593,
+          154.89600207105354
+        ],
+        "ankle": [
+          565,
+          1080.0,
+          0
+        ],
+        "footCenter": [
+          565,
+          1112.2
+        ],
+        "footPitch": 0.0,
+        "footYaw": -3.0
+      },
+      {
+        "side": "left",
+        "cycle": 0.10000000000000009,
+        "stance": true,
+        "lift": 0,
+        "hip": [
+          568.0,
+          850.0,
+          308.36486325275274
+        ],
+        "knee": [
+          563.0,
+          971.407274656965,
+          168.77520152822436
+        ],
+        "ankle": [
+          565,
+          1017.6666666666666,
+          0
+        ],
+        "footCenter": [
+          565,
+          1049.8666666666666
+        ],
+        "footPitch": 0.0,
+        "footYaw": -3.0
+      },
+      {
+        "side": "left",
+        "cycle": 0.19999999999999996,
+        "stance": true,
+        "lift": 0,
+        "hip": [
+          567.0,
+          850.0,
+          334.8221750256229
+        ],
+        "knee": [
+          562.0,
+          942.343520004465,
+          174.51723338880072
+        ],
+        "ankle": [
+          565,
+          955.3333333333334,
+          0
+        ],
+        "footCenter": [
+          565,
+          987.5333333333334
+        ],
+        "footPitch": 0.0,
+        "footYaw": -3.0
+      },
+      {
+        "side": "left",
+        "cycle": 0.30000000000000004,
+        "stance": true,
+        "lift": 0,
+        "hip": [
+          567.0,
+          850.0,
+          348.35613960428486
+        ],
+        "knee": [
+          562.0,
+          911.8077320709344,
+          173.9864052572727
+        ],
+        "ankle": [
+          565,
+          893.0,
+          0
+        ],
+        "footCenter": [
+          565,
+          925.2
+        ],
+        "footPitch": 0.0,
+        "footYaw": -3.0
+      },
+      {
+        "side": "left",
+        "cycle": 0.3999999999999999,
+        "stance": true,
+        "lift": 0,
+        "hip": [
+          568.0,
+          850.0,
+          350.46714856348837
+        ],
+        "knee": [
+          563.0,
+          879.970812891227,
+          167.91099179347125
+        ],
+        "ankle": [
+          565,
+          830.6666666666667,
+          0
+        ],
+        "footCenter": [
+          565,
+          862.8666666666668
+        ],
+        "footPitch": 0.0,
+        "footYaw": -3.0
+      }
+    ],
+    "right": [
+      {
+        "side": "right",
+        "cycle": 0.0,
+        "stance": true,
+        "lift": 0,
+        "hip": [
+          659.0,
+          850.0,
+          265.1433574502669
+        ],
+        "knee": [
+          664.0,
+          998.5615045423593,
+          154.89600207105354
+        ],
+        "ankle": [
+          664,
+          1080.0,
+          0
+        ],
+        "footCenter": [
+          664,
+          1112.2
+        ],
+        "footPitch": 0.0,
+        "footYaw": 3.0
+      },
+      {
+        "side": "right",
+        "cycle": 0.10000000000000009,
+        "stance": true,
+        "lift": 0,
+        "hip": [
+          661.0,
+          850.0,
+          308.36486325275274
+        ],
+        "knee": [
+          666.0,
+          971.407274656965,
+          168.77520152822436
+        ],
+        "ankle": [
+          664,
+          1017.6666666666666,
+          0
+        ],
+        "footCenter": [
+          664,
+          1049.8666666666666
+        ],
+        "footPitch": 0.0,
+        "footYaw": 3.0
+      },
+      {
+        "side": "right",
+        "cycle": 0.19999999999999996,
+        "stance": true,
+        "lift": 0,
+        "hip": [
+          662.0,
+          850.0,
+          334.8221750256229
+        ],
+        "knee": [
+          667.0,
+          942.343520004465,
+          174.51723338880072
+        ],
+        "ankle": [
+          664,
+          955.3333333333334,
+          0
+        ],
+        "footCenter": [
+          664,
+          987.5333333333334
+        ],
+        "footPitch": 0.0,
+        "footYaw": 3.0
+      },
+      {
+        "side": "right",
+        "cycle": 0.30000000000000004,
+        "stance": true,
+        "lift": 0,
+        "hip": [
+          662.0,
+          850.0,
+          348.35613960428486
+        ],
+        "knee": [
+          667.0,
+          911.8077320709344,
+          173.9864052572727
+        ],
+        "ankle": [
+          664,
+          893.0,
+          0
+        ],
+        "footCenter": [
+          664,
+          925.2
+        ],
+        "footPitch": 0.0,
+        "footYaw": 3.0
+      },
+      {
+        "side": "right",
+        "cycle": 0.3999999999999999,
+        "stance": true,
+        "lift": 0,
+        "hip": [
+          661.0,
+          850.0,
+          350.46714856348837
+        ],
+        "knee": [
+          666.0,
+          879.970812891227,
+          167.91099179347125
+        ],
+        "ankle": [
+          664,
+          830.6666666666667,
+          0
+        ],
+        "footCenter": [
+          664,
+          862.8666666666668
+        ],
+        "footPitch": 0.0,
+        "footYaw": 3.0
+      },
+      {
+        "side": "right",
+        "cycle": 0.5,
+        "stance": true,
+        "lift": 0,
+        "hip": [
+          659.0,
+          850.0,
+          265.1433574502669
+        ],
+        "knee": [
+          664.0,
+          916.8090944854243,
+          92.62801061399946
+        ],
+        "ankle": [
+          664,
+          768.3333333333333,
+          0
+        ],
+        "footCenter": [
+          664,
+          800.5333333333333
+        ],
+        "footPitch": 0.0,
+        "footYaw": 3.0
+      },
+      {
+        "side": "right",
+        "cycle": 0.6000000000000001,
+        "stance": false,
+        "lift": 6.278163296415537e-14,
+        "hip": [
+          657.0,
+          850.0,
+          308.36486325275274
+        ],
+        "knee": [
+          662.0,
+          828.9109973345954,
+          124.57081012105166
+        ],
+        "ankle": [
+          664.0,
+          706.0,
+          6.278163296415537e-14
+        ],
+        "footCenter": [
+          664.0,
+          738.2
+        ],
+        "footPitch": 2.0927210988051792e-14,
+        "footYaw": 3.0000000000000044
+      },
+      {
+        "side": "right",
+        "cycle": 0.7,
+        "stance": false,
+        "lift": 50.91168824543141,
+        "hip": [
+          656.0,
+          850.0,
+          334.8221750256229
+        ],
+        "knee": [
+          665.2426406871193,
+          903.1407955035409,
+          157.6187443216694
+        ],
+        "ankle": [
+          672.4852813742385,
+          764.4375,
+          50.91168824543141
+        ],
+        "footCenter": [
+          672.4852813742385,
+          796.6375
+        ],
+        "footPitch": 16.970562748477136,
+        "footYaw": 6.535533905932736
+      },
+      {
+        "side": "right",
+        "cycle": 0.8,
+        "stance": false,
+        "lift": 72.0,
+        "hip": [
+          656.0,
+          850.0,
+          348.35613960428486
+        ],
+        "knee": [
+          667.0,
+          984.4042808971186,
+          221.23222652524038
+        ],
+        "ankle": [
+          676.0,
+          893.0,
+          72.0
+        ],
+        "footCenter": [
+          676.0,
+          925.2
+        ],
+        "footPitch": 24.0,
+        "footYaw": 8.0
+      },
+      {
+        "side": "right",
+        "cycle": 0.8999999999999999,
+        "stance": false,
+        "lift": 50.91168824543147,
+        "hip": [
+          657.0,
+          850.0,
+          350.46714856348837
+        ],
+        "knee": [
+          666.2426406871193,
+          982.6710490581116,
+          221.53541181174774
+        ],
+        "ankle": [
+          672.4852813742385,
+          1021.5625,
+          50.91168824543147
+        ],
+        "footCenter": [
+          672.4852813742385,
+          1053.7625
+        ],
+        "footPitch": 16.970562748477157,
+        "footYaw": 6.535533905932741
+      }
+    ]
+  },
+  "timingNote": "Simulation owns world movement, trade routes and delivery. These are presentation loops.",
+  "integrationStatus": "artwork-only; not connected to game renderer"
+}

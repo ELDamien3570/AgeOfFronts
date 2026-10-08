@@ -1,0 +1,1345 @@
+{
+  "method": "Whole-pose cells, uniform scale and authored roots; no pixel painting or alpha filtering.",
+  "clips": [
+    {
+      "id": "idle",
+      "source": "Native-Idle-Animated-v1.png",
+      "nativeSha256": "02fff285badd5000a7c17d5b4b8e81b09f31fd0f9052a0a7d591b9f0c7d7d876",
+      "output": "Idle-Animated-v1.png",
+      "tracks": [
+        {
+          "index": 0,
+          "sourceRect": [
+            0,
+            0,
+            512,
+            512
+          ],
+          "destinationSize": [
+            410,
+            410
+          ],
+          "offset": [
+            44,
+            44
+          ],
+          "pivot": {
+            "x": 248.8,
+            "y": 260
+          }
+        },
+        {
+          "index": 1,
+          "sourceRect": [
+            512,
+            0,
+            1024,
+            512
+          ],
+          "destinationSize": [
+            410,
+            410
+          ],
+          "offset": [
+            44,
+            44
+          ],
+          "pivot": {
+            "x": 248.8,
+            "y": 260
+          }
+        },
+        {
+          "index": 2,
+          "sourceRect": [
+            1024,
+            0,
+            1536,
+            512
+          ],
+          "destinationSize": [
+            410,
+            410
+          ],
+          "offset": [
+            44,
+            44
+          ],
+          "pivot": {
+            "x": 248.8,
+            "y": 260
+          }
+        },
+        {
+          "index": 3,
+          "sourceRect": [
+            0,
+            512,
+            512,
+            1024
+          ],
+          "destinationSize": [
+            410,
+            410
+          ],
+          "offset": [
+            44,
+            44
+          ],
+          "pivot": {
+            "x": 248.8,
+            "y": 260
+          }
+        },
+        {
+          "index": 4,
+          "sourceRect": [
+            512,
+            512,
+            1024,
+            1024
+          ],
+          "destinationSize": [
+            410,
+            410
+          ],
+          "offset": [
+            44,
+            44
+          ],
+          "pivot": {
+            "x": 248.8,
+            "y": 260
+          }
+        },
+        {
+          "index": 5,
+          "sourceRect": [
+            1024,
+            512,
+            1536,
+            1024
+          ],
+          "destinationSize": [
+            410,
+            410
+          ],
+          "offset": [
+            44,
+            44
+          ],
+          "pivot": {
+            "x": 248.8,
+            "y": 260
+          }
+        }
+      ]
+    },
+    {
+      "id": "running",
+      "source": "Native-Running-v2.png",
+      "nativeSha256": "36248b19f2c102b5259cc465dc6f6719cbdfeb705448d3d2ea6f78ec184f4cbd",
+      "output": "Running-v2.png",
+      "tracks": [
+        {
+          "index": 0,
+          "sourceRect": [
+            0,
+            0,
+            512,
+            512
+          ],
+          "destinationSize": [
+            410,
+            410
+          ],
+          "offset": [
+            44,
+            44
+          ],
+          "pivot": {
+            "x": 248.8,
+            "y": 260
+          }
+        },
+        {
+          "index": 1,
+          "sourceRect": [
+            512,
+            0,
+            1024,
+            512
+          ],
+          "destinationSize": [
+            410,
+            410
+          ],
+          "offset": [
+            44,
+            44
+          ],
+          "pivot": {
+            "x": 248.8,
+            "y": 260
+          }
+        },
+        {
+          "index": 2,
+          "sourceRect": [
+            1024,
+            0,
+            1536,
+            512
+          ],
+          "destinationSize": [
+            410,
+            410
+          ],
+          "offset": [
+            44,
+            44
+          ],
+          "pivot": {
+            "x": 248.8,
+            "y": 260
+          }
+        },
+        {
+          "index": 3,
+          "sourceRect": [
+            0,
+            512,
+            512,
+            1024
+          ],
+          "destinationSize": [
+            410,
+            410
+          ],
+          "offset": [
+            44,
+            44
+          ],
+          "pivot": {
+            "x": 248.8,
+            "y": 260
+          }
+        },
+        {
+          "index": 4,
+          "sourceRect": [
+            512,
+            512,
+            1024,
+            1024
+          ],
+          "destinationSize": [
+            410,
+            410
+          ],
+          "offset": [
+            44,
+            44
+          ],
+          "pivot": {
+            "x": 248.8,
+            "y": 260
+          }
+        },
+        {
+          "index": 5,
+          "sourceRect": [
+            1024,
+            512,
+            1536,
+            1024
+          ],
+          "destinationSize": [
+            410,
+            410
+          ],
+          "offset": [
+            44,
+            44
+          ],
+          "pivot": {
+            "x": 248.8,
+            "y": 260
+          }
+        }
+      ]
+    },
+    {
+      "id": "attack",
+      "source": "Native-Attack-Clean-v6.png",
+      "nativeSha256": "f7ce46f0142f89264c7d5b10ce1f8d17dee89e1bd3c5bf59a2aaf43425cddde0",
+      "output": "Attack-Clean-v6.png",
+      "tracks": [
+        {
+          "index": 0,
+          "sourceRect": [
+            0,
+            0,
+            512,
+            512
+          ],
+          "destinationSize": [
+            410,
+            410
+          ],
+          "offset": [
+            44,
+            44
+          ],
+          "pivot": {
+            "x": 248.8,
+            "y": 260
+          }
+        },
+        {
+          "index": 1,
+          "sourceRect": [
+            512,
+            0,
+            1024,
+            512
+          ],
+          "destinationSize": [
+            410,
+            410
+          ],
+          "offset": [
+            44,
+            44
+          ],
+          "pivot": {
+            "x": 248.8,
+            "y": 260
+          }
+        },
+        {
+          "index": 2,
+          "sourceRect": [
+            1024,
+            0,
+            1536,
+            512
+          ],
+          "destinationSize": [
+            410,
+            410
+          ],
+          "offset": [
+            44,
+            44
+          ],
+          "pivot": {
+            "x": 248.8,
+            "y": 260
+          }
+        },
+        {
+          "index": 3,
+          "sourceRect": [
+            0,
+            512,
+            512,
+            1024
+          ],
+          "destinationSize": [
+            410,
+            410
+          ],
+          "offset": [
+            44,
+            44
+          ],
+          "pivot": {
+            "x": 248.8,
+            "y": 260
+          }
+        },
+        {
+          "index": 4,
+          "sourceRect": [
+            512,
+            512,
+            1024,
+            1024
+          ],
+          "destinationSize": [
+            410,
+            410
+          ],
+          "offset": [
+            44,
+            44
+          ],
+          "pivot": {
+            "x": 248.8,
+            "y": 260
+          }
+        },
+        {
+          "index": 5,
+          "sourceRect": [
+            1024,
+            512,
+            1536,
+            1024
+          ],
+          "destinationSize": [
+            410,
+            410
+          ],
+          "offset": [
+            44,
+            44
+          ],
+          "pivot": {
+            "x": 248.8,
+            "y": 260
+          }
+        }
+      ]
+    },
+    {
+      "id": "reload",
+      "source": "Native-Reload-v1.png",
+      "nativeSha256": "472fea92cc7272e655ee6f77b29427d176e3cb47b9f36cc6f3dbf3e0ebfbdf02",
+      "output": "Reload-v1.png",
+      "tracks": [
+        {
+          "index": 0,
+          "sourceRect": [
+            0,
+            0,
+            512,
+            512
+          ],
+          "destinationSize": [
+            410,
+            410
+          ],
+          "offset": [
+            44,
+            44
+          ],
+          "pivot": {
+            "x": 248.8,
+            "y": 260
+          }
+        },
+        {
+          "index": 1,
+          "sourceRect": [
+            512,
+            0,
+            1024,
+            512
+          ],
+          "destinationSize": [
+            410,
+            410
+          ],
+          "offset": [
+            44,
+            44
+          ],
+          "pivot": {
+            "x": 248.8,
+            "y": 260
+          }
+        },
+        {
+          "index": 2,
+          "sourceRect": [
+            1024,
+            0,
+            1536,
+            512
+          ],
+          "destinationSize": [
+            410,
+            410
+          ],
+          "offset": [
+            44,
+            44
+          ],
+          "pivot": {
+            "x": 248.8,
+            "y": 260
+          }
+        },
+        {
+          "index": 3,
+          "sourceRect": [
+            0,
+            512,
+            512,
+            1024
+          ],
+          "destinationSize": [
+            410,
+            410
+          ],
+          "offset": [
+            44,
+            44
+          ],
+          "pivot": {
+            "x": 248.8,
+            "y": 260
+          }
+        },
+        {
+          "index": 4,
+          "sourceRect": [
+            512,
+            512,
+            1024,
+            1024
+          ],
+          "destinationSize": [
+            410,
+            410
+          ],
+          "offset": [
+            44,
+            44
+          ],
+          "pivot": {
+            "x": 248.8,
+            "y": 260
+          }
+        },
+        {
+          "index": 5,
+          "sourceRect": [
+            1024,
+            512,
+            1536,
+            1024
+          ],
+          "destinationSize": [
+            410,
+            410
+          ],
+          "offset": [
+            44,
+            44
+          ],
+          "pivot": {
+            "x": 248.8,
+            "y": 260
+          }
+        }
+      ]
+    },
+    {
+      "id": "hit",
+      "source": "Native-Hit-v1.png",
+      "nativeSha256": "956e6da8dbe46c6e1cc352351ecc16337c85a9d07f21eda66d926940959af060",
+      "output": "Hit-v1.png",
+      "tracks": [
+        {
+          "index": 0,
+          "sourceRect": [
+            0,
+            0,
+            512,
+            512
+          ],
+          "destinationSize": [
+            410,
+            410
+          ],
+          "offset": [
+            44,
+            44
+          ],
+          "pivot": {
+            "x": 248.8,
+            "y": 260
+          }
+        },
+        {
+          "index": 1,
+          "sourceRect": [
+            512,
+            0,
+            1024,
+            512
+          ],
+          "destinationSize": [
+            410,
+            410
+          ],
+          "offset": [
+            44,
+            44
+          ],
+          "pivot": {
+            "x": 248.8,
+            "y": 260
+          }
+        },
+        {
+          "index": 2,
+          "sourceRect": [
+            1024,
+            0,
+            1536,
+            512
+          ],
+          "destinationSize": [
+            410,
+            410
+          ],
+          "offset": [
+            44,
+            44
+          ],
+          "pivot": {
+            "x": 248.8,
+            "y": 260
+          }
+        },
+        {
+          "index": 3,
+          "sourceRect": [
+            0,
+            512,
+            512,
+            1024
+          ],
+          "destinationSize": [
+            410,
+            410
+          ],
+          "offset": [
+            44,
+            44
+          ],
+          "pivot": {
+            "x": 248.8,
+            "y": 260
+          }
+        },
+        {
+          "index": 4,
+          "sourceRect": [
+            512,
+            512,
+            1024,
+            1024
+          ],
+          "destinationSize": [
+            410,
+            410
+          ],
+          "offset": [
+            44,
+            44
+          ],
+          "pivot": {
+            "x": 248.8,
+            "y": 260
+          }
+        },
+        {
+          "index": 5,
+          "sourceRect": [
+            1024,
+            512,
+            1536,
+            1024
+          ],
+          "destinationSize": [
+            410,
+            410
+          ],
+          "offset": [
+            44,
+            44
+          ],
+          "pivot": {
+            "x": 248.8,
+            "y": 260
+          }
+        }
+      ]
+    },
+    {
+      "id": "charged",
+      "source": "Native-Charged-v1.png",
+      "nativeSha256": "4d5ddb6993e0d5a4ebcb9b970d1c9cd937551e096174edd5be101971f60c55eb",
+      "output": "Charged-v1.png",
+      "tracks": [
+        {
+          "index": 0,
+          "sourceRect": [
+            0,
+            0,
+            512,
+            512
+          ],
+          "destinationSize": [
+            410,
+            410
+          ],
+          "offset": [
+            44,
+            44
+          ],
+          "pivot": {
+            "x": 248.8,
+            "y": 260
+          }
+        },
+        {
+          "index": 1,
+          "sourceRect": [
+            512,
+            0,
+            1024,
+            512
+          ],
+          "destinationSize": [
+            410,
+            410
+          ],
+          "offset": [
+            44,
+            44
+          ],
+          "pivot": {
+            "x": 248.8,
+            "y": 260
+          }
+        },
+        {
+          "index": 2,
+          "sourceRect": [
+            1024,
+            0,
+            1536,
+            512
+          ],
+          "destinationSize": [
+            410,
+            410
+          ],
+          "offset": [
+            44,
+            44
+          ],
+          "pivot": {
+            "x": 248.8,
+            "y": 260
+          }
+        },
+        {
+          "index": 3,
+          "sourceRect": [
+            0,
+            512,
+            512,
+            1024
+          ],
+          "destinationSize": [
+            410,
+            410
+          ],
+          "offset": [
+            44,
+            44
+          ],
+          "pivot": {
+            "x": 248.8,
+            "y": 260
+          }
+        },
+        {
+          "index": 4,
+          "sourceRect": [
+            512,
+            512,
+            1024,
+            1024
+          ],
+          "destinationSize": [
+            410,
+            410
+          ],
+          "offset": [
+            44,
+            44
+          ],
+          "pivot": {
+            "x": 248.8,
+            "y": 260
+          }
+        },
+        {
+          "index": 5,
+          "sourceRect": [
+            1024,
+            512,
+            1536,
+            1024
+          ],
+          "destinationSize": [
+            410,
+            410
+          ],
+          "offset": [
+            44,
+            44
+          ],
+          "pivot": {
+            "x": 248.8,
+            "y": 260
+          }
+        }
+      ]
+    },
+    {
+      "id": "charge",
+      "source": "Native-Charge-v2.png",
+      "nativeSha256": "7a32cfa2107d571500121ebf3eca518dd9e115b5511ff50cab48630576caa2ee",
+      "output": "Charge-v2.png",
+      "tracks": [
+        {
+          "index": 0,
+          "sourceRect": [
+            0,
+            0,
+            512,
+            512
+          ],
+          "destinationSize": [
+            410,
+            410
+          ],
+          "offset": [
+            44,
+            44
+          ],
+          "pivot": {
+            "x": 248.8,
+            "y": 260
+          }
+        },
+        {
+          "index": 1,
+          "sourceRect": [
+            512,
+            0,
+            1024,
+            512
+          ],
+          "destinationSize": [
+            410,
+            410
+          ],
+          "offset": [
+            44,
+            44
+          ],
+          "pivot": {
+            "x": 248.8,
+            "y": 260
+          }
+        },
+        {
+          "index": 2,
+          "sourceRect": [
+            1024,
+            0,
+            1536,
+            512
+          ],
+          "destinationSize": [
+            410,
+            410
+          ],
+          "offset": [
+            44,
+            44
+          ],
+          "pivot": {
+            "x": 248.8,
+            "y": 260
+          }
+        },
+        {
+          "index": 3,
+          "sourceRect": [
+            0,
+            512,
+            512,
+            1024
+          ],
+          "destinationSize": [
+            410,
+            410
+          ],
+          "offset": [
+            44,
+            44
+          ],
+          "pivot": {
+            "x": 248.8,
+            "y": 260
+          }
+        },
+        {
+          "index": 4,
+          "sourceRect": [
+            512,
+            512,
+            1024,
+            1024
+          ],
+          "destinationSize": [
+            410,
+            410
+          ],
+          "offset": [
+            44,
+            44
+          ],
+          "pivot": {
+            "x": 248.8,
+            "y": 260
+          }
+        },
+        {
+          "index": 5,
+          "sourceRect": [
+            1024,
+            512,
+            1536,
+            1024
+          ],
+          "destinationSize": [
+            410,
+            410
+          ],
+          "offset": [
+            44,
+            44
+          ],
+          "pivot": {
+            "x": 248.8,
+            "y": 260
+          }
+        }
+      ]
+    },
+    {
+      "id": "charge-attack",
+      "source": "Native-ChargeAttack-Clean-v5.png",
+      "nativeSha256": "0cacd2aea32ad92f5ba6efde8487b39c6f73a4d1e5de891dd6487ffd4208d1d2",
+      "output": "ChargeAttack-Clean-v5.png",
+      "tracks": [
+        {
+          "index": 0,
+          "sourceRect": [
+            0,
+            0,
+            512,
+            512
+          ],
+          "destinationSize": [
+            410,
+            410
+          ],
+          "offset": [
+            44,
+            44
+          ],
+          "pivot": {
+            "x": 248.8,
+            "y": 260
+          }
+        },
+        {
+          "index": 1,
+          "sourceRect": [
+            512,
+            0,
+            1024,
+            512
+          ],
+          "destinationSize": [
+            410,
+            410
+          ],
+          "offset": [
+            44,
+            44
+          ],
+          "pivot": {
+            "x": 248.8,
+            "y": 260
+          }
+        },
+        {
+          "index": 2,
+          "sourceRect": [
+            1024,
+            0,
+            1536,
+            512
+          ],
+          "destinationSize": [
+            410,
+            410
+          ],
+          "offset": [
+            44,
+            44
+          ],
+          "pivot": {
+            "x": 248.8,
+            "y": 260
+          }
+        },
+        {
+          "index": 3,
+          "sourceRect": [
+            0,
+            512,
+            512,
+            1024
+          ],
+          "destinationSize": [
+            410,
+            410
+          ],
+          "offset": [
+            44,
+            44
+          ],
+          "pivot": {
+            "x": 248.8,
+            "y": 260
+          }
+        },
+        {
+          "index": 4,
+          "sourceRect": [
+            512,
+            512,
+            1024,
+            1024
+          ],
+          "destinationSize": [
+            410,
+            410
+          ],
+          "offset": [
+            44,
+            44
+          ],
+          "pivot": {
+            "x": 248.8,
+            "y": 260
+          }
+        },
+        {
+          "index": 5,
+          "sourceRect": [
+            1024,
+            512,
+            1536,
+            1024
+          ],
+          "destinationSize": [
+            410,
+            410
+          ],
+          "offset": [
+            44,
+            44
+          ],
+          "pivot": {
+            "x": 248.8,
+            "y": 260
+          }
+        }
+      ]
+    },
+    {
+      "id": "death",
+      "source": "Native-Death-v1.png",
+      "nativeSha256": "d55ad3662361bf98bf9695fb5ec6fb2e1679dbe5fd52b721be94a2051f9d1b81",
+      "output": "Death-v1.png",
+      "tracks": [
+        {
+          "index": 0,
+          "sourceRect": [
+            0,
+            0,
+            512,
+            512
+          ],
+          "destinationSize": [
+            410,
+            410
+          ],
+          "offset": [
+            44,
+            44
+          ],
+          "pivot": {
+            "x": 248.8,
+            "y": 260
+          }
+        },
+        {
+          "index": 1,
+          "sourceRect": [
+            512,
+            0,
+            1024,
+            512
+          ],
+          "destinationSize": [
+            410,
+            410
+          ],
+          "offset": [
+            44,
+            44
+          ],
+          "pivot": {
+            "x": 248.8,
+            "y": 260
+          }
+        },
+        {
+          "index": 2,
+          "sourceRect": [
+            1024,
+            0,
+            1536,
+            512
+          ],
+          "destinationSize": [
+            410,
+            410
+          ],
+          "offset": [
+            44,
+            44
+          ],
+          "pivot": {
+            "x": 248.8,
+            "y": 260
+          }
+        },
+        {
+          "index": 3,
+          "sourceRect": [
+            0,
+            512,
+            512,
+            1024
+          ],
+          "destinationSize": [
+            410,
+            410
+          ],
+          "offset": [
+            44,
+            44
+          ],
+          "pivot": {
+            "x": 248.8,
+            "y": 260
+          }
+        },
+        {
+          "index": 4,
+          "sourceRect": [
+            512,
+            512,
+            1024,
+            1024
+          ],
+          "destinationSize": [
+            410,
+            410
+          ],
+          "offset": [
+            44,
+            44
+          ],
+          "pivot": {
+            "x": 248.8,
+            "y": 260
+          }
+        },
+        {
+          "index": 5,
+          "sourceRect": [
+            1024,
+            512,
+            1536,
+            1024
+          ],
+          "destinationSize": [
+            410,
+            410
+          ],
+          "offset": [
+            44,
+            44
+          ],
+          "pivot": {
+            "x": 248.8,
+            "y": 260
+          }
+        }
+      ]
+    },
+    {
+      "id": "death-back",
+      "source": "Native-DeathBack-v1.png",
+      "nativeSha256": "f0310331d6d7812fa86403247fbf1a38b74e3f2ed6fd5e52198a0d2fe31aa1e4",
+      "output": "DeathBack-v1.png",
+      "tracks": [
+        {
+          "index": 0,
+          "sourceRect": [
+            0,
+            0,
+            512,
+            512
+          ],
+          "destinationSize": [
+            410,
+            410
+          ],
+          "offset": [
+            44,
+            44
+          ],
+          "pivot": {
+            "x": 248.8,
+            "y": 260
+          }
+        },
+        {
+          "index": 1,
+          "sourceRect": [
+            512,
+            0,
+            1024,
+            512
+          ],
+          "destinationSize": [
+            410,
+            410
+          ],
+          "offset": [
+            44,
+            44
+          ],
+          "pivot": {
+            "x": 248.8,
+            "y": 260
+          }
+        },
+        {
+          "index": 2,
+          "sourceRect": [
+            1024,
+            0,
+            1536,
+            512
+          ],
+          "destinationSize": [
+            410,
+            410
+          ],
+          "offset": [
+            44,
+            44
+          ],
+          "pivot": {
+            "x": 248.8,
+            "y": 260
+          }
+        },
+        {
+          "index": 3,
+          "sourceRect": [
+            0,
+            512,
+            512,
+            1024
+          ],
+          "destinationSize": [
+            410,
+            410
+          ],
+          "offset": [
+            44,
+            44
+          ],
+          "pivot": {
+            "x": 248.8,
+            "y": 260
+          }
+        },
+        {
+          "index": 4,
+          "sourceRect": [
+            512,
+            512,
+            1024,
+            1024
+          ],
+          "destinationSize": [
+            410,
+            410
+          ],
+          "offset": [
+            44,
+            44
+          ],
+          "pivot": {
+            "x": 248.8,
+            "y": 260
+          }
+        },
+        {
+          "index": 5,
+          "sourceRect": [
+            1024,
+            512,
+            1536,
+            1024
+          ],
+          "destinationSize": [
+            410,
+            410
+          ],
+          "offset": [
+            44,
+            44
+          ],
+          "pivot": {
+            "x": 248.8,
+            "y": 260
+          }
+        }
+      ]
+    }
+  ]
+}

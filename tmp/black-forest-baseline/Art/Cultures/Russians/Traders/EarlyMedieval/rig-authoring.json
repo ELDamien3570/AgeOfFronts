@@ -1,0 +1,281 @@
+{
+  "schemaVersion": 1,
+  "age": "EarlyMedieval",
+  "animationRevision": 1,
+  "label": "Rus fur merchant with horse-drawn two-wheel cart",
+  "source": "SourceArt/Trader_Russian_EarlyMedieval_v1.png",
+  "sourceSha256": "b7d9d27f521bc51afbd8fb0dce3918d76fbf5012e574361860abfc2a0eff3412",
+  "counts": {
+    "merchants": 1,
+    "wagons": 1,
+    "pullingAnimals": 1,
+    "packAnimals": 0,
+    "trucks": 0
+  },
+  "animationApproval": {
+    "status": "approved",
+    "age": "EarlyMedieval",
+    "date": "2026-10-07",
+    "userMessage": "Okay lets do overland traders now, make and animate one for early medieval",
+    "selectedSilhouette": "Rus merchant with a fur-laden two-wheel cart pulled by one horse",
+    "scope": "Creation and animation authorized together; visual acceptance remains pending."
+  },
+  "parts": [
+    {
+      "name": "merchant-breathing",
+      "kind": "body",
+      "rect": [
+        300,
+        782,
+        489,
+        858
+      ],
+      "feather": 6,
+      "margin": 18
+    },
+    {
+      "name": "merchant-sash",
+      "kind": "cloth",
+      "rect": [
+        428,
+        882,
+        471,
+        947
+      ],
+      "feather": 3,
+      "margin": 10
+    },
+    {
+      "name": "horse-breathing",
+      "kind": "body",
+      "rect": [
+        635,
+        963,
+        708,
+        1028
+      ],
+      "feather": 6,
+      "margin": 12
+    },
+    {
+      "name": "left-wheel-tread",
+      "kind": "tread",
+      "rect": [
+        458,
+        320,
+        486,
+        547
+      ],
+      "feather": 2,
+      "margin": 8
+    },
+    {
+      "name": "right-wheel-tread",
+      "kind": "tread",
+      "rect": [
+        842,
+        320,
+        870,
+        547
+      ],
+      "feather": 2,
+      "margin": 8
+    }
+  ],
+  "protectedRegions": [
+    {
+      "name": "cargo-cart-and-hubs",
+      "rect": [
+        434,
+        90,
+        914,
+        636
+      ]
+    },
+    {
+      "name": "left-shaft",
+      "rect": [
+        530,
+        583,
+        582,
+        903
+      ]
+    },
+    {
+      "name": "right-shaft",
+      "rect": [
+        756,
+        584,
+        795,
+        909
+      ]
+    },
+    {
+      "name": "rein",
+      "rect": [
+        505,
+        907,
+        616,
+        991
+      ]
+    }
+  ],
+  "caravanRig": {
+    "sharedStride": {
+      "forwardReach": 105,
+      "rearReach": 67,
+      "stanceFraction": 0.65
+    },
+    "horseAtlas": "SourceArt/Horse_Walking_Limb_Atlas_v1.png",
+    "horseAtlasSha256": "87c38c643614dd8e21732ddf493559699611d3dd1baf64c0219e84800502e937",
+    "merchants": [
+      {
+        "name": "merchant-1",
+        "rig": {
+          "forwardReach": 105,
+          "rearReach": 67,
+          "stanceFraction": 0.65,
+          "atlas": "Shared/SourceArt/Walking_Leg_Atlas_v1.png",
+          "shinCrop": 0.8,
+          "oldLegsPolygon": [
+            [
+              345,
+              951
+            ],
+            [
+              374,
+              965
+            ],
+            [
+              415,
+              965
+            ],
+            [
+              451,
+              951
+            ],
+            [
+              458,
+              1110
+            ],
+            [
+              340,
+              1110
+            ]
+          ],
+          "hips": {
+            "left": [
+              373,
+              963
+            ],
+            "right": [
+              417,
+              963
+            ]
+          },
+          "thighLength": 83,
+          "shinLength": 80,
+          "hipHeight": 113,
+          "thighWidth": 51,
+          "shinWidth": 42,
+          "footWidth": 42,
+          "footLength": 54,
+          "idleReach": 65,
+          "footLift": 34,
+          "swingOutward": 6,
+          "footOutward": 4,
+          "kneeOutward": 2,
+          "phaseOffset": 0.5,
+          "assemblySway": 0
+        }
+      }
+    ],
+    "horses": [
+      {
+        "name": "horse-1",
+        "rig": {
+          "forwardReach": 105,
+          "rearReach": 67,
+          "stanceFraction": 0.65,
+          "hips": {
+            "hind-left": [
+              609,
+              673
+            ],
+            "hind-right": [
+              726,
+              673
+            ],
+            "fore-left": [
+              640,
+              883
+            ],
+            "fore-right": [
+              691,
+              883
+            ]
+          },
+          "upperLength": 130,
+          "lowerLength": 118,
+          "kneeSlack": 9,
+          "minimumHipHeight": 130,
+          "upperWidth": 54,
+          "lowerWidth": 34,
+          "hoofWidth": 39,
+          "hoofLength": 46,
+          "idleReach": 48,
+          "footLift": 43,
+          "footOutward": {
+            "fore": 4,
+            "hind": 30
+          },
+          "swingOutward": {
+            "fore": 2,
+            "hind": 7
+          },
+          "phaseOffset": 0,
+          "contactBias": {
+            "fore": 165,
+            "hind": 65
+          },
+          "foreUpperLength": 155,
+          "foreLowerLength": 155,
+          "pasternLength": 35,
+          "pasternForward": 12,
+          "foreUpperWidth": 40,
+          "foreLowerWidth": 22,
+          "foreHoofWidth": 32
+        },
+        "atlasRows": {
+          "fore": 0,
+          "hind": 1
+        },
+        "oldLegsPolygons": [
+          [
+            [
+              636,
+              1094
+            ],
+            [
+              696,
+              1094
+            ],
+            [
+              703,
+              1200
+            ],
+            [
+              628,
+              1200
+            ]
+          ]
+        ]
+      }
+    ]
+  },
+  "motionNotes": "Independent articulated legs with identical contact velocity. Four-beat horse walk and alternating merchant walk. Retained body assembly preserves shafts, harness, ropes and secured loads; moving ground is browser-only.",
+  "animationRevisionRequest": {
+    "userMessage": "make and animate one for early medieval",
+    "scope": "Create an articulated horse and merchant gait, rolling wheels and connected cargo cart."
+  }
+}

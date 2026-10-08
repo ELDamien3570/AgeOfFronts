@@ -1,0 +1,10 @@
+{
+  "id": "charge-attack",
+  "file": "Charge-Attack-v1.png",
+  "prompt": "Animate APPROVED overhead Ponticsteppearcher inREFERENCE1. REFERENCE1 sole equipment/CAMERA/style/paletteauthority, reference2 MOTIONONLY not itshelmetfurcollarhorsecolor. Exact sameHIGHoverhead projection bigcapcrown smallforeshortenedtorso, visiblelonghorseBACK. Same dun/bayhorse blackmane/tail UNARMORED simpleleatherharness feltclothwood saddle, riderdarkfelt fur-edgedcap sleevelessIRONLAMELLARvest shortshoulderlamellae ironbracers mutedrussetkaftanwithcreamtrim leatherbelt bootstrousersquiverand sheathedsabre. No shinyhelmet no thickfurcollar noheavyplate orhorsearmor. Preserve smoothsubduedpainted finish no grain outlineorredincrease. Compactwoodhornrecurve LEFT screenRIGHT, rightdrawhand. Six ADVANCE-BRACE-FORWARD BOW SHOT poses:1 riderbraced bowready,2 nockandlift,3 fulldraw bowLEFTextended FORWARD/screendown slightlyright rightdrawhandatface,4 release oneFORWARDarrow,5followthrough,6readyidle. Morelean/brace thanregularshot, horsestillfacesdown. Arrowshaft MUST meetbowimmediately nexttoLEFTgriphand nothighupbowlimb. Bowstring tipstoRIGHTdrawhand, clearsinsideleftarm. Noarrowafterrelease5/6. Exact1536x1024 six512pxcells3columns2rows ROWMAJOR, samepose scale ALLsix, commonsaddlecenter256,256 eachcell. Allbodyweaponfallenposetail insideowncell with minimum35pxemptytransparent margins EACHside and rowgutters. ShrinkALLposesuniformlyforclearance notclip. RGBAalpha0transparent backgroundallgaps no glowgroundshadow smokebrownblackgradient textgridlabels. Outputonlysixframeatlas.",
+  "generatedSource": "C:\\Users\\Damien\\.codex\\generated_images\\01a11641-9e1b-7c81-be76-c9edd53ef182\\exec-dd008a18-57ed-476e-9534-147c9f57c3f1.png",
+  "references": [
+    "Idle-v3.png",
+    "ClassicalAge/HorseArcher/SourceArt/Native-Charge-Attack-ArrowGrip-v11.png"
+  ]
+}

@@ -97,7 +97,7 @@ describe("wall artwork topology", () => {
     expect(AGES.map(wallTier)).toEqual([
       "Palisades",
       "StoneWalls",
-      ...Array(5).fill("MassiveStoneWalls"),
+      ...Array(AGES.length - 2).fill("MassiveStoneWalls"),
     ]);
   });
   it("connects ordered runs through a corner and joins tower endpoints at the same pivot", () => {

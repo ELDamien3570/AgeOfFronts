@@ -1,0 +1,36 @@
+{
+  "date": "2026-10-07",
+  "mode": "built-in-imagegen",
+  "selectedIdle": "Idle-Overhead-v3.png",
+  "generatedSource": "C:/Users/Damien/.codex/generated_images/01a0fea1-c63f-7343-92ca-6c21cc1c4296/exec-48318a62-4c07-4eb9-9b07-9e7a3707b5f4.png",
+  "prompt": "Redo this single game sprite as a RENAISSANCE PIKEMAN, replacing the Napoleonic costume completely. Reference image supplies only painted game sprite style, compact proportions, directly overhead camera and two-handed pike posture. Equipment direction researched from sixteenth-century steel morion helmets (Met Museum object 32.75.88) and late Renaissance pikeman half armor: steel crested morion with a raised central comb and sweeping upturned front/back brim; iron gorget, plain burnished steel breast/backplate, restrained small articulated shoulder plates, short overlapping steel thigh tassets, over burgundy padded doublet with moderately puffed sleeves, tan breeches and brown leather boots. Limited warm brass rivets and leather straps retain the Russian culture game palette. No shako, no plume, no Napoleonic green coat, no white crossbelts, no shield, no gun. STRICT 90 DEGREE OVERHEAD ORTHOGRAPHIC camera, hat crown and shoulder tops dominant, torso heavily foreshortened, face hidden below front brim. Faces SCREEN BOTTOM. One long perfectly straight wooden PIKE with narrow symmetrical steel spear point pointing SCREEN BOTTOM, butt SCREEN TOP, held by both hands at two distinct fixed grips in idle ready pose alongside body. Entire shaft, point, both boots and helmet fit with generous transparent margins. Smooth rich painterly textured strategy-game sprite matching established reference, clear materials and readable silhouette at 48/64/128 pixels, soft natural painted edges, no heavy cartoon outline. One single idle frame of one isolated actor. Transparent background, no ground, no cast shadow plane, no text. Era-inspired fictional Russian roster using Renaissance equipment; not a historical exact reconstruction.",
+  "styleReference": "../NapoleonicPikeman/Idle-v1.png",
+  "researchReferences": [
+    "https://www.metmuseum.org/art/collection/search/27891",
+    "https://www.khm.at/kunstwerke/halber-pikernierharnisch-371787"
+  ],
+  "revisionReason": "User requested Renaissance pikeman images and a new design replacing the Napoleonic idle.",
+  "userApproval": "Overhead v3 idle awaiting review",
+  "revisions": [
+    {
+      "date": "2026-10-07",
+      "mode": "built-in-imagegen",
+      "selectedIdle": "Idle-Photo-v2.png",
+      "generatedSource": "C:/Users/Damien/.codex/generated_images/01a0fea1-c63f-7343-92ca-6c21cc1c4296/exec-dd3a8f33-7a58-485e-8ef3-1f2ab509a88f.png",
+      "prompt": "Revise the single Renaissance pikeman idle game sprite (reference2) to match the EQUIPMENT AND CLOTHING of the pikemen in reference1 photograph. Ref1 is the primary equipment reference; ref2 only supplies painted game finish, strict overhead camera and compact silhouette. One isolated man. Simple BLACKENED iron rounded cabasset/morion helmet with low tapered crown, modest brim and tiny yellow feather accent, not a tall ornate fantasy crest. Plain blackened steel breastplate/backplate secured by brown leather shoulder straps. Loose WHITE linen shirt with generously full sleeves, white open collar visible around armor. Brown/mustard knee breeches, off-white stockings and brown leather shoes. Plain leather waist belt, small sheathed side sword at hip optional discreet. NO shoulder pauldrons, NO silver thigh armor/tassets, NO gold decoration, NO burgundy padded doublet, NO shako, NO Napoleonic uniform. Pike notably long and SLENDER wooden shaft, narrower than previous thick pole, with small narrow steel spear point; both hands genuinely grip distinct fixed locations on shaft. Pike projects ahead toward SCREEN BOTTOM, butt toward top. Stable relaxed idle ready stance. Camera STRICT directly vertical90degree overhead orthographic, see TOP of helmet and shoulder tops, very foreshortened torso, face almost entirely obscured by brim; no front portrait. Soldier facing screenBOTTOM, entire long pike and all actor fit inside generous transparent margins. Rich smoothly painted detailed strategy-game sprite materials matching ref2, readable at48/64/128pixels. One frame only, transparent background, no scenery, no text, no ground shadow plane.",
+      "equipmentReference": "C:/Users/Damien/Downloads/Pikeniere_Wallenstein-Festspiele_Memmingen.jpg",
+      "styleReference": "Idle-v1.png",
+      "userApproval": "Awaiting idle review"
+    },
+    {
+      "date": "2026-10-07",
+      "mode": "built-in-imagegen",
+      "selectedIdle": "Idle-Overhead-v3.png",
+      "generatedSource": "C:/Users/Damien/.codex/generated_images/01a0fea1-c63f-7343-92ca-6c21cc1c4296/exec-7cd7400f-9c06-41a2-a52e-64f14b9b48df.png",
+      "prompt": "Edit this Renaissance pikeman single idle sprite. TWO required corrections: (1) reverse the pike end-for-end so the narrow STEEL SPEARHEAD is at the TOP OF THE IMAGE pointing UP, and the plain WOODEN BUTT is at the bottom. No spearhead at bottom. Maintain a slender perfectly straight wooden shaft and two separate genuine hand grips. (2) Make the camera EXACTLY vertical 90-degree overhead orthographic. This must look like looking straight down on his helmet CROWN and shoulder TOPS, not seeing the front of his breastplate. Much stronger torso foreshortening: helmet crown dominates compact body, chest front mostly hidden beneath helmet, no face visible, sleeves shown from above, legs mostly obscured with just shoe tips visible below body. Soldier still faces screenBOTTOM; do NOT rotate the soldier upward just because weapon head now points upward. Preserve identity/equipment: simple blackened iron rounded cabasset/morion with restrained ridge and small yellow feather, blackened plain breast/backplate, brown leather shoulder straps, loose white linen sleeves and collar, mustard brown breeches, off-white stockings, brown shoes, small sheathed hip sword. No shield, no added armor, no gold decoration. Match existing smooth richly painted strategy-game sprite art style, natural material shading, no thick black contour and no colored edge halo. Single isolated actor and ONE idle frame. Entire pike and helmet/shoes fit with at least 60 pixels transparent breathing room all sides. Genuinely transparent background, no ground, no text, no scenery.",
+      "reference": "Idle-Photo-v2.png",
+      "revisionReason": "User requested pike head upward and stronger top-down camera.",
+      "userApproval": "Awaiting idle review"
+    }
+  ]
+}

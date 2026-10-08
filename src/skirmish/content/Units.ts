@@ -1,4 +1,5 @@
 import { FIXED, TICKS_PER_SECOND, type SquadType } from "../Protocol";
+import { damageAmount } from "../domain/Combat";
 import {
   AGES,
   type Age,
@@ -13,8 +14,8 @@ import {
   equipmentItem,
   type EquipmentKind,
 } from "./Equipment";
-import { technologyAt } from "./Technology";
-import { damageAmount } from "../domain/Combat";
+import { RUSSIAN_RECRUITMENT } from "./RussianRecruitment";
+import { TECHNOLOGY, technologyAt } from "./Technology";
 const ground: readonly TargetTag[] = [
   "infantry",
   "ranged",
@@ -23,33 +24,6 @@ const ground: readonly TargetTag[] = [
   "siege",
   "structure",
   "wall",
-];
-const frontline = [
-  "Clubmen",
-  "Bronze swordsmen",
-  "Sword-and-shield infantry",
-  "Mail infantry",
-  "Plate swordsmen",
-  "Short-gun infantry",
-  "Rifle infantry",
-];
-const ranged = [
-  "Javelinists",
-  "Bronze archers",
-  "Classical archers",
-  "Bowmen",
-  "Crossbowmen",
-  "Musketeers",
-  "Marksmen",
-];
-const mobile = [
-  "Mounted spearmen",
-  "Chariots",
-  "Mounted swordsmen",
-  "Mounted spearmen",
-  "Lance knights",
-  "Pistoliers",
-  "Tanks",
 ];
 export const UNITS: UnitDefinition[] = [];
 export const RECIPES: ProductionRecipe[] = EQUIPMENT_RECIPES;
@@ -88,121 +62,6 @@ const profile = (
 });
 for (const [index, age] of AGES.entries()) {
   const factor = 1.5 ** index;
-  // Authored tier equipment, not a hidden age-gap damage multiplier. Increasing
-  // attack and flat armour together keeps contemporary battles from becoming
-  // exponentially faster while obsolete weapons struggle against new armour.
-  const protection = [0, 0.48, 0.64, 0.74, 0.8, 0.84, 0.88][index];
-  for (const [line, slot, names] of [
-    ["infantry", 1, frontline],
-    ["archer", 2, ranged],
-    ["cavalry", 3, mobile],
-  ] as const) {
-    const vehicle = index === 6 && line === "cavalry",
-      mounted = line === "cavalry" && !vehicle;
-    const firearm = index >= 5;
-    const attack =
-      line === "archer"
-        ? profile(
-            "ranged",
-            Math.round((firearm ? 114 : 35) * factor),
-            firearm ? 12 + index - 5 : 6 + index * 0.5,
-            2,
-            {
-              mounted: Math.round(12 * factor),
-            },
-          )
-        : line === "infantry"
-          ? profile(
-              firearm ? "ranged" : "melee",
-              Math.round(120 * factor),
-              firearm ? 5 + index : 1.5,
-              firearm ? 2 : 1.5,
-              { ranged: Math.round(10 * factor) },
-            )
-          : profile(
-              index >= 5 ? "ranged" : "melee",
-              Math.round(145 * factor),
-              vehicle ? 8 : firearm ? 4 : 1.5,
-              vehicle ? 3 : 2,
-              { ranged: Math.round(18 * factor) },
-            );
-    if (index === 4 && line === "archer") attack.penetration = 2000;
-    if (vehicle)
-      attack.projectile = {
-        diameter: FIXED / 5,
-        speed: FIXED * 2,
-        blastRadius: FIXED,
-      };
-    const unit: UnitDefinition = {
-      id: `${age.toLowerCase()}-${line}`,
-      name: names[index],
-      age,
-      line,
-      role: vehicle
-        ? "mounted"
-        : line === "infantry"
-          ? "frontline"
-          : line === "archer"
-            ? "ranged"
-            : "mounted",
-      technologyId: technologyAt(age, "warfare", vehicle ? 2 : slot).id,
-      building: vehicle
-        ? "depot"
-        : line === "infantry"
-          ? "barracks"
-          : line === "archer"
-            ? "archery"
-            : "stables",
-      tags: vehicle
-        ? ["vehicle"]
-        : mounted
-          ? ["mounted"]
-          : line === "archer"
-            ? ["infantry", "ranged"]
-            : ["infantry"],
-      speedPercent: vehicle
-        ? 120
-        : mounted
-          ? 160
-          : line === "archer"
-            ? 90
-            : 100,
-      armourKind: "points",
-      meleeArmour: Math.round(120 * factor * protection),
-      rangedArmour: Math.round((firearm ? 120 : 35) * factor * protection),
-      bonusResistance: {
-        infantry: Math.round(10 * (factor - 1)),
-        ranged: Math.round(12 * (factor - 1)),
-        mounted: Math.round(15 * (factor - 1)),
-      },
-      attack,
-      cost: {
-        gold: (line === "infantry"
-          ? [100, 200, 350, 600, 1000, 1800, 3000]
-          : line === "archer"
-            ? [150, 300, 500, 850, 1400, 2300, 4000]
-            : [250, 450, 750, 1200, 2000, 3200, 5000])[index],
-        reserves: 1000,
-        items: mounted ? { horses: index === 1 ? 40 : 20 } : {},
-      },
-      canCapture: true,
-      ...(mounted && index < 5
-        ? {
-            charge: {
-              speedPercent: 280,
-              damage: Math.round(120 * factor),
-              radius: Math.round(1.25 * FIXED),
-              cooldownTicks: 20 * TICKS_PER_SECOND,
-              runupTicks: 10,
-              maximumDistance: 10 * FIXED,
-              penetration: 2500,
-            },
-          }
-        : {}),
-    };
-    addEquipment(unit, index, vehicle ? "vehicle" : "troop");
-    UNITS.push(unit);
-  }
   const siegeNames = [
     "Field ram",
     "Battering ram",
@@ -210,6 +69,7 @@ for (const [index, age] of AGES.entries()) {
     "Trebuchet",
     "Bombard",
     "Early howitzer",
+    "Modern howitzer",
     "Modern howitzer",
   ];
   const fieldNames = [
@@ -219,6 +79,7 @@ for (const [index, age] of AGES.entries()) {
     "Ballista",
     "Organ gun",
     "Field cannon",
+    "Machine-gun crew",
     "Machine-gun crew",
   ];
   for (const field of index ? [false, true] : [false]) {
@@ -234,12 +95,12 @@ for (const [index, age] of AGES.entries()) {
         wall: Math.round((field ? 100 : 500) * factor),
       },
     );
-    if (index === 6 && field) {
+    if (index >= 6 && field) {
       attack.bonuses = { infantry: 80, ranged: 100 };
       attack.range = 7 * FIXED;
       attack.reloadTicks = 20;
     }
-    if (!contact && !(index === 6 && field))
+    if (!contact && !(index >= 6 && field))
       attack.projectile = {
         diameter: Math.round(FIXED * 0.25),
         speed: FIXED,
@@ -254,7 +115,7 @@ for (const [index, age] of AGES.entries()) {
       technologyId: technologyAt(
         age,
         "warfare",
-        field && index > 1 ? 2 : index === 6 ? 2 : 4,
+        field && index > 1 ? 2 : index >= 6 ? 2 : 4,
       ).id,
       building: "siege-workshop",
       tags: ["siege"],
@@ -269,7 +130,10 @@ for (const [index, age] of AGES.entries()) {
       ...(contact ? { undefendedCaptureTicks: 4 } : {}),
       placeholder: index === 0,
     };
-    addEquipment(unit, index, index === 6 && field ? "troop" : "siege");
+    const sourceEra = age === "Napoleonic" ? "earlymodern" : age === "EarlyModern" ? "modern" : age.toLowerCase();
+    const unlock = TECHNOLOGY.get(`russian-support-${sourceEra}-${field ? "field-support" : "siege"}`);
+    if (unlock?.age === age) unit.technologyId = unlock.id;
+    addEquipment(unit, index, index >= 6 && field ? "troop" : "siege");
     UNITS.push(unit);
   }
 }
@@ -280,11 +144,11 @@ for (const [role, name, targets] of [
   const unit: UnitDefinition = {
     id: `modern-${role}`,
     name,
-    age: "Modern",
+    age: role === "anti-air" ? "EarlyModern" : "Modern",
     line: "cavalry",
     role,
-    technologyId: technologyAt("Modern", "warfare", role === "launcher" ? 4 : 2)
-      .id,
+    technologyId:
+      role === "launcher" ? "russian-mirv-systems" : "modern-combined-arms",
     building: "depot",
     tags: ["vehicle"],
     speedPercent: 90,
@@ -300,9 +164,205 @@ for (const [role, name, targets] of [
     canCapture: false,
     placeholder: true,
   };
-  addEquipment(unit, 6, "vehicle");
+  addEquipment(unit, AGES.indexOf(unit.age), "vehicle");
   UNITS.push(unit);
 }
+// The six authored classes share the existing movement/collider families.
+// Primary IDs stay stable for command and presentation hooks.
+const classProfiles = {
+  frontline: {
+    hp: 60,
+    damage: 6,
+    bonus: 8,
+    melee: 1,
+    pierce: 0,
+    reload: 2,
+    speed: 100,
+  },
+  antiCavalry: {
+    hp: 60,
+    damage: 4,
+    bonus: 24,
+    melee: 0,
+    pierce: 0,
+    reload: 3,
+    speed: 90,
+  },
+  rangedInfantry: {
+    hp: 30,
+    damage: 4,
+    bonus: 6,
+    melee: 0,
+    pierce: 0,
+    reload: 2,
+    speed: 90,
+  },
+  lightCavalry: {
+    hp: 80,
+    damage: 8,
+    bonus: 10,
+    melee: 1,
+    pierce: 1,
+    reload: 2,
+    speed: 160,
+  },
+  heavyCavalry: {
+    hp: 100,
+    damage: 10,
+    bonus: 18,
+    melee: 2,
+    pierce: 2,
+    reload: 1.8,
+    speed: 130,
+  },
+  rangedCavalry: {
+    hp: 50,
+    damage: 6,
+    bonus: 8,
+    melee: 0,
+    pierce: 0,
+    reload: 2,
+    speed: 150,
+  },
+} as const;
+for (const troop of RUSSIAN_RECRUITMENT.units) {
+  const age = troop.age as Age,
+    index = AGES.indexOf(age),
+    factor = 1.5 ** index;
+  const cls = troop.troopClass as keyof typeof classProfiles,
+    stats = classProfiles[cls];
+  const mounted = cls.endsWith("Cavalry"),
+    vehicle = mounted && index >= 6;
+  const rangedAttack =
+    cls === "rangedInfantry" || cls === "rangedCavalry" || index >= 6;
+  const line = mounted
+    ? "cavalry"
+    : cls === "rangedInfantry"
+      ? "archer"
+      : "infantry";
+  const primary =
+    cls === "frontline" || cls === "rangedInfantry" || cls === "lightCavalry";
+  const points = (value: number) => Math.round(((value * 1000) / 60) * factor);
+  const spearBonus = stats.bonus;
+  const bonuses =
+    cls === "antiCavalry"
+      ? {
+          mounted: points(spearBonus),
+          vehicle: points(spearBonus),
+          armoured: points(14),
+        }
+      : cls === "rangedInfantry" || cls === "rangedCavalry"
+        ? { infantry: points(stats.bonus) }
+        : { ranged: points(stats.bonus) };
+  const unit: UnitDefinition = {
+    id: primary ? `${age.toLowerCase()}-${line}` : troop.id,
+    name: troop.name,
+    age,
+    line,
+    troopClass: cls,
+    trainingSeconds: troop.trainingSeconds,
+    role: mounted
+      ? "mounted"
+      : cls === "rangedInfantry"
+        ? "ranged"
+        : "frontline",
+    technologyId: troop.technologyId,
+    building: vehicle
+      ? "depot"
+      : mounted
+        ? "stables"
+        : line === "archer"
+          ? "archery"
+          : "barracks",
+    tags: vehicle
+      ? [
+          "vehicle",
+          ...(cls === "heavyCavalry" || cls === "rangedCavalry"
+            ? ["armoured" as const]
+            : []),
+        ]
+      : mounted
+        ? [
+            "mounted",
+            ...(cls === "heavyCavalry" ? ["armoured" as const] : []),
+            ...(cls === "rangedCavalry" ? ["ranged" as const] : []),
+          ]
+        : cls === "rangedInfantry"
+          ? ["ranged"]
+          : ["infantry"],
+    speedPercent: vehicle ? 120 : stats.speed,
+    armourKind: "points",
+    healthPercent: Math.round(
+      ((cls === "heavyCavalry" && index === 4 ? 150 : stats.hp) / 60) *
+        100 *
+        factor,
+    ),
+    meleeArmour: points(stats.melee),
+    rangedArmour: points(stats.pierce),
+    bonusResistance: {},
+    attack: profile(
+      rangedAttack ? "ranged" : "melee",
+      points(stats.damage),
+      rangedAttack
+        ? index >= 6
+          ? cls === "frontline"
+            ? 4
+            : cls === "antiCavalry" || cls === "rangedCavalry"
+              ? 8
+              : cls === "rangedInfantry"
+                ? 10
+                : 5
+          : cls === "rangedCavalry"
+            ? 5
+            : 6
+        : 1.5,
+      stats.reload,
+      bonuses,
+    ),
+    cost: {
+      gold: troop.gold,
+      reserves: 1000,
+      items: mounted && !vehicle ? { horses: 20 } : {},
+    },
+    canCapture: true,
+    ...(mounted && !vehicle && cls !== "rangedCavalry"
+      ? {
+          charge: {
+            speedPercent: 250,
+            damage: points(6),
+            radius: Math.round(1.25 * FIXED),
+            cooldownTicks: 20 * TICKS_PER_SECOND,
+            runupTicks: 10,
+            maximumDistance: 10 * FIXED,
+            penetration: 2500,
+          },
+        }
+      : {}),
+  };
+  if (vehicle && cls === "rangedCavalry")
+    unit.attack.projectile = {
+      diameter: FIXED / 4,
+      speed: FIXED * 2,
+      blastRadius: 0,
+    };
+  addEquipment(unit, index, vehicle ? "vehicle" : "troop");
+  UNITS.push(unit);
+}
+UNITS.sort(
+  (a, b) =>
+    AGES.indexOf(a.age) - AGES.indexOf(b.age) ||
+    Number(
+      ["frontline", "rangedInfantry", "lightCavalry"].includes(
+        a.troopClass ?? "",
+      ),
+    ) -
+      Number(
+        ["frontline", "rangedInfantry", "lightCavalry"].includes(
+          b.troopClass ?? "",
+        ),
+      ) ||
+    a.id.localeCompare(b.id, "en"),
+);
 export const UNIT = new Map(UNITS.map((u) => [u.id, u]));
 export function defaultUnit(
   line: SquadType,
@@ -311,7 +371,7 @@ export function defaultUnit(
   return UNIT.get(`${age.toLowerCase()}-${line}`)!;
 }
 export const VESSELS: VesselDefinition[] = [];
-export const TRANSPORT_CAPACITIES = [10, 12, 14, 16, 18, 20, 25] as const;
+export const TRANSPORT_CAPACITIES = [10, 12, 14, 16, 18, 20, 25, 30] as const;
 for (const [index, age] of AGES.entries())
   for (const kind of ["transport", "warship", "trade"] as const) {
     const slot = kind === "warship" ? 3 : kind === "trade" || index > 1 ? 2 : 1;
@@ -328,10 +388,29 @@ for (const [index, age] of AGES.entries())
       cost: {
         gold: (kind === "warship" ? 700 : 300) * (index + 1),
       },
-      health: kind === "transport"
-        ? Math.round(damageAmount({ ...profile("ranged", Math.round(160 * 1.3 ** index), 7 + index, 2), targets: ["ship"] },
-          { tags: ["ship"], meleeArmour: 1000, rangedArmour: 2000, bonusResistance: {} }) * (1 + index * 0.5))
-        : Math.round((kind === "warship" ? 1000 : 600) * 1.3 ** index),
+      health:
+        kind === "transport"
+          ? Math.round(
+              damageAmount(
+                {
+                  ...profile(
+                    "ranged",
+                    Math.round(160 * 1.3 ** index),
+                    7 + index,
+                    2,
+                  ),
+                  targets: ["ship"],
+                },
+                {
+                  tags: ["ship"],
+                  meleeArmour: 1000,
+                  rangedArmour: 2000,
+                  bonusResistance: {},
+                },
+              ) *
+                (1 + index * 0.5),
+            )
+          : Math.round((kind === "warship" ? 1000 : 600) * 1.3 ** index),
       speed: (kind === "warship" ? 55 : 70) + index * 6,
       capacity:
         kind === "transport"

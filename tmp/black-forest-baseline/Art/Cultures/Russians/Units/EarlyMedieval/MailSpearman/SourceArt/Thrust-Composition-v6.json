@@ -1,0 +1,191 @@
+{
+  "method": "Whole-pose atlas packing, preserved generated alpha.",
+  "clips": [
+    {
+      "clip": "attack",
+      "source": "Native-Attack-Rebuilt-v6.png",
+      "sourceSha256": "595a9dc9f191c77abbc0d25f0138320ae5b6879ca8ecf79f2336a544b79685d7",
+      "output": "Attack-Rebuilt-v6.png",
+      "outputSha256": "f16bee632150b2e6470d00e827be0ef17ea11d7b8b946cb1cd31f7888413fffe",
+      "tracks": [
+        {
+          "frame": 0,
+          "sourceRect": [
+            0,
+            0,
+            512,
+            512
+          ],
+          "uniformScale": 0.8,
+          "destinationOffset": [
+            51,
+            51
+          ]
+        },
+        {
+          "frame": 1,
+          "sourceRect": [
+            512,
+            0,
+            1024,
+            512
+          ],
+          "uniformScale": 0.8,
+          "destinationOffset": [
+            51,
+            51
+          ]
+        },
+        {
+          "frame": 2,
+          "sourceRect": [
+            1024,
+            0,
+            1536,
+            512
+          ],
+          "uniformScale": 0.8,
+          "destinationOffset": [
+            51,
+            51
+          ]
+        },
+        {
+          "frame": 3,
+          "sourceRect": [
+            0,
+            512,
+            560,
+            1024
+          ],
+          "uniformScale": 0.8,
+          "destinationOffset": [
+            51,
+            51
+          ]
+        },
+        {
+          "frame": 4,
+          "sourceRect": [
+            560,
+            512,
+            1024,
+            1024
+          ],
+          "uniformScale": 0.8,
+          "destinationOffset": [
+            89,
+            51
+          ]
+        },
+        {
+          "frame": 5,
+          "sourceRect": [
+            1024,
+            512,
+            1536,
+            1024
+          ],
+          "uniformScale": 0.8,
+          "destinationOffset": [
+            51,
+            51
+          ]
+        }
+      ]
+    },
+    {
+      "clip": "charge-attack",
+      "source": "Native-Charge-Attack-Rebuilt-v6.png",
+      "sourceSha256": "3d3de767b11e5afbdc8705378b95e7a34317450b548b2ac776e1942ba9fbbcbc",
+      "output": "Charge-Attack-Rebuilt-v6.png",
+      "outputSha256": "7e0c3340f12510c8f292b8dfc9137443a36a0a88c8beb71850f869322e74c7b7",
+      "tracks": [
+        {
+          "frame": 0,
+          "sourceRect": [
+            0,
+            0,
+            512,
+            512
+          ],
+          "uniformScale": 0.8,
+          "destinationOffset": [
+            51,
+            51
+          ]
+        },
+        {
+          "frame": 1,
+          "sourceRect": [
+            512,
+            0,
+            1024,
+            512
+          ],
+          "uniformScale": 0.8,
+          "destinationOffset": [
+            51,
+            51
+          ]
+        },
+        {
+          "frame": 2,
+          "sourceRect": [
+            1024,
+            0,
+            1536,
+            512
+          ],
+          "uniformScale": 0.8,
+          "destinationOffset": [
+            51,
+            51
+          ]
+        },
+        {
+          "frame": 3,
+          "sourceRect": [
+            0,
+            512,
+            560,
+            1024
+          ],
+          "uniformScale": 0.8,
+          "destinationOffset": [
+            51,
+            51
+          ]
+        },
+        {
+          "frame": 4,
+          "sourceRect": [
+            560,
+            512,
+            1024,
+            1024
+          ],
+          "uniformScale": 0.8,
+          "destinationOffset": [
+            89,
+            51
+          ]
+        },
+        {
+          "frame": 5,
+          "sourceRect": [
+            1024,
+            512,
+            1536,
+            1024
+          ],
+          "uniformScale": 0.8,
+          "destinationOffset": [
+            51,
+            51
+          ]
+        }
+      ]
+    }
+  ]
+}

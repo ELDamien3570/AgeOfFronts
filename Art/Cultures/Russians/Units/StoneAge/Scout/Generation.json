@@ -1,0 +1,140 @@
+{
+  "date": "2026-10-07",
+  "mode": "built-in-imagegen",
+  "userApproval": "Idle design approved; nine animations pending visual review.",
+  "records": [
+    {
+      "id": "russian-stoneage-scout-idle-v1",
+      "file": "Idle-v1.png",
+      "clip": "idle",
+      "prompt": "Make ONE Russian Stone Age mounted SCOUT idle sprite. Image1 is reference for exact existing rider, chestnut horse, tack, and vertical overhead camera (it is6poses; make ONLY ONE). Image2 is clubman reference for the short stone-headed CLUB. Preserve rider's red fur-trimmed cap, cream fur collar, rough red leather tunic, dark belt, bare forearms with simple leather wrist wraps, pale trousers and brown boots. Same chestnut horse with black mane/tail, simple leather bridle/reins and primitive leather saddle. Replace long stone spear ENTIRELY with a SHORT one-handed club like image2: thick rough wooden haft about forearm length, chunky rounded gray stone head securely lashed with leather straps. Clearly a blunt club, no spear point, axe blade, sword or longpole. Held in rider's weapon hand on SCREEN LEFT, relaxed ready beside horse shoulder, club stonehead pointing forward screen-bottom-left, not obstructing horse's head; other hand holds reins. Calm horse standing idle, full horse/rider visible, head screen-bottom, tail screen-top. Camera EXACTLY vertical overhead orthographic with horse's back/mane and rider cap crown dominant; no sideview/isometric/frontalface. Readable horse anatomy and silhouette, four legs attached correctly, no duplicate heads/limbs. One mounted actor ONLY; no formation, montage, labels, additionalgear, shields, bronze armor. Same painted stylized game sprite fidelity. Square1254x1254RGBAcanvas, centered saddle root near(640,640), full equipment/horse/tail within>=50px padding. Truly transparent alpha0 outside crisp silhouette, no brown haze, glow, ground or cast shadows.",
+      "references": [
+        "../MountedSpearman/Idle-v2.png",
+        "../Clubman/Idle.png"
+      ],
+      "generatedSource": "C:/Users/Damien/.codex/generated_images/01a11641-9e1b-7c81-be76-c9edd53ef182/exec-8aaba7f6-abe5-49ed-bfa9-1b715603aa78.png",
+      "status": "approved-design-reference"
+    },
+    {
+      "id": "idle",
+      "file": "Idle-Animated-v1.png",
+      "motion": "Loop gentle idle:1 neutralapprovedstance,2 horseinhales,3 earsflick/weight shifts subtly,4 exhale,5 tailsoftsway/weightsettle,6 backtowardframe1. Clubreadyatleft and reinsheld, allhoovesplanted, no bigmotion.",
+      "prompt": "Create a SIX-FRAME single-mounted-actor animation atlas from image1 APPROVED Russian Stone Age SCOUT. Exact same red fur-trimmed cap/tunic, cream fur collar, leather wrist wraps, pale trousers/brown boots, same chestnut horse with black mane/tail, leather saddle/bridle/reins. Short blunt wooden CLUB with chunky rounded gray stone head lashed in leather in weapon hand SCREEN LEFT, other hand SCREEN RIGHT reins. NOT spear/axe/sword, no shield/bronze armor. STRICT vertical overhead orthographic, horse nose screen-bottom tail screen-top, rider's cap crown dominant when mounted. No isometric or frontal portrait. Four anatomically attached horse legs, rider's two boots distinct from horse hooves. One horse/rider per cell, same consistent body proportions and equipment size/camera every frame. Exact1536x1024RGBA,3columns2rows, six512x512cells row-major. Each COMPLETE pose (including tail, head, club, limbs/fallen rider) stays fully inside own cell within centered440x440area, >=36px blank padding. Saddle/body root consistently near(256,256). True alpha0 background outside crisp antialias silhouette, no fog/haze/ground/shadow/glow/trails/text/grid. Distinct authored sequential poses.\nMOTION: Loop gentle idle:1 neutralapprovedstance,2 horseinhales,3 earsflick/weight shifts subtly,4 exhale,5 tailsoftsway/weightsettle,6 backtowardframe1. Clubreadyatleft and reinsheld, allhoovesplanted, no bigmotion.",
+      "references": [
+        "C:/Users/Damien/Documents/GitHub/AgeOfFronts/AgeOfFronts/Art/Cultures/Russians/Units/StoneAge/Scout/Idle-v1.png"
+      ],
+      "generatedSource": "C:/Users/Damien/.codex/generated_images/01a11641-9e1b-7c81-be76-c9edd53ef182/exec-f906745d-9cf9-420c-8285-f1036eaecd5d.png",
+      "status": "selected-animation-source",
+      "nativeCopy": "SourceArt/Native-Idle-Animated-v1.png"
+    },
+    {
+      "id": "running",
+      "file": "Running-v1.png",
+      "motion": "Loop horse WALK, slower four-beat alternating steps:1 leftforelegreachesfront/rightforelegrear,2 leftforelegplants/rightrearlegadvances,3 rightforelegreachesfront/leftrearlegadvances,4 rightforelegplants/leftforelegpasses,5 leftrearlegplants/rightforelegpasses,6 returntoneutralpassingpose. Clearly visible hoof extension/retraction along direction of travel, no shuffling/no floating sidewayshooves. Horseback stable rider seated. Naturaloverheadanatomy.",
+      "prompt": "Create a SIX-FRAME single-mounted-actor animation atlas from image1 APPROVED Russian Stone Age SCOUT. Exact same red fur-trimmed cap/tunic, cream fur collar, leather wrist wraps, pale trousers/brown boots, same chestnut horse with black mane/tail, leather saddle/bridle/reins. Short blunt wooden CLUB with chunky rounded gray stone head lashed in leather in weapon hand SCREEN LEFT, other hand SCREEN RIGHT reins. NOT spear/axe/sword, no shield/bronze armor. STRICT vertical overhead orthographic, horse nose screen-bottom tail screen-top, rider's cap crown dominant when mounted. No isometric or frontal portrait. Four anatomically attached horse legs, rider's two boots distinct from horse hooves. One horse/rider per cell, same consistent body proportions and equipment size/camera every frame. Exact1536x1024RGBA,3columns2rows, six512x512cells row-major. Each COMPLETE pose (including tail, head, club, limbs/fallen rider) stays fully inside own cell within centered440x440area, >=36px blank padding. Saddle/body root consistently near(256,256). True alpha0 background outside crisp antialias silhouette, no fog/haze/ground/shadow/glow/trails/text/grid. Distinct authored sequential poses.\nMOTION: Loop horse WALK, slower four-beat alternating steps:1 leftforelegreachesfront/rightforelegrear,2 leftforelegplants/rightrearlegadvances,3 rightforelegreachesfront/leftrearlegadvances,4 rightforelegplants/leftforelegpasses,5 leftrearlegplants/rightforelegpasses,6 returntoneutralpassingpose. Clearly visible hoof extension/retraction along direction of travel, no shuffling/no floating sidewayshooves. Horseback stable rider seated. Naturaloverheadanatomy.",
+      "references": [
+        "C:/Users/Damien/Documents/GitHub/AgeOfFronts/AgeOfFronts/Art/Cultures/Russians/Units/StoneAge/Scout/Idle-v1.png"
+      ],
+      "generatedSource": "C:/Users/Damien/.codex/generated_images/01a11641-9e1b-7c81-be76-c9edd53ef182/exec-53207fbb-1bc5-47b6-8e2a-1841edcc1aec.png",
+      "status": "selected-animation-source",
+      "nativeCopy": "SourceArt/Native-Running-v1.png"
+    },
+    {
+      "id": "attack",
+      "file": "Attack-v1.png",
+      "motion": "Sixstage ordinary mounted CLUB STRIKE:1 readyclubleft,2 riderraisesclubup/backbesideleftshoulder,3 swingsclubforwardscreen-bottom-left,4 impactdownwardwithbluntstoneheadbesidehorseleftcheek/outsidehorse body,5 liftsclubback,6 returnsready. One rigidSHORTclub/head unchanged. Horseplantedwithsubtlebrace, ridersecurelysaddled, reinshandretained. No stabbing like spear, neverstrike ownhorse.",
+      "prompt": "Create a SIX-FRAME single-mounted-actor animation atlas from image1 APPROVED Russian Stone Age SCOUT. Exact same red fur-trimmed cap/tunic, cream fur collar, leather wrist wraps, pale trousers/brown boots, same chestnut horse with black mane/tail, leather saddle/bridle/reins. Short blunt wooden CLUB with chunky rounded gray stone head lashed in leather in weapon hand SCREEN LEFT, other hand SCREEN RIGHT reins. NOT spear/axe/sword, no shield/bronze armor. STRICT vertical overhead orthographic, horse nose screen-bottom tail screen-top, rider's cap crown dominant when mounted. No isometric or frontal portrait. Four anatomically attached horse legs, rider's two boots distinct from horse hooves. One horse/rider per cell, same consistent body proportions and equipment size/camera every frame. Exact1536x1024RGBA,3columns2rows, six512x512cells row-major. Each COMPLETE pose (including tail, head, club, limbs/fallen rider) stays fully inside own cell within centered440x440area, >=36px blank padding. Saddle/body root consistently near(256,256). True alpha0 background outside crisp antialias silhouette, no fog/haze/ground/shadow/glow/trails/text/grid. Distinct authored sequential poses.\nMOTION: Sixstage ordinary mounted CLUB STRIKE:1 readyclubleft,2 riderraisesclubup/backbesideleftshoulder,3 swingsclubforwardscreen-bottom-left,4 impactdownwardwithbluntstoneheadbesidehorseleftcheek/outsidehorse body,5 liftsclubback,6 returnsready. One rigidSHORTclub/head unchanged. Horseplantedwithsubtlebrace, ridersecurelysaddled, reinshandretained. No stabbing like spear, neverstrike ownhorse.",
+      "references": [
+        "C:/Users/Damien/Documents/GitHub/AgeOfFronts/AgeOfFronts/Art/Cultures/Russians/Units/StoneAge/Scout/Idle-v1.png"
+      ],
+      "generatedSource": "C:/Users/Damien/.codex/generated_images/01a11641-9e1b-7c81-be76-c9edd53ef182/exec-9b9182a4-7ecd-42cb-ba87-9b1d53f906cb.png",
+      "status": "selected-animation-source",
+      "nativeCopy": "SourceArt/Native-Attack-v1.png"
+    },
+    {
+      "id": "hit",
+      "file": "Hit-v1.png",
+      "motion": "Light GET HIT:1neutral,2ridershouldersjerkback,3torsobrieflyflincheshorseearsback,4kneesgripsaddlehorsebraces,5recover,6ready. Bow/no spear not present, clubretained, no rearing/fall.",
+      "prompt": "Create a SIX-FRAME single-mounted-actor animation atlas from image1 APPROVED Russian Stone Age SCOUT. Exact same red fur-trimmed cap/tunic, cream fur collar, leather wrist wraps, pale trousers/brown boots, same chestnut horse with black mane/tail, leather saddle/bridle/reins. Short blunt wooden CLUB with chunky rounded gray stone head lashed in leather in weapon hand SCREEN LEFT, other hand SCREEN RIGHT reins. NOT spear/axe/sword, no shield/bronze armor. STRICT vertical overhead orthographic, horse nose screen-bottom tail screen-top, rider's cap crown dominant when mounted. No isometric or frontal portrait. Four anatomically attached horse legs, rider's two boots distinct from horse hooves. One horse/rider per cell, same consistent body proportions and equipment size/camera every frame. Exact1536x1024RGBA,3columns2rows, six512x512cells row-major. Each COMPLETE pose (including tail, head, club, limbs/fallen rider) stays fully inside own cell within centered440x440area, >=36px blank padding. Saddle/body root consistently near(256,256). True alpha0 background outside crisp antialias silhouette, no fog/haze/ground/shadow/glow/trails/text/grid. Distinct authored sequential poses.\nMOTION: Light GET HIT:1neutral,2ridershouldersjerkback,3torsobrieflyflincheshorseearsback,4kneesgripsaddlehorsebraces,5recover,6ready. Bow/no spear not present, clubretained, no rearing/fall.",
+      "references": [
+        "C:/Users/Damien/Documents/GitHub/AgeOfFronts/AgeOfFronts/Art/Cultures/Russians/Units/StoneAge/Scout/Idle-v1.png"
+      ],
+      "generatedSource": "C:/Users/Damien/.codex/generated_images/01a11641-9e1b-7c81-be76-c9edd53ef182/exec-59fd8eb3-a72f-41da-94f6-71298076e645.png",
+      "status": "selected-animation-source",
+      "nativeCopy": "SourceArt/Native-Hit-v1.png"
+    },
+    {
+      "id": "charged",
+      "file": "Charged-Impact-v1.png",
+      "motion": "Distinct HEAVY CHARGE IMPACT:1brace,2horseleadsheadbackandforelegswideabsorbingforce,3 riderleansback/staggersinsaddle,4 horsebriefdeepcrouch/buckledfrontlegsbutstandingandalllegsanatomical,5 regainbalance,6readystance. Forcefulreactionbutno death/ejection, club/reinsretained. Head stillscreenbottom/tailtop.",
+      "prompt": "Create a SIX-FRAME single-mounted-actor animation atlas from image1 APPROVED Russian Stone Age SCOUT. Exact same red fur-trimmed cap/tunic, cream fur collar, leather wrist wraps, pale trousers/brown boots, same chestnut horse with black mane/tail, leather saddle/bridle/reins. Short blunt wooden CLUB with chunky rounded gray stone head lashed in leather in weapon hand SCREEN LEFT, other hand SCREEN RIGHT reins. NOT spear/axe/sword, no shield/bronze armor. STRICT vertical overhead orthographic, horse nose screen-bottom tail screen-top, rider's cap crown dominant when mounted. No isometric or frontal portrait. Four anatomically attached horse legs, rider's two boots distinct from horse hooves. One horse/rider per cell, same consistent body proportions and equipment size/camera every frame. Exact1536x1024RGBA,3columns2rows, six512x512cells row-major. Each COMPLETE pose (including tail, head, club, limbs/fallen rider) stays fully inside own cell within centered440x440area, >=36px blank padding. Saddle/body root consistently near(256,256). True alpha0 background outside crisp antialias silhouette, no fog/haze/ground/shadow/glow/trails/text/grid. Distinct authored sequential poses.\nMOTION: Distinct HEAVY CHARGE IMPACT:1brace,2horseleadsheadbackandforelegswideabsorbingforce,3 riderleansback/staggersinsaddle,4 horsebriefdeepcrouch/buckledfrontlegsbutstandingandalllegsanatomical,5 regainbalance,6readystance. Forcefulreactionbutno death/ejection, club/reinsretained. Head stillscreenbottom/tailtop.",
+      "references": [
+        "C:/Users/Damien/Documents/GitHub/AgeOfFronts/AgeOfFronts/Art/Cultures/Russians/Units/StoneAge/Scout/Idle-v1.png"
+      ],
+      "generatedSource": "C:/Users/Damien/.codex/generated_images/01a11641-9e1b-7c81-be76-c9edd53ef182/exec-6a8b4175-2972-4fd6-9eae-f26de00fd701.png",
+      "status": "selected-animation-source",
+      "nativeCopy": "SourceArt/Native-Charged-Impact-v1.png"
+    },
+    {
+      "id": "charge",
+      "file": "Charge-v1.png",
+      "motion": "Loop gallop, use image2 APPROVED previous cavalry GAIT reference for horse leg motion only; ignoreits spear. Six phases collectedfour-beatgallop:1 hindlegpush/forelegstucked,2 forelegsreachforwardnose direction screen-bottom,3 leadingforelegextendsfurtherandlandswhileotherfolds,4 forelegsupport/hindrecoverunderbody,5 hindreachforwardunderbodyforelegsretract,6 compactcollectedsuspensionreturnframe1. Hooves move forward/back with knees/hocks bending along horse, NOT sideways windmill/paddles/stretchyfeet. Horsehead/spine consistent, clear foreleg reach and retraction likeimage2. Riderleans slightlyforwardholdingclubready, noattackduringloop.",
+      "prompt": "Create a SIX-FRAME single-mounted-actor animation atlas from image1 APPROVED Russian Stone Age SCOUT. Exact same red fur-trimmed cap/tunic, cream fur collar, leather wrist wraps, pale trousers/brown boots, same chestnut horse with black mane/tail, leather saddle/bridle/reins. Short blunt wooden CLUB with chunky rounded gray stone head lashed in leather in weapon hand SCREEN LEFT, other hand SCREEN RIGHT reins. NOT spear/axe/sword, no shield/bronze armor. STRICT vertical overhead orthographic, horse nose screen-bottom tail screen-top, rider's cap crown dominant when mounted. No isometric or frontal portrait. Four anatomically attached horse legs, rider's two boots distinct from horse hooves. One horse/rider per cell, same consistent body proportions and equipment size/camera every frame. Exact1536x1024RGBA,3columns2rows, six512x512cells row-major. Each COMPLETE pose (including tail, head, club, limbs/fallen rider) stays fully inside own cell within centered440x440area, >=36px blank padding. Saddle/body root consistently near(256,256). True alpha0 background outside crisp antialias silhouette, no fog/haze/ground/shadow/glow/trails/text/grid. Distinct authored sequential poses.\nMOTION: Loop gallop, use image2 APPROVED previous cavalry GAIT reference for horse leg motion only; ignoreits spear. Six phases collectedfour-beatgallop:1 hindlegpush/forelegstucked,2 forelegsreachforwardnose direction screen-bottom,3 leadingforelegextendsfurtherandlandswhileotherfolds,4 forelegsupport/hindrecoverunderbody,5 hindreachforwardunderbodyforelegsretract,6 compactcollectedsuspensionreturnframe1. Hooves move forward/back with knees/hocks bending along horse, NOT sideways windmill/paddles/stretchyfeet. Horsehead/spine consistent, clear foreleg reach and retraction likeimage2. Riderleans slightlyforwardholdingclubready, noattackduringloop.",
+      "references": [
+        "C:/Users/Damien/Documents/GitHub/AgeOfFronts/AgeOfFronts/Art/Cultures/Russians/Units/StoneAge/Scout/Idle-v1.png",
+        "C:/Users/Damien/Documents/GitHub/AgeOfFronts/AgeOfFronts/Art/Cultures/Russians/Units/StoneAge/Scout/../MountedSpearman/Charge-v5.png"
+      ],
+      "generatedSource": "C:/Users/Damien/.codex/generated_images/01a11641-9e1b-7c81-be76-c9edd53ef182/exec-e0e61841-dd28-458f-b40c-fc18acff326b.png",
+      "status": "selected-animation-source",
+      "nativeCopy": "SourceArt/Native-Charge-v1.png"
+    },
+    {
+      "id": "charge-attack",
+      "file": "Charge-Attack-v1.png",
+      "motion": "Mounted heavy charge CLUB SWING:1 advancingbracedready,2 riderraisesclubbackbesideleftshoulder,3 horseplantsforelegswhile riderdrivesclubforward,4 powerfuldownwardswingimpactbluntstoneheadscreenbottom-left clearofhorseface,5 recoverarmhorsecollects,6readystance. Shortclub/headunchanged, swingnot spear thrust, horseanatomyclear, riderremainsmounted/reinsheld.",
+      "prompt": "Create a SIX-FRAME single-mounted-actor animation atlas from image1 APPROVED Russian Stone Age SCOUT. Exact same red fur-trimmed cap/tunic, cream fur collar, leather wrist wraps, pale trousers/brown boots, same chestnut horse with black mane/tail, leather saddle/bridle/reins. Short blunt wooden CLUB with chunky rounded gray stone head lashed in leather in weapon hand SCREEN LEFT, other hand SCREEN RIGHT reins. NOT spear/axe/sword, no shield/bronze armor. STRICT vertical overhead orthographic, horse nose screen-bottom tail screen-top, rider's cap crown dominant when mounted. No isometric or frontal portrait. Four anatomically attached horse legs, rider's two boots distinct from horse hooves. One horse/rider per cell, same consistent body proportions and equipment size/camera every frame. Exact1536x1024RGBA,3columns2rows, six512x512cells row-major. Each COMPLETE pose (including tail, head, club, limbs/fallen rider) stays fully inside own cell within centered440x440area, >=36px blank padding. Saddle/body root consistently near(256,256). True alpha0 background outside crisp antialias silhouette, no fog/haze/ground/shadow/glow/trails/text/grid. Distinct authored sequential poses.\nMOTION: Mounted heavy charge CLUB SWING:1 advancingbracedready,2 riderraisesclubbackbesideleftshoulder,3 horseplantsforelegswhile riderdrivesclubforward,4 powerfuldownwardswingimpactbluntstoneheadscreenbottom-left clearofhorseface,5 recoverarmhorsecollects,6readystance. Shortclub/headunchanged, swingnot spear thrust, horseanatomyclear, riderremainsmounted/reinsheld.",
+      "references": [
+        "C:/Users/Damien/Documents/GitHub/AgeOfFronts/AgeOfFronts/Art/Cultures/Russians/Units/StoneAge/Scout/Idle-v1.png"
+      ],
+      "generatedSource": "C:/Users/Damien/.codex/generated_images/01a11641-9e1b-7c81-be76-c9edd53ef182/exec-0326ba0d-6bbe-494e-9581-967925c1bb7a.png",
+      "status": "selected-animation-source",
+      "nativeCopy": "SourceArt/Native-Charge-Attack-v1.png"
+    },
+    {
+      "id": "death",
+      "file": "Death-Together-v1.png",
+      "motion": "Complete horse AND rider fallingTOGETHER:1 impactrecoil,2 horsefrontkneesbuckle,3 horsebodytipstoscreenleft/riderleanswithit,4 horseandriderland onleftside,5 limbs/club settle,6 motionlesshorse/riderlyingonsidewithbluntclubdroppedbeside. Sixfullfallstagesnotonlycorpse. Horsehead remains toward screenbottom (notinverting), riderstillbysaddle, distinguishfourhorselimbsfromrider. No gore. Wholefallenposeinowncell.",
+      "prompt": "Create a SIX-FRAME single-mounted-actor animation atlas from image1 APPROVED Russian Stone Age SCOUT. Exact same red fur-trimmed cap/tunic, cream fur collar, leather wrist wraps, pale trousers/brown boots, same chestnut horse with black mane/tail, leather saddle/bridle/reins. Short blunt wooden CLUB with chunky rounded gray stone head lashed in leather in weapon hand SCREEN LEFT, other hand SCREEN RIGHT reins. NOT spear/axe/sword, no shield/bronze armor. STRICT vertical overhead orthographic, horse nose screen-bottom tail screen-top, rider's cap crown dominant when mounted. No isometric or frontal portrait. Four anatomically attached horse legs, rider's two boots distinct from horse hooves. One horse/rider per cell, same consistent body proportions and equipment size/camera every frame. Exact1536x1024RGBA,3columns2rows, six512x512cells row-major. Each COMPLETE pose (including tail, head, club, limbs/fallen rider) stays fully inside own cell within centered440x440area, >=36px blank padding. Saddle/body root consistently near(256,256). True alpha0 background outside crisp antialias silhouette, no fog/haze/ground/shadow/glow/trails/text/grid. Distinct authored sequential poses.\nMOTION: Complete horse AND rider fallingTOGETHER:1 impactrecoil,2 horsefrontkneesbuckle,3 horsebodytipstoscreenleft/riderleanswithit,4 horseandriderland onleftside,5 limbs/club settle,6 motionlesshorse/riderlyingonsidewithbluntclubdroppedbeside. Sixfullfallstagesnotonlycorpse. Horsehead remains toward screenbottom (notinverting), riderstillbysaddle, distinguishfourhorselimbsfromrider. No gore. Wholefallenposeinowncell.",
+      "references": [
+        "C:/Users/Damien/Documents/GitHub/AgeOfFronts/AgeOfFronts/Art/Cultures/Russians/Units/StoneAge/Scout/Idle-v1.png"
+      ],
+      "generatedSource": "C:/Users/Damien/.codex/generated_images/01a11641-9e1b-7c81-be76-c9edd53ef182/exec-c26038ca-4da5-4848-84e0-504573054923.png",
+      "status": "selected-animation-source",
+      "nativeCopy": "SourceArt/Native-Death-Together-v1.png"
+    },
+    {
+      "id": "death-thrown",
+      "file": "Death-Thrown-v2.png",
+      "motion": "Complete THROWN RIDER death:1horsehitandriderrecoils,2horseforelegsbraceandhindquartersbuckriderlosesseat,3 riderthrownclearofsaddletoscreenleft,4 riderlands besidehorse onback headscreenTOP feetBOTTOM,5 rider/club settle whilehorsebracesstanding,6 motionlessriderlyingbesidestationaryhorse (horse remainsalive standing), clubdroppedclear. RiderNOT duplicated onhorseandground, onlyONE riderandONEhorse eachcell, tailtophorseheadbottomstable. Fullpathinowncell. No gore.",
+      "prompt": "Precise cleanup of this1536x1024 six-frame Scout atlas. Remove ONLY the thin blue-gray comic motion lines/impact strokes around the rider/horse in TOP LEFT and TOP MIDDLE frames (frames1/2). Remove all drawn movement/impact strokes, no trails. Preserve exact horse/rider/club poses, dimensions, placements, camera and six-frame3x2grid. Keep brown background actually transparent alpha0; no haze/glow/shadows/ground. Do not redraw or change any character/equipment/anatomy. Six512x512cells same size, actual transparent cutout, all edges clean.",
+      "references": [
+        "C:/Users/Damien/.codex/generated_images/01a11641-9e1b-7c81-be76-c9edd53ef182/exec-210088bc-8a9f-406b-b142-9e1d091b0bd1.png"
+      ],
+      "generatedSource": "C:/Users/Damien/.codex/generated_images/01a11641-9e1b-7c81-be76-c9edd53ef182/exec-e03ab5d7-d860-483a-b13b-6e838af0522a.png",
+      "status": "selected-animation-source",
+      "nativeCopy": "SourceArt/Native-Death-Thrown-v2.png"
+    },
+    {
+      "id": "death-thrown",
+      "file": "Death-Thrown-v1.png",
+      "motion": "Complete THROWN RIDER death:1horsehitandriderrecoils,2horseforelegsbraceandhindquartersbuckriderlosesseat,3 riderthrownclearofsaddletoscreenleft,4 riderlands besidehorse onback headscreenTOP feetBOTTOM,5 rider/club settle whilehorsebracesstanding,6 motionlessriderlyingbesidestationaryhorse (horse remainsalive standing), clubdroppedclear. RiderNOT duplicated onhorseandground, onlyONE riderandONEhorse eachcell, tailtophorseheadbottomstable. Fullpathinowncell. No gore.",
+      "prompt": "Create a SIX-FRAME single-mounted-actor animation atlas from image1 APPROVED Russian Stone Age SCOUT. Exact same red fur-trimmed cap/tunic, cream fur collar, leather wrist wraps, pale trousers/brown boots, same chestnut horse with black mane/tail, leather saddle/bridle/reins. Short blunt wooden CLUB with chunky rounded gray stone head lashed in leather in weapon hand SCREEN LEFT, other hand SCREEN RIGHT reins. NOT spear/axe/sword, no shield/bronze armor. STRICT vertical overhead orthographic, horse nose screen-bottom tail screen-top, rider's cap crown dominant when mounted. No isometric or frontal portrait. Four anatomically attached horse legs, rider's two boots distinct from horse hooves. One horse/rider per cell, same consistent body proportions and equipment size/camera every frame. Exact1536x1024RGBA,3columns2rows, six512x512cells row-major. Each COMPLETE pose (including tail, head, club, limbs/fallen rider) stays fully inside own cell within centered440x440area, >=36px blank padding. Saddle/body root consistently near(256,256). True alpha0 background outside crisp antialias silhouette, no fog/haze/ground/shadow/glow/trails/text/grid. Distinct authored sequential poses.\nMOTION: Complete THROWN RIDER death:1horsehitandriderrecoils,2horseforelegsbraceandhindquartersbuckriderlosesseat,3 riderthrownclearofsaddletoscreenleft,4 riderlands besidehorse onback headscreenTOP feetBOTTOM,5 rider/club settle whilehorsebracesstanding,6 motionlessriderlyingbesidestationaryhorse (horse remainsalive standing), clubdroppedclear. RiderNOT duplicated onhorseandground, onlyONE riderandONEhorse eachcell, tailtophorseheadbottomstable. Fullpathinowncell. No gore.",
+      "references": [
+        "C:/Users/Damien/Documents/GitHub/AgeOfFronts/AgeOfFronts/Art/Cultures/Russians/Units/StoneAge/Scout/Idle-v1.png"
+      ],
+      "generatedSource": "C:/Users/Damien/.codex/generated_images/01a11641-9e1b-7c81-be76-c9edd53ef182/exec-210088bc-8a9f-406b-b142-9e1d091b0bd1.png",
+      "status": "superseded-motion-mark-cleanup",
+      "nativeCopy": "SourceArt/Native-Death-Thrown-v1.png"
+    }
+  ]
+}

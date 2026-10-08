@@ -1,0 +1,362 @@
+{
+  "actorCount": 1,
+  "animations": [
+    {
+      "id": "idle",
+      "file": "idle.png",
+      "label": "Idle",
+      "loop": true,
+      "scale": 1,
+      "durations": [
+        170,
+        170,
+        170,
+        170,
+        170,
+        170
+      ],
+      "description": "Breathing and weight settle with the rear spear grip and large round shield.",
+      "frameCount": 6,
+      "sourceFrameOrder": [
+        0,
+        1,
+        2,
+        3,
+        4,
+        5
+      ],
+      "frames": [
+        {
+          "x": 0,
+          "y": 0,
+          "width": 128,
+          "height": 128,
+          "pivot": {
+            "x": 63.7,
+            "y": 68.5
+          }
+        },
+        {
+          "x": 128,
+          "y": 0,
+          "width": 128,
+          "height": 128,
+          "pivot": {
+            "x": 63.7,
+            "y": 68.5
+          }
+        },
+        {
+          "x": 256,
+          "y": 0,
+          "width": 128,
+          "height": 128,
+          "pivot": {
+            "x": 63.7,
+            "y": 68.5
+          }
+        },
+        {
+          "x": 384,
+          "y": 0,
+          "width": 128,
+          "height": 128,
+          "pivot": {
+            "x": 63.7,
+            "y": 68.5
+          }
+        },
+        {
+          "x": 512,
+          "y": 0,
+          "width": 128,
+          "height": 128,
+          "pivot": {
+            "x": 63.7,
+            "y": 68.5
+          }
+        },
+        {
+          "x": 640,
+          "y": 0,
+          "width": 128,
+          "height": 128,
+          "pivot": {
+            "x": 63.7,
+            "y": 68.5
+          }
+        }
+      ]
+    },
+    {
+      "id": "running",
+      "file": "running.png",
+      "label": "Walk",
+      "loop": true,
+      "scale": 1,
+      "durations": [
+        160,
+        160,
+        160,
+        160,
+        160,
+        160
+      ],
+      "description": "Alternating walking steps with spear and shield carried steadily.",
+      "frameCount": 6,
+      "sourceFrameOrder": [
+        0,
+        1,
+        2,
+        3,
+        4,
+        5
+      ],
+      "frames": [
+        {
+          "x": 0,
+          "y": 0,
+          "width": 128,
+          "height": 128,
+          "pivot": {
+            "x": 63.7,
+            "y": 68.5
+          }
+        },
+        {
+          "x": 128,
+          "y": 0,
+          "width": 128,
+          "height": 128,
+          "pivot": {
+            "x": 63.7,
+            "y": 68.5
+          }
+        },
+        {
+          "x": 256,
+          "y": 0,
+          "width": 128,
+          "height": 128,
+          "pivot": {
+            "x": 63.7,
+            "y": 68.5
+          }
+        },
+        {
+          "x": 384,
+          "y": 0,
+          "width": 128,
+          "height": 128,
+          "pivot": {
+            "x": 63.7,
+            "y": 68.5
+          }
+        },
+        {
+          "x": 512,
+          "y": 0,
+          "width": 128,
+          "height": 128,
+          "pivot": {
+            "x": 63.7,
+            "y": 68.5
+          }
+        },
+        {
+          "x": 640,
+          "y": 0,
+          "width": 128,
+          "height": 128,
+          "pivot": {
+            "x": 63.7,
+            "y": 68.5
+          }
+        }
+      ]
+    },
+    {
+      "id": "attack",
+      "file": "attack.png",
+      "label": "Spear thrust",
+      "loop": false,
+      "scale": 1,
+      "durations": [
+        130,
+        180,
+        160,
+        100,
+        180,
+        240
+      ],
+      "description": "Raised overhand rear grip through draw-back, forward spear thrust, and recovery.",
+      "frameCount": 6,
+      "sourceFrameOrder": [
+        0,
+        1,
+        2,
+        3,
+        4,
+        5
+      ],
+      "frames": [
+        {
+          "x": 0,
+          "y": 0,
+          "width": 128,
+          "height": 128,
+          "pivot": {
+            "x": 63.7,
+            "y": 68.5
+          }
+        },
+        {
+          "x": 128,
+          "y": 0,
+          "width": 128,
+          "height": 128,
+          "pivot": {
+            "x": 63.7,
+            "y": 68.5
+          }
+        },
+        {
+          "x": 256,
+          "y": 0,
+          "width": 128,
+          "height": 128,
+          "pivot": {
+            "x": 63.7,
+            "y": 68.5
+          }
+        },
+        {
+          "x": 384,
+          "y": 0,
+          "width": 128,
+          "height": 128,
+          "pivot": {
+            "x": 63.7,
+            "y": 68.5
+          }
+        },
+        {
+          "x": 512,
+          "y": 0,
+          "width": 128,
+          "height": 128,
+          "pivot": {
+            "x": 63.7,
+            "y": 68.5
+          }
+        },
+        {
+          "x": 640,
+          "y": 0,
+          "width": 128,
+          "height": 128,
+          "pivot": {
+            "x": 63.7,
+            "y": 68.5
+          }
+        }
+      ],
+      "impactFrame": 3
+    },
+    {
+      "id": "death",
+      "file": "death.png",
+      "label": "Death - side fall",
+      "loop": false,
+      "scale": 1,
+      "durations": [
+        150,
+        170,
+        190,
+        210,
+        240,
+        400
+      ],
+      "description": "Knees buckle, body rolls onto its side, and settles into a held final pose.",
+      "frameCount": 6,
+      "sourceFrameOrder": [
+        0,
+        1,
+        2,
+        3,
+        4,
+        5
+      ],
+      "frames": [
+        {
+          "x": 0,
+          "y": 0,
+          "width": 128,
+          "height": 128,
+          "pivot": {
+            "x": 63.7,
+            "y": 68.5
+          }
+        },
+        {
+          "x": 128,
+          "y": 0,
+          "width": 128,
+          "height": 128,
+          "pivot": {
+            "x": 63.7,
+            "y": 68.5
+          }
+        },
+        {
+          "x": 256,
+          "y": 0,
+          "width": 128,
+          "height": 128,
+          "pivot": {
+            "x": 63.7,
+            "y": 68.5
+          }
+        },
+        {
+          "x": 384,
+          "y": 0,
+          "width": 128,
+          "height": 128,
+          "pivot": {
+            "x": 63.7,
+            "y": 68.5
+          }
+        },
+        {
+          "x": 512,
+          "y": 0,
+          "width": 128,
+          "height": 128,
+          "pivot": {
+            "x": 63.7,
+            "y": 68.5
+          }
+        },
+        {
+          "x": 640,
+          "y": 0,
+          "width": 128,
+          "height": 128,
+          "pivot": {
+            "x": 63.7,
+            "y": 68.5
+          }
+        }
+      ]
+    }
+  ],
+  "source": "Art/Cultures/Russians/Units/BronzeAge/BronzeSpearman/animations.json",
+  "metadataHash": "cd106e6498377f2b1b2092bf383d564fcebafaa9e8107816c849fe1ab34ac7db",
+  "hashes": {
+    "Art/Cultures/Russians/Units/BronzeAge/BronzeSpearman/Idle-Animated-v1.png": "7bbaca6c01597bd26e6cf339799336e98b0b537932e1bfc20dd1d65752156a83",
+    "Art/Cultures/Russians/Units/BronzeAge/BronzeSpearman/Running-v1.png": "a0c3573849c41bc642b389e2971ab07e22c4160616ce94b4e88458bf9a683cc5",
+    "Art/Cultures/Russians/Units/BronzeAge/BronzeSpearman/Attack-Overhand-v2.png": "b50bab3e1b48c2c3d5904cc37385456fb28d36135b3a45706980bc3fba4dc492",
+    "Art/Cultures/Russians/Units/BronzeAge/BronzeSpearman/Death-v1.png": "ddc4a9e41e0df770f2f14713c5767ab00ba931ca1315dc1f956f411f646c7e45"
+  }
+}

@@ -17,6 +17,7 @@ export interface Defence {
   rangedArmour: number;
   bonusResistance: Partial<Record<TargetTag, number>>;
   cover?: number;
+  healthPercent?: number;
 }
 export function attackStrength(
   strength: number,
@@ -97,7 +98,8 @@ export function damageAmount(
   return Math.max(
     1,
     Math.floor(
-      damage * (committedStrength ?? attackStrength(troops, capacity)),
+      damage * (committedStrength ?? attackStrength(troops, capacity)) *
+      100 / (defence.healthPercent ?? 100),
     ),
   );
 }

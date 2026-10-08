@@ -1,0 +1,7 @@
+{
+  "prompt": "Edit the supplied Kornet operator idle sprite to a STRICT EXACT 90-DEGREE DIRECTLY VERTICAL OVERHEAD ORTHOGRAPHIC CAMERA, significantly more top-down. Keep character identity, modern Russian green digital camouflage, helmet, olive armor, kneeling operator to left of same olive Kornet-style single tube on THREE-leg tripod, and facing screen bottom. Critical perspective correction: see TOP surfaces only. Launcher horizontal tube should be a long parallel-sided cylinder viewed from directly above, its front/rear round end faces MUST NOT be visible as circles or large ellipses; only thin rim edges at ends. Side optical sight also viewed from TOP, no front-facing blue lens circle. Helmet CROWN and shoulder TOPS dominate soldier, hide frontal chest pouches beneath head/shoulders, no face, greatly foreshorten chest and legs. Knees and boots naturally tucked under kneeling body. Controls held naturally by two gloves. Preserve rich established painterly game style, weapon materials, mount, all three splayed legs and full operator; avoid changes to equipment design. One centered entire unit with ample transparent margins. True transparent RGBA background, zero-alpha outside art, no ground/shadows/labels. SINGLE idle frame.",
+  "generatedSource": "C:/Users/Damien/.codex/generated_images/01a0fea1-c63f-7343-92ca-6c21cc1c4296/exec-82f89a44-24cd-4999-9dc3-346da38aae58.png",
+  "editTarget": "Idle-v1.png",
+  "method": "built-in ImageGen",
+  "approval": "Overhead revision awaiting review"
+}

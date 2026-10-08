@@ -1,12 +1,12 @@
 import { TerrainType } from "../../core/game/Game";
 import type { GameMap } from "../../core/game/GameMap";
-import { resourceTerrainOf } from "../ResourceTerrain";
+import { RESOURCE_SUITABILITY_ORDER, resourceTerrainOf } from "../ResourceTerrain";
 import { coastalRanges } from "../content/CoastalTerritory";
 import { coastalWaterDistances } from "./CoastalReach";
 import type { Deposit, Resource } from "./Definitions";
 
 export const DEPOSIT_RULES = Object.freeze({
-  revision: 4,
+  revision: 5,
   baseDensity: 2,
   originalDenominator: 6300,
   mountainRadius: 6,
@@ -17,16 +17,7 @@ export const DEPOSIT_RULES = Object.freeze({
   startingPreferredReach: 24,
   startingReach: 36,
 });
-export const DEPOSIT_RESOURCES: readonly Resource[] = [
-  "horses",
-  "stone",
-  "copper",
-  "tin",
-  "ironOre",
-  "carbon",
-  "gunpowder",
-  "oil",
-];
+export const DEPOSIT_RESOURCES: readonly Resource[] = RESOURCE_SUITABILITY_ORDER;
 function random(tile: number, seed: number): number {
   let value = Math.imul(tile ^ seed ^ 0x6d2b79f5, 1597334677) >>> 0;
   value = Math.imul(value ^ (value >>> 16), 2246822519) >>> 0;
@@ -68,7 +59,8 @@ export function generateDeposits(
 ): Deposit[] {
   const size = map.width() * map.height(),
     mountains = mountainDistances(map),
-    desert = resourceTerrainOf(map)?.desert;
+    geography = resourceTerrainOf(map),
+    desert = geography?.desert;
   const waterDistances = coastalWaterDistances(map), oilReach = coastalRanges(map).oilTiles;
   const sums = new Float64Array(DEPOSIT_RESOURCES.length),
     eligible = new Uint32Array(DEPOSIT_RESOURCES.length);
@@ -76,7 +68,9 @@ export function generateDeposits(
     const resource = DEPOSIT_RESOURCES[index];
     if (map.isImpassable(tile)) return 0;
     if (!map.isLand(tile))
-      return resource === "oil" && map.isWater(tile) && waterDistances[tile] <= oilReach ? 1 : 0;
+      return resource === "oil" && map.isWater(tile) && waterDistances[tile] <= oilReach && (!geography?.marine || geography.marine[tile]) ? 1 : 0;
+    if (geography?.suitability)
+      return geography.suitability[tile * DEPOSIT_RESOURCES.length + index];
     if (
       ["copper", "tin", "ironOre"].includes(resource) &&
       mountains[tile] <= DEPOSIT_RULES.mountainRadius
@@ -136,7 +130,7 @@ export function generateDeposits(
       const start = random(i, seed) % land.length;
       for (let offset = 0; offset < land.length; offset++) {
         const tile = land[(start + offset) % land.length];
-        if (occupied.has(tile)) continue;
+        if (occupied.has(tile) || weight(tile, i) === 0) continue;
         add(tile, resource);
         occupied.add(tile);
         break;

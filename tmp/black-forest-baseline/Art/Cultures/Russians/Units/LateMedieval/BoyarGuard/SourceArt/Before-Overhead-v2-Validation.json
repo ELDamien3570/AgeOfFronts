@@ -1,0 +1,19 @@
+{
+  "mode": "RGBA",
+  "size": [
+    1254,
+    1254
+  ],
+  "alphaExtrema": [
+    0,
+    255
+  ],
+  "sha256": "c8da17208b222e1fb0ee2d462ac9a01df3b2d2531041c2517182eb16f5f25b71",
+  "httpByteIdentity": {
+    "Idle-v1.png": true,
+    "animations.json": true,
+    "Actor_Review.html": true
+  },
+  "mainCatalogEntryVerified": true,
+  "artisticApproval": "Pending user review"
+}

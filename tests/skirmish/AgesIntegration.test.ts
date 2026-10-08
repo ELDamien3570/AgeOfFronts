@@ -147,7 +147,7 @@ describe("integrated shipments and military progression", () => {
     e.roads.add([a, b], "Modern");
     expect(
       decoder.decode(encoder.encode(m.snapshot())).expansion!.roads![1],
-    ).toBe(6);
+    ).toBe(7);
     expect(
       decoder.decode(new SnapshotEncoder().encode(match().snapshot()))
         .expansion!.roads,

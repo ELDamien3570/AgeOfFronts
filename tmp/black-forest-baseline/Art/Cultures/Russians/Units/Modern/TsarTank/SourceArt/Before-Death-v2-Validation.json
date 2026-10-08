@@ -1,0 +1,216 @@
+{
+  "clipCount": 4,
+  "frameCount": 19,
+  "clips": [
+    {
+      "id": "idle",
+      "file": "Idle-v1.png",
+      "distinctFrames": 1,
+      "sha256": "0024317c0cb77943296e8194b8b26904d9b9e8248521187c45b4e3a71f20c241"
+    },
+    {
+      "id": "moving",
+      "file": "moving-Registered-v1.png",
+      "distinctFrames": 6,
+      "frames": [
+        {
+          "index": 0,
+          "visibleBounds": [
+            125,
+            99,
+            387,
+            409
+          ],
+          "sha256": "b721d1f1a2082de9121113afb2d9f6547020c1378c7ac2a31ae77e576825ec38"
+        },
+        {
+          "index": 1,
+          "visibleBounds": [
+            125,
+            99,
+            388,
+            409
+          ],
+          "sha256": "ab4886f0761de5061c5697e79915a312ff9880dcca6d7ee88913e08a5336f4da"
+        },
+        {
+          "index": 2,
+          "visibleBounds": [
+            126,
+            99,
+            389,
+            409
+          ],
+          "sha256": "dfd3a7d9d1641e3a681d3424fbce407a588112e7345bd680d62d3063f6cd7cda"
+        },
+        {
+          "index": 3,
+          "visibleBounds": [
+            126,
+            100,
+            388,
+            409
+          ],
+          "sha256": "5bad1182af5c82980e5616ebd464aaf1588d06d47ba658e22c9e43ed19a81bbf"
+        },
+        {
+          "index": 4,
+          "visibleBounds": [
+            126,
+            100,
+            388,
+            409
+          ],
+          "sha256": "c0fc4880c33ab36ee5a60e6fa24dea9364b97fd9b561791f243d30df6f8f5b94"
+        },
+        {
+          "index": 5,
+          "visibleBounds": [
+            126,
+            100,
+            389,
+            409
+          ],
+          "sha256": "7c2a2479bd0e20cd3210f459191ea8f75f175689dc0f282f7ac6197c809fb4d7"
+        }
+      ]
+    },
+    {
+      "id": "attack",
+      "file": "attack-Registered-v1.png",
+      "distinctFrames": 6,
+      "frames": [
+        {
+          "index": 0,
+          "visibleBounds": [
+            127,
+            103,
+            387,
+            410
+          ],
+          "sha256": "bb32f0f0ae6e89ba8bbb584d283416acdb02d11c86d127e1bc967d33b7066e51"
+        },
+        {
+          "index": 1,
+          "visibleBounds": [
+            127,
+            103,
+            387,
+            410
+          ],
+          "sha256": "315ffd0d145d5741300f98ce2a3cd13fe52607fe01d6d8dc896ddd929c518217"
+        },
+        {
+          "index": 2,
+          "visibleBounds": [
+            126,
+            103,
+            386,
+            410
+          ],
+          "sha256": "635bd41ed364b60afe88237d77c5b2b5df749ef119e5a56175416358ab6e1703"
+        },
+        {
+          "index": 3,
+          "visibleBounds": [
+            127,
+            103,
+            387,
+            408
+          ],
+          "sha256": "e4bd007cfd9d1b1087af4c60bc00f870d45f67c7d99562f365735851489c6e31"
+        },
+        {
+          "index": 4,
+          "visibleBounds": [
+            127,
+            103,
+            387,
+            408
+          ],
+          "sha256": "4cd246a400422375b41c323b73da173c3c6f70ae14034760f89d92bd8f437039"
+        },
+        {
+          "index": 5,
+          "visibleBounds": [
+            126,
+            103,
+            386,
+            408
+          ],
+          "sha256": "01e924699770318989e634b25874e698cb104d78d03e3a6f5db4cbe752fc4afe"
+        }
+      ]
+    },
+    {
+      "id": "death",
+      "file": "death-Registered-v1.png",
+      "distinctFrames": 6,
+      "frames": [
+        {
+          "index": 0,
+          "visibleBounds": [
+            133,
+            101,
+            382,
+            400
+          ],
+          "sha256": "b6801a3f7b7d17cb7c1361369b40e083752660d1eb3fea1f0ddcc170b0973873"
+        },
+        {
+          "index": 1,
+          "visibleBounds": [
+            131,
+            101,
+            382,
+            402
+          ],
+          "sha256": "999651b878a33fa0aa5e63515b4929e14dfc68feaa3a8f2bdca5576157940e3a"
+        },
+        {
+          "index": 2,
+          "visibleBounds": [
+            129,
+            102,
+            383,
+            402
+          ],
+          "sha256": "28ddccc48eead965c5e04229e9bd42d18fcb1a8c116155104c2e49c508b4b472"
+        },
+        {
+          "index": 3,
+          "visibleBounds": [
+            132,
+            97,
+            384,
+            398
+          ],
+          "sha256": "3c7cdb875310393306f3ae602d714f9fcf3c59b7e90241dffed780e183a7e770"
+        },
+        {
+          "index": 4,
+          "visibleBounds": [
+            130,
+            97,
+            385,
+            398
+          ],
+          "sha256": "4ea12898b0b45640f59142d831b6ee37c87b5259ed0a4b2ca092d0be3c054764"
+        },
+        {
+          "index": 5,
+          "visibleBounds": [
+            127,
+            97,
+            385,
+            399
+          ],
+          "sha256": "5baa40c61a969e985f9e29a5a88e2226fad7e890d588e7c3ae34de59390e2ff2"
+        }
+      ]
+    }
+  ],
+  "approvedIdlePreserved": true,
+  "runtimeIntegration": false,
+  "userApproval": "Animations pending review"
+}

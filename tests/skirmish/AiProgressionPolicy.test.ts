@@ -42,7 +42,7 @@ describe("AI progression scoring", () => {
     state.completed=state.completed.filter(id=>!unfinished.includes(id));
     snapshot.research=state.completed;
     snapshot.readyTroops=6000;
-    snapshot.liquid.gold=1000;
+    snapshot.liquid.gold=1;
     const candidates=economicCandidates(snapshot,state,AI_PERSONALITIES[0],
       {units:{},equipment:{},materials:{}},1,
       [{type:"factory",tile:0,objective:5500,reason:"capacity:factory"}]);

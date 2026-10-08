@@ -1,0 +1,191 @@
+{
+  "method": "Whole-pose atlas packing, preserved generated alpha.",
+  "clips": [
+    {
+      "clip": "attack",
+      "source": "Native-Attack-Fixed-Grip-v4.png",
+      "sourceSha256": "4f2f6d042bf4233c0a84a60ce151c9316c86b8a29bff7d016f127daa5e9206e8",
+      "output": "Attack-Fixed-Grip-v4.png",
+      "outputSha256": "793d5e319fbc3a859c55f6197dffff5082d1a1545f4335d8c366c01a7bba9b81",
+      "tracks": [
+        {
+          "frame": 0,
+          "sourceRect": [
+            0,
+            0,
+            512,
+            512
+          ],
+          "uniformScale": 0.849609375,
+          "destinationOffset": [
+            38,
+            38
+          ]
+        },
+        {
+          "frame": 1,
+          "sourceRect": [
+            512,
+            0,
+            1024,
+            512
+          ],
+          "uniformScale": 0.849609375,
+          "destinationOffset": [
+            38,
+            33
+          ]
+        },
+        {
+          "frame": 2,
+          "sourceRect": [
+            1024,
+            0,
+            1536,
+            512
+          ],
+          "uniformScale": 0.849609375,
+          "destinationOffset": [
+            38,
+            46
+          ]
+        },
+        {
+          "frame": 3,
+          "sourceRect": [
+            0,
+            512,
+            512,
+            1024
+          ],
+          "uniformScale": 0.849609375,
+          "destinationOffset": [
+            38,
+            58
+          ]
+        },
+        {
+          "frame": 4,
+          "sourceRect": [
+            512,
+            512,
+            1024,
+            1024
+          ],
+          "uniformScale": 0.849609375,
+          "destinationOffset": [
+            38,
+            46
+          ]
+        },
+        {
+          "frame": 5,
+          "sourceRect": [
+            1024,
+            512,
+            1536,
+            1024
+          ],
+          "uniformScale": 0.849609375,
+          "destinationOffset": [
+            38,
+            38
+          ]
+        }
+      ]
+    },
+    {
+      "clip": "charge-attack",
+      "source": "Native-Charge-Attack-Fixed-Grip-v4.png",
+      "sourceSha256": "089dd8a95307163d7501e72357b746390075ed08e1f3ebfa0dfbc07cea5120f6",
+      "output": "Charge-Attack-Fixed-Grip-v4.png",
+      "outputSha256": "84d7176c76d0fbba9f79543a33662746d55f1f02e1b7c79f02f39cd4a0a83cd2",
+      "tracks": [
+        {
+          "frame": 0,
+          "sourceRect": [
+            0,
+            0,
+            512,
+            512
+          ],
+          "uniformScale": 0.849609375,
+          "destinationOffset": [
+            38,
+            38
+          ]
+        },
+        {
+          "frame": 1,
+          "sourceRect": [
+            512,
+            0,
+            1024,
+            512
+          ],
+          "uniformScale": 0.849609375,
+          "destinationOffset": [
+            38,
+            33
+          ]
+        },
+        {
+          "frame": 2,
+          "sourceRect": [
+            1024,
+            0,
+            1536,
+            512
+          ],
+          "uniformScale": 0.849609375,
+          "destinationOffset": [
+            38,
+            46
+          ]
+        },
+        {
+          "frame": 3,
+          "sourceRect": [
+            0,
+            512,
+            512,
+            1024
+          ],
+          "uniformScale": 0.849609375,
+          "destinationOffset": [
+            38,
+            63
+          ]
+        },
+        {
+          "frame": 4,
+          "sourceRect": [
+            512,
+            512,
+            1024,
+            1024
+          ],
+          "uniformScale": 0.849609375,
+          "destinationOffset": [
+            38,
+            46
+          ]
+        },
+        {
+          "frame": 5,
+          "sourceRect": [
+            1024,
+            512,
+            1536,
+            1024
+          ],
+          "uniformScale": 0.849609375,
+          "destinationOffset": [
+            38,
+            38
+          ]
+        }
+      ]
+    }
+  ]
+}

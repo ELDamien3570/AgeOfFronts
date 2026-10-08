@@ -1,0 +1,21 @@
+{
+  "file": "Idle-v2.png",
+  "size": [
+    1024,
+    1536
+  ],
+  "mode": "RGBA",
+  "alphaExtrema": [
+    0,
+    254
+  ],
+  "visibleBounds": [
+    258,
+    54,
+    767,
+    1425
+  ],
+  "sha256": "b364466a5a84adf30a694c73bf573b90cc82e7d699ee11c8ee6ce2955dbfd022",
+  "runtimeIntegration": false,
+  "userApproval": "Overhead idle v2 pending review"
+}

@@ -1,0 +1,79 @@
+{
+  "checks": [
+    {
+      "id": "hit",
+      "frames": [
+        {
+          "frame": 0,
+          "visible": 53346,
+          "cornerAlpha": 0
+        },
+        {
+          "frame": 1,
+          "visible": 56062,
+          "cornerAlpha": 0
+        },
+        {
+          "frame": 2,
+          "visible": 55971,
+          "cornerAlpha": 0
+        },
+        {
+          "frame": 3,
+          "visible": 55265,
+          "cornerAlpha": 0
+        },
+        {
+          "frame": 4,
+          "visible": 55182,
+          "cornerAlpha": 0
+        },
+        {
+          "frame": 5,
+          "visible": 54620,
+          "cornerAlpha": 0
+        }
+      ],
+      "final": 5,
+      "held": 5
+    },
+    {
+      "id": "charged",
+      "frames": [
+        {
+          "frame": 0,
+          "visible": 53030,
+          "cornerAlpha": 0
+        },
+        {
+          "frame": 1,
+          "visible": 56677,
+          "cornerAlpha": 0
+        },
+        {
+          "frame": 2,
+          "visible": 52227,
+          "cornerAlpha": 0
+        },
+        {
+          "frame": 3,
+          "visible": 49403,
+          "cornerAlpha": 0
+        },
+        {
+          "frame": 4,
+          "visible": 55027,
+          "cornerAlpha": 0
+        },
+        {
+          "frame": 5,
+          "visible": 54861,
+          "cornerAlpha": 0
+        }
+      ],
+      "final": 5,
+      "held": 5
+    }
+  ],
+  "errors": []
+}

@@ -1,0 +1,212 @@
+{
+  "pivot": [
+    257,
+    286
+  ],
+  "bodyPolygons": [
+    [
+      [
+        245,
+        216
+      ],
+      [
+        274,
+        216
+      ],
+      [
+        278,
+        248
+      ],
+      [
+        279,
+        278
+      ],
+      [
+        277,
+        300
+      ],
+      [
+        271,
+        314
+      ],
+      [
+        274,
+        341
+      ],
+      [
+        263,
+        342
+      ],
+      [
+        261,
+        324
+      ],
+      [
+        250,
+        324
+      ],
+      [
+        249,
+        341
+      ],
+      [
+        239,
+        339
+      ],
+      [
+        240,
+        316
+      ],
+      [
+        242,
+        301
+      ],
+      [
+        243,
+        268
+      ]
+    ],
+    [
+      [
+        133,
+        225
+      ],
+      [
+        202,
+        225
+      ],
+      [
+        202,
+        258
+      ],
+      [
+        207,
+        264
+      ],
+      [
+        207,
+        292
+      ],
+      [
+        132,
+        293
+      ]
+    ],
+    [
+      [
+        199,
+        247
+      ],
+      [
+        219,
+        253
+      ],
+      [
+        246,
+        251
+      ],
+      [
+        248,
+        269
+      ],
+      [
+        219,
+        272
+      ],
+      [
+        198,
+        264
+      ]
+    ]
+  ],
+  "barrels": [
+    {
+      "polygon": [
+        [
+          248,
+          54
+        ],
+        [
+          266,
+          54
+        ],
+        [
+          266,
+          86
+        ],
+        [
+          263,
+          87
+        ],
+        [
+          263,
+          174
+        ],
+        [
+          268,
+          180
+        ],
+        [
+          269,
+          215
+        ],
+        [
+          267,
+          226
+        ],
+        [
+          249,
+          226
+        ],
+        [
+          246,
+          212
+        ],
+        [
+          247,
+          181
+        ],
+        [
+          252,
+          174
+        ],
+        [
+          252,
+          87
+        ],
+        [
+          248,
+          86
+        ]
+      ],
+      "muzzle": [
+        257,
+        55
+      ],
+      "phase": 0
+    }
+  ],
+  "cycleFrames": 6,
+  "recoil": 2.2,
+  "elevated": false,
+  "id": "early-gun",
+  "age": "EarlyModern",
+  "folder": "Gun Nest",
+  "directory": "../EarlyModern/Gun Nest",
+  "label": "Gun Nest",
+  "sourceSHA256": "7f2da6c5c6c01743ad38f0dfa17753c0061daf7a3810e72ec53061bda61152e6",
+  "plateSHA256": "fd9764cbc3aee3c362e0d12789fc2be081700fb456aeafef5f712a2d0bde93fb",
+  "framePixels": 640,
+  "cellPixels": 384,
+  "cellOffset": 128,
+  "mountPivot": [
+    320.75,
+    342.5
+  ],
+  "base": "layers/Base.png",
+  "body": "layers/Body.png",
+  "barrelLayers": [
+    "layers/Barrel-1.png"
+  ],
+  "repairPolicy": "Imagegen plate consumed only inside dilated weapon occlusion mask; original source paint retained elsewhere. Same fixed base for every direction/frame."
+}

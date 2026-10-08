@@ -1,0 +1,26 @@
+[
+  {
+    "seed": 1313198008,
+    "size": 500,
+    "errors": [],
+    "islands": "17",
+    "mainlands": "3 mainlands · 3 rivers",
+    "renderer": "webgl"
+  },
+  {
+    "seed": 1313198008,
+    "size": 1000,
+    "errors": [],
+    "islands": "29",
+    "mainlands": "3 mainlands · 4 rivers",
+    "renderer": "webgl"
+  },
+  {
+    "seed": 2,
+    "size": 1000,
+    "errors": [],
+    "islands": "35",
+    "mainlands": "3 mainlands · 5 rivers",
+    "renderer": "webgl"
+  }
+]

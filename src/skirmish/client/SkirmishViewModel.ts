@@ -77,7 +77,7 @@ export class SkirmishViewModel {
           : UNITS.filter(
               (u) =>
                 u.line === kind &&
-                ["frontline", "ranged", "mounted"].includes(u.role),
+                u.troopClass === (kind === "infantry" ? "frontline" : kind === "archer" ? "rangedInfantry" : "lightCavalry"),
             )
       )
         .filter(

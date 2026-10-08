@@ -1,3 +1,4 @@
+import { defaultUnit } from "../../src/skirmish/content/Units";
 import { describe, expect, it } from "vitest";
 import { GameMapImpl } from "../../src/core/game/GameMap";
 import {
@@ -35,6 +36,15 @@ function createMatch(startingAge?: StartingAge) {
   return { match };
 }
 
+// Presets may grant only foundations and dependencies of their starting
+// infantry/city; other current-era class unlocks must remain researchable.
+function allowedGrant(id:string,age:typeof AGES[number]):boolean {
+ const roots=TECHNOLOGIES.filter(t=>t.age===age&&t.slot===1).map(t=>t.id);
+ roots.push(defaultUnit("infantry",age).technologyId,`russian-building-${age.toLowerCase()}-city`);
+ const closure=new Set<string>();
+ const visit=(id:string)=>{if(closure.has(id))return;closure.add(id);TECHNOLOGIES.find(t=>t.id===id)?.prerequisites.forEach(visit)};
+ roots.forEach(visit);return closure.has(id);
+}
 describe("Starting Tech Age Selector", () => {
   it("starts every human, AI and tribe with all technology and exactly one million gold in Post-Modern", () => {
     const { match } = createMatch("PostModern");
@@ -94,7 +104,8 @@ describe("Starting Tech Age Selector", () => {
   it("unlocks only default starting tech in Stone Age", () => {
     const state = startingProgression("StoneAge");
     expect(state.age).toBe("StoneAge");
-    expect(state.completed).toEqual(STARTING_TECHNOLOGIES);
+    expect(state.completed).toEqual(expect.arrayContaining(STARTING_TECHNOLOGIES));
+    expect(state.completed.every(id=>allowedGrant(id,"StoneAge"))).toBe(true);
   });
 
   it("unlocks all Stone Age technologies when starting in Bronze Age", () => {
@@ -108,7 +119,7 @@ describe("Starting Tech Age Selector", () => {
       expect(state.completed).toContain(tech.id);
     }
     for (const tech of bronzeTechs) {
-      expect(state.completed.includes(tech.id)).toBe(tech.slot === 1);
+      expect(state.completed.includes(tech.id)).toBe(allowedGrant(tech.id,state.age));
     }
   });
 
@@ -125,7 +136,7 @@ describe("Starting Tech Age Selector", () => {
       expect(state.completed).toContain(tech.id);
     }
     for (const tech of classicalTechs) {
-      expect(state.completed.includes(tech.id)).toBe(tech.slot === 1);
+      expect(state.completed.includes(tech.id)).toBe(allowedGrant(tech.id,state.age));
     }
   });
 
@@ -141,20 +152,20 @@ describe("Starting Tech Age Selector", () => {
           expect(state.completed).toContain(t.id);
         } else {
           // Current or future age tech should NOT be unlocked (except default starting techs if StoneAge)
-          expect(state.completed.includes(t.id)).toBe(t.age === age && t.slot === 1);
+          expect(state.completed.includes(t.id)).toBe(t.age === age && allowedGrant(t.id,age));
         }
       }
     }
   });
 
-  it.each(AGES)("preserves only prior research and first branch nodes through %s checkpoint recovery", age => {
+  it.each(AGES)("preserves prior research and the starting infantry/city prerequisites through %s checkpoint recovery", age => {
     const { match } = createMatch(age), saved = match.checkpoint();
     const restored = new Skirmish(match.map, match.options); restored.restore(saved);
     expect(restored.checkpoint()).toEqual(saved);
     for (const player of restored.players) {
       const state = restored.expansion!.progression.states[player.id];
       for (const tech of TECHNOLOGIES)
-        expect(state.completed.includes(tech.id)).toBe(AGES.indexOf(tech.age) < AGES.indexOf(age) || (tech.age === age && tech.slot === 1));
+        expect(state.completed.includes(tech.id)).toBe(AGES.indexOf(tech.age) < AGES.indexOf(age) || (tech.age === age && allowedGrant(tech.id,age)));
       expect(Object.keys(state.research)).toHaveLength(0);
     }
   });

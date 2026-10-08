@@ -1,0 +1,465 @@
+{
+  "url": "http://127.0.0.1:9007/Cultures/Russians/Units/Modern/Tunguska/Actor_Review.html?revision=tunguska-hull-size-v4#attack",
+  "status": "All 6 clips loaded · one vehicle · reactions hold their final frame.",
+  "errors": [],
+  "frames": [
+    {
+      "clip": "idle",
+      "frame": 0,
+      "count": 56533,
+      "bounds": [
+        159,
+        85,
+        353,
+        396
+      ],
+      "edge": 0
+    },
+    {
+      "clip": "idle",
+      "frame": 1,
+      "count": 54509,
+      "bounds": [
+        161,
+        71,
+        351,
+        396
+      ],
+      "edge": 0
+    },
+    {
+      "clip": "idle",
+      "frame": 2,
+      "count": 54215,
+      "bounds": [
+        161,
+        69,
+        350,
+        396
+      ],
+      "edge": 0
+    },
+    {
+      "clip": "idle",
+      "frame": 3,
+      "count": 56430,
+      "bounds": [
+        158,
+        85,
+        352,
+        396
+      ],
+      "edge": 0
+    },
+    {
+      "clip": "idle",
+      "frame": 4,
+      "count": 54732,
+      "bounds": [
+        160,
+        69,
+        350,
+        396
+      ],
+      "edge": 0
+    },
+    {
+      "clip": "idle",
+      "frame": 5,
+      "count": 54687,
+      "bounds": [
+        160,
+        70,
+        351,
+        396
+      ],
+      "edge": 0
+    },
+    {
+      "clip": "running",
+      "frame": 0,
+      "count": 54096,
+      "bounds": [
+        160,
+        93,
+        350,
+        395
+      ],
+      "edge": 0
+    },
+    {
+      "clip": "running",
+      "frame": 1,
+      "count": 54432,
+      "bounds": [
+        161,
+        93,
+        350,
+        396
+      ],
+      "edge": 0
+    },
+    {
+      "clip": "running",
+      "frame": 2,
+      "count": 54182,
+      "bounds": [
+        160,
+        93,
+        350,
+        395
+      ],
+      "edge": 0
+    },
+    {
+      "clip": "running",
+      "frame": 3,
+      "count": 55160,
+      "bounds": [
+        160,
+        92,
+        352,
+        397
+      ],
+      "edge": 0
+    },
+    {
+      "clip": "running",
+      "frame": 4,
+      "count": 55602,
+      "bounds": [
+        159,
+        93,
+        352,
+        396
+      ],
+      "edge": 0
+    },
+    {
+      "clip": "running",
+      "frame": 5,
+      "count": 55267,
+      "bounds": [
+        160,
+        92,
+        351,
+        396
+      ],
+      "edge": 0
+    },
+    {
+      "clip": "attack",
+      "frame": 0,
+      "count": 55992,
+      "bounds": [
+        160,
+        90,
+        351,
+        397
+      ],
+      "edge": 0
+    },
+    {
+      "clip": "attack",
+      "frame": 1,
+      "count": 56012,
+      "bounds": [
+        160,
+        91,
+        351,
+        397
+      ],
+      "edge": 0
+    },
+    {
+      "clip": "attack",
+      "frame": 2,
+      "count": 55918,
+      "bounds": [
+        160,
+        91,
+        351,
+        398
+      ],
+      "edge": 0
+    },
+    {
+      "clip": "attack",
+      "frame": 3,
+      "count": 55844,
+      "bounds": [
+        160,
+        91,
+        351,
+        397
+      ],
+      "edge": 0
+    },
+    {
+      "clip": "attack",
+      "frame": 4,
+      "count": 56133,
+      "bounds": [
+        160,
+        91,
+        351,
+        398
+      ],
+      "edge": 0
+    },
+    {
+      "clip": "attack",
+      "frame": 5,
+      "count": 55895,
+      "bounds": [
+        160,
+        91,
+        351,
+        398
+      ],
+      "edge": 0
+    },
+    {
+      "clip": "missile",
+      "frame": 0,
+      "count": 56141,
+      "bounds": [
+        160,
+        77,
+        350,
+        397
+      ],
+      "edge": 0
+    },
+    {
+      "clip": "missile",
+      "frame": 1,
+      "count": 55866,
+      "bounds": [
+        160,
+        78,
+        350,
+        397
+      ],
+      "edge": 0
+    },
+    {
+      "clip": "missile",
+      "frame": 2,
+      "count": 56283,
+      "bounds": [
+        161,
+        78,
+        351,
+        398
+      ],
+      "edge": 0
+    },
+    {
+      "clip": "missile",
+      "frame": 3,
+      "count": 56173,
+      "bounds": [
+        161,
+        77,
+        351,
+        397
+      ],
+      "edge": 0
+    },
+    {
+      "clip": "missile",
+      "frame": 4,
+      "count": 56209,
+      "bounds": [
+        161,
+        78,
+        351,
+        398
+      ],
+      "edge": 0
+    },
+    {
+      "clip": "missile",
+      "frame": 5,
+      "count": 56166,
+      "bounds": [
+        160,
+        78,
+        350,
+        398
+      ],
+      "edge": 0
+    },
+    {
+      "clip": "hit",
+      "frame": 0,
+      "count": 54982,
+      "bounds": [
+        160,
+        93,
+        351,
+        395
+      ],
+      "edge": 0
+    },
+    {
+      "clip": "hit",
+      "frame": 1,
+      "count": 55095,
+      "bounds": [
+        160,
+        93,
+        351,
+        395
+      ],
+      "edge": 0
+    },
+    {
+      "clip": "hit",
+      "frame": 2,
+      "count": 56135,
+      "bounds": [
+        144,
+        92,
+        351,
+        395
+      ],
+      "edge": 0
+    },
+    {
+      "clip": "hit",
+      "frame": 3,
+      "count": 55375,
+      "bounds": [
+        150,
+        94,
+        351,
+        395
+      ],
+      "edge": 0
+    },
+    {
+      "clip": "hit",
+      "frame": 4,
+      "count": 54748,
+      "bounds": [
+        160,
+        94,
+        351,
+        395
+      ],
+      "edge": 0
+    },
+    {
+      "clip": "hit",
+      "frame": 5,
+      "count": 54983,
+      "bounds": [
+        160,
+        94,
+        351,
+        395
+      ],
+      "edge": 0
+    },
+    {
+      "clip": "death",
+      "frame": 0,
+      "count": 54947,
+      "bounds": [
+        160,
+        90,
+        351,
+        396
+      ],
+      "edge": 0
+    },
+    {
+      "clip": "death",
+      "frame": 1,
+      "count": 55076,
+      "bounds": [
+        160,
+        90,
+        351,
+        395
+      ],
+      "edge": 0
+    },
+    {
+      "clip": "death",
+      "frame": 2,
+      "count": 54594,
+      "bounds": [
+        161,
+        90,
+        350,
+        395
+      ],
+      "edge": 0
+    },
+    {
+      "clip": "death",
+      "frame": 3,
+      "count": 54745,
+      "bounds": [
+        161,
+        88,
+        351,
+        395
+      ],
+      "edge": 0
+    },
+    {
+      "clip": "death",
+      "frame": 4,
+      "count": 55056,
+      "bounds": [
+        160,
+        88,
+        352,
+        395
+      ],
+      "edge": 0
+    },
+    {
+      "clip": "death",
+      "frame": 5,
+      "count": 54751,
+      "bounds": [
+        160,
+        88,
+        351,
+        395
+      ],
+      "edge": 0
+    }
+  ],
+  "playback": {
+    "idle": {
+      "frame": "5 / 6",
+      "play": "Pause"
+    },
+    "running": {
+      "frame": "2 / 6",
+      "play": "Pause"
+    },
+    "attack": {
+      "frame": "6 / 6",
+      "play": "Play"
+    },
+    "missile": {
+      "frame": "6 / 6",
+      "play": "Play"
+    },
+    "hit": {
+      "frame": "6 / 6",
+      "play": "Play"
+    },
+    "death": {
+      "frame": "6 / 6",
+      "play": "Play"
+    }
+  }
+}

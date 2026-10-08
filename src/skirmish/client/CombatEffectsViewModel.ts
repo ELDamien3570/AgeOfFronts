@@ -58,7 +58,7 @@ export function weaponVisual(id?: string): WeaponVisual {
   if (unit?.attack.projectile || id?.endsWith("-warship")) return "shell";
   if (
     unit &&
-    (unit.age === "EarlyModern" ||
+    ((unit.age === "Napoleonic" && unit.attack.channel === "ranged") || unit.age === "EarlyModern" ||
       unit.age === "Modern" ||
       id === "latemedieval-field-support")
   )

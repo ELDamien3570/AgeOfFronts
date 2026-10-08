@@ -1,0 +1,367 @@
+{
+  "schemaVersion": 1,
+  "name": "Down Unda",
+  "minimum": -450,
+  "maximum": 8249.0,
+  "seaLevel": 0,
+  "source": {
+    "file": "-5_616_112_500_6_4096_4096_16bit.png",
+    "sha256": "291fdb65e0b2994e6e0e2a7740a49a3cf4af262c391301f71866b00023593e0f",
+    "width": 4096,
+    "height": 4096,
+    "url": "https://manticorp.github.io/unrealheightmap/#latitude/-5.61568684902204/longitude/112.49969754548624/zoom/3/outputzoom/6/width/4096/height/4096/outputformat/png16"
+  },
+  "normalization": {
+    "mode": "regular",
+    "from": -450,
+    "to": 8249.0,
+    "range": 65536
+  },
+  "terrainThresholds": {
+    "highland": 600,
+    "mountain": 1800
+  },
+  "sampling": "area-majority land/water; average height within winning surface; ties water",
+  "waterRule": "calibrated sea level plus explicitly authored major-river hydrology plus registered lake polygons with explicit surface elevations",
+  "resolutionRule": "selected size is the longest edge; source aspect ratio preserved",
+  "variants": {
+    "250": {
+      "width": 250,
+      "height": 250,
+      "landCells": 14288,
+      "seaCode": 3390,
+      "heightMinimum": -450.0,
+      "heightMaximum": 6047.443359375
+    },
+    "500": {
+      "width": 500,
+      "height": 500,
+      "landCells": 57944,
+      "seaCode": 3390,
+      "heightMinimum": -450.0,
+      "heightMaximum": 6264.693359375
+    },
+    "1000": {
+      "width": 1000,
+      "height": 1000,
+      "landCells": 246162,
+      "seaCode": 3390,
+      "heightMinimum": -450.0,
+      "heightMaximum": 6701.45361328125
+    }
+  },
+  "climate": {
+    "description": "Himalayan and Tibetan snow review: raise the mountain snowline to 5700 m in the regional core, softly blending to the original map baseline at the elliptical boundary. Keep snow on the highest peaks and expose grey rock over the plateau. Artistic snow extent, not a measured seasonal snow cover. Other climate fields, water and elevations retain their existing authority.",
+    "regions": [],
+    "snowPolicy": {
+      "northernIceLatitude": 90,
+      "northernTransitionDegrees": 3,
+      "exposedRockRelief": 220,
+      "equatorialSnowline": 4200,
+      "snowlineLatitudeDrop": 22,
+      "minimumMountainSnowline": 1800,
+      "mountainSnowlineRegions": [
+        {
+          "latitude": 32,
+          "longitude": 87,
+          "latitudeRadius": 10,
+          "longitudeRadius": 22,
+          "snowline": 5700
+        }
+      ]
+    }
+  },
+  "environment": {
+    "schemaVersion": 1,
+    "encoding": "u8-moisture-vegetation-aridity",
+    "classifier": "visible-color-gradients-v1",
+    "smoothingCellsAt500": 1.4,
+    "greenSensitivity": 1.1,
+    "source": {
+      "file": "-5_616_112_500_6_4096_4096_albedo_imagery (1).png",
+      "sha256": "8ef4518bb7088bd921f9d62d44af7f85b41257d3a26bb89165e42c384bfdd9ea",
+      "width": 4096,
+      "height": 4096,
+      "registration": "same-footprint"
+    },
+    "interpretation": "approximate color-derived moisture, vegetation and aridity; height/water remain authoritative",
+    "variants": {
+      "250": {
+        "waterHintAgreement": 0.937632,
+        "waterHintIoU": 0.9191521134940059,
+        "meanLandMoisture": 0.41388138682124587,
+        "meanLandVegetation": 0.3800625233296006,
+        "meanLandAridity": 0.30050556616823665
+      },
+      "500": {
+        "waterHintAgreement": 0.944236,
+        "waterHintIoU": 0.927428044914341,
+        "meanLandMoisture": 0.41174440230323806,
+        "meanLandVegetation": 0.3773391753498307,
+        "meanLandAridity": 0.30043314302111845
+      },
+      "1000": {
+        "waterHintAgreement": 0.959512,
+        "waterHintIoU": 0.9463370475568168,
+        "meanLandMoisture": 0.41362233797574083,
+        "meanLandVegetation": 0.37807632181007533,
+        "meanLandAridity": 0.295144549317196
+      }
+    }
+  },
+  "lakes": {
+    "schemaVersion": 1,
+    "source": {
+      "title": "Natural Earth v5.0.0 1:10m ne_10m_lakes",
+      "license": "Public domain",
+      "terms": "https://www.naturalearthdata.com/about/terms-of-use/",
+      "upstreamCommit": "ace5fed0eaf3c6c03c951e75b439ba8fffbc218e",
+      "sourceFiles": [
+        {
+          "file": "ne_10m_lakes.geojson",
+          "sha256": "2d036f53dedec578001c5c30c2959ee7d4eebc1306900fa4367c49929ec8f2d9",
+          "url": "https://github.com/nvkelso/natural-earth-vector/blob/ace5fed0eaf3c6c03c951e75b439ba8fffbc218e/geojson/ne_10m_lakes.geojson"
+        }
+      ],
+      "geometryPolicy": "Original features, properties and coordinates preserved; cropped only during rasterization",
+      "limitations": "Generalized cartography, not a complete drainage or lake inventory. Gameplay widths are exaggerated; fixed nominal lake levels are not current levels or datum conversions.",
+      "geographicBoundsWsen": [
+        67.49969754548624,
+        -45.088823471434,
+        157.49969754548624,
+        36.59813031529008
+      ],
+      "surfaceReferenceLevels": {
+        "Danau Toba": {
+          "surfaceElevationMeters": 905,
+          "url": "https://wldb.ilec.or.jp/Display/html/3527"
+        }
+      },
+      "selectionNotes": "Selected significant permanent lakes with independently referenced nonnegative nominal levels. Below-sea basins and seasonal playas are excluded: shared renderer cannot represent negative lake surfaces.",
+      "file": "lakes.geojson",
+      "sha256": "c67e36762eae75b5702c5efbfe1479102a3cc4c4566bc57297263dca0e96cbfb"
+    },
+    "surfaceElevationsMeters": {
+      "Danau Toba": 905
+    },
+    "registration": "geographic polygons projected into the original Web Mercator footprint",
+    "sampling": "8x8 centre-sampled union coverage; majority and ties water; holes retain islands; mixed cells use dominant lake level with source-order ties",
+    "interpretation": "explicit inland water with flat authored surface elevations; source PNG and all heights outside lake masks preserved",
+    "variants": {
+      "250": {
+        "surfaceCells": 0,
+        "newWaterCells": 0,
+        "cellsByLake": {
+          "Danau Toba": 0
+        }
+      },
+      "500": {
+        "surfaceCells": 2,
+        "newWaterCells": 2,
+        "cellsByLake": {
+          "Danau Toba": 2
+        }
+      },
+      "1000": {
+        "surfaceCells": 8,
+        "newWaterCells": 8,
+        "cellsByLake": {
+          "Danau Toba": 8
+        }
+      }
+    }
+  },
+  "hydrology": {
+    "schemaVersion": 1,
+    "source": {
+      "file": "rivers.geojson",
+      "sha256": "0f9ad1921c3033b325702be4013e964aefddad285dd555a7685384d6e6fda8f0",
+      "title": "Natural Earth v5.0.0 1:10m ne_10m_rivers_lake_centerlines",
+      "license": "Public domain",
+      "terms": "https://www.naturalearthdata.com/about/terms-of-use/",
+      "upstreamCommit": "ace5fed0eaf3c6c03c951e75b439ba8fffbc218e",
+      "sourceFiles": [
+        {
+          "file": "ne_10m_rivers_lake_centerlines.geojson",
+          "sha256": "bb854a900ecbd3b408df46d5e16e3e0f974ba55993f9d8b5c26e855273c0905a",
+          "url": "https://github.com/nvkelso/natural-earth-vector/blob/ace5fed0eaf3c6c03c951e75b439ba8fffbc218e/geojson/ne_10m_rivers_lake_centerlines.geojson"
+        }
+      ],
+      "geometryPolicy": "Original features, properties and coordinates preserved; cropped only during rasterization",
+      "limitations": "Generalized cartography, not a complete drainage or lake inventory. Gameplay widths are exaggerated; fixed nominal lake levels are not current levels or datum conversions.",
+      "geographicBoundsWsen": [
+        67.49969754548624,
+        -45.088823471434,
+        157.49969754548624,
+        36.59813031529008
+      ],
+      "selectionNotes": "Named permanent River and Lake Centerline features, base-layer scale ranks 0 through 8, whose line geometry intersects the footprint. Intermittent rivers and minor supplements excluded."
+    },
+    "names": [
+      "Asahan",
+      "Ayeyarwady",
+      "Bajang",
+      "Baliem",
+      "Banas",
+      "Barito",
+      "Barwon",
+      "Beas",
+      "Bei",
+      "Bhima",
+      "Blackwood",
+      "Brahmani",
+      "Brahmaputra",
+      "Burdekin",
+      "Ca",
+      "Cagayan",
+      "Cauvery",
+      "Chambal",
+      "Chang Jiang",
+      "Chao Phraya",
+      "Chenab",
+      "Chi",
+      "Chindwin",
+      "Da",
+      "Dadu",
+      "Daly",
+      "Dam",
+      "Darling",
+      "Derwent",
+      "Digul",
+      "Dihang",
+      "Dong",
+      "Duliu",
+      "Fitzroy",
+      "Fly",
+      "Fuchun",
+      "Gan",
+      "Ganges",
+      "Gh\u00e4ghara",
+      "God\u00e4vari",
+      "Han",
+      "Helmand",
+      "Hong",
+      "Hongshui",
+      "Huai",
+      "Huang",
+      "Hudi",
+      "Igan",
+      "Indragi",
+      "Indus",
+      "Irrawaddy Delta",
+      "Jhelum",
+      "Jialing",
+      "Jing",
+      "Jinsha",
+      "Kapuas",
+      "Katherine",
+      "Kayan",
+      "Kolidam",
+      "Kong",
+      "Krishna",
+      "Krong",
+      "Lachlan",
+      "Lancang",
+      "Liu",
+      "Luhit",
+      "Mackenzie",
+      "Macquarie",
+      "Mae Klong",
+      "Mahakam",
+      "Mahaweli",
+      "Mahi",
+      "Mah\u00e4na Nad\u00ef",
+      "Mamas",
+      "Mamberamo",
+      "Maquan",
+      "Mekong",
+      "Min",
+      "Mitchell",
+      "Mun",
+      "Murray",
+      "Mytinge",
+      "Nakdong",
+      "Nanpan",
+      "Narmada",
+      "Ngun",
+      "Nmai",
+      "Nu",
+      "Ord",
+      "Ou",
+      "Pahang",
+      "Palar",
+      "Penner",
+      "Ping",
+      "Purari",
+      "Qin",
+      "Quan",
+      "Qumar",
+      "Rong",
+      "Roper",
+      "Salween",
+      "Sankh",
+      "Sapt",
+      "Sepik",
+      "Shiquan",
+      "Sittong",
+      "Sreng",
+      "Srepok",
+      "Sutlej",
+      "Tamar",
+      "Tapi",
+      "Taritatu",
+      "Tel",
+      "Tista",
+      "Tone",
+      "Tongtian",
+      "Tungabhadra",
+      "Tuotuo",
+      "Victoria",
+      "Wainganga",
+      "Wei",
+      "Weir",
+      "Wu",
+      "Xi",
+      "Xiang",
+      "Xun",
+      "Yalong",
+      "Yamuna",
+      "Yangtze",
+      "Yarkant",
+      "Yarlung",
+      "Yom",
+      "Yong",
+      "You",
+      "Yu",
+      "Yuan",
+      "Yurungkax",
+      "Za",
+      "Zay\u00fc",
+      "Za\u2019gya",
+      "Zhang",
+      "Zuo"
+    ],
+    "widthCellsAt500": 1,
+    "widthCellsBySize": {
+      "250": 1,
+      "500": 2,
+      "1000": 3
+    },
+    "registration": "geographic lines projected into the original Web Mercator footprint",
+    "interpretation": "major rivers are four-connected navigable water; gameplay widths exaggerated; original elevations preserved",
+    "variants": {
+      "250": {
+        "channelCells": 2815,
+        "newWaterCells": 2797
+      },
+      "500": {
+        "channelCells": 10668,
+        "newWaterCells": 10631
+      },
+      "1000": {
+        "channelCells": 28223,
+        "newWaterCells": 28163
+      }
+    }
+  }
+}

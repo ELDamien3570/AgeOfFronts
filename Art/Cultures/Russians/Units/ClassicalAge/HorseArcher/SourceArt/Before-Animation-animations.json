@@ -1,0 +1,60 @@
+{
+  "schemaVersion": 1,
+  "cultureId": "russians",
+  "age": "ClassicalAge",
+  "unit": "Horse Archer",
+  "category": "Cavalry",
+  "actorCount": 1,
+  "stage": "single-mounted-idle-design-review",
+  "integrationStatus": "One Classical Age horse archer idle for review; animation follows approval.",
+  "camera": "vertical-overhead-orthographic",
+  "facing": "screen-down",
+  "sheetSize": {
+    "width": 1254,
+    "height": 1254
+  },
+  "grid": {
+    "columns": 1,
+    "rows": 1
+  },
+  "reviewFootprint": 400,
+  "registration": "Fixed authored saddle/root pivot and one constant scale, no silhouette fitting.",
+  "weapon": "Compact wood and horn recurve bow with visible bowstring",
+  "mount": "Chestnut horse with black mane and tail, primitive leather saddle and bridle",
+  "equipmentFinish": "Hammered iron helmet, paired pauldrons, bracers and fittings, reddish-brown leather top, cream fur collar, pale trousers and brown boots",
+  "animations": [
+    {
+      "id": "idle",
+      "file": "Idle-v3.png",
+      "label": "Idle - single frame",
+      "loop": true,
+      "scale": 1,
+      "durations": [
+        1000
+      ],
+      "description": "Iron-armored horse archer holds an undrawn recurve bow in his left hand (screen-right), with reins in his right hand.",
+      "frameCount": 1,
+      "sourceFrameOrder": [
+        0
+      ],
+      "frames": [
+        {
+          "index": 0,
+          "sourceIndex": 0,
+          "x": 0,
+          "y": 0,
+          "width": 1254,
+          "height": 1254,
+          "pivot": {
+            "x": 627.0,
+            "y": 627.0
+          }
+        }
+      ]
+    }
+  ],
+  "offhand": "Anatomical right holds reins; no shield",
+  "ammunition": "Feathered arrows in leather saddle quiver",
+  "weaponHand": "Anatomical left (screen-right when facing down)",
+  "bowstring": "One taut line on inside of anatomical left arm; naturally occluded by forearm"
+}

@@ -1,0 +1,176 @@
+{
+  "tool": "built-in-imagegen",
+  "approvedReference": "Native-Idle-TopDown-v2.png",
+  "records": [
+    {
+      "id": "idle",
+      "file": "idle-v1.png",
+      "nativeFile": "Native-TopDown-idle-v1.png",
+      "generatedSource": "C:/Users/Damien/.codex/generated_images/01a1166c-83ee-7ae0-be97-78c470de8962/exec-f80d21bb-6119-4331-b7de-63fa603e7e00.png",
+      "prompt": "Use case: game sprite animation. Image1 is approved Russian Bronze Age River Archer. Exactly SIX frames on transparent1536x1024 PNG in3x2grid, each512cell. Same hammerbronze helmet/pauldrons/wristguards,creamfurcollar,redbrownleather,lighttrousers,darkboots,backquiver,woodenbronzeageSELFbow(not modern recurve),bronzeheadarrows,no shield. STRICT vertical90degree OVERHEAD camera unchanged. Round helmetcrown between broad shoulders that hide torso in standing poses. At most tiny boot tops. Whole character and entire bow/arrow fit in EACHowncell with70px empty alpha margin, centered, wholepose maximum360px width/height. One anatomy, consistent size, one bow, one string connectingtips, rigid weapon and straight arrow. No floor shadow backdrop text effects. Action: Idle breathing. Boots planted, low wooden bow in left hand screen-right and loose straight arrow in right hand screen-left. Six subtle breathing poses, no lateral sway.",
+      "action": "Idle breathing. Boots planted, low wooden bow in left hand screen-right and loose straight arrow in right hand screen-left. Six subtle breathing poses, no lateral sway.",
+      "status": "selected-source"
+    },
+    {
+      "id": "running",
+      "file": "running-v1.png",
+      "nativeFile": "Native-TopDown-running-v1.png",
+      "generatedSource": "C:/Users/Damien/.codex/generated_images/01a1166c-83ee-7ae0-be97-78c470de8962/exec-c6559e64-aba9-4017-ab09-79014b5dd0fc.png",
+      "prompt": "Use case: game sprite animation. Image1 is approved Russian Bronze Age River Archer. Exactly SIX frames on transparent1536x1024 PNG in3x2grid, each512cell. Same hammerbronze helmet/pauldrons/wristguards,creamfurcollar,redbrownleather,lighttrousers,darkboots,backquiver,woodenbronzeageSELFbow(not modern recurve),bronzeheadarrows,no shield. STRICT vertical90degree OVERHEAD camera unchanged. Round helmetcrown between broad shoulders that hide torso in standing poses. At most tiny boot tops. Whole character and entire bow/arrow fit in EACHowncell with70px empty alpha margin, centered, wholepose maximum360px width/height. One anatomy, consistent size, one bow, one string connectingtips, rigid weapon and straight arrow. No floor shadow backdrop text effects. Action: Walk loop: alternate LEFT then RIGHT leading boot visibly. Carry bow low in left hand and straight arrow right hand. Entire rigid bow moves with hand, not independently.",
+      "action": "Walk loop: alternate LEFT then RIGHT leading boot visibly. Carry bow low in left hand and straight arrow right hand. Entire rigid bow moves with hand, not independently.",
+      "status": "superseded-draft"
+    },
+    {
+      "id": "attack",
+      "file": "attack-v1.png",
+      "nativeFile": "Native-TopDown-attack-v1.png",
+      "generatedSource": "C:/Users/Damien/.codex/generated_images/01a1166c-83ee-7ae0-be97-78c470de8962/exec-642a4b32-bb20-4ac5-a4d7-453a61f955c2.png",
+      "prompt": "Use case: game sprite animation. Image1 is approved Russian Bronze Age River Archer. Exactly SIX frames on transparent1536x1024 PNG in3x2grid, each512cell. Same hammerbronze helmet/pauldrons/wristguards,creamfurcollar,redbrownleather,lighttrousers,darkboots,backquiver,woodenbronzeageSELFbow(not modern recurve),bronzeheadarrows,no shield. STRICT vertical90degree OVERHEAD camera unchanged. Round helmetcrown between broad shoulders that hide torso in standing poses. At most tiny boot tops. Whole character and entire bow/arrow fit in EACHowncell with70px empty alpha margin, centered, wholepose maximum360px width/height. One anatomy, consistent size, one bow, one string connectingtips, rigid weapon and straight arrow. No floor shadow backdrop text effects. Action: Bow shot exactly SCREEN BOTTOM. Frame1 low carry and loose arrow.2 right foot steps back modestly, chest rotates open 35degrees, nock straight arrow.3 full draw: left arm extended toward screen bottom, right elbow pulled back, string two taut segments from bowtips to arrow nock at drawing fingertips. ONLY ONE STRING, no undrawn string left across bow.4 release arrow screen bottom, string snaps toward bowtip line, right fingers relax.5 EMPTY bow relaxed followthrough.6 lower EMPTY bow, no arrow appears again. Bow tilted upright physically, foreshortened from overhead; drawn string passes behind and below arm, never on top of forearm. Rigid wood bow, arrow dead straight aligned screenbottom.",
+      "action": "Bow shot exactly SCREEN BOTTOM. Frame1 low carry and loose arrow.2 right foot steps back modestly, chest rotates open 35degrees, nock straight arrow.3 full draw: left arm extended toward screen bottom, right elbow pulled back, string two taut segments from bowtips to arrow nock at drawing fingertips. ONLY ONE STRING, no undrawn string left across bow.4 release arrow screen bottom, string snaps toward bowtip line, right fingers relax.5 EMPTY bow relaxed followthrough.6 lower EMPTY bow, no arrow appears again. Bow tilted upright physically, foreshortened from overhead; drawn string passes behind and below arm, never on top of forearm. Rigid wood bow, arrow dead straight aligned screenbottom.",
+      "status": "superseded-draft"
+    },
+    {
+      "id": "charge-attack",
+      "file": "charge-attack-v1.png",
+      "nativeFile": "Native-TopDown-charge-attack-v1.png",
+      "generatedSource": "C:/Users/Damien/.codex/generated_images/01a1166c-83ee-7ae0-be97-78c470de8962/exec-45e65a4f-3013-4226-8f9e-d10a1ecc14c7.png",
+      "prompt": "Use case: game sprite animation. Image1 is approved Russian Bronze Age River Archer. Exactly SIX frames on transparent1536x1024 PNG in3x2grid, each512cell. Same hammerbronze helmet/pauldrons/wristguards,creamfurcollar,redbrownleather,lighttrousers,darkboots,backquiver,woodenbronzeageSELFbow(not modern recurve),bronzeheadarrows,no shield. STRICT vertical90degree OVERHEAD camera unchanged. Round helmetcrown between broad shoulders that hide torso in standing poses. At most tiny boot tops. Whole character and entire bow/arrow fit in EACHowncell with70px empty alpha margin, centered, wholepose maximum360px width/height. One anatomy, consistent size, one bow, one string connectingtips, rigid weapon and straight arrow. No floor shadow backdrop text effects. Action: Advance then plant and shoot exactly screen bottom.1 advance low bow arrow;2 brake plant right boot modestly back, body turns open;3 full draw left arm forward right elbow back, straight arrow aimed screenbottom and string taut V from tips to nock at right fingertips;4 release;5 empty-bow followthrough;6 lower empty bow. Single bow and single string. No resting string visible while drawing. String behind arm, no arm penetration. No reload in this clip.",
+      "action": "Advance then plant and shoot exactly screen bottom.1 advance low bow arrow;2 brake plant right boot modestly back, body turns open;3 full draw left arm forward right elbow back, straight arrow aimed screenbottom and string taut V from tips to nock at right fingertips;4 release;5 empty-bow followthrough;6 lower empty bow. Single bow and single string. No resting string visible while drawing. String behind arm, no arm penetration. No reload in this clip.",
+      "status": "superseded-draft"
+    },
+    {
+      "id": "reload",
+      "file": "reload-v1.png",
+      "nativeFile": "Native-TopDown-reload-v1.png",
+      "generatedSource": "C:/Users/Damien/.codex/generated_images/01a1166c-83ee-7ae0-be97-78c470de8962/exec-4e83c974-6b4c-41b3-a5e7-c829c5f4f638.png",
+      "prompt": "Use case: game sprite animation. Image1 is approved Russian Bronze Age River Archer. Exactly SIX frames on transparent1536x1024 PNG in3x2grid, each512cell. Same hammerbronze helmet/pauldrons/wristguards,creamfurcollar,redbrownleather,lighttrousers,darkboots,backquiver,woodenbronzeageSELFbow(not modern recurve),bronzeheadarrows,no shield. STRICT vertical90degree OVERHEAD camera unchanged. Round helmetcrown between broad shoulders that hide torso in standing poses. At most tiny boot tops. Whole character and entire bow/arrow fit in EACHowncell with70px empty alpha margin, centered, wholepose maximum360px width/height. One anatomy, consistent size, one bow, one string connectingtips, rigid weapon and straight arrow. No floor shadow backdrop text effects. Action: Arrow reload separate from shot.1 EMPTY bow low left hand.2 right hand reaches back quiver.3 grasp feathered rear of one arrow.4 withdraw straight arrow.5 lower arrow in right hand, bronze head points screenbottom.6 lowcarry bow and new straight loose arrow same as idle. Bow rigid, one string connecting tips, no clipping into hands. No shot.",
+      "action": "Arrow reload separate from shot.1 EMPTY bow low left hand.2 right hand reaches back quiver.3 grasp feathered rear of one arrow.4 withdraw straight arrow.5 lower arrow in right hand, bronze head points screenbottom.6 lowcarry bow and new straight loose arrow same as idle. Bow rigid, one string connecting tips, no clipping into hands. No shot.",
+      "status": "superseded-draft"
+    },
+    {
+      "id": "hit",
+      "file": "hit-v1.png",
+      "nativeFile": "Native-TopDown-hit-v1.png",
+      "generatedSource": "C:/Users/Damien/.codex/generated_images/01a1166c-83ee-7ae0-be97-78c470de8962/exec-2916ac30-be92-492c-9e57-dc1dbe0a4309.png",
+      "prompt": "Use case: game sprite animation. Image1 is approved Russian Bronze Age River Archer. Exactly SIX frames on transparent1536x1024 PNG in3x2grid, each512cell. Same hammerbronze helmet/pauldrons/wristguards,creamfurcollar,redbrownleather,lighttrousers,darkboots,backquiver,woodenbronzeageSELFbow(not modern recurve),bronzeheadarrows,no shield. STRICT vertical90degree OVERHEAD camera unchanged. Round helmetcrown between broad shoulders that hide torso in standing poses. At most tiny boot tops. Whole character and entire bow/arrow fit in EACHowncell with70px empty alpha margin, centered, wholepose maximum360px width/height. One anatomy, consistent size, one bow, one string connectingtips, rigid weapon and straight arrow. No floor shadow backdrop text effects. Action: Light hit: stand, flinch, kneesbend, recoil, recover, stand. Retain bow and straight arrow. No shot. Strict overhead standing silhouette.",
+      "action": "Light hit: stand, flinch, kneesbend, recoil, recover, stand. Retain bow and straight arrow. No shot. Strict overhead standing silhouette.",
+      "status": "selected-source"
+    },
+    {
+      "id": "charged",
+      "file": "charged-v1.png",
+      "nativeFile": "Native-TopDown-charged-v1.png",
+      "generatedSource": "C:/Users/Damien/.codex/generated_images/01a1166c-83ee-7ae0-be97-78c470de8962/exec-4cb95441-4a7e-4610-b05d-fb4da9dea96f.png",
+      "prompt": "Use case: game sprite animation. Image1 is approved Russian Bronze Age River Archer. Exactly SIX frames on transparent1536x1024 PNG in3x2grid, each512cell. Same hammerbronze helmet/pauldrons/wristguards,creamfurcollar,redbrownleather,lighttrousers,darkboots,backquiver,woodenbronzeageSELFbow(not modern recurve),bronzeheadarrows,no shield. STRICT vertical90degree OVERHEAD camera unchanged. Round helmetcrown between broad shoulders that hide torso in standing poses. At most tiny boot tops. Whole character and entire bow/arrow fit in EACHowncell with70px empty alpha margin, centered, wholepose maximum360px width/height. One anatomy, consistent size, one bow, one string connectingtips, rigid weapon and straight arrow. No floor shadow backdrop text effects. Action: Heavy charge-impact:stand,recoil backward, stumble and kneesbuckle,bracebalance, recover,stand. Natural connected feet and arms. Keep bow and arrow, no firing.",
+      "action": "Heavy charge-impact:stand,recoil backward, stumble and kneesbuckle,bracebalance, recover,stand. Natural connected feet and arms. Keep bow and arrow, no firing.",
+      "status": "superseded-draft"
+    },
+    {
+      "id": "death",
+      "file": "death-v1.png",
+      "nativeFile": "Native-TopDown-death-v1.png",
+      "generatedSource": "C:/Users/Damien/.codex/generated_images/01a1166c-83ee-7ae0-be97-78c470de8962/exec-1471ae81-6095-45ec-bf02-8183e2b2f482.png",
+      "prompt": "Use case: game sprite animation. Image1 is approved Russian Bronze Age River Archer. Exactly SIX frames on transparent1536x1024 PNG in3x2grid, each512cell. Same hammerbronze helmet/pauldrons/wristguards,creamfurcollar,redbrownleather,lighttrousers,darkboots,backquiver,woodenbronzeageSELFbow(not modern recurve),bronzeheadarrows,no shield. STRICT vertical90degree OVERHEAD camera unchanged. Round helmetcrown between broad shoulders that hide torso in standing poses. At most tiny boot tops. Whole character and entire bow/arrow fit in EACHowncell with70px empty alpha margin, centered, wholepose maximum360px width/height. One anatomy, consistent size, one bow, one string connectingtips, rigid weapon and straight arrow. No floor shadow backdrop text effects. Action: Full SIDE death:standing,kneesbuckle,tip sideways,land on side,settle sidecorpse,still sidecorpse. Final3 lying head screenRIGHT bootsLEFT, full redbrown leather torso, belt and pale trousers visible from overhead lying down; legs extend from hips bentknees, do not just rotate standing shoulder silhouette. Drop bow and straight arrow besidebody. No blood, no flip.",
+      "action": "Full SIDE death:standing,kneesbuckle,tip sideways,land on side,settle sidecorpse,still sidecorpse. Final3 lying head screenRIGHT bootsLEFT, full redbrown leather torso, belt and pale trousers visible from overhead lying down; legs extend from hips bentknees, do not just rotate standing shoulder silhouette. Drop bow and straight arrow besidebody. No blood, no flip.",
+      "status": "selected-source"
+    },
+    {
+      "id": "death-back",
+      "file": "death-back-v1.png",
+      "nativeFile": "Native-TopDown-death-back-v1.png",
+      "generatedSource": "C:/Users/Damien/.codex/generated_images/01a1166c-83ee-7ae0-be97-78c470de8962/exec-39761819-de4a-4a2e-95ff-aacd09af1b34.png",
+      "prompt": "Use case: game sprite animation. Image1 is approved Russian Bronze Age River Archer. Exactly SIX frames on transparent1536x1024 PNG in3x2grid, each512cell. Same hammerbronze helmet/pauldrons/wristguards,creamfurcollar,redbrownleather,lighttrousers,darkboots,backquiver,woodenbronzeageSELFbow(not modern recurve),bronzeheadarrows,no shield. STRICT vertical90degree OVERHEAD camera unchanged. Round helmetcrown between broad shoulders that hide torso in standing poses. At most tiny boot tops. Whole character and entire bow/arrow fit in EACHowncell with70px empty alpha margin, centered, wholepose maximum360px width/height. One anatomy, consistent size, one bow, one string connectingtips, rigid weapon and straight arrow. No floor shadow backdrop text effects. Action: BACK death:stand,recoil,kneesbuckleback,fallontoBACK,supine settle,still supinecorpse. Final3 HEAD SCREEN TOP BOOTS BOTTOM always, full length torso/belt/trousers visible as horizontal lying body viewed from above. No body reversal or face-down corpse. Drop bow and arrow besidebody.",
+      "action": "BACK death:stand,recoil,kneesbuckleback,fallontoBACK,supine settle,still supinecorpse. Final3 HEAD SCREEN TOP BOOTS BOTTOM always, full length torso/belt/trousers visible as horizontal lying body viewed from above. No body reversal or face-down corpse. Drop bow and arrow besidebody.",
+      "status": "superseded-draft"
+    },
+    {
+      "id": "charge",
+      "file": "charge-v3.png",
+      "nativeFile": "Native-TopDown-running-v3.png",
+      "generatedSource": "C:/Users/Damien/.codex/generated_images/01a1166c-83ee-7ae0-be97-78c470de8962/exec-dadcdb5e-845c-4f26-993c-135517b5c953.png",
+      "prompt": "Edit/create RiverArcher sixframe spritesheet. Strict90degreeoverhead consistentcamera bronzehelmet/shoulderplates creamfurcollar brownleather. Transparent1536x1024 six512cells3x2. ZEROalphaoutsidebodyandweapons,nofloor backdrop bloodtext grid. Create six WALK poses from approved idle, same overhead camera. Feet alternate screen positions: pose1 SCREEN RIGHT boot at bottom leads and screenLEFT boot tucked;pose2feetlevel;pose3 SCREEN LEFT boot at bottom leads and screenRIGHT tucked;pose4level;pose5screenRIGHTleads;pose6level. BOTH boot soles face same screen direction. Clearly do not use samefrontboot poses1&3. Legs mostlyhidden underneathcollar as idle; no extendedfrontalpantleg. Bow heldlow left hand(screenright),arrowlooseotherhand. Uniform3x2layout.",
+      "action": "Fast alternating-foot run with bow and arrow carried low.",
+      "status": "selected-source",
+      "compositionReason": "Corrected walk poses at faster cadence.",
+      "reference": "C:/Users/Damien/Documents/GitHub/AgeOfFronts/AgeOfFronts/Art/Cultures/Russians/Units/BronzeAge/RiverArcher/SourceArt/Native-Idle-TopDown-v2.png"
+    },
+    {
+      "id": "running",
+      "file": "running-v3.png",
+      "nativeFile": "Native-TopDown-running-v3.png",
+      "generatedSource": "C:/Users/Damien/.codex/generated_images/01a1166c-83ee-7ae0-be97-78c470de8962/exec-dadcdb5e-845c-4f26-993c-135517b5c953.png",
+      "prompt": "Edit/create RiverArcher sixframe spritesheet. Strict90degreeoverhead consistentcamera bronzehelmet/shoulderplates creamfurcollar brownleather. Transparent1536x1024 six512cells3x2. ZEROalphaoutsidebodyandweapons,nofloor backdrop bloodtext grid. Create six WALK poses from approved idle, same overhead camera. Feet alternate screen positions: pose1 SCREEN RIGHT boot at bottom leads and screenLEFT boot tucked;pose2feetlevel;pose3 SCREEN LEFT boot at bottom leads and screenRIGHT tucked;pose4level;pose5screenRIGHTleads;pose6level. BOTH boot soles face same screen direction. Clearly do not use samefrontboot poses1&3. Legs mostlyhidden underneathcollar as idle; no extendedfrontalpantleg. Bow heldlow left hand(screenright),arrowlooseotherhand. Uniform3x2layout.",
+      "reference": "C:/Users/Damien/Documents/GitHub/AgeOfFronts/AgeOfFronts/Art/Cultures/Russians/Units/BronzeAge/RiverArcher/SourceArt/Native-Idle-TopDown-v2.png",
+      "action": "Walk loop: alternate LEFT then RIGHT leading boot visibly. Carry bow low in left hand and straight arrow right hand. Entire rigid bow moves with hand, not independently.",
+      "status": "selected-source"
+    },
+    {
+      "id": "attack",
+      "file": "attack-v3.png",
+      "nativeFile": "Native-TopDown-attack-v3.png",
+      "generatedSource": "C:/Users/Damien/.codex/generated_images/01a1166c-83ee-7ae0-be97-78c470de8962/exec-f187b82d-6d6a-4ea6-ac88-f6bddecdd7eb.png",
+      "prompt": "Edit/create RiverArcher sixframe spritesheet. Strict90degreeoverhead consistentcamera bronzehelmet/shoulderplates creamfurcollar brownleather. Transparent1536x1024 six512cells3x2. ZEROalphaoutsidebodyandweapons,nofloor backdrop bloodtext grid. Correct full draw in frame3: drawhand fingers MUST grasp arrow NOCK at upperend of arrow, stringvertex joins that exact point. Bowhand at(260,375), arrowshaftx260 pointingstraightSCREENBOTTOM, drawingfingersat(260,220). BodyhelmetoffsetscreenRIGHT of arrowlane; right elbow backscreenLEFT. Arrowpassesbesidehelmet, notthroughhelmet. TWOstringsegmentsbowtips->drawingfingers/nock, noextra string. No disconnectedarrow. Frame2nocking,3fulldraw,4release,5emptybowfollowthrough,6lowerEMPTYbow. Single woodenbow uprighttilted, stringBEHINDarm/nocrossing. Entireposeandbow<=350pxwith80pxtransparentmargin ineachcell.",
+      "reference": "C:/Users/Damien/Documents/GitHub/AgeOfFronts/AgeOfFronts/Art/Cultures/Russians/Units/BronzeAge/RiverArcher/SourceArt/Native-TopDown-attack-v1.png",
+      "action": "Bow shot exactly SCREEN BOTTOM. Frame1 low carry and loose arrow.2 right foot steps back modestly, chest rotates open 35degrees, nock straight arrow.3 full draw: left arm extended toward screen bottom, right elbow pulled back, string two taut segments from bowtips to arrow nock at drawing fingertips. ONLY ONE STRING, no undrawn string left across bow.4 release arrow screen bottom, string snaps toward bowtip line, right fingers relax.5 EMPTY bow relaxed followthrough.6 lower EMPTY bow, no arrow appears again. Bow tilted upright physically, foreshortened from overhead; drawn string passes behind and below arm, never on top of forearm. Rigid wood bow, arrow dead straight aligned screenbottom.",
+      "status": "selected-source",
+      "cellSources": {
+        "0": "Native-TopDown-attack-v1.png"
+      },
+      "compositionReason": "Begin in low carry without repeating arrow retrieval; retain corrected nocking, draw, release and empty-bow recovery."
+    },
+    {
+      "id": "charge-attack",
+      "file": "charge-attack-v3.png",
+      "nativeFile": "Native-TopDown-charge-attack-v3.png",
+      "generatedSource": "C:/Users/Damien/.codex/generated_images/01a1166c-83ee-7ae0-be97-78c470de8962/exec-ca044e86-a7f7-41dc-9e48-56d5415deb70.png",
+      "prompt": "Edit/create RiverArcher sixframe spritesheet. Strict90degreeoverhead consistentcamera bronzehelmet/shoulderplates creamfurcollar brownleather. Transparent1536x1024 six512cells3x2. ZEROalphaoutsidebodyandweapons,nofloor backdrop bloodtext grid. Correct frame3full draw: right drawinghand fingers hold arrowNOCK and stringvertex atONEpoint. Arrow shaft and bowgrip aimed VERTICALLYSCREENBOTTOM, allsamexcoordinate. Putdrawinghandatx250,y210,bowgripatx250,y350; bodyhelmetbesideaimlane on screenright, rightelbow pulledbackscreenleft. StringONLY2segments bowtipsto thisnock held byfingertips, not helmet. No floatingarrow, no doublebow orstrings. Frame1advance,2plantnock,3fulldraw,4releasearrowdown,5emptybowfollowthrough,6emptybowlow. Bowuprightplane,stringbehindarms. Wholeposesandweapons350maxeachcell80pxmargin.",
+      "reference": "C:/Users/Damien/Documents/GitHub/AgeOfFronts/AgeOfFronts/Art/Cultures/Russians/Units/BronzeAge/RiverArcher/SourceArt/Native-TopDown-charge-attack-v1.png",
+      "action": "Advance then plant and shoot exactly screen bottom.1 advance low bow arrow;2 brake plant right boot modestly back, body turns open;3 full draw left arm forward right elbow back, straight arrow aimed screenbottom and string taut V from tips to nock at right fingertips;4 release;5 empty-bow followthrough;6 lower empty bow. Single bow and single string. No resting string visible while drawing. String behind arm, no arm penetration. No reload in this clip.",
+      "status": "selected-source",
+      "cellSources": {
+        "2": "Native-TopDown-attack-v3.png",
+        "3": "Native-TopDown-attack-v3.png",
+        "4": "Native-TopDown-attack-v3.png",
+        "5": "Native-TopDown-attack-v3.png"
+      },
+      "compositionReason": "Advance and plant, then use corrected upright-bow draw, release and empty-bow recovery."
+    },
+    {
+      "id": "reload",
+      "file": "reload-v2.png",
+      "nativeFile": "Native-TopDown-reload-v2.png",
+      "generatedSource": "C:/Users/Damien/.codex/generated_images/01a1166c-83ee-7ae0-be97-78c470de8962/exec-1cf85eab-f378-4ba9-b2f6-980cd329bc67.png",
+      "prompt": "Edit the six-frame River Archer reload sheet. Keep sixbodyposes, approved topdowncamera, bronzearmor and brownleather, creamfur, one wooden bow and arrow exactly. Shrink allwholeposes includingequipment uniformly to75percent andcenter in own512cell, maximum350pxwidthheight, 75pxtransparentmargin. REMOVE absolutely all backdrop, grids/panel lines, floor shadows, and ALLbloodsplashes. PNG1536x1024 3x2 transparent; alpha ZERO outside actors/weapons, particularly every cellboundary. No changes to poses or weapon geometry. For backdeath keep headtop bootbottom lyingorientation last3 noflip. Forreload emptybow thenextractarrow fromquiver thenlowcarry. Forcharged distinctstumble recover.",
+      "action": "Arrow reload separate from shot.1 EMPTY bow low left hand.2 right hand reaches back quiver.3 grasp feathered rear of one arrow.4 withdraw straight arrow.5 lower arrow in right hand, bronze head points screenbottom.6 lowcarry bow and new straight loose arrow same as idle. Bow rigid, one string connecting tips, no clipping into hands. No shot.",
+      "status": "selected-source"
+    },
+    {
+      "id": "charged",
+      "file": "charged-v2.png",
+      "nativeFile": "Native-TopDown-charged-v2.png",
+      "generatedSource": "C:/Users/Damien/.codex/generated_images/01a1166c-83ee-7ae0-be97-78c470de8962/exec-c93eb0b5-cb3d-4453-9948-2c4c9455d8cc.png",
+      "prompt": "Edit the six-frame River Archer charged sheet. Keep sixbodyposes, approved topdowncamera, bronzearmor and brownleather, creamfur, one wooden bow and arrow exactly. Shrink allwholeposes includingequipment uniformly to75percent andcenter in own512cell, maximum350pxwidthheight, 75pxtransparentmargin. REMOVE absolutely all backdrop, grids/panel lines, floor shadows, and ALLbloodsplashes. PNG1536x1024 3x2 transparent; alpha ZERO outside actors/weapons, particularly every cellboundary. No changes to poses or weapon geometry. For backdeath keep headtop bootbottom lyingorientation last3 noflip. Forreload emptybow thenextractarrow fromquiver thenlowcarry. Forcharged distinctstumble recover.",
+      "action": "Heavy charge-impact:stand,recoil backward, stumble and kneesbuckle,bracebalance, recover,stand. Natural connected feet and arms. Keep bow and arrow, no firing.",
+      "status": "selected-source"
+    },
+    {
+      "id": "death-back",
+      "file": "death-back-v2.png",
+      "nativeFile": "Native-TopDown-death-back-v2.png",
+      "generatedSource": "C:/Users/Damien/.codex/generated_images/01a1166c-83ee-7ae0-be97-78c470de8962/exec-31a8c3ea-e207-45ee-8707-a7c4332d6258.png",
+      "prompt": "Edit the six-frame River Archer death-back sheet. Keep sixbodyposes, approved topdowncamera, bronzearmor and brownleather, creamfur, one wooden bow and arrow exactly. Shrink allwholeposes includingequipment uniformly to75percent andcenter in own512cell, maximum350pxwidthheight, 75pxtransparentmargin. REMOVE absolutely all backdrop, grids/panel lines, floor shadows, and ALLbloodsplashes. PNG1536x1024 3x2 transparent; alpha ZERO outside actors/weapons, particularly every cellboundary. No changes to poses or weapon geometry. For backdeath keep headtop bootbottom lyingorientation last3 noflip. Forreload emptybow thenextractarrow fromquiver thenlowcarry. Forcharged distinctstumble recover.",
+      "action": "BACK death:stand,recoil,kneesbuckleback,fallontoBACK,supine settle,still supinecorpse. Final3 HEAD SCREEN TOP BOOTS BOTTOM always, full length torso/belt/trousers visible as horizontal lying body viewed from above. No body reversal or face-down corpse. Drop bow and arrow besidebody.",
+      "status": "selected-source"
+    },
+    {
+      "id": "running",
+      "file": "running-v2.png",
+      "nativeFile": "Native-TopDown-running-v2.png",
+      "generatedSource": "C:/Users/Damien/.codex/generated_images/01a1166c-83ee-7ae0-be97-78c470de8962/exec-7746539a-5210-41a9-8890-8ab44e6d45a7.png",
+      "status": "superseded-draft",
+      "action": "Attempted alternate walking feet.",
+      "prompt": "Edit this River Archer sixframe sheet. Same approved veryoverheadcamera bronzehelmetpauldrons creamfur redbrownleather gear. Transparent1536x1024 3x2 six512cells, wholeactor/weapon withinowncellwith60pxmargin. No backdropfloor labels. Fix walking leg alternation: frame1 LEFT leg at SCREEN RIGHT leads toward screen bottom, frame2 passing feet, frame3 RIGHT leg at SCREEN LEFT leads toward bottom, frame4 passing, frame5 LEFT SCREEN RIGHT leads,frame6passing. Knees/boots connected. Current sheet repeats same leadingleg; correct it. Keep overheadhelmet/shoulders and lowbowarrow, no shooting.",
+      "reason": "Still repeated same lead foot; superseded by v3."
+    }
+  ]
+}

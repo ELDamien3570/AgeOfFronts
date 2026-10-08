@@ -3,11 +3,17 @@ export interface ArmyRouteRequest {
   squadId: number;
   revision: number;
 }
+import type { FiringPositionState } from "../FiringPositions";
 import type { DomainRouteTask } from "./DomainRoutePorts";
 export type MatchRouteTask =
   | DomainRouteTask
   | { kind: "army"; request: ArmyRouteRequest }
-  | { kind: "ship-admission"; admissionId: number; shipId: number; playerId: number }
+  | {
+      kind: "ship-admission";
+      admissionId: number;
+      shipId: number;
+      playerId: number;
+    }
   | {
       kind: "admission";
       admissionId: number;
@@ -16,7 +22,7 @@ export type MatchRouteTask =
     }
   | {
       kind: "navigation";
-      operation: "repair" | "pursuit" | "blocked" | "smooth";
+      operation: "repair" | "pursuit" | "blocked" | "smooth" | "continuation";
       squadId: number;
       revision: number;
       playerId?: number;
@@ -32,4 +38,3 @@ export type MatchRouteTask =
       squadIds: number[];
       tile: number;
     };
-import type { FiringPositionState } from "../FiringPositions";

@@ -1,0 +1,21 @@
+{
+  "date": "2026-10-07",
+  "cultureId": "russians",
+  "age": "LateMedieval",
+  "unit": "PlateSpearman",
+  "stage": "single-idle-design-review",
+  "generatedSource": "C:/Users/Damien/.codex/generated_images/01a0fea1-c63f-7343-92ca-6c21cc1c4296/exec-df1242d4-b245-42e5-ac63-1b034875cb0e.png",
+  "nativeFile": "SourceArt/Native-Idle-v1.png",
+  "selectedFile": "Idle-Overhead-v2.png",
+  "prompt": "Create a LATE MEDIEVAL upgraded version of this Russian mail spearman, ONE SINGLE IDLE FRAME, transparentRGBA square image. Same established painterly RTS unit sprite style, same facing SCREEN DOWN, same shield HELD in left hand screenRIGHT, same straight wooden spear in right hand screenLEFT steel leafpoint towards screenBOTTOM and capped wood butt screenTOP. Same compact sturdy soldier identity. Replace exposed mostly-ringmail silhouette with distinctive RUS-INSPIRED STEEL PLATE over chainmail: broad overlapping curved steel shoulder pauldrons with segmented plates, polished but worn steel cuirass/chest plate and overlapping abdominal/hip plates, articulated steel vambraces, steel knee/greave plates above leatherboots; visible ringmail joints/neck/skirt and deep burgundy padded underclothing. Rus-inspired tall pointed/conical steel shishak-like helmet with nasal guard and restrained brass edging/rivet accents, practical decorated plated warrior rather than generic European tournament knight. Silversteel dominant, muted warm brass details, burgundy readable. Upgrade the held round wooden shield with a broad steel rim and hammered steel boss, keep wood face visible. Spear remains ordinary straight wood with steelhead, unchanged role silhouette, no axe or sword. CRITICAL EXACT90degree DIRECT VERTICAL OVERHEAD view: viewer sees helmet crown and top surfaces of both large steel shoulder plates. Broad helmet crown dominates center, face hidden below rim, torso strongly foreshortened, no front-facing portrait or isometric view. Planted relaxed idle, complete whole soldier+shield+ENTIRE spear inside frame with generous80pxtransparentmargins, no cropped weapon. Consistent small-scale readability at48/64/128pixels, strong plate silhouette and restrained fine ornaments. No background, ground, shadow, text, frames, second actor.",
+  "reference": "EarlyMedieval/MailSpearman/Idle-Overhead-v2.png",
+  "artisticApproval": "Pending user review.",
+  "overheadRevisionV2": {
+    "date": "2026-10-07",
+    "generatedSource": "C:/Users/Damien/.codex/generated_images/01a0fea1-c63f-7343-92ca-6c21cc1c4296/exec-8729277b-cd45-49fc-b655-86d22983b939.png",
+    "prompt": "Edit this SAME Russian Late Medieval plate spearman idle sprite to a TRUE DIRECTLY OVERHEAD90degree camera. Preserve same Rus-style steelplate armor with brassrivettrim, ringmail joints, burgundypadding, leatherboots, heldroundwoodshieldwithsteelrim onleftarm SCREEN RIGHT, straightwoodspear righthand SCREEN LEFT, steelpointSCREEN DOWN, buttSCREEN UP. CAMERA CORRECTION is essential: see almost entirely TOP surfaces of helmet and shoulder armor. Helmet is a broad ROUND/OVAL crown seen fromabove with centralraisedpoint seen end-on, NOT a tall teardrop profile silhouette. Shoulderpauldron tops dominate the body, shoulders broad horizontal. Helmet and shoulders OCCLUDE almost all frontchest/belly: only a very thin foreshortened strip of cuirass/belt belowhead, no large exposed breastplate rectangle, no visible face, no frontallegplanes or verticalgreaves. Boots only short top-of-toe shapes peeking below body. Entire body verticalextent(excluding spear) should be compact roughly400px vs650px width shoulders/shield in1280square. Hands belowshoulderlevel inimage but upperarmtops mostlyvisible. Shield held leftarm, face slightly tilted but dominant top rim visible, not fullyverticalportrait shield. Straightwoodshaftandsteelheadkeep identity, entire spear insidecanvas generous transparentmargins. Single full soldier idle, exactsame painterlymaterialstyle, transparentRGBA. No background, shadow,text or multipleactors. Do NOT merely shrink chest: redraw armor from plan view directly above soldier.",
+    "file": "Idle-Overhead-v2.png",
+    "nativeFile": "SourceArt/Native-Idle-Overhead-v2.png",
+    "status": "Pending user review."
+  }
+}

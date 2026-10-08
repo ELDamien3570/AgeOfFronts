@@ -38,20 +38,21 @@ const textures: Record<Age, string> = {
     "../../../Art/UI Age Themes/materials/gold.webp",
     import.meta.url,
   ).href,
-  EarlyModern: new URL(
+  Napoleonic: new URL(
     "../../../Art/UI Age Themes/materials/gunmetal.webp",
     import.meta.url,
   ).href,
-  Modern: new URL(
+  EarlyModern: new URL(
     "../../../Art/UI Age Themes/materials/army-green.webp",
     import.meta.url,
   ).href,
+  Modern: new URL("../../../Art/UI Age Themes/materials/army-green.webp", import.meta.url).href,
 };
 
 export const AGE_UI_THEMES = Object.freeze(
   Object.fromEntries(
     AGES.map((age) => {
-      const source = manifest.themes.find((theme) => theme.age === age);
+      const source = manifest.themes.find((theme) => theme.age === (age === "Napoleonic" ? "EarlyModern" : age === "EarlyModern" ? "Modern" : age));
       if (!source) throw new Error(`Missing UI theme: ${age}`);
       return [
         age,

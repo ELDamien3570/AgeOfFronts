@@ -1,0 +1,205 @@
+{
+  "StoneAge:frontline": {
+    "key": "StoneAge-Clubman",
+    "assetRoot": "/Art/Runtime/Russians/Troops/StoneAge-Clubman/",
+    "memberScale": 0.24,
+    "sizeAudited": true,
+    "projectile": "arrow"
+  },
+  "StoneAge:rangedInfantry": {
+    "key": "StoneAge-Javelinist",
+    "assetRoot": "/Art/Runtime/Russians/Troops/StoneAge-Javelinist/",
+    "memberScale": 0.24727272727272726,
+    "sizeAudited": true,
+    "projectile": "javelin"
+  },
+  "StoneAge:lightCavalry": {
+    "key": "StoneAge-MountedSpearman",
+    "assetRoot": "/Art/Runtime/Russians/Troops/StoneAge-MountedSpearman/",
+    "memberScale": 0.51,
+    "sizeAudited": true,
+    "projectile": "arrow"
+  },
+  "BronzeAge:frontline": {
+    "key": "BronzeAge-BronzeAxeman",
+    "assetRoot": "/Art/Runtime/Russians/Troops/BronzeAge-BronzeAxeman/",
+    "memberScale": 0.27199999999999996,
+    "sizeAudited": true,
+    "projectile": "arrow"
+  },
+  "BronzeAge:antiCavalry": {
+    "key": "BronzeAge-BronzeSpearman",
+    "assetRoot": "/Art/Runtime/Russians/Troops/BronzeAge-BronzeSpearman/",
+    "memberScale": 0.49756097560975604,
+    "sizeAudited": false,
+    "projectile": "arrow"
+  },
+  "BronzeAge:rangedInfantry": {
+    "key": "BronzeAge-RiverArcher",
+    "assetRoot": "/Art/Runtime/Russians/Troops/BronzeAge-RiverArcher/",
+    "memberScale": 0.33999999999999997,
+    "sizeAudited": true,
+    "projectile": "arrow"
+  },
+  "BronzeAge:lightCavalry": {
+    "key": "BronzeAge-LightCavalry",
+    "assetRoot": "/Art/Runtime/Russians/Troops/BronzeAge-LightCavalry/",
+    "memberScale": 0.49756097560975604,
+    "sizeAudited": true,
+    "projectile": "arrow"
+  },
+  "ClassicalAge:lightCavalry": {
+    "key": "ClassicalAge-LightCavalry",
+    "assetRoot": "/Art/Runtime/Russians/Troops/ClassicalAge-LightCavalry/",
+    "memberScale": 0.49756097560975604,
+    "sizeAudited": true,
+    "projectile": "arrow"
+  },
+  "ClassicalAge:frontline": {
+    "key": "ClassicalAge-ShieldWarrior",
+    "assetRoot": "/Art/Runtime/Russians/Troops/ClassicalAge-ShieldWarrior/",
+    "memberScale": 0.27199999999999996,
+    "sizeAudited": true,
+    "projectile": "arrow"
+  },
+  "ClassicalAge:rangedInfantry": {
+    "key": "ClassicalAge-RecurveArcher",
+    "assetRoot": "/Art/Runtime/Russians/Troops/ClassicalAge-RecurveArcher/",
+    "memberScale": 0.31384615384615383,
+    "sizeAudited": true,
+    "projectile": "arrow"
+  },
+  "ClassicalAge:rangedCavalry": {
+    "key": "ClassicalAge-HorseArcher",
+    "assetRoot": "/Art/Runtime/Russians/Troops/ClassicalAge-HorseArcher/",
+    "memberScale": 0.48571428571428565,
+    "sizeAudited": true,
+    "projectile": "arrow"
+  },
+  "EarlyMedieval:rangedInfantry": {
+    "key": "EarlyMedieval-RusBowMan",
+    "assetRoot": "/Art/Runtime/Russians/Troops/EarlyMedieval-RusBowMan/",
+    "memberScale": 0.24,
+    "sizeAudited": false,
+    "projectile": "arrow"
+  },
+  "LateMedieval:rangedInfantry": {
+    "key": "LateMedieval-RusCrossbowman",
+    "assetRoot": "/Art/Runtime/Russians/Troops/LateMedieval-RusCrossbowman/",
+    "memberScale": 0.24,
+    "sizeAudited": false,
+    "projectile": "arrow"
+  },
+  "Napoleonic:rangedCavalry": {
+    "key": "EarlyModern-MountedMusketeer",
+    "assetRoot": "/Art/Runtime/Russians/Troops/EarlyModern-MountedMusketeer/",
+    "memberScale": 0.49756097560975604,
+    "sizeAudited": false,
+    "projectile": "bullet"
+  },
+  "ClassicalAge:antiCavalry": {
+    "key": "ClassicalAge-Pikeman",
+    "assetRoot": "/Art/Runtime/Russians/Troops/ClassicalAge-Pikeman/",
+    "memberScale": 0.3709090909090909,
+    "sizeAudited": true,
+    "projectile": "arrow"
+  },
+  "EarlyMedieval:frontline": {
+    "key": "EarlyMedieval-Axeman",
+    "assetRoot": "/Art/Runtime/Russians/Troops/EarlyMedieval-Axeman/",
+    "memberScale": 0.24,
+    "sizeAudited": false,
+    "projectile": "arrow"
+  },
+  "EarlyMedieval:lightCavalry": {
+    "key": "EarlyMedieval-LightCavalry",
+    "assetRoot": "/Art/Runtime/Russians/Troops/EarlyMedieval-LightCavalry/",
+    "memberScale": 0.49756097560975604,
+    "sizeAudited": false,
+    "projectile": "arrow"
+  },
+  "EarlyMedieval:heavyCavalry": {
+    "key": "EarlyMedieval-Druzhina",
+    "assetRoot": "/Art/Runtime/Russians/Troops/EarlyMedieval-Druzhina/",
+    "memberScale": 0.49756097560975604,
+    "sizeAudited": false,
+    "projectile": "arrow"
+  },
+  "EarlyMedieval:rangedCavalry": {
+    "key": "EarlyMedieval-HorseArcher",
+    "assetRoot": "/Art/Runtime/Russians/Troops/EarlyMedieval-HorseArcher/",
+    "memberScale": 0.49756097560975604,
+    "sizeAudited": false,
+    "projectile": "arrow"
+  },
+  "LateMedieval:rangedCavalry": {
+    "key": "LateMedieval-HorseArcher",
+    "assetRoot": "/Art/Runtime/Russians/Troops/LateMedieval-HorseArcher/",
+    "memberScale": 0.49756097560975604,
+    "sizeAudited": false,
+    "projectile": "arrow"
+  },
+  "Napoleonic:rangedInfantry": {
+    "key": "EarlyModern-RusMusketeer",
+    "assetRoot": "/Art/Runtime/Russians/Troops/EarlyModern-RusMusketeer/",
+    "memberScale": 0.24,
+    "sizeAudited": false,
+    "projectile": "bullet"
+  },
+  "EarlyModern:rangedInfantry": {
+    "key": "Modern-SovietMachineGunner",
+    "assetRoot": "/Art/Runtime/Russians/Troops/Modern-SovietMachineGunner/",
+    "memberScale": 0.24,
+    "sizeAudited": false,
+    "projectile": "bullet"
+  },
+  "Modern:rangedInfantry": {
+    "key": "Modern-RPL20Gunner",
+    "assetRoot": "/Art/Runtime/Russians/Troops/Modern-RPL20Gunner/",
+    "memberScale": 0.24,
+    "sizeAudited": false,
+    "projectile": "bullet"
+  },
+  "EarlyMedieval:antiCavalry": {
+    "key": "EarlyMedieval-MailSpearman",
+    "assetRoot": "/Art/Runtime/Russians/Troops/EarlyMedieval-MailSpearman/",
+    "memberScale": 0.49756097560975604,
+    "sizeAudited": false,
+    "projectile": "arrow"
+  },
+  "LateMedieval:heavyCavalry": {
+    "key": "LateMedieval-Boyar",
+    "assetRoot": "/Art/Runtime/Russians/Troops/LateMedieval-Boyar/",
+    "memberScale": 0.49756097560975604,
+    "sizeAudited": false,
+    "projectile": "arrow"
+  },
+  "LateMedieval:antiCavalry": {
+    "key": "LateMedieval-PlateSpearman",
+    "assetRoot": "/Art/Runtime/Russians/Troops/LateMedieval-PlateSpearman/",
+    "memberScale": 0.49756097560975604,
+    "sizeAudited": false,
+    "projectile": "arrow"
+  },
+  "LateMedieval:lightCavalry": {
+    "key": "LateMedieval-CossackRider",
+    "assetRoot": "/Art/Runtime/Russians/Troops/LateMedieval-CossackRider/",
+    "memberScale": 0.49756097560975604,
+    "sizeAudited": false,
+    "projectile": "arrow"
+  },
+  "Napoleonic:heavyCavalry": {
+    "key": "EarlyModern-Cuirassier",
+    "assetRoot": "/Art/Runtime/Russians/Troops/EarlyModern-Cuirassier/",
+    "memberScale": 0.49756097560975604,
+    "sizeAudited": false,
+    "projectile": "arrow"
+  },
+  "LateMedieval:frontline": {
+    "key": "LateMedieval-BoyarGuard",
+    "assetRoot": "/Art/Runtime/Russians/Troops/LateMedieval-BoyarGuard/",
+    "memberScale": 0.24,
+    "sizeAudited": false,
+    "projectile": "arrow"
+  }
+}

@@ -1,0 +1,218 @@
+{
+  "attack": {
+    "file": "Attack-BronzeMace-Compact-v5.png",
+    "scale": 1.38365,
+    "frames": [
+      {
+        "frame": 0,
+        "bounds": [
+          82,
+          130,
+          444,
+          403
+        ],
+        "maximumAlphaBeyond3px": 5,
+        "pixelsAbove16Beyond3px": 0
+      },
+      {
+        "frame": 1,
+        "bounds": [
+          106,
+          144,
+          439,
+          420
+        ],
+        "maximumAlphaBeyond3px": 4,
+        "pixelsAbove16Beyond3px": 0
+      },
+      {
+        "frame": 2,
+        "bounds": [
+          94,
+          153,
+          437,
+          403
+        ],
+        "maximumAlphaBeyond3px": 4,
+        "pixelsAbove16Beyond3px": 0
+      },
+      {
+        "frame": 3,
+        "bounds": [
+          125,
+          100,
+          443,
+          413
+        ],
+        "maximumAlphaBeyond3px": 6,
+        "pixelsAbove16Beyond3px": 0
+      },
+      {
+        "frame": 4,
+        "bounds": [
+          130,
+          97,
+          431,
+          421
+        ],
+        "maximumAlphaBeyond3px": 8,
+        "pixelsAbove16Beyond3px": 0
+      },
+      {
+        "frame": 5,
+        "bounds": [
+          83,
+          99,
+          437,
+          385
+        ],
+        "maximumAlphaBeyond3px": 6,
+        "pixelsAbove16Beyond3px": 0
+      }
+    ]
+  },
+  "charge": {
+    "file": "Charge-BronzeMace-Compact-v5.png",
+    "scale": 1.1224489795918366,
+    "frames": [
+      {
+        "frame": 0,
+        "bounds": [
+          94,
+          63,
+          476,
+          447
+        ],
+        "maximumAlphaBeyond3px": 6,
+        "pixelsAbove16Beyond3px": 0
+      },
+      {
+        "frame": 1,
+        "bounds": [
+          90,
+          60,
+          467,
+          420
+        ],
+        "maximumAlphaBeyond3px": 7,
+        "pixelsAbove16Beyond3px": 0
+      },
+      {
+        "frame": 2,
+        "bounds": [
+          85,
+          61,
+          460,
+          425
+        ],
+        "maximumAlphaBeyond3px": 7,
+        "pixelsAbove16Beyond3px": 0
+      },
+      {
+        "frame": 3,
+        "bounds": [
+          91,
+          51,
+          471,
+          452
+        ],
+        "maximumAlphaBeyond3px": 5,
+        "pixelsAbove16Beyond3px": 0
+      },
+      {
+        "frame": 4,
+        "bounds": [
+          97,
+          51,
+          478,
+          438
+        ],
+        "maximumAlphaBeyond3px": 3,
+        "pixelsAbove16Beyond3px": 0
+      },
+      {
+        "frame": 5,
+        "bounds": [
+          91,
+          56,
+          472,
+          421
+        ],
+        "maximumAlphaBeyond3px": 6,
+        "pixelsAbove16Beyond3px": 0
+      }
+    ]
+  },
+  "charge-attack": {
+    "file": "ChargeAttack-BronzeMace-Compact-v5.png",
+    "scale": 1.29412,
+    "frames": [
+      {
+        "frame": 0,
+        "bounds": [
+          79,
+          143,
+          448,
+          426
+        ],
+        "maximumAlphaBeyond3px": 6,
+        "pixelsAbove16Beyond3px": 0
+      },
+      {
+        "frame": 1,
+        "bounds": [
+          68,
+          149,
+          451,
+          435
+        ],
+        "maximumAlphaBeyond3px": 5,
+        "pixelsAbove16Beyond3px": 0
+      },
+      {
+        "frame": 2,
+        "bounds": [
+          52,
+          144,
+          449,
+          435
+        ],
+        "maximumAlphaBeyond3px": 4,
+        "pixelsAbove16Beyond3px": 0
+      },
+      {
+        "frame": 3,
+        "bounds": [
+          103,
+          54,
+          446,
+          425
+        ],
+        "maximumAlphaBeyond3px": 3,
+        "pixelsAbove16Beyond3px": 0
+      },
+      {
+        "frame": 4,
+        "bounds": [
+          87,
+          58,
+          426,
+          415
+        ],
+        "maximumAlphaBeyond3px": 4,
+        "pixelsAbove16Beyond3px": 0
+      },
+      {
+        "frame": 5,
+        "bounds": [
+          108,
+          56,
+          457,
+          407
+        ],
+        "maximumAlphaBeyond3px": 6,
+        "pixelsAbove16Beyond3px": 0
+      }
+    ]
+  }
+}

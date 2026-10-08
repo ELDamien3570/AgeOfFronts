@@ -1,0 +1,32 @@
+{
+  "generator": "built-in image_gen",
+  "name": "GunshipImpact",
+  "label": "Gunship cannon impact",
+  "dimension": 314,
+  "columns": 4,
+  "rows": 4,
+  "frameCount": 16,
+  "relativeFootprint": 0.44,
+  "durations": [
+    25,
+    25,
+    35,
+    40,
+    45,
+    50,
+    55,
+    60,
+    70,
+    80,
+    90,
+    100,
+    110,
+    120,
+    140,
+    170
+  ],
+  "prompt": "Use case: stylized-concept.\nAsset type: animated strategy-game VFX sprite atlas for Age of Fronts, transparent PNG.\nPrimary request: draw a genuinely coherent single explosion evolving in time across EXACTLY SIXTEEN frames. This is a 4-column by 4-row sprite sheet, sixteen equally sized square cells, read left-to-right then next row.\nComposition: uniform 4 x 4 grid with no visible grid lines, no text, no gutters and no outer decorative border. Every square cell has a perfectly centered impact at its cell center. All sixteen frames use identical camera, light, scale reference and center. Keep each effect completely inside its cell with wide transparent clearance. No particles or smoke may enter a neighbouring cell.\nCamera: perfectly vertical 90-degree TOP DOWN orthographic ground-impact view. We see the upper surfaces of radial fire, dust and smoke. No side-view mushroom cloud, horizon, oblique view or isometric perspective.\nStyle: realistic richly textured hand-painted strategy-game effects, natural orange/yellow fire with hot pale center, turbulent dark grey smoke, brown-grey dust, fine sparks and irregular wispy edges. Polished matching the existing realistic textured building and bomb icon set. The artwork must remain clear at small game-map scale.\nAnimation continuity: one and the same impact expands radially, burns briefly, cools to smoke and fades away. Preserve the principal smoke lobes and particle paths progressively across adjacent frames; do not redraw sixteen unrelated explosions. No cut to a different shot, no camera movement, no late second flash.\nTiming/storyboard, row-major:\n1 tiny pale ignition flash; 2 brighter compact flash; 3 small expanding orange fireball; 4 larger fiery burst.\n5 fireball grows and first radial dust ring; 6 peak orange flame and sparks; 7 flames start cooling into smoky lobes; 8 smoke expands while fire dims.\n9 faint central embers under smoke; 10 expanding dust and dark smoke; 11 diffuse grey smoke with almost no flame; 12 softer thinner smoke.\n13 low-opacity cooling smoke; 14 wispy fading remnants; 15 barely visible dispersed smoke; 16 completely empty transparent cell.\nOutside every individual effect, preserve TRUE TRANSPARENT ALPHA including through faint smoke and glow. No painted black/white/checkerboard background, ground tile, persistent crater, buildings, aircraft, physical bomb, human, label, border or watermark.\nSubject: a VERY SMALL single gunship autocannon shell impact, suitable for an AC-130-type ground strike. One pinpoint hot spark, tiny orange flecks, a short concentrated grey-brown dust splash, then a small uneven dissipating smoke puff. Peak effect occupies only about 44 percent of its cell width, visibly smaller than a normal artillery explosion. Mostly dust and a fleeting bright spark, no large fireball, no multiple impacts in a cell. Finite one-shot cannon hit.",
+  "source": "C:\\Users\\Damien\\.codex\\generated_images\\01a0f0f0-cfa7-76e0-959a-347e83e7ded2\\exec-c59721e1-54a0-4a69-adc6-50155365fa4b.png",
+  "rebuild": true,
+  "sourceAtlas": "SourceAtlas.png"
+}

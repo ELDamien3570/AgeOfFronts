@@ -1,0 +1,187 @@
+{
+  "date": "2026-10-07",
+  "records": [
+    {
+      "id": "idle",
+      "file": "Idle-Animated-v1.png",
+      "motion": "Subtle breathing idle LOOP, six small changes of chest only, plantedboots, fixedheadposition, no sway/jolt atloopjoin.",
+      "prompt": "Russian LATE MEDIEVAL PLATE SPEARMAN exactly matching approved Image1: broad steel segmented shoulderplate tops with brassrivet accents, broad oval ironhelmet crown, steel cuirass mostlyhidden/foreshortened, mailjoints, burgundypadding, held round wooden shield with wide steelrim leftarm SCREEN RIGHT, straightwoodspear in right hand SCREEN LEFT leafsteelpoint SCREEN DOWN. STRICT90degree DIRECT OVERHEAD camera, helmet crown and shoulder tops dominate, torso compressed; never frontportrait or isometric. Painterly game sprite, restrainededges. EXACT1536x1024transparentRGBA six512cells3columns2rows rowmajor, sixcompleteisolatedactors withwholeweapon insideowncell,>=30pxguards,no spill,fragments,bg,shadow,text. Same equipment scale and shape throughout. Spear rigid straight fixedlength, handclosedaround SAME grip point, never handsliding, bending or weapon growth. Body approx230px wide, helmet95px; spear350px. Shield held never onback.\nMOTION: Subtle breathing idle LOOP, six small changes of chest only, plantedboots, fixedheadposition, no sway/jolt atloopjoin.",
+      "generatedSource": "C:/Users/Damien/.codex/generated_images/01a0fea1-c63f-7343-92ca-6c21cc1c4296/exec-a0230ecd-ac08-4855-93c4-e67791c347b0.png",
+      "nativeFile": "Native-Idle-Animated-v1.png",
+      "status": "selected-source",
+      "rootOffsets": [
+        [
+          1,
+          4
+        ],
+        [
+          5,
+          4
+        ],
+        [
+          5,
+          4
+        ],
+        [
+          2,
+          2
+        ],
+        [
+          4,
+          13
+        ],
+        [
+          5,
+          4
+        ]
+      ]
+    },
+    {
+      "id": "running",
+      "file": "Walk-v1.png",
+      "motion": "WALK LOOP six clear alternating left/rightbootstep poses, bothfeetmove, littlebodybob, absolutelysteady lateralheadposition, no shuffling or shaking.",
+      "prompt": "Russian LATE MEDIEVAL PLATE SPEARMAN exactly matching approved Image1: broad steel segmented shoulderplate tops with brassrivet accents, broad oval ironhelmet crown, steel cuirass mostlyhidden/foreshortened, mailjoints, burgundypadding, held round wooden shield with wide steelrim leftarm SCREEN RIGHT, straightwoodspear in right hand SCREEN LEFT leafsteelpoint SCREEN DOWN. STRICT90degree DIRECT OVERHEAD camera, helmet crown and shoulder tops dominate, torso compressed; never frontportrait or isometric. Painterly game sprite, restrainededges. EXACT1536x1024transparentRGBA six512cells3columns2rows rowmajor, sixcompleteisolatedactors withwholeweapon insideowncell,>=30pxguards,no spill,fragments,bg,shadow,text. Same equipment scale and shape throughout. Spear rigid straight fixedlength, handclosedaround SAME grip point, never handsliding, bending or weapon growth. Body approx230px wide, helmet95px; spear350px. Shield held never onback.\nMOTION: WALK LOOP six clear alternating left/rightbootstep poses, bothfeetmove, littlebodybob, absolutelysteady lateralheadposition, no shuffling or shaking.",
+      "generatedSource": "C:/Users/Damien/.codex/generated_images/01a0fea1-c63f-7343-92ca-6c21cc1c4296/exec-59f74a88-84ff-4782-a4d2-c9d999439907.png",
+      "nativeFile": "Native-Walk-v1.png",
+      "status": "selected-source",
+      "rootOffsets": [
+        [
+          37,
+          3
+        ],
+        [
+          12,
+          3
+        ],
+        [
+          4,
+          3
+        ],
+        [
+          37,
+          -2
+        ],
+        [
+          13,
+          1
+        ],
+        [
+          4,
+          -2
+        ]
+      ]
+    },
+    {
+      "id": "charge",
+      "file": "Charge-v1.png",
+      "motion": "CHARGE RUN LOOP brisklonger alternatingfootstrides, mildforwardlean, maintainedoverheadview, steadyhelmetroot, shieldbraced, heldspearready, no lateralshake.",
+      "prompt": "Russian LATE MEDIEVAL PLATE SPEARMAN exactly matching approved Image1: broad steel segmented shoulderplate tops with brassrivet accents, broad oval ironhelmet crown, steel cuirass mostlyhidden/foreshortened, mailjoints, burgundypadding, held round wooden shield with wide steelrim leftarm SCREEN RIGHT, straightwoodspear in right hand SCREEN LEFT leafsteelpoint SCREEN DOWN. STRICT90degree DIRECT OVERHEAD camera, helmet crown and shoulder tops dominate, torso compressed; never frontportrait or isometric. Painterly game sprite, restrainededges. EXACT1536x1024transparentRGBA six512cells3columns2rows rowmajor, sixcompleteisolatedactors withwholeweapon insideowncell,>=30pxguards,no spill,fragments,bg,shadow,text. Same equipment scale and shape throughout. Spear rigid straight fixedlength, handclosedaround SAME grip point, never handsliding, bending or weapon growth. Body approx230px wide, helmet95px; spear350px. Shield held never onback.\nMOTION: CHARGE RUN LOOP brisklonger alternatingfootstrides, mildforwardlean, maintainedoverheadview, steadyhelmetroot, shieldbraced, heldspearready, no lateralshake.",
+      "generatedSource": "C:/Users/Damien/.codex/generated_images/01a0fea1-c63f-7343-92ca-6c21cc1c4296/exec-1a236375-48e0-49f4-b756-7160133ae17c.png",
+      "nativeFile": "Native-Charge-v1.png",
+      "status": "selected-source",
+      "rootOffsets": [
+        [
+          10,
+          -23
+        ],
+        [
+          7,
+          -25
+        ],
+        [
+          4,
+          -21
+        ],
+        [
+          9,
+          -31
+        ],
+        [
+          7,
+          -19
+        ],
+        [
+          5,
+          -21
+        ]
+      ]
+    },
+    {
+      "id": "attack",
+      "file": "Attack-v1.png",
+      "ref": "EarlyMedieval/MailSpearman/Attack-Forward-Pose-v8.png",
+      "motion": "Image2 is the six APPROVED ATTACK POSES and direction; replace its mailwarrior equipment with Image1 platewarrior equipment while keeping exact pose sequence and motion. OVERHAND spear thrust STRAIGHT SCREEN DOWN, openedbody elbowdrawnback then armextends forward, wholeweaponadvanceswithfixedgrip. ready,windup,drive,fullstab,withdraw,ready. No underhandtransition. Do not copy Image2 mailonlyarmor.",
+      "prompt": "Russian LATE MEDIEVAL PLATE SPEARMAN exactly matching approved Image1: broad steel segmented shoulderplate tops with brassrivet accents, broad oval ironhelmet crown, steel cuirass mostlyhidden/foreshortened, mailjoints, burgundypadding, held round wooden shield with wide steelrim leftarm SCREEN RIGHT, straightwoodspear in right hand SCREEN LEFT leafsteelpoint SCREEN DOWN. STRICT90degree DIRECT OVERHEAD camera, helmet crown and shoulder tops dominate, torso compressed; never frontportrait or isometric. Painterly game sprite, restrainededges. EXACT1536x1024transparentRGBA six512cells3columns2rows rowmajor, sixcompleteisolatedactors withwholeweapon insideowncell,>=30pxguards,no spill,fragments,bg,shadow,text. Same equipment scale and shape throughout. Spear rigid straight fixedlength, handclosedaround SAME grip point, never handsliding, bending or weapon growth. Body approx230px wide, helmet95px; spear350px. Shield held never onback.\nMOTION: Image2 is the six APPROVED ATTACK POSES and direction; replace its mailwarrior equipment with Image1 platewarrior equipment while keeping exact pose sequence and motion. OVERHAND spear thrust STRAIGHT SCREEN DOWN, openedbody elbowdrawnback then armextends forward, wholeweaponadvanceswithfixedgrip. ready,windup,drive,fullstab,withdraw,ready. No underhandtransition. Do not copy Image2 mailonlyarmor.",
+      "generatedSource": "C:/Users/Damien/.codex/generated_images/01a0fea1-c63f-7343-92ca-6c21cc1c4296/exec-e8f40641-d91c-45f0-a6cd-158979075e31.png",
+      "nativeFile": "Native-Attack-v1.png",
+      "status": "superseded",
+      "rejection": "User selected charge-attack for both attacks."
+    },
+    {
+      "id": "charge-attack",
+      "file": "Charge-Attack-v1.png",
+      "ref": "EarlyMedieval/MailSpearman/Charge-Attack-Forward-Pose-v8.png",
+      "motion": "Image2 is six APPROVED CHARGE STAB poses; preserveposemotion and STRAIGHT SCREEN DOWN thrustdirection, replaceequipmentwithImage1platearmor. Overhandhighgrip,shoulderdrawback,plantleadingfoot,lungeandstraightenarmwithwholeweaponmovingforward,nohandslidingonshaft. sixready,windup,drive,fullheavythrust,withdraw,recover.",
+      "prompt": "Russian LATE MEDIEVAL PLATE SPEARMAN exactly matching approved Image1: broad steel segmented shoulderplate tops with brassrivet accents, broad oval ironhelmet crown, steel cuirass mostlyhidden/foreshortened, mailjoints, burgundypadding, held round wooden shield with wide steelrim leftarm SCREEN RIGHT, straightwoodspear in right hand SCREEN LEFT leafsteelpoint SCREEN DOWN. STRICT90degree DIRECT OVERHEAD camera, helmet crown and shoulder tops dominate, torso compressed; never frontportrait or isometric. Painterly game sprite, restrainededges. EXACT1536x1024transparentRGBA six512cells3columns2rows rowmajor, sixcompleteisolatedactors withwholeweapon insideowncell,>=30pxguards,no spill,fragments,bg,shadow,text. Same equipment scale and shape throughout. Spear rigid straight fixedlength, handclosedaround SAME grip point, never handsliding, bending or weapon growth. Body approx230px wide, helmet95px; spear350px. Shield held never onback.\nMOTION: Image2 is six APPROVED CHARGE STAB poses; preserveposemotion and STRAIGHT SCREEN DOWN thrustdirection, replaceequipmentwithImage1platearmor. Overhandhighgrip,shoulderdrawback,plantleadingfoot,lungeandstraightenarmwithwholeweaponmovingforward,nohandslidingonshaft. sixready,windup,drive,fullheavythrust,withdraw,recover.",
+      "generatedSource": "C:/Users/Damien/.codex/generated_images/01a0fea1-c63f-7343-92ca-6c21cc1c4296/exec-7bd79233-a673-4bc3-8838-8c61c3ecb5bc.png",
+      "nativeFile": "Native-Charge-Attack-v1.png",
+      "status": "selected-source"
+    },
+    {
+      "id": "hit",
+      "file": "Hit-v1.png",
+      "motion": "GET HIT shortflinch,recoilshoulders,shieldbrace,crouch,recover,ready. Weapon arm and shieldfollowtorso naturally whileholdingfixedgrip.",
+      "prompt": "Russian LATE MEDIEVAL PLATE SPEARMAN exactly matching approved Image1: broad steel segmented shoulderplate tops with brassrivet accents, broad oval ironhelmet crown, steel cuirass mostlyhidden/foreshortened, mailjoints, burgundypadding, held round wooden shield with wide steelrim leftarm SCREEN RIGHT, straightwoodspear in right hand SCREEN LEFT leafsteelpoint SCREEN DOWN. STRICT90degree DIRECT OVERHEAD camera, helmet crown and shoulder tops dominate, torso compressed; never frontportrait or isometric. Painterly game sprite, restrainededges. EXACT1536x1024transparentRGBA six512cells3columns2rows rowmajor, sixcompleteisolatedactors withwholeweapon insideowncell,>=30pxguards,no spill,fragments,bg,shadow,text. Same equipment scale and shape throughout. Spear rigid straight fixedlength, handclosedaround SAME grip point, never handsliding, bending or weapon growth. Body approx230px wide, helmet95px; spear350px. Shield held never onback.\nMOTION: GET HIT shortflinch,recoilshoulders,shieldbrace,crouch,recover,ready. Weapon arm and shieldfollowtorso naturally whileholdingfixedgrip.",
+      "generatedSource": "C:/Users/Damien/.codex/generated_images/01a0fea1-c63f-7343-92ca-6c21cc1c4296/exec-073ca7ae-2e9d-4c94-b267-1d8d9875b452.png",
+      "nativeFile": "Native-Hit-v1.png",
+      "status": "selected-source"
+    },
+    {
+      "id": "charged",
+      "file": "Charged-v1.png",
+      "motion": "GET CHARGED distinctheavyimpact,ready,recoil,deepbackwardstagger,lowbrace,regainstance,recover. Shoulders/elbow/wristmove together,speararmmustreactnotfrozen. Sameheldshield,sameintactrigidspear.",
+      "prompt": "Russian LATE MEDIEVAL PLATE SPEARMAN exactly matching approved Image1: broad steel segmented shoulderplate tops with brassrivet accents, broad oval ironhelmet crown, steel cuirass mostlyhidden/foreshortened, mailjoints, burgundypadding, held round wooden shield with wide steelrim leftarm SCREEN RIGHT, straightwoodspear in right hand SCREEN LEFT leafsteelpoint SCREEN DOWN. STRICT90degree DIRECT OVERHEAD camera, helmet crown and shoulder tops dominate, torso compressed; never frontportrait or isometric. Painterly game sprite, restrainededges. EXACT1536x1024transparentRGBA six512cells3columns2rows rowmajor, sixcompleteisolatedactors withwholeweapon insideowncell,>=30pxguards,no spill,fragments,bg,shadow,text. Same equipment scale and shape throughout. Spear rigid straight fixedlength, handclosedaround SAME grip point, never handsliding, bending or weapon growth. Body approx230px wide, helmet95px; spear350px. Shield held never onback.\nMOTION: GET CHARGED distinctheavyimpact,ready,recoil,deepbackwardstagger,lowbrace,regainstance,recover. Shoulders/elbow/wristmove together,speararmmustreactnotfrozen. Sameheldshield,sameintactrigidspear.",
+      "generatedSource": "C:/Users/Damien/.codex/generated_images/01a0fea1-c63f-7343-92ca-6c21cc1c4296/exec-c082daa0-e307-4cce-b84e-a51f2abbe896.png",
+      "nativeFile": "Native-Charged-v1.png",
+      "status": "superseded",
+      "rejection": "Incomplete rear shaft in first impact pose."
+    },
+    {
+      "id": "death",
+      "file": "Death-Side-v1.png",
+      "motion": "SIDE DEATH progressive sixposes upright,kneesbuckle,leantoright,collapseontorightside,almostsettled,settledcorpse horizontalHEAD SCREENRIGHT BOOTS SCREENLEFT. Shieldandintactspearfollowarmsdown naturally. No flip atfinal. Still90degreeoverhead.",
+      "prompt": "Russian LATE MEDIEVAL PLATE SPEARMAN exactly matching approved Image1: broad steel segmented shoulderplate tops with brassrivet accents, broad oval ironhelmet crown, steel cuirass mostlyhidden/foreshortened, mailjoints, burgundypadding, held round wooden shield with wide steelrim leftarm SCREEN RIGHT, straightwoodspear in right hand SCREEN LEFT leafsteelpoint SCREEN DOWN. STRICT90degree DIRECT OVERHEAD camera, helmet crown and shoulder tops dominate, torso compressed; never frontportrait or isometric. Painterly game sprite, restrainededges. EXACT1536x1024transparentRGBA six512cells3columns2rows rowmajor, sixcompleteisolatedactors withwholeweapon insideowncell,>=30pxguards,no spill,fragments,bg,shadow,text. Same equipment scale and shape throughout. Spear rigid straight fixedlength, handclosedaround SAME grip point, never handsliding, bending or weapon growth. Body approx230px wide, helmet95px; spear350px. Shield held never onback.\nMOTION: SIDE DEATH progressive sixposes upright,kneesbuckle,leantoright,collapseontorightside,almostsettled,settledcorpse horizontalHEAD SCREENRIGHT BOOTS SCREENLEFT. Shieldandintactspearfollowarmsdown naturally. No flip atfinal. Still90degreeoverhead.",
+      "generatedSource": "C:/Users/Damien/.codex/generated_images/01a0fea1-c63f-7343-92ca-6c21cc1c4296/exec-f54b29ca-5240-4aca-93db-333a27e8d4d0.png",
+      "nativeFile": "Native-Death-Side-v1.png",
+      "status": "selected-source"
+    },
+    {
+      "id": "death-back",
+      "file": "Death-Back-v1.png",
+      "motion": "BACK DEATH progressive sixposes upright,recoil/kneesbuckle,shouldersfallback,bodyreclines,almostflat,settledcorpse HEADSCREENTOP BOOTSSCREENDOWN. Heldshieldandspearlowerwitharms,head/feetneverinvert atfinal. Stilloverhead.",
+      "prompt": "Russian LATE MEDIEVAL PLATE SPEARMAN exactly matching approved Image1: broad steel segmented shoulderplate tops with brassrivet accents, broad oval ironhelmet crown, steel cuirass mostlyhidden/foreshortened, mailjoints, burgundypadding, held round wooden shield with wide steelrim leftarm SCREEN RIGHT, straightwoodspear in right hand SCREEN LEFT leafsteelpoint SCREEN DOWN. STRICT90degree DIRECT OVERHEAD camera, helmet crown and shoulder tops dominate, torso compressed; never frontportrait or isometric. Painterly game sprite, restrainededges. EXACT1536x1024transparentRGBA six512cells3columns2rows rowmajor, sixcompleteisolatedactors withwholeweapon insideowncell,>=30pxguards,no spill,fragments,bg,shadow,text. Same equipment scale and shape throughout. Spear rigid straight fixedlength, handclosedaround SAME grip point, never handsliding, bending or weapon growth. Body approx230px wide, helmet95px; spear350px. Shield held never onback.\nMOTION: BACK DEATH progressive sixposes upright,recoil/kneesbuckle,shouldersfallback,bodyreclines,almostflat,settledcorpse HEADSCREENTOP BOOTSSCREENDOWN. Heldshieldandspearlowerwitharms,head/feetneverinvert atfinal. Stilloverhead.",
+      "generatedSource": "C:/Users/Damien/.codex/generated_images/01a0fea1-c63f-7343-92ca-6c21cc1c4296/exec-5b7b4c24-a803-4d51-9f74-009fbf0c7188.png",
+      "nativeFile": "Native-Death-Back-v1.png",
+      "status": "selected-source"
+    },
+    {
+      "id": "charged",
+      "file": "Charged-v2.png",
+      "prompt": "Rebuild ONLY the GET CHARGED heavy-impact reaction for this approved Russian plate spearman. Exact1536x1024transparentRGBA3x2six512cells. Match approved90degreeoverheadhelmetcrown/broadsegmentedsteelpaultops/brassrivets/burgundypadding, heldshieldscreenRIGHT and woodspearscreenLEFT,steelheadscreenDOWN, cappedBUTTscreenUP. EVERY pose MUST retain the fullwoodspeartail ABOVE the clenched fist, and the steelblade BELOW it. Right hand ALWAYS grips wood nearMIDPOINT: visibly at least120px wood ABOVE fist tobutt and150pxshaft/blade BELOW fist, rigid same total~320px inallsix. No hand at spearbutt, missingrearshaft, shortbrokenweapon or fingersfloatingoffweapon. Sequence1uprightready2hardrecoil3deepstaggerbackwitharmsresponding4lowbraceafterstumble5recover6ready. Character does NOT lie flat or die inthisclip. Speararm shoulderelbowwrist follow impact strongly but samegrip,heldshieldfollowsnaturally. Actual topdowncamera always. Fullactorandfullweaponcontainedwith40pxtransparentcellguards,no spill,text,shadow,bg. Preserve samepainterlystyle. Exactlysixdistinctcompleteposes.",
+      "generatedSource": "C:/Users/Damien/.codex/generated_images/01a0fea1-c63f-7343-92ca-6c21cc1c4296/exec-872d6bef-54c0-424e-a515-79a6958a0583.png",
+      "nativeFile": "Native-Charged-v2.png",
+      "status": "selected-source"
+    },
+    {
+      "id": "attack",
+      "file": "Charge-Attack-v1.png",
+      "ref": "EarlyMedieval/MailSpearman/Charge-Attack-Forward-Pose-v8.png",
+      "motion": "Image2 is six APPROVED CHARGE STAB poses; preserveposemotion and STRAIGHT SCREEN DOWN thrustdirection, replaceequipmentwithImage1platearmor. Overhandhighgrip,shoulderdrawback,plantleadingfoot,lungeandstraightenarmwithwholeweaponmovingforward,nohandslidingonshaft. sixready,windup,drive,fullheavythrust,withdraw,recover.",
+      "prompt": "Russian LATE MEDIEVAL PLATE SPEARMAN exactly matching approved Image1: broad steel segmented shoulderplate tops with brassrivet accents, broad oval ironhelmet crown, steel cuirass mostlyhidden/foreshortened, mailjoints, burgundypadding, held round wooden shield with wide steelrim leftarm SCREEN RIGHT, straightwoodspear in right hand SCREEN LEFT leafsteelpoint SCREEN DOWN. STRICT90degree DIRECT OVERHEAD camera, helmet crown and shoulder tops dominate, torso compressed; never frontportrait or isometric. Painterly game sprite, restrainededges. EXACT1536x1024transparentRGBA six512cells3columns2rows rowmajor, sixcompleteisolatedactors withwholeweapon insideowncell,>=30pxguards,no spill,fragments,bg,shadow,text. Same equipment scale and shape throughout. Spear rigid straight fixedlength, handclosedaround SAME grip point, never handsliding, bending or weapon growth. Body approx230px wide, helmet95px; spear350px. Shield held never onback.\nMOTION: Image2 is six APPROVED CHARGE STAB poses; preserveposemotion and STRAIGHT SCREEN DOWN thrustdirection, replaceequipmentwithImage1platearmor. Overhandhighgrip,shoulderdrawback,plantleadingfoot,lungeandstraightenarmwithwholeweaponmovingforward,nohandslidingonshaft. sixready,windup,drive,fullheavythrust,withdraw,recover.",
+      "generatedSource": "C:/Users/Damien/.codex/generated_images/01a0fea1-c63f-7343-92ca-6c21cc1c4296/exec-7bd79233-a673-4bc3-8838-8c61c3ecb5bc.png",
+      "nativeFile": "Native-Charge-Attack-v1.png",
+      "status": "selected-source",
+      "selectionNote": "Approved alias of charge-attack; same source, frames and timing."
+    }
+  ]
+}

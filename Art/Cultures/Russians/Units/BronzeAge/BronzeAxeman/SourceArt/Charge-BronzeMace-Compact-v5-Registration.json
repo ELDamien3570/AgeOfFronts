@@ -1,0 +1,95 @@
+{
+  "measurementMethod": "Manual central bronze dome circle from native atlas excluding rim; approximate within 3px",
+  "file": "Charge-BronzeMace-Compact-v5.png",
+  "domeCenters": [
+    {
+      "x": 269,
+      "y": 223
+    },
+    {
+      "x": 259,
+      "y": 223
+    },
+    {
+      "x": 258,
+      "y": 223
+    },
+    {
+      "x": 259,
+      "y": 218
+    },
+    {
+      "x": 266,
+      "y": 220
+    },
+    {
+      "x": 262,
+      "y": 221
+    }
+  ],
+  "domeWidths": [
+    98,
+    98,
+    98,
+    98,
+    98,
+    98
+  ],
+  "fixedScale": 1.1224489795918366,
+  "pivots": [
+    {
+      "x": 269,
+      "y": 243
+    },
+    {
+      "x": 259,
+      "y": 243
+    },
+    {
+      "x": 258,
+      "y": 243
+    },
+    {
+      "x": 259,
+      "y": 238
+    },
+    {
+      "x": 266,
+      "y": 240
+    },
+    {
+      "x": 262,
+      "y": 241
+    }
+  ],
+  "charge": {
+    "scale": 1.1224489795918366,
+    "file": "Charge-BronzeMace-Compact-v5.png",
+    "pivots": [
+      {
+        "x": 269,
+        "y": 243
+      },
+      {
+        "x": 259,
+        "y": 243
+      },
+      {
+        "x": 258,
+        "y": 243
+      },
+      {
+        "x": 259,
+        "y": 238
+      },
+      {
+        "x": 266,
+        "y": 240
+      },
+      {
+        "x": 262,
+        "y": 241
+      }
+    ]
+  }
+}

@@ -1,0 +1,35 @@
+{
+  "date": "2026-10-07",
+  "loadedClips": 10,
+  "loadedFrames": 60,
+  "inspectedSizes": [
+    "main",
+    32,
+    48,
+    64
+  ],
+  "checks": [
+    "All ten sheets load in the solo actor review.",
+    "Normal and charge shooting full-draw frames point straight screen-bottom.",
+    "Selected native shooting atlases inspected through release and followthrough: arrow absent frames 4-6.",
+    "Reload extraction and nocking reviewed.",
+    "Side and back death final poses reviewed; back-death settling retains head-top orientation.",
+    "Normal and charge-shot strings pull back into two taut segments meeting at the arrow nock; release and settled strings inspected in native atlases.",
+    "Bow cleanup: normal-shot frame 5 has one bow; old resting string absent during draw; drawn string occluded behind bow arm in both selected shooting clips. Native atlases and refreshed browser draw views inspected."
+  ],
+  "screenshots": [
+    "Review-Forward-Shot-v4.png",
+    "Review-Forward-ChargeShot-v3.png",
+    "Review-Reload-v1.png",
+    "Review-DeathSide-v1.png",
+    "Review-DeathBack-v1.png",
+    "Review-String-Shot-v5.png",
+    "Review-String-ChargeShot-v4.png",
+    "Review-Clean-Frame5-v6.png",
+    "Review-Clean-Draw-v6.png",
+    "Review-Clean-ChargeDraw-v5.png"
+  ],
+  "consoleWarningsOrErrors": [],
+  "userApproval": "Idle approved; animations pending user visual review.",
+  "runtimeIntegration": false
+}

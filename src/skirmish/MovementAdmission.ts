@@ -1,3 +1,4 @@
+import { translatedSlots } from "./FormationLine";
 import { FormationOccupancy } from "./FormationOccupancy";
 import type { GameMap } from "../core/game/GameMap";
 import {
@@ -52,6 +53,10 @@ interface QueuedIntent {
   members: { id: number; admissionId?: number }[];
   revision: string;
   formation?: FormationPlanningState;
+  travelLayout?: {
+    members: { id: number; admissionId?: number }[];
+    origins: Map<number, WorldPoint>; index: number; sumX: number; sumY: number;
+  };
 }
 export interface MovementAdmissionEvent {
   id: number;
@@ -62,6 +67,8 @@ export interface MovementAdmissionEvent {
   tile?: number;
 }
 export interface MovementAdmissionPorts {
+  /** Experimental persistent group offsets for ordinary queued movement. */
+  preserveQueuedLayout?: boolean;
   /** The route graph for a faction's squads (amphibious with transports). */
   paths?(playerId: number): LandPaths;
   prepareStructure?(state: StructureAttackPreparationState, budget: number): number;
@@ -260,10 +267,13 @@ export class MovementAdmission {
       }));
     if (!members.some((m) => m.admissionId !== undefined)) return false;
     if (selected.length > 30) {
+      const travelLayout = this.ports.preserveQueuedLayout && order.type === "move"
+        ? { members, origins: new Map<number, WorldPoint>(), index: 0, sumX: 0, sumY: 0 }
+        : undefined;
       for (let start = 0; start < selected.length; start += 30) {
         const chunk = members.slice(start, start + 30), squad = this.ports.squad(chunk[0].id)!;
         const intent: QueuedIntent = { id: this.nextId++, playerId: squad.playerId,
-          generation: this.ports.generation(squad.playerId), order: { ...order }, members: chunk,
+          generation: this.ports.generation(squad.playerId), order: { ...order }, members: chunk, travelLayout,
           revision: this.ports.revision(squad.playerId) };
         this.addIntent(intent); this.event(intent, tick, "deferred");
       }
@@ -622,6 +632,27 @@ export class MovementAdmission {
         intent.revision = revision;
       }
       const order = intent.order;
+      const layout = intent.travelLayout;
+      if (layout && layout.index < layout.members.length) {
+        // All placement cohorts share one translated layout. Capture its source
+        // destinations incrementally so a large Shift selection stays budgeted.
+        while (layout.index < layout.members.length && used < budget) {
+          const m = layout.members[layout.index], squad = this.ports.squad(m.id);
+          const pending = m.admissionId === undefined ? undefined : this.pending.get(m.admissionId);
+          const member = pending?.members.find(candidate => candidate.id === m.id);
+          if (pending && !member?.destination) { used++; break; }
+          if (squad) {
+            const orders = member?.queued ?? squad.queuedOrders;
+            const last = orders[orders.length - 1] ?? (pending ? undefined : squad.order);
+            const origin = last?.type === "move" ? last.x === undefined ? tilePoint(this.map,last.tile) : { x:last.x,y:last.y! }
+              : member?.destination ?? squad;
+            layout.origins.set(m.id,{x:origin.x,y:origin.y});
+            layout.sumX += origin.x; layout.sumY += origin.y;
+          }
+          layout.index++; used++;
+        }
+        if (layout.index < layout.members.length) break;
+      }
       if (order.type === "move" && !intent.formation) {
         const members = intent.members.map((m) => {
           const squad = this.ports.squad(m.id)!,
@@ -666,7 +697,13 @@ export class MovementAdmission {
           members,
           () => this.ports.squads(),
           Infinity,
-          undefined,
+          layout ? new Map(members.map(m => {
+            const origin = layout.origins.get(m.squad.id) ?? m.origin;
+            const target = tilePoint(this.map,order.tile), count = Math.max(1,layout.origins.size);
+            return [m.squad.id,{ x:Math.round(target.x+origin.x-layout.sumX/count), y:Math.round(target.y+origin.y-layout.sumY/count) }];
+          })) : this.ports.preserveQueuedLayout ? translatedSlots(
+            members.map(m => ({ id: m.squad.id, origin: m.origin })), tilePoint(this.map, order.tile),
+          ) : undefined,
           undefined,
           additional,
         ).state;

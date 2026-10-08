@@ -1,0 +1,161 @@
+{
+  "url": "http://127.0.0.1:9007/Cultures/Russians/Units/EarlyModern/MosinNagant/Actor_Review.html?revision=mosin-aimed-fire-v3#attack",
+  "status": "All 10 clips loaded · one soldier · reactions hold their final frame.",
+  "errors": [],
+  "frames": [
+    {
+      "clip": "attack",
+      "frame": 0,
+      "count": 23409,
+      "bounds": [
+        144,
+        189,
+        390,
+        421
+      ],
+      "edge": 0
+    },
+    {
+      "clip": "attack",
+      "frame": 1,
+      "count": 21588,
+      "bounds": [
+        160,
+        197,
+        356,
+        462
+      ],
+      "edge": 0
+    },
+    {
+      "clip": "attack",
+      "frame": 2,
+      "count": 22174,
+      "bounds": [
+        174,
+        198,
+        360,
+        454
+      ],
+      "edge": 0
+    },
+    {
+      "clip": "attack",
+      "frame": 3,
+      "count": 22731,
+      "bounds": [
+        163,
+        196,
+        347,
+        490
+      ],
+      "edge": 0
+    },
+    {
+      "clip": "attack",
+      "frame": 4,
+      "count": 23290,
+      "bounds": [
+        162,
+        193,
+        347,
+        454
+      ],
+      "edge": 0
+    },
+    {
+      "clip": "attack",
+      "frame": 5,
+      "count": 24701,
+      "bounds": [
+        132,
+        196,
+        382,
+        434
+      ],
+      "edge": 0
+    },
+    {
+      "clip": "charge-attack",
+      "frame": 0,
+      "count": 27171,
+      "bounds": [
+        155,
+        195,
+        383,
+        485
+      ],
+      "edge": 0
+    },
+    {
+      "clip": "charge-attack",
+      "frame": 1,
+      "count": 27014,
+      "bounds": [
+        158,
+        197,
+        367,
+        484
+      ],
+      "edge": 0
+    },
+    {
+      "clip": "charge-attack",
+      "frame": 2,
+      "count": 27734,
+      "bounds": [
+        152,
+        189,
+        364,
+        472
+      ],
+      "edge": 0
+    },
+    {
+      "clip": "charge-attack",
+      "frame": 3,
+      "count": 28063,
+      "bounds": [
+        157,
+        173,
+        365,
+        502
+      ],
+      "edge": 0
+    },
+    {
+      "clip": "charge-attack",
+      "frame": 4,
+      "count": 28060,
+      "bounds": [
+        151,
+        189,
+        365,
+        472
+      ],
+      "edge": 0
+    },
+    {
+      "clip": "charge-attack",
+      "frame": 5,
+      "count": 27460,
+      "bounds": [
+        144,
+        183,
+        380,
+        467
+      ],
+      "edge": 0
+    }
+  ],
+  "playback": {
+    "attack": {
+      "frame": "6 / 6",
+      "play": "Play"
+    },
+    "charge-attack": {
+      "frame": "6 / 6",
+      "play": "Play"
+    }
+  }
+}

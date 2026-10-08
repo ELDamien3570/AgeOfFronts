@@ -1,0 +1,70 @@
+{
+  "source": "SourceArt\\Native-death-v2.png",
+  "sourceSha256": "4d8f532fabffe2aa52bf7267c8e6c2d6e67d0a6a2f67fbc5258578f538d52a55",
+  "output": "death-Registered-v2.png",
+  "outputSha256": "3dfdf09229009a1627dbf7ab6294a59f50332249849ceca188a64cbf20acaa92",
+  "sourceRects": [
+    [
+      0,
+      0,
+      512,
+      560
+    ],
+    [
+      512,
+      0,
+      1024,
+      559
+    ],
+    [
+      1024,
+      0,
+      1536,
+      580
+    ],
+    [
+      0,
+      560,
+      512,
+      1024
+    ],
+    [
+      512,
+      559,
+      1024,
+      1024
+    ],
+    [
+      1024,
+      580,
+      1536,
+      1024
+    ]
+  ],
+  "uniformScale": 0.650390625,
+  "padding": [
+    90,
+    48
+  ],
+  "expandedCell": [
+    512,
+    640
+  ],
+  "displayScale": 1.5375375375375375,
+  "fixedPivot": [
+    256,
+    256
+  ],
+  "otherClipsPreserved": true,
+  "firstFrameOverride": {
+    "source": "death-Registered-v1.png",
+    "sha256": "05d6822f600612680c3ddae01bb09a88011bad2fac796f7d62891864370c3ed8",
+    "rect": [
+      0,
+      0,
+      512,
+      512
+    ],
+    "reason": "Retain central-hull ignition; generated first pose had unwanted muzzle flashes."
+  }
+}

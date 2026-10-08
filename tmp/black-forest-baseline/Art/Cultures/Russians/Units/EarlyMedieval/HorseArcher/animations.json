@@ -1,0 +1,928 @@
+{
+  "schemaVersion": 1,
+  "cultureId": "russians",
+  "age": "EarlyMedieval",
+  "unit": "Early Cossack Archer",
+  "category": "Mounted Archer",
+  "actorCount": 1,
+  "stage": "single-mounted-actor-art-prototype",
+  "integrationStatus": "Nine solo horse archer clips for visual review; gameplay integration is separate.",
+  "camera": "vertical-overhead-orthographic",
+  "facing": "screen-down",
+  "sheetSize": {
+    "width": 1536,
+    "height": 1024
+  },
+  "grid": {
+    "columns": 3,
+    "rows": 2
+  },
+  "reviewFootprint": 400,
+  "registration": "One common whole-pose scale and fixed saddle pivot; no silhouette fitting.",
+  "weapon": "Compact wood and horn composite recurve bow",
+  "mount": "Unarmored dun/bay horse, leather harness, wooden-framed saddle and felt saddlecloth",
+  "equipmentFinish": "Sleeveless iron lamellar vest, light shoulder lamellae, reinforced bracers, russet kaftan and felt cap; unarmored horse",
+  "animations": [
+    {
+      "id": "idle",
+      "file": "Idle-Registered-v6.png",
+      "label": "Idle",
+      "loop": true,
+      "scale": 1.25,
+      "durations": [
+        600,
+        600,
+        600,
+        600,
+        600,
+        600
+      ],
+      "description": "Slow, subtle idle with whole poses aligned to the same saddle/torso position.",
+      "frameCount": 6,
+      "frames": [
+        {
+          "index": 0,
+          "sourceIndex": 0,
+          "x": 0,
+          "y": 0,
+          "width": 512,
+          "height": 512,
+          "pivot": {
+            "x": 254.8,
+            "y": 254.8
+          }
+        },
+        {
+          "index": 1,
+          "sourceIndex": 1,
+          "x": 512,
+          "y": 0,
+          "width": 512,
+          "height": 512,
+          "pivot": {
+            "x": 254.8,
+            "y": 254.8
+          }
+        },
+        {
+          "index": 2,
+          "sourceIndex": 2,
+          "x": 1024,
+          "y": 0,
+          "width": 512,
+          "height": 512,
+          "pivot": {
+            "x": 254.8,
+            "y": 254.8
+          }
+        },
+        {
+          "index": 3,
+          "sourceIndex": 3,
+          "x": 0,
+          "y": 512,
+          "width": 512,
+          "height": 512,
+          "pivot": {
+            "x": 254.8,
+            "y": 254.8
+          }
+        },
+        {
+          "index": 4,
+          "sourceIndex": 4,
+          "x": 512,
+          "y": 512,
+          "width": 512,
+          "height": 512,
+          "pivot": {
+            "x": 254.8,
+            "y": 254.8
+          }
+        },
+        {
+          "index": 5,
+          "sourceIndex": 5,
+          "x": 1024,
+          "y": 512,
+          "width": 512,
+          "height": 512,
+          "pivot": {
+            "x": 254.8,
+            "y": 254.8
+          }
+        }
+      ],
+      "sourceFrameOrder": [
+        0,
+        1,
+        2,
+        3,
+        4,
+        5
+      ]
+    },
+    {
+      "id": "running",
+      "file": "Running-Registered-v3.png",
+      "label": "Walk",
+      "loop": true,
+      "scale": 1.25,
+      "durations": [
+        180,
+        180,
+        180,
+        180,
+        180,
+        180
+      ],
+      "description": "Four-beat horse walk with lateral placement drift removed; authored vertical bob and leg motion retained.",
+      "frameCount": 6,
+      "frames": [
+        {
+          "index": 0,
+          "sourceIndex": 0,
+          "x": 0,
+          "y": 0,
+          "width": 512,
+          "height": 512,
+          "pivot": {
+            "x": 254.8,
+            "y": 254.8
+          }
+        },
+        {
+          "index": 1,
+          "sourceIndex": 1,
+          "x": 512,
+          "y": 0,
+          "width": 512,
+          "height": 512,
+          "pivot": {
+            "x": 254.8,
+            "y": 254.8
+          }
+        },
+        {
+          "index": 2,
+          "sourceIndex": 2,
+          "x": 1024,
+          "y": 0,
+          "width": 512,
+          "height": 512,
+          "pivot": {
+            "x": 254.8,
+            "y": 254.8
+          }
+        },
+        {
+          "index": 3,
+          "sourceIndex": 3,
+          "x": 0,
+          "y": 512,
+          "width": 512,
+          "height": 512,
+          "pivot": {
+            "x": 254.8,
+            "y": 254.8
+          }
+        },
+        {
+          "index": 4,
+          "sourceIndex": 4,
+          "x": 512,
+          "y": 512,
+          "width": 512,
+          "height": 512,
+          "pivot": {
+            "x": 254.8,
+            "y": 254.8
+          }
+        },
+        {
+          "index": 5,
+          "sourceIndex": 5,
+          "x": 1024,
+          "y": 512,
+          "width": 512,
+          "height": 512,
+          "pivot": {
+            "x": 254.8,
+            "y": 254.8
+          }
+        }
+      ],
+      "sourceFrameOrder": [
+        0,
+        1,
+        2,
+        3,
+        4,
+        5
+      ]
+    },
+    {
+      "id": "attack",
+      "file": "Attack-Forward-v2.png",
+      "label": "Bow shot",
+      "loop": false,
+      "scale": 1.25,
+      "durations": [
+        160,
+        190,
+        230,
+        100,
+        180,
+        230
+      ],
+      "description": "Nock, draw with right hand, release from left-held recurve bow, and recover.",
+      "frameCount": 6,
+      "frames": [
+        {
+          "index": 0,
+          "sourceIndex": 0,
+          "x": 0,
+          "y": 0,
+          "width": 512,
+          "height": 512,
+          "pivot": {
+            "x": 254.8,
+            "y": 254.8
+          }
+        },
+        {
+          "index": 1,
+          "sourceIndex": 1,
+          "x": 512,
+          "y": 0,
+          "width": 512,
+          "height": 512,
+          "pivot": {
+            "x": 254.8,
+            "y": 254.8
+          }
+        },
+        {
+          "index": 2,
+          "sourceIndex": 2,
+          "x": 1024,
+          "y": 0,
+          "width": 512,
+          "height": 512,
+          "pivot": {
+            "x": 254.8,
+            "y": 254.8
+          }
+        },
+        {
+          "index": 3,
+          "sourceIndex": 3,
+          "x": 0,
+          "y": 512,
+          "width": 512,
+          "height": 512,
+          "pivot": {
+            "x": 254.8,
+            "y": 254.8
+          }
+        },
+        {
+          "index": 4,
+          "sourceIndex": 4,
+          "x": 512,
+          "y": 512,
+          "width": 512,
+          "height": 512,
+          "pivot": {
+            "x": 254.8,
+            "y": 254.8
+          }
+        },
+        {
+          "index": 5,
+          "sourceIndex": 5,
+          "x": 1024,
+          "y": 512,
+          "width": 512,
+          "height": 512,
+          "pivot": {
+            "x": 254.8,
+            "y": 254.8
+          }
+        }
+      ],
+      "sourceFrameOrder": [
+        0,
+        1,
+        2,
+        3,
+        4,
+        5
+      ],
+      "impactFrame": 3
+    },
+    {
+      "id": "hit",
+      "file": "Hit-v1.png",
+      "label": "Get hit",
+      "loop": false,
+      "scale": 1.25,
+      "durations": [
+        100,
+        100,
+        130,
+        130,
+        170,
+        180
+      ],
+      "description": "Rider recoils and horse braces, then recovers.",
+      "frameCount": 6,
+      "frames": [
+        {
+          "index": 0,
+          "sourceIndex": 0,
+          "x": 0,
+          "y": 0,
+          "width": 512,
+          "height": 512,
+          "pivot": {
+            "x": 254.8,
+            "y": 254.8
+          }
+        },
+        {
+          "index": 1,
+          "sourceIndex": 1,
+          "x": 512,
+          "y": 0,
+          "width": 512,
+          "height": 512,
+          "pivot": {
+            "x": 254.8,
+            "y": 254.8
+          }
+        },
+        {
+          "index": 2,
+          "sourceIndex": 2,
+          "x": 1024,
+          "y": 0,
+          "width": 512,
+          "height": 512,
+          "pivot": {
+            "x": 254.8,
+            "y": 254.8
+          }
+        },
+        {
+          "index": 3,
+          "sourceIndex": 3,
+          "x": 0,
+          "y": 512,
+          "width": 512,
+          "height": 512,
+          "pivot": {
+            "x": 254.8,
+            "y": 254.8
+          }
+        },
+        {
+          "index": 4,
+          "sourceIndex": 4,
+          "x": 512,
+          "y": 512,
+          "width": 512,
+          "height": 512,
+          "pivot": {
+            "x": 254.8,
+            "y": 254.8
+          }
+        },
+        {
+          "index": 5,
+          "sourceIndex": 5,
+          "x": 1024,
+          "y": 512,
+          "width": 512,
+          "height": 512,
+          "pivot": {
+            "x": 254.8,
+            "y": 254.8
+          }
+        }
+      ],
+      "sourceFrameOrder": [
+        0,
+        1,
+        2,
+        3,
+        4,
+        5
+      ]
+    },
+    {
+      "id": "charged",
+      "file": "Charged-Impact-v1.png",
+      "label": "Get charged",
+      "loop": false,
+      "scale": 1.25,
+      "durations": [
+        130,
+        130,
+        180,
+        190,
+        180,
+        240
+      ],
+      "description": "Heavy impact staggers horse and rider before recovery.",
+      "frameCount": 6,
+      "frames": [
+        {
+          "index": 0,
+          "sourceIndex": 0,
+          "x": 0,
+          "y": 0,
+          "width": 512,
+          "height": 512,
+          "pivot": {
+            "x": 254.8,
+            "y": 254.8
+          }
+        },
+        {
+          "index": 1,
+          "sourceIndex": 1,
+          "x": 512,
+          "y": 0,
+          "width": 512,
+          "height": 512,
+          "pivot": {
+            "x": 254.8,
+            "y": 254.8
+          }
+        },
+        {
+          "index": 2,
+          "sourceIndex": 2,
+          "x": 1024,
+          "y": 0,
+          "width": 512,
+          "height": 512,
+          "pivot": {
+            "x": 254.8,
+            "y": 254.8
+          }
+        },
+        {
+          "index": 3,
+          "sourceIndex": 3,
+          "x": 0,
+          "y": 512,
+          "width": 512,
+          "height": 512,
+          "pivot": {
+            "x": 254.8,
+            "y": 254.8
+          }
+        },
+        {
+          "index": 4,
+          "sourceIndex": 4,
+          "x": 512,
+          "y": 512,
+          "width": 512,
+          "height": 512,
+          "pivot": {
+            "x": 254.8,
+            "y": 254.8
+          }
+        },
+        {
+          "index": 5,
+          "sourceIndex": 5,
+          "x": 1024,
+          "y": 512,
+          "width": 512,
+          "height": 512,
+          "pivot": {
+            "x": 254.8,
+            "y": 254.8
+          }
+        }
+      ],
+      "sourceFrameOrder": [
+        0,
+        1,
+        2,
+        3,
+        4,
+        5
+      ]
+    },
+    {
+      "id": "charge",
+      "file": "Charge-v1.png",
+      "label": "Gallop / maintain charge",
+      "loop": true,
+      "scale": 1.25,
+      "durations": [
+        100,
+        100,
+        100,
+        100,
+        100,
+        100
+      ],
+      "description": "Collected horse gallop; gameplay supplies world movement.",
+      "frameCount": 6,
+      "frames": [
+        {
+          "index": 0,
+          "sourceIndex": 0,
+          "x": 0,
+          "y": 0,
+          "width": 512,
+          "height": 512,
+          "pivot": {
+            "x": 254.8,
+            "y": 254.8
+          }
+        },
+        {
+          "index": 1,
+          "sourceIndex": 1,
+          "x": 512,
+          "y": 0,
+          "width": 512,
+          "height": 512,
+          "pivot": {
+            "x": 254.8,
+            "y": 254.8
+          }
+        },
+        {
+          "index": 2,
+          "sourceIndex": 2,
+          "x": 1024,
+          "y": 0,
+          "width": 512,
+          "height": 512,
+          "pivot": {
+            "x": 254.8,
+            "y": 254.8
+          }
+        },
+        {
+          "index": 3,
+          "sourceIndex": 3,
+          "x": 0,
+          "y": 512,
+          "width": 512,
+          "height": 512,
+          "pivot": {
+            "x": 254.8,
+            "y": 254.8
+          }
+        },
+        {
+          "index": 4,
+          "sourceIndex": 4,
+          "x": 512,
+          "y": 512,
+          "width": 512,
+          "height": 512,
+          "pivot": {
+            "x": 254.8,
+            "y": 254.8
+          }
+        },
+        {
+          "index": 5,
+          "sourceIndex": 5,
+          "x": 1024,
+          "y": 512,
+          "width": 512,
+          "height": 512,
+          "pivot": {
+            "x": 254.8,
+            "y": 254.8
+          }
+        }
+      ],
+      "sourceFrameOrder": [
+        0,
+        1,
+        2,
+        3,
+        4,
+        5
+      ]
+    },
+    {
+      "id": "charge-attack",
+      "file": "Charge-Attack-Forward-v2.png",
+      "label": "Charge shot",
+      "loop": false,
+      "scale": 1.25,
+      "durations": [
+        160,
+        190,
+        230,
+        100,
+        180,
+        230
+      ],
+      "description": "Advance, brace, draw and release a mounted bow shot, then recover.",
+      "frameCount": 6,
+      "frames": [
+        {
+          "index": 0,
+          "sourceIndex": 0,
+          "x": 0,
+          "y": 0,
+          "width": 512,
+          "height": 512,
+          "pivot": {
+            "x": 254.8,
+            "y": 254.8
+          }
+        },
+        {
+          "index": 1,
+          "sourceIndex": 1,
+          "x": 512,
+          "y": 0,
+          "width": 512,
+          "height": 512,
+          "pivot": {
+            "x": 254.8,
+            "y": 254.8
+          }
+        },
+        {
+          "index": 2,
+          "sourceIndex": 2,
+          "x": 1024,
+          "y": 0,
+          "width": 512,
+          "height": 512,
+          "pivot": {
+            "x": 254.8,
+            "y": 254.8
+          }
+        },
+        {
+          "index": 3,
+          "sourceIndex": 3,
+          "x": 0,
+          "y": 512,
+          "width": 512,
+          "height": 512,
+          "pivot": {
+            "x": 254.8,
+            "y": 254.8
+          }
+        },
+        {
+          "index": 4,
+          "sourceIndex": 4,
+          "x": 512,
+          "y": 512,
+          "width": 512,
+          "height": 512,
+          "pivot": {
+            "x": 254.8,
+            "y": 254.8
+          }
+        },
+        {
+          "index": 5,
+          "sourceIndex": 5,
+          "x": 1024,
+          "y": 512,
+          "width": 512,
+          "height": 512,
+          "pivot": {
+            "x": 254.8,
+            "y": 254.8
+          }
+        }
+      ],
+      "sourceFrameOrder": [
+        0,
+        1,
+        2,
+        3,
+        4,
+        5
+      ],
+      "impactFrame": 3
+    },
+    {
+      "id": "death",
+      "file": "Death-Together-v1.png",
+      "label": "Death - together fall",
+      "loop": false,
+      "scale": 1.25,
+      "durations": [
+        150,
+        180,
+        200,
+        220,
+        260,
+        450
+      ],
+      "description": "Horse and rider buckle and fall together; ending remains settled.",
+      "frameCount": 6,
+      "frames": [
+        {
+          "index": 0,
+          "sourceIndex": 0,
+          "x": 0,
+          "y": 0,
+          "width": 512,
+          "height": 512,
+          "pivot": {
+            "x": 254.8,
+            "y": 254.8
+          }
+        },
+        {
+          "index": 1,
+          "sourceIndex": 1,
+          "x": 512,
+          "y": 0,
+          "width": 512,
+          "height": 512,
+          "pivot": {
+            "x": 254.8,
+            "y": 254.8
+          }
+        },
+        {
+          "index": 2,
+          "sourceIndex": 2,
+          "x": 1024,
+          "y": 0,
+          "width": 512,
+          "height": 512,
+          "pivot": {
+            "x": 254.8,
+            "y": 254.8
+          }
+        },
+        {
+          "index": 3,
+          "sourceIndex": 3,
+          "x": 0,
+          "y": 512,
+          "width": 512,
+          "height": 512,
+          "pivot": {
+            "x": 254.8,
+            "y": 254.8
+          }
+        },
+        {
+          "index": 4,
+          "sourceIndex": 4,
+          "x": 512,
+          "y": 512,
+          "width": 512,
+          "height": 512,
+          "pivot": {
+            "x": 254.8,
+            "y": 254.8
+          }
+        },
+        {
+          "index": 5,
+          "sourceIndex": 5,
+          "x": 1024,
+          "y": 512,
+          "width": 512,
+          "height": 512,
+          "pivot": {
+            "x": 254.8,
+            "y": 254.8
+          }
+        }
+      ],
+      "sourceFrameOrder": [
+        0,
+        1,
+        2,
+        3,
+        4,
+        5
+      ]
+    },
+    {
+      "id": "death-thrown",
+      "file": "Death-Thrown-v2.png",
+      "label": "Death - thrown rider",
+      "loop": false,
+      "scale": 1.25,
+      "durations": [
+        150,
+        180,
+        210,
+        230,
+        270,
+        450
+      ],
+      "description": "Rider is thrown beside the standing horse and remains fallen.",
+      "frameCount": 6,
+      "frames": [
+        {
+          "index": 0,
+          "sourceIndex": 0,
+          "x": 0,
+          "y": 0,
+          "width": 512,
+          "height": 512,
+          "pivot": {
+            "x": 254.8,
+            "y": 254.8
+          }
+        },
+        {
+          "index": 1,
+          "sourceIndex": 1,
+          "x": 512,
+          "y": 0,
+          "width": 512,
+          "height": 512,
+          "pivot": {
+            "x": 254.8,
+            "y": 254.8
+          }
+        },
+        {
+          "index": 2,
+          "sourceIndex": 2,
+          "x": 1024,
+          "y": 0,
+          "width": 512,
+          "height": 512,
+          "pivot": {
+            "x": 254.8,
+            "y": 254.8
+          }
+        },
+        {
+          "index": 3,
+          "sourceIndex": 3,
+          "x": 0,
+          "y": 512,
+          "width": 512,
+          "height": 512,
+          "pivot": {
+            "x": 254.8,
+            "y": 254.8
+          }
+        },
+        {
+          "index": 4,
+          "sourceIndex": 4,
+          "x": 512,
+          "y": 512,
+          "width": 512,
+          "height": 512,
+          "pivot": {
+            "x": 254.8,
+            "y": 254.8
+          }
+        },
+        {
+          "index": 5,
+          "sourceIndex": 5,
+          "x": 1024,
+          "y": 512,
+          "width": 512,
+          "height": 512,
+          "pivot": {
+            "x": 254.8,
+            "y": 254.8
+          }
+        }
+      ],
+      "sourceFrameOrder": [
+        0,
+        1,
+        2,
+        3,
+        4,
+        5
+      ]
+    }
+  ],
+  "offhand": "Left hand holds bow; right hand holds reins",
+  "historicalDirection": "Regional Pontic steppe mounted archer circa AD 900; inspired reconstruction, no specific tribal assignment.",
+  "deathVariants": [
+    "death",
+    "death-thrown"
+  ],
+  "motionContract": "Local gait, bow shot and reactions; gameplay owns movement, formations, projectile spawning and combat timing.",
+  "idlePolicy": "Six distinct registered quiet poses. Fixed scale; translation corrects authored placement drift."
+}

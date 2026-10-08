@@ -1,0 +1,245 @@
+{
+  "schemaVersion": 1,
+  "name": "Valles Kairulia",
+  "minimum": -450,
+  "maximum": 1819.473,
+  "seaLevel": 0,
+  "source": {
+    "file": "38_617_13_579_9_4096_4096_16bit.png",
+    "sha256": "93e49388d977c7b8c01fe6928f0e516d61c9ec8f8c964aef9d38e00e7089bfb8",
+    "width": 4096,
+    "height": 4096,
+    "url": "https://manticorp.github.io/unrealheightmap/#latitude/38.61705122131377/longitude/13.579123531324512/zoom/5/outputzoom/9/width/4096/height/4096/outputformat/png16"
+  },
+  "normalization": {
+    "mode": "regular",
+    "from": -450,
+    "to": 1819.473,
+    "range": 65536
+  },
+  "terrainThresholds": {
+    "highland": 600,
+    "mountain": 1800
+  },
+  "sampling": "area-majority land/water; average height within winning surface; ties water",
+  "waterRule": "calibrated sea level plus explicitly authored major-river hydrology plus registered lake polygons with explicit surface elevations",
+  "resolutionRule": "selected size is the longest edge; source aspect ratio preserved",
+  "variants": {
+    "250": {
+      "width": 250,
+      "height": 250,
+      "landCells": 16063,
+      "seaCode": 12994,
+      "heightMinimum": -450.0,
+      "heightMaximum": 1819.4383544921875
+    },
+    "500": {
+      "width": 500,
+      "height": 500,
+      "landCells": 64558,
+      "seaCode": 12994,
+      "heightMinimum": -450.0,
+      "heightMaximum": 1819.4383544921875
+    },
+    "1000": {
+      "width": 1000,
+      "height": 1000,
+      "landCells": 259156,
+      "seaCode": 12994,
+      "heightMinimum": -450.0,
+      "heightMaximum": 1819.4383544921875
+    }
+  },
+  "environment": {
+    "schemaVersion": 1,
+    "encoding": "u8-moisture-vegetation-aridity",
+    "classifier": "visible-color-gradients-v1",
+    "smoothingCellsAt500": 1.4,
+    "greenSensitivity": 1.1,
+    "source": {
+      "file": "38_617_13_579_9_4096_4096_albedo_imagery.png",
+      "sha256": "ad37724f3b77ab5f54993b696418532b7b31063311fd9c5c4bdee3b224d7d600",
+      "width": 4096,
+      "height": 4096,
+      "registration": "same-footprint"
+    },
+    "interpretation": "approximate color-derived moisture, vegetation and aridity; height/water remain authoritative",
+    "variants": {
+      "250": {
+        "waterHintAgreement": 0.986448,
+        "waterHintIoU": 0.9817700486419009,
+        "meanLandMoisture": 0.29382297400065677,
+        "meanLandVegetation": 0.22431772933290853,
+        "meanLandAridity": 0.3543637613172642
+      },
+      "500": {
+        "waterHintAgreement": 0.988796,
+        "waterHintIoU": 0.9849227837676354,
+        "meanLandMoisture": 0.296802510464826,
+        "meanLandVegetation": 0.22540223747728902,
+        "meanLandAridity": 0.3605269983702146
+      },
+      "1000": {
+        "waterHintAgreement": 0.989687,
+        "waterHintIoU": 0.986117224844958,
+        "meanLandMoisture": 0.3009688917781069,
+        "meanLandVegetation": 0.2288173767091303,
+        "meanLandAridity": 0.36473398262050655
+      }
+    }
+  },
+  "lakes": {
+    "schemaVersion": 1,
+    "source": {
+      "title": "Natural Earth v5.0.0 1:10m lakes and European supplement",
+      "license": "Public domain",
+      "terms": "https://www.naturalearthdata.com/about/terms-of-use/",
+      "upstreamCommit": "ace5fed0eaf3c6c03c951e75b439ba8fffbc218e",
+      "geographicBoundsWsen": [
+        7.954123531324512,
+        34.08925290722928,
+        19.204123531324512,
+        42.87613363764532
+      ],
+      "geometryPolicy": "Original features, properties and coordinates preserved; no invented connections; clipped only while rasterizing the original Web Mercator capture",
+      "sourceFiles": [
+        {
+          "file": "ne_10m_lakes.geojson",
+          "url": "https://github.com/nvkelso/natural-earth-vector/blob/ace5fed0eaf3c6c03c951e75b439ba8fffbc218e/geojson/ne_10m_lakes.geojson",
+          "sha256": "2d036f53dedec578001c5c30c2959ee7d4eebc1306900fa4367c49929ec8f2d9"
+        },
+        {
+          "file": "ne_10m_lakes_europe.geojson",
+          "url": "https://github.com/nvkelso/natural-earth-vector/blob/ace5fed0eaf3c6c03c951e75b439ba8fffbc218e/geojson/ne_10m_lakes_europe.geojson",
+          "sha256": "b4dd9e7a5edd0d07b54768b5404d1ebe77f80b9d579c85fff65f90cf50369769"
+        }
+      ],
+      "limitations": "Cartographic generalized 1:10 million geometry, not a complete or survey-accurate drainage inventory; polygon shorelines, islands and river widths are additionally limited by output cell size.",
+      "surfaceReferenceLevels": {
+        "Lago di Bolsena": {
+          "surfaceElevationMeters": 305,
+          "url": "https://www.regione.lazio.it/sites/default/files/2021-10/DCR-18-23112018.pdf",
+          "title": "Regione Lazio, DCR 18/2018, section 4.1.2 Lago di Bolsena (printed page 144)",
+          "convention": "Published nominal altitude in metres above sea level; precise vertical datum unspecified"
+        },
+        "Lago di Bracciano": {
+          "surfaceElevationMeters": 164,
+          "url": "https://www.comune.bracciano.rm.it/il-lago-di-bracciano/il-lago-di-bracciano/",
+          "title": "Comune di Bracciano, Il Lago di Bracciano, quoting Regione Lazio lake guide",
+          "convention": "Published nominal altitude in metres above sea level; precise vertical datum unspecified",
+          "sourceAttributeDiscrepancy": "Europe supplement altitude attribute is 161 m; retain source property but explicitly use municipal published 164 m nominal level"
+        },
+        "Lake Skadar": {
+          "surfaceElevationMeters": 6,
+          "url": "https://www.fao.org/4/t0798e/T0798E01.htm",
+          "title": "FAO Inland fisheries of Europe, Albania, section 5.2 Skadar or Scutari Lake",
+          "convention": "Published nominal lake elevation, metres above sea level; precise vertical datum unspecified"
+        }
+      },
+      "verticalDatumLimitations": "Fixed nominal, non-current lake surfaces; sources do not state a precise common vertical datum and no datum conversion to the original DEM is asserted.",
+      "selectionNotes": "Use correctly located and named Europe supplement Bolsena and Bracciano. Exclude global feature 1159118119 labeled Lago di Bracciano because it is a duplicate Bolsena polygon; include only cropped northwest portion of Skadar. Other unnamed candidates require separate validation.",
+      "file": "lakes.geojson",
+      "sha256": "cf966a5df4c3e49a9496920fe924aaec4ea08f0132758ffe662e9d4171885a28"
+    },
+    "surfaceElevationsMeters": {
+      "Lago di Bolsena": 305,
+      "Lago di Bracciano": 164,
+      "Lake Skadar": 6
+    },
+    "registration": "geographic polygons projected into the original Web Mercator footprint",
+    "sampling": "8x8 centre-sampled union coverage; majority and ties water; holes retain islands; mixed cells use dominant lake level with source-order ties",
+    "interpretation": "explicit inland water with flat authored surface elevations; source PNG and all heights outside lake masks preserved",
+    "variants": {
+      "250": {
+        "surfaceCells": 14,
+        "newWaterCells": 13,
+        "cellsByLake": {
+          "Lake Skadar": 3,
+          "Lago di Bolsena": 8,
+          "Lago di Bracciano": 3
+        }
+      },
+      "500": {
+        "surfaceCells": 62,
+        "newWaterCells": 55,
+        "cellsByLake": {
+          "Lake Skadar": 13,
+          "Lago di Bolsena": 34,
+          "Lago di Bracciano": 15
+        }
+      },
+      "1000": {
+        "surfaceCells": 243,
+        "newWaterCells": 214,
+        "cellsByLake": {
+          "Lake Skadar": 53,
+          "Lago di Bolsena": 129,
+          "Lago di Bracciano": 61
+        }
+      }
+    }
+  },
+  "hydrology": {
+    "schemaVersion": 1,
+    "source": {
+      "file": "rivers.geojson",
+      "sha256": "bc214ca3f6f3b29ae11d38edc8129502214fb399dae961432060b11164776a11",
+      "title": "Natural Earth v5.0.0 1:10m rivers and European supplement",
+      "license": "Public domain",
+      "terms": "https://www.naturalearthdata.com/about/terms-of-use/",
+      "upstreamCommit": "ace5fed0eaf3c6c03c951e75b439ba8fffbc218e",
+      "geographicBoundsWsen": [
+        7.954123531324512,
+        34.08925290722928,
+        19.204123531324512,
+        42.87613363764532
+      ],
+      "geometryPolicy": "Original features, properties and coordinates preserved; no invented connections; clipped only while rasterizing the original Web Mercator capture",
+      "sourceFiles": [
+        {
+          "file": "ne_10m_rivers_lake_centerlines.geojson",
+          "url": "https://github.com/nvkelso/natural-earth-vector/blob/ace5fed0eaf3c6c03c951e75b439ba8fffbc218e/geojson/ne_10m_rivers_lake_centerlines.geojson",
+          "sha256": "bb854a900ecbd3b408df46d5e16e3e0f974ba55993f9d8b5c26e855273c0905a"
+        },
+        {
+          "file": "ne_10m_rivers_europe.geojson",
+          "url": "https://github.com/nvkelso/natural-earth-vector/blob/ace5fed0eaf3c6c03c951e75b439ba8fffbc218e/geojson/ne_10m_rivers_europe.geojson",
+          "sha256": "90712202ac46985812e90840df9acd5101599a9c649868d5bc55ee96c2fedd4c"
+        }
+      ],
+      "limitations": "Cartographic generalized 1:10 million geometry, not a complete or survey-accurate drainage inventory; polygon shorelines, islands and river widths are additionally limited by output cell size.",
+      "selectionNotes": "Seven River features that actually intersect the footprint: Ofanto, Tevere, Simeto, Moraca, Salto/Velino/Nera, Volturno, Sacco/Liri/Garigliano. Drina bbox intersects but its line does not. Moraca lake-centerline excluded; lake polygon supplies the lake surface."
+    },
+    "names": [
+      "Mora\u010da",
+      "Ofanto",
+      "Sacco",
+      "Salto",
+      "Simeto",
+      "Tevere",
+      "Volturno"
+    ],
+    "widthCellsAt500": 1,
+    "widthCellsBySize": {
+      "250": 1,
+      "500": 2,
+      "1000": 3
+    },
+    "registration": "geographic lines projected into the original Web Mercator footprint",
+    "interpretation": "major rivers are four-connected navigable water; gameplay widths exaggerated; original elevations preserved",
+    "variants": {
+      "250": {
+        "channelCells": 341,
+        "newWaterCells": 339
+      },
+      "500": {
+        "channelCells": 1050,
+        "newWaterCells": 1041
+      },
+      "1000": {
+        "channelCells": 2951,
+        "newWaterCells": 2934
+      }
+    }
+  }
+}

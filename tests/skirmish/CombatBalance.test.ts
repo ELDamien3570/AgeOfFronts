@@ -2,7 +2,7 @@ import { retainSquads } from "./UnitFixtures";
 import { describe, expect, it } from "vitest";
 import { GameMapImpl } from "../../src/core/game/GameMap";
 import { technologyAt } from "../../src/skirmish/content/Technology";
-import { defaultUnit, VESSELS } from "../../src/skirmish/content/Units";
+import { defaultUnit, UNIT, VESSELS } from "../../src/skirmish/content/Units";
 import { damageAmount, defenceOf } from "../../src/skirmish/domain/Combat";
 import { AGES } from "../../src/skirmish/domain/Definitions";
 import { unitEffects } from "../../src/skirmish/domain/ResearchEffects";
@@ -118,9 +118,9 @@ describe("flat troop armour and authored tier superiority", () => {
           "fresh recruit survives",
         ).toBe(true);
       });
-  it("preserves useful contemporary bonus classes while newer armour absorbs obsolete counter bonuses", () => {
+  it("gives spear counters a contemporary cavalry bonus while archers target infantry", () => {
     const old = defaultUnit("archer", "BronzeAge"),
-      contemporary = defaultUnit("archer", "ClassicalAge"),
+      contemporary = UNIT.get("classicalage-anticavalry")!,
       target = defaultUnit("cavalry", "ClassicalAge");
     const without = (u: typeof old) =>
       damageAmount({ ...u.attack, bonuses: {} }, defenceOf(target));

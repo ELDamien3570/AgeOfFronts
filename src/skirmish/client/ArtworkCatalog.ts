@@ -1,4 +1,5 @@
 import manifest from "../../../Art/Runtime/Ages/manifest.json";
+import russianManifest from "../../../Art/Runtime/Russians/manifest.json";
 import type { BuildingType } from "../Protocol";
 import { AGES, type Age } from "../domain/Definitions";
 
@@ -8,20 +9,26 @@ export interface ArtworkClip {
   columns: number;
   fps: number;
   loop: boolean;
+  bounds?: { x: number; y: number; width: number; height: number };
+  groundBounds?: { x: number; y: number; width: number; height: number };
 }
 export interface ArtworkAsset {
+  groundBounds?: { x: number; y: number; width: number; height: number };
   file?: string;
   poster?: string;
   facing?: string;
   clips?: Record<string, ArtworkClip>;
 }
+const legacyRuntime: Record<string, ArtworkAsset> = {...manifest};
+for (const suffix of ["infantry", "archer", "cavalry", "siege", "field-support"] as const) {
+  legacyRuntime[`napoleonic-${suffix}`] = manifest[`earlymodern-${suffix}`];
+  legacyRuntime[`earlymodern-${suffix}`] = manifest[`modern-${suffix}`];
+}
+const russianRuntime: Record<string, ArtworkAsset> = { ...russianManifest };
 export const ARTWORK_CATALOG: Readonly<Record<string, ArtworkAsset>> = {
-  ...manifest,
-  // Approved substitutions for missing Stone Age workshop, trader and ram art.
-  // Entity ages, research unlocks, and construction remain domain-owned.
-  "building-stoneage-siege-workshop":
-    manifest["building-bronzeage-siege-workshop"],
-  "stoneage-trader": manifest["bronzeage-trader"],
+  ...legacyRuntime,
+  ...russianRuntime,
+  // The approved ram substitution remains until an authored Russian ram is ready.
   "stoneage-siege": manifest["bronzeage-siege"],
 };
 

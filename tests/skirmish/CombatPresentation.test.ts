@@ -1,6 +1,8 @@
 import { retainSquads } from "./UnitFixtures";
 import { describe, expect, it } from "vitest";
 import { GameMapImpl } from "../../src/core/game/GameMap";
+import { squadSymbol } from "../../src/skirmish/client/MapSymbols";
+import { squadFormationType } from "../../src/skirmish/client/FormationArtwork";
 import { ARTWORK_CATALOG } from "../../src/skirmish/client/ArtworkCatalog";
 import {
   combatTargets,
@@ -53,7 +55,7 @@ describe("read-only enemy inspection and weapon presentation", () => {
     const card = hud.selectionCard(null);
     expect(card.mode).toBe("detail");
     if (card.mode !== "detail") throw new Error("Expected detail");
-    expect(card.card.title).toContain("Marksmen");
+    expect(card.card.title).toContain("RPL-20 Crew");
     expect(card.card.subtitle).toContain("read only");
     expect(card.card.meter?.value).toBe(600);
     expect(
@@ -97,7 +99,11 @@ describe("read-only enemy inspection and weapon presentation", () => {
         u.role === "artillery" ||
         (u.role === "siege" && !u.placeholder),
     ))
-      expect(ARTWORK_CATALOG[unit.id]?.clips?.idle, unit.id).toBeDefined();
+      if (ARTWORK_CATALOG[unit.id]?.clips?.idle) {
+        expect(ARTWORK_CATALOG[unit.id].clips!.idle.frames, unit.id).toBeGreaterThan(0);
+      } else {
+        expect(squadSymbol(20, 1000, false, squadFormationType({kind: unit.line, definitionId: unit.id})).artwork, unit.id).toBe(false);
+      }
   });
   it("rotates five weapon emitters and retains their release coordinates throughout a volley", () => {
     const down = weaponEmitters({ x: 100, y: 100 }, 0, 40, "arrow"),
@@ -130,7 +136,7 @@ describe("read-only enemy inspection and weapon presentation", () => {
       source = m.squads[0],
       target = m.squads.find((s) => s.playerId === 2)!;
     retainSquads(m, [source, target]);
-    m.updateSquad(source.id, { definitionId: "modern-cavalry" });
+    m.updateSquad(source.id, { definitionId: "present-day-rangedcavalry" });
     m.updateSquad(source.id, { kind: "cavalry" });
     m.updateSquad(source.id, { x: 10 * FIXED });
     m.updateSquad(source.id, { y: 10 * FIXED });
@@ -138,7 +144,7 @@ describe("read-only enemy inspection and weapon presentation", () => {
     m.updateSquad(target.id, { y: 10 * FIXED });
     m.expansion!.battle.fight([]);
     const projectile = m.expansion!.battle.projectiles[0];
-    expect(projectile.definitionId).toBe("modern-cavalry");
+    expect(projectile.definitionId).toBe("present-day-rangedcavalry");
     expect(projectile.attackScale).toBe(1);
     const before = structuredClone(projectile),
       visual = shellVisual(

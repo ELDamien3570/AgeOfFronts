@@ -16,15 +16,25 @@ import {
   type FactionHostility,
 } from "./SquadGeometry";
 import { restoreMap } from "./StateTransfer";
+import { FORMATION_MOTION } from "./FormationLocomotion";
 
 export interface MovementIntent {
   squad: Squad;
   goal: WorldPoint;
   speed: number;
   stopDistance?: number;
+  /** Admitted route distance to the next required stop, rather than this steering point. */
+  brakingDistance?: number;
+  /** Feasible speed at this route corner; zero at a required stop. */
+  cornerSpeed?: number;
+  /** This steering point is a transit waypoint, not an exact final destination. */
+  passThrough?: boolean;
   revision?: number;
   // Only the army domain may authorize an arrived member to yield its slot.
   yieldOnly?: boolean;
+  /** Optional authoritative formation controller output, in units per tick. */
+  preferredVelocity?: WorldPoint;
+  movementHeading?: number;
 }
 type Velocity = WorldPoint;
 interface Obstacle {
@@ -142,9 +152,17 @@ export class LocalAvoidance {
     restrictions?: (squad: Squad, end: WorldPoint) => boolean,
     idleReason?: (squad: Squad) => MovementBlockReason,
   ): void {
-    const allowed = (squad: Squad, end: WorldPoint) =>
-      traversable(this.map, squad, end, squadRadius(squad.kind), this.amphibious(squad.playerId)) &&
-      (!restrictions || restrictions(squad, end));
+    const allowed = (squad: Squad, end: WorldPoint) => {
+      const intent = this.motion.get(squad.id)?.intent;
+      if (intent?.movementHeading !== undefined) {
+        const dx = end.x - squad.x, dy = end.y - squad.y, length = Math.hypot(dx, dy);
+        if (length > intent.speed + 1) return false;
+        if (length > 1 && (-Math.sin(intent.movementHeading) * dx + Math.cos(intent.movementHeading) * dy) / length
+          < Math.cos(FORMATION_MOTION.steeringCone)) return false;
+      }
+      return traversable(this.map, squad, end, squadRadius(squad.kind), this.amphibious(squad.playerId)) &&
+        (!restrictions || restrictions(squad, end));
+    };
     const active = this.active,
       motion = this.motion;
     active.length = 0;
@@ -172,6 +190,11 @@ export class LocalAvoidance {
       if (!row) continue;
       row.intent = intent;
       row.preferred.x = row.preferred.y = 0;
+      if (intent.preferredVelocity) {
+        row.preferred.x = intent.preferredVelocity.x;
+        row.preferred.y = intent.preferredVelocity.y;
+        continue;
+      }
       if (intent.yieldOnly) continue;
       const dx = intent.goal.x - intent.squad.x,
         dy = intent.goal.y - intent.squad.y;
@@ -240,6 +263,9 @@ export class LocalAvoidance {
       let pushX = 0,
         pushY = 0,
         read = 0;
+      // Keep the arrival budget: soft spacing must not accelerate a squad
+      // back to full speed after its preferred step has slowed to stop.
+      const steeringBudget = Math.hypot(desired.x, desired.y);
       for (const other of neighbors) {
         if (
           other.id === squad.id ||
@@ -250,7 +276,7 @@ export class LocalAvoidance {
           dy = squad.y - other.y,
           distance = Math.hypot(dx, dy);
         if (distance >= 1.15 * FIXED) continue;
-        const strength = (1 - distance / (1.15 * FIXED)) * intent.speed * 0.3;
+        const strength = (1 - distance / (1.15 * FIXED)) * steeringBudget * 0.3;
         pushX +=
           (distance ? dx / distance : squad.id < other.id ? -1 : 1) * strength;
         pushY +=
@@ -262,7 +288,7 @@ export class LocalAvoidance {
         const x = desired.x + pushX,
           y = desired.y + pushY,
           length = Math.hypot(x, y),
-          scale = Math.min(1, intent.speed / Math.max(1, length));
+          scale = Math.min(1, steeringBudget / Math.max(1, length));
         const steering = { x: Math.round(x * scale), y: Math.round(y * scale) };
         if (
           steering.x * desired.x + steering.y * desired.y > 0 &&

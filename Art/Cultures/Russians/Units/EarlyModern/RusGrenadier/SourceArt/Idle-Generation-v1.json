@@ -1,0 +1,12 @@
+{
+  "generatedSource": "C:/Users/Damien/.codex/generated_images/01a1166c-83ee-7ae0-be97-78c470de8962/exec-d5395fd9-c278-486b-8498-fb9d4c9520dc.png",
+  "prompt": "Use case: stylized strategy game solo soldier sprite. Create a NEW Napoleonic Russian grenadier circa1812 SINGLE IDLE frame on transparent1280x1280PNG. Image1 is STRICT OVERHEAD CAMERA reference only; image2 is painterly rendering and natural two-hand low musket carry reference only. NEW DESIGN: black leather/felt kiwer shako with black crown seen from directly overhead, tall black grenadier plume with small white cockade, brass three-flame grenade badge and pale cords nearfront rim; dark forestgreen wool infantrycoat, red collar cuffs and shoulder straps, brassbuttons, whitecrossbelts, pale linen trousers and blackboots/gaiters. Modest beige rolled blanket across upperback, black cartridgepouch. Long wooden-stock flintlock infantrymusket with steelbarrel, single flintlock mechanism and fitted long straight socketbayonet offset beside barrel. Hold musket low across FRONT clear of torso, right hand around stock/trigger area screenLEFT, left palm supports wooden foreend screenRIGHT. Butt stays OUTSIDE body on screenLEFT, muzzle plus bayonet angle towardSCREENBOTTOMRIGHT idle. All weaponparts mechanically connected, barrel straight, bayonet distinguishable oneblade not doublebarrel, triggerfingerrests outsideguard. Strict VERTICAL 90degree OVERHEADorthographiccamera: see shakoCROWN, broadshoulders conceal chest/waist, onlysmall boot tops, NO visibleface, no fullfrontal torso. Upright shako's tall sidewall must not dominate camera. Strong readable grenadiersilhouette. Entire soldier and gunbayonet inside canvas with100px empty transparentmargin. Same detailed crisp painterly game style as references. No redcaftanfurcap, no medievalarmor/furcollar, no arrowsbowshield, no modernfirearmgrenade or grenadebelt. No textfloor shadowsgridbackground.",
+  "references": [
+    "C:/Users/Damien/Documents/GitHub/AgeOfFronts/AgeOfFronts/Art/Cultures/Russians/Units/ClassicalAge/RecurveArcher/SourceArt/Native-Idle-TopDown-v3.png",
+    "C:/Users/Damien/Documents/GitHub/AgeOfFronts/AgeOfFronts/Art/Cultures/Russians/Units/EarlyModern/RusMusketeer/SourceArt/Native-Idle-TopDown-v2.png"
+  ],
+  "nativeFile": "Native-Idle-v1.png",
+  "file": "Idle-v1.png",
+  "uniformReference": "https://www.wtj.com/games/republique/uniforms/index_ru.htm",
+  "status": "superseded-camera-draft"
+}

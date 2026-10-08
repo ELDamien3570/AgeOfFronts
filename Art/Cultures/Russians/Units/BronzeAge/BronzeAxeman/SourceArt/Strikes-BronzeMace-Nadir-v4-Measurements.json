@@ -1,0 +1,94 @@
+{
+  "attack": {
+    "file": "Attack-BronzeMace-Nadir-v4.png",
+    "domeWidths": [
+      99,
+      98,
+      96,
+      97,
+      96,
+      99
+    ],
+    "domeCenters": [
+      [
+        261,
+        255
+      ],
+      [
+        271.5,
+        266
+      ],
+      [
+        265.5,
+        260
+      ],
+      [
+        261,
+        190.5
+      ],
+      [
+        262.5,
+        196.5
+      ],
+      [
+        258,
+        195.5
+      ]
+    ],
+    "suggestedScale": 1.1224489795918366,
+    "minimumSourcePadding": 7
+  },
+  "chargeAttack": {
+    "file": "ChargeAttack-BronzeMace-Nadir-v4.png",
+    "domeWidths": [
+      82,
+      80,
+      83,
+      79,
+      81,
+      79
+    ],
+    "domeCenters": [
+      [
+        258.5,
+        247
+      ],
+      [
+        280.5,
+        255
+      ],
+      [
+        281,
+        265.5
+      ],
+      [
+        243,
+        174.5
+      ],
+      [
+        252,
+        174.5
+      ],
+      [
+        263,
+        175
+      ]
+    ],
+    "suggestedScale": 1.3664596273291925,
+    "minimumSourcePadding": 54
+  },
+  "alpha": {
+    "pixelsAbove16BeyondThreePixelDilation": 0,
+    "attackMaximumBeyondEdge": 15,
+    "chargeAttackMaximumBeyondEdge": 5
+  },
+  "layout": {
+    "width": 1536,
+    "height": 1024,
+    "columns": 3,
+    "rows": 2,
+    "frameWidth": 512,
+    "frameHeight": 512
+  },
+  "scaleBasis": "Central golden helmet dome connected color component excluding bronze rim. Suggested pivot domeCenter+(0,20)."
+}

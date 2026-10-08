@@ -1,0 +1,15 @@
+{
+  "age": "Modern",
+  "id": "anti-aircraft",
+  "folder": "Anti-Aircraft Emplacement",
+  "category": "Anti-Aircraft Emplacement",
+  "role": "Stationary anti-aircraft gun defence",
+  "newFacility": true,
+  "status": "draft",
+  "references": [
+    "C:/Users/Damien/Documents/GitHub/AgeOfFronts/AgeOfFronts/Art/Cultures/Russians/Buildings/Modern/Gun Nest/Icon.png",
+    "C:/Users/Damien/Documents/GitHub/AgeOfFronts/AgeOfFronts/Art/Cultures/Russians/Buildings/EarlyModern/Anti-Aircraft Emplacement/Icon.png"
+  ],
+  "source": "https://www.awm.gov.au/collection/C1194627",
+  "prompt": "Use case: stylized-concept. Create ONE new project-ready Russian MODERN stationary ANTI-AIRCRAFT GUN building icon. Input image 1 is existing Russian Modern Gun Nest STYLE, surface texture, palette and camera reference only: do NOT copy its single barrel or machine gun tripod. Input image 2 is Early Modern AA camera/role reference only: do NOT copy its single cannon or four-leg mobile carriage. Subject: a modernized ZU-23-inspired TWIN 23mm autocannon with TWO distinct long parallel barrels and separate prominent flash suppressors pointing toward the TOP of canvas, side-by-side rectangular receiver housings, visible paired outside olive ammunition feed boxes, compact optical aiming sensor head. The weapon is PERMANENTLY mounted on one broad circular steel rotating pedestal, bolted into a clean round concrete foundation. NO tow carriage, NO tires, NO wheels, NO truck, NO tracked vehicle, NO tow hitch, NO trailer arms. Twin barrels must be visibly separated all the way to their two muzzles and readable at 48/64/128px. Modern grey concrete and weathered olive metal. A low segmented sandbag arc around upper and side portions of the circular foundation, rear entrance at bottom and two small closed ammunition chests near the rear. Sparse gravel outside compact foundation. Do not add a roofed building, radar dish, missile tube or tall antenna. Camera EXACTLY 90-degree NADIR orthographic, directly straight DOWN, a literal plan projection. Show TOP SURFACES only. The fixed pedestal is a circular TOP disc, ZERO visible cylindrical sidewall, no upright shaft or front-facing wall. Barrels horizontal for clean top-plan visibility; not elevated toward the viewer. Top faces of sandbags only, minimal shallow contact shading, NO perspective convergence, NO isometric or oblique camera. Complete compact footprint centered on square canvas, at least 8 percent empty transparent border every side. Preserve genuine transparent alpha, no opaque background, no checkerboard, no fake red/yellow alpha edge fringe. No soldiers, text, flags, logos, explosions, extra guns, or unrelated objects. Realistic hand-painted RTS art matching the existing Russian Modern family, with ONE unmistakable stationary twin-cannon AA gun."
+}

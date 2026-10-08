@@ -1,0 +1,10 @@
+{
+  "id": "charge-attack",
+  "file": "Charge-Attack-Forward-v2.png",
+  "motion": "Mounted charge shot. Frame1 horse finishing gallop rider leans forward; frame2 horse plants and braces as rider nocks arrow raises bow; frame3 full draw with left arm extended toward screen-right/down, right hand pulls string toward face/shoulder; frame4 release with same left bow hand and right hand followthrough, no airborne projectile; frame5 ease back into seat and lower bow; frame6 recovered ready stance.",
+  "prompt": "Precise motion correction of six-frame mounted horse archer atlas. Preserve all six horse poses, armor, quiver, fixed saddle positions, scale, cell layout and camera EXACTLY. ONLY change rider's aiming upper body arms bow and arrow in frames2,3,4 (top-middle,top-right,bottom-left). Current shot points right sideways; instead aim FORWARD toward screen-BOTTOM, arrow head toward lower-right slightly just outside horse neck. Turn upper torso and arm/bow aiming assembly clockwise about60degrees from original, so arrow shaft goes from drawing hand near helmet DOWN toward extended left hand near horse's screen-right shoulder, then point beyond hand downward beside neck. Anatomical LEFT hand screen-right ALWAYS grips bow center, right hand draws string near chin/face. Frame2 nocking partial draw, frame3 full draw with physically correct ONE V-shaped string to right hand and arrow nocked, frame4 release with left arm still extended forward, right hand follows through toward right cheek, NO arrow. Bow limbs now transverse/diagonal across forward direction, not upright side-facing bow. Keep end frames1,5,6 unchanged with undrawn string INSIDE left arm. One string, no floating fragments or doubled line. Same1536x1024 transparent PNG3x2 grid512cells with generous padding, no clipped bows, no floor fog shadows annotations.",
+  "references": [
+    "C:\\Users\\Damien\\.codex\\generated_images\\01a11641-9e1b-7c81-be76-c9edd53ef182\\exec-44e5b73c-3d45-4e87-aea2-5331f438eba6.png"
+  ],
+  "generatedSource": "C:\\Users\\Damien\\.codex\\generated_images\\01a11641-9e1b-7c81-be76-c9edd53ef182\\exec-a6378fd2-dc0c-40e5-b419-12e7d9f96be2.png"
+}

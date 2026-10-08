@@ -1,0 +1,92 @@
+{
+  "date": "2026-10-07",
+  "passed": true,
+  "method": "Separate local headless Edge browser; in-app browser-control tool unavailable",
+  "checks": [
+    {
+      "age": "StoneAge",
+      "category": "Mine",
+      "loadedImages": 4,
+      "comparisonOpened": true
+    },
+    {
+      "age": "StoneAge",
+      "category": "Siege",
+      "loadedImages": 4,
+      "comparisonOpened": true
+    },
+    {
+      "age": "BronzeAge",
+      "category": "Mine",
+      "loadedImages": 4,
+      "comparisonOpened": true
+    },
+    {
+      "age": "BronzeAge",
+      "category": "Siege",
+      "loadedImages": 4,
+      "comparisonOpened": true
+    },
+    {
+      "age": "BronzeAge",
+      "category": "Blacksmith",
+      "loadedImages": 4,
+      "comparisonOpened": true
+    },
+    {
+      "age": "ClassicalAge",
+      "category": "Mine",
+      "loadedImages": 4,
+      "comparisonOpened": true
+    },
+    {
+      "age": "ClassicalAge",
+      "category": "Siege",
+      "loadedImages": 4,
+      "comparisonOpened": true
+    }
+  ],
+  "ageOptions": [
+    {
+      "value": "",
+      "label": "All ages"
+    },
+    {
+      "value": "StoneAge",
+      "label": "Stone Age"
+    },
+    {
+      "value": "BronzeAge",
+      "label": "Bronze Age"
+    },
+    {
+      "value": "ClassicalAge",
+      "label": "Classical Age"
+    },
+    {
+      "value": "EarlyMedieval",
+      "label": "Early Medieval"
+    },
+    {
+      "value": "LateMedieval",
+      "label": "Late Medieval"
+    },
+    {
+      "value": "Napoleonic",
+      "label": "Napoleonic"
+    },
+    {
+      "value": "EarlyModern",
+      "label": "Early Modern"
+    },
+    {
+      "value": "Modern",
+      "label": "Modern"
+    }
+  ],
+  "napoleonicIcons": 10,
+  "earlyModernIcons": 0,
+  "baseNapoleonicIcons": 9,
+  "earlyMedievalIcons": 10,
+  "pageErrors": []
+}

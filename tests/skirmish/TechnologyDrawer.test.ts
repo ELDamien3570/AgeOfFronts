@@ -71,7 +71,7 @@ describe("battlefield research drawer", () => {
     const { m, vm } = fixture();
     const before = m.snapshot();
     document.body.innerHTML = technologyTreeMarkup(
-      new TechnologyViewModel(vm(), "BronzeAge"), "bronzeage-chariot-warfare", "warfare",
+      new TechnologyViewModel(vm(), "BronzeAge"), "russian-troop-bronzeage-lightcavalry", "warfare",
     );
     const detail = document.querySelector(".technology-detail")!;
     expect(detail.textContent).toContain("Base stats before research bonuses");
@@ -126,7 +126,7 @@ describe("battlefield research drawer", () => {
         .querySelector('[data-node="bronzeage-armies"]')
         ?.getAttribute("aria-pressed"),
     ).toBe("true");
-    expect(model.tree("warfare").total).toBe(5);
+    expect(model.tree("warfare").total).toBe(TECHNOLOGIES.filter(t => t.age === "BronzeAge" && t.tree === "warfare").length);
     expect(
       document.querySelector(
         '[data-edge="bronzeage-fortified-settlements:bronzeage-armies"]',

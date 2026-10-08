@@ -168,7 +168,7 @@ describe("stable staffed Modern fronts", () => {
     expect(section.phase).toBe("holding");
     expect(section.paid).toHaveLength(3);
     expect(section.members).toHaveLength(4);
-    expect(paidGold).toBe(49980 + 3 * 175);
+    expect(paidGold).toBe(57195 + 3 * 175);
     expect(f.game.expansion!.fortifications.barriers.filter(b => b.kind === "trench")).toHaveLength(1);
     expect(paidSteel).toBe(40);
     expect(f.game.buildings.filter((b) => b.type === "trench")).toHaveLength(2);

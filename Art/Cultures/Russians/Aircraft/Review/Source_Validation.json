@@ -1,0 +1,59 @@
+{
+  "schemaVersion": 1,
+  "passed": true,
+  "assets": [
+    {
+      "category": "Fighter",
+      "sourceRgba": true,
+      "sourceDimensions": [
+        1254,
+        1254
+      ],
+      "sourceSha256": "0b622f59a9ac966c13c6083bc3c2b6261d62ef1ec26ef2e06eb39c9dcbd9ae34",
+      "visibleBoundsAlphaAbove16": [
+        91,
+        207,
+        1162,
+        1148
+      ],
+      "nativeEdgeMaximumAlpha": 0,
+      "visibleAirframeGuardClear": true,
+      "exportRgba": true,
+      "exportDimensions": [
+        627,
+        627
+      ],
+      "exportEightPixelGuardClear": true,
+      "sourcePreservedDuringExport": true,
+      "passed": true
+    },
+    {
+      "category": "Bomber",
+      "sourceRgba": true,
+      "sourceDimensions": [
+        1254,
+        1254
+      ],
+      "sourceSha256": "fa632320a52fc8d82dd59c835c3de0fc81b382f95a0c75f57b1d43f710970340",
+      "visibleBoundsAlphaAbove16": [
+        34,
+        285,
+        1220,
+        1097
+      ],
+      "nativeEdgeMaximumAlpha": 1,
+      "visibleAirframeGuardClear": true,
+      "exportRgba": true,
+      "exportDimensions": [
+        627,
+        627
+      ],
+      "exportEightPixelGuardClear": true,
+      "sourcePreservedDuringExport": true,
+      "passed": true
+    }
+  ],
+  "preservedFilesChecked": 352,
+  "preservedFilesChanged": [],
+  "scope": "Static PNG contracts, original source alpha and existing aircraft/ship/trader preservation; no animation or match-runtime certification"
+}

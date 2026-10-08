@@ -1,0 +1,271 @@
+import { describe, expect, it } from "vitest";
+import { unitOwner } from "./UnitFixtures";
+import { buildingOwner } from "./BuildingFixtures";
+import { GameMapImpl } from "../../src/core/game/GameMap";
+import { HudViewModel } from "../../src/skirmish/client/HudViewModel";
+import {
+  SkirmishViewModel,
+  type SelectionState,
+} from "../../src/skirmish/client/SkirmishViewModel";
+import { FIXED } from "../../src/skirmish/Protocol";
+import { Skirmish } from "../../src/skirmish/Simulation";
+
+function setup() {
+  const terrain = new Uint8Array(80 * 50).fill(133);
+  const match = new Skirmish(new GameMapImpl(80, 50, terrain, terrain.length), {
+    seed: 42,
+    aiCount: 1,
+    runAi: false,
+  });
+  const snapshot = match.snapshot();
+  const buildings = buildingOwner(snapshot.buildings), squads = unitOwner(snapshot.squads);
+  snapshot.squads = [...squads.values];
+  snapshot.buildings = [...buildings.values];
+  const selection: SelectionState = {
+    selected: new Set(),
+    selectedShips: new Set(),
+    selectedBuilding: null,
+  };
+  const vm = () => new HudViewModel(new SkirmishViewModel(snapshot, selection));
+  const own = snapshot.squads.filter((s) => s.playerId === 1);
+  return { snapshot, selection, vm, own, buildings, squads };
+}
+describe("snapshot-driven HUD selection", () => {
+  it("reports a stationary move order as waiting for clearance", () => {
+    const {selection,vm,own,squads}=setup();
+    squads.update(own[0].id,{order:{type:"move",tile:20},moved:false});selection.selected.add(own[0].id);
+    const card=vm().selectionCard(null);if(card.mode!=="detail")throw Error("Expected detail");
+    expect(card.card.status).toBe("Waiting for clearance");
+    squads.update(own[0].id,{moved:true});
+    const moving=vm().selectionCard(null);if(moving.mode!=="detail")throw Error("Expected detail");
+    expect(moving.card.status).toBe("Moving");
+  });
+  it("shows the replicated blocker reason, IDs and wait duration", () => {
+    const {selection,vm,own,squads,snapshot}=setup();snapshot.tick=100;
+    squads.update(own[0].id,{order:{type:"move",tile:20},moved:false,movementStatus:{reason:"crowd",since:40,blockerIds:[17,23]}});
+    selection.selected.add(own[0].id);const selected=vm().selectionCard(null);
+    if(selected.mode!=="detail")throw Error("Expected detail");
+    expect(selected.card.status).toBe("Waiting for nearby squads");
+    expect(selected.card.stats).toContainEqual({label:"Blocking squads",value:"#17, #23"});
+    expect(selected.card.stats).toContainEqual({label:"Waiting",value:"3s"});
+    squads.update(own[0].id,{moved:true,movementStatus:{reason:"yielding",since:100,blockerIds:[]}});
+    const yielding=vm().selectionCard(null);if(yielding.mode!=="detail")throw Error("Expected detail");
+    expect(yielding.card.status).toBe("Making room for nearby squads");
+  });
+  it("hides an empty selection and shows real troop health for a single squad", () => {
+    const { selection, vm, own , squads } = setup();
+    expect(vm().selectionCard(null).mode).toBe("empty");
+    squads.update(own[0].id, { troops: 640 });
+    selection.selected.add(own[0].id);
+    const card = vm().selectionCard(null);
+    expect(card.mode).toBe("detail");
+    if (card.mode !== "detail") throw new Error("Expected detail");
+    expect(card.card.meter).toEqual({
+      label: "Troop strength",
+      value: 640,
+      max: 1000,
+    });
+    expect(card.card.count).toBe(1);
+  });
+  it("aggregates same-type health and count without merging units or orders", () => {
+    const { snapshot, selection, vm, own , squads } = setup();
+    squads.update(own[0].id, { troops: 640 });
+    squads.update(own[1].id, { troops: 810 });
+    squads.update(own[1].id, { order: { type: "move", tile: 20 } });
+    selection.selected = new Set([own[0].id, own[1].id]);
+    const before = structuredClone(snapshot);
+    const card = vm().selectionCard(null);
+    expect(card.mode).toBe("group");
+    if (card.mode !== "group") throw new Error("Expected group");
+    expect(card.card.count).toBe(2);
+    expect(card.card.subtitle).toBe("2 squads selected");
+    expect(card.card.meter?.value).toBe(1450);
+    expect(card.card.meter?.max).toBe(2000);
+    expect(card.card.status).toBe("Multiple orders");
+    expect(snapshot).toEqual(before);
+  });
+  it("uses individual mixed cells and inspects one without changing the selected army", () => {
+    const { selection, vm, own, snapshot , squads } = setup();
+    squads.update(own[1].id, { kind: "archer" });
+    selection.selected = new Set([own[0].id, own[1].id]);
+    const before = new Set(selection.selected);
+    expect(vm().selectionCard(null).mode).toBe("mixed");
+    const focused = vm().selectionCard(`squad:${own[1].id}`);
+    expect(focused.mode).toBe("detail");
+    if (focused.mode !== "detail") throw new Error("Expected detail");
+    expect(focused.card.kind).toBe("archer");
+    expect(focused.entities.length).toBe(2);
+    expect(selection.selected).toEqual(before);
+    snapshot.squads = snapshot.squads.filter((s) => s.id !== own[1].id);
+    expect(vm().selectionCard(`squad:${own[1].id}`).entities.length).toBe(1);
+  });
+  it("projects a 200-squad army with current health, selection and order stats", () => {
+    const { selection, vm, own, snapshot , squads } = setup();
+    snapshot.squads = Array.from({ length: 200 }, (_, index) => ({
+      ...own[0],
+      id: 1000 + index,
+      troops: 750,
+      queuedOrders: [],
+    }));
+    squads.restore(snapshot.squads); snapshot.squads = [...squads.values];
+    selection.selected = new Set(snapshot.squads.map((s) => s.id));
+    const hud = vm();
+    const group = hud.selectionCard(null);
+    if (group.mode !== "group") throw new Error("Expected group");
+    expect(group.card.count).toBe(200);
+    expect(group.card.meter?.value).toBe(150000);
+    squads.update(snapshot.squads[0].id, { kind: "archer" });
+    squads.update(snapshot.squads[0].id, { troops: 250 });
+    squads.update(snapshot.squads[0].id, { queuedOrders: [...snapshot.squads[0].queuedOrders, { type: "move", tile: 20 }] });
+    const current = hud.entities;
+    expect(hud.selectionCard(null, current).mode).toBe("mixed");
+    const detail = hud.selectionCard("squad:1000", current);
+    if (detail.mode !== "detail") throw new Error("Expected detail");
+    expect(detail.card.meter?.value).toBe(250);
+    expect(
+      detail.card.stats.find((s) => s.label === "Queued orders")?.value,
+    ).toBe("1");
+    expect(
+      detail.card.stats.find((s) => s.label === "Volley damage")?.value,
+    ).toBe("25");
+    selection.selected.delete(1000);
+    expect(hud.selectionCard(null).entities).toHaveLength(199);
+    expect(
+      hud
+        .actionCard("recruit-infantry")
+        ?.stats.some((s) => s.label === "Recruitment"),
+    ).toBe(true);
+  });
+  it("excludes enemy and embarked squads even if stale IDs remain selected", () => {
+    const { selection, vm, own, snapshot , squads } = setup();
+    squads.update(own[0].id, { embarkedOn: 999 });
+    selection.selected = new Set([
+      own[0].id,
+      snapshot.squads.find((s) => s.playerId === 2)!.id,
+    ]);
+    expect(vm().selectionCard(null).mode).toBe("empty");
+  });
+  it("aggregates ship hulls in a group and shows a single ship's hull", () => {
+    const { selection, vm, snapshot } = setup();
+    snapshot.ships = [1, 2].map((id) => ({
+      id,
+      playerId: 1,
+      kind: "warship",
+      x: FIXED,
+      y: FIXED,
+      health: 450,
+      destination: null,
+      waypoints: [],
+      fighting: false,
+    }));
+    selection.selectedShips = new Set([1, 2]);
+    const group = vm().selectionCard(null);
+    expect(group.mode).toBe("group");
+    if (group.mode !== "group") throw new Error("Expected group");
+    expect(group.card.meter).toEqual({
+      label: "Hull health",
+      value: 900,
+      max: 2000,
+    });
+    const solo = vm().selectionCard("ship:1");
+    if (solo.mode !== "detail") throw new Error("Expected detail");
+    expect(solo.card.meter).toEqual({ label: "Hull health", value: 450, max: 1000 });
+    expect(selection.selectedShips.size).toBe(2);
+  });
+  it("shows an afloat squad's transport hull and troops aboard", () => {
+    const { selection, vm, own, squads } = setup();
+    squads.update(own[0].id, {
+      troops: 700,
+      afloat: { hull: 40, maxHull: 120, vesselId: "stoneage-transport" },
+    });
+    selection.selected.add(own[0].id);
+    const card = vm().selectionCard(null);
+    if (card.mode !== "detail") throw new Error("Expected detail");
+    expect(card.card.meter).toEqual({ label: "Hull health", value: 40, max: 120 });
+    expect(card.card.status).toMatch(/^Afloat · .* · 700 troops aboard$/);
+  });
+  it("shows building construction and ownership without inventing building health", () => {
+    const { selection, vm, snapshot, buildings } = setup();
+    const building = snapshot.buildings.find((b) => b.playerId === 2)!;
+    buildings.update(building.id, { type: "city" });
+    buildings.update(building.id, { remainingTicks: 40 });
+    selection.selectedBuilding = building.id;
+    const result = vm().selectionCard(null);
+    if (result.mode !== "detail") throw new Error("Expected detail");
+    expect(result.card.subtitle).toBe("Enemy building");
+    expect(result.card.meter).toEqual({
+      label: "Construction",
+      value: 120,
+      max: 160,
+    });
+    expect(
+      result.card.stats.find((s) => s.label === "Reserve income")?.value,
+    ).toBe("+40 / sec");
+    buildings.update(building.id, { remainingTicks: 0 });
+    const ready = vm().selectionCard(null);
+    if (ready.mode !== "detail") throw new Error("Expected detail");
+    expect(ready.card.meter).toBeUndefined();
+    expect(ready.card.status).toBe("Ready");
+  });
+});
+describe("HUD action costs and availability", () => {
+  it("keeps costs and stats visible for blocked recruitment and unaffordable buildings", () => {
+    const { snapshot, vm } = setup();
+    snapshot.players[0].reserves = 500;
+    expect(vm().actionCard("recruit-infantry")?.status).toContain(
+      "1,000 reserve",
+    );
+    const ranged = vm().actionCard("recruit-archer")!;
+    expect(ranged.status).toContain("archery range");
+    expect(ranged.stats.find((s) => s.label === "Volley damage")?.value).toBe(
+      "25",
+    );
+    expect(ranged.stats.find((s) => s.label === "Moving volley")?.value).toBe(
+      "5 sec",
+    );
+    snapshot.players[0].gold = 0;
+    expect(vm().actionCard("build-city")?.status).toBe("Not enough gold");
+    expect(
+      vm()
+        .actionCard("build-city")
+        ?.stats.find((s) => s.label === "Construction cost")?.value,
+    ).toBe("800 gold");
+    expect(
+      vm()
+        .actionCard("warship")
+        ?.stats.find((s) => s.label === "Recruitment")?.value,
+    ).toBe("700 gold");
+  });
+  it("reports replenishment only for eligible selected squads", () => {
+    const { snapshot, selection, own, vm , squads } = setup();
+    squads.update(own[0].id, { troops: 500 });
+    snapshot.owners[
+      Math.floor(own[0].y / FIXED) * snapshot.width +
+        Math.floor(own[0].x / FIXED)
+    ] = 1;
+    selection.selected.add(own[0].id);
+    expect(vm().actionCard("replenish")?.status).toBe("Ready");
+    snapshot.players[0].reserves = 0;
+    expect(vm().actionCard("replenish")?.status).toContain(
+      "available reserves",
+    );
+  });
+
+  it("reports building repair when buildings are selected", () => {
+    const { snapshot, selection, vm, buildings } = setup();
+    const building = snapshot.buildings[0];
+    buildings.update(building.id, { playerId: 1 });
+    buildings.update(building.id, { health: 600 });
+    buildings.update(building.id, { maxHealth: 1200 });
+    buildings.update(building.id, { remainingTicks: 0 });
+    selection.selectedBuilding = building.id;
+
+    const card = vm().actionCard("replenish");
+    expect(card?.title).toBe("Repair selected buildings");
+    expect(card?.subtitle).toContain("structure repair");
+    expect(card?.status).toBe("Ready");
+
+    buildings.update(building.id, { health: 1200 });
+    expect(vm().actionCard("replenish")?.status).toBe("No repair needed");
+  });
+});

@@ -1,0 +1,1262 @@
+{
+  "idle": {
+    "file": "Idle-v2.png",
+    "scale": 0.8333333333333334,
+    "frames": [
+      {
+        "frame": 0,
+        "bounds": [
+          53,
+          147,
+          434,
+          428
+        ],
+        "authoredPivot": {
+          "y": 232,
+          "x": 199
+        },
+        "previewPivot": {
+          "y": 232,
+          "x": 199
+        },
+        "maxAlphaBeyond3px": 3,
+        "pixelsAbove16Beyond3px": 0,
+        "muzzleFlashFrame": false
+      },
+      {
+        "frame": 1,
+        "bounds": [
+          44,
+          145,
+          422,
+          428
+        ],
+        "authoredPivot": {
+          "y": 232,
+          "x": 193
+        },
+        "previewPivot": {
+          "y": 232,
+          "x": 193
+        },
+        "maxAlphaBeyond3px": 2,
+        "pixelsAbove16Beyond3px": 0,
+        "muzzleFlashFrame": false
+      },
+      {
+        "frame": 2,
+        "bounds": [
+          36,
+          146,
+          411,
+          426
+        ],
+        "authoredPivot": {
+          "y": 232,
+          "x": 187
+        },
+        "previewPivot": {
+          "y": 232,
+          "x": 187
+        },
+        "maxAlphaBeyond3px": 3,
+        "pixelsAbove16Beyond3px": 0,
+        "muzzleFlashFrame": false
+      },
+      {
+        "frame": 3,
+        "bounds": [
+          49,
+          104,
+          433,
+          384
+        ],
+        "authoredPivot": {
+          "y": 192,
+          "x": 197
+        },
+        "previewPivot": {
+          "y": 192,
+          "x": 197
+        },
+        "maxAlphaBeyond3px": 3,
+        "pixelsAbove16Beyond3px": 0,
+        "muzzleFlashFrame": false
+      },
+      {
+        "frame": 4,
+        "bounds": [
+          43,
+          105,
+          432,
+          388
+        ],
+        "authoredPivot": {
+          "y": 192,
+          "x": 193
+        },
+        "previewPivot": {
+          "y": 192,
+          "x": 193
+        },
+        "maxAlphaBeyond3px": 4,
+        "pixelsAbove16Beyond3px": 0,
+        "muzzleFlashFrame": false
+      },
+      {
+        "frame": 5,
+        "bounds": [
+          39,
+          106,
+          418,
+          386
+        ],
+        "authoredPivot": {
+          "y": 192,
+          "x": 191
+        },
+        "previewPivot": {
+          "y": 192,
+          "x": 191
+        },
+        "maxAlphaBeyond3px": 3,
+        "pixelsAbove16Beyond3px": 0,
+        "muzzleFlashFrame": false
+      }
+    ]
+  },
+  "running": {
+    "file": "Running-v2.png",
+    "scale": 0.9205020920502092,
+    "frames": [
+      {
+        "frame": 0,
+        "bounds": [
+          113,
+          106,
+          449,
+          403
+        ],
+        "authoredPivot": {
+          "x": 246,
+          "y": 220
+        },
+        "previewPivot": {
+          "x": 246,
+          "y": 220
+        },
+        "maxAlphaBeyond3px": 4,
+        "pixelsAbove16Beyond3px": 0,
+        "muzzleFlashFrame": false
+      },
+      {
+        "frame": 1,
+        "bounds": [
+          108,
+          122,
+          428,
+          385
+        ],
+        "authoredPivot": {
+          "x": 236,
+          "y": 227
+        },
+        "previewPivot": {
+          "x": 236,
+          "y": 227
+        },
+        "maxAlphaBeyond3px": 3,
+        "pixelsAbove16Beyond3px": 0,
+        "muzzleFlashFrame": false
+      },
+      {
+        "frame": 2,
+        "bounds": [
+          95,
+          144,
+          426,
+          386
+        ],
+        "authoredPivot": {
+          "x": 225,
+          "y": 223
+        },
+        "previewPivot": {
+          "x": 225,
+          "y": 223
+        },
+        "maxAlphaBeyond3px": 3,
+        "pixelsAbove16Beyond3px": 0,
+        "muzzleFlashFrame": false
+      },
+      {
+        "frame": 3,
+        "bounds": [
+          114,
+          87,
+          460,
+          393
+        ],
+        "authoredPivot": {
+          "x": 251,
+          "y": 209
+        },
+        "previewPivot": {
+          "x": 251,
+          "y": 209
+        },
+        "maxAlphaBeyond3px": 3,
+        "pixelsAbove16Beyond3px": 0,
+        "muzzleFlashFrame": false
+      },
+      {
+        "frame": 4,
+        "bounds": [
+          102,
+          98,
+          445,
+          380
+        ],
+        "authoredPivot": {
+          "x": 240,
+          "y": 211
+        },
+        "previewPivot": {
+          "x": 240,
+          "y": 211
+        },
+        "maxAlphaBeyond3px": 4,
+        "pixelsAbove16Beyond3px": 0,
+        "muzzleFlashFrame": false
+      },
+      {
+        "frame": 5,
+        "bounds": [
+          109,
+          132,
+          450,
+          397
+        ],
+        "authoredPivot": {
+          "x": 254,
+          "y": 213
+        },
+        "previewPivot": {
+          "x": 254,
+          "y": 213
+        },
+        "maxAlphaBeyond3px": 5,
+        "pixelsAbove16Beyond3px": 0,
+        "muzzleFlashFrame": false
+      }
+    ]
+  },
+  "attack": {
+    "file": "Attack-v2.png",
+    "scale": 0.95238,
+    "frames": [
+      {
+        "frame": 0,
+        "bounds": [
+          95,
+          138,
+          433,
+          396
+        ],
+        "authoredPivot": {
+          "x": 230.5,
+          "y": 214.5
+        },
+        "previewPivot": {
+          "x": 230.5,
+          "y": 214.5
+        },
+        "maxAlphaBeyond3px": 3,
+        "pixelsAbove16Beyond3px": 0,
+        "muzzleFlashFrame": false
+      },
+      {
+        "frame": 1,
+        "bounds": [
+          113,
+          144,
+          451,
+          389
+        ],
+        "authoredPivot": {
+          "x": 237.5,
+          "y": 219.5
+        },
+        "previewPivot": {
+          "x": 237.5,
+          "y": 219.5
+        },
+        "maxAlphaBeyond3px": 3,
+        "pixelsAbove16Beyond3px": 0,
+        "muzzleFlashFrame": false
+      },
+      {
+        "frame": 2,
+        "bounds": [
+          99,
+          147,
+          441,
+          393
+        ],
+        "authoredPivot": {
+          "x": 228.5,
+          "y": 224.5
+        },
+        "previewPivot": {
+          "x": 228.5,
+          "y": 224.5
+        },
+        "maxAlphaBeyond3px": 3,
+        "pixelsAbove16Beyond3px": 0,
+        "muzzleFlashFrame": false
+      },
+      {
+        "frame": 3,
+        "bounds": [
+          83,
+          123,
+          462,
+          377
+        ],
+        "authoredPivot": {
+          "x": 219.0,
+          "y": 201.5
+        },
+        "previewPivot": {
+          "x": 219.0,
+          "y": 201.5
+        },
+        "maxAlphaBeyond3px": 34,
+        "pixelsAbove16Beyond3px": 113,
+        "muzzleFlashFrame": true
+      },
+      {
+        "frame": 4,
+        "bounds": [
+          98,
+          115,
+          458,
+          370
+        ],
+        "authoredPivot": {
+          "x": 235.0,
+          "y": 195.5
+        },
+        "previewPivot": {
+          "x": 235.0,
+          "y": 195.5
+        },
+        "maxAlphaBeyond3px": 3,
+        "pixelsAbove16Beyond3px": 0,
+        "muzzleFlashFrame": false
+      },
+      {
+        "frame": 5,
+        "bounds": [
+          72,
+          108,
+          445,
+          385
+        ],
+        "authoredPivot": {
+          "x": 225.5,
+          "y": 189.5
+        },
+        "previewPivot": {
+          "x": 225.5,
+          "y": 189.5
+        },
+        "maxAlphaBeyond3px": 5,
+        "pixelsAbove16Beyond3px": 0,
+        "muzzleFlashFrame": false
+      }
+    ]
+  },
+  "reload": {
+    "file": "Reload-v2.png",
+    "scale": 0.84615,
+    "frames": [
+      {
+        "frame": 0,
+        "bounds": [
+          82,
+          120,
+          462,
+          393
+        ],
+        "authoredPivot": {
+          "x": 233.0,
+          "y": 206.5
+        },
+        "previewPivot": {
+          "x": 233.0,
+          "y": 206.5
+        },
+        "maxAlphaBeyond3px": 7,
+        "pixelsAbove16Beyond3px": 0,
+        "muzzleFlashFrame": false
+      },
+      {
+        "frame": 1,
+        "bounds": [
+          86,
+          119,
+          464,
+          392
+        ],
+        "authoredPivot": {
+          "x": 237.5,
+          "y": 206.0
+        },
+        "previewPivot": {
+          "x": 237.5,
+          "y": 206.0
+        },
+        "maxAlphaBeyond3px": 5,
+        "pixelsAbove16Beyond3px": 0,
+        "muzzleFlashFrame": false
+      },
+      {
+        "frame": 2,
+        "bounds": [
+          72,
+          119,
+          458,
+          392
+        ],
+        "authoredPivot": {
+          "x": 235.5,
+          "y": 206.5
+        },
+        "previewPivot": {
+          "x": 235.5,
+          "y": 206.5
+        },
+        "maxAlphaBeyond3px": 4,
+        "pixelsAbove16Beyond3px": 0,
+        "muzzleFlashFrame": false
+      },
+      {
+        "frame": 3,
+        "bounds": [
+          82,
+          103,
+          465,
+          376
+        ],
+        "authoredPivot": {
+          "x": 235.0,
+          "y": 190.5
+        },
+        "previewPivot": {
+          "x": 235.0,
+          "y": 190.5
+        },
+        "maxAlphaBeyond3px": 3,
+        "pixelsAbove16Beyond3px": 0,
+        "muzzleFlashFrame": false
+      },
+      {
+        "frame": 4,
+        "bounds": [
+          87,
+          100,
+          463,
+          376
+        ],
+        "authoredPivot": {
+          "x": 238.5,
+          "y": 188.5
+        },
+        "previewPivot": {
+          "x": 238.5,
+          "y": 188.5
+        },
+        "maxAlphaBeyond3px": 3,
+        "pixelsAbove16Beyond3px": 0,
+        "muzzleFlashFrame": false
+      },
+      {
+        "frame": 5,
+        "bounds": [
+          81,
+          100,
+          458,
+          377
+        ],
+        "authoredPivot": {
+          "x": 236.5,
+          "y": 190.0
+        },
+        "previewPivot": {
+          "x": 236.5,
+          "y": 190.0
+        },
+        "maxAlphaBeyond3px": 4,
+        "pixelsAbove16Beyond3px": 0,
+        "muzzleFlashFrame": false
+      }
+    ]
+  },
+  "hit": {
+    "file": "Hit-v2.png",
+    "scale": 0.9053497942386831,
+    "frames": [
+      {
+        "frame": 0,
+        "bounds": [
+          122,
+          133,
+          482,
+          392
+        ],
+        "authoredPivot": {
+          "x": 255,
+          "y": 215
+        },
+        "previewPivot": {
+          "x": 255,
+          "y": 215
+        },
+        "maxAlphaBeyond3px": 3,
+        "pixelsAbove16Beyond3px": 0,
+        "muzzleFlashFrame": false
+      },
+      {
+        "frame": 1,
+        "bounds": [
+          128,
+          139,
+          416,
+          419
+        ],
+        "authoredPivot": {
+          "x": 260,
+          "y": 222
+        },
+        "previewPivot": {
+          "x": 260,
+          "y": 222
+        },
+        "maxAlphaBeyond3px": 3,
+        "pixelsAbove16Beyond3px": 0,
+        "muzzleFlashFrame": false
+      },
+      {
+        "frame": 2,
+        "bounds": [
+          121,
+          139,
+          424,
+          397
+        ],
+        "authoredPivot": {
+          "x": 261,
+          "y": 219
+        },
+        "previewPivot": {
+          "x": 261,
+          "y": 219
+        },
+        "maxAlphaBeyond3px": 3,
+        "pixelsAbove16Beyond3px": 0,
+        "muzzleFlashFrame": false
+      },
+      {
+        "frame": 3,
+        "bounds": [
+          115,
+          100,
+          476,
+          343
+        ],
+        "authoredPivot": {
+          "x": 254,
+          "y": 184
+        },
+        "previewPivot": {
+          "x": 254,
+          "y": 184
+        },
+        "maxAlphaBeyond3px": 6,
+        "pixelsAbove16Beyond3px": 0,
+        "muzzleFlashFrame": false
+      },
+      {
+        "frame": 4,
+        "bounds": [
+          114,
+          100,
+          479,
+          360
+        ],
+        "authoredPivot": {
+          "x": 255,
+          "y": 184
+        },
+        "previewPivot": {
+          "x": 255,
+          "y": 184
+        },
+        "maxAlphaBeyond3px": 4,
+        "pixelsAbove16Beyond3px": 0,
+        "muzzleFlashFrame": false
+      },
+      {
+        "frame": 5,
+        "bounds": [
+          102,
+          100,
+          463,
+          361
+        ],
+        "authoredPivot": {
+          "x": 253,
+          "y": 184
+        },
+        "previewPivot": {
+          "x": 253,
+          "y": 184
+        },
+        "maxAlphaBeyond3px": 3,
+        "pixelsAbove16Beyond3px": 0,
+        "muzzleFlashFrame": false
+      }
+    ]
+  },
+  "charged": {
+    "file": "Charged-v2.png",
+    "scale": 0.8148148148148148,
+    "frames": [
+      {
+        "frame": 0,
+        "bounds": [
+          101,
+          145,
+          479,
+          426
+        ],
+        "authoredPivot": {
+          "x": 262,
+          "y": 233
+        },
+        "previewPivot": {
+          "x": 262,
+          "y": 233
+        },
+        "maxAlphaBeyond3px": 4,
+        "pixelsAbove16Beyond3px": 0,
+        "muzzleFlashFrame": false
+      },
+      {
+        "frame": 1,
+        "bounds": [
+          94,
+          122,
+          480,
+          432
+        ],
+        "authoredPivot": {
+          "x": 245,
+          "y": 208
+        },
+        "previewPivot": {
+          "x": 245,
+          "y": 208
+        },
+        "maxAlphaBeyond3px": 3,
+        "pixelsAbove16Beyond3px": 0,
+        "muzzleFlashFrame": false
+      },
+      {
+        "frame": 2,
+        "bounds": [
+          87,
+          131,
+          426,
+          463
+        ],
+        "authoredPivot": {
+          "x": 237,
+          "y": 223
+        },
+        "previewPivot": {
+          "x": 237,
+          "y": 223
+        },
+        "maxAlphaBeyond3px": 2,
+        "pixelsAbove16Beyond3px": 0,
+        "muzzleFlashFrame": false
+      },
+      {
+        "frame": 3,
+        "bounds": [
+          101,
+          118,
+          482,
+          356
+        ],
+        "authoredPivot": {
+          "x": 256,
+          "y": 212
+        },
+        "previewPivot": {
+          "x": 256,
+          "y": 212
+        },
+        "maxAlphaBeyond3px": 2,
+        "pixelsAbove16Beyond3px": 0,
+        "muzzleFlashFrame": false
+      },
+      {
+        "frame": 4,
+        "bounds": [
+          98,
+          83,
+          479,
+          417
+        ],
+        "authoredPivot": {
+          "x": 265,
+          "y": 176
+        },
+        "previewPivot": {
+          "x": 265,
+          "y": 176
+        },
+        "maxAlphaBeyond3px": 5,
+        "pixelsAbove16Beyond3px": 0,
+        "muzzleFlashFrame": false
+      },
+      {
+        "frame": 5,
+        "bounds": [
+          86,
+          99,
+          475,
+          384
+        ],
+        "authoredPivot": {
+          "x": 255,
+          "y": 191
+        },
+        "previewPivot": {
+          "x": 255,
+          "y": 191
+        },
+        "maxAlphaBeyond3px": 4,
+        "pixelsAbove16Beyond3px": 0,
+        "muzzleFlashFrame": false
+      }
+    ]
+  },
+  "charge": {
+    "file": "Charge-v2.png",
+    "scale": 0.9734513274336283,
+    "frames": [
+      {
+        "frame": 0,
+        "bounds": [
+          109,
+          130,
+          426,
+          401
+        ],
+        "authoredPivot": {
+          "x": 242,
+          "y": 206
+        },
+        "previewPivot": {
+          "x": 242,
+          "y": 206
+        },
+        "maxAlphaBeyond3px": 9,
+        "pixelsAbove16Beyond3px": 0,
+        "muzzleFlashFrame": false
+      },
+      {
+        "frame": 1,
+        "bounds": [
+          124,
+          132,
+          448,
+          402
+        ],
+        "authoredPivot": {
+          "x": 260,
+          "y": 208
+        },
+        "previewPivot": {
+          "x": 260,
+          "y": 208
+        },
+        "maxAlphaBeyond3px": 4,
+        "pixelsAbove16Beyond3px": 0,
+        "muzzleFlashFrame": false
+      },
+      {
+        "frame": 2,
+        "bounds": [
+          128,
+          132,
+          447,
+          365
+        ],
+        "authoredPivot": {
+          "x": 265,
+          "y": 208
+        },
+        "previewPivot": {
+          "x": 265,
+          "y": 208
+        },
+        "maxAlphaBeyond3px": 6,
+        "pixelsAbove16Beyond3px": 0,
+        "muzzleFlashFrame": false
+      },
+      {
+        "frame": 3,
+        "bounds": [
+          111,
+          105,
+          430,
+          377
+        ],
+        "authoredPivot": {
+          "x": 246,
+          "y": 182
+        },
+        "previewPivot": {
+          "x": 246,
+          "y": 182
+        },
+        "maxAlphaBeyond3px": 3,
+        "pixelsAbove16Beyond3px": 0,
+        "muzzleFlashFrame": false
+      },
+      {
+        "frame": 4,
+        "bounds": [
+          124,
+          109,
+          445,
+          370
+        ],
+        "authoredPivot": {
+          "x": 262,
+          "y": 189
+        },
+        "previewPivot": {
+          "x": 262,
+          "y": 189
+        },
+        "maxAlphaBeyond3px": 4,
+        "pixelsAbove16Beyond3px": 0,
+        "muzzleFlashFrame": false
+      },
+      {
+        "frame": 5,
+        "bounds": [
+          129,
+          107,
+          444,
+          346
+        ],
+        "authoredPivot": {
+          "x": 267,
+          "y": 186
+        },
+        "previewPivot": {
+          "x": 267,
+          "y": 186
+        },
+        "maxAlphaBeyond3px": 4,
+        "pixelsAbove16Beyond3px": 0,
+        "muzzleFlashFrame": false
+      }
+    ]
+  },
+  "charge-attack": {
+    "file": "ChargeAttack-v2.png",
+    "scale": 0.87649,
+    "frames": [
+      {
+        "frame": 0,
+        "bounds": [
+          92,
+          123,
+          466,
+          433
+        ],
+        "authoredPivot": {
+          "x": 248.5,
+          "y": 205.5
+        },
+        "previewPivot": {
+          "x": 248.5,
+          "y": 205.5
+        },
+        "maxAlphaBeyond3px": 13,
+        "pixelsAbove16Beyond3px": 0,
+        "muzzleFlashFrame": false
+      },
+      {
+        "frame": 1,
+        "bounds": [
+          75,
+          121,
+          460,
+          405
+        ],
+        "authoredPivot": {
+          "x": 226.0,
+          "y": 204.5
+        },
+        "previewPivot": {
+          "x": 226.0,
+          "y": 204.5
+        },
+        "maxAlphaBeyond3px": 3,
+        "pixelsAbove16Beyond3px": 0,
+        "muzzleFlashFrame": false
+      },
+      {
+        "frame": 2,
+        "bounds": [
+          63,
+          123,
+          461,
+          423
+        ],
+        "authoredPivot": {
+          "x": 229.0,
+          "y": 207.0
+        },
+        "previewPivot": {
+          "x": 229.0,
+          "y": 207.0
+        },
+        "maxAlphaBeyond3px": 4,
+        "pixelsAbove16Beyond3px": 0,
+        "muzzleFlashFrame": false
+      },
+      {
+        "frame": 3,
+        "bounds": [
+          84,
+          91,
+          480,
+          379
+        ],
+        "authoredPivot": {
+          "x": 244.0,
+          "y": 176.0
+        },
+        "previewPivot": {
+          "x": 244.0,
+          "y": 176.0
+        },
+        "maxAlphaBeyond3px": 60,
+        "pixelsAbove16Beyond3px": 56,
+        "muzzleFlashFrame": true
+      },
+      {
+        "frame": 4,
+        "bounds": [
+          80,
+          90,
+          451,
+          375
+        ],
+        "authoredPivot": {
+          "x": 228.0,
+          "y": 175.0
+        },
+        "previewPivot": {
+          "x": 228.0,
+          "y": 175.0
+        },
+        "maxAlphaBeyond3px": 3,
+        "pixelsAbove16Beyond3px": 0,
+        "muzzleFlashFrame": false
+      },
+      {
+        "frame": 5,
+        "bounds": [
+          73,
+          90,
+          448,
+          392
+        ],
+        "authoredPivot": {
+          "x": 231.5,
+          "y": 175.0
+        },
+        "previewPivot": {
+          "x": 231.5,
+          "y": 175.0
+        },
+        "maxAlphaBeyond3px": 9,
+        "pixelsAbove16Beyond3px": 0,
+        "muzzleFlashFrame": false
+      }
+    ]
+  },
+  "death": {
+    "file": "Death-v2.png",
+    "scale": 0.859375,
+    "frames": [
+      {
+        "frame": 0,
+        "bounds": [
+          92,
+          78,
+          473,
+          418
+        ],
+        "authoredPivot": {
+          "x": 239,
+          "y": 146
+        },
+        "previewPivot": {
+          "x": 239,
+          "y": 146
+        },
+        "maxAlphaBeyond3px": 3,
+        "pixelsAbove16Beyond3px": 0,
+        "muzzleFlashFrame": false
+      },
+      {
+        "frame": 1,
+        "bounds": [
+          88,
+          100,
+          461,
+          445
+        ],
+        "authoredPivot": {
+          "x": 241,
+          "y": 167
+        },
+        "previewPivot": {
+          "x": 241,
+          "y": 167
+        },
+        "maxAlphaBeyond3px": 6,
+        "pixelsAbove16Beyond3px": 0,
+        "muzzleFlashFrame": false
+      },
+      {
+        "frame": 2,
+        "bounds": [
+          111,
+          111,
+          462,
+          445
+        ],
+        "authoredPivot": {
+          "x": 266,
+          "y": 185
+        },
+        "previewPivot": {
+          "x": 266,
+          "y": 185
+        },
+        "maxAlphaBeyond3px": 4,
+        "pixelsAbove16Beyond3px": 0,
+        "muzzleFlashFrame": false
+      },
+      {
+        "frame": 3,
+        "bounds": [
+          71,
+          102,
+          445,
+          421
+        ],
+        "authoredPivot": {
+          "x": 275,
+          "y": 227
+        },
+        "previewPivot": {
+          "x": 275,
+          "y": 227
+        },
+        "maxAlphaBeyond3px": 7,
+        "pixelsAbove16Beyond3px": 0,
+        "muzzleFlashFrame": false
+      },
+      {
+        "frame": 4,
+        "bounds": [
+          83,
+          39,
+          428,
+          435
+        ],
+        "authoredPivot": {
+          "x": 243,
+          "y": 249
+        },
+        "previewPivot": {
+          "x": 243,
+          "y": 249
+        },
+        "maxAlphaBeyond3px": 4,
+        "pixelsAbove16Beyond3px": 0,
+        "muzzleFlashFrame": false
+      },
+      {
+        "frame": 5,
+        "bounds": [
+          102,
+          40,
+          471,
+          436
+        ],
+        "authoredPivot": {
+          "x": 240,
+          "y": 246
+        },
+        "previewPivot": {
+          "x": 240,
+          "y": 246
+        },
+        "maxAlphaBeyond3px": 11,
+        "pixelsAbove16Beyond3px": 0,
+        "muzzleFlashFrame": false
+      }
+    ]
+  },
+  "death-back": {
+    "file": "DeathBack-v2.png",
+    "scale": 0.8333333333,
+    "frames": [
+      {
+        "frame": 0,
+        "bounds": [
+          103,
+          75,
+          481,
+          373
+        ],
+        "authoredPivot": {
+          "x": 256,
+          "y": 146
+        },
+        "previewPivot": {
+          "x": 256,
+          "y": 146
+        },
+        "maxAlphaBeyond3px": 9,
+        "pixelsAbove16Beyond3px": 0,
+        "muzzleFlashFrame": false
+      },
+      {
+        "frame": 1,
+        "bounds": [
+          103,
+          84,
+          449,
+          414
+        ],
+        "authoredPivot": {
+          "x": 258,
+          "y": 172
+        },
+        "previewPivot": {
+          "x": 258,
+          "y": 172
+        },
+        "maxAlphaBeyond3px": 7,
+        "pixelsAbove16Beyond3px": 0,
+        "muzzleFlashFrame": false
+      },
+      {
+        "frame": 2,
+        "bounds": [
+          54,
+          85,
+          439,
+          446
+        ],
+        "authoredPivot": {
+          "x": 253,
+          "y": 215
+        },
+        "previewPivot": {
+          "x": 253,
+          "y": 215
+        },
+        "maxAlphaBeyond3px": 5,
+        "pixelsAbove16Beyond3px": 0,
+        "muzzleFlashFrame": false
+      },
+      {
+        "frame": 3,
+        "bounds": [
+          131,
+          57,
+          419,
+          422
+        ],
+        "authoredPivot": {
+          "x": 257,
+          "y": 250
+        },
+        "previewPivot": {
+          "x": 257,
+          "y": 250
+        },
+        "maxAlphaBeyond3px": 7,
+        "pixelsAbove16Beyond3px": 0,
+        "muzzleFlashFrame": false
+      },
+      {
+        "frame": 4,
+        "bounds": [
+          138,
+          61,
+          408,
+          422
+        ],
+        "authoredPivot": {
+          "x": 256,
+          "y": 251
+        },
+        "previewPivot": {
+          "x": 256,
+          "y": 251
+        },
+        "maxAlphaBeyond3px": 5,
+        "pixelsAbove16Beyond3px": 0,
+        "muzzleFlashFrame": false
+      },
+      {
+        "frame": 5,
+        "bounds": [
+          130,
+          61,
+          400,
+          423
+        ],
+        "authoredPivot": {
+          "x": 249,
+          "y": 251
+        },
+        "previewPivot": {
+          "x": 249,
+          "y": 251
+        },
+        "maxAlphaBeyond3px": 7,
+        "pixelsAbove16Beyond3px": 0,
+        "muzzleFlashFrame": false
+      }
+    ]
+  }
+}

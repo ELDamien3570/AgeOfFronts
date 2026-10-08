@@ -1,0 +1,190 @@
+{
+  "date": "2026-10-03",
+  "reason": "Static registration after material generation drift. Unchanged cream fur/trouser landmarks guided root transfer; one constant scale per clip, no runtime fitting or per-frame scales. Verified in browser.",
+  "records": [
+    {
+      "clip": "attack",
+      "before": {
+        "scale": 1.08,
+        "pivots": [
+          {
+            "x": 265,
+            "y": 285
+          },
+          {
+            "x": 280,
+            "y": 286
+          },
+          {
+            "x": 268,
+            "y": 287
+          },
+          {
+            "x": 264,
+            "y": 264
+          },
+          {
+            "x": 282,
+            "y": 268
+          },
+          {
+            "x": 267,
+            "y": 268
+          }
+        ]
+      },
+      "after": {
+        "scale": 1.018,
+        "pivots": [
+          {
+            "x": 264,
+            "y": 291
+          },
+          {
+            "x": 283,
+            "y": 291
+          },
+          {
+            "x": 271,
+            "y": 292
+          },
+          {
+            "x": 266,
+            "y": 245
+          },
+          {
+            "x": 286,
+            "y": 250
+          },
+          {
+            "x": 265,
+            "y": 246
+          }
+        ]
+      }
+    },
+    {
+      "clip": "death-back",
+      "before": {
+        "scale": 1.12,
+        "pivots": [
+          {
+            "x": 281,
+            "y": 284
+          },
+          {
+            "x": 262,
+            "y": 299
+          },
+          {
+            "x": 258,
+            "y": 302
+          },
+          {
+            "x": 264,
+            "y": 266
+          },
+          {
+            "x": 251,
+            "y": 234
+          },
+          {
+            "x": 247,
+            "y": 232
+          }
+        ]
+      },
+      "after": {
+        "scale": 1.026,
+        "pivots": [
+          {
+            "x": 275,
+            "y": 294
+          },
+          {
+            "x": 264,
+            "y": 303
+          },
+          {
+            "x": 265,
+            "y": 309
+          },
+          {
+            "x": 264,
+            "y": 257
+          },
+          {
+            "x": 250,
+            "y": 227
+          },
+          {
+            "x": 247,
+            "y": 225
+          }
+        ]
+      }
+    },
+    {
+      "clip": "death",
+      "before": {
+        "scale": 1,
+        "pivots": [
+          {
+            "x": 270,
+            "y": 280
+          },
+          {
+            "x": 276,
+            "y": 310
+          },
+          {
+            "x": 258,
+            "y": 324
+          },
+          {
+            "x": 254,
+            "y": 284
+          },
+          {
+            "x": 250,
+            "y": 260
+          },
+          {
+            "x": 249,
+            "y": 260
+          }
+        ]
+      },
+      "after": {
+        "scale": 1,
+        "pivots": [
+          {
+            "x": 270,
+            "y": 280
+          },
+          {
+            "x": 276,
+            "y": 310
+          },
+          {
+            "x": 258,
+            "y": 324
+          },
+          {
+            "x": 254,
+            "y": 284
+          },
+          {
+            "x": 242,
+            "y": 260
+          },
+          {
+            "x": 249,
+            "y": 260
+          }
+        ]
+      },
+      "reason": "Frame4 offset -8px in baked atlas; matching root offset cancels layout change in playback. All other source roots and constant clip scale preserved."
+    }
+  ]
+}

@@ -1,0 +1,170 @@
+{
+  "schemaVersion": 1,
+  "cultureId": "base",
+  "repeatOneShots": true,
+  "ages": [
+    {
+      "id": "StoneAge",
+      "label": "Stone Age",
+      "subtitle": "Five soldiers per group · straight overhead view"
+    },
+    {
+      "id": "BronzeAge",
+      "label": "Bronze Age",
+      "subtitle": "Five swordsmen · five archers · four two-horse chariots · straight overhead view"
+    },
+    {
+      "id": "ClassicalAge",
+      "label": "Classical Age",
+      "subtitle": "Five sword-and-shield infantry · five archers · five mounted swordsmen · straight overhead view"
+    },
+    {
+      "id": "EarlyMedieval",
+      "label": "Early Medieval",
+      "subtitle": "Five sword-and-shield infantry · five bowmen · five mounted spearmen · straight overhead view"
+    },
+    {
+      "id": "LateMedieval",
+      "label": "Late Medieval",
+      "subtitle": "Five plate swordsmen · five crossbowmen · five lance knights · straight overhead view"
+    },
+    {
+      "id": "EarlyModern",
+      "label": "Early Modern",
+      "subtitle": "Five short-gun infantry · five musketeers · five mounted pistoliers · overhead firing with muzzle smoke"
+    },
+    {
+      "id": "Modern",
+      "label": "Modern Age",
+      "subtitle": "Five bolt-action riflemen · five scoped riflemen · four tanks · straight overhead view with forward firing and muzzle smoke"
+    }
+  ],
+  "units": [
+    {
+      "id": "StoneAge-Melee",
+      "age": "StoneAge",
+      "label": "Clubmen",
+      "metadata": "Melee/StoneAge/animations.json"
+    },
+    {
+      "id": "StoneAge-Ranged",
+      "age": "StoneAge",
+      "label": "Javelinists",
+      "metadata": "Ranged/StoneAge/animations.json"
+    },
+    {
+      "id": "StoneAge-Cavalry",
+      "age": "StoneAge",
+      "label": "Mounted spearmen",
+      "metadata": "Cavalry/StoneAge/animations.json"
+    },
+    {
+      "id": "BronzeAge-Melee",
+      "age": "BronzeAge",
+      "label": "Bronze swordsmen",
+      "metadata": "Melee/BronzeAge/animations.json"
+    },
+    {
+      "id": "BronzeAge-Ranged",
+      "age": "BronzeAge",
+      "label": "Bronze archers",
+      "metadata": "Ranged/BronzeAge/animations.json"
+    },
+    {
+      "id": "BronzeAge-Cavalry",
+      "age": "BronzeAge",
+      "label": "Bronze chariots",
+      "metadata": "Cavalry/BronzeAge/animations.json"
+    },
+    {
+      "id": "ClassicalAge-Melee",
+      "age": "ClassicalAge",
+      "label": "Classical sword-and-shield infantry",
+      "metadata": "Melee/ClassicalAge/animations.json"
+    },
+    {
+      "id": "ClassicalAge-Ranged",
+      "age": "ClassicalAge",
+      "label": "Classical archers",
+      "metadata": "Ranged/ClassicalAge/animations.json"
+    },
+    {
+      "id": "ClassicalAge-Cavalry",
+      "age": "ClassicalAge",
+      "label": "Classical mounted swordsmen",
+      "metadata": "Cavalry/ClassicalAge/animations.json"
+    },
+    {
+      "id": "EarlyMedieval-Melee",
+      "age": "EarlyMedieval",
+      "label": "Early Medieval infantry",
+      "metadata": "Melee/EarlyMedieval/animations.json"
+    },
+    {
+      "id": "EarlyMedieval-Ranged",
+      "age": "EarlyMedieval",
+      "label": "Early Medieval bowmen",
+      "metadata": "Ranged/EarlyMedieval/animations.json"
+    },
+    {
+      "id": "EarlyMedieval-Cavalry",
+      "age": "EarlyMedieval",
+      "label": "Early Medieval mounted spearmen",
+      "metadata": "Cavalry/EarlyMedieval/animations.json"
+    },
+    {
+      "id": "LateMedieval-Melee",
+      "age": "LateMedieval",
+      "label": "Late Medieval plate swordsmen",
+      "metadata": "Melee/LateMedieval/animations.json"
+    },
+    {
+      "id": "LateMedieval-Ranged",
+      "age": "LateMedieval",
+      "label": "Late Medieval crossbowmen",
+      "metadata": "Ranged/LateMedieval/animations.json"
+    },
+    {
+      "id": "LateMedieval-Cavalry",
+      "age": "LateMedieval",
+      "label": "Late Medieval lance knights",
+      "metadata": "Cavalry/LateMedieval/animations.json"
+    },
+    {
+      "id": "EarlyModern-Melee",
+      "age": "EarlyModern",
+      "label": "Early Modern short-gun infantry",
+      "metadata": "Melee/EarlyModern/animations.json"
+    },
+    {
+      "id": "EarlyModern-Ranged",
+      "age": "EarlyModern",
+      "label": "Early Modern musketeers",
+      "metadata": "Ranged/EarlyModern/animations.json"
+    },
+    {
+      "id": "EarlyModern-Cavalry",
+      "age": "EarlyModern",
+      "label": "Early Modern mounted pistoliers",
+      "metadata": "Cavalry/EarlyModern/animations.json"
+    },
+    {
+      "id": "Modern-Melee",
+      "age": "Modern",
+      "label": "Modern bolt-action riflemen",
+      "metadata": "Melee/Modern/animations.json"
+    },
+    {
+      "id": "Modern-Ranged",
+      "age": "Modern",
+      "label": "Modern scoped riflemen",
+      "metadata": "Ranged/Modern/animations.json"
+    },
+    {
+      "id": "Modern-Cavalry",
+      "age": "Modern",
+      "label": "Modern tanks",
+      "metadata": "Cavalry/Modern/animations.json"
+    }
+  ]
+}

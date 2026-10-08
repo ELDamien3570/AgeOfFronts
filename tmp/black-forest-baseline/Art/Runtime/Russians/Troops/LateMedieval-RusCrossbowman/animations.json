@@ -1,0 +1,334 @@
+{
+  "actorCount": 1,
+  "animations": [
+    {
+      "id": "idle",
+      "file": "idle.png",
+      "label": "Idle",
+      "loop": true,
+      "scale": 1,
+      "durations": [
+        280,
+        280,
+        280,
+        280,
+        280,
+        280
+      ],
+      "description": "Subtle breathing with the helmet registered to a fixed lateral anchor and loaded crossbow held steady.",
+      "frameCount": 6,
+      "frames": [
+        {
+          "x": 0,
+          "y": 0,
+          "width": 128,
+          "height": 128,
+          "pivot": {
+            "x": 63.7578125,
+            "y": 64.96875
+          }
+        },
+        {
+          "x": 128,
+          "y": 0,
+          "width": 128,
+          "height": 128,
+          "pivot": {
+            "x": 62.42578125,
+            "y": 64.96875
+          }
+        },
+        {
+          "x": 256,
+          "y": 0,
+          "width": 128,
+          "height": 128,
+          "pivot": {
+            "x": 64.36328125,
+            "y": 64.96875
+          }
+        },
+        {
+          "x": 384,
+          "y": 0,
+          "width": 128,
+          "height": 128,
+          "pivot": {
+            "x": 63.7578125,
+            "y": 64.96875
+          }
+        },
+        {
+          "x": 512,
+          "y": 0,
+          "width": 128,
+          "height": 128,
+          "pivot": {
+            "x": 62.91015625,
+            "y": 64.96875
+          }
+        },
+        {
+          "x": 640,
+          "y": 0,
+          "width": 128,
+          "height": 128,
+          "pivot": {
+            "x": 64.60546875,
+            "y": 64.96875
+          }
+        }
+      ]
+    },
+    {
+      "id": "running",
+      "file": "running.png",
+      "label": "Walk",
+      "loop": true,
+      "scale": 1,
+      "durations": [
+        160,
+        160,
+        160,
+        160,
+        160,
+        160
+      ],
+      "description": "Alternating walking strides, crossbow carried low.",
+      "frameCount": 6,
+      "frames": [
+        {
+          "x": 0,
+          "y": 0,
+          "width": 128,
+          "height": 128,
+          "pivot": {
+            "x": 62.2,
+            "y": 65.0
+          }
+        },
+        {
+          "x": 128,
+          "y": 0,
+          "width": 128,
+          "height": 128,
+          "pivot": {
+            "x": 62.2,
+            "y": 65.0
+          }
+        },
+        {
+          "x": 256,
+          "y": 0,
+          "width": 128,
+          "height": 128,
+          "pivot": {
+            "x": 62.2,
+            "y": 65.0
+          }
+        },
+        {
+          "x": 384,
+          "y": 0,
+          "width": 128,
+          "height": 128,
+          "pivot": {
+            "x": 62.2,
+            "y": 65.0
+          }
+        },
+        {
+          "x": 512,
+          "y": 0,
+          "width": 128,
+          "height": 128,
+          "pivot": {
+            "x": 62.2,
+            "y": 65.0
+          }
+        },
+        {
+          "x": 640,
+          "y": 0,
+          "width": 128,
+          "height": 128,
+          "pivot": {
+            "x": 62.2,
+            "y": 65.0
+          }
+        }
+      ]
+    },
+    {
+      "id": "attack",
+      "file": "attack.png",
+      "label": "Crossbow shot",
+      "loop": false,
+      "scale": 1,
+      "durations": [
+        140,
+        180,
+        260,
+        100,
+        180,
+        250
+      ],
+      "description": "Raise, aim and shoot the crossbow toward screen-bottom; lower the empty weapon. Reload is separate.",
+      "frameCount": 6,
+      "frames": [
+        {
+          "x": 0,
+          "y": 0,
+          "width": 128,
+          "height": 128,
+          "pivot": {
+            "x": 62.25625,
+            "y": 64.96875
+          }
+        },
+        {
+          "x": 128,
+          "y": 0,
+          "width": 128,
+          "height": 128,
+          "pivot": {
+            "x": 62.25625,
+            "y": 64.96875
+          }
+        },
+        {
+          "x": 256,
+          "y": 0,
+          "width": 128,
+          "height": 128,
+          "pivot": {
+            "x": 62.25625,
+            "y": 64.96875
+          }
+        },
+        {
+          "x": 384,
+          "y": 0,
+          "width": 128,
+          "height": 128,
+          "pivot": {
+            "x": 62.25625,
+            "y": 64.96875
+          }
+        },
+        {
+          "x": 512,
+          "y": 0,
+          "width": 128,
+          "height": 128,
+          "pivot": {
+            "x": 62.25625,
+            "y": 64.96875
+          }
+        },
+        {
+          "x": 640,
+          "y": 0,
+          "width": 128,
+          "height": 128,
+          "pivot": {
+            "x": 62.310742187500004,
+            "y": 64.9384765625
+          }
+        }
+      ],
+      "releaseFrame": 3,
+      "weaponState": {
+        "start": "loaded-cocked",
+        "end": "empty-uncocked"
+      }
+    },
+    {
+      "id": "death",
+      "file": "death.png",
+      "label": "Death - side fall",
+      "loop": false,
+      "scale": 1,
+      "durations": [
+        150,
+        170,
+        190,
+        210,
+        240,
+        400
+      ],
+      "description": "Knees buckle, fall onto the side and hold the settled body.",
+      "frameCount": 6,
+      "frames": [
+        {
+          "x": 0,
+          "y": 0,
+          "width": 128,
+          "height": 128,
+          "pivot": {
+            "x": 62.2,
+            "y": 65.0
+          }
+        },
+        {
+          "x": 128,
+          "y": 0,
+          "width": 128,
+          "height": 128,
+          "pivot": {
+            "x": 62.2,
+            "y": 65.0
+          }
+        },
+        {
+          "x": 256,
+          "y": 0,
+          "width": 128,
+          "height": 128,
+          "pivot": {
+            "x": 62.2,
+            "y": 65.0
+          }
+        },
+        {
+          "x": 384,
+          "y": 0,
+          "width": 128,
+          "height": 128,
+          "pivot": {
+            "x": 62.2,
+            "y": 65.0
+          }
+        },
+        {
+          "x": 512,
+          "y": 0,
+          "width": 128,
+          "height": 128,
+          "pivot": {
+            "x": 62.2,
+            "y": 65.0
+          }
+        },
+        {
+          "x": 640,
+          "y": 0,
+          "width": 128,
+          "height": 128,
+          "pivot": {
+            "x": 62.2,
+            "y": 65.0
+          }
+        }
+      ]
+    }
+  ],
+  "source": "Art/Cultures/Russians/Units/LateMedieval/RusCrossbowman/animations.json",
+  "metadataHash": "2e2e98a35ba22762262a82b3700b31b3c4da625a73208d776467276d78413c27",
+  "hashes": {
+    "Art/Cultures/Russians/Units/LateMedieval/RusCrossbowman/idle-motion-v6.png": "839e8094d930255bb6089e9c67bcc4db2b439b42dc02d042f7b00d2c3156ba0b",
+    "Art/Cultures/Russians/Units/LateMedieval/RusCrossbowman/running-string-v5.png": "e067df23d5c3db42e653371561a9a8e5ded4a5ad986dbe8ad4a7fade2ed99122",
+    "Art/Cultures/Russians/Units/LateMedieval/RusCrossbowman/attack-motion-v6.png": "5b88860951f98543fe6a34caa7607d9f1505bbe64e25fdf7e58bf69e3ae01cae",
+    "Art/Cultures/Russians/Units/LateMedieval/RusCrossbowman/death-string-v5.png": "539f9a7c5b371ace22bc013e9b78350cc41f90bdc1dde0a957fdc9a32c2464f1"
+  }
+}

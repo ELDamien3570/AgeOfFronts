@@ -17,7 +17,21 @@ export interface ResearchOpportunity {
   goods: number;
   protectedItems: Readonly<Record<string, number>>;
 }
-/** Catalog work is finite (85 authored nodes); material paths retain the
+// Project the prerequisite graph once. A foundation can lead to a troop unlock
+// without itself granting that troop; AI must value the necessary intermediate work.
+const parents = new Map(TECHNOLOGIES.map((t) => [t.id, t.prerequisites]));
+const ancestors = new Map<string, ReadonlySet<string>>();
+function prerequisiteIds(id: string): ReadonlySet<string> {
+  const cached = ancestors.get(id);
+  if (cached) return cached;
+  const result = new Set<string>([id]);
+  for (const parent of parents.get(id) ?? [])
+    for (const prerequisite of prerequisiteIds(parent))
+      result.add(prerequisite);
+  ancestors.set(id, result);
+  return result;
+}
+/** Catalog work is bounded by the registered research catalogue; material paths retain the
  * existing 32-node dependency limit and count incoming/protected stock once. */
 export function researchUtility(
   technology: Technology,
@@ -37,7 +51,13 @@ export function researchUtility(
   );
   let benefit = 0;
   const reasons: string[] = [];
-  for (const unit of UNITS.filter((u) => u.technologyId === technology.id)) {
+  for (const unit of UNITS.filter(
+    (u) =>
+      !u.placeholder &&
+      AGES.indexOf(u.age) <= AGES.indexOf(snapshot.age) &&
+      !snapshot.research.includes(u.technologyId) &&
+      prerequisiteIds(u.technologyId).has(technology.id),
+  )) {
     const deficit = Math.max(
       0,
       (demand.units[unit.role] ?? 0) - snapshot.force.role(unit.role),
@@ -50,14 +70,21 @@ export function researchUtility(
         (b) =>
           b.type === unit.building && !b.remainingTicks && (b.health ?? 1) > 0,
       ) ||
-      research.includes(buildingTechnology(unit.building, snapshot.age) ?? "");
+      research.includes(buildingTechnology(unit.building, unit.age) ?? "") ||
+      prerequisiteIds(buildingTechnology(unit.building, unit.age) ?? "").has(
+        technology.id,
+      );
     if (deficit && attainable && production && snapshot.headroom > 0) {
       benefit += Math.min(4, deficit) * 3200;
       reasons.push(`role:${unit.role}`);
     }
   }
   for (const recipe of PRODUCTION_RECIPES.filter(
-    (r) => r.technologyId === technology.id,
+    (r) =>
+      AGES.indexOf(TECHNOLOGIES.find((t) => t.id === r.technologyId)!.age) <=
+        AGES.indexOf(snapshot.age) &&
+      !snapshot.research.includes(r.technologyId) &&
+      prerequisiteIds(r.technologyId).has(technology.id),
   )) {
     const needed = Object.entries(recipe.outputs).some(
       ([id]) =>
@@ -129,9 +156,18 @@ export function researchUtility(
       reasons.push("actual-trade-throughput");
     }
   }
-  if(snapshot.age === "Modern" && ["airstrip","missile-silo","mirv-launcher"].some(type=>
-    buildingTechnology(type as Parameters<typeof buildingTechnology>[0],snapshot.age)===technology.id)) {
-    benefit+=8000;reasons.push("late-game-capability");
+  if (
+    snapshot.age === "Modern" &&
+    ["airstrip", "missile-silo", "mirv-launcher"].some(
+      (type) =>
+        buildingTechnology(
+          type as Parameters<typeof buildingTechnology>[0],
+          snapshot.age,
+        ) === technology.id,
+    )
+  ) {
+    benefit += 8000;
+    reasons.push("late-game-capability");
   }
   if (
     snapshot.threatTroops > 0 &&

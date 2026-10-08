@@ -1,0 +1,170 @@
+{
+  "checks": "Dimensions, RGBA transparency, ten frame slots, distinct pose counts including holds, transparent guards, visible padding, hashes, original and previous-age preservation.",
+  "visualReview": "All nine clips loaded in the browser. Inspected whole squads at attack frames 3, 5 and 7, confirmed all five swords or bows remain connected to their gripping hands, and checked alternating cavalry reach and tuck poses. Age tabs tested with Left, Home and End; Classical selection survives reload. Reviewed both three-column and two-column responsive layouts.",
+  "integrationStatus": "Artwork-only; not connected to game renderer.",
+  "preservationChecks": {
+    "originalStillIconsUnchanged": 21,
+    "approvedEarlierAgeSheetsUnchanged": 18
+  },
+  "sheets": [
+    {
+      "file": "Melee\\ClassicalAge\\Idle.png",
+      "size": [
+        2560,
+        1024
+      ],
+      "mode": "RGBA",
+      "alphaExtrema": [
+        0,
+        255
+      ],
+      "distinctFrames": 8,
+      "minimumVisiblePaddingPx": 30,
+      "max8PxGuardAlpha": 0,
+      "sha256": "3756548f2f19a359259abdeab4b059d22a0b4fadecc114d4f95d1423ea8baee6"
+    },
+    {
+      "file": "Melee\\ClassicalAge\\Running.png",
+      "size": [
+        2560,
+        1024
+      ],
+      "mode": "RGBA",
+      "alphaExtrema": [
+        0,
+        255
+      ],
+      "distinctFrames": 10,
+      "minimumVisiblePaddingPx": 52,
+      "max8PxGuardAlpha": 0,
+      "sha256": "9e633121399f6593886a11b9bacd6a097667020fdbef14aa4edeec6ac9992826"
+    },
+    {
+      "file": "Melee\\ClassicalAge\\Attack.png",
+      "size": [
+        2560,
+        1024
+      ],
+      "mode": "RGBA",
+      "alphaExtrema": [
+        0,
+        255
+      ],
+      "distinctFrames": 7,
+      "minimumVisiblePaddingPx": 23,
+      "max8PxGuardAlpha": 0,
+      "sha256": "016f82cc992f823a91bbb41d299894d3b8cbceaedf53eec732ee57e7b635fe87"
+    },
+    {
+      "file": "Ranged\\ClassicalAge\\Idle.png",
+      "size": [
+        2560,
+        1024
+      ],
+      "mode": "RGBA",
+      "alphaExtrema": [
+        0,
+        255
+      ],
+      "distinctFrames": 10,
+      "minimumVisiblePaddingPx": 105,
+      "max8PxGuardAlpha": 0,
+      "sha256": "88e3573d42d89c25885ee8c7c82fbc911719803283e965cd283355dc530cef16"
+    },
+    {
+      "file": "Ranged\\ClassicalAge\\Running.png",
+      "size": [
+        2560,
+        1024
+      ],
+      "mode": "RGBA",
+      "alphaExtrema": [
+        0,
+        255
+      ],
+      "distinctFrames": 10,
+      "minimumVisiblePaddingPx": 79,
+      "max8PxGuardAlpha": 0,
+      "sha256": "423a90f3c913dafbced4f3db58de08ccccfecce7f35ac0c44dbc101a0a0b1ed3"
+    },
+    {
+      "file": "Ranged\\ClassicalAge\\Attack.png",
+      "size": [
+        2560,
+        1024
+      ],
+      "mode": "RGBA",
+      "alphaExtrema": [
+        0,
+        255
+      ],
+      "distinctFrames": 8,
+      "minimumVisiblePaddingPx": 24,
+      "max8PxGuardAlpha": 0,
+      "sha256": "32630c0bf92e6a7c2e431b081127574d03b1456abc0b2edc3016774c45262ac7"
+    },
+    {
+      "file": "Cavalry\\ClassicalAge\\Idle.png",
+      "size": [
+        2560,
+        1024
+      ],
+      "mode": "RGBA",
+      "alphaExtrema": [
+        0,
+        255
+      ],
+      "distinctFrames": 3,
+      "minimumVisiblePaddingPx": 44,
+      "max8PxGuardAlpha": 0,
+      "sha256": "fa7c2d9f0bc81cbd2d9c11239d7d384dd8d2f75fc982cb2a017e27e7a6425b01"
+    },
+    {
+      "file": "Cavalry\\ClassicalAge\\Running.png",
+      "size": [
+        2560,
+        1024
+      ],
+      "mode": "RGBA",
+      "alphaExtrema": [
+        0,
+        255
+      ],
+      "distinctFrames": 4,
+      "minimumVisiblePaddingPx": 24,
+      "max8PxGuardAlpha": 0,
+      "sha256": "7b58b9ed40340c1c0b0a80164337ccc78184b93d6bbfb205df22715ec1a2c811"
+    },
+    {
+      "file": "Cavalry\\ClassicalAge\\Attack.png",
+      "size": [
+        2560,
+        1024
+      ],
+      "mode": "RGBA",
+      "alphaExtrema": [
+        0,
+        255
+      ],
+      "distinctFrames": 6,
+      "minimumVisiblePaddingPx": 31,
+      "max8PxGuardAlpha": 0,
+      "sha256": "e50835aaa7491de643f3b4a8025b5ab757dfc527d40827b45f8fcaf8257f0010"
+    }
+  ],
+  "browserReview": {
+    "url": "http://127.0.0.1:9007/StoneAge_Animation_Preview.html#ClassicalAge",
+    "screenshot": "C:/Users/Damien/.codex/visualizations/2026/09/30/01a0f03e-fce7-71f0-ae83-67f86e8e8794/ClassicalAge_Full_Animation_Review.png",
+    "loadedClips": 9,
+    "attackFramesInspected": [
+      3,
+      5,
+      7
+    ],
+    "ageTabs": [
+      "StoneAge",
+      "BronzeAge",
+      "ClassicalAge"
+    ]
+  }
+}

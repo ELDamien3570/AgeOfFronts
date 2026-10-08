@@ -1,0 +1,40 @@
+{
+  "tool": "built-in-imagegen",
+  "idleHelmetAnchorsX": [
+    255,
+    249.5,
+    257.5,
+    255,
+    251.5,
+    258.5
+  ],
+  "records": [
+    {
+      "id": "idle",
+      "file": "idle-motion-v6.png",
+      "nativeFile": "Native-idle-motion-v6.png",
+      "status": "selected-source",
+      "prompt": "Precise edit existing transparent 1536x1024 six-frame sprite sheet, 3 columns by2rows512cells. Make all six idle poses laterally stationary. Helmet crown, torso center, feet and crossbow center stay at exactly the same X coordinate relative to each cell. NO sideways sway, no rotation, no shifting stance, no swinging weapon. Only subtle shoulder breathing, 1-2 pixels vertical change at this scale. Keep loaded bolt and deep V string behind nock unchanged. All six frames retain the same approved low carry. Preserve character identity, armor purpleclothes, colors, camera, frame centers, current sprite scale and transparent background. No shadow/haze/text, no new weapon parts.",
+      "reference": "C:/Users/Damien/Documents/GitHub/AgeOfFronts/AgeOfFronts/Art/Cultures/Russians/Units/LateMedieval/RusCrossbowman/idle-string-v5b.png",
+      "generatedSource": "C:/Users/Damien/.codex/generated_images/01a1166c-83ee-7ae0-be97-78c470de8962/exec-ba8e1eb8-b49e-4002-9380-a5db492be631.png"
+    },
+    {
+      "id": "attack",
+      "file": "attack-motion-v6.png",
+      "nativeFile": "Native-attack-motion-v6.png",
+      "status": "superseded-string-detail",
+      "prompt": "Precise edit existing transparent 1536x1024 six-frame sprite sheet, 3 columns by2rows512cells. Fix ONLY final frame 6 (bottom-right). The wooden STOCK tilts diagonally down-right, but the FRONT PROD currently incorrectly stays horizontal. Rotate the entire connected crossbow together as ONE RIGID OBJECT as it lowers. Frame 6: stock long axis diagonal down-right, curved prod mounted PERPENDICULAR to that diagonal stock (so prod axis diagonal up-right/down-left), muzzle stirrup follows same stock rotation, one uncocked string connects both prod tips alongside front prod. No bent connection or detached/sliding prod. Keep empty groove with no bolt. Hands support the complete rotated weapon. Keep frames1-5 unchanged, especially the cocked rear string and single release. Preserve exact fixed overhead camera and character. Preserve character identity, armor purpleclothes, colors, camera, frame centers, current sprite scale and transparent background. No shadow/haze/text, no new weapon parts.",
+      "reference": "C:/Users/Damien/Documents/GitHub/AgeOfFronts/AgeOfFronts/Art/Cultures/Russians/Units/LateMedieval/RusCrossbowman/attack-string-v5-clean.png",
+      "generatedSource": "C:/Users/Damien/.codex/generated_images/01a1166c-83ee-7ae0-be97-78c470de8962/exec-0ef57ada-0f49-450f-8f0c-6580e6cacf28.png"
+    },
+    {
+      "id": "attack",
+      "file": "attack-motion-v6b.png",
+      "nativeFile": "Native-attack-motion-v6b.png",
+      "status": "selected-source",
+      "prompt": "Precise correction ONLY to bottom-right cell6 of this transparent 1536x1024 six-frame sheet. Keep newly corrected whole crossbow orientation exactly unchanged: diagonal down-right stock and perpendicular diagonal front prod. This is EMPTY AFTER FIRING. Remove any white/silver bolt feathers, arrow shaft or arrowhead from groove; groove is plain empty darkwood. Remove ALL long diagonal cord segments reaching back toward the rear grip/catch. Replace with exactly ONE relaxed bowstring: single short cord directly between the two OUTER prod tips at the FRONT of crossbow, adjacent to curved woodenprod, crossing near muzzle/front stock. NO deep Vstring, no rear string connection, no second cord. Preserve all six body poses camera armor scale and cells1-5 unchanged. Transparentbackground, crisp silhouettes no haze labels.",
+      "reference": "C:/Users/Damien/.codex/generated_images/01a1166c-83ee-7ae0-be97-78c470de8962/exec-0ef57ada-0f49-450f-8f0c-6580e6cacf28.png",
+      "generatedSource": "C:/Users/Damien/.codex/generated_images/01a1166c-83ee-7ae0-be97-78c470de8962/exec-cae7103e-dae3-47a7-8c7a-764821db8384.png"
+    }
+  ]
+}

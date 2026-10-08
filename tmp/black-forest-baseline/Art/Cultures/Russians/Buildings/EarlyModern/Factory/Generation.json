@@ -1,0 +1,29 @@
+{
+  "schemaVersion": 1,
+  "cultureId": "russians",
+  "age": "EarlyModern",
+  "asset": {
+    "id": "factory",
+    "folder": "Factory",
+    "category": "Factory",
+    "role": "Trade goods and industrial production",
+    "file": "Factory/Icon.png",
+    "sourceFile": "Factory/SourceArt/Icon-v1.png",
+    "selectedSourceFile": "Factory/SourceArt/Icon-v1.png",
+    "generator": "built-in image_gen",
+    "generationFile": "C:\\Users\\Damien\\.codex\\generated_images\\01a0fea5-71c9-75b3-9da6-4a1ca2cbd68f\\exec-ebb1009e-1745-4351-96a3-a20d10303178.png",
+    "prompt": "Use case: stylized-concept. Create ONE NEW hand-painted realistic RTS building icon for Russian/Soviet EARLY MODERN WWII-era culture. Image 1 is STYLE AND EXACT OVERHEAD CAMERA reference only, not subject to copy. Weathered olive corrugated roofs, muted red brick or timber edge caps, warm packed gravel/earth, subdued grass, period 1940s equipment. Use large distinct role cues readable at48/64/128px, restrained detail. EXACT90degree vertical NADIR ORTHOGRAPHIC roof plan, all outer roof edges perfect rectangles parallel to image axes, no visible facade, door, windows, upright shaft, front wall or side elevation anywhere. Roofs completely conceal all vertical building faces. Chimneys circular or square TOP openings only, all vertical posts only top endcaps, wheels viewed edge-on thin strips, machinery only horizontal top surfaces. No isometric camera, camera tilt, perspective convergence, giant long shadows. Minimal shallow contact shading, top-left surface light. Compact complete footprint on square canvas with at least7percent transparent outer margin on every side. GENUINE transparent alpha outside footprint. No black background, checkerboard, bright red/yellow edge fringe, text, labels, modern flags, people or scenic environment. No continuous artificial decorative perimeter frame. SUBJECT: Large broad three-wing brick industrial hall roof, weathered olive-grey corrugated panels, four small chimney top circles with dark mouths only, rear roof skylights; lower yard with packed wooden shipping crates, big cable coils, metal sheet stacks and olive wartime flatbed truck. No rifles, missiles or modern forklift. Industrial trade production dominates.",
+    "referenceImages": [
+      "C:/Users/Damien/Documents/GitHub/AgeOfFronts/AgeOfFronts/Art/Cultures/Russians/Buildings/EarlyModern/Military Airstrip/SourceArt/Icon-WWII-v4.png"
+    ],
+    "status": "draft",
+    "date": "2026-10-07",
+    "technologyIds": [
+      "modern-industrial-production"
+    ],
+    "proposedBuildingRole": false,
+    "sha256": "32a397add367f9fcc4d6bdc41dce39e7d5e995c57a48e5f055fd11b0d19d2abe"
+  },
+  "historicalScope": "Era-inspired compressed game-art interpretation, not a specific building reconstruction.",
+  "scope": "art-review-only; no gameplay entity or technology binding has been implemented"
+}

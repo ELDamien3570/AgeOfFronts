@@ -1,0 +1,72 @@
+{
+  "httpChecks": [
+    {
+      "file": "Actor_Review.html",
+      "status": 200,
+      "bytes": 7107
+    },
+    {
+      "file": "animations.json",
+      "status": 200,
+      "bytes": 21957
+    },
+    {
+      "file": "../../../StoneAge/Clubman/actor-review.js",
+      "status": 200,
+      "bytes": 8203
+    },
+    {
+      "file": "idle-v1.png",
+      "status": 200,
+      "bytes": 1355680
+    },
+    {
+      "file": "running-v3.png",
+      "status": 200,
+      "bytes": 1492090
+    },
+    {
+      "file": "charge-v3.png",
+      "status": 200,
+      "bytes": 1492090
+    },
+    {
+      "file": "attack-v3.png",
+      "status": 200,
+      "bytes": 1089893
+    },
+    {
+      "file": "charge-attack-v3.png",
+      "status": 200,
+      "bytes": 1009428
+    },
+    {
+      "file": "reload-v2.png",
+      "status": 200,
+      "bytes": 1084278
+    },
+    {
+      "file": "hit-v1.png",
+      "status": 200,
+      "bytes": 1188916
+    },
+    {
+      "file": "charged-v2.png",
+      "status": 200,
+      "bytes": 1116488
+    },
+    {
+      "file": "death-v1.png",
+      "status": 200,
+      "bytes": 1177691
+    },
+    {
+      "file": "death-back-v2.png",
+      "status": 200,
+      "bytes": 899182
+    }
+  ],
+  "browserPlaybackVerified": false,
+  "userApproval": "Pending animation review",
+  "runtimeIntegration": false
+}

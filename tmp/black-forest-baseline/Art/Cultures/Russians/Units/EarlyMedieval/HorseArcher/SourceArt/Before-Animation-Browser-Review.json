@@ -1,0 +1,21 @@
+{
+  "httpChecks": [
+    {
+      "file": "Actor_Review.html",
+      "status": 200
+    },
+    {
+      "file": "animations.json",
+      "status": 200
+    },
+    {
+      "file": "Idle-v3.png",
+      "status": 200
+    }
+  ],
+  "nativeIdleInspected": true,
+  "browserPlaybackVerified": false,
+  "limitation": "Windows browser automation sandbox unavailable.",
+  "userApproval": "Idle-v3 pending review",
+  "runtimeIntegration": false
+}

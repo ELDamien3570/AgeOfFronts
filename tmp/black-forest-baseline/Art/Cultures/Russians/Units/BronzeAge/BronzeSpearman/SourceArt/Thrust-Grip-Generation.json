@@ -1,0 +1,25 @@
+{
+  "date": "2026-10-07",
+  "mode": "built-in-imagegen",
+  "scope": "Main attack frames 3 and 4 only; charge attack approved and preserved",
+  "records": [
+    {
+      "prompt": "Precise pose correction to image1 (main attack atlas), using image2 (approved charge attack) as weapon-hand posture reference. Image1 is1536x1024RGBA,3columns2rows, six512x512cells numbered1-6 row-major. Change ONLY frame3 TOP RIGHT and frame4 BOTTOM LEFT. Their spear grip incorrectly changes into an UNDERHAND waist-level thrust with downward hanging fist and elbow. Replace that with the OVERHAND raised thrust grip seen in image2 frames3/4: closed fist knuckles visible toward camera, thumb wrapping shaft from same side as approved charge grip; forearm projects forward from a raised elbow beside shoulder, not dangling down from elbow, spear supported at shoulder level with rear-third grip. Keep rear butt extending screen-top past shoulder, bronze leaf tip screen-bottom, straight rigid long shaft passing through grip. Frame3 extends raised weapon arm forward; frame4 reaches maximum forward thrust, keeping SAME overhand orientation, with hand still around REAR THIRD of spear rather than sliding toward point. Correct only weapon arm/hand/rigid spear in those two cells, preserving exact torso/head/shield/boots placement and equipment proportions and colors. Do not copy running legs or lunge from charge reference. Keep large wooden round shield and helmet/bronze pauldrons/fur/leather. Keep cells1,2,5,6 exactly as inimage1. Exact1536x1024canvas/cell grid and existing actor scale/padding, no resizing, no text/trails/background. Truly transparent alpha0 outside crisp silhouette. Strict vertical overhead camera facing screen-bottom.",
+      "references": [
+        "../Attack-v1.png",
+        "../Charge-Attack-v1.png"
+      ],
+      "generatedSource": "C:\\Users\\Damien\\.codex\\generated_images\\01a0fea1-c63f-7343-92ca-6c21cc1c4296\\exec-842d9f6c-7401-4b4c-aec6-0ebf07e6b530.png",
+      "selection": "Frame 3 selected; frame 4 still underhand and rejected."
+    },
+    {
+      "prompt": "Correct this ONE main spear-thrust frame (image1) using image2 APPROVED charge-thrust pose as exact weapon arm and fist orientation reference. Keep image1 body, helmet, fur, shield, legs, location and SIZE exactly. Replace its weapon-side arm and spear posture with image2's: fist shows FOUR curled fingers/knuckles on the FRONT/CAMERA side of wooden shaft, thumb wraps opposite side, back of hand visible, wrist ABOVE spearhead not palm down. Elbow is back/up beside shoulder, forearm reaching forward screen-bottom from bent raised shoulder, the top of fist visible as in image2. This is an OVERHAND shoulder-height thrust: NOT the downward dangling closed fist inimage1. Spear butt should extend to approximately(165,40), closed fingers at(185,255), rigid shaft continues to bronze leaf tip at(190,447), as image2. Use same long spear and bronze leafhead, no axe. Main attack has planted legs not running lunge: retain image1 legs entirely. Same large round shield inexactimage1place. Single512x512RGBA frame, preserve original scale and position withfull silhouette paddedinsidecell. Only ONE soldier, no text, no montage. Truly transparent alpha0 outside antialiased silhouette, no haze, shadows or background.",
+      "references": [
+        "Thrust-Frame4-Before.png",
+        "Thrust-Frame4-Charge-Reference.png"
+      ],
+      "selection": "Selected main attack frame 4; whole canvas normalized to 512px.",
+      "generatedSource": "C:/Users/Damien/.codex/generated_images/01a0fea1-c63f-7343-92ca-6c21cc1c4296/exec-e13220b8-2e45-4173-ad09-bb8e37ac04e3.png"
+    }
+  ]
+}

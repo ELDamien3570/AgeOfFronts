@@ -229,7 +229,7 @@ export class EmpireHudView {
     tip: string,
     portrait?: string,
   ): string {
-    const art = portrait && eraPortrait(portrait);
+    const art = portrait && (eraPortrait(`unit-portrait-${portrait}`) ?? eraPortrait(portrait));
     const shortcut = action === "build" ? CONSTRUCTION_SHORTCUTS.find(a => a.kind === value) : action === "sortie" ? {key:"P"} : undefined;
     const key = shortcut ? `<kbd>${action === "build" && this.root.dataset.wasdMode === "true" ? "⇧" : ""}${shortcut.key}</kbd>` : "";
     return `<div class="action-slot" data-dock-tip="${esc(`${label}\n${tip}${reason ? `\n${reason}` : ""}`)}" tabindex="${reason ? 0 : -1}"><button class="hud-action" data-dock-action="${action}" data-value="${value}" ${reason ? "disabled" : ""} aria-label="${esc(label)}">${art ? `<img class="hud-art" src="${art}" alt="">` : `<span class="command-symbol">${esc(label.slice(0, 2))}</span>`}${key}<span class="action-name">${esc(label)}</span></button></div>`;
@@ -320,13 +320,13 @@ export class EmpireHudView {
     for (const type of ["city", "factory", "port", "barracks", "archery", "stables"] as const) {
       this.root.querySelector<HTMLElement>(`#build-${type}`)!.closest<HTMLElement>(".action-slot")!.hidden = !vm.buildingVisible(type);
     }
-    const support = ["siege", "artillery", "anti-air", "launcher"]
+    const support = ["antiCavalry", "heavyCavalry", "rangedCavalry", "siege", "artillery", "anti-air", "launcher"]
       .map((role) => {
         const candidates = vm
           .units()
           .filter(
             (u) =>
-              u.role === role &&
+              (u.troopClass === role || u.role === role) &&
               (!this.preferences.tierLimit ||
                 AGES.indexOf(u.age) <=
                   AGES.indexOf(this.preferences.tierLimit)),

@@ -24,7 +24,7 @@ const FOOTPRINTS: Record<
   stables: MILITARY,
   "siege-workshop": MILITARY,
   "arms-factory": MILITARY,
-  airstrip: { width: 2, height: 3 },
+  airstrip: MILITARY,
   factory: MILITARY,
   port: MILITARY,
   mine: SMALL,

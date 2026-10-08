@@ -1,0 +1,12 @@
+{
+  "atlasCount": 12,
+  "spriteCount": 48,
+  "rgba": true,
+  "squareEvenDimensions": true,
+  "noVisibleSpriteTouchesCellEdges": true,
+  "alphaBoundsThreshold": 8,
+  "originalPixelsPreserved": true,
+  "checks": "File hashes, alpha channels, dimensions, nonempty slots, margins. No gameplay or geographic validation.",
+  "totalBytes": 14716761,
+  "minimumMarginPixels": 33
+}

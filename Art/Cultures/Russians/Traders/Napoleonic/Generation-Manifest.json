@@ -1,0 +1,34 @@
+{
+  "schemaVersion": 1,
+  "cultureId": "russian",
+  "age": "Napoleonic",
+  "generator": "built-in image_gen",
+  "prompt": "Edit this exact approved trader into a Napoleonic caravan by adding one more IDENTICAL formation behind the existing one. OUTPUT CANVAS MUST BE PORTRAIT WITH WIDTH:HEIGHT=1:2, DOUBLE THE HEIGHT of square reference, ideally1254x2508. Preserve all original art designs and strict overhead perspective. Exactly TWO merchants, FOUR horse-drawn wooden two-wheel cargo carts, FOUR chestnut pulling horses total. Layout: TWO ROWS along the vertical travel direction. Each row is an identical copy of the reference: leftcart with horse below it, ONE merchant in the CENTER lane alongside horses, rightcart with horse below it. Put first full formation in upper half, second matching full formation in lower half, clear transparent gap between rows. All actors face SCREEN BOTTOM, all carts have same creamlinenbale/brownfurroll/smallwoodchest tiedrope cargo, samegreen wool merchant with furcap/rustsash/boots, samewoodshafts/harness. DO NOT upgrade or redesign clothes/equipment; user asked justsameformation with anotherguy leadingtwo morecarts. Do NOT squeeze four carts into one horizontal row. Do not put eithermerchant onoutside; eachmerchant between his own two horses, holding a lead to each. Both rows fully visible and safelyinside canvas with >=80pixels empty margins. Matching widths and scale between rows. No cropped legs, no oversizedanatomy, no extraanimals, no militarygear, no firearms. Strict90degree verticaloverheadorthographic, crispdimensionalpaintedRTS style, genuine transparentRGBA no backdrop/terrain/castshadow/glow/text. Preserve the approved original silhouette twice. Tall1:2portraitcanvas is essential, not square.",
+  "reference": "../LateMedieval/SourceArt/Trader_Russian_LateMedieval_v2.png",
+  "userMessage": "nice, now do a Napoleonic one it should just be this but with one more guy leading 2 more carts. make the resolution double the height to support that",
+  "requestedSourceSize": [
+    1254,
+    2508
+  ],
+  "requestedFormation": "Two identical merchant-centered, two-cart groups in single file. Two merchants, four horses, four carts.",
+  "status": "approved master; Idle and articulated Travel exported",
+  "sourceSha256": "6c23c1e0fab23325e907c5afa3a8b2828b739ba938a2246eb6c8bb6ed21fcdfb",
+  "generatedFile": "Art\\Cultures\\Russians\\Traders\\Napoleonic\\SourceArt\\Trader_Russian_Napoleonic_Generated_v1.png",
+  "generatedDimensions": [
+    887,
+    1774
+  ],
+  "authoringExportDimensions": [
+    1254,
+    2508
+  ],
+  "exportMethod": "Uniform full-canvas LANCZOS resize; original generated master and alpha retained.",
+  "animationApproval": {
+    "status": "approved",
+    "age": "Napoleonic",
+    "date": "2026-10-07",
+    "userMessage": "nice, now do a Napoleonic one it should just be this but with one more guy leading 2 more carts. make the resolution double the height to support that",
+    "scope": "Continue creation and animation; add a second merchant-centered formation and double canvas height."
+  },
+  "animationAuthoring": "rig-authoring.json; ../caravan-rig.py"
+}

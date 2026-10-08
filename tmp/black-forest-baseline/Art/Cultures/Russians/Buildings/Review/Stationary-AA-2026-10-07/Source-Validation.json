@@ -1,0 +1,29 @@
+{
+  "date": "2026-10-07",
+  "passed": true,
+  "existingImagesPreserved": 488,
+  "changedPriorImages": [],
+  "newModernIcons": 1,
+  "earlyModernIcons": 18,
+  "modernIcons": 21,
+  "selectedMaster": "Anti-Aircraft Emplacement/SourceArt/Icon-v3.png",
+  "alphaRange": [
+    0,
+    255
+  ],
+  "size": [
+    1254,
+    1254
+  ],
+  "solidAlphaBounds": [
+    128,
+    255,
+    1122,
+    1180
+  ],
+  "sha256": "e8090f2f6b57f726d4fc547103dc5ca0f11cc54039e4c0dba704e794f23c4c4b",
+  "preservedMasters": [
+    "Icon-v1.png",
+    "Icon-v2.png"
+  ]
+}

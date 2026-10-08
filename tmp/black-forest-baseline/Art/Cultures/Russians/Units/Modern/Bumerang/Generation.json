@@ -1,0 +1,44 @@
+{
+  "date": "2026-10-07",
+  "mode": "built-in-imagegen",
+  "selectedIdle": "Idle-v1.png",
+  "userApproval": "Idle-v1 approved; animations pending review.",
+  "designReference": "https://odin.t2com.army.mil/WEG/Asset/98120ce6edcd5819b72307efcd79c44d",
+  "records": [
+    {
+      "date": "2026-10-07",
+      "mode": "built-in-imagegen",
+      "file": "Idle-v1.png",
+      "generatedSource": "C:\\Users\\Damien\\.codex\\generated_images\\01a11641-9e1b-7c81-be76-c9edd53ef182\\exec-2659dae2-55d2-4374-a87f-03b2d5a4bcfa.png",
+      "prompt": "Create ONE idle game sprite of a modern Russian VPK-7829 Bumerang K-17 eight-wheeled infantry fighting vehicle with Bumerang-BM style unmanned AUTOCANNON turret. TRUE 90-degree overhead orthographic PLAN VIEW, completely vertical camera, vehicle nose and cannon toward BOTTOM, rear ramp toward TOP. Long broad nearly rectangular angular armored hull, chamfered front corners, wedge-shaped front roof glacis, enclosed troop compartment behind turret. EXACTLY EIGHT large black rubber tires, FOUR separately visible tread-top strips along EACH side, four axles; NO TRACKS, no six-wheeler, no truck cargo bed. Front-left driver's roof hatch, front-right engine ventilation grilles, rear roof access panels and closed hatches. Compact faceted remotely operated turret centered slightly toward rear, long slender autocannon barrel extending straight down toward nose, small coaxial gun, low optical/sensor blocks; paired tube launcher pod on LEFT turret side and paired tube launcher pod on RIGHT side, four restrained dark-green missile tubes pointing forward. Modern matte olive-green armor with modest edge wear, darker wheels and steel gun, tiny subdued red faction star on roof panel. All crew enclosed, no visible soldiers. Entire vehicle including barrel and all8 tires fits transparent1024x1536canvas with generous margins. Strict roof plan: show ONLY TOP surfaces of armor, turret, roof hatches, cannon and tire treads; NO vertical front or side armor facades, no windshield, no visible front grille, no giant circular wheel sidewall faces, NO isometric/3quarter viewpoint. Clean readable silhouette at48/64/128px, smooth stylized painted RTS finish, restrained highlights and texture, consistent with reference palette/render quality. Reference is STYLE ONLY, do not reuse old truck equipment or shape. No ground/shadow/background/text, no muzzle flash, no dramatic lighting or black outline.",
+      "references": [
+        "../MachineGunTruck/Idle-v3.png"
+      ],
+      "designReference": "https://odin.t2com.army.mil/WEG/Asset/98120ce6edcd5819b72307efcd79c44d"
+    },
+    {
+      "file": "moving-v1.png",
+      "generatedSource": "C:\\Users\\Damien\\.codex\\generated_images\\01a11641-9e1b-7c81-be76-c9edd53ef182\\exec-8cef394d-20b8-4e09-ac20-438c6f75eaf1.png",
+      "prompt": "Create a transparent game animation sprite atlas matching the supplied approved K-17 Bumerang exactly. 1536x1024 landscape, 3 columns by 2 rows, six chronological frames left to right then next row. Each isolated vehicle fits entirely in its own 512x512 cell with generous transparent margin; same center and scale in every frame. Strict vertical orthographic overhead, nose and cannon pointing screen-down. Preserve rectangular olive hull, eight tires four per side, roof hatches/grilles, faceted autocannon turret, paired side missile tubes, subdued nose red star, painted RTS finish. No labels, terrain, outlines, camera tilt, lateral weaving or perspective changes. Vehicle length about 390px per cell. Motion: Six-frame seamless in-place forward driving loop. Tire treads visibly cycle, slight suspension vibration only; hull remains rigid and centered, gun stays steady forward. No firing or smoke.",
+      "nativeCopy": "SourceArt\\Native-Motion-moving-v1.png"
+    },
+    {
+      "file": "attack-v1.png",
+      "generatedSource": "C:\\Users\\Damien\\.codex\\generated_images\\01a11641-9e1b-7c81-be76-c9edd53ef182\\exec-2d519419-aa0e-4762-adfa-4afa5b88a000.png",
+      "prompt": "Create a transparent game animation sprite atlas matching the supplied approved K-17 Bumerang exactly. 1536x1024 landscape, 3 columns by 2 rows, six chronological frames left to right then next row. Each isolated vehicle fits entirely in its own 512x512 cell with generous transparent margin; same center and scale in every frame. Strict vertical orthographic overhead, nose and cannon pointing screen-down. Preserve rectangular olive hull, eight tires four per side, roof hatches/grilles, faceted autocannon turret, paired side missile tubes, subdued nose red star, painted RTS finish. No labels, terrain, outlines, camera tilt, lateral weaving or perspective changes. Vehicle length about 390px per cell. Motion: Six-frame stationary autocannon burst: ready, small bright muzzle flash at the downward barrel tip, short barrel recoil recovery, second compact muzzle flash, dissipating small muzzle smoke, settled ready. Eight wheels and hull remain fixed and unchanged. Fire ONLY the autocannon, never the side missile tubes. Preserve smooth olive palette.",
+      "nativeCopy": "SourceArt\\Native-Motion-attack-v1.png"
+    },
+    {
+      "file": "death-v1.png",
+      "generatedSource": "C:\\Users\\Damien\\.codex\\generated_images\\01a11641-9e1b-7c81-be76-c9edd53ef182\\exec-31ea5155-3b5c-454e-be97-6a5277b37369.png",
+      "prompt": "Create a transparent game animation sprite atlas matching the supplied approved K-17 Bumerang exactly. 1536x1024 landscape, 3 columns by 2 rows, six chronological frames left to right then next row. Each isolated vehicle fits entirely in its own 512x512 cell with generous transparent margin; same center and scale in every frame. Strict vertical orthographic overhead, nose and cannon pointing screen-down. Preserve rectangular olive hull, eight tires four per side, roof hatches/grilles, faceted autocannon turret, paired side missile tubes, subdued nose red star, painted RTS finish. No labels, terrain, outlines, camera tilt, lateral weaving or perspective changes. Vehicle length about 390px per cell. Motion: Six-frame catastrophic destruction played once: 1 small ignition at turret ring; 2 explosive ammunition blast ruptures roof; 3 larger fiery blast tears turret completely free and throws two wheels and armor panels clear; 4 detached turret and debris crash onto ground around collapsed hull; 5 smoke clears over crushed burnt open hull, detached turret lying beside it, scattered wheels; 6 same permanent flat wreck with fading embers. Clear structural breakup, no return to intact vehicle. All fire smoke and debris fit inside each cell. Keep overhead view and location fixed.",
+      "nativeCopy": "SourceArt\\Native-Motion-death-v1.png"
+    },
+    {
+      "file": "death-v2.png",
+      "generatedSource": "C:\\Users\\Damien\\.codex\\generated_images\\01a11641-9e1b-7c81-be76-c9edd53ef182\\exec-2dda2665-2890-4d86-bb21-04601170c4a1.png",
+      "prompt": "Create a six-frame catastrophic destruction animation atlas of THIS EXACT supplied overhead K-17 vehicle, not a redesigned version. Transparent background, 1536x1024 sheet, 3x2 equal512px cells, chronological left to right top to bottom. Keep vehicle center (256,256) in each cell, vertical nose-down orthographic camera. VEHICLE PROPORTIONS MUST MATCH REFERENCE: very long slim rectangular hull, visible overall wheel-to-wheel width about 180 pixels and length about 430pixels per cell; hull length about2.4 times width. Exact reference roof hatch layout, turret position, long forward barrel, eight wheels and muted olive palette. Frame1 is intact original with a tiny ignition near turret ring. Frame2 original outline still fixed, explosive flame begins to break open turret ring. Frame3 turret thrown right, two wheels blast away, large ammunition fireball. Frame4 turret fallen beside hull, roof torn open, scattered wheels and plates. Frame5 ruined burnt narrow hull with detached turret and wheels, smoke subsiding. Frame6 same permanent wreck, fading embers. No change in camera, vehicle scale, lateral position or hull width before actual breakup. All smoke/debris inside each cell, wide transparent margins. Smooth painted RTS art identical to reference. No text, no ground, no dark outline added. Keep narrower long original silhouette, do not make squat fat vehicle."
+    }
+  ],
+  "animationMode": "Approved master composition plus ImageGen destruction and muzzle effects"
+}

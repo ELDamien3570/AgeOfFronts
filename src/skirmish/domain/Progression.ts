@@ -1,5 +1,6 @@
 import { availableGold, spendGold } from "./Gold";
 import { restoreRecord } from "../StateTransfer";
+import { RUSSIAN_RECRUITMENT } from "../content/RussianRecruitment";
 import { DEFAULT_CULTURE } from "../content/Catalog";
 import {
   ADVANCES,
@@ -13,6 +14,7 @@ import {
   AGES,
   startingGameplayAge,
   type StartingAge,
+  type Age,
   TREES,
   type ProgressionState,
   type TechnologySpeed,
@@ -41,6 +43,19 @@ export function startingProgression(
     }
   }
   for (const tree of TREES) completed.add(technologyAt(age, tree, 1).id);
+  const grant = (id:string) => {
+    if (completed.has(id)) return;
+    const t = TECHNOLOGY.get(id);
+    if (!t) throw new Error(`Missing starting prerequisite ${id}`);
+    t.prerequisites.forEach(grant);
+    completed.add(id);
+  };
+  // Presets open with their authored infantry and an eligible city. Other
+  // current-era classes still require their individual research.
+  grant(RUSSIAN_RECRUITMENT.units.find(u => u.age === age && u.troopClass === "frontline")!.technologyId);
+  const city = `russian-building-${age.toLowerCase()}-city`;
+  if (TECHNOLOGY.has(city)) grant(city);
+
   return {
     cultureId: DEFAULT_CULTURE.id,
     age,
@@ -77,7 +92,10 @@ export function advanceRejection(
   state: ProgressionState,
   gold: number,
   speed: TechnologySpeed = 1,
+  maximumAge?: Age,
 ): string | null {
+  if (maximumAge && AGES.indexOf(state.age) >= AGES.indexOf(maximumAge))
+    return `${maximumAge.replace("Age", " Age")} is the final age for this scenario`;
   if (state.age === "Modern") return "Modern is the final age";
   if (state.advancement) return "Age advancement already in progress";
   if (
@@ -110,7 +128,10 @@ export class Progression {
   constructor(
     readonly technologySpeed: TechnologySpeed = 1,
     readonly startingAge: StartingAge = "StoneAge",
+    readonly maximumAge?: Age,
   ) {
+    if (maximumAge && (!AGES.includes(maximumAge) || AGES.indexOf(startingGameplayAge(startingAge)) > AGES.indexOf(maximumAge)))
+      throw new Error("Starting age exceeds the scenario age ceiling");
     if (![1, 2, 3].includes(technologySpeed))
       throw new Error("Technology speed must be 1×, 2× or 3×");
   }
@@ -153,7 +174,7 @@ export class Progression {
   }
   advance(player: Player): string | null {
     const state = this.states[player.id],
-      rejection = advanceRejection(state, availableGold(player), this.technologySpeed);
+      rejection = advanceRejection(state, availableGold(player), this.technologySpeed, this.maximumAge);
     if (rejection) return rejection;
     const index = AGES.indexOf(state.age),
       cost = researchTerms(ADVANCES[index], this.technologySpeed);

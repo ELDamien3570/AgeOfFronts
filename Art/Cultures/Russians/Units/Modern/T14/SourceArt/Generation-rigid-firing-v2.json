@@ -1,0 +1,10 @@
+{
+  "mode": "built-in-imagegen-effects-and-deterministic-sprite-composition",
+  "reason": "Whole generated poses changed hull width between frames.",
+  "master": "../idle-Registered-v1.png",
+  "effects": "Native-muzzle-effects-v1.png",
+  "effectsPrompt": "Create a transparent SPRITE EFFECT atlas for an overhead RTS tank cannon muzzle flash and dissipating smoke. EFFECTS ONLY, NO tank, NO gun, NO vehicle or background. Landscape 1536x1024, exactly 3 columns x2 rows, six equal 512x512 cells without borders or text. Each effect centered at x256 y256 in its cell; compact overall size about 140px, clear transparent padding. Reading left to right then next row: frame1 tiny initial yellow-orange ignition spark; frame2 bright compact orange-yellow radial cannon flash with a pointed short plume aimed DOWN; frame3 a compact wispy pale grey smoke puff replacing flash; frame4 same puff expanding slightly and becoming more transparent; frame5 faint fading smoke wisp; frame6 almost vanished wispy smoke. True transparent alpha throughout, soft semi-transparent smoke edges and NO dark grey/black backdrop. All effects viewed vertically FROM ABOVE, no upright plume or ground shadow. Painted detailed RTS VFX style, muted natural smoke, warm bright flash. Six isolated effect poses, no labels, grid or equipment.",
+  "recipe": "compose_rigid_firing.cjs",
+  "validation": "Rigid-Firing-Composition.json",
+  "output": "../moving-shooting-Registered-v2.png"
+}

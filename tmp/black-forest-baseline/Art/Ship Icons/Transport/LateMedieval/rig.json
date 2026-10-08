@@ -1,0 +1,249 @@
+{
+  "schemaVersion": 1,
+  "sourceSize": {
+    "width": 1254,
+    "height": 1254
+  },
+  "source": "Transport/Transport_LateMedieval.png",
+  "sourceSha256": "c123bcb1ae1d2c78c243906e07568b4c756f8aad25aff5ee0d2e96d2c6df17b5",
+  "frameSize": {
+    "width": 512,
+    "height": 512
+  },
+  "sourceToFrame": {
+    "scale": 0.3349282296650718,
+    "offset": [
+      46,
+      46
+    ]
+  },
+  "hullInterior": [
+    [
+      626,
+      172
+    ],
+    [
+      700,
+      223
+    ],
+    [
+      753,
+      376
+    ],
+    [
+      787,
+      676
+    ],
+    [
+      767,
+      887
+    ],
+    [
+      721,
+      1015
+    ],
+    [
+      531,
+      1015
+    ],
+    [
+      485,
+      887
+    ],
+    [
+      466,
+      676
+    ],
+    [
+      498,
+      376
+    ],
+    [
+      551,
+      223
+    ]
+  ],
+  "layers": [
+    {
+      "name": "cloth-01",
+      "polygon": [
+        [
+          415,
+          440
+        ],
+        [
+          610,
+          441
+        ],
+        [
+          610,
+          596
+        ],
+        [
+          446,
+          593
+        ]
+      ],
+      "amplitude": 12,
+      "kind": "cloth",
+      "file": "layers/cloth-01.png"
+    },
+    {
+      "name": "cloth-02",
+      "polygon": [
+        [
+          644,
+          441
+        ],
+        [
+          837,
+          440
+        ],
+        [
+          806,
+          593
+        ],
+        [
+          644,
+          596
+        ]
+      ],
+      "amplitude": 12,
+      "kind": "cloth",
+      "file": "layers/cloth-02.png"
+    },
+    {
+      "name": "cloth-03",
+      "polygon": [
+        [
+          496,
+          756
+        ],
+        [
+          611,
+          756
+        ],
+        [
+          611,
+          876
+        ],
+        [
+          555,
+          862
+        ]
+      ],
+      "amplitude": 10,
+      "kind": "cloth",
+      "file": "layers/cloth-03.png"
+    },
+    {
+      "name": "cloth-04",
+      "polygon": [
+        [
+          644,
+          756
+        ],
+        [
+          760,
+          756
+        ],
+        [
+          703,
+          862
+        ],
+        [
+          644,
+          876
+        ]
+      ],
+      "amplitude": 10,
+      "kind": "cloth",
+      "file": "layers/cloth-04.png"
+    },
+    {
+      "name": "flag-01",
+      "polygon": [
+        [
+          635,
+          38
+        ],
+        [
+          706,
+          61
+        ],
+        [
+          761,
+          86
+        ],
+        [
+          784,
+          117
+        ],
+        [
+          817,
+          171
+        ],
+        [
+          761,
+          145
+        ],
+        [
+          704,
+          120
+        ],
+        [
+          635,
+          103
+        ]
+      ],
+      "pivot": [
+        635,
+        63
+      ],
+      "kind": "flag",
+      "amplitude": 10,
+      "file": "layers/flag-01.png"
+    },
+    {
+      "name": "flag-02",
+      "polygon": [
+        [
+          637,
+          1039
+        ],
+        [
+          684,
+          1068
+        ],
+        [
+          690,
+          1112
+        ],
+        [
+          721,
+          1191
+        ],
+        [
+          705,
+          1242
+        ],
+        [
+          679,
+          1210
+        ],
+        [
+          637,
+          1180
+        ]
+      ],
+      "pivot": [
+        637,
+        1047
+      ],
+      "kind": "flag",
+      "amplitude": 10,
+      "file": "layers/flag-02.png"
+    }
+  ],
+  "notes": "Masks and original painted pixels are retained. Cloth pins, oar pivots, cannon recoil and optional effects are art presentation only."
+}

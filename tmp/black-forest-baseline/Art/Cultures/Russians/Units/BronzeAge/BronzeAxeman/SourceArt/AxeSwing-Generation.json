@@ -1,0 +1,149 @@
+{
+  "date": "2026-10-03",
+  "mode": "built-in-imagegen",
+  "userFeedback": "Axe looks held sideways when swinging.",
+  "records": [
+    {
+      "id": "attack-edge-v3",
+      "clipId": "attack",
+      "file": "Attack-v3.png",
+      "references": [
+        "Attack-v2.png"
+      ],
+      "prompt": "Use case: precise-object-edit\nAsset type: six-frame Russian Bronze Axeman game sprite animation sheet.\nInput image is the EDIT TARGET. Preserve exact soldier identity, cap, red/cream outfit, bronze wrist guards, round timber shield, body poses, body registration, scale, strict straight-overhead orthographic camera facing screen-down, and six-frame chronology.\nPrimary correction: the axe currently swings with its broad FLAT FACE toward the camera, like a paddle. Fix the gripping wrist and rotate the AXE HEAD AROUND THE HAFT so the SHARP CUTTING EDGE LEADS the actual downswing. This is a one-handed overhead CHOP toward an enemy below the soldier on screen. Axe blade plane must align with the vertical chopping plane, not lie flat sideways. During raised windup and impact the overhead camera sees a FORESHORTENED narrow bronze spine/top surface and slim wedge of the cutting bit, NOT the broad full side face. Keep enough bronze crescent/bevel detail for it to remain clearly an axe. The blade cutting edge points forward/down toward the target at impact, not off sideways. Single head, one crescent cutting bit, wood haft, bronze socket. Head is fixed rigidly to haft. Wrist rolls the whole weapon into cutting alignment; head never swivels independently or changes sides on its socket. Right hand grips WOODEN HANDLE below the head, not the metal socket.\nSix chronological poses: 1 relaxed guard with existing broadside axe, 2 begin lifting/rolling wrist into chopping plane, 3 high bent-elbow windup with head angled edge-first, 4 decisive downstroke with CUTTING EDGE facing down-screen and only foreshortened blade side visible, 5 follow-through remains edge-first then wrist unrolls, 6 recover to familiar idle grip. Restore physically plausible fingers and wrist angle. Broad bronze axe identity must persist.\nComposition: EXACT1536x1024 RGBA, 3 columns x2 rows, six512x512 cells. Same complete actor per cell, all head/handle/fingers/boots/shield contained in own cell with at least24px transparent padding. No translation or zoom of upper body, no new characters.\nBackground: true transparent alpha. No haze, glow, vignette, ground shadow, grid, labels, blood or weapon trail. Keep shield, left hand, legs and clothing unchanged.\nClip-specific motion: Normal restrained chop: keep original feet stance and six existing body poses; change only axe/wrist/weapon forearm orientation.",
+      "generatedSource": "C:\\Users\\Damien\\.codex\\generated_images\\01a0fea1-c63f-7343-92ca-6c21cc1c4296\\exec-7918caad-cb0d-4ce0-af8c-e83107887c7d.png",
+      "status": "rejected",
+      "reason": "User reported sideways axe swing; correct cutting-plane and wrist roll.",
+      "reviewReason": "Chopping perspective improved but some heads read as pointed weapons."
+    },
+    {
+      "id": "charge-attack-edge-v3",
+      "clipId": "charge-attack",
+      "file": "ChargeAttack-v3.png",
+      "references": [
+        "ChargeAttack-v2.png"
+      ],
+      "prompt": "Use case: precise-object-edit\nAsset type: six-frame Russian Bronze Axeman game sprite animation sheet.\nInput image is the EDIT TARGET. Preserve exact soldier identity, cap, red/cream outfit, bronze wrist guards, round timber shield, body poses, body registration, scale, strict straight-overhead orthographic camera facing screen-down, and six-frame chronology.\nPrimary correction: the axe currently swings with its broad FLAT FACE toward the camera, like a paddle. Fix the gripping wrist and rotate the AXE HEAD AROUND THE HAFT so the SHARP CUTTING EDGE LEADS the actual downswing. This is a one-handed overhead CHOP toward an enemy below the soldier on screen. Axe blade plane must align with the vertical chopping plane, not lie flat sideways. During raised windup and impact the overhead camera sees a FORESHORTENED narrow bronze spine/top surface and slim wedge of the cutting bit, NOT the broad full side face. Keep enough bronze crescent/bevel detail for it to remain clearly an axe. The blade cutting edge points forward/down toward the target at impact, not off sideways. Single head, one crescent cutting bit, wood haft, bronze socket. Head is fixed rigidly to haft. Wrist rolls the whole weapon into cutting alignment; head never swivels independently or changes sides on its socket. Right hand grips WOODEN HANDLE below the head, not the metal socket.\nSix chronological poses: 1 relaxed guard with existing broadside axe, 2 begin lifting/rolling wrist into chopping plane, 3 high bent-elbow windup with head angled edge-first, 4 decisive downstroke with CUTTING EDGE facing down-screen and only foreshortened blade side visible, 5 follow-through remains edge-first then wrist unrolls, 6 recover to familiar idle grip. Restore physically plausible fingers and wrist angle. Broad bronze axe identity must persist.\nComposition: EXACT1536x1024 RGBA, 3 columns x2 rows, six512x512 cells. Same complete actor per cell, all head/handle/fingers/boots/shield contained in own cell with at least24px transparent padding. No translation or zoom of upper body, no new characters.\nBackground: true transparent alpha. No haze, glow, vignette, ground shadow, grid, labels, blood or weapon trail. Keep shield, left hand, legs and clothing unchanged.\nClip-specific motion: Heavy charge chop: keep original forward lunge, wider planted feet and forceful six body poses; change only axe/wrist/weapon forearm orientation. Edge-first heavy chop, not spear thrust.",
+      "generatedSource": "C:\\Users\\Damien\\.codex\\generated_images\\01a0fea1-c63f-7343-92ca-6c21cc1c4296\\exec-da3b9467-f458-415c-bb84-2b805e92760d.png",
+      "status": "rejected",
+      "reason": "User reported sideways axe swing; correct cutting-plane and wrist roll.",
+      "reviewReason": "Chopping perspective improved but some heads read as pointed weapons."
+    },
+    {
+      "id": "attack-edge-v4",
+      "clipId": "attack",
+      "file": "Attack-v4.png",
+      "references": [
+        "Attack-v3.png"
+      ],
+      "prompt": "Use case: precise-object-edit\nEdit target is the attached six-pose Russian Bronze Axeman attack animation sheet. Refine ONLY THE BRONZE AXE HEADS in swinging frames2/3/4/5, retain all soldier body poses, gripping hands/wrist roll, arms, costume, round shield, camera, root registration and exact body scale. Frame1/6 idle bronze axe head stays broad and crescent-shaped exactly as it is.\nThe recent edit over-foreshortened the axe into a pointed spear/dagger shape. It MUST remain a ONE-SIDED BROAD BRONZE AXE even while chopping. Give windup/impact head a recognizable asymmetric fan/crescent cutting bit, short blunt poll behind the socket, thick bronze spine, convex curved cutting edge and blunt upper/lower blade corners. NO sharp dagger tip, lance point or symmetric arrowhead. The axe head extends OFF ONE SIDE of the socket, perpendicular to the wood haft, never a straight pointed continuation of the haft.\nDuring windup and strike, blade plane is CANTED about30-45 degrees away from vertical so we see a PARTIAL crescent side face and strong bevel. This is aboutHALF the apparent face width of the broad idle blade, neither fully sideways broad-face nor an invisible/knife-thin line. The curved cutting edge is tipped FORWARD into the chop toward LOWER SCREEN and leads the motion; back/poll trails. At impact, convex sharp edge points down/forward toward enemy at screen-bottom, NOT sideways. Hand still grips below socket on wood handle. The socket and blade are rigid; wrist turns whole weapon into chopping plane. Preserve same axe dimensions, its distinctive broad crescent and material; only perspective angle changes.\nNo pointed weapon even in edge view. Keep exact6-frame chronological3x2 layout,1536x1024RGBA six512cells, full actor+axe+shield contained with24px transparent edges. Alpha stays transparent, no background/haze/shadow/trail/grid/text/blood. No camera change or mirrored handedness.",
+      "generatedSource": "C:\\Users\\Damien\\.codex\\generated_images\\01a0fea1-c63f-7343-92ca-6c21cc1c4296\\exec-0df726d2-95ed-4743-bda7-2a5daad3874b.png",
+      "status": "rejected",
+      "reason": "Refine foreshortened chopping blade to retain recognizable crescent axe geometry.",
+      "reviewReason": "Broad side face returned during the chop."
+    },
+    {
+      "id": "charge-attack-edge-v4",
+      "clipId": "charge-attack",
+      "file": "ChargeAttack-v4.png",
+      "references": [
+        "ChargeAttack-v3.png"
+      ],
+      "prompt": "Use case: precise-object-edit\nEdit target is the attached six-pose Russian Bronze Axeman charge-attack animation sheet. Refine ONLY THE BRONZE AXE HEADS in swinging frames2/3/4/5, retain all soldier body poses, gripping hands/wrist roll, arms, costume, round shield, camera, root registration and exact body scale. Frame1/6 idle bronze axe head stays broad and crescent-shaped exactly as it is.\nThe recent edit over-foreshortened the axe into a pointed spear/dagger shape. It MUST remain a ONE-SIDED BROAD BRONZE AXE even while chopping. Give windup/impact head a recognizable asymmetric fan/crescent cutting bit, short blunt poll behind the socket, thick bronze spine, convex curved cutting edge and blunt upper/lower blade corners. NO sharp dagger tip, lance point or symmetric arrowhead. The axe head extends OFF ONE SIDE of the socket, perpendicular to the wood haft, never a straight pointed continuation of the haft.\nDuring windup and strike, blade plane is CANTED about30-45 degrees away from vertical so we see a PARTIAL crescent side face and strong bevel. This is aboutHALF the apparent face width of the broad idle blade, neither fully sideways broad-face nor an invisible/knife-thin line. The curved cutting edge is tipped FORWARD into the chop toward LOWER SCREEN and leads the motion; back/poll trails. At impact, convex sharp edge points down/forward toward enemy at screen-bottom, NOT sideways. Hand still grips below socket on wood handle. The socket and blade are rigid; wrist turns whole weapon into chopping plane. Preserve same axe dimensions, its distinctive broad crescent and material; only perspective angle changes.\nNo pointed weapon even in edge view. Keep exact6-frame chronological3x2 layout,1536x1024RGBA six512cells, full actor+axe+shield contained with24px transparent edges. Alpha stays transparent, no background/haze/shadow/trail/grid/text/blood. No camera change or mirrored handedness.",
+      "generatedSource": "C:\\Users\\Damien\\.codex\\generated_images\\01a0fea1-c63f-7343-92ca-6c21cc1c4296\\exec-c74a7b08-2682-4cb5-a127-db7dc93e86ba.png",
+      "status": "rejected",
+      "reason": "Refine foreshortened chopping blade to retain recognizable crescent axe geometry.",
+      "reviewReason": "Broad side face returned during the chop."
+    },
+    {
+      "id": "attack-edge-v5",
+      "clipId": "attack",
+      "file": "Attack-v5.png",
+      "references": [
+        "Attack-v3.png"
+      ],
+      "prompt": "Use case: precise-object-edit\nKeep this six-frame overhead axeman sheet exactly as shown. Change ONLY the POINTED TIPS of the narrow bronze weapon heads in frames2,3,4,5. Those heads are AXES viewed EDGE-ON from above, not spears. KEEP THEIR NARROW EDGE-ON PERSPECTIVE: do not restore a broad sideways crescent face during the chop.\nReplace each long sharp triangle/knife point with a SHORT BLUNT AXE TOP PROFILE: bronze socket and squared rear poll, stout rectangular tapered wedge, then a SMALL ROUNDED convex cutting lip perpendicular to the haft at its forward end. A tiny sideways flange at the head makes a compact asymmetric T shape, but do not show the full broad blade side. Tip is a short curved cutting line, NEVER a pointed apex. The axe is canted toward screen-bottom and the cutting lip leads the downstroke. Head is roughly30-40px wide in the impact frame, stout and stubby, not a60px long spear point. Wood haft length remains identical. The narrow blade/spine may have a thin bevel highlight to distinguish cutting edge and back. No dagger, sword, spearhead or V-point.\nFrames1/6 broad resting axe remain EXACTLY unchanged. Do not change soldier size, body/arm/foot poses, hands, red/cream clothing, roundshield, camera, frame chronology or placement. True transparency. Exact1536x1024RGBA,3columns2rows6cells512. Full silhouettes contained within original cells with24px transparent edges. No new background, haze, shadow, labels, blood or trail.",
+      "generatedSource": "C:\\Users\\Damien\\.codex\\generated_images\\01a0fea1-c63f-7343-92ca-6c21cc1c4296\\exec-e4c1af29-6b06-4316-92b4-651554d8523b.png",
+      "status": "rejected",
+      "reason": "Replace pointed head with blunt compact axe top profile while preserving edge-first chopping perspective.",
+      "reviewReason": "Blade omitted in swing frames."
+    },
+    {
+      "id": "charge-attack-edge-v5",
+      "clipId": "charge-attack",
+      "file": "ChargeAttack-v5.png",
+      "references": [
+        "ChargeAttack-v3.png"
+      ],
+      "prompt": "Use case: precise-object-edit\nKeep this six-frame overhead axeman sheet exactly as shown. Change ONLY the POINTED TIPS of the narrow bronze weapon heads in frames2,3,4,5. Those heads are AXES viewed EDGE-ON from above, not spears. KEEP THEIR NARROW EDGE-ON PERSPECTIVE: do not restore a broad sideways crescent face during the chop.\nReplace each long sharp triangle/knife point with a SHORT BLUNT AXE TOP PROFILE: bronze socket and squared rear poll, stout rectangular tapered wedge, then a SMALL ROUNDED convex cutting lip perpendicular to the haft at its forward end. A tiny sideways flange at the head makes a compact asymmetric T shape, but do not show the full broad blade side. Tip is a short curved cutting line, NEVER a pointed apex. The axe is canted toward screen-bottom and the cutting lip leads the downstroke. Head is roughly30-40px wide in the impact frame, stout and stubby, not a60px long spear point. Wood haft length remains identical. The narrow blade/spine may have a thin bevel highlight to distinguish cutting edge and back. No dagger, sword, spearhead or V-point.\nFrames1/6 broad resting axe remain EXACTLY unchanged. Do not change soldier size, body/arm/foot poses, hands, red/cream clothing, roundshield, camera, frame chronology or placement. True transparency. Exact1536x1024RGBA,3columns2rows6cells512. Full silhouettes contained within original cells with24px transparent edges. No new background, haze, shadow, labels, blood or trail.",
+      "generatedSource": "C:\\Users\\Damien\\.codex\\generated_images\\01a0fea1-c63f-7343-92ca-6c21cc1c4296\\exec-dd9ec73b-61f3-4344-b1de-b85a2d324974.png",
+      "status": "rejected",
+      "reason": "Replace pointed head with blunt compact axe top profile while preserving edge-first chopping perspective.",
+      "reviewReason": "Blade omitted in swing frames."
+    },
+    {
+      "id": "attack-edge-v6",
+      "clipId": "attack",
+      "file": "Attack-v6.png",
+      "references": [
+        "Attack-v2.png"
+      ],
+      "prompt": "Use case: precise-object-edit\nCorrect only the bronze axe and gripping right wrist in this six-frame axeman attack sheet. Keep soldier, round wooden shield, legs, clothing, straight overhead camera, six original body poses, grid, scale and registration.\nHe must CHOP WITH THE CURVED SHARP EDGE of the axe. During the lifted windup and downstroke the axe head is currently facing LEFT, sideways to his forward attack. ROLL HIS WRIST so the axe blade aims TOWARD THE BOTTOM OF THE IMAGE as he strikes.\nSpecific changes to top-right windup and bottom-left impact: keep a recognizable fan-shaped BRONZE AXE HEAD, but ROTATE ITS PROJECTION so the curved sharp outer edge is on the LOWER SIDE OF THE HEAD, facing SCREEN-BOTTOM or BOTTOM-LEFT toward the enemy. The sharp edge leads down/forward; the small blunt poll stays behind it. The curved cutting bit must extend FORWARD BELOW the haft socket, rather than extending horizontally LEFT of the socket. The lower cutting arc should read as a short broad convex smile BELOW the socket. Angle the blade face so we see a bevel and partial side face, a solid three-dimensional axe. It remains one broad bronze blade on a wood handle. No knife point, spear tip, straight rod or missing blade. Do not keep the cutting edge facing sideways-left throughout the downswing.\nTop-left and bottom-right guard poses remain unchanged. Top-middle windup begins rolling blade toward the lower target; bottom-middle follow-through keeps cutting edge down then rolls back to guard. Fingers grip wooden haft firmly, wrist follows axe orientation. Every head stays rigidly attached.\nExact1536x1024RGBA,3columns2rows,six512cells. All full poses/weapon within own cell with24px transparent edge margin. True transparent background. No blood, text, glow, haze, shadow, trails or formation.",
+      "generatedSource": "C:\\Users\\Damien\\.codex\\generated_images\\01a0fea1-c63f-7343-92ca-6c21cc1c4296\\exec-ee1beb5a-9da2-4cd3-8ceb-d19c7a4388f8.png",
+      "status": "rejected",
+      "reason": "Orient curved bronze cutting edge toward lower target in windup and impact, preserve recognizable axe.",
+      "reviewReason": "Incorrect head attachment and inconsistent cutting angle."
+    },
+    {
+      "id": "charge-attack-edge-v6",
+      "clipId": "charge-attack",
+      "file": "ChargeAttack-v6.png",
+      "references": [
+        "ChargeAttack-v2.png"
+      ],
+      "prompt": "Use case: precise-object-edit\nCorrect only the bronze axe and gripping right wrist in this six-frame axeman charge-attack sheet. Keep soldier, round wooden shield, legs, clothing, straight overhead camera, six original body poses, grid, scale and registration.\nHe must CHOP WITH THE CURVED SHARP EDGE of the axe. During the lifted windup and downstroke the axe head is currently facing LEFT, sideways to his forward attack. ROLL HIS WRIST so the axe blade aims TOWARD THE BOTTOM OF THE IMAGE as he strikes.\nSpecific changes to top-right windup and bottom-left impact: keep a recognizable fan-shaped BRONZE AXE HEAD, but ROTATE ITS PROJECTION so the curved sharp outer edge is on the LOWER SIDE OF THE HEAD, facing SCREEN-BOTTOM or BOTTOM-LEFT toward the enemy. The sharp edge leads down/forward; the small blunt poll stays behind it. The curved cutting bit must extend FORWARD BELOW the haft socket, rather than extending horizontally LEFT of the socket. The lower cutting arc should read as a short broad convex smile BELOW the socket. Angle the blade face so we see a bevel and partial side face, a solid three-dimensional axe. It remains one broad bronze blade on a wood handle. No knife point, spear tip, straight rod or missing blade. Do not keep the cutting edge facing sideways-left throughout the downswing.\nTop-left and bottom-right guard poses remain unchanged. Top-middle windup begins rolling blade toward the lower target; bottom-middle follow-through keeps cutting edge down then rolls back to guard. Fingers grip wooden haft firmly, wrist follows axe orientation. Every head stays rigidly attached.\nExact1536x1024RGBA,3columns2rows,six512cells. All full poses/weapon within own cell with24px transparent edge margin. True transparent background. No blood, text, glow, haze, shadow, trails or formation.",
+      "generatedSource": "C:\\Users\\Damien\\.codex\\generated_images\\01a0fea1-c63f-7343-92ca-6c21cc1c4296\\exec-24ab78e6-1679-4187-96d1-6d0649c605a9.png",
+      "status": "rejected",
+      "reason": "Orient curved bronze cutting edge toward lower target in windup and impact, preserve recognizable axe.",
+      "reviewReason": "Incorrect head attachment and inconsistent cutting angle."
+    },
+    {
+      "id": "attack-edge-v7",
+      "clipId": "attack",
+      "file": "Attack-v7.png",
+      "references": [
+        "Attack-v2.png",
+        "SourceArt/AxeChop-Impact-Corrected.png"
+      ],
+      "prompt": "Use case: precise-object-edit\nInput Image1 is EDIT TARGET: the six-frame Russian Bronze Axeman attack sheet. Image2 is a SUCCESSFUL AXE ORIENTATION REFERENCE: the single soldier has the correct narrow, curved bronze chopping blade and wrist alignment. Use Image2 ONLY to match axe perspective/geometry and right-hand grip, not its larger body size or composition.\nIn Image1 frames2,3,4,5, correct axe/wrist to use EXACT SAME axe-edge profile as Image2: narrow but visibly CURVED bronze cutting bit off socket, visible thick spine/back, not a straight triangular spear point. Blade is rolled into chopping plane, edge points forward/down along the strike. Match the three-dimensional foreshortened axe in Image2; do not show the broad flat blade face hitting sideways. Frame4 impact should specifically match Image2's axe head orientation. Frame3 raised windup has the same weapon rolled edge-first. Frame2 rotates wrist into alignment, frame5 follow-through keeps edge alignment then returns. Frame1/6 resting axe retains Image1's broad bronze idle crescent. Maintain a single rigid axe head attached to wood haft; no shape-changing/extra blade. Fingers grip wood below socket.\nPreserve EXACT Image1 actor body poses/scale/root, leg positions, six-frame chronology, round timber shield, red/cream costume and vertical overhead orthographic camera. It is a restrained chop in attack or heavy lunge in charge-attack, just as Image1 shows.\nOutput exactly1536x1024RGBA,3columns2rows6cells512. All full silhouettes and axe inside each own cell with24px empty transparent margins. True transparency, no haze/ground/glow/shadow/text/grid/blood/trails. Never turn the axe into a spear, club or bare handle.",
+      "generatedSource": "C:\\Users\\Damien\\.codex\\generated_images\\01a0fea1-c63f-7343-92ca-6c21cc1c4296\\exec-efae05ac-3a67-4a0b-aa38-a815b36f2899.png",
+      "status": "superseded",
+      "reason": "Use successful single-pose axe perspective as explicit visual reference for both full swings.",
+      "reviewReason": "Correct axe geometry; top-middle shield required visible guard padding in selected Attack-v8.png."
+    },
+    {
+      "id": "charge-attack-edge-v7",
+      "clipId": "charge-attack",
+      "file": "ChargeAttack-v7.png",
+      "references": [
+        "ChargeAttack-v2.png",
+        "SourceArt/AxeChop-Impact-Corrected.png"
+      ],
+      "prompt": "Use case: precise-object-edit\nInput Image1 is EDIT TARGET: the six-frame Russian Bronze Axeman charge-attack sheet. Image2 is a SUCCESSFUL AXE ORIENTATION REFERENCE: the single soldier has the correct narrow, curved bronze chopping blade and wrist alignment. Use Image2 ONLY to match axe perspective/geometry and right-hand grip, not its larger body size or composition.\nIn Image1 frames2,3,4,5, correct axe/wrist to use EXACT SAME axe-edge profile as Image2: narrow but visibly CURVED bronze cutting bit off socket, visible thick spine/back, not a straight triangular spear point. Blade is rolled into chopping plane, edge points forward/down along the strike. Match the three-dimensional foreshortened axe in Image2; do not show the broad flat blade face hitting sideways. Frame4 impact should specifically match Image2's axe head orientation. Frame3 raised windup has the same weapon rolled edge-first. Frame2 rotates wrist into alignment, frame5 follow-through keeps edge alignment then returns. Frame1/6 resting axe retains Image1's broad bronze idle crescent. Maintain a single rigid axe head attached to wood haft; no shape-changing/extra blade. Fingers grip wood below socket.\nPreserve EXACT Image1 actor body poses/scale/root, leg positions, six-frame chronology, round timber shield, red/cream costume and vertical overhead orthographic camera. It is a restrained chop in attack or heavy lunge in charge-attack, just as Image1 shows.\nOutput exactly1536x1024RGBA,3columns2rows6cells512. All full silhouettes and axe inside each own cell with24px empty transparent margins. True transparency, no haze/ground/glow/shadow/text/grid/blood/trails. Never turn the axe into a spear, club or bare handle.",
+      "generatedSource": "C:\\Users\\Damien\\.codex\\generated_images\\01a0fea1-c63f-7343-92ca-6c21cc1c4296\\exec-97cc1b9a-f69e-4929-b353-85acd216280d.png",
+      "status": "selected",
+      "reason": "Use successful single-pose axe perspective as explicit visual reference for both full swings.",
+      "reviewReason": "Successful single-pose reference retained narrow curved bronze cutting bit during swing."
+    },
+    {
+      "id": "axe-impact-reference-v1",
+      "file": "SourceArt/AxeChop-Impact-Corrected.png",
+      "references": [
+        "SourceArt/AxeChop-Impact-Reference.png"
+      ],
+      "prompt": "Use case: precise-object-edit\nEdit this ONE axeman impact pose. Keep exact red/cream soldier, shield, body and stance, vertical overhead camera and transparent background. Fix only his right hand, wrist and BRONZE AXE orientation during an overhead downward chop.\nHis wooden haft points diagonally down-left. The bronze head currently shows its entire flat side facing the viewer and cutting edge to screen-left. ROLL THE AXE90DEGREES around its wooden haft into the chopping plane. Show the narrow TOP/SPINE VIEW of the bronze axe head at the end of the shaft, with a SHORT curved cutting bevel extending forward down-left, aligned with the strike. The head must read as a real broad single-bladed axe rotated edge-first: thick rectangular top/spine, small visible near-side crescent, curved edge at the LOWER/forward side, blunt rear poll and socket around the wood. No long spear/knife point, no missing axe head, no bronze cylindrical club. Hand grips wood below the socket and wrist aligns the blade to the chop. Keep recognizable axe geometry and material. Entire cutting bit remains visible in three-dimensional foreshortened perspective.\nPreserve composition on a square transparent canvas. One complete actor only, same relative size/root as reference, no zoom. No other pose, no text, blood, shadow, glow, background or trails.",
+      "generatedSource": "C:\\Users\\Damien\\.codex\\generated_images\\01a0fea1-c63f-7343-92ca-6c21cc1c4296\\exec-6931570c-7512-4863-819d-39a33653f553.png",
+      "status": "reference-selected"
+    }
+  ]
+}

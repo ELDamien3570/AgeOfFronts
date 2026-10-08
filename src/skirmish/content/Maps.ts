@@ -60,6 +60,29 @@ export const HEIGHTMAP_MAPS = [
 
 export type HeightmapId = (typeof HEIGHTMAP_MAPS)[number]["id"];
 
+export const PROCEDURAL_MAPS = [
+  {
+    id: "black-forest",
+    name: "Black Forest",
+    assetRoot: "black-forest",
+    sourceWidth: 1,
+    sourceHeight: 1,
+  },
+  {
+    id: "migration",
+    name: "Migration",
+    assetRoot: "migration",
+    sourceWidth: 1,
+    sourceHeight: 1,
+  },
+] as const;
+export type ProceduralMapId = (typeof PROCEDURAL_MAPS)[number]["id"];
+export function isProceduralMap(id: string): id is ProceduralMapId {
+  return PROCEDURAL_MAPS.some((map) => map.id === id);
+}
+export const PLAYABLE_MAPS = [...HEIGHTMAP_MAPS, ...PROCEDURAL_MAPS] as const;
+export type PlayableMapId = (typeof PLAYABLE_MAPS)[number]["id"];
+
 /** A selected size bounds the longest edge; source proportions remain intact. */
 export function heightmapDimensions(
   size: number,

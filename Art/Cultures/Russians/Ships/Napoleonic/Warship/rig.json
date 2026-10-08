@@ -1,0 +1,71 @@
+{
+  "schemaVersion": 1,
+  "source": "Napoleonic/Warship/SourceArt/Warship_Russian_Napoleonic_v1.png",
+  "sourceSha256": "0ca71a662bcbbdacdd73ade2af27e21fcd862a8226b9de38ad858296727f5a8a",
+  "frameSize": [
+    512,
+    512
+  ],
+  "sourceToFrame": {
+    "scale": 0.3349282296650718,
+    "offset": [
+      46,
+      46
+    ]
+  },
+  "authoring": "../../fleet-rig-authoring.json",
+  "oars": [],
+  "oarPolicy": "Only exterior oar pixels rotate rigidly about registered gunwale pivots; protected hull paint remains unchanged.",
+  "attack": {
+    "kind": "broadside-cannon",
+    "direction": "port",
+    "eventFrame": 4,
+    "emitters": [
+      [
+        179,
+        167
+      ],
+      [
+        179,
+        194
+      ],
+      [
+        179,
+        213
+      ],
+      [
+        179,
+        235
+      ],
+      [
+        179,
+        257
+      ],
+      [
+        179,
+        279
+      ],
+      [
+        179,
+        297
+      ],
+      [
+        179,
+        319
+      ]
+    ],
+    "starboardX": 309
+  },
+  "approvedFrameReconstruction": "visible pixels exactly preserved at zero oar angle",
+  "waterAnchors": {
+    "bow": [
+      246,
+      407
+    ],
+    "stern": [
+      246,
+      108
+    ]
+  },
+  "waterMotion": "Hull-local anchors; same yaw and translation as vessel"
+}

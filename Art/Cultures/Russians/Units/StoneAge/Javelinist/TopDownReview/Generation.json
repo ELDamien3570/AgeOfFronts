@@ -1,0 +1,122 @@
+{
+  "tool": "built-in-imagegen",
+  "approvedReference": "Native-Idle-TopDown-v3.png",
+  "records": [
+    {
+      "id": "idle",
+      "file": "idle-v1.png",
+      "nativeFile": "Native-TopDown-idle-v1.png",
+      "generatedSource": "C:/Users/Damien/.codex/generated_images/01a1166c-83ee-7ae0-be97-78c470de8962/exec-479a0a52-7fb7-4433-a5ab-faccc096a9bf.png",
+      "prompt": "Use case: game sprite animation. Reference is approved Russian Stone Age javelinist. Create exactly SIX consecutive frames as 3 columns x 2 rows on 1536x1024 transparent PNG, each cell512square. Same VERY STRICT 90-degree vertical overhead orthographic camera throughout standing poses: round cap crown centered in broad fur collar, shoulders hide torso and belt, just boot tops below. Same red cap/tunic, cream fur, leather bracers/boots, stone tipped wooden javelins. Same anatomy and scale in every frame. Each WHOLE actor AND entire long spear inside its own cell, maximum silhouette width360 height360, 70px transparent margin all sides, do not cross cell borders. No backdrop or ground shadows, labels or panels. Action: Subtle breathing only. Feet planted. No rotation or lateral sway. One straight javelin held low at screen-left, stone point down. Six slightly different breathing poses.",
+      "status": "selected-source",
+      "action": "Subtle breathing only. Feet planted. No rotation or lateral sway. One straight javelin held low at screen-left, stone point down. Six slightly different breathing poses."
+    },
+    {
+      "id": "running",
+      "file": "running-v1.png",
+      "nativeFile": "Native-TopDown-running-v1.png",
+      "generatedSource": "C:/Users/Damien/.codex/generated_images/01a1166c-83ee-7ae0-be97-78c470de8962/exec-8801f1d2-aa6a-4766-81c1-921927c29d36.png",
+      "prompt": "Use case: game sprite animation. Reference is approved Russian Stone Age javelinist. Create exactly SIX consecutive frames as 3 columns x 2 rows on 1536x1024 transparent PNG, each cell512square. Same VERY STRICT 90-degree vertical overhead orthographic camera throughout standing poses: round cap crown centered in broad fur collar, shoulders hide torso and belt, just boot tops below. Same red cap/tunic, cream fur, leather bracers/boots, stone tipped wooden javelins. Same anatomy and scale in every frame. Each WHOLE actor AND entire long spear inside its own cell, maximum silhouette width360 height360, 70px transparent margin all sides, do not cross cell borders. No backdrop or ground shadows, labels or panels. Action: Walk cycle with visibly ALTERNATING left and right lead feet. Feet emerge beneath fur collar, stride small but distinct. One straight javelin held low screen-left. Six consecutive walking poses.",
+      "status": "selected-source",
+      "action": "Walk cycle with visibly ALTERNATING left and right lead feet. Feet emerge beneath fur collar, stride small but distinct. One straight javelin held low screen-left. Six consecutive walking poses."
+    },
+    {
+      "id": "attack",
+      "file": "attack-v1.png",
+      "nativeFile": "Native-TopDown-attack-v1.png",
+      "generatedSource": "C:/Users/Damien/.codex/generated_images/01a1166c-83ee-7ae0-be97-78c470de8962/exec-af1d474e-cc5e-4eda-b6bf-b22a348f6dc0.png",
+      "prompt": "Use case: game sprite animation. Reference is approved Russian Stone Age javelinist. Create exactly SIX consecutive frames as 3 columns x 2 rows on 1536x1024 transparent PNG, each cell512square. Same VERY STRICT 90-degree vertical overhead orthographic camera throughout standing poses: round cap crown centered in broad fur collar, shoulders hide torso and belt, just boot tops below. Same red cap/tunic, cream fur, leather bracers/boots, stone tipped wooden javelins. Same anatomy and scale in every frame. Each WHOLE actor AND entire long spear inside its own cell, maximum silhouette width360 height360, 70px transparent margin all sides, do not cross cell borders. No backdrop or ground shadows, labels or panels. Action: Overarm javelin throw aimed exactly screen-bottom. 1 ready;2 right foot steps back and chest turns;3 right hand draws javelin back above right shoulder, bent elbow;4 strong overarm release toward screen-bottom;5 followthrough EMPTY right hand;6 settle EMPTY right hand. Javelin straight rigid rod, grip near middle, tip always aimed down during launch. No low underarm thrust. No reload in this clip. Spare javelins remain on back.",
+      "status": "selected-source",
+      "action": "Overarm javelin throw aimed exactly screen-bottom. 1 ready;2 right foot steps back and chest turns;3 right hand draws javelin back above right shoulder, bent elbow;4 strong overarm release toward screen-bottom;5 followthrough EMPTY right hand;6 settle EMPTY right hand. Javelin straight rigid rod, grip near middle, tip always aimed down during launch. No low underarm thrust. No reload in this clip. Spare javelins remain on back."
+    },
+    {
+      "id": "charge-attack",
+      "file": "charge-attack-v1.png",
+      "nativeFile": "Native-TopDown-charge-attack-v1.png",
+      "generatedSource": "C:/Users/Damien/.codex/generated_images/01a1166c-83ee-7ae0-be97-78c470de8962/exec-a91a8667-8299-474d-a10b-54c880cac393.png",
+      "prompt": "Use case: game sprite animation. Reference is approved Russian Stone Age javelinist. Create exactly SIX consecutive frames as 3 columns x 2 rows on 1536x1024 transparent PNG, each cell512square. Same VERY STRICT 90-degree vertical overhead orthographic camera throughout standing poses: round cap crown centered in broad fur collar, shoulders hide torso and belt, just boot tops below. Same red cap/tunic, cream fur, leather bracers/boots, stone tipped wooden javelins. Same anatomy and scale in every frame. Each WHOLE actor AND entire long spear inside its own cell, maximum silhouette width360 height360, 70px transparent margin all sides, do not cross cell borders. No backdrop or ground shadows, labels or panels. Action: Advance and stop then overarm throw straight screen-bottom.1 step in with javelin;2 plant feet;3 right hand cocks javelin over shoulder elbow bent, body opens;4 overarm release;5 empty-handed followthrough;6 stable empty-handed recovery. No low thrust, no new spear after release. Spare javelins retained.",
+      "status": "selected-source",
+      "action": "Advance and stop then overarm throw straight screen-bottom.1 step in with javelin;2 plant feet;3 right hand cocks javelin over shoulder elbow bent, body opens;4 overarm release;5 empty-handed followthrough;6 stable empty-handed recovery. No low thrust, no new spear after release. Spare javelins retained.",
+      "cellSources": {
+        "2": "Native-TopDown-attack-v1.png",
+        "3": "Native-TopDown-attack-v1.png",
+        "4": "Native-TopDown-attack-v1.png",
+        "5": "Native-TopDown-attack-v1.png"
+      },
+      "compositionReason": "Keep charge advance and braking, then use the forward-aligned overarm release and empty-hand recovery from regular attack."
+    },
+    {
+      "id": "reload",
+      "file": "reload-v1.png",
+      "nativeFile": "Native-TopDown-reload-v1.png",
+      "generatedSource": "C:/Users/Damien/.codex/generated_images/01a1166c-83ee-7ae0-be97-78c470de8962/exec-6c8d6ca3-a3de-4cb8-8eaa-f4a49b06a46d.png",
+      "prompt": "Use case: game sprite animation. Reference is approved Russian Stone Age javelinist. Create exactly SIX consecutive frames as 3 columns x 2 rows on 1536x1024 transparent PNG, each cell512square. Same VERY STRICT 90-degree vertical overhead orthographic camera throughout standing poses: round cap crown centered in broad fur collar, shoulders hide torso and belt, just boot tops below. Same red cap/tunic, cream fur, leather bracers/boots, stone tipped wooden javelins. Same anatomy and scale in every frame. Each WHOLE actor AND entire long spear inside its own cell, maximum silhouette width360 height360, 70px transparent margin all sides, do not cross cell borders. No backdrop or ground shadows, labels or panels. Action: Separate javelin reload after throwing:1 EMPTY right hand low;2 right hand reaches over right shoulder toward spare javelin pouch;3 grip spare shaft;4 withdraw ONE straight javelin from pouch;5 bring new javelin down along right side (screen-left);6 ready low carry, stone point screen-bottom. Keep pouch on back, reduce spare count visibly when taken, no extra arms.",
+      "status": "superseded-draft",
+      "action": "Separate javelin reload after throwing:1 EMPTY right hand low;2 right hand reaches over right shoulder toward spare javelin pouch;3 grip spare shaft;4 withdraw ONE straight javelin from pouch;5 bring new javelin down along right side (screen-left);6 ready low carry, stone point screen-bottom. Keep pouch on back, reduce spare count visibly when taken, no extra arms."
+    },
+    {
+      "id": "hit",
+      "file": "hit-v1.png",
+      "nativeFile": "Native-TopDown-hit-v1.png",
+      "generatedSource": "C:/Users/Damien/.codex/generated_images/01a1166c-83ee-7ae0-be97-78c470de8962/exec-1df9045f-34eb-4b95-aa18-27e357e50058.png",
+      "prompt": "Use case: game sprite animation. Reference is approved Russian Stone Age javelinist. Create exactly SIX consecutive frames as 3 columns x 2 rows on 1536x1024 transparent PNG, each cell512square. Same VERY STRICT 90-degree vertical overhead orthographic camera throughout standing poses: round cap crown centered in broad fur collar, shoulders hide torso and belt, just boot tops below. Same red cap/tunic, cream fur, leather bracers/boots, stone tipped wooden javelins. Same anatomy and scale in every frame. Each WHOLE actor AND entire long spear inside its own cell, maximum silhouette width360 height360, 70px transparent margin all sides, do not cross cell borders. No backdrop or ground shadows, labels or panels. Action: Light hit reaction. Standing, flinch, knee bend, recoil, recover, standing. Keep one javelin and spare pouch. No attack or blood.",
+      "status": "selected-source",
+      "action": "Light hit reaction. Standing, flinch, knee bend, recoil, recover, standing. Keep one javelin and spare pouch. No attack or blood."
+    },
+    {
+      "id": "charged",
+      "file": "charged-v1.png",
+      "nativeFile": "Native-TopDown-charged-v1.png",
+      "generatedSource": "C:/Users/Damien/.codex/generated_images/01a1166c-83ee-7ae0-be97-78c470de8962/exec-3422235c-d99b-4c31-8044-defe54e3d9e5.png",
+      "prompt": "Use case: game sprite animation. Reference is approved Russian Stone Age javelinist. Create exactly SIX consecutive frames as 3 columns x 2 rows on 1536x1024 transparent PNG, each cell512square. Same VERY STRICT 90-degree vertical overhead orthographic camera throughout standing poses: round cap crown centered in broad fur collar, shoulders hide torso and belt, just boot tops below. Same red cap/tunic, cream fur, leather bracers/boots, stone tipped wooden javelins. Same anatomy and scale in every frame. Each WHOLE actor AND entire long spear inside its own cell, maximum silhouette width360 height360, 70px transparent margin all sides, do not cross cell borders. No backdrop or ground shadows, labels or panels. Action: Distinct heavy charge-impact reaction. Standing, recoil backwards, knees buckle, stumble and brace, regain balance, standing. Keep connected natural limbs. No attacking.",
+      "status": "selected-source",
+      "action": "Distinct heavy charge-impact reaction. Standing, recoil backwards, knees buckle, stumble and brace, regain balance, standing. Keep connected natural limbs. No attacking."
+    },
+    {
+      "id": "death",
+      "file": "death-v1.png",
+      "nativeFile": "Native-TopDown-death-v1.png",
+      "generatedSource": "C:/Users/Damien/.codex/generated_images/01a1166c-83ee-7ae0-be97-78c470de8962/exec-4c7a7af4-1dd4-4f78-b0a3-d6e81e5c5677.png",
+      "prompt": "Use case: game sprite animation. Reference is approved Russian Stone Age javelinist. Create exactly SIX consecutive frames as 3 columns x 2 rows on 1536x1024 transparent PNG, each cell512square. Same VERY STRICT 90-degree vertical overhead orthographic camera throughout standing poses: round cap crown centered in broad fur collar, shoulders hide torso and belt, just boot tops below. Same red cap/tunic, cream fur, leather bracers/boots, stone tipped wooden javelins. Same anatomy and scale in every frame. Each WHOLE actor AND entire long spear inside its own cell, maximum silhouette width360 height360, 70px transparent margin all sides, do not cross cell borders. No backdrop or ground shadows, labels or panels. Action: Full side fall: standing, knees buckle, tip sideways, land on side, body settles on side, still side corpse. Drop straight javelin beside body. Final three frames head remains same end, no 180 degree flips. No blood.",
+      "status": "superseded-draft",
+      "action": "Full side fall: standing, knees buckle, tip sideways, land on side, body settles on side, still side corpse. Drop straight javelin beside body. Final three frames head remains same end, no 180 degree flips. No blood."
+    },
+    {
+      "id": "death-back",
+      "file": "death-back-v1.png",
+      "nativeFile": "Native-TopDown-death-back-v1.png",
+      "generatedSource": "C:/Users/Damien/.codex/generated_images/01a1166c-83ee-7ae0-be97-78c470de8962/exec-93470b51-9554-411f-b8ea-9d7992c98946.png",
+      "prompt": "Use case: game sprite animation. Reference is approved Russian Stone Age javelinist. Create exactly SIX consecutive frames as 3 columns x 2 rows on 1536x1024 transparent PNG, each cell512square. Same VERY STRICT 90-degree vertical overhead orthographic camera throughout standing poses: round cap crown centered in broad fur collar, shoulders hide torso and belt, just boot tops below. Same red cap/tunic, cream fur, leather bracers/boots, stone tipped wooden javelins. Same anatomy and scale in every frame. Each WHOLE actor AND entire long spear inside its own cell, maximum silhouette width360 height360, 70px transparent margin all sides, do not cross cell borders. No backdrop or ground shadows, labels or panels. Action: Full BACK fall: standing, recoil, knees buckle backwards, fall onto back, supine settling, supine corpse. When falling or lying, HEAD SCREEN TOP AND BOOTS SCREEN BOTTOM in ALL frames4/5/6. No flipping, face-down corpse or rotation. Javelin drops beside body, no blood.",
+      "status": "selected-source",
+      "action": "Full BACK fall: standing, recoil, knees buckle backwards, fall onto back, supine settling, supine corpse. When falling or lying, HEAD SCREEN TOP AND BOOTS SCREEN BOTTOM in ALL frames4/5/6. No flipping, face-down corpse or rotation. Javelin drops beside body, no blood."
+    },
+    {
+      "id": "charge",
+      "file": "charge-v1.png",
+      "nativeFile": "Native-TopDown-running-v1.png",
+      "generatedSource": "C:/Users/Damien/.codex/generated_images/01a1166c-83ee-7ae0-be97-78c470de8962/exec-8801f1d2-aa6a-4766-81c1-921927c29d36.png",
+      "prompt": "Use case: game sprite animation. Reference is approved Russian Stone Age javelinist. Create exactly SIX consecutive frames as 3 columns x 2 rows on 1536x1024 transparent PNG, each cell512square. Same VERY STRICT 90-degree vertical overhead orthographic camera throughout standing poses: round cap crown centered in broad fur collar, shoulders hide torso and belt, just boot tops below. Same red cap/tunic, cream fur, leather bracers/boots, stone tipped wooden javelins. Same anatomy and scale in every frame. Each WHOLE actor AND entire long spear inside its own cell, maximum silhouette width360 height360, 70px transparent margin all sides, do not cross cell borders. No backdrop or ground shadows, labels or panels. Action: Walk cycle with visibly ALTERNATING left and right lead feet. Feet emerge beneath fur collar, stride small but distinct. One straight javelin held low screen-left. Six consecutive walking poses.",
+      "status": "selected-source",
+      "action": "Maintain a fast charge run with alternating feet.",
+      "compositionReason": "Uses approved movement poses at faster cadence."
+    },
+    {
+      "id": "reload",
+      "file": "reload-v2.png",
+      "nativeFile": "Native-TopDown-reload-v2.png",
+      "generatedSource": "C:/Users/Damien/.codex/generated_images/01a1166c-83ee-7ae0-be97-78c470de8962/exec-6ac503d8-b6cd-4d96-b5d0-6d2a92627016.png",
+      "prompt": "Edit six-frame overhead javelinist reload sheet. Preserve six actions and strict directly overhead camera. Shrink each entire actor and weapon to 75 percent current size and recenter in each own512squarecell. IMPORTANT invisible/visible alpha must be ZERO near cell boundaries; remove all backdrop and shadow completely. 1536x1024 transparentPNG3x2. All whole silhouettes including fingertips and javelin within own cell,70pxmargin. Same red fur capped javelinist. One hand reaches to back pouch, retrieves one spear then lowers it into ready carry. No text.",
+      "status": "selected-source",
+      "action": "Separate javelin reload after throwing:1 EMPTY right hand low;2 right hand reaches over right shoulder toward spare javelin pouch;3 grip spare shaft;4 withdraw ONE straight javelin from pouch;5 bring new javelin down along right side (screen-left);6 ready low carry, stone point screen-bottom. Keep pouch on back, reduce spare count visibly when taken, no extra arms."
+    },
+    {
+      "id": "death",
+      "file": "death-v2.png",
+      "nativeFile": "Native-TopDown-death-v2.png",
+      "generatedSource": "C:/Users/Damien/.codex/generated_images/01a1166c-83ee-7ae0-be97-78c470de8962/exec-46d92e66-b8f5-4b85-933b-96c8f957f91d.png",
+      "prompt": "Edit this six-frame side-death sheet. Keep first THREE frames exactly. Rebuild bottom-row frames4/5/6 with soldier genuinely LYING on his SIDE on ground, body extended horizontally, HEAD SCREEN RIGHT, BOOTS SCREEN LEFT. Full visible red tunic torso, belt and linen trousers when lying, bent knees/legs from hip extending screen left, fur collar near head. Hands resting ground beside chest. Camera remains vertical overhead, body has changed from upright to lying sideways so its full length visible. One dropped javelin beside corpse. Frame4 lands,5 settles,6 still. Do not simply rotate the standing shoulder silhouette. Same red cap creamfur redtunic darkboots. Transparent1536x1024 PNG3x2, each actor+spear withinown512cell,60pxmargin. No shadow/backdrop blood labels.",
+      "status": "selected-source",
+      "action": "Full side fall: standing, knees buckle, tip sideways, land on side, body settles on side, still side corpse. Drop straight javelin beside body. Final three frames head remains same end, no 180 degree flips. No blood."
+    }
+  ]
+}

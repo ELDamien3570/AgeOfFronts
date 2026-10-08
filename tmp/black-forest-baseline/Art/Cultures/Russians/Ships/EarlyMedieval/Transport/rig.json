@@ -1,0 +1,32 @@
+{
+  "schemaVersion": 1,
+  "source": "EarlyMedieval/Transport/SourceArt/Transport_Russian_EarlyMedieval_v1.png",
+  "sourceSha256": "cc2bf55c00e54de89b540672d93f03ba78bc6fffaa3e7de7ac891230f9fb034b",
+  "frameSize": [
+    512,
+    512
+  ],
+  "sourceToFrame": {
+    "scale": 0.3349282296650718,
+    "offset": [
+      46,
+      46
+    ]
+  },
+  "authoring": "../../fleet-rig-authoring.json",
+  "oars": [],
+  "oarPolicy": "Only exterior oar pixels rotate rigidly about registered gunwale pivots; protected hull paint remains unchanged.",
+  "attack": null,
+  "approvedFrameReconstruction": "visible pixels exactly preserved at zero oar angle",
+  "waterAnchors": {
+    "bow": [
+      248,
+      409
+    ],
+    "stern": [
+      248,
+      108
+    ]
+  },
+  "waterMotion": "Hull-local anchors; same yaw and translation as vessel"
+}

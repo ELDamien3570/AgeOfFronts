@@ -280,7 +280,7 @@ describe("shared equipment contracts", () => {
           (r) => r.outputs[equipmentItem(age)],
         )!;
         expect(troop.building).toBe(
-          index === 6 ? "arms-factory" : index === 5 ? "armory" : "blacksmith",
+          index >= 6 ? "arms-factory" : index === 5 ? "armory" : "blacksmith",
         );
         expect(producerCompatible("arms-factory", troop.building)).toBe(true);
       }
@@ -292,7 +292,7 @@ describe("shared equipment contracts", () => {
     expect(producerCompatible("arms-factory", vehicle.building)).toBe(false);
   });
   it("defines one troop pattern per equipped age and one siege pattern for every age", () => {
-    expect(EQUIPMENT_RECIPES).toHaveLength(14);
+    expect(EQUIPMENT_RECIPES).toHaveLength(17);
     for (const age of AGES) {
       expect(
         EQUIPMENT_RECIPES.filter((r) => r.outputs[equipmentItem(age, "siege")]),

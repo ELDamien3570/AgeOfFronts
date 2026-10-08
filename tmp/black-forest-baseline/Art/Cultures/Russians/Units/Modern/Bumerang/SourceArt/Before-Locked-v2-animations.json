@@ -1,0 +1,364 @@
+{
+  "schemaVersion": 1,
+  "cultureId": "russians",
+  "age": "Modern",
+  "unit": "K-17 Bumerang",
+  "category": "Armored Vehicle",
+  "actorCount": 1,
+  "stage": "single-vehicle-animation-review",
+  "integrationStatus": "Four local animation clips pending visual review; runtime integration is separate.",
+  "camera": "vertical-overhead-orthographic",
+  "facing": "screen-down",
+  "sheetSize": {
+    "width": 1536,
+    "height": 1024
+  },
+  "grid": {
+    "columns": 3,
+    "rows": 2
+  },
+  "reviewFootprint": 400,
+  "registration": "Constant scale, fixed root pivot; living clips translated to a shared opaque hull anchor. No per-frame scaling.",
+  "historicalEra": "Contemporary",
+  "historicalDirection": "User selected the K-17 infantry fighting vehicle variant of the VPK Bumerang. Stylized Russian equipment design.",
+  "designReference": "https://odin.t2com.army.mil/WEG/Asset/98120ce6edcd5819b72307efcd79c44d",
+  "weapon": "Autocannon turret with side missile launchers",
+  "animations": [
+    {
+      "id": "idle",
+      "file": "Idle-v1.png",
+      "sha256": "74aae24d20d59c85a572327115bd1191a5e0d160cb48e419b6581a075ccd0548",
+      "label": "Idle - single frame",
+      "loop": true,
+      "scale": 0.6666666666666666,
+      "durations": [
+        1000
+      ],
+      "description": "K-17 Bumerang: an eight-wheeled armored hull with a compact autocannon turret.",
+      "frameCount": 1,
+      "sourceFrameOrder": [
+        0
+      ],
+      "frames": [
+        {
+          "index": 0,
+          "sourceIndex": 0,
+          "x": 0,
+          "y": 0,
+          "width": 1024,
+          "height": 1536,
+          "pivot": {
+            "x": 512.0,
+            "y": 768.0
+          }
+        }
+      ],
+      "sheetSize": {
+        "width": 1024,
+        "height": 1536
+      }
+    },
+    {
+      "id": "moving",
+      "file": "moving-Registered-v1.png",
+      "sha256": "552c5509131bc37fa9efbdfc538cc795766704a7c3b393373b1f34005dc9bbd5",
+      "label": "Moving",
+      "loop": true,
+      "scale": 1.5375375375375375,
+      "durations": [
+        200,
+        200,
+        200,
+        200,
+        200,
+        200
+      ],
+      "frameCount": 6,
+      "sourceFrameOrder": [
+        0,
+        1,
+        2,
+        3,
+        4,
+        5
+      ],
+      "description": "Six-frame seamless in-place forward driving loop. Tire treads visibly cycle, slight suspension vibration only; hull remains rigid and centered, gun stays steady forward. No firing or smoke.",
+      "frames": [
+        {
+          "index": 0,
+          "sourceIndex": 0,
+          "x": 0,
+          "y": 0,
+          "width": 512,
+          "height": 512,
+          "pivot": {
+            "x": 256,
+            "y": 256
+          }
+        },
+        {
+          "index": 1,
+          "sourceIndex": 1,
+          "x": 512,
+          "y": 0,
+          "width": 512,
+          "height": 512,
+          "pivot": {
+            "x": 256,
+            "y": 256
+          }
+        },
+        {
+          "index": 2,
+          "sourceIndex": 2,
+          "x": 1024,
+          "y": 0,
+          "width": 512,
+          "height": 512,
+          "pivot": {
+            "x": 256,
+            "y": 256
+          }
+        },
+        {
+          "index": 3,
+          "sourceIndex": 3,
+          "x": 0,
+          "y": 512,
+          "width": 512,
+          "height": 512,
+          "pivot": {
+            "x": 256,
+            "y": 256
+          }
+        },
+        {
+          "index": 4,
+          "sourceIndex": 4,
+          "x": 512,
+          "y": 512,
+          "width": 512,
+          "height": 512,
+          "pivot": {
+            "x": 256,
+            "y": 256
+          }
+        },
+        {
+          "index": 5,
+          "sourceIndex": 5,
+          "x": 1024,
+          "y": 512,
+          "width": 512,
+          "height": 512,
+          "pivot": {
+            "x": 256,
+            "y": 256
+          }
+        }
+      ]
+    },
+    {
+      "id": "attack",
+      "file": "attack-Registered-v1.png",
+      "sha256": "2f79607acc3b802c626e689687ffd9e0cec14522d1301c4bbcd3a71f4b155d34",
+      "label": "Autocannon burst",
+      "loop": false,
+      "scale": 1.5375375375375375,
+      "durations": [
+        160,
+        120,
+        180,
+        120,
+        180,
+        300
+      ],
+      "frameCount": 6,
+      "sourceFrameOrder": [
+        0,
+        1,
+        2,
+        3,
+        4,
+        5
+      ],
+      "description": "Six-frame stationary autocannon burst: ready, small bright muzzle flash at the downward barrel tip, short barrel recoil recovery, second compact muzzle flash, dissipating small muzzle smoke, settled ready. Eight wheels and hull remain fixed and unchanged. Fire ONLY the autocannon, never the side missile tubes. Preserve smooth olive palette.",
+      "frames": [
+        {
+          "index": 0,
+          "sourceIndex": 0,
+          "x": 0,
+          "y": 0,
+          "width": 512,
+          "height": 512,
+          "pivot": {
+            "x": 256,
+            "y": 256
+          }
+        },
+        {
+          "index": 1,
+          "sourceIndex": 1,
+          "x": 512,
+          "y": 0,
+          "width": 512,
+          "height": 512,
+          "pivot": {
+            "x": 256,
+            "y": 256
+          }
+        },
+        {
+          "index": 2,
+          "sourceIndex": 2,
+          "x": 1024,
+          "y": 0,
+          "width": 512,
+          "height": 512,
+          "pivot": {
+            "x": 256,
+            "y": 256
+          }
+        },
+        {
+          "index": 3,
+          "sourceIndex": 3,
+          "x": 0,
+          "y": 512,
+          "width": 512,
+          "height": 512,
+          "pivot": {
+            "x": 256,
+            "y": 256
+          }
+        },
+        {
+          "index": 4,
+          "sourceIndex": 4,
+          "x": 512,
+          "y": 512,
+          "width": 512,
+          "height": 512,
+          "pivot": {
+            "x": 256,
+            "y": 256
+          }
+        },
+        {
+          "index": 5,
+          "sourceIndex": 5,
+          "x": 1024,
+          "y": 512,
+          "width": 512,
+          "height": 512,
+          "pivot": {
+            "x": 256,
+            "y": 256
+          }
+        }
+      ]
+    },
+    {
+      "id": "death",
+      "file": "death-Registered-v1.png",
+      "sha256": "9c6a0591e1220dbcdb97bdd6227ae89c67ee44789e79f6720d2502ae54970cab",
+      "label": "Explosion / death",
+      "loop": false,
+      "scale": 1.5375375375375375,
+      "durations": [
+        120,
+        140,
+        180,
+        250,
+        400,
+        1000
+      ],
+      "frameCount": 6,
+      "sourceFrameOrder": [
+        0,
+        1,
+        2,
+        3,
+        4,
+        5
+      ],
+      "description": "Six-frame catastrophic destruction played once: 1 small ignition at turret ring; 2 explosive ammunition blast ruptures roof; 3 larger fiery blast tears turret completely free and throws two wheels and armor panels clear; 4 detached turret and debris crash onto ground around collapsed hull; 5 smoke clears over crushed burnt open hull, detached turret lying beside it, scattered wheels; 6 same permanent flat wreck with fading embers. Clear structural breakup, no return to intact vehicle. All fire smoke and debris fit inside each cell. Keep overhead view and location fixed.",
+      "frames": [
+        {
+          "index": 0,
+          "sourceIndex": 0,
+          "x": 0,
+          "y": 0,
+          "width": 512,
+          "height": 512,
+          "pivot": {
+            "x": 256,
+            "y": 256
+          }
+        },
+        {
+          "index": 1,
+          "sourceIndex": 1,
+          "x": 512,
+          "y": 0,
+          "width": 512,
+          "height": 512,
+          "pivot": {
+            "x": 256,
+            "y": 256
+          }
+        },
+        {
+          "index": 2,
+          "sourceIndex": 2,
+          "x": 1024,
+          "y": 0,
+          "width": 512,
+          "height": 512,
+          "pivot": {
+            "x": 256,
+            "y": 256
+          }
+        },
+        {
+          "index": 3,
+          "sourceIndex": 3,
+          "x": 0,
+          "y": 512,
+          "width": 512,
+          "height": 512,
+          "pivot": {
+            "x": 256,
+            "y": 256
+          }
+        },
+        {
+          "index": 4,
+          "sourceIndex": 4,
+          "x": 512,
+          "y": 512,
+          "width": 512,
+          "height": 512,
+          "pivot": {
+            "x": 256,
+            "y": 256
+          }
+        },
+        {
+          "index": 5,
+          "sourceIndex": 5,
+          "x": 1024,
+          "y": 512,
+          "width": 512,
+          "height": 512,
+          "pivot": {
+            "x": 256,
+            "y": 256
+          }
+        }
+      ]
+    }
+  ],
+  "artRevision": "animations-v1",
+  "motionContract": "In-place art. Runtime owns vehicle translation, facing, formation placement and combat effects."
+}

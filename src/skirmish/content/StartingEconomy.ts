@@ -4,15 +4,16 @@ import { defaultUnit } from "./Units";
 import { AGES, startingGameplayAge, type StartingAge, type Age, type Inventory } from "../domain/Definitions";
 
 /** Opening banks are content, not income multipliers or research grants.
- * EarlyModern is the catalogue name for the attachment's sixth-age package. */
+ * Napoleonic is the catalogue name for the attachment's sixth-age package. */
 export const STARTING_ECONOMY: Readonly<Record<Age, { gold: number; reserves: number; items: Readonly<Inventory> }>> = {
   StoneAge: { gold: 4000, reserves: 6000, items: { stone: 60 } },
   BronzeAge: { gold: 8500, reserves: 8000, items: { stone: 60, bronze: 40, copper: 30, tin: 30, "equipment:bronzeage": 3 } },
   ClassicalAge: { gold: 13000, reserves: 10000, items: { stone: 80, iron: 50, bronze: 30, "equipment:classicalage": 3 } },
   EarlyMedieval: { gold: 17500, reserves: 12000, items: { stone: 80, iron: 60, horses: 20, "equipment:earlymedieval": 3 } },
   LateMedieval: { gold: 22000, reserves: 14000, items: { stone: 100, steel: 60, iron: 40, gunpowder: 30, horses: 20, "equipment:latemedieval": 3 } },
-  EarlyModern: { gold: 27000, reserves: 16000, items: { steel: 80, carbon: 50, gunpowder: 40, iron: 40, "equipment:earlymodern": 3 } },
-  Modern: { gold: 32000, reserves: 18000, items: { steel: 100, oil: 60, carbon: 50, gunpowder: 50, "equipment:modern": 3 } },
+  Napoleonic: { gold: 27000, reserves: 16000, items: { steel: 80, carbon: 50, gunpowder: 40, iron: 40, "equipment:napoleonic": 3 } },
+  EarlyModern: { gold: 32000, reserves: 18000, items: { steel: 100, oil: 60, carbon: 50, gunpowder: 50, "equipment:earlymodern": 3 } },
+  Modern: { gold: 45000, reserves: 20000, items: { steel: 140, oil: 100, carbon: 60, gunpowder: 60, "equipment:modern": 3 } },
 };
 
 export function startingEconomy(start: StartingAge, tribe = false) {
@@ -21,7 +22,7 @@ export function startingEconomy(start: StartingAge, tribe = false) {
   const types: BuildingType[] = tribe
     ? ["city", "port", "factory", "mine", "barracks"]
     : ["city", "city", "mine", "factory", "barracks", "barracks"];
-  const smith = age === "Modern" ? "arms-factory" : age === "EarlyModern" ? "armory" : "blacksmith";
+  const smith = AGES.indexOf(age) >= 6 ? "arms-factory" : age === "Napoleonic" ? "armory" : "blacksmith";
   if (buildingTechnology(smith, age)) types.push(smith);
   const counts = new Map<BuildingType, number>(tribe ? [["barracks", 1]] : []);
   const items = { ...bank.items }, required: Inventory = {};

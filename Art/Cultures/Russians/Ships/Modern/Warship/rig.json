@@ -1,0 +1,42 @@
+{
+  "schemaVersion": 1,
+  "source": "Modern/Warship/SourceArt/Warship_Russian_Modern_v1.png",
+  "sourceSha256": "d8a033d178d9afd1c66a4e06b3cd5ac9ec392110fed65c494afdc059ae143180",
+  "frameSize": [
+    512,
+    512
+  ],
+  "sourceToFrame": {
+    "scale": 0.3349282296650718,
+    "offset": [
+      46,
+      46
+    ]
+  },
+  "authoring": "../../fleet-rig-authoring.json",
+  "oars": [],
+  "oarPolicy": "Only exterior oar pixels rotate rigidly about registered gunwale pivots; protected hull paint remains unchanged.",
+  "attack": {
+    "kind": "guided-missile",
+    "direction": "forward",
+    "eventFrame": 4,
+    "emitters": [
+      [
+        258,
+        298
+      ]
+    ]
+  },
+  "approvedFrameReconstruction": "visible pixels exactly preserved at zero oar angle",
+  "waterAnchors": {
+    "bow": [
+      259,
+      425
+    ],
+    "stern": [
+      259,
+      93
+    ]
+  },
+  "waterMotion": "Hull-local anchors; same yaw and translation as vessel"
+}

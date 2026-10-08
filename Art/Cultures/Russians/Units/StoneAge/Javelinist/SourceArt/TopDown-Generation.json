@@ -1,0 +1,9 @@
+{
+  "tool": "built-in-imagegen",
+  "generatedSource": "C:/Users/Damien/.codex/generated_images/01a1166c-83ee-7ae0-be97-78c470de8962/exec-c4a5f45b-bae8-49a6-8a5c-1d7ea6b98bb3.png",
+  "prompt": "Use case: identity-preserve. Input image is design reference sheet for Russian Stone Age javelin thrower. Create ONE single idle soldier, not a sheet. Same red fur-trimmed cloth cap, red rough leather tunic with thick cream fur shoulder collar, dark leather belt/bracers, light linen trousers and dark boots, pouch of spare stone-tipped javelins on back, one straight stone-tipped wooden javelin held right hand (screen-left) low and pointing toward screen-bottom. CHANGE CAMERA to TRUE VERTICAL OVERHEAD ORTHOGRAPHIC 90 degrees looking straight down. Crown of cap and top of shoulders dominate silhouette; torso and legs strongly foreshortened under them; see only boot tops emerging below shoulders. No frontal chest wall, no visible face. Body faces screen-bottom. Render entire javelin and actor centered within transparent square with generous margins. Same detailed hand-painted strategy game sprite style, crisp readable silhouette, one head two arms two feet, no shadow floor, no scenery text grid. Transparent PNG.",
+  "reference": "Art/Cultures/Russians/Units/StoneAge/Javelinist/Idle.png",
+  "nativeFile": "Native-Idle-TopDown-v2.png",
+  "status": "pending-idle-review",
+  "priorAnimationSet": "../animations.json"
+}

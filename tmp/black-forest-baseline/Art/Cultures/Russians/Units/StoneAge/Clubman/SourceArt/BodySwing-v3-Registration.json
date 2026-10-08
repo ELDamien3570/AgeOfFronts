@@ -1,0 +1,110 @@
+[
+  {
+    "id": "attack",
+    "scale": 1.13402,
+    "frames": [
+      {
+        "index": 0,
+        "crownCenter": [
+          261,
+          244
+        ],
+        "crownWidth": 99
+      },
+      {
+        "index": 1,
+        "crownCenter": [
+          247,
+          262
+        ],
+        "crownWidth": 97
+      },
+      {
+        "index": 2,
+        "crownCenter": [
+          274,
+          278
+        ],
+        "crownWidth": 96
+      },
+      {
+        "index": 3,
+        "crownCenter": [
+          263,
+          182
+        ],
+        "crownWidth": 97
+      },
+      {
+        "index": 4,
+        "crownCenter": [
+          284,
+          174
+        ],
+        "crownWidth": 90
+      },
+      {
+        "index": 5,
+        "crownCenter": [
+          268,
+          173
+        ],
+        "crownWidth": 102
+      }
+    ]
+  },
+  {
+    "id": "charge-attack",
+    "scale": 1.14583,
+    "frames": [
+      {
+        "index": 0,
+        "crownCenter": [
+          276,
+          235
+        ],
+        "crownWidth": 96
+      },
+      {
+        "index": 1,
+        "crownCenter": [
+          266,
+          254
+        ],
+        "crownWidth": 96
+      },
+      {
+        "index": 2,
+        "crownCenter": [
+          279,
+          234
+        ],
+        "crownWidth": 93
+      },
+      {
+        "index": 3,
+        "crownCenter": [
+          308,
+          178
+        ],
+        "crownWidth": 96
+      },
+      {
+        "index": 4,
+        "crownCenter": [
+          310,
+          196
+        ],
+        "crownWidth": 93
+      },
+      {
+        "index": 5,
+        "crownCenter": [
+          262,
+          176
+        ],
+        "crownWidth": 97
+      }
+    ]
+  }
+]

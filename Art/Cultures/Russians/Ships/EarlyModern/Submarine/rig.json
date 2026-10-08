@@ -1,0 +1,42 @@
+{
+  "schemaVersion": 1,
+  "source": "EarlyModern/Submarine/SourceArt/Submarine_Russian_EarlyModern_v1.png",
+  "sourceSha256": "2a2547ae43727087722175b5d81b7689dd9eb77c5feeb0c402f409653d4202c1",
+  "frameSize": [
+    512,
+    512
+  ],
+  "sourceToFrame": {
+    "scale": 0.3349282296650718,
+    "offset": [
+      46,
+      46
+    ]
+  },
+  "authoring": "../../fleet-rig-authoring.json",
+  "oars": [],
+  "oarPolicy": "Only exterior oar pixels rotate rigidly about registered gunwale pivots; protected hull paint remains unchanged.",
+  "attack": {
+    "kind": "torpedo",
+    "direction": "forward",
+    "eventFrame": 4,
+    "emitters": [
+      [
+        256,
+        427
+      ]
+    ]
+  },
+  "approvedFrameReconstruction": "visible pixels exactly preserved at zero oar angle",
+  "waterAnchors": {
+    "bow": [
+      256,
+      426
+    ],
+    "stern": [
+      256,
+      90
+    ]
+  },
+  "waterMotion": "Hull-local anchors; same yaw and translation as vessel"
+}

@@ -1,0 +1,72 @@
+{
+  "schemaVersion": 1,
+  "sourceSize": {
+    "width": 1254,
+    "height": 1254
+  },
+  "source": "Warships/Warship_StoneAge.png",
+  "sourceSha256": "ac3f5196f8fa2f2d24b776598108308219022e334b890d62d7bfe0a5f8bea102",
+  "frameSize": {
+    "width": 512,
+    "height": 512
+  },
+  "sourceToFrame": {
+    "scale": 0.3349282296650718,
+    "offset": [
+      46,
+      46
+    ]
+  },
+  "hullInterior": [
+    [
+      626,
+      110
+    ],
+    [
+      665,
+      235
+    ],
+    [
+      700,
+      380
+    ],
+    [
+      718,
+      555
+    ],
+    [
+      710,
+      805
+    ],
+    [
+      680,
+      947
+    ],
+    [
+      627,
+      1080
+    ],
+    [
+      575,
+      947
+    ],
+    [
+      543,
+      805
+    ],
+    [
+      536,
+      555
+    ],
+    [
+      550,
+      380
+    ],
+    [
+      590,
+      235
+    ]
+  ],
+  "layers": [],
+  "notes": "Masks and original painted pixels are retained. Cloth pins, oar pivots, cannon recoil and optional effects are art presentation only."
+}

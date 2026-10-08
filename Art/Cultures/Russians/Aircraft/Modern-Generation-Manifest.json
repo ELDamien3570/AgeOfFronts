@@ -1,0 +1,62 @@
+{
+  "assets": [
+    {
+      "id": "fighter-modern",
+      "label": "Sukhoi Su-57",
+      "age": "Modern",
+      "era": "Contemporary",
+      "category": "Fighter",
+      "role": "Air superiority",
+      "file": "Modern/Fighter/Icon-Modern-v1.png",
+      "source": "Modern/Fighter/SourceArt/Su57_Russian_Modern_v1.png",
+      "status": "static draft",
+      "frameSize": {
+        "width": 627,
+        "height": 627
+      },
+      "camera": "vertical-overhead-orthographic",
+      "facing": "screen-up",
+      "generator": "built-in image_gen",
+      "generatedFile": "exec-ec7fa944-04e1-4fa8-a32b-6dd08b9390bc.png",
+      "sourceSha256": "e90ccdc5005b39225cbf9992b0f68d5244c8e48c17ac73f5e4f0ff79241d250f",
+      "exportSha256": "f77d58e2a1c0f0259fc1b24532a2aee15b4dca08a8a3f753501f682249c5051a",
+      "nativeDimensions": [
+        1254,
+        1254
+      ],
+      "nativeEightPixelGuardMaxAlpha": 0,
+      "exportMethod": "Uniform full-canvas LANCZOS resize; native source retained unchanged",
+      "animationStatus": "Not animated; awaiting visual approval"
+    },
+    {
+      "id": "bomber-modern",
+      "label": "Tupolev Tu-160",
+      "age": "Modern",
+      "era": "Contemporary",
+      "category": "Bomber",
+      "role": "Strategic bombardment",
+      "file": "Modern/Bomber/Icon-Modern-v1.png",
+      "source": "Modern/Bomber/SourceArt/Tu160_Russian_Modern_v1.png",
+      "status": "static draft",
+      "frameSize": {
+        "width": 627,
+        "height": 627
+      },
+      "camera": "vertical-overhead-orthographic",
+      "facing": "screen-up",
+      "generator": "built-in image_gen",
+      "generatedFile": "exec-51c3f612-e96e-4e8d-936b-af4d92bdad04.png",
+      "sourceSha256": "e004ca122694c212e93d2ffe794680df0926496d0ee778addf226ef92afc2c5c",
+      "exportSha256": "7dc49e9c5a4e7ecf40ee7eaf15b01ed28641a39f7fffe9c0bde21a4a2bad3297",
+      "nativeDimensions": [
+        1254,
+        1254
+      ],
+      "nativeEightPixelGuardMaxAlpha": 0,
+      "exportMethod": "Uniform full-canvas LANCZOS resize; native source retained unchanged",
+      "animationStatus": "Not animated; awaiting visual approval"
+    }
+  ],
+  "prompts": "Modern-Generation-Prompts.json",
+  "preservedExistingPngFiles": 237
+}

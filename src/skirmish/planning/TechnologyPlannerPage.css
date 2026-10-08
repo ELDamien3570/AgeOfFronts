@@ -912,3 +912,92 @@ h1 {
     max-height: none;
   }
 }
+/* Three parallel upgrade lanes per branch; scroll on narrow screens. */
+.research-graph {
+  min-width: calc(
+    var(--branch-count) * 420px + (var(--branch-count) - 1) * 48px + 44px
+  );
+}
+.research-age-tree {
+  grid-template-columns: repeat(var(--research-columns, 2), minmax(0, 1fr));
+}
+.research-graph .node {
+  padding: 8px;
+}
+.research-graph .node b {
+  margin: 4px 0;
+  font-size: 13px;
+  -webkit-line-clamp: 2;
+}
+.node-cost {
+  display: block;
+  font:
+    10px system-ui,
+    sans-serif;
+  color: #dfc88c;
+  margin-top: 4px;
+}
+.research-graph .node.capstone {
+  border: 2px solid #c6a8ec;
+  background: #332a46;
+  box-shadow: 0 0 20px #ac82dc22;
+}
+.research-graph .node.capstone small {
+  color: #dcc4fc;
+}
+.research-age-title > small {
+  color: #b4c8ce;
+  margin-left: 12px;
+}
+
+/* Four readable research lanes with actual unlocked troop/building art. */
+.research-graph {
+  min-width: calc(
+    var(--branch-count) * 640px + (var(--branch-count) - 1) * 48px + 44px
+  );
+}
+.research-art {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 3px;
+  min-height: 42px;
+  margin: 4px 0;
+}
+.research-art-tile {
+  display: inline-block;
+  position: relative;
+  width: 38px;
+  height: 38px;
+  overflow: hidden;
+  background: #15262d;
+  border-radius: 5px;
+}
+.research-art-tile > img {
+  width: 100%;
+  height: 100%;
+  object-fit: contain;
+}
+.research-sprite {
+  position: absolute;
+  width: 76px;
+  height: 76px;
+  left: 0;
+  top: 0;
+  transform: scale(0.5);
+  transform-origin: top left;
+}
+.research-sprite img {
+  position: absolute;
+  max-width: none;
+}
+.research-art-more {
+  font-size: 10px;
+  color: #d6c396;
+}
+.research-age-tree {
+  grid-template-rows: repeat(var(--research-rows), 162px);
+}
+.research-graph .node {
+  height: 162px;
+}

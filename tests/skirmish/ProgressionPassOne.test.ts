@@ -307,6 +307,7 @@ describe("infinite human gold", () => {
     const b = building();
     e.progression.states[1].completed = [
       buildingTechnology("barracks", "StoneAge")!,
+      "russian-troop-stoneage-frontline",
     ];
     expect(
       m.players

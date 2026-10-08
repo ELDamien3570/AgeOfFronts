@@ -1,0 +1,201 @@
+{
+  "schemaVersion": 1,
+  "source": "LateMedieval/Transport/SourceArt/Transport_Russian_LateMedieval_v1.png",
+  "sourceSha256": "4dea5c2a8114cee4c837452ed38b988edd59733ff3b61bba71321a68d9d8d233",
+  "frameSize": [
+    512,
+    512
+  ],
+  "sourceToFrame": {
+    "scale": 0.3349282296650718,
+    "offset": [
+      46,
+      46
+    ]
+  },
+  "authoring": "../../fleet-rig-authoring.json",
+  "oars": [
+    {
+      "name": "port-1",
+      "side": "port",
+      "pivot": [
+        197,
+        185
+      ],
+      "tip": [
+        176,
+        185
+      ],
+      "maskWidth": 11,
+      "amplitude": 6
+    },
+    {
+      "name": "starboard-1",
+      "side": "starboard",
+      "pivot": [
+        321,
+        185
+      ],
+      "tip": [
+        338,
+        185
+      ],
+      "maskWidth": 11,
+      "amplitude": 6
+    },
+    {
+      "name": "port-2",
+      "side": "port",
+      "pivot": [
+        197,
+        210
+      ],
+      "tip": [
+        176,
+        210
+      ],
+      "maskWidth": 11,
+      "amplitude": 6
+    },
+    {
+      "name": "starboard-2",
+      "side": "starboard",
+      "pivot": [
+        321,
+        210
+      ],
+      "tip": [
+        338,
+        210
+      ],
+      "maskWidth": 11,
+      "amplitude": 6
+    },
+    {
+      "name": "port-3",
+      "side": "port",
+      "pivot": [
+        197,
+        235
+      ],
+      "tip": [
+        176,
+        235
+      ],
+      "maskWidth": 11,
+      "amplitude": 6
+    },
+    {
+      "name": "starboard-3",
+      "side": "starboard",
+      "pivot": [
+        321,
+        235
+      ],
+      "tip": [
+        338,
+        235
+      ],
+      "maskWidth": 11,
+      "amplitude": 6
+    },
+    {
+      "name": "port-4",
+      "side": "port",
+      "pivot": [
+        197,
+        257
+      ],
+      "tip": [
+        176,
+        257
+      ],
+      "maskWidth": 11,
+      "amplitude": 6
+    },
+    {
+      "name": "starboard-4",
+      "side": "starboard",
+      "pivot": [
+        321,
+        257
+      ],
+      "tip": [
+        338,
+        257
+      ],
+      "maskWidth": 11,
+      "amplitude": 6
+    },
+    {
+      "name": "port-5",
+      "side": "port",
+      "pivot": [
+        197,
+        280
+      ],
+      "tip": [
+        176,
+        280
+      ],
+      "maskWidth": 11,
+      "amplitude": 6
+    },
+    {
+      "name": "starboard-5",
+      "side": "starboard",
+      "pivot": [
+        321,
+        280
+      ],
+      "tip": [
+        338,
+        280
+      ],
+      "maskWidth": 11,
+      "amplitude": 6
+    },
+    {
+      "name": "port-6",
+      "side": "port",
+      "pivot": [
+        197,
+        302
+      ],
+      "tip": [
+        176,
+        302
+      ],
+      "maskWidth": 11,
+      "amplitude": 6
+    },
+    {
+      "name": "starboard-6",
+      "side": "starboard",
+      "pivot": [
+        321,
+        302
+      ],
+      "tip": [
+        338,
+        302
+      ],
+      "maskWidth": 11,
+      "amplitude": 6
+    }
+  ],
+  "oarPolicy": "Only exterior oar pixels rotate rigidly about registered gunwale pivots; protected hull paint remains unchanged.",
+  "attack": null,
+  "approvedFrameReconstruction": "visible pixels exactly preserved at zero oar angle",
+  "waterAnchors": {
+    "bow": [
+      258,
+      407
+    ],
+    "stern": [
+      258,
+      112
+    ]
+  },
+  "waterMotion": "Hull-local anchors; same yaw and translation as vessel"
+}

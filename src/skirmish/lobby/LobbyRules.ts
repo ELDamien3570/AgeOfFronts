@@ -1,4 +1,4 @@
-import { HEIGHTMAP_MAPS, type HeightmapId } from "../content/Maps";
+import { PLAYABLE_MAPS, type PlayableMapId } from "../content/Maps";
 
 /** Agreed friends-match rules. The coordinator will enforce these when online. */
 export const FRIENDS_MATCH_RULES = Object.freeze({
@@ -19,7 +19,7 @@ export const FRIENDS_MATCH_RULES = Object.freeze({
  */
 export const MAP_CAMP_LIMITS: Partial<
   Record<
-    HeightmapId,
+    PlayableMapId,
     Partial<
       Record<
         250 | 500 | 1000,
@@ -29,10 +29,12 @@ export const MAP_CAMP_LIMITS: Partial<
   >
 > = {
   "amazon-river": { 250: { regularCost: 7, tribeCost: 4, budget: 306 } },
+  // Migration 250: conservatively below mixed-roster packing measured over 12 seeds.
+  migration: { 250: { regularCost: 7, tribeCost: 4, budget: 250 } },
 };
 
-export const LOBBY_MAP_IDS = HEIGHTMAP_MAPS.map((map) => map.id);
-export type LobbyMapId = HeightmapId;
+export const LOBBY_MAP_IDS = PLAYABLE_MAPS.map((map) => map.id);
+export type LobbyMapId = PlayableMapId;
 
 export function isLobbyMapId(value: unknown): value is LobbyMapId {
   return LOBBY_MAP_IDS.some((id) => id === value);

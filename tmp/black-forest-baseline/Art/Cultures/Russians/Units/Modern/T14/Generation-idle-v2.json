@@ -1,0 +1,9 @@
+{
+  "date": "2026-10-07",
+  "mode": "built-in-imagegen",
+  "file": "Idle-v2.png",
+  "reference": "Idle-v1.png",
+  "reason": "User requested a more directly top-down camera.",
+  "prompt": "Edit the attached T-14 Armata idle sprite to be MUCH MORE DIRECTLY TOP DOWN. Camera exactly vertically above the tank at 90 degrees, an orthographic plan view, like a roof blueprint painted as an RTS sprite. Current image still shows front-facing optics, smoke launcher mouths, upright antenna lengths, barrel muzzle opening and vertical equipment sides; REMOVE ALL of those perspective cues. From exact overhead: antennas are tiny circular top caps rather than upright lines; optic housings show ONLY roof tops, not their front-facing glass lenses; smoke launchers show housing tops, not forward-facing circular black mouths; the muzzle is viewed from ABOVE and the bore interior is invisible; sensor blocks and remote gun show only top silhouettes, no front walls. Hull left and right edges stay parallel; tracks show ONLY flat tread tops, no outside side faces or road wheels. Turret retains its recognizable angular faceted T-14 shape but render armor slopes as subdued top plane tonal changes rather than large vertical facade faces. Absolutely NO viewpoint tilt toward tank nose. Preserve the same ONE T-14 tank, olive green color, red faction star, closed forward hull hatches, unmanned angular turret, rear engine deck and long main gun aligned DOWN. Maintain smooth painted RTS finish and subtle worn edges. Flatten all volumetric perspective while keeping distinct equipment roof outlines. Whole tank and gun fully inside square canvas with clear margins. Genuinely transparent alpha background, no terrain, cast shadow, glow, labels, smoke, effects, extra units or sprite grid. ONE idle frame only.",
+  "userApproval": "Pending visual review"
+}

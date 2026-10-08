@@ -1,0 +1,106 @@
+{
+  "date": "2026-10-07",
+  "mode": "built-in-imagegen",
+  "approvedDesign": "Idle-LargeShield-v3.png",
+  "records": [
+    {
+      "id": "idle",
+      "kind": "Anim",
+      "file": "Idle-Animated-v1.png",
+      "prompt": "Create a SIX-FRAME single-actor animation atlas from this APPROVED Russian Bronze Spearman idle design. Exact SAME character: bronze dome helmet, compact bronze pauldrons, cream fur, stitched oxblood-brown leather top, pale trousers, brown boots, wrist guards. Exact SAME LARGE round timber shield with bronze rim/rivets/boss (diameter roughly torso+head length), held SCREEN RIGHT. Same long straight spear, bronze leaf tip at forward SCREEN BOTTOM and bronze-capped butt rear SCREEN TOP LEFT; spear hand on SCREEN LEFT grips its REAR third, not near tip. Spear remains a single rigid straight shaft through grip, same thickness, length and tip design in every pose. Strict vertical overhead orthographic view, facing screen-bottom, no sideways or frontal camera. ONE soldier per cell, same body and equipment dimensions every cell. Exact1536x1024RGBA,3columns2rows, six512x512cells in row-major order. Fit EACH whole body, spear and large shield completely inside its own cell with >=20px padding; position torso/root consistently near(256,270); spear+actor overall extent at most460px. No extra characters, ghost trails, labels, grid, blood. Truly transparent alpha0 outside crisp silhouette: no brown glow/haze/gradient/cast shadows. Distinct authored poses with natural anatomy, constant camera, no resizing or head/feet inversion. Preserve the approved large shield and rear spear grip.\nMOTION: Looping idle: frame1 approved neutral stance; frame2 gentle inhaling chest rise; frame3 small weight shift onto right foot; frame4 soft exhale; frame5 shift back onto left foot; frame6 return toward frame1. Subtle breathing and wrist settling, planted feet, stable rigid spear, no big pose change.",
+      "generatedSource": "C:/Users/Damien/.codex/generated_images/01a0fea1-c63f-7343-92ca-6c21cc1c4296/exec-511816f7-2c2f-45cb-89d8-eb6d203817a8.png",
+      "reference": "Idle-LargeShield-v3.png",
+      "status": "superseded-cleanup"
+    },
+    {
+      "id": "idle",
+      "kind": "Clean",
+      "file": "Idle-Animated-v1.png",
+      "prompt": "Background extraction ONLY from this six-frame atlas. Preserve exact six soldier poses, all weapon/shield pixels, exact size1536x1024 and3x2cell positions. Remove ALL brown background, haze, glows and shadows surrounding silhouettes: alpha must be ZERO outside actual soldier/equipment with crisp antialiasing. No color fog in transparent region. Do not redraw, resize, change equipment, crop spear or change motion. Keep every whole soldier and spear inside each512x512cell.",
+      "generatedSource": "C:/Users/Damien/.codex/generated_images/01a0fea1-c63f-7343-92ca-6c21cc1c4296/exec-8d227b05-f308-4c76-8855-7c22957e4bea.png",
+      "reference": "C:\\Users\\Damien\\.codex\\generated_images\\01a0fea1-c63f-7343-92ca-6c21cc1c4296\\exec-511816f7-2c2f-45cb-89d8-eb6d203817a8.png",
+      "status": "selected-source"
+    },
+    {
+      "id": "running",
+      "kind": "Anim",
+      "file": "Running-v1.png",
+      "prompt": "Create a SIX-FRAME single-actor animation atlas from this APPROVED Russian Bronze Spearman idle design. Exact SAME character: bronze dome helmet, compact bronze pauldrons, cream fur, stitched oxblood-brown leather top, pale trousers, brown boots, wrist guards. Exact SAME LARGE round timber shield with bronze rim/rivets/boss (diameter roughly torso+head length), held SCREEN RIGHT. Same long straight spear, bronze leaf tip at forward SCREEN BOTTOM and bronze-capped butt rear SCREEN TOP LEFT; spear hand on SCREEN LEFT grips its REAR third, not near tip. Spear remains a single rigid straight shaft through grip, same thickness, length and tip design in every pose. Strict vertical overhead orthographic view, facing screen-bottom, no sideways or frontal camera. ONE soldier per cell, same body and equipment dimensions every cell. Exact1536x1024RGBA,3columns2rows, six512x512cells in row-major order. Fit EACH whole body, spear and large shield completely inside its own cell with >=20px padding; position torso/root consistently near(256,270); spear+actor overall extent at most460px. No extra characters, ghost trails, labels, grid, blood. Truly transparent alpha0 outside crisp silhouette: no brown glow/haze/gradient/cast shadows. Distinct authored poses with natural anatomy, constant camera, no resizing or head/feet inversion. Preserve the approved large shield and rear spear grip.\nMOTION: Looping WALK with clear alternating foot placement:1 right foot forward long reach,left rear;2 right planted,left passing;3 left foot forward long reach,right rear;4 left planted,right passing;5 right forward reach;6 right planted,left passing approaching first pose. Subtle body bob, spear and large shield carried steadily. Feet visibly stride, not shuffle. Full spear remains diagonal along left side with rear grip.",
+      "generatedSource": "C:/Users/Damien/.codex/generated_images/01a0fea1-c63f-7343-92ca-6c21cc1c4296/exec-75f4d938-c71e-4214-a14a-b88305086865.png",
+      "reference": "Idle-LargeShield-v3.png",
+      "status": "superseded-cleanup"
+    },
+    {
+      "id": "running",
+      "kind": "Clean",
+      "file": "Running-v1.png",
+      "prompt": "Background extraction ONLY from this six-frame atlas. Preserve exact six soldier poses, all weapon/shield pixels, exact size1536x1024 and3x2cell positions. Remove ALL brown background, haze, glows and shadows surrounding silhouettes: alpha must be ZERO outside actual soldier/equipment with crisp antialiasing. No color fog in transparent region. Do not redraw, resize, change equipment, crop spear or change motion. Keep every whole soldier and spear inside each512x512cell.",
+      "generatedSource": "C:/Users/Damien/.codex/generated_images/01a0fea1-c63f-7343-92ca-6c21cc1c4296/exec-e5035788-03c8-462b-adb0-d684cb8febb7.png",
+      "reference": "C:\\Users\\Damien\\.codex\\generated_images\\01a0fea1-c63f-7343-92ca-6c21cc1c4296\\exec-75f4d938-c71e-4214-a14a-b88305086865.png",
+      "status": "selected-source"
+    },
+    {
+      "id": "attack",
+      "kind": "Anim",
+      "file": "Attack-v1.png",
+      "prompt": "Create a SIX-FRAME single-actor animation atlas from this APPROVED Russian Bronze Spearman idle design. Exact SAME character: bronze dome helmet, compact bronze pauldrons, cream fur, stitched oxblood-brown leather top, pale trousers, brown boots, wrist guards. Exact SAME LARGE round timber shield with bronze rim/rivets/boss (diameter roughly torso+head length), held SCREEN RIGHT. Same long straight spear, bronze leaf tip at forward SCREEN BOTTOM and bronze-capped butt rear SCREEN TOP LEFT; spear hand on SCREEN LEFT grips its REAR third, not near tip. Spear remains a single rigid straight shaft through grip, same thickness, length and tip design in every pose. Strict vertical overhead orthographic view, facing screen-bottom, no sideways or frontal camera. ONE soldier per cell, same body and equipment dimensions every cell. Exact1536x1024RGBA,3columns2rows, six512x512cells in row-major order. Fit EACH whole body, spear and large shield completely inside its own cell with >=20px padding; position torso/root consistently near(256,270); spear+actor overall extent at most460px. No extra characters, ghost trails, labels, grid, blood. Truly transparent alpha0 outside crisp silhouette: no brown glow/haze/gradient/cast shadows. Distinct authored poses with natural anatomy, constant camera, no resizing or head/feet inversion. Preserve the approved large shield and rear spear grip.\nMOTION: Six sequential ordinary forward SPEAR THRUST poses:1 guard,2 pull rear grip slightly back winding up,3 arm drives spear straight screen-bottom,4 full extension impact tip farther screen-bottom,5 retract shaft along same line,6 return guard. Shield protects right torso, rigid spear same bronze leaf head every frame. A thrust, not a swing.",
+      "generatedSource": "C:/Users/Damien/.codex/generated_images/01a0fea1-c63f-7343-92ca-6c21cc1c4296/exec-85265213-0fcc-4396-9504-d158490f0a82.png",
+      "reference": "Idle-LargeShield-v3.png",
+      "status": "selected-source"
+    },
+    {
+      "id": "hit",
+      "kind": "Anim",
+      "file": "Hit-v1.png",
+      "prompt": "Create a SIX-FRAME single-actor animation atlas from this APPROVED Russian Bronze Spearman idle design. Exact SAME character: bronze dome helmet, compact bronze pauldrons, cream fur, stitched oxblood-brown leather top, pale trousers, brown boots, wrist guards. Exact SAME LARGE round timber shield with bronze rim/rivets/boss (diameter roughly torso+head length), held SCREEN RIGHT. Same long straight spear, bronze leaf tip at forward SCREEN BOTTOM and bronze-capped butt rear SCREEN TOP LEFT; spear hand on SCREEN LEFT grips its REAR third, not near tip. Spear remains a single rigid straight shaft through grip, same thickness, length and tip design in every pose. Strict vertical overhead orthographic view, facing screen-bottom, no sideways or frontal camera. ONE soldier per cell, same body and equipment dimensions every cell. Exact1536x1024RGBA,3columns2rows, six512x512cells in row-major order. Fit EACH whole body, spear and large shield completely inside its own cell with >=20px padding; position torso/root consistently near(256,270); spear+actor overall extent at most460px. No extra characters, ghost trails, labels, grid, blood. Truly transparent alpha0 outside crisp silhouette: no brown glow/haze/gradient/cast shadows. Distinct authored poses with natural anatomy, constant camera, no resizing or head/feet inversion. Preserve the approved large shield and rear spear grip.\nMOTION: Six sequential mild GET HIT reaction:1 guarded idle,2 shoulders jerk back,3 torso flinches slightly screen-top and shield rises,4 knees flex absorbing hit,5 straighten,6 return guard. Retain spear with rear grip throughout. No death, no huge displacement.",
+      "generatedSource": "C:/Users/Damien/.codex/generated_images/01a0fea1-c63f-7343-92ca-6c21cc1c4296/exec-b69f1786-cb09-435b-a6c1-0268808c703f.png",
+      "reference": "Idle-LargeShield-v3.png",
+      "status": "selected-source"
+    },
+    {
+      "id": "charged",
+      "kind": "Anim",
+      "file": "Charged-Impact-v1.png",
+      "prompt": "Create a SIX-FRAME single-actor animation atlas from this APPROVED Russian Bronze Spearman idle design. Exact SAME character: bronze dome helmet, compact bronze pauldrons, cream fur, stitched oxblood-brown leather top, pale trousers, brown boots, wrist guards. Exact SAME LARGE round timber shield with bronze rim/rivets/boss (diameter roughly torso+head length), held SCREEN RIGHT. Same long straight spear, bronze leaf tip at forward SCREEN BOTTOM and bronze-capped butt rear SCREEN TOP LEFT; spear hand on SCREEN LEFT grips its REAR third, not near tip. Spear remains a single rigid straight shaft through grip, same thickness, length and tip design in every pose. Strict vertical overhead orthographic view, facing screen-bottom, no sideways or frontal camera. ONE soldier per cell, same body and equipment dimensions every cell. Exact1536x1024RGBA,3columns2rows, six512x512cells in row-major order. Fit EACH whole body, spear and large shield completely inside its own cell with >=20px padding; position torso/root consistently near(256,270); spear+actor overall extent at most460px. No extra characters, ghost trails, labels, grid, blood. Truly transparent alpha0 outside crisp silhouette: no brown glow/haze/gradient/cast shadows. Distinct authored poses with natural anatomy, constant camera, no resizing or head/feet inversion. Preserve the approved large shield and rear spear grip.\nMOTION: Six sequential distinct heavy CHARGE IMPACT reaction:1 brace with large shield ahead,2 shield/body jolted backwards screen-top,3 stagger and left foot braces wide,4 deep crouch bent knees recovering balance,5 rise and bring shield forward,6 regain guard. Spear firmly retained, rigid straight. More forceful than ordinary hit, no fall/death.",
+      "generatedSource": "C:/Users/Damien/.codex/generated_images/01a0fea1-c63f-7343-92ca-6c21cc1c4296/exec-efe0b15e-f23e-478d-8763-d762d6ed1aa0.png",
+      "reference": "Idle-LargeShield-v3.png",
+      "status": "selected-source"
+    },
+    {
+      "id": "charge",
+      "kind": "Anim",
+      "file": "Charge-v1.png",
+      "prompt": "Create a SIX-FRAME single-actor animation atlas from this APPROVED Russian Bronze Spearman idle design. Exact SAME character: bronze dome helmet, compact bronze pauldrons, cream fur, stitched oxblood-brown leather top, pale trousers, brown boots, wrist guards. Exact SAME LARGE round timber shield with bronze rim/rivets/boss (diameter roughly torso+head length), held SCREEN RIGHT. Same long straight spear, bronze leaf tip at forward SCREEN BOTTOM and bronze-capped butt rear SCREEN TOP LEFT; spear hand on SCREEN LEFT grips its REAR third, not near tip. Spear remains a single rigid straight shaft through grip, same thickness, length and tip design in every pose. Strict vertical overhead orthographic view, facing screen-bottom, no sideways or frontal camera. ONE soldier per cell, same body and equipment dimensions every cell. Exact1536x1024RGBA,3columns2rows, six512x512cells in row-major order. Fit EACH whole body, spear and large shield completely inside its own cell with >=20px padding; position torso/root consistently near(256,270); spear+actor overall extent at most460px. No extra characters, ghost trails, labels, grid, blood. Truly transparent alpha0 outside crisp silhouette: no brown glow/haze/gradient/cast shadows. Distinct authored poses with natural anatomy, constant camera, no resizing or head/feet inversion. Preserve the approved large shield and rear spear grip.\nMOTION: Six-frame looping sprint/maintain charge with long clear ALTERNATING legs:1 left foot forward right rear,2 left planted right passing,3 right foot forward left rear,4 right planted left passing,5 left foot reaches forward again,6 right passing. Lean torso slightly screen-bottom behind large shield. Spear leveled along screen-bottom direction ready to thrust, rear hand grip. Clear fast run, not walk or shuffle.",
+      "generatedSource": "C:/Users/Damien/.codex/generated_images/01a0fea1-c63f-7343-92ca-6c21cc1c4296/exec-1304dbee-58b3-4614-be43-0ced3db98c45.png",
+      "reference": "Idle-LargeShield-v3.png",
+      "status": "selected-source"
+    },
+    {
+      "id": "charge-attack",
+      "kind": "Anim",
+      "file": "Charge-Attack-v1.png",
+      "prompt": "Create a SIX-FRAME single-actor animation atlas from this APPROVED Russian Bronze Spearman idle design. Exact SAME character: bronze dome helmet, compact bronze pauldrons, cream fur, stitched oxblood-brown leather top, pale trousers, brown boots, wrist guards. Exact SAME LARGE round timber shield with bronze rim/rivets/boss (diameter roughly torso+head length), held SCREEN RIGHT. Same long straight spear, bronze leaf tip at forward SCREEN BOTTOM and bronze-capped butt rear SCREEN TOP LEFT; spear hand on SCREEN LEFT grips its REAR third, not near tip. Spear remains a single rigid straight shaft through grip, same thickness, length and tip design in every pose. Strict vertical overhead orthographic view, facing screen-bottom, no sideways or frontal camera. ONE soldier per cell, same body and equipment dimensions every cell. Exact1536x1024RGBA,3columns2rows, six512x512cells in row-major order. Fit EACH whole body, spear and large shield completely inside its own cell with >=20px padding; position torso/root consistently near(256,270); spear+actor overall extent at most460px. No extra characters, ghost trails, labels, grid, blood. Truly transparent alpha0 outside crisp silhouette: no brown glow/haze/gradient/cast shadows. Distinct authored poses with natural anatomy, constant camera, no resizing or head/feet inversion. Preserve the approved large shield and rear spear grip.\nMOTION: Six sequential HEAVY spear-thrust charge attack:1 running ready stance,2 draw spear back and plant rear foot,3 lunge forward screen-bottom,4 powerful maximum forward thrust with bronze leaf tip pointing screen-bottom and arm extended,5 pull spear back and recover,6 guarded stance. Rigid straight spear/head never changes shape; no swing or throw. Large shield stays full-sized.",
+      "generatedSource": "C:/Users/Damien/.codex/generated_images/01a0fea1-c63f-7343-92ca-6c21cc1c4296/exec-fe4f25f4-b8ea-4135-8599-f879e023d632.png",
+      "reference": "Idle-LargeShield-v3.png",
+      "status": "selected-source"
+    },
+    {
+      "id": "death",
+      "kind": "Anim",
+      "file": "Death-v1.png",
+      "prompt": "Create a SIX-FRAME single-actor animation atlas from this APPROVED Russian Bronze Spearman idle design. Exact SAME character: bronze dome helmet, compact bronze pauldrons, cream fur, stitched oxblood-brown leather top, pale trousers, brown boots, wrist guards. Exact SAME LARGE round timber shield with bronze rim/rivets/boss (diameter roughly torso+head length), held SCREEN RIGHT. Same long straight spear, bronze leaf tip at forward SCREEN BOTTOM and bronze-capped butt rear SCREEN TOP LEFT; spear hand on SCREEN LEFT grips its REAR third, not near tip. Spear remains a single rigid straight shaft through grip, same thickness, length and tip design in every pose. Strict vertical overhead orthographic view, facing screen-bottom, no sideways or frontal camera. ONE soldier per cell, same body and equipment dimensions every cell. Exact1536x1024RGBA,3columns2rows, six512x512cells in row-major order. Fit EACH whole body, spear and large shield completely inside its own cell with >=20px padding; position torso/root consistently near(256,270); spear+actor overall extent at most460px. No extra characters, ghost trails, labels, grid, blood. Truly transparent alpha0 outside crisp silhouette: no brown glow/haze/gradient/cast shadows. Distinct authored poses with natural anatomy, constant camera, no resizing or head/feet inversion. Preserve the approved large shield and rear spear grip.\nMOTION: Six sequential complete SIDE FALL death:1 hit guarded stance,2 knees buckle,3 body tips onto screen-left side,4 lands sideways with spear dropping left and shield falling right,5 limp body settles,6 final motionless side-lying corpse. Keep camera strictly overhead throughout, no gore, full spear shield body contained within each cell. Clear falling progression rather than six final corpse poses.",
+      "generatedSource": "C:/Users/Damien/.codex/generated_images/01a0fea1-c63f-7343-92ca-6c21cc1c4296/exec-a02d62ef-3d53-41ed-aa48-d95a07e959bf.png",
+      "reference": "Idle-LargeShield-v3.png",
+      "status": "selected-source"
+    },
+    {
+      "id": "death-back",
+      "kind": "Anim",
+      "file": "Death-Back-v1.png",
+      "prompt": "Create a SIX-FRAME single-actor animation atlas from this APPROVED Russian Bronze Spearman idle design. Exact SAME character: bronze dome helmet, compact bronze pauldrons, cream fur, stitched oxblood-brown leather top, pale trousers, brown boots, wrist guards. Exact SAME LARGE round timber shield with bronze rim/rivets/boss (diameter roughly torso+head length), held SCREEN RIGHT. Same long straight spear, bronze leaf tip at forward SCREEN BOTTOM and bronze-capped butt rear SCREEN TOP LEFT; spear hand on SCREEN LEFT grips its REAR third, not near tip. Spear remains a single rigid straight shaft through grip, same thickness, length and tip design in every pose. Strict vertical overhead orthographic view, facing screen-bottom, no sideways or frontal camera. ONE soldier per cell, same body and equipment dimensions every cell. Exact1536x1024RGBA,3columns2rows, six512x512cells in row-major order. Fit EACH whole body, spear and large shield completely inside its own cell with >=20px padding; position torso/root consistently near(256,270); spear+actor overall extent at most460px. No extra characters, ghost trails, labels, grid, blood. Truly transparent alpha0 outside crisp silhouette: no brown glow/haze/gradient/cast shadows. Distinct authored poses with natural anatomy, constant camera, no resizing or head/feet inversion. Preserve the approved large shield and rear spear grip.\nMOTION: Six sequential complete BACKWARD FALL death:1 recoil,2 knees buckle/torso tilts back,3 falls backwards face becomes visible,4 lands FACE UP head at SCREEN TOP and feet SCREEN BOTTOM,5 settles on back,6 final supine corpse head SCREEN TOP and boots SCREEN BOTTOM. NO 180-degree inversion at end. Spear drops left shield right, consistent rigid equipment. Strict overhead camera, no gore.",
+      "generatedSource": "C:/Users/Damien/.codex/generated_images/01a0fea1-c63f-7343-92ca-6c21cc1c4296/exec-2a365dfc-6ba7-4fa5-91b7-bddaea118642.png",
+      "reference": "Idle-LargeShield-v3.png",
+      "status": "selected-source"
+    }
+  ]
+}

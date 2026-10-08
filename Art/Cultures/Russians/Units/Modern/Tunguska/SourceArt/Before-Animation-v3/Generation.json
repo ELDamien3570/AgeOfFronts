@@ -1,0 +1,8 @@
+{
+  "mode": "built-in-imagegen",
+  "file": "Idle-FirstFrame-Nadir-v2.png",
+  "prompt": "Edit this Tunguska firstidle game sprite to a MUCH MORE STRICTLY TOP DOWN camera. Camera EXACT90degreesverticalNADIR, orthographic plan projection withZEROvisiblefront orsideverticalfaces. Preserve olivegreenpaintedstylized vehicleidentity equipment proportions forwardSCREENBOTTOM transparentbackground.\nCurrent problematicparts: rearsearchradar shows broadfrontmeshrectangle; missilecanisters show circularendcaps; trackingradar shows frontdisk; turretarmorfrontfaces visible. Correct allfortrueverticalcamera: rearsearchradar remainserect verticalantenna butfromdirectabove appears ONLY THINhorizontal topEDGEwithnarrowframeworkstrip, NOTlargefrontmeshpanel. Trackingradarfrontfacing dish aheadturret appearsONLYthinedge/topofhousing neverbigovalfrontdisk. MissilecanistercircularFRONTENDCAPS MUSTNOTVISIBLE. Longparallelcylindertops only, withlowerstack occludedrealistically, gunbarrels FOURtwoeachside parallelpointdown withonly topmetalprofiles nomuzzleholes. Hull roofplane andturretrooftop dominate. No verticalarmorwalls, nofrontgrille, no exposedroadwheel sides. Trackstrips seenfromabove, symmetric rectangularoutline parallelgeometryno foreshortening. Keep allroofhatches ventsradarbases and equipmentrole readable. Same singlevehicle completeframe with100pxemptyguard on1254x1254 transparentRGBA. Broadpaintedgameforms notphoto; no addedparts labelsshadowgroundhaze. Trulyoverhead not slightlytilted isometric.",
+  "reference": "Idle-FirstFrame-v1.png",
+  "generatedSource": "C:/Users/Damien/.codex/generated_images/01a11776-58b2-77d1-8e94-9688a2588952/exec-9323823e-0fe6-407a-ae31-3b3132254af9.png",
+  "status": "awaiting overhead design review"
+}

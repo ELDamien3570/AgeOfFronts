@@ -153,6 +153,7 @@ export function quoteLandRefits<T extends RefitSquad>(
         (u) =>
           u.line === current.line &&
           u.role === current.role &&
+          u.troopClass === current.troopClass &&
           AGES.indexOf(u.age) > AGES.indexOf(current.age) &&
           context.research.includes(u.technologyId),
       ).sort((a, b) => AGES.indexOf(b.age) - AGES.indexOf(a.age));

@@ -1,0 +1,10 @@
+{
+  "id": "idle",
+  "file": "Idle-Animated-Quiet-v2.png",
+  "prompt": "EDIT this sixframe idle animation atlas to a much QUIETER standing idle. This is NOT walking or swaying. Use FRAME1 topLEFT as exact registration template for ALLsix cells: same horsebody orientation, same noseposition, same ridercapposition, same bowhandposition, sametailbase, same saddleposition, same scale and camera. Freeze every hoof, horse head/muzzle/neck, rider torso, hands and bow so they do NOT translate, rotate, lean or bounce betweenframes. No shifts towardleft/right likecurrentframes4/6. Horse facesstraightDOWN identical allframes. ONLY animation: extremely subtle horse flankbreathing under1percent width, one tinyearflick, tailTIP tiny twitch less5px at512cellsize; tail mustremain uprightnotwide sweeping. Rideralmoststatue-still not bobbing. Six distinct but almostidentical poses gradual inhale/exhale with seamlessfirst-last loop, no enlargement/shrinking actor acrossframes. Preserve exact darkfeltcap lamellarvest russetkaftan/dunhorse finish and overheadcamera. Same1536x1024 six512cells3x2 transparentalpha0 background emptygutters andmargin30px eachcell. No glowhazegradientgroundshadowoutline text.",
+  "generatedSource": "C:\\Users\\Damien\\.codex\\generated_images\\01a11641-9e1b-7c81-be76-c9edd53ef182\\exec-54f0482c-324d-42a5-800e-ab0feaf061a3.png",
+  "references": [
+    "SourceArt/Native-Idle-Animated-v1.png"
+  ],
+  "status": "quieter-idle-revision"
+}

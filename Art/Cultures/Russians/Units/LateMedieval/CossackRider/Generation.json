@@ -1,0 +1,133 @@
+{
+  "date": "2026-10-07",
+  "mode": "built-in-imagegen",
+  "selectedIdle": "Idle-v1.png",
+  "referenceCopy": "SourceArt/User-Clothing-Reference.png",
+  "userApproval": "Idle-v1 approved; nine animations pending review.",
+  "records": [
+    {
+      "date": "2026-10-07",
+      "mode": "built-in-imagegen",
+      "file": "attack-v1.png",
+      "prompt": "Create a transparent 1536x1024 sprite atlas: EXACTLY six consecutive poses in 3 columns by 2 rows, read left-to-right then next row. Each complete mounted pose including full lance isolated inside its 512x512 cell with generous 55px clear margins, consistent small ~350px length, same saddle location. Preserve approved Late Medieval Cossack Rider reference identity: dark coat, blue trousers, black boots, red-crowned fur cap, light iron lamellar vest, small steel shoulder caps, mail collar and iron bracers. Unarmored bay horse, black mane/tail, gray saddle roll, simple leather harness. Lance in RIGHT hand screen-left, reins left hand screen-right. No shield, firearm or horse armor. Direct overhead camera, face hidden, cap crown and shoulder tops visible, horse nose bottom/tail top. Match smooth painted finish and exact palette; no grain, thick outlines, glow, shadow, background, labels or borders. Motion: Normal mounted lance thrust using a direct forward extension: upright rest; lower lance toward screen-bottom; lean a little and extend right arm forward; full thrust with spearhead beyond horse shoulder toward bottom; retract; upright recovery. Spearhead at forward lower end, rigid shaft, no flipping weapon or changing grip. Horse stays steady. This is the direct thrust style previously approved as the normal attack.",
+      "generatedSource": "C:\\Users\\Damien\\.codex\\generated_images\\01a11641-9e1b-7c81-be76-c9edd53ef182\\exec-14f0b85a-748c-4001-a154-c419b3d134df.png",
+      "references": [
+        "C:/Users/Damien/Documents/GitHub/AgeOfFronts/AgeOfFronts/Art/Cultures/Russians/Units/LateMedieval/CossackRider/Idle-v1.png"
+      ],
+      "nativeCopy": "SourceArt\\Native-attack-v1.png"
+    },
+    {
+      "date": "2026-10-07",
+      "mode": "built-in-imagegen",
+      "file": "charge-attack-v1.png",
+      "prompt": "Create a transparent 1536x1024 sprite atlas: EXACTLY six consecutive poses in 3 columns by 2 rows, read left-to-right then next row. Each complete mounted pose including full lance isolated inside its 512x512 cell with generous 55px clear margins, consistent small ~350px length, same saddle location. Preserve approved Late Medieval Cossack Rider reference identity: dark coat, blue trousers, black boots, red-crowned fur cap, light iron lamellar vest, small steel shoulder caps, mail collar and iron bracers. Unarmored bay horse, black mane/tail, gray saddle roll, simple leather harness. Lance in RIGHT hand screen-left, reins left hand screen-right. No shield, firearm or horse armor. Direct overhead camera, face hidden, cap crown and shoulder tops visible, horse nose bottom/tail top. Match smooth painted finish and exact palette; no grain, thick outlines, glow, shadow, background, labels or borders. Motion: Charge attack using a longer sweeping lowering of lance before thrust: upright rest; right arm moves outward screen-left lowering lance diagonally forward; extend the lance further forward alongside horse neck; fully extended strike close beside screen-left of muzzle toward screen-bottom; withdraw outward diagonally; return upright. Smooth coherent shoulder-level grip, no grip reversal or spearhead at rear end. Maintain rigid wood shaft and single spearhead. Horse stays horizontally stable.",
+      "generatedSource": "C:\\Users\\Damien\\.codex\\generated_images\\01a11641-9e1b-7c81-be76-c9edd53ef182\\exec-2fecba90-f480-431d-a80b-e064b8b8598a.png",
+      "references": [
+        "C:/Users/Damien/Documents/GitHub/AgeOfFronts/AgeOfFronts/Art/Cultures/Russians/Units/LateMedieval/CossackRider/Idle-v1.png"
+      ],
+      "nativeCopy": "SourceArt\\Native-charge-attack-v1.png"
+    },
+    {
+      "date": "2026-10-07",
+      "mode": "built-in-imagegen",
+      "file": "charge-v1.png",
+      "prompt": "Create a transparent 1536x1024 sprite atlas: EXACTLY six consecutive poses in 3 columns by 2 rows, read left-to-right then next row. Each complete mounted pose including full lance isolated inside its 512x512 cell with generous 55px clear margins, consistent small ~350px length, same saddle location. Preserve approved Late Medieval Cossack Rider reference identity: dark coat, blue trousers, black boots, red-crowned fur cap, light iron lamellar vest, small steel shoulder caps, mail collar and iron bracers. Unarmored bay horse, black mane/tail, gray saddle roll, simple leather harness. Lance in RIGHT hand screen-left, reins left hand screen-right. No shield, firearm or horse armor. Direct overhead camera, face hidden, cap crown and shoulder tops visible, horse nose bottom/tail top. Match smooth painted finish and exact palette; no grain, thick outlines, glow, shadow, background, labels or borders. Motion: Natural six-phase gallop IN PLACE: hind push, gather, suspension, foreleg reach, landing and recovery. Anatomical leg movement not sideways paddling. Horizontally stable saddle, slight vertical bob, lance ready.",
+      "generatedSource": "C:\\Users\\Damien\\.codex\\generated_images\\01a11641-9e1b-7c81-be76-c9edd53ef182\\exec-2eaf8b11-36ec-41bc-bcff-139b830f7d93.png",
+      "references": [
+        "C:/Users/Damien/Documents/GitHub/AgeOfFronts/AgeOfFronts/Art/Cultures/Russians/Units/LateMedieval/CossackRider/Idle-v1.png"
+      ],
+      "nativeCopy": "SourceArt\\Native-charge-v1.png"
+    },
+    {
+      "date": "2026-10-07",
+      "mode": "built-in-imagegen",
+      "file": "charged-impact-v1.png",
+      "prompt": "Create a transparent 1536x1024 sprite atlas: EXACTLY six consecutive poses in 3 columns by 2 rows, read left-to-right then next row. Each complete mounted pose including full lance isolated inside its 512x512 cell with generous 55px clear margins, consistent small ~350px length, same saddle location. Preserve approved Late Medieval Cossack Rider reference identity: dark coat, blue trousers, black boots, red-crowned fur cap, light iron lamellar vest, small steel shoulder caps, mail collar and iron bracers. Unarmored bay horse, black mane/tail, gray saddle roll, simple leather harness. Lance in RIGHT hand screen-left, reins left hand screen-right. No shield, firearm or horse armor. Direct overhead camera, face hidden, cap crown and shoulder tops visible, horse nose bottom/tail top. Match smooth painted finish and exact palette; no grain, thick outlines, glow, shadow, background, labels or borders. Motion: Strong distinct charge impact: rest; rider recoils backward and pulls reins; horse forelegs buckle; staggers in place; horse regains feet; rest. Articulated recoil and legs while horse root remains horizontally stable.",
+      "generatedSource": "C:\\Users\\Damien\\.codex\\generated_images\\01a11641-9e1b-7c81-be76-c9edd53ef182\\exec-366047e6-b217-47f7-bbdb-f51ce434d454.png",
+      "references": [
+        "C:/Users/Damien/Documents/GitHub/AgeOfFronts/AgeOfFronts/Art/Cultures/Russians/Units/LateMedieval/CossackRider/Idle-v1.png"
+      ],
+      "nativeCopy": "SourceArt\\Native-charged-impact-v1.png"
+    },
+    {
+      "date": "2026-10-07",
+      "mode": "built-in-imagegen",
+      "file": "death-thrown-v1.png",
+      "prompt": "Create a transparent 1536x1024 sprite atlas: EXACTLY six consecutive poses in 3 columns by 2 rows, read left-to-right then next row. Each complete mounted pose including full lance isolated inside its 512x512 cell with generous 55px clear margins, consistent small ~350px length, same saddle location. Preserve approved Late Medieval Cossack Rider reference identity: dark coat, blue trousers, black boots, red-crowned fur cap, light iron lamellar vest, small steel shoulder caps, mail collar and iron bracers. Unarmored bay horse, black mane/tail, gray saddle roll, simple leather harness. Lance in RIGHT hand screen-left, reins left hand screen-right. No shield, firearm or horse armor. Direct overhead camera, face hidden, cap crown and shoulder tops visible, horse nose bottom/tail top. Match smooth painted finish and exact palette; no grain, thick outlines, glow, shadow, background, labels or borders. Motion: Thrown rider death: upright; horse stumbles; rider thrown clear screen-right; rider lands beside collapsing horse; both settle separately; final corpses, one horse and one rider. No floating duplicate, no flipping at end. Whole lance visible.",
+      "generatedSource": "C:\\Users\\Damien\\.codex\\generated_images\\01a11641-9e1b-7c81-be76-c9edd53ef182\\exec-63a1bff2-6113-4e97-a87c-2407b25a70ec.png",
+      "references": [
+        "C:/Users/Damien/Documents/GitHub/AgeOfFronts/AgeOfFronts/Art/Cultures/Russians/Units/LateMedieval/CossackRider/Idle-v1.png"
+      ],
+      "nativeCopy": "SourceArt\\Native-death-thrown-v1.png"
+    },
+    {
+      "date": "2026-10-07",
+      "mode": "built-in-imagegen",
+      "file": "death-v1.png",
+      "prompt": "Create a transparent 1536x1024 sprite atlas: EXACTLY six consecutive poses in 3 columns by 2 rows, read left-to-right then next row. Each complete mounted pose including full lance isolated inside its 512x512 cell with generous 55px clear margins, consistent small ~350px length, same saddle location. Preserve approved Late Medieval Cossack Rider reference identity: dark coat, blue trousers, black boots, red-crowned fur cap, light iron lamellar vest, small steel shoulder caps, mail collar and iron bracers. Unarmored bay horse, black mane/tail, gray saddle roll, simple leather harness. Lance in RIGHT hand screen-left, reins left hand screen-right. No shield, firearm or horse armor. Direct overhead camera, face hidden, cap crown and shoulder tops visible, horse nose bottom/tail top. Match smooth painted finish and exact palette; no grain, thick outlines, glow, shadow, background, labels or borders. Motion: Horse and rider fall together: upright; knees buckle; both lean screen-left; collapse onto left side; settle; final corpse. True anatomical fall, not spinning upright pose. Last two frames same corpse orientation without inversion. Preserve iron armor, full horse and full lance.",
+      "generatedSource": "C:\\Users\\Damien\\.codex\\generated_images\\01a11641-9e1b-7c81-be76-c9edd53ef182\\exec-74d5f14c-7f3a-42c4-b699-9cee9b62ec33.png",
+      "references": [
+        "C:/Users/Damien/Documents/GitHub/AgeOfFronts/AgeOfFronts/Art/Cultures/Russians/Units/LateMedieval/CossackRider/Idle-v1.png"
+      ],
+      "nativeCopy": "SourceArt\\Native-death-v1.png"
+    },
+    {
+      "date": "2026-10-07",
+      "mode": "built-in-imagegen",
+      "file": "hit-v1.png",
+      "prompt": "Create a transparent 1536x1024 sprite atlas: EXACTLY six consecutive poses in 3 columns by 2 rows, read left-to-right then next row. Each complete mounted pose including full lance isolated inside its 512x512 cell with generous 55px clear margins, consistent small ~350px length, same saddle location. Preserve approved Late Medieval Cossack Rider reference identity: dark coat, blue trousers, black boots, red-crowned fur cap, light iron lamellar vest, small steel shoulder caps, mail collar and iron bracers. Unarmored bay horse, black mane/tail, gray saddle roll, simple leather harness. Lance in RIGHT hand screen-left, reins left hand screen-right. No shield, firearm or horse armor. Direct overhead camera, face hidden, cap crown and shoulder tops visible, horse nose bottom/tail top. Match smooth painted finish and exact palette; no grain, thick outlines, glow, shadow, background, labels or borders. Motion: Small hit recoil: rest; rider recoils slightly; braces lance arm; horse flinches; settles; rest. No whole-pose sideways slide.",
+      "generatedSource": "C:\\Users\\Damien\\.codex\\generated_images\\01a11641-9e1b-7c81-be76-c9edd53ef182\\exec-58365e1a-a970-4e34-a256-e77735068fb5.png",
+      "references": [
+        "C:/Users/Damien/Documents/GitHub/AgeOfFronts/AgeOfFronts/Art/Cultures/Russians/Units/LateMedieval/CossackRider/Idle-v1.png"
+      ],
+      "nativeCopy": "SourceArt\\Native-hit-v1.png"
+    },
+    {
+      "date": "2026-10-07",
+      "mode": "built-in-imagegen",
+      "file": "idle-v1.png",
+      "prompt": "Create a transparent 1536x1024 sprite atlas: EXACTLY six consecutive poses in 3 columns by 2 rows, read left-to-right then next row. Each complete mounted pose including full lance isolated inside its 512x512 cell with generous 55px clear margins, consistent small ~350px length, same saddle location. Preserve approved Late Medieval Cossack Rider reference identity: dark coat, blue trousers, black boots, red-crowned fur cap, light iron lamellar vest, small steel shoulder caps, mail collar and iron bracers. Unarmored bay horse, black mane/tail, gray saddle roll, simple leather harness. Lance in RIGHT hand screen-left, reins left hand screen-right. No shield, firearm or horse armor. Direct overhead camera, face hidden, cap crown and shoulder tops visible, horse nose bottom/tail top. Match smooth painted finish and exact palette; no grain, thick outlines, glow, shadow, background, labels or borders. Motion: Quiet breathing loop, almost fixed saddle, rider/head/feet. Only small breathing, ear flick, tiny tail motion; no stepping or swaying.",
+      "generatedSource": "C:\\Users\\Damien\\.codex\\generated_images\\01a11641-9e1b-7c81-be76-c9edd53ef182\\exec-07a54af0-ddda-46e1-a210-1cde8a7e750b.png",
+      "references": [
+        "C:/Users/Damien/Documents/GitHub/AgeOfFronts/AgeOfFronts/Art/Cultures/Russians/Units/LateMedieval/CossackRider/Idle-v1.png"
+      ],
+      "nativeCopy": "SourceArt\\Native-idle-v1.png"
+    },
+    {
+      "date": "2026-10-07",
+      "mode": "built-in-imagegen",
+      "file": "walk-v1.png",
+      "prompt": "Create a transparent 1536x1024 sprite atlas: EXACTLY six consecutive poses in 3 columns by 2 rows, read left-to-right then next row. Each complete mounted pose including full lance isolated inside its 512x512 cell with generous 55px clear margins, consistent small ~350px length, same saddle location. Preserve approved Late Medieval Cossack Rider reference identity: dark coat, blue trousers, black boots, red-crowned fur cap, light iron lamellar vest, small steel shoulder caps, mail collar and iron bracers. Unarmored bay horse, black mane/tail, gray saddle roll, simple leather harness. Lance in RIGHT hand screen-left, reins left hand screen-right. No shield, firearm or horse armor. Direct overhead camera, face hidden, cap crown and shoulder tops visible, horse nose bottom/tail top. Match smooth painted finish and exact palette; no grain, thick outlines, glow, shadow, background, labels or borders. Motion: Natural four-beat horse walk IN PLACE, six consecutive phases, hinged legs and alternating hoof support/lift. Minimal lateral sway, steady saddle x and mild vertical bob. Rider lance upright at rest.",
+      "generatedSource": "C:\\Users\\Damien\\.codex\\generated_images\\01a11641-9e1b-7c81-be76-c9edd53ef182\\exec-5c595b58-083c-4c84-845d-0861d2292677.png",
+      "references": [
+        "C:/Users/Damien/Documents/GitHub/AgeOfFronts/AgeOfFronts/Art/Cultures/Russians/Units/LateMedieval/CossackRider/Idle-v1.png"
+      ],
+      "nativeCopy": "SourceArt\\Native-walk-v1.png"
+    },
+    {
+      "date": "2026-10-07",
+      "mode": "built-in-imagegen",
+      "prompt": "Edit this approved Cossack Rider into a SLIGHTLY more armored Late Medieval light cavalry variant. Preserve camera, entire horse anatomy/size, pose, dark blue trousers, black boots, low black fur cap with red crown, gray saddle roll, reins and wooden lance held upright at rest in RIGHT hand screen-left. Left hand screen-right holds reins. Horse stays COMPLETELY UNARMORED bay with black mane/tail and same simple leather harness. Only upgrade rider protection modestly: fitted dark leather-and-small iron lamellar vest over the existing dark riding coat, restrained steel shoulder caps, short mail collar at neckline and iron forearm bracers. Keep black cloth sleeves and coat skirts visible, light mobile silhouette, much less armored than heavy Boyar. Armor subdued weathered iron with clear metal highlights, not bronze or gold; no full plate suit, no shield, no horse armor, no helmet replacing fur cap, no firearm. Preserve directly overhead view with cap crown visible, face hidden, horse nose screen-bottom/tail screen-top. Same smooth painted strategy-game finish and color palette, no grain or harsh outlines. Single full idle sprite with entire lance inside generous transparent margins. True transparent background, no glow or ground shadow, no labels or scenery.",
+      "generatedSource": "C:\\Users\\Damien\\.codex\\generated_images\\01a11641-9e1b-7c81-be76-c9edd53ef182\\exec-9d4e517b-3adf-475e-b650-5ebdf024c9cf.png",
+      "references": [
+        "C:/Users/Damien/Documents/GitHub/AgeOfFronts/AgeOfFronts/Art/Cultures/Russians/Units/EarlyMedieval/CossackRider/Idle-v1.png"
+      ],
+      "revisionReason": "User requested a slightly more armored Late Medieval successor while retaining the Early Medieval rider."
+    },
+    {
+      "date": "2026-10-07",
+      "mode": "built-in-imagegen",
+      "file": "death-v2.png",
+      "prompt": "Create a replacement together-fall death animation for the approved Late Medieval Russian Cossack Rider in reference. Transparent sprite atlas 1536x1024, EXACTLY SIX consecutive frames in THREE columns TWO rows. Each 512x512 cell has the entire horse, rider and lance inside with 40px clear margins. Same painted art, palette, proportions, light iron lamellar vest and shoulder caps over black coat, blue trousers, red-crowned black fur cap, unarmored bay horse with black mane/tail and gray saddle roll. Lance right hand screen-left, reins left. Strict overhead camera fixed throughout; no perspective change. Motion: 1 upright mounted rest facing bottom; 2 front legs buckle, horse drops chest downward, rider pitches with it; 3 horse rolls onto its LEFT flank, rider loses seat but stays immediately beside saddle; 4 horse fully lands on flank, four anatomically correct legs extended sideways, rider tumbles down alongside horse; 5 settle rider flat alongside saddle and horse motionless on side; 6 same corpse orientation with only tiny settling, no inversion, no rotation reversal. Horse nose remains directed mostly toward bottom throughout; its body axis remains tail top/head bottom, falling sideways is a roll not a 90-degree turn in the ground plane. Final rider clearly lying on ground beside horse, NOT still sitting upright astride a sideways horse. No rider thrown through air, no blood, no armor added to horse, no extra limbs, no missing lance, no background/shadow/outline/grain/text. Leave generous separation between cells.",
+      "generatedSource": "C:\\Users\\Damien\\.codex\\generated_images\\01a11641-9e1b-7c81-be76-c9edd53ef182\\exec-75cc35d1-52a0-4d18-b1b1-40e87a00af8e.png",
+      "references": [
+        "Idle-v1.png"
+      ],
+      "nativeCopy": "SourceArt\\Native-death-v2.png",
+      "output": "death-Registered-v2.png",
+      "outputSha256": "71dff766ed7a1656d4f6a5ed2e11fb99382ead9eaf54bde7c0f5e96e5198f6c5",
+      "supersedes": "death-Registered-v1.png",
+      "reason": "User requested a new together-fall death sequence."
+    }
+  ]
+}

@@ -15,7 +15,7 @@ import type { Building, Player } from "../../src/skirmish/Protocol";
 
 const map = new GameMapImpl(96, 64, new Uint8Array(96 * 64).fill(133), 96 * 64);
 describe("building footprints and reservations", () => {
-  it("defines cities, military production, ordinary buildings, and the tall airstrip", () => {
+  it("defines cities, military production, ordinary buildings, and the square airstrip", () => {
     expect(buildingFootprint("city")).toEqual({ width: 3, height: 3 });
     for (const type of [
       "barracks",
@@ -25,7 +25,7 @@ describe("building footprints and reservations", () => {
       "arms-factory",
     ] as const)
       expect(buildingFootprint(type)).toEqual({ width: 2, height: 2 });
-    expect(buildingFootprint("airstrip")).toEqual({ width: 2, height: 3 });
+    expect(buildingFootprint("airstrip")).toEqual({ width: 2, height: 2 });
     for (const type of ["blacksmith", "armory", "depot", "missile-silo", "mirv-launcher", "factory", "port"] as const)
       expect(buildingFootprint(type)).toEqual({ width: 2, height: 2 });
     for (const type of ["mine", "tower", "oil-well", "oil-rig", "gun-nest", "trench", "missile-defence"] as const)
@@ -49,7 +49,7 @@ describe("building footprints and reservations", () => {
       left: 9,
       top: 9,
       right: 13,
-      bottom: 14,
+      bottom: 13,
     });
   });
   it("allows touching borders but rejects shared reserved cells, including diagonal corners", () => {

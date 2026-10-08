@@ -1,0 +1,89 @@
+{
+  "date": "2026-10-07",
+  "mode": "built-in-imagegen",
+  "approvedDesign": "Idle-v3.png",
+  "jobs": [
+    {
+      "id": "idle",
+      "file": "Idle-Animated-v1.png",
+      "motion": "Subtle relaxed breathing and settling, bow undrawn."
+    },
+    {
+      "id": "running",
+      "file": "Running-v1.png",
+      "motion": "Four-beat walking loop, keep exact horse gait."
+    },
+    {
+      "id": "hit",
+      "file": "Hit-v1.png",
+      "motion": "Brief recoil and recovery, bow retained."
+    },
+    {
+      "id": "charged",
+      "file": "Charged-Impact-v1.png",
+      "motion": "Heavy stagger impact then recovery, bow retained."
+    },
+    {
+      "id": "charge",
+      "file": "Charge-v1.png",
+      "motion": "Natural collected gallop loop, keep exact horse gait."
+    },
+    {
+      "id": "death",
+      "file": "Death-Together-v1.png",
+      "motion": "Horse and rider fall together onto side, keep exact chronological fall and settled final pose."
+    },
+    {
+      "id": "death-thrown",
+      "file": "Death-Thrown-v1.png",
+      "motion": "Rider thrown off and lands beside standing horse. Keep exact chronological fall, final pose stays fallen."
+    }
+  ],
+  "sourceRowCuts": {
+    "idle": [
+      512,
+      512,
+      512
+    ],
+    "running": [
+      512,
+      512,
+      512
+    ],
+    "attack": [
+      512,
+      512,
+      512
+    ],
+    "hit": [
+      512,
+      512,
+      512
+    ],
+    "charged": [
+      512,
+      506,
+      511
+    ],
+    "charge": [
+      512,
+      512,
+      512
+    ],
+    "charge-attack": [
+      512,
+      512,
+      512
+    ],
+    "death": [
+      512,
+      512,
+      512
+    ],
+    "death-thrown": [
+      509,
+      509,
+      509
+    ]
+  }
+}

@@ -1,0 +1,929 @@
+{
+  "schemaVersion": 1,
+  "cultureId": "russians",
+  "age": "EarlyMedieval",
+  "unit": "Cossack Rider",
+  "category": "Light Cavalry",
+  "actorCount": 1,
+  "stage": "single-mounted-actor-art-prototype",
+  "integrationStatus": "Animation art accepted with user-requested attack assignment swap; runtime integration remains separate.",
+  "camera": "vertical-overhead-orthographic",
+  "facing": "screen-down",
+  "sheetSize": {
+    "width": 1536,
+    "height": 1024
+  },
+  "grid": {
+    "columns": 3,
+    "rows": 2
+  },
+  "reviewFootprint": 400,
+  "registration": "Fixed saddle pivot and constant scale. Gray saddle roll anchors all seven living clips horizontally; quiet idle also aligned vertically.",
+  "weapon": "Wooden lance with narrow steel spearhead held at rest in right hand",
+  "mount": "Unarmored bay horse with simple leather harness, saddle and gray blanket roll",
+  "equipmentFinish": "Dark riding coat, dark blue trousers, black boots and black fur cap with muted red crown detail",
+  "animations": [
+    {
+      "id": "idle",
+      "file": "idle-Registered-v1.png",
+      "label": "Idle",
+      "loop": true,
+      "scale": 1.5375375375375375,
+      "durations": [
+        600,
+        600,
+        600,
+        600,
+        600,
+        600
+      ],
+      "description": "Very quiet breathing loop: horse head, saddle and rider stay nearly fixed; subtle breathing, ear flick, tiny tail change; no stepping or body sway.",
+      "frameCount": 6,
+      "sourceFrameOrder": [
+        0,
+        1,
+        2,
+        3,
+        4,
+        5
+      ],
+      "frames": [
+        {
+          "index": 0,
+          "sourceIndex": 0,
+          "x": 0,
+          "y": 0,
+          "width": 512,
+          "height": 512,
+          "pivot": {
+            "x": 256,
+            "y": 256
+          }
+        },
+        {
+          "index": 1,
+          "sourceIndex": 1,
+          "x": 512,
+          "y": 0,
+          "width": 512,
+          "height": 512,
+          "pivot": {
+            "x": 256,
+            "y": 256
+          }
+        },
+        {
+          "index": 2,
+          "sourceIndex": 2,
+          "x": 1024,
+          "y": 0,
+          "width": 512,
+          "height": 512,
+          "pivot": {
+            "x": 256,
+            "y": 256
+          }
+        },
+        {
+          "index": 3,
+          "sourceIndex": 3,
+          "x": 0,
+          "y": 512,
+          "width": 512,
+          "height": 512,
+          "pivot": {
+            "x": 256,
+            "y": 256
+          }
+        },
+        {
+          "index": 4,
+          "sourceIndex": 4,
+          "x": 512,
+          "y": 512,
+          "width": 512,
+          "height": 512,
+          "pivot": {
+            "x": 256,
+            "y": 256
+          }
+        },
+        {
+          "index": 5,
+          "sourceIndex": 5,
+          "x": 1024,
+          "y": 512,
+          "width": 512,
+          "height": 512,
+          "pivot": {
+            "x": 256,
+            "y": 256
+          }
+        }
+      ]
+    },
+    {
+      "id": "running",
+      "file": "walk-Registered-v1.png",
+      "label": "Walk",
+      "loop": true,
+      "scale": 1.5375375375375375,
+      "durations": [
+        180,
+        180,
+        180,
+        180,
+        180,
+        180
+      ],
+      "description": "Six successive phases of natural four-beat horse walk in place. Correct hinged legs and alternating hooves. Fixed horizontal saddle location, tiny vertical bob, no sideways drift. Lance upright at rest.",
+      "frameCount": 6,
+      "sourceFrameOrder": [
+        0,
+        1,
+        2,
+        3,
+        4,
+        5
+      ],
+      "frames": [
+        {
+          "index": 0,
+          "sourceIndex": 0,
+          "x": 0,
+          "y": 0,
+          "width": 512,
+          "height": 512,
+          "pivot": {
+            "x": 256,
+            "y": 256
+          }
+        },
+        {
+          "index": 1,
+          "sourceIndex": 1,
+          "x": 512,
+          "y": 0,
+          "width": 512,
+          "height": 512,
+          "pivot": {
+            "x": 256,
+            "y": 256
+          }
+        },
+        {
+          "index": 2,
+          "sourceIndex": 2,
+          "x": 1024,
+          "y": 0,
+          "width": 512,
+          "height": 512,
+          "pivot": {
+            "x": 256,
+            "y": 256
+          }
+        },
+        {
+          "index": 3,
+          "sourceIndex": 3,
+          "x": 0,
+          "y": 512,
+          "width": 512,
+          "height": 512,
+          "pivot": {
+            "x": 256,
+            "y": 256
+          }
+        },
+        {
+          "index": 4,
+          "sourceIndex": 4,
+          "x": 512,
+          "y": 512,
+          "width": 512,
+          "height": 512,
+          "pivot": {
+            "x": 256,
+            "y": 256
+          }
+        },
+        {
+          "index": 5,
+          "sourceIndex": 5,
+          "x": 1024,
+          "y": 512,
+          "width": 512,
+          "height": 512,
+          "pivot": {
+            "x": 256,
+            "y": 256
+          }
+        }
+      ]
+    },
+    {
+      "id": "charge",
+      "file": "charge-Registered-v1.png",
+      "label": "Gallop / maintain charge",
+      "loop": true,
+      "scale": 1.5375375375375375,
+      "durations": [
+        130,
+        130,
+        130,
+        130,
+        130,
+        130
+      ],
+      "description": "Six successive phases of natural gallop loop: hind push, gather, suspension, foreleg reach, landing, recovery. Correct legs/hooves, no paddling or sideways twists. Saddle horizontally fixed, mild vertical bob. Rider holds lance ready near right shoulder.",
+      "frameCount": 6,
+      "sourceFrameOrder": [
+        0,
+        1,
+        2,
+        3,
+        4,
+        5
+      ],
+      "frames": [
+        {
+          "index": 0,
+          "sourceIndex": 0,
+          "x": 0,
+          "y": 0,
+          "width": 512,
+          "height": 512,
+          "pivot": {
+            "x": 256,
+            "y": 256
+          }
+        },
+        {
+          "index": 1,
+          "sourceIndex": 1,
+          "x": 512,
+          "y": 0,
+          "width": 512,
+          "height": 512,
+          "pivot": {
+            "x": 256,
+            "y": 256
+          }
+        },
+        {
+          "index": 2,
+          "sourceIndex": 2,
+          "x": 1024,
+          "y": 0,
+          "width": 512,
+          "height": 512,
+          "pivot": {
+            "x": 256,
+            "y": 256
+          }
+        },
+        {
+          "index": 3,
+          "sourceIndex": 3,
+          "x": 0,
+          "y": 512,
+          "width": 512,
+          "height": 512,
+          "pivot": {
+            "x": 256,
+            "y": 256
+          }
+        },
+        {
+          "index": 4,
+          "sourceIndex": 4,
+          "x": 512,
+          "y": 512,
+          "width": 512,
+          "height": 512,
+          "pivot": {
+            "x": 256,
+            "y": 256
+          }
+        },
+        {
+          "index": 5,
+          "sourceIndex": 5,
+          "x": 1024,
+          "y": 512,
+          "width": 512,
+          "height": 512,
+          "pivot": {
+            "x": 256,
+            "y": 256
+          }
+        }
+      ]
+    },
+    {
+      "id": "attack",
+      "file": "charge-attack-Registered-v1.png",
+      "label": "Lance thrust",
+      "loop": false,
+      "scale": 1.5375375375375375,
+      "durations": [
+        150,
+        180,
+        150,
+        110,
+        180,
+        230
+      ],
+      "description": "Six poses of forceful cavalry lance charge thrust: ready; lower lance to point screen-bottom; lean forward and extend; full forward impact spearhead beyond horse shoulder toward bottom; withdraw; ready recovery. Spearhead stays at leading forward end all thrust frames. No backward spearhead, broken shaft, extra weapon or horse stabbing. Steady horizontal horse position.",
+      "frameCount": 6,
+      "sourceFrameOrder": [
+        0,
+        1,
+        2,
+        3,
+        4,
+        5
+      ],
+      "frames": [
+        {
+          "index": 0,
+          "sourceIndex": 0,
+          "x": 0,
+          "y": 0,
+          "width": 512,
+          "height": 512,
+          "pivot": {
+            "x": 256,
+            "y": 256
+          }
+        },
+        {
+          "index": 1,
+          "sourceIndex": 1,
+          "x": 512,
+          "y": 0,
+          "width": 512,
+          "height": 512,
+          "pivot": {
+            "x": 256,
+            "y": 256
+          }
+        },
+        {
+          "index": 2,
+          "sourceIndex": 2,
+          "x": 1024,
+          "y": 0,
+          "width": 512,
+          "height": 512,
+          "pivot": {
+            "x": 256,
+            "y": 256
+          }
+        },
+        {
+          "index": 3,
+          "sourceIndex": 3,
+          "x": 0,
+          "y": 512,
+          "width": 512,
+          "height": 512,
+          "pivot": {
+            "x": 256,
+            "y": 256
+          }
+        },
+        {
+          "index": 4,
+          "sourceIndex": 4,
+          "x": 512,
+          "y": 512,
+          "width": 512,
+          "height": 512,
+          "pivot": {
+            "x": 256,
+            "y": 256
+          }
+        },
+        {
+          "index": 5,
+          "sourceIndex": 5,
+          "x": 1024,
+          "y": 512,
+          "width": 512,
+          "height": 512,
+          "pivot": {
+            "x": 256,
+            "y": 256
+          }
+        }
+      ],
+      "impactFrame": 3,
+      "sourceAnimation": "original charge-attack"
+    },
+    {
+      "id": "charge-attack",
+      "file": "attack-Registered-v1.png",
+      "label": "Charge lance thrust",
+      "loop": false,
+      "scale": 1.5375375375375375,
+      "durations": [
+        170,
+        180,
+        150,
+        110,
+        180,
+        230
+      ],
+      "description": "Six consecutive poses for a controlled mounted lance thrust: upright lance at rest; lower lance forward; extend right arm toward screen-bottom beside horse neck screen-left; full forward thrust with spearhead clearly at FORWARD lower end; retract; upright recovery. Lance rigid straight wooden shaft with ONE steel spearhead on forward end, never backwards, never swapped ends. No underhand grip flip; coherent shoulder-level grip and arm path.",
+      "frameCount": 6,
+      "sourceFrameOrder": [
+        0,
+        1,
+        2,
+        3,
+        4,
+        5
+      ],
+      "frames": [
+        {
+          "index": 0,
+          "sourceIndex": 0,
+          "x": 0,
+          "y": 0,
+          "width": 512,
+          "height": 512,
+          "pivot": {
+            "x": 256,
+            "y": 256
+          }
+        },
+        {
+          "index": 1,
+          "sourceIndex": 1,
+          "x": 512,
+          "y": 0,
+          "width": 512,
+          "height": 512,
+          "pivot": {
+            "x": 256,
+            "y": 256
+          }
+        },
+        {
+          "index": 2,
+          "sourceIndex": 2,
+          "x": 1024,
+          "y": 0,
+          "width": 512,
+          "height": 512,
+          "pivot": {
+            "x": 256,
+            "y": 256
+          }
+        },
+        {
+          "index": 3,
+          "sourceIndex": 3,
+          "x": 0,
+          "y": 512,
+          "width": 512,
+          "height": 512,
+          "pivot": {
+            "x": 256,
+            "y": 256
+          }
+        },
+        {
+          "index": 4,
+          "sourceIndex": 4,
+          "x": 512,
+          "y": 512,
+          "width": 512,
+          "height": 512,
+          "pivot": {
+            "x": 256,
+            "y": 256
+          }
+        },
+        {
+          "index": 5,
+          "sourceIndex": 5,
+          "x": 1024,
+          "y": 512,
+          "width": 512,
+          "height": 512,
+          "pivot": {
+            "x": 256,
+            "y": 256
+          }
+        }
+      ],
+      "impactFrame": 3,
+      "sourceAnimation": "original attack"
+    },
+    {
+      "id": "hit",
+      "file": "hit-Registered-v1.png",
+      "label": "Get hit",
+      "loop": false,
+      "scale": 1.5375375375375375,
+      "durations": [
+        100,
+        100,
+        130,
+        140,
+        170,
+        200
+      ],
+      "description": "Small nonlethal hit: idle; rider recoils slightly; braces arm/lance; horse flinches; settles; idle recovery. Horse/saddle horizontally fixed. Rider recoil articulated without sideways whole-body sliding.",
+      "frameCount": 6,
+      "sourceFrameOrder": [
+        0,
+        1,
+        2,
+        3,
+        4,
+        5
+      ],
+      "frames": [
+        {
+          "index": 0,
+          "sourceIndex": 0,
+          "x": 0,
+          "y": 0,
+          "width": 512,
+          "height": 512,
+          "pivot": {
+            "x": 256,
+            "y": 256
+          }
+        },
+        {
+          "index": 1,
+          "sourceIndex": 1,
+          "x": 512,
+          "y": 0,
+          "width": 512,
+          "height": 512,
+          "pivot": {
+            "x": 256,
+            "y": 256
+          }
+        },
+        {
+          "index": 2,
+          "sourceIndex": 2,
+          "x": 1024,
+          "y": 0,
+          "width": 512,
+          "height": 512,
+          "pivot": {
+            "x": 256,
+            "y": 256
+          }
+        },
+        {
+          "index": 3,
+          "sourceIndex": 3,
+          "x": 0,
+          "y": 512,
+          "width": 512,
+          "height": 512,
+          "pivot": {
+            "x": 256,
+            "y": 256
+          }
+        },
+        {
+          "index": 4,
+          "sourceIndex": 4,
+          "x": 512,
+          "y": 512,
+          "width": 512,
+          "height": 512,
+          "pivot": {
+            "x": 256,
+            "y": 256
+          }
+        },
+        {
+          "index": 5,
+          "sourceIndex": 5,
+          "x": 1024,
+          "y": 512,
+          "width": 512,
+          "height": 512,
+          "pivot": {
+            "x": 256,
+            "y": 256
+          }
+        }
+      ]
+    },
+    {
+      "id": "charged",
+      "file": "charged-impact-Registered-v1.png",
+      "label": "Get charged",
+      "loop": false,
+      "scale": 1.5375375375375375,
+      "durations": [
+        130,
+        130,
+        180,
+        200,
+        200,
+        240
+      ],
+      "description": "Distinct strong charge impact: idle; rider recoils backward pulling reins; horse front knees buckle; staggers in place; horse recovers feet; upright recovery. Keep horse horizontally centered with no lateral translation. Retain natural rider recoil and horse limb articulation.",
+      "frameCount": 6,
+      "sourceFrameOrder": [
+        0,
+        1,
+        2,
+        3,
+        4,
+        5
+      ],
+      "frames": [
+        {
+          "index": 0,
+          "sourceIndex": 0,
+          "x": 0,
+          "y": 0,
+          "width": 512,
+          "height": 512,
+          "pivot": {
+            "x": 256,
+            "y": 256
+          }
+        },
+        {
+          "index": 1,
+          "sourceIndex": 1,
+          "x": 512,
+          "y": 0,
+          "width": 512,
+          "height": 512,
+          "pivot": {
+            "x": 256,
+            "y": 256
+          }
+        },
+        {
+          "index": 2,
+          "sourceIndex": 2,
+          "x": 1024,
+          "y": 0,
+          "width": 512,
+          "height": 512,
+          "pivot": {
+            "x": 256,
+            "y": 256
+          }
+        },
+        {
+          "index": 3,
+          "sourceIndex": 3,
+          "x": 0,
+          "y": 512,
+          "width": 512,
+          "height": 512,
+          "pivot": {
+            "x": 256,
+            "y": 256
+          }
+        },
+        {
+          "index": 4,
+          "sourceIndex": 4,
+          "x": 512,
+          "y": 512,
+          "width": 512,
+          "height": 512,
+          "pivot": {
+            "x": 256,
+            "y": 256
+          }
+        },
+        {
+          "index": 5,
+          "sourceIndex": 5,
+          "x": 1024,
+          "y": 512,
+          "width": 512,
+          "height": 512,
+          "pivot": {
+            "x": 256,
+            "y": 256
+          }
+        }
+      ]
+    },
+    {
+      "id": "death",
+      "file": "death-Registered-v1.png",
+      "label": "Death - together fall",
+      "loop": false,
+      "scale": 1.5375375375375375,
+      "durations": [
+        150,
+        180,
+        200,
+        230,
+        280,
+        650
+      ],
+      "description": "Horse and rider fall together: upright; front knees buckle; both lean screen-left; collapse onto left side; settle on ground; final corpse. True articulated fall, not spinning upright pose. Last two poses keep identical fall orientation without flipping. Whole rider, horse and lance visible.",
+      "frameCount": 6,
+      "sourceFrameOrder": [
+        0,
+        1,
+        2,
+        3,
+        4,
+        5
+      ],
+      "frames": [
+        {
+          "index": 0,
+          "sourceIndex": 0,
+          "x": 0,
+          "y": 0,
+          "width": 512,
+          "height": 512,
+          "pivot": {
+            "x": 256,
+            "y": 256
+          }
+        },
+        {
+          "index": 1,
+          "sourceIndex": 1,
+          "x": 512,
+          "y": 0,
+          "width": 512,
+          "height": 512,
+          "pivot": {
+            "x": 256,
+            "y": 256
+          }
+        },
+        {
+          "index": 2,
+          "sourceIndex": 2,
+          "x": 1024,
+          "y": 0,
+          "width": 512,
+          "height": 512,
+          "pivot": {
+            "x": 256,
+            "y": 256
+          }
+        },
+        {
+          "index": 3,
+          "sourceIndex": 3,
+          "x": 0,
+          "y": 512,
+          "width": 512,
+          "height": 512,
+          "pivot": {
+            "x": 256,
+            "y": 256
+          }
+        },
+        {
+          "index": 4,
+          "sourceIndex": 4,
+          "x": 512,
+          "y": 512,
+          "width": 512,
+          "height": 512,
+          "pivot": {
+            "x": 256,
+            "y": 256
+          }
+        },
+        {
+          "index": 5,
+          "sourceIndex": 5,
+          "x": 1024,
+          "y": 512,
+          "width": 512,
+          "height": 512,
+          "pivot": {
+            "x": 256,
+            "y": 256
+          }
+        }
+      ]
+    },
+    {
+      "id": "death-thrown",
+      "file": "death-thrown-Registered-v1.png",
+      "label": "Death - thrown rider",
+      "loop": false,
+      "scale": 1.5375375375375375,
+      "durations": [
+        150,
+        180,
+        220,
+        240,
+        280,
+        650
+      ],
+      "description": "Thrown rider death: upright; horse stumbles; rider thrown clear screen-right; rider lands while horse falls screen-left; both settle separately on ground; final corpses. One rider and horse, natural articulated fall, no duplicate floating rider. Last two frames maintain corpse orientation. Include entire lance in each pose.",
+      "frameCount": 6,
+      "sourceFrameOrder": [
+        0,
+        1,
+        2,
+        3,
+        4,
+        5
+      ],
+      "frames": [
+        {
+          "index": 0,
+          "sourceIndex": 0,
+          "x": 0,
+          "y": 0,
+          "width": 512,
+          "height": 512,
+          "pivot": {
+            "x": 256,
+            "y": 256
+          }
+        },
+        {
+          "index": 1,
+          "sourceIndex": 1,
+          "x": 512,
+          "y": 0,
+          "width": 512,
+          "height": 512,
+          "pivot": {
+            "x": 256,
+            "y": 256
+          }
+        },
+        {
+          "index": 2,
+          "sourceIndex": 2,
+          "x": 1024,
+          "y": 0,
+          "width": 512,
+          "height": 512,
+          "pivot": {
+            "x": 256,
+            "y": 256
+          }
+        },
+        {
+          "index": 3,
+          "sourceIndex": 3,
+          "x": 0,
+          "y": 512,
+          "width": 512,
+          "height": 512,
+          "pivot": {
+            "x": 256,
+            "y": 256
+          }
+        },
+        {
+          "index": 4,
+          "sourceIndex": 4,
+          "x": 512,
+          "y": 512,
+          "width": 512,
+          "height": 512,
+          "pivot": {
+            "x": 256,
+            "y": 256
+          }
+        },
+        {
+          "index": 5,
+          "sourceIndex": 5,
+          "x": 1024,
+          "y": 512,
+          "width": 512,
+          "height": 512,
+          "pivot": {
+            "x": 256,
+            "y": 256
+          }
+        }
+      ]
+    }
+  ],
+  "offhand": "Left hand holds reins; no shield",
+  "historicalDirection": "Imagined Early Medieval roster using the supplied Cossack photograph as clothing inspiration; firearm replaced by user-selected lance.",
+  "deathVariants": [
+    "death",
+    "death-thrown"
+  ],
+  "motionContract": "Local gait, lance strikes and reactions. Gameplay owns world movement, formations and combat timing."
+}

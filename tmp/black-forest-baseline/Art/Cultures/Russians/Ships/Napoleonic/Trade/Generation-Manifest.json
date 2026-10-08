@@ -1,0 +1,49 @@
+{
+  "schemaVersion": 1,
+  "cultureId": "russian",
+  "age": "Napoleonic",
+  "role": "Trade",
+  "label": "Napoleonic merchantman",
+  "generator": "built-in imagegen",
+  "prompt": "Use case: stylized-concept. Asset: one production RTS Russian culture vessel sprite. STRICTLY TRUE 90-DEGREE DIRECTLY OVERHEAD ORTHOGRAPHIC VIEW. Bow points toward SCREEN BOTTOM, stern toward top. Entire ship and all oars/yards fit within square transparent canvas with at least 8 percent clear guard. Only deck surfaces and roofs are visible; no upright doors, hull side walls, front elevations or oblique perspective. Realistic hand-painted textured game art matching reference, clean readable silhouettes at 48/64/128px, restrained weathering, crisp dark edges, balanced overhead light. One vessel only, transparent alpha background, no water, wake, ground shadow, scene, labels, letters, flag fabric, people, side-view inset or UI. Subject: Broad Russian imperial age-of-sail merchant sailing ship, three masts furled square sails, large rectangular cargo hold hatch and strapped barrels/bales on cargo deck, small pale aft deckhouse roof. Cargo-loaded silhouette; no military cannon. CAD PLAN camera. Three masts only small circular end-on tops, sails narrow horizontal furled rolls across deck. NO vertical mast shafts drawn in image plane, no walls, windows, domes or crosses, NO OARS. True ocean sailing merchantman. Transparent cutout with absolutely NO ambient ground shadow or backdrop.",
+  "generatedOriginal": "C:\\Users\\Damien\\.codex\\generated_images\\01a0fea7-45e8-7a11-8804-5420a62f53c3\\exec-e7526641-011b-4c4f-adc9-f92b1e21ddc5.png",
+  "retainedOriginal": "SourceArt/Trade_Russian_Napoleonic_Generated_v1.png",
+  "rawSha256": "844dbbc660061b81733b814e49fca19b13969c90a12ae2fb02dbb5f8e23d687c",
+  "rawSize": [
+    1254,
+    1254
+  ],
+  "source": "SourceArt/Trade_Russian_Napoleonic_v1.png",
+  "sourceSha256": "a38c456dba90b0dc36e4632d6d850285b3baf592340a67d4ecf444981c5574ec",
+  "registration": {
+    "alphaBounds": [
+      39,
+      14,
+      1230,
+      1239
+    ],
+    "uniformScale": 0.8816326530612245,
+    "offset": [
+      102,
+      87
+    ],
+    "canvas": [
+      1254,
+      1254
+    ]
+  },
+  "conversion": "Uniform alpha-bounds fit, Lanczos resampling and transparent padding only; original retained unchanged.",
+  "technologyPlan": "skirmish/plans/technology-plan.json",
+  "civilizationId": "russians-rework",
+  "unlockTechnology": "earlymodern-ocean-transport",
+  "unlockName": "Ocean Transport",
+  "visualApproval": "approved",
+  "animationApproval": {
+    "status": "approved",
+    "userMessage": "okay animate them all",
+    "scope": "All 17 fleet masters from the eight-age tech-tree roster",
+    "date": "2026-10-07"
+  },
+  "integrationStatus": "art review only; no gameplay or match renderer changes",
+  "historicalScope": "Era-inspired role design, not an exact reconstruction of a named vessel"
+}

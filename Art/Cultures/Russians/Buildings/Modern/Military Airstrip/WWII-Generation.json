@@ -1,0 +1,48 @@
+{
+  "generator": "built-in image_gen",
+  "date": "2026-10-07",
+  "initialPrompt": "Use case: precise-object-edit.\nAsset type: Russian / Soviet WWII military airstrip building icon for Age of Fronts, square transparent PNG, native 1254 square.\nInput image 1 is the current too-modern Russian airstrip EDIT TARGET. Completely redesign its facilities for the WWII era. Preserve ONLY the strict 90-degree overhead camera, general square compact game-building footprint, runway on right, support/hangar area on left, and textured realistic painted game finish.\nInput image 2 is the Soviet Yak-3 fighter aircraft reference, and input image 3 is the Soviet Pe-8 heavy bomber aircraft reference. These are supporting aircraft-design references. If parked aircraft are shown, they must be WWII propeller aircraft visibly corresponding to these references; do not reuse the jets from image 1.\nRedesign: one clearly visible long straight north-south compacted-earth/gravel airstrip on the RIGHT third of the footprint. Uniform warm tan-gray rolled runway with subdued parallel wheel wear, sparse pairs of white edge marker boards, unobstructed thresholds and runway. Grass verges; NO asphalt freeway appearance, modern piano-key stripes, neon yellow taxiway paint or runway lighting poles.\nOn the LEFT: two substantial rectangular aircraft hangars with weathered olive-green corrugated sheet roofs and timber supporting construction, coherent seams, restrained camouflage patches. One large main hangar in upper left, one smaller maintenance shed below it. A broad clear packed gravel aircraft apron connects hangar doors to the runway through a curved taxi track. Two parked aircraft on apron, one small Yak-3 and one larger Pe-8, noses upwards, silhouettes and four vs one prop engines clear, no jets. Keep all airplane wings away from roofs and runway edge. Use compressed game-icon layout and prioritize clear silhouette over literal full-size airfield dimensions.\nSupporting small facilities in lower-left separated from hangars: modest wooden operations hut, one short simple communications mast whose top-down footprint is coherent, a grouped stack of fuel drums behind a low earth berm, one 1940s olive utility truck, a few wooden crates. No oversized radar dish, satellite antenna, modern trucks, ornamental planters, paved parking boxes or modern glass control tower. A small red Soviet star painted on one hangar roof gives culture identity; no lettering or numbers.\nCamera must remain EXACTLY vertical, orthographic, roofs and upper surfaces only. NO isometric buildings, visible front facades, perspective, horizon, sky or angled aircraft. Flat map-like footprint, no detached cast shadows. Surface highlights may describe roofs. Keep ground as a compact irregular-edged grass/gravel footprint. REMOVE the original continuous artificial metal perimeter frame and circular corner/post caps. No fortress wall, decorative outline or thick board border.\nFinish: premium realistic hand-painted RTS building icon, high role clarity at 64 and 128 pixels. Strong runway-versus-hangar shape contrast, clean hierarchy, fine details secondary. Muted grass greens, warm earth and worn olive paint. All facilities grounded and connected naturally.\nFraming: entire completed footprint comfortably inside square canvas, genuine transparent alpha OUTSIDE the land footprint, at least 6 percent clear border around all artwork, no cropped edges, background tile, checkerboard, labels, captions or watermark. One complete airfield icon only.",
+  "edgeCorrectionPrompt": "Edit ONLY the outside grass/earth boundary of this WWII Soviet airfield icon. Remove the spurious bright red fringe/line along the bottom perimeter and any artificial yellow outlined pixels along the outer footprint. Replace those fringes with natural muted grass/earth ending cleanly against genuine transparent alpha.\nPreserve the entire layout and all other painted pixels as closely as possible: runway, white marker boards, both hangars and their roof camouflage/star, both parked Soviet propeller airplanes, communications mast, operations hut, utility truck, fuel berm, barrels and crates. Do not alter aircraft geometry, roof details or their locations. Do not add a border, cast shadow or new feature. Keep strict directly overhead camera, 1254 square framing, full footprint intact with clear margins. No crop, no lettering or watermark. Transparent background.",
+  "projectionCorrectionPrompt": "Correct ONLY the buildings' projection in this Soviet WWII airstrip sprite. This is a TRUE DIRECTLY OVERHEAD ORTHOGRAPHIC view, camera pointing vertically down at 90 degrees. Every vertical wall and door face must be occluded by its roof and completely invisible.\nLarge upper-left hangar: remove the three conspicuous upright wooden X-braced door panels along its bottom/front edge and the exposed front wall strip. Replace their projected area with the continuous roof eave/overhang or ground as appropriate. Show only the TOP roof surface and a thin perimeter roof edge. NO painted door panels laid on the ground, NO X braces, NO frontal facade, NO open dark portals below the roof.\nSmaller mid-left hangar: remove BOTH visible vertical X-braced doors, the upright timber front wall, and all exposed side/front facades. Again only roof/top surfaces, a narrow roof-edge outline and ground meeting the eave. Hide the door faces physically under the roof overhang rather than rotating them flat.\nSmall operations hut near lower-left: remove any visible vertical exterior wall/door faces, roof-only projection.\nDo not rotate or tilt the buildings. Keep exactly their current locations, roof camouflage, roof vents, red roof star, roof ridges and overall rectangular footprints. Keep ALL OTHER parts of the airfield unchanged as closely as possible: runway, white edge markers, parked Yak-3 and Pe-8, gravel paths, fuel drums and berm, truck, mast, crates and grass outline.\nKeep complete footprint framing with empty border and genuine transparent alpha outside the grass. Clean muted grass edges, no stray red/yellow fringe. No visible building elevations anywhere, no perspective, no isometric angle, no text, watermark or new structures.",
+  "userCorrection": "The doors should not be visible in a true top-down view.",
+  "historicalScope": "Compressed Soviet WWII field-airstrip game interpretation, not a specific historical airbase reconstruction.",
+  "animationApproval": "Static review pending",
+  "selectedSource": "SourceArt/Icon-WWII-v4.png",
+  "export": "Icon-WWII-v4.png",
+  "sourceSha256": "644718ea8876f78b73b62032c0b7ad7504018994db32ea7c7d2316369887d0a3",
+  "exportSha256": "644718ea8876f78b73b62032c0b7ad7504018994db32ea7c7d2316369887d0a3",
+  "nativeDimensions": [
+    1254,
+    1254
+  ],
+  "referenceImages": [
+    "Icon.png",
+    "../../../Aircraft/Modern/Fighter/Icon.png",
+    "../../../Aircraft/Modern/Bomber/Icon.png"
+  ],
+  "supersededVersions": [
+    {
+      "file": "SourceArt/Icon-WWII-v2.png",
+      "reason": "Initial WWII layout with visible front-facing hangar doors"
+    },
+    {
+      "file": "SourceArt/Icon-WWII-v3.png",
+      "reason": "Ground-edge edit; front-facing doors still incorrect"
+    }
+  ],
+  "sourceGeneratorDirectory": "C:\\Users\\Damien\\.codex\\generated_images\\01a0fea7-45e8-7a11-8804-5420a62f53c3",
+  "generatedVersions": [
+    {
+      "version": "v2",
+      "file": "exec-ac03dd5e-ff65-4534-8d75-5d894f6a7e96.png"
+    },
+    {
+      "version": "v3",
+      "file": "exec-a30fb4de-e403-403e-b1bc-a6e29c81b59f.png"
+    },
+    {
+      "version": "v4",
+      "file": "exec-74fe4f3d-23c8-4211-aec2-d324a08fc92b.png"
+    }
+  ]
+}

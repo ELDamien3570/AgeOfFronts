@@ -1,0 +1,3363 @@
+{
+  "building-stoneage-barracks": {
+    "file": "building-stoneage-barracks.png",
+    "source": "Art/Cultures/Russians/Buildings/StoneAge/Barracks/Icon.png",
+    "hash": "763708ff20e1f3364b9c7d1b0f378c896e5333cfded55b8dcb3da67e96b40958"
+  },
+  "building-stoneage-city": {
+    "file": "building-stoneage-city.png",
+    "source": "Art/Cultures/Russians/Buildings/StoneAge/City/Icon.png",
+    "hash": "c54f7032ea0597aafd8a58c1e84d24167ae9acf4b5f67e28221e68efcde156ba"
+  },
+  "building-stoneage-archery": {
+    "file": "building-stoneage-archery.png",
+    "source": "Art/Cultures/Russians/Buildings/StoneAge/Archery Range/Icon.png",
+    "hash": "1416f6a44410960a03bba4ea617c5e471edac2482125461db58b22acd63fa3b8"
+  },
+  "building-stoneage-stables": {
+    "file": "building-stoneage-stables.png",
+    "source": "Art/Cultures/Russians/Buildings/StoneAge/Stables/Icon.png",
+    "hash": "7e675c4565fc826ddcac1652b1e90ae3d683d4f973e90f985ce7e5bd13859009"
+  },
+  "building-stoneage-factory": {
+    "file": "building-stoneage-factory.png",
+    "source": "Art/Cultures/Russians/Buildings/StoneAge/Factory/Icon.png",
+    "hash": "f3f07265758b1dc0cef0e96e473925d7f5c38842488620ad00e93c26f870d88d"
+  },
+  "building-stoneage-port": {
+    "file": "building-stoneage-port.png",
+    "source": "Art/Cultures/Russians/Buildings/StoneAge/Port/Icon.png",
+    "hash": "65927a7007e1df15d52ec4ead0040e255374de19adaf017d07e0f2f84df2c1c1"
+  },
+  "building-stoneage-mine": {
+    "file": "building-stoneage-mine.png",
+    "source": "Art/Cultures/Russians/Buildings/StoneAge/Mine/Icon.png",
+    "hash": "ae423f212ee600fe8cdefee685157dfd1085a275851481871a3f0d222c4a2fea"
+  },
+  "building-stoneage-siege-workshop": {
+    "file": "building-stoneage-siege-workshop.png",
+    "source": "Art/Cultures/Russians/Buildings/StoneAge/Siege Workshop/Icon.png",
+    "hash": "4f236da76594b47508549edc1053e239bba4e8308e69fdb3fb3925c34b5873b2"
+  },
+  "building-stoneage-tower": {
+    "file": "building-stoneage-tower.png",
+    "source": "Art/Cultures/Russians/Buildings/StoneAge/Tower/Icon.png",
+    "hash": "e2c6dd0fa7cf84a54028fd3f49c285aa41973b53ad9523622dacc335afd7f049"
+  },
+  "building-bronzeage-barracks": {
+    "file": "building-bronzeage-barracks.png",
+    "source": "Art/Cultures/Russians/Buildings/BronzeAge/Barracks/Icon.png",
+    "hash": "066675dc056365bd5c01c83801c4014737267fc1337032a22df9bda984cbe7f2"
+  },
+  "building-bronzeage-city": {
+    "file": "building-bronzeage-city.png",
+    "source": "Art/Cultures/Russians/Buildings/BronzeAge/City/Icon.png",
+    "hash": "8805377a0c57c32b04e3a6bf61da73e9e4b2e4e095e6d95693a3fe5321afe7e0"
+  },
+  "building-bronzeage-archery": {
+    "file": "building-bronzeage-archery.png",
+    "source": "Art/Cultures/Russians/Buildings/BronzeAge/Archery Range/Icon.png",
+    "hash": "29725750c43b68f6ab4973c0571c3eb80e2f31875a3e65d0de72bae4c878f528"
+  },
+  "building-bronzeage-stables": {
+    "file": "building-bronzeage-stables.png",
+    "source": "Art/Cultures/Russians/Buildings/BronzeAge/Stables/Icon.png",
+    "hash": "a0a5136ebbe8d56fc129822eed6972de0ba0a0905079dd68ac46a6c8bf1c7b52"
+  },
+  "building-bronzeage-factory": {
+    "file": "building-bronzeage-factory.png",
+    "source": "Art/Cultures/Russians/Buildings/BronzeAge/Factory/Icon.png",
+    "hash": "ee5cafec9529ac8652831a4f68692df1a4e829690fe0b264902a37f772fa9c65"
+  },
+  "building-bronzeage-port": {
+    "file": "building-bronzeage-port.png",
+    "source": "Art/Cultures/Russians/Buildings/BronzeAge/Port/Icon.png",
+    "hash": "4637b3023bb6185a8b2e5a10b578d59000f0fec65756d5306c25b2359f271aab"
+  },
+  "building-bronzeage-mine": {
+    "file": "building-bronzeage-mine.png",
+    "source": "Art/Cultures/Russians/Buildings/BronzeAge/Mine/Icon.png",
+    "hash": "f0c030c0afc74deaab0366a655646e52bd1a7acdc382c3ef045af1cb8501fc0c"
+  },
+  "building-bronzeage-siege-workshop": {
+    "file": "building-bronzeage-siege-workshop.png",
+    "source": "Art/Cultures/Russians/Buildings/BronzeAge/Siege Workshop/Icon.png",
+    "hash": "43b55c3afd034299a54894b06b0f7c195d57e3770f6c3917cad2d4ba22cd655e"
+  },
+  "building-bronzeage-tower": {
+    "file": "building-bronzeage-tower.png",
+    "source": "Art/Cultures/Russians/Buildings/BronzeAge/Tower/Icon.png",
+    "hash": "cce8d2544556d004634b30ce3340bbc904cc821e172c331a028479be1eeb562c"
+  },
+  "building-bronzeage-blacksmith": {
+    "file": "building-bronzeage-blacksmith.png",
+    "source": "Art/Cultures/Russians/Buildings/BronzeAge/Blacksmith/Icon.png",
+    "hash": "fb11f8ee8ab1ef8681c2d79116016a4a381f4438685f93c65a586a66a4831e57"
+  },
+  "building-classicalage-barracks": {
+    "file": "building-classicalage-barracks.png",
+    "source": "Art/Cultures/Russians/Buildings/ClassicalAge/Barracks/Icon.png",
+    "hash": "3fde42305845a36a6f31c16710ed4b97564f3284ce972548812b90a5ffcd3b07"
+  },
+  "building-classicalage-city": {
+    "file": "building-classicalage-city.png",
+    "source": "Art/Cultures/Russians/Buildings/ClassicalAge/City/Icon.png",
+    "hash": "5f1765a7eeecd0482caa2bf3df139890c104cd28892ca63d6d61d3290519876a"
+  },
+  "building-classicalage-archery": {
+    "file": "building-classicalage-archery.png",
+    "source": "Art/Cultures/Russians/Buildings/ClassicalAge/Archery Range/Icon.png",
+    "hash": "85e723dc20773d46502c17d39f0d25961375aa108715ca7d90036e045b87c7a8"
+  },
+  "building-classicalage-stables": {
+    "file": "building-classicalage-stables.png",
+    "source": "Art/Cultures/Russians/Buildings/ClassicalAge/Stables/Icon.png",
+    "hash": "ffbbce234520449b52297830e4e211079d28ecbbc2c1738a5af6f933d68a3647"
+  },
+  "building-classicalage-factory": {
+    "file": "building-classicalage-factory.png",
+    "source": "Art/Cultures/Russians/Buildings/ClassicalAge/Factory/Icon.png",
+    "hash": "1a59acf87dbf831b9734a44552e4bad36c0b6f6b9bdad9e4f6f6e1fa64502815"
+  },
+  "building-classicalage-port": {
+    "file": "building-classicalage-port.png",
+    "source": "Art/Cultures/Russians/Buildings/ClassicalAge/Port/Icon.png",
+    "hash": "ed86793f30301f344ed1ccbb40612a20203794a6a59b4f2099b16060b2171d81"
+  },
+  "building-classicalage-mine": {
+    "file": "building-classicalage-mine.png",
+    "source": "Art/Cultures/Russians/Buildings/ClassicalAge/Mine/Icon.png",
+    "hash": "b13baaf7cc10ed56523329240767f0b20740ead1d043e323d9c67414e9ba45cc"
+  },
+  "building-classicalage-siege-workshop": {
+    "file": "building-classicalage-siege-workshop.png",
+    "source": "Art/Cultures/Russians/Buildings/ClassicalAge/Siege Workshop/Icon.png",
+    "hash": "d619438807c59ba1aa4a14e4de71426076da39ec75483ed50970d1e98ecd689f"
+  },
+  "building-classicalage-tower": {
+    "file": "building-classicalage-tower.png",
+    "source": "Art/Cultures/Russians/Buildings/ClassicalAge/Tower/Icon.png",
+    "hash": "1664e2252f0b3ac62183e07792c060556096590cda0567aaa037a91a3034e96c"
+  },
+  "building-classicalage-blacksmith": {
+    "file": "building-classicalage-blacksmith.png",
+    "source": "Art/Cultures/Russians/Buildings/ClassicalAge/Blacksmith/Icon.png",
+    "hash": "1a27020996fd181b021c6b19c0910b7725b19c7e7a164ea5e24b9a52f02b228f"
+  },
+  "building-earlymedieval-barracks": {
+    "file": "building-earlymedieval-barracks.png",
+    "source": "Art/Cultures/Russians/Buildings/EarlyMedieval/Barracks/Icon.png",
+    "hash": "6d078286180032e3584c863b63d00a4a0f3b9ee4b390bfea85415cf6fc8ab920"
+  },
+  "building-earlymedieval-city": {
+    "file": "building-earlymedieval-city.png",
+    "source": "Art/Cultures/Russians/Buildings/EarlyMedieval/City/Icon.png",
+    "hash": "dc72671c2ffcb00bb7e37d894fa33d2f9528cff64342ee18b5bce8a6510cf36a"
+  },
+  "building-earlymedieval-archery": {
+    "file": "building-earlymedieval-archery.png",
+    "source": "Art/Cultures/Russians/Buildings/EarlyMedieval/Archery Range/Icon.png",
+    "hash": "c59d633efd7bd4066ef1a879b392f294d70ac06a7e364349256dbc3674bbb01d"
+  },
+  "building-earlymedieval-stables": {
+    "file": "building-earlymedieval-stables.png",
+    "source": "Art/Cultures/Russians/Buildings/EarlyMedieval/Stables/Icon.png",
+    "hash": "1c3f1c46b53510cdc7e9964976909859c90c45b8a9f28788d8eb8972fa2e6c21"
+  },
+  "building-earlymedieval-factory": {
+    "file": "building-earlymedieval-factory.png",
+    "source": "Art/Cultures/Russians/Buildings/EarlyMedieval/Factory/Icon.png",
+    "hash": "328d2b0ad3d99180daecbd5b2f8c1c4b37baf4ccb04c9cc12229d9d950609821"
+  },
+  "building-earlymedieval-port": {
+    "file": "building-earlymedieval-port.png",
+    "source": "Art/Cultures/Russians/Buildings/EarlyMedieval/Port/Icon.png",
+    "hash": "1cb28c1b83bfbf4106c74408b2eae60afed474cf424342d3f074c6f3310fe7aa"
+  },
+  "building-earlymedieval-mine": {
+    "file": "building-earlymedieval-mine.png",
+    "source": "Art/Cultures/Russians/Buildings/EarlyMedieval/Mine/Icon.png",
+    "hash": "88db1eb6ed1c8c7e2ad30027786673862e54e868ae74d8817346129a5a6f9d8d"
+  },
+  "building-earlymedieval-siege-workshop": {
+    "file": "building-earlymedieval-siege-workshop.png",
+    "source": "Art/Cultures/Russians/Buildings/EarlyMedieval/Siege Workshop/Icon.png",
+    "hash": "4e30df903597be214372a9fc3aeaf7cc00d0f6dcf44d5391297f2028e8aa557d"
+  },
+  "building-earlymedieval-tower": {
+    "file": "building-earlymedieval-tower.png",
+    "source": "Art/Cultures/Russians/Buildings/EarlyMedieval/Tower/Icon.png",
+    "hash": "15cfb4a2dd3cefd2339ce4b8f4c928ae8ed2e606d76e9f40f5643aa9145f833f"
+  },
+  "building-earlymedieval-blacksmith": {
+    "file": "building-earlymedieval-blacksmith.png",
+    "source": "Art/Cultures/Russians/Buildings/EarlyMedieval/Blacksmith/Icon.png",
+    "hash": "3d9b8cb3371b91eebeb2282c63a6aa90572edce4eb46346847301d8608d59c8c"
+  },
+  "building-latemedieval-barracks": {
+    "file": "building-latemedieval-barracks.png",
+    "source": "Art/Cultures/Russians/Buildings/LateMedieval/Barracks/Icon.png",
+    "hash": "2e2bd0447912dcdd5e98ab0d9d5c98ee061fa00eb0032070dee55c1d55dcf5df"
+  },
+  "building-latemedieval-city": {
+    "file": "building-latemedieval-city.png",
+    "source": "Art/Cultures/Russians/Buildings/LateMedieval/City/Icon.png",
+    "hash": "9081a9bd946dee725f7dd1677e9c7c128e807c5358f033d3e2a53104f3686d76"
+  },
+  "building-latemedieval-archery": {
+    "file": "building-latemedieval-archery.png",
+    "source": "Art/Cultures/Russians/Buildings/LateMedieval/Archery Range/Icon.png",
+    "hash": "13df01eefc748226d244ec1ed8eeeb74ffcb217301fbf23e547a54807ae9dc95"
+  },
+  "building-latemedieval-stables": {
+    "file": "building-latemedieval-stables.png",
+    "source": "Art/Cultures/Russians/Buildings/LateMedieval/Stables/Icon.png",
+    "hash": "f870d9ac34a7c238fe1166f7ad2093ac6d3054ebad2c92c82405accd2514d4ad"
+  },
+  "building-latemedieval-factory": {
+    "file": "building-latemedieval-factory.png",
+    "source": "Art/Cultures/Russians/Buildings/LateMedieval/Factory/Icon.png",
+    "hash": "869060ca6f915b2dc711fb3e274888ca0bd986555559a33717fed0a7e46be9e9"
+  },
+  "building-latemedieval-port": {
+    "file": "building-latemedieval-port.png",
+    "source": "Art/Cultures/Russians/Buildings/LateMedieval/Port/Icon.png",
+    "hash": "8caf2c5ed78b99f27997db399cfa3f3dc1e383c13bf6f94b2024d18ca206795c"
+  },
+  "building-latemedieval-mine": {
+    "file": "building-latemedieval-mine.png",
+    "source": "Art/Cultures/Russians/Buildings/LateMedieval/Mine/Icon.png",
+    "hash": "736c4ca123eb000b96f57539a5a9f53eaa915da38ffd424e07386c604efd2cdc"
+  },
+  "building-latemedieval-siege-workshop": {
+    "file": "building-latemedieval-siege-workshop.png",
+    "source": "Art/Cultures/Russians/Buildings/LateMedieval/Siege Workshop/Icon.png",
+    "hash": "17d6c2ffb62f8967a7d922b5b6c0373c97ad41e878ab3d7768ce710e1f6201c8"
+  },
+  "building-latemedieval-tower": {
+    "file": "building-latemedieval-tower.png",
+    "source": "Art/Cultures/Russians/Buildings/LateMedieval/Tower/Icon.png",
+    "hash": "e4c494af78470cd009dc99b493b5e66c94def89fafdf80b6964ca850e36abc46"
+  },
+  "building-latemedieval-blacksmith": {
+    "file": "building-latemedieval-blacksmith.png",
+    "source": "Art/Cultures/Russians/Buildings/LateMedieval/Blacksmith/Icon.png",
+    "hash": "956e9b84484a659d404f2c844dcb236d7bcd089e4f29cbc9b6ddf35783d3b251"
+  },
+  "building-napoleonic-barracks": {
+    "file": "building-napoleonic-barracks.png",
+    "source": "Art/Cultures/Russians/Buildings/Napoleonic/Barracks/Icon.png",
+    "hash": "7f638671bf9f22ad26d91ae5cac28aa529330bd86a334b8275a36bc9097ae141"
+  },
+  "building-napoleonic-city": {
+    "file": "building-napoleonic-city.png",
+    "source": "Art/Cultures/Russians/Buildings/Napoleonic/City/Icon.png",
+    "hash": "3993c6be1d8678e7bf9a535a93289a20c1d16cc39513f0ae28f74b91eb9b0b26"
+  },
+  "building-napoleonic-archery": {
+    "file": "building-napoleonic-archery.png",
+    "source": "Art/Cultures/Russians/Buildings/Napoleonic/Archery Range/Icon.png",
+    "hash": "3ea7dc91dfde845a07fb9289e60703656ed7e2bf32c825bea54180c0319c7238"
+  },
+  "building-napoleonic-stables": {
+    "file": "building-napoleonic-stables.png",
+    "source": "Art/Cultures/Russians/Buildings/Napoleonic/Stables/Icon.png",
+    "hash": "d071ba2e7eabc01795272242abf5bfeacc358971cdddfca68fbc81410a2b12d5"
+  },
+  "building-napoleonic-factory": {
+    "file": "building-napoleonic-factory.png",
+    "source": "Art/Cultures/Russians/Buildings/Napoleonic/Factory/Icon.png",
+    "hash": "98e06b4fe2dafff626cf00210b7c84711f447d508cec6221a55a047f1ee7254c"
+  },
+  "building-napoleonic-port": {
+    "file": "building-napoleonic-port.png",
+    "source": "Art/Cultures/Russians/Buildings/Napoleonic/Port/Icon.png",
+    "hash": "d49133e672c6835d1a8bfda6217c5a54b831cf2e0733985242c6336dfe8a1b98"
+  },
+  "building-napoleonic-mine": {
+    "file": "building-napoleonic-mine.png",
+    "source": "Art/Cultures/Russians/Buildings/Napoleonic/Mine/Icon.png",
+    "hash": "a8f455d1cbebd6a9ee08da370d27b6776bfd53ec5dd6bf62609223ea8868bd6f"
+  },
+  "building-napoleonic-siege-workshop": {
+    "file": "building-napoleonic-siege-workshop.png",
+    "source": "Art/Cultures/Russians/Buildings/Napoleonic/Siege Workshop/Icon.png",
+    "hash": "6b459fa1026d951e1b35f55cb03dd3097c4f44298d30aa59a59c155991bcd88f"
+  },
+  "building-napoleonic-tower": {
+    "file": "building-napoleonic-tower.png",
+    "source": "Art/Cultures/Russians/Buildings/Napoleonic/Tower/Icon.png",
+    "hash": "44067cb6d2781fca61cdab69e66d537404797c212f3b9b1d1d1d05c8e9242057"
+  },
+  "building-napoleonic-armory": {
+    "file": "building-napoleonic-armory.png",
+    "source": "Art/Cultures/Russians/Buildings/Napoleonic/Armory/Icon.png",
+    "hash": "672b202acda1b5ea6e64eadb8a37a586726c2ef7813c904ae1e37b5000123ec1"
+  },
+  "building-modern-barracks": {
+    "file": "building-modern-barracks.png",
+    "source": "Art/Cultures/Russians/Buildings/Modern/Barracks/Icon.png",
+    "hash": "782c4f7a1f9a9a3c9f2d30d65d500a11baaa34ee49ae043fd461fe5e9e014a0c"
+  },
+  "building-modern-city": {
+    "file": "building-modern-city.png",
+    "source": "Art/Cultures/Russians/Buildings/Modern/City/Icon.png",
+    "hash": "231eb892443f700e4ed066a04d4b1ecf67653bb29342fb2df7658f98472e709e"
+  },
+  "building-modern-archery": {
+    "file": "building-modern-archery.png",
+    "source": "Art/Cultures/Russians/Buildings/Modern/Archery Range/Icon.png",
+    "hash": "abe1d288dbb4a24fd25aecc85891907c368673724effb092c2b3de311c68094b"
+  },
+  "building-modern-depot": {
+    "file": "building-modern-depot.png",
+    "source": "Art/Cultures/Russians/Buildings/Modern/Vehicle Depot/Icon.png",
+    "hash": "ade4b5ffb595c209badf88917750c726dbd9697215b4c11f159a14d0fe89c299"
+  },
+  "building-modern-factory": {
+    "file": "building-modern-factory.png",
+    "source": "Art/Cultures/Russians/Buildings/Modern/Factory/Icon.png",
+    "hash": "fc9871f308854339c3686dd16c7b3b30b3308f93d2878cf7ff8b98b699d44363"
+  },
+  "building-modern-port": {
+    "file": "building-modern-port.png",
+    "source": "Art/Cultures/Russians/Buildings/Modern/Port/Icon.png",
+    "hash": "075294d33b7b040443e16d864d237247e5bde9fa89425f955d67c5e64e046f8b"
+  },
+  "building-modern-mine": {
+    "file": "building-modern-mine.png",
+    "source": "Art/Cultures/Russians/Buildings/Modern/Mine/Icon.png",
+    "hash": "3b4e3f21cce570752297361e63c67b1a1c68e9e13a6ed3c21619513cdc254051"
+  },
+  "building-modern-siege-workshop": {
+    "file": "building-modern-siege-workshop.png",
+    "source": "Art/Cultures/Russians/Buildings/Modern/Siege Workshop/Icon.png",
+    "hash": "1eb0cac78798bae341b8cd82a1a89224248469f2af5ea39c168574ca9acc885e"
+  },
+  "building-modern-arms-factory": {
+    "file": "building-modern-arms-factory.png",
+    "source": "Art/Cultures/Russians/Buildings/Modern/Arms Factory/Icon.png",
+    "hash": "71a898f49a04b846189201845f272bf1a7e69b4507a765b6260401f1c15f2f4f"
+  },
+  "building-modern-oil-well": {
+    "file": "building-modern-oil-well.png",
+    "source": "Art/Cultures/Russians/Buildings/Modern/Oil Well/Icon.png",
+    "hash": "ac65b328299a7cbcb93fe93c8d64f977001ac6cd354b432bb740e00708bfed8e"
+  },
+  "building-modern-oil-rig": {
+    "file": "building-modern-oil-rig.png",
+    "source": "Art/Cultures/Russians/Buildings/Modern/Oil Rig/Icon.png",
+    "hash": "9954ac8764c3c4da2e413228b145288af54d5e436590530c1dfb7602a621b873"
+  },
+  "building-modern-airstrip": {
+    "file": "building-modern-airstrip.png",
+    "source": "Art/Cultures/Russians/Buildings/Modern/Military Airstrip/Icon.png",
+    "hash": "4ca718952eb3ceb7bec771322c5ad27f1ab99bd20743ede59c5b17d012cbc6ae"
+  },
+  "building-modern-missile-silo": {
+    "file": "building-modern-missile-silo.png",
+    "source": "Art/Cultures/Russians/Buildings/Modern/Missile Silo/Icon.png",
+    "hash": "a1c9b8124e34d82ff4d1f0ab023b288f558fb70ac3467f566f93db5d8c5c1775"
+  },
+  "building-modern-mirv-launcher": {
+    "file": "building-modern-mirv-launcher.png",
+    "source": "Art/Cultures/Russians/Buildings/Modern/MIRV Launch Complex/Icon.png",
+    "hash": "1c27303ad39c3e1aac2ae344a7f99121283700095684491a7bc385a2d68703ab"
+  },
+  "building-modern-gun-nest": {
+    "file": "building-modern-gun-nest-firing-n-portrait.png",
+    "groundBounds": {
+      "x": 27.0,
+      "y": 30.6,
+      "width": 74.0,
+      "height": 67.0
+    },
+    "source": "Modern/Gun Nest/Animations/N/animations.json"
+  },
+  "building-modern-trench": {
+    "file": "building-modern-trench.png",
+    "source": "Art/Cultures/Russians/Buildings/Modern/Trench/Icon.png",
+    "hash": "499ba09eea5cfc73452a9f26284de88019d43fe2ef5a16e85752d0dd56612be5"
+  },
+  "building-modern-missile-defence": {
+    "file": "building-modern-missile-defence.png",
+    "source": "Art/Cultures/Russians/Buildings/Modern/Missile Defence/Icon.png",
+    "hash": "b48c8c917f3ea8cf21faadc7b8c1b89e09fd8865fc23455c5fca687bad10ab1d"
+  },
+  "building-earlymodern-airstrip": {
+    "file": "building-earlymodern-airstrip.png",
+    "source": "Art/Cultures/Russians/Buildings/EarlyModern/Military Airstrip/Icon-WWII-v4.png",
+    "hash": "644718ea8876f78b73b62032c0b7ad7504018994db32ea7c7d2316369887d0a3"
+  },
+  "building-earlymodern-barracks": {
+    "file": "building-earlymodern-barracks.png",
+    "source": "Art/Cultures/Russians/Buildings/EarlyModern/Barracks/Icon.png",
+    "hash": "7cfab86e24b13edfc49a3c731f73305065f18749702a6ae761988463c47affbe"
+  },
+  "building-earlymodern-city": {
+    "file": "building-earlymodern-city.png",
+    "source": "Art/Cultures/Russians/Buildings/EarlyModern/City/Icon.png",
+    "hash": "e542c3c0a0af099dde8bcfc44cafd91791605547290250f49de3815d9699b107"
+  },
+  "building-earlymodern-archery": {
+    "file": "building-earlymodern-archery.png",
+    "source": "Art/Cultures/Russians/Buildings/EarlyModern/Archery Range/Icon.png",
+    "hash": "5a8b80796c9bafa43fa1c8862ba7f63a991aba2963ef40e2e60fc59390080e11"
+  },
+  "building-earlymodern-depot": {
+    "file": "building-earlymodern-depot.png",
+    "source": "Art/Cultures/Russians/Buildings/EarlyModern/Vehicle Depot/Icon.png",
+    "hash": "08392e86b038e87821f3dedbc0ed3939cc5c41e58fcf5d7ead807dde3331b8fd"
+  },
+  "building-earlymodern-arms-factory": {
+    "file": "building-earlymodern-arms-factory.png",
+    "source": "Art/Cultures/Russians/Buildings/EarlyModern/Arms Factory/Icon.png",
+    "hash": "c6bccec9293ca3958dd3f862baf1cc80e1248bb7858239ebf35130c64995d84c"
+  },
+  "building-earlymodern-siege-workshop": {
+    "file": "building-earlymodern-siege-workshop.png",
+    "source": "Art/Cultures/Russians/Buildings/EarlyModern/Siege Workshop/Icon.png",
+    "hash": "5e89d6d3da983841b260663d9a7e05013ea8907d86a323d7bd25026f84542993"
+  },
+  "building-earlymodern-factory": {
+    "file": "building-earlymodern-factory.png",
+    "source": "Art/Cultures/Russians/Buildings/EarlyModern/Factory/Icon.png",
+    "hash": "32a397add367f9fcc4d6bdc41dce39e7d5e995c57a48e5f055fd11b0d19d2abe"
+  },
+  "building-earlymodern-port": {
+    "file": "building-earlymodern-port.png",
+    "source": "Art/Cultures/Russians/Buildings/EarlyModern/Port/Icon.png",
+    "hash": "e4c5ace2471be934b709b370dc3563c9b35715131ee118d18c6b70dc8661cc94"
+  },
+  "building-earlymodern-mine": {
+    "file": "building-earlymodern-mine.png",
+    "source": "Art/Cultures/Russians/Buildings/EarlyModern/Mine/Icon.png",
+    "hash": "294e8da9987925f6f6e8d904f7a8fae66c4b9e9c0251afbdbd63fddf6ccb01a8"
+  },
+  "building-earlymodern-oil-well": {
+    "file": "building-earlymodern-oil-well.png",
+    "source": "Art/Cultures/Russians/Buildings/EarlyModern/Oil Well/Icon.png",
+    "hash": "e8bc7e76d3fedc57cd1b1695f382a66846e50ba2436fcb58bc70960cb8569675"
+  },
+  "building-earlymodern-oil-rig": {
+    "file": "building-earlymodern-oil-rig.png",
+    "source": "Art/Cultures/Russians/Buildings/EarlyModern/Oil Rig/Icon.png",
+    "hash": "346918fea65b9247e82ba24954820d4a595aa1675e8173f09b099d737fde4cd9"
+  },
+  "building-earlymodern-gun-nest": {
+    "file": "building-earlymodern-gun-nest-firing-n-portrait.png",
+    "groundBounds": {
+      "x": 25.6,
+      "y": 26.6,
+      "width": 73.6,
+      "height": 75.4
+    },
+    "source": "EarlyModern/Gun Nest/Animations/N/animations.json"
+  },
+  "building-earlymodern-trench": {
+    "file": "building-earlymodern-trench.png",
+    "source": "Art/Cultures/Russians/Buildings/EarlyModern/Trench/Icon.png",
+    "hash": "ab074216e37956557638df70f2df6963cd13d7aafe452ef0d5745c30fc88c69c"
+  },
+  "building-earlymodern-anti-aircraft": {
+    "file": "building-earlymodern-anti-aircraft-firing-n-portrait.png",
+    "groundBounds": {
+      "x": 25.6,
+      "y": 30.0,
+      "width": 71.6,
+      "height": 62.6
+    },
+    "source": "EarlyModern/Anti-Aircraft Emplacement/Animations/N/animations.json"
+  },
+  "building-earlymodern-rail-terminal": {
+    "file": "building-earlymodern-rail-terminal.png",
+    "source": "Art/Cultures/Russians/Buildings/EarlyModern/Rail Terminal/Icon.png",
+    "hash": "a07957e0cd63b11f902633f24daf4df0b5b628f3baece050ca5908ab6004fceb"
+  },
+  "building-earlymodern-oil-refinery": {
+    "file": "building-earlymodern-oil-refinery.png",
+    "source": "Art/Cultures/Russians/Buildings/EarlyModern/Oil Refinery/Icon.png",
+    "hash": "2bf91cf4ec9128fc49379e3ebe7246ac0e2d49b3d6843be773bd8d5b6abe6358"
+  },
+  "building-earlymodern-nuclear-weapons-facility": {
+    "file": "building-earlymodern-nuclear-weapons-facility.png",
+    "source": "Art/Cultures/Russians/Buildings/EarlyModern/Nuclear Weapons Facility/Icon.png",
+    "hash": "103646ce3aea828e95115c47b4363dfd5d6bcaf3036ebf833dadc2cc668cc7d8"
+  },
+  "building-modern-rail-terminal": {
+    "file": "building-modern-rail-terminal.png",
+    "source": "Art/Cultures/Russians/Buildings/Modern/Rail Terminal/Icon.png",
+    "hash": "2201e924aaee569acb11df1d63a15136b0dd9ef0547c52a0d4f74e8187442e1d"
+  },
+  "building-modern-drone-facility": {
+    "file": "building-modern-drone-facility.png",
+    "source": "Art/Cultures/Russians/Buildings/Modern/Drone Facility/Icon.png",
+    "hash": "af5836a5853ada69549853f693b778f83b43d24810d163a63f9dd997063b203b"
+  },
+  "building-modern-warehouse": {
+    "file": "building-modern-warehouse.png",
+    "source": "Art/Cultures/Russians/Buildings/Modern/Warehouse/Icon.png",
+    "hash": "cb2ca1d2ad5114d684f2e661de1e717bbcaac2e9977b484e48702d11b677f0de"
+  },
+  "building-modern-anti-aircraft": {
+    "file": "building-modern-anti-aircraft-firing-n-portrait.png",
+    "groundBounds": {
+      "x": 33.0,
+      "y": 40.6,
+      "width": 63.8,
+      "height": 57.8
+    },
+    "source": "Modern/Anti-Aircraft Emplacement/Animations/N/animations.json"
+  },
+  "stoneage-warship": {
+    "clips": {
+      "idle": {
+        "file": "stoneage-warship-idle.png",
+        "frames": 10,
+        "columns": 6,
+        "fps": 8,
+        "loop": true,
+        "bounds": {
+          "x": 48,
+          "y": 13,
+          "width": 33,
+          "height": 102
+        }
+      },
+      "sailing": {
+        "file": "stoneage-warship-sailing.png",
+        "frames": 10,
+        "columns": 6,
+        "fps": 12,
+        "loop": true,
+        "bounds": {
+          "x": 48,
+          "y": 13,
+          "width": 33,
+          "height": 112
+        }
+      },
+      "attack": {
+        "file": "stoneage-warship-attack.png",
+        "frames": 10,
+        "columns": 6,
+        "fps": 10,
+        "loop": false,
+        "bounds": {
+          "x": 47,
+          "y": 5,
+          "width": 34,
+          "height": 110
+        }
+      },
+      "running": {
+        "file": "stoneage-warship-sailing.png",
+        "frames": 10,
+        "columns": 6,
+        "fps": 12,
+        "loop": true,
+        "bounds": {
+          "x": 48,
+          "y": 13,
+          "width": 33,
+          "height": 112
+        }
+      }
+    },
+    "facing": "screen-up",
+    "source": "Art/Cultures/Russians/Ships/StoneAge/Warship/animations.json",
+    "metadataHash": "5f939db237861f3dcadf8c3b75ed9fffc989beac76931d454e40f24c6df4d4aa",
+    "hashes": {
+      "Art/Cultures/Russians/Ships/StoneAge/Warship/Idle.png": "4c5e2183ade79f53a462e1956a8ffae422c150dae149f9ff1318026b1d5aabe2",
+      "Art/Cultures/Russians/Ships/StoneAge/Warship/Sailing.png": "f6263c0d3539d91ffb1b7559e709c7b94e817a7a214f136b1aa4c0f17d3aacf5",
+      "Art/Cultures/Russians/Ships/StoneAge/Warship/Attack.png": "1bf8a11b2dd2c72322bcfd9f5600d07a24000de25bfdc9febf14ac89420df616"
+    },
+    "poster": "stoneage-warship-portrait.png"
+  },
+  "stoneage-transport": {
+    "clips": {
+      "idle": {
+        "file": "stoneage-transport-idle.png",
+        "frames": 10,
+        "columns": 6,
+        "fps": 8,
+        "loop": true,
+        "bounds": {
+          "x": 41,
+          "y": 12,
+          "width": 46,
+          "height": 100
+        }
+      },
+      "sailing": {
+        "file": "stoneage-transport-sailing.png",
+        "frames": 10,
+        "columns": 6,
+        "fps": 12,
+        "loop": true,
+        "bounds": {
+          "x": 41,
+          "y": 13,
+          "width": 46,
+          "height": 109
+        }
+      },
+      "running": {
+        "file": "stoneage-transport-sailing.png",
+        "frames": 10,
+        "columns": 6,
+        "fps": 12,
+        "loop": true,
+        "bounds": {
+          "x": 41,
+          "y": 13,
+          "width": 46,
+          "height": 109
+        }
+      }
+    },
+    "facing": "screen-up",
+    "source": "Art/Cultures/Russians/Ships/StoneAge/Transport/animations.json",
+    "metadataHash": "998a4149617b537635ef1ba179c88521d3c3c871bc3d88e6450412efff51364d",
+    "hashes": {
+      "Art/Cultures/Russians/Ships/StoneAge/Transport/Idle.png": "135d1110e0ae793d92de083e4f237810d764f9120ec3455f240ca4efb0b19ff4",
+      "Art/Cultures/Russians/Ships/StoneAge/Transport/Sailing.png": "0ab9c68952ebda47cba42f8462bd397330d6d786ba5c95c8ca9768b906f00fbb"
+    },
+    "poster": "stoneage-transport-portrait.png"
+  },
+  "stoneage-trade": {
+    "clips": {
+      "idle": {
+        "file": "stoneage-trade-idle.png",
+        "frames": 10,
+        "columns": 6,
+        "fps": 8,
+        "loop": true,
+        "bounds": {
+          "x": 32,
+          "y": 20,
+          "width": 72,
+          "height": 92
+        }
+      },
+      "sailing": {
+        "file": "stoneage-trade-sailing.png",
+        "frames": 10,
+        "columns": 6,
+        "fps": 12,
+        "loop": true,
+        "bounds": {
+          "x": 32,
+          "y": 20,
+          "width": 72,
+          "height": 102
+        }
+      },
+      "running": {
+        "file": "stoneage-trade-sailing.png",
+        "frames": 10,
+        "columns": 6,
+        "fps": 12,
+        "loop": true,
+        "bounds": {
+          "x": 32,
+          "y": 20,
+          "width": 72,
+          "height": 102
+        }
+      }
+    },
+    "facing": "screen-up",
+    "source": "Art/Cultures/Russians/Ships/StoneAge/Trade/animations.json",
+    "metadataHash": "579e1d3ae539908a606820d3a31f0c5c2e0131f85ba544742d46e4511d8b7db8",
+    "hashes": {
+      "Art/Cultures/Russians/Ships/StoneAge/Trade/Idle.png": "948a320b9aa205c036b1e503fba1bea756a3666fbf1aadd447f99e1ec8c603b4",
+      "Art/Cultures/Russians/Ships/StoneAge/Trade/Sailing.png": "2351bd88e0bff038f41873fdac0b757ccbc06660a87a2414278138d431ca77e0"
+    },
+    "poster": "stoneage-trade-portrait.png"
+  },
+  "bronzeage-warship": {
+    "clips": {
+      "idle": {
+        "file": "bronzeage-warship-idle.png",
+        "frames": 10,
+        "columns": 6,
+        "fps": 8,
+        "loop": true,
+        "bounds": {
+          "x": 33,
+          "y": 10,
+          "width": 62,
+          "height": 107
+        }
+      },
+      "sailing": {
+        "file": "bronzeage-warship-sailing.png",
+        "frames": 10,
+        "columns": 6,
+        "fps": 12,
+        "loop": true,
+        "bounds": {
+          "x": 31,
+          "y": 10,
+          "width": 66,
+          "height": 115
+        }
+      },
+      "attack": {
+        "file": "bronzeage-warship-attack.png",
+        "frames": 10,
+        "columns": 6,
+        "fps": 10,
+        "loop": false,
+        "bounds": {
+          "x": 33,
+          "y": 5,
+          "width": 62,
+          "height": 112
+        }
+      },
+      "running": {
+        "file": "bronzeage-warship-sailing.png",
+        "frames": 10,
+        "columns": 6,
+        "fps": 12,
+        "loop": true,
+        "bounds": {
+          "x": 31,
+          "y": 10,
+          "width": 66,
+          "height": 115
+        }
+      }
+    },
+    "facing": "screen-up",
+    "source": "Art/Cultures/Russians/Ships/BronzeAge/Warship/animations.json",
+    "metadataHash": "d60f9686c2a2f1c439004975bb4c1296f24115bd22a902eb0a7b07792c95dbc1",
+    "hashes": {
+      "Art/Cultures/Russians/Ships/BronzeAge/Warship/Idle.png": "cff5e1993756525f323f880d40b6a7b1ad38b99b3330ec7615e3f7da87b4e3e7",
+      "Art/Cultures/Russians/Ships/BronzeAge/Warship/Sailing.png": "2c63c727041fbac82ed395e07f82f738f655e97eb9c737d64a60654e085f15c2",
+      "Art/Cultures/Russians/Ships/BronzeAge/Warship/Attack.png": "d40431c9f9730fa1011fe9206e3441417437943312ef5ce041dba25457061e53"
+    },
+    "poster": "bronzeage-warship-portrait.png"
+  },
+  "bronzeage-transport": {
+    "clips": {
+      "idle": {
+        "file": "bronzeage-transport-idle.png",
+        "frames": 10,
+        "columns": 6,
+        "fps": 8,
+        "loop": true,
+        "bounds": {
+          "x": 41,
+          "y": 12,
+          "width": 46,
+          "height": 100
+        }
+      },
+      "sailing": {
+        "file": "bronzeage-transport-sailing.png",
+        "frames": 10,
+        "columns": 6,
+        "fps": 12,
+        "loop": true,
+        "bounds": {
+          "x": 41,
+          "y": 13,
+          "width": 46,
+          "height": 109
+        }
+      },
+      "running": {
+        "file": "bronzeage-transport-sailing.png",
+        "frames": 10,
+        "columns": 6,
+        "fps": 12,
+        "loop": true,
+        "bounds": {
+          "x": 41,
+          "y": 13,
+          "width": 46,
+          "height": 109
+        }
+      }
+    },
+    "facing": "screen-up",
+    "source": "Art/Cultures/Russians/Ships/BronzeAge/Transport/animations.json",
+    "metadataHash": "1e27fa6230ce8d9e516baaf5316014f0580f444c28b3188e7d9b09f7ee617177",
+    "hashes": {
+      "Art/Cultures/Russians/Ships/BronzeAge/Transport/Idle.png": "666af4fd01fab19d5a5bf9f4be11394332e4bc5e095c077a322c1eac9cd6f21d",
+      "Art/Cultures/Russians/Ships/BronzeAge/Transport/Sailing.png": "1799f9c93104db487e24205c8997700613283b5f8798182f85ed98df56b31471"
+    },
+    "poster": "bronzeage-transport-portrait.png"
+  },
+  "bronzeage-trade": {
+    "clips": {
+      "idle": {
+        "file": "bronzeage-trade-idle.png",
+        "frames": 10,
+        "columns": 6,
+        "fps": 8,
+        "loop": true,
+        "bounds": {
+          "x": 31,
+          "y": 12,
+          "width": 66,
+          "height": 104
+        }
+      },
+      "sailing": {
+        "file": "bronzeage-trade-sailing.png",
+        "frames": 10,
+        "columns": 6,
+        "fps": 12,
+        "loop": true,
+        "bounds": {
+          "x": 31,
+          "y": 12,
+          "width": 66,
+          "height": 112
+        }
+      },
+      "running": {
+        "file": "bronzeage-trade-sailing.png",
+        "frames": 10,
+        "columns": 6,
+        "fps": 12,
+        "loop": true,
+        "bounds": {
+          "x": 31,
+          "y": 12,
+          "width": 66,
+          "height": 112
+        }
+      }
+    },
+    "facing": "screen-up",
+    "source": "Art/Cultures/Russians/Ships/BronzeAge/Trade/animations.json",
+    "metadataHash": "ad8fbd3614121ec327957fd64131ef8533adb9f4e617f7b87f839a1edf73ed66",
+    "hashes": {
+      "Art/Cultures/Russians/Ships/BronzeAge/Trade/Idle.png": "9533584eeb675b3786cce85c2e39f15bb4d77be7d594a0ebfe5cceb1db121358",
+      "Art/Cultures/Russians/Ships/BronzeAge/Trade/Sailing.png": "152a0e3090a5185f2e720fbd6627acdf12f73a2150d34b6eea9e49c460433531"
+    },
+    "poster": "bronzeage-trade-portrait.png"
+  },
+  "classicalage-warship": {
+    "clips": {
+      "idle": {
+        "file": "classicalage-warship-idle.png",
+        "frames": 10,
+        "columns": 6,
+        "fps": 8,
+        "loop": true,
+        "bounds": {
+          "x": 37,
+          "y": 15,
+          "width": 54,
+          "height": 96
+        }
+      },
+      "sailing": {
+        "file": "classicalage-warship-sailing.png",
+        "frames": 10,
+        "columns": 6,
+        "fps": 12,
+        "loop": true,
+        "bounds": {
+          "x": 35,
+          "y": 15,
+          "width": 58,
+          "height": 106
+        }
+      },
+      "attack": {
+        "file": "classicalage-warship-attack.png",
+        "frames": 10,
+        "columns": 6,
+        "fps": 10,
+        "loop": false,
+        "bounds": {
+          "x": 37,
+          "y": 10,
+          "width": 54,
+          "height": 102
+        }
+      },
+      "running": {
+        "file": "classicalage-warship-sailing.png",
+        "frames": 10,
+        "columns": 6,
+        "fps": 12,
+        "loop": true,
+        "bounds": {
+          "x": 35,
+          "y": 15,
+          "width": 58,
+          "height": 106
+        }
+      }
+    },
+    "facing": "screen-up",
+    "source": "Art/Cultures/Russians/Ships/ClassicalAge/Warship/animations.json",
+    "metadataHash": "de533358d90afb7a822f94dcb9f2a4576d6fbe8676b441557a38c98adf554ecc",
+    "hashes": {
+      "Art/Cultures/Russians/Ships/ClassicalAge/Warship/Idle.png": "eb117bafa9c265d36debd6c8873187341022984cfef74098320f717d40c1b8a6",
+      "Art/Cultures/Russians/Ships/ClassicalAge/Warship/Sailing.png": "b270d341affd85467e7f4d768f98078435633840d8e5d246e836e296018a508c",
+      "Art/Cultures/Russians/Ships/ClassicalAge/Warship/Attack.png": "e304d22ee0502ceaf361616dd0f240c973b6001004cb17e22e07c545061d3a24"
+    },
+    "poster": "classicalage-warship-portrait.png"
+  },
+  "classicalage-transport": {
+    "clips": {
+      "idle": {
+        "file": "classicalage-transport-idle.png",
+        "frames": 10,
+        "columns": 6,
+        "fps": 8,
+        "loop": true,
+        "bounds": {
+          "x": 42,
+          "y": 12,
+          "width": 44,
+          "height": 103
+        }
+      },
+      "sailing": {
+        "file": "classicalage-transport-sailing.png",
+        "frames": 10,
+        "columns": 6,
+        "fps": 12,
+        "loop": true,
+        "bounds": {
+          "x": 42,
+          "y": 12,
+          "width": 44,
+          "height": 113
+        }
+      },
+      "running": {
+        "file": "classicalage-transport-sailing.png",
+        "frames": 10,
+        "columns": 6,
+        "fps": 12,
+        "loop": true,
+        "bounds": {
+          "x": 42,
+          "y": 12,
+          "width": 44,
+          "height": 113
+        }
+      }
+    },
+    "facing": "screen-up",
+    "source": "Art/Cultures/Russians/Ships/ClassicalAge/Transport/animations.json",
+    "metadataHash": "18419b406637275b67624dbdcf6d4bdd7040c3320855dd94bb8bc70262c60fed",
+    "hashes": {
+      "Art/Cultures/Russians/Ships/ClassicalAge/Transport/Idle.png": "37f714716c366ace4f6fe37fd7c66717fadf9c4cbf0a9a4b967b79abf4583353",
+      "Art/Cultures/Russians/Ships/ClassicalAge/Transport/Sailing.png": "3eb88e5df7d99448014d9101d364b8677b70f4102569d5fa1ffbe9deea2790b1"
+    },
+    "poster": "classicalage-transport-portrait.png"
+  },
+  "classicalage-trade": {
+    "clips": {
+      "idle": {
+        "file": "classicalage-trade-idle.png",
+        "frames": 10,
+        "columns": 6,
+        "fps": 8,
+        "loop": true,
+        "bounds": {
+          "x": 41,
+          "y": 11,
+          "width": 46,
+          "height": 106
+        }
+      },
+      "sailing": {
+        "file": "classicalage-trade-sailing.png",
+        "frames": 10,
+        "columns": 6,
+        "fps": 12,
+        "loop": true,
+        "bounds": {
+          "x": 41,
+          "y": 12,
+          "width": 46,
+          "height": 114
+        }
+      },
+      "running": {
+        "file": "classicalage-trade-sailing.png",
+        "frames": 10,
+        "columns": 6,
+        "fps": 12,
+        "loop": true,
+        "bounds": {
+          "x": 41,
+          "y": 12,
+          "width": 46,
+          "height": 114
+        }
+      }
+    },
+    "facing": "screen-up",
+    "source": "Art/Cultures/Russians/Ships/ClassicalAge/Trade/animations.json",
+    "metadataHash": "b3d12fad44fbb3c2dc3361440de6aec4ba8afec4f802d963901e5db07edea8e2",
+    "hashes": {
+      "Art/Cultures/Russians/Ships/ClassicalAge/Trade/Idle.png": "b72a10c681a61eed3aa3195fd014e2a2c7b537786da18932e5d594a6bf780afd",
+      "Art/Cultures/Russians/Ships/ClassicalAge/Trade/Sailing.png": "7704ba05409a5dee6e005997b5edfc327691be844209027f7a1add57445335a7"
+    },
+    "poster": "classicalage-trade-portrait.png"
+  },
+  "earlymedieval-warship": {
+    "clips": {
+      "idle": {
+        "file": "earlymedieval-warship-idle.png",
+        "frames": 10,
+        "columns": 6,
+        "fps": 8,
+        "loop": true,
+        "bounds": {
+          "x": 35,
+          "y": 16,
+          "width": 54,
+          "height": 93
+        }
+      },
+      "sailing": {
+        "file": "earlymedieval-warship-sailing.png",
+        "frames": 10,
+        "columns": 6,
+        "fps": 12,
+        "loop": true,
+        "bounds": {
+          "x": 34,
+          "y": 15,
+          "width": 56,
+          "height": 95
+        }
+      },
+      "attack": {
+        "file": "earlymedieval-warship-attack.png",
+        "frames": 10,
+        "columns": 6,
+        "fps": 10,
+        "loop": false,
+        "bounds": {
+          "x": 35,
+          "y": 9,
+          "width": 54,
+          "height": 100
+        }
+      },
+      "running": {
+        "file": "earlymedieval-warship-sailing.png",
+        "frames": 10,
+        "columns": 6,
+        "fps": 12,
+        "loop": true,
+        "bounds": {
+          "x": 34,
+          "y": 15,
+          "width": 56,
+          "height": 95
+        }
+      }
+    },
+    "facing": "screen-up",
+    "source": "Art/Cultures/Russians/Ships/EarlyMedieval/Warship/animations.json",
+    "metadataHash": "a3738bc11c665a2d86e4d3c46de0762aea1169020d4bc78b5036891d4de075a4",
+    "hashes": {
+      "Art/Cultures/Russians/Ships/EarlyMedieval/Warship/Idle.png": "9e2eab0d0cd8ee88cb7e0372ca7236bada5d9260cd54e2ec0895317f61450d5b",
+      "Art/Cultures/Russians/Ships/EarlyMedieval/Warship/Sailing.png": "76032e8223b33ecdd5beab1a04b2c0ef95e0fc72333f8e72573799eb0047615c",
+      "Art/Cultures/Russians/Ships/EarlyMedieval/Warship/Attack.png": "870b9f2e3f0ffa198950d41c6a0058922247dbc72b9133bed2b3e5ecd5892386"
+    },
+    "poster": "earlymedieval-warship-portrait.png"
+  },
+  "earlymedieval-transport": {
+    "clips": {
+      "idle": {
+        "file": "earlymedieval-transport-idle.png",
+        "frames": 10,
+        "columns": 6,
+        "fps": 8,
+        "loop": true,
+        "bounds": {
+          "x": 36,
+          "y": 16,
+          "width": 52,
+          "height": 96
+        }
+      },
+      "sailing": {
+        "file": "earlymedieval-transport-sailing.png",
+        "frames": 10,
+        "columns": 6,
+        "fps": 12,
+        "loop": true,
+        "bounds": {
+          "x": 36,
+          "y": 16,
+          "width": 52,
+          "height": 96
+        }
+      },
+      "running": {
+        "file": "earlymedieval-transport-sailing.png",
+        "frames": 10,
+        "columns": 6,
+        "fps": 12,
+        "loop": true,
+        "bounds": {
+          "x": 36,
+          "y": 16,
+          "width": 52,
+          "height": 96
+        }
+      }
+    },
+    "facing": "screen-down",
+    "source": "Art/Cultures/Russians/Ships/EarlyMedieval/Transport/animations.json",
+    "metadataHash": "06520cec670984406a621ea39867646c92e2c1dd8b9429badd239daa76a757bf",
+    "hashes": {
+      "Art/Cultures/Russians/Ships/EarlyMedieval/Transport/Idle.png": "04b3e0106775d0d56c49fd2f2d227d6418eb14d92002c2bd4b03fa4c9c0ffecc",
+      "Art/Cultures/Russians/Ships/EarlyMedieval/Transport/Sailing.png": "ff812e0643fff1d4af3cbd54869ad22ea8d6fe1b89538fd50688e0dc23f6ff51"
+    },
+    "poster": "earlymedieval-transport-portrait.png"
+  },
+  "earlymedieval-trade": {
+    "clips": {
+      "idle": {
+        "file": "earlymedieval-trade-idle.png",
+        "frames": 10,
+        "columns": 6,
+        "fps": 8,
+        "loop": true,
+        "bounds": {
+          "x": 41,
+          "y": 16,
+          "width": 44,
+          "height": 96
+        }
+      },
+      "sailing": {
+        "file": "earlymedieval-trade-sailing.png",
+        "frames": 10,
+        "columns": 6,
+        "fps": 12,
+        "loop": true,
+        "bounds": {
+          "x": 41,
+          "y": 16,
+          "width": 44,
+          "height": 96
+        }
+      },
+      "running": {
+        "file": "earlymedieval-trade-sailing.png",
+        "frames": 10,
+        "columns": 6,
+        "fps": 12,
+        "loop": true,
+        "bounds": {
+          "x": 41,
+          "y": 16,
+          "width": 44,
+          "height": 96
+        }
+      }
+    },
+    "facing": "screen-down",
+    "source": "Art/Cultures/Russians/Ships/EarlyMedieval/Trade/animations.json",
+    "metadataHash": "0bc4fc2c51833fb4b871e14d737e8a1e28b445f185429f6f3a0f2936e6cd35a6",
+    "hashes": {
+      "Art/Cultures/Russians/Ships/EarlyMedieval/Trade/Idle.png": "b4adef3d2deab6a8703489ceb0f6b18f4effa250f907740e6297df5b17fb9564",
+      "Art/Cultures/Russians/Ships/EarlyMedieval/Trade/Sailing.png": "0c57871eb88c34015a17ef4a82a69c48d5e03da13c1242df3247f0abce46f665"
+    },
+    "poster": "earlymedieval-trade-portrait.png"
+  },
+  "latemedieval-warship": {
+    "clips": {
+      "idle": {
+        "file": "latemedieval-warship-idle.png",
+        "frames": 10,
+        "columns": 6,
+        "fps": 8,
+        "loop": true,
+        "bounds": {
+          "x": 40,
+          "y": 17,
+          "width": 46,
+          "height": 95
+        }
+      },
+      "sailing": {
+        "file": "latemedieval-warship-sailing.png",
+        "frames": 10,
+        "columns": 6,
+        "fps": 12,
+        "loop": true,
+        "bounds": {
+          "x": 40,
+          "y": 14,
+          "width": 46,
+          "height": 98
+        }
+      },
+      "attack": {
+        "file": "latemedieval-warship-attack.png",
+        "frames": 10,
+        "columns": 6,
+        "fps": 10,
+        "loop": false,
+        "bounds": {
+          "x": 37,
+          "y": 17,
+          "width": 49,
+          "height": 95
+        }
+      },
+      "running": {
+        "file": "latemedieval-warship-sailing.png",
+        "frames": 10,
+        "columns": 6,
+        "fps": 12,
+        "loop": true,
+        "bounds": {
+          "x": 40,
+          "y": 14,
+          "width": 46,
+          "height": 98
+        }
+      }
+    },
+    "facing": "screen-down",
+    "source": "Art/Cultures/Russians/Ships/LateMedieval/Warship/animations.json",
+    "metadataHash": "f3c8fa1318e4018b6b0911bb7b682343aedc5f4282da4a9e970d574020d561cf",
+    "hashes": {
+      "Art/Cultures/Russians/Ships/LateMedieval/Warship/Idle.png": "9dd1a7f9103017ce37d8e0a2b917c255b9153664aaa46e89bd251fa62c7a5f9a",
+      "Art/Cultures/Russians/Ships/LateMedieval/Warship/Sailing.png": "8e79603d09f2b10e7d4d812a96264e436d1d8cddcc4f74aab1c8224a22a09c11",
+      "Art/Cultures/Russians/Ships/LateMedieval/Warship/Attack.png": "5588126240078f805399f0f385d12fe89777d5b997a067e9ee2eb3cdb8058180"
+    },
+    "poster": "latemedieval-warship-portrait.png"
+  },
+  "latemedieval-transport": {
+    "clips": {
+      "idle": {
+        "file": "latemedieval-transport-idle.png",
+        "frames": 10,
+        "columns": 6,
+        "fps": 8,
+        "loop": true,
+        "bounds": {
+          "x": 41,
+          "y": 16,
+          "width": 47,
+          "height": 95
+        }
+      },
+      "sailing": {
+        "file": "latemedieval-transport-sailing.png",
+        "frames": 10,
+        "columns": 6,
+        "fps": 12,
+        "loop": true,
+        "bounds": {
+          "x": 41,
+          "y": 16,
+          "width": 47,
+          "height": 95
+        }
+      },
+      "running": {
+        "file": "latemedieval-transport-sailing.png",
+        "frames": 10,
+        "columns": 6,
+        "fps": 12,
+        "loop": true,
+        "bounds": {
+          "x": 41,
+          "y": 16,
+          "width": 47,
+          "height": 95
+        }
+      }
+    },
+    "facing": "screen-down",
+    "source": "Art/Cultures/Russians/Ships/LateMedieval/Transport/animations.json",
+    "metadataHash": "46dcb7730855ec1ce42437deaf3b30c5cbb3b8b7d49d054ca4be47fee2310296",
+    "hashes": {
+      "Art/Cultures/Russians/Ships/LateMedieval/Transport/Idle.png": "516c02659ff06eebdfa4e6c6d6a919713b9b90365f6d700f2f2ac530a91635ab",
+      "Art/Cultures/Russians/Ships/LateMedieval/Transport/Sailing.png": "c5747c6d36593cccff2ea2dc8dc354e9ee161ca6dd02c08371a1853d819507b4"
+    },
+    "poster": "latemedieval-transport-portrait.png"
+  },
+  "latemedieval-trade": {
+    "clips": {
+      "idle": {
+        "file": "latemedieval-trade-idle.png",
+        "frames": 10,
+        "columns": 6,
+        "fps": 8,
+        "loop": true,
+        "bounds": {
+          "x": 33,
+          "y": 17,
+          "width": 60,
+          "height": 95
+        }
+      },
+      "sailing": {
+        "file": "latemedieval-trade-sailing.png",
+        "frames": 10,
+        "columns": 6,
+        "fps": 12,
+        "loop": true,
+        "bounds": {
+          "x": 33,
+          "y": 14,
+          "width": 60,
+          "height": 98
+        }
+      },
+      "running": {
+        "file": "latemedieval-trade-sailing.png",
+        "frames": 10,
+        "columns": 6,
+        "fps": 12,
+        "loop": true,
+        "bounds": {
+          "x": 33,
+          "y": 14,
+          "width": 60,
+          "height": 98
+        }
+      }
+    },
+    "facing": "screen-down",
+    "source": "Art/Cultures/Russians/Ships/LateMedieval/Trade/animations.json",
+    "metadataHash": "ea9ec394c25c28a7a74221fb7fd861ea4feef9e8ba0352f864b171902cdacce9",
+    "hashes": {
+      "Art/Cultures/Russians/Ships/LateMedieval/Trade/Idle.png": "82cc2e0e8b7f63e85df9b2b47d64511aa2c0f48f1812e24e6d7ef60166195681",
+      "Art/Cultures/Russians/Ships/LateMedieval/Trade/Sailing.png": "b947a38de003c4ba2fca5b48aebc8637a9527576b8a1104de27b0c3a421f9bf8"
+    },
+    "poster": "latemedieval-trade-portrait.png"
+  },
+  "napoleonic-warship": {
+    "clips": {
+      "idle": {
+        "file": "napoleonic-warship-idle.png",
+        "frames": 10,
+        "columns": 6,
+        "fps": 8,
+        "loop": true,
+        "bounds": {
+          "x": 41,
+          "y": 16,
+          "width": 41,
+          "height": 96
+        }
+      },
+      "sailing": {
+        "file": "napoleonic-warship-sailing.png",
+        "frames": 10,
+        "columns": 6,
+        "fps": 12,
+        "loop": true,
+        "bounds": {
+          "x": 41,
+          "y": 16,
+          "width": 41,
+          "height": 96
+        }
+      },
+      "attack": {
+        "file": "napoleonic-warship-attack.png",
+        "frames": 10,
+        "columns": 6,
+        "fps": 10,
+        "loop": false,
+        "bounds": {
+          "x": 36,
+          "y": 16,
+          "width": 46,
+          "height": 96
+        }
+      },
+      "running": {
+        "file": "napoleonic-warship-sailing.png",
+        "frames": 10,
+        "columns": 6,
+        "fps": 12,
+        "loop": true,
+        "bounds": {
+          "x": 41,
+          "y": 16,
+          "width": 41,
+          "height": 96
+        }
+      }
+    },
+    "facing": "screen-down",
+    "source": "Art/Cultures/Russians/Ships/Napoleonic/Warship/animations.json",
+    "metadataHash": "af4e4eae67937a9eed989ee1c2fccfdf1c66353b395d279fa50d5928b428000f",
+    "hashes": {
+      "Art/Cultures/Russians/Ships/Napoleonic/Warship/Idle.png": "5c1e5684795498cba5cd6cd7b1e8a2025edc2f29584fa7652bdd5233147a7e84",
+      "Art/Cultures/Russians/Ships/Napoleonic/Warship/Sailing.png": "2fdbed4fa662a7a5b233c2a4dd98a4ac0821609fb7bd28668e31c3c8b45bd77f",
+      "Art/Cultures/Russians/Ships/Napoleonic/Warship/Attack.png": "f771f7e5b3e6ebab35921bbac2bff172cb71832260e7576afbef3ddb53a4843e"
+    },
+    "poster": "napoleonic-warship-portrait.png"
+  },
+  "napoleonic-transport": {
+    "clips": {
+      "idle": {
+        "file": "napoleonic-transport-idle.png",
+        "frames": 10,
+        "columns": 6,
+        "fps": 8,
+        "loop": true,
+        "bounds": {
+          "x": 45,
+          "y": 16,
+          "width": 39,
+          "height": 96
+        }
+      },
+      "sailing": {
+        "file": "napoleonic-transport-sailing.png",
+        "frames": 10,
+        "columns": 6,
+        "fps": 12,
+        "loop": true,
+        "bounds": {
+          "x": 45,
+          "y": 15,
+          "width": 39,
+          "height": 97
+        }
+      },
+      "running": {
+        "file": "napoleonic-transport-sailing.png",
+        "frames": 10,
+        "columns": 6,
+        "fps": 12,
+        "loop": true,
+        "bounds": {
+          "x": 45,
+          "y": 15,
+          "width": 39,
+          "height": 97
+        }
+      }
+    },
+    "facing": "screen-down",
+    "source": "Art/Cultures/Russians/Ships/Napoleonic/Transport/animations.json",
+    "metadataHash": "78eb1df1a87d7d1d8f698edecd5598a4411e6d42ff4d9062227edb090e231fed",
+    "hashes": {
+      "Art/Cultures/Russians/Ships/Napoleonic/Transport/Idle.png": "5d9da1eea26ca487dda783312c293772d571f67c335f4c170ff0f1891969db2f",
+      "Art/Cultures/Russians/Ships/Napoleonic/Transport/Sailing.png": "309b73901562de96d09df9d112ef1cf61e3fabe86ba3d1490eee65ae00b10922"
+    },
+    "poster": "napoleonic-transport-portrait.png"
+  },
+  "napoleonic-trade": {
+    "clips": {
+      "idle": {
+        "file": "napoleonic-trade-idle.png",
+        "frames": 10,
+        "columns": 6,
+        "fps": 8,
+        "loop": true,
+        "bounds": {
+          "x": 43,
+          "y": 16,
+          "width": 41,
+          "height": 96
+        }
+      },
+      "sailing": {
+        "file": "napoleonic-trade-sailing.png",
+        "frames": 10,
+        "columns": 6,
+        "fps": 12,
+        "loop": true,
+        "bounds": {
+          "x": 43,
+          "y": 16,
+          "width": 41,
+          "height": 96
+        }
+      },
+      "running": {
+        "file": "napoleonic-trade-sailing.png",
+        "frames": 10,
+        "columns": 6,
+        "fps": 12,
+        "loop": true,
+        "bounds": {
+          "x": 43,
+          "y": 16,
+          "width": 41,
+          "height": 96
+        }
+      }
+    },
+    "facing": "screen-down",
+    "source": "Art/Cultures/Russians/Ships/Napoleonic/Trade/animations.json",
+    "metadataHash": "d0556a1b5daf83be5ccae4745491a6d8d427700fca7f3352e6724a78398c338b",
+    "hashes": {
+      "Art/Cultures/Russians/Ships/Napoleonic/Trade/Idle.png": "67e4045dd8134a604e9c71f77cc3e7fe2737022ce43e3bd0ed64280561d0a244",
+      "Art/Cultures/Russians/Ships/Napoleonic/Trade/Sailing.png": "9b115f169028f5d34b8fffb42ed47bbf3086a3b95e7248078aff3d1689cf2cb7"
+    },
+    "poster": "napoleonic-trade-portrait.png"
+  },
+  "earlymodern-warship": {
+    "clips": {
+      "idle": {
+        "file": "earlymodern-warship-idle.png",
+        "frames": 10,
+        "columns": 6,
+        "fps": 8,
+        "loop": true,
+        "bounds": {
+          "x": 52,
+          "y": 16,
+          "width": 21,
+          "height": 96
+        }
+      },
+      "sailing": {
+        "file": "earlymodern-warship-sailing.png",
+        "frames": 10,
+        "columns": 6,
+        "fps": 12,
+        "loop": true,
+        "bounds": {
+          "x": 52,
+          "y": 14,
+          "width": 21,
+          "height": 97
+        }
+      },
+      "attack": {
+        "file": "earlymodern-warship-attack.png",
+        "frames": 10,
+        "columns": 6,
+        "fps": 10,
+        "loop": false,
+        "bounds": {
+          "x": 52,
+          "y": 16,
+          "width": 21,
+          "height": 96
+        }
+      },
+      "running": {
+        "file": "earlymodern-warship-sailing.png",
+        "frames": 10,
+        "columns": 6,
+        "fps": 12,
+        "loop": true,
+        "bounds": {
+          "x": 52,
+          "y": 14,
+          "width": 21,
+          "height": 97
+        }
+      }
+    },
+    "facing": "screen-down",
+    "source": "Art/Cultures/Russians/Ships/EarlyModern/Warship/animations.json",
+    "metadataHash": "46fa2e829f0e56607e6b1f682b25bdd1ac64189be7f8be23a61c8905da9cbfd0",
+    "hashes": {
+      "Art/Cultures/Russians/Ships/EarlyModern/Warship/Idle.png": "9e4f7ac4f20c469e70482359fbd0c1de1b48ee744d8a3dd17afcaaf9bd036b31",
+      "Art/Cultures/Russians/Ships/EarlyModern/Warship/Sailing.png": "6f81cc8cb7234b4df0bca749a10ea6de6967a710d8a8635f91fc31fe6f7d106a",
+      "Art/Cultures/Russians/Ships/EarlyModern/Warship/Attack.png": "c3ee27700bc1339740231eabb69e67ff257d6c7d33c0982ec6a9c53840a60f5f"
+    },
+    "poster": "earlymodern-warship-portrait.png"
+  },
+  "earlymodern-transport": {
+    "clips": {
+      "idle": {
+        "file": "earlymodern-transport-idle.png",
+        "frames": 10,
+        "columns": 6,
+        "fps": 8,
+        "loop": true,
+        "bounds": {
+          "x": 49,
+          "y": 17,
+          "width": 29,
+          "height": 95
+        }
+      },
+      "sailing": {
+        "file": "earlymodern-transport-sailing.png",
+        "frames": 10,
+        "columns": 6,
+        "fps": 12,
+        "loop": true,
+        "bounds": {
+          "x": 49,
+          "y": 14,
+          "width": 29,
+          "height": 98
+        }
+      },
+      "running": {
+        "file": "earlymodern-transport-sailing.png",
+        "frames": 10,
+        "columns": 6,
+        "fps": 12,
+        "loop": true,
+        "bounds": {
+          "x": 49,
+          "y": 14,
+          "width": 29,
+          "height": 98
+        }
+      }
+    },
+    "facing": "screen-down",
+    "source": "Art/Cultures/Russians/Ships/EarlyModern/Transport/animations.json",
+    "metadataHash": "5af49040a1430e8797527df51201fdebbcf6824f83c381620681cfa8bb04a17f",
+    "hashes": {
+      "Art/Cultures/Russians/Ships/EarlyModern/Transport/Idle.png": "f2b2debc16defb7e4ddc7c7fd9328d8de955203d94c78d71ffa33a9c9e18442a",
+      "Art/Cultures/Russians/Ships/EarlyModern/Transport/Sailing.png": "ea667ce493daa34159e50d1ed08039bb71211781368695c0bbf7d2b012657921"
+    },
+    "poster": "earlymodern-transport-portrait.png"
+  },
+  "earlymodern-trade": {
+    "clips": {
+      "idle": {
+        "file": "earlymodern-trade-idle.png",
+        "frames": 10,
+        "columns": 6,
+        "fps": 8,
+        "loop": true,
+        "bounds": {
+          "x": 48,
+          "y": 17,
+          "width": 33,
+          "height": 95
+        }
+      },
+      "sailing": {
+        "file": "earlymodern-trade-sailing.png",
+        "frames": 10,
+        "columns": 6,
+        "fps": 12,
+        "loop": true,
+        "bounds": {
+          "x": 48,
+          "y": 15,
+          "width": 33,
+          "height": 97
+        }
+      },
+      "running": {
+        "file": "earlymodern-trade-sailing.png",
+        "frames": 10,
+        "columns": 6,
+        "fps": 12,
+        "loop": true,
+        "bounds": {
+          "x": 48,
+          "y": 15,
+          "width": 33,
+          "height": 97
+        }
+      }
+    },
+    "facing": "screen-down",
+    "source": "Art/Cultures/Russians/Ships/EarlyModern/Trade/animations.json",
+    "metadataHash": "5022a490ac3bf8bb33047dec14dd643aee220682a95cd39aaefdad2d1f788223",
+    "hashes": {
+      "Art/Cultures/Russians/Ships/EarlyModern/Trade/Idle.png": "06fd404f2054fa6d4fbfb67d43a229dc561620af6a6ed5de6c026d99e7399d42",
+      "Art/Cultures/Russians/Ships/EarlyModern/Trade/Sailing.png": "6ed12d43fa2574031f9bf32e72cd318185c2e537eb3182ff6080d4530a9b7dec"
+    },
+    "poster": "earlymodern-trade-portrait.png"
+  },
+  "earlymodern-submarine": {
+    "clips": {
+      "idle": {
+        "file": "earlymodern-submarine-idle.png",
+        "frames": 10,
+        "columns": 6,
+        "fps": 8,
+        "loop": true,
+        "bounds": {
+          "x": 54,
+          "y": 16,
+          "width": 20,
+          "height": 95
+        }
+      },
+      "sailing": {
+        "file": "earlymodern-submarine-sailing.png",
+        "frames": 10,
+        "columns": 6,
+        "fps": 12,
+        "loop": true,
+        "bounds": {
+          "x": 54,
+          "y": 13,
+          "width": 20,
+          "height": 99
+        }
+      },
+      "attack": {
+        "file": "earlymodern-submarine-attack.png",
+        "frames": 10,
+        "columns": 6,
+        "fps": 10,
+        "loop": false,
+        "bounds": {
+          "x": 54,
+          "y": 16,
+          "width": 20,
+          "height": 104
+        }
+      },
+      "running": {
+        "file": "earlymodern-submarine-sailing.png",
+        "frames": 10,
+        "columns": 6,
+        "fps": 12,
+        "loop": true,
+        "bounds": {
+          "x": 54,
+          "y": 13,
+          "width": 20,
+          "height": 99
+        }
+      }
+    },
+    "facing": "screen-down",
+    "source": "Art/Cultures/Russians/Ships/EarlyModern/Submarine/animations.json",
+    "metadataHash": "51848b5615c182f85622374853cf5f8f096571a087e81ba7b301bbb9a11bb042",
+    "hashes": {
+      "Art/Cultures/Russians/Ships/EarlyModern/Submarine/Idle.png": "c604859a3dc5031681eec4ffbe92baf70e2fa7cbc95c83a2a1f438f10bc4c4d1",
+      "Art/Cultures/Russians/Ships/EarlyModern/Submarine/Sailing.png": "564ea3a8b213fb1a0ac8c7e0a2c137abaee86619997ee4ea56be411dfbfd8c9d",
+      "Art/Cultures/Russians/Ships/EarlyModern/Submarine/Attack.png": "08ad84f1ee96fe83ba5d425e78d3f5b4e4a3ace6d4decd2efe59b9602d0cd5e2"
+    },
+    "poster": "earlymodern-submarine-portrait.png"
+  },
+  "modern-warship": {
+    "clips": {
+      "idle": {
+        "file": "modern-warship-idle.png",
+        "frames": 10,
+        "columns": 6,
+        "fps": 8,
+        "loop": true,
+        "bounds": {
+          "x": 52,
+          "y": 16,
+          "width": 26,
+          "height": 96
+        }
+      },
+      "sailing": {
+        "file": "modern-warship-sailing.png",
+        "frames": 10,
+        "columns": 6,
+        "fps": 12,
+        "loop": true,
+        "bounds": {
+          "x": 52,
+          "y": 14,
+          "width": 26,
+          "height": 98
+        }
+      },
+      "attack": {
+        "file": "modern-warship-attack.png",
+        "frames": 10,
+        "columns": 6,
+        "fps": 10,
+        "loop": false,
+        "bounds": {
+          "x": 52,
+          "y": 16,
+          "width": 26,
+          "height": 96
+        }
+      },
+      "running": {
+        "file": "modern-warship-sailing.png",
+        "frames": 10,
+        "columns": 6,
+        "fps": 12,
+        "loop": true,
+        "bounds": {
+          "x": 52,
+          "y": 14,
+          "width": 26,
+          "height": 98
+        }
+      }
+    },
+    "facing": "screen-down",
+    "source": "Art/Cultures/Russians/Ships/Modern/Warship/animations.json",
+    "metadataHash": "002a400324edda6c3f0357e42eed1d92d0f6615500078b43cae75b2e2a6152aa",
+    "hashes": {
+      "Art/Cultures/Russians/Ships/Modern/Warship/Idle.png": "ecd1f557daae2f998be0b9e7caec30e3acf39dc566b24af0fc41a692baa63829",
+      "Art/Cultures/Russians/Ships/Modern/Warship/Sailing.png": "053637e1a7a04e79c63ff7fe83cdc5e67f41668ab03a0230d44aa43aec2c34a5",
+      "Art/Cultures/Russians/Ships/Modern/Warship/Attack.png": "61b734268c3d47495775b310dbcfe5ca14f304bb544985a5e422d224d927f8d6"
+    },
+    "poster": "modern-warship-portrait.png"
+  },
+  "modern-transport": {
+    "clips": {
+      "idle": {
+        "file": "modern-transport-idle.png",
+        "frames": 10,
+        "columns": 6,
+        "fps": 8,
+        "loop": true,
+        "bounds": {
+          "x": 48,
+          "y": 17,
+          "width": 34,
+          "height": 93
+        }
+      },
+      "sailing": {
+        "file": "modern-transport-sailing.png",
+        "frames": 10,
+        "columns": 6,
+        "fps": 12,
+        "loop": true,
+        "bounds": {
+          "x": 48,
+          "y": 14,
+          "width": 34,
+          "height": 96
+        }
+      },
+      "running": {
+        "file": "modern-transport-sailing.png",
+        "frames": 10,
+        "columns": 6,
+        "fps": 12,
+        "loop": true,
+        "bounds": {
+          "x": 48,
+          "y": 14,
+          "width": 34,
+          "height": 96
+        }
+      }
+    },
+    "facing": "screen-down",
+    "source": "Art/Cultures/Russians/Ships/Modern/Transport/animations.json",
+    "metadataHash": "a32de739ac02a70f261123822aae3cdb275092ff13add4f87fce46c0472381f7",
+    "hashes": {
+      "Art/Cultures/Russians/Ships/Modern/Transport/Idle.png": "81ad6e254da8b687abf0a7dfd1ebd0c8fe7a90f50c728aaffebbd8388c1f7e30",
+      "Art/Cultures/Russians/Ships/Modern/Transport/Sailing.png": "7b808fd0e19f257b55bbdd5a1b6e7612f2ec432e3379fc7e2304ea1fa25ed918"
+    },
+    "poster": "modern-transport-portrait.png"
+  },
+  "modern-trade": {
+    "clips": {
+      "idle": {
+        "file": "modern-trade-idle.png",
+        "frames": 10,
+        "columns": 6,
+        "fps": 8,
+        "loop": true,
+        "bounds": {
+          "x": 47,
+          "y": 16,
+          "width": 28,
+          "height": 96
+        }
+      },
+      "sailing": {
+        "file": "modern-trade-sailing.png",
+        "frames": 10,
+        "columns": 6,
+        "fps": 12,
+        "loop": true,
+        "bounds": {
+          "x": 47,
+          "y": 15,
+          "width": 28,
+          "height": 97
+        }
+      },
+      "running": {
+        "file": "modern-trade-sailing.png",
+        "frames": 10,
+        "columns": 6,
+        "fps": 12,
+        "loop": true,
+        "bounds": {
+          "x": 47,
+          "y": 15,
+          "width": 28,
+          "height": 97
+        }
+      }
+    },
+    "facing": "screen-down",
+    "source": "Art/Cultures/Russians/Ships/Modern/Trade/animations.json",
+    "metadataHash": "c23a5342a039b01a74844025b059cff4a4aff87b5690762217eb8af1a71174f8",
+    "hashes": {
+      "Art/Cultures/Russians/Ships/Modern/Trade/Idle.png": "ef843d82743c723e8def209755f59483dc874dc758387e02e8a6ebaa17bd21d0",
+      "Art/Cultures/Russians/Ships/Modern/Trade/Sailing.png": "e7e9ea22dbfb672c9433c522acdd9b33b9ba2b6de87337bb95e597893fc5db28"
+    },
+    "poster": "modern-trade-portrait.png"
+  },
+  "modern-submarine": {
+    "clips": {
+      "idle": {
+        "file": "modern-submarine-idle.png",
+        "frames": 10,
+        "columns": 6,
+        "fps": 8,
+        "loop": true,
+        "bounds": {
+          "x": 47,
+          "y": 17,
+          "width": 30,
+          "height": 94
+        }
+      },
+      "sailing": {
+        "file": "modern-submarine-sailing.png",
+        "frames": 10,
+        "columns": 6,
+        "fps": 12,
+        "loop": true,
+        "bounds": {
+          "x": 47,
+          "y": 13,
+          "width": 30,
+          "height": 99
+        }
+      },
+      "attack": {
+        "file": "modern-submarine-attack.png",
+        "frames": 10,
+        "columns": 6,
+        "fps": 10,
+        "loop": false,
+        "bounds": {
+          "x": 47,
+          "y": 17,
+          "width": 30,
+          "height": 103
+        }
+      },
+      "running": {
+        "file": "modern-submarine-sailing.png",
+        "frames": 10,
+        "columns": 6,
+        "fps": 12,
+        "loop": true,
+        "bounds": {
+          "x": 47,
+          "y": 13,
+          "width": 30,
+          "height": 99
+        }
+      }
+    },
+    "facing": "screen-down",
+    "source": "Art/Cultures/Russians/Ships/Modern/Submarine/animations.json",
+    "metadataHash": "89b4fb03a5cc2b74892ee82c7fb446b91ebe217d4125e583b9399242219ac622",
+    "hashes": {
+      "Art/Cultures/Russians/Ships/Modern/Submarine/Idle.png": "e4292cb67ec79557d41d663667bbdd2bf222e7a16c18febd8839266f38101822",
+      "Art/Cultures/Russians/Ships/Modern/Submarine/Sailing.png": "7792e91be88df9aa93765447911adb21feec9d2010683ec4686053e5dc111021",
+      "Art/Cultures/Russians/Ships/Modern/Submarine/Attack.png": "d2d9c2adfd307d7a39887bbd4fb227276822bcaf28bfdd27b4839f1ee1e7aa2d"
+    },
+    "poster": "modern-submarine-portrait.png"
+  },
+  "bronzeage-trader": {
+    "clips": {
+      "idle": {
+        "file": "bronzeage-trader-idle.png",
+        "frames": 10,
+        "columns": 6,
+        "fps": 8,
+        "loop": true,
+        "bounds": {
+          "x": 37,
+          "y": 17,
+          "width": 54,
+          "height": 86
+        }
+      },
+      "travel": {
+        "file": "bronzeage-trader-travel.png",
+        "frames": 10,
+        "columns": 6,
+        "fps": 12,
+        "loop": true,
+        "bounds": {
+          "x": 37,
+          "y": 17,
+          "width": 54,
+          "height": 91
+        }
+      },
+      "running": {
+        "file": "bronzeage-trader-travel.png",
+        "frames": 10,
+        "columns": 6,
+        "fps": 12,
+        "loop": true,
+        "bounds": {
+          "x": 37,
+          "y": 17,
+          "width": 54,
+          "height": 91
+        }
+      }
+    },
+    "facing": "screen-down",
+    "source": "Art/Cultures/Russians/Traders/BronzeAge/animations.json",
+    "metadataHash": "ad643a82fed5163d89308fd4a5d81f42a0ece2c1e8ac9d575f945f1b7269f5cc",
+    "hashes": {
+      "Art/Cultures/Russians/Traders/BronzeAge/Idle.png": "7497c810b194888baa4df888cf9d55e6e4f5ef466b4b789f58a51ab2a6b362e7",
+      "Art/Cultures/Russians/Traders/BronzeAge/Travel.png": "5d99bbf5e924805d8e99e0f5f2ada93b5d2e3c6908b91ec563d30ed3e0477e29"
+    },
+    "poster": "bronzeage-trader-portrait.png"
+  },
+  "stoneage-trader": {
+    "clips": {
+      "idle": {
+        "file": "stoneage-trader-idle.png",
+        "frames": 10,
+        "columns": 6,
+        "fps": 8,
+        "loop": true,
+        "bounds": {
+          "x": 41,
+          "y": 17,
+          "width": 46,
+          "height": 82
+        }
+      },
+      "travel": {
+        "file": "stoneage-trader-travel.png",
+        "frames": 10,
+        "columns": 6,
+        "fps": 12,
+        "loop": true,
+        "bounds": {
+          "x": 41,
+          "y": 17,
+          "width": 46,
+          "height": 91
+        }
+      },
+      "running": {
+        "file": "stoneage-trader-travel.png",
+        "frames": 10,
+        "columns": 6,
+        "fps": 12,
+        "loop": true,
+        "bounds": {
+          "x": 41,
+          "y": 17,
+          "width": 46,
+          "height": 91
+        }
+      }
+    },
+    "facing": "screen-down",
+    "source": "Art/Cultures/Russians/Traders/StoneAge/animations.json",
+    "metadataHash": "cef87383354ed5a634c92c79440cf7784cf17c7b26f6aa15e58ee6fcf13fb531",
+    "hashes": {
+      "Art/Cultures/Russians/Traders/StoneAge/Idle.png": "fcd89ff16d09ef4975104128aa03f872a13ef924cd225d0d3d86ee7ce8dcd6fd",
+      "Art/Cultures/Russians/Traders/StoneAge/Travel.png": "43815c041ba1635325a27aa08b11da895ef838a4fcc6727ae1465bcadbed4d99"
+    },
+    "poster": "stoneage-trader-portrait.png"
+  },
+  "classicalage-trader": {
+    "clips": {
+      "idle": {
+        "file": "classicalage-trader-idle.png",
+        "frames": 10,
+        "columns": 6,
+        "fps": 8,
+        "loop": true,
+        "bounds": {
+          "x": 17,
+          "y": 18,
+          "width": 94,
+          "height": 88
+        }
+      },
+      "travel": {
+        "file": "classicalage-trader-travel.png",
+        "frames": 10,
+        "columns": 6,
+        "fps": 12,
+        "loop": true,
+        "bounds": {
+          "x": 17,
+          "y": 18,
+          "width": 94,
+          "height": 92
+        }
+      },
+      "running": {
+        "file": "classicalage-trader-travel.png",
+        "frames": 10,
+        "columns": 6,
+        "fps": 12,
+        "loop": true,
+        "bounds": {
+          "x": 17,
+          "y": 18,
+          "width": 94,
+          "height": 92
+        }
+      }
+    },
+    "facing": "screen-down",
+    "source": "Art/Cultures/Russians/Traders/ClassicalAge/animations.json",
+    "metadataHash": "8dbcca9b324476f2fbb22cd2aa8a27a178c3934653e46bfb309e6ce2ff5b0efd",
+    "hashes": {
+      "Art/Cultures/Russians/Traders/ClassicalAge/Idle.png": "81e774f43c9be9d0e828bcf77cf91c57d5937618a6c265f0b80f6121ea858110",
+      "Art/Cultures/Russians/Traders/ClassicalAge/Travel.png": "214b31e365ff664805af9dfff9d13d806f86dd97f15a9701205e88e8a1bc06e2"
+    },
+    "poster": "classicalage-trader-portrait.png"
+  },
+  "earlymedieval-trader": {
+    "clips": {
+      "idle": {
+        "file": "earlymedieval-trader-idle.png",
+        "frames": 10,
+        "columns": 6,
+        "fps": 8,
+        "loop": true,
+        "bounds": {
+          "x": 35,
+          "y": 17,
+          "width": 58,
+          "height": 91
+        }
+      },
+      "travel": {
+        "file": "earlymedieval-trader-travel.png",
+        "frames": 10,
+        "columns": 6,
+        "fps": 12,
+        "loop": true,
+        "bounds": {
+          "x": 35,
+          "y": 17,
+          "width": 58,
+          "height": 95
+        }
+      },
+      "running": {
+        "file": "earlymedieval-trader-travel.png",
+        "frames": 10,
+        "columns": 6,
+        "fps": 12,
+        "loop": true,
+        "bounds": {
+          "x": 35,
+          "y": 17,
+          "width": 58,
+          "height": 95
+        }
+      }
+    },
+    "facing": "screen-down",
+    "source": "Art/Cultures/Russians/Traders/EarlyMedieval/animations.json",
+    "metadataHash": "f651d8e2eaee63a4c8dcb28cfb5cdbc0d8c938aaef78afa1d9299b4c43f9393f",
+    "hashes": {
+      "Art/Cultures/Russians/Traders/EarlyMedieval/Idle.png": "5b0b19d53a0e5b7bdd35bdc340c203dff0e56ad26cd826c71804c9a28a1087f3",
+      "Art/Cultures/Russians/Traders/EarlyMedieval/Travel.png": "294d5ac83fb5915432baae93c6769bcdb53351ec53b7d30da791c998d3c5f7f6"
+    },
+    "poster": "earlymedieval-trader-portrait.png"
+  },
+  "latemedieval-trader": {
+    "clips": {
+      "idle": {
+        "file": "latemedieval-trader-idle.png",
+        "frames": 10,
+        "columns": 6,
+        "fps": 8,
+        "loop": true,
+        "bounds": {
+          "x": 18,
+          "y": 20,
+          "width": 93,
+          "height": 84
+        }
+      },
+      "travel": {
+        "file": "latemedieval-trader-travel.png",
+        "frames": 10,
+        "columns": 6,
+        "fps": 12,
+        "loop": true,
+        "bounds": {
+          "x": 18,
+          "y": 20,
+          "width": 93,
+          "height": 88
+        }
+      },
+      "running": {
+        "file": "latemedieval-trader-travel.png",
+        "frames": 10,
+        "columns": 6,
+        "fps": 12,
+        "loop": true,
+        "bounds": {
+          "x": 18,
+          "y": 20,
+          "width": 93,
+          "height": 88
+        }
+      }
+    },
+    "facing": "screen-down",
+    "source": "Art/Cultures/Russians/Traders/LateMedieval/animations.json",
+    "metadataHash": "d5e3d429555001c181de5fc4dd53b8091c6c08fd8b97f46dec247f46fb9587d7",
+    "hashes": {
+      "Art/Cultures/Russians/Traders/LateMedieval/Idle.png": "1fbf34f7aea7eacbeb641210122b781aa8c5881387013b02025c85bcc1d86ffd",
+      "Art/Cultures/Russians/Traders/LateMedieval/Travel.png": "fed09591f8fd16845a925034a9f9c29b288fbe47dc49b6b1114cf5b4722d3ad9"
+    },
+    "poster": "latemedieval-trader-portrait.png"
+  },
+  "napoleonic-trader": {
+    "clips": {
+      "idle": {
+        "file": "napoleonic-trader-idle.png",
+        "frames": 10,
+        "columns": 6,
+        "fps": 8,
+        "loop": true,
+        "bounds": {
+          "x": 17,
+          "y": 14,
+          "width": 94,
+          "height": 93
+        }
+      },
+      "travel": {
+        "file": "napoleonic-trader-travel.png",
+        "frames": 10,
+        "columns": 6,
+        "fps": 12,
+        "loop": true,
+        "bounds": {
+          "x": 17,
+          "y": 14,
+          "width": 94,
+          "height": 95
+        }
+      },
+      "running": {
+        "file": "napoleonic-trader-travel.png",
+        "frames": 10,
+        "columns": 6,
+        "fps": 12,
+        "loop": true,
+        "bounds": {
+          "x": 17,
+          "y": 14,
+          "width": 94,
+          "height": 95
+        }
+      }
+    },
+    "facing": "screen-down",
+    "source": "Art/Cultures/Russians/Traders/Napoleonic/animations.json",
+    "metadataHash": "99bc609e93173ead4ff9603b03875461405c7fa8b40cd9a8864cbacd3dfde114",
+    "hashes": {
+      "Art/Cultures/Russians/Traders/Napoleonic/Idle.png": "eedc1a65d5286f3dfbc1a372643fdcaf707407b90d6002d1503e1b1f0e63d3b5",
+      "Art/Cultures/Russians/Traders/Napoleonic/Travel.png": "38e82592197bd20537e4ca300361c36757895f90f91a56e446935978c5b1dbee"
+    },
+    "poster": "napoleonic-trader-portrait.png"
+  },
+  "earlymodern-trader": {
+    "clips": {
+      "idle": {
+        "file": "earlymodern-trader-idle.png",
+        "frames": 10,
+        "columns": 6,
+        "fps": 8,
+        "loop": true,
+        "bounds": {
+          "x": 45,
+          "y": 18,
+          "width": 38,
+          "height": 92
+        }
+      },
+      "travel": {
+        "file": "earlymodern-trader-travel.png",
+        "frames": 10,
+        "columns": 6,
+        "fps": 12,
+        "loop": true,
+        "bounds": {
+          "x": 45,
+          "y": 18,
+          "width": 38,
+          "height": 92
+        }
+      },
+      "running": {
+        "file": "earlymodern-trader-travel.png",
+        "frames": 10,
+        "columns": 6,
+        "fps": 12,
+        "loop": true,
+        "bounds": {
+          "x": 45,
+          "y": 18,
+          "width": 38,
+          "height": 92
+        }
+      }
+    },
+    "facing": "screen-down",
+    "source": "Art/Cultures/Russians/Traders/EarlyModern/animations.json",
+    "metadataHash": "1cb408a6fe93614c6ebcb3b5a4a6ba0efb56ea67c2a207554a6fea26155b3cbe",
+    "hashes": {
+      "Art/Cultures/Russians/Traders/EarlyModern/Idle.png": "928edb2afc4c74c4e638172852e98de7adc6e246749bb8c1d3ee688cabab9100",
+      "Art/Cultures/Russians/Traders/EarlyModern/Travel.png": "9c1c7e2777bdabaa82d13e1b7567bfc0e3a77cac78f8aebae25758703c1cd2b0"
+    },
+    "poster": "earlymodern-trader-portrait.png"
+  },
+  "modern-trader": {
+    "clips": {
+      "idle": {
+        "file": "modern-trader-idle.png",
+        "frames": 10,
+        "columns": 6,
+        "fps": 8,
+        "loop": true,
+        "bounds": {
+          "x": 43,
+          "y": 11,
+          "width": 42,
+          "height": 104
+        }
+      },
+      "travel": {
+        "file": "modern-trader-travel.png",
+        "frames": 10,
+        "columns": 6,
+        "fps": 12,
+        "loop": true,
+        "bounds": {
+          "x": 43,
+          "y": 11,
+          "width": 42,
+          "height": 104
+        }
+      },
+      "running": {
+        "file": "modern-trader-travel.png",
+        "frames": 10,
+        "columns": 6,
+        "fps": 12,
+        "loop": true,
+        "bounds": {
+          "x": 43,
+          "y": 11,
+          "width": 42,
+          "height": 104
+        }
+      }
+    },
+    "facing": "screen-down",
+    "source": "Art/Cultures/Russians/Traders/Modern/animations.json",
+    "metadataHash": "e274d9841ffded3c060bbfeff1942387291d2f5f59981625ccd747d9ebe4a17e",
+    "hashes": {
+      "Art/Cultures/Russians/Traders/Modern/Idle.png": "ec48a4a9d8b2080b64e15db660042c78a7ff6562bdfe585a5cae2bec011659f7",
+      "Art/Cultures/Russians/Traders/Modern/Travel.png": "fee599b1d6f6cadadb7162fee277cfe514dcdafb2d5700e66441850b79ba3fdd"
+    },
+    "poster": "modern-trader-portrait.png"
+  },
+  "earlymodern-fighter": {
+    "clips": {
+      "parked": {
+        "file": "earlymodern-fighter-parked.png",
+        "frames": 20,
+        "columns": 6,
+        "fps": 20,
+        "loop": true,
+        "bounds": {
+          "x": 7,
+          "y": 19,
+          "width": 114,
+          "height": 98
+        }
+      },
+      "flight": {
+        "file": "earlymodern-fighter-flight.png",
+        "frames": 20,
+        "columns": 6,
+        "fps": 20,
+        "loop": true,
+        "bounds": {
+          "x": 7,
+          "y": 19,
+          "width": 114,
+          "height": 99
+        }
+      },
+      "idle": {
+        "file": "earlymodern-fighter-parked.png",
+        "frames": 20,
+        "columns": 6,
+        "fps": 20,
+        "loop": true,
+        "bounds": {
+          "x": 7,
+          "y": 19,
+          "width": 114,
+          "height": 98
+        }
+      },
+      "running": {
+        "file": "earlymodern-fighter-flight.png",
+        "frames": 20,
+        "columns": 6,
+        "fps": 20,
+        "loop": true,
+        "bounds": {
+          "x": 7,
+          "y": 19,
+          "width": 114,
+          "height": 99
+        }
+      }
+    },
+    "facing": "screen-up",
+    "source": "Art/Cultures/Russians/Aircraft/EarlyModern/Fighter/Animations/animations.json",
+    "metadataHash": "dde366e964c37291cfc21e78d00cb9d89a254d4687aa210a8b8f33e8125ecdbf",
+    "hashes": {
+      "Art/Cultures/Russians/Aircraft/EarlyModern/Fighter/Animations/Parked.png": "40ea48121da8724452d9e4ca91cd38c2d6cde1a16a6100b9bb04c5942d203c55",
+      "Art/Cultures/Russians/Aircraft/EarlyModern/Fighter/Animations/Flight.png": "fd8878e804ef239afa0d93b02948a5266265947d8d77c69ad73a2f1fdddd2d27"
+    },
+    "poster": "earlymodern-fighter-portrait.png"
+  },
+  "earlymodern-bomber": {
+    "clips": {
+      "parked": {
+        "file": "earlymodern-bomber-parked.png",
+        "frames": 20,
+        "columns": 6,
+        "fps": 20,
+        "loop": true,
+        "bounds": {
+          "x": 1,
+          "y": 27,
+          "width": 126,
+          "height": 87
+        }
+      },
+      "flight": {
+        "file": "earlymodern-bomber-flight.png",
+        "frames": 20,
+        "columns": 6,
+        "fps": 20,
+        "loop": true,
+        "bounds": {
+          "x": 1,
+          "y": 27,
+          "width": 126,
+          "height": 87
+        }
+      },
+      "idle": {
+        "file": "earlymodern-bomber-parked.png",
+        "frames": 20,
+        "columns": 6,
+        "fps": 20,
+        "loop": true,
+        "bounds": {
+          "x": 1,
+          "y": 27,
+          "width": 126,
+          "height": 87
+        }
+      },
+      "running": {
+        "file": "earlymodern-bomber-flight.png",
+        "frames": 20,
+        "columns": 6,
+        "fps": 20,
+        "loop": true,
+        "bounds": {
+          "x": 1,
+          "y": 27,
+          "width": 126,
+          "height": 87
+        }
+      }
+    },
+    "facing": "screen-up",
+    "source": "Art/Cultures/Russians/Aircraft/EarlyModern/Bomber/Animations/animations.json",
+    "metadataHash": "0fc2ca4d1ff4754748c03479d7597ec8a029fd680459210b5bd49a58b8861156",
+    "hashes": {
+      "Art/Cultures/Russians/Aircraft/EarlyModern/Bomber/Animations/Parked.png": "4bdd16be42192540f7a4c7113d712ec6ddad06704ca5aab8abc5e242301cd087",
+      "Art/Cultures/Russians/Aircraft/EarlyModern/Bomber/Animations/Flight.png": "175a82136ad13c2cee03d78aa11f206c534910decf76327503ac5e6a5def3917"
+    },
+    "poster": "earlymodern-bomber-portrait.png"
+  },
+  "modern-fighter": {
+    "clips": {
+      "parked": {
+        "file": "modern-fighter-parked.png",
+        "frames": 20,
+        "columns": 6,
+        "fps": 20,
+        "loop": true,
+        "bounds": {
+          "x": 12,
+          "y": 9,
+          "width": 104,
+          "height": 109
+        }
+      },
+      "flight": {
+        "file": "modern-fighter-flight.png",
+        "frames": 20,
+        "columns": 6,
+        "fps": 20,
+        "loop": true,
+        "bounds": {
+          "x": 12,
+          "y": 9,
+          "width": 104,
+          "height": 109
+        }
+      },
+      "idle": {
+        "file": "modern-fighter-parked.png",
+        "frames": 20,
+        "columns": 6,
+        "fps": 20,
+        "loop": true,
+        "bounds": {
+          "x": 12,
+          "y": 9,
+          "width": 104,
+          "height": 109
+        }
+      },
+      "running": {
+        "file": "modern-fighter-flight.png",
+        "frames": 20,
+        "columns": 6,
+        "fps": 20,
+        "loop": true,
+        "bounds": {
+          "x": 12,
+          "y": 9,
+          "width": 104,
+          "height": 109
+        }
+      }
+    },
+    "facing": "screen-up",
+    "source": "Art/Cultures/Russians/Aircraft/Modern/Fighter/Animations/animations.json",
+    "metadataHash": "f2c2e8505a7071360f7e53d7b77ad58da4820b738fb817aae0deb06746399077",
+    "hashes": {
+      "Art/Cultures/Russians/Aircraft/Modern/Fighter/Animations/Parked.png": "7f3dcdb728ea89c8df1367f4745cd93aaf4030dbd719f2a46c1c133e63e266ca",
+      "Art/Cultures/Russians/Aircraft/Modern/Fighter/Animations/Flight.png": "221919e3801761cfc2e0f5e3d02b61bddca4e188a951982aa0d13100d3dfe979"
+    },
+    "poster": "modern-fighter-portrait.png"
+  },
+  "modern-bomber": {
+    "clips": {
+      "parked": {
+        "file": "modern-bomber-parked.png",
+        "frames": 20,
+        "columns": 6,
+        "fps": 20,
+        "loop": true,
+        "bounds": {
+          "x": 3,
+          "y": 12,
+          "width": 122,
+          "height": 108
+        }
+      },
+      "flight": {
+        "file": "modern-bomber-flight.png",
+        "frames": 20,
+        "columns": 6,
+        "fps": 20,
+        "loop": true,
+        "bounds": {
+          "x": 3,
+          "y": 10,
+          "width": 122,
+          "height": 112
+        }
+      },
+      "idle": {
+        "file": "modern-bomber-parked.png",
+        "frames": 20,
+        "columns": 6,
+        "fps": 20,
+        "loop": true,
+        "bounds": {
+          "x": 3,
+          "y": 12,
+          "width": 122,
+          "height": 108
+        }
+      },
+      "running": {
+        "file": "modern-bomber-flight.png",
+        "frames": 20,
+        "columns": 6,
+        "fps": 20,
+        "loop": true,
+        "bounds": {
+          "x": 3,
+          "y": 10,
+          "width": 122,
+          "height": 112
+        }
+      }
+    },
+    "facing": "screen-up",
+    "source": "Art/Cultures/Russians/Aircraft/Modern/Bomber/Animations/animations.json",
+    "metadataHash": "acd7ac8c4ea9897620364dd0b436d1de2aa46ac0e6aa5bfa638c0aa7da77d9c5",
+    "hashes": {
+      "Art/Cultures/Russians/Aircraft/Modern/Bomber/Animations/Parked.png": "f7829d28ac44dd65662778a82f07889b60acd13167962ccfc130722ee35adc6c",
+      "Art/Cultures/Russians/Aircraft/Modern/Bomber/Animations/Flight.png": "829703ed62c06bb31b0939cd506ffd7e06fb9370d37646adc8320bf49416e036"
+    },
+    "poster": "modern-bomber-portrait.png"
+  },
+  "building-earlymodern-anti-aircraft-firing-n": {
+    "clips": {
+      "firing": {
+        "file": "building-earlymodern-anti-aircraft-firing-n-firing.png",
+        "frames": 36,
+        "columns": 6,
+        "fps": 50,
+        "loop": true,
+        "bounds": {
+          "x": 34,
+          "y": 29,
+          "width": 60,
+          "height": 65
+        },
+        "groundBounds": {
+          "x": 25.6,
+          "y": 30.0,
+          "width": 71.6,
+          "height": 62.6
+        }
+      }
+    },
+    "facing": "N",
+    "source": "Art/Cultures/Russians/Buildings/EarlyModern/Anti-Aircraft Emplacement/Animations/N/animations.json",
+    "metadataHash": "19a52a3ffab123c7046bdf01ee8adb3709198158b0f3a02ff6d0ca1a1b75d7f4",
+    "hashes": {
+      "Art/Cultures/Russians/Buildings/EarlyModern/Anti-Aircraft Emplacement/Animations/N/Firing.png": "3b9a3314345569358835d1944e3387e087f5f2d30e77953b97f2b575eb93e677"
+    },
+    "poster": "building-earlymodern-anti-aircraft-firing-n-portrait.png",
+    "groundBounds": {
+      "x": 25.6,
+      "y": 30.0,
+      "width": 71.6,
+      "height": 62.6
+    }
+  },
+  "building-earlymodern-anti-aircraft-firing-e": {
+    "clips": {
+      "firing": {
+        "file": "building-earlymodern-anti-aircraft-firing-e-firing.png",
+        "frames": 36,
+        "columns": 6,
+        "fps": 50,
+        "loop": true,
+        "bounds": {
+          "x": 34,
+          "y": 36,
+          "width": 67,
+          "height": 58
+        },
+        "groundBounds": {
+          "x": 25.6,
+          "y": 30.0,
+          "width": 71.6,
+          "height": 62.6
+        }
+      }
+    },
+    "facing": "E",
+    "source": "Art/Cultures/Russians/Buildings/EarlyModern/Anti-Aircraft Emplacement/Animations/E/animations.json",
+    "metadataHash": "6fddaba8d56a8407d45f5b2b6eaca3a31af02a3339b28f9fbf27d2cb567e1b92",
+    "hashes": {
+      "Art/Cultures/Russians/Buildings/EarlyModern/Anti-Aircraft Emplacement/Animations/E/Firing.png": "2df92900e585f25ed4af29b672a703ee232d5bd496ffcaaf045f3476a8ddba5e"
+    },
+    "poster": "building-earlymodern-anti-aircraft-firing-e-portrait.png",
+    "groundBounds": {
+      "x": 25.6,
+      "y": 30.0,
+      "width": 71.6,
+      "height": 62.6
+    }
+  },
+  "building-earlymodern-anti-aircraft-firing-s": {
+    "clips": {
+      "firing": {
+        "file": "building-earlymodern-anti-aircraft-firing-s-firing.png",
+        "frames": 36,
+        "columns": 6,
+        "fps": 50,
+        "loop": true,
+        "bounds": {
+          "x": 34,
+          "y": 36,
+          "width": 60,
+          "height": 66
+        },
+        "groundBounds": {
+          "x": 25.6,
+          "y": 30.0,
+          "width": 71.6,
+          "height": 62.6
+        }
+      }
+    },
+    "facing": "S",
+    "source": "Art/Cultures/Russians/Buildings/EarlyModern/Anti-Aircraft Emplacement/Animations/S/animations.json",
+    "metadataHash": "43c06f9cdb1e478a92905b3058d1250106b3d96fd68eda067ebd34cddd520e04",
+    "hashes": {
+      "Art/Cultures/Russians/Buildings/EarlyModern/Anti-Aircraft Emplacement/Animations/S/Firing.png": "267de109e608f0900ac656d69b974af312233d3708ab5cf7581141488388ccf4"
+    },
+    "poster": "building-earlymodern-anti-aircraft-firing-s-portrait.png",
+    "groundBounds": {
+      "x": 25.6,
+      "y": 30.0,
+      "width": 71.6,
+      "height": 62.6
+    }
+  },
+  "building-earlymodern-anti-aircraft-firing-w": {
+    "clips": {
+      "firing": {
+        "file": "building-earlymodern-anti-aircraft-firing-w-firing.png",
+        "frames": 36,
+        "columns": 6,
+        "fps": 50,
+        "loop": true,
+        "bounds": {
+          "x": 28,
+          "y": 36,
+          "width": 66,
+          "height": 58
+        },
+        "groundBounds": {
+          "x": 25.6,
+          "y": 30.0,
+          "width": 71.6,
+          "height": 62.6
+        }
+      }
+    },
+    "facing": "W",
+    "source": "Art/Cultures/Russians/Buildings/EarlyModern/Anti-Aircraft Emplacement/Animations/W/animations.json",
+    "metadataHash": "8fc26498c89e53153b5e2df4614da12771749fd21566450cb10ccc70bee2fc17",
+    "hashes": {
+      "Art/Cultures/Russians/Buildings/EarlyModern/Anti-Aircraft Emplacement/Animations/W/Firing.png": "8b4db29baa97c51eb4eda976d2d4c6de49ffd66ada0a08d5c7e29d777299e2f3"
+    },
+    "poster": "building-earlymodern-anti-aircraft-firing-w-portrait.png",
+    "groundBounds": {
+      "x": 25.6,
+      "y": 30.0,
+      "width": 71.6,
+      "height": 62.6
+    }
+  },
+  "building-earlymodern-gun-nest-firing-n": {
+    "clips": {
+      "firing": {
+        "file": "building-earlymodern-gun-nest-firing-n-firing.png",
+        "frames": 36,
+        "columns": 6,
+        "fps": 50,
+        "loop": true,
+        "bounds": {
+          "x": 29,
+          "y": 28,
+          "width": 69,
+          "height": 65
+        },
+        "groundBounds": {
+          "x": 25.6,
+          "y": 26.6,
+          "width": 73.6,
+          "height": 75.4
+        }
+      }
+    },
+    "facing": "N",
+    "source": "Art/Cultures/Russians/Buildings/EarlyModern/Gun Nest/Animations/N/animations.json",
+    "metadataHash": "4d04fc5159935d269e31f4b5c996edf1b50bb8f2a31fa64efff221b3441758a0",
+    "hashes": {
+      "Art/Cultures/Russians/Buildings/EarlyModern/Gun Nest/Animations/N/Firing.png": "8a615f374be88265c4651734361008b56da93652f1ef05cca71db0ab5c38be9a"
+    },
+    "poster": "building-earlymodern-gun-nest-firing-n-portrait.png",
+    "groundBounds": {
+      "x": 25.6,
+      "y": 26.6,
+      "width": 73.6,
+      "height": 75.4
+    }
+  },
+  "building-earlymodern-gun-nest-firing-e": {
+    "clips": {
+      "firing": {
+        "file": "building-earlymodern-gun-nest-firing-e-firing.png",
+        "frames": 36,
+        "columns": 6,
+        "fps": 50,
+        "loop": true,
+        "bounds": {
+          "x": 29,
+          "y": 39,
+          "width": 76,
+          "height": 54
+        },
+        "groundBounds": {
+          "x": 25.6,
+          "y": 26.6,
+          "width": 73.6,
+          "height": 75.4
+        }
+      }
+    },
+    "facing": "E",
+    "source": "Art/Cultures/Russians/Buildings/EarlyModern/Gun Nest/Animations/E/animations.json",
+    "metadataHash": "1f344e0f16acc426428316fd7aeae962b6d840c9dc3b4df8385653a0850d0935",
+    "hashes": {
+      "Art/Cultures/Russians/Buildings/EarlyModern/Gun Nest/Animations/E/Firing.png": "a2659b6dc8b22316a309cde7620884d279b9a36bbc744abf5cc57b77a723f204"
+    },
+    "poster": "building-earlymodern-gun-nest-firing-e-portrait.png",
+    "groundBounds": {
+      "x": 25.6,
+      "y": 26.6,
+      "width": 73.6,
+      "height": 75.4
+    }
+  },
+  "building-earlymodern-gun-nest-firing-s": {
+    "clips": {
+      "firing": {
+        "file": "building-earlymodern-gun-nest-firing-s-firing.png",
+        "frames": 36,
+        "columns": 6,
+        "fps": 50,
+        "loop": true,
+        "bounds": {
+          "x": 29,
+          "y": 39,
+          "width": 69,
+          "height": 70
+        },
+        "groundBounds": {
+          "x": 25.6,
+          "y": 26.6,
+          "width": 73.6,
+          "height": 75.4
+        }
+      }
+    },
+    "facing": "S",
+    "source": "Art/Cultures/Russians/Buildings/EarlyModern/Gun Nest/Animations/S/animations.json",
+    "metadataHash": "1630401ca4a3c6042103951c2237b727ba3affc5ea67328175d06691c1122f1e",
+    "hashes": {
+      "Art/Cultures/Russians/Buildings/EarlyModern/Gun Nest/Animations/S/Firing.png": "0a20f8e3b75df15f104670670511e92f3cb0926c4573758685d8a36de55b647c"
+    },
+    "poster": "building-earlymodern-gun-nest-firing-s-portrait.png",
+    "groundBounds": {
+      "x": 25.6,
+      "y": 26.6,
+      "width": 73.6,
+      "height": 75.4
+    }
+  },
+  "building-earlymodern-gun-nest-firing-w": {
+    "clips": {
+      "firing": {
+        "file": "building-earlymodern-gun-nest-firing-w-firing.png",
+        "frames": 36,
+        "columns": 6,
+        "fps": 50,
+        "loop": true,
+        "bounds": {
+          "x": 23,
+          "y": 39,
+          "width": 75,
+          "height": 54
+        },
+        "groundBounds": {
+          "x": 25.6,
+          "y": 26.6,
+          "width": 73.6,
+          "height": 75.4
+        }
+      }
+    },
+    "facing": "W",
+    "source": "Art/Cultures/Russians/Buildings/EarlyModern/Gun Nest/Animations/W/animations.json",
+    "metadataHash": "d5570987ab31dc97e6fd399461119c6e4834de55d0f40a11b956773dba9941c0",
+    "hashes": {
+      "Art/Cultures/Russians/Buildings/EarlyModern/Gun Nest/Animations/W/Firing.png": "25c0bb0d010d7361e2542e8fd57f8a361ae22bb9e226996f146cc8cf62bf5d3b"
+    },
+    "poster": "building-earlymodern-gun-nest-firing-w-portrait.png",
+    "groundBounds": {
+      "x": 25.6,
+      "y": 26.6,
+      "width": 73.6,
+      "height": 75.4
+    }
+  },
+  "building-modern-anti-aircraft-firing-n": {
+    "clips": {
+      "firing": {
+        "file": "building-modern-anti-aircraft-firing-n-firing.png",
+        "frames": 36,
+        "columns": 6,
+        "fps": 50,
+        "loop": true,
+        "bounds": {
+          "x": 31,
+          "y": 39,
+          "width": 66,
+          "height": 61
+        },
+        "groundBounds": {
+          "x": 33.0,
+          "y": 40.6,
+          "width": 63.8,
+          "height": 57.8
+        }
+      }
+    },
+    "facing": "N",
+    "source": "Art/Cultures/Russians/Buildings/Modern/Anti-Aircraft Emplacement/Animations/N/animations.json",
+    "metadataHash": "da4b83fffcf318c512652ff1bf80ab4cfcf56fdc36cf11e545f7c1a61442cd5f",
+    "hashes": {
+      "Art/Cultures/Russians/Buildings/Modern/Anti-Aircraft Emplacement/Animations/N/Firing.png": "6f0f208738e42c5b5c78bcc18cb24616e7864c172b994217e8efdbeca7840223"
+    },
+    "poster": "building-modern-anti-aircraft-firing-n-portrait.png",
+    "groundBounds": {
+      "x": 33.0,
+      "y": 40.6,
+      "width": 63.8,
+      "height": 57.8
+    }
+  },
+  "building-modern-anti-aircraft-firing-e": {
+    "clips": {
+      "firing": {
+        "file": "building-modern-anti-aircraft-firing-e-firing.png",
+        "frames": 36,
+        "columns": 6,
+        "fps": 50,
+        "loop": true,
+        "bounds": {
+          "x": 31,
+          "y": 39,
+          "width": 66,
+          "height": 61
+        },
+        "groundBounds": {
+          "x": 33.0,
+          "y": 40.6,
+          "width": 63.8,
+          "height": 57.8
+        }
+      }
+    },
+    "facing": "E",
+    "source": "Art/Cultures/Russians/Buildings/Modern/Anti-Aircraft Emplacement/Animations/E/animations.json",
+    "metadataHash": "55ca1a77934a4ffbb24c17d83e5816494f118b23657b44d197fe9aa9bf8ddc48",
+    "hashes": {
+      "Art/Cultures/Russians/Buildings/Modern/Anti-Aircraft Emplacement/Animations/E/Firing.png": "acd53a0e93d2f987573558f0bd04b5b730f9556f5862a19382a6a3e6e1d97817"
+    },
+    "poster": "building-modern-anti-aircraft-firing-e-portrait.png",
+    "groundBounds": {
+      "x": 33.0,
+      "y": 40.6,
+      "width": 63.8,
+      "height": 57.8
+    }
+  },
+  "building-modern-anti-aircraft-firing-s": {
+    "clips": {
+      "firing": {
+        "file": "building-modern-anti-aircraft-firing-s-firing.png",
+        "frames": 36,
+        "columns": 6,
+        "fps": 50,
+        "loop": true,
+        "bounds": {
+          "x": 31,
+          "y": 39,
+          "width": 66,
+          "height": 61
+        },
+        "groundBounds": {
+          "x": 33.0,
+          "y": 40.6,
+          "width": 63.8,
+          "height": 57.8
+        }
+      }
+    },
+    "facing": "S",
+    "source": "Art/Cultures/Russians/Buildings/Modern/Anti-Aircraft Emplacement/Animations/S/animations.json",
+    "metadataHash": "16d8183ecc4c4d4981d1b78dcdefc8f977a26dcc9f4ae8ed5274b0f5ad5354a7",
+    "hashes": {
+      "Art/Cultures/Russians/Buildings/Modern/Anti-Aircraft Emplacement/Animations/S/Firing.png": "2aee1e764ae927f1072ca6a833e0834e668eefd547320d5394f9c178c739e10d"
+    },
+    "poster": "building-modern-anti-aircraft-firing-s-portrait.png",
+    "groundBounds": {
+      "x": 33.0,
+      "y": 40.6,
+      "width": 63.8,
+      "height": 57.8
+    }
+  },
+  "building-modern-anti-aircraft-firing-w": {
+    "clips": {
+      "firing": {
+        "file": "building-modern-anti-aircraft-firing-w-firing.png",
+        "frames": 36,
+        "columns": 6,
+        "fps": 50,
+        "loop": true,
+        "bounds": {
+          "x": 31,
+          "y": 39,
+          "width": 66,
+          "height": 61
+        },
+        "groundBounds": {
+          "x": 33.0,
+          "y": 40.6,
+          "width": 63.8,
+          "height": 57.8
+        }
+      }
+    },
+    "facing": "W",
+    "source": "Art/Cultures/Russians/Buildings/Modern/Anti-Aircraft Emplacement/Animations/W/animations.json",
+    "metadataHash": "bc277445985c69d0f9a9d7fc5103973dde855e54c80e04964bb9a6dc44bfe9ed",
+    "hashes": {
+      "Art/Cultures/Russians/Buildings/Modern/Anti-Aircraft Emplacement/Animations/W/Firing.png": "acff5db13eec817bb92e01a8b84ee36daded309dafaa60b7658b10f43db6e5a5"
+    },
+    "poster": "building-modern-anti-aircraft-firing-w-portrait.png",
+    "groundBounds": {
+      "x": 33.0,
+      "y": 40.6,
+      "width": 63.8,
+      "height": 57.8
+    }
+  },
+  "building-modern-gun-nest-firing-n": {
+    "clips": {
+      "firing": {
+        "file": "building-modern-gun-nest-firing-n-firing.png",
+        "frames": 36,
+        "columns": 6,
+        "fps": 50,
+        "loop": true,
+        "bounds": {
+          "x": 25,
+          "y": 24,
+          "width": 78,
+          "height": 70
+        },
+        "groundBounds": {
+          "x": 27.0,
+          "y": 30.6,
+          "width": 74.0,
+          "height": 67.0
+        }
+      }
+    },
+    "facing": "N",
+    "source": "Art/Cultures/Russians/Buildings/Modern/Gun Nest/Animations/N/animations.json",
+    "metadataHash": "9cda79558e3102bdec4b1ab554c44904812ac89a1aa28ef7a4618cd37307c2b8",
+    "hashes": {
+      "Art/Cultures/Russians/Buildings/Modern/Gun Nest/Animations/N/Firing.png": "6bfea9021f572578d726630fb79adf1b6821ea4aafd2559593bd9d5a3e4b29b9"
+    },
+    "poster": "building-modern-gun-nest-firing-n-portrait.png",
+    "groundBounds": {
+      "x": 27.0,
+      "y": 30.6,
+      "width": 74.0,
+      "height": 67.0
+    }
+  },
+  "building-modern-gun-nest-firing-e": {
+    "clips": {
+      "firing": {
+        "file": "building-modern-gun-nest-firing-e-firing.png",
+        "frames": 36,
+        "columns": 6,
+        "fps": 50,
+        "loop": true,
+        "bounds": {
+          "x": 25,
+          "y": 36,
+          "width": 88,
+          "height": 58
+        },
+        "groundBounds": {
+          "x": 27.0,
+          "y": 30.6,
+          "width": 74.0,
+          "height": 67.0
+        }
+      }
+    },
+    "facing": "E",
+    "source": "Art/Cultures/Russians/Buildings/Modern/Gun Nest/Animations/E/animations.json",
+    "metadataHash": "bc987769ed695bde7eeeae509e56e2587735911d1adb9897b97c14d291604463",
+    "hashes": {
+      "Art/Cultures/Russians/Buildings/Modern/Gun Nest/Animations/E/Firing.png": "6aca3bd3fbc742be8319ea5022d6220a1ee12982a9052aa024aabfc9434f70f2"
+    },
+    "poster": "building-modern-gun-nest-firing-e-portrait.png",
+    "groundBounds": {
+      "x": 27.0,
+      "y": 30.6,
+      "width": 74.0,
+      "height": 67.0
+    }
+  },
+  "building-modern-gun-nest-firing-s": {
+    "clips": {
+      "firing": {
+        "file": "building-modern-gun-nest-firing-s-firing.png",
+        "frames": 36,
+        "columns": 6,
+        "fps": 50,
+        "loop": true,
+        "bounds": {
+          "x": 25,
+          "y": 36,
+          "width": 78,
+          "height": 86
+        },
+        "groundBounds": {
+          "x": 27.0,
+          "y": 30.6,
+          "width": 74.0,
+          "height": 67.0
+        }
+      }
+    },
+    "facing": "S",
+    "source": "Art/Cultures/Russians/Buildings/Modern/Gun Nest/Animations/S/animations.json",
+    "metadataHash": "aac1b3600cb983609a09ef36773d1d1d7e75e2ab92fd1ef554ad3a11235c6b42",
+    "hashes": {
+      "Art/Cultures/Russians/Buildings/Modern/Gun Nest/Animations/S/Firing.png": "f31c5e7d7e9a9ec29702bcf9dda7ae17154836e7f5508da4c6544b5809c244d3"
+    },
+    "poster": "building-modern-gun-nest-firing-s-portrait.png",
+    "groundBounds": {
+      "x": 27.0,
+      "y": 30.6,
+      "width": 74.0,
+      "height": 67.0
+    }
+  },
+  "building-modern-gun-nest-firing-w": {
+    "clips": {
+      "firing": {
+        "file": "building-modern-gun-nest-firing-w-firing.png",
+        "frames": 36,
+        "columns": 6,
+        "fps": 50,
+        "loop": true,
+        "bounds": {
+          "x": 15,
+          "y": 36,
+          "width": 88,
+          "height": 64
+        },
+        "groundBounds": {
+          "x": 27.0,
+          "y": 30.6,
+          "width": 74.0,
+          "height": 67.0
+        }
+      }
+    },
+    "facing": "W",
+    "source": "Art/Cultures/Russians/Buildings/Modern/Gun Nest/Animations/W/animations.json",
+    "metadataHash": "edf49fa60cb11fb78eb13c1f19f0d0a6a87012e8da1973729eb2b77abcd303de",
+    "hashes": {
+      "Art/Cultures/Russians/Buildings/Modern/Gun Nest/Animations/W/Firing.png": "6326cf0b8892352f5be4ac425cdd6dbb74e4970423a2cc8fea05d73e90402feb"
+    },
+    "poster": "building-modern-gun-nest-firing-w-portrait.png",
+    "groundBounds": {
+      "x": 27.0,
+      "y": 30.6,
+      "width": 74.0,
+      "height": 67.0
+    }
+  },
+  "unit-portrait-stoneage-infantry": {
+    "file": "unit-portrait-stoneage-infantry.png",
+    "source": "Art/Cultures/Russians/Units/StoneAge/Clubman/Idle-Stylized-Clean-v8.png",
+    "hash": "250379e7dfd298564850547af6f6bb859326ed361620323b0ef32c15d708a0ad"
+  },
+  "unit-portrait-stoneage-archer": {
+    "file": "unit-portrait-stoneage-archer.png",
+    "source": "Art/Cultures/Russians/Units/StoneAge/Javelinist/Idle.png",
+    "hash": "f41c063a07e6b0fb77971cf96539d0f57b4947c119388900ed5b5636592ee79e"
+  },
+  "unit-portrait-stoneage-cavalry": {
+    "file": "unit-portrait-stoneage-cavalry.png",
+    "source": "Art/Cultures/Russians/Units/StoneAge/MountedSpearman/Idle-v2.png",
+    "hash": "7aa435ceaa802e7d6b51b9b9008c8ba286058d023c52c12aa4c9f024b2a36e6d"
+  },
+  "unit-portrait-bronzeage-infantry": {
+    "file": "unit-portrait-bronzeage-infantry.png",
+    "source": "Art/Cultures/Russians/Units/BronzeAge/BronzeAxeman/Idle-BronzeMace-Nadir-v3.png",
+    "hash": "5c9b324646dbaa5412794f747f1362459b6f622fbfff5adb61451af3a8488c11"
+  },
+  "unit-portrait-bronzeage-anticavalry": {
+    "file": "unit-portrait-bronzeage-anticavalry.png",
+    "source": "Art/Cultures/Russians/Units/BronzeAge/BronzeSpearman/Idle-Animated-v1.png",
+    "hash": "7bbaca6c01597bd26e6cf339799336e98b0b537932e1bfc20dd1d65752156a83"
+  },
+  "unit-portrait-bronzeage-archer": {
+    "file": "unit-portrait-bronzeage-archer.png",
+    "source": "Art/Cultures/Russians/Units/BronzeAge/RiverArcher/Idle-Animated-v1.png",
+    "hash": "9d1ba15f6e61eeb1767b645c4e8d144ecab72450b9c7038a9eee543bf65010af"
+  },
+  "unit-portrait-bronzeage-cavalry": {
+    "file": "unit-portrait-bronzeage-cavalry.png",
+    "source": "Art/Cultures/Russians/Units/BronzeAge/LightCavalry/Idle-Animated-v1.png",
+    "hash": "d8de09cfa7abc25648b500593f123b08fb316ccd3b202e0503d2aeef30e0860c"
+  },
+  "unit-portrait-classicalage-infantry": {
+    "file": "unit-portrait-classicalage-infantry.png",
+    "source": "Art/Cultures/Russians/Units/ClassicalAge/ShieldWarrior/Idle-Axe-Consistent-v2.png",
+    "hash": "52254d749625badfe4cb8fc87f307ec64aee97f88e1b5ae365bd4c601aad3ffd"
+  },
+  "unit-portrait-classicalage-anticavalry": {
+    "file": "unit-portrait-classicalage-anticavalry.png",
+    "source": "Art/Cultures/Russians/Units/ClassicalAge/Pikeman/Idle-Smooth-v2.png",
+    "hash": "e45f7a524402d6ebbc0297b158656e00361b56eac6d4d0231ec4ebd6450884bb"
+  },
+  "unit-portrait-classicalage-archer": {
+    "file": "unit-portrait-classicalage-archer.png",
+    "source": "Art/Cultures/Russians/Units/ClassicalAge/RecurveArcher/Idle-Animated-v1.png",
+    "hash": "78370d2c2bc2d451baebc096582383b35eef0b3515e7f73e7728f850ba3f18b6"
+  },
+  "unit-portrait-classicalage-cavalry": {
+    "file": "unit-portrait-classicalage-cavalry.png",
+    "source": "Art/Cultures/Russians/Units/ClassicalAge/LightCavalry/Idle-Animated-v1.png",
+    "hash": "bca6c3c6a00ca15e1dc984f4ce5b17afbdd64cc7425aa150789b62ab5f1b7c74"
+  },
+  "unit-portrait-classicalage-rangedcavalry": {
+    "file": "unit-portrait-classicalage-rangedcavalry.png",
+    "source": "Art/Cultures/Russians/Units/ClassicalAge/HorseArcher/Idle-Animated-v1.png",
+    "hash": "baa90e503c54801fafc8d24402b4ca22b7a97ed9c6d0e0d115b16dfb9a5d33f6"
+  },
+  "unit-portrait-earlymedieval-infantry": {
+    "file": "unit-portrait-earlymedieval-infantry.png",
+    "source": "Art/Cultures/Russians/Units/EarlyMedieval/Axeman/Idle-Animated-v2.png",
+    "hash": "084f1b8b538f1879f54bcf0995493893109b764944eb39a4acd52f8427d34f1a"
+  },
+  "unit-portrait-earlymedieval-anticavalry": {
+    "file": "unit-portrait-earlymedieval-anticavalry.png",
+    "source": "Art/Cultures/Russians/Units/EarlyMedieval/MailSpearman/Idle-Animated-v1.png",
+    "hash": "ee918aee9331bb73a8e9156bb7a592adddf24eea8115365fe0dbd6f0aa8b7b53"
+  },
+  "unit-portrait-earlymedieval-archer": {
+    "file": "unit-portrait-earlymedieval-archer.png",
+    "source": "Art/Cultures/Russians/Units/EarlyMedieval/RusBowMan/Idle-Animated-v1.png",
+    "hash": "4d5bdb6e2a42a4caf968b8d09341f6aad8fa8f3f229e00205cdbda76d25bbdbc"
+  },
+  "unit-portrait-earlymedieval-cavalry": {
+    "file": "unit-portrait-earlymedieval-cavalry.png",
+    "source": "Art/Cultures/Russians/Units/EarlyMedieval/LightCavalry/Idle-Animated-v1.png",
+    "hash": "ae6c90c7896829ba55097de48e04d24f41bb177b42d5dc5d4b65340df0623c3a"
+  },
+  "unit-portrait-earlymedieval-heavycavalry": {
+    "file": "unit-portrait-earlymedieval-heavycavalry.png",
+    "source": "Art/Cultures/Russians/Units/EarlyMedieval/Druzhina/Idle-Animated-v1.png",
+    "hash": "71a364f5ba188838151236f800b17075ae9d67cbce9a3fc1ccdbab5e9c1ab300"
+  },
+  "unit-portrait-earlymedieval-rangedcavalry": {
+    "file": "unit-portrait-earlymedieval-rangedcavalry.png",
+    "source": "Art/Cultures/Russians/Units/EarlyMedieval/HorseArcher/Idle-Registered-v6.png",
+    "hash": "d089c345f123ca31e776fdc6f50e033c79cc70b6eeb2a5033332b09b11551579"
+  },
+  "unit-portrait-latemedieval-anticavalry": {
+    "file": "unit-portrait-latemedieval-anticavalry.png",
+    "source": "Art/Cultures/Russians/Units/LateMedieval/PlateSpearman/Idle-Animated-v1.png",
+    "hash": "51c6cdb4a0a1c37172cf69db230d2c8e58fa9a8819c491db81003874937b71d3"
+  },
+  "unit-portrait-latemedieval-archer": {
+    "file": "unit-portrait-latemedieval-archer.png",
+    "source": "Art/Cultures/Russians/Units/LateMedieval/RusCrossbowman/idle-motion-v6.png",
+    "hash": "839e8094d930255bb6089e9c67bcc4db2b439b42dc02d042f7b00d2c3156ba0b"
+  },
+  "unit-portrait-latemedieval-cavalry": {
+    "file": "unit-portrait-latemedieval-cavalry.png",
+    "source": "Art/Cultures/Russians/Units/LateMedieval/CossackRider/idle-Registered-v1.png",
+    "hash": "02ff67d88b7b0ebb567dd20e5385fac6e125bc83100441021e27888adf7a130b"
+  },
+  "unit-portrait-latemedieval-heavycavalry": {
+    "file": "unit-portrait-latemedieval-heavycavalry.png",
+    "source": "Art/Cultures/Russians/Units/LateMedieval/Boyar/idle-Registered-v1.png",
+    "hash": "50e3809879e45fb1b8f443d747900ce748bb63918d8734342b3da8ded5b3e987"
+  },
+  "unit-portrait-latemedieval-rangedcavalry": {
+    "file": "unit-portrait-latemedieval-rangedcavalry.png",
+    "source": "Art/Cultures/Russians/Units/LateMedieval/HorseArcher/Idle-Registered-v1.png",
+    "hash": "3a85b52fae7114d263ff4267021bd4ec422e857bb3172c54bcc5ef1779b42f2f"
+  },
+  "unit-portrait-earlymodern-anticavalry": {
+    "file": "unit-portrait-earlymodern-anticavalry.png",
+    "source": "Art/Cultures/Russians/Units/EarlyModern/NapoleonicPikeman/Idle-v1.png",
+    "hash": "f4c38bb55e3800b5971b6c1e4b99956730df1bb836ef18e41d0971362f2d38a1"
+  },
+  "unit-portrait-napoleonic-archer": {
+    "file": "unit-portrait-napoleonic-archer.png",
+    "source": "Art/Cultures/Russians/Units/EarlyModern/RusMusketeer/idle-v2.png",
+    "hash": "48a188f977ba4d09e33d1a5ec44c15747e47187d80bed4377259ce9205555620"
+  },
+  "unit-portrait-earlymodern-heavycavalry": {
+    "file": "unit-portrait-earlymodern-heavycavalry.png",
+    "source": "Art/Cultures/Russians/Units/EarlyModern/Cuirassier/idle-Registered-v1.png",
+    "hash": "2eacfe6189789ba0b13a07334a81362e4961129990158152ee70390c2c0d1896"
+  },
+  "unit-portrait-earlymodern-rangedcavalry": {
+    "file": "unit-portrait-earlymodern-rangedcavalry.png",
+    "source": "Art/Cultures/Russians/Units/EarlyModern/MountedMusketeer/Idle-Animated-Registered-v1.png",
+    "hash": "04deee4000d41db99d754d93c3407d524cab5cd89f29558f8d762b537e9e89d9"
+  },
+  "unit-portrait-earlymodern-archer": {
+    "file": "unit-portrait-earlymodern-archer.png",
+    "source": "Art/Cultures/Russians/Units/Modern/SovietMachineGunner/idle-v2.png",
+    "hash": "ab236266932aa618486cd630aa59c56242e40f4c96fcd58e066686ab96a31aa0"
+  },
+  "unit-portrait-modern-archer": {
+    "file": "unit-portrait-modern-archer.png",
+    "source": "Art/Cultures/Russians/Units/Modern/RPL20Gunner/idle-v2.png",
+    "hash": "f0ba09d6a7c8043da14b1bcf476717382d8b36b9b707c1b7288950fd4c902bc7"
+  }
+}

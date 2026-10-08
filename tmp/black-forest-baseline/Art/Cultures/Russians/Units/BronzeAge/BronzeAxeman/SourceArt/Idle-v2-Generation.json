@@ -1,0 +1,10 @@
+{
+  "id": "idle-shield-padding-v2",
+  "file": "Idle-v2.png",
+  "prompt": "Use case: precise-object-edit\nEdit this Russian Bronze Axeman idle sheet for shield readability and clean cell padding. Preserve exact man, red/cream costume, fur cap with bronze band, bronze wrist guards, broad bronze axe, boots, straight vertical overhead screen-down camera, six breathing poses and painted style. Change ONLY the SHIELD orientation and uniform sprite padding.\nThe shield is ROUND, not tall/oval. Tilt the same timber shield face UP toward the overhead camera, held on the left forearm at SCREEN-RIGHT. It should read as a broad near-circular wooden disk, about140px wide by150px tall before scaling, with a small bronze central boss, radial timber/plank texture and leather-bound rim. Keep its face fully visible beside the torso, round silhouette clear at32/48/64px. No giant upright elliptical shield, no shield on the wrong arm, no second shield. The round shield remains firmly held and does not cover the soldier's cap or axe arm. Do not change the axe into a sword.\nUniformly redraw all six COMPLETE silhouettes slightly smaller at90 percent of current body size, centered around the same foot/body root within EACH cell. Output exactly1536x1024 RGBA, exact3columns x2rows, six512px cells. Each complete man+axe+round shield fits within a centered400x400 box leaving at least56px empty transparent padding on ALL edges of EVERY cell. Keep the same body scale and root across six poses, not per-frame fitting. Restore any cropped fingertips or axe tip. No cross-cell pixels or neighbors.\nTRUE transparent background, NO haze, vignette, ground shadow, glow, labels, grid or blood. Same subtle idle breathing/weight shift in chronological reading order; six distinct poses, with frame6 closing smoothly to frame1.",
+  "references": [
+    "Idle.png"
+  ],
+  "generatedSource": "C:/Users/Damien/.codex/generated_images/01a0fea1-c63f-7343-92ca-6c21cc1c4296/exec-83bd462c-c592-41d4-8872-9545804f40db.png",
+  "status": "selected"
+}

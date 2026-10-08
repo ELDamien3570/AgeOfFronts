@@ -1,0 +1,125 @@
+{
+  "date": "2026-10-07",
+  "mode": "built-in-imagegen",
+  "selectedIdle": "Idle-v1.png",
+  "equipmentReference": "https://ar.culture.ru/en/subject/ryadovoy-kirasir",
+  "userApproval": "Idle-v1 approved; nine animations pending review.",
+  "ageCatalogNote": "Existing art uses EarlyModern for the Napoleonic package, consistent with the current planning artwork mappings.",
+  "records": [
+    {
+      "date": "2026-10-07",
+      "mode": "built-in-imagegen",
+      "prompt": "Create one Russian Napoleonic circa 1812 CUIRASSIER cavalry idle sprite, single rider on horse, transparent background. Reference image supplies ONLY the smooth painted strategy-game style, compact natural horse anatomy, and directly overhead camera. Replace all medieval equipment and bow. Near vertical overhead orthographic viewpoint: see helmet crown, shoulder tops and horse back, torso strongly foreshortened, no face visible. Facing screen bottom, tail at top. Rider has 1808-style black lacquered leather helmet with brass front plate and black horsehair crest running along crown; black-painted iron cuirass breast/back plates secured by brass-scaled shoulder straps; white wool short uniform jacket with restrained red collar/cuffs, white or pale gray riding trousers, tall black leather riding boots, white gloves. No mail, pauldrons, fur trim, shield, bow or lance. Right hand SCREEN LEFT holds a STRAIGHT cavalry broadsword with brass basket guard, relaxed upright at rest alongside right shoulder, not thrusting; left hand SCREEN RIGHT holds reins. Sword is straight broad steel blade not curved saber, visible complete within frame. Compact sturdy bay horse with black mane/tail, normal narrow head and clear paired ears, natural saddle and stirrups, brown leather harness, muted dark red saddlecloth with thin pale edging, period saddle roll behind rider. Horse has NO armor. Correct visible rump separate above rider, neck/head below rider, separate four legs, horse smaller relative to rider, retain realistic structure. Calm stationary pose. Strong readable white sleeves versus black breastplate silhouette. Match polished warm painterly game finish of reference; no grainy texture, no heavy contour outlines or glow, no ground shadow, no scenery, no text. Entire unit fully inside generous transparent margins. Single portrait idle frame.",
+      "generatedSource": "C:\\Users\\Damien\\.codex\\generated_images\\01a11641-9e1b-7c81-be76-c9edd53ef182\\exec-c6bbf293-4ba0-43de-b2da-c1ef7b06f3d0.png",
+      "references": [
+        "C:/Users/Damien/Documents/GitHub/AgeOfFronts/AgeOfFronts/Art/Cultures/Russians/Units/EarlyMedieval/HorseArcher/Idle-v3.png"
+      ],
+      "equipmentReference": "https://ar.culture.ru/en/subject/ryadovoy-kirasir",
+      "revisionReason": "First Napoleonic Russian cuirassier idle for visual approval."
+    },
+    {
+      "date": "2026-10-07",
+      "mode": "built-in-imagegen",
+      "file": "idle-v1.png",
+      "prompt": "Generate a 1536x1024 transparent sprite atlas with exactly SIX sequential animation frames arranged 3 columns by 2 rows, read left-to-right then next row. Each complete pose isolated inside its own 512x512 cell, at consistent scale ~360px horse/rider length, ample transparent margins including full sword, fixed saddle position. Preserve approved reference identity EXACTLY: Russian Napoleonic cuirassier, black cuirass, white jacket with red cuffs, brass shoulder scales, black crested helmet, white gloves, pale trousers and black tall boots, bay horse without armor, red edged saddlecloth, pale saddle roll. Direct overhead camera with helmet crown visible, facing screen-bottom, horse tail top. Right hand SCREEN LEFT carries rigid STRAIGHT steel cavalry broadsword with brass basket guard; left hand SCREEN RIGHT reins. No shield or extra weapons. Match reference smooth painterly finish, palette and lighting, no grain or bold outlines. Transparent background, no glow/shadows/text/grid lines. Six coherent consecutive poses for: Quiet breathing idle loop. Nearly fixed rider, horse head and feet, only slight chest breathing, subtle ears and tail. No sway or stepping.",
+      "generatedSource": "C:\\Users\\Damien\\.codex\\generated_images\\01a11641-9e1b-7c81-be76-c9edd53ef182\\exec-5eb2db3d-b0b2-4828-a8a0-00a9ab6f66bb.png",
+      "references": [
+        "C:/Users/Damien/Documents/GitHub/AgeOfFronts/AgeOfFronts/Art/Cultures/Russians/Units/EarlyModern/Cuirassier/Idle-v1.png"
+      ],
+      "nativeCopy": "SourceArt\\Native-idle-v1.png"
+    },
+    {
+      "date": "2026-10-07",
+      "mode": "built-in-imagegen",
+      "file": "walk-v1.png",
+      "prompt": "Generate a 1536x1024 transparent sprite atlas with exactly SIX sequential animation frames arranged 3 columns by 2 rows, read left-to-right then next row. Each complete pose isolated inside its own 512x512 cell, at consistent scale ~360px horse/rider length, ample transparent margins including full sword, fixed saddle position. Preserve approved reference identity EXACTLY: Russian Napoleonic cuirassier, black cuirass, white jacket with red cuffs, brass shoulder scales, black crested helmet, white gloves, pale trousers and black tall boots, bay horse without armor, red edged saddlecloth, pale saddle roll. Direct overhead camera with helmet crown visible, facing screen-bottom, horse tail top. Right hand SCREEN LEFT carries rigid STRAIGHT steel cavalry broadsword with brass basket guard; left hand SCREEN RIGHT reins. No shield or extra weapons. Match reference smooth painterly finish, palette and lighting, no grain or bold outlines. Transparent background, no glow/shadows/text/grid lines. Six coherent consecutive poses for: Natural four-beat walk in place with six successive leg positions. Correct hinged horse legs and hooves alternating support and lift, saddle horizontally fixed, minimal sideways sway. Rider holds straight sword upright at rest.",
+      "generatedSource": "C:\\Users\\Damien\\.codex\\generated_images\\01a11641-9e1b-7c81-be76-c9edd53ef182\\exec-f5b2550b-1095-447d-a826-3d557cdc94ac.png",
+      "references": [
+        "C:/Users/Damien/Documents/GitHub/AgeOfFronts/AgeOfFronts/Art/Cultures/Russians/Units/EarlyModern/Cuirassier/Idle-v1.png"
+      ],
+      "nativeCopy": "SourceArt\\Native-walk-v1.png"
+    },
+    {
+      "date": "2026-10-07",
+      "mode": "built-in-imagegen",
+      "file": "charge-v1.png",
+      "prompt": "Generate a 1536x1024 transparent sprite atlas with exactly SIX sequential animation frames arranged 3 columns by 2 rows, read left-to-right then next row. Each complete pose isolated inside its own 512x512 cell, at consistent scale ~360px horse/rider length, ample transparent margins including full sword, fixed saddle position. Preserve approved reference identity EXACTLY: Russian Napoleonic cuirassier, black cuirass, white jacket with red cuffs, brass shoulder scales, black crested helmet, white gloves, pale trousers and black tall boots, bay horse without armor, red edged saddlecloth, pale saddle roll. Direct overhead camera with helmet crown visible, facing screen-bottom, horse tail top. Right hand SCREEN LEFT carries rigid STRAIGHT steel cavalry broadsword with brass basket guard; left hand SCREEN RIGHT reins. No shield or extra weapons. Match reference smooth painterly finish, palette and lighting, no grain or bold outlines. Transparent background, no glow/shadows/text/grid lines. Six coherent consecutive poses for: Natural gallop loop in place, hind propulsion, gathered legs, suspension, foreleg reach/landing and recovery. Anatomically coherent legs, no sideways paddling, steady horizontal saddle and mild vertical bob. Rider sword poised ready.",
+      "generatedSource": "C:\\Users\\Damien\\.codex\\generated_images\\01a11641-9e1b-7c81-be76-c9edd53ef182\\exec-1e939891-018f-4574-9e89-118b6a44faa8.png",
+      "references": [
+        "C:/Users/Damien/Documents/GitHub/AgeOfFronts/AgeOfFronts/Art/Cultures/Russians/Units/EarlyModern/Cuirassier/Idle-v1.png"
+      ],
+      "nativeCopy": "SourceArt\\Native-charge-v1.png"
+    },
+    {
+      "date": "2026-10-07",
+      "mode": "built-in-imagegen",
+      "file": "attack-v1.png",
+      "prompt": "Generate a 1536x1024 transparent sprite atlas with exactly SIX sequential animation frames arranged 3 columns by 2 rows, read left-to-right then next row. Each complete pose isolated inside its own 512x512 cell, at consistent scale ~360px horse/rider length, ample transparent margins including full sword, fixed saddle position. Preserve approved reference identity EXACTLY: Russian Napoleonic cuirassier, black cuirass, white jacket with red cuffs, brass shoulder scales, black crested helmet, white gloves, pale trousers and black tall boots, bay horse without armor, red edged saddlecloth, pale saddle roll. Direct overhead camera with helmet crown visible, facing screen-bottom, horse tail top. Right hand SCREEN LEFT carries rigid STRAIGHT steel cavalry broadsword with brass basket guard; left hand SCREEN RIGHT reins. No shield or extra weapons. Match reference smooth painterly finish, palette and lighting, no grain or bold outlines. Transparent background, no glow/shadows/text/grid lines. Six coherent consecutive poses for: One forward mounted broadsword CUT: upright sword ready; raise right arm and blade; swing blade forward/downward beside horse neck on screen-left; complete downward cutting strike; withdraw blade; upright ready recovery. Keep rigid straight blade, same length, basket hilt connected to right gloved hand in every frame. Left hand reins.",
+      "generatedSource": "C:\\Users\\Damien\\.codex\\generated_images\\01a11641-9e1b-7c81-be76-c9edd53ef182\\exec-50d3fbcf-18c7-43f3-891a-599c9e7f9211.png",
+      "references": [
+        "C:/Users/Damien/Documents/GitHub/AgeOfFronts/AgeOfFronts/Art/Cultures/Russians/Units/EarlyModern/Cuirassier/Idle-v1.png"
+      ],
+      "nativeCopy": "SourceArt\\Native-attack-v1.png"
+    },
+    {
+      "date": "2026-10-07",
+      "mode": "built-in-imagegen",
+      "file": "charge-attack-v1.png",
+      "prompt": "Generate a 1536x1024 transparent sprite atlas with exactly SIX sequential animation frames arranged 3 columns by 2 rows, read left-to-right then next row. Each complete pose isolated inside its own 512x512 cell, at consistent scale ~360px horse/rider length, ample transparent margins including full sword, fixed saddle position. Preserve approved reference identity EXACTLY: Russian Napoleonic cuirassier, black cuirass, white jacket with red cuffs, brass shoulder scales, black crested helmet, white gloves, pale trousers and black tall boots, bay horse without armor, red edged saddlecloth, pale saddle roll. Direct overhead camera with helmet crown visible, facing screen-bottom, horse tail top. Right hand SCREEN LEFT carries rigid STRAIGHT steel cavalry broadsword with brass basket guard; left hand SCREEN RIGHT reins. No shield or extra weapons. Match reference smooth painterly finish, palette and lighting, no grain or bold outlines. Transparent background, no glow/shadows/text/grid lines. Six coherent consecutive poses for: Forward cavalry sword THRUST: begin upright ready; lower straight broadsword and lean slightly forward; extend right arm aiming point toward screen-bottom alongside horse neck screen-left; fully extended forward thrust past horse shoulder without stabbing horse; retract; upright sword ready. Strong foreshortening when blade points downward into forward battlefield direction. Same rigid straight blade and basket hilt every frame.",
+      "generatedSource": "C:\\Users\\Damien\\.codex\\generated_images\\01a11641-9e1b-7c81-be76-c9edd53ef182\\exec-286995b8-d6ea-49bc-a000-ba7fd17cd932.png",
+      "references": [
+        "C:/Users/Damien/Documents/GitHub/AgeOfFronts/AgeOfFronts/Art/Cultures/Russians/Units/EarlyModern/Cuirassier/Idle-v1.png"
+      ],
+      "nativeCopy": "SourceArt\\Native-charge-attack-v1.png"
+    },
+    {
+      "date": "2026-10-07",
+      "mode": "built-in-imagegen",
+      "file": "hit-v1.png",
+      "prompt": "Generate a 1536x1024 transparent sprite atlas with exactly SIX sequential animation frames arranged 3 columns by 2 rows, read left-to-right then next row. Each complete pose isolated inside its own 512x512 cell, at consistent scale ~360px horse/rider length, ample transparent margins including full sword, fixed saddle position. Preserve approved reference identity EXACTLY: Russian Napoleonic cuirassier, black cuirass, white jacket with red cuffs, brass shoulder scales, black crested helmet, white gloves, pale trousers and black tall boots, bay horse without armor, red edged saddlecloth, pale saddle roll. Direct overhead camera with helmet crown visible, facing screen-bottom, horse tail top. Right hand SCREEN LEFT carries rigid STRAIGHT steel cavalry broadsword with brass basket guard; left hand SCREEN RIGHT reins. No shield or extra weapons. Match reference smooth painterly finish, palette and lighting, no grain or bold outlines. Transparent background, no glow/shadows/text/grid lines. Six coherent consecutive poses for: Small hit reaction: upright ready; torso recoils; right arm braces with sword; horse briefly flinches; settle; upright ready. Controlled nonlethal recoil, no damage overlay.",
+      "generatedSource": "C:\\Users\\Damien\\.codex\\generated_images\\01a11641-9e1b-7c81-be76-c9edd53ef182\\exec-d9e2c115-ace3-491c-ac9c-3098e02d8a90.png",
+      "references": [
+        "C:/Users/Damien/Documents/GitHub/AgeOfFronts/AgeOfFronts/Art/Cultures/Russians/Units/EarlyModern/Cuirassier/Idle-v1.png"
+      ],
+      "nativeCopy": "SourceArt\\Native-hit-v1.png"
+    },
+    {
+      "date": "2026-10-07",
+      "mode": "built-in-imagegen",
+      "file": "charged-impact-v1.png",
+      "prompt": "Generate a 1536x1024 transparent sprite atlas with exactly SIX sequential animation frames arranged 3 columns by 2 rows, read left-to-right then next row. Each complete pose isolated inside its own 512x512 cell, at consistent scale ~360px horse/rider length, ample transparent margins including full sword, fixed saddle position. Preserve approved reference identity EXACTLY: Russian Napoleonic cuirassier, black cuirass, white jacket with red cuffs, brass shoulder scales, black crested helmet, white gloves, pale trousers and black tall boots, bay horse without armor, red edged saddlecloth, pale saddle roll. Direct overhead camera with helmet crown visible, facing screen-bottom, horse tail top. Right hand SCREEN LEFT carries rigid STRAIGHT steel cavalry broadsword with brass basket guard; left hand SCREEN RIGHT reins. No shield or extra weapons. Match reference smooth painterly finish, palette and lighting, no grain or bold outlines. Transparent background, no glow/shadows/text/grid lines. Six coherent consecutive poses for: Distinct heavy charge impact: upright; rider recoils and reins pull; horse forelegs buckle; mount staggers with rider bracing; horse regains stance; upright recovery. Do not dismount or invert.",
+      "generatedSource": "C:\\Users\\Damien\\.codex\\generated_images\\01a11641-9e1b-7c81-be76-c9edd53ef182\\exec-9bbc6f6b-e61c-445d-873a-f425abd32b20.png",
+      "references": [
+        "C:/Users/Damien/Documents/GitHub/AgeOfFronts/AgeOfFronts/Art/Cultures/Russians/Units/EarlyModern/Cuirassier/Idle-v1.png"
+      ],
+      "nativeCopy": "SourceArt\\Native-charged-impact-v1.png"
+    },
+    {
+      "date": "2026-10-07",
+      "mode": "built-in-imagegen",
+      "file": "death-v1.png",
+      "prompt": "Generate a 1536x1024 transparent sprite atlas with exactly SIX sequential animation frames arranged 3 columns by 2 rows, read left-to-right then next row. Each complete pose isolated inside its own 512x512 cell, at consistent scale ~360px horse/rider length, ample transparent margins including full sword, fixed saddle position. Preserve approved reference identity EXACTLY: Russian Napoleonic cuirassier, black cuirass, white jacket with red cuffs, brass shoulder scales, black crested helmet, white gloves, pale trousers and black tall boots, bay horse without armor, red edged saddlecloth, pale saddle roll. Direct overhead camera with helmet crown visible, facing screen-bottom, horse tail top. Right hand SCREEN LEFT carries rigid STRAIGHT steel cavalry broadsword with brass basket guard; left hand SCREEN RIGHT reins. No shield or extra weapons. Match reference smooth painterly finish, palette and lighting, no grain or bold outlines. Transparent background, no glow/shadows/text/grid lines. Six coherent consecutive poses for: Horse and rider fall TOGETHER: mounted upright; horse knees buckle; rider and mount lean/collapse screen-left; both fall onto their side; settle on ground; final dead horse and rider. Real articulated fall, no upright sprite rotation shortcut. Final two frames maintain same corpse orientation. Retain equipment and recognizable unarmored horse.",
+      "generatedSource": "C:\\Users\\Damien\\.codex\\generated_images\\01a11641-9e1b-7c81-be76-c9edd53ef182\\exec-034c352c-5549-4947-b1ce-7722d7105c38.png",
+      "references": [
+        "C:/Users/Damien/Documents/GitHub/AgeOfFronts/AgeOfFronts/Art/Cultures/Russians/Units/EarlyModern/Cuirassier/Idle-v1.png"
+      ],
+      "nativeCopy": "SourceArt\\Native-death-v1.png"
+    },
+    {
+      "date": "2026-10-07",
+      "mode": "built-in-imagegen",
+      "file": "death-thrown-v1.png",
+      "prompt": "Generate a 1536x1024 transparent sprite atlas with exactly SIX sequential animation frames arranged 3 columns by 2 rows, read left-to-right then next row. Each complete pose isolated inside its own 512x512 cell, at consistent scale ~360px horse/rider length, ample transparent margins including full sword, fixed saddle position. Preserve approved reference identity EXACTLY: Russian Napoleonic cuirassier, black cuirass, white jacket with red cuffs, brass shoulder scales, black crested helmet, white gloves, pale trousers and black tall boots, bay horse without armor, red edged saddlecloth, pale saddle roll. Direct overhead camera with helmet crown visible, facing screen-bottom, horse tail top. Right hand SCREEN LEFT carries rigid STRAIGHT steel cavalry broadsword with brass basket guard; left hand SCREEN RIGHT reins. No shield or extra weapons. Match reference smooth painterly finish, palette and lighting, no grain or bold outlines. Transparent background, no glow/shadows/text/grid lines. Six coherent consecutive poses for: Distinct THROWN RIDER death: upright; horse stumbles; rider thrown clear toward screen-right; rider lands beside collapsing horse; both settle lying on ground; final corpses in same orientation. One horse and one rider only, no floating duplicate body, no inversion at end.",
+      "generatedSource": "C:\\Users\\Damien\\.codex\\generated_images\\01a11641-9e1b-7c81-be76-c9edd53ef182\\exec-f5481ace-87f8-439f-ad1b-cab108adecb2.png",
+      "references": [
+        "C:/Users/Damien/Documents/GitHub/AgeOfFronts/AgeOfFronts/Art/Cultures/Russians/Units/EarlyModern/Cuirassier/Idle-v1.png"
+      ],
+      "nativeCopy": "SourceArt\\Native-death-thrown-v1.png"
+    },
+    {
+      "file": "SourceArt/Steady-Motions-v2.json",
+      "method": "Horizontal whole-pose registration",
+      "userRequest": "Less lateral movement in walk, broadsword cut, charge thrust, get hit and get charged."
+    }
+  ]
+}

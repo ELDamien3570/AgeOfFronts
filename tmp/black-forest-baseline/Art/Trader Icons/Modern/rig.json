@@ -1,0 +1,138 @@
+{
+  "source": "generated/Trader_Modern.png",
+  "sourceSha256": "4386e82d9c5e9dddcd4bc5ca3140fc2b275d938e69d17d19bdab9c585fdeeef2",
+  "generatedSize": [
+    1254,
+    1254
+  ],
+  "nativeSize": [
+    1254,
+    1254
+  ],
+  "placement": {
+    "crop": [
+      371,
+      3,
+      883,
+      1252
+    ],
+    "scale": 0.9127301841473179,
+    "offset": [
+      393,
+      57
+    ],
+    "generatedSize": [
+      1254,
+      1254
+    ]
+  },
+  "layers": [
+    {
+      "kind": "suspension",
+      "rect": [
+        445,
+        52,
+        808,
+        840
+      ],
+      "name": "cargo-box-suspension",
+      "phase": 0,
+      "feather": 18,
+      "maskFile": "layers/cargo-box-suspension-mask.png",
+      "paintFile": "layers/cargo-box-suspension.png"
+    },
+    {
+      "kind": "body",
+      "rect": [
+        440,
+        838,
+        809,
+        1202
+      ],
+      "name": "cab-engine-and-suspension",
+      "phase": 1.5707963267948966,
+      "feather": 12,
+      "maskFile": "layers/cab-engine-and-suspension-mask.png",
+      "paintFile": "layers/cab-engine-and-suspension.png"
+    },
+    {
+      "kind": "tread",
+      "rect": [
+        421,
+        340,
+        438,
+        452
+      ],
+      "name": "truck-tire-1",
+      "feather": 3,
+      "maskFile": "layers/truck-tire-1-mask.png",
+      "paintFile": "layers/truck-tire-1.png"
+    },
+    {
+      "kind": "tread",
+      "rect": [
+        818,
+        340,
+        832,
+        452
+      ],
+      "name": "truck-tire-2",
+      "feather": 3,
+      "maskFile": "layers/truck-tire-2-mask.png",
+      "paintFile": "layers/truck-tire-2.png"
+    },
+    {
+      "kind": "tread",
+      "rect": [
+        420,
+        494,
+        437,
+        605
+      ],
+      "name": "truck-tire-3",
+      "feather": 3,
+      "maskFile": "layers/truck-tire-3-mask.png",
+      "paintFile": "layers/truck-tire-3.png"
+    },
+    {
+      "kind": "tread",
+      "rect": [
+        819,
+        494,
+        832,
+        605
+      ],
+      "name": "truck-tire-4",
+      "feather": 3,
+      "maskFile": "layers/truck-tire-4-mask.png",
+      "paintFile": "layers/truck-tire-4.png"
+    },
+    {
+      "kind": "tread",
+      "rect": [
+        441,
+        1025,
+        459,
+        1128
+      ],
+      "name": "truck-tire-5",
+      "feather": 3,
+      "maskFile": "layers/truck-tire-5-mask.png",
+      "paintFile": "layers/truck-tire-5.png"
+    },
+    {
+      "kind": "tread",
+      "rect": [
+        775,
+        1025,
+        791,
+        1128
+      ],
+      "name": "truck-tire-6",
+      "feather": 3,
+      "maskFile": "layers/truck-tire-6-mask.png",
+      "paintFile": "layers/truck-tire-6.png"
+    }
+  ],
+  "authoring": "Local mesh deformation of original painted pixels; limbs remain connected, wagon cargo stays secured, and overhead wheel treads retain their silhouette."
+}

@@ -86,11 +86,11 @@ export function technologyDetails(technology: Technology): string[] {
       `Buildings: ${buildings.map((type) => BUILDING_RULES[type].name).join(", ")}`,
     );
   for (const unit of UNITS.filter((unit) => unit.technologyId === id)) {
-    const seconds = unit.tags.includes("vehicle")
+    const seconds = unit.trainingSeconds ?? (unit.tags.includes("vehicle")
       ? RECRUITMENT_SECONDS.vehicle
       : unit.tags.includes("siege")
         ? RECRUITMENT_SECONDS.siege
-        : RECRUITMENT_SECONDS[unit.line];
+        : RECRUITMENT_SECONDS[unit.line]);
     lines.push(
       `${unit.name}: ${cost(unit.cost)} · ${seconds}s recruitment at ${BUILDING_RULES[unit.building].name}`,
     );
@@ -165,7 +165,7 @@ export function technologyDetails(technology: Technology): string[] {
     );
   if (id === "stoneage-horsemanship")
     lines.push("Horse breeding: 1 horse/4s per completed owned stable");
-  if (tree === "warfare" && slot === 4) {
+  if (tree === "warfare" && slot === 4 && age !== "Modern") {
     const units = UNITS.filter((unit) => unit.age === age);
     lines.push(
       `All ${AGE_NAMES[ageIndex]} ground units: +10% base attack (rounded) · reload ×0.95 (rounded to 0.05s)`,
@@ -174,7 +174,18 @@ export function technologyDetails(technology: Technology): string[] {
       `Melee/ranged armour bonus: ${units.map((unit) => `${unit.name} +${unitEffects(unit, [id]).meleeArmour - unit.meleeArmour} points`).join("; ")}`,
     );
   }
-  if (tree === "naval" && slot === 4) {
+  if (["russian-infantry-radios", "russian-infantry-optics", "russian-tank-armour", "russian-tank-fire-control"].includes(id)) {
+    for (const unit of UNITS) {
+      const upgraded = unitEffects(unit, [id]);
+      if (upgraded.attack.damage !== unit.attack.damage)
+        lines.push(`${unit.name}: ${unit.attack.damage} -> ${upgraded.attack.damage} base attack`);
+      if (upgraded.healthPercent !== unit.healthPercent)
+        lines.push(`${unit.name}: +20% durability`);
+    }
+  }
+  if (id === "russian-naval-missiles")
+    lines.push("Modern warships: +15% base attack and +1 tile range");
+  if (tree === "naval" && slot === 4 && age !== "Modern") {
     for (const vessel of VESSELS.filter(
       (vessel) => vessel.age === age && vessel.kind !== "trade",
     )) {
@@ -223,5 +234,5 @@ export function technologyDetails(technology: Technology): string[] {
         `${name === "hydrogen" ? "Hydrogen bomb" : name.toUpperCase()}: ${payload.warheads ? `${payload.warheads} warheads × ${number(payload.damage / payload.warheads)}` : number(payload.damage)} attack · ${payload.blastRadius / FIXED}-tile blast radius${payload.warheads ? " per warhead" : ""}`,
       );
   }
-  return lines;
+  return lines.length ? lines : [technology.description];
 }

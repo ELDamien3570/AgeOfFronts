@@ -1,0 +1,50 @@
+{
+  "schemaVersion": 1,
+  "cultureId": "russians",
+  "age": "EarlyModern",
+  "unit": "Renaissance Pikeman",
+  "category": "Infantry",
+  "actorCount": 1,
+  "stage": "single-idle-design-review",
+  "camera": "vertical-overhead-orthographic",
+  "facing": "screen-down",
+  "sheetSize": {
+    "width": 1215,
+    "height": 1295
+  },
+  "grid": {
+    "columns": 1,
+    "rows": 1
+  },
+  "reviewFootprint": 440,
+  "weapon": "Two-handed slender wooden pike; steel head points screen-up in idle",
+  "animations": [
+    {
+      "id": "idle",
+      "file": "Idle-Overhead-v4.png",
+      "label": "Idle design",
+      "loop": true,
+      "scale": 1,
+      "durations": [
+        1000
+      ],
+      "description": "More directly overhead idle: helmet crown and shoulder tops dominate, torso and legs heavily foreshortened. Steel pike head points upward. Awaiting review.",
+      "frameCount": 1,
+      "sha256": "f4e5922d825a61ae98b7703d97fea8f6a32dd0f9f3f34ff30011a18f7faacf23",
+      "frames": [
+        {
+          "index": 0,
+          "sourceIndex": 0,
+          "x": 0,
+          "y": 0,
+          "width": 1215,
+          "height": 1295,
+          "pivot": {
+            "x": 607.5,
+            "y": 647.5
+          }
+        }
+      ]
+    }
+  ]
+}

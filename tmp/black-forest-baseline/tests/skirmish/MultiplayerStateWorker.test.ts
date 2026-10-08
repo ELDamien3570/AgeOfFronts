@@ -1,0 +1,164 @@
+import { createHash } from "node:crypto";
+import { gunzipSync, gzipSync } from "node:zlib";
+import { afterEach, describe, expect, it, vi } from "vitest";
+import { GameMapImpl } from "../../src/core/game/GameMap";
+import { Skirmish } from "../../src/skirmish/Simulation";
+import { SnapshotEncoder, SnapshotDecoder } from "../../src/skirmish/SnapshotCodec";
+import { encodeState } from "../../src/skirmish/multiplayer/StateCodec";
+
+afterEach(() => vi.unstubAllGlobals());
+async function worker() {
+  vi.resetModules();
+  const surface = {
+    onmessage: undefined as ((event: { data: unknown }) => void) | undefined,
+    postMessage: vi.fn(),
+  };
+  vi.stubGlobal("self", surface);
+  await import("../../src/skirmish/client/multiplayerStateWorker");
+  return surface;
+}
+function fixture() {
+  const terrain = new Uint8Array(3072).fill(133);
+  const match = new Skirmish(new GameMapImpl(64, 48, terrain, terrain.length), {
+    seed: 42,
+    aiCount: 1,
+    runAi: false,
+    tribes: false,
+  });
+  return {
+    match,
+    encoder: new SnapshotEncoder(true),
+    expectedMap: { width: 64, height: 48 },
+  };
+}
+describe("real network state decode worker", () => {
+  it("transfers packed views while retaining worker canonical buffers through binary decode and hidden updates", async () => {
+    const surface=await worker(), {match,encoder,expectedMap}=fixture(), decoder=new SnapshotDecoder();
+    const send=async(presentation:boolean) => surface.onmessage!({data:{...(await encodeState(encoder.encode(match.snapshot()),undefined,{},true)),expectedMap,packed:true,presentation}});
+    await send(true); await vi.waitFor(()=>expect(surface.postMessage).toHaveBeenCalledTimes(1));
+    const baseline=surface.postMessage.mock.calls[0][0];
+    expect(baseline.snapshot).toBeUndefined(); expect(decoder.decode(baseline.viewPacket).tick).toBe(0);
+    structuredClone(baseline.viewPacket,{transfer:surface.postMessage.mock.calls[0][1].transfer});
+    surface.onmessage!({data:{type:"presented",sequence:1}});
+    const tile=100, original=match.owners[tile];
+    match.tick=1;match.owners[tile]=original===1?2:1;await send(false);
+    match.tick=2;match.owners[tile]=original;await send(false);
+    await vi.waitFor(()=>expect(surface.postMessage).toHaveBeenCalledTimes(3));
+    surface.onmessage!({data:{type:"presentation",packed:true}});
+    await vi.waitFor(()=>expect(surface.postMessage).toHaveBeenCalledTimes(4));
+    const latest=surface.postMessage.mock.calls[3][0];
+    expect(latest.snapshot).toBeUndefined();expect(latest.viewPacket.tiles[0]).toBe(tile);
+    expect(decoder.decode(latest.viewPacket).owners[tile]).toBe(original);
+    expect(latest.viewPacket.tick).toBe(2);
+  });
+  it("applies hidden canonical updates without cloning views and projects the latest state on demand", async () => {
+    const surface = await worker(), { match, encoder, expectedMap } = fixture();
+    const tile = match.map.ref(30, 20), original = match.owners[tile];
+    surface.onmessage!({ data: { ...(await encodeState(encoder.encode(match.snapshot()))), expectedMap } });
+    await vi.waitFor(() => expect(surface.postMessage).toHaveBeenCalledTimes(1));
+    surface.onmessage!({ data: { type: "presented", sequence: 1 } });
+    match.owners[tile] = original === 1 ? 2 : 1; match.tick = 1;
+    surface.onmessage!({ data: { ...(await encodeState(encoder.encode(match.snapshot()))), expectedMap, presentation: false } });
+    match.owners[tile] = original; match.tick = 2;
+    surface.onmessage!({ data: { ...(await encodeState(encoder.encode(match.snapshot()))), expectedMap, presentation: false } });
+    await vi.waitFor(() => expect(surface.postMessage).toHaveBeenCalledTimes(3));
+    for (const call of surface.postMessage.mock.calls.slice(1)) {
+      expect(call[0].canonicalOnly).toBe(true); expect(call[0].snapshot).toBeUndefined(); expect(call).toHaveLength(1);
+    }
+    surface.onmessage!({ data: { type: "presentation" } });
+    await vi.waitFor(() => expect(surface.postMessage).toHaveBeenCalledTimes(4));
+    const latest = surface.postMessage.mock.calls[3][0];
+    expect(latest.snapshot.tick).toBe(2); expect(latest.snapshot.owners[tile]).toBe(original);
+    expect(latest.snapshot.changedTiles).toContain(tile); expect(latest.canonicalSequence).toBe(3);
+  });
+  it("decodes queued updates in order, publishes isolated complete views and exposes structural allocation stats", async () => {
+    const surface = await worker(),
+      { match, encoder, expectedMap } = fixture();
+    const baseline = encoder.encode(match.snapshot()),
+      tile = match.map.ref(30, 20);
+    const oldOwner = match.owners[tile];
+    const changed = structuredClone(match.snapshot());
+    changed.owners[tile] = 1;
+    changed.tick = 1;
+    const delta = encoder.encode(changed);
+    surface.onmessage!({
+      data: { ...(await encodeState(baseline)), expectedMap },
+    });
+    surface.onmessage!({
+      data: { ...(await encodeState(delta)), expectedMap },
+    });
+    await vi.waitFor(() =>
+      expect(surface.postMessage).toHaveBeenCalledTimes(2),
+    );
+    const first = surface.postMessage.mock.calls[0][0],
+      second = surface.postMessage.mock.calls[1][0];
+    expect(first.snapshot.owners[tile]).toBe(oldOwner);
+    expect(second.snapshot.owners[tile]).toBe(1);
+    expect([first.canonicalSequence, second.canonicalSequence]).toEqual([1, 2]);
+    expect(second.decodeStats.wireBytes).toBeGreaterThan(0);
+    expect(second.decodeStats.arrayBytes).toBeGreaterThan(0);
+    expect(second.decodeStats.metadataTokens).toBeGreaterThan(0);
+    expect(surface.postMessage.mock.calls[1][1].transfer).toHaveLength(3);
+  });
+  it("rejects a first baseline with different dimensions and fences later loaded-map changes", async () => {
+    const surface = await worker(),
+      { match, encoder, expectedMap } = fixture();
+    const baseline = encoder.encode(match.snapshot());
+    surface.onmessage!({
+      data: {
+        ...(await encodeState({ ...baseline, width: 48, height: 64 })),
+        expectedMap,
+      },
+    });
+    await vi.waitFor(() =>
+      expect(surface.postMessage).toHaveBeenCalledTimes(1),
+    );
+    expect(surface.postMessage.mock.calls[0][0].error).toContain("loaded map");
+    const encoded = await encodeState(baseline);
+    surface.onmessage!({ data: { ...encoded, expectedMap } });
+    await vi.waitFor(() =>
+      expect(surface.postMessage).toHaveBeenCalledTimes(2),
+    );
+    expect(surface.postMessage.mock.calls[1][0].canonicalSequence).toBe(1);
+    surface.onmessage!({
+      data: { ...encoded, expectedMap: { width: 48, height: 64 } },
+    });
+    await vi.waitFor(() =>
+      expect(surface.postMessage).toHaveBeenCalledTimes(3),
+    );
+    expect(surface.postMessage.mock.calls[2][0].error).toContain(
+      "dimensions changed",
+    );
+  });
+  it("rejects a tiny compressed RLE packet before its 128 MB expansion", async () => {
+    const surface = await worker(),
+      encoded = await encodeState({ huge: new Uint16Array(5000) });
+    const raw = gunzipSync(Buffer.from(encoded.payload, "base64")),
+      metadataLength = raw.readUInt32LE(4);
+    const metadata = JSON.parse(
+      raw.subarray(8, 8 + metadataLength).toString("utf8"),
+    );
+    metadata.value.huge.length = 64_000_000;
+    const text = Buffer.from(JSON.stringify(metadata)),
+      header = Buffer.from(raw.subarray(0, 8)),
+      runs = Buffer.from(raw.subarray(8 + metadataLength));
+    header.writeUInt32LE(text.length, 4);
+    runs.writeUInt32LE(64_000_000, 4);
+    const bytes = Buffer.concat([header, text, runs]),
+      payload = gzipSync(bytes).toString("base64");
+    expect(payload.length).toBeLessThan(1000);
+    surface.onmessage!({
+      data: {
+        hash: createHash("sha256").update(bytes).digest("hex"),
+        payload,
+        expectedMap: { width: 64, height: 48 },
+      },
+    });
+    await vi.waitFor(() =>
+      expect(surface.postMessage).toHaveBeenCalledTimes(1),
+    );
+    expect(surface.postMessage.mock.calls[0][0].error).toContain(
+      "memory budget",
+    );
+  });
+});

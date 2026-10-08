@@ -1,0 +1,925 @@
+{
+  "schemaVersion": 1,
+  "cultureId": "russians",
+  "age": "StoneAge",
+  "unit": "Javelinist",
+  "category": "Ranged",
+  "actorCount": 1,
+  "stage": "overhead-animation-review",
+  "integrationStatus": "Single-soldier art review; runtime formation instancing and combat integration are separate.",
+  "camera": "vertical-overhead-orthographic",
+  "facing": "screen-down",
+  "sheetSize": {
+    "width": 1536,
+    "height": 1024
+  },
+  "grid": {
+    "columns": 3,
+    "rows": 2
+  },
+  "registration": "Explicit authored torso pivots and fixed per-clip scale. Cap component measurements aid inspection; playback never fits silhouette bounds.",
+  "weapon": "Stone-tipped throwing javelin",
+  "chargeAttack": "Stop and throw after advancing",
+  "projectileContract": "Runtime owns thrown projectile creation and timing. Release markers are visual references.",
+  "animations": [
+    {
+      "id": "idle",
+      "label": "Idle",
+      "file": "idle-v1.png",
+      "sha256": "f70ab55b35a1fdf9e313a32d2e617a3daeb0a4af3cf527754a8aaa05a3f62d69",
+      "loop": true,
+      "scale": 1,
+      "durations": [
+        280,
+        280,
+        280,
+        280,
+        280,
+        280
+      ],
+      "description": "Subtle breathing only. Feet planted. No rotation or lateral sway. One straight javelin held low at screen-left, stone point down. Six slightly different breathing poses.",
+      "frameCount": 6,
+      "frames": [
+        {
+          "index": 0,
+          "x": 0,
+          "y": 0,
+          "width": 512,
+          "height": 512,
+          "pivot": {
+            "x": 256,
+            "y": 256
+          }
+        },
+        {
+          "index": 1,
+          "x": 512,
+          "y": 0,
+          "width": 512,
+          "height": 512,
+          "pivot": {
+            "x": 256,
+            "y": 256
+          }
+        },
+        {
+          "index": 2,
+          "x": 1024,
+          "y": 0,
+          "width": 512,
+          "height": 512,
+          "pivot": {
+            "x": 256,
+            "y": 256
+          }
+        },
+        {
+          "index": 3,
+          "x": 0,
+          "y": 512,
+          "width": 512,
+          "height": 512,
+          "pivot": {
+            "x": 256,
+            "y": 256
+          }
+        },
+        {
+          "index": 4,
+          "x": 512,
+          "y": 512,
+          "width": 512,
+          "height": 512,
+          "pivot": {
+            "x": 256,
+            "y": 256
+          }
+        },
+        {
+          "index": 5,
+          "x": 1024,
+          "y": 512,
+          "width": 512,
+          "height": 512,
+          "pivot": {
+            "x": 256,
+            "y": 256
+          }
+        }
+      ]
+    },
+    {
+      "id": "running",
+      "label": "Walk",
+      "file": "running-v1.png",
+      "sha256": "36583ec8f554853915fac369d91e90f866c77c426214d19a3dc6999108d753f3",
+      "loop": true,
+      "scale": 1,
+      "durations": [
+        160,
+        160,
+        160,
+        160,
+        160,
+        160
+      ],
+      "description": "Walk cycle with visibly ALTERNATING left and right lead feet. Feet emerge beneath fur collar, stride small but distinct. One straight javelin held low screen-left. Six consecutive walking poses.",
+      "frameCount": 6,
+      "frames": [
+        {
+          "index": 0,
+          "x": 0,
+          "y": 0,
+          "width": 512,
+          "height": 512,
+          "pivot": {
+            "x": 256,
+            "y": 256
+          }
+        },
+        {
+          "index": 1,
+          "x": 512,
+          "y": 0,
+          "width": 512,
+          "height": 512,
+          "pivot": {
+            "x": 256,
+            "y": 256
+          }
+        },
+        {
+          "index": 2,
+          "x": 1024,
+          "y": 0,
+          "width": 512,
+          "height": 512,
+          "pivot": {
+            "x": 256,
+            "y": 256
+          }
+        },
+        {
+          "index": 3,
+          "x": 0,
+          "y": 512,
+          "width": 512,
+          "height": 512,
+          "pivot": {
+            "x": 256,
+            "y": 256
+          }
+        },
+        {
+          "index": 4,
+          "x": 512,
+          "y": 512,
+          "width": 512,
+          "height": 512,
+          "pivot": {
+            "x": 256,
+            "y": 256
+          }
+        },
+        {
+          "index": 5,
+          "x": 1024,
+          "y": 512,
+          "width": 512,
+          "height": 512,
+          "pivot": {
+            "x": 256,
+            "y": 256
+          }
+        }
+      ]
+    },
+    {
+      "id": "charge",
+      "label": "Charge in / maintain",
+      "file": "charge-v1.png",
+      "sha256": "36583ec8f554853915fac369d91e90f866c77c426214d19a3dc6999108d753f3",
+      "loop": true,
+      "scale": 1,
+      "durations": [
+        90,
+        90,
+        90,
+        90,
+        90,
+        90
+      ],
+      "description": "Maintain a fast charge run with alternating feet.",
+      "frameCount": 6,
+      "frames": [
+        {
+          "index": 0,
+          "x": 0,
+          "y": 0,
+          "width": 512,
+          "height": 512,
+          "pivot": {
+            "x": 256,
+            "y": 256
+          }
+        },
+        {
+          "index": 1,
+          "x": 512,
+          "y": 0,
+          "width": 512,
+          "height": 512,
+          "pivot": {
+            "x": 256,
+            "y": 256
+          }
+        },
+        {
+          "index": 2,
+          "x": 1024,
+          "y": 0,
+          "width": 512,
+          "height": 512,
+          "pivot": {
+            "x": 256,
+            "y": 256
+          }
+        },
+        {
+          "index": 3,
+          "x": 0,
+          "y": 512,
+          "width": 512,
+          "height": 512,
+          "pivot": {
+            "x": 256,
+            "y": 256
+          }
+        },
+        {
+          "index": 4,
+          "x": 512,
+          "y": 512,
+          "width": 512,
+          "height": 512,
+          "pivot": {
+            "x": 256,
+            "y": 256
+          }
+        },
+        {
+          "index": 5,
+          "x": 1024,
+          "y": 512,
+          "width": 512,
+          "height": 512,
+          "pivot": {
+            "x": 256,
+            "y": 256
+          }
+        }
+      ]
+    },
+    {
+      "id": "attack",
+      "label": "Overarm throw",
+      "file": "attack-v1.png",
+      "sha256": "38016e8d548e7f49b2dab1e8d650384702e0d6ff8e9203a06afc34700a7e159c",
+      "loop": false,
+      "scale": 1,
+      "durations": [
+        140,
+        180,
+        260,
+        100,
+        180,
+        250
+      ],
+      "description": "Overarm javelin throw aimed exactly screen-bottom. 1 ready;2 right foot steps back and chest turns;3 right hand draws javelin back above right shoulder, bent elbow;4 strong overarm release toward screen-bottom;5 followthrough EMPTY right hand;6 settle EMPTY right hand. Javelin straight rigid rod, grip near middle, tip always aimed down during launch. No low underarm thrust. No reload in this clip. Spare javelins remain on back.",
+      "frameCount": 6,
+      "frames": [
+        {
+          "index": 0,
+          "x": 0,
+          "y": 0,
+          "width": 512,
+          "height": 512,
+          "pivot": {
+            "x": 256,
+            "y": 256
+          }
+        },
+        {
+          "index": 1,
+          "x": 512,
+          "y": 0,
+          "width": 512,
+          "height": 512,
+          "pivot": {
+            "x": 256,
+            "y": 256
+          }
+        },
+        {
+          "index": 2,
+          "x": 1024,
+          "y": 0,
+          "width": 512,
+          "height": 512,
+          "pivot": {
+            "x": 256,
+            "y": 256
+          }
+        },
+        {
+          "index": 3,
+          "x": 0,
+          "y": 512,
+          "width": 512,
+          "height": 512,
+          "pivot": {
+            "x": 256,
+            "y": 256
+          }
+        },
+        {
+          "index": 4,
+          "x": 512,
+          "y": 512,
+          "width": 512,
+          "height": 512,
+          "pivot": {
+            "x": 256,
+            "y": 256
+          }
+        },
+        {
+          "index": 5,
+          "x": 1024,
+          "y": 512,
+          "width": 512,
+          "height": 512,
+          "pivot": {
+            "x": 256,
+            "y": 256
+          }
+        }
+      ],
+      "releaseFrame": 3,
+      "weaponState": {
+        "start": "javelin-ready",
+        "end": "empty-hand"
+      }
+    },
+    {
+      "id": "charge-attack",
+      "label": "Advance, stop and throw",
+      "file": "charge-attack-v1.png",
+      "sha256": "eaab1ecc0e8afa907c5c833b2ba3a9e90013595867923905256267cb8a8cd91a",
+      "loop": false,
+      "scale": 1,
+      "durations": [
+        140,
+        180,
+        260,
+        100,
+        180,
+        250
+      ],
+      "description": "Advance and stop then overarm throw straight screen-bottom.1 step in with javelin;2 plant feet;3 right hand cocks javelin over shoulder elbow bent, body opens;4 overarm release;5 empty-handed followthrough;6 stable empty-handed recovery. No low thrust, no new spear after release. Spare javelins retained.",
+      "frameCount": 6,
+      "frames": [
+        {
+          "index": 0,
+          "x": 0,
+          "y": 0,
+          "width": 512,
+          "height": 512,
+          "pivot": {
+            "x": 256,
+            "y": 256
+          }
+        },
+        {
+          "index": 1,
+          "x": 512,
+          "y": 0,
+          "width": 512,
+          "height": 512,
+          "pivot": {
+            "x": 256,
+            "y": 256
+          }
+        },
+        {
+          "index": 2,
+          "x": 1024,
+          "y": 0,
+          "width": 512,
+          "height": 512,
+          "pivot": {
+            "x": 256,
+            "y": 256
+          }
+        },
+        {
+          "index": 3,
+          "x": 0,
+          "y": 512,
+          "width": 512,
+          "height": 512,
+          "pivot": {
+            "x": 256,
+            "y": 256
+          }
+        },
+        {
+          "index": 4,
+          "x": 512,
+          "y": 512,
+          "width": 512,
+          "height": 512,
+          "pivot": {
+            "x": 256,
+            "y": 256
+          }
+        },
+        {
+          "index": 5,
+          "x": 1024,
+          "y": 512,
+          "width": 512,
+          "height": 512,
+          "pivot": {
+            "x": 256,
+            "y": 256
+          }
+        }
+      ],
+      "releaseFrame": 3,
+      "weaponState": {
+        "start": "javelin-ready",
+        "end": "empty-hand"
+      }
+    },
+    {
+      "id": "reload",
+      "label": "Reload javelin",
+      "file": "reload-v2.png",
+      "sha256": "edc50eddb0daff6859dee15b824ff5f7025d333622bb8f353b22a5ade2032d04",
+      "loop": false,
+      "scale": 1,
+      "durations": [
+        250,
+        300,
+        350,
+        350,
+        300,
+        250
+      ],
+      "description": "Separate javelin reload after throwing:1 EMPTY right hand low;2 right hand reaches over right shoulder toward spare javelin pouch;3 grip spare shaft;4 withdraw ONE straight javelin from pouch;5 bring new javelin down along right side (screen-left);6 ready low carry, stone point screen-bottom. Keep pouch on back, reduce spare count visibly when taken, no extra arms.",
+      "frameCount": 6,
+      "frames": [
+        {
+          "index": 0,
+          "x": 0,
+          "y": 0,
+          "width": 512,
+          "height": 512,
+          "pivot": {
+            "x": 256,
+            "y": 256
+          }
+        },
+        {
+          "index": 1,
+          "x": 512,
+          "y": 0,
+          "width": 512,
+          "height": 512,
+          "pivot": {
+            "x": 256,
+            "y": 256
+          }
+        },
+        {
+          "index": 2,
+          "x": 1024,
+          "y": 0,
+          "width": 512,
+          "height": 512,
+          "pivot": {
+            "x": 256,
+            "y": 256
+          }
+        },
+        {
+          "index": 3,
+          "x": 0,
+          "y": 512,
+          "width": 512,
+          "height": 512,
+          "pivot": {
+            "x": 256,
+            "y": 256
+          }
+        },
+        {
+          "index": 4,
+          "x": 512,
+          "y": 512,
+          "width": 512,
+          "height": 512,
+          "pivot": {
+            "x": 256,
+            "y": 256
+          }
+        },
+        {
+          "index": 5,
+          "x": 1024,
+          "y": 512,
+          "width": 512,
+          "height": 512,
+          "pivot": {
+            "x": 256,
+            "y": 256
+          }
+        }
+      ],
+      "weaponState": {
+        "start": "empty-hand",
+        "end": "javelin-ready"
+      }
+    },
+    {
+      "id": "hit",
+      "label": "Get hit",
+      "file": "hit-v1.png",
+      "sha256": "eb810f8a426a7fac5406c216d683ce8f30d90fd0540b713aa8a7904b804fa90b",
+      "loop": false,
+      "scale": 1,
+      "durations": [
+        100,
+        90,
+        130,
+        130,
+        160,
+        180
+      ],
+      "description": "Light hit reaction. Standing, flinch, knee bend, recoil, recover, standing. Keep one javelin and spare pouch. No attack or blood.",
+      "frameCount": 6,
+      "frames": [
+        {
+          "index": 0,
+          "x": 0,
+          "y": 0,
+          "width": 512,
+          "height": 512,
+          "pivot": {
+            "x": 256,
+            "y": 256
+          }
+        },
+        {
+          "index": 1,
+          "x": 512,
+          "y": 0,
+          "width": 512,
+          "height": 512,
+          "pivot": {
+            "x": 256,
+            "y": 256
+          }
+        },
+        {
+          "index": 2,
+          "x": 1024,
+          "y": 0,
+          "width": 512,
+          "height": 512,
+          "pivot": {
+            "x": 256,
+            "y": 256
+          }
+        },
+        {
+          "index": 3,
+          "x": 0,
+          "y": 512,
+          "width": 512,
+          "height": 512,
+          "pivot": {
+            "x": 256,
+            "y": 256
+          }
+        },
+        {
+          "index": 4,
+          "x": 512,
+          "y": 512,
+          "width": 512,
+          "height": 512,
+          "pivot": {
+            "x": 256,
+            "y": 256
+          }
+        },
+        {
+          "index": 5,
+          "x": 1024,
+          "y": 512,
+          "width": 512,
+          "height": 512,
+          "pivot": {
+            "x": 256,
+            "y": 256
+          }
+        }
+      ]
+    },
+    {
+      "id": "charged",
+      "label": "Get charged",
+      "file": "charged-v1.png",
+      "sha256": "6cf505613694ff889748e320b7b1dd18ae417b3534c095cf60172b80c20fd1f4",
+      "loop": false,
+      "scale": 1,
+      "durations": [
+        130,
+        120,
+        180,
+        180,
+        180,
+        230
+      ],
+      "description": "Distinct heavy charge-impact reaction. Standing, recoil backwards, knees buckle, stumble and brace, regain balance, standing. Keep connected natural limbs. No attacking.",
+      "frameCount": 6,
+      "frames": [
+        {
+          "index": 0,
+          "x": 0,
+          "y": 0,
+          "width": 512,
+          "height": 512,
+          "pivot": {
+            "x": 256,
+            "y": 256
+          }
+        },
+        {
+          "index": 1,
+          "x": 512,
+          "y": 0,
+          "width": 512,
+          "height": 512,
+          "pivot": {
+            "x": 256,
+            "y": 256
+          }
+        },
+        {
+          "index": 2,
+          "x": 1024,
+          "y": 0,
+          "width": 512,
+          "height": 512,
+          "pivot": {
+            "x": 256,
+            "y": 256
+          }
+        },
+        {
+          "index": 3,
+          "x": 0,
+          "y": 512,
+          "width": 512,
+          "height": 512,
+          "pivot": {
+            "x": 256,
+            "y": 256
+          }
+        },
+        {
+          "index": 4,
+          "x": 512,
+          "y": 512,
+          "width": 512,
+          "height": 512,
+          "pivot": {
+            "x": 256,
+            "y": 256
+          }
+        },
+        {
+          "index": 5,
+          "x": 1024,
+          "y": 512,
+          "width": 512,
+          "height": 512,
+          "pivot": {
+            "x": 256,
+            "y": 256
+          }
+        }
+      ]
+    },
+    {
+      "id": "death",
+      "label": "Death - side fall",
+      "file": "death-v2.png",
+      "sha256": "885119b1c1b63863a78044daf96bfff32ef097cdc714808e859caafdecf6d283",
+      "loop": false,
+      "scale": 1,
+      "durations": [
+        150,
+        170,
+        190,
+        210,
+        240,
+        400
+      ],
+      "description": "Full side fall: standing, knees buckle, tip sideways, land on side, body settles on side, still side corpse. Drop straight javelin beside body. Final three frames head remains same end, no 180 degree flips. No blood.",
+      "frameCount": 6,
+      "frames": [
+        {
+          "index": 0,
+          "x": 0,
+          "y": 0,
+          "width": 512,
+          "height": 512,
+          "pivot": {
+            "x": 256,
+            "y": 256
+          }
+        },
+        {
+          "index": 1,
+          "x": 512,
+          "y": 0,
+          "width": 512,
+          "height": 512,
+          "pivot": {
+            "x": 256,
+            "y": 256
+          }
+        },
+        {
+          "index": 2,
+          "x": 1024,
+          "y": 0,
+          "width": 512,
+          "height": 512,
+          "pivot": {
+            "x": 256,
+            "y": 256
+          }
+        },
+        {
+          "index": 3,
+          "x": 0,
+          "y": 512,
+          "width": 512,
+          "height": 512,
+          "pivot": {
+            "x": 256,
+            "y": 256
+          }
+        },
+        {
+          "index": 4,
+          "x": 512,
+          "y": 512,
+          "width": 512,
+          "height": 512,
+          "pivot": {
+            "x": 256,
+            "y": 256
+          }
+        },
+        {
+          "index": 5,
+          "x": 1024,
+          "y": 512,
+          "width": 512,
+          "height": 512,
+          "pivot": {
+            "x": 256,
+            "y": 256
+          }
+        }
+      ]
+    },
+    {
+      "id": "death-back",
+      "label": "Death - back fall",
+      "file": "death-back-v1.png",
+      "sha256": "d46755598e2e4bcbbdf76c42b6ad1c9da8fe6a512030ddd808298b629c5e367c",
+      "loop": false,
+      "scale": 1,
+      "durations": [
+        150,
+        180,
+        190,
+        210,
+        240,
+        400
+      ],
+      "description": "Full BACK fall: standing, recoil, knees buckle backwards, fall onto back, supine settling, supine corpse. When falling or lying, HEAD SCREEN TOP AND BOOTS SCREEN BOTTOM in ALL frames4/5/6. No flipping, face-down corpse or rotation. Javelin drops beside body, no blood.",
+      "frameCount": 6,
+      "frames": [
+        {
+          "index": 0,
+          "x": 0,
+          "y": 0,
+          "width": 512,
+          "height": 512,
+          "pivot": {
+            "x": 256,
+            "y": 256
+          }
+        },
+        {
+          "index": 1,
+          "x": 512,
+          "y": 0,
+          "width": 512,
+          "height": 512,
+          "pivot": {
+            "x": 256,
+            "y": 256
+          }
+        },
+        {
+          "index": 2,
+          "x": 1024,
+          "y": 0,
+          "width": 512,
+          "height": 512,
+          "pivot": {
+            "x": 256,
+            "y": 256
+          }
+        },
+        {
+          "index": 3,
+          "x": 0,
+          "y": 512,
+          "width": 512,
+          "height": 512,
+          "pivot": {
+            "x": 256,
+            "y": 256
+          }
+        },
+        {
+          "index": 4,
+          "x": 512,
+          "y": 512,
+          "width": 512,
+          "height": 512,
+          "pivot": {
+            "x": 256,
+            "y": 256
+          }
+        },
+        {
+          "index": 5,
+          "x": 1024,
+          "y": 512,
+          "width": 512,
+          "height": 512,
+          "pivot": {
+            "x": 256,
+            "y": 256
+          }
+        }
+      ]
+    }
+  ],
+  "reviewFootprint": 400,
+  "throwReloadContract": {
+    "sequence": [
+      "attack",
+      "reload",
+      "idle"
+    ],
+    "chargeSequence": [
+      "charge-attack",
+      "reload",
+      "idle"
+    ],
+    "releaseFrame": 3,
+    "timingAuthority": "Runtime controls attack and reload timing. Source clips do not create projectiles or consume ammunition."
+  },
+  "shotSequence": [
+    "attack",
+    "reload",
+    "idle"
+  ],
+  "chargeShotSequence": [
+    "charge-attack",
+    "reload",
+    "idle"
+  ]
+}

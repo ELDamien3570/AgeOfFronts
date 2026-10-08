@@ -1,0 +1,265 @@
+{
+  "scope": "Selected source PNG transparency, containment, master parity and preservation of approved earlier ages. Browser and runtime integration are separate.",
+  "checkedAt": "2026-10-03T00:50:10.242569+00:00",
+  "passed": true,
+  "generator": "built-in image_gen",
+  "approvedEarlierAges": [
+    {
+      "age": "StoneAge",
+      "images": 9,
+      "unchanged": true
+    },
+    {
+      "age": "BronzeAge",
+      "images": 10,
+      "unchanged": true
+    }
+  ],
+  "assets": [
+    {
+      "id": "barracks",
+      "file": "Barracks/Icon.png",
+      "size": [
+        1254,
+        1254
+      ],
+      "alphaExtrema": [
+        0,
+        255
+      ],
+      "solidContentBounds": [
+        57,
+        85,
+        1198,
+        1191
+      ],
+      "maximumEdgeAlpha": 1,
+      "opaqueEdgePixels": 0,
+      "selectedMaster": "Barracks/SourceArt/Icon-v2.png",
+      "selectedMasterMatches": true,
+      "sha256": "3fde42305845a36a6f31c16710ed4b97564f3284ce972548812b90a5ffcd3b07",
+      "previousSha256": "94493d131202faef80f48276652acb02b56d43e858634aa954760f3c325641c6"
+    },
+    {
+      "id": "city",
+      "file": "City/Icon.png",
+      "size": [
+        1254,
+        1254
+      ],
+      "alphaExtrema": [
+        0,
+        255
+      ],
+      "solidContentBounds": [
+        72,
+        80,
+        1185,
+        1186
+      ],
+      "maximumEdgeAlpha": 1,
+      "opaqueEdgePixels": 0,
+      "selectedMaster": "City/SourceArt/Icon-v1.png",
+      "selectedMasterMatches": true,
+      "sha256": "5f1765a7eeecd0482caa2bf3df139890c104cd28892ca63d6d61d3290519876a"
+    },
+    {
+      "id": "archery",
+      "file": "Archery Range/Icon.png",
+      "size": [
+        1254,
+        1254
+      ],
+      "alphaExtrema": [
+        0,
+        255
+      ],
+      "solidContentBounds": [
+        119,
+        159,
+        1139,
+        1100
+      ],
+      "maximumEdgeAlpha": 1,
+      "opaqueEdgePixels": 0,
+      "selectedMaster": "Archery Range/SourceArt/Icon-v1.png",
+      "selectedMasterMatches": true,
+      "sha256": "85e723dc20773d46502c17d39f0d25961375aa108715ca7d90036e045b87c7a8"
+    },
+    {
+      "id": "stables",
+      "file": "Stables/Icon.png",
+      "size": [
+        1254,
+        1254
+      ],
+      "alphaExtrema": [
+        0,
+        255
+      ],
+      "solidContentBounds": [
+        53,
+        110,
+        1204,
+        1144
+      ],
+      "maximumEdgeAlpha": 1,
+      "opaqueEdgePixels": 0,
+      "selectedMaster": "Stables/SourceArt/Icon-v1.png",
+      "selectedMasterMatches": true,
+      "sha256": "ffbbce234520449b52297830e4e211079d28ecbbc2c1738a5af6f933d68a3647"
+    },
+    {
+      "id": "factory",
+      "file": "Factory/Icon.png",
+      "size": [
+        1254,
+        1254
+      ],
+      "alphaExtrema": [
+        0,
+        255
+      ],
+      "solidContentBounds": [
+        62,
+        83,
+        1200,
+        1148
+      ],
+      "maximumEdgeAlpha": 0,
+      "opaqueEdgePixels": 0,
+      "selectedMaster": "Factory/SourceArt/Icon-v2.png",
+      "selectedMasterMatches": true,
+      "sha256": "1a59acf87dbf831b9734a44552e4bad36c0b6f6b9bdad9e4f6f6e1fa64502815"
+    },
+    {
+      "id": "port",
+      "file": "Port/Icon.png",
+      "size": [
+        1254,
+        1254
+      ],
+      "alphaExtrema": [
+        0,
+        255
+      ],
+      "solidContentBounds": [
+        146,
+        76,
+        1113,
+        1214
+      ],
+      "maximumEdgeAlpha": 1,
+      "opaqueEdgePixels": 0,
+      "selectedMaster": "Port/SourceArt/Icon-v2.png",
+      "selectedMasterMatches": true,
+      "sha256": "ed86793f30301f344ed1ccbb40612a20203794a6a59b4f2099b16060b2171d81"
+    },
+    {
+      "id": "mine",
+      "file": "Mine/Icon.png",
+      "size": [
+        1254,
+        1254
+      ],
+      "alphaExtrema": [
+        0,
+        255
+      ],
+      "solidContentBounds": [
+        36,
+        34,
+        1224,
+        1215
+      ],
+      "maximumEdgeAlpha": 1,
+      "opaqueEdgePixels": 0,
+      "selectedMaster": "Mine/SourceArt/Icon-v2.png",
+      "selectedMasterMatches": true,
+      "sha256": "a0a80e93d58e700ebafc1a37d815b2b76805ee5a00eb32430ab9f7271c490d0c"
+    },
+    {
+      "id": "siege-workshop",
+      "file": "Siege Workshop/Icon.png",
+      "size": [
+        1254,
+        1254
+      ],
+      "alphaExtrema": [
+        0,
+        255
+      ],
+      "solidContentBounds": [
+        83,
+        118,
+        1176,
+        1166
+      ],
+      "maximumEdgeAlpha": 1,
+      "opaqueEdgePixels": 0,
+      "selectedMaster": "Siege Workshop/SourceArt/Icon-v1.png",
+      "selectedMasterMatches": true,
+      "sha256": "7f040811f460c1e95bc4dd3fe78a9eacfd2147adb37b76947a5dd652800ad616"
+    },
+    {
+      "id": "tower",
+      "file": "Tower/Icon.png",
+      "size": [
+        1254,
+        1254
+      ],
+      "alphaExtrema": [
+        0,
+        255
+      ],
+      "solidContentBounds": [
+        252,
+        234,
+        1002,
+        1028
+      ],
+      "maximumEdgeAlpha": 1,
+      "opaqueEdgePixels": 0,
+      "selectedMaster": "Tower/SourceArt/Icon-v1.png",
+      "selectedMasterMatches": true,
+      "sha256": "1664e2252f0b3ac62183e07792c060556096590cda0567aaa037a91a3034e96c"
+    },
+    {
+      "id": "blacksmith",
+      "file": "Blacksmith/Icon.png",
+      "size": [
+        1254,
+        1254
+      ],
+      "alphaExtrema": [
+        0,
+        255
+      ],
+      "solidContentBounds": [
+        64,
+        75,
+        1204,
+        1175
+      ],
+      "maximumEdgeAlpha": 0,
+      "opaqueEdgePixels": 0,
+      "selectedMaster": "Blacksmith/SourceArt/Icon-v2.png",
+      "selectedMasterMatches": true,
+      "sha256": "1a27020996fd181b021c6b19c0910b7725b19c7e7a164ea5e24b9a52f02b228f"
+    }
+  ],
+  "latestChangedAssets": [
+    "barracks"
+  ],
+  "latestUnchangedAssets": [
+    "archery",
+    "blacksmith",
+    "city",
+    "factory",
+    "mine",
+    "port",
+    "siege-workshop",
+    "stables",
+    "tower"
+  ]
+}

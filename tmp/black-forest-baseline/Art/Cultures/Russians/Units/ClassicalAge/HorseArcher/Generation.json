@@ -1,0 +1,352 @@
+{
+  "date": "2026-10-07",
+  "mode": "built-in-imagegen",
+  "userApproval": "Seven non-shot clips approved; revised forward bow shots pending review.",
+  "records": [
+    {
+      "id": "russian-classicalage-horse-archer-idle-v1",
+      "file": "Idle-v1.png",
+      "clip": "idle",
+      "prompt": "Edit reference into ONE Russian Classical Age HORSE ARCHER single IDLE sprite. Same exact unarmored chestnut horse black mane/tail, leather saddle/bridle, seated rider, hammered cool iron domed helmet with riveted browband, paired iron pauldrons and bracers, stitched reddish-brown leather top, cream fur collar, dark belt iron buckle, pale trousers brownboots. Preserve strict vertical overhead orthographic camera, horse nose screen-bottom and tail screen-top, helmet crown dominant and same painted detailed stylized game sprite clarity. REMOVE spear entirely including shaft/tip/socket. Replace with a compact distinctly RECURVE BOW suitable for mounted archery: laminated warm wooden/horn limbs curved out from central wrapped grip, recurved tips hooking away from archer, one taut slender bowstring clearly spanning limb tips. Bow held relaxed and undrawn in screen-left hand beside horse's left shoulder, its full double-curved silhouette and string visible in overhead plane, not straight longbow or crossbow. Screen-right hand holds reins. Small leather quiver with a few feathered arrow fletchings tucked beside saddle behind rider so role reads clearly, no giant decorations or extra weapons, no shield. Calm ready idle, no aiming/firing or nocked arrow. Only one full mounted actor and one pose, no grid/montage. Same square1254x1254 RGBAcanvas, saddle/root near center and full bow/horse/tail safely inside generous transparent padding. True alpha0 outside crisp silhouette, no fog/haze/glow/ground/castshadow/text. Keep all existing iron armor, proportions and horse tack unchanged. Imagined ancestral Russian roster, not a historical claim.",
+      "references": [
+        "../LightCavalry/Idle-v1.png"
+      ],
+      "generatedSource": "C:\\Users\\Damien\\.codex\\generated_images\\01a11641-9e1b-7c81-be76-c9edd53ef182\\exec-f45a9fef-9fa7-4551-8b7a-771bf8790308.png",
+      "status": "superseded-hand-correction-source-preserved"
+    },
+    {
+      "id": "russian-classicalage-horse-archer-idle-v2-left-hand",
+      "file": "Idle-v2.png",
+      "clip": "idle",
+      "prompt": "Precise object edit of this single Russian Classical Age mounted horse archer idle sprite. Correct handedness ONLY: move the existing undrawn recurve bow into the rider's ANATOMICAL LEFT HAND, which is on SCREEN-RIGHT because horse and rider face screen-bottom. Rider's screen-right/left-anatomical hand grips the wrapped middle grip of the recurve bow beside that side of horse. Move reins into the rider's anatomical RIGHT hand on SCREEN-LEFT. Remove bow from screen-left entirely. Preserve same recognizable double curved recurve bow with taut single string, compact size, undrawn calm idle. Keep quiver where it is. Preserve horse, pose, iron helmet pauldrons bracers, reddish brown leather, fur collar, proportions, overhead orthographic camera, facing down, saddle center, generous padding and all other details exactly. One actor one idle frame, no text or ground or shadow, native transparent RGBA background, same square 1254 canvas. Do not mirror the entire sprite; only swap the hands' equipment.",
+      "references": [
+        "Idle-v1.png"
+      ],
+      "generatedSource": "C:/Users/Damien/.codex/generated_images/01a11641-9e1b-7c81-be76-c9edd53ef182/exec-b1276f8b-63ce-4cd0-a6c5-631bc7df2d45.png",
+      "status": "superseded-string-correction-source-preserved"
+    },
+    {
+      "id": "russian-classicalage-horse-archer-idle-v3-string",
+      "file": "Idle-v3.png",
+      "clip": "idle",
+      "prompt": "Precisely edit the bowstring ONLY in this overhead Russian mounted horse archer idle sprite. Preserve everything else exactly including anatomical left hand holding bow on SCREEN-RIGHT, rein hand, chestnut horse, iron armor, quiver, full pose, camera and canvas. The existing string is incorrectly split into strands outside hand and around lower limb. REMOVE all existing misplaced thin strands. Draw ONE physically correct taut straight slender pale tan bowstring spanning the two recurve limb string nocks. The string follows approximately from screen coordinate (860,420) to (800,870) in 1254-square reference, a near vertical line slanting slightly inward toward horse at bottom. Critically the string lies on the INSIDE of the archer's bow arm toward his body (screen-left of the bow grip and hand), passing inside forearm, not outside hand. Occlude string behind arm where arm overlaps it naturally. Keep thin but readable, not thick white paint. The wooden recurve limbs and wrapped grip remain unchanged, no extra string segments or slack loops on outer side. Single undrawn bow, one idle frame, transparent background, same native square1254 canvas. No annotations, white guide, red markings, text, ground or shadow.",
+      "references": [
+        "Idle-v2.png"
+      ],
+      "generatedSource": "C:\\Users\\Damien\\.codex\\generated_images\\01a11641-9e1b-7c81-be76-c9edd53ef182\\exec-4be28c34-53b8-4602-8b98-a96c302c1f87.png",
+      "status": "selected-idle-design-review"
+    },
+    {
+      "id": "idle",
+      "file": "Idle-Animated-v1.png",
+      "motion": "Subtle relaxed breathing and settling, bow undrawn.",
+      "prompt": "Edit reference1 SIX-FRAME mounted atlas into the approved HORSE ARCHER in reference2. Preserve reference1 six sequential horse poses, sizes, fixed saddle roots and gait exactly, but replace spear with compact recurve bow held in anatomical LEFT hand (SCREEN-RIGHT when facing down), reins in RIGHT hand SCREEN-LEFT. Remove every spear shaft/tip. Match reference2 iron armor leather fur horse tack and saddle quiver. Bowstring ONE taut line tip to tip on INSIDE of bow arm toward body, naturally occluded by forearm; never slack doubled or outside hand. Undrawn bow throughout this clip. Vertical overhead nose-down tail-up. EXACT1536x1024 atlas 3columns2rows512cells, six complete poses separated by transparent generous gutters; full horse rider bow within each cell. Transparent RGBAalpha0 outside crisp silhouette, NO background haze/glow/ground/shadows/text/grid. No new limbs or changed equipment. Chronological reading row-major. Motion: Subtle relaxed breathing and settling, bow undrawn.",
+      "references": [
+        "C:/Users/Damien/Documents/GitHub/AgeOfFronts/AgeOfFronts/Art/Cultures/Russians/Units/ClassicalAge/LightCavalry/SourceArt/Native-Idle-Animated-v1.png",
+        "C:/Users/Damien/Documents/GitHub/AgeOfFronts/AgeOfFronts/Art/Cultures/Russians/Units/ClassicalAge/HorseArcher/Idle-v3.png"
+      ],
+      "generatedSource": "C:\\Users\\Damien\\.codex\\generated_images\\01a11641-9e1b-7c81-be76-c9edd53ef182\\exec-54bd0742-1b06-493b-969a-11e38e95e5a0.png",
+      "status": "selected-animation-source",
+      "nativeCopy": "SourceArt\\Native-Idle-Animated-v1.png"
+    },
+    {
+      "id": "running",
+      "file": "Running-v1.png",
+      "motion": "Four-beat walking loop, keep exact horse gait.",
+      "prompt": "Edit reference1 SIX-FRAME mounted atlas into the approved HORSE ARCHER in reference2. Preserve reference1 six sequential horse poses, sizes, fixed saddle roots and gait exactly, but replace spear with compact recurve bow held in anatomical LEFT hand (SCREEN-RIGHT when facing down), reins in RIGHT hand SCREEN-LEFT. Remove every spear shaft/tip. Match reference2 iron armor leather fur horse tack and saddle quiver. Bowstring ONE taut line tip to tip on INSIDE of bow arm toward body, naturally occluded by forearm; never slack doubled or outside hand. Undrawn bow throughout this clip. Vertical overhead nose-down tail-up. EXACT1536x1024 atlas 3columns2rows512cells, six complete poses separated by transparent generous gutters; full horse rider bow within each cell. Transparent RGBAalpha0 outside crisp silhouette, NO background haze/glow/ground/shadows/text/grid. No new limbs or changed equipment. Chronological reading row-major. Motion: Four-beat walking loop, keep exact horse gait.",
+      "references": [
+        "C:/Users/Damien/Documents/GitHub/AgeOfFronts/AgeOfFronts/Art/Cultures/Russians/Units/ClassicalAge/LightCavalry/SourceArt/Native-Running-v1.png",
+        "C:/Users/Damien/Documents/GitHub/AgeOfFronts/AgeOfFronts/Art/Cultures/Russians/Units/ClassicalAge/HorseArcher/Idle-v3.png"
+      ],
+      "generatedSource": "C:\\Users\\Damien\\.codex\\generated_images\\01a11641-9e1b-7c81-be76-c9edd53ef182\\exec-36d0990d-64ce-4cfb-9a50-1255ae515053.png",
+      "status": "selected-animation-source",
+      "nativeCopy": "SourceArt\\Native-Running-v1.png"
+    },
+    {
+      "id": "attack",
+      "file": "Attack-Forward-v2.png",
+      "motion": "Horse stands steadily. Frame1 relaxed left-hand bow; frame2 nock arrow and raise left-held bow forward; frame3 FULL DRAW left arm extended screen-right/down with bow, right hand drawing string back toward face and right shoulder, arrow points screen-bottom just right of horse head; frame4 RELEASE same left extended bow arm, right hand follows through behind cheek and arrow departs (do not draw airborne projectile); frame5 lower bow and recover; frame6 return ready idle.",
+      "prompt": "Precise motion correction of six-frame mounted horse archer atlas. Preserve all six horse poses, armor, quiver, fixed saddle positions, scale, cell layout and camera EXACTLY. ONLY change rider's aiming upper body arms bow and arrow in frames2,3,4 (top-middle,top-right,bottom-left). Current shot points right sideways; instead aim FORWARD toward screen-BOTTOM, arrow head toward lower-right slightly just outside horse neck. Turn upper torso and arm/bow aiming assembly clockwise about60degrees from original, so arrow shaft goes from drawing hand near helmet DOWN toward extended left hand near horse's screen-right shoulder, then point beyond hand downward beside neck. Anatomical LEFT hand screen-right ALWAYS grips bow center, right hand draws string near chin/face. Frame2 nocking partial draw, frame3 full draw with physically correct ONE V-shaped string to right hand and arrow nocked, frame4 release with left arm still extended forward, right hand follows through toward right cheek, NO arrow. Bow limbs now transverse/diagonal across forward direction, not upright side-facing bow. Keep end frames1,5,6 unchanged with undrawn string INSIDE left arm. One string, no floating fragments or doubled line. Same1536x1024 transparent PNG3x2 grid512cells with generous padding, no clipped bows, no floor fog shadows annotations.",
+      "references": [
+        "C:\\Users\\Damien\\.codex\\generated_images\\01a11641-9e1b-7c81-be76-c9edd53ef182\\exec-c4626d98-2b11-4015-93ea-e4b4669a8c8c.png"
+      ],
+      "generatedSource": "C:\\Users\\Damien\\.codex\\generated_images\\01a11641-9e1b-7c81-be76-c9edd53ef182\\exec-164dd636-707b-498a-874f-56d7cb27138f.png",
+      "status": "superseded-animation-source-preserved",
+      "nativeCopy": "SourceArt\\Native-Attack-Forward-v2.png"
+    },
+    {
+      "id": "hit",
+      "file": "Hit-v1.png",
+      "motion": "Brief recoil and recovery, bow retained.",
+      "prompt": "Edit reference1 SIX-FRAME mounted atlas into the approved HORSE ARCHER in reference2. Preserve reference1 six sequential horse poses, sizes, fixed saddle roots and gait exactly, but replace spear with compact recurve bow held in anatomical LEFT hand (SCREEN-RIGHT when facing down), reins in RIGHT hand SCREEN-LEFT. Remove every spear shaft/tip. Match reference2 iron armor leather fur horse tack and saddle quiver. Bowstring ONE taut line tip to tip on INSIDE of bow arm toward body, naturally occluded by forearm; never slack doubled or outside hand. Undrawn bow throughout this clip. Vertical overhead nose-down tail-up. EXACT1536x1024 atlas 3columns2rows512cells, six complete poses separated by transparent generous gutters; full horse rider bow within each cell. Transparent RGBAalpha0 outside crisp silhouette, NO background haze/glow/ground/shadows/text/grid. No new limbs or changed equipment. Chronological reading row-major. Motion: Brief recoil and recovery, bow retained.",
+      "references": [
+        "C:/Users/Damien/Documents/GitHub/AgeOfFronts/AgeOfFronts/Art/Cultures/Russians/Units/ClassicalAge/LightCavalry/SourceArt/Native-Hit-v1.png",
+        "C:/Users/Damien/Documents/GitHub/AgeOfFronts/AgeOfFronts/Art/Cultures/Russians/Units/ClassicalAge/HorseArcher/Idle-v3.png"
+      ],
+      "generatedSource": "C:\\Users\\Damien\\.codex\\generated_images\\01a11641-9e1b-7c81-be76-c9edd53ef182\\exec-00b03abe-c29b-4b15-b1e8-14ab27118ba2.png",
+      "status": "selected-animation-source",
+      "nativeCopy": "SourceArt\\Native-Hit-v1.png"
+    },
+    {
+      "id": "charged",
+      "file": "Charged-Impact-v1.png",
+      "motion": "Heavy stagger impact then recovery, bow retained.",
+      "prompt": "Edit reference1 SIX-FRAME mounted atlas into the approved HORSE ARCHER in reference2. Preserve reference1 six sequential horse poses, sizes, fixed saddle roots and gait exactly, but replace spear with compact recurve bow held in anatomical LEFT hand (SCREEN-RIGHT when facing down), reins in RIGHT hand SCREEN-LEFT. Remove every spear shaft/tip. Match reference2 iron armor leather fur horse tack and saddle quiver. Bowstring ONE taut line tip to tip on INSIDE of bow arm toward body, naturally occluded by forearm; never slack doubled or outside hand. Undrawn bow throughout this clip. Vertical overhead nose-down tail-up. EXACT1536x1024 atlas 3columns2rows512cells, six complete poses separated by transparent generous gutters; full horse rider bow within each cell. Transparent RGBAalpha0 outside crisp silhouette, NO background haze/glow/ground/shadows/text/grid. No new limbs or changed equipment. Chronological reading row-major. Motion: Heavy stagger impact then recovery, bow retained.",
+      "references": [
+        "C:/Users/Damien/Documents/GitHub/AgeOfFronts/AgeOfFronts/Art/Cultures/Russians/Units/ClassicalAge/LightCavalry/SourceArt/Native-Charged-Impact-v1.png",
+        "C:/Users/Damien/Documents/GitHub/AgeOfFronts/AgeOfFronts/Art/Cultures/Russians/Units/ClassicalAge/HorseArcher/Idle-v3.png"
+      ],
+      "generatedSource": "C:\\Users\\Damien\\.codex\\generated_images\\01a11641-9e1b-7c81-be76-c9edd53ef182\\exec-d82ed11a-ee56-4731-842e-5f0175f8b370.png",
+      "status": "selected-animation-source",
+      "nativeCopy": "SourceArt\\Native-Charged-Impact-v1.png"
+    },
+    {
+      "id": "charge",
+      "file": "Charge-v1.png",
+      "motion": "Natural collected gallop loop, keep exact horse gait.",
+      "prompt": "Edit reference1 SIX-FRAME mounted atlas into the approved HORSE ARCHER in reference2. Preserve reference1 six sequential horse poses, sizes, fixed saddle roots and gait exactly, but replace spear with compact recurve bow held in anatomical LEFT hand (SCREEN-RIGHT when facing down), reins in RIGHT hand SCREEN-LEFT. Remove every spear shaft/tip. Match reference2 iron armor leather fur horse tack and saddle quiver. Bowstring ONE taut line tip to tip on INSIDE of bow arm toward body, naturally occluded by forearm; never slack doubled or outside hand. Undrawn bow throughout this clip. Vertical overhead nose-down tail-up. EXACT1536x1024 atlas 3columns2rows512cells, six complete poses separated by transparent generous gutters; full horse rider bow within each cell. Transparent RGBAalpha0 outside crisp silhouette, NO background haze/glow/ground/shadows/text/grid. No new limbs or changed equipment. Chronological reading row-major. Motion: Natural collected gallop loop, keep exact horse gait.",
+      "references": [
+        "C:/Users/Damien/Documents/GitHub/AgeOfFronts/AgeOfFronts/Art/Cultures/Russians/Units/ClassicalAge/LightCavalry/SourceArt/Native-Charge-v1.png",
+        "C:/Users/Damien/Documents/GitHub/AgeOfFronts/AgeOfFronts/Art/Cultures/Russians/Units/ClassicalAge/HorseArcher/Idle-v3.png"
+      ],
+      "generatedSource": "C:\\Users\\Damien\\.codex\\generated_images\\01a11641-9e1b-7c81-be76-c9edd53ef182\\exec-2a25ec3d-c491-4a75-b572-65d8bf17c582.png",
+      "status": "selected-animation-source",
+      "nativeCopy": "SourceArt\\Native-Charge-v1.png"
+    },
+    {
+      "id": "charge-attack",
+      "file": "Charge-Attack-Forward-v2.png",
+      "motion": "Mounted charge shot. Frame1 horse finishing gallop rider leans forward; frame2 horse plants and braces as rider nocks arrow raises bow; frame3 full draw with left arm extended toward screen-right/down, right hand pulls string toward face/shoulder; frame4 release with same left bow hand and right hand followthrough, no airborne projectile; frame5 ease back into seat and lower bow; frame6 recovered ready stance.",
+      "prompt": "Precise motion correction of six-frame mounted horse archer atlas. Preserve all six horse poses, armor, quiver, fixed saddle positions, scale, cell layout and camera EXACTLY. ONLY change rider's aiming upper body arms bow and arrow in frames2,3,4 (top-middle,top-right,bottom-left). Current shot points right sideways; instead aim FORWARD toward screen-BOTTOM, arrow head toward lower-right slightly just outside horse neck. Turn upper torso and arm/bow aiming assembly clockwise about60degrees from original, so arrow shaft goes from drawing hand near helmet DOWN toward extended left hand near horse's screen-right shoulder, then point beyond hand downward beside neck. Anatomical LEFT hand screen-right ALWAYS grips bow center, right hand draws string near chin/face. Frame2 nocking partial draw, frame3 full draw with physically correct ONE V-shaped string to right hand and arrow nocked, frame4 release with left arm still extended forward, right hand follows through toward right cheek, NO arrow. Bow limbs now transverse/diagonal across forward direction, not upright side-facing bow. Keep end frames1,5,6 unchanged with undrawn string INSIDE left arm. One string, no floating fragments or doubled line. Same1536x1024 transparent PNG3x2 grid512cells with generous padding, no clipped bows, no floor fog shadows annotations.",
+      "references": [
+        "C:\\Users\\Damien\\.codex\\generated_images\\01a11641-9e1b-7c81-be76-c9edd53ef182\\exec-44e5b73c-3d45-4e87-aea2-5331f438eba6.png"
+      ],
+      "generatedSource": "C:\\Users\\Damien\\.codex\\generated_images\\01a11641-9e1b-7c81-be76-c9edd53ef182\\exec-a6378fd2-dc0c-40e5-b419-12e7d9f96be2.png",
+      "status": "superseded-animation-source-preserved",
+      "nativeCopy": "SourceArt\\Native-Charge-Attack-Forward-v2.png"
+    },
+    {
+      "id": "death",
+      "file": "Death-Together-v1.png",
+      "motion": "Horse and rider fall together onto side, keep exact chronological fall and settled final pose.",
+      "prompt": "Edit reference1 SIX-FRAME mounted atlas into the approved HORSE ARCHER in reference2. Preserve reference1 six sequential horse poses, sizes, fixed saddle roots and gait exactly, but replace spear with compact recurve bow held in anatomical LEFT hand (SCREEN-RIGHT when facing down), reins in RIGHT hand SCREEN-LEFT. Remove every spear shaft/tip. Match reference2 iron armor leather fur horse tack and saddle quiver. Bowstring ONE taut line tip to tip on INSIDE of bow arm toward body, naturally occluded by forearm; never slack doubled or outside hand. Undrawn bow throughout this clip. Vertical overhead nose-down tail-up. EXACT1536x1024 atlas 3columns2rows512cells, six complete poses separated by transparent generous gutters; full horse rider bow within each cell. Transparent RGBAalpha0 outside crisp silhouette, NO background haze/glow/ground/shadows/text/grid. No new limbs or changed equipment. Chronological reading row-major. Motion: Horse and rider fall together onto side, keep exact chronological fall and settled final pose. Keep entire fallen rider horse and bow in every cell, no end-frame inversion or flip; landed orientation stays the same in last three frames. Bow can settle beside rider but remains same recurve weapon. No spear.",
+      "references": [
+        "C:/Users/Damien/Documents/GitHub/AgeOfFronts/AgeOfFronts/Art/Cultures/Russians/Units/ClassicalAge/LightCavalry/SourceArt/Native-Death-Together-v1.png",
+        "C:/Users/Damien/Documents/GitHub/AgeOfFronts/AgeOfFronts/Art/Cultures/Russians/Units/ClassicalAge/HorseArcher/Idle-v3.png"
+      ],
+      "generatedSource": "C:\\Users\\Damien\\.codex\\generated_images\\01a11641-9e1b-7c81-be76-c9edd53ef182\\exec-da7d44d4-84fa-42c5-a9c5-7d20121f7218.png",
+      "status": "selected-animation-source",
+      "nativeCopy": "SourceArt\\Native-Death-Together-v1.png"
+    },
+    {
+      "id": "death-thrown",
+      "file": "Death-Thrown-Released-v2.png",
+      "motion": "Rider thrown off and lands beside standing horse. Keep exact chronological fall, final pose stays fallen.",
+      "prompt": "Correct hand continuity ONLY in six-frame mounted horse archer death atlas. Keep all horse and rider fall poses, camera, equipment, scale and cell positions exactly. Frame1 unchanged bow in anatomical left hand SCREEN-RIGHT. On frame2 rider is thrown left and RELEASES bow from that left hand; show both hands empty and recurve bow falling freely near rider not grasped by screen-left hand. Frame3 bow now falling beside rider, BOTH hands empty. Frames4,5,6 bow rests on ground beside fallen rider within each cell, hands empty. Never switch bow into anatomical right hand. Keep same compact recurve bow undrawn taut inside string. No ground painting/shadows, transparent alpha0 background. Preserve exact1536x1024 3x2atlas512cells and six chronological poses, no added limbs or annotations. All equipment fits own cell.",
+      "references": [
+        "C:\\Users\\Damien\\.codex\\generated_images\\01a11641-9e1b-7c81-be76-c9edd53ef182\\exec-ee10e7c2-173f-4b80-b2ef-1f253e158968.png"
+      ],
+      "generatedSource": "C:\\Users\\Damien\\.codex\\generated_images\\01a11641-9e1b-7c81-be76-c9edd53ef182\\exec-e2e87ec4-449a-4c9e-8aed-9ce8b4d67823.png",
+      "status": "selected-animation-source",
+      "nativeCopy": "SourceArt\\Native-Death-Thrown-Released-v2.png"
+    },
+    {
+      "id": "attack",
+      "file": "Attack-v1.png",
+      "motion": "Horse stands steadily. Frame1 relaxed left-hand bow; frame2 nock arrow and raise left-held bow forward; frame3 FULL DRAW left arm extended screen-right/down with bow, right hand drawing string back toward face and right shoulder, arrow points screen-bottom just right of horse head; frame4 RELEASE same left extended bow arm, right hand follows through behind cheek and arrow departs (do not draw airborne projectile); frame5 lower bow and recover; frame6 return ready idle.",
+      "prompt": "Animate approved overhead horse archer from this reference into SIX distinct chronological frames of Horse stands steadily. Frame1 relaxed left-hand bow; frame2 nock arrow and raise left-held bow forward; frame3 FULL DRAW left arm extended screen-right/down with bow, right hand drawing string back toward face and right shoulder, arrow points screen-bottom just right of horse head; frame4 RELEASE same left extended bow arm, right hand follows through behind cheek and arrow departs (do not draw airborne projectile); frame5 lower bow and recover; frame6 return ready idle. Keep anatomical LEFT hand always holding recurve bow (SCREEN-RIGHT when facing down); anatomical RIGHT hand draws string, never swapped. Physically correct recurve bow: undrawn ONE taut straight string inside arm like reference; full draw string forms ONE V from limb tips to right drawing hand, nocked arrow centered on grip, never strings outside bow. Bow visibly bends under tension then returns shape on release. Preserve matching iron helmet pauldrons bracers red leather fur collar quiver chestnut horse black mane/tail and tack. No shield spear club extra arms. Strict directly overhead orthographic with helmet crown, horse head DOWN tail UP, horse never side camera or horizontal. Same saddle root centered EACH cell, same character proportions/scale across six poses. Output1536x1024 PNG RGBA transparent 3columns2rows512cells row-major sequence, all full horse rider bow fit within own cell with generous alpha0 margins and row gutters. No floor fog shadows glow annotations/text/grid. Painted crisp stylized game sprite. Clear draw-release action, no duplicate frames.",
+      "references": [
+        "C:/Users/Damien/Documents/GitHub/AgeOfFronts/AgeOfFronts/Art/Cultures/Russians/Units/ClassicalAge/HorseArcher/Idle-v3.png"
+      ],
+      "generatedSource": "C:\\Users\\Damien\\.codex\\generated_images\\01a11641-9e1b-7c81-be76-c9edd53ef182\\exec-c4626d98-2b11-4015-93ea-e4b4669a8c8c.png",
+      "status": "superseded-animation-source-preserved"
+    },
+    {
+      "id": "attack",
+      "file": "Attack-Forward-Cutout-v3.png",
+      "motion": "Horse stands steadily. Frame1 relaxed left-hand bow; frame2 nock arrow and raise left-held bow forward; frame3 FULL DRAW left arm extended screen-right/down with bow, right hand drawing string back toward face and right shoulder, arrow points screen-bottom just right of horse head; frame4 RELEASE same left extended bow arm, right hand follows through behind cheek and arrow departs (do not draw airborne projectile); frame5 lower bow and recover; frame6 return ready idle.",
+      "prompt": "Transparent background extraction ONLY. Preserve all SIX horse archer sprites and all painted actor pixels and thin strings exactly, no pose changes, no rescaling. Remove ALL brown/black haze and semitransparent backdrop between/around sprites. Background must be TRUE alpha0 everywhere outside the horse rider equipment silhouette, including every gap around bowstring and every empty row gutter. Do NOT paint black/checkerboard/green background; actual PNG RGBA transparency. Keep edge antialias only one pixel around silhouettes. Every horse bow rider unchanged and complete. Same1536x1024 exact3x2grid512cells, NO shadow glow fog haze or new content. This is a game sprite atlas cutout, not artwork on a dark backdrop.",
+      "references": [
+        "C:\\Users\\Damien\\.codex\\generated_images\\01a11641-9e1b-7c81-be76-c9edd53ef182\\exec-164dd636-707b-498a-874f-56d7cb27138f.png"
+      ],
+      "generatedSource": "C:\\Users\\Damien\\.codex\\generated_images\\01a11641-9e1b-7c81-be76-c9edd53ef182\\exec-b4499eeb-e663-4922-8db0-bae7ac9ecccd.png",
+      "status": "superseded-animation-source-preserved"
+    },
+    {
+      "id": "charge-attack",
+      "file": "Charge-Attack-v1.png",
+      "motion": "Mounted charge shot. Frame1 horse finishing gallop rider leans forward; frame2 horse plants and braces as rider nocks arrow raises bow; frame3 full draw with left arm extended toward screen-right/down, right hand pulls string toward face/shoulder; frame4 release with same left bow hand and right hand followthrough, no airborne projectile; frame5 ease back into seat and lower bow; frame6 recovered ready stance.",
+      "prompt": "Animate approved overhead horse archer from this reference into SIX distinct chronological frames of Mounted charge shot. Frame1 horse finishing gallop rider leans forward; frame2 horse plants and braces as rider nocks arrow raises bow; frame3 full draw with left arm extended toward screen-right/down, right hand pulls string toward face/shoulder; frame4 release with same left bow hand and right hand followthrough, no airborne projectile; frame5 ease back into seat and lower bow; frame6 recovered ready stance. Keep anatomical LEFT hand always holding recurve bow (SCREEN-RIGHT when facing down); anatomical RIGHT hand draws string, never swapped. Physically correct recurve bow: undrawn ONE taut straight string inside arm like reference; full draw string forms ONE V from limb tips to right drawing hand, nocked arrow centered on grip, never strings outside bow. Bow visibly bends under tension then returns shape on release. Preserve matching iron helmet pauldrons bracers red leather fur collar quiver chestnut horse black mane/tail and tack. No shield spear club extra arms. Strict directly overhead orthographic with helmet crown, horse head DOWN tail UP, horse never side camera or horizontal. Same saddle root centered EACH cell, same character proportions/scale across six poses. Output1536x1024 PNG RGBA transparent 3columns2rows512cells row-major sequence, all full horse rider bow fit within own cell with generous alpha0 margins and row gutters. No floor fog shadows glow annotations/text/grid. Painted crisp stylized game sprite. Clear draw-release action, no duplicate frames.",
+      "references": [
+        "C:/Users/Damien/Documents/GitHub/AgeOfFronts/AgeOfFronts/Art/Cultures/Russians/Units/ClassicalAge/HorseArcher/Idle-v3.png"
+      ],
+      "generatedSource": "C:\\Users\\Damien\\.codex\\generated_images\\01a11641-9e1b-7c81-be76-c9edd53ef182\\exec-44e5b73c-3d45-4e87-aea2-5331f438eba6.png",
+      "status": "superseded-animation-source-preserved"
+    },
+    {
+      "id": "charge-attack",
+      "file": "Charge-Attack-Forward-Cutout-v3.png",
+      "motion": "Mounted charge shot. Frame1 horse finishing gallop rider leans forward; frame2 horse plants and braces as rider nocks arrow raises bow; frame3 full draw with left arm extended toward screen-right/down, right hand pulls string toward face/shoulder; frame4 release with same left bow hand and right hand followthrough, no airborne projectile; frame5 ease back into seat and lower bow; frame6 recovered ready stance.",
+      "prompt": "Transparent background extraction ONLY. Preserve all SIX horse archer sprites and all painted actor pixels and thin strings exactly, no pose changes, no rescaling. Remove ALL brown/black haze and semitransparent backdrop between/around sprites. Background must be TRUE alpha0 everywhere outside the horse rider equipment silhouette, including every gap around bowstring and every empty row gutter. Do NOT paint black/checkerboard/green background; actual PNG RGBA transparency. Keep edge antialias only one pixel around silhouettes. Every horse bow rider unchanged and complete. Same1536x1024 exact3x2grid512cells, NO shadow glow fog haze or new content. This is a game sprite atlas cutout, not artwork on a dark backdrop.",
+      "references": [
+        "C:\\Users\\Damien\\.codex\\generated_images\\01a11641-9e1b-7c81-be76-c9edd53ef182\\exec-a6378fd2-dc0c-40e5-b419-12e7d9f96be2.png"
+      ],
+      "generatedSource": "C:\\Users\\Damien\\.codex\\generated_images\\01a11641-9e1b-7c81-be76-c9edd53ef182\\exec-ff755bc8-e274-4809-8abc-6dce3c0db407.png",
+      "status": "superseded-animation-source-preserved"
+    },
+    {
+      "id": "death-thrown",
+      "file": "Death-Thrown-v1.png",
+      "motion": "Rider thrown off and lands beside standing horse. Keep exact chronological fall, final pose stays fallen.",
+      "prompt": "Edit reference1 SIX-FRAME mounted atlas into the approved HORSE ARCHER in reference2. Preserve reference1 six sequential horse poses, sizes, fixed saddle roots and gait exactly, but replace spear with compact recurve bow held in anatomical LEFT hand (SCREEN-RIGHT when facing down), reins in RIGHT hand SCREEN-LEFT. Remove every spear shaft/tip. Match reference2 iron armor leather fur horse tack and saddle quiver. Bowstring ONE taut line tip to tip on INSIDE of bow arm toward body, naturally occluded by forearm; never slack doubled or outside hand. Undrawn bow throughout this clip. Vertical overhead nose-down tail-up. EXACT1536x1024 atlas 3columns2rows512cells, six complete poses separated by transparent generous gutters; full horse rider bow within each cell. Transparent RGBAalpha0 outside crisp silhouette, NO background haze/glow/ground/shadows/text/grid. No new limbs or changed equipment. Chronological reading row-major. Motion: Rider thrown off and lands beside standing horse. Keep exact chronological fall, final pose stays fallen. Keep entire fallen rider horse and bow in every cell, no end-frame inversion or flip; landed orientation stays the same in last three frames. Bow can settle beside rider but remains same recurve weapon. No spear.",
+      "references": [
+        "C:/Users/Damien/Documents/GitHub/AgeOfFronts/AgeOfFronts/Art/Cultures/Russians/Units/ClassicalAge/LightCavalry/SourceArt/Native-Death-Thrown-v1.png",
+        "C:/Users/Damien/Documents/GitHub/AgeOfFronts/AgeOfFronts/Art/Cultures/Russians/Units/ClassicalAge/HorseArcher/Idle-v3.png"
+      ],
+      "generatedSource": "C:\\Users\\Damien\\.codex\\generated_images\\01a11641-9e1b-7c81-be76-c9edd53ef182\\exec-ee10e7c2-173f-4b80-b2ef-1f253e158968.png",
+      "status": "superseded-animation-source-preserved"
+    },
+    {
+      "id": "attack",
+      "file": "Attack-Forward-v4.png",
+      "prompt": "Edit ONLY aiming poses of this six-frame overhead mounted horse archer atlas. User wants firing MUCH MORE FORWARD. In frames2,3,4 turn RIDER torso, helmet/head, shoulders and arms about40degrees further clockwise from current aiming pose so he faces nearly directly screen-BOTTOM. HORSE remains unchanged facing screen-bottom. Arrow must point ALMOST VERTICALLY DOWN, at most10degrees to right of straight screen-down, parallel to horse's travel. This is NOT another diagonally sideways shot. Left bow hand extended forward/down to just beside the horse's right shoulder at local cell(315,320), right draw hand at near local(285,205), arrow line from(285,205) to(320,390). Arrowhead lower than both hands, below horse shoulder; arrow NEVER pointing strongly right. Recurve bow lies almost horizontal across firing line in overhead plane, diagonally slightly; do NOT leave bow vertical beside shoulder. Anatomical LEFT hand always grips bow, anatomical RIGHT hand draws string toward cheek and follows through. Turn upper body with arms so posture anatomically plausible. Frame2 nock/partial draw,frame3full draw single V string to draw hand,frame4 release (arrow absent, bow same forward direction). Frames1,5,6 remain original ready idle poses. Preserve iron armor redleather fur quiver horse tack all six horse poses EXACTLY, fixed saddle roots and size. SIX512cells3x2 EXACT1536x1024 RGBA true transparency alpha0 outside sprites, no haze fog brown/black background shadows grid or annotations. All bow/arrow fit own cell. Crisp painted game sprites.",
+      "references": [
+        "SourceArt/Native-Attack-Forward-Cutout-v3.png"
+      ],
+      "generatedSource": "C:\\Users\\Damien\\.codex\\generated_images\\01a11641-9e1b-7c81-be76-c9edd53ef182\\exec-db68e4bf-31d8-4cf3-a967-a8df4efd10a7.png",
+      "status": "superseded-animation-source-preserved"
+    },
+    {
+      "id": "attack",
+      "file": "Attack-Forward-Draw-v5.png",
+      "prompt": "Precise bowstring correction and transparent cutout of this six-frame overhead horse archer atlas. Preserve ALL sprites, poses, armor, horse, arms, hands and arrow aiming direction nearly STRAIGHT SCREEN-DOWN exactly. Do not change forward shot, torso twist, bow hand or camera. In frames2 (top-middle) and3(top-right) existing straight string between bow tips incorrectly implies no draw. Replace that string with ONE DRAWN V-SHAPED string: two taut segments from left and right bow limb tip nocks converge EXACTLY at the anatomical RIGHT drawing hand near helmet above bow. Remove the straight horizontal segment across bow in those frames. Partial draw frame2, full draw frame3; string apex touches arrow nock at drawing fingers, arrow shaft passes left-hand bowgrip and points straight down along horse neck as already shown. Bow never swaps hands. Frame4(bottom-left) release retains ONE straight tip-to-tip string with no arrow. Otherframes1,5,6 unchanged. No extra string or arrow fragments. Remove ALL brownblack backdrop haze so every pixel outside actor silhouette is alpha0, including empty row gutters. Only onepixel antialias near silhouettes. Native transparent PNG RGBA1536x1024 exact3columns2rows512cells, no fog floor shadows text or grid, no rescale.",
+      "references": [
+        "C:\\Users\\Damien\\.codex\\generated_images\\01a11641-9e1b-7c81-be76-c9edd53ef182\\exec-db68e4bf-31d8-4cf3-a967-a8df4efd10a7.png"
+      ],
+      "generatedSource": "C:\\Users\\Damien\\.codex\\generated_images\\01a11641-9e1b-7c81-be76-c9edd53ef182\\exec-7aded17e-ca5c-48d3-b7c4-b92c056730d7.png",
+      "status": "superseded-animation-source-preserved"
+    },
+    {
+      "id": "charge-attack",
+      "file": "Charge-Attack-Forward-v4.png",
+      "prompt": "Edit ONLY aiming poses of this six-frame overhead mounted horse archer atlas. User wants firing MUCH MORE FORWARD. In frames2,3,4 turn RIDER torso, helmet/head, shoulders and arms about40degrees further clockwise from current aiming pose so he faces nearly directly screen-BOTTOM. HORSE remains unchanged facing screen-bottom. Arrow must point ALMOST VERTICALLY DOWN, at most10degrees to right of straight screen-down, parallel to horse's travel. This is NOT another diagonally sideways shot. Left bow hand extended forward/down to just beside the horse's right shoulder at local cell(315,320), right draw hand at near local(285,205), arrow line from(285,205) to(320,390). Arrowhead lower than both hands, below horse shoulder; arrow NEVER pointing strongly right. Recurve bow lies almost horizontal across firing line in overhead plane, diagonally slightly; do NOT leave bow vertical beside shoulder. Anatomical LEFT hand always grips bow, anatomical RIGHT hand draws string toward cheek and follows through. Turn upper body with arms so posture anatomically plausible. Frame2 nock/partial draw,frame3full draw single V string to draw hand,frame4 release (arrow absent, bow same forward direction). Frames1,5,6 remain original ready idle poses. Preserve iron armor redleather fur quiver horse tack all six horse poses EXACTLY, fixed saddle roots and size. SIX512cells3x2 EXACT1536x1024 RGBA true transparency alpha0 outside sprites, no haze fog brown/black background shadows grid or annotations. All bow/arrow fit own cell. Crisp painted game sprites.",
+      "references": [
+        "SourceArt/Native-Charge-Attack-Forward-Cutout-v3.png"
+      ],
+      "generatedSource": "C:\\Users\\Damien\\.codex\\generated_images\\01a11641-9e1b-7c81-be76-c9edd53ef182\\exec-439035f5-b817-4adc-ab5d-7754d69f80cb.png",
+      "status": "superseded-animation-source-preserved"
+    },
+    {
+      "id": "charge-attack",
+      "file": "Charge-Attack-Forward-Draw-v5.png",
+      "prompt": "Precise bowstring correction and transparent cutout of this six-frame overhead horse archer atlas. Preserve ALL sprites, poses, armor, horse, arms, hands and arrow aiming direction nearly STRAIGHT SCREEN-DOWN exactly. Do not change forward shot, torso twist, bow hand or camera. In frames2 (top-middle) and3(top-right) existing straight string between bow tips incorrectly implies no draw. Replace that string with ONE DRAWN V-SHAPED string: two taut segments from left and right bow limb tip nocks converge EXACTLY at the anatomical RIGHT drawing hand near helmet above bow. Remove the straight horizontal segment across bow in those frames. Partial draw frame2, full draw frame3; string apex touches arrow nock at drawing fingers, arrow shaft passes left-hand bowgrip and points straight down along horse neck as already shown. Bow never swaps hands. Frame4(bottom-left) release retains ONE straight tip-to-tip string with no arrow. Otherframes1,5,6 unchanged. No extra string or arrow fragments. Remove ALL brownblack backdrop haze so every pixel outside actor silhouette is alpha0, including empty row gutters. Only onepixel antialias near silhouettes. Native transparent PNG RGBA1536x1024 exact3columns2rows512cells, no fog floor shadows text or grid, no rescale.",
+      "references": [
+        "C:\\Users\\Damien\\.codex\\generated_images\\01a11641-9e1b-7c81-be76-c9edd53ef182\\exec-439035f5-b817-4adc-ab5d-7754d69f80cb.png"
+      ],
+      "generatedSource": "C:\\Users\\Damien\\.codex\\generated_images\\01a11641-9e1b-7c81-be76-c9edd53ef182\\exec-97865bf7-cbea-4c1a-8b3c-c3bfd191f4d1.png",
+      "status": "superseded-animation-source-preserved"
+    },
+    {
+      "id": "charge-attack",
+      "file": "Charge-Attack-Forward-Draw-v6.png",
+      "prompt": "Edit two drawn bowstrings ONLY, then deliver pristine actual transparent alpha PNG. This mounted archer now correctly fires straight screen-DOWN; preserve ALL six horse/rider/arms/bow/arrow poses and forward direction exactly. In TOP-MIDDLE and TOP-RIGHT full-draw frames, ERASE thin straight horizontal string between left and right bowtips. REPLACE with a triangular drawn string apex at drawing fingers near helmet. TOP-RIGHT coordinates on1536x1024canvas: left tip approx(1160,345) -> drawhand(1240,230) -> right tip(1400,325). This makes an upside-downV with apex UP toward rider helmet, not horizontal across horse. If a string goes under arm, correctly occlude only hidden parts. TOP-MIDDLE corresponding local cell coords lefttip(175,328)->drawingfingers(245,256)->righttip(415,320). EXACTLY two taut segments one V, no third horizontal chord between tips. Arrow nock stays at apex drawingfingers and shaft points nearly vertically down through left-hand grip. DO NOT turn or change aiming. Frame4 RELEASE straight string between tips, no arrow. Otherframes unchanged. REMOVE brownblack backdrop haze and all isolated stray alpha in empty row gutters without affecting actors. True alpha0 outside crisp silhouettes. Transparent PNG RGBA1536x1024 three512columns two512rows. Wholeactors fit own cells with clear transparent row gutters, no ground glow haze shadows text.",
+      "references": [
+        "C:\\Users\\Damien\\.codex\\generated_images\\01a11641-9e1b-7c81-be76-c9edd53ef182\\exec-97865bf7-cbea-4c1a-8b3c-c3bfd191f4d1.png"
+      ],
+      "generatedSource": "C:\\Users\\Damien\\.codex\\generated_images\\01a11641-9e1b-7c81-be76-c9edd53ef182\\exec-96d9312d-27cb-4729-b9c5-ddb7897a7339.png",
+      "status": "superseded-animation-source-preserved"
+    },
+    {
+      "id": "charge-attack",
+      "file": "Charge-Attack-Forward-Cutout-v7.png",
+      "prompt": "Transparent game sprite atlas cutout cleanup ONLY of reference. Retain ALL six horse archer forward aiming poses exactly including triangular DRAWN strings, nearly vertical downward arrow shafts, proportions and saddle pivots. Remove every stray halo/faint semitransparent pixel away from silhouettes, especially BETWEEN upper and lower rows around y500..525. Preserve actual horse noses and tail tips, but there must be a clear transparent gap separating the two rows. No pose changes, no resize, no repaint armor or bow. TRUE PNG RGBA alpha0 background; no blackbrown fog/shadow/ground. EXACT1536x1024 six512cells3columns2rows. The output must be actual isolated transparent sprites, not illustration on dark background.",
+      "references": [
+        "C:\\Users\\Damien\\.codex\\generated_images\\01a11641-9e1b-7c81-be76-c9edd53ef182\\exec-96d9312d-27cb-4729-b9c5-ddb7897a7339.png"
+      ],
+      "generatedSource": "C:\\Users\\Damien\\.codex\\generated_images\\01a11641-9e1b-7c81-be76-c9edd53ef182\\exec-6f4f6a72-bb89-42f3-a383-76906741b769.png",
+      "status": "superseded-animation-source-preserved"
+    },
+    {
+      "id": "charge-attack",
+      "file": "Charge-Attack-Forward-Padded-v8.png",
+      "prompt": "Produce this EXACT six-frame forward-firing horse archer animation as an atlas with MORE TRANSPARENT PADDING. Reference poses are approved: preserve all their anatomy, rider forward turn, LEFT hand bow grip, nearly straight downward arrow, V-shaped drawn strings and straight released string. Same horse and rider/armor quiver. Scale EACH COMPLETE POSE including horse tail bow arrow to90percent of its present size around its unchanged saddle pivot at center of own512pixel cell. Do NOT crop tail tips or hooves. Each full sprite MUST leave at least20pixels of totally transparent alpha0 margin at top/bottom/left/right of its512cell, making a CLEAR alpha0 band at y500..524 across whole atlas. Six whole sprites strictly isolated. NO sprites touch or overlap row/cell borders. SAME3columns2rows1536x1024 RGBAtransparent. Absolutely no opaque or semitransparent black/brown haze or glow outside silhouettes, empty background alpha0. No grid text ground shadows. Only uniform size reduction within cells, preserve poses exactly. Frameorderunchanged.",
+      "references": [
+        "C:\\Users\\Damien\\.codex\\generated_images\\01a11641-9e1b-7c81-be76-c9edd53ef182\\exec-6f4f6a72-bb89-42f3-a383-76906741b769.png"
+      ],
+      "generatedSource": "C:\\Users\\Damien\\.codex\\generated_images\\01a11641-9e1b-7c81-be76-c9edd53ef182\\exec-e650f4c8-db60-4399-88b5-0867c5b46130.png",
+      "sourcePoseScale": 0.9,
+      "status": "superseded-animation-source-preserved"
+    },
+    {
+      "id": "attack",
+      "file": "Attack-StyleMatched-v6.png",
+      "prompt": "Rebuild SIX animation frames of the horse archer in REFERENCE1 (single approved idle), using REFERENCE2 ONLY for six chronological aiming poses. REFERENCE1 is the ABSOLUTE rendering/material/color authority: precisely match its muted reddish BROWN leather (not bright red/orange), natural medium chestnut horse, cool gray iron, cream fur, smooth restrained painterly shading, soft fine details and thin natural edges. Do NOT copy reference2 colors, black strokes, bright orange highlights, grain, oversharpening or texture. No thick black cartoon outline around horse/body/bow/individual armor pieces. No speckled noise or grit. The result must look like the SAME artist and SAME unit as reference1 changed pose, not a comic redraw. Recreate from reference1 afresh rather than filtering reference2. Preserve single seated horse archer equipment/identity: iron domehelm pairedpauldrons bracers leather fur trousers boots quiver chestnut horse blackmane/tail. Motion followsreference2: frame1ready; frame2 nockandpartialdraw forward; frame3fulldraw forward; frame4releaseforward noarrow; frame5lowerbowrecover; frame6ready. Rider twists toward horse facing so arrow points almost STRAIGHT SCREEN-DOWN, not sideways. Anatomical LEFT hand holds wooden horn recurve bow, RIGHT hand draws string at cheek. Arrow nock sits at right fingers, shaft rests on bow at left-hand grip and extends down ahead of horse. Frame2/3string ONE drawnV from limb nocks to rightdrawhand, frame4single straight tip-to-tip string. Undrawnstring inside leftarm inreadyposes asreference1. Strict overhead orthographic helmetcrown noseDOWN tailUP throughout. Horse feet matchreference2, no newgait or camera. EXACT1536x1024 six512cells3columns2rows rowmajor. Same fixed saddlecenter(256,256) and uniform actor scale in eachcell. Whole horse rider bow arrow occupy at most440px height leaving at least30px totallyTRANSPARENT top/bottom padding percell. True RGBAalpha0 outside crisp silhouette and across clear rowgutters, NO brownblack backdrop fog shadow glow ground text grid. Output only six-frame atlas. Highestpriority: muted palette, smooth painted finish, minimal outlines exactly like REFERENCE1.",
+      "references": [
+        "Idle-v3.png",
+        "SourceArt/Native-Attack-Forward-Draw-v5.png"
+      ],
+      "generatedSource": "C:\\Users\\Damien\\.codex\\generated_images\\01a11641-9e1b-7c81-be76-c9edd53ef182\\exec-4eca1f3f-a379-4791-a853-847db9158095.png",
+      "displayScale": 1.4,
+      "status": "superseded-animation-source-preserved"
+    },
+    {
+      "id": "charge-attack",
+      "file": "Charge-Attack-StyleMatched-v9.png",
+      "prompt": "Rebuild SIX animation frames of the horse archer in REFERENCE1 (single approved idle), using REFERENCE2 ONLY for six chronological aiming poses. REFERENCE1 is the ABSOLUTE rendering/material/color authority: precisely match its muted reddish BROWN leather (not bright red/orange), natural medium chestnut horse, cool gray iron, cream fur, smooth restrained painterly shading, soft fine details and thin natural edges. Do NOT copy reference2 colors, black strokes, bright orange highlights, grain, oversharpening or texture. No thick black cartoon outline around horse/body/bow/individual armor pieces. No speckled noise or grit. The result must look like the SAME artist and SAME unit as reference1 changed pose, not a comic redraw. Recreate from reference1 afresh rather than filtering reference2. Preserve single seated horse archer equipment/identity: iron domehelm pairedpauldrons bracers leather fur trousers boots quiver chestnut horse blackmane/tail. Motion followsreference2: frame1ready; frame2 nockandpartialdraw forward; frame3fulldraw forward; frame4releaseforward noarrow; frame5lowerbowrecover; frame6ready. Rider twists toward horse facing so arrow points almost STRAIGHT SCREEN-DOWN, not sideways. Anatomical LEFT hand holds wooden horn recurve bow, RIGHT hand draws string at cheek. Arrow nock sits at right fingers, shaft rests on bow at left-hand grip and extends down ahead of horse. Frame2/3string ONE drawnV from limb nocks to rightdrawhand, frame4single straight tip-to-tip string. Undrawnstring inside leftarm inreadyposes asreference1. Strict overhead orthographic helmetcrown noseDOWN tailUP throughout. Horse feet matchreference2, no newgait or camera. EXACT1536x1024 six512cells3columns2rows rowmajor. Same fixed saddlecenter(256,256) and uniform actor scale in eachcell. Whole horse rider bow arrow occupy at most440px height leaving at least30px totallyTRANSPARENT top/bottom padding percell. True RGBAalpha0 outside crisp silhouette and across clear rowgutters, NO brownblack backdrop fog shadow glow ground text grid. Output only six-frame atlas. Highestpriority: muted palette, smooth painted finish, minimal outlines exactly like REFERENCE1.",
+      "references": [
+        "Idle-v3.png",
+        "SourceArt/Native-Charge-Attack-Forward-Padded-v8.png"
+      ],
+      "generatedSource": "C:\\Users\\Damien\\.codex\\generated_images\\01a11641-9e1b-7c81-be76-c9edd53ef182\\exec-3add32cb-2be4-4214-b521-aa72446ff086.png",
+      "displayScale": 1.4,
+      "status": "superseded-animation-source-preserved"
+    },
+    {
+      "id": "attack",
+      "file": "Attack-ArrowGrip-v7.png",
+      "prompt": "Surgical correction of this exact six-frame horse archer atlas. Preserve all six poses, every horse/rider/armor color and texture, smooth finish, subdued palette, silhouette, scale, pixel positions, 1536x1024 3x2 grid of 512px cells, and original transparent alpha. Change ONLY the arrow placement in frames2 and3 (top middle and top right). Currently the shaft crosses the bow far to the screen-LEFT of the gripping LEFT hand, on a limb. The arrow MUST instead rest directly adjacent to the anatomical LEFT bow hand, just above that gripping hand's index knuckle at the central bow grip: shaft must cross the bow within 4-8 pixels of the fingers, NOT halfway up a limb. Keep the arrow nock in the right draw fingers near the face, adjusting those fingers minimally if necessary so a single straight arrow shaft runs from right draw hand through a point immediately next to left bow hand and projects forward/down beyond the bow. Keep near screen-down aim. One arrow only. String remains two segments joining limb tips to the right draw hand; do not mistake string for arrow. Frame4 is release with NO arrow remaining. Frames1,4,5,6 otherwise unchanged. No outlines added, no bright red, no grain, no shadows, no background. Exact same overhead horse archer and fixed 512-cell layout; generous transparent row gutters.",
+      "references": [
+        "SourceArt/Native-Attack-StyleMatched-v6.png"
+      ],
+      "generatedSource": "C:\\Users\\Damien\\.codex\\generated_images\\01a11641-9e1b-7c81-be76-c9edd53ef182\\exec-26e6b07f-cfde-47ce-bd98-35e9419c4694.png",
+      "displayScale": 1.2,
+      "status": "selected-animation-source",
+      "preservedFrameSource": "SourceArt/Native-Attack-StyleMatched-v6.png",
+      "preservedFrameIndices": [
+        0,
+        3,
+        4,
+        5
+      ]
+    },
+    {
+      "id": "charge-attack",
+      "file": "Charge-Attack-ArrowGrip-v10.png",
+      "prompt": "Surgical correction of this exact six-frame horse archer atlas. Preserve all six poses, every horse/rider/armor color and texture, smooth finish, subdued palette, silhouette, scale, pixel positions, 1536x1024 3x2 grid of 512px cells, and original transparent alpha. Change ONLY the arrow placement in frames2 and3 (top middle and top right). Currently the shaft crosses the bow far to the screen-LEFT of the gripping LEFT hand, on a limb. The arrow MUST instead rest directly adjacent to the anatomical LEFT bow hand, just above that gripping hand's index knuckle at the central bow grip: shaft must cross the bow within 4-8 pixels of the fingers, NOT halfway up a limb. Keep the arrow nock in the right draw fingers near the face, adjusting those fingers minimally if necessary so a single straight arrow shaft runs from right draw hand through a point immediately next to left bow hand and projects forward/down beyond the bow. Keep near screen-down aim. One arrow only. String remains two segments joining limb tips to the right draw hand; do not mistake string for arrow. Frame4 is release with NO arrow remaining. Frames1,4,5,6 otherwise unchanged. No outlines added, no bright red, no grain, no shadows, no background. Exact same overhead horse archer and fixed 512-cell layout; generous transparent row gutters.",
+      "references": [
+        "SourceArt/Native-Charge-Attack-StyleMatched-v9.png"
+      ],
+      "generatedSource": "C:\\Users\\Damien\\.codex\\generated_images\\01a11641-9e1b-7c81-be76-c9edd53ef182\\exec-f1f1c0d5-d165-4da0-ba5e-cb3a83636ba1.png",
+      "displayScale": 1.2,
+      "status": "superseded-animation-source-preserved"
+    },
+    {
+      "id": "charge-attack",
+      "file": "Charge-Attack-ArrowGrip-v11.png",
+      "prompt": "Edit this exact six-frame atlas narrowly. In top middle and top right frames ONLY, move the arrow shaft so it rests at the bow grip right next to the anatomical LEFT hand (screen-right hand holding the bow), instead of halfway along the screen-left bow limb. The shaft must be ONE PERFECTLY STRAIGHT rigid wooden line, running diagonally from the right draw fingers near helmet, across the left bow hand's index knuckle at grip, then continuing along THE EXACT SAME straight line to arrowhead forward/screen-down-right. Angle about 25degrees right of screen-down is fine. NO bend or kink at the grip. NO separate vertical shaft segment below hand. The nock must touch right draw fingers; shaft must cross immediately next to left grip fingers. Keep SINGLE arrow and existing drawn string two strands from bowtips to drawfingers. Everything else in all frames identical: exact muted brown/red leather and chestnut horse, grayiron, creamfur, smoothpainted texture, thin natural edges, riderposes, horse anatomy, camera, silhouette, palette, and scale. Frames1,4,5,6 unchanged, frame4release noarrow. Same1536x1024 threecolumns tworows 512pxcells fixedsaddleroot, transparentalpha0 emptygutters. No backgroundshadow. Preserve native RGBA.",
+      "references": [
+        "SourceArt/Native-Charge-Attack-StyleMatched-v9.png"
+      ],
+      "generatedSource": "C:\\Users\\Damien\\.codex\\generated_images\\01a11641-9e1b-7c81-be76-c9edd53ef182\\exec-62e2aae3-9e82-4371-83ff-f6de55b5ab3b.png",
+      "displayScale": 1.2,
+      "status": "selected-animation-source",
+      "preservedFrameSource": "SourceArt/Native-Charge-Attack-StyleMatched-v9.png",
+      "preservedFrameIndices": [
+        0,
+        3,
+        4,
+        5
+      ]
+    }
+  ]
+}

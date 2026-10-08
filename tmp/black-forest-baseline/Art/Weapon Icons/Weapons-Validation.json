@@ -1,0 +1,478 @@
+{
+  "passed": true,
+  "scope": "file contracts, alpha, frame hashes, sheet pixels, preview timing, roster; camera and action direction reviewed visually",
+  "unitCount": 12,
+  "clipCount": 36,
+  "frameCount": 468,
+  "errors": [],
+  "units": [
+    {
+      "key": "Mangonel",
+      "directory": "Field Artillery/Mangonel_ClassicalAge",
+      "clips": {
+        "idle": {
+          "frames": 12,
+          "paintedPoses": 4,
+          "durationMs": 1000,
+          "previewDurationMs": 1000,
+          "sheetSize": [
+            3762,
+            1254
+          ],
+          "passed": true
+        },
+        "movement": {
+          "frames": 8,
+          "paintedPoses": 4,
+          "durationMs": 667,
+          "previewDurationMs": 667,
+          "sheetSize": [
+            3762,
+            1254
+          ],
+          "passed": true
+        },
+        "attack": {
+          "frames": 24,
+          "paintedPoses": 4,
+          "durationMs": 2000,
+          "previewDurationMs": 2700,
+          "sheetSize": [
+            3762,
+            2508
+          ],
+          "passed": true
+        }
+      }
+    },
+    {
+      "key": "Ballista",
+      "directory": "Field Artillery/Ballista_EarlyMedieval",
+      "clips": {
+        "idle": {
+          "frames": 12,
+          "paintedPoses": 4,
+          "durationMs": 1000,
+          "previewDurationMs": 1000,
+          "sheetSize": [
+            3762,
+            1254
+          ],
+          "passed": true
+        },
+        "movement": {
+          "frames": 8,
+          "paintedPoses": 4,
+          "durationMs": 667,
+          "previewDurationMs": 667,
+          "sheetSize": [
+            3762,
+            1254
+          ],
+          "passed": true
+        },
+        "attack": {
+          "frames": 18,
+          "paintedPoses": 4,
+          "durationMs": 1500,
+          "previewDurationMs": 2200,
+          "sheetSize": [
+            3762,
+            1881
+          ],
+          "passed": true
+        }
+      }
+    },
+    {
+      "key": "OrganGun",
+      "directory": "Field Artillery/OrganGun_LateMedieval",
+      "clips": {
+        "idle": {
+          "frames": 12,
+          "paintedPoses": 4,
+          "durationMs": 1000,
+          "previewDurationMs": 1000,
+          "sheetSize": [
+            3762,
+            1254
+          ],
+          "passed": true
+        },
+        "movement": {
+          "frames": 8,
+          "paintedPoses": 4,
+          "durationMs": 667,
+          "previewDurationMs": 667,
+          "sheetSize": [
+            3762,
+            1254
+          ],
+          "passed": true
+        },
+        "attack": {
+          "frames": 18,
+          "paintedPoses": 4,
+          "durationMs": 1500,
+          "previewDurationMs": 2200,
+          "sheetSize": [
+            3762,
+            1881
+          ],
+          "passed": true
+        }
+      }
+    },
+    {
+      "key": "NapoleonicCannon",
+      "directory": "Field Artillery/NapoleonicCannon_EarlyModern",
+      "clips": {
+        "idle": {
+          "frames": 12,
+          "paintedPoses": 4,
+          "durationMs": 1000,
+          "previewDurationMs": 1000,
+          "sheetSize": [
+            3762,
+            1254
+          ],
+          "passed": true
+        },
+        "movement": {
+          "frames": 8,
+          "paintedPoses": 4,
+          "durationMs": 667,
+          "previewDurationMs": 667,
+          "sheetSize": [
+            3762,
+            1254
+          ],
+          "passed": true
+        },
+        "attack": {
+          "frames": 18,
+          "paintedPoses": 4,
+          "durationMs": 1500,
+          "previewDurationMs": 2200,
+          "sheetSize": [
+            3762,
+            1881
+          ],
+          "passed": true
+        }
+      }
+    },
+    {
+      "key": "BrowningMachineGunner",
+      "directory": "Field Artillery/BrowningMachineGunner_Modern",
+      "clips": {
+        "idle": {
+          "frames": 12,
+          "paintedPoses": 4,
+          "durationMs": 1000,
+          "previewDurationMs": 1000,
+          "sheetSize": [
+            3762,
+            1254
+          ],
+          "passed": true
+        },
+        "movement": {
+          "frames": 8,
+          "paintedPoses": 4,
+          "durationMs": 667,
+          "previewDurationMs": 667,
+          "sheetSize": [
+            3762,
+            1254
+          ],
+          "passed": true
+        },
+        "attack": {
+          "frames": 12,
+          "paintedPoses": 4,
+          "durationMs": 1000,
+          "previewDurationMs": 1700,
+          "sheetSize": [
+            3762,
+            1254
+          ],
+          "passed": true
+        }
+      }
+    },
+    {
+      "key": "BatteringRam",
+      "directory": "Siege Weapons/BatteringRam_BronzeAge",
+      "clips": {
+        "idle": {
+          "frames": 12,
+          "paintedPoses": 4,
+          "durationMs": 1000,
+          "previewDurationMs": 1000,
+          "sheetSize": [
+            3762,
+            1254
+          ],
+          "passed": true
+        },
+        "movement": {
+          "frames": 8,
+          "paintedPoses": 4,
+          "durationMs": 667,
+          "previewDurationMs": 667,
+          "sheetSize": [
+            3762,
+            1254
+          ],
+          "passed": true
+        },
+        "attack": {
+          "frames": 18,
+          "paintedPoses": 4,
+          "durationMs": 1500,
+          "previewDurationMs": 2200,
+          "sheetSize": [
+            3762,
+            1881
+          ],
+          "passed": true
+        }
+      }
+    },
+    {
+      "key": "SiegeTower",
+      "directory": "Siege Weapons/SiegeTower_BronzeAge",
+      "clips": {
+        "idle": {
+          "frames": 12,
+          "paintedPoses": 4,
+          "durationMs": 1000,
+          "previewDurationMs": 1000,
+          "sheetSize": [
+            3762,
+            1254
+          ],
+          "passed": true
+        },
+        "movement": {
+          "frames": 8,
+          "paintedPoses": 4,
+          "durationMs": 667,
+          "previewDurationMs": 667,
+          "sheetSize": [
+            3762,
+            1254
+          ],
+          "passed": true
+        },
+        "attack": {
+          "frames": 18,
+          "paintedPoses": 4,
+          "durationMs": 1500,
+          "previewDurationMs": 2200,
+          "sheetSize": [
+            3762,
+            1881
+          ],
+          "passed": true
+        }
+      }
+    },
+    {
+      "key": "Onager",
+      "directory": "Siege Weapons/Onager_ClassicalAge",
+      "clips": {
+        "idle": {
+          "frames": 12,
+          "paintedPoses": 4,
+          "durationMs": 1000,
+          "previewDurationMs": 1000,
+          "sheetSize": [
+            3762,
+            1254
+          ],
+          "passed": true
+        },
+        "movement": {
+          "frames": 8,
+          "paintedPoses": 4,
+          "durationMs": 667,
+          "previewDurationMs": 667,
+          "sheetSize": [
+            3762,
+            1254
+          ],
+          "passed": true
+        },
+        "attack": {
+          "frames": 24,
+          "paintedPoses": 4,
+          "durationMs": 2000,
+          "previewDurationMs": 2700,
+          "sheetSize": [
+            3762,
+            2508
+          ],
+          "passed": true
+        }
+      }
+    },
+    {
+      "key": "Trebuchet",
+      "directory": "Siege Weapons/Trebuchet_EarlyMedieval",
+      "clips": {
+        "idle": {
+          "frames": 12,
+          "paintedPoses": 4,
+          "durationMs": 1000,
+          "previewDurationMs": 1000,
+          "sheetSize": [
+            3762,
+            1254
+          ],
+          "passed": true
+        },
+        "movement": {
+          "frames": 8,
+          "paintedPoses": 4,
+          "durationMs": 667,
+          "previewDurationMs": 667,
+          "sheetSize": [
+            3762,
+            1254
+          ],
+          "passed": true
+        },
+        "attack": {
+          "frames": 24,
+          "paintedPoses": 4,
+          "durationMs": 2000,
+          "previewDurationMs": 2700,
+          "sheetSize": [
+            3762,
+            2508
+          ],
+          "passed": true
+        }
+      }
+    },
+    {
+      "key": "Bombard",
+      "directory": "Siege Weapons/Bombard_LateMedieval",
+      "clips": {
+        "idle": {
+          "frames": 12,
+          "paintedPoses": 4,
+          "durationMs": 1000,
+          "previewDurationMs": 1000,
+          "sheetSize": [
+            3762,
+            1254
+          ],
+          "passed": true
+        },
+        "movement": {
+          "frames": 8,
+          "paintedPoses": 4,
+          "durationMs": 667,
+          "previewDurationMs": 667,
+          "sheetSize": [
+            3762,
+            1254
+          ],
+          "passed": true
+        },
+        "attack": {
+          "frames": 18,
+          "paintedPoses": 4,
+          "durationMs": 1500,
+          "previewDurationMs": 2200,
+          "sheetSize": [
+            3762,
+            1881
+          ],
+          "passed": true
+        }
+      }
+    },
+    {
+      "key": "EarlyHowitzer",
+      "directory": "Siege Weapons/EarlyHowitzer_EarlyModern",
+      "clips": {
+        "idle": {
+          "frames": 12,
+          "paintedPoses": 4,
+          "durationMs": 1000,
+          "previewDurationMs": 1000,
+          "sheetSize": [
+            3762,
+            1254
+          ],
+          "passed": true
+        },
+        "movement": {
+          "frames": 8,
+          "paintedPoses": 4,
+          "durationMs": 667,
+          "previewDurationMs": 667,
+          "sheetSize": [
+            3762,
+            1254
+          ],
+          "passed": true
+        },
+        "attack": {
+          "frames": 18,
+          "paintedPoses": 4,
+          "durationMs": 1500,
+          "previewDurationMs": 2200,
+          "sheetSize": [
+            3762,
+            1881
+          ],
+          "passed": true
+        }
+      }
+    },
+    {
+      "key": "ModernHowitzer",
+      "directory": "Siege Weapons/ModernHowitzer_Modern",
+      "clips": {
+        "idle": {
+          "frames": 12,
+          "paintedPoses": 4,
+          "durationMs": 1000,
+          "previewDurationMs": 1000,
+          "sheetSize": [
+            3762,
+            1254
+          ],
+          "passed": true
+        },
+        "movement": {
+          "frames": 8,
+          "paintedPoses": 4,
+          "durationMs": 667,
+          "previewDurationMs": 667,
+          "sheetSize": [
+            3762,
+            1254
+          ],
+          "passed": true
+        },
+        "attack": {
+          "frames": 18,
+          "paintedPoses": 4,
+          "durationMs": 1500,
+          "previewDurationMs": 2200,
+          "sheetSize": [
+            3762,
+            1881
+          ],
+          "passed": true
+        }
+      }
+    }
+  ]
+}

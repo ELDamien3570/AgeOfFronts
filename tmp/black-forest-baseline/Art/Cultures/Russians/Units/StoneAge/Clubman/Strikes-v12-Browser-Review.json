@@ -1,0 +1,79 @@
+{
+  "checks": [
+    {
+      "id": "attack",
+      "frames": [
+        {
+          "frame": 0,
+          "visible": 55301,
+          "cornerAlpha": 0
+        },
+        {
+          "frame": 1,
+          "visible": 52177,
+          "cornerAlpha": 0
+        },
+        {
+          "frame": 2,
+          "visible": 55147,
+          "cornerAlpha": 0
+        },
+        {
+          "frame": 3,
+          "visible": 55813,
+          "cornerAlpha": 0
+        },
+        {
+          "frame": 4,
+          "visible": 53599,
+          "cornerAlpha": 0
+        },
+        {
+          "frame": 5,
+          "visible": 57868,
+          "cornerAlpha": 0
+        }
+      ],
+      "final": 5,
+      "held": 5
+    },
+    {
+      "id": "charge-attack",
+      "frames": [
+        {
+          "frame": 0,
+          "visible": 66509,
+          "cornerAlpha": 0
+        },
+        {
+          "frame": 1,
+          "visible": 63946,
+          "cornerAlpha": 0
+        },
+        {
+          "frame": 2,
+          "visible": 65310,
+          "cornerAlpha": 0
+        },
+        {
+          "frame": 3,
+          "visible": 58034,
+          "cornerAlpha": 0
+        },
+        {
+          "frame": 4,
+          "visible": 62277,
+          "cornerAlpha": 0
+        },
+        {
+          "frame": 5,
+          "visible": 71811,
+          "cornerAlpha": 0
+        }
+      ],
+      "final": 5,
+      "held": 5
+    }
+  ],
+  "errors": []
+}

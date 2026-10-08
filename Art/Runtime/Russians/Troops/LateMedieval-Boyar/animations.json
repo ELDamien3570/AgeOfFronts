@@ -1,0 +1,362 @@
+{
+  "actorCount": 1,
+  "animations": [
+    {
+      "id": "idle",
+      "file": "idle.png",
+      "label": "Idle",
+      "loop": true,
+      "scale": 1.25,
+      "durations": [
+        600,
+        600,
+        600,
+        600,
+        600,
+        600
+      ],
+      "description": "Very quiet six-frame breathing loop: nearly fixed horse head, saddle, rider torso and feet. Only subtle breathing, small ear flick, minimal tail change; no walking or swaying.",
+      "frameCount": 6,
+      "sourceFrameOrder": [
+        0,
+        1,
+        2,
+        3,
+        4,
+        5
+      ],
+      "frames": [
+        {
+          "x": 0,
+          "y": 0,
+          "width": 128,
+          "height": 128,
+          "pivot": {
+            "x": 64.0,
+            "y": 64.0
+          }
+        },
+        {
+          "x": 128,
+          "y": 0,
+          "width": 128,
+          "height": 128,
+          "pivot": {
+            "x": 64.0,
+            "y": 64.0
+          }
+        },
+        {
+          "x": 256,
+          "y": 0,
+          "width": 128,
+          "height": 128,
+          "pivot": {
+            "x": 64.0,
+            "y": 64.0
+          }
+        },
+        {
+          "x": 384,
+          "y": 0,
+          "width": 128,
+          "height": 128,
+          "pivot": {
+            "x": 64.0,
+            "y": 64.0
+          }
+        },
+        {
+          "x": 512,
+          "y": 0,
+          "width": 128,
+          "height": 128,
+          "pivot": {
+            "x": 64.0,
+            "y": 64.0
+          }
+        },
+        {
+          "x": 640,
+          "y": 0,
+          "width": 128,
+          "height": 128,
+          "pivot": {
+            "x": 64.0,
+            "y": 64.0
+          }
+        }
+      ]
+    },
+    {
+      "id": "running",
+      "file": "running.png",
+      "label": "Walk",
+      "loop": true,
+      "scale": 1.25,
+      "durations": [
+        180,
+        180,
+        180,
+        180,
+        180,
+        180
+      ],
+      "description": "Six consecutive phases of a natural four-beat horse walk in place. Each leg articulates correctly with alternating hoof lift and placement. Fixed saddle horizontal position; almost no lateral sway. Rider maintains shoulder-resting axe.",
+      "frameCount": 6,
+      "sourceFrameOrder": [
+        0,
+        1,
+        2,
+        3,
+        4,
+        5
+      ],
+      "frames": [
+        {
+          "x": 0,
+          "y": 0,
+          "width": 128,
+          "height": 128,
+          "pivot": {
+            "x": 64.0,
+            "y": 64.0
+          }
+        },
+        {
+          "x": 128,
+          "y": 0,
+          "width": 128,
+          "height": 128,
+          "pivot": {
+            "x": 64.0,
+            "y": 64.0
+          }
+        },
+        {
+          "x": 256,
+          "y": 0,
+          "width": 128,
+          "height": 128,
+          "pivot": {
+            "x": 64.0,
+            "y": 64.0
+          }
+        },
+        {
+          "x": 384,
+          "y": 0,
+          "width": 128,
+          "height": 128,
+          "pivot": {
+            "x": 64.0,
+            "y": 64.0
+          }
+        },
+        {
+          "x": 512,
+          "y": 0,
+          "width": 128,
+          "height": 128,
+          "pivot": {
+            "x": 64.0,
+            "y": 64.0
+          }
+        },
+        {
+          "x": 640,
+          "y": 0,
+          "width": 128,
+          "height": 128,
+          "pivot": {
+            "x": 64.0,
+            "y": 64.0
+          }
+        }
+      ]
+    },
+    {
+      "id": "attack",
+      "file": "attack.png",
+      "label": "Axe attack",
+      "loop": false,
+      "scale": 1.25,
+      "durations": [
+        170,
+        180,
+        150,
+        110,
+        180,
+        230
+      ],
+      "description": "Six sequential poses for one mounted AXE attack facing forward screen-bottom: shoulder-rest idle; lift axe above right shoulder; begin forward downward chop; full impact with broad axe blade forward beside horse neck on screen-left; withdraw; return axe to shoulder. Same broad axe shape and short wooden haft all frames, never spear or sickle. Shield remains left.",
+      "frameCount": 6,
+      "sourceFrameOrder": [
+        0,
+        1,
+        2,
+        3,
+        4,
+        5
+      ],
+      "frames": [
+        {
+          "x": 0,
+          "y": 0,
+          "width": 128,
+          "height": 128,
+          "pivot": {
+            "x": 64.0,
+            "y": 64.0
+          }
+        },
+        {
+          "x": 128,
+          "y": 0,
+          "width": 128,
+          "height": 128,
+          "pivot": {
+            "x": 64.0,
+            "y": 64.0
+          }
+        },
+        {
+          "x": 256,
+          "y": 0,
+          "width": 128,
+          "height": 128,
+          "pivot": {
+            "x": 64.0,
+            "y": 64.0
+          }
+        },
+        {
+          "x": 384,
+          "y": 0,
+          "width": 128,
+          "height": 128,
+          "pivot": {
+            "x": 64.0,
+            "y": 64.0
+          }
+        },
+        {
+          "x": 512,
+          "y": 0,
+          "width": 128,
+          "height": 128,
+          "pivot": {
+            "x": 64.0,
+            "y": 64.0
+          }
+        },
+        {
+          "x": 640,
+          "y": 0,
+          "width": 128,
+          "height": 128,
+          "pivot": {
+            "x": 64.0,
+            "y": 64.0
+          }
+        }
+      ],
+      "impactFrame": 3
+    },
+    {
+      "id": "death",
+      "file": "death.png",
+      "label": "Death - together fall",
+      "loop": false,
+      "scale": 1.25,
+      "durations": [
+        150,
+        180,
+        200,
+        230,
+        280,
+        650
+      ],
+      "description": "Six sequential poses of horse AND rider falling together: mounted upright; horse knees buckle; mount sinks and begins rolling screen-left; horse and rider collapse to left; both on ground; settled dead horse and rider on their side. Real articulated fall, never merely shrink or spin upright pose. Last two poses remain same orientation, no inversion. Preserve all equipment.",
+      "frameCount": 6,
+      "sourceFrameOrder": [
+        0,
+        1,
+        2,
+        3,
+        4,
+        5
+      ],
+      "frames": [
+        {
+          "x": 0,
+          "y": 0,
+          "width": 128,
+          "height": 128,
+          "pivot": {
+            "x": 64.0,
+            "y": 64.0
+          }
+        },
+        {
+          "x": 128,
+          "y": 0,
+          "width": 128,
+          "height": 128,
+          "pivot": {
+            "x": 64.0,
+            "y": 64.0
+          }
+        },
+        {
+          "x": 256,
+          "y": 0,
+          "width": 128,
+          "height": 128,
+          "pivot": {
+            "x": 64.0,
+            "y": 64.0
+          }
+        },
+        {
+          "x": 384,
+          "y": 0,
+          "width": 128,
+          "height": 128,
+          "pivot": {
+            "x": 64.0,
+            "y": 64.0
+          }
+        },
+        {
+          "x": 512,
+          "y": 0,
+          "width": 128,
+          "height": 128,
+          "pivot": {
+            "x": 64.0,
+            "y": 64.0
+          }
+        },
+        {
+          "x": 640,
+          "y": 0,
+          "width": 128,
+          "height": 128,
+          "pivot": {
+            "x": 64.0,
+            "y": 64.0
+          }
+        }
+      ]
+    }
+  ],
+  "source": "Art/Cultures/Russians/Units/LateMedieval/Boyar/animations.json",
+  "metadataHash": "dd20f16817c9ce076cc2d99eb8b92ef1cf988b8e698c10a846ce20b6867e00ce",
+  "hashes": {
+    "Art/Cultures/Russians/Units/LateMedieval/Boyar/idle-Registered-v1.png": "50e3809879e45fb1b8f443d747900ce748bb63918d8734342b3da8ded5b3e987",
+    "Art/Cultures/Russians/Units/LateMedieval/Boyar/walk-Registered-v1.png": "bf056070cb9c8add6a72bb164ceaf11e68a7239ec5928861d7ce12ead219b716",
+    "Art/Cultures/Russians/Units/LateMedieval/Boyar/attack-Registered-v1.png": "f13e5908bfa967d0e7b8866bd99386a9225dc28d727c353291b55ccef2b39397",
+    "Art/Cultures/Russians/Units/LateMedieval/Boyar/death-Registered-v1.png": "dd749049187c7ffdb7ae2e9b62ce621bd5ee4dcbfad30487f92cb7b087a69bfe"
+  }
+}

@@ -1,0 +1,12 @@
+{
+  "id": "attack-edge-padding-v8",
+  "clipId": "attack",
+  "file": "Attack-v8.png",
+  "references": [
+    "Attack-v7.png"
+  ],
+  "prompt": "Use case: precise-object-edit\nPADDING ONLY. Preserve this successful six-frame Russian Bronze Axeman axe chop sheet, including exact narrow CURVED bronze axe head perspective, edge-first grip in swing poses, broad resting axe in frames1/6, clothing, round wooden shield, overhead camera and exact pose chronology. DO NOT reinterpret or broaden the chopping blade or change the swing.\nThe shield in the top-middle cell is within5px of its right edge. Redraw ALL6 full sprites uniformly at90percent their current size, same constant body scale for all6. Center each body's root aroundlocal256,275. Complete shield rim, all boots/fingers, woodhaft and bronze head must stay withinlocal24..488px of EACH512cell with at least24px clear transparent padding all4edges. No cropped or neighboring pixels. Do not fit different frames to different scales.\nExactly1536x1024RGBA,3columns2rows6cells512. Alpha true transparent; no haze, shadows, glow, ground, grids, text or trails. Preserve correct narrow curved axe profile from this sheet, never spear point or bare handle.",
+  "generatedSource": "C:\\Users\\Damien\\.codex\\generated_images\\01a0fea1-c63f-7343-92ca-6c21cc1c4296\\exec-d41f3bb6-dfca-4ade-8fe2-57416a2595be.png",
+  "status": "selected",
+  "reason": "Add visible frame-guard space around top-middle shield while retaining correct axe perspective."
+}

@@ -1,0 +1,30 @@
+{
+  "schemaVersion": 1,
+  "cultureId": "russian",
+  "age": "LateMedieval",
+  "generator": "built-in image_gen",
+  "prompt": "Edit the reference Early Medieval Rus trader into the next-age Late Medieval variant. Preserve the exact art design, strict top-down camera, screen-down movement, merchant costume, chestnut horse anatomy, two-wheel cart construction and secured cargo. Add ONE SECOND matching horse-drawn two-wheel cargo cart ON THE RIGHT of the existing team. Exactly ONE merchant at far LEFT, TWO horses total, TWO two-wheel carts total. No second merchant, no pack animal. Both horses pull their own separate cart on parallel side-by-side lanes, both carts at top and horses below, both face screenBOTTOM. Keep the original left team visually unchanged except uniformly scaling and repositioning the entire composition to fit. The second team is a faithful matching copy, same fur rolls, cream bale and timber chest, brown horse, wood shafts, connected harness. Two teams have clear transparent gap between their wheels/shafts/horse bodies. Merchant remains beside left horse holding its lead rein. Strict90degree directly overhead orthographic with top of cart cargo, cap and horse backs. Do not redesign clothes/cargo/wheels, no extra supplies or roofs, no weird elongated limbs, no rectangular tread blocks. Square transparent canvas complete assembly centered with >=80px fully transparent margins on all4edges, no winglike horse legs, no cropping. Same crisp painted RTS dimensional quality. Genuine RGBA transparency no ground/shadow/glow/text. This is the same thing with one additional horse-drawn cart on its RIGHT.",
+  "generatedFile": "C:/Users/Damien/.codex/generated_images/01a0fea7-45e8-7a11-8804-5420a62f53c3/exec-1648840b-15dc-48b9-9b1f-84e4e640be39.png",
+  "reference": "../EarlyMedieval/SourceArt/Trader_Russian_EarlyMedieval_v1.png",
+  "status": "approved master; Idle and articulated Travel exported",
+  "animationApproval": {
+    "status": "approved",
+    "age": "LateMedieval",
+    "date": "2026-10-07",
+    "userMessage": "okay now do late medieval, just make it the same thing with another horsedrawn cart on the right",
+    "scope": "Continue trader creation and animation; keep one merchant and add one horse-cart team on the right. Visual acceptance pending.",
+    "selectedMaster": "SourceArt/Trader_Russian_LateMedieval_v2.png"
+  },
+  "animationAuthoring": "rig-authoring.json; ../caravan-rig.py",
+  "sourceSha256": "eebbf0dfb7fb87915c15de61210207caff820ebecda1a66989d9b17b6770d644",
+  "animationSupport": {
+    "horseAtlasOrigin": "../EarlyMedieval/SourceArt/Horse_Walking_Limb_Atlas_v1.png",
+    "merchantAtlas": "../Shared/SourceArt/Walking_Leg_Atlas_v1.png",
+    "method": "Scaled source-space registration with preserved leg-link ratios, one shared contact velocity and offset horse gait phases."
+  },
+  "formationCorrection": {
+    "record": "SourceArt/Formation-Correction.json",
+    "selectedMaster": "SourceArt/Trader_Russian_LateMedieval_v2.png",
+    "supersededMaster": "SourceArt/Trader_Russian_LateMedieval_v1.png"
+  }
+}

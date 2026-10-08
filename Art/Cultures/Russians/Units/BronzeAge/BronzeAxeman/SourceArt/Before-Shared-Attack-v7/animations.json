@@ -1,0 +1,1048 @@
+{
+  "schemaVersion": 1,
+  "cultureId": "russians",
+  "age": "BronzeAge",
+  "unit": "Bronze Axeman",
+  "category": "Melee",
+  "actorCount": 1,
+  "stage": "single-actor-art-prototype",
+  "integrationStatus": "Nine overhead bronze-mace clips ready for visual review; match integration pending.",
+  "camera": "vertical-overhead-orthographic",
+  "facing": "screen-down",
+  "sheetSize": {
+    "width": 1536,
+    "height": 1024
+  },
+  "grid": {
+    "columns": 3,
+    "rows": 2
+  },
+  "reviewFootprint": 420,
+  "registration": "Explicit authored body/root pivots with one constant scale per clip, never per-frame bounds fitting.",
+  "weapon": "Bronze mace",
+  "offhand": "Round timber shield with bronze boss",
+  "fictionalRoster": true,
+  "deathVariants": [
+    "death",
+    "death-back"
+  ],
+  "motionContract": "Local gait and weapon poses; gameplay owns world movement and attack authorization.",
+  "animations": [
+    {
+      "id": "idle",
+      "file": "Idle-BronzeMace-Nadir-v3.png",
+      "label": "Idle",
+      "loop": true,
+      "scale": 1.22222,
+      "durations": [
+        250,
+        250,
+        250,
+        250,
+        250,
+        250
+      ],
+      "description": "Overhead bronze mace idle: gentle breathing, planted feet and a steady shield.",
+      "frameCount": 6,
+      "frames": [
+        {
+          "index": 0,
+          "sourceIndex": 0,
+          "x": 0,
+          "y": 0,
+          "width": 512,
+          "height": 512,
+          "pivot": {
+            "x": 251,
+            "y": 240
+          }
+        },
+        {
+          "index": 1,
+          "sourceIndex": 1,
+          "x": 512,
+          "y": 0,
+          "width": 512,
+          "height": 512,
+          "pivot": {
+            "x": 251,
+            "y": 234
+          }
+        },
+        {
+          "index": 2,
+          "sourceIndex": 2,
+          "x": 1024,
+          "y": 0,
+          "width": 512,
+          "height": 512,
+          "pivot": {
+            "x": 253,
+            "y": 231
+          }
+        },
+        {
+          "index": 3,
+          "sourceIndex": 3,
+          "x": 0,
+          "y": 512,
+          "width": 512,
+          "height": 512,
+          "pivot": {
+            "x": 251,
+            "y": 233
+          }
+        },
+        {
+          "index": 4,
+          "sourceIndex": 4,
+          "x": 512,
+          "y": 512,
+          "width": 512,
+          "height": 512,
+          "pivot": {
+            "x": 252,
+            "y": 236
+          }
+        },
+        {
+          "index": 5,
+          "sourceIndex": 5,
+          "x": 1024,
+          "y": 512,
+          "width": 512,
+          "height": 512,
+          "pivot": {
+            "x": 254,
+            "y": 236
+          }
+        }
+      ],
+      "sourceFrameOrder": [
+        0,
+        1,
+        2,
+        3,
+        4,
+        5
+      ],
+      "sha256": "5c9b324646dbaa5412794f747f1362459b6f622fbfff5adb61451af3a8488c11",
+      "weapon": "Bronze mace"
+    },
+    {
+      "id": "running",
+      "file": "Running-BronzeMace-Nadir-v4.png",
+      "label": "Run",
+      "loop": true,
+      "scale": 1.111111,
+      "durations": [
+        160,
+        160,
+        160,
+        160,
+        160,
+        160
+      ],
+      "description": "Overhead alternating stride with mace and shield held steady.",
+      "frameCount": 6,
+      "frames": [
+        {
+          "index": 0,
+          "sourceIndex": 0,
+          "x": 0,
+          "y": 0,
+          "width": 512,
+          "height": 512,
+          "pivot": {
+            "x": 255,
+            "y": 262
+          }
+        },
+        {
+          "index": 1,
+          "sourceIndex": 1,
+          "x": 512,
+          "y": 0,
+          "width": 512,
+          "height": 512,
+          "pivot": {
+            "x": 253,
+            "y": 265
+          }
+        },
+        {
+          "index": 2,
+          "sourceIndex": 2,
+          "x": 1024,
+          "y": 0,
+          "width": 512,
+          "height": 512,
+          "pivot": {
+            "x": 254,
+            "y": 262
+          }
+        },
+        {
+          "index": 3,
+          "sourceIndex": 3,
+          "x": 0,
+          "y": 512,
+          "width": 512,
+          "height": 512,
+          "pivot": {
+            "x": 253,
+            "y": 244
+          }
+        },
+        {
+          "index": 4,
+          "sourceIndex": 4,
+          "x": 512,
+          "y": 512,
+          "width": 512,
+          "height": 512,
+          "pivot": {
+            "x": 252,
+            "y": 243
+          }
+        },
+        {
+          "index": 5,
+          "sourceIndex": 5,
+          "x": 1024,
+          "y": 512,
+          "width": 512,
+          "height": 512,
+          "pivot": {
+            "x": 256,
+            "y": 242
+          }
+        }
+      ],
+      "sourceFrameOrder": [
+        0,
+        1,
+        2,
+        3,
+        4,
+        5
+      ],
+      "sha256": "614956117ee502bc0322d013c7362226d2e9019dc7346d73c2b12e1e338f5501",
+      "weapon": "Bronze mace"
+    },
+    {
+      "id": "attack",
+      "file": "Attack-BronzeMace-Heavy-v6.png",
+      "label": "Mace swing",
+      "loop": false,
+      "scale": 1.46667,
+      "durations": [
+        120,
+        180,
+        180,
+        80,
+        150,
+        220
+      ],
+      "description": "Plant, coil the hips and shoulders, drive the mace across the front and commit to the follow-through.",
+      "frameCount": 6,
+      "frames": [
+        {
+          "index": 0,
+          "sourceIndex": 0,
+          "x": 0,
+          "y": 0,
+          "width": 512,
+          "height": 512,
+          "pivot": {
+            "x": 251.0,
+            "y": 245.5
+          }
+        },
+        {
+          "index": 1,
+          "sourceIndex": 1,
+          "x": 512,
+          "y": 0,
+          "width": 512,
+          "height": 512,
+          "pivot": {
+            "x": 245.0,
+            "y": 255.0
+          }
+        },
+        {
+          "index": 2,
+          "sourceIndex": 2,
+          "x": 1024,
+          "y": 0,
+          "width": 512,
+          "height": 512,
+          "pivot": {
+            "x": 254.0,
+            "y": 244.5
+          }
+        },
+        {
+          "index": 3,
+          "sourceIndex": 3,
+          "x": 0,
+          "y": 512,
+          "width": 512,
+          "height": 512,
+          "pivot": {
+            "x": 260.0,
+            "y": 216.0
+          }
+        },
+        {
+          "index": 4,
+          "sourceIndex": 4,
+          "x": 512,
+          "y": 512,
+          "width": 512,
+          "height": 512,
+          "pivot": {
+            "x": 279.87,
+            "y": 194.5
+          }
+        },
+        {
+          "index": 5,
+          "sourceIndex": 5,
+          "x": 1024,
+          "y": 512,
+          "width": 512,
+          "height": 512,
+          "pivot": {
+            "x": 247.0,
+            "y": 222.5
+          }
+        }
+      ],
+      "impactFrame": 3,
+      "sourceFrameOrder": [
+        0,
+        1,
+        2,
+        3,
+        4,
+        5
+      ],
+      "sha256": "12e7c1eae822cb5ee454d58781398f8d592a3843ff472ea592f999a0dcb9c009",
+      "weapon": "Bronze mace"
+    },
+    {
+      "id": "hit",
+      "file": "Hit-BronzeMace-Nadir-v4.png",
+      "label": "Get hit",
+      "loop": false,
+      "scale": 1.057692,
+      "durations": [
+        100,
+        90,
+        130,
+        90,
+        110,
+        180
+      ],
+      "description": "Light impact recoil through the shoulders, step back and recover.",
+      "frameCount": 6,
+      "frames": [
+        {
+          "index": 0,
+          "sourceIndex": 0,
+          "x": 0,
+          "y": 0,
+          "width": 512,
+          "height": 512,
+          "pivot": {
+            "x": 257,
+            "y": 243
+          }
+        },
+        {
+          "index": 1,
+          "sourceIndex": 1,
+          "x": 512,
+          "y": 0,
+          "width": 512,
+          "height": 512,
+          "pivot": {
+            "x": 265,
+            "y": 250
+          }
+        },
+        {
+          "index": 2,
+          "sourceIndex": 2,
+          "x": 1024,
+          "y": 0,
+          "width": 512,
+          "height": 512,
+          "pivot": {
+            "x": 267,
+            "y": 267
+          }
+        },
+        {
+          "index": 3,
+          "sourceIndex": 3,
+          "x": 0,
+          "y": 512,
+          "width": 512,
+          "height": 512,
+          "pivot": {
+            "x": 272,
+            "y": 227
+          }
+        },
+        {
+          "index": 4,
+          "sourceIndex": 4,
+          "x": 512,
+          "y": 512,
+          "width": 512,
+          "height": 512,
+          "pivot": {
+            "x": 252,
+            "y": 224
+          }
+        },
+        {
+          "index": 5,
+          "sourceIndex": 5,
+          "x": 1024,
+          "y": 512,
+          "width": 512,
+          "height": 512,
+          "pivot": {
+            "x": 249,
+            "y": 224
+          }
+        }
+      ],
+      "sourceFrameOrder": [
+        0,
+        1,
+        2,
+        3,
+        4,
+        5
+      ],
+      "sha256": "87126b89f88cade2038863836bba0fa09090441e808cac3395db8a717dcfdfd2",
+      "weapon": "Bronze mace"
+    },
+    {
+      "id": "charged",
+      "file": "Charged-BronzeMace-Nadir-v4.png",
+      "label": "Get charged",
+      "loop": false,
+      "scale": 1.078431,
+      "durations": [
+        130,
+        120,
+        180,
+        180,
+        180,
+        230
+      ],
+      "description": "Brace the shield, absorb a heavy impact, crouch and regain balance.",
+      "frameCount": 6,
+      "frames": [
+        {
+          "index": 0,
+          "sourceIndex": 0,
+          "x": 0,
+          "y": 0,
+          "width": 512,
+          "height": 512,
+          "pivot": {
+            "x": 262,
+            "y": 244
+          }
+        },
+        {
+          "index": 1,
+          "sourceIndex": 1,
+          "x": 512,
+          "y": 0,
+          "width": 512,
+          "height": 512,
+          "pivot": {
+            "x": 266,
+            "y": 256
+          }
+        },
+        {
+          "index": 2,
+          "sourceIndex": 2,
+          "x": 1024,
+          "y": 0,
+          "width": 512,
+          "height": 512,
+          "pivot": {
+            "x": 290,
+            "y": 247
+          }
+        },
+        {
+          "index": 3,
+          "sourceIndex": 3,
+          "x": 0,
+          "y": 512,
+          "width": 512,
+          "height": 512,
+          "pivot": {
+            "x": 279,
+            "y": 239
+          }
+        },
+        {
+          "index": 4,
+          "sourceIndex": 4,
+          "x": 512,
+          "y": 512,
+          "width": 512,
+          "height": 512,
+          "pivot": {
+            "x": 256,
+            "y": 214
+          }
+        },
+        {
+          "index": 5,
+          "sourceIndex": 5,
+          "x": 1024,
+          "y": 512,
+          "width": 512,
+          "height": 512,
+          "pivot": {
+            "x": 261,
+            "y": 213
+          }
+        }
+      ],
+      "sourceFrameOrder": [
+        0,
+        1,
+        2,
+        3,
+        4,
+        5
+      ],
+      "sha256": "11824549794876e8f912677bfd2641c1eb6c1579881f2e07d1985b02563f8909",
+      "weapon": "Bronze mace"
+    },
+    {
+      "id": "charge",
+      "file": "Charge-BronzeMace-Compact-v5.png",
+      "label": "Charge in / maintain",
+      "loop": true,
+      "scale": 1.1224489795918366,
+      "durations": [
+        90,
+        90,
+        90,
+        90,
+        90,
+        90
+      ],
+      "description": "Shield-led sprint with a compact mace guard close to the shoulder.",
+      "frameCount": 6,
+      "frames": [
+        {
+          "index": 0,
+          "sourceIndex": 0,
+          "x": 0,
+          "y": 0,
+          "width": 512,
+          "height": 512,
+          "pivot": {
+            "x": 269,
+            "y": 243
+          }
+        },
+        {
+          "index": 1,
+          "sourceIndex": 1,
+          "x": 512,
+          "y": 0,
+          "width": 512,
+          "height": 512,
+          "pivot": {
+            "x": 259,
+            "y": 243
+          }
+        },
+        {
+          "index": 2,
+          "sourceIndex": 2,
+          "x": 1024,
+          "y": 0,
+          "width": 512,
+          "height": 512,
+          "pivot": {
+            "x": 258,
+            "y": 243
+          }
+        },
+        {
+          "index": 3,
+          "sourceIndex": 3,
+          "x": 0,
+          "y": 512,
+          "width": 512,
+          "height": 512,
+          "pivot": {
+            "x": 259,
+            "y": 238
+          }
+        },
+        {
+          "index": 4,
+          "sourceIndex": 4,
+          "x": 512,
+          "y": 512,
+          "width": 512,
+          "height": 512,
+          "pivot": {
+            "x": 266,
+            "y": 240
+          }
+        },
+        {
+          "index": 5,
+          "sourceIndex": 5,
+          "x": 1024,
+          "y": 512,
+          "width": 512,
+          "height": 512,
+          "pivot": {
+            "x": 262,
+            "y": 241
+          }
+        }
+      ],
+      "sourceFrameOrder": [
+        0,
+        1,
+        2,
+        3,
+        4,
+        5
+      ],
+      "sha256": "3c087ebb5f8d7617ea22f945fb1be43cb8b62b72a5134dd7f9247195e633d9f3",
+      "weapon": "Bronze mace"
+    },
+    {
+      "id": "charge-attack",
+      "file": "ChargeAttack-BronzeMace-Heavy-v6.png",
+      "label": "Charge attack",
+      "loop": false,
+      "scale": 1.53846,
+      "durations": [
+        120,
+        180,
+        180,
+        80,
+        150,
+        220
+      ],
+      "description": "Plant the lead foot from the charge, rotate the whole body and drive a heavy mace sweep across the front.",
+      "frameCount": 6,
+      "frames": [
+        {
+          "index": 0,
+          "sourceIndex": 0,
+          "x": 0,
+          "y": 0,
+          "width": 512,
+          "height": 512,
+          "pivot": {
+            "x": 259.5,
+            "y": 262.5
+          }
+        },
+        {
+          "index": 1,
+          "sourceIndex": 1,
+          "x": 512,
+          "y": 0,
+          "width": 512,
+          "height": 512,
+          "pivot": {
+            "x": 268.5,
+            "y": 276.5
+          }
+        },
+        {
+          "index": 2,
+          "sourceIndex": 2,
+          "x": 1024,
+          "y": 0,
+          "width": 512,
+          "height": 512,
+          "pivot": {
+            "x": 283.0,
+            "y": 282.0
+          }
+        },
+        {
+          "index": 3,
+          "sourceIndex": 3,
+          "x": 0,
+          "y": 512,
+          "width": 512,
+          "height": 512,
+          "pivot": {
+            "x": 260.0,
+            "y": 217.49
+          }
+        },
+        {
+          "index": 4,
+          "sourceIndex": 4,
+          "x": 512,
+          "y": 512,
+          "width": 512,
+          "height": 512,
+          "pivot": {
+            "x": 304.49,
+            "y": 224.0
+          }
+        },
+        {
+          "index": 5,
+          "sourceIndex": 5,
+          "x": 1024,
+          "y": 512,
+          "width": 512,
+          "height": 512,
+          "pivot": {
+            "x": 239.0,
+            "y": 209.0
+          }
+        }
+      ],
+      "impactFrame": 3,
+      "sourceFrameOrder": [
+        0,
+        1,
+        2,
+        3,
+        4,
+        5
+      ],
+      "sha256": "2edd1b0f041ac9459f25e35fc0a30b258d8e116c2bc7d8e13c8fc29b06c7d3cb",
+      "weapon": "Bronze mace"
+    },
+    {
+      "id": "death",
+      "file": "Death-BronzeMace-Nadir-v4.png",
+      "label": "Death - side fall",
+      "loop": false,
+      "scale": 1.22222,
+      "durations": [
+        150,
+        170,
+        190,
+        210,
+        240,
+        400
+      ],
+      "description": "Knees buckle, collapse sideways and settle into a smaller prone corpse.",
+      "frameCount": 6,
+      "frames": [
+        {
+          "index": 0,
+          "sourceIndex": 0,
+          "x": 0,
+          "y": 0,
+          "width": 512,
+          "height": 512,
+          "pivot": {
+            "x": 263,
+            "y": 224
+          }
+        },
+        {
+          "index": 1,
+          "sourceIndex": 1,
+          "x": 512,
+          "y": 0,
+          "width": 512,
+          "height": 512,
+          "pivot": {
+            "x": 263,
+            "y": 234
+          }
+        },
+        {
+          "index": 2,
+          "sourceIndex": 2,
+          "x": 1024,
+          "y": 0,
+          "width": 512,
+          "height": 512,
+          "pivot": {
+            "x": 274,
+            "y": 240
+          }
+        },
+        {
+          "index": 3,
+          "sourceIndex": 3,
+          "x": 0,
+          "y": 512,
+          "width": 512,
+          "height": 512,
+          "pivot": {
+            "x": 282,
+            "y": 247
+          }
+        },
+        {
+          "index": 4,
+          "sourceIndex": 4,
+          "x": 512,
+          "y": 512,
+          "width": 512,
+          "height": 512,
+          "pivot": {
+            "x": 267,
+            "y": 240
+          }
+        },
+        {
+          "index": 5,
+          "sourceIndex": 5,
+          "x": 1024,
+          "y": 512,
+          "width": 512,
+          "height": 512,
+          "pivot": {
+            "x": 247,
+            "y": 240
+          }
+        }
+      ],
+      "sourceFrameOrder": [
+        0,
+        1,
+        2,
+        3,
+        4,
+        5
+      ],
+      "sha256": "3df34759aca6521f80b7923dd6a866a02814c8e41ea47fa3ad894226ec28a24e",
+      "weapon": "Bronze mace",
+      "corpseFile": "Corpse-Prone-BronzeMace-v4.png"
+    },
+    {
+      "id": "death-back",
+      "file": "Death-Back-BronzeMace-Nadir-v4.png",
+      "label": "Death - back fall",
+      "loop": false,
+      "scale": 1.06796,
+      "durations": [
+        150,
+        180,
+        190,
+        210,
+        240,
+        400
+      ],
+      "description": "Fall backward away from the facing direction and settle flat face-up, head toward screen-top.",
+      "frameCount": 6,
+      "frames": [
+        {
+          "index": 0,
+          "sourceIndex": 0,
+          "x": 0,
+          "y": 0,
+          "width": 512,
+          "height": 512,
+          "pivot": {
+            "x": 256,
+            "y": 218
+          }
+        },
+        {
+          "index": 1,
+          "sourceIndex": 1,
+          "x": 512,
+          "y": 0,
+          "width": 512,
+          "height": 512,
+          "pivot": {
+            "x": 258,
+            "y": 220
+          }
+        },
+        {
+          "index": 2,
+          "sourceIndex": 2,
+          "x": 1024,
+          "y": 0,
+          "width": 512,
+          "height": 512,
+          "pivot": {
+            "x": 259,
+            "y": 240
+          }
+        },
+        {
+          "index": 3,
+          "sourceIndex": 3,
+          "x": 0,
+          "y": 512,
+          "width": 512,
+          "height": 512,
+          "pivot": {
+            "x": 253,
+            "y": 240
+          }
+        },
+        {
+          "index": 4,
+          "sourceIndex": 4,
+          "x": 512,
+          "y": 512,
+          "width": 512,
+          "height": 512,
+          "pivot": {
+            "x": 245,
+            "y": 240
+          }
+        },
+        {
+          "index": 5,
+          "sourceIndex": 5,
+          "x": 1024,
+          "y": 512,
+          "width": 512,
+          "height": 512,
+          "pivot": {
+            "x": 244,
+            "y": 240
+          }
+        }
+      ],
+      "sourceFrameOrder": [
+        0,
+        1,
+        2,
+        3,
+        4,
+        5
+      ],
+      "sha256": "6d56a02f241544129df13e08931ad3046cb83668ad376ac94a86a95d672eed16",
+      "weapon": "Bronze mace",
+      "corpseFile": "Corpse-Back-BronzeMace-v4.png"
+    }
+  ],
+  "artRevisions": [
+    {
+      "date": "2026-10-03",
+      "clips": [
+        "attack",
+        "charge-attack"
+      ],
+      "reason": "User feedback: axe looked sideways when swinging. Wrist and blade perspective corrected.",
+      "userApproval": "pending revised swing review"
+    },
+    {
+      "date": "2026-10-03",
+      "clips": [
+        "idle",
+        "running",
+        "attack",
+        "charge-attack",
+        "hit",
+        "charged",
+        "charge",
+        "death",
+        "death-back"
+      ],
+      "reason": "User requested rougher equipment and bronze cap crown.",
+      "userApproval": "pending revised equipment review"
+    },
+    {
+      "date": "2026-10-07",
+      "clips": [
+        "idle",
+        "running",
+        "attack",
+        "hit",
+        "charged",
+        "charge",
+        "charge-attack",
+        "death",
+        "death-back"
+      ],
+      "reason": "Bronze pauldrons and leather top requested by user.",
+      "userApproval": "pending revised equipment review"
+    },
+    {
+      "date": "2026-10-07",
+      "clips": [
+        "charge-attack"
+      ],
+      "reason": "User feedback: axe became a sickle during charge attack. Solid broad head restored throughout the six poses.",
+      "userApproval": "pending charge axe shape review"
+    },
+    {
+      "date": "2026-10-07",
+      "clips": [
+        "charge-attack"
+      ],
+      "reason": "Frames 2 and 4 resembled a trowel; corrected side-mounted blade/socket in frames 2 through 5; retained frames 1 and 6 exactly.",
+      "userApproval": "pending v3 axe review"
+    },
+    {
+      "date": "2026-10-07",
+      "clips": [
+        "death-back"
+      ],
+      "reason": "Remove head/feet inversion in backward death; preserve first three poses and replace landing/settling poses.",
+      "userApproval": "pending corrected backward death review"
+    },
+    {
+      "date": "2026-10-07",
+      "clips": [
+        "running",
+        "charge",
+        "hit",
+        "charged",
+        "attack",
+        "charge-attack",
+        "death",
+        "death-back"
+      ],
+      "reason": "Rebuild remaining motions from approved overhead bronze mace idle.",
+      "userApproval": "pending full motion review"
+    },
+    {
+      "date": "2026-10-07",
+      "clips": [
+        "attack",
+        "charge-attack",
+        "charge"
+      ],
+      "reason": "User feedback: weapon arm reached too far back. Shortened shoulder windups, preserved body coil.",
+      "userApproval": "pending compact windup review"
+    },
+    {
+      "date": "2026-10-07",
+      "clips": [
+        "attack",
+        "charge-attack"
+      ],
+      "reason": "User requested a heavier human swing. Planted stance, stronger body rotation, fast cross-body strike and committed follow-through. Compact windup retained.",
+      "userApproval": "pending heavy strike review"
+    }
+  ],
+  "equipmentFinish": "Stylized bronze domed helmet and shoulder caps, cream fur collar, reddish-brown leather, timber shield and rounded lobed bronze mace.",
+  "artRevision": "bronze-mace-heavy-v6"
+}

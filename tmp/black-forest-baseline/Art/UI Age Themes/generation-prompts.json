@@ -1,0 +1,59 @@
+{
+  "tool": "Built-in image generation",
+  "purpose": "Painted material textures for seven production age UI themes",
+  "prompts": [
+    {
+      "age": "StoneAge",
+      "material": "Stone",
+      "prompt": "Use case: stylized-concept. Asset type: a flat painted material texture for borders of a high-quality historical RTS user interface. Primary request: one opaque material surface filling the entire square image, viewed exactly straight-on with no perspective. Painterly realistic game-art finish, richly tactile at close range, visually calm at small UI sizes. Soft diffuse light from upper-left, evenly exposed. Seamless-looking surface with the same detail and brightness at all four edges. This is a raw texture, not a UI mockup or a picture of an object. No frame, borders, labels, text, symbols, rivets, separate objects, dramatic shadows or vignette. No transparent pixels. Material: weathered gray granite cut-stone face, coarse small mineral speckles, shallow chisel wear and occasional fine cracks, matte, earthy gray with warmer pale speckles. No mortar lines or separate stones.",
+      "transparentBackground": false
+    },
+    {
+      "age": "BronzeAge",
+      "material": "Bronze",
+      "prompt": "Use case: stylized-concept. Asset type: a flat painted material texture for borders of a high-quality historical RTS user interface. Primary request: one opaque material surface filling the entire square image, viewed exactly straight-on with no perspective. Painterly realistic game-art finish, richly tactile at close range, visually calm at small UI sizes. Soft diffuse light from upper-left, evenly exposed. Seamless-looking surface with the same detail and brightness at all four edges. This is a raw texture, not a UI mockup or a picture of an object. No frame, borders, labels, text, symbols, rivets, separate objects, dramatic shadows or vignette. No transparent pixels. Material: aged burnished bronze plate, warm copper-brown and amber bronze, restrained desaturated turquoise patina speckles, fine scuffs and hammered marks. Warm bronze must remain dominant.",
+      "transparentBackground": false
+    },
+    {
+      "age": "ClassicalAge",
+      "material": "Iron",
+      "prompt": "Use case: stylized-concept. Asset type: a flat painted material texture for borders of a high-quality historical RTS user interface. Primary request: one opaque material surface filling the entire square image, viewed exactly straight-on with no perspective. Painterly realistic game-art finish, richly tactile at close range, visually calm at small UI sizes. Soft diffuse light from upper-left, evenly exposed. Seamless-looking surface with the same detail and brightness at all four edges. This is a raw texture, not a UI mockup or a picture of an object. No frame, borders, labels, text, symbols, rivets, separate objects, dramatic shadows or vignette. No transparent pixels. Material: dark forged iron plate, charcoal gray, visibly hammered shallow irregular facets and fine oxidized grain, matte subdued cold-gray highlights. No rust-orange dominance.",
+      "transparentBackground": false
+    },
+    {
+      "age": "EarlyMedieval",
+      "material": "Shimmering steel",
+      "prompt": "Use case: stylized-concept. Asset type: a flat painted material texture for borders of a high-quality historical RTS user interface. Primary request: one opaque material surface filling the entire square image, viewed exactly straight-on with no perspective. Painterly realistic game-art finish, richly tactile at close range, visually calm at small UI sizes. Soft diffuse light from upper-left, evenly exposed. Seamless-looking surface with the same detail and brightness at all four edges. This is a raw texture, not a UI mockup or a picture of an object. No frame, borders, labels, text, symbols, rivets, separate objects, dramatic shadows or vignette. No transparent pixels. Material: polished satin steel plate, bright cool silver-gray, fine brushed metal grain, broad restrained diagonal pearly silver highlight. No mirror objects or environment reflections, not blue or white plastic.",
+      "transparentBackground": false
+    },
+    {
+      "age": "LateMedieval",
+      "material": "Gold",
+      "prompt": "Use case: stylized-concept. Asset type: a flat painted material texture for borders of a high-quality historical RTS user interface. Primary request: one opaque material surface filling the entire square image, viewed exactly straight-on with no perspective. Painterly realistic game-art finish, richly tactile at close range, visually calm at small UI sizes. Soft diffuse light from upper-left, evenly exposed. Seamless-looking surface with the same detail and brightness at all four edges. This is a raw texture, not a UI mockup or a picture of an object. No frame, borders, labels, text, symbols, rivets, separate objects, dramatic shadows or vignette. No transparent pixels. Material: rich gilded gold plate, warm deep amber and gold-yellow with pale metallic highlights, subtle hammered microtexture, tiny scratches, lightly aged and tasteful. Gold is unmistakable but not glitter.",
+      "transparentBackground": false
+    },
+    {
+      "age": "EarlyModern",
+      "material": "Gunmetal",
+      "prompt": "Use case: stylized-concept. Asset type: a flat painted material texture for borders of a high-quality historical RTS user interface. Primary request: one opaque material surface filling the entire square image, viewed exactly straight-on with no perspective. Painterly realistic game-art finish, richly tactile at close range, visually calm at small UI sizes. Soft diffuse light from upper-left, evenly exposed. Seamless-looking surface with the same detail and brightness at all four edges. This is a raw texture, not a UI mockup or a picture of an object. No frame, borders, labels, text, symbols, rivets, separate objects, dramatic shadows or vignette. No transparent pixels. Material: blued gunmetal plate, dark desaturated slate-gray with a slight blue cast, precise brushed grain, tiny machining scuffs, low gloss. Modern machined steel rather than medieval hammered iron.",
+      "transparentBackground": false
+    },
+    {
+      "age": "Modern",
+      "material": "Army green",
+      "prompt": "Use case: stylized-concept. Asset type: a flat painted material texture for borders of a high-quality historical RTS user interface. Primary request: one opaque material surface filling the entire square image, viewed exactly straight-on with no perspective. Painterly realistic game-art finish, richly tactile at close range, visually calm at small UI sizes. Soft diffuse light from upper-left, evenly exposed. Seamless-looking surface with the same detail and brightness at all four edges. This is a raw texture, not a UI mockup or a picture of an object. No frame, borders, labels, text, symbols, rivets, separate objects, dramatic shadows or vignette. No transparent pixels. Material: matte army-olive green paint on metal, dusty desaturated olive-green dominant, fine field-worn painted grain and sparse subtle scuffs showing gray metal, no camouflage pattern, no decals.",
+      "transparentBackground": false
+    }
+  ],
+  "edits": [
+    {
+      "age": "StoneAge",
+      "userRequest": "Make the stone more rugged",
+      "editBrief": "Larger fractured rock faces, chipped irregular edges, deep charcoal crevices and restrained moss; straight-on opaque painted fieldstone material for small UI rims. Keep gray stone dominant and retain quiet text inlays in the assembled UI.",
+      "originalPreserved": "generated/stone-smooth-original.png",
+      "output": "generated/stone.png",
+      "generatedSource": "C:\\Users\\Damien\\.codex\\generated_images\\01a0f146-1b3d-7de2-8263-c3b4f0e64132\\exec-6052c5fb-cc44-4ee0-9082-ac5efec74605.png",
+      "transparentBackground": false
+    }
+  ]
+}

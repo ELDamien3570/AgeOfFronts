@@ -1,0 +1,72 @@
+{
+  "httpChecks": [
+    {
+      "file": "Actor_Review.html",
+      "status": 200,
+      "bytes": 7122
+    },
+    {
+      "file": "animations.json",
+      "status": 200,
+      "bytes": 21351
+    },
+    {
+      "file": "../../Clubman/actor-review.js",
+      "status": 200,
+      "bytes": 8203
+    },
+    {
+      "file": "idle-v1.png",
+      "status": 200,
+      "bytes": 971515
+    },
+    {
+      "file": "running-v1.png",
+      "status": 200,
+      "bytes": 1007397
+    },
+    {
+      "file": "charge-v1.png",
+      "status": 200,
+      "bytes": 1007397
+    },
+    {
+      "file": "attack-v1.png",
+      "status": 200,
+      "bytes": 782259
+    },
+    {
+      "file": "charge-attack-v1.png",
+      "status": 200,
+      "bytes": 758563
+    },
+    {
+      "file": "reload-v2.png",
+      "status": 200,
+      "bytes": 843420
+    },
+    {
+      "file": "hit-v1.png",
+      "status": 200,
+      "bytes": 943266
+    },
+    {
+      "file": "charged-v1.png",
+      "status": 200,
+      "bytes": 906229
+    },
+    {
+      "file": "death-v2.png",
+      "status": 200,
+      "bytes": 1035486
+    },
+    {
+      "file": "death-back-v1.png",
+      "status": 200,
+      "bytes": 985680
+    }
+  ],
+  "browserPlaybackVerified": false,
+  "userApproval": "Pending animation review",
+  "runtimeIntegration": false
+}

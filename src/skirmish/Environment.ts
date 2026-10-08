@@ -162,6 +162,13 @@ export class EnvironmentProfile {
       )
     )
       throw new Error("Invalid map environment inputs");
+    if (
+      data?.families &&
+      (!(data.families instanceof Uint8Array) ||
+        data.families.length !== size ||
+        data.families.some((family) => family >= ENVIRONMENT_FAMILIES.length))
+    )
+      throw new Error("Invalid authored map biomes");
     this.vegetation = data?.vegetation.slice();
     this.aridity = data?.aridity.slice();
     this.families = new Uint8Array(size);
@@ -326,7 +333,8 @@ export class EnvironmentProfile {
             family = "polar-ice";
           else family = this.heightAt(tile) >= 1800 ? "alpine" : "tundra";
         }
-        this.families[tile] = ENVIRONMENT_FAMILIES.indexOf(family);
+        this.families[tile] =
+          data?.families?.[tile] ?? ENVIRONMENT_FAMILIES.indexOf(family);
       }
     }
   }

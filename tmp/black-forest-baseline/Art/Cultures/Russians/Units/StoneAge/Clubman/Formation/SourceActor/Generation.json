@@ -1,0 +1,27 @@
+{
+  "tool": "built-in image_gen",
+  "created": "2026-10-02",
+  "records": [
+    {
+      "id": "charge-attack-v1",
+      "prompt": "Use case: identity-preserve.\nAsset type: transparent single-soldier sprite sheet for the CHARGE ATTACK phase of a top-down RTS.\nInput image 1 is the approved single-clubman CHARGE reference. Input image 2 is the approved ordinary ATTACK reference. Create a NEW sprite sheet for the same ONE soldier executing a more forceful advancing club strike after a charge. Do not modify those existing sheets.\nIdentity invariants: same sturdy adult Russian-inspired Stone Age clubman, scarlet cloth cap with cream fur brim, cream fur collar, red coarse tunic, brown leather belt and wrist wraps, pale linen trousers, brown boots, one flint-headed wooden club in the same hand (on screen-left when in ready pose). No other characters. Keep the painted stylized RTS finish and readable red/cream blocks.\nCamera: exact vertical overhead orthographic view, screen-DOWN facing, top of cap and shoulders visible, no portrait face, no frontal/isometric camera.\nCanvas: EXACTLY 1536x1024 transparent RGBA PNG. EXACT 3 columns by 2 rows of 512x512 cells, six poses left-to-right top row then bottom row. ONE whole soldier and his entire club per cell. Same scale and root location in every cell, cap approximately centered at local (256,190), hips/root around (256,300). All art inside each cell with at least 24 pixels clear border. True transparent background, no backdrop, glow, ground, cast shadow, grid, frame numbers, labels or motion trails.\nSix-frame charge-strike sequence:\n1. Finish the charge stride and plant the forward boot. Club raised above and behind his right shoulder as in the charge reference, free arm balancing.\n2. Brace and wind up for a heavy strike, knees bent, forward intent, club high, shoulders rotate while maintaining screen-down facing.\n3. Accelerate the club forward toward SCREEN BOTTOM, strong torso follow-through and long planted front leg, visibly different from the wind-up.\n4. Impact pose: the flint head reaches down ahead of the soldier close to local y=450, weapon arm extended toward screen bottom, heavy lunging shoulders, back heel lifted. The whole club remains inside the cell.\n5. Follow through across the front of his body, low sweeping club, knees and torso absorb the strike.\n6. Recover upright with the club carried LOW at his side, feet under him and ready to move back into standard formation. No new wind-up, this is a one-shot strike ending in a low ready stance.\nKeep both boots and the whole club visible, stable cap/fur size, no weapon hand changes, no body-size changes, no smear frames or cloned ghosts. A strong readable strike with anticipation, impact and recovery, not another running cycle.",
+      "references": [
+        "../../Charge.png",
+        "../../Attack.png"
+      ],
+      "source": "C:/Users/Damien/.codex/generated_images/01a0fea1-c63f-7343-92ca-6c21cc1c4296/exec-b1cd3631-fa5c-42f5-9317-6952896ee6de.png",
+      "file": "SourceArt/ChargeAttack-v1.png",
+      "selection": "Rejected: club crosses frame boundary."
+    },
+    {
+      "id": "charge-attack",
+      "prompt": "Use case: precise-object-edit.\nEdit the supplied single Russian clubman charge-attack sprite sheet. Preserve the six sequential poses, same soldier, same clothing and materials, same weapon hand, same overhead camera and screen-down facing, same 1536x1024 canvas and exact 3x2 grid of 512px cells.\nCorrect the frame boundaries: the third pose (TOP RIGHT) has a club extending below its 512px cell and its fragment contaminates the sixth pose (BOTTOM RIGHT). Repaint the COMPLETE flint head and entire club for the third pose so it stays within that top-right cell. REMOVE the stray club pixels belonging to the top-right pose from the upper edge of the bottom-right cell. The bottom-right pose must contain only its own low-ready soldier.\nReduce ALL SIX actors uniformly to about 86 percent of their current size, retaining the same body proportions and anatomy, and center each complete pose inside its own cell. This must leave at least 32 completely transparent pixels at ALL FOUR edges of every 512px cell, including the extended weapon strike and raised-club poses. No cropped club heads, no cropped boots, no spill into neighbors. One whole soldier per cell.\nKeep the heavy charge-strike progression: raised planted stance, wind-up, accelerating strike, full impact, follow-through, low-ready recovery. Do not replace striking poses with idle poses. Same uniform actor scale across the six frames.\nAll non-character pixels must be true transparent alpha zero. No backdrop, glow, haze, ground or cast shadow; no grid or text. Clean antialiased edges only.",
+      "references": [
+        "SourceArt/ChargeAttack-v1.png"
+      ],
+      "source": "C:/Users/Damien/.codex/generated_images/01a0fea1-c63f-7343-92ca-6c21cc1c4296/exec-8465d955-cc92-4c74-b778-a146d9e8b09f.png",
+      "file": "ChargeAttack.png",
+      "selection": "Selected after removing frame spill."
+    }
+  ]
+}

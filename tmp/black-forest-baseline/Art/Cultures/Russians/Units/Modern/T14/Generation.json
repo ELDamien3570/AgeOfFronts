@@ -1,0 +1,43 @@
+{
+  "date": "2026-10-07",
+  "mode": "built-in-imagegen",
+  "file": "Idle-v1.png",
+  "cultureId": "russians",
+  "requestedAge": "Modern",
+  "unit": "T-14 Armata",
+  "stage": "single-vehicle-animation-review",
+  "camera": "vertical-overhead-orthographic",
+  "facing": "screen-down",
+  "styleReference": "outputs/art-review/Russians/T34-85/Idle-v1.png",
+  "designResearch": [
+    "https://rostec.ru/upload/iblock/258/2588384c4a05f0fc1aaaf46585db8120.pdf",
+    "https://g2webcontent.z2.web.core.usgovcloudapi.net/OEE/GCKN/GCKN%20Reports/Red_Diamond_Vol10_Iss4_Russia_2019.pdf"
+  ],
+  "prompt": "Use case: stylized-concept. Asset type: Age of Fronts Russian civilization Modern-age armored vehicle sprite, SINGLE idle review frame. Subject: unmistakable T-14 Armata main battle tank. Input image is ONLY a reference for painted RTS finish, muted olive color, strict overhead camera, downward facing and isolated presentation; DO NOT reuse its T-34 shape, round turret, old hatches or external cylindrical fuel drums. Build a distinctly modern T-14: elongated broad armored tracked hull, distinctive compact angular faceted UNMANNED turret with asymmetric armor housings and a rear bustle, long 125mm smoothbore cannon with thermal sleeve and plain muzzle, NO muzzle brake and NO large barrel bore evacuator. Turret roof has optical sensor housings and small remote machine gun station, NOT human crew cupolas or large turret crew hatches. Closed crew hatches on the forward hull deck ahead of turret. Modern segmented protective side-skirt tops, frontal modular armor blocks, rear engine deck grilles, discrete active-protection housings, two dark steel continuous caterpillar track tread-top strips along sides. Prioritize authentic identifiable Armata roof-plan proportions rather than generic sci-fi or a T-90. Main gun and chassis aligned straight DOWN, rear engine deck toward TOP. Camera ABSOLUTELY vertical 90-degree overhead orthographic roof plan: zero perspective, no isometric or three-quarter view, no vertical frontal armor faces, no side armor faces, no road wheel side faces, no horizon. Painted high-quality RTS finish matching reference, subdued olive green metal, restrained wear along edges, clean dark seams, soft shading on top surfaces, dark grey steel tracks. Small muted red Russian faction star on a clear turret-top armor panel if appropriate. No numbers, text or labels. Entire tank and full gun muzzle within square canvas, centered on vertical axis, generous transparent clearance at all edges, unit occupies about 80% of total height. ONE stationary intact tank, quiet idle, turret forward, all hatches closed, no people, no smoke, muzzle flash, dust, explosions, scenery, ground shadow, glow or background. Genuinely transparent alpha background. Strong clear silhouette and readable broad armor planes at 48/64 px. ONE standalone frame ONLY, not a sheet or multiple views.",
+  "runtimeIntegration": false,
+  "idleApproval": "User approved Idle-v2 and requested animation.",
+  "approvedIdle": "Idle-v2.png",
+  "animationRecords": [
+    {
+      "id": "moving",
+      "mode": "built-in-imagegen",
+      "prompt": "Animate this APPROVED exact T-14 Armata v2 sprite. Preserve its olive paint, angular unmanned turret, OFFSET red star on turret right, closed hull hatches, roof equipment, rear grille, long gun aligned straight DOWN. STRICT vertical 90-degree overhead orthographic plan view. Only equipment roofs visible: no optic front faces, no launcher mouths, no tall antenna stems, no upright armor walls, no side wheels. Transparent animation sprite sheet exactly SIX consecutive frames, THREE COLUMNS by TWO ROWS, landscape 1536x1024, each square cell 512x512. Every tank same size, centered at same position in its cell. Whole tank including barrel fills only 75% of cell height; at least 40px transparent clearance at TOP and BOTTOM, more around effects. No labels, cell borders, scenery, cast shadows, glows or background. Only ONE tank per cell. No geometry redesign or changing barrel length. Motion: MOVING seamless six-frame loop. Advance BOTH track tread patterns forward toward bottom in successive phases; visible tread motion. Hull and turret stay rigid and motionless at identical position. Barrel always same full length. No tank translation, turning, swaying, smoke or muzzle flashes. Six coherent consecutive moving-track poses, not six different designs.",
+      "nativeSource": "SourceArt/Native-moving-v1.png",
+      "reference": "Idle-v2.png"
+    },
+    {
+      "id": "moving-shooting",
+      "mode": "built-in-imagegen",
+      "prompt": "Animate this APPROVED exact T-14 Armata v2 sprite. Preserve its olive paint, angular unmanned turret, OFFSET red star on turret right, closed hull hatches, roof equipment, rear grille, long gun aligned straight DOWN. STRICT vertical 90-degree overhead orthographic plan view. Only equipment roofs visible: no optic front faces, no launcher mouths, no tall antenna stems, no upright armor walls, no side wheels. Transparent animation sprite sheet exactly SIX consecutive frames, THREE COLUMNS by TWO ROWS, landscape 1536x1024, each square cell 512x512. Every tank same size, centered at same position in its cell. Whole tank including barrel fills only 75% of cell height; at least 40px transparent clearance at TOP and BOTTOM, more around effects. No labels, cell borders, scenery, cast shadows, glows or background. Only ONE tank per cell. No geometry redesign or changing barrel length. Motion: MOVING AND FIRING, six consecutive frames ONE main cannon shot cycle. Both tracks advance tread phases throughout. Barrel full length in ALL frames, muzzle SAME distance beyond hull in ALL frames, NO dramatic barrel shortening. Frame 1 driving ready no flash. Frame 2 short compact orange-yellow flash ONLY at very tip of long main gun below tank, never at hull. Frame 3 small dissipating grey puff beyond muzzle. Frame 4 faint remnant of same puff. Frame 5 ready clear, frame 6 ready clear. Hull, turret and weapon roof geometry identical and stationary through cycle. No remote machine gun firing. No ejected brass. All flash and smoke comfortably inside padded cell, no neighboring cell overlap.",
+      "nativeSource": "SourceArt/Native-moving-shooting-v1.png",
+      "reference": "Idle-v2.png"
+    },
+    {
+      "id": "death",
+      "mode": "built-in-imagegen",
+      "prompt": "Animate this APPROVED exact T-14 Armata v2 sprite. Preserve its olive paint, angular unmanned turret, OFFSET red star on turret right, closed hull hatches, roof equipment, rear grille, long gun aligned straight DOWN. STRICT vertical 90-degree overhead orthographic plan view. Only equipment roofs visible: no optic front faces, no launcher mouths, no tall antenna stems, no upright armor walls, no side wheels. Transparent animation sprite sheet exactly SIX consecutive frames, THREE COLUMNS by TWO ROWS, landscape 1536x1024, each square cell 512x512. Every tank same size, centered at same position in its cell. Whole tank including barrel fills only 75% of cell height; at least 40px transparent clearance at TOP and BOTTOM, more around effects. No labels, cell borders, scenery, cast shadows, glows or background. Only ONE tank per cell. No geometry redesign or changing barrel length. Motion: DESTRUCTION six-frame one-shot explosion sequence, holds final wreck. Fixed tank position and overhead view. Frame 1 intact tank small ignition on rear engine deck. Frame 2 compact growing orange-yellow fire and blast. Frame 3 peak compact overhead radial fireball and dark smoke, tank outline still partly visible, few small fragments. Frame 4 smoke clearing exposes scorched turret and hull. Frame 5 mostly cleared charred wreck with small remaining flames. Frame 6 settled same blackened wreck, faint embers only. No restored tank at end. All flames seen directly FROM ABOVE, no upright plume, no sideview mushroom cloud, no people or gore. Maintain the tank's large angular turret and broad rectangular hull silhouette; a damaged bent barrel at the end is allowed. Keep blast, smoke and debris completely inside generous clear cell margins.",
+      "nativeSource": "SourceArt/Native-death-v1.png",
+      "reference": "Idle-v2.png"
+    }
+  ]
+}

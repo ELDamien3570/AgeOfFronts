@@ -1,0 +1,9 @@
+{
+  "id": "charge-attack",
+  "file": "Charge-Attack-Forward-Cutout-v7.png",
+  "prompt": "Transparent game sprite atlas cutout cleanup ONLY of reference. Retain ALL six horse archer forward aiming poses exactly including triangular DRAWN strings, nearly vertical downward arrow shafts, proportions and saddle pivots. Remove every stray halo/faint semitransparent pixel away from silhouettes, especially BETWEEN upper and lower rows around y500..525. Preserve actual horse noses and tail tips, but there must be a clear transparent gap separating the two rows. No pose changes, no resize, no repaint armor or bow. TRUE PNG RGBA alpha0 background; no blackbrown fog/shadow/ground. EXACT1536x1024 six512cells3columns2rows. The output must be actual isolated transparent sprites, not illustration on dark background.",
+  "references": [
+    "C:\\Users\\Damien\\.codex\\generated_images\\01a11641-9e1b-7c81-be76-c9edd53ef182\\exec-96d9312d-27cb-4729-b9c5-ddb7897a7339.png"
+  ],
+  "generatedSource": "C:\\Users\\Damien\\.codex\\generated_images\\01a11641-9e1b-7c81-be76-c9edd53ef182\\exec-6f4f6a72-bb89-42f3-a383-76906741b769.png"
+}

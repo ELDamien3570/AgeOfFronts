@@ -159,7 +159,7 @@ describe("coordinated AI economy", () => {
   for (const type of ["blacksmith", "armory", "arms-factory", "depot", "siege-workshop"] as const)
     it(`can fund a missing ${type} with no recruitment headroom`, () => {
       const { player } = fixture(), research = TECHNOLOGIES.map(t => t.id),
-        age = type === "blacksmith" ? "BronzeAge" : type === "armory" ? "EarlyModern" : "Modern";
+        age = type === "blacksmith" ? "BronzeAge" : type === "armory" ? "Napoleonic" : "Modern";
       const recipe = PRODUCTION_RECIPES.find(r => r.building === type)!;
       const snapshot = economicSnapshot({ player, tick: 0, generation: 0, age, research,
         inventory: { ...recipe.inputs }, buildings: [], squads: [], ships: [], jobs: [], production: {}, cap: 0, threatTroops: 0 });

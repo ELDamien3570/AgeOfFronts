@@ -1,0 +1,20 @@
+{
+  "date": "2026-10-07",
+  "frames": 1,
+  "size": [
+    1254,
+    1254
+  ],
+  "mode": "RGBA",
+  "visibleBounds": [
+    232,
+    242,
+    1022,
+    1011
+  ],
+  "cornerAlpha": 0,
+  "nativePreserved": true,
+  "sha256": "9c5692367aa7a1875c2bf16909ab9922a619fba68a8b103b1901e15eda8d96dd",
+  "approval": "Pending top spike review",
+  "file": "Idle-Axe-TopSpike-v3.png"
+}

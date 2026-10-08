@@ -1,0 +1,90 @@
+{
+  "rules": {
+    "revision": 3,
+    "baseDensity": 2,
+    "originalDenominator": 6300,
+    "mountainRadius": 6,
+    "metalWeight": 3,
+    "plainsHorseWeight": 3,
+    "desertOilWeight": 4,
+    "powderAbundance": 2,
+    "startingReach": 24
+  },
+  "resources": [
+    "horses",
+    "stone",
+    "copper",
+    "tin",
+    "ironOre",
+    "carbon",
+    "gunpowder",
+    "oil"
+  ],
+  "audits": [
+    {
+      "map": "heightmap-test1",
+      "size": 250,
+      "seed": 1,
+      "factions": 35,
+      "covered": 35
+    },
+    {
+      "map": "heightmap-test1",
+      "size": 250,
+      "seed": 47,
+      "factions": 35,
+      "covered": 35
+    },
+    {
+      "map": "heightmap-test1",
+      "size": 250,
+      "seed": 1987,
+      "factions": 35,
+      "covered": 35
+    },
+    {
+      "map": "africa",
+      "size": 250,
+      "seed": 1,
+      "factions": 35,
+      "covered": 35
+    },
+    {
+      "map": "africa",
+      "size": 250,
+      "seed": 47,
+      "factions": 35,
+      "covered": 35
+    },
+    {
+      "map": "africa",
+      "size": 250,
+      "seed": 1987,
+      "factions": 35,
+      "covered": 35
+    },
+    {
+      "map": "amazon-river",
+      "size": 250,
+      "seed": 1,
+      "factions": 35,
+      "covered": 35
+    },
+    {
+      "map": "amazon-river",
+      "size": 250,
+      "seed": 47,
+      "factions": 35,
+      "covered": 35
+    },
+    {
+      "map": "amazon-river",
+      "size": 250,
+      "seed": 1987,
+      "factions": 35,
+      "covered": 35
+    }
+  ],
+  "factionsAudited": 315,
+  "factionsCovered": 315
+}

@@ -1,0 +1,222 @@
+{
+  "attack": {
+    "file": "GunFire-v3.png",
+    "scale": 1,
+    "pivots": [
+      {
+        "x": 266,
+        "y": 287
+      },
+      {
+        "x": 256,
+        "y": 287
+      },
+      {
+        "x": 246,
+        "y": 287
+      },
+      {
+        "x": 266,
+        "y": 252
+      },
+      {
+        "x": 256,
+        "y": 252
+      },
+      {
+        "x": 246,
+        "y": 252
+      }
+    ],
+    "frameSize": 512,
+    "grid": [
+      3,
+      2
+    ],
+    "frameChecks": [
+      {
+        "frame": 0,
+        "bounds": [
+          152,
+          116,
+          379,
+          458
+        ],
+        "guard": 53,
+        "edgeMaxAlpha": 1,
+        "pixelsBeyondOpaqueDilationAbove16": 7
+      },
+      {
+        "frame": 1,
+        "bounds": [
+          142,
+          116,
+          369,
+          458
+        ],
+        "guard": 53,
+        "edgeMaxAlpha": 0,
+        "pixelsBeyondOpaqueDilationAbove16": 3
+      },
+      {
+        "frame": 2,
+        "bounds": [
+          132,
+          116,
+          360,
+          458
+        ],
+        "guard": 53,
+        "edgeMaxAlpha": 1,
+        "pixelsBeyondOpaqueDilationAbove16": 6
+      },
+      {
+        "frame": 3,
+        "bounds": [
+          152,
+          81,
+          379,
+          423
+        ],
+        "guard": 81,
+        "edgeMaxAlpha": 1,
+        "pixelsBeyondOpaqueDilationAbove16": 16
+      },
+      {
+        "frame": 4,
+        "bounds": [
+          142,
+          81,
+          369,
+          423
+        ],
+        "guard": 81,
+        "edgeMaxAlpha": 1,
+        "pixelsBeyondOpaqueDilationAbove16": 5
+      },
+      {
+        "frame": 5,
+        "bounds": [
+          132,
+          81,
+          360,
+          423
+        ],
+        "guard": 81,
+        "edgeMaxAlpha": 0,
+        "pixelsBeyondOpaqueDilationAbove16": 12
+      }
+    ],
+    "sha256": "d2ea1d04cebe9be557f8acaeb78f1f805366719e086b84bcb8c9c4d542cf94cd"
+  },
+  "missile": {
+    "file": "MissileLaunch-v3.png",
+    "scale": 1,
+    "pivots": [
+      {
+        "x": 291,
+        "y": 270
+      },
+      {
+        "x": 258,
+        "y": 270
+      },
+      {
+        "x": 254,
+        "y": 270
+      },
+      {
+        "x": 288,
+        "y": 240
+      },
+      {
+        "x": 256,
+        "y": 241
+      },
+      {
+        "x": 255,
+        "y": 241
+      }
+    ],
+    "frameSize": 512,
+    "grid": [
+      3,
+      2
+    ],
+    "frameChecks": [
+      {
+        "frame": 0,
+        "bounds": [
+          177,
+          100,
+          405,
+          439
+        ],
+        "guard": 72,
+        "edgeMaxAlpha": 1,
+        "pixelsBeyondOpaqueDilationAbove16": 2
+      },
+      {
+        "frame": 1,
+        "bounds": [
+          145,
+          101,
+          372,
+          439
+        ],
+        "guard": 72,
+        "edgeMaxAlpha": 1,
+        "pixelsBeyondOpaqueDilationAbove16": 4
+      },
+      {
+        "frame": 2,
+        "bounds": [
+          141,
+          100,
+          368,
+          439
+        ],
+        "guard": 72,
+        "edgeMaxAlpha": 1,
+        "pixelsBeyondOpaqueDilationAbove16": 0
+      },
+      {
+        "frame": 3,
+        "bounds": [
+          174,
+          71,
+          401,
+          410
+        ],
+        "guard": 71,
+        "edgeMaxAlpha": 1,
+        "pixelsBeyondOpaqueDilationAbove16": 0
+      },
+      {
+        "frame": 4,
+        "bounds": [
+          142,
+          71,
+          369,
+          411
+        ],
+        "guard": 71,
+        "edgeMaxAlpha": 1,
+        "pixelsBeyondOpaqueDilationAbove16": 0
+      },
+      {
+        "frame": 5,
+        "bounds": [
+          141,
+          71,
+          369,
+          411
+        ],
+        "guard": 71,
+        "edgeMaxAlpha": 0,
+        "pixelsBeyondOpaqueDilationAbove16": 0
+      }
+    ],
+    "sha256": "303a9967fd187f60d19e324d762d4f3335e840c8a0e18214eb6c9da9bca722fa"
+  }
+}

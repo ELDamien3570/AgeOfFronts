@@ -1,0 +1,265 @@
+{
+  "passed": true,
+  "vessels": 17,
+  "waterFrames": 170,
+  "unchangedImages": 1093,
+  "idleAttackVesselPassesPreserved": true,
+  "checks": [
+    {
+      "age": "EarlyMedieval",
+      "role": "Warship",
+      "anchors": {
+        "bow": [
+          248,
+          83
+        ],
+        "stern": [
+          248,
+          403
+        ]
+      },
+      "anchorsInsidePaint": true
+    },
+    {
+      "age": "EarlyMedieval",
+      "role": "Transport",
+      "anchors": {
+        "bow": [
+          248,
+          409
+        ],
+        "stern": [
+          248,
+          108
+        ]
+      },
+      "anchorsInsidePaint": true
+    },
+    {
+      "age": "EarlyMedieval",
+      "role": "Trade",
+      "anchors": {
+        "bow": [
+          252,
+          410
+        ],
+        "stern": [
+          252,
+          138
+        ]
+      },
+      "anchorsInsidePaint": true
+    },
+    {
+      "age": "LateMedieval",
+      "role": "Warship",
+      "anchors": {
+        "bow": [
+          251,
+          409
+        ],
+        "stern": [
+          251,
+          95
+        ]
+      },
+      "anchorsInsidePaint": true
+    },
+    {
+      "age": "LateMedieval",
+      "role": "Transport",
+      "anchors": {
+        "bow": [
+          258,
+          407
+        ],
+        "stern": [
+          258,
+          112
+        ]
+      },
+      "anchorsInsidePaint": true
+    },
+    {
+      "age": "LateMedieval",
+      "role": "Trade",
+      "anchors": {
+        "bow": [
+          250,
+          406
+        ],
+        "stern": [
+          250,
+          96
+        ]
+      },
+      "anchorsInsidePaint": true
+    },
+    {
+      "age": "Napoleonic",
+      "role": "Warship",
+      "anchors": {
+        "bow": [
+          246,
+          407
+        ],
+        "stern": [
+          246,
+          108
+        ]
+      },
+      "anchorsInsidePaint": true
+    },
+    {
+      "age": "Napoleonic",
+      "role": "Transport",
+      "anchors": {
+        "bow": [
+          256.5,
+          406
+        ],
+        "stern": [
+          256.5,
+          99
+        ]
+      },
+      "anchorsInsidePaint": true
+    },
+    {
+      "age": "Napoleonic",
+      "role": "Trade",
+      "anchors": {
+        "bow": [
+          253.5,
+          407
+        ],
+        "stern": [
+          253.5,
+          103
+        ]
+      },
+      "anchorsInsidePaint": true
+    },
+    {
+      "age": "EarlyModern",
+      "role": "Warship",
+      "anchors": {
+        "bow": [
+          248,
+          421
+        ],
+        "stern": [
+          248,
+          94
+        ]
+      },
+      "anchorsInsidePaint": true
+    },
+    {
+      "age": "EarlyModern",
+      "role": "Transport",
+      "anchors": {
+        "bow": [
+          254,
+          426
+        ],
+        "stern": [
+          254,
+          93
+        ]
+      },
+      "anchorsInsidePaint": true
+    },
+    {
+      "age": "EarlyModern",
+      "role": "Trade",
+      "anchors": {
+        "bow": [
+          259,
+          425
+        ],
+        "stern": [
+          259,
+          98
+        ]
+      },
+      "anchorsInsidePaint": true
+    },
+    {
+      "age": "EarlyModern",
+      "role": "Submarine",
+      "anchors": {
+        "bow": [
+          256,
+          426
+        ],
+        "stern": [
+          256,
+          90
+        ]
+      },
+      "anchorsInsidePaint": true
+    },
+    {
+      "age": "Modern",
+      "role": "Warship",
+      "anchors": {
+        "bow": [
+          259,
+          425
+        ],
+        "stern": [
+          259,
+          93
+        ]
+      },
+      "anchorsInsidePaint": true
+    },
+    {
+      "age": "Modern",
+      "role": "Transport",
+      "anchors": {
+        "bow": [
+          260,
+          416
+        ],
+        "stern": [
+          260,
+          96
+        ]
+      },
+      "anchorsInsidePaint": true
+    },
+    {
+      "age": "Modern",
+      "role": "Trade",
+      "anchors": {
+        "bow": [
+          243,
+          426
+        ],
+        "stern": [
+          243,
+          99
+        ]
+      },
+      "anchorsInsidePaint": true
+    },
+    {
+      "age": "Modern",
+      "role": "Submarine",
+      "anchors": {
+        "bow": [
+          246,
+          426
+        ],
+        "stern": [
+          246,
+          90
+        ]
+      },
+      "anchorsInsidePaint": true
+    }
+  ],
+  "animationFrameChecksPassed": true
+}

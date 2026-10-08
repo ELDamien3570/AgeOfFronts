@@ -1,0 +1,154 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width,initial-scale=1">
+  <title>Modern Defenses</title>
+  <style>
+    :root { color-scheme:dark; font-family:system-ui,sans-serif; background:#141d19; color:#edf1e9; }
+    * { box-sizing:border-box; }
+    body { margin:0; padding:24px; }
+    main { max-width:1140px; margin:auto; }
+    .heading { display:flex; justify-content:space-between; align-items:center; gap:18px; margin-bottom:18px; }
+    h1 { font-size:27px; margin:0 0 5px; letter-spacing:-.6px; font-weight:650; }
+    .subtitle { margin:0; color:#b6c4b9; font-size:14px; }
+    .badge { border:1px solid #5c6850; border-radius:20px; padding:7px 12px; color:#d3c28e; font-size:12px; white-space:nowrap; }
+    button,select { font:inherit; font-size:13px; cursor:pointer; color:#eff1e8; background:#334439; border:1px solid #526759; border-radius:7px; padding:7px 12px; }
+    button:hover { background:#475e4e; }
+    button:focus-visible,select:focus-visible,input:focus-visible,a:focus-visible { outline:2px solid #a4ddd0; outline-offset:3px; }
+    .toolbar { display:flex; flex-wrap:wrap; align-items:center; gap:16px; background:#25352b; border:1px solid #3d5142; border-radius:12px; padding:12px 14px; margin-bottom:18px; }
+    label { display:inline-flex; align-items:center; gap:7px; color:#c5d2c7; font-size:13px; }
+    input { accent-color:#d3b879; }
+    .grid { display:grid; grid-template-columns:1.2fr 1fr 1fr; gap:14px; }
+    article { min-width:0; background:#24332a; border:1px solid #405746; border-radius:12px; overflow:hidden; }
+    article header { padding:11px 14px; border-bottom:1px solid #405746; }
+    article h2 { margin:0 0 4px; font-size:14px; font-weight:600; }
+    .description { color:#c8bd99; font-size:12px; }
+    .stage { display:flex; justify-content:flex-start; align-items:center; min-height:290px; background:#1d2c22; padding:12px; overflow:auto; }
+    canvas { display:block; flex-shrink:0; margin:auto; }
+    article footer { display:flex; flex-wrap:wrap; justify-content:space-between; gap:8px; padding:8px 14px; color:#aabfb0; font-size:11px; }
+    a { color:#ddc58f; text-decoration:none; }
+    a:hover { text-decoration:underline; }
+    #status { color:#b6c4b9; font-size:13px; margin:18px 0 10px; }
+    .review-links { display:flex; flex-wrap:wrap; gap:20px; font-size:12px; }
+    .note { font-size:12px; color:#a6bba9; margin:0 0 12px; }
+    .wide .grid { grid-template-columns:repeat(2,minmax(0,1fr)); }
+    .wide .primary { grid-column:1/-1; }
+    @media(max-width:900px) { .grid { grid-template-columns:repeat(2,minmax(0,1fr)); } .primary { grid-column:1/-1; } }
+    @media(max-width:540px) { body { padding:15px; } .badge { display:none; } .grid,.wide .grid { grid-template-columns:1fr; } .primary { grid-column:auto; } }
+  </style>
+</head>
+<body>
+  <main>
+    <header class="heading">
+      <div><h1>Modern Defenses</h1><p class="subtitle">Connected trenches · heavy machine-gun nests · quad anti-air emplacements</p></div>
+      <div class="badge">16 trenches · 2 nest types · 4 facings</div>
+    </header>
+    <div class="toolbar">
+      <label for="view">View <select id="view"><option value="network">Connected trenches</option><option value="tiles">All 16 trench pieces</option><option value="corners">Four corner joins</option><option value="facings">All eight nest facings</option><option value="profile">Wall profile comparison</option></select></label>
+      <label for="size">Cell size <select id="size"><option value="24">24 px</option><option value="32" selected>32 px</option><option value="48">48 px</option><option value="64">64 px</option><option value="128">128 px</option><option value="256">256 px</option></select></label>
+      <label for="ground">Ground <select id="ground"><option value="grass">Grass</option><option value="sand">Sand</option><option value="snow">Snow</option><option value="checker">Checkerboard</option><option value="dark">Dark</option></select></label>
+      <label for="nest">Nests <select id="nest"><option value="mixed">Both types</option><option value="AntiInfantry">Anti-infantry</option><option value="AntiAir">Anti-air</option><option value="none">None</option></select></label>
+      <label for="facing">Facing <select id="facing"><option value="varied">Varied</option><option value="N">North</option><option value="E">East</option><option value="S">South</option><option value="W">West</option></select></label>
+      <label for="grid"><input id="grid" type="checkbox">Cell boundaries</label>
+      <button id="reset" type="button">Reset view</button>
+    </div>
+    <section id="kits" class="grid" aria-busy="true" aria-label="Modern defense art"></section>
+    <p id="status" role="status">Loading modern defenses…</p>
+    <p class="note">Transparent production sprites · N / E / S / W connections · same width and center pivot as massive stone walls</p>
+    <p class="review-links"><a href="Animations/Gun_Animation_Preview.html">Gun animations ↗</a><a href="../Wall%20Kit/Wall_Kit_Preview.html">Wall kit ↗</a><a href="../Trade%20Roads/Road_Tile_Preview.html">Road tiles ↗</a><a href="Modern_Defenses_Manifest.json" target="_blank" rel="noopener">Asset manifest ↗</a><a href="README.md" target="_blank" rel="noopener">Asset guide ↗</a></p>
+  </main>
+  <script>
+    // Review-only MVVM: the asset catalog and display state are separate.
+    // This page neither owns nor changes gameplay, unlock or combat state.
+    const FACINGS=['N','E','S','W'];
+    const assetModel={
+      manifest:null,trench:null,nests:[],ground:null,layout:null,wallReference:null,version:Date.now(),
+      async json(path) { const response=await fetch(`${path}?review=${this.version}`); if (!response.ok) throw new Error(`${path} unavailable (${response.status})`); return response.json(); },
+      async image(path) { const image=new Image(); image.src=`${path}?review=${this.version}`; await image.decode(); return image; },
+      async initialize() {
+        this.manifest=await this.json('Modern_Defenses_Manifest.json');
+        const [metadata,atlas,catalog,ground,layout,wallReference]=await Promise.all([this.json(this.manifest.trenchMetadata),this.image(this.manifest.trenchAtlas),this.json(this.manifest.nestMetadata),this.image(this.manifest.previewGround),this.json(this.manifest.layout),this.image('../Wall%20Kit/MassiveStoneWalls/tiles/10-straight-ew.png')]);
+        if (metadata.tileSize!==256 || metadata.tiles.length!==16 || atlas.naturalWidth!==1024 || atlas.naturalHeight!==1024) throw new Error('Invalid trench atlas');
+        this.trench={metadata,atlasImage:atlas}; this.ground=ground; this.layout=layout; this.wallReference=wallReference;
+        this.nests=await Promise.all(catalog.types.map(async type => {
+          const path=`Gun Nests/${type.atlas}`, image=await this.image(path);
+          if (image.naturalWidth!==1024 || image.naturalHeight!==256 || type.facings.length!==4) throw new Error(`Invalid nest facings: ${type.id}`);
+          return {...type,atlasPath:path,atlasImage:image};
+        }));
+      },
+    };
+    const viewModel={view:'network',cellSize:32,ground:'grass',nest:'mixed',facing:'varied',grid:false};
+    const elements=Object.fromEntries(['kits','status','view','size','ground','nest','facing','grid'].map(id => [id,document.getElementById(id)]));
+    const viewLabels={network:'Connected trench network',tiles:'All 16 trench pieces',corners:'Four corner joins',facings:'All eight nest facings',profile:'Wall and trench profiles'};
+    const canvasView={
+      background(ctx,width,height,size) {
+        if (viewModel.ground==='grass') {
+          for (let y=0;y<height;y+=size) for (let x=0;x<width;x+=size) ctx.drawImage(assetModel.ground,x,y,size,size);
+        } else if (viewModel.ground==='checker') {
+          const step=Math.max(8,Math.round(size/4));
+          for (let y=0;y<height;y+=step) for (let x=0;x<width;x+=step) { ctx.fillStyle=((Math.floor(x/step)+Math.floor(y/step))%2) ? '#aeb8ad' : '#dae0d6'; ctx.fillRect(x,y,step,step); }
+        } else { ctx.fillStyle={sand:'#c5ad77',snow:'#e0e6e5',dark:'#202925'}[viewModel.ground]; ctx.fillRect(0,0,width,height); }
+      },
+      begin(canvas,columns,rows,size) {
+        canvas.width=columns*size; canvas.height=rows*size; canvas.style.width=`${canvas.width}px`; canvas.style.height=`${canvas.height}px`;
+        const ctx=canvas.getContext('2d'); ctx.imageSmoothingEnabled=true; this.background(ctx,canvas.width,canvas.height,size); return ctx;
+      },
+      sprite(ctx,image,rect,x,y,size) { ctx.drawImage(image,rect.x,rect.y,rect.width,rect.height,x*size,y*size,size,size); },
+      nest(ctx,type,facing,x,y,size) { const frame=type.facings.find(entry => entry.facing===facing); this.sprite(ctx,type.atlasImage,frame.rect,x,y,size); },
+      primary(canvas) {
+        const view=viewModel.view,size=viewModel.cellSize;
+        const columns=view==='network' ? assetModel.layout.width : view==='tiles' || view==='facings' ? 4 : view==='corners' ? 2 : 3;
+        const rows=view==='network' ? assetModel.layout.height : view==='tiles' ? 4 : 2;
+        const ctx=this.begin(canvas,columns,rows,size);
+        for (let y=0;y<rows;y++) for (let x=0;x<columns;x++) {
+          if (view==='facings') { this.nest(ctx,assetModel.nests[y],FACINGS[x],x,y,size); continue; }
+          if (view==='profile') {
+            if (y===0) ctx.drawImage(assetModel.wallReference,x*size,y*size,size,size);
+            else this.sprite(ctx,assetModel.trench.atlasImage,assetModel.trench.metadata.tiles[10].rect,x,y,size);
+            continue;
+          }
+          const mask=view==='network' ? assetModel.layout.cells[y][x] : view==='tiles' ? y*4+x : assetModel.layout.cornerMasks[y*2+x];
+          if (mask===null) continue;
+          this.sprite(ctx,assetModel.trench.atlasImage,assetModel.trench.metadata.tiles[mask].rect,x,y,size);
+          if (viewModel.nest!=='none' && assetModel.trench.metadata.nestSlots.includes(mask)) {
+            const type=viewModel.nest==='mixed' ? assetModel.nests[(x+y)%2] : assetModel.nests.find(type => type.id===viewModel.nest);
+            const facing=viewModel.facing==='varied' ? FACINGS[(x+2*y)%4] : viewModel.facing;
+            this.nest(ctx,type,facing,x,y,size);
+          }
+        }
+        if (viewModel.grid) {
+          ctx.strokeStyle='rgba(245,231,185,.48)'; ctx.lineWidth=1; ctx.beginPath();
+          for (let x=0;x<=columns;x++) { ctx.moveTo(x*size+.5,0); ctx.lineTo(x*size+.5,canvas.height); }
+          for (let y=0;y<=rows;y++) { ctx.moveTo(0,y*size+.5); ctx.lineTo(canvas.width,y*size+.5); }
+          ctx.stroke();
+        }
+      },
+      detail(canvas,type) { const size=96,ctx=this.begin(canvas,2,2,size); FACINGS.forEach((facing,index) => this.nest(ctx,type,facing,index%2,Math.floor(index/2),size)); },
+      card(title,description,canvasLabel,links,footerText,primary=false) {
+        const article=document.createElement('article'); if (primary) article.className='primary';
+        const header=document.createElement('header'),h2=document.createElement('h2'),detail=document.createElement('div'); h2.textContent=title; detail.className='description'; detail.textContent=description; header.append(h2,detail);
+        const stage=document.createElement('div'),canvas=document.createElement('canvas'); stage.className='stage'; canvas.setAttribute('aria-label',canvasLabel); stage.append(canvas);
+        const footer=document.createElement('footer');
+        for (const [href,label] of links) { const link=document.createElement('a'); link.href=href; link.textContent=label; link.target='_blank'; link.rel='noopener'; footer.append(link); }
+        const text=document.createElement('span'); text.textContent=footerText; footer.append(text); article.append(header,stage,footer); elements.kits.append(article); return canvas;
+      },
+    };
+    function render() {
+      document.body.classList.toggle('wide',viewModel.cellSize>=64); elements.kits.replaceChildren();
+      const caption=viewModel.view==='profile' ? 'Top: massive stone wall · bottom: trench' : 'Modern Age · sandbag lips and wooden duckboards';
+      const canvas=canvasView.card(viewLabels[viewModel.view],caption,viewLabels[viewModel.view],[['Trenches/Trench_Atlas.png','Trench atlas ↗']],`${viewModel.cellSize} px per cell`,true); canvasView.primary(canvas);
+      for (const type of assetModel.nests) { const canvas=canvasView.card(type.label,type.weapon,`${type.label} north, east, south and west facings`,[[type.atlasPath,'Facing atlas ↗']], 'N / E / S / W · 96 px each'); canvasView.detail(canvas,type); }
+      const active=viewModel.view!=='facings' && viewModel.view!=='profile'; elements.nest.disabled=!active; elements.facing.disabled=!active || viewModel.nest==='none';
+      elements.status.textContent=`16 / 16 trench pieces · 2 / 2 nest types · 8 / 8 facings loaded · ${viewLabels[viewModel.view]} · ${viewModel.cellSize} px per cell`;
+    }
+    for (const [id,key,convert] of [['view','view',String],['size','cellSize',Number],['ground','ground',String],['nest','nest',String],['facing','facing',String]]) elements[id].addEventListener('change',() => { viewModel[key]=convert(elements[id].value); render(); });
+    elements.grid.addEventListener('change',() => { viewModel.grid=elements.grid.checked; render(); });
+    document.getElementById('reset').addEventListener('click',() => {
+      Object.assign(viewModel,{view:'network',cellSize:32,ground:'grass',nest:'mixed',facing:'varied',grid:false});
+      for (const [id,value] of [['view','network'],['size','32'],['ground','grass'],['nest','mixed'],['facing','varied']]) elements[id].value=value; elements.grid.checked=false; render();
+    });
+    assetModel.initialize().then(() => { elements.kits.setAttribute('aria-busy','false'); render(); }).catch(error => { elements.kits.setAttribute('aria-busy','false'); elements.status.textContent=`Could not load modern defenses: ${error.message}. Open this page through the project's local art server.`; console.error(error); });
+  </script>
+</body>
+</html>

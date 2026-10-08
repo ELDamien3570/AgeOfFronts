@@ -1,0 +1,340 @@
+{
+  "actorCount": 1,
+  "animations": [
+    {
+      "id": "idle",
+      "file": "idle.png",
+      "label": "Idle",
+      "fps": 6,
+      "loop": true,
+      "description": "Stylized overhead idle: gentle breathing, relaxed hands, planted feet.",
+      "durations": [
+        250,
+        250,
+        250,
+        250,
+        250,
+        250
+      ],
+      "frameCount": 6,
+      "scale": 0.95238,
+      "frames": [
+        {
+          "x": 0,
+          "y": 0,
+          "width": 128,
+          "height": 128,
+          "pivot": {
+            "x": 64.0,
+            "y": 57.5
+          }
+        },
+        {
+          "x": 128,
+          "y": 0,
+          "width": 128,
+          "height": 128,
+          "pivot": {
+            "x": 64.0,
+            "y": 57.5
+          }
+        },
+        {
+          "x": 256,
+          "y": 0,
+          "width": 128,
+          "height": 128,
+          "pivot": {
+            "x": 64.5,
+            "y": 57.0
+          }
+        },
+        {
+          "x": 384,
+          "y": 0,
+          "width": 128,
+          "height": 128,
+          "pivot": {
+            "x": 64.0,
+            "y": 54.25
+          }
+        },
+        {
+          "x": 512,
+          "y": 0,
+          "width": 128,
+          "height": 128,
+          "pivot": {
+            "x": 64.0,
+            "y": 54.5
+          }
+        },
+        {
+          "x": 640,
+          "y": 0,
+          "width": 128,
+          "height": 128,
+          "pivot": {
+            "x": 64.75,
+            "y": 55.0
+          }
+        }
+      ],
+      "sha256": "250379e7dfd298564850547af6f6bb859326ed361620323b0ef32c15d708a0ad"
+    },
+    {
+      "id": "running",
+      "file": "running.png",
+      "label": "Movement",
+      "fps": 7,
+      "loop": true,
+      "description": "Stylized overhead movement: alternating strides, shoulder counterrotation and a secure club grip.",
+      "durations": [
+        130,
+        130,
+        130,
+        130,
+        130,
+        130
+      ],
+      "frameCount": 6,
+      "scale": 0.94017,
+      "frames": [
+        {
+          "x": 0,
+          "y": 0,
+          "width": 128,
+          "height": 128,
+          "pivot": {
+            "x": 64.25,
+            "y": 55.5
+          }
+        },
+        {
+          "x": 128,
+          "y": 0,
+          "width": 128,
+          "height": 128,
+          "pivot": {
+            "x": 64.25,
+            "y": 55.5
+          }
+        },
+        {
+          "x": 256,
+          "y": 0,
+          "width": 128,
+          "height": 128,
+          "pivot": {
+            "x": 65.25,
+            "y": 57.25
+          }
+        },
+        {
+          "x": 384,
+          "y": 0,
+          "width": 128,
+          "height": 128,
+          "pivot": {
+            "x": 64.25,
+            "y": 52.5
+          }
+        },
+        {
+          "x": 512,
+          "y": 0,
+          "width": 128,
+          "height": 128,
+          "pivot": {
+            "x": 64.5,
+            "y": 52.5
+          }
+        },
+        {
+          "x": 640,
+          "y": 0,
+          "width": 128,
+          "height": 128,
+          "pivot": {
+            "x": 65.25,
+            "y": 52.25
+          }
+        }
+      ],
+      "sha256": "36b6dd96b24ff403a9fc803b22c39148070bdae6115e4b1841a8e522c2198721"
+    },
+    {
+      "id": "attack",
+      "file": "attack.png",
+      "label": "Attack",
+      "fps": 10,
+      "loop": false,
+      "description": "Stylized overhead strike: planted feet, shoulder and hip coil, follow-through and recovery.",
+      "durations": [
+        150,
+        140,
+        180,
+        85,
+        150,
+        200
+      ],
+      "frameCount": 6,
+      "scale": 0.97778,
+      "frames": [
+        {
+          "x": 0,
+          "y": 0,
+          "width": 128,
+          "height": 128,
+          "pivot": {
+            "x": 63.0,
+            "y": 62.5
+          }
+        },
+        {
+          "x": 128,
+          "y": 0,
+          "width": 128,
+          "height": 128,
+          "pivot": {
+            "x": 59.0,
+            "y": 65.0
+          }
+        },
+        {
+          "x": 256,
+          "y": 0,
+          "width": 128,
+          "height": 128,
+          "pivot": {
+            "x": 59.25,
+            "y": 64.0
+          }
+        },
+        {
+          "x": 384,
+          "y": 0,
+          "width": 128,
+          "height": 128,
+          "pivot": {
+            "x": 65.0,
+            "y": 43.75
+          }
+        },
+        {
+          "x": 512,
+          "y": 0,
+          "width": 128,
+          "height": 128,
+          "pivot": {
+            "x": 64.75,
+            "y": 45.5
+          }
+        },
+        {
+          "x": 640,
+          "y": 0,
+          "width": 128,
+          "height": 128,
+          "pivot": {
+            "x": 63.0,
+            "y": 44.0
+          }
+        }
+      ],
+      "sha256": "190135e7e1ffb834fce66382671f2377cdb6915dcaedd618b6cb18c8bc3b39db",
+      "impactFrame": 3
+    },
+    {
+      "id": "death",
+      "file": "death.png",
+      "label": "Death",
+      "fps": 8,
+      "loop": false,
+      "description": "Direct overhead forward collapse with a smaller settled prone corpse.",
+      "durations": [
+        120,
+        140,
+        150,
+        180,
+        180,
+        300
+      ],
+      "frameCount": 6,
+      "scale": 1.02804,
+      "frames": [
+        {
+          "x": 0,
+          "y": 0,
+          "width": 128,
+          "height": 128,
+          "pivot": {
+            "x": 64.0,
+            "y": 64.0
+          }
+        },
+        {
+          "x": 128,
+          "y": 0,
+          "width": 128,
+          "height": 128,
+          "pivot": {
+            "x": 64.0,
+            "y": 64.0
+          }
+        },
+        {
+          "x": 256,
+          "y": 0,
+          "width": 128,
+          "height": 128,
+          "pivot": {
+            "x": 64.0,
+            "y": 64.0
+          }
+        },
+        {
+          "x": 384,
+          "y": 0,
+          "width": 128,
+          "height": 128,
+          "pivot": {
+            "x": 64.0,
+            "y": 64.0
+          }
+        },
+        {
+          "x": 512,
+          "y": 0,
+          "width": 128,
+          "height": 128,
+          "pivot": {
+            "x": 64.0,
+            "y": 64.0
+          }
+        },
+        {
+          "x": 640,
+          "y": 0,
+          "width": 128,
+          "height": 128,
+          "pivot": {
+            "x": 64.0,
+            "y": 64.0
+          }
+        }
+      ],
+      "sha256": "c3e907a8a3c25c190a3cfa4f41ebb436d281a7abd9a7e73eaebffa222671128f",
+      "corpseFrame": 5,
+      "corpseFile": "Corpse-Prone-Nadir-v14.png"
+    }
+  ],
+  "source": "Art/Cultures/Russians/Units/StoneAge/Clubman/animations.json",
+  "metadataHash": "d53d7da248bc034542eff13584c684c28f8b9100b4b771aec9da3c883bbe889d",
+  "hashes": {
+    "Art/Cultures/Russians/Units/StoneAge/Clubman/Idle-Stylized-Clean-v8.png": "250379e7dfd298564850547af6f6bb859326ed361620323b0ef32c15d708a0ad",
+    "Art/Cultures/Russians/Units/StoneAge/Clubman/Running-Stylized-v9.png": "36b6dd96b24ff403a9fc803b22c39148070bdae6115e4b1841a8e522c2198721",
+    "Art/Cultures/Russians/Units/StoneAge/Clubman/Attack-Stylized-v12.png": "190135e7e1ffb834fce66382671f2377cdb6915dcaedd618b6cb18c8bc3b39db",
+    "Art/Cultures/Russians/Units/StoneAge/Clubman/Death-Nadir-v14.png": "c3e907a8a3c25c190a3cfa4f41ebb436d281a7abd9a7e73eaebffa222671128f"
+  }
+}

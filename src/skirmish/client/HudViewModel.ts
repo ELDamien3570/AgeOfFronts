@@ -1,3 +1,4 @@
+import { buildingPreviewArtworkId } from "./ArtworkCatalog";
 import { availableGold } from "../domain/Gold";
 import type { BuildingType, ShipType, SquadType } from "../Protocol";
 import { FIXED, SQUAD_TROOPS, TICKS_PER_SECOND } from "../Protocol";
@@ -396,6 +397,9 @@ export class HudViewModel {
         : undefined;
       return {
         ...buildingCards[build.kind],
+        definitionId: this.game.state.expansion
+          ? buildingPreviewArtworkId(build.kind, choice?.age ?? this.game.state.expansion.progression[this.playerId].age)
+          : undefined,
         ...(choice
           ? {
               stats: [

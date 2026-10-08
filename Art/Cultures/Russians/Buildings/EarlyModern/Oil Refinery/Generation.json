@@ -1,0 +1,56 @@
+{
+  "schemaVersion": 1,
+  "cultureId": "russians",
+  "age": "EarlyModern",
+  "asset": {
+    "id": "oil-refinery",
+    "folder": "Oil Refinery",
+    "category": "Oil Refinery",
+    "role": "Fuel refining",
+    "file": "Oil Refinery/Icon.png",
+    "sourceFile": "Oil Refinery/SourceArt/Icon-v1.png",
+    "selectedSourceFile": "Oil Refinery/SourceArt/Icon-v3.png",
+    "generator": "built-in image_gen",
+    "generationFile": "C:\\Users\\Damien\\.codex\\generated_images\\01a0fea5-71c9-75b3-9da6-4a1ca2cbd68f\\exec-8f8ec04d-dd5d-4276-b9b1-9b2693a94d41.png",
+    "prompt": "Use case: stylized-concept. Create ONE NEW hand-painted realistic RTS building icon for Russian/Soviet EARLY MODERN WWII-era culture. Image 1 is STYLE AND EXACT OVERHEAD CAMERA reference only, not subject to copy. Weathered olive corrugated roofs, muted red brick or timber edge caps, warm packed gravel/earth, subdued grass, period 1940s equipment. Use large distinct role cues readable at48/64/128px, restrained detail. EXACT90degree vertical NADIR ORTHOGRAPHIC roof plan, all outer roof edges perfect rectangles parallel to image axes, no visible facade, door, windows, upright shaft, front wall or side elevation anywhere. Roofs completely conceal all vertical building faces. Chimneys circular or square TOP openings only, all vertical posts only top endcaps, wheels viewed edge-on thin strips, machinery only horizontal top surfaces. No isometric camera, camera tilt, perspective convergence, giant long shadows. Minimal shallow contact shading, top-left surface light. Compact complete footprint on square canvas with at least7percent transparent outer margin on every side. GENUINE transparent alpha outside footprint. No black background, checkerboard, bright red/yellow edge fringe, text, labels, modern flags, people or scenic environment. No continuous artificial decorative perimeter frame. SUBJECT: Two large CIRCULAR tank TOPS, three small circular distillation-column TOP caps connected by orderly pipe TOP lines, one compact rectangular brick processing hall olive roof, grouped steel drums and wartime tanker truck in gravel yard. No giant rising towers, side elevations or hyperbolic cooling towers. Refining process tanks and pipe layout distinguish from pumpjack oil extraction. Tanks and columns MUST be only perfectly round top discs. No cylindrical side wall below any disc, no offset back edge, no standing height. Only circular top surfaces and shallow contact contours.",
+    "referenceImages": [
+      "C:/Users/Damien/Documents/GitHub/AgeOfFronts/AgeOfFronts/Art/Cultures/Russians/Buildings/Modern/Factory/Icon.png"
+    ],
+    "status": "draft",
+    "date": "2026-10-07",
+    "technologyIds": [
+      "russian-oil-refining"
+    ],
+    "proposedBuildingRole": true,
+    "sha256": "2bf91cf4ec9128fc49379e3ebe7246ac0e2d49b3d6843be773bd8d5b6abe6358",
+    "selectedGenerationFile": "C:\\Users\\Damien\\.codex\\generated_images\\01a0fea5-71c9-75b3-9da6-4a1ca2cbd68f\\exec-cbb7b6d8-ebe6-46f0-8da4-934d8dc420eb.png",
+    "edits": [
+      {
+        "version": 2,
+        "date": "2026-10-07",
+        "prompt": "EDIT the attached new Russian building icon; this is a camera cleanup of this same asset, not a new design. Preserve two large circular storage tanks, three smaller process columns, pipe network, main processing roof and tanker truck. DELETE the entire unrelated red/cream perimeter frame and all planter corners; leave a natural packed-earth/gravel ground footprint with small muted grass at irregular outer edges. Reproject all three process columns to circular TOP discs with hatch circles and pipes; ZERO visible cylinder sidewalls, no lower vertical extension. Larger tanks also PERFECT circular top discs, narrow rim only. Roof hides all lower masonry faces. No border wall or compound fence. Camera is EXACT 90-DEGREE NADIR ORTHOGRAPHIC, a true architectural roof plan. No isometric camera, no perspective or facade visibility anywhere. Keep reference composition, olive WWII material palette, roof textures and role readability. Remove any bright red/yellow artificial halo pixels outside the footprint. Clean transparent alpha boundary, generous transparent margins. Do not add people, text or flags. Output one transparent PNG.",
+        "referenceImages": [
+          "C:/Users/Damien/Documents/GitHub/AgeOfFronts/AgeOfFronts/Art/Cultures/Russians/Buildings/EarlyModern/Oil Refinery/Icon.png"
+        ],
+        "generationFile": "C:\\Users\\Damien\\.codex\\generated_images\\01a0fea5-71c9-75b3-9da6-4a1ca2cbd68f\\exec-d8146a15-6a02-4ef6-b540-c784685413cc.png",
+        "sourceFile": "Oil Refinery/SourceArt/Icon-v2.png",
+        "sha256": "a329b7e304afb85520d6d7d64ed0f3b1b84bd950c4b2f097af94aa14dea97896",
+        "reason": "Straight overhead camera and footprint cleanup"
+      },
+      {
+        "version": 3,
+        "date": "2026-10-07",
+        "prompt": "Edit this Russian WWII oil refinery icon. THE ONLY REQUIRED GEOMETRY CHANGE: the THREE SMALL UPRIGHT CYLINDERS across the top row MUST BECOME THREE FLAT CIRCULAR TOP FACES. Remove their entire dark lower cylindrical sidewalls and their upright mounting brackets. Each should show ONLY a PERFECT CIRCLE seen from directly above, with a round hatch centered within it. Under each circle show a square ground foundation top and a pipe extending toward the roof. No object height may displace the top circles upward from their foundations. These three circular tops can be larger to remain readable. Similarly remove the masonry entrance fronts under the main roof: extend roof across them, no side faces. Keep ALL other refinery geometry, the TWO LARGE tank-top circles left, connected pipes, processing roof, tanker truck lower right and packed-earth ground. Exact 90 degree overhead orthographic roof-plan camera. No people, text, fence, border frame or flags. Clean true transparency, no bright colored alpha-edge fringe. One PNG.",
+        "referenceImages": [
+          "C:/Users/Damien/Documents/GitHub/AgeOfFronts/AgeOfFronts/Art/Cultures/Russians/Buildings/EarlyModern/Oil Refinery/Icon.png"
+        ],
+        "generationFile": "C:\\Users\\Damien\\.codex\\generated_images\\01a0fea5-71c9-75b3-9da6-4a1ca2cbd68f\\exec-cbb7b6d8-ebe6-46f0-8da4-934d8dc420eb.png",
+        "sourceFile": "Oil Refinery/SourceArt/Icon-v3.png",
+        "sha256": "2bf91cf4ec9128fc49379e3ebe7246ac0e2d49b3d6843be773bd8d5b6abe6358",
+        "reason": "Straight overhead camera and footprint cleanup"
+      }
+    ]
+  },
+  "historicalScope": "Era-inspired compressed game-art interpretation, not a specific building reconstruction.",
+  "scope": "art-review-only; no gameplay entity or technology binding has been implemented"
+}

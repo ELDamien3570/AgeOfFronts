@@ -1,0 +1,53 @@
+{
+  "points": [
+    {
+      "frame": 0,
+      "capCenter": [
+        257,
+        202
+      ],
+      "capWidth": 117
+    },
+    {
+      "frame": 1,
+      "capCenter": [
+        257,
+        202
+      ],
+      "capWidth": 117
+    },
+    {
+      "frame": 2,
+      "capCenter": [
+        261,
+        209
+      ],
+      "capWidth": 117
+    },
+    {
+      "frame": 3,
+      "capCenter": [
+        257,
+        190
+      ],
+      "capWidth": 117
+    },
+    {
+      "frame": 4,
+      "capCenter": [
+        258,
+        190
+      ],
+      "capWidth": 116
+    },
+    {
+      "frame": 5,
+      "capCenter": [
+        261,
+        189
+      ],
+      "capWidth": 117
+    }
+  ],
+  "scale": 0.94017
+}

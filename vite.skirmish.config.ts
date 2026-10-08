@@ -120,8 +120,11 @@ export default defineConfig({
       input: {
         home: "skirmish/home.html",
         game: "skirmish/index.html",
+        blackForest: "skirmish/black-forest.html",
+        migration: "skirmish/migration.html",
         troops: "skirmish/troops.html",
         technologyPlanner: "skirmish/technology-planner.html",
+        troopTree: "skirmish/troop-tree.html",
       },
     },
   },

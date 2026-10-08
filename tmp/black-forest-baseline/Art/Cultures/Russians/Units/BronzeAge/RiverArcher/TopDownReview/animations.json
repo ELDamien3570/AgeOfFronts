@@ -1,0 +1,918 @@
+{
+  "schemaVersion": 1,
+  "cultureId": "russians",
+  "age": "BronzeAge",
+  "unit": "Archers",
+  "category": "Ranged",
+  "actorCount": 1,
+  "stage": "overhead-animation-review",
+  "integrationStatus": "Solo animation review; runtime formations and gameplay integration are separate.",
+  "camera": "vertical-overhead-orthographic",
+  "facing": "screen-down",
+  "sheetSize": {
+    "width": 1536,
+    "height": 1024
+  },
+  "grid": {
+    "columns": 3,
+    "rows": 2
+  },
+  "reviewFootprint": 400,
+  "registration": "Whole authored poses baked at one common 0.80 scale with fixed root pivots, never per-frame bounds fitting.",
+  "weapon": "Plain wooden self-bow, natural-fiber string, wooden arrows with bronze leaf-shaped heads",
+  "offhand": "No shield",
+  "equipmentFinish": "Bronze dome helmet and compact pauldrons, cream fur collar, reddish-brown leather top, bronze wristguards, pale trousers and brown boots matching the approved Bronze Spearman.",
+  "fictionalRoster": true,
+  "animations": [
+    {
+      "id": "idle",
+      "label": "Idle",
+      "file": "idle-v1.png",
+      "sha256": "ae97a0c9d11e0c9694312b199b6553269ef41d06aae475610edc7e92c6c1f480",
+      "loop": true,
+      "scale": 1,
+      "durations": [
+        280,
+        280,
+        280,
+        280,
+        280,
+        280
+      ],
+      "description": "Idle breathing. Boots planted, low wooden bow in left hand screen-right and loose straight arrow in right hand screen-left. Six subtle breathing poses, no lateral sway.",
+      "frameCount": 6,
+      "frames": [
+        {
+          "index": 0,
+          "x": 0,
+          "y": 0,
+          "width": 512,
+          "height": 512,
+          "pivot": {
+            "x": 256,
+            "y": 256
+          }
+        },
+        {
+          "index": 1,
+          "x": 512,
+          "y": 0,
+          "width": 512,
+          "height": 512,
+          "pivot": {
+            "x": 256,
+            "y": 256
+          }
+        },
+        {
+          "index": 2,
+          "x": 1024,
+          "y": 0,
+          "width": 512,
+          "height": 512,
+          "pivot": {
+            "x": 256,
+            "y": 256
+          }
+        },
+        {
+          "index": 3,
+          "x": 0,
+          "y": 512,
+          "width": 512,
+          "height": 512,
+          "pivot": {
+            "x": 256,
+            "y": 256
+          }
+        },
+        {
+          "index": 4,
+          "x": 512,
+          "y": 512,
+          "width": 512,
+          "height": 512,
+          "pivot": {
+            "x": 256,
+            "y": 256
+          }
+        },
+        {
+          "index": 5,
+          "x": 1024,
+          "y": 512,
+          "width": 512,
+          "height": 512,
+          "pivot": {
+            "x": 256,
+            "y": 256
+          }
+        }
+      ]
+    },
+    {
+      "id": "running",
+      "label": "Walk",
+      "file": "running-v3.png",
+      "sha256": "54ce5af94f6930a3c4930edf2778c61f036fc37d0e4e218b92553a0aead746ba",
+      "loop": true,
+      "scale": 1,
+      "durations": [
+        160,
+        160,
+        160,
+        160,
+        160,
+        160
+      ],
+      "description": "Walk loop: alternate LEFT then RIGHT leading boot visibly. Carry bow low in left hand and straight arrow right hand. Entire rigid bow moves with hand, not independently.",
+      "frameCount": 6,
+      "frames": [
+        {
+          "index": 0,
+          "x": 0,
+          "y": 0,
+          "width": 512,
+          "height": 512,
+          "pivot": {
+            "x": 256,
+            "y": 256
+          }
+        },
+        {
+          "index": 1,
+          "x": 512,
+          "y": 0,
+          "width": 512,
+          "height": 512,
+          "pivot": {
+            "x": 256,
+            "y": 256
+          }
+        },
+        {
+          "index": 2,
+          "x": 1024,
+          "y": 0,
+          "width": 512,
+          "height": 512,
+          "pivot": {
+            "x": 256,
+            "y": 256
+          }
+        },
+        {
+          "index": 3,
+          "x": 0,
+          "y": 512,
+          "width": 512,
+          "height": 512,
+          "pivot": {
+            "x": 256,
+            "y": 256
+          }
+        },
+        {
+          "index": 4,
+          "x": 512,
+          "y": 512,
+          "width": 512,
+          "height": 512,
+          "pivot": {
+            "x": 256,
+            "y": 256
+          }
+        },
+        {
+          "index": 5,
+          "x": 1024,
+          "y": 512,
+          "width": 512,
+          "height": 512,
+          "pivot": {
+            "x": 256,
+            "y": 256
+          }
+        }
+      ]
+    },
+    {
+      "id": "charge",
+      "label": "Charge in / maintain",
+      "file": "charge-v3.png",
+      "sha256": "54ce5af94f6930a3c4930edf2778c61f036fc37d0e4e218b92553a0aead746ba",
+      "loop": true,
+      "scale": 1,
+      "durations": [
+        90,
+        90,
+        90,
+        90,
+        90,
+        90
+      ],
+      "description": "Fast alternating-foot run with bow and arrow carried low.",
+      "frameCount": 6,
+      "frames": [
+        {
+          "index": 0,
+          "x": 0,
+          "y": 0,
+          "width": 512,
+          "height": 512,
+          "pivot": {
+            "x": 256,
+            "y": 256
+          }
+        },
+        {
+          "index": 1,
+          "x": 512,
+          "y": 0,
+          "width": 512,
+          "height": 512,
+          "pivot": {
+            "x": 256,
+            "y": 256
+          }
+        },
+        {
+          "index": 2,
+          "x": 1024,
+          "y": 0,
+          "width": 512,
+          "height": 512,
+          "pivot": {
+            "x": 256,
+            "y": 256
+          }
+        },
+        {
+          "index": 3,
+          "x": 0,
+          "y": 512,
+          "width": 512,
+          "height": 512,
+          "pivot": {
+            "x": 256,
+            "y": 256
+          }
+        },
+        {
+          "index": 4,
+          "x": 512,
+          "y": 512,
+          "width": 512,
+          "height": 512,
+          "pivot": {
+            "x": 256,
+            "y": 256
+          }
+        },
+        {
+          "index": 5,
+          "x": 1024,
+          "y": 512,
+          "width": 512,
+          "height": 512,
+          "pivot": {
+            "x": 256,
+            "y": 256
+          }
+        }
+      ]
+    },
+    {
+      "id": "attack",
+      "label": "Bow shot",
+      "file": "attack-v3.png",
+      "sha256": "966e65e40ee2b13d81791794c99f4dcb65302234a8abdf77c5917537a04f862d",
+      "loop": false,
+      "scale": 1,
+      "durations": [
+        140,
+        180,
+        260,
+        100,
+        180,
+        250
+      ],
+      "description": "Bow shot exactly SCREEN BOTTOM. Frame1 low carry and loose arrow.2 right foot steps back modestly, chest rotates open 35degrees, nock straight arrow.3 full draw: left arm extended toward screen bottom, right elbow pulled back, string two taut segments from bowtips to arrow nock at drawing fingertips. ONLY ONE STRING, no undrawn string left across bow.4 release arrow screen bottom, string snaps toward bowtip line, right fingers relax.5 EMPTY bow relaxed followthrough.6 lower EMPTY bow, no arrow appears again. Bow tilted upright physically, foreshortened from overhead; drawn string passes behind and below arm, never on top of forearm. Rigid wood bow, arrow dead straight aligned screenbottom.",
+      "frameCount": 6,
+      "frames": [
+        {
+          "index": 0,
+          "x": 0,
+          "y": 0,
+          "width": 512,
+          "height": 512,
+          "pivot": {
+            "x": 256,
+            "y": 256
+          }
+        },
+        {
+          "index": 1,
+          "x": 512,
+          "y": 0,
+          "width": 512,
+          "height": 512,
+          "pivot": {
+            "x": 256,
+            "y": 256
+          }
+        },
+        {
+          "index": 2,
+          "x": 1024,
+          "y": 0,
+          "width": 512,
+          "height": 512,
+          "pivot": {
+            "x": 256,
+            "y": 256
+          }
+        },
+        {
+          "index": 3,
+          "x": 0,
+          "y": 512,
+          "width": 512,
+          "height": 512,
+          "pivot": {
+            "x": 256,
+            "y": 256
+          }
+        },
+        {
+          "index": 4,
+          "x": 512,
+          "y": 512,
+          "width": 512,
+          "height": 512,
+          "pivot": {
+            "x": 256,
+            "y": 256
+          }
+        },
+        {
+          "index": 5,
+          "x": 1024,
+          "y": 512,
+          "width": 512,
+          "height": 512,
+          "pivot": {
+            "x": 256,
+            "y": 256
+          }
+        }
+      ],
+      "releaseFrame": 3,
+      "weaponState": {
+        "start": "arrow-ready",
+        "end": "empty-bow"
+      }
+    },
+    {
+      "id": "charge-attack",
+      "label": "Advance, plant and shoot",
+      "file": "charge-attack-v3.png",
+      "sha256": "b10e48f7319e2bf5e8ae663008d8e903e16dc0edbb672467370d0e170d8f8644",
+      "loop": false,
+      "scale": 1,
+      "durations": [
+        140,
+        180,
+        260,
+        100,
+        180,
+        250
+      ],
+      "description": "Advance then plant and shoot exactly screen bottom.1 advance low bow arrow;2 brake plant right boot modestly back, body turns open;3 full draw left arm forward right elbow back, straight arrow aimed screenbottom and string taut V from tips to nock at right fingertips;4 release;5 empty-bow followthrough;6 lower empty bow. Single bow and single string. No resting string visible while drawing. String behind arm, no arm penetration. No reload in this clip.",
+      "frameCount": 6,
+      "frames": [
+        {
+          "index": 0,
+          "x": 0,
+          "y": 0,
+          "width": 512,
+          "height": 512,
+          "pivot": {
+            "x": 256,
+            "y": 256
+          }
+        },
+        {
+          "index": 1,
+          "x": 512,
+          "y": 0,
+          "width": 512,
+          "height": 512,
+          "pivot": {
+            "x": 256,
+            "y": 256
+          }
+        },
+        {
+          "index": 2,
+          "x": 1024,
+          "y": 0,
+          "width": 512,
+          "height": 512,
+          "pivot": {
+            "x": 256,
+            "y": 256
+          }
+        },
+        {
+          "index": 3,
+          "x": 0,
+          "y": 512,
+          "width": 512,
+          "height": 512,
+          "pivot": {
+            "x": 256,
+            "y": 256
+          }
+        },
+        {
+          "index": 4,
+          "x": 512,
+          "y": 512,
+          "width": 512,
+          "height": 512,
+          "pivot": {
+            "x": 256,
+            "y": 256
+          }
+        },
+        {
+          "index": 5,
+          "x": 1024,
+          "y": 512,
+          "width": 512,
+          "height": 512,
+          "pivot": {
+            "x": 256,
+            "y": 256
+          }
+        }
+      ],
+      "releaseFrame": 3,
+      "weaponState": {
+        "start": "arrow-ready",
+        "end": "empty-bow"
+      }
+    },
+    {
+      "id": "reload",
+      "label": "Reload arrow",
+      "file": "reload-v2.png",
+      "sha256": "ddfcc8d7249337959b64f83c9249d96c9a9ed8642c8ec397bb337c82cf073d35",
+      "loop": false,
+      "scale": 1,
+      "durations": [
+        250,
+        300,
+        350,
+        350,
+        300,
+        250
+      ],
+      "description": "Arrow reload separate from shot.1 EMPTY bow low left hand.2 right hand reaches back quiver.3 grasp feathered rear of one arrow.4 withdraw straight arrow.5 lower arrow in right hand, bronze head points screenbottom.6 lowcarry bow and new straight loose arrow same as idle. Bow rigid, one string connecting tips, no clipping into hands. No shot.",
+      "frameCount": 6,
+      "frames": [
+        {
+          "index": 0,
+          "x": 0,
+          "y": 0,
+          "width": 512,
+          "height": 512,
+          "pivot": {
+            "x": 256,
+            "y": 256
+          }
+        },
+        {
+          "index": 1,
+          "x": 512,
+          "y": 0,
+          "width": 512,
+          "height": 512,
+          "pivot": {
+            "x": 256,
+            "y": 256
+          }
+        },
+        {
+          "index": 2,
+          "x": 1024,
+          "y": 0,
+          "width": 512,
+          "height": 512,
+          "pivot": {
+            "x": 256,
+            "y": 256
+          }
+        },
+        {
+          "index": 3,
+          "x": 0,
+          "y": 512,
+          "width": 512,
+          "height": 512,
+          "pivot": {
+            "x": 256,
+            "y": 256
+          }
+        },
+        {
+          "index": 4,
+          "x": 512,
+          "y": 512,
+          "width": 512,
+          "height": 512,
+          "pivot": {
+            "x": 256,
+            "y": 256
+          }
+        },
+        {
+          "index": 5,
+          "x": 1024,
+          "y": 512,
+          "width": 512,
+          "height": 512,
+          "pivot": {
+            "x": 256,
+            "y": 256
+          }
+        }
+      ],
+      "weaponState": {
+        "start": "empty-bow",
+        "end": "arrow-ready"
+      }
+    },
+    {
+      "id": "hit",
+      "label": "Get hit",
+      "file": "hit-v1.png",
+      "sha256": "4177e1d3859c8d621447ce2d7bf54eabcf7f8a78dc78acc182c7742ff23e4a1f",
+      "loop": false,
+      "scale": 1,
+      "durations": [
+        100,
+        90,
+        130,
+        130,
+        160,
+        180
+      ],
+      "description": "Light hit: stand, flinch, kneesbend, recoil, recover, stand. Retain bow and straight arrow. No shot. Strict overhead standing silhouette.",
+      "frameCount": 6,
+      "frames": [
+        {
+          "index": 0,
+          "x": 0,
+          "y": 0,
+          "width": 512,
+          "height": 512,
+          "pivot": {
+            "x": 256,
+            "y": 256
+          }
+        },
+        {
+          "index": 1,
+          "x": 512,
+          "y": 0,
+          "width": 512,
+          "height": 512,
+          "pivot": {
+            "x": 256,
+            "y": 256
+          }
+        },
+        {
+          "index": 2,
+          "x": 1024,
+          "y": 0,
+          "width": 512,
+          "height": 512,
+          "pivot": {
+            "x": 256,
+            "y": 256
+          }
+        },
+        {
+          "index": 3,
+          "x": 0,
+          "y": 512,
+          "width": 512,
+          "height": 512,
+          "pivot": {
+            "x": 256,
+            "y": 256
+          }
+        },
+        {
+          "index": 4,
+          "x": 512,
+          "y": 512,
+          "width": 512,
+          "height": 512,
+          "pivot": {
+            "x": 256,
+            "y": 256
+          }
+        },
+        {
+          "index": 5,
+          "x": 1024,
+          "y": 512,
+          "width": 512,
+          "height": 512,
+          "pivot": {
+            "x": 256,
+            "y": 256
+          }
+        }
+      ]
+    },
+    {
+      "id": "charged",
+      "label": "Get charged",
+      "file": "charged-v2.png",
+      "sha256": "6e403214fcb0019632bf73ee51124bc03f6e900bc0ae31e302a2f2fb1639f1d7",
+      "loop": false,
+      "scale": 1,
+      "durations": [
+        130,
+        120,
+        180,
+        180,
+        180,
+        230
+      ],
+      "description": "Heavy charge-impact:stand,recoil backward, stumble and kneesbuckle,bracebalance, recover,stand. Natural connected feet and arms. Keep bow and arrow, no firing.",
+      "frameCount": 6,
+      "frames": [
+        {
+          "index": 0,
+          "x": 0,
+          "y": 0,
+          "width": 512,
+          "height": 512,
+          "pivot": {
+            "x": 256,
+            "y": 256
+          }
+        },
+        {
+          "index": 1,
+          "x": 512,
+          "y": 0,
+          "width": 512,
+          "height": 512,
+          "pivot": {
+            "x": 256,
+            "y": 256
+          }
+        },
+        {
+          "index": 2,
+          "x": 1024,
+          "y": 0,
+          "width": 512,
+          "height": 512,
+          "pivot": {
+            "x": 256,
+            "y": 256
+          }
+        },
+        {
+          "index": 3,
+          "x": 0,
+          "y": 512,
+          "width": 512,
+          "height": 512,
+          "pivot": {
+            "x": 256,
+            "y": 256
+          }
+        },
+        {
+          "index": 4,
+          "x": 512,
+          "y": 512,
+          "width": 512,
+          "height": 512,
+          "pivot": {
+            "x": 256,
+            "y": 256
+          }
+        },
+        {
+          "index": 5,
+          "x": 1024,
+          "y": 512,
+          "width": 512,
+          "height": 512,
+          "pivot": {
+            "x": 256,
+            "y": 256
+          }
+        }
+      ]
+    },
+    {
+      "id": "death",
+      "label": "Death - side fall",
+      "file": "death-v1.png",
+      "sha256": "2662f04d1b84d9fc527272a9b88533219138348c9e4777df20604bb670e9294c",
+      "loop": false,
+      "scale": 1,
+      "durations": [
+        150,
+        170,
+        190,
+        210,
+        240,
+        400
+      ],
+      "description": "Full SIDE death:standing,kneesbuckle,tip sideways,land on side,settle sidecorpse,still sidecorpse. Final3 lying head screenRIGHT bootsLEFT, full redbrown leather torso, belt and pale trousers visible from overhead lying down; legs extend from hips bentknees, do not just rotate standing shoulder silhouette. Drop bow and straight arrow besidebody. No blood, no flip.",
+      "frameCount": 6,
+      "frames": [
+        {
+          "index": 0,
+          "x": 0,
+          "y": 0,
+          "width": 512,
+          "height": 512,
+          "pivot": {
+            "x": 256,
+            "y": 256
+          }
+        },
+        {
+          "index": 1,
+          "x": 512,
+          "y": 0,
+          "width": 512,
+          "height": 512,
+          "pivot": {
+            "x": 256,
+            "y": 256
+          }
+        },
+        {
+          "index": 2,
+          "x": 1024,
+          "y": 0,
+          "width": 512,
+          "height": 512,
+          "pivot": {
+            "x": 256,
+            "y": 256
+          }
+        },
+        {
+          "index": 3,
+          "x": 0,
+          "y": 512,
+          "width": 512,
+          "height": 512,
+          "pivot": {
+            "x": 256,
+            "y": 256
+          }
+        },
+        {
+          "index": 4,
+          "x": 512,
+          "y": 512,
+          "width": 512,
+          "height": 512,
+          "pivot": {
+            "x": 256,
+            "y": 256
+          }
+        },
+        {
+          "index": 5,
+          "x": 1024,
+          "y": 512,
+          "width": 512,
+          "height": 512,
+          "pivot": {
+            "x": 256,
+            "y": 256
+          }
+        }
+      ]
+    },
+    {
+      "id": "death-back",
+      "label": "Death - back fall",
+      "file": "death-back-v2.png",
+      "sha256": "50190e4097550e599cba92da03a9165cbc02d51078cdbdb8f1360eb6d7b8ed35",
+      "loop": false,
+      "scale": 1,
+      "durations": [
+        150,
+        180,
+        190,
+        210,
+        240,
+        400
+      ],
+      "description": "BACK death:stand,recoil,kneesbuckleback,fallontoBACK,supine settle,still supinecorpse. Final3 HEAD SCREEN TOP BOOTS BOTTOM always, full length torso/belt/trousers visible as horizontal lying body viewed from above. No body reversal or face-down corpse. Drop bow and arrow besidebody.",
+      "frameCount": 6,
+      "frames": [
+        {
+          "index": 0,
+          "x": 0,
+          "y": 0,
+          "width": 512,
+          "height": 512,
+          "pivot": {
+            "x": 256,
+            "y": 256
+          }
+        },
+        {
+          "index": 1,
+          "x": 512,
+          "y": 0,
+          "width": 512,
+          "height": 512,
+          "pivot": {
+            "x": 256,
+            "y": 256
+          }
+        },
+        {
+          "index": 2,
+          "x": 1024,
+          "y": 0,
+          "width": 512,
+          "height": 512,
+          "pivot": {
+            "x": 256,
+            "y": 256
+          }
+        },
+        {
+          "index": 3,
+          "x": 0,
+          "y": 512,
+          "width": 512,
+          "height": 512,
+          "pivot": {
+            "x": 256,
+            "y": 256
+          }
+        },
+        {
+          "index": 4,
+          "x": 512,
+          "y": 512,
+          "width": 512,
+          "height": 512,
+          "pivot": {
+            "x": 256,
+            "y": 256
+          }
+        },
+        {
+          "index": 5,
+          "x": 1024,
+          "y": 512,
+          "width": 512,
+          "height": 512,
+          "pivot": {
+            "x": 256,
+            "y": 256
+          }
+        }
+      ]
+    }
+  ],
+  "deathVariants": [
+    "death",
+    "death-back"
+  ],
+  "motionContract": "Artwork supplies local gait and bow poses. Gameplay owns world movement, formation placement, projectile creation and combat effects.",
+  "shotSequence": [
+    "attack",
+    "reload",
+    "idle"
+  ],
+  "chargeShotSequence": [
+    "charge-attack",
+    "reload",
+    "idle"
+  ],
+  "projectileContract": "Runtime owns arrow projectile creation and timing. Release markers are visual references."
+}

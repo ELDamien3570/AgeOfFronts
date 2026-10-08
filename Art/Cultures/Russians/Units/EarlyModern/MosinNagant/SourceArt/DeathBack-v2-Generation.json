@@ -1,0 +1,20 @@
+{
+  "mode": "built-in image_gen",
+  "output": "DeathBack-v2.png",
+  "source": "C:/Users/Damien/.codex/generated_images/01a1186d-c9ae-7993-aebb-e88f9b918c60/exec-3f2c7e6f-e5bd-4daf-8281-7209224368f3.png",
+  "reference": "Idle-FirstFrame-v1.png",
+  "prompt": "Edit only lowerthreeframe face/head viewpoint and consistentheadscale. Preserve topthree fallingframes and lowerrow flatlegs bootuppersrifle placement exactly. Lowerrow faces currently look up fromthechin likea frontal portrait; correct to DIRECTLYABOVEFACE orthographiccamera view of supinesoldier with facepointingUP. Nose seen fromabove, both eyelids cheeks andears symmetric, NO nostrilsunderchinview, no chinupheadtilt, foreheadvisiblewithclosedeyes. Helmet/head rests flatonground, sameclosedeyessoldierface. Helmet/head lowerrow shouldwidthapproximately88%standinghelmetwidth (standingrough120px sofallenhelmetabout105px). Not a tiny90pxhead. Bodyshoulderwidths andlimbproportions preserved smallerthanstanding ratherthanlooming. No uprightbodyportrait, wholebodyflatimageplane true90degreeverticalnadir. Allspritesentirelyuncut40pxtransparentguardwithincell includingrifletips. Exact1536x1024six512cells3x2, paintedstylizedillustration sameSovietkhakiwebbingpouchesolive steelhelmet boots andMosinwoodrifle. NativeRGBAtransparency outside nohalo/background/shadow.",
+  "initialPrompt": "Use case stylized-concept, transparentgameatlas. SIXchronologicalframes backwarddeath of exactreferenceSovietMosinNagant soldier. Exact1536x1024 3col2rows512squarecells, nativeRGBAfullytransparentoutsidebody,40pxpaddingallcellsincludingrifle. Nogridlabelsgroundshadowfogglow. Samepaintedstylizedgameillustration olive steelhelmet khakiuniform brownleathercrossstraps beltammo pouches darkboots longwoodmetalMosinboltactionrifle. No armorfurshield.\nCamera fixed TRUE90DEGREE NADIR verticallystraightdown overground, noquarterangle orisometric. Standingfacescreenbottom helmetroundcrown masksface, shouldertops andshortfootuppers. Frame1 referenceidleholdtwohand rifleacrossfrontdiagonallybarrelbottomright;2 backwardrecoil kneesbuckle;3 hipsdrop legsunfoldfowardscreenbottom shouldersfallawaytowardtop;4 landflatBACKONground faceup kneesalreadyflat;5 limbs settleflat;6 finalstillcorpse FACEUP seen EXACTLYfromABOVE.\nFinalbottom3 frames wholebody HORIZONTAL parallelimageplane notuprightportrait/recliner. Closedeyes mouth nose seenfaceON pointing directlyUPatverticalcamera, symmetricears, no chinup nostrils view no prominentcheeksidewalls. HeadatSCREEN TOP feetBOTTOM andno inversion. Neckbackagainstground, helmetrimaroundhead. Fullkhakifronttunic fullarmsfulllegsshownbroadside. KneesFLAT extendedgroundlevel, bootsTOPUPPERSVISIBLE toespointDOWNscreen noSOLES or sole tread no perspectivefromfeet. Legsbilateralextended slackslightsplay. Rifle dropped beside rightarm diagonallylongclearbarrel, not heldbycorpse. Deadarms slackbesidebody handsempty. Groundedhelmet/head/bodypartwidths about88%standing correspondingwidths, nozoom or inflation, keep identity andproportions. Entiredeadbodyflatlikeplanviewmapicon butpolished paintedminiature. Sixdistinct fallingphases not6corpses. Anatomicallynatural onehead twoarms twolegs. Ensurecleantransparentedges.",
+  "alphaPolicy": "Preserve native RGBA transparency",
+  "layout": {
+    "width": 1536,
+    "height": 1024,
+    "columns": 3,
+    "rows": 2,
+    "frameCount": 6,
+    "cellWidth": 512,
+    "cellHeight": 512
+  },
+  "finalCorrection": "DeathBack-v2-Boot-Upper-Correction.json",
+  "finalSource": "C:/Users/Damien/.codex/generated_images/01a1186d-c9ae-7993-aebb-e88f9b918c60/exec-996bfbae-2f5b-4d6b-833d-0c710a06e034.png"
+}

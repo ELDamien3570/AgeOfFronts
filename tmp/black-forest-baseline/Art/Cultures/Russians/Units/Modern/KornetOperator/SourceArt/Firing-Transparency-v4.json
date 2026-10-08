@@ -1,0 +1,9 @@
+{
+  "id": "attack",
+  "file": "Attack-v4.png",
+  "motion": "Deployed launch with cleaned transparency",
+  "prompt": "Remove background haze from this exact six-frame1536x1024 sprite sheet. Keep all six sprites pixels and equipment geometry unchanged including three tripod legs, soldier and small top exhaust flash in frame4. Make all area outside each soldier/launcher/flash perfectly TRANSPARENT with ZERO ALPHA, including olive brown dark glow surrounding every sprite. No colored halos, vignettes or shadow beneath. Preserve soft clean edges of painted art and exact layout. Output actual transparent RGBA sprite sheet.",
+  "generatedSource": "C:/Users/Damien/.codex/generated_images/01a0fea1-c63f-7343-92ca-6c21cc1c4296/exec-0fff7373-e132-4c6b-a59d-ba7d947b4728.png",
+  "nativeFile": "Native-Attack-v4.png",
+  "status": "selected-source"
+}

@@ -1,0 +1,10 @@
+{
+  "id": "charge-attack",
+  "file": "Charge-Attack-Forward-Cutout-v3.png",
+  "motion": "Mounted charge shot. Frame1 horse finishing gallop rider leans forward; frame2 horse plants and braces as rider nocks arrow raises bow; frame3 full draw with left arm extended toward screen-right/down, right hand pulls string toward face/shoulder; frame4 release with same left bow hand and right hand followthrough, no airborne projectile; frame5 ease back into seat and lower bow; frame6 recovered ready stance.",
+  "prompt": "Transparent background extraction ONLY. Preserve all SIX horse archer sprites and all painted actor pixels and thin strings exactly, no pose changes, no rescaling. Remove ALL brown/black haze and semitransparent backdrop between/around sprites. Background must be TRUE alpha0 everywhere outside the horse rider equipment silhouette, including every gap around bowstring and every empty row gutter. Do NOT paint black/checkerboard/green background; actual PNG RGBA transparency. Keep edge antialias only one pixel around silhouettes. Every horse bow rider unchanged and complete. Same1536x1024 exact3x2grid512cells, NO shadow glow fog haze or new content. This is a game sprite atlas cutout, not artwork on a dark backdrop.",
+  "references": [
+    "C:\\Users\\Damien\\.codex\\generated_images\\01a11641-9e1b-7c81-be76-c9edd53ef182\\exec-a6378fd2-dc0c-40e5-b419-12e7d9f96be2.png"
+  ],
+  "generatedSource": "C:\\Users\\Damien\\.codex\\generated_images\\01a11641-9e1b-7c81-be76-c9edd53ef182\\exec-ff755bc8-e274-4809-8abc-6dce3c0db407.png"
+}

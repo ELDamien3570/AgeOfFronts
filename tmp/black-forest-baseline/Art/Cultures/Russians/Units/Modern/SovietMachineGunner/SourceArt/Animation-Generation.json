@@ -1,0 +1,240 @@
+{
+  "tool": "built-in-imagegen",
+  "records": [
+    {
+      "id": "idle",
+      "file": "idle-v1.png",
+      "nativeFile": "Native-idle-v1.png",
+      "status": "superseded",
+      "prompt": "Use case: stylized-concept. Animate the exact approved overhead Soviet DP-28 gunner reference as six DISTINCT successive sprite poses. Exact1536x1024transparentPNG,3columns2rows512squarecells rowmajor. One whole actor percell same fixed torso root consistent scale with clear transparent margins. True directly overhead orthographic camera fixed. Olive steel helmet crown, khakiuniform, canvasmagazinepouch, leatherbelt, brownboots, facemostlyhidden. Preserve ONE DP-28: woodenstock, straight perforated barrel jacket, foldedbipod, round ribbed flat panmagazine mounted horizontally on TOP of receiver. No musket/bow/beltfeed/drum on side. Idle breathing LOOP: all six poses feet planted, helmet fixed sideways, gun low diagonal held in same grips. Only subtle shoulder/fabric breathing. NO flash smoke shooting or aiming. Crisp readable gameart, actual clear alpha outside silhouette, no floor shadows coloredbackground text grid or duplicateactors. Only firing clips may have compact muzzleflash/smoke.",
+      "reference": "C:/Users/Damien/Documents/GitHub/AgeOfFronts/AgeOfFronts/Art/Cultures/Russians/Units/Modern/SovietMachineGunner/SourceArt/Native-Idle-TopDown-v2.png",
+      "generatedSource": "C:/Users/Damien/.codex/generated_images/01a1166c-83ee-7ae0-be97-78c470de8962/exec-3da4963a-2f5e-473b-989f-5057897bb115.png",
+      "supersededReason": "Cell clearance correction."
+    },
+    {
+      "id": "running",
+      "file": "running-v1.png",
+      "nativeFile": "Native-running-v1.png",
+      "status": "superseded",
+      "prompt": "Use case: stylized-concept. Animate the exact approved overhead Soviet DP-28 gunner reference as six DISTINCT successive sprite poses. Exact1536x1024transparentPNG,3columns2rows512squarecells rowmajor. One whole actor percell same fixed torso root consistent scale with clear transparent margins. True directly overhead orthographic camera fixed. Olive steel helmet crown, khakiuniform, canvasmagazinepouch, leatherbelt, brownboots, facemostlyhidden. Preserve ONE DP-28: woodenstock, straight perforated barrel jacket, foldedbipod, round ribbed flat panmagazine mounted horizontally on TOP of receiver. No musket/bow/beltfeed/drum on side. Walking LOOP with clearly alternating left and right strides and arms carrying gun securely low diagonal. NO flash or smoke. Crisp readable gameart, actual clear alpha outside silhouette, no floor shadows coloredbackground text grid or duplicateactors. Only firing clips may have compact muzzleflash/smoke.",
+      "reference": "C:/Users/Damien/Documents/GitHub/AgeOfFronts/AgeOfFronts/Art/Cultures/Russians/Units/Modern/SovietMachineGunner/SourceArt/Native-Idle-TopDown-v2.png",
+      "generatedSource": "C:/Users/Damien/.codex/generated_images/01a1166c-83ee-7ae0-be97-78c470de8962/exec-58f1dd24-2705-4940-bf18-014fefb8070e.png",
+      "supersededReason": "Cell clearance correction."
+    },
+    {
+      "id": "attack",
+      "file": "attack-v1.png",
+      "nativeFile": "Native-attack-v1.png",
+      "status": "superseded",
+      "prompt": "Use case: stylized-concept. Animate the exact approved overhead Soviet DP-28 gunner reference as six DISTINCT successive sprite poses. Exact1536x1024transparentPNG,3columns2rows512squarecells rowmajor. One whole actor percell same fixed torso root consistent scale with clear transparent margins. True directly overhead orthographic camera fixed. Olive steel helmet crown, khakiuniform, canvasmagazinepouch, leatherbelt, brownboots, facemostlyhidden. Preserve ONE DP-28: woodenstock, straight perforated barrel jacket, foldedbipod, round ribbed flat panmagazine mounted horizontally on TOP of receiver. No musket/bow/beltfeed/drum on side. Six successive burst-fire poses:1 low carry,2 right foot (screen left) modestly back and chest turns35degrees,3 aimed braced gun stock at right shoulder left hand forward beneath jacket,4 small muzzle flash,5 second short burst flash with slight recoil,6 lower gun. Muzzle points exactly SCREEN BOTTOM during aim/fire. Feet stay planted frames3to5; rear boot BELOW shoulders and connected to hip, never beside head. Natural human stance. Pan remains attached. Crisp readable gameart, actual clear alpha outside silhouette, no floor shadows coloredbackground text grid or duplicateactors. Only firing clips may have compact muzzleflash/smoke.",
+      "reference": "C:/Users/Damien/Documents/GitHub/AgeOfFronts/AgeOfFronts/Art/Cultures/Russians/Units/Modern/SovietMachineGunner/SourceArt/Native-Idle-TopDown-v2.png",
+      "generatedSource": "C:/Users/Damien/.codex/generated_images/01a1166c-83ee-7ae0-be97-78c470de8962/exec-c4d69ff9-16be-49a4-b726-444f4a19aa29.png",
+      "supersededReason": "Native source-cell boundary crossing."
+    },
+    {
+      "id": "reload",
+      "file": "reload-v1.png",
+      "nativeFile": "Native-reload-v1.png",
+      "status": "superseded",
+      "prompt": "Use case: stylized-concept. Animate the exact approved overhead Soviet DP-28 gunner reference as six DISTINCT successive sprite poses. Exact1536x1024transparentPNG,3columns2rows512squarecells rowmajor. One whole actor percell same fixed torso root consistent scale with clear transparent margins. True directly overhead orthographic camera fixed. Olive steel helmet crown, khakiuniform, canvasmagazinepouch, leatherbelt, brownboots, facemostlyhidden. Preserve ONE DP-28: woodenstock, straight perforated barrel jacket, foldedbipod, round ribbed flat panmagazine mounted horizontally on TOP of receiver. No musket/bow/beltfeed/drum on side. Six successive pan magazine reload stages:1 low gun spent magazine seated;2 right hand removes old circular pan from top receiver, left hand supports gun;3 old pan lowered to pouch;4 right hand brings spare pan from pouch above empty receiver;5 replacement pan locks flat horizontally onto receiver;6 ready low carry after charging handle. Show ONE mounted pan except when off receiver; detached pan clearly held. No ammunition belt, rifle bolt or muzzle loading. NO firing effects. Crisp readable gameart, actual clear alpha outside silhouette, no floor shadows coloredbackground text grid or duplicateactors. Only firing clips may have compact muzzleflash/smoke.",
+      "reference": "C:/Users/Damien/Documents/GitHub/AgeOfFronts/AgeOfFronts/Art/Cultures/Russians/Units/Modern/SovietMachineGunner/SourceArt/Native-Idle-TopDown-v2.png",
+      "generatedSource": "C:/Users/Damien/.codex/generated_images/01a1166c-83ee-7ae0-be97-78c470de8962/exec-2418f6b7-5bf2-408f-9737-72d59b99ef7b.png",
+      "supersededReason": "Cell clearance correction."
+    },
+    {
+      "id": "hit",
+      "file": "hit-v1.png",
+      "nativeFile": "Native-hit-v1.png",
+      "status": "superseded",
+      "prompt": "Use case: stylized-concept. Animate the exact approved overhead Soviet DP-28 gunner reference as six DISTINCT successive sprite poses. Exact1536x1024transparentPNG,3columns2rows512squarecells rowmajor. One whole actor percell same fixed torso root consistent scale with clear transparent margins. True directly overhead orthographic camera fixed. Olive steel helmet crown, khakiuniform, canvasmagazinepouch, leatherbelt, brownboots, facemostlyhidden. Preserve ONE DP-28: woodenstock, straight perforated barrel jacket, foldedbipod, round ribbed flat panmagazine mounted horizontally on TOP of receiver. No musket/bow/beltfeed/drum on side. Six-stage light hit reaction: standing,flinch,small torso recoil,bend knees,recover,stand. Keep grip on gun. No firing effects. Crisp readable gameart, actual clear alpha outside silhouette, no floor shadows coloredbackground text grid or duplicateactors. Only firing clips may have compact muzzleflash/smoke.",
+      "reference": "C:/Users/Damien/Documents/GitHub/AgeOfFronts/AgeOfFronts/Art/Cultures/Russians/Units/Modern/SovietMachineGunner/SourceArt/Native-Idle-TopDown-v2.png",
+      "generatedSource": "C:/Users/Damien/.codex/generated_images/01a1166c-83ee-7ae0-be97-78c470de8962/exec-80ba698f-41a8-44d1-9b25-23e6d26556f0.png",
+      "supersededReason": "Cell clearance correction."
+    },
+    {
+      "id": "charged",
+      "file": "charged-v1.png",
+      "nativeFile": "Native-charged-v1.png",
+      "status": "superseded",
+      "prompt": "Use case: stylized-concept. Animate the exact approved overhead Soviet DP-28 gunner reference as six DISTINCT successive sprite poses. Exact1536x1024transparentPNG,3columns2rows512squarecells rowmajor. One whole actor percell same fixed torso root consistent scale with clear transparent margins. True directly overhead orthographic camera fixed. Olive steel helmet crown, khakiuniform, canvasmagazinepouch, leatherbelt, brownboots, facemostlyhidden. Preserve ONE DP-28: woodenstock, straight perforated barrel jacket, foldedbipod, round ribbed flat panmagazine mounted horizontally on TOP of receiver. No musket/bow/beltfeed/drum on side. Six-stage distinct heavy impact:standing,strong backward recoil,knees buckle with arms balancing,low crouch,regainbalance,stand with gun. ONE helmet and ONE gun only. No firing effects. Crisp readable gameart, actual clear alpha outside silhouette, no floor shadows coloredbackground text grid or duplicateactors. Only firing clips may have compact muzzleflash/smoke.",
+      "reference": "C:/Users/Damien/Documents/GitHub/AgeOfFronts/AgeOfFronts/Art/Cultures/Russians/Units/Modern/SovietMachineGunner/SourceArt/Native-Idle-TopDown-v2.png",
+      "generatedSource": "C:/Users/Damien/.codex/generated_images/01a1166c-83ee-7ae0-be97-78c470de8962/exec-3cf6ced7-a267-4f75-ba42-3ca6e012f280.png",
+      "supersededReason": "Cell clearance correction."
+    },
+    {
+      "id": "charge",
+      "file": "charge-v1.png",
+      "nativeFile": "Native-charge-v1.png",
+      "status": "superseded",
+      "prompt": "Use case: stylized-concept. Animate the exact approved overhead Soviet DP-28 gunner reference as six DISTINCT successive sprite poses. Exact1536x1024transparentPNG,3columns2rows512squarecells rowmajor. One whole actor percell same fixed torso root consistent scale with clear transparent margins. True directly overhead orthographic camera fixed. Olive steel helmet crown, khakiuniform, canvasmagazinepouch, leatherbelt, brownboots, facemostlyhidden. Preserve ONE DP-28: woodenstock, straight perforated barrel jacket, foldedbipod, round ribbed flat panmagazine mounted horizontally on TOP of receiver. No musket/bow/beltfeed/drum on side. Fast running LOOP six alternating full strides, equipment secure, gun low diagonal in twohands, boots clearly alternate. No shooting effects. Crisp readable gameart, actual clear alpha outside silhouette, no floor shadows coloredbackground text grid or duplicateactors. Only firing clips may have compact muzzleflash/smoke.",
+      "reference": "C:/Users/Damien/Documents/GitHub/AgeOfFronts/AgeOfFronts/Art/Cultures/Russians/Units/Modern/SovietMachineGunner/SourceArt/Native-Idle-TopDown-v2.png",
+      "generatedSource": "C:/Users/Damien/.codex/generated_images/01a1166c-83ee-7ae0-be97-78c470de8962/exec-339ab4f6-db84-4cb0-89d1-72ffb4522e4f.png",
+      "supersededReason": "Cell clearance correction."
+    },
+    {
+      "id": "charge-attack",
+      "file": "charge-attack-v1.png",
+      "nativeFile": "Native-charge-attack-v1.png",
+      "status": "superseded",
+      "prompt": "Use case: stylized-concept. Animate the exact approved overhead Soviet DP-28 gunner reference as six DISTINCT successive sprite poses. Exact1536x1024transparentPNG,3columns2rows512squarecells rowmajor. One whole actor percell same fixed torso root consistent scale with clear transparent margins. True directly overhead orthographic camera fixed. Olive steel helmet crown, khakiuniform, canvasmagazinepouch, leatherbelt, brownboots, facemostlyhidden. Preserve ONE DP-28: woodenstock, straight perforated barrel jacket, foldedbipod, round ribbed flat panmagazine mounted horizontally on TOP of receiver. No musket/bow/beltfeed/drum on side. Six-stage advance and burst:1 running low carry,2 brake plant feet right boot modestly back chest turns35degrees,3 aim stock braced right shoulder left hand supports front,4 small muzzle flash,5 second short burst and subtle recoil,6 low carry recover. Muzzle aimed exactly SCREEN BOTTOM. Stable connected legs boots BELOW shoulders; no boot near head, no extreme splits. Pan remains attached. Crisp readable gameart, actual clear alpha outside silhouette, no floor shadows coloredbackground text grid or duplicateactors. Only firing clips may have compact muzzleflash/smoke.",
+      "reference": "C:/Users/Damien/Documents/GitHub/AgeOfFronts/AgeOfFronts/Art/Cultures/Russians/Units/Modern/SovietMachineGunner/SourceArt/Native-Idle-TopDown-v2.png",
+      "generatedSource": "C:/Users/Damien/.codex/generated_images/01a1166c-83ee-7ae0-be97-78c470de8962/exec-ed8786fc-d69d-4f1e-9925-bf2c6c1fda97.png",
+      "supersededReason": "Native source-cell boundary crossing."
+    },
+    {
+      "id": "death",
+      "file": "death-v1.png",
+      "nativeFile": "Native-death-v1.png",
+      "status": "superseded",
+      "prompt": "Use case: stylized-concept. Animate the exact approved overhead Soviet DP-28 gunner reference as six DISTINCT successive sprite poses. Exact1536x1024transparentPNG,3columns2rows512squarecells rowmajor. One whole actor percell same fixed torso root consistent scale with clear transparent margins. True directly overhead orthographic camera fixed. Olive steel helmet crown, khakiuniform, canvasmagazinepouch, leatherbelt, brownboots, facemostlyhidden. Preserve ONE DP-28: woodenstock, straight perforated barrel jacket, foldedbipod, round ribbed flat panmagazine mounted horizontally on TOP of receiver. No musket/bow/beltfeed/drum on side. Complete six-stage side death:standing,kneesbuckle,tip sideways,fall onto leftside,lying on leftside,settled corpse. Same camera, body orientation continuous, gun falls beside body. No shooting. Crisp readable gameart, actual clear alpha outside silhouette, no floor shadows coloredbackground text grid or duplicateactors. Only firing clips may have compact muzzleflash/smoke.",
+      "reference": "C:/Users/Damien/Documents/GitHub/AgeOfFronts/AgeOfFronts/Art/Cultures/Russians/Units/Modern/SovietMachineGunner/SourceArt/Native-Idle-TopDown-v2.png",
+      "generatedSource": "C:/Users/Damien/.codex/generated_images/01a1166c-83ee-7ae0-be97-78c470de8962/exec-43a9d408-421e-4290-9dff-938b9b6d3532.png",
+      "supersededReason": "Cell clearance correction."
+    },
+    {
+      "id": "death-back",
+      "file": "death-back-v1.png",
+      "nativeFile": "Native-death-back-v1.png",
+      "status": "superseded",
+      "prompt": "Use case: stylized-concept. Animate the exact approved overhead Soviet DP-28 gunner reference as six DISTINCT successive sprite poses. Exact1536x1024transparentPNG,3columns2rows512squarecells rowmajor. One whole actor percell same fixed torso root consistent scale with clear transparent margins. True directly overhead orthographic camera fixed. Olive steel helmet crown, khakiuniform, canvasmagazinepouch, leatherbelt, brownboots, facemostlyhidden. Preserve ONE DP-28: woodenstock, straight perforated barrel jacket, foldedbipod, round ribbed flat panmagazine mounted horizontally on TOP of receiver. No musket/bow/beltfeed/drum on side. Complete six-stage backward death:standing,recoil,kneesbucklebackwards,fall onto back,lying on back,settled corpse. Head stays screenTOP boots screenBOTTOM finalposes, noflip/reset. Gun beside body. No shooting. Crisp readable gameart, actual clear alpha outside silhouette, no floor shadows coloredbackground text grid or duplicateactors. Only firing clips may have compact muzzleflash/smoke.",
+      "reference": "C:/Users/Damien/Documents/GitHub/AgeOfFronts/AgeOfFronts/Art/Cultures/Russians/Units/Modern/SovietMachineGunner/SourceArt/Native-Idle-TopDown-v2.png",
+      "generatedSource": "C:/Users/Damien/.codex/generated_images/01a1166c-83ee-7ae0-be97-78c470de8962/exec-2c2c5d4a-03a9-4462-9fc2-8439bc622737.png",
+      "supersededReason": "Native source-cell boundary crossing."
+    },
+    {
+      "id": "idle",
+      "file": "idle-v2.png",
+      "nativeFile": "Native-idle-v2.png",
+      "status": "selected-source",
+      "reference": "C:/Users/Damien/.codex/generated_images/01a1166c-83ee-7ae0-be97-78c470de8962/exec-3da4963a-2f5e-473b-989f-5057897bb115.png",
+      "prompt": "Correct ONLY sprite layout: this six-frame idle sheet has long barrels crossing 512-cell boundaries. Keep exactsixposes/overheadcamera/art/DP28. Reduce EVERY whole actor including gun to85percent current scale and center each within its OWN512squarecell. All pixels of each actor and entire barrel must stay between localx40and472/y40and472, no sprite overlapping neighboring cell. Exact1536x1024canvas3cols2rows. Actual transparent alpha background, no shadows. Preserve minimal breathing idle and same wholeweapon. No shooting.",
+      "generatedSource": "C:/Users/Damien/.codex/generated_images/01a1166c-83ee-7ae0-be97-78c470de8962/exec-6778dec0-52f6-4217-806a-51ac49899245.png"
+    },
+    {
+      "id": "running",
+      "file": "running-v2.png",
+      "nativeFile": "Native-running-v2.png",
+      "status": "superseded",
+      "reference": "C:/Users/Damien/.codex/generated_images/01a1166c-83ee-7ae0-be97-78c470de8962/exec-58f1dd24-2705-4940-bf18-014fefb8070e.png",
+      "prompt": "Use case: precise-object-edit. Fix ONLY the layout and clearance of this six-frame Soviet DP28 running animation sheet. Reduce all six complete actors AND guns uniformly to85percent current size, center eachpose in OWN512squarecell, all boots/barrels inside localx40to472/y40to472. No barrel crossing neighboringcells. Preserve exactsixposes,art,overheadcamera,magazine and weapon identity. Keep both hands holding the weapon in every pose while legs alternate naturally. Exact1536x1024transparentPNG3columns2rows. No floor shadow backdrop or text. One wholeactor eachcell.",
+      "generatedSource": "C:/Users/Damien/.codex/generated_images/01a1166c-83ee-7ae0-be97-78c470de8962/exec-6fbec235-b5ee-49d3-9f21-0fc2eb3f7271.png"
+    },
+    {
+      "id": "reload",
+      "file": "reload-v2.png",
+      "nativeFile": "Native-reload-v2.png",
+      "status": "selected-source",
+      "reference": "C:/Users/Damien/.codex/generated_images/01a1166c-83ee-7ae0-be97-78c470de8962/exec-2418f6b7-5bf2-408f-9737-72d59b99ef7b.png",
+      "prompt": "Use case: precise-object-edit. Fix ONLY the layout and clearance of this six-frame Soviet DP28 reload animation sheet. Reduce all six complete actors AND guns uniformly to85percent current size, center eachpose in OWN512squarecell, all boots/barrels inside localx40to472/y40to472. No barrel crossing neighboringcells. Preserve exactsixposes,art,overheadcamera,magazine and weapon identity. Keep magazine removal/replacement poses; no flash or smoke. Exact1536x1024transparentPNG3columns2rows. No floor shadow backdrop or text. One wholeactor eachcell.",
+      "generatedSource": "C:/Users/Damien/.codex/generated_images/01a1166c-83ee-7ae0-be97-78c470de8962/exec-7ff35416-4315-4974-8b0f-c92710a488ed.png"
+    },
+    {
+      "id": "hit",
+      "file": "hit-v2.png",
+      "nativeFile": "Native-hit-v2.png",
+      "status": "selected-source",
+      "reference": "C:/Users/Damien/.codex/generated_images/01a1166c-83ee-7ae0-be97-78c470de8962/exec-80ba698f-41a8-44d1-9b25-23e6d26556f0.png",
+      "prompt": "Use case: precise-object-edit. Correct ONLY sprite sheet spacing: resize all six COMPLETE actors including gun to85percent current size and center each inside own512squarecell with40pxclear margins. This fixes barrels crossing cell boundaries. Preserve all six hit motion poses, same equipment, overhead camera, TWO hands on weapon except heavy-impact balancing. Exact1536x1024transparentPNG3columns2rows. No actor pixels outside owncell, actual clear alpha outsideactor, no shadows/backdrop/text. Full straight DP28 barrels preserved.",
+      "generatedSource": "C:/Users/Damien/.codex/generated_images/01a1166c-83ee-7ae0-be97-78c470de8962/exec-5d8873f6-d1d5-419d-82f0-771127f7d848.png"
+    },
+    {
+      "id": "charged",
+      "file": "charged-v2.png",
+      "nativeFile": "Native-charged-v2.png",
+      "status": "superseded",
+      "reference": "C:/Users/Damien/.codex/generated_images/01a1166c-83ee-7ae0-be97-78c470de8962/exec-3cf6ced7-a267-4f75-ba42-3ca6e012f280.png",
+      "prompt": "Use case: precise-object-edit. Correct ONLY sprite sheet spacing: resize all six COMPLETE actors including gun to85percent current size and center each inside own512squarecell with40pxclear margins. This fixes barrels crossing cell boundaries. Preserve all six charged motion poses, same equipment, overhead camera, TWO hands on weapon except heavy-impact balancing. Exact1536x1024transparentPNG3columns2rows. No actor pixels outside owncell, actual clear alpha outsideactor, no shadows/backdrop/text. Full straight DP28 barrels preserved.",
+      "generatedSource": "C:/Users/Damien/.codex/generated_images/01a1166c-83ee-7ae0-be97-78c470de8962/exec-17856242-a034-425f-8dcb-a603242fed3f.png"
+    },
+    {
+      "id": "charge",
+      "file": "charge-v2.png",
+      "nativeFile": "Native-charge-v2.png",
+      "status": "selected-source",
+      "reference": "C:/Users/Damien/.codex/generated_images/01a1166c-83ee-7ae0-be97-78c470de8962/exec-339ab4f6-db84-4cb0-89d1-72ffb4522e4f.png",
+      "prompt": "Use case: precise-object-edit. Correct ONLY sprite sheet spacing: resize all six COMPLETE actors including gun to85percent current size and center each inside own512squarecell with40pxclear margins. This fixes barrels crossing cell boundaries. Preserve all six charge motion poses, same equipment, overhead camera, TWO hands on weapon except heavy-impact balancing. Exact1536x1024transparentPNG3columns2rows. No actor pixels outside owncell, actual clear alpha outsideactor, no shadows/backdrop/text. Full straight DP28 barrels preserved.",
+      "generatedSource": "C:/Users/Damien/.codex/generated_images/01a1166c-83ee-7ae0-be97-78c470de8962/exec-4d73d79e-b963-45e7-9dad-3a347a0de54f.png",
+      "cellSources": {
+        "0": "Native-running-v3.png",
+        "1": "Native-running-v3.png",
+        "2": "Native-running-v3.png",
+        "3": "Native-running-v3.png",
+        "4": "Native-running-v3.png",
+        "5": "Native-running-v3.png"
+      },
+      "compositionReason": "Reuse corrected alternating gait at faster charge cadence; previous generated charge repeated the same lead foot."
+    },
+    {
+      "id": "death",
+      "file": "death-v2.png",
+      "nativeFile": "Native-death-v2.png",
+      "status": "selected-source",
+      "reference": "C:/Users/Damien/.codex/generated_images/01a1166c-83ee-7ae0-be97-78c470de8962/exec-43a9d408-421e-4290-9dff-938b9b6d3532.png",
+      "prompt": "Use case: precise-object-edit. Correct ONLY spacing of these six side-death poses. Resize each whole soldier and gun uniformly to85percent and center within OWN512squarecell leaving40pxclear margin on ALL sides. Fourthpose currently handcrosses512cellboundary: fix this by scaling wholepose, preserve hand. Keep exact six stages standing/kneel/tip/fall/sidecorpse/settled, same overheadcamera, samekhakihelmetDP28. Exact1536x1024RGBA3columns2rows, actualtransparentalpha no background shadowtext. No spriteoverlap.",
+      "generatedSource": "C:/Users/Damien/.codex/generated_images/01a1166c-83ee-7ae0-be97-78c470de8962/exec-4ae243b2-3d11-4b97-bc9b-7d79d92643c9.png"
+    },
+    {
+      "id": "running",
+      "file": "running-v3.png",
+      "nativeFile": "Native-running-v3.png",
+      "status": "selected-source",
+      "prompt": "Use case: precise-object-edit. Fix the WALK CYCLE in this six-cell Soviet DP28 sheet. Keep samecamera,helmet,uniform,gun,positions and size,40pxclearcellmargins. Both hands continuously holding gun: righttriggergrip,leftsupport under barreljacket EVERY frame. Feet alternate:frame1 LEFT boot (screenRIGHT) strides towardbottom,RIGHT boot behind;frame2 feetpassing;frame3 RIGHT boot (screenLEFT) strides towardbottom,LEFT behind;frame4 rightfootpushesback,left comesforward;frame5 LEFT boot clearlyextended screenBOTTOMRIGHT,rightbehind;frame6passingfeet. Two anatomically connected legs visible, no duplication, no moonwalk. Exact1536x1024six512cells3x2, actualtransparentalpha no shadows backdrop text. Fullguncontainedinsideeachcell.",
+      "reference": "C:/Users/Damien/.codex/generated_images/01a1166c-83ee-7ae0-be97-78c470de8962/exec-6fbec235-b5ee-49d3-9f21-0fc2eb3f7271.png",
+      "generatedSource": "C:/Users/Damien/.codex/generated_images/01a1166c-83ee-7ae0-be97-78c470de8962/exec-d38a7e71-423f-4883-92b5-aeb41b2e7642.png"
+    },
+    {
+      "id": "attack",
+      "file": "attack-v2.png",
+      "nativeFile": "Native-attack-v2.png",
+      "status": "selected-source",
+      "reference": "C:/Users/Damien/.codex/generated_images/01a1166c-83ee-7ae0-be97-78c470de8962/exec-c4d69ff9-16be-49a4-b726-444f4a19aa29.png",
+      "prompt": "Use case: precise-object-edit. Fix sprite sheet cell boundaries. Preserve EXACT all six attack poses and art, but scale every COMPLETE actor AND entire gun and flash/smoke to85percent and center within its own512squarecell. Leave at least40px ZERO alpha on all four sides of EACHcell. Row2 shoulders currently cross y512 into row1; longgun crossescolumnboundary: eliminate crossings by shrinking wholeposes uniformly. Exact1536x1024threecolumns two rows. Same helmet,khakiDP28, fixed overheadcamera, same six motionstages. Actualtransparentalpha, no coloredbackgroundfloor shadowtext. All effectspart of ownposeand fitwithinmargin.",
+      "generatedSource": "C:/Users/Damien/.codex/generated_images/01a1166c-83ee-7ae0-be97-78c470de8962/exec-487714df-3cbb-4f67-ad45-db1ecb72a526.png",
+      "destinationSize": 480,
+      "cellSources": {
+        "5": "Native-charge-attack-v2.png"
+      },
+      "reason": "Use nonfiring whole recovery pose; enlarge uniformly to match actor scale."
+    },
+    {
+      "id": "charge-attack",
+      "file": "charge-attack-v2.png",
+      "nativeFile": "Native-charge-attack-v2.png",
+      "status": "selected-source",
+      "reference": "C:/Users/Damien/.codex/generated_images/01a1166c-83ee-7ae0-be97-78c470de8962/exec-ed8786fc-d69d-4f1e-9925-bf2c6c1fda97.png",
+      "prompt": "Use case: precise-object-edit. Fix sprite sheet cell boundaries. Preserve EXACT all six charge-attack poses and art, but scale every COMPLETE actor AND entire gun and flash/smoke to85percent and center within its own512squarecell. Leave at least40px ZERO alpha on all four sides of EACHcell. Row2 shoulders currently cross y512 into row1; longgun crossescolumnboundary: eliminate crossings by shrinking wholeposes uniformly. Exact1536x1024threecolumns two rows. Same helmet,khakiDP28, fixed overheadcamera, same six motionstages. Actualtransparentalpha, no coloredbackgroundfloor shadowtext. All effectspart of ownposeand fitwithinmargin.",
+      "generatedSource": "C:/Users/Damien/.codex/generated_images/01a1166c-83ee-7ae0-be97-78c470de8962/exec-e7a7bef2-7e1e-4f44-b486-502ed780f48d.png",
+      "destinationSize": 480
+    },
+    {
+      "id": "death-back",
+      "file": "death-back-v2.png",
+      "nativeFile": "Native-death-back-v2.png",
+      "status": "superseded",
+      "reference": "C:/Users/Damien/.codex/generated_images/01a1166c-83ee-7ae0-be97-78c470de8962/exec-2c2c5d4a-03a9-4462-9fc2-8439bc622737.png",
+      "prompt": "Use case: precise-object-edit. Fix sprite sheet cell boundaries. Preserve EXACT all six death-back poses and art, but scale every COMPLETE actor AND entire gun and flash/smoke to85percent and center within its own512squarecell. Leave at least40px ZERO alpha on all four sides of EACHcell. Row2 shoulders currently cross y512 into row1; longgun crossescolumnboundary: eliminate crossings by shrinking wholeposes uniformly. Exact1536x1024threecolumns two rows. Same helmet,khakiDP28, fixed overheadcamera, same six motionstages. Actualtransparentalpha, no coloredbackgroundfloor shadowtext. All effectspart of ownposeand fitwithinmargin.",
+      "generatedSource": "C:/Users/Damien/.codex/generated_images/01a1166c-83ee-7ae0-be97-78c470de8962/exec-641a102b-575b-4049-9f58-dd864d4cfae9.png",
+      "supersededReason": "Native source-cell boundary crossing."
+    },
+    {
+      "id": "charged",
+      "file": "charged-v3.png",
+      "nativeFile": "Native-charged-v3.png",
+      "status": "selected-source",
+      "reference": "C:/Users/Damien/.codex/generated_images/01a1166c-83ee-7ae0-be97-78c470de8962/exec-17856242-a034-425f-8dcb-a603242fed3f.png",
+      "prompt": "Use case: precise-object-edit. This sheet still has TOP MIDDLE gun barrel crossing its cell RIGHT boundary x1024. Shrink each COMPLETE actor including gun by another15percent, centered in each512squarecell. All silhouette pixels localx50to462,y50to462 with generous transparent margins. Preserve exactsixheavyimpactposes andDP28 details.1536x1024RGBA3x2,sameoverheadcamera. No neighboroverlap. Actualtransparentalpha no backdrop/shadows/text.",
+      "generatedSource": "C:/Users/Damien/.codex/generated_images/01a1166c-83ee-7ae0-be97-78c470de8962/exec-89974818-5549-416a-b145-6b0568f184ed.png",
+      "destinationSize": 480
+    },
+    {
+      "id": "death-back",
+      "file": "death-back-v3.png",
+      "nativeFile": "Native-death-back-v3.png",
+      "status": "selected-source",
+      "reference": "C:/Users/Damien/.codex/generated_images/01a1166c-83ee-7ae0-be97-78c470de8962/exec-641a102b-575b-4049-9f58-dd864d4cfae9.png",
+      "prompt": "Use case: precise-object-edit. This six-frame sheet still has the fourth actor's gun crossing x512. Re-layout it with MUCH SMALLER complete actors: each wholeactor ANDgun maximum350pixels wide and350pixelshigh, centered inside each512squarecell. Leave at least80pixels transparent margin on every side. Preserve exactsixbackdeathposes,allweaponparts,sameartandcamera.1536x1024RGBA3columns2rows. DO NOT let any gunbarrel pass intoanothercell. Actualclearalphaoutsideactors,nobackdropshadowtext.",
+      "generatedSource": "C:/Users/Damien/.codex/generated_images/01a1166c-83ee-7ae0-be97-78c470de8962/exec-7df506b6-f530-43c2-9d07-edfbae55a184.png",
+      "destinationSize": 480
+    }
+  ]
+}

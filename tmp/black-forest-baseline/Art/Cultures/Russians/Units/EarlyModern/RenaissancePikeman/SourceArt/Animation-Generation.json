@@ -1,0 +1,321 @@
+{
+  "date": "2026-10-07",
+  "records": [
+    {
+      "id": "idle",
+      "file": "Idle-Animated-v1.png",
+      "motion": "IDLE LOOP: pike STEEL HEAD toward SCREEN TOP, wood butt down. Subtle breathing, fixed helmet root and planted shoes, almost still. Six gentle sleeve/breath changes return smoothly to first pose; no sudden sway/jolt.",
+      "prompt": "Animate the APPROVED Renaissance Russian pikeman in reference: simple blackened morion helmet crown with yellow feather, blackened cuirass, brown leather straps, loose WHITE linen sleeves, mustard breeches, brown shoes, discreet sheathed sword. NO shield or other armor. STRICT90degree DIRECT OVERHEAD orthographic camera looking down his spine, helmet crown and shoulder TOPS dominate, noface/frontportrait, strongly foreshortened body. Facing SCREENBOTTOM. Rich smooth painterly strategy-game sprite, clean alpha, no colored fringe/outline. Long slender straight wooden pike with same narrow STEEL head, identical proportions and length EVERY frame. TWO HANDS hold fixed spots on shaft, no sliding grips, deformation, floating weapon. EXACT1536x1024 transparentRGBA SPRITE SHEET: 3 columns x2 rows, SIX frames, each512x512, row-major. One COMPLETE isolated soldier in each cell, weapon entirely inside its cell with >=35px clear margin, no text/grid/shadow/background. Body approximately150pxwide and pike380pxlong throughout, fixed BODY ROOT in each cell at (280,300). Do not independently fit/scale poses. Six frames of ONE continuous motion. \nMOTION: IDLE LOOP: pike STEEL HEAD toward SCREEN TOP, wood butt down. Subtle breathing, fixed helmet root and planted shoes, almost still. Six gentle sleeve/breath changes return smoothly to first pose; no sudden sway/jolt.",
+      "generatedSource": "C:/Users/Damien/.codex/generated_images/01a0fea1-c63f-7343-92ca-6c21cc1c4296/exec-0236859b-076f-4eba-a425-45139b032dde.png",
+      "nativeFile": "Native-Idle-Animated-v1.png",
+      "status": "selected-source",
+      "rootOffsets": [
+        [
+          28,
+          2
+        ],
+        [
+          -5,
+          -1
+        ],
+        [
+          0,
+          10
+        ],
+        [
+          25,
+          -6
+        ],
+        [
+          2,
+          -5
+        ],
+        [
+          -1,
+          2
+        ]
+      ]
+    },
+    {
+      "id": "running",
+      "file": "Walk-v1.png",
+      "motion": "WALK LOOP: pike steel head toward SCREEN TOP, carried upright in both hands. Frame1 leftfoot forward rightback;2 weight transfer;3 legs pass;4 rightfootforward leftback;5 transfer;6 legs pass toward first. Visible alternating feet with natural arms steady carrying pike. Root remains fixed, no side-to-side shaking.",
+      "prompt": "Animate the APPROVED Renaissance Russian pikeman in reference: simple blackened morion helmet crown with yellow feather, blackened cuirass, brown leather straps, loose WHITE linen sleeves, mustard breeches, brown shoes, discreet sheathed sword. NO shield or other armor. STRICT90degree DIRECT OVERHEAD orthographic camera looking down his spine, helmet crown and shoulder TOPS dominate, noface/frontportrait, strongly foreshortened body. Facing SCREENBOTTOM. Rich smooth painterly strategy-game sprite, clean alpha, no colored fringe/outline. Long slender straight wooden pike with same narrow STEEL head, identical proportions and length EVERY frame. TWO HANDS hold fixed spots on shaft, no sliding grips, deformation, floating weapon. EXACT1536x1024 transparentRGBA SPRITE SHEET: 3 columns x2 rows, SIX frames, each512x512, row-major. One COMPLETE isolated soldier in each cell, weapon entirely inside its cell with >=35px clear margin, no text/grid/shadow/background. Body approximately150pxwide and pike380pxlong throughout, fixed BODY ROOT in each cell at (280,300). Do not independently fit/scale poses. Six frames of ONE continuous motion. \nMOTION: WALK LOOP: pike steel head toward SCREEN TOP, carried upright in both hands. Frame1 leftfoot forward rightback;2 weight transfer;3 legs pass;4 rightfootforward leftback;5 transfer;6 legs pass toward first. Visible alternating feet with natural arms steady carrying pike. Root remains fixed, no side-to-side shaking.",
+      "generatedSource": "C:/Users/Damien/.codex/generated_images/01a0fea1-c63f-7343-92ca-6c21cc1c4296/exec-3e819358-ada7-450f-b4f2-f022c5cbddc0.png",
+      "nativeFile": "Native-Walk-v1.png",
+      "status": "selected-source",
+      "rootOffsets": [
+        [
+          12,
+          5
+        ],
+        [
+          -16,
+          5
+        ],
+        [
+          14,
+          5
+        ],
+        [
+          11,
+          -28
+        ],
+        [
+          -17,
+          -26
+        ],
+        [
+          15,
+          -27
+        ]
+      ]
+    },
+    {
+      "id": "charge",
+      "file": "Charge-v1.png",
+      "motion": "CHARGE RUN LOOP: long pike lowered forward, STEEL POINT toward SCREENBOTTOM, blunt butt toward top. Both hands carry it as rigid pole aimed ahead. Six alternating quick running strides with modestforwardlean, planted push-off and brief flight, return seamlessly. No lateralrootshake. Running into charge and maintain charge share this loop; not an attack yet.",
+      "prompt": "Animate the APPROVED Renaissance Russian pikeman in reference: simple blackened morion helmet crown with yellow feather, blackened cuirass, brown leather straps, loose WHITE linen sleeves, mustard breeches, brown shoes, discreet sheathed sword. NO shield or other armor. STRICT90degree DIRECT OVERHEAD orthographic camera looking down his spine, helmet crown and shoulder TOPS dominate, noface/frontportrait, strongly foreshortened body. Facing SCREENBOTTOM. Rich smooth painterly strategy-game sprite, clean alpha, no colored fringe/outline. Long slender straight wooden pike with same narrow STEEL head, identical proportions and length EVERY frame. TWO HANDS hold fixed spots on shaft, no sliding grips, deformation, floating weapon. EXACT1536x1024 transparentRGBA SPRITE SHEET: 3 columns x2 rows, SIX frames, each512x512, row-major. One COMPLETE isolated soldier in each cell, weapon entirely inside its cell with >=35px clear margin, no text/grid/shadow/background. Body approximately150pxwide and pike380pxlong throughout, fixed BODY ROOT in each cell at (280,300). Do not independently fit/scale poses. Six frames of ONE continuous motion. \nMOTION: CHARGE RUN LOOP: long pike lowered forward, STEEL POINT toward SCREENBOTTOM, blunt butt toward top. Both hands carry it as rigid pole aimed ahead. Six alternating quick running strides with modestforwardlean, planted push-off and brief flight, return seamlessly. No lateralrootshake. Running into charge and maintain charge share this loop; not an attack yet.",
+      "generatedSource": "C:/Users/Damien/.codex/generated_images/01a0fea1-c63f-7343-92ca-6c21cc1c4296/exec-fa8922de-c1a1-47c9-a18e-ff2a50ff78fe.png",
+      "nativeFile": "Native-Charge-v1.png",
+      "status": "selected-source",
+      "rootOffsets": [
+        [
+          19,
+          -124
+        ],
+        [
+          7,
+          -118
+        ],
+        [
+          6,
+          -121
+        ],
+        [
+          19,
+          -130
+        ],
+        [
+          14,
+          -127
+        ],
+        [
+          6,
+          -127
+        ]
+      ]
+    },
+    {
+      "id": "attack",
+      "file": "Attack-v1.png",
+      "motion": "FORWARD PIKE THRUST toward SCREENBOTTOM. Already lowered pike STEEL HEAD DOWN, buttUP. Frame1 lowered ready;2 both hands pull weapon BACK together (tip retreats toward torso);3 begin extension;4 full committed two-handed forward thrust, ARMS and ENTIRE SHAFT translate DOWN by80px, tip visibly nearer bottom;5 retract;6 ready. Handgrip fixed SAME spots, hands NEVER slide along shaft. Compactbody at cell(280,240), pike span330px allows full forward extension. Turn shoulders modestly but keep overhead and face hidden. Spear point screenBOTTOM in all six frames. Not waving, not merely bending elbow while stationary weapon.",
+      "prompt": "Animate the APPROVED Renaissance Russian pikeman in reference: simple blackened morion helmet crown with yellow feather, blackened cuirass, brown leather straps, loose WHITE linen sleeves, mustard breeches, brown shoes, discreet sheathed sword. NO shield or other armor. STRICT90degree DIRECT OVERHEAD orthographic camera looking down his spine, helmet crown and shoulder TOPS dominate, noface/frontportrait, strongly foreshortened body. Facing SCREENBOTTOM. Rich smooth painterly strategy-game sprite, clean alpha, no colored fringe/outline. Long slender straight wooden pike with same narrow STEEL head, identical proportions and length EVERY frame. TWO HANDS hold fixed spots on shaft, no sliding grips, deformation, floating weapon. EXACT1536x1024 transparentRGBA SPRITE SHEET: 3 columns x2 rows, SIX frames, each512x512, row-major. One COMPLETE isolated soldier in each cell, weapon entirely inside its cell with >=35px clear margin, no text/grid/shadow/background. Body approximately150pxwide and pike380pxlong throughout, fixed BODY ROOT in each cell at (280,300). Do not independently fit/scale poses. Six frames of ONE continuous motion. \nMOTION: FORWARD PIKE THRUST toward SCREENBOTTOM. Already lowered pike STEEL HEAD DOWN, buttUP. Frame1 lowered ready;2 both hands pull weapon BACK together (tip retreats toward torso);3 begin extension;4 full committed two-handed forward thrust, ARMS and ENTIRE SHAFT translate DOWN by80px, tip visibly nearer bottom;5 retract;6 ready. Handgrip fixed SAME spots, hands NEVER slide along shaft. Compactbody at cell(280,240), pike span330px allows full forward extension. Turn shoulders modestly but keep overhead and face hidden. Spear point screenBOTTOM in all six frames. Not waving, not merely bending elbow while stationary weapon.",
+      "generatedSource": "C:/Users/Damien/.codex/generated_images/01a0fea1-c63f-7343-92ca-6c21cc1c4296/exec-d7884245-5f46-40f1-9b7f-dc0910d262dc.png",
+      "nativeFile": "Native-Attack-v1.png",
+      "status": "selected-source",
+      "rootOffsets": [
+        [
+          31,
+          -113
+        ],
+        [
+          31,
+          -113
+        ],
+        [
+          31,
+          -113
+        ],
+        [
+          31,
+          -113
+        ],
+        [
+          31,
+          -113
+        ],
+        [
+          31,
+          -113
+        ]
+      ]
+    },
+    {
+      "id": "charge-attack",
+      "file": "Charge-Attack-v1.png",
+      "motion": "HEAVY FORWARD CHARGE PIKE THRUST toward SCREENBOTTOM:1 brace lowered pike HEAD DOWN buttUP;2 draw back as body winds;3 step into thrust;4 BOTH ARMS extend and entire pike advances DOWN by90px to full extension, point closer screenbottom, feet plant;5 withdraw;6 ready. Both closedhands fixed on same shaft positions. No sliding hand along static shaft. Pike length constant. Compact body at(280,220) leaves forward room. No vertical upright headUP in this attack. Tip MUST point directly SCREENBOTTOM not sideways. More committed lunge than normal attack.",
+      "prompt": "Animate the APPROVED Renaissance Russian pikeman in reference: simple blackened morion helmet crown with yellow feather, blackened cuirass, brown leather straps, loose WHITE linen sleeves, mustard breeches, brown shoes, discreet sheathed sword. NO shield or other armor. STRICT90degree DIRECT OVERHEAD orthographic camera looking down his spine, helmet crown and shoulder TOPS dominate, noface/frontportrait, strongly foreshortened body. Facing SCREENBOTTOM. Rich smooth painterly strategy-game sprite, clean alpha, no colored fringe/outline. Long slender straight wooden pike with same narrow STEEL head, identical proportions and length EVERY frame. TWO HANDS hold fixed spots on shaft, no sliding grips, deformation, floating weapon. EXACT1536x1024 transparentRGBA SPRITE SHEET: 3 columns x2 rows, SIX frames, each512x512, row-major. One COMPLETE isolated soldier in each cell, weapon entirely inside its cell with >=35px clear margin, no text/grid/shadow/background. Body approximately150pxwide and pike380pxlong throughout, fixed BODY ROOT in each cell at (280,300). Do not independently fit/scale poses. Six frames of ONE continuous motion. \nMOTION: HEAVY FORWARD CHARGE PIKE THRUST toward SCREENBOTTOM:1 brace lowered pike HEAD DOWN buttUP;2 draw back as body winds;3 step into thrust;4 BOTH ARMS extend and entire pike advances DOWN by90px to full extension, point closer screenbottom, feet plant;5 withdraw;6 ready. Both closedhands fixed on same shaft positions. No sliding hand along static shaft. Pike length constant. Compact body at(280,220) leaves forward room. No vertical upright headUP in this attack. Tip MUST point directly SCREENBOTTOM not sideways. More committed lunge than normal attack.",
+      "generatedSource": "C:/Users/Damien/.codex/generated_images/01a0fea1-c63f-7343-92ca-6c21cc1c4296/exec-a3b4fa78-f74f-4047-a88e-34ba9b1e01a8.png",
+      "nativeFile": "Native-Charge-Attack-v1.png",
+      "status": "selected-source",
+      "rootOffsets": [
+        [
+          25,
+          -111
+        ],
+        [
+          25,
+          -111
+        ],
+        [
+          25,
+          -111
+        ],
+        [
+          25,
+          -111
+        ],
+        [
+          25,
+          -111
+        ],
+        [
+          25,
+          -111
+        ]
+      ]
+    },
+    {
+      "id": "hit",
+      "file": "Hit-v1.png",
+      "motion": "GET HIT reaction:1 idle pikeheadUP;2 sharpsmall chest/shoulder recoil;3 braced knee bend arms carry pike with recoil;4 regain balance;5 straighten;6 approvedidle headUP. Moderate wholearm weaponmovement, no detached hand. Single brief reaction, keepfeetnearroot, no dramatic fall.",
+      "prompt": "Animate the APPROVED Renaissance Russian pikeman in reference: simple blackened morion helmet crown with yellow feather, blackened cuirass, brown leather straps, loose WHITE linen sleeves, mustard breeches, brown shoes, discreet sheathed sword. NO shield or other armor. STRICT90degree DIRECT OVERHEAD orthographic camera looking down his spine, helmet crown and shoulder TOPS dominate, noface/frontportrait, strongly foreshortened body. Facing SCREENBOTTOM. Rich smooth painterly strategy-game sprite, clean alpha, no colored fringe/outline. Long slender straight wooden pike with same narrow STEEL head, identical proportions and length EVERY frame. TWO HANDS hold fixed spots on shaft, no sliding grips, deformation, floating weapon. EXACT1536x1024 transparentRGBA SPRITE SHEET: 3 columns x2 rows, SIX frames, each512x512, row-major. One COMPLETE isolated soldier in each cell, weapon entirely inside its cell with >=35px clear margin, no text/grid/shadow/background. Body approximately150pxwide and pike380pxlong throughout, fixed BODY ROOT in each cell at (280,300). Do not independently fit/scale poses. Six frames of ONE continuous motion. \nMOTION: GET HIT reaction:1 idle pikeheadUP;2 sharpsmall chest/shoulder recoil;3 braced knee bend arms carry pike with recoil;4 regain balance;5 straighten;6 approvedidle headUP. Moderate wholearm weaponmovement, no detached hand. Single brief reaction, keepfeetnearroot, no dramatic fall.",
+      "generatedSource": "C:/Users/Damien/.codex/generated_images/01a0fea1-c63f-7343-92ca-6c21cc1c4296/exec-34afbfae-eab7-438f-9a2f-0e9a8c2b1518.png",
+      "nativeFile": "Native-Hit-v1.png",
+      "status": "selected-source",
+      "rootOffsets": [
+        [
+          -6,
+          -16
+        ],
+        [
+          -6,
+          -16
+        ],
+        [
+          -6,
+          -16
+        ],
+        [
+          -6,
+          -16
+        ],
+        [
+          -6,
+          -16
+        ],
+        [
+          -6,
+          -16
+        ]
+      ]
+    },
+    {
+      "id": "charged",
+      "file": "Charged-v1.png",
+      "motion": "GET CHARGED heavy impact and recovery six sequential poses:1 idle headUP pike;2 violent shoulder recoil and arm swing;3 stumble backward bentknees pike tilts with moving hands;4 deep stagger near-kneeling, both arms and pike displaced together;5 pushing upright;6 regain originalready pikeheadUP. Weaponrigid follows hands/body, cannot have frozenarm during recoil, no weapon invert. Not death.",
+      "prompt": "Animate the APPROVED Renaissance Russian pikeman in reference: simple blackened morion helmet crown with yellow feather, blackened cuirass, brown leather straps, loose WHITE linen sleeves, mustard breeches, brown shoes, discreet sheathed sword. NO shield or other armor. STRICT90degree DIRECT OVERHEAD orthographic camera looking down his spine, helmet crown and shoulder TOPS dominate, noface/frontportrait, strongly foreshortened body. Facing SCREENBOTTOM. Rich smooth painterly strategy-game sprite, clean alpha, no colored fringe/outline. Long slender straight wooden pike with same narrow STEEL head, identical proportions and length EVERY frame. TWO HANDS hold fixed spots on shaft, no sliding grips, deformation, floating weapon. EXACT1536x1024 transparentRGBA SPRITE SHEET: 3 columns x2 rows, SIX frames, each512x512, row-major. One COMPLETE isolated soldier in each cell, weapon entirely inside its cell with >=35px clear margin, no text/grid/shadow/background. Body approximately150pxwide and pike380pxlong throughout, fixed BODY ROOT in each cell at (280,300). Do not independently fit/scale poses. Six frames of ONE continuous motion. \nMOTION: GET CHARGED heavy impact and recovery six sequential poses:1 idle headUP pike;2 violent shoulder recoil and arm swing;3 stumble backward bentknees pike tilts with moving hands;4 deep stagger near-kneeling, both arms and pike displaced together;5 pushing upright;6 regain originalready pikeheadUP. Weaponrigid follows hands/body, cannot have frozenarm during recoil, no weapon invert. Not death.",
+      "generatedSource": "C:/Users/Damien/.codex/generated_images/01a0fea1-c63f-7343-92ca-6c21cc1c4296/exec-d4e3cdc2-c7bf-4846-a57a-225d7aee9c9d.png",
+      "nativeFile": "Native-Charged-v1.png",
+      "status": "selected-source",
+      "rootOffsets": [
+        [
+          57,
+          26
+        ],
+        [
+          57,
+          26
+        ],
+        [
+          57,
+          26
+        ],
+        [
+          57,
+          26
+        ],
+        [
+          57,
+          26
+        ],
+        [
+          57,
+          26
+        ]
+      ]
+    },
+    {
+      "id": "death",
+      "file": "Death-Side-v1.png",
+      "motion": "DEATH SIDE FALL one complete NONLOOP sequence:1 approvedidle pikeheadUP;2 knees buckle and shoulders tip left;3 descending onto left hip with arms following;4 shoulders contact ground and legs fold;5 roll slightly to settle;6 completely dead on left side, helmet remains on, white sleeves/blackarmor/brownlegs clear. Pike rotates and comes to rest alongside fallen body as a rigid full straightweapon, no shaft loss. Every pose entirely inside cell. Last2 frames consistent orientation, no snapflip. Overhead ground-plane perspective throughout; not standing throughout.",
+      "prompt": "Animate the APPROVED Renaissance Russian pikeman in reference: simple blackened morion helmet crown with yellow feather, blackened cuirass, brown leather straps, loose WHITE linen sleeves, mustard breeches, brown shoes, discreet sheathed sword. NO shield or other armor. STRICT90degree DIRECT OVERHEAD orthographic camera looking down his spine, helmet crown and shoulder TOPS dominate, noface/frontportrait, strongly foreshortened body. Facing SCREENBOTTOM. Rich smooth painterly strategy-game sprite, clean alpha, no colored fringe/outline. Long slender straight wooden pike with same narrow STEEL head, identical proportions and length EVERY frame. TWO HANDS hold fixed spots on shaft, no sliding grips, deformation, floating weapon. EXACT1536x1024 transparentRGBA SPRITE SHEET: 3 columns x2 rows, SIX frames, each512x512, row-major. One COMPLETE isolated soldier in each cell, weapon entirely inside its cell with >=35px clear margin, no text/grid/shadow/background. Body approximately150pxwide and pike380pxlong throughout, fixed BODY ROOT in each cell at (280,300). Do not independently fit/scale poses. Six frames of ONE continuous motion. \nMOTION: DEATH SIDE FALL one complete NONLOOP sequence:1 approvedidle pikeheadUP;2 knees buckle and shoulders tip left;3 descending onto left hip with arms following;4 shoulders contact ground and legs fold;5 roll slightly to settle;6 completely dead on left side, helmet remains on, white sleeves/blackarmor/brownlegs clear. Pike rotates and comes to rest alongside fallen body as a rigid full straightweapon, no shaft loss. Every pose entirely inside cell. Last2 frames consistent orientation, no snapflip. Overhead ground-plane perspective throughout; not standing throughout.",
+      "generatedSource": "C:/Users/Damien/.codex/generated_images/01a0fea1-c63f-7343-92ca-6c21cc1c4296/exec-8ff42997-2f7c-4856-8ee6-867a8f779847.png",
+      "nativeFile": "Native-Death-Side-v1.png",
+      "status": "selected-source",
+      "rootOffsets": [
+        [
+          -30,
+          26
+        ],
+        [
+          -30,
+          26
+        ],
+        [
+          -30,
+          26
+        ],
+        [
+          -30,
+          26
+        ],
+        [
+          -30,
+          26
+        ],
+        [
+          -30,
+          26
+        ]
+      ]
+    },
+    {
+      "id": "death-back",
+      "file": "Death-Back-v1.png",
+      "motion": "DEATH BACK FALL complete NONLOOP:1 approvedidle pikeheadUP;2 hitrecoil head/back goes screenTOP;3 knees buckle and falling backwards screenTOP, arms carry pike down;4 backcontactsground, legs extend towardSCREENBOTTOM;5 settle with chest skyward;6 corpse lies ON BACK sameorientation headTOP feetBOTTOM. Cannot flip at end. Pike lies diagonally alongside body with identical slender woodshaft/steelpoint connected, fullweaponinsidecell. Allsixdistinctposes, clear gradual fall. Helmet stays on. Camera90degree aboveground.",
+      "prompt": "Animate the APPROVED Renaissance Russian pikeman in reference: simple blackened morion helmet crown with yellow feather, blackened cuirass, brown leather straps, loose WHITE linen sleeves, mustard breeches, brown shoes, discreet sheathed sword. NO shield or other armor. STRICT90degree DIRECT OVERHEAD orthographic camera looking down his spine, helmet crown and shoulder TOPS dominate, noface/frontportrait, strongly foreshortened body. Facing SCREENBOTTOM. Rich smooth painterly strategy-game sprite, clean alpha, no colored fringe/outline. Long slender straight wooden pike with same narrow STEEL head, identical proportions and length EVERY frame. TWO HANDS hold fixed spots on shaft, no sliding grips, deformation, floating weapon. EXACT1536x1024 transparentRGBA SPRITE SHEET: 3 columns x2 rows, SIX frames, each512x512, row-major. One COMPLETE isolated soldier in each cell, weapon entirely inside its cell with >=35px clear margin, no text/grid/shadow/background. Body approximately150pxwide and pike380pxlong throughout, fixed BODY ROOT in each cell at (280,300). Do not independently fit/scale poses. Six frames of ONE continuous motion. \nMOTION: DEATH BACK FALL complete NONLOOP:1 approvedidle pikeheadUP;2 hitrecoil head/back goes screenTOP;3 knees buckle and falling backwards screenTOP, arms carry pike down;4 backcontactsground, legs extend towardSCREENBOTTOM;5 settle with chest skyward;6 corpse lies ON BACK sameorientation headTOP feetBOTTOM. Cannot flip at end. Pike lies diagonally alongside body with identical slender woodshaft/steelpoint connected, fullweaponinsidecell. Allsixdistinctposes, clear gradual fall. Helmet stays on. Camera90degree aboveground.",
+      "generatedSource": "C:/Users/Damien/.codex/generated_images/01a0fea1-c63f-7343-92ca-6c21cc1c4296/exec-ad266139-84c9-4f6e-94b8-e4b30ca006e9.png",
+      "nativeFile": "Native-Death-Back-v1.png",
+      "status": "selected-source",
+      "rootOffsets": [
+        [
+          13,
+          5
+        ],
+        [
+          13,
+          5
+        ],
+        [
+          13,
+          5
+        ],
+        [
+          13,
+          5
+        ],
+        [
+          13,
+          5
+        ],
+        [
+          13,
+          5
+        ]
+      ]
+    }
+  ],
+  "registration": "Gait pivots measured from the top of the largest neutral dark helmet component; one common scale per sheet. Reaction/attack/fall pivots fixed from first pose to preserve intentional recoil/lunge."
+}

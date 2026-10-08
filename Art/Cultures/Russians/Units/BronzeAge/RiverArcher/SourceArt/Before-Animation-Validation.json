@@ -1,0 +1,27 @@
+{
+  "date": "2026-10-07",
+  "mode": "RGBA",
+  "nativeSize": [
+    1254,
+    1254
+  ],
+  "visibleBounds": [
+    136,
+    204,
+    1145,
+    1066
+  ],
+  "guardAlphaMax": 1,
+  "guardNote": "Native edge alpha is at most 1/255; alpha preserved without filtering.",
+  "registeredPreviewBounds": [
+    95.3811802232855,
+    105.0717703349282,
+    417.2312599681021,
+    380.03189792663477
+  ],
+  "nativeSourceHash": "9ba446db473d73cc4dfcce1f34bf4b493183756b660f2dec8f3e78c55d90001a",
+  "selectedFileHash": "9ba446db473d73cc4dfcce1f34bf4b493183756b660f2dec8f3e78c55d90001a",
+  "alphaPreserved": true,
+  "visualApproval": "Pending user review",
+  "runtimeIntegration": false
+}

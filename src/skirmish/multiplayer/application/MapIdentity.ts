@@ -15,6 +15,8 @@ export async function mapIdentity(map: RuntimeMap): Promise<string> {
           : null,
         forest: !!map.forest,
         resourceTerrain: !!map.resourceTerrain,
+        ...(map.resourceTerrain?.suitability ? { resourceSuitability: true } : {}),
+        ...(map.resourceTerrain?.marine ? { resourceMarine: true } : {}),
       }),
     ),
   ];
@@ -29,6 +31,8 @@ export async function mapIdentity(map: RuntimeMap): Promise<string> {
     );
   if (map.forest) parts.push(map.forest.cover);
   if (map.resourceTerrain) parts.push(map.resourceTerrain.desert);
+  if (map.resourceTerrain?.suitability) parts.push(map.resourceTerrain.suitability);
+  if (map.resourceTerrain?.marine) parts.push(map.resourceTerrain.marine);
   const bytes = new Uint8Array(
     parts.reduce((size, part) => size + part.length, 0),
   );

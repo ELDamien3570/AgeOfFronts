@@ -1,0 +1,371 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Black Forest · AgeOfFronts</title>
+    <link
+      rel="icon"
+      type="image/png"
+      href="/images/age-of-fronts-stone-logo.png"
+    />
+    <style>
+      * {
+        box-sizing: border-box;
+      }
+      :root {
+        color-scheme: dark;
+        font-family: system-ui, sans-serif;
+        color: #e7eddf;
+        background: #101713;
+      }
+      body {
+        margin: 0;
+      }
+      header {
+        padding: 24px 32px;
+        display: flex;
+        align-items: center;
+        justify-content: space-between;
+        border-bottom: 1px solid #344239;
+      }
+      .eyebrow {
+        color: #a3b390;
+        font-size: 11px;
+        letter-spacing: 0.22em;
+        text-transform: uppercase;
+      }
+      h1 {
+        font:
+          38px Georgia,
+          serif;
+        margin: 5px 0 0;
+        font-weight: normal;
+      }
+      header a {
+        color: #abbca5;
+        text-decoration: none;
+        font-size: 13px;
+      }
+      main {
+        display: grid;
+        grid-template-columns: 270px 1fr;
+        min-height: calc(100vh - 112px);
+      }
+      aside {
+        padding: 27px 24px;
+        background: #17211a;
+        border-right: 1px solid #344239;
+      }
+      aside p {
+        color: #afbbac;
+        font-size: 14px;
+        line-height: 1.6;
+        margin: 0 0 25px;
+      }
+      label {
+        display: block;
+        color: #b9c7b1;
+        font-size: 12px;
+        margin: 16px 0 7px;
+      }
+      input,
+      select,
+      button,
+      .play {
+        font: inherit;
+        border-radius: 5px;
+        border: 1px solid #485942;
+      }
+      input,
+      select {
+        width: 100%;
+        padding: 10px;
+        background: #101713;
+        color: #e7eddf;
+      }
+      button,
+      .play {
+        padding: 10px 12px;
+        background: #253227;
+        color: #e7eddf;
+        cursor: pointer;
+      }
+      button:hover,
+      .play:hover {
+        background: #344732;
+      }
+      .buttons {
+        display: flex;
+        gap: 8px;
+        margin: 12px 0 25px;
+      }
+      .buttons button {
+        flex: 1;
+        font-size: 13px;
+      }
+      .play {
+        display: block;
+        text-align: center;
+        text-decoration: none;
+        background: #b7c79d;
+        color: #172015;
+        font-weight: 650;
+        margin-top: 24px;
+      }
+      .play:hover {
+        background: #d2dfbb;
+      }
+      .legend {
+        margin-top: 28px;
+        font-size: 12px;
+        line-height: 2.1;
+        color: #b9c7b1;
+      }
+      .dot {
+        display: inline-block;
+        width: 9px;
+        height: 9px;
+        margin-right: 10px;
+        border-radius: 50%;
+      }
+      .forest {
+        background: #415b40;
+      }
+      .meadow {
+        background: #a9b780;
+      }
+      .pond {
+        background: #598799;
+      }
+      .stat {
+        display: flex;
+        justify-content: space-between;
+        font-size: 13px;
+        margin-top: 14px;
+        padding-bottom: 12px;
+        border-bottom: 1px solid #344239;
+      }
+      .stat strong {
+        font-weight: 500;
+        color: #d4dfc5;
+      }
+      .stage {
+        position: relative;
+        min-width: 0;
+        background: #111a14;
+        overflow: hidden;
+      }
+      canvas {
+        display: block;
+        width: 100%;
+        height: calc(100vh - 161px);
+        min-height: 430px;
+        touch-action: none;
+        cursor: grab;
+      }
+      .toolbar {
+        position: absolute;
+        top: 19px;
+        right: 22px;
+        display: flex;
+        gap: 7px;
+        z-index: 1;
+      }
+      .ground-layer {
+        position: absolute;
+        top: 0;
+        left: 0;
+        pointer-events: none;
+      }
+      #map {
+        position: relative;
+      }
+      .toolbar button {
+        background: #17211ae8;
+        font-size: 12px;
+      }
+      footer {
+        display: flex;
+        justify-content: space-between;
+        gap: 15px;
+        padding: 15px 24px;
+        border-top: 1px solid #344239;
+        font-size: 12px;
+        color: #a8b5a1;
+      }
+      #status[data-error] {
+        color: #ffb6a7;
+      }
+      .note {
+        font-size: 12px;
+        color: #8f9e86;
+        margin-top: 18px;
+        line-height: 1.6;
+      }
+      @media (max-width: 760px) {
+        header {
+          padding: 18px;
+        }
+        h1 {
+          font-size: 30px;
+        }
+        main {
+          grid-template-columns: 1fr;
+        }
+        aside {
+          border-right: 0;
+          padding: 18px;
+        }
+        aside p,
+        .legend,
+        .stat,
+        .note {
+          display: none;
+        }
+        form {
+          display: grid;
+          grid-template-columns: 1fr 1fr;
+          gap: 12px;
+        }
+        .buttons {
+          margin: 10px 0;
+        }
+        .play {
+          margin: 10px 0;
+        }
+        canvas {
+          height: 65vh;
+        }
+        footer {
+          padding: 12px;
+        }
+      }
+    </style>
+  </head>
+  <body>
+    <header>
+      <div>
+        <div class="eyebrow">AgeOfFronts · Procedural maps</div>
+        <h1>Black Forest</h1>
+      </div>
+      <a href="/">Back to lobby ↗</a>
+    </header>
+    <main>
+      <aside>
+        <p>
+          Deep conifer woods open into sheltered glades. Follow the winding
+          paths, or take the slower route through the trees.
+        </p>
+        <form id="generation-controls">
+          <div>
+            <label for="seed">Map seed</label
+            ><input
+              id="seed"
+              type="number"
+              min="0"
+              max="2147483647"
+              step="1"
+              value="42"
+              required
+            />
+          </div>
+          <div>
+            <label for="size">Map size</label
+            ><select id="size">
+              <option value="250">Small · 250 × 250</option>
+              <option value="500">Medium · 500 × 500</option>
+              <option value="1000">Large · 1000 × 1000</option>
+            </select>
+          </div>
+          <div class="buttons">
+            <button type="submit">Generate</button
+            ><button type="button" id="reroll">New seed ↻</button>
+          </div>
+        </form>
+        <div class="stat">
+          <span>Woodland</span><strong id="forest-share">—</strong>
+        </div>
+        <div class="stat">
+          <span>Open glades</span><strong id="glade-count">—</strong>
+        </div>
+        <div class="stat">
+          <span>Woodland movement</span><strong id="forest-speed">—</strong>
+        </div>
+        <div class="stat">
+          <span>Ponds in glades</span><strong id="pond-count">—</strong>
+        </div>
+        <div class="legend">
+          <div><span class="dot forest"></span>Dense conifer woodland</div>
+          <div><span class="dot meadow"></span>Clearings and fast paths</div>
+          <div><span class="dot pond"></span>Clearing ponds</div>
+        </div>
+        <a id="play" class="play" href="#">Play this map →</a>
+        <div class="note">
+          Forests are traversable. Trees slow armies; clearings make room for
+          settlements. The same seed reproduces the same terrain.
+        </div>
+      </aside>
+      <section class="stage" aria-label="Map preview">
+        <div
+          id="resource-panel"
+          hidden
+          style="
+            position: absolute;
+            left: 16px;
+            bottom: 65px;
+            width: 185px;
+            padding: 12px;
+            background: #17211aee;
+            border: 1px solid #485942;
+            border-radius: 5px;
+            z-index: 1;
+            font-size: 12px;
+          "
+        >
+          <label
+            for="resource-filter"
+            style="display: block; margin-bottom: 8px"
+            >Resource inspection</label
+          ><select id="resource-filter"></select>
+          <div
+            id="resource-legend"
+            style="margin-top: 10px; line-height: 1.8"
+          ></div>
+          <p
+            style="
+              font-size: 10px;
+              line-height: 1.4;
+              color: #a8b5a1;
+              margin-bottom: 0;
+            "
+          >
+            World deposits · normal density · all ages. Starting resources are
+            added after choosing camps.
+          </p>
+        </div>
+        <div class="toolbar">
+          <button id="overview">Overview</button
+          ><button id="detail">Explore glade</button
+          ><button id="routes" aria-pressed="false">Show paths</button
+          ><button id="resources" aria-pressed="false">Resources</button
+          ><button id="save">Save image</button>
+        </div>
+        <canvas
+          id="map"
+          aria-label="Black Forest map. Drag to pan, scroll to zoom."
+          tabindex="0"
+        ></canvas>
+        <footer>
+          <span id="status" role="status" aria-live="polite"
+            >Generating woodland…</span
+          ><span id="hover">Drag to pan · Scroll to zoom</span>
+        </footer>
+      </section>
+    </main>
+    <script
+      type="module"
+      src="/src/skirmish/client/ProceduralMapReview.ts"
+    ></script>
+  </body>
+</html>

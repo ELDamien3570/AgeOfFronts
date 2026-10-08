@@ -1,0 +1,22 @@
+{
+  "date": "2026-10-07",
+  "loadedClips": 10,
+  "loadedFrames": 60,
+  "inspectedSizes": [
+    "main",
+    32,
+    48,
+    64
+  ],
+  "screenshots": [
+    "Review-Attack-v2.png",
+    "Review-ChargeAttack-v2.png",
+    "Review-Reload-v1.png",
+    "Review-DeathSide-v1.png",
+    "Review-DeathBack-v1.png"
+  ],
+  "consoleWarningsOrErrors": [],
+  "checks": ["All native six-pose atlases inspected.", "All ten sheets load in the solo actor review.", "Both revised shooting clips aim screen-down; drawn string replaces resting string and is occluded by the bow arm.", "Reload extraction and both settled death poses inspected in browser at main and game-size previews."],
+  "userApproval": "Overhead idle approved; animations pending user visual review.",
+  "runtimeIntegration": false
+}

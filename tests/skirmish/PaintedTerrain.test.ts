@@ -23,6 +23,10 @@ function context() {
     fillRect: vi.fn(),
     drawImage: vi.fn(),
     beginPath: vi.fn(),
+    save: vi.fn(),
+    restore: vi.fn(),
+    rect: vi.fn(),
+    clip: vi.fn(),
     moveTo: vi.fn(),
     quadraticCurveTo: vi.fn(),
     stroke: vi.fn(),
@@ -30,7 +34,7 @@ function context() {
 }
 
 describe("building clearance in cached terrain", () => {
-  it("redraws shared forest ground across seams even when distant zoom hides all sprites", () => {
+  it("redraws distant forest ground and canopy across building-clearance seams", () => {
     const created: ReturnType<typeof context>[] = [];
     vi.stubGlobal("document", {
       createElement: () => {
@@ -52,7 +56,11 @@ describe("building clearance in cached terrain", () => {
       before = paintedCell(map, tile, undefined, environment).color,
       ctx = context() as unknown as CanvasRenderingContext2D;
     ground.draw(ctx, 1, 0, 0, 192, 128);
-    expect(created).toHaveLength(6);
+    expect(created).toHaveLength(7); // six cached chunks and one reused canopy bake
+    const crownDraws = created[0].drawImage.mock.calls.length;
+    expect(crownDraws).toBeGreaterThan(0);
+    ground.draw(ctx, 1, 0, 0, 192, 128);
+    expect(created[0].drawImage.mock.calls.length).toBe(crownDraws);
     const site = { tile, type: "city" as const };
     ground.updateBuildings([site]);
     expect(forestOf(map)!.coverAt(tile)).toBe(0);
@@ -60,10 +68,10 @@ describe("building clearance in cached terrain", () => {
       before,
     );
     ground.draw(ctx, 1, 0, 0, 192, 128);
-    expect(created).toHaveLength(8);
+    expect(created).toHaveLength(9);
     ground.updateBuildings([site, site]);
     ground.draw(ctx, 1, 0, 0, 192, 128);
-    expect(created).toHaveLength(8);
+    expect(created).toHaveLength(9);
   });
   it("invalidates both sides of a chunk seam and every cached zoom level, leaving distant chunks cached", () => {
     const created: ReturnType<typeof context>[] = [];
@@ -121,7 +129,38 @@ describe("building clearance in cached terrain", () => {
 });
 
 describe("decorations-only chunks under the GL ground", () => {
-  it("skips detail 1, paints no tiles or water strokes, and returns changed forest tiles", () => {
+  it("clips enlarged distant stands away from a newly cleared building site", () => {
+    const created: ReturnType<typeof context>[] = [];
+    vi.stubGlobal("document", {
+      createElement: () => {
+        const ctx = context();
+        created.push(ctx);
+        return { width: 0, height: 0, getContext: () => ctx };
+      },
+    });
+    const map = createSkirmishMap(
+        64,
+        64,
+        new Uint8Array(64 * 64).fill(133),
+        undefined,
+        { cover: new Uint8Array(64 * 64).fill(255) },
+      ),
+      ground = new PaintedTerrain(map),
+      ctx = context() as unknown as CanvasRenderingContext2D;
+    ground.setDecorationsOnly(true);
+    ground.draw(ctx, 0.5, 0, 0, 32, 32);
+    const scratch = created[0],
+      coversCentre = ([x, y, width, height]: number[]) =>
+        x <= 32 && x + width > 32 && y <= 32 && y + height > 32;
+    expect(scratch.rect.mock.calls.some(coversCentre)).toBe(true);
+    scratch.rect.mockClear();
+    ground.updateBuildings([{ tile: map.ref(32, 32), type: "city" }]);
+    ground.draw(ctx, 0.5, 0, 0, 32, 32);
+    expect(scratch.clip).toHaveBeenCalledTimes(2);
+    expect(scratch.rect.mock.calls.length).toBeGreaterThan(0);
+    expect(scratch.rect.mock.calls.some(coversCentre)).toBe(false);
+  });
+  it("keeps distant canopy under GL ground without painting tiles or water strokes", () => {
     const created: ReturnType<typeof context>[] = [];
     vi.stubGlobal("document", {
       createElement: () => {
@@ -140,7 +179,10 @@ describe("decorations-only chunks under the GL ground", () => {
       ctx = context() as unknown as CanvasRenderingContext2D;
     ground.setDecorationsOnly(true);
     ground.draw(ctx, 1, 0, 0, 192, 128);
-    expect(created).toHaveLength(0);
+    expect(created).toHaveLength(7);
+    expect(created[0].drawImage).toHaveBeenCalled();
+    ground.draw(ctx, 0.5, 0, 0, 96, 64);
+    expect(created).toHaveLength(7); // camera changes reuse the filtered canopy
     ground.draw(ctx, 4, 0, 0, 192 * 4, 128 * 4);
     expect(created.length).toBeGreaterThan(0);
     for (const c of created) {

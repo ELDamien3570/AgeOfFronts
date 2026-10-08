@@ -1,4 +1,4 @@
-import type { ResourceTerrainData } from "./ResourceTerrain";
+import { RESOURCE_SUITABILITY_ORDER, type ResourceTerrainData } from "./ResourceTerrain";
 import type { GameMap } from "../core/game/GameMap";
 import { GameMapImpl } from "../core/game/GameMap";
 import { ForestField, type ForestData } from "./Forest";
@@ -64,7 +64,16 @@ export class SkirmishMap extends GameMapImpl {
     if (resourceTerrain) {
       if (!(resourceTerrain.desert instanceof Uint8Array) || resourceTerrain.desert.length !== terrain.length)
         throw new Error("Invalid resource biome inputs");
-      this.resourceTerrain = { desert: resourceTerrain.desert.slice() };
+      const { suitability, marine } = resourceTerrain;
+      if (suitability && (!(suitability instanceof Uint8Array) || suitability.length !== terrain.length * RESOURCE_SUITABILITY_ORDER.length))
+        throw new Error("Invalid resource suitability inputs");
+      if (marine && (!(marine instanceof Uint8Array) || marine.length !== terrain.length))
+        throw new Error("Invalid resource marine inputs");
+      this.resourceTerrain = {
+        desert: resourceTerrain.desert.slice(),
+        ...(suitability ? { suitability: suitability.slice() } : {}),
+        ...(marine ? { marine: marine.slice() } : {}),
+      };
     }
     if (elevation)
       this.elevation = new ElevationField(width * height, elevation);

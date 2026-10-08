@@ -1,0 +1,19 @@
+{
+  "date": "2026-10-07",
+  "frames": 1,
+  "size": [
+    1254,
+    1254
+  ],
+  "mode": "RGBA",
+  "visibleBounds": [
+    172,
+    243,
+    1019,
+    1021
+  ],
+  "cornerAlpha": 0,
+  "nativePreserved": true,
+  "sha256": "a2791a6e0bdd3004cd123e7290ea25e2e53b2bc669cda33b3fa7326a0d7c6bd2",
+  "approval": "Pending user visual review"
+}

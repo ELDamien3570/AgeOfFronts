@@ -1,0 +1,651 @@
+{
+  "method": "User-authorized rigid spear-and-hand layer with two-bone arm and editable position tracks.",
+  "source": "Native-Attack-Fixed-Grip-v4.png",
+  "sourceSha256": "4f2f6d042bf4233c0a84a60ce151c9316c86b8a29bff7d016f127daa5e9206e8",
+  "layers": {
+    "Body": "e7605b414e24328adfc83bd157a7c8b6e13109fcdcd9b3f64413bf195af703d8",
+    "Spear-And-Hand": "a62741165dfa2ba2a141f182eb40bee946e7576e428eb1f1a9029bcbcb905cb7",
+    "Upper-Arm": "06c47608f226d1bbc544da745d4a1a964d7b3cae64b2a0e4feadcb9359fcde0d",
+    "Forearm": "f40658710d65dcd21658ba1393b252dfd39c660983a08f7b866d409e949779da"
+  },
+  "canvas": 640,
+  "outputScale": 0.8,
+  "clips": [
+    {
+      "clip": "attack",
+      "file": "Attack-Rig-v5.png",
+      "tracks": [
+        {
+          "frame": 0,
+          "bodyOffset": [
+            64,
+            64
+          ],
+          "shoulder": [
+            254,
+            264
+          ],
+          "elbow": [
+            205.21942168404982,
+            229.0649863437632
+          ],
+          "wrist": [
+            209,
+            339
+          ],
+          "weaponTranslation": [
+            64,
+            64
+          ],
+          "weaponRotation": 0,
+          "weaponScale": 1,
+          "gripSlipPixels": 0
+        },
+        {
+          "frame": 1,
+          "bodyOffset": [
+            64,
+            62
+          ],
+          "shoulder": [
+            254,
+            262
+          ],
+          "elbow": [
+            222.63839612377393,
+            210.84875561327289
+          ],
+          "wrist": [
+            209,
+            320
+          ],
+          "weaponTranslation": [
+            64,
+            45
+          ],
+          "weaponRotation": 0,
+          "weaponScale": 1,
+          "gripSlipPixels": 0
+        },
+        {
+          "frame": 2,
+          "bodyOffset": [
+            64,
+            60
+          ],
+          "shoulder": [
+            254,
+            260
+          ],
+          "elbow": [
+            250.44294072597242,
+            200.10553173020855
+          ],
+          "wrist": [
+            209,
+            302
+          ],
+          "weaponTranslation": [
+            64,
+            27
+          ],
+          "weaponRotation": 0,
+          "weaponScale": 1,
+          "gripSlipPixels": 0
+        },
+        {
+          "frame": 3,
+          "bodyOffset": [
+            64,
+            60
+          ],
+          "shoulder": [
+            254,
+            260
+          ],
+          "elbow": [
+            250.44294072597242,
+            200.10553173020855
+          ],
+          "wrist": [
+            209,
+            302
+          ],
+          "weaponTranslation": [
+            64,
+            27
+          ],
+          "weaponRotation": 0,
+          "weaponScale": 1,
+          "gripSlipPixels": 0
+        },
+        {
+          "frame": 4,
+          "bodyOffset": [
+            64,
+            64
+          ],
+          "shoulder": [
+            254,
+            264
+          ],
+          "elbow": [
+            220.01495972422484,
+            214.5528864598353
+          ],
+          "wrist": [
+            209,
+            324
+          ],
+          "weaponTranslation": [
+            64,
+            49
+          ],
+          "weaponRotation": 0,
+          "weaponScale": 1,
+          "gripSlipPixels": 0
+        },
+        {
+          "frame": 5,
+          "bodyOffset": [
+            64,
+            68
+          ],
+          "shoulder": [
+            254,
+            268
+          ],
+          "elbow": [
+            196.54600144719004,
+            250.70728331656036
+          ],
+          "wrist": [
+            209,
+            360
+          ],
+          "weaponTranslation": [
+            64,
+            85
+          ],
+          "weaponRotation": 0,
+          "weaponScale": 1,
+          "gripSlipPixels": 0
+        },
+        {
+          "frame": 6,
+          "bodyOffset": [
+            64,
+            73
+          ],
+          "shoulder": [
+            254,
+            273
+          ],
+          "elbow": [
+            197.64275228087587,
+            293.587875789534
+          ],
+          "wrist": [
+            209,
+            403
+          ],
+          "weaponTranslation": [
+            64,
+            128
+          ],
+          "weaponRotation": 0,
+          "weaponScale": 1,
+          "gripSlipPixels": 0
+        },
+        {
+          "frame": 7,
+          "bodyOffset": [
+            64,
+            78
+          ],
+          "shoulder": [
+            254,
+            278
+          ],
+          "elbow": [
+            203.96620144510348,
+            311.1152382169906
+          ],
+          "wrist": [
+            209,
+            421
+          ],
+          "weaponTranslation": [
+            64,
+            146
+          ],
+          "weaponRotation": 0,
+          "weaponScale": 1,
+          "gripSlipPixels": 0
+        },
+        {
+          "frame": 8,
+          "bodyOffset": [
+            64,
+            73
+          ],
+          "shoulder": [
+            254,
+            273
+          ],
+          "elbow": [
+            197.64275228087587,
+            293.587875789534
+          ],
+          "wrist": [
+            209,
+            403
+          ],
+          "weaponTranslation": [
+            64,
+            128
+          ],
+          "weaponRotation": 0,
+          "weaponScale": 1,
+          "gripSlipPixels": 0
+        },
+        {
+          "frame": 9,
+          "bodyOffset": [
+            64,
+            68
+          ],
+          "shoulder": [
+            254,
+            268
+          ],
+          "elbow": [
+            194.68874790734833,
+            258.93493655830673
+          ],
+          "wrist": [
+            209,
+            368
+          ],
+          "weaponTranslation": [
+            64,
+            93
+          ],
+          "weaponRotation": 0,
+          "weaponScale": 1,
+          "gripSlipPixels": 0
+        },
+        {
+          "frame": 10,
+          "bodyOffset": [
+            64,
+            64
+          ],
+          "shoulder": [
+            254,
+            264
+          ],
+          "elbow": [
+            202.51378777738952,
+            233.19139810104468
+          ],
+          "wrist": [
+            209,
+            343
+          ],
+          "weaponTranslation": [
+            64,
+            68
+          ],
+          "weaponRotation": 0,
+          "weaponScale": 1,
+          "gripSlipPixels": 0
+        },
+        {
+          "frame": 11,
+          "bodyOffset": [
+            64,
+            64
+          ],
+          "shoulder": [
+            254,
+            264
+          ],
+          "elbow": [
+            205.21942168404982,
+            229.0649863437632
+          ],
+          "wrist": [
+            209,
+            339
+          ],
+          "weaponTranslation": [
+            64,
+            64
+          ],
+          "weaponRotation": 0,
+          "weaponScale": 1,
+          "gripSlipPixels": 0
+        }
+      ]
+    },
+    {
+      "clip": "charge-attack",
+      "file": "Charge-Attack-Rig-v5.png",
+      "tracks": [
+        {
+          "frame": 0,
+          "bodyOffset": [
+            64,
+            64
+          ],
+          "shoulder": [
+            254,
+            264
+          ],
+          "elbow": [
+            205.21942168404982,
+            229.0649863437632
+          ],
+          "wrist": [
+            209,
+            339
+          ],
+          "weaponTranslation": [
+            64,
+            64
+          ],
+          "weaponRotation": 0,
+          "weaponScale": 1,
+          "gripSlipPixels": 0
+        },
+        {
+          "frame": 1,
+          "bodyOffset": [
+            64,
+            62
+          ],
+          "shoulder": [
+            254,
+            262
+          ],
+          "elbow": [
+            229.97772152095519,
+            207.01882015930158
+          ],
+          "wrist": [
+            209,
+            315
+          ],
+          "weaponTranslation": [
+            64,
+            40
+          ],
+          "weaponRotation": 0,
+          "weaponScale": 1,
+          "gripSlipPixels": 0
+        },
+        {
+          "frame": 2,
+          "bodyOffset": [
+            64,
+            60
+          ],
+          "shoulder": [
+            254,
+            260
+          ],
+          "elbow": [
+            266.7289213952706,
+            201.36575607963363
+          ],
+          "wrist": [
+            209,
+            295
+          ],
+          "weaponTranslation": [
+            64,
+            20
+          ],
+          "weaponRotation": 0,
+          "weaponScale": 1,
+          "gripSlipPixels": 0
+        },
+        {
+          "frame": 3,
+          "bodyOffset": [
+            64,
+            60
+          ],
+          "shoulder": [
+            254,
+            260
+          ],
+          "elbow": [
+            266.7289213952706,
+            201.36575607963363
+          ],
+          "wrist": [
+            209,
+            295
+          ],
+          "weaponTranslation": [
+            64,
+            20
+          ],
+          "weaponRotation": 0,
+          "weaponScale": 1,
+          "gripSlipPixels": 0
+        },
+        {
+          "frame": 4,
+          "bodyOffset": [
+            64,
+            64
+          ],
+          "shoulder": [
+            254,
+            264
+          ],
+          "elbow": [
+            222.63839612377393,
+            212.84875561327289
+          ],
+          "wrist": [
+            209,
+            322
+          ],
+          "weaponTranslation": [
+            64,
+            47
+          ],
+          "weaponRotation": 0,
+          "weaponScale": 1,
+          "gripSlipPixels": 0
+        },
+        {
+          "frame": 5,
+          "bodyOffset": [
+            64,
+            68
+          ],
+          "shoulder": [
+            254,
+            268
+          ],
+          "elbow": [
+            195.70292634672717,
+            253.8066493221339
+          ],
+          "wrist": [
+            209,
+            363
+          ],
+          "weaponTranslation": [
+            64,
+            88
+          ],
+          "weaponRotation": 0,
+          "weaponScale": 1,
+          "gripSlipPixels": 0
+        },
+        {
+          "frame": 6,
+          "bodyOffset": [
+            64,
+            73
+          ],
+          "shoulder": [
+            254,
+            273
+          ],
+          "elbow": [
+            198.3839630381163,
+            295.5134722478426
+          ],
+          "wrist": [
+            209,
+            405
+          ],
+          "weaponTranslation": [
+            64,
+            130
+          ],
+          "weaponRotation": 0,
+          "weaponScale": 1,
+          "gripSlipPixels": 0
+        },
+        {
+          "frame": 7,
+          "bodyOffset": [
+            64,
+            78
+          ],
+          "shoulder": [
+            254,
+            278
+          ],
+          "elbow": [
+            203.96620144510348,
+            311.1152382169906
+          ],
+          "wrist": [
+            209,
+            421
+          ],
+          "weaponTranslation": [
+            64,
+            146
+          ],
+          "weaponRotation": 0,
+          "weaponScale": 1,
+          "gripSlipPixels": 0
+        },
+        {
+          "frame": 8,
+          "bodyOffset": [
+            64,
+            73
+          ],
+          "shoulder": [
+            254,
+            273
+          ],
+          "elbow": [
+            198.3839630381163,
+            295.5134722478426
+          ],
+          "wrist": [
+            209,
+            405
+          ],
+          "weaponTranslation": [
+            64,
+            130
+          ],
+          "weaponRotation": 0,
+          "weaponScale": 1,
+          "gripSlipPixels": 0
+        },
+        {
+          "frame": 9,
+          "bodyOffset": [
+            64,
+            68
+          ],
+          "shoulder": [
+            254,
+            268
+          ],
+          "elbow": [
+            194.54189010922386,
+            259.9543074744067
+          ],
+          "wrist": [
+            209,
+            369
+          ],
+          "weaponTranslation": [
+            64,
+            94
+          ],
+          "weaponRotation": 0,
+          "weaponScale": 1,
+          "gripSlipPixels": 0
+        },
+        {
+          "frame": 10,
+          "bodyOffset": [
+            64,
+            64
+          ],
+          "shoulder": [
+            254,
+            264
+          ],
+          "elbow": [
+            201.90697684009012,
+            234.22892447255072
+          ],
+          "wrist": [
+            209,
+            344
+          ],
+          "weaponTranslation": [
+            64,
+            69
+          ],
+          "weaponRotation": 0,
+          "weaponScale": 1,
+          "gripSlipPixels": 0
+        },
+        {
+          "frame": 11,
+          "bodyOffset": [
+            64,
+            64
+          ],
+          "shoulder": [
+            254,
+            264
+          ],
+          "elbow": [
+            205.21942168404982,
+            229.0649863437632
+          ],
+          "wrist": [
+            209,
+            339
+          ],
+          "weaponTranslation": [
+            64,
+            64
+          ],
+          "weaponRotation": 0,
+          "weaponScale": 1,
+          "gripSlipPixels": 0
+        }
+      ]
+    }
+  ]
+}

@@ -1,0 +1,12 @@
+{
+  "review": "rear-leg-v3",
+  "clipCount": 10,
+  "frameCount": 60,
+  "httpAssetsVerified": true,
+  "httpStatus": 200,
+  "nativeAndBakedImagesInspected": true,
+  "browserPlaybackVerified": false,
+  "limitation": "Browser automation kernel failed to initialize: Windows sandbox setup refresh error.",
+  "userAnimationApproval": "pending",
+  "runtimeIntegration": false
+}

@@ -1,0 +1,3 @@
+# Russian Modern Kornet Operator
+
+Ten solo clips: deployed idle, packed movement, deploy, reversed undeploy, deployed firing, reload, get hit, get charged, side death and backward death. No charge or moving fire. Undeploy references the deploy sheet in reverse; there are 54 unique authored frames and 60 playback frames. Approved Idle-Overhead-v2.png and native ImageGen sources preserved. Full prompts in Generation.json and SourceArt/Animation-Generation.json. Editable whole-pose packing tracks in SourceArt/Composition.json; regenerate with SourceArt/compose_animations.py. Whole connected actors are composed separately; native originals preserved. Animations await user review. Runtime formations and gameplay remain separate.

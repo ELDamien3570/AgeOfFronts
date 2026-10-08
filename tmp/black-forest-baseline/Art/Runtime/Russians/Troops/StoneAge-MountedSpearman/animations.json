@@ -1,0 +1,330 @@
+{
+  "actorCount": 1,
+  "animations": [
+    {
+      "id": "idle",
+      "file": "idle.png",
+      "label": "Idle",
+      "loop": true,
+      "scale": 1.22,
+      "durations": [
+        170,
+        170,
+        170,
+        170,
+        170,
+        170
+      ],
+      "frameCount": 6,
+      "description": "Horse breathes and shifts weight; rider settles with spear held ready.",
+      "frames": [
+        {
+          "x": 0,
+          "y": 0,
+          "width": 128,
+          "height": 128,
+          "pivot": {
+            "x": 67.5,
+            "y": 67.5
+          }
+        },
+        {
+          "x": 128,
+          "y": 0,
+          "width": 128,
+          "height": 128,
+          "pivot": {
+            "x": 64.5,
+            "y": 68.25
+          }
+        },
+        {
+          "x": 256,
+          "y": 0,
+          "width": 128,
+          "height": 128,
+          "pivot": {
+            "x": 63.0,
+            "y": 68.5
+          }
+        },
+        {
+          "x": 384,
+          "y": 0,
+          "width": 128,
+          "height": 128,
+          "pivot": {
+            "x": 66.75,
+            "y": 64.5
+          }
+        },
+        {
+          "x": 512,
+          "y": 0,
+          "width": 128,
+          "height": 128,
+          "pivot": {
+            "x": 64.25,
+            "y": 64.25
+          }
+        },
+        {
+          "x": 640,
+          "y": 0,
+          "width": 128,
+          "height": 128,
+          "pivot": {
+            "x": 63.25,
+            "y": 64.5
+          }
+        }
+      ]
+    },
+    {
+      "id": "running",
+      "file": "running.png",
+      "label": "Walk",
+      "loop": true,
+      "scale": 1.2,
+      "durations": [
+        150,
+        180,
+        150,
+        150,
+        180,
+        150
+      ],
+      "frameCount": 6,
+      "description": "Clear alternating foreleg steps with a restrained rider sway.",
+      "frames": [
+        {
+          "x": 0,
+          "y": 0,
+          "width": 128,
+          "height": 128,
+          "pivot": {
+            "x": 69.0,
+            "y": 64.0
+          }
+        },
+        {
+          "x": 128,
+          "y": 0,
+          "width": 128,
+          "height": 128,
+          "pivot": {
+            "x": 66.5,
+            "y": 64.25
+          }
+        },
+        {
+          "x": 256,
+          "y": 0,
+          "width": 128,
+          "height": 128,
+          "pivot": {
+            "x": 66.0,
+            "y": 64.25
+          }
+        },
+        {
+          "x": 384,
+          "y": 0,
+          "width": 128,
+          "height": 128,
+          "pivot": {
+            "x": 66.5,
+            "y": 63.75
+          }
+        },
+        {
+          "x": 512,
+          "y": 0,
+          "width": 128,
+          "height": 128,
+          "pivot": {
+            "x": 63.75,
+            "y": 64.0
+          }
+        },
+        {
+          "x": 640,
+          "y": 0,
+          "width": 128,
+          "height": 128,
+          "pivot": {
+            "x": 65.25,
+            "y": 66.5
+          }
+        }
+      ]
+    },
+    {
+      "id": "attack",
+      "file": "attack.png",
+      "label": "Spear thrust",
+      "loop": false,
+      "scale": 1.22,
+      "durations": [
+        140,
+        180,
+        130,
+        90,
+        160,
+        240
+      ],
+      "frameCount": 6,
+      "description": "Brace, draw back, thrust the held spear forward, retract and recover.",
+      "impactFrame": 3,
+      "frames": [
+        {
+          "x": 0,
+          "y": 0,
+          "width": 128,
+          "height": 128,
+          "pivot": {
+            "x": 66.0,
+            "y": 65.0
+          }
+        },
+        {
+          "x": 128,
+          "y": 0,
+          "width": 128,
+          "height": 128,
+          "pivot": {
+            "x": 67.5,
+            "y": 65.0
+          }
+        },
+        {
+          "x": 256,
+          "y": 0,
+          "width": 128,
+          "height": 128,
+          "pivot": {
+            "x": 65.25,
+            "y": 65.25
+          }
+        },
+        {
+          "x": 384,
+          "y": 0,
+          "width": 128,
+          "height": 128,
+          "pivot": {
+            "x": 66.5,
+            "y": 63.75
+          }
+        },
+        {
+          "x": 512,
+          "y": 0,
+          "width": 128,
+          "height": 128,
+          "pivot": {
+            "x": 66.25,
+            "y": 63.25
+          }
+        },
+        {
+          "x": 640,
+          "y": 0,
+          "width": 128,
+          "height": 128,
+          "pivot": {
+            "x": 64.75,
+            "y": 64.0
+          }
+        }
+      ]
+    },
+    {
+      "id": "death",
+      "file": "death.png",
+      "label": "Death \u00b7 together",
+      "loop": false,
+      "scale": 1.15,
+      "durations": [
+        140,
+        170,
+        210,
+        250,
+        230,
+        400
+      ],
+      "frameCount": 6,
+      "description": "Horse knees buckle; horse and rider fall together onto their side and remain down.",
+      "frames": [
+        {
+          "x": 0,
+          "y": 0,
+          "width": 128,
+          "height": 128,
+          "pivot": {
+            "x": 60.0,
+            "y": 64.25
+          }
+        },
+        {
+          "x": 128,
+          "y": 0,
+          "width": 128,
+          "height": 128,
+          "pivot": {
+            "x": 67.25,
+            "y": 65.75
+          }
+        },
+        {
+          "x": 256,
+          "y": 0,
+          "width": 128,
+          "height": 128,
+          "pivot": {
+            "x": 70.25,
+            "y": 67.75
+          }
+        },
+        {
+          "x": 384,
+          "y": 0,
+          "width": 128,
+          "height": 128,
+          "pivot": {
+            "x": 63.25,
+            "y": 63.0
+          }
+        },
+        {
+          "x": 512,
+          "y": 0,
+          "width": 128,
+          "height": 128,
+          "pivot": {
+            "x": 64.0,
+            "y": 63.5
+          }
+        },
+        {
+          "x": 640,
+          "y": 0,
+          "width": 128,
+          "height": 128,
+          "pivot": {
+            "x": 68.5,
+            "y": 63.75
+          }
+        }
+      ]
+    }
+  ],
+  "source": "Art/Cultures/Russians/Units/StoneAge/MountedSpearman/animations.json",
+  "metadataHash": "56fecee0ea4d64d48e62e4f4d985d287fe831468a436ecaaeb99040dffacc69c",
+  "hashes": {
+    "Art/Cultures/Russians/Units/StoneAge/MountedSpearman/Idle-v2.png": "7aa435ceaa802e7d6b51b9b9008c8ba286058d023c52c12aa4c9f024b2a36e6d",
+    "Art/Cultures/Russians/Units/StoneAge/MountedSpearman/Running-v2.png": "0d4ecfe88a6ee291a25573222fc5033b5089b7af9cbd59197dd60f114f7155f6",
+    "Art/Cultures/Russians/Units/StoneAge/MountedSpearman/Attack-v2.png": "77f0d476a63e7cd6119e8a4c664f20188b395563c91a2bed4af6bac8e7b15f11",
+    "Art/Cultures/Russians/Units/StoneAge/MountedSpearman/Death-Together.png": "da859ab56243cca8add7d1d9517ab61de7fc05d3ac287241d68a2bea52daecd4"
+  }
+}

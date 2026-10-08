@@ -1,0 +1,56 @@
+{
+  "generator": "built-in image_gen",
+  "frameGeneration": "painted keyframes, normalized and interpolated at 24 fps",
+  "effects": [
+    {
+      "name": "AerialBomb",
+      "label": "Aerial bomb explosion",
+      "directory": "C:\\Users\\Damien\\Documents\\GitHub\\AgeOfFronts\\AgeOfFronts\\Art\\Bomb Icons\\Explosions\\AerialBomb",
+      "frameCount": 53,
+      "dimension": 627,
+      "sheets": 2,
+      "durationMs": 2208,
+      "generator": "built-in image_gen"
+    },
+    {
+      "name": "ArtilleryImpact",
+      "label": "Artillery impact",
+      "directory": "C:\\Users\\Damien\\Documents\\GitHub\\AgeOfFronts\\AgeOfFronts\\Art\\Bomb Icons\\Explosions\\ArtilleryImpact",
+      "frameCount": 43,
+      "dimension": 314,
+      "sheets": 1,
+      "durationMs": 1792,
+      "generator": "built-in image_gen"
+    },
+    {
+      "name": "GunshipImpact",
+      "label": "Gunship cannon impact",
+      "directory": "C:\\Users\\Damien\\Documents\\GitHub\\AgeOfFronts\\AgeOfFronts\\Art\\Bomb Icons\\Explosions\\GunshipImpact",
+      "frameCount": 30,
+      "dimension": 314,
+      "sheets": 1,
+      "durationMs": 1250,
+      "generator": "built-in image_gen"
+    },
+    {
+      "name": "ICBM",
+      "label": "ICBM detonation",
+      "directory": "C:\\Users\\Damien\\Documents\\GitHub\\AgeOfFronts\\AgeOfFronts\\Art\\Bomb Icons\\Explosions\\ICBM",
+      "frameCount": 116,
+      "dimension": 627,
+      "sheets": 4,
+      "durationMs": 4833,
+      "generator": "built-in image_gen"
+    },
+    {
+      "name": "HydrogenBomb",
+      "label": "Hydrogen bomb detonation",
+      "directory": "C:\\Users\\Damien\\Documents\\GitHub\\AgeOfFronts\\AgeOfFronts\\Art\\Bomb Icons\\Explosions\\HydrogenBomb",
+      "frameCount": 208,
+      "dimension": 627,
+      "sheets": 6,
+      "durationMs": 8667,
+      "generator": "built-in image_gen"
+    }
+  ]
+}

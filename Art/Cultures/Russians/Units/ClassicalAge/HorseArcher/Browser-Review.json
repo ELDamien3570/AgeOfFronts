@@ -1,0 +1,58 @@
+{
+  "date": "2026-10-07",
+  "loadedClips": 9,
+  "loadedFrames": 54,
+  "browserWarningsOrErrors": [],
+  "inspected": [
+    "bow draw frame 3",
+    "both shot releases frame 4",
+    "gallop reach frames 2 and 4",
+    "charge impact frame 3",
+    "both death endings frame 6",
+    "32, 48, and 64 px previews"
+  ],
+  "deathRepeatDisabledDuringInspection": true,
+  "screenshot": "Review-Forward-ChargeShot-v2.png",
+  "additionalScreenshot": "Review-Forward-BowShot-v2.png",
+  "forwardRevisionInspected": [
+    "both full draws frame 3",
+    "both releases frame 4",
+    "forward arrow direction",
+    "left bow hand",
+    "all nine clips loaded"
+  ],
+  "approvedNonShotClipHashesUnchanged": true,
+  "artApproval": "Seven non-shot clips approved; revised forward shots pending user review",
+  "runtimeIntegration": false,
+  "styleRevision": {
+    "attack": "Attack-StyleMatched-v6.png",
+    "chargeAttack": "Charge-Attack-StyleMatched-v9.png",
+    "reference": "Idle-v3.png",
+    "inspected": [
+      "native six-frame sheets",
+      "normal bow draw in browser",
+      "approved idle comparison",
+      "all nine clips loaded after final scale adjustment"
+    ],
+    "preliminaryScreenshot": "Review-StyleMatched-BowShot-v3.png",
+    "screenshotLimitation": "Final-scale screenshot capture timed out; preliminary screenshot uses displayScale 1.4. Selected assets use 1.2.",
+    "artApproval": "Replacement shots pending user review; seven other approved clips unchanged"
+  },
+  "arrowGripRevision": {
+    "attack": "Attack-ArrowGrip-v7.png",
+    "chargeAttack": "Charge-Attack-ArrowGrip-v11.png",
+    "inspected": [
+      "both draws frame 3 in browser",
+      "arrow adjacent to left bow grip",
+      "straight arrow shaft",
+      "all nine clips loaded"
+    ],
+    "screenshots": [
+      "Review-ArrowGrip-BowShot-v4.png",
+      "Review-ArrowGrip-ChargeShot-v4.png"
+    ],
+    "unchangedShotFramesVerified": 8,
+    "approvedNonShotClipsUnchanged": true,
+    "artApproval": "Arrow grip correction pending user review"
+  }
+}

@@ -22,8 +22,8 @@ function match() {
 describe("opening economy and troop catalogue", () => {
   it("charges gold for every land unit and increases core-line prices across ages", () => {
     expect(UNITS.every((u) => (u.cost.gold ?? 0) > 0)).toBe(true);
-    for (const role of ["frontline", "ranged", "mounted"]) {
-      const prices = UNITS.filter((u) => u.role === role).map(
+    for (const role of ["frontline", "rangedInfantry", "lightCavalry"]) {
+      const prices = UNITS.filter((u) => u.troopClass === role).map(
         (u) => u.cost.gold!,
       );
       expect(prices.every((n, i) => i === 0 || n > prices[i - 1])).toBe(true);
@@ -53,7 +53,7 @@ describe("opening economy and troop catalogue", () => {
   it("rejects unaffordable recruitment in both AI choice and the domain without spending reserves", () => {
     const game = match(),
       p = game.players[1];
-    p.gold = 99;
+    p.gold = 59;
     p.reserves = 5000;
     const b = game.addBuilding({
       id: 9999,

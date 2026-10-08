@@ -1,0 +1,805 @@
+{
+  "schemaVersion": 1,
+  "cultureId": "russians",
+  "age": "StoneAge",
+  "unit": "Clubman",
+  "actorCount": 1,
+  "stage": "art-prototype",
+  "integrationStatus": "Overhead v2 art review, including charge strike and both deaths; formation atlases rebuilt from these sources.",
+  "camera": "strict-90-degree-vertical-overhead-orthographic",
+  "facing": "screen-down",
+  "sheetSize": {
+    "width": 1536,
+    "height": 1024
+  },
+  "grid": {
+    "columns": 3,
+    "rows": 2
+  },
+  "registration": "Authored crown/chest pivots measured once from generated cells; fixed scale per clip, no runtime fitting. Death root remains at cell center.",
+  "animations": [
+    {
+      "id": "idle",
+      "file": "Idle-Overhead-v2.png",
+      "label": "Idle",
+      "fps": 6,
+      "loop": true,
+      "description": "Breathing and weight settle.",
+      "durations": [
+        170,
+        170,
+        170,
+        170,
+        170,
+        170
+      ],
+      "frameCount": 6,
+      "scale": 0.83969,
+      "frames": [
+        {
+          "index": 0,
+          "x": 0,
+          "y": 0,
+          "width": 512,
+          "height": 512,
+          "pivot": {
+            "x": 262,
+            "y": 228
+          }
+        },
+        {
+          "index": 1,
+          "x": 512,
+          "y": 0,
+          "width": 512,
+          "height": 512,
+          "pivot": {
+            "x": 262,
+            "y": 230
+          }
+        },
+        {
+          "index": 2,
+          "x": 1024,
+          "y": 0,
+          "width": 512,
+          "height": 512,
+          "pivot": {
+            "x": 264,
+            "y": 228
+          }
+        },
+        {
+          "index": 3,
+          "x": 0,
+          "y": 512,
+          "width": 512,
+          "height": 512,
+          "pivot": {
+            "x": 264,
+            "y": 220
+          }
+        },
+        {
+          "index": 4,
+          "x": 512,
+          "y": 512,
+          "width": 512,
+          "height": 512,
+          "pivot": {
+            "x": 260,
+            "y": 220
+          }
+        },
+        {
+          "index": 5,
+          "x": 1024,
+          "y": 512,
+          "width": 512,
+          "height": 512,
+          "pivot": {
+            "x": 260,
+            "y": 220
+          }
+        }
+      ],
+      "sha256": "92cd134dc4b3e43ba4caeb0721ad2c2b2911b18c9747a9644b991b0f5c46723d"
+    },
+    {
+      "id": "running",
+      "file": "Running-Overhead-v2.png",
+      "label": "Movement",
+      "fps": 7,
+      "loop": true,
+      "description": "Alternating left and right strides with the club held low.",
+      "durations": [
+        150,
+        130,
+        160,
+        150,
+        130,
+        160
+      ],
+      "frameCount": 6,
+      "scale": 0.81784,
+      "frames": [
+        {
+          "index": 0,
+          "x": 0,
+          "y": 0,
+          "width": 512,
+          "height": 512,
+          "pivot": {
+            "x": 258,
+            "y": 220
+          }
+        },
+        {
+          "index": 1,
+          "x": 512,
+          "y": 0,
+          "width": 512,
+          "height": 512,
+          "pivot": {
+            "x": 256,
+            "y": 218
+          }
+        },
+        {
+          "index": 2,
+          "x": 1024,
+          "y": 0,
+          "width": 512,
+          "height": 512,
+          "pivot": {
+            "x": 254,
+            "y": 218
+          }
+        },
+        {
+          "index": 3,
+          "x": 0,
+          "y": 512,
+          "width": 512,
+          "height": 512,
+          "pivot": {
+            "x": 258,
+            "y": 194
+          }
+        },
+        {
+          "index": 4,
+          "x": 512,
+          "y": 512,
+          "width": 512,
+          "height": 512,
+          "pivot": {
+            "x": 256,
+            "y": 193
+          }
+        },
+        {
+          "index": 5,
+          "x": 1024,
+          "y": 512,
+          "width": 512,
+          "height": 512,
+          "pivot": {
+            "x": 253,
+            "y": 192
+          }
+        }
+      ],
+      "sha256": "b19d26efd63586a8bbe30767f09ccce4a76cc1606df166e7a6b8a33e40929f8a"
+    },
+    {
+      "id": "attack",
+      "file": "Attack-BodySwing-v3.png",
+      "label": "Attack",
+      "fps": 10,
+      "loop": false,
+      "description": "Planted footwork, hip and shoulder coil, body-powered strike, follow-through and recovery.",
+      "durations": [
+        120,
+        100,
+        180,
+        85,
+        150,
+        180
+      ],
+      "frameCount": 6,
+      "scale": 1.13402,
+      "frames": [
+        {
+          "index": 0,
+          "x": 0,
+          "y": 0,
+          "width": 512,
+          "height": 512,
+          "pivot": {
+            "x": 261,
+            "y": 264
+          }
+        },
+        {
+          "index": 1,
+          "x": 512,
+          "y": 0,
+          "width": 512,
+          "height": 512,
+          "pivot": {
+            "x": 247,
+            "y": 282
+          }
+        },
+        {
+          "index": 2,
+          "x": 1024,
+          "y": 0,
+          "width": 512,
+          "height": 512,
+          "pivot": {
+            "x": 274,
+            "y": 298
+          }
+        },
+        {
+          "index": 3,
+          "x": 0,
+          "y": 512,
+          "width": 512,
+          "height": 512,
+          "pivot": {
+            "x": 263,
+            "y": 202
+          }
+        },
+        {
+          "index": 4,
+          "x": 512,
+          "y": 512,
+          "width": 512,
+          "height": 512,
+          "pivot": {
+            "x": 284,
+            "y": 194
+          }
+        },
+        {
+          "index": 5,
+          "x": 1024,
+          "y": 512,
+          "width": 512,
+          "height": 512,
+          "pivot": {
+            "x": 268,
+            "y": 193
+          }
+        }
+      ],
+      "sha256": "03e76f2be40b6e80f0d5367ab9805b350edc80fdfe2eeaa0737f6079de0a6111"
+    },
+    {
+      "id": "hit",
+      "file": "Hit-Overhead-v2.png",
+      "label": "Get hit",
+      "fps": 12,
+      "loop": false,
+      "description": "A brief flinch while remaining on his feet.",
+      "durations": [
+        90,
+        60,
+        110,
+        100,
+        90,
+        120
+      ],
+      "frameCount": 6,
+      "scale": 1.23596,
+      "frames": [
+        {
+          "index": 0,
+          "x": 0,
+          "y": 0,
+          "width": 512,
+          "height": 512,
+          "pivot": {
+            "x": 255,
+            "y": 246
+          }
+        },
+        {
+          "index": 1,
+          "x": 512,
+          "y": 0,
+          "width": 512,
+          "height": 512,
+          "pivot": {
+            "x": 258,
+            "y": 248
+          }
+        },
+        {
+          "index": 2,
+          "x": 1024,
+          "y": 0,
+          "width": 512,
+          "height": 512,
+          "pivot": {
+            "x": 252,
+            "y": 268
+          }
+        },
+        {
+          "index": 3,
+          "x": 0,
+          "y": 512,
+          "width": 512,
+          "height": 512,
+          "pivot": {
+            "x": 258,
+            "y": 224
+          }
+        },
+        {
+          "index": 4,
+          "x": 512,
+          "y": 512,
+          "width": 512,
+          "height": 512,
+          "pivot": {
+            "x": 259,
+            "y": 216
+          }
+        },
+        {
+          "index": 5,
+          "x": 1024,
+          "y": 512,
+          "width": 512,
+          "height": 512,
+          "pivot": {
+            "x": 254,
+            "y": 221
+          }
+        }
+      ],
+      "sha256": "0d3293e4c3ff7695975b85ab8b9d7cbc495ad85dd538731a24a6df6bead9aeaf"
+    },
+    {
+      "id": "charged",
+      "file": "Charged-Overhead-v2.png",
+      "label": "Get charged",
+      "fps": 9,
+      "loop": false,
+      "description": "A heavy stagger, then regain balance.",
+      "durations": [
+        100,
+        85,
+        150,
+        180,
+        160,
+        200
+      ],
+      "frameCount": 6,
+      "scale": 1.22222,
+      "frames": [
+        {
+          "index": 0,
+          "x": 0,
+          "y": 0,
+          "width": 512,
+          "height": 512,
+          "pivot": {
+            "x": 250,
+            "y": 239
+          }
+        },
+        {
+          "index": 1,
+          "x": 512,
+          "y": 0,
+          "width": 512,
+          "height": 512,
+          "pivot": {
+            "x": 260,
+            "y": 231
+          }
+        },
+        {
+          "index": 2,
+          "x": 1024,
+          "y": 0,
+          "width": 512,
+          "height": 512,
+          "pivot": {
+            "x": 268,
+            "y": 254
+          }
+        },
+        {
+          "index": 3,
+          "x": 0,
+          "y": 512,
+          "width": 512,
+          "height": 512,
+          "pivot": {
+            "x": 278,
+            "y": 222
+          }
+        },
+        {
+          "index": 4,
+          "x": 512,
+          "y": 512,
+          "width": 512,
+          "height": 512,
+          "pivot": {
+            "x": 258,
+            "y": 209
+          }
+        },
+        {
+          "index": 5,
+          "x": 1024,
+          "y": 512,
+          "width": 512,
+          "height": 512,
+          "pivot": {
+            "x": 254,
+            "y": 208
+          }
+        }
+      ],
+      "sha256": "a5044f987544a7cf803b5f2a650b7187ff9602bab0c8b77a3489f7d0bebdaa23"
+    },
+    {
+      "id": "charge",
+      "file": "Charge-ArmFix-v4.png",
+      "label": "Charge",
+      "fps": 12,
+      "loop": true,
+      "description": "Alternating sprint with a compact forward weapon guard.",
+      "durations": [
+        100,
+        80,
+        100,
+        80,
+        100,
+        80
+      ],
+      "frameCount": 6,
+      "scale": 1.08911,
+      "frames": [
+        {
+          "index": 0,
+          "x": 0,
+          "y": 0,
+          "width": 512,
+          "height": 512,
+          "pivot": {
+            "x": 259,
+            "y": 206
+          }
+        },
+        {
+          "index": 1,
+          "x": 512,
+          "y": 0,
+          "width": 512,
+          "height": 512,
+          "pivot": {
+            "x": 264,
+            "y": 206
+          }
+        },
+        {
+          "index": 2,
+          "x": 1024,
+          "y": 0,
+          "width": 512,
+          "height": 512,
+          "pivot": {
+            "x": 258,
+            "y": 205
+          }
+        },
+        {
+          "index": 3,
+          "x": 0,
+          "y": 512,
+          "width": 512,
+          "height": 512,
+          "pivot": {
+            "x": 259,
+            "y": 174
+          }
+        },
+        {
+          "index": 4,
+          "x": 512,
+          "y": 512,
+          "width": 512,
+          "height": 512,
+          "pivot": {
+            "x": 258,
+            "y": 174
+          }
+        },
+        {
+          "index": 5,
+          "x": 1024,
+          "y": 512,
+          "width": 512,
+          "height": 512,
+          "pivot": {
+            "x": 284,
+            "y": 174
+          }
+        }
+      ],
+      "sha256": "ce800cfc5f45e900561c2b918b922d8a2fecfec640a196211cce99f1d876e796"
+    },
+    {
+      "id": "death",
+      "file": "Death-Overhead-v2.png",
+      "label": "Death",
+      "fps": 8,
+      "loop": false,
+      "description": "Collapse and hold the fallen pose.",
+      "durations": [
+        120,
+        140,
+        150,
+        180,
+        180,
+        300
+      ],
+      "frameCount": 6,
+      "scale": 0.88,
+      "frames": [
+        {
+          "index": 0,
+          "x": 0,
+          "y": 0,
+          "width": 512,
+          "height": 512,
+          "pivot": {
+            "x": 256,
+            "y": 256
+          }
+        },
+        {
+          "index": 1,
+          "x": 512,
+          "y": 0,
+          "width": 512,
+          "height": 512,
+          "pivot": {
+            "x": 256,
+            "y": 256
+          }
+        },
+        {
+          "index": 2,
+          "x": 1024,
+          "y": 0,
+          "width": 512,
+          "height": 512,
+          "pivot": {
+            "x": 256,
+            "y": 256
+          }
+        },
+        {
+          "index": 3,
+          "x": 0,
+          "y": 512,
+          "width": 512,
+          "height": 512,
+          "pivot": {
+            "x": 256,
+            "y": 256
+          }
+        },
+        {
+          "index": 4,
+          "x": 512,
+          "y": 512,
+          "width": 512,
+          "height": 512,
+          "pivot": {
+            "x": 256,
+            "y": 256
+          }
+        },
+        {
+          "index": 5,
+          "x": 1024,
+          "y": 512,
+          "width": 512,
+          "height": 512,
+          "pivot": {
+            "x": 256,
+            "y": 256
+          }
+        }
+      ],
+      "sha256": "8faef35c920c7e1469724a6f3699867a2b389d07ced6d70b5a034751307faaa9"
+    },
+    {
+      "id": "charge-attack",
+      "file": "ChargeAttack-ArmFix-v4.png",
+      "label": "Charge attack",
+      "frameCount": 6,
+      "loop": false,
+      "scale": 1.12821,
+      "durations": [
+        150,
+        170,
+        85,
+        125,
+        180,
+        230
+      ],
+      "impactFrame": 3,
+      "frames": [
+        {
+          "index": 0,
+          "x": 0,
+          "y": 0,
+          "width": 512,
+          "height": 512,
+          "pivot": {
+            "x": 278,
+            "y": 254
+          }
+        },
+        {
+          "index": 1,
+          "x": 512,
+          "y": 0,
+          "width": 512,
+          "height": 512,
+          "pivot": {
+            "x": 258,
+            "y": 258
+          }
+        },
+        {
+          "index": 2,
+          "x": 1024,
+          "y": 0,
+          "width": 512,
+          "height": 512,
+          "pivot": {
+            "x": 280,
+            "y": 254
+          }
+        },
+        {
+          "index": 3,
+          "x": 0,
+          "y": 512,
+          "width": 512,
+          "height": 512,
+          "pivot": {
+            "x": 292,
+            "y": 194
+          }
+        },
+        {
+          "index": 4,
+          "x": 512,
+          "y": 512,
+          "width": 512,
+          "height": 512,
+          "pivot": {
+            "x": 311,
+            "y": 198
+          }
+        },
+        {
+          "index": 5,
+          "x": 1024,
+          "y": 512,
+          "width": 512,
+          "height": 512,
+          "pivot": {
+            "x": 272,
+            "y": 186
+          }
+        }
+      ],
+      "description": "Compact forward guard, planted body-driven strike and recovery.",
+      "sha256": "8b70c7e2870b208a826427c3906132eaf70cc7cca74b230fbf5a2657db89a96d"
+    },
+    {
+      "id": "death-back",
+      "label": "Backward fall",
+      "file": "Death-Back-Overhead-v2.png",
+      "loop": false,
+      "scale": 1.25,
+      "durations": [
+        120,
+        150,
+        170,
+        210,
+        190,
+        300
+      ],
+      "frameCount": 6,
+      "description": "Recoil, knees buckle, hips land, fall onto the back, settle and hold the supine corpse.",
+      "frames": [
+        {
+          "index": 0,
+          "x": 0,
+          "y": 0,
+          "width": 512,
+          "height": 512,
+          "pivot": {
+            "x": 256,
+            "y": 256
+          }
+        },
+        {
+          "index": 1,
+          "x": 512,
+          "y": 0,
+          "width": 512,
+          "height": 512,
+          "pivot": {
+            "x": 256,
+            "y": 256
+          }
+        },
+        {
+          "index": 2,
+          "x": 1024,
+          "y": 0,
+          "width": 512,
+          "height": 512,
+          "pivot": {
+            "x": 256,
+            "y": 256
+          }
+        },
+        {
+          "index": 3,
+          "x": 0,
+          "y": 512,
+          "width": 512,
+          "height": 512,
+          "pivot": {
+            "x": 256,
+            "y": 256
+          }
+        },
+        {
+          "index": 4,
+          "x": 512,
+          "y": 512,
+          "width": 512,
+          "height": 512,
+          "pivot": {
+            "x": 256,
+            "y": 256
+          }
+        },
+        {
+          "index": 5,
+          "x": 1024,
+          "y": 512,
+          "width": 512,
+          "height": 512,
+          "pivot": {
+            "x": 256,
+            "y": 256
+          }
+        }
+      ],
+      "sha256": "232e7924709a932751a8eba9ef10ea8be193f73fff8768d855f3f6924603d0f4"
+    }
+  ],
+  "artRevision": "overhead-v2-charge-arms-v4"
+}

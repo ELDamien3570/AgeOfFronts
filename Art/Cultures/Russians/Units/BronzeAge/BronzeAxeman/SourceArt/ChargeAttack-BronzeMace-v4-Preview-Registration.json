@@ -1,0 +1,38 @@
+{
+  "reason": "Authored swing roots adjusted to clear overhead mace windup and followthrough in 420px preview. Fixed scale and native pixels unchanged.",
+  "changes": [
+    {
+      "frame": 2,
+      "before": {
+        "x": 281,
+        "y": 285.5
+      },
+      "after": {
+        "x": 281,
+        "y": 273.5
+      }
+    },
+    {
+      "frame": 3,
+      "before": {
+        "x": 243,
+        "y": 194.5
+      },
+      "after": {
+        "x": 243,
+        "y": 210.5
+      }
+    },
+    {
+      "frame": 4,
+      "before": {
+        "x": 252,
+        "y": 194.5
+      },
+      "after": {
+        "x": 252,
+        "y": 210.5
+      }
+    }
+  ]
+}

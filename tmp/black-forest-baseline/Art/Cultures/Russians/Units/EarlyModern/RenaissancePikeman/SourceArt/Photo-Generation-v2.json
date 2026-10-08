@@ -1,0 +1,10 @@
+{
+  "date": "2026-10-07",
+  "mode": "built-in-imagegen",
+  "selectedIdle": "Idle-Photo-v2.png",
+  "generatedSource": "C:/Users/Damien/.codex/generated_images/01a0fea1-c63f-7343-92ca-6c21cc1c4296/exec-dd3a8f33-7a58-485e-8ef3-1f2ab509a88f.png",
+  "prompt": "Revise the single Renaissance pikeman idle game sprite (reference2) to match the EQUIPMENT AND CLOTHING of the pikemen in reference1 photograph. Ref1 is the primary equipment reference; ref2 only supplies painted game finish, strict overhead camera and compact silhouette. One isolated man. Simple BLACKENED iron rounded cabasset/morion helmet with low tapered crown, modest brim and tiny yellow feather accent, not a tall ornate fantasy crest. Plain blackened steel breastplate/backplate secured by brown leather shoulder straps. Loose WHITE linen shirt with generously full sleeves, white open collar visible around armor. Brown/mustard knee breeches, off-white stockings and brown leather shoes. Plain leather waist belt, small sheathed side sword at hip optional discreet. NO shoulder pauldrons, NO silver thigh armor/tassets, NO gold decoration, NO burgundy padded doublet, NO shako, NO Napoleonic uniform. Pike notably long and SLENDER wooden shaft, narrower than previous thick pole, with small narrow steel spear point; both hands genuinely grip distinct fixed locations on shaft. Pike projects ahead toward SCREEN BOTTOM, butt toward top. Stable relaxed idle ready stance. Camera STRICT directly vertical90degree overhead orthographic, see TOP of helmet and shoulder tops, very foreshortened torso, face almost entirely obscured by brim; no front portrait. Soldier facing screenBOTTOM, entire long pike and all actor fit inside generous transparent margins. Rich smoothly painted detailed strategy-game sprite materials matching ref2, readable at48/64/128pixels. One frame only, transparent background, no scenery, no text, no ground shadow plane.",
+  "equipmentReference": "C:/Users/Damien/Downloads/Pikeniere_Wallenstein-Festspiele_Memmingen.jpg",
+  "styleReference": "Idle-v1.png",
+  "userApproval": "Awaiting idle review"
+}

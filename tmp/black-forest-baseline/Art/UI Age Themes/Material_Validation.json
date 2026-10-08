@@ -1,0 +1,78 @@
+{
+  "status": "PASS",
+  "count": 7,
+  "totalWebBytes": 597906,
+  "note": "Source images preserved. Web textures are opaque 512px copies; UI geometry is native HTML/CSS.",
+  "materials": [
+    {
+      "age": "StoneAge",
+      "material": "stone",
+      "sourceWidth": 1254,
+      "sourceHeight": 1254,
+      "width": 512,
+      "height": 512,
+      "opaque": true,
+      "webBytes": 135998
+    },
+    {
+      "age": "BronzeAge",
+      "material": "bronze",
+      "sourceWidth": 1254,
+      "sourceHeight": 1254,
+      "width": 512,
+      "height": 512,
+      "opaque": true,
+      "webBytes": 99594
+    },
+    {
+      "age": "ClassicalAge",
+      "material": "iron",
+      "sourceWidth": 1254,
+      "sourceHeight": 1254,
+      "width": 512,
+      "height": 512,
+      "opaque": true,
+      "webBytes": 84502
+    },
+    {
+      "age": "EarlyMedieval",
+      "material": "steel",
+      "sourceWidth": 1254,
+      "sourceHeight": 1254,
+      "width": 512,
+      "height": 512,
+      "opaque": true,
+      "webBytes": 54984
+    },
+    {
+      "age": "LateMedieval",
+      "material": "gold",
+      "sourceWidth": 1254,
+      "sourceHeight": 1254,
+      "width": 512,
+      "height": 512,
+      "opaque": true,
+      "webBytes": 99290
+    },
+    {
+      "age": "EarlyModern",
+      "material": "gunmetal",
+      "sourceWidth": 1254,
+      "sourceHeight": 1254,
+      "width": 512,
+      "height": 512,
+      "opaque": true,
+      "webBytes": 58214
+    },
+    {
+      "age": "Modern",
+      "material": "army-green",
+      "sourceWidth": 1254,
+      "sourceHeight": 1254,
+      "width": 512,
+      "height": 512,
+      "opaque": true,
+      "webBytes": 65324
+    }
+  ]
+}

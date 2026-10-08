@@ -132,10 +132,10 @@ describe("independent trade unlocks", () => {
     expect(actor.naval).toBe(false);
     expect(m.expansion!.trade.actors.some(a => a.naval && a.factoryId !== actor.factoryId)).toBe(true);
   });
-  it("uses the approved supplied workshop art for the actual Stone Age building", () => {
+  it("uses the completed Russian Stone Age workshop art", () => {
     const id = buildingArtworkId("siege-workshop", "StoneAge")!;
     expect(ARTWORK_CATALOG[id].file).toBe(
-      "building-bronzeage-siege-workshop.png",
+      "building-stoneage-siege-workshop.png",
     );
   });
 });

@@ -1,0 +1,900 @@
+{
+  "schemaVersion": 1,
+  "cultureId": "russians",
+  "age": "EarlyModern",
+  "unit": "Rus Musketeer",
+  "category": "Ranged",
+  "actorCount": 1,
+  "stage": "single-actor-animation-review",
+  "integrationStatus": "Local art review. Runtime formations, combat and projectile integration are separate.",
+  "camera": "vertical-overhead-orthographic",
+  "facing": "screen-down",
+  "sheetSize": {
+    "width": 1536,
+    "height": 1024
+  },
+  "grid": {
+    "columns": 3,
+    "rows": 2
+  },
+  "reviewFootprint": 400,
+  "registration": "Fixed authored torso root; no silhouette fitting.",
+  "weapon": "Early matchlock musket",
+  "animations": [
+    {
+      "id": "idle",
+      "file": "idle-v2.png",
+      "label": "Idle",
+      "loop": true,
+      "scale": 1,
+      "durations": [
+        280,
+        280,
+        280,
+        280,
+        280,
+        280
+      ],
+      "description": "Subtle breathing with the loaded musket held low.",
+      "frameCount": 6,
+      "frames": [
+        {
+          "index": 0,
+          "x": 0,
+          "y": 0,
+          "width": 512,
+          "height": 512,
+          "pivot": {
+            "x": 252.203125,
+            "y": 260
+          }
+        },
+        {
+          "index": 1,
+          "x": 512,
+          "y": 0,
+          "width": 512,
+          "height": 512,
+          "pivot": {
+            "x": 247.3984375,
+            "y": 260
+          }
+        },
+        {
+          "index": 2,
+          "x": 1024,
+          "y": 0,
+          "width": 512,
+          "height": 512,
+          "pivot": {
+            "x": 247.3984375,
+            "y": 260
+          }
+        },
+        {
+          "index": 3,
+          "x": 0,
+          "y": 512,
+          "width": 512,
+          "height": 512,
+          "pivot": {
+            "x": 253.00390625,
+            "y": 260
+          }
+        },
+        {
+          "index": 4,
+          "x": 512,
+          "y": 512,
+          "width": 512,
+          "height": 512,
+          "pivot": {
+            "x": 247.3984375,
+            "y": 260
+          }
+        },
+        {
+          "index": 5,
+          "x": 1024,
+          "y": 512,
+          "width": 512,
+          "height": 512,
+          "pivot": {
+            "x": 250.6015625,
+            "y": 260
+          }
+        }
+      ]
+    },
+    {
+      "id": "running",
+      "file": "running-v1.png",
+      "label": "Walk",
+      "loop": true,
+      "scale": 1,
+      "durations": [
+        160,
+        160,
+        160,
+        160,
+        160,
+        160
+      ],
+      "description": "Alternating walking strides, musket carried low.",
+      "frameCount": 6,
+      "frames": [
+        {
+          "index": 0,
+          "x": 0,
+          "y": 0,
+          "width": 512,
+          "height": 512,
+          "pivot": {
+            "x": 248.8,
+            "y": 260
+          }
+        },
+        {
+          "index": 1,
+          "x": 512,
+          "y": 0,
+          "width": 512,
+          "height": 512,
+          "pivot": {
+            "x": 248.8,
+            "y": 260
+          }
+        },
+        {
+          "index": 2,
+          "x": 1024,
+          "y": 0,
+          "width": 512,
+          "height": 512,
+          "pivot": {
+            "x": 248.8,
+            "y": 260
+          }
+        },
+        {
+          "index": 3,
+          "x": 0,
+          "y": 512,
+          "width": 512,
+          "height": 512,
+          "pivot": {
+            "x": 248.8,
+            "y": 260
+          }
+        },
+        {
+          "index": 4,
+          "x": 512,
+          "y": 512,
+          "width": 512,
+          "height": 512,
+          "pivot": {
+            "x": 248.8,
+            "y": 260
+          }
+        },
+        {
+          "index": 5,
+          "x": 1024,
+          "y": 512,
+          "width": 512,
+          "height": 512,
+          "pivot": {
+            "x": 248.8,
+            "y": 260
+          }
+        }
+      ]
+    },
+    {
+      "id": "attack",
+      "file": "attack-leg-v3.png",
+      "label": "Musket shot",
+      "loop": false,
+      "scale": 1,
+      "durations": [
+        140,
+        180,
+        260,
+        100,
+        180,
+        250
+      ],
+      "description": "Raise, aim and shoot the musket toward screen-bottom; lower the empty weapon. Reload is separate.",
+      "frameCount": 6,
+      "frames": [
+        {
+          "index": 0,
+          "x": 0,
+          "y": 0,
+          "width": 512,
+          "height": 512,
+          "pivot": {
+            "x": 248.8,
+            "y": 260
+          }
+        },
+        {
+          "index": 1,
+          "x": 512,
+          "y": 0,
+          "width": 512,
+          "height": 512,
+          "pivot": {
+            "x": 248.8,
+            "y": 260
+          }
+        },
+        {
+          "index": 2,
+          "x": 1024,
+          "y": 0,
+          "width": 512,
+          "height": 512,
+          "pivot": {
+            "x": 248.8,
+            "y": 260
+          }
+        },
+        {
+          "index": 3,
+          "x": 0,
+          "y": 512,
+          "width": 512,
+          "height": 512,
+          "pivot": {
+            "x": 248.8,
+            "y": 260
+          }
+        },
+        {
+          "index": 4,
+          "x": 512,
+          "y": 512,
+          "width": 512,
+          "height": 512,
+          "pivot": {
+            "x": 248.8,
+            "y": 260
+          }
+        },
+        {
+          "index": 5,
+          "x": 1024,
+          "y": 512,
+          "width": 512,
+          "height": 512,
+          "pivot": {
+            "x": 248.8,
+            "y": 260
+          }
+        }
+      ],
+      "releaseFrame": 3,
+      "weaponState": {
+        "start": "loaded-ready",
+        "end": "spent"
+      }
+    },
+    {
+      "id": "reload",
+      "file": "reload-v1.png",
+      "label": "Reload musket",
+      "loop": false,
+      "scale": 1,
+      "durations": [
+        300,
+        400,
+        350,
+        500,
+        400,
+        300
+      ],
+      "description": "Measure powder, load the ball and wadding, ram the charge, prime the pan and return to low carry.",
+      "frameCount": 6,
+      "frames": [
+        {
+          "index": 0,
+          "x": 0,
+          "y": 0,
+          "width": 512,
+          "height": 512,
+          "pivot": {
+            "x": 248.8,
+            "y": 260
+          }
+        },
+        {
+          "index": 1,
+          "x": 512,
+          "y": 0,
+          "width": 512,
+          "height": 512,
+          "pivot": {
+            "x": 248.8,
+            "y": 260
+          }
+        },
+        {
+          "index": 2,
+          "x": 1024,
+          "y": 0,
+          "width": 512,
+          "height": 512,
+          "pivot": {
+            "x": 248.8,
+            "y": 260
+          }
+        },
+        {
+          "index": 3,
+          "x": 0,
+          "y": 512,
+          "width": 512,
+          "height": 512,
+          "pivot": {
+            "x": 248.8,
+            "y": 260
+          }
+        },
+        {
+          "index": 4,
+          "x": 512,
+          "y": 512,
+          "width": 512,
+          "height": 512,
+          "pivot": {
+            "x": 248.8,
+            "y": 260
+          }
+        },
+        {
+          "index": 5,
+          "x": 1024,
+          "y": 512,
+          "width": 512,
+          "height": 512,
+          "pivot": {
+            "x": 248.8,
+            "y": 260
+          }
+        }
+      ],
+      "weaponState": {
+        "start": "spent",
+        "end": "loaded-ready"
+      }
+    },
+    {
+      "id": "hit",
+      "file": "hit-v1.png",
+      "label": "Get hit",
+      "loop": false,
+      "scale": 1,
+      "durations": [
+        100,
+        90,
+        130,
+        130,
+        160,
+        180
+      ],
+      "description": "Brief recoil and recovery with equipment retained.",
+      "frameCount": 6,
+      "frames": [
+        {
+          "index": 0,
+          "x": 0,
+          "y": 0,
+          "width": 512,
+          "height": 512,
+          "pivot": {
+            "x": 248.8,
+            "y": 260
+          }
+        },
+        {
+          "index": 1,
+          "x": 512,
+          "y": 0,
+          "width": 512,
+          "height": 512,
+          "pivot": {
+            "x": 248.8,
+            "y": 260
+          }
+        },
+        {
+          "index": 2,
+          "x": 1024,
+          "y": 0,
+          "width": 512,
+          "height": 512,
+          "pivot": {
+            "x": 248.8,
+            "y": 260
+          }
+        },
+        {
+          "index": 3,
+          "x": 0,
+          "y": 512,
+          "width": 512,
+          "height": 512,
+          "pivot": {
+            "x": 248.8,
+            "y": 260
+          }
+        },
+        {
+          "index": 4,
+          "x": 512,
+          "y": 512,
+          "width": 512,
+          "height": 512,
+          "pivot": {
+            "x": 248.8,
+            "y": 260
+          }
+        },
+        {
+          "index": 5,
+          "x": 1024,
+          "y": 512,
+          "width": 512,
+          "height": 512,
+          "pivot": {
+            "x": 248.8,
+            "y": 260
+          }
+        }
+      ]
+    },
+    {
+      "id": "charged",
+      "file": "charged-v2.png",
+      "label": "Get charged",
+      "loop": false,
+      "scale": 1,
+      "durations": [
+        130,
+        120,
+        180,
+        180,
+        180,
+        230
+      ],
+      "description": "Heavy impact, backward stumble, crouch and regain balance.",
+      "frameCount": 6,
+      "frames": [
+        {
+          "index": 0,
+          "x": 0,
+          "y": 0,
+          "width": 512,
+          "height": 512,
+          "pivot": {
+            "x": 248.8,
+            "y": 260
+          }
+        },
+        {
+          "index": 1,
+          "x": 512,
+          "y": 0,
+          "width": 512,
+          "height": 512,
+          "pivot": {
+            "x": 248.8,
+            "y": 260
+          }
+        },
+        {
+          "index": 2,
+          "x": 1024,
+          "y": 0,
+          "width": 512,
+          "height": 512,
+          "pivot": {
+            "x": 248.8,
+            "y": 260
+          }
+        },
+        {
+          "index": 3,
+          "x": 0,
+          "y": 512,
+          "width": 512,
+          "height": 512,
+          "pivot": {
+            "x": 248.8,
+            "y": 260
+          }
+        },
+        {
+          "index": 4,
+          "x": 512,
+          "y": 512,
+          "width": 512,
+          "height": 512,
+          "pivot": {
+            "x": 248.8,
+            "y": 260
+          }
+        },
+        {
+          "index": 5,
+          "x": 1024,
+          "y": 512,
+          "width": 512,
+          "height": 512,
+          "pivot": {
+            "x": 248.8,
+            "y": 260
+          }
+        }
+      ]
+    },
+    {
+      "id": "charge",
+      "file": "charge-v1.png",
+      "label": "Charge in / maintain",
+      "loop": true,
+      "scale": 1,
+      "durations": [
+        90,
+        90,
+        90,
+        90,
+        90,
+        90
+      ],
+      "description": "Sustained running with alternating strides and musket secure.",
+      "frameCount": 6,
+      "frames": [
+        {
+          "index": 0,
+          "x": 0,
+          "y": 0,
+          "width": 512,
+          "height": 512,
+          "pivot": {
+            "x": 248.8,
+            "y": 260
+          }
+        },
+        {
+          "index": 1,
+          "x": 512,
+          "y": 0,
+          "width": 512,
+          "height": 512,
+          "pivot": {
+            "x": 248.8,
+            "y": 260
+          }
+        },
+        {
+          "index": 2,
+          "x": 1024,
+          "y": 0,
+          "width": 512,
+          "height": 512,
+          "pivot": {
+            "x": 248.8,
+            "y": 260
+          }
+        },
+        {
+          "index": 3,
+          "x": 0,
+          "y": 512,
+          "width": 512,
+          "height": 512,
+          "pivot": {
+            "x": 248.8,
+            "y": 260
+          }
+        },
+        {
+          "index": 4,
+          "x": 512,
+          "y": 512,
+          "width": 512,
+          "height": 512,
+          "pivot": {
+            "x": 248.8,
+            "y": 260
+          }
+        },
+        {
+          "index": 5,
+          "x": 1024,
+          "y": 512,
+          "width": 512,
+          "height": 512,
+          "pivot": {
+            "x": 248.8,
+            "y": 260
+          }
+        }
+      ]
+    },
+    {
+      "id": "charge-attack",
+      "file": "charge-attack-stance-v2.png",
+      "label": "Advance, plant and shoot",
+      "loop": false,
+      "scale": 1,
+      "durations": [
+        140,
+        200,
+        260,
+        100,
+        180,
+        250
+      ],
+      "description": "Brake, plant, aim and shoot toward screen-bottom, then lower the empty musket. Reload is separate.",
+      "frameCount": 6,
+      "frames": [
+        {
+          "index": 0,
+          "x": 0,
+          "y": 0,
+          "width": 512,
+          "height": 512,
+          "pivot": {
+            "x": 248.8,
+            "y": 260
+          }
+        },
+        {
+          "index": 1,
+          "x": 512,
+          "y": 0,
+          "width": 512,
+          "height": 512,
+          "pivot": {
+            "x": 248.8,
+            "y": 260
+          }
+        },
+        {
+          "index": 2,
+          "x": 1024,
+          "y": 0,
+          "width": 512,
+          "height": 512,
+          "pivot": {
+            "x": 248.8,
+            "y": 260
+          }
+        },
+        {
+          "index": 3,
+          "x": 0,
+          "y": 512,
+          "width": 512,
+          "height": 512,
+          "pivot": {
+            "x": 248.8,
+            "y": 260
+          }
+        },
+        {
+          "index": 4,
+          "x": 512,
+          "y": 512,
+          "width": 512,
+          "height": 512,
+          "pivot": {
+            "x": 248.8,
+            "y": 260
+          }
+        },
+        {
+          "index": 5,
+          "x": 1024,
+          "y": 512,
+          "width": 512,
+          "height": 512,
+          "pivot": {
+            "x": 248.8,
+            "y": 260
+          }
+        }
+      ],
+      "releaseFrame": 3,
+      "weaponState": {
+        "start": "loaded-ready",
+        "end": "spent"
+      }
+    },
+    {
+      "id": "death",
+      "file": "death-v1.png",
+      "label": "Death - side fall",
+      "loop": false,
+      "scale": 1,
+      "durations": [
+        150,
+        170,
+        190,
+        210,
+        240,
+        400
+      ],
+      "description": "Knees buckle, fall onto the side and hold the settled body.",
+      "frameCount": 6,
+      "frames": [
+        {
+          "index": 0,
+          "x": 0,
+          "y": 0,
+          "width": 512,
+          "height": 512,
+          "pivot": {
+            "x": 248.8,
+            "y": 260
+          }
+        },
+        {
+          "index": 1,
+          "x": 512,
+          "y": 0,
+          "width": 512,
+          "height": 512,
+          "pivot": {
+            "x": 248.8,
+            "y": 260
+          }
+        },
+        {
+          "index": 2,
+          "x": 1024,
+          "y": 0,
+          "width": 512,
+          "height": 512,
+          "pivot": {
+            "x": 248.8,
+            "y": 260
+          }
+        },
+        {
+          "index": 3,
+          "x": 0,
+          "y": 512,
+          "width": 512,
+          "height": 512,
+          "pivot": {
+            "x": 248.8,
+            "y": 260
+          }
+        },
+        {
+          "index": 4,
+          "x": 512,
+          "y": 512,
+          "width": 512,
+          "height": 512,
+          "pivot": {
+            "x": 248.8,
+            "y": 260
+          }
+        },
+        {
+          "index": 5,
+          "x": 1024,
+          "y": 512,
+          "width": 512,
+          "height": 512,
+          "pivot": {
+            "x": 248.8,
+            "y": 260
+          }
+        }
+      ]
+    },
+    {
+      "id": "death-back",
+      "file": "death-back-v1.png",
+      "label": "Death - back fall",
+      "loop": false,
+      "scale": 1,
+      "durations": [
+        150,
+        180,
+        190,
+        210,
+        240,
+        400
+      ],
+      "description": "Recoil, buckle and fall onto the back; head remains screen-top through settling.",
+      "frameCount": 6,
+      "frames": [
+        {
+          "index": 0,
+          "x": 0,
+          "y": 0,
+          "width": 512,
+          "height": 512,
+          "pivot": {
+            "x": 248.8,
+            "y": 260
+          }
+        },
+        {
+          "index": 1,
+          "x": 512,
+          "y": 0,
+          "width": 512,
+          "height": 512,
+          "pivot": {
+            "x": 248.8,
+            "y": 260
+          }
+        },
+        {
+          "index": 2,
+          "x": 1024,
+          "y": 0,
+          "width": 512,
+          "height": 512,
+          "pivot": {
+            "x": 248.8,
+            "y": 260
+          }
+        },
+        {
+          "index": 3,
+          "x": 0,
+          "y": 512,
+          "width": 512,
+          "height": 512,
+          "pivot": {
+            "x": 248.8,
+            "y": 260
+          }
+        },
+        {
+          "index": 4,
+          "x": 512,
+          "y": 512,
+          "width": 512,
+          "height": 512,
+          "pivot": {
+            "x": 248.8,
+            "y": 260
+          }
+        },
+        {
+          "index": 5,
+          "x": 1024,
+          "y": 512,
+          "width": 512,
+          "height": 512,
+          "pivot": {
+            "x": 248.8,
+            "y": 260
+          }
+        }
+      ]
+    }
+  ],
+  "projectileContract": "Actor release markers are visual references; runtime owns projectile creation, ammunition and reload timing.",
+  "shotSequence": [
+    "attack",
+    "reload",
+    "idle"
+  ],
+  "chargeShotSequence": [
+    "charge-attack",
+    "reload",
+    "idle"
+  ]
+}

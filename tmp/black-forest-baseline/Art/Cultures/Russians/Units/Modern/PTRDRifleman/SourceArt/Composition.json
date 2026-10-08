@@ -1,0 +1,1656 @@
+{
+  "date": "2026-10-07",
+  "method": "Whole ImageGen-authored poses, common scale and padding; whole actor selection excludes neighboring sprites; native originals preserved.",
+  "clips": [
+    {
+      "clip": "idle",
+      "source": "Native-Idle-v1-Animated.png",
+      "sourceSha256": "de11c84c90b368574463dae9bda5b5b090e4cbb0d00cf59831a739620450b7ed",
+      "output": "Idle-v1-Animated.png",
+      "outputSha256": "65be10c9240379f02b378183294dac9ab702703e6de038dfb4edc5f57822b6fa",
+      "tracks": [
+        {
+          "frame": 0,
+          "sourceRect": [
+            0,
+            0,
+            512,
+            512
+          ],
+          "uniformScale": 0.8,
+          "destinationOffset": [
+            51,
+            51
+          ],
+          "packingOffset": [
+            0,
+            0
+          ],
+          "rootOffset": [
+            0,
+            0
+          ],
+          "pivot": {
+            "x": 256.0,
+            "y": 256.0
+          }
+        },
+        {
+          "frame": 1,
+          "sourceRect": [
+            512,
+            0,
+            1024,
+            512
+          ],
+          "uniformScale": 0.8,
+          "destinationOffset": [
+            51,
+            51
+          ],
+          "packingOffset": [
+            0,
+            0
+          ],
+          "rootOffset": [
+            0,
+            0
+          ],
+          "pivot": {
+            "x": 256.0,
+            "y": 256.0
+          }
+        },
+        {
+          "frame": 2,
+          "sourceRect": [
+            1024,
+            0,
+            1536,
+            512
+          ],
+          "uniformScale": 0.8,
+          "destinationOffset": [
+            51,
+            51
+          ],
+          "packingOffset": [
+            0,
+            0
+          ],
+          "rootOffset": [
+            0,
+            0
+          ],
+          "pivot": {
+            "x": 256.0,
+            "y": 256.0
+          }
+        },
+        {
+          "frame": 3,
+          "sourceRect": [
+            0,
+            512,
+            512,
+            1024
+          ],
+          "uniformScale": 0.8,
+          "destinationOffset": [
+            51,
+            51
+          ],
+          "packingOffset": [
+            0,
+            0
+          ],
+          "rootOffset": [
+            0,
+            0
+          ],
+          "pivot": {
+            "x": 256.0,
+            "y": 256.0
+          }
+        },
+        {
+          "frame": 4,
+          "sourceRect": [
+            512,
+            512,
+            1024,
+            1024
+          ],
+          "uniformScale": 0.8,
+          "destinationOffset": [
+            51,
+            51
+          ],
+          "packingOffset": [
+            0,
+            0
+          ],
+          "rootOffset": [
+            0,
+            0
+          ],
+          "pivot": {
+            "x": 256.0,
+            "y": 256.0
+          }
+        },
+        {
+          "frame": 5,
+          "sourceRect": [
+            1024,
+            512,
+            1536,
+            1024
+          ],
+          "uniformScale": 0.8,
+          "destinationOffset": [
+            51,
+            51
+          ],
+          "packingOffset": [
+            0,
+            0
+          ],
+          "rootOffset": [
+            0,
+            0
+          ],
+          "pivot": {
+            "x": 256.0,
+            "y": 256.0
+          }
+        }
+      ]
+    },
+    {
+      "clip": "running",
+      "source": "Native-Walk-v1.png",
+      "sourceSha256": "2af1f0305f38a62709d71718d22fb2b29de8a2682d98fb1effa8616e4bd2a515",
+      "output": "Walk-v1.png",
+      "outputSha256": "11a7e52d404e36caf5b3321f9b5bdf4dcad3ea79bed55a5a412346b3aaace85e",
+      "tracks": [
+        {
+          "frame": 0,
+          "sourceRect": [
+            0,
+            0,
+            512,
+            512
+          ],
+          "uniformScale": 0.8,
+          "destinationOffset": [
+            51,
+            51
+          ],
+          "packingOffset": [
+            0,
+            0
+          ],
+          "rootOffset": [
+            0,
+            0
+          ],
+          "pivot": {
+            "x": 256.0,
+            "y": 256.0
+          }
+        },
+        {
+          "frame": 1,
+          "sourceRect": [
+            512,
+            0,
+            1024,
+            512
+          ],
+          "uniformScale": 0.8,
+          "destinationOffset": [
+            51,
+            51
+          ],
+          "packingOffset": [
+            0,
+            0
+          ],
+          "rootOffset": [
+            0,
+            0
+          ],
+          "pivot": {
+            "x": 256.0,
+            "y": 256.0
+          }
+        },
+        {
+          "frame": 2,
+          "sourceRect": [
+            1024,
+            0,
+            1536,
+            512
+          ],
+          "uniformScale": 0.8,
+          "destinationOffset": [
+            51,
+            51
+          ],
+          "packingOffset": [
+            0,
+            0
+          ],
+          "rootOffset": [
+            0,
+            0
+          ],
+          "pivot": {
+            "x": 256.0,
+            "y": 256.0
+          }
+        },
+        {
+          "frame": 3,
+          "sourceRect": [
+            0,
+            512,
+            512,
+            1024
+          ],
+          "uniformScale": 0.8,
+          "destinationOffset": [
+            51,
+            51
+          ],
+          "packingOffset": [
+            0,
+            0
+          ],
+          "rootOffset": [
+            0,
+            0
+          ],
+          "pivot": {
+            "x": 256.0,
+            "y": 256.0
+          }
+        },
+        {
+          "frame": 4,
+          "sourceRect": [
+            512,
+            512,
+            1024,
+            1024
+          ],
+          "uniformScale": 0.8,
+          "destinationOffset": [
+            51,
+            51
+          ],
+          "packingOffset": [
+            0,
+            0
+          ],
+          "rootOffset": [
+            0,
+            0
+          ],
+          "pivot": {
+            "x": 256.0,
+            "y": 256.0
+          }
+        },
+        {
+          "frame": 5,
+          "sourceRect": [
+            1024,
+            512,
+            1536,
+            1024
+          ],
+          "uniformScale": 0.8,
+          "destinationOffset": [
+            51,
+            51
+          ],
+          "packingOffset": [
+            0,
+            0
+          ],
+          "rootOffset": [
+            0,
+            0
+          ],
+          "pivot": {
+            "x": 256.0,
+            "y": 256.0
+          }
+        }
+      ]
+    },
+    {
+      "clip": "charge",
+      "source": "Native-Charge-v1.png",
+      "sourceSha256": "2cadb373b451bfdba7c63a2829e30e589b14acfd8b3146b79ea7013420d1890e",
+      "output": "Charge-v1.png",
+      "outputSha256": "148a7062682a4ef515d2767446d98d188c950b3bcd6154de32cd651e9aa2f6fb",
+      "tracks": [
+        {
+          "frame": 0,
+          "sourceRect": [
+            0,
+            0,
+            512,
+            512
+          ],
+          "uniformScale": 0.8,
+          "destinationOffset": [
+            51,
+            51
+          ],
+          "packingOffset": [
+            0,
+            0
+          ],
+          "rootOffset": [
+            0,
+            0
+          ],
+          "pivot": {
+            "x": 256.0,
+            "y": 256.0
+          }
+        },
+        {
+          "frame": 1,
+          "sourceRect": [
+            512,
+            0,
+            1024,
+            512
+          ],
+          "uniformScale": 0.8,
+          "destinationOffset": [
+            51,
+            51
+          ],
+          "packingOffset": [
+            0,
+            0
+          ],
+          "rootOffset": [
+            0,
+            0
+          ],
+          "pivot": {
+            "x": 256.0,
+            "y": 256.0
+          }
+        },
+        {
+          "frame": 2,
+          "sourceRect": [
+            1024,
+            0,
+            1536,
+            512
+          ],
+          "uniformScale": 0.8,
+          "destinationOffset": [
+            51,
+            51
+          ],
+          "packingOffset": [
+            0,
+            0
+          ],
+          "rootOffset": [
+            0,
+            0
+          ],
+          "pivot": {
+            "x": 256.0,
+            "y": 256.0
+          }
+        },
+        {
+          "frame": 3,
+          "sourceRect": [
+            0,
+            512,
+            512,
+            1024
+          ],
+          "uniformScale": 0.8,
+          "destinationOffset": [
+            51,
+            51
+          ],
+          "packingOffset": [
+            0,
+            0
+          ],
+          "rootOffset": [
+            0,
+            0
+          ],
+          "pivot": {
+            "x": 256.0,
+            "y": 256.0
+          }
+        },
+        {
+          "frame": 4,
+          "sourceRect": [
+            512,
+            512,
+            1024,
+            1024
+          ],
+          "uniformScale": 0.8,
+          "destinationOffset": [
+            51,
+            51
+          ],
+          "packingOffset": [
+            0,
+            0
+          ],
+          "rootOffset": [
+            0,
+            0
+          ],
+          "pivot": {
+            "x": 256.0,
+            "y": 256.0
+          }
+        },
+        {
+          "frame": 5,
+          "sourceRect": [
+            1024,
+            512,
+            1536,
+            1024
+          ],
+          "uniformScale": 0.8,
+          "destinationOffset": [
+            51,
+            51
+          ],
+          "packingOffset": [
+            0,
+            0
+          ],
+          "rootOffset": [
+            0,
+            0
+          ],
+          "pivot": {
+            "x": 256.0,
+            "y": 256.0
+          }
+        }
+      ]
+    },
+    {
+      "clip": "attack",
+      "source": "Native-Attack-v1.png",
+      "sourceSha256": "07b7c353a46d7b84c89b7670ecff4a46a2e35135334d45b7f6bb7d57b6b8c8ed",
+      "output": "Attack-v1.png",
+      "outputSha256": "89889291cd95a39e616527e28af2146f6578fba4204381506e12184a231464da",
+      "tracks": [
+        {
+          "frame": 0,
+          "sourceRect": [
+            0,
+            0,
+            512,
+            512
+          ],
+          "uniformScale": 0.8,
+          "destinationOffset": [
+            51,
+            51
+          ],
+          "packingOffset": [
+            0,
+            0
+          ],
+          "rootOffset": [
+            0,
+            0
+          ],
+          "pivot": {
+            "x": 256.0,
+            "y": 256.0
+          }
+        },
+        {
+          "frame": 1,
+          "sourceRect": [
+            512,
+            0,
+            1024,
+            512
+          ],
+          "uniformScale": 0.8,
+          "destinationOffset": [
+            51,
+            51
+          ],
+          "packingOffset": [
+            0,
+            0
+          ],
+          "rootOffset": [
+            0,
+            0
+          ],
+          "pivot": {
+            "x": 256.0,
+            "y": 256.0
+          }
+        },
+        {
+          "frame": 2,
+          "sourceRect": [
+            1024,
+            0,
+            1536,
+            512
+          ],
+          "uniformScale": 0.8,
+          "destinationOffset": [
+            51,
+            51
+          ],
+          "packingOffset": [
+            0,
+            0
+          ],
+          "rootOffset": [
+            0,
+            0
+          ],
+          "pivot": {
+            "x": 256.0,
+            "y": 256.0
+          }
+        },
+        {
+          "frame": 3,
+          "sourceRect": [
+            0,
+            512,
+            512,
+            1024
+          ],
+          "uniformScale": 0.8,
+          "destinationOffset": [
+            51,
+            51
+          ],
+          "packingOffset": [
+            0,
+            0
+          ],
+          "rootOffset": [
+            0,
+            0
+          ],
+          "pivot": {
+            "x": 256.0,
+            "y": 256.0
+          }
+        },
+        {
+          "frame": 4,
+          "sourceRect": [
+            512,
+            512,
+            1024,
+            1024
+          ],
+          "uniformScale": 0.8,
+          "destinationOffset": [
+            51,
+            51
+          ],
+          "packingOffset": [
+            0,
+            0
+          ],
+          "rootOffset": [
+            0,
+            0
+          ],
+          "pivot": {
+            "x": 256.0,
+            "y": 256.0
+          }
+        },
+        {
+          "frame": 5,
+          "sourceRect": [
+            1024,
+            512,
+            1536,
+            1024
+          ],
+          "uniformScale": 0.8,
+          "destinationOffset": [
+            51,
+            51
+          ],
+          "packingOffset": [
+            0,
+            0
+          ],
+          "rootOffset": [
+            0,
+            0
+          ],
+          "pivot": {
+            "x": 256.0,
+            "y": 256.0
+          }
+        }
+      ]
+    },
+    {
+      "clip": "hit",
+      "source": "Native-Hit-v1.png",
+      "sourceSha256": "34937eb07914491cf428d5a1ef53ecd0112761797acbdf5be97bbd9a0f2aa20c",
+      "output": "Hit-v1.png",
+      "outputSha256": "745c29b15dda4cf2e943df5a7a8c553f75f201f59b63fbe96bca18aa3cd4ad1e",
+      "tracks": [
+        {
+          "frame": 0,
+          "sourceRect": [
+            0,
+            0,
+            512,
+            512
+          ],
+          "uniformScale": 0.8,
+          "destinationOffset": [
+            51,
+            51
+          ],
+          "packingOffset": [
+            0,
+            0
+          ],
+          "rootOffset": [
+            0,
+            0
+          ],
+          "pivot": {
+            "x": 256.0,
+            "y": 256.0
+          }
+        },
+        {
+          "frame": 1,
+          "sourceRect": [
+            512,
+            0,
+            1024,
+            512
+          ],
+          "uniformScale": 0.8,
+          "destinationOffset": [
+            51,
+            51
+          ],
+          "packingOffset": [
+            0,
+            0
+          ],
+          "rootOffset": [
+            0,
+            0
+          ],
+          "pivot": {
+            "x": 256.0,
+            "y": 256.0
+          }
+        },
+        {
+          "frame": 2,
+          "sourceRect": [
+            1024,
+            0,
+            1536,
+            512
+          ],
+          "uniformScale": 0.8,
+          "destinationOffset": [
+            51,
+            51
+          ],
+          "packingOffset": [
+            0,
+            0
+          ],
+          "rootOffset": [
+            0,
+            0
+          ],
+          "pivot": {
+            "x": 256.0,
+            "y": 256.0
+          }
+        },
+        {
+          "frame": 3,
+          "sourceRect": [
+            0,
+            512,
+            512,
+            1024
+          ],
+          "uniformScale": 0.8,
+          "destinationOffset": [
+            51,
+            51
+          ],
+          "packingOffset": [
+            0,
+            0
+          ],
+          "rootOffset": [
+            0,
+            0
+          ],
+          "pivot": {
+            "x": 256.0,
+            "y": 256.0
+          }
+        },
+        {
+          "frame": 4,
+          "sourceRect": [
+            512,
+            512,
+            1024,
+            1024
+          ],
+          "uniformScale": 0.8,
+          "destinationOffset": [
+            51,
+            51
+          ],
+          "packingOffset": [
+            0,
+            0
+          ],
+          "rootOffset": [
+            0,
+            0
+          ],
+          "pivot": {
+            "x": 256.0,
+            "y": 256.0
+          }
+        },
+        {
+          "frame": 5,
+          "sourceRect": [
+            1024,
+            512,
+            1536,
+            1024
+          ],
+          "uniformScale": 0.8,
+          "destinationOffset": [
+            51,
+            51
+          ],
+          "packingOffset": [
+            0,
+            0
+          ],
+          "rootOffset": [
+            0,
+            0
+          ],
+          "pivot": {
+            "x": 256.0,
+            "y": 256.0
+          }
+        }
+      ]
+    },
+    {
+      "clip": "charged",
+      "source": "Native-Charged-v1.png",
+      "sourceSha256": "fe39d98ae0b60390dd1415c92e56c06b39eafce0516ece8ac7aedcc4db9614f4",
+      "output": "Charged-v1.png",
+      "outputSha256": "860689279cdec3cb055bbe8c14e8ac722ccfae98716b90eeca81c353891da33d",
+      "tracks": [
+        {
+          "frame": 0,
+          "sourceRect": [
+            0,
+            0,
+            512,
+            512
+          ],
+          "uniformScale": 0.8,
+          "destinationOffset": [
+            51,
+            51
+          ],
+          "packingOffset": [
+            0,
+            0
+          ],
+          "rootOffset": [
+            0,
+            0
+          ],
+          "pivot": {
+            "x": 256.0,
+            "y": 256.0
+          }
+        },
+        {
+          "frame": 1,
+          "sourceRect": [
+            512,
+            0,
+            1024,
+            512
+          ],
+          "uniformScale": 0.8,
+          "destinationOffset": [
+            51,
+            51
+          ],
+          "packingOffset": [
+            0,
+            0
+          ],
+          "rootOffset": [
+            0,
+            0
+          ],
+          "pivot": {
+            "x": 256.0,
+            "y": 256.0
+          }
+        },
+        {
+          "frame": 2,
+          "sourceRect": [
+            1024,
+            0,
+            1536,
+            512
+          ],
+          "uniformScale": 0.8,
+          "destinationOffset": [
+            51,
+            51
+          ],
+          "packingOffset": [
+            0,
+            0
+          ],
+          "rootOffset": [
+            0,
+            0
+          ],
+          "pivot": {
+            "x": 256.0,
+            "y": 256.0
+          }
+        },
+        {
+          "frame": 3,
+          "sourceRect": [
+            0,
+            512,
+            512,
+            1024
+          ],
+          "uniformScale": 0.8,
+          "destinationOffset": [
+            51,
+            51
+          ],
+          "packingOffset": [
+            0,
+            0
+          ],
+          "rootOffset": [
+            0,
+            0
+          ],
+          "pivot": {
+            "x": 256.0,
+            "y": 256.0
+          }
+        },
+        {
+          "frame": 4,
+          "sourceRect": [
+            512,
+            512,
+            1024,
+            1024
+          ],
+          "uniformScale": 0.8,
+          "destinationOffset": [
+            51,
+            51
+          ],
+          "packingOffset": [
+            0,
+            0
+          ],
+          "rootOffset": [
+            0,
+            0
+          ],
+          "pivot": {
+            "x": 256.0,
+            "y": 256.0
+          }
+        },
+        {
+          "frame": 5,
+          "sourceRect": [
+            1024,
+            512,
+            1536,
+            1024
+          ],
+          "uniformScale": 0.8,
+          "destinationOffset": [
+            51,
+            51
+          ],
+          "packingOffset": [
+            0,
+            0
+          ],
+          "rootOffset": [
+            0,
+            0
+          ],
+          "pivot": {
+            "x": 256.0,
+            "y": 256.0
+          }
+        }
+      ]
+    },
+    {
+      "clip": "death",
+      "source": "Native-Death-Side-v1.png",
+      "sourceSha256": "170a6213e4c7e3568da9b00bafa1548cce22d86b55549da039d3e7ffe5521ae9",
+      "output": "Death-Side-v1.png",
+      "outputSha256": "b641477fc6ccf06ad474c2b17f7cb0a58beb420e8bde6ba4a41abab2340a4c74",
+      "tracks": [
+        {
+          "frame": 0,
+          "sourceRect": [
+            0,
+            0,
+            512,
+            512
+          ],
+          "uniformScale": 0.8,
+          "destinationOffset": [
+            51,
+            51
+          ],
+          "packingOffset": [
+            0,
+            0
+          ],
+          "rootOffset": [
+            0,
+            0
+          ],
+          "pivot": {
+            "x": 256.0,
+            "y": 256.0
+          }
+        },
+        {
+          "frame": 1,
+          "sourceRect": [
+            512,
+            0,
+            1024,
+            512
+          ],
+          "uniformScale": 0.8,
+          "destinationOffset": [
+            51,
+            51
+          ],
+          "packingOffset": [
+            0,
+            0
+          ],
+          "rootOffset": [
+            0,
+            0
+          ],
+          "pivot": {
+            "x": 256.0,
+            "y": 256.0
+          }
+        },
+        {
+          "frame": 2,
+          "sourceRect": [
+            1024,
+            0,
+            1536,
+            512
+          ],
+          "uniformScale": 0.8,
+          "destinationOffset": [
+            51,
+            51
+          ],
+          "packingOffset": [
+            0,
+            0
+          ],
+          "rootOffset": [
+            0,
+            0
+          ],
+          "pivot": {
+            "x": 256.0,
+            "y": 256.0
+          }
+        },
+        {
+          "frame": 3,
+          "sourceRect": [
+            0,
+            512,
+            512,
+            1024
+          ],
+          "uniformScale": 0.8,
+          "destinationOffset": [
+            51,
+            51
+          ],
+          "packingOffset": [
+            0,
+            0
+          ],
+          "rootOffset": [
+            0,
+            0
+          ],
+          "pivot": {
+            "x": 256.0,
+            "y": 256.0
+          }
+        },
+        {
+          "frame": 4,
+          "sourceRect": [
+            512,
+            512,
+            1024,
+            1024
+          ],
+          "uniformScale": 0.8,
+          "destinationOffset": [
+            51,
+            51
+          ],
+          "packingOffset": [
+            0,
+            0
+          ],
+          "rootOffset": [
+            0,
+            0
+          ],
+          "pivot": {
+            "x": 256.0,
+            "y": 256.0
+          }
+        },
+        {
+          "frame": 5,
+          "sourceRect": [
+            1024,
+            512,
+            1536,
+            1024
+          ],
+          "uniformScale": 0.8,
+          "destinationOffset": [
+            51,
+            51
+          ],
+          "packingOffset": [
+            0,
+            0
+          ],
+          "rootOffset": [
+            0,
+            0
+          ],
+          "pivot": {
+            "x": 256.0,
+            "y": 256.0
+          }
+        }
+      ]
+    },
+    {
+      "clip": "reload",
+      "source": "Native-Reload-v1.png",
+      "sourceSha256": "bc814423674783691ca315a5f693fb6027caadeb7cf4ddc0938112caa65cca37",
+      "output": "Reload-v1.png",
+      "outputSha256": "f4628f8d8523f3e77f55e8ee41401ba35aea80ce8c365cef95b3cdd88196e56e",
+      "tracks": [
+        {
+          "frame": 0,
+          "sourceRect": [
+            0,
+            0,
+            512,
+            512
+          ],
+          "uniformScale": 0.8,
+          "destinationOffset": [
+            51,
+            51
+          ],
+          "packingOffset": [
+            0,
+            0
+          ],
+          "rootOffset": [
+            0,
+            0
+          ],
+          "pivot": {
+            "x": 256.0,
+            "y": 256.0
+          }
+        },
+        {
+          "frame": 1,
+          "sourceRect": [
+            512,
+            0,
+            1024,
+            512
+          ],
+          "uniformScale": 0.8,
+          "destinationOffset": [
+            51,
+            51
+          ],
+          "packingOffset": [
+            0,
+            0
+          ],
+          "rootOffset": [
+            0,
+            0
+          ],
+          "pivot": {
+            "x": 256.0,
+            "y": 256.0
+          }
+        },
+        {
+          "frame": 2,
+          "sourceRect": [
+            1024,
+            0,
+            1536,
+            512
+          ],
+          "uniformScale": 0.8,
+          "destinationOffset": [
+            51,
+            51
+          ],
+          "packingOffset": [
+            0,
+            0
+          ],
+          "rootOffset": [
+            0,
+            0
+          ],
+          "pivot": {
+            "x": 256.0,
+            "y": 256.0
+          }
+        },
+        {
+          "frame": 3,
+          "sourceRect": [
+            0,
+            512,
+            512,
+            1024
+          ],
+          "uniformScale": 0.8,
+          "destinationOffset": [
+            51,
+            51
+          ],
+          "packingOffset": [
+            0,
+            0
+          ],
+          "rootOffset": [
+            0,
+            0
+          ],
+          "pivot": {
+            "x": 256.0,
+            "y": 256.0
+          }
+        },
+        {
+          "frame": 4,
+          "sourceRect": [
+            512,
+            512,
+            1024,
+            1024
+          ],
+          "uniformScale": 0.8,
+          "destinationOffset": [
+            51,
+            51
+          ],
+          "packingOffset": [
+            0,
+            0
+          ],
+          "rootOffset": [
+            0,
+            0
+          ],
+          "pivot": {
+            "x": 256.0,
+            "y": 256.0
+          }
+        },
+        {
+          "frame": 5,
+          "sourceRect": [
+            1024,
+            512,
+            1536,
+            1024
+          ],
+          "uniformScale": 0.8,
+          "destinationOffset": [
+            51,
+            51
+          ],
+          "packingOffset": [
+            0,
+            0
+          ],
+          "rootOffset": [
+            0,
+            0
+          ],
+          "pivot": {
+            "x": 256.0,
+            "y": 256.0
+          }
+        }
+      ]
+    },
+    {
+      "clip": "charge-attack",
+      "source": "Native-Charge-Attack-v2.png",
+      "sourceSha256": "fab86ae1468e690fcf372657540b5c6f3e4ce966fe3c3ee5cded0f0b5f38888b",
+      "output": "Charge-Attack-v2.png",
+      "outputSha256": "c51c4ee774f3558b9f1eb0eee3a554ce178f1493643d1878daf68e78e79341f5",
+      "tracks": [
+        {
+          "frame": 0,
+          "sourceRect": [
+            0,
+            0,
+            512,
+            512
+          ],
+          "uniformScale": 0.8,
+          "destinationOffset": [
+            51,
+            51
+          ],
+          "packingOffset": [
+            0,
+            0
+          ],
+          "rootOffset": [
+            0,
+            0
+          ],
+          "pivot": {
+            "x": 256.0,
+            "y": 256.0
+          }
+        },
+        {
+          "frame": 1,
+          "sourceRect": [
+            512,
+            0,
+            1024,
+            512
+          ],
+          "uniformScale": 0.8,
+          "destinationOffset": [
+            51,
+            51
+          ],
+          "packingOffset": [
+            0,
+            0
+          ],
+          "rootOffset": [
+            0,
+            0
+          ],
+          "pivot": {
+            "x": 256.0,
+            "y": 256.0
+          }
+        },
+        {
+          "frame": 2,
+          "sourceRect": [
+            1118,
+            0,
+            1536,
+            512
+          ],
+          "uniformScale": 0.8,
+          "destinationOffset": [
+            126,
+            51
+          ],
+          "packingOffset": [
+            0,
+            0
+          ],
+          "rootOffset": [
+            0,
+            0
+          ],
+          "pivot": {
+            "x": 256.0,
+            "y": 256.0
+          }
+        },
+        {
+          "frame": 3,
+          "sourceRect": [
+            0,
+            512,
+            512,
+            1024
+          ],
+          "uniformScale": 0.8,
+          "destinationOffset": [
+            51,
+            51
+          ],
+          "packingOffset": [
+            0,
+            0
+          ],
+          "rootOffset": [
+            0,
+            0
+          ],
+          "pivot": {
+            "x": 256.0,
+            "y": 256.0
+          }
+        },
+        {
+          "frame": 4,
+          "sourceRect": [
+            512,
+            512,
+            1024,
+            1024
+          ],
+          "uniformScale": 0.8,
+          "destinationOffset": [
+            51,
+            51
+          ],
+          "packingOffset": [
+            0,
+            0
+          ],
+          "rootOffset": [
+            0,
+            0
+          ],
+          "pivot": {
+            "x": 256.0,
+            "y": 256.0
+          }
+        },
+        {
+          "frame": 5,
+          "sourceRect": [
+            1024,
+            512,
+            1536,
+            1024
+          ],
+          "uniformScale": 0.8,
+          "destinationOffset": [
+            51,
+            51
+          ],
+          "packingOffset": [
+            0,
+            0
+          ],
+          "rootOffset": [
+            0,
+            0
+          ],
+          "pivot": {
+            "x": 256.0,
+            "y": 256.0
+          }
+        }
+      ]
+    },
+    {
+      "clip": "death-back",
+      "source": "Native-Death-Back-v3.png",
+      "sourceSha256": "882e2d6bfd2b9104d241f65eff9feea15b157a623bc72a591a4153ba35a0bb74",
+      "output": "Death-Back-v3.png",
+      "outputSha256": "d492b2c561044e3b49e5b105741ee8c20cb42602ede69b83b7b4d92432951dbe",
+      "tracks": [
+        {
+          "frame": 0,
+          "sourceRect": [
+            0,
+            0,
+            512,
+            512
+          ],
+          "uniformScale": 0.8,
+          "destinationOffset": [
+            51,
+            51
+          ],
+          "packingOffset": [
+            0,
+            0
+          ],
+          "rootOffset": [
+            0,
+            0
+          ],
+          "pivot": {
+            "x": 256.0,
+            "y": 256.0
+          }
+        },
+        {
+          "frame": 1,
+          "sourceRect": [
+            512,
+            0,
+            1024,
+            512
+          ],
+          "uniformScale": 0.8,
+          "destinationOffset": [
+            51,
+            51
+          ],
+          "packingOffset": [
+            0,
+            0
+          ],
+          "rootOffset": [
+            0,
+            0
+          ],
+          "pivot": {
+            "x": 256.0,
+            "y": 256.0
+          }
+        },
+        {
+          "frame": 2,
+          "sourceRect": [
+            1024,
+            0,
+            1536,
+            512
+          ],
+          "uniformScale": 0.8,
+          "destinationOffset": [
+            51,
+            51
+          ],
+          "packingOffset": [
+            0,
+            0
+          ],
+          "rootOffset": [
+            0,
+            0
+          ],
+          "pivot": {
+            "x": 256.0,
+            "y": 256.0
+          }
+        },
+        {
+          "frame": 3,
+          "sourceRect": [
+            0,
+            512,
+            512,
+            1024
+          ],
+          "uniformScale": 0.8,
+          "destinationOffset": [
+            51,
+            51
+          ],
+          "packingOffset": [
+            0,
+            0
+          ],
+          "rootOffset": [
+            0,
+            0
+          ],
+          "pivot": {
+            "x": 256.0,
+            "y": 256.0
+          }
+        },
+        {
+          "frame": 4,
+          "sourceRect": [
+            512,
+            512,
+            1024,
+            1024
+          ],
+          "uniformScale": 0.8,
+          "destinationOffset": [
+            51,
+            51
+          ],
+          "packingOffset": [
+            0,
+            0
+          ],
+          "rootOffset": [
+            0,
+            0
+          ],
+          "pivot": {
+            "x": 256.0,
+            "y": 256.0
+          }
+        },
+        {
+          "frame": 5,
+          "sourceRect": [
+            1024,
+            512,
+            1536,
+            1024
+          ],
+          "uniformScale": 0.8,
+          "destinationOffset": [
+            51,
+            51
+          ],
+          "packingOffset": [
+            0,
+            0
+          ],
+          "rootOffset": [
+            0,
+            0
+          ],
+          "pivot": {
+            "x": 256.0,
+            "y": 256.0
+          }
+        }
+      ]
+    }
+  ]
+}

@@ -1,0 +1,798 @@
+{
+  "date": "2026-10-07",
+  "mode": "built-in-imagegen",
+  "selectedIdle": "Idle-Overhead-v2.png",
+  "generatedSource": "C:/Users/Damien/.codex/generated_images/01a0fea1-c63f-7343-92ca-6c21cc1c4296/exec-46a2a767-5a8d-4ca7-941a-d68c13e249ff.png",
+  "reference": "../PlateSpearman/Idle-Overhead-v2.png",
+  "prompt": "Create ONE overhead idle game sprite of a Russian Late Medieval BOYAR GUARD, elite heavy PLATE armored SHOCK INFANTRY, wielding a large TWO-HANDED MACE. Reference image provides established rich smooth painterly strategy-game style, Russian burgundy/brass/steel palette and directly overhead camera. NEW role silhouette broader and more heavily armored than spearman. NO shield, NO spear, NO axe. Heavy enclosed steel helmet with shallow Rus-inspired pointed crown and restrained brass trim, broad thick articulated plate pauldrons, full steel cuirass, plate vambraces and GAUNTLETS, burgundy padded underlayer, mail only at joints, armored thigh protection and heavy boots. Very stocky imposing soldier. Large rigid TWO-HANDED FLANGED MACE: long dark hardwood shaft with steel reinforcing bands and leather grip, massive clearly blunt steel head with SIX broad chunky flanges around a central core, NOT spikes, not hammer, not axe blade. Both armored hands visibly closed around separate locations on SAME long handle, holding mace diagonally in a calm ready stance with heavy flanged head to SCREEN UPPER LEFT; whole mace head and shaft inside frame. Strong weapon readability at48/64/128px. Camera EXACTLY90degree vertical overhead orthographic, looking directly down standing spine. Helmet TOP crown and broad shoulder TOPS dominate. Chest front hidden under helmet, no face, very foreshortened torso, shoes only tips beneath body. Soldier facing SCREENBOTTOM, stance upright not bowing head. Single isolated soldier, SINGLE idle frame only. Entire actor and weapon fit inside generous 80px transparent margins all sides. Matching textured painted materials, clean soft edges without colored halo or heavy outline. Genuinely transparent background, no ground/shadow plane, no text, no scenery. Imagined Russian culture game roster.",
+  "userApproval": "Armor and mace look liked by user; overhead v2 idle awaiting review",
+  "revisions": [
+    {
+      "date": "2026-10-07",
+      "mode": "built-in-imagegen",
+      "selectedIdle": "Idle-Overhead-v2.png",
+      "generatedSource": "C:/Users/Damien/.codex/generated_images/01a0fea1-c63f-7343-92ca-6c21cc1c4296/exec-047cbfe0-f476-4242-9e37-cf8792ae34f9.png",
+      "prompt": "EDIT only camera angle of this approved Boyar Guard idle design. User LOVES the look; preserve SAME heavy steel plate armor shapes, gold/brass trim and rivets, burgundy padding, mail joints, same closed pointed Rus-inspired helmet, same broad layered pauldrons, same gauntlets, and EXACT same massive flanged two-handed mace design, shaft proportions, steel/brass bands and wrapped grip. Keep two hands gripping shaft at separate locations, mace diagonal from lowerRIGHT wood butt to upperLEFT blunt steel flanged head. Do NOT change weapon into hammer/axe or add shield. Required correction: much MORE TOP DOWN, TRUE90degree vertical overhead orthographic camera looking straight down standing spine. Helmet CROWN and shoulder TOP surfaces dominate, helmet obscures nearly all chest front, no face or visor front visible. Chest strongly compressed in projection, torso short shallow oval, only tiny shoe tips beneath body. See TOP surfaces of forearms and gauntlets. Do not make soldier bow head; keep upright stance and move CAMERA to zenith. Soldier still faces SCREENBOTTOM. Preserve imposing broad heavy shock infantry silhouette and original rich smoothly painted game materials. Single isolated idle frame, full mace and soldier visible with generous transparent margins, genuinely transparent background, clean alpha, no colored fringe, no ground/scenery/text/shadow plane.",
+      "reference": "Idle-v1.png",
+      "revisionReason": "Preserve the liked armor and mace design; move camera more directly overhead.",
+      "userApproval": "Awaiting idle review"
+    }
+  ],
+  "approval": "Idle-Overhead-v2.png approved for animation; animation artwork pending review.",
+  "animations": [
+    {
+      "id": "idle",
+      "file": "Idle-Animated-v1.png",
+      "motion": "IDLE LOOP six subtlebreathingposes, plantedfeet fixedhelmetroot. Mace diagonalheadUPLEFT buttDOWNRIGHT exactlyreference. Gentle chestbreathing with almoststillhands, return smoothlytofirst no jolt.",
+      "prompt": "Animate EXACT approved Russian Late Medieval BOYAR GUARD in reference, same heavy broad steel segmented plate shoulders, closed Rus pointed helmet crown with brass trim, burgundy padding, mail joints, plate gauntlets, boots. NO shield. Same TWO-HANDED FLANGED MACE in ALL frames: long darkwood shaft, brass/steel bands, leather grip, massive blunt SIX broad steel flanges around rounded center, brassring/cap. NOT hammer, axe, spear, ball or spikedclub. Both gauntlets genuinely grip SAME rigidhandle at fixed spaced grip spots, no sliding/weaponmorph/detachedhand. STRICT90degree vertical overhead orthographic camera looking down standing spine, crown and shoulderTOPS dominate, no face/frontportrait, compressedtorso. Facing SCREENBOTTOM. Same rich smooth painterly game materials and restrained natural edges. EXACT1536x1024 TRANSPARENT RGBA SHEET:3columns2rows, six512x512cells row-major. ONE COMPLETE isolated actor percell with ENTIREmace insidecell and>=35pxguard. Body240pxwide, mace350pxlong, stablecommon scale and bodyroot(280,290) acrossposes. No text/grid/background/groundshadow/fragments. \nMOTION: IDLE LOOP six subtlebreathingposes, plantedfeet fixedhelmetroot. Mace diagonalheadUPLEFT buttDOWNRIGHT exactlyreference. Gentle chestbreathing with almoststillhands, return smoothlytofirst no jolt.",
+      "generatedSource": "C:/Users/Damien/.codex/generated_images/01a0fea1-c63f-7343-92ca-6c21cc1c4296/exec-b5060c11-e169-4806-b48f-4d3a49e8270a.png",
+      "nativeFile": "Native-Idle-Animated-v1.png",
+      "status": "selected-source",
+      "rootOffsets": [
+        [
+          74,
+          -27
+        ],
+        [
+          40,
+          -52
+        ],
+        [
+          44,
+          -22
+        ],
+        [
+          54,
+          -43
+        ],
+        [
+          40,
+          -60
+        ],
+        [
+          48,
+          -28
+        ]
+      ],
+      "sourceRects": [
+        [
+          8,
+          23,
+          522,
+          499
+        ],
+        [
+          510,
+          23,
+          1002,
+          500
+        ],
+        [
+          1018,
+          23,
+          1507,
+          500
+        ],
+        [
+          3,
+          522,
+          503,
+          1000
+        ],
+        [
+          509,
+          521,
+          1007,
+          1001
+        ],
+        [
+          1018,
+          522,
+          1517,
+          1001
+        ]
+      ],
+      "poseFiles": [
+        "Isolated-idle-0.png",
+        "Isolated-idle-1.png",
+        "Isolated-idle-2.png",
+        "Isolated-idle-3.png",
+        "Isolated-idle-4.png",
+        "Isolated-idle-5.png"
+      ]
+    },
+    {
+      "id": "running",
+      "file": "Walk-v1.png",
+      "motion": "WALK LOOP six naturalalternating steps:1leftforward rightback;2weighttransfer;3legspass;4rightforward leftback;5transfer;6pass backtoward1. Mace carried diagonallyheadUPLEFT in bothhands, steadyarmorandhelmet, no lateralsway, clearfeetmovement.",
+      "prompt": "Animate EXACT approved Russian Late Medieval BOYAR GUARD in reference, same heavy broad steel segmented plate shoulders, closed Rus pointed helmet crown with brass trim, burgundy padding, mail joints, plate gauntlets, boots. NO shield. Same TWO-HANDED FLANGED MACE in ALL frames: long darkwood shaft, brass/steel bands, leather grip, massive blunt SIX broad steel flanges around rounded center, brassring/cap. NOT hammer, axe, spear, ball or spikedclub. Both gauntlets genuinely grip SAME rigidhandle at fixed spaced grip spots, no sliding/weaponmorph/detachedhand. STRICT90degree vertical overhead orthographic camera looking down standing spine, crown and shoulderTOPS dominate, no face/frontportrait, compressedtorso. Facing SCREENBOTTOM. Same rich smooth painterly game materials and restrained natural edges. EXACT1536x1024 TRANSPARENT RGBA SHEET:3columns2rows, six512x512cells row-major. ONE COMPLETE isolated actor percell with ENTIREmace insidecell and>=35pxguard. Body240pxwide, mace350pxlong, stablecommon scale and bodyroot(280,290) acrossposes. No text/grid/background/groundshadow/fragments. \nMOTION: WALK LOOP six naturalalternating steps:1leftforward rightback;2weighttransfer;3legspass;4rightforward leftback;5transfer;6pass backtoward1. Mace carried diagonallyheadUPLEFT in bothhands, steadyarmorandhelmet, no lateralsway, clearfeetmovement.",
+      "generatedSource": "C:/Users/Damien/.codex/generated_images/01a0fea1-c63f-7343-92ca-6c21cc1c4296/exec-9b6cc454-db89-462a-93f4-aed6974fa341.png",
+      "nativeFile": "Native-Walk-v1.png",
+      "status": "selected-source",
+      "rootOffsets": [
+        [
+          72,
+          -74
+        ],
+        [
+          27,
+          -69
+        ],
+        [
+          31,
+          -59
+        ],
+        [
+          75,
+          -85
+        ],
+        [
+          41,
+          -83
+        ],
+        [
+          29,
+          -87
+        ]
+      ],
+      "sourceRects": [
+        [
+          31,
+          12,
+          500,
+          491
+        ],
+        [
+          520,
+          13,
+          972,
+          465
+        ],
+        [
+          1030,
+          15,
+          1490,
+          486
+        ],
+        [
+          38,
+          518,
+          510,
+          976
+        ],
+        [
+          534,
+          507,
+          993,
+          976
+        ],
+        [
+          1031,
+          507,
+          1497,
+          944
+        ]
+      ],
+      "poseFiles": [
+        "Isolated-running-0.png",
+        "Isolated-running-1.png",
+        "Isolated-running-2.png",
+        "Isolated-running-3.png",
+        "Isolated-running-4.png",
+        "Isolated-running-5.png"
+      ]
+    },
+    {
+      "id": "charge",
+      "file": "Charge-v1.png",
+      "motion": "CHARGE RUN LOOP, six quickalternating runningstrides:push-off,legs pass,oppositefootforward,push-off,pass,return. Heavyforwardlean, twohands carry mace diagonallyheadUPLEFT readyforstrike. Feetmove clearly, rootsteady, no sidetosideshaking, no attack yet.",
+      "prompt": "Animate EXACT approved Russian Late Medieval BOYAR GUARD in reference, same heavy broad steel segmented plate shoulders, closed Rus pointed helmet crown with brass trim, burgundy padding, mail joints, plate gauntlets, boots. NO shield. Same TWO-HANDED FLANGED MACE in ALL frames: long darkwood shaft, brass/steel bands, leather grip, massive blunt SIX broad steel flanges around rounded center, brassring/cap. NOT hammer, axe, spear, ball or spikedclub. Both gauntlets genuinely grip SAME rigidhandle at fixed spaced grip spots, no sliding/weaponmorph/detachedhand. STRICT90degree vertical overhead orthographic camera looking down standing spine, crown and shoulderTOPS dominate, no face/frontportrait, compressedtorso. Facing SCREENBOTTOM. Same rich smooth painterly game materials and restrained natural edges. EXACT1536x1024 TRANSPARENT RGBA SHEET:3columns2rows, six512x512cells row-major. ONE COMPLETE isolated actor percell with ENTIREmace insidecell and>=35pxguard. Body240pxwide, mace350pxlong, stablecommon scale and bodyroot(280,290) acrossposes. No text/grid/background/groundshadow/fragments. \nMOTION: CHARGE RUN LOOP, six quickalternating runningstrides:push-off,legs pass,oppositefootforward,push-off,pass,return. Heavyforwardlean, twohands carry mace diagonallyheadUPLEFT readyforstrike. Feetmove clearly, rootsteady, no sidetosideshaking, no attack yet.",
+      "generatedSource": "C:/Users/Damien/.codex/generated_images/01a0fea1-c63f-7343-92ca-6c21cc1c4296/exec-924a7530-a31f-465c-8059-1fdf8ecfc000.png",
+      "nativeFile": "Native-Charge-v1.png",
+      "status": "selected-source",
+      "rootOffsets": [
+        [
+          51,
+          -56
+        ],
+        [
+          49,
+          -51
+        ],
+        [
+          44,
+          -50
+        ],
+        [
+          52,
+          -66
+        ],
+        [
+          57,
+          -58
+        ],
+        [
+          52,
+          -59
+        ]
+      ],
+      "sourceRects": [
+        [
+          34,
+          7,
+          450,
+          498
+        ],
+        [
+          544,
+          7,
+          969,
+          436
+        ],
+        [
+          1052,
+          12,
+          1474,
+          491
+        ],
+        [
+          27,
+          511,
+          461,
+          994
+        ],
+        [
+          541,
+          510,
+          982,
+          945
+        ],
+        [
+          1068,
+          504,
+          1476,
+          1002
+        ]
+      ],
+      "poseFiles": [
+        "Isolated-charge-0.png",
+        "Isolated-charge-1.png",
+        "Isolated-charge-2.png",
+        "Isolated-charge-3.png",
+        "Isolated-charge-4.png",
+        "Isolated-charge-5.png"
+      ]
+    },
+    {
+      "id": "attack",
+      "file": "Attack-v1.png",
+      "motion": "TWO-HANDED MACE STRIKE toward SCREENBOTTOM:1diagonalready headUPLEFT;2turn shoulders and lift bothhands/maceheadback above shoulder;3accelerate whole rigidmace forward;4committed downwardforwardblow, macehead at SCREENBOTTOM ahead of shoes, bodyleans slightly into blow;5withdraw;6return exactdiagonalready. SAME SIX-FLANGED bluntsteel head/brassring and fullhandle throughout, head NEVER becomesaxe/hammer. Bothhands move together maintainingfixed spacedgrips. Show clear large arc, notshaftthrust. Overhead always.",
+      "prompt": "Animate EXACT approved Russian Late Medieval BOYAR GUARD in reference, same heavy broad steel segmented plate shoulders, closed Rus pointed helmet crown with brass trim, burgundy padding, mail joints, plate gauntlets, boots. NO shield. Same TWO-HANDED FLANGED MACE in ALL frames: long darkwood shaft, brass/steel bands, leather grip, massive blunt SIX broad steel flanges around rounded center, brassring/cap. NOT hammer, axe, spear, ball or spikedclub. Both gauntlets genuinely grip SAME rigidhandle at fixed spaced grip spots, no sliding/weaponmorph/detachedhand. STRICT90degree vertical overhead orthographic camera looking down standing spine, crown and shoulderTOPS dominate, no face/frontportrait, compressedtorso. Facing SCREENBOTTOM. Same rich smooth painterly game materials and restrained natural edges. EXACT1536x1024 TRANSPARENT RGBA SHEET:3columns2rows, six512x512cells row-major. ONE COMPLETE isolated actor percell with ENTIREmace insidecell and>=35pxguard. Body240pxwide, mace350pxlong, stablecommon scale and bodyroot(280,290) acrossposes. No text/grid/background/groundshadow/fragments. \nMOTION: TWO-HANDED MACE STRIKE toward SCREENBOTTOM:1diagonalready headUPLEFT;2turn shoulders and lift bothhands/maceheadback above shoulder;3accelerate whole rigidmace forward;4committed downwardforwardblow, macehead at SCREENBOTTOM ahead of shoes, bodyleans slightly into blow;5withdraw;6return exactdiagonalready. SAME SIX-FLANGED bluntsteel head/brassring and fullhandle throughout, head NEVER becomesaxe/hammer. Bothhands move together maintainingfixed spacedgrips. Show clear large arc, notshaftthrust. Overhead always.",
+      "generatedSource": "C:/Users/Damien/.codex/generated_images/01a0fea1-c63f-7343-92ca-6c21cc1c4296/exec-0ab2dcdb-01e7-4e20-b923-ac6f5ac84a1a.png",
+      "nativeFile": "Native-Attack-v1.png",
+      "status": "selected-source",
+      "rootOffsets": [
+        [
+          42,
+          -8
+        ],
+        [
+          42,
+          -8
+        ],
+        [
+          42,
+          -8
+        ],
+        [
+          42,
+          -8
+        ],
+        [
+          42,
+          -8
+        ],
+        [
+          42,
+          -8
+        ]
+      ],
+      "sourceRects": [
+        [
+          9,
+          27,
+          462,
+          477
+        ],
+        [
+          510,
+          11,
+          951,
+          429
+        ],
+        [
+          1052,
+          79,
+          1428,
+          516
+        ],
+        [
+          123,
+          539,
+          395,
+          1003
+        ],
+        [
+          579,
+          535,
+          1010,
+          1004
+        ],
+        [
+          1034,
+          506,
+          1487,
+          984
+        ]
+      ],
+      "poseFiles": [
+        "Isolated-attack-0.png",
+        "Isolated-attack-1.png",
+        "Isolated-attack-2.png",
+        "Isolated-attack-3.png",
+        "Isolated-attack-4.png",
+        "Isolated-attack-5.png"
+      ]
+    },
+    {
+      "id": "charge-attack",
+      "file": "Charge-Attack-v1.png",
+      "motion": "HEAVY CHARGE MACE SLAM toward SCREENBOTTOM:1brace diagonalready;2large twohandwindup with headaboveleftshoulder;3stepin and begin fullswing;4massive overhead slam with bluntFLANGED macehead projected ahead at SCREENBOTTOM, deep committed lunge;5lift weaponrecovery;6ready. Botharms actuallyswing SAME rigidmace around fixedhandgrips. Fullhead/handleinsidethecell, identical flanges brassbands no morph. Not anaxe orhammer, no thrust. Facingdown throughout.",
+      "prompt": "Animate EXACT approved Russian Late Medieval BOYAR GUARD in reference, same heavy broad steel segmented plate shoulders, closed Rus pointed helmet crown with brass trim, burgundy padding, mail joints, plate gauntlets, boots. NO shield. Same TWO-HANDED FLANGED MACE in ALL frames: long darkwood shaft, brass/steel bands, leather grip, massive blunt SIX broad steel flanges around rounded center, brassring/cap. NOT hammer, axe, spear, ball or spikedclub. Both gauntlets genuinely grip SAME rigidhandle at fixed spaced grip spots, no sliding/weaponmorph/detachedhand. STRICT90degree vertical overhead orthographic camera looking down standing spine, crown and shoulderTOPS dominate, no face/frontportrait, compressedtorso. Facing SCREENBOTTOM. Same rich smooth painterly game materials and restrained natural edges. EXACT1536x1024 TRANSPARENT RGBA SHEET:3columns2rows, six512x512cells row-major. ONE COMPLETE isolated actor percell with ENTIREmace insidecell and>=35pxguard. Body240pxwide, mace350pxlong, stablecommon scale and bodyroot(280,290) acrossposes. No text/grid/background/groundshadow/fragments. \nMOTION: HEAVY CHARGE MACE SLAM toward SCREENBOTTOM:1brace diagonalready;2large twohandwindup with headaboveleftshoulder;3stepin and begin fullswing;4massive overhead slam with bluntFLANGED macehead projected ahead at SCREENBOTTOM, deep committed lunge;5lift weaponrecovery;6ready. Botharms actuallyswing SAME rigidmace around fixedhandgrips. Fullhead/handleinsidethecell, identical flanges brassbands no morph. Not anaxe orhammer, no thrust. Facingdown throughout.",
+      "generatedSource": "C:/Users/Damien/.codex/generated_images/01a0fea1-c63f-7343-92ca-6c21cc1c4296/exec-5e66f341-4722-4547-9772-dcb66ac115ae.png",
+      "nativeFile": "Native-Charge-Attack-v1.png",
+      "status": "selected-source",
+      "rootOffsets": [
+        [
+          32,
+          -30
+        ],
+        [
+          32,
+          -30
+        ],
+        [
+          32,
+          -30
+        ],
+        [
+          32,
+          -30
+        ],
+        [
+          32,
+          -30
+        ],
+        [
+          32,
+          -30
+        ]
+      ],
+      "sourceRects": [
+        [
+          25,
+          11,
+          439,
+          449
+        ],
+        [
+          507,
+          7,
+          924,
+          427
+        ],
+        [
+          1036,
+          70,
+          1437,
+          473
+        ],
+        [
+          164,
+          543,
+          397,
+          1016
+        ],
+        [
+          628,
+          464,
+          1013,
+          942
+        ],
+        [
+          1041,
+          505,
+          1465,
+          946
+        ]
+      ],
+      "poseFiles": [
+        "Isolated-charge-attack-0.png",
+        "Isolated-charge-attack-1.png",
+        "Isolated-charge-attack-2.png",
+        "Isolated-charge-attack-3.png",
+        "Isolated-charge-attack-4.png",
+        "Isolated-charge-attack-5.png"
+      ]
+    },
+    {
+      "id": "hit",
+      "file": "Hit-v1.png",
+      "motion": "GET HIT briefnonloop reaction:1approvedidle;2shouldersrecoil and kneesbend;3bracedflinch with botharms and rigidmace movingalong;4recenter;5straighten;6returnapprovedidle. Macehead remainsupperLEFT, weaponfollowsarms notfrozenhand. Keepheavysteadyarmoridentity no violentfall.",
+      "prompt": "Animate EXACT approved Russian Late Medieval BOYAR GUARD in reference, same heavy broad steel segmented plate shoulders, closed Rus pointed helmet crown with brass trim, burgundy padding, mail joints, plate gauntlets, boots. NO shield. Same TWO-HANDED FLANGED MACE in ALL frames: long darkwood shaft, brass/steel bands, leather grip, massive blunt SIX broad steel flanges around rounded center, brassring/cap. NOT hammer, axe, spear, ball or spikedclub. Both gauntlets genuinely grip SAME rigidhandle at fixed spaced grip spots, no sliding/weaponmorph/detachedhand. STRICT90degree vertical overhead orthographic camera looking down standing spine, crown and shoulderTOPS dominate, no face/frontportrait, compressedtorso. Facing SCREENBOTTOM. Same rich smooth painterly game materials and restrained natural edges. EXACT1536x1024 TRANSPARENT RGBA SHEET:3columns2rows, six512x512cells row-major. ONE COMPLETE isolated actor percell with ENTIREmace insidecell and>=35pxguard. Body240pxwide, mace350pxlong, stablecommon scale and bodyroot(280,290) acrossposes. No text/grid/background/groundshadow/fragments. \nMOTION: GET HIT briefnonloop reaction:1approvedidle;2shouldersrecoil and kneesbend;3bracedflinch with botharms and rigidmace movingalong;4recenter;5straighten;6returnapprovedidle. Macehead remainsupperLEFT, weaponfollowsarms notfrozenhand. Keepheavysteadyarmoridentity no violentfall.",
+      "generatedSource": "C:/Users/Damien/.codex/generated_images/01a0fea1-c63f-7343-92ca-6c21cc1c4296/exec-79b3da73-06ea-43cc-9bb9-509ec06dd1c0.png",
+      "nativeFile": "Native-Hit-v1.png",
+      "status": "selected-source",
+      "rootOffsets": [
+        [
+          45,
+          -48
+        ],
+        [
+          45,
+          -48
+        ],
+        [
+          45,
+          -48
+        ],
+        [
+          45,
+          -48
+        ],
+        [
+          45,
+          -48
+        ],
+        [
+          45,
+          -48
+        ]
+      ],
+      "sourceRects": [
+        [
+          19,
+          14,
+          498,
+          504
+        ],
+        [
+          519,
+          15,
+          1003,
+          512
+        ],
+        [
+          1040,
+          62,
+          1494,
+          505
+        ],
+        [
+          24,
+          518,
+          499,
+          994
+        ],
+        [
+          523,
+          517,
+          1007,
+          1009
+        ],
+        [
+          1035,
+          518,
+          1515,
+          1010
+        ]
+      ],
+      "poseFiles": [
+        "Isolated-hit-0.png",
+        "Isolated-hit-1.png",
+        "Isolated-hit-2.png",
+        "Isolated-hit-3.png",
+        "Isolated-hit-4.png",
+        "Isolated-hit-5.png"
+      ]
+    },
+    {
+      "id": "charged",
+      "file": "Charged-v1.png",
+      "motion": "GET CHARGED HEAVYIMPACT nonloop sixposes:1approvedidle;2violentshoulderrecoil kneesbend;3stumbleback with botharms/mace displaced;4deepstagger almostkneeling, weapon rigidlyswings with hands and torso;5pushupright;6regainapprovedidle. Mace never freezes while armsfall, headneverflips independently shaft; samebluntflanges andfullhandle allposes. Helmeton no death.",
+      "prompt": "Animate EXACT approved Russian Late Medieval BOYAR GUARD in reference, same heavy broad steel segmented plate shoulders, closed Rus pointed helmet crown with brass trim, burgundy padding, mail joints, plate gauntlets, boots. NO shield. Same TWO-HANDED FLANGED MACE in ALL frames: long darkwood shaft, brass/steel bands, leather grip, massive blunt SIX broad steel flanges around rounded center, brassring/cap. NOT hammer, axe, spear, ball or spikedclub. Both gauntlets genuinely grip SAME rigidhandle at fixed spaced grip spots, no sliding/weaponmorph/detachedhand. STRICT90degree vertical overhead orthographic camera looking down standing spine, crown and shoulderTOPS dominate, no face/frontportrait, compressedtorso. Facing SCREENBOTTOM. Same rich smooth painterly game materials and restrained natural edges. EXACT1536x1024 TRANSPARENT RGBA SHEET:3columns2rows, six512x512cells row-major. ONE COMPLETE isolated actor percell with ENTIREmace insidecell and>=35pxguard. Body240pxwide, mace350pxlong, stablecommon scale and bodyroot(280,290) acrossposes. No text/grid/background/groundshadow/fragments. \nMOTION: GET CHARGED HEAVYIMPACT nonloop sixposes:1approvedidle;2violentshoulderrecoil kneesbend;3stumbleback with botharms/mace displaced;4deepstagger almostkneeling, weapon rigidlyswings with hands and torso;5pushupright;6regainapprovedidle. Mace never freezes while armsfall, headneverflips independently shaft; samebluntflanges andfullhandle allposes. Helmeton no death.",
+      "generatedSource": "C:/Users/Damien/.codex/generated_images/01a0fea1-c63f-7343-92ca-6c21cc1c4296/exec-35bba711-b091-49be-b54a-cad4bf2d59b5.png",
+      "nativeFile": "Native-Charged-v1.png",
+      "status": "superseded-background-haze",
+      "rootOffsets": [
+        [
+          51,
+          -46
+        ],
+        [
+          51,
+          -46
+        ],
+        [
+          51,
+          -46
+        ],
+        [
+          51,
+          -46
+        ],
+        [
+          51,
+          -46
+        ],
+        [
+          51,
+          -46
+        ]
+      ]
+    },
+    {
+      "id": "death",
+      "file": "Death-Side-v1.png",
+      "motion": "SIDE DEATH fullsixframefall:1approvedidle;2kneesbuckling and bodytipsleft;3descending tohip with botharmsand macefollowing;4shouldercontactsground legsfold;5rollsettle;6deadonSIDE fullyfallen with helmeton and mace restingalongside. Lasttwo frames same corpseorientation, no flips. Wholearmor/maceinsideeachcell, no disappearinghead/shaft, cleanoverheadgroundplane. Sixdistinctprogressiveposes notjustcorpse.",
+      "prompt": "Animate EXACT approved Russian Late Medieval BOYAR GUARD in reference, same heavy broad steel segmented plate shoulders, closed Rus pointed helmet crown with brass trim, burgundy padding, mail joints, plate gauntlets, boots. NO shield. Same TWO-HANDED FLANGED MACE in ALL frames: long darkwood shaft, brass/steel bands, leather grip, massive blunt SIX broad steel flanges around rounded center, brassring/cap. NOT hammer, axe, spear, ball or spikedclub. Both gauntlets genuinely grip SAME rigidhandle at fixed spaced grip spots, no sliding/weaponmorph/detachedhand. STRICT90degree vertical overhead orthographic camera looking down standing spine, crown and shoulderTOPS dominate, no face/frontportrait, compressedtorso. Facing SCREENBOTTOM. Same rich smooth painterly game materials and restrained natural edges. EXACT1536x1024 TRANSPARENT RGBA SHEET:3columns2rows, six512x512cells row-major. ONE COMPLETE isolated actor percell with ENTIREmace insidecell and>=35pxguard. Body240pxwide, mace350pxlong, stablecommon scale and bodyroot(280,290) acrossposes. No text/grid/background/groundshadow/fragments. \nMOTION: SIDE DEATH fullsixframefall:1approvedidle;2kneesbuckling and bodytipsleft;3descending tohip with botharmsand macefollowing;4shouldercontactsground legsfold;5rollsettle;6deadonSIDE fullyfallen with helmeton and mace restingalongside. Lasttwo frames same corpseorientation, no flips. Wholearmor/maceinsideeachcell, no disappearinghead/shaft, cleanoverheadgroundplane. Sixdistinctprogressiveposes notjustcorpse.",
+      "generatedSource": "C:/Users/Damien/.codex/generated_images/01a0fea1-c63f-7343-92ca-6c21cc1c4296/exec-4b1d041a-37aa-4a16-ad7f-fadfbf281bc5.png",
+      "nativeFile": "Native-Death-Side-v1.png",
+      "status": "selected-source",
+      "rootOffsets": [
+        [
+          28,
+          -71
+        ],
+        [
+          28,
+          -71
+        ],
+        [
+          28,
+          -71
+        ],
+        [
+          28,
+          -71
+        ],
+        [
+          28,
+          -71
+        ],
+        [
+          28,
+          -71
+        ]
+      ],
+      "sourceRects": [
+        [
+          8,
+          65,
+          434,
+          470
+        ],
+        [
+          517,
+          71,
+          920,
+          501
+        ],
+        [
+          985,
+          91,
+          1481,
+          503
+        ],
+        [
+          2,
+          636,
+          519,
+          978
+        ],
+        [
+          481,
+          645,
+          974,
+          944
+        ],
+        [
+          983,
+          670,
+          1533,
+          913
+        ]
+      ],
+      "poseFiles": [
+        "Isolated-death-0.png",
+        "Isolated-death-1.png",
+        "Isolated-death-2.png",
+        "Isolated-death-3.png",
+        "Isolated-death-4.png",
+        "Isolated-death-5.png"
+      ]
+    },
+    {
+      "id": "death-back",
+      "file": "Death-Back-v1.png",
+      "motion": "BACK DEATH fullsixframes:1idle;2recoil headback towardSCREEN TOP;3kneesbuckle fallingback;4backhitsground headTOP feetBOTTOM;5settle;6deadlyingonBACK sameorientation headTOP feetBOTTOM. Botharms and mace lowerwithcollapse, fullsameflangedmace restingdiagonally besidecorpse. Sameorientation last2 frames no inversion. Cleargradualfall, helmetremainson, strictoverhead groundplane, no gore.",
+      "prompt": "Animate EXACT approved Russian Late Medieval BOYAR GUARD in reference, same heavy broad steel segmented plate shoulders, closed Rus pointed helmet crown with brass trim, burgundy padding, mail joints, plate gauntlets, boots. NO shield. Same TWO-HANDED FLANGED MACE in ALL frames: long darkwood shaft, brass/steel bands, leather grip, massive blunt SIX broad steel flanges around rounded center, brassring/cap. NOT hammer, axe, spear, ball or spikedclub. Both gauntlets genuinely grip SAME rigidhandle at fixed spaced grip spots, no sliding/weaponmorph/detachedhand. STRICT90degree vertical overhead orthographic camera looking down standing spine, crown and shoulderTOPS dominate, no face/frontportrait, compressedtorso. Facing SCREENBOTTOM. Same rich smooth painterly game materials and restrained natural edges. EXACT1536x1024 TRANSPARENT RGBA SHEET:3columns2rows, six512x512cells row-major. ONE COMPLETE isolated actor percell with ENTIREmace insidecell and>=35pxguard. Body240pxwide, mace350pxlong, stablecommon scale and bodyroot(280,290) acrossposes. No text/grid/background/groundshadow/fragments. \nMOTION: BACK DEATH fullsixframes:1idle;2recoil headback towardSCREEN TOP;3kneesbuckle fallingback;4backhitsground headTOP feetBOTTOM;5settle;6deadlyingonBACK sameorientation headTOP feetBOTTOM. Botharms and mace lowerwithcollapse, fullsameflangedmace restingdiagonally besidecorpse. Sameorientation last2 frames no inversion. Cleargradualfall, helmetremainson, strictoverhead groundplane, no gore.",
+      "generatedSource": "C:/Users/Damien/.codex/generated_images/01a0fea1-c63f-7343-92ca-6c21cc1c4296/exec-d7c28bc0-6970-404a-b0d9-70523580034c.png",
+      "nativeFile": "Native-Death-Back-v1.png",
+      "status": "superseded-duplicate-helmet"
+    },
+    {
+      "id": "death-back",
+      "file": "Death-Back-v2.png",
+      "motion": "Rebuilt backward fall with one helmet per pose.",
+      "prompt": "Animate EXACT approved Russian Late Medieval BOYAR GUARD in reference, same heavy broad steel segmented plate shoulders, closed Rus pointed helmet crown with brass trim, burgundy padding, mail joints, plate gauntlets, boots. NO shield. Same TWO-HANDED FLANGED MACE in ALL frames: long darkwood shaft, brass/steel bands, leather grip, massive blunt SIX broad steel flanges around rounded center, brassring/cap. NOT hammer, axe, spear, ball or spikedclub. Both gauntlets genuinely grip SAME rigidhandle at fixed spaced grip spots, no sliding/weaponmorph/detachedhand. STRICT90degree vertical overhead orthographic camera looking down standing spine, crown and shoulderTOPS dominate, no face/frontportrait, compressedtorso. Facing SCREENBOTTOM. Same rich smooth painterly game materials and restrained natural edges. EXACT1536x1024 TRANSPARENT RGBA SHEET:3columns2rows, six512x512cells row-major. ONE COMPLETE isolated actor percell with ENTIREmace insidecell and>=35pxguard. Body240pxwide, mace350pxlong, stablecommon scale and bodyroot(280,290) acrossposes. No text/grid/background/groundshadow/fragments. \nREBUILD BACKWARD DEATH with EXACTLY ONE helmet/one head per soldier. Sixsequentialposes:1standingapprovedidle twohanddiagonalmace;2smallrearwardrecoil;3kneesbuckled fallingback;4lands flatONBACK head toward SCREEN TOP, feet toward SCREENBOTTOM;5settles;6sameflatcorpseorientation. Each actor has ONE torso ONE head ONE wornhelmet ONLY; do not add detachedhelmet or duplicatehead above him. Keep heavy plateincluding legplate, burgundy padding, same LARGE blunt sixflangedmace and woodshaft/brassbands. Botharms carry it throughcollapse then restsbesidebody. Finalcorpseface hiddenby singlehelmet visor, no extrahelmetbehindhead. Entireactorweaponinsidecell. Strong gradual fall and lastframesno flip. Camera90degree abovetheground, no mixedperspectives. SAME maceheadsize throughout about70px wide. Sixdistinctcompleteposes.",
+      "generatedSource": "C:/Users/Damien/.codex/generated_images/01a0fea1-c63f-7343-92ca-6c21cc1c4296/exec-27d04962-7bd6-4140-9b4b-1e6d65ea4e05.png",
+      "nativeFile": "Native-Death-Back-v2.png",
+      "status": "selected-source",
+      "rootOffsets": [
+        [
+          40,
+          -67
+        ],
+        [
+          40,
+          -67
+        ],
+        [
+          40,
+          -67
+        ],
+        [
+          40,
+          -67
+        ],
+        [
+          40,
+          -67
+        ],
+        [
+          40,
+          -67
+        ]
+      ],
+      "sourceRects": [
+        [
+          24,
+          23,
+          462,
+          452
+        ],
+        [
+          541,
+          17,
+          956,
+          465
+        ],
+        [
+          1051,
+          15,
+          1452,
+          500
+        ],
+        [
+          30,
+          535,
+          485,
+          968
+        ],
+        [
+          533,
+          535,
+          999,
+          976
+        ],
+        [
+          1038,
+          536,
+          1507,
+          981
+        ]
+      ],
+      "poseFiles": [
+        "Isolated-death-back-0.png",
+        "Isolated-death-back-1.png",
+        "Isolated-death-back-2.png",
+        "Isolated-death-back-3.png",
+        "Isolated-death-back-4.png",
+        "Isolated-death-back-5.png"
+      ]
+    },
+    {
+      "id": "charged",
+      "file": "Charged-v2.png",
+      "motion": "Heavy charge impact and recovery, no backdrop haze.",
+      "prompt": "Animate EXACT approved Russian Late Medieval BOYAR GUARD in reference, same heavy broad steel segmented plate shoulders, closed Rus pointed helmet crown with brass trim, burgundy padding, mail joints, plate gauntlets, boots. NO shield. Same TWO-HANDED FLANGED MACE in ALL frames: long darkwood shaft, brass/steel bands, leather grip, massive blunt SIX broad steel flanges around rounded center, brassring/cap. NOT hammer, axe, spear, ball or spikedclub. Both gauntlets genuinely grip SAME rigidhandle at fixed spaced grip spots, no sliding/weaponmorph/detachedhand. STRICT90degree vertical overhead orthographic camera looking down standing spine, crown and shoulderTOPS dominate, no face/frontportrait, compressedtorso. Facing SCREENBOTTOM. Same rich smooth painterly game materials and restrained natural edges. EXACT1536x1024 TRANSPARENT RGBA SHEET:3columns2rows, six512x512cells row-major. ONE COMPLETE isolated actor percell with ENTIREmace insidecell and>=35pxguard. Body240pxwide, mace350pxlong, stablecommon scale and bodyroot(280,290) acrossposes. No text/grid/background/groundshadow/fragments. \nGET CHARGED reaction ONLY:6frames rowmajor.1approvedidle;2heavyshoulderrecoil;3backwardstumble kneesbent armscarrymace;4deepbrace nearone knee maceheadlowLEFT;5pushupright;6ready. ONE WHOLE SAME guard with sameflangedmace ineachcell. No sparks, dust, glow, haze, shadow or floor. ALL EMPTY PIXELS MUST HAVE ALPHA ZERO, entirely transparentbackground with NO semitransparentwhite/gray backdrop. Leave>=45pxEMPTYtransparentguardall4edges ofEVERY512cell, especiallyweaponhead, ensureNO fragment/overlapwithneighborcell. Moderatecompactmovement leavesroom. Bothhands and mace movewithrecoil, samewoodshaft/brassbands/flanges throughout. Bodyroot(290,250).",
+      "generatedSource": "C:/Users/Damien/.codex/generated_images/01a0fea1-c63f-7343-92ca-6c21cc1c4296/exec-a29dca27-95ed-4cd7-9d26-23d8ff50dd99.png",
+      "nativeFile": "Native-Charged-v2.png",
+      "status": "selected-source",
+      "rootOffsets": [
+        [
+          3,
+          -99
+        ],
+        [
+          3,
+          -99
+        ],
+        [
+          3,
+          -99
+        ],
+        [
+          3,
+          -99
+        ],
+        [
+          3,
+          -99
+        ],
+        [
+          3,
+          -99
+        ]
+      ],
+      "sourceRects": [
+        [
+          107,
+          77,
+          411,
+          507
+        ],
+        [
+          520,
+          12,
+          941,
+          448
+        ],
+        [
+          1025,
+          115,
+          1478,
+          475
+        ],
+        [
+          44,
+          599,
+          450,
+          985
+        ],
+        [
+          552,
+          596,
+          948,
+          989
+        ],
+        [
+          1025,
+          531,
+          1483,
+          914
+        ]
+      ],
+      "poseFiles": [
+        "Isolated-charged-0.png",
+        "Isolated-charged-1.png",
+        "Isolated-charged-2.png",
+        "Isolated-charged-3.png",
+        "Isolated-charged-4.png",
+        "Isolated-charged-5.png"
+      ]
+    }
+  ],
+  "stage": "single-actor-animation-review"
+}

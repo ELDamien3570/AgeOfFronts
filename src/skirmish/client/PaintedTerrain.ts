@@ -5,6 +5,7 @@ import type { EnvironmentProfile } from "../Environment";
 import { forestOf } from "../Forest";
 import type { MapGeography } from "../Geography";
 import type { Building } from "../Protocol";
+import { EARTH_ACCENTS } from "./EarthTerrainCatalog";
 import type { BakeSource } from "./GroundBake";
 import { TerrainArtwork } from "./TerrainArtwork";
 import {
@@ -18,6 +19,29 @@ import { terrainHash as hash, terrainNoise as noise } from "./TerrainNoise";
 
 const CHUNK = TERRAIN_CHUNK_CELLS;
 const PIXEL_BUDGET = 12_000_000;
+const CANOPY_DETAIL = 2;
+const CANOPY_BAKE_DETAIL = 4;
+const CANOPY_STAND_SCALE = 2.6;
+const CANOPY_STAND_PADDING = Math.ceil(
+  Math.max(
+    ...EARTH_ACCENTS.filter((accent) => accent.role === "canopy").flatMap(
+      (accent) => {
+        const ratio =
+            accent.visibleFootprintCells /
+            Math.max(accent.alphaBounds[2], accent.alphaBounds[3]),
+          left = accent.pivot[0] * ratio,
+          top = accent.pivot[1] * ratio;
+        return [
+          left,
+          top,
+          accent.imageSizeCells[0] - left,
+          accent.imageSizeCells[1] - top,
+        ];
+      },
+    ),
+  ) *
+    (CANOPY_STAND_SCALE - 1),
+);
 const PALETTES = {
   plains: [127, 148, 88],
   hills: [146, 140, 98],
@@ -124,10 +148,12 @@ export class PaintedTerrain {
   >();
   private pixels = 0;
   private decorationsOnly = false;
+  private canopyScratch?: HTMLCanvasElement;
   constructor(
     private readonly map: GameMap,
     geography?: MapGeography,
     environment?: EnvironmentProfile,
+    invalidated: () => void = () => {},
   ) {
     this.relief = terrainRelief(map);
     this.environment = new TerrainEnvironment(map, geography, environment);
@@ -135,10 +161,11 @@ export class PaintedTerrain {
     this.artwork = new TerrainArtwork(this.decorations.families, () => {
       this.cache.clear();
       this.pixels = 0;
+      invalidated();
     });
   }
   // When the WebGL ground layer paints the terrain, chunks hold only the
-  // decoration accents on transparent canvases (and none at detail 1).
+  // decoration accents on transparent canvases, including distant canopy.
   setDecorationsOnly(value: boolean): void {
     if (value === this.decorationsOnly) return;
     this.decorationsOnly = value;
@@ -196,23 +223,25 @@ export class PaintedTerrain {
   private invalidate(bounds: TerrainBounds): void {
     // Include the shared one-cell gutter, all LODs, and the entire image's
     // transparent padding. Adjacent chunks lose the same accent together.
-    for (
-      let cy = Math.floor((bounds.top - 1) / CHUNK);
-      cy <= Math.floor((bounds.bottom + 1) / CHUNK);
-      cy++
-    )
+    for (const detail of [CANOPY_DETAIL, 4, 8, 16]) {
+      const padding = 1 + (detail === CANOPY_DETAIL ? CANOPY_STAND_PADDING : 0);
       for (
-        let cx = Math.floor((bounds.left - 1) / CHUNK);
-        cx <= Math.floor((bounds.right + 1) / CHUNK);
-        cx++
+        let cy = Math.floor((bounds.top - padding) / CHUNK);
+        cy <= Math.floor((bounds.bottom + padding) / CHUNK);
+        cy++
       )
-        for (const detail of [1, 4, 8, 16]) {
+        for (
+          let cx = Math.floor((bounds.left - padding) / CHUNK);
+          cx <= Math.floor((bounds.right + padding) / CHUNK);
+          cx++
+        ) {
           const key = `${cx}:${cy}:${detail}`,
             entry = this.cache.get(key);
           if (!entry) continue;
           this.pixels -= entry.canvas.width * entry.canvas.height;
           this.cache.delete(key);
         }
+    }
   }
   private chunk(cx: number, cy: number, detail: number) {
     const key = `${cx}:${cy}:${detail}`;
@@ -228,11 +257,17 @@ export class PaintedTerrain {
       y = Math.max(0, cy * CHUNK - 1),
       width = Math.min((cx + 1) * CHUNK + 1, this.map.width()) - x,
       height = Math.min((cy + 1) * CHUNK + 1, this.map.height()) - y;
-    const canvas = document.createElement("canvas");
-    canvas.width = width * detail;
-    canvas.height = height * detail;
+    const distant = detail === CANOPY_DETAIL,
+      bakeDetail = distant ? CANOPY_BAKE_DETAIL : detail,
+      canvas = distant
+        ? (this.canopyScratch ??= document.createElement("canvas"))
+        : document.createElement("canvas");
+    // One reusable oversampled surface filters crowns before storing the small
+    // distant mip. A full 1000-square map fits within the existing pixel budget.
+    canvas.width = width * bakeDetail;
+    canvas.height = height * bakeDetail;
     const ctx = canvas.getContext("2d")!;
-    ctx.scale(detail, detail);
+    ctx.scale(bakeDetail, bakeDetail);
     if (!this.decorationsOnly)
       for (let yy = y; yy < y + height; yy++)
         for (let xx = x; xx < x + width; xx++) {
@@ -245,29 +280,60 @@ export class PaintedTerrain {
           ctx.fillStyle = cell.color;
           ctx.fillRect(xx - x, yy - y, 1, 1);
         }
-    if (detail > 1) {
+    {
       // Include decoration anchors beyond a chunk edge so adjacent chunks share
       // the same artwork, with no seams or dependence on camera position.
       ctx.imageSmoothingEnabled = true;
+      if (distant) {
+        // Distant crowns represent groups of trees. Clip those larger shapes
+        // to shared forest cover so clearings, shores and building sites stay open.
+        ctx.save();
+        ctx.beginPath();
+        for (let yy = y; yy < y + height; yy++) {
+          let run = -1;
+          for (let xx = x; xx <= x + width; xx++) {
+            const tile = xx < x + width ? this.map.ref(xx, yy) : -1,
+              wooded =
+                tile >= 0 &&
+                this.map.isLand(tile) &&
+                this.environment.coverAt(tile) >= 0.15;
+            if (wooded && run < 0) run = xx;
+            else if (!wooded && run >= 0) {
+              ctx.rect(run - x, yy - y, xx - run, 1);
+              run = -1;
+            }
+          }
+        }
+        ctx.clip();
+      }
+      const padding = distant ? CANOPY_STAND_PADDING : 0;
       const accents = Array.from(
         this.decorations.visible({
-          left: x,
-          top: y,
-          right: x + width,
-          bottom: y + height,
+          left: x - padding,
+          top: y - padding,
+          right: x + width + padding,
+          bottom: y + height + padding,
         }),
-      ).sort(
-        (a, b) =>
-          Number(a.accent.role === "canopy") -
-            Number(b.accent.role === "canopy") ||
-          a.y - b.y ||
-          a.id - b.id,
-      );
+      )
+        .filter(
+          (placed) =>
+            !distant ||
+            (placed.accent.role === "canopy" &&
+              hash(Math.floor(placed.x * 13), Math.floor(placed.y * 13)) < 0.2),
+        )
+        .sort(
+          (a, b) =>
+            Number(a.accent.role === "canopy") -
+              Number(b.accent.role === "canopy") ||
+            a.y - b.y ||
+            a.id - b.id,
+        );
       for (const placed of accents) {
         const image = this.artwork.get(placed.accent.family);
         if (!image) continue;
         const source = placed.accent.sourceRect,
-          bounds = placed.imageBounds;
+          bounds = placed.imageBounds,
+          enlargement = distant ? CANOPY_STAND_SCALE : 1;
         ctx.globalAlpha = placed.accent.role === "canopy" ? 0.98 : 0.7;
         ctx.drawImage(
           image,
@@ -275,12 +341,13 @@ export class PaintedTerrain {
           source[1],
           source[2],
           source[3],
-          bounds.left - x,
-          bounds.top - y,
-          bounds.right - bounds.left,
-          bounds.bottom - bounds.top,
+          placed.x + (bounds.left - placed.x) * enlargement - x,
+          placed.y + (bounds.top - placed.y) * enlargement - y,
+          (bounds.right - bounds.left) * enlargement,
+          (bounds.bottom - bounds.top) * enlargement,
         );
       }
+      if (distant) ctx.restore();
       ctx.globalAlpha = 1;
       // Restrained strokes give water a painted surface at tactical zoom.
       // The GL ground's water shader replaces them.
@@ -290,6 +357,7 @@ export class PaintedTerrain {
         for (let xx = x + 2; xx < x + width; xx += 7)
           if (
             !this.decorationsOnly &&
+            !distant &&
             this.map.isWater(this.map.ref(xx, yy)) &&
             hash(xx, yy) > 0.5
           ) {
@@ -304,9 +372,19 @@ export class PaintedTerrain {
             ctx.stroke();
           }
     }
-    cached = { canvas, x, y, width, height };
+    let cachedCanvas = canvas;
+    if (distant) {
+      cachedCanvas = document.createElement("canvas");
+      cachedCanvas.width = width * detail;
+      cachedCanvas.height = height * detail;
+      const reduced = cachedCanvas.getContext("2d")!;
+      reduced.imageSmoothingEnabled = true;
+      reduced.imageSmoothingQuality = "high";
+      reduced.drawImage(canvas, 0, 0, cachedCanvas.width, cachedCanvas.height);
+    }
+    cached = { canvas: cachedCanvas, x, y, width, height };
     this.cache.set(key, cached);
-    this.pixels += canvas.width * canvas.height;
+    this.pixels += cachedCanvas.width * cachedCanvas.height;
     while (this.pixels > PIXEL_BUDGET && this.cache.size > 1) {
       const oldest = this.cache.keys().next().value!;
       const entry = this.cache.get(oldest)!;
@@ -323,8 +401,8 @@ export class PaintedTerrain {
     width: number,
     height: number,
   ) {
-    const detail = scale >= 12 ? 16 : scale >= 5 ? 8 : scale >= 2 ? 4 : 1;
-    if (this.decorationsOnly && detail === 1) return;
+    const detail =
+      scale >= 12 ? 16 : scale >= 5 ? 8 : scale >= 2 ? 4 : CANOPY_DETAIL;
     const left = Math.max(0, Math.floor(-offsetX / scale / CHUNK)),
       right = Math.min(
         Math.ceil(this.map.width() / CHUNK) - 1,

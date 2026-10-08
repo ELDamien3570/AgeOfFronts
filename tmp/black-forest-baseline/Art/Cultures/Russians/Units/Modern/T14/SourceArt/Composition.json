@@ -1,0 +1,372 @@
+{
+  "method": "Native frame extraction, uniform resampling and translation only; no pose painting or warping.",
+  "approvedIdleSha256": "d77e373b0704c0d886c65f16e5e3696946ad9ee43c3dfacf640b0af0748b2dd5",
+  "clips": [
+    {
+      "id": "moving",
+      "nativeSource": "SourceArt\\Native-moving-v1.png",
+      "sha256": "8e7cbb3fa52819811de6e4db90e91f4e04e2cb74332c5a467680f94c9075bb9a",
+      "scale": 0.84,
+      "frames": [
+        {
+          "index": 0,
+          "sourceAnchor": [
+            324.04375,
+            306.9125
+          ],
+          "uniformScale": 0.84,
+          "translation": [
+            14,
+            -18
+          ],
+          "visibleBounds": [
+            158,
+            69,
+            355,
+            450
+          ],
+          "frameSha256": "5ebde8fc9fd15e20c78090229b599b37bdd4a0aafb3e0886e72b0b3b8a3ac74d"
+        },
+        {
+          "index": 1,
+          "sourceAnchor": [
+            292.01176470588234,
+            306.84705882352944
+          ],
+          "uniformScale": 0.84,
+          "translation": [
+            41,
+            -18
+          ],
+          "visibleBounds": [
+            157,
+            69,
+            356,
+            450
+          ],
+          "frameSha256": "7de2f6f4dfa2220e6ce9be1cdbc1567686a81e33badf774cedb0cdd825bdd59e"
+        },
+        {
+          "index": 2,
+          "sourceAnchor": [
+            260.01169590643275,
+            307.0
+          ],
+          "uniformScale": 0.84,
+          "translation": [
+            68,
+            -18
+          ],
+          "visibleBounds": [
+            158,
+            69,
+            356,
+            450
+          ],
+          "frameSha256": "7701ec3da2e1f5902c3c9fac9dc7afc572ef8b0c874524fa021fa22520e8b539"
+        },
+        {
+          "index": 3,
+          "sourceAnchor": [
+            323.9943181818182,
+            306.4886363636364
+          ],
+          "uniformScale": 0.84,
+          "translation": [
+            14,
+            -17
+          ],
+          "visibleBounds": [
+            157,
+            69,
+            355,
+            451
+          ],
+          "frameSha256": "af83e98a163e87e46d3c1ddd87242c317b5e01d98676f591c5333c007c6db3b0"
+        },
+        {
+          "index": 4,
+          "sourceAnchor": [
+            291.938202247191,
+            306.5561797752809
+          ],
+          "uniformScale": 0.84,
+          "translation": [
+            41,
+            -18
+          ],
+          "visibleBounds": [
+            157,
+            68,
+            356,
+            450
+          ],
+          "frameSha256": "a1825dc63a98219f47447fb74e33806021751c93cfc243c1be9e64dac98f7ae0"
+        },
+        {
+          "index": 5,
+          "sourceAnchor": [
+            260.0833333333333,
+            306.55555555555554
+          ],
+          "uniformScale": 0.84,
+          "translation": [
+            68,
+            -18
+          ],
+          "visibleBounds": [
+            158,
+            68,
+            356,
+            450
+          ],
+          "frameSha256": "533ddc86e0780254057f4a58ca20bd0fb9d70db043293e33bb9f5e776c99f1a9"
+        }
+      ]
+    },
+    {
+      "id": "moving-shooting",
+      "nativeSource": "SourceArt\\Native-moving-shooting-v1.png",
+      "sha256": "8af5d77922cab33e5dc4461b044efaf7caa51292550cfe15429589927b7c842d",
+      "scale": 0.86,
+      "frames": [
+        {
+          "index": 0,
+          "sourceAnchor": [
+            305.55696202531647,
+            281.746835443038
+          ],
+          "uniformScale": 0.86,
+          "translation": [
+            23,
+            -2
+          ],
+          "visibleBounds": [
+            160,
+            70,
+            353,
+            456
+          ],
+          "frameSha256": "bb3026abe17629d74c0ad466ff4242e8530189907a432eca1c1318858cbe64ab"
+        },
+        {
+          "index": 1,
+          "sourceAnchor": [
+            291.7543859649123,
+            282.0175438596491
+          ],
+          "uniformScale": 0.86,
+          "translation": [
+            35,
+            -3
+          ],
+          "visibleBounds": [
+            150,
+            69,
+            360,
+            478
+          ],
+          "frameSha256": "5cf1f69ceb7f0148361dc530b753cff580d980b370a9f57c0f5f6d819884e39e"
+        },
+        {
+          "index": 2,
+          "sourceAnchor": [
+            291.32947976878614,
+            282.0693641618497
+          ],
+          "uniformScale": 0.86,
+          "translation": [
+            35,
+            -3
+          ],
+          "visibleBounds": [
+            150,
+            69,
+            360,
+            491
+          ],
+          "frameSha256": "c2daa55f8c516156d8a5b0943df719f38c72ad1181d65be37fca98b569633ea2"
+        },
+        {
+          "index": 3,
+          "sourceAnchor": [
+            306.9490445859873,
+            282.70063694267515
+          ],
+          "uniformScale": 0.86,
+          "translation": [
+            22,
+            -3
+          ],
+          "visibleBounds": [
+            154,
+            69,
+            359,
+            480
+          ],
+          "frameSha256": "02067981b00090891ab9f7d8a5f05961e2514086afd344e91937c3488dd054b6"
+        },
+        {
+          "index": 4,
+          "sourceAnchor": [
+            291.7125,
+            282.61875
+          ],
+          "uniformScale": 0.86,
+          "translation": [
+            35,
+            -3
+          ],
+          "visibleBounds": [
+            150,
+            69,
+            360,
+            471
+          ],
+          "frameSha256": "9292f5d543ad6d4458d8124de1a968170fcebc76719c38e800c19b343d7fe664"
+        },
+        {
+          "index": 5,
+          "sourceAnchor": [
+            291.89940828402365,
+            282.38461538461536
+          ],
+          "uniformScale": 0.86,
+          "translation": [
+            35,
+            -3
+          ],
+          "visibleBounds": [
+            146,
+            69,
+            362,
+            455
+          ],
+          "frameSha256": "9898ae9c55c1bb828ea3f54ab0d002dc7ad0cdd4376c76acb73d987dcc2033b6"
+        }
+      ]
+    },
+    {
+      "id": "death",
+      "nativeSource": "SourceArt\\Native-death-v1.png",
+      "sha256": "d668985e2edcacaee5beb33e0ed825403923577a2372e6cd2fa0fdfd2d0762aa",
+      "scale": 0.9,
+      "frames": [
+        {
+          "index": 0,
+          "sourceAnchor": [
+            303,
+            313
+          ],
+          "uniformScale": 0.9,
+          "translation": [
+            13,
+            -42
+          ],
+          "visibleBounds": [
+            163,
+            37,
+            353,
+            451
+          ],
+          "frameSha256": "e7c3bcbd825ff6bc5984a89422f9eed31ab93ac992da8be8856f96715c497237"
+        },
+        {
+          "index": 1,
+          "sourceAnchor": [
+            282,
+            313
+          ],
+          "uniformScale": 0.9,
+          "translation": [
+            32,
+            -42
+          ],
+          "visibleBounds": [
+            127,
+            33,
+            391,
+            451
+          ],
+          "frameSha256": "034e759ad56327f02e80e61ab8f99cee5d9e48c9097992a4105aeb9bdb054274"
+        },
+        {
+          "index": 2,
+          "sourceAnchor": [
+            275,
+            313
+          ],
+          "uniformScale": 0.9,
+          "translation": [
+            38,
+            -42
+          ],
+          "visibleBounds": [
+            74,
+            31,
+            426,
+            451
+          ],
+          "frameSha256": "fc0b3bf74e4eb7ec389ff1ee26cec00fd7cf24753d683327b379ac97dc0adea5"
+        },
+        {
+          "index": 3,
+          "sourceAnchor": [
+            303,
+            313
+          ],
+          "uniformScale": 0.9,
+          "translation": [
+            13,
+            -42
+          ],
+          "visibleBounds": [
+            107,
+            4,
+            408,
+            446
+          ],
+          "frameSha256": "ecab9b544c891154c5f8e47bf677674768d37b4641e9be26c915f5cc872eba77"
+        },
+        {
+          "index": 4,
+          "sourceAnchor": [
+            282,
+            313
+          ],
+          "uniformScale": 0.9,
+          "translation": [
+            32,
+            -42
+          ],
+          "visibleBounds": [
+            110,
+            53,
+            407,
+            443
+          ],
+          "frameSha256": "ad0d8396ead3e0f6099b5d87fa0bb4b90b65c17b9322c8504353ca994ca9506c"
+        },
+        {
+          "index": 5,
+          "sourceAnchor": [
+            275,
+            313
+          ],
+          "uniformScale": 0.9,
+          "translation": [
+            38,
+            -42
+          ],
+          "visibleBounds": [
+            118,
+            52,
+            394,
+            441
+          ],
+          "frameSha256": "70179dd26eae3b5491cab091a92afd2031c1a2b2635ebe44d28c4320b3607ec7"
+        }
+      ]
+    }
+  ]
+}

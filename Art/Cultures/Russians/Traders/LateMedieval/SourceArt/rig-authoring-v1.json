@@ -1,0 +1,423 @@
+{
+  "schemaVersion": 1,
+  "age": "LateMedieval",
+  "animationRevision": 1,
+  "label": "Rus fur caravan with two horse-drawn carts",
+  "source": "SourceArt/Trader_Russian_LateMedieval_v1.png",
+  "sourceSha256": "f1160ee9d678dd639dc2a8eda6e222175bdf4fe7ca52ac6cc972359181539214",
+  "counts": {
+    "merchants": 1,
+    "wagons": 2,
+    "pullingAnimals": 2,
+    "packAnimals": 0,
+    "trucks": 0
+  },
+  "animationApproval": {
+    "status": "approved",
+    "age": "LateMedieval",
+    "date": "2026-10-07",
+    "userMessage": "okay now do late medieval, just make it the same thing with another horsedrawn cart on the right",
+    "scope": "Continue trader creation and animation; keep one merchant and add one horse-cart team on the right. Visual acceptance pending."
+  },
+  "parts": [
+    {
+      "name": "merchant-breathing",
+      "kind": "body",
+      "rect": [
+        165,
+        748,
+        340,
+        815
+      ],
+      "feather": 6,
+      "margin": 16
+    },
+    {
+      "name": "merchant-sash",
+      "kind": "cloth",
+      "rect": [
+        288,
+        855,
+        319,
+        911
+      ],
+      "feather": 3,
+      "margin": 10
+    },
+    {
+      "name": "left-horse-breathing",
+      "kind": "body",
+      "rect": [
+        474,
+        945,
+        524,
+        999
+      ],
+      "feather": 6,
+      "margin": 12
+    },
+    {
+      "name": "left-cart-left-tread",
+      "kind": "tread",
+      "rect": [
+        310,
+        330,
+        337,
+        530
+      ],
+      "feather": 2,
+      "margin": 8
+    },
+    {
+      "name": "left-cart-right-tread",
+      "kind": "tread",
+      "rect": [
+        654,
+        330,
+        681,
+        530
+      ],
+      "feather": 2,
+      "margin": 8
+    },
+    {
+      "name": "right-horse-breathing",
+      "kind": "body",
+      "rect": [
+        849,
+        945,
+        899,
+        999
+      ],
+      "feather": 6,
+      "margin": 12
+    },
+    {
+      "name": "right-cart-left-tread",
+      "kind": "tread",
+      "rect": [
+        685,
+        330,
+        712,
+        530
+      ],
+      "feather": 2,
+      "margin": 8
+    },
+    {
+      "name": "right-cart-right-tread",
+      "kind": "tread",
+      "rect": [
+        1029,
+        330,
+        1056,
+        530
+      ],
+      "feather": 2,
+      "margin": 8
+    }
+  ],
+  "protectedRegions": [
+    {
+      "name": "0-cart-cargo-hubs",
+      "rect": [
+        292,
+        125,
+        690,
+        612
+      ]
+    },
+    {
+      "name": "0-left-shaft",
+      "rect": [
+        380,
+        567,
+        418,
+        856
+      ]
+    },
+    {
+      "name": "0-right-shaft",
+      "rect": [
+        575,
+        567,
+        609,
+        856
+      ]
+    },
+    {
+      "name": "375-cart-cargo-hubs",
+      "rect": [
+        667,
+        125,
+        1065,
+        612
+      ]
+    },
+    {
+      "name": "375-left-shaft",
+      "rect": [
+        755,
+        567,
+        793,
+        856
+      ]
+    },
+    {
+      "name": "375-right-shaft",
+      "rect": [
+        950,
+        567,
+        984,
+        856
+      ]
+    },
+    {
+      "name": "lead-rein",
+      "rect": [
+        363,
+        846,
+        446,
+        936
+      ]
+    }
+  ],
+  "caravanRig": {
+    "sharedStride": {
+      "forwardReach": 94.5,
+      "rearReach": 60.300000000000004,
+      "stanceFraction": 0.65
+    },
+    "horseAtlas": "SourceArt/Horse_Walking_Limb_Atlas_v1.png",
+    "horseAtlasSha256": "87c38c643614dd8e21732ddf493559699611d3dd1baf64c0219e84800502e937",
+    "merchants": [
+      {
+        "name": "merchant-1",
+        "rig": {
+          "forwardReach": 94.5,
+          "rearReach": 60.300000000000004,
+          "stanceFraction": 0.65,
+          "atlas": "Shared/SourceArt/Walking_Leg_Atlas_v1.png",
+          "shinCrop": 0.8,
+          "oldLegsPolygon": [
+            [
+              205,
+              907
+            ],
+            [
+              230,
+              920
+            ],
+            [
+              273,
+              920
+            ],
+            [
+              307,
+              907
+            ],
+            [
+              311,
+              1060
+            ],
+            [
+              202,
+              1060
+            ]
+          ],
+          "hips": {
+            "left": [
+              230,
+              923
+            ],
+            "right": [
+              270,
+              923
+            ]
+          },
+          "thighLength": 74.7,
+          "shinLength": 72.0,
+          "hipHeight": 101.7,
+          "thighWidth": 46,
+          "shinWidth": 38,
+          "footWidth": 38,
+          "footLength": 48.6,
+          "idleReach": 58.5,
+          "footLift": 30.6,
+          "swingOutward": 5.4,
+          "footOutward": 3.6,
+          "kneeOutward": 1.8,
+          "phaseOffset": 0.5,
+          "assemblySway": 0
+        }
+      }
+    ],
+    "horses": [
+      {
+        "name": "horse-1",
+        "rig": {
+          "forwardReach": 94.5,
+          "rearReach": 60.300000000000004,
+          "stanceFraction": 0.65,
+          "hips": {
+            "hind-left": [
+              445,
+              641
+            ],
+            "hind-right": [
+              550,
+              641
+            ],
+            "fore-left": [
+              473,
+              830
+            ],
+            "fore-right": [
+              519,
+              830
+            ]
+          },
+          "upperLength": 117.0,
+          "lowerLength": 106.2,
+          "kneeSlack": 8.1,
+          "minimumHipHeight": 117.0,
+          "upperWidth": 49,
+          "lowerWidth": 31,
+          "hoofWidth": 35,
+          "hoofLength": 41.4,
+          "idleReach": 43.2,
+          "footLift": 38.7,
+          "footOutward": {
+            "fore": 3.6,
+            "hind": 27.0
+          },
+          "swingOutward": {
+            "fore": 1.8,
+            "hind": 6.3
+          },
+          "phaseOffset": 0,
+          "contactBias": {
+            "fore": 148.5,
+            "hind": 58.5
+          },
+          "foreUpperLength": 139.5,
+          "foreLowerLength": 139.5,
+          "pasternLength": 31.5,
+          "pasternForward": 10.8,
+          "foreUpperWidth": 36,
+          "foreLowerWidth": 20,
+          "foreHoofWidth": 29
+        },
+        "atlasRows": {
+          "fore": 0,
+          "hind": 1
+        },
+        "oldLegsPolygons": [
+          [
+            [
+              467,
+              1025
+            ],
+            [
+              528,
+              1025
+            ],
+            [
+              533,
+              1140
+            ],
+            [
+              460,
+              1140
+            ]
+          ]
+        ]
+      },
+      {
+        "name": "horse-2",
+        "rig": {
+          "forwardReach": 94.5,
+          "rearReach": 60.300000000000004,
+          "stanceFraction": 0.65,
+          "hips": {
+            "hind-left": [
+              820,
+              641
+            ],
+            "hind-right": [
+              925,
+              641
+            ],
+            "fore-left": [
+              848,
+              830
+            ],
+            "fore-right": [
+              894,
+              830
+            ]
+          },
+          "upperLength": 117.0,
+          "lowerLength": 106.2,
+          "kneeSlack": 8.1,
+          "minimumHipHeight": 117.0,
+          "upperWidth": 49,
+          "lowerWidth": 31,
+          "hoofWidth": 35,
+          "hoofLength": 41.4,
+          "idleReach": 43.2,
+          "footLift": 38.7,
+          "footOutward": {
+            "fore": 3.6,
+            "hind": 27.0
+          },
+          "swingOutward": {
+            "fore": 1.8,
+            "hind": 6.3
+          },
+          "phaseOffset": 0.38,
+          "contactBias": {
+            "fore": 148.5,
+            "hind": 58.5
+          },
+          "foreUpperLength": 139.5,
+          "foreLowerLength": 139.5,
+          "pasternLength": 31.5,
+          "pasternForward": 10.8,
+          "foreUpperWidth": 36,
+          "foreLowerWidth": 20,
+          "foreHoofWidth": 29
+        },
+        "atlasRows": {
+          "fore": 0,
+          "hind": 1
+        },
+        "oldLegsPolygons": [
+          [
+            [
+              842,
+              1025
+            ],
+            [
+              903,
+              1025
+            ],
+            [
+              908,
+              1140
+            ],
+            [
+              835,
+              1140
+            ]
+          ]
+        ]
+      }
+    ]
+  },
+  "motionNotes": "Independent articulated legs with identical contact velocity. Four-beat horse walk and alternating merchant walk. Retained body assembly preserves shafts, harness, ropes and secured loads; moving ground is browser-only.",
+  "animationRevisionRequest": {
+    "userMessage": "okay now do late medieval, just make it the same thing with another horsedrawn cart on the right",
+    "scope": "Same assembly with a second horse-cart team on the right."
+  }
+}

@@ -1,0 +1,30 @@
+{
+  "scope": "single Russian Stone Age clubman movement and death inspection",
+  "movement": {
+    "sheet": "Running-v2.png",
+    "previousSheet": "Running.png (retained)",
+    "change": "Alternating leading feet, fixed authored pivots, 880 ms travel cycle",
+    "visualChecks": "Opposite foot contacts on frames 1 and 4 reviewed enlarged and at 32, 48 and 64 pixel sprite sizes",
+    "sheetChecks": "RGBA 1536 by 1024, six distinct frames, no visible guard spill; see Validation.json",
+    "visualApproval": "pending user review"
+  },
+  "death": {
+    "artwork": "Original six-frame collapse retained",
+    "cause": "Gallery autoplay completed the one-shot before the viewer reached the death card",
+    "change": "Default repeat for Russian inspection, 1000 ms final-pose pause, explicit repeat checkbox and per-card Replay",
+    "repeatingFramesObserved": [0, 2, 4, 5, 0],
+    "individualReplay": "Observed restart at frame 0 followed by frame 5",
+    "oneShotFinalHold": "Frame 5 retained with repeat disabled",
+    "animationLoopFlag": false
+  },
+  "regressionChecks": {
+    "baseStoneAgeClipsLoaded": 9,
+    "russianStoneAgeClipsLoaded": 7,
+    "civRoundTrip": "passed",
+    "browserErrorsOrWarnings": [],
+    "chargeArtwork": "unchanged",
+    "baseArtwork": "unchanged",
+    "staticValidation": "JavaScript syntax and git diff whitespace checks passed"
+  },
+  "engineIntegration": "art review only"
+}

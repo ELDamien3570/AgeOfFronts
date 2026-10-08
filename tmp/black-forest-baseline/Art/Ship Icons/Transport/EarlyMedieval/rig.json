@@ -1,0 +1,121 @@
+{
+  "schemaVersion": 1,
+  "sourceSize": {
+    "width": 1254,
+    "height": 1254
+  },
+  "source": "Transport/Transport_EarlyMedieval.png",
+  "sourceSha256": "5724d67f60fc1ce3003e226fc4053a448d7c93ea7abd38083956c58d08975c44",
+  "frameSize": {
+    "width": 512,
+    "height": 512
+  },
+  "sourceToFrame": {
+    "scale": 0.3349282296650718,
+    "offset": [
+      46,
+      46
+    ]
+  },
+  "hullInterior": [
+    [
+      626,
+      117
+    ],
+    [
+      700,
+      225
+    ],
+    [
+      755,
+      359
+    ],
+    [
+      783,
+      553
+    ],
+    [
+      776,
+      827
+    ],
+    [
+      735,
+      1000
+    ],
+    [
+      626,
+      1117
+    ],
+    [
+      517,
+      1000
+    ],
+    [
+      476,
+      827
+    ],
+    [
+      470,
+      553
+    ],
+    [
+      497,
+      359
+    ],
+    [
+      551,
+      225
+    ]
+  ],
+  "layers": [
+    {
+      "name": "cloth-01",
+      "polygon": [
+        [
+          376,
+          478
+        ],
+        [
+          610,
+          478
+        ],
+        [
+          610,
+          629
+        ],
+        [
+          437,
+          629
+        ]
+      ],
+      "amplitude": 12,
+      "kind": "cloth",
+      "file": "layers/cloth-01.png"
+    },
+    {
+      "name": "cloth-02",
+      "polygon": [
+        [
+          644,
+          478
+        ],
+        [
+          879,
+          478
+        ],
+        [
+          817,
+          629
+        ],
+        [
+          644,
+          629
+        ]
+      ],
+      "amplitude": 12,
+      "kind": "cloth",
+      "file": "layers/cloth-02.png"
+    }
+  ],
+  "notes": "Masks and original painted pixels are retained. Cloth pins, oar pivots, cannon recoil and optional effects are art presentation only."
+}

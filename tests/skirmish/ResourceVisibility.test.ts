@@ -32,7 +32,7 @@ const firstAges = {
   sulphur: "LateMedieval",
   nitrate: "LateMedieval",
   gunpowder: "LateMedieval",
-  oil: "Modern",
+  oil: "EarlyModern",
 } as const;
 
 describe("age-based strategic resource discovery", () => {

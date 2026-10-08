@@ -64,15 +64,15 @@ describe("per-trip market limits and multi-stop trade", () => {
     for(let i=1;i<10;i++) {add("city",11); add("city",18);}
     const trade=game.expansion!.trade;
     game.tick=20;trade.step();
-    const a=trade.actors[0]; expect(a.loaded).toBe(450);
+    const a=trade.actors[0]; expect(a.loaded).toBe(600);
     const arrive=(b:typeof first)=>{
       a.state="outbound";a.destination=b.id;a.path=[];a.nextPathIndex=0;a.waitTicks=0;
       a.x=(game.map.x(b.tile)+.5)*FIXED;a.y=(game.map.y(b.tile)+.5)*FIXED;
       game.tick++;trade.step();
     };
-    arrive(first); expect(a.delivered).toBe(50);expect(a.cargo).toBe(400);
+    arrive(first); expect(a.delivered).toBe(50);expect(a.cargo).toBe(550);
     arrive(first); expect(a.delivered).toBe(50);
-    arrive(second); expect(a.delivered).toBe(100);expect(a.cargo).toBe(350);
+    arrive(second); expect(a.delivered).toBe(100);expect(a.cargo).toBe(500);
     const saved=game.checkpoint(),cold=new Skirmish(game.map,game.options);cold.restore(saved);
     expect(trade.receipts.get(`1:${second.tile}`)?.gold).toBe(1000);
     expect(game.snapshot().expansion?.tradeReceipts).toEqual([...trade.receipts.values()]);
@@ -80,7 +80,7 @@ describe("per-trip market limits and multi-stop trade", () => {
     expect(cold.expansion!.trade.checkpoint()).toEqual(trade.checkpoint());
     a.state="returning";a.destination=a.factoryId;a.path=[];a.waitTicks=0;
     game.tick++;trade.step();
-    expect(a.returned).toBe(350);
+    expect(a.returned).toBe(500);
     expect(a.loaded).toBe(a.delivered+a.returned+a.lost+a.cargo);
     expect(trade.cycleQuotes.get(a.id)?.guaranteedGold).toBe(2000);
     const trip = a.shipmentId;

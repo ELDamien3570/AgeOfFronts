@@ -1,0 +1,303 @@
+{
+  "schemaVersion": 1,
+  "status": "animation-proposal",
+  "key": "HumveeInterceptor",
+  "label": "Humvee interceptor rocket",
+  "age": "Modern",
+  "type": "projectile",
+  "camera": "vertical-overhead-orthographic",
+  "facing": "screen-up",
+  "directionCount": 1,
+  "frameSize": {
+    "width": 627,
+    "height": 627
+  },
+  "pivot": {
+    "x": 313.5,
+    "y": 313.5
+  },
+  "normalizedPivot": {
+    "x": 0.5,
+    "y": 0.5
+  },
+  "alpha": "straight",
+  "textureLimit": 4096,
+  "frameOrder": "row-major, then next sheet",
+  "animations": {
+    "flight": {
+      "frameCount": 12,
+      "sourceKeyframeCount": 4,
+      "suggestedFramesPerSecond": 12,
+      "loop": true,
+      "durationMs": 1000,
+      "preview": "Flight-Preview.webp",
+      "once": null,
+      "previewPauseMs": 0,
+      "files": [
+        "Flight-Sheet_00.png"
+      ],
+      "sheets": [
+        {
+          "file": "Flight-Sheet_00.png",
+          "width": 3762,
+          "height": 1254,
+          "columns": 6,
+          "rows": 2,
+          "firstFrame": 0,
+          "frameCount": 12
+        }
+      ],
+      "frames": [
+        {
+          "index": 0,
+          "keyframe": 0,
+          "file": "Frames/Flight_000.png",
+          "width": 627,
+          "height": 627,
+          "durationMs": 83,
+          "sha256": "2bf946c13f7de7044b2c23b20a1e2c21b9a641c495dde9316a3e981d7df55591",
+          "sheet": "Flight-Sheet_00.png",
+          "x": 0,
+          "y": 0
+        },
+        {
+          "index": 1,
+          "keyframe": 0,
+          "file": "Frames/Flight_001.png",
+          "width": 627,
+          "height": 627,
+          "durationMs": 84,
+          "sha256": "2bf946c13f7de7044b2c23b20a1e2c21b9a641c495dde9316a3e981d7df55591",
+          "sheet": "Flight-Sheet_00.png",
+          "x": 627,
+          "y": 0
+        },
+        {
+          "index": 2,
+          "keyframe": 0,
+          "file": "Frames/Flight_002.png",
+          "width": 627,
+          "height": 627,
+          "durationMs": 83,
+          "sha256": "2bf946c13f7de7044b2c23b20a1e2c21b9a641c495dde9316a3e981d7df55591",
+          "sheet": "Flight-Sheet_00.png",
+          "x": 1254,
+          "y": 0
+        },
+        {
+          "index": 3,
+          "keyframe": 1,
+          "file": "Frames/Flight_003.png",
+          "width": 627,
+          "height": 627,
+          "durationMs": 83,
+          "sha256": "dd4741490fb48eda01386bbeb7e4f65a07e9fc7ebc643dd9c6589a8293471b15",
+          "sheet": "Flight-Sheet_00.png",
+          "x": 1881,
+          "y": 0
+        },
+        {
+          "index": 4,
+          "keyframe": 1,
+          "file": "Frames/Flight_004.png",
+          "width": 627,
+          "height": 627,
+          "durationMs": 84,
+          "sha256": "dd4741490fb48eda01386bbeb7e4f65a07e9fc7ebc643dd9c6589a8293471b15",
+          "sheet": "Flight-Sheet_00.png",
+          "x": 2508,
+          "y": 0
+        },
+        {
+          "index": 5,
+          "keyframe": 1,
+          "file": "Frames/Flight_005.png",
+          "width": 627,
+          "height": 627,
+          "durationMs": 83,
+          "sha256": "dd4741490fb48eda01386bbeb7e4f65a07e9fc7ebc643dd9c6589a8293471b15",
+          "sheet": "Flight-Sheet_00.png",
+          "x": 3135,
+          "y": 0
+        },
+        {
+          "index": 6,
+          "keyframe": 2,
+          "file": "Frames/Flight_006.png",
+          "width": 627,
+          "height": 627,
+          "durationMs": 83,
+          "sha256": "b52ccaf30735a16af9b1ea958e5511fdea618e8c25ba19511b6827203d19ec9f",
+          "sheet": "Flight-Sheet_00.png",
+          "x": 0,
+          "y": 627
+        },
+        {
+          "index": 7,
+          "keyframe": 2,
+          "file": "Frames/Flight_007.png",
+          "width": 627,
+          "height": 627,
+          "durationMs": 84,
+          "sha256": "b52ccaf30735a16af9b1ea958e5511fdea618e8c25ba19511b6827203d19ec9f",
+          "sheet": "Flight-Sheet_00.png",
+          "x": 627,
+          "y": 627
+        },
+        {
+          "index": 8,
+          "keyframe": 2,
+          "file": "Frames/Flight_008.png",
+          "width": 627,
+          "height": 627,
+          "durationMs": 83,
+          "sha256": "b52ccaf30735a16af9b1ea958e5511fdea618e8c25ba19511b6827203d19ec9f",
+          "sheet": "Flight-Sheet_00.png",
+          "x": 1254,
+          "y": 627
+        },
+        {
+          "index": 9,
+          "keyframe": 3,
+          "file": "Frames/Flight_009.png",
+          "width": 627,
+          "height": 627,
+          "durationMs": 83,
+          "sha256": "f38a2600dc28049ea9779ac04000c21185669179d56e3d4e3c47c9643c75adcb",
+          "sheet": "Flight-Sheet_00.png",
+          "x": 1881,
+          "y": 627
+        },
+        {
+          "index": 10,
+          "keyframe": 3,
+          "file": "Frames/Flight_010.png",
+          "width": 627,
+          "height": 627,
+          "durationMs": 84,
+          "sha256": "f38a2600dc28049ea9779ac04000c21185669179d56e3d4e3c47c9643c75adcb",
+          "sheet": "Flight-Sheet_00.png",
+          "x": 2508,
+          "y": 627
+        },
+        {
+          "index": 11,
+          "keyframe": 3,
+          "file": "Frames/Flight_011.png",
+          "width": 627,
+          "height": 627,
+          "durationMs": 83,
+          "sha256": "f38a2600dc28049ea9779ac04000c21185669179d56e3d4e3c47c9643c75adcb",
+          "sheet": "Flight-Sheet_00.png",
+          "x": 3135,
+          "y": 627
+        }
+      ],
+      "events": [],
+      "sourceArt": [
+        "SourceArt/Flight.png"
+      ],
+      "interpolation": "held painted poses"
+    }
+  },
+  "sourceAudit": {
+    "Flight": {
+      "file": "SourceArt/Flight.png",
+      "audit": [
+        {
+          "index": 0,
+          "rect": {
+            "left": 0,
+            "top": 0,
+            "width": 627,
+            "height": 625
+          },
+          "bounds": [
+            295,
+            75,
+            404,
+            585
+          ],
+          "edgeAlpha": 0,
+          "maxAlpha": 255
+        },
+        {
+          "index": 1,
+          "rect": {
+            "left": 627,
+            "top": 0,
+            "width": 627,
+            "height": 625
+          },
+          "bounds": [
+            221,
+            74,
+            331,
+            591
+          ],
+          "edgeAlpha": 0,
+          "maxAlpha": 255
+        },
+        {
+          "index": 2,
+          "rect": {
+            "left": 0,
+            "top": 625,
+            "width": 627,
+            "height": 629
+          },
+          "bounds": [
+            295,
+            57,
+            404,
+            569
+          ],
+          "edgeAlpha": 0,
+          "maxAlpha": 255
+        },
+        {
+          "index": 3,
+          "rect": {
+            "left": 627,
+            "top": 625,
+            "width": 627,
+            "height": 629
+          },
+          "bounds": [
+            222,
+            56,
+            331,
+            575
+          ],
+          "edgeAlpha": 0,
+          "maxAlpha": 255
+        }
+      ],
+      "grid": {
+        "columns": 2,
+        "rows": 2,
+        "xBoundaries": [
+          0,
+          627,
+          1254
+        ],
+        "yBoundaries": [
+          0,
+          625,
+          1254
+        ]
+      }
+    }
+  },
+  "links": {
+    "effect": "HumveeIntercept"
+  },
+  "notes": [],
+  "packaging": {
+    "generator": "built-in image_gen",
+    "alignment": "fixed source cell centers; no per-frame mass recentering",
+    "rigidInterpolation": "none; painted poses held at explicit timings",
+    "effectsInterpolation": "premultiplied-alpha blending of 16 painted poses",
+    "movement": "in place; game supplies world translation"
+  }
+}

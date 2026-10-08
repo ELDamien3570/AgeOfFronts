@@ -1,0 +1,254 @@
+{
+  "records": [
+    {
+      "id": "idle",
+      "file": "idle-v1.png",
+      "nativeFile": "Native-TopDown-idle-v1.png",
+      "generatedSource": "C:/Users/Damien/.codex/generated_images/01a1166c-83ee-7ae0-be97-78c470de8962/exec-6a8b76f9-2ab3-40b1-8da8-2a76c3141be7.png",
+      "prompt": "Use case: strategy game sprite animation. Reference is the APPROVED overhead Russian Bronze Spearman. Make exactly SIX poses on transparent 1536x1024 PNG sprite sheet, 3 columns by 2 rows, each 512x512 cell. Entire soldier plus spear and shield fits centered within EACH cell with at least70px empty transparent margin, maximum whole-pose dimensions370px. No grid lines, labels, text, floor, shadows or effects. Preserve strict 90-degree VERTICAL OVERHEAD camera for standing poses: bronze helmet crown centered inside broad bronze pauldrons and cream fur collar, shoulder mass hides torso and hips, tiny boot tops. Keep rough red-brown leather beneath bronze armor, pale trousers, dark boots, bronze bracers. Large round WOOD shield with bronze rim and boss in LEFT hand SCREEN RIGHT. Wooden SPEAR with leaf-shaped BRONZE tip, RIGHT hand SCREEN LEFT grips REAR THIRD, spear points SCREEN BOTTOM. No other weapons, no body duplication. Consistent anatomy and sprite scale across all six cells. Six subtle breathing poses. Boots stay planted, almost no lateral sway. Carry spear low on screen left, shield on screen right.",
+      "references": [
+        "C:/Users/Damien/Documents/GitHub/AgeOfFronts/AgeOfFronts/Art/Cultures/Russians/Units/BronzeAge/BronzeSpearman/SourceArt/Native-Idle-TopDown-v2.png"
+      ],
+      "action": "Six subtle breathing poses. Boots stay planted, almost no lateral sway. Carry spear low on screen left, shield on screen right.",
+      "status": "selected-source"
+    },
+    {
+      "id": "running",
+      "file": "running-v1.png",
+      "nativeFile": "Native-TopDown-running-v1.png",
+      "generatedSource": "C:/Users/Damien/.codex/generated_images/01a1166c-83ee-7ae0-be97-78c470de8962/exec-01a3958d-bd95-43fe-975a-e4d7d33e59a6.png",
+      "prompt": "Use case: strategy game sprite animation. Reference is the APPROVED overhead Russian Bronze Spearman. Make exactly SIX poses on transparent 1536x1024 PNG sprite sheet, 3 columns by 2 rows, each 512x512 cell. Entire soldier plus spear and shield fits centered within EACH cell with at least70px empty transparent margin, maximum whole-pose dimensions370px. No grid lines, labels, text, floor, shadows or effects. Preserve strict 90-degree VERTICAL OVERHEAD camera for standing poses: bronze helmet crown centered inside broad bronze pauldrons and cream fur collar, shoulder mass hides torso and hips, tiny boot tops. Keep rough red-brown leather beneath bronze armor, pale trousers, dark boots, bronze bracers. Large round WOOD shield with bronze rim and boss in LEFT hand SCREEN RIGHT. Wooden SPEAR with leaf-shaped BRONZE tip, RIGHT hand SCREEN LEFT grips REAR THIRD, spear points SCREEN BOTTOM. No other weapons, no body duplication. Consistent anatomy and sprite scale across all six cells. Six alternating WALK poses: right foot leads, feet level, left foot leads, feet level, right foot leads, feet level. Short natural strides, thighs mostly hidden by shoulders, show different boot positions. Spear and shield carried steadily.",
+      "references": [
+        "C:/Users/Damien/Documents/GitHub/AgeOfFronts/AgeOfFronts/Art/Cultures/Russians/Units/BronzeAge/BronzeSpearman/SourceArt/Native-Idle-TopDown-v2.png"
+      ],
+      "action": "Six alternating WALK poses: right foot leads, feet level, left foot leads, feet level, right foot leads, feet level. Short natural strides, thighs mostly hidden by shoulders, show different boot positions. Spear and shield carried steadily. Body root aligned across frames to reduce lateral drift.",
+      "status": "selected-source",
+      "pivots": [
+        {
+          "x": 271.0,
+          "y": 256
+        },
+        {
+          "x": 267.25,
+          "y": 256
+        },
+        {
+          "x": 233.5,
+          "y": 256
+        },
+        {
+          "x": 271.0,
+          "y": 256
+        },
+        {
+          "x": 267.25,
+          "y": 256
+        },
+        {
+          "x": 233.5,
+          "y": 256
+        }
+      ],
+      "registrationReason": "Authored helmet/body roots compensate whole-frame lateral drift; preserve original foot motion and vertical bob.",
+      "nativeBodyRootX": [
+        272,
+        268,
+        232,
+        272,
+        268,
+        232
+      ]
+    },
+    {
+      "id": "attack",
+      "file": "attack-v1.png",
+      "nativeFile": "Native-TopDown-attack-v1.png",
+      "generatedSource": "C:/Users/Damien/.codex/generated_images/01a1166c-83ee-7ae0-be97-78c470de8962/exec-df3bd41f-dec8-4a5e-bfc5-dffdef68b41b.png",
+      "prompt": "Use case: strategy game sprite animation. Reference is the APPROVED overhead Russian Bronze Spearman. Make exactly SIX poses on transparent 1536x1024 PNG sprite sheet, 3 columns by 2 rows, each 512x512 cell. Entire soldier plus spear and shield fits centered within EACH cell with at least70px empty transparent margin, maximum whole-pose dimensions370px. No grid lines, labels, text, floor, shadows or effects. Preserve strict 90-degree VERTICAL OVERHEAD camera for standing poses: bronze helmet crown centered inside broad bronze pauldrons and cream fur collar, shoulder mass hides torso and hips, tiny boot tops. Keep rough red-brown leather beneath bronze armor, pale trousers, dark boots, bronze bracers. Large round WOOD shield with bronze rim and boss in LEFT hand SCREEN RIGHT. Wooden SPEAR with leaf-shaped BRONZE tip, RIGHT hand SCREEN LEFT grips REAR THIRD, spear points SCREEN BOTTOM. No other weapons, no body duplication. Consistent anatomy and sprite scale across all six cells. Six OVERHAND forward spear thrust poses: ready, right hand draws spear back above right shoulder, thrust extension, full forward extension, withdraw, ready. Aim exactly SCREEN BOTTOM along the screen-left lane beside helmet. Right fist remains at SHOULDER HEIGHT or above, elbow behind and outward; NEVER drop to waist or switch to underhand grip. Shaft straight, bronze spearhead always at forward screen-bottom end, rear butt screen-top. Hand grips rear third. Shield protects screen-right flank.",
+      "references": [
+        "C:/Users/Damien/Documents/GitHub/AgeOfFronts/AgeOfFronts/Art/Cultures/Russians/Units/BronzeAge/BronzeSpearman/SourceArt/Native-Idle-TopDown-v2.png"
+      ],
+      "action": "Six OVERHAND forward spear thrust poses: ready, right hand draws spear back above right shoulder, thrust extension, full forward extension, withdraw, ready. Aim exactly SCREEN BOTTOM along the screen-left lane beside helmet. Right fist remains at SHOULDER HEIGHT or above, elbow behind and outward; NEVER drop to waist or switch to underhand grip. Shaft straight, bronze spearhead always at forward screen-bottom end, rear butt screen-top. Hand grips rear third. Shield protects screen-right flank.",
+      "status": "superseded-draft"
+    },
+    {
+      "id": "charge-attack",
+      "file": "charge-attack-v1.png",
+      "nativeFile": "Native-TopDown-charge-attack-v1.png",
+      "generatedSource": "C:/Users/Damien/.codex/generated_images/01a1166c-83ee-7ae0-be97-78c470de8962/exec-0843feeb-0b0b-4cd1-8569-80695452cece.png",
+      "prompt": "Use case: strategy game sprite animation. Reference is the APPROVED overhead Russian Bronze Spearman. Make exactly SIX poses on transparent 1536x1024 PNG sprite sheet, 3 columns by 2 rows, each 512x512 cell. Entire soldier plus spear and shield fits centered within EACH cell with at least70px empty transparent margin, maximum whole-pose dimensions370px. No grid lines, labels, text, floor, shadows or effects. Preserve strict 90-degree VERTICAL OVERHEAD camera for standing poses: bronze helmet crown centered inside broad bronze pauldrons and cream fur collar, shoulder mass hides torso and hips, tiny boot tops. Keep rough red-brown leather beneath bronze armor, pale trousers, dark boots, bronze bracers. Large round WOOD shield with bronze rim and boss in LEFT hand SCREEN RIGHT. Wooden SPEAR with leaf-shaped BRONZE tip, RIGHT hand SCREEN LEFT grips REAR THIRD, spear points SCREEN BOTTOM. No other weapons, no body duplication. Consistent anatomy and sprite scale across all six cells. Six heavy OVERHAND spear thrust poses after advancing: brake and plant, draw spear over right shoulder, drive straight forward SCREEN BOTTOM beside helmet, fully extended thrust, withdraw, ready. Right fist remains ABOVE shoulder line, never underhand. Right foot drops slightly back to open chest while same directly overhead camera retained. One straight spear, rear grip, same shield.",
+      "references": [
+        "C:/Users/Damien/Documents/GitHub/AgeOfFronts/AgeOfFronts/Art/Cultures/Russians/Units/BronzeAge/BronzeSpearman/SourceArt/Native-Idle-TopDown-v2.png"
+      ],
+      "action": "Six heavy OVERHAND spear thrust poses after advancing: brake and plant, draw spear over right shoulder, drive straight forward SCREEN BOTTOM beside helmet, fully extended thrust, withdraw, ready. Right fist remains ABOVE shoulder line, never underhand. Right foot drops slightly back to open chest while same directly overhead camera retained. One straight spear, rear grip, same shield.",
+      "status": "superseded-draft"
+    },
+    {
+      "id": "hit",
+      "file": "hit-v1.png",
+      "nativeFile": "Native-TopDown-hit-v1.png",
+      "generatedSource": "C:/Users/Damien/.codex/generated_images/01a1166c-83ee-7ae0-be97-78c470de8962/exec-cccdfe73-a0a5-4e0a-b265-517b3cd91e79.png",
+      "prompt": "Use case: strategy game sprite animation. Reference is the APPROVED overhead Russian Bronze Spearman. Make exactly SIX poses on transparent 1536x1024 PNG sprite sheet, 3 columns by 2 rows, each 512x512 cell. Entire soldier plus spear and shield fits centered within EACH cell with at least70px empty transparent margin, maximum whole-pose dimensions370px. No grid lines, labels, text, floor, shadows or effects. Preserve strict 90-degree VERTICAL OVERHEAD camera for standing poses: bronze helmet crown centered inside broad bronze pauldrons and cream fur collar, shoulder mass hides torso and hips, tiny boot tops. Keep rough red-brown leather beneath bronze armor, pale trousers, dark boots, bronze bracers. Large round WOOD shield with bronze rim and boss in LEFT hand SCREEN RIGHT. Wooden SPEAR with leaf-shaped BRONZE tip, RIGHT hand SCREEN LEFT grips REAR THIRD, spear points SCREEN BOTTOM. No other weapons, no body duplication. Consistent anatomy and sprite scale across all six cells. Six light hit reaction poses: stand, flinch, knees flex, recoil, recover, stand. Spear and shield retained, shield rises slightly to protect. No attack thrust or blood.",
+      "references": [
+        "C:/Users/Damien/Documents/GitHub/AgeOfFronts/AgeOfFronts/Art/Cultures/Russians/Units/BronzeAge/BronzeSpearman/SourceArt/Native-Idle-TopDown-v2.png"
+      ],
+      "action": "Six light hit reaction poses: stand, flinch, knees flex, recoil, recover, stand. Spear and shield retained, shield rises slightly to protect. No attack thrust or blood.",
+      "status": "selected-source"
+    },
+    {
+      "id": "charged",
+      "file": "charged-v1.png",
+      "nativeFile": "Native-TopDown-charged-v1.png",
+      "generatedSource": "C:/Users/Damien/.codex/generated_images/01a1166c-83ee-7ae0-be97-78c470de8962/exec-819fc86f-8dc3-4422-a177-323d867d675e.png",
+      "prompt": "Use case: strategy game sprite animation. Reference is the APPROVED overhead Russian Bronze Spearman. Make exactly SIX poses on transparent 1536x1024 PNG sprite sheet, 3 columns by 2 rows, each 512x512 cell. Entire soldier plus spear and shield fits centered within EACH cell with at least70px empty transparent margin, maximum whole-pose dimensions370px. No grid lines, labels, text, floor, shadows or effects. Preserve strict 90-degree VERTICAL OVERHEAD camera for standing poses: bronze helmet crown centered inside broad bronze pauldrons and cream fur collar, shoulder mass hides torso and hips, tiny boot tops. Keep rough red-brown leather beneath bronze armor, pale trousers, dark boots, bronze bracers. Large round WOOD shield with bronze rim and boss in LEFT hand SCREEN RIGHT. Wooden SPEAR with leaf-shaped BRONZE tip, RIGHT hand SCREEN LEFT grips REAR THIRD, spear points SCREEN BOTTOM. No other weapons, no body duplication. Consistent anatomy and sprite scale across all six cells. Six heavy charge-impact reactions: stand, backward recoil, knees buckle and stagger, brace with shield, regain balance, stand. Spear retained in right hand, shield in left; never stab or swap arms. Stronger motion than light hit.",
+      "references": [
+        "C:/Users/Damien/Documents/GitHub/AgeOfFronts/AgeOfFronts/Art/Cultures/Russians/Units/BronzeAge/BronzeSpearman/SourceArt/Native-Idle-TopDown-v2.png"
+      ],
+      "action": "Six heavy charge-impact reactions: stand, backward recoil, knees buckle and stagger, brace with shield, regain balance, stand. Spear retained in right hand, shield in left; never stab or swap arms. Stronger motion than light hit.",
+      "status": "selected-source"
+    },
+    {
+      "id": "death",
+      "file": "death-v1.png",
+      "nativeFile": "Native-TopDown-death-v1.png",
+      "generatedSource": "C:/Users/Damien/.codex/generated_images/01a1166c-83ee-7ae0-be97-78c470de8962/exec-c4cd1334-3bd1-4fa5-8879-8544d8bf8e46.png",
+      "prompt": "Use case: strategy game sprite animation. Reference is the APPROVED overhead Russian Bronze Spearman. Make exactly SIX poses on transparent 1536x1024 PNG sprite sheet, 3 columns by 2 rows, each 512x512 cell. Entire soldier plus spear and shield fits centered within EACH cell with at least70px empty transparent margin, maximum whole-pose dimensions370px. No grid lines, labels, text, floor, shadows or effects. Preserve strict 90-degree VERTICAL OVERHEAD camera for standing poses: bronze helmet crown centered inside broad bronze pauldrons and cream fur collar, shoulder mass hides torso and hips, tiny boot tops. Keep rough red-brown leather beneath bronze armor, pale trousers, dark boots, bronze bracers. Large round WOOD shield with bronze rim and boss in LEFT hand SCREEN RIGHT. Wooden SPEAR with leaf-shaped BRONZE tip, RIGHT hand SCREEN LEFT grips REAR THIRD, spear points SCREEN BOTTOM. No other weapons, no body duplication. Consistent anatomy and sprite scale across all six cells. Six SIDE death stages: standing, knees buckle, tip sideways, fall onto side, settle, still corpse. Final three full body lying on SIDE with HEAD SCREEN RIGHT and BOOTS SCREEN LEFT continuously. Visible leather torso and pants when lying, anatomically connected legs. Spear and shield drop beside body, one of each, no blood.",
+      "references": [
+        "C:/Users/Damien/Documents/GitHub/AgeOfFronts/AgeOfFronts/Art/Cultures/Russians/Units/BronzeAge/BronzeSpearman/SourceArt/Native-Idle-TopDown-v2.png"
+      ],
+      "action": "Six SIDE death stages: standing, knees buckle, tip sideways, fall onto side, settle, still corpse. Final three full body lying on SIDE with HEAD SCREEN RIGHT and BOOTS SCREEN LEFT continuously. Visible leather torso and pants when lying, anatomically connected legs. Spear and shield drop beside body, one of each, no blood.",
+      "status": "superseded-draft"
+    },
+    {
+      "id": "death-back",
+      "file": "death-back-v1.png",
+      "nativeFile": "Native-TopDown-death-back-v1.png",
+      "generatedSource": "C:/Users/Damien/.codex/generated_images/01a1166c-83ee-7ae0-be97-78c470de8962/exec-ffc19318-9291-43e4-8aaf-8174b9fddc0e.png",
+      "prompt": "Use case: strategy game sprite animation. Reference is the APPROVED overhead Russian Bronze Spearman. Make exactly SIX poses on transparent 1536x1024 PNG sprite sheet, 3 columns by 2 rows, each 512x512 cell. Entire soldier plus spear and shield fits centered within EACH cell with at least70px empty transparent margin, maximum whole-pose dimensions370px. No grid lines, labels, text, floor, shadows or effects. Preserve strict 90-degree VERTICAL OVERHEAD camera for standing poses: bronze helmet crown centered inside broad bronze pauldrons and cream fur collar, shoulder mass hides torso and hips, tiny boot tops. Keep rough red-brown leather beneath bronze armor, pale trousers, dark boots, bronze bracers. Large round WOOD shield with bronze rim and boss in LEFT hand SCREEN RIGHT. Wooden SPEAR with leaf-shaped BRONZE tip, RIGHT hand SCREEN LEFT grips REAR THIRD, spear points SCREEN BOTTOM. No other weapons, no body duplication. Consistent anatomy and sprite scale across all six cells. Six BACK death stages: standing, recoil, buckle backwards, land on BACK, settle, still corpse. Final three HEAD SCREEN TOP and BOOTS SCREEN BOTTOM continuously without flip. Full prone-on-back body with leather torso and pants visible, hands beside body; spear and shield fall beside him, one of each, no blood.",
+      "references": [
+        "C:/Users/Damien/Documents/GitHub/AgeOfFronts/AgeOfFronts/Art/Cultures/Russians/Units/BronzeAge/BronzeSpearman/SourceArt/Native-Idle-TopDown-v2.png"
+      ],
+      "action": "Six BACK death stages: standing, recoil, buckle backwards, land on BACK, settle, still corpse. Final three HEAD SCREEN TOP and BOOTS SCREEN BOTTOM continuously without flip. Full prone-on-back body with leather torso and pants visible, hands beside body; spear and shield fall beside him, one of each, no blood.",
+      "status": "superseded-draft"
+    },
+    {
+      "id": "attack",
+      "file": "attack-v2.png",
+      "nativeFile": "Native-TopDown-attack-v2.png",
+      "generatedSource": "C:/Users/Damien/.codex/generated_images/01a1166c-83ee-7ae0-be97-78c470de8962/exec-a5f02c1c-3d4d-433e-becc-6c8eba2896a2.png",
+      "prompt": "Edit sixframe overhead Bronze Spearman thrust sheet. Keep same character, equipment, strict directly overhead camera and six attack poses. Reduce EVERY whole soldier AND all equipment to75percent current size, recenter each in its own512pxcell with at least70px transparent margins; do not let spear butt or tip cross cell edge. 1536x1024transparent PNG3columns2rows. Correct extension poses frames3and4: spear always ONE continuous wooden shaft with capped rear butt behind fist and leaf bronze spearhead forward, fist holds rear third with overhand grip, knuckles facing camera, palm DOWN. Grip must not become an underhand palm-up thrust. Raised elbow behind/outward, rightarm extends toward screenBOTTOM along left-side lane. Straight shaft remains aligned exactly screenDOWN through swing extension; rearbutt may be occluded by forearm but shaft connects naturally. No spearhead/sickle changes, no bent wood, no extra weapon. No text grids shadows.",
+      "references": [
+        "C:/Users/Damien/.codex/generated_images/01a1166c-83ee-7ae0-be97-78c470de8962/exec-df3bd41f-dec8-4a5e-bfc5-dffdef68b41b.png"
+      ],
+      "status": "selected-source",
+      "action": "Six OVERHAND forward spear thrust poses: ready, right hand draws spear back above right shoulder, thrust extension, full forward extension, withdraw, ready. Aim exactly SCREEN BOTTOM along the screen-left lane beside helmet. Right fist remains at SHOULDER HEIGHT or above, elbow behind and outward; NEVER drop to waist or switch to underhand grip. Shaft straight, bronze spearhead always at forward screen-bottom end, rear butt screen-top. Hand grips rear third. Shield protects screen-right flank.",
+      "scale": 1.5
+    },
+    {
+      "id": "charge",
+      "file": "charge-v1.png",
+      "nativeFile": "Native-TopDown-running-v1.png",
+      "generatedSource": "C:/Users/Damien/.codex/generated_images/01a1166c-83ee-7ae0-be97-78c470de8962/exec-01a3958d-bd95-43fe-975a-e4d7d33e59a6.png",
+      "prompt": "Use case: strategy game sprite animation. Reference is the APPROVED overhead Russian Bronze Spearman. Make exactly SIX poses on transparent 1536x1024 PNG sprite sheet, 3 columns by 2 rows, each 512x512 cell. Entire soldier plus spear and shield fits centered within EACH cell with at least70px empty transparent margin, maximum whole-pose dimensions370px. No grid lines, labels, text, floor, shadows or effects. Preserve strict 90-degree VERTICAL OVERHEAD camera for standing poses: bronze helmet crown centered inside broad bronze pauldrons and cream fur collar, shoulder mass hides torso and hips, tiny boot tops. Keep rough red-brown leather beneath bronze armor, pale trousers, dark boots, bronze bracers. Large round WOOD shield with bronze rim and boss in LEFT hand SCREEN RIGHT. Wooden SPEAR with leaf-shaped BRONZE tip, RIGHT hand SCREEN LEFT grips REAR THIRD, spear points SCREEN BOTTOM. No other weapons, no body duplication. Consistent anatomy and sprite scale across all six cells. Six alternating WALK poses: right foot leads, feet level, left foot leads, feet level, right foot leads, feet level. Short natural strides, thighs mostly hidden by shoulders, show different boot positions. Spear and shield carried steadily.",
+      "references": [
+        "C:/Users/Damien/Documents/GitHub/AgeOfFronts/AgeOfFronts/Art/Cultures/Russians/Units/BronzeAge/BronzeSpearman/SourceArt/Native-Idle-TopDown-v2.png"
+      ],
+      "action": "Fast alternating-foot charge movement with spear and shield held steadily. Body root aligned across frames to reduce lateral drift.",
+      "status": "selected-source",
+      "compositionReason": "Reuse alternating gait poses at faster cadence.",
+      "pivots": [
+        {
+          "x": 271.0,
+          "y": 256
+        },
+        {
+          "x": 267.25,
+          "y": 256
+        },
+        {
+          "x": 233.5,
+          "y": 256
+        },
+        {
+          "x": 271.0,
+          "y": 256
+        },
+        {
+          "x": 267.25,
+          "y": 256
+        },
+        {
+          "x": 233.5,
+          "y": 256
+        }
+      ],
+      "registrationReason": "Authored helmet/body roots compensate whole-frame lateral drift; preserve original foot motion and vertical bob.",
+      "nativeBodyRootX": [
+        272,
+        268,
+        232,
+        272,
+        268,
+        232
+      ]
+    },
+    {
+      "id": "charge-attack",
+      "file": "charge-attack-v2.png",
+      "nativeFile": "Native-TopDown-charge-attack-v2.png",
+      "generatedSource": "C:/Users/Damien/.codex/generated_images/01a1166c-83ee-7ae0-be97-78c470de8962/exec-a48acc85-9bba-4186-874c-617ab531a8f0.png",
+      "prompt": "Use this exact six-pose spear thrust choreography and same overhead Bronze Spearman identity for a CHARGE ATTACK. Stronger planted stance and modest whole body lean into thrust, shield braced in left hand screenright. Keep overheadcamera, bronzehelmet pauldronsfur leather, same actor SCALE as this reference. First pose brakes from run, second pulls spear backward over rightshoulder, thirdandfourth thrust RIGHTHAND overhand towardSCREENBOTTOM, fifthwithdraws, sixthready. Keep straight spear always tip SCREENBOTTOM and butt SCREEN TOP, never reverse it or spin spear diagonallyabovehelmet. Pronated fist knuckles towardcamera, not palm-up underhand. Exactlyone continuousspear leafbronzehead, same largeshield. Transparent1536x1024PNG3x2six512cells with all actor+weapons insideeachcell with60px margins. No text grids shadows.",
+      "references": [
+        "C:/Users/Damien/.codex/generated_images/01a1166c-83ee-7ae0-be97-78c470de8962/exec-a5f02c1c-3d4d-433e-becc-6c8eba2896a2.png"
+      ],
+      "status": "selected-source",
+      "action": "Six heavy OVERHAND spear thrust poses after advancing: brake and plant, draw spear over right shoulder, drive straight forward SCREEN BOTTOM beside helmet, fully extended thrust, withdraw, ready. Right fist remains ABOVE shoulder line, never underhand. Right foot drops slightly back to open chest while same directly overhead camera retained. One straight spear, rear grip, same shield.",
+      "scale": 1.5,
+      "cellSources": {
+        "0": "Native-TopDown-attack-v2.png",
+        "5": "Native-TopDown-attack-v2.png"
+      },
+      "compositionReason": "Use clean ready poses at start/end; retain stronger planted thrust in middle. Fixed 1.5 clip scale calibrates smaller generated body."
+    },
+    {
+      "id": "death",
+      "file": "death-v2.png",
+      "nativeFile": "Native-TopDown-death-v2.png",
+      "generatedSource": "C:/Users/Damien/.codex/generated_images/01a1166c-83ee-7ae0-be97-78c470de8962/exec-329f683c-8c11-4e29-97bd-b94d21a028af.png",
+      "prompt": "Edit this six-pose side death sheet only to reduce ALL whole poses including dropped spear/shield to70% current scale, center each inside its own512x512cell. ALL body and equipment insideeach cellwith minimum80px empty margins. No neighboring sprite crosses row or column boundary. Preserve sidefall anatomy/choreography and character. Final3headSCREENRIGHT bootsSCREENLEFT. Transparent1536x1024PNG3columns2rows. No shadows or grids.",
+      "references": [
+        "C:/Users/Damien/.codex/generated_images/01a1166c-83ee-7ae0-be97-78c470de8962/exec-c4cd1334-3bd1-4fa5-8879-8544d8bf8e46.png"
+      ],
+      "action": "Six SIDE death stages: standing, knees buckle, tip sideways, fall onto side, settle, still corpse. Final three full body lying on SIDE with HEAD SCREEN RIGHT and BOOTS SCREEN LEFT continuously. Visible leather torso and pants when lying, anatomically connected legs. Spear and shield drop beside body, one of each, no blood.",
+      "status": "selected-source",
+      "scale": 1.25,
+      "compositionReason": "Fixed clip scale calibrates smaller death source against standing clips."
+    },
+    {
+      "id": "death-back",
+      "file": "death-back-v2.png",
+      "nativeFile": "Native-TopDown-death-back-v2.png",
+      "generatedSource": "C:/Users/Damien/.codex/generated_images/01a1166c-83ee-7ae0-be97-78c470de8962/exec-c6321868-9f45-4149-bc42-0f3afc21d19a.png",
+      "prompt": "Improve sixframe overhead back-death sheet. Keep Bronze Spearman identity/equipment and first3poses. Rebuild final3poses as FULL BODY LYING FLAT SUPINE on ground, camera directly above him: torso and thighs lie parallel to ground, head SCREEN TOP, feetSCREENBOTTOM, knees relax, arms beside body. He must NOT look seated orstanding. Same bronzehelmet pauldronsredleather creamfur pale pantsboots, no additionalgear. Drop spear and shield beside body, one ofeach. HeadorientationstaysTOP inlast3poses. Entireposeweaponsmaximum340pxinsideeach512cellwith80px emptymargins. Transparent1536x1024PNG3columns2rowssixframes. No bloodshadowfloorgridlabels.",
+      "references": [
+        "C:/Users/Damien/.codex/generated_images/01a1166c-83ee-7ae0-be97-78c470de8962/exec-ffc19318-9291-43e4-8aaf-8174b9fddc0e.png"
+      ],
+      "action": "Six BACK death stages: standing, recoil, buckle backwards, land on BACK, settle, still corpse. Final three HEAD SCREEN TOP and BOOTS SCREEN BOTTOM continuously without flip. Full prone-on-back body with leather torso and pants visible, hands beside body; spear and shield fall beside him, one of each, no blood.",
+      "status": "superseded-boundary-draft"
+    },
+    {
+      "id": "death-back",
+      "file": "death-back-v3.png",
+      "nativeFile": "Native-TopDown-death-back-v3.png",
+      "generatedSource": "C:/Users/Damien/.codex/generated_images/01a1166c-83ee-7ae0-be97-78c470de8962/exec-3277d1ab-3aa2-4fcf-89ab-f5721c6bc130.png",
+      "prompt": "Rebuild this sixframe back-death sprite sheet at SMALLER SCALE. All six characters and dropped shield/spear MUST fit inside centered320x320region of each512cell, at least96px empty margins. Especially bottomleft corpse's shield must not cross into nextcell. Last3bodies should clearly lie flat faceUP rather than sit: relax knees and legs extended, bootTOPS visible not soles toward camera. Helmet tilted back with small face underneath pointing UP AT CAMERA, shoulders/leather torso/thighs all lyingflat in samegroundplane. HeadTOP feetBOTTOM neverflip. First3stand,recoil,backwardbuckling, last3landflat,settle,still. Preserve bronzehelmetpauldrons bracers fur redleather pale trouserslargewoodshield bronzeleafspear. Strictverticaloverheadcamera throughout. Transparent1536x1024PNG3x2six512cells. No floors shadowsbloodgridtext. Scale EVERY WHOLEPOSE INCLUDING DROPPEDWEAPONS to fit320square.",
+      "references": [
+        "C:/Users/Damien/.codex/generated_images/01a1166c-83ee-7ae0-be97-78c470de8962/exec-c6321868-9f45-4149-bc42-0f3afc21d19a.png"
+      ],
+      "action": "Six BACK death stages: standing, recoil, buckle backwards, land on BACK, settle, still corpse. Final three HEAD SCREEN TOP and BOOTS SCREEN BOTTOM continuously without flip. Full prone-on-back body with leather torso and pants visible, hands beside body; spear and shield fall beside him, one of each, no blood.",
+      "status": "selected-source",
+      "scale": 1.25,
+      "compositionReason": "Fixed clip scale calibrates smaller death source; supine face-up final poses, protected cell margins."
+    }
+  ]
+}

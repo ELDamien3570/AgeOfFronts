@@ -6,6 +6,7 @@ export const AGES = [
   "ClassicalAge",
   "EarlyMedieval",
   "LateMedieval",
+  "Napoleonic",
   "EarlyModern",
   "Modern",
 ] as const;
@@ -16,6 +17,7 @@ export const AGE_NAMES = [
   "Classical Age",
   "Early Medieval",
   "Late Medieval",
+  "Napoleonic",
   "Early Modern",
   "Modern",
 ];
@@ -35,6 +37,7 @@ export type TargetTag =
   | "infantry"
   | "ranged"
   | "mounted"
+  | "armoured"
   | "vehicle"
   | "siege"
   | "ship"
@@ -138,6 +141,9 @@ export interface UnitDefinition {
     | "anti-air"
     | "launcher";
   technologyId: string;
+  troopClass?: "frontline" | "antiCavalry" | "rangedInfantry" | "lightCavalry" | "heavyCavalry" | "rangedCavalry";
+  trainingSeconds?: number;
+  healthPercent?: number;
   building: BuildingType;
   tags: readonly TargetTag[];
   speedPercent: number;
@@ -205,7 +211,7 @@ export interface RefitJob {
   totalTicks: number;
 }
 export interface ChargeState {
-  phase: "approach" | "committed" | "recovery";
+  phase: "approach" | "committed" | "recovery" | "preparing";
   x: number;
   y: number;
   startTick: number;
@@ -331,6 +337,7 @@ export interface ExpansionSnapshot {
   tradeReceipts?: TradeReceipt[];
   fallout?: Uint32Array;
   startingAge?: Age;
+  maximumAge?: Age;
   armies: Army[];
   rulesetId: string;
   contentHash: string;

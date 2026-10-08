@@ -1,0 +1,330 @@
+[
+  {
+    "id": "barracks",
+    "folder": "Barracks",
+    "category": "Barracks",
+    "role": "Infantry recruitment",
+    "subject": "Two long separate timber/brick barracks roofs with olive sheetmetal, central broad drill yard, two large overhead straw training dummies, parallel stacks of rifles and olive crates. Infantry identity; no tanks, targets or factory smokestacks.",
+    "age": "EarlyModern",
+    "prompt": "Use case: stylized-concept. Create ONE NEW hand-painted realistic RTS building icon for Russian/Soviet EARLY MODERN WWII-era culture. Image 1 is STYLE AND EXACT OVERHEAD CAMERA reference only, not subject to copy. Weathered olive corrugated roofs, muted red brick or timber edge caps, warm packed gravel/earth, subdued grass, period 1940s equipment. Use large distinct role cues readable at48/64/128px, restrained detail. EXACT90degree vertical NADIR ORTHOGRAPHIC roof plan, all outer roof edges perfect rectangles parallel to image axes, no visible facade, door, windows, upright shaft, front wall or side elevation anywhere. Roofs completely conceal all vertical building faces. Chimneys circular or square TOP openings only, all vertical posts only top endcaps, wheels viewed edge-on thin strips, machinery only horizontal top surfaces. No isometric camera, camera tilt, perspective convergence, giant long shadows. Minimal shallow contact shading, top-left surface light. Compact complete footprint on square canvas with at least7percent transparent outer margin on every side. GENUINE transparent alpha outside footprint. No black background, checkerboard, bright red/yellow edge fringe, text, labels, modern flags, people or scenic environment. No continuous artificial decorative perimeter frame. SUBJECT: Two long separate timber/brick barracks roofs with olive sheetmetal, central broad drill yard, two large overhead straw training dummies, parallel stacks of rifles and olive crates. Infantry identity; no tanks, targets or factory smokestacks.",
+    "reference": "C:/Users/Damien/Documents/GitHub/AgeOfFronts/AgeOfFronts/Art/Cultures/Russians/Buildings/EarlyModern/Military Airstrip/SourceArt/Icon-WWII-v4.png",
+    "technologyIds": [
+      "modern-modern-armaments"
+    ],
+    "status": "draft",
+    "era": "WWII / mid-twentieth century",
+    "newFacility": true
+  },
+  {
+    "id": "city",
+    "folder": "City",
+    "category": "City",
+    "role": "Population and reserve growth",
+    "subject": "Five separate brick/timber domestic residential rooftops around communal garden square, largest long civic hall roof, broad pedestrian earth paths, garden plots and modest wooden well. Soviet 1940s workers settlement; roofs brick-brown and weathered olive, no modern apartment towers, military equipment or decorative emblem.",
+    "age": "EarlyModern",
+    "prompt": "Use case: stylized-concept. Create ONE NEW hand-painted realistic RTS building icon for Russian/Soviet EARLY MODERN WWII-era culture. Image 1 is STYLE AND EXACT OVERHEAD CAMERA reference only, not subject to copy. Weathered olive corrugated roofs, muted red brick or timber edge caps, warm packed gravel/earth, subdued grass, period 1940s equipment. Use large distinct role cues readable at48/64/128px, restrained detail. EXACT90degree vertical NADIR ORTHOGRAPHIC roof plan, all outer roof edges perfect rectangles parallel to image axes, no visible facade, door, windows, upright shaft, front wall or side elevation anywhere. Roofs completely conceal all vertical building faces. Chimneys circular or square TOP openings only, all vertical posts only top endcaps, wheels viewed edge-on thin strips, machinery only horizontal top surfaces. No isometric camera, camera tilt, perspective convergence, giant long shadows. Minimal shallow contact shading, top-left surface light. Compact complete footprint on square canvas with at least7percent transparent outer margin on every side. GENUINE transparent alpha outside footprint. No black background, checkerboard, bright red/yellow edge fringe, text, labels, modern flags, people or scenic environment. No continuous artificial decorative perimeter frame. SUBJECT: Five separate brick/timber domestic residential rooftops around communal garden square, largest long civic hall roof, broad pedestrian earth paths, garden plots and modest wooden well. Soviet 1940s workers settlement; roofs brick-brown and weathered olive, no modern apartment towers, military equipment or decorative emblem.",
+    "reference": "C:/Users/Damien/Documents/GitHub/AgeOfFronts/AgeOfFronts/Art/Cultures/Russians/Buildings/EarlyModern/Military Airstrip/SourceArt/Icon-WWII-v4.png",
+    "technologyIds": [
+      "modern-industrial-production"
+    ],
+    "status": "draft",
+    "era": "WWII / mid-twentieth century",
+    "newFacility": true
+  },
+  {
+    "id": "archery",
+    "folder": "Archery Range",
+    "category": "Archery Range",
+    "role": "Ranged infantry recruitment",
+    "subject": "WWII rifle and machine-gun firing range, three elongated parallel dirt firing lanes terminating in big flat round straw targets; narrow timber supply shed along left; rifles, one tripod-supported long-barrel gun seen overhead, ammunition crates at bottom. Target lanes dominate. All targets laid flat for game plan readability; no standing target faces.",
+    "age": "EarlyModern",
+    "prompt": "Use case: stylized-concept. Create ONE NEW hand-painted realistic RTS building icon for Russian/Soviet EARLY MODERN WWII-era culture. Image 1 is STYLE AND EXACT OVERHEAD CAMERA reference only, not subject to copy. Weathered olive corrugated roofs, muted red brick or timber edge caps, warm packed gravel/earth, subdued grass, period 1940s equipment. Use large distinct role cues readable at48/64/128px, restrained detail. EXACT90degree vertical NADIR ORTHOGRAPHIC roof plan, all outer roof edges perfect rectangles parallel to image axes, no visible facade, door, windows, upright shaft, front wall or side elevation anywhere. Roofs completely conceal all vertical building faces. Chimneys circular or square TOP openings only, all vertical posts only top endcaps, wheels viewed edge-on thin strips, machinery only horizontal top surfaces. No isometric camera, camera tilt, perspective convergence, giant long shadows. Minimal shallow contact shading, top-left surface light. Compact complete footprint on square canvas with at least7percent transparent outer margin on every side. GENUINE transparent alpha outside footprint. No black background, checkerboard, bright red/yellow edge fringe, text, labels, modern flags, people or scenic environment. No continuous artificial decorative perimeter frame. SUBJECT: WWII rifle and machine-gun firing range, three elongated parallel dirt firing lanes terminating in big flat round straw targets; narrow timber supply shed along left; rifles, one tripod-supported long-barrel gun seen overhead, ammunition crates at bottom. Target lanes dominate. All targets laid flat for game plan readability; no standing target faces.",
+    "reference": "C:/Users/Damien/Documents/GitHub/AgeOfFronts/AgeOfFronts/Art/Cultures/Russians/Buildings/EarlyModern/Military Airstrip/SourceArt/Icon-WWII-v4.png",
+    "technologyIds": [
+      "russian-machine-gun-teams"
+    ],
+    "status": "draft",
+    "era": "WWII / mid-twentieth century",
+    "newFacility": true
+  },
+  {
+    "id": "depot",
+    "folder": "Vehicle Depot",
+    "category": "Vehicle Depot",
+    "role": "Armored vehicle recruitment and equipment",
+    "subject": "Two big olive corrugated vehicle-shed roof rectangles at rear and left, spacious gravel motor pool with one distinctive compact overhead T-34 style tracked tank, one wartime armored half-track and one olive gun truck, three separate silhouettes; tools/fuel drums and spare tread assemblies. No modern IFVs, missiles or jets. Tank circular turret and broad tracks top only.",
+    "age": "EarlyModern",
+    "prompt": "Use case: stylized-concept. Create ONE NEW hand-painted realistic RTS building icon for Russian/Soviet EARLY MODERN WWII-era culture. Image 1 is STYLE AND EXACT OVERHEAD CAMERA reference only, not subject to copy. Weathered olive corrugated roofs, muted red brick or timber edge caps, warm packed gravel/earth, subdued grass, period 1940s equipment. Use large distinct role cues readable at48/64/128px, restrained detail. EXACT90degree vertical NADIR ORTHOGRAPHIC roof plan, all outer roof edges perfect rectangles parallel to image axes, no visible facade, door, windows, upright shaft, front wall or side elevation anywhere. Roofs completely conceal all vertical building faces. Chimneys circular or square TOP openings only, all vertical posts only top endcaps, wheels viewed edge-on thin strips, machinery only horizontal top surfaces. No isometric camera, camera tilt, perspective convergence, giant long shadows. Minimal shallow contact shading, top-left surface light. Compact complete footprint on square canvas with at least7percent transparent outer margin on every side. GENUINE transparent alpha outside footprint. No black background, checkerboard, bright red/yellow edge fringe, text, labels, modern flags, people or scenic environment. No continuous artificial decorative perimeter frame. SUBJECT: Two big olive corrugated vehicle-shed roof rectangles at rear and left, spacious gravel motor pool with one distinctive compact overhead T-34 style tracked tank, one wartime armored half-track and one olive gun truck, three separate silhouettes; tools/fuel drums and spare tread assemblies. No modern IFVs, missiles or jets. Tank circular turret and broad tracks top only.",
+    "reference": "C:/Users/Damien/Documents/GitHub/AgeOfFronts/AgeOfFronts/Art/Cultures/Russians/Buildings/EarlyModern/Military Airstrip/SourceArt/Icon-WWII-v4.png",
+    "technologyIds": [
+      "russian-gun-trucks",
+      "russian-apc-production",
+      "russian-tank-production"
+    ],
+    "status": "draft",
+    "era": "WWII / mid-twentieth century",
+    "newFacility": true
+  },
+  {
+    "id": "arms-factory",
+    "folder": "Arms Factory",
+    "category": "Arms Factory",
+    "role": "Infantry equipment production",
+    "subject": "Long narrow brick armaments hall with olive corrugated roof and only two small circular chimney TOP mouths, workyard with large visibly laid-out rifles and machine-gun parts on rectangular benches, ammo boxes and six ammunition-shell bundles. Weapons equipment production, not generic trade goods or tanks.",
+    "age": "EarlyModern",
+    "prompt": "Use case: stylized-concept. Create ONE NEW hand-painted realistic RTS building icon for Russian/Soviet EARLY MODERN WWII-era culture. Image 1 is STYLE AND EXACT OVERHEAD CAMERA reference only, not subject to copy. Weathered olive corrugated roofs, muted red brick or timber edge caps, warm packed gravel/earth, subdued grass, period 1940s equipment. Use large distinct role cues readable at48/64/128px, restrained detail. EXACT90degree vertical NADIR ORTHOGRAPHIC roof plan, all outer roof edges perfect rectangles parallel to image axes, no visible facade, door, windows, upright shaft, front wall or side elevation anywhere. Roofs completely conceal all vertical building faces. Chimneys circular or square TOP openings only, all vertical posts only top endcaps, wheels viewed edge-on thin strips, machinery only horizontal top surfaces. No isometric camera, camera tilt, perspective convergence, giant long shadows. Minimal shallow contact shading, top-left surface light. Compact complete footprint on square canvas with at least7percent transparent outer margin on every side. GENUINE transparent alpha outside footprint. No black background, checkerboard, bright red/yellow edge fringe, text, labels, modern flags, people or scenic environment. No continuous artificial decorative perimeter frame. SUBJECT: Long narrow brick armaments hall with olive corrugated roof and only two small circular chimney TOP mouths, workyard with large visibly laid-out rifles and machine-gun parts on rectangular benches, ammo boxes and six ammunition-shell bundles. Weapons equipment production, not generic trade goods or tanks.",
+    "reference": "C:/Users/Damien/Documents/GitHub/AgeOfFronts/AgeOfFronts/Art/Cultures/Russians/Buildings/EarlyModern/Military Airstrip/SourceArt/Icon-WWII-v4.png",
+    "technologyIds": [
+      "modern-modern-armaments"
+    ],
+    "status": "draft",
+    "era": "WWII / mid-twentieth century",
+    "newFacility": true
+  },
+  {
+    "id": "siege-workshop",
+    "folder": "Siege Workshop",
+    "category": "Siege",
+    "role": "Artillery production and recruitment",
+    "subject": "WWII Soviet artillery workshop with L-shaped olive corrugated roof, open assembly court dominated by one overhead long-barrel field cannon with two wheels seen edge-on and long split trails, a short heavy howitzer seen overhead, wheel/axle parts and stacked shells. Gun barrels horizontal pointing upward, no facing muzzle circles, no vertical shields/front faces.",
+    "age": "EarlyModern",
+    "prompt": "Use case: stylized-concept. Create ONE NEW hand-painted realistic RTS building icon for Russian/Soviet EARLY MODERN WWII-era culture. Image 1 is STYLE AND EXACT OVERHEAD CAMERA reference only, not subject to copy. Weathered olive corrugated roofs, muted red brick or timber edge caps, warm packed gravel/earth, subdued grass, period 1940s equipment. Use large distinct role cues readable at48/64/128px, restrained detail. EXACT90degree vertical NADIR ORTHOGRAPHIC roof plan, all outer roof edges perfect rectangles parallel to image axes, no visible facade, door, windows, upright shaft, front wall or side elevation anywhere. Roofs completely conceal all vertical building faces. Chimneys circular or square TOP openings only, all vertical posts only top endcaps, wheels viewed edge-on thin strips, machinery only horizontal top surfaces. No isometric camera, camera tilt, perspective convergence, giant long shadows. Minimal shallow contact shading, top-left surface light. Compact complete footprint on square canvas with at least7percent transparent outer margin on every side. GENUINE transparent alpha outside footprint. No black background, checkerboard, bright red/yellow edge fringe, text, labels, modern flags, people or scenic environment. No continuous artificial decorative perimeter frame. SUBJECT: WWII Soviet artillery workshop with L-shaped olive corrugated roof, open assembly court dominated by one overhead long-barrel field cannon with two wheels seen edge-on and long split trails, a short heavy howitzer seen overhead, wheel/axle parts and stacked shells. Gun barrels horizontal pointing upward, no facing muzzle circles, no vertical shields/front faces.",
+    "reference": "C:/Users/Damien/Documents/GitHub/AgeOfFronts/AgeOfFronts/Art/Cultures/Russians/Buildings/EarlyModern/Military Airstrip/SourceArt/Icon-WWII-v4.png",
+    "technologyIds": [
+      "modern-modern-armaments"
+    ],
+    "status": "draft",
+    "era": "WWII / mid-twentieth century",
+    "newFacility": true
+  },
+  {
+    "id": "factory",
+    "folder": "Factory",
+    "category": "Factory",
+    "role": "Trade goods and industrial production",
+    "subject": "Large broad three-wing brick industrial hall roof, weathered olive-grey corrugated panels, four small chimney top circles with dark mouths only, rear roof skylights; lower yard with packed wooden shipping crates, big cable coils, metal sheet stacks and olive wartime flatbed truck. No rifles, missiles or modern forklift. Industrial trade production dominates.",
+    "age": "EarlyModern",
+    "prompt": "Use case: stylized-concept. Create ONE NEW hand-painted realistic RTS building icon for Russian/Soviet EARLY MODERN WWII-era culture. Image 1 is STYLE AND EXACT OVERHEAD CAMERA reference only, not subject to copy. Weathered olive corrugated roofs, muted red brick or timber edge caps, warm packed gravel/earth, subdued grass, period 1940s equipment. Use large distinct role cues readable at48/64/128px, restrained detail. EXACT90degree vertical NADIR ORTHOGRAPHIC roof plan, all outer roof edges perfect rectangles parallel to image axes, no visible facade, door, windows, upright shaft, front wall or side elevation anywhere. Roofs completely conceal all vertical building faces. Chimneys circular or square TOP openings only, all vertical posts only top endcaps, wheels viewed edge-on thin strips, machinery only horizontal top surfaces. No isometric camera, camera tilt, perspective convergence, giant long shadows. Minimal shallow contact shading, top-left surface light. Compact complete footprint on square canvas with at least7percent transparent outer margin on every side. GENUINE transparent alpha outside footprint. No black background, checkerboard, bright red/yellow edge fringe, text, labels, modern flags, people or scenic environment. No continuous artificial decorative perimeter frame. SUBJECT: Large broad three-wing brick industrial hall roof, weathered olive-grey corrugated panels, four small chimney top circles with dark mouths only, rear roof skylights; lower yard with packed wooden shipping crates, big cable coils, metal sheet stacks and olive wartime flatbed truck. No rifles, missiles or modern forklift. Industrial trade production dominates.",
+    "reference": "C:/Users/Damien/Documents/GitHub/AgeOfFronts/AgeOfFronts/Art/Cultures/Russians/Buildings/EarlyModern/Military Airstrip/SourceArt/Icon-WWII-v4.png",
+    "technologyIds": [
+      "modern-industrial-production"
+    ],
+    "status": "draft",
+    "era": "WWII / mid-twentieth century",
+    "newFacility": true
+  },
+  {
+    "id": "port",
+    "folder": "Port",
+    "category": "Port",
+    "role": "Shipbuilding and sea trade",
+    "subject": "Two timber/concrete piers around one SINGLE LARGE Soviet-era coastal cargo freighter hull from exact above, central cargo hatches, modest deckhouse roof and short funnel circular top. Grey-blue shallow water only within compact footprint, olive warehouse roof on shore, crates and wartime truck. No container stacks or modern vessels; boat clear and large.",
+    "age": "EarlyModern",
+    "prompt": "Use case: stylized-concept. Create ONE NEW hand-painted realistic RTS building icon for Russian/Soviet EARLY MODERN WWII-era culture. Image 1 is STYLE AND EXACT OVERHEAD CAMERA reference only, not subject to copy. Weathered olive corrugated roofs, muted red brick or timber edge caps, warm packed gravel/earth, subdued grass, period 1940s equipment. Use large distinct role cues readable at48/64/128px, restrained detail. EXACT90degree vertical NADIR ORTHOGRAPHIC roof plan, all outer roof edges perfect rectangles parallel to image axes, no visible facade, door, windows, upright shaft, front wall or side elevation anywhere. Roofs completely conceal all vertical building faces. Chimneys circular or square TOP openings only, all vertical posts only top endcaps, wheels viewed edge-on thin strips, machinery only horizontal top surfaces. No isometric camera, camera tilt, perspective convergence, giant long shadows. Minimal shallow contact shading, top-left surface light. Compact complete footprint on square canvas with at least7percent transparent outer margin on every side. GENUINE transparent alpha outside footprint. No black background, checkerboard, bright red/yellow edge fringe, text, labels, modern flags, people or scenic environment. No continuous artificial decorative perimeter frame. SUBJECT: Two timber/concrete piers around one SINGLE LARGE Soviet-era coastal cargo freighter hull from exact above, central cargo hatches, modest deckhouse roof and short funnel circular top. Grey-blue shallow water only within compact footprint, olive warehouse roof on shore, crates and wartime truck. No container stacks or modern vessels; boat clear and large.",
+    "reference": "C:/Users/Damien/Documents/GitHub/AgeOfFronts/AgeOfFronts/Art/Cultures/Russians/Buildings/EarlyModern/Military Airstrip/SourceArt/Icon-WWII-v4.png",
+    "technologyIds": [
+      "modern-powered-vessels"
+    ],
+    "status": "draft",
+    "era": "WWII / mid-twentieth century",
+    "newFacility": true
+  },
+  {
+    "id": "mine",
+    "folder": "Mine",
+    "category": "Mine",
+    "role": "Deposit extraction",
+    "subject": "Large PERFECT CIRCULAR open quarry in centre with three concentric broad level rocky terrace rings, crevice boundaries only thin uniformly spaced lines with ZERO tall cliff elevations. Grey ore floor and tracks to one compact ore cart; olive tool shed roof, overhead steel gantry TOP crossbeam with legs hidden and grey ore piles. Small tracked period excavator top silhouette, no modern huge haul trucks.",
+    "age": "EarlyModern",
+    "prompt": "Use case: stylized-concept. Create ONE NEW hand-painted realistic RTS building icon for Russian/Soviet EARLY MODERN WWII-era culture. Image 1 is STYLE AND EXACT OVERHEAD CAMERA reference only, not subject to copy. Weathered olive corrugated roofs, muted red brick or timber edge caps, warm packed gravel/earth, subdued grass, period 1940s equipment. Use large distinct role cues readable at48/64/128px, restrained detail. EXACT90degree vertical NADIR ORTHOGRAPHIC roof plan, all outer roof edges perfect rectangles parallel to image axes, no visible facade, door, windows, upright shaft, front wall or side elevation anywhere. Roofs completely conceal all vertical building faces. Chimneys circular or square TOP openings only, all vertical posts only top endcaps, wheels viewed edge-on thin strips, machinery only horizontal top surfaces. No isometric camera, camera tilt, perspective convergence, giant long shadows. Minimal shallow contact shading, top-left surface light. Compact complete footprint on square canvas with at least7percent transparent outer margin on every side. GENUINE transparent alpha outside footprint. No black background, checkerboard, bright red/yellow edge fringe, text, labels, modern flags, people or scenic environment. No continuous artificial decorative perimeter frame. SUBJECT: Large PERFECT CIRCULAR open quarry in centre with three concentric broad level rocky terrace rings, crevice boundaries only thin uniformly spaced lines with ZERO tall cliff elevations. Grey ore floor and tracks to one compact ore cart; olive tool shed roof, overhead steel gantry TOP crossbeam with legs hidden and grey ore piles. Small tracked period excavator top silhouette, no modern huge haul trucks.",
+    "reference": "C:/Users/Damien/Documents/GitHub/AgeOfFronts/AgeOfFronts/Art/Cultures/Russians/Buildings/EarlyModern/Military Airstrip/SourceArt/Icon-WWII-v4.png",
+    "technologyIds": [
+      "modern-petroleum-extraction"
+    ],
+    "status": "draft",
+    "era": "WWII / mid-twentieth century",
+    "newFacility": true
+  },
+  {
+    "id": "oil-well",
+    "folder": "Oil Well",
+    "category": "Oil Well",
+    "role": "Oil extraction",
+    "subject": "One unmistakable WWII-era beam pumpjack from directly above, long straight horizontal walking-beam TOP along north-south, gearbox rectangular top, small round wellhead, two circular oil storage tank tops, olive weathered utility hut roof, fuel drums and narrow dirt service path. No pumpjack side elevation/standing triangular frame, show only overhead machinery plan.",
+    "age": "EarlyModern",
+    "prompt": "Use case: stylized-concept. Create ONE NEW hand-painted realistic RTS building icon for Russian/Soviet EARLY MODERN WWII-era culture. Image 1 is STYLE AND EXACT OVERHEAD CAMERA reference only, not subject to copy. Weathered olive corrugated roofs, muted red brick or timber edge caps, warm packed gravel/earth, subdued grass, period 1940s equipment. Use large distinct role cues readable at48/64/128px, restrained detail. EXACT90degree vertical NADIR ORTHOGRAPHIC roof plan, all outer roof edges perfect rectangles parallel to image axes, no visible facade, door, windows, upright shaft, front wall or side elevation anywhere. Roofs completely conceal all vertical building faces. Chimneys circular or square TOP openings only, all vertical posts only top endcaps, wheels viewed edge-on thin strips, machinery only horizontal top surfaces. No isometric camera, camera tilt, perspective convergence, giant long shadows. Minimal shallow contact shading, top-left surface light. Compact complete footprint on square canvas with at least7percent transparent outer margin on every side. GENUINE transparent alpha outside footprint. No black background, checkerboard, bright red/yellow edge fringe, text, labels, modern flags, people or scenic environment. No continuous artificial decorative perimeter frame. SUBJECT: One unmistakable WWII-era beam pumpjack from directly above, long straight horizontal walking-beam TOP along north-south, gearbox rectangular top, small round wellhead, two circular oil storage tank tops, olive weathered utility hut roof, fuel drums and narrow dirt service path. No pumpjack side elevation/standing triangular frame, show only overhead machinery plan.",
+    "reference": "C:/Users/Damien/Documents/GitHub/AgeOfFronts/AgeOfFronts/Art/Cultures/Russians/Buildings/EarlyModern/Military Airstrip/SourceArt/Icon-WWII-v4.png",
+    "technologyIds": [
+      "modern-petroleum-extraction"
+    ],
+    "status": "draft",
+    "era": "WWII / mid-twentieth century",
+    "newFacility": true
+  },
+  {
+    "id": "oil-rig",
+    "folder": "Oil Rig",
+    "category": "Oil Rig",
+    "role": "Offshore oil extraction",
+    "subject": "Compact mid-twentieth-century Soviet coastal offshore drilling platform: one rectangular weathered deck on compact water footprint, central square derrick TOP lattice plan with no standing tower sides, pipes, circular tanks, simple olive service-hut roof and ONE small moored workboat. A modest primitive industrial rig not present-day giant deepsea megastructure. All machinery exact overhead.",
+    "age": "EarlyModern",
+    "prompt": "Use case: stylized-concept. Create ONE NEW hand-painted realistic RTS building icon for Russian/Soviet EARLY MODERN WWII-era culture. Image 1 is STYLE AND EXACT OVERHEAD CAMERA reference only, not subject to copy. Weathered olive corrugated roofs, muted red brick or timber edge caps, warm packed gravel/earth, subdued grass, period 1940s equipment. Use large distinct role cues readable at48/64/128px, restrained detail. EXACT90degree vertical NADIR ORTHOGRAPHIC roof plan, all outer roof edges perfect rectangles parallel to image axes, no visible facade, door, windows, upright shaft, front wall or side elevation anywhere. Roofs completely conceal all vertical building faces. Chimneys circular or square TOP openings only, all vertical posts only top endcaps, wheels viewed edge-on thin strips, machinery only horizontal top surfaces. No isometric camera, camera tilt, perspective convergence, giant long shadows. Minimal shallow contact shading, top-left surface light. Compact complete footprint on square canvas with at least7percent transparent outer margin on every side. GENUINE transparent alpha outside footprint. No black background, checkerboard, bright red/yellow edge fringe, text, labels, modern flags, people or scenic environment. No continuous artificial decorative perimeter frame. SUBJECT: Compact mid-twentieth-century Soviet coastal offshore drilling platform: one rectangular weathered deck on compact water footprint, central square derrick TOP lattice plan with no standing tower sides, pipes, circular tanks, simple olive service-hut roof and ONE small moored workboat. A modest primitive industrial rig not present-day giant deepsea megastructure. All machinery exact overhead.",
+    "reference": "C:/Users/Damien/Documents/GitHub/AgeOfFronts/AgeOfFronts/Art/Cultures/Russians/Buildings/EarlyModern/Military Airstrip/SourceArt/Icon-WWII-v4.png",
+    "technologyIds": [
+      "modern-petroleum-extraction"
+    ],
+    "status": "draft",
+    "era": "WWII / mid-twentieth century",
+    "newFacility": true
+  },
+  {
+    "id": "gun-nest",
+    "folder": "Gun Nest",
+    "category": "Gun Nest",
+    "role": "Automatic ground defence",
+    "subject": "WWII Soviet DShK-inspired heavy machine-gun position directly above: recognisable long finned barrel, short chunky muzzle brake, left belt feed, spade grips and broad tripod. Two staggered rows of sandbags extend across front and down both sides of gun in low wide U, rear open. Sandbag TOP ovals only. Gun aims upward across front parapet; olive ammo boxes and belt at rear. No generic turret or fake tiny rifle.",
+    "age": "EarlyModern",
+    "prompt": "Use case: stylized-concept. Create ONE NEW hand-painted realistic RTS building icon for Russian/Soviet EARLY MODERN WWII-era culture. Image 1 is STYLE AND EXACT OVERHEAD CAMERA reference only, not subject to copy. Weathered olive corrugated roofs, muted red brick or timber edge caps, warm packed gravel/earth, subdued grass, period 1940s equipment. Use large distinct role cues readable at48/64/128px, restrained detail. EXACT90degree vertical NADIR ORTHOGRAPHIC roof plan, all outer roof edges perfect rectangles parallel to image axes, no visible facade, door, windows, upright shaft, front wall or side elevation anywhere. Roofs completely conceal all vertical building faces. Chimneys circular or square TOP openings only, all vertical posts only top endcaps, wheels viewed edge-on thin strips, machinery only horizontal top surfaces. No isometric camera, camera tilt, perspective convergence, giant long shadows. Minimal shallow contact shading, top-left surface light. Compact complete footprint on square canvas with at least7percent transparent outer margin on every side. GENUINE transparent alpha outside footprint. No black background, checkerboard, bright red/yellow edge fringe, text, labels, modern flags, people or scenic environment. No continuous artificial decorative perimeter frame. SUBJECT: WWII Soviet DShK-inspired heavy machine-gun position directly above: recognisable long finned barrel, short chunky muzzle brake, left belt feed, spade grips and broad tripod. Two staggered rows of sandbags extend across front and down both sides of gun in low wide U, rear open. Sandbag TOP ovals only. Gun aims upward across front parapet; olive ammo boxes and belt at rear. No generic turret or fake tiny rifle.",
+    "reference": "C:/Users/Damien/Documents/GitHub/AgeOfFronts/AgeOfFronts/Art/Cultures/Russians/Buildings/EarlyModern/Military Airstrip/SourceArt/Icon-WWII-v4.png",
+    "technologyIds": [
+      "russian-machine-gun-teams"
+    ],
+    "status": "draft",
+    "era": "WWII / mid-twentieth century",
+    "newFacility": true
+  },
+  {
+    "id": "trench",
+    "folder": "Trench",
+    "category": "Trench",
+    "role": "Infantry cover",
+    "subject": "Distinct broad zig-zag wartime earth trench plan, dark narrow dugout channel with alternating traverses, pale earth berms on both sides, short overhead timber plank bridges and olive covered dugout ROOF in lower corner, sandbag top rows on north-facing firing sections. No deep exposed front walls or people. Channel width consistent viewed straight down.",
+    "age": "EarlyModern",
+    "prompt": "Use case: stylized-concept. Create ONE NEW hand-painted realistic RTS building icon for Russian/Soviet EARLY MODERN WWII-era culture. Image 1 is STYLE AND EXACT OVERHEAD CAMERA reference only, not subject to copy. Weathered olive corrugated roofs, muted red brick or timber edge caps, warm packed gravel/earth, subdued grass, period 1940s equipment. Use large distinct role cues readable at48/64/128px, restrained detail. EXACT90degree vertical NADIR ORTHOGRAPHIC roof plan, all outer roof edges perfect rectangles parallel to image axes, no visible facade, door, windows, upright shaft, front wall or side elevation anywhere. Roofs completely conceal all vertical building faces. Chimneys circular or square TOP openings only, all vertical posts only top endcaps, wheels viewed edge-on thin strips, machinery only horizontal top surfaces. No isometric camera, camera tilt, perspective convergence, giant long shadows. Minimal shallow contact shading, top-left surface light. Compact complete footprint on square canvas with at least7percent transparent outer margin on every side. GENUINE transparent alpha outside footprint. No black background, checkerboard, bright red/yellow edge fringe, text, labels, modern flags, people or scenic environment. No continuous artificial decorative perimeter frame. SUBJECT: Distinct broad zig-zag wartime earth trench plan, dark narrow dugout channel with alternating traverses, pale earth berms on both sides, short overhead timber plank bridges and olive covered dugout ROOF in lower corner, sandbag top rows on north-facing firing sections. No deep exposed front walls or people. Channel width consistent viewed straight down.",
+    "reference": "C:/Users/Damien/Documents/GitHub/AgeOfFronts/AgeOfFronts/Art/Cultures/Russians/Buildings/EarlyModern/Military Airstrip/SourceArt/Icon-WWII-v4.png",
+    "technologyIds": [
+      "modern-combined-arms"
+    ],
+    "status": "draft",
+    "era": "WWII / mid-twentieth century",
+    "newFacility": true
+  },
+  {
+    "id": "anti-aircraft",
+    "folder": "Anti-Aircraft Emplacement",
+    "category": "Anti-Aircraft Emplacement",
+    "role": "Ground anti-aircraft defence",
+    "subject": "Soviet WWII 37mm automatic anti-aircraft gun emplacement seen PERFECTLY overhead. Long single gun barrel lowered nearly horizontal aiming upward, circular rotating gun platform, distinct cross-shaped four outriggers, offset small ammunition feed tray, handwheel top edges. Ground sandbag ring with rear entrance, spare shell clips and olive ammo chests. No shield facade, no standing barrel side elevation or huge radar; do not copy DShK machine-gun silhouette.",
+    "age": "EarlyModern",
+    "prompt": "Use case: stylized-concept. Create ONE NEW hand-painted realistic RTS building icon for Russian/Soviet EARLY MODERN WWII-era culture. Image 1 is STYLE AND EXACT OVERHEAD CAMERA reference only, not subject to copy. Weathered olive corrugated roofs, muted red brick or timber edge caps, warm packed gravel/earth, subdued grass, period 1940s equipment. Use large distinct role cues readable at48/64/128px, restrained detail. EXACT90degree vertical NADIR ORTHOGRAPHIC roof plan, all outer roof edges perfect rectangles parallel to image axes, no visible facade, door, windows, upright shaft, front wall or side elevation anywhere. Roofs completely conceal all vertical building faces. Chimneys circular or square TOP openings only, all vertical posts only top endcaps, wheels viewed edge-on thin strips, machinery only horizontal top surfaces. No isometric camera, camera tilt, perspective convergence, giant long shadows. Minimal shallow contact shading, top-left surface light. Compact complete footprint on square canvas with at least7percent transparent outer margin on every side. GENUINE transparent alpha outside footprint. No black background, checkerboard, bright red/yellow edge fringe, text, labels, modern flags, people or scenic environment. No continuous artificial decorative perimeter frame. SUBJECT: Soviet WWII 37mm automatic anti-aircraft gun emplacement seen PERFECTLY overhead. Long single gun barrel lowered nearly horizontal aiming upward, circular rotating gun platform, distinct cross-shaped four outriggers, offset small ammunition feed tray, handwheel top edges. Ground sandbag ring with rear entrance, spare shell clips and olive ammo chests. No shield facade, no standing barrel side elevation or huge radar; do not copy DShK machine-gun silhouette.",
+    "reference": "C:/Users/Damien/Documents/GitHub/AgeOfFronts/AgeOfFronts/Art/Cultures/Russians/Buildings/EarlyModern/Military Airstrip/SourceArt/Icon-WWII-v4.png",
+    "technologyIds": [
+      "russian-anti-aircraft-guns"
+    ],
+    "status": "draft",
+    "era": "WWII / mid-twentieth century",
+    "newFacility": true
+  },
+  {
+    "age": "EarlyModern",
+    "id": "rail-terminal",
+    "folder": "Rail Terminal",
+    "category": "Rail Terminal",
+    "role": "High-capacity land freight",
+    "technologyIds": [
+      "russian-rail-freight"
+    ],
+    "proposedBuildingRole": true,
+    "subject": "Three straight parallel railway tracks running north-south beside a long brick freight shed with weathered olive roof and open loading platform. One black wartime STEAM locomotive seen overhead with circular boiler top and small chimney TOP, two wooden covered freight wagons and one open coal wagon, crate stacks, dirt service lane and olive truck. No modern containers, overhead electrical gantries or passenger station. Track/freight train dominate silhouette.",
+    "prompt": "Use case: stylized-concept. Create ONE NEW hand-painted realistic RTS building icon for Russian/Soviet EARLY MODERN WWII-era culture. Image 1 is STYLE AND EXACT OVERHEAD CAMERA reference only, not subject to copy. Weathered olive corrugated roofs, muted red brick or timber edge caps, warm packed gravel/earth, subdued grass, period 1940s equipment. Use large distinct role cues readable at48/64/128px, restrained detail. EXACT90degree vertical NADIR ORTHOGRAPHIC roof plan, all outer roof edges perfect rectangles parallel to image axes, no visible facade, door, windows, upright shaft, front wall or side elevation anywhere. Roofs completely conceal all vertical building faces. Chimneys circular or square TOP openings only, all vertical posts only top endcaps, wheels viewed edge-on thin strips, machinery only horizontal top surfaces. No isometric camera, camera tilt, perspective convergence, giant long shadows. Minimal shallow contact shading, top-left surface light. Compact complete footprint on square canvas with at least7percent transparent outer margin on every side. GENUINE transparent alpha outside footprint. No black background, checkerboard, bright red/yellow edge fringe, text, labels, modern flags, people or scenic environment. No continuous artificial decorative perimeter frame. SUBJECT: Three straight parallel railway tracks running north-south beside a long brick freight shed with weathered olive roof and open loading platform. One black wartime STEAM locomotive seen overhead with circular boiler top and small chimney TOP, two wooden covered freight wagons and one open coal wagon, crate stacks, dirt service lane and olive truck. No modern containers, overhead electrical gantries or passenger station. Track/freight train dominate silhouette.",
+    "reference": "C:/Users/Damien/Documents/GitHub/AgeOfFronts/AgeOfFronts/Art/Cultures/Russians/Buildings/Modern/Factory/Icon.png",
+    "status": "draft",
+    "era": "WWII / mid-twentieth century",
+    "newFacility": true
+  },
+  {
+    "age": "EarlyModern",
+    "id": "oil-refinery",
+    "folder": "Oil Refinery",
+    "category": "Oil Refinery",
+    "role": "Fuel refining",
+    "technologyIds": [
+      "russian-oil-refining"
+    ],
+    "proposedBuildingRole": true,
+    "subject": "Two large CIRCULAR tank TOPS, three small circular distillation-column TOP caps connected by orderly pipe TOP lines, one compact rectangular brick processing hall olive roof, grouped steel drums and wartime tanker truck in gravel yard. No giant rising towers, side elevations or hyperbolic cooling towers. Refining process tanks and pipe layout distinguish from pumpjack oil extraction.",
+    "prompt": "Use case: stylized-concept. Create ONE NEW hand-painted realistic RTS building icon for Russian/Soviet EARLY MODERN WWII-era culture. Image 1 is STYLE AND EXACT OVERHEAD CAMERA reference only, not subject to copy. Weathered olive corrugated roofs, muted red brick or timber edge caps, warm packed gravel/earth, subdued grass, period 1940s equipment. Use large distinct role cues readable at48/64/128px, restrained detail. EXACT90degree vertical NADIR ORTHOGRAPHIC roof plan, all outer roof edges perfect rectangles parallel to image axes, no visible facade, door, windows, upright shaft, front wall or side elevation anywhere. Roofs completely conceal all vertical building faces. Chimneys circular or square TOP openings only, all vertical posts only top endcaps, wheels viewed edge-on thin strips, machinery only horizontal top surfaces. No isometric camera, camera tilt, perspective convergence, giant long shadows. Minimal shallow contact shading, top-left surface light. Compact complete footprint on square canvas with at least7percent transparent outer margin on every side. GENUINE transparent alpha outside footprint. No black background, checkerboard, bright red/yellow edge fringe, text, labels, modern flags, people or scenic environment. No continuous artificial decorative perimeter frame. SUBJECT: Two large CIRCULAR tank TOPS, three small circular distillation-column TOP caps connected by orderly pipe TOP lines, one compact rectangular brick processing hall olive roof, grouped steel drums and wartime tanker truck in gravel yard. No giant rising towers, side elevations or hyperbolic cooling towers. Refining process tanks and pipe layout distinguish from pumpjack oil extraction.",
+    "reference": "C:/Users/Damien/Documents/GitHub/AgeOfFronts/AgeOfFronts/Art/Cultures/Russians/Buildings/Modern/Factory/Icon.png",
+    "status": "draft",
+    "era": "WWII / mid-twentieth century",
+    "newFacility": true
+  },
+  {
+    "age": "EarlyModern",
+    "id": "nuclear-weapons-facility",
+    "folder": "Nuclear Weapons Facility",
+    "category": "Nuclear Weapons Facility",
+    "role": "Early nuclear weapon production",
+    "technologyIds": [
+      "modern-strategic-weapons"
+    ],
+    "proposedBuildingRole": true,
+    "subject": "Late1940s Soviet early atomic weapons industrial research complex, one large heavy rectangular pale concrete processing hall with olive-grey roof and big squared roof vents, two smaller laboratory roof blocks, enclosed circular process tank TOP and shielded square roof cell, modest controlled gravel service yard with period utility truck and sealed steel cylinders/crates. Industrial lab character, no exposed weapon internals, no assembly schematics, no missile launch tubes, no modern rockets, no reactor dome or giant cooling tower, no signs or radiation logo. Keep iconic large process hall and grouped laboratory blocks.",
+    "prompt": "Use case: stylized-concept. Create ONE NEW hand-painted realistic RTS building icon for Russian/Soviet EARLY MODERN WWII-era culture. Image 1 is STYLE AND EXACT OVERHEAD CAMERA reference only, not subject to copy. Weathered olive corrugated roofs, muted red brick or timber edge caps, warm packed gravel/earth, subdued grass, period 1940s equipment. Use large distinct role cues readable at48/64/128px, restrained detail. EXACT90degree vertical NADIR ORTHOGRAPHIC roof plan, all outer roof edges perfect rectangles parallel to image axes, no visible facade, door, windows, upright shaft, front wall or side elevation anywhere. Roofs completely conceal all vertical building faces. Chimneys circular or square TOP openings only, all vertical posts only top endcaps, wheels viewed edge-on thin strips, machinery only horizontal top surfaces. No isometric camera, camera tilt, perspective convergence, giant long shadows. Minimal shallow contact shading, top-left surface light. Compact complete footprint on square canvas with at least7percent transparent outer margin on every side. GENUINE transparent alpha outside footprint. No black background, checkerboard, bright red/yellow edge fringe, text, labels, modern flags, people or scenic environment. No continuous artificial decorative perimeter frame. SUBJECT: Late1940s Soviet early atomic weapons industrial research complex, one large heavy rectangular pale concrete processing hall with olive-grey roof and big squared roof vents, two smaller laboratory roof blocks, enclosed circular process tank TOP and shielded square roof cell, modest controlled gravel service yard with period utility truck and sealed steel cylinders/crates. Industrial lab character, no exposed weapon internals, no assembly schematics, no missile launch tubes, no modern rockets, no reactor dome or giant cooling tower, no signs or radiation logo. Keep iconic large process hall and grouped laboratory blocks.",
+    "reference": "C:/Users/Damien/Documents/GitHub/AgeOfFronts/AgeOfFronts/Art/Cultures/Russians/Buildings/Modern/Factory/Icon.png",
+    "status": "draft",
+    "era": "WWII / mid-twentieth century",
+    "newFacility": true
+  },
+  {
+    "age": "Modern",
+    "id": "rail-terminal",
+    "folder": "Rail Terminal",
+    "category": "Rail Terminal",
+    "role": "Advanced rail and freight networks",
+    "technologyIds": [
+      "russian-advanced-rail-networks"
+    ],
+    "proposedBuildingRole": true,
+    "subject": "Contemporary Russian freight rail terminal: three long parallel tracks, dark-blue electric freight locomotive overhead with small pantograph top shape, two container wagons, grey-green warehouse roof alongside paved loading apron with container stacks in large coherent color blocks and one overhead forklift. No standing gantry sides or electric pole shafts. Rail and long wagon pattern dominant; no unrelated nuclear symbols.",
+    "prompt": "Use case: stylized-concept. Create ONE new Russian MODERN building icon in image1's crisp hand-painted material style, reference only. Mixed Soviet brick/concrete and contemporary facilities, muted olive/grey-green roofs, grey paved yards, large clear role silhouettes. EXACT90degree vertical NADIR orthographic top-down roof PLAN. NO visible building facade, front doors, windows, vertical walls or upright shafts. Roof rectangle edges aligned to canvas axes, roof covers every wall. All posts and chimneys only flat top caps, no perspective, no isometric camera, no giant long shadows. Horizontal circles truly round, equipment overhead only. Complete compact centered footprint with at least7percent EMPTY transparent outer border. Genuine transparent alpha background, no artificial decorative frame, bright red fringe, text, labels, people or modern flags. SUBJECT: Contemporary Russian freight rail terminal: three long parallel tracks, dark-blue electric freight locomotive overhead with small pantograph top shape, two container wagons, grey-green warehouse roof alongside paved loading apron with container stacks in large coherent color blocks and one overhead forklift. No standing gantry sides or electric pole shafts. Rail and long wagon pattern dominant; no unrelated nuclear symbols.",
+    "reference": "C:/Users/Damien/Documents/GitHub/AgeOfFronts/AgeOfFronts/Art/Cultures/Russians/Buildings/Modern/Factory/Icon.png",
+    "status": "draft",
+    "era": "Contemporary",
+    "newFacility": true
+  },
+  {
+    "age": "Modern",
+    "id": "drone-facility",
+    "folder": "Drone Facility",
+    "category": "Drone Facility",
+    "role": "Drone production and deployment",
+    "technologyIds": [
+      "russian-battlefield-drones"
+    ],
+    "proposedBuildingRole": true,
+    "subject": "Contemporary Russian drone support/production compound, low L-shaped grey concrete assembly facility with desaturated olive metal TOP roofs and rectangular vents; open paved yard contains TWO clearly large overhead quadcopter silhouettes on distinct square launch pads, plus one compact fixed-wing reconnaissance UAV on staging mat, large rechargeable battery cases and small wheeled service cart. Two quadcopters must be instantly recognizable by four round rotors surrounding center fuselage, no helicopter tail. No missile silos, fighter jets or regular aviation runway; no weapon payload diagrams.",
+    "prompt": "Use case: stylized-concept. Create ONE new Russian MODERN building icon in image1's crisp hand-painted material style, reference only. Mixed Soviet brick/concrete and contemporary facilities, muted olive/grey-green roofs, grey paved yards, large clear role silhouettes. EXACT90degree vertical NADIR orthographic top-down roof PLAN. NO visible building facade, front doors, windows, vertical walls or upright shafts. Roof rectangle edges aligned to canvas axes, roof covers every wall. All posts and chimneys only flat top caps, no perspective, no isometric camera, no giant long shadows. Horizontal circles truly round, equipment overhead only. Complete compact centered footprint with at least7percent EMPTY transparent outer border. Genuine transparent alpha background, no artificial decorative frame, bright red fringe, text, labels, people or modern flags. SUBJECT: Contemporary Russian drone support/production compound, low L-shaped grey concrete assembly facility with desaturated olive metal TOP roofs and rectangular vents; open paved yard contains TWO clearly large overhead quadcopter silhouettes on distinct square launch pads, plus one compact fixed-wing reconnaissance UAV on staging mat, large rechargeable battery cases and small wheeled service cart. Two quadcopters must be instantly recognizable by four round rotors surrounding center fuselage, no helicopter tail. No missile silos, fighter jets or regular aviation runway; no weapon payload diagrams.",
+    "reference": "C:/Users/Damien/Documents/GitHub/AgeOfFronts/AgeOfFronts/Art/Cultures/Russians/Buildings/Modern/Factory/Icon.png",
+    "status": "draft",
+    "era": "Contemporary",
+    "newFacility": true
+  },
+  {
+    "age": "Modern",
+    "id": "warehouse",
+    "folder": "Warehouse",
+    "category": "Warehouse",
+    "role": "Storage and loading throughput",
+    "technologyIds": [
+      "russian-intelligent-warehouses"
+    ],
+    "proposedBuildingRole": true,
+    "subject": "Contemporary Russian logistics warehouse: ONE huge rectangular grey-green roof covering most upper footprint with neat skylight bands and rooftop utility TOP boxes, large paved loading apron along lower strip, two top-down delivery trucks beside rectangular covered loading canopy, clear pallet stacks and two overhead forklifts. No factory chimneys, weapons, rails or cranes. Warehouse single-roof mass and goods loading distinguish from multiwingFactory. Tight role-focused realistic painted icon.",
+    "prompt": "Use case: stylized-concept. Create ONE new Russian MODERN building icon in image1's crisp hand-painted material style, reference only. Mixed Soviet brick/concrete and contemporary facilities, muted olive/grey-green roofs, grey paved yards, large clear role silhouettes. EXACT90degree vertical NADIR orthographic top-down roof PLAN. NO visible building facade, front doors, windows, vertical walls or upright shafts. Roof rectangle edges aligned to canvas axes, roof covers every wall. All posts and chimneys only flat top caps, no perspective, no isometric camera, no giant long shadows. Horizontal circles truly round, equipment overhead only. Complete compact centered footprint with at least7percent EMPTY transparent outer border. Genuine transparent alpha background, no artificial decorative frame, bright red fringe, text, labels, people or modern flags. SUBJECT: Contemporary Russian logistics warehouse: ONE huge rectangular grey-green roof covering most upper footprint with neat skylight bands and rooftop utility TOP boxes, large paved loading apron along lower strip, two top-down delivery trucks beside rectangular covered loading canopy, clear pallet stacks and two overhead forklifts. No factory chimneys, weapons, rails or cranes. Warehouse single-roof mass and goods loading distinguish from multiwingFactory. Tight role-focused realistic painted icon.",
+    "reference": "C:/Users/Damien/Documents/GitHub/AgeOfFronts/AgeOfFronts/Art/Cultures/Russians/Buildings/Modern/Factory/Icon.png",
+    "status": "draft",
+    "era": "Contemporary",
+    "newFacility": true
+  }
+]

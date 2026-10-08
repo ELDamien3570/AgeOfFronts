@@ -1,3 +1,4 @@
+import { FORMATION_MOVEMENT } from "../../content/FormationMovement";
 import { DEFAULT_AI_POLICIES } from "../../content/AiPolicies";
 import { SPAWN_SECONDS } from "../../domain/SpawnSelection";
 import { RuntimeDiagnostics, RuntimeProgress } from "../../RuntimeDiagnostics";
@@ -142,6 +143,7 @@ export class LiveMatch {
     );
     this.options = {
       ...DEFAULT_AI_POLICIES,
+      ...FORMATION_MOVEMENT,
       seed: Math.floor(Math.random() * 0x7fffffff),
       humanNames: reservation.members.map((member) => member.profile.name),
       ...(reservation.members.some(member => typeof member.profile.colorIndex === "number")

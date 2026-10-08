@@ -1,0 +1,16 @@
+{
+  "date": "2026-10-07",
+  "loadedClips": 9,
+  "loadedFrames": 54,
+  "browserWarningsOrErrors": [],
+  "inspected": [
+    "spear impact frame 4",
+    "charge impact frame 4",
+    "both death endings frame 6",
+    "gallop loop"
+  ],
+  "repeatReactionsDisabled": true,
+  "screenshot": "Review-Animations-v1.png",
+  "artApproval": "Pending animation review",
+  "runtimeIntegration": false
+}

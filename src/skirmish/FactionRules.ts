@@ -10,7 +10,8 @@ export const AGE_SQUAD_CAPS: Readonly<Record<Age, number>> = {
   ClassicalAge: 100,
   EarlyMedieval: 120,
   LateMedieval: 140,
-  EarlyModern: 160,
+  Napoleonic: 160,
+  EarlyModern: 180,
   Modern: 200,
 };
 

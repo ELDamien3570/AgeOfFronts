@@ -1,0 +1,31 @@
+{
+  "schemaVersion": 1,
+  "cultureId": "russians",
+  "age": "EarlyModern",
+  "asset": {
+    "id": "depot",
+    "folder": "Vehicle Depot",
+    "category": "Vehicle Depot",
+    "role": "Armored vehicle recruitment and equipment",
+    "file": "Vehicle Depot/Icon.png",
+    "sourceFile": "Vehicle Depot/SourceArt/Icon-v1.png",
+    "selectedSourceFile": "Vehicle Depot/SourceArt/Icon-v1.png",
+    "generator": "built-in image_gen",
+    "generationFile": "C:\\Users\\Damien\\.codex\\generated_images\\01a0fea5-71c9-75b3-9da6-4a1ca2cbd68f\\exec-31ab4159-6999-41f6-9fe6-e1d04d4f8765.png",
+    "prompt": "Use case: stylized-concept. Create ONE NEW hand-painted realistic RTS building icon for Russian/Soviet EARLY MODERN WWII-era culture. Image 1 is STYLE AND EXACT OVERHEAD CAMERA reference only, not subject to copy. Weathered olive corrugated roofs, muted red brick or timber edge caps, warm packed gravel/earth, subdued grass, period 1940s equipment. Use large distinct role cues readable at48/64/128px, restrained detail. EXACT90degree vertical NADIR ORTHOGRAPHIC roof plan, all outer roof edges perfect rectangles parallel to image axes, no visible facade, door, windows, upright shaft, front wall or side elevation anywhere. Roofs completely conceal all vertical building faces. Chimneys circular or square TOP openings only, all vertical posts only top endcaps, wheels viewed edge-on thin strips, machinery only horizontal top surfaces. No isometric camera, camera tilt, perspective convergence, giant long shadows. Minimal shallow contact shading, top-left surface light. Compact complete footprint on square canvas with at least7percent transparent outer margin on every side. GENUINE transparent alpha outside footprint. No black background, checkerboard, bright red/yellow edge fringe, text, labels, modern flags, people or scenic environment. No continuous artificial decorative perimeter frame. SUBJECT: Two big olive corrugated vehicle-shed roof rectangles at rear and left, spacious gravel motor pool with one distinctive compact overhead T-34 style tracked tank, one wartime armored half-track and one olive gun truck, three separate silhouettes; tools/fuel drums and spare tread assemblies. No modern IFVs, missiles or jets. Tank circular turret and broad tracks top only.",
+    "referenceImages": [
+      "C:/Users/Damien/Documents/GitHub/AgeOfFronts/AgeOfFronts/Art/Cultures/Russians/Buildings/EarlyModern/Military Airstrip/SourceArt/Icon-WWII-v4.png"
+    ],
+    "status": "draft",
+    "date": "2026-10-07",
+    "technologyIds": [
+      "russian-gun-trucks",
+      "russian-apc-production",
+      "russian-tank-production"
+    ],
+    "proposedBuildingRole": false,
+    "sha256": "08392e86b038e87821f3dedbc0ed3939cc5c41e58fcf5d7ead807dde3331b8fd"
+  },
+  "historicalScope": "Era-inspired compressed game-art interpretation, not a specific building reconstruction.",
+  "scope": "art-review-only; no gameplay entity or technology binding has been implemented"
+}

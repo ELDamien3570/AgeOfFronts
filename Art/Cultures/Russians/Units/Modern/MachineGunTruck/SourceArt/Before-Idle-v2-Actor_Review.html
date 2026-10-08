@@ -1,0 +1,80 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<title>Soviet Machine Gun Truck · Single Actor Review</title>
+<style>
+:root{color-scheme:dark;font-family:Inter,Segoe UI,system-ui,sans-serif;background:#131917;color:#e9ede6}
+*{box-sizing:border-box}body{margin:0;padding:26px}main{max-width:1060px;margin:auto}
+.eyebrow{font-size:11px;letter-spacing:2px;color:#c4a984;text-transform:uppercase}
+header{display:flex;justify-content:space-between;align-items:center;gap:18px;margin-bottom:24px}
+h1{font-size:29px;letter-spacing:-.8px;margin:7px 0}p{color:#aab9af;line-height:1.6;margin:0}
+.badge{border:1px solid #644138;border-radius:18px;padding:7px 12px;color:#e3b3a7;font-size:12px;white-space:nowrap}
+.workspace{display:grid;grid-template-columns:180px minmax(0,1fr) 190px;gap:16px}
+.panel{background:#202a24;border:1px solid #3c4a40;border-radius:13px;overflow:hidden}
+nav{padding:10px;display:flex;flex-direction:column;gap:6px}
+button,select{font:inherit;font-size:13px;color:#e8eee7;border:1px solid #4f6053;background:#29392e;border-radius:7px;padding:8px 11px;cursor:pointer}
+button:hover{background:#3c5141}button:focus-visible,input:focus-visible,select:focus-visible,a:focus-visible{outline:2px solid #e9ba98;outline-offset:3px}
+nav button{text-align:left;padding:12px 10px;border-color:transparent;background:transparent}
+nav button[aria-selected=true]{background:#ba5545;border-color:#df8371;color:#fff}
+nav small{display:block;margin-top:5px;opacity:.75;font-size:10px;letter-spacing:.4px}
+.stage{display:grid;place-items:center;background:#314b34;min-height:300px}
+.stage canvas{display:block;width:100%;height:auto;max-width:430px}
+body[data-bg=dark] .stage{background:#1c2225}
+body[data-bg=light] .stage{background:#d3d1c4}
+body[data-bg=checker] .stage{background-color:#3b443f;background-image:linear-gradient(45deg,#303932 25%,transparent 25%),linear-gradient(-45deg,#303932 25%,transparent 25%),linear-gradient(45deg,transparent 75%,#303932 75%),linear-gradient(-45deg,transparent 75%,#303932 75%);background-size:24px 24px;background-position:0 0,0 12px,12px -12px,-12px 0}
+.caption{padding:13px 16px;border-top:1px solid #3c4a40;min-height:87px}
+h2{font-size:15px;font-weight:600;margin:0 0 7px}.caption p{font-size:12px}
+.sizes{padding:15px}.sizes h2{font-size:13px}.sizes p{font-size:11px}
+.size-card{margin-top:14px;border:1px solid #3c4c40;border-radius:9px;overflow:hidden}
+.size-card .stage{min-height:92px}.size-card canvas{width:96px;height:96px}
+.size-card figcaption{text-align:center;padding:7px;font-size:11px;border-top:1px solid #3c4c40;color:#b6c4b9}
+figure{margin:0}.toolbar{display:flex;align-items:center;flex-wrap:wrap;gap:9px;margin-top:16px;padding:13px}
+#play{background:#c9715d;color:#161c17;font-weight:650;border-color:#c9715d;min-width:76px}
+label{font-size:12px;color:#bac8bd;display:flex;align-items:center;gap:7px}
+#scrub{flex:1;min-width:110px;accent-color:#d98770}output{font-size:12px;font-variant-numeric:tabular-nums;min-width:68px}
+.options{display:flex;flex-wrap:wrap;align-items:center;gap:16px;margin-top:15px;padding:0 2px}
+input[type=checkbox]{accent-color:#d98770}.options select{padding:6px 8px}
+footer{display:flex;flex-wrap:wrap;gap:12px;align-items:center;margin-top:18px;font-size:11px;color:#8fa294}
+footer a{color:#ceba99;text-decoration:none}footer a:hover{text-decoration:underline}
+#status{margin:17px 2px 0;font-size:12px;color:#becbbf}
+@media(max-width:850px){.workspace{grid-template-columns:150px minmax(0,1fr)}.sizes{grid-column:1/-1;display:flex;flex-wrap:wrap;align-items:center;justify-content:space-between;gap:10px}.sizes>div{max-width:160px}.size-card{margin:0;width:120px}.stage{min-height:250px}}
+@media(max-width:530px){body{padding:14px}.badge{display:none}.workspace{grid-template-columns:1fr}nav{flex-direction:row;flex-wrap:wrap}nav button{flex:1;min-width:90px;padding:9px}.sizes{grid-column:1}.size-card{width:90px}.toolbar{padding:10px}h1{font-size:25px}}
+</style>
+</head>
+<body data-bg="ground">
+<main>
+<header><div><div class="eyebrow">Age of Fronts · Russians · Modern Age · World War II</div><h1>One machine gun truck. One idle frame.</h1><p>Olive-drab Soviet-style cargo truck with an open wooden bed, one pedestal-mounted heavy machine gun and a khaki-clad gunner.</p></div><span class="badge">Single vehicle review</span></header>
+<div class="workspace">
+<nav class="panel" id="clips" role="tablist" aria-label="Animation clip"></nav>
+<section class="panel" id="actor-panel" role="tabpanel" aria-busy="true">
+<div class="stage"><canvas id="actor" width="512" height="512" aria-label="Enlarged single machine gun truck sprite"></canvas></div>
+<div class="caption"><h2 id="clip-title">Loading actor…</h2><p id="description"></p></div>
+</section>
+<aside class="panel sizes"><div><h2>At game size</h2><p>Each preview is the same single vehicle.</p></div>
+<figure class="size-card"><div class="stage"><canvas width="96" height="96" data-size="32" aria-label="32 pixel single vehicle preview"></canvas></div><figcaption>32 px sprite</figcaption></figure>
+<figure class="size-card"><div class="stage"><canvas width="96" height="96" data-size="48" aria-label="48 pixel single vehicle preview"></canvas></div><figcaption>48 px sprite</figcaption></figure>
+<figure class="size-card"><div class="stage"><canvas width="96" height="96" data-size="64" aria-label="64 pixel single vehicle preview"></canvas></div><figcaption>64 px sprite</figcaption></figure>
+</aside>
+</div>
+<div class="panel toolbar">
+<button id="play" type="button">Pause</button><button id="restart" type="button">Replay</button>
+<button id="previous" type="button" aria-label="Previous frame">‹</button>
+<input id="scrub" type="range" min="0" max="0" value="0" aria-label="Animation frame">
+<button id="next" type="button" aria-label="Next frame">›</button><output id="frame-output">1 / 1</output>
+</div>
+<div class="options">
+<label>Speed <select id="speed"><option value=".5">Half speed</option><option value="1" selected>Normal</option><option value="1.5">Fast</option></select></label>
+<label>Backdrop <select id="backdrop"><option value="ground">Ground</option><option value="checker">Checkerboard</option><option value="light">Light</option><option value="dark">Dark</option></select></label>
+<label>Facing <select id="facing"><option value="0">Down</option><option value="90">Left</option><option value="180">Up</option><option value="270">Right</option></select></label>
+<label><input id="anchor" type="checkbox">Show anchor</label>
+<label><input id="repeat" type="checkbox" checked>Repeat reactions for review</label>
+</div>
+<p id="status" role="status">Loading truck idle…</p>
+<footer><a id="sheet" href="Idle-v1.png" target="_blank">Open selected sheet ↗</a><a href="animations.json" target="_blank">Animation data ↗</a><a href="Generation.json" target="_blank">Generation prompts ↗</a><span>Artwork prototype · game integration follows visual review</span><a href="../SovietMachineGunner/Actor_Review.html">Soviet machine gunner review ↗</a></footer>
+</main>
+<script type="module" src="../../StoneAge/Clubman/actor-review.js"></script>
+</body>
+</html>
+

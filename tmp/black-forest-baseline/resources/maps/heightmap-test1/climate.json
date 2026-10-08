@@ -1,0 +1,29 @@
+{
+  "description": "Authored approximate vegetation profile for Test 1. Broad blended regions, not measured rainfall, forest coverage or political boundaries.",
+  "regions": [
+    {
+      "latitude": 47,
+      "longitude": 2,
+      "latitudeRadius": 4.8,
+      "longitudeRadius": 7,
+      "minimumMoisture": 0.76,
+      "woodlandBias": 0.12
+    },
+    {
+      "latitude": 51.2,
+      "longitude": 10.5,
+      "latitudeRadius": 4.2,
+      "longitudeRadius": 6.5,
+      "minimumMoisture": 0.76,
+      "woodlandBias": 0.12
+    },
+    {
+      "latitude": 43.2,
+      "longitude": -4.5,
+      "latitudeRadius": 1.8,
+      "longitudeRadius": 6.5,
+      "minimumMoisture": 0.78,
+      "woodlandBias": 0.14
+    }
+  ]
+}

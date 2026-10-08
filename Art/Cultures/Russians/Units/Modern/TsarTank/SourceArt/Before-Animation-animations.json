@@ -1,0 +1,58 @@
+{
+  "schemaVersion": 1,
+  "cultureId": "russians",
+  "age": "Modern",
+  "unit": "Tsar Tank",
+  "category": "Armored Vehicle",
+  "actorCount": 1,
+  "stage": "single-vehicle-idle-design-review",
+  "integrationStatus": "First idle pending review before animation; gameplay integration is separate.",
+  "camera": "vertical-overhead-orthographic",
+  "facing": "screen-down",
+  "sheetSize": {
+    "width": 1254,
+    "height": 1254
+  },
+  "grid": {
+    "columns": 1,
+    "rows": 1
+  },
+  "reviewFootprint": 400,
+  "registration": "Fixed vehicle-root pivot and constant scale.",
+  "historicalEra": "WWI-inspired imagined Soviet faction variant",
+  "historicalDirection": "User selected the Imperial Russian Tsar Tank giant tricycle as the design basis. Soviet paint and markings are a fictional faction adaptation.",
+  "designReference": "https://www.nevingtonwarmuseum.com/tsar-lebedenko-tank.html",
+  "weapon": "Short cannon barrels in side sponsons",
+  "animations": [
+    {
+      "id": "idle",
+      "file": "Idle-v1.png",
+      "sha256": "0024317c0cb77943296e8194b8b26904d9b9e8248521187c45b4e3a71f20c241",
+      "label": "Idle - single frame",
+      "loop": true,
+      "scale": 1.0,
+      "durations": [
+        1000
+      ],
+      "description": "Tsar Tank-inspired tricycle: two giant upright steel wheels, a broad riveted hull, and a small rear steering roller on a long tail boom.",
+      "frameCount": 1,
+      "sourceFrameOrder": [
+        0
+      ],
+      "frames": [
+        {
+          "index": 0,
+          "sourceIndex": 0,
+          "x": 0,
+          "y": 0,
+          "width": 1254,
+          "height": 1254,
+          "pivot": {
+            "x": 627.0,
+            "y": 627.0
+          }
+        }
+      ]
+    }
+  ]
+}

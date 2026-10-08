@@ -1,0 +1,669 @@
+{
+  "date": "2026-10-07",
+  "actorCount": 1,
+  "clipCount": 9,
+  "frameCount": 54,
+  "approvedIdlePreserved": true,
+  "eightPixelGuards": "Zero alpha",
+  "userApproval": "New animations pending visual review.",
+  "runtimeIntegration": false,
+  "clips": [
+    {
+      "clip": "idle",
+      "file": "Idle-Axe-Consistent-v2.png",
+      "distinctFrames": 6,
+      "frames": [
+        {
+          "frame": 0,
+          "visibleBounds": [
+            103,
+            103,
+            414,
+            432
+          ],
+          "guardAlphaMax": 0,
+          "sha256": "98ebf382118aeaf38eb6f92b3d65cd9a956be94992e4f33948991c8b8ee1b112"
+        },
+        {
+          "frame": 1,
+          "visibleBounds": [
+            92,
+            105,
+            403,
+            432
+          ],
+          "guardAlphaMax": 0,
+          "sha256": "9cba8b8ec8ec92917e3222af61cfdd97c3264eb7e1a2c84d31c05841c9883a97"
+        },
+        {
+          "frame": 2,
+          "visibleBounds": [
+            82,
+            105,
+            395,
+            430
+          ],
+          "guardAlphaMax": 0,
+          "sha256": "112929cf0249a48e97c9408c5ac7f4dae476b02349b17b069c51e35bd76af447"
+        },
+        {
+          "frame": 3,
+          "visibleBounds": [
+            103,
+            100,
+            417,
+            420
+          ],
+          "guardAlphaMax": 0,
+          "sha256": "c650c12d5089f03059cac0c68bd02e5b6e7f25ac43fe28b82f5b0a13c339df2a"
+        },
+        {
+          "frame": 4,
+          "visibleBounds": [
+            91,
+            89,
+            402,
+            418
+          ],
+          "guardAlphaMax": 0,
+          "sha256": "eb1ff1a6eb64e6fd79f3fd381deb868bb009d31c38061f417fc7e048468b6208"
+        },
+        {
+          "frame": 5,
+          "visibleBounds": [
+            75,
+            100,
+            393,
+            419
+          ],
+          "guardAlphaMax": 0,
+          "sha256": "0747a4aee40896317dbfe0a967bd4dda789e719a1901225a7272a40738388c07"
+        }
+      ]
+    },
+    {
+      "clip": "running",
+      "file": "Gait-Axe-Consistent-v5.png",
+      "distinctFrames": 6,
+      "frames": [
+        {
+          "frame": 0,
+          "visibleBounds": [
+            101,
+            106,
+            418,
+            436
+          ],
+          "guardAlphaMax": 0,
+          "sha256": "08c78154912861b452854936c3ba9ab0a57ac19a248b097ef18c91c88e232278"
+        },
+        {
+          "frame": 1,
+          "visibleBounds": [
+            100,
+            107,
+            401,
+            436
+          ],
+          "guardAlphaMax": 0,
+          "sha256": "2b7ac42e5237175fbfa9d5d425a153ff1a6c9a9f2c19cf6f4e60375ef8fc0574"
+        },
+        {
+          "frame": 2,
+          "visibleBounds": [
+            100,
+            106,
+            392,
+            444
+          ],
+          "guardAlphaMax": 0,
+          "sha256": "d8abcddf6cf52a99d33a87b75dcf82933c8b6dbe315744e9f72c9c430b572577"
+        },
+        {
+          "frame": 3,
+          "visibleBounds": [
+            110,
+            76,
+            417,
+            397
+          ],
+          "guardAlphaMax": 0,
+          "sha256": "d73c5971af4ece50b4a915f62c98ef5b3c102289e5485fd86681252241dde9c4"
+        },
+        {
+          "frame": 4,
+          "visibleBounds": [
+            103,
+            76,
+            404,
+            396
+          ],
+          "guardAlphaMax": 0,
+          "sha256": "97d6d2905abf2bb8e0ed3c61d0bef9bdf39ab246f8ac375a9ff4dae5124578c3"
+        },
+        {
+          "frame": 5,
+          "visibleBounds": [
+            88,
+            76,
+            394,
+            376
+          ],
+          "guardAlphaMax": 0,
+          "sha256": "c88596f09b18e6969c160354074e0b89ed7dc83d51b72e53ba408c15a2c78716"
+        }
+      ]
+    },
+    {
+      "clip": "hit",
+      "file": "Hit-Axe-Consistent-v3.png",
+      "distinctFrames": 6,
+      "frames": [
+        {
+          "frame": 0,
+          "visibleBounds": [
+            89,
+            105,
+            414,
+            448
+          ],
+          "guardAlphaMax": 0,
+          "sha256": "9a5d39a17389fc4a1b1b19609a8c8ae3b46295396505ac48e0e223122b81b5f6"
+        },
+        {
+          "frame": 1,
+          "visibleBounds": [
+            95,
+            109,
+            405,
+            440
+          ],
+          "guardAlphaMax": 0,
+          "sha256": "2c0974f9463e2a2f903d08387d0382f0983d01bea1e2678cb227b1249d12c3a2"
+        },
+        {
+          "frame": 2,
+          "visibleBounds": [
+            100,
+            133,
+            402,
+            437
+          ],
+          "guardAlphaMax": 0,
+          "sha256": "675e8dfdebf84de9069467bb17af6da97f3b81256b9af36d26556b5c4bb696db"
+        },
+        {
+          "frame": 3,
+          "visibleBounds": [
+            83,
+            96,
+            386,
+            412
+          ],
+          "guardAlphaMax": 0,
+          "sha256": "d70c87993fd6b1352e006e5b95ac65ad8ece6fb77052621b28261a4b1bb98f9f"
+        },
+        {
+          "frame": 4,
+          "visibleBounds": [
+            84,
+            86,
+            416,
+            420
+          ],
+          "guardAlphaMax": 0,
+          "sha256": "f3962af81db61cf75d4dfd3aa8a50e77384b774a0c59a7a25aeef2b940665ac2"
+        },
+        {
+          "frame": 5,
+          "visibleBounds": [
+            79,
+            84,
+            414,
+            424
+          ],
+          "guardAlphaMax": 0,
+          "sha256": "6c8384912dad54df5d6a78947f68c4b75fa1fce8a9d1e76dfc1734b005e47fd4"
+        }
+      ]
+    },
+    {
+      "clip": "charged",
+      "file": "Charged-Axe-Consistent-v3.png",
+      "distinctFrames": 6,
+      "frames": [
+        {
+          "frame": 0,
+          "visibleBounds": [
+            77,
+            86,
+            443,
+            447
+          ],
+          "guardAlphaMax": 0,
+          "sha256": "f59d708a5daa8d42309685d336faed0e8da896fc5267689037ef1e8f7b2b1031"
+        },
+        {
+          "frame": 1,
+          "visibleBounds": [
+            72,
+            88,
+            434,
+            414
+          ],
+          "guardAlphaMax": 0,
+          "sha256": "0b73b9ad5ff9d58004160daaad2fe8415d88ad5b9f7acbb3ab3b3b2b89173632"
+        },
+        {
+          "frame": 2,
+          "visibleBounds": [
+            50,
+            78,
+            449,
+            418
+          ],
+          "guardAlphaMax": 0,
+          "sha256": "16bb5ddec16987906d0f6b718183f95017f94eb52eb3afc268d67ff1776871b2"
+        },
+        {
+          "frame": 3,
+          "visibleBounds": [
+            90,
+            110,
+            442,
+            407
+          ],
+          "guardAlphaMax": 0,
+          "sha256": "3838b0d3b09f55570e1ef9c706ea28ed7b6fca18d666c612af8fbd478a92ef19"
+        },
+        {
+          "frame": 4,
+          "visibleBounds": [
+            80,
+            99,
+            418,
+            405
+          ],
+          "guardAlphaMax": 0,
+          "sha256": "fe13e3c017884bfbc2ce6325d00484eefd3f3927b2b8af3e93e4f603da033eab"
+        },
+        {
+          "frame": 5,
+          "visibleBounds": [
+            51,
+            60,
+            431,
+            435
+          ],
+          "guardAlphaMax": 0,
+          "sha256": "36633e2db56f5afe9e932962fdf06bdf636232b80d86c81082a2b8dd39fb410d"
+        }
+      ]
+    },
+    {
+      "clip": "charge-attack",
+      "file": "Attack-Axe-Consistent-v4.png",
+      "distinctFrames": 6,
+      "frames": [
+        {
+          "frame": 0,
+          "visibleBounds": [
+            118,
+            173,
+            409,
+            497
+          ],
+          "guardAlphaMax": 0,
+          "sha256": "4435dce5557ef609a7dd07e71dbbc783e07c20176c8e2daf37f61e5a32ccbb43"
+        },
+        {
+          "frame": 1,
+          "visibleBounds": [
+            80,
+            49,
+            417,
+            406
+          ],
+          "guardAlphaMax": 0,
+          "sha256": "a739ed940662664547f27f1eecf7d483cec70866fb2f457c23b40992cc0078f6"
+        },
+        {
+          "frame": 2,
+          "visibleBounds": [
+            148,
+            22,
+            361,
+            410
+          ],
+          "guardAlphaMax": 0,
+          "sha256": "d7add692a5ce589adf2683467c93c8b807c4c2959e461373f6e3dbce7ab6cd8c"
+        },
+        {
+          "frame": 3,
+          "visibleBounds": [
+            146,
+            87,
+            382,
+            453
+          ],
+          "guardAlphaMax": 0,
+          "sha256": "8a2c9471527883f96b05e51636c5a6fbede6c2e4c8885490e73f738554718d8b"
+        },
+        {
+          "frame": 4,
+          "visibleBounds": [
+            93,
+            95,
+            408,
+            408
+          ],
+          "guardAlphaMax": 0,
+          "sha256": "6d457b632e5d5fdd84523a3a3aa9836328c08142e9ddaa9594d7315464473444"
+        },
+        {
+          "frame": 5,
+          "visibleBounds": [
+            107,
+            105,
+            412,
+            438
+          ],
+          "guardAlphaMax": 0,
+          "sha256": "91d2a57d1b4aab40da3da4ad7d13920916a9165b082bf9e74b909c13e0045477"
+        }
+      ]
+    },
+    {
+      "clip": "death",
+      "file": "Death-Side-Axe-Consistent-v4.png",
+      "distinctFrames": 6,
+      "frames": [
+        {
+          "frame": 0,
+          "visibleBounds": [
+            116,
+            121,
+            393,
+            430
+          ],
+          "guardAlphaMax": 0,
+          "sha256": "1ee3f2ba6f469c271d15e86feac3dd7c33beded82491353e204d5dafeb01c0f7"
+        },
+        {
+          "frame": 1,
+          "visibleBounds": [
+            115,
+            174,
+            375,
+            442
+          ],
+          "guardAlphaMax": 0,
+          "sha256": "223b03625c9f232009048488793c045ebd2dfcdfd6493d5701daea6a40da0232"
+        },
+        {
+          "frame": 2,
+          "visibleBounds": [
+            104,
+            194,
+            382,
+            484
+          ],
+          "guardAlphaMax": 0,
+          "sha256": "a8ad1cc3859a2906cacbcc2d633ec1c1ad9b8155e21a0a49641a3eb38f7e633a"
+        },
+        {
+          "frame": 3,
+          "visibleBounds": [
+            129,
+            172,
+            408,
+            405
+          ],
+          "guardAlphaMax": 0,
+          "sha256": "8ac31175082eecea5b3b7d9d2fc6b6cd762006aaaa081e8a083502990133a334"
+        },
+        {
+          "frame": 4,
+          "visibleBounds": [
+            104,
+            179,
+            400,
+            404
+          ],
+          "guardAlphaMax": 0,
+          "sha256": "d826aa94d08ef62705f47572e01e571e49dda3f420f5beb619fd2b1913d37b37"
+        },
+        {
+          "frame": 5,
+          "visibleBounds": [
+            79,
+            190,
+            407,
+            407
+          ],
+          "guardAlphaMax": 0,
+          "sha256": "8dfaed0f12a7085fd493a6fcd8fd27a0ab6a8cb27287001e00cf9681eb3871b8"
+        }
+      ]
+    },
+    {
+      "clip": "death-back",
+      "file": "Death-Back-Axe-Consistent-v6.png",
+      "distinctFrames": 6,
+      "frames": [
+        {
+          "frame": 0,
+          "visibleBounds": [
+            100,
+            129,
+            401,
+            405
+          ],
+          "guardAlphaMax": 0,
+          "sha256": "a5f4b5f31d07c402ef7065d0c0ff7c45ba4b646a62f2e9394024448f5b4f12dc"
+        },
+        {
+          "frame": 1,
+          "visibleBounds": [
+            72,
+            137,
+            444,
+            389
+          ],
+          "guardAlphaMax": 0,
+          "sha256": "0d9b89495e7ae7c7663be873a7711b22f0ac75955f8bcc8954d68296bff7cd31"
+        },
+        {
+          "frame": 2,
+          "visibleBounds": [
+            118,
+            109,
+            434,
+            401
+          ],
+          "guardAlphaMax": 0,
+          "sha256": "ca678d8148da455f2de3d7aab784ccb5bc586ff571b78690d3bff67768a58c83"
+        },
+        {
+          "frame": 3,
+          "visibleBounds": [
+            71,
+            126,
+            438,
+            383
+          ],
+          "guardAlphaMax": 0,
+          "sha256": "f0961feffdee77103c4461d2b1a3f75740c76515b724b6113bf88eafcfb8c0e9"
+        },
+        {
+          "frame": 4,
+          "visibleBounds": [
+            73,
+            110,
+            416,
+            383
+          ],
+          "guardAlphaMax": 0,
+          "sha256": "ba6baca4a18b5984870298911fefd7c3e3588f4c28ed1be6f5c0f94437ea39ac"
+        },
+        {
+          "frame": 5,
+          "visibleBounds": [
+            72,
+            111,
+            425,
+            388
+          ],
+          "guardAlphaMax": 0,
+          "sha256": "1fbebf89b3869586414b3a5762f6506802760a36c478a58424f9c484fee766eb"
+        }
+      ]
+    },
+    {
+      "clip": "attack",
+      "file": "Attack-Axe-Consistent-v4.png",
+      "distinctFrames": 6,
+      "frames": [
+        {
+          "frame": 0,
+          "visibleBounds": [
+            118,
+            173,
+            409,
+            497
+          ],
+          "guardAlphaMax": 0,
+          "sha256": "4435dce5557ef609a7dd07e71dbbc783e07c20176c8e2daf37f61e5a32ccbb43"
+        },
+        {
+          "frame": 1,
+          "visibleBounds": [
+            80,
+            49,
+            417,
+            406
+          ],
+          "guardAlphaMax": 0,
+          "sha256": "a739ed940662664547f27f1eecf7d483cec70866fb2f457c23b40992cc0078f6"
+        },
+        {
+          "frame": 2,
+          "visibleBounds": [
+            148,
+            22,
+            361,
+            410
+          ],
+          "guardAlphaMax": 0,
+          "sha256": "d7add692a5ce589adf2683467c93c8b807c4c2959e461373f6e3dbce7ab6cd8c"
+        },
+        {
+          "frame": 3,
+          "visibleBounds": [
+            146,
+            87,
+            382,
+            453
+          ],
+          "guardAlphaMax": 0,
+          "sha256": "8a2c9471527883f96b05e51636c5a6fbede6c2e4c8885490e73f738554718d8b"
+        },
+        {
+          "frame": 4,
+          "visibleBounds": [
+            93,
+            95,
+            408,
+            408
+          ],
+          "guardAlphaMax": 0,
+          "sha256": "6d457b632e5d5fdd84523a3a3aa9836328c08142e9ddaa9594d7315464473444"
+        },
+        {
+          "frame": 5,
+          "visibleBounds": [
+            107,
+            105,
+            412,
+            438
+          ],
+          "guardAlphaMax": 0,
+          "sha256": "91d2a57d1b4aab40da3da4ad7d13920916a9165b082bf9e74b909c13e0045477"
+        }
+      ]
+    },
+    {
+      "clip": "charge",
+      "file": "Gait-Axe-Consistent-v5.png",
+      "distinctFrames": 6,
+      "frames": [
+        {
+          "frame": 0,
+          "visibleBounds": [
+            101,
+            106,
+            418,
+            436
+          ],
+          "guardAlphaMax": 0,
+          "sha256": "08c78154912861b452854936c3ba9ab0a57ac19a248b097ef18c91c88e232278"
+        },
+        {
+          "frame": 1,
+          "visibleBounds": [
+            100,
+            107,
+            401,
+            436
+          ],
+          "guardAlphaMax": 0,
+          "sha256": "2b7ac42e5237175fbfa9d5d425a153ff1a6c9a9f2c19cf6f4e60375ef8fc0574"
+        },
+        {
+          "frame": 2,
+          "visibleBounds": [
+            100,
+            106,
+            392,
+            444
+          ],
+          "guardAlphaMax": 0,
+          "sha256": "d8abcddf6cf52a99d33a87b75dcf82933c8b6dbe315744e9f72c9c430b572577"
+        },
+        {
+          "frame": 3,
+          "visibleBounds": [
+            110,
+            76,
+            417,
+            397
+          ],
+          "guardAlphaMax": 0,
+          "sha256": "d73c5971af4ece50b4a915f62c98ef5b3c102289e5485fd86681252241dde9c4"
+        },
+        {
+          "frame": 4,
+          "visibleBounds": [
+            103,
+            76,
+            404,
+            396
+          ],
+          "guardAlphaMax": 0,
+          "sha256": "97d6d2905abf2bb8e0ed3c61d0bef9bdf39ab246f8ac375a9ff4dae5124578c3"
+        },
+        {
+          "frame": 5,
+          "visibleBounds": [
+            88,
+            76,
+            394,
+            376
+          ],
+          "guardAlphaMax": 0,
+          "sha256": "c88596f09b18e6969c160354074e0b89ed7dc83d51b72e53ba408c15a2c78716"
+        }
+      ]
+    }
+  ]
+}

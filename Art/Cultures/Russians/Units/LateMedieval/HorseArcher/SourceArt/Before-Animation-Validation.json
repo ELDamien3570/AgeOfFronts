@@ -1,0 +1,21 @@
+{
+  "date": "2026-10-07",
+  "size": [
+    1024,
+    1536
+  ],
+  "mode": "RGBA",
+  "alphaExtrema": [
+    0,
+    254
+  ],
+  "visibleBounds": [
+    51,
+    14,
+    942,
+    1472
+  ],
+  "sha256": "576463ad1361a2f6922f48875a9814e733fe96e492220ecbf0bc0e1b3741520f",
+  "userApproval": "Idle pending review",
+  "runtimeIntegration": false
+}

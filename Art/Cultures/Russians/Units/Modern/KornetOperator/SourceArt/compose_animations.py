@@ -1,0 +1,78 @@
+"""Bake complete ImageGen-authored poses, preserving the approved idle and native sources."""
+from pathlib import Path
+from PIL import Image
+import json,shutil,hashlib
+ROOT=Path(__file__).resolve().parent.parent
+SOURCE=ROOT/'SourceArt'
+def sha(p): return hashlib.sha256(p.read_bytes()).hexdigest()
+def write(p,d): p.write_text(json.dumps(d,indent=2)+'\n',encoding='utf-8')
+gen=json.loads((SOURCE/'Animation-Generation.json').read_text(encoding='utf-8'))
+data=json.loads((SOURCE/'Before-Animation-animations.json').read_text(encoding='utf-8'))
+approved=ROOT/'Idle-Overhead-v2.png'; approved_hash=sha(approved)
+write(SOURCE/'Approved-Idle.json',{'file':approved.name,'sha256':approved_hash,'approval':'User approved for animation on 2026-10-07.'})
+labels={'idle':'Deployed idle','running':'Packed movement','deploy':'Deploy','undeploy':'Undeploy','attack':'Deployed firing','reload':'Reload','hit':'Get hit','charged':'Get charged','death':'Death - side fall','death-back':'Death - back fall'}
+durations={'idle':[320]*6,'running':[160]*6,'deploy':[220,240,280,280,240,260],'attack':[200,180,180,100,280,320],'reload':[200,240,300,300,240,260],'hit':[100,90,130,130,160,180],'charged':[130,120,180,180,180,230],'death':[150,170,190,210,240,400],'death-back':[150,180,190,210,240,400]}
+descriptions={'idle':'Kneeling at the deployed launcher with subtle breathing.','running':'Walk with the launcher and folded tripod carried together.','deploy':'Lower the packed launcher, unfold the tripod and settle at the controls.','attack':'Fire from the planted tripod and remain at the controls.','reload':'Lift and reseat the launch tube, then return to the controls.','hit':'Recoil and brace beside the deployed launcher.','charged':'Heavy impact pushes the operator away before recovery.','death':'Collapse onto the side beside the launcher.','death-back':'Fall backward and settle beside the launcher.'}
+clips=[];recipes=[];checks=[]
+for rec in gen['records']:
+ native=SOURCE/rec['nativeFile']
+ if not native.exists(): shutil.copy2(rec['generatedSource'],native)
+ if rec['status']!='selected-source':continue
+ im=Image.open(native)
+ assert im.mode=='RGBA',(rec['id'],im.mode)
+ assert im.size==(1536,1024),(rec['id'],im.size)
+ out=Image.new('RGBA',im.size,(0,0,0,0)); frames=[];framechecks=[];tracks=[]
+ scale=.8;padding=51
+ for i in range(6):
+  col,row=i%3,i//3
+  rect=rec.get("sourceRects",[])[i] if rec.get("sourceRects") else [col*512,row*512,(col+1)*512,(row+1)*512]
+  size=(round((rect[2]-rect[0])*scale),round((rect[3]-rect[1])*scale))
+  pose_source=Image.open(SOURCE/rec['poseFiles'][i]) if rec.get('poseFiles') else im.crop(tuple(rect))
+  pose=pose_source.resize(size,Image.Resampling.LANCZOS)
+  dx=padding+round((rect[0]-col*512)*scale);dy=padding+round((rect[1]-row*512)*scale)
+  pack=rec.get("packingOffsets",[[0,0]]*6)[i]
+  dx+=pack[0];dy+=pack[1]
+  out.paste(pose,(col*512+dx,row*512+dy))
+  root_offset=rec.get("rootOffsets",[[0,0]]*6)[i]
+  frame={'index':i,'sourceIndex':i,'x':col*512,'y':row*512,'width':512,'height':512,'pivot':{'x':256+pack[0]+root_offset[0]*scale,'y':256+pack[1]+root_offset[1]*scale}}
+  frames.append(frame)
+  cell=out.crop((col*512,row*512,(col+1)*512,(row+1)*512));alpha=cell.getchannel('A')
+  bounds=alpha.point(lambda v:255 if v>16 else 0).getbbox()
+  assert bounds,(rec['id'],i,'empty')
+  guard=max(alpha.crop(r).getextrema()[1] for r in [(0,0,512,8),(0,504,512,512),(0,0,8,512),(504,0,512,512)])
+  assert guard==0,(rec['id'],i,guard)
+  framechecks.append({'frame':i,'visibleBounds':bounds,'guardAlphaMax':guard,'sha256':hashlib.sha256(cell.tobytes()).hexdigest()})
+  tracks.append({'frame':i,'sourceRect':rect,'uniformScale':scale,'destinationOffset':[dx,dy],'packingOffset':pack,'rootOffset':root_offset,'pivot':frame['pivot']})
+ distinct=len({f['sha256'] for f in framechecks})
+ assert distinct==6,(rec['id'],'duplicate frames')
+ out.save(ROOT/rec['file'])
+ ident=rec['id']
+ clip={'id':ident,'file':rec['file'],'label':labels[ident],'loop':ident in ['idle','running','charge'],'scale':1,'durations':rec.get('durations',durations[ident]),'description':rec.get('description',descriptions[ident]),'frameCount':6,'frames':frames}
+ if ident in ['attack','charge-attack']:clip['impactFrame']=3
+ clip['sha256']=sha(ROOT/rec['file'])
+ clips.append(clip)
+ checks.append({'clip':ident,'file':rec['file'],'distinctFrames':distinct,'frames':framechecks})
+ recipes.append({'clip':ident,'source':rec['nativeFile'],'sourceSha256':sha(native),'output':rec['file'],'outputSha256':sha(ROOT/rec['file']),'tracks':tracks})
+assert len(clips)==9
+import copy
+forward=next(c for c in clips if c['id']=='deploy')
+reverse=copy.deepcopy(forward)
+reverse.update({'id':'undeploy','label':labels['undeploy'],'description':'Reverse deployment: fold the tripod, lift the packed launcher and return to carry.','durations':list(reversed(forward['durations'])),'frames':list(reversed(forward['frames'])),'reverseOf':'deploy'})
+for i,f in enumerate(reverse['frames']):f['index']=i
+clips.append(reverse)
+assert reverse['frames'][0]['sourceIndex']==5 and reverse['frames'][-1]['sourceIndex']==0
+clips.sort(key=lambda c:list(labels).index(c['id']))
+data.update({'stage':'single-actor-animation-review','integrationStatus':'Local artwork review; runtime formations and gameplay are separate.','sheetSize':{'width':1536,'height':1024},'grid':{'columns':3,'rows':2},'reviewFootprint':460,'registration':'Whole authored poses with common scale, padding and fixed root.','movementPolicy':'Packed movement only; firing requires deployment. No charge or moving fire.','transitionClips':{'deploy':'deploy','undeploy':'undeploy'},'deathVariants':['death','death-back'],'animations':clips})
+write(ROOT/'animations.json',data)
+assert sha(approved)==approved_hash
+write(ROOT/'Validation.json',{'date':'2026-10-07','actorCount':1,'clipCount':10,'frameCount':60,'approvedIdlePreserved':True,'eightPixelGuards':'Zero alpha','undeployReverseVerified':True,'chargeAndMovingFireAbsent':True,'userApproval':'Animations pending visual review.','runtimeIntegration':False,'clips':checks})
+write(SOURCE/'Composition.json',{'date':'2026-10-07','method':'Whole ImageGen-authored poses, common scale and padding; whole actor selection excludes neighboring sprites; native originals preserved.','clips':recipes})
+hist=json.loads((SOURCE/'Before-Animation-Generation.json').read_text(encoding='utf-8'))
+hist['approval']='Idle-Overhead-v2.png approved for animation; animation artwork pending review.'
+hist['animations']=gen['records'];hist['stage']='single-actor-animation-review'
+write(ROOT/'Generation.json',hist)
+html=(SOURCE/'Before-Animation-Actor_Review.html').read_text(encoding='utf-8')
+html=html.replace('Kornet Operator. Idle design.','Kornet Operator. Ten motions.').replace('Single idle frame review','Single actor animation review').replace('Idle artwork awaiting review','Animation artwork awaiting review').replace('Loading Kornet Operator idle frame','Loading animation sheets')
+(ROOT/'Actor_Review.html').write_text(html,encoding='utf-8')
+(ROOT/'README.md').write_text('# Russian Modern Kornet Operator\n\nTen solo clips: deployed idle, packed movement, deploy, reversed undeploy, deployed firing, reload, get hit, get charged, side death and backward death. No charge or moving fire. Undeploy references the deploy sheet in reverse; there are 54 unique authored frames and 60 playback frames. Approved Idle-Overhead-v2.png and native ImageGen sources preserved. Full prompts in Generation.json and SourceArt/Animation-Generation.json. Editable whole-pose packing tracks in SourceArt/Composition.json; regenerate with SourceArt/compose_animations.py. Whole connected actors are composed separately; native originals preserved. Animations await user review. Runtime formations and gameplay remain separate.\n',encoding='utf-8')
+print('Ten clips, 60 frames; approved idle preserved, six distinct poses each, alpha guards clear.')

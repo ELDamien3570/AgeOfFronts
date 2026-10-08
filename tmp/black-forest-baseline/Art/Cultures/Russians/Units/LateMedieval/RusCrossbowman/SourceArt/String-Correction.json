@@ -1,0 +1,32 @@
+{
+  "tool": "built-in-imagegen",
+  "records": [
+    {
+      "file": "Idle-String-Draft.png",
+      "nativeFile": "Native-Idle-String-Draft.png",
+      "prompt": "Use case: precise-object-edit. Correct ONLY the crossbow string geometry and supporting hand clearance in this approved solo game sprite. Preserve exactly the directly overhead camera, lowered diagonal crossbow carry, soldier identity, pose, armor, purple sleeves, helmet, pouches, boots, wooden stock and curved wooden prod, lighting and style. Real transparent background. The current cord visually tunnels through the stock and hand; remove that cord completely and replace it with ONE continuous cocked bowstring: two straight taut segments from each outer prod tip to ONE raised metal release nut/catch on TOP surface of stock immediately behind the bolt's feathered nock. At the center show cord visibly passing OVER the upper surface of the wooden stock, resting in the exposed catch and directly behind the bolt nock, never disappearing inside wood or emerging through sides. Entire string and catch must sit above the stock, with hands supporting underside and rear grip behind catch, clear of the string triangle. Adjust supporting fingers slightly if needed to expose that top-plane connection. Short straight bolt remains seated on top central groove. No second string or extra cord, no cord through hand, no string beneath bow or stock. One complete centered soldier, ample transparent margin, same square composition. This is a single corrected IDLE frame, no sheet or labels.",
+      "reference": "C:/Users/Damien/Documents/GitHub/AgeOfFronts/AgeOfFronts/Art/Cultures/Russians/Units/LateMedieval/RusCrossbowman/SourceArt/Native-Idle-Lowered-v3.png",
+      "generatedSource": "C:/Users/Damien/.codex/generated_images/01a1166c-83ee-7ae0-be97-78c470de8962/exec-562480b6-3030-4702-827f-9a3eb3834582.png",
+      "tool": "built-in-imagegen",
+      "status": "superseded-catch-refinement"
+    },
+    {
+      "file": "Idle-String-v4.png",
+      "nativeFile": "Native-Idle-String-v4.png",
+      "prompt": "Precise edit to this single transparent overhead Rus Crossbowman idle. Keep entire soldier and weapon pose unchanged. Correct ONLY the center vertex of cocked bowstring. It currently meets stock too far forward beside the middle of bolt. Move the single V-string center attachment REARWARD UP-LEFT along the stock to immediately behind the white bolt feathers/nock (near image coordinate x580 y710 on1254square). Add exposed metal release catch there on TOP of woodenstock. Route two single taut stringsegments from outer woodenprod tips to this rear catch. String must be continuous and clearly lie ON TOP of wood, never inside wood. Remove old forward catch cord junction completely, no extra strings. Short straight bolt lies forward fromcatch toward muzzle. Hands remain beneath stock and rear grip clearofstring. Preserve silhouette,costume,camera,lighting,size and genuine transparentalpha. One idleframe no labels.",
+      "reference": "C:/Users/Damien/.codex/generated_images/01a1166c-83ee-7ae0-be97-78c470de8962/exec-562480b6-3030-4702-827f-9a3eb3834582.png",
+      "generatedSource": "C:/Users/Damien/.codex/generated_images/01a1166c-83ee-7ae0-be97-78c470de8962/exec-fbd7fcd5-30cc-435d-a111-e1950f767c70.png",
+      "tool": "built-in-imagegen",
+      "status": "pending-idle-review"
+    },
+    {
+      "file": "Idle-String-v5.png",
+      "nativeFile": "Native-Idle-String-v5.png",
+      "prompt": "Edit this exact transparent sprite. Mandatory major visible correction: pull the cocked crossbow string MUCH FARTHER BACK toward the soldier, to the very REAR END of the loaded bolt, behind ALL white feathers. Current metal catch and string junction near middle of bolt at (630,780) is wrong. DELETE that old metal bridge and string junction entirely. New string junction and small release nut must be at (575,690), directly behind the very rearmost end of the bolt at the TOP LEFT of the woodenstock. These coordinates are for1254square input. Two taut cord segments extend from outer prod tips around (500,980) and (900,835) to new junction (575,690). This creates a noticeably LONGER deeper drawn V triangle than original, reaches almost to rear grip hand. String rests visibly on TOP surface of stock at bolt nock, never inside wood. Keep bolt straight and seated in same groove, its feathers IN FRONT of the new stringcatch toward muzzle. No cord or metal bridge remaining at old (630,780). Keep all other artwork unchanged: overhead camera, lowereddiagonalcrossbow, wood limbs, hands armor helmet mail purplecostume leathergearboots proportionslighting. Hands belowstock clearstring, one stringonebolt. Transparentbackground, one complete solo idle frame, no text.",
+      "reference": "C:/Users/Damien/Documents/GitHub/AgeOfFronts/AgeOfFronts/Art/Cultures/Russians/Units/LateMedieval/RusCrossbowman/SourceArt/Native-Idle-String-v4.png",
+      "generatedSource": "C:/Users/Damien/.codex/generated_images/01a1166c-83ee-7ae0-be97-78c470de8962/exec-1fd85c43-99ed-4c4e-b5f8-62f1d96d3d2e.png",
+      "tool": "built-in-imagegen",
+      "status": "pending-idle-review"
+    }
+  ]
+}

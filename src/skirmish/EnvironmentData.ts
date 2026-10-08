@@ -3,6 +3,8 @@ export interface EnvironmentData {
   readonly moisture: Uint8Array;
   readonly vegetation: Uint8Array;
   readonly aridity: Uint8Array;
+  /** Optional authored biome IDs, indexed by ENVIRONMENT_FAMILIES. */
+  readonly families?: Uint8Array;
 }
 
 export const ENVIRONMENT_ENCODING = "u8-moisture-vegetation-aridity";

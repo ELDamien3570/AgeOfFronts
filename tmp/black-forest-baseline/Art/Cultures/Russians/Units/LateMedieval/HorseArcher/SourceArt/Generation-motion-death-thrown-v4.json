@@ -1,0 +1,9 @@
+{
+  "id": "death-thrown",
+  "file": "Death-Thrown-v4.png",
+  "prompt": "Remove the entire background from this six-frame horse archer death sprite sheet. Return a true transparent PNG cutout with alpha ZERO everywhere outside the actual horses and riders and their equipment. Remove ALL brown glow, gray haze, shadows and soft vignette between sprites. The transparent area between rows must be completely clear. Preserve all six horse/rider poses exactly, including empty saddles after rider is thrown, painted colors, gear, bodies and bowstrings. Do not redraw or move any object.1536x1024 RGBA, same layout. No background whatsoever.",
+  "generatedSource": "C:\\Users\\Damien\\.codex\\generated_images\\01a11641-9e1b-7c81-be76-c9edd53ef182\\exec-bb6dbf57-b9a7-4cc8-ad41-5e99b1700995.png",
+  "references": [
+    "C:\\Users\\Damien\\.codex\\generated_images\\01a11641-9e1b-7c81-be76-c9edd53ef182\\exec-54839d16-5e7d-4c9e-8998-5fbc90788f75.png"
+  ]
+}

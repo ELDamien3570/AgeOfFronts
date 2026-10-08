@@ -1,0 +1,10 @@
+{
+  "date": "2026-10-07",
+  "mode": "built-in-imagegen",
+  "selectedIdle": "Idle-v1.png",
+  "generatedSource": "C:/Users/Damien/.codex/generated_images/01a0fea1-c63f-7343-92ca-6c21cc1c4296/exec-845a45b3-50b2-4c93-b9f3-3ba035634624.png",
+  "reference": "../../LateMedieval/PlateSpearman/Idle-Overhead-v2.png",
+  "prompt": "Create ONE single idle sprite of a Napoleonic-era-inspired Russian PIKEMAN for Age of Fronts. Reference image is ONLY a visual style and strict camera reference; replace all medieval equipment. Match its richly painted game sprite materials, compact stocky proportions, precise readable silhouette and textured highlights. Camera exactly 90 degrees vertically overhead, orthographic, looking directly onto the flat TOP of his black shako and shoulder tops. Soldier faces toward SCREEN BOTTOM. Very foreshortened torso, face almost invisible under hat brim; do not turn this into a front-facing or isometric character portrait. Costume: dark forest green wool military coat, red collar and cuffs, modest brass shoulder details and buttons, white leather cross straps, light gray trousers, black boots. Black Napoleonic shako with restrained brass insignia and small dark plume. No medieval plate armor, no helmet, no shield, no musket. Long straight wooden pike with a slim symmetrical steel spearhead pointing toward the BOTTOM of the image, wooden butt toward top. Pike held with BOTH hands at separate fixed grip locations in a relaxed ready stance beside his body, shaft straight and unbroken and visibly passing through both closed hands. Entire pike and soldier fully visible with generous transparent margins, no cropping. One isolated actor, one idle frame, centered composition, no terrain, no shadow plane, no text, no border. Transparent background. Stylized imagined Russian game roster rather than a historical reconstruction.",
+  "userApproval": "Idle design awaiting user review; no animation authored.",
+  "ageCatalogNote": "EarlyModern contains the existing Napoleonic package."
+}

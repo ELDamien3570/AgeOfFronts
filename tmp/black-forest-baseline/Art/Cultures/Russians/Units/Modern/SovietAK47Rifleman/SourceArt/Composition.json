@@ -1,0 +1,1105 @@
+{
+  "method": "Whole-pose crops, uniform scaling, transparent padding and authored roots. No pixel painting or alpha filtering.",
+  "clips": [
+    {
+      "id": "idle",
+      "native": "Native-idle-v2.png",
+      "nativeSha256": "be8513a157318d4494086575a97e2ae3f4acb0f39f3ee14cb6275bcda046bc7a",
+      "output": "idle-v2.png",
+      "tracks": [
+        {
+          "index": 0,
+          "source": "Native-idle-v2.png",
+          "sourceSha256": "be8513a157318d4494086575a97e2ae3f4acb0f39f3ee14cb6275bcda046bc7a",
+          "sourceRect": [
+            0,
+            0,
+            512,
+            512
+          ],
+          "destinationSize": 480,
+          "offset": 16,
+          "pivot": {
+            "x": 256,
+            "y": 256
+          }
+        },
+        {
+          "index": 1,
+          "source": "Native-idle-v2.png",
+          "sourceSha256": "be8513a157318d4494086575a97e2ae3f4acb0f39f3ee14cb6275bcda046bc7a",
+          "sourceRect": [
+            512,
+            0,
+            1024,
+            512
+          ],
+          "destinationSize": 480,
+          "offset": 16,
+          "pivot": {
+            "x": 256,
+            "y": 256
+          }
+        },
+        {
+          "index": 2,
+          "source": "Native-idle-v2.png",
+          "sourceSha256": "be8513a157318d4494086575a97e2ae3f4acb0f39f3ee14cb6275bcda046bc7a",
+          "sourceRect": [
+            1024,
+            0,
+            1536,
+            512
+          ],
+          "destinationSize": 480,
+          "offset": 16,
+          "pivot": {
+            "x": 256,
+            "y": 256
+          }
+        },
+        {
+          "index": 3,
+          "source": "Native-idle-v2.png",
+          "sourceSha256": "be8513a157318d4494086575a97e2ae3f4acb0f39f3ee14cb6275bcda046bc7a",
+          "sourceRect": [
+            0,
+            512,
+            512,
+            1024
+          ],
+          "destinationSize": 480,
+          "offset": 16,
+          "pivot": {
+            "x": 256,
+            "y": 256
+          }
+        },
+        {
+          "index": 4,
+          "source": "Native-idle-v2.png",
+          "sourceSha256": "be8513a157318d4494086575a97e2ae3f4acb0f39f3ee14cb6275bcda046bc7a",
+          "sourceRect": [
+            512,
+            512,
+            1024,
+            1024
+          ],
+          "destinationSize": 480,
+          "offset": 16,
+          "pivot": {
+            "x": 256,
+            "y": 256
+          }
+        },
+        {
+          "index": 5,
+          "source": "Native-idle-v2.png",
+          "sourceSha256": "be8513a157318d4494086575a97e2ae3f4acb0f39f3ee14cb6275bcda046bc7a",
+          "sourceRect": [
+            1024,
+            512,
+            1536,
+            1024
+          ],
+          "destinationSize": 480,
+          "offset": 16,
+          "pivot": {
+            "x": 256,
+            "y": 256
+          }
+        }
+      ]
+    },
+    {
+      "id": "running",
+      "native": "Native-running-v1.png",
+      "nativeSha256": "06d38ad1d2a2ca2ebbe6d11df04f53e0b3fa692410fc4085053a0fddd733d289",
+      "output": "running-v1.png",
+      "tracks": [
+        {
+          "index": 0,
+          "source": "Native-running-v1.png",
+          "sourceSha256": "06d38ad1d2a2ca2ebbe6d11df04f53e0b3fa692410fc4085053a0fddd733d289",
+          "sourceRect": [
+            0,
+            0,
+            512,
+            512
+          ],
+          "destinationSize": 480,
+          "offset": 16,
+          "pivot": {
+            "x": 256,
+            "y": 256
+          }
+        },
+        {
+          "index": 1,
+          "source": "Native-running-v1.png",
+          "sourceSha256": "06d38ad1d2a2ca2ebbe6d11df04f53e0b3fa692410fc4085053a0fddd733d289",
+          "sourceRect": [
+            512,
+            0,
+            1024,
+            512
+          ],
+          "destinationSize": 480,
+          "offset": 16,
+          "pivot": {
+            "x": 256,
+            "y": 256
+          }
+        },
+        {
+          "index": 2,
+          "source": "Native-running-v1.png",
+          "sourceSha256": "06d38ad1d2a2ca2ebbe6d11df04f53e0b3fa692410fc4085053a0fddd733d289",
+          "sourceRect": [
+            1024,
+            0,
+            1536,
+            512
+          ],
+          "destinationSize": 480,
+          "offset": 16,
+          "pivot": {
+            "x": 256,
+            "y": 256
+          }
+        },
+        {
+          "index": 3,
+          "source": "Native-running-v1.png",
+          "sourceSha256": "06d38ad1d2a2ca2ebbe6d11df04f53e0b3fa692410fc4085053a0fddd733d289",
+          "sourceRect": [
+            0,
+            512,
+            512,
+            1024
+          ],
+          "destinationSize": 480,
+          "offset": 16,
+          "pivot": {
+            "x": 256,
+            "y": 256
+          }
+        },
+        {
+          "index": 4,
+          "source": "Native-running-v1.png",
+          "sourceSha256": "06d38ad1d2a2ca2ebbe6d11df04f53e0b3fa692410fc4085053a0fddd733d289",
+          "sourceRect": [
+            512,
+            512,
+            1024,
+            1024
+          ],
+          "destinationSize": 480,
+          "offset": 16,
+          "pivot": {
+            "x": 256,
+            "y": 256
+          }
+        },
+        {
+          "index": 5,
+          "source": "Native-running-v1.png",
+          "sourceSha256": "06d38ad1d2a2ca2ebbe6d11df04f53e0b3fa692410fc4085053a0fddd733d289",
+          "sourceRect": [
+            1024,
+            512,
+            1536,
+            1024
+          ],
+          "destinationSize": 480,
+          "offset": 16,
+          "pivot": {
+            "x": 256,
+            "y": 256
+          }
+        }
+      ]
+    },
+    {
+      "id": "charge",
+      "native": "Native-charge-v2.png",
+      "nativeSha256": "8704af1cf15aa08cfb7726b76481c4fcfa176362e7bbdfbbf3a0768322f9a5a5",
+      "output": "charge-v2.png",
+      "tracks": [
+        {
+          "index": 0,
+          "source": "Native-charge-v2.png",
+          "sourceSha256": "8704af1cf15aa08cfb7726b76481c4fcfa176362e7bbdfbbf3a0768322f9a5a5",
+          "sourceRect": [
+            0,
+            0,
+            512,
+            512
+          ],
+          "destinationSize": 480,
+          "offset": 16,
+          "pivot": {
+            "x": 256,
+            "y": 256
+          }
+        },
+        {
+          "index": 1,
+          "source": "Native-charge-v2.png",
+          "sourceSha256": "8704af1cf15aa08cfb7726b76481c4fcfa176362e7bbdfbbf3a0768322f9a5a5",
+          "sourceRect": [
+            512,
+            0,
+            1024,
+            512
+          ],
+          "destinationSize": 480,
+          "offset": 16,
+          "pivot": {
+            "x": 256,
+            "y": 256
+          }
+        },
+        {
+          "index": 2,
+          "source": "Native-charge-v2.png",
+          "sourceSha256": "8704af1cf15aa08cfb7726b76481c4fcfa176362e7bbdfbbf3a0768322f9a5a5",
+          "sourceRect": [
+            1024,
+            0,
+            1536,
+            512
+          ],
+          "destinationSize": 480,
+          "offset": 16,
+          "pivot": {
+            "x": 256,
+            "y": 256
+          }
+        },
+        {
+          "index": 3,
+          "source": "Native-charge-v2.png",
+          "sourceSha256": "8704af1cf15aa08cfb7726b76481c4fcfa176362e7bbdfbbf3a0768322f9a5a5",
+          "sourceRect": [
+            0,
+            512,
+            512,
+            1024
+          ],
+          "destinationSize": 480,
+          "offset": 16,
+          "pivot": {
+            "x": 256,
+            "y": 256
+          }
+        },
+        {
+          "index": 4,
+          "source": "Native-charge-v2.png",
+          "sourceSha256": "8704af1cf15aa08cfb7726b76481c4fcfa176362e7bbdfbbf3a0768322f9a5a5",
+          "sourceRect": [
+            512,
+            512,
+            1024,
+            1024
+          ],
+          "destinationSize": 480,
+          "offset": 16,
+          "pivot": {
+            "x": 256,
+            "y": 256
+          }
+        },
+        {
+          "index": 5,
+          "source": "Native-charge-v2.png",
+          "sourceSha256": "8704af1cf15aa08cfb7726b76481c4fcfa176362e7bbdfbbf3a0768322f9a5a5",
+          "sourceRect": [
+            1024,
+            512,
+            1536,
+            1024
+          ],
+          "destinationSize": 480,
+          "offset": 16,
+          "pivot": {
+            "x": 256,
+            "y": 256
+          }
+        }
+      ]
+    },
+    {
+      "id": "attack",
+      "native": "Native-attack-v1.png",
+      "nativeSha256": "aa791ed0b160f56d0aec6874eee17aaf2b75c1d2c6e0f3225822da478701b4b0",
+      "output": "attack-v1.png",
+      "tracks": [
+        {
+          "index": 0,
+          "source": "Native-attack-v1.png",
+          "sourceSha256": "aa791ed0b160f56d0aec6874eee17aaf2b75c1d2c6e0f3225822da478701b4b0",
+          "sourceRect": [
+            0,
+            0,
+            512,
+            512
+          ],
+          "destinationSize": 480,
+          "offset": 16,
+          "pivot": {
+            "x": 256,
+            "y": 256
+          }
+        },
+        {
+          "index": 1,
+          "source": "Native-attack-v1.png",
+          "sourceSha256": "aa791ed0b160f56d0aec6874eee17aaf2b75c1d2c6e0f3225822da478701b4b0",
+          "sourceRect": [
+            512,
+            0,
+            1024,
+            512
+          ],
+          "destinationSize": 480,
+          "offset": 16,
+          "pivot": {
+            "x": 256,
+            "y": 256
+          }
+        },
+        {
+          "index": 2,
+          "source": "Native-attack-v1.png",
+          "sourceSha256": "aa791ed0b160f56d0aec6874eee17aaf2b75c1d2c6e0f3225822da478701b4b0",
+          "sourceRect": [
+            1024,
+            0,
+            1536,
+            512
+          ],
+          "destinationSize": 480,
+          "offset": 16,
+          "pivot": {
+            "x": 256,
+            "y": 256
+          }
+        },
+        {
+          "index": 3,
+          "source": "Native-attack-v1.png",
+          "sourceSha256": "aa791ed0b160f56d0aec6874eee17aaf2b75c1d2c6e0f3225822da478701b4b0",
+          "sourceRect": [
+            0,
+            512,
+            512,
+            1024
+          ],
+          "destinationSize": 480,
+          "offset": 16,
+          "pivot": {
+            "x": 256,
+            "y": 256
+          }
+        },
+        {
+          "index": 4,
+          "source": "Native-attack-v1.png",
+          "sourceSha256": "aa791ed0b160f56d0aec6874eee17aaf2b75c1d2c6e0f3225822da478701b4b0",
+          "sourceRect": [
+            512,
+            512,
+            1024,
+            1024
+          ],
+          "destinationSize": 480,
+          "offset": 16,
+          "pivot": {
+            "x": 256,
+            "y": 256
+          }
+        },
+        {
+          "index": 5,
+          "source": "Native-attack-v1.png",
+          "sourceSha256": "aa791ed0b160f56d0aec6874eee17aaf2b75c1d2c6e0f3225822da478701b4b0",
+          "sourceRect": [
+            1024,
+            512,
+            1536,
+            1024
+          ],
+          "destinationSize": 480,
+          "offset": 16,
+          "pivot": {
+            "x": 256,
+            "y": 256
+          }
+        }
+      ]
+    },
+    {
+      "id": "charge-attack",
+      "native": "Native-charge-attack-v1.png",
+      "nativeSha256": "6fb35dd8713b96442d8116e5df5fd1dc10b2e7afdcec861ffb51fa9b6e97352b",
+      "output": "charge-attack-v1.png",
+      "tracks": [
+        {
+          "index": 0,
+          "source": "Native-charge-attack-v1.png",
+          "sourceSha256": "6fb35dd8713b96442d8116e5df5fd1dc10b2e7afdcec861ffb51fa9b6e97352b",
+          "sourceRect": [
+            0,
+            0,
+            512,
+            512
+          ],
+          "destinationSize": 480,
+          "offset": 16,
+          "pivot": {
+            "x": 256,
+            "y": 256
+          }
+        },
+        {
+          "index": 1,
+          "source": "Native-charge-attack-v1.png",
+          "sourceSha256": "6fb35dd8713b96442d8116e5df5fd1dc10b2e7afdcec861ffb51fa9b6e97352b",
+          "sourceRect": [
+            512,
+            0,
+            1024,
+            512
+          ],
+          "destinationSize": 480,
+          "offset": 16,
+          "pivot": {
+            "x": 256,
+            "y": 256
+          }
+        },
+        {
+          "index": 2,
+          "source": "Native-charge-attack-v1.png",
+          "sourceSha256": "6fb35dd8713b96442d8116e5df5fd1dc10b2e7afdcec861ffb51fa9b6e97352b",
+          "sourceRect": [
+            1024,
+            0,
+            1536,
+            512
+          ],
+          "destinationSize": 480,
+          "offset": 16,
+          "pivot": {
+            "x": 256,
+            "y": 256
+          }
+        },
+        {
+          "index": 3,
+          "source": "Native-charge-attack-v1.png",
+          "sourceSha256": "6fb35dd8713b96442d8116e5df5fd1dc10b2e7afdcec861ffb51fa9b6e97352b",
+          "sourceRect": [
+            0,
+            512,
+            512,
+            1024
+          ],
+          "destinationSize": 480,
+          "offset": 16,
+          "pivot": {
+            "x": 256,
+            "y": 256
+          }
+        },
+        {
+          "index": 4,
+          "source": "Native-charge-attack-v1.png",
+          "sourceSha256": "6fb35dd8713b96442d8116e5df5fd1dc10b2e7afdcec861ffb51fa9b6e97352b",
+          "sourceRect": [
+            512,
+            512,
+            1024,
+            1024
+          ],
+          "destinationSize": 480,
+          "offset": 16,
+          "pivot": {
+            "x": 256,
+            "y": 256
+          }
+        },
+        {
+          "index": 5,
+          "source": "Native-charge-attack-v1.png",
+          "sourceSha256": "6fb35dd8713b96442d8116e5df5fd1dc10b2e7afdcec861ffb51fa9b6e97352b",
+          "sourceRect": [
+            1024,
+            512,
+            1536,
+            1024
+          ],
+          "destinationSize": 480,
+          "offset": 16,
+          "pivot": {
+            "x": 256,
+            "y": 256
+          }
+        }
+      ]
+    },
+    {
+      "id": "reload",
+      "native": "Native-reload-v1.png",
+      "nativeSha256": "2afccec8f7a46d01297e7b8a99c5dd1171d7aecae43b5e16b78ff1c9633144d0",
+      "output": "reload-v1.png",
+      "tracks": [
+        {
+          "index": 0,
+          "source": "Native-reload-v1.png",
+          "sourceSha256": "2afccec8f7a46d01297e7b8a99c5dd1171d7aecae43b5e16b78ff1c9633144d0",
+          "sourceRect": [
+            0,
+            0,
+            512,
+            512
+          ],
+          "destinationSize": 480,
+          "offset": 16,
+          "pivot": {
+            "x": 256,
+            "y": 256
+          }
+        },
+        {
+          "index": 1,
+          "source": "Native-reload-v1.png",
+          "sourceSha256": "2afccec8f7a46d01297e7b8a99c5dd1171d7aecae43b5e16b78ff1c9633144d0",
+          "sourceRect": [
+            512,
+            0,
+            1024,
+            512
+          ],
+          "destinationSize": 480,
+          "offset": 16,
+          "pivot": {
+            "x": 256,
+            "y": 256
+          }
+        },
+        {
+          "index": 2,
+          "source": "Native-reload-v1.png",
+          "sourceSha256": "2afccec8f7a46d01297e7b8a99c5dd1171d7aecae43b5e16b78ff1c9633144d0",
+          "sourceRect": [
+            1024,
+            0,
+            1536,
+            512
+          ],
+          "destinationSize": 480,
+          "offset": 16,
+          "pivot": {
+            "x": 256,
+            "y": 256
+          }
+        },
+        {
+          "index": 3,
+          "source": "Native-reload-v1.png",
+          "sourceSha256": "2afccec8f7a46d01297e7b8a99c5dd1171d7aecae43b5e16b78ff1c9633144d0",
+          "sourceRect": [
+            0,
+            512,
+            512,
+            1024
+          ],
+          "destinationSize": 480,
+          "offset": 16,
+          "pivot": {
+            "x": 256,
+            "y": 256
+          }
+        },
+        {
+          "index": 4,
+          "source": "Native-reload-v1.png",
+          "sourceSha256": "2afccec8f7a46d01297e7b8a99c5dd1171d7aecae43b5e16b78ff1c9633144d0",
+          "sourceRect": [
+            512,
+            512,
+            1024,
+            1024
+          ],
+          "destinationSize": 480,
+          "offset": 16,
+          "pivot": {
+            "x": 256,
+            "y": 256
+          }
+        },
+        {
+          "index": 5,
+          "source": "Native-reload-v1.png",
+          "sourceSha256": "2afccec8f7a46d01297e7b8a99c5dd1171d7aecae43b5e16b78ff1c9633144d0",
+          "sourceRect": [
+            1024,
+            512,
+            1536,
+            1024
+          ],
+          "destinationSize": 480,
+          "offset": 16,
+          "pivot": {
+            "x": 256,
+            "y": 256
+          }
+        }
+      ]
+    },
+    {
+      "id": "hit",
+      "native": "Native-hit-v1.png",
+      "nativeSha256": "4f3889451e8d45dc416099b33c1ef0b4fa882857365b8d0821590b56ac6518bb",
+      "output": "hit-v1.png",
+      "tracks": [
+        {
+          "index": 0,
+          "source": "Native-hit-v1.png",
+          "sourceSha256": "4f3889451e8d45dc416099b33c1ef0b4fa882857365b8d0821590b56ac6518bb",
+          "sourceRect": [
+            0,
+            0,
+            512,
+            512
+          ],
+          "destinationSize": 480,
+          "offset": 16,
+          "pivot": {
+            "x": 256,
+            "y": 256
+          }
+        },
+        {
+          "index": 1,
+          "source": "Native-hit-v1.png",
+          "sourceSha256": "4f3889451e8d45dc416099b33c1ef0b4fa882857365b8d0821590b56ac6518bb",
+          "sourceRect": [
+            512,
+            0,
+            1024,
+            512
+          ],
+          "destinationSize": 480,
+          "offset": 16,
+          "pivot": {
+            "x": 256,
+            "y": 256
+          }
+        },
+        {
+          "index": 2,
+          "source": "Native-hit-v1.png",
+          "sourceSha256": "4f3889451e8d45dc416099b33c1ef0b4fa882857365b8d0821590b56ac6518bb",
+          "sourceRect": [
+            1024,
+            0,
+            1536,
+            512
+          ],
+          "destinationSize": 480,
+          "offset": 16,
+          "pivot": {
+            "x": 256,
+            "y": 256
+          }
+        },
+        {
+          "index": 3,
+          "source": "Native-hit-v1.png",
+          "sourceSha256": "4f3889451e8d45dc416099b33c1ef0b4fa882857365b8d0821590b56ac6518bb",
+          "sourceRect": [
+            0,
+            512,
+            512,
+            1024
+          ],
+          "destinationSize": 480,
+          "offset": 16,
+          "pivot": {
+            "x": 256,
+            "y": 256
+          }
+        },
+        {
+          "index": 4,
+          "source": "Native-hit-v1.png",
+          "sourceSha256": "4f3889451e8d45dc416099b33c1ef0b4fa882857365b8d0821590b56ac6518bb",
+          "sourceRect": [
+            512,
+            512,
+            1024,
+            1024
+          ],
+          "destinationSize": 480,
+          "offset": 16,
+          "pivot": {
+            "x": 256,
+            "y": 256
+          }
+        },
+        {
+          "index": 5,
+          "source": "Native-hit-v1.png",
+          "sourceSha256": "4f3889451e8d45dc416099b33c1ef0b4fa882857365b8d0821590b56ac6518bb",
+          "sourceRect": [
+            1024,
+            512,
+            1536,
+            1024
+          ],
+          "destinationSize": 480,
+          "offset": 16,
+          "pivot": {
+            "x": 256,
+            "y": 256
+          }
+        }
+      ]
+    },
+    {
+      "id": "charged",
+      "native": "Native-charged-v1.png",
+      "nativeSha256": "f866a8f9d6f6b1c4b5a5a6a480adfd1ad7da0528cad624d57948f051ce99319c",
+      "output": "charged-v1.png",
+      "tracks": [
+        {
+          "index": 0,
+          "source": "Native-charged-v1.png",
+          "sourceSha256": "f866a8f9d6f6b1c4b5a5a6a480adfd1ad7da0528cad624d57948f051ce99319c",
+          "sourceRect": [
+            0,
+            0,
+            512,
+            512
+          ],
+          "destinationSize": 480,
+          "offset": 16,
+          "pivot": {
+            "x": 256,
+            "y": 256
+          }
+        },
+        {
+          "index": 1,
+          "source": "Native-charged-v1.png",
+          "sourceSha256": "f866a8f9d6f6b1c4b5a5a6a480adfd1ad7da0528cad624d57948f051ce99319c",
+          "sourceRect": [
+            512,
+            0,
+            1024,
+            512
+          ],
+          "destinationSize": 480,
+          "offset": 16,
+          "pivot": {
+            "x": 256,
+            "y": 256
+          }
+        },
+        {
+          "index": 2,
+          "source": "Native-charged-v1.png",
+          "sourceSha256": "f866a8f9d6f6b1c4b5a5a6a480adfd1ad7da0528cad624d57948f051ce99319c",
+          "sourceRect": [
+            1024,
+            0,
+            1536,
+            512
+          ],
+          "destinationSize": 480,
+          "offset": 16,
+          "pivot": {
+            "x": 256,
+            "y": 256
+          }
+        },
+        {
+          "index": 3,
+          "source": "Native-charged-v1.png",
+          "sourceSha256": "f866a8f9d6f6b1c4b5a5a6a480adfd1ad7da0528cad624d57948f051ce99319c",
+          "sourceRect": [
+            0,
+            512,
+            512,
+            1024
+          ],
+          "destinationSize": 480,
+          "offset": 16,
+          "pivot": {
+            "x": 256,
+            "y": 256
+          }
+        },
+        {
+          "index": 4,
+          "source": "Native-charged-v1.png",
+          "sourceSha256": "f866a8f9d6f6b1c4b5a5a6a480adfd1ad7da0528cad624d57948f051ce99319c",
+          "sourceRect": [
+            512,
+            512,
+            1024,
+            1024
+          ],
+          "destinationSize": 480,
+          "offset": 16,
+          "pivot": {
+            "x": 256,
+            "y": 256
+          }
+        },
+        {
+          "index": 5,
+          "source": "Native-charged-v1.png",
+          "sourceSha256": "f866a8f9d6f6b1c4b5a5a6a480adfd1ad7da0528cad624d57948f051ce99319c",
+          "sourceRect": [
+            1024,
+            512,
+            1536,
+            1024
+          ],
+          "destinationSize": 480,
+          "offset": 16,
+          "pivot": {
+            "x": 256,
+            "y": 256
+          }
+        }
+      ]
+    },
+    {
+      "id": "death",
+      "native": "Native-death-v2.png",
+      "nativeSha256": "913f3f9a770ee5c73015107ec100bbe445a270ca5dd0f6a6a36e3dd45475b644",
+      "output": "death-v2.png",
+      "tracks": [
+        {
+          "index": 0,
+          "source": "Native-death-v2.png",
+          "sourceSha256": "913f3f9a770ee5c73015107ec100bbe445a270ca5dd0f6a6a36e3dd45475b644",
+          "sourceRect": [
+            0,
+            0,
+            512,
+            512
+          ],
+          "destinationSize": 480,
+          "offset": 16,
+          "pivot": {
+            "x": 256,
+            "y": 256
+          }
+        },
+        {
+          "index": 1,
+          "source": "Native-death-v2.png",
+          "sourceSha256": "913f3f9a770ee5c73015107ec100bbe445a270ca5dd0f6a6a36e3dd45475b644",
+          "sourceRect": [
+            512,
+            0,
+            1024,
+            512
+          ],
+          "destinationSize": 480,
+          "offset": 16,
+          "pivot": {
+            "x": 256,
+            "y": 256
+          }
+        },
+        {
+          "index": 2,
+          "source": "Native-death-v2.png",
+          "sourceSha256": "913f3f9a770ee5c73015107ec100bbe445a270ca5dd0f6a6a36e3dd45475b644",
+          "sourceRect": [
+            1024,
+            0,
+            1536,
+            512
+          ],
+          "destinationSize": 480,
+          "offset": 16,
+          "pivot": {
+            "x": 256,
+            "y": 256
+          }
+        },
+        {
+          "index": 3,
+          "source": "Native-death-v2.png",
+          "sourceSha256": "913f3f9a770ee5c73015107ec100bbe445a270ca5dd0f6a6a36e3dd45475b644",
+          "sourceRect": [
+            0,
+            512,
+            512,
+            1024
+          ],
+          "destinationSize": 480,
+          "offset": 16,
+          "pivot": {
+            "x": 256,
+            "y": 256
+          }
+        },
+        {
+          "index": 4,
+          "source": "Native-death-v2.png",
+          "sourceSha256": "913f3f9a770ee5c73015107ec100bbe445a270ca5dd0f6a6a36e3dd45475b644",
+          "sourceRect": [
+            512,
+            512,
+            1024,
+            1024
+          ],
+          "destinationSize": 480,
+          "offset": 16,
+          "pivot": {
+            "x": 256,
+            "y": 256
+          }
+        },
+        {
+          "index": 5,
+          "source": "Native-death-v2.png",
+          "sourceSha256": "913f3f9a770ee5c73015107ec100bbe445a270ca5dd0f6a6a36e3dd45475b644",
+          "sourceRect": [
+            1024,
+            512,
+            1536,
+            1024
+          ],
+          "destinationSize": 480,
+          "offset": 16,
+          "pivot": {
+            "x": 256,
+            "y": 256
+          }
+        }
+      ]
+    },
+    {
+      "id": "death-back",
+      "native": "Native-death-back-v2.png",
+      "nativeSha256": "75e0bf0b8a722af061965a7714ff769080b38dd8e10bf58b16ce9bd3c0697479",
+      "output": "death-back-v2.png",
+      "tracks": [
+        {
+          "index": 0,
+          "source": "Native-death-back-v2.png",
+          "sourceSha256": "75e0bf0b8a722af061965a7714ff769080b38dd8e10bf58b16ce9bd3c0697479",
+          "sourceRect": [
+            0,
+            0,
+            512,
+            512
+          ],
+          "destinationSize": 480,
+          "offset": 16,
+          "pivot": {
+            "x": 256,
+            "y": 256
+          }
+        },
+        {
+          "index": 1,
+          "source": "Native-death-back-v2.png",
+          "sourceSha256": "75e0bf0b8a722af061965a7714ff769080b38dd8e10bf58b16ce9bd3c0697479",
+          "sourceRect": [
+            512,
+            0,
+            1024,
+            512
+          ],
+          "destinationSize": 480,
+          "offset": 16,
+          "pivot": {
+            "x": 256,
+            "y": 256
+          }
+        },
+        {
+          "index": 2,
+          "source": "Native-death-back-v2.png",
+          "sourceSha256": "75e0bf0b8a722af061965a7714ff769080b38dd8e10bf58b16ce9bd3c0697479",
+          "sourceRect": [
+            1024,
+            0,
+            1536,
+            512
+          ],
+          "destinationSize": 480,
+          "offset": 16,
+          "pivot": {
+            "x": 256,
+            "y": 256
+          }
+        },
+        {
+          "index": 3,
+          "source": "Native-death-back-v2.png",
+          "sourceSha256": "75e0bf0b8a722af061965a7714ff769080b38dd8e10bf58b16ce9bd3c0697479",
+          "sourceRect": [
+            0,
+            512,
+            512,
+            1024
+          ],
+          "destinationSize": 480,
+          "offset": 16,
+          "pivot": {
+            "x": 256,
+            "y": 256
+          }
+        },
+        {
+          "index": 4,
+          "source": "Native-death-back-v2.png",
+          "sourceSha256": "75e0bf0b8a722af061965a7714ff769080b38dd8e10bf58b16ce9bd3c0697479",
+          "sourceRect": [
+            512,
+            512,
+            1024,
+            1024
+          ],
+          "destinationSize": 480,
+          "offset": 16,
+          "pivot": {
+            "x": 256,
+            "y": 256
+          }
+        },
+        {
+          "index": 5,
+          "source": "Native-death-back-v2.png",
+          "sourceSha256": "75e0bf0b8a722af061965a7714ff769080b38dd8e10bf58b16ce9bd3c0697479",
+          "sourceRect": [
+            1024,
+            512,
+            1536,
+            1024
+          ],
+          "destinationSize": 480,
+          "offset": 16,
+          "pivot": {
+            "x": 256,
+            "y": 256
+          }
+        }
+      ]
+    }
+  ]
+}

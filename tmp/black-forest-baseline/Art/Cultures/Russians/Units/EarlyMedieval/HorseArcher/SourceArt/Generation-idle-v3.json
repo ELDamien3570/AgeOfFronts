@@ -1,0 +1,11 @@
+{
+  "id": "idle",
+  "file": "Idle-v3.png",
+  "prompt": "EDIT reference1 armored mounted archer: keep SAME ironlamellar vest, short iron shoulder lamellae, reinforcedbracers, redcloth sleeves/kaftan, fur-edgeddarkcap, bowLEFT screenRIGHT, reinsRIGHT screenLEFT, unarmoredhorse equipment materials. CHANGE CAMERA ONLY much higher to a TRUE ZENITH VERTICAL OVERHEAD view lookingstraightdown from directly above saddle. Reference2 ONLY gives higher camera guidance; absolutely do not copy its heavy armor, armoredhorse or lance. In reference1 too much broad FRONT CHEST, fronts ofboots and long muzzle is shown. New pose must show broad round TOP cap crown, top shoulders and UPPER BACK lamellar, much shorter foreshortened torso; front chest plate panel mostly hidden below cap and shoulders. Knees/boots foreshortened small at sides not frontal tall shins. Horse head nose foreshortened from above, see ears tophead not frontal face. Increase visiblehorseBACK behindrider. Rider stilluprightnormal not hunchedover, camera elevated not leaningbody. NoseDOWN tailTOP. Entire horse rider bowtail inframe generousmargins. Same size1024x1536portrait nativeRGBAalpha0 background no gradientsgroundshadowhaze text. Preserve bow stringinside besidearm straighttip-to-tip. ONEidleframe.",
+  "generatedSource": "C:\\Users\\Damien\\.codex\\generated_images\\01a11641-9e1b-7c81-be76-c9edd53ef182\\exec-7cf1bf05-e288-4483-964a-1991e777ff1d.png",
+  "references": [
+    "Generation-idle-v2.json",
+    "EarlyMedieval/Druzhina/Idle-v3.png"
+  ],
+  "status": "higher-overhead-camera-revision"
+}

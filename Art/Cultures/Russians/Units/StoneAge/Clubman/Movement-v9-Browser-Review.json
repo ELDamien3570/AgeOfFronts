@@ -1,0 +1,50 @@
+{
+  "url": "http://127.0.0.1:9007/Cultures/Russians/Units/StoneAge/Clubman/Actor_Review.html?revision=stylized-movement-v9#running",
+  "frames": [
+    {
+      "frame": 0,
+      "visible": 50744,
+      "cornerAlpha": 0
+    },
+    {
+      "frame": 1,
+      "visible": 51487,
+      "cornerAlpha": 0
+    },
+    {
+      "frame": 2,
+      "visible": 52963,
+      "cornerAlpha": 0
+    },
+    {
+      "frame": 3,
+      "visible": 50808,
+      "cornerAlpha": 0
+    },
+    {
+      "frame": 4,
+      "visible": 53649,
+      "cornerAlpha": 0
+    },
+    {
+      "frame": 5,
+      "visible": 52264,
+      "cornerAlpha": 0
+    }
+  ],
+  "samples": [
+    0,
+    1,
+    2,
+    3,
+    4,
+    5,
+    5,
+    0,
+    1,
+    2,
+    3,
+    4
+  ],
+  "errors": []
+}

@@ -1,0 +1,52 @@
+{
+  "httpChecks": [
+    {
+      "file": "Actor_Review.html",
+      "status": 200
+    },
+    {
+      "file": "animations.json",
+      "status": 200
+    },
+    {
+      "file": "idle-Registered-v1.png",
+      "status": 200
+    },
+    {
+      "file": "walk-Steady-v2.png",
+      "status": 200
+    },
+    {
+      "file": "charge-Registered-v1.png",
+      "status": 200
+    },
+    {
+      "file": "attack-Steady-v2.png",
+      "status": 200
+    },
+    {
+      "file": "charge-attack-Steady-v2.png",
+      "status": 200
+    },
+    {
+      "file": "hit-Steady-v2.png",
+      "status": 200
+    },
+    {
+      "file": "charged-impact-Steady-v2.png",
+      "status": 200
+    },
+    {
+      "file": "death-Registered-v1.png",
+      "status": 200
+    },
+    {
+      "file": "death-thrown-Registered-v1.png",
+      "status": 200
+    }
+  ],
+  "nativeAtlasesInspected": true,
+  "browserPlaybackVerified": false,
+  "userApproval": "Steadier five clips pending visual review",
+  "runtimeIntegration": false
+}

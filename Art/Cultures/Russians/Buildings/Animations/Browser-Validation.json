@@ -1,0 +1,53 @@
+{
+  "date": "2026-10-07",
+  "passed": true,
+  "method": "Separate local headless Edge",
+  "directionChecks": [
+    {
+      "facing": "N",
+      "loadedWeapons": 4,
+      "animatedCanvases": 4,
+      "distinctFramePixels": true
+    },
+    {
+      "facing": "E",
+      "loadedWeapons": 4,
+      "animatedCanvases": 4,
+      "distinctFramePixels": true
+    },
+    {
+      "facing": "S",
+      "loadedWeapons": 4,
+      "animatedCanvases": 4,
+      "distinctFramePixels": true
+    },
+    {
+      "facing": "W",
+      "loadedWeapons": 4,
+      "animatedCanvases": 4,
+      "distinctFramePixels": true
+    }
+  ],
+  "ageAndWeaponFilters": true,
+  "playbackChangesPixels": true,
+  "pauseStopsPlayback": true,
+  "scrubAndRestart": true,
+  "livePreviewSizes": [
+    48,
+    64,
+    128
+  ],
+  "backgrounds": [
+    "checker",
+    "light",
+    "dark"
+  ],
+  "galleryLinks": [
+    "http://127.0.0.1:9000/Art/Cultures/Russians/Buildings/Animations/Review.html?age=Modern&weapon=Gun%20Nest",
+    "http://127.0.0.1:9000/Art/Cultures/Russians/Buildings/Animations/Review.html?age=EarlyModern&weapon=Gun%20Nest",
+    "http://127.0.0.1:9000/Art/Cultures/Russians/Buildings/Animations/Review.html?age=EarlyModern&weapon=Anti-Aircraft%20Emplacement",
+    "http://127.0.0.1:9000/Art/Cultures/Russians/Buildings/Animations/Review.html?age=Modern&weapon=Anti-Aircraft%20Emplacement"
+  ],
+  "pageErrors": [],
+  "scope": "Local art review only; no gameplay integration or user artistic approval"
+}

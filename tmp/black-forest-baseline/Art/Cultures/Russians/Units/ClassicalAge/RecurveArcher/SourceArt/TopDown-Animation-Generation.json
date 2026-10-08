@@ -1,0 +1,189 @@
+{
+  "records": [
+    {
+      "id": "idle",
+      "file": "idle-v1.png",
+      "nativeFile": "Native-TopDown-idle-v1.png",
+      "generatedSource": "C:/Users/Damien/.codex/generated_images/01a1166c-83ee-7ae0-be97-78c470de8962/exec-d86dbf9a-47df-4e8d-97f1-547925f44645.png",
+      "prompt": "Usecase strategy game sprite animation. Image1 approved Russian ClassicalAge RecurveArcher idle. EXACTLY6frames on1536x1024 transparent PNG3columns2rows, every512cellcontainswholepose with80pxEMPTYtransparentmargin, whole actor+bowequipment maximum350widthheight. NOgridlabels panels backdropfloor shadows blood. Keep STRICT90degreeVERTICALoverheadcamera in allstandingposes: ironhelmetcrown centeredinsidebroadironpauldron/furmass that hides torso, onlytinyboot tops. Same hammeredearlyironhelmet platesbracers/segmentedcuirass overredbrownleather creamfurcollar lightlinenpants darkboots backquiver, same recurvebowwoodlimbs ivoryhorncurvedtips leathermidgrip and ironheadarrows, noshield. Samecharacterscaleandanatomy, onebowonearrowonebowstring. Six subtly different breathing poses. Boots planted. Recurve bow carried low along screen-right side, loose straight arrow held separately in screenleft hand. No chestturn/lateral sway.",
+      "action": "Six subtly different breathing poses. Boots planted. Recurve bow carried low along screen-right side, loose straight arrow held separately in screenleft hand. No chestturn/lateral sway.",
+      "status": "selected-source"
+    },
+    {
+      "id": "running",
+      "file": "running-v1.png",
+      "nativeFile": "Native-TopDown-running-v1.png",
+      "generatedSource": "C:/Users/Damien/.codex/generated_images/01a1166c-83ee-7ae0-be97-78c470de8962/exec-c7b4f9a5-2ca8-42cb-b65d-46e9840d13d7.png",
+      "prompt": "Usecase strategy game sprite animation. Image1 approved Russian ClassicalAge RecurveArcher idle. EXACTLY6frames on1536x1024 transparent PNG3columns2rows, every512cellcontainswholepose with80pxEMPTYtransparentmargin, whole actor+bowequipment maximum350widthheight. NOgridlabels panels backdropfloor shadows blood. Keep STRICT90degreeVERTICALoverheadcamera in allstandingposes: ironhelmetcrown centeredinsidebroadironpauldron/furmass that hides torso, onlytinyboot tops. Same hammeredearlyironhelmet platesbracers/segmentedcuirass overredbrownleather creamfurcollar lightlinenpants darkboots backquiver, same recurvebowwoodlimbs ivoryhorncurvedtips leathermidgrip and ironheadarrows, noshield. Samecharacterscaleandanatomy, onebowonearrowonebowstring. Six WALK poses. Frame1 SCREEN RIGHT BOOT leads below shoulder and screenLEFT tucked;2feetlevel;3SCREENLEFTboot leads below shoulder and SCREENRIGHT tucked;4feetlevel;5SCREENRIGHTleads;6feetlevel. Short alternatingstrides, thighsmostlyhidden by shoulders. Bow and arrow carried low separately, rigidbow moveswithleftgrip.",
+      "action": "Six WALK poses. Frame1 SCREEN RIGHT BOOT leads below shoulder and screenLEFT tucked;2feetlevel;3SCREENLEFTboot leads below shoulder and SCREENRIGHT tucked;4feetlevel;5SCREENRIGHTleads;6feetlevel. Short alternatingstrides, thighsmostlyhidden by shoulders. Bow and arrow carried low separately, rigidbow moveswithleftgrip.",
+      "status": "selected-source"
+    },
+    {
+      "id": "attack",
+      "file": "attack-v1.png",
+      "nativeFile": "Native-TopDown-attack-v1.png",
+      "generatedSource": "C:/Users/Damien/.codex/generated_images/01a1166c-83ee-7ae0-be97-78c470de8962/exec-dcba425c-fd94-4cf9-9970-b3126695def0.png",
+      "prompt": "Usecase strategy game sprite animation. Image1 approved Russian ClassicalAge RecurveArcher idle. EXACTLY6frames on1536x1024 transparent PNG3columns2rows, every512cellcontainswholepose with80pxEMPTYtransparentmargin, whole actor+bowequipment maximum350widthheight. NOgridlabels panels backdropfloor shadows blood. Keep STRICT90degreeVERTICALoverheadcamera in allstandingposes: ironhelmetcrown centeredinsidebroadironpauldron/furmass that hides torso, onlytinyboot tops. Same hammeredearlyironhelmet platesbracers/segmentedcuirass overredbrownleather creamfurcollar lightlinenpants darkboots backquiver, same recurvebowwoodlimbs ivoryhorncurvedtips leathermidgrip and ironheadarrows, noshield. Samecharacterscaleandanatomy, onebowonearrowonebowstring. Six forward BOW SHOT stages, aim exactly SCREENBOTTOM.1idlelowcarry withloosearrow,2nock and turnchestopen/rightfootmodestlyback,3full draw,4release,5emptybowfollowthrough,6lowerEMPTYbow. Full draw has bow grip, straight arrow shaft, nock and right drawing fingertips ALIGNED on SAME vertical aiming line NEXT TO helmet, not throughhead. Rightfingers hold rear arrowNOCK, stringvertex touches SAME exact nock. ONLY two taut stringsegments bowtip->nock->bowtip, no restingstring acrossbow at full draw. Rightelbow back, leftarm extendedtowardbottom. Bowplane upright slightlytilted, stringpassesBEHINDarm and no lineonforearm. One rigid recurve bow both curved horn tips visible, no duplicatebow. Arrow disappears afterrelease, reloadseparate.",
+      "action": "Six forward BOW SHOT stages, aim exactly SCREENBOTTOM.1idlelowcarry withloosearrow,2nock and turnchestopen/rightfootmodestlyback,3full draw,4release,5emptybowfollowthrough,6lowerEMPTYbow. Full draw has bow grip, straight arrow shaft, nock and right drawing fingertips ALIGNED on SAME vertical aiming line NEXT TO helmet, not throughhead. Rightfingers hold rear arrowNOCK, stringvertex touches SAME exact nock. ONLY two taut stringsegments bowtip->nock->bowtip, no restingstring acrossbow at full draw. Rightelbow back, leftarm extendedtowardbottom. Bowplane upright slightlytilted, stringpassesBEHINDarm and no lineonforearm. One rigid recurve bow both curved horn tips visible, no duplicatebow. Arrow disappears afterrelease, reloadseparate.",
+      "status": "superseded-draft"
+    },
+    {
+      "id": "charge-attack",
+      "file": "charge-attack-v1.png",
+      "nativeFile": "Native-TopDown-charge-attack-v1.png",
+      "generatedSource": "C:/Users/Damien/.codex/generated_images/01a1166c-83ee-7ae0-be97-78c470de8962/exec-a3304b1d-a930-4f91-b69e-1bf4ec55cf23.png",
+      "prompt": "Usecase strategy game sprite animation. Image1 approved Russian ClassicalAge RecurveArcher idle. EXACTLY6frames on1536x1024 transparent PNG3columns2rows, every512cellcontainswholepose with80pxEMPTYtransparentmargin, whole actor+bowequipment maximum350widthheight. NOgridlabels panels backdropfloor shadows blood. Keep STRICT90degreeVERTICALoverheadcamera in allstandingposes: ironhelmetcrown centeredinsidebroadironpauldron/furmass that hides torso, onlytinyboot tops. Same hammeredearlyironhelmet platesbracers/segmentedcuirass overredbrownleather creamfurcollar lightlinenpants darkboots backquiver, same recurvebowwoodlimbs ivoryhorncurvedtips leathermidgrip and ironheadarrows, noshield. Samecharacterscaleandanatomy, onebowonearrowonebowstring. Advance then plant and shoot SCREENBOTTOM.1advance lowbow/loosearrow,2brakeplant and nockturnbody,3fulldraw,4release,5emptybowfollowthrough,6lowerEMPTYbow. Full draw rearARROWNOCK is physically graspedbyRIGHTfingertips at SAMEpoint as pulledstringvertex. Bowgrip,arrowshaft,nock,anddrawinghand all SAMEvertical aimingline besidehelmet. Two tautstringsegments only, reststringdisappearswhile drawn. One recurvebow retained rigidly no separatelymovinglimb. Stringbehindshootingarm. Arrowstraight,notdiagonalshot.",
+      "action": "Advance then plant and shoot SCREENBOTTOM.1advance lowbow/loosearrow,2brakeplant and nockturnbody,3fulldraw,4release,5emptybowfollowthrough,6lowerEMPTYbow. Full draw rearARROWNOCK is physically graspedbyRIGHTfingertips at SAMEpoint as pulledstringvertex. Bowgrip,arrowshaft,nock,anddrawinghand all SAMEvertical aimingline besidehelmet. Two tautstringsegments only, reststringdisappearswhile drawn. One recurvebow retained rigidly no separatelymovinglimb. Stringbehindshootingarm. Arrowstraight,notdiagonalshot.",
+      "status": "selected-source",
+      "cellSources": {
+        "1": "Native-TopDown-attack-v2.png",
+        "2": "Native-TopDown-attack-v2.png",
+        "3": "Native-TopDown-attack-v2.png",
+        "4": "Native-TopDown-attack-v2.png",
+        "5": "Native-TopDown-attack-v1.png"
+      },
+      "compositionReason": "Advance into corrected nocking/draw/release, end with emptybow. No sideways or duplicate arrows."
+    },
+    {
+      "id": "reload",
+      "file": "reload-v1.png",
+      "nativeFile": "Native-TopDown-reload-v1.png",
+      "generatedSource": "C:/Users/Damien/.codex/generated_images/01a1166c-83ee-7ae0-be97-78c470de8962/exec-d1d8e53a-3b8d-42ae-ae5b-cbc21b3396bb.png",
+      "prompt": "Usecase strategy game sprite animation. Image1 approved Russian ClassicalAge RecurveArcher idle. EXACTLY6frames on1536x1024 transparent PNG3columns2rows, every512cellcontainswholepose with80pxEMPTYtransparentmargin, whole actor+bowequipment maximum350widthheight. NOgridlabels panels backdropfloor shadows blood. Keep STRICT90degreeVERTICALoverheadcamera in allstandingposes: ironhelmetcrown centeredinsidebroadironpauldron/furmass that hides torso, onlytinyboot tops. Same hammeredearlyironhelmet platesbracers/segmentedcuirass overredbrownleather creamfurcollar lightlinenpants darkboots backquiver, same recurvebowwoodlimbs ivoryhorncurvedtips leathermidgrip and ironheadarrows, noshield. Samecharacterscaleandanatomy, onebowonearrowonebowstring. Six separate ARROW RELOAD stages.1emptybowlow,2righthandreachesbackquiver,3griponearrowfletching,4extractstraightarrow,5lowerarrowinrightscreenlefthand,6idlelowcarrywithnewloosearrowpointdown. Lefthandholdsbow throughout, don't changebowgeometry. One stringconnectstips, behindarms noclipping.",
+      "action": "Six separate ARROW RELOAD stages.1emptybowlow,2righthandreachesbackquiver,3griponearrowfletching,4extractstraightarrow,5lowerarrowinrightscreenlefthand,6idlelowcarrywithnewloosearrowpointdown. Lefthandholdsbow throughout, don't changebowgeometry. One stringconnectstips, behindarms noclipping.",
+      "status": "superseded-draft"
+    },
+    {
+      "id": "hit",
+      "file": "hit-v1.png",
+      "nativeFile": "Native-TopDown-hit-v1.png",
+      "generatedSource": "C:/Users/Damien/.codex/generated_images/01a1166c-83ee-7ae0-be97-78c470de8962/exec-ed1863ad-928f-4492-a1c2-3014cf40f591.png",
+      "prompt": "Usecase strategy game sprite animation. Image1 approved Russian ClassicalAge RecurveArcher idle. EXACTLY6frames on1536x1024 transparent PNG3columns2rows, every512cellcontainswholepose with80pxEMPTYtransparentmargin, whole actor+bowequipment maximum350widthheight. NOgridlabels panels backdropfloor shadows blood. Keep STRICT90degreeVERTICALoverheadcamera in allstandingposes: ironhelmetcrown centeredinsidebroadironpauldron/furmass that hides torso, onlytinyboot tops. Same hammeredearlyironhelmet platesbracers/segmentedcuirass overredbrownleather creamfurcollar lightlinenpants darkboots backquiver, same recurvebowwoodlimbs ivoryhorncurvedtips leathermidgrip and ironheadarrows, noshield. Samecharacterscaleandanatomy, onebowonearrowonebowstring. Light impact sixposes standing,flinch,kneesbend,recoil,recover,standing. Retain bow/arrow, nofiring effects.",
+      "action": "Light impact sixposes standing,flinch,kneesbend,recoil,recover,standing. Retain bow/arrow, nofiring effects.",
+      "status": "selected-source"
+    },
+    {
+      "id": "charged",
+      "file": "charged-v1.png",
+      "nativeFile": "Native-TopDown-charged-v1.png",
+      "generatedSource": "C:/Users/Damien/.codex/generated_images/01a1166c-83ee-7ae0-be97-78c470de8962/exec-848e5e48-ff3a-4e98-ae5e-715e34284eb6.png",
+      "prompt": "Usecase strategy game sprite animation. Image1 approved Russian ClassicalAge RecurveArcher idle. EXACTLY6frames on1536x1024 transparent PNG3columns2rows, every512cellcontainswholepose with80pxEMPTYtransparentmargin, whole actor+bowequipment maximum350widthheight. NOgridlabels panels backdropfloor shadows blood. Keep STRICT90degreeVERTICALoverheadcamera in allstandingposes: ironhelmetcrown centeredinsidebroadironpauldron/furmass that hides torso, onlytinyboot tops. Same hammeredearlyironhelmet platesbracers/segmentedcuirass overredbrownleather creamfurcollar lightlinenpants darkboots backquiver, same recurvebowwoodlimbs ivoryhorncurvedtips leathermidgrip and ironheadarrows, noshield. Samecharacterscaleandanatomy, onebowonearrowonebowstring. Heavy chargeimpact sixposes stand,backwardrecoil,stumblekneesbuckle,bracebalance,recover,stand. Keep connected limbs, bowandarrow retained. NOwhitegridpanel lines, no effects.",
+      "action": "Heavy chargeimpact sixposes stand,backwardrecoil,stumblekneesbuckle,bracebalance,recover,stand. Keep connected limbs, bowandarrow retained. NOwhitegridpanel lines, no effects.",
+      "status": "superseded-draft"
+    },
+    {
+      "id": "death",
+      "file": "death-v1.png",
+      "nativeFile": "Native-TopDown-death-v1.png",
+      "generatedSource": "C:/Users/Damien/.codex/generated_images/01a1166c-83ee-7ae0-be97-78c470de8962/exec-fbdfdcb1-11f2-4a85-8411-470ec7a07b9c.png",
+      "prompt": "Usecase strategy game sprite animation. Image1 approved Russian ClassicalAge RecurveArcher idle. EXACTLY6frames on1536x1024 transparent PNG3columns2rows, every512cellcontainswholepose with80pxEMPTYtransparentmargin, whole actor+bowequipment maximum350widthheight. NOgridlabels panels backdropfloor shadows blood. Keep STRICT90degreeVERTICALoverheadcamera in allstandingposes: ironhelmetcrown centeredinsidebroadironpauldron/furmass that hides torso, onlytinyboot tops. Same hammeredearlyironhelmet platesbracers/segmentedcuirass overredbrownleather creamfurcollar lightlinenpants darkboots backquiver, same recurvebowwoodlimbs ivoryhorncurvedtips leathermidgrip and ironheadarrows, noshield. Samecharacterscaleandanatomy, onebowonearrowonebowstring. Six SIDE DEATH stages standing,kneebuckle,tipside,landonside,settlesidecorpse,stillcorpse. Final3 fullbodylyingonSIDE withHEAD SCREENRIGHT BOOTS SCREENLEFT always, legsfromhips bentkneesextendleft, torso ironsegmentedcuirass over leather visible lyingdown, no merelyrotatedstandingshoulders. Bowandstraightarrow dropped besidebody. No blood.",
+      "action": "Six SIDE DEATH stages standing,kneebuckle,tipside,landonside,settlesidecorpse,stillcorpse. Final3 fullbodylyingonSIDE withHEAD SCREENRIGHT BOOTS SCREENLEFT always, legsfromhips bentkneesextendleft, torso ironsegmentedcuirass over leather visible lyingdown, no merelyrotatedstandingshoulders. Bowandstraightarrow dropped besidebody. No blood.",
+      "status": "selected-source"
+    },
+    {
+      "id": "death-back",
+      "file": "death-back-v1.png",
+      "nativeFile": "Native-TopDown-death-back-v1.png",
+      "generatedSource": "C:/Users/Damien/.codex/generated_images/01a1166c-83ee-7ae0-be97-78c470de8962/exec-5f016c80-b340-45ba-b7e5-56ced455ecab.png",
+      "prompt": "Usecase strategy game sprite animation. Image1 approved Russian ClassicalAge RecurveArcher idle. EXACTLY6frames on1536x1024 transparent PNG3columns2rows, every512cellcontainswholepose with80pxEMPTYtransparentmargin, whole actor+bowequipment maximum350widthheight. NOgridlabels panels backdropfloor shadows blood. Keep STRICT90degreeVERTICALoverheadcamera in allstandingposes: ironhelmetcrown centeredinsidebroadironpauldron/furmass that hides torso, onlytinyboot tops. Same hammeredearlyironhelmet platesbracers/segmentedcuirass overredbrownleather creamfurcollar lightlinenpants darkboots backquiver, same recurvebowwoodlimbs ivoryhorncurvedtips leathermidgrip and ironheadarrows, noshield. Samecharacterscaleandanatomy, onebowonearrowonebowstring. Six BACK DEATH stages stand,recoil,kneesbuckleback,fallontoBACK,settlesupine,stillcorpse. Last3 HEADTOP FEETBOTTOM continuouslynoflip. Fullbodylyingground ironcuirass leathertorso belt pants visible, armsbesidebody. Dropbowandarrow. NO BLOOD noattackeffects.",
+      "action": "Six BACK DEATH stages stand,recoil,kneesbuckleback,fallontoBACK,settlesupine,stillcorpse. Last3 HEADTOP FEETBOTTOM continuouslynoflip. Fullbodylyingground ironcuirass leathertorso belt pants visible, armsbesidebody. Dropbowandarrow. NO BLOOD noattackeffects.",
+      "status": "selected-source"
+    },
+    {
+      "id": "charge",
+      "file": "charge-v1.png",
+      "nativeFile": "Native-TopDown-running-v1.png",
+      "generatedSource": "C:/Users/Damien/.codex/generated_images/01a1166c-83ee-7ae0-be97-78c470de8962/exec-c7b4f9a5-2ca8-42cb-b65d-46e9840d13d7.png",
+      "prompt": "Usecase strategy game sprite animation. Image1 approved Russian ClassicalAge RecurveArcher idle. EXACTLY6frames on1536x1024 transparent PNG3columns2rows, every512cellcontainswholepose with80pxEMPTYtransparentmargin, whole actor+bowequipment maximum350widthheight. NOgridlabels panels backdropfloor shadows blood. Keep STRICT90degreeVERTICALoverheadcamera in allstandingposes: ironhelmetcrown centeredinsidebroadironpauldron/furmass that hides torso, onlytinyboot tops. Same hammeredearlyironhelmet platesbracers/segmentedcuirass overredbrownleather creamfurcollar lightlinenpants darkboots backquiver, same recurvebowwoodlimbs ivoryhorncurvedtips leathermidgrip and ironheadarrows, noshield. Samecharacterscaleandanatomy, onebowonearrowonebowstring. Six WALK poses. Frame1 SCREEN RIGHT BOOT leads below shoulder and screenLEFT tucked;2feetlevel;3SCREENLEFTboot leads below shoulder and SCREENRIGHT tucked;4feetlevel;5SCREENRIGHTleads;6feetlevel. Short alternatingstrides, thighsmostlyhidden by shoulders. Bow and arrow carried low separately, rigidbow moveswithleftgrip.",
+      "action": "Fast alternating-foot charge run with equipment carried low.",
+      "status": "selected-source",
+      "compositionReason": "Walk poses at faster cadence."
+    },
+    {
+      "id": "attack",
+      "file": "attack-v2.png",
+      "nativeFile": "Native-TopDown-attack-v2.png",
+      "generatedSource": "C:/Users/Damien/.codex/generated_images/01a1166c-83ee-7ae0-be97-78c470de8962/exec-1af240c3-8c9d-4aca-8962-1f70f8f78958.png",
+      "prompt": "Image1 is IDENTITY and equipment reference: strict directlyoverhead Russian classical ironarmored RecurveArcher. Image2 is ONLY sixpose shooting MOTION reference. Make one transparent1536x1024 3x2sixframe sheet of image1character using exact image2 shootingbody/arm choreography. Keep image1 ironhelmetpauldronsbracers fur redleather quiver and RECURREDBOW horncurvedtips, no bronzeequipment. Frame1lowcarry,2nocking,3full draw,4release,5emptybowfollowthrough,6emptylowbow. Full draw arrow aimed STRAIGHTSCREENBOTTOM, arrow rearNOCK/rightdrawingFINGERTIPS/STRINGVERTEX all ONE point at SAMEverticalaxis as straightarrowshaft/bowgrip. Aiminglane besidehelmet notthroughhead. ONEarrow only, nohorizontaladditionalarrow. Twotautstringsegments bowtipstonock only, nostringthroughforearm, stringbehindarm. Match rigidbowgeometry allframes. Entireposeweaponsmaximum350pxinsideeach512cell with80pxEMPTYtransparentmargin. NO floor background shadows grid labels.",
+      "references": [
+        "C:/Users/Damien/Documents/GitHub/AgeOfFronts/AgeOfFronts/Art/Cultures/Russians/Units/ClassicalAge/RecurveArcher/SourceArt/Native-Idle-TopDown-v3.png",
+        "C:/Users/Damien/Documents/GitHub/AgeOfFronts/AgeOfFronts/Art/Cultures/Russians/Units/BronzeAge/RiverArcher/TopDownReview/attack-v3.png"
+      ],
+      "status": "selected-source",
+      "action": "Six forward BOW SHOT stages, aim exactly SCREENBOTTOM.1idlelowcarry withloosearrow,2nock and turnchestopen/rightfootmodestlyback,3full draw,4release,5emptybowfollowthrough,6lowerEMPTYbow. Full draw has bow grip, straight arrow shaft, nock and right drawing fingertips ALIGNED on SAME vertical aiming line NEXT TO helmet, not throughhead. Rightfingers hold rear arrowNOCK, stringvertex touches SAME exact nock. ONLY two taut stringsegments bowtip->nock->bowtip, no restingstring acrossbow at full draw. Rightelbow back, leftarm extendedtowardbottom. Bowplane upright slightlytilted, stringpassesBEHINDarm and no lineonforearm. One rigid recurve bow both curved horn tips visible, no duplicatebow. Arrow disappears afterrelease, reloadseparate.",
+      "cellSources": {
+        "0": "Native-TopDown-attack-v1.png",
+        "5": "Native-TopDown-attack-v1.png"
+      },
+      "compositionReason": "Preserve low carry at start and empty-bow low carry at end; corrected draw/release poses in middle."
+    },
+    {
+      "id": "reload",
+      "file": "reload-v2.png",
+      "nativeFile": "Native-TopDown-reload-v2.png",
+      "generatedSource": "C:/Users/Damien/.codex/generated_images/01a1166c-83ee-7ae0-be97-78c470de8962/exec-39d5bb1f-cdb1-4ee6-bdc2-39c396fbfa1a.png",
+      "prompt": "Edit sixframe reloadsheet. Keep overhead ironarmored recurvearcher bodyposes andbow. Correct arrowframes3and4 to ONE LONG STRAIGHTwoodshaft, one ironpoint atoneend and whitefletching atOTHERend, neverpointonfletching. Rightfingersgripshaftnearfletching whileextractingfrombackquiver, arrowwholelength visible oncewithdrawn inframe4; noarrowstabintobody. Frame1emptybow,2reach,3extract,4withdrawlongarrow,5lowerloosearrowpointdown,6lowreadycarry. Shrinkallwholeposesuniformly to75percent andcenter insideown512cells;entirearrowbowbodyinsidewith70pxzeroalphamargin. Transparent1536x1024PNG3x2. No backgroundshadowsgrid.",
+      "references": [
+        "C:/Users/Damien/.codex/generated_images/01a1166c-83ee-7ae0-be97-78c470de8962/exec-d1d8e53a-3b8d-42ae-ae5b-cbc21b3396bb.png"
+      ],
+      "status": "superseded-draft",
+      "action": "Six separate ARROW RELOAD stages.1emptybowlow,2righthandreachesbackquiver,3griponearrowfletching,4extractstraightarrow,5lowerarrowinrightscreenlefthand,6idlelowcarrywithnewloosearrowpointdown. Lefthandholdsbow throughout, don't changebowgeometry. One stringconnectstips, behindarms noclipping."
+    },
+    {
+      "id": "charged",
+      "file": "charged-v2.png",
+      "nativeFile": "Native-TopDown-charged-v2.png",
+      "generatedSource": "C:/Users/Damien/.codex/generated_images/01a1166c-83ee-7ae0-be97-78c470de8962/exec-c29b68a3-0de8-47ca-9740-b70024d03d20.png",
+      "prompt": "Create six overhead poses of this same iron armored recurve archer receiving a heavy impact: standing, backward recoil, stumble with knees buckling, brace, regain balance, standing. Bow remains held LOW at left side, loose arrow in right hand. NO aiming, drawing, shooting, or nocking in any frame. Keep strict vertically overhead camera, helmet crown and shoulders conceal torso. Transparent sprite sheet 1536x1024, 3 columns 2 rows of 512px cells. All body and equipment in each cell within a centered 320x320 region with at least 90px completely empty margin. No shadows, text, grids.",
+      "references": [
+        "C:/Users/Damien/Documents/GitHub/AgeOfFronts/AgeOfFronts/Art/Cultures/Russians/Units/ClassicalAge/RecurveArcher/SourceArt/Native-Idle-TopDown-v3.png"
+      ],
+      "action": "Heavy chargeimpact sixposes stand,backwardrecoil,stumblekneesbuckle,bracebalance,recover,stand. Keep connected limbs, bowandarrow retained. NOwhitegridpanel lines, no effects.",
+      "status": "selected-source"
+    },
+    {
+      "id": "charged",
+      "file": "charged-v3.png",
+      "nativeFile": "Native-TopDown-charged-v3.png",
+      "generatedSource": "C:/Users/Damien/.codex/generated_images/01a1166c-83ee-7ae0-be97-78c470de8962/exec-7d19db21-a167-470b-b0b5-69329926ff95.png",
+      "prompt": "Remove ALL of the dark brown background, glows, haze and shadows from this sprite sheet. Background removal only: preserve all six soldiers, poses, fine bowstrings, arrows and equipment exactly. True transparent alpha=0 between and around sprites including at tile borders. No floor or ambient glow. Keep1536x1024PNG layout.",
+      "references": [
+        "C:/Users/Damien/.codex/generated_images/01a1166c-83ee-7ae0-be97-78c470de8962/exec-c29b68a3-0de8-47ca-9740-b70024d03d20.png"
+      ],
+      "action": "Heavy chargeimpact sixposes stand,backwardrecoil,stumblekneesbuckle,bracebalance,recover,stand. Keep connected limbs, bowandarrow retained. NOwhitegridpanel lines, no effects.",
+      "status": "unused-transparency-variant",
+      "compositionReason": "Previous source already has transparent background; retain checked poses."
+    },
+    {
+      "id": "reload",
+      "file": "reload-v3.png",
+      "nativeFile": "Native-TopDown-reload-v3.png",
+      "generatedSource": "C:/Users/Damien/.codex/generated_images/01a1166c-83ee-7ae0-be97-78c470de8962/exec-e1670281-0ca3-4a3e-bdf1-8f29dcd12e86.png",
+      "prompt": "Rebuild this six frame arrow reload sheet at a much smaller scale within its cells. Transparent1536x1024 PNG 3 columns 2 rows of 512pxcells. Every WHOLE actor plus bow and arrow must fit inside centered 300x300 region, 100px empty transparent margins on ALL FOUR SIDES of each cell. No element crosses any cell boundary. Keep same overhead iron armored archer and six reload poses: empty low bow, reach quiver, extract arrow by fletching, bring intact straight arrow forward, lower arrow point down, ready carry. One long straight arrow with iron point at one end and fletching at opposite end. No shadows text grids. Preserve same equipment and camera.",
+      "references": [
+        "C:/Users/Damien/Documents/GitHub/AgeOfFronts/AgeOfFronts/Art/Cultures/Russians/Units/ClassicalAge/RecurveArcher/SourceArt/Native-TopDown-reload-v2.png"
+      ],
+      "action": "Six separate ARROW RELOAD stages.1emptybowlow,2righthandreachesbackquiver,3griponearrowfletching,4extractstraightarrow,5lowerarrowinrightscreenlefthand,6idlelowcarrywithnewloosearrowpointdown. Lefthandholdsbow throughout, don't changebowgeometry. One stringconnectstips, behindarms noclipping.",
+      "status": "selected-source",
+      "sourceCrop": [
+        64,
+        40,
+        448,
+        424
+      ]
+    },
+    {
+      "id": "reload",
+      "file": "reload-v4.png",
+      "nativeFile": "Native-TopDown-reload-v4.png",
+      "generatedSource": "C:/Users/Damien/.codex/generated_images/01a1166c-83ee-7ae0-be97-78c470de8962/exec-3b17a234-b9cb-4923-a706-b1873dc1898f.png",
+      "prompt": "Remove ALL of the dark brown background, glows, haze and shadows from this sprite sheet. Background removal only: preserve all six soldiers, poses, fine bowstrings, arrows and equipment exactly. True transparent alpha=0 between and around sprites including at tile borders. No floor or ambient glow. Keep1536x1024PNG layout.",
+      "references": [
+        "C:/Users/Damien/.codex/generated_images/01a1166c-83ee-7ae0-be97-78c470de8962/exec-e1670281-0ca3-4a3e-bdf1-8f29dcd12e86.png"
+      ],
+      "action": "Six separate ARROW RELOAD stages.1emptybowlow,2righthandreachesbackquiver,3griponearrowfletching,4extractstraightarrow,5lowerarrowinrightscreenlefthand,6idlelowcarrywithnewloosearrowpointdown. Lefthandholdsbow throughout, don't changebowgeometry. One stringconnectstips, behindarms noclipping.",
+      "status": "unused-transparency-variant",
+      "compositionReason": "Previous source already has transparent background; retain checked poses."
+    }
+  ]
+}

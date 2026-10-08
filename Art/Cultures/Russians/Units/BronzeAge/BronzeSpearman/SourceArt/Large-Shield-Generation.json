@@ -1,0 +1,17 @@
+{
+  "date": "2026-10-07",
+  "mode": "built-in-imagegen",
+  "records": [
+    {
+      "id": "bronze-spearman-idle-large-shield-v3",
+      "clip": "idle",
+      "file": "Idle-LargeShield-v3.png",
+      "prompt": "Precise edit of the supplied single overhead Russian Bronze Spearman idle sprite. Enlarge ONLY the round timber shield at screen-right to 150 PERCENT of its current width AND height (linear dimensions 1.5x). This must be visibly a substantially larger round shield, same wood boards, same bronze rim and rivets, same raised bronze central boss, scaled together consistently. Existing shield is approximately360pxwide by400pxtall; revised shield should be approximately540pxwide by600pxtall at the SAME character scale. Keep it round in its existing overhead perspective; it can overlap more of the torso, shield arm and right thigh naturally. Position its center slightly farther inward if needed to keep all of rim within the canvas with >=24px transparent margin, but do NOT shrink the shield to fit. Preserve EXACT same soldier body size and position, bronze helmet and pauldrons, cream fur collar, reddish-brown leather top, trousers and boots. Preserve the accepted rear spear grip: raised bent weapon arm, hand firmly grasping the upper-left rear section of straight wooden shaft. Entire spear in same location, angle, length, butt top-left, leaf-shaped bronze point bottom-left. No new stance, extra hands, armor changes, spear changes or duplicated shield. ONE single idle frame, square1254x1254RGBA transparent cutout. No background, haze, glow, ground or cast shadow; all pixels outside actual silhouettes fully transparent with crisp antialiased edges.",
+      "references": [
+        "Idle-RearGrip-v2.png"
+      ],
+      "generatedSource": "C:/Users/Damien/.codex/generated_images/01a0fea1-c63f-7343-92ca-6c21cc1c4296/exec-a4a4080c-9180-48b0-b1ad-adc7c738c9ef.png",
+      "status": "selected"
+    }
+  ]
+}

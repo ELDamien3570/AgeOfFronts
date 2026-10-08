@@ -1,0 +1,14 @@
+{
+  "passed": true,
+  "newMasters": 17,
+  "transparentGuard": 64,
+  "dimensions": [
+    1254,
+    1254
+  ],
+  "previousImagesPreserved": 784,
+  "previousCatalogEntriesPreserved": true,
+  "allUnlockIdsExist": true,
+  "artisticAcceptance": "pending",
+  "browserVisualQA": "unavailable; local HTTP and static verification only"
+}

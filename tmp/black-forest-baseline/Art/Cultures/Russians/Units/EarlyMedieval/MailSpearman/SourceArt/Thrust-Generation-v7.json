@@ -1,0 +1,22 @@
+{
+  "records": [
+    {
+      "id": "attack",
+      "file": "Attack-Forward-v7.png",
+      "prompt": "Edit this six-frame overhead mail spearman attack atlas. Preserve the character art, ringmail, burgundy clothing, held shield, overhead camera, planted/lunging poses and painterly style. CHANGE ATTACK DIRECTION: the thrust must go STRAIGHT TOWARD THE BOTTOM OF THE SCREEN (6 o'clock), not bottom-right. Keep overhand knuckles-up grip and elbow drawn back followed by long forward arm extension. In every frame, spear shaft is VERTICAL in screen space, capped butt points screenTOP and steel leafhead points screenBOTTOM. At full thrust the right arm extends from right shoulder toward screenBOTTOM beside the right side of torso (screenLEFT), not across chest toward shield. Whole spear moves forward with closed fist and fixed wood grip; no hand sliding. Drawback has fist beside shoulder, impact has fist well below shoulder with elbow straight. Spear butt and tip advance downward together between windup and impact. SAME rigid spear and grip in all frames. Torso may open slightly but attacking direction remains screenDOWN throughout. Frame1ready,2draw elbow back,3drive forward,4fullstraightDOWN thrust and footplant,5withdraw,6ready. Preserve fullnatural anatomically painted arms, no rigged cutouts. Exactly1536x1024 RGBAtransparent3columns2rows each512cell isolated fullsoldierandfullspear with40pxguards; no spill. To keep entire spearinsidecell use300pxshaft/headtotal, fixed midpointgrip. Readytip y360,winduptip y330,fullthrusttip y470. Verticalshaft atx170 in allframes. Bodyhelmetnear256,210. No text,bg,shadows,trails. Keep a controlled planted-foot thrust.",
+      "generatedSource": "C:/Users/Damien/.codex/generated_images/01a0fea1-c63f-7343-92ca-6c21cc1c4296/exec-631eb1bf-65b4-4140-b5c1-77c6809bac59.png",
+      "nativeFile": "Native-Attack-Forward-v7.png",
+      "status": "rejected",
+      "rejection": "Changed approved attack poses and repeated grip/body defects."
+    },
+    {
+      "id": "charge-attack",
+      "file": "Charge-Attack-Forward-v7.png",
+      "prompt": "Edit this six-frame overhead mail spearman attack atlas. Preserve the character art, ringmail, burgundy clothing, held shield, overhead camera, planted/lunging poses and painterly style. CHANGE ATTACK DIRECTION: the thrust must go STRAIGHT TOWARD THE BOTTOM OF THE SCREEN (6 o'clock), not bottom-right. Keep overhand knuckles-up grip and elbow drawn back followed by long forward arm extension. In every frame, spear shaft is VERTICAL in screen space, capped butt points screenTOP and steel leafhead points screenBOTTOM. At full thrust the right arm extends from right shoulder toward screenBOTTOM beside the right side of torso (screenLEFT), not across chest toward shield. Whole spear moves forward with closed fist and fixed wood grip; no hand sliding. Drawback has fist beside shoulder, impact has fist well below shoulder with elbow straight. Spear butt and tip advance downward together between windup and impact. SAME rigid spear and grip in all frames. Torso may open slightly but attacking direction remains screenDOWN throughout. Frame1ready,2draw elbow back,3drive forward,4fullstraightDOWN thrust and footplant,5withdraw,6ready. Preserve fullnatural anatomically painted arms, no rigged cutouts. Exactly1536x1024 RGBAtransparent3columns2rows each512cell isolated fullsoldierandfullspear with40pxguards; no spill. To keep entire spearinsidecell use300pxshaft/headtotal, fixed midpointgrip. Readytip y360,winduptip y330,fullthrusttip y470. Verticalshaft atx170 in allframes. Bodyhelmetnear256,210. No text,bg,shadows,trails. Keep stronger shoulder lunge for the charge attack.",
+      "generatedSource": "C:/Users/Damien/.codex/generated_images/01a0fea1-c63f-7343-92ca-6c21cc1c4296/exec-de16372f-af30-4c5f-98e8-77659047cd04.png",
+      "nativeFile": "Native-Charge-Attack-Forward-v7.png",
+      "status": "rejected",
+      "rejection": "Changed approved attack poses and repeated grip/body defects."
+    }
+  ]
+}

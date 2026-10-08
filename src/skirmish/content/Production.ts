@@ -33,7 +33,7 @@ export const REFINING: ProductionRecipe[] = [
   ...["icbm", "hydrogen", "mirv"].map((name, i) => ({
     id: `make-${name}`,
     name: `${name.toUpperCase()} payload`,
-    technologyId: technologyAt("Modern", "warfare", 4).id,
+    technologyId: name === "mirv" ? "russian-mirv-systems" : "modern-strategic-weapons",
     building: "arms-factory" as const,
     inputs: {
       steel: 200 + i * 100,

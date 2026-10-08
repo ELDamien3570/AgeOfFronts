@@ -83,17 +83,17 @@ describe("authoritative recruitment queues", () => {
     const m = game(),
       p = m.players[0];
     for (let i = 0; i < 5; i++) expect(train(m)).toBeNull();
-    expect(p.gold).toBe(99500);
+    expect(p.gold).toBe(99700);
     expect(p.reserves).toBe(95000);
     const initial = m.squads.filter((s) => s.playerId === 1).length;
-    for (let i = 0; i < 99; i++) m.step();
+    for (let i = 0; i < 239; i++) m.step();
     expect(m.squads.filter((s) => s.playerId === 1)).toHaveLength(initial);
     expect(m.recruitment.jobs[0].remainingTicks).toBe(1);
     m.step();
     expect(m.squads.filter((s) => s.playerId === 1)).toHaveLength(initial + 1);
     expect(m.recruitment.jobs).toHaveLength(4);
-    expect(m.recruitment.jobs[0].remainingTicks).toBe(100);
-    expect(p.reserves).toBe(95100); // five seconds of base plus starting-city reserve income
+    expect(m.recruitment.jobs[0].remainingTicks).toBe(240);
+    expect(p.reserves).toBe(95240); // twelve seconds of base plus starting-city reserve income
     const decoded = new SnapshotDecoder().decode(
       new SnapshotEncoder().encode(m.snapshot()),
     );
@@ -197,7 +197,7 @@ describe("authoritative recruitment queues", () => {
       9000, 9001, 9000, 9001, 9000,
     ]);
     const before = m.squads.filter((s) => s.playerId === 1).length;
-    for (let i = 0; i < 100; i++) m.step();
+    for (let i = 0; i < 240; i++) m.step();
     expect(m.squads.filter((s) => s.playerId === 1)).toHaveLength(before + 2);
     expect(new RecruitmentQueueViewModel(m.snapshot()).entries[0].count).toBe(
       3,

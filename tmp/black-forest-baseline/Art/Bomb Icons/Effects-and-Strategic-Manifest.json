@@ -1,0 +1,305 @@
+{
+  "generator": "built-in image_gen",
+  "staticAssets": [
+    {
+      "category": "Missile Silo",
+      "age": "Modern",
+      "filename": "MissileSilo_Modern.png",
+      "dimension": 1254,
+      "reference": "C:/Users/Damien/Documents/GitHub/AgeOfFronts/AgeOfFronts/Art/Building Icons/Military Airstrip/Top-Down-Correction/MilitaryAirstrip_Modern.png",
+      "prompt": "Use case: stylized-concept.\nAsset type: Age of Fronts game asset, painted realistic 2D strategy icon, genuine transparent alpha.\nStyle: realistic hand-painted finish matching the supplied reference, muted olive-drab, grey industrial metal, restrained warm material highlights, subtle weathering, sharp readable outline. No cartoon cel shading or technical blueprint.\nCamera: STRICT TOP DOWN orthographic view. No isometric tilt, perspective, angled camera or large visible side elevation.\nConstraints: ONE complete centered subject only, generous transparent margin, no text, symbols, logos, numbering, people or watermark. The background outside the asset is genuinely transparent, not white, black or painted checkerboard.\nInput image 1 is STYLE REFERENCE ONLY for industrial materials, weathering, rooftops, overhead geometry and ground footprint. Do not copy the runway or hangars.\nPrimary request: a Modern Age military missile silo facility, square 1254 x 1254 PNG.\nSubject: a large clearly readable circular reinforced olive-grey steel silo hatch occupying the center of a substantial pale concrete launch pad, inset flush to ground, with heavy panel seams, a compact service mechanism housing along one edge and concentric concrete edging. A short service road connects the pad to one low flat-roof operations bunker and a small utility shed. Muted grass and gravel shoulders form a coherent bounded facility footprint. Restrained perimeter security fence, controlled service-road entrance, a few olive supply containers outside the launch pad.\nComposition: perfectly vertical 90-degree aerial plan, circular hatch remains circular, roof plans visible without front walls. Silo lid closed. Compact but believable military site, recognizable circular missile hatch as the dominant icon silhouette, all objects inside a comfortable transparent border.\nAvoid: missile launching, fire, smoke, cutaway, internal mechanism schematic, technical dimensions, runway, decorative nuclear logos, giant towers or obvious front facades.",
+      "source": "C:\\Users\\Damien\\.codex\\generated_images\\01a0f0f0-cfa7-76e0-959a-347e83e7ded2\\exec-b61306d0-6948-45f5-8744-2cf4a13bbe72.png",
+      "destination": "C:/Users/Damien/Documents/GitHub/AgeOfFronts/AgeOfFronts/Art/Building Icons/Missile Silo/Top-Down-Correction/MissileSilo_Modern.png",
+      "generator": "built-in image_gen",
+      "finalDimensions": [
+        1254,
+        1254
+      ],
+      "resampling": {
+        "Saved": "C:/Users/Damien/Documents/GitHub/AgeOfFronts/AgeOfFronts/Art/Building Icons/Missile Silo/Top-Down-Correction/MissileSilo_Modern.png",
+        "Width": 1254,
+        "Height": 1254,
+        "Resampled": false
+      }
+    },
+    {
+      "category": "ICBM Rocket",
+      "age": "Modern",
+      "filename": "ICBM_Modern_TopDown.png",
+      "dimension": 627,
+      "reference": "C:/Users/Damien/Documents/GitHub/AgeOfFronts/AgeOfFronts/Art/Bomb Icons/AerialBomb_WWII_TopDown.png",
+      "prompt": "Use case: stylized-concept.\nAsset type: Age of Fronts game asset, painted realistic 2D strategy icon, genuine transparent alpha.\nStyle: realistic hand-painted finish matching the supplied reference, muted olive-drab, grey industrial metal, restrained warm material highlights, subtle weathering, sharp readable outline. No cartoon cel shading or technical blueprint.\nCamera: STRICT TOP DOWN orthographic view. No isometric tilt, perspective, angled camera or large visible side elevation.\nConstraints: ONE complete centered subject only, generous transparent margin, no text, symbols, logos, numbering, people or watermark. The background outside the asset is genuinely transparent, not white, black or painted checkerboard.\nInput image 1 is STYLE AND FACING REFERENCE ONLY: retain the top-down longitudinal silhouette, weathered painted metal, tidy isolated presentation and nose-up orientation. Create an entirely different long ballistic rocket.\nPrimary request: one generic ICBM-style military rocket game icon, square 627 x 627 PNG, exterior only.\nSubject: one long narrow pale-grey missile, a smooth dark olive pointed conical nose, clean cylindrical long body with restrained exterior panel bands, a short darker olive lower section, small conventional symmetrical tail stabilizers and a closed dark base. Visually taller and slimmer than the aerial bomb reference. Subtle aluminium edge wear and soft upper-surface highlight. No launched exhaust or detached parts.\nComposition: see the full LONGITUDINAL silhouette from straight above while the rocket is aligned in the image plane, nose pointing up, tail down, centered, occupying about 84 percent of image height, generous transparent margin. Symmetrical top plan, fins depicted in correct overhead projection. No end-on circular view, no side-perspective view.\nAvoid: open internal sections, cutaways, diagrams, specifications, actual weapon branding, readable serial markings or decals.",
+      "source": "C:\\Users\\Damien\\.codex\\generated_images\\01a0f0f0-cfa7-76e0-959a-347e83e7ded2\\exec-e0edaf7c-3a8e-43f2-af6b-5670013d1ee2.png",
+      "destination": "C:/Users/Damien/Documents/GitHub/AgeOfFronts/AgeOfFronts/Art/Bomb Icons/ICBM_Modern_TopDown.png",
+      "generator": "built-in image_gen",
+      "finalDimensions": [
+        627,
+        627
+      ],
+      "resampling": {
+        "Saved": "C:/Users/Damien/Documents/GitHub/AgeOfFronts/AgeOfFronts/Art/Bomb Icons/ICBM_Modern_TopDown.png",
+        "Width": 627,
+        "Height": 627,
+        "Resampled": true,
+        "SourceWidth": 1254,
+        "SourceHeight": 1254
+      },
+      "jpegDestination": "C:/Users/Damien/Documents/GitHub/AgeOfFronts/AgeOfFronts/Art/Bomb Icons/ICBM_Modern_TopDown.jpg",
+      "jpegConversion": {
+        "Saved": "C:/Users/Damien/Documents/GitHub/AgeOfFronts/AgeOfFronts/Art/Bomb Icons/ICBM_Modern_TopDown.jpg",
+        "Width": 627,
+        "Height": 627,
+        "Background": "white",
+        "Quality": 95
+      }
+    },
+    {
+      "category": "Hydrogen Bomb",
+      "age": "Modern",
+      "filename": "HydrogenBomb_Modern_TopDown.png",
+      "dimension": 627,
+      "reference": "C:/Users/Damien/Documents/GitHub/AgeOfFronts/AgeOfFronts/Art/Bomb Icons/AerialBomb_WWII_TopDown.png",
+      "prompt": "Use case: stylized-concept.\nAsset type: Age of Fronts game asset, painted realistic 2D strategy icon, genuine transparent alpha.\nStyle: realistic hand-painted finish matching the supplied reference, muted olive-drab, grey industrial metal, restrained warm material highlights, subtle weathering, sharp readable outline. No cartoon cel shading or technical blueprint.\nCamera: STRICT TOP DOWN orthographic view. No isometric tilt, perspective, angled camera or large visible side elevation.\nConstraints: ONE complete centered subject only, generous transparent margin, no text, symbols, logos, numbering, people or watermark. The background outside the asset is genuinely transparent, not white, black or painted checkerboard.\nInput image 1 is STYLE AND FACING REFERENCE ONLY: same weathered painted steel finish, strict overhead longitudinal shape, nose-up orientation and isolated transparent silhouette. Create a visually distinct much larger aerial bomb silhouette.\nPrimary request: one generic hydrogen bomb game payload icon, square 627 x 627 PNG, exterior only.\nSubject: a heavy broad-bodied finned aerial bomb with a rounded blunt ogive nose, substantial smooth steel cylinder with two understated external panel bands, slightly tapered rear body and large robust stabilizing tail fins. Pale-grey upper body, subdued olive tail section, one discreet ochre identification band near the nose, subtle paint wear. A visibly broad and weighty silhouette that reads differently from the slimmer olive WWII aerial bomb. No text or nuclear logo.\nComposition: see full longitudinal silhouette from straight above, object aligned in the image plane, rounded nose pointing up and fins down. Complete centered object occupies about 80 percent of canvas height with comfortable transparent margins. Fin pair spreads left and right, perpendicular fin appears as a narrow ridge. No perspective tilt, no end-on view.\nAvoid: internal cutaways, engineering diagrams or specifications, actual weapon markings, readable labels, falling trail, explosion or ground shadow.",
+      "source": "C:\\Users\\Damien\\.codex\\generated_images\\01a0f0f0-cfa7-76e0-959a-347e83e7ded2\\exec-a92a65b2-ed1f-4dd4-bf54-f3805b62244a.png",
+      "destination": "C:/Users/Damien/Documents/GitHub/AgeOfFronts/AgeOfFronts/Art/Bomb Icons/HydrogenBomb_Modern_TopDown.png",
+      "generator": "built-in image_gen",
+      "finalDimensions": [
+        627,
+        627
+      ],
+      "resampling": {
+        "Saved": "C:/Users/Damien/Documents/GitHub/AgeOfFronts/AgeOfFronts/Art/Bomb Icons/HydrogenBomb_Modern_TopDown.png",
+        "Width": 627,
+        "Height": 627,
+        "Resampled": true,
+        "SourceWidth": 1254,
+        "SourceHeight": 1254
+      },
+      "jpegDestination": "C:/Users/Damien/Documents/GitHub/AgeOfFronts/AgeOfFronts/Art/Bomb Icons/HydrogenBomb_Modern_TopDown.jpg",
+      "jpegConversion": {
+        "Saved": "C:/Users/Damien/Documents/GitHub/AgeOfFronts/AgeOfFronts/Art/Bomb Icons/HydrogenBomb_Modern_TopDown.jpg",
+        "Width": 627,
+        "Height": 627,
+        "Background": "white",
+        "Quality": 95
+      }
+    }
+  ],
+  "effects": [
+    {
+      "name": "AerialBomb",
+      "label": "Aerial bomb explosion",
+      "dimension": 627,
+      "columns": 4,
+      "rows": 4,
+      "frameCount": 16,
+      "relativeFootprint": 0.82,
+      "durations": [
+        40,
+        40,
+        60,
+        80,
+        100,
+        100,
+        100,
+        100,
+        120,
+        140,
+        160,
+        180,
+        200,
+        220,
+        250,
+        300
+      ],
+      "prompt": "Use case: precise-object-edit.\nAsset type: transparent top-down explosion sprite sheet.\nInput image 1 is the edit target. Preserve its realistic painted explosion/fire/smoke artwork style and sixteen-frame ignition, expansion, cooling smoke, full fade chronology.\nFix ONLY the sprite layout and clearance. Re-render the animation as an EXACTLY SQUARE canvas with an EXACT 4-by-4 grid of equal square cells. There are 16 frames, row-major, fixed impact pivot at each cell center. No labels or visible grid.\nEvery sprite MUST fit within the CENTRAL 50 PERCENT of the cell width AND height, leaving an enormous empty transparent margin on every side of each cell. Even the largest smoke billow or spark cannot exceed this central half-cell region. This large clearance is essential for slicing the animation into individual sprites. All sprites centered identically. No shifted smoke, no neighboring frame intrusion, no objects touching a cell boundary or canvas edge.\nMake the very first frame a small flash, grow the fire and dust in frames 2-6, cool fire into smoke in frames 7-11, progressively fade thin smoke in frames 12-15, and leave the LAST CELL ENTIRELY EMPTY TRANSPARENT.\nSubject remains a conventional aerial bomb explosion with hot orange fireball, brown-grey dust shockwave and charcoal smoke.\nPreserve the strict vertical overhead camera; never a side-view cloud. Maintain coherent principal smoke lobes over time. Genuine alpha around every frame and through faint smoke. No ground disk, painted backdrop, crater, text, border or watermark.\nMost important: massive consistent transparent padding INSIDE EVERY CELL; exactly square whole sheet, 4 equal columns and 4 equal rows. No artwork crosses a cell boundary.",
+      "source": "C:\\Users\\Damien\\.codex\\generated_images\\01a0f0f0-cfa7-76e0-959a-347e83e7ded2\\exec-6a2de437-b858-47f8-baba-189abd06b98a.png",
+      "previousGenerations": [
+        {
+          "source": "C:\\Users\\Damien\\.codex\\generated_images\\01a0f0f0-cfa7-76e0-959a-347e83e7ded2\\exec-b5622dba-9208-4e4b-8103-57eec18c54df.png",
+          "prompt": "Use case: stylized-concept.\nAsset type: animated strategy-game VFX sprite atlas for Age of Fronts, transparent PNG.\nPrimary request: draw a genuinely coherent single explosion evolving in time across EXACTLY SIXTEEN frames. This is a 4-column by 4-row sprite sheet, sixteen equally sized square cells, read left-to-right then next row.\nComposition: uniform 4 x 4 grid with no visible grid lines, no text, no gutters and no outer decorative border. Every square cell has a perfectly centered impact at its cell center. All sixteen frames use identical camera, light, scale reference and center. Keep each effect completely inside its cell with wide transparent clearance. No particles or smoke may enter a neighbouring cell.\nCamera: perfectly vertical 90-degree TOP DOWN orthographic ground-impact view. We see the upper surfaces of radial fire, dust and smoke. No side-view mushroom cloud, horizon, oblique view or isometric perspective.\nStyle: realistic richly textured hand-painted strategy-game effects, natural orange/yellow fire with hot pale center, turbulent dark grey smoke, brown-grey dust, fine sparks and irregular wispy edges. Polished matching the existing realistic textured building and bomb icon set. The artwork must remain clear at small game-map scale.\nAnimation continuity: one and the same impact expands radially, burns briefly, cools to smoke and fades away. Preserve the principal smoke lobes and particle paths progressively across adjacent frames; do not redraw sixteen unrelated explosions. No cut to a different shot, no camera movement, no late second flash.\nTiming/storyboard, row-major:\n1 tiny pale ignition flash; 2 brighter compact flash; 3 small expanding orange fireball; 4 larger fiery burst.\n5 fireball grows and first radial dust ring; 6 peak orange flame and sparks; 7 flames start cooling into smoky lobes; 8 smoke expands while fire dims.\n9 faint central embers under smoke; 10 expanding dust and dark smoke; 11 diffuse grey smoke with almost no flame; 12 softer thinner smoke.\n13 low-opacity cooling smoke; 14 wispy fading remnants; 15 barely visible dispersed smoke; 16 completely empty transparent cell.\nOutside every individual effect, preserve TRUE TRANSPARENT ALPHA including through faint smoke and glow. No painted black/white/checkerboard background, ground tile, persistent crater, buildings, aircraft, physical bomb, human, label, border or watermark.\nSubject: a conventional aerial bomb ground explosion. A forceful broad irregular radial orange fireball with a small brilliant yellow center, scattered tiny sparks, a rapidly expanding uneven dusty shockwave, then thick charcoal-grey smoke cooling and dissipating. Peak effect occupies about 82 percent of its cell width. Finite one-shot detonation, not continuous burning or a repeating campfire.",
+          "reasonReplaced": "Smoke crosses equal-cell boundaries"
+        }
+      ],
+      "reference": "C:\\Users\\Damien\\.codex\\generated_images\\01a0f0f0-cfa7-76e0-959a-347e83e7ded2\\exec-b5622dba-9208-4e4b-8103-57eec18c54df.png",
+      "directory": "C:/Users/Damien/Documents/GitHub/AgeOfFronts/AgeOfFronts/Art/Bomb Icons/Explosions/AerialBomb",
+      "sourceAtlas": "C:/Users/Damien/Documents/GitHub/AgeOfFronts/AgeOfFronts/Art/Bomb Icons/Explosions/AerialBomb/SourceAtlas.png",
+      "frames": 53,
+      "sheets": 2,
+      "ms": 2208,
+      "peak": 10
+    },
+    {
+      "name": "ArtilleryImpact",
+      "label": "Artillery impact",
+      "dimension": 314,
+      "columns": 4,
+      "rows": 4,
+      "frameCount": 16,
+      "relativeFootprint": 0.68,
+      "durations": [
+        30,
+        30,
+        40,
+        50,
+        60,
+        70,
+        80,
+        90,
+        100,
+        110,
+        130,
+        150,
+        170,
+        190,
+        210,
+        250
+      ],
+      "prompt": "Use case: precise-object-edit.\nAsset type: transparent top-down explosion sprite sheet.\nInput image 1 is the edit target. Preserve its realistic painted explosion/fire/smoke artwork style and sixteen-frame ignition, expansion, cooling smoke, full fade chronology.\nFix ONLY the sprite layout and clearance. Re-render the animation as an EXACTLY SQUARE canvas with an EXACT 4-by-4 grid of equal square cells. There are 16 frames, row-major, fixed impact pivot at each cell center. No labels or visible grid.\nEvery sprite MUST fit within the CENTRAL 50 PERCENT of the cell width AND height, leaving an enormous empty transparent margin on every side of each cell. Even the largest smoke billow or spark cannot exceed this central half-cell region. This large clearance is essential for slicing the animation into individual sprites. All sprites centered identically. No shifted smoke, no neighboring frame intrusion, no objects touching a cell boundary or canvas edge.\nMake the very first frame a small flash, grow the fire and dust in frames 2-6, cool fire into smoke in frames 7-11, progressively fade thin smoke in frames 12-15, and leave the LAST CELL ENTIRELY EMPTY TRANSPARENT.\nSubject remains a small artillery shell impact with a short hot spark and mostly brown-grey dust/smoke, little fire.\nPreserve the strict vertical overhead camera; never a side-view cloud. Maintain coherent principal smoke lobes over time. Genuine alpha around every frame and through faint smoke. No ground disk, painted backdrop, crater, text, border or watermark.\nMost important: massive consistent transparent padding INSIDE EVERY CELL; exactly square whole sheet, 4 equal columns and 4 equal rows. No artwork crosses a cell boundary.",
+      "source": "C:\\Users\\Damien\\.codex\\generated_images\\01a0f0f0-cfa7-76e0-959a-347e83e7ded2\\exec-d9e28304-4ec6-4cad-a04b-106b687953a5.png",
+      "previousGenerations": [
+        {
+          "source": "C:\\Users\\Damien\\.codex\\generated_images\\01a0f0f0-cfa7-76e0-959a-347e83e7ded2\\exec-a04f6cd9-dd2b-4fc5-a035-9c88a43fe9ac.png",
+          "prompt": "Use case: stylized-concept.\nAsset type: animated strategy-game VFX sprite atlas for Age of Fronts, transparent PNG.\nPrimary request: draw a genuinely coherent single explosion evolving in time across EXACTLY SIXTEEN frames. This is a 4-column by 4-row sprite sheet, sixteen equally sized square cells, read left-to-right then next row.\nComposition: uniform 4 x 4 grid with no visible grid lines, no text, no gutters and no outer decorative border. Every square cell has a perfectly centered impact at its cell center. All sixteen frames use identical camera, light, scale reference and center. Keep each effect completely inside its cell with wide transparent clearance. No particles or smoke may enter a neighbouring cell.\nCamera: perfectly vertical 90-degree TOP DOWN orthographic ground-impact view. We see the upper surfaces of radial fire, dust and smoke. No side-view mushroom cloud, horizon, oblique view or isometric perspective.\nStyle: realistic richly textured hand-painted strategy-game effects, natural orange/yellow fire with hot pale center, turbulent dark grey smoke, brown-grey dust, fine sparks and irregular wispy edges. Polished matching the existing realistic textured building and bomb icon set. The artwork must remain clear at small game-map scale.\nAnimation continuity: one and the same impact expands radially, burns briefly, cools to smoke and fades away. Preserve the principal smoke lobes and particle paths progressively across adjacent frames; do not redraw sixteen unrelated explosions. No cut to a different shot, no camera movement, no late second flash.\nTiming/storyboard, row-major:\n1 tiny pale ignition flash; 2 brighter compact flash; 3 small expanding orange fireball; 4 larger fiery burst.\n5 fireball grows and first radial dust ring; 6 peak orange flame and sparks; 7 flames start cooling into smoky lobes; 8 smoke expands while fire dims.\n9 faint central embers under smoke; 10 expanding dust and dark smoke; 11 diffuse grey smoke with almost no flame; 12 softer thinner smoke.\n13 low-opacity cooling smoke; 14 wispy fading remnants; 15 barely visible dispersed smoke; 16 completely empty transparent cell.\nOutside every individual effect, preserve TRUE TRANSPARENT ALPHA including through faint smoke and glow. No painted black/white/checkerboard background, ground tile, persistent crater, buildings, aircraft, physical bomb, human, label, border or watermark.\nSubject: a SMALL conventional artillery shell ground impact, much less fire than an aerial bomb. A short sharp pale flash and compact orange sparks, jagged radial brown-grey dust plumes with only a brief hot center, then an expanding rough dark dust puff and thinning grey smoke. Peak effect occupies about 68 percent of its cell width. Avoid a giant rolling fireball. Finite one-shot shell impact.",
+          "reasonReplaced": "Smoke crosses equal-cell boundaries"
+        }
+      ],
+      "reference": "C:\\Users\\Damien\\.codex\\generated_images\\01a0f0f0-cfa7-76e0-959a-347e83e7ded2\\exec-a04f6cd9-dd2b-4fc5-a035-9c88a43fe9ac.png",
+      "directory": "C:/Users/Damien/Documents/GitHub/AgeOfFronts/AgeOfFronts/Art/Bomb Icons/Explosions/ArtilleryImpact",
+      "sourceAtlas": "C:/Users/Damien/Documents/GitHub/AgeOfFronts/AgeOfFronts/Art/Bomb Icons/Explosions/ArtilleryImpact/SourceAtlas.png",
+      "frames": 43,
+      "sheets": 1,
+      "ms": 1792,
+      "peak": 8
+    },
+    {
+      "name": "GunshipImpact",
+      "label": "Gunship cannon impact",
+      "dimension": 314,
+      "columns": 4,
+      "rows": 4,
+      "frameCount": 16,
+      "relativeFootprint": 0.44,
+      "durations": [
+        25,
+        25,
+        35,
+        40,
+        45,
+        50,
+        55,
+        60,
+        70,
+        80,
+        90,
+        100,
+        110,
+        120,
+        140,
+        170
+      ],
+      "prompt": "Use case: stylized-concept.\nAsset type: animated strategy-game VFX sprite atlas for Age of Fronts, transparent PNG.\nPrimary request: draw a genuinely coherent single explosion evolving in time across EXACTLY SIXTEEN frames. This is a 4-column by 4-row sprite sheet, sixteen equally sized square cells, read left-to-right then next row.\nComposition: uniform 4 x 4 grid with no visible grid lines, no text, no gutters and no outer decorative border. Every square cell has a perfectly centered impact at its cell center. All sixteen frames use identical camera, light, scale reference and center. Keep each effect completely inside its cell with wide transparent clearance. No particles or smoke may enter a neighbouring cell.\nCamera: perfectly vertical 90-degree TOP DOWN orthographic ground-impact view. We see the upper surfaces of radial fire, dust and smoke. No side-view mushroom cloud, horizon, oblique view or isometric perspective.\nStyle: realistic richly textured hand-painted strategy-game effects, natural orange/yellow fire with hot pale center, turbulent dark grey smoke, brown-grey dust, fine sparks and irregular wispy edges. Polished matching the existing realistic textured building and bomb icon set. The artwork must remain clear at small game-map scale.\nAnimation continuity: one and the same impact expands radially, burns briefly, cools to smoke and fades away. Preserve the principal smoke lobes and particle paths progressively across adjacent frames; do not redraw sixteen unrelated explosions. No cut to a different shot, no camera movement, no late second flash.\nTiming/storyboard, row-major:\n1 tiny pale ignition flash; 2 brighter compact flash; 3 small expanding orange fireball; 4 larger fiery burst.\n5 fireball grows and first radial dust ring; 6 peak orange flame and sparks; 7 flames start cooling into smoky lobes; 8 smoke expands while fire dims.\n9 faint central embers under smoke; 10 expanding dust and dark smoke; 11 diffuse grey smoke with almost no flame; 12 softer thinner smoke.\n13 low-opacity cooling smoke; 14 wispy fading remnants; 15 barely visible dispersed smoke; 16 completely empty transparent cell.\nOutside every individual effect, preserve TRUE TRANSPARENT ALPHA including through faint smoke and glow. No painted black/white/checkerboard background, ground tile, persistent crater, buildings, aircraft, physical bomb, human, label, border or watermark.\nSubject: a VERY SMALL single gunship autocannon shell impact, suitable for an AC-130-type ground strike. One pinpoint hot spark, tiny orange flecks, a short concentrated grey-brown dust splash, then a small uneven dissipating smoke puff. Peak effect occupies only about 44 percent of its cell width, visibly smaller than a normal artillery explosion. Mostly dust and a fleeting bright spark, no large fireball, no multiple impacts in a cell. Finite one-shot cannon hit.",
+      "source": "C:\\Users\\Damien\\.codex\\generated_images\\01a0f0f0-cfa7-76e0-959a-347e83e7ded2\\exec-c59721e1-54a0-4a69-adc6-50155365fa4b.png",
+      "directory": "C:/Users/Damien/Documents/GitHub/AgeOfFronts/AgeOfFronts/Art/Bomb Icons/Explosions/GunshipImpact",
+      "sourceAtlas": "C:/Users/Damien/Documents/GitHub/AgeOfFronts/AgeOfFronts/Art/Bomb Icons/Explosions/GunshipImpact/SourceAtlas.png",
+      "frames": 30,
+      "sheets": 1,
+      "ms": 1250,
+      "peak": 5
+    },
+    {
+      "name": "ICBM",
+      "label": "ICBM detonation",
+      "dimension": 627,
+      "columns": 4,
+      "rows": 4,
+      "frameCount": 16,
+      "relativeFootprint": 0.8,
+      "durations": [
+        40,
+        50,
+        80,
+        100,
+        140,
+        180,
+        240,
+        280,
+        320,
+        360,
+        400,
+        440,
+        480,
+        500,
+        550,
+        650
+      ],
+      "prompt": "Use case: precise-object-edit.\nInput image 1 is the EDIT TARGET. Preserve its realistic painted nuclear detonation, brilliant flash, expanding fireball, one dominant expanding shockwave ring, and lingering billowing smoke, with the SAME sixteen-stage chronology.\nFix the layout and frame clearance. Produce an EXACTLY SQUARE transparent PNG atlas with 4 EQUAL COLUMNS and 4 EQUAL ROWS of square cells. Sixteen row-major frames. Each effect pivot exactly at its cell center. No borders, labels or visible grid lines.\nEach blast including every shockwave, glow fringe and smoke wisp must remain INSIDE THE CENTRAL 50 PERCENT of its own cell width and height. Huge transparent margin on every side of every cell. Nothing touches or crosses a cell boundary, and neighbouring frames never overlap. Even the largest pressure ring and cloud must be dramatically smaller than the cell.\nCoherent timeline: cells 1-2 ignition and bright flash; cells 3-6 expanding yellow-orange fire and pressure ring(s); cells 7-8 cooling fire and growing smoke; cells 9-12 broad billowing smoky canopy with flames gone; cells 13-15 increasingly faint translucent lingering smoke; cell 16 entirely empty transparent.\nMake grey smoke partially transparent and progressively vanish at the end. Maintain the same cloud lobes across neighbouring frames. No opaque ground disk. Everything outside fire, glow and smoke is truly transparent alpha.\nTrue vertical 90-degree top down camera throughout, seeing the top of the cloud. No side view mushroom stem, horizon, buildings, physical bomb, text, logo or watermark.\nMost important: square whole canvas, exactly 4x4 layout, identical centered pivots, MASSIVE EMPTY TRANSPARENT CLEARANCE INSIDE EVERY CELL.",
+      "source": "C:\\Users\\Damien\\.codex\\generated_images\\01a0f0f0-cfa7-76e0-959a-347e83e7ded2\\exec-60269cdb-ba78-43bf-b7a7-fbbc6ddd0de6.png",
+      "reference": "C:\\Users\\Damien\\.codex\\generated_images\\01a0f0f0-cfa7-76e0-959a-347e83e7ded2\\exec-03c93cc4-ff12-4312-8e04-d93191d8b79a.png",
+      "previousGenerations": [
+        {
+          "source": "C:\\Users\\Damien\\.codex\\generated_images\\01a0f0f0-cfa7-76e0-959a-347e83e7ded2\\exec-03c93cc4-ff12-4312-8e04-d93191d8b79a.png",
+          "prompt": "Use case: stylized-concept.\nAsset type: animated nuclear detonation game VFX for Age of Fronts, transparent PNG sprite atlas.\nPrimary request: one nuclear blast viewed perfectly from above, evolving coherently through SIXTEEN consecutive frames arranged in an EXACT 4 x 4 grid, four equal square cells across and four down, left-to-right then next row.\nLayout: no grid lines, text, border, gutter or labels. Every cell contains the SAME centered blast at exactly its cell center. Fixed camera, fixed animation pivot and consistent scale across all cells. The expansion is motion within cells, not camera zoom. Never let glow, smoke or shockwaves cross into a neighboring cell.\nCamera: vertical 90-degree TOP DOWN orthographic view, see radial fireball, concentric shockwave and the top of a billowing smoke canopy. NO side view mushroom cloud or visible vertical stem, NO horizon, buildings, ground tiles or environment.\nStyle: realistic richly textured hand-painted strategy-game effect. Intense but readable warm-white flash, pale yellow heat, orange rolling fire, luminous circular pressure wave, turbulent dark charcoal and ash-grey smoke with feathered partially transparent wisps. Match the realistic painted texture finish of the game's overhead assets, with coherent organic motion and no flat diagram lines.\nTime evolution row-major:\n1 tiny warm-white ignition flash at center.\n2 extremely bright compact flash begins expanding.\n3 bright round fireball grows and a first luminous circular shockwave appears.\n4 expanding hot yellow/orange fireball and larger clean pressure ring.\n5 rolling fire and outward shockwave expand.\n6 largest fireball with turbulent outer edges and widening ring.\n7 orange heat begins dimming while grey smoke curls over the fire.\n8 large overhead smoke canopy expands, faint internal fire.\n9 full dense billowing smoke canopy with dim embers.\n10 smoke spreads broadly and pressure ring thins.\n11 cooling grey smoke retains the same lobe structure.\n12 lighter thinning smoke still visibly lingering.\n13 diffuse semi-transparent grey smoke.\n14 faint dispersed wisps.\n15 very faint residual wisps.\n16 completely empty transparent cell.\nAnimation continuity: the same principal smoke lobes and plume details evolve progressively; never sixteen unrelated explosions, no second late detonation. A one-shot flash, expansion, long cooling smoke phase and full fade out.\nConstraints: generous empty transparent space around every cell effect, true alpha transparency outside fire, glow and smoke and through the fading smoke. No painted opaque black, white or checkerboard background; no physical weapon, mushroom cloud side silhouette, text, logo, symbols, numbers, people or watermark.\nSpecific blast: a single strategic missile warhead detonation. A powerful warm-white flash, dense orange radial fireball, ONE clearly dominant thin circular pressure ring, then a broad dark-grey smoky circular canopy. Keep peak outer radius to about 80 percent of cell width. Smoke remains much longer than the bright fire phase. No tall stem visible from the side.",
+          "reasonReplaced": "Shockwaves overlap equal-cell boundaries"
+        }
+      ],
+      "directory": "C:/Users/Damien/Documents/GitHub/AgeOfFronts/AgeOfFronts/Art/Bomb Icons/Explosions/ICBM",
+      "sourceAtlas": "C:/Users/Damien/Documents/GitHub/AgeOfFronts/AgeOfFronts/Art/Bomb Icons/Explosions/ICBM/SourceAtlas.png",
+      "frames": 116,
+      "sheets": 4,
+      "ms": 4833,
+      "peak": 15
+    },
+    {
+      "name": "HydrogenBomb",
+      "label": "Hydrogen bomb detonation",
+      "dimension": 627,
+      "columns": 4,
+      "rows": 4,
+      "frameCount": 16,
+      "relativeFootprint": 0.9,
+      "durations": [
+        50,
+        70,
+        100,
+        150,
+        200,
+        280,
+        350,
+        450,
+        550,
+        650,
+        750,
+        850,
+        900,
+        1000,
+        1100,
+        1200
+      ],
+      "prompt": "Use case: precise-object-edit.\nInput image 1 is the EDIT TARGET. Preserve its realistic painted nuclear detonation, brilliant flash, expanding fireball, two expanding concentric shockwave rings, and lingering billowing smoke, with the SAME sixteen-stage chronology.\nFix the layout and frame clearance. Produce an EXACTLY SQUARE transparent PNG atlas with 4 EQUAL COLUMNS and 4 EQUAL ROWS of square cells. Sixteen row-major frames. Each effect pivot exactly at its cell center. No borders, labels or visible grid lines.\nEach blast including every shockwave, glow fringe and smoke wisp must remain INSIDE THE CENTRAL 50 PERCENT of its own cell width and height. Huge transparent margin on every side of every cell. Nothing touches or crosses a cell boundary, and neighbouring frames never overlap. Even the largest pressure ring and cloud must be dramatically smaller than the cell.\nCoherent timeline: cells 1-2 ignition and bright flash; cells 3-6 expanding yellow-orange fire and pressure ring(s); cells 7-8 cooling fire and growing smoke; cells 9-12 broad billowing smoky canopy with flames gone; cells 13-15 increasingly faint translucent lingering smoke; cell 16 entirely empty transparent.\nMake grey smoke partially transparent and progressively vanish at the end. Maintain the same cloud lobes across neighbouring frames. No opaque ground disk. Everything outside fire, glow and smoke is truly transparent alpha.\nTrue vertical 90-degree top down camera throughout, seeing the top of the cloud. No side view mushroom stem, horizon, buildings, physical bomb, text, logo or watermark.\nMost important: square whole canvas, exactly 4x4 layout, identical centered pivots, MASSIVE EMPTY TRANSPARENT CLEARANCE INSIDE EVERY CELL.",
+      "source": "C:\\Users\\Damien\\.codex\\generated_images\\01a0f0f0-cfa7-76e0-959a-347e83e7ded2\\exec-2cfafede-b3c5-4047-b3a2-5db1f3ef9cd7.png",
+      "reference": "C:\\Users\\Damien\\.codex\\generated_images\\01a0f0f0-cfa7-76e0-959a-347e83e7ded2\\exec-d2d2c8d4-6c80-4cd9-87d1-1cb816cb3192.png",
+      "previousGenerations": [
+        {
+          "source": "C:\\Users\\Damien\\.codex\\generated_images\\01a0f0f0-cfa7-76e0-959a-347e83e7ded2\\exec-d2d2c8d4-6c80-4cd9-87d1-1cb816cb3192.png",
+          "prompt": "Use case: stylized-concept.\nAsset type: animated nuclear detonation game VFX for Age of Fronts, transparent PNG sprite atlas.\nPrimary request: one nuclear blast viewed perfectly from above, evolving coherently through SIXTEEN consecutive frames arranged in an EXACT 4 x 4 grid, four equal square cells across and four down, left-to-right then next row.\nLayout: no grid lines, text, border, gutter or labels. Every cell contains the SAME centered blast at exactly its cell center. Fixed camera, fixed animation pivot and consistent scale across all cells. The expansion is motion within cells, not camera zoom. Never let glow, smoke or shockwaves cross into a neighboring cell.\nCamera: vertical 90-degree TOP DOWN orthographic view, see radial fireball, concentric shockwave and the top of a billowing smoke canopy. NO side view mushroom cloud or visible vertical stem, NO horizon, buildings, ground tiles or environment.\nStyle: realistic richly textured hand-painted strategy-game effect. Intense but readable warm-white flash, pale yellow heat, orange rolling fire, luminous circular pressure wave, turbulent dark charcoal and ash-grey smoke with feathered partially transparent wisps. Match the realistic painted texture finish of the game's overhead assets, with coherent organic motion and no flat diagram lines.\nTime evolution row-major:\n1 tiny warm-white ignition flash at center.\n2 extremely bright compact flash begins expanding.\n3 bright round fireball grows and a first luminous circular shockwave appears.\n4 expanding hot yellow/orange fireball and larger clean pressure ring.\n5 rolling fire and outward shockwave expand.\n6 largest fireball with turbulent outer edges and widening ring.\n7 orange heat begins dimming while grey smoke curls over the fire.\n8 large overhead smoke canopy expands, faint internal fire.\n9 full dense billowing smoke canopy with dim embers.\n10 smoke spreads broadly and pressure ring thins.\n11 cooling grey smoke retains the same lobe structure.\n12 lighter thinning smoke still visibly lingering.\n13 diffuse semi-transparent grey smoke.\n14 faint dispersed wisps.\n15 very faint residual wisps.\n16 completely empty transparent cell.\nAnimation continuity: the same principal smoke lobes and plume details evolve progressively; never sixteen unrelated explosions, no second late detonation. A one-shot flash, expansion, long cooling smoke phase and full fade out.\nConstraints: generous empty transparent space around every cell effect, true alpha transparency outside fire, glow and smoke and through the fading smoke. No painted opaque black, white or checkerboard background; no physical weapon, mushroom cloud side silhouette, text, logo, symbols, numbers, people or watermark.\nSpecific blast: a very large hydrogen-bomb detonation, visibly broader and more intense than an ordinary missile blast. A wide almost white hot flash, large golden-yellow rolling fireball with orange folds, TWO separated expanding concentric luminous shockwave rings, then a massive overhead circular cauliflower-shaped smoke canopy with turbulent dark inner lobes and soft pale-grey outer billows. The smoke lingers after all flames vanish. Peak outer smoke/ring diameter about 90 percent of cell width, within its boundaries. The overhead cloud must have rich swirling surface structure; never a side-view mushroom stem.",
+          "reasonReplaced": "Shockwaves overlap equal-cell boundaries"
+        }
+      ],
+      "directory": "C:/Users/Damien/Documents/GitHub/AgeOfFronts/AgeOfFronts/Art/Bomb Icons/Explosions/HydrogenBomb",
+      "sourceAtlas": "C:/Users/Damien/Documents/GitHub/AgeOfFronts/AgeOfFronts/Art/Bomb Icons/Explosions/HydrogenBomb/SourceAtlas.png",
+      "frames": 208,
+      "sheets": 6,
+      "ms": 8667,
+      "peak": 20
+    }
+  ],
+  "packaging": {
+    "frameRate": 24,
+    "frameSequences": "PNG RGBA",
+    "previews": "lossless animated WebP",
+    "maximumSpriteSheetDimension": 4096,
+    "metadataLoop": false
+  },
+  "review": "C:/Users/Damien/Documents/GitHub/AgeOfFronts/AgeOfFronts/Art/Bomb Icons/Effects-Review.html"
+}

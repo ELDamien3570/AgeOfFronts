@@ -1,0 +1,19 @@
+{
+  "frameCount": 1,
+  "sheetSize": [
+    1254,
+    1254
+  ],
+  "mode": "RGBA",
+  "alphaBounds": [
+    25,
+    21,
+    1234,
+    1232
+  ],
+  "sha256": "9556dca91383e806fe7a42454de9cb9c86ccf6b205de6297c2e9ab94e7126e26",
+  "httpVerifiedPort": 9018,
+  "artisticApproval": "pending",
+  "runtimeIntegration": false,
+  "selectedIdle": "Idle-Overhead-v2.png"
+}

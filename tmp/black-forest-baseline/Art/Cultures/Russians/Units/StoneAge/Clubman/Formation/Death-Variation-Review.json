@@ -1,0 +1,24 @@
+{
+  "date": "2026-10-02",
+  "memberCount": 5,
+  "deathMotionCount": 2,
+  "assignments": {
+    "tip": "death",
+    "left": "death-back",
+    "right": "death",
+    "rear-left": "death",
+    "rear-right": "death-back"
+  },
+  "durationMs": 1580,
+  "validation": "Ten clips, 210 baked frames, no source or composition guard failures.",
+  "regression": "All nine other formation PNGs match their pre-revision SHA-256 hashes.",
+  "structuralTests": {
+    "combinedWithJavelinists": 27,
+    "failed": 0
+  },
+  "browser": "All ten clips loaded. At 1580 ms three side corpses and two supine corpses remain visible; Repeat disabled holds the five final poses.",
+  "browserErrorsOrWarnings": [],
+  "previousDeathAtlas": "SourceActor/SourceArt/Death-Formation-v1.png",
+  "visualAcceptance": "approved by user 2026-10-02",
+  "engineIntegration": "not integrated"
+}

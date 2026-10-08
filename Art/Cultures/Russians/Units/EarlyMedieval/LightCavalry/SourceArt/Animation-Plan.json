@@ -1,0 +1,90 @@
+{
+  "date": "2026-10-07",
+  "mode": "built-in-imagegen",
+  "approvedDesign": "Idle-v1.png",
+  "jobs": [
+    {
+      "id": "idle",
+      "file": "Idle-Animated-v1.png"
+    },
+    {
+      "id": "running",
+      "file": "Running-v1.png"
+    },
+    {
+      "id": "attack",
+      "file": "Attack-v1.png"
+    },
+    {
+      "id": "hit",
+      "file": "Hit-v1.png"
+    },
+    {
+      "id": "charged",
+      "file": "Charged-Impact-v1.png"
+    },
+    {
+      "id": "charge",
+      "file": "Charge-v1.png"
+    },
+    {
+      "id": "charge-attack",
+      "file": "Charge-Attack-v1.png"
+    },
+    {
+      "id": "death",
+      "file": "Death-Together-v1.png"
+    },
+    {
+      "id": "death-thrown",
+      "file": "Death-Thrown-v2.png"
+    }
+  ],
+  "sourceRowCuts": {
+    "idle": [
+      512,
+      512,
+      512
+    ],
+    "running": [
+      512,
+      512,
+      512
+    ],
+    "attack": [
+      512,
+      512,
+      512
+    ],
+    "hit": [
+      511,
+      508,
+      511
+    ],
+    "charged": [
+      512,
+      510,
+      509
+    ],
+    "charge": [
+      512,
+      512,
+      512
+    ],
+    "charge-attack": [
+      512,
+      512,
+      512
+    ],
+    "death": [
+      512,
+      512,
+      512
+    ],
+    "death-thrown": [
+      510,
+      510,
+      510
+    ]
+  }
+}

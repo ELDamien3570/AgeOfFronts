@@ -32,7 +32,7 @@ afterEach(() => {
 });
 
 describe("age-dependent presentation", () => {
-  it("covers every authoritative age with a distinct material", () => {
+  it("covers eight ages using the seven authored materials", () => {
     expect(Object.keys(AGE_UI_THEMES)).toEqual([...AGES]);
     expect(
       new Set(Object.values(AGE_UI_THEMES).map((theme) => theme.texture)).size,
@@ -45,6 +45,7 @@ describe("age-dependent presentation", () => {
         "Shimmering steel",
         "Gold",
         "Gunmetal",
+        "Army green",
         "Army green",
       ],
     );

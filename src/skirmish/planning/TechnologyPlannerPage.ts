@@ -1,11 +1,7 @@
 import savedPlan from "../../../skirmish/plans/technology-plan.json";
-import {
-  AGES,
-  AGE_NAMES,
-  TREES,
-  type Age,
-  type Tree,
-} from "../domain/Definitions";
+import { TREES, type Tree } from "../domain/Definitions";
+import { createResearchArtwork } from "./ResearchTreeArtwork";
+import type { PlanAge as Age } from "./TechnologyPlan";
 import {
   ROLE_NAMES,
   UNIT_ROLES,
@@ -17,6 +13,7 @@ import {
   type TechnologyPlan,
 } from "./TechnologyPlan";
 import { layoutResearch, researchRelations } from "./TechnologyPlanGraph";
+import { readTechnologyPlan } from "./TechnologyPlanMigration";
 import "./TechnologyPlannerPage.css";
 
 const root = document.querySelector<HTMLDivElement>("#planner")!;
@@ -40,10 +37,12 @@ const options = (
         `<option value="${escape(value)}" ${value === selected ? "selected" : ""}>${escape(labels?.[i] ?? value)}</option>`,
     )
     .join("");
-let plan = structuredClone(savedPlan) as TechnologyPlan;
+let plan = readTechnologyPlan(savedPlan);
 let savedSnapshot = JSON.stringify(plan);
 let revision = "";
-let civId = "russians";
+let civId = plan.civilizations.some((c) => c.id === "russians-rework")
+  ? "russians-rework"
+  : "russians";
 let view: "research" | "units" | Tree = "research";
 let ageScope: "all" | Age = "all";
 let showInspector = false;
@@ -59,7 +58,11 @@ const undo: TechnologyPlan[] = [],
   redo: TechnologyPlan[] = [];
 const civ = (): CivilizationPlan =>
   plan.civilizations.find((c) => c.id === civId) ?? plan.civilizations[0];
-const ageName = (age: Age) => AGE_NAMES[AGES.indexOf(age)];
+const planAges = () => civ().ages.map((a) => a.id);
+const ageLabels = () => civ().ages.map((a) => a.name);
+const ageName = (age: Age) => civ().ages.find((a) => a.id === age)?.name ?? age;
+const agePeriod = (age: Age) =>
+  civ().ages.find((a) => a.id === age)?.period ?? "";
 const selectedNode = () =>
   selection?.kind === "unit"
     ? civ().units.find((n) => n.id === selection!.id)
@@ -93,8 +96,10 @@ function commit(next: TechnologyPlan, text: string): boolean {
   return true;
 }
 
+let artworkForNode: ReturnType<typeof createResearchArtwork> = () => [];
 function render() {
   const current = civ();
+  artworkForNode = createResearchArtwork(current);
   tracedRelations = researchRelations(
     current.technologies,
     selection?.kind === "technology" ? selection.id : undefined,
@@ -103,17 +108,22 @@ function render() {
     (u) => u.availability === "undecided",
   ).length;
   root.innerHTML = `
-    <header class="masthead"><a href="/" class="brand">AGE <span>OF</span> FRONTS</a><div class="workshop-tag">DESIGN WORKSHOP <span>Planning draft</span></div><a href="/skirmish/troops.html">Troop almanac ↗</a></header>
+    <header class="masthead"><a href="/" class="brand">AGE <span>OF</span> FRONTS</a><div class="workshop-tag">DESIGN WORKSHOP <span>Planning draft</span></div><a href="/skirmish/troop-tree.html">Troop tree ↗</a></header>
     <section class="intro"><div><p class="eyebrow">CIVILIZATIONS / RESEARCH & UNLOCKS</p><h1>Civilization Workshop</h1></div><div class="plan-scope"><b>Development planning</b><span>These plans do not change live gameplay.</span></div></section>
     <section class="toolbar" aria-label="Planning controls"><label class="civilization-picker">Civilization<select id="civilization">${plan.civilizations.map((c) => `<option value="${escape(c.id)}" ${c.id === current.id ? "selected" : ""}>${escape(c.name)}</option>`).join("")}</select></label><button id="add-civ">+ Civilization</button><button id="edit-civ">Civilization notes</button><div class="toolbar-spacer"></div><button id="undo" ${undo.length ? "" : "disabled"}>Undo</button><button id="redo" ${redo.length ? "" : "disabled"}>Redo</button><button id="reload">Reload saved</button><button id="import">Import JSON</button><button id="export">Export JSON</button><button id="save" class="primary" ${saving ? "disabled" : ""}>${saving ? "Saving…" : dirty ? "Save changes" : "Save plan"}</button><input type="file" id="import-file" accept="application/json,.json" hidden /></section>
     <div class="save-strip"><span class="save-indicator ${dirty ? "unsaved" : ""}">${dirty ? "Unsaved plan changes" : "Saved plan"}</span><span>Save writes <code>skirmish/plans/technology-plan.json</code> on the local dev server. Export works anywhere.</span></div>
     <div id="status" role="status" aria-live="polite" data-error="${failed}">${escape(message)}</div>
     <div class="workspace ${showInspector ? "inspector-open" : ""}"><section class="canvas-panel"><div class="canvas-heading"><div><h2>${escape(current.name)}</h2><p>${pending} undecided unit unlocks · ${current.technologies.length} research nodes</p></div><button id="add-node">+ Research node</button></div>
-      <nav class="age-tabs" aria-label="Research age"><button data-age="all" aria-pressed="${ageScope === "all"}">All ages</button>${AGES.map((age) => `<button data-age="${age}" aria-pressed="${ageScope === age}">${ageName(age)}</button>`).join("")}</nav>
+      <nav class="age-tabs" aria-label="Research age"><button data-age="all" aria-pressed="${ageScope === "all"}">All ages</button>${planAges()
+        .map(
+          (age) =>
+            `<button data-age="${age}" aria-pressed="${ageScope === age}">${escape(ageName(age))}</button>`,
+        )
+        .join("")}</nav>
       <nav class="view-tabs" aria-label="Tree view">${["research", "units", ...TREES].map((t) => `<button data-view="${t}" aria-pressed="${view === t}">${t === "research" ? "All research" : t === "units" ? "Unit progression" : branchName(t as Tree)}</button>`).join("")}</nav>
       ${traceMarkup()}
       <div class="legend">${view === "units" ? '<span><i class="available-dot"></i>Available</span><span><i class="undecided-dot"></i>Undecided</span><span><i class="unavailable-dot"></i>Unavailable</span>' : '<span><i class="prerequisite-dot"></i>Prerequisite path</span><span><i class="downstream-dot"></i>Downstream unlocks</span><span>Click a node to trace its dependencies. Use Edit selected node to change it.</span>'}</div>
-      <div class="graph-scroll" tabindex="0" aria-label="Seven-age technology tree">${diagramMarkup(current)}</div>
+      <div class="graph-scroll" tabindex="0" aria-label="Civilization technology tree">${diagramMarkup(current)}</div>
       <footer class="canvas-footer">${view === "units" ? "Availability and unlocking technologies are separate decisions. Select a unit to edit its plan." : "Research flows from top to bottom. Parallel nodes split and rejoin like the in-game tree. All ages shows links between ages; All research includes links between branches."}</footer>
     </section><aside class="inspector" aria-label="Plan inspector"><button id="close-inspector" class="close-inspector" aria-label="Close inspector">×</button>${inspector()}</aside></div>`;
   bind();
@@ -134,12 +144,14 @@ const svgMarkup = () =>
     )
     .join("")}</defs><g></g></svg>`;
 function diagramMarkup(current: CivilizationPlan) {
-  const ages = AGES.filter((age) => ageScope === "all" || age === ageScope);
+  const ages = planAges().filter(
+    (age) => ageScope === "all" || age === ageScope,
+  );
   if (view === "units")
     return `<div class="graph unit-graph">${ages
       .map(
         (age, index) =>
-          `<section class="age-column"><header><span>AGE ${String(AGES.indexOf(age) + 1).padStart(2, "0")}</span><h3>${ageName(age)}</h3></header>${UNIT_ROLES.map(
+          `<section class="age-column"><header><span>AGE ${String(planAges().indexOf(age) + 1).padStart(2, "0")}</span><h3>${escape(ageName(age))}</h3></header>${UNIT_ROLES.map(
             (role) => {
               const unit = current.units.find(
                 (u) => u.age === age && u.role === role,
@@ -152,16 +164,16 @@ function diagramMarkup(current: CivilizationPlan) {
       )
       .join("")}</div>`;
   const branches = view === "research" ? TREES : [view as Tree];
-  const layouts = layoutResearch(current.technologies).filter((layout) =>
-    ages.includes(layout.age),
+  const layouts = layoutResearch(current.technologies, planAges(), 4).filter(
+    (layout) => ages.includes(layout.age),
   );
   return `<div class="graph research-graph" style="--branch-count:${branches.length}">${svgMarkup()}<div class="research-headings">${branches.map((tree) => `<h3>${branchName(tree)}<small>${current.technologies.filter((n) => n.tree === tree && ages.includes(n.age)).length} discoveries</small></h3>`).join("")}</div>${layouts
     .map(
       (layout) =>
-        `<section class="research-age-band" data-research-age="${layout.age}"><header class="research-age-title"><span>AGE ${String(AGES.indexOf(layout.age) + 1).padStart(2, "0")}</span><h3>${ageName(layout.age)}</h3></header><div class="research-age-branches">${branches
+        `<section class="research-age-band" data-research-age="${layout.age}"><header class="research-age-title"><span>AGE ${String(planAges().indexOf(layout.age) + 1).padStart(2, "0")}</span><h3>${escape(ageName(layout.age))}</h3><small>${escape(agePeriod(layout.age))}</small></header><div class="research-age-branches">${branches
           .map(
             (tree) =>
-              `<div class="research-age-tree" data-branch="${tree}" style="--research-rows:${layout.rows}">${current.technologies
+              `<div class="research-age-tree" data-branch="${tree}" style="--research-rows:${layout.rows};--research-columns:${layout.columns}">${current.technologies
                 .filter((n) => n.age === layout.age && n.tree === tree)
                 .map((node) => {
                   const placement = layout.placements.get(node.id)!;
@@ -191,7 +203,7 @@ function traceMarkup() {
         )
       : [];
   const link = (n: PlannedTechnology | PlannedUnit) =>
-    `<button data-jump-kind="${"role" in n ? "unit" : "technology"}" data-jump="${escape(n.id)}">${escape(n.name)} <small>${ageName(n.age)}</small></button>`;
+    `<button data-jump-kind="${"role" in n ? "unit" : "technology"}" data-jump="${escape(n.id)}">${escape(n.name)} <small>${escape(ageName(n.age))}</small></button>`;
   return `<section class="dependency-trace" aria-label="Selected dependency path"><div class="trace-heading"><div><b>${escape(node.name)}</b><span>${selection?.kind === "technology" ? `${ancestors.size} prerequisites in path · ${descendants.size} downstream technologies` : `${parents.length} unlocking technologies`}</span></div><button id="edit-selected">Edit selected node</button><button id="clear-selection">Clear trace</button></div><div class="trace-links"><div><strong>Requires</strong>${parents.length ? parents.map(link).join("") : "<span>No prerequisites assigned</span>"}</div><div><strong>Directly unlocks</strong>${children.length ? children.map(link).join("") : "<span>No direct unlocks assigned</span>"}</div></div></section>`;
 }
 function nodeCard(
@@ -213,7 +225,23 @@ function nodeCard(
         : relations.descendants.has(node.id)
           ? "descendant"
           : "unrelated";
-  return `<button class="node ${availability} ${active ? "selected" : ""} ${relation}" data-kind="${kind}" data-node="${escape(node.id)}" aria-pressed="${active}"><small>${escape(subtitle)}</small><b>${escape(node.name)}</b><span class="node-state">${kind === "unit" ? availability : `${node.prerequisites.length} prerequisite${node.prerequisites.length === 1 ? "" : "s"}`}</span><span class="decision ${node.decision}">${node.decision}</span></button>`;
+  const art = artworkForNode(node);
+  const icons = art.length
+    ? `<span class="research-art" aria-label="${escape(art.map((i) => `${i.direct ? "Unlocks" : "Leads to"} ${i.label}`).join(", "))}">${art
+        .slice(0, 4)
+        .map((i) => {
+          if (!i.art) return "";
+          const image =
+            "width" in i.art
+              ? `<span class="research-sprite"><img src="${escape(i.art.url)}" alt="" loading="lazy" style="width:${i.art.width}px;height:${i.art.height}px;left:${i.art.left}px;top:${i.art.top}px" /></span>`
+              : `<img src="${escape(i.art.url)}" alt="" loading="lazy" />`;
+          return `<span class="research-art-tile" title="${escape(`${i.direct ? "Unlocks" : "Leads to"} ${i.label}`)}">${image}</span>`;
+        })
+        .join(
+          "",
+        )}${art.length > 4 ? `<span class="research-art-more">+${art.length - 4}</span>` : ""}</span>`
+    : "";
+  return `<button class="node ${"kind" in node ? node.kind : ""} ${availability} ${active ? "selected" : ""} ${relation}" data-kind="${kind}" data-node="${escape(node.id)}" aria-pressed="${active}"><small>${escape("kind" in node ? node.kind.toUpperCase() : subtitle)}</small>${icons}<b>${escape(node.name)}</b><span class="node-state">${kind === "unit" ? availability : `${node.prerequisites.length} prerequisite${node.prerequisites.length === 1 ? "" : "s"}`}</span>${"gold" in node ? `<span class="node-cost">${node.gold === null ? "Cost undecided" : `${node.gold.toLocaleString()}g`} · ${node.researchSeconds === null ? "Time undecided" : `${node.researchSeconds}s`}</span>` : ""}<span class="decision ${node.decision}">${node.decision}</span></button>`;
 }
 
 function inspector(): string {
@@ -223,23 +251,27 @@ function inspector(): string {
     return `<p class="eyebrow">CIVILIZATION DESIGN</p><h2>${escape(civ().name)}</h2><form id="civ-form"><label>Name<input name="name" value="${escape(civ().name)}" required maxlength="120" /></label><label>Design notes<textarea name="notes" rows="10">${escape(civ().notes)}</textarea></label><button class="primary">Apply civilization edits</button></form><p class="inspector-hint">The civilization ID stays stable when its name changes.</p>`;
   const node = selectedNode();
   if (!node)
-    return `<p class="eyebrow">NODE INSPECTOR</p><h2>Shape the next age</h2><p>Select a unit or research node to edit its name, age and prerequisite links.</p><div class="inspector-note"><b>Russian decisions captured</b><p>Stone Age excludes anti-cavalry infantry, heavy cavalry and ranged cavalry.</p><p>Bronze Age uses spear riders and mounted archers, with no chariots.</p><p>Heavy cavalry and anti-cavalry introduction ages are still open.</p></div><p class="inspector-hint">Use Save changes to write the plan to the repository. Keep a JSON export when working away from the local development server.</p>`;
+    return `<p class="eyebrow">NODE INSPECTOR</p><h2>Shape the next age</h2><p>Select a unit or research node to edit its name, age and prerequisite links.</p><div class="inspector-note"><b>Russian decisions captured</b><p>Stone Age excludes anti-cavalry infantry, heavy cavalry and ranged cavalry.</p><p>Bronze Age uses Spear Riders; ranged cavalry is absent, with no chariots.</p><p>Anti-cavalry starts in Bronze Age. Heavy cavalry starts in Early Medieval and peaks in Late Medieval.</p></div><p class="inspector-hint">Use Save changes to write the plan to the repository. Keep a JSON export when working away from the local development server.</p>`;
   const unit = "availability" in node;
   const prerequisiteCandidates = civ()
     .technologies.filter(
-      (t) => t.id !== node.id && AGES.indexOf(t.age) <= AGES.indexOf(node.age),
+      (t) =>
+        t.id !== node.id &&
+        planAges().indexOf(t.age) <= planAges().indexOf(node.age),
     )
     .sort(
-      (a, b) => AGES.indexOf(a.age) - AGES.indexOf(b.age) || a.order - b.order,
+      (a, b) =>
+        planAges().indexOf(a.age) - planAges().indexOf(b.age) ||
+        a.order - b.order,
     );
-  return `<p class="eyebrow">${unit ? ROLE_NAMES[node.role] : `${node.tree} RESEARCH`}</p><h2>${escape(node.name)}</h2><form id="node-form"><label>Name<input name="name" value="${escape(node.name)}" maxlength="120" required /></label><label>Age<select name="age">${options(AGES, node.age, AGE_NAMES)}</select></label>${
+  return `<p class="eyebrow">${unit ? ROLE_NAMES[node.role] : `${node.tree} RESEARCH`}</p><h2>${escape(node.name)}</h2><form id="node-form"><label>Name<input name="name" value="${escape(node.name)}" maxlength="120" required /></label><label>Age<select name="age">${options(planAges(), node.age, ageLabels())}</select></label>${
     unit
       ? `<label>Class<select name="role">${options(
           UNIT_ROLES,
           node.role,
           UNIT_ROLES.map((r) => ROLE_NAMES[r]),
         )}</select></label><label>Availability<select name="availability">${options(["available", "unavailable", "undecided"], node.availability)}</select></label>`
-      : `<div class="field-pair"><label>Branch<select name="tree">${options(TREES, node.tree)}</select></label><label>Position<input name="order" type="number" min="0" step="1" value="${node.order}" required /></label></div><label>Description<textarea name="description" rows="3">${escape(node.description)}</textarea></label>`
+      : `<div class="field-pair"><label>Branch<select name="tree">${options(TREES, node.tree)}</select></label><label>Position<input name="order" type="number" min="0" step="1" value="${node.order}" required /></label></div><label>Research type<select name="researchKind">${options(["unlock", "upgrade", "capstone"], node.kind)}</select></label><div class="field-pair"><label>Gold cost<input name="gold" type="number" min="0" step="1" value="${node.gold ?? ""}" /></label><label>Research seconds<input name="researchSeconds" type="number" min="0" step="1" value="${node.researchSeconds ?? ""}" /></label></div><label>Description<textarea name="description" rows="3">${escape(node.description)}</textarea></label>`
   }<label>Decision status<select name="decision">${options(["baseline", "proposed", "confirmed"], node.decision)}</select></label><fieldset><legend>${unit ? "Unlocking technologies" : "Prerequisites"} <span>(all required)</span></legend><div class="prerequisite-list">${prerequisiteCandidates.map((t) => `<label><input type="checkbox" name="prerequisite" value="${escape(t.id)}" ${node.prerequisites.includes(t.id) ? "checked" : ""} /><span>${escape(t.name)}<small>${ageName(t.age)} · ${t.tree}</small></span></label>`).join("") || "<p>No candidate technologies.</p>"}</div></fieldset><p class="inspector-hint">Apply an age change first to refresh the prerequisite choices. Existing links are retained and validated.</p><label>Design notes<textarea name="notes" rows="4">${escape(node.notes)}</textarea></label><button class="primary">Apply node edits</button><button type="button" id="delete-node" class="danger">Delete ${unit ? "unit plan" : "research node"}</button></form><code class="stable-id">${escape(node.id)}</code>`;
 }
 
@@ -308,6 +340,8 @@ function bind() {
         return;
       }
       civId = (event.target as HTMLSelectElement).value;
+      if (ageScope !== "all" && !planAges().includes(ageScope))
+        ageScope = "all";
       selection = null;
       inspectorMode = "node";
       showInspector = false;
@@ -395,6 +429,9 @@ function bind() {
     current.technologies.push({
       id,
       name: "New research",
+      kind: "unlock",
+      gold: null,
+      researchSeconds: null,
       age,
       tree: branch,
       order:
@@ -484,7 +521,7 @@ function bind() {
       if (file.size > 2_000_000)
         return setMessage("Import exceeds the 2 MB limit.", true);
       try {
-        const imported: unknown = JSON.parse(await file.text());
+        const imported = readTechnologyPlan(JSON.parse(await file.text()));
         const errors = validatePlan(imported);
         if (errors.length)
           return setMessage(errors.slice(0, 5).join("\n"), true);
@@ -567,6 +604,12 @@ function bind() {
         node.tree = field("tree") as Tree;
         node.order = Number(field("order"));
         node.description = field("description");
+        node.kind = field("researchKind") as typeof node.kind;
+        node.gold = field("gold") === "" ? null : Number(field("gold"));
+        node.researchSeconds =
+          field("researchSeconds") === ""
+            ? null
+            : Number(field("researchSeconds"));
       }
     }
     commit(
@@ -691,7 +734,7 @@ async function load(reload = false) {
     const result = await response.json();
     const errors = validatePlan(result.plan);
     if (errors.length) throw new Error(errors.join("\n"));
-    plan = result.plan;
+    plan = readTechnologyPlan(result.plan);
     savedSnapshot = JSON.stringify(plan);
     revision = result.revision;
     civId = civ().id;
@@ -708,6 +751,11 @@ async function load(reload = false) {
   } catch (error) {
     message = `${error instanceof Error ? error.message : "Unable to load plan."} ${revision ? "The current draft was retained." : "Using bundled plans; JSON import/export remain available."}`;
     failed = true;
+  }
+  if (!reload) {
+    const requested = new URLSearchParams(location.search).get("node");
+    if (requested && civ().technologies.some((t) => t.id === requested))
+      selection = { kind: "technology", id: requested };
   }
   render();
 }

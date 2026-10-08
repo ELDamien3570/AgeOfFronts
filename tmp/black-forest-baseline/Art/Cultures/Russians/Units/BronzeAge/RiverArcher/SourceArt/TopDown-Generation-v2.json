@@ -1,0 +1,8 @@
+{
+  "tool": "built-in-imagegen",
+  "generatedSource": "C:/Users/Damien/.codex/generated_images/01a1166c-83ee-7ae0-be97-78c470de8962/exec-3a61c21d-9f5f-4b27-a6d8-70da0999561f.png",
+  "prompt": "Edit target: single Russian Bronze Age River Archer from image1. Rebuild camera at TRUE90 DEGREE VERTICAL OVERHEAD ORTHOGRAPHIC looking directly down, like strategy game plan view. Helmet crown round centered in broad shoulder mass. Fur collar and bronze pauldrons hide almost entire front torso, belt, thighs. Only little boot tops peek below shoulders. Foreshorten arms viewed from above. Preserve hammered bronze dome helmet, bronze rounded pauldrons and wristguards, creamfurcollar, reddish brown leather tunic, pale trousers darkboots, backquiver. No shield. Same wooden Bronze Age selfbow naturalfiberstring, one straight bronzeheadedarrow held loose separately in right hand (screen-left), bow low in left hand (screen-right). Bow limbs and string must connect both tips, string clear of hands and arms; arrow is straight and no piercing arm. Body faces screen bottom, idle low carry. Detailed painted game sprite matching reference. Entire actor and bow inside transparent square with80pxmargin, no shadowfloor scenery text. DO NOT merely tuck head forward: change wholebodyprojection from above, hidefrontchestwall.",
+  "reference": "Idle-v1.png",
+  "nativeFile": "Native-Idle-TopDown-v2.png",
+  "status": "pending-idle-review"
+}

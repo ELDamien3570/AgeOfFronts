@@ -34,7 +34,7 @@ describe("quick research opportunities", () => {
     expect(cards().map((c) => c.id)).toEqual([
       "stoneage-shorecraft",
       "stoneage-spear-throwing",
-      "stoneage-horsemanship",
+      "stoneage-field-engineering",
       "stoneage-craft-workshops",
       "stoneage-stone-mining",
     ]);
@@ -68,7 +68,7 @@ describe("quick research opportunities", () => {
       cards()
         .filter((c) => c.tree === "naval")
         .map((c) => c.id),
-    ).toEqual(["stoneage-war-canoes"]);
+    ).toEqual(["stoneage-war-canoes", "russian-building-stoneage-port"]);
   });
   it("includes unfinished older-age research and uses the local player rather than player one", () => {
     const { m, vm } = fixture();
@@ -110,11 +110,11 @@ describe("quick research opportunities", () => {
       main.querySelector('[data-quick-research="stoneage-shorecraft"]'),
     ).toBeNull();
     expect(
-      main.querySelector('[data-quick-research="stoneage-horsemanship"]'),
+      main.querySelector('[data-quick-research="stoneage-spear-throwing"]'),
     ).not.toBeNull();
     // A stale rendered button cannot spend gold lost since the previous render.
     const stale = main.querySelector<HTMLButtonElement>(
-      '[data-quick-research="stoneage-horsemanship"]',
+      '[data-quick-research="stoneage-spear-throwing"]',
     )!;
     const poor = vm();
     poor.player.gold = 0;

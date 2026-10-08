@@ -1,0 +1,1276 @@
+{
+  "method": "Whole-pose uniform resize, transparent padding and registration by translation; no art repainting.",
+  "authorization": "User authorized composing and baking sprites.",
+  "clips": [
+    {
+      "clip": "idle",
+      "nativeSource": "SourceArt\\Native-Idle-v1.png",
+      "sourceSha256": "60ecf9ae2551257406c07d060ef073dc1c0bad5c914e201a48fe0b54c4ab2615",
+      "output": "Idle-Registered-v1.png",
+      "outputSha256": "3a85b52fae7114d263ff4267021bd4ec422e857bb3172c54bcc5ef1779b42f2f",
+      "uniformScale": 0.8,
+      "displayScale": 1.25,
+      "authoredSourcePoseScale": 1,
+      "placement": [
+        50,
+        50
+      ],
+      "fixedPivot": [
+        254.8,
+        254.8
+      ],
+      "tracks": [
+        {
+          "frame": 0,
+          "translationPx": [
+            0,
+            0
+          ],
+          "matchedRegion": [
+            185,
+            180,
+            340,
+            310
+          ],
+          "alignmentError": null
+        },
+        {
+          "frame": 1,
+          "translationPx": [
+            0,
+            -1
+          ],
+          "matchedRegion": [
+            185,
+            180,
+            340,
+            310
+          ],
+          "alignmentError": 0.009636912494897842
+        },
+        {
+          "frame": 2,
+          "translationPx": [
+            0,
+            -1
+          ],
+          "matchedRegion": [
+            185,
+            180,
+            340,
+            310
+          ],
+          "alignmentError": 0.010676534846425056
+        },
+        {
+          "frame": 3,
+          "translationPx": [
+            0,
+            1
+          ],
+          "matchedRegion": [
+            185,
+            180,
+            340,
+            310
+          ],
+          "alignmentError": 0.007701942231506109
+        },
+        {
+          "frame": 4,
+          "translationPx": [
+            0,
+            1
+          ],
+          "matchedRegion": [
+            185,
+            180,
+            340,
+            310
+          ],
+          "alignmentError": 0.009208198636770248
+        },
+        {
+          "frame": 5,
+          "translationPx": [
+            0,
+            1
+          ],
+          "matchedRegion": [
+            185,
+            180,
+            340,
+            310
+          ],
+          "alignmentError": 0.008168249391019344
+        }
+      ],
+      "sourceRects": [
+        [
+          [
+            0,
+            0,
+            512,
+            512
+          ]
+        ],
+        [
+          [
+            512,
+            0,
+            1024,
+            512
+          ]
+        ],
+        [
+          [
+            1024,
+            0,
+            1536,
+            512
+          ]
+        ],
+        [
+          [
+            0,
+            512,
+            512,
+            1024
+          ]
+        ],
+        [
+          [
+            512,
+            512,
+            1024,
+            1024
+          ]
+        ],
+        [
+          [
+            1024,
+            512,
+            1536,
+            1024
+          ]
+        ]
+      ]
+    },
+    {
+      "clip": "running",
+      "nativeSource": "SourceArt\\Native-Running-v1.png",
+      "sourceSha256": "4d6ffeff66205eeb552aaefd46cd55183d8bf6b2ef7354e33c900b67a462f4c2",
+      "output": "Running-Registered-v1.png",
+      "outputSha256": "5cdcaa1679aa49b83db82a0c080a0a7ad5541af1996aa35745483873c863b822",
+      "uniformScale": 0.8,
+      "displayScale": 1.25,
+      "authoredSourcePoseScale": 1,
+      "placement": [
+        50,
+        50
+      ],
+      "fixedPivot": [
+        254.8,
+        254.8
+      ],
+      "tracks": [
+        {
+          "frame": 0,
+          "translationPx": [
+            0,
+            0
+          ],
+          "matchedRegion": [
+            185,
+            180,
+            340,
+            310
+          ],
+          "alignmentError": null
+        },
+        {
+          "frame": 1,
+          "translationPx": [
+            1,
+            0
+          ],
+          "matchedRegion": [
+            185,
+            180,
+            340,
+            310
+          ],
+          "alignmentError": 0.015829872339963913
+        },
+        {
+          "frame": 2,
+          "translationPx": [
+            3,
+            0
+          ],
+          "matchedRegion": [
+            185,
+            180,
+            340,
+            310
+          ],
+          "alignmentError": 0.021346231922507286
+        },
+        {
+          "frame": 3,
+          "translationPx": [
+            0,
+            0
+          ],
+          "matchedRegion": [
+            185,
+            180,
+            340,
+            310
+          ],
+          "alignmentError": 0.016400804743170738
+        },
+        {
+          "frame": 4,
+          "translationPx": [
+            2,
+            0
+          ],
+          "matchedRegion": [
+            185,
+            180,
+            340,
+            310
+          ],
+          "alignmentError": 0.02245730347931385
+        },
+        {
+          "frame": 5,
+          "translationPx": [
+            3,
+            0
+          ],
+          "matchedRegion": [
+            185,
+            180,
+            340,
+            310
+          ],
+          "alignmentError": 0.02452387474477291
+        }
+      ],
+      "sourceRects": [
+        [
+          [
+            0,
+            0,
+            512,
+            512
+          ]
+        ],
+        [
+          [
+            512,
+            0,
+            1024,
+            512
+          ]
+        ],
+        [
+          [
+            1024,
+            0,
+            1536,
+            512
+          ]
+        ],
+        [
+          [
+            0,
+            512,
+            512,
+            1024
+          ]
+        ],
+        [
+          [
+            512,
+            512,
+            1024,
+            1024
+          ]
+        ],
+        [
+          [
+            1024,
+            512,
+            1536,
+            1024
+          ]
+        ]
+      ]
+    },
+    {
+      "clip": "attack",
+      "nativeSource": "SourceArt\\Native-Attack-Forward-v2.png",
+      "sourceSha256": "182ae9c91dfdd6e3afbfc83b74e3f3ea9d3ca14b3f25e6888fc12b2775bf6499",
+      "output": "Attack-Forward-v2.png",
+      "outputSha256": "6fd7f6074957104830805604889c1e69f03c29f240515192cf383947283017dd",
+      "uniformScale": 0.8,
+      "displayScale": 1.25,
+      "authoredSourcePoseScale": 1,
+      "placement": [
+        50,
+        50
+      ],
+      "fixedPivot": [
+        254.8,
+        254.8
+      ],
+      "tracks": [
+        {
+          "frame": 0,
+          "translationPx": [
+            0,
+            0
+          ],
+          "matchedRegion": null,
+          "alignmentError": null
+        },
+        {
+          "frame": 1,
+          "translationPx": [
+            0,
+            0
+          ],
+          "matchedRegion": null,
+          "alignmentError": null
+        },
+        {
+          "frame": 2,
+          "translationPx": [
+            0,
+            0
+          ],
+          "matchedRegion": null,
+          "alignmentError": null
+        },
+        {
+          "frame": 3,
+          "translationPx": [
+            0,
+            0
+          ],
+          "matchedRegion": null,
+          "alignmentError": null
+        },
+        {
+          "frame": 4,
+          "translationPx": [
+            0,
+            0
+          ],
+          "matchedRegion": null,
+          "alignmentError": null
+        },
+        {
+          "frame": 5,
+          "translationPx": [
+            0,
+            0
+          ],
+          "matchedRegion": null,
+          "alignmentError": null
+        }
+      ],
+      "sourceRects": [
+        [
+          [
+            0,
+            0,
+            512,
+            510
+          ]
+        ],
+        [
+          [
+            512,
+            0,
+            1024,
+            511
+          ]
+        ],
+        [
+          [
+            1024,
+            0,
+            1536,
+            511
+          ]
+        ],
+        [
+          [
+            0,
+            510,
+            512,
+            1024
+          ]
+        ],
+        [
+          [
+            512,
+            511,
+            1024,
+            1024
+          ]
+        ],
+        [
+          [
+            1024,
+            511,
+            1536,
+            1024
+          ]
+        ]
+      ]
+    },
+    {
+      "clip": "hit",
+      "nativeSource": "SourceArt\\Native-Hit-v1.png",
+      "sourceSha256": "099e839a69953475295e71f6367d56655258c80eee6d109b857b55df9f8b7a34",
+      "output": "Hit-v1.png",
+      "outputSha256": "043fe472593a5b7a416ac29ccfd167be671e265db069ab850118a8827e6a230c",
+      "uniformScale": 0.8,
+      "displayScale": 1.25,
+      "authoredSourcePoseScale": 1,
+      "placement": [
+        50,
+        50
+      ],
+      "fixedPivot": [
+        254.8,
+        254.8
+      ],
+      "tracks": [
+        {
+          "frame": 0,
+          "translationPx": [
+            0,
+            0
+          ],
+          "matchedRegion": null,
+          "alignmentError": null
+        },
+        {
+          "frame": 1,
+          "translationPx": [
+            0,
+            0
+          ],
+          "matchedRegion": null,
+          "alignmentError": null
+        },
+        {
+          "frame": 2,
+          "translationPx": [
+            0,
+            0
+          ],
+          "matchedRegion": null,
+          "alignmentError": null
+        },
+        {
+          "frame": 3,
+          "translationPx": [
+            0,
+            0
+          ],
+          "matchedRegion": null,
+          "alignmentError": null
+        },
+        {
+          "frame": 4,
+          "translationPx": [
+            0,
+            0
+          ],
+          "matchedRegion": null,
+          "alignmentError": null
+        },
+        {
+          "frame": 5,
+          "translationPx": [
+            0,
+            0
+          ],
+          "matchedRegion": null,
+          "alignmentError": null
+        }
+      ],
+      "sourceRects": [
+        [
+          [
+            0,
+            0,
+            512,
+            512
+          ]
+        ],
+        [
+          [
+            512,
+            0,
+            1024,
+            512
+          ]
+        ],
+        [
+          [
+            1024,
+            0,
+            1536,
+            512
+          ]
+        ],
+        [
+          [
+            0,
+            512,
+            512,
+            1024
+          ]
+        ],
+        [
+          [
+            512,
+            512,
+            1024,
+            1024
+          ]
+        ],
+        [
+          [
+            1024,
+            512,
+            1536,
+            1024
+          ]
+        ]
+      ]
+    },
+    {
+      "clip": "charged",
+      "nativeSource": "SourceArt\\Native-Charged-Impact-v1.png",
+      "sourceSha256": "8b6dac3f0fb5e203b058fa99248537a94e405cfe3ff990593bdf82248eac4848",
+      "output": "Charged-Impact-v1.png",
+      "outputSha256": "f7394fd609e7acba6c7deafba7d097892d31f91fb4ee632809faf167bb60538a",
+      "uniformScale": 0.8,
+      "displayScale": 1.25,
+      "authoredSourcePoseScale": 1,
+      "placement": [
+        50,
+        50
+      ],
+      "fixedPivot": [
+        254.8,
+        254.8
+      ],
+      "tracks": [
+        {
+          "frame": 0,
+          "translationPx": [
+            0,
+            0
+          ],
+          "matchedRegion": null,
+          "alignmentError": null
+        },
+        {
+          "frame": 1,
+          "translationPx": [
+            0,
+            0
+          ],
+          "matchedRegion": null,
+          "alignmentError": null
+        },
+        {
+          "frame": 2,
+          "translationPx": [
+            0,
+            0
+          ],
+          "matchedRegion": null,
+          "alignmentError": null
+        },
+        {
+          "frame": 3,
+          "translationPx": [
+            0,
+            0
+          ],
+          "matchedRegion": null,
+          "alignmentError": null
+        },
+        {
+          "frame": 4,
+          "translationPx": [
+            0,
+            0
+          ],
+          "matchedRegion": null,
+          "alignmentError": null
+        },
+        {
+          "frame": 5,
+          "translationPx": [
+            0,
+            0
+          ],
+          "matchedRegion": null,
+          "alignmentError": null
+        }
+      ],
+      "sourceRects": [
+        [
+          [
+            0,
+            0,
+            512,
+            512
+          ]
+        ],
+        [
+          [
+            512,
+            0,
+            1024,
+            512
+          ]
+        ],
+        [
+          [
+            1024,
+            0,
+            1536,
+            512
+          ]
+        ],
+        [
+          [
+            0,
+            512,
+            512,
+            1024
+          ]
+        ],
+        [
+          [
+            512,
+            512,
+            1024,
+            1024
+          ]
+        ],
+        [
+          [
+            1024,
+            512,
+            1536,
+            1024
+          ]
+        ]
+      ]
+    },
+    {
+      "clip": "charge",
+      "nativeSource": "SourceArt\\Native-Charge-v1.png",
+      "sourceSha256": "08ccd404eb0d52457eacf091be83a4ec6989e3373dcb784c88f73fe864b13edd",
+      "output": "Charge-Registered-v2.png",
+      "outputSha256": "fa8f37a714494c2db011a01be3620a5c3b15e0bbb9ec2efb64d4630feab835e8",
+      "uniformScale": 0.8,
+      "displayScale": 1.25,
+      "authoredSourcePoseScale": 1,
+      "placement": [
+        50,
+        50
+      ],
+      "fixedPivot": [
+        254.8,
+        254.8
+      ],
+      "tracks": [
+        {
+          "frame": 0,
+          "translationPx": [
+            0,
+            0
+          ],
+          "matchedRegion": null,
+          "alignmentError": null
+        },
+        {
+          "frame": 1,
+          "translationPx": [
+            0,
+            0
+          ],
+          "matchedRegion": null,
+          "alignmentError": null
+        },
+        {
+          "frame": 2,
+          "translationPx": [
+            0,
+            0
+          ],
+          "matchedRegion": null,
+          "alignmentError": null
+        },
+        {
+          "frame": 3,
+          "translationPx": [
+            0,
+            0
+          ],
+          "matchedRegion": null,
+          "alignmentError": null
+        },
+        {
+          "frame": 4,
+          "translationPx": [
+            0,
+            0
+          ],
+          "matchedRegion": null,
+          "alignmentError": null
+        },
+        {
+          "frame": 5,
+          "translationPx": [
+            0,
+            0
+          ],
+          "matchedRegion": null,
+          "alignmentError": null
+        }
+      ],
+      "sourceRects": [
+        [
+          [
+            0,
+            0,
+            512,
+            512
+          ]
+        ],
+        [
+          [
+            512,
+            0,
+            1024,
+            512
+          ]
+        ],
+        [
+          [
+            1024,
+            0,
+            1536,
+            512
+          ]
+        ],
+        [
+          [
+            0,
+            512,
+            512,
+            1024
+          ]
+        ],
+        [
+          [
+            512,
+            512,
+            1024,
+            1024
+          ]
+        ],
+        [
+          [
+            1024,
+            512,
+            1536,
+            1024
+          ]
+        ]
+      ],
+      "registrationSource": "Charge-v1.png",
+      "registrationSourceSha256": "89c5a7107688955827d71da63bbd20da7d15df35734a94ae2e9102c60da38140",
+      "registrationOffsets": [
+        {
+          "frame": 0,
+          "translationPx": [
+            0,
+            0
+          ],
+          "matchedRegion": [
+            185,
+            180,
+            340,
+            310
+          ],
+          "measuredVerticalOffsetNotApplied": 0,
+          "alignmentError": 0.0
+        },
+        {
+          "frame": 1,
+          "translationPx": [
+            22,
+            0
+          ],
+          "matchedRegion": [
+            185,
+            180,
+            340,
+            310
+          ],
+          "measuredVerticalOffsetNotApplied": 0,
+          "alignmentError": 0.012619697488844395
+        },
+        {
+          "frame": 2,
+          "translationPx": [
+            42,
+            0
+          ],
+          "matchedRegion": [
+            185,
+            180,
+            340,
+            310
+          ],
+          "measuredVerticalOffsetNotApplied": 2,
+          "alignmentError": 0.018661383539438248
+        },
+        {
+          "frame": 3,
+          "translationPx": [
+            -4,
+            0
+          ],
+          "matchedRegion": [
+            185,
+            180,
+            340,
+            310
+          ],
+          "measuredVerticalOffsetNotApplied": 6,
+          "alignmentError": 0.02621249295771122
+        },
+        {
+          "frame": 4,
+          "translationPx": [
+            22,
+            0
+          ],
+          "matchedRegion": [
+            185,
+            180,
+            340,
+            310
+          ],
+          "measuredVerticalOffsetNotApplied": 6,
+          "alignmentError": 0.026091625913977623
+        },
+        {
+          "frame": 5,
+          "translationPx": [
+            44,
+            0
+          ],
+          "matchedRegion": [
+            185,
+            180,
+            340,
+            310
+          ],
+          "measuredVerticalOffsetNotApplied": 4,
+          "alignmentError": 0.022324098274111748
+        }
+      ]
+    },
+    {
+      "clip": "charge-attack",
+      "nativeSource": "SourceArt\\Native-Charge-Attack-Forward-v2.png",
+      "sourceSha256": "dd4ccc5bf3c1d531f8432d47f76056f41c9e1d75001952cd7b6e4695bf27c89f",
+      "output": "Charge-Attack-Forward-v2.png",
+      "outputSha256": "40c434ab7caee318201b6264682e31ea50c3be909c030bd2f44d510063638aef",
+      "uniformScale": 0.8,
+      "displayScale": 1.25,
+      "authoredSourcePoseScale": 1,
+      "placement": [
+        50,
+        50
+      ],
+      "fixedPivot": [
+        254.8,
+        254.8
+      ],
+      "tracks": [
+        {
+          "frame": 0,
+          "translationPx": [
+            0,
+            0
+          ],
+          "matchedRegion": null,
+          "alignmentError": null
+        },
+        {
+          "frame": 1,
+          "translationPx": [
+            0,
+            0
+          ],
+          "matchedRegion": null,
+          "alignmentError": null
+        },
+        {
+          "frame": 2,
+          "translationPx": [
+            0,
+            0
+          ],
+          "matchedRegion": null,
+          "alignmentError": null
+        },
+        {
+          "frame": 3,
+          "translationPx": [
+            0,
+            0
+          ],
+          "matchedRegion": null,
+          "alignmentError": null
+        },
+        {
+          "frame": 4,
+          "translationPx": [
+            0,
+            0
+          ],
+          "matchedRegion": null,
+          "alignmentError": null
+        },
+        {
+          "frame": 5,
+          "translationPx": [
+            0,
+            0
+          ],
+          "matchedRegion": null,
+          "alignmentError": null
+        }
+      ],
+      "sourceRects": [
+        [
+          [
+            0,
+            0,
+            512,
+            511
+          ]
+        ],
+        [
+          [
+            512,
+            0,
+            1024,
+            511
+          ]
+        ],
+        [
+          [
+            1024,
+            0,
+            1536,
+            511
+          ]
+        ],
+        [
+          [
+            0,
+            511,
+            512,
+            1024
+          ]
+        ],
+        [
+          [
+            512,
+            511,
+            1024,
+            1024
+          ]
+        ],
+        [
+          [
+            1024,
+            511,
+            1536,
+            1024
+          ]
+        ]
+      ]
+    },
+    {
+      "clip": "death",
+      "nativeSource": "SourceArt\\Native-Death-Together-v1.png",
+      "sourceSha256": "e66b34bbfd86b78047a4c4342941f0401442aff1600d28de175ab3349678c983",
+      "output": "Death-Together-v1.png",
+      "outputSha256": "5afe4bc15cffdb1d1efca36b4505547add885527481729cbd05587c6a8edec5b",
+      "uniformScale": 0.8,
+      "displayScale": 1.25,
+      "authoredSourcePoseScale": 1,
+      "placement": [
+        50,
+        50
+      ],
+      "fixedPivot": [
+        254.8,
+        254.8
+      ],
+      "tracks": [
+        {
+          "frame": 0,
+          "translationPx": [
+            0,
+            0
+          ],
+          "matchedRegion": null,
+          "alignmentError": null
+        },
+        {
+          "frame": 1,
+          "translationPx": [
+            0,
+            0
+          ],
+          "matchedRegion": null,
+          "alignmentError": null
+        },
+        {
+          "frame": 2,
+          "translationPx": [
+            0,
+            0
+          ],
+          "matchedRegion": null,
+          "alignmentError": null
+        },
+        {
+          "frame": 3,
+          "translationPx": [
+            0,
+            0
+          ],
+          "matchedRegion": null,
+          "alignmentError": null
+        },
+        {
+          "frame": 4,
+          "translationPx": [
+            0,
+            0
+          ],
+          "matchedRegion": null,
+          "alignmentError": null
+        },
+        {
+          "frame": 5,
+          "translationPx": [
+            0,
+            0
+          ],
+          "matchedRegion": null,
+          "alignmentError": null
+        }
+      ],
+      "sourceRects": [
+        [
+          [
+            0,
+            0,
+            512,
+            530
+          ]
+        ],
+        [
+          [
+            512,
+            0,
+            1024,
+            535
+          ]
+        ],
+        [
+          [
+            1024,
+            0,
+            1536,
+            512
+          ]
+        ],
+        [
+          [
+            0,
+            530,
+            512,
+            1024
+          ]
+        ],
+        [
+          [
+            512,
+            535,
+            1024,
+            1024
+          ]
+        ],
+        [
+          [
+            1024,
+            512,
+            1536,
+            1024
+          ]
+        ]
+      ]
+    },
+    {
+      "clip": "death-thrown",
+      "nativeSource": "SourceArt\\Native-Death-Thrown-v5.png",
+      "sourceSha256": "402f455dc02a4c6de4da097d330a52373a3b50786df1842c1cd299e0bb2d9065",
+      "output": "Death-Thrown-v5.png",
+      "outputSha256": "7f205fbcfb94a1e12af152c81eaa651a6b1aee37c3c9ff955a817955bc76ac9a",
+      "uniformScale": 0.8,
+      "displayScale": 1.4197976878612717,
+      "authoredSourcePoseScale": 0.8804071246819338,
+      "placement": [
+        50,
+        50
+      ],
+      "fixedPivot": [
+        254.8,
+        254.8
+      ],
+      "tracks": [
+        {
+          "frame": 0,
+          "translationPx": [
+            0,
+            0
+          ],
+          "matchedRegion": null,
+          "alignmentError": null
+        },
+        {
+          "frame": 1,
+          "translationPx": [
+            0,
+            0
+          ],
+          "matchedRegion": null,
+          "alignmentError": null
+        },
+        {
+          "frame": 2,
+          "translationPx": [
+            0,
+            0
+          ],
+          "matchedRegion": null,
+          "alignmentError": null
+        },
+        {
+          "frame": 3,
+          "translationPx": [
+            0,
+            0
+          ],
+          "matchedRegion": null,
+          "alignmentError": null
+        },
+        {
+          "frame": 4,
+          "translationPx": [
+            0,
+            0
+          ],
+          "matchedRegion": null,
+          "alignmentError": null
+        },
+        {
+          "frame": 5,
+          "translationPx": [
+            0,
+            0
+          ],
+          "matchedRegion": null,
+          "alignmentError": null
+        }
+      ],
+      "sourceRects": [
+        [
+          [
+            0,
+            0,
+            512,
+            512
+          ]
+        ],
+        [
+          [
+            512,
+            0,
+            1024,
+            512
+          ]
+        ],
+        [
+          [
+            1024,
+            0,
+            1536,
+            512
+          ]
+        ],
+        [
+          [
+            0,
+            512,
+            512,
+            1024
+          ]
+        ],
+        [
+          [
+            512,
+            512,
+            1024,
+            1024
+          ]
+        ],
+        [
+          [
+            1024,
+            512,
+            1536,
+            1024
+          ]
+        ]
+      ]
+    }
+  ]
+}

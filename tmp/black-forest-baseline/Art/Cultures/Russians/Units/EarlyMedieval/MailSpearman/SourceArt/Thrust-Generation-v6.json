@@ -1,0 +1,97 @@
+{
+  "date": "2026-10-07",
+  "records": [
+    {
+      "id": "attack",
+      "file": "Attack-Rebuilt-v6.png",
+      "prompt": "Completely NEW attack animation poses, not modifications of old frames. Reference is CHARACTER COSTUME ONLY, not attack pose. Russian Early Medieval mail spearman with iron ringmail, burgundy padded sleeves, conical iron helmet, leather gloves and boots, wood round shield in left hand, straight wood spear with steel leafhead in right hand. Directly90degreeoverhead RTS painterly style, helmet crown visible, never portrait/isometric. SIX sequential frames,1536x1024RGBA transparent atlas3columns2rows,each512cell containsfullactorandweapon with30pxguards. A proper OVERHAND spear jab: soldier OPENS BODY about30degrees, right SHOULDER DRAWS BACK, ELBOW BENDS behind, fist holds spear beside right shoulder; then shoulder drives forward and elbow STRAIGHTENS to push spear into enemy direction toward bottom-right, then recover. Right arm is above shoulder plane, palm faces down, knuckles up throughout. Entire spear translates with fist. NO hand sliding on shaft. Firm fist ALWAYS at MIDPOINT of300px spear,150px rearwood fromfisttobutt AND150px forwardwood+head fromfisttotip. Spear axis same30degrees diagonal fromTOPLEFT toBOTTOMRIGHT; steelhead atBOTTOMRIGHT, buttTOPLEFT. Midpointgrip never changes, one identical rigid spear everyframe. Frame1ready body slightlyopen and highfist(145,230),butt(85,92),tip(205,368). Frame2windup stronger torso turn, raised elbow drawn back, fist(125,190),butt(65,52),tip(185,328). Frame3shoulder drives, elbow halfway open,fist(155,250),butt(95,112),tip(215,388). Frame4IMPACT full forward arm extension, fist(205,330),butt(145,192),tip(265,468),clear frontfoot plant, visibly long arm at shoulderlevel pointing towardbottom-right, strong stab. Frame5withdraw elbowbend,fist(155,250),butt(95,112),tip(215,388). Frame6readyfist(145,230),butt(85,92),tip(205,368). Shield leftarm braces andmoves naturally with torso turn. Head staysnear(270,210), consistent100pxhelmet and body250px. TWO ARMS ONLY; no detachedweapon, cutoutlimbs, duplicatedhands, weaponswing,chop, raisedhandatthebutt. Fullpaintedbodyposes, transparentbackground,no shadows,text ormotionlines. Standard stab uses planted feet and controlled torso twist.",
+      "generatedSource": "C:/Users/Damien/.codex/generated_images/01a0fea1-c63f-7343-92ca-6c21cc1c4296/exec-7a026345-531c-40ad-aaff-e48dcbd64ab1.png",
+      "nativeFile": "Native-Attack-Rebuilt-v6.png",
+      "status": "selected-source",
+      "sourceRects": [
+        [
+          0,
+          0,
+          512,
+          512
+        ],
+        [
+          512,
+          0,
+          1024,
+          512
+        ],
+        [
+          1024,
+          0,
+          1536,
+          512
+        ],
+        [
+          0,
+          512,
+          560,
+          1024
+        ],
+        [
+          560,
+          512,
+          1024,
+          1024
+        ],
+        [
+          1024,
+          512,
+          1536,
+          1024
+        ]
+      ]
+    },
+    {
+      "id": "charge-attack",
+      "file": "Charge-Attack-Rebuilt-v6.png",
+      "prompt": "Completely NEW attack animation poses, not modifications of old frames. Reference is CHARACTER COSTUME ONLY, not attack pose. Russian Early Medieval mail spearman with iron ringmail, burgundy padded sleeves, conical iron helmet, leather gloves and boots, wood round shield in left hand, straight wood spear with steel leafhead in right hand. Directly90degreeoverhead RTS painterly style, helmet crown visible, never portrait/isometric. SIX sequential frames,1536x1024RGBA transparent atlas3columns2rows,each512cell containsfullactorandweapon with30pxguards. A proper OVERHAND spear jab: soldier OPENS BODY about30degrees, right SHOULDER DRAWS BACK, ELBOW BENDS behind, fist holds spear beside right shoulder; then shoulder drives forward and elbow STRAIGHTENS to push spear into enemy direction toward bottom-right, then recover. Right arm is above shoulder plane, palm faces down, knuckles up throughout. Entire spear translates with fist. NO hand sliding on shaft. Firm fist ALWAYS at MIDPOINT of300px spear,150px rearwood fromfisttobutt AND150px forwardwood+head fromfisttotip. Spear axis same30degrees diagonal fromTOPLEFT toBOTTOMRIGHT; steelhead atBOTTOMRIGHT, buttTOPLEFT. Midpointgrip never changes, one identical rigid spear everyframe. Frame1ready body slightlyopen and highfist(145,230),butt(85,92),tip(205,368). Frame2windup stronger torso turn, raised elbow drawn back, fist(125,190),butt(65,52),tip(185,328). Frame3shoulder drives, elbow halfway open,fist(155,250),butt(95,112),tip(215,388). Frame4IMPACT full forward arm extension, fist(205,330),butt(145,192),tip(265,468),clear frontfoot plant, visibly long arm at shoulderlevel pointing towardbottom-right, strong stab. Frame5withdraw elbowbend,fist(155,250),butt(95,112),tip(215,388). Frame6readyfist(145,230),butt(85,92),tip(205,368). Shield leftarm braces andmoves naturally with torso turn. Head staysnear(270,210), consistent100pxhelmet and body250px. TWO ARMS ONLY; no detachedweapon, cutoutlimbs, duplicatedhands, weaponswing,chop, raisedhandatthebutt. Fullpaintedbodyposes, transparentbackground,no shadows,text ormotionlines. Charge strike has deeper knee bend and forward shoulder lunge, leadingfootstep, strong one-offstab.",
+      "generatedSource": "C:/Users/Damien/.codex/generated_images/01a0fea1-c63f-7343-92ca-6c21cc1c4296/exec-072e2f64-a3a5-4dee-81d9-fe0fed7f116a.png",
+      "nativeFile": "Native-Charge-Attack-Rebuilt-v6.png",
+      "status": "selected-source",
+      "sourceRects": [
+        [
+          0,
+          0,
+          512,
+          512
+        ],
+        [
+          512,
+          0,
+          1024,
+          512
+        ],
+        [
+          1024,
+          0,
+          1536,
+          512
+        ],
+        [
+          0,
+          512,
+          560,
+          1024
+        ],
+        [
+          560,
+          512,
+          1024,
+          1024
+        ],
+        [
+          1024,
+          512,
+          1536,
+          1024
+        ]
+      ]
+    }
+  ]
+}

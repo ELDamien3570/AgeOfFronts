@@ -1,0 +1,781 @@
+{
+  "schemaVersion": 1,
+  "status": "animation-proposal",
+  "unit": "Bombard",
+  "key": "Bombard",
+  "category": "Siege Weapons",
+  "age": "LateMedieval",
+  "crewCount": 3,
+  "camera": "vertical-overhead-orthographic",
+  "facing": "screen-up",
+  "directionCount": 1,
+  "frameSize": {
+    "width": 627,
+    "height": 627
+  },
+  "pivot": {
+    "x": 313.5,
+    "y": 313.5
+  },
+  "normalizedPivot": {
+    "x": 0.5,
+    "y": 0.5
+  },
+  "alpha": "straight",
+  "textureLimit": 4096,
+  "frameOrder": "left-to-right-then-next-row",
+  "animations": {
+    "idle": {
+      "file": "Idle.png",
+      "preview": "Idle-Preview.webp",
+      "frameCount": 12,
+      "keyframeCount": 4,
+      "suggestedFramesPerSecond": 12,
+      "loop": true,
+      "durationMs": 1000,
+      "grid": {
+        "columns": 6,
+        "rows": 2
+      },
+      "sheetSize": {
+        "width": 3762,
+        "height": 1254
+      },
+      "frames": [
+        {
+          "index": 0,
+          "keyframe": 0,
+          "file": "Frames/Idle_000.png",
+          "x": 0,
+          "y": 0,
+          "width": 627,
+          "height": 627,
+          "durationMs": 83,
+          "sha256": "da620db3439f4196a98a2e83a3d0dc48fc989fc6c60dfb3c20c42aeb04611a2c"
+        },
+        {
+          "index": 1,
+          "keyframe": 0,
+          "file": "Frames/Idle_001.png",
+          "x": 627,
+          "y": 0,
+          "width": 627,
+          "height": 627,
+          "durationMs": 84,
+          "sha256": "da620db3439f4196a98a2e83a3d0dc48fc989fc6c60dfb3c20c42aeb04611a2c"
+        },
+        {
+          "index": 2,
+          "keyframe": 0,
+          "file": "Frames/Idle_002.png",
+          "x": 1254,
+          "y": 0,
+          "width": 627,
+          "height": 627,
+          "durationMs": 83,
+          "sha256": "da620db3439f4196a98a2e83a3d0dc48fc989fc6c60dfb3c20c42aeb04611a2c"
+        },
+        {
+          "index": 3,
+          "keyframe": 1,
+          "file": "Frames/Idle_003.png",
+          "x": 1881,
+          "y": 0,
+          "width": 627,
+          "height": 627,
+          "durationMs": 83,
+          "sha256": "c50c55cf724389f0c2bbde0789d29cd577a2df97343aa8d2fa91ba09f8ad3f32"
+        },
+        {
+          "index": 4,
+          "keyframe": 1,
+          "file": "Frames/Idle_004.png",
+          "x": 2508,
+          "y": 0,
+          "width": 627,
+          "height": 627,
+          "durationMs": 84,
+          "sha256": "c50c55cf724389f0c2bbde0789d29cd577a2df97343aa8d2fa91ba09f8ad3f32"
+        },
+        {
+          "index": 5,
+          "keyframe": 1,
+          "file": "Frames/Idle_005.png",
+          "x": 3135,
+          "y": 0,
+          "width": 627,
+          "height": 627,
+          "durationMs": 83,
+          "sha256": "c50c55cf724389f0c2bbde0789d29cd577a2df97343aa8d2fa91ba09f8ad3f32"
+        },
+        {
+          "index": 6,
+          "keyframe": 2,
+          "file": "Frames/Idle_006.png",
+          "x": 0,
+          "y": 627,
+          "width": 627,
+          "height": 627,
+          "durationMs": 83,
+          "sha256": "4d699d3ef27828651417dffea1a5e194d913c5746db2d5b40e3e52813c92b6e1"
+        },
+        {
+          "index": 7,
+          "keyframe": 2,
+          "file": "Frames/Idle_007.png",
+          "x": 627,
+          "y": 627,
+          "width": 627,
+          "height": 627,
+          "durationMs": 84,
+          "sha256": "4d699d3ef27828651417dffea1a5e194d913c5746db2d5b40e3e52813c92b6e1"
+        },
+        {
+          "index": 8,
+          "keyframe": 2,
+          "file": "Frames/Idle_008.png",
+          "x": 1254,
+          "y": 627,
+          "width": 627,
+          "height": 627,
+          "durationMs": 83,
+          "sha256": "4d699d3ef27828651417dffea1a5e194d913c5746db2d5b40e3e52813c92b6e1"
+        },
+        {
+          "index": 9,
+          "keyframe": 3,
+          "file": "Frames/Idle_009.png",
+          "x": 1881,
+          "y": 627,
+          "width": 627,
+          "height": 627,
+          "durationMs": 83,
+          "sha256": "57a70eef73b881a9466a5874664518f4e86dbf978b27e381d1dbd5e3eff56d50"
+        },
+        {
+          "index": 10,
+          "keyframe": 3,
+          "file": "Frames/Idle_010.png",
+          "x": 2508,
+          "y": 627,
+          "width": 627,
+          "height": 627,
+          "durationMs": 84,
+          "sha256": "57a70eef73b881a9466a5874664518f4e86dbf978b27e381d1dbd5e3eff56d50"
+        },
+        {
+          "index": 11,
+          "keyframe": 3,
+          "file": "Frames/Idle_011.png",
+          "x": 3135,
+          "y": 627,
+          "width": 627,
+          "height": 627,
+          "durationMs": 83,
+          "sha256": "57a70eef73b881a9466a5874664518f4e86dbf978b27e381d1dbd5e3eff56d50"
+        }
+      ]
+    },
+    "movement": {
+      "file": "Movement.png",
+      "preview": "Movement-Preview.webp",
+      "frameCount": 8,
+      "keyframeCount": 4,
+      "suggestedFramesPerSecond": 12,
+      "loop": true,
+      "durationMs": 667,
+      "grid": {
+        "columns": 6,
+        "rows": 2
+      },
+      "sheetSize": {
+        "width": 3762,
+        "height": 1254
+      },
+      "frames": [
+        {
+          "index": 0,
+          "keyframe": 0,
+          "file": "Frames/Movement_000.png",
+          "x": 0,
+          "y": 0,
+          "width": 627,
+          "height": 627,
+          "durationMs": 83,
+          "sha256": "19b78509c26aab4cfc44d0e054fc3aab7137746f5368d7c4bbb4a1c2f236105f"
+        },
+        {
+          "index": 1,
+          "keyframe": 0,
+          "file": "Frames/Movement_001.png",
+          "x": 627,
+          "y": 0,
+          "width": 627,
+          "height": 627,
+          "durationMs": 84,
+          "sha256": "19b78509c26aab4cfc44d0e054fc3aab7137746f5368d7c4bbb4a1c2f236105f"
+        },
+        {
+          "index": 2,
+          "keyframe": 1,
+          "file": "Frames/Movement_002.png",
+          "x": 1254,
+          "y": 0,
+          "width": 627,
+          "height": 627,
+          "durationMs": 83,
+          "sha256": "1e43e6a58ab286bbaea229e01d4161296de57b10825da9c29a3e31144dbd2b8a"
+        },
+        {
+          "index": 3,
+          "keyframe": 1,
+          "file": "Frames/Movement_003.png",
+          "x": 1881,
+          "y": 0,
+          "width": 627,
+          "height": 627,
+          "durationMs": 83,
+          "sha256": "1e43e6a58ab286bbaea229e01d4161296de57b10825da9c29a3e31144dbd2b8a"
+        },
+        {
+          "index": 4,
+          "keyframe": 2,
+          "file": "Frames/Movement_004.png",
+          "x": 2508,
+          "y": 0,
+          "width": 627,
+          "height": 627,
+          "durationMs": 84,
+          "sha256": "c9e1eb9aaa63e54d77f6e7debe6978b765dc9825a292522e86173e87adcddf80"
+        },
+        {
+          "index": 5,
+          "keyframe": 2,
+          "file": "Frames/Movement_005.png",
+          "x": 3135,
+          "y": 0,
+          "width": 627,
+          "height": 627,
+          "durationMs": 83,
+          "sha256": "c9e1eb9aaa63e54d77f6e7debe6978b765dc9825a292522e86173e87adcddf80"
+        },
+        {
+          "index": 6,
+          "keyframe": 3,
+          "file": "Frames/Movement_006.png",
+          "x": 0,
+          "y": 627,
+          "width": 627,
+          "height": 627,
+          "durationMs": 83,
+          "sha256": "9e6f93a40f0ae73786fc3034c038d2dd99737930b730443b049d7048809d8286"
+        },
+        {
+          "index": 7,
+          "keyframe": 3,
+          "file": "Frames/Movement_007.png",
+          "x": 627,
+          "y": 627,
+          "width": 627,
+          "height": 627,
+          "durationMs": 84,
+          "sha256": "9e6f93a40f0ae73786fc3034c038d2dd99737930b730443b049d7048809d8286"
+        }
+      ]
+    },
+    "attack": {
+      "file": "Attack.png",
+      "preview": "Attack-Preview.webp",
+      "frameCount": 18,
+      "keyframeCount": 4,
+      "suggestedFramesPerSecond": 12,
+      "loop": false,
+      "durationMs": 1500,
+      "grid": {
+        "columns": 6,
+        "rows": 3
+      },
+      "sheetSize": {
+        "width": 3762,
+        "height": 1881
+      },
+      "frames": [
+        {
+          "index": 0,
+          "keyframe": 0,
+          "file": "Frames/Attack_000.png",
+          "x": 0,
+          "y": 0,
+          "width": 627,
+          "height": 627,
+          "durationMs": 83,
+          "sha256": "40a771275f2278aa73bea826fb938b4bcc0d1f5319d15de4e69f91666924cf9e"
+        },
+        {
+          "index": 1,
+          "keyframe": 0,
+          "file": "Frames/Attack_001.png",
+          "x": 627,
+          "y": 0,
+          "width": 627,
+          "height": 627,
+          "durationMs": 84,
+          "sha256": "40a771275f2278aa73bea826fb938b4bcc0d1f5319d15de4e69f91666924cf9e"
+        },
+        {
+          "index": 2,
+          "keyframe": 0,
+          "file": "Frames/Attack_002.png",
+          "x": 1254,
+          "y": 0,
+          "width": 627,
+          "height": 627,
+          "durationMs": 83,
+          "sha256": "40a771275f2278aa73bea826fb938b4bcc0d1f5319d15de4e69f91666924cf9e"
+        },
+        {
+          "index": 3,
+          "keyframe": 0,
+          "file": "Frames/Attack_003.png",
+          "x": 1881,
+          "y": 0,
+          "width": 627,
+          "height": 627,
+          "durationMs": 83,
+          "sha256": "40a771275f2278aa73bea826fb938b4bcc0d1f5319d15de4e69f91666924cf9e"
+        },
+        {
+          "index": 4,
+          "keyframe": 0,
+          "file": "Frames/Attack_004.png",
+          "x": 2508,
+          "y": 0,
+          "width": 627,
+          "height": 627,
+          "durationMs": 84,
+          "sha256": "40a771275f2278aa73bea826fb938b4bcc0d1f5319d15de4e69f91666924cf9e"
+        },
+        {
+          "index": 5,
+          "keyframe": 1,
+          "file": "Frames/Attack_005.png",
+          "x": 3135,
+          "y": 0,
+          "width": 627,
+          "height": 627,
+          "durationMs": 83,
+          "sha256": "d5320f090892a18c8aae50e8de5d59e11a3014efd76f1e11327b1341321e379a"
+        },
+        {
+          "index": 6,
+          "keyframe": 1,
+          "file": "Frames/Attack_006.png",
+          "x": 0,
+          "y": 627,
+          "width": 627,
+          "height": 627,
+          "durationMs": 83,
+          "sha256": "d5320f090892a18c8aae50e8de5d59e11a3014efd76f1e11327b1341321e379a"
+        },
+        {
+          "index": 7,
+          "keyframe": 1,
+          "file": "Frames/Attack_007.png",
+          "x": 627,
+          "y": 627,
+          "width": 627,
+          "height": 627,
+          "durationMs": 84,
+          "sha256": "d5320f090892a18c8aae50e8de5d59e11a3014efd76f1e11327b1341321e379a"
+        },
+        {
+          "index": 8,
+          "keyframe": 2,
+          "file": "Frames/Attack_008.png",
+          "x": 1254,
+          "y": 627,
+          "width": 627,
+          "height": 627,
+          "durationMs": 83,
+          "sha256": "104c5884aab86bd6dca73ecb4fc32ce661993d1d511dc232c899989420247122"
+        },
+        {
+          "index": 9,
+          "keyframe": 2,
+          "file": "Frames/Attack_009.png",
+          "x": 1881,
+          "y": 627,
+          "width": 627,
+          "height": 627,
+          "durationMs": 83,
+          "sha256": "104c5884aab86bd6dca73ecb4fc32ce661993d1d511dc232c899989420247122"
+        },
+        {
+          "index": 10,
+          "keyframe": 2,
+          "file": "Frames/Attack_010.png",
+          "x": 2508,
+          "y": 627,
+          "width": 627,
+          "height": 627,
+          "durationMs": 84,
+          "sha256": "104c5884aab86bd6dca73ecb4fc32ce661993d1d511dc232c899989420247122"
+        },
+        {
+          "index": 11,
+          "keyframe": 2,
+          "file": "Frames/Attack_011.png",
+          "x": 3135,
+          "y": 627,
+          "width": 627,
+          "height": 627,
+          "durationMs": 83,
+          "sha256": "104c5884aab86bd6dca73ecb4fc32ce661993d1d511dc232c899989420247122"
+        },
+        {
+          "index": 12,
+          "keyframe": 3,
+          "file": "Frames/Attack_012.png",
+          "x": 0,
+          "y": 1254,
+          "width": 627,
+          "height": 627,
+          "durationMs": 83,
+          "sha256": "2519c98a72d94793f35c16e7d3bef58b20046c6b85ff9256945d806d2ad8927a"
+        },
+        {
+          "index": 13,
+          "keyframe": 3,
+          "file": "Frames/Attack_013.png",
+          "x": 627,
+          "y": 1254,
+          "width": 627,
+          "height": 627,
+          "durationMs": 84,
+          "sha256": "2519c98a72d94793f35c16e7d3bef58b20046c6b85ff9256945d806d2ad8927a"
+        },
+        {
+          "index": 14,
+          "keyframe": 3,
+          "file": "Frames/Attack_014.png",
+          "x": 1254,
+          "y": 1254,
+          "width": 627,
+          "height": 627,
+          "durationMs": 83,
+          "sha256": "2519c98a72d94793f35c16e7d3bef58b20046c6b85ff9256945d806d2ad8927a"
+        },
+        {
+          "index": 15,
+          "keyframe": 3,
+          "file": "Frames/Attack_015.png",
+          "x": 1881,
+          "y": 1254,
+          "width": 627,
+          "height": 627,
+          "durationMs": 83,
+          "sha256": "2519c98a72d94793f35c16e7d3bef58b20046c6b85ff9256945d806d2ad8927a"
+        },
+        {
+          "index": 16,
+          "keyframe": 3,
+          "file": "Frames/Attack_016.png",
+          "x": 2508,
+          "y": 1254,
+          "width": 627,
+          "height": 627,
+          "durationMs": 84,
+          "sha256": "2519c98a72d94793f35c16e7d3bef58b20046c6b85ff9256945d806d2ad8927a"
+        },
+        {
+          "index": 17,
+          "keyframe": 3,
+          "file": "Frames/Attack_017.png",
+          "x": 3135,
+          "y": 1254,
+          "width": 627,
+          "height": 627,
+          "durationMs": 83,
+          "sha256": "2519c98a72d94793f35c16e7d3bef58b20046c6b85ff9256945d806d2ad8927a"
+        }
+      ],
+      "events": [
+        {
+          "frame": 5,
+          "timeMs": 417,
+          "name": "fire"
+        }
+      ]
+    }
+  },
+  "sourceAudit": {
+    "Idle": {
+      "sourceAtlas": "SourceAtlases/Idle.png",
+      "grid": {
+        "columns": 2,
+        "rows": 2,
+        "xBoundaries": [
+          0,
+          629,
+          1254
+        ],
+        "yBoundaries": [
+          0,
+          627,
+          1254
+        ]
+      },
+      "frames": [
+        {
+          "index": 0,
+          "sourceRect": {
+            "left": 0,
+            "top": 0,
+            "width": 629,
+            "height": 627
+          },
+          "bounds": [
+            118,
+            80,
+            537,
+            566
+          ],
+          "edgeAlpha": 0,
+          "maxAlpha": 255
+        },
+        {
+          "index": 1,
+          "sourceRect": {
+            "left": 629,
+            "top": 0,
+            "width": 625,
+            "height": 627
+          },
+          "bounds": [
+            124,
+            78,
+            539,
+            567
+          ],
+          "edgeAlpha": 0,
+          "maxAlpha": 255
+        },
+        {
+          "index": 2,
+          "sourceRect": {
+            "left": 0,
+            "top": 627,
+            "width": 629,
+            "height": 627
+          },
+          "bounds": [
+            116,
+            80,
+            539,
+            566
+          ],
+          "edgeAlpha": 0,
+          "maxAlpha": 255
+        },
+        {
+          "index": 3,
+          "sourceRect": {
+            "left": 629,
+            "top": 627,
+            "width": 625,
+            "height": 627
+          },
+          "bounds": [
+            115,
+            78,
+            539,
+            566
+          ],
+          "edgeAlpha": 0,
+          "maxAlpha": 255
+        }
+      ]
+    },
+    "Movement": {
+      "sourceAtlas": "SourceAtlases/Movement.png",
+      "grid": {
+        "columns": 2,
+        "rows": 2,
+        "xBoundaries": [
+          0,
+          627,
+          1254
+        ],
+        "yBoundaries": [
+          0,
+          627,
+          1254
+        ]
+      },
+      "frames": [
+        {
+          "index": 0,
+          "sourceRect": {
+            "left": 0,
+            "top": 0,
+            "width": 627,
+            "height": 627
+          },
+          "bounds": [
+            115,
+            76,
+            535,
+            578
+          ],
+          "edgeAlpha": 0,
+          "maxAlpha": 255
+        },
+        {
+          "index": 1,
+          "sourceRect": {
+            "left": 627,
+            "top": 0,
+            "width": 627,
+            "height": 627
+          },
+          "bounds": [
+            117,
+            76,
+            539,
+            578
+          ],
+          "edgeAlpha": 0,
+          "maxAlpha": 255
+        },
+        {
+          "index": 2,
+          "sourceRect": {
+            "left": 0,
+            "top": 627,
+            "width": 627,
+            "height": 627
+          },
+          "bounds": [
+            117,
+            77,
+            541,
+            561
+          ],
+          "edgeAlpha": 0,
+          "maxAlpha": 255
+        },
+        {
+          "index": 3,
+          "sourceRect": {
+            "left": 627,
+            "top": 627,
+            "width": 627,
+            "height": 627
+          },
+          "bounds": [
+            113,
+            77,
+            537,
+            575
+          ],
+          "edgeAlpha": 0,
+          "maxAlpha": 255
+        }
+      ]
+    },
+    "Attack": {
+      "sourceAtlas": "SourceAtlases/Attack.png",
+      "grid": {
+        "columns": 2,
+        "rows": 2,
+        "xBoundaries": [
+          0,
+          627,
+          1254
+        ],
+        "yBoundaries": [
+          0,
+          627,
+          1254
+        ]
+      },
+      "frames": [
+        {
+          "index": 0,
+          "sourceRect": {
+            "left": 0,
+            "top": 0,
+            "width": 627,
+            "height": 627
+          },
+          "bounds": [
+            116,
+            103,
+            541,
+            588
+          ],
+          "edgeAlpha": 0,
+          "maxAlpha": 255
+        },
+        {
+          "index": 1,
+          "sourceRect": {
+            "left": 627,
+            "top": 0,
+            "width": 627,
+            "height": 627
+          },
+          "bounds": [
+            114,
+            52,
+            541,
+            588
+          ],
+          "edgeAlpha": 0,
+          "maxAlpha": 255
+        },
+        {
+          "index": 2,
+          "sourceRect": {
+            "left": 0,
+            "top": 627,
+            "width": 627,
+            "height": 627
+          },
+          "bounds": [
+            129,
+            48,
+            542,
+            588
+          ],
+          "edgeAlpha": 0,
+          "maxAlpha": 255
+        },
+        {
+          "index": 3,
+          "sourceRect": {
+            "left": 627,
+            "top": 627,
+            "width": 627,
+            "height": 627
+          },
+          "bounds": [
+            113,
+            103,
+            540,
+            588
+          ],
+          "edgeAlpha": 0,
+          "maxAlpha": 255
+        }
+      ]
+    }
+  },
+  "packaging": {
+    "sourceKeyframesPerClip": 4,
+    "timing": "painted keyframes held for explicit frame durations",
+    "alignment": "fixed source cell centers; no per-frame mass recentering",
+    "interpolation": "none; rigid outlines stay sharp",
+    "movement": "in-place crew and weapon motion; world translation belongs to the game"
+  }
+}

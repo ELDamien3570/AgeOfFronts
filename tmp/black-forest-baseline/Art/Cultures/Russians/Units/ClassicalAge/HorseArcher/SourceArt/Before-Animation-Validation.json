@@ -1,0 +1,20 @@
+{
+  "date": "2026-10-07",
+  "file": "Idle-v3.png",
+  "size": [
+    1254,
+    1254
+  ],
+  "mode": "RGBA",
+  "visibleBounds": [
+    97,
+    21,
+    1210,
+    1222
+  ],
+  "edgeGuardAlphaMax": 0,
+  "nativeSourcePreserved": true,
+  "sha256": "3c9192fa44324e863cae31b4785c664192b9b83b31d67af7762701312c254503",
+  "userApproval": "Pending corrected idle review",
+  "runtimeIntegration": false
+}

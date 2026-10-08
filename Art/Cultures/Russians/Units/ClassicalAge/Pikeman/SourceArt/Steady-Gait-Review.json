@@ -1,0 +1,36 @@
+{
+  "changedClips": [
+    "running",
+    "charge"
+  ],
+  "otherSevenClipsByteIdentical": true,
+  "durationsPreserved": true,
+  "servedSheetsAndMetadataVerified": true,
+  "helmetRegistration": {
+    "running": {
+      "nativeHelmetCenters": [
+        256,
+        256,
+        256,
+        256,
+        256,
+        256
+      ],
+      "registeredLateralRange": 0.0
+    },
+    "charge": {
+      "nativeHelmetCenters": [
+        294,
+        262,
+        262,
+        294,
+        262,
+        262
+      ],
+      "registeredLateralRange": 0.0
+    }
+  },
+  "method": "ImageGen steadier upper-body posing and whole-pose lateral root registration.",
+  "artisticApproval": "Awaiting user playback review",
+  "interactiveBrowserCheck": "Unavailable due to Windows sandbox setup failure."
+}

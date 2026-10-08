@@ -1,0 +1,24 @@
+{
+  "date": "2026-10-07",
+  "mode": "built-in-imagegen",
+  "superseded": {
+    "id": "death-back",
+    "file": "Death-Back-v1.png",
+    "prompt": "Create a SIX-FRAME animation atlas of the ONE APPROVED Russian Bronze Age River Archer from image1. Exact same overhead character: hammered bronze dome helmet and compact pauldrons, cream fur, reddish-brown leather, bronze wristguards, pale trousers/boots, hip/back leather quiver, NO shield. Same plain wooden curved self-bow with leather center grip and natural fiber string joining BOTH limb tips, wooden arrow/bronze leaf tip/feather fletching. Bow is flexible wood, not metal or crossbow. Left bow hand SCREEN RIGHT holds center; right string hand SCREEN LEFT draws string, as reference. Strict vertical overhead orthographic, crown helmet dominant unless falling face up; facing screen-bottom in every upright pose. Exact1536x1024RGBA atlas3columns2rows, SIX512x512cells row-major. EACH whole actor including bow/arrow/quiver fits its OWN cell with>=35px transparent margin; maximum overall pose440pxwide/tall. Body/root consistently near(256,270), no camera/scale changes, same equipment shapes. Crisp true alpha0 cutout outside silhouettes, no haze/glow/cast shadows/ground/text/grid/trails. One soldier ineachcell, no duplicated limbs or bows. Draw distinct sequential authored poses.\nMOTION: Complete backwards fall:1 recoil,2 knees buckle,3 torso tiltsback face becomesvisible,4 lands supine FACE UP headSCREEN TOP and bootsSCREEN BOTTOM,5 limbs settle bowdropsbesidebody,6 final motionless faceupcorpse headTOP bootsBOTTOM. No180degreeflip at end. Strict overheadthroughout, no gore, full equipment ineachcell.",
+    "references": [
+      "Idle-v1.png"
+    ],
+    "generatedSource": "C:/Users/Damien/.codex/generated_images/01a0fea1-c63f-7343-92ca-6c21cc1c4296/exec-1d0b2414-2707-44db-ad58-48ddc2beab6a.png",
+    "status": "selected-animation-source"
+  },
+  "selected": {
+    "id": "death-back",
+    "file": "Death-Back-Clean-v2.png",
+    "prompt": "Background extraction ONLY of this six-frame archer backward-death atlas. Preserve all six exact character/body/bow/quiver poses and their exact scale and cell coordinates,1536x1024canvas3columns2rows. Remove ALL brown/gray background, light haze, shadows, AND WHITE GRID SEPARATOR LINES. Make actual alpha ZERO outside the six crisp antialiased actor+bow silhouettes. Keep exact pose progression and face-up final poses headscreen-top feetbottom, do not redraw or changeequipment, no flips, no resizing, no labels. Transparent sprite atlas, absolutely no grid/background outside sprites.",
+    "references": [
+      "SourceArt/Native-Death-Back-v1.png"
+    ],
+    "generatedSource": "C:/Users/Damien/.codex/generated_images/01a0fea1-c63f-7343-92ca-6c21cc1c4296/exec-85fa6eea-779e-4177-8126-7105328b7365.png",
+    "status": "selected-animation-source"
+  }
+}

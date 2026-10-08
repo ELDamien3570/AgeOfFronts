@@ -1,0 +1,574 @@
+{
+  "tool": "built-in image_gen",
+  "stage": "single-actor-animation-review",
+  "prompt": "Create ONE single idle game sprite for a Russian Classical Age Pikeman, using the attached approved Shield Warrior as the equipment and painting style reference. True directly overhead/top-down orthographic camera, facing down screen; helmet crown dominates, minimal visible face; same camera as reference. Keep the same iron ridged helmet, battered steel lamellar armor and scale shoulder guards, burgundy quilted sleeves/skirt, metal bracers and greaves, brown leather gloves and boots, restrained warm brass rivets and side sword. Change weapon to a LONG straight wooden pike with a small pointed steel spearhead aimed toward bottom of screen, securely held in right hand (screen left), gripped behind the midpoint. Pike visibly much longer than a short spear, clean unbroken shaft, fully within frame with generous transparent margins. Move the round wooden shield OFF HIS BACK and have his left arm (screen right) securely HOLD the same round wooden shield with iron rim and boss in front/alongside his torso, defensive ready pose. No shield remaining on back. Both hands anatomically attached, no floating gear. Idle standing balanced, sturdy readable silhouette. Same richly hand painted stylized game sprite, textured metal and quilted fabric, strong outlines, same proportions and identity. Single centered complete soldier, all gear fully in frame, 1536x1536 or square canvas, genuinely transparent background, no ground, no cast shadow, no text, no labels, no grid. This is an idle design for user review, not an animation atlas.",
+  "reference": "../ShieldWarrior/Idle-Axe-TopSpike-v3.png",
+  "nativeGeneratedPath": "C:\\Users\\Damien\\.codex\\generated_images\\01a0fea1-c63f-7343-92ca-6c21cc1c4296\\exec-4fc74d4d-702a-46ef-b54a-808589a18e90.png",
+  "output": "Idle-v1.png",
+  "sha256": "cb8f6764bd47d72572a5e964853b82847bad2f3c265b50468a908016553f9363",
+  "approval": "Idle-v1.png approved for animation; animation artwork pending review.",
+  "animations": [
+    {
+      "id": "idle",
+      "file": "Idle-Animated-v1.png",
+      "motion": "IDLE LOOP: subtle breathing, slight knee bend and weight shift then back to neutral; shield/pike remain steady; frame6 flows into frame1.",
+      "prompt": "Create a SIX-FRAME animation atlas of this exact approved Classical Russian PIKEMAN. Match reference gear, proportions and richly painted stylized RTS art. EXACT 1536x1024 transparent RGBA, 3 columns x 2 rows, six equal 512x512 cells ROW MAJOR. Exactly ONE full soldier per cell, six distinct sequential poses, NO visible grid or text. Each complete body, shield and pike entirely INSIDE its cell with >=32px transparent margin; same physical scale across all poses, no zoom. Long pike approximately 410px overall, soldier approximately 190px tall within cell. Keep fixed body root around (256,256). STRICT DIRECTLY OVERHEAD 90-degree orthographic camera throughout, helmet crown dominant, compressed torso, no front-facing portraits. Soldier faces SCREEN DOWN. Iron ridged helmet, battered iron lamellar and scale shoulders, burgundy quilted sleeves/skirt, metal bracers and greaves, brown gloves and boots, side sword. Round wooden shield with iron rim and steel boss securely held by LEFT arm SCREEN RIGHT at torso throughout; never strapped to back, never switches hands. RIGHT hand SCREEN LEFT grips the wooden pike behind midpoint. ONE rigid STRAIGHT shaft of FIXED LENGTH, small steel spearhead at forward SCREEN BOTTOM end and plain capped wooden butt at rear end. Continuous shaft passes through closed grip; tip/hand/shaft stay aligned, no warping, no growing weapon, no duplicate shafts. Pike stays longitudinally oriented toward screen-bottom, viewed overhead so thrusts read as shaft sliding forward, not horizontal across body. Two arms and two legs only. Genuine transparent background, no ground/shadows/trails/text.\nMOTION: IDLE LOOP: subtle breathing, slight knee bend and weight shift then back to neutral; shield/pike remain steady; frame6 flows into frame1.",
+      "generatedSource": "C:/Users/Damien/.codex/generated_images/01a0fea1-c63f-7343-92ca-6c21cc1c4296/exec-157405ca-0976-4388-b0f7-4d5080830b3c.png",
+      "nativeFile": "Native-Idle-Animated-v1.png",
+      "status": "superseded-source",
+      "note": "User reported abrupt idle jolt; replaced weight shifts with gentle breathing."
+    },
+    {
+      "id": "running",
+      "file": "Walk-v1.png",
+      "motion": "WALK LOOP: six clear alternating foot strides, left forward/right back then passing then right forward/left back then passing. Both boots travel equally, no shuffling. Pike and shield held steady, planted body root; frame6 flows into frame1.",
+      "prompt": "Create a SIX-FRAME animation atlas of this exact approved Classical Russian PIKEMAN. Match reference gear, proportions and richly painted stylized RTS art. EXACT 1536x1024 transparent RGBA, 3 columns x 2 rows, six equal 512x512 cells ROW MAJOR. Exactly ONE full soldier per cell, six distinct sequential poses, NO visible grid or text. Each complete body, shield and pike entirely INSIDE its cell with >=32px transparent margin; same physical scale across all poses, no zoom. Long pike approximately 410px overall, soldier approximately 190px tall within cell. Keep fixed body root around (256,256). STRICT DIRECTLY OVERHEAD 90-degree orthographic camera throughout, helmet crown dominant, compressed torso, no front-facing portraits. Soldier faces SCREEN DOWN. Iron ridged helmet, battered iron lamellar and scale shoulders, burgundy quilted sleeves/skirt, metal bracers and greaves, brown gloves and boots, side sword. Round wooden shield with iron rim and steel boss securely held by LEFT arm SCREEN RIGHT at torso throughout; never strapped to back, never switches hands. RIGHT hand SCREEN LEFT grips the wooden pike behind midpoint. ONE rigid STRAIGHT shaft of FIXED LENGTH, small steel spearhead at forward SCREEN BOTTOM end and plain capped wooden butt at rear end. Continuous shaft passes through closed grip; tip/hand/shaft stay aligned, no warping, no growing weapon, no duplicate shafts. Pike stays longitudinally oriented toward screen-bottom, viewed overhead so thrusts read as shaft sliding forward, not horizontal across body. Two arms and two legs only. Genuine transparent background, no ground/shadows/trails/text.\nMOTION: WALK LOOP: six clear alternating foot strides, left forward/right back then passing then right forward/left back then passing. Both boots travel equally, no shuffling. Pike and shield held steady, planted body root; frame6 flows into frame1.",
+      "generatedSource": "C:/Users/Damien/.codex/generated_images/01a0fea1-c63f-7343-92ca-6c21cc1c4296/exec-2513afe0-e5d8-40c9-8461-213847458dc9.png",
+      "nativeFile": "Native-Walk-v1.png",
+      "status": "superseded-source",
+      "note": "User requested reduced side-to-side movement."
+    },
+    {
+      "id": "attack",
+      "file": "Attack-v1.png",
+      "motion": "REGULAR PIKE THRUST ONCE: 1ready 2draw shaft backward keeping spearhead down 3brace and aim 4extend right arm and thrust straight forward toward screen-bottom 5withdraw 6ready. Shield stays braced screen-right. Same forward grip style all6 frames, NO underhand grip change. Long shaft and steel tip rigid, unchanging length. Thrust one-handed from shoulder, arm extends down screen; no axe swing.",
+      "prompt": "Create a SIX-FRAME animation atlas of this exact approved Classical Russian PIKEMAN. Match reference gear, proportions and richly painted stylized RTS art. EXACT 1536x1024 transparent RGBA, 3 columns x 2 rows, six equal 512x512 cells ROW MAJOR. Exactly ONE full soldier per cell, six distinct sequential poses, NO visible grid or text. Each complete body, shield and pike entirely INSIDE its cell with >=32px transparent margin; same physical scale across all poses, no zoom. Long pike approximately 410px overall, soldier approximately 190px tall within cell. Keep fixed body root around (256,256). STRICT DIRECTLY OVERHEAD 90-degree orthographic camera throughout, helmet crown dominant, compressed torso, no front-facing portraits. Soldier faces SCREEN DOWN. Iron ridged helmet, battered iron lamellar and scale shoulders, burgundy quilted sleeves/skirt, metal bracers and greaves, brown gloves and boots, side sword. Round wooden shield with iron rim and steel boss securely held by LEFT arm SCREEN RIGHT at torso throughout; never strapped to back, never switches hands. RIGHT hand SCREEN LEFT grips the wooden pike behind midpoint. ONE rigid STRAIGHT shaft of FIXED LENGTH, small steel spearhead at forward SCREEN BOTTOM end and plain capped wooden butt at rear end. Continuous shaft passes through closed grip; tip/hand/shaft stay aligned, no warping, no growing weapon, no duplicate shafts. Pike stays longitudinally oriented toward screen-bottom, viewed overhead so thrusts read as shaft sliding forward, not horizontal across body. Two arms and two legs only. Genuine transparent background, no ground/shadows/trails/text.\nMOTION: REGULAR PIKE THRUST ONCE: 1ready 2draw shaft backward keeping spearhead down 3brace and aim 4extend right arm and thrust straight forward toward screen-bottom 5withdraw 6ready. Shield stays braced screen-right. Same forward grip style all6 frames, NO underhand grip change. Long shaft and steel tip rigid, unchanging length. Thrust one-handed from shoulder, arm extends down screen; no axe swing.",
+      "generatedSource": "C:/Users/Damien/.codex/generated_images/01a0fea1-c63f-7343-92ca-6c21cc1c4296/exec-5e17f763-2548-4944-8467-3351a191f6e1.png",
+      "nativeFile": "Native-Attack-v1.png",
+      "status": "superseded-source",
+      "note": "Pike rear shaft missing at impact; native source retained."
+    },
+    {
+      "id": "hit",
+      "file": "Hit-v1.png",
+      "motion": "LIGHT HIT ONCE: 1ready 2small shoulder flinch 3brief torso recoil 4brace shield 5recover 6ready. Pike held continuously; shield on left arm, no size/weapon changes.",
+      "prompt": "Create a SIX-FRAME animation atlas of this exact approved Classical Russian PIKEMAN. Match reference gear, proportions and richly painted stylized RTS art. EXACT 1536x1024 transparent RGBA, 3 columns x 2 rows, six equal 512x512 cells ROW MAJOR. Exactly ONE full soldier per cell, six distinct sequential poses, NO visible grid or text. Each complete body, shield and pike entirely INSIDE its cell with >=32px transparent margin; same physical scale across all poses, no zoom. Long pike approximately 410px overall, soldier approximately 190px tall within cell. Keep fixed body root around (256,256). STRICT DIRECTLY OVERHEAD 90-degree orthographic camera throughout, helmet crown dominant, compressed torso, no front-facing portraits. Soldier faces SCREEN DOWN. Iron ridged helmet, battered iron lamellar and scale shoulders, burgundy quilted sleeves/skirt, metal bracers and greaves, brown gloves and boots, side sword. Round wooden shield with iron rim and steel boss securely held by LEFT arm SCREEN RIGHT at torso throughout; never strapped to back, never switches hands. RIGHT hand SCREEN LEFT grips the wooden pike behind midpoint. ONE rigid STRAIGHT shaft of FIXED LENGTH, small steel spearhead at forward SCREEN BOTTOM end and plain capped wooden butt at rear end. Continuous shaft passes through closed grip; tip/hand/shaft stay aligned, no warping, no growing weapon, no duplicate shafts. Pike stays longitudinally oriented toward screen-bottom, viewed overhead so thrusts read as shaft sliding forward, not horizontal across body. Two arms and two legs only. Genuine transparent background, no ground/shadows/trails/text.\nMOTION: LIGHT HIT ONCE: 1ready 2small shoulder flinch 3brief torso recoil 4brace shield 5recover 6ready. Pike held continuously; shield on left arm, no size/weapon changes.",
+      "generatedSource": "C:/Users/Damien/.codex/generated_images/01a0fea1-c63f-7343-92ca-6c21cc1c4296/exec-41b56f0a-30b2-482e-b502-a5c5e9c0ba8f.png",
+      "nativeFile": "Native-Hit-v1.png",
+      "status": "selected-source"
+    },
+    {
+      "id": "charged",
+      "file": "Charged-v1.png",
+      "motion": "DISTINCT CHARGE IMPACT REACTION ONCE: 1ready 2shield jolts into forearm 3deep recoil backward toward screen-top 4knees stagger and body leans 5regain balance 6ready. Stronger than get-hit, no falling permanently. Pike kept straight; no detached equipment.",
+      "prompt": "Create a SIX-FRAME animation atlas of this exact approved Classical Russian PIKEMAN. Match reference gear, proportions and richly painted stylized RTS art. EXACT 1536x1024 transparent RGBA, 3 columns x 2 rows, six equal 512x512 cells ROW MAJOR. Exactly ONE full soldier per cell, six distinct sequential poses, NO visible grid or text. Each complete body, shield and pike entirely INSIDE its cell with >=32px transparent margin; same physical scale across all poses, no zoom. Long pike approximately 410px overall, soldier approximately 190px tall within cell. Keep fixed body root around (256,256). STRICT DIRECTLY OVERHEAD 90-degree orthographic camera throughout, helmet crown dominant, compressed torso, no front-facing portraits. Soldier faces SCREEN DOWN. Iron ridged helmet, battered iron lamellar and scale shoulders, burgundy quilted sleeves/skirt, metal bracers and greaves, brown gloves and boots, side sword. Round wooden shield with iron rim and steel boss securely held by LEFT arm SCREEN RIGHT at torso throughout; never strapped to back, never switches hands. RIGHT hand SCREEN LEFT grips the wooden pike behind midpoint. ONE rigid STRAIGHT shaft of FIXED LENGTH, small steel spearhead at forward SCREEN BOTTOM end and plain capped wooden butt at rear end. Continuous shaft passes through closed grip; tip/hand/shaft stay aligned, no warping, no growing weapon, no duplicate shafts. Pike stays longitudinally oriented toward screen-bottom, viewed overhead so thrusts read as shaft sliding forward, not horizontal across body. Two arms and two legs only. Genuine transparent background, no ground/shadows/trails/text.\nMOTION: DISTINCT CHARGE IMPACT REACTION ONCE: 1ready 2shield jolts into forearm 3deep recoil backward toward screen-top 4knees stagger and body leans 5regain balance 6ready. Stronger than get-hit, no falling permanently. Pike kept straight; no detached equipment.",
+      "generatedSource": "C:/Users/Damien/.codex/generated_images/01a0fea1-c63f-7343-92ca-6c21cc1c4296/exec-17ef394e-0f7a-41b4-a0a7-148066c199ee.png",
+      "nativeFile": "Native-Charged-v1.png",
+      "status": "selected-source"
+    },
+    {
+      "id": "charge",
+      "file": "Charge-v1.png",
+      "motion": "RUNNING CHARGE LOOP: six strong alternating running strides, deeper knees and brisk steps, body leans forward toward screen-bottom, pike leveled down screen and shield tight to left forearm. Both boots visibly alternate through front/back and passing phases. Frame6 loops into frame1.",
+      "prompt": "Create a SIX-FRAME animation atlas of this exact approved Classical Russian PIKEMAN. Match reference gear, proportions and richly painted stylized RTS art. EXACT 1536x1024 transparent RGBA, 3 columns x 2 rows, six equal 512x512 cells ROW MAJOR. Exactly ONE full soldier per cell, six distinct sequential poses, NO visible grid or text. Each complete body, shield and pike entirely INSIDE its cell with >=32px transparent margin; same physical scale across all poses, no zoom. Long pike approximately 410px overall, soldier approximately 190px tall within cell. Keep fixed body root around (256,256). STRICT DIRECTLY OVERHEAD 90-degree orthographic camera throughout, helmet crown dominant, compressed torso, no front-facing portraits. Soldier faces SCREEN DOWN. Iron ridged helmet, battered iron lamellar and scale shoulders, burgundy quilted sleeves/skirt, metal bracers and greaves, brown gloves and boots, side sword. Round wooden shield with iron rim and steel boss securely held by LEFT arm SCREEN RIGHT at torso throughout; never strapped to back, never switches hands. RIGHT hand SCREEN LEFT grips the wooden pike behind midpoint. ONE rigid STRAIGHT shaft of FIXED LENGTH, small steel spearhead at forward SCREEN BOTTOM end and plain capped wooden butt at rear end. Continuous shaft passes through closed grip; tip/hand/shaft stay aligned, no warping, no growing weapon, no duplicate shafts. Pike stays longitudinally oriented toward screen-bottom, viewed overhead so thrusts read as shaft sliding forward, not horizontal across body. Two arms and two legs only. Genuine transparent background, no ground/shadows/trails/text.\nMOTION: RUNNING CHARGE LOOP: six strong alternating running strides, deeper knees and brisk steps, body leans forward toward screen-bottom, pike leveled down screen and shield tight to left forearm. Both boots visibly alternate through front/back and passing phases. Frame6 loops into frame1.",
+      "generatedSource": "C:/Users/Damien/.codex/generated_images/01a0fea1-c63f-7343-92ca-6c21cc1c4296/exec-3e4a431e-1baa-4553-9b17-1cd52ccf3aab.png",
+      "nativeFile": "Native-Charge-v1.png",
+      "status": "superseded-source",
+      "note": "User requested reduced side-to-side movement."
+    },
+    {
+      "id": "charge-attack",
+      "file": "Charge-Attack-v1.png",
+      "motion": "HEAVY CHARGE PIKE THRUST ONCE: 1forward running ready 2plant both feet 3draw pike rearward and brace shield 4powerful straight thrust toward screen-bottom 5long follow-through 6recover. One rigid straight pike, unchanging length, rear grip never becomes underhand. Shield held left side. Tip, shaft, gripping hand always aligned, no overhead stab or sideways shaft.",
+      "prompt": "Create a SIX-FRAME animation atlas of this exact approved Classical Russian PIKEMAN. Match reference gear, proportions and richly painted stylized RTS art. EXACT 1536x1024 transparent RGBA, 3 columns x 2 rows, six equal 512x512 cells ROW MAJOR. Exactly ONE full soldier per cell, six distinct sequential poses, NO visible grid or text. Each complete body, shield and pike entirely INSIDE its cell with >=32px transparent margin; same physical scale across all poses, no zoom. Long pike approximately 410px overall, soldier approximately 190px tall within cell. Keep fixed body root around (256,256). STRICT DIRECTLY OVERHEAD 90-degree orthographic camera throughout, helmet crown dominant, compressed torso, no front-facing portraits. Soldier faces SCREEN DOWN. Iron ridged helmet, battered iron lamellar and scale shoulders, burgundy quilted sleeves/skirt, metal bracers and greaves, brown gloves and boots, side sword. Round wooden shield with iron rim and steel boss securely held by LEFT arm SCREEN RIGHT at torso throughout; never strapped to back, never switches hands. RIGHT hand SCREEN LEFT grips the wooden pike behind midpoint. ONE rigid STRAIGHT shaft of FIXED LENGTH, small steel spearhead at forward SCREEN BOTTOM end and plain capped wooden butt at rear end. Continuous shaft passes through closed grip; tip/hand/shaft stay aligned, no warping, no growing weapon, no duplicate shafts. Pike stays longitudinally oriented toward screen-bottom, viewed overhead so thrusts read as shaft sliding forward, not horizontal across body. Two arms and two legs only. Genuine transparent background, no ground/shadows/trails/text.\nMOTION: HEAVY CHARGE PIKE THRUST ONCE: 1forward running ready 2plant both feet 3draw pike rearward and brace shield 4powerful straight thrust toward screen-bottom 5long follow-through 6recover. One rigid straight pike, unchanging length, rear grip never becomes underhand. Shield held left side. Tip, shaft, gripping hand always aligned, no overhead stab or sideways shaft.",
+      "generatedSource": "C:/Users/Damien/.codex/generated_images/01a0fea1-c63f-7343-92ca-6c21cc1c4296/exec-603988ea-f8a6-4ac2-bc81-8543f1713970.png",
+      "nativeFile": "Native-Charge-Attack-v1.png",
+      "status": "superseded-source",
+      "note": "User requested stronger, consistently overhand thrusts."
+    },
+    {
+      "id": "death",
+      "file": "Death-Side-v1.png",
+      "motion": "SIDE FALL DEATH ONCE: 1ready 2hit recoil 3knees buckle and lean screen-left 4fall gradually on left side 5body sprawled side-on ground 6settled corpse same orientation as5. Camera remains overhead; head and torso rotate naturally together through fall, no final flip. Shield and straight pike lower with hands and rest beside body, no floating weapons. Keep full length pike in cell, pose not cropped.",
+      "prompt": "Create a SIX-FRAME animation atlas of this exact approved Classical Russian PIKEMAN. Match reference gear, proportions and richly painted stylized RTS art. EXACT 1536x1024 transparent RGBA, 3 columns x 2 rows, six equal 512x512 cells ROW MAJOR. Exactly ONE full soldier per cell, six distinct sequential poses, NO visible grid or text. Each complete body, shield and pike entirely INSIDE its cell with >=32px transparent margin; same physical scale across all poses, no zoom. Long pike approximately 410px overall, soldier approximately 190px tall within cell. Keep fixed body root around (256,256). STRICT DIRECTLY OVERHEAD 90-degree orthographic camera throughout, helmet crown dominant, compressed torso, no front-facing portraits. Soldier faces SCREEN DOWN. Iron ridged helmet, battered iron lamellar and scale shoulders, burgundy quilted sleeves/skirt, metal bracers and greaves, brown gloves and boots, side sword. Round wooden shield with iron rim and steel boss securely held by LEFT arm SCREEN RIGHT at torso throughout; never strapped to back, never switches hands. RIGHT hand SCREEN LEFT grips the wooden pike behind midpoint. ONE rigid STRAIGHT shaft of FIXED LENGTH, small steel spearhead at forward SCREEN BOTTOM end and plain capped wooden butt at rear end. Continuous shaft passes through closed grip; tip/hand/shaft stay aligned, no warping, no growing weapon, no duplicate shafts. Pike stays longitudinally oriented toward screen-bottom, viewed overhead so thrusts read as shaft sliding forward, not horizontal across body. Two arms and two legs only. Genuine transparent background, no ground/shadows/trails/text.\nMOTION: SIDE FALL DEATH ONCE: 1ready 2hit recoil 3knees buckle and lean screen-left 4fall gradually on left side 5body sprawled side-on ground 6settled corpse same orientation as5. Camera remains overhead; head and torso rotate naturally together through fall, no final flip. Shield and straight pike lower with hands and rest beside body, no floating weapons. Keep full length pike in cell, pose not cropped.",
+      "generatedSource": "C:/Users/Damien/.codex/generated_images/01a0fea1-c63f-7343-92ca-6c21cc1c4296/exec-0bc0704d-5f0b-49a1-955f-55e97061dd22.png",
+      "nativeFile": "Native-Death-Side-v1.png",
+      "status": "superseded-source",
+      "note": "User requested complete rebuild of both thrusts and side fall."
+    },
+    {
+      "id": "death-back",
+      "file": "Death-Back-v1.png",
+      "motion": "BACKWARD FALL DEATH ONCE: 1ready 2recoil backward screen-top 3knees give way 4fall onto back 5supine corpse from overhead 6settle same orientation as5. Feet remain at screen-bottom, helmet/head screen-top throughout; no inversion at end. Shield and straight pike lower with hands and lie beside body, no floating weapons. Camera always overhead, no frontal portrait.",
+      "prompt": "Create a SIX-FRAME animation atlas of this exact approved Classical Russian PIKEMAN. Match reference gear, proportions and richly painted stylized RTS art. EXACT 1536x1024 transparent RGBA, 3 columns x 2 rows, six equal 512x512 cells ROW MAJOR. Exactly ONE full soldier per cell, six distinct sequential poses, NO visible grid or text. Each complete body, shield and pike entirely INSIDE its cell with >=32px transparent margin; same physical scale across all poses, no zoom. Long pike approximately 410px overall, soldier approximately 190px tall within cell. Keep fixed body root around (256,256). STRICT DIRECTLY OVERHEAD 90-degree orthographic camera throughout, helmet crown dominant, compressed torso, no front-facing portraits. Soldier faces SCREEN DOWN. Iron ridged helmet, battered iron lamellar and scale shoulders, burgundy quilted sleeves/skirt, metal bracers and greaves, brown gloves and boots, side sword. Round wooden shield with iron rim and steel boss securely held by LEFT arm SCREEN RIGHT at torso throughout; never strapped to back, never switches hands. RIGHT hand SCREEN LEFT grips the wooden pike behind midpoint. ONE rigid STRAIGHT shaft of FIXED LENGTH, small steel spearhead at forward SCREEN BOTTOM end and plain capped wooden butt at rear end. Continuous shaft passes through closed grip; tip/hand/shaft stay aligned, no warping, no growing weapon, no duplicate shafts. Pike stays longitudinally oriented toward screen-bottom, viewed overhead so thrusts read as shaft sliding forward, not horizontal across body. Two arms and two legs only. Genuine transparent background, no ground/shadows/trails/text.\nMOTION: BACKWARD FALL DEATH ONCE: 1ready 2recoil backward screen-top 3knees give way 4fall onto back 5supine corpse from overhead 6settle same orientation as5. Feet remain at screen-bottom, helmet/head screen-top throughout; no inversion at end. Shield and straight pike lower with hands and lie beside body, no floating weapons. Camera always overhead, no frontal portrait.",
+      "generatedSource": "C:/Users/Damien/.codex/generated_images/01a0fea1-c63f-7343-92ca-6c21cc1c4296/exec-96931a6c-a4d0-41f4-88ae-8c6ed5f94779.png",
+      "nativeFile": "Native-Death-Back-v1.png",
+      "status": "selected-source"
+    },
+    {
+      "id": "attack",
+      "file": "Attack-v2.png",
+      "motion": "REGULAR PIKE THRUST ONCE: 1ready 2draw shaft backward keeping spearhead down 3brace and aim 4extend right arm and thrust straight forward toward screen-bottom 5withdraw 6ready. Shield stays braced screen-right. Same forward grip style all6 frames, NO underhand grip change. Long shaft and steel tip rigid, unchanging length. Thrust one-handed from shoulder, arm extends down screen; no axe swing.",
+      "prompt": "Edit this six-frame Pikeman attack atlas. Keep exact 1536x1024 layout 3x2, all body poses, camera, armor, shield, cell positions and timing poses unchanged. Fix ONLY the pike in frame4 (bottom-left cell): it currently becomes a short spear at impact. Restore the SAME full-length straight wooden shaft as in all the other5 cells, including the rear capped butt clearly visible above/behind the gripping hand toward the TOP of this cell. In frame4 the right arm is extended toward screen bottom; the long shaft must pass continuously through this hand and extend backwards toward screen top along a straight line, alongside screen-left of the shoulder. Leave steel pointed forward end aimed down screen near cell bottom, small spearhead not grown. Make full shaft from rear butt to tip approximately400px long as in otherframes, all entirely within its512squarecell with clear transparent margin. Closed grip stays at same position; move no arm or body. Never hide or remove rear shaft. Treat pike as one rigid object of unchanging length. Other5 cells unchanged. Preserve genuine zero alpha background; no painted backdrop, no shadow, no labels.",
+      "generatedSource": "C:/Users/Damien/.codex/generated_images/01a0fea1-c63f-7343-92ca-6c21cc1c4296/exec-7f3eee2a-d685-4ff5-a49f-42e3fd17f660.png",
+      "nativeFile": "Native-Attack-v2.png",
+      "status": "superseded-source",
+      "note": "User requested stronger, consistently overhand thrusts."
+    },
+    {
+      "id": "attack",
+      "file": "Attack-Overhand-v3.png",
+      "nativeFile": "Native-Attack-Overhand-v3.png",
+      "generatedSource": "C:/Users/Damien/.codex/generated_images/01a0fea1-c63f-7343-92ca-6c21cc1c4296/exec-dd91b330-061b-4a8e-8680-5c237e50adc7.png",
+      "prompt": "Replace this pikeman attack atlas with a stronger, consistent OVERHAND pike thrust animation. Image1 is attack sheet to correct; image2 is locked equipment/style reference. EXACT 1536x1024 RGBA, 3columns2rows, SIX512x512 cells, row-major six sequential full poses. No duplicate bodies, no grid, text or arrows. Every complete body AND full pike must be ENTIRELY INSIDE OWN CELL, >=24px transparent margin, absolutely NO parts from lower row protruding into upper row. Uniform body and weapon size all frames. Fixed root near(256,256), soldier190px tall, full straight pike390px long. Strict90degree directly overhead camera throughout, facing screen-bottom. Same iron helmet/lamellar/scales/burgundy quilting/boots and held wooden shield. Shield stays in LEFT hand screen-right, no back shield. Right weapon hand screen-left uses ONE CONSTANT PRONATED OVERHAND GRIP: back of glove/knuckles visible from above, palm faces ground, thumb underneath/opposes shaft. Right elbow raised and flared at shoulder level, NEVER dropped into waist-level underarm/underhand scoop, NEVER palm-up, never grip inversion. Pike points screen-down throughout, thrust horizontally FORWARD, not vertically stabbing ground. SAME continuous rigid straight shaft and SAME small steel head, fixed overall length; whole pike slides FORWARD along its axis at impact, with visible rear butt behind grip. Strong arm extension and torso rotation; clear spear tip travel at least90px downscreen from cocked position to impact. NO bent/growing/shrinking shaft, no pole cut off or missing behind shoulder. During recovery keep SAME OVERHAND grasp. All6 distinct poses. True alpha0 background, no glow/ground/shadow.\nACTION: Frame1 overhand ready; frame2 pull elbow BACK toward screen-top, pike tip retracts to y330; frame3 maximum cocked overhand arm at shoulder, shield braced; frame4 FULL forceful forward thrust, right arm straightens toward screen-bottom with pronated glove on TOP of shaft and steel tip now at y455; frame5 sustained extension/follow-through with slight torso lean; frame6 retract to overhand ready. Head position largely fixed; thrust comes from arm/torso, not whole soldier sliding. No underhand in frames4 or5.",
+      "motion": "Frame1 overhand ready; frame2 pull elbow BACK toward screen-top, pike tip retracts to y330; frame3 maximum cocked overhand arm at shoulder, shield braced; frame4 FULL forceful forward thrust, right arm straightens toward screen-bottom with pronated glove on TOP of shaft and steel tip now at y455; frame5 sustained extension/follow-through with slight torso lean; frame6 retract to overhand ready. Head position largely fixed; thrust comes from arm/torso, not whole soldier sliding. No underhand in frames4 or5.",
+      "status": "rejected-source",
+      "note": "Stronger stroke, but follow-through dropped to a low weapon hand."
+    },
+    {
+      "id": "attack",
+      "file": "Attack-Overhand-v4.png",
+      "nativeFile": "Native-Attack-Overhand-v4.png",
+      "generatedSource": "C:/Users/Damien/.codex/generated_images/01a0fea1-c63f-7343-92ca-6c21cc1c4296/exec-2bcd059e-ee5e-4972-91ab-e1a0334a60d0.png",
+      "prompt": "Correct ONLY the right weapon arm and pike positioning in this six-frame overhead Pikeman attack atlas. It STILL turns into an underarm thrust in bottom-left/bottom-middle cells (frames4 and5). Make ALL SIX frames use a HIGH OVERHAND thrust with weapon fist at HEAD/SHOULDER height. In frames4 and5, MOVE THE PIKE FIST UP SCREEN to directly LEFT OF THE HELMET, around y245 in its512cell, never below helmet toward waist. RAISE RIGHT ELBOW/FOREARM, use back-of-glove and knuckles facing UP at camera, palm down, SAME wrap/thumb orientation as frame3. Pike runs past SIDE of head from raised fist, like an overarm javelin thrust, NEVER an underarm spear grip. Right arm reaches forward from HIGH shoulder, NOT low forward from waist; glove never hangs below belt. Keep strong windup frame2/3 and extensionframe4/5, pike spearhead advances visibly down screen while rear butt slides forward too. Long pike stays rigid STRAIGHT with constant length and one small steel tip, correct grip behind midpoint; no changed hand, no short spear, no pike floating apart from hand. IMPORTANT anatomy: right raised fist SCREEN LEFT near helmet, held round wooden shield SCREEN RIGHT. Preserve exact armor, body sizes, body/head positions, shield, feet, strict overhead camera, facingdown, art and6celllayout. EXACT1536x1024, 3x2grid512cells. Entirepike/bodywithinowncell>=16pxclearalpha, no protruding fragments inothercells. Genuine transparent alpha0background. Keep six sequential poses distinct. No labels.",
+      "motion": "Frame1 overhand ready; frame2 pull elbow BACK toward screen-top, pike tip retracts to y330; frame3 maximum cocked overhand arm at shoulder, shield braced; frame4 FULL forceful forward thrust, right arm straightens toward screen-bottom with pronated glove on TOP of shaft and steel tip now at y455; frame5 sustained extension/follow-through with slight torso lean; frame6 retract to overhand ready. Head position largely fixed; thrust comes from arm/torso, not whole soldier sliding. No underhand in frames4 or5.",
+      "status": "superseded-source",
+      "note": "User requested softer painterly edges instead of heavy black rotoscoped outlines."
+    },
+    {
+      "id": "charge-attack",
+      "file": "Charge-Attack-Overhand-v2.png",
+      "nativeFile": "Native-Charge-Attack-Overhand-v2.png",
+      "generatedSource": "C:/Users/Damien/.codex/generated_images/01a0fea1-c63f-7343-92ca-6c21cc1c4296/exec-0031de8f-7213-49c6-8f60-ee035faebd2d.png",
+      "prompt": "Replace this pikeman attack atlas with a stronger, consistent OVERHAND pike thrust animation. Image1 is attack sheet to correct; image2 is locked equipment/style reference. EXACT 1536x1024 RGBA, 3columns2rows, SIX512x512 cells, row-major six sequential full poses. No duplicate bodies, no grid, text or arrows. Every complete body AND full pike must be ENTIRELY INSIDE OWN CELL, >=24px transparent margin, absolutely NO parts from lower row protruding into upper row. Uniform body and weapon size all frames. Fixed root near(256,256), soldier190px tall, full straight pike390px long. Strict90degree directly overhead camera throughout, facing screen-bottom. Same iron helmet/lamellar/scales/burgundy quilting/boots and held wooden shield. Shield stays in LEFT hand screen-right, no back shield. Right weapon hand screen-left uses ONE CONSTANT PRONATED OVERHAND GRIP: back of glove/knuckles visible from above, palm faces ground, thumb underneath/opposes shaft. Right elbow raised and flared at shoulder level, NEVER dropped into waist-level underarm/underhand scoop, NEVER palm-up, never grip inversion. Pike points screen-down throughout, thrust horizontally FORWARD, not vertically stabbing ground. SAME continuous rigid straight shaft and SAME small steel head, fixed overall length; whole pike slides FORWARD along its axis at impact, with visible rear butt behind grip. Strong arm extension and torso rotation; clear spear tip travel at least90px downscreen from cocked position to impact. NO bent/growing/shrinking shaft, no pole cut off or missing behind shoulder. During recovery keep SAME OVERHAND grasp. All6 distinct poses. True alpha0 background, no glow/ground/shadow.\nACTION: Frame1 running approach with OVERHAND pike ready; frame2 plant forward foot and brace shield; frame3 shoulder/elbow cocked well back, pike tip retracts to y330; frame4 explosive overhand shoulder-height lunge, right arm fully extends forward, straight pike tip advances to y455; frame5 hold long overhand extension and body lean; frame6 draw back and settle in same overhand ready grip. Stronger torso commitment than regular thrust, but same knuckles-on-top grip all6frames. No underhand follow-through.",
+      "motion": "Frame1 running approach with OVERHAND pike ready; frame2 plant forward foot and brace shield; frame3 shoulder/elbow cocked well back, pike tip retracts to y330; frame4 explosive overhand shoulder-height lunge, right arm fully extends forward, straight pike tip advances to y455; frame5 hold long overhand extension and body lean; frame6 draw back and settle in same overhand ready grip. Stronger torso commitment than regular thrust, but same knuckles-on-top grip all6frames. No underhand follow-through.",
+      "status": "rejected-source",
+      "note": "Stronger stroke, but follow-through dropped to a low weapon hand."
+    },
+    {
+      "id": "charge-attack",
+      "file": "Charge-Attack-Overhand-v3.png",
+      "nativeFile": "Native-Charge-Attack-Overhand-v3.png",
+      "generatedSource": "C:/Users/Damien/.codex/generated_images/01a0fea1-c63f-7343-92ca-6c21cc1c4296/exec-671cbfdc-dd92-47db-a853-2b5728a79326.png",
+      "prompt": "Correct ONLY the right weapon arm and pike positioning in this six-frame overhead Pikeman attack atlas. It STILL turns into an underarm thrust in bottom-left/bottom-middle cells (frames4 and5). Make ALL SIX frames use a HIGH OVERHAND thrust with weapon fist at HEAD/SHOULDER height. In frames4 and5, MOVE THE PIKE FIST UP SCREEN to directly LEFT OF THE HELMET, around y245 in its512cell, never below helmet toward waist. RAISE RIGHT ELBOW/FOREARM, use back-of-glove and knuckles facing UP at camera, palm down, SAME wrap/thumb orientation as frame3. Pike runs past SIDE of head from raised fist, like an overarm javelin thrust, NEVER an underarm spear grip. Right arm reaches forward from HIGH shoulder, NOT low forward from waist; glove never hangs below belt. Keep strong windup frame2/3 and extensionframe4/5, pike spearhead advances visibly down screen while rear butt slides forward too. Long pike stays rigid STRAIGHT with constant length and one small steel tip, correct grip behind midpoint; no changed hand, no short spear, no pike floating apart from hand. IMPORTANT anatomy: right raised fist SCREEN LEFT near helmet, held round wooden shield SCREEN RIGHT. Preserve exact armor, body sizes, body/head positions, shield, feet, strict overhead camera, facingdown, art and6celllayout. EXACT1536x1024, 3x2grid512cells. Entirepike/bodywithinowncell>=16pxclearalpha, no protruding fragments inothercells. Genuine transparent alpha0background. Keep six sequential poses distinct. No labels.",
+      "motion": "Frame1 running approach with OVERHAND pike ready; frame2 plant forward foot and brace shield; frame3 shoulder/elbow cocked well back, pike tip retracts to y330; frame4 explosive overhand shoulder-height lunge, right arm fully extends forward, straight pike tip advances to y455; frame5 hold long overhand extension and body lean; frame6 draw back and settle in same overhand ready grip. Stronger torso commitment than regular thrust, but same knuckles-on-top grip all6frames. No underhand follow-through.",
+      "status": "superseded-source",
+      "note": "User requested softer painterly edges instead of heavy black rotoscoped outlines.",
+      "sourceRects": [
+        [
+          0,
+          0,
+          512,
+          480
+        ],
+        [
+          512,
+          0,
+          1024,
+          480
+        ],
+        [
+          1024,
+          0,
+          1536,
+          480
+        ],
+        [
+          0,
+          500,
+          512,
+          1024
+        ],
+        [
+          512,
+          500,
+          1024,
+          1024
+        ],
+        [
+          1024,
+          500,
+          1536,
+          1024
+        ]
+      ],
+      "compositionNote": "Whole-pose rectangles preserve lower-row pike butt caps and exclude neighboring lower-row fragments from upper poses; uniform scale and body registration remain unchanged."
+    },
+    {
+      "id": "attack",
+      "file": "Attack-Overhand-Painterly-v5.png",
+      "nativeFile": "Native-Attack-Overhand-Painterly-v5.png",
+      "generatedSource": "C:/Users/Damien/.codex/generated_images/01a0fea1-c63f-7343-92ca-6c21cc1c4296/exec-92be190d-699e-4965-804a-6680b053ab1e.png",
+      "prompt": "STYLE-ONLY correction to image1 six-frame Pikeman animation atlas. Image2 approved idle is the painterly material and edge-treatment reference. Remove the THICK BLACK INK/rotoscope contour around every soldier, helmet, gloves, shield, spearhead and pike shaft in ALL SIX frames. Replace stark black traced borders with thin natural material-colored edges and soft painterly shaded transitions: dark steel-gray at metal, burgundy fabric shadows, warm brown at leather and wood. No pure black comic ink outlines, no uniform black sticker border, no cel shading, no outer glow/halo. Match the approved idle's richly textured weathered metal, subtle wood grain and cloth; avoid glossy plastic oversaturation. KEEP EVERY POSE EXACTLY: high overhand right-hand grip beside helmet in all6frames, strong thrust, same hand locations, body locations, camera, proportions, armor, held shield, spear length/shape, source cell positions, six-frame sequence. No new pose generation. Do not turn overhand into underhand or lower fist. Pike remains straight, rigid, firmly held. EXACT1536x1024RGBA 3columns2rows six512cells, same atlas arrangement. Preserve true transparent alpha0 background, no painted background or ground or cast shadow. Change edge rendering/material shading ONLY; geometry and animation poses invariant.",
+      "status": "superseded-source",
+      "references": [
+        "C:/Users/Damien/Documents/GitHub/AgeOfFronts/AgeOfFronts/Art/Cultures/Russians/Units/ClassicalAge/Pikeman/SourceArt/Native-Attack-Overhand-v4.png",
+        "C:/Users/Damien/Documents/GitHub/AgeOfFronts/AgeOfFronts/Art/Cultures/Russians/Units/ClassicalAge/Pikeman/Idle-v1.png"
+      ],
+      "note": "User requested complete rebuild of both thrusts and side fall."
+    },
+    {
+      "id": "charge-attack",
+      "file": "Charge-Attack-Overhand-Painterly-v4.png",
+      "nativeFile": "Native-Charge-Attack-Overhand-Painterly-v4.png",
+      "generatedSource": "C:/Users/Damien/.codex/generated_images/01a0fea1-c63f-7343-92ca-6c21cc1c4296/exec-40587e71-e356-495a-b91e-b321419b8eba.png",
+      "prompt": "STYLE-ONLY correction to image1 six-frame Pikeman animation atlas. Image2 approved idle is the painterly material and edge-treatment reference. Remove the THICK BLACK INK/rotoscope contour around every soldier, helmet, gloves, shield, spearhead and pike shaft in ALL SIX frames. Replace stark black traced borders with thin natural material-colored edges and soft painterly shaded transitions: dark steel-gray at metal, burgundy fabric shadows, warm brown at leather and wood. No pure black comic ink outlines, no uniform black sticker border, no cel shading, no outer glow/halo. Match the approved idle's richly textured weathered metal, subtle wood grain and cloth; avoid glossy plastic oversaturation. KEEP EVERY POSE EXACTLY: high overhand right-hand grip beside helmet in all6frames, strong thrust, same hand locations, body locations, camera, proportions, armor, held shield, spear length/shape, source cell positions, six-frame sequence. No new pose generation. Do not turn overhand into underhand or lower fist. Pike remains straight, rigid, firmly held. EXACT1536x1024RGBA 3columns2rows six512cells, same atlas arrangement. Preserve true transparent alpha0 background, no painted background or ground or cast shadow. Change edge rendering/material shading ONLY; geometry and animation poses invariant.",
+      "status": "superseded-source",
+      "references": [
+        "C:/Users/Damien/Documents/GitHub/AgeOfFronts/AgeOfFronts/Art/Cultures/Russians/Units/ClassicalAge/Pikeman/SourceArt/Native-Charge-Attack-Overhand-v3.png",
+        "C:/Users/Damien/Documents/GitHub/AgeOfFronts/AgeOfFronts/Art/Cultures/Russians/Units/ClassicalAge/Pikeman/Idle-v1.png"
+      ],
+      "sourceRects": [
+        [
+          0,
+          0,
+          512,
+          480
+        ],
+        [
+          512,
+          0,
+          1024,
+          480
+        ],
+        [
+          1024,
+          0,
+          1536,
+          480
+        ],
+        [
+          0,
+          500,
+          512,
+          1024
+        ],
+        [
+          512,
+          500,
+          1024,
+          1024
+        ],
+        [
+          1024,
+          500,
+          1536,
+          1024
+        ]
+      ],
+      "note": "User requested complete rebuild of both thrusts and side fall."
+    },
+    {
+      "id": "attack",
+      "file": "Attack-Rebuilt-v6.png",
+      "nativeFile": "Native-Attack-Rebuilt-v6.png",
+      "generatedSource": "C:/Users/Damien/.codex/generated_images/01a0fea1-c63f-7343-92ca-6c21cc1c4296/exec-188d15ae-1ba8-49e2-bdad-103e02230e56.png",
+      "prompt": "Create a NEW six-frame solo animation atlas of the EXACT approved Russian Classical Pikeman in reference. Use ONLY this approved idle as locked design and art style. EXACT1536x1024 RGBA atlas, 3columns2rows, six512squarecells row-major, ONE complete soldier per cell. Every body and entire pike stays wholly inside its own cell with >=24px clear transparent margin, no fragments in other cells. Same body physical scale, proportions and equipment across all6frames; body around190px tall, long wooden pike around390px full length; do not zoom. Fixed ground root near(256,256). STRICT90degree overhead orthographic camera unchanged all6frames, facing screen-bottom when standing, helmet crown dominant, no eye-level portraits. Match reference's richly textured weathered iron ridged helmet, iron lamellar/scales, burgundy quilted sleeve/skirt, metal bracers/greaves, brown gloves/boots and side sword. Wooden round shield with iron rim/boss held LEFT arm screen-right, no shield on back. Long ONE continuous rigid wooden pike in RIGHT hand screen-left, small steel spearhead at forward end, plain wooden butt at rear; fixed length, no bent shaft, no short spear, no changing blade. Painterly edges/material shadows, NO thick black rotoscope/comic outlines or glossy cel shading. EXACTtwohands/twoarms/twolegs. True transparent alpha0 background, no ground, shadow, aura, haze, blood or text.\nANIMATION: REGULAR OVERHAND THRUST, six distinct poses:1ready weapon fist high beside helmet,2right elbow pulls back and torso turns to cock,3maximum high windup,4full strong forward thrust toward screen-bottom,5hold extended follow-through,6withdraw to same ready. Constant PRONATED OVERHAND grip throughout: palm toward ground, back of glove toward top-down camera, right fist near HEAD/SHOULDER height, no waist-level underarm grip in impact or recovery. Pike hand travels forward together with whole rigid pike, clear spearhead advance>=60px between3and4. Rear capped butt must move with tip; never change shaft length or slide grip. Right arm extends from high shoulder, shield braces torso. Arm/thrust/body twist create motion, not whole actor sliding. Pike may angle slightly diagonally within screen-left lane to fit long rigid weapon, but always thrusting forward downscreen, not sideways swinging or overhead ground stabbing.",
+      "motion": "REGULAR OVERHAND THRUST, six distinct poses:1ready weapon fist high beside helmet,2right elbow pulls back and torso turns to cock,3maximum high windup,4full strong forward thrust toward screen-bottom,5hold extended follow-through,6withdraw to same ready. Constant PRONATED OVERHAND grip throughout: palm toward ground, back of glove toward top-down camera, right fist near HEAD/SHOULDER height, no waist-level underarm grip in impact or recovery. Pike hand travels forward together with whole rigid pike, clear spearhead advance>=60px between3and4. Rear capped butt must move with tip; never change shaft length or slide grip. Right arm extends from high shoulder, shield braces torso. Arm/thrust/body twist create motion, not whole actor sliding. Pike may angle slightly diagonally within screen-left lane to fit long rigid weapon, but always thrusting forward downscreen, not sideways swinging or overhead ground stabbing.",
+      "status": "rejected-source",
+      "references": [
+        "C:/Users/Damien/Documents/GitHub/AgeOfFronts/AgeOfFronts/Art/Cultures/Russians/Units/ClassicalAge/Pikeman/Idle-v1.png"
+      ],
+      "note": "Fresh rebuilt draft; rear pike shaft disappeared at impact."
+    },
+    {
+      "id": "charge-attack",
+      "file": "Charge-Attack-Rebuilt-v5.png",
+      "nativeFile": "Native-Charge-Attack-Rebuilt-v5.png",
+      "generatedSource": "C:/Users/Damien/.codex/generated_images/01a0fea1-c63f-7343-92ca-6c21cc1c4296/exec-21ca056e-b801-4cae-8471-6ca9d6d46f21.png",
+      "prompt": "Create a NEW six-frame solo animation atlas of the EXACT approved Russian Classical Pikeman in reference. Use ONLY this approved idle as locked design and art style. EXACT1536x1024 RGBA atlas, 3columns2rows, six512squarecells row-major, ONE complete soldier per cell. Every body and entire pike stays wholly inside its own cell with >=24px clear transparent margin, no fragments in other cells. Same body physical scale, proportions and equipment across all6frames; body around190px tall, long wooden pike around390px full length; do not zoom. Fixed ground root near(256,256). STRICT90degree overhead orthographic camera unchanged all6frames, facing screen-bottom when standing, helmet crown dominant, no eye-level portraits. Match reference's richly textured weathered iron ridged helmet, iron lamellar/scales, burgundy quilted sleeve/skirt, metal bracers/greaves, brown gloves/boots and side sword. Wooden round shield with iron rim/boss held LEFT arm screen-right, no shield on back. Long ONE continuous rigid wooden pike in RIGHT hand screen-left, small steel spearhead at forward end, plain wooden butt at rear; fixed length, no bent shaft, no short spear, no changing blade. Painterly edges/material shadows, NO thick black rotoscope/comic outlines or glossy cel shading. EXACTtwohands/twoarms/twolegs. True transparent alpha0 background, no ground, shadow, aura, haze, blood or text.\nANIMATION: POWERFUL OVERHAND CHARGE THRUST, six distinct sequential poses:1approach pike ready high,2plant leading foot and brace shield,3cock right elbow/torso far back,4drive high shoulder and right arm forward into a LONG overhand lunge,5sustained extension and follow-through,6recoil/recover. Constant PRONATED OVERHAND grip in ALL6frames: back of glove facing camera, palm groundward, right fist stays at helmet/shoulder HEIGHT throughout thrust, NEVER drop to waist or palm-up underarm scoop. Stronger body commitment than regular attack. Whole rigid pike advances visibly>=60px toward screen-bottom from3to4, tip and rear capped butt move together with hand, identical shaft length and grip location; NO shortened spear, no missing rear shaft. Complete pike insideowncell. Slight diagonal longitudinal aim screen-left permitted to give room for full pike. High right elbow and shield locked to left arm. No horizontal sweep.",
+      "motion": "POWERFUL OVERHAND CHARGE THRUST, six distinct sequential poses:1approach pike ready high,2plant leading foot and brace shield,3cock right elbow/torso far back,4drive high shoulder and right arm forward into a LONG overhand lunge,5sustained extension and follow-through,6recoil/recover. Constant PRONATED OVERHAND grip in ALL6frames: back of glove facing camera, palm groundward, right fist stays at helmet/shoulder HEIGHT throughout thrust, NEVER drop to waist or palm-up underarm scoop. Stronger body commitment than regular attack. Whole rigid pike advances visibly>=60px toward screen-bottom from3to4, tip and rear capped butt move together with hand, identical shaft length and grip location; NO shortened spear, no missing rear shaft. Complete pike insideowncell. Slight diagonal longitudinal aim screen-left permitted to give room for full pike. High right elbow and shield locked to left arm. No horizontal sweep.",
+      "status": "rejected-source",
+      "references": [
+        "C:/Users/Damien/Documents/GitHub/AgeOfFronts/AgeOfFronts/Art/Cultures/Russians/Units/ClassicalAge/Pikeman/Idle-v1.png"
+      ],
+      "note": "Fresh rebuilt draft; rear pike shaft disappeared at impact."
+    },
+    {
+      "id": "attack",
+      "file": "Attack-Rebuilt-v7.png",
+      "nativeFile": "Native-Attack-Rebuilt-v7.png",
+      "generatedSource": "C:/Users/Damien/.codex/generated_images/01a0fea1-c63f-7343-92ca-6c21cc1c4296/exec-d55f4e0f-39c4-43c6-87fc-89658936e289.png",
+      "prompt": "Correct this NEW six-frame overhead pikeman atlas while preserving the new body/feet/shield poses, detailed painterly art and layout. Correct the weapon arm and complete pike ONLY. In bottom-left and bottom-middle (frames4,5), pike's REAR HALF IS MISSING and right fist drops too low. Restore FULL pike as ONE unbroken straight shaft from steel tip to capped rear butt, same total390px length in all6cells. Rear shaft must extend clearly BACKWARD behind gripping hand toward screen-top, with whole cap visible, never disappear into arm/armor. Move weapon hand UP to directly SCREEN LEFT beside helmet at shoulder height, around(155,210) in eachcell, right elbow raised; maintain PRONATED OVERHAND grip with back of glove facing camera and palm groundward. SAME wrist/grip orientation all6frames, including impact and recovery. Right hand never at waist or below body. Reposition full pike with hand: shaft passes continuously through closedgrip with at least110px rear shaft exposed behind it. Keep the forward tip toward screen-bottom, NOT sideways horizontal. Frames2/3 high cock-back and frames4/5 forward extension: rigid pike/hand advances toward screen-bottom at least60px, no shaft length change. Make thrust clear with right shoulder rotation and elbow extension. Full pike must fit withincell >=20pxalpha margin; slight diagonal angle permitted, consistent small steel point. Body positions/sizes/shield/foot poses unchanged. STRICT overhead camera stays, no front chest portrait. EXACT1536x1024RGBA 3x2six512cells; all equipment insideOWNCELL, no duplicate or extra shafts, no neighboring fragments. Genuine zero-alpha background and same soft material edges, no bold black comic outlines. Do not edit any body beyond right arm/hand needed for high overhand thrust.",
+      "motion": "REGULAR OVERHAND THRUST, six distinct poses:1ready weapon fist high beside helmet,2right elbow pulls back and torso turns to cock,3maximum high windup,4full strong forward thrust toward screen-bottom,5hold extended follow-through,6withdraw to same ready. Constant PRONATED OVERHAND grip throughout: palm toward ground, back of glove toward top-down camera, right fist near HEAD/SHOULDER height, no waist-level underarm grip in impact or recovery. Pike hand travels forward together with whole rigid pike, clear spearhead advance>=60px between3and4. Rear capped butt must move with tip; never change shaft length or slide grip. Right arm extends from high shoulder, shield braces torso. Arm/thrust/body twist create motion, not whole actor sliding. Pike may angle slightly diagonally within screen-left lane to fit long rigid weapon, but always thrusting forward downscreen, not sideways swinging or overhead ground stabbing.",
+      "status": "selected-source",
+      "references": [
+        "C:/Users/Damien/.codex/generated_images/01a0fea1-c63f-7343-92ca-6c21cc1c4296/exec-188d15ae-1ba8-49e2-bdad-103e02230e56.png"
+      ]
+    },
+    {
+      "id": "charge-attack",
+      "file": "Charge-Attack-Rebuilt-v6.png",
+      "nativeFile": "Native-Charge-Attack-Rebuilt-v6.png",
+      "generatedSource": "C:/Users/Damien/.codex/generated_images/01a0fea1-c63f-7343-92ca-6c21cc1c4296/exec-4b659026-e6fc-435f-80d6-ad47cf4d46ca.png",
+      "prompt": "Correct this NEW six-frame overhead pikeman atlas while preserving the new body/feet/shield poses, detailed painterly art and layout. Correct the weapon arm and complete pike ONLY. In bottom-left and bottom-middle (frames4,5), pike's REAR HALF IS MISSING and right fist drops too low. Restore FULL pike as ONE unbroken straight shaft from steel tip to capped rear butt, same total390px length in all6cells. Rear shaft must extend clearly BACKWARD behind gripping hand toward screen-top, with whole cap visible, never disappear into arm/armor. Move weapon hand UP to directly SCREEN LEFT beside helmet at shoulder height, around(155,210) in eachcell, right elbow raised; maintain PRONATED OVERHAND grip with back of glove facing camera and palm groundward. SAME wrist/grip orientation all6frames, including impact and recovery. Right hand never at waist or below body. Reposition full pike with hand: shaft passes continuously through closedgrip with at least110px rear shaft exposed behind it. Keep the forward tip toward screen-bottom, NOT sideways horizontal. Frames2/3 high cock-back and frames4/5 forward extension: rigid pike/hand advances toward screen-bottom at least60px, no shaft length change. Make thrust clear with right shoulder rotation and elbow extension. Full pike must fit withincell >=20pxalpha margin; slight diagonal angle permitted, consistent small steel point. Body positions/sizes/shield/foot poses unchanged. STRICT overhead camera stays, no front chest portrait. EXACT1536x1024RGBA 3x2six512cells; all equipment insideOWNCELL, no duplicate or extra shafts, no neighboring fragments. Genuine zero-alpha background and same soft material edges, no bold black comic outlines. Do not edit any body beyond right arm/hand needed for high overhand thrust.",
+      "motion": "POWERFUL OVERHAND CHARGE THRUST, six distinct sequential poses:1approach pike ready high,2plant leading foot and brace shield,3cock right elbow/torso far back,4drive high shoulder and right arm forward into a LONG overhand lunge,5sustained extension and follow-through,6recoil/recover. Constant PRONATED OVERHAND grip in ALL6frames: back of glove facing camera, palm groundward, right fist stays at helmet/shoulder HEIGHT throughout thrust, NEVER drop to waist or palm-up underarm scoop. Stronger body commitment than regular attack. Whole rigid pike advances visibly>=60px toward screen-bottom from3to4, tip and rear capped butt move together with hand, identical shaft length and grip location; NO shortened spear, no missing rear shaft. Complete pike insideowncell. Slight diagonal longitudinal aim screen-left permitted to give room for full pike. High right elbow and shield locked to left arm. No horizontal sweep.",
+      "status": "rejected-source",
+      "references": [
+        "C:/Users/Damien/.codex/generated_images/01a0fea1-c63f-7343-92ca-6c21cc1c4296/exec-21ca056e-b801-4cae-8471-6ca9d6d46f21.png"
+      ],
+      "note": "Full shaft restored but impact arm stayed too low."
+    },
+    {
+      "id": "charge-attack",
+      "file": "Charge-Attack-Rebuilt-v7.png",
+      "nativeFile": "Native-Charge-Attack-Rebuilt-v7.png",
+      "generatedSource": "C:/Users/Damien/.codex/generated_images/01a0fea1-c63f-7343-92ca-6c21cc1c4296/exec-8d8507c2-8d3b-4c7e-8a63-9c0627f8e22f.png",
+      "prompt": "Correct ONLY frames4 and5 (bottom-left and bottom-middle cells) of this charge thrust atlas: HIGH OVERHAND weapon arm instead of current LOW UNDERARM reach. Move RIGHT FIST so it is IMMEDIATELY TO LEFT OF HELMET at the SAME VERTICAL SCREEN POSITION AS HELMET CENTER in each of those two poses. Frame4 desired fist around local(150,140); frame5 desired fist around local(150,150). Right forearm raised and elbow flared, high shoulder overhand stance, back of glove facing overhead camera, palm groundward. Fist must NOT be lower downscreen than helmet or in front of hips/waist. Keep glove wrap/thumb identical to high cocked frames2/3. Make pike almost VERTICAL on SCREEN LEFT beside helmet in frames4/5: complete straight wooden pole, rear capped butt near celltop(y30), point near cellbottom(y465), closed fist continuously gripping aboutone-third from rear butt. FULL pike rear shaft visible behind fist, full forward shaft/tip visible in front; no missing shaft, no extra pole. Pike forward extension comes from high shoulder arm, high overhand angle, no underhand scoop or horizontal swing. Keep torso/feet/shield positions and sizes EXACTLY as currentlydrawn, armor/colors/painterly style unchanged, allother4cells unchanged. Fixed overheadcamera, sameheldshield inleftarm. EXACT1536x1024RGBA 3x2six512cells. Wholepike remainsinitsowncell >=20pxtransparentmargin, no gridfragments, no dark outlines or background.",
+      "motion": "POWERFUL OVERHAND CHARGE THRUST, six distinct sequential poses:1approach pike ready high,2plant leading foot and brace shield,3cock right elbow/torso far back,4drive high shoulder and right arm forward into a LONG overhand lunge,5sustained extension and follow-through,6recoil/recover. Constant PRONATED OVERHAND grip in ALL6frames: back of glove facing camera, palm groundward, right fist stays at helmet/shoulder HEIGHT throughout thrust, NEVER drop to waist or palm-up underarm scoop. Stronger body commitment than regular attack. Whole rigid pike advances visibly>=60px toward screen-bottom from3to4, tip and rear capped butt move together with hand, identical shaft length and grip location; NO shortened spear, no missing rear shaft. Complete pike insideowncell. Slight diagonal longitudinal aim screen-left permitted to give room for full pike. High right elbow and shield locked to left arm. No horizontal sweep.",
+      "status": "superseded-source",
+      "references": [
+        "C:/Users/Damien/.codex/generated_images/01a0fea1-c63f-7343-92ca-6c21cc1c4296/exec-4b659026-e6fc-435f-80d6-ad47cf4d46ca.png"
+      ],
+      "sourceRects": [
+        [
+          0,
+          0,
+          512,
+          490
+        ],
+        [
+          512,
+          0,
+          1024,
+          490
+        ],
+        [
+          1024,
+          0,
+          1536,
+          490
+        ],
+        [
+          0,
+          494,
+          512,
+          1024
+        ],
+        [
+          512,
+          494,
+          1024,
+          1024
+        ],
+        [
+          1024,
+          476,
+          1536,
+          1010
+        ]
+      ],
+      "packingOffsets": [
+        [
+          0,
+          0
+        ],
+        [
+          0,
+          0
+        ],
+        [
+          0,
+          0
+        ],
+        [
+          0,
+          0
+        ],
+        [
+          0,
+          0
+        ],
+        [
+          0,
+          20
+        ]
+      ],
+      "compositionNote": "Whole-pose crops exclude neighboring pike fragments; final pose repacked with matching pivot offset to preserve body registration.",
+      "note": "Rejected after colored render showed background debris."
+    },
+    {
+      "id": "death",
+      "file": "Death-Side-Rebuilt-v2.png",
+      "nativeFile": "Native-Death-Side-Rebuilt-v2.png",
+      "generatedSource": "C:/Users/Damien/.codex/generated_images/01a0fea1-c63f-7343-92ca-6c21cc1c4296/exec-9014a049-cee0-4842-9e7c-4509a6630908.png",
+      "prompt": "Create a NEW six-frame solo animation atlas of the EXACT approved Russian Classical Pikeman in reference. Use ONLY this approved idle as locked design and art style. EXACT1536x1024 RGBA atlas, 3columns2rows, six512squarecells row-major, ONE complete soldier per cell. Every body and entire pike stays wholly inside its own cell with >=24px clear transparent margin, no fragments in other cells. Same body physical scale, proportions and equipment across all6frames; body around190px tall, long wooden pike around390px full length; do not zoom. Fixed ground root near(256,256). STRICT90degree overhead orthographic camera unchanged all6frames, facing screen-bottom when standing, helmet crown dominant, no eye-level portraits. Match reference's richly textured weathered iron ridged helmet, iron lamellar/scales, burgundy quilted sleeve/skirt, metal bracers/greaves, brown gloves/boots and side sword. Wooden round shield with iron rim/boss held LEFT arm screen-right, no shield on back. Long ONE continuous rigid wooden pike in RIGHT hand screen-left, small steel spearhead at forward end, plain wooden butt at rear; fixed length, no bent shaft, no short spear, no changing blade. Painterly edges/material shadows, NO thick black rotoscope/comic outlines or glossy cel shading. EXACTtwohands/twoarms/twolegs. True transparent alpha0 background, no ground, shadow, aura, haze, blood or text.\nANIMATION: NEW FULL SIDE-FALL DEATH, six clear phases:1approved idle stance,2body recoils and knees buckle,3weight sinks and torso tilts to screen-right,4falling fully onto right side with helmet/body turning coherently together,5body lying ON RIGHT SIDE on ground viewed directly overhead,6same settled side corpse with small settling only, NO orientation inversion. Final head toward screen-right and feet toward screen-left, believable bent knees and collapsed upper body; not merely crouched or upright. Shield stays with forearm and LOWERS all the way to ground beside body, rotated into lying plane, not held upright floating. Pike lowers/rotates with right hand then comes to rest diagonally on ground beside corpse, complete same straight shaft visible withincell; no standing upright pole next to corpse, no disappearing spearhead, no additional hands. Continuous fall from stance to ground, stages4to6coherent physical orientations. Locked overheadcamera and exact samearmor.",
+      "motion": "NEW FULL SIDE-FALL DEATH, six clear phases:1approved idle stance,2body recoils and knees buckle,3weight sinks and torso tilts to screen-right,4falling fully onto right side with helmet/body turning coherently together,5body lying ON RIGHT SIDE on ground viewed directly overhead,6same settled side corpse with small settling only, NO orientation inversion. Final head toward screen-right and feet toward screen-left, believable bent knees and collapsed upper body; not merely crouched or upright. Shield stays with forearm and LOWERS all the way to ground beside body, rotated into lying plane, not held upright floating. Pike lowers/rotates with right hand then comes to rest diagonally on ground beside corpse, complete same straight shaft visible withincell; no standing upright pole next to corpse, no disappearing spearhead, no additional hands. Continuous fall from stance to ground, stages4to6coherent physical orientations. Locked overheadcamera and exact samearmor.",
+      "status": "selected-source",
+      "references": [
+        "C:/Users/Damien/Documents/GitHub/AgeOfFronts/AgeOfFronts/Art/Cultures/Russians/Units/ClassicalAge/Pikeman/Idle-v1.png"
+      ]
+    },
+    {
+      "id": "charge-attack",
+      "file": "Charge-Attack-Rebuilt-Clean-v8.png",
+      "nativeFile": "Native-Charge-Attack-Rebuilt-Clean-v8.png",
+      "generatedSource": "C:/Users/Damien/.codex/generated_images/01a0fea1-c63f-7343-92ca-6c21cc1c4296/exec-b6dc18d1-539d-4e97-9703-84e2a2f62848.png",
+      "prompt": "Perform BACKGROUND REMOVAL and stray-fragment cleanup ONLY on this six-frame sprite atlas. Preserve every soldier, weapon, shield, armor pixel detail, pose, hand grip, sizing, position and layout as faithfully as possible. Remove ALL brown haze, black/brown/gray cloudy alpha residue, rectangular blocks, halos, shadows, opaque background, and stray isolated pixels outside each complete soldier plus held pike and shield. Set ALL space outside those six silhouettes to genuinely TRANSPARENT alpha0, with clean narrow anti-aliased material edges, no dark matte fringe. Specifically delete the tiny detached brown pike-butt fragment BELOW the top-right soldier (at bottomedge of top-rightcell); it belongs to neighboring frame and is not part of top-rightpose. Keep full intact pikes actually held by each soldier, including capped rear butts and steel tips. No weapon fragments in neighboring cells. Do NOT change poses or arms: all high overhand grips stay. EXACT1536x1024RGBA 3columns2rows six512cells, same source positions and root registration, no scaling/recropping. Output clean transparent sprite sheet, no background of any color, no ground or cast shadows, no outlines added. This is a precise cutout correction, not a redesign.",
+      "status": "selected-source",
+      "references": [
+        "C:/Users/Damien/Documents/GitHub/AgeOfFronts/AgeOfFronts/Art/Cultures/Russians/Units/ClassicalAge/Pikeman/Charge-Attack-Rebuilt-v7.png"
+      ],
+      "note": "Background residue and detached neighbor fragment removed through ImageGen. Clean atlas checked on green; high overhand grip and full pikes retained."
+    },
+    {
+      "id": "running",
+      "file": "Walk-Steady-v2.png",
+      "nativeFile": "Native-Walk-Steady-v2.png",
+      "generatedSource": "C:/Users/Damien/.codex/generated_images/01a0fea1-c63f-7343-92ca-6c21cc1c4296/exec-52571df3-1483-49b6-a4a8-4d81f7c90063.png",
+      "prompt": "Correct this Pikeman gait atlas to remove SHAKY SIDE-TO-SIDE motion. Image1 current six-frame gait, image2 approved character design/style. EXACT1536x1024RGBA 3columns2rows six512cells, ROWMAJOR. LOCK upper body and equipment across all6frames: helmet crown CENTER always at local(256,200), helmet size/orientation IDENTICAL, torso x position/yaw/shoulder width identical, NO torso rocking left/right, NO head tilting/turning, no changes in body scale. Held wooden shield in left arm(screen-right) has EXACT same position/angle/size all6frames. Pike in right hand(screen-left) has EXACT same straight shaft, length, position/angle and grip all6frames; no pole swinging/swaying. Animate only legs/boots beneath stable pelvis; allow at most2px gentle vertical breathing/bob, ZERO lateral body drift. Same iron helmet/lamellar/scales/burgundy quilting/metalgreaves/leathergloves/brownboots, same deeply textured painterly art as approved idle, thin natural material edges not black cartoon outline. STRICT90degree overhead orthographic view facing screen-bottom. Every complete pike/body/shield INSIDE itsown512cell >=24pxalpha margin; no neighboringfragments or croppedtip/butt. Genuinealpha0background, no haze, shadows, blocks, ground, or text. All6frames show smoothly sequenced alternating foot strides, NOT six copies of idle. Body/head/equipment are steady while legs do the locomotion. Frame6->frame1 seamless.\nMOTION: WALK LOOP: left foot forward/right foot back, pass, right foot forward/left foot back, pass, intermediate steps completing alternating cycle. Bothfeettravel equally along screenup/down, no sideways stepping. Small controlled strides; steady upperbody.",
+      "motion": "WALK LOOP: left foot forward/right foot back, pass, right foot forward/left foot back, pass, intermediate steps completing alternating cycle. Bothfeettravel equally along screenup/down, no sideways stepping. Small controlled strides; steady upperbody.",
+      "status": "selected-source",
+      "references": [
+        "C:/Users/Damien/Documents/GitHub/AgeOfFronts/AgeOfFronts/Art/Cultures/Russians/Units/ClassicalAge/Pikeman/SourceArt/Native-Walk-v1.png",
+        "C:/Users/Damien/Documents/GitHub/AgeOfFronts/AgeOfFronts/Art/Cultures/Russians/Units/ClassicalAge/Pikeman/Idle-v1.png"
+      ],
+      "helmetLandmarks": [
+        256,
+        256,
+        256,
+        256,
+        256,
+        256
+      ],
+      "rootOffsets": [
+        [
+          0,
+          0
+        ],
+        [
+          0,
+          0
+        ],
+        [
+          0,
+          0
+        ],
+        [
+          0,
+          0
+        ],
+        [
+          0,
+          0
+        ],
+        [
+          0,
+          0
+        ]
+      ],
+      "registrationNote": "Whole-pose lateral registration from helmet landmarks; vertical stride/bob preserved. No painted pixels or changed gear."
+    },
+    {
+      "id": "charge",
+      "file": "Charge-Steady-v2.png",
+      "nativeFile": "Native-Charge-Steady-v2.png",
+      "generatedSource": "C:/Users/Damien/.codex/generated_images/01a0fea1-c63f-7343-92ca-6c21cc1c4296/exec-fcbc82d7-1a2f-432d-b49c-1696b2d3bc82.png",
+      "prompt": "Correct this Pikeman gait atlas to remove SHAKY SIDE-TO-SIDE motion. Image1 current six-frame gait, image2 approved character design/style. EXACT1536x1024RGBA 3columns2rows six512cells, ROWMAJOR. LOCK upper body and equipment across all6frames: helmet crown CENTER always at local(256,200), helmet size/orientation IDENTICAL, torso x position/yaw/shoulder width identical, NO torso rocking left/right, NO head tilting/turning, no changes in body scale. Held wooden shield in left arm(screen-right) has EXACT same position/angle/size all6frames. Pike in right hand(screen-left) has EXACT same straight shaft, length, position/angle and grip all6frames; no pole swinging/swaying. Animate only legs/boots beneath stable pelvis; allow at most2px gentle vertical breathing/bob, ZERO lateral body drift. Same iron helmet/lamellar/scales/burgundy quilting/metalgreaves/leathergloves/brownboots, same deeply textured painterly art as approved idle, thin natural material edges not black cartoon outline. STRICT90degree overhead orthographic view facing screen-bottom. Every complete pike/body/shield INSIDE itsown512cell >=24pxalpha margin; no neighboringfragments or croppedtip/butt. Genuinealpha0background, no haze, shadows, blocks, ground, or text. All6frames show smoothly sequenced alternating foot strides, NOT six copies of idle. Body/head/equipment are steady while legs do the locomotion. Frame6->frame1 seamless.\nMOTION: RUN LOOP: stronger alternating left/right leg strides and knees than walk, body has a CONSTANT slight forward lean identical all6frames; footcycle alternates lead leg, passing and push-off smoothly. Bothbootsclearly move forward/back equally, not shuffling. Pike held firm forward, shield close. Upperbody/helmet/pike/shieldnever rockleft/right; no changing lean angleframe-to-frame.",
+      "motion": "RUN LOOP: stronger alternating left/right leg strides and knees than walk, body has a CONSTANT slight forward lean identical all6frames; footcycle alternates lead leg, passing and push-off smoothly. Bothbootsclearly move forward/back equally, not shuffling. Pike held firm forward, shield close. Upperbody/helmet/pike/shieldnever rockleft/right; no changing lean angleframe-to-frame.",
+      "status": "selected-source",
+      "references": [
+        "C:/Users/Damien/Documents/GitHub/AgeOfFronts/AgeOfFronts/Art/Cultures/Russians/Units/ClassicalAge/Pikeman/SourceArt/Native-Charge-v1.png",
+        "C:/Users/Damien/Documents/GitHub/AgeOfFronts/AgeOfFronts/Art/Cultures/Russians/Units/ClassicalAge/Pikeman/Idle-v1.png"
+      ],
+      "helmetLandmarks": [
+        294,
+        262,
+        262,
+        294,
+        262,
+        262
+      ],
+      "rootOffsets": [
+        [
+          38,
+          0
+        ],
+        [
+          6,
+          0
+        ],
+        [
+          6,
+          0
+        ],
+        [
+          38,
+          0
+        ],
+        [
+          6,
+          0
+        ],
+        [
+          6,
+          0
+        ]
+      ],
+      "registrationNote": "Whole-pose lateral registration from helmet landmarks; vertical stride/bob preserved. No painted pixels or changed gear."
+    },
+    {
+      "id": "idle",
+      "file": "Idle-Smooth-v2.png",
+      "nativeFile": "Native-Idle-Smooth-v2.png",
+      "generatedSource": "C:/Users/Damien/.codex/generated_images/01a0fea1-c63f-7343-92ca-6c21cc1c4296/exec-b6433bc0-8862-4ef9-a5b5-f86d82411959.png",
+      "prompt": "Create a corrected SIX-FRAME idle breathing atlas for the exact approved Russian Pikeman. Image1 existing idle has abrupt pose changes; image2 approved idle design. Replace the sequence with VERY SMALL smooth breathing ONLY. All6frames have IDENTICAL planted foot positions, torso yaw/lean, helmet center at local(256,210), helmet orientation, shield position/angle/size, pike position/angle/length and grip. NO weight shifts, no knee squats, NO head tilts/turns, NO rocking, NO equipment jitter. Six sequential subtle poses: frame1 neutral,2slight inhale,3near peak inhale,4peak,5slight exhale,6almost neutral again so6->1 is seamless. Chest/shoulder breathing amplitude max1-2px per512cell, everythingelse remainssteady. Match approved idle exact weathered iron helmet/lamellar/scales, burgundy quilting, greaves/bracers, brown leather gloves/boots and sword. Held wooden round shield left arm screen-right; long rigid straight pike right hand screen-left, same steelhead and rearcap FULLY VISIBLE all6frames. Rich painterly textures/material edges, no thick black rotoscoping outlines or celshading. STRICT90degree directly overhead orthographic camera facing screen-down. EXACT1536x1024RGBA, 3columns2rows SIX512cells ROWMAJOR. One whole soldier percell, same physical scale, fixed bodycenter/feet/root; every pike and body entirely within owncell >=24pxalpha margin. Genuine transparent zeroalpha background, absolutely no haze/clouds/shadows/blocks/halos/text. Do not add decorative motion, lateral movement, or pose substitutions.",
+      "status": "selected-source",
+      "references": [
+        "C:/Users/Damien/Documents/GitHub/AgeOfFronts/AgeOfFronts/Art/Cultures/Russians/Units/ClassicalAge/Pikeman/SourceArt/Native-Idle-Animated-v1.png",
+        "C:/Users/Damien/Documents/GitHub/AgeOfFronts/AgeOfFronts/Art/Cultures/Russians/Units/ClassicalAge/Pikeman/Idle-v1.png"
+      ],
+      "durations": [
+        320,
+        320,
+        320,
+        320,
+        320,
+        320
+      ],
+      "helmetLandmarks": [
+        [
+          280,
+          210
+        ],
+        [
+          257,
+          212
+        ],
+        [
+          258,
+          212
+        ],
+        [
+          282,
+          206
+        ],
+        [
+          257,
+          208
+        ],
+        [
+          258,
+          207
+        ]
+      ],
+      "rootOffsets": [
+        [
+          24,
+          0
+        ],
+        [
+          1,
+          2
+        ],
+        [
+          2,
+          2
+        ],
+        [
+          26,
+          -4
+        ],
+        [
+          1,
+          -2
+        ],
+        [
+          2,
+          -3
+        ]
+      ],
+      "registrationNote": "Whole-pose registration keeps helmet steady; chest breathing retained; no pixel edits."
+    }
+  ]
+}

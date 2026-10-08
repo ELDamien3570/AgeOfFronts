@@ -1,0 +1,362 @@
+{
+  "actorCount": 1,
+  "animations": [
+    {
+      "id": "idle",
+      "file": "idle.png",
+      "label": "Idle",
+      "loop": true,
+      "scale": 1.25,
+      "durations": [
+        600,
+        600,
+        600,
+        600,
+        600,
+        600
+      ],
+      "description": "Quiet six-frame breathing idle, registered to the saddle and torso.",
+      "frameCount": 6,
+      "sourceFrameOrder": [
+        0,
+        1,
+        2,
+        3,
+        4,
+        5
+      ],
+      "frames": [
+        {
+          "x": 0,
+          "y": 0,
+          "width": 128,
+          "height": 128,
+          "pivot": {
+            "x": 63.7,
+            "y": 63.7
+          }
+        },
+        {
+          "x": 128,
+          "y": 0,
+          "width": 128,
+          "height": 128,
+          "pivot": {
+            "x": 63.7,
+            "y": 63.7
+          }
+        },
+        {
+          "x": 256,
+          "y": 0,
+          "width": 128,
+          "height": 128,
+          "pivot": {
+            "x": 63.7,
+            "y": 63.7
+          }
+        },
+        {
+          "x": 384,
+          "y": 0,
+          "width": 128,
+          "height": 128,
+          "pivot": {
+            "x": 63.7,
+            "y": 63.7
+          }
+        },
+        {
+          "x": 512,
+          "y": 0,
+          "width": 128,
+          "height": 128,
+          "pivot": {
+            "x": 63.7,
+            "y": 63.7
+          }
+        },
+        {
+          "x": 640,
+          "y": 0,
+          "width": 128,
+          "height": 128,
+          "pivot": {
+            "x": 63.7,
+            "y": 63.7
+          }
+        }
+      ]
+    },
+    {
+      "id": "running",
+      "file": "running.png",
+      "label": "Walk",
+      "loop": true,
+      "scale": 1.25,
+      "durations": [
+        180,
+        180,
+        180,
+        180,
+        180,
+        180
+      ],
+      "description": "Natural walking gait with lateral placement drift removed and vertical bob retained.",
+      "frameCount": 6,
+      "sourceFrameOrder": [
+        0,
+        1,
+        2,
+        3,
+        4,
+        5
+      ],
+      "frames": [
+        {
+          "x": 0,
+          "y": 0,
+          "width": 128,
+          "height": 128,
+          "pivot": {
+            "x": 63.7,
+            "y": 63.7
+          }
+        },
+        {
+          "x": 128,
+          "y": 0,
+          "width": 128,
+          "height": 128,
+          "pivot": {
+            "x": 63.7,
+            "y": 63.7
+          }
+        },
+        {
+          "x": 256,
+          "y": 0,
+          "width": 128,
+          "height": 128,
+          "pivot": {
+            "x": 63.7,
+            "y": 63.7
+          }
+        },
+        {
+          "x": 384,
+          "y": 0,
+          "width": 128,
+          "height": 128,
+          "pivot": {
+            "x": 63.7,
+            "y": 63.7
+          }
+        },
+        {
+          "x": 512,
+          "y": 0,
+          "width": 128,
+          "height": 128,
+          "pivot": {
+            "x": 63.7,
+            "y": 63.7
+          }
+        },
+        {
+          "x": 640,
+          "y": 0,
+          "width": 128,
+          "height": 128,
+          "pivot": {
+            "x": 63.7,
+            "y": 63.7
+          }
+        }
+      ]
+    },
+    {
+      "id": "attack",
+      "file": "attack.png",
+      "label": "Bow shot",
+      "loop": false,
+      "scale": 1.25,
+      "durations": [
+        160,
+        190,
+        230,
+        100,
+        180,
+        230
+      ],
+      "description": "Raise the left-held recurve bow, draw with the right hand, shoot forward, and recover.",
+      "frameCount": 6,
+      "sourceFrameOrder": [
+        0,
+        1,
+        2,
+        3,
+        4,
+        5
+      ],
+      "frames": [
+        {
+          "x": 0,
+          "y": 0,
+          "width": 128,
+          "height": 128,
+          "pivot": {
+            "x": 63.7,
+            "y": 63.7
+          }
+        },
+        {
+          "x": 128,
+          "y": 0,
+          "width": 128,
+          "height": 128,
+          "pivot": {
+            "x": 63.7,
+            "y": 63.7
+          }
+        },
+        {
+          "x": 256,
+          "y": 0,
+          "width": 128,
+          "height": 128,
+          "pivot": {
+            "x": 63.7,
+            "y": 63.7
+          }
+        },
+        {
+          "x": 384,
+          "y": 0,
+          "width": 128,
+          "height": 128,
+          "pivot": {
+            "x": 63.7,
+            "y": 63.7
+          }
+        },
+        {
+          "x": 512,
+          "y": 0,
+          "width": 128,
+          "height": 128,
+          "pivot": {
+            "x": 63.7,
+            "y": 63.7
+          }
+        },
+        {
+          "x": 640,
+          "y": 0,
+          "width": 128,
+          "height": 128,
+          "pivot": {
+            "x": 63.7,
+            "y": 63.7
+          }
+        }
+      ],
+      "impactFrame": 3
+    },
+    {
+      "id": "death",
+      "file": "death.png",
+      "label": "Death - together fall",
+      "loop": false,
+      "scale": 1.25,
+      "durations": [
+        150,
+        180,
+        200,
+        220,
+        260,
+        600
+      ],
+      "description": "Horse and rider buckle and fall together; the final corpse stays settled.",
+      "frameCount": 6,
+      "sourceFrameOrder": [
+        0,
+        1,
+        2,
+        3,
+        4,
+        5
+      ],
+      "frames": [
+        {
+          "x": 0,
+          "y": 0,
+          "width": 128,
+          "height": 128,
+          "pivot": {
+            "x": 63.7,
+            "y": 63.7
+          }
+        },
+        {
+          "x": 128,
+          "y": 0,
+          "width": 128,
+          "height": 128,
+          "pivot": {
+            "x": 63.7,
+            "y": 63.7
+          }
+        },
+        {
+          "x": 256,
+          "y": 0,
+          "width": 128,
+          "height": 128,
+          "pivot": {
+            "x": 63.7,
+            "y": 63.7
+          }
+        },
+        {
+          "x": 384,
+          "y": 0,
+          "width": 128,
+          "height": 128,
+          "pivot": {
+            "x": 63.7,
+            "y": 63.7
+          }
+        },
+        {
+          "x": 512,
+          "y": 0,
+          "width": 128,
+          "height": 128,
+          "pivot": {
+            "x": 63.7,
+            "y": 63.7
+          }
+        },
+        {
+          "x": 640,
+          "y": 0,
+          "width": 128,
+          "height": 128,
+          "pivot": {
+            "x": 63.7,
+            "y": 63.7
+          }
+        }
+      ]
+    }
+  ],
+  "source": "Art/Cultures/Russians/Units/LateMedieval/HorseArcher/animations.json",
+  "metadataHash": "c11f9b9c749e7cab58b045349cd4f241851e23e275e3b06d77def99dcc2de75d",
+  "hashes": {
+    "Art/Cultures/Russians/Units/LateMedieval/HorseArcher/Idle-Registered-v1.png": "3a85b52fae7114d263ff4267021bd4ec422e857bb3172c54bcc5ef1779b42f2f",
+    "Art/Cultures/Russians/Units/LateMedieval/HorseArcher/Running-Registered-v1.png": "5cdcaa1679aa49b83db82a0c080a0a7ad5541af1996aa35745483873c863b822",
+    "Art/Cultures/Russians/Units/LateMedieval/HorseArcher/Attack-Forward-v2.png": "6fd7f6074957104830805604889c1e69f03c29f240515192cf383947283017dd",
+    "Art/Cultures/Russians/Units/LateMedieval/HorseArcher/Death-Together-v1.png": "5afe4bc15cffdb1d1efca36b4505547add885527481729cbd05587c6a8edec5b"
+  }
+}

@@ -1,0 +1,10 @@
+{
+  "generatedSource": "C:/Users/Damien/.codex/generated_images/01a1166c-83ee-7ae0-be97-78c470de8962/exec-768964a4-1af4-48bf-b177-a66124df5b8c.png",
+  "prompt": "Edit only the spear and right-hand grip placement in this overhead sprite. Preserve soldier, armor, camera, shield, boots, and hand anatomy. The right hand at SCREEN LEFT must hold near the BACK QUARTER of the spear. The capped spear BUTT is screenTOP, spearhead screenBOTTOM. Shorten the shaft portion ABOVE his hand to a short rear stub (about25%of totalshaft), so butt starts near upperarm height rather than far abovehelmet. The remaining75%ofshaft extends BELOW hand toward bronzeleaf spearhead. Keep spearstraight, wooden shaftbronze cap andbronzeleafhead, point towardSCREENBOTTOM. Hand wraps shaftfirmly in sameoverhand carry grip. Maintain fullweapon insidecanvas with80pxmargins. One spear, transparent background1280x1280,no shadows text.",
+  "references": [
+    "C:/Users/Damien/.codex/generated_images/01a1166c-83ee-7ae0-be97-78c470de8962/exec-8de0da09-5f22-43c1-9123-e7df2b7bb81b.png"
+  ],
+  "nativeFile": "Native-Idle-TopDown-v2.png",
+  "file": "Idle-TopDown-v2.png",
+  "status": "pending-idle-review"
+}

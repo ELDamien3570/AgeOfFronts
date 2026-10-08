@@ -1,0 +1,10 @@
+{
+  "review": "solo-animations-v1",
+  "clipCount": 10,
+  "frameCount": 60,
+  "httpAssetsVerified": true,
+  "browserPlaybackVerified": false,
+  "limitation": "Browser automation previously failed to initialize in this session; live playback remains unverified.",
+  "userAnimationApproval": "pending",
+  "runtimeIntegration": false
+}

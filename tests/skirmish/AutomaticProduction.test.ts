@@ -91,7 +91,7 @@ describe("shared automatic production allocation", () => {
       "make-latemedieval-equipment",
     );
     expect(plan({ buildings: [building(1, "armory")] }).get(1)).toBe(
-      "make-earlymodern-equipment",
+      "make-napoleonic-equipment",
     );
     expect(plan({ research: [] }).size).toBe(0);
   });
@@ -242,8 +242,9 @@ describe("automatic paid-batch lifecycle", () => {
     ["make-classicalage-equipment", 250],
     ["make-earlymedieval-equipment", 300],
     ["make-latemedieval-equipment", 350],
-    ["make-earlymodern-equipment", 400],
-    ["make-modern-equipment", 450],
+    ["make-napoleonic-equipment", 400],
+    ["make-earlymodern-equipment", 450],
+    ["make-modern-equipment", 500],
     ["make-icbm", 1200], ["make-hydrogen", 1500], ["make-mirv", 1800],
   ] as const)("finishes %s at its halved base duration (%i ticks)", (id, ticks) => {
     const {e, p, stock, add, step} = setup();

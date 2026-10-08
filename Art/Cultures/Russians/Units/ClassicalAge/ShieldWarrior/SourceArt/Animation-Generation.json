@@ -1,0 +1,588 @@
+{
+  "records": [
+    {
+      "id": "idle",
+      "file": "Idle-Animated-v1.png",
+      "motion": "Subtle breathing and weight shifts, all6poses same relaxed overheadidle, axeheldlow, shieldback.",
+      "description": "Subtle breathing and weight shifts, all6poses same relaxed overheadidle, axeheldlow, shieldback.",
+      "prompt": "Create SIX-FRAME single-soldier animation atlas using approved SHIELD WARRIOR reference as LOCKED design. Subtle breathing and weight shifts, all6poses same relaxed overheadidle, axeheldlow, shieldback. EXACT1536x1024RGBA, 3columns2rows SIX512squarecells row-major. Eachposeentirelyinsideitscell >=36pxcleartransparentmargin, maximum440pxwidth/heightinclaxe/shield. SAME body/equipmentphysicalsize allframes, bodyrootnear(256,270), NO perframezoom. Camera STRICT90DEGREE VERTICALOVERHEADORTHOGRAPHIC unchangedthroughALLframes: largehelmetcrown/topshoulders dominate, compressedtorso, nofrontalchest/belt/faceportrait. FacingSCREENBOTTOM exceptphysicallyfallingdeath. Exactreferenceironridgedhelmet, compactiron/scaleshoulders, darklamellar overBURGUNDYquilting, irongreaves/bracers, darkglovesbrownboots, sheathedswordlefthip. Roundwoodenironrim/bossshield STRAPPEDBACK throughout, neverappearsheldbyhandorforearm. Shieldupper/backedgevisiblebehindhead SCREEN-TOPinstandingposes. RightAXEhandSCREENLEFT, nohandswap. IRONwaraxeexactreferencegeometry: straightwoodhandlefirmlygripped, elongatedsinglebladeheldUPRIGHT, oneSHORTPOINT onTOP/SPINE oppositeblade aimedupwardinready, NO horizontal side/rear spike. Axeheadrigidlyattachedshaft, consistentblade/spikesize, rotateasoneunitwithhand, nobenthandle/sickle/trowel/spear. Axegrip/handleoverlapcontinuous. Exactlytwoarms/twohands/twolegs. CrispstylizedpaintedRTSsameartstyle, readable48/64px. All6distinctsequentialanimationposes. GenuinealphaZEROoutsidefigure/equipment, nobackground/haze/grid/ground/castshadow/trails/text. Do notgenerateformation/multiplepeople.",
+      "generatedSource": "C:/Users/Damien/.codex/generated_images/01a0fea1-c63f-7343-92ca-6c21cc1c4296/exec-e4894963-271e-4fff-bb68-2b49a62aa035.png",
+      "nativeFile": "Native-Idle-Animated-v1.png",
+      "status": "superseded-source"
+    },
+    {
+      "id": "running",
+      "file": "Running-v1.png",
+      "motion": "WALK loop, six sequential clear alternating footsteps: leftforward/rightback, passing, rightforward/leftback, passing, repeat. Rightfoot travels asfarasleft, notshuffle. Axeheldsteadilylow, shieldstrappedback doesnotmoveintoarm.",
+      "description": "WALK loop, six sequential clear alternating footsteps: leftforward/rightback, passing, rightforward/leftback, passing, repeat. Rightfoot travels asfarasleft, notshuffle. Axeheldsteadilylow, shieldstrappedback doesnotmoveintoarm.",
+      "prompt": "Create SIX-FRAME single-soldier animation atlas using approved SHIELD WARRIOR reference as LOCKED design. WALK loop, six sequential clear alternating footsteps: leftforward/rightback, passing, rightforward/leftback, passing, repeat. Rightfoot travels asfarasleft, notshuffle. Axeheldsteadilylow, shieldstrappedback doesnotmoveintoarm. EXACT1536x1024RGBA, 3columns2rows SIX512squarecells row-major. Eachposeentirelyinsideitscell >=36pxcleartransparentmargin, maximum440pxwidth/heightinclaxe/shield. SAME body/equipmentphysicalsize allframes, bodyrootnear(256,270), NO perframezoom. Camera STRICT90DEGREE VERTICALOVERHEADORTHOGRAPHIC unchangedthroughALLframes: largehelmetcrown/topshoulders dominate, compressedtorso, nofrontalchest/belt/faceportrait. FacingSCREENBOTTOM exceptphysicallyfallingdeath. Exactreferenceironridgedhelmet, compactiron/scaleshoulders, darklamellar overBURGUNDYquilting, irongreaves/bracers, darkglovesbrownboots, sheathedswordlefthip. Roundwoodenironrim/bossshield STRAPPEDBACK throughout, neverappearsheldbyhandorforearm. Shieldupper/backedgevisiblebehindhead SCREEN-TOPinstandingposes. RightAXEhandSCREENLEFT, nohandswap. IRONwaraxeexactreferencegeometry: straightwoodhandlefirmlygripped, elongatedsinglebladeheldUPRIGHT, oneSHORTPOINT onTOP/SPINE oppositeblade aimedupwardinready, NO horizontal side/rear spike. Axeheadrigidlyattachedshaft, consistentblade/spikesize, rotateasoneunitwithhand, nobenthandle/sickle/trowel/spear. Axegrip/handleoverlapcontinuous. Exactlytwoarms/twohands/twolegs. CrispstylizedpaintedRTSsameartstyle, readable48/64px. All6distinctsequentialanimationposes. GenuinealphaZEROoutsidefigure/equipment, nobackground/haze/grid/ground/castshadow/trails/text. Do notgenerateformation/multiplepeople.",
+      "generatedSource": "C:/Users/Damien/.codex/generated_images/01a0fea1-c63f-7343-92ca-6c21cc1c4296/exec-f0008d54-1212-472b-a1b6-d09ec5a8b2ff.png",
+      "nativeFile": "Native-Running-v1.png",
+      "status": "rejected-source"
+    },
+    {
+      "id": "attack",
+      "file": "Attack-v1.png",
+      "motion": "AXE CHOP once:1ready2drawaxehandback3raisedwindup4strongforward/downwardchop5followthrough6returnready. Onehandedaxe, mainbladecuts, nottopspike stabbing. Axeheadsamegeometry rotatedwithshaft, no sickle/sidewaysblade. Leftarmfreeforbalance, shieldonback.",
+      "description": "AXE CHOP once:1ready2drawaxehandback3raisedwindup4strongforward/downwardchop5followthrough6returnready. Onehandedaxe, mainbladecuts, nottopspike stabbing. Axeheadsamegeometry rotatedwithshaft, no sickle/sidewaysblade. Leftarmfreeforbalance, shieldonback.",
+      "prompt": "Create SIX-FRAME single-soldier animation atlas using approved SHIELD WARRIOR reference as LOCKED design. AXE CHOP once:1ready2drawaxehandback3raisedwindup4strongforward/downwardchop5followthrough6returnready. Onehandedaxe, mainbladecuts, nottopspike stabbing. Axeheadsamegeometry rotatedwithshaft, no sickle/sidewaysblade. Leftarmfreeforbalance, shieldonback. EXACT1536x1024RGBA, 3columns2rows SIX512squarecells row-major. Eachposeentirelyinsideitscell >=36pxcleartransparentmargin, maximum440pxwidth/heightinclaxe/shield. SAME body/equipmentphysicalsize allframes, bodyrootnear(256,270), NO perframezoom. Camera STRICT90DEGREE VERTICALOVERHEADORTHOGRAPHIC unchangedthroughALLframes: largehelmetcrown/topshoulders dominate, compressedtorso, nofrontalchest/belt/faceportrait. FacingSCREENBOTTOM exceptphysicallyfallingdeath. Exactreferenceironridgedhelmet, compactiron/scaleshoulders, darklamellar overBURGUNDYquilting, irongreaves/bracers, darkglovesbrownboots, sheathedswordlefthip. Roundwoodenironrim/bossshield STRAPPEDBACK throughout, neverappearsheldbyhandorforearm. Shieldupper/backedgevisiblebehindhead SCREEN-TOPinstandingposes. RightAXEhandSCREENLEFT, nohandswap. IRONwaraxeexactreferencegeometry: straightwoodhandlefirmlygripped, elongatedsinglebladeheldUPRIGHT, oneSHORTPOINT onTOP/SPINE oppositeblade aimedupwardinready, NO horizontal side/rear spike. Axeheadrigidlyattachedshaft, consistentblade/spikesize, rotateasoneunitwithhand, nobenthandle/sickle/trowel/spear. Axegrip/handleoverlapcontinuous. Exactlytwoarms/twohands/twolegs. CrispstylizedpaintedRTSsameartstyle, readable48/64px. All6distinctsequentialanimationposes. GenuinealphaZEROoutsidefigure/equipment, nobackground/haze/grid/ground/castshadow/trails/text. Do notgenerateformation/multiplepeople.",
+      "generatedSource": "C:/Users/Damien/.codex/generated_images/01a0fea1-c63f-7343-92ca-6c21cc1c4296/exec-bcf9bfd7-2333-4958-8586-9cfc349586bd.png",
+      "nativeFile": "Native-Attack-v1.png",
+      "status": "superseded-source",
+      "note": "User replaced regular attack with approved charge attack on 2026-10-07; source preserved."
+    },
+    {
+      "id": "hit",
+      "file": "Hit-v1.png",
+      "motion": "LIGHT HIT:1ready2impactflinch3shorttorsorecoil4brace5recover6ready. Shieldremainsstrappedback, no armshieldblock.",
+      "description": "LIGHT HIT:1ready2impactflinch3shorttorsorecoil4brace5recover6ready. Shieldremainsstrappedback, no armshieldblock.",
+      "prompt": "Create SIX-FRAME single-soldier animation atlas using approved SHIELD WARRIOR reference as LOCKED design. LIGHT HIT:1ready2impactflinch3shorttorsorecoil4brace5recover6ready. Shieldremainsstrappedback, no armshieldblock. EXACT1536x1024RGBA, 3columns2rows SIX512squarecells row-major. Eachposeentirelyinsideitscell >=36pxcleartransparentmargin, maximum440pxwidth/heightinclaxe/shield. SAME body/equipmentphysicalsize allframes, bodyrootnear(256,270), NO perframezoom. Camera STRICT90DEGREE VERTICALOVERHEADORTHOGRAPHIC unchangedthroughALLframes: largehelmetcrown/topshoulders dominate, compressedtorso, nofrontalchest/belt/faceportrait. FacingSCREENBOTTOM exceptphysicallyfallingdeath. Exactreferenceironridgedhelmet, compactiron/scaleshoulders, darklamellar overBURGUNDYquilting, irongreaves/bracers, darkglovesbrownboots, sheathedswordlefthip. Roundwoodenironrim/bossshield STRAPPEDBACK throughout, neverappearsheldbyhandorforearm. Shieldupper/backedgevisiblebehindhead SCREEN-TOPinstandingposes. RightAXEhandSCREENLEFT, nohandswap. IRONwaraxeexactreferencegeometry: straightwoodhandlefirmlygripped, elongatedsinglebladeheldUPRIGHT, oneSHORTPOINT onTOP/SPINE oppositeblade aimedupwardinready, NO horizontal side/rear spike. Axeheadrigidlyattachedshaft, consistentblade/spikesize, rotateasoneunitwithhand, nobenthandle/sickle/trowel/spear. Axegrip/handleoverlapcontinuous. Exactlytwoarms/twohands/twolegs. CrispstylizedpaintedRTSsameartstyle, readable48/64px. All6distinctsequentialanimationposes. GenuinealphaZEROoutsidefigure/equipment, nobackground/haze/grid/ground/castshadow/trails/text. Do notgenerateformation/multiplepeople.",
+      "generatedSource": "C:/Users/Damien/.codex/generated_images/01a0fea1-c63f-7343-92ca-6c21cc1c4296/exec-70fd9ada-f6a6-4124-946a-4e4658d313e5.png",
+      "nativeFile": "Native-Hit-v1.png",
+      "status": "superseded-source"
+    },
+    {
+      "id": "charged",
+      "file": "Charged-Impact-v1.png",
+      "motion": "HEAVY CHARGE IMPACT:1ready2violentforwardimpactreaction3torsoforcedbackandkneesbend4deepstagger/offbalance5pushup6recoveredready. Distinctheavierthanlighthit, no shieldinhand.",
+      "description": "HEAVY CHARGE IMPACT:1ready2violentforwardimpactreaction3torsoforcedbackandkneesbend4deepstagger/offbalance5pushup6recoveredready. Distinctheavierthanlighthit, no shieldinhand.",
+      "prompt": "Create SIX-FRAME single-soldier animation atlas using approved SHIELD WARRIOR reference as LOCKED design. HEAVY CHARGE IMPACT:1ready2violentforwardimpactreaction3torsoforcedbackandkneesbend4deepstagger/offbalance5pushup6recoveredready. Distinctheavierthanlighthit, no shieldinhand. EXACT1536x1024RGBA, 3columns2rows SIX512squarecells row-major. Eachposeentirelyinsideitscell >=36pxcleartransparentmargin, maximum440pxwidth/heightinclaxe/shield. SAME body/equipmentphysicalsize allframes, bodyrootnear(256,270), NO perframezoom. Camera STRICT90DEGREE VERTICALOVERHEADORTHOGRAPHIC unchangedthroughALLframes: largehelmetcrown/topshoulders dominate, compressedtorso, nofrontalchest/belt/faceportrait. FacingSCREENBOTTOM exceptphysicallyfallingdeath. Exactreferenceironridgedhelmet, compactiron/scaleshoulders, darklamellar overBURGUNDYquilting, irongreaves/bracers, darkglovesbrownboots, sheathedswordlefthip. Roundwoodenironrim/bossshield STRAPPEDBACK throughout, neverappearsheldbyhandorforearm. Shieldupper/backedgevisiblebehindhead SCREEN-TOPinstandingposes. RightAXEhandSCREENLEFT, nohandswap. IRONwaraxeexactreferencegeometry: straightwoodhandlefirmlygripped, elongatedsinglebladeheldUPRIGHT, oneSHORTPOINT onTOP/SPINE oppositeblade aimedupwardinready, NO horizontal side/rear spike. Axeheadrigidlyattachedshaft, consistentblade/spikesize, rotateasoneunitwithhand, nobenthandle/sickle/trowel/spear. Axegrip/handleoverlapcontinuous. Exactlytwoarms/twohands/twolegs. CrispstylizedpaintedRTSsameartstyle, readable48/64px. All6distinctsequentialanimationposes. GenuinealphaZEROoutsidefigure/equipment, nobackground/haze/grid/ground/castshadow/trails/text. Do notgenerateformation/multiplepeople.",
+      "generatedSource": "C:/Users/Damien/.codex/generated_images/01a0fea1-c63f-7343-92ca-6c21cc1c4296/exec-040b9686-d097-45d4-b0a0-a98fe02320ac.png",
+      "nativeFile": "Native-Charged-Impact-v1.png",
+      "status": "superseded-source"
+    },
+    {
+      "id": "charge",
+      "file": "Charge-v1.png",
+      "motion": "RUN/MAINTAIN CHARGE loop: six clear alternating running strides with leftANDrightfeet swinging, kneeslift, torsoforwardlean; axecarriedstableonehand readytochop, roundshield firmlystrappedonback throughout, no shieldheldforward.",
+      "description": "RUN/MAINTAIN CHARGE loop: six clear alternating running strides with leftANDrightfeet swinging, kneeslift, torsoforwardlean; axecarriedstableonehand readytochop, roundshield firmlystrappedonback throughout, no shieldheldforward.",
+      "prompt": "Create SIX-FRAME single-soldier animation atlas using approved SHIELD WARRIOR reference as LOCKED design. RUN/MAINTAIN CHARGE loop: six clear alternating running strides with leftANDrightfeet swinging, kneeslift, torsoforwardlean; axecarriedstableonehand readytochop, roundshield firmlystrappedonback throughout, no shieldheldforward. EXACT1536x1024RGBA, 3columns2rows SIX512squarecells row-major. Eachposeentirelyinsideitscell >=36pxcleartransparentmargin, maximum440pxwidth/heightinclaxe/shield. SAME body/equipmentphysicalsize allframes, bodyrootnear(256,270), NO perframezoom. Camera STRICT90DEGREE VERTICALOVERHEADORTHOGRAPHIC unchangedthroughALLframes: largehelmetcrown/topshoulders dominate, compressedtorso, nofrontalchest/belt/faceportrait. FacingSCREENBOTTOM exceptphysicallyfallingdeath. Exactreferenceironridgedhelmet, compactiron/scaleshoulders, darklamellar overBURGUNDYquilting, irongreaves/bracers, darkglovesbrownboots, sheathedswordlefthip. Roundwoodenironrim/bossshield STRAPPEDBACK throughout, neverappearsheldbyhandorforearm. Shieldupper/backedgevisiblebehindhead SCREEN-TOPinstandingposes. RightAXEhandSCREENLEFT, nohandswap. IRONwaraxeexactreferencegeometry: straightwoodhandlefirmlygripped, elongatedsinglebladeheldUPRIGHT, oneSHORTPOINT onTOP/SPINE oppositeblade aimedupwardinready, NO horizontal side/rear spike. Axeheadrigidlyattachedshaft, consistentblade/spikesize, rotateasoneunitwithhand, nobenthandle/sickle/trowel/spear. Axegrip/handleoverlapcontinuous. Exactlytwoarms/twohands/twolegs. CrispstylizedpaintedRTSsameartstyle, readable48/64px. All6distinctsequentialanimationposes. GenuinealphaZEROoutsidefigure/equipment, nobackground/haze/grid/ground/castshadow/trails/text. Do notgenerateformation/multiplepeople.",
+      "generatedSource": "C:/Users/Damien/.codex/generated_images/01a0fea1-c63f-7343-92ca-6c21cc1c4296/exec-b70ce87e-3d49-44f4-834b-2acd3ddb11c4.png",
+      "nativeFile": "Native-Charge-v1.png",
+      "status": "rejected-source"
+    },
+    {
+      "id": "charge-attack",
+      "file": "Charge-Attack-v1.png",
+      "motion": "HEAVY AXE CHARGE ATTACK once:1leanforwardready2plantfeet/cockaxeback3fullraisedwindup4heavyforward/downwardaxechopwithbodylunge5followthrough6returnready. Actualaxeedgehits, notspike; sameheadwithoneUPPERspike oppositeblade andnoSIDEspike. Shieldback.",
+      "description": "HEAVY AXE CHARGE ATTACK once:1leanforwardready2plantfeet/cockaxeback3fullraisedwindup4heavyforward/downwardaxechopwithbodylunge5followthrough6returnready. Actualaxeedgehits, notspike; sameheadwithoneUPPERspike oppositeblade andnoSIDEspike. Shieldback.",
+      "prompt": "Create SIX-FRAME single-soldier animation atlas using approved SHIELD WARRIOR reference as LOCKED design. HEAVY AXE CHARGE ATTACK once:1leanforwardready2plantfeet/cockaxeback3fullraisedwindup4heavyforward/downwardaxechopwithbodylunge5followthrough6returnready. Actualaxeedgehits, notspike; sameheadwithoneUPPERspike oppositeblade andnoSIDEspike. Shieldback. EXACT1536x1024RGBA, 3columns2rows SIX512squarecells row-major. Eachposeentirelyinsideitscell >=36pxcleartransparentmargin, maximum440pxwidth/heightinclaxe/shield. SAME body/equipmentphysicalsize allframes, bodyrootnear(256,270), NO perframezoom. Camera STRICT90DEGREE VERTICALOVERHEADORTHOGRAPHIC unchangedthroughALLframes: largehelmetcrown/topshoulders dominate, compressedtorso, nofrontalchest/belt/faceportrait. FacingSCREENBOTTOM exceptphysicallyfallingdeath. Exactreferenceironridgedhelmet, compactiron/scaleshoulders, darklamellar overBURGUNDYquilting, irongreaves/bracers, darkglovesbrownboots, sheathedswordlefthip. Roundwoodenironrim/bossshield STRAPPEDBACK throughout, neverappearsheldbyhandorforearm. Shieldupper/backedgevisiblebehindhead SCREEN-TOPinstandingposes. RightAXEhandSCREENLEFT, nohandswap. IRONwaraxeexactreferencegeometry: straightwoodhandlefirmlygripped, elongatedsinglebladeheldUPRIGHT, oneSHORTPOINT onTOP/SPINE oppositeblade aimedupwardinready, NO horizontal side/rear spike. Axeheadrigidlyattachedshaft, consistentblade/spikesize, rotateasoneunitwithhand, nobenthandle/sickle/trowel/spear. Axegrip/handleoverlapcontinuous. Exactlytwoarms/twohands/twolegs. CrispstylizedpaintedRTSsameartstyle, readable48/64px. All6distinctsequentialanimationposes. GenuinealphaZEROoutsidefigure/equipment, nobackground/haze/grid/ground/castshadow/trails/text. Do notgenerateformation/multiplepeople.",
+      "generatedSource": "C:/Users/Damien/.codex/generated_images/01a0fea1-c63f-7343-92ca-6c21cc1c4296/exec-22bea873-b642-45da-8533-f17c12896c2c.png",
+      "nativeFile": "Native-Charge-Attack-v1.png",
+      "status": "superseded-source"
+    },
+    {
+      "id": "death",
+      "file": "Death-Side-v1.png",
+      "motion": "SIDE DEATH progressive:1standingimpact2kneesbuckle3fallsideways4bodyrollontoleftside5settle6motionlessfullyfallen sidecorpse. FinalheadSCREENLEFT, bootsSCREENRIGHT,shieldstillbackwithnaturallyattachedrotation, axefallsnearrighthand samegeometry. Noinstantcorpse, no recovery, six sequentialdistinctposes.",
+      "description": "SIDE DEATH progressive:1standingimpact2kneesbuckle3fallsideways4bodyrollontoleftside5settle6motionlessfullyfallen sidecorpse. FinalheadSCREENLEFT, bootsSCREENRIGHT,shieldstillbackwithnaturallyattachedrotation, axefallsnearrighthand samegeometry. Noinstantcorpse, no recovery, six sequentialdistinctposes.",
+      "prompt": "Create SIX-FRAME single-soldier animation atlas using approved SHIELD WARRIOR reference as LOCKED design. SIDE DEATH progressive:1standingimpact2kneesbuckle3fallsideways4bodyrollontoleftside5settle6motionlessfullyfallen sidecorpse. FinalheadSCREENLEFT, bootsSCREENRIGHT,shieldstillbackwithnaturallyattachedrotation, axefallsnearrighthand samegeometry. Noinstantcorpse, no recovery, six sequentialdistinctposes. EXACT1536x1024RGBA, 3columns2rows SIX512squarecells row-major. Eachposeentirelyinsideitscell >=36pxcleartransparentmargin, maximum440pxwidth/heightinclaxe/shield. SAME body/equipmentphysicalsize allframes, bodyrootnear(256,270), NO perframezoom. Camera STRICT90DEGREE VERTICALOVERHEADORTHOGRAPHIC unchangedthroughALLframes: largehelmetcrown/topshoulders dominate, compressedtorso, nofrontalchest/belt/faceportrait. FacingSCREENBOTTOM exceptphysicallyfallingdeath. Exactreferenceironridgedhelmet, compactiron/scaleshoulders, darklamellar overBURGUNDYquilting, irongreaves/bracers, darkglovesbrownboots, sheathedswordlefthip. Roundwoodenironrim/bossshield STRAPPEDBACK throughout, neverappearsheldbyhandorforearm. Shieldupper/backedgevisiblebehindhead SCREEN-TOPinstandingposes. RightAXEhandSCREENLEFT, nohandswap. IRONwaraxeexactreferencegeometry: straightwoodhandlefirmlygripped, elongatedsinglebladeheldUPRIGHT, oneSHORTPOINT onTOP/SPINE oppositeblade aimedupwardinready, NO horizontal side/rear spike. Axeheadrigidlyattachedshaft, consistentblade/spikesize, rotateasoneunitwithhand, nobenthandle/sickle/trowel/spear. Axegrip/handleoverlapcontinuous. Exactlytwoarms/twohands/twolegs. CrispstylizedpaintedRTSsameartstyle, readable48/64px. All6distinctsequentialanimationposes. GenuinealphaZEROoutsidefigure/equipment, nobackground/haze/grid/ground/castshadow/trails/text. Do notgenerateformation/multiplepeople.",
+      "generatedSource": "C:/Users/Damien/.codex/generated_images/01a0fea1-c63f-7343-92ca-6c21cc1c4296/exec-6f347d47-7ef7-42f6-a306-485cdbce9ee2.png",
+      "nativeFile": "Native-Death-Side-v1.png",
+      "status": "superseded-source"
+    },
+    {
+      "id": "death-back",
+      "file": "Death-Back-v1.png",
+      "motion": "BACK DEATH progressive:1standingrecoil2kneesbuckle3fallback4shouldersland5settle6motionlessfaceupbodylyingonbackshield. FinalHEAD staysSCREENTOP, feetSCREENBOTTOM consistentlythroughframes3to6, NEVER invert/spin/flipatend. Axe restsbesidesamehand. Distinctfromsidedeath, no recovery.",
+      "description": "BACK DEATH progressive:1standingrecoil2kneesbuckle3fallback4shouldersland5settle6motionlessfaceupbodylyingonbackshield. FinalHEAD staysSCREENTOP, feetSCREENBOTTOM consistentlythroughframes3to6, NEVER invert/spin/flipatend. Axe restsbesidesamehand. Distinctfromsidedeath, no recovery.",
+      "prompt": "Create SIX-FRAME single-soldier animation atlas using approved SHIELD WARRIOR reference as LOCKED design. BACK DEATH progressive:1standingrecoil2kneesbuckle3fallback4shouldersland5settle6motionlessfaceupbodylyingonbackshield. FinalHEAD staysSCREENTOP, feetSCREENBOTTOM consistentlythroughframes3to6, NEVER invert/spin/flipatend. Axe restsbesidesamehand. Distinctfromsidedeath, no recovery. EXACT1536x1024RGBA, 3columns2rows SIX512squarecells row-major. Eachposeentirelyinsideitscell >=36pxcleartransparentmargin, maximum440pxwidth/heightinclaxe/shield. SAME body/equipmentphysicalsize allframes, bodyrootnear(256,270), NO perframezoom. Camera STRICT90DEGREE VERTICALOVERHEADORTHOGRAPHIC unchangedthroughALLframes: largehelmetcrown/topshoulders dominate, compressedtorso, nofrontalchest/belt/faceportrait. FacingSCREENBOTTOM exceptphysicallyfallingdeath. Exactreferenceironridgedhelmet, compactiron/scaleshoulders, darklamellar overBURGUNDYquilting, irongreaves/bracers, darkglovesbrownboots, sheathedswordlefthip. Roundwoodenironrim/bossshield STRAPPEDBACK throughout, neverappearsheldbyhandorforearm. Shieldupper/backedgevisiblebehindhead SCREEN-TOPinstandingposes. RightAXEhandSCREENLEFT, nohandswap. IRONwaraxeexactreferencegeometry: straightwoodhandlefirmlygripped, elongatedsinglebladeheldUPRIGHT, oneSHORTPOINT onTOP/SPINE oppositeblade aimedupwardinready, NO horizontal side/rear spike. Axeheadrigidlyattachedshaft, consistentblade/spikesize, rotateasoneunitwithhand, nobenthandle/sickle/trowel/spear. Axegrip/handleoverlapcontinuous. Exactlytwoarms/twohands/twolegs. CrispstylizedpaintedRTSsameartstyle, readable48/64px. All6distinctsequentialanimationposes. GenuinealphaZEROoutsidefigure/equipment, nobackground/haze/grid/ground/castshadow/trails/text. Do notgenerateformation/multiplepeople.",
+      "generatedSource": "C:/Users/Damien/.codex/generated_images/01a0fea1-c63f-7343-92ca-6c21cc1c4296/exec-8ce87296-8779-40e1-b6fa-769db94f3952.png",
+      "nativeFile": "Native-Death-Back-v1.png",
+      "status": "rejected-source"
+    },
+    {
+      "id": "running",
+      "file": "Running-v2.png",
+      "motion": "WALK loop, six sequential clear alternating footsteps: leftforward/rightback, passing, rightforward/leftback, passing, repeat. Rightfoot travels asfarasleft, notshuffle. Axeheldsteadilylow, shieldstrappedback doesnotmoveintoarm.",
+      "description": "WALK loop, six sequential clear alternating footsteps: leftforward/rightback, passing, rightforward/leftback, passing, repeat. Rightfoot travels asfarasleft, notshuffle. Axeheldsteadilylow, shieldstrappedback doesnotmoveintoarm.",
+      "prompt": "Edit the referenced six-frame overhead soldier sprite atlas. Preserve all armor, colors, shield strapped on BACK, sword at screen-right hip, and upright axe blade with upward top spike. Fix the walking leg cycle and handedness: the axe MUST stay in the SCREEN-LEFT hand in EVERY cell, never swap. Six distinct consecutive poses read row-major. Frame1 screen-left boot far forward (screen-bottom), right boot far back (screen-top); frame2 left planted right boot passes underneath hips; frame3 right boot far forward left far back; frame4 right planted left boot passes hips; frame5 left far forward right far back with upward body bounce; frame6 left planted right passes hips with downward bounce. Both feet travel clearly and equally. Moderate walking steps. All boots visible separately. Strict90degree overhead camera helmet crown shoulder tops, no face/portrait. Keep weapon stable low in same screen-left hand throughout and back shield behind head. Exact1536x1024, 3columns2rows, 512square cells, character max420px with46px transparent margin in every cell. Genuine transparent alpha background, no floor, haze, shadows, labels or grid. Preserve style and equipment.",
+      "generatedSource": "C:/Users/Damien/.codex/generated_images/01a0fea1-c63f-7343-92ca-6c21cc1c4296/exec-a2c51b27-c791-4de0-8295-fad577520d01.png",
+      "nativeFile": "Native-Running-v2.png",
+      "status": "rejected-source"
+    },
+    {
+      "id": "charge",
+      "file": "Charge-v2.png",
+      "motion": "RUN/MAINTAIN CHARGE loop: six clear alternating running strides with leftANDrightfeet swinging, kneeslift, torsoforwardlean; axecarriedstableonehand readytochop, roundshield firmlystrappedonback throughout, no shieldheldforward.",
+      "description": "RUN/MAINTAIN CHARGE loop: six clear alternating running strides with leftANDrightfeet swinging, kneeslift, torsoforwardlean; axecarriedstableonehand readytochop, roundshield firmlystrappedonback throughout, no shieldheldforward.",
+      "prompt": "Edit the referenced six-frame overhead soldier sprite atlas. Preserve all armor, colors, shield strapped on BACK, sword at screen-right hip, and upright axe blade with upward top spike. Fix the running leg cycle and handedness: the axe MUST stay in the SCREEN-LEFT hand in EVERY cell, never swap. Six distinct consecutive poses read row-major. Frame1 screen-left boot far forward (screen-bottom), right boot far back (screen-top); frame2 left planted right boot passes underneath hips; frame3 right boot far forward left far back; frame4 right planted left boot passes hips; frame5 left far forward right far back with upward body bounce; frame6 left planted right passes hips with downward bounce. Both feet travel clearly and equally. Deep athletic running strides, lifted knees, forward torso lean. All boots visible separately. Strict90degree overhead camera helmet crown shoulder tops, no face/portrait. Keep weapon stable low in same screen-left hand throughout and back shield behind head. Exact1536x1024, 3columns2rows, 512square cells, character max420px with46px transparent margin in every cell. Genuine transparent alpha background, no floor, haze, shadows, labels or grid. Preserve style and equipment.",
+      "generatedSource": "C:/Users/Damien/.codex/generated_images/01a0fea1-c63f-7343-92ca-6c21cc1c4296/exec-916a66e1-dd03-4bfa-8ec0-e996b2ce01b9.png",
+      "nativeFile": "Native-Charge-v2.png",
+      "status": "rejected-source"
+    },
+    {
+      "id": "death-back",
+      "file": "Death-Back-v2.png",
+      "motion": "BACK DEATH progressive:1standingrecoil2kneesbuckle3fallback4shouldersland5settle6motionlessfaceupbodylyingonbackshield. FinalHEAD staysSCREENTOP, feetSCREENBOTTOM consistentlythroughframes3to6, NEVER invert/spin/flipatend. Axe restsbesidesamehand. Distinctfromsidedeath, no recovery.",
+      "description": "BACK DEATH progressive:1standingrecoil2kneesbuckle3fallback4shouldersland5settle6motionlessfaceupbodylyingonbackshield. FinalHEAD staysSCREENTOP, feetSCREENBOTTOM consistentlythroughframes3to6, NEVER invert/spin/flipatend. Axe restsbesidesamehand. Distinctfromsidedeath, no recovery.",
+      "prompt": "Edit this six-frame atlas to show a FULL backward death, not sitting upright at the end. Preserve exact character, axe in screen-left hand, shield strapped behind shoulders, iron armor/burgundy cloth. Exact1536x1024 3columns2rows512cells, generous48px transparent gutters. Frame1 overhead standing impact,2 knees buckle leaning back,3 halfway falling backward with knees up,4 shoulders land ground and torso horizontal,5 fully recumbent settling,6 corpse COMPLETELY LYING FLAT ON BACK with FACEUP head at SCREEN-TOP, feet SCREEN-BOTTOM. Finalpose strictverticaloverhead sees elongated full-body length in plane of ground with face and chest visible because corpse is supine, rather than helmet crown as standing. Feet and head remain same orientation, neverflip. Shield underneath back partlyvisiblebehindneck, not giant shielding chest. Camera strict90degreeoverhead stays fixed. Fully different backdeath from sidefall. Six sequentialposes. Transparentalpha background, no shadows,haze,floor. Uprightaxehead with topupwardspike unchanged, rests beside right hand.",
+      "generatedSource": "C:/Users/Damien/.codex/generated_images/01a0fea1-c63f-7343-92ca-6c21cc1c4296/exec-2297afe2-8cda-483c-a874-5008b5da0fd4.png",
+      "nativeFile": "Native-Death-Back-v2.png",
+      "status": "rejected-source"
+    },
+    {
+      "id": "hit",
+      "file": "Hit-v2.png",
+      "motion": "LIGHT HIT:1ready2impactflinch3shorttorsorecoil4brace5recover6ready. Shieldremainsstrappedback, no armshieldblock.",
+      "description": "LIGHT HIT:1ready2impactflinch3shorttorsorecoil4brace5recover6ready. Shieldremainsstrappedback, no armshieldblock.",
+      "prompt": "Correct this sprite atlas into a LIGHT HIT reaction, not an axe attack. Keep all six poses centered in six512square cells, exact1536x1024 3columns2rows. The axe stays held LOW at screen-left throughout ALL6poses, no raised weapon or swing. 1ready,2shoulders recoil small impact flinch,3torso recoils and knees bend slightly,4brace with free arm,5recover,6ready. No death. Keep same equipment overhead camera, shield BACK, ironlamellar burgundycloth, uprightaxe with topupwardspike, sword screenright. Entireactor+axe fitsinside eachcell with50pxclear gutters. Remove the stray disembodied axe tip above the bottomright soldier. Genuinealpha transparency no shadows/haze/floor. No clipping across cell borders.",
+      "generatedSource": "C:/Users/Damien/.codex/generated_images/01a0fea1-c63f-7343-92ca-6c21cc1c4296/exec-168f949e-f010-4db7-821b-8567d74786e6.png",
+      "nativeFile": "Native-Hit-v2.png",
+      "status": "superseded-source"
+    },
+    {
+      "id": "death-back",
+      "file": "Death-Back-v3.png",
+      "motion": "BACK DEATH progressive:1standingrecoil2kneesbuckle3fallback4shouldersland5settle6motionlessfaceupbodylyingonbackshield. FinalHEAD staysSCREENTOP, feetSCREENBOTTOM consistentlythroughframes3to6, NEVER invert/spin/flipatend. Axe restsbesidesamehand. Distinctfromsidedeath, no recovery.",
+      "description": "BACK DEATH progressive:1standingrecoil2kneesbuckle3fallback4shouldersland5settle6motionlessfaceupbodylyingonbackshield. FinalHEAD staysSCREENTOP, feetSCREENBOTTOM consistentlythroughframes3to6, NEVER invert/spin/flipatend. Axe restsbesidesamehand. Distinctfromsidedeath, no recovery.",
+      "prompt": "Create a six-frame backward death sprite atlas of EXACTLY the approved iron SHIELD WARRIOR reference. Retain lamellar iron strip armor, burgundy quilted coat, scale shoulders, ridged IRON HELMET ON HEAD through ALL6frames, round WOODEN SHIELD strapped BACK, sheathed sword left hip, war AXE held right hand (screen-left), SAME axe with edge-on vertical long blade and small upward top spike. DO NOT replace armor with circular chestplate or axe with spear. 1536x1024 transparent 3x2 512cells. Strict90degree overhead fixed camera. Frame1 approved idle,2 recoilleanback kneesbuckling,3 fall backwardkneesup,4 lying supine back touchingground,5 supine settle,6 fullyhorizontalground corpse HEAD SCREENTOP bootsSCREENBOTTOM. Helmet stays ON, crown seen standing but face/helmet brim naturally seen lying down. Axe lies flat beside same hand in finalframes, round wooden backshield underneath body, not in hands. NO standing/seated finalpose. Allgearfits440px insideeach512cell with36pxclearalpha margins, six distinctsequentialposes. Transparentbackground no floor/haze/shadow/text. Preserve established style and proportions.",
+      "generatedSource": "C:/Users/Damien/.codex/generated_images/01a0fea1-c63f-7343-92ca-6c21cc1c4296/exec-c15f19df-6ca1-4c55-a72f-456f4500f1e0.png",
+      "nativeFile": "Native-Death-Back-v3.png",
+      "status": "superseded-source"
+    },
+    {
+      "id": "running",
+      "file": "Running-v3.png",
+      "motion": "WALK loop, six sequential clear alternating footsteps: leftforward/rightback, passing, rightforward/leftback, passing, repeat. Rightfoot travels asfarasleft, notshuffle. Axeheldsteadilylow, shieldstrappedback doesnotmoveintoarm.",
+      "description": "WALK loop, six sequential clear alternating footsteps: leftforward/rightback, passing, rightforward/leftback, passing, repeat. Rightfoot travels asfarasleft, notshuffle. Axeheldsteadilylow, shieldstrappedback doesnotmoveintoarm.",
+      "prompt": "Create a RUN CYCLE six-frame overhead game sprite atlas of this approved soldier. Exact1536x1024 transparent3x2grid512cells. CRITICAL: alternate SCREEN-LEFT and SCREEN-RIGHT leading boots. First row 3poses SCREEN-LEFT leg forward: contact, passing, push-off. Second row 3poses SCREEN-RIGHT leg forward: contact, passing, push-off. Screen-right KNEE AND BOOT must protrude below the torso on entire bottom row; screen-left knee andboot must be drawn UPWARD beside hip on entire bottom row. BOTH legs swing forward equally across loop. DO NOT repeat left leg forward bottomrow. MotionfacesSCREENDOWN, torsoforwardlean. Helmetcrown90degreeoverhead. Exactlyreferencearmor, burgundycloth, greaves, gloves, swordSCREENRIGHT, roundshieldstrappedBACK behindhelmetscreentop. Axe in SCREENLEFT hand in all6frames neverdisappears/neverswaps. UprightironaxeheadwithsmallTOPupwardspike. All6poses fit430px insidecell with40pxclear margins. Genuinealpha transparency nofloor/shadow/haze/grid. Preserve gear geometry. Six consecutivedistinctrunningposes, fullbothfoot gait.",
+      "generatedSource": "C:/Users/Damien/.codex/generated_images/01a0fea1-c63f-7343-92ca-6c21cc1c4296/exec-5e9e7485-656f-4d3d-b3ef-595898485ad6.png",
+      "nativeFile": "Native-Running-v3.png",
+      "status": "superseded-source",
+      "sourceOrder": [
+        0,
+        1,
+        2,
+        3,
+        4,
+        2
+      ],
+      "minimumDistinctFrames": 5,
+      "note": "Same authored gait poses at walking and charge cadence. Passing pose reused instead of rejected hand-swap frame."
+    },
+    {
+      "id": "charge",
+      "file": "Charge-v3.png",
+      "motion": "RUN/MAINTAIN CHARGE loop: six clear alternating running strides with leftANDrightfeet swinging, kneeslift, torsoforwardlean; axecarriedstableonehand readytochop, roundshield firmlystrappedonback throughout, no shieldheldforward.",
+      "description": "RUN/MAINTAIN CHARGE loop: six clear alternating running strides with leftANDrightfeet swinging, kneeslift, torsoforwardlean; axecarriedstableonehand readytochop, roundshield firmlystrappedonback throughout, no shieldheldforward.",
+      "prompt": "Create a RUN CYCLE six-frame overhead game sprite atlas of this approved soldier. Exact1536x1024 transparent3x2grid512cells. CRITICAL: alternate SCREEN-LEFT and SCREEN-RIGHT leading boots. First row 3poses SCREEN-LEFT leg forward: contact, passing, push-off. Second row 3poses SCREEN-RIGHT leg forward: contact, passing, push-off. Screen-right KNEE AND BOOT must protrude below the torso on entire bottom row; screen-left knee andboot must be drawn UPWARD beside hip on entire bottom row. BOTH legs swing forward equally across loop. DO NOT repeat left leg forward bottomrow. MotionfacesSCREENDOWN, torsoforwardlean. Helmetcrown90degreeoverhead. Exactlyreferencearmor, burgundycloth, greaves, gloves, swordSCREENRIGHT, roundshieldstrappedBACK behindhelmetscreentop. Axe in SCREENLEFT hand in all6frames neverdisappears/neverswaps. UprightironaxeheadwithsmallTOPupwardspike. All6poses fit430px insidecell with40pxclear margins. Genuinealpha transparency nofloor/shadow/haze/grid. Preserve gear geometry. Six consecutivedistinctrunningposes, fullbothfoot gait.",
+      "generatedSource": "C:/Users/Damien/.codex/generated_images/01a0fea1-c63f-7343-92ca-6c21cc1c4296/exec-5e9e7485-656f-4d3d-b3ef-595898485ad6.png",
+      "nativeFile": "Native-Charge-v3.png",
+      "status": "superseded-source",
+      "sourceOrder": [
+        0,
+        1,
+        2,
+        3,
+        4,
+        2
+      ],
+      "minimumDistinctFrames": 5,
+      "note": "Same authored gait poses at walking and charge cadence. Passing pose reused instead of rejected hand-swap frame."
+    },
+    {
+      "id": "running",
+      "file": "Running-v4.png",
+      "motion": "WALK loop, six sequential clear alternating footsteps: leftforward/rightback, passing, rightforward/leftback, passing, repeat. Rightfoot travels asfarasleft, notshuffle. Axeheldsteadilylow, shieldstrappedback doesnotmoveintoarm.",
+      "description": "WALK loop, six sequential clear alternating footsteps: leftforward/rightback, passing, rightforward/leftback, passing, repeat. Rightfoot travels asfarasleft, notshuffle. Axeheldsteadilylow, shieldstrappedback doesnotmoveintoarm.",
+      "prompt": "Make two precise corrections to this six-pose sprite atlas. Keep the FIRST FIVE poses, leg strides, armor, top-down camera, size and positions unchanged. 1) Bottom-right frame6: move the axe from screen-right hand into SCREEN-LEFT hand, same as all otherframes. Screen-right hand empty fist, sword remains screenright. Do NOT mirror character. 2) In all6frames remove the little sidehook on axehead. Axehead is an upright long cuttingblade with a short POINT ON ITS TOP/SUPERIOR SURFACE pointed UPWARD ALONG SHAFT, as in approvedsecondreference. No side/rearhook. Exact1536x1024 transparent3x2grid512cells. Preserve clear transparent margins, nobackground/shadows/haze.",
+      "generatedSource": "C:/Users/Damien/.codex/generated_images/01a0fea1-c63f-7343-92ca-6c21cc1c4296/exec-356f2b2e-282d-4bf9-9bd3-eaa505129cfb.png",
+      "nativeFile": "Native-Running-v4.png",
+      "status": "superseded-source",
+      "note": "Six authored gait poses reused at walking and running cadence.",
+      "reference": "C:/Users/Damien/.codex/generated_images/01a0fea1-c63f-7343-92ca-6c21cc1c4296/exec-5e9e7485-656f-4d3d-b3ef-595898485ad6.png"
+    },
+    {
+      "id": "charge",
+      "file": "Charge-v4.png",
+      "motion": "RUN/MAINTAIN CHARGE loop: six clear alternating running strides with leftANDrightfeet swinging, kneeslift, torsoforwardlean; axecarriedstableonehand readytochop, roundshield firmlystrappedonback throughout, no shieldheldforward.",
+      "description": "RUN/MAINTAIN CHARGE loop: six clear alternating running strides with leftANDrightfeet swinging, kneeslift, torsoforwardlean; axecarriedstableonehand readytochop, roundshield firmlystrappedonback throughout, no shieldheldforward.",
+      "prompt": "Make two precise corrections to this six-pose sprite atlas. Keep the FIRST FIVE poses, leg strides, armor, top-down camera, size and positions unchanged. 1) Bottom-right frame6: move the axe from screen-right hand into SCREEN-LEFT hand, same as all otherframes. Screen-right hand empty fist, sword remains screenright. Do NOT mirror character. 2) In all6frames remove the little sidehook on axehead. Axehead is an upright long cuttingblade with a short POINT ON ITS TOP/SUPERIOR SURFACE pointed UPWARD ALONG SHAFT, as in approvedsecondreference. No side/rearhook. Exact1536x1024 transparent3x2grid512cells. Preserve clear transparent margins, nobackground/shadows/haze.",
+      "generatedSource": "C:/Users/Damien/.codex/generated_images/01a0fea1-c63f-7343-92ca-6c21cc1c4296/exec-356f2b2e-282d-4bf9-9bd3-eaa505129cfb.png",
+      "nativeFile": "Native-Charge-v4.png",
+      "status": "superseded-source",
+      "note": "Six authored gait poses reused at walking and running cadence.",
+      "reference": "C:/Users/Damien/.codex/generated_images/01a0fea1-c63f-7343-92ca-6c21cc1c4296/exec-5e9e7485-656f-4d3d-b3ef-595898485ad6.png"
+    },
+    {
+      "id": "attack",
+      "file": "Charge-Attack-v1.png",
+      "motion": "HEAVY AXE CHARGE ATTACK once:1leanforwardready2plantfeet/cockaxeback3fullraisedwindup4heavyforward/downwardaxechopwithbodylunge5followthrough6returnready. Actualaxeedgehits, notspike; sameheadwithoneUPPERspike oppositeblade andnoSIDEspike. Shieldback.",
+      "description": "HEAVY AXE CHARGE ATTACK once:1leanforwardready2plantfeet/cockaxeback3fullraisedwindup4heavyforward/downwardaxechopwithbodylunge5followthrough6returnready. Actualaxeedgehits, notspike; sameheadwithoneUPPERspike oppositeblade andnoSIDEspike. Shieldback.",
+      "prompt": "Create SIX-FRAME single-soldier animation atlas using approved SHIELD WARRIOR reference as LOCKED design. HEAVY AXE CHARGE ATTACK once:1leanforwardready2plantfeet/cockaxeback3fullraisedwindup4heavyforward/downwardaxechopwithbodylunge5followthrough6returnready. Actualaxeedgehits, notspike; sameheadwithoneUPPERspike oppositeblade andnoSIDEspike. Shieldback. EXACT1536x1024RGBA, 3columns2rows SIX512squarecells row-major. Eachposeentirelyinsideitscell >=36pxcleartransparentmargin, maximum440pxwidth/heightinclaxe/shield. SAME body/equipmentphysicalsize allframes, bodyrootnear(256,270), NO perframezoom. Camera STRICT90DEGREE VERTICALOVERHEADORTHOGRAPHIC unchangedthroughALLframes: largehelmetcrown/topshoulders dominate, compressedtorso, nofrontalchest/belt/faceportrait. FacingSCREENBOTTOM exceptphysicallyfallingdeath. Exactreferenceironridgedhelmet, compactiron/scaleshoulders, darklamellar overBURGUNDYquilting, irongreaves/bracers, darkglovesbrownboots, sheathedswordlefthip. Roundwoodenironrim/bossshield STRAPPEDBACK throughout, neverappearsheldbyhandorforearm. Shieldupper/backedgevisiblebehindhead SCREEN-TOPinstandingposes. RightAXEhandSCREENLEFT, nohandswap. IRONwaraxeexactreferencegeometry: straightwoodhandlefirmlygripped, elongatedsinglebladeheldUPRIGHT, oneSHORTPOINT onTOP/SPINE oppositeblade aimedupwardinready, NO horizontal side/rear spike. Axeheadrigidlyattachedshaft, consistentblade/spikesize, rotateasoneunitwithhand, nobenthandle/sickle/trowel/spear. Axegrip/handleoverlapcontinuous. Exactlytwoarms/twohands/twolegs. CrispstylizedpaintedRTSsameartstyle, readable48/64px. All6distinctsequentialanimationposes. GenuinealphaZEROoutsidefigure/equipment, nobackground/haze/grid/ground/castshadow/trails/text. Do notgenerateformation/multiplepeople.",
+      "generatedSource": "C:/Users/Damien/.codex/generated_images/01a0fea1-c63f-7343-92ca-6c21cc1c4296/exec-22bea873-b642-45da-8533-f17c12896c2c.png",
+      "nativeFile": "Native-Charge-Attack-v1.png",
+      "status": "superseded-source",
+      "sharedAnimation": "charge-attack",
+      "note": "User requested the approved charge attack for both attacks, including its six frames and timing."
+    },
+    {
+      "id": "idle",
+      "input": "Idle-Animated-v1.png",
+      "file": "Idle-Axe-Consistent-v2.png",
+      "prompt": "Edit ONLY the war axe in ALL SIX cells of image1 (idle animation atlas), matching the SAME weapon shown in image2 approved idle reference. Keep character pose, hands/grips, armor, anatomy, shield-on-BACK, camera, scale and cell positions EXACTLY as image1. Maintain1536x1024, 3columns2rows512square cells with transparent clear margins.\nWEAPON DESIGN LOCK: warm brown straight wooden shaft; dark iron socket/collar; ONE long slender slightly curved iron cutting blade which extends toward the weapon's striking end; ONE short triangular iron spike projecting upward from the TOP of the axe head, pointing toward the handle/gripping hand in idle orientation. The spike and blade are two distinct elements on the same iron head like image2. No sideways rear-pick, horizontal hook, broad triangular spearhead, sickle, trowel, fork or double blade. Consistent shaft thickness, shaft length, blade proportions, spike placement and metal finish in all6frames. Rigid complete axe rotates as one object with original wrist orientation; projection may change but design must not morph. Blade stays seated on shaft. Never exchange hands. Keep existing hand grip and swing sequence; axe cannot float or clip the hand. Use image2 as exact geometry reference, including small top spike.\n\n\n\nDo not redraw animation or change the approved heavy chop. Preserve the true vertical overhead camera. Output clean RGBA transparency, no shadows/haze/background/grid/text. This is a targeted prop consistency correction, not a new character design.",
+      "generatedSource": "C:/Users/Damien/.codex/generated_images/01a0fea1-c63f-7343-92ca-6c21cc1c4296/exec-62785b79-6ce8-4b26-8678-78e384ed0320.png",
+      "nativeFile": "Native-Idle-Axe-Consistent-v2.png",
+      "status": "selected-source",
+      "uniformScale": 0.96,
+      "padding": 10,
+      "sourceRoot": [
+        248.8,
+        260
+      ],
+      "references": [
+        "Idle-Animated-v1.png",
+        "Idle-Axe-TopSpike-v3.png"
+      ]
+    },
+    {
+      "id": "running",
+      "input": "Running-v4.png",
+      "file": "Gait-Axe-Consistent-v5.png",
+      "prompt": "Edit ONLY the war axe in ALL SIX cells of image1 (running animation atlas), matching the SAME weapon shown in image2 approved idle reference. Keep character pose, hands/grips, armor, anatomy, shield-on-BACK, camera, scale and cell positions EXACTLY as image1. Maintain1536x1024, 3columns2rows512square cells with transparent clear margins.\nWEAPON DESIGN LOCK: warm brown straight wooden shaft; dark iron socket/collar; ONE long slender slightly curved iron cutting blade which extends toward the weapon's striking end; ONE short triangular iron spike projecting upward from the TOP of the axe head, pointing toward the handle/gripping hand in idle orientation. The spike and blade are two distinct elements on the same iron head like image2. No sideways rear-pick, horizontal hook, broad triangular spearhead, sickle, trowel, fork or double blade. Consistent shaft thickness, shaft length, blade proportions, spike placement and metal finish in all6frames. Rigid complete axe rotates as one object with original wrist orientation; projection may change but design must not morph. Blade stays seated on shaft. Never exchange hands. Keep existing hand grip and swing sequence; axe cannot float or clip the hand. Use image2 as exact geometry reference, including small top spike.\n\n\n\nDo not redraw animation or change the approved heavy chop. Preserve the true vertical overhead camera. Output clean RGBA transparency, no shadows/haze/background/grid/text. This is a targeted prop consistency correction, not a new character design.",
+      "generatedSource": "C:/Users/Damien/.codex/generated_images/01a0fea1-c63f-7343-92ca-6c21cc1c4296/exec-f9303f66-14ff-4795-803d-78bc881ad32d.png",
+      "nativeFile": "Native-Gait-Axe-Consistent-v5.png",
+      "status": "selected-source",
+      "uniformScale": 0.96,
+      "padding": 10,
+      "sourceRoot": [
+        248.8,
+        260
+      ],
+      "references": [
+        "Running-v4.png",
+        "Idle-Axe-TopSpike-v3.png"
+      ]
+    },
+    {
+      "id": "charge-attack",
+      "input": "Charge-Attack-v1.png",
+      "file": "Attack-Axe-Consistent-v2.png",
+      "prompt": "Edit ONLY the war axe in ALL SIX cells of image1 (charge-attack animation atlas), matching the SAME weapon shown in image2 approved idle reference. Keep character pose, hands/grips, armor, anatomy, shield-on-BACK, camera, scale and cell positions EXACTLY as image1. Maintain1536x1024, 3columns2rows512square cells with transparent clear margins.\nWEAPON DESIGN LOCK: warm brown straight wooden shaft; dark iron socket/collar; ONE long slender slightly curved iron cutting blade which extends toward the weapon's striking end; ONE short triangular iron spike projecting upward from the TOP of the axe head, pointing toward the handle/gripping hand in idle orientation. The spike and blade are two distinct elements on the same iron head like image2. No sideways rear-pick, horizontal hook, broad triangular spearhead, sickle, trowel, fork or double blade. Consistent shaft thickness, shaft length, blade proportions, spike placement and metal finish in all6frames. Rigid complete axe rotates as one object with original wrist orientation; projection may change but design must not morph. Blade stays seated on shaft. Never exchange hands. Keep existing hand grip and swing sequence; axe cannot float or clip the hand. Use image2 as exact geometry reference, including small top spike.\n\n\n\nDo not redraw animation or change the approved heavy chop. Preserve the true vertical overhead camera. Output clean RGBA transparency, no shadows/haze/background/grid/text. This is a targeted prop consistency correction, not a new character design.",
+      "generatedSource": "C:/Users/Damien/.codex/generated_images/01a0fea1-c63f-7343-92ca-6c21cc1c4296/exec-9a4800a7-4658-48eb-8ae0-24300afa6eb6.png",
+      "nativeFile": "Native-Attack-Axe-Consistent-v2.png",
+      "status": "rejected-source",
+      "uniformScale": 1,
+      "padding": 0,
+      "sourceRoot": [
+        248.8,
+        260
+      ],
+      "references": [
+        "Charge-Attack-v1.png",
+        "Idle-Axe-TopSpike-v3.png"
+      ]
+    },
+    {
+      "id": "hit",
+      "input": "Hit-v2.png",
+      "file": "Hit-Axe-Consistent-v3.png",
+      "prompt": "Edit ONLY the war axe in ALL SIX cells of image1 (hit animation atlas), matching the SAME weapon shown in image2 approved idle reference. Keep character pose, hands/grips, armor, anatomy, shield-on-BACK, camera, scale and cell positions EXACTLY as image1. Maintain1536x1024, 3columns2rows512square cells with transparent clear margins.\nWEAPON DESIGN LOCK: warm brown straight wooden shaft; dark iron socket/collar; ONE long slender slightly curved iron cutting blade which extends toward the weapon's striking end; ONE short triangular iron spike projecting upward from the TOP of the axe head, pointing toward the handle/gripping hand in idle orientation. The spike and blade are two distinct elements on the same iron head like image2. No sideways rear-pick, horizontal hook, broad triangular spearhead, sickle, trowel, fork or double blade. Consistent shaft thickness, shaft length, blade proportions, spike placement and metal finish in all6frames. Rigid complete axe rotates as one object with original wrist orientation; projection may change but design must not morph. Blade stays seated on shaft. Never exchange hands. Keep existing hand grip and swing sequence; axe cannot float or clip the hand. Use image2 as exact geometry reference, including small top spike.\nThe original hit sheet has a spear-like head pointing up; replace it with the SAME axe in the original wrist orientation, with a visible long cutting blade and short separate top spike, not a spear.\n\n\nDo not redraw animation or change the approved heavy chop. Preserve the true vertical overhead camera. Output clean RGBA transparency, no shadows/haze/background/grid/text. This is a targeted prop consistency correction, not a new character design.",
+      "generatedSource": "C:/Users/Damien/.codex/generated_images/01a0fea1-c63f-7343-92ca-6c21cc1c4296/exec-88952768-551f-4ac2-8cf9-42bfa084e2b9.png",
+      "nativeFile": "Native-Hit-Axe-Consistent-v3.png",
+      "status": "selected-source",
+      "uniformScale": 0.96,
+      "padding": 10,
+      "sourceRoot": [
+        248.8,
+        260
+      ],
+      "references": [
+        "Hit-v2.png",
+        "Idle-Axe-TopSpike-v3.png"
+      ]
+    },
+    {
+      "id": "charged",
+      "input": "Charged-Impact-v1.png",
+      "file": "Charged-Axe-Consistent-v2.png",
+      "prompt": "Edit ONLY the war axe in ALL SIX cells of image1 (charged animation atlas), matching the SAME weapon shown in image2 approved idle reference. Keep character pose, hands/grips, armor, anatomy, shield-on-BACK, camera, scale and cell positions EXACTLY as image1. Maintain1536x1024, 3columns2rows512square cells with transparent clear margins.\nWEAPON DESIGN LOCK: warm brown straight wooden shaft; dark iron socket/collar; ONE long slender slightly curved iron cutting blade which extends toward the weapon's striking end; ONE short triangular iron spike projecting upward from the TOP of the axe head, pointing toward the handle/gripping hand in idle orientation. The spike and blade are two distinct elements on the same iron head like image2. No sideways rear-pick, horizontal hook, broad triangular spearhead, sickle, trowel, fork or double blade. Consistent shaft thickness, shaft length, blade proportions, spike placement and metal finish in all6frames. Rigid complete axe rotates as one object with original wrist orientation; projection may change but design must not morph. Blade stays seated on shaft. Never exchange hands. Keep existing hand grip and swing sequence; axe cannot float or clip the hand. Use image2 as exact geometry reference, including small top spike.\n\n\n\nDo not redraw animation or change the approved heavy chop. Preserve the true vertical overhead camera. Output clean RGBA transparency, no shadows/haze/background/grid/text. This is a targeted prop consistency correction, not a new character design.",
+      "generatedSource": "C:/Users/Damien/.codex/generated_images/01a0fea1-c63f-7343-92ca-6c21cc1c4296/exec-5deedff3-aeb4-40ac-930b-fd0d13468e26.png",
+      "nativeFile": "Native-Charged-Axe-Consistent-v2.png",
+      "status": "rejected-source",
+      "uniformScale": 1,
+      "padding": 0,
+      "sourceRoot": [
+        248.8,
+        260
+      ],
+      "references": [
+        "Charged-Impact-v1.png",
+        "Idle-Axe-TopSpike-v3.png"
+      ]
+    },
+    {
+      "id": "death",
+      "input": "Death-Side-v1.png",
+      "file": "Death-Side-Axe-Consistent-v2.png",
+      "prompt": "Edit ONLY the war axe in ALL SIX cells of image1 (death animation atlas), matching the SAME weapon shown in image2 approved idle reference. Keep character pose, hands/grips, armor, anatomy, shield-on-BACK, camera, scale and cell positions EXACTLY as image1. Maintain1536x1024, 3columns2rows512square cells with transparent clear margins.\nWEAPON DESIGN LOCK: warm brown straight wooden shaft; dark iron socket/collar; ONE long slender slightly curved iron cutting blade which extends toward the weapon's striking end; ONE short triangular iron spike projecting upward from the TOP of the axe head, pointing toward the handle/gripping hand in idle orientation. The spike and blade are two distinct elements on the same iron head like image2. No sideways rear-pick, horizontal hook, broad triangular spearhead, sickle, trowel, fork or double blade. Consistent shaft thickness, shaft length, blade proportions, spike placement and metal finish in all6frames. Rigid complete axe rotates as one object with original wrist orientation; projection may change but design must not morph. Blade stays seated on shaft. Never exchange hands. Keep existing hand grip and swing sequence; axe cannot float or clip the hand. Use image2 as exact geometry reference, including small top spike.\n\nRemove every stray disembodied axe fragment in the blank gutters. The fallen axe in frames3to6 must retain the long slim curved blade and small top spike; restore any clipped blade so each whole soldier and axe fits its own cell.\n\nDo not redraw animation or change the approved heavy chop. Preserve the true vertical overhead camera. Output clean RGBA transparency, no shadows/haze/background/grid/text. This is a targeted prop consistency correction, not a new character design.",
+      "generatedSource": "C:/Users/Damien/.codex/generated_images/01a0fea1-c63f-7343-92ca-6c21cc1c4296/exec-0fa0ea37-d8d0-4bfa-95d6-d12f1b0ad376.png",
+      "nativeFile": "Native-Death-Side-Axe-Consistent-v2.png",
+      "status": "rejected-source",
+      "uniformScale": 1,
+      "padding": 0,
+      "sourceRoot": [
+        248.8,
+        260
+      ],
+      "references": [
+        "Death-Side-v1.png",
+        "Idle-Axe-TopSpike-v3.png"
+      ]
+    },
+    {
+      "id": "death-back",
+      "input": "Death-Back-v3.png",
+      "file": "Death-Back-Axe-Consistent-v4.png",
+      "prompt": "Edit ONLY the war axe in ALL SIX cells of image1 (death-back animation atlas), matching the SAME weapon shown in image2 approved idle reference. Keep character pose, hands/grips, armor, anatomy, shield-on-BACK, camera, scale and cell positions EXACTLY as image1. Maintain1536x1024, 3columns2rows512square cells with transparent clear margins.\nWEAPON DESIGN LOCK: warm brown straight wooden shaft; dark iron socket/collar; ONE long slender slightly curved iron cutting blade which extends toward the weapon's striking end; ONE short triangular iron spike projecting upward from the TOP of the axe head, pointing toward the handle/gripping hand in idle orientation. The spike and blade are two distinct elements on the same iron head like image2. No sideways rear-pick, horizontal hook, broad triangular spearhead, sickle, trowel, fork or double blade. Consistent shaft thickness, shaft length, blade proportions, spike placement and metal finish in all6frames. Rigid complete axe rotates as one object with original wrist orientation; projection may change but design must not morph. Blade stays seated on shaft. Never exchange hands. Keep existing hand grip and swing sequence; axe cannot float or clip the hand. Use image2 as exact geometry reference, including small top spike.\n\n\nPreserve all existing falling/supine poses and helmet. Repair the axe in frame3 where it looks like a spear.\nDo not redraw animation or change the approved heavy chop. Preserve the true vertical overhead camera. Output clean RGBA transparency, no shadows/haze/background/grid/text. This is a targeted prop consistency correction, not a new character design.",
+      "generatedSource": "C:/Users/Damien/.codex/generated_images/01a0fea1-c63f-7343-92ca-6c21cc1c4296/exec-c568158f-6969-4135-9298-cefc27da0eb5.png",
+      "nativeFile": "Native-Death-Back-Axe-Consistent-v4.png",
+      "status": "rejected-source",
+      "uniformScale": 1,
+      "padding": 0,
+      "sourceRoot": [
+        248.8,
+        260
+      ],
+      "references": [
+        "Death-Back-v3.png",
+        "Idle-Axe-TopSpike-v3.png"
+      ]
+    },
+    {
+      "id": "charged",
+      "input": "Charged-Impact-v1.png",
+      "file": "Charged-Axe-Consistent-v3.png",
+      "prompt": "Targeted axe correction only. Preserve exact soldier poses, limbs, grip points, equipment, atlas layout and camera in image1. Its axeheads are TOO LARGE and broad. All6heads must use image2 approved idle's NARROW EDGE-ON profile, NEVER broadside, no large crescent/trowel. Each longslender cuttingblade length equals roughly HALF helmetdiameter, width roughlyONEEIGHTH helmetdiameter; small triangular top/back spike roughlyONETENTH helmetdiameter. Spike projects alongshaftTOWARD grippinghand, opposite maincuttingbladetip. Same smallsizedhead in EVERYframe. Woodshaft same thickness, exposed grip-tohead length roughlyHALFhelmetdiameter. Preserve existing wristrotation andbladepointingdirection, replacegeometry only. No sickle/spear/hook, no sidepick. Image2 exactprojectedheadsilhouette is mandatory.1536x1024 six512cells3x2transparent, no clipping or background/shadow/haze. Donotchangebodyposes.",
+      "generatedSource": "C:/Users/Damien/.codex/generated_images/01a0fea1-c63f-7343-92ca-6c21cc1c4296/exec-b7654857-e40f-4bd2-9a43-61efef4080f7.png",
+      "nativeFile": "Native-Charged-Axe-Consistent-v3.png",
+      "status": "selected-source",
+      "uniformScale": 0.96,
+      "padding": 10,
+      "sourceRoot": [
+        248.8,
+        260
+      ],
+      "references": [
+        "Native-Charged-Axe-Consistent-v2.png",
+        "Idle-Axe-TopSpike-v3.png"
+      ]
+    },
+    {
+      "id": "charge-attack",
+      "input": "Charge-Attack-v1.png",
+      "file": "Attack-Axe-Consistent-v3.png",
+      "prompt": "Edit ONLY axe heads in the FIRST reference six-frame atlas. The prior correction made the axe into a broad crescent/sickle. Replace everyhead with EXACT slender EDGE-ON axe head in SECOND reference approved idle. In ALL6frames axe blade remains EDGE-ON to overhead camera; NEVER display a broad crescent profile or curved scythe face. Match narrowwidth/longlength proportions image2: slim tapered steel blade, a raised longitudinal facet, darkironcollar aroundwoodshaft, and a SMALL SEPARATE triangular spike on top/back of ironhead CLOSER TO GRIPPINGHAND, pointing ALONGSHAFT TOWARDHAND (opposite mainbladeendpoint). Same rigid design in all6frames. Blade doesnotchangeprofile during windup or chop. Preserve all existing hands, grip points, woodshafts, soldiers, poses, attacktiming/layout/camera EXACTLY. No side/rearpick/nohook. Weapon isnot spear or crescentaxe.1536x1024 transparent3x2grid512cells, keepwholeequipmentwithclearalpha margins. No floor/haze/shadow.",
+      "generatedSource": "C:/Users/Damien/.codex/generated_images/01a0fea1-c63f-7343-92ca-6c21cc1c4296/exec-5ff47cd7-972e-477a-86fe-1c1570bb73ac.png",
+      "nativeFile": "Native-Attack-Axe-Consistent-v3.png",
+      "status": "rejected-source",
+      "uniformScale": 1,
+      "padding": 0,
+      "sourceRoot": [
+        248.8,
+        260
+      ],
+      "references": [
+        "Native-Attack-Axe-Consistent-v2.png",
+        "Idle-Axe-TopSpike-v3.png"
+      ]
+    },
+    {
+      "id": "charge-attack",
+      "input": "Charge-Attack-v1.png",
+      "file": "Attack-Axe-Consistent-v4.png",
+      "prompt": "Edit ONLY iron axehead in frames2and3 (topmiddle/topright) of this six-frame attackatlas. The small secondaryspike is wrongly pointingUP beside the longblade. Move that SMALL spike to the BACK/TOP of the axehead, nearer wooden shaft/hand, and point it DOWN alongshaftTOWARD grippinghand. Mainlongblade stillpointsUP awayfromhand. Exactlysamegeometry as frames1,4,5,6, simply rotated180degrees because weaponraised. ONLY one longblade and one shortcounterpoint towardshaft; NOT two spearpoints facing sameway. Preserve entire remainingatlas including ALLbodyposes, grips, woodenhandles, bladeproportions, armor,camera and cellpositions. Transparent1536x1024 3x2grid512cells, no floor/shadow/haze. Maintainblade+topspikegeometry of approvedsecondreference.",
+      "generatedSource": "C:/Users/Damien/.codex/generated_images/01a0fea1-c63f-7343-92ca-6c21cc1c4296/exec-f1ac18a9-fa7f-491f-9e75-dcc37ef75ebc.png",
+      "nativeFile": "Native-Attack-Axe-Consistent-v4.png",
+      "status": "selected-source",
+      "uniformScale": 0.96,
+      "padding": 10,
+      "sourceRoot": [
+        248.8,
+        260
+      ],
+      "references": [
+        "Native-Attack-Axe-Consistent-v2.png",
+        "Idle-Axe-TopSpike-v3.png"
+      ]
+    },
+    {
+      "id": "death",
+      "input": "Death-Side-v1.png",
+      "file": "Death-Side-Axe-Consistent-v3.png",
+      "prompt": "Precise localized weapon edit. ONLY repair axeheads in frames1and2 (top-left and top-middle). Move the sideways little spike onto the TOP/BACK closer to grippinghand and point it along the shaft TOWARD THE HAND, as image2. No side spike. Keep other4frames unchanged. Preserve EVERY soldier pose, grip, woodshaft, camera, scale, layout and all armor exactly. Do not regenerate character or change falling motion. Reference2 shows exact approved axegeometry.1536x1024 transparent3x2six512cells, keepcleartransparentgutters, no shadow/haze/background. No spear/sickle or largerblade.",
+      "generatedSource": "C:/Users/Damien/.codex/generated_images/01a0fea1-c63f-7343-92ca-6c21cc1c4296/exec-da1268f5-203f-48e2-baaf-5b182f2510d0.png",
+      "nativeFile": "Native-Death-Side-Axe-Consistent-v3.png",
+      "status": "rejected-source",
+      "uniformScale": 1,
+      "padding": 0,
+      "sourceRoot": [
+        248.8,
+        260
+      ],
+      "references": [
+        "Native-Death-Side-Axe-Consistent-v2.png",
+        "Idle-Axe-TopSpike-v3.png"
+      ]
+    },
+    {
+      "id": "death-back",
+      "input": "Death-Back-v3.png",
+      "file": "Death-Back-Axe-Consistent-v5.png",
+      "prompt": "Precise localized weapon edit. ONLY repair axehead in frame3 (top-right). Its head is mounted backwards relative to the shaft. Rotate the entire ironhead180degrees at its socket so the long cuttingblade tip points UP alongtheweaponawayfromhand (SCREENTOP), and short top/backspike points DOWN alongshaftTOWARDHAND. Same headgeometry as other5frames, simply rotated with the up-pointing shaft. Keep other5frames unchanged. Preserve EVERY soldier pose, grip, woodshaft, camera, scale, layout and all armor exactly. Do not regenerate character or change falling motion. Reference2 shows exact approved axegeometry.1536x1024 transparent3x2six512cells, keepcleartransparentgutters, no shadow/haze/background. No spear/sickle or largerblade.",
+      "generatedSource": "C:/Users/Damien/.codex/generated_images/01a0fea1-c63f-7343-92ca-6c21cc1c4296/exec-18775bed-d1d2-47ef-b6d9-5634ada25752.png",
+      "nativeFile": "Native-Death-Back-Axe-Consistent-v5.png",
+      "status": "rejected-source",
+      "uniformScale": 1,
+      "padding": 0,
+      "sourceRoot": [
+        248.8,
+        260
+      ],
+      "references": [
+        "Native-Death-Back-Axe-Consistent-v4.png",
+        "Idle-Axe-TopSpike-v3.png"
+      ]
+    },
+    {
+      "id": "Side1",
+      "status": "cell-edit-source",
+      "nativeFile": "Native-Side1-Axe-Corrected-v1.png",
+      "generatedSource": "C:/Users/Damien/.codex/generated_images/01a0fea1-c63f-7343-92ca-6c21cc1c4296/exec-a37862a8-7da0-4ec2-9f9c-8b0aab4eef88.png",
+      "prompt": "Edit ONLY axehead in this SINGLE512x512 sprite cell. The axe is held low, shaft pointsDOWN. Keep longslim slightlycurved cuttingblade pointedDOWN. Move small leftwardsidepick to TOP/BACK of ironhead, point it UP alongshaftTOWARDS the grippinghand. Exactly matchapprovedidle referencehead. Remove sidewayspick. Preserve everyotherpixel'sappearance, bodypose, feetposition, camera, handgrip, woodenhandle, backshield, sizeandposition exactly. No newanimationpose. Match ironcollar, blade and smalltriangularspike from image2. Blade length about halfhelmetwidth, doNOTenlarge or makebroadcrescent. Genuine transparent background withclear margins, no shadows/haze/floor. Output512x512samecanvas andsamecharacterplacement.",
+      "references": [
+        "Side1-Axe-Correction-Input.png",
+        "Idle-Axe-TopSpike-v3.png"
+      ]
+    },
+    {
+      "id": "Side2",
+      "status": "cell-edit-source",
+      "nativeFile": "Native-Side2-Axe-Corrected-v1.png",
+      "generatedSource": "C:/Users/Damien/.codex/generated_images/01a0fea1-c63f-7343-92ca-6c21cc1c4296/exec-2b24733c-da69-4600-9020-234f1113faaa.png",
+      "prompt": "Edit ONLY axehead in this SINGLE512x512 sprite cell. The axe is held low, shaft pointsDOWN. Keep longslim slightlycurved cuttingblade pointedDOWN. Move small leftwardsidepick to TOP/BACK of ironhead, point it UP alongshaftTOWARDS the grippinghand. Exactly matchapprovedidle referencehead. Remove sidewayspick. Preserve everyotherpixel'sappearance, bodypose, feetposition, camera, handgrip, woodenhandle, backshield, sizeandposition exactly. No newanimationpose. Match ironcollar, blade and smalltriangularspike from image2. Blade length about halfhelmetwidth, doNOTenlarge or makebroadcrescent. Genuine transparent background withclear margins, no shadows/haze/floor. Output512x512samecanvas andsamecharacterplacement.",
+      "references": [
+        "Side2-Axe-Correction-Input.png",
+        "Idle-Axe-TopSpike-v3.png"
+      ]
+    },
+    {
+      "id": "Back3",
+      "status": "cell-edit-source",
+      "nativeFile": "Native-Back3-Axe-Corrected-v1.png",
+      "generatedSource": "C:/Users/Damien/.codex/generated_images/01a0fea1-c63f-7343-92ca-6c21cc1c4296/exec-ef7aff18-c28c-402c-9dde-877dd2376c83.png",
+      "prompt": "Edit ONLY axehead in this SINGLE512x512 sprite cell. The shaft points UP. Long cuttingblade tip must point UP awayfromhand; the small secondarytopspike must point DOWN towards hand. Rotateheadfromidle180degrees. NOT a spear: long slightlycurvedone-sided cuttingblade and distinctshorttopspike facingoppositedirection. Preserve everyotherpixel'sappearance, bodypose, feetposition, camera, handgrip, woodenhandle, backshield, sizeandposition exactly. No newanimationpose. Match ironcollar, blade and smalltriangularspike from image2. Blade length about halfhelmetwidth, doNOTenlarge or makebroadcrescent. Genuine transparent background withclear margins, no shadows/haze/floor. Output512x512samecanvas andsamecharacterplacement.",
+      "references": [
+        "Back3-Axe-Correction-Input.png",
+        "Idle-Axe-TopSpike-v3.png"
+      ]
+    },
+    {
+      "id": "death",
+      "input": "Death-Side-v1.png",
+      "file": "Death-Side-Axe-Consistent-v4.png",
+      "prompt": "Edit ONLY the war axe in ALL SIX cells of image1 (death animation atlas), matching the SAME weapon shown in image2 approved idle reference. Keep character pose, hands/grips, armor, anatomy, shield-on-BACK, camera, scale and cell positions EXACTLY as image1. Maintain1536x1024, 3columns2rows512square cells with transparent clear margins.\nWEAPON DESIGN LOCK: warm brown straight wooden shaft; dark iron socket/collar; ONE long slender slightly curved iron cutting blade which extends toward the weapon's striking end; ONE short triangular iron spike projecting upward from the TOP of the axe head, pointing toward the handle/gripping hand in idle orientation. The spike and blade are two distinct elements on the same iron head like image2. No sideways rear-pick, horizontal hook, broad triangular spearhead, sickle, trowel, fork or double blade. Consistent shaft thickness, shaft length, blade proportions, spike placement and metal finish in all6frames. Rigid complete axe rotates as one object with original wrist orientation; projection may change but design must not morph. Blade stays seated on shaft. Never exchange hands. Keep existing hand grip and swing sequence; axe cannot float or clip the hand. Use image2 as exact geometry reference, including small top spike.\n\nRemove every stray disembodied axe fragment in the blank gutters. The fallen axe in frames3to6 must retain the long slim curved blade and small top spike; restore any clipped blade so each whole soldier and axe fits its own cell.\n\nDo not redraw animation or change the approved heavy chop. Preserve the true vertical overhead camera. Output clean RGBA transparency, no shadows/haze/background/grid/text. This is a targeted prop consistency correction, not a new character design.",
+      "generatedSource": "C:/Users/Damien/.codex/generated_images/01a0fea1-c63f-7343-92ca-6c21cc1c4296/exec-0fa0ea37-d8d0-4bfa-95d6-d12f1b0ad376.png",
+      "nativeFile": "Native-Death-Side-Axe-Consistent-v2.png",
+      "status": "selected-source",
+      "uniformScale": 0.96,
+      "padding": 10,
+      "sourceRoot": [
+        248.8,
+        260
+      ],
+      "references": [
+        "Death-Side-v1.png",
+        "Idle-Axe-TopSpike-v3.png"
+      ],
+      "cellReplacements": [
+        {
+          "frame": 0,
+          "nativeFile": "Native-Side1-Axe-Corrected-v1.png"
+        },
+        {
+          "frame": 1,
+          "nativeFile": "Native-Side2-Axe-Corrected-v1.png"
+        }
+      ],
+      "note": "Whole-pose cell replacements repair remaining spike orientation without regenerating the other animation cells."
+    },
+    {
+      "id": "death-back",
+      "input": "Death-Back-v3.png",
+      "file": "Death-Back-Axe-Consistent-v6.png",
+      "prompt": "Edit ONLY the war axe in ALL SIX cells of image1 (death-back animation atlas), matching the SAME weapon shown in image2 approved idle reference. Keep character pose, hands/grips, armor, anatomy, shield-on-BACK, camera, scale and cell positions EXACTLY as image1. Maintain1536x1024, 3columns2rows512square cells with transparent clear margins.\nWEAPON DESIGN LOCK: warm brown straight wooden shaft; dark iron socket/collar; ONE long slender slightly curved iron cutting blade which extends toward the weapon's striking end; ONE short triangular iron spike projecting upward from the TOP of the axe head, pointing toward the handle/gripping hand in idle orientation. The spike and blade are two distinct elements on the same iron head like image2. No sideways rear-pick, horizontal hook, broad triangular spearhead, sickle, trowel, fork or double blade. Consistent shaft thickness, shaft length, blade proportions, spike placement and metal finish in all6frames. Rigid complete axe rotates as one object with original wrist orientation; projection may change but design must not morph. Blade stays seated on shaft. Never exchange hands. Keep existing hand grip and swing sequence; axe cannot float or clip the hand. Use image2 as exact geometry reference, including small top spike.\n\n\nPreserve all existing falling/supine poses and helmet. Repair the axe in frame3 where it looks like a spear.\nDo not redraw animation or change the approved heavy chop. Preserve the true vertical overhead camera. Output clean RGBA transparency, no shadows/haze/background/grid/text. This is a targeted prop consistency correction, not a new character design.",
+      "generatedSource": "C:/Users/Damien/.codex/generated_images/01a0fea1-c63f-7343-92ca-6c21cc1c4296/exec-c568158f-6969-4135-9298-cefc27da0eb5.png",
+      "nativeFile": "Native-Death-Back-Axe-Consistent-v4.png",
+      "status": "selected-source",
+      "uniformScale": 0.96,
+      "padding": 10,
+      "sourceRoot": [
+        248.8,
+        260
+      ],
+      "references": [
+        "Death-Back-v3.png",
+        "Idle-Axe-TopSpike-v3.png"
+      ],
+      "cellReplacements": [
+        {
+          "frame": 2,
+          "nativeFile": "Native-Back3-Axe-Corrected-v2.png"
+        }
+      ],
+      "note": "Whole-pose cell replacements repair remaining spike orientation without regenerating the other animation cells."
+    },
+    {
+      "id": "attack",
+      "input": "Charge-Attack-v1.png",
+      "file": "Attack-Axe-Consistent-v4.png",
+      "prompt": "Edit ONLY iron axehead in frames2and3 (topmiddle/topright) of this six-frame attackatlas. The small secondaryspike is wrongly pointingUP beside the longblade. Move that SMALL spike to the BACK/TOP of the axehead, nearer wooden shaft/hand, and point it DOWN alongshaftTOWARD grippinghand. Mainlongblade stillpointsUP awayfromhand. Exactlysamegeometry as frames1,4,5,6, simply rotated180degrees because weaponraised. ONLY one longblade and one shortcounterpoint towardshaft; NOT two spearpoints facing sameway. Preserve entire remainingatlas including ALLbodyposes, grips, woodenhandles, bladeproportions, armor,camera and cellpositions. Transparent1536x1024 3x2grid512cells, no floor/shadow/haze. Maintainblade+topspikegeometry of approvedsecondreference.",
+      "generatedSource": "C:/Users/Damien/.codex/generated_images/01a0fea1-c63f-7343-92ca-6c21cc1c4296/exec-f1ac18a9-fa7f-491f-9e75-dcc37ef75ebc.png",
+      "nativeFile": "Native-Attack-Axe-Consistent-v4.png",
+      "status": "selected-source",
+      "uniformScale": 0.96,
+      "padding": 10,
+      "sourceRoot": [
+        248.8,
+        260
+      ],
+      "references": [
+        "Native-Attack-Axe-Consistent-v2.png",
+        "Idle-Axe-TopSpike-v3.png"
+      ],
+      "sharedAnimation": "charge-attack"
+    },
+    {
+      "id": "charge",
+      "input": "Running-v4.png",
+      "file": "Gait-Axe-Consistent-v5.png",
+      "prompt": "Edit ONLY the war axe in ALL SIX cells of image1 (running animation atlas), matching the SAME weapon shown in image2 approved idle reference. Keep character pose, hands/grips, armor, anatomy, shield-on-BACK, camera, scale and cell positions EXACTLY as image1. Maintain1536x1024, 3columns2rows512square cells with transparent clear margins.\nWEAPON DESIGN LOCK: warm brown straight wooden shaft; dark iron socket/collar; ONE long slender slightly curved iron cutting blade which extends toward the weapon's striking end; ONE short triangular iron spike projecting upward from the TOP of the axe head, pointing toward the handle/gripping hand in idle orientation. The spike and blade are two distinct elements on the same iron head like image2. No sideways rear-pick, horizontal hook, broad triangular spearhead, sickle, trowel, fork or double blade. Consistent shaft thickness, shaft length, blade proportions, spike placement and metal finish in all6frames. Rigid complete axe rotates as one object with original wrist orientation; projection may change but design must not morph. Blade stays seated on shaft. Never exchange hands. Keep existing hand grip and swing sequence; axe cannot float or clip the hand. Use image2 as exact geometry reference, including small top spike.\n\n\n\nDo not redraw animation or change the approved heavy chop. Preserve the true vertical overhead camera. Output clean RGBA transparency, no shadows/haze/background/grid/text. This is a targeted prop consistency correction, not a new character design.",
+      "generatedSource": "C:/Users/Damien/.codex/generated_images/01a0fea1-c63f-7343-92ca-6c21cc1c4296/exec-f9303f66-14ff-4795-803d-78bc881ad32d.png",
+      "nativeFile": "Native-Gait-Axe-Consistent-v5.png",
+      "status": "selected-source",
+      "uniformScale": 0.96,
+      "padding": 10,
+      "sourceRoot": [
+        248.8,
+        260
+      ],
+      "references": [
+        "Running-v4.png",
+        "Idle-Axe-TopSpike-v3.png"
+      ],
+      "sharedAnimation": "running"
+    },
+    {
+      "id": "Back3",
+      "status": "cell-edit-source",
+      "nativeFile": "Native-Back3-Axe-Corrected-v2.png",
+      "generatedSource": "C:/Users/Damien/.codex/generated_images/01a0fea1-c63f-7343-92ca-6c21cc1c4296/exec-c41544b2-bdfc-430f-a591-b1c5e3315f45.png",
+      "prompt": "Make ONE tiny edit: REMOVE the unwanted small iron spike projecting from the BOTTOM/BUTT of the wooden axe handle, below the gold endcap underneath grippinghand. Replace that handlebutt with the existing smooth roundedwood/goldendcap, NO spike. Do not change the ironaxehead at top: keep its long cuttingbladepointUP and shorttopspikepointDOWNtowardhand EXACTLY as is. Keep allbody, armor, handgrip, pose, proportions andcanvasposition unchanged. Transparentbackground. No newweapons or equipment. Same squarecanvas.",
+      "references": [
+        "Native-Back3-Axe-Corrected-v1.png"
+      ]
+    }
+  ]
+}

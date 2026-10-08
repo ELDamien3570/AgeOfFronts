@@ -1,0 +1,141 @@
+{
+  "date": "2026-10-07",
+  "mode": "built-in-imagegen",
+  "stage": "single-idle-review",
+  "userApproval": "Idle design approved; nine animations pending visual review.",
+  "records": [
+    {
+      "file": "Idle-v1.png",
+      "prompt": "Create ONE idle sprite for an Early Medieval Russian civilization LIGHT CAVALRY unit, a Rus-inspired steppe lancer. Use the attached Classical-age cavalry as the exact GAME ART rendering, overhead camera, horse anatomy, actor proportion, facing and subdued palette reference. Upgrade ONLY rider design into readable Rus and steppe-inspired early medieval gear: modest conical iron helmet with small pointed crown and narrow nasal guard (overhead crown visible), fine mail neck/shoulder protection, lightweight dark iron lamellar vest of clear overlapping rectangular plates over muted red-brown long sleeved riding coat, small restrained cream fur trim near collar, leather belt/bracers and brown boots. Less bulky fur than Classical rider. No giant plate pauldrons, no full plate suit. Practical imagined Rus ancestral aesthetic, not a museum reconstruction. Rider holds LONG wooden lance in anatomical RIGHT hand (screen LEFT), narrow leaf-shaped iron spearhead pointing forward/down, long shaft held farther back for good reach; no banner. In anatomical LEFT hand (screen RIGHT) he holds SMALL ROUND wooden shield, iron rim and simple central iron boss, diameter roughly rider torso width, held beside body clear of horse head; leather rein naturally held with that hand. Keep chestnut riding horse black mane and tail, simple brown leather tack and small red-brown saddlecloth, no horse armor. Strict DIRECTLY OVERHEAD orthographic camera, horse nose screen DOWN tail screen UP, rider helmet crown visible, NO oblique/isometric/front portrait, seated relaxed idle. Full single horse and rider and entire lance visible, centered with clean transparent margins. Same smooth painterly game asset shading and natural thin edges as reference, muted leather/chestnut not bright saturated red; NO gritty grain or thick black cartoon outlines. Strong silhouette readable at48/64px. ONE character only, no grid, no labels, no shadow or ground. True transparent RGBA background.",
+      "generatedSource": "C:\\Users\\Damien\\.codex\\generated_images\\01a11641-9e1b-7c81-be76-c9edd53ef182\\exec-d7cb8624-9bb5-406b-8d1f-da9d5d0ebd63.png",
+      "reference": "../../ClassicalAge/LightCavalry/Idle-v1.png",
+      "status": "approved-design-reference"
+    },
+    {
+      "id": "idle",
+      "file": "Idle-Animated-v1.png",
+      "prompt": "Edit reference1 SIX-FRAME cavalry atlas into the APPROVED EARLY MEDIEVAL RUS STEPPE LANCER in reference2. Reference1 supplies precise movement poses and chronological sequence ONLY; reference2 is sole equipment, color and art-style authority. Replace Classical rider with conical pointed iron nasal helmet, mail shoulders, dark iron lamellar over muted redbrown long-sleeved coat with small creamfur collar, leather bracers boots, long lance held RIGHT hand screenLEFT, SMALL round wooden ironrim/boss SHIELD strapped LEFT forearm screenRIGHT in EVERY frame, with rein hand there. Chestnut horse black mane tail same asapproved. No giant platepauldrons. Smoothrestrained painterly finish, no grain or thick black outlines or saturation increase. Preserve exact six poses, horse gait, anatomy and fixed saddlecenter of reference1; add shield carriednaturally so it does not float, cover horse head, disappear or swap hands. STRICT directlyOVERHEAD orthographic noseDOWN tailUP. EXACT1536x1024 3columns2rows six512pxcells rowmajor. SAME actor scale and saddlecenter256,256 in EVERY cell. Make actor smaller if needed so ENTIRE horse lance shield and fallenbody fit comfortably WITHIN eachcell with30pxalpha0clear margins and empty rowgutters. Do not clip lancehead or tail or bleed into adjacentcell. TRUE transparentRGBAalpha0 outside crispantialiased silhouettes, no haze glowground shadow smoke motionlines textgrid. Preserve straight long lance with SAME leafironhead allframes. Output ONLY sixposeatlas.",
+      "references": [
+        "C:/Users/Damien/Documents/GitHub/AgeOfFronts/AgeOfFronts/Art/Cultures/Russians/Units/ClassicalAge/LightCavalry/SourceArt/Native-Idle-Animated-v1.png",
+        "C:/Users/Damien/Documents/GitHub/AgeOfFronts/AgeOfFronts/Art/Cultures/Russians/Units/EarlyMedieval/LightCavalry/Idle-v1.png"
+      ],
+      "generatedSource": "C:\\Users\\Damien\\.codex\\generated_images\\01a11641-9e1b-7c81-be76-c9edd53ef182\\exec-9ea441d8-1eef-442e-9bd2-8838f543644f.png",
+      "status": "selected-animation-source",
+      "nativeCopy": "SourceArt/Native-Idle-Animated-v1.png"
+    },
+    {
+      "id": "running",
+      "file": "Running-v1.png",
+      "prompt": "Edit reference1 SIX-FRAME cavalry atlas into the APPROVED EARLY MEDIEVAL RUS STEPPE LANCER in reference2. Reference1 supplies precise movement poses and chronological sequence ONLY; reference2 is sole equipment, color and art-style authority. Replace Classical rider with conical pointed iron nasal helmet, mail shoulders, dark iron lamellar over muted redbrown long-sleeved coat with small creamfur collar, leather bracers boots, long lance held RIGHT hand screenLEFT, SMALL round wooden ironrim/boss SHIELD strapped LEFT forearm screenRIGHT in EVERY frame, with rein hand there. Chestnut horse black mane tail same asapproved. No giant platepauldrons. Smoothrestrained painterly finish, no grain or thick black outlines or saturation increase. Preserve exact six poses, horse gait, anatomy and fixed saddlecenter of reference1; add shield carriednaturally so it does not float, cover horse head, disappear or swap hands. STRICT directlyOVERHEAD orthographic noseDOWN tailUP. EXACT1536x1024 3columns2rows six512pxcells rowmajor. SAME actor scale and saddlecenter256,256 in EVERY cell. Make actor smaller if needed so ENTIRE horse lance shield and fallenbody fit comfortably WITHIN eachcell with30pxalpha0clear margins and empty rowgutters. Do not clip lancehead or tail or bleed into adjacentcell. TRUE transparentRGBAalpha0 outside crispantialiased silhouettes, no haze glowground shadow smoke motionlines textgrid. Preserve straight long lance with SAME leafironhead allframes. Output ONLY sixposeatlas.",
+      "references": [
+        "C:/Users/Damien/Documents/GitHub/AgeOfFronts/AgeOfFronts/Art/Cultures/Russians/Units/ClassicalAge/LightCavalry/SourceArt/Native-Running-v1.png",
+        "C:/Users/Damien/Documents/GitHub/AgeOfFronts/AgeOfFronts/Art/Cultures/Russians/Units/EarlyMedieval/LightCavalry/Idle-v1.png"
+      ],
+      "generatedSource": "C:\\Users\\Damien\\.codex\\generated_images\\01a11641-9e1b-7c81-be76-c9edd53ef182\\exec-a69f0c67-b11a-4c7b-bd1a-dba99f7af6de.png",
+      "status": "selected-animation-source",
+      "nativeCopy": "SourceArt/Native-Running-v1.png"
+    },
+    {
+      "id": "attack",
+      "file": "Attack-v1.png",
+      "prompt": "Edit reference1 SIX-FRAME cavalry atlas into the APPROVED EARLY MEDIEVAL RUS STEPPE LANCER in reference2. Reference1 supplies precise movement poses and chronological sequence ONLY; reference2 is sole equipment, color and art-style authority. Replace Classical rider with conical pointed iron nasal helmet, mail shoulders, dark iron lamellar over muted redbrown long-sleeved coat with small creamfur collar, leather bracers boots, long lance held RIGHT hand screenLEFT, SMALL round wooden ironrim/boss SHIELD strapped LEFT forearm screenRIGHT in EVERY frame, with rein hand there. Chestnut horse black mane tail same asapproved. No giant platepauldrons. Smoothrestrained painterly finish, no grain or thick black outlines or saturation increase. Preserve exact six poses, horse gait, anatomy and fixed saddlecenter of reference1; add shield carriednaturally so it does not float, cover horse head, disappear or swap hands. STRICT directlyOVERHEAD orthographic noseDOWN tailUP. EXACT1536x1024 3columns2rows six512pxcells rowmajor. SAME actor scale and saddlecenter256,256 in EVERY cell. Make actor smaller if needed so ENTIRE horse lance shield and fallenbody fit comfortably WITHIN eachcell with30pxalpha0clear margins and empty rowgutters. Do not clip lancehead or tail or bleed into adjacentcell. TRUE transparentRGBAalpha0 outside crispantialiased silhouettes, no haze glowground shadow smoke motionlines textgrid. Preserve straight long lance with SAME leafironhead allframes. Output ONLY sixposeatlas. Keep OVERARM grip: raise lance near shoulder then drive point forward/screenDOWN beside horse, frame4 thrust impact and frames5/6recovery. NEVER underhand grip or weapon bend.",
+      "references": [
+        "C:/Users/Damien/Documents/GitHub/AgeOfFronts/AgeOfFronts/Art/Cultures/Russians/Units/ClassicalAge/LightCavalry/SourceArt/Native-Attack-v1.png",
+        "C:/Users/Damien/Documents/GitHub/AgeOfFronts/AgeOfFronts/Art/Cultures/Russians/Units/EarlyMedieval/LightCavalry/Idle-v1.png"
+      ],
+      "generatedSource": "C:\\Users\\Damien\\.codex\\generated_images\\01a11641-9e1b-7c81-be76-c9edd53ef182\\exec-c015424d-6ed7-45cd-b333-f1ef9cc3b268.png",
+      "sourceFrameOrder": [
+        0,
+        1,
+        3,
+        2,
+        4,
+        5
+      ],
+      "status": "selected-animation-source",
+      "nativeCopy": "SourceArt/Native-Attack-v1.png"
+    },
+    {
+      "id": "hit",
+      "file": "Hit-v1.png",
+      "prompt": "Edit reference1 SIX-FRAME cavalry atlas into the APPROVED EARLY MEDIEVAL RUS STEPPE LANCER in reference2. Reference1 supplies precise movement poses and chronological sequence ONLY; reference2 is sole equipment, color and art-style authority. Replace Classical rider with conical pointed iron nasal helmet, mail shoulders, dark iron lamellar over muted redbrown long-sleeved coat with small creamfur collar, leather bracers boots, long lance held RIGHT hand screenLEFT, SMALL round wooden ironrim/boss SHIELD strapped LEFT forearm screenRIGHT in EVERY frame, with rein hand there. Chestnut horse black mane tail same asapproved. No giant platepauldrons. Smoothrestrained painterly finish, no grain or thick black outlines or saturation increase. Preserve exact six poses, horse gait, anatomy and fixed saddlecenter of reference1; add shield carriednaturally so it does not float, cover horse head, disappear or swap hands. STRICT directlyOVERHEAD orthographic noseDOWN tailUP. EXACT1536x1024 3columns2rows six512pxcells rowmajor. SAME actor scale and saddlecenter256,256 in EVERY cell. Make actor smaller if needed so ENTIRE horse lance shield and fallenbody fit comfortably WITHIN eachcell with30pxalpha0clear margins and empty rowgutters. Do not clip lancehead or tail or bleed into adjacentcell. TRUE transparentRGBAalpha0 outside crispantialiased silhouettes, no haze glowground shadow smoke motionlines textgrid. Preserve straight long lance with SAME leafironhead allframes. Output ONLY sixposeatlas.",
+      "references": [
+        "C:/Users/Damien/Documents/GitHub/AgeOfFronts/AgeOfFronts/Art/Cultures/Russians/Units/ClassicalAge/LightCavalry/SourceArt/Native-Hit-v1.png",
+        "C:/Users/Damien/Documents/GitHub/AgeOfFronts/AgeOfFronts/Art/Cultures/Russians/Units/EarlyMedieval/LightCavalry/Idle-v1.png"
+      ],
+      "generatedSource": "C:\\Users\\Damien\\.codex\\generated_images\\01a11641-9e1b-7c81-be76-c9edd53ef182\\exec-0f63d15e-837b-4b3d-b333-bb01d40eaf0b.png",
+      "status": "selected-animation-source",
+      "nativeCopy": "SourceArt/Native-Hit-v1.png"
+    },
+    {
+      "id": "charged",
+      "file": "Charged-Impact-v1.png",
+      "prompt": "Edit reference1 SIX-FRAME cavalry atlas into the APPROVED EARLY MEDIEVAL RUS STEPPE LANCER in reference2. Reference1 supplies precise movement poses and chronological sequence ONLY; reference2 is sole equipment, color and art-style authority. Replace Classical rider with conical pointed iron nasal helmet, mail shoulders, dark iron lamellar over muted redbrown long-sleeved coat with small creamfur collar, leather bracers boots, long lance held RIGHT hand screenLEFT, SMALL round wooden ironrim/boss SHIELD strapped LEFT forearm screenRIGHT in EVERY frame, with rein hand there. Chestnut horse black mane tail same asapproved. No giant platepauldrons. Smoothrestrained painterly finish, no grain or thick black outlines or saturation increase. Preserve exact six poses, horse gait, anatomy and fixed saddlecenter of reference1; add shield carriednaturally so it does not float, cover horse head, disappear or swap hands. STRICT directlyOVERHEAD orthographic noseDOWN tailUP. EXACT1536x1024 3columns2rows six512pxcells rowmajor. SAME actor scale and saddlecenter256,256 in EVERY cell. Make actor smaller if needed so ENTIRE horse lance shield and fallenbody fit comfortably WITHIN eachcell with30pxalpha0clear margins and empty rowgutters. Do not clip lancehead or tail or bleed into adjacentcell. TRUE transparentRGBAalpha0 outside crispantialiased silhouettes, no haze glowground shadow smoke motionlines textgrid. Preserve straight long lance with SAME leafironhead allframes. Output ONLY sixposeatlas.",
+      "references": [
+        "C:/Users/Damien/Documents/GitHub/AgeOfFronts/AgeOfFronts/Art/Cultures/Russians/Units/ClassicalAge/LightCavalry/SourceArt/Native-Charged-Impact-v1.png",
+        "C:/Users/Damien/Documents/GitHub/AgeOfFronts/AgeOfFronts/Art/Cultures/Russians/Units/EarlyMedieval/LightCavalry/Idle-v1.png"
+      ],
+      "generatedSource": "C:\\Users\\Damien\\.codex\\generated_images\\01a11641-9e1b-7c81-be76-c9edd53ef182\\exec-22bc354f-f74d-4a39-8733-1115c30abbcd.png",
+      "status": "selected-animation-source",
+      "nativeCopy": "SourceArt/Native-Charged-Impact-v1.png"
+    },
+    {
+      "id": "charge",
+      "file": "Charge-v1.png",
+      "prompt": "Edit reference1 SIX-FRAME cavalry atlas into the APPROVED EARLY MEDIEVAL RUS STEPPE LANCER in reference2. Reference1 supplies precise movement poses and chronological sequence ONLY; reference2 is sole equipment, color and art-style authority. Replace Classical rider with conical pointed iron nasal helmet, mail shoulders, dark iron lamellar over muted redbrown long-sleeved coat with small creamfur collar, leather bracers boots, long lance held RIGHT hand screenLEFT, SMALL round wooden ironrim/boss SHIELD strapped LEFT forearm screenRIGHT in EVERY frame, with rein hand there. Chestnut horse black mane tail same asapproved. No giant platepauldrons. Smoothrestrained painterly finish, no grain or thick black outlines or saturation increase. Preserve exact six poses, horse gait, anatomy and fixed saddlecenter of reference1; add shield carriednaturally so it does not float, cover horse head, disappear or swap hands. STRICT directlyOVERHEAD orthographic noseDOWN tailUP. EXACT1536x1024 3columns2rows six512pxcells rowmajor. SAME actor scale and saddlecenter256,256 in EVERY cell. Make actor smaller if needed so ENTIRE horse lance shield and fallenbody fit comfortably WITHIN eachcell with30pxalpha0clear margins and empty rowgutters. Do not clip lancehead or tail or bleed into adjacentcell. TRUE transparentRGBAalpha0 outside crispantialiased silhouettes, no haze glowground shadow smoke motionlines textgrid. Preserve straight long lance with SAME leafironhead allframes. Output ONLY sixposeatlas.",
+      "references": [
+        "C:/Users/Damien/Documents/GitHub/AgeOfFronts/AgeOfFronts/Art/Cultures/Russians/Units/ClassicalAge/LightCavalry/SourceArt/Native-Charge-v1.png",
+        "C:/Users/Damien/Documents/GitHub/AgeOfFronts/AgeOfFronts/Art/Cultures/Russians/Units/EarlyMedieval/LightCavalry/Idle-v1.png"
+      ],
+      "generatedSource": "C:\\Users\\Damien\\.codex\\generated_images\\01a11641-9e1b-7c81-be76-c9edd53ef182\\exec-d522a5d0-c19a-4e48-95ad-771f345888bc.png",
+      "status": "selected-animation-source",
+      "nativeCopy": "SourceArt/Native-Charge-v1.png"
+    },
+    {
+      "id": "charge-attack",
+      "file": "Charge-Attack-v1.png",
+      "prompt": "Edit reference1 SIX-FRAME cavalry atlas into the APPROVED EARLY MEDIEVAL RUS STEPPE LANCER in reference2. Reference1 supplies precise movement poses and chronological sequence ONLY; reference2 is sole equipment, color and art-style authority. Replace Classical rider with conical pointed iron nasal helmet, mail shoulders, dark iron lamellar over muted redbrown long-sleeved coat with small creamfur collar, leather bracers boots, long lance held RIGHT hand screenLEFT, SMALL round wooden ironrim/boss SHIELD strapped LEFT forearm screenRIGHT in EVERY frame, with rein hand there. Chestnut horse black mane tail same asapproved. No giant platepauldrons. Smoothrestrained painterly finish, no grain or thick black outlines or saturation increase. Preserve exact six poses, horse gait, anatomy and fixed saddlecenter of reference1; add shield carriednaturally so it does not float, cover horse head, disappear or swap hands. STRICT directlyOVERHEAD orthographic noseDOWN tailUP. EXACT1536x1024 3columns2rows six512pxcells rowmajor. SAME actor scale and saddlecenter256,256 in EVERY cell. Make actor smaller if needed so ENTIRE horse lance shield and fallenbody fit comfortably WITHIN eachcell with30pxalpha0clear margins and empty rowgutters. Do not clip lancehead or tail or bleed into adjacentcell. TRUE transparentRGBAalpha0 outside crispantialiased silhouettes, no haze glowground shadow smoke motionlines textgrid. Preserve straight long lance with SAME leafironhead allframes. Output ONLY sixposeatlas. Keep OVERARM grip: raise lance near shoulder then drive point forward/screenDOWN beside horse, frame4 thrust impact and frames5/6recovery. NEVER underhand grip or weapon bend.",
+      "references": [
+        "C:/Users/Damien/Documents/GitHub/AgeOfFronts/AgeOfFronts/Art/Cultures/Russians/Units/ClassicalAge/LightCavalry/SourceArt/Native-Charge-Attack-v1.png",
+        "C:/Users/Damien/Documents/GitHub/AgeOfFronts/AgeOfFronts/Art/Cultures/Russians/Units/EarlyMedieval/LightCavalry/Idle-v1.png"
+      ],
+      "generatedSource": "C:\\Users\\Damien\\.codex\\generated_images\\01a11641-9e1b-7c81-be76-c9edd53ef182\\exec-c95aeb76-159d-4e0d-9641-3740b1695029.png",
+      "status": "selected-animation-source",
+      "nativeCopy": "SourceArt/Native-Charge-Attack-v1.png"
+    },
+    {
+      "id": "death",
+      "file": "Death-Together-v1.png",
+      "prompt": "Edit reference1 SIX-FRAME cavalry atlas into the APPROVED EARLY MEDIEVAL RUS STEPPE LANCER in reference2. Reference1 supplies precise movement poses and chronological sequence ONLY; reference2 is sole equipment, color and art-style authority. Replace Classical rider with conical pointed iron nasal helmet, mail shoulders, dark iron lamellar over muted redbrown long-sleeved coat with small creamfur collar, leather bracers boots, long lance held RIGHT hand screenLEFT, SMALL round wooden ironrim/boss SHIELD strapped LEFT forearm screenRIGHT in EVERY frame, with rein hand there. Chestnut horse black mane tail same asapproved. No giant platepauldrons. Smoothrestrained painterly finish, no grain or thick black outlines or saturation increase. Preserve exact six poses, horse gait, anatomy and fixed saddlecenter of reference1; add shield carriednaturally so it does not float, cover horse head, disappear or swap hands. STRICT directlyOVERHEAD orthographic noseDOWN tailUP. EXACT1536x1024 3columns2rows six512pxcells rowmajor. SAME actor scale and saddlecenter256,256 in EVERY cell. Make actor smaller if needed so ENTIRE horse lance shield and fallenbody fit comfortably WITHIN eachcell with30pxalpha0clear margins and empty rowgutters. Do not clip lancehead or tail or bleed into adjacentcell. TRUE transparentRGBAalpha0 outside crispantialiased silhouettes, no haze glowground shadow smoke motionlines textgrid. Preserve straight long lance with SAME leafironhead allframes. Output ONLY sixposeatlas. Fall together smoothly frame1alive frame2buckles frame3tilts frame4sidefall frame5settles frame6corpse. NO inversion/reset, fallenorientation continuous. Shield fallswithrider.",
+      "references": [
+        "C:/Users/Damien/Documents/GitHub/AgeOfFronts/AgeOfFronts/Art/Cultures/Russians/Units/ClassicalAge/LightCavalry/SourceArt/Native-Death-Together-v2.png",
+        "C:/Users/Damien/Documents/GitHub/AgeOfFronts/AgeOfFronts/Art/Cultures/Russians/Units/EarlyMedieval/LightCavalry/Idle-v1.png"
+      ],
+      "generatedSource": "C:\\Users\\Damien\\.codex\\generated_images\\01a11641-9e1b-7c81-be76-c9edd53ef182\\exec-59dd1518-bb41-44da-87ab-db3fdfd15338.png",
+      "status": "selected-animation-source",
+      "nativeCopy": "SourceArt/Native-Death-Together-v1.png"
+    },
+    {
+      "id": "death-thrown",
+      "file": "Death-Thrown-v2.png",
+      "prompt": "Surgical edit of EXACT six-frame overhead horse rider death atlas. Keep entire layout1536x1024 three512columns two512rows, all poses/bodypositions horse rider lancecolors textures alpha identical. ONLY correction: in frame5 bottommiddle and frame6 bottomright, the small round wooden iron-rim shield has vanished. Restore the SAME small shield to the rider's anatomical LEFT forearm which is extending toward lower-right beside horse head, continuing from frame4bottomleft where shield is visible. Shield must be STRAPPED to forearm and move coherently with it; show wooden face ironrim and boss. Do not add shield to right lancearm. Shield left arm lands with rider, horse still stands. Avoid floating or changing position of horse or fallenrider. No other changes. TRUE transparentRGBA background same alpha0 emptyrowgutters no shadows. Keep frame1-4 identical, finalcorpsecontinuous noorientationflip.",
+      "references": [
+        "C:\\Users\\Damien\\.codex\\generated_images\\01a11641-9e1b-7c81-be76-c9edd53ef182\\exec-73b7fca3-9103-4de0-acaa-3c8d634cc988.png"
+      ],
+      "generatedSource": "C:\\Users\\Damien\\.codex\\generated_images\\01a11641-9e1b-7c81-be76-c9edd53ef182\\exec-a448cdc7-db20-419f-98f8-30b16f768bdc.png",
+      "status": "selected-animation-source",
+      "nativeCopy": "SourceArt/Native-Death-Thrown-v2.png"
+    },
+    {
+      "id": "death-thrown",
+      "file": "Death-Thrown-v1.png",
+      "prompt": "Edit reference1 SIX-FRAME cavalry atlas into the APPROVED EARLY MEDIEVAL RUS STEPPE LANCER in reference2. Reference1 supplies precise movement poses and chronological sequence ONLY; reference2 is sole equipment, color and art-style authority. Replace Classical rider with conical pointed iron nasal helmet, mail shoulders, dark iron lamellar over muted redbrown long-sleeved coat with small creamfur collar, leather bracers boots, long lance held RIGHT hand screenLEFT, SMALL round wooden ironrim/boss SHIELD strapped LEFT forearm screenRIGHT in EVERY frame, with rein hand there. Chestnut horse black mane tail same asapproved. No giant platepauldrons. Smoothrestrained painterly finish, no grain or thick black outlines or saturation increase. Preserve exact six poses, horse gait, anatomy and fixed saddlecenter of reference1; add shield carriednaturally so it does not float, cover horse head, disappear or swap hands. STRICT directlyOVERHEAD orthographic noseDOWN tailUP. EXACT1536x1024 3columns2rows six512pxcells rowmajor. SAME actor scale and saddlecenter256,256 in EVERY cell. Make actor smaller if needed so ENTIRE horse lance shield and fallenbody fit comfortably WITHIN eachcell with30pxalpha0clear margins and empty rowgutters. Do not clip lancehead or tail or bleed into adjacentcell. TRUE transparentRGBAalpha0 outside crispantialiased silhouettes, no haze glowground shadow smoke motionlines textgrid. Preserve straight long lance with SAME leafironhead allframes. Output ONLY sixposeatlas. Rider thrown beside standinghorse, releaseslance into ground on weaponside, shield staysstrappedleftarm, finalcorpseremainsfallen noresurrection.",
+      "references": [
+        "C:/Users/Damien/Documents/GitHub/AgeOfFronts/AgeOfFronts/Art/Cultures/Russians/Units/ClassicalAge/LightCavalry/SourceArt/Native-Death-Thrown-v1.png",
+        "C:/Users/Damien/Documents/GitHub/AgeOfFronts/AgeOfFronts/Art/Cultures/Russians/Units/EarlyMedieval/LightCavalry/Idle-v1.png"
+      ],
+      "generatedSource": "C:\\Users\\Damien\\.codex\\generated_images\\01a11641-9e1b-7c81-be76-c9edd53ef182\\exec-73b7fca3-9103-4de0-acaa-3c8d634cc988.png",
+      "status": "superseded-shield-continuity-draft-preserved"
+    }
+  ]
+}

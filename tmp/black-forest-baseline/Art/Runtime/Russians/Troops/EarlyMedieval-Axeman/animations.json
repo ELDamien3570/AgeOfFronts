@@ -1,0 +1,330 @@
+{
+  "actorCount": 1,
+  "animations": [
+    {
+      "id": "idle",
+      "file": "idle.png",
+      "label": "Idle",
+      "loop": true,
+      "scale": 1,
+      "durations": [
+        320,
+        320,
+        320,
+        320,
+        320,
+        320
+      ],
+      "description": "Subtle breathing with planted feet and steady equipment.",
+      "frameCount": 6,
+      "frames": [
+        {
+          "x": 0,
+          "y": 0,
+          "width": 128,
+          "height": 128,
+          "pivot": {
+            "x": 71.875,
+            "y": 64.0
+          }
+        },
+        {
+          "x": 128,
+          "y": 0,
+          "width": 128,
+          "height": 128,
+          "pivot": {
+            "x": 64.675,
+            "y": 64.0
+          }
+        },
+        {
+          "x": 256,
+          "y": 0,
+          "width": 128,
+          "height": 128,
+          "pivot": {
+            "x": 61.975,
+            "y": 62.2
+          }
+        },
+        {
+          "x": 384,
+          "y": 0,
+          "width": 128,
+          "height": 128,
+          "pivot": {
+            "x": 71.875,
+            "y": 63.775
+          }
+        },
+        {
+          "x": 512,
+          "y": 0,
+          "width": 128,
+          "height": 128,
+          "pivot": {
+            "x": 64.675,
+            "y": 64.0
+          }
+        },
+        {
+          "x": 640,
+          "y": 0,
+          "width": 128,
+          "height": 128,
+          "pivot": {
+            "x": 62.2,
+            "y": 61.975
+          }
+        }
+      ]
+    },
+    {
+      "id": "running",
+      "file": "running.png",
+      "label": "Walk",
+      "loop": true,
+      "scale": 1,
+      "durations": [
+        160,
+        160,
+        160,
+        160,
+        160,
+        160
+      ],
+      "description": "Alternating walking strides with the shield strapped to his back.",
+      "frameCount": 6,
+      "frames": [
+        {
+          "x": 0,
+          "y": 0,
+          "width": 128,
+          "height": 128,
+          "pivot": {
+            "x": 64.45,
+            "y": 64.0
+          }
+        },
+        {
+          "x": 128,
+          "y": 0,
+          "width": 128,
+          "height": 128,
+          "pivot": {
+            "x": 64.45,
+            "y": 64.0
+          }
+        },
+        {
+          "x": 256,
+          "y": 0,
+          "width": 128,
+          "height": 128,
+          "pivot": {
+            "x": 62.65,
+            "y": 64.0
+          }
+        },
+        {
+          "x": 384,
+          "y": 0,
+          "width": 128,
+          "height": 128,
+          "pivot": {
+            "x": 64.225,
+            "y": 64.0
+          }
+        },
+        {
+          "x": 512,
+          "y": 0,
+          "width": 128,
+          "height": 128,
+          "pivot": {
+            "x": 64.225,
+            "y": 64.0
+          }
+        },
+        {
+          "x": 640,
+          "y": 0,
+          "width": 128,
+          "height": 128,
+          "pivot": {
+            "x": 63.775,
+            "y": 64.0
+          }
+        }
+      ]
+    },
+    {
+      "id": "attack",
+      "file": "attack.png",
+      "label": "Axe attack",
+      "loop": false,
+      "scale": 1,
+      "durations": [
+        130,
+        150,
+        150,
+        100,
+        170,
+        240
+      ],
+      "description": "Raise the axe, deliver a forward overhead chop, and recover.",
+      "frameCount": 6,
+      "frames": [
+        {
+          "x": 0,
+          "y": 0,
+          "width": 128,
+          "height": 128,
+          "pivot": {
+            "x": 64.0,
+            "y": 64.0
+          }
+        },
+        {
+          "x": 128,
+          "y": 0,
+          "width": 128,
+          "height": 128,
+          "pivot": {
+            "x": 64.0,
+            "y": 64.0
+          }
+        },
+        {
+          "x": 256,
+          "y": 0,
+          "width": 128,
+          "height": 128,
+          "pivot": {
+            "x": 64.0,
+            "y": 64.0
+          }
+        },
+        {
+          "x": 384,
+          "y": 0,
+          "width": 128,
+          "height": 128,
+          "pivot": {
+            "x": 64.0,
+            "y": 64.0
+          }
+        },
+        {
+          "x": 512,
+          "y": 0,
+          "width": 128,
+          "height": 128,
+          "pivot": {
+            "x": 64.0,
+            "y": 64.0
+          }
+        },
+        {
+          "x": 640,
+          "y": 0,
+          "width": 128,
+          "height": 128,
+          "pivot": {
+            "x": 64.0,
+            "y": 64.0
+          }
+        }
+      ],
+      "impactFrame": 3
+    },
+    {
+      "id": "death",
+      "file": "death.png",
+      "label": "Death - side fall",
+      "loop": false,
+      "scale": 1,
+      "durations": [
+        150,
+        170,
+        190,
+        210,
+        240,
+        400
+      ],
+      "description": "Knees buckle, followed by a side collapse and settled corpse.",
+      "frameCount": 6,
+      "frames": [
+        {
+          "x": 0,
+          "y": 0,
+          "width": 128,
+          "height": 128,
+          "pivot": {
+            "x": 64.0,
+            "y": 64.0
+          }
+        },
+        {
+          "x": 128,
+          "y": 0,
+          "width": 128,
+          "height": 128,
+          "pivot": {
+            "x": 64.0,
+            "y": 64.0
+          }
+        },
+        {
+          "x": 256,
+          "y": 0,
+          "width": 128,
+          "height": 128,
+          "pivot": {
+            "x": 64.0,
+            "y": 64.0
+          }
+        },
+        {
+          "x": 384,
+          "y": 0,
+          "width": 128,
+          "height": 128,
+          "pivot": {
+            "x": 64.0,
+            "y": 64.0
+          }
+        },
+        {
+          "x": 512,
+          "y": 0,
+          "width": 128,
+          "height": 128,
+          "pivot": {
+            "x": 64.0,
+            "y": 64.0
+          }
+        },
+        {
+          "x": 640,
+          "y": 0,
+          "width": 128,
+          "height": 128,
+          "pivot": {
+            "x": 64.0,
+            "y": 64.0
+          }
+        }
+      ]
+    }
+  ],
+  "source": "Art/Cultures/Russians/Units/EarlyMedieval/Axeman/animations.json",
+  "metadataHash": "c71a7d55990f8c544f018e21632547ea5759f024bfa6963029e4db36ef3b2199",
+  "hashes": {
+    "Art/Cultures/Russians/Units/EarlyMedieval/Axeman/Idle-Animated-v2.png": "084f1b8b538f1879f54bcf0995493893109b764944eb39a4acd52f8427d34f1a",
+    "Art/Cultures/Russians/Units/EarlyMedieval/Axeman/Walk-v1.png": "21f59db418308dd3940802e8170115bdaf70515d7dc9181fb7dac3fe2eeaf7dc",
+    "Art/Cultures/Russians/Units/EarlyMedieval/Axeman/Attack-v1.png": "d8f9dafe540abeb9217f1cd9c1c3dd184bb4f8f8b345f21b55e4bbbe5982c1d2",
+    "Art/Cultures/Russians/Units/EarlyMedieval/Axeman/Death-Side-v3.png": "58fa68a508a3adf2d48c83e7b1c0e35b2588c322d122aa91e283b19a445a6a4e"
+  }
+}

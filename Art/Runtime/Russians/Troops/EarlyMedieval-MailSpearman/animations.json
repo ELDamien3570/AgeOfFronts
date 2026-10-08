@@ -1,0 +1,338 @@
+{
+  "actorCount": 1,
+  "animations": [
+    {
+      "id": "idle",
+      "file": "idle.png",
+      "label": "Idle",
+      "loop": true,
+      "scale": 1,
+      "durations": [
+        320,
+        320,
+        320,
+        320,
+        320,
+        320
+      ],
+      "description": "Subtle breathing with planted feet and steady equipment.",
+      "frameCount": 6,
+      "frames": [
+        {
+          "x": 0,
+          "y": 0,
+          "width": 128,
+          "height": 128,
+          "pivot": {
+            "x": 63.325,
+            "y": 69.625
+          }
+        },
+        {
+          "x": 128,
+          "y": 0,
+          "width": 128,
+          "height": 128,
+          "pivot": {
+            "x": 64.0,
+            "y": 68.5
+          }
+        },
+        {
+          "x": 256,
+          "y": 0,
+          "width": 128,
+          "height": 128,
+          "pivot": {
+            "x": 64.225,
+            "y": 68.5
+          }
+        },
+        {
+          "x": 384,
+          "y": 0,
+          "width": 128,
+          "height": 128,
+          "pivot": {
+            "x": 63.55,
+            "y": 69.175
+          }
+        },
+        {
+          "x": 512,
+          "y": 0,
+          "width": 128,
+          "height": 128,
+          "pivot": {
+            "x": 63.325,
+            "y": 69.625
+          }
+        },
+        {
+          "x": 640,
+          "y": 0,
+          "width": 128,
+          "height": 128,
+          "pivot": {
+            "x": 63.325,
+            "y": 69.625
+          }
+        }
+      ]
+    },
+    {
+      "id": "running",
+      "file": "running.png",
+      "label": "Walk",
+      "loop": true,
+      "scale": 1,
+      "durations": [
+        160,
+        160,
+        160,
+        160,
+        160,
+        160
+      ],
+      "description": "Alternating walking strides with the shield held in the left hand.",
+      "frameCount": 6,
+      "frames": [
+        {
+          "x": 0,
+          "y": 0,
+          "width": 128,
+          "height": 128,
+          "pivot": {
+            "x": 66.475,
+            "y": 62.65
+          }
+        },
+        {
+          "x": 128,
+          "y": 0,
+          "width": 128,
+          "height": 128,
+          "pivot": {
+            "x": 64.45,
+            "y": 62.2
+          }
+        },
+        {
+          "x": 256,
+          "y": 0,
+          "width": 128,
+          "height": 128,
+          "pivot": {
+            "x": 63.775,
+            "y": 62.425
+          }
+        },
+        {
+          "x": 384,
+          "y": 0,
+          "width": 128,
+          "height": 128,
+          "pivot": {
+            "x": 66.7,
+            "y": 58.825
+          }
+        },
+        {
+          "x": 512,
+          "y": 0,
+          "width": 128,
+          "height": 128,
+          "pivot": {
+            "x": 65.125,
+            "y": 59.725
+          }
+        },
+        {
+          "x": 640,
+          "y": 0,
+          "width": 128,
+          "height": 128,
+          "pivot": {
+            "x": 63.55,
+            "y": 59.5
+          }
+        }
+      ]
+    },
+    {
+      "id": "attack",
+      "file": "attack.png",
+      "label": "Overhand spear thrust",
+      "loop": false,
+      "scale": 1.1764705882352942,
+      "durations": [
+        140,
+        170,
+        100,
+        170,
+        160,
+        220
+      ],
+      "description": "Complete painted overhand attack poses oriented to thrust toward the bottom of the screen.",
+      "frameCount": 6,
+      "frames": [
+        {
+          "x": 0,
+          "y": 0,
+          "width": 128,
+          "height": 128,
+          "pivot": {
+            "x": 64.0,
+            "y": 64.0
+          }
+        },
+        {
+          "x": 128,
+          "y": 0,
+          "width": 128,
+          "height": 128,
+          "pivot": {
+            "x": 64.0,
+            "y": 64.0
+          }
+        },
+        {
+          "x": 256,
+          "y": 0,
+          "width": 128,
+          "height": 128,
+          "pivot": {
+            "x": 64.0,
+            "y": 64.0
+          }
+        },
+        {
+          "x": 384,
+          "y": 0,
+          "width": 128,
+          "height": 128,
+          "pivot": {
+            "x": 64.0,
+            "y": 64.0
+          }
+        },
+        {
+          "x": 512,
+          "y": 0,
+          "width": 128,
+          "height": 128,
+          "pivot": {
+            "x": 64.0,
+            "y": 64.0
+          }
+        },
+        {
+          "x": 640,
+          "y": 0,
+          "width": 128,
+          "height": 128,
+          "pivot": {
+            "x": 64.0,
+            "y": 64.0
+          }
+        }
+      ],
+      "impactFrame": 3,
+      "sheetSize": {
+        "width": 1536,
+        "height": 1024
+      },
+      "grid": {
+        "columns": 3,
+        "rows": 2
+      }
+    },
+    {
+      "id": "death",
+      "file": "death.png",
+      "label": "Death - side fall",
+      "loop": false,
+      "scale": 1,
+      "durations": [
+        150,
+        170,
+        190,
+        210,
+        240,
+        400
+      ],
+      "description": "Knees buckle, followed by a side collapse and settled corpse.",
+      "frameCount": 6,
+      "frames": [
+        {
+          "x": 0,
+          "y": 0,
+          "width": 128,
+          "height": 128,
+          "pivot": {
+            "x": 64.0,
+            "y": 64.0
+          }
+        },
+        {
+          "x": 128,
+          "y": 0,
+          "width": 128,
+          "height": 128,
+          "pivot": {
+            "x": 64.0,
+            "y": 64.0
+          }
+        },
+        {
+          "x": 256,
+          "y": 0,
+          "width": 128,
+          "height": 128,
+          "pivot": {
+            "x": 64.0,
+            "y": 64.0
+          }
+        },
+        {
+          "x": 384,
+          "y": 0,
+          "width": 128,
+          "height": 128,
+          "pivot": {
+            "x": 64.0,
+            "y": 64.0
+          }
+        },
+        {
+          "x": 512,
+          "y": 0,
+          "width": 128,
+          "height": 128,
+          "pivot": {
+            "x": 64.0,
+            "y": 64.0
+          }
+        },
+        {
+          "x": 640,
+          "y": 0,
+          "width": 128,
+          "height": 128,
+          "pivot": {
+            "x": 64.0,
+            "y": 64.0
+          }
+        }
+      ]
+    }
+  ],
+  "source": "Art/Cultures/Russians/Units/EarlyMedieval/MailSpearman/animations.json",
+  "metadataHash": "7e03d099374985af867f4e793aca77e4903549c2c7052cedc98323e639ee39bd",
+  "hashes": {
+    "Art/Cultures/Russians/Units/EarlyMedieval/MailSpearman/Idle-Animated-v1.png": "ee918aee9331bb73a8e9156bb7a592adddf24eea8115365fe0dbd6f0aa8b7b53",
+    "Art/Cultures/Russians/Units/EarlyMedieval/MailSpearman/Walk-v1.png": "f27d6edfb6f972b47fe3de3d4075c34ed3c478715f3d2ae53632ca030cab16cc",
+    "Art/Cultures/Russians/Units/EarlyMedieval/MailSpearman/Attack-Forward-Pose-v8.png": "1d8001ecc490d70fe4e88b1d3b2b9a6363a727a6b9c5aebfd596ed76b33c9ba4",
+    "Art/Cultures/Russians/Units/EarlyMedieval/MailSpearman/Death-Side-v1.png": "438edd0fe83d88e5f33f9864c5266c01aa6d07dea17e455eab6bd943797c3dea"
+  }
+}

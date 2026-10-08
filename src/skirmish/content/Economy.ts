@@ -2,7 +2,7 @@ import { AGES, type Age } from "../domain/Definitions";
 
 // Shared opening and growth rules used by simulation and presentation.
 export const STARTING_AGE_TROOPS = 6_000;
-export const LAND_TRADE_CAPACITIES = [20, 30, 40, 50, 60, 80, 120] as const;
+export const LAND_TRADE_CAPACITIES = [20, 30, 40, 50, 60, 80, 120, 160] as const;
 export const tradeStockPerSecond = (age: Age) => 2 * (AGES.indexOf(age) + 1);
 export const extractionYieldMultiplier = (age: Age) => 1 + Math.floor(AGES.indexOf(age) / 2);
 export const TRADE_RULES = {
@@ -52,8 +52,8 @@ export const WATER_TRADE_PRICING = {
   longRatePercent: 150,
 } as const;
 export const RESERVE_GROWTH = {
-  base: [12, 18, 26, 36, 48, 64, 80],
-  city: [8, 12, 18, 26, 36, 50, 70],
+  base: [12, 18, 26, 36, 48, 64, 80, 96],
+  city: [8, 12, 18, 26, 36, 50, 70, 90],
 } as const;
 export const baseReserveIncome = (age: Age) =>
   RESERVE_GROWTH.base[AGES.indexOf(age)];

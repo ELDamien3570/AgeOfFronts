@@ -1,0 +1,12 @@
+{
+  "id": "death",
+  "file": "Death-Together-v1.png",
+  "reference": "C:/Users/Damien/Documents/GitHub/AgeOfFronts/AgeOfFronts/Art/Cultures/Russians/Units/BronzeAge/LightCavalry/SourceArt/Native-Death-Together-v1.png",
+  "prompt": "Edit reference1 SIX-FRAME cavalry atlas into Russian CLASSICAL AGE iron light cavalry, matching approved single iron rider in reference2. Maintain ALL six exact sequential poses, frame ordering, horse gait, handgrip, spear direction, recoil/fall orientation, body sizes, fixed saddle roots and exact 1536x1024 canvas with3columns2rows512px cells. Do not invent new motions or change anatomy. Replace EVERY bronze metal piece with cool hammered charcoal/silver gray IRON matching reference2: helmet, riveted browband, both pauldrons, bracers, belt buckle, horse bridle/tack fittings, spear leafhead/socket and buttcap. No gold/copper/bronze remains. Same leather reddish-brown top, cream fur collar, pale trousers, boots and unarmored chestnut horse blackmane/tail. Long rigid wooden spear screen-left, rein hand screen-right, no shield. Keep OVERARM spear grip and forward/downward spearhead direction exactly from the atlas. Vertical overhead orthographic nose-down/tail-up, same painted gameart clarity. All complete poses stay in their own cells with transparent gutters and generous padding; no clipping or neighbor overlaps. True RGBAalpha0 background outside crisp antialiased silhouette, no haze/glow/shadow/ground/drawn motion marks/text/grid. Reference1 is edit target; reference2 supplies iron materials ONLY, not pose/layout. Output ONLY the edited six-frame atlas.\nCLIP: death. Preserve all six source poses and sequence.",
+  "references": [
+    "C:/Users/Damien/Documents/GitHub/AgeOfFronts/AgeOfFronts/Art/Cultures/Russians/Units/BronzeAge/LightCavalry/SourceArt/Native-Death-Together-v1.png",
+    "C:/Users/Damien/Documents/GitHub/AgeOfFronts/AgeOfFronts/Art/Cultures/Russians/Units/ClassicalAge/LightCavalry/Idle-v1.png"
+  ],
+  "generatedSource": "C:\\Users\\Damien\\.codex\\generated_images\\01a11641-9e1b-7c81-be76-c9edd53ef182\\exec-a5a53b80-fdba-42da-9720-b54404d9ff50.png",
+  "status": "pending-inspection"
+}

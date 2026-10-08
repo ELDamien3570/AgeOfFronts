@@ -1,0 +1,364 @@
+{
+  "schemaVersion": 1,
+  "cultureId": "russians",
+  "age": "Modern",
+  "unit": "Tsar Tank",
+  "category": "Armored Vehicle",
+  "actorCount": 1,
+  "stage": "single-vehicle-animation-review",
+  "integrationStatus": "Four local animation clips pending visual review; runtime integration is separate.",
+  "camera": "vertical-overhead-orthographic",
+  "facing": "screen-down",
+  "sheetSize": {
+    "width": 1536,
+    "height": 1024
+  },
+  "grid": {
+    "columns": 3,
+    "rows": 2
+  },
+  "reviewFootprint": 400,
+  "registration": "Constant scale, fixed root pivot; living clips translated to a shared turret-star anchor. No per-frame scaling.",
+  "historicalEra": "WWI-inspired imagined Soviet faction variant",
+  "historicalDirection": "User selected the Imperial Russian Tsar Tank giant tricycle as the design basis. Soviet paint and markings are a fictional faction adaptation.",
+  "designReference": "https://www.nevingtonwarmuseum.com/tsar-lebedenko-tank.html",
+  "weapon": "Short cannon barrels in side sponsons",
+  "animations": [
+    {
+      "id": "idle",
+      "file": "Idle-v1.png",
+      "sha256": "0024317c0cb77943296e8194b8b26904d9b9e8248521187c45b4e3a71f20c241",
+      "label": "Idle - single frame",
+      "loop": true,
+      "scale": 1.0,
+      "durations": [
+        1000
+      ],
+      "description": "Tsar Tank-inspired tricycle: two giant upright steel wheels, a broad riveted hull, and a small rear steering roller on a long tail boom.",
+      "frameCount": 1,
+      "sourceFrameOrder": [
+        0
+      ],
+      "frames": [
+        {
+          "index": 0,
+          "sourceIndex": 0,
+          "x": 0,
+          "y": 0,
+          "width": 1254,
+          "height": 1254,
+          "pivot": {
+            "x": 627.0,
+            "y": 627.0
+          }
+        }
+      ],
+      "sheetSize": {
+        "width": 1254,
+        "height": 1254
+      }
+    },
+    {
+      "id": "moving",
+      "file": "moving-Registered-v1.png",
+      "sha256": "d56e28ccba84870fa7e087bb8ed55cd7fdd43ad651f6edb164e813a2fbd687d7",
+      "label": "Moving",
+      "loop": true,
+      "scale": 1.5375375375375375,
+      "durations": [
+        200,
+        200,
+        200,
+        200,
+        200,
+        200
+      ],
+      "frameCount": 6,
+      "sourceFrameOrder": [
+        0,
+        1,
+        2,
+        3,
+        4,
+        5
+      ],
+      "description": "Slow heavy driving IN PLACE, six consecutive seamless-loop frames. Steel rim/tread surface patterns cycle along the two huge upright wheels, small rear roller rolls. Tiny mechanical suspension vibration and axle settling only. Central hull star and geometry fixed, no lateral wandering, no whole-vehicle translation. Wheel lengths, wheel spacing, rear boom and guns remain exactly identical. No flashes or smoke.",
+      "frames": [
+        {
+          "index": 0,
+          "sourceIndex": 0,
+          "x": 0,
+          "y": 0,
+          "width": 512,
+          "height": 512,
+          "pivot": {
+            "x": 256,
+            "y": 256
+          }
+        },
+        {
+          "index": 1,
+          "sourceIndex": 1,
+          "x": 512,
+          "y": 0,
+          "width": 512,
+          "height": 512,
+          "pivot": {
+            "x": 256,
+            "y": 256
+          }
+        },
+        {
+          "index": 2,
+          "sourceIndex": 2,
+          "x": 1024,
+          "y": 0,
+          "width": 512,
+          "height": 512,
+          "pivot": {
+            "x": 256,
+            "y": 256
+          }
+        },
+        {
+          "index": 3,
+          "sourceIndex": 3,
+          "x": 0,
+          "y": 512,
+          "width": 512,
+          "height": 512,
+          "pivot": {
+            "x": 256,
+            "y": 256
+          }
+        },
+        {
+          "index": 4,
+          "sourceIndex": 4,
+          "x": 512,
+          "y": 512,
+          "width": 512,
+          "height": 512,
+          "pivot": {
+            "x": 256,
+            "y": 256
+          }
+        },
+        {
+          "index": 5,
+          "sourceIndex": 5,
+          "x": 1024,
+          "y": 512,
+          "width": 512,
+          "height": 512,
+          "pivot": {
+            "x": 256,
+            "y": 256
+          }
+        }
+      ]
+    },
+    {
+      "id": "attack",
+      "file": "attack-Registered-v1.png",
+      "sha256": "b92acd890fdc715e99da879daafcfa5fa1fb261541c4d07b2ed2eb7ee0218a47",
+      "label": "Twin cannon volley",
+      "loop": false,
+      "scale": 1.5375375375375375,
+      "durations": [
+        160,
+        120,
+        180,
+        120,
+        180,
+        300
+      ],
+      "frameCount": 6,
+      "sourceFrameOrder": [
+        0,
+        1,
+        2,
+        3,
+        4,
+        5
+      ],
+      "description": "Stationary twin-cannon firing sequence, six consecutive frames: 1 ready; 2 left short cannon recoils with compact bright orange flash at LEFT BARREL TIP toward bottom; 3 left recovers with a little dissipating muzzle smoke; 4 right short cannon recoils with orange flash at RIGHT BARREL TIP toward bottom; 5 right recovers with little smoke; 6 both cannons at rest. Sequential left/right volley. Recoil only the barrels, not whole tank. No long barrel extension, no extra guns. Fully fixed wheel/hull/boom geometry.",
+      "frames": [
+        {
+          "index": 0,
+          "sourceIndex": 0,
+          "x": 0,
+          "y": 0,
+          "width": 512,
+          "height": 512,
+          "pivot": {
+            "x": 256,
+            "y": 256
+          }
+        },
+        {
+          "index": 1,
+          "sourceIndex": 1,
+          "x": 512,
+          "y": 0,
+          "width": 512,
+          "height": 512,
+          "pivot": {
+            "x": 256,
+            "y": 256
+          }
+        },
+        {
+          "index": 2,
+          "sourceIndex": 2,
+          "x": 1024,
+          "y": 0,
+          "width": 512,
+          "height": 512,
+          "pivot": {
+            "x": 256,
+            "y": 256
+          }
+        },
+        {
+          "index": 3,
+          "sourceIndex": 3,
+          "x": 0,
+          "y": 512,
+          "width": 512,
+          "height": 512,
+          "pivot": {
+            "x": 256,
+            "y": 256
+          }
+        },
+        {
+          "index": 4,
+          "sourceIndex": 4,
+          "x": 512,
+          "y": 512,
+          "width": 512,
+          "height": 512,
+          "pivot": {
+            "x": 256,
+            "y": 256
+          }
+        },
+        {
+          "index": 5,
+          "sourceIndex": 5,
+          "x": 1024,
+          "y": 512,
+          "width": 512,
+          "height": 512,
+          "pivot": {
+            "x": 256,
+            "y": 256
+          }
+        }
+      ]
+    },
+    {
+      "id": "death",
+      "file": "death-Registered-v2.png",
+      "sha256": "3dfdf09229009a1627dbf7ab6294a59f50332249849ceca188a64cbf20acaa92",
+      "label": "Explosion / death",
+      "loop": false,
+      "scale": 1.5375375375375375,
+      "durations": [
+        160,
+        200,
+        230,
+        280,
+        400,
+        1100
+      ],
+      "frameCount": 6,
+      "sourceFrameOrder": [
+        0,
+        1,
+        2,
+        3,
+        4,
+        5
+      ],
+      "description": "Blast tears the center free of both giant wheels. Detached hull crashes down as the wheels topple flat, exposing their spokes; scattered wreck settles.",
+      "frames": [
+        {
+          "index": 0,
+          "sourceIndex": 0,
+          "x": 0,
+          "y": 0,
+          "width": 512,
+          "height": 512,
+          "pivot": {
+            "x": 256,
+            "y": 256
+          }
+        },
+        {
+          "index": 1,
+          "sourceIndex": 1,
+          "x": 512,
+          "y": 0,
+          "width": 512,
+          "height": 512,
+          "pivot": {
+            "x": 256,
+            "y": 256
+          }
+        },
+        {
+          "index": 2,
+          "sourceIndex": 2,
+          "x": 1024,
+          "y": 0,
+          "width": 512,
+          "height": 512,
+          "pivot": {
+            "x": 256,
+            "y": 256
+          }
+        },
+        {
+          "index": 3,
+          "sourceIndex": 3,
+          "x": 0,
+          "y": 512,
+          "width": 512,
+          "height": 512,
+          "pivot": {
+            "x": 256,
+            "y": 256
+          }
+        },
+        {
+          "index": 4,
+          "sourceIndex": 4,
+          "x": 512,
+          "y": 512,
+          "width": 512,
+          "height": 512,
+          "pivot": {
+            "x": 256,
+            "y": 256
+          }
+        },
+        {
+          "index": 5,
+          "sourceIndex": 5,
+          "x": 1024,
+          "y": 512,
+          "width": 512,
+          "height": 512,
+          "pivot": {
+            "x": 256,
+            "y": 256
+          }
+        }
+      ]
+    }
+  ],
+  "artRevision": "animations-v1",
+  "motionContract": "In-place art. Runtime owns vehicle translation, facing, formation placement and combat effects."
+}

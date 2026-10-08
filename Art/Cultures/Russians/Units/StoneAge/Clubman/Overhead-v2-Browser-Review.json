@@ -1,0 +1,119 @@
+{
+  "revision": "overhead-v2",
+  "actorUrl": "http://127.0.0.1:9007/Cultures/Russians/Units/StoneAge/Clubman/Actor_Review.html",
+  "formationUrl": "http://127.0.0.1:9007/Cultures/Russians/Units/StoneAge/Clubman/Formation/Formation_Review.html",
+  "checks": [
+    {
+      "clip": "idle",
+      "frame": 2,
+      "visible": 54244,
+      "loop": true,
+      "completed": false
+    },
+    {
+      "clip": "running",
+      "frame": 2,
+      "visible": 53291,
+      "loop": true,
+      "completed": false
+    },
+    {
+      "clip": "attack",
+      "frame": 5,
+      "visible": 58144,
+      "loop": false,
+      "completed": true
+    },
+    {
+      "clip": "hit",
+      "frame": 5,
+      "visible": 55886,
+      "loop": false,
+      "completed": true
+    },
+    {
+      "clip": "charged",
+      "frame": 5,
+      "visible": 61247,
+      "loop": false,
+      "completed": true
+    },
+    {
+      "clip": "charge",
+      "frame": 4,
+      "visible": 62824,
+      "loop": true,
+      "completed": false
+    },
+    {
+      "clip": "death",
+      "frame": 5,
+      "visible": 55431,
+      "loop": false,
+      "completed": true
+    },
+    {
+      "clip": "charge-attack",
+      "frame": 5,
+      "visible": 59018,
+      "loop": false,
+      "completed": true
+    },
+    {
+      "clip": "death-back",
+      "frame": 5,
+      "visible": 84518,
+      "loop": false,
+      "completed": true
+    }
+  ],
+  "formation": [
+    {
+      "label": "Full charge sequence\nFOUR PHASES",
+      "title": "Full charge sequence · Charge in"
+    },
+    {
+      "label": "Idle\nLOOP",
+      "title": "Idle · Loop"
+    },
+    {
+      "label": "Movement\nLOOP",
+      "title": "Movement · Loop"
+    },
+    {
+      "label": "Attack\nPLAYS ONCE",
+      "title": "Attack · Plays once"
+    },
+    {
+      "label": "Get hit\nPLAYS ONCE",
+      "title": "Get hit · Plays once"
+    },
+    {
+      "label": "Get charged\nPLAYS ONCE",
+      "title": "Get charged · Plays once"
+    },
+    {
+      "label": "Charge in\nPLAYS ONCE",
+      "title": "Charge in · Plays once"
+    },
+    {
+      "label": "Maintain charge\nLOOP",
+      "title": "Maintain charge · Loop"
+    },
+    {
+      "label": "Charge attack\nPLAYS ONCE",
+      "title": "Charge attack · Plays once"
+    },
+    {
+      "label": "Transition out\nPLAYS ONCE",
+      "title": "Transition out · Plays once"
+    },
+    {
+      "label": "Death\nPLAYS ONCE",
+      "title": "Death · Plays once"
+    }
+  ],
+  "formationStatus": "All ten formation clips loaded · five members · source actor preserved · gameplay integration pending.",
+  "errors": [],
+  "scope": "Local browser art playback only; no match-runtime or artistic acceptance claim."
+}

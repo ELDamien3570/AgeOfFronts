@@ -1,0 +1,22 @@
+{
+  "records": [
+    {
+      "id": "attack",
+      "file": "Attack-String-v5.png",
+      "nativeFile": "Native-Attack-String-v5.png",
+      "prompt": "Use case: precise-object-edit. Edit ONLY BOWSTRING in attached 1536x1024RGBA six-frame 3x2 overhead iron recurve archer shooting atlas. Current defect: bowstring remains straight across bow tips during draw, disconnected from drawn arrow nock. Correct real archery mechanics: frame1 ready partially pulled string meets arrow's rear nock at drawing fingers. Frame2 drawing and frame3 FULL DRAW: remove existing straight horizontal string connecting tips. Replace with ONE continuous taut string of TWO STRAIGHT SEGMENTS, from LEFT bowtip to ARROW NOCK at drawing fingers near cheek, then from that SAME NOCK to RIGHT bowtip. This makes an inverted V whose apex is screen-TOP at arrow's REAR end. String apex touches rear of arrow and drawing fingers, NOT grip or arrowhead. No residual horizontal string across bow at full draw, no duplicate strings, no third segment. Arrow nock screen-top, arrowhead screen-bottom. String apex moves backward WITH the drawn arrow from1to2to3. Frame4 RELEASE: string springs forward to shallow V near bow's rest position, noarrow; frame5and6 string settled straight between tips, noarrow. Bow limb shape and endpoints unchanged. Keep arrow completely straight vertical down, head/shaft/nockcollinear. Preserve all body/armor/arms/hands, bow, quiver, feet, root, scale, colors, cells, margins, entire original pose progression. String thin pale tan and clearly visible against dark armor, anatomically occluded by fingers where held, no string passing through solid forearm. Actualtransparentbackground alpha0, no shadow haze grid text. This is ONLY a string geometry correction, not a new archer or new poses.",
+      "reference": "C:/Users/Damien/Documents/GitHub/AgeOfFronts/AgeOfFronts/Art/Cultures/Russians/Units/ClassicalAge/RecurveArcher/SourceArt/Native-Attack-Forward-v4.png",
+      "generatedSource": "C:/Users/Damien/.codex/generated_images/01a1166c-83ee-7ae0-be97-78c470de8962/exec-20dea2a3-9b8d-4c86-a7ab-5c54c7c2b188.png",
+      "status": "selected-source"
+    },
+    {
+      "id": "charge-attack",
+      "file": "ChargeAttack-String-v4.png",
+      "nativeFile": "Native-ChargeAttack-String-v4.png",
+      "prompt": "Use case: precise-object-edit. Edit ONLY BOWSTRING in attached 1536x1024RGBA six-frame 3x2 overhead iron recurve archer shooting atlas. Current defect: bowstring remains straight across bow tips during draw, disconnected from drawn arrow nock. Correct real archery mechanics: frame1 ready partially pulled string meets arrow's rear nock at drawing fingers. Frame2 drawing and frame3 FULL DRAW: remove existing straight horizontal string connecting tips. Replace with ONE continuous taut string of TWO STRAIGHT SEGMENTS, from LEFT bowtip to ARROW NOCK at drawing fingers near cheek, then from that SAME NOCK to RIGHT bowtip. This makes an inverted V whose apex is screen-TOP at arrow's REAR end. String apex touches rear of arrow and drawing fingers, NOT grip or arrowhead. No residual horizontal string across bow at full draw, no duplicate strings, no third segment. Arrow nock screen-top, arrowhead screen-bottom. String apex moves backward WITH the drawn arrow from1to2to3. Frame4 RELEASE: string springs forward to shallow V near bow's rest position, noarrow; frame5and6 string settled straight between tips, noarrow. Bow limb shape and endpoints unchanged. Keep arrow completely straight vertical down, head/shaft/nockcollinear. Preserve all body/armor/arms/hands, bow, quiver, feet, root, scale, colors, cells, margins, entire original pose progression. String thin pale tan and clearly visible against dark armor, anatomically occluded by fingers where held, no string passing through solid forearm. Actualtransparentbackground alpha0, no shadow haze grid text. This is ONLY a string geometry correction, not a new archer or new poses.",
+      "reference": "C:/Users/Damien/Documents/GitHub/AgeOfFronts/AgeOfFronts/Art/Cultures/Russians/Units/ClassicalAge/RecurveArcher/SourceArt/Native-ChargeAttack-Forward-v3.png",
+      "generatedSource": "C:/Users/Damien/.codex/generated_images/01a1166c-83ee-7ae0-be97-78c470de8962/exec-deb22cf0-dc9f-4f9d-ad6d-29f32093824e.png",
+      "status": "selected-source"
+    }
+  ]
+}

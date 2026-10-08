@@ -1,0 +1,23 @@
+{
+  "tool": "built-in ImageGen",
+  "stage": "single-idle-design-review",
+  "artisticApproval": "pending",
+  "reference": "../../ClassicalAge/Pikeman/Idle-v1.png",
+  "assets": [
+    {
+      "file": "Idle-v1.png",
+      "nativeFile": "SourceArt/Native-Idle-v1.png",
+      "generatedSource": "C:/Users/Damien/.codex/generated_images/01a0fea1-c63f-7343-92ca-6c21cc1c4296/exec-7da4cb1b-8890-4423-a7e0-9625d721ac4e.png",
+      "prompt": "Use case stylized-concept. Create FIRST SINGLE IDLE frame for Russian Early Medieval MAIL SPEARMAN in established overhead RTS unit art. Image1 is style/camera/body scale and held shield+spear reference, NOT target to keep armor. Upgrade into mail spearman: dominant chainmail hauberk of readable interlocking dark silver iron rings over burgundy padded tunic, mail shoulder mantle and short mail sleeves, mail skirt drapes over upper thighs. Replace classical lamellar and scale armor with MAIL, not plates/scales; simple iron/leather bracers, brown leather gloves/boots, belt, burgundy padded fabric visible at elbows and hem. Early Medieval conical iron helmet with narrow nasal guard and mail aventail, subtly weathered silver iron, restrained brass rivets. No gold luxury plate shoulders, no classical lamellar. LEFT arm SCREEN RIGHT holds round wooden shield with iron rim/boss, shield is HELD in hand not on back, visible broad shield surface readable overhead. RIGHT hand SCREEN LEFT grips ONE straight wooden spear behind midpoint; leaf-shaped steel spearhead points SCREEN DOWN, capped wooden rear butt points screen-up. Spear length about1.5times soldier body length, shorter than reference pike, uniform shaft thickness and honest fixed geometry; continuous shaft through fist no bent shaft or second spear. Idle planted balanced stance, shield near body, spear alongside right arm. STRICT90degree directly vertical overhead orthographic view from above helmet crown, top of shoulders, compressed torso, no face-on portrait/isometric camera. Same painterly textured materials/proportions and burgundy family as reference, crisp readable48/64/128px silhouette, soft restrained edges no thick black cartoon outline. Single soldier complete head, feet, shield and spear on TRUE transparent RGBA background, square canvas, ample>=70px transparent margins around every weapon end. No ground, cast shadow, text, otherfigures or panels. ONE frame only for approval."
+    },
+    {
+      "file": "Idle-Overhead-v2.png",
+      "nativeFile": "SourceArt/Native-Idle-Overhead-v2.png",
+      "generatedSource": "C:/Users/Damien/.codex/generated_images/01a0fea1-c63f-7343-92ca-6c21cc1c4296/exec-23d9704e-0006-4528-b265-40e812716c1c.png",
+      "prompt": "Precise-object-edit. Image1 Russian Early Medieval mail spearman idle. Change CAMERA ONLY to STRICT DIRECTLY OVERHEAD90degree orthographic bird's eye: looking straight vertically onto crown of conical iron helmet and TOP surfaces of chainmail shoulders. Much MORE TOP DOWN than reference: helmet crown appears broad and circular centered over torso, cone apex near center rather than long teardrop pointing screen-top; nasal guard mostly occluded by helmet brim, no visible face/front helmet. Torso/waist heavily foreshortened under head/shoulders, show minimal front chest/mail skirt; boots peep just beyond body, avoid standing full-length portrait. Shield remains held LEFT hand SCREEN RIGHT, round wood with ironboss/rim, viewed overhead with appropriate foreshortening. RIGHT hand SCREEN LEFT still wraps straight wood spear shaft, steel leaf-shaped tip SCREEN DOWN, capped woodbutt SCREEN UP. Keep mail armor interlocking rings, burgundy padding, leather bracers/gloves/boots/belt, same painterly palette/detail, same idle balanced planted stance and single unit. Spear lies along screen direction not camera pointing pole; fixed rigid length and shape. Preserve transparent background, full soldier/shield/spear with empty guard, square canvas. No front view, isometric camera, tilt, floor, cast shadows, thick black outline or text. ONE idle frame.",
+      "supersedes": "Idle-v1.png"
+    }
+  ],
+  "animationStatus": "No animation authored; awaiting idle review",
+  "selectedIdle": "Idle-Overhead-v2.png"
+}

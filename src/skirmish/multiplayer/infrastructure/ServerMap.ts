@@ -1,5 +1,6 @@
 import { readFile } from "node:fs/promises";
 import { join } from "node:path";
+import { generateProceduralMap } from "../../ProceduralMaps";
 import { HEIGHTMAP_MAPS } from "../../content/Maps";
 import { EnvironmentProfile } from "../../Environment";
 import { generateForestCover } from "../../ForestGeneration";
@@ -11,7 +12,23 @@ import type { RuntimeMap } from "../application/MatchExecutor";
 export async function loadServerMap(
   settings: LobbySettings,
   resources = join(process.cwd(), "resources"),
+  seed = 0,
 ): Promise<{ map: RuntimeMap; territoryIncomeScale: number }> {
+  const procedural = generateProceduralMap(settings.mapId, settings.worldSize, seed);
+  if (procedural) {
+    const loaded = procedural;
+    return {
+      map: {
+        width: loaded.map.width(),
+        height: loaded.map.height(),
+        terrain: loaded.terrain,
+        elevation: loaded.elevation,
+        forest: loaded.forest,
+        resourceTerrain: loaded.resourceTerrain,
+      },
+      territoryIncomeScale: loaded.territoryIncomeScale,
+    };
+  }
   const definition = HEIGHTMAP_MAPS.find((map) => map.id === settings.mapId);
   if (!definition) throw new Error("Unsupported multiplayer map");
   const root = join(resources, "maps", definition.assetRoot);

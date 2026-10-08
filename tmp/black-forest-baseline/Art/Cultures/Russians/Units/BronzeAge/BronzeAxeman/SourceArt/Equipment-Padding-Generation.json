@@ -1,0 +1,18 @@
+{
+  "date": "2026-10-03",
+  "mode": "built-in-imagegen",
+  "records": [
+    {
+      "id": "equipment-death-padding-v3",
+      "clip": "death",
+      "file": "Death-RoughBronze-v3.png",
+      "prompt": "Use case: precise-object-edit\nCorrect ONLY sprite-cell padding in this existing six-pose death sheet. Preserve exactly the bronze cap crown, red tunic, cream fur, mildly worn equipment, painterly details, six death poses and strict overhead camera.\nThe two settled corpse silhouettes in BOTTOM-MIDDLE and BOTTOM-RIGHT cells have their wooden shield too close to the RIGHT cell edge. Translate the ENTIRE complete corpse + axe + shield together LEFT by16pixels inside EACH of these two512px cells. Keep same actor size and all relative body/equipment positions. Leave the other FOUR frames completely unchanged. Do not crop, truncate or remove any part of shield, boot, axe or hand. No scale/zoom changes or revised animation.\nOutput exact1536x1024 RGBA, same3columns x2rows of512px cells, true transparent background. Final two whole silhouettes need at least20px clear transparent space at their right cell boundary. Preserve original alpha/clean cutout; no haze, glow, shadows, grid, text or blood.",
+      "references": [
+        "Death-RoughBronze-v2.png"
+      ],
+      "generatedSource": "C:\\Users\\Damien\\.codex\\generated_images\\01a0fea1-c63f-7343-92ca-6c21cc1c4296\\exec-e7610bd9-4db8-4d03-9279-c174f4999577.png",
+      "status": "rejected",
+      "reason": "Padding edit pushed bottom-right boot into left cell guard; geometry-preserving v2 source baked instead."
+    }
+  ]
+}

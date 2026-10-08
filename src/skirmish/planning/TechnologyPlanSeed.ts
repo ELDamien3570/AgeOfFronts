@@ -1,13 +1,16 @@
 import technologies from "../content/technologies.json";
 import { UNITS } from "../content/Units";
-import { AGES } from "../domain/Definitions";
+
 import {
   ROLE_NAMES,
   UNIT_ROLES,
   type CivilizationPlan,
   type TechnologyPlan,
 } from "./TechnologyPlan";
+import { legacyPlanAges } from "./TechnologyPlanMigration";
+import { applyRussianTroopAvailability } from "./TroopTreePlan";
 
+const AGES = legacyPlanAges().map((a) => a.id);
 const russianNames = [
   [
     "Clubmen",
@@ -20,58 +23,58 @@ const russianNames = [
   [
     "Bronze Axemen",
     "Bronze Spearmen",
-    "Bowmen",
+    "Archers",
     "Spear Riders",
     "Heavy cavalry",
     "Mounted Archers",
   ],
   [
-    "Shield Warriors",
-    "Long Spearmen",
-    "Archers",
+    "Varangians",
+    "Heavy Spearmen",
+    "Recurve Bowmen",
     "Light Horsemen",
     "Armoured Horsemen",
     "Horse Archers",
   ],
   [
-    "Rus Axemen",
-    "Rus Spearmen",
+    "Rus Woodsman",
+    "Mail Spearman",
     "Rus Bowmen",
-    "Border Riders",
-    "Druzhina Cavalry",
-    "Mounted Bowmen",
+    "Rus Lancer",
+    "Druzhina",
+    "Early Cossack Archer",
   ],
   [
     "Boyar Guards",
-    "Pikemen",
-    "Crossbowmen",
+    "Plate Spearman",
+    "Rus Crossbowman",
     "Cossack Riders",
     "Boyar Cavalry",
-    "Mounted Archers",
+    "Heavy Cossack Archer",
   ],
   [
     "Grenadiers",
-    "Pike Guards",
-    "Streltsy",
+    "Pikeman",
+    "Rus Musketeer",
     "Cossack Lancers",
     "Cuirassiers",
-    "Mounted Musketeers",
+    "Streltsy",
   ],
   [
-    "Assault Infantry",
-    "Tank Hunters",
-    "Machine Gunners",
+    "Mosin Nagant Squad",
+    "PTRD-41 Crew",
+    "DP-28 Crew",
     "Gun Trucks",
-    "Armoured Personnel Carriers",
-    "Battle Tanks",
+    "Tsar Tank",
+    "T-34",
   ],
 ];
 
-/** Proposals are deliberately distinct from approved availability. Heavy cavalry
- * and anti-cavalry introduction ages have not yet been decided for Russians. */
+/** Proposed names remain separate from confirmed class starting ages. */
 export function createInitialPlan(): TechnologyPlan {
   const baseline: CivilizationPlan = {
     id: "base",
+    ages: legacyPlanAges(),
     name: "Base",
     notes:
       "Current shared gameplay baseline. The existing cavalry line is placed in the light/mobile lane for comparison; its Modern tank is not a confirmed light-cavalry design.",
@@ -85,6 +88,9 @@ export function createInitialPlan(): TechnologyPlan {
       description: t.description,
       notes: "",
       decision: "baseline",
+      kind: "unlock",
+      gold: t.gold,
+      researchSeconds: Math.round(t.ticks / 20),
     })),
     units: AGES.flatMap((age) =>
       UNIT_ROLES.map((role) => {
@@ -100,8 +106,14 @@ export function createInitialPlan(): TechnologyPlan {
           lane >= 0
             ? UNITS.find(
                 (u) =>
-                  u.age === age &&
-                  u.line === ["infantry", "archer", "cavalry"][lane],
+                  u.age ===
+                    (age === "EarlyModern"
+                      ? "Napoleonic"
+                      : age === "Modern"
+                        ? "EarlyModern"
+                        : age) &&
+                  u.line === ["infantry", "archer", "cavalry"][lane] &&
+                  u.troopClass === role,
               )
             : undefined;
         return {
@@ -111,7 +123,17 @@ export function createInitialPlan(): TechnologyPlan {
           name: existing?.name ?? ROLE_NAMES[role],
           availability:
             lane >= 0 ? ("available" as const) : ("undecided" as const),
-          prerequisites: existing ? [existing.technologyId] : [],
+          prerequisites:
+            lane >= 0
+              ? [
+                  technologies.find(
+                    (t) =>
+                      t.age === age &&
+                      t.tree === "warfare" &&
+                      t.slot === lane + 1,
+                  )!.id,
+                ]
+              : [],
           notes:
             lane < 0
               ? "New class; not present in the current gameplay baseline. Unlock age and technology are undecided."
@@ -125,9 +147,10 @@ export function createInitialPlan(): TechnologyPlan {
   };
   const russian: CivilizationPlan = {
     id: "russians",
+    ages: legacyPlanAges(),
     name: "Russians",
     notes:
-      "Draft Russian civilization. Shared technologies are inherited as a starting proposal. Names after Bronze Age are proposals. Heavy cavalry and anti-cavalry starting ages remain open.",
+      "Draft Russian civilization. Shared technologies are inherited as a starting proposal. Names after Bronze Age are proposals. Anti-cavalry begins in Bronze Age. Heavy cavalry begins in Early Medieval and peaks in Late Medieval.",
     technologies: baseline.technologies.map((t) => ({
       ...structuredClone(t),
       decision: "proposed",
@@ -159,7 +182,7 @@ export function createInitialPlan(): TechnologyPlan {
               : index === 1 && ["lightCavalry", "rangedCavalry"].includes(role)
                 ? "Confirmed Bronze Age mounted role. No chariots. Unlocking technology is undecided."
                 : index === 6 && lane >= 3
-                  ? "Confirmed modern role: gun truck / armoured personnel carrier / tank. Name and unlocking technology remain editable."
+                  ? "Confirmed Early Modern role: gun truck / WWI tank / WWII tank. Name and unlocking technology remain editable."
                   : "Proposed name. Unlocking technology is undecided.",
           decision:
             unavailable ||
@@ -177,9 +200,10 @@ export function createInitialPlan(): TechnologyPlan {
   if (bronzeMounted) {
     bronzeMounted.name = "Bronze Horsemanship";
     bronzeMounted.description =
-      "Russian Bronze Age mounted warfare: spear riders and mounted archers. Exact unlock links are undecided.";
+      "Russian Bronze Age mounted warfare: spear riders. Ranged cavalry is excluded in this age; exact unlock links are undecided.";
     bronzeMounted.notes =
       "Proposed replacement for the baseline chariot technology. The inherited ID is retained so existing prerequisite links remain stable.";
   }
-  return { schemaVersion: 1, civilizations: [baseline, russian] };
+  applyRussianTroopAvailability(russian);
+  return { schemaVersion: 2, civilizations: [baseline, russian] };
 }

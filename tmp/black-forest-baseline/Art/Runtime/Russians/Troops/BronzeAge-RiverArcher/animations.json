@@ -1,0 +1,363 @@
+{
+  "actorCount": 1,
+  "animations": [
+    {
+      "id": "idle",
+      "file": "idle.png",
+      "label": "Idle",
+      "loop": true,
+      "scale": 1,
+      "durations": [
+        170,
+        170,
+        170,
+        170,
+        170,
+        170
+      ],
+      "description": "Breathing and weight settle with a loose arrow ready and the bow held low.",
+      "frameCount": 6,
+      "frames": [
+        {
+          "x": 0,
+          "y": 0,
+          "width": 128,
+          "height": 128,
+          "pivot": {
+            "x": 62.2,
+            "y": 65.0
+          }
+        },
+        {
+          "x": 128,
+          "y": 0,
+          "width": 128,
+          "height": 128,
+          "pivot": {
+            "x": 62.2,
+            "y": 65.0
+          }
+        },
+        {
+          "x": 256,
+          "y": 0,
+          "width": 128,
+          "height": 128,
+          "pivot": {
+            "x": 62.2,
+            "y": 65.0
+          }
+        },
+        {
+          "x": 384,
+          "y": 0,
+          "width": 128,
+          "height": 128,
+          "pivot": {
+            "x": 62.2,
+            "y": 65.0
+          }
+        },
+        {
+          "x": 512,
+          "y": 0,
+          "width": 128,
+          "height": 128,
+          "pivot": {
+            "x": 62.2,
+            "y": 65.0
+          }
+        },
+        {
+          "x": 640,
+          "y": 0,
+          "width": 128,
+          "height": 128,
+          "pivot": {
+            "x": 62.2,
+            "y": 65.0
+          }
+        }
+      ],
+      "sourceFrameOrder": [
+        0,
+        1,
+        2,
+        3,
+        4,
+        5
+      ]
+    },
+    {
+      "id": "running",
+      "file": "running.png",
+      "label": "Walk",
+      "loop": true,
+      "scale": 1,
+      "durations": [
+        160,
+        160,
+        160,
+        160,
+        160,
+        160
+      ],
+      "description": "Alternating walking steps with the bow carried low.",
+      "frameCount": 6,
+      "frames": [
+        {
+          "x": 0,
+          "y": 0,
+          "width": 128,
+          "height": 128,
+          "pivot": {
+            "x": 62.2,
+            "y": 65.0
+          }
+        },
+        {
+          "x": 128,
+          "y": 0,
+          "width": 128,
+          "height": 128,
+          "pivot": {
+            "x": 62.2,
+            "y": 65.0
+          }
+        },
+        {
+          "x": 256,
+          "y": 0,
+          "width": 128,
+          "height": 128,
+          "pivot": {
+            "x": 62.2,
+            "y": 65.0
+          }
+        },
+        {
+          "x": 384,
+          "y": 0,
+          "width": 128,
+          "height": 128,
+          "pivot": {
+            "x": 62.2,
+            "y": 65.0
+          }
+        },
+        {
+          "x": 512,
+          "y": 0,
+          "width": 128,
+          "height": 128,
+          "pivot": {
+            "x": 62.2,
+            "y": 65.0
+          }
+        },
+        {
+          "x": 640,
+          "y": 0,
+          "width": 128,
+          "height": 128,
+          "pivot": {
+            "x": 62.2,
+            "y": 65.0
+          }
+        }
+      ],
+      "sourceFrameOrder": [
+        0,
+        1,
+        2,
+        3,
+        4,
+        5
+      ]
+    },
+    {
+      "id": "attack",
+      "file": "attack.png",
+      "label": "Bow shot",
+      "loop": false,
+      "scale": 1,
+      "durations": [
+        140,
+        180,
+        260,
+        100,
+        180,
+        250
+      ],
+      "description": "Turn side-on, extend the bow arm, open the chest and draw back to the anchor, release, follow through, then turn back to ready.",
+      "frameCount": 6,
+      "frames": [
+        {
+          "x": 0,
+          "y": 0,
+          "width": 128,
+          "height": 128,
+          "pivot": {
+            "x": 62.2,
+            "y": 65.0
+          }
+        },
+        {
+          "x": 128,
+          "y": 0,
+          "width": 128,
+          "height": 128,
+          "pivot": {
+            "x": 62.2,
+            "y": 65.0
+          }
+        },
+        {
+          "x": 256,
+          "y": 0,
+          "width": 128,
+          "height": 128,
+          "pivot": {
+            "x": 62.2,
+            "y": 65.0
+          }
+        },
+        {
+          "x": 384,
+          "y": 0,
+          "width": 128,
+          "height": 128,
+          "pivot": {
+            "x": 62.2,
+            "y": 65.0
+          }
+        },
+        {
+          "x": 512,
+          "y": 0,
+          "width": 128,
+          "height": 128,
+          "pivot": {
+            "x": 62.2,
+            "y": 65.0
+          }
+        },
+        {
+          "x": 640,
+          "y": 0,
+          "width": 128,
+          "height": 128,
+          "pivot": {
+            "x": 62.2,
+            "y": 65.0
+          }
+        }
+      ],
+      "sourceFrameOrder": [
+        0,
+        1,
+        2,
+        3,
+        4,
+        5
+      ],
+      "releaseFrame": 3,
+      "impactFrame": 3
+    },
+    {
+      "id": "death",
+      "file": "death.png",
+      "label": "Death - side fall",
+      "loop": false,
+      "scale": 1,
+      "durations": [
+        150,
+        170,
+        190,
+        210,
+        240,
+        400
+      ],
+      "description": "Knees buckle, body falls onto its side, and settles into a held final pose.",
+      "frameCount": 6,
+      "frames": [
+        {
+          "x": 0,
+          "y": 0,
+          "width": 128,
+          "height": 128,
+          "pivot": {
+            "x": 62.2,
+            "y": 65.0
+          }
+        },
+        {
+          "x": 128,
+          "y": 0,
+          "width": 128,
+          "height": 128,
+          "pivot": {
+            "x": 62.2,
+            "y": 65.0
+          }
+        },
+        {
+          "x": 256,
+          "y": 0,
+          "width": 128,
+          "height": 128,
+          "pivot": {
+            "x": 62.2,
+            "y": 65.0
+          }
+        },
+        {
+          "x": 384,
+          "y": 0,
+          "width": 128,
+          "height": 128,
+          "pivot": {
+            "x": 62.2,
+            "y": 65.0
+          }
+        },
+        {
+          "x": 512,
+          "y": 0,
+          "width": 128,
+          "height": 128,
+          "pivot": {
+            "x": 62.2,
+            "y": 65.0
+          }
+        },
+        {
+          "x": 640,
+          "y": 0,
+          "width": 128,
+          "height": 128,
+          "pivot": {
+            "x": 62.2,
+            "y": 65.0
+          }
+        }
+      ],
+      "sourceFrameOrder": [
+        0,
+        1,
+        2,
+        3,
+        4,
+        5
+      ]
+    }
+  ],
+  "source": "Art/Cultures/Russians/Units/BronzeAge/RiverArcher/animations.json",
+  "metadataHash": "e4f58abd433768270b669f3d7a4ddaae3811f53fd2e9a6185a9a2d51bbd25549",
+  "hashes": {
+    "Art/Cultures/Russians/Units/BronzeAge/RiverArcher/Idle-Animated-v1.png": "9d1ba15f6e61eeb1767b645c4e8d144ecab72450b9c7038a9eee543bf65010af",
+    "Art/Cultures/Russians/Units/BronzeAge/RiverArcher/Running-v1.png": "35b08085098bfde7fa6db15911557be27b341cf12ab8aa801e9751b535bf138b",
+    "Art/Cultures/Russians/Units/BronzeAge/RiverArcher/Attack-UprightBow-v6.png": "6526aad16b67959d811c480a008bb9d34ace6984394b4e0315bf46eb766e5955",
+    "Art/Cultures/Russians/Units/BronzeAge/RiverArcher/Death-v1.png": "780bdc2eeb411175b0710e779be4f648ef2ebfd875f1856914438c4ab6733c38"
+  }
+}

@@ -78,6 +78,8 @@ export interface ArtworkFrame {
   pivotY: number;
   // Includes transparent margins; bars and team discs use the visible size.
   extent: number;
+  groundBounds?: { x: number; y: number; width: number; height: number };
+  visibleBounds?: { x: number; y: number; width: number; height: number };
 }
 
 export class UnitArtwork {

@@ -1,0 +1,10 @@
+{
+  "date": "2026-10-07",
+  "mode": "built-in-imagegen",
+  "selectedIdle": "Idle-Overhead-v2.png",
+  "generatedSource": "C:/Users/Damien/.codex/generated_images/01a0fea1-c63f-7343-92ca-6c21cc1c4296/exec-047cbfe0-f476-4242-9e37-cf8792ae34f9.png",
+  "prompt": "EDIT only camera angle of this approved Boyar Guard idle design. User LOVES the look; preserve SAME heavy steel plate armor shapes, gold/brass trim and rivets, burgundy padding, mail joints, same closed pointed Rus-inspired helmet, same broad layered pauldrons, same gauntlets, and EXACT same massive flanged two-handed mace design, shaft proportions, steel/brass bands and wrapped grip. Keep two hands gripping shaft at separate locations, mace diagonal from lowerRIGHT wood butt to upperLEFT blunt steel flanged head. Do NOT change weapon into hammer/axe or add shield. Required correction: much MORE TOP DOWN, TRUE90degree vertical overhead orthographic camera looking straight down standing spine. Helmet CROWN and shoulder TOP surfaces dominate, helmet obscures nearly all chest front, no face or visor front visible. Chest strongly compressed in projection, torso short shallow oval, only tiny shoe tips beneath body. See TOP surfaces of forearms and gauntlets. Do not make soldier bow head; keep upright stance and move CAMERA to zenith. Soldier still faces SCREENBOTTOM. Preserve imposing broad heavy shock infantry silhouette and original rich smoothly painted game materials. Single isolated idle frame, full mace and soldier visible with generous transparent margins, genuinely transparent background, clean alpha, no colored fringe, no ground/scenery/text/shadow plane.",
+  "reference": "Idle-v1.png",
+  "revisionReason": "Preserve the liked armor and mace design; move camera more directly overhead.",
+  "userApproval": "Awaiting idle review"
+}

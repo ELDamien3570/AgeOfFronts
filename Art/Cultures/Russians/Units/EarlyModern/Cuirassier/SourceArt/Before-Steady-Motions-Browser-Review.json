@@ -1,0 +1,54 @@
+{
+  "date": "2026-10-07",
+  "httpChecks": [
+    {
+      "file": "Actor_Review.html",
+      "status": 200
+    },
+    {
+      "file": "animations.json",
+      "status": 200
+    },
+    {
+      "file": "idle-Registered-v1.png",
+      "status": 200
+    },
+    {
+      "file": "walk-Registered-v1.png",
+      "status": 200
+    },
+    {
+      "file": "charge-Registered-v1.png",
+      "status": 200
+    },
+    {
+      "file": "attack-Registered-v1.png",
+      "status": 200
+    },
+    {
+      "file": "charge-attack-Registered-v1.png",
+      "status": 200
+    },
+    {
+      "file": "hit-Registered-v1.png",
+      "status": 200
+    },
+    {
+      "file": "charged-impact-Registered-v1.png",
+      "status": 200
+    },
+    {
+      "file": "death-Registered-v1.png",
+      "status": 200
+    },
+    {
+      "file": "death-thrown-Registered-v1.png",
+      "status": 200
+    }
+  ],
+  "nativeAtlasesInspected": true,
+  "browserPlaybackVerified": false,
+  "limitation": "HTTP asset checks do not establish rendered browser playback.",
+  "userApproval": "Animations pending visual review",
+  "runtimeIntegration": false
+}

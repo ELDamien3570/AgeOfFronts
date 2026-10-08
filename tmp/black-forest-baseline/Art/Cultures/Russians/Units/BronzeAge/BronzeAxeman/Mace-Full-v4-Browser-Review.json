@@ -1,0 +1,673 @@
+{
+  "url": "http://127.0.0.1:9007/Cultures/Russians/Units/BronzeAge/BronzeAxeman/Actor_Review.html?revision=bronze-mace-full-v4#attack",
+  "status": "All 9 clips loaded · one soldier · reactions hold their final frame.",
+  "errors": [],
+  "frames": [
+    {
+      "clip": "idle",
+      "frame": 0,
+      "count": 71781,
+      "bounds": [
+        53,
+        127,
+        474,
+        459
+      ],
+      "edge": 0
+    },
+    {
+      "clip": "idle",
+      "frame": 1,
+      "count": 76880,
+      "bounds": [
+        48,
+        121,
+        481,
+        457
+      ],
+      "edge": 0
+    },
+    {
+      "clip": "idle",
+      "frame": 2,
+      "count": 77583,
+      "bounds": [
+        52,
+        117,
+        481,
+        456
+      ],
+      "edge": 0
+    },
+    {
+      "clip": "idle",
+      "frame": 3,
+      "count": 73332,
+      "bounds": [
+        53,
+        125,
+        476,
+        459
+      ],
+      "edge": 0
+    },
+    {
+      "clip": "idle",
+      "frame": 4,
+      "count": 75152,
+      "bounds": [
+        50,
+        124,
+        481,
+        457
+      ],
+      "edge": 0
+    },
+    {
+      "clip": "idle",
+      "frame": 5,
+      "count": 74290,
+      "bounds": [
+        49,
+        124,
+        476,
+        461
+      ],
+      "edge": 0
+    },
+    {
+      "clip": "running",
+      "frame": 0,
+      "count": 64335,
+      "bounds": [
+        61,
+        112,
+        458,
+        428
+      ],
+      "edge": 0
+    },
+    {
+      "clip": "running",
+      "frame": 1,
+      "count": 66847,
+      "bounds": [
+        64,
+        103,
+        468,
+        421
+      ],
+      "edge": 0
+    },
+    {
+      "clip": "running",
+      "frame": 2,
+      "count": 67459,
+      "bounds": [
+        66,
+        108,
+        464,
+        426
+      ],
+      "edge": 0
+    },
+    {
+      "clip": "running",
+      "frame": 3,
+      "count": 65181,
+      "bounds": [
+        64,
+        98,
+        466,
+        419
+      ],
+      "edge": 0
+    },
+    {
+      "clip": "running",
+      "frame": 4,
+      "count": 64993,
+      "bounds": [
+        62,
+        93,
+        468,
+        419
+      ],
+      "edge": 0
+    },
+    {
+      "clip": "running",
+      "frame": 5,
+      "count": 66167,
+      "bounds": [
+        64,
+        98,
+        459,
+        420
+      ],
+      "edge": 0
+    },
+    {
+      "clip": "attack",
+      "frame": 0,
+      "count": 61457,
+      "bounds": [
+        60,
+        134,
+        456,
+        433
+      ],
+      "edge": 0
+    },
+    {
+      "clip": "attack",
+      "frame": 1,
+      "count": 60631,
+      "bounds": [
+        33,
+        42,
+        468,
+        434
+      ],
+      "edge": 0
+    },
+    {
+      "clip": "attack",
+      "frame": 2,
+      "count": 60130,
+      "bounds": [
+        106,
+        4,
+        453,
+        440
+      ],
+      "edge": 0
+    },
+    {
+      "clip": "attack",
+      "frame": 3,
+      "count": 59042,
+      "bounds": [
+        120,
+        137,
+        450,
+        497
+      ],
+      "edge": 0
+    },
+    {
+      "clip": "attack",
+      "frame": 4,
+      "count": 60684,
+      "bounds": [
+        133,
+        135,
+        457,
+        481
+      ],
+      "edge": 0
+    },
+    {
+      "clip": "attack",
+      "frame": 5,
+      "count": 61812,
+      "bounds": [
+        61,
+        133,
+        456,
+        436
+      ],
+      "edge": 0
+    },
+    {
+      "clip": "hit",
+      "frame": 0,
+      "count": 55964,
+      "bounds": [
+        71,
+        141,
+        446,
+        432
+      ],
+      "edge": 0
+    },
+    {
+      "clip": "hit",
+      "frame": 1,
+      "count": 54256,
+      "bounds": [
+        88,
+        134,
+        416,
+        436
+      ],
+      "edge": 0
+    },
+    {
+      "clip": "hit",
+      "frame": 2,
+      "count": 52378,
+      "bounds": [
+        45,
+        135,
+        426,
+        425
+      ],
+      "edge": 0
+    },
+    {
+      "clip": "hit",
+      "frame": 3,
+      "count": 54830,
+      "bounds": [
+        55,
+        136,
+        441,
+        431
+      ],
+      "edge": 0
+    },
+    {
+      "clip": "hit",
+      "frame": 4,
+      "count": 57898,
+      "bounds": [
+        69,
+        137,
+        447,
+        433
+      ],
+      "edge": 0
+    },
+    {
+      "clip": "hit",
+      "frame": 5,
+      "count": 58063,
+      "bounds": [
+        63,
+        137,
+        451,
+        432
+      ],
+      "edge": 0
+    },
+    {
+      "clip": "charged",
+      "frame": 0,
+      "count": 59321,
+      "bounds": [
+        65,
+        135,
+        439,
+        430
+      ],
+      "edge": 0
+    },
+    {
+      "clip": "charged",
+      "frame": 1,
+      "count": 59773,
+      "bounds": [
+        58,
+        127,
+        417,
+        412
+      ],
+      "edge": 0
+    },
+    {
+      "clip": "charged",
+      "frame": 2,
+      "count": 61017,
+      "bounds": [
+        20,
+        127,
+        412,
+        435
+      ],
+      "edge": 0
+    },
+    {
+      "clip": "charged",
+      "frame": 3,
+      "count": 56633,
+      "bounds": [
+        39,
+        124,
+        418,
+        408
+      ],
+      "edge": 0
+    },
+    {
+      "clip": "charged",
+      "frame": 4,
+      "count": 61338,
+      "bounds": [
+        69,
+        133,
+        446,
+        427
+      ],
+      "edge": 0
+    },
+    {
+      "clip": "charged",
+      "frame": 5,
+      "count": 60978,
+      "bounds": [
+        51,
+        138,
+        451,
+        432
+      ],
+      "edge": 0
+    },
+    {
+      "clip": "charge",
+      "frame": 0,
+      "count": 67891,
+      "bounds": [
+        61,
+        65,
+        445,
+        438
+      ],
+      "edge": 0
+    },
+    {
+      "clip": "charge",
+      "frame": 1,
+      "count": 63006,
+      "bounds": [
+        97,
+        63,
+        456,
+        414
+      ],
+      "edge": 0
+    },
+    {
+      "clip": "charge",
+      "frame": 2,
+      "count": 62656,
+      "bounds": [
+        93,
+        63,
+        442,
+        421
+      ],
+      "edge": 0
+    },
+    {
+      "clip": "charge",
+      "frame": 3,
+      "count": 67420,
+      "bounds": [
+        58,
+        60,
+        452,
+        445
+      ],
+      "edge": 0
+    },
+    {
+      "clip": "charge",
+      "frame": 4,
+      "count": 66034,
+      "bounds": [
+        98,
+        62,
+        461,
+        434
+      ],
+      "edge": 0
+    },
+    {
+      "clip": "charge",
+      "frame": 5,
+      "count": 63195,
+      "bounds": [
+        93,
+        59,
+        448,
+        421
+      ],
+      "edge": 0
+    },
+    {
+      "clip": "charge-attack",
+      "frame": 0,
+      "count": 65496,
+      "bounds": [
+        52,
+        17,
+        453,
+        437
+      ],
+      "edge": 0
+    },
+    {
+      "clip": "charge-attack",
+      "frame": 1,
+      "count": 67738,
+      "bounds": [
+        32,
+        14,
+        447,
+        433
+      ],
+      "edge": 0
+    },
+    {
+      "clip": "charge-attack",
+      "frame": 2,
+      "count": 68583,
+      "bounds": [
+        56,
+        12,
+        458,
+        450
+      ],
+      "edge": 0
+    },
+    {
+      "clip": "charge-attack",
+      "frame": 3,
+      "count": 67517,
+      "bounds": [
+        117,
+        114,
+        468,
+        501
+      ],
+      "edge": 0
+    },
+    {
+      "clip": "charge-attack",
+      "frame": 4,
+      "count": 67838,
+      "bounds": [
+        112,
+        118,
+        456,
+        494
+      ],
+      "edge": 0
+    },
+    {
+      "clip": "charge-attack",
+      "frame": 5,
+      "count": 68445,
+      "bounds": [
+        97,
+        132,
+        459,
+        500
+      ],
+      "edge": 0
+    },
+    {
+      "clip": "death",
+      "frame": 0,
+      "count": 56248,
+      "bounds": [
+        69,
+        149,
+        446,
+        440
+      ],
+      "edge": 0
+    },
+    {
+      "clip": "death",
+      "frame": 1,
+      "count": 56244,
+      "bounds": [
+        58,
+        154,
+        429,
+        428
+      ],
+      "edge": 0
+    },
+    {
+      "clip": "death",
+      "frame": 2,
+      "count": 55730,
+      "bounds": [
+        51,
+        163,
+        432,
+        428
+      ],
+      "edge": 0
+    },
+    {
+      "clip": "death",
+      "frame": 3,
+      "count": 61320,
+      "bounds": [
+        46,
+        97,
+        467,
+        375
+      ],
+      "edge": 0
+    },
+    {
+      "clip": "death",
+      "frame": 4,
+      "count": 68677,
+      "bounds": [
+        46,
+        91,
+        467,
+        449
+      ],
+      "edge": 0
+    },
+    {
+      "clip": "death",
+      "frame": 5,
+      "count": 69666,
+      "bounds": [
+        51,
+        85,
+        456,
+        448
+      ],
+      "edge": 0
+    },
+    {
+      "clip": "death-back",
+      "frame": 0,
+      "count": 55882,
+      "bounds": [
+        71,
+        159,
+        442,
+        448
+      ],
+      "edge": 0
+    },
+    {
+      "clip": "death-back",
+      "frame": 1,
+      "count": 58970,
+      "bounds": [
+        52,
+        163,
+        448,
+        439
+      ],
+      "edge": 0
+    },
+    {
+      "clip": "death-back",
+      "frame": 2,
+      "count": 64373,
+      "bounds": [
+        47,
+        137,
+        437,
+        434
+      ],
+      "edge": 0
+    },
+    {
+      "clip": "death-back",
+      "frame": 3,
+      "count": 66854,
+      "bounds": [
+        73,
+        81,
+        476,
+        423
+      ],
+      "edge": 0
+    },
+    {
+      "clip": "death-back",
+      "frame": 4,
+      "count": 65366,
+      "bounds": [
+        74,
+        82,
+        472,
+        424
+      ],
+      "edge": 0
+    },
+    {
+      "clip": "death-back",
+      "frame": 5,
+      "count": 66266,
+      "bounds": [
+        63,
+        82,
+        474,
+        424
+      ],
+      "edge": 0
+    }
+  ],
+  "playback": {
+    "running": {
+      "frame": "4 / 6",
+      "play": "Pause"
+    },
+    "charge": {
+      "frame": "5 / 6",
+      "play": "Pause"
+    },
+    "death": {
+      "frame": "6 / 6",
+      "play": "Play"
+    },
+    "death-back": {
+      "frame": "6 / 6",
+      "play": "Play"
+    }
+  }
+}

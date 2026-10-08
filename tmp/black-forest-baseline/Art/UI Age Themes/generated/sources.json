@@ -1,0 +1,40 @@
+{
+  "tool": "Built-in image generation",
+  "sources": [
+    {
+      "age": "StoneAge",
+      "file": "stone",
+      "source": "C:\\Users\\Damien\\.codex\\generated_images\\01a0f146-1b3d-7de2-8263-c3b4f0e64132\\exec-6052c5fb-cc44-4ee0-9082-ac5efec74605.png"
+    },
+    {
+      "age": "BronzeAge",
+      "file": "bronze",
+      "source": "C:\\Users\\Damien\\.codex\\generated_images\\01a0f146-1b3d-7de2-8263-c3b4f0e64132\\exec-00d87944-7d97-45cf-a3d2-b6da9c787e4e.png"
+    },
+    {
+      "age": "ClassicalAge",
+      "file": "iron",
+      "source": "C:\\Users\\Damien\\.codex\\generated_images\\01a0f146-1b3d-7de2-8263-c3b4f0e64132\\exec-4c5f039d-2534-4d93-b76e-061a3b30c0ee.png"
+    },
+    {
+      "age": "EarlyMedieval",
+      "file": "steel",
+      "source": "C:\\Users\\Damien\\.codex\\generated_images\\01a0f146-1b3d-7de2-8263-c3b4f0e64132\\exec-a9d4e0a5-23ff-4a9d-98c9-39873fc68d9f.png"
+    },
+    {
+      "age": "LateMedieval",
+      "file": "gold",
+      "source": "C:\\Users\\Damien\\.codex\\generated_images\\01a0f146-1b3d-7de2-8263-c3b4f0e64132\\exec-204c6971-4cc7-474d-8525-8cf82228dc34.png"
+    },
+    {
+      "age": "EarlyModern",
+      "file": "gunmetal",
+      "source": "C:\\Users\\Damien\\.codex\\generated_images\\01a0f146-1b3d-7de2-8263-c3b4f0e64132\\exec-71a5909c-866c-4fa1-924f-907b2894393f.png"
+    },
+    {
+      "age": "Modern",
+      "file": "army-green",
+      "source": "C:\\Users\\Damien\\.codex\\generated_images\\01a0f146-1b3d-7de2-8263-c3b4f0e64132\\exec-8299ef8d-3fba-4bfc-b3e5-9a82afec64d4.png"
+    }
+  ]
+}

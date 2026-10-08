@@ -1,0 +1,147 @@
+{
+  "death": {
+    "file": "Death-v2.png",
+    "scale": 0.859375,
+    "pivots": [
+      {
+        "x": 239,
+        "y": 146
+      },
+      {
+        "x": 241,
+        "y": 167
+      },
+      {
+        "x": 266,
+        "y": 185
+      },
+      {
+        "x": 275,
+        "y": 227
+      },
+      {
+        "x": 243,
+        "y": 249
+      },
+      {
+        "x": 240,
+        "y": 246
+      }
+    ],
+    "firstStandingHelmetWidth": 128,
+    "corpseFile": "Corpse-Prone-v2.png",
+    "bounds": [
+      [
+        92,
+        78,
+        472,
+        417
+      ],
+      [
+        88,
+        100,
+        460,
+        444
+      ],
+      [
+        111,
+        111,
+        461,
+        444
+      ],
+      [
+        71,
+        102,
+        444,
+        420
+      ],
+      [
+        83,
+        39,
+        427,
+        434
+      ],
+      [
+        102,
+        40,
+        470,
+        435
+      ]
+    ],
+    "alphaFarPixels": 1,
+    "correctionProvenance": "Death-v2-Corrections.json"
+  },
+  "death-back": {
+    "file": "DeathBack-v2.png",
+    "scale": 0.8333333333,
+    "pivots": [
+      {
+        "x": 256,
+        "y": 146
+      },
+      {
+        "x": 258,
+        "y": 172
+      },
+      {
+        "x": 253,
+        "y": 215
+      },
+      {
+        "x": 257,
+        "y": 250
+      },
+      {
+        "x": 256,
+        "y": 251
+      },
+      {
+        "x": 249,
+        "y": 251
+      }
+    ],
+    "firstStandingHelmetWidth": 132,
+    "corpseFile": "Corpse-Back-v2.png",
+    "bounds": [
+      [
+        103,
+        75,
+        480,
+        372
+      ],
+      [
+        103,
+        84,
+        448,
+        413
+      ],
+      [
+        54,
+        85,
+        438,
+        445
+      ],
+      [
+        131,
+        57,
+        418,
+        421
+      ],
+      [
+        138,
+        61,
+        407,
+        421
+      ],
+      [
+        130,
+        61,
+        399,
+        422
+      ]
+    ],
+    "alphaFarPixels": 0,
+    "correctionProvenance": "DeathBack-v2-Boot-Upper-Correction.json"
+  },
+  "notes": "One fixed clip scale from first standing helmet width to110px. No per-frame runtime fitting. Lower row corrected to clearly visible lace/toe uppers, no boot soles; layout repair baked15percent reduction of lower-row body/rifle to preserve exactcell boundaries. Grounded figures therefore smaller than12percent target; source art proportions remain consistent. All native alpha outside3pxedge\u22649 backward sheet; lowerrow guards\u226557px. Body/floorcenter pivots preserve unfoldingheadtranslation."
+}

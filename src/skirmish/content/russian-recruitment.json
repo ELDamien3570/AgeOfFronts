@@ -1,0 +1,4041 @@
+{
+  "schemaVersion": 1,
+  "units": [
+    {
+      "id": "stoneage-frontline",
+      "name": "Clubmen",
+      "age": "StoneAge",
+      "troopClass": "frontline",
+      "technologyId": "russian-troop-stoneage-frontline",
+      "gold": 60,
+      "trainingSeconds": 12
+    },
+    {
+      "id": "stoneage-rangedinfantry",
+      "name": "Javelin Throwers",
+      "age": "StoneAge",
+      "troopClass": "rangedInfantry",
+      "technologyId": "russian-troop-stoneage-rangedinfantry",
+      "gold": 100,
+      "trainingSeconds": 24
+    },
+    {
+      "id": "stoneage-lightcavalry",
+      "name": "Mounted Spearmen",
+      "age": "StoneAge",
+      "troopClass": "lightCavalry",
+      "technologyId": "russian-troop-stoneage-lightcavalry",
+      "gold": 170,
+      "trainingSeconds": 30
+    },
+    {
+      "id": "bronzeage-frontline",
+      "name": "Bronze Axemen",
+      "age": "BronzeAge",
+      "troopClass": "frontline",
+      "technologyId": "russian-troop-bronzeage-frontline",
+      "gold": 85,
+      "trainingSeconds": 12
+    },
+    {
+      "id": "bronzeage-anticavalry",
+      "name": "Bronze Spearmen",
+      "age": "BronzeAge",
+      "troopClass": "antiCavalry",
+      "technologyId": "bronzeage-bronze-equipment",
+      "gold": 130,
+      "trainingSeconds": 20
+    },
+    {
+      "id": "bronzeage-rangedinfantry",
+      "name": "Archers",
+      "age": "BronzeAge",
+      "troopClass": "rangedInfantry",
+      "technologyId": "russian-troop-bronzeage-rangedinfantry",
+      "gold": 145,
+      "trainingSeconds": 24
+    },
+    {
+      "id": "bronzeage-lightcavalry",
+      "name": "Spear Riders",
+      "age": "BronzeAge",
+      "troopClass": "lightCavalry",
+      "technologyId": "russian-troop-bronzeage-lightcavalry",
+      "gold": 245,
+      "trainingSeconds": 30
+    },
+    {
+      "id": "classicalage-frontline",
+      "name": "Varangians",
+      "age": "ClassicalAge",
+      "troopClass": "frontline",
+      "technologyId": "russian-troop-classicalage-frontline",
+      "gold": 125,
+      "trainingSeconds": 12
+    },
+    {
+      "id": "classicalage-anticavalry",
+      "name": "Heavy Spearmen",
+      "age": "ClassicalAge",
+      "troopClass": "antiCavalry",
+      "technologyId": "russian-troop-classicalage-anticavalry",
+      "gold": 190,
+      "trainingSeconds": 20
+    },
+    {
+      "id": "classicalage-rangedinfantry",
+      "name": "Recurve Bowmen",
+      "age": "ClassicalAge",
+      "troopClass": "rangedInfantry",
+      "technologyId": "russian-troop-classicalage-rangedinfantry",
+      "gold": 210,
+      "trainingSeconds": 24
+    },
+    {
+      "id": "classicalage-lightcavalry",
+      "name": "Light Horsemen",
+      "age": "ClassicalAge",
+      "troopClass": "lightCavalry",
+      "technologyId": "russian-troop-classicalage-lightcavalry",
+      "gold": 355,
+      "trainingSeconds": 30
+    },
+    {
+      "id": "classicalage-rangedcavalry",
+      "name": "Horse Archers",
+      "age": "ClassicalAge",
+      "troopClass": "rangedCavalry",
+      "technologyId": "russian-classical-horse-archery",
+      "gold": 485,
+      "trainingSeconds": 40
+    },
+    {
+      "id": "earlymedieval-frontline",
+      "name": "Rus Woodsman",
+      "age": "EarlyMedieval",
+      "troopClass": "frontline",
+      "technologyId": "russian-troop-earlymedieval-frontline",
+      "gold": 180,
+      "trainingSeconds": 12
+    },
+    {
+      "id": "earlymedieval-anticavalry",
+      "name": "Mail Spearman",
+      "age": "EarlyMedieval",
+      "troopClass": "antiCavalry",
+      "technologyId": "russian-troop-earlymedieval-anticavalry",
+      "gold": 270,
+      "trainingSeconds": 20
+    },
+    {
+      "id": "earlymedieval-rangedinfantry",
+      "name": "Rus Bowmen",
+      "age": "EarlyMedieval",
+      "troopClass": "rangedInfantry",
+      "technologyId": "russian-troop-earlymedieval-rangedinfantry",
+      "gold": 300,
+      "trainingSeconds": 24
+    },
+    {
+      "id": "earlymedieval-lightcavalry",
+      "name": "Rus Lancer",
+      "age": "EarlyMedieval",
+      "troopClass": "lightCavalry",
+      "technologyId": "russian-troop-earlymedieval-lightcavalry",
+      "gold": 510,
+      "trainingSeconds": 30
+    },
+    {
+      "id": "earlymedieval-heavycavalry",
+      "name": "Druzhina",
+      "age": "EarlyMedieval",
+      "troopClass": "heavyCavalry",
+      "technologyId": "russian-druzhina",
+      "gold": 1170,
+      "trainingSeconds": 60
+    },
+    {
+      "id": "earlymedieval-rangedcavalry",
+      "name": "Early Cossack Archer",
+      "age": "EarlyMedieval",
+      "troopClass": "rangedCavalry",
+      "technologyId": "russian-cossack-archery",
+      "gold": 690,
+      "trainingSeconds": 40
+    },
+    {
+      "id": "latemedieval-frontline",
+      "name": "Boyar Guards",
+      "age": "LateMedieval",
+      "troopClass": "frontline",
+      "technologyId": "russian-troop-latemedieval-frontline",
+      "gold": 260,
+      "trainingSeconds": 12
+    },
+    {
+      "id": "latemedieval-anticavalry",
+      "name": "Plate Spearman",
+      "age": "LateMedieval",
+      "troopClass": "antiCavalry",
+      "technologyId": "russian-troop-latemedieval-anticavalry",
+      "gold": 385,
+      "trainingSeconds": 20
+    },
+    {
+      "id": "latemedieval-rangedinfantry",
+      "name": "Rus Crossbowman",
+      "age": "LateMedieval",
+      "troopClass": "rangedInfantry",
+      "technologyId": "russian-troop-latemedieval-rangedinfantry",
+      "gold": 430,
+      "trainingSeconds": 24
+    },
+    {
+      "id": "latemedieval-lightcavalry",
+      "name": "Cossack Riders",
+      "age": "LateMedieval",
+      "troopClass": "lightCavalry",
+      "technologyId": "russian-troop-latemedieval-lightcavalry",
+      "gold": 730,
+      "trainingSeconds": 30
+    },
+    {
+      "id": "latemedieval-heavycavalry",
+      "name": "Boyar Cavalry",
+      "age": "LateMedieval",
+      "troopClass": "heavyCavalry",
+      "technologyId": "russian-boyar-cavalry",
+      "gold": 2065,
+      "trainingSeconds": 70
+    },
+    {
+      "id": "latemedieval-rangedcavalry",
+      "name": "Heavy Cossack Archer",
+      "age": "LateMedieval",
+      "troopClass": "rangedCavalry",
+      "technologyId": "russian-heavy-cossack-archery",
+      "gold": 990,
+      "trainingSeconds": 40
+    },
+    {
+      "id": "earlymodern-frontline",
+      "name": "Grenadiers",
+      "age": "Napoleonic",
+      "troopClass": "frontline",
+      "technologyId": "russian-grenadier-companies",
+      "gold": 370,
+      "trainingSeconds": 12
+    },
+    {
+      "id": "earlymodern-anticavalry",
+      "name": "Pikeman",
+      "age": "Napoleonic",
+      "troopClass": "antiCavalry",
+      "technologyId": "russian-troop-earlymodern-anticavalry",
+      "gold": 560,
+      "trainingSeconds": 20
+    },
+    {
+      "id": "earlymodern-rangedinfantry",
+      "name": "Rus Musketeer",
+      "age": "Napoleonic",
+      "troopClass": "rangedInfantry",
+      "technologyId": "russian-troop-earlymodern-rangedinfantry",
+      "gold": 620,
+      "trainingSeconds": 24
+    },
+    {
+      "id": "earlymodern-lightcavalry",
+      "name": "Cossack Lancers",
+      "age": "Napoleonic",
+      "troopClass": "lightCavalry",
+      "technologyId": "russian-troop-earlymodern-lightcavalry",
+      "gold": 1055,
+      "trainingSeconds": 30
+    },
+    {
+      "id": "earlymodern-heavycavalry",
+      "name": "Cuirassiers",
+      "age": "Napoleonic",
+      "troopClass": "heavyCavalry",
+      "technologyId": "russian-cuirassiers",
+      "gold": 2420,
+      "trainingSeconds": 60
+    },
+    {
+      "id": "earlymodern-rangedcavalry",
+      "name": "Streltsy",
+      "age": "Napoleonic",
+      "troopClass": "rangedCavalry",
+      "technologyId": "russian-mounted-musketeers",
+      "gold": 1425,
+      "trainingSeconds": 40
+    },
+    {
+      "id": "modern-frontline",
+      "name": "Mosin Nagant Squad",
+      "age": "EarlyModern",
+      "troopClass": "frontline",
+      "technologyId": "russian-rifle-infantry",
+      "gold": 540,
+      "trainingSeconds": 12
+    },
+    {
+      "id": "modern-anticavalry",
+      "name": "PTRD-41 Crew",
+      "age": "EarlyModern",
+      "troopClass": "antiCavalry",
+      "technologyId": "russian-anti-tank-teams",
+      "gold": 810,
+      "trainingSeconds": 20
+    },
+    {
+      "id": "modern-rangedinfantry",
+      "name": "DP-28 Crew",
+      "age": "EarlyModern",
+      "troopClass": "rangedInfantry",
+      "technologyId": "russian-machine-gun-teams",
+      "gold": 900,
+      "trainingSeconds": 24
+    },
+    {
+      "id": "modern-lightcavalry",
+      "name": "Gun Trucks",
+      "age": "EarlyModern",
+      "troopClass": "lightCavalry",
+      "technologyId": "russian-gun-trucks",
+      "gold": 1530,
+      "trainingSeconds": 30
+    },
+    {
+      "id": "modern-heavycavalry",
+      "name": "Armoured Personnel Carriers",
+      "age": "EarlyModern",
+      "troopClass": "heavyCavalry",
+      "technologyId": "russian-apc-production",
+      "gold": 3510,
+      "trainingSeconds": 60
+    },
+    {
+      "id": "modern-rangedcavalry",
+      "name": "Battle Tanks",
+      "age": "EarlyModern",
+      "troopClass": "rangedCavalry",
+      "technologyId": "russian-tank-production",
+      "gold": 2070,
+      "trainingSeconds": 40
+    },
+    {
+      "id": "present-day-frontline",
+      "name": "AK-47 Squad",
+      "age": "Modern",
+      "troopClass": "frontline",
+      "technologyId": "russian-troop-present-day-frontline",
+      "gold": 810,
+      "trainingSeconds": 12
+    },
+    {
+      "id": "present-day-anticavalry",
+      "name": "ATGM Teams",
+      "age": "Modern",
+      "troopClass": "antiCavalry",
+      "technologyId": "russian-anti-tank-guidance",
+      "gold": 1215,
+      "trainingSeconds": 20
+    },
+    {
+      "id": "present-day-rangedinfantry",
+      "name": "RPL-20 Crew",
+      "age": "Modern",
+      "troopClass": "rangedInfantry",
+      "technologyId": "russian-troop-present-day-rangedinfantry",
+      "gold": 1350,
+      "trainingSeconds": 24
+    },
+    {
+      "id": "present-day-lightcavalry",
+      "name": "Gun Trucks",
+      "age": "Modern",
+      "troopClass": "lightCavalry",
+      "technologyId": "russian-troop-present-day-lightcavalry",
+      "gold": 2295,
+      "trainingSeconds": 30
+    },
+    {
+      "id": "present-day-heavycavalry",
+      "name": "Armoured Personnel Carriers",
+      "age": "Modern",
+      "troopClass": "heavyCavalry",
+      "technologyId": "russian-troop-present-day-heavycavalry",
+      "gold": 5265,
+      "trainingSeconds": 60
+    },
+    {
+      "id": "present-day-rangedcavalry",
+      "name": "Main Battle Tanks",
+      "age": "Modern",
+      "troopClass": "rangedCavalry",
+      "technologyId": "russian-troop-present-day-rangedcavalry",
+      "gold": 3105,
+      "trainingSeconds": 40
+    }
+  ],
+  "technologies": [
+    {
+      "id": "stoneage-shorecraft",
+      "name": "Shorecraft",
+      "age": "StoneAge",
+      "tree": "naval",
+      "slot": 2,
+      "gold": 200,
+      "ticks": 360,
+      "description": "Unlocks ports for shipbuilding and sea trade.",
+      "prerequisites": [
+        "stoneage-cargo-canoes"
+      ],
+      "capabilities": [
+        "stoneage-shorecraft"
+      ]
+    },
+    {
+      "id": "stoneage-cargo-canoes",
+      "name": "Cargo Canoes",
+      "age": "StoneAge",
+      "tree": "naval",
+      "slot": 1,
+      "gold": 300,
+      "ticks": 400,
+      "description": "Lets squads cross water as canoe transports and unlocks automatic port-to-port trade. A transport sinks with every soldier aboard.",
+      "prerequisites": [],
+      "capabilities": [
+        "stoneage-cargo-canoes"
+      ]
+    },
+    {
+      "id": "stoneage-war-canoes",
+      "name": "War Canoes",
+      "age": "StoneAge",
+      "tree": "naval",
+      "slot": 3,
+      "gold": 300,
+      "ticks": 400,
+      "description": "Unlocks war canoes for naval combat and interception of hostile trade ships.",
+      "prerequisites": [
+        "stoneage-shorecraft"
+      ],
+      "capabilities": [
+        "stoneage-war-canoes"
+      ]
+    },
+    {
+      "id": "stoneage-coastal-navigation",
+      "name": "Coastal Navigation",
+      "age": "StoneAge",
+      "tree": "naval",
+      "slot": 4,
+      "gold": 450,
+      "ticks": 500,
+      "description": "Improves transport hulls and sailing speed for squads afloat, and military sailing speed; warships reload faster. Trade ships are unchanged.",
+      "prerequisites": [
+        "stoneage-cargo-canoes",
+        "stoneage-war-canoes"
+      ],
+      "capabilities": [
+        "stoneage-coastal-navigation"
+      ]
+    },
+    {
+      "id": "stoneage-flint-weapons",
+      "name": "Flint Weapons",
+      "age": "StoneAge",
+      "tree": "warfare",
+      "slot": 1,
+      "prerequisites": [],
+      "gold": 0,
+      "ticks": 0,
+      "capabilities": [],
+      "description": "Foundation for Stone Age weapons. Barracks and troop unlocks are separate nodes."
+    },
+    {
+      "id": "stoneage-spear-throwing",
+      "name": "Spear Throwing",
+      "age": "StoneAge",
+      "tree": "warfare",
+      "slot": 2,
+      "prerequisites": [
+        "stoneage-flint-weapons"
+      ],
+      "gold": 300,
+      "ticks": 400,
+      "capabilities": [],
+      "description": "Foundation for thrown weapons. Javelin Throwers have a separate unlock."
+    },
+    {
+      "id": "stoneage-horsemanship",
+      "name": "Horsemanship",
+      "age": "StoneAge",
+      "tree": "warfare",
+      "slot": 3,
+      "prerequisites": [
+        "stoneage-spear-throwing",
+        "stoneage-field-engineering"
+      ],
+      "gold": 250,
+      "ticks": 300,
+      "capabilities": [],
+      "description": "Horse handling and breeding. Stables and mounted troops have separate unlocks."
+    },
+    {
+      "id": "stoneage-field-engineering",
+      "name": "Field Engineering",
+      "age": "StoneAge",
+      "tree": "warfare",
+      "slot": 4,
+      "prerequisites": [
+        "stoneage-flint-weapons"
+      ],
+      "gold": 450,
+      "ticks": 500,
+      "capabilities": [],
+      "description": "Unlocks towers, palisades, gates, field rams, and siege equipment. Improves all Stone Age ground units. In this draft, troop and building construction requires the separately named unlock nodes; this foundation does not grant them automatically."
+    },
+    {
+      "id": "stoneage-settlements",
+      "name": "Settlements",
+      "age": "StoneAge",
+      "tree": "economic",
+      "slot": 1,
+      "gold": 0,
+      "ticks": 0,
+      "description": "Unlocks cities, which grow troop reserves.",
+      "prerequisites": [],
+      "capabilities": [
+        "stoneage-settlements"
+      ]
+    },
+    {
+      "id": "stoneage-craft-workshops",
+      "name": "Craft Workshops",
+      "age": "StoneAge",
+      "tree": "economic",
+      "slot": 2,
+      "gold": 300,
+      "ticks": 400,
+      "description": "Unlocks factories producing goods for land trade.",
+      "prerequisites": [
+        "stoneage-settlements"
+      ],
+      "capabilities": [
+        "stoneage-craft-workshops"
+      ]
+    },
+    {
+      "id": "stoneage-stone-mining",
+      "name": "Stone Mining",
+      "age": "StoneAge",
+      "tree": "economic",
+      "slot": 3,
+      "gold": 300,
+      "ticks": 400,
+      "description": "Unlocks mines and stone extraction from owned deposits.",
+      "prerequisites": [
+        "stoneage-settlements"
+      ],
+      "capabilities": [
+        "stoneage-stone-mining"
+      ]
+    },
+    {
+      "id": "stoneage-goods-handling",
+      "name": "Goods Handling",
+      "age": "StoneAge",
+      "tree": "economic",
+      "slot": 4,
+      "gold": 450,
+      "ticks": 500,
+      "description": "Starts automatic land trade between reachable markets. Increases land and sea cargo capacity and speeds up production recipes.",
+      "prerequisites": [
+        "stoneage-craft-workshops",
+        "stoneage-stone-mining"
+      ],
+      "capabilities": [
+        "stoneage-goods-handling"
+      ]
+    },
+    {
+      "id": "bronzeage-planked-hulls",
+      "name": "Planked Hulls",
+      "age": "BronzeAge",
+      "tree": "naval",
+      "slot": 1,
+      "gold": 4000,
+      "ticks": 400,
+      "description": "Unlocks Bronze Age ports; squads afloat use sturdier Bronze Age transport hulls. Existing ports advance automatically.",
+      "prerequisites": [
+        "stoneage-coastal-navigation"
+      ],
+      "capabilities": [
+        "bronzeage-planked-hulls"
+      ]
+    },
+    {
+      "id": "bronzeage-merchant-sailing",
+      "name": "Merchant Sailing",
+      "age": "BronzeAge",
+      "tree": "naval",
+      "slot": 2,
+      "gold": 2334,
+      "ticks": 440,
+      "description": "Unlocks Bronze Age sea traders, with larger cargo holds.",
+      "prerequisites": [
+        "bronzeage-planked-hulls"
+      ],
+      "capabilities": [
+        "bronzeage-merchant-sailing"
+      ]
+    },
+    {
+      "id": "bronzeage-oared-warships",
+      "name": "Oared Warships",
+      "age": "BronzeAge",
+      "tree": "naval",
+      "slot": 3,
+      "gold": 2334,
+      "ticks": 440,
+      "description": "Unlocks Bronze Age warships for naval combat and interception of hostile trade ships.",
+      "prerequisites": [
+        "bronzeage-planked-hulls"
+      ],
+      "capabilities": [
+        "bronzeage-oared-warships"
+      ]
+    },
+    {
+      "id": "bronzeage-naval-organisation",
+      "name": "Naval Organisation",
+      "age": "BronzeAge",
+      "tree": "naval",
+      "slot": 4,
+      "gold": 3334,
+      "ticks": 500,
+      "description": "Improves transport hulls and sailing speed for squads afloat, and military sailing speed; warships reload faster. Trade ships are unchanged.",
+      "prerequisites": [
+        "bronzeage-merchant-sailing",
+        "bronzeage-oared-warships"
+      ],
+      "capabilities": [
+        "bronzeage-naval-organisation"
+      ]
+    },
+    {
+      "id": "bronzeage-bronze-equipment",
+      "name": "Bronze Equipment",
+      "age": "BronzeAge",
+      "tree": "warfare",
+      "slot": 1,
+      "prerequisites": [
+        "stoneage-field-engineering"
+      ],
+      "gold": 4000,
+      "ticks": 400,
+      "capabilities": [],
+      "description": "Unlock Bronze Spearmen and develop bronze troop equipment. Bronze Axemen and Blacksmith have separate unlocks."
+    },
+    {
+      "id": "bronzeage-bowcraft",
+      "name": "Bowcraft",
+      "age": "BronzeAge",
+      "tree": "warfare",
+      "slot": 2,
+      "prerequisites": [
+        "bronzeage-bronze-equipment"
+      ],
+      "gold": 4667,
+      "ticks": 440,
+      "capabilities": [],
+      "description": "Bronze bow equipment. Archers have a separate unlock."
+    },
+    {
+      "id": "bronzeage-chariot-warfare",
+      "name": "Bronze Horsemanship",
+      "age": "BronzeAge",
+      "tree": "warfare",
+      "slot": 3,
+      "prerequisites": [
+        "bronzeage-bronze-equipment"
+      ],
+      "gold": 4667,
+      "ticks": 440,
+      "capabilities": [],
+      "description": "Mounted spear equipment and horse training. Spear Riders have a separate unlock; no chariots or ranged cavalry."
+    },
+    {
+      "id": "bronzeage-fortified-settlements",
+      "name": "Fortified Settlements",
+      "age": "BronzeAge",
+      "tree": "warfare",
+      "slot": 4,
+      "prerequisites": [
+        "bronzeage-bowcraft",
+        "bronzeage-chariot-warfare"
+      ],
+      "gold": 6667,
+      "ticks": 500,
+      "capabilities": [],
+      "description": "Unlocks fortified walls, gates, towers, rams, siege towers, and siege equipment. Improves all Bronze Age ground units. In this draft, troop and building construction requires the separately named unlock nodes; this foundation does not grant them automatically."
+    },
+    {
+      "id": "bronzeage-armies",
+      "name": "Armies",
+      "age": "BronzeAge",
+      "tree": "warfare",
+      "slot": 5,
+      "prerequisites": [
+        "bronzeage-fortified-settlements"
+      ],
+      "gold": 2334,
+      "ticks": 440,
+      "capabilities": [],
+      "description": "Organizes squads into armies with shared orders and formations. Army capacity counts squads, not soldiers."
+    },
+    {
+      "id": "bronzeage-bronze-metallurgy",
+      "name": "Bronze Metallurgy",
+      "age": "BronzeAge",
+      "tree": "economic",
+      "slot": 1,
+      "gold": 2000,
+      "ticks": 400,
+      "description": "Unlocks copper and tin extraction, bronze smelting, and Bronze Age mines.",
+      "prerequisites": [
+        "stoneage-goods-handling"
+      ],
+      "capabilities": [
+        "bronzeage-bronze-metallurgy"
+      ]
+    },
+    {
+      "id": "bronzeage-urban-workshops",
+      "name": "Urban Workshops",
+      "age": "BronzeAge",
+      "tree": "economic",
+      "slot": 2,
+      "gold": 2334,
+      "ticks": 440,
+      "description": "Unlocks Bronze Age city and factory upgrades, increasing reserve growth and trade stock.",
+      "prerequisites": [
+        "bronzeage-bronze-metallurgy"
+      ],
+      "capabilities": [
+        "bronzeage-urban-workshops"
+      ]
+    },
+    {
+      "id": "bronzeage-road-networks",
+      "name": "Road Networks",
+      "age": "BronzeAge",
+      "tree": "economic",
+      "slot": 3,
+      "gold": 2334,
+      "ticks": 440,
+      "description": "Increases land trader cargo capacity. Adds cosmetic dirt roads along trade routes.",
+      "prerequisites": [
+        "bronzeage-bronze-metallurgy"
+      ],
+      "capabilities": [
+        "bronzeage-road-networks"
+      ]
+    },
+    {
+      "id": "bronzeage-civic-administration",
+      "name": "Civic Administration",
+      "age": "BronzeAge",
+      "tree": "economic",
+      "slot": 4,
+      "gold": 3334,
+      "ticks": 500,
+      "description": "Speeds up equipment and refining recipes.",
+      "prerequisites": [
+        "bronzeage-urban-workshops",
+        "bronzeage-road-networks"
+      ],
+      "capabilities": [
+        "bronzeage-civic-administration"
+      ]
+    },
+    {
+      "id": "classicalage-shipyards",
+      "name": "Shipyards",
+      "age": "ClassicalAge",
+      "tree": "naval",
+      "slot": 1,
+      "gold": 6667,
+      "ticks": 500,
+      "description": "Unlocks Classical Age ports. Existing ports advance automatically.",
+      "prerequisites": [
+        "bronzeage-naval-organisation"
+      ],
+      "capabilities": [
+        "classicalage-shipyards"
+      ]
+    },
+    {
+      "id": "classicalage-transport-fleets",
+      "name": "Transport Fleets",
+      "age": "ClassicalAge",
+      "tree": "naval",
+      "slot": 2,
+      "gold": 4000,
+      "ticks": 560,
+      "description": "Unlocks Classical Age sea traders with larger cargo holds; squads afloat use sturdier Classical Age transport hulls.",
+      "prerequisites": [
+        "classicalage-shipyards"
+      ],
+      "capabilities": [
+        "classicalage-transport-fleets"
+      ]
+    },
+    {
+      "id": "classicalage-galley-warfare",
+      "name": "Galley Warfare",
+      "age": "ClassicalAge",
+      "tree": "naval",
+      "slot": 3,
+      "gold": 4000,
+      "ticks": 560,
+      "description": "Unlocks Classical Age warships for naval combat and interception of hostile trade ships.",
+      "prerequisites": [
+        "classicalage-shipyards"
+      ],
+      "capabilities": [
+        "classicalage-galley-warfare"
+      ]
+    },
+    {
+      "id": "classicalage-naval-logistics",
+      "name": "Naval Logistics",
+      "age": "ClassicalAge",
+      "tree": "naval",
+      "slot": 4,
+      "gold": 5334,
+      "ticks": 700,
+      "description": "Improves transport hulls and sailing speed for squads afloat, and military sailing speed; warships reload faster. Trade ships are unchanged.",
+      "prerequisites": [
+        "classicalage-transport-fleets",
+        "classicalage-galley-warfare"
+      ],
+      "capabilities": [
+        "classicalage-naval-logistics"
+      ]
+    },
+    {
+      "id": "classicalage-professional-infantry",
+      "name": "Professional Infantry",
+      "age": "ClassicalAge",
+      "tree": "warfare",
+      "slot": 1,
+      "prerequisites": [
+        "bronzeage-fortified-settlements",
+        "bronzeage-armies"
+      ],
+      "gold": 6667,
+      "ticks": 500,
+      "capabilities": [],
+      "description": "Infantry equipment and army capacity. Varangians and Heavy Spearmen have separate unlocks."
+    },
+    {
+      "id": "classicalage-ranged-warfare",
+      "name": "Ranged Warfare",
+      "age": "ClassicalAge",
+      "tree": "warfare",
+      "slot": 2,
+      "prerequisites": [
+        "classicalage-professional-infantry"
+      ],
+      "gold": 8000,
+      "ticks": 560,
+      "capabilities": [],
+      "description": "Ranged equipment. Recurve Bowmen, Mangonel and Siege workshop have separate unlocks."
+    },
+    {
+      "id": "classicalage-cavalry-tactics",
+      "name": "Cavalry Tactics",
+      "age": "ClassicalAge",
+      "tree": "warfare",
+      "slot": 3,
+      "prerequisites": [
+        "classicalage-professional-infantry"
+      ],
+      "gold": 8000,
+      "ticks": 560,
+      "capabilities": [],
+      "description": "Mounted combat training. Light Horsemen and Horse Archers have separate unlocks; no heavy cavalry."
+    },
+    {
+      "id": "classicalage-masonry-engineering",
+      "name": "Masonry Engineering",
+      "age": "ClassicalAge",
+      "tree": "warfare",
+      "slot": 4,
+      "prerequisites": [
+        "classicalage-ranged-warfare",
+        "classicalage-cavalry-tactics"
+      ],
+      "gold": 10667,
+      "ticks": 700,
+      "capabilities": [],
+      "description": "Unlocks towers, walls, gates, and onagers. Improves all Classical ground units. In this draft, troop and building construction requires the separately named unlock nodes; this foundation does not grant them automatically."
+    },
+    {
+      "id": "classicalage-ironworking",
+      "name": "Ironworking",
+      "age": "ClassicalAge",
+      "tree": "economic",
+      "slot": 1,
+      "gold": 3334,
+      "ticks": 500,
+      "description": "Unlocks iron extraction, iron smelting, and Classical mines.",
+      "prerequisites": [
+        "bronzeage-civic-administration"
+      ],
+      "capabilities": [
+        "classicalage-ironworking"
+      ]
+    },
+    {
+      "id": "classicalage-urban-planning",
+      "name": "Urban Planning",
+      "age": "ClassicalAge",
+      "tree": "economic",
+      "slot": 2,
+      "gold": 4000,
+      "ticks": 560,
+      "description": "Unlocks Classical city and factory upgrades and faster horse breeding.",
+      "prerequisites": [
+        "classicalage-ironworking"
+      ],
+      "capabilities": [
+        "classicalage-urban-planning"
+      ]
+    },
+    {
+      "id": "classicalage-caravan-roads",
+      "name": "Caravan Roads",
+      "age": "ClassicalAge",
+      "tree": "economic",
+      "slot": 3,
+      "gold": 4000,
+      "ticks": 560,
+      "description": "Increases land trader cargo capacity. Adds cosmetic gravel roads along trade routes.",
+      "prerequisites": [
+        "classicalage-ironworking"
+      ],
+      "capabilities": [
+        "classicalage-caravan-roads"
+      ]
+    },
+    {
+      "id": "classicalage-husbandry",
+      "name": "Husbandry",
+      "age": "ClassicalAge",
+      "tree": "economic",
+      "slot": 4,
+      "gold": 5334,
+      "ticks": 700,
+      "description": "Speeds up equipment and refining recipes.",
+      "prerequisites": [
+        "classicalage-urban-planning",
+        "classicalage-caravan-roads"
+      ],
+      "capabilities": [
+        "classicalage-husbandry"
+      ]
+    },
+    {
+      "id": "earlymedieval-framed-hulls",
+      "name": "Framed Hulls",
+      "age": "EarlyMedieval",
+      "tree": "naval",
+      "slot": 1,
+      "gold": 10667,
+      "ticks": 600,
+      "description": "Unlocks Early Medieval ports. Existing ports advance automatically.",
+      "prerequisites": [
+        "classicalage-naval-logistics"
+      ],
+      "capabilities": [
+        "earlymedieval-framed-hulls"
+      ]
+    },
+    {
+      "id": "earlymedieval-seafaring",
+      "name": "Seafaring",
+      "age": "EarlyMedieval",
+      "tree": "naval",
+      "slot": 2,
+      "gold": 6000,
+      "ticks": 660,
+      "description": "Unlocks Early Medieval sea traders with larger cargo holds; squads afloat use sturdier Early Medieval transport hulls.",
+      "prerequisites": [
+        "earlymedieval-framed-hulls"
+      ],
+      "capabilities": [
+        "earlymedieval-seafaring"
+      ]
+    },
+    {
+      "id": "earlymedieval-coastal-warships",
+      "name": "Coastal Warships",
+      "age": "EarlyMedieval",
+      "tree": "naval",
+      "slot": 3,
+      "gold": 6000,
+      "ticks": 660,
+      "description": "Unlocks Early Medieval warships for naval combat and interception of hostile trade ships.",
+      "prerequisites": [
+        "earlymedieval-framed-hulls"
+      ],
+      "capabilities": [
+        "earlymedieval-coastal-warships"
+      ]
+    },
+    {
+      "id": "earlymedieval-landing-logistics",
+      "name": "Landing Logistics",
+      "age": "EarlyMedieval",
+      "tree": "naval",
+      "slot": 4,
+      "gold": 8667,
+      "ticks": 800,
+      "description": "Improves transport hulls and sailing speed for squads afloat, and military sailing speed; warships reload faster. Trade ships are unchanged.",
+      "prerequisites": [
+        "earlymedieval-seafaring",
+        "earlymedieval-coastal-warships"
+      ],
+      "capabilities": [
+        "earlymedieval-landing-logistics"
+      ]
+    },
+    {
+      "id": "earlymedieval-mail-equipment",
+      "name": "Mail Equipment",
+      "age": "EarlyMedieval",
+      "tree": "warfare",
+      "slot": 1,
+      "prerequisites": [
+        "classicalage-masonry-engineering"
+      ],
+      "gold": 10667,
+      "ticks": 600,
+      "capabilities": [],
+      "description": "Mail equipment and army capacity. Rus Woodsman and Mail Spearman have separate unlocks."
+    },
+    {
+      "id": "earlymedieval-bow-and-bolt-warfare",
+      "name": "Bow Warfare",
+      "age": "EarlyMedieval",
+      "tree": "warfare",
+      "slot": 2,
+      "prerequisites": [
+        "earlymedieval-mail-equipment"
+      ],
+      "gold": 12000,
+      "ticks": 660,
+      "capabilities": [],
+      "description": "Bow equipment. Rus Bowmen and Ballista have separate unlocks."
+    },
+    {
+      "id": "earlymedieval-mounted-spearmen",
+      "name": "Rus Horsemanship",
+      "age": "EarlyMedieval",
+      "tree": "warfare",
+      "slot": 3,
+      "prerequisites": [
+        "earlymedieval-mail-equipment"
+      ],
+      "gold": 12000,
+      "ticks": 660,
+      "capabilities": [],
+      "description": "Mounted combat training. Rus Lancer, Druzhina and Early Cossack Archer have separate unlocks."
+    },
+    {
+      "id": "earlymedieval-trebuchet-engineering",
+      "name": "Trebuchet Engineering",
+      "age": "EarlyMedieval",
+      "tree": "warfare",
+      "slot": 4,
+      "prerequisites": [
+        "earlymedieval-bow-and-bolt-warfare",
+        "earlymedieval-mounted-spearmen"
+      ],
+      "gold": 17334,
+      "ticks": 800,
+      "capabilities": [],
+      "description": "Unlocks towers, walls, gates, and trebuchets. Improves all Early Medieval ground units. In this draft, troop and building construction requires the separately named unlock nodes; this foundation does not grant them automatically."
+    },
+    {
+      "id": "earlymedieval-agricultural-organisation",
+      "name": "Agricultural Organisation",
+      "age": "EarlyMedieval",
+      "tree": "economic",
+      "slot": 1,
+      "gold": 5334,
+      "ticks": 600,
+      "description": "Unlocks Early Medieval city and mine upgrades.",
+      "prerequisites": [
+        "classicalage-husbandry"
+      ],
+      "capabilities": [
+        "earlymedieval-agricultural-organisation"
+      ]
+    },
+    {
+      "id": "earlymedieval-craft-guilds",
+      "name": "Craft Guilds",
+      "age": "EarlyMedieval",
+      "tree": "economic",
+      "slot": 2,
+      "gold": 6000,
+      "ticks": 660,
+      "description": "Unlocks Early Medieval factory upgrades, increasing trade stock.",
+      "prerequisites": [
+        "earlymedieval-agricultural-organisation"
+      ],
+      "capabilities": [
+        "earlymedieval-craft-guilds"
+      ]
+    },
+    {
+      "id": "earlymedieval-caravan-breeding",
+      "name": "Caravan Breeding",
+      "age": "EarlyMedieval",
+      "tree": "economic",
+      "slot": 3,
+      "gold": 6000,
+      "ticks": 660,
+      "description": "Increases land trader cargo capacity and horse breeding. Upgrades cosmetic trade roads.",
+      "prerequisites": [
+        "earlymedieval-agricultural-organisation"
+      ],
+      "capabilities": [
+        "earlymedieval-caravan-breeding"
+      ]
+    },
+    {
+      "id": "earlymedieval-market-logistics",
+      "name": "Market Logistics",
+      "age": "EarlyMedieval",
+      "tree": "economic",
+      "slot": 4,
+      "gold": 8667,
+      "ticks": 800,
+      "description": "Speeds up equipment and refining recipes.",
+      "prerequisites": [
+        "earlymedieval-craft-guilds",
+        "earlymedieval-caravan-breeding"
+      ],
+      "capabilities": [
+        "earlymedieval-market-logistics"
+      ]
+    },
+    {
+      "id": "latemedieval-sailing-hulls",
+      "name": "Sailing Hulls",
+      "age": "LateMedieval",
+      "tree": "naval",
+      "slot": 1,
+      "gold": 16000,
+      "ticks": 700,
+      "description": "Unlocks Late Medieval ports. Existing ports advance automatically.",
+      "prerequisites": [
+        "earlymedieval-landing-logistics"
+      ],
+      "capabilities": [
+        "latemedieval-sailing-hulls"
+      ]
+    },
+    {
+      "id": "latemedieval-merchant-convoys",
+      "name": "Merchant Convoys",
+      "age": "LateMedieval",
+      "tree": "naval",
+      "slot": 2,
+      "gold": 9334,
+      "ticks": 800,
+      "description": "Unlocks Late Medieval sea traders with larger cargo holds; squads afloat use sturdier Late Medieval transport hulls.",
+      "prerequisites": [
+        "latemedieval-sailing-hulls"
+      ],
+      "capabilities": [
+        "latemedieval-merchant-convoys"
+      ]
+    },
+    {
+      "id": "latemedieval-naval-gunnery",
+      "name": "Naval Gunnery",
+      "age": "LateMedieval",
+      "tree": "naval",
+      "slot": 3,
+      "gold": 9334,
+      "ticks": 800,
+      "description": "Unlocks Late Medieval warships for naval combat and interception of hostile trade ships.",
+      "prerequisites": [
+        "latemedieval-sailing-hulls"
+      ],
+      "capabilities": [
+        "latemedieval-naval-gunnery"
+      ]
+    },
+    {
+      "id": "latemedieval-broadside-tactics",
+      "name": "Broadside Tactics",
+      "age": "LateMedieval",
+      "tree": "naval",
+      "slot": 4,
+      "gold": 13334,
+      "ticks": 900,
+      "description": "Improves transport hulls and sailing speed for squads afloat, and military sailing speed; warships reload faster. Trade ships are unchanged.",
+      "prerequisites": [
+        "latemedieval-merchant-convoys",
+        "latemedieval-naval-gunnery"
+      ],
+      "capabilities": [
+        "latemedieval-broadside-tactics"
+      ]
+    },
+    {
+      "id": "latemedieval-steel-equipment",
+      "name": "Steel Equipment",
+      "age": "LateMedieval",
+      "tree": "warfare",
+      "slot": 1,
+      "prerequisites": [
+        "earlymedieval-trebuchet-engineering"
+      ],
+      "gold": 16000,
+      "ticks": 700,
+      "capabilities": [],
+      "description": "Steel equipment and army capacity. Boyar Guards and Plate Spearman have separate unlocks."
+    },
+    {
+      "id": "latemedieval-crossbows-and-field-guns",
+      "name": "Crossbow and Field Gun Engineering",
+      "age": "LateMedieval",
+      "tree": "warfare",
+      "slot": 2,
+      "prerequisites": [
+        "latemedieval-steel-equipment"
+      ],
+      "gold": 18667,
+      "ticks": 800,
+      "capabilities": [],
+      "description": "Equipment foundation. Rus Crossbowman, Organ gun and Siege workshop have separate unlocks."
+    },
+    {
+      "id": "latemedieval-lance-knights",
+      "name": "Cossack and Boyar Horsemanship",
+      "age": "LateMedieval",
+      "tree": "warfare",
+      "slot": 3,
+      "prerequisites": [
+        "latemedieval-steel-equipment"
+      ],
+      "gold": 18667,
+      "ticks": 800,
+      "capabilities": [],
+      "description": "Mounted combat training. Cossack Riders, Boyar Cavalry and Heavy Cossack Archer have separate unlocks."
+    },
+    {
+      "id": "latemedieval-siege-ordnance",
+      "name": "Siege Ordnance",
+      "age": "LateMedieval",
+      "tree": "warfare",
+      "slot": 4,
+      "prerequisites": [
+        "latemedieval-crossbows-and-field-guns",
+        "latemedieval-lance-knights"
+      ],
+      "gold": 26667,
+      "ticks": 900,
+      "capabilities": [],
+      "description": "Unlocks towers, walls, gates, and bombards. Improves all Late Medieval ground units. In this draft, troop and building construction requires the separately named unlock nodes; this foundation does not grant them automatically."
+    },
+    {
+      "id": "latemedieval-steelmaking",
+      "name": "Steelmaking",
+      "age": "LateMedieval",
+      "tree": "economic",
+      "slot": 1,
+      "gold": 8000,
+      "ticks": 700,
+      "description": "Unlocks carbon extraction, steel production, and Late Medieval mines.",
+      "prerequisites": [
+        "earlymedieval-market-logistics"
+      ],
+      "capabilities": [
+        "latemedieval-steelmaking"
+      ]
+    },
+    {
+      "id": "latemedieval-powder-milling",
+      "name": "Powder Milling",
+      "age": "LateMedieval",
+      "tree": "economic",
+      "slot": 2,
+      "gold": 9334,
+      "ticks": 800,
+      "description": "Unlocks sulphur, nitrate, and gunpowder extraction from owned deposits.",
+      "prerequisites": [
+        "latemedieval-steelmaking"
+      ],
+      "capabilities": [
+        "latemedieval-powder-milling"
+      ]
+    },
+    {
+      "id": "latemedieval-guild-commerce",
+      "name": "Guild Commerce",
+      "age": "LateMedieval",
+      "tree": "economic",
+      "slot": 3,
+      "gold": 9334,
+      "ticks": 800,
+      "description": "Unlocks Late Medieval city and factory upgrades and larger land trader cargo holds. Upgrades cosmetic trade roads.",
+      "prerequisites": [
+        "latemedieval-steelmaking"
+      ],
+      "capabilities": [
+        "latemedieval-guild-commerce"
+      ]
+    },
+    {
+      "id": "latemedieval-urban-administration",
+      "name": "Urban Administration",
+      "age": "LateMedieval",
+      "tree": "economic",
+      "slot": 4,
+      "gold": 13334,
+      "ticks": 900,
+      "description": "Speeds up equipment and refining recipes.",
+      "prerequisites": [
+        "latemedieval-powder-milling",
+        "latemedieval-guild-commerce"
+      ],
+      "capabilities": [
+        "latemedieval-urban-administration"
+      ]
+    },
+    {
+      "id": "earlymodern-ocean-navigation",
+      "name": "Ocean Navigation",
+      "age": "Napoleonic",
+      "tree": "naval",
+      "slot": 1,
+      "gold": 23334,
+      "ticks": 800,
+      "description": "Unlocks Early Modern ports. Existing ports advance automatically.",
+      "prerequisites": [
+        "latemedieval-broadside-tactics"
+      ],
+      "capabilities": [
+        "earlymodern-ocean-navigation"
+      ]
+    },
+    {
+      "id": "earlymodern-ocean-transport",
+      "name": "Ocean Transport",
+      "age": "Napoleonic",
+      "tree": "naval",
+      "slot": 2,
+      "gold": 13334,
+      "ticks": 880,
+      "description": "Unlocks Early Modern sea traders with larger cargo holds; squads afloat use sturdier Early Modern transport hulls.",
+      "prerequisites": [
+        "earlymodern-ocean-navigation"
+      ],
+      "capabilities": [
+        "earlymodern-ocean-transport"
+      ]
+    },
+    {
+      "id": "earlymodern-ships-of-the-line",
+      "name": "Ships of the Line",
+      "age": "Napoleonic",
+      "tree": "naval",
+      "slot": 3,
+      "gold": 13334,
+      "ticks": 880,
+      "description": "Unlocks Early Modern warships for naval combat and interception of hostile trade ships.",
+      "prerequisites": [
+        "earlymodern-ocean-navigation"
+      ],
+      "capabilities": [
+        "earlymodern-ships-of-the-line"
+      ]
+    },
+    {
+      "id": "earlymodern-fleet-coordination",
+      "name": "Fleet Coordination",
+      "age": "Napoleonic",
+      "tree": "naval",
+      "slot": 4,
+      "gold": 18334,
+      "ticks": 1000,
+      "description": "Improves transport hulls and sailing speed for squads afloat, and military sailing speed; warships reload faster. Trade ships are unchanged.",
+      "prerequisites": [
+        "earlymodern-ocean-transport",
+        "earlymodern-ships-of-the-line"
+      ],
+      "capabilities": [
+        "earlymodern-fleet-coordination"
+      ]
+    },
+    {
+      "id": "earlymodern-firearms",
+      "name": "Firearms",
+      "age": "Napoleonic",
+      "tree": "warfare",
+      "slot": 1,
+      "prerequisites": [
+        "latemedieval-siege-ordnance"
+      ],
+      "gold": 23334,
+      "ticks": 800,
+      "capabilities": [],
+      "description": "Unlocks short-gun infantry and armories producing troop equipment. Raises army capacity after Armies is researched. In this draft, troop and building construction requires the separately named unlock nodes; this foundation does not grant them automatically."
+    },
+    {
+      "id": "earlymodern-musket-and-artillery-drill",
+      "name": "Musket Drill",
+      "age": "Napoleonic",
+      "tree": "warfare",
+      "slot": 2,
+      "prerequisites": [
+        "earlymodern-firearms"
+      ],
+      "gold": 26667,
+      "ticks": 880,
+      "capabilities": [],
+      "description": "Musket equipment foundation. Rus Musketeer has a separate unlock."
+    },
+    {
+      "id": "earlymodern-pistoliers",
+      "name": "Lancer Training",
+      "age": "Napoleonic",
+      "tree": "warfare",
+      "slot": 3,
+      "prerequisites": [
+        "earlymodern-firearms"
+      ],
+      "gold": 26667,
+      "ticks": 880,
+      "capabilities": [],
+      "description": "Mounted lance training. Cossack Lancers have a separate unlock."
+    },
+    {
+      "id": "earlymodern-howitzer-engineering",
+      "name": "Artillery Foundries",
+      "age": "Napoleonic",
+      "tree": "warfare",
+      "slot": 4,
+      "prerequisites": [
+        "earlymodern-musket-and-artillery-drill",
+        "earlymodern-pistoliers"
+      ],
+      "gold": 36667,
+      "ticks": 1000,
+      "capabilities": [],
+      "description": "Unlock artillery production; individual artillery upgrades are researched separately. In this draft, troop and building construction requires the separately named unlock nodes; this foundation does not grant them automatically."
+    },
+    {
+      "id": "earlymodern-powder-manufactories",
+      "name": "Powder Manufactories",
+      "age": "Napoleonic",
+      "tree": "economic",
+      "slot": 1,
+      "gold": 11667,
+      "ticks": 800,
+      "description": "Unlocks Early Modern mine upgrades for higher deposit output.",
+      "prerequisites": [
+        "latemedieval-urban-administration"
+      ],
+      "capabilities": [
+        "earlymodern-powder-manufactories"
+      ]
+    },
+    {
+      "id": "earlymodern-manufactories",
+      "name": "Manufactories",
+      "age": "Napoleonic",
+      "tree": "economic",
+      "slot": 2,
+      "gold": 13334,
+      "ticks": 880,
+      "description": "Unlocks Early Modern city and factory upgrades, increasing reserve growth and trade stock.",
+      "prerequisites": [
+        "earlymodern-powder-manufactories"
+      ],
+      "capabilities": [
+        "earlymodern-manufactories"
+      ]
+    },
+    {
+      "id": "earlymodern-long-distance-commerce",
+      "name": "Long-Distance Commerce",
+      "age": "Napoleonic",
+      "tree": "economic",
+      "slot": 3,
+      "gold": 13334,
+      "ticks": 880,
+      "description": "Increases land trader cargo capacity. Adds cosmetic dressed-stone roads along trade routes.",
+      "prerequisites": [
+        "earlymodern-powder-manufactories"
+      ],
+      "capabilities": [
+        "earlymodern-long-distance-commerce"
+      ]
+    },
+    {
+      "id": "earlymodern-military-provisioning",
+      "name": "Military Provisioning",
+      "age": "Napoleonic",
+      "tree": "economic",
+      "slot": 4,
+      "gold": 18334,
+      "ticks": 1000,
+      "description": "Speeds up equipment and refining recipes and increases horse breeding.",
+      "prerequisites": [
+        "earlymodern-manufactories",
+        "earlymodern-long-distance-commerce"
+      ],
+      "capabilities": [
+        "earlymodern-military-provisioning"
+      ]
+    },
+    {
+      "id": "modern-powered-vessels",
+      "name": "Powered Vessels",
+      "age": "EarlyModern",
+      "tree": "naval",
+      "slot": 1,
+      "gold": 33334,
+      "ticks": 900,
+      "description": "Unlocks Modern ports. Existing ports advance automatically.",
+      "prerequisites": [
+        "earlymodern-fleet-coordination"
+      ],
+      "capabilities": [
+        "modern-powered-vessels"
+      ]
+    },
+    {
+      "id": "modern-amphibious-transport",
+      "name": "Amphibious Transport",
+      "age": "EarlyModern",
+      "tree": "naval",
+      "slot": 2,
+      "gold": 20000,
+      "ticks": 1000,
+      "description": "Unlocks Modern sea traders with larger cargo holds; squads afloat use sturdier Modern transport hulls.",
+      "prerequisites": [
+        "modern-powered-vessels"
+      ],
+      "capabilities": [
+        "modern-amphibious-transport"
+      ]
+    },
+    {
+      "id": "modern-modern-warships",
+      "name": "Modern Warships",
+      "age": "EarlyModern",
+      "tree": "naval",
+      "slot": 3,
+      "gold": 20000,
+      "ticks": 1000,
+      "description": "Unlocks Modern warships for naval combat and interception of hostile trade ships.",
+      "prerequisites": [
+        "modern-powered-vessels"
+      ],
+      "capabilities": [
+        "modern-modern-warships"
+      ]
+    },
+    {
+      "id": "modern-fleet-operations",
+      "name": "Fleet Operations",
+      "age": "EarlyModern",
+      "tree": "naval",
+      "slot": 4,
+      "gold": 30000,
+      "ticks": 1200,
+      "description": "Improves transport hulls and sailing speed for squads afloat, and military sailing speed; warships reload faster. Trade ships are unchanged.",
+      "prerequisites": [
+        "modern-amphibious-transport",
+        "modern-modern-warships"
+      ],
+      "capabilities": [
+        "modern-fleet-operations"
+      ]
+    },
+    {
+      "id": "modern-modern-armaments",
+      "name": "Industrial Armaments",
+      "age": "EarlyModern",
+      "tree": "warfare",
+      "slot": 1,
+      "prerequisites": [
+        "earlymodern-howitzer-engineering"
+      ],
+      "gold": 33334,
+      "ticks": 900,
+      "capabilities": [],
+      "description": "Foundation for individual twentieth-century infantry and vehicle unlocks."
+    },
+    {
+      "id": "modern-combined-arms",
+      "name": "Combined Arms Doctrine",
+      "age": "EarlyModern",
+      "tree": "warfare",
+      "slot": 2,
+      "prerequisites": [
+        "russian-infantry-radios",
+        "russian-tank-armour",
+        "russian-apc-production",
+        "russian-fighter-squadrons"
+      ],
+      "gold": 40000,
+      "ticks": 1000,
+      "capabilities": [],
+      "description": "Coordinate separately unlocked infantry, armour and air support."
+    },
+    {
+      "id": "modern-military-aviation",
+      "name": "Military Airfields",
+      "age": "EarlyModern",
+      "tree": "warfare",
+      "slot": 3,
+      "prerequisites": [
+        "modern-modern-armaments"
+      ],
+      "gold": 40000,
+      "ticks": 1000,
+      "capabilities": [],
+      "description": "Unlock aviation infrastructure; fighters and bombers are researched individually. In this draft, troop and building construction requires the separately named unlock nodes; this foundation does not grant them automatically."
+    },
+    {
+      "id": "modern-strategic-weapons",
+      "name": "Nuclear Weapons",
+      "age": "EarlyModern",
+      "tree": "warfare",
+      "slot": 4,
+      "prerequisites": [
+        "modern-combined-arms",
+        "modern-military-aviation"
+      ],
+      "gold": 60000,
+      "ticks": 1200,
+      "capabilities": [],
+      "description": "Unlock early nuclear weapons; modern precision missiles and MIRV systems are separate research. In this draft, troop and building construction requires the separately named unlock nodes; this foundation does not grant them automatically."
+    },
+    {
+      "id": "modern-petroleum-extraction",
+      "name": "Petroleum Extraction",
+      "age": "EarlyModern",
+      "tree": "economic",
+      "slot": 1,
+      "gold": 16667,
+      "ticks": 900,
+      "description": "Unlocks oil wells, offshore oil rigs, oil extraction, and Modern mine upgrades.",
+      "prerequisites": [
+        "earlymodern-military-provisioning"
+      ],
+      "capabilities": [
+        "modern-petroleum-extraction"
+      ]
+    },
+    {
+      "id": "modern-industrial-production",
+      "name": "Industrial Production",
+      "age": "EarlyModern",
+      "tree": "economic",
+      "slot": 2,
+      "gold": 20000,
+      "ticks": 1000,
+      "description": "Unlocks Modern city and factory upgrades, increasing reserve growth and trade stock.",
+      "prerequisites": [
+        "modern-petroleum-extraction"
+      ],
+      "capabilities": [
+        "modern-industrial-production"
+      ]
+    },
+    {
+      "id": "modern-motor-freight",
+      "name": "Motor Freight",
+      "age": "EarlyModern",
+      "tree": "economic",
+      "slot": 3,
+      "gold": 20000,
+      "ticks": 1000,
+      "description": "Increases land trader cargo capacity. Adds cosmetic asphalt roads along trade routes.",
+      "prerequisites": [
+        "modern-petroleum-extraction"
+      ],
+      "capabilities": [
+        "modern-motor-freight"
+      ]
+    },
+    {
+      "id": "modern-integrated-logistics",
+      "name": "Integrated Logistics",
+      "age": "EarlyModern",
+      "tree": "economic",
+      "slot": 4,
+      "gold": 30000,
+      "ticks": 1200,
+      "description": "Speeds up equipment, refining, and payload recipes and increases horse breeding.",
+      "prerequisites": [
+        "modern-industrial-production",
+        "modern-motor-freight"
+      ],
+      "capabilities": [
+        "modern-integrated-logistics"
+      ]
+    },
+    {
+      "id": "russian-troop-stoneage-frontline",
+      "name": "Clubmen",
+      "age": "StoneAge",
+      "tree": "warfare",
+      "slot": 11,
+      "prerequisites": [
+        "stoneage-flint-weapons",
+        "russian-building-stoneage-barracks"
+      ],
+      "gold": 200,
+      "ticks": 300,
+      "capabilities": [],
+      "description": "Unlock Clubmen: frontline. Produced at Barracks."
+    },
+    {
+      "id": "russian-building-stoneage-barracks",
+      "name": "Barracks",
+      "age": "StoneAge",
+      "tree": "warfare",
+      "slot": 6,
+      "prerequisites": [
+        "stoneage-flint-weapons"
+      ],
+      "gold": 200,
+      "ticks": 300,
+      "capabilities": [],
+      "description": "Unlock Barracks construction in Stone Age. Separate node for this building tier; earlier tiers remain available."
+    },
+    {
+      "id": "russian-troop-stoneage-rangedinfantry",
+      "name": "Javelin Throwers",
+      "age": "StoneAge",
+      "tree": "warfare",
+      "slot": 13,
+      "prerequisites": [
+        "stoneage-spear-throwing",
+        "russian-building-stoneage-archery"
+      ],
+      "gold": 200,
+      "ticks": 300,
+      "capabilities": [],
+      "description": "Unlock Javelin Throwers: rangedInfantry. Produced at Archery range."
+    },
+    {
+      "id": "russian-building-stoneage-archery",
+      "name": "Archery range",
+      "age": "StoneAge",
+      "tree": "warfare",
+      "slot": 5,
+      "prerequisites": [
+        "stoneage-spear-throwing"
+      ],
+      "gold": 200,
+      "ticks": 300,
+      "capabilities": [],
+      "description": "Unlock Archery range construction in Stone Age. Separate node for this building tier; earlier tiers remain available."
+    },
+    {
+      "id": "russian-troop-stoneage-lightcavalry",
+      "name": "Mounted Spearmen",
+      "age": "StoneAge",
+      "tree": "warfare",
+      "slot": 12,
+      "prerequisites": [
+        "stoneage-horsemanship",
+        "russian-building-stoneage-stables"
+      ],
+      "gold": 200,
+      "ticks": 300,
+      "capabilities": [],
+      "description": "Unlock Mounted Spearmen: lightCavalry. Produced at Stables."
+    },
+    {
+      "id": "russian-building-stoneage-stables",
+      "name": "Stables",
+      "age": "StoneAge",
+      "tree": "warfare",
+      "slot": 8,
+      "prerequisites": [
+        "stoneage-horsemanship"
+      ],
+      "gold": 200,
+      "ticks": 300,
+      "capabilities": [],
+      "description": "Unlock Stables construction in Stone Age. Separate node for this building tier; earlier tiers remain available."
+    },
+    {
+      "id": "russian-troop-bronzeage-frontline",
+      "name": "Bronze Axemen",
+      "age": "BronzeAge",
+      "tree": "warfare",
+      "slot": 14,
+      "prerequisites": [
+        "bronzeage-bronze-equipment",
+        "russian-building-bronzeage-barracks"
+      ],
+      "gold": 700,
+      "ticks": 500,
+      "capabilities": [],
+      "description": "Unlock Bronze Axemen: frontline. Produced at Barracks."
+    },
+    {
+      "id": "russian-building-bronzeage-barracks",
+      "name": "Barracks",
+      "age": "BronzeAge",
+      "tree": "warfare",
+      "slot": 7,
+      "prerequisites": [],
+      "gold": 0,
+      "ticks": 0,
+      "capabilities": [],
+      "description": "Unlock Barracks construction in Bronze Age. Separate node for this building tier; earlier tiers remain available."
+    },
+    {
+      "id": "russian-troop-bronzeage-rangedinfantry",
+      "name": "Archers",
+      "age": "BronzeAge",
+      "tree": "warfare",
+      "slot": 16,
+      "prerequisites": [
+        "bronzeage-bowcraft",
+        "russian-building-bronzeage-archery"
+      ],
+      "gold": 700,
+      "ticks": 500,
+      "capabilities": [],
+      "description": "Unlock Archers: rangedInfantry. Produced at Archery range."
+    },
+    {
+      "id": "russian-building-bronzeage-archery",
+      "name": "Archery range",
+      "age": "BronzeAge",
+      "tree": "warfare",
+      "slot": 6,
+      "prerequisites": [
+        "bronzeage-bowcraft"
+      ],
+      "gold": 700,
+      "ticks": 500,
+      "capabilities": [],
+      "description": "Unlock Archery range construction in Bronze Age. Separate node for this building tier; earlier tiers remain available."
+    },
+    {
+      "id": "russian-troop-bronzeage-lightcavalry",
+      "name": "Spear Riders",
+      "age": "BronzeAge",
+      "tree": "warfare",
+      "slot": 15,
+      "prerequisites": [
+        "bronzeage-chariot-warfare",
+        "russian-building-bronzeage-stables"
+      ],
+      "gold": 700,
+      "ticks": 500,
+      "capabilities": [],
+      "description": "Unlock Spear Riders: lightCavalry. Produced at Stables."
+    },
+    {
+      "id": "russian-building-bronzeage-stables",
+      "name": "Stables",
+      "age": "BronzeAge",
+      "tree": "warfare",
+      "slot": 10,
+      "prerequisites": [
+        "bronzeage-chariot-warfare"
+      ],
+      "gold": 700,
+      "ticks": 500,
+      "capabilities": [],
+      "description": "Unlock Stables construction in Bronze Age. Separate node for this building tier; earlier tiers remain available."
+    },
+    {
+      "id": "russian-troop-classicalage-frontline",
+      "name": "Varangians",
+      "age": "ClassicalAge",
+      "tree": "warfare",
+      "slot": 15,
+      "prerequisites": [
+        "classicalage-professional-infantry",
+        "russian-building-classicalage-barracks"
+      ],
+      "gold": 1800,
+      "ticks": 700,
+      "capabilities": [],
+      "description": "Unlock Varangians: frontline. Produced at Barracks."
+    },
+    {
+      "id": "russian-building-classicalage-barracks",
+      "name": "Barracks",
+      "age": "ClassicalAge",
+      "tree": "warfare",
+      "slot": 6,
+      "prerequisites": [
+        "classicalage-professional-infantry"
+      ],
+      "gold": 1800,
+      "ticks": 700,
+      "capabilities": [],
+      "description": "Unlock Barracks construction in Classical Age. Separate node for this building tier; earlier tiers remain available."
+    },
+    {
+      "id": "russian-troop-classicalage-anticavalry",
+      "name": "Heavy Spearmen",
+      "age": "ClassicalAge",
+      "tree": "warfare",
+      "slot": 14,
+      "prerequisites": [
+        "classicalage-professional-infantry",
+        "russian-building-classicalage-barracks"
+      ],
+      "gold": 1800,
+      "ticks": 700,
+      "capabilities": [],
+      "description": "Unlock Heavy Spearmen: antiCavalry. Produced at Barracks."
+    },
+    {
+      "id": "russian-troop-classicalage-rangedinfantry",
+      "name": "Recurve Bowmen",
+      "age": "ClassicalAge",
+      "tree": "warfare",
+      "slot": 17,
+      "prerequisites": [
+        "classicalage-ranged-warfare",
+        "russian-building-classicalage-archery"
+      ],
+      "gold": 1800,
+      "ticks": 700,
+      "capabilities": [],
+      "description": "Unlock Recurve Bowmen: rangedInfantry. Produced at Archery range."
+    },
+    {
+      "id": "russian-building-classicalage-archery",
+      "name": "Archery range",
+      "age": "ClassicalAge",
+      "tree": "warfare",
+      "slot": 5,
+      "prerequisites": [
+        "classicalage-ranged-warfare"
+      ],
+      "gold": 1800,
+      "ticks": 700,
+      "capabilities": [],
+      "description": "Unlock Archery range construction in Classical Age. Separate node for this building tier; earlier tiers remain available."
+    },
+    {
+      "id": "russian-troop-classicalage-lightcavalry",
+      "name": "Light Horsemen",
+      "age": "ClassicalAge",
+      "tree": "warfare",
+      "slot": 16,
+      "prerequisites": [
+        "classicalage-cavalry-tactics",
+        "russian-building-classicalage-stables"
+      ],
+      "gold": 1800,
+      "ticks": 700,
+      "capabilities": [],
+      "description": "Unlock Light Horsemen: lightCavalry. Produced at Stables."
+    },
+    {
+      "id": "russian-building-classicalage-stables",
+      "name": "Stables",
+      "age": "ClassicalAge",
+      "tree": "warfare",
+      "slot": 9,
+      "prerequisites": [
+        "classicalage-cavalry-tactics"
+      ],
+      "gold": 1800,
+      "ticks": 700,
+      "capabilities": [],
+      "description": "Unlock Stables construction in Classical Age. Separate node for this building tier; earlier tiers remain available."
+    },
+    {
+      "id": "russian-classical-horse-archery",
+      "name": "Horse Archers",
+      "age": "ClassicalAge",
+      "tree": "warfare",
+      "slot": 11,
+      "prerequisites": [
+        "classicalage-cavalry-tactics",
+        "russian-building-classicalage-stables"
+      ],
+      "gold": 6000,
+      "ticks": 600,
+      "capabilities": [],
+      "description": "Unlock Horse Archers: rangedCavalry. Produced at Stables."
+    },
+    {
+      "id": "russian-troop-earlymedieval-frontline",
+      "name": "Rus Woodsman",
+      "age": "EarlyMedieval",
+      "tree": "warfare",
+      "slot": 16,
+      "prerequisites": [
+        "earlymedieval-mail-equipment",
+        "russian-building-earlymedieval-barracks"
+      ],
+      "gold": 3500,
+      "ticks": 900,
+      "capabilities": [],
+      "description": "Unlock Rus Woodsman: frontline. Produced at Barracks."
+    },
+    {
+      "id": "russian-building-earlymedieval-barracks",
+      "name": "Barracks",
+      "age": "EarlyMedieval",
+      "tree": "warfare",
+      "slot": 6,
+      "prerequisites": [
+        "earlymedieval-mail-equipment"
+      ],
+      "gold": 3500,
+      "ticks": 900,
+      "capabilities": [],
+      "description": "Unlock Barracks construction in Early Medieval. Separate node for this building tier; earlier tiers remain available."
+    },
+    {
+      "id": "russian-troop-earlymedieval-anticavalry",
+      "name": "Mail Spearman",
+      "age": "EarlyMedieval",
+      "tree": "warfare",
+      "slot": 15,
+      "prerequisites": [
+        "earlymedieval-mail-equipment",
+        "russian-building-earlymedieval-barracks"
+      ],
+      "gold": 3500,
+      "ticks": 900,
+      "capabilities": [],
+      "description": "Unlock Mail Spearman: antiCavalry. Produced at Barracks."
+    },
+    {
+      "id": "russian-troop-earlymedieval-rangedinfantry",
+      "name": "Rus Bowmen",
+      "age": "EarlyMedieval",
+      "tree": "warfare",
+      "slot": 18,
+      "prerequisites": [
+        "earlymedieval-bow-and-bolt-warfare",
+        "russian-building-earlymedieval-archery"
+      ],
+      "gold": 3500,
+      "ticks": 900,
+      "capabilities": [],
+      "description": "Unlock Rus Bowmen: rangedInfantry. Produced at Archery range."
+    },
+    {
+      "id": "russian-building-earlymedieval-archery",
+      "name": "Archery range",
+      "age": "EarlyMedieval",
+      "tree": "warfare",
+      "slot": 5,
+      "prerequisites": [
+        "earlymedieval-bow-and-bolt-warfare"
+      ],
+      "gold": 3500,
+      "ticks": 900,
+      "capabilities": [],
+      "description": "Unlock Archery range construction in Early Medieval. Separate node for this building tier; earlier tiers remain available."
+    },
+    {
+      "id": "russian-troop-earlymedieval-lightcavalry",
+      "name": "Rus Lancer",
+      "age": "EarlyMedieval",
+      "tree": "warfare",
+      "slot": 17,
+      "prerequisites": [
+        "earlymedieval-mounted-spearmen",
+        "russian-building-earlymedieval-stables"
+      ],
+      "gold": 3500,
+      "ticks": 900,
+      "capabilities": [],
+      "description": "Unlock Rus Lancer: lightCavalry. Produced at Stables."
+    },
+    {
+      "id": "russian-building-earlymedieval-stables",
+      "name": "Stables",
+      "age": "EarlyMedieval",
+      "tree": "warfare",
+      "slot": 9,
+      "prerequisites": [
+        "earlymedieval-mounted-spearmen"
+      ],
+      "gold": 3500,
+      "ticks": 900,
+      "capabilities": [],
+      "description": "Unlock Stables construction in Early Medieval. Separate node for this building tier; earlier tiers remain available."
+    },
+    {
+      "id": "russian-druzhina",
+      "name": "Druzhina",
+      "age": "EarlyMedieval",
+      "tree": "warfare",
+      "slot": 12,
+      "prerequisites": [
+        "earlymedieval-mounted-spearmen",
+        "russian-building-earlymedieval-stables"
+      ],
+      "gold": 12000,
+      "ticks": 900,
+      "capabilities": [],
+      "description": "Unlock Druzhina: heavyCavalry. Produced at Stables."
+    },
+    {
+      "id": "russian-cossack-archery",
+      "name": "Early Cossack Archer",
+      "age": "EarlyMedieval",
+      "tree": "warfare",
+      "slot": 11,
+      "prerequisites": [
+        "earlymedieval-mounted-spearmen",
+        "russian-building-earlymedieval-stables"
+      ],
+      "gold": 9000,
+      "ticks": 700,
+      "capabilities": [],
+      "description": "Unlock Early Cossack Archer: rangedCavalry. Produced at Stables."
+    },
+    {
+      "id": "russian-troop-latemedieval-frontline",
+      "name": "Boyar Guards",
+      "age": "LateMedieval",
+      "tree": "warfare",
+      "slot": 16,
+      "prerequisites": [
+        "latemedieval-steel-equipment",
+        "russian-building-latemedieval-barracks"
+      ],
+      "gold": 6500,
+      "ticks": 1100,
+      "capabilities": [],
+      "description": "Unlock Boyar Guards: frontline. Produced at Barracks."
+    },
+    {
+      "id": "russian-building-latemedieval-barracks",
+      "name": "Barracks",
+      "age": "LateMedieval",
+      "tree": "warfare",
+      "slot": 7,
+      "prerequisites": [
+        "latemedieval-steel-equipment"
+      ],
+      "gold": 6500,
+      "ticks": 1100,
+      "capabilities": [],
+      "description": "Unlock Barracks construction in Late Medieval. Separate node for this building tier; earlier tiers remain available."
+    },
+    {
+      "id": "russian-troop-latemedieval-anticavalry",
+      "name": "Plate Spearman",
+      "age": "LateMedieval",
+      "tree": "warfare",
+      "slot": 15,
+      "prerequisites": [
+        "latemedieval-steel-equipment",
+        "russian-building-latemedieval-barracks"
+      ],
+      "gold": 6500,
+      "ticks": 1100,
+      "capabilities": [],
+      "description": "Unlock Plate Spearman: antiCavalry. Produced at Barracks."
+    },
+    {
+      "id": "russian-troop-latemedieval-rangedinfantry",
+      "name": "Rus Crossbowman",
+      "age": "LateMedieval",
+      "tree": "warfare",
+      "slot": 18,
+      "prerequisites": [
+        "latemedieval-crossbows-and-field-guns",
+        "russian-building-latemedieval-archery"
+      ],
+      "gold": 6500,
+      "ticks": 1100,
+      "capabilities": [],
+      "description": "Unlock Rus Crossbowman: rangedInfantry. Produced at Archery range."
+    },
+    {
+      "id": "russian-building-latemedieval-archery",
+      "name": "Archery range",
+      "age": "LateMedieval",
+      "tree": "warfare",
+      "slot": 6,
+      "prerequisites": [
+        "latemedieval-crossbows-and-field-guns"
+      ],
+      "gold": 6500,
+      "ticks": 1100,
+      "capabilities": [],
+      "description": "Unlock Archery range construction in Late Medieval. Separate node for this building tier; earlier tiers remain available."
+    },
+    {
+      "id": "russian-troop-latemedieval-lightcavalry",
+      "name": "Cossack Riders",
+      "age": "LateMedieval",
+      "tree": "warfare",
+      "slot": 17,
+      "prerequisites": [
+        "latemedieval-lance-knights",
+        "russian-building-latemedieval-stables"
+      ],
+      "gold": 6500,
+      "ticks": 1100,
+      "capabilities": [],
+      "description": "Unlock Cossack Riders: lightCavalry. Produced at Stables."
+    },
+    {
+      "id": "russian-building-latemedieval-stables",
+      "name": "Stables",
+      "age": "LateMedieval",
+      "tree": "warfare",
+      "slot": 10,
+      "prerequisites": [
+        "latemedieval-lance-knights"
+      ],
+      "gold": 6500,
+      "ticks": 1100,
+      "capabilities": [],
+      "description": "Unlock Stables construction in Late Medieval. Separate node for this building tier; earlier tiers remain available."
+    },
+    {
+      "id": "russian-boyar-cavalry",
+      "name": "Boyar Cavalry",
+      "age": "LateMedieval",
+      "tree": "warfare",
+      "slot": 5,
+      "prerequisites": [
+        "latemedieval-lance-knights",
+        "russian-building-latemedieval-stables"
+      ],
+      "gold": 22000,
+      "ticks": 1000,
+      "capabilities": [],
+      "description": "Unlock Boyar Cavalry: heavyCavalry. Produced at Stables."
+    },
+    {
+      "id": "russian-heavy-cossack-archery",
+      "name": "Heavy Cossack Archer",
+      "age": "LateMedieval",
+      "tree": "warfare",
+      "slot": 12,
+      "prerequisites": [
+        "latemedieval-lance-knights",
+        "russian-building-latemedieval-stables"
+      ],
+      "gold": 18000,
+      "ticks": 900,
+      "capabilities": [],
+      "description": "Unlock Heavy Cossack Archer: rangedCavalry. Produced at Stables."
+    },
+    {
+      "id": "russian-grenadier-companies",
+      "name": "Grenadiers",
+      "age": "Napoleonic",
+      "tree": "warfare",
+      "slot": 12,
+      "prerequisites": [
+        "earlymodern-musket-and-artillery-drill",
+        "russian-building-napoleonic-barracks"
+      ],
+      "gold": 12000,
+      "ticks": 1200,
+      "capabilities": [],
+      "description": "Unlock Grenadiers: frontline. Produced at Barracks."
+    },
+    {
+      "id": "russian-building-napoleonic-barracks",
+      "name": "Barracks",
+      "age": "Napoleonic",
+      "tree": "warfare",
+      "slot": 7,
+      "prerequisites": [
+        "earlymodern-firearms"
+      ],
+      "gold": 14000,
+      "ticks": 1300,
+      "capabilities": [],
+      "description": "Unlock Barracks construction in Napoleonic. Separate node for this building tier; earlier tiers remain available."
+    },
+    {
+      "id": "russian-troop-earlymodern-anticavalry",
+      "name": "Pikeman",
+      "age": "Napoleonic",
+      "tree": "warfare",
+      "slot": 16,
+      "prerequisites": [
+        "earlymodern-firearms",
+        "russian-building-napoleonic-barracks"
+      ],
+      "gold": 14000,
+      "ticks": 1300,
+      "capabilities": [],
+      "description": "Unlock Pikeman: antiCavalry. Produced at Barracks."
+    },
+    {
+      "id": "russian-troop-earlymodern-rangedinfantry",
+      "name": "Rus Musketeer",
+      "age": "Napoleonic",
+      "tree": "warfare",
+      "slot": 18,
+      "prerequisites": [
+        "earlymodern-musket-and-artillery-drill",
+        "russian-building-napoleonic-archery"
+      ],
+      "gold": 14000,
+      "ticks": 1300,
+      "capabilities": [],
+      "description": "Unlock Rus Musketeer: rangedInfantry. Produced at Archery range."
+    },
+    {
+      "id": "russian-building-napoleonic-archery",
+      "name": "Archery range",
+      "age": "Napoleonic",
+      "tree": "warfare",
+      "slot": 5,
+      "prerequisites": [
+        "earlymodern-musket-and-artillery-drill"
+      ],
+      "gold": 14000,
+      "ticks": 1300,
+      "capabilities": [],
+      "description": "Unlock Archery range construction in Napoleonic. Separate node for this building tier; earlier tiers remain available."
+    },
+    {
+      "id": "russian-troop-earlymodern-lightcavalry",
+      "name": "Cossack Lancers",
+      "age": "Napoleonic",
+      "tree": "warfare",
+      "slot": 17,
+      "prerequisites": [
+        "earlymodern-pistoliers",
+        "russian-building-napoleonic-stables"
+      ],
+      "gold": 14000,
+      "ticks": 1300,
+      "capabilities": [],
+      "description": "Unlock Cossack Lancers: lightCavalry. Produced at Stables."
+    },
+    {
+      "id": "russian-building-napoleonic-stables",
+      "name": "Stables",
+      "age": "Napoleonic",
+      "tree": "warfare",
+      "slot": 9,
+      "prerequisites": [
+        "earlymodern-pistoliers"
+      ],
+      "gold": 14000,
+      "ticks": 1300,
+      "capabilities": [],
+      "description": "Unlock Stables construction in Napoleonic. Separate node for this building tier; earlier tiers remain available."
+    },
+    {
+      "id": "russian-cuirassiers",
+      "name": "Cuirassiers",
+      "age": "Napoleonic",
+      "tree": "warfare",
+      "slot": 11,
+      "prerequisites": [
+        "earlymodern-pistoliers",
+        "russian-building-napoleonic-stables"
+      ],
+      "gold": 16000,
+      "ticks": 1400,
+      "capabilities": [],
+      "description": "Unlock Cuirassiers: heavyCavalry. Produced at Stables."
+    },
+    {
+      "id": "russian-mounted-musketeers",
+      "name": "Streltsy",
+      "age": "Napoleonic",
+      "tree": "warfare",
+      "slot": 13,
+      "prerequisites": [
+        "earlymodern-pistoliers",
+        "russian-building-napoleonic-stables"
+      ],
+      "gold": 14000,
+      "ticks": 1200,
+      "capabilities": [],
+      "description": "Unlock Streltsy: rangedCavalry. Produced at Stables."
+    },
+    {
+      "id": "russian-rifle-infantry",
+      "name": "Mosin Nagant Squad",
+      "age": "EarlyModern",
+      "tree": "warfare",
+      "slot": 22,
+      "prerequisites": [
+        "modern-modern-armaments",
+        "russian-building-earlymodern-barracks"
+      ],
+      "gold": 30000,
+      "ticks": 1800,
+      "capabilities": [],
+      "description": "Unlock Mosin Nagant Squad: frontline. Produced at Barracks."
+    },
+    {
+      "id": "russian-building-earlymodern-barracks",
+      "name": "Barracks",
+      "age": "EarlyModern",
+      "tree": "warfare",
+      "slot": 11,
+      "prerequisites": [
+        "modern-modern-armaments"
+      ],
+      "gold": 35000,
+      "ticks": 2000,
+      "capabilities": [],
+      "description": "Unlock Barracks construction in Early Modern. Separate node for this building tier; earlier tiers remain available."
+    },
+    {
+      "id": "russian-anti-tank-teams",
+      "name": "PTRD-41 Crew",
+      "age": "EarlyModern",
+      "tree": "warfare",
+      "slot": 5,
+      "prerequisites": [
+        "russian-rifle-infantry",
+        "russian-building-earlymodern-barracks"
+      ],
+      "gold": 30000,
+      "ticks": 1800,
+      "capabilities": [],
+      "description": "Unlock PTRD-41 Crew: antiCavalry. Produced at Barracks."
+    },
+    {
+      "id": "russian-machine-gun-teams",
+      "name": "DP-28 Crew",
+      "age": "EarlyModern",
+      "tree": "warfare",
+      "slot": 21,
+      "prerequisites": [
+        "modern-modern-armaments",
+        "russian-building-earlymodern-archery"
+      ],
+      "gold": 30000,
+      "ticks": 1800,
+      "capabilities": [],
+      "description": "Unlock DP-28 Crew: rangedInfantry. Produced at Archery range."
+    },
+    {
+      "id": "russian-building-earlymodern-archery",
+      "name": "Archery range",
+      "age": "EarlyModern",
+      "tree": "warfare",
+      "slot": 9,
+      "prerequisites": [
+        "modern-modern-armaments"
+      ],
+      "gold": 35000,
+      "ticks": 2000,
+      "capabilities": [],
+      "description": "Unlock Archery range construction in Early Modern. Separate node for this building tier; earlier tiers remain available."
+    },
+    {
+      "id": "russian-gun-trucks",
+      "name": "Gun Trucks",
+      "age": "EarlyModern",
+      "tree": "warfare",
+      "slot": 19,
+      "prerequisites": [
+        "modern-modern-armaments",
+        "russian-building-earlymodern-depot"
+      ],
+      "gold": 30000,
+      "ticks": 1800,
+      "capabilities": [],
+      "description": "Unlock Gun Trucks: lightCavalry. Produced at Vehicle depot."
+    },
+    {
+      "id": "russian-building-earlymodern-depot",
+      "name": "Vehicle depot",
+      "age": "EarlyModern",
+      "tree": "warfare",
+      "slot": 12,
+      "prerequisites": [
+        "modern-modern-armaments"
+      ],
+      "gold": 35000,
+      "ticks": 2000,
+      "capabilities": [],
+      "description": "Unlock Vehicle depot construction in Early Modern. Separate node for this building tier; earlier tiers remain available."
+    },
+    {
+      "id": "russian-apc-production",
+      "name": "Armoured Personnel Carriers",
+      "age": "EarlyModern",
+      "tree": "warfare",
+      "slot": 6,
+      "prerequisites": [
+        "russian-gun-trucks",
+        "russian-building-earlymodern-depot"
+      ],
+      "gold": 40000,
+      "ticks": 2000,
+      "capabilities": [],
+      "description": "Unlock Armoured Personnel Carriers: heavyCavalry. Produced at Vehicle depot."
+    },
+    {
+      "id": "russian-tank-production",
+      "name": "Battle Tanks",
+      "age": "EarlyModern",
+      "tree": "warfare",
+      "slot": 25,
+      "prerequisites": [
+        "russian-gun-trucks",
+        "russian-building-earlymodern-depot"
+      ],
+      "gold": 45000,
+      "ticks": 2000,
+      "capabilities": [],
+      "description": "Unlock Battle Tanks: rangedCavalry. Produced at Vehicle depot."
+    },
+    {
+      "id": "russian-troop-present-day-frontline",
+      "name": "AK-47 Squad",
+      "age": "Modern",
+      "tree": "warfare",
+      "slot": 19,
+      "prerequisites": [
+        "russian-infantry-optics",
+        "russian-building-modern-barracks"
+      ],
+      "gold": 80000,
+      "ticks": 2400,
+      "capabilities": [],
+      "description": "Unlock AK-47 Squad: frontline. Produced at Barracks."
+    },
+    {
+      "id": "russian-infantry-optics",
+      "name": "Infantry Optics",
+      "age": "Modern",
+      "tree": "warfare",
+      "slot": 2,
+      "prerequisites": [
+        "russian-networked-command"
+      ],
+      "gold": 70000,
+      "ticks": 2400,
+      "capabilities": [],
+      "description": "Improve present-day infantry accuracy."
+    },
+    {
+      "id": "russian-networked-command",
+      "name": "Networked Command",
+      "age": "Modern",
+      "tree": "warfare",
+      "slot": 1,
+      "prerequisites": [
+        "modern-combined-arms"
+      ],
+      "gold": 65000,
+      "ticks": 2400,
+      "capabilities": [],
+      "description": "Foundation for present-day Russian military research."
+    },
+    {
+      "id": "russian-infantry-radios",
+      "name": "Infantry Radios",
+      "age": "EarlyModern",
+      "tree": "warfare",
+      "slot": 20,
+      "prerequisites": [
+        "russian-rifle-infantry",
+        "russian-machine-gun-teams"
+      ],
+      "gold": 30000,
+      "ticks": 1800,
+      "capabilities": [],
+      "description": "Improve infantry coordination."
+    },
+    {
+      "id": "russian-tank-armour",
+      "name": "Improved Tank Armour",
+      "age": "EarlyModern",
+      "tree": "warfare",
+      "slot": 24,
+      "prerequisites": [
+        "russian-tank-production"
+      ],
+      "gold": 30000,
+      "ticks": 1800,
+      "capabilities": [],
+      "description": "Improve tank survivability."
+    },
+    {
+      "id": "russian-fighter-squadrons",
+      "name": "Fighter Squadrons",
+      "age": "EarlyModern",
+      "tree": "warfare",
+      "slot": 18,
+      "prerequisites": [
+        "modern-military-aviation"
+      ],
+      "gold": 40000,
+      "ticks": 2000,
+      "capabilities": [],
+      "description": "Unlock fighters."
+    },
+    {
+      "id": "russian-building-modern-barracks",
+      "name": "Barracks",
+      "age": "Modern",
+      "tree": "warfare",
+      "slot": 9,
+      "prerequisites": [
+        "russian-networked-command"
+      ],
+      "gold": 80000,
+      "ticks": 2400,
+      "capabilities": [],
+      "description": "Unlock Barracks construction in Modern. Separate node for this building tier; earlier tiers remain available."
+    },
+    {
+      "id": "russian-anti-tank-guidance",
+      "name": "ATGM Teams",
+      "age": "Modern",
+      "tree": "warfare",
+      "slot": 5,
+      "prerequisites": [
+        "russian-infantry-optics",
+        "russian-building-modern-barracks"
+      ],
+      "gold": 85000,
+      "ticks": 3000,
+      "capabilities": [],
+      "description": "Unlock ATGM Teams: antiCavalry. Produced at Barracks."
+    },
+    {
+      "id": "russian-troop-present-day-rangedinfantry",
+      "name": "RPL-20 Crew",
+      "age": "Modern",
+      "tree": "warfare",
+      "slot": 23,
+      "prerequisites": [
+        "russian-infantry-optics",
+        "russian-building-modern-archery"
+      ],
+      "gold": 80000,
+      "ticks": 2400,
+      "capabilities": [],
+      "description": "Unlock RPL-20 Crew: rangedInfantry. Produced at Archery range."
+    },
+    {
+      "id": "russian-building-modern-archery",
+      "name": "Archery range",
+      "age": "Modern",
+      "tree": "warfare",
+      "slot": 7,
+      "prerequisites": [
+        "russian-networked-command"
+      ],
+      "gold": 80000,
+      "ticks": 2400,
+      "capabilities": [],
+      "description": "Unlock Archery range construction in Modern. Separate node for this building tier; earlier tiers remain available."
+    },
+    {
+      "id": "russian-troop-present-day-lightcavalry",
+      "name": "Gun Trucks",
+      "age": "Modern",
+      "tree": "warfare",
+      "slot": 21,
+      "prerequisites": [
+        "russian-vehicle-electronics",
+        "russian-building-modern-depot"
+      ],
+      "gold": 80000,
+      "ticks": 2400,
+      "capabilities": [],
+      "description": "Unlock Gun Trucks: lightCavalry. Produced at Vehicle depot."
+    },
+    {
+      "id": "russian-vehicle-electronics",
+      "name": "Vehicle Electronics",
+      "age": "Modern",
+      "tree": "warfare",
+      "slot": 3,
+      "prerequisites": [
+        "russian-networked-command"
+      ],
+      "gold": 80000,
+      "ticks": 2400,
+      "capabilities": [],
+      "description": "Develop modern vehicle electronics. Gun Trucks, APCs and Main Battle Tanks each have their own unlock."
+    },
+    {
+      "id": "russian-building-modern-depot",
+      "name": "Vehicle depot",
+      "age": "Modern",
+      "tree": "warfare",
+      "slot": 10,
+      "prerequisites": [
+        "russian-networked-command"
+      ],
+      "gold": 80000,
+      "ticks": 2400,
+      "capabilities": [],
+      "description": "Unlock Vehicle depot construction in Modern. Separate node for this building tier; earlier tiers remain available."
+    },
+    {
+      "id": "russian-troop-present-day-heavycavalry",
+      "name": "Armoured Personnel Carriers",
+      "age": "Modern",
+      "tree": "warfare",
+      "slot": 20,
+      "prerequisites": [
+        "russian-vehicle-electronics",
+        "russian-building-modern-depot"
+      ],
+      "gold": 80000,
+      "ticks": 2400,
+      "capabilities": [],
+      "description": "Unlock Armoured Personnel Carriers: heavyCavalry. Produced at Vehicle depot."
+    },
+    {
+      "id": "russian-troop-present-day-rangedcavalry",
+      "name": "Main Battle Tanks",
+      "age": "Modern",
+      "tree": "warfare",
+      "slot": 22,
+      "prerequisites": [
+        "russian-vehicle-electronics",
+        "russian-building-modern-depot"
+      ],
+      "gold": 80000,
+      "ticks": 2400,
+      "capabilities": [],
+      "description": "Unlock Main Battle Tanks: rangedCavalry. Produced at Vehicle depot."
+    },
+    {
+      "id": "russian-tank-fire-control",
+      "name": "Tank Fire Control",
+      "age": "Modern",
+      "tree": "warfare",
+      "slot": 4,
+      "prerequisites": [
+        "russian-vehicle-electronics"
+      ],
+      "gold": 85000,
+      "ticks": 3000,
+      "capabilities": [],
+      "description": "Improve tank accuracy."
+    },
+    {
+      "id": "russian-modern-naval-systems",
+      "name": "Modern Naval Systems",
+      "age": "Modern",
+      "tree": "naval",
+      "slot": 1,
+      "prerequisites": [
+        "modern-fleet-operations"
+      ],
+      "gold": 65000,
+      "ticks": 2400,
+      "capabilities": [],
+      "description": "Foundation for present-day naval research."
+    },
+    {
+      "id": "russian-modern-transport-fleet",
+      "name": "Modern Transport Fleet",
+      "age": "Modern",
+      "tree": "naval",
+      "slot": 2,
+      "prerequisites": [
+        "russian-modern-naval-systems"
+      ],
+      "gold": 80000,
+      "ticks": 2400,
+      "capabilities": [],
+      "description": "Unlock modern troop and cargo vessels."
+    },
+    {
+      "id": "russian-missile-frigates",
+      "name": "Guided-Missile Frigates",
+      "age": "Modern",
+      "tree": "naval",
+      "slot": 3,
+      "prerequisites": [
+        "russian-modern-naval-systems"
+      ],
+      "gold": 85000,
+      "ticks": 3000,
+      "capabilities": [],
+      "description": "Unlock modern surface warships."
+    },
+    {
+      "id": "russian-naval-missiles",
+      "name": "Naval Missiles",
+      "age": "Modern",
+      "tree": "naval",
+      "slot": 4,
+      "prerequisites": [
+        "russian-missile-frigates"
+      ],
+      "gold": 100000,
+      "ticks": 3000,
+      "capabilities": [],
+      "description": "Improve surface strike capability."
+    },
+    {
+      "id": "russian-digital-economy",
+      "name": "Digital Economy",
+      "age": "Modern",
+      "tree": "economic",
+      "slot": 1,
+      "prerequisites": [
+        "modern-integrated-logistics"
+      ],
+      "gold": 65000,
+      "ticks": 2400,
+      "capabilities": [],
+      "description": "Foundation for present-day production and freight."
+    },
+    {
+      "id": "russian-automated-factories",
+      "name": "Automated Factories",
+      "age": "Modern",
+      "tree": "economic",
+      "slot": 2,
+      "prerequisites": [
+        "russian-digital-economy"
+      ],
+      "gold": 80000,
+      "ticks": 2400,
+      "capabilities": [],
+      "description": "Unlock automated production."
+    },
+    {
+      "id": "russian-trade-route-management",
+      "name": "Trade Route Management",
+      "age": "Modern",
+      "tree": "economic",
+      "slot": 3,
+      "prerequisites": [
+        "russian-digital-economy"
+      ],
+      "gold": 75000,
+      "ticks": 2400,
+      "capabilities": [],
+      "description": "Improve management of overland trade routes."
+    },
+    {
+      "id": "russian-precision-manufacturing",
+      "name": "Precision Manufacturing",
+      "age": "Modern",
+      "tree": "economic",
+      "slot": 4,
+      "prerequisites": [
+        "russian-automated-factories"
+      ],
+      "gold": 100000,
+      "ticks": 3000,
+      "capabilities": [],
+      "description": "Increase factory productivity."
+    },
+    {
+      "id": "russian-bomber-squadrons",
+      "name": "Bomber Squadrons",
+      "age": "EarlyModern",
+      "tree": "warfare",
+      "slot": 7,
+      "prerequisites": [
+        "modern-military-aviation"
+      ],
+      "gold": 45000,
+      "ticks": 2000,
+      "capabilities": [],
+      "description": "Unlock bombers."
+    },
+    {
+      "id": "russian-building-stoneage-city",
+      "name": "City",
+      "age": "StoneAge",
+      "tree": "economic",
+      "slot": 5,
+      "prerequisites": [
+        "stoneage-settlements"
+      ],
+      "gold": 200,
+      "ticks": 300,
+      "capabilities": [],
+      "description": "Unlock City construction in Stone Age. Separate node for this building tier; earlier tiers remain available."
+    },
+    {
+      "id": "russian-building-stoneage-factory",
+      "name": "Factory",
+      "age": "StoneAge",
+      "tree": "economic",
+      "slot": 6,
+      "prerequisites": [
+        "stoneage-craft-workshops"
+      ],
+      "gold": 200,
+      "ticks": 300,
+      "capabilities": [],
+      "description": "Unlock Factory construction in Stone Age. Separate node for this building tier; earlier tiers remain available."
+    },
+    {
+      "id": "russian-building-stoneage-port",
+      "name": "Port",
+      "age": "StoneAge",
+      "tree": "naval",
+      "slot": 5,
+      "prerequisites": [
+        "stoneage-shorecraft"
+      ],
+      "gold": 200,
+      "ticks": 300,
+      "capabilities": [],
+      "description": "Unlock Port construction in Stone Age. Separate node for this building tier; earlier tiers remain available."
+    },
+    {
+      "id": "russian-building-stoneage-mine",
+      "name": "Mine",
+      "age": "StoneAge",
+      "tree": "economic",
+      "slot": 7,
+      "prerequisites": [
+        "stoneage-stone-mining"
+      ],
+      "gold": 200,
+      "ticks": 300,
+      "capabilities": [],
+      "description": "Unlock Mine construction in Stone Age. Separate node for this building tier; earlier tiers remain available."
+    },
+    {
+      "id": "russian-building-stoneage-siege-workshop",
+      "name": "Siege workshop",
+      "age": "StoneAge",
+      "tree": "warfare",
+      "slot": 7,
+      "prerequisites": [
+        "stoneage-field-engineering"
+      ],
+      "gold": 200,
+      "ticks": 300,
+      "capabilities": [],
+      "description": "Unlock Siege workshop construction in Stone Age. Separate node for this building tier; earlier tiers remain available."
+    },
+    {
+      "id": "russian-building-stoneage-tower",
+      "name": "Tower",
+      "age": "StoneAge",
+      "tree": "warfare",
+      "slot": 9,
+      "prerequisites": [
+        "stoneage-field-engineering"
+      ],
+      "gold": 200,
+      "ticks": 300,
+      "capabilities": [],
+      "description": "Unlock Tower construction in Stone Age. Separate node for this building tier; earlier tiers remain available."
+    },
+    {
+      "id": "russian-building-bronzeage-city",
+      "name": "City",
+      "age": "BronzeAge",
+      "tree": "economic",
+      "slot": 5,
+      "prerequisites": [
+        "bronzeage-urban-workshops"
+      ],
+      "gold": 700,
+      "ticks": 500,
+      "capabilities": [],
+      "description": "Unlock City construction in Bronze Age. Separate node for this building tier; earlier tiers remain available."
+    },
+    {
+      "id": "russian-building-bronzeage-factory",
+      "name": "Factory",
+      "age": "BronzeAge",
+      "tree": "economic",
+      "slot": 6,
+      "prerequisites": [
+        "bronzeage-urban-workshops"
+      ],
+      "gold": 700,
+      "ticks": 500,
+      "capabilities": [],
+      "description": "Unlock Factory construction in Bronze Age. Separate node for this building tier; earlier tiers remain available."
+    },
+    {
+      "id": "russian-building-bronzeage-port",
+      "name": "Port",
+      "age": "BronzeAge",
+      "tree": "naval",
+      "slot": 5,
+      "prerequisites": [
+        "bronzeage-planked-hulls"
+      ],
+      "gold": 700,
+      "ticks": 500,
+      "capabilities": [],
+      "description": "Unlock Port construction in Bronze Age. Separate node for this building tier; earlier tiers remain available."
+    },
+    {
+      "id": "russian-building-bronzeage-mine",
+      "name": "Mine",
+      "age": "BronzeAge",
+      "tree": "economic",
+      "slot": 7,
+      "prerequisites": [
+        "bronzeage-bronze-metallurgy"
+      ],
+      "gold": 700,
+      "ticks": 500,
+      "capabilities": [],
+      "description": "Unlock Mine construction in Bronze Age. Separate node for this building tier; earlier tiers remain available."
+    },
+    {
+      "id": "russian-building-bronzeage-blacksmith",
+      "name": "Blacksmith",
+      "age": "BronzeAge",
+      "tree": "warfare",
+      "slot": 8,
+      "prerequisites": [
+        "bronzeage-bronze-equipment"
+      ],
+      "gold": 700,
+      "ticks": 500,
+      "capabilities": [],
+      "description": "Unlock Blacksmith construction in Bronze Age. Separate node for this building tier; earlier tiers remain available."
+    },
+    {
+      "id": "russian-building-bronzeage-siege-workshop",
+      "name": "Siege workshop",
+      "age": "BronzeAge",
+      "tree": "warfare",
+      "slot": 9,
+      "prerequisites": [
+        "bronzeage-fortified-settlements"
+      ],
+      "gold": 700,
+      "ticks": 500,
+      "capabilities": [],
+      "description": "Unlock Siege workshop construction in Bronze Age. Separate node for this building tier; earlier tiers remain available."
+    },
+    {
+      "id": "russian-building-bronzeage-tower",
+      "name": "Tower",
+      "age": "BronzeAge",
+      "tree": "warfare",
+      "slot": 11,
+      "prerequisites": [
+        "bronzeage-fortified-settlements"
+      ],
+      "gold": 700,
+      "ticks": 500,
+      "capabilities": [],
+      "description": "Unlock Tower construction in Bronze Age. Separate node for this building tier; earlier tiers remain available."
+    },
+    {
+      "id": "russian-building-classicalage-city",
+      "name": "City",
+      "age": "ClassicalAge",
+      "tree": "economic",
+      "slot": 5,
+      "prerequisites": [
+        "classicalage-urban-planning"
+      ],
+      "gold": 1800,
+      "ticks": 700,
+      "capabilities": [],
+      "description": "Unlock City construction in Classical Age. Separate node for this building tier; earlier tiers remain available."
+    },
+    {
+      "id": "russian-building-classicalage-factory",
+      "name": "Factory",
+      "age": "ClassicalAge",
+      "tree": "economic",
+      "slot": 6,
+      "prerequisites": [
+        "classicalage-urban-planning"
+      ],
+      "gold": 1800,
+      "ticks": 700,
+      "capabilities": [],
+      "description": "Unlock Factory construction in Classical Age. Separate node for this building tier; earlier tiers remain available."
+    },
+    {
+      "id": "russian-building-classicalage-port",
+      "name": "Port",
+      "age": "ClassicalAge",
+      "tree": "naval",
+      "slot": 5,
+      "prerequisites": [
+        "classicalage-shipyards"
+      ],
+      "gold": 1800,
+      "ticks": 700,
+      "capabilities": [],
+      "description": "Unlock Port construction in Classical Age. Separate node for this building tier; earlier tiers remain available."
+    },
+    {
+      "id": "russian-building-classicalage-mine",
+      "name": "Mine",
+      "age": "ClassicalAge",
+      "tree": "economic",
+      "slot": 7,
+      "prerequisites": [
+        "classicalage-ironworking"
+      ],
+      "gold": 1800,
+      "ticks": 700,
+      "capabilities": [],
+      "description": "Unlock Mine construction in Classical Age. Separate node for this building tier; earlier tiers remain available."
+    },
+    {
+      "id": "russian-building-classicalage-blacksmith",
+      "name": "Blacksmith",
+      "age": "ClassicalAge",
+      "tree": "warfare",
+      "slot": 7,
+      "prerequisites": [
+        "classicalage-professional-infantry"
+      ],
+      "gold": 1800,
+      "ticks": 700,
+      "capabilities": [],
+      "description": "Unlock Blacksmith construction in Classical Age. Separate node for this building tier; earlier tiers remain available."
+    },
+    {
+      "id": "russian-building-classicalage-siege-workshop",
+      "name": "Siege workshop",
+      "age": "ClassicalAge",
+      "tree": "warfare",
+      "slot": 8,
+      "prerequisites": [
+        "classicalage-ranged-warfare"
+      ],
+      "gold": 1800,
+      "ticks": 700,
+      "capabilities": [],
+      "description": "Unlock Siege workshop construction in Classical Age. Separate node for this building tier; earlier tiers remain available."
+    },
+    {
+      "id": "russian-building-classicalage-tower",
+      "name": "Tower",
+      "age": "ClassicalAge",
+      "tree": "warfare",
+      "slot": 10,
+      "prerequisites": [
+        "classicalage-masonry-engineering"
+      ],
+      "gold": 1800,
+      "ticks": 700,
+      "capabilities": [],
+      "description": "Unlock Tower construction in Classical Age. Separate node for this building tier; earlier tiers remain available."
+    },
+    {
+      "id": "russian-building-earlymedieval-city",
+      "name": "City",
+      "age": "EarlyMedieval",
+      "tree": "economic",
+      "slot": 5,
+      "prerequisites": [
+        "earlymedieval-agricultural-organisation"
+      ],
+      "gold": 3500,
+      "ticks": 900,
+      "capabilities": [],
+      "description": "Unlock City construction in Early Medieval. Separate node for this building tier; earlier tiers remain available."
+    },
+    {
+      "id": "russian-building-earlymedieval-factory",
+      "name": "Factory",
+      "age": "EarlyMedieval",
+      "tree": "economic",
+      "slot": 6,
+      "prerequisites": [
+        "earlymedieval-craft-guilds"
+      ],
+      "gold": 3500,
+      "ticks": 900,
+      "capabilities": [],
+      "description": "Unlock Factory construction in Early Medieval. Separate node for this building tier; earlier tiers remain available."
+    },
+    {
+      "id": "russian-building-earlymedieval-port",
+      "name": "Port",
+      "age": "EarlyMedieval",
+      "tree": "naval",
+      "slot": 5,
+      "prerequisites": [
+        "earlymedieval-framed-hulls"
+      ],
+      "gold": 3500,
+      "ticks": 900,
+      "capabilities": [],
+      "description": "Unlock Port construction in Early Medieval. Separate node for this building tier; earlier tiers remain available."
+    },
+    {
+      "id": "russian-building-earlymedieval-mine",
+      "name": "Mine",
+      "age": "EarlyMedieval",
+      "tree": "economic",
+      "slot": 7,
+      "prerequisites": [
+        "earlymedieval-agricultural-organisation"
+      ],
+      "gold": 3500,
+      "ticks": 900,
+      "capabilities": [],
+      "description": "Unlock Mine construction in Early Medieval. Separate node for this building tier; earlier tiers remain available."
+    },
+    {
+      "id": "russian-building-earlymedieval-blacksmith",
+      "name": "Blacksmith",
+      "age": "EarlyMedieval",
+      "tree": "warfare",
+      "slot": 7,
+      "prerequisites": [
+        "earlymedieval-mail-equipment"
+      ],
+      "gold": 3500,
+      "ticks": 900,
+      "capabilities": [],
+      "description": "Unlock Blacksmith construction in Early Medieval. Separate node for this building tier; earlier tiers remain available."
+    },
+    {
+      "id": "russian-building-earlymedieval-siege-workshop",
+      "name": "Siege workshop",
+      "age": "EarlyMedieval",
+      "tree": "warfare",
+      "slot": 8,
+      "prerequisites": [
+        "earlymedieval-bow-and-bolt-warfare"
+      ],
+      "gold": 3500,
+      "ticks": 900,
+      "capabilities": [],
+      "description": "Unlock Siege workshop construction in Early Medieval. Separate node for this building tier; earlier tiers remain available."
+    },
+    {
+      "id": "russian-building-earlymedieval-tower",
+      "name": "Tower",
+      "age": "EarlyMedieval",
+      "tree": "warfare",
+      "slot": 10,
+      "prerequisites": [
+        "earlymedieval-trebuchet-engineering"
+      ],
+      "gold": 3500,
+      "ticks": 900,
+      "capabilities": [],
+      "description": "Unlock Tower construction in Early Medieval. Separate node for this building tier; earlier tiers remain available."
+    },
+    {
+      "id": "russian-building-latemedieval-city",
+      "name": "City",
+      "age": "LateMedieval",
+      "tree": "economic",
+      "slot": 5,
+      "prerequisites": [
+        "latemedieval-guild-commerce"
+      ],
+      "gold": 6500,
+      "ticks": 1100,
+      "capabilities": [],
+      "description": "Unlock City construction in Late Medieval. Separate node for this building tier; earlier tiers remain available."
+    },
+    {
+      "id": "russian-building-latemedieval-factory",
+      "name": "Factory",
+      "age": "LateMedieval",
+      "tree": "economic",
+      "slot": 6,
+      "prerequisites": [
+        "latemedieval-guild-commerce"
+      ],
+      "gold": 6500,
+      "ticks": 1100,
+      "capabilities": [],
+      "description": "Unlock Factory construction in Late Medieval. Separate node for this building tier; earlier tiers remain available."
+    },
+    {
+      "id": "russian-building-latemedieval-port",
+      "name": "Port",
+      "age": "LateMedieval",
+      "tree": "naval",
+      "slot": 5,
+      "prerequisites": [
+        "latemedieval-sailing-hulls"
+      ],
+      "gold": 6500,
+      "ticks": 1100,
+      "capabilities": [],
+      "description": "Unlock Port construction in Late Medieval. Separate node for this building tier; earlier tiers remain available."
+    },
+    {
+      "id": "russian-building-latemedieval-mine",
+      "name": "Mine",
+      "age": "LateMedieval",
+      "tree": "economic",
+      "slot": 7,
+      "prerequisites": [
+        "latemedieval-steelmaking"
+      ],
+      "gold": 6500,
+      "ticks": 1100,
+      "capabilities": [],
+      "description": "Unlock Mine construction in Late Medieval. Separate node for this building tier; earlier tiers remain available."
+    },
+    {
+      "id": "russian-building-latemedieval-blacksmith",
+      "name": "Blacksmith",
+      "age": "LateMedieval",
+      "tree": "warfare",
+      "slot": 8,
+      "prerequisites": [
+        "latemedieval-steel-equipment"
+      ],
+      "gold": 6500,
+      "ticks": 1100,
+      "capabilities": [],
+      "description": "Unlock Blacksmith construction in Late Medieval. Separate node for this building tier; earlier tiers remain available."
+    },
+    {
+      "id": "russian-building-latemedieval-siege-workshop",
+      "name": "Siege workshop",
+      "age": "LateMedieval",
+      "tree": "warfare",
+      "slot": 9,
+      "prerequisites": [
+        "latemedieval-crossbows-and-field-guns"
+      ],
+      "gold": 6500,
+      "ticks": 1100,
+      "capabilities": [],
+      "description": "Unlock Siege workshop construction in Late Medieval. Separate node for this building tier; earlier tiers remain available."
+    },
+    {
+      "id": "russian-building-latemedieval-tower",
+      "name": "Tower",
+      "age": "LateMedieval",
+      "tree": "warfare",
+      "slot": 11,
+      "prerequisites": [
+        "latemedieval-siege-ordnance"
+      ],
+      "gold": 6500,
+      "ticks": 1100,
+      "capabilities": [],
+      "description": "Unlock Tower construction in Late Medieval. Separate node for this building tier; earlier tiers remain available."
+    },
+    {
+      "id": "russian-building-napoleonic-city",
+      "name": "City",
+      "age": "Napoleonic",
+      "tree": "economic",
+      "slot": 5,
+      "prerequisites": [
+        "earlymodern-manufactories"
+      ],
+      "gold": 14000,
+      "ticks": 1300,
+      "capabilities": [],
+      "description": "Unlock City construction in Napoleonic. Separate node for this building tier; earlier tiers remain available."
+    },
+    {
+      "id": "russian-building-napoleonic-factory",
+      "name": "Factory",
+      "age": "Napoleonic",
+      "tree": "economic",
+      "slot": 6,
+      "prerequisites": [
+        "earlymodern-manufactories"
+      ],
+      "gold": 14000,
+      "ticks": 1300,
+      "capabilities": [],
+      "description": "Unlock Factory construction in Napoleonic. Separate node for this building tier; earlier tiers remain available."
+    },
+    {
+      "id": "russian-building-napoleonic-port",
+      "name": "Port",
+      "age": "Napoleonic",
+      "tree": "naval",
+      "slot": 5,
+      "prerequisites": [
+        "earlymodern-ocean-navigation"
+      ],
+      "gold": 14000,
+      "ticks": 1300,
+      "capabilities": [],
+      "description": "Unlock Port construction in Napoleonic. Separate node for this building tier; earlier tiers remain available."
+    },
+    {
+      "id": "russian-building-napoleonic-mine",
+      "name": "Mine",
+      "age": "Napoleonic",
+      "tree": "economic",
+      "slot": 7,
+      "prerequisites": [
+        "earlymodern-powder-manufactories"
+      ],
+      "gold": 14000,
+      "ticks": 1300,
+      "capabilities": [],
+      "description": "Unlock Mine construction in Napoleonic. Separate node for this building tier; earlier tiers remain available."
+    },
+    {
+      "id": "russian-building-napoleonic-armory",
+      "name": "Armory",
+      "age": "Napoleonic",
+      "tree": "warfare",
+      "slot": 6,
+      "prerequisites": [
+        "earlymodern-firearms"
+      ],
+      "gold": 14000,
+      "ticks": 1300,
+      "capabilities": [],
+      "description": "Unlock Armory construction in Napoleonic. Separate node for this building tier; earlier tiers remain available."
+    },
+    {
+      "id": "russian-building-napoleonic-siege-workshop",
+      "name": "Siege workshop",
+      "age": "Napoleonic",
+      "tree": "warfare",
+      "slot": 8,
+      "prerequisites": [
+        "earlymodern-musket-and-artillery-drill"
+      ],
+      "gold": 14000,
+      "ticks": 1300,
+      "capabilities": [],
+      "description": "Unlock Siege workshop construction in Napoleonic. Separate node for this building tier; earlier tiers remain available."
+    },
+    {
+      "id": "russian-building-napoleonic-tower",
+      "name": "Tower",
+      "age": "Napoleonic",
+      "tree": "warfare",
+      "slot": 10,
+      "prerequisites": [
+        "earlymodern-howitzer-engineering"
+      ],
+      "gold": 14000,
+      "ticks": 1300,
+      "capabilities": [],
+      "description": "Unlock Tower construction in Napoleonic. Separate node for this building tier; earlier tiers remain available."
+    },
+    {
+      "id": "russian-building-earlymodern-city",
+      "name": "City",
+      "age": "EarlyModern",
+      "tree": "economic",
+      "slot": 5,
+      "prerequisites": [
+        "modern-industrial-production"
+      ],
+      "gold": 35000,
+      "ticks": 2000,
+      "capabilities": [],
+      "description": "Unlock City construction in Early Modern. Separate node for this building tier; earlier tiers remain available."
+    },
+    {
+      "id": "russian-building-earlymodern-factory",
+      "name": "Factory",
+      "age": "EarlyModern",
+      "tree": "economic",
+      "slot": 6,
+      "prerequisites": [
+        "modern-industrial-production"
+      ],
+      "gold": 35000,
+      "ticks": 2000,
+      "capabilities": [],
+      "description": "Unlock Factory construction in Early Modern. Separate node for this building tier; earlier tiers remain available."
+    },
+    {
+      "id": "russian-building-earlymodern-port",
+      "name": "Port",
+      "age": "EarlyModern",
+      "tree": "naval",
+      "slot": 6,
+      "prerequisites": [
+        "modern-powered-vessels"
+      ],
+      "gold": 35000,
+      "ticks": 2000,
+      "capabilities": [],
+      "description": "Unlock Port construction in Early Modern. Separate node for this building tier; earlier tiers remain available."
+    },
+    {
+      "id": "russian-building-earlymodern-mine",
+      "name": "Mine",
+      "age": "EarlyModern",
+      "tree": "economic",
+      "slot": 7,
+      "prerequisites": [
+        "modern-petroleum-extraction"
+      ],
+      "gold": 35000,
+      "ticks": 2000,
+      "capabilities": [],
+      "description": "Unlock Mine construction in Early Modern. Separate node for this building tier; earlier tiers remain available."
+    },
+    {
+      "id": "russian-building-earlymodern-arms-factory",
+      "name": "Arms factory",
+      "age": "EarlyModern",
+      "tree": "warfare",
+      "slot": 10,
+      "prerequisites": [
+        "modern-modern-armaments"
+      ],
+      "gold": 35000,
+      "ticks": 2000,
+      "capabilities": [],
+      "description": "Unlock Arms factory construction in Early Modern. Separate node for this building tier; earlier tiers remain available."
+    },
+    {
+      "id": "russian-building-earlymodern-siege-workshop",
+      "name": "Siege workshop",
+      "age": "EarlyModern",
+      "tree": "warfare",
+      "slot": 16,
+      "prerequisites": [
+        "modern-modern-armaments"
+      ],
+      "gold": 35000,
+      "ticks": 2000,
+      "capabilities": [],
+      "description": "Unlock Siege workshop construction in Early Modern. Separate node for this building tier; earlier tiers remain available."
+    },
+    {
+      "id": "russian-building-earlymodern-airstrip",
+      "name": "Military airstrip",
+      "age": "EarlyModern",
+      "tree": "warfare",
+      "slot": 8,
+      "prerequisites": [
+        "modern-military-aviation"
+      ],
+      "gold": 35000,
+      "ticks": 2000,
+      "capabilities": [],
+      "description": "Unlock Military airstrip construction in Early Modern. Separate node for this building tier; earlier tiers remain available."
+    },
+    {
+      "id": "russian-building-earlymodern-oil-well",
+      "name": "Oil well",
+      "age": "EarlyModern",
+      "tree": "economic",
+      "slot": 8,
+      "prerequisites": [
+        "modern-petroleum-extraction"
+      ],
+      "gold": 35000,
+      "ticks": 2000,
+      "capabilities": [],
+      "description": "Unlock Oil well construction in Early Modern. Separate node for this building tier; earlier tiers remain available."
+    },
+    {
+      "id": "russian-building-earlymodern-oil-rig",
+      "name": "Oil rig",
+      "age": "EarlyModern",
+      "tree": "naval",
+      "slot": 5,
+      "prerequisites": [
+        "modern-petroleum-extraction"
+      ],
+      "gold": 35000,
+      "ticks": 2000,
+      "capabilities": [],
+      "description": "Unlock Oil rig construction in Early Modern. Separate node for this building tier; earlier tiers remain available."
+    },
+    {
+      "id": "russian-building-earlymodern-gun-nest",
+      "name": "Gun nest",
+      "age": "EarlyModern",
+      "tree": "warfare",
+      "slot": 13,
+      "prerequisites": [
+        "modern-combined-arms"
+      ],
+      "gold": 35000,
+      "ticks": 2000,
+      "capabilities": [],
+      "description": "Unlock Gun nest construction in Early Modern. Separate node for this building tier; earlier tiers remain available."
+    },
+    {
+      "id": "russian-building-earlymodern-trench",
+      "name": "Trench",
+      "age": "EarlyModern",
+      "tree": "warfare",
+      "slot": 17,
+      "prerequisites": [
+        "modern-combined-arms"
+      ],
+      "gold": 35000,
+      "ticks": 2000,
+      "capabilities": [],
+      "description": "Unlock Trench construction in Early Modern. Separate node for this building tier; earlier tiers remain available."
+    },
+    {
+      "id": "russian-building-earlymodern-missile-silo",
+      "name": "Missile silo",
+      "age": "EarlyModern",
+      "tree": "warfare",
+      "slot": 15,
+      "prerequisites": [
+        "modern-strategic-weapons"
+      ],
+      "gold": 35000,
+      "ticks": 2000,
+      "capabilities": [],
+      "description": "Unlock Missile silo construction in Early Modern. Separate node for this building tier; earlier tiers remain available."
+    },
+    {
+      "id": "russian-building-earlymodern-missile-defence",
+      "name": "Missile defence",
+      "age": "EarlyModern",
+      "tree": "warfare",
+      "slot": 14,
+      "prerequisites": [
+        "modern-combined-arms"
+      ],
+      "gold": 35000,
+      "ticks": 2000,
+      "capabilities": [],
+      "description": "Unlock Missile defence construction in Early Modern. Separate node for this building tier; earlier tiers remain available."
+    },
+    {
+      "id": "russian-building-modern-city",
+      "name": "City",
+      "age": "Modern",
+      "tree": "economic",
+      "slot": 5,
+      "prerequisites": [
+        "modern-industrial-production"
+      ],
+      "gold": 80000,
+      "ticks": 2400,
+      "capabilities": [],
+      "description": "Unlock City construction in Modern. Separate node for this building tier; earlier tiers remain available."
+    },
+    {
+      "id": "russian-building-modern-factory",
+      "name": "Factory",
+      "age": "Modern",
+      "tree": "economic",
+      "slot": 6,
+      "prerequisites": [
+        "modern-industrial-production"
+      ],
+      "gold": 80000,
+      "ticks": 2400,
+      "capabilities": [],
+      "description": "Unlock Factory construction in Modern. Separate node for this building tier; earlier tiers remain available."
+    },
+    {
+      "id": "russian-building-modern-port",
+      "name": "Port",
+      "age": "Modern",
+      "tree": "naval",
+      "slot": 6,
+      "prerequisites": [
+        "modern-powered-vessels"
+      ],
+      "gold": 80000,
+      "ticks": 2400,
+      "capabilities": [],
+      "description": "Unlock Port construction in Modern. Separate node for this building tier; earlier tiers remain available."
+    },
+    {
+      "id": "russian-building-modern-mine",
+      "name": "Mine",
+      "age": "Modern",
+      "tree": "economic",
+      "slot": 7,
+      "prerequisites": [
+        "modern-petroleum-extraction"
+      ],
+      "gold": 80000,
+      "ticks": 2400,
+      "capabilities": [],
+      "description": "Unlock Mine construction in Modern. Separate node for this building tier; earlier tiers remain available."
+    },
+    {
+      "id": "russian-building-modern-arms-factory",
+      "name": "Arms factory",
+      "age": "Modern",
+      "tree": "warfare",
+      "slot": 8,
+      "prerequisites": [
+        "russian-networked-command"
+      ],
+      "gold": 80000,
+      "ticks": 2400,
+      "capabilities": [],
+      "description": "Unlock Arms factory construction in Modern. Separate node for this building tier; earlier tiers remain available."
+    },
+    {
+      "id": "russian-building-modern-siege-workshop",
+      "name": "Siege workshop",
+      "age": "Modern",
+      "tree": "warfare",
+      "slot": 15,
+      "prerequisites": [
+        "russian-networked-command"
+      ],
+      "gold": 80000,
+      "ticks": 2400,
+      "capabilities": [],
+      "description": "Unlock Siege workshop construction in Modern. Separate node for this building tier; earlier tiers remain available."
+    },
+    {
+      "id": "russian-building-modern-airstrip",
+      "name": "Military airstrip",
+      "age": "Modern",
+      "tree": "warfare",
+      "slot": 6,
+      "prerequisites": [
+        "modern-military-aviation"
+      ],
+      "gold": 80000,
+      "ticks": 2400,
+      "capabilities": [],
+      "description": "Unlock Military airstrip construction in Modern. Separate node for this building tier; earlier tiers remain available."
+    },
+    {
+      "id": "russian-building-modern-oil-well",
+      "name": "Oil well",
+      "age": "Modern",
+      "tree": "economic",
+      "slot": 8,
+      "prerequisites": [
+        "modern-petroleum-extraction"
+      ],
+      "gold": 80000,
+      "ticks": 2400,
+      "capabilities": [],
+      "description": "Unlock Oil well construction in Modern. Separate node for this building tier; earlier tiers remain available."
+    },
+    {
+      "id": "russian-building-modern-oil-rig",
+      "name": "Oil rig",
+      "age": "Modern",
+      "tree": "naval",
+      "slot": 5,
+      "prerequisites": [
+        "modern-petroleum-extraction"
+      ],
+      "gold": 80000,
+      "ticks": 2400,
+      "capabilities": [],
+      "description": "Unlock Oil rig construction in Modern. Separate node for this building tier; earlier tiers remain available."
+    },
+    {
+      "id": "russian-building-modern-gun-nest",
+      "name": "Gun nest",
+      "age": "Modern",
+      "tree": "warfare",
+      "slot": 11,
+      "prerequisites": [
+        "modern-combined-arms"
+      ],
+      "gold": 80000,
+      "ticks": 2400,
+      "capabilities": [],
+      "description": "Unlock Gun nest construction in Modern. Separate node for this building tier; earlier tiers remain available."
+    },
+    {
+      "id": "russian-building-modern-trench",
+      "name": "Trench",
+      "age": "Modern",
+      "tree": "warfare",
+      "slot": 16,
+      "prerequisites": [
+        "modern-combined-arms"
+      ],
+      "gold": 80000,
+      "ticks": 2400,
+      "capabilities": [],
+      "description": "Unlock Trench construction in Modern. Separate node for this building tier; earlier tiers remain available."
+    },
+    {
+      "id": "russian-building-modern-missile-silo",
+      "name": "Missile silo",
+      "age": "Modern",
+      "tree": "warfare",
+      "slot": 14,
+      "prerequisites": [
+        "modern-strategic-weapons"
+      ],
+      "gold": 80000,
+      "ticks": 2400,
+      "capabilities": [],
+      "description": "Unlock Missile silo construction in Modern. Separate node for this building tier; earlier tiers remain available."
+    },
+    {
+      "id": "russian-building-modern-mirv-launcher",
+      "name": "MIRV launch complex",
+      "age": "Modern",
+      "tree": "warfare",
+      "slot": 12,
+      "prerequisites": [
+        "russian-mirv-systems"
+      ],
+      "gold": 80000,
+      "ticks": 2400,
+      "capabilities": [],
+      "description": "Unlock MIRV launch complex construction in Modern. Separate node for this building tier; earlier tiers remain available."
+    },
+    {
+      "id": "russian-mirv-systems",
+      "name": "MIRV Systems",
+      "age": "Modern",
+      "tree": "warfare",
+      "slot": 17,
+      "prerequisites": [
+        "russian-precision-missiles"
+      ],
+      "gold": 180000,
+      "ticks": 4800,
+      "capabilities": [],
+      "description": "Upgrade strategic nuclear delivery systems."
+    },
+    {
+      "id": "russian-precision-missiles",
+      "name": "Precision Missiles",
+      "age": "Modern",
+      "tree": "warfare",
+      "slot": 18,
+      "prerequisites": [
+        "modern-strategic-weapons",
+        "russian-networked-command"
+      ],
+      "gold": 120000,
+      "ticks": 3600,
+      "capabilities": [],
+      "description": "Unlock precision conventional missile strikes."
+    },
+    {
+      "id": "russian-building-modern-missile-defence",
+      "name": "Missile defence",
+      "age": "Modern",
+      "tree": "warfare",
+      "slot": 13,
+      "prerequisites": [
+        "modern-combined-arms"
+      ],
+      "gold": 80000,
+      "ticks": 2400,
+      "capabilities": [],
+      "description": "Unlock Missile defence construction in Modern. Separate node for this building tier; earlier tiers remain available."
+    },
+    {
+      "id": "russian-support-stoneage-siege",
+      "name": "Field ram",
+      "age": "StoneAge",
+      "tree": "warfare",
+      "slot": 10,
+      "prerequisites": [
+        "stoneage-field-engineering",
+        "russian-building-stoneage-siege-workshop"
+      ],
+      "gold": 200,
+      "ticks": 300,
+      "capabilities": [],
+      "description": "Unlock Field ram at the Siege workshop."
+    },
+    {
+      "id": "russian-support-bronzeage-siege",
+      "name": "Battering ram",
+      "age": "BronzeAge",
+      "tree": "warfare",
+      "slot": 13,
+      "prerequisites": [
+        "bronzeage-fortified-settlements",
+        "russian-building-bronzeage-siege-workshop"
+      ],
+      "gold": 700,
+      "ticks": 500,
+      "capabilities": [],
+      "description": "Unlock Battering ram at the Siege workshop."
+    },
+    {
+      "id": "russian-support-bronzeage-field-support",
+      "name": "Assault siege tower",
+      "age": "BronzeAge",
+      "tree": "warfare",
+      "slot": 12,
+      "prerequisites": [
+        "bronzeage-fortified-settlements",
+        "russian-building-bronzeage-siege-workshop"
+      ],
+      "gold": 700,
+      "ticks": 500,
+      "capabilities": [],
+      "description": "Unlock Assault siege tower at the Siege workshop."
+    },
+    {
+      "id": "russian-support-classicalage-siege",
+      "name": "Onager",
+      "age": "ClassicalAge",
+      "tree": "warfare",
+      "slot": 13,
+      "prerequisites": [
+        "classicalage-masonry-engineering",
+        "russian-building-classicalage-siege-workshop"
+      ],
+      "gold": 1800,
+      "ticks": 700,
+      "capabilities": [],
+      "description": "Unlock Onager at the Siege workshop."
+    },
+    {
+      "id": "russian-support-classicalage-field-support",
+      "name": "Mangonel",
+      "age": "ClassicalAge",
+      "tree": "warfare",
+      "slot": 12,
+      "prerequisites": [
+        "classicalage-ranged-warfare",
+        "russian-building-classicalage-siege-workshop"
+      ],
+      "gold": 1800,
+      "ticks": 700,
+      "capabilities": [],
+      "description": "Unlock Mangonel at the Siege workshop."
+    },
+    {
+      "id": "russian-support-earlymedieval-siege",
+      "name": "Trebuchet",
+      "age": "EarlyMedieval",
+      "tree": "warfare",
+      "slot": 14,
+      "prerequisites": [
+        "earlymedieval-trebuchet-engineering",
+        "russian-building-earlymedieval-siege-workshop"
+      ],
+      "gold": 3500,
+      "ticks": 900,
+      "capabilities": [],
+      "description": "Unlock Trebuchet at the Siege workshop."
+    },
+    {
+      "id": "russian-support-earlymedieval-field-support",
+      "name": "Ballista",
+      "age": "EarlyMedieval",
+      "tree": "warfare",
+      "slot": 13,
+      "prerequisites": [
+        "earlymedieval-bow-and-bolt-warfare",
+        "russian-building-earlymedieval-siege-workshop"
+      ],
+      "gold": 3500,
+      "ticks": 900,
+      "capabilities": [],
+      "description": "Unlock Ballista at the Siege workshop."
+    },
+    {
+      "id": "russian-support-latemedieval-siege",
+      "name": "Bombard",
+      "age": "LateMedieval",
+      "tree": "warfare",
+      "slot": 14,
+      "prerequisites": [
+        "latemedieval-siege-ordnance",
+        "russian-building-latemedieval-siege-workshop"
+      ],
+      "gold": 6500,
+      "ticks": 1100,
+      "capabilities": [],
+      "description": "Unlock Bombard at the Siege workshop."
+    },
+    {
+      "id": "russian-support-latemedieval-field-support",
+      "name": "Organ gun",
+      "age": "LateMedieval",
+      "tree": "warfare",
+      "slot": 13,
+      "prerequisites": [
+        "latemedieval-crossbows-and-field-guns",
+        "russian-building-latemedieval-siege-workshop"
+      ],
+      "gold": 6500,
+      "ticks": 1100,
+      "capabilities": [],
+      "description": "Unlock Organ gun at the Siege workshop."
+    },
+    {
+      "id": "russian-support-earlymodern-siege",
+      "name": "Early howitzer",
+      "age": "Napoleonic",
+      "tree": "warfare",
+      "slot": 15,
+      "prerequisites": [
+        "earlymodern-howitzer-engineering",
+        "russian-building-napoleonic-siege-workshop"
+      ],
+      "gold": 14000,
+      "ticks": 1300,
+      "capabilities": [],
+      "description": "Unlock Early howitzer at the Siege workshop."
+    },
+    {
+      "id": "russian-support-earlymodern-field-support",
+      "name": "Field cannon",
+      "age": "Napoleonic",
+      "tree": "warfare",
+      "slot": 14,
+      "prerequisites": [
+        "earlymodern-musket-and-artillery-drill",
+        "russian-building-napoleonic-siege-workshop"
+      ],
+      "gold": 14000,
+      "ticks": 1300,
+      "capabilities": [],
+      "description": "Unlock Field cannon at the Siege workshop."
+    },
+    {
+      "id": "russian-support-modern-siege",
+      "name": "Modern howitzer",
+      "age": "EarlyModern",
+      "tree": "warfare",
+      "slot": 23,
+      "prerequisites": [
+        "modern-combined-arms",
+        "russian-building-earlymodern-siege-workshop"
+      ],
+      "gold": 35000,
+      "ticks": 2000,
+      "capabilities": [],
+      "description": "Unlock Modern howitzer at the Siege workshop."
+    }
+  ]
+}

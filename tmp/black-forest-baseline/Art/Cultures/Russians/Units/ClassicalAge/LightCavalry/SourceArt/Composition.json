@@ -1,0 +1,1024 @@
+{
+  "date": "2026-10-07",
+  "authorization": "User authorized composing and baking existing sprites; single mounted actors only.",
+  "method": "Authored transparent row gutters, whole-pose uniform resize, and transparent atlas padding; native alpha retained, no painted pixels.",
+  "clips": [
+    {
+      "clip": "idle",
+      "source": "SourceArt/Native-Idle-Animated-v1.png",
+      "sourceSha256": "f440bad0392ed8d356e7e0d25bbdaec936408c2654b2e9c7b672b527f32c2400",
+      "output": "Idle-Animated-v1.png",
+      "outputSha256": "bca6c3c6a00ca15e1dc984f4ce5b17afbdd64cc7425aa150789b62ab5f1b7c74",
+      "sourceGrid": [
+        3,
+        2
+      ],
+      "sourceCellSize": [
+        512,
+        512
+      ],
+      "uniformScale": 0.8,
+      "destinationCellOffset": [
+        50,
+        50
+      ],
+      "destinationCellSize": [
+        512,
+        512
+      ],
+      "sourceRoot": [
+        256,
+        256
+      ],
+      "sourceRowCuts": [
+        512,
+        512,
+        512
+      ],
+      "framePlacements": [
+        {
+          "frame": 0,
+          "sourceRect": [
+            0,
+            0,
+            512,
+            512
+          ],
+          "destinationOffset": [
+            50,
+            50
+          ]
+        },
+        {
+          "frame": 1,
+          "sourceRect": [
+            512,
+            0,
+            1024,
+            512
+          ],
+          "destinationOffset": [
+            50,
+            50
+          ]
+        },
+        {
+          "frame": 2,
+          "sourceRect": [
+            1024,
+            0,
+            1536,
+            512
+          ],
+          "destinationOffset": [
+            50,
+            50
+          ]
+        },
+        {
+          "frame": 3,
+          "sourceRect": [
+            0,
+            512,
+            512,
+            1024
+          ],
+          "destinationOffset": [
+            50,
+            50
+          ]
+        },
+        {
+          "frame": 4,
+          "sourceRect": [
+            512,
+            512,
+            1024,
+            1024
+          ],
+          "destinationOffset": [
+            50,
+            50
+          ]
+        },
+        {
+          "frame": 5,
+          "sourceRect": [
+            1024,
+            512,
+            1536,
+            1024
+          ],
+          "destinationOffset": [
+            50,
+            50
+          ]
+        }
+      ]
+    },
+    {
+      "clip": "running",
+      "source": "SourceArt/Native-Running-v1.png",
+      "sourceSha256": "99c9cd89b6dae92b5d0b1198e89e8e71881eae0e7f139418df64f3ed86cc0c63",
+      "output": "Running-v1.png",
+      "outputSha256": "1df71c529dc1be3226486e3e746ab3a172dca095823e62f426e40ac00f448150",
+      "sourceGrid": [
+        3,
+        2
+      ],
+      "sourceCellSize": [
+        512,
+        512
+      ],
+      "uniformScale": 0.8,
+      "destinationCellOffset": [
+        50,
+        50
+      ],
+      "destinationCellSize": [
+        512,
+        512
+      ],
+      "sourceRoot": [
+        256,
+        256
+      ],
+      "sourceRowCuts": [
+        512,
+        512,
+        512
+      ],
+      "framePlacements": [
+        {
+          "frame": 0,
+          "sourceRect": [
+            0,
+            0,
+            512,
+            512
+          ],
+          "destinationOffset": [
+            50,
+            50
+          ]
+        },
+        {
+          "frame": 1,
+          "sourceRect": [
+            512,
+            0,
+            1024,
+            512
+          ],
+          "destinationOffset": [
+            50,
+            50
+          ]
+        },
+        {
+          "frame": 2,
+          "sourceRect": [
+            1024,
+            0,
+            1536,
+            512
+          ],
+          "destinationOffset": [
+            50,
+            50
+          ]
+        },
+        {
+          "frame": 3,
+          "sourceRect": [
+            0,
+            512,
+            512,
+            1024
+          ],
+          "destinationOffset": [
+            50,
+            50
+          ]
+        },
+        {
+          "frame": 4,
+          "sourceRect": [
+            512,
+            512,
+            1024,
+            1024
+          ],
+          "destinationOffset": [
+            50,
+            50
+          ]
+        },
+        {
+          "frame": 5,
+          "sourceRect": [
+            1024,
+            512,
+            1536,
+            1024
+          ],
+          "destinationOffset": [
+            50,
+            50
+          ]
+        }
+      ]
+    },
+    {
+      "clip": "attack",
+      "source": "SourceArt/Native-Attack-v1.png",
+      "sourceSha256": "037f1270606221a679565616d2afd838bde6a8d02ac2cb7d109a1eea2a6d7f48",
+      "output": "Attack-v1.png",
+      "outputSha256": "727e5eb6de78f4f893eb31ec2bc72dbf5645d2621f7eb0a838b3ff5ca0efa233",
+      "sourceGrid": [
+        3,
+        2
+      ],
+      "sourceCellSize": [
+        512,
+        512
+      ],
+      "uniformScale": 0.8,
+      "destinationCellOffset": [
+        50,
+        50
+      ],
+      "destinationCellSize": [
+        512,
+        512
+      ],
+      "sourceRoot": [
+        256,
+        256
+      ],
+      "sourceRowCuts": [
+        511,
+        512,
+        512
+      ],
+      "framePlacements": [
+        {
+          "frame": 0,
+          "sourceRect": [
+            0,
+            0,
+            512,
+            511
+          ],
+          "destinationOffset": [
+            50,
+            50
+          ]
+        },
+        {
+          "frame": 1,
+          "sourceRect": [
+            512,
+            0,
+            1024,
+            512
+          ],
+          "destinationOffset": [
+            50,
+            50
+          ]
+        },
+        {
+          "frame": 2,
+          "sourceRect": [
+            0,
+            511,
+            512,
+            1024
+          ],
+          "destinationOffset": [
+            50,
+            49
+          ]
+        },
+        {
+          "frame": 3,
+          "sourceRect": [
+            1024,
+            0,
+            1536,
+            512
+          ],
+          "destinationOffset": [
+            50,
+            50
+          ]
+        },
+        {
+          "frame": 4,
+          "sourceRect": [
+            512,
+            512,
+            1024,
+            1024
+          ],
+          "destinationOffset": [
+            50,
+            50
+          ]
+        },
+        {
+          "frame": 5,
+          "sourceRect": [
+            1024,
+            512,
+            1536,
+            1024
+          ],
+          "destinationOffset": [
+            50,
+            50
+          ]
+        }
+      ]
+    },
+    {
+      "clip": "hit",
+      "source": "SourceArt/Native-Hit-v1.png",
+      "sourceSha256": "72b132eea250854fd1fff385d96d71308fcbd970c4c89fc61a48ed9c58fe7dc8",
+      "output": "Hit-v1.png",
+      "outputSha256": "7a4f81f81e60f066dc05ddacf0454dbb26dc768c33225edf0bcdff607861758a",
+      "sourceGrid": [
+        3,
+        2
+      ],
+      "sourceCellSize": [
+        512,
+        512
+      ],
+      "uniformScale": 0.8,
+      "destinationCellOffset": [
+        50,
+        50
+      ],
+      "destinationCellSize": [
+        512,
+        512
+      ],
+      "sourceRoot": [
+        256,
+        256
+      ],
+      "sourceRowCuts": [
+        512,
+        510,
+        512
+      ],
+      "framePlacements": [
+        {
+          "frame": 0,
+          "sourceRect": [
+            0,
+            0,
+            512,
+            512
+          ],
+          "destinationOffset": [
+            50,
+            50
+          ]
+        },
+        {
+          "frame": 1,
+          "sourceRect": [
+            512,
+            0,
+            1024,
+            510
+          ],
+          "destinationOffset": [
+            50,
+            50
+          ]
+        },
+        {
+          "frame": 2,
+          "sourceRect": [
+            1024,
+            0,
+            1536,
+            512
+          ],
+          "destinationOffset": [
+            50,
+            50
+          ]
+        },
+        {
+          "frame": 3,
+          "sourceRect": [
+            0,
+            512,
+            512,
+            1024
+          ],
+          "destinationOffset": [
+            50,
+            50
+          ]
+        },
+        {
+          "frame": 4,
+          "sourceRect": [
+            512,
+            510,
+            1024,
+            1024
+          ],
+          "destinationOffset": [
+            50,
+            48
+          ]
+        },
+        {
+          "frame": 5,
+          "sourceRect": [
+            1024,
+            512,
+            1536,
+            1024
+          ],
+          "destinationOffset": [
+            50,
+            50
+          ]
+        }
+      ]
+    },
+    {
+      "clip": "charged",
+      "source": "SourceArt/Native-Charged-Impact-v1.png",
+      "sourceSha256": "282931c2d8a5bd9b1f64442c6bd79a7875b9d21041b65673669c3b15cf823372",
+      "output": "Charged-Impact-v1.png",
+      "outputSha256": "fb5057b283cb0e9e48b285fa7bfe57e15051faab38773ddb1045e5fd8887fd77",
+      "sourceGrid": [
+        3,
+        2
+      ],
+      "sourceCellSize": [
+        512,
+        512
+      ],
+      "uniformScale": 0.8,
+      "destinationCellOffset": [
+        50,
+        50
+      ],
+      "destinationCellSize": [
+        512,
+        512
+      ],
+      "sourceRoot": [
+        256,
+        256
+      ],
+      "sourceRowCuts": [
+        512,
+        512,
+        512
+      ],
+      "framePlacements": [
+        {
+          "frame": 0,
+          "sourceRect": [
+            0,
+            0,
+            512,
+            512
+          ],
+          "destinationOffset": [
+            50,
+            50
+          ]
+        },
+        {
+          "frame": 1,
+          "sourceRect": [
+            512,
+            0,
+            1024,
+            512
+          ],
+          "destinationOffset": [
+            50,
+            50
+          ]
+        },
+        {
+          "frame": 2,
+          "sourceRect": [
+            1024,
+            0,
+            1536,
+            512
+          ],
+          "destinationOffset": [
+            50,
+            50
+          ]
+        },
+        {
+          "frame": 3,
+          "sourceRect": [
+            0,
+            512,
+            512,
+            1024
+          ],
+          "destinationOffset": [
+            50,
+            50
+          ]
+        },
+        {
+          "frame": 4,
+          "sourceRect": [
+            512,
+            512,
+            1024,
+            1024
+          ],
+          "destinationOffset": [
+            50,
+            50
+          ]
+        },
+        {
+          "frame": 5,
+          "sourceRect": [
+            1024,
+            512,
+            1536,
+            1024
+          ],
+          "destinationOffset": [
+            50,
+            50
+          ]
+        }
+      ]
+    },
+    {
+      "clip": "charge",
+      "source": "SourceArt/Native-Charge-v1.png",
+      "sourceSha256": "6f3ea8e5b2cb35e9187252cc369735a237df4b30fb1507d7abc67251e84b8700",
+      "output": "Charge-v1.png",
+      "outputSha256": "07ab9af45f6ec2f51509088955269bea12144a39ae2bcd0f3680cd5a1e3e4eb4",
+      "sourceGrid": [
+        3,
+        2
+      ],
+      "sourceCellSize": [
+        512,
+        512
+      ],
+      "uniformScale": 0.8,
+      "destinationCellOffset": [
+        50,
+        50
+      ],
+      "destinationCellSize": [
+        512,
+        512
+      ],
+      "sourceRoot": [
+        256,
+        256
+      ],
+      "sourceRowCuts": [
+        512,
+        512,
+        513
+      ],
+      "framePlacements": [
+        {
+          "frame": 0,
+          "sourceRect": [
+            0,
+            0,
+            512,
+            512
+          ],
+          "destinationOffset": [
+            50,
+            50
+          ]
+        },
+        {
+          "frame": 1,
+          "sourceRect": [
+            512,
+            0,
+            1024,
+            512
+          ],
+          "destinationOffset": [
+            50,
+            50
+          ]
+        },
+        {
+          "frame": 2,
+          "sourceRect": [
+            1024,
+            0,
+            1536,
+            513
+          ],
+          "destinationOffset": [
+            50,
+            50
+          ]
+        },
+        {
+          "frame": 3,
+          "sourceRect": [
+            0,
+            512,
+            512,
+            1024
+          ],
+          "destinationOffset": [
+            50,
+            50
+          ]
+        },
+        {
+          "frame": 4,
+          "sourceRect": [
+            512,
+            512,
+            1024,
+            1024
+          ],
+          "destinationOffset": [
+            50,
+            50
+          ]
+        },
+        {
+          "frame": 5,
+          "sourceRect": [
+            1024,
+            513,
+            1536,
+            1024
+          ],
+          "destinationOffset": [
+            50,
+            51
+          ]
+        }
+      ]
+    },
+    {
+      "clip": "charge-attack",
+      "source": "SourceArt/Native-Charge-Attack-v1.png",
+      "sourceSha256": "983ed17b0d7de8102740c0d65501e178f5995673d2d54603c34ce068cc784bbe",
+      "output": "Charge-Attack-v1.png",
+      "outputSha256": "e27f26bdadb2d4a97a1b3aa37a387321358e35ca8af84bc89a9c18022ce035b9",
+      "sourceGrid": [
+        3,
+        2
+      ],
+      "sourceCellSize": [
+        512,
+        512
+      ],
+      "uniformScale": 0.8,
+      "destinationCellOffset": [
+        50,
+        50
+      ],
+      "destinationCellSize": [
+        512,
+        512
+      ],
+      "sourceRoot": [
+        256,
+        256
+      ],
+      "sourceRowCuts": [
+        512,
+        512,
+        512
+      ],
+      "framePlacements": [
+        {
+          "frame": 0,
+          "sourceRect": [
+            0,
+            0,
+            512,
+            512
+          ],
+          "destinationOffset": [
+            50,
+            50
+          ]
+        },
+        {
+          "frame": 1,
+          "sourceRect": [
+            512,
+            0,
+            1024,
+            512
+          ],
+          "destinationOffset": [
+            50,
+            50
+          ]
+        },
+        {
+          "frame": 2,
+          "sourceRect": [
+            1024,
+            0,
+            1536,
+            512
+          ],
+          "destinationOffset": [
+            50,
+            50
+          ]
+        },
+        {
+          "frame": 3,
+          "sourceRect": [
+            0,
+            512,
+            512,
+            1024
+          ],
+          "destinationOffset": [
+            50,
+            50
+          ]
+        },
+        {
+          "frame": 4,
+          "sourceRect": [
+            512,
+            512,
+            1024,
+            1024
+          ],
+          "destinationOffset": [
+            50,
+            50
+          ]
+        },
+        {
+          "frame": 5,
+          "sourceRect": [
+            1024,
+            512,
+            1536,
+            1024
+          ],
+          "destinationOffset": [
+            50,
+            50
+          ]
+        }
+      ]
+    },
+    {
+      "clip": "death",
+      "source": "SourceArt/Native-Death-Together-v2.png",
+      "sourceSha256": "b2f6802c82b621f6eae84f0819db47a54af21986278ee1d29e405c770c688565",
+      "output": "Death-Together-v2.png",
+      "outputSha256": "210a6e948f2e163665f28572acabdd6d23189123060a27bce0f3015339e0610f",
+      "sourceGrid": [
+        3,
+        2
+      ],
+      "sourceCellSize": [
+        512,
+        512
+      ],
+      "uniformScale": 0.8,
+      "destinationCellOffset": [
+        50,
+        50
+      ],
+      "destinationCellSize": [
+        512,
+        512
+      ],
+      "sourceRoot": [
+        256,
+        256
+      ],
+      "sourceRowCuts": [
+        512,
+        512,
+        512
+      ],
+      "framePlacements": [
+        {
+          "frame": 0,
+          "sourceRect": [
+            0,
+            0,
+            512,
+            512
+          ],
+          "destinationOffset": [
+            50,
+            50
+          ]
+        },
+        {
+          "frame": 1,
+          "sourceRect": [
+            512,
+            0,
+            1024,
+            512
+          ],
+          "destinationOffset": [
+            50,
+            50
+          ]
+        },
+        {
+          "frame": 2,
+          "sourceRect": [
+            1024,
+            0,
+            1536,
+            512
+          ],
+          "destinationOffset": [
+            50,
+            50
+          ]
+        },
+        {
+          "frame": 3,
+          "sourceRect": [
+            0,
+            512,
+            512,
+            1024
+          ],
+          "destinationOffset": [
+            50,
+            50
+          ]
+        },
+        {
+          "frame": 4,
+          "sourceRect": [
+            512,
+            512,
+            1024,
+            1024
+          ],
+          "destinationOffset": [
+            50,
+            50
+          ]
+        },
+        {
+          "frame": 5,
+          "sourceRect": [
+            1024,
+            512,
+            1536,
+            1024
+          ],
+          "destinationOffset": [
+            50,
+            50
+          ]
+        }
+      ]
+    },
+    {
+      "clip": "death-thrown",
+      "source": "SourceArt/Native-Death-Thrown-v1.png",
+      "sourceSha256": "3199481c3f5d9b338b34d1725ecc0215f86d90ce9fa3a983763b72ab0ca337c6",
+      "output": "Death-Thrown-v1.png",
+      "outputSha256": "d14351bb68f9ecc4a1c1b44a976ed37a6ffaf5fd457092677743f99d9b2e1457",
+      "sourceGrid": [
+        3,
+        2
+      ],
+      "sourceCellSize": [
+        512,
+        512
+      ],
+      "uniformScale": 0.8,
+      "destinationCellOffset": [
+        50,
+        50
+      ],
+      "destinationCellSize": [
+        512,
+        512
+      ],
+      "sourceRoot": [
+        256,
+        256
+      ],
+      "sourceRowCuts": [
+        512,
+        512,
+        512
+      ],
+      "framePlacements": [
+        {
+          "frame": 0,
+          "sourceRect": [
+            0,
+            0,
+            512,
+            512
+          ],
+          "destinationOffset": [
+            50,
+            50
+          ]
+        },
+        {
+          "frame": 1,
+          "sourceRect": [
+            512,
+            0,
+            1024,
+            512
+          ],
+          "destinationOffset": [
+            50,
+            50
+          ]
+        },
+        {
+          "frame": 2,
+          "sourceRect": [
+            1024,
+            0,
+            1536,
+            512
+          ],
+          "destinationOffset": [
+            50,
+            50
+          ]
+        },
+        {
+          "frame": 3,
+          "sourceRect": [
+            0,
+            512,
+            512,
+            1024
+          ],
+          "destinationOffset": [
+            50,
+            50
+          ]
+        },
+        {
+          "frame": 4,
+          "sourceRect": [
+            512,
+            512,
+            1024,
+            1024
+          ],
+          "destinationOffset": [
+            50,
+            50
+          ]
+        },
+        {
+          "frame": 5,
+          "sourceRect": [
+            1024,
+            512,
+            1536,
+            1024
+          ],
+          "destinationOffset": [
+            50,
+            50
+          ]
+        }
+      ]
+    }
+  ]
+}

@@ -1,0 +1,125 @@
+{
+  "method": "Deterministic sprite-layer animation: one immutable master, clipped tread texture motion, independent generated muzzle VFX.",
+  "master": "idle-Registered-v1.png",
+  "masterSha256": "39b7ec64a734aeecf18df16ed771ba9d0c195fb3d2d76c323962ee95a6db51df",
+  "effects": "SourceArt/Native-muzzle-effects-v1.png",
+  "effectsSha256": "8ed0f2665532ecb57f50830bddda07993c0cebcfb05c455b2813bd00e2f119e4",
+  "output": "moving-shooting-Registered-v2.png",
+  "outputSha256": "29bafbbbde9fafc7ba4f9e101dd9f5d762d43b27ec40b35dd79111313f3c9114",
+  "records": [
+    {
+      "frame": 0,
+      "bodyWidths": [
+        187,
+        189,
+        187,
+        187,
+        189,
+        189,
+        189,
+        189
+      ],
+      "changedOutsideLayers": 0,
+      "phase": 0
+    },
+    {
+      "frame": 1,
+      "bodyWidths": [
+        187,
+        189,
+        187,
+        187,
+        189,
+        189,
+        189,
+        189
+      ],
+      "changedOutsideLayers": 0,
+      "phase": 2
+    },
+    {
+      "frame": 2,
+      "bodyWidths": [
+        187,
+        189,
+        187,
+        187,
+        189,
+        189,
+        189,
+        189
+      ],
+      "changedOutsideLayers": 0,
+      "phase": 4
+    },
+    {
+      "frame": 3,
+      "bodyWidths": [
+        187,
+        189,
+        187,
+        187,
+        189,
+        189,
+        189,
+        189
+      ],
+      "changedOutsideLayers": 0,
+      "phase": 6
+    },
+    {
+      "frame": 4,
+      "bodyWidths": [
+        187,
+        189,
+        187,
+        187,
+        189,
+        189,
+        189,
+        189
+      ],
+      "changedOutsideLayers": 0,
+      "phase": 8
+    },
+    {
+      "frame": 5,
+      "bodyWidths": [
+        187,
+        189,
+        187,
+        187,
+        189,
+        189,
+        189,
+        189
+      ],
+      "changedOutsideLayers": 0,
+      "phase": 10
+    }
+  ],
+  "tracks": [
+    {
+      "x": 166,
+      "y": 84,
+      "w": 7,
+      "h": 300
+    },
+    {
+      "x": 339,
+      "y": 84,
+      "w": 7,
+      "h": 300
+    }
+  ],
+  "referenceWidths": [
+    187,
+    189,
+    187,
+    187,
+    189,
+    189,
+    189,
+    189
+  ]
+}

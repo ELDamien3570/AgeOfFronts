@@ -1,0 +1,50 @@
+{
+  "schemaVersion": 1,
+  "cultureId": "russians",
+  "age": "Modern",
+  "unit": "Russian RPL-20 Machine Gunner",
+  "category": "Ranged",
+  "actorCount": 1,
+  "stage": "single-idle-design-review",
+  "integrationStatus": "Single idle pending user visual approval; runtime integration separate.",
+  "camera": "vertical-overhead-orthographic",
+  "facing": "screen-down",
+  "sheetSize": {
+    "width": 1302,
+    "height": 1302
+  },
+  "grid": {
+    "columns": 1,
+    "rows": 1
+  },
+  "reviewFootprint": 400,
+  "registration": "Fixed authored torso root; no silhouette fitting.",
+  "weapon": "RPL-20 light machine gun",
+  "animations": [
+    {
+      "id": "idle",
+      "file": "Idle-v1.png",
+      "label": "Idle - single frame",
+      "loop": true,
+      "scale": 1,
+      "durations": [
+        1000
+      ],
+      "description": "Digital camouflage, ballistic helmet, body armor and an RPL-20 with a belt-fed rectangular ammunition container.",
+      "frameCount": 1,
+      "frames": [
+        {
+          "index": 0,
+          "x": 0,
+          "y": 0,
+          "width": 1302,
+          "height": 1302,
+          "pivot": {
+            "x": 651.0,
+            "y": 651.0
+          }
+        }
+      ]
+    }
+  ]
+}

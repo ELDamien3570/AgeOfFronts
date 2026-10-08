@@ -1,4 +1,4 @@
-import { HEIGHTMAP_MAPS, heightmapDimensions } from "../../content/Maps";
+import { PLAYABLE_MAPS, heightmapDimensions, isProceduralMap } from "../../content/Maps";
 import type { LobbyMapId } from "../../lobby/LobbyRules";
 
 export interface LobbyMapCard {
@@ -55,15 +55,23 @@ const presentation: Record<
     description:
       "Follow the Nile, Tigris and Euphrates through arid landscapes.",
   },
+  "black-forest": {
+    terrain: "Dense conifers, open glades & winding woodland paths",
+    description: "A new seeded forest each match. Advance quickly through clearings or push through slower woodland.",
+  },
+  migration: {
+    terrain: "River-cut mainlands, coastal islands & winding sea channels",
+    description: "Choose an island foothold or settle a mainland. Larger maps add more small islands; each seed varies the coasts, rivers and mainland splits.",
+  },
 };
 
-export const LOBBY_MAPS: readonly LobbyMapCard[] = HEIGHTMAP_MAPS.map(
+export const LOBBY_MAPS: readonly LobbyMapCard[] = PLAYABLE_MAPS.map(
   (map, index) => ({
     ...map,
     ...presentation[map.id],
     number: String(index + 1).padStart(2, "0"),
     image: `/maps/${map.assetRoot}/lobby-preview.png`,
-    imageCredit: "Elevation · Mapzen / Nextzen and others",
+    imageCredit: isProceduralMap(map.id) ? "Procedural terrain · AgeOfFronts" : "Elevation · Mapzen / Nextzen and others",
   }),
 );
 

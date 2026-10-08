@@ -1,0 +1,20 @@
+{
+  "date": "2026-10-07",
+  "mode": "built-in-imagegen",
+  "selectedIdle": "Idle-v1.png",
+  "userApproval": "First idle pending visual review. User selected Tsar Tank giant tricycle design.",
+  "designReference": "https://www.nevingtonwarmuseum.com/tsar-lebedenko-tank.html",
+  "records": [
+    {
+      "date": "2026-10-07",
+      "mode": "built-in-imagegen",
+      "file": "Idle-v1.png",
+      "generatedSource": "C:\\Users\\Damien\\.codex\\generated_images\\01a11641-9e1b-7c81-be76-c9edd53ef182\\exec-d224c517-5f3c-4cec-a2e4-7b1a3a8ad408.png",
+      "prompt": "Create ONE game sprite idle frame of a Tsar Tank / Lebedenko giant TRICYCLE tank, redesigned as an imagined Russian/Soviet faction vehicle. STRICT true 90-degree vertical OVERHEAD ORTHOGRAPHIC PLAN VIEW, front facing bottom of image. Historical Tsar Tank anatomy: TWO enormous UPRIGHT steel wheels LEFT and RIGHT, a broad horizontal riveted armored hull spanning their common axle at center, and a long narrow central tail boom running BACKWARD toward TOP to a tiny rear steering roller. Giant main wheels are 9-meter diameter upright wheels, not tracks. From overhead their circular spoke side faces are NOT visible: each main wheel projects as a very long NARROW rectangular tread/rim strip running top-to-bottom along far left/right, with subtly rounded ends; NOT circles lying flat on ground, NOT caterpillar tracks. Small single rear roller seen as a short narrow tread strip at TOP of central rear boom. Broad hull across middle with cylindrical turret TOP viewed as a circular hatch roof, plus two compact side sponsons and short forward cannon barrels pointing bottom. Tubular structural struts join axle/hull to wheels; sparse industrial framework, not a solid modern tank chassis filling whole space between wheels. Recognizable wide T-shaped tuning-fork silhouette with three wheel locations, no tank tracks, no truck cab. Military olive-gray painted riveted steel, restrained worn edges, blackened iron rims, subtle Soviet red star on central turret roof. Fully enclosed crew. Ground and whole scene not visible. The entire vehicle centered on transparent 1024x1024 canvas, with 60px clear margins. Flat top surfaces only, no visible vertical front/side armor facades, no isometric camera or wheel-side circles. Smooth polished stylized RTS painted art, role readability at48/64/128px, restrained texture. Input reference is ONLY for painting style and muted olive palette, NOT for truck shape or equipment. No text, glow, ground shadow, background, extra wheel pairs, rubber tires, modern main battle tank elements.",
+      "references": [
+        "../MachineGunTruck/Idle-v3.png"
+      ],
+      "designReference": "https://www.nevingtonwarmuseum.com/tsar-lebedenko-tank.html"
+    }
+  ]
+}

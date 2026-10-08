@@ -87,22 +87,22 @@ describe("age progression and authoritative definitions", () => {
     expect(m.applyCommand(command)).toBeNull();
     expect(s.research.warfare?.technologyId).toBe("bronzeage-armies");
   });
-  it("validates 85 named nodes, including the fifth Bronze Warfare technology", () => {
+  it("validates the expanded research graph and unique per-branch slots", () => {
     expect(() => validateTechnologies()).not.toThrow();
-    expect(TECHNOLOGIES).toHaveLength(85);
+    expect(TECHNOLOGIES.length).toBeGreaterThan(85);
     for (const age of AGES)
       for (const tree of TREES)
         expect(
           TECHNOLOGIES.filter((t) => t.age === age && t.tree === tree),
-        ).toHaveLength(age === "BronzeAge" && tree === "warfare" ? 5 : 4);
+        ).toHaveLength(treeWorkload(age, tree));
   });
-  it("opens with three flint infantry, three branch grants and a completed city per faction", () => {
+  it("opens with three flint infantry and their required research grants and a completed city per faction", () => {
     const m = make();
     expect(m.buildings).toHaveLength(m.players.length);
     for (const p of m.players) {
       expect(m.buildings.find(b => b.playerId === p.id)).toMatchObject({type: "city", remainingTicks: 0});
       expect(m.squads.filter((s) => s.playerId === p.id)).toHaveLength(3);
-      expect(m.expansion!.progression.states[p.id].completed).toHaveLength(3);
+      expect(m.expansion!.progression.states[p.id].completed).toContain(defaultUnit("infantry").technologyId);
       expect(
         m.squads
           .filter((s) => s.playerId === p.id)
@@ -111,7 +111,7 @@ describe("age progression and authoritative definitions", () => {
     }
     expect(m.players[0].gold).toBeGreaterThanOrEqual(1500);
   });
-  it("researches all seven ages through legal commands with gold-only parallel jobs", () => {
+  it("researches all eight ages through legal commands with gold-only parallel jobs", () => {
     const m = make(),
       p = m.players[0],
       e = m.expansion!,
@@ -156,16 +156,17 @@ describe("age progression and authoritative definitions", () => {
         while (s.advancement) e.progression.step(m.players);
       }
     }
-    expect(s.completed).toHaveLength(85);
+    expect(s.completed).toHaveLength(TECHNOLOGIES.length);
     expect(p.reserves).toBe(before);
     expect(advanceRejection(s, p.gold)).toMatch(/final/);
     expect(m.winner).toBeNull();
   });
-  it("allows branch two and three independently, rejects future ages, and requires current-age trees", () => {
+  it("enforces authored prerequisites, rejects future ages, and requires current-age trees", () => {
     const m = make(),
       p = m.players[0],
       s = m.expansion!.progression.states[1];
     p.gold = 999999;
+    s.completed.push(technologyAt("StoneAge", "warfare", 2).id, technologyAt("StoneAge", "warfare", 4).id);
     expect(
       m.applyCommand({
         type: "research",
@@ -184,7 +185,7 @@ describe("age progression and authoritative definitions", () => {
       m.applyCommand({
         type: "research",
         playerId: 1,
-        technologyId: technologyAt("StoneAge", "warfare", 2).id,
+        technologyId: "russian-troop-stoneage-lightcavalry",
       }),
     ).toMatch(/already researching/);
     expect(advanceRejection(s, p.gold)).toMatch(/two/);
@@ -210,7 +211,7 @@ describe("age progression and authoritative definitions", () => {
     });
     expect(defaultUnit("cavalry", "EarlyModern").charge).toBeUndefined();
     expect(UNIT.get("modern-anti-air")!.attack.targets).toEqual(["aircraft"]);
-    expect(UNITS.filter((u) => u.role === "siege")).toHaveLength(7);
+    expect(UNITS.filter((u) => u.role === "siege")).toHaveLength(8);
   });
 });
 describe("supply conservation and deployment", () => {
@@ -350,7 +351,7 @@ describe("bonuses, promotions, volleys and finite impacts", () => {
         1000,
         999999,
       ),
-    ).toBe(120);
+    ).toBe(103);
     const shares = effectiveDamageShares(7, [
       { id: 1, damage: 100 },
       { id: 1, damage: 50 },

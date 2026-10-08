@@ -1,3 +1,4 @@
+import type { DeploymentLine } from "./FormationLine";
 import type { GameMap } from "../core/game/GameMap";
 import type { ElevationData } from "./Elevation";
 import type { EnvironmentProfile } from "./Environment";
@@ -27,10 +28,10 @@ export const MELEE_RANGE = 384;
 export const MAX_QUEUED_ORDERS = 32;
 
 export type Order =
-  | { type: "hold" }
+  | { type: "hold"; facing?: number }
   | { type: "replenish" }
   // Formation coordinates are assigned by the domain, never trusted from commands.
-  | { type: "move"; tile: number; x?: number; y?: number }
+  | { type: "move"; tile: number; x?: number; y?: number; facing?: number }
   | { type: "attack"; targetId: number };
 
 export type Command =
@@ -188,6 +189,7 @@ export type Command =
       playerId: number;
       squadIds: number[];
       order: Order;
+      deploymentLine?: DeploymentLine;
       append?: boolean;
     };
 
@@ -208,6 +210,7 @@ export interface Squad {
   readonly embarkedOn: number | null;
   readonly lastCombatTick: number;
   readonly moved: boolean;
+  readonly locomotion?: Readonly<import("./FormationLocomotion").FormationMotion>;
   readonly firingCharge: number;
   readonly order: Readonly<Order>;
   readonly queuedOrders: readonly Readonly<Order>[];
@@ -378,6 +381,12 @@ export interface MatchOptions {
   infiniteGoldForPlayers?: boolean;
   alliances?: boolean;
   runAi?: boolean;
+  /** Experimental authoritative squad turns/acceleration, enabled by the troop demo. */
+  formationLocomotion?: boolean;
+  /** Experimental individual turn-in-place instead of slow whole-layout rotation. */
+  formationReorientation?: boolean;
+  /** Experimental crowd velocity steering without formation-facing travel gates. */
+  formationFreeTravel?: boolean;
   /** Economic demand policy. Normal games enable the shared AI policy defaults. */
   aiEconomy?: boolean;
   /** Bounded transactional route admission. Explicit false preserves legacy replay. */
@@ -396,6 +405,8 @@ export interface MatchOptions {
   victoryMode?: "solo" | "allied";
   technologySpeed?: TechnologySpeed;
   startingAge?: StartingAge;
+  /** Optional scenario ceiling; omitted in normal matches. */
+  maximumAge?: Age;
 }
 
 export interface Snapshot {
@@ -465,6 +476,7 @@ export interface SnapshotPacket {
     refit?: RefitJob | null;
     charge?: ChargeState | null;
     chargeReadyTick?: number;
+    locomotion?: Squad["locomotion"];
     structureTarget?: Squad["structureTarget"];
     afloat?: Afloat | null;
   }[];

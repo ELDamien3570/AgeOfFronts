@@ -1,7 +1,7 @@
 import type { BuildingType } from "../Protocol";
 import { BUILDING_RULES } from "../Rules";
 import { AGES, type Age, type Cost } from "../domain/Definitions";
-import { technologyAt } from "./Technology";
+import { TECHNOLOGY, technologyAt } from "./Technology";
 export const DEFENSIVE_BUILDINGS: readonly BuildingType[] = [
   "tower",
   "gun-nest",
@@ -20,7 +20,7 @@ export function automaticBuildingTier(type: BuildingType, playerAge: Age, comple
   return [...AGES].reverse().find(age => AGES.indexOf(age) <= AGES.indexOf(playerAge) &&
     !!buildingTechnology(type, age) && completed.includes(buildingTechnology(type, age)!));
 }
-export function buildingTechnology(
+export function buildingFoundationTechnology(
   type: BuildingType,
   age: Age,
 ): string | null {
@@ -40,7 +40,7 @@ export function buildingTechnology(
       "mirv-launcher",
       "missile-defence",
     ].includes(type) &&
-      index !== 6)
+      index < 6)
   )
     return null;
   if (type === "port") return age === "StoneAge" ? "stoneage-shorecraft" : technologyAt(age, "naval", 1).id;
@@ -73,13 +73,17 @@ export function buildingTechnology(
   )
     return technologyAt(age, "warfare", 2).id;
   if (type === "stables")
-    return index === 6 ? null : technologyAt(age, "warfare", 3).id;
+    return index >= 6 ? null : technologyAt(age, "warfare", 3).id;
   if (type === "airstrip") return technologyAt(age, "warfare", 3).id;
   if (type === "siege-workshop")
     return technologyAt(age, "warfare", index > 1 ? 2 : 4).id;
   if (type === "tower")
-    return index === 6 ? null : technologyAt(age, "warfare", 4).id;
+    return index >= 6 ? null : technologyAt(age, "warfare", 4).id;
   return technologyAt(age, "warfare", 4).id;
+}
+export function buildingTechnology(type: BuildingType, age: Age): string | null {
+  const explicit = `russian-building-${age.toLowerCase()}-${type}`;
+  return TECHNOLOGY.has(explicit) ? explicit : buildingFoundationTechnology(type, age);
 }
 export function buildingCostMultiplier(existingCount = 0): number {
   return Math.min(4, 1 + Math.max(0, existingCount) * 0.3);

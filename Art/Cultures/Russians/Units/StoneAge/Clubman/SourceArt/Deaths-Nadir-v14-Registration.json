@@ -1,0 +1,38 @@
+[
+  {
+    "id": "death",
+    "scale": 1.02804,
+    "firstFrameCapWidth": 107,
+    "fixedRoot": {
+      "x": 256,
+      "y": 256
+    },
+    "corpseFile": "Corpse-Prone-Nadir-v14.png",
+    "oldDisplayedBounds": [
+      433.36396,
+      364.13952
+    ],
+    "newDisplayedBounds": [
+      300.18768,
+      314.58024
+    ]
+  },
+  {
+    "id": "death-back",
+    "scale": 1.02804,
+    "firstFrameCapWidth": 107,
+    "fixedRoot": {
+      "x": 256,
+      "y": 256
+    },
+    "corpseFile": "Corpse-Back-Nadir-v14.png",
+    "oldDisplayedBounds": [
+      483.09252000000004,
+      433.19564
+    ],
+    "newDisplayedBounds": [
+      308.41200000000003,
+      343.36536
+    ]
+  }
+]

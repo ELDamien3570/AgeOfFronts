@@ -1,0 +1,49 @@
+{
+  "schemaVersion": 1,
+  "cultureId": "russian",
+  "age": "Modern",
+  "role": "Submarine",
+  "label": "Modern nuclear submarine",
+  "generator": "built-in imagegen",
+  "prompt": "Use case: stylized-concept. Asset: one production RTS Russian culture vessel sprite. STRICTLY TRUE 90-DEGREE DIRECTLY OVERHEAD ORTHOGRAPHIC VIEW. Bow points toward SCREEN BOTTOM, stern toward top. Entire ship and all oars/yards fit within square transparent canvas with at least 8 percent clear guard. Only deck surfaces and roofs are visible; no upright doors, hull side walls, front elevations or oblique perspective. Realistic hand-painted textured game art matching reference, clean readable silhouettes at 48/64/128px, restrained weathering, crisp dark edges, balanced overhead light. One vessel only, transparent alpha background, no water, wake, ground shadow, scene, labels, letters, flag fabric, people, side-view inset or UI. Subject: Contemporary Russian-inspired nuclear-powered attack submarine, very long rounded matte charcoal cigar hull, smooth rounded nose, streamlined sail roof forward of center, short horizontal diving planes and aft cruciform tail planes. Distinctly larger thicker smooth hull than WWII diesel sub. No deck gun, no missile silo array, no flags. Nuclear propulsion role, not ballistic missile carrier. Technical plan-view camera, streamlined sail is an elongated oval ROOF only, short mast end-on circles on that roof, stern top with tail planes at screen top and round blunt nose at screen bottom. No upright tower sides, no doors, no front-view parts, no backdrop or halo.",
+  "generatedOriginal": "C:\\Users\\Damien\\.codex\\generated_images\\01a0fea7-45e8-7a11-8804-5420a62f53c3\\exec-ac689681-1a07-4802-b347-1b878c05fa5c.png",
+  "retainedOriginal": "SourceArt/Submarine_Russian_Modern_Generated_v1.png",
+  "rawSha256": "4ac66861598b22e845c80fa09d4d998565268a12cdba7e312d51a5d60165fe00",
+  "rawSize": [
+    1254,
+    1254
+  ],
+  "source": "SourceArt/Submarine_Russian_Modern_v1.png",
+  "sourceSha256": "cdff98b2308a4c49ee67478da01a7c0356b9ebe3bc7bdcf0776276c3892e52f7",
+  "registration": {
+    "alphaBounds": [
+      113,
+      0,
+      1208,
+      1254
+    ],
+    "uniformScale": 0.861244019138756,
+    "offset": [
+      155,
+      87
+    ],
+    "canvas": [
+      1254,
+      1254
+    ]
+  },
+  "conversion": "Uniform alpha-bounds fit, Lanczos resampling and transparent padding only; original retained unchanged.",
+  "technologyPlan": "skirmish/plans/technology-plan.json",
+  "civilizationId": "russians-rework",
+  "unlockTechnology": "russian-nuclear-submarines",
+  "unlockName": "Nuclear Submarines",
+  "visualApproval": "approved",
+  "animationApproval": {
+    "status": "approved",
+    "userMessage": "okay animate them all",
+    "scope": "All 17 fleet masters from the eight-age tech-tree roster",
+    "date": "2026-10-07"
+  },
+  "integrationStatus": "art review only; no gameplay or match renderer changes",
+  "historicalScope": "Era-inspired role design, not an exact reconstruction of a named vessel"
+}

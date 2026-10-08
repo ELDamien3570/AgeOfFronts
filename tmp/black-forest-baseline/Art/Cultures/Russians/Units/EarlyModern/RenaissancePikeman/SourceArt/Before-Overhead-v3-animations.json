@@ -1,0 +1,50 @@
+{
+  "schemaVersion": 1,
+  "cultureId": "russians",
+  "age": "EarlyModern",
+  "unit": "Renaissance Pikeman",
+  "category": "Infantry",
+  "actorCount": 1,
+  "stage": "single-idle-design-review",
+  "camera": "vertical-overhead-orthographic",
+  "facing": "screen-down",
+  "sheetSize": {
+    "width": 1215,
+    "height": 1295
+  },
+  "grid": {
+    "columns": 1,
+    "rows": 1
+  },
+  "reviewFootprint": 440,
+  "weapon": "Two-handed wooden pike with steel spearhead",
+  "animations": [
+    {
+      "id": "idle",
+      "file": "Idle-Photo-v2.png",
+      "label": "Idle design",
+      "loop": true,
+      "scale": 1,
+      "durations": [
+        1000
+      ],
+      "description": "Photo-inspired pikeman: blackened helmet and breastplate, loose white sleeves, brown breeches, stockings, and a slender two-handed pike. Idle design awaiting review.",
+      "frameCount": 1,
+      "sha256": "cfecceb70ecd7b8d1e8cc9486bb1c12fac75429cdca5b2373fe9cc3742914b63",
+      "frames": [
+        {
+          "index": 0,
+          "sourceIndex": 0,
+          "x": 0,
+          "y": 0,
+          "width": 1215,
+          "height": 1295,
+          "pivot": {
+            "x": 607.5,
+            "y": 647.5
+          }
+        }
+      ]
+    }
+  ]
+}

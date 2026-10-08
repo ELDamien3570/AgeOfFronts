@@ -1,0 +1,19 @@
+{
+  "date": "2026-10-07",
+  "url": "http://127.0.0.1:9007/Cultures/Russians/Units/BronzeAge/BronzeSpearman/Actor_Review.html#idle",
+  "actorCount": 1,
+  "loadedClips": 1,
+  "frameCount": 1,
+  "observations": [
+    "One idle sprite loaded at 1/1.",
+    "Armor and shield match Bronze Axeman reference; complete spear visible.",
+    "32/48/64px previews displayed."
+  ],
+  "screenshots": [
+    "Review-Idle-v1.jpg"
+  ],
+  "warnings": [],
+  "errors": [],
+  "userApproval": "pending single idle design review",
+  "engineIntegration": "not integrated"
+}

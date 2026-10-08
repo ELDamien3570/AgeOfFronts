@@ -1,0 +1,100 @@
+{
+  "date": "2026-10-07",
+  "mode": "built-in-imagegen",
+  "approvedDesign": "Idle-v1.png",
+  "basePrompt": "Edit reference1 SIX-FRAME cavalry atlas into Russian CLASSICAL AGE iron light cavalry, matching approved single iron rider in reference2. Maintain ALL six exact sequential poses, frame ordering, horse gait, handgrip, spear direction, recoil/fall orientation, body sizes, fixed saddle roots and exact 1536x1024 canvas with3columns2rows512px cells. Do not invent new motions or change anatomy. Replace EVERY bronze metal piece with cool hammered charcoal/silver gray IRON matching reference2: helmet, riveted browband, both pauldrons, bracers, belt buckle, horse bridle/tack fittings, spear leafhead/socket and buttcap. No gold/copper/bronze remains. Same leather reddish-brown top, cream fur collar, pale trousers, boots and unarmored chestnut horse blackmane/tail. Long rigid wooden spear screen-left, rein hand screen-right, no shield. Keep OVERARM spear grip and forward/downward spearhead direction exactly from the atlas. Vertical overhead orthographic nose-down/tail-up, same painted gameart clarity. All complete poses stay in their own cells with transparent gutters and generous padding; no clipping or neighbor overlaps. True RGBAalpha0 background outside crisp antialiased silhouette, no haze/glow/shadow/ground/drawn motion marks/text/grid. Reference1 is edit target; reference2 supplies iron materials ONLY, not pose/layout. Output ONLY the edited six-frame atlas.",
+  "jobs": [
+    {
+      "id": "idle",
+      "file": "Idle-Animated-v1.png",
+      "reference": "C:/Users/Damien/Documents/GitHub/AgeOfFronts/AgeOfFronts/Art/Cultures/Russians/Units/BronzeAge/LightCavalry/SourceArt/Native-Idle-Animated-v1.png"
+    },
+    {
+      "id": "running",
+      "file": "Running-v1.png",
+      "reference": "C:/Users/Damien/Documents/GitHub/AgeOfFronts/AgeOfFronts/Art/Cultures/Russians/Units/BronzeAge/LightCavalry/SourceArt/Native-Running-v1.png"
+    },
+    {
+      "id": "attack",
+      "file": "Attack-v1.png",
+      "reference": "C:/Users/Damien/Documents/GitHub/AgeOfFronts/AgeOfFronts/Art/Cultures/Russians/Units/BronzeAge/LightCavalry/SourceArt/Native-Attack-Overarm-v2.png"
+    },
+    {
+      "id": "hit",
+      "file": "Hit-v1.png",
+      "reference": "C:/Users/Damien/Documents/GitHub/AgeOfFronts/AgeOfFronts/Art/Cultures/Russians/Units/BronzeAge/LightCavalry/SourceArt/Native-Hit-v1.png"
+    },
+    {
+      "id": "charged",
+      "file": "Charged-Impact-v1.png",
+      "reference": "C:/Users/Damien/Documents/GitHub/AgeOfFronts/AgeOfFronts/Art/Cultures/Russians/Units/BronzeAge/LightCavalry/SourceArt/Native-Charged-Impact-v1.png"
+    },
+    {
+      "id": "charge",
+      "file": "Charge-v1.png",
+      "reference": "C:/Users/Damien/Documents/GitHub/AgeOfFronts/AgeOfFronts/Art/Cultures/Russians/Units/BronzeAge/LightCavalry/SourceArt/Native-Charge-v1.png"
+    },
+    {
+      "id": "charge-attack",
+      "file": "Charge-Attack-v1.png",
+      "reference": "C:/Users/Damien/Documents/GitHub/AgeOfFronts/AgeOfFronts/Art/Cultures/Russians/Units/BronzeAge/LightCavalry/SourceArt/Native-Charge-Attack-Overarm-v2.png"
+    },
+    {
+      "id": "death",
+      "file": "Death-Together-v1.png",
+      "reference": "C:/Users/Damien/Documents/GitHub/AgeOfFronts/AgeOfFronts/Art/Cultures/Russians/Units/BronzeAge/LightCavalry/SourceArt/Native-Death-Together-v1.png"
+    },
+    {
+      "id": "death-thrown",
+      "file": "Death-Thrown-v1.png",
+      "reference": "C:/Users/Damien/Documents/GitHub/AgeOfFronts/AgeOfFronts/Art/Cultures/Russians/Units/BronzeAge/LightCavalry/SourceArt/Native-Death-Thrown-v1.png"
+    }
+  ],
+  "sourceRowCuts": {
+    "idle": [
+      512,
+      512,
+      512
+    ],
+    "running": [
+      512,
+      512,
+      512
+    ],
+    "attack": [
+      511,
+      512,
+      512
+    ],
+    "hit": [
+      512,
+      510,
+      512
+    ],
+    "charged": [
+      512,
+      512,
+      512
+    ],
+    "charge": [
+      512,
+      512,
+      513
+    ],
+    "charge-attack": [
+      512,
+      512,
+      512
+    ],
+    "death": [
+      512,
+      512,
+      512
+    ],
+    "death-thrown": [
+      512,
+      512,
+      512
+    ]
+  }
+}

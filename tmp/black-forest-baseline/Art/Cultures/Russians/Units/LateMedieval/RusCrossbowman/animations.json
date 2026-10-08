@@ -1,0 +1,900 @@
+{
+  "schemaVersion": 1,
+  "cultureId": "russians",
+  "age": "LateMedieval",
+  "unit": "Rus Crossbowman",
+  "category": "Ranged",
+  "actorCount": 1,
+  "stage": "single-actor-animation-review",
+  "integrationStatus": "Local art review. Runtime formations, combat and projectile integration are separate.",
+  "camera": "vertical-overhead-orthographic",
+  "facing": "screen-down",
+  "sheetSize": {
+    "width": 1536,
+    "height": 1024
+  },
+  "grid": {
+    "columns": 3,
+    "rows": 2
+  },
+  "reviewFootprint": 400,
+  "registration": "Fixed authored torso root; no silhouette fitting.",
+  "weapon": "Wooden crossbow with iron-tipped bolt",
+  "animations": [
+    {
+      "id": "idle",
+      "file": "idle-motion-v6.png",
+      "label": "Idle",
+      "loop": true,
+      "scale": 1,
+      "durations": [
+        280,
+        280,
+        280,
+        280,
+        280,
+        280
+      ],
+      "description": "Subtle breathing with the helmet registered to a fixed lateral anchor and loaded crossbow held steady.",
+      "frameCount": 6,
+      "frames": [
+        {
+          "index": 0,
+          "x": 0,
+          "y": 0,
+          "width": 512,
+          "height": 512,
+          "pivot": {
+            "x": 255.03125,
+            "y": 259.875
+          }
+        },
+        {
+          "index": 1,
+          "x": 512,
+          "y": 0,
+          "width": 512,
+          "height": 512,
+          "pivot": {
+            "x": 249.703125,
+            "y": 259.875
+          }
+        },
+        {
+          "index": 2,
+          "x": 1024,
+          "y": 0,
+          "width": 512,
+          "height": 512,
+          "pivot": {
+            "x": 257.453125,
+            "y": 259.875
+          }
+        },
+        {
+          "index": 3,
+          "x": 0,
+          "y": 512,
+          "width": 512,
+          "height": 512,
+          "pivot": {
+            "x": 255.03125,
+            "y": 259.875
+          }
+        },
+        {
+          "index": 4,
+          "x": 512,
+          "y": 512,
+          "width": 512,
+          "height": 512,
+          "pivot": {
+            "x": 251.640625,
+            "y": 259.875
+          }
+        },
+        {
+          "index": 5,
+          "x": 1024,
+          "y": 512,
+          "width": 512,
+          "height": 512,
+          "pivot": {
+            "x": 258.421875,
+            "y": 259.875
+          }
+        }
+      ]
+    },
+    {
+      "id": "running",
+      "file": "running-string-v5.png",
+      "label": "Walk",
+      "loop": true,
+      "scale": 1,
+      "durations": [
+        160,
+        160,
+        160,
+        160,
+        160,
+        160
+      ],
+      "description": "Alternating walking strides, crossbow carried low.",
+      "frameCount": 6,
+      "frames": [
+        {
+          "index": 0,
+          "x": 0,
+          "y": 0,
+          "width": 512,
+          "height": 512,
+          "pivot": {
+            "x": 248.8,
+            "y": 260
+          }
+        },
+        {
+          "index": 1,
+          "x": 512,
+          "y": 0,
+          "width": 512,
+          "height": 512,
+          "pivot": {
+            "x": 248.8,
+            "y": 260
+          }
+        },
+        {
+          "index": 2,
+          "x": 1024,
+          "y": 0,
+          "width": 512,
+          "height": 512,
+          "pivot": {
+            "x": 248.8,
+            "y": 260
+          }
+        },
+        {
+          "index": 3,
+          "x": 0,
+          "y": 512,
+          "width": 512,
+          "height": 512,
+          "pivot": {
+            "x": 248.8,
+            "y": 260
+          }
+        },
+        {
+          "index": 4,
+          "x": 512,
+          "y": 512,
+          "width": 512,
+          "height": 512,
+          "pivot": {
+            "x": 248.8,
+            "y": 260
+          }
+        },
+        {
+          "index": 5,
+          "x": 1024,
+          "y": 512,
+          "width": 512,
+          "height": 512,
+          "pivot": {
+            "x": 248.8,
+            "y": 260
+          }
+        }
+      ]
+    },
+    {
+      "id": "attack",
+      "file": "attack-motion-v6.png",
+      "label": "Crossbow shot",
+      "loop": false,
+      "scale": 1,
+      "durations": [
+        140,
+        180,
+        260,
+        100,
+        180,
+        250
+      ],
+      "description": "Raise, aim and shoot the crossbow toward screen-bottom; lower the empty weapon. Reload is separate.",
+      "frameCount": 6,
+      "frames": [
+        {
+          "index": 0,
+          "x": 0,
+          "y": 0,
+          "width": 512,
+          "height": 512,
+          "pivot": {
+            "x": 249.025,
+            "y": 259.875
+          }
+        },
+        {
+          "index": 1,
+          "x": 512,
+          "y": 0,
+          "width": 512,
+          "height": 512,
+          "pivot": {
+            "x": 249.025,
+            "y": 259.875
+          }
+        },
+        {
+          "index": 2,
+          "x": 1024,
+          "y": 0,
+          "width": 512,
+          "height": 512,
+          "pivot": {
+            "x": 249.025,
+            "y": 259.875
+          }
+        },
+        {
+          "index": 3,
+          "x": 0,
+          "y": 512,
+          "width": 512,
+          "height": 512,
+          "pivot": {
+            "x": 249.025,
+            "y": 259.875
+          }
+        },
+        {
+          "index": 4,
+          "x": 512,
+          "y": 512,
+          "width": 512,
+          "height": 512,
+          "pivot": {
+            "x": 249.025,
+            "y": 259.875
+          }
+        },
+        {
+          "index": 5,
+          "x": 1024,
+          "y": 512,
+          "width": 512,
+          "height": 512,
+          "pivot": {
+            "x": 249.24296875000002,
+            "y": 259.75390625
+          }
+        }
+      ],
+      "releaseFrame": 3,
+      "weaponState": {
+        "start": "loaded-cocked",
+        "end": "empty-uncocked"
+      }
+    },
+    {
+      "id": "reload",
+      "file": "reload-string-v5-clean.png",
+      "label": "Reload crossbow",
+      "loop": false,
+      "scale": 1,
+      "durations": [
+        200,
+        250,
+        350,
+        250,
+        250,
+        250
+      ],
+      "description": "Brace the muzzle stirrup, span the string, latch it, then load a fresh bolt and return to low carry.",
+      "frameCount": 6,
+      "frames": [
+        {
+          "index": 0,
+          "x": 0,
+          "y": 0,
+          "width": 512,
+          "height": 512,
+          "pivot": {
+            "x": 249.025,
+            "y": 259.875
+          }
+        },
+        {
+          "index": 1,
+          "x": 512,
+          "y": 0,
+          "width": 512,
+          "height": 512,
+          "pivot": {
+            "x": 249.025,
+            "y": 259.875
+          }
+        },
+        {
+          "index": 2,
+          "x": 1024,
+          "y": 0,
+          "width": 512,
+          "height": 512,
+          "pivot": {
+            "x": 249.025,
+            "y": 259.875
+          }
+        },
+        {
+          "index": 3,
+          "x": 0,
+          "y": 512,
+          "width": 512,
+          "height": 512,
+          "pivot": {
+            "x": 249.025,
+            "y": 259.875
+          }
+        },
+        {
+          "index": 4,
+          "x": 512,
+          "y": 512,
+          "width": 512,
+          "height": 512,
+          "pivot": {
+            "x": 249.025,
+            "y": 259.875
+          }
+        },
+        {
+          "index": 5,
+          "x": 1024,
+          "y": 512,
+          "width": 512,
+          "height": 512,
+          "pivot": {
+            "x": 249.025,
+            "y": 259.875
+          }
+        }
+      ],
+      "weaponState": {
+        "start": "empty-uncocked",
+        "end": "loaded-cocked"
+      }
+    },
+    {
+      "id": "hit",
+      "file": "hit-string-v5.png",
+      "label": "Get hit",
+      "loop": false,
+      "scale": 1,
+      "durations": [
+        100,
+        90,
+        130,
+        130,
+        160,
+        180
+      ],
+      "description": "Brief recoil and recovery with equipment retained.",
+      "frameCount": 6,
+      "frames": [
+        {
+          "index": 0,
+          "x": 0,
+          "y": 0,
+          "width": 512,
+          "height": 512,
+          "pivot": {
+            "x": 248.8,
+            "y": 260
+          }
+        },
+        {
+          "index": 1,
+          "x": 512,
+          "y": 0,
+          "width": 512,
+          "height": 512,
+          "pivot": {
+            "x": 248.8,
+            "y": 260
+          }
+        },
+        {
+          "index": 2,
+          "x": 1024,
+          "y": 0,
+          "width": 512,
+          "height": 512,
+          "pivot": {
+            "x": 248.8,
+            "y": 260
+          }
+        },
+        {
+          "index": 3,
+          "x": 0,
+          "y": 512,
+          "width": 512,
+          "height": 512,
+          "pivot": {
+            "x": 248.8,
+            "y": 260
+          }
+        },
+        {
+          "index": 4,
+          "x": 512,
+          "y": 512,
+          "width": 512,
+          "height": 512,
+          "pivot": {
+            "x": 248.8,
+            "y": 260
+          }
+        },
+        {
+          "index": 5,
+          "x": 1024,
+          "y": 512,
+          "width": 512,
+          "height": 512,
+          "pivot": {
+            "x": 248.8,
+            "y": 260
+          }
+        }
+      ]
+    },
+    {
+      "id": "charged",
+      "file": "charged-string-v5b.png",
+      "label": "Get charged",
+      "loop": false,
+      "scale": 1,
+      "durations": [
+        130,
+        120,
+        180,
+        180,
+        180,
+        230
+      ],
+      "description": "Heavy impact, backward stumble, crouch and regain balance.",
+      "frameCount": 6,
+      "frames": [
+        {
+          "index": 0,
+          "x": 0,
+          "y": 0,
+          "width": 512,
+          "height": 512,
+          "pivot": {
+            "x": 248.8,
+            "y": 260
+          }
+        },
+        {
+          "index": 1,
+          "x": 512,
+          "y": 0,
+          "width": 512,
+          "height": 512,
+          "pivot": {
+            "x": 248.8,
+            "y": 260
+          }
+        },
+        {
+          "index": 2,
+          "x": 1024,
+          "y": 0,
+          "width": 512,
+          "height": 512,
+          "pivot": {
+            "x": 248.8,
+            "y": 260
+          }
+        },
+        {
+          "index": 3,
+          "x": 0,
+          "y": 512,
+          "width": 512,
+          "height": 512,
+          "pivot": {
+            "x": 248.8,
+            "y": 260
+          }
+        },
+        {
+          "index": 4,
+          "x": 512,
+          "y": 512,
+          "width": 512,
+          "height": 512,
+          "pivot": {
+            "x": 248.8,
+            "y": 260
+          }
+        },
+        {
+          "index": 5,
+          "x": 1024,
+          "y": 512,
+          "width": 512,
+          "height": 512,
+          "pivot": {
+            "x": 248.8,
+            "y": 260
+          }
+        }
+      ]
+    },
+    {
+      "id": "charge",
+      "file": "charge-string-v5.png",
+      "label": "Charge in / maintain",
+      "loop": true,
+      "scale": 1,
+      "durations": [
+        90,
+        90,
+        90,
+        90,
+        90,
+        90
+      ],
+      "description": "Sustained running with alternating strides and crossbow secure.",
+      "frameCount": 6,
+      "frames": [
+        {
+          "index": 0,
+          "x": 0,
+          "y": 0,
+          "width": 512,
+          "height": 512,
+          "pivot": {
+            "x": 248.8,
+            "y": 260
+          }
+        },
+        {
+          "index": 1,
+          "x": 512,
+          "y": 0,
+          "width": 512,
+          "height": 512,
+          "pivot": {
+            "x": 248.8,
+            "y": 260
+          }
+        },
+        {
+          "index": 2,
+          "x": 1024,
+          "y": 0,
+          "width": 512,
+          "height": 512,
+          "pivot": {
+            "x": 248.8,
+            "y": 260
+          }
+        },
+        {
+          "index": 3,
+          "x": 0,
+          "y": 512,
+          "width": 512,
+          "height": 512,
+          "pivot": {
+            "x": 248.8,
+            "y": 260
+          }
+        },
+        {
+          "index": 4,
+          "x": 512,
+          "y": 512,
+          "width": 512,
+          "height": 512,
+          "pivot": {
+            "x": 248.8,
+            "y": 260
+          }
+        },
+        {
+          "index": 5,
+          "x": 1024,
+          "y": 512,
+          "width": 512,
+          "height": 512,
+          "pivot": {
+            "x": 248.8,
+            "y": 260
+          }
+        }
+      ]
+    },
+    {
+      "id": "charge-attack",
+      "file": "charge-attack-motion-v6.png",
+      "label": "Advance, plant and shoot",
+      "loop": false,
+      "scale": 1,
+      "durations": [
+        140,
+        200,
+        260,
+        100,
+        180,
+        250
+      ],
+      "description": "Brake, plant, aim and shoot toward screen-bottom, then lower the empty crossbow. Reload is separate.",
+      "frameCount": 6,
+      "frames": [
+        {
+          "index": 0,
+          "x": 0,
+          "y": 0,
+          "width": 512,
+          "height": 512,
+          "pivot": {
+            "x": 249.025,
+            "y": 259.875
+          }
+        },
+        {
+          "index": 1,
+          "x": 512,
+          "y": 0,
+          "width": 512,
+          "height": 512,
+          "pivot": {
+            "x": 249.025,
+            "y": 259.875
+          }
+        },
+        {
+          "index": 2,
+          "x": 1024,
+          "y": 0,
+          "width": 512,
+          "height": 512,
+          "pivot": {
+            "x": 249.025,
+            "y": 259.875
+          }
+        },
+        {
+          "index": 3,
+          "x": 0,
+          "y": 512,
+          "width": 512,
+          "height": 512,
+          "pivot": {
+            "x": 249.025,
+            "y": 259.875
+          }
+        },
+        {
+          "index": 4,
+          "x": 512,
+          "y": 512,
+          "width": 512,
+          "height": 512,
+          "pivot": {
+            "x": 249.025,
+            "y": 259.875
+          }
+        },
+        {
+          "index": 5,
+          "x": 1024,
+          "y": 512,
+          "width": 512,
+          "height": 512,
+          "pivot": {
+            "x": 249.24296875000002,
+            "y": 259.75390625
+          }
+        }
+      ],
+      "releaseFrame": 3,
+      "weaponState": {
+        "start": "loaded-cocked",
+        "end": "empty-uncocked"
+      }
+    },
+    {
+      "id": "death",
+      "file": "death-string-v5.png",
+      "label": "Death - side fall",
+      "loop": false,
+      "scale": 1,
+      "durations": [
+        150,
+        170,
+        190,
+        210,
+        240,
+        400
+      ],
+      "description": "Knees buckle, fall onto the side and hold the settled body.",
+      "frameCount": 6,
+      "frames": [
+        {
+          "index": 0,
+          "x": 0,
+          "y": 0,
+          "width": 512,
+          "height": 512,
+          "pivot": {
+            "x": 248.8,
+            "y": 260
+          }
+        },
+        {
+          "index": 1,
+          "x": 512,
+          "y": 0,
+          "width": 512,
+          "height": 512,
+          "pivot": {
+            "x": 248.8,
+            "y": 260
+          }
+        },
+        {
+          "index": 2,
+          "x": 1024,
+          "y": 0,
+          "width": 512,
+          "height": 512,
+          "pivot": {
+            "x": 248.8,
+            "y": 260
+          }
+        },
+        {
+          "index": 3,
+          "x": 0,
+          "y": 512,
+          "width": 512,
+          "height": 512,
+          "pivot": {
+            "x": 248.8,
+            "y": 260
+          }
+        },
+        {
+          "index": 4,
+          "x": 512,
+          "y": 512,
+          "width": 512,
+          "height": 512,
+          "pivot": {
+            "x": 248.8,
+            "y": 260
+          }
+        },
+        {
+          "index": 5,
+          "x": 1024,
+          "y": 512,
+          "width": 512,
+          "height": 512,
+          "pivot": {
+            "x": 248.8,
+            "y": 260
+          }
+        }
+      ]
+    },
+    {
+      "id": "death-back",
+      "file": "death-back-string-v5c.png",
+      "label": "Death - back fall",
+      "loop": false,
+      "scale": 1,
+      "durations": [
+        150,
+        180,
+        190,
+        210,
+        240,
+        400
+      ],
+      "description": "Recoil, buckle and fall onto the back; head remains screen-top through settling.",
+      "frameCount": 6,
+      "frames": [
+        {
+          "index": 0,
+          "x": 0,
+          "y": 0,
+          "width": 512,
+          "height": 512,
+          "pivot": {
+            "x": 248.8,
+            "y": 260
+          }
+        },
+        {
+          "index": 1,
+          "x": 512,
+          "y": 0,
+          "width": 512,
+          "height": 512,
+          "pivot": {
+            "x": 248.8,
+            "y": 260
+          }
+        },
+        {
+          "index": 2,
+          "x": 1024,
+          "y": 0,
+          "width": 512,
+          "height": 512,
+          "pivot": {
+            "x": 248.8,
+            "y": 260
+          }
+        },
+        {
+          "index": 3,
+          "x": 0,
+          "y": 512,
+          "width": 512,
+          "height": 512,
+          "pivot": {
+            "x": 248.8,
+            "y": 260
+          }
+        },
+        {
+          "index": 4,
+          "x": 512,
+          "y": 512,
+          "width": 512,
+          "height": 512,
+          "pivot": {
+            "x": 248.8,
+            "y": 260
+          }
+        },
+        {
+          "index": 5,
+          "x": 1024,
+          "y": 512,
+          "width": 512,
+          "height": 512,
+          "pivot": {
+            "x": 248.8,
+            "y": 260
+          }
+        }
+      ]
+    }
+  ],
+  "projectileContract": "Actor release markers are visual references; runtime owns projectile creation, ammunition and reload timing.",
+  "shotSequence": [
+    "attack",
+    "reload",
+    "idle"
+  ],
+  "chargeShotSequence": [
+    "charge-attack",
+    "reload",
+    "idle"
+  ]
+}

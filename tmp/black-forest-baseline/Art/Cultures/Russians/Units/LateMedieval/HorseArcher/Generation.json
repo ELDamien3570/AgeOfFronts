@@ -1,0 +1,374 @@
+{
+  "date": "2026-10-07",
+  "mode": "built-in-imagegen",
+  "userApproval": "Idle-v2 approved; nine animations pending review.",
+  "records": [
+    {
+      "date": "2026-10-07",
+      "mode": "built-in-imagegen",
+      "prompt": "Edit the referenced approved game sprite into a Late Medieval Russian armored horse archer, one single relaxed idle frame. Preserve the exact directly overhead camera, horse nose toward bottom and tail toward top, pose, proportions, compact readable silhouette, smooth painted finish and muted russet/cream palette. Upgrade the rider with finely made steel lamellar over mail, stronger steel shoulder plates and bracers, a refined steel conical helmet with restrained brass accents and a fur edge. Keep freedom at the arms for archery. Add articulated steel lamellar barding to the horse: segmented neck protection, chest protection, side and rump panels and a fitted steel chamfron, with muted red cloth beneath. Armor follows the existing horse anatomy, with mane, ears, legs and muzzle readable. Preserve the compact wooden/horn recurve bow in rider's LEFT hand (screen right), right hand on reins, hip quiver and sheathed sabre. Bowstring is straight between tips on the inside toward the rider's arm. No shield or lance. Same lighting and controlled texture as the reference, no gritty noise or heavy black outlines. Entire horse and rider centered uncropped in a portrait 1024x1536 transparent RGBA canvas, generous empty margins. No background, ground shadow, labels or watermark. This is a single idle review sprite, not a sheet.",
+      "generatedSource": "C:\\Users\\Damien\\.codex\\generated_images\\01a11641-9e1b-7c81-be76-c9edd53ef182\\exec-19ff0bc3-5b72-44e8-8316-95cd18885525.png",
+      "references": [
+        "Art/Cultures/Russians/Units/EarlyMedieval/HorseArcher/Idle-v3.png"
+      ]
+    },
+    {
+      "date": "2026-10-07",
+      "mode": "built-in-imagegen",
+      "prompt": "Precisely remove the diffuse brown/gray glow and shadow surrounding this horse-and-rider sprite. All pixels outside the actual horse, rider, bow, bowstring, quiver and equipment must be fully transparent. Preserve the sprite itself exactly: same overhead pose, same steel armor and barding, same colors, anatomy and detail. Clean crisp alpha cutout without any halo, aura, cast shadow or soft vignette. Keep thin bowstring intact. Single centered complete sprite on a transparent 1024x1536 canvas.",
+      "generatedSource": "C:\\Users\\Damien\\.codex\\generated_images\\01a11641-9e1b-7c81-be76-c9edd53ef182\\exec-8455bf66-6679-49af-8d51-e139d43aaf9e.png",
+      "references": [
+        "C:\\Users\\Damien\\.codex\\generated_images\\01a11641-9e1b-7c81-be76-c9edd53ef182\\exec-19ff0bc3-5b72-44e8-8316-95cd18885525.png"
+      ]
+    },
+    {
+      "id": "idle",
+      "file": "Idle-v1.png",
+      "prompt": "Create a transparent RGBA game animation sprite sheet from this APPROVED Late Medieval Russian armored horse archer. EXACTLY 6 frames in a 3-column by 2-row grid on a 1536x1024 canvas, each cell512x512, read left to right then next row. No gutters, text or drawn grid. One complete horse and rider per cell; same constant camera, scale, anatomy, material colors and smooth painted finish as reference. Direct overhead orthographic camera, nose toward bottom, tail toward top. Preserve finely made steel lamellar and mail rider armor, conical steel helmet with fur rim, russet cream trimmed cloth, segmented steel horse barding and chamfron, recurve bow, hip quiver and sheathed sabre. Bow in LEFT hand (screen-right), reins/drawing in right. Fixed saddle center at cell(256,256); horse tail at about y35, muzzle near y470, rider helmet crown near y205. Keep identical scale in every frame, generous margins, do not progressively shift by column. True transparent background including space between equipment; no halos, ground, shadow, grain or black outline. Quiet breathing idle. Six distinct very subtle frames: horse standing with all feet planted, rider breathing barely perceptibly, slight ear flick. No walking, no swaying, no rotation or translation. Final pose joins first smoothly.",
+      "generatedSource": "C:\\Users\\Damien\\.codex\\generated_images\\01a11641-9e1b-7c81-be76-c9edd53ef182\\exec-c60b894e-2438-4cff-8381-66c84942e54d.png",
+      "references": [
+        "C:/Users/Damien/Documents/GitHub/AgeOfFronts/AgeOfFronts/Art/Cultures/Russians/Units/LateMedieval/HorseArcher/Idle-v2.png"
+      ],
+      "durations": [
+        600,
+        600,
+        600,
+        600,
+        600,
+        600
+      ],
+      "loop": true,
+      "nativeCopy": "SourceArt/Native-Idle-v1.png",
+      "status": "selected-animation-source"
+    },
+    {
+      "id": "walk",
+      "file": "Running-v1.png",
+      "prompt": "Create a transparent RGBA game animation sprite sheet from this APPROVED Late Medieval Russian armored horse archer. EXACTLY 6 frames in a 3-column by 2-row grid on a 1536x1024 canvas, each cell512x512, read left to right then next row. No gutters, text or drawn grid. One complete horse and rider per cell; same constant camera, scale, anatomy, material colors and smooth painted finish as reference. Direct overhead orthographic camera, nose toward bottom, tail toward top. Preserve finely made steel lamellar and mail rider armor, conical steel helmet with fur rim, russet cream trimmed cloth, segmented steel horse barding and chamfron, recurve bow, hip quiver and sheathed sabre. Bow in LEFT hand (screen-right), reins/drawing in right. Fixed saddle center at cell(256,256); horse tail at about y35, muzzle near y470, rider helmet crown near y205. Keep identical scale in every frame, generous margins, do not progressively shift by column. True transparent background including space between equipment; no halos, ground, shadow, grain or black outline. Slow walking loop. Six anatomically sequential walk phases, alternating horse hooves with natural articulated leg joints, rider seated calmly. Keep saddle centered, minimal lateral motion, very small vertical bob. Feet and lower legs articulate rather than whole horse sliding. Last to first seamless.",
+      "generatedSource": "C:\\Users\\Damien\\.codex\\generated_images\\01a11641-9e1b-7c81-be76-c9edd53ef182\\exec-d352bced-943e-4d88-a723-2e7fac7067b6.png",
+      "references": [
+        "C:/Users/Damien/Documents/GitHub/AgeOfFronts/AgeOfFronts/Art/Cultures/Russians/Units/LateMedieval/HorseArcher/Idle-v2.png"
+      ],
+      "durations": [
+        180,
+        180,
+        180,
+        180,
+        180,
+        180
+      ],
+      "loop": true,
+      "nativeCopy": "SourceArt/Native-Running-v1.png",
+      "status": "selected-animation-source"
+    },
+    {
+      "id": "attack",
+      "file": "Attack-v1.png",
+      "prompt": "Create a transparent RGBA game animation sprite sheet from this APPROVED Late Medieval Russian armored horse archer. EXACTLY 6 frames in a 3-column by 2-row grid on a 1536x1024 canvas, each cell512x512, read left to right then next row. No gutters, text or drawn grid. One complete horse and rider per cell; same constant camera, scale, anatomy, material colors and smooth painted finish as reference. Direct overhead orthographic camera, nose toward bottom, tail toward top. Preserve finely made steel lamellar and mail rider armor, conical steel helmet with fur rim, russet cream trimmed cloth, segmented steel horse barding and chamfron, recurve bow, hip quiver and sheathed sabre. Bow in LEFT hand (screen-right), reins/drawing in right. Fixed saddle center at cell(256,256); horse tail at about y35, muzzle near y470, rider helmet crown near y205. Keep identical scale in every frame, generous margins, do not progressively shift by column. True transparent background including space between equipment; no halos, ground, shadow, grain or black outline. Six-frame forward archery shot from stationary horse: ready, bring bow forward, full draw, release, follow-through, return ready. LEFT hand holds bow screen-right; RIGHT hand draws string. Turn torso toward horse's forward direction (bottom of image); aim arrow toward bottom, not sideways. Arrow shaft nocked level with bow grip immediately adjacent to left hand, never far up limb. Recurve bow and string correct and continuous.",
+      "generatedSource": "C:\\Users\\Damien\\.codex\\generated_images\\01a11641-9e1b-7c81-be76-c9edd53ef182\\exec-60314403-c285-45fb-bcb7-893669f1214c.png",
+      "references": [
+        "C:/Users/Damien/Documents/GitHub/AgeOfFronts/AgeOfFronts/Art/Cultures/Russians/Units/LateMedieval/HorseArcher/Idle-v2.png"
+      ],
+      "durations": [
+        150,
+        150,
+        150,
+        150,
+        150,
+        150
+      ],
+      "loop": false,
+      "nativeCopy": "SourceArt/Native-Attack-v1.png",
+      "status": "superseded-animation-source-preserved"
+    },
+    {
+      "id": "attack",
+      "file": "Attack-Forward-v2.png",
+      "prompt": "Correct ONLY the archery poses in this six-frame 3x2 overhead sprite sheet. Preserve exactly the same armored horse, barding, rider armor, muted russet colors, camera, scale, placement and smooth finish. The current draw poses incorrectly aim sideways to screen right. The rider must twist and aim the arrow mostly FORWARD toward BOTTOM of image, at most 20 degrees toward bottom-right. In frames 2 and 3 (top-middle and top-right), extend rider's LEFT bow hand toward horse's front-right shoulder (lower-right of rider); rotate the recurve bow so its two tips spread roughly horizontally across the forward shooting direction. Arrow points DOWN toward bottom-right; arrow shaft crosses the bow exactly at grip immediately next to left hand, with nock at rider's RIGHT draw hand pulled back toward upper chest. Taut string from each bow tip to the right drawing hand. Hands anatomically coherent, no rightward-pointing horizontal arrow. Frame1 ready; frame2 aiming forward; frame3 full forward draw; frame4 release while bow still aimed forward; frame5 lowering; frame6 ready. Remove any detached flying arrow from release frames; gameplay will spawn the projectile separately. Keep body/horse positioning stable. Transparent RGBA, 1536x1024, exactly same six 512x512 cells, no shadows or halo.",
+      "generatedSource": "C:\\Users\\Damien\\.codex\\generated_images\\01a11641-9e1b-7c81-be76-c9edd53ef182\\exec-4a49fce6-c3df-4ff4-82f7-b4e93f350d93.png",
+      "references": [
+        "C:\\Users\\Damien\\.codex\\generated_images\\01a11641-9e1b-7c81-be76-c9edd53ef182\\exec-60314403-c285-45fb-bcb7-893669f1214c.png",
+        "Idle-v2.png"
+      ],
+      "nativeCopy": "SourceArt/Native-Attack-Forward-v2.png",
+      "status": "selected-animation-source"
+    },
+    {
+      "id": "hit",
+      "file": "Hit-v1.png",
+      "prompt": "Create a transparent RGBA game animation sprite sheet from this APPROVED Late Medieval Russian armored horse archer. EXACTLY 6 frames in a 3-column by 2-row grid on a 1536x1024 canvas, each cell512x512, read left to right then next row. No gutters, text or drawn grid. One complete horse and rider per cell; same constant camera, scale, anatomy, material colors and smooth painted finish as reference. Direct overhead orthographic camera, nose toward bottom, tail toward top. Preserve finely made steel lamellar and mail rider armor, conical steel helmet with fur rim, russet cream trimmed cloth, segmented steel horse barding and chamfron, recurve bow, hip quiver and sheathed sabre. Bow in LEFT hand (screen-right), reins/drawing in right. Fixed saddle center at cell(256,256); horse tail at about y35, muzzle near y470, rider helmet crown near y205. Keep identical scale in every frame, generous margins, do not progressively shift by column. True transparent background including space between equipment; no halos, ground, shadow, grain or black outline. Six-frame small hit reaction: ready, rider flinches, shoulder recoils, horse gives small startle, recover posture, return ready. Bow still left hand, helmet and segmented horse barding constant. No collapse or large rotation.",
+      "generatedSource": "C:\\Users\\Damien\\.codex\\generated_images\\01a11641-9e1b-7c81-be76-c9edd53ef182\\exec-5cdea699-caf5-42ca-9940-baa0cb469e47.png",
+      "references": [
+        "C:/Users/Damien/Documents/GitHub/AgeOfFronts/AgeOfFronts/Art/Cultures/Russians/Units/LateMedieval/HorseArcher/Idle-v2.png"
+      ],
+      "durations": [
+        130,
+        130,
+        130,
+        130,
+        130,
+        130
+      ],
+      "loop": false,
+      "nativeCopy": "SourceArt/Native-Hit-v1.png",
+      "status": "selected-animation-source"
+    },
+    {
+      "id": "charged-impact",
+      "file": "Charged-Impact-v1.png",
+      "prompt": "Create a transparent RGBA game animation sprite sheet from this APPROVED Late Medieval Russian armored horse archer. EXACTLY 6 frames in a 3-column by 2-row grid on a 1536x1024 canvas, each cell512x512, read left to right then next row. No gutters, text or drawn grid. One complete horse and rider per cell; same constant camera, scale, anatomy, material colors and smooth painted finish as reference. Direct overhead orthographic camera, nose toward bottom, tail toward top. Preserve finely made steel lamellar and mail rider armor, conical steel helmet with fur rim, russet cream trimmed cloth, segmented steel horse barding and chamfron, recurve bow, hip quiver and sheathed sabre. Bow in LEFT hand (screen-right), reins/drawing in right. Fixed saddle center at cell(256,256); horse tail at about y35, muzzle near y470, rider helmet crown near y205. Keep identical scale in every frame, generous margins, do not progressively shift by column. True transparent background including space between equipment; no halos, ground, shadow, grain or black outline. Six-frame strong charge-impact reaction: braced rider, abrupt forward impact, rider recoils backward in saddle and horse buckles front knees slightly, peak stagger, recover balance, return standing. Distinct from ordinary hit, coherent anatomy, keep horse mostly facing bottom.",
+      "generatedSource": "C:\\Users\\Damien\\.codex\\generated_images\\01a11641-9e1b-7c81-be76-c9edd53ef182\\exec-ab14e2f9-67b2-46c4-80ca-649dfedc5b89.png",
+      "references": [
+        "C:/Users/Damien/Documents/GitHub/AgeOfFronts/AgeOfFronts/Art/Cultures/Russians/Units/LateMedieval/HorseArcher/Idle-v2.png"
+      ],
+      "durations": [
+        150,
+        150,
+        150,
+        150,
+        150,
+        150
+      ],
+      "loop": false,
+      "nativeCopy": "SourceArt/Native-Charged-Impact-v1.png",
+      "status": "selected-animation-source"
+    },
+    {
+      "id": "charge",
+      "file": "Charge-v1.png",
+      "prompt": "Create a transparent RGBA game animation sprite sheet from this APPROVED Late Medieval Russian armored horse archer. EXACTLY 6 frames in a 3-column by 2-row grid on a 1536x1024 canvas, each cell512x512, read left to right then next row. No gutters, text or drawn grid. One complete horse and rider per cell; same constant camera, scale, anatomy, material colors and smooth painted finish as reference. Direct overhead orthographic camera, nose toward bottom, tail toward top. Preserve finely made steel lamellar and mail rider armor, conical steel helmet with fur rim, russet cream trimmed cloth, segmented steel horse barding and chamfron, recurve bow, hip quiver and sheathed sabre. Bow in LEFT hand (screen-right), reins/drawing in right. Fixed saddle center at cell(256,256); horse tail at about y35, muzzle near y470, rider helmet crown near y205. Keep identical scale in every frame, generous margins, do not progressively shift by column. True transparent background including space between equipment; no halos, ground, shadow, grain or black outline. Galloping loop. Six sequential natural gallop phases: gathering hindlegs, hindleg push, extending forelegs, foreleg contact, recovery, gathered suspension. Rider leans forward slightly, bow held safely in left hand. Natural horse joint articulation, no foot flailing. Saddle remains centered, limited natural bob. Seamless cycle.",
+      "generatedSource": "C:\\Users\\Damien\\.codex\\generated_images\\01a11641-9e1b-7c81-be76-c9edd53ef182\\exec-91c11abc-5862-477f-b44e-05230fc20c62.png",
+      "references": [
+        "C:/Users/Damien/Documents/GitHub/AgeOfFronts/AgeOfFronts/Art/Cultures/Russians/Units/LateMedieval/HorseArcher/Idle-v2.png"
+      ],
+      "durations": [
+        130,
+        130,
+        130,
+        130,
+        130,
+        130
+      ],
+      "loop": true,
+      "nativeCopy": "SourceArt/Native-Charge-v1.png",
+      "status": "selected-animation-source"
+    },
+    {
+      "id": "charge-attack",
+      "file": "Charge-Attack-v1.png",
+      "prompt": "Create a transparent RGBA game animation sprite sheet from this APPROVED Late Medieval Russian armored horse archer. EXACTLY 6 frames in a 3-column by 2-row grid on a 1536x1024 canvas, each cell512x512, read left to right then next row. No gutters, text or drawn grid. One complete horse and rider per cell; same constant camera, scale, anatomy, material colors and smooth painted finish as reference. Direct overhead orthographic camera, nose toward bottom, tail toward top. Preserve finely made steel lamellar and mail rider armor, conical steel helmet with fur rim, russet cream trimmed cloth, segmented steel horse barding and chamfron, recurve bow, hip quiver and sheathed sabre. Bow in LEFT hand (screen-right), reins/drawing in right. Fixed saddle center at cell(256,256); horse tail at about y35, muzzle near y470, rider helmet crown near y205. Keep identical scale in every frame, generous margins, do not progressively shift by column. True transparent background including space between equipment; no halos, ground, shadow, grain or black outline. Six-frame mounted forward shot after advancing: rider settles while horse decelerates, lift bow toward forward bottom direction, full draw, release forward, follow-through, return ready. LEFT holds bow, RIGHT draws. Torso turns to face forward rather than firing sideways. Arrow shaft at bow grip adjacent to left hand, not high on bow. Keep armor unchanged.",
+      "generatedSource": "C:\\Users\\Damien\\.codex\\generated_images\\01a11641-9e1b-7c81-be76-c9edd53ef182\\exec-71b07bb3-17b3-4e1e-943e-5d851eb21188.png",
+      "references": [
+        "C:/Users/Damien/Documents/GitHub/AgeOfFronts/AgeOfFronts/Art/Cultures/Russians/Units/LateMedieval/HorseArcher/Idle-v2.png"
+      ],
+      "durations": [
+        150,
+        150,
+        150,
+        150,
+        150,
+        150
+      ],
+      "loop": false,
+      "nativeCopy": "SourceArt/Native-Charge-Attack-v1.png",
+      "status": "superseded-animation-source-preserved"
+    },
+    {
+      "id": "charge-attack",
+      "file": "Charge-Attack-Forward-v2.png",
+      "prompt": "Correct ONLY the archery poses in this six-frame 3x2 overhead sprite sheet. Preserve exactly the same armored horse, barding, rider armor, muted russet colors, camera, scale, placement and smooth finish. The current draw poses incorrectly aim sideways to screen right. The rider must twist and aim the arrow mostly FORWARD toward BOTTOM of image, at most 20 degrees toward bottom-right. In frames 2 and 3 (top-middle and top-right), extend rider's LEFT bow hand toward horse's front-right shoulder (lower-right of rider); rotate the recurve bow so its two tips spread roughly horizontally across the forward shooting direction. Arrow points DOWN toward bottom-right; arrow shaft crosses the bow exactly at grip immediately next to left hand, with nock at rider's RIGHT draw hand pulled back toward upper chest. Taut string from each bow tip to the right drawing hand. Hands anatomically coherent, no rightward-pointing horizontal arrow. Frame1 ready; frame2 aiming forward; frame3 full forward draw; frame4 release while bow still aimed forward; frame5 lowering; frame6 ready. Remove any detached flying arrow from release frames; gameplay will spawn the projectile separately. Keep body/horse positioning stable. Transparent RGBA, 1536x1024, exactly same six 512x512 cells, no shadows or halo.",
+      "generatedSource": "C:\\Users\\Damien\\.codex\\generated_images\\01a11641-9e1b-7c81-be76-c9edd53ef182\\exec-3b938cf2-f242-4ca1-b91e-92687eb73ea5.png",
+      "references": [
+        "C:\\Users\\Damien\\.codex\\generated_images\\01a11641-9e1b-7c81-be76-c9edd53ef182\\exec-71b07bb3-17b3-4e1e-943e-5d851eb21188.png",
+        "Idle-v2.png"
+      ],
+      "nativeCopy": "SourceArt/Native-Charge-Attack-Forward-v2.png",
+      "status": "selected-animation-source"
+    },
+    {
+      "id": "death",
+      "file": "Death-Together-v1.png",
+      "prompt": "Create a transparent RGBA game animation sprite sheet from this APPROVED Late Medieval Russian armored horse archer. EXACTLY 6 frames in a 3-column by 2-row grid on a 1536x1024 canvas, each cell512x512, read left to right then next row. No gutters, text or drawn grid. One complete horse and rider per cell; same constant camera, scale, anatomy, material colors and smooth painted finish as reference. Direct overhead orthographic camera, nose toward bottom, tail toward top. Preserve finely made steel lamellar and mail rider armor, conical steel helmet with fur rim, russet cream trimmed cloth, segmented steel horse barding and chamfron, recurve bow, hip quiver and sheathed sabre. Bow in LEFT hand (screen-right), reins/drawing in right. Fixed saddle center at cell(256,256); horse tail at about y35, muzzle near y470, rider helmet crown near y205. Keep identical scale in every frame, generous margins, do not progressively shift by column. True transparent background including space between equipment; no halos, ground, shadow, grain or black outline. Six-frame complete death progression: upright struck rider, rider slumps and horse front knees buckle, horse lowers and tips to left, rider and horse fall together, fully on side, stable final corpse. No sudden inversion or return to upright, continuous direction of fall. Keep rider's steel helmet and armor and horse's segmented barding in ALL frames. Entire bodies within cells.",
+      "generatedSource": "C:\\Users\\Damien\\.codex\\generated_images\\01a11641-9e1b-7c81-be76-c9edd53ef182\\exec-9ff2fc15-03ac-46ee-bfcb-40654c444fee.png",
+      "references": [
+        "C:/Users/Damien/Documents/GitHub/AgeOfFronts/AgeOfFronts/Art/Cultures/Russians/Units/LateMedieval/HorseArcher/Idle-v2.png"
+      ],
+      "durations": [
+        220,
+        220,
+        220,
+        220,
+        220,
+        220
+      ],
+      "loop": false,
+      "nativeCopy": "SourceArt/Native-Death-Together-v1.png",
+      "status": "selected-animation-source"
+    },
+    {
+      "id": "death-thrown",
+      "file": "Death-Thrown-v1.png",
+      "prompt": "Create a transparent RGBA game animation sprite sheet from this APPROVED Late Medieval Russian armored horse archer. EXACTLY 6 frames in a 3-column by 2-row grid on a 1536x1024 canvas, each cell512x512, read left to right then next row. No gutters, text or drawn grid. One complete horse and rider per cell; same constant camera, scale, anatomy, material colors and smooth painted finish as reference. Direct overhead orthographic camera, nose toward bottom, tail toward top. Preserve finely made steel lamellar and mail rider armor, conical steel helmet with fur rim, russet cream trimmed cloth, segmented steel horse barding and chamfron, recurve bow, hip quiver and sheathed sabre. Bow in LEFT hand (screen-right), reins/drawing in right. Fixed saddle center at cell(256,256); horse tail at about y35, muzzle near y470, rider helmet crown near y205. Keep identical scale in every frame, generous margins, do not progressively shift by column. True transparent background including space between equipment; no halos, ground, shadow, grain or black outline. Six-frame complete alternative death progression: upright impact, horse stumbles and rider loses seat, rider thrown to screen-right, armored rider falls onto ground beside horse as horse collapses, both settle, stable corpse. Continuous fall path, no inversion, no reset. Same steel helmet and armor on rider, barding on horse in every frame. Complete horse and separated rider within each cell.",
+      "generatedSource": "C:\\Users\\Damien\\.codex\\generated_images\\01a11641-9e1b-7c81-be76-c9edd53ef182\\exec-da4d99f6-28b3-47b0-a747-812a6e9b120c.png",
+      "references": [
+        "C:/Users/Damien/Documents/GitHub/AgeOfFronts/AgeOfFronts/Art/Cultures/Russians/Units/LateMedieval/HorseArcher/Idle-v2.png"
+      ],
+      "durations": [
+        220,
+        220,
+        220,
+        220,
+        220,
+        220
+      ],
+      "loop": false,
+      "nativeCopy": "SourceArt/Native-Death-Thrown-v1.png",
+      "status": "superseded-animation-source-preserved"
+    },
+    {
+      "id": "death-thrown",
+      "file": "Death-Thrown-v2.png",
+      "prompt": "Fix a duplication error in this six-frame mounted archer death sprite sheet. There must be ONLY ONE rider per frame. Frame1 upright rider on horse. Frame2 rider starting to fall off saddle. Frame3 rider fully thrown to right side; horse saddle now EMPTY. Frames4,5,6 the same one fallen armored rider lies to right of the collapsing horse, whose saddle is EMPTY. Remove the erroneous extra seated rider still on horse in frames3,4,5,6: remove that duplicate helmet, torso, arms, red coat and human boots and reveal the actual empty brown leather saddle, horse back, black mane and steel horse barding underneath. Preserve the separate falling/fallen rider to the right, exact steel helmet armor bow and russet cloth. Keep horse, pose directions, camera, layout, smooth painted finish and color unchanged. Six frames on transparent RGBA1536x1024, 3x2 grid512 cells. No glow/shadow.",
+      "generatedSource": "C:\\Users\\Damien\\.codex\\generated_images\\01a11641-9e1b-7c81-be76-c9edd53ef182\\exec-bee5abe2-b7c9-4d03-93bf-49f9b7356b38.png",
+      "references": [
+        "C:\\Users\\Damien\\.codex\\generated_images\\01a11641-9e1b-7c81-be76-c9edd53ef182\\exec-da4d99f6-28b3-47b0-a747-812a6e9b120c.png"
+      ],
+      "nativeCopy": "SourceArt/Native-Death-Thrown-v2.png",
+      "status": "superseded-animation-source-preserved"
+    },
+    {
+      "id": "death-thrown",
+      "file": "Death-Thrown-v3.png",
+      "prompt": "Precise correction to the BOTTOM ROW ONLY of this sprite sheet. In EACH of the bottom-left, bottom-middle and bottom-right frames there are incorrectly TWO humans: one corpse at right and a duplicate seated armored human on the horse. ERASE the entire duplicate seated human from all THREE bottom-row frames: steel helmet with fur rim, armored shoulders and chest, red sleeves, hands, human boots. Replace those duplicate human parts with an EMPTY brown leather saddle on the HORSE'S BACK, black horse mane, reins and horse barding. Keep ONLY the fallen human body to the RIGHT of each horse. The fallen human at right remains exactly unchanged. Specifically remove duplicate helmet centered around image coordinates(155,790),(665,800),(1185,815). No human head or hands should remain anywhere on the bottom-row horses. Top row unchanged, bottom horses still collapsing same poses, same overhead view, coloring and armor, canvas1536x1024 transparent6frame3x2sheet.",
+      "generatedSource": "C:\\Users\\Damien\\.codex\\generated_images\\01a11641-9e1b-7c81-be76-c9edd53ef182\\exec-54839d16-5e7d-4c9e-8998-5fbc90788f75.png",
+      "references": [
+        "C:\\Users\\Damien\\.codex\\generated_images\\01a11641-9e1b-7c81-be76-c9edd53ef182\\exec-bee5abe2-b7c9-4d03-93bf-49f9b7356b38.png"
+      ],
+      "nativeCopy": "SourceArt/Native-Death-Thrown-v3.png",
+      "status": "superseded-animation-source-preserved"
+    },
+    {
+      "id": "death-thrown",
+      "file": "Death-Thrown-v4.png",
+      "prompt": "Remove the entire background from this six-frame horse archer death sprite sheet. Return a true transparent PNG cutout with alpha ZERO everywhere outside the actual horses and riders and their equipment. Remove ALL brown glow, gray haze, shadows and soft vignette between sprites. The transparent area between rows must be completely clear. Preserve all six horse/rider poses exactly, including empty saddles after rider is thrown, painted colors, gear, bodies and bowstrings. Do not redraw or move any object.1536x1024 RGBA, same layout. No background whatsoever.",
+      "generatedSource": "C:\\Users\\Damien\\.codex\\generated_images\\01a11641-9e1b-7c81-be76-c9edd53ef182\\exec-bb6dbf57-b9a7-4cc8-ad41-5e99b1700995.png",
+      "references": [
+        "C:\\Users\\Damien\\.codex\\generated_images\\01a11641-9e1b-7c81-be76-c9edd53ef182\\exec-54839d16-5e7d-4c9e-8998-5fbc90788f75.png"
+      ],
+      "nativeCopy": "SourceArt/Native-Death-Thrown-v4.png",
+      "status": "superseded-animation-source-preserved"
+    },
+    {
+      "id": "death-thrown",
+      "file": "Death-Thrown-v5.png",
+      "prompt": "Re-layout this transparent six-frame death animation into six clean separated cells. Preserve all poses exactly, especially EMPTY saddle in frames3,4,5,6 and only ONE fallen rider to right. Current horse nose and next-row tail are too close. Scale ALL horse-and-rider frame groups to 75% of current size uniformly, and center each group inside its own512x512cell with at least40px clear transparent margin on EVERY side.1536x1024canvas,3columns2rows. Frame1 upright horse+rider; frame2 riderfalling; frame3 riderthrown andemptysaddle; bottomrowridercorpsebesidehorsewithemptysaddle. Keep top-downview and steelarmor/barding, smooth finish mutedrussetcolors unchanged. Fully transparent background alphaZERObetween and aroundsprites. No brownorgrayglow, haze, vignette, shadow. Neither nose nor tail nor bow may extend across cell boundaries. Sixdistinctframes, no labels orgrid.",
+      "generatedSource": "C:\\Users\\Damien\\.codex\\generated_images\\01a11641-9e1b-7c81-be76-c9edd53ef182\\exec-52cc451a-4d0e-4a3c-a870-eaca918e5ae3.png",
+      "references": [
+        "C:\\Users\\Damien\\.codex\\generated_images\\01a11641-9e1b-7c81-be76-c9edd53ef182\\exec-bb6dbf57-b9a7-4cc8-ad41-5e99b1700995.png"
+      ],
+      "sourcePoseScale": 0.8804071246819338,
+      "scaleCalibration": "One constant clip scale measured from upright frame height against native idle; no per-frame fitting.",
+      "nativeCopy": "SourceArt/Native-Death-Thrown-v5.png",
+      "status": "selected-animation-source"
+    },
+    {
+      "file": "Charge-Registered-v2.png",
+      "source": "Charge-v1.png",
+      "method": "Whole-pose horizontal translation only; no scaling, pixel painting, filtering or vertical adjustment.",
+      "tracks": [
+        {
+          "frame": 0,
+          "translationPx": [
+            0,
+            0
+          ],
+          "matchedRegion": [
+            185,
+            180,
+            340,
+            310
+          ],
+          "measuredVerticalOffsetNotApplied": 0,
+          "alignmentError": 0.0
+        },
+        {
+          "frame": 1,
+          "translationPx": [
+            22,
+            0
+          ],
+          "matchedRegion": [
+            185,
+            180,
+            340,
+            310
+          ],
+          "measuredVerticalOffsetNotApplied": 0,
+          "alignmentError": 0.012619697488844395
+        },
+        {
+          "frame": 2,
+          "translationPx": [
+            42,
+            0
+          ],
+          "matchedRegion": [
+            185,
+            180,
+            340,
+            310
+          ],
+          "measuredVerticalOffsetNotApplied": 2,
+          "alignmentError": 0.018661383539438248
+        },
+        {
+          "frame": 3,
+          "translationPx": [
+            -4,
+            0
+          ],
+          "matchedRegion": [
+            185,
+            180,
+            340,
+            310
+          ],
+          "measuredVerticalOffsetNotApplied": 6,
+          "alignmentError": 0.02621249295771122
+        },
+        {
+          "frame": 4,
+          "translationPx": [
+            22,
+            0
+          ],
+          "matchedRegion": [
+            185,
+            180,
+            340,
+            310
+          ],
+          "measuredVerticalOffsetNotApplied": 6,
+          "alignmentError": 0.026091625913977623
+        },
+        {
+          "frame": 5,
+          "translationPx": [
+            44,
+            0
+          ],
+          "matchedRegion": [
+            185,
+            180,
+            340,
+            310
+          ],
+          "measuredVerticalOffsetNotApplied": 4,
+          "alignmentError": 0.022324098274111748
+        }
+      ],
+      "status": "selected-gallop-registration"
+    }
+  ],
+  "supersededDraft": "SourceArt/Idle-v1-halo-draft.png retained; surrounding halo removed in v2."
+}

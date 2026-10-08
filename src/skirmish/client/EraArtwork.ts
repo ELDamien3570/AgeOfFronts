@@ -6,7 +6,17 @@ const urls = import.meta.glob<string>("../../../Art/Runtime/Ages/*.png", {
   query: "?url",
   import: "default",
 });
-const url = (file: string) => urls[`../../../Art/Runtime/Ages/${file}`];
+const russianUrls = import.meta.glob<string>(
+  "../../../Art/Runtime/Russians/*.png",
+  {
+    eager: true,
+    query: "?url",
+    import: "default",
+  },
+);
+const url = (file: string) =>
+  russianUrls[`../../../Art/Runtime/Russians/${file}`] ??
+  urls[`../../../Art/Runtime/Ages/${file}`];
 export function eraPortrait(id: string): string | undefined {
   const asset = catalog[id];
   const file = asset?.poster ?? asset?.file;
@@ -27,6 +37,13 @@ export class EraArtwork {
     }
     return this.images.get(file);
   }
+  preload(id: string, clip: string): void {
+    const asset = catalog[id];
+    const animation = asset?.clips?.[clip];
+    if (animation) this.load(animation.file);
+    if (asset?.poster) this.load(asset.poster);
+  }
+
   get(id: string, clip = "idle", elapsedTicks = 0): ArtworkFrame | undefined {
     const asset = catalog[id];
     if (!asset) return;
@@ -42,6 +59,7 @@ export class EraArtwork {
             pivotX: 0.5,
             pivotY: 0.5,
             extent: 1,
+            groundBounds: asset.groundBounds,
           }
         : undefined;
     }
@@ -72,6 +90,7 @@ export class EraArtwork {
             pivotX: 0.5,
             pivotY: 0.5,
             extent: 4 / 3,
+            groundBounds: asset.groundBounds,
           }
         : undefined;
     }
@@ -88,6 +107,15 @@ export class EraArtwork {
       pivotX: 0.5,
       pivotY: 0.5,
       extent: 4 / 3,
+      groundBounds: animation.groundBounds,
+      visibleBounds: animation.bounds
+        ? {
+            x: (frame % animation.columns) * 128 + animation.bounds.x,
+            y: Math.floor(frame / animation.columns) * 128 + animation.bounds.y,
+            width: animation.bounds.width,
+            height: animation.bounds.height,
+          }
+        : undefined,
     };
   }
   facing(id: string): number {

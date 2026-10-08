@@ -1,0 +1,166 @@
+{
+  "unit": "Russian Bronze Mace",
+  "created": "2026-10-07",
+  "sheets": [
+    {
+      "file": "Death-BronzeMace-Nadir-v4.png",
+      "frameCount": 6,
+      "cellSize": [
+        512,
+        512
+      ],
+      "pivots": [
+        {
+          "x": 263,
+          "y": 224
+        },
+        {
+          "x": 263,
+          "y": 234
+        },
+        {
+          "x": 274,
+          "y": 240
+        },
+        {
+          "x": 282,
+          "y": 247
+        },
+        {
+          "x": 267,
+          "y": 240
+        },
+        {
+          "x": 247,
+          "y": 240
+        }
+      ],
+      "firstHelmetDomeWidthApprox": 90,
+      "scaleTo110px": 1.22222,
+      "corpse": "Corpse-Prone-BronzeMace-v4.png",
+      "bounds": [
+        [
+          77,
+          118,
+          452,
+          407
+        ],
+        [
+          65,
+          132,
+          436,
+          405
+        ],
+        [
+          70,
+          147,
+          449,
+          411
+        ],
+        [
+          73,
+          89,
+          492,
+          365
+        ],
+        [
+          58,
+          76,
+          477,
+          432
+        ],
+        [
+          43,
+          70,
+          446,
+          432
+        ]
+      ],
+      "visibleAlphaFarPixels": 0
+    },
+    {
+      "file": "Death-Back-BronzeMace-Nadir-v4.png",
+      "frameCount": 6,
+      "cellSize": [
+        512,
+        512
+      ],
+      "pivots": [
+        {
+          "x": 256,
+          "y": 218
+        },
+        {
+          "x": 258,
+          "y": 220
+        },
+        {
+          "x": 259,
+          "y": 240
+        },
+        {
+          "x": 253,
+          "y": 240
+        },
+        {
+          "x": 245,
+          "y": 240
+        },
+        {
+          "x": 244,
+          "y": 240
+        }
+      ],
+      "firstHelmetDomeWidthApprox": 103,
+      "scaleTo110px": 1.06796,
+      "corpse": "Corpse-Back-BronzeMace-v4.png",
+      "bounds": [
+        [
+          45,
+          108,
+          468,
+          437
+        ],
+        [
+          25,
+          114,
+          477,
+          429
+        ],
+        [
+          20,
+          104,
+          465,
+          444
+        ],
+        [
+          45,
+          41,
+          505,
+          431
+        ],
+        [
+          37,
+          41,
+          492,
+          431
+        ],
+        [
+          24,
+          41,
+          493,
+          431
+        ]
+      ],
+      "visibleAlphaFarPixels": 3,
+      "farPixelAlphaValues": [
+        21,
+        17,
+        17
+      ],
+      "flatCorrectionProvenance": "Death-Back-BronzeMace-Nadir-v4-Flat-Correction.json"
+    }
+  ],
+  "registrationNote": "First standing crown pivot transitions to floor/torso center during fall so head and legs unfold around stable body center. Approximate dome width manually assessed. One fixed scale per clip; never per-frame fit.",
+  "reviewNote": "Backward fall lower row corrected to completely flat supine body, extended knees, symmetric upward face, visible boot uppers and circular ground-flat shield. Prone corpse uses toes-down ankle pose. Fixed overhead view and smaller grounded heads; artistic acceptance remains user review."
+}

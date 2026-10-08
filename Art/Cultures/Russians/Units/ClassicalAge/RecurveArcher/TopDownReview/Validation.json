@@ -1,0 +1,790 @@
+{
+  "clipCount": 10,
+  "frameCount": 60,
+  "clips": [
+    {
+      "id": "idle",
+      "frames": [
+        {
+          "index": 0,
+          "visibleBounds": [
+            72,
+            36,
+            458,
+            460
+          ],
+          "guardAlphaMax": 0,
+          "nativeCellEdgeAlphaMax": 1,
+          "sha256": "f02326290247f172668d7afa29cafe4ca17844ab1d148e020737c3aaa974dadd"
+        },
+        {
+          "index": 1,
+          "visibleBounds": [
+            76,
+            34,
+            458,
+            459
+          ],
+          "guardAlphaMax": 0,
+          "nativeCellEdgeAlphaMax": 1,
+          "sha256": "dab39d3311d29ed1da2ea74eacf8c8c2a06a29cb4c84cb1af6ea73193e28f361"
+        },
+        {
+          "index": 2,
+          "visibleBounds": [
+            74,
+            36,
+            462,
+            460
+          ],
+          "guardAlphaMax": 0,
+          "nativeCellEdgeAlphaMax": 1,
+          "sha256": "9df2dc3d7d4424147315652c4e89715d1985b3bed5b2e5040efca96c04eb2248"
+        },
+        {
+          "index": 3,
+          "visibleBounds": [
+            74,
+            41,
+            459,
+            453
+          ],
+          "guardAlphaMax": 0,
+          "nativeCellEdgeAlphaMax": 1,
+          "sha256": "24855983d87d8ebd344cbcdfb5e8580d88b7b75be47afc9545b5fa80198920c0"
+        },
+        {
+          "index": 4,
+          "visibleBounds": [
+            70,
+            39,
+            462,
+            452
+          ],
+          "guardAlphaMax": 0,
+          "nativeCellEdgeAlphaMax": 1,
+          "sha256": "8bb9c1ea2cad4daa102ad54c00168a00fd0b40e36eeed19d708b55bafa704c13"
+        },
+        {
+          "index": 5,
+          "visibleBounds": [
+            74,
+            39,
+            458,
+            464
+          ],
+          "guardAlphaMax": 0,
+          "nativeCellEdgeAlphaMax": 0,
+          "sha256": "c4b3006a9def25d159dd798c913fea9a7c66c39a8f233b4a7d8c4beee9630283"
+        }
+      ],
+      "sha256": "63c4571f82ddae73c4846fb986772d3bfdc1601104b3452bd85951064e19cb53"
+    },
+    {
+      "id": "running",
+      "frames": [
+        {
+          "index": 0,
+          "visibleBounds": [
+            103,
+            91,
+            422,
+            462
+          ],
+          "guardAlphaMax": 0,
+          "nativeCellEdgeAlphaMax": 1,
+          "sha256": "65342e4e3b4888fa8c6cbc91030ecf8f67349ebc753c07bd660d393770a596fd"
+        },
+        {
+          "index": 1,
+          "visibleBounds": [
+            105,
+            84,
+            420,
+            460
+          ],
+          "guardAlphaMax": 0,
+          "nativeCellEdgeAlphaMax": 1,
+          "sha256": "faa6b0408607abd7bbb700b8d5f250554ae0a8b643050b896e426f1598703c50"
+        },
+        {
+          "index": 2,
+          "visibleBounds": [
+            88,
+            91,
+            424,
+            460
+          ],
+          "guardAlphaMax": 0,
+          "nativeCellEdgeAlphaMax": 1,
+          "sha256": "966388ba2ac2ec0284b0c1395a4f9a07efdfd2a94650f7121efaffb4c1fa2f7d"
+        },
+        {
+          "index": 3,
+          "visibleBounds": [
+            101,
+            83,
+            424,
+            454
+          ],
+          "guardAlphaMax": 0,
+          "nativeCellEdgeAlphaMax": 1,
+          "sha256": "9197052b77996c5af9be16c4acb15da691d609238223092a97e3f6269f5436c6"
+        },
+        {
+          "index": 4,
+          "visibleBounds": [
+            88,
+            86,
+            436,
+            455
+          ],
+          "guardAlphaMax": 0,
+          "nativeCellEdgeAlphaMax": 1,
+          "sha256": "88acf6b748aa81fd5778a452d950623db4d824bce64c758c442401fe0bad445b"
+        },
+        {
+          "index": 5,
+          "visibleBounds": [
+            92,
+            88,
+            419,
+            455
+          ],
+          "guardAlphaMax": 0,
+          "nativeCellEdgeAlphaMax": 1,
+          "sha256": "0f07083bdab78822e110572254d5198b798c574d4509e117173428a79c46c556"
+        }
+      ],
+      "sha256": "a2d1ecf1df20e50ffacb2e1028e607b1ca21534637b564f4aca1651edbeadf21"
+    },
+    {
+      "id": "charge",
+      "frames": [
+        {
+          "index": 0,
+          "visibleBounds": [
+            103,
+            91,
+            422,
+            462
+          ],
+          "guardAlphaMax": 0,
+          "nativeCellEdgeAlphaMax": 1,
+          "sha256": "65342e4e3b4888fa8c6cbc91030ecf8f67349ebc753c07bd660d393770a596fd"
+        },
+        {
+          "index": 1,
+          "visibleBounds": [
+            105,
+            84,
+            420,
+            460
+          ],
+          "guardAlphaMax": 0,
+          "nativeCellEdgeAlphaMax": 1,
+          "sha256": "faa6b0408607abd7bbb700b8d5f250554ae0a8b643050b896e426f1598703c50"
+        },
+        {
+          "index": 2,
+          "visibleBounds": [
+            88,
+            91,
+            424,
+            460
+          ],
+          "guardAlphaMax": 0,
+          "nativeCellEdgeAlphaMax": 1,
+          "sha256": "966388ba2ac2ec0284b0c1395a4f9a07efdfd2a94650f7121efaffb4c1fa2f7d"
+        },
+        {
+          "index": 3,
+          "visibleBounds": [
+            101,
+            83,
+            424,
+            454
+          ],
+          "guardAlphaMax": 0,
+          "nativeCellEdgeAlphaMax": 1,
+          "sha256": "9197052b77996c5af9be16c4acb15da691d609238223092a97e3f6269f5436c6"
+        },
+        {
+          "index": 4,
+          "visibleBounds": [
+            88,
+            86,
+            436,
+            455
+          ],
+          "guardAlphaMax": 0,
+          "nativeCellEdgeAlphaMax": 1,
+          "sha256": "88acf6b748aa81fd5778a452d950623db4d824bce64c758c442401fe0bad445b"
+        },
+        {
+          "index": 5,
+          "visibleBounds": [
+            92,
+            88,
+            419,
+            455
+          ],
+          "guardAlphaMax": 0,
+          "nativeCellEdgeAlphaMax": 1,
+          "sha256": "0f07083bdab78822e110572254d5198b798c574d4509e117173428a79c46c556"
+        }
+      ],
+      "sha256": "a2d1ecf1df20e50ffacb2e1028e607b1ca21534637b564f4aca1651edbeadf21"
+    },
+    {
+      "id": "attack",
+      "frames": [
+        {
+          "index": 0,
+          "visibleBounds": [
+            102,
+            55,
+            475,
+            471
+          ],
+          "guardAlphaMax": 0,
+          "nativeCellEdgeAlphaMax": 1,
+          "sha256": "7062d59c939071ea76033f248c40b6cb8fe8cdc090d4eb400599821307605710"
+        },
+        {
+          "index": 1,
+          "visibleBounds": [
+            130,
+            52,
+            404,
+            455
+          ],
+          "guardAlphaMax": 0,
+          "nativeCellEdgeAlphaMax": 1,
+          "sha256": "62baaa1a23088ff42f49fe06c802f62084d6441caa1e7545a0faa4e87232d5a0"
+        },
+        {
+          "index": 2,
+          "visibleBounds": [
+            95,
+            48,
+            398,
+            470
+          ],
+          "guardAlphaMax": 0,
+          "nativeCellEdgeAlphaMax": 1,
+          "sha256": "c39d9db2cddb286377c434dc92fd2dd4f632e07c7f77fd369057f7767356a9fb"
+        },
+        {
+          "index": 3,
+          "visibleBounds": [
+            79,
+            49,
+            406,
+            440
+          ],
+          "guardAlphaMax": 0,
+          "nativeCellEdgeAlphaMax": 1,
+          "sha256": "7b200a170022ee7488f4f25264ce638e29ab66cb550e3f5e3bafcd2eca717433"
+        },
+        {
+          "index": 4,
+          "visibleBounds": [
+            81,
+            48,
+            404,
+            440
+          ],
+          "guardAlphaMax": 0,
+          "nativeCellEdgeAlphaMax": 1,
+          "sha256": "5a4dccded8ecbbdb246f9a3210112e52cfd992da88d8634c719c7df739afd997"
+        },
+        {
+          "index": 5,
+          "visibleBounds": [
+            94,
+            46,
+            464,
+            443
+          ],
+          "guardAlphaMax": 0,
+          "nativeCellEdgeAlphaMax": 1,
+          "sha256": "878ecab22bea207e2316d014934c319a39c3c82e7d2f1f56664efe0dc44978db"
+        }
+      ],
+      "sha256": "9743661c5bdfa9183c36495138d97c338dcaeca0b79e81631011b235273fdbbd"
+    },
+    {
+      "id": "charge-attack",
+      "frames": [
+        {
+          "index": 0,
+          "visibleBounds": [
+            119,
+            101,
+            430,
+            466
+          ],
+          "guardAlphaMax": 0,
+          "nativeCellEdgeAlphaMax": 1,
+          "sha256": "67dba44dc52ce30e7b669ec3cb797175dec07b6f8a2d6a31cde27b3a98ab9663"
+        },
+        {
+          "index": 1,
+          "visibleBounds": [
+            130,
+            52,
+            404,
+            455
+          ],
+          "guardAlphaMax": 0,
+          "nativeCellEdgeAlphaMax": 1,
+          "sha256": "62baaa1a23088ff42f49fe06c802f62084d6441caa1e7545a0faa4e87232d5a0"
+        },
+        {
+          "index": 2,
+          "visibleBounds": [
+            95,
+            48,
+            398,
+            470
+          ],
+          "guardAlphaMax": 0,
+          "nativeCellEdgeAlphaMax": 1,
+          "sha256": "c39d9db2cddb286377c434dc92fd2dd4f632e07c7f77fd369057f7767356a9fb"
+        },
+        {
+          "index": 3,
+          "visibleBounds": [
+            79,
+            49,
+            406,
+            440
+          ],
+          "guardAlphaMax": 0,
+          "nativeCellEdgeAlphaMax": 1,
+          "sha256": "7b200a170022ee7488f4f25264ce638e29ab66cb550e3f5e3bafcd2eca717433"
+        },
+        {
+          "index": 4,
+          "visibleBounds": [
+            81,
+            48,
+            404,
+            440
+          ],
+          "guardAlphaMax": 0,
+          "nativeCellEdgeAlphaMax": 1,
+          "sha256": "5a4dccded8ecbbdb246f9a3210112e52cfd992da88d8634c719c7df739afd997"
+        },
+        {
+          "index": 5,
+          "visibleBounds": [
+            94,
+            46,
+            464,
+            443
+          ],
+          "guardAlphaMax": 0,
+          "nativeCellEdgeAlphaMax": 1,
+          "sha256": "878ecab22bea207e2316d014934c319a39c3c82e7d2f1f56664efe0dc44978db"
+        }
+      ],
+      "sha256": "23c3d9af62f31e5828b854723b3674be8e11ca5c62574845826bcbfeb0299238"
+    },
+    {
+      "id": "reload",
+      "frames": [
+        {
+          "index": 0,
+          "visibleBounds": [
+            95,
+            146,
+            401,
+            480
+          ],
+          "guardAlphaMax": 0,
+          "nativeCellEdgeAlphaMax": 0,
+          "sha256": "a9d966b14db6a29660f175340aa7799fb88a6c489f3bd015051868b083bc5ead"
+        },
+        {
+          "index": 1,
+          "visibleBounds": [
+            92,
+            121,
+            399,
+            481
+          ],
+          "guardAlphaMax": 0,
+          "nativeCellEdgeAlphaMax": 1,
+          "sha256": "402197a3a9bb6f21ee470d0220e499e4007f637e70c80e3e296fb2606f2b7dfd"
+        },
+        {
+          "index": 2,
+          "visibleBounds": [
+            104,
+            85,
+            407,
+            485
+          ],
+          "guardAlphaMax": 0,
+          "nativeCellEdgeAlphaMax": 1,
+          "sha256": "071f8d770de8374a620401d92a1a159e71b9ebc2c01001501c7ea93ecc9d8ccb"
+        },
+        {
+          "index": 3,
+          "visibleBounds": [
+            88,
+            42,
+            406,
+            462
+          ],
+          "guardAlphaMax": 0,
+          "nativeCellEdgeAlphaMax": 1,
+          "sha256": "e8545086eb8e2fe0f30f49bce8e50a678521367083d9fb18da5be15a762f70d7"
+        },
+        {
+          "index": 4,
+          "visibleBounds": [
+            100,
+            111,
+            410,
+            460
+          ],
+          "guardAlphaMax": 0,
+          "nativeCellEdgeAlphaMax": 0,
+          "sha256": "475b7a9b5a44bd7a3cbdc13f0e16e1944c077543b34a3c331f20c2cd8b92996a"
+        },
+        {
+          "index": 5,
+          "visibleBounds": [
+            103,
+            112,
+            413,
+            462
+          ],
+          "guardAlphaMax": 0,
+          "nativeCellEdgeAlphaMax": 0,
+          "sha256": "6500677ae94201c45cca1793ff4735016f9aeeaf19479d0e8689463b9b20aa27"
+        }
+      ],
+      "sha256": "2b3e5492b6c31377a22572792e78a565e3d69f31606e0159c77a6b2a687f8daf"
+    },
+    {
+      "id": "hit",
+      "frames": [
+        {
+          "index": 0,
+          "visibleBounds": [
+            83,
+            60,
+            442,
+            460
+          ],
+          "guardAlphaMax": 0,
+          "nativeCellEdgeAlphaMax": 1,
+          "sha256": "1b79c013c077d1887fc44de7e5b33559092d2d889458f25dcbaf3940ae9594b0"
+        },
+        {
+          "index": 1,
+          "visibleBounds": [
+            93,
+            75,
+            444,
+            466
+          ],
+          "guardAlphaMax": 0,
+          "nativeCellEdgeAlphaMax": 1,
+          "sha256": "0987b67475f9d1c45b9b2a98e7584b5007a32943094e731b6c0a3f5570c978eb"
+        },
+        {
+          "index": 2,
+          "visibleBounds": [
+            123,
+            104,
+            446,
+            478
+          ],
+          "guardAlphaMax": 0,
+          "nativeCellEdgeAlphaMax": 0,
+          "sha256": "5c29c833fe1fd65d8f6f48409b52d358de19c56fe66c2922db503403d8b4f8f3"
+        },
+        {
+          "index": 3,
+          "visibleBounds": [
+            68,
+            54,
+            450,
+            445
+          ],
+          "guardAlphaMax": 0,
+          "nativeCellEdgeAlphaMax": 1,
+          "sha256": "54c9523648835ff9c2df4a748fcacfcb37c1dae4a68dc3af0c247338dab80bdd"
+        },
+        {
+          "index": 4,
+          "visibleBounds": [
+            79,
+            61,
+            444,
+            447
+          ],
+          "guardAlphaMax": 0,
+          "nativeCellEdgeAlphaMax": 1,
+          "sha256": "696b28c3c5aef6b2bf288b616d0759457e3eb2816bf622796aee3ca3dd404b5c"
+        },
+        {
+          "index": 5,
+          "visibleBounds": [
+            84,
+            60,
+            442,
+            459
+          ],
+          "guardAlphaMax": 0,
+          "nativeCellEdgeAlphaMax": 0,
+          "sha256": "6bdcc5c394f18bd13b246ae7065a51ace9e3382205ddc7b9e8bb04202f422cc6"
+        }
+      ],
+      "sha256": "3ad2356581aaa3dca2f0cfac6d5fceebc2b9f7c9baeca74106e4b0ddee8a8b81"
+    },
+    {
+      "id": "charged",
+      "frames": [
+        {
+          "index": 0,
+          "visibleBounds": [
+            114,
+            85,
+            439,
+            432
+          ],
+          "guardAlphaMax": 0,
+          "nativeCellEdgeAlphaMax": 1,
+          "sha256": "b9cd3b15a2bb6e3a3cbc9ece08b232f3ebb14c09ed64a877c92a6f91bbdfb0ab"
+        },
+        {
+          "index": 1,
+          "visibleBounds": [
+            27,
+            125,
+            456,
+            452
+          ],
+          "guardAlphaMax": 0,
+          "nativeCellEdgeAlphaMax": 1,
+          "sha256": "e48d238bbbd403427eb47ba8ab600ec8bd559108c0b2e0fd6893f1c73bc3c551"
+        },
+        {
+          "index": 2,
+          "visibleBounds": [
+            80,
+            144,
+            420,
+            469
+          ],
+          "guardAlphaMax": 0,
+          "nativeCellEdgeAlphaMax": 1,
+          "sha256": "c99c573e5a3448d0fb12aa6e54954b3e9a69cf8faf4e35c1095df3e573fcd435"
+        },
+        {
+          "index": 3,
+          "visibleBounds": [
+            107,
+            87,
+            448,
+            430
+          ],
+          "guardAlphaMax": 0,
+          "nativeCellEdgeAlphaMax": 1,
+          "sha256": "19ed7b270806a99aee4e8920844112e2783d373f8e8b28f661f5c990792119fe"
+        },
+        {
+          "index": 4,
+          "visibleBounds": [
+            105,
+            78,
+            437,
+            422
+          ],
+          "guardAlphaMax": 0,
+          "nativeCellEdgeAlphaMax": 1,
+          "sha256": "64ce5cc6b57b34c6433b42cab0ba182bac877c27f3f4f9d9ddb35a0fc5643442"
+        },
+        {
+          "index": 5,
+          "visibleBounds": [
+            92,
+            73,
+            408,
+            426
+          ],
+          "guardAlphaMax": 0,
+          "nativeCellEdgeAlphaMax": 1,
+          "sha256": "e976cbb0d514fb02a727bee3edbcecc944699ae359151591697318a917326756"
+        }
+      ],
+      "sha256": "9038de0dfe680d33e2142a4afb3ca95fd1e8e33d8ac4340a57c5ed8c48847980"
+    },
+    {
+      "id": "death",
+      "frames": [
+        {
+          "index": 0,
+          "visibleBounds": [
+            97,
+            99,
+            388,
+            450
+          ],
+          "guardAlphaMax": 0,
+          "nativeCellEdgeAlphaMax": 2,
+          "sha256": "d7412827823f122cfd7d623de84cf254189bd3a42ffb58c30dc802f588b186f8"
+        },
+        {
+          "index": 1,
+          "visibleBounds": [
+            132,
+            121,
+            400,
+            460
+          ],
+          "guardAlphaMax": 0,
+          "nativeCellEdgeAlphaMax": 2,
+          "sha256": "7538c8caa799fe4133f7cacf902123a4fbe298639db6f7933e77cac55014f156"
+        },
+        {
+          "index": 2,
+          "visibleBounds": [
+            87,
+            179,
+            457,
+            490
+          ],
+          "guardAlphaMax": 0,
+          "nativeCellEdgeAlphaMax": 3,
+          "sha256": "9788a495424f325d0a1a719c774837236133d2f9de70a04ffde90a907dcdb846"
+        },
+        {
+          "index": 3,
+          "visibleBounds": [
+            58,
+            167,
+            443,
+            417
+          ],
+          "guardAlphaMax": 0,
+          "nativeCellEdgeAlphaMax": 3,
+          "sha256": "5f6734f7ff4b154ba37117142e40ab55f9d0676b5c367783cc1c3aeb98ed90e2"
+        },
+        {
+          "index": 4,
+          "visibleBounds": [
+            59,
+            167,
+            455,
+            424
+          ],
+          "guardAlphaMax": 0,
+          "nativeCellEdgeAlphaMax": 2,
+          "sha256": "1673d3f6d7f0965cf320eff6791d672c4c162e7dc7fdeed2ea4d6a640a23f997"
+        },
+        {
+          "index": 5,
+          "visibleBounds": [
+            69,
+            164,
+            465,
+            424
+          ],
+          "guardAlphaMax": 0,
+          "nativeCellEdgeAlphaMax": 4,
+          "sha256": "a709e999179874b61e561dbc85e4f8bc0746352b5da35e2d292cc22cde17e732"
+        }
+      ],
+      "sha256": "3948b34d5c7f886fa312bc01491c1ee82861b56ffcc1d69bf52cc93bec93978b"
+    },
+    {
+      "id": "death-back",
+      "frames": [
+        {
+          "index": 0,
+          "visibleBounds": [
+            127,
+            88,
+            437,
+            431
+          ],
+          "guardAlphaMax": 0,
+          "nativeCellEdgeAlphaMax": 1,
+          "sha256": "cd97066d6f4e6ebaaa3e114030c21f642cd44b1aac4e7da439adc8cebf5ac19e"
+        },
+        {
+          "index": 1,
+          "visibleBounds": [
+            84,
+            85,
+            430,
+            399
+          ],
+          "guardAlphaMax": 0,
+          "nativeCellEdgeAlphaMax": 1,
+          "sha256": "a7e30b5fb05af5822a04a352882a7b47a8366613c52a11bdc3329a4b4af1e3b2"
+        },
+        {
+          "index": 2,
+          "visibleBounds": [
+            45,
+            107,
+            435,
+            444
+          ],
+          "guardAlphaMax": 0,
+          "nativeCellEdgeAlphaMax": 1,
+          "sha256": "77dc7b535615cf2aff7e0531eaea976fe1c5f8ce88836d01d6dcfbbc1307e7b7"
+        },
+        {
+          "index": 3,
+          "visibleBounds": [
+            123,
+            82,
+            443,
+            400
+          ],
+          "guardAlphaMax": 0,
+          "nativeCellEdgeAlphaMax": 1,
+          "sha256": "715839b62a79beeb23787a0de2eb2d8e3c81731c67f8fd9a0d105512a818f62c"
+        },
+        {
+          "index": 4,
+          "visibleBounds": [
+            88,
+            54,
+            468,
+            429
+          ],
+          "guardAlphaMax": 0,
+          "nativeCellEdgeAlphaMax": 1,
+          "sha256": "a507f2a954bc8d2668b984c914f5d30de73100b76a5a0f8f2375a10889c12403"
+        },
+        {
+          "index": 5,
+          "visibleBounds": [
+            84,
+            55,
+            464,
+            429
+          ],
+          "guardAlphaMax": 0,
+          "nativeCellEdgeAlphaMax": 1,
+          "sha256": "59684e7c7a39c745f33981a6c98c95029d65dcaafb197da0cfc21d0f6c665bd1"
+        }
+      ],
+      "sha256": "55b1da619fdc0df916518975c8a8ab829e8c20fc879e21d4b6edac2ad2fa8db8"
+    }
+  ],
+  "failures": [],
+  "approvedIdlePreserved": true,
+  "runtimeIntegration": false,
+  "userApproval": "Pending animation review"
+}

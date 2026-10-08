@@ -1,0 +1,21 @@
+{
+  "results": [
+    {
+      "renderer": "webgl",
+      "aligned": true
+    },
+    {
+      "size": "250",
+      "renderer": "webgl"
+    },
+    {
+      "size": "1000",
+      "renderer": "webgl"
+    },
+    {
+      "fallback": "classic",
+      "contextRecovery": "passed"
+    }
+  ],
+  "errors": []
+}

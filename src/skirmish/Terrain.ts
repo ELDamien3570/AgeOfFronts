@@ -1,17 +1,19 @@
-import { resourceTerrainData } from "./ResourceTerrain";
 import { TerrainType } from "../core/game/Game";
 import type { GameMap } from "../core/game/GameMap";
 import { GameMapImpl } from "../core/game/GameMap";
-import { HEIGHTMAP_MAPS } from "./content/Maps";
+import { generateProceduralMap } from "./ProceduralMaps";
+import { HEIGHTMAP_MAPS, PROCEDURAL_MAPS } from "./content/Maps";
 import { createSkirmishMap } from "./Elevation";
 import { EnvironmentProfile } from "./Environment";
 import { forestOf } from "./Forest";
 import { generateForestCover } from "./ForestGeneration";
 import { loadHeightmap } from "./HeightmapMap";
 import type { LoadedMap } from "./Protocol";
+import { resourceTerrainData } from "./ResourceTerrain";
 
 export const MAPS = [
   ...HEIGHTMAP_MAPS.map(({ id, name }) => ({ id, name })),
+  ...PROCEDURAL_MAPS.map(({ id, name }) => ({ id, name })),
   { id: "thebox", name: "Training Square" },
 ] as const;
 
@@ -35,7 +37,13 @@ export function baseTerrainSpeed(map: GameMap, tile: number): number {
   }
 }
 
-export async function loadMap(id: string, worldSize = 500): Promise<LoadedMap> {
+export async function loadMap(
+  id: string,
+  worldSize = 500,
+  seed = 0,
+): Promise<LoadedMap> {
+  const procedural = generateProceduralMap(id, worldSize, seed);
+  if (procedural) return procedural;
   const loaded = await loadBareMap(id, worldSize);
   const environment =
     loaded.environment ?? new EnvironmentProfile(loaded.map, loaded.geography);

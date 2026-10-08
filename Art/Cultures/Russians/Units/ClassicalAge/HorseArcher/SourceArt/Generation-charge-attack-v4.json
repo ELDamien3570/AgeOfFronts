@@ -1,0 +1,9 @@
+{
+  "id": "charge-attack",
+  "file": "Charge-Attack-Forward-v4.png",
+  "prompt": "Edit ONLY aiming poses of this six-frame overhead mounted horse archer atlas. User wants firing MUCH MORE FORWARD. In frames2,3,4 turn RIDER torso, helmet/head, shoulders and arms about40degrees further clockwise from current aiming pose so he faces nearly directly screen-BOTTOM. HORSE remains unchanged facing screen-bottom. Arrow must point ALMOST VERTICALLY DOWN, at most10degrees to right of straight screen-down, parallel to horse's travel. This is NOT another diagonally sideways shot. Left bow hand extended forward/down to just beside the horse's right shoulder at local cell(315,320), right draw hand at near local(285,205), arrow line from(285,205) to(320,390). Arrowhead lower than both hands, below horse shoulder; arrow NEVER pointing strongly right. Recurve bow lies almost horizontal across firing line in overhead plane, diagonally slightly; do NOT leave bow vertical beside shoulder. Anatomical LEFT hand always grips bow, anatomical RIGHT hand draws string toward cheek and follows through. Turn upper body with arms so posture anatomically plausible. Frame2 nock/partial draw,frame3full draw single V string to draw hand,frame4 release (arrow absent, bow same forward direction). Frames1,5,6 remain original ready idle poses. Preserve iron armor redleather fur quiver horse tack all six horse poses EXACTLY, fixed saddle roots and size. SIX512cells3x2 EXACT1536x1024 RGBA true transparency alpha0 outside sprites, no haze fog brown/black background shadows grid or annotations. All bow/arrow fit own cell. Crisp painted game sprites.",
+  "references": [
+    "SourceArt/Native-Charge-Attack-Forward-Cutout-v3.png"
+  ],
+  "generatedSource": "C:\\Users\\Damien\\.codex\\generated_images\\01a11641-9e1b-7c81-be76-c9edd53ef182\\exec-439035f5-b817-4adc-ab5d-7754d69f80cb.png"
+}

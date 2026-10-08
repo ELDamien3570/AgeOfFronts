@@ -180,7 +180,7 @@ describe("minor tribes", () => {
       }),
     ).toBeNull();
     expect(ageTribe.reserves).toBe(1000);
-    expect(ageTribe.gold).toBe(fundedGold - 100);
+    expect(ageTribe.gold).toBe(fundedGold - 60);
     expect(
       ageGame.applyCommand({
         type: "recruit",
@@ -189,7 +189,7 @@ describe("minor tribes", () => {
       }),
     ).toBeNull();
     expect(ageTribe.reserves).toBe(0);
-    expect(ageTribe.gold).toBe(fundedGold - 200);
+    expect(ageTribe.gold).toBe(fundedGold - 120);
   });
 
   it("allows tribes to build 1 city and 1 extra barracks and rejects additional or invalid buildings", () => {

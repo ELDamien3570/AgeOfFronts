@@ -1,0 +1,43 @@
+{
+  "browserPassed": true,
+  "browserChecks": [
+    {
+      "check": "all 21 markers loaded using game rendering resource",
+      "pass": true
+    },
+    {
+      "check": "18px actual-size canvases available for every building",
+      "pass": true
+    },
+    {
+      "check": "24px size, red tint and snow background controls",
+      "pass": true
+    },
+    {
+      "check": "building filter shows missile silo and missile defence",
+      "pass": true
+    },
+    {
+      "check": "MIRV has its own distinct entry",
+      "pass": true
+    },
+    {
+      "check": "preview and live game have no browser errors",
+      "pass": true,
+      "previewErrors": [],
+      "gameErrors": []
+    }
+  ],
+  "checks": {
+    "assetCatalog": "21 of 21 BuildingType values covered",
+    "relatedTests": "6 passed in MapSymbols and FormationArtwork",
+    "productionBundle": "PASS: vite build --config vite.skirmish.config.ts",
+    "typeCheckWithES2022Library": "PASS: tsc --noEmit --lib ES2022,DOM",
+    "defaultTypeCheck": "FAIL: four existing Array.at library errors in tests/skirmish/AllianceFeed.test.ts (80,91,97,111)"
+  },
+  "proof": {
+    "preview": "marker-preview-screenshot.png",
+    "liveGame": "in-game-marker-screenshot.png"
+  },
+  "scope": "All 21 icons exercised through the shared game marker resource; live game visually checked at distant zoom. Selection/construction use the existing renderer overlays."
+}

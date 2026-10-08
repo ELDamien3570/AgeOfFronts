@@ -31,10 +31,10 @@ describe("placement footprint coverage", () => {
     );
   });
 
-  it("retains the tall airstrip shape", () => {
+  it("uses the requested 2 by 2 airstrip footprint", () => {
     expect(
       new PlacementCoverage().runs(map, [map.ref(5, 6)], "airstrip", viewport),
-    ).toEqual([6, 7, 8].map((y) => ({ y, left: 5, right: 7 })));
+    ).toEqual([6, 7].map((y) => ({ y, left: 5, right: 7 })));
   });
 
   it("includes visible cells of offscreen anchors and clips at viewport and map edges", () => {

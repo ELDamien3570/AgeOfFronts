@@ -1,0 +1,352 @@
+{
+  "schemaVersion": 1,
+  "cultureId": "russians",
+  "age": "Modern",
+  "unit": "K-17 Bumerang",
+  "category": "Armored Vehicle",
+  "actorCount": 1,
+  "stage": "single-vehicle-animation-review",
+  "integrationStatus": "Corrected local clips pending visual review; runtime integration is separate.",
+  "camera": "vertical-overhead-orthographic",
+  "facing": "screen-down",
+  "sheetSize": {
+    "width": 1536,
+    "height": 1024
+  },
+  "grid": {
+    "columns": 3,
+    "rows": 2
+  },
+  "reviewFootprint": 400,
+  "registration": "Living clips share the exact approved body, scale and root. Only tread textures and muzzle effects animate.",
+  "historicalEra": "Contemporary",
+  "historicalDirection": "User selected the K-17 infantry fighting vehicle variant of the VPK Bumerang. Stylized Russian equipment design.",
+  "designReference": "https://odin.t2com.army.mil/WEG/Asset/98120ce6edcd5819b72307efcd79c44d",
+  "weapon": "Autocannon turret with side missile launchers",
+  "animations": [
+    {
+      "id": "idle",
+      "file": "Idle-v1.png",
+      "sha256": "74aae24d20d59c85a572327115bd1191a5e0d160cb48e419b6581a075ccd0548",
+      "label": "Idle - single frame",
+      "loop": true,
+      "scale": 0.6666666666666666,
+      "durations": [
+        1000
+      ],
+      "description": "K-17 Bumerang: an eight-wheeled armored hull with a compact autocannon turret.",
+      "frameCount": 1,
+      "sourceFrameOrder": [
+        0
+      ],
+      "frames": [
+        {
+          "index": 0,
+          "sourceIndex": 0,
+          "x": 0,
+          "y": 0,
+          "width": 1024,
+          "height": 1536,
+          "pivot": {
+            "x": 512.0,
+            "y": 768.0
+          }
+        }
+      ],
+      "sheetSize": {
+        "width": 1024,
+        "height": 1536
+      }
+    },
+    {
+      "id": "moving",
+      "file": "moving-Locked-v2.png",
+      "sha256": "c42644dec27f7f713498d94bc98a8583b87e458a2a50d6a70b86c71880307cc3",
+      "label": "Moving",
+      "loop": true,
+      "scale": 1.0,
+      "durations": [
+        120,
+        120,
+        120,
+        120,
+        120,
+        120
+      ],
+      "frameCount": 6,
+      "description": "Approved vehicle body held fixed; tire tread surfaces cycle in place.",
+      "sheetSize": {
+        "width": 1536,
+        "height": 1024
+      },
+      "frames": [
+        {
+          "index": 0,
+          "sourceIndex": 0,
+          "x": 0,
+          "y": 0,
+          "width": 512,
+          "height": 512,
+          "pivot": {
+            "x": 256.0,
+            "y": 256.0
+          }
+        },
+        {
+          "index": 1,
+          "sourceIndex": 1,
+          "x": 512,
+          "y": 0,
+          "width": 512,
+          "height": 512,
+          "pivot": {
+            "x": 256.0,
+            "y": 256.0
+          }
+        },
+        {
+          "index": 2,
+          "sourceIndex": 2,
+          "x": 1024,
+          "y": 0,
+          "width": 512,
+          "height": 512,
+          "pivot": {
+            "x": 256.0,
+            "y": 256.0
+          }
+        },
+        {
+          "index": 3,
+          "sourceIndex": 3,
+          "x": 0,
+          "y": 512,
+          "width": 512,
+          "height": 512,
+          "pivot": {
+            "x": 256.0,
+            "y": 256.0
+          }
+        },
+        {
+          "index": 4,
+          "sourceIndex": 4,
+          "x": 512,
+          "y": 512,
+          "width": 512,
+          "height": 512,
+          "pivot": {
+            "x": 256.0,
+            "y": 256.0
+          }
+        },
+        {
+          "index": 5,
+          "sourceIndex": 5,
+          "x": 1024,
+          "y": 512,
+          "width": 512,
+          "height": 512,
+          "pivot": {
+            "x": 256.0,
+            "y": 256.0
+          }
+        }
+      ]
+    },
+    {
+      "id": "attack",
+      "file": "attack-Locked-v2.png",
+      "sha256": "0be6960fdadcfdb88e92df06f8a8646a7b54c0578c36471bec737c6271788274",
+      "label": "Autocannon burst",
+      "loop": false,
+      "scale": 1.0,
+      "durations": [
+        180,
+        80,
+        130,
+        80,
+        200,
+        400
+      ],
+      "frameCount": 6,
+      "description": "Approved vehicle body and barrel stay fixed; two brief muzzle flashes followed by dissipating smoke.",
+      "sheetSize": {
+        "width": 1536,
+        "height": 1024
+      },
+      "frames": [
+        {
+          "index": 0,
+          "sourceIndex": 0,
+          "x": 0,
+          "y": 0,
+          "width": 512,
+          "height": 512,
+          "pivot": {
+            "x": 256.0,
+            "y": 256.0
+          }
+        },
+        {
+          "index": 1,
+          "sourceIndex": 1,
+          "x": 512,
+          "y": 0,
+          "width": 512,
+          "height": 512,
+          "pivot": {
+            "x": 256.0,
+            "y": 256.0
+          }
+        },
+        {
+          "index": 2,
+          "sourceIndex": 2,
+          "x": 1024,
+          "y": 0,
+          "width": 512,
+          "height": 512,
+          "pivot": {
+            "x": 256.0,
+            "y": 256.0
+          }
+        },
+        {
+          "index": 3,
+          "sourceIndex": 3,
+          "x": 0,
+          "y": 512,
+          "width": 512,
+          "height": 512,
+          "pivot": {
+            "x": 256.0,
+            "y": 256.0
+          }
+        },
+        {
+          "index": 4,
+          "sourceIndex": 4,
+          "x": 512,
+          "y": 512,
+          "width": 512,
+          "height": 512,
+          "pivot": {
+            "x": 256.0,
+            "y": 256.0
+          }
+        },
+        {
+          "index": 5,
+          "sourceIndex": 5,
+          "x": 1024,
+          "y": 512,
+          "width": 512,
+          "height": 512,
+          "pivot": {
+            "x": 256.0,
+            "y": 256.0
+          }
+        }
+      ]
+    },
+    {
+      "id": "death",
+      "file": "death-Locked-v2.png",
+      "sha256": "00dca2b21fa36aa135a5983576c8ea7f6352646291932f9d172a3c0b0d0ad7b0",
+      "label": "Explosion / death",
+      "loop": false,
+      "scale": 1.25,
+      "durations": [
+        120,
+        140,
+        180,
+        250,
+        400,
+        1000
+      ],
+      "frameCount": 6,
+      "description": "Approved idle starts the destruction; turret and wheels detach, leaving a permanent burnt wreck.",
+      "sheetSize": {
+        "width": 1920,
+        "height": 1280
+      },
+      "frames": [
+        {
+          "index": 0,
+          "sourceIndex": 0,
+          "x": 0,
+          "y": 0,
+          "width": 640,
+          "height": 640,
+          "pivot": {
+            "x": 320.0,
+            "y": 320.0
+          }
+        },
+        {
+          "index": 1,
+          "sourceIndex": 1,
+          "x": 640,
+          "y": 0,
+          "width": 640,
+          "height": 640,
+          "pivot": {
+            "x": 320.0,
+            "y": 320.0
+          }
+        },
+        {
+          "index": 2,
+          "sourceIndex": 2,
+          "x": 1280,
+          "y": 0,
+          "width": 640,
+          "height": 640,
+          "pivot": {
+            "x": 320.0,
+            "y": 320.0
+          }
+        },
+        {
+          "index": 3,
+          "sourceIndex": 3,
+          "x": 0,
+          "y": 640,
+          "width": 640,
+          "height": 640,
+          "pivot": {
+            "x": 320.0,
+            "y": 320.0
+          }
+        },
+        {
+          "index": 4,
+          "sourceIndex": 4,
+          "x": 640,
+          "y": 640,
+          "width": 640,
+          "height": 640,
+          "pivot": {
+            "x": 320.0,
+            "y": 320.0
+          }
+        },
+        {
+          "index": 5,
+          "sourceIndex": 5,
+          "x": 1280,
+          "y": 640,
+          "width": 640,
+          "height": 640,
+          "pivot": {
+            "x": 320.0,
+            "y": 320.0
+          }
+        }
+      ]
+    }
+  ],
+  "artRevision": "locked-body-v2",
+  "motionContract": "In-place art. Runtime owns vehicle translation, facing, formation placement and combat effects."
+}

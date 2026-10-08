@@ -1,0 +1,199 @@
+{
+  "method": "Whole-pose orientation of approved v6 artwork; no isolated limb or weapon edits.",
+  "clips": [
+    {
+      "clip": "attack",
+      "source": "Attack-Rebuilt-v6.png",
+      "output": "Attack-Forward-Pose-v8.png",
+      "tracks": [
+        {
+          "frame": 0,
+          "sourceRect": [
+            0,
+            0,
+            512,
+            512
+          ],
+          "clockwiseRotationDegrees": 45,
+          "uniformScale": 0.85,
+          "pivot": [
+            256,
+            256
+          ]
+        },
+        {
+          "frame": 1,
+          "sourceRect": [
+            512,
+            0,
+            1024,
+            512
+          ],
+          "clockwiseRotationDegrees": 45,
+          "uniformScale": 0.85,
+          "pivot": [
+            256,
+            256
+          ]
+        },
+        {
+          "frame": 2,
+          "sourceRect": [
+            1024,
+            0,
+            1536,
+            512
+          ],
+          "clockwiseRotationDegrees": 45,
+          "uniformScale": 0.85,
+          "pivot": [
+            256,
+            256
+          ]
+        },
+        {
+          "frame": 3,
+          "sourceRect": [
+            0,
+            512,
+            512,
+            1024
+          ],
+          "clockwiseRotationDegrees": 45,
+          "uniformScale": 0.85,
+          "pivot": [
+            256,
+            256
+          ]
+        },
+        {
+          "frame": 4,
+          "sourceRect": [
+            512,
+            512,
+            1024,
+            1024
+          ],
+          "clockwiseRotationDegrees": 45,
+          "uniformScale": 0.85,
+          "pivot": [
+            256,
+            256
+          ]
+        },
+        {
+          "frame": 5,
+          "sourceRect": [
+            1024,
+            512,
+            1536,
+            1024
+          ],
+          "clockwiseRotationDegrees": 45,
+          "uniformScale": 0.85,
+          "pivot": [
+            256,
+            256
+          ]
+        }
+      ]
+    },
+    {
+      "clip": "charge-attack",
+      "source": "Charge-Attack-Rebuilt-v6.png",
+      "output": "Charge-Attack-Forward-Pose-v8.png",
+      "tracks": [
+        {
+          "frame": 0,
+          "sourceRect": [
+            0,
+            0,
+            512,
+            512
+          ],
+          "clockwiseRotationDegrees": 37,
+          "uniformScale": 0.85,
+          "pivot": [
+            256,
+            256
+          ]
+        },
+        {
+          "frame": 1,
+          "sourceRect": [
+            512,
+            0,
+            1024,
+            512
+          ],
+          "clockwiseRotationDegrees": 37,
+          "uniformScale": 0.85,
+          "pivot": [
+            256,
+            256
+          ]
+        },
+        {
+          "frame": 2,
+          "sourceRect": [
+            1024,
+            0,
+            1536,
+            512
+          ],
+          "clockwiseRotationDegrees": 43,
+          "uniformScale": 0.85,
+          "pivot": [
+            256,
+            256
+          ]
+        },
+        {
+          "frame": 3,
+          "sourceRect": [
+            0,
+            512,
+            512,
+            1024
+          ],
+          "clockwiseRotationDegrees": 45,
+          "uniformScale": 0.85,
+          "pivot": [
+            256,
+            256
+          ]
+        },
+        {
+          "frame": 4,
+          "sourceRect": [
+            512,
+            512,
+            1024,
+            1024
+          ],
+          "clockwiseRotationDegrees": 38,
+          "uniformScale": 0.85,
+          "pivot": [
+            256,
+            256
+          ]
+        },
+        {
+          "frame": 5,
+          "sourceRect": [
+            1024,
+            512,
+            1536,
+            1024
+          ],
+          "clockwiseRotationDegrees": 40,
+          "uniformScale": 0.85,
+          "pivot": [
+            256,
+            256
+          ]
+        }
+      ]
+    }
+  ]
+}

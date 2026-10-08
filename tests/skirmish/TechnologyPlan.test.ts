@@ -1,6 +1,6 @@
 import { describe, expect, it } from "vitest";
 import { UNITS } from "../../src/skirmish/content/Units";
-import { AGES } from "../../src/skirmish/domain/Definitions";
+import { legacyPlanAges } from "../../src/skirmish/planning/TechnologyPlanMigration";
 import {
   cloneCivilization,
   validatePlan,
@@ -8,22 +8,22 @@ import {
 import { createInitialPlan } from "../../src/skirmish/planning/TechnologyPlanSeed";
 
 describe("technology planning documents", () => {
-  it("seeds the live baseline and seven ages without assuming new class unlocks", () => {
+  it("preserves the historical planning baseline and seven ages without assuming new class unlocks", () => {
     const plan = createInitialPlan();
     expect(validatePlan(plan)).toEqual([]);
     const base = plan.civilizations[0];
-    for (const age of AGES) {
+    for (const {id: age} of legacyPlanAges()) {
       expect(base.units.filter((u) => u.age === age)).toHaveLength(6);
       expect(
         base.units.find((u) => u.age === age && u.role === "frontline")!.name,
-      ).toBe(UNITS.find((u) => u.age === age && u.line === "infantry")!.name);
+      ).toBe(UNITS.find((u) => u.age === (age === "EarlyModern" ? "Napoleonic" : age === "Modern" ? "EarlyModern" : age) && u.troopClass === "frontline")!.name);
       expect(
         base.units.find((u) => u.age === age && u.role === "antiCavalry")!
           .availability,
       ).toBe("undecided");
     }
   });
-  it("captures Russian exclusions and Bronze riders without inventing a heavy-cavalry start", () => {
+  it("captures Russian exclusions, Bronze riders and confirmed class starting ages", () => {
     const russian = createInitialPlan().civilizations[1];
     expect(
       russian.units
@@ -38,17 +38,32 @@ describe("technology planning documents", () => {
     expect(
       russian.units.find(
         (u) => u.age === "BronzeAge" && u.role === "rangedCavalry",
-      )!.name,
-    ).toBe("Mounted Archers");
+      )!.availability,
+    ).toBe("unavailable");
     expect(
       russian.units
         .filter(
           (u) =>
             u.role === "heavyCavalry" &&
-            u.age !== "StoneAge" &&
-            u.age !== "Modern",
+            ["StoneAge", "BronzeAge", "ClassicalAge"].includes(u.age),
         )
-        .every((u) => u.availability === "undecided"),
+        .every((u) => u.availability === "unavailable"),
+    ).toBe(true);
+    expect(
+      russian.units
+        .filter(
+          (u) =>
+            u.role === "heavyCavalry" &&
+            ["EarlyMedieval", "LateMedieval", "EarlyModern", "Modern"].includes(
+              u.age,
+            ),
+        )
+        .every((u) => u.availability === "available"),
+    ).toBe(true);
+    expect(
+      russian.units
+        .filter((u) => u.role === "antiCavalry" && u.age !== "StoneAge")
+        .every((u) => u.availability === "available"),
     ).toBe(true);
     expect(
       russian.units.find(

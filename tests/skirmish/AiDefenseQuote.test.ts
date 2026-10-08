@@ -103,7 +103,7 @@ describe("exact funded defense quotation", () => {
       quote = quoteAiDefense({ ...input, sites });
     expect(typeof quote).toBe("object");
     if (typeof quote === "string") throw new Error(quote);
-    expect(quote.cost).toEqual({ gold: 49980 + 3 * 175, items: { steel: 40 } });
+    expect(quote.cost).toEqual({ gold: 57195 + 3 * 175, items: { steel: 40 } });
     expect(quote.steps[1].links).toHaveLength(1);
     expect(quote.steps[1].ticks).toBe(buildingTicks("trench", 1));
     expect(quote.steps[2].earliestStart).toBe(
@@ -118,7 +118,7 @@ describe("exact funded defense quotation", () => {
       })),
     });
     if (typeof large === "string") throw new Error(large);
-    expect(large.cost).toEqual({ gold: 214200 + 5 * 3 * 175, items: { steel: 156 } });
+    expect(large.cost).toEqual({ gold: 245175 + 5 * 3 * 175, items: { steel: 156 } });
   });
   it("retains corners, evenly spaces side towers and includes actual automatic wall payment", () => {
     const { map, input } = fixture(),

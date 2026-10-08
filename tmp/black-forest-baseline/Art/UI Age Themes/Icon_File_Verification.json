@@ -1,0 +1,9 @@
+{
+  "status": "PASS",
+  "pngs": 259,
+  "editableSvgs": 259,
+  "atlases": 7,
+  "sharedFieldMasks": 37,
+  "maskSpillsIntoMaterial": false,
+  "failures": []
+}

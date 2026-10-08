@@ -1,0 +1,70 @@
+{
+  "date": "2026-10-07",
+  "httpChecks": [
+    {
+      "file": "Actor_Review.html",
+      "status": 200,
+      "bytes": 7292
+    },
+    {
+      "file": "animations.json",
+      "status": 200,
+      "bytes": 19731
+    },
+    {
+      "file": "Idle-Animated-v1.png",
+      "status": 200,
+      "bytes": 680826
+    },
+    {
+      "file": "Running-v1.png",
+      "status": 200,
+      "bytes": 676663
+    },
+    {
+      "file": "Attack-v3.png",
+      "status": 200,
+      "bytes": 525108
+    },
+    {
+      "file": "Hit-v2.png",
+      "status": 200,
+      "bytes": 618204
+    },
+    {
+      "file": "Charged-Impact-v1.png",
+      "status": 200,
+      "bytes": 896294
+    },
+    {
+      "file": "Charge-v1.png",
+      "status": 200,
+      "bytes": 714768
+    },
+    {
+      "file": "Charge-Attack-v1.png",
+      "status": 200,
+      "bytes": 765149
+    },
+    {
+      "file": "Death-Together-v1.png",
+      "status": 200,
+      "bytes": 874984
+    },
+    {
+      "file": "Death-Thrown-v1.png",
+      "status": 200,
+      "bytes": 947630
+    },
+    {
+      "file": "shared actor-review.js",
+      "status": 200,
+      "bytes": 7744
+    }
+  ],
+  "nativeAtlasesInspected": true,
+  "browserPlaybackVerified": false,
+  "limitation": "Browser automation unavailable because Windows sandbox initialization fails. HTTP checks do not establish browser playback.",
+  "userApproval": "Idle-v3 approved; animations pending visual review.",
+  "runtimeIntegration": false
+}

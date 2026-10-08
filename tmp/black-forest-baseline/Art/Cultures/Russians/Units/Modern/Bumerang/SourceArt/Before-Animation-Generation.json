@@ -1,0 +1,20 @@
+{
+  "date": "2026-10-07",
+  "mode": "built-in-imagegen",
+  "selectedIdle": "Idle-v1.png",
+  "userApproval": "First idle pending visual review. User selected K-17 autocannon turret variant.",
+  "designReference": "https://odin.t2com.army.mil/WEG/Asset/98120ce6edcd5819b72307efcd79c44d",
+  "records": [
+    {
+      "date": "2026-10-07",
+      "mode": "built-in-imagegen",
+      "file": "Idle-v1.png",
+      "generatedSource": "C:\\Users\\Damien\\.codex\\generated_images\\01a11641-9e1b-7c81-be76-c9edd53ef182\\exec-2659dae2-55d2-4374-a87f-03b2d5a4bcfa.png",
+      "prompt": "Create ONE idle game sprite of a modern Russian VPK-7829 Bumerang K-17 eight-wheeled infantry fighting vehicle with Bumerang-BM style unmanned AUTOCANNON turret. TRUE 90-degree overhead orthographic PLAN VIEW, completely vertical camera, vehicle nose and cannon toward BOTTOM, rear ramp toward TOP. Long broad nearly rectangular angular armored hull, chamfered front corners, wedge-shaped front roof glacis, enclosed troop compartment behind turret. EXACTLY EIGHT large black rubber tires, FOUR separately visible tread-top strips along EACH side, four axles; NO TRACKS, no six-wheeler, no truck cargo bed. Front-left driver's roof hatch, front-right engine ventilation grilles, rear roof access panels and closed hatches. Compact faceted remotely operated turret centered slightly toward rear, long slender autocannon barrel extending straight down toward nose, small coaxial gun, low optical/sensor blocks; paired tube launcher pod on LEFT turret side and paired tube launcher pod on RIGHT side, four restrained dark-green missile tubes pointing forward. Modern matte olive-green armor with modest edge wear, darker wheels and steel gun, tiny subdued red faction star on roof panel. All crew enclosed, no visible soldiers. Entire vehicle including barrel and all8 tires fits transparent1024x1536canvas with generous margins. Strict roof plan: show ONLY TOP surfaces of armor, turret, roof hatches, cannon and tire treads; NO vertical front or side armor facades, no windshield, no visible front grille, no giant circular wheel sidewall faces, NO isometric/3quarter viewpoint. Clean readable silhouette at48/64/128px, smooth stylized painted RTS finish, restrained highlights and texture, consistent with reference palette/render quality. Reference is STYLE ONLY, do not reuse old truck equipment or shape. No ground/shadow/background/text, no muzzle flash, no dramatic lighting or black outline.",
+      "references": [
+        "../MachineGunTruck/Idle-v3.png"
+      ],
+      "designReference": "https://odin.t2com.army.mil/WEG/Asset/98120ce6edcd5819b72307efcd79c44d"
+    }
+  ]
+}

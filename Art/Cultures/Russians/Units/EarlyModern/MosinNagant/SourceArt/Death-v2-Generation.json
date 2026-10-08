@@ -1,0 +1,18 @@
+{
+  "mode": "built-in image_gen",
+  "output": "Death-v2.png",
+  "source": "C:/Users/Damien/.codex/generated_images/01a1186d-c9ae-7993-aebb-e88f9b918c60/exec-4d167cb3-7cc9-4303-9d28-3b9a921d07f1.png",
+  "reference": "Idle-FirstFrame-v1.png",
+  "prompt": "Correct only frame layout/scale and grounded helmet proportions in this six-frame Mosin death sprite atlas. Keep exact poses and painting identity otherwise.\nAll six sprites must have at least40pixels transparentguard to512squarecell boundary including rifle tip. Reduce standing first3wholefigures evenly if needed tofit rifle; never cut barrel. Samefixedcamera andbody size allsix.\nThe grounded bottommiddle andbottomright heads currently look disproportionately tiny: enlarge grounded steel helmet/head to about88percent of the STANDING helmet width, not halfwidth. Keep lyingfaceDOWN bodyflat viewedexactlyfromabove, no uprighthelmetverticalfrontwall. Backhelmetrear curvature legitimate but horizontalheadplane, helmetround crown visible. Corpsetorsoleganatomy shoulder/limb widths about88percentstandingproportions. BodyfaceDOWN withbackkhakitunic leathercrosswebbing, armsreleasedlifeless, riflelyingbeside. Cameraexact90overhead, nozoom/perspective. Native transparentalpha nogroundfoghalo. Keep1536x1024threecoltworow512cellsixtotal.",
+  "initialPrompt": "Use case stylized-concept. Game sprite atlas SIX chronological SIDE DEATH frames of the exact soldier reference. Create exact1536x1024 transparentPNG3columns2rows of512x512cells with40pxclearpaddingineverycell. No backgroundgroundshadowhazegridtext.\nCamera FIXEDverticalnadir exactly90degrees overhead orthographic, everypose. Matchreferencepaintedstylizedoutline, khakiSovietuniform steelolivehelmetbrownleatherwebbingpouches blackbrownboots woodenMosinNagantboltactionrifle longbarrel no bayonet. NO fur armor shield bronze gear. Standing facing screenBOTTOM helmetcrownabove fullshoulders hidesface andtorso, weaponhelddiagonallycrossbody righttriggerhandscreenLEFT leftsupport screenRIGHT.\nFrame1 referenceguard;2 kneesbuckle shouldersdrop withslightclockwisecoil;3 dropsontoonebentknee whileturningsideways;4 collapsingontoitsrightside;5 lyingalmostprone;6 settledFACE DOWN corpse flatonGROUND, headtowardTOP feetBOTTOM, exactverticalcamera seesbackkhakitunic fulllegsandbackhelmet, armsslackside, rifle releasedlyingdiagonallybesidebodywithlongbarrel clear. No handgrip final. Groundedhelmetandbodywidth twelvepercentSMALLERthanstanding, bodylengthnaturallyunfolds intoimageplane, nozoom/enlargement ofcorpse. Bothlegsflatkneesextended, seebootsuppers/back ratherthansole tread. Wholebodyflat parallelimageplane, no anglefromfeet no seatedfigureportrait. Sameanatomicalproportions identityallframes. Cleanpaintedgameart no photorealism, smoothnaturalposeprogression oneheadtwoarmstwolegs no impossiblebentelbows. Finalcorpse reusablegamecorpse. Outside sprites nativealphafullytransparent, no colorhalos orsmears.",
+  "alphaPolicy": "Preserve native RGBA transparency",
+  "layout": {
+    "width": 1536,
+    "height": 1024,
+    "columns": 3,
+    "rows": 2,
+    "frameCount": 6,
+    "cellWidth": 512,
+    "cellHeight": 512
+  }
+}

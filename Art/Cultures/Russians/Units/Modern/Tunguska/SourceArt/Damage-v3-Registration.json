@@ -1,0 +1,214 @@
+{
+  "hit": {
+    "file": "Hit-v3.png",
+    "scale": 0.7949790794979079,
+    "pivots": [
+      {
+        "x": 309,
+        "y": 261
+      },
+      {
+        "x": 267,
+        "y": 261
+      },
+      {
+        "x": 225,
+        "y": 261
+      },
+      {
+        "x": 310,
+        "y": 253
+      },
+      {
+        "x": 267,
+        "y": 253
+      },
+      {
+        "x": 225,
+        "y": 253
+      }
+    ],
+    "frameChecks": [
+      {
+        "frame": 0,
+        "boundsAlpha16": [
+          155,
+          23,
+          462,
+          500
+        ],
+        "cornerAlpha": 0,
+        "maxOutsideOpaque3px": 21,
+        "hazePixelsAbove16": 1
+      },
+      {
+        "frame": 1,
+        "boundsAlpha16": [
+          114,
+          22,
+          420,
+          499
+        ],
+        "cornerAlpha": 0,
+        "maxOutsideOpaque3px": 123,
+        "hazePixelsAbove16": 21
+      },
+      {
+        "frame": 2,
+        "boundsAlpha16": [
+          45,
+          21,
+          377,
+          499
+        ],
+        "cornerAlpha": 0,
+        "maxOutsideOpaque3px": 229,
+        "hazePixelsAbove16": 1961
+      },
+      {
+        "frame": 3,
+        "boundsAlpha16": [
+          141,
+          15,
+          463,
+          491
+        ],
+        "cornerAlpha": 0,
+        "maxOutsideOpaque3px": 215,
+        "hazePixelsAbove16": 1159
+      },
+      {
+        "frame": 4,
+        "boundsAlpha16": [
+          114,
+          15,
+          419,
+          491
+        ],
+        "cornerAlpha": 0,
+        "maxOutsideOpaque3px": 177,
+        "hazePixelsAbove16": 8
+      },
+      {
+        "frame": 5,
+        "boundsAlpha16": [
+          71,
+          15,
+          378,
+          491
+        ],
+        "cornerAlpha": 0,
+        "maxOutsideOpaque3px": 95,
+        "hazePixelsAbove16": 22
+      }
+    ],
+    "nativeAtlas": true,
+    "registrationNote": "Imagegen native layout has staggered column positions; fixed scale and center registration avoid per-frame fitting."
+  },
+  "death": {
+    "file": "Death-v3.png",
+    "scale": 0.9090909090909091,
+    "pivots": [
+      {
+        "x": 306,
+        "y": 251
+      },
+      {
+        "x": 256,
+        "y": 251
+      },
+      {
+        "x": 207,
+        "y": 251
+      },
+      {
+        "x": 306,
+        "y": 239
+      },
+      {
+        "x": 256,
+        "y": 239
+      },
+      {
+        "x": 207,
+        "y": 239
+      }
+    ],
+    "frameChecks": [
+      {
+        "frame": 0,
+        "boundsAlpha16": [
+          174,
+          42,
+          437,
+          459
+        ],
+        "cornerAlpha": 0,
+        "maxOutsideOpaque3px": 229,
+        "hazePixelsAbove16": 18
+      },
+      {
+        "frame": 1,
+        "boundsAlpha16": [
+          123,
+          42,
+          388,
+          459
+        ],
+        "cornerAlpha": 0,
+        "maxOutsideOpaque3px": 8,
+        "hazePixelsAbove16": 0
+      },
+      {
+        "frame": 2,
+        "boundsAlpha16": [
+          76,
+          41,
+          338,
+          459
+        ],
+        "cornerAlpha": 0,
+        "maxOutsideOpaque3px": 69,
+        "hazePixelsAbove16": 4
+      },
+      {
+        "frame": 3,
+        "boundsAlpha16": [
+          174,
+          30,
+          437,
+          448
+        ],
+        "cornerAlpha": 0,
+        "maxOutsideOpaque3px": 210,
+        "hazePixelsAbove16": 11
+      },
+      {
+        "frame": 4,
+        "boundsAlpha16": [
+          122,
+          28,
+          388,
+          449
+        ],
+        "cornerAlpha": 0,
+        "maxOutsideOpaque3px": 235,
+        "hazePixelsAbove16": 67
+      },
+      {
+        "frame": 5,
+        "boundsAlpha16": [
+          75,
+          29,
+          339,
+          448
+        ],
+        "cornerAlpha": 0,
+        "maxOutsideOpaque3px": 240,
+        "hazePixelsAbove16": 53
+      }
+    ],
+    "nativeAtlas": true,
+    "registrationNote": "Imagegen native layout has staggered column positions; fixed scale and center registration avoid per-frame fitting."
+  }
+}

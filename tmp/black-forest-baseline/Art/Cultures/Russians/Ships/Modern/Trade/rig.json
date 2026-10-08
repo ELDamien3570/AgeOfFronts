@@ -1,0 +1,32 @@
+{
+  "schemaVersion": 1,
+  "source": "Modern/Trade/SourceArt/Trade_Russian_Modern_v1.png",
+  "sourceSha256": "e9e4df0fce672345d083c8cfe549c1800635dde91309b7d9816e88a1fe8fe976",
+  "frameSize": [
+    512,
+    512
+  ],
+  "sourceToFrame": {
+    "scale": 0.3349282296650718,
+    "offset": [
+      46,
+      46
+    ]
+  },
+  "authoring": "../../fleet-rig-authoring.json",
+  "oars": [],
+  "oarPolicy": "Only exterior oar pixels rotate rigidly about registered gunwale pivots; protected hull paint remains unchanged.",
+  "attack": null,
+  "approvedFrameReconstruction": "visible pixels exactly preserved at zero oar angle",
+  "waterAnchors": {
+    "bow": [
+      243,
+      426
+    ],
+    "stern": [
+      243,
+      99
+    ]
+  },
+  "waterMotion": "Hull-local anchors; same yaw and translation as vessel"
+}

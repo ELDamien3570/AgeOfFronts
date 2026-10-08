@@ -3,6 +3,7 @@ import fs from "node:fs/promises";
 import path from "node:path";
 import type { Plugin } from "vite";
 import { validatePlan } from "../src/skirmish/planning/TechnologyPlan";
+import { readTechnologyPlan } from "../src/skirmish/planning/TechnologyPlanMigration";
 
 export function technologyPlanDevPlugin(): Plugin {
   let saving = false;
@@ -46,7 +47,7 @@ export function technologyPlanDevPlugin(): Plugin {
           if (req.method === "GET") {
             const body = await fs.readFile(planPath, "utf8");
             return respond(200, {
-              plan: JSON.parse(body),
+              plan: readTechnologyPlan(JSON.parse(body)),
               revision: revision(body),
             });
           }

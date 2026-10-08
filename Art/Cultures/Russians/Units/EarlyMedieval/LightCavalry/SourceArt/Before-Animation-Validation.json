@@ -1,0 +1,21 @@
+{
+  "stage": "idle-review",
+  "size": [
+    1254,
+    1254
+  ],
+  "mode": "RGBA",
+  "alphaExtrema": [
+    0,
+    255
+  ],
+  "visibleBounds": [
+    105,
+    23,
+    1210,
+    1235
+  ],
+  "sha256": "841a7758965efb897d326e6dcff65bd01ba649cfc9b84f34df264793afff15b5",
+  "userApproval": "Pending idle review",
+  "runtimeIntegration": false
+}

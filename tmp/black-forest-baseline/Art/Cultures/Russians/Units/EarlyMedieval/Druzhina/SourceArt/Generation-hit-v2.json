@@ -1,0 +1,10 @@
+{
+  "id": "hit",
+  "file": "Hit-v2.png",
+  "prompt": "Edit target atlas reference1 ONLY to remove erroneous duplicate heads: frame3 TOP RIGHT and frame4 BOTTOM LEFT each currently has two helmet/head shapes. Each rider must have exactly ONE head and ONE helmet attached to the neck. Keep the upper tilted elongated iron helmet as the actual head in these recoil poses; remove the lower circular helmet-like disk and restore plain redbrown mantle/iron torso beneath it. Keep frames1,2,5,6 unchanged. Same six512px cells 1536x1024 3x2 rowmajor, same overhead rider/fullyarmored horse/pointup lance, same transparent alpha0 background, padding and colors. No other anatomy changes, no shield, no extra head, no second helmet, no medallion that looks like helmet.",
+  "generatedSource": "C:\\Users\\Damien\\.codex\\generated_images\\01a11641-9e1b-7c81-be76-c9edd53ef182\\exec-474041d5-01d9-47b7-821c-6ea929f51672.png",
+  "references": [
+    "Generation-hit-v1.json"
+  ],
+  "status": "duplicate-helmet-correction"
+}

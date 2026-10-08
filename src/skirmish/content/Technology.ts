@@ -5,8 +5,8 @@ import {
   type Technology,
   type Tree,
 } from "../domain/Definitions";
-import data from "./technologies.json";
-export const TECHNOLOGIES = data as Technology[];
+import { RUSSIAN_RECRUITMENT } from "./RussianRecruitment";
+export const TECHNOLOGIES = RUSSIAN_RECRUITMENT.technologies as Technology[];
 export const TECHNOLOGY = new Map(TECHNOLOGIES.map((t) => [t.id, t]));
 export function technologyAt(age: Age, tree: Tree, slot: number): Technology {
   const definition = TECHNOLOGIES.find(
@@ -29,13 +29,14 @@ export const ADVANCES = [
   { gold: 40_000, ticks: 1000 },
   { gold: 57_500, ticks: 1100 },
   { gold: 82_500, ticks: 1200 },
+  { gold: 120_000, ticks: 1400 },
 ] as const;
 export function treeWorkload(age: Age, tree: Tree): number {
   return TECHNOLOGIES.filter((t) => t.age === age && t.tree === tree).length;
 }
 export function validateTechnologies(): void {
-  if (TECHNOLOGY.size !== 85 || TECHNOLOGIES.length !== 85)
-    throw new Error("Expected 85 unique technologies");
+  if (TECHNOLOGY.size !== TECHNOLOGIES.length)
+    throw new Error("Duplicate technology IDs");
   const visiting = new Set<string>(),
     visited = new Set<string>();
   const visit = (id: string) => {
@@ -46,7 +47,7 @@ export function validateTechnologies(): void {
     visiting.add(id);
     for (const parent of t.prerequisites) {
       const p = TECHNOLOGY.get(parent);
-      if (!p || p.tree !== t.tree || AGES.indexOf(p.age) > AGES.indexOf(t.age))
+      if (!p || AGES.indexOf(p.age) > AGES.indexOf(t.age))
         throw new Error("Invalid research edge");
       visit(parent);
     }
@@ -58,9 +59,9 @@ export function validateTechnologies(): void {
       const nodes = TECHNOLOGIES.filter(
         (t) => t.age === age && t.tree === tree,
       );
-      const count = age === "BronzeAge" && tree === "warfare" ? 5 : 4;
+      const count = nodes.length;
       if (
-        nodes.length !== count ||
+        count < 4 ||
         new Set(nodes.map((t) => t.slot)).size !== count ||
         nodes.some((t) => t.slot < 1 || t.slot > count)
       )

@@ -1,0 +1,338 @@
+{
+  "actorCount": 1,
+  "animations": [
+    {
+      "id": "idle",
+      "label": "Idle",
+      "file": "idle.png",
+      "sha256": "f70ab55b35a1fdf9e313a32d2e617a3daeb0a4af3cf527754a8aaa05a3f62d69",
+      "loop": true,
+      "scale": 1,
+      "durations": [
+        280,
+        280,
+        280,
+        280,
+        280,
+        280
+      ],
+      "description": "Subtle breathing only. Feet planted. No rotation or lateral sway. One straight javelin held low at screen-left, stone point down. Six slightly different breathing poses.",
+      "frameCount": 6,
+      "frames": [
+        {
+          "x": 0,
+          "y": 0,
+          "width": 128,
+          "height": 128,
+          "pivot": {
+            "x": 64.0,
+            "y": 64.0
+          }
+        },
+        {
+          "x": 128,
+          "y": 0,
+          "width": 128,
+          "height": 128,
+          "pivot": {
+            "x": 64.0,
+            "y": 64.0
+          }
+        },
+        {
+          "x": 256,
+          "y": 0,
+          "width": 128,
+          "height": 128,
+          "pivot": {
+            "x": 64.0,
+            "y": 64.0
+          }
+        },
+        {
+          "x": 384,
+          "y": 0,
+          "width": 128,
+          "height": 128,
+          "pivot": {
+            "x": 64.0,
+            "y": 64.0
+          }
+        },
+        {
+          "x": 512,
+          "y": 0,
+          "width": 128,
+          "height": 128,
+          "pivot": {
+            "x": 64.0,
+            "y": 64.0
+          }
+        },
+        {
+          "x": 640,
+          "y": 0,
+          "width": 128,
+          "height": 128,
+          "pivot": {
+            "x": 64.0,
+            "y": 64.0
+          }
+        }
+      ]
+    },
+    {
+      "id": "running",
+      "label": "Walk",
+      "file": "running.png",
+      "sha256": "36583ec8f554853915fac369d91e90f866c77c426214d19a3dc6999108d753f3",
+      "loop": true,
+      "scale": 1,
+      "durations": [
+        160,
+        160,
+        160,
+        160,
+        160,
+        160
+      ],
+      "description": "Walk cycle with visibly ALTERNATING left and right lead feet. Feet emerge beneath fur collar, stride small but distinct. One straight javelin held low screen-left. Six consecutive walking poses.",
+      "frameCount": 6,
+      "frames": [
+        {
+          "x": 0,
+          "y": 0,
+          "width": 128,
+          "height": 128,
+          "pivot": {
+            "x": 64.0,
+            "y": 64.0
+          }
+        },
+        {
+          "x": 128,
+          "y": 0,
+          "width": 128,
+          "height": 128,
+          "pivot": {
+            "x": 64.0,
+            "y": 64.0
+          }
+        },
+        {
+          "x": 256,
+          "y": 0,
+          "width": 128,
+          "height": 128,
+          "pivot": {
+            "x": 64.0,
+            "y": 64.0
+          }
+        },
+        {
+          "x": 384,
+          "y": 0,
+          "width": 128,
+          "height": 128,
+          "pivot": {
+            "x": 64.0,
+            "y": 64.0
+          }
+        },
+        {
+          "x": 512,
+          "y": 0,
+          "width": 128,
+          "height": 128,
+          "pivot": {
+            "x": 64.0,
+            "y": 64.0
+          }
+        },
+        {
+          "x": 640,
+          "y": 0,
+          "width": 128,
+          "height": 128,
+          "pivot": {
+            "x": 64.0,
+            "y": 64.0
+          }
+        }
+      ]
+    },
+    {
+      "id": "attack",
+      "label": "Overarm throw",
+      "file": "attack.png",
+      "sha256": "38016e8d548e7f49b2dab1e8d650384702e0d6ff8e9203a06afc34700a7e159c",
+      "loop": false,
+      "scale": 1,
+      "durations": [
+        140,
+        180,
+        260,
+        100,
+        180,
+        250
+      ],
+      "description": "Overarm javelin throw aimed exactly screen-bottom. 1 ready;2 right foot steps back and chest turns;3 right hand draws javelin back above right shoulder, bent elbow;4 strong overarm release toward screen-bottom;5 followthrough EMPTY right hand;6 settle EMPTY right hand. Javelin straight rigid rod, grip near middle, tip always aimed down during launch. No low underarm thrust. No reload in this clip. Spare javelins remain on back.",
+      "frameCount": 6,
+      "frames": [
+        {
+          "x": 0,
+          "y": 0,
+          "width": 128,
+          "height": 128,
+          "pivot": {
+            "x": 64.0,
+            "y": 64.0
+          }
+        },
+        {
+          "x": 128,
+          "y": 0,
+          "width": 128,
+          "height": 128,
+          "pivot": {
+            "x": 64.0,
+            "y": 64.0
+          }
+        },
+        {
+          "x": 256,
+          "y": 0,
+          "width": 128,
+          "height": 128,
+          "pivot": {
+            "x": 64.0,
+            "y": 64.0
+          }
+        },
+        {
+          "x": 384,
+          "y": 0,
+          "width": 128,
+          "height": 128,
+          "pivot": {
+            "x": 64.0,
+            "y": 64.0
+          }
+        },
+        {
+          "x": 512,
+          "y": 0,
+          "width": 128,
+          "height": 128,
+          "pivot": {
+            "x": 64.0,
+            "y": 64.0
+          }
+        },
+        {
+          "x": 640,
+          "y": 0,
+          "width": 128,
+          "height": 128,
+          "pivot": {
+            "x": 64.0,
+            "y": 64.0
+          }
+        }
+      ],
+      "releaseFrame": 3,
+      "weaponState": {
+        "start": "javelin-ready",
+        "end": "empty-hand"
+      }
+    },
+    {
+      "id": "death",
+      "label": "Death - side fall",
+      "file": "death.png",
+      "sha256": "885119b1c1b63863a78044daf96bfff32ef097cdc714808e859caafdecf6d283",
+      "loop": false,
+      "scale": 1,
+      "durations": [
+        150,
+        170,
+        190,
+        210,
+        240,
+        400
+      ],
+      "description": "Full side fall: standing, knees buckle, tip sideways, land on side, body settles on side, still side corpse. Drop straight javelin beside body. Final three frames head remains same end, no 180 degree flips. No blood.",
+      "frameCount": 6,
+      "frames": [
+        {
+          "x": 0,
+          "y": 0,
+          "width": 128,
+          "height": 128,
+          "pivot": {
+            "x": 64.0,
+            "y": 64.0
+          }
+        },
+        {
+          "x": 128,
+          "y": 0,
+          "width": 128,
+          "height": 128,
+          "pivot": {
+            "x": 64.0,
+            "y": 64.0
+          }
+        },
+        {
+          "x": 256,
+          "y": 0,
+          "width": 128,
+          "height": 128,
+          "pivot": {
+            "x": 64.0,
+            "y": 64.0
+          }
+        },
+        {
+          "x": 384,
+          "y": 0,
+          "width": 128,
+          "height": 128,
+          "pivot": {
+            "x": 64.0,
+            "y": 64.0
+          }
+        },
+        {
+          "x": 512,
+          "y": 0,
+          "width": 128,
+          "height": 128,
+          "pivot": {
+            "x": 64.0,
+            "y": 64.0
+          }
+        },
+        {
+          "x": 640,
+          "y": 0,
+          "width": 128,
+          "height": 128,
+          "pivot": {
+            "x": 64.0,
+            "y": 64.0
+          }
+        }
+      ]
+    }
+  ],
+  "source": "Art/Cultures/Russians/Units/StoneAge/Javelinist/TopDownReview/animations.json",
+  "metadataHash": "176424d7932183466d581bb7643ec415ffa396a054385f28804b491c13a8bb54",
+  "hashes": {
+    "Art/Cultures/Russians/Units/StoneAge/Javelinist/TopDownReview/idle-v1.png": "f70ab55b35a1fdf9e313a32d2e617a3daeb0a4af3cf527754a8aaa05a3f62d69",
+    "Art/Cultures/Russians/Units/StoneAge/Javelinist/TopDownReview/running-v1.png": "36583ec8f554853915fac369d91e90f866c77c426214d19a3dc6999108d753f3",
+    "Art/Cultures/Russians/Units/StoneAge/Javelinist/TopDownReview/attack-v1.png": "38016e8d548e7f49b2dab1e8d650384702e0d6ff8e9203a06afc34700a7e159c",
+    "Art/Cultures/Russians/Units/StoneAge/Javelinist/TopDownReview/death-v2.png": "885119b1c1b63863a78044daf96bfff32ef097cdc714808e859caafdecf6d283"
+  }
+}

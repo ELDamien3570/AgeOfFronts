@@ -1,0 +1,17 @@
+{
+  "coldMs": 6552,
+  "before": {
+    "atlasDraws": 130549,
+    "chunkDraws": 1024
+  },
+  "after": {
+    "atlasDraws": 130549,
+    "chunkDraws": 1280
+  },
+  "far": {
+    "atlasDraws": 130549,
+    "chunkDraws": 1536
+  },
+  "warmAtlasDraws": 0,
+  "distantZoomAtlasDraws": 0
+}

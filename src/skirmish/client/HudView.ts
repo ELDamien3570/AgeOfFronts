@@ -71,7 +71,7 @@ export function icon(kind: HudKind, definitionId?: string) {
         : buildingPreviewArtworkId(kind as keyof typeof BUILDING_RULES, age)) ??
       artworkId;
   }
-  const portrait = eraPortrait(artworkId);
+  const portrait = (definitionId && eraPortrait(`unit-portrait-${definitionId}`)) || eraPortrait(artworkId);
   if (portrait) return `<img class="hud-art" src="${portrait}" alt="">`;
   if (kind === "infantry" || kind === "archer" || kind === "cavalry") {
     const grid = UNIT_ANIMATIONS[kind].grid;
@@ -339,6 +339,13 @@ export class HudView {
     if (dialog.open) this.el("delete-building-message").textContent = this.deletion.message(vm.game.state);
     for (const button of this.root.querySelectorAll<HTMLElement>('button[id^="build-"], button[data-dock-action="build"]')) {
       const type = (button.dataset.value ?? button.id.slice(6)) as import("../Protocol").BuildingType;
+      const age = vm.game.state.expansion?.progression[vm.playerId]?.age ?? "StoneAge";
+      const artworkId = buildingPreviewArtworkId(type, age);
+      if (artworkId && button.dataset.artworkId !== artworkId) {
+        const current = button.querySelector(".hud-art, .command-symbol");
+        if (current) current.outerHTML = icon(type, artworkId);
+        button.dataset.artworkId = artworkId;
+      }
       const count = vm.buildingCounts.get(type) ?? {total: 0, ready: 0};
       let badge = button.querySelector<HTMLElement>(".building-count");
       if (!badge) { badge = document.createElement("span"); badge.className = "building-count"; button.append(badge); }

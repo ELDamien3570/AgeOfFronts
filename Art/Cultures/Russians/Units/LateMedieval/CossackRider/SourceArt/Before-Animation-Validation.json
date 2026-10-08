@@ -1,0 +1,22 @@
+{
+  "date": "2026-10-07",
+  "file": "Idle-v1.png",
+  "size": [
+    1024,
+    1536
+  ],
+  "mode": "RGBA",
+  "alphaExtrema": [
+    0,
+    254
+  ],
+  "visibleBounds": [
+    17,
+    24,
+    984,
+    1517
+  ],
+  "sha256": "63e2bf0c9f0f5a3d8c14a996b3f5b9e2ba2696ebe96adb6ff8ca7837b1cff076",
+  "userApproval": "Idle pending review",
+  "runtimeIntegration": false
+}

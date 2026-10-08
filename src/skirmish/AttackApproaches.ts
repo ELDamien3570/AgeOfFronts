@@ -10,6 +10,18 @@ const kinds = { infantry: 0, archer: 1, cavalry: 2 };
 
 /** One bounded polar assignment per combat batch, shared by player and AI. */
 export class AttackApproaches {
+  // Target pressure is consumed by AI before the next movement rebuild; slot
+  // assignments persist while their signatures remain valid. Both influence
+  // simulation decisions and must survive authoritative checkpoint recovery.
+  checkpoint() { return structuredClone({ cache: this.cache, slots: this.slots, loads: this.loads }); }
+  restore(saved?: ReturnType<AttackApproaches["checkpoint"]>): void {
+    this.cache.clear(); this.slots.clear(); this.loads.clear();
+    if (!saved) return;
+    const state = structuredClone(saved);
+    for (const [key,value] of state.cache) this.cache.set(key,value);
+    for (const [key,value] of state.slots) this.slots.set(key,value);
+    for (const [key,value] of state.loads) this.loads.set(key,value);
+  }
   private readonly cache = new Map<
     string,
     { revision: string; signature: number[]; points: Map<number, WorldPoint> }

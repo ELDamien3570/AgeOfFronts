@@ -1,0 +1,21 @@
+{
+  "date": "2026-10-07",
+  "mode": "built-in-imagegen",
+  "selectedIdle": "Idle-Overhead-v2.png",
+  "generatedSource": "C:/Users/Damien/.codex/generated_images/01a0fea1-c63f-7343-92ca-6c21cc1c4296/exec-46a2a767-5a8d-4ca7-941a-d68c13e249ff.png",
+  "reference": "../PlateSpearman/Idle-Overhead-v2.png",
+  "prompt": "Create ONE overhead idle game sprite of a Russian Late Medieval BOYAR GUARD, elite heavy PLATE armored SHOCK INFANTRY, wielding a large TWO-HANDED MACE. Reference image provides established rich smooth painterly strategy-game style, Russian burgundy/brass/steel palette and directly overhead camera. NEW role silhouette broader and more heavily armored than spearman. NO shield, NO spear, NO axe. Heavy enclosed steel helmet with shallow Rus-inspired pointed crown and restrained brass trim, broad thick articulated plate pauldrons, full steel cuirass, plate vambraces and GAUNTLETS, burgundy padded underlayer, mail only at joints, armored thigh protection and heavy boots. Very stocky imposing soldier. Large rigid TWO-HANDED FLANGED MACE: long dark hardwood shaft with steel reinforcing bands and leather grip, massive clearly blunt steel head with SIX broad chunky flanges around a central core, NOT spikes, not hammer, not axe blade. Both armored hands visibly closed around separate locations on SAME long handle, holding mace diagonally in a calm ready stance with heavy flanged head to SCREEN UPPER LEFT; whole mace head and shaft inside frame. Strong weapon readability at48/64/128px. Camera EXACTLY90degree vertical overhead orthographic, looking directly down standing spine. Helmet TOP crown and broad shoulder TOPS dominate. Chest front hidden under helmet, no face, very foreshortened torso, shoes only tips beneath body. Soldier facing SCREENBOTTOM, stance upright not bowing head. Single isolated soldier, SINGLE idle frame only. Entire actor and weapon fit inside generous 80px transparent margins all sides. Matching textured painted materials, clean soft edges without colored halo or heavy outline. Genuinely transparent background, no ground/shadow plane, no text, no scenery. Imagined Russian culture game roster.",
+  "userApproval": "Armor and mace look liked by user; overhead v2 idle awaiting review",
+  "revisions": [
+    {
+      "date": "2026-10-07",
+      "mode": "built-in-imagegen",
+      "selectedIdle": "Idle-Overhead-v2.png",
+      "generatedSource": "C:/Users/Damien/.codex/generated_images/01a0fea1-c63f-7343-92ca-6c21cc1c4296/exec-047cbfe0-f476-4242-9e37-cf8792ae34f9.png",
+      "prompt": "EDIT only camera angle of this approved Boyar Guard idle design. User LOVES the look; preserve SAME heavy steel plate armor shapes, gold/brass trim and rivets, burgundy padding, mail joints, same closed pointed Rus-inspired helmet, same broad layered pauldrons, same gauntlets, and EXACT same massive flanged two-handed mace design, shaft proportions, steel/brass bands and wrapped grip. Keep two hands gripping shaft at separate locations, mace diagonal from lowerRIGHT wood butt to upperLEFT blunt steel flanged head. Do NOT change weapon into hammer/axe or add shield. Required correction: much MORE TOP DOWN, TRUE90degree vertical overhead orthographic camera looking straight down standing spine. Helmet CROWN and shoulder TOP surfaces dominate, helmet obscures nearly all chest front, no face or visor front visible. Chest strongly compressed in projection, torso short shallow oval, only tiny shoe tips beneath body. See TOP surfaces of forearms and gauntlets. Do not make soldier bow head; keep upright stance and move CAMERA to zenith. Soldier still faces SCREENBOTTOM. Preserve imposing broad heavy shock infantry silhouette and original rich smoothly painted game materials. Single isolated idle frame, full mace and soldier visible with generous transparent margins, genuinely transparent background, clean alpha, no colored fringe, no ground/scenery/text/shadow plane.",
+      "reference": "Idle-v1.png",
+      "revisionReason": "Preserve the liked armor and mace design; move camera more directly overhead.",
+      "userApproval": "Awaiting idle review"
+    }
+  ]
+}

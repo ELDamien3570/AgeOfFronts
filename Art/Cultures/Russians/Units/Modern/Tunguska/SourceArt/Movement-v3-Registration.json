@@ -1,0 +1,272 @@
+{
+  "idle": {
+    "file": "Idle-v3.png",
+    "scale": 1.02874,
+    "pivots": [
+      {
+        "x": 334.0,
+        "y": 283.5
+      },
+      {
+        "x": 257.0,
+        "y": 284.0
+      },
+      {
+        "x": 186.5,
+        "y": 283.5
+      },
+      {
+        "x": 333.5,
+        "y": 249.5
+      },
+      {
+        "x": 257.5,
+        "y": 249.0
+      },
+      {
+        "x": 187.5,
+        "y": 251.0
+      }
+    ],
+    "frameChecks": [
+      {
+        "frame": 0,
+        "bounds": [
+          214,
+          82,
+          454,
+          453
+        ],
+        "hullBounds": [
+          215,
+          119,
+          453,
+          448
+        ],
+        "visiblePixels": 83351,
+        "alphaOutsideThreePixelOpaqueGuard": 0
+      },
+      {
+        "frame": 1,
+        "bounds": [
+          140,
+          66,
+          374,
+          453
+        ],
+        "hullBounds": [
+          140,
+          119,
+          374,
+          449
+        ],
+        "visiblePixels": 80345,
+        "alphaOutsideThreePixelOpaqueGuard": 0
+      },
+      {
+        "frame": 2,
+        "bounds": [
+          69,
+          63,
+          303,
+          453
+        ],
+        "hullBounds": [
+          70,
+          119,
+          303,
+          448
+        ],
+        "visiblePixels": 80045,
+        "alphaOutsideThreePixelOpaqueGuard": 0
+      },
+      {
+        "frame": 3,
+        "bounds": [
+          213,
+          48,
+          454,
+          419
+        ],
+        "hullBounds": [
+          214,
+          85,
+          453,
+          414
+        ],
+        "visiblePixels": 83303,
+        "alphaOutsideThreePixelOpaqueGuard": 0
+      },
+      {
+        "frame": 4,
+        "bounds": [
+          139,
+          28,
+          375,
+          419
+        ],
+        "hullBounds": [
+          140,
+          84,
+          375,
+          414
+        ],
+        "visiblePixels": 80931,
+        "alphaOutsideThreePixelOpaqueGuard": 0
+      },
+      {
+        "frame": 5,
+        "bounds": [
+          69,
+          31,
+          306,
+          420
+        ],
+        "hullBounds": [
+          70,
+          86,
+          305,
+          416
+        ],
+        "visiblePixels": 80753,
+        "alphaOutsideThreePixelOpaqueGuard": 0
+      }
+    ],
+    "registrationBasis": "Fixed clip scale from median hull length to340px; perframe hull center excludes rotating radar."
+  },
+  "running": {
+    "file": "Running-v3.png",
+    "scale": 0.86735,
+    "pivots": [
+      {
+        "x": 295.0,
+        "y": 263.0
+      },
+      {
+        "x": 255.5,
+        "y": 263.0
+      },
+      {
+        "x": 216.0,
+        "y": 263.0
+      },
+      {
+        "x": 295.0,
+        "y": 251.0
+      },
+      {
+        "x": 255.0,
+        "y": 251.0
+      },
+      {
+        "x": 215.5,
+        "y": 251.0
+      }
+    ],
+    "frameChecks": [
+      {
+        "frame": 0,
+        "bounds": [
+          145,
+          34,
+          445,
+          463
+        ],
+        "hullBounds": [
+          146,
+          68,
+          444,
+          458
+        ],
+        "visiblePixels": 120904,
+        "alphaOutsideThreePixelOpaqueGuard": 0
+      },
+      {
+        "frame": 1,
+        "bounds": [
+          105,
+          34,
+          405,
+          463
+        ],
+        "hullBounds": [
+          106,
+          68,
+          405,
+          458
+        ],
+        "visiblePixels": 121568,
+        "alphaOutsideThreePixelOpaqueGuard": 0
+      },
+      {
+        "frame": 2,
+        "bounds": [
+          66,
+          34,
+          366,
+          463
+        ],
+        "hullBounds": [
+          67,
+          68,
+          365,
+          458
+        ],
+        "visiblePixels": 121111,
+        "alphaOutsideThreePixelOpaqueGuard": 20
+      },
+      {
+        "frame": 3,
+        "bounds": [
+          144,
+          21,
+          447,
+          452
+        ],
+        "hullBounds": [
+          144,
+          55,
+          446,
+          447
+        ],
+        "visiblePixels": 123464,
+        "alphaOutsideThreePixelOpaqueGuard": 0
+      },
+      {
+        "frame": 4,
+        "bounds": [
+          102,
+          22,
+          408,
+          452
+        ],
+        "hullBounds": [
+          103,
+          55,
+          407,
+          447
+        ],
+        "visiblePixels": 124454,
+        "alphaOutsideThreePixelOpaqueGuard": 0
+      },
+      {
+        "frame": 5,
+        "bounds": [
+          64,
+          21,
+          367,
+          452
+        ],
+        "hullBounds": [
+          65,
+          55,
+          366,
+          447
+        ],
+        "visiblePixels": 123606,
+        "alphaOutsideThreePixelOpaqueGuard": 0
+      }
+    ],
+    "registrationBasis": "Fixed clip scale from median hull length to340px; perframe hull center excludes rotating radar."
+  }
+}

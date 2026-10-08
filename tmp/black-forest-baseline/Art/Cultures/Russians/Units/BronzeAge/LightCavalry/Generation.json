@@ -1,0 +1,154 @@
+{
+  "date": "2026-10-07",
+  "mode": "built-in-imagegen",
+  "userApproval": "Idle design approved; nine animations pending visual review.",
+  "records": [
+    {
+      "id": "russian-bronzeage-light-cavalry-idle-v1",
+      "file": "Idle-v1.png",
+      "clip": "idle",
+      "prompt": "Create ONE Russian Bronze Age LIGHT CAVALRY mounted spearman idle game sprite. Reference 1 supplies the exact horse/rider overhead composition, chestnut horse with black mane and tail, leather tack, and painted game-art style. Reference 2 supplies the Bronze Age rider EQUIPMENT: rough hammered bronze domed helmet with riveted brow band, compact paired bronze pauldrons, bronze forearm bracers, stitched reddish-brown leather short-sleeved top, thick cream fur collar, dark leather belt, pale trousers and brown boots. Replace reference1's red cap and wrist wraps with this bronze equipment, and replace its club completely with one long wooden SPEAR with a broad leaf-shaped BRONZE spearhead like reference2. NO shield for this light cavalry draft; screen-right hand holds leather reins. Screen-left hand grips spear toward the rear half, hand raised near shoulder, long shaft extends forward beside the left side of horse and bronze spear point aimed screen-bottom-left, safely clear of the horse's head. Spear remains a straight rigid wooden shaft, visible grip, unmistakable broad bronze leaf tip, no axe or club. Calm standing horse, rider seated naturally in saddle, full tail, head, hooves, spear and rider visible. Keep horse unarmored, simple leather saddle and bridle. Exactly vertical overhead orthographic camera looking straight down, helmet crown and shoulders and horse's back dominate; nose screen-bottom and tail screen-top. No front portrait, isometric view, ground plane, cast shadow or scenic backdrop. ONE centered mounted actor, single idle pose, no formation or frame montage. Same clear stylized painted outlines/material texture and warm bronze palette as references. Square approximately1254px transparent RGBA canvas, fixed saddle/root center at canvas center, full silhouette with at least60px transparent padding on all sides. True alpha0 outside crisp antialiased silhouette, no haze, glow, symbols, words or extra gear. This is an imagined ancestral Russian roster matching the other game units, not a claim of historical Slavic equipment.",
+      "references": [
+        "C:/Users/Damien/Documents/GitHub/AgeOfFronts/AgeOfFronts/Art/Cultures/Russians/Units/StoneAge/Scout/Idle-v1.png",
+        "C:/Users/Damien/Documents/GitHub/AgeOfFronts/AgeOfFronts/Art/Cultures/Russians/Units/BronzeAge/BronzeSpearman/Idle-LargeShield-v3.png"
+      ],
+      "generatedSource": "C:/Users/Damien/.codex/generated_images/01a11641-9e1b-7c81-be76-c9edd53ef182/exec-4a59aff4-1cae-4a33-8110-6d467937cb94.png",
+      "status": "approved-design-reference"
+    },
+    {
+      "id": "idle",
+      "file": "Idle-Animated-v1.png",
+      "motion": "Loop subtle idle:1 neutralready,2 inhale,3 softearflick/weightsettle,4 exhale,5 tailsoftsway,6 settle toward1. Hooves planted, spear beside horse.",
+      "prompt": "Create SIX sequential poses of the approved Russian Bronze Age LIGHT CAVALRY rider in reference1. Exact same hammered bronze domed helmet, paired riveted bronze pauldrons and bracers, reddish brown leather top, cream fur collar, pale trousers, brown boots, unarmored chestnut horse black mane/tail, leather saddle and reins. One long straight wooden SPEAR with broad bronze LEAF shaped head, gripped in rear half by screen-left weapon hand; screen-right hand reins, NO shield. Spearhead never morphs into sickle/axe/trowel. STRICT vertical overhead orthographic, nose screen-bottom tail screen-top, helmet crown and horse back dominant, no side/isometric/frontalface. Anatomically coherent four horse legs, rider boots distinct. One mounted actor per cell, same consistent body proportions and equipment size. Exact1536x1024RGBA atlas 3columns 2rows, six512x512 cells row-major. Every full pose, spear, tail and any fallen rider must fit in its own cell within440x440 centered area with>=36px padding; fixed saddle root(256,256), no neighbor overlap. True alpha0 background, no fog/glow/shadows/ground/drawn motion or impact strokes/text/grid. Preserve reference style and clear silhouettes.\nMOTION: Loop subtle idle:1 neutralready,2 inhale,3 softearflick/weightsettle,4 exhale,5 tailsoftsway,6 settle toward1. Hooves planted, spear beside horse.",
+      "references": [
+        "C:/Users/Damien/Documents/GitHub/AgeOfFronts/AgeOfFronts/Art/Cultures/Russians/Units/BronzeAge/LightCavalry/Idle-v1.png"
+      ],
+      "generatedSource": "C:\\Users\\Damien\\.codex\\generated_images\\01a11641-9e1b-7c81-be76-c9edd53ef182\\exec-e89d089e-b7ff-4938-9391-2423c2a0b36d.png",
+      "status": "selected-animation-source",
+      "nativeCopy": "SourceArt/Native-Idle-Animated-v1.png"
+    },
+    {
+      "id": "running",
+      "file": "Running-v1.png",
+      "motion": "Loop four-beat WALK with clear foreleg/hindleg stride:1 leftfore reaches/rightforeback,2 leftforeplants/rightrearadvances,3 rightfore reaches/leftrear advances,4 rightforeplants/leftforepasses,5 hindlegsupport,6 passingpose toward1. No sidewayspaddling/footshuffling. Riderseated, spearsteady.",
+      "prompt": "Create SIX sequential poses of the approved Russian Bronze Age LIGHT CAVALRY rider in reference1. Exact same hammered bronze domed helmet, paired riveted bronze pauldrons and bracers, reddish brown leather top, cream fur collar, pale trousers, brown boots, unarmored chestnut horse black mane/tail, leather saddle and reins. One long straight wooden SPEAR with broad bronze LEAF shaped head, gripped in rear half by screen-left weapon hand; screen-right hand reins, NO shield. Spearhead never morphs into sickle/axe/trowel. STRICT vertical overhead orthographic, nose screen-bottom tail screen-top, helmet crown and horse back dominant, no side/isometric/frontalface. Anatomically coherent four horse legs, rider boots distinct. One mounted actor per cell, same consistent body proportions and equipment size. Exact1536x1024RGBA atlas 3columns 2rows, six512x512 cells row-major. Every full pose, spear, tail and any fallen rider must fit in its own cell within440x440 centered area with>=36px padding; fixed saddle root(256,256), no neighbor overlap. True alpha0 background, no fog/glow/shadows/ground/drawn motion or impact strokes/text/grid. Preserve reference style and clear silhouettes.\nMOTION: Loop four-beat WALK with clear foreleg/hindleg stride:1 leftfore reaches/rightforeback,2 leftforeplants/rightrearadvances,3 rightfore reaches/leftrear advances,4 rightforeplants/leftforepasses,5 hindlegsupport,6 passingpose toward1. No sidewayspaddling/footshuffling. Riderseated, spearsteady.",
+      "references": [
+        "C:/Users/Damien/Documents/GitHub/AgeOfFronts/AgeOfFronts/Art/Cultures/Russians/Units/BronzeAge/LightCavalry/Idle-v1.png"
+      ],
+      "generatedSource": "C:\\Users\\Damien\\.codex\\generated_images\\01a11641-9e1b-7c81-be76-c9edd53ef182\\exec-5d025079-3e14-4159-a037-c5f0bde2ef07.png",
+      "status": "selected-animation-source",
+      "nativeCopy": "SourceArt/Native-Running-v1.png"
+    },
+    {
+      "id": "attack",
+      "file": "Attack-Overarm-v2.png",
+      "motion": "Mounted overarm thrust, rigid spear continuously aimed forward",
+      "prompt": "Create SIX sequential poses of the approved Russian Bronze Age LIGHT CAVALRY rider in reference1. Exact same hammered bronze domed helmet, paired riveted bronze pauldrons and bracers, reddish brown leather top, cream fur collar, pale trousers, brown boots, unarmored chestnut horse black mane/tail, leather saddle and reins. One long straight wooden SPEAR with broad bronze LEAF shaped head, gripped in rear half by screen-left weapon hand; screen-right hand reins, NO shield. Spearhead never morphs into sickle/axe/trowel. STRICT vertical overhead orthographic, nose screen-bottom tail screen-top, helmet crown and horse back dominant, no side/isometric/frontalface. Anatomically coherent four horse legs, rider boots distinct. One mounted actor per cell, same consistent body proportions and equipment size. Exact1536x1024RGBA atlas 3columns 2rows, six512x512 cells row-major. Every full pose, spear, tail and any fallen rider must fit in its own cell within440x440 centered area with>=36px padding; fixed saddle root(256,256), no neighbor overlap. True alpha0 background, no fog/glow/shadows/ground/drawn motion or impact strokes/text/grid. Preserve reference style and clear silhouettes.\nCORRECTED MOTION: Mounted overarm thrust, six poses. Keep the spear POINT aimed screen-bottom or bottom-left in EVERY FRAME, its bronze buttcap screen-top. Never point spearhead screen-top or screen-left. Shaft remains long (about horse body length) and nearly parallel to horse's nose-tail axis throughout. 1ready,2 weapon hand lifts to left shoulder and elbow flares backward while spear stays tip DOWN,3 shoulder-level hand pushes DOWN towards horse's left ear,4 full OVERARM extension with raised elbow and knuckles above shaft, spearhead beyond left side of horse nose aimed DOWN,5 hand retracts at shoulder height,6 ready. Do NOT swing or rotate spear like club or axe. Supporting reference2 shows overarm GRIP and downward spear direction only; do not add shield or replace horse with infantry. Preserve mounted Bronze armor and horse from reference1.",
+      "references": [
+        "C:/Users/Damien/Documents/GitHub/AgeOfFronts/AgeOfFronts/Art/Cultures/Russians/Units/BronzeAge/LightCavalry/Idle-v1.png",
+        "C:/Users/Damien/Documents/GitHub/AgeOfFronts/AgeOfFronts/Art/Cultures/Russians/Units/BronzeAge/BronzeSpearman/Attack-Overhand-v2.png"
+      ],
+      "generatedSource": "C:\\Users\\Damien\\.codex\\generated_images\\01a11641-9e1b-7c81-be76-c9edd53ef182\\exec-a390d944-1b49-4000-ac2e-f93c0973848f.png",
+      "status": "selected-animation-source",
+      "nativeCopy": "SourceArt/Native-Attack-Overarm-v2.png"
+    },
+    {
+      "id": "hit",
+      "file": "Hit-v1.png",
+      "motion": "Brief light hit:1ready,2 rider shoulderjerk,3 riderrecoils/horsebraces,4 riderregainsseat,5 steadyrecovery,6ready. Staymounted, spearretained, horse fourhooves grounded.",
+      "prompt": "Create SIX sequential poses of the approved Russian Bronze Age LIGHT CAVALRY rider in reference1. Exact same hammered bronze domed helmet, paired riveted bronze pauldrons and bracers, reddish brown leather top, cream fur collar, pale trousers, brown boots, unarmored chestnut horse black mane/tail, leather saddle and reins. One long straight wooden SPEAR with broad bronze LEAF shaped head, gripped in rear half by screen-left weapon hand; screen-right hand reins, NO shield. Spearhead never morphs into sickle/axe/trowel. STRICT vertical overhead orthographic, nose screen-bottom tail screen-top, helmet crown and horse back dominant, no side/isometric/frontalface. Anatomically coherent four horse legs, rider boots distinct. One mounted actor per cell, same consistent body proportions and equipment size. Exact1536x1024RGBA atlas 3columns 2rows, six512x512 cells row-major. Every full pose, spear, tail and any fallen rider must fit in its own cell within440x440 centered area with>=36px padding; fixed saddle root(256,256), no neighbor overlap. True alpha0 background, no fog/glow/shadows/ground/drawn motion or impact strokes/text/grid. Preserve reference style and clear silhouettes.\nMOTION: Brief light hit:1ready,2 rider shoulderjerk,3 riderrecoils/horsebraces,4 riderregainsseat,5 steadyrecovery,6ready. Staymounted, spearretained, horse fourhooves grounded.",
+      "references": [
+        "C:/Users/Damien/Documents/GitHub/AgeOfFronts/AgeOfFronts/Art/Cultures/Russians/Units/BronzeAge/LightCavalry/Idle-v1.png"
+      ],
+      "generatedSource": "C:\\Users\\Damien\\.codex\\generated_images\\01a11641-9e1b-7c81-be76-c9edd53ef182\\exec-d8505f65-39a7-45fd-8b3c-09824b7a0876.png",
+      "status": "selected-animation-source",
+      "nativeCopy": "SourceArt/Native-Hit-v1.png"
+    },
+    {
+      "id": "charged",
+      "file": "Charged-Impact-v1.png",
+      "motion": "Distinct heavy charge impact:1ready,2 horse forelegbrace wide and rider jolts backward,3 horseknees compress and rider pitches/reins taut,4 deepest brace stagger,5 horse straightens/riderrecovers,6ready. No death, no drawn impact marks.",
+      "prompt": "Create SIX sequential poses of the approved Russian Bronze Age LIGHT CAVALRY rider in reference1. Exact same hammered bronze domed helmet, paired riveted bronze pauldrons and bracers, reddish brown leather top, cream fur collar, pale trousers, brown boots, unarmored chestnut horse black mane/tail, leather saddle and reins. One long straight wooden SPEAR with broad bronze LEAF shaped head, gripped in rear half by screen-left weapon hand; screen-right hand reins, NO shield. Spearhead never morphs into sickle/axe/trowel. STRICT vertical overhead orthographic, nose screen-bottom tail screen-top, helmet crown and horse back dominant, no side/isometric/frontalface. Anatomically coherent four horse legs, rider boots distinct. One mounted actor per cell, same consistent body proportions and equipment size. Exact1536x1024RGBA atlas 3columns 2rows, six512x512 cells row-major. Every full pose, spear, tail and any fallen rider must fit in its own cell within440x440 centered area with>=36px padding; fixed saddle root(256,256), no neighbor overlap. True alpha0 background, no fog/glow/shadows/ground/drawn motion or impact strokes/text/grid. Preserve reference style and clear silhouettes.\nMOTION: Distinct heavy charge impact:1ready,2 horse forelegbrace wide and rider jolts backward,3 horseknees compress and rider pitches/reins taut,4 deepest brace stagger,5 horse straightens/riderrecovers,6ready. No death, no drawn impact marks.",
+      "references": [
+        "C:/Users/Damien/Documents/GitHub/AgeOfFronts/AgeOfFronts/Art/Cultures/Russians/Units/BronzeAge/LightCavalry/Idle-v1.png"
+      ],
+      "generatedSource": "C:\\Users\\Damien\\.codex\\generated_images\\01a11641-9e1b-7c81-be76-c9edd53ef182\\exec-0fe0ba2e-bff5-4e2c-90b8-54c798ad3e16.png",
+      "status": "selected-animation-source",
+      "nativeCopy": "SourceArt/Native-Charged-Impact-v1.png"
+    },
+    {
+      "id": "charge",
+      "file": "Charge-v1.png",
+      "motion": "Loop GALLOP. Supporting image2 only for horse gait sequence, NOT redcap orclub.1 collectedforelegs,2 forelegsreach forward,3 leadforelegextended/supportotherretracts,4 alternatingforelegsupport hindquarterdrives,5 forelegsretractwith hindlegrecovery,6 collected suspension toward1. Clearforward/back hoofmotion not sideways paddles. Bronze spear beside horse, rider leansforward.",
+      "prompt": "Create SIX sequential poses of the approved Russian Bronze Age LIGHT CAVALRY rider in reference1. Exact same hammered bronze domed helmet, paired riveted bronze pauldrons and bracers, reddish brown leather top, cream fur collar, pale trousers, brown boots, unarmored chestnut horse black mane/tail, leather saddle and reins. One long straight wooden SPEAR with broad bronze LEAF shaped head, gripped in rear half by screen-left weapon hand; screen-right hand reins, NO shield. Spearhead never morphs into sickle/axe/trowel. STRICT vertical overhead orthographic, nose screen-bottom tail screen-top, helmet crown and horse back dominant, no side/isometric/frontalface. Anatomically coherent four horse legs, rider boots distinct. One mounted actor per cell, same consistent body proportions and equipment size. Exact1536x1024RGBA atlas 3columns 2rows, six512x512 cells row-major. Every full pose, spear, tail and any fallen rider must fit in its own cell within440x440 centered area with>=36px padding; fixed saddle root(256,256), no neighbor overlap. True alpha0 background, no fog/glow/shadows/ground/drawn motion or impact strokes/text/grid. Preserve reference style and clear silhouettes.\nMOTION: Loop GALLOP. Supporting image2 only for horse gait sequence, NOT redcap orclub.1 collectedforelegs,2 forelegsreach forward,3 leadforelegextended/supportotherretracts,4 alternatingforelegsupport hindquarterdrives,5 forelegsretractwith hindlegrecovery,6 collected suspension toward1. Clearforward/back hoofmotion not sideways paddles. Bronze spear beside horse, rider leansforward.",
+      "references": [
+        "C:/Users/Damien/Documents/GitHub/AgeOfFronts/AgeOfFronts/Art/Cultures/Russians/Units/BronzeAge/LightCavalry/Idle-v1.png",
+        "C:/Users/Damien/Documents/GitHub/AgeOfFronts/AgeOfFronts/Art/Cultures/Russians/Units/StoneAge/Scout/SourceArt/Native-Charge-v1.png"
+      ],
+      "generatedSource": "C:\\Users\\Damien\\.codex\\generated_images\\01a11641-9e1b-7c81-be76-c9edd53ef182\\exec-8a0784ab-711d-4ecb-b113-2653eb5a0ea9.png",
+      "status": "selected-animation-source",
+      "nativeCopy": "SourceArt/Native-Charge-v1.png"
+    },
+    {
+      "id": "charge-attack",
+      "file": "Charge-Attack-Overarm-v2.png",
+      "motion": "Heavy mounted forward overarm thrust",
+      "prompt": "Create SIX sequential poses of the approved Russian Bronze Age LIGHT CAVALRY rider in reference1. Exact same hammered bronze domed helmet, paired riveted bronze pauldrons and bracers, reddish brown leather top, cream fur collar, pale trousers, brown boots, unarmored chestnut horse black mane/tail, leather saddle and reins. One long straight wooden SPEAR with broad bronze LEAF shaped head, gripped in rear half by screen-left weapon hand; screen-right hand reins, NO shield. Spearhead never morphs into sickle/axe/trowel. STRICT vertical overhead orthographic, nose screen-bottom tail screen-top, helmet crown and horse back dominant, no side/isometric/frontalface. Anatomically coherent four horse legs, rider boots distinct. One mounted actor per cell, same consistent body proportions and equipment size. Exact1536x1024RGBA atlas 3columns 2rows, six512x512 cells row-major. Every full pose, spear, tail and any fallen rider must fit in its own cell within440x440 centered area with>=36px padding; fixed saddle root(256,256), no neighbor overlap. True alpha0 background, no fog/glow/shadows/ground/drawn motion or impact strokes/text/grid. Preserve reference style and clear silhouettes.\nCHARGE SPEAR THRUST: six poses of a powerful forward thrust alongside horse with rider leaning into impact. Spearhead points DOWN screen-bottom-left in ALL SIX FRAMES, bronze buttcap always UP. Shaft about full horse body length, constant length, stays roughly parallel horse nose-tail axis and never rotates across the rider.1forwardlean spearready,2 draw hand upward to left shoulder with elbow flared but bronze spearhead remains below hand,3 push hand/spear straight DOWN past horseleftshoulder,4 fulloverarm extension with elbow raised, spearhead beyond horse nose left and pointed DOWN,5 pullhandbackupatshoulderheight,6 regainready. Knuckles above shaft, sameoverarmgrip for thrust3/4. Never lift spearhead up or wield as axe. Horse braces/slight stride, no spear throughhorse. Reference2 ONLY for grip and spear pointing screen-down, no shield or dismounted infantry.",
+      "references": [
+        "C:/Users/Damien/Documents/GitHub/AgeOfFronts/AgeOfFronts/Art/Cultures/Russians/Units/BronzeAge/LightCavalry/Idle-v1.png",
+        "C:/Users/Damien/Documents/GitHub/AgeOfFronts/AgeOfFronts/Art/Cultures/Russians/Units/BronzeAge/BronzeSpearman/Attack-Overhand-v2.png"
+      ],
+      "generatedSource": "C:\\Users\\Damien\\.codex\\generated_images\\01a11641-9e1b-7c81-be76-c9edd53ef182\\exec-fce307f2-72c7-4407-9d56-ac925590c640.png",
+      "status": "selected-animation-source",
+      "nativeCopy": "SourceArt/Native-Charge-Attack-Overarm-v2.png"
+    },
+    {
+      "id": "death",
+      "file": "Death-Together-v1.png",
+      "motion": "Full horse AND rider death together.1 mountedready,2 horseforekneesbuckle riderleans,3 horse collapses tipping onto leftside riderfallswithsaddle,4 bothdownonside legsvisiblescreenright spear releasedalongside,5 settling,6 samefinalorientation fullystill. Keepheadgenerallybottom, no180flip, nocutbody, no duplicaterider, no drawn impact strokes.",
+      "prompt": "Create SIX sequential poses of the approved Russian Bronze Age LIGHT CAVALRY rider in reference1. Exact same hammered bronze domed helmet, paired riveted bronze pauldrons and bracers, reddish brown leather top, cream fur collar, pale trousers, brown boots, unarmored chestnut horse black mane/tail, leather saddle and reins. One long straight wooden SPEAR with broad bronze LEAF shaped head, gripped in rear half by screen-left weapon hand; screen-right hand reins, NO shield. Spearhead never morphs into sickle/axe/trowel. STRICT vertical overhead orthographic, nose screen-bottom tail screen-top, helmet crown and horse back dominant, no side/isometric/frontalface. Anatomically coherent four horse legs, rider boots distinct. One mounted actor per cell, same consistent body proportions and equipment size. Exact1536x1024RGBA atlas 3columns 2rows, six512x512 cells row-major. Every full pose, spear, tail and any fallen rider must fit in its own cell within440x440 centered area with>=36px padding; fixed saddle root(256,256), no neighbor overlap. True alpha0 background, no fog/glow/shadows/ground/drawn motion or impact strokes/text/grid. Preserve reference style and clear silhouettes.\nMOTION: Full horse AND rider death together.1 mountedready,2 horseforekneesbuckle riderleans,3 horse collapses tipping onto leftside riderfallswithsaddle,4 bothdownonside legsvisiblescreenright spear releasedalongside,5 settling,6 samefinalorientation fullystill. Keepheadgenerallybottom, no180flip, nocutbody, no duplicaterider, no drawn impact strokes.",
+      "references": [
+        "C:/Users/Damien/Documents/GitHub/AgeOfFronts/AgeOfFronts/Art/Cultures/Russians/Units/BronzeAge/LightCavalry/Idle-v1.png"
+      ],
+      "generatedSource": "C:\\Users\\Damien\\.codex\\generated_images\\01a11641-9e1b-7c81-be76-c9edd53ef182\\exec-fc3bfe3a-37b1-4c22-b0fd-e4580bcfc631.png",
+      "status": "selected-animation-source",
+      "nativeCopy": "SourceArt/Native-Death-Together-v1.png"
+    },
+    {
+      "id": "death-thrown",
+      "file": "Death-Thrown-v1.png",
+      "motion": "Full THROWN RIDER death variant.1mountedready,2horsejolt riderlosesseat,3rider thrown toward screenleft spearretainedloosely,4riderlandsonside beside standinghorse spear drops,5ridersettleslyingdead spearbesidebody,6same orientation still. Horse remainsstanding riderless afterframe3. Exactly one horse and one rider eachcell. No flip at end, no gore, no drawn impact/motion strokes.",
+      "prompt": "Create SIX sequential poses of the approved Russian Bronze Age LIGHT CAVALRY rider in reference1. Exact same hammered bronze domed helmet, paired riveted bronze pauldrons and bracers, reddish brown leather top, cream fur collar, pale trousers, brown boots, unarmored chestnut horse black mane/tail, leather saddle and reins. One long straight wooden SPEAR with broad bronze LEAF shaped head, gripped in rear half by screen-left weapon hand; screen-right hand reins, NO shield. Spearhead never morphs into sickle/axe/trowel. STRICT vertical overhead orthographic, nose screen-bottom tail screen-top, helmet crown and horse back dominant, no side/isometric/frontalface. Anatomically coherent four horse legs, rider boots distinct. One mounted actor per cell, same consistent body proportions and equipment size. Exact1536x1024RGBA atlas 3columns 2rows, six512x512 cells row-major. Every full pose, spear, tail and any fallen rider must fit in its own cell within440x440 centered area with>=36px padding; fixed saddle root(256,256), no neighbor overlap. True alpha0 background, no fog/glow/shadows/ground/drawn motion or impact strokes/text/grid. Preserve reference style and clear silhouettes.\nMOTION: Full THROWN RIDER death variant.1mountedready,2horsejolt riderlosesseat,3rider thrown toward screenleft spearretainedloosely,4riderlandsonside beside standinghorse spear drops,5ridersettleslyingdead spearbesidebody,6same orientation still. Horse remainsstanding riderless afterframe3. Exactly one horse and one rider eachcell. No flip at end, no gore, no drawn impact/motion strokes.",
+      "references": [
+        "C:/Users/Damien/Documents/GitHub/AgeOfFronts/AgeOfFronts/Art/Cultures/Russians/Units/BronzeAge/LightCavalry/Idle-v1.png"
+      ],
+      "generatedSource": "C:\\Users\\Damien\\.codex\\generated_images\\01a11641-9e1b-7c81-be76-c9edd53ef182\\exec-e2a670c7-624c-4b65-9c01-552509148fb9.png",
+      "status": "selected-animation-source",
+      "nativeCopy": "SourceArt/Native-Death-Thrown-v1.png"
+    },
+    {
+      "id": "attack",
+      "file": "Attack-v1.png",
+      "motion": "Mounted OVERARM spear thrust alongside horse screen-left.1 ready with reargrip,2 lift elbow and draw spear back to shoulder,3 extend OVERARM at shoulder height,4 full forward thrust screen-bottom-left bronze tip clear of horse,5 retractatshoulderheight,6 ready. SAME OVERARM gripthrough3/4, never underhanded, no horizontalaxe swing.",
+      "prompt": "Create SIX sequential poses of the approved Russian Bronze Age LIGHT CAVALRY rider in reference1. Exact same hammered bronze domed helmet, paired riveted bronze pauldrons and bracers, reddish brown leather top, cream fur collar, pale trousers, brown boots, unarmored chestnut horse black mane/tail, leather saddle and reins. One long straight wooden SPEAR with broad bronze LEAF shaped head, gripped in rear half by screen-left weapon hand; screen-right hand reins, NO shield. Spearhead never morphs into sickle/axe/trowel. STRICT vertical overhead orthographic, nose screen-bottom tail screen-top, helmet crown and horse back dominant, no side/isometric/frontalface. Anatomically coherent four horse legs, rider boots distinct. One mounted actor per cell, same consistent body proportions and equipment size. Exact1536x1024RGBA atlas 3columns 2rows, six512x512 cells row-major. Every full pose, spear, tail and any fallen rider must fit in its own cell within440x440 centered area with>=36px padding; fixed saddle root(256,256), no neighbor overlap. True alpha0 background, no fog/glow/shadows/ground/drawn motion or impact strokes/text/grid. Preserve reference style and clear silhouettes.\nMOTION: Mounted OVERARM spear thrust alongside horse screen-left.1 ready with reargrip,2 lift elbow and draw spear back to shoulder,3 extend OVERARM at shoulder height,4 full forward thrust screen-bottom-left bronze tip clear of horse,5 retractatshoulderheight,6 ready. SAME OVERARM gripthrough3/4, never underhanded, no horizontalaxe swing.",
+      "references": [
+        "C:/Users/Damien/Documents/GitHub/AgeOfFronts/AgeOfFronts/Art/Cultures/Russians/Units/BronzeAge/LightCavalry/Idle-v1.png"
+      ],
+      "generatedSource": "C:\\Users\\Damien\\.codex\\generated_images\\01a11641-9e1b-7c81-be76-c9edd53ef182\\exec-79ed485d-1b10-40b1-80c8-153e43b061ea.png",
+      "status": "superseded-spear-direction-correction",
+      "nativeCopy": "SourceArt/Native-Attack-v1.png"
+    },
+    {
+      "id": "charge-attack",
+      "file": "Charge-Attack-v1.png",
+      "motion": "Heavy mounted spear THRUST on charge, overarm shoulder-level grip.1 forwardlean ready,2 brace with spear drawnback,3 drivearm/spearstraightforward screen-bottom-left alongsidehorse,4 fullextension impact at shoulderheight,5 retract,6 regainready. Rigidwoodshaft broadbronzetip, sameoverarm grip allframes, horseheadclear.",
+      "prompt": "Create SIX sequential poses of the approved Russian Bronze Age LIGHT CAVALRY rider in reference1. Exact same hammered bronze domed helmet, paired riveted bronze pauldrons and bracers, reddish brown leather top, cream fur collar, pale trousers, brown boots, unarmored chestnut horse black mane/tail, leather saddle and reins. One long straight wooden SPEAR with broad bronze LEAF shaped head, gripped in rear half by screen-left weapon hand; screen-right hand reins, NO shield. Spearhead never morphs into sickle/axe/trowel. STRICT vertical overhead orthographic, nose screen-bottom tail screen-top, helmet crown and horse back dominant, no side/isometric/frontalface. Anatomically coherent four horse legs, rider boots distinct. One mounted actor per cell, same consistent body proportions and equipment size. Exact1536x1024RGBA atlas 3columns 2rows, six512x512 cells row-major. Every full pose, spear, tail and any fallen rider must fit in its own cell within440x440 centered area with>=36px padding; fixed saddle root(256,256), no neighbor overlap. True alpha0 background, no fog/glow/shadows/ground/drawn motion or impact strokes/text/grid. Preserve reference style and clear silhouettes.\nMOTION: Heavy mounted spear THRUST on charge, overarm shoulder-level grip.1 forwardlean ready,2 brace with spear drawnback,3 drivearm/spearstraightforward screen-bottom-left alongsidehorse,4 fullextension impact at shoulderheight,5 retract,6 regainready. Rigidwoodshaft broadbronzetip, sameoverarm grip allframes, horseheadclear.",
+      "references": [
+        "C:/Users/Damien/Documents/GitHub/AgeOfFronts/AgeOfFronts/Art/Cultures/Russians/Units/BronzeAge/LightCavalry/Idle-v1.png"
+      ],
+      "generatedSource": "C:\\Users\\Damien\\.codex\\generated_images\\01a11641-9e1b-7c81-be76-c9edd53ef182\\exec-b12d479f-8a05-4661-a05c-03e6d65decee.png",
+      "status": "superseded-spear-direction-correction",
+      "nativeCopy": "SourceArt/Native-Charge-Attack-v1.png"
+    }
+  ]
+}

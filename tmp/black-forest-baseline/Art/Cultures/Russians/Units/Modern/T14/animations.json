@@ -1,0 +1,331 @@
+{
+  "schemaVersion": 1,
+  "cultureId": "russians",
+  "requestedAge": "Modern",
+  "unit": "T-14 Armata",
+  "actorCount": 1,
+  "stage": "single-vehicle-animation-review",
+  "camera": "vertical-overhead-orthographic",
+  "facing": "screen-down",
+  "reviewFootprint": 460,
+  "sheetSize": {
+    "width": 1536,
+    "height": 1024
+  },
+  "grid": {
+    "columns": 3,
+    "rows": 2
+  },
+  "animations": [
+    {
+      "id": "idle",
+      "label": "Idle",
+      "file": "idle-Registered-v1.png",
+      "loop": true,
+      "scale": 1,
+      "sheetSize": {
+        "width": 512,
+        "height": 512
+      },
+      "durations": [
+        1000
+      ],
+      "frameCount": 1,
+      "description": "Approved stationary idle. Hull, turret, gun and tracks remain still.",
+      "frames": [
+        {
+          "index": 0,
+          "x": 0,
+          "y": 0,
+          "width": 512,
+          "height": 512,
+          "pivot": {
+            "x": 256,
+            "y": 256
+          }
+        }
+      ],
+      "sha256": "39b7ec64a734aeecf18df16ed771ba9d0c195fb3d2d76c323962ee95a6db51df"
+    },
+    {
+      "id": "moving",
+      "label": "Moving",
+      "file": "moving-Registered-v1.png",
+      "loop": true,
+      "scale": 1,
+      "durations": [
+        150,
+        150,
+        150,
+        150,
+        150,
+        150
+      ],
+      "frameCount": 6,
+      "description": "Rolling track tread phases; motion stays in place.",
+      "frames": [
+        {
+          "index": 0,
+          "sourceIndex": 0,
+          "x": 0,
+          "y": 0,
+          "width": 512,
+          "height": 512,
+          "pivot": {
+            "x": 256,
+            "y": 256
+          }
+        },
+        {
+          "index": 1,
+          "sourceIndex": 1,
+          "x": 512,
+          "y": 0,
+          "width": 512,
+          "height": 512,
+          "pivot": {
+            "x": 256,
+            "y": 256
+          }
+        },
+        {
+          "index": 2,
+          "sourceIndex": 2,
+          "x": 1024,
+          "y": 0,
+          "width": 512,
+          "height": 512,
+          "pivot": {
+            "x": 256,
+            "y": 256
+          }
+        },
+        {
+          "index": 3,
+          "sourceIndex": 3,
+          "x": 0,
+          "y": 512,
+          "width": 512,
+          "height": 512,
+          "pivot": {
+            "x": 256,
+            "y": 256
+          }
+        },
+        {
+          "index": 4,
+          "sourceIndex": 4,
+          "x": 512,
+          "y": 512,
+          "width": 512,
+          "height": 512,
+          "pivot": {
+            "x": 256,
+            "y": 256
+          }
+        },
+        {
+          "index": 5,
+          "sourceIndex": 5,
+          "x": 1024,
+          "y": 512,
+          "width": 512,
+          "height": 512,
+          "pivot": {
+            "x": 256,
+            "y": 256
+          }
+        }
+      ],
+      "sha256": "81d95370184db254fed6586445dab5551e3f68f7a7833bd3a570447ae53f2bbe"
+    },
+    {
+      "id": "moving-shooting",
+      "label": "Moving and shooting",
+      "file": "moving-shooting-Registered-v2.png",
+      "loop": true,
+      "scale": 1,
+      "durations": [
+        180,
+        100,
+        120,
+        150,
+        200,
+        250
+      ],
+      "frameCount": 6,
+      "description": "One fixed approved tank. Tread textures advance inside unchanged track outlines; one cannon flash and fading smoke are separate layers. No hull, turret or weapon resizing.",
+      "frames": [
+        {
+          "index": 0,
+          "sourceIndex": 0,
+          "x": 0,
+          "y": 0,
+          "width": 512,
+          "height": 512,
+          "pivot": {
+            "x": 256,
+            "y": 256
+          }
+        },
+        {
+          "index": 1,
+          "sourceIndex": 1,
+          "x": 512,
+          "y": 0,
+          "width": 512,
+          "height": 512,
+          "pivot": {
+            "x": 256,
+            "y": 256
+          }
+        },
+        {
+          "index": 2,
+          "sourceIndex": 2,
+          "x": 1024,
+          "y": 0,
+          "width": 512,
+          "height": 512,
+          "pivot": {
+            "x": 256,
+            "y": 256
+          }
+        },
+        {
+          "index": 3,
+          "sourceIndex": 3,
+          "x": 0,
+          "y": 512,
+          "width": 512,
+          "height": 512,
+          "pivot": {
+            "x": 256,
+            "y": 256
+          }
+        },
+        {
+          "index": 4,
+          "sourceIndex": 4,
+          "x": 512,
+          "y": 512,
+          "width": 512,
+          "height": 512,
+          "pivot": {
+            "x": 256,
+            "y": 256
+          }
+        },
+        {
+          "index": 5,
+          "sourceIndex": 5,
+          "x": 1024,
+          "y": 512,
+          "width": 512,
+          "height": 512,
+          "pivot": {
+            "x": 256,
+            "y": 256
+          }
+        }
+      ],
+      "sha256": "29bafbbbde9fafc7ba4f9e101dd9f5d762d43b27ec40b35dd79111313f3c9114"
+    },
+    {
+      "id": "death",
+      "label": "Explosion / death",
+      "file": "death-Registered-v1.png",
+      "loop": false,
+      "scale": 1,
+      "durations": [
+        120,
+        120,
+        160,
+        220,
+        350,
+        1200
+      ],
+      "frameCount": 6,
+      "description": "Ignition, explosion, smoke clearing, then a charred wreck; holds the final frame.",
+      "frames": [
+        {
+          "index": 0,
+          "sourceIndex": 0,
+          "x": 0,
+          "y": 0,
+          "width": 512,
+          "height": 512,
+          "pivot": {
+            "x": 256,
+            "y": 256
+          }
+        },
+        {
+          "index": 1,
+          "sourceIndex": 1,
+          "x": 512,
+          "y": 0,
+          "width": 512,
+          "height": 512,
+          "pivot": {
+            "x": 256,
+            "y": 256
+          }
+        },
+        {
+          "index": 2,
+          "sourceIndex": 2,
+          "x": 1024,
+          "y": 0,
+          "width": 512,
+          "height": 512,
+          "pivot": {
+            "x": 256,
+            "y": 256
+          }
+        },
+        {
+          "index": 3,
+          "sourceIndex": 3,
+          "x": 0,
+          "y": 512,
+          "width": 512,
+          "height": 512,
+          "pivot": {
+            "x": 256,
+            "y": 256
+          }
+        },
+        {
+          "index": 4,
+          "sourceIndex": 4,
+          "x": 512,
+          "y": 512,
+          "width": 512,
+          "height": 512,
+          "pivot": {
+            "x": 256,
+            "y": 256
+          }
+        },
+        {
+          "index": 5,
+          "sourceIndex": 5,
+          "x": 1024,
+          "y": 512,
+          "width": 512,
+          "height": 512,
+          "pivot": {
+            "x": 256,
+            "y": 256
+          }
+        }
+      ],
+      "sha256": "13b6522dcf51cfdf8cb5d6c49ce6aa456690f6434eb9a6a0d09493fcf5cdd827"
+    }
+  ],
+  "registration": "Living clips register the offset turret star at x286 y240, keeping tank centerline near pivot x256. Uniform scale per clip, translation only; destruction uses measured hull centers.",
+  "motionContract": "In-place artwork. Runtime owns translation, facing and combat.",
+  "integrationStatus": "Local art review; runtime integration not performed.",
+  "artRevision": "rigid-firing-v2"
+}

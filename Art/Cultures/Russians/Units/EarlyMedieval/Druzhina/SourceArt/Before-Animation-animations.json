@@ -1,0 +1,57 @@
+{
+  "schemaVersion": 1,
+  "cultureId": "russians",
+  "age": "EarlyMedieval",
+  "unit": "Druzhina",
+  "category": "Heavy Cavalry",
+  "actorCount": 1,
+  "stage": "single-mounted-idle-design-review",
+  "integrationStatus": "Single Druzhina idle design pending review before animation.",
+  "camera": "vertical-overhead-orthographic",
+  "facing": "screen-down",
+  "sheetSize": {
+    "width": 1024,
+    "height": 1536
+  },
+  "grid": {
+    "columns": 1,
+    "rows": 1
+  },
+  "reviewFootprint": 400,
+  "registration": "Fixed authored saddle/root pivot and one constant scale, no silhouette fitting.",
+  "weapon": "Long wooden lance with iron leaf spearhead",
+  "mount": "Dark chestnut horse with iron and brass-accented lamellar barding and chamfron",
+  "equipmentFinish": "Reinforced conical iron helmet, brass browband, heavy lamellar and mail, iron forearm guards, russet coat",
+  "animations": [
+    {
+      "id": "idle",
+      "file": "Idle-v3.png",
+      "label": "Idle - single frame",
+      "loop": true,
+      "scale": 0.6666666666666666,
+      "durations": [
+        1000
+      ],
+      "description": "More overhead Druzhina idle with resting lance, visible helmet crown and armored horse back.",
+      "frameCount": 1,
+      "sourceFrameOrder": [
+        0
+      ],
+      "frames": [
+        {
+          "index": 0,
+          "sourceIndex": 0,
+          "x": 0,
+          "y": 0,
+          "width": 1024,
+          "height": 1536,
+          "pivot": {
+            "x": 512.0,
+            "y": 768.0
+          }
+        }
+      ]
+    }
+  ],
+  "offhand": "Reins; lance-only first draft following supplied reference"
+}

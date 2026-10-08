@@ -1,0 +1,906 @@
+{
+  "method": "Whole generated pose uniform scaling and transparent padding; native sources and alpha preserved.",
+  "authorization": "User authorized composing and baking sprites.",
+  "clips": [
+    {
+      "clip": "idle",
+      "source": "SourceArt\\Native-Idle-Animated-v1.png",
+      "sourceSha256": "89b66556869c1ba88b87653c951f3ef1719e62527dac2a6b48f5a6b0d59526f3",
+      "output": "Idle-Animated-v1.png",
+      "outputSha256": "baa90e503c54801fafc8d24402b4ca22b7a97ed9c6d0e0d115b16dfb9a5d33f6",
+      "uniformScale": 0.8,
+      "displayScale": 1.25,
+      "authoredSourcePoseScale": 1,
+      "fixedRoot": [
+        254.8,
+        254.8
+      ],
+      "placements": [
+        {
+          "sourceRect": [
+            0,
+            0,
+            512,
+            512
+          ],
+          "destinationOffset": [
+            50,
+            50
+          ],
+          "source": "SourceArt\\Native-Idle-Animated-v1.png",
+          "sourceSha256": "89b66556869c1ba88b87653c951f3ef1719e62527dac2a6b48f5a6b0d59526f3"
+        },
+        {
+          "sourceRect": [
+            512,
+            0,
+            1024,
+            512
+          ],
+          "destinationOffset": [
+            50,
+            50
+          ],
+          "source": "SourceArt\\Native-Idle-Animated-v1.png",
+          "sourceSha256": "89b66556869c1ba88b87653c951f3ef1719e62527dac2a6b48f5a6b0d59526f3"
+        },
+        {
+          "sourceRect": [
+            1024,
+            0,
+            1536,
+            512
+          ],
+          "destinationOffset": [
+            50,
+            50
+          ],
+          "source": "SourceArt\\Native-Idle-Animated-v1.png",
+          "sourceSha256": "89b66556869c1ba88b87653c951f3ef1719e62527dac2a6b48f5a6b0d59526f3"
+        },
+        {
+          "sourceRect": [
+            0,
+            512,
+            512,
+            1024
+          ],
+          "destinationOffset": [
+            50,
+            50
+          ],
+          "source": "SourceArt\\Native-Idle-Animated-v1.png",
+          "sourceSha256": "89b66556869c1ba88b87653c951f3ef1719e62527dac2a6b48f5a6b0d59526f3"
+        },
+        {
+          "sourceRect": [
+            512,
+            512,
+            1024,
+            1024
+          ],
+          "destinationOffset": [
+            50,
+            50
+          ],
+          "source": "SourceArt\\Native-Idle-Animated-v1.png",
+          "sourceSha256": "89b66556869c1ba88b87653c951f3ef1719e62527dac2a6b48f5a6b0d59526f3"
+        },
+        {
+          "sourceRect": [
+            1024,
+            512,
+            1536,
+            1024
+          ],
+          "destinationOffset": [
+            50,
+            50
+          ],
+          "source": "SourceArt\\Native-Idle-Animated-v1.png",
+          "sourceSha256": "89b66556869c1ba88b87653c951f3ef1719e62527dac2a6b48f5a6b0d59526f3"
+        }
+      ]
+    },
+    {
+      "clip": "running",
+      "source": "SourceArt\\Native-Running-v1.png",
+      "sourceSha256": "901bb961b101f49747179b58284080df253c56a10ad1fbda27219f0e419d311a",
+      "output": "Running-v1.png",
+      "outputSha256": "7b246992a89b59f314989eafa89f62889296372e8ee3f94a03c08d4615250d57",
+      "uniformScale": 0.8,
+      "displayScale": 1.25,
+      "authoredSourcePoseScale": 1,
+      "fixedRoot": [
+        254.8,
+        254.8
+      ],
+      "placements": [
+        {
+          "sourceRect": [
+            0,
+            0,
+            512,
+            512
+          ],
+          "destinationOffset": [
+            50,
+            50
+          ],
+          "source": "SourceArt\\Native-Running-v1.png",
+          "sourceSha256": "901bb961b101f49747179b58284080df253c56a10ad1fbda27219f0e419d311a"
+        },
+        {
+          "sourceRect": [
+            512,
+            0,
+            1024,
+            512
+          ],
+          "destinationOffset": [
+            50,
+            50
+          ],
+          "source": "SourceArt\\Native-Running-v1.png",
+          "sourceSha256": "901bb961b101f49747179b58284080df253c56a10ad1fbda27219f0e419d311a"
+        },
+        {
+          "sourceRect": [
+            1024,
+            0,
+            1536,
+            512
+          ],
+          "destinationOffset": [
+            50,
+            50
+          ],
+          "source": "SourceArt\\Native-Running-v1.png",
+          "sourceSha256": "901bb961b101f49747179b58284080df253c56a10ad1fbda27219f0e419d311a"
+        },
+        {
+          "sourceRect": [
+            0,
+            512,
+            512,
+            1024
+          ],
+          "destinationOffset": [
+            50,
+            50
+          ],
+          "source": "SourceArt\\Native-Running-v1.png",
+          "sourceSha256": "901bb961b101f49747179b58284080df253c56a10ad1fbda27219f0e419d311a"
+        },
+        {
+          "sourceRect": [
+            512,
+            512,
+            1024,
+            1024
+          ],
+          "destinationOffset": [
+            50,
+            50
+          ],
+          "source": "SourceArt\\Native-Running-v1.png",
+          "sourceSha256": "901bb961b101f49747179b58284080df253c56a10ad1fbda27219f0e419d311a"
+        },
+        {
+          "sourceRect": [
+            1024,
+            512,
+            1536,
+            1024
+          ],
+          "destinationOffset": [
+            50,
+            50
+          ],
+          "source": "SourceArt\\Native-Running-v1.png",
+          "sourceSha256": "901bb961b101f49747179b58284080df253c56a10ad1fbda27219f0e419d311a"
+        }
+      ]
+    },
+    {
+      "clip": "attack",
+      "source": "SourceArt\\Native-Attack-ArrowGrip-v7.png",
+      "sourceSha256": "73bef6a1ae46fe2614efb5cc479e46fb075b0f149239538c8fa28c739fce57cb",
+      "output": "Attack-ArrowGrip-v7.png",
+      "outputSha256": "1cb97f8a7dc5bb4e1a007d2dbff9f135a94fef7171385073198db28567f76776",
+      "uniformScale": 0.8,
+      "displayScale": 1.2,
+      "authoredSourcePoseScale": 1,
+      "fixedRoot": [
+        254.8,
+        254.8
+      ],
+      "placements": [
+        {
+          "sourceRect": [
+            0,
+            0,
+            512,
+            512
+          ],
+          "destinationOffset": [
+            50,
+            50
+          ],
+          "source": "SourceArt/Native-Attack-StyleMatched-v6.png",
+          "sourceSha256": "ea9d3399e5b9c44e10ea66a5ebc7acf8afadd51aa803e01d176f98a6a07435f7"
+        },
+        {
+          "sourceRect": [
+            512,
+            0,
+            1024,
+            512
+          ],
+          "destinationOffset": [
+            50,
+            50
+          ],
+          "source": "SourceArt\\Native-Attack-ArrowGrip-v7.png",
+          "sourceSha256": "73bef6a1ae46fe2614efb5cc479e46fb075b0f149239538c8fa28c739fce57cb"
+        },
+        {
+          "sourceRect": [
+            1024,
+            0,
+            1536,
+            512
+          ],
+          "destinationOffset": [
+            50,
+            50
+          ],
+          "source": "SourceArt\\Native-Attack-ArrowGrip-v7.png",
+          "sourceSha256": "73bef6a1ae46fe2614efb5cc479e46fb075b0f149239538c8fa28c739fce57cb"
+        },
+        {
+          "sourceRect": [
+            0,
+            512,
+            512,
+            1024
+          ],
+          "destinationOffset": [
+            50,
+            50
+          ],
+          "source": "SourceArt/Native-Attack-StyleMatched-v6.png",
+          "sourceSha256": "ea9d3399e5b9c44e10ea66a5ebc7acf8afadd51aa803e01d176f98a6a07435f7"
+        },
+        {
+          "sourceRect": [
+            512,
+            512,
+            1024,
+            1024
+          ],
+          "destinationOffset": [
+            50,
+            50
+          ],
+          "source": "SourceArt/Native-Attack-StyleMatched-v6.png",
+          "sourceSha256": "ea9d3399e5b9c44e10ea66a5ebc7acf8afadd51aa803e01d176f98a6a07435f7"
+        },
+        {
+          "sourceRect": [
+            1024,
+            512,
+            1536,
+            1024
+          ],
+          "destinationOffset": [
+            50,
+            50
+          ],
+          "source": "SourceArt/Native-Attack-StyleMatched-v6.png",
+          "sourceSha256": "ea9d3399e5b9c44e10ea66a5ebc7acf8afadd51aa803e01d176f98a6a07435f7"
+        }
+      ]
+    },
+    {
+      "clip": "hit",
+      "source": "SourceArt\\Native-Hit-v1.png",
+      "sourceSha256": "ae2354c5cd17c09affe349faa83862d8bcd842c251ee4682f709021adcd3f7f6",
+      "output": "Hit-v1.png",
+      "outputSha256": "adc00b3a1d6aefe99e3cc1f18563ead66662a3121aeb20833f927328f9ae74a0",
+      "uniformScale": 0.8,
+      "displayScale": 1.25,
+      "authoredSourcePoseScale": 1,
+      "fixedRoot": [
+        254.8,
+        254.8
+      ],
+      "placements": [
+        {
+          "sourceRect": [
+            0,
+            0,
+            512,
+            512
+          ],
+          "destinationOffset": [
+            50,
+            50
+          ],
+          "source": "SourceArt\\Native-Hit-v1.png",
+          "sourceSha256": "ae2354c5cd17c09affe349faa83862d8bcd842c251ee4682f709021adcd3f7f6"
+        },
+        {
+          "sourceRect": [
+            512,
+            0,
+            1024,
+            512
+          ],
+          "destinationOffset": [
+            50,
+            50
+          ],
+          "source": "SourceArt\\Native-Hit-v1.png",
+          "sourceSha256": "ae2354c5cd17c09affe349faa83862d8bcd842c251ee4682f709021adcd3f7f6"
+        },
+        {
+          "sourceRect": [
+            1024,
+            0,
+            1536,
+            512
+          ],
+          "destinationOffset": [
+            50,
+            50
+          ],
+          "source": "SourceArt\\Native-Hit-v1.png",
+          "sourceSha256": "ae2354c5cd17c09affe349faa83862d8bcd842c251ee4682f709021adcd3f7f6"
+        },
+        {
+          "sourceRect": [
+            0,
+            512,
+            512,
+            1024
+          ],
+          "destinationOffset": [
+            50,
+            50
+          ],
+          "source": "SourceArt\\Native-Hit-v1.png",
+          "sourceSha256": "ae2354c5cd17c09affe349faa83862d8bcd842c251ee4682f709021adcd3f7f6"
+        },
+        {
+          "sourceRect": [
+            512,
+            512,
+            1024,
+            1024
+          ],
+          "destinationOffset": [
+            50,
+            50
+          ],
+          "source": "SourceArt\\Native-Hit-v1.png",
+          "sourceSha256": "ae2354c5cd17c09affe349faa83862d8bcd842c251ee4682f709021adcd3f7f6"
+        },
+        {
+          "sourceRect": [
+            1024,
+            512,
+            1536,
+            1024
+          ],
+          "destinationOffset": [
+            50,
+            50
+          ],
+          "source": "SourceArt\\Native-Hit-v1.png",
+          "sourceSha256": "ae2354c5cd17c09affe349faa83862d8bcd842c251ee4682f709021adcd3f7f6"
+        }
+      ]
+    },
+    {
+      "clip": "charged",
+      "source": "SourceArt\\Native-Charged-Impact-v1.png",
+      "sourceSha256": "b67ab6c81ce0179199bbd92c2d369270395792671f35fc99366ce830eb944cce",
+      "output": "Charged-Impact-v1.png",
+      "outputSha256": "23bdc5a9e1766ff40c16622207cd8fb44f4f2f330d1d48f058c00982e5990c83",
+      "uniformScale": 0.8,
+      "displayScale": 1.25,
+      "authoredSourcePoseScale": 1,
+      "fixedRoot": [
+        254.8,
+        254.8
+      ],
+      "placements": [
+        {
+          "sourceRect": [
+            0,
+            0,
+            512,
+            512
+          ],
+          "destinationOffset": [
+            50,
+            50
+          ],
+          "source": "SourceArt\\Native-Charged-Impact-v1.png",
+          "sourceSha256": "b67ab6c81ce0179199bbd92c2d369270395792671f35fc99366ce830eb944cce"
+        },
+        {
+          "sourceRect": [
+            512,
+            0,
+            1024,
+            506
+          ],
+          "destinationOffset": [
+            50,
+            50
+          ],
+          "source": "SourceArt\\Native-Charged-Impact-v1.png",
+          "sourceSha256": "b67ab6c81ce0179199bbd92c2d369270395792671f35fc99366ce830eb944cce"
+        },
+        {
+          "sourceRect": [
+            1024,
+            0,
+            1536,
+            511
+          ],
+          "destinationOffset": [
+            50,
+            50
+          ],
+          "source": "SourceArt\\Native-Charged-Impact-v1.png",
+          "sourceSha256": "b67ab6c81ce0179199bbd92c2d369270395792671f35fc99366ce830eb944cce"
+        },
+        {
+          "sourceRect": [
+            0,
+            512,
+            512,
+            1024
+          ],
+          "destinationOffset": [
+            50,
+            50
+          ],
+          "source": "SourceArt\\Native-Charged-Impact-v1.png",
+          "sourceSha256": "b67ab6c81ce0179199bbd92c2d369270395792671f35fc99366ce830eb944cce"
+        },
+        {
+          "sourceRect": [
+            512,
+            506,
+            1024,
+            1024
+          ],
+          "destinationOffset": [
+            50,
+            45
+          ],
+          "source": "SourceArt\\Native-Charged-Impact-v1.png",
+          "sourceSha256": "b67ab6c81ce0179199bbd92c2d369270395792671f35fc99366ce830eb944cce"
+        },
+        {
+          "sourceRect": [
+            1024,
+            511,
+            1536,
+            1024
+          ],
+          "destinationOffset": [
+            50,
+            49
+          ],
+          "source": "SourceArt\\Native-Charged-Impact-v1.png",
+          "sourceSha256": "b67ab6c81ce0179199bbd92c2d369270395792671f35fc99366ce830eb944cce"
+        }
+      ]
+    },
+    {
+      "clip": "charge",
+      "source": "SourceArt\\Native-Charge-v1.png",
+      "sourceSha256": "24710fe6c7802ff2347ef258ca057cbe84adb043449754d8d01008d7afbed1e3",
+      "output": "Charge-v1.png",
+      "outputSha256": "555e6199f0235792cbfb1d6f8f078b5d0b63af10e69be4c0a7eb8b3dca9d5508",
+      "uniformScale": 0.8,
+      "displayScale": 1.25,
+      "authoredSourcePoseScale": 1,
+      "fixedRoot": [
+        254.8,
+        254.8
+      ],
+      "placements": [
+        {
+          "sourceRect": [
+            0,
+            0,
+            512,
+            512
+          ],
+          "destinationOffset": [
+            50,
+            50
+          ],
+          "source": "SourceArt\\Native-Charge-v1.png",
+          "sourceSha256": "24710fe6c7802ff2347ef258ca057cbe84adb043449754d8d01008d7afbed1e3"
+        },
+        {
+          "sourceRect": [
+            512,
+            0,
+            1024,
+            512
+          ],
+          "destinationOffset": [
+            50,
+            50
+          ],
+          "source": "SourceArt\\Native-Charge-v1.png",
+          "sourceSha256": "24710fe6c7802ff2347ef258ca057cbe84adb043449754d8d01008d7afbed1e3"
+        },
+        {
+          "sourceRect": [
+            1024,
+            0,
+            1536,
+            512
+          ],
+          "destinationOffset": [
+            50,
+            50
+          ],
+          "source": "SourceArt\\Native-Charge-v1.png",
+          "sourceSha256": "24710fe6c7802ff2347ef258ca057cbe84adb043449754d8d01008d7afbed1e3"
+        },
+        {
+          "sourceRect": [
+            0,
+            512,
+            512,
+            1024
+          ],
+          "destinationOffset": [
+            50,
+            50
+          ],
+          "source": "SourceArt\\Native-Charge-v1.png",
+          "sourceSha256": "24710fe6c7802ff2347ef258ca057cbe84adb043449754d8d01008d7afbed1e3"
+        },
+        {
+          "sourceRect": [
+            512,
+            512,
+            1024,
+            1024
+          ],
+          "destinationOffset": [
+            50,
+            50
+          ],
+          "source": "SourceArt\\Native-Charge-v1.png",
+          "sourceSha256": "24710fe6c7802ff2347ef258ca057cbe84adb043449754d8d01008d7afbed1e3"
+        },
+        {
+          "sourceRect": [
+            1024,
+            512,
+            1536,
+            1024
+          ],
+          "destinationOffset": [
+            50,
+            50
+          ],
+          "source": "SourceArt\\Native-Charge-v1.png",
+          "sourceSha256": "24710fe6c7802ff2347ef258ca057cbe84adb043449754d8d01008d7afbed1e3"
+        }
+      ]
+    },
+    {
+      "clip": "charge-attack",
+      "source": "SourceArt\\Native-Charge-Attack-ArrowGrip-v11.png",
+      "sourceSha256": "80934595f95baa2cdb7be7f49dbb0c742ff9a9cf71a18c908d0a9ec106552c2b",
+      "output": "Charge-Attack-ArrowGrip-v11.png",
+      "outputSha256": "faba8d50ead8486531fabca9b9bcc640280689c69d6f57c678fb56ab753f388e",
+      "uniformScale": 0.8,
+      "displayScale": 1.2,
+      "authoredSourcePoseScale": 1,
+      "fixedRoot": [
+        254.8,
+        254.8
+      ],
+      "placements": [
+        {
+          "sourceRect": [
+            0,
+            0,
+            512,
+            512
+          ],
+          "destinationOffset": [
+            50,
+            50
+          ],
+          "source": "SourceArt/Native-Charge-Attack-StyleMatched-v9.png",
+          "sourceSha256": "39399f8962c5ae67c5abed4a6f50362baa7e6e19f8fd0d39f9b7a997fdb25a3a"
+        },
+        {
+          "sourceRect": [
+            512,
+            0,
+            1024,
+            512
+          ],
+          "destinationOffset": [
+            50,
+            50
+          ],
+          "source": "SourceArt\\Native-Charge-Attack-ArrowGrip-v11.png",
+          "sourceSha256": "80934595f95baa2cdb7be7f49dbb0c742ff9a9cf71a18c908d0a9ec106552c2b"
+        },
+        {
+          "sourceRect": [
+            1024,
+            0,
+            1536,
+            512
+          ],
+          "destinationOffset": [
+            50,
+            50
+          ],
+          "source": "SourceArt\\Native-Charge-Attack-ArrowGrip-v11.png",
+          "sourceSha256": "80934595f95baa2cdb7be7f49dbb0c742ff9a9cf71a18c908d0a9ec106552c2b"
+        },
+        {
+          "sourceRect": [
+            0,
+            512,
+            512,
+            1024
+          ],
+          "destinationOffset": [
+            50,
+            50
+          ],
+          "source": "SourceArt/Native-Charge-Attack-StyleMatched-v9.png",
+          "sourceSha256": "39399f8962c5ae67c5abed4a6f50362baa7e6e19f8fd0d39f9b7a997fdb25a3a"
+        },
+        {
+          "sourceRect": [
+            512,
+            512,
+            1024,
+            1024
+          ],
+          "destinationOffset": [
+            50,
+            50
+          ],
+          "source": "SourceArt/Native-Charge-Attack-StyleMatched-v9.png",
+          "sourceSha256": "39399f8962c5ae67c5abed4a6f50362baa7e6e19f8fd0d39f9b7a997fdb25a3a"
+        },
+        {
+          "sourceRect": [
+            1024,
+            512,
+            1536,
+            1024
+          ],
+          "destinationOffset": [
+            50,
+            50
+          ],
+          "source": "SourceArt/Native-Charge-Attack-StyleMatched-v9.png",
+          "sourceSha256": "39399f8962c5ae67c5abed4a6f50362baa7e6e19f8fd0d39f9b7a997fdb25a3a"
+        }
+      ]
+    },
+    {
+      "clip": "death",
+      "source": "SourceArt\\Native-Death-Together-v1.png",
+      "sourceSha256": "15ea22ab47bfcacec75672a47f15621e8c0516c6190042c2c5463e684554d65c",
+      "output": "Death-Together-v1.png",
+      "outputSha256": "fb0497a78c85052644201abd80372ef4a5c937b7b732fd3151cb90ef66703a21",
+      "uniformScale": 0.8,
+      "displayScale": 1.25,
+      "authoredSourcePoseScale": 1,
+      "fixedRoot": [
+        254.8,
+        254.8
+      ],
+      "placements": [
+        {
+          "sourceRect": [
+            0,
+            0,
+            512,
+            512
+          ],
+          "destinationOffset": [
+            50,
+            50
+          ],
+          "source": "SourceArt\\Native-Death-Together-v1.png",
+          "sourceSha256": "15ea22ab47bfcacec75672a47f15621e8c0516c6190042c2c5463e684554d65c"
+        },
+        {
+          "sourceRect": [
+            512,
+            0,
+            1024,
+            512
+          ],
+          "destinationOffset": [
+            50,
+            50
+          ],
+          "source": "SourceArt\\Native-Death-Together-v1.png",
+          "sourceSha256": "15ea22ab47bfcacec75672a47f15621e8c0516c6190042c2c5463e684554d65c"
+        },
+        {
+          "sourceRect": [
+            1024,
+            0,
+            1536,
+            512
+          ],
+          "destinationOffset": [
+            50,
+            50
+          ],
+          "source": "SourceArt\\Native-Death-Together-v1.png",
+          "sourceSha256": "15ea22ab47bfcacec75672a47f15621e8c0516c6190042c2c5463e684554d65c"
+        },
+        {
+          "sourceRect": [
+            0,
+            512,
+            512,
+            1024
+          ],
+          "destinationOffset": [
+            50,
+            50
+          ],
+          "source": "SourceArt\\Native-Death-Together-v1.png",
+          "sourceSha256": "15ea22ab47bfcacec75672a47f15621e8c0516c6190042c2c5463e684554d65c"
+        },
+        {
+          "sourceRect": [
+            512,
+            512,
+            1024,
+            1024
+          ],
+          "destinationOffset": [
+            50,
+            50
+          ],
+          "source": "SourceArt\\Native-Death-Together-v1.png",
+          "sourceSha256": "15ea22ab47bfcacec75672a47f15621e8c0516c6190042c2c5463e684554d65c"
+        },
+        {
+          "sourceRect": [
+            1024,
+            512,
+            1536,
+            1024
+          ],
+          "destinationOffset": [
+            50,
+            50
+          ],
+          "source": "SourceArt\\Native-Death-Together-v1.png",
+          "sourceSha256": "15ea22ab47bfcacec75672a47f15621e8c0516c6190042c2c5463e684554d65c"
+        }
+      ]
+    },
+    {
+      "clip": "death-thrown",
+      "source": "SourceArt\\Native-Death-Thrown-Released-v2.png",
+      "sourceSha256": "1a9e8d4ae468439315be8ca9d5a8d2d2d0e120fbe789eaa728792f0eaa7d87cc",
+      "output": "Death-Thrown-Released-v2.png",
+      "outputSha256": "148be6b5eb135dfc7bbb0e5d63c1cb14ccf5f6b8557ac69fee3b1de81634396b",
+      "uniformScale": 0.8,
+      "displayScale": 1.25,
+      "authoredSourcePoseScale": 1,
+      "fixedRoot": [
+        254.8,
+        254.8
+      ],
+      "placements": [
+        {
+          "sourceRect": [
+            0,
+            0,
+            512,
+            509
+          ],
+          "destinationOffset": [
+            50,
+            50
+          ],
+          "source": "SourceArt\\Native-Death-Thrown-Released-v2.png",
+          "sourceSha256": "1a9e8d4ae468439315be8ca9d5a8d2d2d0e120fbe789eaa728792f0eaa7d87cc"
+        },
+        {
+          "sourceRect": [
+            512,
+            0,
+            1024,
+            509
+          ],
+          "destinationOffset": [
+            50,
+            50
+          ],
+          "source": "SourceArt\\Native-Death-Thrown-Released-v2.png",
+          "sourceSha256": "1a9e8d4ae468439315be8ca9d5a8d2d2d0e120fbe789eaa728792f0eaa7d87cc"
+        },
+        {
+          "sourceRect": [
+            1024,
+            0,
+            1536,
+            509
+          ],
+          "destinationOffset": [
+            50,
+            50
+          ],
+          "source": "SourceArt\\Native-Death-Thrown-Released-v2.png",
+          "sourceSha256": "1a9e8d4ae468439315be8ca9d5a8d2d2d0e120fbe789eaa728792f0eaa7d87cc"
+        },
+        {
+          "sourceRect": [
+            0,
+            509,
+            512,
+            1024
+          ],
+          "destinationOffset": [
+            50,
+            48
+          ],
+          "source": "SourceArt\\Native-Death-Thrown-Released-v2.png",
+          "sourceSha256": "1a9e8d4ae468439315be8ca9d5a8d2d2d0e120fbe789eaa728792f0eaa7d87cc"
+        },
+        {
+          "sourceRect": [
+            512,
+            509,
+            1024,
+            1024
+          ],
+          "destinationOffset": [
+            50,
+            48
+          ],
+          "source": "SourceArt\\Native-Death-Thrown-Released-v2.png",
+          "sourceSha256": "1a9e8d4ae468439315be8ca9d5a8d2d2d0e120fbe789eaa728792f0eaa7d87cc"
+        },
+        {
+          "sourceRect": [
+            1024,
+            509,
+            1536,
+            1024
+          ],
+          "destinationOffset": [
+            50,
+            48
+          ],
+          "source": "SourceArt\\Native-Death-Thrown-Released-v2.png",
+          "sourceSha256": "1a9e8d4ae468439315be8ca9d5a8d2d2d0e120fbe789eaa728792f0eaa7d87cc"
+        }
+      ]
+    }
+  ]
+}

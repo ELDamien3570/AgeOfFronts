@@ -1,0 +1,19 @@
+{
+  "date": "2026-10-07",
+  "size": [
+    1254,
+    1254
+  ],
+  "mode": "RGBA",
+  "visibleBounds": [
+    251,
+    33,
+    890,
+    1138
+  ],
+  "edgeGuardAlphaMax": 0,
+  "nativeSourcePreserved": true,
+  "sha256": "79705927ee6ca06a6dd80a5cb908772f7467536eeb07ab1e7a8e431d70bafb62",
+  "userApproval": "Pending idle review",
+  "runtimeIntegration": false
+}

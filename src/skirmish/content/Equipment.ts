@@ -22,11 +22,12 @@ for (const [index, age] of AGES.entries()) {
     "steel",
     "iron",
     "steel",
+    "steel",
   ][index];
   for (const kind of [
     "troop",
     "siege",
-    ...(age === "Modern" ? ["vehicle" as const] : []),
+    ...(index >= 6 ? ["vehicle" as const] : []),
   ] as const) {
     if (kind === "troop" && !index) continue;
     const item = equipmentItem(age, kind);
@@ -45,7 +46,7 @@ for (const [index, age] of AGES.entries()) {
           ? "siege-workshop"
           : kind === "vehicle"
             ? "depot"
-            : index === 6
+            : index >= 6
               ? "arms-factory"
               : index === 5
                 ? "armory"

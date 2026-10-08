@@ -1,0 +1,13 @@
+{
+  "mode": "builtin-imagegen",
+  "file": "ChargeAttack-BronzeMace-Compact-v5.png",
+  "prompt": "Use case precise-object-edit. Correct only the WINDUP ARM poses in this 6-frame bronze mace CHARGE ATTACK sprite sheet. Keep sameexactwarrior, stylizedpainteddesign, STRICTVERTICAL NADIRorthographiccamera, circularhelmetcrown, maceRIGHT hand screenLEFT and shieldLEFT hand screenRIGHT. Keep1536x1024RGBA sheet3columns2rows sixchronological512cells. All6figuresfitowncell with32pxtransparentguard; fixedcamera fixedbodyscale.\n\nUsercorrection: reaches MUCH TOO FARBACK. In frames0,1,2 (entireTOPROW) lower rightmacehandandmacehead into a COMPACT SHOULDER-HEIGHT COCK beside screenLEFTshoulder. ELBOW bends90to110degrees and staysclose BESIDEshoulder, upperarmwithin30degrees oftorso, NOTraisedbackwards overhead. Rightforearm foldsforward towards shoulder so hand is justLEFT ofhelmet atapproxlocal140,240; macehead near local105,220 besideleftshoulder notfarbehindhead orhighuptowardtopborder. Woodenhaftsamereferencelength may pointdiagonallydownleft fromgrip withmacehead close tobody. This is a tight boxer-like loadedrightarm readyto swing withhiprotation, never stretchedbehindbody. Retain visiblewholebodycoil throughthreeprogressivewindupframes: slightcoil,moderatecoil,maximumshoulder/hipcoil, butcompactbentarm inallthree. Preserve lowerrowframes3,4,5 forwardstrike/followthrough/recoveryascloselyaspossible. Preserve roundedlobedbronze ballmacewithwoodhaftEVERYframe. Noaxe,nohammer,nohandednessswap,nodetachedlimbs. Samebronzehelmet,creamfur,pauldrons,redleather,bootsandroundshield. Overheadanatomy,cameraexactlyvertical,nofacefrontvisible,no photorealism. Transparentbackgroundalpha0 nohalo,redfringe,shadoweffects,grid,labels.",
+  "referenceImage": "ChargeAttack-BronzeMace-Nadir-v4.png",
+  "generatedSource": "exec-923d5956-ba56-4162-b962-9f4b573c3304.png",
+  "layout": {
+    "columns": 3,
+    "rows": 2,
+    "frameWidth": 512,
+    "frameHeight": 512
+  }
+}

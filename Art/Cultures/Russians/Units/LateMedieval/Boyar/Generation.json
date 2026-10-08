@@ -1,0 +1,181 @@
+{
+  "date": "2026-10-07",
+  "mode": "built-in-imagegen",
+  "userApproval": "Idle-v7 approved; nine animations pending review.",
+  "selectedIdle": "Idle-v7.png",
+  "referenceCopy": "SourceArt/User-Equipment-Reference.png",
+  "records": [
+    {
+      "date": "2026-10-07",
+      "mode": "built-in-imagegen",
+      "prompt": "Create one single directly TOP-DOWN idle game sprite of a Russian LATE MEDIEVAL BOYAR mounted heavy cavalryman. Image1 is the user's equipment reference: match its tall pointed steel conical helmet with chainmail aventail, mail sleeves and plate/lamellar torso, articulated steel leg armor, large ROUND plain steel shield with central boss and modest rivets, and heavily armored dark horse with wide silver steel strips linked by mail and burgundy cloth under armor. Image2 defines ONLY the existing game sprite style, overhead camera, horse proportions and horse-nose-down composition; do NOT copy its gold/brass armor bands, spear or helmet plume. Camera directly overhead orthographic, top crown of conical helmet visible, face hidden, strongly foreshortened torso. Horse muzzle toward BOTTOM, tail toward TOP, broad plated back and neck visible. Dark brown/black horse with black mane and tail, fitted silver steel chamfron, neck armor, mail-and-strip steel side skirts and rump barding like photo; burgundy lining visible at joints. Rider wears sober bright iron/steel and mail with restrained dark leather straps and burgundy cloth, no decorative gold bands, no fur collar or plume. RIGHT hand screen-left holds a wooden-haft steel battle axe at REST alongside right shoulder, relaxed grip, axe head toward top-left, not thrusting or swinging. Axe has clearly recognizable broad curved bearded steel blade and a short rear spike matching the axe in photo, not a spear or sickle. LEFT arm screen-right carries the ROUND STEEL shield resting beside torso, moderately tilted so its boss and circular outline readable from above; left hand also gathers reins under shield grip. Complete horse, rider, axe and shield clearly readable, all centered uncropped with generous transparent margins. Same smooth painterly finish as image2, controlled metal texture, no gritty noise or thick black outlines. One idle frame on transparent RGBA1024x1536portraitcanvas, no grid, labels, background, glow, vignette, ground shadows or watermark.",
+      "generatedSource": "C:\\Users\\Damien\\.codex\\generated_images\\01a11641-9e1b-7c81-be76-c9edd53ef182\\exec-6760fab0-2b15-4c74-b026-9f58e6f419f9.png",
+      "references": [
+        "C:/Users/Damien/AppData/Local/Temp/codex-clipboard-b459ff98-6cb5-4265-92e5-daaa465d0141.png",
+        "C:/Users/Damien/Documents/GitHub/AgeOfFronts/AgeOfFronts/Art/Cultures/Russians/Units/EarlyMedieval/Druzhina/Idle-v3.png"
+      ]
+    },
+    {
+      "date": "2026-10-07",
+      "mode": "built-in-imagegen",
+      "prompt": "Revise this Boyar idle sprite in TWO specific ways. FIRST change camera to strict90-degree directly VERTICAL OVERHEAD orthographic view, looking straight down. Show top of helmet crown as a circular steel cone seen from above with central tip; NO visible face, NO frontal mail face opening, NO tall triangular helmet side profile. Rider torso and legs strongly foreshortened; mostly top of shoulders, helmet crown, arms and thighs visible. Horse viewed from above with back/neck/chamfron top surfaces, not front face or side chest. SECOND make horse about25% SMALLER relative to rider in both length and width, while keeping rider/shield/axe approximately their current size: a compact mount, shorter neck and rump, not an enormous elongated horse. Rider should dominate silhouette more. Shorten tail proportionately. Preserve EXACT equipment from this sprite: silver steel strip-and-mail horse barding and chamfron, burgundy undercloth, rider chainmail and plate, round steel boss shield in LEFT hand(screen-right), recognizable broad bearded steel axe with rear spike resting in RIGHT hand(screen-left). Keep same smooth painted finish and sober silver steel palette, no gold bands. Complete centered mounted unit facing bottom, all gear visible uncropped on transparent1024x1536canvas. Large clear transparent margins, no glow background shadow or text. One idle pose.",
+      "generatedSource": "C:\\Users\\Damien\\.codex\\generated_images\\01a11641-9e1b-7c81-be76-c9edd53ef182\\exec-a1124ecb-460f-4de5-9543-adf8e18f748f.png",
+      "references": [
+        "C:\\Users\\Damien\\.codex\\generated_images\\01a11641-9e1b-7c81-be76-c9edd53ef182\\exec-6760fab0-2b15-4c74-b026-9f58e6f419f9.png"
+      ],
+      "revisionReason": "User requested more top-down view and smaller horse."
+    },
+    {
+      "date": "2026-10-07",
+      "mode": "built-in-imagegen",
+      "prompt": "Image1 is the Boyar design to correct. Image2 is the APPROVED game camera to match. Redraw image1 Boyar from the SAME overhead camera and foreshortened rider pose as image2. Equipment/colors MUST remain image1's silver steel strip-and-mail armor, burgundy lining, broad axe right hand and round steel boss shield left arm, no bow/quiver and no gold/bronze accents. Important geometric corrections: the helmet is viewed from DIRECTLY ABOVE so its outline is nearly CIRCULAR and cone apex is at CENTER of crown, NOT a tall triangular point sticking toward top of image. Hide the entire face and frontal mail face curtain under helmet. Show broad top surfaces of shoulders and helmet, greatly compress rider's frontal chest vertically to at most one short strip below shoulders. Compress visible shins so boots are small near stirrups, not long frontal legs. Shield held tilted upward with near-circular readable face, not tall vertical ellipse. Keep the SMALLER COMPACT horse proportions from image1: horse about25% smaller relative to rider than original design, no return to huge mount, short tail and compact neck/rump. Horse nose down, rider upright resting axe with relaxed grip. Smooth painted style, controlled texture, complete centered sprite on1024x1536 transparentcanvas. Transparent background with no halo/groundshadow/text. Only one overhead idle sprite.",
+      "generatedSource": "C:\\Users\\Damien\\.codex\\generated_images\\01a11641-9e1b-7c81-be76-c9edd53ef182\\exec-5a7a1df4-bf5f-4894-bdff-b0abe10aae95.png",
+      "references": [
+        "C:\\Users\\Damien\\.codex\\generated_images\\01a11641-9e1b-7c81-be76-c9edd53ef182\\exec-a1124ecb-460f-4de5-9543-adf8e18f748f.png",
+        "C:/Users/Damien/Documents/GitHub/AgeOfFronts/AgeOfFronts/Art/Cultures/Russians/Units/LateMedieval/HorseArcher/Idle-v2.png"
+      ],
+      "revisionReason": "Correct remaining oblique helmet/chest view while retaining compact horse."
+    },
+    {
+      "date": "2026-10-07",
+      "mode": "built-in-imagegen",
+      "prompt": "EDIT IMAGE1 into a Boyar. Keep image1's EXACT directly overhead camera and foreshortened anatomy. Image2 supplies equipment ONLY, not its oblique camera. Replace image1's helmet/furcollar/clothing/bow/quiver with image2's plain silver steel Boyar helmet and mail aventail, steel plateandmailarmor and burgundycloth. Helmet fromabove MUST be a ROUND crown with cone apex visible in CENTER of the roundshape, like looking straightdown at a cone: no triangular sideprofile and no face/mailmask below. Replace bow with round plain steel boss shield on LEFT arm screenright, add relaxed right-hand woodenhaftbeardedaxe screenleft with broadcurvedsteelblade andshortrearspike fromimage2. Replacegoldtrimhorsearmor withimage2's silverstripmailbarding and steelchamfron burgundyundercloth. Removequiverandarrows. MakeHORSE25%smaller relative to rider than image1: shortenarmoredneckandrumpandtailyetretainnaturalhorseanatomy. Keep rider's largereadable overheadhelmet shoulders hands shield axe with smallforeshortenedboots. Strict90degreeoverhead, riderleaningmodestlyforwardlookingaheadsohelmetcrownhideschest, nosebottomtailtop. Smoothpaintedgamestyle matchingimage1. Transparent1024x1536 singleidle completeuncropped, clear margins, nohalo shadowbackgroundtext.",
+      "generatedSource": "C:\\Users\\Damien\\.codex\\generated_images\\01a11641-9e1b-7c81-be76-c9edd53ef182\\exec-0b5157c1-7f6e-4827-be05-af8b8cbbf983.png",
+      "references": [
+        "C:/Users/Damien/Documents/GitHub/AgeOfFronts/AgeOfFronts/Art/Cultures/Russians/Units/LateMedieval/HorseArcher/Idle-v2.png",
+        "C:\\Users\\Damien\\.codex\\generated_images\\01a11641-9e1b-7c81-be76-c9edd53ef182\\exec-5a7a1df4-bf5f-4894-bdff-b0abe10aae95.png"
+      ],
+      "revisionReason": "Use approved overhead camera as primary base for Boyar equipment and compact horse."
+    },
+    {
+      "date": "2026-10-07",
+      "mode": "built-in-imagegen",
+      "prompt": "Edit ONLY the rider's RIGHT arm/hand and axe position in this Boyar idle sprite. Have him rest the axe comfortably OVER HIS RIGHT SHOULDER (screen-left). Relaxed bent right elbow, right hand loosely holding the lower wooden haft near chest, axe haft lies diagonally back and makes clear physical contact with the TOP of right shoulder plate; broad steel axe head sits BEHIND and just above that shoulder, away from helmet and horse. This is a casual shoulder-carry idle, not raised attack or stiff upright pole grip. Keep same axe design: wooden haft, broad curved bearded steel blade, short rear spike, same material finish. Preserve everything else exactly: existing overhead camera, helmet, mail and steel plate, burgundy cloth, round steel shield on left arm(screen-right), left hand and reins, compact horse proportions and all horse barding, pose and colors. Do not enlarge horse or change camera. Whole centered uncropped sprite on1024x1536 transparent RGBA canvas. No background halo shadow text or watermark.",
+      "generatedSource": "C:\\Users\\Damien\\.codex\\generated_images\\01a11641-9e1b-7c81-be76-c9edd53ef182\\exec-90eef827-52e3-4adb-9ea3-eff48fcc009d.png",
+      "references": [
+        "C:/Users/Damien/Documents/GitHub/AgeOfFronts/AgeOfFronts/Art/Cultures/Russians/Units/LateMedieval/Boyar/Idle-v4.png"
+      ],
+      "revisionReason": "User requested relaxed axe resting on right shoulder."
+    },
+    {
+      "date": "2026-10-07",
+      "mode": "built-in-imagegen",
+      "prompt": "Create a fresh single idle game sprite of a Russian Late Medieval Boyar heavy cavalry rider. First reference is EQUIPMENT inspiration only; second reference supplies overhead camera and natural horse anatomy only. Start from scratch. Transparent background. One centered complete horse and rider facing screen bottom, directly overhead with strong foreshortening, helmet crown prominent, face hidden. Compact realistically proportioned dark bay horse smaller relative to rider, clearly distinct rump at top, short black tail, saddle at middle, narrowing neck and paired ears then head/muzzle at bottom, correctly placed horse legs. Do not merge the rump into the rider shoulders. Horse wears fitted DARK CHARCOAL BLACKENED STEEL strip-and-mail barding, restrained gray highlights, dark leather straps, subtle burgundy lining, and charcoal chamfron. Keep the entire horse armor decidedly dark. Rider wears distinctly brighter pale steel pointed helmet and mail aventail, mail sleeves, steel plate/lamellar torso and articulated leg armor inspired by museum reference. No gold, plume or fur collar. Left arm SCREEN RIGHT holds round bright steel shield with boss. Right hand SCREEN LEFT holds wooden axe haft in relaxed bent elbow pose, broad steel bearded battle axe resting naturally on right shoulder, axe head behind/above shoulder, not thrusting. Relaxed stationary mounted idle, reins gathered. Clear dark horse versus light rider value separation with smooth polished hand-painted game art matching second reference; no gritty noise, glows, heavy black outlines, labels, scenery or ground shadow. Full sprite fits with generous transparent margins. Single portrait idle frame.",
+      "generatedSource": "C:\\Users\\Damien\\.codex\\generated_images\\01a11641-9e1b-7c81-be76-c9edd53ef182\\exec-fa1d6ee5-5aba-45e5-91b2-f8dd8335f776.png",
+      "references": [
+        "C:/Users/Damien/Documents/GitHub/AgeOfFronts/AgeOfFronts/Art/Cultures/Russians/Units/LateMedieval/Boyar/SourceArt/User-Equipment-Reference.png",
+        "C:/Users/Damien/Documents/GitHub/AgeOfFronts/AgeOfFronts/Art/Cultures/Russians/Units/EarlyMedieval/HorseArcher/Idle-v3.png"
+      ],
+      "revisionReason": "Fresh design requested to repair horse anatomy and separate dark horse armor from bright rider armor."
+    },
+    {
+      "date": "2026-10-07",
+      "mode": "built-in-imagegen",
+      "prompt": "Edit this approved Boyar idle sprite ONLY to change camera to much more directly TOP DOWN, near vertical overhead orthographic view. Preserve exact character design, charcoal horse barding, bright steel rider armor, burgundy lining, compact horse proportions, axe resting on rider right shoulder screen-left, round steel shield on left arm screen-right, relaxed idle pose, smooth detailed painted style and palette. Horse faces screen bottom with tail at top. View helmet from ABOVE: round crown and central pointed apex rather than tall frontal triangular cone; no face opening visible. Strongly foreshorten torso and upper legs; see shoulder tops, helmet crown, horse back and neck tops. Horse muzzle foreshortened from above, not front portrait. Redraw perspective anatomically rather than squash or rotate the image. Retain separate natural rump, saddle, neck, paired ears/head and legs. Keep whole horse/rider within transparent margins. True transparent background, no glow or ground shadow. One single idle frame, no additional poses, labels or scenery.",
+      "generatedSource": "C:\\Users\\Damien\\.codex\\generated_images\\01a11641-9e1b-7c81-be76-c9edd53ef182\\exec-cfbe4fd0-bb0f-4d51-b286-bc8d008b5902.png",
+      "references": [
+        "C:/Users/Damien/Documents/GitHub/AgeOfFronts/AgeOfFronts/Art/Cultures/Russians/Units/LateMedieval/Boyar/Idle-v6.png"
+      ],
+      "revisionReason": "User approved fresh v6 design and requested a steeper top-down camera only."
+    },
+    {
+      "date": "2026-10-07",
+      "mode": "built-in-imagegen",
+      "file": "idle-v1.png",
+      "prompt": "Create a 1536x1024 TRANSPARENT sprite atlas, precisely 3 columns by 2 rows, SIX consecutive animation frames read left-to-right top row then bottom row. Each pose wholly isolated within its 512x512 cell, with at least 50 pixels transparent margin on every cell edge. Entire complete mounted unit at consistent SMALL scale about 360 pixels tall per cell, centered on SAME saddle/root location. No frame borders, numbers, text, glow or background shadows. Reference image is the APPROVED Boyar identity: preserve near-vertical top-down camera, screen-bottom facing, bright steel rider with mail and plate, dark charcoal blackened horse armor, burgundy lining, round steel shield in LEFT arm screen-right, broad bearded steel battle axe with wooden haft in RIGHT hand screen-left. Axe normally rests on right shoulder. Preserve compact horse structure, clear rump/tail at top, saddle center and horse neck/head at bottom, rider and horse separate. Match colors, lighting and smooth finish exactly with no style drift or excessive outlines. Motion: Very quiet six-frame breathing loop: nearly fixed horse head, saddle, rider torso and feet. Only subtle breathing, small ear flick, minimal tail change; no walking or swaying.",
+      "generatedSource": "C:\\Users\\Damien\\.codex\\generated_images\\01a11641-9e1b-7c81-be76-c9edd53ef182\\exec-d7cc9e15-349f-4697-8399-702dd2f12d8c.png",
+      "references": [
+        "C:/Users/Damien/Documents/GitHub/AgeOfFronts/AgeOfFronts/Art/Cultures/Russians/Units/LateMedieval/Boyar/Idle-v7.png"
+      ],
+      "nativeCopy": "SourceArt\\Native-idle-v1.png"
+    },
+    {
+      "date": "2026-10-07",
+      "mode": "built-in-imagegen",
+      "file": "walk-v1.png",
+      "prompt": "Create a 1536x1024 TRANSPARENT sprite atlas, precisely 3 columns by 2 rows, SIX consecutive animation frames read left-to-right top row then bottom row. Each pose wholly isolated within its 512x512 cell, with at least 50 pixels transparent margin on every cell edge. Entire complete mounted unit at consistent SMALL scale about 360 pixels tall per cell, centered on SAME saddle/root location. No frame borders, numbers, text, glow or background shadows. Reference image is the APPROVED Boyar identity: preserve near-vertical top-down camera, screen-bottom facing, bright steel rider with mail and plate, dark charcoal blackened horse armor, burgundy lining, round steel shield in LEFT arm screen-right, broad bearded steel battle axe with wooden haft in RIGHT hand screen-left. Axe normally rests on right shoulder. Preserve compact horse structure, clear rump/tail at top, saddle center and horse neck/head at bottom, rider and horse separate. Match colors, lighting and smooth finish exactly with no style drift or excessive outlines. Motion: Six consecutive phases of a natural four-beat horse walk in place. Each leg articulates correctly with alternating hoof lift and placement. Fixed saddle horizontal position; almost no lateral sway. Rider maintains shoulder-resting axe.",
+      "generatedSource": "C:\\Users\\Damien\\.codex\\generated_images\\01a11641-9e1b-7c81-be76-c9edd53ef182\\exec-8626a568-dc9e-4901-8fda-c53b1b264d4f.png",
+      "references": [
+        "C:/Users/Damien/Documents/GitHub/AgeOfFronts/AgeOfFronts/Art/Cultures/Russians/Units/LateMedieval/Boyar/Idle-v7.png"
+      ],
+      "nativeCopy": "SourceArt\\Native-walk-v1.png"
+    },
+    {
+      "date": "2026-10-07",
+      "mode": "built-in-imagegen",
+      "file": "charge-v1.png",
+      "prompt": "Create a 1536x1024 TRANSPARENT sprite atlas, precisely 3 columns by 2 rows, SIX consecutive animation frames read left-to-right top row then bottom row. Each pose wholly isolated within its 512x512 cell, with at least 50 pixels transparent margin on every cell edge. Entire complete mounted unit at consistent SMALL scale about 360 pixels tall per cell, centered on SAME saddle/root location. No frame borders, numbers, text, glow or background shadows. Reference image is the APPROVED Boyar identity: preserve near-vertical top-down camera, screen-bottom facing, bright steel rider with mail and plate, dark charcoal blackened horse armor, burgundy lining, round steel shield in LEFT arm screen-right, broad bearded steel battle axe with wooden haft in RIGHT hand screen-left. Axe normally rests on right shoulder. Preserve compact horse structure, clear rump/tail at top, saddle center and horse neck/head at bottom, rider and horse separate. Match colors, lighting and smooth finish exactly with no style drift or excessive outlines. Motion: Six consecutive phases of natural horse gallop in place: hind propulsion, gathered legs, suspension, foreleg reach and landing, recovery. Anatomical hinged legs, no paddling or sideways foot twists. Fixed saddle horizontal position, modest vertical bob, no lateral drift. Rider holds axe ready near shoulder.",
+      "generatedSource": "C:\\Users\\Damien\\.codex\\generated_images\\01a11641-9e1b-7c81-be76-c9edd53ef182\\exec-9f702134-de5f-4ad9-974e-6dc3fa68fbb6.png",
+      "references": [
+        "C:/Users/Damien/Documents/GitHub/AgeOfFronts/AgeOfFronts/Art/Cultures/Russians/Units/LateMedieval/Boyar/Idle-v7.png"
+      ],
+      "nativeCopy": "SourceArt\\Native-charge-v1.png"
+    },
+    {
+      "date": "2026-10-07",
+      "mode": "built-in-imagegen",
+      "file": "attack-v1.png",
+      "prompt": "Create a 1536x1024 TRANSPARENT sprite atlas, precisely 3 columns by 2 rows, SIX consecutive animation frames read left-to-right top row then bottom row. Each pose wholly isolated within its 512x512 cell, with at least 50 pixels transparent margin on every cell edge. Entire complete mounted unit at consistent SMALL scale about 360 pixels tall per cell, centered on SAME saddle/root location. No frame borders, numbers, text, glow or background shadows. Reference image is the APPROVED Boyar identity: preserve near-vertical top-down camera, screen-bottom facing, bright steel rider with mail and plate, dark charcoal blackened horse armor, burgundy lining, round steel shield in LEFT arm screen-right, broad bearded steel battle axe with wooden haft in RIGHT hand screen-left. Axe normally rests on right shoulder. Preserve compact horse structure, clear rump/tail at top, saddle center and horse neck/head at bottom, rider and horse separate. Match colors, lighting and smooth finish exactly with no style drift or excessive outlines. Motion: Six sequential poses for one mounted AXE attack facing forward screen-bottom: shoulder-rest idle; lift axe above right shoulder; begin forward downward chop; full impact with broad axe blade forward beside horse neck on screen-left; withdraw; return axe to shoulder. Same broad axe shape and short wooden haft all frames, never spear or sickle. Shield remains left.",
+      "generatedSource": "C:\\Users\\Damien\\.codex\\generated_images\\01a11641-9e1b-7c81-be76-c9edd53ef182\\exec-aad906db-1334-423b-b623-547bb6b62d54.png",
+      "references": [
+        "C:/Users/Damien/Documents/GitHub/AgeOfFronts/AgeOfFronts/Art/Cultures/Russians/Units/LateMedieval/Boyar/Idle-v7.png"
+      ],
+      "nativeCopy": "SourceArt\\Native-attack-v1.png"
+    },
+    {
+      "date": "2026-10-07",
+      "mode": "built-in-imagegen",
+      "file": "charge-attack-v1.png",
+      "prompt": "Create a 1536x1024 TRANSPARENT sprite atlas, precisely 3 columns by 2 rows, SIX consecutive animation frames read left-to-right top row then bottom row. Each pose wholly isolated within its 512x512 cell, with at least 50 pixels transparent margin on every cell edge. Entire complete mounted unit at consistent SMALL scale about 360 pixels tall per cell, centered on SAME saddle/root location. No frame borders, numbers, text, glow or background shadows. Reference image is the APPROVED Boyar identity: preserve near-vertical top-down camera, screen-bottom facing, bright steel rider with mail and plate, dark charcoal blackened horse armor, burgundy lining, round steel shield in LEFT arm screen-right, broad bearded steel battle axe with wooden haft in RIGHT hand screen-left. Axe normally rests on right shoulder. Preserve compact horse structure, clear rump/tail at top, saddle center and horse neck/head at bottom, rider and horse separate. Match colors, lighting and smooth finish exactly with no style drift or excessive outlines. Motion: Six sequential poses for heavy forward mounted axe charge strike: brace while advancing; draw axe high; powerful forward downward chop on screen-left toward bottom; follow through beside horse head without hitting horse; retract; return to ready. Horse steady with modest gallop articulation. Preserve broad bearded blade, right hand grip, shield left.",
+      "generatedSource": "C:\\Users\\Damien\\.codex\\generated_images\\01a11641-9e1b-7c81-be76-c9edd53ef182\\exec-046c725c-13ac-4d8b-9489-45d76cd99bdf.png",
+      "references": [
+        "C:/Users/Damien/Documents/GitHub/AgeOfFronts/AgeOfFronts/Art/Cultures/Russians/Units/LateMedieval/Boyar/Idle-v7.png"
+      ],
+      "nativeCopy": "SourceArt\\Native-charge-attack-v1.png"
+    },
+    {
+      "date": "2026-10-07",
+      "mode": "built-in-imagegen",
+      "file": "hit-v1.png",
+      "prompt": "Create a 1536x1024 TRANSPARENT sprite atlas, precisely 3 columns by 2 rows, SIX consecutive animation frames read left-to-right top row then bottom row. Each pose wholly isolated within its 512x512 cell, with at least 50 pixels transparent margin on every cell edge. Entire complete mounted unit at consistent SMALL scale about 360 pixels tall per cell, centered on SAME saddle/root location. No frame borders, numbers, text, glow or background shadows. Reference image is the APPROVED Boyar identity: preserve near-vertical top-down camera, screen-bottom facing, bright steel rider with mail and plate, dark charcoal blackened horse armor, burgundy lining, round steel shield in LEFT arm screen-right, broad bearded steel battle axe with wooden haft in RIGHT hand screen-left. Axe normally rests on right shoulder. Preserve compact horse structure, clear rump/tail at top, saddle center and horse neck/head at bottom, rider and horse separate. Match colors, lighting and smooth finish exactly with no style drift or excessive outlines. Motion: Six sequential poses for small hit reaction: idle; slight rider recoil; shield pulls inward; horse briefly flinches; recover; shoulder-rest idle. No injury overlays. Small controlled motion.",
+      "generatedSource": "C:\\Users\\Damien\\.codex\\generated_images\\01a11641-9e1b-7c81-be76-c9edd53ef182\\exec-9bab9a5f-6a5e-44d4-ab46-cdaea96ed2f2.png",
+      "references": [
+        "C:/Users/Damien/Documents/GitHub/AgeOfFronts/AgeOfFronts/Art/Cultures/Russians/Units/LateMedieval/Boyar/Idle-v7.png"
+      ],
+      "nativeCopy": "SourceArt\\Native-hit-v1.png"
+    },
+    {
+      "date": "2026-10-07",
+      "mode": "built-in-imagegen",
+      "file": "charged-impact-v1.png",
+      "prompt": "Create a 1536x1024 TRANSPARENT sprite atlas, precisely 3 columns by 2 rows, SIX consecutive animation frames read left-to-right top row then bottom row. Each pose wholly isolated within its 512x512 cell, with at least 50 pixels transparent margin on every cell edge. Entire complete mounted unit at consistent SMALL scale about 360 pixels tall per cell, centered on SAME saddle/root location. No frame borders, numbers, text, glow or background shadows. Reference image is the APPROVED Boyar identity: preserve near-vertical top-down camera, screen-bottom facing, bright steel rider with mail and plate, dark charcoal blackened horse armor, burgundy lining, round steel shield in LEFT arm screen-right, broad bearded steel battle axe with wooden haft in RIGHT hand screen-left. Axe normally rests on right shoulder. Preserve compact horse structure, clear rump/tail at top, saddle center and horse neck/head at bottom, rider and horse separate. Match colors, lighting and smooth finish exactly with no style drift or excessive outlines. Motion: Six sequential poses for distinct powerful charge impact: idle; rider recoils rearward and shield braces; horse front knees buckle; rider and horse stagger; horse regains footing; upright shoulder-rest recovery. Remain coherent and facing bottom, no flipping.",
+      "generatedSource": "C:\\Users\\Damien\\.codex\\generated_images\\01a11641-9e1b-7c81-be76-c9edd53ef182\\exec-640871b8-7fc9-458b-b9c9-b8a03dce9798.png",
+      "references": [
+        "C:/Users/Damien/Documents/GitHub/AgeOfFronts/AgeOfFronts/Art/Cultures/Russians/Units/LateMedieval/Boyar/Idle-v7.png"
+      ],
+      "nativeCopy": "SourceArt\\Native-charged-impact-v1.png"
+    },
+    {
+      "date": "2026-10-07",
+      "mode": "built-in-imagegen",
+      "file": "death-v1.png",
+      "prompt": "Create a 1536x1024 TRANSPARENT sprite atlas, precisely 3 columns by 2 rows, SIX consecutive animation frames read left-to-right top row then bottom row. Each pose wholly isolated within its 512x512 cell, with at least 50 pixels transparent margin on every cell edge. Entire complete mounted unit at consistent SMALL scale about 360 pixels tall per cell, centered on SAME saddle/root location. No frame borders, numbers, text, glow or background shadows. Reference image is the APPROVED Boyar identity: preserve near-vertical top-down camera, screen-bottom facing, bright steel rider with mail and plate, dark charcoal blackened horse armor, burgundy lining, round steel shield in LEFT arm screen-right, broad bearded steel battle axe with wooden haft in RIGHT hand screen-left. Axe normally rests on right shoulder. Preserve compact horse structure, clear rump/tail at top, saddle center and horse neck/head at bottom, rider and horse separate. Match colors, lighting and smooth finish exactly with no style drift or excessive outlines. Motion: Six sequential poses of horse AND rider falling together: mounted upright; horse knees buckle; mount sinks and begins rolling screen-left; horse and rider collapse to left; both on ground; settled dead horse and rider on their side. Real articulated fall, never merely shrink or spin upright pose. Last two poses remain same orientation, no inversion. Preserve all equipment.",
+      "generatedSource": "C:\\Users\\Damien\\.codex\\generated_images\\01a11641-9e1b-7c81-be76-c9edd53ef182\\exec-5557bb2d-9c3c-4baf-82b6-4aeac3093e1f.png",
+      "references": [
+        "C:/Users/Damien/Documents/GitHub/AgeOfFronts/AgeOfFronts/Art/Cultures/Russians/Units/LateMedieval/Boyar/Idle-v7.png"
+      ],
+      "nativeCopy": "SourceArt\\Native-death-v1.png"
+    },
+    {
+      "date": "2026-10-07",
+      "mode": "built-in-imagegen",
+      "file": "death-thrown-v1.png",
+      "prompt": "Create a 1536x1024 TRANSPARENT sprite atlas, precisely 3 columns by 2 rows, SIX consecutive animation frames read left-to-right top row then bottom row. Each pose wholly isolated within its 512x512 cell, with at least 50 pixels transparent margin on every cell edge. Entire complete mounted unit at consistent SMALL scale about 360 pixels tall per cell, centered on SAME saddle/root location. No frame borders, numbers, text, glow or background shadows. Reference image is the APPROVED Boyar identity: preserve near-vertical top-down camera, screen-bottom facing, bright steel rider with mail and plate, dark charcoal blackened horse armor, burgundy lining, round steel shield in LEFT arm screen-right, broad bearded steel battle axe with wooden haft in RIGHT hand screen-left. Axe normally rests on right shoulder. Preserve compact horse structure, clear rump/tail at top, saddle center and horse neck/head at bottom, rider and horse separate. Match colors, lighting and smooth finish exactly with no style drift or excessive outlines. Motion: Six sequential poses of distinct cavalry death: mounted upright; horse stumbles; rider is thrown from saddle toward screen-right; rider lands alongside while horse collapses screen-left; both lie on ground separated; settled dead rider and horse. Do not duplicate bodies or leave floating saddle rider. Last two poses same orientation without flipping.",
+      "generatedSource": "C:\\Users\\Damien\\.codex\\generated_images\\01a11641-9e1b-7c81-be76-c9edd53ef182\\exec-572ec00f-fa08-4014-b5af-198322043d28.png",
+      "references": [
+        "C:/Users/Damien/Documents/GitHub/AgeOfFronts/AgeOfFronts/Art/Cultures/Russians/Units/LateMedieval/Boyar/Idle-v7.png"
+      ],
+      "nativeCopy": "SourceArt\\Native-death-thrown-v1.png"
+    }
+  ]
+}

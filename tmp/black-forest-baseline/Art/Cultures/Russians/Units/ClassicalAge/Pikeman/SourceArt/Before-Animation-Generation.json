@@ -1,0 +1,10 @@
+{
+  "tool": "built-in image_gen",
+  "stage": "idle-design-review",
+  "prompt": "Create ONE single idle game sprite for a Russian Classical Age Pikeman, using the attached approved Shield Warrior as the equipment and painting style reference. True directly overhead/top-down orthographic camera, facing down screen; helmet crown dominates, minimal visible face; same camera as reference. Keep the same iron ridged helmet, battered steel lamellar armor and scale shoulder guards, burgundy quilted sleeves/skirt, metal bracers and greaves, brown leather gloves and boots, restrained warm brass rivets and side sword. Change weapon to a LONG straight wooden pike with a small pointed steel spearhead aimed toward bottom of screen, securely held in right hand (screen left), gripped behind the midpoint. Pike visibly much longer than a short spear, clean unbroken shaft, fully within frame with generous transparent margins. Move the round wooden shield OFF HIS BACK and have his left arm (screen right) securely HOLD the same round wooden shield with iron rim and boss in front/alongside his torso, defensive ready pose. No shield remaining on back. Both hands anatomically attached, no floating gear. Idle standing balanced, sturdy readable silhouette. Same richly hand painted stylized game sprite, textured metal and quilted fabric, strong outlines, same proportions and identity. Single centered complete soldier, all gear fully in frame, 1536x1536 or square canvas, genuinely transparent background, no ground, no cast shadow, no text, no labels, no grid. This is an idle design for user review, not an animation atlas.",
+  "reference": "../ShieldWarrior/Idle-Axe-TopSpike-v3.png",
+  "nativeGeneratedPath": "C:\\Users\\Damien\\.codex\\generated_images\\01a0fea1-c63f-7343-92ca-6c21cc1c4296\\exec-4fc74d4d-702a-46ef-b54a-808589a18e90.png",
+  "output": "Idle-v1.png",
+  "sha256": "cb8f6764bd47d72572a5e964853b82847bad2f3c265b50468a908016553f9363",
+  "approval": "awaiting-user-review"
+}

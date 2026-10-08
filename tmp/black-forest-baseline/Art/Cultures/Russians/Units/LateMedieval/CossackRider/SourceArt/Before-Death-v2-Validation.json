@@ -1,0 +1,613 @@
+{
+  "date": "2026-10-07",
+  "clipCount": 9,
+  "frameCount": 54,
+  "approvedIdlePreserved": true,
+  "runtimeIntegration": false,
+  "userApproval": "Idle approved; animations pending review.",
+  "clips": [
+    {
+      "id": "idle",
+      "file": "idle-Registered-v1.png",
+      "distinctFrames": 6,
+      "frames": [
+        {
+          "index": 0,
+          "visibleBounds": [
+            201,
+            98,
+            314,
+            419
+          ],
+          "sha256": "743454c10259ad596e86e579423da45c6a2014210fc7e19ba67903e5a7d145bc"
+        },
+        {
+          "index": 1,
+          "visibleBounds": [
+            199,
+            98,
+            312,
+            419
+          ],
+          "sha256": "9ba43f893280c52d9532eb4ff942efdd53e2e022a9645678fea9ec03c1b40584"
+        },
+        {
+          "index": 2,
+          "visibleBounds": [
+            200,
+            97,
+            313,
+            419
+          ],
+          "sha256": "6408faa58b9df9e966f4a528c1d77b542381eb49680ca4c902de8c276b526476"
+        },
+        {
+          "index": 3,
+          "visibleBounds": [
+            200,
+            98,
+            312,
+            416
+          ],
+          "sha256": "a6e1203e54b0a11622089a5ba7a022a1f31971c2d6f31ce4962bcb30bf70f161"
+        },
+        {
+          "index": 4,
+          "visibleBounds": [
+            198,
+            98,
+            311,
+            416
+          ],
+          "sha256": "b4539d60c8bc2ba7c0090df9f89f6363f9d7ab47bf58c4393177136b40bf7f79"
+        },
+        {
+          "index": 5,
+          "visibleBounds": [
+            199,
+            98,
+            312,
+            416
+          ],
+          "sha256": "3970b15f80899cd7d0578a9cf5dd28ad6548f70cd70384696f4b5dc1817ab0f8"
+        }
+      ]
+    },
+    {
+      "id": "running",
+      "file": "walk-Registered-v1.png",
+      "distinctFrames": 6,
+      "frames": [
+        {
+          "index": 0,
+          "visibleBounds": [
+            196,
+            98,
+            315,
+            418
+          ],
+          "sha256": "62dc63d1a64c52510c217e63d1d0270ccea05fdf59180e7a89d154f455c5f4a8"
+        },
+        {
+          "index": 1,
+          "visibleBounds": [
+            197,
+            99,
+            316,
+            418
+          ],
+          "sha256": "cad4dbd0daf790a2658a9c77428d93e7ba522ea429edcc848349d7d466f939a9"
+        },
+        {
+          "index": 2,
+          "visibleBounds": [
+            197,
+            98,
+            314,
+            418
+          ],
+          "sha256": "e90a12be388077a84df84b8c0108461b164be53bb0aedfc64e0a42c5bef6289e"
+        },
+        {
+          "index": 3,
+          "visibleBounds": [
+            197,
+            97,
+            312,
+            413
+          ],
+          "sha256": "a2d42388006d770ee9ca86ecfddeb8224ec63d64385b41f68b58180b2d30daf3"
+        },
+        {
+          "index": 4,
+          "visibleBounds": [
+            196,
+            96,
+            315,
+            413
+          ],
+          "sha256": "3c428158fa8881d79b52d2deb88142e88be0430aae4d22889fa1d50852b99330"
+        },
+        {
+          "index": 5,
+          "visibleBounds": [
+            197,
+            96,
+            315,
+            413
+          ],
+          "sha256": "9973c737b110900c90bf38e34e9f4f982d6c2a82c24d768ce3c37010d35b6cdc"
+        }
+      ]
+    },
+    {
+      "id": "charge",
+      "file": "charge-Registered-v1.png",
+      "distinctFrames": 6,
+      "frames": [
+        {
+          "index": 0,
+          "visibleBounds": [
+            209,
+            103,
+            306,
+            419
+          ],
+          "sha256": "e580e98fe93bd7745f05165a4f2c1e3624694292078180901767c55fbb6018f0"
+        },
+        {
+          "index": 1,
+          "visibleBounds": [
+            207,
+            102,
+            307,
+            419
+          ],
+          "sha256": "94e7001c4df290e50054759d74489807d292b6a88e3ff8f5419136858580767f"
+        },
+        {
+          "index": 2,
+          "visibleBounds": [
+            207,
+            101,
+            307,
+            413
+          ],
+          "sha256": "af89d113127c1ce6e62b18817821c42d8a1d298795d0125b5560b9f25da6a508"
+        },
+        {
+          "index": 3,
+          "visibleBounds": [
+            208,
+            100,
+            308,
+            410
+          ],
+          "sha256": "2d124c120f18179a52d63bfd8058ac819210e42fe1b81c3376c3a67f88ea5e1e"
+        },
+        {
+          "index": 4,
+          "visibleBounds": [
+            209,
+            103,
+            305,
+            410
+          ],
+          "sha256": "d1a4c0b39e8070eae44b5573b1294a33dfc4e618902035f5e0c8e5b95fb0c4fe"
+        },
+        {
+          "index": 5,
+          "visibleBounds": [
+            208,
+            102,
+            308,
+            401
+          ],
+          "sha256": "51a7a57b086c7df02c1829002c7d4e1c90c5b406c592b5f81acee2542c3f7113"
+        }
+      ]
+    },
+    {
+      "id": "attack",
+      "file": "attack-Registered-v1.png",
+      "distinctFrames": 6,
+      "frames": [
+        {
+          "index": 0,
+          "visibleBounds": [
+            204,
+            98,
+            313,
+            415
+          ],
+          "sha256": "49a570570907743909115e60a8097be976724cb5de518bdf21c923894615f44b"
+        },
+        {
+          "index": 1,
+          "visibleBounds": [
+            184,
+            97,
+            313,
+            415
+          ],
+          "sha256": "0c661218b477f9935613c9d3dc2bee3ce446dedb623809966d6d7eea07e9cf3d"
+        },
+        {
+          "index": 2,
+          "visibleBounds": [
+            174,
+            98,
+            313,
+            415
+          ],
+          "sha256": "8c90f6c0f641d41fb452a28bce2f1b9da31347a73184425f51c1f77af7eff062"
+        },
+        {
+          "index": 3,
+          "visibleBounds": [
+            199,
+            95,
+            312,
+            415
+          ],
+          "sha256": "b382d24d3e1e22fb1c65f249eab29132a120d61bbddd8008753415a64a31f93c"
+        },
+        {
+          "index": 4,
+          "visibleBounds": [
+            192,
+            95,
+            312,
+            408
+          ],
+          "sha256": "a536f4ad078271ee8ffda80a4e9f590b669eed34bdc94d6641fe74f98e358835"
+        },
+        {
+          "index": 5,
+          "visibleBounds": [
+            203,
+            97,
+            313,
+            406
+          ],
+          "sha256": "1a69da5ca5ebc030991a93d5e5711e1401b5a6bfdc893a61219609819d679d40"
+        }
+      ]
+    },
+    {
+      "id": "charge-attack",
+      "file": "charge-attack-Registered-v1.png",
+      "distinctFrames": 6,
+      "frames": [
+        {
+          "index": 0,
+          "visibleBounds": [
+            210,
+            94,
+            309,
+            410
+          ],
+          "sha256": "3291e05f2b116a7a1421e60cd5e5108df793e5e594c3dbd4bb5af928661aa2a2"
+        },
+        {
+          "index": 1,
+          "visibleBounds": [
+            127,
+            105,
+            308,
+            410
+          ],
+          "sha256": "8b924bfc5afba198df13929afaffaacbdb68b289779c869837eec5a9dd06954b"
+        },
+        {
+          "index": 2,
+          "visibleBounds": [
+            141,
+            105,
+            310,
+            410
+          ],
+          "sha256": "07878d185173327358719f3e93198a9831259c55f995685dd5d8fd217efcb3a5"
+        },
+        {
+          "index": 3,
+          "visibleBounds": [
+            206,
+            103,
+            308,
+            416
+          ],
+          "sha256": "519527600f361cbc6a36971bf2bab0bcdcacef71248c297cd35f7ed70e4c8da1"
+        },
+        {
+          "index": 4,
+          "visibleBounds": [
+            112,
+            101,
+            308,
+            408
+          ],
+          "sha256": "322d83113332cd5ce48071bfd94796ec270610355445360a8eb34c2e52eefaec"
+        },
+        {
+          "index": 5,
+          "visibleBounds": [
+            209,
+            90,
+            310,
+            408
+          ],
+          "sha256": "22d84a4cbea04bb2ed382739ea9af2dc9f0c3bd72b6aedba7a694718b42204a5"
+        }
+      ]
+    },
+    {
+      "id": "hit",
+      "file": "hit-Registered-v1.png",
+      "distinctFrames": 6,
+      "frames": [
+        {
+          "index": 0,
+          "visibleBounds": [
+            203,
+            97,
+            311,
+            425
+          ],
+          "sha256": "5fb881f3570ef5e620a8c7ad58639a09eb3158fa1e8c06455ceb096ffe8f5396"
+        },
+        {
+          "index": 1,
+          "visibleBounds": [
+            204,
+            93,
+            316,
+            425
+          ],
+          "sha256": "afe1981e24299e0707b14d9284a2b38d1f8d35186047499de8b35428c4beab21"
+        },
+        {
+          "index": 2,
+          "visibleBounds": [
+            201,
+            105,
+            312,
+            425
+          ],
+          "sha256": "271fa2256684786a38dae2685003167e336580d43988e72af5da4c97b9a92475"
+        },
+        {
+          "index": 3,
+          "visibleBounds": [
+            200,
+            91,
+            315,
+            407
+          ],
+          "sha256": "957c2d241695457ed72da59acb445a85a6a349c5486431e410d86ba9080e9c7a"
+        },
+        {
+          "index": 4,
+          "visibleBounds": [
+            201,
+            93,
+            314,
+            412
+          ],
+          "sha256": "04912b0345f22ee32ee22a7586b55b8b4f368f16f43cd885020a0bffc2930ba9"
+        },
+        {
+          "index": 5,
+          "visibleBounds": [
+            202,
+            92,
+            313,
+            413
+          ],
+          "sha256": "b59c3764b6d5d175d19180e5808bf3f09b8541834f9c6211e825375ab2b8e856"
+        }
+      ]
+    },
+    {
+      "id": "charged",
+      "file": "charged-impact-Registered-v1.png",
+      "distinctFrames": 6,
+      "frames": [
+        {
+          "index": 0,
+          "visibleBounds": [
+            202,
+            96,
+            309,
+            418
+          ],
+          "sha256": "b3e6702e1ed2540cb1d52ddae5520a3a5b9b4fbd3e310e75809e5fab5fe09339"
+        },
+        {
+          "index": 1,
+          "visibleBounds": [
+            168,
+            97,
+            321,
+            418
+          ],
+          "sha256": "76bcad5bc01645b48a5befe65ceb0a30d1f857b61bf725e14ede6acbbf5bc1fc"
+        },
+        {
+          "index": 2,
+          "visibleBounds": [
+            178,
+            99,
+            325,
+            418
+          ],
+          "sha256": "e024ef511f4a19d796a08c2ba311cfc57032d96c5ab6c3ff2581360b569368fa"
+        },
+        {
+          "index": 3,
+          "visibleBounds": [
+            183,
+            94,
+            323,
+            411
+          ],
+          "sha256": "be7ba763b461aac22dbcd2231b3a76a40197b765634be7d6ce09c4283045f489"
+        },
+        {
+          "index": 4,
+          "visibleBounds": [
+            198,
+            95,
+            316,
+            414
+          ],
+          "sha256": "10d3cc6f538fbca6d5476bb334c461e18430f1ab5ea6bb0ccbc0fb9442f26fc1"
+        },
+        {
+          "index": 5,
+          "visibleBounds": [
+            202,
+            93,
+            312,
+            415
+          ],
+          "sha256": "956bd7ada552108894b729fa40084c92b050eacdfe50794438769a64c1c23934"
+        }
+      ]
+    },
+    {
+      "id": "death",
+      "file": "death-Registered-v1.png",
+      "distinctFrames": 6,
+      "frames": [
+        {
+          "index": 0,
+          "visibleBounds": [
+            194,
+            100,
+            301,
+            428
+          ],
+          "sha256": "5cf06761cf23993203575e4efe219be7b56db773f832602bc2611d01d7eaf258"
+        },
+        {
+          "index": 1,
+          "visibleBounds": [
+            141,
+            117,
+            323,
+            423
+          ],
+          "sha256": "e3fbe5da6348553cf9ca1608c5c463734faad248d6c803317d667162944fd5c7"
+        },
+        {
+          "index": 2,
+          "visibleBounds": [
+            122,
+            131,
+            348,
+            429
+          ],
+          "sha256": "fad7eb5113802e0ac4e4736cdc14c05f82eff1c957b64e67e59889bda1a1da87"
+        },
+        {
+          "index": 3,
+          "visibleBounds": [
+            99,
+            146,
+            406,
+            394
+          ],
+          "sha256": "70e8075d7644605a8c50e8372062cdcfeb45027c3221a5361872c3c272b826de"
+        },
+        {
+          "index": 4,
+          "visibleBounds": [
+            116,
+            136,
+            411,
+            402
+          ],
+          "sha256": "cc81f7744683175c4eaa806dad81637f8e2f91c4a7147c86fcf919ae95f48e92"
+        },
+        {
+          "index": 5,
+          "visibleBounds": [
+            111,
+            136,
+            410,
+            403
+          ],
+          "sha256": "32fd24f09e1be51cdbf641309ac0c901e46e4e00278f5a447a823ce54e3a4e81"
+        }
+      ]
+    },
+    {
+      "id": "death-thrown",
+      "file": "death-thrown-Registered-v1.png",
+      "distinctFrames": 6,
+      "frames": [
+        {
+          "index": 0,
+          "visibleBounds": [
+            208,
+            96,
+            306,
+            416
+          ],
+          "sha256": "fc18b1fa2622550e03ffb5e050ce244e3a2a2e09cc45067b3fc935faafc0b92c"
+        },
+        {
+          "index": 1,
+          "visibleBounds": [
+            162,
+            115,
+            333,
+            397
+          ],
+          "sha256": "427d14d1582f876b77e1d9670c8adc2a03f8af09026224e92e9a2df104f12e06"
+        },
+        {
+          "index": 2,
+          "visibleBounds": [
+            163,
+            125,
+            397,
+            399
+          ],
+          "sha256": "67d7f6791ef68fac46e978f8c49d885269839b3defd528093b5d26ed1f8706fe"
+        },
+        {
+          "index": 3,
+          "visibleBounds": [
+            115,
+            127,
+            418,
+            388
+          ],
+          "sha256": "6eddda1b8bd1d441ce3a649c2fc3bc429c200244c5bf27025baf202b841efc94"
+        },
+        {
+          "index": 4,
+          "visibleBounds": [
+            111,
+            135,
+            402,
+            391
+          ],
+          "sha256": "44f25bc20c2387c0dc50ce4ff1cb88011510b969c947383e3085ed9aca916685"
+        },
+        {
+          "index": 5,
+          "visibleBounds": [
+            111,
+            152,
+            400,
+            398
+          ],
+          "sha256": "af1b6265a8c39d2a60796520cc1951bd8f136af294f0692b4afa9c7d4990b972"
+        }
+      ]
+    }
+  ]
+}

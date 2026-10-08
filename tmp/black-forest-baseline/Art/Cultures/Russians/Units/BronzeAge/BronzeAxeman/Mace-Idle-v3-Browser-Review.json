@@ -1,0 +1,86 @@
+{
+  "url": "http://127.0.0.1:9007/Cultures/Russians/Units/BronzeAge/BronzeAxeman/Actor_Review.html?revision=bronze-mace-idle-v3#idle",
+  "frames": [
+    {
+      "frame": 0,
+      "visible": 71781,
+      "cornerAlpha": 0,
+      "bounds": [
+        53,
+        127,
+        474,
+        459
+      ]
+    },
+    {
+      "frame": 1,
+      "visible": 76880,
+      "cornerAlpha": 0,
+      "bounds": [
+        48,
+        121,
+        481,
+        457
+      ]
+    },
+    {
+      "frame": 2,
+      "visible": 77583,
+      "cornerAlpha": 0,
+      "bounds": [
+        52,
+        117,
+        481,
+        456
+      ]
+    },
+    {
+      "frame": 3,
+      "visible": 73332,
+      "cornerAlpha": 0,
+      "bounds": [
+        53,
+        125,
+        476,
+        459
+      ]
+    },
+    {
+      "frame": 4,
+      "visible": 75152,
+      "cornerAlpha": 0,
+      "bounds": [
+        50,
+        124,
+        481,
+        457
+      ]
+    },
+    {
+      "frame": 5,
+      "visible": 74290,
+      "cornerAlpha": 0,
+      "bounds": [
+        49,
+        124,
+        476,
+        461
+      ]
+    }
+  ],
+  "samples": [
+    0,
+    1,
+    2,
+    2,
+    3,
+    4,
+    4,
+    5,
+    0,
+    0,
+    1,
+    2
+  ],
+  "errors": []
+}

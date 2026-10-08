@@ -1,0 +1,58 @@
+{
+  "schemaVersion": 1,
+  "cultureId": "russians",
+  "age": "LateMedieval",
+  "unit": "Cossack Rider",
+  "category": "Light Cavalry",
+  "actorCount": 1,
+  "stage": "single-mounted-idle-design-review",
+  "integrationStatus": "First idle pending visual review before animation.",
+  "camera": "vertical-overhead-orthographic",
+  "facing": "screen-down",
+  "sheetSize": {
+    "width": 1024,
+    "height": 1536
+  },
+  "grid": {
+    "columns": 1,
+    "rows": 1
+  },
+  "reviewFootprint": 400,
+  "registration": "Fixed authored saddle/root pivot and one constant scale, no silhouette fitting.",
+  "weapon": "Wooden lance with narrow steel spearhead held at rest in right hand",
+  "mount": "Unarmored bay horse with simple leather harness, saddle and gray blanket roll",
+  "equipmentFinish": "Dark leather and iron lamellar vest, modest steel shoulder caps, mail collar and iron bracers over dark coat; blue trousers, boots and fur cap retained",
+  "animations": [
+    {
+      "id": "idle",
+      "file": "Idle-v1.png",
+      "label": "Idle - single frame",
+      "loop": true,
+      "scale": 0.6666666666666666,
+      "durations": [
+        1000
+      ],
+      "description": "Lightly armored Cossack Rider with resting lance on an unarmored bay horse.",
+      "frameCount": 1,
+      "sourceFrameOrder": [
+        0
+      ],
+      "frames": [
+        {
+          "index": 0,
+          "sourceIndex": 0,
+          "x": 0,
+          "y": 0,
+          "width": 1024,
+          "height": 1536,
+          "pivot": {
+            "x": 512.0,
+            "y": 768.0
+          }
+        }
+      ]
+    }
+  ],
+  "offhand": "Left hand holds reins; no shield",
+  "historicalDirection": "Imagined Late Medieval successor to the approved Early Medieval Cossack Rider, with modest iron protection added."
+}

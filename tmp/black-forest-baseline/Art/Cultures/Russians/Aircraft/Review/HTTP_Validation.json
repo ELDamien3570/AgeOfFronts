@@ -1,0 +1,16 @@
+{
+  "date": "2026-10-07",
+  "passed": true,
+  "scope": "HTTP delivery, catalog URLs and PNG signatures; live browser QA unavailable due to sandbox initialization error",
+  "statuses": {
+    "Ship%20Icons/Ship_Animation_Preview.html": 200,
+    "Building%20Icons/Aviation-Review.html?civ=russians": 200,
+    "Cultures/building-context-review.js": 200,
+    "Cultures/review-civs.json": 200,
+    "Cultures/Russians/Aircraft/manifest.json": 200,
+    "Yakovlev Yak-3": 200,
+    "Petlyakov Pe-8": 200
+  },
+  "browserVisualReview": "pending",
+  "runtimeIntegration": "not changed"
+}

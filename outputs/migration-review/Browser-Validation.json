@@ -1,0 +1,23 @@
+{
+  "sizes": [
+    {
+      "size": 250,
+      "islands": "7",
+      "play": "/skirmish/index.html?map=migration&seed=3&size=250"
+    },
+    {
+      "size": 500,
+      "islands": "7",
+      "play": "/skirmish/index.html?map=migration&seed=3&size=500"
+    },
+    {
+      "size": 1000,
+      "islands": "7",
+      "play": "/skirmish/index.html?map=migration&seed=3&size=1000"
+    }
+  ],
+  "title": "Migration · 250×250 · seed 3 · land skirmish",
+  "clock": "0:01",
+  "errors": [],
+  "failures": []
+}

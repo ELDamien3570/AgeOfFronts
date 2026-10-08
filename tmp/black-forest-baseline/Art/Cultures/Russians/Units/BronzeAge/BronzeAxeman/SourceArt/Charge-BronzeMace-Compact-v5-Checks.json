@@ -1,0 +1,81 @@
+{
+  "size": [
+    1536,
+    1024
+  ],
+  "mode": "RGBA",
+  "frames": [
+    {
+      "frame": 0,
+      "bounds": [
+        94,
+        63,
+        476,
+        447
+      ],
+      "hazeAlphaMaxBeyond3px": 6,
+      "hazePixelsAbove16": 0,
+      "cornerAlpha": 0
+    },
+    {
+      "frame": 1,
+      "bounds": [
+        90,
+        60,
+        467,
+        420
+      ],
+      "hazeAlphaMaxBeyond3px": 7,
+      "hazePixelsAbove16": 0,
+      "cornerAlpha": 0
+    },
+    {
+      "frame": 2,
+      "bounds": [
+        85,
+        61,
+        460,
+        425
+      ],
+      "hazeAlphaMaxBeyond3px": 7,
+      "hazePixelsAbove16": 0,
+      "cornerAlpha": 0
+    },
+    {
+      "frame": 3,
+      "bounds": [
+        91,
+        51,
+        471,
+        452
+      ],
+      "hazeAlphaMaxBeyond3px": 5,
+      "hazePixelsAbove16": 0,
+      "cornerAlpha": 0
+    },
+    {
+      "frame": 4,
+      "bounds": [
+        97,
+        51,
+        478,
+        438
+      ],
+      "hazeAlphaMaxBeyond3px": 3,
+      "hazePixelsAbove16": 0,
+      "cornerAlpha": 0
+    },
+    {
+      "frame": 5,
+      "bounds": [
+        91,
+        56,
+        472,
+        421
+      ],
+      "hazeAlphaMaxBeyond3px": 6,
+      "hazePixelsAbove16": 0,
+      "cornerAlpha": 0
+    }
+  ]
+}

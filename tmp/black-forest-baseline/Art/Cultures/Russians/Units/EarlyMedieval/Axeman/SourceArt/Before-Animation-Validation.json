@@ -1,0 +1,53 @@
+{
+  "assets": [
+    {
+      "file": "Idle-v1.png",
+      "size": [
+        1254,
+        1254
+      ],
+      "mode": "RGBA",
+      "alphaBounds": [
+        89,
+        47,
+        1170,
+        1214
+      ],
+      "sha256": "a676dfc8947608f9f4496710b7ae0ca756c9365d5dc6db8184ea79f8670208b7"
+    },
+    {
+      "file": "WeaponReferences/Axe-Angles-v1.png",
+      "size": [
+        1222,
+        1287
+      ],
+      "mode": "RGBA",
+      "alphaBounds": [
+        25,
+        0,
+        1208,
+        1287
+      ],
+      "sha256": "33b09ea452b45817d9c0ca74b49f8e1b688089a99130dca7c8e9587c4035dfeb"
+    },
+    {
+      "file": "Idle-Upright-v2.png",
+      "size": [
+        1254,
+        1254
+      ],
+      "mode": "RGBA",
+      "alphaBounds": [
+        105,
+        57,
+        1227,
+        1214
+      ],
+      "sha256": "a33915cedd45c03dab8483b7c1bb5652a655fe5d98d4bcf65c1754e83e868685"
+    }
+  ],
+  "httpVerifiedPort": 9018,
+  "artisticApproval": "pending",
+  "interactiveBrowserCheck": "not performed",
+  "selectedIdle": "Idle-Upright-v2.png"
+}

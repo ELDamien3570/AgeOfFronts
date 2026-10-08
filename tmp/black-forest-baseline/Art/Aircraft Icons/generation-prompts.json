@@ -1,0 +1,55 @@
+{
+  "generator": "built-in image_gen",
+  "artifacts": [
+    {
+      "category": "Bomber",
+      "age": "Modern",
+      "era": "WWII",
+      "filename": "Bomber_WWII_TopDown.png",
+      "dimension": 627,
+      "subject": "four-engine WWII-era heavy bomber",
+      "prompt": "Use case: stylized-concept.\nAsset type: Age of Fronts strategy game aircraft unit icon, square transparent PNG, final 627 x 627 pixels.\nInput image 1: STYLE REFERENCE ONLY for realistically painted game icon finish, restrained grey/olive palette, detailed weathered metal, sharp roof-map-like overhead geometry and soft ambient highlights. Do not include any building, paving, scenery or ground from this reference.\nCamera: perfectly vertical 90-degree TOP DOWN orthographic plan view, looking down on the upper surfaces of the airplane. Aircraft flies level, wings horizontal, nose pointing straight toward the top of the canvas, tail pointing down. No roll, no bank, no pitch, no perspective foreshortening, no isometric tilt, no visible fuselage side wall or underside.\nStyle: polished realistic hand-painted 2D game sprite, matching the building set's textured surface treatment. Restrained olive-drab painted upper surfaces, slightly worn panel edges, a little exposed aluminium, subtle rivets and seams, dark glazed cockpit panels. Use material highlights to read volume, but no detached ground shadow.\nComposition: one complete centered aircraft silhouette, wings entirely in frame, balanced left and right, comfortable transparent margins on every side, nose and tail intact. Crisp useful silhouette at small game-map scale.\nConstraints: genuine transparent alpha outside the aircraft, no ground tile, sky, clouds, motion trails, environment, text, national insignia, logos, labels, numbers, people or watermark. ONE AIRPLANE ONLY. Conventional WWII propeller-era construction and silhouette, no jet engine or modern swept delta wing. Avoid toy proportions, schematic diagram styling or flat line art.\nSubject: a single WWII-era four-engine heavy bomber airplane. A long substantial olive-drab fuselage with a glazed rounded bomber nose, dark framed cockpit glazing near the front, broad straight gently tapered symmetric wings, EXACTLY FOUR conventional propeller engine nacelles, two under each wing evenly spaced and equally sized, each extending a short way ahead of its wing leading edge. Correct overhead propeller projection at each engine. Conventional horizontal tailplane and a single vertical tail seen only as a narrow center ridge, a small dark dorsal gun turret glass dome. Landing gear retracted, bomb bay closed, no loose bombs. The wingspan occupies about 86 percent of the canvas width and is noticeably wider than fuselage length. Every engine and wing connection should be coherent, readable and symmetrical.",
+      "reference": "C:/Users/Damien/Documents/GitHub/AgeOfFronts/AgeOfFronts/Art/Building Icons/Arms Factory/Top-Down-Correction/ArmsFactory_Modern.png",
+      "source": "C:\\Users\\Damien\\.codex\\generated_images\\01a0f0f0-cfa7-76e0-959a-347e83e7ded2\\exec-a5ff2fb8-344b-4aef-aa5e-946a4b8e2c0e.png",
+      "destination": "C:/Users/Damien/Documents/GitHub/AgeOfFronts/AgeOfFronts/Art/Aircraft Icons/Bomber_WWII_TopDown.png",
+      "generator": "built-in image_gen",
+      "finalDimensions": [
+        627,
+        627
+      ],
+      "resampling": {
+        "Saved": "C:/Users/Damien/Documents/GitHub/AgeOfFronts/AgeOfFronts/Art/Aircraft Icons/Bomber_WWII_TopDown.png",
+        "Width": 627,
+        "Height": 627,
+        "Resampled": true,
+        "SourceWidth": 1254,
+        "SourceHeight": 1254
+      }
+    },
+    {
+      "category": "Fighter",
+      "age": "Modern",
+      "era": "WWII",
+      "filename": "Fighter_WWII_TopDown.png",
+      "dimension": 627,
+      "subject": "single-engine WWII-era fighter",
+      "prompt": "Use case: stylized-concept.\nAsset type: Age of Fronts strategy game aircraft unit icon, square transparent PNG, final 627 x 627 pixels.\nInput image 1: STYLE REFERENCE ONLY for realistically painted game icon finish, restrained grey/olive palette, detailed weathered metal, sharp roof-map-like overhead geometry and soft ambient highlights. Do not include any building, paving, scenery or ground from this reference.\nCamera: perfectly vertical 90-degree TOP DOWN orthographic plan view, looking down on the upper surfaces of the airplane. Aircraft flies level, wings horizontal, nose pointing straight toward the top of the canvas, tail pointing down. No roll, no bank, no pitch, no perspective foreshortening, no isometric tilt, no visible fuselage side wall or underside.\nStyle: polished realistic hand-painted 2D game sprite, matching the building set's textured surface treatment. Restrained olive-drab painted upper surfaces, slightly worn panel edges, a little exposed aluminium, subtle rivets and seams, dark glazed cockpit panels. Use material highlights to read volume, but no detached ground shadow.\nComposition: one complete centered aircraft silhouette, wings entirely in frame, balanced left and right, comfortable transparent margins on every side, nose and tail intact. Crisp useful silhouette at small game-map scale.\nConstraints: genuine transparent alpha outside the aircraft, no ground tile, sky, clouds, motion trails, environment, text, national insignia, logos, labels, numbers, people or watermark. ONE AIRPLANE ONLY. Conventional WWII propeller-era construction and silhouette, no jet engine or modern swept delta wing. Avoid toy proportions, schematic diagram styling or flat line art.\nSubject: a single WWII-era single-engine fighter airplane. A compact streamlined fuselage, one nose-mounted propeller in physically correct overhead projection, dark narrow framed cockpit canopy slightly aft of the wings, symmetrical broad subtly elliptical low wings with gently tapered rounded tips, conventional horizontal tailplanes and a narrow single vertical tail seen only as a thin central ridge. The centerline and wing geometry are tidy and mechanically coherent. Landing gear retracted, no external bombs. The main wing span should occupy about 82 percent of the canvas width; the plane length a little less than that.",
+      "reference": "C:/Users/Damien/Documents/GitHub/AgeOfFronts/AgeOfFronts/Art/Building Icons/Arms Factory/Top-Down-Correction/ArmsFactory_Modern.png",
+      "source": "C:\\Users\\Damien\\.codex\\generated_images\\01a0f0f0-cfa7-76e0-959a-347e83e7ded2\\exec-40839316-2788-4f05-96d6-21c10aa46c94.png",
+      "destination": "C:/Users/Damien/Documents/GitHub/AgeOfFronts/AgeOfFronts/Art/Aircraft Icons/Fighter_WWII_TopDown.png",
+      "generator": "built-in image_gen",
+      "finalDimensions": [
+        627,
+        627
+      ],
+      "resampling": {
+        "Saved": "C:/Users/Damien/Documents/GitHub/AgeOfFronts/AgeOfFronts/Art/Aircraft Icons/Fighter_WWII_TopDown.png",
+        "Width": 627,
+        "Height": 627,
+        "Resampled": true,
+        "SourceWidth": 1254,
+        "SourceHeight": 1254
+      }
+    }
+  ]
+}

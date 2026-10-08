@@ -1,0 +1,28 @@
+{
+  "scope": "Local source-art inspection only. Runtime integration and publishing have not been performed.",
+  "checkedAt": "2026-10-02T23:49:14.056Z",
+  "passed": true,
+  "gallery": "http://127.0.0.1:9000/Art/Building%20Icons/Top-Down-Correction-Review.html?civ=russians&age=BronzeAge",
+  "checks": [
+    "Russian Bronze Age gallery displays 10 draft building roles, including blacksmith.",
+    "All 40 displayed hero and 48/64/128 pixel sample images load at the expected 1254x1254 source size.",
+    "All ten generated designs and the corrected top-down siege carriage visually inspected in the gallery.",
+    "Base Bronze Age selection restores its 9 original gallery entries.",
+    "Blacksmith type filter yields one Russian Bronze Age entry and preserves URL state.",
+    "Blacksmith comparison uses the correct base/current PNGs and draft caption.",
+    "Stone Age selection displays all 9 approved entries; comparison caption also shows approved status.",
+    "SHA256 comparison confirms every approved Stone Age source image is unchanged.",
+    "Wall inspector shows the approved Stone Age tower and draft Bronze Age tower with distinct review statuses.",
+    "No console errors observed in the main and wall inspectors.",
+    "JavaScript syntax checks and scoped git diff whitespace checks pass.",
+    "Seven requested design revisions visually inspected: city and three military palisades, siege tower with ram, three factory chimneys and one larger port boat.",
+    "City, barracks, archery range and stable palisades corrected to overhead stake tops and visually reviewed at 48, 64 and 128 pixels.",
+    "All 40 current image instances load at 1254x1254; no console errors observed after final refresh.",
+    "Source validation confirms transparent margins and selected-master parity for all 10 PNGs; only the four requested images changed in the wall-camera revision."
+  ],
+  "screenshots": [
+    "Inspection_Review.jpg",
+    "Full_Inspection_Review.jpg",
+    "Palisade_Review.jpg"
+  ]
+}

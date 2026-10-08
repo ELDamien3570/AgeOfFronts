@@ -1,0 +1,12 @@
+{
+  "date": "2026-10-07",
+  "mode": "built-in-imagegen",
+  "prompt": "Create one single idle sprite for a Russian Early Medieval light cavalry unit called Cossack Rider, an imagined game roster inspired by photo, NOT historical reconstruction. Image 1 is CLOTHING and horse equipment reference: dark near-black loose riding coat, dark blue trousers, black boots, low black fur cap with small deep red crown detail, unarmored bay horse, simple leather harness and saddle, compact gray blanket roll. Omit firearm completely. Image 2 is ONLY painterly strategy-game rendering style and overhead camera reference; do not use its armor, bow or outfit. Weapon selected by user is a wooden LANCE with small narrow steel spearhead, held in RIGHT hand screen-left in a relaxed upright at-rest position beside shoulder, not an extended thrust. Left hand screen-right gathers reins. No shield, no metal body armor, no breastplate or mail, no modern firearm or cartridge loops. Near vertical directly top-down orthographic camera: helmet/cap crown visible, face hidden, strongly foreshortened torso, shoulder tops and horse back visible. Facing screen-bottom, black tail at top, distinct bay rump above saddle/rider, natural narrow neck and paired ears/head below rider, properly placed legs and stirrups. Compact horse smaller relative to rider and natural light cavalry anatomy. Preserve photo's dark coat and blue trouser silhouette, simple clothing, small muted saddlecloth and gray saddle roll, horse unarmored. Smooth polished painterly game sprite with restrained warm highlights, coherent anatomy, no harsh black contours, grain, glow or ground shadow. Entire rider, horse, lance shaft and spearhead inside generous transparent margins. True transparent background. Single portrait idle frame only, no scenery or lettering.",
+  "generatedSource": "C:\\Users\\Damien\\.codex\\generated_images\\01a11641-9e1b-7c81-be76-c9edd53ef182\\exec-4f86733b-fba9-4bfd-b32b-00930a85c661.png",
+  "references": [
+    "C:/Users/Damien/AppData/Local/Temp/codex-clipboard-6c805a48-2023-472d-9e67-5741d44ab2a5.png",
+    "C:/Users/Damien/Documents/GitHub/AgeOfFronts/AgeOfFronts/Art/Cultures/Russians/Units/EarlyMedieval/HorseArcher/Idle-v3.png"
+  ],
+  "weaponChoice": "User selected lance.",
+  "revisionReason": "First top-down Cossack Rider idle based on supplied clothing reference."
+}

@@ -1,0 +1,35 @@
+{
+  "generator": "built-in image_gen",
+  "jobs": [
+    {
+      "key": "TwinCannonAirburst",
+      "label": "Twin-cannon airburst",
+      "frames": 24,
+      "durations": [
+        35,
+        35,
+        45,
+        45,
+        50,
+        55,
+        60,
+        65,
+        70,
+        80,
+        90,
+        90,
+        90,
+        95,
+        100,
+        0
+      ],
+      "description": "SMALL aerial flak shell hit: keys1-2 pinprick gold-white flash;3-4 compact orange spark burst;5-7 sparse hot brass-grey fragments and tiny charcoal puff;8-10 soft small gray smoke lobes;11-15 widening faint wisps fading away. Peak diameter only 170px out of a314px cell. No crater, dirt, ground debris, shockwave, missile or nuclear fireball. Sixteen stages including final empty.",
+      "dimension": 314,
+      "category": "Effects",
+      "clip": "Detonate",
+      "mode": "effect",
+      "prompt": "Use case: stylized-concept. Paint a TOP-DOWN game explosion animation atlas, for Age of Fronts. 1254x1254 RGBA in an EXACT 4x4 uniform grid, sixteen 314x314 cells, ordered left-to-right then next row. Same fixed central impact point at the geometric CENTER of EVERY cell. True transparent alpha outside fire/smoke/glow, including between cells. Vertical overhead orthographic view of circular/irregular cloud TOPS, never side view or mushroom profile. Hand-painted volumetric shaded fire and smoke with crisp luminous core and soft alpha edge. No ground texture patch, vehicles, target silhouettes, text, frame numbers, grid lines, border, checkerboard or opaque canvas. Each key is fully contained with 18px clear border, never spill across cells. Key 16 (bottom-right cell) must be completely empty transparent. SMALL aerial flak shell hit: keys1-2 pinprick gold-white flash;3-4 compact orange spark burst;5-7 sparse hot brass-grey fragments and tiny charcoal puff;8-10 soft small gray smoke lobes;11-15 widening faint wisps fading away. Peak diameter only 170px out of a314px cell. No crater, dirt, ground debris, shockwave, missile or nuclear fireball. Sixteen stages including final empty.",
+      "source": "C:\\Users\\Damien\\.codex\\generated_images\\01a0f0f0-cfa7-76e0-959a-347e83e7ded2\\exec-937d2c55-595c-4007-9312-fd853d9ffb9a.png"
+    }
+  ]
+}

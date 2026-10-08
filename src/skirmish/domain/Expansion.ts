@@ -21,6 +21,7 @@ import type {
   Squad,
 } from "../Protocol";
 import { FIXED, TICKS_PER_SECOND } from "../Protocol";
+import { chargeAligned, FORMATION_MOTION } from "../FormationLocomotion";
 import { AIRCRAFT_RULES, BOMBER_ATTACK, STRATEGIC_PAYLOADS, STRATEGIC_RULES } from "../content/ModernWeapons";
 import { personalityOf } from "../content/AiPersonalities";
 import {
@@ -82,7 +83,7 @@ export interface ExpansionWorld extends BattleWorld, ArmyWorld {
   wasteland: NuclearWasteland;
   spatialFacts(phase: import("../PhaseSpatialViews").SpatialPhase): import("../PhaseSpatialViews").PhaseSpatialFacts;
   recruitment: Recruitment;
-  options?: { runAi?: boolean; aiEconomy?: boolean; aiDefenses?:boolean; aiNaval?:boolean; aiWarPolicy?:boolean; deferredPlanning?:boolean; territoryIncomeScale?:number; resourceDensity?: 1 | 2 | 3 | 5; resourceOutput?: 1 | 2 | 3 | 5; alliances?: boolean; startingAge?: StartingAge };
+  options?: { runAi?: boolean; formationLocomotion?: boolean; aiEconomy?: boolean; aiDefenses?:boolean; aiNaval?:boolean; aiWarPolicy?:boolean; deferredPlanning?:boolean; territoryIncomeScale?:number; resourceDensity?: 1 | 2 | 3 | 5; resourceOutput?: 1 | 2 | 3 | 5; alliances?: boolean; startingAge?: StartingAge; maximumAge?: Age };
   map: GameMap;
   owners: Uint8Array;
   claims: Uint8Array;
@@ -175,7 +176,7 @@ export class Expansion {
   ) {
     this.startingAge = startingGameplayAge(startingAge);
     this.towerSites={at:tile=>world.buildingsAt(tile),nearby:(tile,radius)=>world.towersNear(tile,radius)};
-    this.progression = new Progression(technologySpeed, startingAge);
+    this.progression = new Progression(technologySpeed, startingAge, world.options?.maximumAge);
     this.victoryMode = mode;
     this.fortifications = new Fortifications(world.map, this.diplomacy);
     this.supply = new Supply(world.map, this.progression, seed, world.options?.resourceDensity, world.options?.resourceOutput);
@@ -615,7 +616,7 @@ export class Expansion {
         );
       if (!target || !this.progression.has(player.id, target.technologyId))
         return "Research the requested refit first";
-      const eligible=selected.filter((s):s is Squad=>!!s&&s.playerId===player.id&&s.embarkedOn===null&&!s.afloat&&!s.refit&&!s.moved&&!s.fighting&&world.owners[world.tileOf(s)]===player.id&&this.unit(s).line===target.line&&this.unit(s).role===target.role&&AGES.indexOf(this.unit(s).age)<AGES.indexOf(target.age)).sort((a,b)=>a.id-b.id);
+      const eligible=selected.filter((s):s is Squad=>!!s&&s.playerId===player.id&&s.embarkedOn===null&&!s.afloat&&!s.refit&&!s.moved&&!s.fighting&&world.owners[world.tileOf(s)]===player.id&&this.unit(s).line===target.line&&this.unit(s).role===target.role&&this.unit(s).troopClass===target.troopClass&&AGES.indexOf(this.unit(s).age)<AGES.indexOf(target.age)).sort((a,b)=>a.id-b.id);
       if(!eligible.length)return "Refit a compatible stationary group on owned land, out of combat";
       const count=affordableRefitCount(unitRefitCost(target),availableGold(player),this.supply.inventories[player.id],eligible.length);
       if(!count)return costRejection(player,this.supply.inventories[player.id],unitRefitCost(target))??"No affordable refit";
@@ -676,7 +677,7 @@ export class Expansion {
       world.cancelMovement?.(selected.map((s) => s!.id));
       selected.forEach((s, i) => {
         world.updateSquad(s!.id, {
-          charge: { phase: "approach", x: command.x, y: command.y, startTick: world.tick, committedTick: 0, targetId: command.targetId },
+          charge: { phase: world.options?.formationLocomotion ? "preparing" : "approach", x: command.x, y: command.y, startTick: world.tick, committedTick: 0, targetId: command.targetId },
           order: { type: "move", tile }, nextPathIndex: 0, queuedOrders: [], structureTarget: null,
         });
         world.installSquadPath(s!.id, paths[i]!);
@@ -809,7 +810,7 @@ export class Expansion {
     if (
       !field ||
       !["fighter", "bomber"].includes(kind) ||
-      !this.progression.has(player.id, technologyAt("Modern", "warfare", 3).id)
+      !this.progression.has(player.id, kind === "fighter" ? "russian-fighter-squadrons" : "russian-bomber-squadrons")
     )
       return "Needs researched aviation and a completed owned airstrip";
     if (
@@ -866,7 +867,7 @@ export class Expansion {
     if (
       !["icbm", "hydrogen", "mirv"].includes(payload) ||
       !this.validPosition(x, y) ||
-      !this.progression.has(player.id, technologyAt("Modern", "warfare", 4).id)
+      !this.progression.has(player.id, "modern-strategic-weapons")
     )
       return "Research Strategic Weapons and choose a valid target";
     const building = this.world.buildings.find(
@@ -991,9 +992,14 @@ export class Expansion {
           world.updateSquad(s.id, { definitionId: target.id, kind: target.line, xp: 0, nextAttackTick: world.tick, refit: null });
         } else world.updateSquad(s.id, { refit: { ...s.refit, remainingTicks } });
       }
+      if (s.charge?.phase === "preparing" && chargeAligned(s) && (s.locomotion?.speed ?? 0) === 0 &&
+        world.tick - s.charge.startTick >= FORMATION_MOTION.prepareTicks) {
+        world.updateSquad(s.id, { charge: { ...s.charge, phase: "approach", startTick: world.tick } });
+      }
       if (
         s.charge?.phase === "approach" &&
-        world.tick - s.charge.startTick >= this.unit(s).charge!.runupTicks
+        world.tick - s.charge.startTick >= this.unit(s).charge!.runupTicks &&
+        (!world.options?.formationLocomotion || (chargeAligned(s) && s.moved && (s.locomotion?.speed ?? 0) > 0))
       ) {
         world.updateSquad(s.id, {
           charge: { ...s.charge, phase: "committed", committedTick: world.tick },
@@ -1119,7 +1125,7 @@ export class Expansion {
       const personality = personalityOf(player);
       if (!this.economy.enabled(player)) {
       if (
-        !advanceRejection(state, availableGold(player), this.progression.technologySpeed)
+        !advanceRejection(state, availableGold(player), this.progression.technologySpeed, this.progression.maximumAge)
       )
         this.world.applyCommand({ type: "advance-age", playerId: player.id });
       for (const tree of personality.researchOrder) {
@@ -1304,7 +1310,7 @@ export class Expansion {
   private thinkTribeDevelopment(player: Player): void {
     const state = this.progression.states[player.id];
     if (!tribeAdvanceRejection(player, this.world.players, this.progression.states) &&
-        !advanceRejection(state, availableGold(player), this.progression.technologySpeed))
+        !advanceRejection(state, availableGold(player), this.progression.technologySpeed, this.progression.maximumAge))
       this.world.applyCommand({ type: "advance-age", playerId: player.id });
     const next = TECHNOLOGIES.find(t => t.age === state.age &&
       !researchRejection(state, availableGold(player), t.id, this.progression.technologySpeed));
@@ -1653,7 +1659,7 @@ export class Expansion {
   }
   private metadataIdentity={};
   replicationMetadata(){return {identity:this.metadataIdentity,revisions:{
-    rulesetId:1,startingAge:1,contentHash:1,technologySpeed:1,victoryMode:1,
+    rulesetId:1,startingAge:1,maximumAge:1,contentHash:1,technologySpeed:1,victoryMode:1,
     progression:this.progression.revision,diplomacy:this.diplomacy.revision,
     productionPlans:this.supply.controlRevision,productionPriorities:this.supply.controlRevision,
     tradeControls:this.trade.controlRevision,
@@ -1668,6 +1674,7 @@ export class Expansion {
       fallout: this.world.wasteland.snapshot(),
       rulesetId: "ages-v1",
       startingAge: this.startingAge,
+      ...(this.progression.maximumAge ? { maximumAge: this.progression.maximumAge } : {}),
       contentHash: CONTENT_HASH,
       technologySpeed: this.progression.technologySpeed,
       fortificationRevision: this.fortifications.version,

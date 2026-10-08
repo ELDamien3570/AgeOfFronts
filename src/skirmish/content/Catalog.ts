@@ -1,3 +1,5 @@
+import { buildingFootprint } from "../BuildingFootprint";
+import type { BuildingType } from "../Protocol";
 import { AGE_SQUAD_CAPS, AI_WARSHIP_CAP, TRIBE_WARSHIP_CAP, TRIBE_PROMOTION_PERCENT, TRIBE_SQUAD_CAP, TRIBE_SQUADS_PER_AGE, TRIBE_TRADER_CAP, TRIBE_TRADERS_PER_AGE } from "../FactionRules";
 import { BUILDING_RULES, MAX_SHIPS } from "../Rules";
 import { MAX_ARMOUR, PROMOTION_ATTACK, XP_THRESHOLDS } from "../domain/Combat";
@@ -93,6 +95,7 @@ export const CONTENT_HASH = hash({
   vessels: VESSELS,
   recipes: PRODUCTION_RECIPES,
   buildings: BUILDING_RULES,
+  buildingFootprints: Object.fromEntries((Object.keys(BUILDING_RULES) as BuildingType[]).map(type => [type, buildingFootprint(type)])),
   advances: ADVANCES,
   promotions: {
     thresholds: XP_THRESHOLDS,

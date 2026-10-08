@@ -121,6 +121,7 @@ export class EmpireViewModel {
         this.progression,
         availableGold(this.player),
         this.technologySpeed,
+        this.expansion.maximumAge,
       ),
     };
   }
@@ -479,8 +480,8 @@ export class EmpireViewModel {
     const cost = {
       gold: 5000,
     };
-    const reason = !this.has(technologyAt("Modern", "warfare", 3).id)
-      ? "Research Military Aviation"
+    const reason = !this.has(kind === "fighter" ? "russian-fighter-squadrons" : "russian-bomber-squadrons")
+      ? `Research ${kind === "fighter" ? "Fighter Squadrons" : "Bomber Squadrons"}`
       : !building
         ? "Needs an airstrip with a free slot"
         : this.expansion.aircraft.filter((a) => a.playerId === this.playerId)
@@ -553,7 +554,7 @@ export class EmpireViewModel {
         (a, b) => this.distance(a.tile) - this.distance(b.tile) || a.id - b.id,
       )[0];
     const cost = { gold: 10000, items: { [`payload:${payload}`]: 1 } };
-    const reason = !this.has(technologyAt("Modern", "warfare", 4).id)
+    const reason = !this.has("modern-strategic-weapons")
       ? "Research Strategic Weapons"
       : !launcher
         ? "Needs a ready compatible launcher"

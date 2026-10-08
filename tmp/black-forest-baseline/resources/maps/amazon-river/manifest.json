@@ -1,0 +1,142 @@
+{
+  "schemaVersion": 1,
+  "name": "Amazon River",
+  "minimum": -450,
+  "maximum": 4160,
+  "seaLevel": 0,
+  "source": {
+    "file": "-3_733_-62_798_8_8192_2048_16bit.png",
+    "sha256": "426e24f1ee012294837582b18ddfe2eeb12cbb139cc1e463b68528645908a628",
+    "width": 8192,
+    "height": 2048,
+    "url": "https://manticorp.github.io/unrealheightmap/#latitude/-3.732701379008688/longitude/-62.797881705770806/zoom/8/outputzoom/8/width/8192/height/2048/outputformat/png16"
+  },
+  "normalization": {
+    "mode": "regular",
+    "from": -450,
+    "to": 4160,
+    "range": 65536
+  },
+  "terrainThresholds": {
+    "highland": 600,
+    "mountain": 1800
+  },
+  "sampling": "area-majority land/water; average height within winning surface; ties water",
+  "waterRule": "calibrated sea level plus explicitly authored major-river hydrology",
+  "resolutionRule": "selected size is the longest edge; source aspect ratio preserved",
+  "variants": {
+    "250": {
+      "width": 250,
+      "height": 63,
+      "landCells": 11821,
+      "seaCode": 6397,
+      "heightMinimum": -450.0,
+      "heightMaximum": 4145.302734375
+    },
+    "500": {
+      "width": 500,
+      "height": 125,
+      "landCells": 47283,
+      "seaCode": 6397,
+      "heightMinimum": -450.0,
+      "heightMaximum": 4154.349609375
+    },
+    "1000": {
+      "width": 1000,
+      "height": 250,
+      "landCells": 193824,
+      "seaCode": 6397,
+      "heightMinimum": -450.0,
+      "heightMaximum": 4159.9296875
+    }
+  },
+  "environment": {
+    "schemaVersion": 1,
+    "encoding": "u8-moisture-vegetation-aridity",
+    "classifier": "visible-color-gradients-v1",
+    "smoothingCellsAt500": 1.4,
+    "greenSensitivity": 1.1,
+    "source": {
+      "file": "-3_733_-62_798_8_8192_2048_albedo_imagery.png",
+      "sha256": "00dbd9c9e5fd89c88e90651c3898b73a8446873b132f1060476bf1152cf44407",
+      "width": 8192,
+      "height": 2048,
+      "registration": "same-footprint"
+    },
+    "interpretation": "approximate color-derived moisture, vegetation and aridity; height/water remain authoritative",
+    "variants": {
+      "250": {
+        "waterHintAgreement": 0.9213968253968254,
+        "waterHintIoU": 0.6849071010435225,
+        "meanLandMoisture": 0.7699202648659498,
+        "meanLandVegetation": 0.8385857007552197,
+        "meanLandAridity": 0.02774324855566116
+      },
+      "500": {
+        "waterHintAgreement": 0.92808,
+        "waterHintIoU": 0.7046066898863114,
+        "meanLandMoisture": 0.7686436239364726,
+        "meanLandVegetation": 0.8374859264180261,
+        "meanLandAridity": 0.029616580680450172
+      },
+      "1000": {
+        "waterHintAgreement": 0.947052,
+        "waterHintIoU": 0.7643655653659926,
+        "meanLandMoisture": 0.7692038987462245,
+        "meanLandVegetation": 0.8381823655663354,
+        "meanLandAridity": 0.03126869494702289
+      }
+    }
+  },
+  "hydrology": {
+    "schemaVersion": 1,
+    "source": {
+      "file": "rivers.geojson",
+      "sha256": "5347d5fee12bee39445f87644425003b3574ba0264082e83866a5ba9ac365677",
+      "title": "Natural Earth 1:10m rivers and lake centerlines",
+      "url": "https://github.com/nvkelso/natural-earth-vector/blob/master/geojson/ne_10m_rivers_lake_centerlines.geojson",
+      "upstreamGitBlob": "61a0d7137a6ff1113cc259525e7479c63d5fec86",
+      "upstreamSha256": "bb854a900ecbd3b408df46d5e16e3e0f974ba55993f9d8b5c26e855273c0905a",
+      "license": "Public domain",
+      "terms": "https://www.naturalearthdata.com/about/terms-of-use/"
+    },
+    "names": [
+      "Amazonas",
+      "Araguaia",
+      "Japur\u00e1",
+      "Juru\u00e1",
+      "Madeira",
+      "Mara\u00f1\u00f3n",
+      "Napo",
+      "Negro",
+      "Pur\u00fas",
+      "Tapaj\u00f3s",
+      "Tocantins",
+      "Trombetas",
+      "Ucayali",
+      "Xingu"
+    ],
+    "widthCellsAt500": 1,
+    "widthCellsBySize": {
+      "250": 1,
+      "500": 2,
+      "1000": 3
+    },
+    "registration": "geographic lines projected into the original Web Mercator footprint",
+    "interpretation": "major rivers are four-connected navigable water; gameplay widths exaggerated; original elevations preserved",
+    "variants": {
+      "250": {
+        "channelCells": 1064,
+        "newWaterCells": 1063
+      },
+      "500": {
+        "channelCells": 3828,
+        "newWaterCells": 3822
+      },
+      "1000": {
+        "channelCells": 10566,
+        "newWaterCells": 10541
+      }
+    }
+  }
+}

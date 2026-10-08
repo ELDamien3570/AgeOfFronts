@@ -1,0 +1,29 @@
+{
+  "schemaVersion": 1,
+  "cultureId": "russians",
+  "age": "Modern",
+  "asset": {
+    "id": "drone-facility",
+    "folder": "Drone Facility",
+    "category": "Drone Facility",
+    "role": "Drone production and deployment",
+    "file": "Drone Facility/Icon.png",
+    "sourceFile": "Drone Facility/SourceArt/Icon-v1.png",
+    "selectedSourceFile": "Drone Facility/SourceArt/Icon-v1.png",
+    "generator": "built-in image_gen",
+    "generationFile": "C:\\Users\\Damien\\.codex\\generated_images\\01a0fea5-71c9-75b3-9da6-4a1ca2cbd68f\\exec-60283105-712a-4019-b80c-1d6bc02ca456.png",
+    "prompt": "Use case: stylized-concept. Create ONE new Russian MODERN building icon in image1's crisp hand-painted material style, reference only. Mixed Soviet brick/concrete and contemporary facilities, muted olive/grey-green roofs, grey paved yards, large clear role silhouettes. EXACT90degree vertical NADIR orthographic top-down roof PLAN. NO visible building facade, front doors, windows, vertical walls or upright shafts. Roof rectangle edges aligned to canvas axes, roof covers every wall. All posts and chimneys only flat top caps, no perspective, no isometric camera, no giant long shadows. Horizontal circles truly round, equipment overhead only. Complete compact centered footprint with at least7percent EMPTY transparent outer border. Genuine transparent alpha background, no artificial decorative frame, bright red fringe, text, labels, people or modern flags. SUBJECT: Contemporary Russian drone support/production compound, low L-shaped grey concrete assembly facility with desaturated olive metal TOP roofs and rectangular vents; open paved yard contains TWO clearly large overhead quadcopter silhouettes on distinct square launch pads, plus one compact fixed-wing reconnaissance UAV on staging mat, large rechargeable battery cases and small wheeled service cart. Two quadcopters must be instantly recognizable by four round rotors surrounding center fuselage, no helicopter tail. No missile silos, fighter jets or regular aviation runway; no weapon payload diagrams.",
+    "referenceImages": [
+      "C:/Users/Damien/Documents/GitHub/AgeOfFronts/AgeOfFronts/Art/Cultures/Russians/Buildings/Modern/Factory/Icon.png"
+    ],
+    "status": "draft",
+    "date": "2026-10-07",
+    "technologyIds": [
+      "russian-battlefield-drones"
+    ],
+    "proposedBuildingRole": true,
+    "sha256": "af5836a5853ada69549853f693b778f83b43d24810d163a63f9dd997063b203b"
+  },
+  "historicalScope": "Era-inspired compressed game-art interpretation, not a specific building reconstruction.",
+  "scope": "art-review-only; no gameplay entity or technology binding has been implemented"
+}

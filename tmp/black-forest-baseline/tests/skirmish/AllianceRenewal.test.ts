@@ -1,0 +1,40 @@
+// @vitest-environment jsdom
+import { expect, it } from "vitest";
+import { GameMapImpl } from "../../src/core/game/GameMap";
+import { Skirmish } from "../../src/skirmish/Simulation";
+import { EmpireViewModel } from "../../src/skirmish/client/EmpireViewModel";
+import { AllianceRenewalView } from "../../src/skirmish/client/AllianceRenewalView";
+import type { Command } from "../../src/skirmish/Protocol";
+
+it("warns at thirty seconds, preserves focus, renews through authority, and lets dismissal expire", () => {
+  const cells=new Uint8Array(48*48).fill(133);
+  const game=new Skirmish(new GameMapImpl(48,48,cells,cells.length),{seed:42,aiCount:1,tribes:false,runAi:false,ruleset:"ages-v1"});
+  const treaty={id:1,a:1,b:2,expiresTick:6000,renewal:[] as number[]};
+  game.expansion!.diplomacy.state.alliances.push(treaty);
+  const vm=()=>new EmpireViewModel(game.snapshot(),{selected:new Set(),selectedShips:new Set(),selectedBuilding:null});
+  const sent:Command[]=[];
+  document.body.innerHTML='<main></main>';
+  const view=new AllianceRenewalView(document.querySelector("main")!,c=>sent.push(c));
+  game.tick=5399;view.update(vm());
+  expect(document.querySelector<HTMLElement>("aside")!.hidden).toBe(true);
+  game.tick=5400;view.update(vm());
+  expect(document.querySelector("strong")!.textContent).toContain("30s");
+  const renew=document.querySelector<HTMLButtonElement>('[data-action="renew"]')!;
+  renew.focus();game.tick=5420;view.update(vm());
+  expect(document.activeElement).toBe(renew);
+  renew.click();expect(sent).toEqual([{type:"alliance",playerId:1,otherId:2,action:"renew"}]);
+  game.expansion!.diplomacy.action(game.players[0],game.players[1],"renew",game.tick);
+  view.update(vm());expect(renew.disabled).toBe(true);
+  expect(document.querySelector("span")!.textContent).toContain("awaiting");
+  document.querySelector<HTMLButtonElement>('[data-action="dismiss"]')!.click();
+  expect(document.querySelector<HTMLElement>("aside")!.hidden).toBe(true);
+  game.tick=5999;view.update(vm());
+  expect(document.querySelector<HTMLElement>("aside")!.hidden).toBe(true);
+  game.tick=6000;view.update(vm());
+  expect(document.querySelector<HTMLElement>("aside")!.hidden).toBe(true);
+  treaty.expiresTick=12000;treaty.renewal=[];
+  game.tick=11400;view.update(vm());
+  expect(document.querySelector<HTMLElement>("aside")!.hidden).toBe(false);
+  view.reset();
+  expect(document.querySelector<HTMLElement>("aside")!.hidden).toBe(true);
+});

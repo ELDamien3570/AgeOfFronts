@@ -83,17 +83,17 @@ describe("tribe catch-up progression", () => {
   });
 
   it("scales tribe caps and preserves regular caps", () => {
-    expect(AGES.map(age => squadCap({ kind: "tribe" }, age))).toEqual([10, 15, 20, 25, 30, 35, 40]);
-    expect(AGES.map(age => tradeActorCap({ kind: "tribe" }, age))).toEqual([16, 18, 20, 22, 24, 26, 28]);
+    expect(AGES.map(age => squadCap({ kind: "tribe" }, age))).toEqual([10, 15, 20, 25, 30, 35, 40, 45]);
+    expect(AGES.map(age => tradeActorCap({ kind: "tribe" }, age))).toEqual([16, 18, 20, 22, 24, 26, 28, 30]);
     expect(AGES.map(age => tradeActorCap({ kind: "regular" }, age))).toEqual(AGES.map(() => 48));
     expect(squadCap({ kind: "regular" }, "Modern")).toBe(200);
   });
 });
 
 describe("age-up pacing", () => {
-  it("preserves gold discounts with 35 to 60 second advancement at every technology speed", () => {
+  it("preserves gold discounts with 35 to 70 second advancement at every technology speed", () => {
     const original = [{ gold: 3000, ticks: 2000 }, { gold: 75000, ticks: 900 }, { gold: 110000, ticks: 1000 },
-      { gold: 160000, ticks: 1100 }, { gold: 230000, ticks: 1200 }, { gold: 330000, ticks: 1300 }];
+      { gold: 160000, ticks: 1100 }, { gold: 230000, ticks: 1200 }, { gold: 330000, ticks: 1300 }, { gold: 480000, ticks: 1400 }];
     for (const speed of [1, 2, 3] as const) for (let i = 0; i < ADVANCES.length; i++) {
       const progression = new Progression(speed);
       progression.add(1, AGES[i]);
@@ -104,7 +104,7 @@ describe("age-up pacing", () => {
       player.gold = 1_000_000;
       const terms = researchTerms(ADVANCES[i], speed);
       const factor = i === 0 ? 1 : 0.25;
-      expect(terms).toEqual({ gold: Math.ceil(original[i].gold * factor / speed), ticks: Math.ceil((700 + i * 100) / speed) });
+      expect(terms).toEqual({ gold: Math.ceil(original[i].gold * factor / speed), ticks: Math.ceil(ADVANCES[i].ticks / speed) });
       expect(progression.advance(player)).toBeNull();
       expect(state.advancement?.totalTicks).toBe(terms.ticks);
       expect(player.gold).toBe(1_000_000 - terms.gold);

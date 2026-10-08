@@ -1,0 +1,32 @@
+{
+  "date": "2026-10-07",
+  "file": "Death-Back-LeatherPauldrons-NoFlip-Baked-v2.png",
+  "source": "Death-Back-LeatherPauldrons-NoFlip-v2.png",
+  "preservedFrames": [
+    {
+      "source": "Death-Back-LeatherPauldrons-v1.png",
+      "sourceFrame": 0,
+      "targetFrame": 0,
+      "cellHash": "af481c65efa0bc003a5dd31c6d14d57552c7cf95a6cf03d548bcf9faeb469c00"
+    },
+    {
+      "source": "Death-Back-LeatherPauldrons-v1.png",
+      "sourceFrame": 1,
+      "targetFrame": 1,
+      "cellHash": "4f3627157a60ed675fc81a476ba2ac6fa6ad201540f97a4f7aeb6c490e4eb432"
+    },
+    {
+      "source": "Death-Back-LeatherPauldrons-v1.png",
+      "sourceFrame": 2,
+      "targetFrame": 2,
+      "cellHash": "11f8642c9effcb4fb856968a6db4bdee575e1688cd6ba30c904a12853d783767"
+    }
+  ],
+  "generatedFrames": [
+    3,
+    4,
+    5
+  ],
+  "status": "selected",
+  "alphaPolicy": "Whole RGBA cells copied without filtering."
+}

@@ -1,0 +1,362 @@
+{
+  "actorCount": 1,
+  "animations": [
+    {
+      "id": "idle",
+      "file": "idle.png",
+      "label": "Idle",
+      "loop": true,
+      "scale": 1.25,
+      "durations": [
+        170,
+        170,
+        170,
+        170,
+        170,
+        170
+      ],
+      "description": "Armored horse breathes and settles; Druzhina carries the lance point-up at rest.",
+      "frameCount": 6,
+      "sourceFrameOrder": [
+        0,
+        1,
+        2,
+        3,
+        4,
+        5
+      ],
+      "frames": [
+        {
+          "x": 0,
+          "y": 0,
+          "width": 128,
+          "height": 128,
+          "pivot": {
+            "x": 63.7,
+            "y": 63.7
+          }
+        },
+        {
+          "x": 128,
+          "y": 0,
+          "width": 128,
+          "height": 128,
+          "pivot": {
+            "x": 63.7,
+            "y": 63.7
+          }
+        },
+        {
+          "x": 256,
+          "y": 0,
+          "width": 128,
+          "height": 128,
+          "pivot": {
+            "x": 63.7,
+            "y": 63.7
+          }
+        },
+        {
+          "x": 384,
+          "y": 0,
+          "width": 128,
+          "height": 128,
+          "pivot": {
+            "x": 63.7,
+            "y": 63.7
+          }
+        },
+        {
+          "x": 512,
+          "y": 0,
+          "width": 128,
+          "height": 128,
+          "pivot": {
+            "x": 63.7,
+            "y": 63.7
+          }
+        },
+        {
+          "x": 640,
+          "y": 0,
+          "width": 128,
+          "height": 128,
+          "pivot": {
+            "x": 63.7,
+            "y": 63.7
+          }
+        }
+      ]
+    },
+    {
+      "id": "running",
+      "file": "running.png",
+      "label": "Walk",
+      "loop": true,
+      "scale": 1.25,
+      "durations": [
+        180,
+        180,
+        180,
+        180,
+        180,
+        180
+      ],
+      "description": "Four-beat walking steps with clear foreleg and hindleg reach.",
+      "frameCount": 6,
+      "sourceFrameOrder": [
+        0,
+        1,
+        2,
+        3,
+        4,
+        5
+      ],
+      "frames": [
+        {
+          "x": 0,
+          "y": 0,
+          "width": 128,
+          "height": 128,
+          "pivot": {
+            "x": 63.7,
+            "y": 63.7
+          }
+        },
+        {
+          "x": 128,
+          "y": 0,
+          "width": 128,
+          "height": 128,
+          "pivot": {
+            "x": 63.7,
+            "y": 63.7
+          }
+        },
+        {
+          "x": 256,
+          "y": 0,
+          "width": 128,
+          "height": 128,
+          "pivot": {
+            "x": 63.7,
+            "y": 63.7
+          }
+        },
+        {
+          "x": 384,
+          "y": 0,
+          "width": 128,
+          "height": 128,
+          "pivot": {
+            "x": 63.7,
+            "y": 63.7
+          }
+        },
+        {
+          "x": 512,
+          "y": 0,
+          "width": 128,
+          "height": 128,
+          "pivot": {
+            "x": 63.7,
+            "y": 63.7
+          }
+        },
+        {
+          "x": 640,
+          "y": 0,
+          "width": 128,
+          "height": 128,
+          "pivot": {
+            "x": 63.7,
+            "y": 63.7
+          }
+        }
+      ]
+    },
+    {
+      "id": "attack",
+      "file": "attack.png",
+      "label": "Spear thrust",
+      "loop": false,
+      "scale": 1.25,
+      "durations": [
+        130,
+        180,
+        160,
+        100,
+        180,
+        240
+      ],
+      "description": "Draw the spear to shoulder level, thrust overarm alongside the horse, and recover.",
+      "frameCount": 6,
+      "sourceFrameOrder": [
+        0,
+        1,
+        2,
+        3,
+        4,
+        5
+      ],
+      "frames": [
+        {
+          "x": 0,
+          "y": 0,
+          "width": 128,
+          "height": 128,
+          "pivot": {
+            "x": 63.7,
+            "y": 63.7
+          }
+        },
+        {
+          "x": 128,
+          "y": 0,
+          "width": 128,
+          "height": 128,
+          "pivot": {
+            "x": 63.7,
+            "y": 63.7
+          }
+        },
+        {
+          "x": 256,
+          "y": 0,
+          "width": 128,
+          "height": 128,
+          "pivot": {
+            "x": 63.7,
+            "y": 63.7
+          }
+        },
+        {
+          "x": 384,
+          "y": 0,
+          "width": 128,
+          "height": 128,
+          "pivot": {
+            "x": 63.7,
+            "y": 63.7
+          }
+        },
+        {
+          "x": 512,
+          "y": 0,
+          "width": 128,
+          "height": 128,
+          "pivot": {
+            "x": 63.7,
+            "y": 63.7
+          }
+        },
+        {
+          "x": 640,
+          "y": 0,
+          "width": 128,
+          "height": 128,
+          "pivot": {
+            "x": 63.7,
+            "y": 63.7
+          }
+        }
+      ],
+      "impactFrame": 3
+    },
+    {
+      "id": "death",
+      "file": "death.png",
+      "label": "Death - together fall",
+      "loop": false,
+      "scale": 1.25,
+      "durations": [
+        150,
+        180,
+        200,
+        220,
+        260,
+        450
+      ],
+      "description": "Horse and rider buckle, fall together onto their side, and settle.",
+      "frameCount": 6,
+      "sourceFrameOrder": [
+        0,
+        1,
+        2,
+        3,
+        4,
+        5
+      ],
+      "frames": [
+        {
+          "x": 0,
+          "y": 0,
+          "width": 128,
+          "height": 128,
+          "pivot": {
+            "x": 63.7,
+            "y": 63.7
+          }
+        },
+        {
+          "x": 128,
+          "y": 0,
+          "width": 128,
+          "height": 128,
+          "pivot": {
+            "x": 63.7,
+            "y": 63.7
+          }
+        },
+        {
+          "x": 256,
+          "y": 0,
+          "width": 128,
+          "height": 128,
+          "pivot": {
+            "x": 63.7,
+            "y": 63.7
+          }
+        },
+        {
+          "x": 384,
+          "y": 0,
+          "width": 128,
+          "height": 128,
+          "pivot": {
+            "x": 63.7,
+            "y": 63.7
+          }
+        },
+        {
+          "x": 512,
+          "y": 0,
+          "width": 128,
+          "height": 128,
+          "pivot": {
+            "x": 63.7,
+            "y": 63.7
+          }
+        },
+        {
+          "x": 640,
+          "y": 0,
+          "width": 128,
+          "height": 128,
+          "pivot": {
+            "x": 63.7,
+            "y": 63.7
+          }
+        }
+      ]
+    }
+  ],
+  "source": "Art/Cultures/Russians/Units/EarlyMedieval/Druzhina/animations.json",
+  "metadataHash": "91f07aecb98551fdca273e17d58a9dd3b07d7c7765dbf063c2e572699a858002",
+  "hashes": {
+    "Art/Cultures/Russians/Units/EarlyMedieval/Druzhina/Idle-Animated-v1.png": "71a364f5ba188838151236f800b17075ae9d67cbce9a3fc1ccdbab5e9c1ab300",
+    "Art/Cultures/Russians/Units/EarlyMedieval/Druzhina/Running-v1.png": "d1590ff33351a1ee0af729850f193634614d017eb7c509829ecb209bea6b5b3a",
+    "Art/Cultures/Russians/Units/EarlyMedieval/Druzhina/Attack-v3.png": "5944be2b507c8e9144ebec29f279f49fd0d8a78bf34a742d8585c9e08048480c",
+    "Art/Cultures/Russians/Units/EarlyMedieval/Druzhina/Death-Together-v1.png": "f8e45dc3c67e1de90d8df257e624cc97f98d053f988f809e3fae8ab8bdabcdd0"
+  }
+}

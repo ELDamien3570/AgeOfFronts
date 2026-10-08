@@ -1,3 +1,10 @@
+import { installTroopPresentation } from "./troops/TroopPresentation";
+import { FORMATION_MOVEMENT } from "../content/FormationMovement";
+import { isProceduralMap } from "../ProceduralMaps";
+import { deploymentLine } from "../FormationLine";
+import type { WorldPoint } from "../SpatialGrid";
+import { localSkirmishProfile } from "./LocalSkirmishProfile";
+const localProfile = localSkirmishProfile();
 import { hasInfiniteGold } from "../domain/Gold";
 import { applyDragSelection, limitSquadSelection } from "./SquadSelectionViewModel";
 import { BrowserLobbyPreviewStore } from "./lobby/LobbyPreviewStore";
@@ -12,7 +19,7 @@ const onlineQuery = new URLSearchParams(window.location.search);
 const savedLobbyProfile = new BrowserLobbyPreviewStore().read() as { profile?: { colorIndex?: unknown } } | undefined;
 const preferredFactionColor = onlineQuery.has("color") ? Number(onlineQuery.get("color")) : savedLobbyProfile?.profile?.colorIndex;
 
-const onlineMatchId = onlineQuery.get("match");
+const onlineMatchId = localProfile ? null : onlineQuery.get("match");
 const onlineSeat = onlineQuery.has("seat") ? Number(onlineQuery.get("seat")) : undefined;
 
 import { squadCap } from "../FactionRules";
@@ -166,6 +173,8 @@ const canvas = element<HTMLCanvasElement>("battlefield");
 const campLoss = new CampLossPresentation();
 
 const renderer = new Renderer(canvas, campLoss);
+const localPresentation = localProfile?.install(renderer) ?? installTroopPresentation(renderer);
+const formationDrawing = localProfile?.formationDrawing ?? true;
 
 // Ground style is a per-browser preference: animated or still water on the
 // WebGL ground, or the classic painted ground.
@@ -370,6 +379,8 @@ function notify(message: string): void {
 
 async function start(): Promise<void> {
   if(onlineMatchId) { await startOnlineMatch(); return; }
+  drag=undefined; renderer.selectionBox=undefined; renderer.deploymentPreview=undefined;
+  localPresentation?.reset();
   recruitmentControls.clear();
   cameraPan.clear();
   orderGesture.cancel();
@@ -430,10 +441,17 @@ async function start(): Promise<void> {
   try {
     const mapId = element<HTMLSelectElement>("map").value;
 
+    const requestedSeed = (onlineQuery.has("diagnostics") || isProceduralMap(mapId)) && onlineQuery.has("seed")
+      ? Number(onlineQuery.get("seed")) : NaN;
+    const seed = Number.isSafeInteger(requestedSeed) && requestedSeed >= 0 && requestedSeed <= 0x7fffffff
+      ? requestedSeed : Math.floor(Math.random() * 0x7fffffff);
+    diagnosticSeed = seed;
+
     const loaded = await loadMap(
       mapId,
 
       Number(element<HTMLSelectElement>("world-size").value),
+      seed,
     );
 
     if (sequence !== matchSequence) return;
@@ -458,7 +476,7 @@ async function start(): Promise<void> {
       link.textContent = loaded.attribution.label;
 
       attribution.append(link);
-    } else attribution.textContent = "OpenFront maps · CC BY-SA 4.0";
+    } else attribution.textContent = isProceduralMap(mapId) ? "Procedural terrain · AgeOfFronts" : "OpenFront maps · CC BY-SA 4.0";
 
 
     renderer.setMap(loaded.map, loaded.geography, loaded.environment);
@@ -523,6 +541,7 @@ async function start(): Promise<void> {
       paused = message.paused;
 
       browserDiagnostics.measure("presentation", () => renderer.update(snapshot!));
+      localPresentation.update(snapshot);
 
       groups.prune(snapshot);
 
@@ -542,20 +561,18 @@ async function start(): Promise<void> {
       if (snapshot.winner !== null) showResult(snapshot.winner);
     };
 
-    const requestedSeed = onlineQuery.has("diagnostics") && onlineQuery.has("seed") ? Number(onlineQuery.get("seed")) : NaN;
-    const seed = Number.isSafeInteger(requestedSeed) && requestedSeed >= 0 && requestedSeed <= 0x7fffffff
-      ? requestedSeed : Math.floor(Math.random() * 0x7fffffff);
-    diagnosticSeed = seed;
     const startingAge =
       (element<HTMLSelectElement>("starting-age")?.value as StartingAge) || "StoneAge";
     const spawnOptions: MatchOptions = {
       ...DEFAULT_AI_POLICIES,
+        ...FORMATION_MOVEMENT,
       seed,
       aiCount: Number(element<HTMLSelectElement>("opponents").value),
       tribes: true,
       ruleset: "ages-v1",
       startingAge,
       infiniteGoldForPlayers: element<HTMLInputElement>("infinite-gold").checked,
+      ...localProfile?.matchOptions,
     };
 
     post({
@@ -574,6 +591,7 @@ async function start(): Promise<void> {
 
       options: {
         ...DEFAULT_AI_POLICIES,
+        ...FORMATION_MOVEMENT,
         seed,
         ...(validFactionColor(preferredFactionColor)
           ? { humanColors: [preferredFactionColor] } : {}),
@@ -593,6 +611,7 @@ async function start(): Promise<void> {
 
         territoryIncomeScale: loaded.territoryIncomeScale,
         technologySpeed,
+        ...localProfile?.matchOptions,
       },
     });
 
@@ -684,7 +703,7 @@ async function startOnlineMatch(): Promise<void> {
       element<HTMLSelectElement>("technology-speed").value = String(manifest.settings.technologySpeed);
       element<HTMLInputElement>("infinite-gold").checked = Boolean(manifest.options.infiniteGoldForPlayers);
       element<HTMLInputElement>("infinite-gold").disabled = true;
-      const loaded = await loadMap(manifest.settings.mapId, manifest.settings.worldSize);
+      const loaded = await loadMap(manifest.settings.mapId, manifest.settings.worldSize, manifest.options.seed);
       currentMap = loaded;
       terrainView = new TerrainViewModel(loaded.map);
       renderer.setMap(loaded.map, loaded.geography, loaded.environment);
@@ -725,6 +744,7 @@ async function startOnlineMatch(): Promise<void> {
     snapshot.disconnectedPlayerIds = session.disconnectedPlayerIds;
     paused = event.data.paused;
     browserDiagnostics.measure("presentation", () => renderer.update(snapshot!));
+    localPresentation.update(snapshot);
     groups.prune(snapshot);
     hudPending = true;
     if (startingCamera) {
@@ -1279,6 +1299,7 @@ let drag:
       shift: boolean;
 
       moved: boolean;
+      lineStart?: WorldPoint;
     }
   | undefined;
 
@@ -1287,6 +1308,61 @@ const localPosition = (event: MouseEvent | PointerEvent) => {
 
   return { x: event.clientX - rect.left, y: event.clientY - rect.top };
 };
+
+function drawnDeployment(
+  start: WorldPoint,
+  end: { x: number; y: number },
+  append: boolean,
+) {
+  if (
+    !formationDrawing ||
+    !snapshot ||
+    !currentMap ||
+    placementType ||
+    targetedAction ||
+    renderer.spawn ||
+    renderer.selectedShips.size ||
+    renderer.selectedAircraft.size
+  )
+    return undefined;
+  const members = snapshot.squads.filter(
+    (s) =>
+      renderer.selected.has(s.id) &&
+      s.playerId === localPlayerId &&
+      s.embarkedOn === null &&
+      !s.afloat &&
+      !s.refit,
+  );
+  if (!members.length || members.length !== renderer.selected.size)
+    return undefined;
+  const line = deploymentLine(
+    members.map((s) => {
+      const last = s.queuedOrders[s.queuedOrders.length - 1] ?? s.order;
+      const origin =
+        append && last.type === "move"
+          ? {
+              x: last.x ?? ((last.tile % snapshot!.width) + 0.5) * FIXED,
+              y:
+                last.y ??
+                (Math.floor(last.tile / snapshot!.width) + 0.5) * FIXED,
+            }
+          : { x: s.x, y: s.y };
+      return { id: s.id, origin };
+    }),
+    {
+      start,
+      end: { x: Math.round(end.x * FIXED), y: Math.round(end.y * FIXED) },
+    },
+  );
+  if (!line) return undefined;
+  const valid = [...line.slots.values()].every((point) => {
+    const x = Math.floor(point.x / FIXED),
+      y = Math.floor(point.y / FIXED),
+      map = currentMap!.map;
+    return map.isValidCoord(x, y) && map.isLand(map.ref(x, y));
+  });
+  return { line, valid, ids: members.map((s) => s.id) };
+}
 
 canvas.addEventListener("contextmenu", (event) => event.preventDefault());
 
@@ -1321,6 +1397,7 @@ canvas.addEventListener("pointerdown", (event) => {
     shift: event.shiftKey,
 
     moved: false,
+    lineStart: formationDrawing && event.button===2 ? (()=>{const w=renderer.world(p.x,p.y);return {x:Math.round(w.x*FIXED),y:Math.round(w.y*FIXED)};})() : undefined,
   };
 });
 
@@ -1355,8 +1432,18 @@ canvas.addEventListener("pointermove", (event) => {
 
   if (!drag) return;
 
-  if ((p.x - drag.x) ** 2 + (p.y - drag.y) ** 2 > 25) drag.moved = true;
+  // Require a deliberate gesture at overview zoom and meaningful world travel
+  // when zoomed in, so camera magnification cannot make tiny clicks deploy squads.
+  const dragThreshold = drag.button === 2 && drag.lineStart
+    ? Math.max(48, renderer.pixelsPerCell * 1.5)
+    : 5;
+  if ((p.x - drag.x) ** 2 + (p.y - drag.y) ** 2 > dragThreshold ** 2)
+    drag.moved = true;
 
+  if (drag.button===2 && drag.moved && drag.lineStart) {
+    const deployment=drawnDeployment(drag.lineStart,renderer.world(p.x,p.y),drag.shift);
+    renderer.deploymentPreview=deployment ? {line:deployment.line,valid:deployment.valid,color:COLORS[localPlayerId]} : undefined;
+  }
   if (drag.button === 1) renderer.pan(p.x - drag.lastX, p.y - drag.lastY);
   else if (drag.button === 0 && drag.moved)
     renderer.selectionBox = { x1: drag.x, y1: drag.y, x2: p.x, y2: p.y };
@@ -1394,6 +1481,7 @@ canvas.addEventListener("pointerup", (event) => {
   drag = undefined;
 
   renderer.selectionBox = undefined;
+  renderer.deploymentPreview = undefined;
 
   if (
     start.button === 2 &&
@@ -1480,14 +1568,7 @@ canvas.addEventListener("pointerup", (event) => {
       for (const squad of snapshot.squads) {
         if (squad.playerId !== localPlayerId || squad.embarkedOn !== null) continue;
 
-        const position = renderer.screen(squad.x / FIXED, squad.y / FIXED);
-
-        if (
-          position.x >= Math.min(p.x, start.x) &&
-          position.x <= Math.max(p.x, start.x) &&
-          position.y >= Math.min(p.y, start.y) &&
-          position.y <= Math.max(p.y, start.y)
-        )
+        if (renderer.squadIntersectsBox(squad, start.x, start.y, p.x, p.y))
           candidates.squads.push(squad.id);
       }
 
@@ -1587,6 +1668,16 @@ canvas.addEventListener("pointerup", (event) => {
 
     updateHud();
   } else if (start.button === 2) {
+    if (start.moved && start.lineStart) {
+      const deployment=drawnDeployment(start.lineStart,renderer.world(p.x,p.y),start.shift);
+      if(deployment) {
+        if(!deployment.valid) { notify("Keep the deployment positions on land inside the map"); return; }
+        const midpoint={x:Math.round((deployment.line.start.x+deployment.line.end.x)/2),y:Math.round((deployment.line.start.y+deployment.line.end.y)/2)};
+        const tile=currentMap!.map.ref(Math.floor(midpoint.x/FIXED),Math.floor(midpoint.y/FIXED));
+        command({type:"order",playerId:localPlayerId,squadIds:deployment.ids,append:start.shift,order:{type:"move",tile},deploymentLine:{start:start.lineStart,end:{x:Math.round(renderer.world(p.x,p.y).x*FIXED),y:Math.round(renderer.world(p.x,p.y).y*FIXED)}}});
+        return;
+      }
+    }
     if (renderer.selectedAircraft.size) {
       const position = renderer.world(p.x, p.y);
       const order = sortieCommand(snapshot, localPlayerId,
@@ -1706,8 +1797,8 @@ canvas.addEventListener("pointerup", (event) => {
 
 canvas.addEventListener("pointercancel", () => {
   drag = undefined;
-
   renderer.selectionBox = undefined;
+  renderer.deploymentPreview = undefined;
 });
 
 canvas.addEventListener("dblclick", (event) => {
@@ -1858,6 +1949,7 @@ document.addEventListener("keydown", (event) => {
       break;
 
     case "cancel":
+      drag=undefined; renderer.selectionBox=undefined; renderer.deploymentPreview=undefined;
       cancelPlacement();
 
       hud.closeInspection();
@@ -1889,7 +1981,11 @@ function frame(now: number): void {
   }
   const pan = cameraPan.step(now);
   if (pan.x || pan.y) renderer.pan(pan.x, pan.y);
-  if (renderer.draw(now, speed, paused)) updateCampLossLabels(now);
+  localPresentation?.beginFrame(now, speed, paused);
+  if (renderer.draw(now, speed, paused)) {
+    updateCampLossLabels(now);
+    localPresentation?.endFrame(now, performance.now() - started);
+  }
   browserDiagnostics.record("frame", performance.now() - started);
   if (snapshot && now >= nextClientDiagnosticsAt && (worker instanceof OnlineMatchSession || onlineQuery.has("diagnostics"))) {
     nextClientDiagnosticsAt = now + 30_000;
@@ -1911,5 +2007,9 @@ requestAnimationFrame(frame);
 const launchMap = new URLSearchParams(window.location.search).get("map");
 if (MAPS.some((map) => map.id === launchMap))
   element<HTMLSelectElement>("map").value = launchMap!;
+const launchSize = onlineQuery.get("size");
+if (["250", "500", "1000"].includes(launchSize ?? ""))
+  element<HTMLSelectElement>("world-size").value = launchSize!;
 
+localProfile?.initializeControls();
 void start();

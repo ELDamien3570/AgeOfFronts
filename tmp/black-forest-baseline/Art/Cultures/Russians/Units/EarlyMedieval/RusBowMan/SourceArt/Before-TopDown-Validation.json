@@ -1,0 +1,22 @@
+{
+  "file": "Idle-v1.png",
+  "size": [
+    1302,
+    1302
+  ],
+  "mode": "RGBA",
+  "visibleBounds": [
+    113,
+    71,
+    1264,
+    1278
+  ],
+  "guardAlphaMax": 0,
+  "sha256": "3c4a0755a12b5b428f648a51808da8c7598f54a2937ff6e6be2b51489f3a0783",
+  "nativePixelsPreserved": true,
+  "transparentPadding": 24,
+  "frameCount": 1,
+  "failures": [],
+  "userApproval": "Pending idle design review",
+  "runtimeIntegration": false
+}

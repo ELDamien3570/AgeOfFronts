@@ -133,7 +133,7 @@ parentPort.on(
                 map: request.map,
                 territoryIncomeScale: request.options.territoryIncomeScale,
               }
-            : await loadServerMap(request.settings);
+            : await loadServerMap(request.settings, undefined, request.options.seed);
           const options = {
             ...request.options,
             territoryIncomeScale: loaded.territoryIncomeScale,

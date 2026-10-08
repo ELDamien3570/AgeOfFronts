@@ -1,0 +1,442 @@
+{
+  "date": "2026-10-07",
+  "mode": "built-in-imagegen",
+  "unit": "Rus Crossbowman",
+  "age": "LateMedieval",
+  "userApproval": "Idle approved; animations pending user review.",
+  "records": [
+    {
+      "file": "Idle-v1.png",
+      "prompt": "Use case: stylized-concept. Create ONE single idleframe transparentgameunit: LateMedieval RUS CROSSBOWMAN. Image1 PRIMARYcostume/weaponreference: simple pointed CONICAL smoothdarkironhelmet withwideironrim, darkchainmailcoif coveringneck/shoulders andshortsleevedmailshirt/skirt over mutedDARKPURPLElongsleevedclothandtrousers, brownbeltwithbrassbuckle, cream/brass cuffdetails, tanleatherboltpouchsat hips, practicalbrowndarkboots, blondbeardmostlyoccludedoverhead. RusticwoodenCROSSBOW: straightbrownwoodtillerstocklongitudinal towardtarget, ONEtransversecurvedbowprod boundtofrontstock, tautstringfromtipsbacktolatch, ONEshort straightiron-tippedBOLTlyingONtopcentralstockgroove, footstirrupatfrontmetalring. No handboworlongarrow, no shield. Image2 ONLYcamera/style/proportionsreference: EXACT90degreeVERTICAL OVERHEADorthographic straightdown gamecamera. Topofconicalhelmetcrown seen ABOVEbroadchainmailshouldertops, frontchest extremelyforeshortenedhiddenbelowhead, legsshortbootsseenfromabove, nofrontal/isometric portrait. SoldierfacesSCREENBOTTOM. Idle calmlyholdsREADYcrossbowintwohands acrosslowerfrontaimingstraightSCREENBOTTOM: righttriggerhandnearrearstockunderbody, leftsupporthandunderforestock; straightstockandboltcenterlineverticalY, crossbowprod spansscreenleft/right. ONEcrossbowoneprodonestringonebolt, allmechanicallyconnected clearstock/grip/latchandstirrup. Handsnotthroughstring. SamecrispdimensionalpaintedRTSstyle Image2 BUT no redgreenscaledhelmetfurplatepauldrons. Preserve reference1mailpurplehelmetleatheridentity. Fullsingleactor completeequipment centeredonsquare1254x1254or equivalent, >=80pxcleartransparentmargins, maxoccupancy85%, compacttopdownsilhouette readable48/64px. ActualRGBAalpha0outsidecharacter, nobackdropssceneryshadowsglowhazegridlettering. Noatlasoranimationyet. Priority strictTOPDOWN and clearlyCROSSBOWnotbow.",
+      "references": [
+        "C:/Users/Damien/AppData/Local/Temp/codex-clipboard-78f8bb8c-e91a-4b78-8562-1d41a2450c9c.png",
+        "C:/Users/Damien/Documents/GitHub/AgeOfFronts/AgeOfFronts/Art/Cultures/Russians/Units/EarlyMedieval/RusBowMan/SourceArt/Native-Idle-TopDown-v2.png"
+      ],
+      "generatedSource": "C:/Users/Damien/.codex/generated_images/01a1166c-83ee-7ae0-be97-78c470de8962/exec-4e27c4dd-fafe-485a-a321-4565e66eb12a.png"
+    },
+    {
+      "file": "Idle-TopDown-v2.png",
+      "nativeFile": "Native-Idle-TopDown-v2.png",
+      "prompt": "Use case: precise-object-edit. AttachedRUSCROSSBOWMAN idle needs CAMERA correction ONLY. Re-render EXACT90DEGREEVERTICALOVERHEADorthographic directly aboveuprightbody. Currentimage angled showslongbeardfronthelmetchest: wrong. ViewtopofCONICALhelmet asROUNDcircle withPOINTATCENTERofcircle, nottipatupperendofanoval; concentricroundhelmetrim. Chainmailshouldertops broad seen ABOVE; mailshirtfrontbelttunictorso muchSHORTERinprojectionpartlyoccludedunderhelmet. Beardonlytinytipbelowrim mostlyhidden notfull beardfront. Legsforeshortenedbootsseenfromaboveclosebody NOTlongfrontaltrousers. Broadcompacttopdownbodylikegameunit overhead, notportraitofmanlookingdown. Keep smoothconicalironhelmetnotpatternedscales, chainmailcoifshirt/sleeves darkpurpleclothbrasscreamcuffsbelttanboltpouchesbrownboots. Preservecrossbowmechanicsandshape: longwoodstockwithoneboltONtopgroove pointsSTRAIGHTscreenBOTTOM, onecurvedtransversewoodprod oneVstringbacktolatch footstirrupfront. Righttriggerhandrearstock leftsupporthandforestock bothhandsvalid. Bowstockremainsclearlyvisibleinfrontbottom butbodyshorter. PaintedRTSstyle exactsameequipmentandcolors, trueoverheadcamera primarychange. Singlecompleteidleframe square1254x1254orequivalent80pxtransparentmargins truealpha0backgroundnoshadowsgridsletters. Critical helmTIPcentrallyaboveROUNDhelmet footprint and fronttorso barelyvisible, feetshort seenfromtop.",
+      "reference": "C:/Users/Damien/.codex/generated_images/01a1166c-83ee-7ae0-be97-78c470de8962/exec-4e27c4dd-fafe-485a-a321-4565e66eb12a.png",
+      "generatedSource": "C:/Users/Damien/.codex/generated_images/01a1166c-83ee-7ae0-be97-78c470de8962/exec-c963d98a-2ea7-45b9-b241-b7292728ddba.png"
+    },
+    {
+      "file": "Idle-Lowered-v3.png",
+      "nativeFile": "Native-Idle-Lowered-v3.png",
+      "prompt": "Use case: precise-object-edit. Edit attached single overhead Rus Crossbowman idle sprite. Repose CROSSBOW AND ARMS to a relaxed LOW CARRY with muzzle/frontstirrup angled physically DOWN TOWARD GROUND, NOT level forward aiming. Weapon supported in bothhands in FRONT of hips, below waist. EntirerearBUTT endstock plainlyvisible OUTSIDE body's silhouette, no stockdisappearinginsidegut, no buttpressedintoabdomen. Stockcanangle diagonallyacrosslowerfront toallowbuttbesidehip inclearspace; muzzle angleddown foreshortensstockin overheadprojection, frontprodclosertofeet. RighttriggerhandholdsREARGRIP BEHINDstringcatch; leftsupporthandcradlesUNDERSIDEofFORESTOCK betweenstringcatchandbowprod. Handsoverlaponlystockgrip, NEVERbowstring orits path. Stringlies ONTOP ofweapon abovehands thatare underneathstock; visible unbrokenstringfromleftprodtipbacktolatchTHENrightprodtip, nock/bolt oncentralstockgroove, no stringrunningunderhandoracrossforearm. Onecrossbow, straightwoodstockonecurvedwoodprod attachedforward, onecockedstringoneironbolt footstirrupatfront. Compactrealisticcrossbow notoversized. Armsbentrelaxed lowered, NOTfiringpose. Preserve EXACT90degreeverticaloverheadcamera smoothironconicalhelmetcrownwideironrim broadmailcoifshoulders foreshortenedshirt darkpurpleclothbrasscreamcuffsbelttanboltpouchesbrownboots tinyblondbeardfringe. SameidentitypaintedRTSstyleproportionscolors. Onecompletepose centered1254squareorequivalent80pxtransparentmargins, truealpha0outsidecharacter, no sceneryshadowslettersorgrid. Essential: loweredtowardgroundidle, visiblebuttclearofbody, handsUNDERstock/stringplane withno hand-stringcollision.",
+      "reference": "C:/Users/Damien/Documents/GitHub/AgeOfFronts/AgeOfFronts/Art/Cultures/Russians/Units/LateMedieval/RusCrossbowman/SourceArt/Native-Idle-TopDown-v2.png",
+      "generatedSource": "C:/Users/Damien/.codex/generated_images/01a1166c-83ee-7ae0-be97-78c470de8962/exec-dbb4ebcf-b5ee-49c8-8b61-ada61c3cf41c.png"
+    },
+    {
+      "id": "idle",
+      "file": "idle.png",
+      "nativeFile": "Native-idle.png",
+      "status": "selected-source",
+      "prompt": "Use case: stylized-concept. Create a production game animation sprite sheet from Image 1 (approved identity reference). EXACTLY 1536x1024 pixels, 3 columns by 2 rows, six equal 512x512 cells read left-right then next row. One solo Rus Crossbowman per cell, centered at same body root, consistent scale, entire silhouette safely within cell with ample transparent margins. Truly transparent background, no floor, shadows, grids, text or numbers. Camera directly overhead, fixed in all six frames; facing SCREEN BOTTOM. Match reference iron conical helmet crown, chainmail coif and shirt, purple leather clothing, gold cream cuffs, blond beard, tan bolt pouches, brown boots and wooden CROSSBOW. No shield, no handbow. Preserve role readability. Crossbow stock is wooden, short bolt on groove, transverse curved wooden prod and single physical string. Animation: Subtle six-frame breathing loop in the approved lowered loaded crossbow carry. Six distinct progressing poses, cohesive motions, equipment consistent.",
+      "reference": "C:/Users/Damien/Documents/GitHub/AgeOfFronts/AgeOfFronts/Art/Cultures/Russians/Units/LateMedieval/RusCrossbowman/SourceArt/Native-Idle-Lowered-v3.png",
+      "generatedSource": "C:/Users/Damien/.codex/generated_images/01a1166c-83ee-7ae0-be97-78c470de8962/exec-500df587-0426-4614-8cdb-7b58cb745eab.png"
+    },
+    {
+      "id": "running",
+      "file": "running.png",
+      "nativeFile": "Native-running.png",
+      "status": "selected-source",
+      "prompt": "Use case: stylized-concept. Create a production game animation sprite sheet from Image 1 (approved identity reference). EXACTLY 1536x1024 pixels, 3 columns by 2 rows, six equal 512x512 cells read left-right then next row. One solo Rus Crossbowman per cell, centered at same body root, consistent scale, entire silhouette safely within cell with ample transparent margins. Truly transparent background, no floor, shadows, grids, text or numbers. Camera directly overhead, fixed in all six frames; facing SCREEN BOTTOM. Match reference iron conical helmet crown, chainmail coif and shirt, purple leather clothing, gold cream cuffs, blond beard, tan bolt pouches, brown boots and wooden CROSSBOW. No shield, no handbow. Preserve role readability. Crossbow stock is wooden, short bolt on groove, transverse curved wooden prod and single physical string. Animation: Six-frame walking cycle, clearly alternate left and right foot forward; lowered crossbow carried securely. Six distinct progressing poses, cohesive motions, equipment consistent.",
+      "reference": "C:/Users/Damien/Documents/GitHub/AgeOfFronts/AgeOfFronts/Art/Cultures/Russians/Units/LateMedieval/RusCrossbowman/SourceArt/Native-Idle-Lowered-v3.png",
+      "generatedSource": "C:/Users/Damien/.codex/generated_images/01a1166c-83ee-7ae0-be97-78c470de8962/exec-bec62adb-cf27-4388-871c-5b4dc8791589.png"
+    },
+    {
+      "id": "attack",
+      "file": "attack.png",
+      "nativeFile": "Native-attack.png",
+      "status": "selected-source",
+      "prompt": "Use case: stylized-concept. Create a production game animation sprite sheet from Image 1 (approved identity reference). EXACTLY 1536x1024 pixels, 3 columns by 2 rows, six equal 512x512 cells read left-right then next row. One solo Rus Crossbowman per cell, centered at same body root, consistent scale, entire silhouette safely within cell with ample transparent margins. Truly transparent background, no floor, shadows, grids, text or numbers. Camera directly overhead, fixed in all six frames; facing SCREEN BOTTOM. Match reference iron conical helmet crown, chainmail coif and shirt, purple leather clothing, gold cream cuffs, blond beard, tan bolt pouches, brown boots and wooden CROSSBOW. No shield, no handbow. Preserve role readability. Crossbow stock is wooden, short bolt on groove, transverse curved wooden prod and single physical string. Animation: Six-frame crossbow shot: 1 lowered loaded carry; 2 raise weapon aim straight SCREEN BOTTOM; 3 steady aimed cocked crossbow; 4 release bolt straight down-screen string snaps forward; 5 follow through with empty crossbow; 6 lower empty weapon. No hand pulls string during shot. One short straight bolt only before release. String V connects limb tips to catch when cocked, moves forward after release; never two strings. Butt outside torso, hands clear of string. Six distinct progressing poses, cohesive motions, equipment consistent.",
+      "reference": "C:/Users/Damien/Documents/GitHub/AgeOfFronts/AgeOfFronts/Art/Cultures/Russians/Units/LateMedieval/RusCrossbowman/SourceArt/Native-Idle-Lowered-v3.png",
+      "generatedSource": "C:/Users/Damien/.codex/generated_images/01a1166c-83ee-7ae0-be97-78c470de8962/exec-87bb277e-5930-4c1c-b49e-60f272ceaa99.png"
+    },
+    {
+      "id": "reload",
+      "file": "reload.png",
+      "nativeFile": "Native-reload.png",
+      "status": "superseded-reload-order",
+      "prompt": "Use case: stylized-concept. Create a production game animation sprite sheet from Image 1 (approved identity reference). EXACTLY 1536x1024 pixels, 3 columns by 2 rows, six equal 512x512 cells read left-right then next row. One solo Rus Crossbowman per cell, centered at same body root, consistent scale, entire silhouette safely within cell with ample transparent margins. Truly transparent background, no floor, shadows, grids, text or numbers. Camera directly overhead, fixed in all six frames; facing SCREEN BOTTOM. Match reference iron conical helmet crown, chainmail coif and shirt, purple leather clothing, gold cream cuffs, blond beard, tan bolt pouches, brown boots and wooden CROSSBOW. No shield, no handbow. Preserve role readability. Crossbow stock is wooden, short bolt on groove, transverse curved wooden prod and single physical string. Animation: Six-frame mechanical CROSSBOW reload: 1 empty uncocked lowered crossbow; 2 place one foot in muzzle stirrup with weapon muzzle toward floor; 3 both hands pull string back along stock toward catch using foot for leverage; 4 string latched to catch, reach bolt pouch; 5 put one short straight bolt in stock groove; 6 return loaded crossbow to approved lowered carry. Show distinct spanning and bolt loading stages. No longbow gestures. Six distinct progressing poses, cohesive motions, equipment consistent.",
+      "reference": "C:/Users/Damien/Documents/GitHub/AgeOfFronts/AgeOfFronts/Art/Cultures/Russians/Units/LateMedieval/RusCrossbowman/SourceArt/Native-Idle-Lowered-v3.png",
+      "generatedSource": "C:/Users/Damien/.codex/generated_images/01a1166c-83ee-7ae0-be97-78c470de8962/exec-e430b8b8-85ba-4c12-9712-580a2a586efb.png"
+    },
+    {
+      "id": "reload",
+      "file": "reload-v2.png",
+      "nativeFile": "Native-reload-v2.png",
+      "status": "selected-source",
+      "prompt": "Create a transparent 1536x1024 six-frame sprite sheet EXACT 3 columns x2rows512squarecells no labels. Reference is approved Rus Crossbowman identity, directly overhead, facing screenbottom, purple clothing chainmail ironhelmet browngear. Six CROSSBOW RELOAD frames fixedroot/scale centered eachcell amplecleartransparentmargin. IMPORTANT bolt must be ABSENT in frames1,2,3,4; present only in5,6. Frame1 empty lowered wooden crossbow, uncocked forward string near curved transverse prod. Frame2 place foot in muzzle stirrup, no bolt. Frame3 BOTH hands pull ONE string backward along woodenstock to latch, EMPTY groove no projectile. Frame4 stringlatched V fromlimbtips tocatch, handreachesbeltboltpouch, EMPTY groove. Frame5 insert ONE shortstraightbolt intogroove. Frame6 EXACT reference approved loweredloaded carry, visible straightbolt alongwoodengroove, Vstringcocked. Samebowallframes, one stringonly, handssupportstockunderneathnevercrossstring, buttclearofgut. Completecharacterineachcell, topdown camera fixed, no background/shadows/text.",
+      "reference": "C:/Users/Damien/Documents/GitHub/AgeOfFronts/AgeOfFronts/Art/Cultures/Russians/Units/LateMedieval/RusCrossbowman/SourceArt/Native-Idle-Lowered-v3.png",
+      "generatedSource": "C:/Users/Damien/.codex/generated_images/01a1166c-83ee-7ae0-be97-78c470de8962/exec-1a83301a-9bf0-4209-b4c6-ccd30a98c688.png"
+    },
+    {
+      "id": "hit",
+      "file": "hit.png",
+      "nativeFile": "Native-hit.png",
+      "status": "selected-source",
+      "prompt": "Use case: stylized-concept. Create a production game animation sprite sheet from Image 1 (approved identity reference). EXACTLY 1536x1024 pixels, 3 columns by 2 rows, six equal 512x512 cells read left-right then next row. One solo Rus Crossbowman per cell, centered at same body root, consistent scale, entire silhouette safely within cell with ample transparent margins. Truly transparent background, no floor, shadows, grids, text or numbers. Camera directly overhead, fixed in all six frames; facing SCREEN BOTTOM. Match reference iron conical helmet crown, chainmail coif and shirt, purple leather clothing, gold cream cuffs, blond beard, tan bolt pouches, brown boots and wooden CROSSBOW. No shield, no handbow. Preserve role readability. Crossbow stock is wooden, short bolt on groove, transverse curved wooden prod and single physical string. Animation: Six-frame light hit reaction: upright carry, recoil, shoulders jolt, recover stance, settle, return carry. Keep weapon. Six distinct progressing poses, cohesive motions, equipment consistent.",
+      "reference": "C:/Users/Damien/Documents/GitHub/AgeOfFronts/AgeOfFronts/Art/Cultures/Russians/Units/LateMedieval/RusCrossbowman/SourceArt/Native-Idle-Lowered-v3.png",
+      "generatedSource": "C:/Users/Damien/.codex/generated_images/01a1166c-83ee-7ae0-be97-78c470de8962/exec-368266de-3b83-430d-90d6-06de908fbf39.png"
+    },
+    {
+      "id": "charged",
+      "file": "charged.png",
+      "nativeFile": "Native-charged.png",
+      "status": "selected-source",
+      "prompt": "Use case: stylized-concept. Create a production game animation sprite sheet from Image 1 (approved identity reference). EXACTLY 1536x1024 pixels, 3 columns by 2 rows, six equal 512x512 cells read left-right then next row. One solo Rus Crossbowman per cell, centered at same body root, consistent scale, entire silhouette safely within cell with ample transparent margins. Truly transparent background, no floor, shadows, grids, text or numbers. Camera directly overhead, fixed in all six frames; facing SCREEN BOTTOM. Match reference iron conical helmet crown, chainmail coif and shirt, purple leather clothing, gold cream cuffs, blond beard, tan bolt pouches, brown boots and wooden CROSSBOW. No shield, no handbow. Preserve role readability. Crossbow stock is wooden, short bolt on groove, transverse curved wooden prod and single physical string. Animation: Six-frame heavy charge-impact reaction: ready, forceful impact, stagger backward, deep braced crouch, regain balance, recover. Keep crossbow. Six distinct progressing poses, cohesive motions, equipment consistent.",
+      "reference": "C:/Users/Damien/Documents/GitHub/AgeOfFronts/AgeOfFronts/Art/Cultures/Russians/Units/LateMedieval/RusCrossbowman/SourceArt/Native-Idle-Lowered-v3.png",
+      "generatedSource": "C:/Users/Damien/.codex/generated_images/01a1166c-83ee-7ae0-be97-78c470de8962/exec-74212428-aba4-467f-9f95-08b7de36e138.png"
+    },
+    {
+      "id": "charge",
+      "file": "charge.png",
+      "nativeFile": "Native-charge.png",
+      "status": "selected-source",
+      "prompt": "Use case: stylized-concept. Create a production game animation sprite sheet from Image 1 (approved identity reference). EXACTLY 1536x1024 pixels, 3 columns by 2 rows, six equal 512x512 cells read left-right then next row. One solo Rus Crossbowman per cell, centered at same body root, consistent scale, entire silhouette safely within cell with ample transparent margins. Truly transparent background, no floor, shadows, grids, text or numbers. Camera directly overhead, fixed in all six frames; facing SCREEN BOTTOM. Match reference iron conical helmet crown, chainmail coif and shirt, purple leather clothing, gold cream cuffs, blond beard, tan bolt pouches, brown boots and wooden CROSSBOW. No shield, no handbow. Preserve role readability. Crossbow stock is wooden, short bolt on groove, transverse curved wooden prod and single physical string. Animation: Six-frame sustained running loop full alternating strides, lowered crossbow secured, clear leg movement. Six distinct progressing poses, cohesive motions, equipment consistent.",
+      "reference": "C:/Users/Damien/Documents/GitHub/AgeOfFronts/AgeOfFronts/Art/Cultures/Russians/Units/LateMedieval/RusCrossbowman/SourceArt/Native-Idle-Lowered-v3.png",
+      "generatedSource": "C:/Users/Damien/.codex/generated_images/01a1166c-83ee-7ae0-be97-78c470de8962/exec-a0b7cf44-2d53-4ba3-bc8d-518ce13b49a8.png"
+    },
+    {
+      "id": "charge-attack",
+      "file": "charge-attack.png",
+      "nativeFile": "Native-charge-attack.png",
+      "status": "superseded-lingering-bolt",
+      "prompt": "Use case: stylized-concept. Create a production game animation sprite sheet from Image 1 (approved identity reference). EXACTLY 1536x1024 pixels, 3 columns by 2 rows, six equal 512x512 cells read left-right then next row. One solo Rus Crossbowman per cell, centered at same body root, consistent scale, entire silhouette safely within cell with ample transparent margins. Truly transparent background, no floor, shadows, grids, text or numbers. Camera directly overhead, fixed in all six frames; facing SCREEN BOTTOM. Match reference iron conical helmet crown, chainmail coif and shirt, purple leather clothing, gold cream cuffs, blond beard, tan bolt pouches, brown boots and wooden CROSSBOW. No shield, no handbow. Preserve role readability. Crossbow stock is wooden, short bolt on groove, transverse curved wooden prod and single physical string. Animation: Six-frame advancing crossbow shot: 1 advance with lowered loaded weapon; 2 brake plant feet and raise; 3 aim exactly SCREEN BOTTOM; 4 release short bolt forward down-screen string snaps forward; 5 follow-through empty; 6 lower empty crossbow. No hand-drawing string. One crossbow and one string only, loaded V at catch before firing then uncocked forward string. Hands clear string, butt outside gut. Six distinct progressing poses, cohesive motions, equipment consistent.",
+      "reference": "C:/Users/Damien/Documents/GitHub/AgeOfFronts/AgeOfFronts/Art/Cultures/Russians/Units/LateMedieval/RusCrossbowman/SourceArt/Native-Idle-Lowered-v3.png",
+      "generatedSource": "C:/Users/Damien/.codex/generated_images/01a1166c-83ee-7ae0-be97-78c470de8962/exec-010070d1-ec02-4b5a-9f20-d8eef8b13146.png"
+    },
+    {
+      "id": "charge-attack",
+      "file": "charge-attack-v2.png",
+      "nativeFile": "Native-charge-attack-v2.png",
+      "status": "selected-source",
+      "prompt": "Precisely edit this transparent 1536x1024 3x2 crossbowman charge-shot sprite sheet. Keep all six soldier poses, overhead camera, scale and equipment unchanged. Fix ONLY projectile and string mechanics: cells1,2,3 have exactly one short straight bolt loaded in stock groove, V string tips-to-catch. Cell4 firing release show bolt separated moving straight screenbottom, empty stock groove; string forward near wooden curved prod. Cells5 and6 must have NO arrow or bolt anywhere: stock groove visibly completely EMPTY plain wood, single uncocked string forward nearprod. Specifically REMOVE silver arrowhead/shaft currently lingering in cell5. No ghoststrings no duplicatebows. Preserve real transparent alpha, no shadow background no labels.",
+      "reference": "C:/Users/Damien/.codex/generated_images/01a1166c-83ee-7ae0-be97-78c470de8962/exec-010070d1-ec02-4b5a-9f20-d8eef8b13146.png",
+      "generatedSource": "C:/Users/Damien/.codex/generated_images/01a1166c-83ee-7ae0-be97-78c470de8962/exec-da3a6eb5-4711-46ba-b069-467d662c4a26.png"
+    },
+    {
+      "id": "death",
+      "file": "death.png",
+      "nativeFile": "Native-death.png",
+      "status": "selected-source",
+      "prompt": "Use case: stylized-concept. Create a production game animation sprite sheet from Image 1 (approved identity reference). EXACTLY 1536x1024 pixels, 3 columns by 2 rows, six equal 512x512 cells read left-right then next row. One solo Rus Crossbowman per cell, centered at same body root, consistent scale, entire silhouette safely within cell with ample transparent margins. Truly transparent background, no floor, shadows, grids, text or numbers. Camera directly overhead, fixed in all six frames; facing SCREEN BOTTOM. Match reference iron conical helmet crown, chainmail coif and shirt, purple leather clothing, gold cream cuffs, blond beard, tan bolt pouches, brown boots and wooden CROSSBOW. No shield, no handbow. Preserve role readability. Crossbow stock is wooden, short bolt on groove, transverse curved wooden prod and single physical string. Animation: Six-frame COMPLETE side death: standing; knees buckle; tip left; fall left onto side; lying on side; settled side corpse. Same overhead camera, no inversion or reset, crossbow falls beside body. Six distinct progressing poses, cohesive motions, equipment consistent.",
+      "reference": "C:/Users/Damien/Documents/GitHub/AgeOfFronts/AgeOfFronts/Art/Cultures/Russians/Units/LateMedieval/RusCrossbowman/SourceArt/Native-Idle-Lowered-v3.png",
+      "generatedSource": "C:/Users/Damien/.codex/generated_images/01a1166c-83ee-7ae0-be97-78c470de8962/exec-94b09f4e-2ebc-47f8-b08c-5d9e30e3cfb3.png"
+    },
+    {
+      "id": "death-back",
+      "file": "death-back.png",
+      "nativeFile": "Native-death-back.png",
+      "status": "selected-source",
+      "prompt": "Use case: stylized-concept. Create a production game animation sprite sheet from Image 1 (approved identity reference). EXACTLY 1536x1024 pixels, 3 columns by 2 rows, six equal 512x512 cells read left-right then next row. One solo Rus Crossbowman per cell, centered at same body root, consistent scale, entire silhouette safely within cell with ample transparent margins. Truly transparent background, no floor, shadows, grids, text or numbers. Camera directly overhead, fixed in all six frames; facing SCREEN BOTTOM. Match reference iron conical helmet crown, chainmail coif and shirt, purple leather clothing, gold cream cuffs, blond beard, tan bolt pouches, brown boots and wooden CROSSBOW. No shield, no handbow. Preserve role readability. Crossbow stock is wooden, short bolt on groove, transverse curved wooden prod and single physical string. Animation: Six-frame COMPLETE back death: standing; recoil; buckle backward; falling onto back; lying on back; settled back corpse. Head stays screen-top throughout, no flip at end. Crossbow falls alongside. Six distinct progressing poses, cohesive motions, equipment consistent.",
+      "reference": "C:/Users/Damien/Documents/GitHub/AgeOfFronts/AgeOfFronts/Art/Cultures/Russians/Units/LateMedieval/RusCrossbowman/SourceArt/Native-Idle-Lowered-v3.png",
+      "generatedSource": "C:/Users/Damien/.codex/generated_images/01a1166c-83ee-7ae0-be97-78c470de8962/exec-2cabfb70-2142-4584-a1e5-7e2f6edab959.png"
+    },
+    {
+      "file": "Idle-String-Draft.png",
+      "nativeFile": "Native-Idle-String-Draft.png",
+      "prompt": "Use case: precise-object-edit. Correct ONLY the crossbow string geometry and supporting hand clearance in this approved solo game sprite. Preserve exactly the directly overhead camera, lowered diagonal crossbow carry, soldier identity, pose, armor, purple sleeves, helmet, pouches, boots, wooden stock and curved wooden prod, lighting and style. Real transparent background. The current cord visually tunnels through the stock and hand; remove that cord completely and replace it with ONE continuous cocked bowstring: two straight taut segments from each outer prod tip to ONE raised metal release nut/catch on TOP surface of stock immediately behind the bolt's feathered nock. At the center show cord visibly passing OVER the upper surface of the wooden stock, resting in the exposed catch and directly behind the bolt nock, never disappearing inside wood or emerging through sides. Entire string and catch must sit above the stock, with hands supporting underside and rear grip behind catch, clear of the string triangle. Adjust supporting fingers slightly if needed to expose that top-plane connection. Short straight bolt remains seated on top central groove. No second string or extra cord, no cord through hand, no string beneath bow or stock. One complete centered soldier, ample transparent margin, same square composition. This is a single corrected IDLE frame, no sheet or labels.",
+      "reference": "C:/Users/Damien/Documents/GitHub/AgeOfFronts/AgeOfFronts/Art/Cultures/Russians/Units/LateMedieval/RusCrossbowman/SourceArt/Native-Idle-Lowered-v3.png",
+      "generatedSource": "C:/Users/Damien/.codex/generated_images/01a1166c-83ee-7ae0-be97-78c470de8962/exec-562480b6-3030-4702-827f-9a3eb3834582.png",
+      "tool": "built-in-imagegen",
+      "status": "superseded-catch-refinement"
+    },
+    {
+      "file": "Idle-String-v4.png",
+      "nativeFile": "Native-Idle-String-v4.png",
+      "prompt": "Precise edit to this single transparent overhead Rus Crossbowman idle. Keep entire soldier and weapon pose unchanged. Correct ONLY the center vertex of cocked bowstring. It currently meets stock too far forward beside the middle of bolt. Move the single V-string center attachment REARWARD UP-LEFT along the stock to immediately behind the white bolt feathers/nock (near image coordinate x580 y710 on1254square). Add exposed metal release catch there on TOP of woodenstock. Route two single taut stringsegments from outer woodenprod tips to this rear catch. String must be continuous and clearly lie ON TOP of wood, never inside wood. Remove old forward catch cord junction completely, no extra strings. Short straight bolt lies forward fromcatch toward muzzle. Hands remain beneath stock and rear grip clearofstring. Preserve silhouette,costume,camera,lighting,size and genuine transparentalpha. One idleframe no labels.",
+      "reference": "C:/Users/Damien/.codex/generated_images/01a1166c-83ee-7ae0-be97-78c470de8962/exec-562480b6-3030-4702-827f-9a3eb3834582.png",
+      "generatedSource": "C:/Users/Damien/.codex/generated_images/01a1166c-83ee-7ae0-be97-78c470de8962/exec-fbd7fcd5-30cc-435d-a111-e1950f767c70.png",
+      "tool": "built-in-imagegen",
+      "status": "pending-idle-review"
+    },
+    {
+      "file": "Idle-String-v5.png",
+      "nativeFile": "Native-Idle-String-v5.png",
+      "prompt": "Edit this exact transparent sprite. Mandatory major visible correction: pull the cocked crossbow string MUCH FARTHER BACK toward the soldier, to the very REAR END of the loaded bolt, behind ALL white feathers. Current metal catch and string junction near middle of bolt at (630,780) is wrong. DELETE that old metal bridge and string junction entirely. New string junction and small release nut must be at (575,690), directly behind the very rearmost end of the bolt at the TOP LEFT of the woodenstock. These coordinates are for1254square input. Two taut cord segments extend from outer prod tips around (500,980) and (900,835) to new junction (575,690). This creates a noticeably LONGER deeper drawn V triangle than original, reaches almost to rear grip hand. String rests visibly on TOP surface of stock at bolt nock, never inside wood. Keep bolt straight and seated in same groove, its feathers IN FRONT of the new stringcatch toward muzzle. No cord or metal bridge remaining at old (630,780). Keep all other artwork unchanged: overhead camera, lowereddiagonalcrossbow, wood limbs, hands armor helmet mail purplecostume leathergearboots proportionslighting. Hands belowstock clearstring, one stringonebolt. Transparentbackground, one complete solo idle frame, no text.",
+      "reference": "C:/Users/Damien/Documents/GitHub/AgeOfFronts/AgeOfFronts/Art/Cultures/Russians/Units/LateMedieval/RusCrossbowman/SourceArt/Native-Idle-String-v4.png",
+      "generatedSource": "C:/Users/Damien/.codex/generated_images/01a1166c-83ee-7ae0-be97-78c470de8962/exec-1fd85c43-99ed-4c4e-b5f8-62f1d96d3d2e.png",
+      "tool": "built-in-imagegen",
+      "status": "pending-idle-review"
+    },
+    {
+      "id": "idle",
+      "file": "idle-string-v5.png",
+      "nativeFile": "Native-idle-string-v5.png",
+      "status": "superseded-mechanics-draft",
+      "prompt": "Use case: stylized-concept. Production animation sheet using Image1 approved identity AND EXACT weapon geometry. Transparent 1536x1024, exactly 3columns 2rows six512squarecells readlefttoright. One complete solo Rus Crossbowman percell centered samebodyroot uniformscale amplecleartransparentmargin. Directly overhead fixedcamera facing screenbottom, exact ironhelmet chainmail purplecloth goldcuffs leatherpouches boots wooden crossbow. Critical crossbow: ONE visible taut Vstring running from prod tips all way BACK to the raised catch on TOP of stock immediately BEHIND the very rear of bolt nock/whitefeathers, near rear grip. Match reference DEEP LONG V triangle, never shallow string junction at midshaft. String above stock, hands belowstock clearcord. One straight shortbolt seatedgroove FORWARD of rearstringcatch. No secondbow or secondstring. Subtle breathing loop keeping approved exact deep V string geometry behind bolt feathers in all six poses. Six distinct smoothly sequential poses. No shadows ground text labels lines or grid. Preserve transparent alpha.",
+      "reference": "C:/Users/Damien/Documents/GitHub/AgeOfFronts/AgeOfFronts/Art/Cultures/Russians/Units/LateMedieval/RusCrossbowman/SourceArt/Native-Idle-String-v5.png",
+      "generatedSource": "C:/Users/Damien/.codex/generated_images/01a1166c-83ee-7ae0-be97-78c470de8962/exec-20d9296e-d3c2-49cb-bcc5-15c62175e3e1.png"
+    },
+    {
+      "id": "idle",
+      "file": "idle-string-v5b.png",
+      "nativeFile": "Native-idle-string-v5b.png",
+      "status": "selected-source",
+      "prompt": "Create ONLY an IDLE BREATHING loop from this reference. Transparent1536x1024, 3columns2rows six512squarecells. All SIX frames MUST retain EXACT same lowered diagonal loaded crossbow pose and feet planted. Very subtle shoulders rise and fall only. NO aiming, shooting, turning, reloading, stepping, or emptyweapon. ONE bolt seated in groove in EVERYframe. ONE deep Vstring fromtipstoREARcatch BEHINDallwhitefeathers in EVERYframe exactly asreference, visibleabove stock handsunderneathclearstring. Fixed overheadcamera ironhelmetmailpurplesleevesgoldcuffspouchesboots unchanged. Six distinct subtlebreathingposes same root scale centered complete silhouette ampletransparentmargin. No labels shadows or background.",
+      "reference": "C:/Users/Damien/Documents/GitHub/AgeOfFronts/AgeOfFronts/Art/Cultures/Russians/Units/LateMedieval/RusCrossbowman/SourceArt/Native-Idle-String-v5.png",
+      "generatedSource": "C:/Users/Damien/.codex/generated_images/01a1166c-83ee-7ae0-be97-78c470de8962/exec-02407b20-a489-42c2-96a1-eb7d91e5588f.png"
+    },
+    {
+      "id": "running",
+      "file": "running-string-v5.png",
+      "nativeFile": "Native-running-string-v5.png",
+      "status": "selected-source",
+      "prompt": "Use case: stylized-concept. Production animation sheet using Image1 approved identity AND EXACT weapon geometry. Transparent 1536x1024, exactly 3columns 2rows six512squarecells readlefttoright. One complete solo Rus Crossbowman percell centered samebodyroot uniformscale amplecleartransparentmargin. Directly overhead fixedcamera facing screenbottom, exact ironhelmet chainmail purplecloth goldcuffs leatherpouches boots wooden crossbow. Critical crossbow: ONE visible taut Vstring running from prod tips all way BACK to the raised catch on TOP of stock immediately BEHIND the very rear of bolt nock/whitefeathers, near rear grip. Match reference DEEP LONG V triangle, never shallow string junction at midshaft. String above stock, hands belowstock clearcord. One straight shortbolt seatedgroove FORWARD of rearstringcatch. No secondbow or secondstring. Walking loop with clearly alternating left and right strides. Secure loaded low carry, deep V string behind bolt nock throughout. Six distinct smoothly sequential poses. No shadows ground text labels lines or grid. Preserve transparent alpha.",
+      "reference": "C:/Users/Damien/Documents/GitHub/AgeOfFronts/AgeOfFronts/Art/Cultures/Russians/Units/LateMedieval/RusCrossbowman/SourceArt/Native-Idle-String-v5.png",
+      "generatedSource": "C:/Users/Damien/.codex/generated_images/01a1166c-83ee-7ae0-be97-78c470de8962/exec-79453a78-3e9d-4e08-9b8e-b9b297e377b8.png"
+    },
+    {
+      "id": "attack",
+      "file": "attack-string-v5.png",
+      "nativeFile": "Native-attack-string-v5.png",
+      "status": "superseded-mechanics-draft",
+      "prompt": "Use case: stylized-concept. Production animation sheet using Image1 approved identity AND EXACT weapon geometry. Transparent 1536x1024, exactly 3columns 2rows six512squarecells readlefttoright. One complete solo Rus Crossbowman percell centered samebodyroot uniformscale amplecleartransparentmargin. Directly overhead fixedcamera facing screenbottom, exact ironhelmet chainmail purplecloth goldcuffs leatherpouches boots wooden crossbow. Critical crossbow: ONE visible taut Vstring running from prod tips all way BACK to the raised catch on TOP of stock immediately BEHIND the very rear of bolt nock/whitefeathers, near rear grip. Match reference DEEP LONG V triangle, never shallow string junction at midshaft. String above stock, hands belowstock clearcord. One straight shortbolt seatedgroove FORWARD of rearstringcatch. No secondbow or secondstring. 1 approved low loaded carry, 2 raise to aim exactly screenbottom, 3 hold aim loaded, 4 fire bolt straight screenbottom, 5 empty followthrough, 6 lower empty crossbow. String remains at rear catch BEHIND ALL FEATHERS in1-3; at4 release forward; in5-6 single uncocked string near prod and NO bolt. Hands never draw string while firing. Six distinct smoothly sequential poses. No shadows ground text labels lines or grid. Preserve transparent alpha.",
+      "reference": "C:/Users/Damien/Documents/GitHub/AgeOfFronts/AgeOfFronts/Art/Cultures/Russians/Units/LateMedieval/RusCrossbowman/SourceArt/Native-Idle-String-v5.png",
+      "generatedSource": "C:/Users/Damien/.codex/generated_images/01a1166c-83ee-7ae0-be97-78c470de8962/exec-c5943f0e-e285-4bc8-98c2-24b0e5b95c11.png"
+    },
+    {
+      "id": "attack",
+      "file": "attack-string-v5b.png",
+      "nativeFile": "Native-attack-string-v5b.png",
+      "status": "selected-source",
+      "prompt": "Precisely correct this existing transparent six-frame 1536x1024 sheet, three columns two rows, cell order left to right. Change ONLY the string in cell 6 (bottom right). The weapon has just fired: remove the deep V drawn string reaching rear grip, and place one relaxed string spanning limb tips near the front wooden prod, as already shown in cell 5. Empty stock groove, no bolt. Preserve cells 1-5 unchanged, including the release bolt in cell 4. Preserve poses, character, fixed overhead camera, frame centers, scale, all costume and wood geometry. No added objects, duplicate strings, shadows, labels or background.",
+      "reference": "C:/Users/Damien/.codex/generated_images/01a1166c-83ee-7ae0-be97-78c470de8962/exec-c5943f0e-e285-4bc8-98c2-24b0e5b95c11.png",
+      "generatedSource": "C:/Users/Damien/.codex/generated_images/01a1166c-83ee-7ae0-be97-78c470de8962/exec-5b3fdf8d-d200-424c-be92-e6c75c5f1256.png"
+    },
+    {
+      "id": "reload",
+      "file": "reload-string-v5.png",
+      "nativeFile": "Native-reload-string-v5.png",
+      "status": "superseded-mechanics-draft",
+      "prompt": "Use case: stylized-concept. Production animation sheet using Image1 approved identity AND EXACT weapon geometry. Transparent 1536x1024, exactly 3columns 2rows six512squarecells readlefttoright. One complete solo Rus Crossbowman percell centered samebodyroot uniformscale amplecleartransparentmargin. Directly overhead fixedcamera facing screenbottom, exact ironhelmet chainmail purplecloth goldcuffs leatherpouches boots wooden crossbow. Critical crossbow: ONE visible taut Vstring running from prod tips all way BACK to the raised catch on TOP of stock immediately BEHIND the very rear of bolt nock/whitefeathers, near rear grip. Match reference DEEP LONG V triangle, never shallow string junction at midshaft. String above stock, hands belowstock clearcord. One straight shortbolt seatedgroove FORWARD of rearstringcatch. No secondbow or secondstring. 1 empty uncocked low carry, 2 foot braces muzzle stirrup EMPTY groove, 3 both hands pull single string back to REARMOST catch empty groove, 4 latch string at rear catch and reach bolt pouch EMPTY groove, 5 insert short straight bolt ahead of string, 6 approved loaded low carry deep V at bolt nock. NO bolt in1-4, bolt only5-6. Spanning then loading. Six distinct smoothly sequential poses. No shadows ground text labels lines or grid. Preserve transparent alpha.",
+      "reference": "C:/Users/Damien/Documents/GitHub/AgeOfFronts/AgeOfFronts/Art/Cultures/Russians/Units/LateMedieval/RusCrossbowman/SourceArt/Native-Idle-String-v5.png",
+      "generatedSource": "C:/Users/Damien/.codex/generated_images/01a1166c-83ee-7ae0-be97-78c470de8962/exec-6d4352ca-e2e0-4a74-946b-07eefe22be95.png"
+    },
+    {
+      "id": "reload",
+      "file": "reload-string-v5b.png",
+      "nativeFile": "Native-reload-string-v5b.png",
+      "status": "superseded-spanning-bolt",
+      "prompt": "Precisely correct this existing transparent six-frame 1536x1024 sheet, three columns two rows, cell order left to right. Remove the bolt entirely from cells 1, 2, 3 and 4. All four stock grooves must be EMPTY plain wood, no silver arrowhead, no orange shaft, no white feathers. Cell 1 must have uncocked string near the front prod. Cell 2 must show uncocked string near prod, foot braced in stirrup, empty groove. Cell 3 shows hands pulling string back, empty groove. Cell 4 has deep V string latched at the rear catch, empty groove. Keep bolt loading in cell 5 and loaded approved carry in cell 6. Exactly one bolt only in cells 5 and 6. Preserve poses, character, fixed overhead camera, frame centers, scale, all costume and wood geometry. No added objects, duplicate strings, shadows, labels or background.",
+      "reference": "C:/Users/Damien/.codex/generated_images/01a1166c-83ee-7ae0-be97-78c470de8962/exec-6d4352ca-e2e0-4a74-946b-07eefe22be95.png",
+      "generatedSource": "C:/Users/Damien/.codex/generated_images/01a1166c-83ee-7ae0-be97-78c470de8962/exec-57ea7ae8-48d6-4ee8-aaf1-06a672b8ab32.png"
+    },
+    {
+      "id": "reload",
+      "file": "reload-string-v5c.png",
+      "nativeFile": "Native-reload-string-v5c.png",
+      "status": "selected-source",
+      "prompt": "Precise removal edit of this transparent six-cell1536x1024 sprite sheet. ONLY TOP MIDDLE AND TOP RIGHT cells: erase the orange central arrow shaft AND its small silver pointed head at the bottom of the stock. There must be NO ORANGE OR SILVER LINE in either stock groove. Replace that line with plain dark brown empty wooden channel. Crossbow is being spanned before ammunition inserted. Do not alter other cells or pose. The shaft must be removed, not faded. Preserve exact3x2celllayout, overheadcamera, costume, scale, transparentalpha. No new objects, no text.",
+      "reference": "C:/Users/Damien/.codex/generated_images/01a1166c-83ee-7ae0-be97-78c470de8962/exec-57ea7ae8-48d6-4ee8-aaf1-06a672b8ab32.png",
+      "generatedSource": "C:/Users/Damien/.codex/generated_images/01a1166c-83ee-7ae0-be97-78c470de8962/exec-ef12280c-2e4d-441a-a00a-3e9077cc6ff6.png",
+      "cellSources": {
+        "0": "Native-attack-string-v5b.png",
+        "3": "Native-reload-string-v5b.png",
+        "4": "Native-reload-string-v5b.png",
+        "5": "Native-reload-string-v5b.png"
+      },
+      "cellIndices": {
+        "0": 5
+      }
+    },
+    {
+      "id": "hit",
+      "file": "hit-string-v5.png",
+      "nativeFile": "Native-hit-string-v5.png",
+      "status": "selected-source",
+      "prompt": "Use case: stylized-concept. Production animation sheet using Image1 approved identity AND EXACT weapon geometry. Transparent 1536x1024, exactly 3columns 2rows six512squarecells readlefttoright. One complete solo Rus Crossbowman percell centered samebodyroot uniformscale amplecleartransparentmargin. Directly overhead fixedcamera facing screenbottom, exact ironhelmet chainmail purplecloth goldcuffs leatherpouches boots wooden crossbow. Critical crossbow: ONE visible taut Vstring running from prod tips all way BACK to the raised catch on TOP of stock immediately BEHIND the very rear of bolt nock/whitefeathers, near rear grip. Match reference DEEP LONG V triangle, never shallow string junction at midshaft. String above stock, hands belowstock clearcord. One straight shortbolt seatedgroove FORWARD of rearstringcatch. No secondbow or secondstring. Light hit reaction loop progression: ready recoil shoulders jolt recover settle ready. Loaded crossbow retained with deep V behind nock. Six distinct smoothly sequential poses. No shadows ground text labels lines or grid. Preserve transparent alpha.",
+      "reference": "C:/Users/Damien/Documents/GitHub/AgeOfFronts/AgeOfFronts/Art/Cultures/Russians/Units/LateMedieval/RusCrossbowman/SourceArt/Native-Idle-String-v5.png",
+      "generatedSource": "C:/Users/Damien/.codex/generated_images/01a1166c-83ee-7ae0-be97-78c470de8962/exec-864253db-6ef4-4ba3-bbf3-5385280e9579.png"
+    },
+    {
+      "id": "charged",
+      "file": "charged-string-v5.png",
+      "nativeFile": "Native-charged-string-v5.png",
+      "status": "superseded-mechanics-draft",
+      "prompt": "Use case: stylized-concept. Production animation sheet using Image1 approved identity AND EXACT weapon geometry. Transparent 1536x1024, exactly 3columns 2rows six512squarecells readlefttoright. One complete solo Rus Crossbowman percell centered samebodyroot uniformscale amplecleartransparentmargin. Directly overhead fixedcamera facing screenbottom, exact ironhelmet chainmail purplecloth goldcuffs leatherpouches boots wooden crossbow. Critical crossbow: ONE visible taut Vstring running from prod tips all way BACK to the raised catch on TOP of stock immediately BEHIND the very rear of bolt nock/whitefeathers, near rear grip. Match reference DEEP LONG V triangle, never shallow string junction at midshaft. String above stock, hands belowstock clearcord. One straight shortbolt seatedgroove FORWARD of rearstringcatch. No secondbow or secondstring. Heavy impact reaction: ready forcefulhit backwardstagger bracedcrouch regainbalance recover. Loaded crossbow retained deep V behind nock. Six distinct smoothly sequential poses. No shadows ground text labels lines or grid. Preserve transparent alpha.",
+      "reference": "C:/Users/Damien/Documents/GitHub/AgeOfFronts/AgeOfFronts/Art/Cultures/Russians/Units/LateMedieval/RusCrossbowman/SourceArt/Native-Idle-String-v5.png",
+      "generatedSource": "C:/Users/Damien/.codex/generated_images/01a1166c-83ee-7ae0-be97-78c470de8962/exec-f94b885a-7106-4cb2-8bab-dc6923df83ad.png"
+    },
+    {
+      "id": "charged",
+      "file": "charged-string-v5b.png",
+      "nativeFile": "Native-charged-string-v5b.png",
+      "status": "selected-source",
+      "prompt": "Precise edit this transparent1536x1024 six-cell sheet3columns2rows. This is a GET CHARGED IMPACT reaction, NOT a shot. Correct ONLY cell2 topmiddle: completely REMOVE the flying bolt and its white motion trail below muzzle, then show exactly one stationary loaded bolt seated along stock groove inside weapon, with deep Vstring cocked at rearmost catch behind bolt feathers matching cells1and3. No firing projectile or trails anywhere. Keep all six original recoil/stagger/recovery poses, gear,camera,roots,scale unchanged. Onebowonestringloadedbolt everyframe. Transparentbackground no labels.",
+      "reference": "C:/Users/Damien/.codex/generated_images/01a1166c-83ee-7ae0-be97-78c470de8962/exec-f94b885a-7106-4cb2-8bab-dc6923df83ad.png",
+      "generatedSource": "C:/Users/Damien/.codex/generated_images/01a1166c-83ee-7ae0-be97-78c470de8962/exec-25909855-2040-4330-9a05-6b42df1a3060.png"
+    },
+    {
+      "id": "charge",
+      "file": "charge-string-v5.png",
+      "nativeFile": "Native-charge-string-v5.png",
+      "status": "selected-source",
+      "prompt": "Use case: stylized-concept. Production animation sheet using Image1 approved identity AND EXACT weapon geometry. Transparent 1536x1024, exactly 3columns 2rows six512squarecells readlefttoright. One complete solo Rus Crossbowman percell centered samebodyroot uniformscale amplecleartransparentmargin. Directly overhead fixedcamera facing screenbottom, exact ironhelmet chainmail purplecloth goldcuffs leatherpouches boots wooden crossbow. Critical crossbow: ONE visible taut Vstring running from prod tips all way BACK to the raised catch on TOP of stock immediately BEHIND the very rear of bolt nock/whitefeathers, near rear grip. Match reference DEEP LONG V triangle, never shallow string junction at midshaft. String above stock, hands belowstock clearcord. One straight shortbolt seatedgroove FORWARD of rearstringcatch. No secondbow or secondstring. Running cycle full alternating strides. Secure loaded low crossbow carry and deep V behind bolt nock throughout. Six distinct smoothly sequential poses. No shadows ground text labels lines or grid. Preserve transparent alpha.",
+      "reference": "C:/Users/Damien/Documents/GitHub/AgeOfFronts/AgeOfFronts/Art/Cultures/Russians/Units/LateMedieval/RusCrossbowman/SourceArt/Native-Idle-String-v5.png",
+      "generatedSource": "C:/Users/Damien/.codex/generated_images/01a1166c-83ee-7ae0-be97-78c470de8962/exec-d13640cc-1a2c-4220-9eed-83aca2a7383c.png"
+    },
+    {
+      "id": "charge-attack",
+      "file": "charge-attack-string-v5.png",
+      "nativeFile": "Native-charge-attack-string-v5.png",
+      "status": "selected-source",
+      "prompt": "Use case: stylized-concept. Production animation sheet using Image1 approved identity AND EXACT weapon geometry. Transparent 1536x1024, exactly 3columns 2rows six512squarecells readlefttoright. One complete solo Rus Crossbowman percell centered samebodyroot uniformscale amplecleartransparentmargin. Directly overhead fixedcamera facing screenbottom, exact ironhelmet chainmail purplecloth goldcuffs leatherpouches boots wooden crossbow. Critical crossbow: ONE visible taut Vstring running from prod tips all way BACK to the raised catch on TOP of stock immediately BEHIND the very rear of bolt nock/whitefeathers, near rear grip. Match reference DEEP LONG V triangle, never shallow string junction at midshaft. String above stock, hands belowstock clearcord. One straight shortbolt seatedgroove FORWARD of rearstringcatch. No secondbow or secondstring. 1 advance with loaded low carry, 2 brake plant raise weapon, 3 aim straight screenbottom, 4 fire straight screenbottom, 5 EMPTY followthrough, 6 lower EMPTY crossbow. Deep Vstring at REARcatch BEHINDfeathers in1-3, stringforwardnearprod4-6, NO BOLT in5-6. No handspanningwhileshooting. Six distinct smoothly sequential poses. No shadows ground text labels lines or grid. Preserve transparent alpha.",
+      "reference": "C:/Users/Damien/Documents/GitHub/AgeOfFronts/AgeOfFronts/Art/Cultures/Russians/Units/LateMedieval/RusCrossbowman/SourceArt/Native-Idle-String-v5.png",
+      "generatedSource": "C:/Users/Damien/.codex/generated_images/01a1166c-83ee-7ae0-be97-78c470de8962/exec-d39f32ac-f8f2-4633-93ba-0b5c506c9b0b.png",
+      "cellSources": {
+        "3": "Native-attack-string-v5b.png",
+        "4": "Native-attack-string-v5b.png",
+        "5": "Native-attack-string-v5b.png"
+      }
+    },
+    {
+      "id": "death",
+      "file": "death-string-v5.png",
+      "nativeFile": "Native-death-string-v5.png",
+      "status": "selected-source",
+      "prompt": "Use case: stylized-concept. Production animation sheet using Image1 approved identity AND EXACT weapon geometry. Transparent 1536x1024, exactly 3columns 2rows six512squarecells readlefttoright. One complete solo Rus Crossbowman percell centered samebodyroot uniformscale amplecleartransparentmargin. Directly overhead fixedcamera facing screenbottom, exact ironhelmet chainmail purplecloth goldcuffs leatherpouches boots wooden crossbow. Critical crossbow: ONE visible taut Vstring running from prod tips all way BACK to the raised catch on TOP of stock immediately BEHIND the very rear of bolt nock/whitefeathers, near rear grip. Match reference DEEP LONG V triangle, never shallow string junction at midshaft. String above stock, hands belowstock clearcord. One straight shortbolt seatedgroove FORWARD of rearstringcatch. No secondbow or secondstring. Complete sidefall: standing kneebuckle tipleft fallleft lyingonside settledsidecorpse. Fixedoverheadcamera stableheadposition finaltwoframes. Crossbowdropsalongside retaining deep V geometry. Six distinct smoothly sequential poses. No shadows ground text labels lines or grid. Preserve transparent alpha.",
+      "reference": "C:/Users/Damien/Documents/GitHub/AgeOfFronts/AgeOfFronts/Art/Cultures/Russians/Units/LateMedieval/RusCrossbowman/SourceArt/Native-Idle-String-v5.png",
+      "generatedSource": "C:/Users/Damien/.codex/generated_images/01a1166c-83ee-7ae0-be97-78c470de8962/exec-cf23938f-7b2c-470f-a1a5-362eb645b051.png"
+    },
+    {
+      "id": "death-back",
+      "file": "death-back-string-v5.png",
+      "nativeFile": "Native-death-back-string-v5.png",
+      "status": "superseded-mechanics-draft",
+      "prompt": "Use case: stylized-concept. Production animation sheet using Image1 approved identity AND EXACT weapon geometry. Transparent 1536x1024, exactly 3columns 2rows six512squarecells readlefttoright. One complete solo Rus Crossbowman percell centered samebodyroot uniformscale amplecleartransparentmargin. Directly overhead fixedcamera facing screenbottom, exact ironhelmet chainmail purplecloth goldcuffs leatherpouches boots wooden crossbow. Critical crossbow: ONE visible taut Vstring running from prod tips all way BACK to the raised catch on TOP of stock immediately BEHIND the very rear of bolt nock/whitefeathers, near rear grip. Match reference DEEP LONG V triangle, never shallow string junction at midshaft. String above stock, hands belowstock clearcord. One straight shortbolt seatedgroove FORWARD of rearstringcatch. No secondbow or secondstring. Complete backfall: standing recoil buckleback fallingonback lyingonback settledbackcorpse. Headalwaysscreentop no inversion. Crossbowdropsalongside retaining deep V geometry. Six distinct smoothly sequential poses. No shadows ground text labels lines or grid. Preserve transparent alpha.",
+      "reference": "C:/Users/Damien/Documents/GitHub/AgeOfFronts/AgeOfFronts/Art/Cultures/Russians/Units/LateMedieval/RusCrossbowman/SourceArt/Native-Idle-String-v5.png",
+      "generatedSource": "C:/Users/Damien/.codex/generated_images/01a1166c-83ee-7ae0-be97-78c470de8962/exec-5e08a00c-ae9c-4211-a0f1-fbd461ed613a.png"
+    },
+    {
+      "id": "death-back",
+      "file": "death-back-string-v5c.png",
+      "nativeFile": "Native-death-back-string-v5c.png",
+      "status": "selected-source",
+      "prompt": "Precise removal edit of this transparent six-cell1536x1024 sprite sheet. ONLY TOP MIDDLE cell: remove the floating orange arrow with silver head below crossbow muzzle. This death reaction is not firing. Keep all body and weapon poses exactly the same. No projectile anywhere outside crossbow. Preserve exact3x2celllayout, overheadcamera, costume, scale, transparentalpha. No new objects, no text.",
+      "reference": "C:/Users/Damien/.codex/generated_images/01a1166c-83ee-7ae0-be97-78c470de8962/exec-5e08a00c-ae9c-4211-a0f1-fbd461ed613a.png",
+      "generatedSource": "C:/Users/Damien/.codex/generated_images/01a1166c-83ee-7ae0-be97-78c470de8962/exec-013f45b8-fdda-44b7-aa54-29915bdc5e89.png"
+    },
+    {
+      "id": "idle",
+      "file": "idle-string-v5-clean.png",
+      "nativeFile": "Native-idle-string-v5-clean.png",
+      "status": "unused-extraction-variant",
+      "prompt": "Background extraction ONLY. Remove every dark brown/gray glow, rectangular cell backdrop and semi-transparent haze from this six-frame 1536x1024 game sprite sheet. Make ALL pixels outside actual soldier/crossbow/projectile silhouettes fully transparent including open spaces between string and stock and between limbs. Preserve every existing sprite pixel shape, pose, position, scale, weapon string, bolts, colors, sharp edges, fixed3columns2rows512cells. Do NOT redraw or animate anything, do NOT move or rescale sprites. No shadows, no background or checkerboard. Genuine alpha transparency with crisp silhouette cutouts. Preserve the six distinct frames exactly.",
+      "reference": "C:/Users/Damien/Documents/GitHub/AgeOfFronts/AgeOfFronts/Art/Cultures/Russians/Units/LateMedieval/RusCrossbowman/idle-string-v5b.png",
+      "generatedSource": "C:/Users/Damien/.codex/generated_images/01a1166c-83ee-7ae0-be97-78c470de8962/exec-2666fe1b-fac4-47f9-be3f-bfbf4950034a.png"
+    },
+    {
+      "id": "running",
+      "file": "running-string-v5-clean.png",
+      "nativeFile": "Native-running-string-v5-clean.png",
+      "status": "unused-extraction-variant",
+      "prompt": "Background extraction ONLY. Remove every dark brown/gray glow, rectangular cell backdrop and semi-transparent haze from this six-frame 1536x1024 game sprite sheet. Make ALL pixels outside actual soldier/crossbow/projectile silhouettes fully transparent including open spaces between string and stock and between limbs. Preserve every existing sprite pixel shape, pose, position, scale, weapon string, bolts, colors, sharp edges, fixed3columns2rows512cells. Do NOT redraw or animate anything, do NOT move or rescale sprites. No shadows, no background or checkerboard. Genuine alpha transparency with crisp silhouette cutouts. Preserve the six distinct frames exactly.",
+      "reference": "C:/Users/Damien/Documents/GitHub/AgeOfFronts/AgeOfFronts/Art/Cultures/Russians/Units/LateMedieval/RusCrossbowman/running-string-v5.png",
+      "generatedSource": "C:/Users/Damien/.codex/generated_images/01a1166c-83ee-7ae0-be97-78c470de8962/exec-22c94a12-a33d-4572-90e2-a472e42ae390.png"
+    },
+    {
+      "id": "attack",
+      "file": "attack-string-v5-clean.png",
+      "nativeFile": "Native-attack-string-v5-clean.png",
+      "status": "selected-source",
+      "prompt": "Background extraction ONLY. Remove every dark brown/gray glow, rectangular cell backdrop and semi-transparent haze from this six-frame 1536x1024 game sprite sheet. Make ALL pixels outside actual soldier/crossbow/projectile silhouettes fully transparent including open spaces between string and stock and between limbs. Preserve every existing sprite pixel shape, pose, position, scale, weapon string, bolts, colors, sharp edges, fixed3columns2rows512cells. Do NOT redraw or animate anything, do NOT move or rescale sprites. No shadows, no background or checkerboard. Genuine alpha transparency with crisp silhouette cutouts. Preserve the six distinct frames exactly.",
+      "reference": "C:/Users/Damien/Documents/GitHub/AgeOfFronts/AgeOfFronts/Art/Cultures/Russians/Units/LateMedieval/RusCrossbowman/attack-string-v5b.png",
+      "generatedSource": "C:/Users/Damien/.codex/generated_images/01a1166c-83ee-7ae0-be97-78c470de8962/exec-ff601f70-1493-4b8f-aad3-b5bba4aa0476.png"
+    },
+    {
+      "id": "reload",
+      "file": "reload-string-v5-clean.png",
+      "nativeFile": "Native-reload-string-v5-clean.png",
+      "status": "selected-source",
+      "prompt": "Background extraction ONLY. Remove every dark brown/gray glow, rectangular cell backdrop and semi-transparent haze from this six-frame 1536x1024 game sprite sheet. Make ALL pixels outside actual soldier/crossbow/projectile silhouettes fully transparent including open spaces between string and stock and between limbs. Preserve every existing sprite pixel shape, pose, position, scale, weapon string, bolts, colors, sharp edges, fixed3columns2rows512cells. Do NOT redraw or animate anything, do NOT move or rescale sprites. No shadows, no background or checkerboard. Genuine alpha transparency with crisp silhouette cutouts. Preserve the six distinct frames exactly.",
+      "reference": "C:/Users/Damien/Documents/GitHub/AgeOfFronts/AgeOfFronts/Art/Cultures/Russians/Units/LateMedieval/RusCrossbowman/reload-string-v5c.png",
+      "generatedSource": "C:/Users/Damien/.codex/generated_images/01a1166c-83ee-7ae0-be97-78c470de8962/exec-24750b57-61f5-4248-8156-02fdf3f32749.png"
+    },
+    {
+      "id": "hit",
+      "file": "hit-string-v5-clean.png",
+      "nativeFile": "Native-hit-string-v5-clean.png",
+      "status": "unused-extraction-variant",
+      "prompt": "Background extraction ONLY. Remove every dark brown/gray glow, rectangular cell backdrop and semi-transparent haze from this six-frame 1536x1024 game sprite sheet. Make ALL pixels outside actual soldier/crossbow/projectile silhouettes fully transparent including open spaces between string and stock and between limbs. Preserve every existing sprite pixel shape, pose, position, scale, weapon string, bolts, colors, sharp edges, fixed3columns2rows512cells. Do NOT redraw or animate anything, do NOT move or rescale sprites. No shadows, no background or checkerboard. Genuine alpha transparency with crisp silhouette cutouts. Preserve the six distinct frames exactly.",
+      "reference": "C:/Users/Damien/Documents/GitHub/AgeOfFronts/AgeOfFronts/Art/Cultures/Russians/Units/LateMedieval/RusCrossbowman/hit-string-v5.png",
+      "generatedSource": "C:/Users/Damien/.codex/generated_images/01a1166c-83ee-7ae0-be97-78c470de8962/exec-e7c31e29-1b67-4c58-b02a-09a1f498383b.png"
+    },
+    {
+      "id": "charged",
+      "file": "charged-string-v5-clean.png",
+      "nativeFile": "Native-charged-string-v5-clean.png",
+      "status": "unused-extraction-variant",
+      "prompt": "Background extraction ONLY. Remove every dark brown/gray glow, rectangular cell backdrop and semi-transparent haze from this six-frame 1536x1024 game sprite sheet. Make ALL pixels outside actual soldier/crossbow/projectile silhouettes fully transparent including open spaces between string and stock and between limbs. Preserve every existing sprite pixel shape, pose, position, scale, weapon string, bolts, colors, sharp edges, fixed3columns2rows512cells. Do NOT redraw or animate anything, do NOT move or rescale sprites. No shadows, no background or checkerboard. Genuine alpha transparency with crisp silhouette cutouts. Preserve the six distinct frames exactly.",
+      "reference": "C:/Users/Damien/Documents/GitHub/AgeOfFronts/AgeOfFronts/Art/Cultures/Russians/Units/LateMedieval/RusCrossbowman/charged-string-v5b.png",
+      "generatedSource": "C:/Users/Damien/.codex/generated_images/01a1166c-83ee-7ae0-be97-78c470de8962/exec-94d74414-ddef-4b2c-8bb1-8981dfa1182b.png"
+    },
+    {
+      "id": "charge",
+      "file": "charge-string-v5-clean.png",
+      "nativeFile": "Native-charge-string-v5-clean.png",
+      "status": "unused-extraction-variant",
+      "prompt": "Background extraction ONLY. Remove every dark brown/gray glow, rectangular cell backdrop and semi-transparent haze from this six-frame 1536x1024 game sprite sheet. Make ALL pixels outside actual soldier/crossbow/projectile silhouettes fully transparent including open spaces between string and stock and between limbs. Preserve every existing sprite pixel shape, pose, position, scale, weapon string, bolts, colors, sharp edges, fixed3columns2rows512cells. Do NOT redraw or animate anything, do NOT move or rescale sprites. No shadows, no background or checkerboard. Genuine alpha transparency with crisp silhouette cutouts. Preserve the six distinct frames exactly.",
+      "reference": "C:/Users/Damien/Documents/GitHub/AgeOfFronts/AgeOfFronts/Art/Cultures/Russians/Units/LateMedieval/RusCrossbowman/charge-string-v5.png",
+      "generatedSource": "C:/Users/Damien/.codex/generated_images/01a1166c-83ee-7ae0-be97-78c470de8962/exec-008875d3-6897-414e-8eec-0b60c72534e0.png"
+    },
+    {
+      "id": "charge-attack",
+      "file": "charge-attack-string-v5-clean.png",
+      "nativeFile": "Native-charge-attack-string-v5-clean.png",
+      "status": "selected-source",
+      "prompt": "Background extraction ONLY. Remove every dark brown/gray glow, rectangular cell backdrop and semi-transparent haze from this six-frame 1536x1024 game sprite sheet. Make ALL pixels outside actual soldier/crossbow/projectile silhouettes fully transparent including open spaces between string and stock and between limbs. Preserve every existing sprite pixel shape, pose, position, scale, weapon string, bolts, colors, sharp edges, fixed3columns2rows512cells. Do NOT redraw or animate anything, do NOT move or rescale sprites. No shadows, no background or checkerboard. Genuine alpha transparency with crisp silhouette cutouts. Preserve the six distinct frames exactly.",
+      "reference": "C:/Users/Damien/Documents/GitHub/AgeOfFronts/AgeOfFronts/Art/Cultures/Russians/Units/LateMedieval/RusCrossbowman/charge-attack-string-v5.png",
+      "generatedSource": "C:/Users/Damien/.codex/generated_images/01a1166c-83ee-7ae0-be97-78c470de8962/exec-e3faa720-5993-4853-a59d-6bf68c2ca069.png"
+    },
+    {
+      "id": "death",
+      "file": "death-string-v5-clean.png",
+      "nativeFile": "Native-death-string-v5-clean.png",
+      "status": "unused-extraction-variant",
+      "prompt": "Background extraction ONLY. Remove every dark brown/gray glow, rectangular cell backdrop and semi-transparent haze from this six-frame 1536x1024 game sprite sheet. Make ALL pixels outside actual soldier/crossbow/projectile silhouettes fully transparent including open spaces between string and stock and between limbs. Preserve every existing sprite pixel shape, pose, position, scale, weapon string, bolts, colors, sharp edges, fixed3columns2rows512cells. Do NOT redraw or animate anything, do NOT move or rescale sprites. No shadows, no background or checkerboard. Genuine alpha transparency with crisp silhouette cutouts. Preserve the six distinct frames exactly.",
+      "reference": "C:/Users/Damien/Documents/GitHub/AgeOfFronts/AgeOfFronts/Art/Cultures/Russians/Units/LateMedieval/RusCrossbowman/death-string-v5.png",
+      "generatedSource": "C:/Users/Damien/.codex/generated_images/01a1166c-83ee-7ae0-be97-78c470de8962/exec-69f88dc1-f210-4123-9e0a-6da0b0ccec20.png"
+    },
+    {
+      "id": "death-back",
+      "file": "death-back-string-v5-clean.png",
+      "nativeFile": "Native-death-back-string-v5-clean.png",
+      "status": "unused-extraction-variant",
+      "prompt": "Background extraction ONLY. Remove every dark brown/gray glow, rectangular cell backdrop and semi-transparent haze from this six-frame 1536x1024 game sprite sheet. Make ALL pixels outside actual soldier/crossbow/projectile silhouettes fully transparent including open spaces between string and stock and between limbs. Preserve every existing sprite pixel shape, pose, position, scale, weapon string, bolts, colors, sharp edges, fixed3columns2rows512cells. Do NOT redraw or animate anything, do NOT move or rescale sprites. No shadows, no background or checkerboard. Genuine alpha transparency with crisp silhouette cutouts. Preserve the six distinct frames exactly.",
+      "reference": "C:/Users/Damien/Documents/GitHub/AgeOfFronts/AgeOfFronts/Art/Cultures/Russians/Units/LateMedieval/RusCrossbowman/death-back-string-v5c.png",
+      "generatedSource": "C:/Users/Damien/.codex/generated_images/01a1166c-83ee-7ae0-be97-78c470de8962/exec-3e152f4a-6ee8-45dc-a680-96678547020e.png"
+    },
+    {
+      "id": "idle",
+      "file": "idle-motion-v6.png",
+      "nativeFile": "Native-idle-motion-v6.png",
+      "status": "selected-source",
+      "prompt": "Precise edit existing transparent 1536x1024 six-frame sprite sheet, 3 columns by2rows512cells. Make all six idle poses laterally stationary. Helmet crown, torso center, feet and crossbow center stay at exactly the same X coordinate relative to each cell. NO sideways sway, no rotation, no shifting stance, no swinging weapon. Only subtle shoulder breathing, 1-2 pixels vertical change at this scale. Keep loaded bolt and deep V string behind nock unchanged. All six frames retain the same approved low carry. Preserve character identity, armor purpleclothes, colors, camera, frame centers, current sprite scale and transparent background. No shadow/haze/text, no new weapon parts.",
+      "reference": "C:/Users/Damien/Documents/GitHub/AgeOfFronts/AgeOfFronts/Art/Cultures/Russians/Units/LateMedieval/RusCrossbowman/idle-string-v5b.png",
+      "generatedSource": "C:/Users/Damien/.codex/generated_images/01a1166c-83ee-7ae0-be97-78c470de8962/exec-ba8e1eb8-b49e-4002-9380-a5db492be631.png"
+    },
+    {
+      "id": "attack",
+      "file": "attack-motion-v6.png",
+      "nativeFile": "Native-attack-motion-v6.png",
+      "status": "superseded-string-detail",
+      "prompt": "Precise edit existing transparent 1536x1024 six-frame sprite sheet, 3 columns by2rows512cells. Fix ONLY final frame 6 (bottom-right). The wooden STOCK tilts diagonally down-right, but the FRONT PROD currently incorrectly stays horizontal. Rotate the entire connected crossbow together as ONE RIGID OBJECT as it lowers. Frame 6: stock long axis diagonal down-right, curved prod mounted PERPENDICULAR to that diagonal stock (so prod axis diagonal up-right/down-left), muzzle stirrup follows same stock rotation, one uncocked string connects both prod tips alongside front prod. No bent connection or detached/sliding prod. Keep empty groove with no bolt. Hands support the complete rotated weapon. Keep frames1-5 unchanged, especially the cocked rear string and single release. Preserve exact fixed overhead camera and character. Preserve character identity, armor purpleclothes, colors, camera, frame centers, current sprite scale and transparent background. No shadow/haze/text, no new weapon parts.",
+      "reference": "C:/Users/Damien/Documents/GitHub/AgeOfFronts/AgeOfFronts/Art/Cultures/Russians/Units/LateMedieval/RusCrossbowman/attack-string-v5-clean.png",
+      "generatedSource": "C:/Users/Damien/.codex/generated_images/01a1166c-83ee-7ae0-be97-78c470de8962/exec-0ef57ada-0f49-450f-8f0c-6580e6cacf28.png"
+    },
+    {
+      "id": "attack",
+      "file": "attack-motion-v6b.png",
+      "nativeFile": "Native-attack-motion-v6b.png",
+      "status": "selected-source",
+      "prompt": "Precise correction ONLY to bottom-right cell6 of this transparent 1536x1024 six-frame sheet. Keep newly corrected whole crossbow orientation exactly unchanged: diagonal down-right stock and perpendicular diagonal front prod. This is EMPTY AFTER FIRING. Remove any white/silver bolt feathers, arrow shaft or arrowhead from groove; groove is plain empty darkwood. Remove ALL long diagonal cord segments reaching back toward the rear grip/catch. Replace with exactly ONE relaxed bowstring: single short cord directly between the two OUTER prod tips at the FRONT of crossbow, adjacent to curved woodenprod, crossing near muzzle/front stock. NO deep Vstring, no rear string connection, no second cord. Preserve all six body poses camera armor scale and cells1-5 unchanged. Transparentbackground, crisp silhouettes no haze labels.",
+      "reference": "C:/Users/Damien/.codex/generated_images/01a1166c-83ee-7ae0-be97-78c470de8962/exec-0ef57ada-0f49-450f-8f0c-6580e6cacf28.png",
+      "generatedSource": "C:/Users/Damien/.codex/generated_images/01a1166c-83ee-7ae0-be97-78c470de8962/exec-cae7103e-dae3-47a7-8c7a-764821db8384.png"
+    }
+  ]
+}

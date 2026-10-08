@@ -9,8 +9,9 @@ export const ARMY_CAPS = Object.freeze([
     capacity: 30,
   },
   { technologyId: technologyAt("LateMedieval", "warfare", 1).id, capacity: 35 },
-  { technologyId: technologyAt("EarlyModern", "warfare", 1).id, capacity: 40 },
-  { technologyId: technologyAt("Modern", "warfare", 1).id, capacity: 50 },
+  { technologyId: technologyAt("Napoleonic", "warfare", 1).id, capacity: 40 },
+  { technologyId: technologyAt("EarlyModern", "warfare", 1).id, capacity: 50 },
+  { technologyId: technologyAt("Modern", "warfare", 1).id, capacity: 60 },
 ]);
 export function armyCapacity(completed: readonly string[]): number {
   if (!completed.includes(ARMY_TECHNOLOGY)) return 0;

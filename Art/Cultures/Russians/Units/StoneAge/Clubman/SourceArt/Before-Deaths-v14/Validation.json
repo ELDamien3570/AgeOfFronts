@@ -1,0 +1,758 @@
+{
+  "stage": "single-actor-art-prototype",
+  "checks": "RGBA, dimensions, transparency, distinct frames, visible artwork within eight-pixel guards, hashes",
+  "guardAlphaTolerance": 16,
+  "guardNote": "Generated sheets can contain alpha 1 residue. This checks visible spill; it is not a zero-alpha atlas certification.",
+  "visualApproval": "pending user review",
+  "engineIntegration": "not integrated",
+  "failures": [],
+  "sheets": [
+    {
+      "id": "idle",
+      "file": "Idle-Stylized-Clean-v8.png",
+      "size": [
+        1536,
+        1024
+      ],
+      "mode": "RGBA",
+      "alphaExtrema": [
+        0,
+        254
+      ],
+      "uniqueFrames": 6,
+      "frames": [
+        {
+          "index": 0,
+          "visibleBounds": [
+            76,
+            105,
+            438,
+            430
+          ],
+          "guardAlphaMax": 1,
+          "sha256": "e6791708ffbcadcdb8133764e4d59525519e33927982ee965582ac00dd687e27"
+        },
+        {
+          "index": 1,
+          "visibleBounds": [
+            75,
+            105,
+            440,
+            428
+          ],
+          "guardAlphaMax": 1,
+          "sha256": "1088b4c11acd70a2cdb34d7169ec5462f0f0c4f330c1417b69ff6cd69abab0ee"
+        },
+        {
+          "index": 2,
+          "visibleBounds": [
+            69,
+            100,
+            448,
+            431
+          ],
+          "guardAlphaMax": 0,
+          "sha256": "565b4562068566b3718607d5225682e23f7e7916bf30ed988c1adbe0ebde91a8"
+        },
+        {
+          "index": 3,
+          "visibleBounds": [
+            76,
+            92,
+            438,
+            419
+          ],
+          "guardAlphaMax": 1,
+          "sha256": "758e6d9a4d5a133b46fd879c5b765603ecfc2382871e39bad71f7bfa980fc0c7"
+        },
+        {
+          "index": 4,
+          "visibleBounds": [
+            76,
+            92,
+            439,
+            418
+          ],
+          "guardAlphaMax": 0,
+          "sha256": "30ddb96506560d73170001d564598e166d3be9e5d954f553eadc44395669cbe3"
+        },
+        {
+          "index": 5,
+          "visibleBounds": [
+            78,
+            95,
+            442,
+            422
+          ],
+          "guardAlphaMax": 0,
+          "sha256": "8b996dd9e143c1749257e9852940e48f3e0903917532c88f0a4b8f585d0678bd"
+        }
+      ],
+      "sha256": "250379e7dfd298564850547af6f6bb859326ed361620323b0ef32c15d708a0ad"
+    },
+    {
+      "id": "running",
+      "file": "Running-Stylized-v9.png",
+      "size": [
+        1536,
+        1024
+      ],
+      "mode": "RGBA",
+      "alphaExtrema": [
+        0,
+        254
+      ],
+      "uniqueFrames": 6,
+      "frames": [
+        {
+          "index": 0,
+          "visibleBounds": [
+            76,
+            95,
+            466,
+            431
+          ],
+          "guardAlphaMax": 1,
+          "sha256": "bad0be7d8661f62d94e9c848f85b22e7a168631b5ab1130a60988048c372a989"
+        },
+        {
+          "index": 1,
+          "visibleBounds": [
+            76,
+            96,
+            445,
+            433
+          ],
+          "guardAlphaMax": 1,
+          "sha256": "622fa54a786de30602c54080093944c199c3ec7f475e6edf08814c936f576eec"
+        },
+        {
+          "index": 2,
+          "visibleBounds": [
+            75,
+            102,
+            448,
+            429
+          ],
+          "guardAlphaMax": 1,
+          "sha256": "099ff2dc7f31fcdb4960c204870a776ab1d8e75363200576efe1e96071bb2667"
+        },
+        {
+          "index": 3,
+          "visibleBounds": [
+            74,
+            81,
+            442,
+            423
+          ],
+          "guardAlphaMax": 1,
+          "sha256": "a165a6a3146d3b6b5b8d90a8e02d6479a92a9b781b1946dfb8fc0786fca468ae"
+        },
+        {
+          "index": 4,
+          "visibleBounds": [
+            77,
+            81,
+            448,
+            423
+          ],
+          "guardAlphaMax": 1,
+          "sha256": "bd3902b5c0c49708c492384586447c95dc1b76a225cf91dbbeb97ca3cf857b4b"
+        },
+        {
+          "index": 5,
+          "visibleBounds": [
+            78,
+            80,
+            448,
+            427
+          ],
+          "guardAlphaMax": 1,
+          "sha256": "5aabe3bb3b4e8aa6385efe0e566d4099e7bdedb8724a0721660edc73455a7c79"
+        }
+      ],
+      "sha256": "36b6dd96b24ff403a9fc803b22c39148070bdae6115e4b1841a8e522c2198721"
+    },
+    {
+      "id": "attack",
+      "file": "Attack-Stylized-v12.png",
+      "size": [
+        1536,
+        1024
+      ],
+      "mode": "RGBA",
+      "alphaExtrema": [
+        0,
+        254
+      ],
+      "uniqueFrames": 6,
+      "frames": [
+        {
+          "index": 0,
+          "visibleBounds": [
+            70,
+            128,
+            422,
+            469
+          ],
+          "guardAlphaMax": 1,
+          "sha256": "43d2ea262c054fd948b406a637d8ad5b4cb2e3d405fb8fc8535385d41d046680"
+        },
+        {
+          "index": 1,
+          "visibleBounds": [
+            53,
+            46,
+            399,
+            387
+          ],
+          "guardAlphaMax": 1,
+          "sha256": "1276983f5bb1d42b098cbb60fd49867d162596031aa9a8a7c9c71228e02c3b9f"
+        },
+        {
+          "index": 2,
+          "visibleBounds": [
+            9,
+            49,
+            403,
+            387
+          ],
+          "guardAlphaMax": 3,
+          "sha256": "8c1437df5f39cc34269b0b80198b208bdaea38f925ea58119b9902fddbae584e"
+        },
+        {
+          "index": 3,
+          "visibleBounds": [
+            91,
+            48,
+            430,
+            410
+          ],
+          "guardAlphaMax": 1,
+          "sha256": "b9a72f4d1a940d3c3f3319951b0d8d55fbd6ee44de59f855793974aff53e45bb"
+        },
+        {
+          "index": 4,
+          "visibleBounds": [
+            70,
+            52,
+            493,
+            417
+          ],
+          "guardAlphaMax": 1,
+          "sha256": "cc0449bacad1ee54d52e5ef1b8b8ae43b229ca5db6e90175013bbc59ad86d5f5"
+        },
+        {
+          "index": 5,
+          "visibleBounds": [
+            72,
+            50,
+            429,
+            397
+          ],
+          "guardAlphaMax": 1,
+          "sha256": "96ea5721f67167908a4f8eb0eac538151134aac8f845974750cd6269a5d3ccf8"
+        }
+      ],
+      "sha256": "190135e7e1ffb834fce66382671f2377cdb6915dcaedd618b6cb18c8bc3b39db"
+    },
+    {
+      "id": "hit",
+      "file": "Hit-Stylized-v11.png",
+      "size": [
+        1536,
+        1024
+      ],
+      "mode": "RGBA",
+      "alphaExtrema": [
+        0,
+        254
+      ],
+      "uniqueFrames": 6,
+      "frames": [
+        {
+          "index": 0,
+          "visibleBounds": [
+            76,
+            105,
+            439,
+            431
+          ],
+          "guardAlphaMax": 1,
+          "sha256": "67d7e203fdb77a286d2e4245fc9808e93ec76b1a1cf6a24bfb196cde0ab1cbb4"
+        },
+        {
+          "index": 1,
+          "visibleBounds": [
+            65,
+            86,
+            451,
+            398
+          ],
+          "guardAlphaMax": 1,
+          "sha256": "b13a858773e1093c2f352b19dc8c107f7d9ee594eafbcbaf86c9ef95fd7d633c"
+        },
+        {
+          "index": 2,
+          "visibleBounds": [
+            66,
+            80,
+            448,
+            399
+          ],
+          "guardAlphaMax": 1,
+          "sha256": "7795d16f430fed2aba75901ae4878b004846ee589f766ba4b3ae427d4fcf332c"
+        },
+        {
+          "index": 3,
+          "visibleBounds": [
+            76,
+            82,
+            444,
+            424
+          ],
+          "guardAlphaMax": 1,
+          "sha256": "ea0c1b1c07b05f2c6c31744a54de76357dae99af96ebb704814f05831eff1ffe"
+        },
+        {
+          "index": 4,
+          "visibleBounds": [
+            75,
+            86,
+            439,
+            424
+          ],
+          "guardAlphaMax": 1,
+          "sha256": "c18f7a3f6d27bbde617a2a413829ee4bc7e36da942779faa1e44cc410acc6200"
+        },
+        {
+          "index": 5,
+          "visibleBounds": [
+            77,
+            94,
+            443,
+            426
+          ],
+          "guardAlphaMax": 1,
+          "sha256": "d2088b3a0c6e5e7bcfdf573f61b46014201aa18e3d93dba73748c8a4befa749c"
+        }
+      ],
+      "sha256": "6da7fac3cbe6369d0feb1059a435077a8823c08646193323100ea2eafed17371"
+    },
+    {
+      "id": "charged",
+      "file": "Charged-Stylized-v11.png",
+      "size": [
+        1536,
+        1024
+      ],
+      "mode": "RGBA",
+      "alphaExtrema": [
+        0,
+        254
+      ],
+      "uniqueFrames": 6,
+      "frames": [
+        {
+          "index": 0,
+          "visibleBounds": [
+            76,
+            100,
+            438,
+            414
+          ],
+          "guardAlphaMax": 1,
+          "sha256": "3cb009a1672f63e5b0b188d5fe83df2e2ea3bfef3b78ff1f057d7d54ef48931f"
+        },
+        {
+          "index": 1,
+          "visibleBounds": [
+            60,
+            87,
+            490,
+            407
+          ],
+          "guardAlphaMax": 1,
+          "sha256": "43800c17ac6409cd8ff8ea0eb2c7899e2c70124222b0cde7dacc8460cb5bc55e"
+        },
+        {
+          "index": 2,
+          "visibleBounds": [
+            65,
+            65,
+            472,
+            429
+          ],
+          "guardAlphaMax": 1,
+          "sha256": "f0b827a1b114be7cf72c1849656d579b08c82c286449893ca65dbdcd12710898"
+        },
+        {
+          "index": 3,
+          "visibleBounds": [
+            75,
+            65,
+            472,
+            392
+          ],
+          "guardAlphaMax": 1,
+          "sha256": "d538137b901fe5aa1140d17eafc2183da3b761f66b0a5ba476f876ff00cced90"
+        },
+        {
+          "index": 4,
+          "visibleBounds": [
+            72,
+            92,
+            443,
+            404
+          ],
+          "guardAlphaMax": 1,
+          "sha256": "1a620deb707425eceb7e8738281c3bc9e2ea4c1c03a38edb27a36cba339d88a0"
+        },
+        {
+          "index": 5,
+          "visibleBounds": [
+            73,
+            92,
+            443,
+            404
+          ],
+          "guardAlphaMax": 1,
+          "sha256": "3950410a65853c24ca2ee868a78a5fca2af45e99eda310e7ea70ad1cdfc76a5e"
+        }
+      ],
+      "sha256": "eccd5e355cd5d2707ebab26d19f906e711d238241186c2d12e603ce6c1637f51"
+    },
+    {
+      "id": "charge",
+      "file": "Charge-Stylized-v10.png",
+      "size": [
+        1536,
+        1024
+      ],
+      "mode": "RGBA",
+      "alphaExtrema": [
+        0,
+        254
+      ],
+      "uniqueFrames": 6,
+      "frames": [
+        {
+          "index": 0,
+          "visibleBounds": [
+            65,
+            88,
+            459,
+            396
+          ],
+          "guardAlphaMax": 1,
+          "sha256": "3ad82a2aac0215a5b21a7587bda3edf2c0352937f1368f87f5c6b02c34ec8f13"
+        },
+        {
+          "index": 1,
+          "visibleBounds": [
+            67,
+            80,
+            446,
+            393
+          ],
+          "guardAlphaMax": 1,
+          "sha256": "dec100bc0dfecaa9dd5e3e15cccb6b02d1580985e6849691ce2be056d3e2134f"
+        },
+        {
+          "index": 2,
+          "visibleBounds": [
+            55,
+            89,
+            449,
+            415
+          ],
+          "guardAlphaMax": 0,
+          "sha256": "f0b9dbddf2fe9d4f98af614abd3fbc81148aba767fb184e49d61e78ba5d10b7e"
+        },
+        {
+          "index": 3,
+          "visibleBounds": [
+            71,
+            56,
+            466,
+            416
+          ],
+          "guardAlphaMax": 1,
+          "sha256": "24aa5086bdb7bd5349ea7ffe748e6b46f5cab09d8b2a1a52050fc9abc11155bf"
+        },
+        {
+          "index": 4,
+          "visibleBounds": [
+            71,
+            61,
+            443,
+            423
+          ],
+          "guardAlphaMax": 1,
+          "sha256": "0e580d8d685d3116721ee601ce921b48ee10ae7386d01fa6c516c1cae9b53c61"
+        },
+        {
+          "index": 5,
+          "visibleBounds": [
+            61,
+            57,
+            442,
+            415
+          ],
+          "guardAlphaMax": 1,
+          "sha256": "4ea6d78a6f189cb663ea544526e37da558989656be4eb9f04eaa518351063b28"
+        }
+      ],
+      "sha256": "c72232d2ca736e67343fcf9d1505d0e5e2811d88742f6f3ee69c8d03f10ff963"
+    },
+    {
+      "id": "death",
+      "file": "Death-Stylized-v13.png",
+      "size": [
+        1536,
+        1024
+      ],
+      "mode": "RGBA",
+      "alphaExtrema": [
+        0,
+        254
+      ],
+      "uniqueFrames": 6,
+      "frames": [
+        {
+          "index": 0,
+          "visibleBounds": [
+            73,
+            103,
+            442,
+            433
+          ],
+          "guardAlphaMax": 1,
+          "sha256": "395ddedec5e1c76ab42be3ae7bb50b8de44a47e781201547bf21baae46e6e1b4"
+        },
+        {
+          "index": 1,
+          "visibleBounds": [
+            63,
+            122,
+            439,
+            434
+          ],
+          "guardAlphaMax": 1,
+          "sha256": "2be2222ee688d83fbc75c46d33f7577eb549366c331a3bf6823522d1e9fbddb2"
+        },
+        {
+          "index": 2,
+          "visibleBounds": [
+            67,
+            146,
+            471,
+            447
+          ],
+          "guardAlphaMax": 1,
+          "sha256": "eb10b7f0c9be6454cda5ba0719c019c07f557603c545c3052aece261106b2333"
+        },
+        {
+          "index": 3,
+          "visibleBounds": [
+            31,
+            34,
+            459,
+            434
+          ],
+          "guardAlphaMax": 1,
+          "sha256": "305482b1330a38de3f69223ca28401652269f15f98b5e2010939d154a9b443a5"
+        },
+        {
+          "index": 4,
+          "visibleBounds": [
+            27,
+            61,
+            484,
+            444
+          ],
+          "guardAlphaMax": 1,
+          "sha256": "52be78ea4cdd30c6a8ab8c67c5d569f4315696ba980af9fc0a20735a906d9110"
+        },
+        {
+          "index": 5,
+          "visibleBounds": [
+            28,
+            60,
+            485,
+            444
+          ],
+          "guardAlphaMax": 1,
+          "sha256": "122decba5a9c5de7eed86da4eda4a49e7240f09d69e3ae255c1bc8f89c092f1f"
+        }
+      ],
+      "sha256": "546c42bca8090ac05b74b1d6baad4db26a5de50da344e55551bd53cc262eb35c"
+    },
+    {
+      "id": "charge-attack",
+      "file": "ChargeAttack-Stylized-v12.png",
+      "size": [
+        1536,
+        1024
+      ],
+      "mode": "RGBA",
+      "alphaExtrema": [
+        0,
+        254
+      ],
+      "uniqueFrames": 6,
+      "frames": [
+        {
+          "index": 0,
+          "visibleBounds": [
+            75,
+            113,
+            453,
+            419
+          ],
+          "guardAlphaMax": 1,
+          "sha256": "fd3a4615ade9d01c6407772a3644f31a46d65694fb6350867dd99b6057c74513"
+        },
+        {
+          "index": 1,
+          "visibleBounds": [
+            13,
+            74,
+            488,
+            440
+          ],
+          "guardAlphaMax": 1,
+          "sha256": "3d139a6e1e6f7cdbfa6ba9689f9c00d6cf6152723e1c4b23849d0901715165b5"
+        },
+        {
+          "index": 2,
+          "visibleBounds": [
+            27,
+            68,
+            467,
+            438
+          ],
+          "guardAlphaMax": 1,
+          "sha256": "f0447f9ab7f2f44fb5b0b82a9acc816d8c023a34a57af03b96843a388a53cac2"
+        },
+        {
+          "index": 3,
+          "visibleBounds": [
+            134,
+            45,
+            449,
+            461
+          ],
+          "guardAlphaMax": 1,
+          "sha256": "fe75d8d3c475ae6d361fd96d8a958e52882b6598d9aa450edefdf35456ed5ba6"
+        },
+        {
+          "index": 4,
+          "visibleBounds": [
+            83,
+            50,
+            466,
+            442
+          ],
+          "guardAlphaMax": 1,
+          "sha256": "8e82627908f165c906fce32cee0b26f8fee3c0fe0fafa243c08020f3aa603bee"
+        },
+        {
+          "index": 5,
+          "visibleBounds": [
+            48,
+            51,
+            440,
+            377
+          ],
+          "guardAlphaMax": 1,
+          "sha256": "03c60b322f05346eb87148d845c23137666d8fd95092ea5d5215b0445229fd58"
+        }
+      ],
+      "sha256": "91ca61b51ea03353e3e47999c6e87ba096ec5f340d00c318a0e2339f4e106890"
+    },
+    {
+      "id": "death-back",
+      "file": "Death-Back-Stylized-v13.png",
+      "size": [
+        1536,
+        1024
+      ],
+      "mode": "RGBA",
+      "alphaExtrema": [
+        0,
+        254
+      ],
+      "uniqueFrames": 6,
+      "frames": [
+        {
+          "index": 0,
+          "visibleBounds": [
+            70,
+            76,
+            410,
+            419
+          ],
+          "guardAlphaMax": 1,
+          "sha256": "57472740c7e05fa105fc7e88f7d7180e229ecd877be24f981c7bad69dc9017ba"
+        },
+        {
+          "index": 1,
+          "visibleBounds": [
+            66,
+            63,
+            408,
+            453
+          ],
+          "guardAlphaMax": 1,
+          "sha256": "1d37be28bc381a8c7bc45de2f2070afafcb7373a645bf61145842c30f14129f8"
+        },
+        {
+          "index": 2,
+          "visibleBounds": [
+            29,
+            80,
+            435,
+            461
+          ],
+          "guardAlphaMax": 1,
+          "sha256": "41933f37394841f66fd3f25e79ef8d82732ca86e350a4917c9c4629f7f9ccf5c"
+        },
+        {
+          "index": 3,
+          "visibleBounds": [
+            63,
+            53,
+            485,
+            430
+          ],
+          "guardAlphaMax": 1,
+          "sha256": "336cdcf84129b587297d069d740426606803b2c6ca588672d2918077a6a46f9a"
+        },
+        {
+          "index": 4,
+          "visibleBounds": [
+            63,
+            53,
+            477,
+            430
+          ],
+          "guardAlphaMax": 1,
+          "sha256": "949e8670935cae81bf55b0cbde1584f2c2d255944bc16f2ba90017736dd5e965"
+        },
+        {
+          "index": 5,
+          "visibleBounds": [
+            53,
+            52,
+            479,
+            434
+          ],
+          "guardAlphaMax": 1,
+          "sha256": "14bf167ed0d6a272a87203601f91a2169a0b796e3bec15040418ae7f88eeaaec"
+        }
+      ],
+      "sha256": "4b3a073924dc0ffa5dc9c4749e4fe32acc3672846553224eb0056c4833a22078"
+    }
+  ]
+}

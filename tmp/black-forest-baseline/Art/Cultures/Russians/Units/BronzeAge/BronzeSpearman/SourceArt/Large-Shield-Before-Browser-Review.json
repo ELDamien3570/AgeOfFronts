@@ -1,0 +1,20 @@
+{
+  "date": "2026-10-07",
+  "url": "http://127.0.0.1:9007/Cultures/Russians/Units/BronzeAge/BronzeSpearman/Actor_Review.html#idle",
+  "actorCount": 1,
+  "loadedClips": 1,
+  "frameCount": 1,
+  "observations": [
+    "One idle frame loaded at1/1 with rearward spear grip.",
+    "Weapon arm raised and bent; complete straight spear remains visible.",
+    "32/48/64px previews displayed."
+  ],
+  "screenshots": [
+    "Review-Idle-RearGrip-v2.jpg"
+  ],
+  "warnings": [],
+  "errors": [],
+  "userApproval": "pending revised rear grip review",
+  "engineIntegration": "not integrated",
+  "selectedFile": "Idle-RearGrip-v2.png"
+}
