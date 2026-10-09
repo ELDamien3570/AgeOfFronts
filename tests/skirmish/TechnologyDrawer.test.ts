@@ -33,19 +33,26 @@ describe("battlefield research drawer", () => {
     document.body.replaceChildren(root);
     const commands: unknown[] = [];
     const view = new EmpireView(root, {
-      refresh: () => {}, build: () => {}, notify: () => {},
-      focusedRef: () => null, target: () => {},
-      command: command => commands.push(command),
+      refresh: () => {},
+      build: () => {},
+      notify: () => {},
+      focusedRef: () => null,
+      target: () => {},
+      command: (command) => commands.push(command),
     });
     view.update(vm());
     view.toggle("technology");
     const detail = () => root.querySelector<HTMLElement>(".technology-detail")!;
-    const body = () => root.querySelector<HTMLElement>(".technology-detail-body")!;
-    const toggle = () => root.querySelector<HTMLButtonElement>("[data-details-toggle]")!;
+    const body = () =>
+      root.querySelector<HTMLElement>(".technology-detail-body")!;
+    const toggle = () =>
+      root.querySelector<HTMLButtonElement>("[data-details-toggle]")!;
     expect(detail().dataset.expanded).toBe("false");
     expect(toggle().getAttribute("aria-expanded")).toBe("false");
     expect(body().firstElementChild?.className).toBe("technology-description");
-    expect(body().querySelector(".technology-detail-extra .technology-stats")).not.toBeNull();
+    expect(
+      body().querySelector(".technology-detail-extra .technology-stats"),
+    ).not.toBeNull();
     body().scrollTop = 80;
     root.querySelector<HTMLElement>(".technology-tree-scroll")!.scrollTop = 200;
     toggle().click();
@@ -58,12 +65,22 @@ describe("battlefield research drawer", () => {
     body().querySelector<HTMLElement>("p")!.click();
     expect(detail().dataset.expanded).toBe("false");
     expect(body().scrollTop).toBe(0);
-    expect(root.querySelector<HTMLElement>(".technology-tree-scroll")!.scrollTop).toBe(200);
+    expect(
+      root.querySelector<HTMLElement>(".technology-tree-scroll")!.scrollTop,
+    ).toBe(200);
     toggle().click();
-    root.querySelector<HTMLButtonElement>('[data-node="stoneage-shorecraft"]')!.click();
+    root
+      .querySelector<HTMLButtonElement>(
+        '[data-node="rus-stoneage-port-sea-trade"]',
+      )!
+      .click();
     expect(detail().dataset.expanded).toBe("false");
     expect(body().scrollTop).toBe(0);
-    root.querySelector<HTMLButtonElement>('[data-research="stoneage-shorecraft"]')!.click();
+    root
+      .querySelector<HTMLButtonElement>(
+        '[data-research="rus-stoneage-port-sea-trade"]',
+      )!
+      .click();
     expect(commands).toHaveLength(1);
     expect(detail().dataset.expanded).toBe("false");
   });
@@ -71,12 +88,18 @@ describe("battlefield research drawer", () => {
     const { m, vm } = fixture();
     const before = m.snapshot();
     document.body.innerHTML = technologyTreeMarkup(
-      new TechnologyViewModel(vm(), "BronzeAge"), "russian-troop-bronzeage-lightcavalry", "warfare",
+      new TechnologyViewModel(vm(), "BronzeAge"),
+      "rus-bronzeage-mobile",
+      "warfare",
     );
     const detail = document.querySelector(".technology-detail")!;
     expect(detail.textContent).toContain("Base stats before research bonuses");
-    expect(detail.querySelector(".technology-stats")?.textContent).toContain("2 Bronze Age equipment");
-    expect(detail.textContent).not.toContain("Unlocks capabilities; deployment has separate");
+    expect(detail.querySelector(".technology-stats")?.textContent).toContain(
+      "2 Bronze Age equipment",
+    );
+    expect(detail.textContent).not.toContain(
+      "Unlocks capabilities; deployment has separate",
+    );
     expect(m.snapshot()).toEqual(before);
   });
   it("labels startup grants by identity, exposes future preview without changing the match", () => {
@@ -89,7 +112,11 @@ describe("battlefield research drawer", () => {
         .filter((n) => n.status === "Starting grant")
         .map((n) => n.id)
         .sort(),
-    ).toEqual(["stoneage-cargo-canoes", "stoneage-flint-weapons", "stoneage-settlements"]);
+    ).toEqual([
+      "rus-stoneage-barracks-equipment",
+      "rus-stoneage-cargo-canoes",
+      "rus-stoneage-factories-mines",
+    ]);
     const future = new TechnologyViewModel(vm(), "Modern");
     expect(future.trees.flatMap((t) => t.nodes).every((n) => n.reason)).toBe(
       true,
@@ -97,13 +124,13 @@ describe("battlefield research drawer", () => {
     expect(future.ages.find((a) => a.age === "Modern")?.state).toBe("future");
     expect(m.snapshot()).toEqual(before);
   });
-  it("renders the Armies prerequisite edge from Fortified Settlements", () => {
+  it("renders the authored military prerequisite edges", () => {
     const { m, vm } = fixture();
     m.expansion!.progression.states[1].age = "BronzeAge";
     const model = new TechnologyViewModel(vm(), "BronzeAge");
     document.body.innerHTML = technologyTreeMarkup(
       model,
-      "bronzeage-armies",
+      "rus-bronzeage-barracks-equipment",
       "warfare",
     );
     const expected = TECHNOLOGIES.filter((t) => t.age === "BronzeAge")
@@ -123,18 +150,21 @@ describe("battlefield research drawer", () => {
     expect(document.querySelectorAll('[data-active="true"]')).toHaveLength(1);
     expect(
       document
-        .querySelector('[data-node="bronzeage-armies"]')
+        .querySelector('[data-node="rus-bronzeage-barracks-equipment"]')
         ?.getAttribute("aria-pressed"),
     ).toBe("true");
-    expect(model.tree("warfare").total).toBe(TECHNOLOGIES.filter(t => t.age === "BronzeAge" && t.tree === "warfare").length);
+    expect(model.tree("warfare").total).toBe(
+      TECHNOLOGIES.filter((t) => t.age === "BronzeAge" && t.tree === "warfare")
+        .length,
+    );
     expect(
       document.querySelector(
-        '[data-edge="bronzeage-fortified-settlements:bronzeage-armies"]',
+        '[data-edge="rus-bronzeage-fortifications:rus-bronzeage-siege"]',
       ),
     ).not.toBeNull();
     expect(
       document
-        .querySelector('[data-research="bronzeage-armies"]')
+        .querySelector('[data-research="rus-bronzeage-barracks-equipment"]')
         ?.getAttribute("disabled"),
     ).not.toBeNull();
   });
@@ -159,7 +189,9 @@ describe("battlefield research drawer", () => {
     view.toggle("technology");
     root.querySelector<HTMLElement>(".technology-tree-scroll")!.scrollTop = 200;
     root
-      .querySelector<HTMLButtonElement>('[data-node="stoneage-shorecraft"]')!
+      .querySelector<HTMLButtonElement>(
+        '[data-node="rus-stoneage-port-sea-trade"]',
+      )!
       .click();
     const details = root.querySelector<HTMLElement>(".technology-detail")!;
     expect(details.closest(".technology-tree-scroll")).toBeNull();
@@ -173,7 +205,7 @@ describe("battlefield research drawer", () => {
     research.click();
     expect(
       m.expansion!.progression.states[1].research.naval?.technologyId,
-    ).toBe("stoneage-shorecraft");
+    ).toBe("rus-stoneage-port-sea-trade");
     view.update(vm());
     view.toggle("technology");
     view.toggle("technology");

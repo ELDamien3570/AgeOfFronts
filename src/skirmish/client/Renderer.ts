@@ -774,7 +774,7 @@ export class Renderer {
   ): number {
     const ctx = this.ctx;
     const shot = buildingId === undefined ? undefined : this.buildingGuns.firing(buildingId, elapsedTicks);
-    if (type === "gun-nest" && definitionId && this.scale >= 12) {
+    if ((type === "gun-nest" || type === "anti-air-emplacement") && definitionId && this.scale >= 12) {
       for (const facing of ["n", "e", "s", "w"])
         this.eraArtwork.preload(`${definitionId}-firing-${facing}`, "firing");
     }
@@ -2058,7 +2058,7 @@ export class Renderer {
           : pose;
         if (!visibleInViewport(p, 32, this.width, this.height)) continue;
         const artworkId =
-          projectile.kind === "mirv"
+          projectile.definitionId === "atomic" ? "hydrogen" : projectile.kind === "mirv"
             ? "mirv"
             : projectile.kind === "warhead"
               ? "mirv-warhead"

@@ -329,6 +329,7 @@ export interface Aircraft {
   health: number;
   target: { x: number; y: number } | null;
   state: "ready" | "outbound" | "patrolling" | "returning";
+  atomicPayload?: boolean;
   mission?: "bombing" | "patrol" | "atomic" | "drone";
   age?: Age;
   reloadTick: number;

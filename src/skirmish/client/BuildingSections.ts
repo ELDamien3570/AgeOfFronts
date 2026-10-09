@@ -20,6 +20,7 @@ export const BUILDING_SECTION: Record<BuildingType, BuildingSection> = {
   airstrip: "military",
   "nuclear-facility": "production",
   "drone-facility": "military",
+  "anti-air-emplacement": "defense",
   "missile-silo": "military",
   "mirv-launcher": "military",
   tower: "defense",

@@ -6,7 +6,7 @@ import { buildingPreviewArtworkId } from "./ArtworkCatalog";
 import type { EmpireActions } from "./EmpireView";
 import type { EmpireViewModel } from "./EmpireViewModel";
 import { eraPortrait } from "./EraArtwork";
-import { CONSTRUCTION_SHORTCUTS, recruitmentBatch, sortieCommand } from "./Controls";
+import { CONSTRUCTION_SHORTCUTS, recruitmentBatch, sortieCommand, airMissionCandidates } from "./Controls";
 import { icon } from "./HudView";
 import { SkirmishViewModel } from "./SkirmishViewModel";
 import { BUILDING_SECTION, type BuildingSection } from "./BuildingSections";
@@ -82,9 +82,10 @@ export class EmpireHudView {
         this.vm.selection.selectedAircraft,mission);
       if (command) this.actions.command(command);
       else this.actions.notify("No ready aircraft of this mission type can reach that target");
-    }, `${mission === "patrol" ? "Dispatch fighters" : mission === "atomic" ? "A-Bomb Run" : mission === "drone" ? "Drone Strike" : "Bombing Run"} · Click a target · Shift launches up to 5 · Escape cancels`, (x,y)=>{
-      const candidates=(this.vm?.expansion.aircraft??[]).filter(a=>a.playerId===this.playerId && a.state==="ready" && a.definitionId===missionKind(mission) && (!this.vm?.selection.selectedAircraft?.size || this.vm?.selection.selectedAircraft?.has(a.id)));
-      const values=candidates.map(a=>flightPercent(a,x,y)).sort((a,b)=>a-b).slice(0,shift?5:1);
+    }, `${mission === "patrol" ? "Dispatch fighters" : mission === "atomic" ? "A-Bomb Run" : mission === "drone" ? "Drone Strike" : "Bombing Run"} · Click a target · Shift launches up to 5 · Escape cancels`, (x,y,targetShift=false)=>{
+      if(!this.vm)return "No ready aircraft";
+      const candidates=airMissionCandidates(this.vm.state,this.playerId,x,y,this.vm.selection.selectedAircraft ?? new Set(),mission);
+      const values=candidates.slice(0,shift||targetShift?5:1).map(a=>flightPercent(a,x,y));
       return values.length ? `Travel: ${Math.ceil(Math.max(...values))}% flight time` : "No ready aircraft";
     });
   }
@@ -235,7 +236,7 @@ export class EmpireHudView {
     portrait?: string,
   ): string {
     const art = portrait && (eraPortrait(`unit-portrait-${portrait}`) ?? eraPortrait(portrait));
-    const shortcut = action === "build" ? CONSTRUCTION_SHORTCUTS.find(a => a.kind === value) : action === "sortie" ? {key:"P"} : undefined;
+    const shortcut = action === "build" ? CONSTRUCTION_SHORTCUTS.find(a => a.kind === value) : action === "sortie" ? {key:"P"} : action === "dispatch" ? {key:"I"} : action === "atomic-run" ? {key:"O"} : action === "drone-strike" ? {key:"U"} : undefined;
     const key = shortcut ? `<kbd>${action === "build" && this.root.dataset.wasdMode === "true" ? "⇧" : ""}${shortcut.key}</kbd>` : "";
     return `<div class="action-slot" data-dock-tip="${esc(`${label}\n${tip}${reason ? `\n${reason}` : ""}`)}" tabindex="${reason ? 0 : -1}"><button class="hud-action" data-dock-action="${action}" data-value="${value}" ${reason ? "disabled" : ""} aria-label="${esc(label)}">${art ? `<img class="hud-art" src="${art}" alt="">` : `<span class="command-symbol">${esc(label.slice(0, 2))}</span>`}${key}<span class="action-name">${esc(label)}</span></button></div>`;
   }
@@ -479,7 +480,7 @@ export class EmpireHudView {
         });
     }
     if (action === "aircraft") {
-      const kind = value as "fighter" | "bomber",
+      const kind = value as "fighter" | "bomber" | "drone",
         q = vm.aircraft(kind);
       if (q.building && !q.reason)
         this.actions.command({

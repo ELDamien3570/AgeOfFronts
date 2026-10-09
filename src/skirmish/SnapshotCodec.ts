@@ -368,6 +368,7 @@ export function snapshotTransfers(packet: SnapshotPacket): ArrayBuffer[] {
     ...(packet.expansion?.depositOwners ? [packet.expansion.depositOwners] : []),
     ...(packet.barrierChanges ? [packet.barrierChanges.removed] : []),
     ...(details ? [details.ships, details.volleys, details.ids,
+      ...(details.shipAirDefense ? [details.shipAirDefense] : []),
       ...(details.squads ? [details.squads] : []), ...(details.squadMotion ? [details.squadMotion] : []),
       ...(details.buildings ? [details.buildings] : [])] : []),
   ].map((array) => array.buffer as ArrayBuffer);

@@ -17,7 +17,7 @@ export class BuildingGunPresentation {
       buildings
         .filter(
           (b) =>
-            b.type === "gun-nest" && !b.remainingTicks && (b.health ?? 1) > 0,
+            (b.type === "gun-nest" || b.type === "anti-air-emplacement") && !b.remainingTicks && (b.health ?? 1) > 0,
         )
         .map((b) => b.id),
     );

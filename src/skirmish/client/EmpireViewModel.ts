@@ -1,38 +1,37 @@
-import { aircraftTechnology, FLIGHT_RULES } from "../content/FlightOperations";
-import { canonicalTechnologyId } from "../content/Technology";
-import { availableGold } from "../domain/Gold";
-import { quoteLandRefits, quoteShipRefits } from "../domain/RefitQuote";
-import type { BuildingType, ShipType, Snapshot, SquadType } from "../Protocol";
 import {
   buildingCost,
-  buildingTicks,
   buildingTechnology,
+  buildingTicks,
   producerCompatible,
 } from "../content/Buildings";
 import { supplyItemName } from "../content/Equipment";
+import { aircraftTechnology, FLIGHT_RULES } from "../content/FlightOperations";
 import {
   ADVANCES,
+  canonicalTechnologyId,
   TECHNOLOGIES,
   TECHNOLOGY,
-  technologyAt,
   treeWorkload,
 } from "../content/Technology";
 import { UNIT, UNITS, VESSEL, VESSELS } from "../content/Units";
 import { automaticProductionPriorities } from "../domain/AutomaticProduction";
+import { quoteBuildingUpgrades } from "../domain/BuildingUpgrades";
 import { AGE_NAMES, AGES, TREES, type Age } from "../domain/Definitions";
+import { availableGold } from "../domain/Gold";
 import {
   advanceRejection,
   researchRejection,
   researchTerms,
   treeCompletion,
 } from "../domain/Progression";
+import { quoteLandRefits, quoteShipRefits } from "../domain/RefitQuote";
 import {
   costRejection,
   PRODUCTION_RECIPES,
   productionRejection,
   productionTicks,
 } from "../domain/Supply";
-import { quoteBuildingUpgrades } from "../domain/BuildingUpgrades";
+import type { BuildingType, ShipType, Snapshot, SquadType } from "../Protocol";
 import { FactionViewModel } from "./FactionViewModel";
 import { productionText } from "./ProductionText";
 import { ResourceViewModel } from "./ResourceViewModel";
@@ -86,9 +85,14 @@ export class EmpireViewModel {
   }
   militaryCounts(id: number) {
     return {
-      squads: this.state.squads.filter(s => s.playerId === id && s.troops > 0).length,
-      boats: this.state.ships.filter(s => s.playerId === id && s.kind === "warship" && s.health > 0).length,
-      planes: this.expansion.aircraft.filter(a => a.playerId === id && a.health > 0).length,
+      squads: this.state.squads.filter((s) => s.playerId === id && s.troops > 0)
+        .length,
+      boats: this.state.ships.filter(
+        (s) => s.playerId === id && s.kind === "warship" && s.health > 0,
+      ).length,
+      planes: this.expansion.aircraft.filter(
+        (a) => a.playerId === id && a.health > 0,
+      ).length,
     };
   }
   has(id: string): boolean {
@@ -147,7 +151,11 @@ export class EmpireViewModel {
   buildingAge(type: BuildingType): Age | undefined {
     return [...AGES].reverse().find((age) => {
       const t = buildingTechnology(type, age);
-      return t && this.has(t);
+      return (
+        AGES.indexOf(age) <= AGES.indexOf(this.progression.age) &&
+        t &&
+        this.has(t)
+      );
     });
   }
   buildChoice(type: BuildingType, age = this.buildingAge(type)) {
@@ -372,30 +380,73 @@ export class EmpireViewModel {
     );
   }
   buildingUpgrade() {
-    const ids = this.selection.selectedBuildings?.size ? [...this.selection.selectedBuildings]
-      : this.selection.selectedBuilding === null ? [] : [this.selection.selectedBuilding];
+    const ids = this.selection.selectedBuildings?.size
+      ? [...this.selection.selectedBuildings]
+      : this.selection.selectedBuilding === null
+        ? []
+        : [this.selection.selectedBuilding];
     if (!ids.length) return null;
-    return quoteBuildingUpgrades(this.player, this.progression, this.inventory,
-      this.state.buildings, this.state.owners, ids);
+    return quoteBuildingUpgrades(
+      this.player,
+      this.progression,
+      this.inventory,
+      this.state.buildings,
+      this.state.owners,
+      ids,
+    );
   }
   refit(focusedId?: number) {
-    const selected=this.state.squads.filter(s=>s.playerId===this.playerId&&this.selection.selected.has(s.id));
-    return quoteLandRefits(selected,focusedId,{player:this.player,research:this.progression.completed,inventory:this.inventory},this.state.owners,this.state.width);
+    const selected = this.state.squads.filter(
+      (s) => s.playerId === this.playerId && this.selection.selected.has(s.id),
+    );
+    return quoteLandRefits(
+      selected,
+      focusedId,
+      {
+        player: this.player,
+        research: this.progression.completed,
+        inventory: this.inventory,
+      },
+      this.state.owners,
+      this.state.width,
+    );
   }
   shipRefit(focusedId?: number) {
-    const selected=this.state.ships.filter(s=>s.playerId===this.playerId&&this.selection.selectedShips.has(s.id));
-    return quoteShipRefits(selected,focusedId,{player:this.player,research:this.progression.completed,inventory:this.inventory});
+    const selected = this.state.ships.filter(
+      (s) =>
+        s.playerId === this.playerId && this.selection.selectedShips.has(s.id),
+    );
+    return quoteShipRefits(selected, focusedId, {
+      player: this.player,
+      research: this.progression.completed,
+      inventory: this.inventory,
+    });
   }
   get allianceRenewals() {
     return this.expansion.diplomacy.alliances
-      .filter(t => !t.longTerm && (t.a === this.playerId || t.b === this.playerId) &&
-        t.expiresTick > this.state.tick && t.expiresTick - this.state.tick <= 600)
-      .flatMap(t => {
+      .filter(
+        (t) =>
+          !t.longTerm &&
+          (t.a === this.playerId || t.b === this.playerId) &&
+          t.expiresTick > this.state.tick &&
+          t.expiresTick - this.state.tick <= 600,
+      )
+      .flatMap((t) => {
         const otherId = t.a === this.playerId ? t.b : t.a;
-        const other = this.state.players.find(p => p.id === otherId && !p.eliminated);
-        return other ? [{key: t.id + ":" + t.expiresTick, otherId, name: other.name,
-          seconds: Math.ceil((t.expiresTick - this.state.tick) / 20),
-          requested: t.renewal.includes(this.playerId)}] : [];
+        const other = this.state.players.find(
+          (p) => p.id === otherId && !p.eliminated,
+        );
+        return other
+          ? [
+              {
+                key: t.id + ":" + t.expiresTick,
+                otherId,
+                name: other.name,
+                seconds: Math.ceil((t.expiresTick - this.state.tick) / 20),
+                requested: t.renewal.includes(this.playerId),
+              },
+            ]
+          : [];
       });
   }
 
@@ -482,8 +533,13 @@ export class EmpireViewModel {
     const cost = {
       gold: FLIGHT_RULES[kind].gold,
     };
-    const reason = !this.has(aircraftTechnology(kind,building?.age ?? (kind === "drone" ? "Modern" : "EarlyModern")))
-      ? `Research ${kind === "fighter" ? "Fighter Squadrons" : "Bomber Squadrons"}`
+    const reason = !this.has(
+      aircraftTechnology(
+        kind,
+        building?.age ?? (kind === "drone" ? "Modern" : "EarlyModern"),
+      ),
+    )
+      ? `Research ${this.technologyName(aircraftTechnology(kind, building?.age ?? (kind === "drone" ? "Modern" : "EarlyModern")))}`
       : !building
         ? "Needs an airstrip with a free slot"
         : this.expansion.aircraft.filter((a) => a.playerId === this.playerId)
@@ -557,7 +613,7 @@ export class EmpireViewModel {
       )[0];
     const cost = { gold: 10000, items: { [`payload:${payload}`]: 1 } };
     const reason = !this.has("modern-strategic-weapons")
-      ? "Research Strategic Weapons"
+      ? "Research Missile Infrastructure"
       : !launcher
         ? "Needs a ready compatible launcher"
         : launcher.ready > this.state.tick

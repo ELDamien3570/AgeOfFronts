@@ -91,7 +91,7 @@ export function economicSnapshot(input: {
       baseReserveIncome(age) +
       completed
         .filter((b) => b.type === "city")
-        .reduce((n, b) => n + cityReserveIncome(b.age ?? "StoneAge"), 0),
+        .reduce((n, b) => n + cityReserveIncome(b.age ?? "StoneAge",input.research), 0),
     goldIncome:
       20 + Math.floor(player.land / (40 * (input.territoryIncomeScale ?? 1))),
     cap: input.cap,

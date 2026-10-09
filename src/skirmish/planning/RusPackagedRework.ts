@@ -216,9 +216,9 @@ export function createRusPackagedRework(
       id,
       "economic",
       "cities",
-      index ? `${label} Cities` : "Settlements & Cities",
+      index ? `${label} Cities` : "Settlement Administration",
       [roads, traders],
-      "Unlock/upgrade cities, which generate troop reserves and act as cargo drop-off/receiving points. Slightly improve reserve generation, receiving capacity and building health. This closes the age's economic spine.",
+      index ? "Upgrade cities, improving reserve generation, receiving capacity and building health. This closes the age's economic spine." : "Cities are buildable from the start. Improve city reserve generation and building health by 10%, and receiving capacity by 10%. This closes the Stone Age economic branch.",
       ["City"],
       index ? "upgrade" : "unlock",
     );

@@ -82,7 +82,7 @@ describe("remaining gameplay passes", () => {
             troops: 100000,
           }),
         );
-      e.progression.states[ai.id].completed.push("stoneage-cargo-canoes");
+      e.progression.states[ai.id].completed.push("rus-stoneage-cargo-canoes");
       game.restore(game.checkpoint());
       game.tick = 60;
       e.economy.recovery.step();
@@ -143,7 +143,7 @@ describe("remaining gameplay passes", () => {
     const { game, e, map } = fixture(),
       ai = game.players[1];
     game.owners.fill(ai.id);
-    e.progression.states[ai.id].completed.push("bronzeage-armies");
+    e.progression.states[ai.id].completed.push("rus-bronzeage-barracks-equipment");
     const ids = game.squads
       .filter((s) => s.playerId === ai.id)
       .map((s) => s.id);
@@ -322,7 +322,7 @@ describe("remaining gameplay passes", () => {
     };
     expect(internal.aiFootprintAllowed(ai.id, map.ref(29, 25))).toBe(true);
     expect(e.canCaptureTile(own[0], map.ref(31, 25))).toBe(false);
-    e.progression.states[ai.id].completed.push("stoneage-cargo-canoes");
+    e.progression.states[ai.id].completed.push("rus-stoneage-cargo-canoes");
     expect(
       game.applyCommand({
         type: "order",

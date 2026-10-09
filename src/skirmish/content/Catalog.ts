@@ -1,3 +1,4 @@
+import { ATOMIC_ATTACK,DRONE_ATTACK,NAVAL_AIR_ATTACK } from "./ModernWeapons";
 import { FLIGHT_RULES } from "./FlightOperations";
 import { buildingFootprint } from "../BuildingFootprint";
 import type { BuildingType } from "../Protocol";
@@ -104,7 +105,7 @@ export const CONTENT_HASH = hash({
     maxArmour: MAX_ARMOUR,
   },
   combatRevision: 5,
-  flights:FLIGHT_RULES,
+  flights:{rules:FLIGHT_RULES,atomic:ATOMIC_ATTACK,drone:DRONE_ATTACK,navalAir:NAVAL_AIR_ATTACK},
   nuclearLand:{reserveLossPerCell:NUCLEAR_RESERVE_LOSS_PER_CELL,troopLossPerCell:FALLOUT_TROOP_LOSS_PER_CELL},
   shoreTransportRevision: 1,
   navalAutonomyRevision: 3,

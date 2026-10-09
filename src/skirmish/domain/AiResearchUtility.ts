@@ -2,7 +2,7 @@ import { buildingTechnology } from "../content/Buildings";
 import { PRODUCTION_RECIPES } from "../content/Production";
 import { RESOURCE_TECHNOLOGIES } from "../content/Resources";
 import { TECHNOLOGIES } from "../content/Technology";
-import { UNITS, VESSELS } from "../content/Units";
+import { UNIT, UNITS, VESSELS } from "../content/Units";
 import type { AiEconomicSnapshot } from "./AiEconomicSnapshot";
 import type { AiProductionDemand } from "./AiMilitaryDemand";
 import { AiProductionDependencies } from "./AiProductionDependencies";
@@ -62,9 +62,16 @@ export function researchUtility(
       0,
       (demand.units[unit.role] ?? 0) - snapshot.force.role(unit.role),
     );
-    const attainable = Object.entries(unit.cost.items ?? {}).every(([id, n]) =>
-      dependencies.available(id, n),
-    );
+    const upgrade=snapshot.squads.some(s=>{
+      const current=UNIT.get(s.definitionId??`stoneage-${s.kind}`);
+      return current && current.role===unit.role && current.troopClass===unit.troopClass && AGES.indexOf(current.age)<AGES.indexOf(unit.age);
+    });
+    if(!deficit&&!upgrade)continue;
+    // Value the complete, paid path to an upgrade, including intermediate nodes
+    // that cannot themselves manufacture the final equipment yet.
+    const futureResearch=[...new Set([...snapshot.research,...prerequisiteIds(unit.technologyId)])];
+    const futureDependencies=new AiProductionDependencies({...snapshot,research:futureResearch},new Set(opportunity.resources.filter(r=>futureResearch.includes(RESOURCE_TECHNOLOGIES[r]))),opportunity.protectedItems);
+    const attainable = Object.entries(unit.cost.items ?? {}).every(([id, n]) => futureDependencies.available(id, n));
     const production =
       snapshot.buildings.some(
         (b) =>
@@ -74,9 +81,9 @@ export function researchUtility(
       prerequisiteIds(buildingTechnology(unit.building, unit.age) ?? "").has(
         technology.id,
       );
-    if (deficit && attainable && production && snapshot.headroom > 0) {
-      benefit += Math.min(4, deficit) * 3200;
-      reasons.push(`role:${unit.role}`);
+    if (attainable && production && (upgrade || deficit && snapshot.headroom > 0)) {
+      benefit += Math.min(4, Math.max(deficit,upgrade?2:0)) * 3200;
+      reasons.push(upgrade ? `modernize:${unit.role}` : `role:${unit.role}`);
     }
   }
   for (const recipe of PRODUCTION_RECIPES.filter(
@@ -129,6 +136,7 @@ export function researchUtility(
       benefit += 3500;
     if (buildingTechnology("port", snapshot.age) === technology.id)
       benefit += 4500;
+    if(technology.capabilities.includes("naval-missiles-air-defence") && snapshot.ships.length) {benefit+=8000;reasons.push("fleet-air-defence");}
     reasons.push("reachable-sea-use");
   }
   if (technology.tree === "economic") {
@@ -160,10 +168,9 @@ export function researchUtility(
     snapshot.age === "Modern" &&
     ["airstrip", "nuclear-facility", "drone-facility", "missile-silo", "mirv-launcher"].some(
       (type) =>
-        buildingTechnology(
-          type as Parameters<typeof buildingTechnology>[0],
-          snapshot.age,
-        ) === technology.id,
+        prerequisiteIds(buildingTechnology(
+          type as Parameters<typeof buildingTechnology>[0], snapshot.age,
+        ) ?? "").has(technology.id),
     )
   ) {
     benefit += 8000;

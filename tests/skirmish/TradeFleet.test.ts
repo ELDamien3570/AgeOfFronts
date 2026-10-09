@@ -58,9 +58,9 @@ function fleet(factories = 1, ports = 1, aiWarPolicy = false, deferredPlanning =
   const expansion = game.expansion!,
     trade = expansion.trade;
   expansion.progression.states[1].completed.push(
-    "stoneage-goods-handling",
-    "stoneage-cargo-canoes",
-    "stoneage-craft-workshops",
+    "rus-stoneage-land-traders",
+    "rus-stoneage-port-sea-trade",
+    "rus-stoneage-cities",
   );
   for (const source of sources) expansion.supply.goods.set(source.id, 1000);
   const step = (ticks = 1) => {
@@ -263,7 +263,7 @@ describe("bounded civilian trade", () => {
     expect(game.map.neighbors(sources[0].tile).some(t => game.map.isWater(t))).toBe(false);
     step(22);
     expect(trade.actors.some(a => a.naval && a.cargo > 0)).toBe(true);
-    game.expansion!.progression.states[1].completed.push("stoneage-war-canoes");
+    game.expansion!.progression.states[1].completed.push("rus-stoneage-port-sea-trade");
     game.players[0].gold=100000;
     expect(game.applyCommand({type:"recruit-ship",playerId:1,buildingId:sources[0].id,shipType:"warship",definitionId:"stoneage-warship"})).toBeNull();
   });
@@ -315,7 +315,7 @@ describe("bounded civilian trade", () => {
     const { game, expansion, trade, sources, step } = fleet(0, 1, false, false, true);
     const tribe = game.players.find((p) => p.kind === "tribe")!;
     for (const source of sources) game.updateBuilding(source.id, { playerId: tribe.id });
-    expansion.progression.states[tribe.id].completed.push("stoneage-cargo-canoes");
+    expansion.progression.states[tribe.id].completed.push("rus-stoneage-port-sea-trade");
     if (reason === "eliminated") tribe.eliminated = true;
     else for (const port of game.buildings.filter((b) => b.type === "port"))
       game.updateBuilding(port.id, { playerId: tribe.id });
@@ -333,7 +333,7 @@ describe("bounded civilian trade", () => {
     research.splice(0, research.length);
     step(20);
     expect(trade.actors.filter((a) => a.playerId === tribe.id)).toHaveLength(0);
-    research.push("stoneage-cargo-canoes");
+    research.push("rus-stoneage-port-sea-trade");
     step(20);
     const actors = trade.actors.filter((a) => a.playerId === tribe.id);
     // Two stacked ports share one physical spawn site, not two timers.
@@ -357,7 +357,7 @@ describe("bounded civilian trade", () => {
     for (const source of sources) game.updateBuilding(source.id, { playerId: tribe.id });
     const destination = game.buildings.find((b) => b.type === "port" && !sources.includes(b))!;
     game.updateBuilding(destination.id, { playerId: 1 });
-    expansion.progression.states[tribe.id].completed.push("stoneage-goods-handling", "stoneage-cargo-canoes");
+    expansion.progression.states[tribe.id].completed.push("rus-stoneage-land-traders", "rus-stoneage-port-sea-trade");
     step(20);
     expect(trade.actors.filter((a) => a.playerId === tribe.id)).toHaveLength(16);
     step(800);

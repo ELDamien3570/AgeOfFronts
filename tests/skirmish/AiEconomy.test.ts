@@ -36,7 +36,7 @@ describe("coordinated AI economy", () => {
   it("does not refresh old trade evidence when the courier stops completing trips",()=>{
     const {game,player,expansion}=fixture();
     game.options.deferredPlanning=true;
-    expansion.progression.states[player.id].completed.push("stoneage-goods-handling","stoneage-craft-workshops");
+    expansion.progression.states[player.id].completed.push("rus-stoneage-land-traders","rus-stoneage-factories-mines");
     const source=game.addBuilding({id:game.allocateId(),playerId:player.id,type:"factory",tile:player.base,age:"StoneAge",remainingTicks:0});
     expansion.supply.goods.set(source.id,25);game.tick=20;expansion.trade.step();
     const actor=expansion.trade.actors.find(a=>a.playerId===player.id)!;

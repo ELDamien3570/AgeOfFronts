@@ -52,8 +52,6 @@ export const BUILDING_RULES: Record<
     goldIncome: number;
   }
 > = {
-  "nuclear-facility": {name:"Nuclear weapons facility",glyph:"N",cost:6000,ticks:600,reserveIncome:0,goldIncome:0},
-  "drone-facility": {name:"Drone facility",glyph:"D",cost:4000,ticks:400,reserveIncome:0,goldIncome:0},
   barracks: {
     name: "Barracks",
     glyph: "B",
@@ -225,6 +223,9 @@ export const BUILDING_RULES: Record<
     reserveIncome: 0,
     goldIncome: 0,
   },
+  "nuclear-facility": {name:"Nuclear weapons facility",glyph:"N",cost:6000,ticks:600,reserveIncome:0,goldIncome:0},
+  "anti-air-emplacement": {name:"Anti-aircraft emplacement",glyph:"AA",cost:3000,ticks:300,reserveIncome:0,goldIncome:0},
+  "drone-facility": {name:"Drone facility",glyph:"D",cost:4000,ticks:400,reserveIncome:0,goldIncome:0},
 };
 
 export const SHIP_RULES: Record<

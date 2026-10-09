@@ -55,7 +55,7 @@ describe("independent trade unlocks", () => {
     const {m,research}=fixture(true,true);
     const destination=m.buildings.find(b=>b.playerId===2 && b.type==="port")!;
     m.updateBuilding(destination.id,{tile:m.map.ref(70,19)});
-    research.push("stoneage-cargo-canoes","stoneage-craft-workshops");
+    research.push("rus-stoneage-port-sea-trade","rus-stoneage-cities");
     m.expansion!.diplomacy.action(m.players[0],m.players[1],"offer",0);
     m.expansion!.diplomacy.action(m.players[1],m.players[0],"accept",0);
     let delivered=false;
@@ -67,7 +67,7 @@ describe("independent trade unlocks", () => {
     expect(delivered).toBe(true);
   });
   it("physically dispatches a naval trader despite unrelated military-policy revisions", () => {
-    const {m,research}=fixture(true,true);research.push("stoneage-cargo-canoes","stoneage-craft-workshops");
+    const {m,research}=fixture(true,true);research.push("rus-stoneage-port-sea-trade","rus-stoneage-cities");
     m.expansion!.diplomacy.action(m.players[0],m.players[1],"offer",0);
     m.expansion!.diplomacy.action(m.players[1],m.players[0],"accept",0);
     let origin: {id:number;x:number;y:number}|undefined, travelled=false;
@@ -83,10 +83,10 @@ describe("independent trade unlocks", () => {
   });
   it("keeps workshop production separate from land dispatch, then unlocks a visible trader with Goods Handling", () => {
     const { m, dispatch, research } = fixture();
-    research.push("stoneage-craft-workshops");
+    research.push("rus-stoneage-cities");
     dispatch();
     expect(m.expansion!.trade.actors.filter(a => a.playerId === 1)).toHaveLength(0);
-    research.push("stoneage-goods-handling");
+    research.push("rus-stoneage-land-traders");
     dispatch();
     expect(m.expansion!.trade.actors).toHaveLength(1);
     expect(m.expansion!.trade.actors[0]).toMatchObject({
@@ -95,13 +95,13 @@ describe("independent trade unlocks", () => {
     });
     expect(ARTWORK_CATALOG["stoneage-trader"].clips?.travel).toBeDefined();
   });
-  it("unlocks a water trader with Cargo Canoes without Goods Handling", () => {
+  it("unlocks a water trader with Port & Sea Trade without overland-trader research", () => {
     const { m, dispatch, research } = fixture(true);
-    research.splice(research.indexOf("stoneage-cargo-canoes"), 1);
-    research.push("stoneage-craft-workshops");
+    research.splice(research.indexOf("rus-stoneage-port-sea-trade"), 1);
+    research.push("rus-stoneage-cities");
     dispatch();
     expect(m.expansion!.trade.actors.filter(a => a.playerId === 1)).toHaveLength(0);
-    research.push("stoneage-cargo-canoes");
+    research.push("rus-stoneage-port-sea-trade");
     dispatch();
     expect(m.expansion!.trade.actors.filter(a => a.playerId === 1)).toHaveLength(1);
     expect(m.expansion!.trade.actors.find(a => a.playerId === 1)).toMatchObject({
@@ -111,7 +111,7 @@ describe("independent trade unlocks", () => {
   });
   it("does not substitute land traders for water research when there is no reachable port", () => {
     const { m, dispatch, research } = fixture();
-    research.push("stoneage-cargo-canoes");
+    research.push("rus-stoneage-port-sea-trade");
     dispatch();
     expect(m.expansion!.trade.actors).toHaveLength(0);
   });
@@ -119,10 +119,10 @@ describe("independent trade unlocks", () => {
     const {m,dispatch,research} = fixture(true);
     for (const port of m.buildings.filter(b=>b.type === "port")) m.updateBuilding((port).id, { playerId: 1 });
     expect(m.expansion!.trade.hasForeignMarket(1,m.map.ref(10,20))).toBe(false);
-    expect(research).not.toContain("stoneage-goods-handling");
-    research.push("stoneage-cargo-canoes"); dispatch();
+    expect(research).not.toContain("rus-stoneage-land-traders");
+    research.push("rus-stoneage-port-sea-trade"); dispatch();
     expect(m.expansion!.trade.actors.map(a=>({playerId:a.playerId,naval:a.naval,port:a.originPortId}))).toEqual([]);
-    research.push("stoneage-goods-handling"); dispatch();
+    research.push("rus-stoneage-land-traders"); dispatch();
     const actor = m.expansion!.trade.actors[0];
     expect(actor.naval).toBe(false);
     expect(actor.cargo).toBeGreaterThan(0);

@@ -19,7 +19,7 @@ function fixture(){
   const add=(type:"factory"|"city",x:number,owner:number)=>game.addBuilding({id:game.allocateId(),type,
     tile:map.ref(x,32),playerId:owner,age:"StoneAge",remainingTicks:0});
   const source=add("factory",8,1),market=add("city",150,2);
-  expansion.progression.states[1].completed.push("stoneage-goods-handling");
+  expansion.progression.states[1].completed.push("rus-stoneage-land-traders");
   expansion.supply.goods.set(source.id,25);
   for(const s of game.squads)game.updateSquad(s.id,{x:s.playerId*30*FIXED,y:5*FIXED,order:{type:"hold"}});
   const step=(n=1)=>{for(let i=0;i<n;i++){game.tick++;trade.step();}};

@@ -10,16 +10,19 @@ import {
   tradeStockPerSecond,
 } from "../content/Economy";
 import { supplyItemName } from "../content/Equipment";
+import { FLIGHT_RULES, flightTicks } from "../content/FlightOperations";
 import {
   AIRCRAFT_RULES,
+  ATOMIC_ATTACK,
   BOMBER_ATTACK,
+  DRONE_ATTACK,
+  NAVAL_AIR_ATTACK,
   STRATEGIC_PAYLOADS,
   STRATEGIC_RULES,
 } from "../content/ModernWeapons";
 import { PRODUCTION_RECIPES } from "../content/Production";
 import { RESOURCE_TECHNOLOGIES } from "../content/Resources";
 import { UNITS, VESSELS } from "../content/Units";
-import { RUSSIAN_UPGRADES } from "../content/RussianRecruitment";
 import { attackInterval } from "../domain/Combat";
 import {
   AGE_NAMES,
@@ -33,7 +36,6 @@ import { RECRUITMENT_SECONDS } from "../domain/Recruitment";
 import {
   breedingPerSecond,
   throughputPercent,
-  unitEffects,
   vesselEffects,
 } from "../domain/ResearchEffects";
 
@@ -76,7 +78,7 @@ function weapon(attack: AttackProfile, moving = false): string {
 
 /** Catalogue values, without player upgrades. Keep numeric balance in its source definitions. */
 export function technologyDetails(technology: Technology): string[] {
-  const { id, age, tree, slot } = technology;
+  const { id, age } = technology;
   const ageIndex = AGES.indexOf(age);
   const lines: string[] = [];
   const buildings = (Object.keys(BUILDING_RULES) as BuildingType[]).filter(
@@ -87,11 +89,13 @@ export function technologyDetails(technology: Technology): string[] {
       `Buildings: ${buildings.map((type) => BUILDING_RULES[type].name).join(", ")}`,
     );
   for (const unit of UNITS.filter((unit) => unit.technologyId === id)) {
-    const seconds = unit.trainingSeconds ?? (unit.tags.includes("vehicle")
-      ? RECRUITMENT_SECONDS.vehicle
-      : unit.tags.includes("siege")
-        ? RECRUITMENT_SECONDS.siege
-        : RECRUITMENT_SECONDS[unit.line]);
+    const seconds =
+      unit.trainingSeconds ??
+      (unit.tags.includes("vehicle")
+        ? RECRUITMENT_SECONDS.vehicle
+        : unit.tags.includes("siege")
+          ? RECRUITMENT_SECONDS.siege
+          : RECRUITMENT_SECONDS[unit.line]);
     lines.push(
       `${unit.name}: ${cost(unit.cost)} · ${seconds}s recruitment at ${BUILDING_RULES[unit.building].name}`,
     );
@@ -142,108 +146,124 @@ export function technologyDetails(technology: Technology): string[] {
     lines.push(
       `Trade stock: ${tradeStockPerSecond(age)} goods/s per completed factory or port of this tier`,
     );
-  if (
-    tree === "economic" &&
-    (slot === (ageIndex === 0 ? 2 : 3) || id === "stoneage-goods-handling")
-  ) {
-    const capacity = LAND_TRADE_CAPACITIES[ageIndex];
-    lines.push(
-      `Land trade: ${capacity} goods base cargo · ${Math.floor(capacity * 1.25)} with Goods Handling at one factory`,
-    );
-  }
-  if (id === "stoneage-goods-handling")
-    lines.push("Cargo: +25% for land and sea traders (rounded down)");
-  if (tree === "economic" && slot === 4) {
+  const role = id.replace(`rus-${age.toLowerCase()}-`, "");
+  if (role === "factories-mines") {
     const percent = throughputPercent([id]);
     lines.push(
       `Recipe production rate: ${percent}% of base · cycle time ÷ ${number(percent / 100)} (rounded up to 0.05s; replaces earlier tiers)`,
     );
   }
-  const breeding = breedingPerSecond([id]);
-  if (breeding)
+  if (role === "roads")
     lines.push(
-      `Horse breeding: ${breeding} horses/s per completed owned stable (replaces earlier tiers)`,
+      `Trade traffic builds ${AGE_NAMES[ageIndex]} roads. Road tier is independent of trader cargo capacity.`,
     );
-  if (id === "stoneage-horsemanship")
-    lines.push("Horse breeding: 1 horse/4s per completed owned stable");
-  if (tree === "warfare" && slot === 4 && age !== "Modern") {
-    const units = UNITS.filter((unit) => unit.age === age);
+  if (role === "land-traders") {
+    const capacity = LAND_TRADE_CAPACITIES[ageIndex];
     lines.push(
-      `All ${AGE_NAMES[ageIndex]} ground units: +10% base attack (rounded) · reload ×0.95 (rounded to 0.05s)`,
+      `Land trade: ${capacity} goods base cargo · ${Math.floor(capacity * 1.25)} with Stone Age cargo handling at one factory`,
     );
     lines.push(
-      `Melee/ranged armour bonus: ${units.map((unit) => `${unit.name} +${unitEffects(unit, [id]).meleeArmour - unit.meleeArmour} points`).join("; ")}`,
+      `Horse breeding: ${breedingPerSecond([id])} horses/s per completed owned stable (replaces earlier tiers)`,
     );
+    if (!ageIndex)
+      lines.push(
+        "Cargo handling: +25% for land and sea traders (rounded down)",
+      );
   }
-  if (id in RUSSIAN_UPGRADES) {
-    for (const unit of UNITS) {
-      const upgraded = unitEffects(unit, [id]);
-      if (upgraded.attack.damage !== unit.attack.damage)
-        lines.push(`${unit.name}: ${unit.attack.damage} -> ${upgraded.attack.damage} base attack`);
-      if (upgraded.healthPercent !== unit.healthPercent)
-        lines.push(`${unit.name}: +20% durability`);
-      if (upgraded.speedPercent !== unit.speedPercent)
-        lines.push(`${unit.name}: movement speed +15%`);
-    }
-    for (const vessel of VESSELS) {
-      const upgraded = vesselEffects(vessel, [id]);
-      if (upgraded.capacity !== vessel.capacity) lines.push(`${vessel.name}: cargo ${vessel.capacity} → ${upgraded.capacity}`);
-      if (upgraded.health !== vessel.health) lines.push(`${vessel.name}: hull ${vessel.health} → ${upgraded.health}`);
-      if (upgraded.speed !== vessel.speed) lines.push(`${vessel.name}: sailing speed +10%`);
-    }
-    if (["russian-machine-tools", "russian-supply-depots", "russian-assembly-line-upgrades"].includes(id))
-      lines.push(`Recipe throughput bonus: +${throughputPercent([id]) - 100} percentage points`);
+  if (role === "cities") {
+    lines.push(
+      `City: +${cityReserveIncome(age, [id])} reserves/s at this tier`,
+    );
+    if (!ageIndex)
+      lines.push(
+        "Cities are buildable from the start. +10% city health and receiving capacity.",
+      );
+    else
+      lines.push(
+        "Existing cities upgrade automatically: improved health, reserve generation and receiving capacity.",
+      );
   }
-  if (id === "russian-naval-missiles")
-    lines.push("Modern warships: +15% base attack and +1 tile range");
-  if (tree === "naval" && slot === 4 && age !== "Modern") {
+  if (role === "ports")
+    lines.push(
+      `Existing ports upgrade automatically. Land and sea cargo per trip: +${ageIndex * 5}% (replaces earlier port bonuses). Receiving capacity, cargo stock and building health improve with the port tier.`,
+    );
+  if (role === "coastal-navigation" || role === "ship-improvements") {
     for (const vessel of VESSELS.filter(
-      (vessel) => vessel.age === age && vessel.kind !== "trade",
+      (v) => age === "Modern" || v.age === age,
     )) {
       const upgraded = vesselEffects(vessel, [id]);
       lines.push(
-        `${vessel.kind === "transport" ? "Squads afloat" : "Warship"}: ${number((vessel.speed * TICKS_PER_SECOND) / FIXED)} → ${number((upgraded.speed * TICKS_PER_SECOND) / FIXED)} tiles/s${vessel.kind === "transport" ? ` · hull ${vessel.health} → ${upgraded.health}` : ""}${vessel.attack ? ` · ${number(vessel.attack.reloadTicks / TICKS_PER_SECOND)} → ${number(upgraded.attack!.reloadTicks / TICKS_PER_SECOND)}s reload` : ""}`,
+        `${vessel.kind === "transport" ? "Squads afloat" : vessel.name}: hull ${vessel.health} → ${upgraded.health} · ${number((vessel.speed * TICKS_PER_SECOND) / FIXED)} → ${number((upgraded.speed * TICKS_PER_SECOND) / FIXED)} tiles/s${vessel.capacity ? ` · cargo ${vessel.capacity} → ${upgraded.capacity}` : ""}${vessel.attack ? ` · ${number(vessel.attack.reloadTicks / TICKS_PER_SECOND)} → ${number(upgraded.attack!.reloadTicks / TICKS_PER_SECOND)}s reload` : ""}`,
       );
     }
   }
   const transport = VESSELS.find(
-    (vessel) =>
-      vessel.age === age &&
-      vessel.kind === "transport" &&
-      vessel.technologyId === id,
+    (v) => v.age === age && v.kind === "transport" && v.technologyId === id,
   );
   if (transport)
     lines.push(
       `Squads cross water as ${transport.name}: ${transport.health} hull · ${number((transport.speed * TICKS_PER_SECOND) / FIXED)} tiles/s · sinks with all aboard`,
     );
-  if (id === "modern-combined-arms") {
+  if (role === "naval-missiles-air-defence") {
+    lines.push("Modern warships: +15% base attack and +1 tile range");
+    lines.push(
+      `Air defence: ${weapon(NAVAL_AIR_ATTACK)} · homing rockets against hostile aircraft; drones cannot be intercepted`,
+    );
+  }
+  if (role === "fortifications" && ageIndex >= 6) {
     lines.push(`Gun nest: ${weapon(GUN_NEST_ATTACK)}`);
     lines.push(
       `Trench cover: ${TRENCH_COVER.slots} infantry squads per trench tile · ${TRENCH_COVER.reduction / 100}% damage reduction within ${TRENCH_COVER.radius / FIXED} tile`,
     );
+    if (age === "Modern")
+      lines.push(
+        `Ground air defence: ${weapon(NAVAL_AIR_ATTACK)} · drones cannot be intercepted`,
+      );
   }
-  if (id === "modern-military-aviation") {
+  if (["airfields", "bombers", "mirvs-drones"].includes(role)) {
+    const kind =
+      role === "airfields"
+        ? "fighter"
+        : role === "bombers"
+          ? "bomber"
+          : "drone";
+    const rule = FLIGHT_RULES[kind];
     lines.push(
-      `Fighter or bomber: ${number(AIRCRAFT_RULES.gold)} gold · ${RECRUITMENT_SECONDS.aircraft}s recruitment · ${number(AIRCRAFT_RULES.health)} HP`,
+      `${kind}: ${number(rule.gold)} gold · ${RECRUITMENT_SECONDS.aircraft}s recruitment · ${number(AIRCRAFT_RULES.health)} HP · ${number((rule.speed * TICKS_PER_SECOND) / FIXED)} tiles/s`,
     );
     lines.push(
-      `Aircraft capacity: ${AIRCRAFT_RULES.airfieldCapacity} per airstrip · ${AIRCRAFT_RULES.factionCapacity} per faction · ${AIRCRAFT_RULES.fuelTicks / TICKS_PER_SECOND}s flight endurance`,
+      `Aircraft capacity: ${AIRCRAFT_RULES.airfieldCapacity} per launch site · ${AIRCRAFT_RULES.factionCapacity} per faction · ${flightTicks(kind, age) / TICKS_PER_SECOND}s flight time`,
     );
     lines.push(
-      `Bomb: ${number(BOMBER_ATTACK.damage)} attack · +${number(BOMBER_ATTACK.bonuses.structure!)} vs structures · ${BOMBER_ATTACK.penetration / 100}% armour penetration · ${BOMBER_ATTACK.projectile!.blastRadius / FIXED}-tile blast radius`,
+      "Outbound travel and patrol use flight time; return flight is free. Targets beyond the remaining flight budget are rejected. Shift launches up to 5.",
     );
-    lines.push(
-      "Sortie: 1 ready squad; Shift launches up to 5. Runway is chosen automatically.",
-    );
+    if (kind === "fighter")
+      lines.push(
+        "I Dispatch: patrol and intercept hostile fighters and bombers. Fighters do not bomb ground targets.",
+      );
+    if (kind === "bomber")
+      lines.push(`P Bombing Run: ${weapon(BOMBER_ATTACK)}`);
+    if (kind === "drone")
+      lines.push(
+        `U Drone Strike: ${weapon(DRONE_ATTACK)} · single use · no interception`,
+      );
   }
-  if (id === "modern-strategic-weapons") {
+  if (role === "nuclear-weapons")
+    lines.push(
+      `O A-Bomb Run: ${weapon(ATOMIC_ATTACK)} · one atomic payload per bomber · blast damages friendly and hostile targets`,
+    );
+  if (role === "missile-infrastructure" || role === "mirvs-drones") {
     lines.push(
       `Launch: ${number(STRATEGIC_RULES.gold)} gold + 1 matching payload · ${STRATEGIC_RULES.reloadTicks / TICKS_PER_SECOND}s launcher cooldown`,
     );
-    for (const [name, payload] of Object.entries(STRATEGIC_PAYLOADS))
+    for (const [name, payload] of Object.entries(STRATEGIC_PAYLOADS)) {
+      if ((name === "mirv") !== (role === "mirvs-drones")) continue;
       lines.push(
         `${name === "hydrogen" ? "Hydrogen bomb" : name.toUpperCase()}: ${payload.warheads ? `${payload.warheads} warheads × ${number(payload.damage / payload.warheads)}` : number(payload.damage)} attack · ${payload.blastRadius / FIXED}-tile blast radius${payload.warheads ? " per warhead" : ""}`,
       );
+    }
   }
+  if (!lines.includes(technology.description))
+    lines.push(technology.description);
   return lines.length ? lines : [technology.description];
 }

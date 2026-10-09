@@ -52,7 +52,7 @@ function shipment() {
     factory = building(m, "factory", 10);
   building(m, "city", 20);
   building(m, "city", 11, 2);
-  e.progression.states[1].completed.push("stoneage-goods-handling");
+  e.progression.states[1].completed.push("rus-stoneage-land-traders");
   e.supply.goods.set(factory.id, 25);
   tradeStep(m, 22);
   const actor = e.trade.actors[0];

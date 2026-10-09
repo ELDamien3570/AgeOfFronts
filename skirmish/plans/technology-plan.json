@@ -9239,10 +9239,10 @@
           "description": "Unlock squad transport technology: squads use cargo canoes to cross water. No port is required to unlock this transport tier.",
           "buildingUnlocks": [],
           "kind": "unlock",
-          "notes": "Planner sketch. Price and duration TBD. Any slight stat increases are design intent; magnitudes TBD.",
+          "notes": "Playable first pass. Costs and research durations follow the base-culture age pattern; the eighth age extrapolates its final tier by 25%. Balance remains tunable.",
           "decision": "proposed",
-          "gold": null,
-          "researchSeconds": null
+          "gold": 300,
+          "researchSeconds": 20
         },
         {
           "id": "rus-stoneage-port-sea-trade",
@@ -9258,10 +9258,10 @@
             "Port"
           ],
           "kind": "unlock",
-          "notes": "Planner sketch. Price and duration TBD. Any slight stat increases are design intent; magnitudes TBD.",
+          "notes": "Playable first pass. Costs and research durations follow the base-culture age pattern; the eighth age extrapolates its final tier by 25%. Balance remains tunable.",
           "decision": "proposed",
-          "gold": null,
-          "researchSeconds": null
+          "gold": 200,
+          "researchSeconds": 18
         },
         {
           "id": "rus-stoneage-coastal-navigation",
@@ -9275,7 +9275,7 @@
           "description": "Unchanged upgrade: improve squad transport hulls and sailing speed, military sailing speed and warship firing rate. Trade ships are unchanged.",
           "buildingUnlocks": [],
           "kind": "upgrade",
-          "notes": "Preserve the existing Coastal Navigation effects and research terms. Its prerequisite is now the bundled port/warship/trader unlock.",
+          "notes": "Playable first pass. Costs and research durations follow the base-culture age pattern; the eighth age extrapolates its final tier by 25%. Balance remains tunable.",
           "decision": "proposed",
           "gold": 450,
           "researchSeconds": 25
@@ -9293,10 +9293,10 @@
             "Mine"
           ],
           "kind": "unlock",
-          "notes": "Planner sketch. Price and duration TBD. Any slight stat increases are design intent; magnitudes TBD.",
+          "notes": "Playable first pass. Costs and research durations follow the base-culture age pattern; the eighth age extrapolates its final tier by 25%. Balance remains tunable.",
           "decision": "proposed",
-          "gold": null,
-          "researchSeconds": null
+          "gold": 0,
+          "researchSeconds": 0
         },
         {
           "id": "rus-stoneage-roads",
@@ -9310,10 +9310,10 @@
           "description": "Improve overland roads and trade-route infrastructure for this age. Exact road benefits remain TBD.",
           "buildingUnlocks": [],
           "kind": "upgrade",
-          "notes": "Planner sketch. Price and duration TBD. Any slight stat increases are design intent; magnitudes TBD.",
+          "notes": "Playable first pass. Costs and research durations follow the base-culture age pattern; the eighth age extrapolates its final tier by 25%. Balance remains tunable.",
           "decision": "proposed",
-          "gold": null,
-          "researchSeconds": null
+          "gold": 300,
+          "researchSeconds": 20
         },
         {
           "id": "rus-stoneage-land-traders",
@@ -9327,30 +9327,30 @@
           "description": "Unlock/upgrade overland traders spawned by factories, with a modest improvement in cargo per trip and delivery efficiency. Exact numbers remain TBD.",
           "buildingUnlocks": [],
           "kind": "unlock",
-          "notes": "Planner sketch. Price and duration TBD. Any slight stat increases are design intent; magnitudes TBD.",
+          "notes": "Playable first pass. Costs and research durations follow the base-culture age pattern; the eighth age extrapolates its final tier by 25%. Balance remains tunable.",
           "decision": "proposed",
-          "gold": null,
-          "researchSeconds": null
+          "gold": 300,
+          "researchSeconds": 20
         },
         {
           "id": "rus-stoneage-cities",
           "age": "StoneAge",
           "tree": "economic",
           "order": 4,
-          "name": "Settlements & Cities",
+          "name": "Settlement Administration",
           "prerequisites": [
             "rus-stoneage-roads",
             "rus-stoneage-land-traders"
           ],
-          "description": "Unlock/upgrade cities, which generate troop reserves and act as cargo drop-off/receiving points. Slightly improve reserve generation, receiving capacity and building health. This closes the age's economic spine.",
+          "description": "Cities are buildable from the start. Improve city reserve generation and building health by 10%, and receiving capacity by 10%. This closes the Stone Age economic branch.",
           "buildingUnlocks": [
             "City"
           ],
-          "kind": "unlock",
-          "notes": "Planner sketch. Price and duration TBD. Any slight stat increases are design intent; magnitudes TBD.",
+          "kind": "upgrade",
+          "notes": "Playable first pass. Costs and research durations follow the base-culture age pattern; the eighth age extrapolates its final tier by 25%. Balance remains tunable.",
           "decision": "proposed",
-          "gold": null,
-          "researchSeconds": null
+          "gold": 450,
+          "researchSeconds": 25
         },
         {
           "id": "rus-stoneage-barracks-equipment",
@@ -9365,10 +9365,10 @@
             "Blacksmith"
           ],
           "kind": "unlock",
-          "notes": "Planner sketch. Price and duration TBD. Any slight stat increases are design intent; magnitudes TBD.",
+          "notes": "Playable first pass. Costs and research durations follow the base-culture age pattern; the eighth age extrapolates its final tier by 25%. Balance remains tunable.",
           "decision": "proposed",
-          "gold": null,
-          "researchSeconds": null
+          "gold": 0,
+          "researchSeconds": 0
         },
         {
           "id": "rus-stoneage-ranged",
@@ -9384,10 +9384,10 @@
             "Archery Range"
           ],
           "kind": "unlock",
-          "notes": "Planner sketch. Price and duration TBD. Any slight stat increases are design intent; magnitudes TBD.",
+          "notes": "Playable first pass. Costs and research durations follow the base-culture age pattern; the eighth age extrapolates its final tier by 25%. Balance remains tunable.",
           "decision": "proposed",
-          "gold": null,
-          "researchSeconds": null
+          "gold": 300,
+          "researchSeconds": 20
         },
         {
           "id": "rus-stoneage-mobile",
@@ -9403,10 +9403,10 @@
             "Stables"
           ],
           "kind": "unlock",
-          "notes": "Planner sketch. Price and duration TBD. Any slight stat increases are design intent; magnitudes TBD.",
+          "notes": "Playable first pass. Costs and research durations follow the base-culture age pattern; the eighth age extrapolates its final tier by 25%. Balance remains tunable.",
           "decision": "proposed",
-          "gold": null,
-          "researchSeconds": null
+          "gold": 250,
+          "researchSeconds": 15
         },
         {
           "id": "rus-stoneage-fortifications",
@@ -9424,10 +9424,10 @@
             "Gates"
           ],
           "kind": "unlock",
-          "notes": "Planner sketch. Price and duration TBD. Any slight stat increases are design intent; magnitudes TBD.",
+          "notes": "Playable first pass. Costs and research durations follow the base-culture age pattern; the eighth age extrapolates its final tier by 25%. Balance remains tunable.",
           "decision": "proposed",
-          "gold": null,
-          "researchSeconds": null
+          "gold": 450,
+          "researchSeconds": 25
         },
         {
           "id": "rus-stoneage-siege",
@@ -9445,10 +9445,10 @@
             "Siege Workshop"
           ],
           "kind": "unlock",
-          "notes": "Planner sketch. Price and duration TBD. Any slight stat increases are design intent; magnitudes TBD.",
+          "notes": "Playable first pass. Costs and research durations follow the base-culture age pattern; the eighth age extrapolates its final tier by 25%. Balance remains tunable.",
           "decision": "proposed",
-          "gold": null,
-          "researchSeconds": null
+          "gold": 450,
+          "researchSeconds": 25
         },
         {
           "id": "rus-bronzeage-ports",
@@ -9464,10 +9464,10 @@
             "Port"
           ],
           "kind": "unlock",
-          "notes": "Planner sketch. Price and duration TBD. Any slight stat increases are design intent; magnitudes TBD.",
+          "notes": "Playable first pass. Costs and research durations follow the base-culture age pattern; the eighth age extrapolates its final tier by 25%. Balance remains tunable.",
           "decision": "proposed",
-          "gold": null,
-          "researchSeconds": null
+          "gold": 4000,
+          "researchSeconds": 20
         },
         {
           "id": "rus-bronzeage-warships",
@@ -9481,10 +9481,10 @@
           "description": "Unlock this age's improved warship recipe at the upgraded port. This is the warship branch of the port upgrade.",
           "buildingUnlocks": [],
           "kind": "unlock",
-          "notes": "Planner sketch. Price and duration TBD. Any slight stat increases are design intent; magnitudes TBD.",
+          "notes": "Playable first pass. Costs and research durations follow the base-culture age pattern; the eighth age extrapolates its final tier by 25%. Balance remains tunable.",
           "decision": "proposed",
-          "gold": null,
-          "researchSeconds": null
+          "gold": 2334,
+          "researchSeconds": 22
         },
         {
           "id": "rus-bronzeage-sea-traders",
@@ -9498,10 +9498,10 @@
           "description": "Upgrade the sea traders spawned by ports to this age's improved trader tier, with a slight increase in cargo capacity per trip.",
           "buildingUnlocks": [],
           "kind": "unlock",
-          "notes": "Planner sketch. Price and duration TBD. Any slight stat increases are design intent; magnitudes TBD.",
+          "notes": "Playable first pass. Costs and research durations follow the base-culture age pattern; the eighth age extrapolates its final tier by 25%. Balance remains tunable.",
           "decision": "proposed",
-          "gold": null,
-          "researchSeconds": null
+          "gold": 2334,
+          "researchSeconds": 22
         },
         {
           "id": "rus-bronzeage-ship-improvements",
@@ -9516,10 +9516,10 @@
           "description": "Slightly improve squad transport and warship durability, and warship firing rate. Improves the existing fleet without another unit/building unlock.",
           "buildingUnlocks": [],
           "kind": "upgrade",
-          "notes": "Planner sketch. Price and duration TBD. Any slight stat increases are design intent; magnitudes TBD.",
+          "notes": "Playable first pass. Costs and research durations follow the base-culture age pattern; the eighth age extrapolates its final tier by 25%. Balance remains tunable.",
           "decision": "proposed",
-          "gold": null,
-          "researchSeconds": null
+          "gold": 3334,
+          "researchSeconds": 25
         },
         {
           "id": "rus-bronzeage-factories-mines",
@@ -9536,10 +9536,10 @@
             "Mine"
           ],
           "kind": "unlock",
-          "notes": "Planner sketch. Price and duration TBD. Any slight stat increases are design intent; magnitudes TBD.",
+          "notes": "Playable first pass. Costs and research durations follow the base-culture age pattern; the eighth age extrapolates its final tier by 25%. Balance remains tunable.",
           "decision": "proposed",
-          "gold": null,
-          "researchSeconds": null
+          "gold": 2000,
+          "researchSeconds": 20
         },
         {
           "id": "rus-bronzeage-roads",
@@ -9553,10 +9553,10 @@
           "description": "Improve overland roads and trade-route infrastructure for this age. Exact road benefits remain TBD.",
           "buildingUnlocks": [],
           "kind": "upgrade",
-          "notes": "Planner sketch. Price and duration TBD. Any slight stat increases are design intent; magnitudes TBD.",
+          "notes": "Playable first pass. Costs and research durations follow the base-culture age pattern; the eighth age extrapolates its final tier by 25%. Balance remains tunable.",
           "decision": "proposed",
-          "gold": null,
-          "researchSeconds": null
+          "gold": 2334,
+          "researchSeconds": 22
         },
         {
           "id": "rus-bronzeage-land-traders",
@@ -9570,10 +9570,10 @@
           "description": "Unlock/upgrade overland traders spawned by factories, with a modest improvement in cargo per trip and delivery efficiency. Exact numbers remain TBD.",
           "buildingUnlocks": [],
           "kind": "upgrade",
-          "notes": "Planner sketch. Price and duration TBD. Any slight stat increases are design intent; magnitudes TBD.",
+          "notes": "Playable first pass. Costs and research durations follow the base-culture age pattern; the eighth age extrapolates its final tier by 25%. Balance remains tunable.",
           "decision": "proposed",
-          "gold": null,
-          "researchSeconds": null
+          "gold": 2334,
+          "researchSeconds": 22
         },
         {
           "id": "rus-bronzeage-cities",
@@ -9590,10 +9590,10 @@
             "City"
           ],
           "kind": "upgrade",
-          "notes": "Planner sketch. Price and duration TBD. Any slight stat increases are design intent; magnitudes TBD.",
+          "notes": "Playable first pass. Costs and research durations follow the base-culture age pattern; the eighth age extrapolates its final tier by 25%. Balance remains tunable.",
           "decision": "proposed",
-          "gold": null,
-          "researchSeconds": null
+          "gold": 3334,
+          "researchSeconds": 25
         },
         {
           "id": "rus-bronzeage-barracks-equipment",
@@ -9610,10 +9610,10 @@
             "Blacksmith"
           ],
           "kind": "unlock",
-          "notes": "Planner sketch. Price and duration TBD. Any slight stat increases are design intent; magnitudes TBD.",
+          "notes": "Playable first pass. Costs and research durations follow the base-culture age pattern; the eighth age extrapolates its final tier by 25%. Balance remains tunable.",
           "decision": "proposed",
-          "gold": null,
-          "researchSeconds": null
+          "gold": 4000,
+          "researchSeconds": 20
         },
         {
           "id": "rus-bronzeage-ranged",
@@ -9629,10 +9629,10 @@
             "Archery Range"
           ],
           "kind": "unlock",
-          "notes": "Planner sketch. Price and duration TBD. Any slight stat increases are design intent; magnitudes TBD.",
+          "notes": "Playable first pass. Costs and research durations follow the base-culture age pattern; the eighth age extrapolates its final tier by 25%. Balance remains tunable.",
           "decision": "proposed",
-          "gold": null,
-          "researchSeconds": null
+          "gold": 4667,
+          "researchSeconds": 22
         },
         {
           "id": "rus-bronzeage-mobile",
@@ -9648,10 +9648,10 @@
             "Stables"
           ],
           "kind": "unlock",
-          "notes": "Planner sketch. Price and duration TBD. Any slight stat increases are design intent; magnitudes TBD.",
+          "notes": "Playable first pass. Costs and research durations follow the base-culture age pattern; the eighth age extrapolates its final tier by 25%. Balance remains tunable.",
           "decision": "proposed",
-          "gold": null,
-          "researchSeconds": null
+          "gold": 4667,
+          "researchSeconds": 22
         },
         {
           "id": "rus-bronzeage-fortifications",
@@ -9669,10 +9669,10 @@
             "Gates"
           ],
           "kind": "unlock",
-          "notes": "Planner sketch. Price and duration TBD. Any slight stat increases are design intent; magnitudes TBD.",
+          "notes": "Playable first pass. Costs and research durations follow the base-culture age pattern; the eighth age extrapolates its final tier by 25%. Balance remains tunable.",
           "decision": "proposed",
-          "gold": null,
-          "researchSeconds": null
+          "gold": 6667,
+          "researchSeconds": 25
         },
         {
           "id": "rus-bronzeage-siege",
@@ -9690,10 +9690,10 @@
             "Siege Workshop"
           ],
           "kind": "unlock",
-          "notes": "Planner sketch. Price and duration TBD. Any slight stat increases are design intent; magnitudes TBD.",
+          "notes": "Playable first pass. Costs and research durations follow the base-culture age pattern; the eighth age extrapolates its final tier by 25%. Balance remains tunable.",
           "decision": "proposed",
-          "gold": null,
-          "researchSeconds": null
+          "gold": 6667,
+          "researchSeconds": 25
         },
         {
           "id": "rus-classicalage-ports",
@@ -9709,10 +9709,10 @@
             "Port"
           ],
           "kind": "unlock",
-          "notes": "Planner sketch. Price and duration TBD. Any slight stat increases are design intent; magnitudes TBD.",
+          "notes": "Playable first pass. Costs and research durations follow the base-culture age pattern; the eighth age extrapolates its final tier by 25%. Balance remains tunable.",
           "decision": "proposed",
-          "gold": null,
-          "researchSeconds": null
+          "gold": 6667,
+          "researchSeconds": 25
         },
         {
           "id": "rus-classicalage-warships",
@@ -9726,10 +9726,10 @@
           "description": "Unlock this age's improved warship recipe at the upgraded port. This is the warship branch of the port upgrade.",
           "buildingUnlocks": [],
           "kind": "unlock",
-          "notes": "Planner sketch. Price and duration TBD. Any slight stat increases are design intent; magnitudes TBD.",
+          "notes": "Playable first pass. Costs and research durations follow the base-culture age pattern; the eighth age extrapolates its final tier by 25%. Balance remains tunable.",
           "decision": "proposed",
-          "gold": null,
-          "researchSeconds": null
+          "gold": 4000,
+          "researchSeconds": 28
         },
         {
           "id": "rus-classicalage-sea-traders",
@@ -9743,10 +9743,10 @@
           "description": "Upgrade the sea traders spawned by ports to this age's improved trader tier, with a slight increase in cargo capacity per trip.",
           "buildingUnlocks": [],
           "kind": "unlock",
-          "notes": "Planner sketch. Price and duration TBD. Any slight stat increases are design intent; magnitudes TBD.",
+          "notes": "Playable first pass. Costs and research durations follow the base-culture age pattern; the eighth age extrapolates its final tier by 25%. Balance remains tunable.",
           "decision": "proposed",
-          "gold": null,
-          "researchSeconds": null
+          "gold": 4000,
+          "researchSeconds": 28
         },
         {
           "id": "rus-classicalage-ship-improvements",
@@ -9761,10 +9761,10 @@
           "description": "Slightly improve squad transport and warship durability, and warship firing rate. Improves the existing fleet without another unit/building unlock.",
           "buildingUnlocks": [],
           "kind": "upgrade",
-          "notes": "Planner sketch. Price and duration TBD. Any slight stat increases are design intent; magnitudes TBD.",
+          "notes": "Playable first pass. Costs and research durations follow the base-culture age pattern; the eighth age extrapolates its final tier by 25%. Balance remains tunable.",
           "decision": "proposed",
-          "gold": null,
-          "researchSeconds": null
+          "gold": 5334,
+          "researchSeconds": 35
         },
         {
           "id": "rus-classicalage-factories-mines",
@@ -9781,10 +9781,10 @@
             "Mine"
           ],
           "kind": "unlock",
-          "notes": "Planner sketch. Price and duration TBD. Any slight stat increases are design intent; magnitudes TBD.",
+          "notes": "Playable first pass. Costs and research durations follow the base-culture age pattern; the eighth age extrapolates its final tier by 25%. Balance remains tunable.",
           "decision": "proposed",
-          "gold": null,
-          "researchSeconds": null
+          "gold": 3334,
+          "researchSeconds": 25
         },
         {
           "id": "rus-classicalage-roads",
@@ -9798,10 +9798,10 @@
           "description": "Improve overland roads and trade-route infrastructure for this age. Exact road benefits remain TBD.",
           "buildingUnlocks": [],
           "kind": "upgrade",
-          "notes": "Planner sketch. Price and duration TBD. Any slight stat increases are design intent; magnitudes TBD.",
+          "notes": "Playable first pass. Costs and research durations follow the base-culture age pattern; the eighth age extrapolates its final tier by 25%. Balance remains tunable.",
           "decision": "proposed",
-          "gold": null,
-          "researchSeconds": null
+          "gold": 4000,
+          "researchSeconds": 28
         },
         {
           "id": "rus-classicalage-land-traders",
@@ -9815,10 +9815,10 @@
           "description": "Unlock/upgrade overland traders spawned by factories, with a modest improvement in cargo per trip and delivery efficiency. Exact numbers remain TBD.",
           "buildingUnlocks": [],
           "kind": "upgrade",
-          "notes": "Planner sketch. Price and duration TBD. Any slight stat increases are design intent; magnitudes TBD.",
+          "notes": "Playable first pass. Costs and research durations follow the base-culture age pattern; the eighth age extrapolates its final tier by 25%. Balance remains tunable.",
           "decision": "proposed",
-          "gold": null,
-          "researchSeconds": null
+          "gold": 4000,
+          "researchSeconds": 28
         },
         {
           "id": "rus-classicalage-cities",
@@ -9835,10 +9835,10 @@
             "City"
           ],
           "kind": "upgrade",
-          "notes": "Planner sketch. Price and duration TBD. Any slight stat increases are design intent; magnitudes TBD.",
+          "notes": "Playable first pass. Costs and research durations follow the base-culture age pattern; the eighth age extrapolates its final tier by 25%. Balance remains tunable.",
           "decision": "proposed",
-          "gold": null,
-          "researchSeconds": null
+          "gold": 5334,
+          "researchSeconds": 35
         },
         {
           "id": "rus-classicalage-barracks-equipment",
@@ -9855,10 +9855,10 @@
             "Blacksmith"
           ],
           "kind": "unlock",
-          "notes": "Planner sketch. Price and duration TBD. Any slight stat increases are design intent; magnitudes TBD.",
+          "notes": "Playable first pass. Costs and research durations follow the base-culture age pattern; the eighth age extrapolates its final tier by 25%. Balance remains tunable.",
           "decision": "proposed",
-          "gold": null,
-          "researchSeconds": null
+          "gold": 6667,
+          "researchSeconds": 25
         },
         {
           "id": "rus-classicalage-ranged",
@@ -9874,10 +9874,10 @@
             "Archery Range"
           ],
           "kind": "unlock",
-          "notes": "Planner sketch. Price and duration TBD. Any slight stat increases are design intent; magnitudes TBD.",
+          "notes": "Playable first pass. Costs and research durations follow the base-culture age pattern; the eighth age extrapolates its final tier by 25%. Balance remains tunable.",
           "decision": "proposed",
-          "gold": null,
-          "researchSeconds": null
+          "gold": 8000,
+          "researchSeconds": 28
         },
         {
           "id": "rus-classicalage-mobile",
@@ -9893,10 +9893,10 @@
             "Stables"
           ],
           "kind": "unlock",
-          "notes": "Planner sketch. Price and duration TBD. Any slight stat increases are design intent; magnitudes TBD.",
+          "notes": "Playable first pass. Costs and research durations follow the base-culture age pattern; the eighth age extrapolates its final tier by 25%. Balance remains tunable.",
           "decision": "proposed",
-          "gold": null,
-          "researchSeconds": null
+          "gold": 8000,
+          "researchSeconds": 28
         },
         {
           "id": "rus-classicalage-fortifications",
@@ -9914,10 +9914,10 @@
             "Gates"
           ],
           "kind": "unlock",
-          "notes": "Planner sketch. Price and duration TBD. Any slight stat increases are design intent; magnitudes TBD.",
+          "notes": "Playable first pass. Costs and research durations follow the base-culture age pattern; the eighth age extrapolates its final tier by 25%. Balance remains tunable.",
           "decision": "proposed",
-          "gold": null,
-          "researchSeconds": null
+          "gold": 10667,
+          "researchSeconds": 35
         },
         {
           "id": "rus-classicalage-siege",
@@ -9935,10 +9935,10 @@
             "Siege Workshop"
           ],
           "kind": "unlock",
-          "notes": "Planner sketch. Price and duration TBD. Any slight stat increases are design intent; magnitudes TBD.",
+          "notes": "Playable first pass. Costs and research durations follow the base-culture age pattern; the eighth age extrapolates its final tier by 25%. Balance remains tunable.",
           "decision": "proposed",
-          "gold": null,
-          "researchSeconds": null
+          "gold": 10667,
+          "researchSeconds": 35
         },
         {
           "id": "rus-classicalage-ranged-mobile",
@@ -9952,10 +9952,10 @@
           "description": "Optional terminal unlock: Horse Archers and its equipment/recruitment recipe. No technology requires this node. Produced at stables; the research branches from ranged training.",
           "buildingUnlocks": [],
           "kind": "unlock",
-          "notes": "Planner sketch. Price and duration TBD. Any slight stat increases are design intent; magnitudes TBD.",
+          "notes": "Playable first pass. Costs and research durations follow the base-culture age pattern; the eighth age extrapolates its final tier by 25%. Balance remains tunable.",
           "decision": "proposed",
-          "gold": null,
-          "researchSeconds": null
+          "gold": 8000,
+          "researchSeconds": 28
         },
         {
           "id": "rus-earlymedieval-ports",
@@ -9971,10 +9971,10 @@
             "Port"
           ],
           "kind": "unlock",
-          "notes": "Planner sketch. Price and duration TBD. Any slight stat increases are design intent; magnitudes TBD.",
+          "notes": "Playable first pass. Costs and research durations follow the base-culture age pattern; the eighth age extrapolates its final tier by 25%. Balance remains tunable.",
           "decision": "proposed",
-          "gold": null,
-          "researchSeconds": null
+          "gold": 10667,
+          "researchSeconds": 30
         },
         {
           "id": "rus-earlymedieval-warships",
@@ -9988,10 +9988,10 @@
           "description": "Unlock this age's improved warship recipe at the upgraded port. This is the warship branch of the port upgrade.",
           "buildingUnlocks": [],
           "kind": "unlock",
-          "notes": "Planner sketch. Price and duration TBD. Any slight stat increases are design intent; magnitudes TBD.",
+          "notes": "Playable first pass. Costs and research durations follow the base-culture age pattern; the eighth age extrapolates its final tier by 25%. Balance remains tunable.",
           "decision": "proposed",
-          "gold": null,
-          "researchSeconds": null
+          "gold": 6000,
+          "researchSeconds": 33
         },
         {
           "id": "rus-earlymedieval-sea-traders",
@@ -10005,10 +10005,10 @@
           "description": "Upgrade the sea traders spawned by ports to this age's improved trader tier, with a slight increase in cargo capacity per trip.",
           "buildingUnlocks": [],
           "kind": "unlock",
-          "notes": "Planner sketch. Price and duration TBD. Any slight stat increases are design intent; magnitudes TBD.",
+          "notes": "Playable first pass. Costs and research durations follow the base-culture age pattern; the eighth age extrapolates its final tier by 25%. Balance remains tunable.",
           "decision": "proposed",
-          "gold": null,
-          "researchSeconds": null
+          "gold": 6000,
+          "researchSeconds": 33
         },
         {
           "id": "rus-earlymedieval-ship-improvements",
@@ -10023,10 +10023,10 @@
           "description": "Slightly improve squad transport and warship durability, and warship firing rate. Improves the existing fleet without another unit/building unlock.",
           "buildingUnlocks": [],
           "kind": "upgrade",
-          "notes": "Planner sketch. Price and duration TBD. Any slight stat increases are design intent; magnitudes TBD.",
+          "notes": "Playable first pass. Costs and research durations follow the base-culture age pattern; the eighth age extrapolates its final tier by 25%. Balance remains tunable.",
           "decision": "proposed",
-          "gold": null,
-          "researchSeconds": null
+          "gold": 8667,
+          "researchSeconds": 40
         },
         {
           "id": "rus-earlymedieval-factories-mines",
@@ -10043,10 +10043,10 @@
             "Mine"
           ],
           "kind": "unlock",
-          "notes": "Planner sketch. Price and duration TBD. Any slight stat increases are design intent; magnitudes TBD.",
+          "notes": "Playable first pass. Costs and research durations follow the base-culture age pattern; the eighth age extrapolates its final tier by 25%. Balance remains tunable.",
           "decision": "proposed",
-          "gold": null,
-          "researchSeconds": null
+          "gold": 5334,
+          "researchSeconds": 30
         },
         {
           "id": "rus-earlymedieval-roads",
@@ -10060,10 +10060,10 @@
           "description": "Improve overland roads and trade-route infrastructure for this age. Exact road benefits remain TBD.",
           "buildingUnlocks": [],
           "kind": "upgrade",
-          "notes": "Planner sketch. Price and duration TBD. Any slight stat increases are design intent; magnitudes TBD.",
+          "notes": "Playable first pass. Costs and research durations follow the base-culture age pattern; the eighth age extrapolates its final tier by 25%. Balance remains tunable.",
           "decision": "proposed",
-          "gold": null,
-          "researchSeconds": null
+          "gold": 6000,
+          "researchSeconds": 33
         },
         {
           "id": "rus-earlymedieval-land-traders",
@@ -10077,10 +10077,10 @@
           "description": "Unlock/upgrade overland traders spawned by factories, with a modest improvement in cargo per trip and delivery efficiency. Exact numbers remain TBD.",
           "buildingUnlocks": [],
           "kind": "upgrade",
-          "notes": "Planner sketch. Price and duration TBD. Any slight stat increases are design intent; magnitudes TBD.",
+          "notes": "Playable first pass. Costs and research durations follow the base-culture age pattern; the eighth age extrapolates its final tier by 25%. Balance remains tunable.",
           "decision": "proposed",
-          "gold": null,
-          "researchSeconds": null
+          "gold": 6000,
+          "researchSeconds": 33
         },
         {
           "id": "rus-earlymedieval-cities",
@@ -10097,10 +10097,10 @@
             "City"
           ],
           "kind": "upgrade",
-          "notes": "Planner sketch. Price and duration TBD. Any slight stat increases are design intent; magnitudes TBD.",
+          "notes": "Playable first pass. Costs and research durations follow the base-culture age pattern; the eighth age extrapolates its final tier by 25%. Balance remains tunable.",
           "decision": "proposed",
-          "gold": null,
-          "researchSeconds": null
+          "gold": 8667,
+          "researchSeconds": 40
         },
         {
           "id": "rus-earlymedieval-barracks-equipment",
@@ -10117,10 +10117,10 @@
             "Blacksmith"
           ],
           "kind": "unlock",
-          "notes": "Planner sketch. Price and duration TBD. Any slight stat increases are design intent; magnitudes TBD.",
+          "notes": "Playable first pass. Costs and research durations follow the base-culture age pattern; the eighth age extrapolates its final tier by 25%. Balance remains tunable.",
           "decision": "proposed",
-          "gold": null,
-          "researchSeconds": null
+          "gold": 10667,
+          "researchSeconds": 30
         },
         {
           "id": "rus-earlymedieval-ranged",
@@ -10136,10 +10136,10 @@
             "Archery Range"
           ],
           "kind": "unlock",
-          "notes": "Planner sketch. Price and duration TBD. Any slight stat increases are design intent; magnitudes TBD.",
+          "notes": "Playable first pass. Costs and research durations follow the base-culture age pattern; the eighth age extrapolates its final tier by 25%. Balance remains tunable.",
           "decision": "proposed",
-          "gold": null,
-          "researchSeconds": null
+          "gold": 12000,
+          "researchSeconds": 33
         },
         {
           "id": "rus-earlymedieval-mobile",
@@ -10155,10 +10155,10 @@
             "Stables"
           ],
           "kind": "unlock",
-          "notes": "Planner sketch. Price and duration TBD. Any slight stat increases are design intent; magnitudes TBD.",
+          "notes": "Playable first pass. Costs and research durations follow the base-culture age pattern; the eighth age extrapolates its final tier by 25%. Balance remains tunable.",
           "decision": "proposed",
-          "gold": null,
-          "researchSeconds": null
+          "gold": 12000,
+          "researchSeconds": 33
         },
         {
           "id": "rus-earlymedieval-fortifications",
@@ -10176,10 +10176,10 @@
             "Gates"
           ],
           "kind": "unlock",
-          "notes": "Planner sketch. Price and duration TBD. Any slight stat increases are design intent; magnitudes TBD.",
+          "notes": "Playable first pass. Costs and research durations follow the base-culture age pattern; the eighth age extrapolates its final tier by 25%. Balance remains tunable.",
           "decision": "proposed",
-          "gold": null,
-          "researchSeconds": null
+          "gold": 17334,
+          "researchSeconds": 40
         },
         {
           "id": "rus-earlymedieval-siege",
@@ -10197,10 +10197,10 @@
             "Siege Workshop"
           ],
           "kind": "unlock",
-          "notes": "Planner sketch. Price and duration TBD. Any slight stat increases are design intent; magnitudes TBD.",
+          "notes": "Playable first pass. Costs and research durations follow the base-culture age pattern; the eighth age extrapolates its final tier by 25%. Balance remains tunable.",
           "decision": "proposed",
-          "gold": null,
-          "researchSeconds": null
+          "gold": 17334,
+          "researchSeconds": 40
         },
         {
           "id": "rus-earlymedieval-ranged-mobile",
@@ -10214,10 +10214,10 @@
           "description": "Optional terminal unlock: Early Cossack Archer and its equipment/recruitment recipe. No technology requires this node. Produced at stables; the research branches from ranged training.",
           "buildingUnlocks": [],
           "kind": "unlock",
-          "notes": "Planner sketch. Price and duration TBD. Any slight stat increases are design intent; magnitudes TBD.",
+          "notes": "Playable first pass. Costs and research durations follow the base-culture age pattern; the eighth age extrapolates its final tier by 25%. Balance remains tunable.",
           "decision": "proposed",
-          "gold": null,
-          "researchSeconds": null
+          "gold": 12000,
+          "researchSeconds": 33
         },
         {
           "id": "rus-earlymedieval-heavy-mobile",
@@ -10231,10 +10231,10 @@
           "description": "Optional terminal unlock: Druzhina and its equipment/recruitment recipe at stables. No technology requires this node.",
           "buildingUnlocks": [],
           "kind": "unlock",
-          "notes": "Planner sketch. Price and duration TBD. Any slight stat increases are design intent; magnitudes TBD.",
+          "notes": "Playable first pass. Costs and research durations follow the base-culture age pattern; the eighth age extrapolates its final tier by 25%. Balance remains tunable.",
           "decision": "proposed",
-          "gold": null,
-          "researchSeconds": null
+          "gold": 12000,
+          "researchSeconds": 33
         },
         {
           "id": "rus-latemedieval-ports",
@@ -10250,10 +10250,10 @@
             "Port"
           ],
           "kind": "unlock",
-          "notes": "Planner sketch. Price and duration TBD. Any slight stat increases are design intent; magnitudes TBD.",
+          "notes": "Playable first pass. Costs and research durations follow the base-culture age pattern; the eighth age extrapolates its final tier by 25%. Balance remains tunable.",
           "decision": "proposed",
-          "gold": null,
-          "researchSeconds": null
+          "gold": 16000,
+          "researchSeconds": 35
         },
         {
           "id": "rus-latemedieval-warships",
@@ -10267,10 +10267,10 @@
           "description": "Unlock this age's improved warship recipe at the upgraded port. This is the warship branch of the port upgrade.",
           "buildingUnlocks": [],
           "kind": "unlock",
-          "notes": "Planner sketch. Price and duration TBD. Any slight stat increases are design intent; magnitudes TBD.",
+          "notes": "Playable first pass. Costs and research durations follow the base-culture age pattern; the eighth age extrapolates its final tier by 25%. Balance remains tunable.",
           "decision": "proposed",
-          "gold": null,
-          "researchSeconds": null
+          "gold": 9334,
+          "researchSeconds": 40
         },
         {
           "id": "rus-latemedieval-sea-traders",
@@ -10284,10 +10284,10 @@
           "description": "Upgrade the sea traders spawned by ports to this age's improved trader tier, with a slight increase in cargo capacity per trip.",
           "buildingUnlocks": [],
           "kind": "unlock",
-          "notes": "Planner sketch. Price and duration TBD. Any slight stat increases are design intent; magnitudes TBD.",
+          "notes": "Playable first pass. Costs and research durations follow the base-culture age pattern; the eighth age extrapolates its final tier by 25%. Balance remains tunable.",
           "decision": "proposed",
-          "gold": null,
-          "researchSeconds": null
+          "gold": 9334,
+          "researchSeconds": 40
         },
         {
           "id": "rus-latemedieval-ship-improvements",
@@ -10302,10 +10302,10 @@
           "description": "Slightly improve squad transport and warship durability, and warship firing rate. Improves the existing fleet without another unit/building unlock.",
           "buildingUnlocks": [],
           "kind": "upgrade",
-          "notes": "Planner sketch. Price and duration TBD. Any slight stat increases are design intent; magnitudes TBD.",
+          "notes": "Playable first pass. Costs and research durations follow the base-culture age pattern; the eighth age extrapolates its final tier by 25%. Balance remains tunable.",
           "decision": "proposed",
-          "gold": null,
-          "researchSeconds": null
+          "gold": 13334,
+          "researchSeconds": 45
         },
         {
           "id": "rus-latemedieval-factories-mines",
@@ -10322,10 +10322,10 @@
             "Mine"
           ],
           "kind": "unlock",
-          "notes": "Planner sketch. Price and duration TBD. Any slight stat increases are design intent; magnitudes TBD.",
+          "notes": "Playable first pass. Costs and research durations follow the base-culture age pattern; the eighth age extrapolates its final tier by 25%. Balance remains tunable.",
           "decision": "proposed",
-          "gold": null,
-          "researchSeconds": null
+          "gold": 8000,
+          "researchSeconds": 35
         },
         {
           "id": "rus-latemedieval-roads",
@@ -10339,10 +10339,10 @@
           "description": "Improve overland roads and trade-route infrastructure for this age. Exact road benefits remain TBD.",
           "buildingUnlocks": [],
           "kind": "upgrade",
-          "notes": "Planner sketch. Price and duration TBD. Any slight stat increases are design intent; magnitudes TBD.",
+          "notes": "Playable first pass. Costs and research durations follow the base-culture age pattern; the eighth age extrapolates its final tier by 25%. Balance remains tunable.",
           "decision": "proposed",
-          "gold": null,
-          "researchSeconds": null
+          "gold": 9334,
+          "researchSeconds": 40
         },
         {
           "id": "rus-latemedieval-land-traders",
@@ -10356,10 +10356,10 @@
           "description": "Unlock/upgrade overland traders spawned by factories, with a modest improvement in cargo per trip and delivery efficiency. Exact numbers remain TBD.",
           "buildingUnlocks": [],
           "kind": "upgrade",
-          "notes": "Planner sketch. Price and duration TBD. Any slight stat increases are design intent; magnitudes TBD.",
+          "notes": "Playable first pass. Costs and research durations follow the base-culture age pattern; the eighth age extrapolates its final tier by 25%. Balance remains tunable.",
           "decision": "proposed",
-          "gold": null,
-          "researchSeconds": null
+          "gold": 9334,
+          "researchSeconds": 40
         },
         {
           "id": "rus-latemedieval-cities",
@@ -10376,10 +10376,10 @@
             "City"
           ],
           "kind": "upgrade",
-          "notes": "Planner sketch. Price and duration TBD. Any slight stat increases are design intent; magnitudes TBD.",
+          "notes": "Playable first pass. Costs and research durations follow the base-culture age pattern; the eighth age extrapolates its final tier by 25%. Balance remains tunable.",
           "decision": "proposed",
-          "gold": null,
-          "researchSeconds": null
+          "gold": 13334,
+          "researchSeconds": 45
         },
         {
           "id": "rus-latemedieval-barracks-equipment",
@@ -10396,10 +10396,10 @@
             "Blacksmith"
           ],
           "kind": "unlock",
-          "notes": "Planner sketch. Price and duration TBD. Any slight stat increases are design intent; magnitudes TBD.",
+          "notes": "Playable first pass. Costs and research durations follow the base-culture age pattern; the eighth age extrapolates its final tier by 25%. Balance remains tunable.",
           "decision": "proposed",
-          "gold": null,
-          "researchSeconds": null
+          "gold": 16000,
+          "researchSeconds": 35
         },
         {
           "id": "rus-latemedieval-ranged",
@@ -10415,10 +10415,10 @@
             "Archery Range"
           ],
           "kind": "unlock",
-          "notes": "Planner sketch. Price and duration TBD. Any slight stat increases are design intent; magnitudes TBD.",
+          "notes": "Playable first pass. Costs and research durations follow the base-culture age pattern; the eighth age extrapolates its final tier by 25%. Balance remains tunable.",
           "decision": "proposed",
-          "gold": null,
-          "researchSeconds": null
+          "gold": 18667,
+          "researchSeconds": 40
         },
         {
           "id": "rus-latemedieval-mobile",
@@ -10434,10 +10434,10 @@
             "Stables"
           ],
           "kind": "unlock",
-          "notes": "Planner sketch. Price and duration TBD. Any slight stat increases are design intent; magnitudes TBD.",
+          "notes": "Playable first pass. Costs and research durations follow the base-culture age pattern; the eighth age extrapolates its final tier by 25%. Balance remains tunable.",
           "decision": "proposed",
-          "gold": null,
-          "researchSeconds": null
+          "gold": 18667,
+          "researchSeconds": 40
         },
         {
           "id": "rus-latemedieval-fortifications",
@@ -10455,10 +10455,10 @@
             "Gates"
           ],
           "kind": "unlock",
-          "notes": "Planner sketch. Price and duration TBD. Any slight stat increases are design intent; magnitudes TBD.",
+          "notes": "Playable first pass. Costs and research durations follow the base-culture age pattern; the eighth age extrapolates its final tier by 25%. Balance remains tunable.",
           "decision": "proposed",
-          "gold": null,
-          "researchSeconds": null
+          "gold": 26667,
+          "researchSeconds": 45
         },
         {
           "id": "rus-latemedieval-siege",
@@ -10476,10 +10476,10 @@
             "Siege Workshop"
           ],
           "kind": "unlock",
-          "notes": "Planner sketch. Price and duration TBD. Any slight stat increases are design intent; magnitudes TBD.",
+          "notes": "Playable first pass. Costs and research durations follow the base-culture age pattern; the eighth age extrapolates its final tier by 25%. Balance remains tunable.",
           "decision": "proposed",
-          "gold": null,
-          "researchSeconds": null
+          "gold": 26667,
+          "researchSeconds": 45
         },
         {
           "id": "rus-latemedieval-ranged-mobile",
@@ -10493,10 +10493,10 @@
           "description": "Optional terminal unlock: Heavy Cossack Archer and its equipment/recruitment recipe. No technology requires this node. Produced at stables; the research branches from ranged training.",
           "buildingUnlocks": [],
           "kind": "unlock",
-          "notes": "Planner sketch. Price and duration TBD. Any slight stat increases are design intent; magnitudes TBD.",
+          "notes": "Playable first pass. Costs and research durations follow the base-culture age pattern; the eighth age extrapolates its final tier by 25%. Balance remains tunable.",
           "decision": "proposed",
-          "gold": null,
-          "researchSeconds": null
+          "gold": 18667,
+          "researchSeconds": 40
         },
         {
           "id": "rus-latemedieval-heavy-mobile",
@@ -10510,10 +10510,10 @@
           "description": "Optional terminal unlock: Boyar Cavalry and its equipment/recruitment recipe at stables. No technology requires this node.",
           "buildingUnlocks": [],
           "kind": "unlock",
-          "notes": "Planner sketch. Price and duration TBD. Any slight stat increases are design intent; magnitudes TBD.",
+          "notes": "Playable first pass. Costs and research durations follow the base-culture age pattern; the eighth age extrapolates its final tier by 25%. Balance remains tunable.",
           "decision": "proposed",
-          "gold": null,
-          "researchSeconds": null
+          "gold": 18667,
+          "researchSeconds": 40
         },
         {
           "id": "rus-napoleonic-ports",
@@ -10529,10 +10529,10 @@
             "Port"
           ],
           "kind": "unlock",
-          "notes": "Planner sketch. Price and duration TBD. Any slight stat increases are design intent; magnitudes TBD.",
+          "notes": "Playable first pass. Costs and research durations follow the base-culture age pattern; the eighth age extrapolates its final tier by 25%. Balance remains tunable.",
           "decision": "proposed",
-          "gold": null,
-          "researchSeconds": null
+          "gold": 23334,
+          "researchSeconds": 40
         },
         {
           "id": "rus-napoleonic-warships",
@@ -10546,10 +10546,10 @@
           "description": "Unlock this age's improved warship recipe at the upgraded port. This is the warship branch of the port upgrade.",
           "buildingUnlocks": [],
           "kind": "unlock",
-          "notes": "Planner sketch. Price and duration TBD. Any slight stat increases are design intent; magnitudes TBD.",
+          "notes": "Playable first pass. Costs and research durations follow the base-culture age pattern; the eighth age extrapolates its final tier by 25%. Balance remains tunable.",
           "decision": "proposed",
-          "gold": null,
-          "researchSeconds": null
+          "gold": 13334,
+          "researchSeconds": 44
         },
         {
           "id": "rus-napoleonic-sea-traders",
@@ -10563,10 +10563,10 @@
           "description": "Upgrade the sea traders spawned by ports to this age's improved trader tier, with a slight increase in cargo capacity per trip.",
           "buildingUnlocks": [],
           "kind": "unlock",
-          "notes": "Planner sketch. Price and duration TBD. Any slight stat increases are design intent; magnitudes TBD.",
+          "notes": "Playable first pass. Costs and research durations follow the base-culture age pattern; the eighth age extrapolates its final tier by 25%. Balance remains tunable.",
           "decision": "proposed",
-          "gold": null,
-          "researchSeconds": null
+          "gold": 13334,
+          "researchSeconds": 44
         },
         {
           "id": "rus-napoleonic-ship-improvements",
@@ -10581,10 +10581,10 @@
           "description": "Slightly improve squad transport and warship durability, and warship firing rate. Improves the existing fleet without another unit/building unlock.",
           "buildingUnlocks": [],
           "kind": "upgrade",
-          "notes": "Planner sketch. Price and duration TBD. Any slight stat increases are design intent; magnitudes TBD.",
+          "notes": "Playable first pass. Costs and research durations follow the base-culture age pattern; the eighth age extrapolates its final tier by 25%. Balance remains tunable.",
           "decision": "proposed",
-          "gold": null,
-          "researchSeconds": null
+          "gold": 18334,
+          "researchSeconds": 50
         },
         {
           "id": "rus-napoleonic-factories-mines",
@@ -10601,10 +10601,10 @@
             "Mine"
           ],
           "kind": "unlock",
-          "notes": "Planner sketch. Price and duration TBD. Any slight stat increases are design intent; magnitudes TBD.",
+          "notes": "Playable first pass. Costs and research durations follow the base-culture age pattern; the eighth age extrapolates its final tier by 25%. Balance remains tunable.",
           "decision": "proposed",
-          "gold": null,
-          "researchSeconds": null
+          "gold": 11667,
+          "researchSeconds": 40
         },
         {
           "id": "rus-napoleonic-roads",
@@ -10618,10 +10618,10 @@
           "description": "Improve overland roads and trade-route infrastructure for this age. Exact road benefits remain TBD.",
           "buildingUnlocks": [],
           "kind": "upgrade",
-          "notes": "Planner sketch. Price and duration TBD. Any slight stat increases are design intent; magnitudes TBD.",
+          "notes": "Playable first pass. Costs and research durations follow the base-culture age pattern; the eighth age extrapolates its final tier by 25%. Balance remains tunable.",
           "decision": "proposed",
-          "gold": null,
-          "researchSeconds": null
+          "gold": 13334,
+          "researchSeconds": 44
         },
         {
           "id": "rus-napoleonic-land-traders",
@@ -10635,10 +10635,10 @@
           "description": "Unlock/upgrade overland traders spawned by factories, with a modest improvement in cargo per trip and delivery efficiency. Exact numbers remain TBD.",
           "buildingUnlocks": [],
           "kind": "upgrade",
-          "notes": "Planner sketch. Price and duration TBD. Any slight stat increases are design intent; magnitudes TBD.",
+          "notes": "Playable first pass. Costs and research durations follow the base-culture age pattern; the eighth age extrapolates its final tier by 25%. Balance remains tunable.",
           "decision": "proposed",
-          "gold": null,
-          "researchSeconds": null
+          "gold": 13334,
+          "researchSeconds": 44
         },
         {
           "id": "rus-napoleonic-cities",
@@ -10655,10 +10655,10 @@
             "City"
           ],
           "kind": "upgrade",
-          "notes": "Planner sketch. Price and duration TBD. Any slight stat increases are design intent; magnitudes TBD.",
+          "notes": "Playable first pass. Costs and research durations follow the base-culture age pattern; the eighth age extrapolates its final tier by 25%. Balance remains tunable.",
           "decision": "proposed",
-          "gold": null,
-          "researchSeconds": null
+          "gold": 18334,
+          "researchSeconds": 50
         },
         {
           "id": "rus-napoleonic-barracks-equipment",
@@ -10675,10 +10675,10 @@
             "Armory"
           ],
           "kind": "unlock",
-          "notes": "Planner sketch. Price and duration TBD. Any slight stat increases are design intent; magnitudes TBD.",
+          "notes": "Playable first pass. Costs and research durations follow the base-culture age pattern; the eighth age extrapolates its final tier by 25%. Balance remains tunable.",
           "decision": "proposed",
-          "gold": null,
-          "researchSeconds": null
+          "gold": 23334,
+          "researchSeconds": 40
         },
         {
           "id": "rus-napoleonic-ranged",
@@ -10694,10 +10694,10 @@
             "Archery Range"
           ],
           "kind": "unlock",
-          "notes": "Planner sketch. Price and duration TBD. Any slight stat increases are design intent; magnitudes TBD.",
+          "notes": "Playable first pass. Costs and research durations follow the base-culture age pattern; the eighth age extrapolates its final tier by 25%. Balance remains tunable.",
           "decision": "proposed",
-          "gold": null,
-          "researchSeconds": null
+          "gold": 26667,
+          "researchSeconds": 44
         },
         {
           "id": "rus-napoleonic-mobile",
@@ -10713,10 +10713,10 @@
             "Stables"
           ],
           "kind": "unlock",
-          "notes": "Planner sketch. Price and duration TBD. Any slight stat increases are design intent; magnitudes TBD.",
+          "notes": "Playable first pass. Costs and research durations follow the base-culture age pattern; the eighth age extrapolates its final tier by 25%. Balance remains tunable.",
           "decision": "proposed",
-          "gold": null,
-          "researchSeconds": null
+          "gold": 26667,
+          "researchSeconds": 44
         },
         {
           "id": "rus-napoleonic-fortifications",
@@ -10734,10 +10734,10 @@
             "Gates"
           ],
           "kind": "unlock",
-          "notes": "Planner sketch. Price and duration TBD. Any slight stat increases are design intent; magnitudes TBD.",
+          "notes": "Playable first pass. Costs and research durations follow the base-culture age pattern; the eighth age extrapolates its final tier by 25%. Balance remains tunable.",
           "decision": "proposed",
-          "gold": null,
-          "researchSeconds": null
+          "gold": 36667,
+          "researchSeconds": 50
         },
         {
           "id": "rus-napoleonic-siege",
@@ -10755,10 +10755,10 @@
             "Siege Workshop"
           ],
           "kind": "unlock",
-          "notes": "Planner sketch. Price and duration TBD. Any slight stat increases are design intent; magnitudes TBD.",
+          "notes": "Playable first pass. Costs and research durations follow the base-culture age pattern; the eighth age extrapolates its final tier by 25%. Balance remains tunable.",
           "decision": "proposed",
-          "gold": null,
-          "researchSeconds": null
+          "gold": 36667,
+          "researchSeconds": 50
         },
         {
           "id": "rus-napoleonic-ranged-mobile",
@@ -10772,10 +10772,10 @@
           "description": "Optional terminal unlock: Streltsy and its equipment/recruitment recipe. No technology requires this node. Produced at stables; the research branches from ranged training.",
           "buildingUnlocks": [],
           "kind": "unlock",
-          "notes": "Planner sketch. Price and duration TBD. Any slight stat increases are design intent; magnitudes TBD.",
+          "notes": "Playable first pass. Costs and research durations follow the base-culture age pattern; the eighth age extrapolates its final tier by 25%. Balance remains tunable.",
           "decision": "proposed",
-          "gold": null,
-          "researchSeconds": null
+          "gold": 26667,
+          "researchSeconds": 44
         },
         {
           "id": "rus-napoleonic-heavy-mobile",
@@ -10789,10 +10789,10 @@
           "description": "Optional terminal unlock: Cuirassiers and its equipment/recruitment recipe at stables. No technology requires this node.",
           "buildingUnlocks": [],
           "kind": "unlock",
-          "notes": "Planner sketch. Price and duration TBD. Any slight stat increases are design intent; magnitudes TBD.",
+          "notes": "Playable first pass. Costs and research durations follow the base-culture age pattern; the eighth age extrapolates its final tier by 25%. Balance remains tunable.",
           "decision": "proposed",
-          "gold": null,
-          "researchSeconds": null
+          "gold": 26667,
+          "researchSeconds": 44
         },
         {
           "id": "rus-earlymodern-ports",
@@ -10808,10 +10808,10 @@
             "Port"
           ],
           "kind": "unlock",
-          "notes": "Planner sketch. Price and duration TBD. Any slight stat increases are design intent; magnitudes TBD.",
+          "notes": "Playable first pass. Costs and research durations follow the base-culture age pattern; the eighth age extrapolates its final tier by 25%. Balance remains tunable.",
           "decision": "proposed",
-          "gold": null,
-          "researchSeconds": null
+          "gold": 33334,
+          "researchSeconds": 45
         },
         {
           "id": "rus-earlymodern-warships",
@@ -10825,10 +10825,10 @@
           "description": "Unlock this age's improved warship recipe at the upgraded port. This is the warship branch of the port upgrade.",
           "buildingUnlocks": [],
           "kind": "unlock",
-          "notes": "Planner sketch. Price and duration TBD. Any slight stat increases are design intent; magnitudes TBD.",
+          "notes": "Playable first pass. Costs and research durations follow the base-culture age pattern; the eighth age extrapolates its final tier by 25%. Balance remains tunable.",
           "decision": "proposed",
-          "gold": null,
-          "researchSeconds": null
+          "gold": 20000,
+          "researchSeconds": 50
         },
         {
           "id": "rus-earlymodern-sea-traders",
@@ -10842,10 +10842,10 @@
           "description": "Upgrade the sea traders spawned by ports to this age's improved trader tier, with a slight increase in cargo capacity per trip.",
           "buildingUnlocks": [],
           "kind": "unlock",
-          "notes": "Planner sketch. Price and duration TBD. Any slight stat increases are design intent; magnitudes TBD.",
+          "notes": "Playable first pass. Costs and research durations follow the base-culture age pattern; the eighth age extrapolates its final tier by 25%. Balance remains tunable.",
           "decision": "proposed",
-          "gold": null,
-          "researchSeconds": null
+          "gold": 20000,
+          "researchSeconds": 50
         },
         {
           "id": "rus-earlymodern-ship-improvements",
@@ -10860,10 +10860,10 @@
           "description": "Slightly improve squad transport and warship durability, and warship firing rate. Improves the existing fleet without another unit/building unlock.",
           "buildingUnlocks": [],
           "kind": "upgrade",
-          "notes": "Planner sketch. Price and duration TBD. Any slight stat increases are design intent; magnitudes TBD.",
+          "notes": "Playable first pass. Costs and research durations follow the base-culture age pattern; the eighth age extrapolates its final tier by 25%. Balance remains tunable.",
           "decision": "proposed",
-          "gold": null,
-          "researchSeconds": null
+          "gold": 30000,
+          "researchSeconds": 60
         },
         {
           "id": "rus-earlymodern-submarines",
@@ -10877,10 +10877,10 @@
           "description": "Unlock submarines and their port recipe. This is an optional specialization; submarine improvements are included in the later Modern General Fleet Improvements node. No quiet-propulsion chain.",
           "buildingUnlocks": [],
           "kind": "unlock",
-          "notes": "Planner sketch. Price and duration TBD. Any slight stat increases are design intent; magnitudes TBD.",
+          "notes": "Playable first pass. Costs and research durations follow the base-culture age pattern; the eighth age extrapolates its final tier by 25%. Balance remains tunable.",
           "decision": "proposed",
-          "gold": null,
-          "researchSeconds": null
+          "gold": 20000,
+          "researchSeconds": 50
         },
         {
           "id": "rus-earlymodern-factories-mines",
@@ -10897,10 +10897,10 @@
             "Mine"
           ],
           "kind": "unlock",
-          "notes": "Planner sketch. Price and duration TBD. Any slight stat increases are design intent; magnitudes TBD.",
+          "notes": "Playable first pass. Costs and research durations follow the base-culture age pattern; the eighth age extrapolates its final tier by 25%. Balance remains tunable.",
           "decision": "proposed",
-          "gold": null,
-          "researchSeconds": null
+          "gold": 16667,
+          "researchSeconds": 45
         },
         {
           "id": "rus-earlymodern-roads",
@@ -10914,10 +10914,10 @@
           "description": "Improve overland roads and trade-route infrastructure for this age. Exact road benefits remain TBD.",
           "buildingUnlocks": [],
           "kind": "upgrade",
-          "notes": "Planner sketch. Price and duration TBD. Any slight stat increases are design intent; magnitudes TBD.",
+          "notes": "Playable first pass. Costs and research durations follow the base-culture age pattern; the eighth age extrapolates its final tier by 25%. Balance remains tunable.",
           "decision": "proposed",
-          "gold": null,
-          "researchSeconds": null
+          "gold": 20000,
+          "researchSeconds": 50
         },
         {
           "id": "rus-earlymodern-land-traders",
@@ -10931,10 +10931,10 @@
           "description": "Unlock/upgrade overland traders spawned by factories, with a modest improvement in cargo per trip and delivery efficiency. Exact numbers remain TBD.",
           "buildingUnlocks": [],
           "kind": "upgrade",
-          "notes": "Planner sketch. Price and duration TBD. Any slight stat increases are design intent; magnitudes TBD.",
+          "notes": "Playable first pass. Costs and research durations follow the base-culture age pattern; the eighth age extrapolates its final tier by 25%. Balance remains tunable.",
           "decision": "proposed",
-          "gold": null,
-          "researchSeconds": null
+          "gold": 20000,
+          "researchSeconds": 50
         },
         {
           "id": "rus-earlymodern-cities",
@@ -10951,10 +10951,10 @@
             "City"
           ],
           "kind": "upgrade",
-          "notes": "Planner sketch. Price and duration TBD. Any slight stat increases are design intent; magnitudes TBD.",
+          "notes": "Playable first pass. Costs and research durations follow the base-culture age pattern; the eighth age extrapolates its final tier by 25%. Balance remains tunable.",
           "decision": "proposed",
-          "gold": null,
-          "researchSeconds": null
+          "gold": 30000,
+          "researchSeconds": 60
         },
         {
           "id": "rus-earlymodern-oil-extraction",
@@ -10971,10 +10971,10 @@
             "Oil Rig"
           ],
           "kind": "unlock",
-          "notes": "Planner sketch. Price and duration TBD. Any slight stat increases are design intent; magnitudes TBD.",
+          "notes": "Playable first pass. Costs and research durations follow the base-culture age pattern; the eighth age extrapolates its final tier by 25%. Balance remains tunable.",
           "decision": "proposed",
-          "gold": null,
-          "researchSeconds": null
+          "gold": 20000,
+          "researchSeconds": 50
         },
         {
           "id": "rus-earlymodern-barracks-equipment",
@@ -10991,10 +10991,10 @@
             "Arms Factory"
           ],
           "kind": "unlock",
-          "notes": "Planner sketch. Price and duration TBD. Any slight stat increases are design intent; magnitudes TBD.",
+          "notes": "Playable first pass. Costs and research durations follow the base-culture age pattern; the eighth age extrapolates its final tier by 25%. Balance remains tunable.",
           "decision": "proposed",
-          "gold": null,
-          "researchSeconds": null
+          "gold": 33334,
+          "researchSeconds": 45
         },
         {
           "id": "rus-earlymodern-ranged",
@@ -11010,10 +11010,10 @@
             "Archery Range"
           ],
           "kind": "unlock",
-          "notes": "Planner sketch. Price and duration TBD. Any slight stat increases are design intent; magnitudes TBD.",
+          "notes": "Playable first pass. Costs and research durations follow the base-culture age pattern; the eighth age extrapolates its final tier by 25%. Balance remains tunable.",
           "decision": "proposed",
-          "gold": null,
-          "researchSeconds": null
+          "gold": 40000,
+          "researchSeconds": 50
         },
         {
           "id": "rus-earlymodern-mobile",
@@ -11029,10 +11029,10 @@
             "Vehicle Depot"
           ],
           "kind": "unlock",
-          "notes": "Planner sketch. Price and duration TBD. Any slight stat increases are design intent; magnitudes TBD.",
+          "notes": "Playable first pass. Costs and research durations follow the base-culture age pattern; the eighth age extrapolates its final tier by 25%. Balance remains tunable.",
           "decision": "proposed",
-          "gold": null,
-          "researchSeconds": null
+          "gold": 40000,
+          "researchSeconds": 50
         },
         {
           "id": "rus-earlymodern-fortifications",
@@ -11050,10 +11050,10 @@
             "Anti-Aircraft Emplacement"
           ],
           "kind": "unlock",
-          "notes": "Planner sketch. Price and duration TBD. Any slight stat increases are design intent; magnitudes TBD.",
+          "notes": "Playable first pass. Costs and research durations follow the base-culture age pattern; the eighth age extrapolates its final tier by 25%. Balance remains tunable.",
           "decision": "proposed",
-          "gold": null,
-          "researchSeconds": null
+          "gold": 60000,
+          "researchSeconds": 60
         },
         {
           "id": "rus-earlymodern-siege",
@@ -11071,10 +11071,10 @@
             "Siege Workshop"
           ],
           "kind": "unlock",
-          "notes": "Planner sketch. Price and duration TBD. Any slight stat increases are design intent; magnitudes TBD.",
+          "notes": "Playable first pass. Costs and research durations follow the base-culture age pattern; the eighth age extrapolates its final tier by 25%. Balance remains tunable.",
           "decision": "proposed",
-          "gold": null,
-          "researchSeconds": null
+          "gold": 60000,
+          "researchSeconds": 60
         },
         {
           "id": "rus-earlymodern-ranged-mobile",
@@ -11088,10 +11088,10 @@
           "description": "Optional terminal unlock: T-34 and its equipment/recruitment recipe. No technology requires this node. Produced at the vehicle depot.",
           "buildingUnlocks": [],
           "kind": "unlock",
-          "notes": "Planner sketch. Price and duration TBD. Any slight stat increases are design intent; magnitudes TBD.",
+          "notes": "Playable first pass. Costs and research durations follow the base-culture age pattern; the eighth age extrapolates its final tier by 25%. Balance remains tunable.",
           "decision": "proposed",
-          "gold": null,
-          "researchSeconds": null
+          "gold": 40000,
+          "researchSeconds": 50
         },
         {
           "id": "rus-earlymodern-heavy-mobile",
@@ -11105,10 +11105,10 @@
           "description": "Optional terminal unlock: Tsar Tank and its equipment/recruitment recipe at the vehicle depot. No technology requires this node.",
           "buildingUnlocks": [],
           "kind": "unlock",
-          "notes": "Planner sketch. Price and duration TBD. Any slight stat increases are design intent; magnitudes TBD.",
+          "notes": "Playable first pass. Costs and research durations follow the base-culture age pattern; the eighth age extrapolates its final tier by 25%. Balance remains tunable.",
           "decision": "proposed",
-          "gold": null,
-          "researchSeconds": null
+          "gold": 40000,
+          "researchSeconds": 50
         },
         {
           "id": "rus-earlymodern-airfields",
@@ -11124,10 +11124,10 @@
             "Military Airstrip"
           ],
           "kind": "unlock",
-          "notes": "Planner sketch. Price and duration TBD. Any slight stat increases are design intent; magnitudes TBD.",
+          "notes": "Playable first pass. Costs and research durations follow the base-culture age pattern; the eighth age extrapolates its final tier by 25%. Balance remains tunable.",
           "decision": "proposed",
-          "gold": null,
-          "researchSeconds": null
+          "gold": 40000,
+          "researchSeconds": 50
         },
         {
           "id": "rus-earlymodern-bombers",
@@ -11141,10 +11141,10 @@
           "description": "Optional terminal unlock: this age's bombers and their production recipe. No technology requires this specialization. Pre-modern bombers can carry atomic bombs after Nuclear Weapons is researched.",
           "buildingUnlocks": [],
           "kind": "unlock",
-          "notes": "Planner sketch. Price and duration TBD. Any slight stat increases are design intent; magnitudes TBD.",
+          "notes": "Playable first pass. Costs and research durations follow the base-culture age pattern; the eighth age extrapolates its final tier by 25%. Balance remains tunable.",
           "decision": "proposed",
-          "gold": null,
-          "researchSeconds": null
+          "gold": 40000,
+          "researchSeconds": 50
         },
         {
           "id": "rus-earlymodern-nuclear-weapons",
@@ -11156,15 +11156,15 @@
             "rus-earlymodern-siege",
             "rus-earlymodern-airfields"
           ],
-          "description": "End-of-pre-modern unlock: nuclear weapons facility and A-bomb production/loading for bombers. Reuse the existing H-bomb artwork for a bomber-dropped atomic bomb. Bomber specialization is required to produce the delivery aircraft, but is not a research prerequisite of this node. Proposed capability; not yet implemented in gameplay.",
+          "description": "End-of-pre-modern unlock: nuclear weapons facility and A-bomb production/loading for bombers. Reuse the existing H-bomb artwork for a bomber-dropped atomic bomb. Bomber specialization is required to produce the delivery aircraft, but is not a research prerequisite of this node. Atomic bombs are produced at the nuclear weapons facility and loaded one per bomber for O: A-Bomb Run.",
           "buildingUnlocks": [
             "Nuclear Weapons Facility"
           ],
           "kind": "unlock",
-          "notes": "Planner sketch. Price and duration TBD. Any slight stat increases are design intent; magnitudes TBD.",
+          "notes": "Playable first pass. Costs and research durations follow the base-culture age pattern; the eighth age extrapolates its final tier by 25%. Balance remains tunable.",
           "decision": "proposed",
-          "gold": null,
-          "researchSeconds": null
+          "gold": 60000,
+          "researchSeconds": 60
         },
         {
           "id": "rus-modern-ports",
@@ -11180,10 +11180,10 @@
             "Port"
           ],
           "kind": "unlock",
-          "notes": "Planner sketch. Price and duration TBD. Any slight stat increases are design intent; magnitudes TBD.",
+          "notes": "Playable first pass. Costs and research durations follow the base-culture age pattern; the eighth age extrapolates its final tier by 25%. Balance remains tunable.",
           "decision": "proposed",
-          "gold": null,
-          "researchSeconds": null
+          "gold": 41668,
+          "researchSeconds": 57
         },
         {
           "id": "rus-modern-warships",
@@ -11197,10 +11197,10 @@
           "description": "Unlock this age's improved warship recipe at the upgraded port. This is the warship branch of the port upgrade.",
           "buildingUnlocks": [],
           "kind": "unlock",
-          "notes": "Planner sketch. Price and duration TBD. Any slight stat increases are design intent; magnitudes TBD.",
+          "notes": "Playable first pass. Costs and research durations follow the base-culture age pattern; the eighth age extrapolates its final tier by 25%. Balance remains tunable.",
           "decision": "proposed",
-          "gold": null,
-          "researchSeconds": null
+          "gold": 25000,
+          "researchSeconds": 63
         },
         {
           "id": "rus-modern-sea-traders",
@@ -11214,10 +11214,10 @@
           "description": "Upgrade the sea traders spawned by ports to this age's improved trader tier, with a slight increase in cargo capacity per trip.",
           "buildingUnlocks": [],
           "kind": "unlock",
-          "notes": "Planner sketch. Price and duration TBD. Any slight stat increases are design intent; magnitudes TBD.",
+          "notes": "Playable first pass. Costs and research durations follow the base-culture age pattern; the eighth age extrapolates its final tier by 25%. Balance remains tunable.",
           "decision": "proposed",
-          "gold": null,
-          "researchSeconds": null
+          "gold": 25000,
+          "researchSeconds": 63
         },
         {
           "id": "rus-modern-ship-improvements",
@@ -11232,10 +11232,10 @@
           "description": "One general improvement for researched warships, submarines, squad transports and sea traders: slight durability, cargo/receiving and warship firing-rate improvements as applicable. Bundles Reinforced Transport Hulls and Maritime Cargo Systems; no Integrated Fleet Command or separate submarine-improvement node.",
           "buildingUnlocks": [],
           "kind": "upgrade",
-          "notes": "Planner sketch. Price and duration TBD. Any slight stat increases are design intent; magnitudes TBD.",
+          "notes": "Playable first pass. Costs and research durations follow the base-culture age pattern; the eighth age extrapolates its final tier by 25%. Balance remains tunable.",
           "decision": "proposed",
-          "gold": null,
-          "researchSeconds": null
+          "gold": 37500,
+          "researchSeconds": 75
         },
         {
           "id": "rus-modern-naval-missiles-air-defence",
@@ -11249,10 +11249,10 @@
           "description": "One optional upgrade combining naval missile capability and fleet air defence. Replaces the two separate missile/air-defence upgrades.",
           "buildingUnlocks": [],
           "kind": "upgrade",
-          "notes": "Planner sketch. Price and duration TBD. Any slight stat increases are design intent; magnitudes TBD.",
+          "notes": "Playable first pass. Costs and research durations follow the base-culture age pattern; the eighth age extrapolates its final tier by 25%. Balance remains tunable.",
           "decision": "proposed",
-          "gold": null,
-          "researchSeconds": null
+          "gold": 37500,
+          "researchSeconds": 75
         },
         {
           "id": "rus-modern-submarines",
@@ -11267,10 +11267,10 @@
           "description": "Unlock the modern nuclear-powered submarine tier and its port recipe. Nuclear propulsion does not grant nuclear missiles. General Fleet Improvements supplies the later modest submarine improvements.",
           "buildingUnlocks": [],
           "kind": "unlock",
-          "notes": "Planner sketch. Price and duration TBD. Any slight stat increases are design intent; magnitudes TBD.",
+          "notes": "Playable first pass. Costs and research durations follow the base-culture age pattern; the eighth age extrapolates its final tier by 25%. Balance remains tunable.",
           "decision": "proposed",
-          "gold": null,
-          "researchSeconds": null
+          "gold": 25000,
+          "researchSeconds": 63
         },
         {
           "id": "rus-modern-factories-mines",
@@ -11287,10 +11287,10 @@
             "Mine"
           ],
           "kind": "unlock",
-          "notes": "Planner sketch. Price and duration TBD. Any slight stat increases are design intent; magnitudes TBD.",
+          "notes": "Playable first pass. Costs and research durations follow the base-culture age pattern; the eighth age extrapolates its final tier by 25%. Balance remains tunable.",
           "decision": "proposed",
-          "gold": null,
-          "researchSeconds": null
+          "gold": 20834,
+          "researchSeconds": 57
         },
         {
           "id": "rus-modern-roads",
@@ -11304,10 +11304,10 @@
           "description": "Improve overland roads and trade-route infrastructure for this age. Exact road benefits remain TBD.",
           "buildingUnlocks": [],
           "kind": "upgrade",
-          "notes": "Planner sketch. Price and duration TBD. Any slight stat increases are design intent; magnitudes TBD.",
+          "notes": "Playable first pass. Costs and research durations follow the base-culture age pattern; the eighth age extrapolates its final tier by 25%. Balance remains tunable.",
           "decision": "proposed",
-          "gold": null,
-          "researchSeconds": null
+          "gold": 25000,
+          "researchSeconds": 63
         },
         {
           "id": "rus-modern-land-traders",
@@ -11321,10 +11321,10 @@
           "description": "Unlock/upgrade overland traders spawned by factories, with a modest improvement in cargo per trip and delivery efficiency. Exact numbers remain TBD.",
           "buildingUnlocks": [],
           "kind": "upgrade",
-          "notes": "Planner sketch. Price and duration TBD. Any slight stat increases are design intent; magnitudes TBD.",
+          "notes": "Playable first pass. Costs and research durations follow the base-culture age pattern; the eighth age extrapolates its final tier by 25%. Balance remains tunable.",
           "decision": "proposed",
-          "gold": null,
-          "researchSeconds": null
+          "gold": 25000,
+          "researchSeconds": 63
         },
         {
           "id": "rus-modern-cities",
@@ -11341,10 +11341,10 @@
             "City"
           ],
           "kind": "upgrade",
-          "notes": "Planner sketch. Price and duration TBD. Any slight stat increases are design intent; magnitudes TBD.",
+          "notes": "Playable first pass. Costs and research durations follow the base-culture age pattern; the eighth age extrapolates its final tier by 25%. Balance remains tunable.",
           "decision": "proposed",
-          "gold": null,
-          "researchSeconds": null
+          "gold": 37500,
+          "researchSeconds": 75
         },
         {
           "id": "rus-modern-barracks-equipment",
@@ -11361,10 +11361,10 @@
             "Arms Factory"
           ],
           "kind": "unlock",
-          "notes": "Planner sketch. Price and duration TBD. Any slight stat increases are design intent; magnitudes TBD.",
+          "notes": "Playable first pass. Costs and research durations follow the base-culture age pattern; the eighth age extrapolates its final tier by 25%. Balance remains tunable.",
           "decision": "proposed",
-          "gold": null,
-          "researchSeconds": null
+          "gold": 41668,
+          "researchSeconds": 57
         },
         {
           "id": "rus-modern-ranged",
@@ -11380,10 +11380,10 @@
             "Archery Range"
           ],
           "kind": "unlock",
-          "notes": "Planner sketch. Price and duration TBD. Any slight stat increases are design intent; magnitudes TBD.",
+          "notes": "Playable first pass. Costs and research durations follow the base-culture age pattern; the eighth age extrapolates its final tier by 25%. Balance remains tunable.",
           "decision": "proposed",
-          "gold": null,
-          "researchSeconds": null
+          "gold": 50000,
+          "researchSeconds": 63
         },
         {
           "id": "rus-modern-mobile",
@@ -11399,10 +11399,10 @@
             "Vehicle Depot"
           ],
           "kind": "unlock",
-          "notes": "Planner sketch. Price and duration TBD. Any slight stat increases are design intent; magnitudes TBD.",
+          "notes": "Playable first pass. Costs and research durations follow the base-culture age pattern; the eighth age extrapolates its final tier by 25%. Balance remains tunable.",
           "decision": "proposed",
-          "gold": null,
-          "researchSeconds": null
+          "gold": 50000,
+          "researchSeconds": 63
         },
         {
           "id": "rus-modern-fortifications",
@@ -11420,10 +11420,10 @@
             "Anti-Aircraft Emplacement"
           ],
           "kind": "unlock",
-          "notes": "Planner sketch. Price and duration TBD. Any slight stat increases are design intent; magnitudes TBD.",
+          "notes": "Playable first pass. Costs and research durations follow the base-culture age pattern; the eighth age extrapolates its final tier by 25%. Balance remains tunable.",
           "decision": "proposed",
-          "gold": null,
-          "researchSeconds": null
+          "gold": 75000,
+          "researchSeconds": 75
         },
         {
           "id": "rus-modern-siege",
@@ -11441,10 +11441,10 @@
             "Siege Workshop"
           ],
           "kind": "unlock",
-          "notes": "Planner sketch. Price and duration TBD. Any slight stat increases are design intent; magnitudes TBD.",
+          "notes": "Playable first pass. Costs and research durations follow the base-culture age pattern; the eighth age extrapolates its final tier by 25%. Balance remains tunable.",
           "decision": "proposed",
-          "gold": null,
-          "researchSeconds": null
+          "gold": 75000,
+          "researchSeconds": 75
         },
         {
           "id": "rus-modern-ranged-mobile",
@@ -11458,10 +11458,10 @@
           "description": "Optional terminal unlock: 2K22 Tunguska and its equipment/recruitment recipe. No technology requires this node. Produced at the vehicle depot.",
           "buildingUnlocks": [],
           "kind": "unlock",
-          "notes": "Planner sketch. Price and duration TBD. Any slight stat increases are design intent; magnitudes TBD.",
+          "notes": "Playable first pass. Costs and research durations follow the base-culture age pattern; the eighth age extrapolates its final tier by 25%. Balance remains tunable.",
           "decision": "proposed",
-          "gold": null,
-          "researchSeconds": null
+          "gold": 50000,
+          "researchSeconds": 63
         },
         {
           "id": "rus-modern-heavy-mobile",
@@ -11475,10 +11475,10 @@
           "description": "Optional terminal unlock: T-14 and its equipment/recruitment recipe at the vehicle depot. No technology requires this node.",
           "buildingUnlocks": [],
           "kind": "unlock",
-          "notes": "Planner sketch. Price and duration TBD. Any slight stat increases are design intent; magnitudes TBD.",
+          "notes": "Playable first pass. Costs and research durations follow the base-culture age pattern; the eighth age extrapolates its final tier by 25%. Balance remains tunable.",
           "decision": "proposed",
-          "gold": null,
-          "researchSeconds": null
+          "gold": 50000,
+          "researchSeconds": 63
         },
         {
           "id": "rus-modern-airfields",
@@ -11494,10 +11494,10 @@
             "Military Airstrip"
           ],
           "kind": "unlock",
-          "notes": "Planner sketch. Price and duration TBD. Any slight stat increases are design intent; magnitudes TBD.",
+          "notes": "Playable first pass. Costs and research durations follow the base-culture age pattern; the eighth age extrapolates its final tier by 25%. Balance remains tunable.",
           "decision": "proposed",
-          "gold": null,
-          "researchSeconds": null
+          "gold": 50000,
+          "researchSeconds": 63
         },
         {
           "id": "rus-modern-bombers",
@@ -11511,10 +11511,10 @@
           "description": "Optional terminal unlock: this age's bombers and their production recipe. No technology requires this specialization. Pre-modern bombers can carry atomic bombs after Nuclear Weapons is researched.",
           "buildingUnlocks": [],
           "kind": "unlock",
-          "notes": "Planner sketch. Price and duration TBD. Any slight stat increases are design intent; magnitudes TBD.",
+          "notes": "Playable first pass. Costs and research durations follow the base-culture age pattern; the eighth age extrapolates its final tier by 25%. Balance remains tunable.",
           "decision": "proposed",
-          "gold": null,
-          "researchSeconds": null
+          "gold": 50000,
+          "researchSeconds": 63
         },
         {
           "id": "rus-modern-missile-infrastructure",
@@ -11534,10 +11534,10 @@
             "Missile Defence"
           ],
           "kind": "unlock",
-          "notes": "Planner sketch. Price and duration TBD. Any slight stat increases are design intent; magnitudes TBD.",
+          "notes": "Playable first pass. Costs and research durations follow the base-culture age pattern; the eighth age extrapolates its final tier by 25%. Balance remains tunable.",
           "decision": "proposed",
-          "gold": null,
-          "researchSeconds": null
+          "gold": 75000,
+          "researchSeconds": 75
         },
         {
           "id": "rus-modern-mirvs-drones",
@@ -11548,16 +11548,16 @@
           "prerequisites": [
             "rus-modern-missile-infrastructure"
           ],
-          "description": "One later terminal unlock for MIRV systems, MIRV launch complexes and drone systems/facilities together. Drone roles, counters and exact effects still need design; this is a planner proposal, not an implemented runtime capability.",
+          "description": "Unlock MIRVs, MIRV launch complexes and Drone Facilities together. U sends single-use drones on a 120-second, slower-speed flight; drones currently bypass defence.",
           "buildingUnlocks": [
             "MIRV Launch Complex",
             "Drone Facility"
           ],
           "kind": "capstone",
-          "notes": "Planner sketch. Price and duration TBD. Any slight stat increases are design intent; magnitudes TBD.",
+          "notes": "Playable first pass. Costs and research durations follow the base-culture age pattern; the eighth age extrapolates its final tier by 25%. Balance remains tunable.",
           "decision": "proposed",
-          "gold": null,
-          "researchSeconds": null
+          "gold": 75000,
+          "researchSeconds": 75
         }
       ],
       "units": [

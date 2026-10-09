@@ -301,7 +301,7 @@ export function economicCandidates(
   };
   const pairs=TREES.flatMap((a,i)=>TREES.slice(i+1).map(b=>({trees:[a,b] as import("./Definitions").Tree[],work:outstanding([a,b])})))
     .sort((a,b)=>[...a.work].reduce((n,id)=>n+researchTerms(TECHNOLOGIES.find(t=>t.id===id)!,speed).gold,0)-[...b.work].reduce((n,id)=>n+researchTerms(TECHNOLOGIES.find(t=>t.id===id)!,speed).gold,0) || a.trees.reduce((n,t)=>n+personality.researchOrder.indexOf(t),0)-b.trees.reduce((n,t)=>n+personality.researchOrder.indexOf(t),0));
-  const raceTrees=pairs[0].trees, raceWork=pairs[0].work;
+  const raceWork=pairs[0].work;
   for (const tree of personality.researchOrder) {
     const eligible = TECHNOLOGIES.filter(t => t.tree === tree && !researchRejection(state, Number.MAX_SAFE_INTEGER, t.id, speed))
       .map(technology => ({technology,utility:researchUtility(technology,snapshot,demand,opportunity)}))

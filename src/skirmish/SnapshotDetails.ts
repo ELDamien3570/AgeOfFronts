@@ -21,6 +21,7 @@ export interface PackedSnapshotDetails {
   squadMotion?: Float64Array;
   buildings?: Float64Array;
   ships: Float64Array;
+  shipAirDefense?: Float64Array;
   volleys: Float64Array;
   ids: Float64Array;
 }
@@ -224,6 +225,7 @@ export function packSnapshotDetails(
     ...(squadMotion ? { squadMotion } : {}),
     buildings: buildingData,
     ships: shipData,
+    ...(ships.some(s=>s.airDefenseTick!==undefined)?{shipAirDefense:new Float64Array(ships.filter(s=>s.airDefenseTick!==undefined).flatMap(s=>[s.id,s.airDefenseTick!]))}:{}),
     volleys: volleyData,
     ids,
   };
@@ -265,6 +267,8 @@ export function validateSnapshotDetails(data: PackedSnapshotDetails): void {
   rows(data.squadMotion, 4, MAX_SQUADS * 255);
   rows(data.buildings, DETAIL_STRIDES.building, 1_000_000);
   rows(data.ships, DETAIL_STRIDES.ship, MAX_FACTION_SHIPS * 255, true);
+  rows(data.shipAirDefense,2,MAX_FACTION_SHIPS*255);
+  if(data.shipAirDefense)for(let at=0;at<data.shipAirDefense.length;at+=2)if(!Number.isSafeInteger(data.shipAirDefense[at+1])||data.shipAirDefense[at+1]<0)throw new Error("Invalid ship air defence tick");
   rows(data.volleys, DETAIL_STRIDES.volley, MAX_SQUADS * 255, true);
   const range = (offset: number, count: number, maximum: number) => {
     if (
@@ -484,6 +488,10 @@ export function unpackSnapshotDetails(
       repairPortId: readNullable(b[at + 20]),
       repairState: Number.isNaN(b[at + 21]) ? undefined : repairs[b[at + 21]],
     });
+  }
+  if(data.shipAirDefense) {
+    const cooldown=new Map<number,number>();for(let at=0;at<data.shipAirDefense.length;at+=2)cooldown.set(data.shipAirDefense[at],data.shipAirDefense[at+1]);
+    for(let i=0;i<ships.length;i++)if(cooldown.has(ships[i].id))ships[i]={...ships[i],airDefenseTick:cooldown.get(ships[i].id)};
   }
   const volleys: ArcherVolley[] = [];
   for (let at = 0; at < data.volleys.length; at += DETAIL_STRIDES.volley) {

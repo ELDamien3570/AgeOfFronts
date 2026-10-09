@@ -196,7 +196,7 @@ describe("integrated shipments and military progression", () => {
       factory = building(m, "factory", 10, 10),
       a = building(m, "city", 14, 10),
       b = building(m, "city", 18, 10);
-    e.progression.states[1].completed.push("stoneage-goods-handling");
+    e.progression.states[1].completed.push("rus-stoneage-land-traders");
     e.supply.goods.set(factory.id, 25);
     tradeStep(m, 22);
     const actor = e.trade.actors[0];
@@ -219,7 +219,7 @@ describe("integrated shipments and military progression", () => {
       factory = building(m, "factory", 10, 10);
     building(m, "city", 20, 10);
     const prize = building(m, "city", 11, 10, 2);
-    e.progression.states[1].completed.push("stoneage-goods-handling");
+    e.progression.states[1].completed.push("rus-stoneage-land-traders");
     e.supply.goods.set(factory.id, 25);
     tradeStep(m, 22);
     const actor = e.trade.actors[0];

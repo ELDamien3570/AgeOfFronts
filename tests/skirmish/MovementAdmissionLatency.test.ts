@@ -99,7 +99,7 @@ describe("human movement admission latency", () => {
     const [squad] = humanSquads(match, 1, 20, 20);
     // Factions with transports simply sail off; a land-only faction is wedged.
     const progression = match.expansion!.progression.states[1];
-    progression.completed = progression.completed.filter(id => id !== "stoneage-cargo-canoes");
+    progression.completed = progression.completed.filter(id => id !== "rus-stoneage-cargo-canoes");
     expect(match.amphibious(1)).toBe(false);
     // Exactly on the water corner: the squad's radius overlaps a water tile.
     match.updateSquad(squad.id, { x: 20 * FIXED, y: 20 * FIXED });

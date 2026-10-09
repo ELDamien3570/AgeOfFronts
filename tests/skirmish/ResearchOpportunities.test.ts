@@ -32,19 +32,20 @@ describe("quick research opportunities", () => {
   it("shows unlocked branches but excludes completed, future, and missing-prerequisite nodes", () => {
     const { cards } = fixture();
     expect(cards().map((c) => c.id)).toEqual([
-      "stoneage-shorecraft",
-      "stoneage-spear-throwing",
-      "stoneage-field-engineering",
-      "stoneage-craft-workshops",
-      "stoneage-stone-mining",
+      "rus-stoneage-port-sea-trade",
+      "rus-stoneage-roads",
+      "rus-stoneage-land-traders",
+      "rus-stoneage-ranged",
+      "rus-stoneage-mobile",
+      "rus-stoneage-fortifications",
     ]);
   });
   it("shows nodes only with sufficient funds and uses the shared tech-speed quote", () => {
     const { m, cards } = fixture(3);
     m.players[0].gold = 66;
-    expect(cards().some((c) => c.id === "stoneage-shorecraft")).toBe(false);
+    expect(cards().some((c) => c.id === "rus-stoneage-port-sea-trade")).toBe(false);
     m.players[0].gold = 67;
-    const node = cards().find((c) => c.id === "stoneage-shorecraft")!;
+    const node = cards().find((c) => c.id === "rus-stoneage-port-sea-trade")!;
     expect(node.gold).toBe(67);
     expect(node.seconds).toBe(6);
     expect(node.reason).toBeNull();
@@ -57,32 +58,32 @@ describe("quick research opportunities", () => {
       m.applyCommand({
         type: "research",
         playerId: 1,
-        technologyId: "stoneage-shorecraft",
+        technologyId: "rus-stoneage-port-sea-trade",
       }),
     ).toBeNull();
     expect(cards().some((c) => c.tree === "naval")).toBe(false);
     const progression = m.expansion!.progression.states[1];
-    progression.completed.push("stoneage-shorecraft");
+    progression.completed.push("rus-stoneage-port-sea-trade");
     delete progression.research.naval;
     expect(
       cards()
         .filter((c) => c.tree === "naval")
         .map((c) => c.id),
-    ).toEqual(["stoneage-war-canoes", "russian-building-stoneage-port"]);
+    ).toEqual(["rus-stoneage-coastal-navigation"]);
   });
   it("includes unfinished older-age research and uses the local player rather than player one", () => {
     const { m, vm } = fixture();
     m.expansion!.progression.states[2].age = "BronzeAge";
-    m.expansion!.progression.states[2].completed.push("stoneage-cargo-canoes");
+    m.expansion!.progression.states[2].completed.push("rus-stoneage-cargo-canoes");
     const snapshot = m.snapshot();
     snapshot.localPlayerId = 2;
     const model = new ResearchOpportunitiesViewModel(
       new EmpireViewModel(snapshot, vm().selection),
     );
-    expect(model.cards.some((c) => c.id === "stoneage-shorecraft")).toBe(
+    expect(model.cards.some((c) => c.id === "rus-stoneage-port-sea-trade")).toBe(
       true,
     );
-    expect(model.cards.some((c) => c.id === "stoneage-cargo-canoes")).toBe(false);
+    expect(model.cards.some((c) => c.id === "rus-stoneage-cargo-canoes")).toBe(false);
     m.players[1].eliminated = true;
     snapshot.players[1].eliminated = true;
     expect(model.cards).toEqual([]);
@@ -98,23 +99,23 @@ describe("quick research opportunities", () => {
     });
     view.update(vm());
     const button = main.querySelector<HTMLButtonElement>(
-      '[data-quick-research="stoneage-shorecraft"]',
+      '[data-quick-research="rus-stoneage-port-sea-trade"]',
     )!;
     expect(button.disabled).toBe(false);
     button.click();
     view.update(vm());
     expect(commands).toEqual([
-      { type: "research", playerId: 1, technologyId: "stoneage-shorecraft" },
+      { type: "research", playerId: 1, technologyId: "rus-stoneage-port-sea-trade" },
     ]);
     expect(
-      main.querySelector('[data-quick-research="stoneage-shorecraft"]'),
+      main.querySelector('[data-quick-research="rus-stoneage-port-sea-trade"]'),
     ).toBeNull();
     expect(
-      main.querySelector('[data-quick-research="stoneage-spear-throwing"]'),
+      main.querySelector('[data-quick-research="rus-stoneage-ranged"]'),
     ).not.toBeNull();
     // A stale rendered button cannot spend gold lost since the previous render.
     const stale = main.querySelector<HTMLButtonElement>(
-      '[data-quick-research="stoneage-spear-throwing"]',
+      '[data-quick-research="rus-stoneage-ranged"]',
     )!;
     const poor = vm();
     poor.player.gold = 0;

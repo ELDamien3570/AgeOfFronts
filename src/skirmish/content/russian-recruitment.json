@@ -476,7 +476,7 @@
     },
     {
       "id": "rus-stoneage-cities",
-      "name": "Settlements & Cities",
+      "name": "Settlement Administration",
       "age": "StoneAge",
       "tree": "economic",
       "slot": 4,
@@ -489,7 +489,7 @@
       "capabilities": [
         "cities"
       ],
-      "description": "Unlock/upgrade cities, which generate troop reserves and act as cargo drop-off/receiving points. Slightly improve reserve generation, receiving capacity and building health. This closes the age's economic spine."
+      "description": "Cities are buildable from the start. Improve city reserve generation and building health by 10%, and receiving capacity by 10%. This closes the Stone Age economic branch."
     },
     {
       "id": "rus-stoneage-barracks-equipment",
@@ -2066,7 +2066,7 @@
       "capabilities": [
         "nuclear-weapons"
       ],
-      "description": "End-of-pre-modern unlock: nuclear weapons facility and A-bomb production/loading for bombers. Reuse the existing H-bomb artwork for a bomber-dropped atomic bomb. Bomber specialization is required to produce the delivery aircraft, but is not a research prerequisite of this node. Proposed capability; not yet implemented in gameplay."
+      "description": "End-of-pre-modern unlock: nuclear weapons facility and A-bomb production/loading for bombers. Reuse the existing H-bomb artwork for a bomber-dropped atomic bomb. Bomber specialization is required to produce the delivery aircraft, but is not a research prerequisite of this node. Atomic bombs are produced at the nuclear weapons facility and loaded one per bomber for O: A-Bomb Run."
     },
     {
       "id": "rus-modern-ports",
@@ -2078,7 +2078,7 @@
         "rus-earlymodern-ship-improvements"
       ],
       "gold": 41668,
-      "ticks": 1125,
+      "ticks": 1140,
       "capabilities": [
         "ports"
       ],
@@ -2094,7 +2094,7 @@
         "rus-modern-ports"
       ],
       "gold": 25000,
-      "ticks": 1250,
+      "ticks": 1260,
       "capabilities": [
         "warships"
       ],
@@ -2110,7 +2110,7 @@
         "rus-modern-ports"
       ],
       "gold": 25000,
-      "ticks": 1250,
+      "ticks": 1260,
       "capabilities": [
         "sea-traders"
       ],
@@ -2160,7 +2160,7 @@
         "rus-earlymodern-submarines"
       ],
       "gold": 25000,
-      "ticks": 1250,
+      "ticks": 1260,
       "capabilities": [
         "submarines"
       ],
@@ -2176,7 +2176,7 @@
         "rus-earlymodern-cities"
       ],
       "gold": 20834,
-      "ticks": 1125,
+      "ticks": 1140,
       "capabilities": [
         "factories-mines"
       ],
@@ -2192,7 +2192,7 @@
         "rus-modern-factories-mines"
       ],
       "gold": 25000,
-      "ticks": 1250,
+      "ticks": 1260,
       "capabilities": [
         "roads"
       ],
@@ -2208,7 +2208,7 @@
         "rus-modern-factories-mines"
       ],
       "gold": 25000,
-      "ticks": 1250,
+      "ticks": 1260,
       "capabilities": [
         "land-traders"
       ],
@@ -2241,7 +2241,7 @@
         "rus-earlymodern-nuclear-weapons"
       ],
       "gold": 41668,
-      "ticks": 1125,
+      "ticks": 1140,
       "capabilities": [
         "barracks-equipment"
       ],
@@ -2257,7 +2257,7 @@
         "rus-modern-barracks-equipment"
       ],
       "gold": 50000,
-      "ticks": 1250,
+      "ticks": 1260,
       "capabilities": [
         "ranged"
       ],
@@ -2273,7 +2273,7 @@
         "rus-modern-barracks-equipment"
       ],
       "gold": 50000,
-      "ticks": 1250,
+      "ticks": 1260,
       "capabilities": [
         "mobile"
       ],
@@ -2323,7 +2323,7 @@
         "rus-modern-mobile"
       ],
       "gold": 50000,
-      "ticks": 1250,
+      "ticks": 1260,
       "capabilities": [
         "ranged-mobile"
       ],
@@ -2339,7 +2339,7 @@
         "rus-modern-mobile"
       ],
       "gold": 50000,
-      "ticks": 1250,
+      "ticks": 1260,
       "capabilities": [
         "heavy-mobile"
       ],
@@ -2355,7 +2355,7 @@
         "rus-modern-barracks-equipment"
       ],
       "gold": 50000,
-      "ticks": 1250,
+      "ticks": 1260,
       "capabilities": [
         "airfields"
       ],
@@ -2371,7 +2371,7 @@
         "rus-modern-airfields"
       ],
       "gold": 50000,
-      "ticks": 1250,
+      "ticks": 1260,
       "capabilities": [
         "bombers"
       ],
@@ -2410,7 +2410,7 @@
       "capabilities": [
         "mirvs-drones"
       ],
-      "description": "One later terminal unlock for MIRV systems, MIRV launch complexes and drone systems/facilities together. Drone roles, counters and exact effects still need design; this is a planner proposal, not an implemented runtime capability."
+      "description": "Unlock MIRVs, MIRV launch complexes and Drone Facilities together. U sends single-use drones on a 120-second, slower-speed flight; drones currently bypass defence."
     }
   ],
   "buildings": {
@@ -2486,6 +2486,7 @@
     "EarlyModern:depot": "rus-earlymodern-mobile",
     "EarlyModern:gun-nest": "rus-earlymodern-fortifications",
     "EarlyModern:trench": "rus-earlymodern-fortifications",
+    "EarlyModern:anti-air-emplacement": "rus-earlymodern-fortifications",
     "EarlyModern:siege-workshop": "rus-earlymodern-siege",
     "EarlyModern:airstrip": "rus-earlymodern-airfields",
     "EarlyModern:nuclear-facility": "rus-earlymodern-nuclear-weapons",
@@ -2499,6 +2500,7 @@
     "Modern:depot": "rus-modern-mobile",
     "Modern:gun-nest": "rus-modern-fortifications",
     "Modern:trench": "rus-modern-fortifications",
+    "Modern:anti-air-emplacement": "rus-modern-fortifications",
     "Modern:siege-workshop": "rus-modern-siege",
     "Modern:airstrip": "rus-modern-airfields",
     "Modern:missile-silo": "rus-modern-missile-infrastructure",
@@ -2579,6 +2581,7 @@
     "russian-building-earlymodern-depot": "rus-earlymodern-mobile",
     "russian-building-earlymodern-gun-nest": "rus-earlymodern-fortifications",
     "russian-building-earlymodern-trench": "rus-earlymodern-fortifications",
+    "russian-building-earlymodern-anti-air-emplacement": "rus-earlymodern-fortifications",
     "russian-building-earlymodern-siege-workshop": "rus-earlymodern-siege",
     "russian-building-earlymodern-airstrip": "rus-earlymodern-airfields",
     "russian-building-earlymodern-nuclear-facility": "rus-earlymodern-nuclear-weapons",
@@ -2592,6 +2595,7 @@
     "russian-building-modern-depot": "rus-modern-mobile",
     "russian-building-modern-gun-nest": "rus-modern-fortifications",
     "russian-building-modern-trench": "rus-modern-fortifications",
+    "russian-building-modern-anti-air-emplacement": "rus-modern-fortifications",
     "russian-building-modern-siege-workshop": "rus-modern-siege",
     "russian-building-modern-airstrip": "rus-modern-airfields",
     "russian-building-modern-missile-silo": "rus-modern-missile-infrastructure",
@@ -2687,58 +2691,40 @@
     "russian-bomber-squadrons": "rus-earlymodern-bombers",
     "russian-mirv-systems": "rus-modern-mirvs-drones",
     "russian-naval-missiles": "rus-modern-naval-missiles-air-defence",
-    "russian-troop-stoneage-frontline": "rus-stoneage-barracks-equipment",
-    "russian-troop-stoneage-rangedinfantry": "rus-stoneage-ranged",
-    "russian-troop-stoneage-lightcavalry": "rus-stoneage-mobile",
-    "russian-troop-bronzeage-frontline": "rus-bronzeage-barracks-equipment",
-    "russian-troop-bronzeage-rangedinfantry": "rus-bronzeage-ranged",
-    "russian-troop-bronzeage-lightcavalry": "rus-bronzeage-mobile",
-    "russian-troop-classicalage-frontline": "rus-classicalage-barracks-equipment",
-    "russian-troop-classicalage-anticavalry": "rus-classicalage-barracks-equipment",
-    "russian-troop-classicalage-rangedinfantry": "rus-classicalage-ranged",
-    "russian-troop-classicalage-lightcavalry": "rus-classicalage-mobile",
-    "russian-classical-horse-archery": "rus-classicalage-ranged-mobile",
-    "russian-troop-earlymedieval-frontline": "rus-earlymedieval-barracks-equipment",
-    "russian-troop-earlymedieval-anticavalry": "rus-earlymedieval-barracks-equipment",
-    "russian-troop-earlymedieval-rangedinfantry": "rus-earlymedieval-ranged",
-    "russian-troop-earlymedieval-lightcavalry": "rus-earlymedieval-mobile",
-    "russian-druzhina": "rus-earlymedieval-heavy-mobile",
-    "russian-cossack-archery": "rus-earlymedieval-ranged-mobile",
-    "russian-troop-latemedieval-frontline": "rus-latemedieval-barracks-equipment",
-    "russian-troop-latemedieval-anticavalry": "rus-latemedieval-barracks-equipment",
-    "russian-troop-latemedieval-rangedinfantry": "rus-latemedieval-ranged",
-    "russian-troop-latemedieval-lightcavalry": "rus-latemedieval-mobile",
-    "russian-boyar-cavalry": "rus-latemedieval-heavy-mobile",
-    "russian-heavy-cossack-archery": "rus-latemedieval-ranged-mobile",
-    "russian-grenadier-companies": "rus-napoleonic-barracks-equipment",
-    "russian-troop-earlymodern-anticavalry": "rus-napoleonic-barracks-equipment",
-    "russian-troop-earlymodern-rangedinfantry": "rus-napoleonic-ranged",
-    "russian-troop-earlymodern-lightcavalry": "rus-napoleonic-mobile",
-    "russian-cuirassiers": "rus-napoleonic-heavy-mobile",
-    "russian-mounted-musketeers": "rus-napoleonic-ranged-mobile",
-    "russian-rifle-infantry": "rus-earlymodern-barracks-equipment",
-    "russian-anti-tank-teams": "rus-earlymodern-barracks-equipment",
-    "russian-machine-gun-teams": "rus-earlymodern-ranged",
-    "russian-gun-trucks": "rus-earlymodern-mobile",
-    "russian-apc-production": "rus-earlymodern-heavy-mobile",
-    "russian-tank-production": "rus-earlymodern-ranged-mobile",
-    "russian-troop-present-day-frontline": "rus-modern-barracks-equipment",
-    "russian-anti-tank-guidance": "rus-modern-barracks-equipment",
-    "russian-troop-present-day-rangedinfantry": "rus-modern-ranged",
-    "russian-troop-present-day-lightcavalry": "rus-modern-mobile",
-    "russian-troop-present-day-heavycavalry": "rus-modern-heavy-mobile",
-    "russian-troop-present-day-rangedcavalry": "rus-modern-ranged-mobile",
-    "russian-support-stoneage-siege": "rus-stoneage-siege",
-    "russian-support-bronzeage-siege": "rus-bronzeage-siege",
-    "russian-support-bronzeage-field-support": "rus-bronzeage-siege",
-    "russian-support-classicalage-siege": "rus-classicalage-siege",
-    "russian-support-classicalage-field-support": "rus-classicalage-siege",
-    "russian-support-earlymedieval-siege": "rus-earlymedieval-siege",
-    "russian-support-earlymedieval-field-support": "rus-earlymedieval-siege",
-    "russian-support-latemedieval-siege": "rus-latemedieval-siege",
-    "russian-support-latemedieval-field-support": "rus-latemedieval-siege",
-    "russian-support-earlymodern-siege": "rus-napoleonic-siege",
-    "russian-support-earlymodern-field-support": "rus-napoleonic-siege",
-    "russian-support-modern-siege": "rus-earlymodern-siege"
+    "rus-stoneage-barracks-equipment": "rus-stoneage-barracks-equipment",
+    "rus-stoneage-ranged": "rus-stoneage-ranged",
+    "rus-stoneage-mobile": "rus-stoneage-mobile",
+    "rus-bronzeage-barracks-equipment": "rus-bronzeage-barracks-equipment",
+    "rus-bronzeage-ranged": "rus-bronzeage-ranged",
+    "rus-bronzeage-mobile": "rus-bronzeage-mobile",
+    "rus-classicalage-barracks-equipment": "rus-classicalage-barracks-equipment",
+    "rus-classicalage-ranged": "rus-classicalage-ranged",
+    "rus-classicalage-mobile": "rus-classicalage-mobile",
+    "rus-classicalage-ranged-mobile": "rus-classicalage-ranged-mobile",
+    "rus-earlymedieval-barracks-equipment": "rus-earlymedieval-barracks-equipment",
+    "rus-earlymedieval-ranged": "rus-earlymedieval-ranged",
+    "rus-earlymedieval-mobile": "rus-earlymedieval-mobile",
+    "rus-earlymedieval-heavy-mobile": "rus-earlymedieval-heavy-mobile",
+    "rus-earlymedieval-ranged-mobile": "rus-earlymedieval-ranged-mobile",
+    "rus-latemedieval-barracks-equipment": "rus-latemedieval-barracks-equipment",
+    "rus-latemedieval-ranged": "rus-latemedieval-ranged",
+    "rus-latemedieval-mobile": "rus-latemedieval-mobile",
+    "rus-latemedieval-heavy-mobile": "rus-latemedieval-heavy-mobile",
+    "rus-latemedieval-ranged-mobile": "rus-latemedieval-ranged-mobile",
+    "rus-napoleonic-barracks-equipment": "rus-napoleonic-barracks-equipment",
+    "rus-napoleonic-ranged": "rus-napoleonic-ranged",
+    "rus-napoleonic-mobile": "rus-napoleonic-mobile",
+    "rus-napoleonic-heavy-mobile": "rus-napoleonic-heavy-mobile",
+    "rus-napoleonic-ranged-mobile": "rus-napoleonic-ranged-mobile",
+    "rus-earlymodern-barracks-equipment": "rus-earlymodern-barracks-equipment",
+    "rus-earlymodern-ranged": "rus-earlymodern-ranged",
+    "rus-earlymodern-mobile": "rus-earlymodern-mobile",
+    "rus-earlymodern-heavy-mobile": "rus-earlymodern-heavy-mobile",
+    "rus-earlymodern-ranged-mobile": "rus-earlymodern-ranged-mobile",
+    "rus-modern-barracks-equipment": "rus-modern-barracks-equipment",
+    "rus-modern-ranged": "rus-modern-ranged",
+    "rus-modern-mobile": "rus-modern-mobile",
+    "rus-modern-heavy-mobile": "rus-modern-heavy-mobile",
+    "rus-modern-ranged-mobile": "rus-modern-ranged-mobile"
   }
 }

@@ -245,9 +245,9 @@ describe("remaining strategic plans", () => {
       state = f.e.progression.states[f.player.id];
     state.age = "StoneAge";
     state.completed = [
-      "stoneage-flint-weapons",
+      "rus-stoneage-barracks-equipment",
       "stoneage-gathering",
-      "stoneage-cargo-canoes",
+      "rus-stoneage-cargo-canoes",
     ];
     const snapshot = economicSnapshot({
       player: f.player,
@@ -274,7 +274,7 @@ describe("remaining strategic plans", () => {
       };
     expect(
       researchUtility(
-        TECHNOLOGY.get("stoneage-spear-throwing")!,
+        TECHNOLOGY.get("rus-stoneage-ranged")!,
         snapshot,
         demand,
         opportunity,
@@ -282,7 +282,7 @@ describe("remaining strategic plans", () => {
     ).toBeGreaterThan(5000);
     expect(
       researchUtility(
-        TECHNOLOGY.get("stoneage-war-canoes")!,
+        TECHNOLOGY.get("rus-stoneage-port-sea-trade")!,
         snapshot,
         demand,
         opportunity,

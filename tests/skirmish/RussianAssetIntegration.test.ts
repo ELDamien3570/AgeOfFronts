@@ -154,7 +154,7 @@ describe("complete Russian asset integration", () => {
       readFileSync("skirmish/plans/technology-plan.json", "utf8"),
     );
     const russian = plan.civilizations.find(
-      (c: { id: string }) => c.id === "russians-rework",
+      (c: { id: string }) => c.id === "russians-rus-eight-age-rework",
     );
     const gaps = JSON.parse(
       readFileSync("skirmish/plans/RuntimeTechnologyGaps.json", "utf8"),
@@ -173,22 +173,13 @@ describe("complete Russian asset integration", () => {
   });
   it("applies authored upgrades and caches ships by research effects rather than leaking another owner's upgrades", () => {
     const infantry = UNIT.get("napoleonic-infantry")!;
-    expect(
-      unitEffects(infantry, ["russian-bayonet-drill"]).attack.damage,
-    ).toBeGreaterThan(infantry.attack.damage);
-    expect(throughputPercent(["russian-machine-tools"])).toBe(110);
-    const ship = VESSELS.find(
-      (v) => v.age === "Napoleonic" && v.kind === "warship",
-    )!;
-    const first = vesselEffects(ship, ["russian-copper-sheathing"]);
-    const other = vesselEffects(ship, [
-      TECHNOLOGIES.find(
-        (t) => t.age === "Napoleonic" && t.tree === "naval" && t.slot === 4,
-      )!.id,
-    ]);
+    expect(unitEffects(infantry,["rus-napoleonic-barracks-equipment"])).toBe(infantry);
+    expect(throughputPercent(["rus-napoleonic-factories-mines"])).toBe(160);
+    const ship=VESSELS.find(v=>v.age==="Napoleonic"&&v.kind==="warship")!;
+    const first=vesselEffects(ship,["rus-napoleonic-ship-improvements"]);
     expect(first.health).toBeGreaterThan(ship.health);
-    expect(other.health).toBe(ship.health);
-    expect(vesselEffects(ship, [])).toBe(ship);
+    expect(vesselEffects(ship,[])).toBe(ship);
+    expect(vesselEffects(ship,["rus-napoleonic-ship-improvements"])).toBe(first);
   });
   it("removes cohort legacy atlas bindings rather than silently drawing unrelated old troops", () => {
     for (const unit of UNITS.filter((unit) => unit.troopClass))

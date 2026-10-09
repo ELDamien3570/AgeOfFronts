@@ -8,7 +8,7 @@ import {
 
 describe("defined Russian recruitment catalogue readiness", () => {
   it("contains every available authored troop with its exact era and research prerequisite", () => {
-    const civ = plan.civilizations.find((c) => c.id === "russians-rework")!;
+    const civ = plan.civilizations.find((c) => c.id === "russians-rus-eight-age-rework")!;
     const available = civ.units.filter((u) => u.availability === "available");
     expect(RUSSIAN_RECRUITMENT.units).toHaveLength(42);
     expect(RUSSIAN_RECRUITMENT.units.map((u) => u.id).sort()).toEqual(
@@ -28,7 +28,7 @@ describe("defined Russian recruitment catalogue readiness", () => {
     const nodes = new Map(
       RUSSIAN_RECRUITMENT.technologies.map((t) => [t.id, t]),
     );
-    const civ = plan.civilizations.find((c) => c.id === "russians-rework")!;
+    const civ = plan.civilizations.find((c) => c.id === "russians-rus-eight-age-rework")!;
     const visit = (id: string, seen = new Set<string>()) => {
       if (seen.has(id)) return;
       seen.add(id);
@@ -44,7 +44,7 @@ describe("defined Russian recruitment catalogue readiness", () => {
     RUSSIAN_RECRUITMENT.units.forEach((u) => visit(u.technologyId));
     expect(
       [...nodes.keys()].filter((id) =>
-        /drone|submarine|rail-|railway|refinery|warehouse/.test(id),
+        /rail-|railway|refinery|warehouse/.test(id),
       ),
     ).toEqual([]);
   });

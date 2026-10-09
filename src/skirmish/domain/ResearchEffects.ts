@@ -1,5 +1,5 @@
 import { FIXED } from "../Protocol";
-import { technologyAt, packageTechnology } from "../content/Technology";
+import { packageTechnology } from "../content/Technology";
 import {
   AGES,
   type Inventory,
@@ -7,69 +7,20 @@ import {
   type VesselDefinition,
 } from "./Definitions";
 export type Research = readonly string[];
-const has = (
-  research: Research,
-  age: (typeof AGES)[number],
-  tree: "naval" | "warfare" | "economic",
-  slot: number,
-) => research.includes(technologyAt(age, tree, slot).id);
 // Authored values replace tiers. Research is never compounded on an entity or
 // copied on capture; effects resolve from the current owner's completed nodes.
 export function unitEffects(
   unit: UnitDefinition,
   research: Research,
 ): UnitDefinition {
-  const drill = false; // Age equipment statistics are authored on the unlocked unit.
-  const infantry =
-    unit.tags.includes("infantry") || unit.troopClass === "rangedInfantry";
-  const radio =
-    infantry &&
-    research.includes("russian-infantry-radios") &&
-    AGES.indexOf(unit.age) >= 6;
-  const optics =
-    infantry &&
-    research.includes("russian-infantry-optics") &&
-    unit.age === "Modern";
-  const tank =
-    unit.tags.includes("vehicle") && (unit.troopClass === "heavyCavalry" ||
-      (unit.age === "EarlyModern" && unit.troopClass === "rangedCavalry"));
-  const armour = tank && research.includes("russian-tank-armour");
-  const fireControl = tank && research.includes("russian-tank-fire-control");
-  const bayonet = unit.age === "Napoleonic" && unit.troopClass === "frontline" && research.includes("russian-bayonet-drill");
-  const volley = unit.age === "Napoleonic" && unit.troopClass === "rangedInfantry" && research.includes("russian-volley-fire");
-  const carriages = unit.age === "Napoleonic" && (unit.role === "siege" || unit.role === "artillery") && research.includes("russian-artillery-carriages");
-  if (!drill && !radio && !optics && !armour && !fireControl && !bayonet && !volley && !carriages) return unit;
-  const attackPercent =
-    100 +
-    (drill ? 10 : 0) +
-    (radio ? 10 : 0) +
-    (optics ? 10 : 0) +
-    (fireControl ? 10 : 0) + (bayonet ? 10 : 0) + (volley ? 10 : 0);
-  return {
-    ...unit,
-    speedPercent: Math.round(unit.speedPercent * (carriages ? 1.15 : 1)),
-    healthPercent: Math.round((unit.healthPercent ?? 100) * (armour ? 1.2 : 1)),
-    meleeArmour:
-      unit.armourKind === "points"
-        ? unit.meleeArmour +
-          (drill ? Math.max(3, Math.round(unit.attack.damage * 0.025)) : 0)
-        : Math.min(6500, unit.meleeArmour + 300),
-    rangedArmour:
-      unit.armourKind === "points"
-        ? unit.rangedArmour +
-          (drill ? Math.max(3, Math.round(unit.attack.damage * 0.025)) : 0)
-        : Math.min(7000, unit.rangedArmour + 300),
-    attack: {
-      ...unit.attack,
-      damage: Math.round((unit.attack.damage * attackPercent) / 100),
-      reloadTicks: Math.max(
-        1,
-        Math.round(unit.attack.reloadTicks * (drill ? 0.95 : 1)),
-      ),
-    },
-  };
+  // Equipment packages unlock the authored age-specific unit statistics.
+  // No detached drill/radio/optics research survives in the packaged tree.
+  return unit;
 }
-const improvedVessels = new WeakMap<VesselDefinition, Map<string, VesselDefinition>>();
+const improvedVessels = new WeakMap<
+  VesselDefinition,
+  Map<string, VesselDefinition>
+>();
 export function vesselEffects(
   vessel: VesselDefinition,
   research: Research,
@@ -77,26 +28,36 @@ export function vesselEffects(
   const missiles =
     vessel.age === "Modern" &&
     vessel.kind === "warship" &&
-    research.includes(packageTechnology("Modern","naval-missiles-air-defence"));
-  const sailing = research.includes(packageTechnology(vessel.age,vessel.age === "StoneAge" ? "coastal-navigation" : "ship-improvements"));
-  const copper = vessel.age === "Napoleonic" && vessel.kind === "warship" && research.includes("russian-copper-sheathing");
-  const hull = vessel.age === "Modern" && vessel.kind === "transport" && research.includes("russian-transport-hulls");
-  const freight = vessel.kind === "trade" && (
-    (vessel.age === "Napoleonic" && research.includes("russian-merchant-holds")) ||
-    (vessel.age === "EarlyModern" && research.includes("russian-container-shipping")) ||
-    (vessel.age === "Modern" && research.includes("russian-maritime-cargo-systems")));
-  if (!missiles && !sailing && !copper && !hull && !freight) return vessel;
-  const key = [missiles, sailing, copper, hull, freight].map(Number).join("");
+    research.includes(
+      packageTechnology("Modern", "naval-missiles-air-defence"),
+    );
+  const modernFleet = research.includes(
+    packageTechnology("Modern", "ship-improvements"),
+  );
+  const ownImprovement = research.includes(
+    packageTechnology(
+      vessel.age,
+      vessel.age === "StoneAge" ? "coastal-navigation" : "ship-improvements",
+    ),
+  );
+  const coastal =
+    ownImprovement && vessel.age === "StoneAge" && vessel.kind !== "trade";
+  const general = modernFleet || (ownImprovement && vessel.age !== "StoneAge");
+  if (!missiles && !coastal && !general) return vessel;
+  const key = `${Number(missiles)}${Number(coastal)}${Number(general)}`;
   let cache = improvedVessels.get(vessel);
-  if (!cache) { cache = new Map(); improvedVessels.set(vessel, cache); }
+  if (!cache) {
+    cache = new Map();
+    improvedVessels.set(vessel, cache);
+  }
   const cached = cache.get(key);
   if (cached) return cached;
   const improved = {
     ...vessel,
-    speed: Math.round(vessel.speed * (sailing ? 1.1 : 1) * (copper ? 1.1 : 1)),
-    health: Math.round(vessel.health * (sailing && vessel.age !== "StoneAge" ? 1.1 : 1) * (copper ? 1.15 : 1) * (hull ? 1.2 : 1)),
+    speed: Math.round(vessel.speed * (coastal ? 1.1 : 1)),
+    health: Math.round(vessel.health * (general ? 1.1 : 1)),
     capacity: vessel.capacity
-      ? Math.ceil(vessel.capacity * (sailing ? 1.25 : 1) * (freight ? 1.2 : 1))
+      ? Math.ceil(vessel.capacity * (coastal ? 1.25 : general ? 1.1 : 1))
       : 0,
     attack: vessel.attack
       ? {
@@ -105,7 +66,9 @@ export function vesselEffects(
           range: vessel.attack.range + (missiles ? FIXED : 0),
           reloadTicks: Math.max(
             1,
-            Math.round(vessel.attack.reloadTicks * (sailing ? 0.9 : 1)),
+            Math.round(
+              vessel.attack.reloadTicks * (coastal ? 0.9 : general ? 0.95 : 1),
+            ),
           ),
         }
       : undefined,
@@ -116,21 +79,42 @@ export function vesselEffects(
 export function logisticsTier(research: Research): number {
   let tier = 0;
   for (const [i, age] of AGES.entries())
-    if (research.includes(packageTechnology(age,"roads"))) tier = i;
+    if (research.includes(packageTechnology(age, "roads"))) tier = i;
   return tier;
 }
+export function roadsUnlocked(research: Research): boolean {
+  return AGES.some((age) => research.includes(packageTechnology(age, "roads")));
+}
+export function landTraderTier(research: Research): number {
+  let tier = 0;
+  for (const [i, age] of AGES.entries())
+    if (research.includes(packageTechnology(age, "land-traders"))) tier = i;
+  return tier;
+}
+export function portCargoPercent(research: Research): number {
+  let percent = 100;
+  for (const [i, age] of AGES.entries())
+    if (research.includes(packageTechnology(age, "ports")))
+      percent = 100 + i * 5;
+  return percent;
+}
 export function cargoHandlingPercent(research: Research): number {
-  return research.includes(packageTechnology("StoneAge","land-traders"))
+  return research.includes(packageTechnology("StoneAge", "land-traders"))
     ? 125
     : 100;
 }
-export function breedingPerSecond(research:Research):number {
- let tier=-1;for(const [i,age] of AGES.entries())if(research.includes(packageTechnology(age,"land-traders")))tier=i;
- return tier<0?0:Math.min(6,tier+1);
+export function breedingPerSecond(research: Research): number {
+  let tier = -1;
+  for (const [i, age] of AGES.entries())
+    if (research.includes(packageTechnology(age, "land-traders"))) tier = i;
+  return tier < 0 ? 0 : Math.min(6, tier + 1);
 }
-export function throughputPercent(research:Research):number {
- let percent=100;for(const [i,age] of AGES.entries())if(research.includes(packageTechnology(age,"factories-mines")))percent=110+i*10;
- return percent;
+export function throughputPercent(research: Research): number {
+  let percent = 100;
+  for (const [i, age] of AGES.entries())
+    if (research.includes(packageTechnology(age, "factories-mines")))
+      percent = 110 + i * 10;
+  return percent;
 }
 export function scaledInputs(inputs: Inventory, tier = 1): Inventory {
   return Object.fromEntries(

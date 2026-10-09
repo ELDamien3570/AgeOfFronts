@@ -81,7 +81,7 @@ describe("reserved authoritative worker", () => {
       const initial = await worker.request<MatchAdvance>({ ...initialize, streamPublications: true });
       const decoder = new SnapshotDecoder(); decoder.decode(await decodeState<SnapshotPacket>(initial.packet!));
       const first = await worker.request<MatchAdvance>({ ...advance(1), commands: [{ id: "coherent-research",
-        command: { type: "research", playerId: 1, technologyId: "stoneage-shorecraft" } }] });
+        command: { type: "research", playerId: 1, technologyId: "rus-stoneage-port-sea-trade" } }] });
       expect(first.tick).toBe(1); expect(first.packet).toBeUndefined();
       const second = await worker.request<MatchAdvance>(advance(1, false)); expect(second.tick).toBe(2);
       const joined = await worker.request<import("../../src/skirmish/multiplayer/application/MatchExecutor").JoinBarrier>({ type: "join-barrier", playerId: 1 });
@@ -240,7 +240,7 @@ describe("reserved authoritative worker", () => {
             command: {
               type: "research",
               playerId: 2,
-              technologyId: "stoneage-shorecraft",
+              technologyId: "rus-stoneage-port-sea-trade",
             },
           },
         ],
@@ -248,12 +248,12 @@ describe("reserved authoritative worker", () => {
       const packet = await decodeState<SnapshotPacket>(update.packet!);
       expect(
         Object.values(packet.expansion!.progression![2].research).some(
-          (job) => job?.technologyId === "stoneage-shorecraft",
+          (job) => job?.technologyId === "rus-stoneage-port-sea-trade",
         ),
       ).toBe(true);
       expect(
         Object.values(packet.expansion!.progression![1].research).some(
-          (job) => job?.technologyId === "stoneage-shorecraft",
+          (job) => job?.technologyId === "rus-stoneage-port-sea-trade",
         ),
       ).toBe(false);
       const after = await worker.request<MatchAdvance>({

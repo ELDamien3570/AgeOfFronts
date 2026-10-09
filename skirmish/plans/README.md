@@ -93,3 +93,10 @@ review artifact, not registered runtime content. It preserves authored unlocks,
 research prices, recruitment prices and training times; it rejects missing or
 unpriced prerequisites rather than silently replacing them with legacy slots.
 The full runtime roster is now compiled by compileRussianRecruitment.ts and registered in normal skirmish.
+
+## Current packaged Rus runtime
+
+The normal-skirmish runtime now follows the saved **Rus — eight-age rework** draft.
+See [RusPackagedMigration.md](RusPackagedMigration.md) for the 125-package migration,
+air missions, AI integration, controls and validation limits. Earlier migration
+sections above describe historical catalogue stages.

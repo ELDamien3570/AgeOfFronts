@@ -70,7 +70,7 @@ describe("seeded terrain-weighted deposits", () => {
     expansion.progression.states[1].age = "LateMedieval";
     expansion.supply.step(20, match.players, match.buildings, match.owners);
     expect(expansion.supply.inventories[1].gunpowder).toBe(0);
-    expansion.progression.states[1].completed.push("latemedieval-powder-milling");
+    expansion.progression.states[1].completed.push("rus-latemedieval-factories-mines");
     expansion.supply.step(40, match.players, match.buildings, match.owners);
     expect(expansion.supply.inventories[1].gunpowder).toBeGreaterThan(0);
     expect(PRODUCTION_RECIPES.some(r => r.id === "refine-gunpowder")).toBe(false);

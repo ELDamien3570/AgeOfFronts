@@ -1,4 +1,3 @@
-import { retainSquads } from "./UnitFixtures";
 import { describe, expect, it } from "vitest";
 import { GameMapImpl } from "../../src/core/game/GameMap";
 import {
@@ -26,6 +25,7 @@ import {
   SnapshotDecoder,
   SnapshotEncoder,
 } from "../../src/skirmish/SnapshotCodec";
+import { retainSquads } from "./UnitFixtures";
 const make = () => {
   const data = new Uint8Array(96 * 64).fill(133);
   return new Skirmish(new GameMapImpl(96, 64, data, data.length), {
@@ -37,8 +37,13 @@ const make = () => {
   });
 };
 const pos = (m: Skirmish, s: Squad, x: number, y: number) => {
-  m.updateSquad(s.id, { x: (x + 0.5) * FIXED, y: (y + 0.5) * FIXED,
-    order: { type: "hold" }, path: [], moved: false });
+  m.updateSquad(s.id, {
+    x: (x + 0.5) * FIXED,
+    y: (y + 0.5) * FIXED,
+    order: { type: "hold" },
+    path: [],
+    moved: false,
+  });
 };
 const complete = (m: Skirmish) => {
   for (const p of m.players) {
@@ -73,19 +78,27 @@ const step = (m: Skirmish, n: number) => {
   for (let i = 0; i < n; i++) m.step();
 };
 describe("age progression and authoritative definitions", () => {
-  it("requires completed Fortified Settlements before researching Armies", () => {
+  it("requires all three military building upgrades before siege research", () => {
     const m = make(),
       p = m.players[0],
-      s = m.expansion!.progression.states[p.id];
-    s.age = "BronzeAge";
-    s.completed.push("bronzeage-bronze-equipment", "bronzeage-bowcraft", "bronzeage-chariot-warfare");
+      state = m.expansion!.progression.states[p.id];
+    state.age = "BronzeAge";
+    state.completed.push(
+      "rus-bronzeage-barracks-equipment",
+      "rus-bronzeage-ranged",
+      "rus-bronzeage-mobile",
+    );
     p.gold = 1000000;
-    const command = { type: "research" as const, playerId: p.id, technologyId: "bronzeage-armies" };
+    const command = {
+      type: "research" as const,
+      playerId: p.id,
+      technologyId: "rus-bronzeage-siege",
+    };
     expect(m.applyCommand(command)).toBe("Complete the prerequisites first");
-    expect(s.research.warfare).toBeUndefined();
-    s.completed.push("bronzeage-fortified-settlements");
+    expect(state.research.warfare).toBeUndefined();
+    state.completed.push("rus-bronzeage-fortifications");
     expect(m.applyCommand(command)).toBeNull();
-    expect(s.research.warfare?.technologyId).toBe("bronzeage-armies");
+    expect(state.research.warfare?.technologyId).toBe(command.technologyId);
   });
   it("validates the expanded research graph and unique per-branch slots", () => {
     expect(() => validateTechnologies()).not.toThrow();
@@ -100,9 +113,14 @@ describe("age progression and authoritative definitions", () => {
     const m = make();
     expect(m.buildings).toHaveLength(m.players.length);
     for (const p of m.players) {
-      expect(m.buildings.find(b => b.playerId === p.id)).toMatchObject({type: "city", remainingTicks: 0});
+      expect(m.buildings.find((b) => b.playerId === p.id)).toMatchObject({
+        type: "city",
+        remainingTicks: 0,
+      });
       expect(m.squads.filter((s) => s.playerId === p.id)).toHaveLength(3);
-      expect(m.expansion!.progression.states[p.id].completed).toContain(defaultUnit("infantry").technologyId);
+      expect(m.expansion!.progression.states[p.id].completed).toContain(
+        defaultUnit("infantry").technologyId,
+      );
       expect(
         m.squads
           .filter((s) => s.playerId === p.id)
@@ -166,7 +184,10 @@ describe("age progression and authoritative definitions", () => {
       p = m.players[0],
       s = m.expansion!.progression.states[1];
     p.gold = 999999;
-    s.completed.push(technologyAt("StoneAge", "warfare", 2).id, technologyAt("StoneAge", "warfare", 4).id);
+    s.completed.push(
+      technologyAt("StoneAge", "warfare", 2).id,
+      technologyAt("StoneAge", "warfare", 4).id,
+    );
     expect(
       m.applyCommand({
         type: "research",
@@ -185,7 +206,7 @@ describe("age progression and authoritative definitions", () => {
       m.applyCommand({
         type: "research",
         playerId: 1,
-        technologyId: "russian-troop-stoneage-lightcavalry",
+        technologyId: "rus-stoneage-mobile",
       }),
     ).toMatch(/already researching/);
     expect(advanceRejection(s, p.gold)).toMatch(/two/);
@@ -243,7 +264,7 @@ describe("supply conservation and deployment", () => {
     inv.copper = 8;
     inv.tin = 2;
     e.supply.step(400, m.players, m.buildings, m.owners);
-    m.updateBuilding((b).id, { playerId: 2 });
+    m.updateBuilding(b.id, { playerId: 2 });
     for (let i = 401; i < 700; i++)
       e.supply.step(i, m.players, m.buildings, m.owners);
     expect(inv.bronze).toBe(10);
@@ -303,7 +324,7 @@ describe("supply conservation and deployment", () => {
         definitionId: "bronzeage-infantry",
       }),
     ).toBeNull();
-    expect(p.gold).toBe(gold-800);
+    expect(p.gold).toBe(gold - 800);
     expect(own.filter((s) => !!s.refit)).toHaveLength(1);
     expect(inv["equipment:bronzeage"]).toBe(0);
     inv["equipment:bronzeage"] = 2;
@@ -552,9 +573,10 @@ describe("allied protection and fortifications", () => {
     const p = m.players[1],
       s = m.squads[0];
     retainSquads(m, [s]);
-    for (const city of m.buildings.filter(b => b.playerId === p.id)) m.removeBuilding(city.id);
+    for (const city of m.buildings.filter((b) => b.playerId === p.id))
+      m.removeBuilding(city.id);
     const b = building(m, "city", p.base, 2);
-    m.updateBuilding((b).id, { health: 1 });
+    m.updateBuilding(b.id, { health: 1 });
     pos(m, s, (p.base % 96) - 1, Math.floor(p.base / 96));
     m.updateSquad(s.id, { structureTarget: { buildingId: b.id } });
     const remnant = m.owners.findIndex((owner) => owner === 2);

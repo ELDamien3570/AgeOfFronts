@@ -294,7 +294,8 @@ export type BuildingType =
   | "mirv-launcher"
   | "missile-defence"
   | "nuclear-facility"
-  | "drone-facility";
+  | "drone-facility"
+  | "anti-air-emplacement";
 /** Squads cross water themselves (see Afloat); every fleet vessel is a warship. */
 export type ShipType = "warship";
 
@@ -475,7 +476,6 @@ export interface SnapshotPacket {
     deploymentTicks?: number;
     lastAttackTick?: number;
     nextAttackTick?: number;
-  airDefenseTick?: number;
     planningPaused?: boolean;
     movementStatus?: MovementStatus;
     refit?: RefitJob | null;

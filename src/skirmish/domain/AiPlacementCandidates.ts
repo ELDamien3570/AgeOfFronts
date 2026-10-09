@@ -111,6 +111,7 @@ export class AiPlacementCandidates {
       "airstrip",
       "nuclear-facility",
       "drone-facility",
+      "anti-air-emplacement",
       "missile-defence",
       "missile-silo",
       "mirv-launcher",
@@ -199,6 +200,7 @@ export class AiPlacementCandidates {
         objective=Math.max(objective,8000);
       if (["missile-silo","mirv-launcher"].includes(type) && snapshot.age === "Modern" && count < 2)
         objective=Math.max(objective,7000);
+      if(type === "anti-air-emplacement" && count<2 && this.expansion.aircraft.some(a=>a.health>0 && a.state!=="ready" && a.definitionId!=="drone" && this.expansion.diplomacy.hostile(player.id,a.playerId)))objective=Math.max(objective,8500);
       const safeGrowth = snapshot.threatTroops <= snapshot.readyTroops / 2 && snapshot.readyTroops >= 4000;
       const factories = snapshot.buildings.filter(b => b.type === "factory").length;
       const ports = snapshot.buildings.filter(b => b.type === "port").length;

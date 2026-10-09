@@ -887,7 +887,7 @@ export class HudViewModel {
             "Role",
             a.definitionId === "fighter"
               ? "Air-to-air · 200 damage / 2s · 8 cells"
-              : "Ground bomb · 2,500 base + 2,000 structure bonus",
+              : a.definitionId === "drone" ? "Single-use strike · 10,000 base damage" : "Ground bomb · 2,500 base + 2,000 structure bonus",
           ),
           stat("Orders", "I patrol · P bombing · O atomic · U drones"),
         ],

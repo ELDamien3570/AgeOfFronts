@@ -24,13 +24,13 @@ describe("technology inspection", () => {
     }
   });
   it("shows cavalry equipment, production inputs and the halved base cycle", () => {
-    expect(text("russian-troop-bronzeage-lightcavalry")).toContain(
+    expect(text("rus-bronzeage-mobile")).toContain(
       "20 horses + 2 Bronze Age equipment",
     );
-    expect(text("bronzeage-bronze-equipment")).toContain(
+    expect(text("rus-bronzeage-barracks-equipment")).toContain(
       "12 bronze → 1 Bronze Age equipment · 10s base cycle at Blacksmith",
     );
-    expect(text("modern-modern-armaments")).toContain(
+    expect(text("rus-earlymodern-barracks-equipment")).toContain(
       "12 steel + 10 gunpowder",
     );
   });
@@ -40,42 +40,42 @@ describe("technology inspection", () => {
       (v) => v.age === "ClassicalAge" && v.kind === "transport",
     )!;
     const upgraded = vesselEffects(transport, [node.id]);
-    expect(upgraded.speed).toBeGreaterThan(transport.speed);
+    expect(upgraded.health).toBeGreaterThan(transport.health);
     expect(text(node.id)).toContain("Squads afloat: ");
     expect(text(node.id)).toContain(
       `hull ${transport.health} → ${upgraded.health}`,
     );
     expect(text(node.id)).not.toContain("Sea trade:");
-    expect(text("classicalage-transport-fleets")).toContain(
+    expect(text("rus-classicalage-ports")).toContain(
       `Squads cross water as ${transport.name}: ${transport.health} hull`,
     );
   });
   it("reports logistics tiers as replacements and locates horse breeding on its real unlock", () => {
-    expect(text("modern-integrated-logistics")).toContain(
+    expect(text("rus-earlymodern-factories-mines")).toContain(
       "Recipe production rate: 170% of base",
     );
-    expect(text("modern-integrated-logistics")).toContain("6 horses/s");
-    expect(text("classicalage-urban-planning")).toContain("2 horses/s");
-    expect(text("classicalage-husbandry")).not.toContain("horses/s");
-    expect(text("modern-motor-freight")).toContain(
-      "120 goods base cargo · 150 with Goods Handling",
+    expect(text("rus-earlymodern-land-traders")).toContain("6 horses/s");
+    expect(text("rus-classicalage-land-traders")).toContain("3 horses/s");
+    expect(text("rus-classicalage-cities")).not.toContain("horses/s");
+    expect(text("rus-earlymodern-land-traders")).toContain(
+      "120 goods base cargo · 150 with Stone Age cargo handling",
     );
   });
   it("shows strategic launch cost, per-warhead blast values, and aircraft limits", () => {
-    expect(text("modern-strategic-weapons")).toContain(
+    expect(text("rus-modern-missile-infrastructure")).toContain(
       "10,000 gold + 1 matching payload · 60s launcher cooldown",
     );
-    expect(text("modern-strategic-weapons")).toContain(
+    expect(text("rus-modern-mirvs-drones")).toContain(
       "MIRV: 8 warheads × 3,000 attack · 3-tile blast radius per warhead",
     );
-    expect(text("modern-strategic-weapons")).toContain(
+    expect(text("rus-modern-missile-infrastructure")).toContain(
       "Hydrogen bomb: 40,000 attack · 28-tile blast radius",
     );
-    expect(text("modern-military-aviation")).toContain(
-      "6 per airstrip · 32 per faction",
+    expect(text("rus-earlymodern-airfields")).toContain(
+      "6 per launch site · 32 per faction",
     );
-    expect(text("modern-military-aviation")).toContain("4-tile blast radius");
-    expect(text("modern-combined-arms")).toContain(
+    expect(text("rus-earlymodern-bombers")).toContain("4-tile blast radius");
+    expect(text("rus-modern-fortifications")).toContain(
       "6 infantry squads per trench tile",
     );
   });

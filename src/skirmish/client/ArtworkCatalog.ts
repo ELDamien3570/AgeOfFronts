@@ -28,6 +28,11 @@ for (const suffix of ["infantry", "archer", "cavalry", "siege", "field-support"]
 // Individual cohort actors and explicit icon fallbacks supersede baked atlases.
 for (const unit of UNITS) if (unit.troopClass) delete legacyRuntime[unit.id];
 const russianRuntime: Record<string, ArtworkAsset> = { ...russianManifest };
+for(const age of ["earlymodern","modern"]) {
+ const original=`building-${age}-anti-aircraft`,bound=`building-${age}-anti-air-emplacement`;
+ russianRuntime[bound]=russianRuntime[original];
+ for(const facing of ["n","e","s","w"])russianRuntime[`${bound}-firing-${facing}`]=russianRuntime[`${original}-firing-${facing}`];
+}
 export const ARTWORK_CATALOG: Readonly<Record<string, ArtworkAsset>> = {
   ...legacyRuntime,
   ...russianRuntime,

@@ -30,7 +30,7 @@ const escape = (s: string) =>
 const fmt = (n: number) => Math.floor(n).toLocaleString("en-US");
 
 export function empireMarkup(): string {
-  return `<div id="resource-strip" class="resource-strip" aria-label="Empire resources"><div id="treasury"></div><div id="strategic-stocks"></div><span id="clock" aria-label="Game time">0:00</span><button id="technology-toggle">Technology <kbd>Y</kbd></button><button id="supplies-toggle">Supplies <kbd>I</kbd></button><button id="empire-age" type="button" aria-controls="match-topbar" aria-expanded="true" title="Show or hide the top bar">Stone Age</button></div>`;
+  return `<div id="resource-strip" class="resource-strip" aria-label="Empire resources"><div id="treasury"></div><div id="strategic-stocks"></div><span id="clock" aria-label="Game time">0:00</span><button id="technology-toggle">Technology <kbd>Y</kbd></button><button id="supplies-toggle">Supplies <kbd>L</kbd></button><button id="empire-age" type="button" aria-controls="match-topbar" aria-expanded="true" title="Show or hide the top bar">Stone Age</button></div>`;
 }
 
 export interface EmpireActions {
@@ -40,7 +40,7 @@ export interface EmpireActions {
   build(type: BuildingType, age?: Age): void;
   notify(text: string): void;
   focusedRef(): string | null;
-  target(action: (x: number, y: number, gesture?: {shift:boolean; buildingId?:number}) => void, hint: string, preview?: (x:number,y:number)=>string): void;
+  target(action: (x: number, y: number, gesture?: {shift:boolean; buildingId?:number}) => void, hint: string, preview?: (x:number,y:number,shift?:boolean)=>string): void;
 }
 
 export class EmpireView {
@@ -168,7 +168,7 @@ export class EmpireView {
         .addEventListener("click", () => this.close());
     root.querySelector("#infrastructure-toggle")!.textContent = "Production";
     root.querySelector("#supplies-toggle")!.innerHTML =
-      "Production <kbd>I</kbd>";
+      "Production <kbd>L</kbd>";
     this.dock = new EmpireHudView(root, actions, this, (id) =>
       this.inspectPlayer(id),
     );
@@ -279,7 +279,7 @@ export class EmpireView {
         const items = Object.entries(cost.items ?? {}).map(([id, n]) => `${n} ${id}`).join(" · ");
         actions.innerHTML = !upgrades.length && reason === "Military buildings upgrade automatically with research"
           ? `<small>${escape(reason)}</small>`
-          : `<button ${reason ? "disabled" : ""}>Upgrade ${upgrades.length}/${eligibleCount + skipped} Building${upgrades.length === 1 ? "" : "s"}${tiers ? ` to ${tiers}` : ""} <kbd>U</kbd></button><small>${escape(reason ?? `${fmt(cost.gold ?? 0)} gold${items ? ` · ${items}` : ""} · production pauses${skipped ? ` · ${skipped} ineligible skipped` : ""}`)}</small>`;
+          : `<button ${reason ? "disabled" : ""}>Upgrade ${upgrades.length}/${eligibleCount + skipped} Building${upgrades.length === 1 ? "" : "s"}${tiers ? ` to ${tiers}` : ""} <kbd>Ctrl U</kbd></button><small>${escape(reason ?? `${fmt(cost.gold ?? 0)} gold${items ? ` · ${items}` : ""} · production pauses${skipped ? ` · ${skipped} ineligible skipped` : ""}`)}</small>`;
       }
     }
 
@@ -289,7 +289,7 @@ export class EmpireView {
         `${refit.reason}:${refit.target?.id}:${refit.eligibleCount}:${refit.totalCount}:${refit.cost?.gold}:${JSON.stringify(refit.cost?.items)}:${refit.selected.map((s) => s.id).join()}`
     ) {
       actions.dataset.key = `${refit.reason}:${refit.target?.id}:${refit.eligibleCount}:${refit.totalCount}:${refit.cost?.gold}:${JSON.stringify(refit.cost?.items)}:${refit.selected.map((s) => s.id).join()}`;
-      actions.innerHTML = `<button ${refit.reason || !refit.target ? "disabled" : ""}>Upgrade ${refit.affordable.length}/${refit.totalCount} <kbd>U</kbd></button><small>${escape(refit.reason ?? `${refit.target!.name} · ${fmt(refit.cost!.gold ?? 0)} gold · ${refit.affordable.length} of ${refit.eligibleCount} eligible · 10 sec · promotion resets`)}</small>`;
+      actions.innerHTML = `<button ${refit.reason || !refit.target ? "disabled" : ""}>Upgrade ${refit.affordable.length}/${refit.totalCount} <kbd>Ctrl U</kbd></button><small>${escape(refit.reason ?? `${refit.target!.name} · ${fmt(refit.cost!.gold ?? 0)} gold · ${refit.affordable.length} of ${refit.eligibleCount} eligible · 10 sec · promotion resets`)}</small>`;
     }
 
     if (this.panel && performance.now() - this.lastRender > 500)
@@ -491,9 +491,9 @@ export class EmpireView {
         type: "recruit-aircraft",
         playerId: this.playerId,
         buildingId: Number(d.airfield),
-        buildingIds: this.vm.aircraft(d.aircraft as "fighter" | "bomber")
+        buildingIds: this.vm.aircraft(d.aircraft as "fighter" | "bomber" | "drone")
           .buildingIds,
-        definitionId: d.aircraft as "fighter" | "bomber",
+        definitionId: d.aircraft as "fighter" | "bomber" | "drone",
       });
 
     if (d.sortie) {

@@ -21,7 +21,7 @@ import type { Diplomacy } from "./Diplomacy";
 import type { DomainRoutePorts, DomainRouteTask } from "./DomainRoutePorts";
 import type { Fortifications } from "./Fortifications";
 import type { Progression } from "./Progression";
-import { cargoHandlingPercent, logisticsTier, vesselEffects } from "./ResearchEffects";
+import { cargoHandlingPercent, logisticsTier, landTraderTier, portCargoPercent, roadsUnlocked, vesselEffects } from "./ResearchEffects";
 import { TradeReceiving } from "./TradeReceiving";
 import type { Roads } from "./Roads";
 import type { Supply } from "./Supply";
@@ -381,11 +381,14 @@ export class Trade {
     this.marketGeometry = facts?.geometryRevision ?? -1;
     if (!changed) return;
     const receivers = new Map<string, number>();
+    const receivingPercent=new Map<string,number>();
     for (const m of this.markets.values()) for (const b of m.markets) {
       const key = TradeReceiving.key(b.playerId, b.tile);
       receivers.set(key, (receivers.get(key) ?? 0) + 1);
+      const research=this.progression.states[b.playerId].completed;
+      receivingPercent.set(key,Math.max(receivingPercent.get(key)??100,100+AGES.indexOf(b.age??"StoneAge")*5+(b.type==="city"&&b.age==="StoneAge"&&research.includes("rus-stoneage-cities")?10:0)));
     }
-    for (const [key, stack] of receivers) this.receiving.configure(key, stack, this.world.tick);
+    for (const [key, stack] of receivers) this.receiving.configure(key, stack, this.world.tick,receivingPercent.get(key)??100);
     this.receiving.retain(new Set(receivers.keys()));
     this.landMarkets.length = 0;
     for (const m of this.markets.values()) {
@@ -727,7 +730,7 @@ export class Trade {
         a.nextPathIndex = 0;
         a.state = p.state;
         this.remember(this.corridorKey(p, p.goal!), p.path!);
-        if (!a.naval)
+        if (!a.naval && roadsUnlocked(this.progression.states[a.playerId].completed))
           this.roads?.add(
             a.path,
             AGES[logisticsTier(this.progression.states[a.playerId].completed)],
@@ -808,7 +811,7 @@ export class Trade {
   }
   private capacity(site: Site): { value: number; definition: string } {
     const research = this.progression.states[site.source.playerId].completed,
-      tier = logisticsTier(research),
+      tier = landTraderTier(research),
       vessel = site.naval
         ? VESSELS.filter(
             (v) => v.kind === "trade" && research.includes(v.technologyId),
@@ -817,9 +820,9 @@ export class Trade {
     return {
       value: Math.floor(
         ((vessel ? vesselEffects(vessel, research).capacity! : LAND_TRADE_CAPACITIES[tier]) *
-          cargoHandlingPercent(research) *
+          cargoHandlingPercent(research) * portCargoPercent(research) *
           stackCargoPercent(site.buildings.length)) /
-          10000,
+          1000000,
       ),
       definition: vessel?.id ?? `${AGES[tier].toLowerCase()}-trader`,
     };
@@ -908,7 +911,7 @@ export class Trade {
     const research = this.progression.states[owner]?.completed ?? [];
     return !this.paused(owner, naval) && (naval
       ? VESSELS.some(v => v.kind === "trade" && research.includes(v.technologyId))
-      : research.includes(technologyAt("StoneAge", "economic", 4).id));
+      : research.includes("rus-stoneage-land-traders"));
   }
   /** Current source throughput facts, shared with AI investment decisions. */
   sourceStatus(sourceId: number) {

@@ -50,14 +50,15 @@ export class AutomaticBuildingTiers {
         if (
           !age ||
           building.remainingTicks ||
-          AGES.indexOf(age) <= AGES.indexOf(current)
+          AGES.indexOf(age) < AGES.indexOf(current)
         )
           continue;
         const maximum =
           building.maxHealth ?? buildingIntegrity(building.type, current);
         const health = building.health ?? maximum;
         if (health <= 0) continue;
-        const maxHealth = buildingIntegrity(building.type, age);
+        const maxHealth = buildingIntegrity(building.type, age,state.completed);
+        if(age === current && maximum === maxHealth)continue;
         update(building.id, {
           age,
           maxHealth,

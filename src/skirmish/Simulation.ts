@@ -2909,7 +2909,7 @@ export class Skirmish {
           0,
           (player.kind === "tribe" ? 40 : baseReserveIncome(this.expansion.progression.states[player.id].age)) +
             cities.reduce(
-              (n, b) => n + cityReserveIncome(b.age ?? "StoneAge"),
+              (n, b) => n + cityReserveIncome(b.age ?? "StoneAge",this.expansion!.progression.states[player.id].completed),
               0,
             ),
         );

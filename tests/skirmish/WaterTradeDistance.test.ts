@@ -41,8 +41,8 @@ function route(distance: number, inland = 0, foreign = true) {
   const destination = add("port", 10 + distance, 19, foreign ? 2 : 1);
   const e = m.expansion!;
   e.progression.states[1].completed.push(
-    "stoneage-cargo-canoes",
-    "stoneage-craft-workshops",
+    "rus-stoneage-port-sea-trade",
+    "rus-stoneage-cities",
   );
   const step = () => {
     m.tick++;

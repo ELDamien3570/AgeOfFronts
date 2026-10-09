@@ -37,7 +37,7 @@ export function quoteBuildingUpgrades(
       return result("Select buildings on your own territory");
     const current = building.age ?? "StoneAge";
     if (AUTOMATIC_TIER_BUILDINGS.includes(building.type)) {
-      unavailable = "Military buildings upgrade automatically with research";
+      unavailable = "These buildings upgrade automatically with research";
       continue;
     }
     const maximum = building.maxHealth ?? buildingIntegrity(building.type, current);

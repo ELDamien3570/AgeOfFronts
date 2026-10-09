@@ -27,6 +27,7 @@ const FOOTPRINTS: Record<
   airstrip: MILITARY,
   "nuclear-facility": MILITARY,
   "drone-facility": MILITARY,
+  "anti-air-emplacement": SMALL,
   factory: MILITARY,
   port: MILITARY,
   mine: SMALL,

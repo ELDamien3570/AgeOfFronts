@@ -221,7 +221,7 @@ describe("remaining roadmap integration", () => {
   });
   it("admit Army corridors without synchronous route search, then commits the complete selected cohort", () => {
     const f = fixture(false, 4);
-    f.expansion.progression.states[2].completed.push("bronzeage-armies");
+    f.expansion.progression.states[2].completed.push("rus-bronzeage-barracks-equipment");
     expect(
       f.game.applyCommand({
         type: "create-army",
@@ -357,7 +357,7 @@ describe("remaining roadmap integration", () => {
   });
   it("keeps all staged planners deterministic across a mid-admission authoritative checkpoint", () => {
     const f = fixture(true, 4);
-    f.expansion.progression.states[2].completed.push("stoneage-cargo-canoes");
+    f.expansion.progression.states[2].completed.push("rus-stoneage-cargo-canoes");
     expect(
       f.game.applyCommand({
         type: "order",

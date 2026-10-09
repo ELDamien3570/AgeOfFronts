@@ -91,27 +91,32 @@ describe("playtest stability regressions", () => {
         expect(moved.has(ai.id), "AI " + ai.id + " displaced").toBe(true);
     },
   );
-  it.each(["tower", "trench", "gun-nest", "missile-defence", "factory", "blacksmith", "barracks"] as const)(
-    "defeats an AI whose sole surviving building is %s",
-    (type) => {
-      const { game } = fixture(),
-        ai = game.players.find((p) => p.ai)!;
-      for (const s of [...game.squads])
-        if (s.playerId === ai.id) game.removeSquad(s.id);
-      for (const b of [...game.buildings])
-        if (b.playerId === ai.id) game.removeBuilding(b.id);
-      game.addBuilding({
-        id: game.allocateId(),
-        playerId: ai.id,
-        type,
-        tile: ai.base,
-        remainingTicks: 0,
-        health: 1000,
-      });
-      game.step();
-      expect(ai.eliminated).toBe(true);
-    },
-  );
+  it.each([
+    "tower",
+    "trench",
+    "gun-nest",
+    "missile-defence",
+    "factory",
+    "blacksmith",
+    "barracks",
+  ] as const)("defeats an AI whose sole surviving building is %s", (type) => {
+    const { game } = fixture(),
+      ai = game.players.find((p) => p.ai)!;
+    for (const s of [...game.squads])
+      if (s.playerId === ai.id) game.removeSquad(s.id);
+    for (const b of [...game.buildings])
+      if (b.playerId === ai.id) game.removeBuilding(b.id);
+    game.addBuilding({
+      id: game.allocateId(),
+      playerId: ai.id,
+      type,
+      tile: ai.base,
+      remainingTicks: 0,
+      health: 1000,
+    });
+    game.step();
+    expect(ai.eliminated).toBe(true);
+  });
   it.each(["city"] as const)(
     "keeps an AI alive with a completed %s",
     (type) => {
@@ -257,8 +262,10 @@ describe("playtest stability regressions", () => {
     e.progression.states[ai.id].completed = TECHNOLOGIES.filter(
       // Keep advancement unavailable: a viable age-up now intentionally wins
       // over completing an optional third tree.
-      (t) => t.age === "StoneAge" && t.id !== "stoneage-field-engineering" &&
-        !(t.tree === "naval" && t.slot === 4),
+      (t) =>
+        t.age === "StoneAge" &&
+        t.id !== "rus-stoneage-siege" &&
+        !(t.tree === "naval" && t.id === "rus-stoneage-coastal-navigation"),
     ).map((t) => t.id);
     for (const b of game.buildings)
       if (b.playerId === ai.id)
@@ -281,9 +288,11 @@ describe("playtest stability regressions", () => {
       e.economy.step();
     }
     expect(e.progression.states[ai.id].research.warfare?.technologyId).toBe(
-      "stoneage-field-engineering",
+      "rus-stoneage-siege",
     );
-    expect(ai.gold).toBe(550);
+    expect(ai.gold).toBe(
+      1000 - TECHNOLOGIES.find((t) => t.id === "rus-stoneage-siege")!.gold,
+    );
     expect(ai.reserves).toBe(0);
     investments.mockRestore();
     expect(e.economy.ledger.protected(ai.id).gold).toBeLessThanOrEqual(ai.gold);

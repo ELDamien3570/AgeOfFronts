@@ -24,10 +24,11 @@ import type {
 } from "../Protocol";
 import { FIXED, TICKS_PER_SECOND } from "../Protocol";
 import { chargeAligned, FORMATION_MOTION } from "../FormationLocomotion";
-import { AIRCRAFT_RULES, BOMBER_ATTACK, STRATEGIC_PAYLOADS, STRATEGIC_RULES } from "../content/ModernWeapons";
+import { AIRCRAFT_RULES, BOMBER_ATTACK, ATOMIC_ATTACK, DRONE_ATTACK, NAVAL_AIR_ATTACK, STRATEGIC_PAYLOADS, STRATEGIC_RULES } from "../content/ModernWeapons";
 import { personalityOf } from "../content/AiPersonalities";
 import {
   DEFENSIVE_BUILDINGS,
+  automaticBuildingTier,
   buildingCost,
   buildingIntegrity,
   buildingTechnology,
@@ -300,6 +301,10 @@ export class Expansion {
     const technology = buildingTechnology(type, age);
     if (!technology || (!placementOnly && !this.progression.has(player.id, technology)))
       return "Research this building's technology first";
+    const state = this.progression.states[player.id];
+    const tier = automaticBuildingTier(type, state.age, state.completed);
+    if (!placementOnly && tier && tier !== age)
+      return "Build this structure at its latest researched tier";
     const plan =
       (type === "tower" || type === "trench")
         ? this.fortifications.towerPlan(
@@ -367,7 +372,7 @@ export class Expansion {
       ...cost,
       gold: (cost.gold ?? 0) + (plan?.gold ?? 0),
     });
-    const maxHealth = buildingIntegrity(building.type, age);
+    const maxHealth = buildingIntegrity(building.type, age,this.progression.states[player.id].completed);
     this.world.updateBuilding(building.id, { age, maxHealth, health: maxHealth });
     if (plan) this.fortifications.addTower(building, plan);
   }
@@ -382,7 +387,7 @@ export class Expansion {
       for (const { building, age, ticks } of quote.upgrades) {
         const maximum = building.maxHealth ?? buildingIntegrity(building.type, building.age ?? "StoneAge");
         const ratio = Math.min(1, (building.health ?? maximum) / maximum);
-        const maxHealth = buildingIntegrity(building.type, age);
+        const maxHealth = buildingIntegrity(building.type, age,this.progression.states[player.id].completed);
         world.updateBuilding(building.id, { age, maxHealth,
           health: Math.max(1, Math.floor(maxHealth * ratio)), remainingTicks: ticks });
       }
@@ -560,6 +565,7 @@ export class Expansion {
       }
       for (const a of selected as Aircraft[]) {
         a.mission=mission;
+        a.atomicPayload=mission === "atomic";
         a.target = { x: command.x, y: command.y };
         a.state = "outbound";
         // Flight budget was filled at recruitment/landing; orders cannot refill it.
@@ -1063,8 +1069,18 @@ export class Expansion {
       targets.query(ship.x,ship.y,12*FIXED,this.nearbyAircraft);
       const target=this.nearbyAircraft.filter(a=>a.health>0&&this.diplomacy.hostile(ship.playerId,a.playerId)).sort((a,b)=>(a.x-ship.x)**2+(a.y-ship.y)**2-((b.x-ship.x)**2+(b.y-ship.y)**2)||a.id-b.id)[0];
       if(!target)continue;
-      if(this.battle.fire({...ship,domain:"ship"},target,{...BOMBER_ATTACK,damage:200,targets:["aircraft"],projectile:{diameter:FIXED/5,speed:2*FIXED,blastRadius:0}},200,"shell",10,0,"naval-air-defence",undefined,target.id)) {
+      if(this.battle.fire({...ship,domain:"ship"},target,NAVAL_AIR_ATTACK,200,"shell",10,0,"naval-air-defence",undefined,target.id)) {
         this.world.updateShip(ship.id,{airDefenseTick:this.world.tick+40});
+      }
+    }
+    for(const b of this.world.buildings) {
+      if(b.type!=="anti-air-emplacement"||b.remainingTicks||(b.health??1)<=0||this.world.tick<(b.nextAttackTick??0))continue;
+      const point=this.battle.position(b);targets.query(point.x,point.y,NAVAL_AIR_ATTACK.range,this.nearbyAircraft);
+      const target=this.nearbyAircraft.filter(a=>a.health>0&&this.diplomacy.hostile(b.playerId,a.playerId)).sort((a,c)=>(a.x-point.x)**2+(a.y-point.y)**2-((c.x-point.x)**2+(c.y-point.y)**2)||a.id-c.id)[0];
+      if(!target)continue;
+      if(this.battle.fire({id:b.id,playerId:b.playerId,...point,domain:"building"},target,NAVAL_AIR_ATTACK,200,"shell",10,0,"naval-air-defence",undefined,target.id)) {
+        this.world.updateBuilding(b.id,{nextAttackTick:this.world.tick+NAVAL_AIR_ATTACK.reloadTicks});
+        this.world.volleys.push({id:this.world.allocateId(),squadId:b.id,playerId:b.playerId,definitionId:"naval-air-defence",tick:this.world.tick,fromX:point.x,fromY:point.y,toX:target.x,toY:target.y});
       }
     }
     for (const a of this.aircraft) {
@@ -1104,10 +1120,14 @@ export class Expansion {
       if (!a.target) continue;
       if(a.state !== "returning") {if(a.fuelTicks<=0)a.state="returning";else a.fuelTicks--;}
       if(a.state === "patrolling") {
-        // Deterministic diamond orbit around the dispatch point, never beyond the flight budget.
-        const phase=Math.floor(this.world.tick / 40 + a.id) % 4;
-        const offsets=[[2,0],[0,2],[-2,0],[0,-2]];
-        const dx=a.target.x + offsets[phase][0]*FIXED-a.x,dy=a.target.y+offsets[phase][1]*FIXED-a.y;
+        // Pursue contacts inside the assigned patrol area; otherwise maintain a continuous orbit.
+        targets.query(a.target.x,a.target.y,24*FIXED,this.nearbyAircraft);
+        const contact=this.nearbyAircraft.filter(t=>t.health>0&&t.playerId!==a.playerId&&this.diplomacy.hostile(a.playerId,t.playerId)&&(t.x-a.target!.x)**2+(t.y-a.target!.y)**2<=(24*FIXED)**2)
+          .sort((b,c)=>Number(c.definitionId==="bomber")-Number(b.definitionId==="bomber") || (b.x-a.x)**2+(b.y-a.y)**2-((c.x-a.x)**2+(c.y-a.y)**2)||b.id-c.id)[0];
+        const phase=this.world.tick*flightSpeed(a.definitionId)/(4*FIXED)+a.id*1.7;
+        const goalX=Math.max(1,Math.min(this.world.map.width()*FIXED-1,contact?.x ?? a.target.x+Math.cos(phase)*4*FIXED));
+        const goalY=Math.max(1,Math.min(this.world.map.height()*FIXED-1,contact?.y ?? a.target.y+Math.sin(phase)*4*FIXED));
+        const dx=goalX-a.x,dy=goalY-a.y;
         const d=Math.hypot(dx,dy),speed=flightSpeed(a.definitionId);
         if(d>0){a.x+=Math.round(dx*Math.min(1,speed/d));a.y+=Math.round(dy*Math.min(1,speed/d));}
         continue;
@@ -1128,20 +1148,24 @@ export class Expansion {
       if (a.state === "returning") {
         a.state = "ready";
         a.target = null;
+        if(a.atomicPayload) {this.supply.inventories[a.playerId]["payload:atomic"]=(this.supply.inventories[a.playerId]["payload:atomic"]??0)+1;a.atomicPayload=false;}
         a.fuelTicks=flightTicks(a.definitionId,this.progression.states[a.playerId].completed.includes("rus-modern-airfields")?"Modern":a.age??base.age??"EarlyModern");
       } else {
         if(a.definitionId === "fighter") {a.state="patrolling";continue;}
-        if (a.definitionId === "bomber" || a.definitionId === "drone")
-          this.battle.fire(
+        if (a.definitionId === "bomber" || a.definitionId === "drone") {
+          const fired=this.battle.fire(
             { ...a, domain: "aircraft" },
             a.target,
-            a.mission === "atomic" ? {...BOMBER_ATTACK,damage:24000,projectile:{...BOMBER_ATTACK.projectile!,blastRadius:16*FIXED}} : a.definitionId === "drone" ? {...BOMBER_ATTACK,damage:10000,projectile:{...BOMBER_ATTACK.projectile!,blastRadius:3*FIXED}} : BOMBER_ATTACK,
+            a.mission === "atomic" ? ATOMIC_ATTACK : a.definitionId === "drone" ? DRONE_ATTACK : BOMBER_ATTACK,
             a.mission === "atomic" ? 24000 : a.definitionId === "drone" ? 10000 : BOMBER_ATTACK.damage,
             "bomb",
             20,
             0,
             a.mission === "atomic" ? "atomic" : "bomb",
           );
+          if(!fired)continue;
+          a.atomicPayload=false;
+        }
         if(a.definitionId === "drone") {a.health=0;continue;}
         a.state = "returning";
       }

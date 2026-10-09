@@ -1,5 +1,3 @@
-import { retainSquads } from "./UnitFixtures";
-import { squadSeparation } from "../../src/skirmish/SquadGeometry";
 import { describe, expect, it, vi } from "vitest";
 import { GameMapImpl } from "../../src/core/game/GameMap";
 import { ArmyViewModel } from "../../src/skirmish/client/ArmyViewModel";
@@ -18,6 +16,8 @@ import {
   SnapshotDecoder,
   SnapshotEncoder,
 } from "../../src/skirmish/SnapshotCodec";
+import { squadSeparation } from "../../src/skirmish/SquadGeometry";
+import { retainSquads } from "./UnitFixtures";
 const make = (
   count = 20,
   full = false,
@@ -29,7 +29,9 @@ const make = (
   );
   const e = match.expansion!;
   const own = match.squads.find((s) => s.playerId === 1)!;
-  retainSquads(match, [...match.squads.filter((s) => s.playerId !== 1), ...Array.from({ length: count }, (_, i) => ({
+  retainSquads(match, [
+    ...match.squads.filter((s) => s.playerId !== 1),
+    ...Array.from({ length: count }, (_, i) => ({
       ...own,
       id: 100 + i,
       x: (12 + (i % 4)) * FIXED,
@@ -37,7 +39,8 @@ const make = (
       order: { type: "hold" } as Squad["order"],
       path: [],
       queuedOrders: [],
-    }))]);
+    })),
+  ]);
   for (const s of match.squads.filter((s) => s.playerId === 2)) {
     match.updateSquad(s.id, { x: 85 * FIXED });
     match.updateSquad(s.id, { y: (52 + (s.id % 3)) * FIXED });
@@ -45,7 +48,7 @@ const make = (
   e.progression.states[1].age = full ? "Modern" : "BronzeAge";
   e.progression.states[1].completed = full
     ? TECHNOLOGIES.map((t) => t.id)
-    : ["bronzeage-armies"];
+    : ["rus-bronzeage-barracks-equipment"];
   return match;
 };
 const ids = (m: Skirmish) =>
@@ -56,35 +59,27 @@ const step = (m: Skirmish, n: number) => {
   for (let i = 0; i < n; i++) m.step();
 };
 describe("persistent armies and Bronze tree", () => {
-  it("requires all five Bronze Warfare nodes, and retains catch-up when other trees unlock Classical", () => {
+  it("requires complete branches to advance and allows paid military catch-up", () => {
     const m = make(3),
       state = m.expansion!.progression.states[1];
     state.completed = TECHNOLOGIES.filter(
       (t) =>
-        t.age === "BronzeAge" &&
-        t.tree !== "naval" &&
-        t.id !== "bronzeage-armies",
+        t.age === "StoneAge" ||
+        (t.age === "BronzeAge" &&
+          t.tree !== "naval" &&
+          t.id !== "rus-bronzeage-siege"),
     ).map((t) => t.id);
     expect(advanceRejection(state, 1e8)).toMatch(/two/);
-    state.completed.push("bronzeage-armies");
+    state.completed.push("rus-bronzeage-siege");
     expect(advanceRejection(state, 1e8)).toBeNull();
     state.age = "ClassicalAge";
-    state.completed = state.completed.filter((id) => id !== "bronzeage-armies");
-    expect(
-      researchRejection(
-        state,
-        1e8,
-        technologyAt("ClassicalAge", "warfare", 1).id,
-      ),
-    ).toMatch(/prerequisites/);
-    state.completed.push("bronzeage-armies");
-    expect(
-      researchRejection(
-        state,
-        1e8,
-        technologyAt("ClassicalAge", "warfare", 1).id,
-      ),
-    ).toBeNull();
+    state.completed = state.completed.filter(
+      (id) => id !== "rus-bronzeage-siege",
+    );
+    const next = technologyAt("ClassicalAge", "warfare", 1).id;
+    expect(researchRejection(state, 1e8, next)).toMatch(/prerequisites/);
+    state.completed.push("rus-bronzeage-siege");
+    expect(researchRejection(state, 1e8, next)).toBeNull();
   });
   it("gates capacity by researched named technologies, never empire age alone", () => {
     expect(armyCapacity([])).toBe(0);
@@ -190,21 +185,28 @@ describe("persistent armies and Bronze tree", () => {
     const army = m.expansion!.armies.armies[0],
       members = m.squads.filter((s) => s.playerId === 1);
     m.updateSquad(members[0].id, { embarkedOn: 999 });
-    m.updateSquad(members[1].id, { refit: {
-      targetId: "bronzeage-infantry",
-      totalTicks: 1000,
-      remainingTicks: 1000,
-    } });
+    m.updateSquad(members[1].id, {
+      refit: {
+        targetId: "bronzeage-infantry",
+        totalTicks: 1000,
+        remainingTicks: 1000,
+      },
+    });
     m.expansion!.armies.step();
     expect(army.memberIds).toHaveLength(3);
     const vm = new ArmyViewModel(m.snapshot(), new Set([members[2].id]));
     expect(vm.selectedArmy?.id).toBe(army.id);
     expect(vm.card(army).suspended).toBe(2);
-    for (const record of m.squads.slice(m.squads.indexOf(members[2]), (m.squads.indexOf(members[2])) + (1))) m.removeSquad(record.id);
+    for (const record of m.squads.slice(
+      m.squads.indexOf(members[2]),
+      m.squads.indexOf(members[2]) + 1,
+    ))
+      m.removeSquad(record.id);
     m.expansion!.armies.step();
     m.expansion!.armies.step();
     expect(army.memberIds).toHaveLength(2);
-    for (const record of m.squads.slice(0, (0) + (m.squads.length))) m.removeSquad(record.id);
+    for (const record of m.squads.slice(0, 0 + m.squads.length))
+      m.removeSquad(record.id);
     m.expansion!.armies.step();
     expect(m.expansion!.armies.armies).toHaveLength(0);
   });
@@ -355,27 +357,76 @@ describe("persistent armies and Bronze tree", () => {
     expect(own.every((s) => s.x > 50 * FIXED)).toBe(true);
   });
   it("recovers crowded army members without changing the army order or queued leg", () => {
-    const m=make(4),own=m.squads.filter(s=>s.playerId===1),offsets=[[0,0],[146,-75],[40,-200],[-105,-125]];
-    own.forEach((s,i)=>m.updateSquad(s.id,{x:15*FIXED+offsets[i][0],y:30*FIXED+offsets[i][1]}));
+    const m = make(4),
+      own = m.squads.filter((s) => s.playerId === 1),
+      offsets = [
+        [0, 0],
+        [146, -75],
+        [40, -200],
+        [-105, -125],
+      ];
+    own.forEach((s, i) =>
+      m.updateSquad(s.id, {
+        x: 15 * FIXED + offsets[i][0],
+        y: 30 * FIXED + offsets[i][1],
+      }),
+    );
     expect(create(m)).toBeNull();
-    expect(m.applyCommand({type:"army-order",playerId:1,armyId:1,order:{type:"move",tile:m.map.ref(45,30)}})).toBeNull();
-    expect(m.applyCommand({type:"army-order",playerId:1,armyId:1,order:{type:"move",tile:m.map.ref(65,35)},append:true})).toBeNull();
-    const army=m.expansion!.armies.armies[0];
-    for(let tick=0;tick<1000;tick++) {
+    expect(
+      m.applyCommand({
+        type: "army-order",
+        playerId: 1,
+        armyId: 1,
+        order: { type: "move", tile: m.map.ref(45, 30) },
+      }),
+    ).toBeNull();
+    expect(
+      m.applyCommand({
+        type: "army-order",
+        playerId: 1,
+        armyId: 1,
+        order: { type: "move", tile: m.map.ref(65, 35) },
+        append: true,
+      }),
+    ).toBeNull();
+    const army = m.expansion!.armies.armies[0];
+    for (let tick = 0; tick < 1000; tick++) {
       m.step();
-      for(let i=0;i<own.length;i++)for(let j=i+1;j<own.length;j++)
-        expect((own[i].x-own[j].x)**2+(own[i].y-own[j].y)**2).toBeGreaterThanOrEqual(squadSeparation(own[i], own[j])**2);
+      for (let i = 0; i < own.length; i++)
+        for (let j = i + 1; j < own.length; j++)
+          expect(
+            (own[i].x - own[j].x) ** 2 + (own[i].y - own[j].y) ** 2,
+          ).toBeGreaterThanOrEqual(squadSeparation(own[i], own[j]) ** 2);
     }
-    expect(army.state).toBe("holding");expect(own.every(s=>s.x>60*FIXED)).toBe(true);
-    expect(army.memberIds).toEqual(own.map(s=>s.id));
+    expect(army.state).toBe("holding");
+    expect(own.every((s) => s.x > 60 * FIXED)).toBe(true);
+    expect(army.memberIds).toEqual(own.map((s) => s.id));
   });
   it("withdraws automatic slot-yield permission when a player explicitly holds a member", () => {
-    const m=make(4);expect(create(m)).toBeNull();
-    expect(m.applyCommand({type:"army-order",playerId:1,armyId:1,order:{type:"move",tile:m.map.ref(55,30)}})).toBeNull();
-    step(m,30);const member=m.squad(ids(m)[0])!;
-    expect(m.applyCommand({type:"order",playerId:1,squadIds:[member.id],order:{type:"hold"}})).toBeNull();
-    const point={x:member.x,y:member.y};expect(m.expansion!.armies.yieldSlot(member)).toBeUndefined();
-    step(m,150);expect({x:member.x,y:member.y}).toEqual(point);
+    const m = make(4);
+    expect(create(m)).toBeNull();
+    expect(
+      m.applyCommand({
+        type: "army-order",
+        playerId: 1,
+        armyId: 1,
+        order: { type: "move", tile: m.map.ref(55, 30) },
+      }),
+    ).toBeNull();
+    step(m, 30);
+    const member = m.squad(ids(m)[0])!;
+    expect(
+      m.applyCommand({
+        type: "order",
+        playerId: 1,
+        squadIds: [member.id],
+        order: { type: "hold" },
+      }),
+    ).toBeNull();
+    const point = { x: member.x, y: member.y };
+    expect(m.expansion!.armies.yieldSlot(member)).toBeUndefined();
+    step(m, 150);
+    expect({ x: member.x, y: member.y }).toEqual(point);
   });
   it("budgets 50-member work fairly and cancels stale routes after new orders", () => {
     const m = make(50, true);
@@ -389,9 +440,15 @@ describe("persistent armies and Bronze tree", () => {
       order: { type: "move", tile: m.map.ref(70, 30) },
     });
     const background = vi.spyOn(m.expansion!.armies, "resolveRoute");
-    m.queueArmyRoute("other-faction", {armyId:999,squadId:999,revision:0});
+    m.queueArmyRoute("other-faction", {
+      armyId: 999,
+      squadId: 999,
+      revision: 0,
+    });
     step(m, 3);
-    expect(background.mock.calls.filter(([work]) => work.armyId === 999)).toHaveLength(1);
+    expect(
+      background.mock.calls.filter(([work]) => work.armyId === 999),
+    ).toHaveLength(1);
     expect(spy.mock.calls.length).toBeGreaterThan(24);
     m.applyCommand({
       type: "army-order",

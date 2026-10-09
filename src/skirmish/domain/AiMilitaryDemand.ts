@@ -126,6 +126,7 @@ export function militaryDemand(
     if(oilUsers)result.equipment.oil=Math.max(40,oilUsers*20);
   }
   }
+  if(snapshot.buildings.some(b=>b.type==="nuclear-facility") && snapshot.research.includes(packageTechnology("EarlyModern","nuclear-weapons"))) result.equipment["payload:atomic"]=2;
   const preparation=saved??{equipment:result.equipment,units:result.units,quote:dependencies.beginMaterials(result.equipment),availabilityDeferred:dependencies.deferred};
   result.equipment=preparation.equipment;result.units=preparation.units;
   dependencies.stepMaterials(preparation.quote,allowance);

@@ -318,7 +318,7 @@ let placementAge: Age | undefined;
 let lastPlacementTime = 0;
 let lastPlacementAttempt = 0;
 
-let targetPreview: ((x:number,y:number)=>string) | undefined;
+let targetPreview: ((x:number,y:number,shift?:boolean)=>string) | undefined;
 const flightTip=document.createElement("div");flightTip.style.cssText="position:fixed;z-index:100;pointer-events:none;padding:6px 9px;background:#111e;color:white;border-radius:5px;font:13px system-ui";flightTip.hidden=true;document.body.append(flightTip);
 let targetedAction: ((x: number, y: number, gesture?: {shift:boolean; buildingId?:number}) => void) | undefined;
 
@@ -330,7 +330,7 @@ const empireModel = () =>
 function beginTarget(
   action: (x: number, y: number, gesture?: {shift:boolean; buildingId?:number}) => void,
   hint: string,
-  preview?: (x:number,y:number)=>string,
+  preview?: (x:number,y:number,shift?:boolean)=>string,
 ): void {
   cancelPlacement();
   empire.close();
@@ -1409,7 +1409,7 @@ canvas.addEventListener("pointerdown", (event) => {
 canvas.addEventListener("pointermove", (event) => {
   const p = localPosition(event);
   if(targetPreview) {
-    const world=renderer.world(p.x,p.y),text=targetPreview(Math.round(world.x*FIXED),Math.round(world.y*FIXED));
+    const world=renderer.world(p.x,p.y),text=targetPreview(Math.round(world.x*FIXED),Math.round(world.y*FIXED),event.shiftKey);
     flightTip.textContent=text;flightTip.hidden=false;flightTip.style.left=`${Math.min(window.innerWidth-210,event.clientX+18)}px`;flightTip.style.top=`${event.clientY+18}px`;
     const percent=Number(/(\d+)%/.exec(text)?.[1]??0);flightTip.style.color=percent>100?"#ff7070":"#fff";
   }
@@ -1905,16 +1905,16 @@ document.addEventListener("keydown", (event) => {
     return;
   }
   const key = event.key.toLowerCase();
+  if(event.ctrlKey && !event.metaKey && !event.altKey && key === "u") {event.preventDefault();empire.upgrade();return;}
 
   if (
     !event.ctrlKey &&
     !event.metaKey &&
     !event.altKey &&
-    ["y", "i", "u"].includes(key)
+    ["y", "l"].includes(key)
   ) {
     event.preventDefault();
-    if (key === "u") empire.upgrade();
-    else empire.toggle(key === "y" ? "technology" : "supplies");
+    empire.toggle(key === "y" ? "technology" : "supplies");
     return;
   }
 
