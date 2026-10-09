@@ -1,0 +1,672 @@
+{
+  "folder": "Units/EarlyMedieval/MailSpearman/_TO BE DELETED",
+  "created": "2026-10-09T03:15:53.711Z",
+  "files": [
+    {
+      "original": "Units/EarlyMedieval/MailSpearman/Attack-Fixed-Grip-v4.png",
+      "archived": "Units/EarlyMedieval/MailSpearman/_TO BE DELETED/Attack-Fixed-Grip-v4.png",
+      "sha256": "793d5e319fbc3a859c55f6197dffff5082d1a1545f4335d8c366c01a7bba9b81",
+      "size": 842729
+    },
+    {
+      "original": "Units/EarlyMedieval/MailSpearman/Attack-Rebuilt-v6.png",
+      "archived": "Units/EarlyMedieval/MailSpearman/_TO BE DELETED/Attack-Rebuilt-v6.png",
+      "sha256": "f16bee632150b2e6470d00e827be0ef17ea11d7b8b946cb1cd31f7888413fffe",
+      "size": 718352
+    },
+    {
+      "original": "Units/EarlyMedieval/MailSpearman/Attack-Rig-v5.png",
+      "archived": "Units/EarlyMedieval/MailSpearman/_TO BE DELETED/Attack-Rig-v5.png",
+      "sha256": "b9acf554ff1784bae6e65c4553d5f6053f7cb63e94b7a65a447c7165ef824967",
+      "size": 1278093
+    },
+    {
+      "original": "Units/EarlyMedieval/MailSpearman/Attack-Thrust-v2.png",
+      "archived": "Units/EarlyMedieval/MailSpearman/_TO BE DELETED/Attack-Thrust-v2.png",
+      "sha256": "d562869209bc57c6da672abf787fb39318dbf86fbcb554685cd399623a6cdce6",
+      "size": 749176
+    },
+    {
+      "original": "Units/EarlyMedieval/MailSpearman/Attack-v1.png",
+      "archived": "Units/EarlyMedieval/MailSpearman/_TO BE DELETED/Attack-v1.png",
+      "sha256": "bc545995102ea2759fab55a7565c82e4d1314175a3035528a591b2158466429a",
+      "size": 888737
+    },
+    {
+      "original": "Units/EarlyMedieval/MailSpearman/Charge-Attack-Fixed-Grip-v4.png",
+      "archived": "Units/EarlyMedieval/MailSpearman/_TO BE DELETED/Charge-Attack-Fixed-Grip-v4.png",
+      "sha256": "84d7176c76d0fbba9f79543a33662746d55f1f02e1b7c79f02f39cd4a0a83cd2",
+      "size": 927574
+    },
+    {
+      "original": "Units/EarlyMedieval/MailSpearman/Charge-Attack-Rebuilt-v6.png",
+      "archived": "Units/EarlyMedieval/MailSpearman/_TO BE DELETED/Charge-Attack-Rebuilt-v6.png",
+      "sha256": "7e0c3340f12510c8f292b8dfc9137443a36a0a88c8beb71850f869322e74c7b7",
+      "size": 743146
+    },
+    {
+      "original": "Units/EarlyMedieval/MailSpearman/Charge-Attack-Rig-v5.png",
+      "archived": "Units/EarlyMedieval/MailSpearman/_TO BE DELETED/Charge-Attack-Rig-v5.png",
+      "sha256": "7ab50849048c515fb6e1f766dc6fff82506680dabbd690b0a1b3708e6b915de7",
+      "size": 1261736
+    },
+    {
+      "original": "Units/EarlyMedieval/MailSpearman/Charge-Attack-Thrust-v2.png",
+      "archived": "Units/EarlyMedieval/MailSpearman/_TO BE DELETED/Charge-Attack-Thrust-v2.png",
+      "sha256": "ea12992d3de3eb1b3f434567c4d152cb141c352ae685a8ab347888b478f6ffc2",
+      "size": 802320
+    },
+    {
+      "original": "Units/EarlyMedieval/MailSpearman/Charge-Attack-v1.png",
+      "archived": "Units/EarlyMedieval/MailSpearman/_TO BE DELETED/Charge-Attack-v1.png",
+      "sha256": "4442c1caa8de6f8f4fa129d986c04a8842b9e551fc88f4d875298ddafaed3ab9",
+      "size": 918742
+    },
+    {
+      "original": "Units/EarlyMedieval/MailSpearman/Generation.json",
+      "archived": "Units/EarlyMedieval/MailSpearman/_TO BE DELETED/Generation.json",
+      "sha256": "3d61432d73cdc0dba4cfe3877af0039a85d58544997d3a0e7aff5d9455723238",
+      "size": 64874
+    },
+    {
+      "original": "Units/EarlyMedieval/MailSpearman/Idle-Overhead-v2.png",
+      "archived": "Units/EarlyMedieval/MailSpearman/_TO BE DELETED/Idle-Overhead-v2.png",
+      "sha256": "9556dca91383e806fe7a42454de9cb9c86ccf6b205de6297c2e9ab94e7126e26",
+      "size": 780445
+    },
+    {
+      "original": "Units/EarlyMedieval/MailSpearman/Idle-v1.png",
+      "archived": "Units/EarlyMedieval/MailSpearman/_TO BE DELETED/Idle-v1.png",
+      "sha256": "a7fee1885754f4a9580e67206067a4252fd603b87a0bb977cf2140a978b65a2a",
+      "size": 759298
+    },
+    {
+      "original": "Units/EarlyMedieval/MailSpearman/README.md",
+      "archived": "Units/EarlyMedieval/MailSpearman/_TO BE DELETED/README.md",
+      "sha256": "ddd9f4b1e3c9caf105c02a9a1862ae41dcde468fd5e9c92120acb1331ed9eee5",
+      "size": 409
+    },
+    {
+      "original": "Units/EarlyMedieval/MailSpearman/Review-All-Animations-v1.jpg",
+      "archived": "Units/EarlyMedieval/MailSpearman/_TO BE DELETED/Review-All-Animations-v1.jpg",
+      "sha256": "71c0097399028af9d58e6a20df8f3ab5b13ebfff9610792b3ce6fca16c5bbcfb",
+      "size": 173897
+    },
+    {
+      "original": "Units/EarlyMedieval/MailSpearman/Review-attack-forward-v8.webp",
+      "archived": "Units/EarlyMedieval/MailSpearman/_TO BE DELETED/Review-attack-forward-v8.webp",
+      "sha256": "44afb155a458d67e66023ddc3526e3c1fdd59b627b502209a3ffe1ae701c4c1e",
+      "size": 79004
+    },
+    {
+      "original": "Units/EarlyMedieval/MailSpearman/Review-attack-rebuilt-v6.webp",
+      "archived": "Units/EarlyMedieval/MailSpearman/_TO BE DELETED/Review-attack-rebuilt-v6.webp",
+      "sha256": "1e1eced9f5da08d65a62d6af25118f3663ea0cb565cf9c4eff3b570c9431fced",
+      "size": 98140
+    },
+    {
+      "original": "Units/EarlyMedieval/MailSpearman/Review-attack-rig-v5.webp",
+      "archived": "Units/EarlyMedieval/MailSpearman/_TO BE DELETED/Review-attack-rig-v5.webp",
+      "sha256": "ce9f1bed449fd5fcc015a03eaffd89a0f48185d6bcc9418c2f7eb0ae9ff77ef6",
+      "size": 195870
+    },
+    {
+      "original": "Units/EarlyMedieval/MailSpearman/Review-attack-v1.webp",
+      "archived": "Units/EarlyMedieval/MailSpearman/_TO BE DELETED/Review-attack-v1.webp",
+      "sha256": "886d1b139d59f682a1040b0e6089506e68ec2d1d37512ac871df0df9f2e8d8ed",
+      "size": 121736
+    },
+    {
+      "original": "Units/EarlyMedieval/MailSpearman/Review-attack-v2.webp",
+      "archived": "Units/EarlyMedieval/MailSpearman/_TO BE DELETED/Review-attack-v2.webp",
+      "sha256": "9984a0118dcdf5cbdee7ac995dd9a719425eae3b6d860440b266c9f29444e649",
+      "size": 107038
+    },
+    {
+      "original": "Units/EarlyMedieval/MailSpearman/Review-attack-v4.webp",
+      "archived": "Units/EarlyMedieval/MailSpearman/_TO BE DELETED/Review-attack-v4.webp",
+      "sha256": "0259f9287615abb52b7628320ceea44b96a3edf7bd3da63fb06b47c20efdb5f1",
+      "size": 121634
+    },
+    {
+      "original": "Units/EarlyMedieval/MailSpearman/Review-charge-attack-forward-v8.webp",
+      "archived": "Units/EarlyMedieval/MailSpearman/_TO BE DELETED/Review-charge-attack-forward-v8.webp",
+      "sha256": "a084492623116552b5ee139f5a8773a29fc7029642c0452412c66c4914eb3d40",
+      "size": 77380
+    },
+    {
+      "original": "Units/EarlyMedieval/MailSpearman/Review-charge-attack-rebuilt-v6.webp",
+      "archived": "Units/EarlyMedieval/MailSpearman/_TO BE DELETED/Review-charge-attack-rebuilt-v6.webp",
+      "sha256": "ff0b1dce6622b11051bcfb8a99aa4bbcea6562f954e5c0e41295843dcdd7e13d",
+      "size": 96274
+    },
+    {
+      "original": "Units/EarlyMedieval/MailSpearman/Review-charge-attack-rig-v5.webp",
+      "archived": "Units/EarlyMedieval/MailSpearman/_TO BE DELETED/Review-charge-attack-rig-v5.webp",
+      "sha256": "fd28a3e7e5636b378bcc6cf348f9bef571403cfaf796046981cdedd43f10fd7e",
+      "size": 196032
+    },
+    {
+      "original": "Units/EarlyMedieval/MailSpearman/Review-charge-attack-v1.webp",
+      "archived": "Units/EarlyMedieval/MailSpearman/_TO BE DELETED/Review-charge-attack-v1.webp",
+      "sha256": "f96ee58e16cbb602e2382f21acea81cc0cb2b2331c5cdf6ea4f91c6f6b8284b3",
+      "size": 114586
+    },
+    {
+      "original": "Units/EarlyMedieval/MailSpearman/Review-charge-attack-v2.webp",
+      "archived": "Units/EarlyMedieval/MailSpearman/_TO BE DELETED/Review-charge-attack-v2.webp",
+      "sha256": "0dcbbcef4c26ad04467f2a550f001c00a03a51f1786d8af88afad87bc087e3b0",
+      "size": 116118
+    },
+    {
+      "original": "Units/EarlyMedieval/MailSpearman/Review-charge-attack-v4.webp",
+      "archived": "Units/EarlyMedieval/MailSpearman/_TO BE DELETED/Review-charge-attack-v4.webp",
+      "sha256": "ce116218853541d2532b9c38b9fb4063032df517234dd1c427a3b132e5a5250b",
+      "size": 132254
+    },
+    {
+      "original": "Units/EarlyMedieval/MailSpearman/Review-charge-v1.webp",
+      "archived": "Units/EarlyMedieval/MailSpearman/_TO BE DELETED/Review-charge-v1.webp",
+      "sha256": "0d7057d5d94549082a51f5162a99b96f7624b2690eb2a2a34234cf5f5cf31195",
+      "size": 137536
+    },
+    {
+      "original": "Units/EarlyMedieval/MailSpearman/Review-charged-v1.webp",
+      "archived": "Units/EarlyMedieval/MailSpearman/_TO BE DELETED/Review-charged-v1.webp",
+      "sha256": "14542927e246a7d4a585995b126cd7f1ef6b3c9803efcb5101db2ccf11db327f",
+      "size": 156428
+    },
+    {
+      "original": "Units/EarlyMedieval/MailSpearman/Review-death-back-v1.webp",
+      "archived": "Units/EarlyMedieval/MailSpearman/_TO BE DELETED/Review-death-back-v1.webp",
+      "sha256": "0ba073d9d72346e2000207f5e5d7062a5521d199b159066d27053d9ec6645d77",
+      "size": 129942
+    },
+    {
+      "original": "Units/EarlyMedieval/MailSpearman/Review-death-v1.webp",
+      "archived": "Units/EarlyMedieval/MailSpearman/_TO BE DELETED/Review-death-v1.webp",
+      "sha256": "11461a732ab2223eb17d6d74c82f1dcb198a56d03890bcdcd3567a41f0f2d56d",
+      "size": 127696
+    },
+    {
+      "original": "Units/EarlyMedieval/MailSpearman/Review-Forward-v8.jpg",
+      "archived": "Units/EarlyMedieval/MailSpearman/_TO BE DELETED/Review-Forward-v8.jpg",
+      "sha256": "9b451bd2bf92ad5bf9168a8660ccee3ea97d02dd3f2b5ce272b41911bf62402f",
+      "size": 27036
+    },
+    {
+      "original": "Units/EarlyMedieval/MailSpearman/Review-hit-v1.webp",
+      "archived": "Units/EarlyMedieval/MailSpearman/_TO BE DELETED/Review-hit-v1.webp",
+      "sha256": "f66dafca64ebc8102f68b7297f60d3e9057b02f9750a6a416997649f781a367a",
+      "size": 130280
+    },
+    {
+      "original": "Units/EarlyMedieval/MailSpearman/Review-Idle-Overhead-v2.png",
+      "archived": "Units/EarlyMedieval/MailSpearman/_TO BE DELETED/Review-Idle-Overhead-v2.png",
+      "sha256": "79005eba686783e8dbb0dd40292895522f02413ee508a8add3f6c747b9897197",
+      "size": 120642
+    },
+    {
+      "original": "Units/EarlyMedieval/MailSpearman/Review-Idle-v1.png",
+      "archived": "Units/EarlyMedieval/MailSpearman/_TO BE DELETED/Review-Idle-v1.png",
+      "sha256": "705a2b302a364e35e2d49d6f5d0a0534035083ae46a2e47103585909197e6a29",
+      "size": 116592
+    },
+    {
+      "original": "Units/EarlyMedieval/MailSpearman/Review-idle-v1.webp",
+      "archived": "Units/EarlyMedieval/MailSpearman/_TO BE DELETED/Review-idle-v1.webp",
+      "sha256": "aa4dabb355eb6e77db1d76fdd15445483464ba45d786d5074ffa3b3116d819f6",
+      "size": 137290
+    },
+    {
+      "original": "Units/EarlyMedieval/MailSpearman/Review-Rebuilt-v6.jpg",
+      "archived": "Units/EarlyMedieval/MailSpearman/_TO BE DELETED/Review-Rebuilt-v6.jpg",
+      "sha256": "795b4d8f904817742cf330518686e02e9fd4ff689cb4a2d885422cfaf9fea8cb",
+      "size": 34583
+    },
+    {
+      "original": "Units/EarlyMedieval/MailSpearman/Review-Rig-v5.jpg",
+      "archived": "Units/EarlyMedieval/MailSpearman/_TO BE DELETED/Review-Rig-v5.jpg",
+      "sha256": "9140514a617af718906ae95a84fac4e13311b2a9af1137ff36720f0cd4f96a8d",
+      "size": 53161
+    },
+    {
+      "original": "Units/EarlyMedieval/MailSpearman/Review-running-v1.webp",
+      "archived": "Units/EarlyMedieval/MailSpearman/_TO BE DELETED/Review-running-v1.webp",
+      "sha256": "4b01702760fb015b911670b6fd3098169230762c080bcd8b363ceb55ef348ac8",
+      "size": 150636
+    },
+    {
+      "original": "Units/EarlyMedieval/MailSpearman/Review-Thrusts-v2.jpg",
+      "archived": "Units/EarlyMedieval/MailSpearman/_TO BE DELETED/Review-Thrusts-v2.jpg",
+      "sha256": "c196e2c6158ed8795050d317e1ce4d2713de4ec1a9368fd2b43cdcde42503b2b",
+      "size": 37461
+    },
+    {
+      "original": "Units/EarlyMedieval/MailSpearman/Review-Thrusts-v4.jpg",
+      "archived": "Units/EarlyMedieval/MailSpearman/_TO BE DELETED/Review-Thrusts-v4.jpg",
+      "sha256": "a77ce2e1dec28fde8388507a6cad30792c1ee3983ea769db3137edcf41d634db",
+      "size": 41437
+    },
+    {
+      "original": "Units/EarlyMedieval/MailSpearman/SourceArt/Animation-Generation.json",
+      "archived": "Units/EarlyMedieval/MailSpearman/_TO BE DELETED/SourceArt/Animation-Generation.json",
+      "sha256": "415081728f1a90c206c76fe1367dff41d49ff269e469b9aaca54b6deb4c07432",
+      "size": 40793
+    },
+    {
+      "original": "Units/EarlyMedieval/MailSpearman/SourceArt/Approved-Idle.json",
+      "archived": "Units/EarlyMedieval/MailSpearman/_TO BE DELETED/SourceArt/Approved-Idle.json",
+      "sha256": "d50f1194013e7602fadfd36404f34bcc79e41fd4ef43578b6aa8bfb6bdaa2a7a",
+      "size": 182
+    },
+    {
+      "original": "Units/EarlyMedieval/MailSpearman/SourceArt/Before-Animation-Actor_Review.html",
+      "archived": "Units/EarlyMedieval/MailSpearman/_TO BE DELETED/SourceArt/Before-Animation-Actor_Review.html",
+      "sha256": "05d6f6728406d1e3982a760f652fdef983153f3e1085df95dee6c04439247c0d",
+      "size": 7284
+    },
+    {
+      "original": "Units/EarlyMedieval/MailSpearman/SourceArt/Before-Animation-animations.json",
+      "archived": "Units/EarlyMedieval/MailSpearman/_TO BE DELETED/SourceArt/Before-Animation-animations.json",
+      "sha256": "bb1c9357a3d6ce8568e76451fee88d44e378816497f7ddf83a9a05b2f1ce27b1",
+      "size": 1207
+    },
+    {
+      "original": "Units/EarlyMedieval/MailSpearman/SourceArt/Before-Animation-Generation.json",
+      "archived": "Units/EarlyMedieval/MailSpearman/_TO BE DELETED/SourceArt/Before-Animation-Generation.json",
+      "sha256": "ed3be7719f6420235d75dde13465732b5e356d593caa8bdef86edd70be031b3c",
+      "size": 4222
+    },
+    {
+      "original": "Units/EarlyMedieval/MailSpearman/SourceArt/Before-Animation-Validation.json",
+      "archived": "Units/EarlyMedieval/MailSpearman/_TO BE DELETED/SourceArt/Before-Animation-Validation.json",
+      "sha256": "3bb6df42a6141b2a55bbf011cf0cf72234867890fb48c258fc9a54e02b18917d",
+      "size": 373
+    },
+    {
+      "original": "Units/EarlyMedieval/MailSpearman/SourceArt/Before-Fixed-Grip-v3-animations.json",
+      "archived": "Units/EarlyMedieval/MailSpearman/_TO BE DELETED/SourceArt/Before-Fixed-Grip-v3-animations.json",
+      "sha256": "99eef8e2d78216366d1a60fe7a89b69f7689b1040417a6e6b18d45949a22118b",
+      "size": 17965
+    },
+    {
+      "original": "Units/EarlyMedieval/MailSpearman/SourceArt/Before-Fixed-Grip-v3-Generation.json",
+      "archived": "Units/EarlyMedieval/MailSpearman/_TO BE DELETED/SourceArt/Before-Fixed-Grip-v3-Generation.json",
+      "sha256": "ee43b84e6aa93b77cf3fb12f23df2b8229edef2974f5ec29bdd9411eb14ce3cd",
+      "size": 34106
+    },
+    {
+      "original": "Units/EarlyMedieval/MailSpearman/SourceArt/Before-Fixed-Grip-v3-Validation.json",
+      "archived": "Units/EarlyMedieval/MailSpearman/_TO BE DELETED/SourceArt/Before-Fixed-Grip-v3-Validation.json",
+      "sha256": "1fb4c846462378c3f98335100fc38fccc6f4194d27ae480c98fbb7af64b80ad3",
+      "size": 16680
+    },
+    {
+      "original": "Units/EarlyMedieval/MailSpearman/SourceArt/Before-Forward-v7-animations.json",
+      "archived": "Units/EarlyMedieval/MailSpearman/_TO BE DELETED/SourceArt/Before-Forward-v7-animations.json",
+      "sha256": "9d451c8d3bf5988a1affa3088b3aef4a7a488711aff53b378ccd2ad4d3e31862",
+      "size": 18311
+    },
+    {
+      "original": "Units/EarlyMedieval/MailSpearman/SourceArt/Before-Forward-v7-Generation.json",
+      "archived": "Units/EarlyMedieval/MailSpearman/_TO BE DELETED/SourceArt/Before-Forward-v7-Generation.json",
+      "sha256": "18bd3c7e2f4990354bc1c8e4aaa2e99ed0a96a65e3c630b4556eff7e0cb30883",
+      "size": 60868
+    },
+    {
+      "original": "Units/EarlyMedieval/MailSpearman/SourceArt/Before-Forward-v7-Validation.json",
+      "archived": "Units/EarlyMedieval/MailSpearman/_TO BE DELETED/SourceArt/Before-Forward-v7-Validation.json",
+      "sha256": "c2bf882b6f500aa68399cbb33996e672577cf445f0c59926e126d599fa162a28",
+      "size": 17154
+    },
+    {
+      "original": "Units/EarlyMedieval/MailSpearman/SourceArt/Before-Overhead-animations.json",
+      "archived": "Units/EarlyMedieval/MailSpearman/_TO BE DELETED/SourceArt/Before-Overhead-animations.json",
+      "sha256": "2d73e024a5c98959427085e9737bdbb86ea87088ec02758ed4c9375dfb6cb9dd",
+      "size": 1203
+    },
+    {
+      "original": "Units/EarlyMedieval/MailSpearman/SourceArt/Before-Rebuild-v6-animations.json",
+      "archived": "Units/EarlyMedieval/MailSpearman/_TO BE DELETED/SourceArt/Before-Rebuild-v6-animations.json",
+      "sha256": "881e4858c24f44199fdd175241892e5ae01ef9e3d82e4eee579ddc7f52cad7ee",
+      "size": 21465
+    },
+    {
+      "original": "Units/EarlyMedieval/MailSpearman/SourceArt/Before-Rebuild-v6-Generation.json",
+      "archived": "Units/EarlyMedieval/MailSpearman/_TO BE DELETED/SourceArt/Before-Rebuild-v6-Generation.json",
+      "sha256": "70052a757007c8d7b02c68a6e807b2666eb4fbf3ce8b2016cbfeb6b2ace3bdb3",
+      "size": 54371
+    },
+    {
+      "original": "Units/EarlyMedieval/MailSpearman/SourceArt/Before-Rebuild-v6-Validation.json",
+      "archived": "Units/EarlyMedieval/MailSpearman/_TO BE DELETED/SourceArt/Before-Rebuild-v6-Validation.json",
+      "sha256": "5e36e38b859e9e7c9fc4184d291c7ad07c99bfde56a4e56c1bcb2619874279fa",
+      "size": 13910
+    },
+    {
+      "original": "Units/EarlyMedieval/MailSpearman/SourceArt/Before-Rig-v5-animations.json",
+      "archived": "Units/EarlyMedieval/MailSpearman/_TO BE DELETED/SourceArt/Before-Rig-v5-animations.json",
+      "sha256": "c7ffa6889f259672f139f46a6764757221a273948846e79e700ee8afd335a026",
+      "size": 17973
+    },
+    {
+      "original": "Units/EarlyMedieval/MailSpearman/SourceArt/Before-Rig-v5-Generation.json",
+      "archived": "Units/EarlyMedieval/MailSpearman/_TO BE DELETED/SourceArt/Before-Rig-v5-Generation.json",
+      "sha256": "e438dc28bc0b1db54fe87ec03b182e1db37ab4f1295ad99f74b1ab6731adbed5",
+      "size": 39237
+    },
+    {
+      "original": "Units/EarlyMedieval/MailSpearman/SourceArt/Before-Rig-v5-Validation.json",
+      "archived": "Units/EarlyMedieval/MailSpearman/_TO BE DELETED/SourceArt/Before-Rig-v5-Validation.json",
+      "sha256": "3361c083f8a9110d749bb4af056ec72a76233b23c0fac5c79df1402148fdbf81",
+      "size": 16757
+    },
+    {
+      "original": "Units/EarlyMedieval/MailSpearman/SourceArt/Before-Thrust-v2-Animation-Generation.json",
+      "archived": "Units/EarlyMedieval/MailSpearman/_TO BE DELETED/SourceArt/Before-Thrust-v2-Animation-Generation.json",
+      "sha256": "b4526c77342d5594302f4840b00f46f710b5422c2c26e856faf74c29c64d6cd9",
+      "size": 25121
+    },
+    {
+      "original": "Units/EarlyMedieval/MailSpearman/SourceArt/Before-Thrust-v2-animations.json",
+      "archived": "Units/EarlyMedieval/MailSpearman/_TO BE DELETED/SourceArt/Before-Thrust-v2-animations.json",
+      "sha256": "e8e6a983a800ede6dce1cd2cb93d675f73feb89c70495e7c733f50174fdaf7a6",
+      "size": 17957
+    },
+    {
+      "original": "Units/EarlyMedieval/MailSpearman/SourceArt/Before-Thrust-v2-Generation.json",
+      "archived": "Units/EarlyMedieval/MailSpearman/_TO BE DELETED/SourceArt/Before-Thrust-v2-Generation.json",
+      "sha256": "0443a1a96b764f1db9626c4f145c6f26bc8be6c4079c1909f01c9ccaf93ffc4d",
+      "size": 29417
+    },
+    {
+      "original": "Units/EarlyMedieval/MailSpearman/SourceArt/Before-Thrust-v2-Validation.json",
+      "archived": "Units/EarlyMedieval/MailSpearman/_TO BE DELETED/SourceArt/Before-Thrust-v2-Validation.json",
+      "sha256": "509a72c4bad6be01b6c8a2025ac7633c569db9fc43232e658b0ad3a950d81dc7",
+      "size": 16589
+    },
+    {
+      "original": "Units/EarlyMedieval/MailSpearman/SourceArt/compose_animations.py",
+      "archived": "Units/EarlyMedieval/MailSpearman/_TO BE DELETED/SourceArt/compose_animations.py",
+      "sha256": "699de48e96bd037a4dbd79e19e26022caca87582cfbf8fd672d6632322e48dba",
+      "size": 6892
+    },
+    {
+      "original": "Units/EarlyMedieval/MailSpearman/SourceArt/compose_thrust_v2.py",
+      "archived": "Units/EarlyMedieval/MailSpearman/_TO BE DELETED/SourceArt/compose_thrust_v2.py",
+      "sha256": "ba92fdbba5c77e6110867bb17ce0392d8051f8bde25fd4c29f83ae1f3f508e98",
+      "size": 2914
+    },
+    {
+      "original": "Units/EarlyMedieval/MailSpearman/SourceArt/compose_thrust_v3.py",
+      "archived": "Units/EarlyMedieval/MailSpearman/_TO BE DELETED/SourceArt/compose_thrust_v3.py",
+      "sha256": "a15d17795d05a1b5b9ef1772318fc918cfd203d3e14514936bde4b43f1d8ba34",
+      "size": 2958
+    },
+    {
+      "original": "Units/EarlyMedieval/MailSpearman/SourceArt/compose_thrust_v4.py",
+      "archived": "Units/EarlyMedieval/MailSpearman/_TO BE DELETED/SourceArt/compose_thrust_v4.py",
+      "sha256": "dc6330ec4bc1e09c95a11868b387ab29396c06b84c3e04262285c351e438645c",
+      "size": 3118
+    },
+    {
+      "original": "Units/EarlyMedieval/MailSpearman/SourceArt/compose_thrust_v6.py",
+      "archived": "Units/EarlyMedieval/MailSpearman/_TO BE DELETED/SourceArt/compose_thrust_v6.py",
+      "sha256": "8b2c67aebcb866516f3a35043c337c6af687cafcfcc868965e5c2348bcdd850d",
+      "size": 3450
+    },
+    {
+      "original": "Units/EarlyMedieval/MailSpearman/SourceArt/compose_thrust_v7.py",
+      "archived": "Units/EarlyMedieval/MailSpearman/_TO BE DELETED/SourceArt/compose_thrust_v7.py",
+      "sha256": "21f45b8d322b06e78bd91cb4077f770610d759d31aee6af6c67eb4854119da9e",
+      "size": 3440
+    },
+    {
+      "original": "Units/EarlyMedieval/MailSpearman/SourceArt/Composition.json",
+      "archived": "Units/EarlyMedieval/MailSpearman/_TO BE DELETED/SourceArt/Composition.json",
+      "sha256": "da78df39fd7d88683e8e7c7befd28e604632a3732eb5592b0f0c06b7f28a919f",
+      "size": 30311
+    },
+    {
+      "original": "Units/EarlyMedieval/MailSpearman/SourceArt/Forward-Pose-Composition-v8.json",
+      "archived": "Units/EarlyMedieval/MailSpearman/_TO BE DELETED/SourceArt/Forward-Pose-Composition-v8.json",
+      "sha256": "17afbc4bddcdda9a53c6b31ba8453e3bf8e0f2e23f8de63aee22e2bc83c9a5f2",
+      "size": 4100
+    },
+    {
+      "original": "Units/EarlyMedieval/MailSpearman/SourceArt/Native-Attack-Fixed-Grip-v3.png",
+      "archived": "Units/EarlyMedieval/MailSpearman/_TO BE DELETED/SourceArt/Native-Attack-Fixed-Grip-v3.png",
+      "sha256": "845fda5626a8eb066888bd3336ff9deda0e5d5e27d1083eb1a6779e093609d51",
+      "size": 1773407
+    },
+    {
+      "original": "Units/EarlyMedieval/MailSpearman/SourceArt/Native-Attack-Fixed-Grip-v4.png",
+      "archived": "Units/EarlyMedieval/MailSpearman/_TO BE DELETED/SourceArt/Native-Attack-Fixed-Grip-v4.png",
+      "sha256": "4f2f6d042bf4233c0a84a60ce151c9316c86b8a29bff7d016f127daa5e9206e8",
+      "size": 2003980
+    },
+    {
+      "original": "Units/EarlyMedieval/MailSpearman/SourceArt/Native-Attack-Forward-v7.png",
+      "archived": "Units/EarlyMedieval/MailSpearman/_TO BE DELETED/SourceArt/Native-Attack-Forward-v7.png",
+      "sha256": "2fb05d110da02326012df9455b062fc2ebbf02d381e50084ae9663038c039aa6",
+      "size": 1719095
+    },
+    {
+      "original": "Units/EarlyMedieval/MailSpearman/SourceArt/Native-Attack-Rebuilt-v6.png",
+      "archived": "Units/EarlyMedieval/MailSpearman/_TO BE DELETED/SourceArt/Native-Attack-Rebuilt-v6.png",
+      "sha256": "595a9dc9f191c77abbc0d25f0138320ae5b6879ca8ecf79f2336a544b79685d7",
+      "size": 1996963
+    },
+    {
+      "original": "Units/EarlyMedieval/MailSpearman/SourceArt/Native-Attack-Thrust-v2.png",
+      "archived": "Units/EarlyMedieval/MailSpearman/_TO BE DELETED/SourceArt/Native-Attack-Thrust-v2.png",
+      "sha256": "9e0ba125f85c8bf45b383fcc37f5b7d531ebecc1e6df2a54f3143c8a96ef3332",
+      "size": 1905970
+    },
+    {
+      "original": "Units/EarlyMedieval/MailSpearman/SourceArt/Native-Attack-v1.png",
+      "archived": "Units/EarlyMedieval/MailSpearman/_TO BE DELETED/SourceArt/Native-Attack-v1.png",
+      "sha256": "5b3ba519faf4cdab698e4dbf6d5e771617c4145b78036b481cc92e7681c9699f",
+      "size": 1977472
+    },
+    {
+      "original": "Units/EarlyMedieval/MailSpearman/SourceArt/Native-Charge-Attack-Fixed-Grip-v3.png",
+      "archived": "Units/EarlyMedieval/MailSpearman/_TO BE DELETED/SourceArt/Native-Charge-Attack-Fixed-Grip-v3.png",
+      "sha256": "e35e4c144d01123a03ddab72f8ffd1be1922376f2449989c401592398971a8a5",
+      "size": 1756574
+    },
+    {
+      "original": "Units/EarlyMedieval/MailSpearman/SourceArt/Native-Charge-Attack-Fixed-Grip-v4.png",
+      "archived": "Units/EarlyMedieval/MailSpearman/_TO BE DELETED/SourceArt/Native-Charge-Attack-Fixed-Grip-v4.png",
+      "sha256": "089dd8a95307163d7501e72357b746390075ed08e1f3ebfa0dfbc07cea5120f6",
+      "size": 2092206
+    },
+    {
+      "original": "Units/EarlyMedieval/MailSpearman/SourceArt/Native-Charge-Attack-Forward-v7.png",
+      "archived": "Units/EarlyMedieval/MailSpearman/_TO BE DELETED/SourceArt/Native-Charge-Attack-Forward-v7.png",
+      "sha256": "f68937651bbc3755c3db18df305e8b16e0e1154ceb3691006b035baac4b977e0",
+      "size": 1691701
+    },
+    {
+      "original": "Units/EarlyMedieval/MailSpearman/SourceArt/Native-Charge-Attack-Rebuilt-v6.png",
+      "archived": "Units/EarlyMedieval/MailSpearman/_TO BE DELETED/SourceArt/Native-Charge-Attack-Rebuilt-v6.png",
+      "sha256": "3d3de767b11e5afbdc8705378b95e7a34317450b548b2ac776e1942ba9fbbcbc",
+      "size": 2017837
+    },
+    {
+      "original": "Units/EarlyMedieval/MailSpearman/SourceArt/Native-Charge-Attack-Thrust-v2.png",
+      "archived": "Units/EarlyMedieval/MailSpearman/_TO BE DELETED/SourceArt/Native-Charge-Attack-Thrust-v2.png",
+      "sha256": "01e74922f9809cb4559e99dbb2a86fbf6d638c258efd8de27ecc4ae47ae5230f",
+      "size": 1963259
+    },
+    {
+      "original": "Units/EarlyMedieval/MailSpearman/SourceArt/Native-Charge-Attack-v1.png",
+      "archived": "Units/EarlyMedieval/MailSpearman/_TO BE DELETED/SourceArt/Native-Charge-Attack-v1.png",
+      "sha256": "5bee6339e6081aba69001fda360bb47708e4b48333d2a2055711aeda177722c2",
+      "size": 1994787
+    },
+    {
+      "original": "Units/EarlyMedieval/MailSpearman/SourceArt/Native-Charge-v1.png",
+      "archived": "Units/EarlyMedieval/MailSpearman/_TO BE DELETED/SourceArt/Native-Charge-v1.png",
+      "sha256": "9f9eac27a40f21732fcb1ee92d6c9ccb60506c4d6b244b41ab64f310828b9211",
+      "size": 2038862
+    },
+    {
+      "original": "Units/EarlyMedieval/MailSpearman/SourceArt/Native-Charged-v1.png",
+      "archived": "Units/EarlyMedieval/MailSpearman/_TO BE DELETED/SourceArt/Native-Charged-v1.png",
+      "sha256": "ef60893a85fefc9f43ebe1b4a4a9dba7343277e041563d6a8fce5d730e9f3ada",
+      "size": 2140278
+    },
+    {
+      "original": "Units/EarlyMedieval/MailSpearman/SourceArt/Native-Death-Back-v1.png",
+      "archived": "Units/EarlyMedieval/MailSpearman/_TO BE DELETED/SourceArt/Native-Death-Back-v1.png",
+      "sha256": "9c363a7cd20f2efd3b3cb8184a327ea0a1fd6bdcfefc8155e564c2975577e280",
+      "size": 2017984
+    },
+    {
+      "original": "Units/EarlyMedieval/MailSpearman/SourceArt/Native-Death-Side-v1.png",
+      "archived": "Units/EarlyMedieval/MailSpearman/_TO BE DELETED/SourceArt/Native-Death-Side-v1.png",
+      "sha256": "f8014473b6cd7823672636331752c7467be71c9588f4798a9d217dd81a63f66d",
+      "size": 1993566
+    },
+    {
+      "original": "Units/EarlyMedieval/MailSpearman/SourceArt/Native-Hit-v1.png",
+      "archived": "Units/EarlyMedieval/MailSpearman/_TO BE DELETED/SourceArt/Native-Hit-v1.png",
+      "sha256": "8d0fbef9f7f4ce9877416b25c60b739cfb8cf5baf8430fc8b583d483eb349b81",
+      "size": 1943230
+    },
+    {
+      "original": "Units/EarlyMedieval/MailSpearman/SourceArt/Native-Idle-Animated-v1.png",
+      "archived": "Units/EarlyMedieval/MailSpearman/_TO BE DELETED/SourceArt/Native-Idle-Animated-v1.png",
+      "sha256": "882d7d29ec487199db59182e2ce66684d047221af1d152ecf14dc31569b7aaca",
+      "size": 1958025
+    },
+    {
+      "original": "Units/EarlyMedieval/MailSpearman/SourceArt/Native-Idle-Overhead-v2.png",
+      "archived": "Units/EarlyMedieval/MailSpearman/_TO BE DELETED/SourceArt/Native-Idle-Overhead-v2.png",
+      "sha256": "9556dca91383e806fe7a42454de9cb9c86ccf6b205de6297c2e9ab94e7126e26",
+      "size": 780445
+    },
+    {
+      "original": "Units/EarlyMedieval/MailSpearman/SourceArt/Native-Idle-v1.png",
+      "archived": "Units/EarlyMedieval/MailSpearman/_TO BE DELETED/SourceArt/Native-Idle-v1.png",
+      "sha256": "a7fee1885754f4a9580e67206067a4252fd603b87a0bb977cf2140a978b65a2a",
+      "size": 759298
+    },
+    {
+      "original": "Units/EarlyMedieval/MailSpearman/SourceArt/Native-Walk-v1.png",
+      "archived": "Units/EarlyMedieval/MailSpearman/_TO BE DELETED/SourceArt/Native-Walk-v1.png",
+      "sha256": "64bd104081433f1e1e056469f0392c4c1911426afd95b3d49175b95fa7e10759",
+      "size": 2072028
+    },
+    {
+      "original": "Units/EarlyMedieval/MailSpearman/SourceArt/orient_attacks_v8.py",
+      "archived": "Units/EarlyMedieval/MailSpearman/_TO BE DELETED/SourceArt/orient_attacks_v8.py",
+      "sha256": "42ab1ddbccdce9ac54080034e5fd9b673b05374cff5f069ed9947f5c05425f76",
+      "size": 2368
+    },
+    {
+      "original": "Units/EarlyMedieval/MailSpearman/SourceArt/Rig-Arm-Crop.jpg",
+      "archived": "Units/EarlyMedieval/MailSpearman/_TO BE DELETED/SourceArt/Rig-Arm-Crop.jpg",
+      "sha256": "0d71c5f491daf272b0fa457896d50d7faf5c766375fcd795834eae7c6efa04b1",
+      "size": 34757
+    },
+    {
+      "original": "Units/EarlyMedieval/MailSpearman/SourceArt/rig_thrusts_v5.py",
+      "archived": "Units/EarlyMedieval/MailSpearman/_TO BE DELETED/SourceArt/rig_thrusts_v5.py",
+      "sha256": "15c986f20e5cf956682f98ce84624ac407f66c5f893cc963bdde6a29cab5c0ce",
+      "size": 6121
+    },
+    {
+      "original": "Units/EarlyMedieval/MailSpearman/SourceArt/Thrust-Composition-v2.json",
+      "archived": "Units/EarlyMedieval/MailSpearman/_TO BE DELETED/SourceArt/Thrust-Composition-v2.json",
+      "sha256": "9cbd5d72fb2092c01561e3bae0192e1e25105d183decb98f2da0ef67e860b3b4",
+      "size": 4124
+    },
+    {
+      "original": "Units/EarlyMedieval/MailSpearman/SourceArt/Thrust-Composition-v4.json",
+      "archived": "Units/EarlyMedieval/MailSpearman/_TO BE DELETED/SourceArt/Thrust-Composition-v4.json",
+      "sha256": "1cd9cd9916acc6c3535cc1e85f2dd5a8641e9e52996ceb5bb741def6f9e5cf3b",
+      "size": 4140
+    },
+    {
+      "original": "Units/EarlyMedieval/MailSpearman/SourceArt/Thrust-Composition-v6.json",
+      "archived": "Units/EarlyMedieval/MailSpearman/_TO BE DELETED/SourceArt/Thrust-Composition-v6.json",
+      "sha256": "b0b5214db0400c4ec151914317163a447ab3ed907e6b3a0942b386a1ffca6256",
+      "size": 4032
+    },
+    {
+      "original": "Units/EarlyMedieval/MailSpearman/SourceArt/Thrust-Generation-v2.json",
+      "archived": "Units/EarlyMedieval/MailSpearman/_TO BE DELETED/SourceArt/Thrust-Generation-v2.json",
+      "sha256": "a2b2926285b5849b90ba972010dec95eeff15f71278c326209e410ca0ffd10eb",
+      "size": 4599
+    },
+    {
+      "original": "Units/EarlyMedieval/MailSpearman/SourceArt/Thrust-Generation-v3.json",
+      "archived": "Units/EarlyMedieval/MailSpearman/_TO BE DELETED/SourceArt/Thrust-Generation-v3.json",
+      "sha256": "5db1442ddd88ac2777040f6ece3d3d163f5dbe7f5293f317acb645e9254a7e01",
+      "size": 4509
+    },
+    {
+      "original": "Units/EarlyMedieval/MailSpearman/SourceArt/Thrust-Generation-v4.json",
+      "archived": "Units/EarlyMedieval/MailSpearman/_TO BE DELETED/SourceArt/Thrust-Generation-v4.json",
+      "sha256": "206b64cbc6eb6b77c4ee45719c84d51f880343b2f8634a414db34738f35f381b",
+      "size": 4891
+    },
+    {
+      "original": "Units/EarlyMedieval/MailSpearman/SourceArt/Thrust-Generation-v6.json",
+      "archived": "Units/EarlyMedieval/MailSpearman/_TO BE DELETED/SourceArt/Thrust-Generation-v6.json",
+      "sha256": "631334b2b858aca9d84f8e07d16dc64660dedb8ae57a6e70a2a22b8a64a675e5",
+      "size": 6111
+    },
+    {
+      "original": "Units/EarlyMedieval/MailSpearman/SourceArt/Thrust-Generation-v7.json",
+      "archived": "Units/EarlyMedieval/MailSpearman/_TO BE DELETED/SourceArt/Thrust-Generation-v7.json",
+      "sha256": "e4eed95ee97fb8406a2673de84f2076545005135c565aad06c455a49ed19af06",
+      "size": 4018
+    },
+    {
+      "original": "Units/EarlyMedieval/MailSpearman/SourceArt/Thrust-Rig-v5/Body.png",
+      "archived": "Units/EarlyMedieval/MailSpearman/_TO BE DELETED/SourceArt/Thrust-Rig-v5/Body.png",
+      "sha256": "e7605b414e24328adfc83bd157a7c8b6e13109fcdcd9b3f64413bf195af703d8",
+      "size": 329182
+    },
+    {
+      "original": "Units/EarlyMedieval/MailSpearman/SourceArt/Thrust-Rig-v5/Forearm.png",
+      "archived": "Units/EarlyMedieval/MailSpearman/_TO BE DELETED/SourceArt/Thrust-Rig-v5/Forearm.png",
+      "sha256": "f40658710d65dcd21658ba1393b252dfd39c660983a08f7b866d409e949779da",
+      "size": 320784
+    },
+    {
+      "original": "Units/EarlyMedieval/MailSpearman/SourceArt/Thrust-Rig-v5/Spear-And-Hand.png",
+      "archived": "Units/EarlyMedieval/MailSpearman/_TO BE DELETED/SourceArt/Thrust-Rig-v5/Spear-And-Hand.png",
+      "sha256": "a62741165dfa2ba2a141f182eb40bee946e7576e428eb1f1a9029bcbcb905cb7",
+      "size": 325703
+    },
+    {
+      "original": "Units/EarlyMedieval/MailSpearman/SourceArt/Thrust-Rig-v5/Upper-Arm.png",
+      "archived": "Units/EarlyMedieval/MailSpearman/_TO BE DELETED/SourceArt/Thrust-Rig-v5/Upper-Arm.png",
+      "sha256": "06c47608f226d1bbc544da745d4a1a964d7b3cae64b2a0e4feadcb9359fcde0d",
+      "size": 320719
+    },
+    {
+      "original": "Units/EarlyMedieval/MailSpearman/SourceArt/Thrust-Rig-v5.json",
+      "archived": "Units/EarlyMedieval/MailSpearman/_TO BE DELETED/SourceArt/Thrust-Rig-v5.json",
+      "sha256": "c21afb0d4ab9f6026e8cf6690bcd39221be99c50c774bf9939ded642be6030d3",
+      "size": 13816
+    },
+    {
+      "original": "Units/EarlyMedieval/MailSpearman/SourceArt/Thrust-v2-Unchanged.json",
+      "archived": "Units/EarlyMedieval/MailSpearman/_TO BE DELETED/SourceArt/Thrust-v2-Unchanged.json",
+      "sha256": "ab8366723de89ddde7c089dd70064fcfedf9a8e6230d97790aedbf71ba18362a",
+      "size": 630
+    },
+    {
+      "original": "Units/EarlyMedieval/MailSpearman/Validation.json",
+      "archived": "Units/EarlyMedieval/MailSpearman/_TO BE DELETED/Validation.json",
+      "sha256": "3a294b051128020c95eeb4df28e9a9e9423c61fa8635d1fb1b84f345cfaaca4c",
+      "size": 17282
+    }
+  ]
+}

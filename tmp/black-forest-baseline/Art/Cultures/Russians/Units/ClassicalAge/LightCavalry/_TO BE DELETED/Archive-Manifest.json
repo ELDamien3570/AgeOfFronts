@@ -1,0 +1,210 @@
+{
+  "folder": "Units/ClassicalAge/LightCavalry/_TO BE DELETED",
+  "created": "2026-10-09T03:15:53.711Z",
+  "files": [
+    {
+      "original": "Units/ClassicalAge/LightCavalry/Browser-Review.json",
+      "archived": "Units/ClassicalAge/LightCavalry/_TO BE DELETED/Browser-Review.json",
+      "sha256": "a871f2df085d1a8edc3228873ece70a9cc8561a8b727f791b0a4f7da95837f2c",
+      "size": 404
+    },
+    {
+      "original": "Units/ClassicalAge/LightCavalry/Generation.json",
+      "archived": "Units/ClassicalAge/LightCavalry/_TO BE DELETED/Generation.json",
+      "sha256": "7f268beddc5cee123c8b9d045c37fef4a62ad4fe27e02e5e9d1ce0702c3b3e47",
+      "size": 24319
+    },
+    {
+      "original": "Units/ClassicalAge/LightCavalry/Idle-v1.png",
+      "archived": "Units/ClassicalAge/LightCavalry/_TO BE DELETED/Idle-v1.png",
+      "sha256": "79705927ee6ca06a6dd80a5cb908772f7467536eeb07ab1e7a8e431d70bafb62",
+      "size": 854989
+    },
+    {
+      "original": "Units/ClassicalAge/LightCavalry/README.md",
+      "archived": "Units/ClassicalAge/LightCavalry/_TO BE DELETED/README.md",
+      "sha256": "d6cb2322f51facc6a0de61b8a3aae442a754534ef0aad630c1ef523750da4388",
+      "size": 1353
+    },
+    {
+      "original": "Units/ClassicalAge/LightCavalry/Review-Animations-v1.png",
+      "archived": "Units/ClassicalAge/LightCavalry/_TO BE DELETED/Review-Animations-v1.png",
+      "sha256": "519fe8a4f91abf47fb5d99467081cc148a4d11be6115948282e09abe69811025",
+      "size": 77906
+    },
+    {
+      "original": "Units/ClassicalAge/LightCavalry/Review-Idle-v1.png",
+      "archived": "Units/ClassicalAge/LightCavalry/_TO BE DELETED/Review-Idle-v1.png",
+      "sha256": "f53e32ddebaa236b936a3cc11c61a0384c171d40fb26360e73203d707a814bde",
+      "size": 71830
+    },
+    {
+      "original": "Units/ClassicalAge/LightCavalry/SourceArt/Animation-Plan.json",
+      "archived": "Units/ClassicalAge/LightCavalry/_TO BE DELETED/SourceArt/Animation-Plan.json",
+      "sha256": "7d78202459d3b489431d766062804dd830fffe1f0a7fd035648762d27b679979",
+      "size": 4261
+    },
+    {
+      "original": "Units/ClassicalAge/LightCavalry/SourceArt/Approved-Idle.json",
+      "archived": "Units/ClassicalAge/LightCavalry/_TO BE DELETED/SourceArt/Approved-Idle.json",
+      "sha256": "b1c909d28194f4ff31052a1b64e2d2f400b80d0c9ffa803e821a158831037889",
+      "size": 189
+    },
+    {
+      "original": "Units/ClassicalAge/LightCavalry/SourceArt/Before-Animation-animations.json",
+      "archived": "Units/ClassicalAge/LightCavalry/_TO BE DELETED/SourceArt/Before-Animation-animations.json",
+      "sha256": "9df5d757a3d9d1847fe9cab8fddf739aef6b92df9eb672c9d191c273be30e8db",
+      "size": 1676
+    },
+    {
+      "original": "Units/ClassicalAge/LightCavalry/SourceArt/Before-Animation-Browser-Review.json",
+      "archived": "Units/ClassicalAge/LightCavalry/_TO BE DELETED/SourceArt/Before-Animation-Browser-Review.json",
+      "sha256": "da1f97658ab9a7d99de1ac7805dcd7623705e8b49a4c6b25eef57203cf11c197",
+      "size": 249
+    },
+    {
+      "original": "Units/ClassicalAge/LightCavalry/SourceArt/Before-Animation-Validation.json",
+      "archived": "Units/ClassicalAge/LightCavalry/_TO BE DELETED/SourceArt/Before-Animation-Validation.json",
+      "sha256": "491dbebe1387f6fd9ec78327d747e7e661746a63316c42c49c84b8c6a30468eb",
+      "size": 372
+    },
+    {
+      "original": "Units/ClassicalAge/LightCavalry/SourceArt/compose_animations.py",
+      "archived": "Units/ClassicalAge/LightCavalry/_TO BE DELETED/SourceArt/compose_animations.py",
+      "sha256": "e73374e91f8c85bedb3daec596e15a7dced0aba398ff4375c687872011707c40",
+      "size": 8477
+    },
+    {
+      "original": "Units/ClassicalAge/LightCavalry/SourceArt/Composition.json",
+      "archived": "Units/ClassicalAge/LightCavalry/_TO BE DELETED/SourceArt/Composition.json",
+      "sha256": "5a1d8483e27149e1734629a905b356e436aae66bd98df6a1b471695b7ffbab3a",
+      "size": 20119
+    },
+    {
+      "original": "Units/ClassicalAge/LightCavalry/SourceArt/Generation-attack-v1.json",
+      "archived": "Units/ClassicalAge/LightCavalry/_TO BE DELETED/SourceArt/Generation-attack-v1.json",
+      "sha256": "4290806dfebef4bb3972fac2ba2ebc20dee01df38906d6fee4882abda438313c",
+      "size": 2157
+    },
+    {
+      "original": "Units/ClassicalAge/LightCavalry/SourceArt/Generation-charge-attack-v1.json",
+      "archived": "Units/ClassicalAge/LightCavalry/_TO BE DELETED/SourceArt/Generation-charge-attack-v1.json",
+      "sha256": "885208a5c82908ee2fdc7f5c089b51ee070fd1d86bfc9ce3b7fcb77dd25d5800",
+      "size": 2192
+    },
+    {
+      "original": "Units/ClassicalAge/LightCavalry/SourceArt/Generation-charge-v1.json",
+      "archived": "Units/ClassicalAge/LightCavalry/_TO BE DELETED/SourceArt/Generation-charge-v1.json",
+      "sha256": "faa2b8fb8fac1ca8dec001e0be7fe1975029064e045f37ae53f5e47d191abec2",
+      "size": 2141
+    },
+    {
+      "original": "Units/ClassicalAge/LightCavalry/SourceArt/Generation-charged-v1.json",
+      "archived": "Units/ClassicalAge/LightCavalry/_TO BE DELETED/SourceArt/Generation-charged-v1.json",
+      "sha256": "e5d55811a979a493ee0b8f951769f79f658b44907fe53ddcfeb4bd7e863577e5",
+      "size": 2167
+    },
+    {
+      "original": "Units/ClassicalAge/LightCavalry/SourceArt/Generation-death-thrown-v1.json",
+      "archived": "Units/ClassicalAge/LightCavalry/_TO BE DELETED/SourceArt/Generation-death-thrown-v1.json",
+      "sha256": "5f780d3bac504f9d7049628fee128ed0e8bd1257f6d686e17378ef43199abaaf",
+      "size": 2171
+    },
+    {
+      "original": "Units/ClassicalAge/LightCavalry/SourceArt/Generation-death-v1.json",
+      "archived": "Units/ClassicalAge/LightCavalry/_TO BE DELETED/SourceArt/Generation-death-v1.json",
+      "sha256": "72c114fcaa34fa02d6d029cdc0d82772190a22f01c07c9ed998e6467f2759d96",
+      "size": 2163
+    },
+    {
+      "original": "Units/ClassicalAge/LightCavalry/SourceArt/Generation-death-v2.json",
+      "archived": "Units/ClassicalAge/LightCavalry/_TO BE DELETED/SourceArt/Generation-death-v2.json",
+      "sha256": "b8b75e41c9b86171a8cf998834b66d2bcf048c94fa869274fc91457645880c26",
+      "size": 1454
+    },
+    {
+      "original": "Units/ClassicalAge/LightCavalry/SourceArt/Generation-hit-v1.json",
+      "archived": "Units/ClassicalAge/LightCavalry/_TO BE DELETED/SourceArt/Generation-hit-v1.json",
+      "sha256": "f4b789d2ad57057fa960bfc99bab385a142c4182dde5bd2338bb7a77fccf2268",
+      "size": 2126
+    },
+    {
+      "original": "Units/ClassicalAge/LightCavalry/SourceArt/Generation-idle-v1.json",
+      "archived": "Units/ClassicalAge/LightCavalry/_TO BE DELETED/SourceArt/Generation-idle-v1.json",
+      "sha256": "03d4d24eda9b14d154697c290332b4a682b46e1f628fa415f85316d29dbf469a",
+      "size": 2158
+    },
+    {
+      "original": "Units/ClassicalAge/LightCavalry/SourceArt/Generation-running-v1.json",
+      "archived": "Units/ClassicalAge/LightCavalry/_TO BE DELETED/SourceArt/Generation-running-v1.json",
+      "sha256": "81ac4d4b7fbd5ce0abc8bf689c74aef472bb3ccddaef9cf1c909461ce52656a9",
+      "size": 2146
+    },
+    {
+      "original": "Units/ClassicalAge/LightCavalry/SourceArt/Native-Attack-v1.png",
+      "archived": "Units/ClassicalAge/LightCavalry/_TO BE DELETED/SourceArt/Native-Attack-v1.png",
+      "sha256": "037f1270606221a679565616d2afd838bde6a8d02ac2cb7d109a1eea2a6d7f48",
+      "size": 2009621
+    },
+    {
+      "original": "Units/ClassicalAge/LightCavalry/SourceArt/Native-Charge-Attack-v1.png",
+      "archived": "Units/ClassicalAge/LightCavalry/_TO BE DELETED/SourceArt/Native-Charge-Attack-v1.png",
+      "sha256": "983ed17b0d7de8102740c0d65501e178f5995673d2d54603c34ce068cc784bbe",
+      "size": 1991320
+    },
+    {
+      "original": "Units/ClassicalAge/LightCavalry/SourceArt/Native-Charge-v1.png",
+      "archived": "Units/ClassicalAge/LightCavalry/_TO BE DELETED/SourceArt/Native-Charge-v1.png",
+      "sha256": "6f3ea8e5b2cb35e9187252cc369735a237df4b30fb1507d7abc67251e84b8700",
+      "size": 1940726
+    },
+    {
+      "original": "Units/ClassicalAge/LightCavalry/SourceArt/Native-Charged-Impact-v1.png",
+      "archived": "Units/ClassicalAge/LightCavalry/_TO BE DELETED/SourceArt/Native-Charged-Impact-v1.png",
+      "sha256": "282931c2d8a5bd9b1f64442c6bd79a7875b9d21041b65673669c3b15cf823372",
+      "size": 2099434
+    },
+    {
+      "original": "Units/ClassicalAge/LightCavalry/SourceArt/Native-Death-Thrown-v1.png",
+      "archived": "Units/ClassicalAge/LightCavalry/_TO BE DELETED/SourceArt/Native-Death-Thrown-v1.png",
+      "sha256": "3199481c3f5d9b338b34d1725ecc0215f86d90ce9fa3a983763b72ab0ca337c6",
+      "size": 2131803
+    },
+    {
+      "original": "Units/ClassicalAge/LightCavalry/SourceArt/Native-Death-Together-v1.png",
+      "archived": "Units/ClassicalAge/LightCavalry/_TO BE DELETED/SourceArt/Native-Death-Together-v1.png",
+      "sha256": "a5201402fe5352c92d18fef59ea64b176b137dd55f03f3265699142a60b9ad6d",
+      "size": 2177044
+    },
+    {
+      "original": "Units/ClassicalAge/LightCavalry/SourceArt/Native-Death-Together-v2.png",
+      "archived": "Units/ClassicalAge/LightCavalry/_TO BE DELETED/SourceArt/Native-Death-Together-v2.png",
+      "sha256": "b2f6802c82b621f6eae84f0819db47a54af21986278ee1d29e405c770c688565",
+      "size": 2160167
+    },
+    {
+      "original": "Units/ClassicalAge/LightCavalry/SourceArt/Native-Hit-v1.png",
+      "archived": "Units/ClassicalAge/LightCavalry/_TO BE DELETED/SourceArt/Native-Hit-v1.png",
+      "sha256": "72b132eea250854fd1fff385d96d71308fcbd970c4c89fc61a48ed9c58fe7dc8",
+      "size": 1996283
+    },
+    {
+      "original": "Units/ClassicalAge/LightCavalry/SourceArt/Native-Idle-Animated-v1.png",
+      "archived": "Units/ClassicalAge/LightCavalry/_TO BE DELETED/SourceArt/Native-Idle-Animated-v1.png",
+      "sha256": "f440bad0392ed8d356e7e0d25bbdaec936408c2654b2e9c7b672b527f32c2400",
+      "size": 2025226
+    },
+    {
+      "original": "Units/ClassicalAge/LightCavalry/SourceArt/Native-Running-v1.png",
+      "archived": "Units/ClassicalAge/LightCavalry/_TO BE DELETED/SourceArt/Native-Running-v1.png",
+      "sha256": "99c9cd89b6dae92b5d0b1198e89e8e71881eae0e7f139418df64f3ed86cc0c63",
+      "size": 1913686
+    },
+    {
+      "original": "Units/ClassicalAge/LightCavalry/Validation.json",
+      "archived": "Units/ClassicalAge/LightCavalry/_TO BE DELETED/Validation.json",
+      "sha256": "a3595d01bd8dc405cd3fa6f5fb9e85c41d5d9c472e5d08cd3832b8f957ba8b54",
+      "size": 31835
+    }
+  ]
+}

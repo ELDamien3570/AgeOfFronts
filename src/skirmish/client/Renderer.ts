@@ -82,6 +82,8 @@ const SELECTED_UNIT_COLOR = "#c4ff36";
 export class Renderer {
   /** Optional client artwork pass; returning true replaces only this squad's artwork. */
   squadArtworkOverride?: (ctx: CanvasRenderingContext2D, squad: Snapshot["squads"][number], position: { x: number; y: number }, angle: number, tileSize: number, visualTick: number, worldPosition: { x: number; y: number }) => boolean;
+  squadProjectileArtwork?: (ctx: CanvasRenderingContext2D, projectile: import("../domain/Definitions").Projectile, tick: number, tileSize: number,
+    project: (x: number, y: number) => { x: number; y: number }) => boolean;
   /** True: individual art, false: formation icon, undefined: normal unit artwork. */
   squadArtworkDetailed?: (squad: Snapshot["squads"][number], tileSize: number) => boolean | undefined;
   squadArtworkHitTest?: (squad: Snapshot["squads"][number], world: {x:number;y:number}, tileSize: number) => number | undefined;
@@ -2032,6 +2034,7 @@ export class Renderer {
         impactVisuals = this.impacts.frames(impactTick),
         impactIds = new Set(impactVisuals.map((e) => e.id));
       for (const projectile of snapshot.expansion.projectiles) {
+        if (this.squadProjectileArtwork?.(ctx, projectile, visualTick, this.scale, (x, y) => this.screen(x, y))) continue;
         const interception = projectile.interception;
         if (interception && !projectile.impacted && visualTick >= interception.tick && visualTick < interception.impactTick) {
           const fraction = Math.max(0,Math.min(1,(visualTick-interception.tick)/(interception.impactTick-interception.tick)));

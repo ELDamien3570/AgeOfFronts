@@ -86,7 +86,8 @@
         3,
         4,
         5
-      ]
+      ],
+      "releaseFrame": 3
     },
     {
       "id": "running",
@@ -173,7 +174,8 @@
         3,
         4,
         5
-      ]
+      ],
+      "releaseFrame": 3
     },
     {
       "id": "attack",
@@ -349,7 +351,8 @@
         3,
         4,
         5
-      ]
+      ],
+      "releaseFrame": 3
     }
   ],
   "source": "Art/Cultures/Russians/Units/BronzeAge/RiverArcher/animations.json",

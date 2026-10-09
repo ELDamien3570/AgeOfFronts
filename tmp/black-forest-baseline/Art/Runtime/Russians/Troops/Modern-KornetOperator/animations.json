@@ -1,0 +1,338 @@
+{
+  "actorCount": 1,
+  "animations": [
+    {
+      "id": "idle",
+      "file": "idle.png",
+      "label": "Deployed idle",
+      "loop": true,
+      "scale": 1,
+      "durations": [
+        320,
+        320,
+        320,
+        320,
+        320,
+        320
+      ],
+      "description": "Kneeling at the deployed launcher with subtle breathing.",
+      "frameCount": 6,
+      "frames": [
+        {
+          "x": 0,
+          "y": 0,
+          "width": 128,
+          "height": 128,
+          "pivot": {
+            "x": 64.0,
+            "y": 64.0
+          }
+        },
+        {
+          "x": 128,
+          "y": 0,
+          "width": 128,
+          "height": 128,
+          "pivot": {
+            "x": 64.0,
+            "y": 64.0
+          }
+        },
+        {
+          "x": 256,
+          "y": 0,
+          "width": 128,
+          "height": 128,
+          "pivot": {
+            "x": 64.0,
+            "y": 64.0
+          }
+        },
+        {
+          "x": 384,
+          "y": 0,
+          "width": 128,
+          "height": 128,
+          "pivot": {
+            "x": 64.0,
+            "y": 64.0
+          }
+        },
+        {
+          "x": 512,
+          "y": 0,
+          "width": 128,
+          "height": 128,
+          "pivot": {
+            "x": 64.0,
+            "y": 64.0
+          }
+        },
+        {
+          "x": 640,
+          "y": 0,
+          "width": 128,
+          "height": 128,
+          "pivot": {
+            "x": 64.0,
+            "y": 64.0
+          }
+        }
+      ],
+      "sha256": "bb47518e351c9eb00c66d7a43f77c99f3e779423a53d4a0d346f201c3c2ac9e5",
+      "releaseFrame": 3
+    },
+    {
+      "id": "running",
+      "file": "running.png",
+      "label": "Packed movement",
+      "loop": true,
+      "scale": 1,
+      "durations": [
+        160,
+        160,
+        160,
+        160,
+        160,
+        160
+      ],
+      "description": "Walk with the launcher and folded tripod carried together.",
+      "frameCount": 6,
+      "frames": [
+        {
+          "x": 0,
+          "y": 0,
+          "width": 128,
+          "height": 128,
+          "pivot": {
+            "x": 64.0,
+            "y": 64.0
+          }
+        },
+        {
+          "x": 128,
+          "y": 0,
+          "width": 128,
+          "height": 128,
+          "pivot": {
+            "x": 64.0,
+            "y": 64.0
+          }
+        },
+        {
+          "x": 256,
+          "y": 0,
+          "width": 128,
+          "height": 128,
+          "pivot": {
+            "x": 64.0,
+            "y": 64.0
+          }
+        },
+        {
+          "x": 384,
+          "y": 0,
+          "width": 128,
+          "height": 128,
+          "pivot": {
+            "x": 64.0,
+            "y": 64.0
+          }
+        },
+        {
+          "x": 512,
+          "y": 0,
+          "width": 128,
+          "height": 128,
+          "pivot": {
+            "x": 64.0,
+            "y": 64.0
+          }
+        },
+        {
+          "x": 640,
+          "y": 0,
+          "width": 128,
+          "height": 128,
+          "pivot": {
+            "x": 64.0,
+            "y": 64.0
+          }
+        }
+      ],
+      "sha256": "3ab13e933b8af0c2083896ec41785a06b0387081a5bb78eb0f3870dfed4b52ca",
+      "releaseFrame": 3
+    },
+    {
+      "id": "attack",
+      "file": "attack.png",
+      "label": "Deployed firing",
+      "loop": false,
+      "scale": 1,
+      "durations": [
+        200,
+        180,
+        180,
+        100,
+        280,
+        320
+      ],
+      "description": "Fire from the planted tripod and remain at the controls.",
+      "frameCount": 6,
+      "frames": [
+        {
+          "x": 0,
+          "y": 0,
+          "width": 128,
+          "height": 128,
+          "pivot": {
+            "x": 64.0,
+            "y": 64.0
+          }
+        },
+        {
+          "x": 128,
+          "y": 0,
+          "width": 128,
+          "height": 128,
+          "pivot": {
+            "x": 64.0,
+            "y": 64.0
+          }
+        },
+        {
+          "x": 256,
+          "y": 0,
+          "width": 128,
+          "height": 128,
+          "pivot": {
+            "x": 64.0,
+            "y": 64.0
+          }
+        },
+        {
+          "x": 384,
+          "y": 0,
+          "width": 128,
+          "height": 128,
+          "pivot": {
+            "x": 64.0,
+            "y": 64.0
+          }
+        },
+        {
+          "x": 512,
+          "y": 0,
+          "width": 128,
+          "height": 128,
+          "pivot": {
+            "x": 64.0,
+            "y": 64.0
+          }
+        },
+        {
+          "x": 640,
+          "y": 0,
+          "width": 128,
+          "height": 128,
+          "pivot": {
+            "x": 64.0,
+            "y": 64.0
+          }
+        }
+      ],
+      "impactFrame": 3,
+      "sha256": "2d398237c57a240445ef8019e95e1f2dcae477cfd221a34e5d3e2e366f6544ba",
+      "releaseFrame": 3
+    },
+    {
+      "id": "death",
+      "file": "death.png",
+      "label": "Death - side fall",
+      "loop": false,
+      "scale": 1,
+      "durations": [
+        150,
+        170,
+        190,
+        210,
+        240,
+        400
+      ],
+      "description": "Collapse onto the side beside the launcher.",
+      "frameCount": 6,
+      "frames": [
+        {
+          "x": 0,
+          "y": 0,
+          "width": 128,
+          "height": 128,
+          "pivot": {
+            "x": 64.0,
+            "y": 64.0
+          }
+        },
+        {
+          "x": 128,
+          "y": 0,
+          "width": 128,
+          "height": 128,
+          "pivot": {
+            "x": 64.0,
+            "y": 64.0
+          }
+        },
+        {
+          "x": 256,
+          "y": 0,
+          "width": 128,
+          "height": 128,
+          "pivot": {
+            "x": 64.0,
+            "y": 64.0
+          }
+        },
+        {
+          "x": 384,
+          "y": 0,
+          "width": 128,
+          "height": 128,
+          "pivot": {
+            "x": 64.0,
+            "y": 64.0
+          }
+        },
+        {
+          "x": 512,
+          "y": 0,
+          "width": 128,
+          "height": 128,
+          "pivot": {
+            "x": 64.0,
+            "y": 64.0
+          }
+        },
+        {
+          "x": 640,
+          "y": 0,
+          "width": 128,
+          "height": 128,
+          "pivot": {
+            "x": 64.0,
+            "y": 64.0
+          }
+        }
+      ],
+      "sha256": "fef5e0b4eddb6b5b68f6c412cef84dc0846fc009d4ce33dfc25489ef68f2dd1c",
+      "releaseFrame": 3
+    }
+  ],
+  "source": "Art/Cultures/Russians/Units/Modern/KornetOperator/animations.json",
+  "metadataHash": "7f835a90ca75d3e15c5d8775de38657fe544af57bb276491f45daab00df8e6c6",
+  "hashes": {
+    "Art/Cultures/Russians/Units/Modern/KornetOperator/Idle-Animated-v1.png": "bb47518e351c9eb00c66d7a43f77c99f3e779423a53d4a0d346f201c3c2ac9e5",
+    "Art/Cultures/Russians/Units/Modern/KornetOperator/Walk-v2.png": "3ab13e933b8af0c2083896ec41785a06b0387081a5bb78eb0f3870dfed4b52ca",
+    "Art/Cultures/Russians/Units/Modern/KornetOperator/Attack-v4.png": "2d398237c57a240445ef8019e95e1f2dcae477cfd221a34e5d3e2e366f6544ba",
+    "Art/Cultures/Russians/Units/Modern/KornetOperator/Death-Side-v1.png": "fef5e0b4eddb6b5b68f6c412cef84dc0846fc009d4ce33dfc25489ef68f2dd1c"
+  }
+}

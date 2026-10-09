@@ -3222,8 +3222,8 @@
   },
   "unit-portrait-stoneage-archer": {
     "file": "unit-portrait-stoneage-archer.png",
-    "source": "Art/Cultures/Russians/Units/StoneAge/Javelinist/Idle.png",
-    "hash": "f41c063a07e6b0fb77971cf96539d0f57b4947c119388900ed5b5636592ee79e"
+    "source": "Art/Cultures/Russians/Units/StoneAge/Javelinist/TopDownReview/idle-v1.png",
+    "hash": "f70ab55b35a1fdf9e313a32d2e617a3daeb0a4af3cf527754a8aaa05a3f62d69"
   },
   "unit-portrait-stoneage-cavalry": {
     "file": "unit-portrait-stoneage-cavalry.png",
@@ -3305,6 +3305,11 @@
     "source": "Art/Cultures/Russians/Units/EarlyMedieval/HorseArcher/Idle-Registered-v6.png",
     "hash": "d089c345f123ca31e776fdc6f50e033c79cc70b6eeb2a5033332b09b11551579"
   },
+  "unit-portrait-latemedieval-infantry": {
+    "file": "unit-portrait-latemedieval-infantry.png",
+    "source": "Art/Cultures/Russians/Units/LateMedieval/BoyarGuard/Idle-Animated-v1.png",
+    "hash": "83768b850c6ac8b9931ab5c7a3339bd1a8865e20a588c2d80b2d83840ab27782"
+  },
   "unit-portrait-latemedieval-anticavalry": {
     "file": "unit-portrait-latemedieval-anticavalry.png",
     "source": "Art/Cultures/Russians/Units/LateMedieval/PlateSpearman/Idle-Animated-v1.png",
@@ -3330,15 +3335,25 @@
     "source": "Art/Cultures/Russians/Units/LateMedieval/HorseArcher/Idle-Registered-v1.png",
     "hash": "3a85b52fae7114d263ff4267021bd4ec422e857bb3172c54bcc5ef1779b42f2f"
   },
+  "unit-portrait-napoleonic-infantry": {
+    "file": "unit-portrait-napoleonic-infantry.png",
+    "source": "Art/Cultures/Russians/Units/EarlyModern/RusGrenadier/idle-v2.png",
+    "hash": "1a2d21ce4dd28850bcb0e35add716eabd0867d853ac109aaa2582fdc4d66cf43"
+  },
   "unit-portrait-earlymodern-anticavalry": {
     "file": "unit-portrait-earlymodern-anticavalry.png",
-    "source": "Art/Cultures/Russians/Units/EarlyModern/NapoleonicPikeman/Idle-v1.png",
-    "hash": "f4c38bb55e3800b5971b6c1e4b99956730df1bb836ef18e41d0971362f2d38a1"
+    "source": "Art/Cultures/Russians/Units/EarlyModern/RenaissancePikeman/Idle-Animated-v1.png",
+    "hash": "59a82ac7024ce7855883dd1c8c0a8198bb04dcbb15fbd55a8cb553d0f8d25e73"
   },
   "unit-portrait-napoleonic-archer": {
     "file": "unit-portrait-napoleonic-archer.png",
     "source": "Art/Cultures/Russians/Units/EarlyModern/RusMusketeer/idle-v2.png",
     "hash": "48a188f977ba4d09e33d1a5ec44c15747e47187d80bed4377259ce9205555620"
+  },
+  "unit-portrait-napoleonic-cavalry": {
+    "file": "unit-portrait-napoleonic-cavalry.png",
+    "source": "Art/Cultures/Russians/Units/Napoleonic/CossackLancer/idle-Registered-v1.png",
+    "hash": "6a029d5bfc9d8453cef5baba4814a9cfad598ecdb21eee71ee55935d9614f506"
   },
   "unit-portrait-earlymodern-heavycavalry": {
     "file": "unit-portrait-earlymodern-heavycavalry.png",
@@ -3350,14 +3365,64 @@
     "source": "Art/Cultures/Russians/Units/EarlyModern/MountedMusketeer/Idle-Animated-Registered-v1.png",
     "hash": "04deee4000d41db99d754d93c3407d524cab5cd89f29558f8d762b537e9e89d9"
   },
+  "unit-portrait-earlymodern-infantry": {
+    "file": "unit-portrait-earlymodern-infantry.png",
+    "source": "Art/Cultures/Russians/Units/EarlyModern/MosinNagant/Idle-v2.png",
+    "hash": "392798b4490204c70b7a2aeab81daa73bbea12cc3381204f7d56ddef77661f19"
+  },
+  "unit-portrait-modern-anticavalry": {
+    "file": "unit-portrait-modern-anticavalry.png",
+    "source": "Art/Cultures/Russians/Units/Modern/PTRDRifleman/Idle-v1-Animated.png",
+    "hash": "65be10c9240379f02b378183294dac9ab702703e6de038dfb4edc5f57822b6fa"
+  },
   "unit-portrait-earlymodern-archer": {
     "file": "unit-portrait-earlymodern-archer.png",
     "source": "Art/Cultures/Russians/Units/Modern/SovietMachineGunner/idle-v2.png",
     "hash": "ab236266932aa618486cd630aa59c56242e40f4c96fcd58e066686ab96a31aa0"
   },
+  "unit-portrait-earlymodern-cavalry": {
+    "file": "unit-portrait-earlymodern-cavalry.png",
+    "source": "Art/Cultures/Russians/Units/Modern/MachineGunTruck/idle-Registered-v1.png",
+    "hash": "9f2537875bc6be8278292e03023260ef2d152d11b7c3d64fa492ad14accb1177"
+  },
+  "unit-portrait-modern-heavycavalry": {
+    "file": "unit-portrait-modern-heavycavalry.png",
+    "source": "Art/Cultures/Russians/Units/Modern/TsarTank/Idle-v1.png",
+    "hash": "0024317c0cb77943296e8194b8b26904d9b9e8248521187c45b4e3a71f20c241"
+  },
+  "unit-portrait-modern-rangedcavalry": {
+    "file": "unit-portrait-modern-rangedcavalry.png",
+    "source": "Art/Cultures/Russians/Units/PreModern/T34-85/idle-Registered-v1.png",
+    "hash": "acd1f046846517fbd86b686a51b7a8831d2f42eae83472b4d2ecd7662eb74ca3"
+  },
+  "unit-portrait-modern-infantry": {
+    "file": "unit-portrait-modern-infantry.png",
+    "source": "Art/Cultures/Russians/Units/Modern/SovietAK47Rifleman/idle-v2.png",
+    "hash": "c5fbfa3dbfb0a9dda84002852a78989bd5f4b4e897fa954932fa2fd252d931f6"
+  },
+  "unit-portrait-present-day-anticavalry": {
+    "file": "unit-portrait-present-day-anticavalry.png",
+    "source": "Art/Cultures/Russians/Units/Modern/KornetOperator/Idle-Animated-v1.png",
+    "hash": "bb47518e351c9eb00c66d7a43f77c99f3e779423a53d4a0d346f201c3c2ac9e5"
+  },
   "unit-portrait-modern-archer": {
     "file": "unit-portrait-modern-archer.png",
     "source": "Art/Cultures/Russians/Units/Modern/RPL20Gunner/idle-v2.png",
     "hash": "f0ba09d6a7c8043da14b1bcf476717382d8b36b9b707c1b7288950fd4c902bc7"
+  },
+  "unit-portrait-modern-cavalry": {
+    "file": "unit-portrait-modern-cavalry.png",
+    "source": "Art/Cultures/Russians/Units/Modern/Bumerang/Idle-v1.png",
+    "hash": "74aae24d20d59c85a572327115bd1191a5e0d160cb48e419b6581a075ccd0548"
+  },
+  "unit-portrait-present-day-heavycavalry": {
+    "file": "unit-portrait-present-day-heavycavalry.png",
+    "source": "Art/Cultures/Russians/Units/Modern/T14/idle-Registered-v1.png",
+    "hash": "39b7ec64a734aeecf18df16ed771ba9d0c195fb3d2d76c323962ee95a6db51df"
+  },
+  "unit-portrait-present-day-rangedcavalry": {
+    "file": "unit-portrait-present-day-rangedcavalry.png",
+    "source": "Art/Cultures/Russians/Units/Modern/Tunguska/Idle-v3.png",
+    "hash": "37084efa05e29168d63a7845a057e9139fafe67d91c5f70db12c01122be2749b"
   }
 }

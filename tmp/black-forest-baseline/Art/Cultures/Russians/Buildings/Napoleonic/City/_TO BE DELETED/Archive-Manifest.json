@@ -1,0 +1,18 @@
+{
+  "folder": "Buildings/Napoleonic/City/_TO BE DELETED",
+  "created": "2026-10-09T03:15:53.711Z",
+  "files": [
+    {
+      "original": "Buildings/Napoleonic/City/SourceArt/Icon-v1.png",
+      "archived": "Buildings/Napoleonic/City/_TO BE DELETED/SourceArt/Icon-v1.png",
+      "sha256": "756d4971f76795fac237d4fb80c8809c037f368c38edb70370ed4548e05121c7",
+      "size": 2531878
+    },
+    {
+      "original": "Buildings/Napoleonic/City/SourceArt/Icon-v2.png",
+      "archived": "Buildings/Napoleonic/City/_TO BE DELETED/SourceArt/Icon-v2.png",
+      "sha256": "3993c6be1d8678e7bf9a535a93289a20c1d16cc39513f0ae28f74b91eb9b0b26",
+      "size": 2496283
+    }
+  ]
+}

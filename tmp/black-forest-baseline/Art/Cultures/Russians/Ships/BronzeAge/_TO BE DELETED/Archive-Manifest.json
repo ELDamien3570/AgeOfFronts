@@ -1,0 +1,24 @@
+{
+  "folder": "Ships/BronzeAge/_TO BE DELETED",
+  "created": "2026-10-09T03:15:53.711Z",
+  "files": [
+    {
+      "original": "Ships/BronzeAge/Animation_Validation.json",
+      "archived": "Ships/BronzeAge/_TO BE DELETED/Animation_Validation.json",
+      "sha256": "fd2e2095e26939def1d4beac35d13dbad677817d40ad3f8a59684ac8f8c20055",
+      "size": 12430
+    },
+    {
+      "original": "Ships/BronzeAge/Generation-Manifest.json",
+      "archived": "Ships/BronzeAge/_TO BE DELETED/Generation-Manifest.json",
+      "sha256": "5768188acc86233a76f129b8ef4aea293ee9195e70490812a808bc12a4bc96fa",
+      "size": 28135
+    },
+    {
+      "original": "Ships/BronzeAge/Static_Art_Validation.json",
+      "archived": "Ships/BronzeAge/_TO BE DELETED/Static_Art_Validation.json",
+      "sha256": "b32cba1c574926690e3135993b5bb7cd81c3cb9d148624ab2a9d47c7b60ccdd3",
+      "size": 2538
+    }
+  ]
+}

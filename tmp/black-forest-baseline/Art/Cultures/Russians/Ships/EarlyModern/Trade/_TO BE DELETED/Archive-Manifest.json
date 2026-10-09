@@ -1,0 +1,60 @@
+{
+  "folder": "Ships/EarlyModern/Trade/_TO BE DELETED",
+  "created": "2026-10-09T03:15:53.711Z",
+  "files": [
+    {
+      "original": "Ships/EarlyModern/Trade/Generation-Manifest.json",
+      "archived": "Ships/EarlyModern/Trade/_TO BE DELETED/Generation-Manifest.json",
+      "sha256": "27b73ddff8c3b0ca9ed71088cb61d1e538dfcf97e954f2c89470bd3944f4014d",
+      "size": 2946
+    },
+    {
+      "original": "Ships/EarlyModern/Trade/Idle-Preview.webp",
+      "archived": "Ships/EarlyModern/Trade/_TO BE DELETED/Idle-Preview.webp",
+      "sha256": "d027c7dfa0b2d75ea5165939459fd7b46c64e0cf12f914caf92e4fdee7b52d2e",
+      "size": 575478
+    },
+    {
+      "original": "Ships/EarlyModern/Trade/layers/Hull-Protection.png",
+      "archived": "Ships/EarlyModern/Trade/_TO BE DELETED/layers/Hull-Protection.png",
+      "sha256": "65795a5b91030a2a433dae510d1edf494082a9cfa1153cd94f3797759f68f257",
+      "size": 334
+    },
+    {
+      "original": "Ships/EarlyModern/Trade/layers/Hull.png",
+      "archived": "Ships/EarlyModern/Trade/_TO BE DELETED/layers/Hull.png",
+      "sha256": "258f01df906010cfef61f7b6c5181417849196609c175e5dfafc8fde9c9dc1e3",
+      "size": 80184
+    },
+    {
+      "original": "Ships/EarlyModern/Trade/Review/Frame-128px.png",
+      "archived": "Ships/EarlyModern/Trade/_TO BE DELETED/Review/Frame-128px.png",
+      "sha256": "169246e9fa527f7ed59909b4cec41aac19029c9b3a65bced1781f478f6a5658f",
+      "size": 9721
+    },
+    {
+      "original": "Ships/EarlyModern/Trade/Review/Frame-48px.png",
+      "archived": "Ships/EarlyModern/Trade/_TO BE DELETED/Review/Frame-48px.png",
+      "sha256": "60057683556ff83677eac96f9fb895124630b7e17592159bcb716d05e68bc07d",
+      "size": 2009
+    },
+    {
+      "original": "Ships/EarlyModern/Trade/Review/Frame-64px.png",
+      "archived": "Ships/EarlyModern/Trade/_TO BE DELETED/Review/Frame-64px.png",
+      "sha256": "1adeeb470897d626fab9c586e431b0d791d3c280d43a45bf6d4b017803bf7d09",
+      "size": 3112
+    },
+    {
+      "original": "Ships/EarlyModern/Trade/Sailing-Preview.webp",
+      "archived": "Ships/EarlyModern/Trade/_TO BE DELETED/Sailing-Preview.webp",
+      "sha256": "768062e3b09330abd93c9b47bad6844b8ae82f02828106012df86fa1489deebc",
+      "size": 587938
+    },
+    {
+      "original": "Ships/EarlyModern/Trade/SourceArt/Trade_Russian_EarlyModern_Generated_v1.png",
+      "archived": "Ships/EarlyModern/Trade/_TO BE DELETED/SourceArt/Trade_Russian_EarlyModern_Generated_v1.png",
+      "sha256": "81f38ac47d6ffe88be4049b724aefe216e9ef020f1ebcfd21055d9d74e990eaa",
+      "size": 856046
+    }
+  ]
+}

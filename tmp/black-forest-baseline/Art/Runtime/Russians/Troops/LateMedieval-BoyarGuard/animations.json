@@ -78,7 +78,8 @@
             "y": 58.4
           }
         }
-      ]
+      ],
+      "releaseFrame": 3
     },
     {
       "id": "running",
@@ -157,7 +158,8 @@
             "y": 46.599999999999994
           }
         }
-      ]
+      ],
+      "releaseFrame": 3
     },
     {
       "id": "attack",
@@ -166,14 +168,14 @@
       "loop": false,
       "scale": 1,
       "durations": [
-        130,
-        150,
-        150,
         100,
-        170,
-        240
+        230,
+        65,
+        70,
+        160,
+        260
       ],
-      "description": "Wind up, deliver a heavy two-handed mace blow toward screen bottom, and recover.",
+      "description": "A shoulder-driven clockwise mace sweep: wind up, accelerate through a broad arc, strike forward, follow through, and recover.",
       "frameCount": 6,
       "frames": [
         {
@@ -182,8 +184,8 @@
           "width": 128,
           "height": 128,
           "pivot": {
-            "x": 72.4,
-            "y": 62.4
+            "x": 73.2,
+            "y": 56.8
           }
         },
         {
@@ -192,8 +194,8 @@
           "width": 128,
           "height": 128,
           "pivot": {
-            "x": 72.4,
-            "y": 62.4
+            "x": 73.2,
+            "y": 56.8
           }
         },
         {
@@ -202,8 +204,8 @@
           "width": 128,
           "height": 128,
           "pivot": {
-            "x": 72.4,
-            "y": 62.4
+            "x": 73.2,
+            "y": 56.8
           }
         },
         {
@@ -212,8 +214,8 @@
           "width": 128,
           "height": 128,
           "pivot": {
-            "x": 72.4,
-            "y": 62.4
+            "x": 73.2,
+            "y": 56.8
           }
         },
         {
@@ -222,8 +224,8 @@
           "width": 128,
           "height": 128,
           "pivot": {
-            "x": 72.4,
-            "y": 62.4
+            "x": 73.2,
+            "y": 56.8
           }
         },
         {
@@ -232,12 +234,13 @@
           "width": 128,
           "height": 128,
           "pivot": {
-            "x": 72.4,
-            "y": 62.4
+            "x": 73.2,
+            "y": 56.8
           }
         }
       ],
-      "impactFrame": 3
+      "impactFrame": 3,
+      "releaseFrame": 3
     },
     {
       "id": "death",
@@ -316,15 +319,16 @@
             "y": 49.8
           }
         }
-      ]
+      ],
+      "releaseFrame": 3
     }
   ],
   "source": "Art/Cultures/Russians/Units/LateMedieval/BoyarGuard/animations.json",
-  "metadataHash": "d67841c30d10cc618284acd365f7f037c3f8354e0826c1309ff94feca1586411",
+  "metadataHash": "d3b24aface326f40cca1be7e538b415001a02eb7d675f2aef40dcb3ae22e788e",
   "hashes": {
     "Art/Cultures/Russians/Units/LateMedieval/BoyarGuard/Idle-Animated-v1.png": "83768b850c6ac8b9931ab5c7a3339bd1a8865e20a588c2d80b2d83840ab27782",
     "Art/Cultures/Russians/Units/LateMedieval/BoyarGuard/Walk-v1.png": "99387312a4ce2f2310e87e1d1e8e0553118dc3c83ec1ae2135595468d3c81442",
-    "Art/Cultures/Russians/Units/LateMedieval/BoyarGuard/Attack-v1.png": "7a9f8d1c2d083ebfa129231b181351ab19d7a5598439c40a87006eb9929ab3c2",
+    "Art/Cultures/Russians/Units/LateMedieval/BoyarGuard/Attack-Swing-v2.png": "78c87312cb805ccdcf4af93063a21a00203220dee9603a8fd41802ba04a3d86b",
     "Art/Cultures/Russians/Units/LateMedieval/BoyarGuard/Death-Side-v1.png": "23cea927d2c0672aaa5b1f71404da8362e8191971d80ad542cbd528d31472f51"
   }
 }

@@ -1,11 +1,35 @@
-import { formationSlots, type FormationLayout, type FormationShape } from "./TroopFormationModel";
+import {
+  formationSlots,
+  type FormationLayout,
+  type FormationShape,
+} from "./TroopFormationModel";
 /** Shared packing accepts a fixed authored size from any actor catalogue. */
 export function actorFormationSlots(
   layout: FormationLayout,
   mounted: boolean,
   shape: FormationShape,
   scale: number,
+  actor?: {
+    vehicle?: boolean;
+    members?: number;
+    widthWorld?: number;
+    lengthWorld?: number;
+  },
 ) {
+  if (actor?.vehicle) {
+    const count = actor.members ?? 1;
+    const footprint = 2 / 0.75;
+    const width = ((actor.widthWorld ?? 2) + 0.4) / footprint;
+    const depth = ((actor.lengthWorld ?? 4) + 0.6) / footprint;
+    // Vehicles keep clear hull lanes. Line is abreast; mobile travel uses a
+    // staggered pair. Neither shape becomes an infantry square or charge wedge.
+    return Array.from({ length: count }, (_, index) => ({
+      x: (index - (count - 1) / 2) * width,
+      y: shape === "line" ? 0 : (index - (count - 1) / 2) * depth * 0.55,
+      row: shape === "line" ? 0 : index,
+      scale,
+    }));
+  }
   const slots = formationSlots(layout, mounted ? 6 : 12, shape, 1, mounted);
   if (!mounted) return slots.map((slot) => ({ ...slot, scale }));
   if (shape === "mass") {

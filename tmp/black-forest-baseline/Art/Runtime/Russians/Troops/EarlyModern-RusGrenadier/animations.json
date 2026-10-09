@@ -1,0 +1,341 @@
+{
+  "actorCount": 1,
+  "animations": [
+    {
+      "id": "idle",
+      "label": "Idle",
+      "file": "idle.png",
+      "sha256": "1a2d21ce4dd28850bcb0e35add716eabd0867d853ac109aaa2582fdc4d66cf43",
+      "loop": true,
+      "scale": 1,
+      "durations": [
+        280,
+        280,
+        280,
+        280,
+        280,
+        280
+      ],
+      "description": "Six distinct restrained breathing poses, boots planted, body centered with almost no lateral sway. Two hands carry musket across low front as reference.",
+      "frameCount": 6,
+      "frames": [
+        {
+          "x": 0,
+          "y": 0,
+          "width": 128,
+          "height": 128,
+          "pivot": {
+            "x": 64.0,
+            "y": 64.0
+          }
+        },
+        {
+          "x": 128,
+          "y": 0,
+          "width": 128,
+          "height": 128,
+          "pivot": {
+            "x": 64.0,
+            "y": 64.0
+          }
+        },
+        {
+          "x": 256,
+          "y": 0,
+          "width": 128,
+          "height": 128,
+          "pivot": {
+            "x": 64.0,
+            "y": 64.0
+          }
+        },
+        {
+          "x": 384,
+          "y": 0,
+          "width": 128,
+          "height": 128,
+          "pivot": {
+            "x": 64.0,
+            "y": 64.0
+          }
+        },
+        {
+          "x": 512,
+          "y": 0,
+          "width": 128,
+          "height": 128,
+          "pivot": {
+            "x": 64.0,
+            "y": 64.0
+          }
+        },
+        {
+          "x": 640,
+          "y": 0,
+          "width": 128,
+          "height": 128,
+          "pivot": {
+            "x": 64.0,
+            "y": 64.0
+          }
+        }
+      ],
+      "releaseFrame": 3
+    },
+    {
+      "id": "running",
+      "label": "Walk",
+      "file": "running.png",
+      "sha256": "3d680b262bcda8e6a8ad980c9556ad502062aef1ff3269467e965cc30e915d03",
+      "loop": true,
+      "scale": 1,
+      "durations": [
+        160,
+        160,
+        160,
+        160,
+        160,
+        160
+      ],
+      "description": "Six WALK poses with clear alternating boots: screenleft foot ahead, level feet, screenright ahead, level feet, screenleft ahead, screenright recovery. Head and shoulder body CENTER remains EXACT SAME X throughout; minimal sideways rocking, no hip skating. Two hands hold musket steadily across low front.",
+      "frameCount": 6,
+      "frames": [
+        {
+          "x": 0,
+          "y": 0,
+          "width": 128,
+          "height": 128,
+          "pivot": {
+            "x": 65.640625,
+            "y": 64.0
+          }
+        },
+        {
+          "x": 128,
+          "y": 0,
+          "width": 128,
+          "height": 128,
+          "pivot": {
+            "x": 64.703125,
+            "y": 64.0
+          }
+        },
+        {
+          "x": 256,
+          "y": 0,
+          "width": 128,
+          "height": 128,
+          "pivot": {
+            "x": 65.640625,
+            "y": 64.0
+          }
+        },
+        {
+          "x": 384,
+          "y": 0,
+          "width": 128,
+          "height": 128,
+          "pivot": {
+            "x": 65.640625,
+            "y": 64.0
+          }
+        },
+        {
+          "x": 512,
+          "y": 0,
+          "width": 128,
+          "height": 128,
+          "pivot": {
+            "x": 64.703125,
+            "y": 64.0
+          }
+        },
+        {
+          "x": 640,
+          "y": 0,
+          "width": 128,
+          "height": 128,
+          "pivot": {
+            "x": 65.640625,
+            "y": 64.0
+          }
+        }
+      ],
+      "releaseFrame": 3
+    },
+    {
+      "id": "attack",
+      "label": "Musket shot",
+      "file": "attack.png",
+      "sha256": "1254c09f66dc477a88f7a6acb9f94f2e3b702e20b1c25c3bc9167d4d1891eeb9",
+      "loop": false,
+      "scale": 1.6,
+      "durations": [
+        140,
+        180,
+        180,
+        150,
+        180,
+        220
+      ],
+      "description": "Six forward MUSKET SHOT poses: low ready, RIGHT FOOT drops slightly back and chest turns side-on while shouldering stock, aim SCREEN BOTTOM, fire, recoil, lower musket ready. Right rear leg anatomically connected, knee bends a LITTLE, never twists 180 or splays. LEFT hand supports foreend, RIGHT around trigger stock, butt against right shoulder outside neck/head. Barrel straight and aligned SCREENBOTTOM next to head, bayonet rigidly follows barrel not separate. Flash ONLY at muzzle frame4, small brief flash and smoke avoiding neighboring cell. Thumb and arm natural, no barrel through arm.",
+      "frameCount": 6,
+      "frames": [
+        {
+          "x": 0,
+          "y": 0,
+          "width": 128,
+          "height": 128,
+          "pivot": {
+            "x": 64.0,
+            "y": 64.0
+          }
+        },
+        {
+          "x": 128,
+          "y": 0,
+          "width": 128,
+          "height": 128,
+          "pivot": {
+            "x": 64.0,
+            "y": 64.0
+          }
+        },
+        {
+          "x": 256,
+          "y": 0,
+          "width": 128,
+          "height": 128,
+          "pivot": {
+            "x": 64.0,
+            "y": 64.0
+          }
+        },
+        {
+          "x": 384,
+          "y": 0,
+          "width": 128,
+          "height": 128,
+          "pivot": {
+            "x": 64.0,
+            "y": 64.0
+          }
+        },
+        {
+          "x": 512,
+          "y": 0,
+          "width": 128,
+          "height": 128,
+          "pivot": {
+            "x": 64.0,
+            "y": 64.0
+          }
+        },
+        {
+          "x": 640,
+          "y": 0,
+          "width": 128,
+          "height": 128,
+          "pivot": {
+            "x": 64.0,
+            "y": 64.0
+          }
+        }
+      ],
+      "releaseFrame": 3,
+      "weaponState": {
+        "start": "loaded",
+        "end": "fired"
+      }
+    },
+    {
+      "id": "death",
+      "label": "Death - side fall",
+      "file": "death.png",
+      "sha256": "3aa6671ce64a508990ded95c0239fcf71234d3d5cb00f3506d56e10d5cb65b9d",
+      "loop": false,
+      "scale": 1,
+      "durations": [
+        150,
+        170,
+        190,
+        210,
+        240,
+        400
+      ],
+      "description": "Six side death stages stand, buckle, tip to side, land on side, settle, still full corpse. Finalthree HEAD SCREENRIGHT BOOTS SCREENLEFT continuously, full extended torso/legs lieflat withgreen coat pale trousers arms relaxed. Musket drops beside body oneconnectedgun withbayonet. No blood or smoke. Not just rotated standing shoulders.",
+      "frameCount": 6,
+      "frames": [
+        {
+          "x": 0,
+          "y": 0,
+          "width": 128,
+          "height": 128,
+          "pivot": {
+            "x": 64.0,
+            "y": 64.0
+          }
+        },
+        {
+          "x": 128,
+          "y": 0,
+          "width": 128,
+          "height": 128,
+          "pivot": {
+            "x": 64.0,
+            "y": 64.0
+          }
+        },
+        {
+          "x": 256,
+          "y": 0,
+          "width": 128,
+          "height": 128,
+          "pivot": {
+            "x": 64.0,
+            "y": 64.0
+          }
+        },
+        {
+          "x": 384,
+          "y": 0,
+          "width": 128,
+          "height": 128,
+          "pivot": {
+            "x": 64.0,
+            "y": 64.0
+          }
+        },
+        {
+          "x": 512,
+          "y": 0,
+          "width": 128,
+          "height": 128,
+          "pivot": {
+            "x": 64.0,
+            "y": 64.0
+          }
+        },
+        {
+          "x": 640,
+          "y": 0,
+          "width": 128,
+          "height": 128,
+          "pivot": {
+            "x": 64.0,
+            "y": 64.0
+          }
+        }
+      ],
+      "releaseFrame": 3
+    }
+  ],
+  "source": "Art/Cultures/Russians/Units/EarlyModern/RusGrenadier/animations.json",
+  "metadataHash": "c52c58026a7f2c336e5096253e847d758dff0ff6b9d566f8c8358d2b276890b0",
+  "hashes": {
+    "Art/Cultures/Russians/Units/EarlyModern/RusGrenadier/idle-v2.png": "1a2d21ce4dd28850bcb0e35add716eabd0867d853ac109aaa2582fdc4d66cf43",
+    "Art/Cultures/Russians/Units/EarlyModern/RusGrenadier/running-v3.png": "3d680b262bcda8e6a8ad980c9556ad502062aef1ff3269467e965cc30e915d03",
+    "Art/Cultures/Russians/Units/EarlyModern/RusGrenadier/attack-v3.png": "1254c09f66dc477a88f7a6acb9f94f2e3b702e20b1c25c3bc9167d4d1891eeb9",
+    "Art/Cultures/Russians/Units/EarlyModern/RusGrenadier/death-v1.png": "3aa6671ce64a508990ded95c0239fcf71234d3d5cb00f3506d56e10d5cb65b9d"
+  }
+}

@@ -34,7 +34,7 @@ describe("explicit Russian research effects", () => {
     expect(unitEffects(earlier, ["russian-infantry-optics"])).toBe(earlier);
   });
   it("armour increases tank durability and fire control improves tank attack without modifying base definitions", () => {
-    const tank = UNIT.get("present-day-rangedcavalry")!,
+    const tank = UNIT.get("present-day-heavycavalry")!,
       base = structuredClone(tank);
     const upgraded = unitEffects(tank, [
       "russian-tank-armour",
@@ -43,7 +43,7 @@ describe("explicit Russian research effects", () => {
     expect(upgraded.healthPercent).toBe(Math.round(tank.healthPercent! * 1.2));
     expect(upgraded.attack.damage).toBe(Math.round(tank.attack.damage * 1.1));
     expect(tank).toEqual(base);
-    const apc = UNIT.get("present-day-heavycavalry")!;
+    const apc = UNIT.get("modern-cavalry")!;
     expect(
       unitEffects(apc, ["russian-tank-armour", "russian-tank-fire-control"]),
     ).toBe(apc);

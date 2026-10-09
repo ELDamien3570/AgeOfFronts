@@ -1,0 +1,764 @@
+{
+  "folder": "Units/BronzeAge/RiverArcher/_TO BE DELETED",
+  "created": "2026-10-09T03:15:53.711Z",
+  "files": [
+    {
+      "original": "Units/BronzeAge/RiverArcher/Attack-OpenDraw-v3.png",
+      "archived": "Units/BronzeAge/RiverArcher/_TO BE DELETED/Attack-OpenDraw-v3.png",
+      "sha256": "dfff34b1cc209338cc525b123ec28ab5c120e0421208e1127aabb2827471e539",
+      "size": 866440
+    },
+    {
+      "original": "Units/BronzeAge/RiverArcher/Attack-StraightArrow-v4.png",
+      "archived": "Units/BronzeAge/RiverArcher/_TO BE DELETED/Attack-StraightArrow-v4.png",
+      "sha256": "52eced5a89287052e50ff8b529165d1227191dede74c037b4e5632d7c6560458",
+      "size": 866604
+    },
+    {
+      "original": "Units/BronzeAge/RiverArcher/Attack-v1.png",
+      "archived": "Units/BronzeAge/RiverArcher/_TO BE DELETED/Attack-v1.png",
+      "sha256": "ec19d42f5325374a26cb3929ca928714aba1a85a8fe19c31e17982d30a8d609d",
+      "size": 1022416
+    },
+    {
+      "original": "Units/BronzeAge/RiverArcher/Browser-Review.json",
+      "archived": "Units/BronzeAge/RiverArcher/_TO BE DELETED/Browser-Review.json",
+      "sha256": "7d7d608eeeb7cbf7acdaf2b73feb2ea4966ba6660f87a3fc664ae8c111a0abd2",
+      "size": 1463
+    },
+    {
+      "original": "Units/BronzeAge/RiverArcher/Charge-Attack-OpenDraw-v3.png",
+      "archived": "Units/BronzeAge/RiverArcher/_TO BE DELETED/Charge-Attack-OpenDraw-v3.png",
+      "sha256": "e1a75e2e310fdb99042a2fa4a02deb5418954b7605de643450dab228af958f8e",
+      "size": 927032
+    },
+    {
+      "original": "Units/BronzeAge/RiverArcher/Charge-Attack-StraightArrow-v4.png",
+      "archived": "Units/BronzeAge/RiverArcher/_TO BE DELETED/Charge-Attack-StraightArrow-v4.png",
+      "sha256": "69431d09b509d6d32a066f4f71b02571eefedcb7e1abdee35d980a9e924ed0d1",
+      "size": 924945
+    },
+    {
+      "original": "Units/BronzeAge/RiverArcher/Charge-Attack-UprightBow-v6.png",
+      "archived": "Units/BronzeAge/RiverArcher/_TO BE DELETED/Charge-Attack-UprightBow-v6.png",
+      "sha256": "324a4220459bc73a565bc90489369b02999fa46a0f361ae389a7795e553d33f1",
+      "size": 1772930
+    },
+    {
+      "original": "Units/BronzeAge/RiverArcher/Charge-Attack-v1.png",
+      "archived": "Units/BronzeAge/RiverArcher/_TO BE DELETED/Charge-Attack-v1.png",
+      "sha256": "ffe92d6f509acedbaf00a1c763fe3fe8c300ea38c9eaf26cebadb0fad1bd19da",
+      "size": 971806
+    },
+    {
+      "original": "Units/BronzeAge/RiverArcher/Death-Back-v1.png",
+      "archived": "Units/BronzeAge/RiverArcher/_TO BE DELETED/Death-Back-v1.png",
+      "sha256": "5e22b5c013906cc0392a9a0ec2895dc947522a8e6ddef31349f96f67b84fe162",
+      "size": 1021029
+    },
+    {
+      "original": "Units/BronzeAge/RiverArcher/Generation.json",
+      "archived": "Units/BronzeAge/RiverArcher/_TO BE DELETED/Generation.json",
+      "sha256": "e12a22dc42c59c91386f608d97392e5ebee5f5c2e7c45cc3a3ff99d90427660c",
+      "size": 49237
+    },
+    {
+      "original": "Units/BronzeAge/RiverArcher/Idle-v1.png",
+      "archived": "Units/BronzeAge/RiverArcher/_TO BE DELETED/Idle-v1.png",
+      "sha256": "9ba446db473d73cc4dfcce1f34bf4b493183756b660f2dec8f3e78c55d90001a",
+      "size": 952214
+    },
+    {
+      "original": "Units/BronzeAge/RiverArcher/README.md",
+      "archived": "Units/BronzeAge/RiverArcher/_TO BE DELETED/README.md",
+      "sha256": "8ec7c8330a1e246255c4ba6405d1808b010d18e09b5d93bdaba3cb275992e407",
+      "size": 3842
+    },
+    {
+      "original": "Units/BronzeAge/RiverArcher/Review-Bow-Shot-Animated-v1.png",
+      "archived": "Units/BronzeAge/RiverArcher/_TO BE DELETED/Review-Bow-Shot-Animated-v1.png",
+      "sha256": "1c812699f52ceb720f909c9cea1f114ace36ec0faa47deaac5d281344209e502",
+      "size": 75231
+    },
+    {
+      "original": "Units/BronzeAge/RiverArcher/Review-Charge-Shot-Animated-v1.png",
+      "archived": "Units/BronzeAge/RiverArcher/_TO BE DELETED/Review-Charge-Shot-Animated-v1.png",
+      "sha256": "c384b81b0d3cadcd1de4885321dc4a9a364a650ed2297f84df9d758535941d71",
+      "size": 75750
+    },
+    {
+      "original": "Units/BronzeAge/RiverArcher/Review-Death-Back-Animated-v1.png",
+      "archived": "Units/BronzeAge/RiverArcher/_TO BE DELETED/Review-Death-Back-Animated-v1.png",
+      "sha256": "381a0d0ab0ded8894cd950b0bbed5f48426c30711d8006c84012c1fdb17b97cd",
+      "size": 75579
+    },
+    {
+      "original": "Units/BronzeAge/RiverArcher/Review-Death-Side-Animated-v1.png",
+      "archived": "Units/BronzeAge/RiverArcher/_TO BE DELETED/Review-Death-Side-Animated-v1.png",
+      "sha256": "06de55b2df28ad6d59d45726b312d61d75b95709dfd6857a2a1e1d263f79920e",
+      "size": 73800
+    },
+    {
+      "original": "Units/BronzeAge/RiverArcher/Review-Idle-v1.png",
+      "archived": "Units/BronzeAge/RiverArcher/_TO BE DELETED/Review-Idle-v1.png",
+      "sha256": "a1b43ab99d7aadd501585282b89920e8bacc1f31a97375f902610497b1465dfc",
+      "size": 74342
+    },
+    {
+      "original": "Units/BronzeAge/RiverArcher/Review-Open-Draw-Attack-v3.png",
+      "archived": "Units/BronzeAge/RiverArcher/_TO BE DELETED/Review-Open-Draw-Attack-v3.png",
+      "sha256": "a749ee6bab7195c41aea7d8f79e646723f792bd53b353ab14e9a2b75d95327cd",
+      "size": 75643
+    },
+    {
+      "original": "Units/BronzeAge/RiverArcher/Review-Open-Draw-Charge-v3.png",
+      "archived": "Units/BronzeAge/RiverArcher/_TO BE DELETED/Review-Open-Draw-Charge-v3.png",
+      "sha256": "65cf4085ec6b4121efc54e399e23fcbfdcc0156344af7e47e7ff5d0c51fb1ee5",
+      "size": 77570
+    },
+    {
+      "original": "Units/BronzeAge/RiverArcher/Review-Open-Draw-Release-v3.png",
+      "archived": "Units/BronzeAge/RiverArcher/_TO BE DELETED/Review-Open-Draw-Release-v3.png",
+      "sha256": "a4f9bfb2830a0982b8560169a79cedd916819c526d1c6cd53fb473462d8c1d6f",
+      "size": 74932
+    },
+    {
+      "original": "Units/BronzeAge/RiverArcher/Review-Straight-Arrow-Charge-v4.png",
+      "archived": "Units/BronzeAge/RiverArcher/_TO BE DELETED/Review-Straight-Arrow-Charge-v4.png",
+      "sha256": "234d0f3ae66bfb870581b42995d577283f1591325ce46ccf013a8460a3178ea1",
+      "size": 77878
+    },
+    {
+      "original": "Units/BronzeAge/RiverArcher/Review-Straight-Arrow-v4.png",
+      "archived": "Units/BronzeAge/RiverArcher/_TO BE DELETED/Review-Straight-Arrow-v4.png",
+      "sha256": "15d533f88e8c6738bc20be6e6c953d98148fd1f57c12dd69a99570203e049d27",
+      "size": 75929
+    },
+    {
+      "original": "Units/BronzeAge/RiverArcher/Review-Upright-Bow-Charge-v9.png",
+      "archived": "Units/BronzeAge/RiverArcher/_TO BE DELETED/Review-Upright-Bow-Charge-v9.png",
+      "sha256": "66a9fb04c321340c49f62b24e64a1803931b2172cb876bcd9b03dc4826f6a65d",
+      "size": 76457
+    },
+    {
+      "original": "Units/BronzeAge/RiverArcher/Review-Upright-Bow-Release-v9.png",
+      "archived": "Units/BronzeAge/RiverArcher/_TO BE DELETED/Review-Upright-Bow-Release-v9.png",
+      "sha256": "91a669eeee0d8d28d65809471837d2994cd355f840534ff310922e676aafdd89",
+      "size": 75763
+    },
+    {
+      "original": "Units/BronzeAge/RiverArcher/Review-Upright-Bow-v6.png",
+      "archived": "Units/BronzeAge/RiverArcher/_TO BE DELETED/Review-Upright-Bow-v6.png",
+      "sha256": "16c54b0a517591bea097705be16e4a96ea34cf6c6b67ea3999b9317168e1c36c",
+      "size": 74371
+    },
+    {
+      "original": "Units/BronzeAge/RiverArcher/SourceArt/Animation-Generation.json",
+      "archived": "Units/BronzeAge/RiverArcher/_TO BE DELETED/SourceArt/Animation-Generation.json",
+      "sha256": "2bf10f14525a43552ef15a528dff98bb85ee42c43bfdc5a5d0c4a33b1ddd98cb",
+      "size": 16217
+    },
+    {
+      "original": "Units/BronzeAge/RiverArcher/SourceArt/Approved-Idle.json",
+      "archived": "Units/BronzeAge/RiverArcher/_TO BE DELETED/SourceArt/Approved-Idle.json",
+      "sha256": "514b990756d91531c8ef8397e84b904c5b2ef3dae724a21c1376a2286b9d0d7f",
+      "size": 179
+    },
+    {
+      "original": "Units/BronzeAge/RiverArcher/SourceArt/audit_topdown_sources.py",
+      "archived": "Units/BronzeAge/RiverArcher/_TO BE DELETED/SourceArt/audit_topdown_sources.py",
+      "sha256": "d54ef2a4c0736c85d5ff686a801c7071fa6b3b692b370d5c4a13456093bcffa8",
+      "size": 641
+    },
+    {
+      "original": "Units/BronzeAge/RiverArcher/SourceArt/Before-Animation-animations.json",
+      "archived": "Units/BronzeAge/RiverArcher/_TO BE DELETED/SourceArt/Before-Animation-animations.json",
+      "sha256": "2e45234201efbb5d5f7679eab75db651c9e6eb142b53eb634b04b87d994a5c9f",
+      "size": 1734
+    },
+    {
+      "original": "Units/BronzeAge/RiverArcher/SourceArt/Before-Animation-Browser-Review.json",
+      "archived": "Units/BronzeAge/RiverArcher/_TO BE DELETED/SourceArt/Before-Animation-Browser-Review.json",
+      "sha256": "47cb60b9a4724d2e4370bb90dc2ba46fb99fcb024f5f1015608a6f9b405f18b4",
+      "size": 363
+    },
+    {
+      "original": "Units/BronzeAge/RiverArcher/SourceArt/Before-Animation-Validation.json",
+      "archived": "Units/BronzeAge/RiverArcher/_TO BE DELETED/SourceArt/Before-Animation-Validation.json",
+      "sha256": "9bc392839eb0a1bbf73840c74853881d9b3f063bdc5a7e2030acf605931c136d",
+      "size": 695
+    },
+    {
+      "original": "Units/BronzeAge/RiverArcher/SourceArt/Before-Open-Draw-animations.json",
+      "archived": "Units/BronzeAge/RiverArcher/_TO BE DELETED/SourceArt/Before-Open-Draw-animations.json",
+      "sha256": "df148d83ca05511d994402431bbdaa82e1c8c3621cd566d3fa861e7e03601ae8",
+      "size": 19523
+    },
+    {
+      "original": "Units/BronzeAge/RiverArcher/SourceArt/Before-Open-Draw-Browser-Review.json",
+      "archived": "Units/BronzeAge/RiverArcher/_TO BE DELETED/SourceArt/Before-Open-Draw-Browser-Review.json",
+      "sha256": "f9f6090daaec2c08c29de7f73f006608334eb86e3f4c88bf8eaeeb54e5381bb5",
+      "size": 753
+    },
+    {
+      "original": "Units/BronzeAge/RiverArcher/SourceArt/Before-Open-Draw-Validation.json",
+      "archived": "Units/BronzeAge/RiverArcher/_TO BE DELETED/SourceArt/Before-Open-Draw-Validation.json",
+      "sha256": "fa75e1ff0d4e5858e39bc34db17b0c22fac62965322b5923b0bc3fa4dbb23cd3",
+      "size": 31617
+    },
+    {
+      "original": "Units/BronzeAge/RiverArcher/SourceArt/Before-Straight-Arrow-animations.json",
+      "archived": "Units/BronzeAge/RiverArcher/_TO BE DELETED/SourceArt/Before-Straight-Arrow-animations.json",
+      "sha256": "e4b2a349ba3f56299780524e227c77d4e08aeefe2127821618b4e15b6b34ffa2",
+      "size": 19659
+    },
+    {
+      "original": "Units/BronzeAge/RiverArcher/SourceArt/Before-Straight-Arrow-Browser-Review.json",
+      "archived": "Units/BronzeAge/RiverArcher/_TO BE DELETED/SourceArt/Before-Straight-Arrow-Browser-Review.json",
+      "sha256": "75d0d8974ef757df3545bb4eecc6fadeb9208f7f96381c5f647d12e9b80a69c4",
+      "size": 968
+    },
+    {
+      "original": "Units/BronzeAge/RiverArcher/SourceArt/Before-Straight-Arrow-Validation.json",
+      "archived": "Units/BronzeAge/RiverArcher/_TO BE DELETED/SourceArt/Before-Straight-Arrow-Validation.json",
+      "sha256": "c680773abb9e13344c3b1ba006c74d39e27f53b4128b538c50d81752b79c2309",
+      "size": 30451
+    },
+    {
+      "original": "Units/BronzeAge/RiverArcher/SourceArt/Before-Upright-Bow-animations.json",
+      "archived": "Units/BronzeAge/RiverArcher/_TO BE DELETED/SourceArt/Before-Upright-Bow-animations.json",
+      "sha256": "2ca5555f7ef8c43eab4d1107bdd1362bf00ca63b0a9f5a840b0a640d562eec3a",
+      "size": 19669
+    },
+    {
+      "original": "Units/BronzeAge/RiverArcher/SourceArt/Before-Upright-Bow-Browser-Review.json",
+      "archived": "Units/BronzeAge/RiverArcher/_TO BE DELETED/SourceArt/Before-Upright-Bow-Browser-Review.json",
+      "sha256": "bc201f022cb13a3f8562516da6b756d775a4e0955942f03f2dd006681e92d310",
+      "size": 1171
+    },
+    {
+      "original": "Units/BronzeAge/RiverArcher/SourceArt/Before-Upright-Bow-Validation.json",
+      "archived": "Units/BronzeAge/RiverArcher/_TO BE DELETED/SourceArt/Before-Upright-Bow-Validation.json",
+      "sha256": "7879b3493e6ed7be53bee98525aff77aa90121c2def917d69e98886ef9eadfa1",
+      "size": 30710
+    },
+    {
+      "original": "Units/BronzeAge/RiverArcher/SourceArt/check_topdown_review.py",
+      "archived": "Units/BronzeAge/RiverArcher/_TO BE DELETED/SourceArt/check_topdown_review.py",
+      "sha256": "fab60101c340f727897a7bd511f460027d5db55acbbc3a23a13b0eeeb3778d5d",
+      "size": 851
+    },
+    {
+      "original": "Units/BronzeAge/RiverArcher/SourceArt/compose_animations.py",
+      "archived": "Units/BronzeAge/RiverArcher/_TO BE DELETED/SourceArt/compose_animations.py",
+      "sha256": "9d5a31bf486c1054da69dda7919087df30216bb3c53249d558902d286c9f0af8",
+      "size": 8787
+    },
+    {
+      "original": "Units/BronzeAge/RiverArcher/SourceArt/compose_open_draw.py",
+      "archived": "Units/BronzeAge/RiverArcher/_TO BE DELETED/SourceArt/compose_open_draw.py",
+      "sha256": "91791f3c8692424b4ce8bc04bee937395f67261d78c7c7baaa2f90bfd56a3cb0",
+      "size": 4477
+    },
+    {
+      "original": "Units/BronzeAge/RiverArcher/SourceArt/compose_shooting_mechanics.py",
+      "archived": "Units/BronzeAge/RiverArcher/_TO BE DELETED/SourceArt/compose_shooting_mechanics.py",
+      "sha256": "d8f3c4fe8e15e75d0bacfe2a97f2d39b14eef1628275183ce6e1e5aec8eff0f0",
+      "size": 3537
+    },
+    {
+      "original": "Units/BronzeAge/RiverArcher/SourceArt/compose_straight_arrow.py",
+      "archived": "Units/BronzeAge/RiverArcher/_TO BE DELETED/SourceArt/compose_straight_arrow.py",
+      "sha256": "e754f79ec7768ad449f6753baabafbf2b566d1292749847b08375a10e4b13984",
+      "size": 4778
+    },
+    {
+      "original": "Units/BronzeAge/RiverArcher/SourceArt/compose_topdown_animations.py",
+      "archived": "Units/BronzeAge/RiverArcher/_TO BE DELETED/SourceArt/compose_topdown_animations.py",
+      "sha256": "c5bc125e7cf3499bbdc37f63ebc55e46aac2ef37e076cc73dc384c82d3c98b46",
+      "size": 5313
+    },
+    {
+      "original": "Units/BronzeAge/RiverArcher/SourceArt/compose_upright_bow.py",
+      "archived": "Units/BronzeAge/RiverArcher/_TO BE DELETED/SourceArt/compose_upright_bow.py",
+      "sha256": "87fae925f6ed4e8fd4506fc681151341551a14a65d20385824432cf1d8cd470e",
+      "size": 4891
+    },
+    {
+      "original": "Units/BronzeAge/RiverArcher/SourceArt/Composition.json",
+      "archived": "Units/BronzeAge/RiverArcher/_TO BE DELETED/SourceArt/Composition.json",
+      "sha256": "7181821320012045a4262d624c2d2e22f738f5710473deae3dd6a79ec5e6c819",
+      "size": 29865
+    },
+    {
+      "original": "Units/BronzeAge/RiverArcher/SourceArt/Death-Background-Correction.json",
+      "archived": "Units/BronzeAge/RiverArcher/_TO BE DELETED/SourceArt/Death-Background-Correction.json",
+      "sha256": "00567942160acc50426d6a2991064d95fa4db62cd3cb4c553db2beed584c4917",
+      "size": 2868
+    },
+    {
+      "original": "Units/BronzeAge/RiverArcher/SourceArt/Draft-Attack-OpenDraw-v2.png",
+      "archived": "Units/BronzeAge/RiverArcher/_TO BE DELETED/SourceArt/Draft-Attack-OpenDraw-v2.png",
+      "sha256": "9bd9d7c42cb750531770b4f8609e037fc84cb4898fc8f8e8f491d4183017c3a2",
+      "size": 2110251
+    },
+    {
+      "original": "Units/BronzeAge/RiverArcher/SourceArt/Draft-Attack-UprightBow-v5.png",
+      "archived": "Units/BronzeAge/RiverArcher/_TO BE DELETED/SourceArt/Draft-Attack-UprightBow-v5.png",
+      "sha256": "a592be6c30bda48f2631ac2c65ecdd5c02f0a6903d5f495d7c18212e729fcdac",
+      "size": 1708665
+    },
+    {
+      "original": "Units/BronzeAge/RiverArcher/SourceArt/Draft-Charge-Attack-OpenDraw-v2.png",
+      "archived": "Units/BronzeAge/RiverArcher/_TO BE DELETED/SourceArt/Draft-Charge-Attack-OpenDraw-v2.png",
+      "sha256": "e1744c14564cdebe7cdc856e7015661063652147f2748035ec7cb30b04123172",
+      "size": 2178987
+    },
+    {
+      "original": "Units/BronzeAge/RiverArcher/SourceArt/Draft-Charge-Attack-UprightBow-v5.png",
+      "archived": "Units/BronzeAge/RiverArcher/_TO BE DELETED/SourceArt/Draft-Charge-Attack-UprightBow-v5.png",
+      "sha256": "16a37c5e2ca13aa5e1a34c29c9ca4f8ae357f1b96e61fceed7b27e04ff564067",
+      "size": 1748569
+    },
+    {
+      "original": "Units/BronzeAge/RiverArcher/SourceArt/Draft-Mechanics-1-ready-v10.png",
+      "archived": "Units/BronzeAge/RiverArcher/_TO BE DELETED/SourceArt/Draft-Mechanics-1-ready-v10.png",
+      "sha256": "c606b804280dee47b749e3710b4a173c4e04e18e584f0f8263e0b6a926b280ba",
+      "size": 907903
+    },
+    {
+      "original": "Units/BronzeAge/RiverArcher/SourceArt/Draft-Mechanics-2-drawing-v10.png",
+      "archived": "Units/BronzeAge/RiverArcher/_TO BE DELETED/SourceArt/Draft-Mechanics-2-drawing-v10.png",
+      "sha256": "77c1a31de42c207e0a5a3502204d7a02b29044f230de5fdb7307b28820a70775",
+      "size": 1029780
+    },
+    {
+      "original": "Units/BronzeAge/RiverArcher/SourceArt/Draft-Mechanics-3-full-draw-v10.png",
+      "archived": "Units/BronzeAge/RiverArcher/_TO BE DELETED/SourceArt/Draft-Mechanics-3-full-draw-v10.png",
+      "sha256": "fb316abaf775a119c1c3389bfefed972eb14405876c2d156fd79881f6a4222b3",
+      "size": 1037906
+    },
+    {
+      "original": "Units/BronzeAge/RiverArcher/SourceArt/Draft-Mechanics-4-release-v10.png",
+      "archived": "Units/BronzeAge/RiverArcher/_TO BE DELETED/SourceArt/Draft-Mechanics-4-release-v10.png",
+      "sha256": "b95bac5b52872dc6730737983087666db23c47aed26d8e0dee6ee40c28e56cbf",
+      "size": 955947
+    },
+    {
+      "original": "Units/BronzeAge/RiverArcher/SourceArt/Draft-Mechanics-5-followthrough-v10.png",
+      "archived": "Units/BronzeAge/RiverArcher/_TO BE DELETED/SourceArt/Draft-Mechanics-5-followthrough-v10.png",
+      "sha256": "2fb869af9af2d703700cd253f6bbcbd7998d8a447661a761adaf814bc138954d",
+      "size": 963499
+    },
+    {
+      "original": "Units/BronzeAge/RiverArcher/SourceArt/Draft-Mechanics-6-recovery-v10.png",
+      "archived": "Units/BronzeAge/RiverArcher/_TO BE DELETED/SourceArt/Draft-Mechanics-6-recovery-v10.png",
+      "sha256": "8317629eec57e8cf911a1a151e1d08253fb495f5d336bf61d693dd3aa5af7715",
+      "size": 926120
+    },
+    {
+      "original": "Units/BronzeAge/RiverArcher/SourceArt/Draw-Body-Reference.png",
+      "archived": "Units/BronzeAge/RiverArcher/_TO BE DELETED/SourceArt/Draw-Body-Reference.png",
+      "sha256": "f115a833a2291f461811f2255dbd0216d0410388a71cbc2287f82d8a2cb1487b",
+      "size": 79360
+    },
+    {
+      "original": "Units/BronzeAge/RiverArcher/SourceArt/Native-Attack-OpenDraw-v3.png",
+      "archived": "Units/BronzeAge/RiverArcher/_TO BE DELETED/SourceArt/Native-Attack-OpenDraw-v3.png",
+      "sha256": "e968eac5cc4d07826b95d2e78225941c6c9653e9ca2b9a71cc1dfbc1b2d6b1d3",
+      "size": 2126728
+    },
+    {
+      "original": "Units/BronzeAge/RiverArcher/SourceArt/Native-Attack-StraightArrow-v4.png",
+      "archived": "Units/BronzeAge/RiverArcher/_TO BE DELETED/SourceArt/Native-Attack-StraightArrow-v4.png",
+      "sha256": "e2a9b632c4e61df3a7050ea35cbe7df50778be2113dca6778a55f3aef1ced269",
+      "size": 2115550
+    },
+    {
+      "original": "Units/BronzeAge/RiverArcher/SourceArt/Native-Attack-UprightBow-v6.png",
+      "archived": "Units/BronzeAge/RiverArcher/_TO BE DELETED/SourceArt/Native-Attack-UprightBow-v6.png",
+      "sha256": "643c1025fa6f12ff439cb6edad43671147cfc25cc0a3973c6bb8f89265113b69",
+      "size": 1778444
+    },
+    {
+      "original": "Units/BronzeAge/RiverArcher/SourceArt/Native-Attack-v1.png",
+      "archived": "Units/BronzeAge/RiverArcher/_TO BE DELETED/SourceArt/Native-Attack-v1.png",
+      "sha256": "676324e637372d769ce21139a418f70b1f4bc4153b30c56b84ceaaf1b6137761",
+      "size": 2261481
+    },
+    {
+      "original": "Units/BronzeAge/RiverArcher/SourceArt/Native-Charge-Attack-OpenDraw-v3.png",
+      "archived": "Units/BronzeAge/RiverArcher/_TO BE DELETED/SourceArt/Native-Charge-Attack-OpenDraw-v3.png",
+      "sha256": "63c3889c41358df4eb2f5723fa24bfa0240a7fadc505192bb0d779cd32356a7d",
+      "size": 2178172
+    },
+    {
+      "original": "Units/BronzeAge/RiverArcher/SourceArt/Native-Charge-Attack-StraightArrow-v4.png",
+      "archived": "Units/BronzeAge/RiverArcher/_TO BE DELETED/SourceArt/Native-Charge-Attack-StraightArrow-v4.png",
+      "sha256": "e3ada75c85b3c5e57dbc1938e22128bcd87c17f25c493b86a64759e95018d561",
+      "size": 2171331
+    },
+    {
+      "original": "Units/BronzeAge/RiverArcher/SourceArt/Native-Charge-Attack-UprightBow-Clean-v9.png",
+      "archived": "Units/BronzeAge/RiverArcher/_TO BE DELETED/SourceArt/Native-Charge-Attack-UprightBow-Clean-v9.png",
+      "sha256": "9dd09da98b8e050f90c34746671361ac802ffd9db0d4d0237e71ebc5a4a25cc6",
+      "size": 2090198
+    },
+    {
+      "original": "Units/BronzeAge/RiverArcher/SourceArt/Native-Charge-Attack-UprightBow-v6.png",
+      "archived": "Units/BronzeAge/RiverArcher/_TO BE DELETED/SourceArt/Native-Charge-Attack-UprightBow-v6.png",
+      "sha256": "678434a13a022feea7d959cef1b65669901bfe24ff4e811733a1a7d12407c561",
+      "size": 1783386
+    },
+    {
+      "original": "Units/BronzeAge/RiverArcher/SourceArt/Native-Charge-Attack-UprightBow-v7.png",
+      "archived": "Units/BronzeAge/RiverArcher/_TO BE DELETED/SourceArt/Native-Charge-Attack-UprightBow-v7.png",
+      "sha256": "f19b3c5d85bed9333292d31aa5576908c3a59690f2c2c311fb68b34f4bc97328",
+      "size": 1781789
+    },
+    {
+      "original": "Units/BronzeAge/RiverArcher/SourceArt/Native-Charge-Attack-UprightBow-v8.png",
+      "archived": "Units/BronzeAge/RiverArcher/_TO BE DELETED/SourceArt/Native-Charge-Attack-UprightBow-v8.png",
+      "sha256": "3bad3b76d1f53768e39d8db510d6332becd61894dc0516d9f6aaabbd911ba0d5",
+      "size": 2163078
+    },
+    {
+      "original": "Units/BronzeAge/RiverArcher/SourceArt/Native-Charge-Attack-v1.png",
+      "archived": "Units/BronzeAge/RiverArcher/_TO BE DELETED/SourceArt/Native-Charge-Attack-v1.png",
+      "sha256": "892ab5e30c52f0f6f83b945cee8b17b6dddf15b2a535bc1362383545c5b11830",
+      "size": 2195384
+    },
+    {
+      "original": "Units/BronzeAge/RiverArcher/SourceArt/Native-Charge-v1.png",
+      "archived": "Units/BronzeAge/RiverArcher/_TO BE DELETED/SourceArt/Native-Charge-v1.png",
+      "sha256": "25a63fd7f8835aa912835b8560796c389acf5ab7f37b14c83622c60bdb7acac3",
+      "size": 2190304
+    },
+    {
+      "original": "Units/BronzeAge/RiverArcher/SourceArt/Native-Charged-Impact-v1.png",
+      "archived": "Units/BronzeAge/RiverArcher/_TO BE DELETED/SourceArt/Native-Charged-Impact-v1.png",
+      "sha256": "ae5d5af69c7bdd89793320f6028208e39c409bbca0a6e3d482db65559f44ba99",
+      "size": 2309820
+    },
+    {
+      "original": "Units/BronzeAge/RiverArcher/SourceArt/Native-Death-Back-Clean-v2.png",
+      "archived": "Units/BronzeAge/RiverArcher/_TO BE DELETED/SourceArt/Native-Death-Back-Clean-v2.png",
+      "sha256": "22475e57e2b5f9657ce548c5f412a04dd7ef7bfc6ed4d281f7bd702a883bcb21",
+      "size": 2175809
+    },
+    {
+      "original": "Units/BronzeAge/RiverArcher/SourceArt/Native-Death-Back-v1.png",
+      "archived": "Units/BronzeAge/RiverArcher/_TO BE DELETED/SourceArt/Native-Death-Back-v1.png",
+      "sha256": "08e118d550b9da42c843ffdd1c1fe3f457b6267700aec43a1295343d9c511737",
+      "size": 2215748
+    },
+    {
+      "original": "Units/BronzeAge/RiverArcher/SourceArt/Native-Death-v1.png",
+      "archived": "Units/BronzeAge/RiverArcher/_TO BE DELETED/SourceArt/Native-Death-v1.png",
+      "sha256": "0c3cf3344f3b8ffaaa871f5afa992824c4f8927b151821b4a7ef452dd882f434",
+      "size": 2090777
+    },
+    {
+      "original": "Units/BronzeAge/RiverArcher/SourceArt/Native-Hit-v1.png",
+      "archived": "Units/BronzeAge/RiverArcher/_TO BE DELETED/SourceArt/Native-Hit-v1.png",
+      "sha256": "8a0366174fcc1f9a9e5e4b7924874e4339697cb8e7d0072a15dc2cbdae2044f7",
+      "size": 2247429
+    },
+    {
+      "original": "Units/BronzeAge/RiverArcher/SourceArt/Native-Idle-Animated-v1.png",
+      "archived": "Units/BronzeAge/RiverArcher/_TO BE DELETED/SourceArt/Native-Idle-Animated-v1.png",
+      "sha256": "b817dcf19dc4a6cfcd167a331428137c41332f6e95b6612d7f387a4f994db4b4",
+      "size": 2275383
+    },
+    {
+      "original": "Units/BronzeAge/RiverArcher/SourceArt/Native-Idle-TopDown-v2.png",
+      "archived": "Units/BronzeAge/RiverArcher/_TO BE DELETED/SourceArt/Native-Idle-TopDown-v2.png",
+      "sha256": "9a4b77881af9f684baa56fac5d16438ea5047d3ec108f28e20a29d54fc83dd17",
+      "size": 921211
+    },
+    {
+      "original": "Units/BronzeAge/RiverArcher/SourceArt/Native-Running-v1.png",
+      "archived": "Units/BronzeAge/RiverArcher/_TO BE DELETED/SourceArt/Native-Running-v1.png",
+      "sha256": "5e1976e91313a4f445b02e5b445079b90e3a01906315d5693b70d67f9f88fb56",
+      "size": 2269256
+    },
+    {
+      "original": "Units/BronzeAge/RiverArcher/SourceArt/Native-TopDown-attack-v1.png",
+      "archived": "Units/BronzeAge/RiverArcher/_TO BE DELETED/SourceArt/Native-TopDown-attack-v1.png",
+      "sha256": "93b8143e81be613270e5197a7d14015c16aca446bc723821cd7efcbc216478bf",
+      "size": 2181723
+    },
+    {
+      "original": "Units/BronzeAge/RiverArcher/SourceArt/Native-TopDown-attack-v3.png",
+      "archived": "Units/BronzeAge/RiverArcher/_TO BE DELETED/SourceArt/Native-TopDown-attack-v3.png",
+      "sha256": "688d7194f48cd95eda758c0da2108b0a512306364db56d4db5ecdb6aa5e20e32",
+      "size": 2050459
+    },
+    {
+      "original": "Units/BronzeAge/RiverArcher/SourceArt/Native-TopDown-charge-attack-v1.png",
+      "archived": "Units/BronzeAge/RiverArcher/_TO BE DELETED/SourceArt/Native-TopDown-charge-attack-v1.png",
+      "sha256": "81508b82accfb2de6aeae1ff20e433ed1c4dfe9b7594855534c2ff4b271cb7e5",
+      "size": 2141206
+    },
+    {
+      "original": "Units/BronzeAge/RiverArcher/SourceArt/Native-TopDown-charge-attack-v3.png",
+      "archived": "Units/BronzeAge/RiverArcher/_TO BE DELETED/SourceArt/Native-TopDown-charge-attack-v3.png",
+      "sha256": "ebc82c7856c099ac487adee24cabc67319b0eaca4ac0f8bf7ad401c77b3eed5c",
+      "size": 1891621
+    },
+    {
+      "original": "Units/BronzeAge/RiverArcher/SourceArt/Native-TopDown-charged-v1.png",
+      "archived": "Units/BronzeAge/RiverArcher/_TO BE DELETED/SourceArt/Native-TopDown-charged-v1.png",
+      "sha256": "8392517d5bae36563420568dcf95c8f5fc6c240cabd5380c64159b9ce4528cbd",
+      "size": 2187345
+    },
+    {
+      "original": "Units/BronzeAge/RiverArcher/SourceArt/Native-TopDown-charged-v2.png",
+      "archived": "Units/BronzeAge/RiverArcher/_TO BE DELETED/SourceArt/Native-TopDown-charged-v2.png",
+      "sha256": "bea8677239a6d92b5c81fd3fb4d2586657ffb3a886b601e8237945213aba8c1a",
+      "size": 2082656
+    },
+    {
+      "original": "Units/BronzeAge/RiverArcher/SourceArt/Native-TopDown-death-back-v1.png",
+      "archived": "Units/BronzeAge/RiverArcher/_TO BE DELETED/SourceArt/Native-TopDown-death-back-v1.png",
+      "sha256": "af3c89119f08e2af5499fef732ec9f5e3846d48d45cea0386c5dedc279f0857d",
+      "size": 2068835
+    },
+    {
+      "original": "Units/BronzeAge/RiverArcher/SourceArt/Native-TopDown-death-back-v2.png",
+      "archived": "Units/BronzeAge/RiverArcher/_TO BE DELETED/SourceArt/Native-TopDown-death-back-v2.png",
+      "sha256": "5ae56ac7abf12a8920de9fd5774fd4c753f80408c8bf00cb6ff00e805fb0efe4",
+      "size": 1894816
+    },
+    {
+      "original": "Units/BronzeAge/RiverArcher/SourceArt/Native-TopDown-death-v1.png",
+      "archived": "Units/BronzeAge/RiverArcher/_TO BE DELETED/SourceArt/Native-TopDown-death-v1.png",
+      "sha256": "007f762ce90c328bd4f6126eb2ddbb08a9c2bb50935810973548bf764af32ccb",
+      "size": 2117513
+    },
+    {
+      "original": "Units/BronzeAge/RiverArcher/SourceArt/Native-TopDown-hit-v1.png",
+      "archived": "Units/BronzeAge/RiverArcher/_TO BE DELETED/SourceArt/Native-TopDown-hit-v1.png",
+      "sha256": "2748c9f1bd3b94f5f7d53834d9a131fc6f37b76e8fd4ce0099f803e9bbc5d388",
+      "size": 2148998
+    },
+    {
+      "original": "Units/BronzeAge/RiverArcher/SourceArt/Native-TopDown-idle-v1.png",
+      "archived": "Units/BronzeAge/RiverArcher/_TO BE DELETED/SourceArt/Native-TopDown-idle-v1.png",
+      "sha256": "cdf41827a3cc3134ce39b1a2670d8eef09e17e18bb52f470e82a11c790ee9adf",
+      "size": 2282535
+    },
+    {
+      "original": "Units/BronzeAge/RiverArcher/SourceArt/Native-TopDown-reload-v1.png",
+      "archived": "Units/BronzeAge/RiverArcher/_TO BE DELETED/SourceArt/Native-TopDown-reload-v1.png",
+      "sha256": "41e799f61a49195df1bab8cee75a2d9e093240cda09ec921cfbb3735a20f3b53",
+      "size": 2230337
+    },
+    {
+      "original": "Units/BronzeAge/RiverArcher/SourceArt/Native-TopDown-reload-v2.png",
+      "archived": "Units/BronzeAge/RiverArcher/_TO BE DELETED/SourceArt/Native-TopDown-reload-v2.png",
+      "sha256": "2b67545285c87b43876a08cb6429fc986cb60bcd368cd36288db6dd2cde7cb32",
+      "size": 2067179
+    },
+    {
+      "original": "Units/BronzeAge/RiverArcher/SourceArt/Native-TopDown-running-v1.png",
+      "archived": "Units/BronzeAge/RiverArcher/_TO BE DELETED/SourceArt/Native-TopDown-running-v1.png",
+      "sha256": "bbd53a6695259d5a610b7bc310482c2f46906974c536bbc1f5cca0f780139770",
+      "size": 2135380
+    },
+    {
+      "original": "Units/BronzeAge/RiverArcher/SourceArt/Native-TopDown-running-v2.png",
+      "archived": "Units/BronzeAge/RiverArcher/_TO BE DELETED/SourceArt/Native-TopDown-running-v2.png",
+      "sha256": "bc9917e3eb8d0252e825b365c514d233fdc2c11b92f9352eb3262ba60080cfa9",
+      "size": 2151779
+    },
+    {
+      "original": "Units/BronzeAge/RiverArcher/SourceArt/Native-TopDown-running-v3.png",
+      "archived": "Units/BronzeAge/RiverArcher/_TO BE DELETED/SourceArt/Native-TopDown-running-v3.png",
+      "sha256": "eb3388d44ba3cd1d6a46778ceae96c93c6f153da023e514c5be7c869da36a93a",
+      "size": 2371735
+    },
+    {
+      "original": "Units/BronzeAge/RiverArcher/SourceArt/Open-Draw-Bake.json",
+      "archived": "Units/BronzeAge/RiverArcher/_TO BE DELETED/SourceArt/Open-Draw-Bake.json",
+      "sha256": "60728e5af0fc2df1e7a9d34eb84e3ecaf22d4fd802de2f233a51d1a708eab17a",
+      "size": 8311
+    },
+    {
+      "original": "Units/BronzeAge/RiverArcher/SourceArt/Open-Draw-Generation.json",
+      "archived": "Units/BronzeAge/RiverArcher/_TO BE DELETED/SourceArt/Open-Draw-Generation.json",
+      "sha256": "c67608bdebc9bab57dba5bda2f71c22be94ead623c3d2883312aed0ddd22efa0",
+      "size": 10414
+    },
+    {
+      "original": "Units/BronzeAge/RiverArcher/SourceArt/prepare_topdown_review.py",
+      "archived": "Units/BronzeAge/RiverArcher/_TO BE DELETED/SourceArt/prepare_topdown_review.py",
+      "sha256": "0c84c50c571a778540e894608f02ba456c5a7791668b4b578188230b91c1ba99",
+      "size": 2007
+    },
+    {
+      "original": "Units/BronzeAge/RiverArcher/SourceArt/Shooting-Mechanics-Generation.json",
+      "archived": "Units/BronzeAge/RiverArcher/_TO BE DELETED/SourceArt/Shooting-Mechanics-Generation.json",
+      "sha256": "792c8f224f970b31a770a0c28cba464e5b429c0b4bd73d387fa8b41bd3a5bae5",
+      "size": 13919
+    },
+    {
+      "original": "Units/BronzeAge/RiverArcher/SourceArt/Straight-Arrow-Bake.json",
+      "archived": "Units/BronzeAge/RiverArcher/_TO BE DELETED/SourceArt/Straight-Arrow-Bake.json",
+      "sha256": "e97ff73a12193d4dbf810dcf68988dd2b23bc122063aef084914879371be04c3",
+      "size": 8513
+    },
+    {
+      "original": "Units/BronzeAge/RiverArcher/SourceArt/Straight-Arrow-Generation.json",
+      "archived": "Units/BronzeAge/RiverArcher/_TO BE DELETED/SourceArt/Straight-Arrow-Generation.json",
+      "sha256": "0d97d2fc8b1ef917855bfaadf36bb3addfe7fb9ede41d40763d7f20b64aca178",
+      "size": 3978
+    },
+    {
+      "original": "Units/BronzeAge/RiverArcher/SourceArt/TopDown-Animation-Generation.json",
+      "archived": "Units/BronzeAge/RiverArcher/_TO BE DELETED/SourceArt/TopDown-Animation-Generation.json",
+      "sha256": "301ac7d95cc1f5302eda14621be90d0e65e1ce6c8c7a4d8fe663fd1da8cdecf9",
+      "size": 27915
+    },
+    {
+      "original": "Units/BronzeAge/RiverArcher/SourceArt/TopDown-Composition.json",
+      "archived": "Units/BronzeAge/RiverArcher/_TO BE DELETED/SourceArt/TopDown-Composition.json",
+      "sha256": "ae0a9a531c0559c9402ecd93fa35b3befa7f93b797c4cda8ce4fa58e7acc9409",
+      "size": 29336
+    },
+    {
+      "original": "Units/BronzeAge/RiverArcher/SourceArt/TopDown-Generation-v2.json",
+      "archived": "Units/BronzeAge/RiverArcher/_TO BE DELETED/SourceArt/TopDown-Generation-v2.json",
+      "sha256": "f4bb605cb41369ac3ea9b015e4c35b3bca9adbe9b66f292143dbc384a457c511",
+      "size": 1432
+    },
+    {
+      "original": "Units/BronzeAge/RiverArcher/SourceArt/Upright-Bow-Bake.json",
+      "archived": "Units/BronzeAge/RiverArcher/_TO BE DELETED/SourceArt/Upright-Bow-Bake.json",
+      "sha256": "efe5b09a26bb651261efea39eb6fcf866b7b458d35663023a31556affa33297a",
+      "size": 8339
+    },
+    {
+      "original": "Units/BronzeAge/RiverArcher/SourceArt/Upright-Bow-Clean-Record.json",
+      "archived": "Units/BronzeAge/RiverArcher/_TO BE DELETED/SourceArt/Upright-Bow-Clean-Record.json",
+      "sha256": "20036b59064e631cf3ce3e96ad4354f32c692c21d3711081080a64d87b05096c",
+      "size": 1148
+    },
+    {
+      "original": "Units/BronzeAge/RiverArcher/SourceArt/Upright-Bow-Generation.json",
+      "archived": "Units/BronzeAge/RiverArcher/_TO BE DELETED/SourceArt/Upright-Bow-Generation.json",
+      "sha256": "5ea7537a74bfe80b33b23dff5787e4a74bbfe3ea69783b4e4365091911f6a57a",
+      "size": 13962
+    },
+    {
+      "original": "Units/BronzeAge/RiverArcher/Validation.json",
+      "archived": "Units/BronzeAge/RiverArcher/_TO BE DELETED/Validation.json",
+      "sha256": "27ed26bd3974e8ed4001f6476ae57b0057753394e57b0f5d6c8c842c9589a7a6",
+      "size": 31374
+    }
+  ],
+  "restored": [
+    {
+      "from": "Units/BronzeAge/RiverArcher/_TO BE DELETED/TopDownReview/Actor_Review.html",
+      "to": "Units/BronzeAge/RiverArcher/TopDownReview/Actor_Review.html",
+      "sha256": "f0e6b4a2488815360fac7de068e36926695f3389364c346f99e71e15ff306a21",
+      "reason": "User clarified that TopDownReview is the correct selection"
+    },
+    {
+      "from": "Units/BronzeAge/RiverArcher/_TO BE DELETED/TopDownReview/animations.json",
+      "to": "Units/BronzeAge/RiverArcher/TopDownReview/animations.json",
+      "sha256": "cdd171769551e2b0475ac4ca696acb6ee01bc42bcd7ce70be003035a2c69d4ba",
+      "reason": "User clarified that TopDownReview is the correct selection"
+    },
+    {
+      "from": "Units/BronzeAge/RiverArcher/_TO BE DELETED/TopDownReview/attack-v3.png",
+      "to": "Units/BronzeAge/RiverArcher/TopDownReview/attack-v3.png",
+      "sha256": "966e65e40ee2b13d81791794c99f4dcb65302234a8abdf77c5917537a04f862d",
+      "reason": "User clarified that TopDownReview is the correct selection"
+    },
+    {
+      "from": "Units/BronzeAge/RiverArcher/_TO BE DELETED/TopDownReview/Browser-Review.json",
+      "to": "Units/BronzeAge/RiverArcher/TopDownReview/Browser-Review.json",
+      "sha256": "0885648eb29c23fbc8af51c09db62622af88d6c81b11249c66ce1ccc4bfb0615",
+      "reason": "User clarified that TopDownReview is the correct selection"
+    },
+    {
+      "from": "Units/BronzeAge/RiverArcher/_TO BE DELETED/TopDownReview/charge-attack-v3.png",
+      "to": "Units/BronzeAge/RiverArcher/TopDownReview/charge-attack-v3.png",
+      "sha256": "b10e48f7319e2bf5e8ae663008d8e903e16dc0edbb672467370d0e170d8f8644",
+      "reason": "User clarified that TopDownReview is the correct selection"
+    },
+    {
+      "from": "Units/BronzeAge/RiverArcher/_TO BE DELETED/TopDownReview/charge-v3.png",
+      "to": "Units/BronzeAge/RiverArcher/TopDownReview/charge-v3.png",
+      "sha256": "54ce5af94f6930a3c4930edf2778c61f036fc37d0e4e218b92553a0aead746ba",
+      "reason": "User clarified that TopDownReview is the correct selection"
+    },
+    {
+      "from": "Units/BronzeAge/RiverArcher/_TO BE DELETED/TopDownReview/charged-v2.png",
+      "to": "Units/BronzeAge/RiverArcher/TopDownReview/charged-v2.png",
+      "sha256": "6e403214fcb0019632bf73ee51124bc03f6e900bc0ae31e302a2f2fb1639f1d7",
+      "reason": "User clarified that TopDownReview is the correct selection"
+    },
+    {
+      "from": "Units/BronzeAge/RiverArcher/_TO BE DELETED/TopDownReview/death-back-v2.png",
+      "to": "Units/BronzeAge/RiverArcher/TopDownReview/death-back-v2.png",
+      "sha256": "50190e4097550e599cba92da03a9165cbc02d51078cdbdb8f1360eb6d7b8ed35",
+      "reason": "User clarified that TopDownReview is the correct selection"
+    },
+    {
+      "from": "Units/BronzeAge/RiverArcher/_TO BE DELETED/TopDownReview/death-v1.png",
+      "to": "Units/BronzeAge/RiverArcher/TopDownReview/death-v1.png",
+      "sha256": "2662f04d1b84d9fc527272a9b88533219138348c9e4777df20604bb670e9294c",
+      "reason": "User clarified that TopDownReview is the correct selection"
+    },
+    {
+      "from": "Units/BronzeAge/RiverArcher/_TO BE DELETED/TopDownReview/Generation.json",
+      "to": "Units/BronzeAge/RiverArcher/TopDownReview/Generation.json",
+      "sha256": "e565d5307646f3227940d4e7029300c682eeccd1369efe6418179b34e37112f7",
+      "reason": "User clarified that TopDownReview is the correct selection"
+    },
+    {
+      "from": "Units/BronzeAge/RiverArcher/_TO BE DELETED/TopDownReview/hit-v1.png",
+      "to": "Units/BronzeAge/RiverArcher/TopDownReview/hit-v1.png",
+      "sha256": "4177e1d3859c8d621447ce2d7bf54eabcf7f8a78dc78acc182c7742ff23e4a1f",
+      "reason": "User clarified that TopDownReview is the correct selection"
+    },
+    {
+      "from": "Units/BronzeAge/RiverArcher/_TO BE DELETED/TopDownReview/Idle-TopDown-v2.png",
+      "to": "Units/BronzeAge/RiverArcher/TopDownReview/Idle-TopDown-v2.png",
+      "sha256": "3acc7dd50fe736300f50b2deff372e43e20188e852c33a97754d8c978ae30b2e",
+      "reason": "User clarified that TopDownReview is the correct selection"
+    },
+    {
+      "from": "Units/BronzeAge/RiverArcher/_TO BE DELETED/TopDownReview/idle-v1.png",
+      "to": "Units/BronzeAge/RiverArcher/TopDownReview/idle-v1.png",
+      "sha256": "ae97a0c9d11e0c9694312b199b6553269ef41d06aae475610edc7e92c6c1f480",
+      "reason": "User clarified that TopDownReview is the correct selection"
+    },
+    {
+      "from": "Units/BronzeAge/RiverArcher/_TO BE DELETED/TopDownReview/README.md",
+      "to": "Units/BronzeAge/RiverArcher/TopDownReview/README.md",
+      "sha256": "54f9ebcf0f95d816c42a93d3d4fab40bc702bb54159428279e8df231c10c064c",
+      "reason": "User clarified that TopDownReview is the correct selection"
+    },
+    {
+      "from": "Units/BronzeAge/RiverArcher/_TO BE DELETED/TopDownReview/reload-v2.png",
+      "to": "Units/BronzeAge/RiverArcher/TopDownReview/reload-v2.png",
+      "sha256": "ddfcc8d7249337959b64f83c9249d96c9a9ed8642c8ec397bb337c82cf073d35",
+      "reason": "User clarified that TopDownReview is the correct selection"
+    },
+    {
+      "from": "Units/BronzeAge/RiverArcher/_TO BE DELETED/TopDownReview/running-v3.png",
+      "to": "Units/BronzeAge/RiverArcher/TopDownReview/running-v3.png",
+      "sha256": "54ce5af94f6930a3c4930edf2778c61f036fc37d0e4e218b92553a0aead746ba",
+      "reason": "User clarified that TopDownReview is the correct selection"
+    },
+    {
+      "from": "Units/BronzeAge/RiverArcher/_TO BE DELETED/TopDownReview/Validation.json",
+      "to": "Units/BronzeAge/RiverArcher/TopDownReview/Validation.json",
+      "sha256": "715c402b7f65ab13999f68b26bb34fbe3e2b57648eca58cb1dbe3067cad13ba7",
+      "reason": "User clarified that TopDownReview is the correct selection"
+    }
+  ]
+}

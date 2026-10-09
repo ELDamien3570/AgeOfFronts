@@ -1,0 +1,360 @@
+{
+  "folder": "Units/EarlyModern/RenaissancePikeman/_TO BE DELETED",
+  "created": "2026-10-09T03:15:53.711Z",
+  "files": [
+    {
+      "original": "Units/EarlyModern/RenaissancePikeman/Generation.json",
+      "archived": "Units/EarlyModern/RenaissancePikeman/_TO BE DELETED/Generation.json",
+      "sha256": "1bcdc541dbf76c98f4700fd8e0d2ca8ee739cd2e62f4232b9f169372604745ba",
+      "size": 33077
+    },
+    {
+      "original": "Units/EarlyModern/RenaissancePikeman/Idle-Overhead-v3.png",
+      "archived": "Units/EarlyModern/RenaissancePikeman/_TO BE DELETED/Idle-Overhead-v3.png",
+      "sha256": "be310e15a27f374d797b784ad6b89ad132c983ffec51fab2f6d5a7fc9cbf48ec",
+      "size": 426628
+    },
+    {
+      "original": "Units/EarlyModern/RenaissancePikeman/Idle-Overhead-v4.png",
+      "archived": "Units/EarlyModern/RenaissancePikeman/_TO BE DELETED/Idle-Overhead-v4.png",
+      "sha256": "f4e5922d825a61ae98b7703d97fea8f6a32dd0f9f3f34ff30011a18f7faacf23",
+      "size": 450399
+    },
+    {
+      "original": "Units/EarlyModern/RenaissancePikeman/Idle-Photo-v2.png",
+      "archived": "Units/EarlyModern/RenaissancePikeman/_TO BE DELETED/Idle-Photo-v2.png",
+      "sha256": "cfecceb70ecd7b8d1e8cc9486bb1c12fac75429cdca5b2373fe9cc3742914b63",
+      "size": 565300
+    },
+    {
+      "original": "Units/EarlyModern/RenaissancePikeman/Idle-Review-v1.jpg",
+      "archived": "Units/EarlyModern/RenaissancePikeman/_TO BE DELETED/Idle-Review-v1.jpg",
+      "sha256": "9a6c9107f99b6a95fd348604c796fe190e8dcafae8af6761b9208c2a6977adfa",
+      "size": 32257
+    },
+    {
+      "original": "Units/EarlyModern/RenaissancePikeman/Idle-Review-v2.jpg",
+      "archived": "Units/EarlyModern/RenaissancePikeman/_TO BE DELETED/Idle-Review-v2.jpg",
+      "sha256": "e123103ffd79dc5d629da7d97dcdb0bcaf50ae8ab47d52ea03a219ad7207de10",
+      "size": 26028
+    },
+    {
+      "original": "Units/EarlyModern/RenaissancePikeman/Idle-Review-v3.jpg",
+      "archived": "Units/EarlyModern/RenaissancePikeman/_TO BE DELETED/Idle-Review-v3.jpg",
+      "sha256": "902dd4a75471759fb5e80cc6f191af043e4330148ec6161b507c169943970d4d",
+      "size": 21001
+    },
+    {
+      "original": "Units/EarlyModern/RenaissancePikeman/Idle-Review-v4.jpg",
+      "archived": "Units/EarlyModern/RenaissancePikeman/_TO BE DELETED/Idle-Review-v4.jpg",
+      "sha256": "e9cf6775c2aca06b22919065edf6fc05d7abbb97ffdc9dcf82206cd5d4d181e0",
+      "size": 22073
+    },
+    {
+      "original": "Units/EarlyModern/RenaissancePikeman/Idle-v1.png",
+      "archived": "Units/EarlyModern/RenaissancePikeman/_TO BE DELETED/Idle-v1.png",
+      "sha256": "d572def2821d823f5cb958d0f0b592da8e4655f7e8072ffc9c1aa5e90b0a51c8",
+      "size": 626514
+    },
+    {
+      "original": "Units/EarlyModern/RenaissancePikeman/README.md",
+      "archived": "Units/EarlyModern/RenaissancePikeman/_TO BE DELETED/README.md",
+      "sha256": "551d5e14bf9d907f2521189e158440c63acf92b847304cff18108c3894e04cc0",
+      "size": 589
+    },
+    {
+      "original": "Units/EarlyModern/RenaissancePikeman/Review-All-Animations-v1.jpg",
+      "archived": "Units/EarlyModern/RenaissancePikeman/_TO BE DELETED/Review-All-Animations-v1.jpg",
+      "sha256": "1c323d871b60c19bb890fc520cc9fbda234082add5c8ef069cf7f0d75b6294a3",
+      "size": 171728
+    },
+    {
+      "original": "Units/EarlyModern/RenaissancePikeman/Review-attack-v1.webp",
+      "archived": "Units/EarlyModern/RenaissancePikeman/_TO BE DELETED/Review-attack-v1.webp",
+      "sha256": "1fbc7c79fd32e0cb4be2aa05fe39331df15fd5a558003122e08a71f5e50a2779",
+      "size": 42996
+    },
+    {
+      "original": "Units/EarlyModern/RenaissancePikeman/Review-charge-attack-v1.webp",
+      "archived": "Units/EarlyModern/RenaissancePikeman/_TO BE DELETED/Review-charge-attack-v1.webp",
+      "sha256": "7857397c9072f484886af87f5c76149ff641597e35b431d95eaf932c5b7c8271",
+      "size": 46052
+    },
+    {
+      "original": "Units/EarlyModern/RenaissancePikeman/Review-charge-v1.webp",
+      "archived": "Units/EarlyModern/RenaissancePikeman/_TO BE DELETED/Review-charge-v1.webp",
+      "sha256": "20f393858c4485149d5f9bdfa4a19fb1fe36edfdd674d4ade660525cf3cf8acb",
+      "size": 44136
+    },
+    {
+      "original": "Units/EarlyModern/RenaissancePikeman/Review-charged-v1.webp",
+      "archived": "Units/EarlyModern/RenaissancePikeman/_TO BE DELETED/Review-charged-v1.webp",
+      "sha256": "5711595e280026b3abb47b39e2654cfd741642367240c89c941acf8ba3d46dae",
+      "size": 51660
+    },
+    {
+      "original": "Units/EarlyModern/RenaissancePikeman/Review-death-back-v1.webp",
+      "archived": "Units/EarlyModern/RenaissancePikeman/_TO BE DELETED/Review-death-back-v1.webp",
+      "sha256": "21af19afc668218a5f7e3ea28875ab9f9f6a373f36eecf57bfe980a25f866ed9",
+      "size": 65808
+    },
+    {
+      "original": "Units/EarlyModern/RenaissancePikeman/Review-death-v1.webp",
+      "archived": "Units/EarlyModern/RenaissancePikeman/_TO BE DELETED/Review-death-v1.webp",
+      "sha256": "be28886ac067f35aa9adda6af6a8c65ffea6896b9decb08ba9eb121575d5de96",
+      "size": 55638
+    },
+    {
+      "original": "Units/EarlyModern/RenaissancePikeman/Review-hit-v1.webp",
+      "archived": "Units/EarlyModern/RenaissancePikeman/_TO BE DELETED/Review-hit-v1.webp",
+      "sha256": "9d6370e0b655df4bc341eea5c5ec706b192edb05d5d0cd253e6501d8dcc8ad09",
+      "size": 65564
+    },
+    {
+      "original": "Units/EarlyModern/RenaissancePikeman/Review-idle-v1.webp",
+      "archived": "Units/EarlyModern/RenaissancePikeman/_TO BE DELETED/Review-idle-v1.webp",
+      "sha256": "baaca405012afccc6fcecaa8bdd9f215425639c15d9860b557366cac25b07201",
+      "size": 58920
+    },
+    {
+      "original": "Units/EarlyModern/RenaissancePikeman/Review-running-v1.webp",
+      "archived": "Units/EarlyModern/RenaissancePikeman/_TO BE DELETED/Review-running-v1.webp",
+      "sha256": "82afcab3150ed80a3b0034c005b974a7e77e57b5513b02206ff6ba87af1fbe01",
+      "size": 53190
+    },
+    {
+      "original": "Units/EarlyModern/RenaissancePikeman/SourceArt/Animation-Generation.json",
+      "archived": "Units/EarlyModern/RenaissancePikeman/_TO BE DELETED/SourceArt/Animation-Generation.json",
+      "sha256": "58545a085c411bbdeba1b4bf754a473ad9bd92b74eb6d0a8183373be76286e97",
+      "size": 24633
+    },
+    {
+      "original": "Units/EarlyModern/RenaissancePikeman/SourceArt/Approved-Idle.json",
+      "archived": "Units/EarlyModern/RenaissancePikeman/_TO BE DELETED/SourceArt/Approved-Idle.json",
+      "sha256": "ed562ad9b256b6ef06b9158c4579d8fdc80db98bc66871127b845fde803ed61e",
+      "size": 182
+    },
+    {
+      "original": "Units/EarlyModern/RenaissancePikeman/SourceArt/Before-Animation-Actor_Review.html",
+      "archived": "Units/EarlyModern/RenaissancePikeman/_TO BE DELETED/SourceArt/Before-Animation-Actor_Review.html",
+      "sha256": "e7a573fcb8a905877e8a45850237b6a7772332cb076ddf968fb4c6c60fdd347e",
+      "size": 7294
+    },
+    {
+      "original": "Units/EarlyModern/RenaissancePikeman/SourceArt/Before-Animation-animations.json",
+      "archived": "Units/EarlyModern/RenaissancePikeman/_TO BE DELETED/SourceArt/Before-Animation-animations.json",
+      "sha256": "fe88188791efacdc533e6da0f4d9da4b3bc0a54a2b141120e854545ddc1b3f2c",
+      "size": 1289
+    },
+    {
+      "original": "Units/EarlyModern/RenaissancePikeman/SourceArt/Before-Animation-Generation.json",
+      "archived": "Units/EarlyModern/RenaissancePikeman/_TO BE DELETED/SourceArt/Before-Animation-Generation.json",
+      "sha256": "2213587c7586233861c9b5cbf62e61b589dddfe7f686786d73ecf1ec5cd550e7",
+      "size": 8547
+    },
+    {
+      "original": "Units/EarlyModern/RenaissancePikeman/SourceArt/Before-Animation-README.md",
+      "archived": "Units/EarlyModern/RenaissancePikeman/_TO BE DELETED/SourceArt/Before-Animation-README.md",
+      "sha256": "c7954ac2a1ffc1473dca1ebcf24961a2361847c28f37f4f7766e54ac36fdddfe",
+      "size": 1085
+    },
+    {
+      "original": "Units/EarlyModern/RenaissancePikeman/SourceArt/Before-Animation-Validation.json",
+      "archived": "Units/EarlyModern/RenaissancePikeman/_TO BE DELETED/SourceArt/Before-Animation-Validation.json",
+      "sha256": "d492927c6b1dcdfe73b1c8d9a210c1afbc2abad00145646f9a2d1c7637e14f19",
+      "size": 396
+    },
+    {
+      "original": "Units/EarlyModern/RenaissancePikeman/SourceArt/Before-Overhead-v3-Actor_Review.html",
+      "archived": "Units/EarlyModern/RenaissancePikeman/_TO BE DELETED/SourceArt/Before-Overhead-v3-Actor_Review.html",
+      "sha256": "2302065019da6a5f3b31aa1fce9484abcadc0b57ce8a31496d958dd05327555d",
+      "size": 7300
+    },
+    {
+      "original": "Units/EarlyModern/RenaissancePikeman/SourceArt/Before-Overhead-v3-animations.json",
+      "archived": "Units/EarlyModern/RenaissancePikeman/_TO BE DELETED/SourceArt/Before-Overhead-v3-animations.json",
+      "sha256": "01d542456e9385424d8c96a6045420b2fdba0479b3396b2a3188e0375b094b87",
+      "size": 1272
+    },
+    {
+      "original": "Units/EarlyModern/RenaissancePikeman/SourceArt/Before-Overhead-v3-Generation.json",
+      "archived": "Units/EarlyModern/RenaissancePikeman/_TO BE DELETED/SourceArt/Before-Overhead-v3-Generation.json",
+      "sha256": "dbc018ec77a59908bccd748dced0a8cc773c0705b1a77c2b3d9b63e137cc78d5",
+      "size": 4573
+    },
+    {
+      "original": "Units/EarlyModern/RenaissancePikeman/SourceArt/Before-Overhead-v3-Validation.json",
+      "archived": "Units/EarlyModern/RenaissancePikeman/_TO BE DELETED/SourceArt/Before-Overhead-v3-Validation.json",
+      "sha256": "8d2eaaf2fc39156ac814a5ae568f610193ca72c45e8c3a1dc6b622096974804d",
+      "size": 393
+    },
+    {
+      "original": "Units/EarlyModern/RenaissancePikeman/SourceArt/Before-Overhead-v4-Actor_Review.html",
+      "archived": "Units/EarlyModern/RenaissancePikeman/_TO BE DELETED/SourceArt/Before-Overhead-v4-Actor_Review.html",
+      "sha256": "e42b6591520ecc7be3a547f0ea8a1d6312dfe4ebde4312caadc3a6855c174a14",
+      "size": 7294
+    },
+    {
+      "original": "Units/EarlyModern/RenaissancePikeman/SourceArt/Before-Overhead-v4-animations.json",
+      "archived": "Units/EarlyModern/RenaissancePikeman/_TO BE DELETED/SourceArt/Before-Overhead-v4-animations.json",
+      "sha256": "fd413c06c828f0336e68521023bb7335aa68bffb6bf5ef46012d8625d6ec1645",
+      "size": 1305
+    },
+    {
+      "original": "Units/EarlyModern/RenaissancePikeman/SourceArt/Before-Overhead-v4-Generation.json",
+      "archived": "Units/EarlyModern/RenaissancePikeman/_TO BE DELETED/SourceArt/Before-Overhead-v4-Generation.json",
+      "sha256": "0c2461c8aba99c9272dad8eeaf811dadd1f0ae4b09c099b352739cecc81db146",
+      "size": 6604
+    },
+    {
+      "original": "Units/EarlyModern/RenaissancePikeman/SourceArt/Before-Overhead-v4-Validation.json",
+      "archived": "Units/EarlyModern/RenaissancePikeman/_TO BE DELETED/SourceArt/Before-Overhead-v4-Validation.json",
+      "sha256": "4f725a1aa0a8aa471785a4c2b0c9c1024e5662d335fdad35d0d5614821718b91",
+      "size": 396
+    },
+    {
+      "original": "Units/EarlyModern/RenaissancePikeman/SourceArt/Before-Photo-v2-Actor_Review.html",
+      "archived": "Units/EarlyModern/RenaissancePikeman/_TO BE DELETED/SourceArt/Before-Photo-v2-Actor_Review.html",
+      "sha256": "ace9dcb9cdf6e87e31c0ef0683cc38f623dd8339782fb1053ebc10c9071e2b94",
+      "size": 7291
+    },
+    {
+      "original": "Units/EarlyModern/RenaissancePikeman/SourceArt/Before-Photo-v2-animations.json",
+      "archived": "Units/EarlyModern/RenaissancePikeman/_TO BE DELETED/SourceArt/Before-Photo-v2-animations.json",
+      "sha256": "cb7fc2b7654273a9d543c15bb8ba75b3a18dd27190df7e131b330ff653e84ae7",
+      "size": 1246
+    },
+    {
+      "original": "Units/EarlyModern/RenaissancePikeman/SourceArt/Before-Photo-v2-Generation.json",
+      "archived": "Units/EarlyModern/RenaissancePikeman/_TO BE DELETED/SourceArt/Before-Photo-v2-Generation.json",
+      "sha256": "bfc931b260c7514b3f089d1391bc8eee4f26ab9aaea78da43f9d2741789a81b2",
+      "size": 2396
+    },
+    {
+      "original": "Units/EarlyModern/RenaissancePikeman/SourceArt/Before-Photo-v2-Validation.json",
+      "archived": "Units/EarlyModern/RenaissancePikeman/_TO BE DELETED/SourceArt/Before-Photo-v2-Validation.json",
+      "sha256": "946e158eecb618e4bf7066b28045e1177534e1cb923573df103517bad3b7f0b0",
+      "size": 386
+    },
+    {
+      "original": "Units/EarlyModern/RenaissancePikeman/SourceArt/compose_animations.py",
+      "archived": "Units/EarlyModern/RenaissancePikeman/_TO BE DELETED/SourceArt/compose_animations.py",
+      "sha256": "b00dee9227fb60fbfab94830095e184742bb2d14474a05f10f95af7efa93eb5b",
+      "size": 6941
+    },
+    {
+      "original": "Units/EarlyModern/RenaissancePikeman/SourceArt/Composition.json",
+      "archived": "Units/EarlyModern/RenaissancePikeman/_TO BE DELETED/SourceArt/Composition.json",
+      "sha256": "dce46ad2d859fd2b0834f082cda04a07dfb409b1f76541804867b186f943a4e2",
+      "size": 30370
+    },
+    {
+      "original": "Units/EarlyModern/RenaissancePikeman/SourceArt/Native-Attack-v1.png",
+      "archived": "Units/EarlyModern/RenaissancePikeman/_TO BE DELETED/SourceArt/Native-Attack-v1.png",
+      "sha256": "507bea4d37b3f0edc5e90b79fa317cb54a62c0bac57daf9c1da4717b2e956607",
+      "size": 1564618
+    },
+    {
+      "original": "Units/EarlyModern/RenaissancePikeman/SourceArt/Native-Charge-Attack-v1.png",
+      "archived": "Units/EarlyModern/RenaissancePikeman/_TO BE DELETED/SourceArt/Native-Charge-Attack-v1.png",
+      "sha256": "e16fa2c7668ee9f66a881a29817023b9c4fb21fa172161b8d793c87cadaf579f",
+      "size": 1582720
+    },
+    {
+      "original": "Units/EarlyModern/RenaissancePikeman/SourceArt/Native-Charge-v1.png",
+      "archived": "Units/EarlyModern/RenaissancePikeman/_TO BE DELETED/SourceArt/Native-Charge-v1.png",
+      "sha256": "972d0a03b4238d1ec1dedea839ebc49abe37933c01df1ac866941323fdb9ff4e",
+      "size": 1540128
+    },
+    {
+      "original": "Units/EarlyModern/RenaissancePikeman/SourceArt/Native-Charged-v1.png",
+      "archived": "Units/EarlyModern/RenaissancePikeman/_TO BE DELETED/SourceArt/Native-Charged-v1.png",
+      "sha256": "d7f2f2f2eec8f5e69c06a1f38a5254d10d7dfe5b0c001f83d47c94f1745b2d52",
+      "size": 1678121
+    },
+    {
+      "original": "Units/EarlyModern/RenaissancePikeman/SourceArt/Native-Death-Back-v1.png",
+      "archived": "Units/EarlyModern/RenaissancePikeman/_TO BE DELETED/SourceArt/Native-Death-Back-v1.png",
+      "sha256": "3cc4657f1962c7da6374155f19eaa1dbf3b6783a849f2771b2519c24de03658d",
+      "size": 1824770
+    },
+    {
+      "original": "Units/EarlyModern/RenaissancePikeman/SourceArt/Native-Death-Side-v1.png",
+      "archived": "Units/EarlyModern/RenaissancePikeman/_TO BE DELETED/SourceArt/Native-Death-Side-v1.png",
+      "sha256": "fec623bc884bf102e0ae6281ba983228419aa2af9ff2b4e62e9440dfd84edd87",
+      "size": 1757135
+    },
+    {
+      "original": "Units/EarlyModern/RenaissancePikeman/SourceArt/Native-Hit-v1.png",
+      "archived": "Units/EarlyModern/RenaissancePikeman/_TO BE DELETED/SourceArt/Native-Hit-v1.png",
+      "sha256": "a4dafbbb3183d149f4210b93b6c3c7208612156fb5a8f10dce8225be0222eab3",
+      "size": 1761812
+    },
+    {
+      "original": "Units/EarlyModern/RenaissancePikeman/SourceArt/Native-Idle-Animated-v1.png",
+      "archived": "Units/EarlyModern/RenaissancePikeman/_TO BE DELETED/SourceArt/Native-Idle-Animated-v1.png",
+      "sha256": "a30384329f8b9a995c3a281c175721e243c84c48dc34db9e64ebe327f571a0f8",
+      "size": 1708895
+    },
+    {
+      "original": "Units/EarlyModern/RenaissancePikeman/SourceArt/Native-Idle-Overhead-v3.png",
+      "archived": "Units/EarlyModern/RenaissancePikeman/_TO BE DELETED/SourceArt/Native-Idle-Overhead-v3.png",
+      "sha256": "be310e15a27f374d797b784ad6b89ad132c983ffec51fab2f6d5a7fc9cbf48ec",
+      "size": 426628
+    },
+    {
+      "original": "Units/EarlyModern/RenaissancePikeman/SourceArt/Native-Idle-Overhead-v4.png",
+      "archived": "Units/EarlyModern/RenaissancePikeman/_TO BE DELETED/SourceArt/Native-Idle-Overhead-v4.png",
+      "sha256": "f4e5922d825a61ae98b7703d97fea8f6a32dd0f9f3f34ff30011a18f7faacf23",
+      "size": 450399
+    },
+    {
+      "original": "Units/EarlyModern/RenaissancePikeman/SourceArt/Native-Idle-Photo-v2.png",
+      "archived": "Units/EarlyModern/RenaissancePikeman/_TO BE DELETED/SourceArt/Native-Idle-Photo-v2.png",
+      "sha256": "cfecceb70ecd7b8d1e8cc9486bb1c12fac75429cdca5b2373fe9cc3742914b63",
+      "size": 565300
+    },
+    {
+      "original": "Units/EarlyModern/RenaissancePikeman/SourceArt/Native-Idle-v1.png",
+      "archived": "Units/EarlyModern/RenaissancePikeman/_TO BE DELETED/SourceArt/Native-Idle-v1.png",
+      "sha256": "d572def2821d823f5cb958d0f0b592da8e4655f7e8072ffc9c1aa5e90b0a51c8",
+      "size": 626514
+    },
+    {
+      "original": "Units/EarlyModern/RenaissancePikeman/SourceArt/Native-Walk-v1.png",
+      "archived": "Units/EarlyModern/RenaissancePikeman/_TO BE DELETED/SourceArt/Native-Walk-v1.png",
+      "sha256": "05a7f064ef1335d63fd8d48da82f829af95ece7d38b865f94e12e1dc6630c486",
+      "size": 1662179
+    },
+    {
+      "original": "Units/EarlyModern/RenaissancePikeman/SourceArt/Overhead-Generation-v3.json",
+      "archived": "Units/EarlyModern/RenaissancePikeman/_TO BE DELETED/SourceArt/Overhead-Generation-v3.json",
+      "sha256": "41bf0deef33b571975193903f3bef105b14a1e347b8db51c74c30d9f7a7dd1bd",
+      "size": 1986
+    },
+    {
+      "original": "Units/EarlyModern/RenaissancePikeman/SourceArt/Overhead-Generation-v4.json",
+      "archived": "Units/EarlyModern/RenaissancePikeman/_TO BE DELETED/SourceArt/Overhead-Generation-v4.json",
+      "sha256": "b779ac78d7f6e52148826d1d9defdb8447720d4be59b8432c6998abefc19ecce",
+      "size": 1892
+    },
+    {
+      "original": "Units/EarlyModern/RenaissancePikeman/SourceArt/Photo-Generation-v2.json",
+      "archived": "Units/EarlyModern/RenaissancePikeman/_TO BE DELETED/SourceArt/Photo-Generation-v2.json",
+      "sha256": "3ff3519c3e31a9933569955fa9a9c956b7c43f60c0546330d7401f3256da9b15",
+      "size": 2093
+    },
+    {
+      "original": "Units/EarlyModern/RenaissancePikeman/SourceArt/Replaced-Catalog-Entry.json",
+      "archived": "Units/EarlyModern/RenaissancePikeman/_TO BE DELETED/SourceArt/Replaced-Catalog-Entry.json",
+      "sha256": "afdbfcceaac006d9ec695ed9da4e2c039fd492875c4d29102351ce41b2026740",
+      "size": 288
+    },
+    {
+      "original": "Units/EarlyModern/RenaissancePikeman/Validation.json",
+      "archived": "Units/EarlyModern/RenaissancePikeman/_TO BE DELETED/Validation.json",
+      "sha256": "6af99e67daf37bd71bb5177b74fcba073c56e4270d5e281af32efca598a80430",
+      "size": 16995
+    }
+  ]
+}

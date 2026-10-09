@@ -25,6 +25,8 @@ export const ROLE_NAMES: Record<UnitRole, string> = {
 };
 export type Decision = "baseline" | "proposed" | "confirmed";
 export interface PlannedTechnology {
+  /** Building artwork subjects bundled by a planner-only research node. */
+  buildingUnlocks?: string[];
   id: string;
   name: string;
   age: PlanAge;
@@ -144,6 +146,11 @@ export function validatePlan(value: unknown): string[] {
         !strings(node.prerequisites) ||
         !text(node.description) ||
         !text(node.notes) ||
+        (node.buildingUnlocks !== undefined &&
+          (!strings(node.buildingUnlocks) ||
+            node.buildingUnlocks.some(
+              (name: string) => !/^[A-Za-z][A-Za-z -]{0,99}$/.test(name),
+            ))) ||
         !decision(node.decision) ||
         !["unlock", "upgrade", "capstone"].includes(node.kind as string) ||
         (node.gold !== null &&

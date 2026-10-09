@@ -1,0 +1,60 @@
+{
+  "folder": "Ships/ClassicalAge/Review/_TO BE DELETED",
+  "created": "2026-10-09T03:15:53.711Z",
+  "files": [
+    {
+      "original": "Ships/ClassicalAge/Review/Animation_Overview.png",
+      "archived": "Ships/ClassicalAge/Review/_TO BE DELETED/Animation_Overview.png",
+      "sha256": "34281c1c6be7467f35ccd773ef5b28da985e15fd8bf688698a31ea35469f6b09",
+      "size": 193390
+    },
+    {
+      "original": "Ships/ClassicalAge/Review/Animation_Overview.webp",
+      "archived": "Ships/ClassicalAge/Review/_TO BE DELETED/Animation_Overview.webp",
+      "sha256": "8259f7c8b17a4a63eb589a3883e793998d51eaf079c89cb94d61f42208ae800b",
+      "size": 1529608
+    },
+    {
+      "original": "Ships/ClassicalAge/Review/Animation_Preservation_Baseline.json",
+      "archived": "Ships/ClassicalAge/Review/_TO BE DELETED/Animation_Preservation_Baseline.json",
+      "sha256": "8179b74d7bf908c1ba357da8ac90002caea4e2c75d0874f528ee7770d36e3374",
+      "size": 120407
+    },
+    {
+      "original": "Ships/ClassicalAge/Review/Browser_Validation.json",
+      "archived": "Ships/ClassicalAge/Review/_TO BE DELETED/Browser_Validation.json",
+      "sha256": "d4d109b1a9118036907d4c79b0ed3c23b297308022cf1648ae0a57a64afb556c",
+      "size": 1883
+    },
+    {
+      "original": "Ships/ClassicalAge/Review/Classical_Animations_Playing.jpg",
+      "archived": "Ships/ClassicalAge/Review/_TO BE DELETED/Classical_Animations_Playing.jpg",
+      "sha256": "cc78e148abfee74c127ac56983a6818236e0431f2f22c07c71124ca838177c52",
+      "size": 175925
+    },
+    {
+      "original": "Ships/ClassicalAge/Review/Classical_Boats_Review.jpg",
+      "archived": "Ships/ClassicalAge/Review/_TO BE DELETED/Classical_Boats_Review.jpg",
+      "sha256": "36be28e9ab42ab2c8567b1e96a76c0c1cbc523703137944a1da1f9cba2b41c11",
+      "size": 116442
+    },
+    {
+      "original": "Ships/ClassicalAge/Review/Oar_Pose_Audit.png",
+      "archived": "Ships/ClassicalAge/Review/_TO BE DELETED/Oar_Pose_Audit.png",
+      "sha256": "d7f74b75112b2bf2f0eba6d0b89f98cb5be1d959c249286b3f7e0c2dfa621a71",
+      "size": 296187
+    },
+    {
+      "original": "Ships/ClassicalAge/Review/Previous_Art_Baseline.json",
+      "archived": "Ships/ClassicalAge/Review/_TO BE DELETED/Previous_Art_Baseline.json",
+      "sha256": "df66917b4b210462696607f69f4266ba937e8ca82ccb49068284a9eaacf2b261",
+      "size": 121711
+    },
+    {
+      "original": "Ships/ClassicalAge/Review/Static_Validation.json",
+      "archived": "Ships/ClassicalAge/Review/_TO BE DELETED/Static_Validation.json",
+      "sha256": "72cfdcd1c06517ef99c47fc8319734dd56a2f995ad2796dbcd1140264211ccdb",
+      "size": 2920
+    }
+  ]
+}

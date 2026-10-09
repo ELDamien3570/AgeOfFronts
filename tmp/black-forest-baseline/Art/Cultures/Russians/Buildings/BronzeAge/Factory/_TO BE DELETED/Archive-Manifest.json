@@ -1,0 +1,18 @@
+{
+  "folder": "Buildings/BronzeAge/Factory/_TO BE DELETED",
+  "created": "2026-10-09T03:15:53.711Z",
+  "files": [
+    {
+      "original": "Buildings/BronzeAge/Factory/SourceArt/Icon-v1.png",
+      "archived": "Buildings/BronzeAge/Factory/_TO BE DELETED/SourceArt/Icon-v1.png",
+      "sha256": "b802682e61ff30cb695a406eb44bd90a90bec5a02b729f004787a5e39738cb1d",
+      "size": 2682657
+    },
+    {
+      "original": "Buildings/BronzeAge/Factory/SourceArt/Icon-v2.png",
+      "archived": "Buildings/BronzeAge/Factory/_TO BE DELETED/SourceArt/Icon-v2.png",
+      "sha256": "ee5cafec9529ac8652831a4f68692df1a4e829690fe0b264902a37f772fa9c65",
+      "size": 2513480
+    }
+  ]
+}

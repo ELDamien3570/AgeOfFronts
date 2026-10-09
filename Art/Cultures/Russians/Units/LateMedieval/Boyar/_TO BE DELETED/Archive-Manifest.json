@@ -1,0 +1,270 @@
+{
+  "folder": "Units/LateMedieval/Boyar/_TO BE DELETED",
+  "created": "2026-10-09T03:15:53.711Z",
+  "files": [
+    {
+      "original": "Units/LateMedieval/Boyar/Browser-Review.json",
+      "archived": "Units/LateMedieval/Boyar/_TO BE DELETED/Browser-Review.json",
+      "sha256": "7e6b5a1f11d6ec659b557724119d0d73a30254a650c2c0e38180a7053c25af6d",
+      "size": 1161
+    },
+    {
+      "original": "Units/LateMedieval/Boyar/Generation.json",
+      "archived": "Units/LateMedieval/Boyar/_TO BE DELETED/Generation.json",
+      "sha256": "a90969764c20a0165cb31d0e414f153cafae092c1abc82684f3717fb339b29b3",
+      "size": 30747
+    },
+    {
+      "original": "Units/LateMedieval/Boyar/Idle-v1.png",
+      "archived": "Units/LateMedieval/Boyar/_TO BE DELETED/Idle-v1.png",
+      "sha256": "dc2bfd3fb9651bd9647c8db0dcf8f34ab4dfe42facabe4a4cde83a5ca9eb3d3b",
+      "size": 1865282
+    },
+    {
+      "original": "Units/LateMedieval/Boyar/Idle-v2.png",
+      "archived": "Units/LateMedieval/Boyar/_TO BE DELETED/Idle-v2.png",
+      "sha256": "93fc09a672d7002575a3ea527d41e959f9318009ef727c31f60c9938cc2892d5",
+      "size": 1699950
+    },
+    {
+      "original": "Units/LateMedieval/Boyar/Idle-v3.png",
+      "archived": "Units/LateMedieval/Boyar/_TO BE DELETED/Idle-v3.png",
+      "sha256": "9ee19dceb7e2a5425450e6d3d0aee6341d12841d233745f68fcc2f399e3d3518",
+      "size": 1636274
+    },
+    {
+      "original": "Units/LateMedieval/Boyar/Idle-v4.png",
+      "archived": "Units/LateMedieval/Boyar/_TO BE DELETED/Idle-v4.png",
+      "sha256": "a84579b3d9cdda8c269e271bfa46fec72abe0f34c5ce4acc00065624183182aa",
+      "size": 1755560
+    },
+    {
+      "original": "Units/LateMedieval/Boyar/Idle-v5.png",
+      "archived": "Units/LateMedieval/Boyar/_TO BE DELETED/Idle-v5.png",
+      "sha256": "501299da89b52e482655aabe40f125ae2da92f5047eb1de04353d12441b2858f",
+      "size": 1682857
+    },
+    {
+      "original": "Units/LateMedieval/Boyar/Idle-v6.png",
+      "archived": "Units/LateMedieval/Boyar/_TO BE DELETED/Idle-v6.png",
+      "sha256": "4902573e9063d7a59714642bcbf24c88899bacfc2d194e7aaef6f2830d4f2ea1",
+      "size": 1861348
+    },
+    {
+      "original": "Units/LateMedieval/Boyar/Idle-v7.png",
+      "archived": "Units/LateMedieval/Boyar/_TO BE DELETED/Idle-v7.png",
+      "sha256": "cad3b34b0f5f551903cb98638e0e433848b18bb701832d397659d1e46d77fbc5",
+      "size": 1871576
+    },
+    {
+      "original": "Units/LateMedieval/Boyar/prepare_idle.py",
+      "archived": "Units/LateMedieval/Boyar/_TO BE DELETED/prepare_idle.py",
+      "sha256": "0c587ebbfb2fc2a36e5b504e9524b42553d643dadb2fd46a0e43f7d974e3b5b8",
+      "size": 4795
+    },
+    {
+      "original": "Units/LateMedieval/Boyar/SourceArt/Approved-Idle.json",
+      "archived": "Units/LateMedieval/Boyar/_TO BE DELETED/SourceArt/Approved-Idle.json",
+      "sha256": "e0a8f6a50e97f2762936430b331406d281a30b9590af84cf40b2e66f9c1ecde3",
+      "size": 184
+    },
+    {
+      "original": "Units/LateMedieval/Boyar/SourceArt/Before-Animation-Actor_Review.html",
+      "archived": "Units/LateMedieval/Boyar/_TO BE DELETED/SourceArt/Before-Animation-Actor_Review.html",
+      "sha256": "1536c628cd272060444c8098bb7318057dc06a9e01afaf3e476a8f57bbc6e85a",
+      "size": 7255
+    },
+    {
+      "original": "Units/LateMedieval/Boyar/SourceArt/Before-Animation-animations.json",
+      "archived": "Units/LateMedieval/Boyar/_TO BE DELETED/SourceArt/Before-Animation-animations.json",
+      "sha256": "fadebbf20f6ce759a0cbab9efa9edf693d3c453a0fb0dbb4e67875132a0fceff",
+      "size": 1878
+    },
+    {
+      "original": "Units/LateMedieval/Boyar/SourceArt/Before-Animation-Browser-Review.json",
+      "archived": "Units/LateMedieval/Boyar/_TO BE DELETED/SourceArt/Before-Animation-Browser-Review.json",
+      "sha256": "974ed47d47fac5c9c2721016735db3579dc7d90137f30ccb427e945bd7363f43",
+      "size": 478
+    },
+    {
+      "original": "Units/LateMedieval/Boyar/SourceArt/Before-Animation-Validation.json",
+      "archived": "Units/LateMedieval/Boyar/_TO BE DELETED/SourceArt/Before-Animation-Validation.json",
+      "sha256": "27f276b75473d2a13f93450fd1ae66ab6b8414e2de6e182de5fe842e3bc73e38",
+      "size": 388
+    },
+    {
+      "original": "Units/LateMedieval/Boyar/SourceArt/compose_animations.py",
+      "archived": "Units/LateMedieval/Boyar/_TO BE DELETED/SourceArt/compose_animations.py",
+      "sha256": "30d10e8032606d6b2a9a426f3b34b32d99f6450fe2a71675a0882c2190b349ed",
+      "size": 7469
+    },
+    {
+      "original": "Units/LateMedieval/Boyar/SourceArt/Composition.json",
+      "archived": "Units/LateMedieval/Boyar/_TO BE DELETED/SourceArt/Composition.json",
+      "sha256": "3dc09f0ded14689e58d8fb99b0898f9b3a3c244554c2a5b8c374cf0d7d5f732a",
+      "size": 16423
+    },
+    {
+      "original": "Units/LateMedieval/Boyar/SourceArt/Generation-idle-v1.json",
+      "archived": "Units/LateMedieval/Boyar/_TO BE DELETED/SourceArt/Generation-idle-v1.json",
+      "sha256": "b69e63531beabf3cc4cad9271c60774c0c0dbaed6568145da9d8c8ea96793288",
+      "size": 2508
+    },
+    {
+      "original": "Units/LateMedieval/Boyar/SourceArt/Generation-idle-v2.json",
+      "archived": "Units/LateMedieval/Boyar/_TO BE DELETED/SourceArt/Generation-idle-v2.json",
+      "sha256": "78a565182b0f25e5b19dc0f5cb3a0e98c4f2ac703a7d6b3d28360e7775d304fe",
+      "size": 1832
+    },
+    {
+      "original": "Units/LateMedieval/Boyar/SourceArt/Generation-idle-v3.json",
+      "archived": "Units/LateMedieval/Boyar/_TO BE DELETED/SourceArt/Generation-idle-v3.json",
+      "sha256": "702289b2521746148620efa990e668f2cab7baa9b38cffb010f62c85c6c9f151",
+      "size": 1978
+    },
+    {
+      "original": "Units/LateMedieval/Boyar/SourceArt/Generation-idle-v4.json",
+      "archived": "Units/LateMedieval/Boyar/_TO BE DELETED/SourceArt/Generation-idle-v4.json",
+      "sha256": "adfd0ef9e33c6e196005e34015594d5c6ced534f187db58a3892986d103ca186",
+      "size": 1878
+    },
+    {
+      "original": "Units/LateMedieval/Boyar/SourceArt/Generation-idle-v5.json",
+      "archived": "Units/LateMedieval/Boyar/_TO BE DELETED/SourceArt/Generation-idle-v5.json",
+      "sha256": "65576228fbda8dc7818908dd518d1ea30c02cf807698deb7e1b6e4d4760d6d41",
+      "size": 1466
+    },
+    {
+      "original": "Units/LateMedieval/Boyar/SourceArt/Generation-idle-v6.json",
+      "archived": "Units/LateMedieval/Boyar/_TO BE DELETED/SourceArt/Generation-idle-v6.json",
+      "sha256": "ed012c292ae486edda8b47bf35382577098a998443596fdbd2dbc8d486079283",
+      "size": 2335
+    },
+    {
+      "original": "Units/LateMedieval/Boyar/SourceArt/Generation-idle-v7.json",
+      "archived": "Units/LateMedieval/Boyar/_TO BE DELETED/SourceArt/Generation-idle-v7.json",
+      "sha256": "11cab4b4edf787b4291e474ee274ddce5fbdc41819fdc17d8b7ab239db6813d0",
+      "size": 1531
+    },
+    {
+      "original": "Units/LateMedieval/Boyar/SourceArt/Generation-motion-attack-v1.json",
+      "archived": "Units/LateMedieval/Boyar/_TO BE DELETED/SourceArt/Generation-motion-attack-v1.json",
+      "sha256": "91f43d5c22383bf12c20065eba18edb1d292ab7bd40314905890d68cc5b35037",
+      "size": 1809
+    },
+    {
+      "original": "Units/LateMedieval/Boyar/SourceArt/Generation-motion-charge-attack-v1.json",
+      "archived": "Units/LateMedieval/Boyar/_TO BE DELETED/SourceArt/Generation-motion-charge-attack-v1.json",
+      "sha256": "04f8647dab71d25893e66288652c786fa2d51ee5f7cbe0cca0f085ceb81f0c26",
+      "size": 1803
+    },
+    {
+      "original": "Units/LateMedieval/Boyar/SourceArt/Generation-motion-charge-v1.json",
+      "archived": "Units/LateMedieval/Boyar/_TO BE DELETED/SourceArt/Generation-motion-charge-v1.json",
+      "sha256": "737dbc2bac2bebd585a3a7239cb0b80604e4348f7bc01d94b8431815f15577bc",
+      "size": 1752
+    },
+    {
+      "original": "Units/LateMedieval/Boyar/SourceArt/Generation-motion-charged-impact-v1.json",
+      "archived": "Units/LateMedieval/Boyar/_TO BE DELETED/SourceArt/Generation-motion-charged-impact-v1.json",
+      "sha256": "40e8d49af767f82e001315511fe4698fb0dda12a42c1990dc7a7f413fc39cfcd",
+      "size": 1711
+    },
+    {
+      "original": "Units/LateMedieval/Boyar/SourceArt/Generation-motion-death-thrown-v1.json",
+      "archived": "Units/LateMedieval/Boyar/_TO BE DELETED/SourceArt/Generation-motion-death-thrown-v1.json",
+      "sha256": "c540dd412b43c741eae8041506a08545976df9a90629e1492def108d6ef751d2",
+      "size": 1802
+    },
+    {
+      "original": "Units/LateMedieval/Boyar/SourceArt/Generation-motion-death-v1.json",
+      "archived": "Units/LateMedieval/Boyar/_TO BE DELETED/SourceArt/Generation-motion-death-v1.json",
+      "sha256": "d223c7f4d875715dddd3b6aa49a5ba49af3611a329d96667479bedb428918880",
+      "size": 1818
+    },
+    {
+      "original": "Units/LateMedieval/Boyar/SourceArt/Generation-motion-hit-v1.json",
+      "archived": "Units/LateMedieval/Boyar/_TO BE DELETED/SourceArt/Generation-motion-hit-v1.json",
+      "sha256": "8d9a057bcdbc549127f6d677864c76920d55236f53bcbb866fd154bc45bdc38c",
+      "size": 1631
+    },
+    {
+      "original": "Units/LateMedieval/Boyar/SourceArt/Generation-motion-idle-v1.json",
+      "archived": "Units/LateMedieval/Boyar/_TO BE DELETED/SourceArt/Generation-motion-idle-v1.json",
+      "sha256": "2f6236ee888ea9da625daad233a18fa7dcd90d4b9ad8d6cd9dea976ecae99361",
+      "size": 1617
+    },
+    {
+      "original": "Units/LateMedieval/Boyar/SourceArt/Generation-motion-walk-v1.json",
+      "archived": "Units/LateMedieval/Boyar/_TO BE DELETED/SourceArt/Generation-motion-walk-v1.json",
+      "sha256": "fbf2c1511246dc621ecbb904a9a4b3e2c1f590c10227c38a8a052bff2e8fa22d",
+      "size": 1677
+    },
+    {
+      "original": "Units/LateMedieval/Boyar/SourceArt/Native-attack-v1.png",
+      "archived": "Units/LateMedieval/Boyar/_TO BE DELETED/SourceArt/Native-attack-v1.png",
+      "sha256": "22ae60b285038f8c2c056500bfb1708c1b71b2dca0dce9e2b260e55f6a44031b",
+      "size": 2134581
+    },
+    {
+      "original": "Units/LateMedieval/Boyar/SourceArt/Native-charge-attack-v1.png",
+      "archived": "Units/LateMedieval/Boyar/_TO BE DELETED/SourceArt/Native-charge-attack-v1.png",
+      "sha256": "ccb163d0e66a9324a9c13ec6f3e57638bbc2ceacb18a0306a36699b5790d2352",
+      "size": 2038998
+    },
+    {
+      "original": "Units/LateMedieval/Boyar/SourceArt/Native-charge-v1.png",
+      "archived": "Units/LateMedieval/Boyar/_TO BE DELETED/SourceArt/Native-charge-v1.png",
+      "sha256": "062e9fceb251136fee9eb64d36a912be43069d952a05b95f189176ee6bd18f09",
+      "size": 2029348
+    },
+    {
+      "original": "Units/LateMedieval/Boyar/SourceArt/Native-charged-impact-v1.png",
+      "archived": "Units/LateMedieval/Boyar/_TO BE DELETED/SourceArt/Native-charged-impact-v1.png",
+      "sha256": "dc9e4104b37f4a094e3ecbe1b7de437d7ba0dea89b7740ee66a46ee4d8ed7e85",
+      "size": 2077420
+    },
+    {
+      "original": "Units/LateMedieval/Boyar/SourceArt/Native-death-thrown-v1.png",
+      "archived": "Units/LateMedieval/Boyar/_TO BE DELETED/SourceArt/Native-death-thrown-v1.png",
+      "sha256": "099b34a52a90ef3c93425d70f2354b35712ef0507c49be131d03b5fc28a1be57",
+      "size": 2232411
+    },
+    {
+      "original": "Units/LateMedieval/Boyar/SourceArt/Native-death-v1.png",
+      "archived": "Units/LateMedieval/Boyar/_TO BE DELETED/SourceArt/Native-death-v1.png",
+      "sha256": "9cd9bac54ca97c017bead81e3c628699449608d6146fe3c4189a034b7cdf9f9f",
+      "size": 2333172
+    },
+    {
+      "original": "Units/LateMedieval/Boyar/SourceArt/Native-hit-v1.png",
+      "archived": "Units/LateMedieval/Boyar/_TO BE DELETED/SourceArt/Native-hit-v1.png",
+      "sha256": "c4a1949f00b2fec412a43ede68e623c7e963986e01a052e8415dd60749972d9d",
+      "size": 2020265
+    },
+    {
+      "original": "Units/LateMedieval/Boyar/SourceArt/Native-idle-v1.png",
+      "archived": "Units/LateMedieval/Boyar/_TO BE DELETED/SourceArt/Native-idle-v1.png",
+      "sha256": "ad189aa6cedc9f7c7e158c1715945ec43840e6f9a5811bd2980125e5bef9ce1a",
+      "size": 1985033
+    },
+    {
+      "original": "Units/LateMedieval/Boyar/SourceArt/Native-walk-v1.png",
+      "archived": "Units/LateMedieval/Boyar/_TO BE DELETED/SourceArt/Native-walk-v1.png",
+      "sha256": "b192fb7ad45b4ac758c12f2a9a6ab7b28485aaf47be03f8768f2f797ea97280a",
+      "size": 1880075
+    },
+    {
+      "original": "Units/LateMedieval/Boyar/SourceArt/User-Equipment-Reference.png",
+      "archived": "Units/LateMedieval/Boyar/_TO BE DELETED/SourceArt/User-Equipment-Reference.png",
+      "sha256": "beaaa8c408bdd521e74880c55c1a6357aa57de8efa90e1e42f7bb3a85e69da7a",
+      "size": 1917784
+    },
+    {
+      "original": "Units/LateMedieval/Boyar/Validation.json",
+      "archived": "Units/LateMedieval/Boyar/_TO BE DELETED/Validation.json",
+      "sha256": "d112cf4bac051cebe3c5f2330bf1927b8c0de4e72cf74720b4bec5f0bb4563bf",
+      "size": 14857
+    }
+  ]
+}

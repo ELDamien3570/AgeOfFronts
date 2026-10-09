@@ -7,8 +7,8 @@
   "camera": "vertical-overhead-orthographic",
   "facing": "screen-down",
   "actorSources": [
-    "../animations.json",
-    "SourceActor/animations.json"
+    "../_TO BE DELETED/animations.json",
+    "../_TO BE DELETED/Formation/SourceActor/animations.json"
   ],
   "frameSize": {
     "width": 512,
@@ -98,7 +98,7 @@
     {
       "id": "idle",
       "label": "Idle",
-      "file": "Idle.png",
+      "file": "../_TO BE DELETED/Formation/Idle.png",
       "source": "idle",
       "layoutFrom": "standard",
       "layoutTo": "standard",
@@ -109,7 +109,7 @@
     {
       "id": "running",
       "label": "Movement",
-      "file": "Running.png",
+      "file": "../_TO BE DELETED/Formation/Running.png",
       "source": "running",
       "layoutFrom": "standard",
       "layoutTo": "standard",
@@ -120,7 +120,7 @@
     {
       "id": "attack",
       "label": "Javelin volley",
-      "file": "Attack.png",
+      "file": "../_TO BE DELETED/Formation/Attack.png",
       "source": "attack",
       "layoutFrom": "standard",
       "layoutTo": "standard",
@@ -138,7 +138,7 @@
     {
       "id": "hit",
       "label": "Get hit",
-      "file": "Hit.png",
+      "file": "../_TO BE DELETED/Formation/Hit.png",
       "source": "hit",
       "layoutFrom": "standard",
       "layoutTo": "standard",
@@ -156,7 +156,7 @@
     {
       "id": "charged",
       "label": "Get charged",
-      "file": "Charged.png",
+      "file": "../_TO BE DELETED/Formation/Charged.png",
       "source": "charged",
       "layoutFrom": "standard",
       "layoutTo": "standard",
@@ -174,7 +174,7 @@
     {
       "id": "charge-in",
       "label": "Charge in",
-      "file": "Charge-In.png",
+      "file": "../_TO BE DELETED/Formation/Charge-In.png",
       "source": "charge",
       "layoutFrom": "standard",
       "layoutTo": "wedge",
@@ -237,7 +237,7 @@
     {
       "id": "charge-maintain",
       "label": "Maintain charge",
-      "file": "Charge-Maintain.png",
+      "file": "../_TO BE DELETED/Formation/Charge-Maintain.png",
       "source": "charge",
       "layoutFrom": "wedge",
       "layoutTo": "wedge",
@@ -251,7 +251,7 @@
     {
       "id": "charge-attack",
       "label": "Charge volley",
-      "file": "Charge-Attack.png",
+      "file": "../_TO BE DELETED/Formation/Charge-Attack.png",
       "source": "charge-attack",
       "layoutFrom": "wedge",
       "layoutTo": "wedge",
@@ -275,7 +275,7 @@
     {
       "id": "charge-out",
       "label": "Transition out",
-      "file": "Charge-Out.png",
+      "file": "../_TO BE DELETED/Formation/Charge-Out.png",
       "source": "running",
       "layoutFrom": "wedge",
       "layoutTo": "standard",
@@ -344,7 +344,7 @@
     {
       "id": "death",
       "label": "Death",
-      "file": "Death.png",
+      "file": "../_TO BE DELETED/Formation/Death.png",
       "source": "death",
       "layoutFrom": "standard",
       "layoutTo": "standard",

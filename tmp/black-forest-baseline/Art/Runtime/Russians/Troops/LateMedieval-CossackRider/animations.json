@@ -32,8 +32,8 @@
           "width": 128,
           "height": 128,
           "pivot": {
-            "x": 64.0,
-            "y": 64.0
+            "x": 64,
+            "y": 64
           }
         },
         {
@@ -42,8 +42,8 @@
           "width": 128,
           "height": 128,
           "pivot": {
-            "x": 64.0,
-            "y": 64.0
+            "x": 64,
+            "y": 64
           }
         },
         {
@@ -52,8 +52,8 @@
           "width": 128,
           "height": 128,
           "pivot": {
-            "x": 64.0,
-            "y": 64.0
+            "x": 64,
+            "y": 64
           }
         },
         {
@@ -62,8 +62,8 @@
           "width": 128,
           "height": 128,
           "pivot": {
-            "x": 64.0,
-            "y": 64.0
+            "x": 64,
+            "y": 64
           }
         },
         {
@@ -72,8 +72,8 @@
           "width": 128,
           "height": 128,
           "pivot": {
-            "x": 64.0,
-            "y": 64.0
+            "x": 64,
+            "y": 64
           }
         },
         {
@@ -82,12 +82,13 @@
           "width": 128,
           "height": 128,
           "pivot": {
-            "x": 64.0,
-            "y": 64.0
+            "x": 64,
+            "y": 64
           }
         }
       ],
-      "sha256": "02ff67d88b7b0ebb567dd20e5385fac6e125bc83100441021e27888adf7a130b"
+      "sha256": "02ff67d88b7b0ebb567dd20e5385fac6e125bc83100441021e27888adf7a130b",
+      "releaseFrame": 3
     },
     {
       "id": "running",
@@ -120,8 +121,8 @@
           "width": 128,
           "height": 128,
           "pivot": {
-            "x": 64.0,
-            "y": 64.0
+            "x": 64,
+            "y": 64
           }
         },
         {
@@ -130,8 +131,8 @@
           "width": 128,
           "height": 128,
           "pivot": {
-            "x": 64.0,
-            "y": 64.0
+            "x": 64,
+            "y": 64
           }
         },
         {
@@ -140,8 +141,8 @@
           "width": 128,
           "height": 128,
           "pivot": {
-            "x": 64.0,
-            "y": 64.0
+            "x": 64,
+            "y": 64
           }
         },
         {
@@ -150,8 +151,8 @@
           "width": 128,
           "height": 128,
           "pivot": {
-            "x": 64.0,
-            "y": 64.0
+            "x": 64,
+            "y": 64
           }
         },
         {
@@ -160,8 +161,8 @@
           "width": 128,
           "height": 128,
           "pivot": {
-            "x": 64.0,
-            "y": 64.0
+            "x": 64,
+            "y": 64
           }
         },
         {
@@ -170,12 +171,13 @@
           "width": 128,
           "height": 128,
           "pivot": {
-            "x": 64.0,
-            "y": 64.0
+            "x": 64,
+            "y": 64
           }
         }
       ],
-      "sha256": "1e1af4710aa27f23c6ece1fcfbb4c4b122ca1def29c5bf31e0835a9e87f55fd9"
+      "sha256": "1e1af4710aa27f23c6ece1fcfbb4c4b122ca1def29c5bf31e0835a9e87f55fd9",
+      "releaseFrame": 3
     },
     {
       "id": "attack",
@@ -208,8 +210,8 @@
           "width": 128,
           "height": 128,
           "pivot": {
-            "x": 64.0,
-            "y": 64.0
+            "x": 64,
+            "y": 64
           }
         },
         {
@@ -218,8 +220,8 @@
           "width": 128,
           "height": 128,
           "pivot": {
-            "x": 64.0,
-            "y": 64.0
+            "x": 64,
+            "y": 64
           }
         },
         {
@@ -228,8 +230,8 @@
           "width": 128,
           "height": 128,
           "pivot": {
-            "x": 64.0,
-            "y": 64.0
+            "x": 64,
+            "y": 64
           }
         },
         {
@@ -238,8 +240,8 @@
           "width": 128,
           "height": 128,
           "pivot": {
-            "x": 64.0,
-            "y": 64.0
+            "x": 64,
+            "y": 64
           }
         },
         {
@@ -248,8 +250,8 @@
           "width": 128,
           "height": 128,
           "pivot": {
-            "x": 64.0,
-            "y": 64.0
+            "x": 64,
+            "y": 64
           }
         },
         {
@@ -258,13 +260,14 @@
           "width": 128,
           "height": 128,
           "pivot": {
-            "x": 64.0,
-            "y": 64.0
+            "x": 64,
+            "y": 64
           }
         }
       ],
       "sha256": "7f1bed9984961592b82867baf95a3affff603a86ffe7c93b2fab70f9ab785cac",
-      "impactFrame": 3
+      "impactFrame": 3,
+      "releaseFrame": 3
     },
     {
       "id": "death",
@@ -297,8 +300,8 @@
           "width": 128,
           "height": 128,
           "pivot": {
-            "x": 64.0,
-            "y": 64.0
+            "x": 64,
+            "y": 64
           }
         },
         {
@@ -307,8 +310,8 @@
           "width": 128,
           "height": 128,
           "pivot": {
-            "x": 64.0,
-            "y": 64.0
+            "x": 64,
+            "y": 64
           }
         },
         {
@@ -317,8 +320,8 @@
           "width": 128,
           "height": 128,
           "pivot": {
-            "x": 64.0,
-            "y": 64.0
+            "x": 64,
+            "y": 64
           }
         },
         {
@@ -327,8 +330,8 @@
           "width": 128,
           "height": 128,
           "pivot": {
-            "x": 64.0,
-            "y": 64.0
+            "x": 64,
+            "y": 64
           }
         },
         {
@@ -337,8 +340,8 @@
           "width": 128,
           "height": 128,
           "pivot": {
-            "x": 64.0,
-            "y": 64.0
+            "x": 64,
+            "y": 64
           }
         },
         {
@@ -347,16 +350,17 @@
           "width": 128,
           "height": 128,
           "pivot": {
-            "x": 64.0,
-            "y": 64.0
+            "x": 64,
+            "y": 64
           }
         }
       ],
-      "sha256": "71dff766ed7a1656d4f6a5ed2e11fb99382ead9eaf54bde7c0f5e96e5198f6c5"
+      "sha256": "71dff766ed7a1656d4f6a5ed2e11fb99382ead9eaf54bde7c0f5e96e5198f6c5",
+      "releaseFrame": 3
     }
   ],
   "source": "Art/Cultures/Russians/Units/LateMedieval/CossackRider/animations.json",
-  "metadataHash": "eda843d3ebb7dfa44bc82143370b16adf93bb380bb94441c835c11369495d384",
+  "metadataHash": "03f48d7b8077f5fc3c47a752bbf90433a41d6c09f1df408c04100d3bf47ac4d1",
   "hashes": {
     "Art/Cultures/Russians/Units/LateMedieval/CossackRider/idle-Registered-v1.png": "02ff67d88b7b0ebb567dd20e5385fac6e125bc83100441021e27888adf7a130b",
     "Art/Cultures/Russians/Units/LateMedieval/CossackRider/walk-Registered-v1.png": "1e1af4710aa27f23c6ece1fcfbb4c4b122ca1def29c5bf31e0835a9e87f55fd9",

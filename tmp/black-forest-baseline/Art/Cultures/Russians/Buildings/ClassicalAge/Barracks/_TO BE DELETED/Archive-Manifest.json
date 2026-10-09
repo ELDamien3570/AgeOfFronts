@@ -1,0 +1,18 @@
+{
+  "folder": "Buildings/ClassicalAge/Barracks/_TO BE DELETED",
+  "created": "2026-10-09T03:15:53.711Z",
+  "files": [
+    {
+      "original": "Buildings/ClassicalAge/Barracks/SourceArt/Icon-v1.png",
+      "archived": "Buildings/ClassicalAge/Barracks/_TO BE DELETED/SourceArt/Icon-v1.png",
+      "sha256": "94493d131202faef80f48276652acb02b56d43e858634aa954760f3c325641c6",
+      "size": 2753444
+    },
+    {
+      "original": "Buildings/ClassicalAge/Barracks/SourceArt/Icon-v2.png",
+      "archived": "Buildings/ClassicalAge/Barracks/_TO BE DELETED/SourceArt/Icon-v2.png",
+      "sha256": "3fde42305845a36a6f31c16710ed4b97564f3284ce972548812b90a5ffcd3b07",
+      "size": 2875133
+    }
+  ]
+}

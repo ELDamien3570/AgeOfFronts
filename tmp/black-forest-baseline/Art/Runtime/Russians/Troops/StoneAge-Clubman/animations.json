@@ -80,7 +80,8 @@
           }
         }
       ],
-      "sha256": "250379e7dfd298564850547af6f6bb859326ed361620323b0ef32c15d708a0ad"
+      "sha256": "250379e7dfd298564850547af6f6bb859326ed361620323b0ef32c15d708a0ad",
+      "releaseFrame": 3
     },
     {
       "id": "running",
@@ -161,7 +162,8 @@
           }
         }
       ],
-      "sha256": "36b6dd96b24ff403a9fc803b22c39148070bdae6115e4b1841a8e522c2198721"
+      "sha256": "36b6dd96b24ff403a9fc803b22c39148070bdae6115e4b1841a8e522c2198721",
+      "releaseFrame": 3
     },
     {
       "id": "attack",
@@ -243,7 +245,8 @@
         }
       ],
       "sha256": "190135e7e1ffb834fce66382671f2377cdb6915dcaedd618b6cb18c8bc3b39db",
-      "impactFrame": 3
+      "impactFrame": 3,
+      "releaseFrame": 3
     },
     {
       "id": "death",
@@ -326,7 +329,8 @@
       ],
       "sha256": "c3e907a8a3c25c190a3cfa4f41ebb436d281a7abd9a7e73eaebffa222671128f",
       "corpseFrame": 5,
-      "corpseFile": "Corpse-Prone-Nadir-v14.png"
+      "corpseFile": "Corpse-Prone-Nadir-v14.png",
+      "releaseFrame": 3
     }
   ],
   "source": "Art/Cultures/Russians/Units/StoneAge/Clubman/animations.json",

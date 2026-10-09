@@ -1,0 +1,132 @@
+{
+  "folder": "Traders/ClassicalAge/_TO BE DELETED",
+  "created": "2026-10-09T03:15:53.711Z",
+  "files": [
+    {
+      "original": "Traders/ClassicalAge/Animation-Support-Generation.json",
+      "archived": "Traders/ClassicalAge/_TO BE DELETED/Animation-Support-Generation.json",
+      "sha256": "4e0c1622c2432011979e6242cfda0757fe842b12d791da9571e2c4fad0ee0d05",
+      "size": 2990
+    },
+    {
+      "original": "Traders/ClassicalAge/Animation_Validation.json",
+      "archived": "Traders/ClassicalAge/_TO BE DELETED/Animation_Validation.json",
+      "sha256": "e611e6aed43180758f09c2f625564b388c7f18d6511ddce1cd83f7b441e3830d",
+      "size": 5768
+    },
+    {
+      "original": "Traders/ClassicalAge/Generation-Manifest.json",
+      "archived": "Traders/ClassicalAge/_TO BE DELETED/Generation-Manifest.json",
+      "sha256": "27f1e059fb43d9ee4ea2d29b3d19142a3c11230f666e98f754328184b3f13892",
+      "size": 6527
+    },
+    {
+      "original": "Traders/ClassicalAge/Idle.webp",
+      "archived": "Traders/ClassicalAge/_TO BE DELETED/Idle.webp",
+      "sha256": "a486c17c85909ab21cfdd545e06fcaab2dd9a2b5735756316a35deaf834a4bec",
+      "size": 743594
+    },
+    {
+      "original": "Traders/ClassicalAge/layers/Old_Legs_Removal_Mask.png",
+      "archived": "Traders/ClassicalAge/_TO BE DELETED/layers/Old_Legs_Removal_Mask.png",
+      "sha256": "aae8d3e0d0f21f8656af87670588dee6047a580930dea087fe04bcd3cce35837",
+      "size": 2552
+    },
+    {
+      "original": "Traders/ClassicalAge/layers/Original_Painting.png",
+      "archived": "Traders/ClassicalAge/_TO BE DELETED/layers/Original_Painting.png",
+      "sha256": "e48cffe72ea441806276eddc3dcea20aef8b41b9e7889c2cda0ae3b6d1153b12",
+      "size": 1320540
+    },
+    {
+      "original": "Traders/ClassicalAge/README.md",
+      "archived": "Traders/ClassicalAge/_TO BE DELETED/README.md",
+      "sha256": "4f35c56c4abd992a985197833ee0227da774bb73254dc6fde7bbaec1c5144d12",
+      "size": 2955
+    },
+    {
+      "original": "Traders/ClassicalAge/Review/All_Travel_Poses.png",
+      "archived": "Traders/ClassicalAge/_TO BE DELETED/Review/All_Travel_Poses.png",
+      "sha256": "e980595be9c14868a335c6d40e52b70731ed4ce3ecb6a0641f429583420b93c7",
+      "size": 375861
+    },
+    {
+      "original": "Traders/ClassicalAge/Review/Browser_Validation.json",
+      "archived": "Traders/ClassicalAge/_TO BE DELETED/Review/Browser_Validation.json",
+      "sha256": "a0f56a57e3ed7bb48f7349f5595c85d6f3167482927c2e087644b25c67065666",
+      "size": 1933
+    },
+    {
+      "original": "Traders/ClassicalAge/Review/Caravan_Gait_Audit.png",
+      "archived": "Traders/ClassicalAge/_TO BE DELETED/Review/Caravan_Gait_Audit.png",
+      "sha256": "876f965afb4e3b5b909b83c7a77931a601aaf87af4ad3a7d972cbd9542c9532d",
+      "size": 272852
+    },
+    {
+      "original": "Traders/ClassicalAge/Review/Classical_Trader_Game_Scale.jpg",
+      "archived": "Traders/ClassicalAge/_TO BE DELETED/Review/Classical_Trader_Game_Scale.jpg",
+      "sha256": "67375351491ff0f5b2c06c062d8a821e22f580de12242b8f287a4e1606a2f5a8",
+      "size": 52853
+    },
+    {
+      "original": "Traders/ClassicalAge/Review/Classical_Trader_Review.jpg",
+      "archived": "Traders/ClassicalAge/_TO BE DELETED/Review/Classical_Trader_Review.jpg",
+      "sha256": "4fbdc771e0f4d2d5084ccc81535a11a026216f6dc1a2c0a0f9fc3418b57bc9e3",
+      "size": 91557
+    },
+    {
+      "original": "Traders/ClassicalAge/Review/Classical_Trader_Walking.jpg",
+      "archived": "Traders/ClassicalAge/_TO BE DELETED/Review/Classical_Trader_Walking.jpg",
+      "sha256": "865a956821efa42391012e96ba99b4b10b9a1b97331acd94e38732eb557b9d1b",
+      "size": 67598
+    },
+    {
+      "original": "Traders/ClassicalAge/Review/Feet_And_Joins_Audit.png",
+      "archived": "Traders/ClassicalAge/_TO BE DELETED/Review/Feet_And_Joins_Audit.png",
+      "sha256": "8f94a49b1952bee0389e56f79a6bfdd57b81a42d6afd5e8b8022487b905859d3",
+      "size": 224537
+    },
+    {
+      "original": "Traders/ClassicalAge/Review/Rig_Reference_Grid.png",
+      "archived": "Traders/ClassicalAge/_TO BE DELETED/Review/Rig_Reference_Grid.png",
+      "sha256": "bd40861a4c161fcfb88aeb74ace4e3294ae6eef8c5379a330873e20db01e5417",
+      "size": 1251251
+    },
+    {
+      "original": "Traders/ClassicalAge/Review/Static_Validation.json",
+      "archived": "Traders/ClassicalAge/_TO BE DELETED/Review/Static_Validation.json",
+      "sha256": "72cfdcd1c06517ef99c47fc8319734dd56a2f995ad2796dbcd1140264211ccdb",
+      "size": 2920
+    },
+    {
+      "original": "Traders/ClassicalAge/Review/Walking_Review.png",
+      "archived": "Traders/ClassicalAge/_TO BE DELETED/Review/Walking_Review.png",
+      "sha256": "52f98373ad45b662c56b08d4879621d0d9e780223e62fc60f02ca354e2647c9b",
+      "size": 139849
+    },
+    {
+      "original": "Traders/ClassicalAge/Review/Walking_Review.webp",
+      "archived": "Traders/ClassicalAge/_TO BE DELETED/Review/Walking_Review.webp",
+      "sha256": "cf5bcfafbb9610813e3afad91f22ba746082e9db8cac61cc4a7a1241598d11f3",
+      "size": 1487214
+    },
+    {
+      "original": "Traders/ClassicalAge/rig-authoring.json",
+      "archived": "Traders/ClassicalAge/_TO BE DELETED/rig-authoring.json",
+      "sha256": "e9bc994c92c7e354d3dcd907142eba5d63ceac091f865e4a78ccfa78306ba8a1",
+      "size": 9997
+    },
+    {
+      "original": "Traders/ClassicalAge/Source_Transparent.png",
+      "archived": "Traders/ClassicalAge/_TO BE DELETED/Source_Transparent.png",
+      "sha256": "2c071c23b01c8c903aa638672a42b87c04429954019b913bfbc2c82b8c355732",
+      "size": 1201042
+    },
+    {
+      "original": "Traders/ClassicalAge/Travel.webp",
+      "archived": "Traders/ClassicalAge/_TO BE DELETED/Travel.webp",
+      "sha256": "1614981a12f845622f38f5f7b2daf4712ad76e09dd0a50a770e0a4a3f73c4751",
+      "size": 1093154
+    }
+  ]
+}

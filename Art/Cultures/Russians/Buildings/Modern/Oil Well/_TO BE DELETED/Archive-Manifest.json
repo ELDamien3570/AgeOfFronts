@@ -1,0 +1,18 @@
+{
+  "folder": "Buildings/Modern/Oil Well/_TO BE DELETED",
+  "created": "2026-10-09T03:15:53.711Z",
+  "files": [
+    {
+      "original": "Buildings/Modern/Oil Well/SourceArt/Icon-v1.png",
+      "archived": "Buildings/Modern/Oil Well/_TO BE DELETED/SourceArt/Icon-v1.png",
+      "sha256": "a8cc68b254c539cbdce5ddb29c834fbe9b7980e5ebacd056f4d8fed403ef9a8b",
+      "size": 2403297
+    },
+    {
+      "original": "Buildings/Modern/Oil Well/SourceArt/Icon-v2.png",
+      "archived": "Buildings/Modern/Oil Well/_TO BE DELETED/SourceArt/Icon-v2.png",
+      "sha256": "ac65b328299a7cbcb93fe93c8d64f977001ac6cd354b432bb740e00708bfed8e",
+      "size": 2495075
+    }
+  ]
+}

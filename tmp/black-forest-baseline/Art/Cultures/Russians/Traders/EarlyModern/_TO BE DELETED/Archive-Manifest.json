@@ -1,0 +1,66 @@
+{
+  "folder": "Traders/EarlyModern/_TO BE DELETED",
+  "created": "2026-10-09T03:15:53.711Z",
+  "files": [
+    {
+      "original": "Traders/EarlyModern/Animation_Validation.json",
+      "archived": "Traders/EarlyModern/_TO BE DELETED/Animation_Validation.json",
+      "sha256": "dbe555c3e5d689de18d785c7c24aa8cf1c69e34493a35811430d97495f3b47c2",
+      "size": 3241
+    },
+    {
+      "original": "Traders/EarlyModern/Generation-Manifest.json",
+      "archived": "Traders/EarlyModern/_TO BE DELETED/Generation-Manifest.json",
+      "sha256": "05177d55ffb2bdecb56563c61075af0b1f2d567157761a6a3dd20a0240795389",
+      "size": 2881
+    },
+    {
+      "original": "Traders/EarlyModern/Idle.webp",
+      "archived": "Traders/EarlyModern/_TO BE DELETED/Idle.webp",
+      "sha256": "bbd9c2c79c9b22b537827d1e0d4e108541d5377701f7760def229647485446b2",
+      "size": 401792
+    },
+    {
+      "original": "Traders/EarlyModern/README.md",
+      "archived": "Traders/EarlyModern/_TO BE DELETED/README.md",
+      "sha256": "3c1d927d55a598e370133e6d57f1cf3138e280fa4e7a0ec4634f5fe60c85589d",
+      "size": 658
+    },
+    {
+      "original": "Traders/EarlyModern/Review/Preservation-Baseline.json",
+      "archived": "Traders/EarlyModern/_TO BE DELETED/Review/Preservation-Baseline.json",
+      "sha256": "c70a4b83164bc5d5fafa281ce570250061e77f47d497fffd4d422586756b3460",
+      "size": 116216
+    },
+    {
+      "original": "Traders/EarlyModern/Review/Travel-Moving-Ground.gif",
+      "archived": "Traders/EarlyModern/_TO BE DELETED/Review/Travel-Moving-Ground.gif",
+      "sha256": "88a1136efeeabb0888f1c0f6f5baf0574977756fc22fc6b1f30589d2d2632864",
+      "size": 406492
+    },
+    {
+      "original": "Traders/EarlyModern/Review/Truck-Review.png",
+      "archived": "Traders/EarlyModern/_TO BE DELETED/Review/Truck-Review.png",
+      "sha256": "3342ca75bc1de33a2e9dcbba81d8e4b9f5c3e87b31975b98c1e98bed7a30a038",
+      "size": 145064
+    },
+    {
+      "original": "Traders/EarlyModern/rig-authoring.json",
+      "archived": "Traders/EarlyModern/_TO BE DELETED/rig-authoring.json",
+      "sha256": "f84698b502a6726567521a33b5dbe41af372971c9c51c2db39556209c74fd3f2",
+      "size": 1869
+    },
+    {
+      "original": "Traders/EarlyModern/Source_Transparent.png",
+      "archived": "Traders/EarlyModern/_TO BE DELETED/Source_Transparent.png",
+      "sha256": "a325602e8bd581e1b51d29479b9b7248676a73eaa6da45cf012c53dacaec6d5d",
+      "size": 763736
+    },
+    {
+      "original": "Traders/EarlyModern/Travel.webp",
+      "archived": "Traders/EarlyModern/_TO BE DELETED/Travel.webp",
+      "sha256": "1d2c26c590317be0e1367456d3521db6e70f82012eb20c675cfdf4d052964560",
+      "size": 593382
+    }
+  ]
+}

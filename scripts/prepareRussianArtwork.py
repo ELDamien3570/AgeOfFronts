@@ -108,11 +108,14 @@ for asset in json.loads((SOURCE / "Buildings/Animations/manifest.json").read_tex
 # These are single actors for cards, never silently substituted for world formations.
 unit_art = json.loads((ROOT / "src/skirmish/content/RussianTroopArtwork.json").read_text())
 roster = json.loads((ROOT / "src/skirmish/content/russian-recruitment.json").read_text())
+actor_catalogue = json.loads((ROOT / "src/skirmish/content/RussianTroopActors.json").read_text(encoding="utf-8"))
 for troop in roster["units"]:
     folder = unit_art.get(f"{troop['age']}:{troop['troopClass']}")
     if not folder:
         continue
-    metadata = SOURCE / "Units" / folder / "animations.json"
+    actor = actor_catalogue.get(f"{troop['age']}:{troop['troopClass']}")
+    runtime_metadata = ROOT / "Art/Runtime/Russians/Troops" / actor["key"] / "animations.json" if actor else None
+    metadata = ROOT / json.loads(runtime_metadata.read_text(encoding="utf-8"))["source"] if runtime_metadata else SOURCE / "Units" / folder / "animations.json"
     data = json.loads(metadata.read_text(encoding="utf-8"))
     idle = next((clip for clip in data["animations"] if clip["id"] == "idle"), None)
     if not idle or not idle.get("frames"):
@@ -124,4 +127,25 @@ for troop in roster["units"]:
     runtime_id = f"{troop['age'].lower()}-{line}" if cls in ("frontline", "rangedInfantry", "lightCavalry") else troop["id"]
     static(f"unit-portrait-{runtime_id}", source, frame)
 (OUT / "manifest.json").write_text(json.dumps(manifest, indent=2)+"\n", encoding="utf-8")
+referenced = set()
+def collect_files(value):
+    if isinstance(value, dict):
+        for key, item in value.items():
+            if key in ("file", "poster") and isinstance(item, str):
+                referenced.add(item)
+            else:
+                collect_files(item)
+    elif isinstance(value, list):
+        for item in value:
+            collect_files(item)
+collect_files(manifest)
+removed = json.loads((OUT / "RuntimeCleanup.json").read_text(encoding="utf-8")).get("removedGeneratedFiles", []) if (OUT / "RuntimeCleanup.json").exists() else []
+for path in OUT.glob("*.png"):
+    if path.name not in referenced:
+        if path.resolve().parent != OUT.resolve():
+            raise RuntimeError("Runtime cleanup escaped its output directory")
+        removed.append(path.name)
+        path.unlink()
+(OUT / "RuntimeCleanup.json").write_text(json.dumps({"removedGeneratedFiles": removed,
+    "policy": "Only unreferenced generated runtime PNGs; authored source/review versions preserved."}, indent=2)+"\n", encoding="utf-8")
 print(f"Prepared {len(manifest)} Russian assets, {sum(p.stat().st_size for p in OUT.glob('*.png')) / 1048576:.1f} MiB")

@@ -1,0 +1,24 @@
+{
+  "folder": "Buildings/BronzeAge/Barracks/_TO BE DELETED",
+  "created": "2026-10-09T03:15:53.711Z",
+  "files": [
+    {
+      "original": "Buildings/BronzeAge/Barracks/SourceArt/Icon-v1.png",
+      "archived": "Buildings/BronzeAge/Barracks/_TO BE DELETED/SourceArt/Icon-v1.png",
+      "sha256": "0327db556463be7972153dd2e445aa353ff4ca9b8d3a5d4deaa56a024cb4448b",
+      "size": 2552091
+    },
+    {
+      "original": "Buildings/BronzeAge/Barracks/SourceArt/Icon-v2.png",
+      "archived": "Buildings/BronzeAge/Barracks/_TO BE DELETED/SourceArt/Icon-v2.png",
+      "sha256": "c404b9c134c66516afbc408db59b967d5cc84e3969cba65e570ed4744a908b0d",
+      "size": 2545365
+    },
+    {
+      "original": "Buildings/BronzeAge/Barracks/SourceArt/Icon-v3.png",
+      "archived": "Buildings/BronzeAge/Barracks/_TO BE DELETED/SourceArt/Icon-v3.png",
+      "sha256": "066675dc056365bd5c01c83801c4014737267fc1337032a22df9bda984cbe7f2",
+      "size": 2484268
+    }
+  ]
+}

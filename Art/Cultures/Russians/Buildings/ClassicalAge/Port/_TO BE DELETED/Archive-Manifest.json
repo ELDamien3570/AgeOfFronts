@@ -1,0 +1,18 @@
+{
+  "folder": "Buildings/ClassicalAge/Port/_TO BE DELETED",
+  "created": "2026-10-09T03:15:53.711Z",
+  "files": [
+    {
+      "original": "Buildings/ClassicalAge/Port/SourceArt/Icon-v1.png",
+      "archived": "Buildings/ClassicalAge/Port/_TO BE DELETED/SourceArt/Icon-v1.png",
+      "sha256": "9b6558004d5aaf928197fd4c8ddec353539afe82dd9c3148896e3780e2dd387f",
+      "size": 2035242
+    },
+    {
+      "original": "Buildings/ClassicalAge/Port/SourceArt/Icon-v2.png",
+      "archived": "Buildings/ClassicalAge/Port/_TO BE DELETED/SourceArt/Icon-v2.png",
+      "sha256": "ed86793f30301f344ed1ccbb40612a20203794a6a59b4f2099b16060b2171d81",
+      "size": 2056857
+    }
+  ]
+}

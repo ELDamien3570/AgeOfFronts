@@ -1,0 +1,18 @@
+{
+  "folder": "Buildings/LateMedieval/Tower/_TO BE DELETED",
+  "created": "2026-10-09T03:15:53.711Z",
+  "files": [
+    {
+      "original": "Buildings/LateMedieval/Tower/SourceArt/Icon-v1.png",
+      "archived": "Buildings/LateMedieval/Tower/_TO BE DELETED/SourceArt/Icon-v1.png",
+      "sha256": "267debe483664a8f4777fb01ce611dce7bf4b3d241497e5b7b4bcb7f8f90aaea",
+      "size": 1465184
+    },
+    {
+      "original": "Buildings/LateMedieval/Tower/SourceArt/Icon-v2.png",
+      "archived": "Buildings/LateMedieval/Tower/_TO BE DELETED/SourceArt/Icon-v2.png",
+      "sha256": "e4c494af78470cd009dc99b493b5e66c94def89fafdf80b6964ca850e36abc46",
+      "size": 1389947
+    }
+  ]
+}

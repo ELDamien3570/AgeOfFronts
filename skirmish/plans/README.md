@@ -52,11 +52,11 @@ for implemented capabilities, provisional balance and explicit remaining boundar
 Russian building, ship, aircraft, trader and animated gun-nest art is prepared into
 bounded 128px runtime images. Source assets remain unchanged. Airstrips occupy 2x2
 cells. Command previews, placement ghosts and tooltips use Russian building art;
-29 ready soldier sprites provide recruitment portraits. Individual-soldier world
-rendering remains in the isolated prototype, and new classes without a world atlas
-use formation icons in normal skirmish.
+42 ready actor sets provide matching recruitment portraits and individual world
+rendering in normal skirmish. Tanks use one vehicle; trucks and APCs use staggered
+or abreast pairs. The Cossack Lancer binding uses the accepted set in its legacy source folder.
 
-The runtime research catalogue includes 248 supported nodes and the prerequisite
+The runtime research catalogue includes 259 supported nodes and the prerequisite
 closure needed by recruitment and supported buildings. Existing economic/naval
 baseline mechanics remain; unfinished drone, submarine, rail and facility mechanics
 are unavailable. The saved eight-age planner remains the editable design source.

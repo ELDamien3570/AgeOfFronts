@@ -1,0 +1,18 @@
+{
+  "folder": "Buildings/Napoleonic/Barracks/_TO BE DELETED",
+  "created": "2026-10-09T03:15:53.711Z",
+  "files": [
+    {
+      "original": "Buildings/Napoleonic/Barracks/SourceArt/Icon-v1.png",
+      "archived": "Buildings/Napoleonic/Barracks/_TO BE DELETED/SourceArt/Icon-v1.png",
+      "sha256": "7f8cd649bc66c62d7416f363243faee6fec944b03f9905744005a8cdfdf9652a",
+      "size": 2626088
+    },
+    {
+      "original": "Buildings/Napoleonic/Barracks/SourceArt/Icon-v2.png",
+      "archived": "Buildings/Napoleonic/Barracks/_TO BE DELETED/SourceArt/Icon-v2.png",
+      "sha256": "7f638671bf9f22ad26d91ae5cac28aa529330bd86a334b8275a36bc9097ae141",
+      "size": 2357282
+    }
+  ]
+}

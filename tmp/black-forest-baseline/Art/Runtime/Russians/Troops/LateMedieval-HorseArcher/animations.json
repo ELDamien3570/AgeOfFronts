@@ -86,7 +86,8 @@
             "y": 63.7
           }
         }
-      ]
+      ],
+      "releaseFrame": 3
     },
     {
       "id": "running",
@@ -173,7 +174,8 @@
             "y": 63.7
           }
         }
-      ]
+      ],
+      "releaseFrame": 3
     },
     {
       "id": "attack",
@@ -261,7 +263,8 @@
           }
         }
       ],
-      "impactFrame": 3
+      "impactFrame": 3,
+      "releaseFrame": 3
     },
     {
       "id": "death",
@@ -348,7 +351,8 @@
             "y": 63.7
           }
         }
-      ]
+      ],
+      "releaseFrame": 3
     }
   ],
   "source": "Art/Cultures/Russians/Units/LateMedieval/HorseArcher/animations.json",

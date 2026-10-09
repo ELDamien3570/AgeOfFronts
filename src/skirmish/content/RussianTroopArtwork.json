@@ -26,8 +26,19 @@
   "LateMedieval:heavyCavalry": "LateMedieval/Boyar",
   "LateMedieval:antiCavalry": "LateMedieval/PlateSpearman",
   "LateMedieval:lightCavalry": "LateMedieval/CossackRider",
-  "Napoleonic:antiCavalry": "EarlyModern/NapoleonicPikeman",
+  "Napoleonic:antiCavalry": "EarlyModern/RenaissancePikeman",
   "Napoleonic:heavyCavalry": "EarlyModern/Cuirassier",
   "LateMedieval:frontline": "LateMedieval/BoyarGuard",
-  "EarlyModern:lightCavalry": "Modern/MachineGunTruck"
+  "EarlyModern:lightCavalry": "Modern/MachineGunTruck",
+  "Napoleonic:frontline": "EarlyModern/RusGrenadier",
+  "EarlyModern:frontline": "EarlyModern/MosinNagant",
+  "EarlyModern:antiCavalry": "Modern/PTRDRifleman",
+  "EarlyModern:heavyCavalry": "Modern/TsarTank",
+  "EarlyModern:rangedCavalry": "PreModern/T34-85",
+  "Modern:frontline": "Modern/SovietAK47Rifleman",
+  "Modern:antiCavalry": "Modern/KornetOperator",
+  "Modern:lightCavalry": "Modern/Bumerang",
+  "Modern:heavyCavalry": "Modern/T14",
+  "Modern:rangedCavalry": "Modern/Tunguska",
+  "Napoleonic:lightCavalry": "Napoleonic/CossackLancer"
 }

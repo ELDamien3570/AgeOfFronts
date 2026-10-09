@@ -1,0 +1,258 @@
+{
+  "folder": "Units/EarlyMedieval/RusBowMan/_TO BE DELETED",
+  "created": "2026-10-09T03:15:53.711Z",
+  "files": [
+    {
+      "original": "Units/EarlyMedieval/RusBowMan/Attack-v1.png",
+      "archived": "Units/EarlyMedieval/RusBowMan/_TO BE DELETED/Attack-v1.png",
+      "sha256": "8cfe211fe37f7d080ea61f211cd5a37aaa889e33b9efe3f3d658e46272b52aff",
+      "size": 905794
+    },
+    {
+      "original": "Units/EarlyMedieval/RusBowMan/Browser-Review.json",
+      "archived": "Units/EarlyMedieval/RusBowMan/_TO BE DELETED/Browser-Review.json",
+      "sha256": "ba5b0c715074bba9747b97963a10f8b1da50114d8a3d7b7c0d754a04e5f097eb",
+      "size": 793
+    },
+    {
+      "original": "Units/EarlyMedieval/RusBowMan/ChargeAttack-v1.png",
+      "archived": "Units/EarlyMedieval/RusBowMan/_TO BE DELETED/ChargeAttack-v1.png",
+      "sha256": "f6e41a9b494ed2b63a9ac3a9cec5fab6676a5ccb24e38475bb4d96d8c72bdd3f",
+      "size": 871324
+    },
+    {
+      "original": "Units/EarlyMedieval/RusBowMan/Generation.json",
+      "archived": "Units/EarlyMedieval/RusBowMan/_TO BE DELETED/Generation.json",
+      "sha256": "a91517605299a9eccf48c9542cd02ced15ff2d9501679af7bda6be92f85b26e3",
+      "size": 29509
+    },
+    {
+      "original": "Units/EarlyMedieval/RusBowMan/Idle-TopDown-v2.png",
+      "archived": "Units/EarlyMedieval/RusBowMan/_TO BE DELETED/Idle-TopDown-v2.png",
+      "sha256": "3281150b0faa5dd589d1b66f6a8bd80bbcc20a57dd9ed8181f08f0e2f558bbc2",
+      "size": 917358
+    },
+    {
+      "original": "Units/EarlyMedieval/RusBowMan/Idle-v1.png",
+      "archived": "Units/EarlyMedieval/RusBowMan/_TO BE DELETED/Idle-v1.png",
+      "sha256": "3c4a0755a12b5b428f648a51808da8c7598f54a2937ff6e6be2b51489f3a0783",
+      "size": 986444
+    },
+    {
+      "original": "Units/EarlyMedieval/RusBowMan/README.md",
+      "archived": "Units/EarlyMedieval/RusBowMan/_TO BE DELETED/README.md",
+      "sha256": "266012c4cf26efc9830cd15426513e733bf15e246e09649c931d279656cb701a",
+      "size": 1543
+    },
+    {
+      "original": "Units/EarlyMedieval/RusBowMan/Review-Attack-v2.png",
+      "archived": "Units/EarlyMedieval/RusBowMan/_TO BE DELETED/Review-Attack-v2.png",
+      "sha256": "35e01ce1bf733aa4b3e9011fe55ee9bacdd6e35decf57ac94341261c821878d8",
+      "size": 78727
+    },
+    {
+      "original": "Units/EarlyMedieval/RusBowMan/Review-ChargeAttack-v2.png",
+      "archived": "Units/EarlyMedieval/RusBowMan/_TO BE DELETED/Review-ChargeAttack-v2.png",
+      "sha256": "cdfc3021e417b406a7975d29930c8608a39aff39f42827bb60f548a8f9f703f4",
+      "size": 78551
+    },
+    {
+      "original": "Units/EarlyMedieval/RusBowMan/Review-DeathBack-v1.png",
+      "archived": "Units/EarlyMedieval/RusBowMan/_TO BE DELETED/Review-DeathBack-v1.png",
+      "sha256": "27d579e87aa9e17dc7ed92a109e4b03d455b9e5f9ab551cecf082b07c1b8c036",
+      "size": 76660
+    },
+    {
+      "original": "Units/EarlyMedieval/RusBowMan/Review-DeathSide-v1.png",
+      "archived": "Units/EarlyMedieval/RusBowMan/_TO BE DELETED/Review-DeathSide-v1.png",
+      "sha256": "3e10caf12353ff60447925cc1df98b4e8e27fad0e33b9e4f0482a7094a6cccda",
+      "size": 74660
+    },
+    {
+      "original": "Units/EarlyMedieval/RusBowMan/Review-Idle-TopDown-v2.png",
+      "archived": "Units/EarlyMedieval/RusBowMan/_TO BE DELETED/Review-Idle-TopDown-v2.png",
+      "sha256": "cca4f8685279e35b194c975b9552467fe28e558a2625518a2de4078549ead15a",
+      "size": 65757
+    },
+    {
+      "original": "Units/EarlyMedieval/RusBowMan/Review-Idle-v1.png",
+      "archived": "Units/EarlyMedieval/RusBowMan/_TO BE DELETED/Review-Idle-v1.png",
+      "sha256": "d2de8973945f9896fd30c66e7b20abc04b9ddc130636237731a2548b0d035da8",
+      "size": 73991
+    },
+    {
+      "original": "Units/EarlyMedieval/RusBowMan/Review-Reload-v1.png",
+      "archived": "Units/EarlyMedieval/RusBowMan/_TO BE DELETED/Review-Reload-v1.png",
+      "sha256": "9917bb8a0f612439c05f11b1cc15d330958f1bb043e21ab04946d1ae672e8942",
+      "size": 76713
+    },
+    {
+      "original": "Units/EarlyMedieval/RusBowMan/SourceArt/Animation-Generation.json",
+      "archived": "Units/EarlyMedieval/RusBowMan/_TO BE DELETED/SourceArt/Animation-Generation.json",
+      "sha256": "604b2b0363171ae92cc432a9928d94e159a614318e6889191dd939d860cc1b70",
+      "size": 24726
+    },
+    {
+      "original": "Units/EarlyMedieval/RusBowMan/SourceArt/Approved-Idle.json",
+      "archived": "Units/EarlyMedieval/RusBowMan/_TO BE DELETED/SourceArt/Approved-Idle.json",
+      "sha256": "1108974a1753099148616412eaa01444554c4d0826fb6826df0f3940ee5992d3",
+      "size": 167
+    },
+    {
+      "original": "Units/EarlyMedieval/RusBowMan/SourceArt/Before-Animation-animations.json",
+      "archived": "Units/EarlyMedieval/RusBowMan/_TO BE DELETED/SourceArt/Before-Animation-animations.json",
+      "sha256": "f64d250548d1cf73fe3f9938bef3bf1201a488f9db902ee1b3df7f388da1bd7f",
+      "size": 1272
+    },
+    {
+      "original": "Units/EarlyMedieval/RusBowMan/SourceArt/Before-Animation-Browser-Review.json",
+      "archived": "Units/EarlyMedieval/RusBowMan/_TO BE DELETED/SourceArt/Before-Animation-Browser-Review.json",
+      "sha256": "5f062cc1cf4a6b16e88e51a9873526c3fed38f2d35e437283178f3e92fb634b5",
+      "size": 323
+    },
+    {
+      "original": "Units/EarlyMedieval/RusBowMan/SourceArt/Before-Animation-Validation.json",
+      "archived": "Units/EarlyMedieval/RusBowMan/_TO BE DELETED/SourceArt/Before-Animation-Validation.json",
+      "sha256": "2cc03fd4c1a83be917d06bb67fa44497ba5522113d5b7b216e1ce613a16a0245",
+      "size": 452
+    },
+    {
+      "original": "Units/EarlyMedieval/RusBowMan/SourceArt/Before-TopDown-animations.json",
+      "archived": "Units/EarlyMedieval/RusBowMan/_TO BE DELETED/SourceArt/Before-TopDown-animations.json",
+      "sha256": "ede897bbe607246808411b6e6743007429a7bdbfeeb019c29a63c59d13d1ab1d",
+      "size": 1264
+    },
+    {
+      "original": "Units/EarlyMedieval/RusBowMan/SourceArt/Before-TopDown-Browser-Review.json",
+      "archived": "Units/EarlyMedieval/RusBowMan/_TO BE DELETED/SourceArt/Before-TopDown-Browser-Review.json",
+      "sha256": "1ea6c2dddfb14d9e228f10788aefe31d1554b950c3bce2eaba2b41127975b101",
+      "size": 270
+    },
+    {
+      "original": "Units/EarlyMedieval/RusBowMan/SourceArt/Before-TopDown-Validation.json",
+      "archived": "Units/EarlyMedieval/RusBowMan/_TO BE DELETED/SourceArt/Before-TopDown-Validation.json",
+      "sha256": "7168357d436595a47a887a0aa00f73766ae79fd26a62ad9132f6e3699a36fd9a",
+      "size": 445
+    },
+    {
+      "original": "Units/EarlyMedieval/RusBowMan/SourceArt/compose_animations.py",
+      "archived": "Units/EarlyMedieval/RusBowMan/_TO BE DELETED/SourceArt/compose_animations.py",
+      "sha256": "a19d035e0c8482abbc693e7c30e813e5529c7c5cca9974f8197c564a30515204",
+      "size": 6089
+    },
+    {
+      "original": "Units/EarlyMedieval/RusBowMan/SourceArt/Composition.json",
+      "archived": "Units/EarlyMedieval/RusBowMan/_TO BE DELETED/SourceArt/Composition.json",
+      "sha256": "edadf41a1466240fa3495f606ddc174a842347271bf1e9c813ac64f5af701986",
+      "size": 34385
+    },
+    {
+      "original": "Units/EarlyMedieval/RusBowMan/SourceArt/Native-Attack-v1.png",
+      "archived": "Units/EarlyMedieval/RusBowMan/_TO BE DELETED/SourceArt/Native-Attack-v1.png",
+      "sha256": "2dc11a0f26fb4befdb69f2ad8dab5901888215211ae6be4dcd04ad53e48f43f7",
+      "size": 2193284
+    },
+    {
+      "original": "Units/EarlyMedieval/RusBowMan/SourceArt/Native-Attack-v2.png",
+      "archived": "Units/EarlyMedieval/RusBowMan/_TO BE DELETED/SourceArt/Native-Attack-v2.png",
+      "sha256": "447cbab1a7649e938d44fad63dc88660100d65a0b759f1999f05eda091397040",
+      "size": 2231283
+    },
+    {
+      "original": "Units/EarlyMedieval/RusBowMan/SourceArt/Native-Charge-v1.png",
+      "archived": "Units/EarlyMedieval/RusBowMan/_TO BE DELETED/SourceArt/Native-Charge-v1.png",
+      "sha256": "54afea8f2ec3d1d9507f964b225bfe145abb277241c41ad8bba4f6ce4e9457c9",
+      "size": 2287559
+    },
+    {
+      "original": "Units/EarlyMedieval/RusBowMan/SourceArt/Native-ChargeAttack-v1.png",
+      "archived": "Units/EarlyMedieval/RusBowMan/_TO BE DELETED/SourceArt/Native-ChargeAttack-v1.png",
+      "sha256": "1453af0e6ce68d5e5886fd24fe417cdb98e2d1b03e60030e0ef0ef18023cd6dd",
+      "size": 2146087
+    },
+    {
+      "original": "Units/EarlyMedieval/RusBowMan/SourceArt/Native-ChargeAttack-v2.png",
+      "archived": "Units/EarlyMedieval/RusBowMan/_TO BE DELETED/SourceArt/Native-ChargeAttack-v2.png",
+      "sha256": "f4de9e5983357c2ec247c3e3de748da4eaeb53868dfa959c6060d699f31de38f",
+      "size": 2240955
+    },
+    {
+      "original": "Units/EarlyMedieval/RusBowMan/SourceArt/Native-Charged-v1.png",
+      "archived": "Units/EarlyMedieval/RusBowMan/_TO BE DELETED/SourceArt/Native-Charged-v1.png",
+      "sha256": "c7623bc26585175019a16352347f8949a18063e4535c240e076e3d2de3bff0c8",
+      "size": 2246290
+    },
+    {
+      "original": "Units/EarlyMedieval/RusBowMan/SourceArt/Native-Death-v1.png",
+      "archived": "Units/EarlyMedieval/RusBowMan/_TO BE DELETED/SourceArt/Native-Death-v1.png",
+      "sha256": "8d93931afd649cbd505f1814230b56331b4128123a48a7407c9c6d687bc66ceb",
+      "size": 2197063
+    },
+    {
+      "original": "Units/EarlyMedieval/RusBowMan/SourceArt/Native-DeathBack-v1.png",
+      "archived": "Units/EarlyMedieval/RusBowMan/_TO BE DELETED/SourceArt/Native-DeathBack-v1.png",
+      "sha256": "eaf6d8deb6bdb74cba13130f6c63f5a29aaf816b4f8c00f28f0454a7f9cc9154",
+      "size": 2212868
+    },
+    {
+      "original": "Units/EarlyMedieval/RusBowMan/SourceArt/Native-Hit-v1.png",
+      "archived": "Units/EarlyMedieval/RusBowMan/_TO BE DELETED/SourceArt/Native-Hit-v1.png",
+      "sha256": "80a7ff03b044da9857062a7da7aa2a7ce87808c02b0c3f3d1e0de990cc9ca718",
+      "size": 2477659
+    },
+    {
+      "original": "Units/EarlyMedieval/RusBowMan/SourceArt/Native-Idle-Animated-v1.png",
+      "archived": "Units/EarlyMedieval/RusBowMan/_TO BE DELETED/SourceArt/Native-Idle-Animated-v1.png",
+      "sha256": "e83a6315f4e833e4835c3f0adc88900c0bd9c6688513644a58fb14bcb5013c98",
+      "size": 2336639
+    },
+    {
+      "original": "Units/EarlyMedieval/RusBowMan/SourceArt/Native-Idle-TopDown-v2.png",
+      "archived": "Units/EarlyMedieval/RusBowMan/_TO BE DELETED/SourceArt/Native-Idle-TopDown-v2.png",
+      "sha256": "c55eb52de0b69a93a3da80a775c05512480dbb422b7a6dcca5d5e70eca3a5077",
+      "size": 963154
+    },
+    {
+      "original": "Units/EarlyMedieval/RusBowMan/SourceArt/Native-Idle-v1.png",
+      "archived": "Units/EarlyMedieval/RusBowMan/_TO BE DELETED/SourceArt/Native-Idle-v1.png",
+      "sha256": "d9105373e53e34f0fed31f559a009fa48ab22679e642b83fec4253a87fd62252",
+      "size": 1026864
+    },
+    {
+      "original": "Units/EarlyMedieval/RusBowMan/SourceArt/Native-Reload-v1.png",
+      "archived": "Units/EarlyMedieval/RusBowMan/_TO BE DELETED/SourceArt/Native-Reload-v1.png",
+      "sha256": "fe16dff93d89ee14c5c0ec6c679ffa2034f69f901c1acc39c2ed2ddbe241e168",
+      "size": 2273089
+    },
+    {
+      "original": "Units/EarlyMedieval/RusBowMan/SourceArt/Native-Walk-v1.png",
+      "archived": "Units/EarlyMedieval/RusBowMan/_TO BE DELETED/SourceArt/Native-Walk-v1.png",
+      "sha256": "16950c2b11ebea9cd669f02e6738f740b47bb22396cce3560b0a87f01e7f1f5f",
+      "size": 2367850
+    },
+    {
+      "original": "Units/EarlyMedieval/RusBowMan/SourceArt/prepare_idle.py",
+      "archived": "Units/EarlyMedieval/RusBowMan/_TO BE DELETED/SourceArt/prepare_idle.py",
+      "sha256": "568d26d5fecd4e3c4ace7735323795c51017cac89cd2a47d44a7deffd08b4f54",
+      "size": 3499
+    },
+    {
+      "original": "Units/EarlyMedieval/RusBowMan/SourceArt/Shot-Corrections.json",
+      "archived": "Units/EarlyMedieval/RusBowMan/_TO BE DELETED/SourceArt/Shot-Corrections.json",
+      "sha256": "1075f6ef490a651d8c841c09e6393e3d29f3526b108ed2e5598ba62082d53203",
+      "size": 4116
+    },
+    {
+      "original": "Units/EarlyMedieval/RusBowMan/SourceArt/TopDown-Correction.json",
+      "archived": "Units/EarlyMedieval/RusBowMan/_TO BE DELETED/SourceArt/TopDown-Correction.json",
+      "sha256": "f26341b90891f3372dc88142e19d47b9c49cf01e0e27d9fe15f3f1ab2e7eeb87",
+      "size": 2248
+    },
+    {
+      "original": "Units/EarlyMedieval/RusBowMan/Validation.json",
+      "archived": "Units/EarlyMedieval/RusBowMan/_TO BE DELETED/Validation.json",
+      "sha256": "beb6fe0d8ad0018b1b037fa950123cec6c6dbac8e5e88f7fad4aec11a95facab",
+      "size": 27771
+    }
+  ]
+}

@@ -1,0 +1,444 @@
+{
+  "folder": "Units/EarlyMedieval/Axeman/_TO BE DELETED",
+  "created": "2026-10-09T03:15:53.711Z",
+  "files": [
+    {
+      "original": "Units/EarlyMedieval/Axeman/attack-Preview-v1.webp",
+      "archived": "Units/EarlyMedieval/Axeman/_TO BE DELETED/attack-Preview-v1.webp",
+      "sha256": "d429e1aeabc2a3367e34110d92fa52f58949d334d9bb0f5b154d05f36ef1573d",
+      "size": 122228
+    },
+    {
+      "original": "Units/EarlyMedieval/Axeman/Browser-Review.json",
+      "archived": "Units/EarlyMedieval/Axeman/_TO BE DELETED/Browser-Review.json",
+      "sha256": "034ac569a224347102e22967726731ffc522cce15aa3fdd15b44ea2079d7ab4d",
+      "size": 315
+    },
+    {
+      "original": "Units/EarlyMedieval/Axeman/charge-attack-Preview-v1.webp",
+      "archived": "Units/EarlyMedieval/Axeman/_TO BE DELETED/charge-attack-Preview-v1.webp",
+      "sha256": "ac578719a7365f976ec2db5e86b62b866c05462e87cc05812c69012d585a999b",
+      "size": 114978
+    },
+    {
+      "original": "Units/EarlyMedieval/Axeman/charge-Preview-v1.webp",
+      "archived": "Units/EarlyMedieval/Axeman/_TO BE DELETED/charge-Preview-v1.webp",
+      "sha256": "c11fc7c665bca21be5de4b2ae975dbe2829130a8848cae7bf2f5a181e1fdeb52",
+      "size": 149968
+    },
+    {
+      "original": "Units/EarlyMedieval/Axeman/Charged-Arm-Motion-Clean-Review-v6.png",
+      "archived": "Units/EarlyMedieval/Axeman/_TO BE DELETED/Charged-Arm-Motion-Clean-Review-v6.png",
+      "sha256": "a20c61e5bb15edfade299db3bedbf069bc8d819126d00e478313b135de90b9a3",
+      "size": 1031580
+    },
+    {
+      "original": "Units/EarlyMedieval/Axeman/Charged-Arm-Motion-Review-v5.png",
+      "archived": "Units/EarlyMedieval/Axeman/_TO BE DELETED/Charged-Arm-Motion-Review-v5.png",
+      "sha256": "ba89dbb10eb8ab096326e0356d91f8432ae1704ce514076a7e91b49744c33cf8",
+      "size": 1093074
+    },
+    {
+      "original": "Units/EarlyMedieval/Axeman/Charged-Arm-Motion-v5.png",
+      "archived": "Units/EarlyMedieval/Axeman/_TO BE DELETED/Charged-Arm-Motion-v5.png",
+      "sha256": "ce80f7c290989c9216992cb448beac061f5de5e85b4a8bea2b193f96264350d8",
+      "size": 1371430
+    },
+    {
+      "original": "Units/EarlyMedieval/Axeman/Charged-Head-Up-Review-v4.png",
+      "archived": "Units/EarlyMedieval/Axeman/_TO BE DELETED/Charged-Head-Up-Review-v4.png",
+      "sha256": "49c5bf0e6aeecdc6257c8a60e54c48e9f69513cd59c8385ae642ab1dfe394281",
+      "size": 1061023
+    },
+    {
+      "original": "Units/EarlyMedieval/Axeman/Charged-Head-Up-v4.png",
+      "archived": "Units/EarlyMedieval/Axeman/_TO BE DELETED/Charged-Head-Up-v4.png",
+      "sha256": "fed88bb3c04b54b26a4933db83a0f16baf5d97059cc7c463b22ab5dc04a882fd",
+      "size": 1326282
+    },
+    {
+      "original": "Units/EarlyMedieval/Axeman/charged-Preview-v1.webp",
+      "archived": "Units/EarlyMedieval/Axeman/_TO BE DELETED/charged-Preview-v1.webp",
+      "sha256": "e0157d503fcb8120638c0cbe357fdc3641d89d6bc6ec42d096567d2304d4b6d2",
+      "size": 147820
+    },
+    {
+      "original": "Units/EarlyMedieval/Axeman/charged-Preview-v3.webp",
+      "archived": "Units/EarlyMedieval/Axeman/_TO BE DELETED/charged-Preview-v3.webp",
+      "sha256": "1bf5969993e770e3bd48b6a24cb53e2789a2ca8f02a5e2404afd864b66ac17c1",
+      "size": 209758
+    },
+    {
+      "original": "Units/EarlyMedieval/Axeman/charged-Preview-v4.webp",
+      "archived": "Units/EarlyMedieval/Axeman/_TO BE DELETED/charged-Preview-v4.webp",
+      "sha256": "9aa5e5cbe0fac233bd3343824eec41a30e9236b2808cb8b22cf85ef6c4fc2a98",
+      "size": 220302
+    },
+    {
+      "original": "Units/EarlyMedieval/Axeman/charged-Preview-v5.webp",
+      "archived": "Units/EarlyMedieval/Axeman/_TO BE DELETED/charged-Preview-v5.webp",
+      "sha256": "64b469aea95a33ebc761fbac76b2b6081a8f48540c51f0d45e8169ecc772b815",
+      "size": 227634
+    },
+    {
+      "original": "Units/EarlyMedieval/Axeman/charged-Preview-v6.webp",
+      "archived": "Units/EarlyMedieval/Axeman/_TO BE DELETED/charged-Preview-v6.webp",
+      "sha256": "db7c86f88480294a7076321e0d00509de6eb797f5535db811d98b2f4d9c88f2d",
+      "size": 217456
+    },
+    {
+      "original": "Units/EarlyMedieval/Axeman/Charged-Upright-Review-v3.png",
+      "archived": "Units/EarlyMedieval/Axeman/_TO BE DELETED/Charged-Upright-Review-v3.png",
+      "sha256": "2044c228cbb2e9ceef28fefa11ff35927e0c51691b3fd88ce74fa185f159004d",
+      "size": 1025675
+    },
+    {
+      "original": "Units/EarlyMedieval/Axeman/Charged-Upright-v3.png",
+      "archived": "Units/EarlyMedieval/Axeman/_TO BE DELETED/Charged-Upright-v3.png",
+      "sha256": "be28c8acb86d32c2c8ac0c358f4307db70fd9c55482a5f7d81af152170b911f5",
+      "size": 1275349
+    },
+    {
+      "original": "Units/EarlyMedieval/Axeman/Charged-v2.png",
+      "archived": "Units/EarlyMedieval/Axeman/_TO BE DELETED/Charged-v2.png",
+      "sha256": "3c15ff9d16a155de9657d009ae3923972387a2a1901690cee15d1656a660c9b1",
+      "size": 1274400
+    },
+    {
+      "original": "Units/EarlyMedieval/Axeman/death-back-Preview-v1.webp",
+      "archived": "Units/EarlyMedieval/Axeman/_TO BE DELETED/death-back-Preview-v1.webp",
+      "sha256": "b715df32ef7046b4f411899997048c765e350197fe30425254c132fad6edad87",
+      "size": 135126
+    },
+    {
+      "original": "Units/EarlyMedieval/Axeman/Death-Back-v2.png",
+      "archived": "Units/EarlyMedieval/Axeman/_TO BE DELETED/Death-Back-v2.png",
+      "sha256": "081c327e23a43da9a83b146288c4371a534b450a556403bf7c82ecd109f5f1c1",
+      "size": 1148622
+    },
+    {
+      "original": "Units/EarlyMedieval/Axeman/death-Preview-v1.webp",
+      "archived": "Units/EarlyMedieval/Axeman/_TO BE DELETED/death-Preview-v1.webp",
+      "sha256": "18066db1e4bb3a9b266a79338ec5a1e3d1d73af91ebab8889a79c34cab1ae9b7",
+      "size": 155876
+    },
+    {
+      "original": "Units/EarlyMedieval/Axeman/Death-Side-Check-v3.png",
+      "archived": "Units/EarlyMedieval/Axeman/_TO BE DELETED/Death-Side-Check-v3.png",
+      "sha256": "87153955efe7271b0883a97fcb64d0e92d06f8d008ef84bd2e897d3261c9f088",
+      "size": 1131117
+    },
+    {
+      "original": "Units/EarlyMedieval/Axeman/Death-Side-v2.png",
+      "archived": "Units/EarlyMedieval/Axeman/_TO BE DELETED/Death-Side-v2.png",
+      "sha256": "e751101cc1dee4ad94bdd47601768f823a34cf60436d0ce050545df51a7ace9e",
+      "size": 1385191
+    },
+    {
+      "original": "Units/EarlyMedieval/Axeman/Generation.json",
+      "archived": "Units/EarlyMedieval/Axeman/_TO BE DELETED/Generation.json",
+      "sha256": "81f08e192f6136aab4f1832edb5c27fec8467264158e838886ea32a3b6ec753a",
+      "size": 50066
+    },
+    {
+      "original": "Units/EarlyMedieval/Axeman/hit-Preview-v1.webp",
+      "archived": "Units/EarlyMedieval/Axeman/_TO BE DELETED/hit-Preview-v1.webp",
+      "sha256": "7b89628f15fe9801084b6d9a874373d65805e40e8755b719963bdb5e2913e8f2",
+      "size": 131570
+    },
+    {
+      "original": "Units/EarlyMedieval/Axeman/Idle-Animated-v1.png",
+      "archived": "Units/EarlyMedieval/Axeman/_TO BE DELETED/Idle-Animated-v1.png",
+      "sha256": "4108c6c5ce4abbbf1f65557f6eba39a8a42b4238cb9c0a68c39a224852aac44f",
+      "size": 1598139
+    },
+    {
+      "original": "Units/EarlyMedieval/Axeman/idle-Preview-v1.webp",
+      "archived": "Units/EarlyMedieval/Axeman/_TO BE DELETED/idle-Preview-v1.webp",
+      "sha256": "fc74b700be66d71074d975c59bf34afde74d742edaa21d09c6a6e9a96d92774d",
+      "size": 182800
+    },
+    {
+      "original": "Units/EarlyMedieval/Axeman/Idle-Upright-v2.png",
+      "archived": "Units/EarlyMedieval/Axeman/_TO BE DELETED/Idle-Upright-v2.png",
+      "sha256": "a33915cedd45c03dab8483b7c1bb5652a655fe5d98d4bcf65c1754e83e868685",
+      "size": 1166856
+    },
+    {
+      "original": "Units/EarlyMedieval/Axeman/Idle-v1.png",
+      "archived": "Units/EarlyMedieval/Axeman/_TO BE DELETED/Idle-v1.png",
+      "sha256": "a676dfc8947608f9f4496710b7ae0ca756c9365d5dc6db8184ea79f8670208b7",
+      "size": 1287392
+    },
+    {
+      "original": "Units/EarlyMedieval/Axeman/README.md",
+      "archived": "Units/EarlyMedieval/Axeman/_TO BE DELETED/README.md",
+      "sha256": "942d1059ca9fa41f69d1a4859fa287643906062386f5ac221e9d3eadc84d3d0a",
+      "size": 594
+    },
+    {
+      "original": "Units/EarlyMedieval/Axeman/Review-Animations-v1.png",
+      "archived": "Units/EarlyMedieval/Axeman/_TO BE DELETED/Review-Animations-v1.png",
+      "sha256": "c5412b6e7db0c1f3b66505cd0b346fd80f6532a21439586fce8f2f89511b0e92",
+      "size": 1526232
+    },
+    {
+      "original": "Units/EarlyMedieval/Axeman/Review-Animations-v2.png",
+      "archived": "Units/EarlyMedieval/Axeman/_TO BE DELETED/Review-Animations-v2.png",
+      "sha256": "4addb3027433debf180776a7ef8f7c7bec5a0a81cc3acda68dfb804e77a0c559",
+      "size": 1265616
+    },
+    {
+      "original": "Units/EarlyMedieval/Axeman/Review-Animations-v3.png",
+      "archived": "Units/EarlyMedieval/Axeman/_TO BE DELETED/Review-Animations-v3.png",
+      "sha256": "2e3b3521841399e382acb9e9f0d7a4b83643c8deb6306e81b2138c8efa8048e0",
+      "size": 1265468
+    },
+    {
+      "original": "Units/EarlyMedieval/Axeman/running-Preview-v1.webp",
+      "archived": "Units/EarlyMedieval/Axeman/_TO BE DELETED/running-Preview-v1.webp",
+      "sha256": "285580142f90281d65265536ed82908b32d8c509830f1326bcc697a2c23520bf",
+      "size": 140312
+    },
+    {
+      "original": "Units/EarlyMedieval/Axeman/SourceArt/Animation-Generation-v2.json",
+      "archived": "Units/EarlyMedieval/Axeman/_TO BE DELETED/SourceArt/Animation-Generation-v2.json",
+      "sha256": "f3226596f8a17682a8bb89f8e1a593edbdb1d861e8fb8c1613008c2ab60dffb8",
+      "size": 31312
+    },
+    {
+      "original": "Units/EarlyMedieval/Axeman/SourceArt/Animation-Generation.json",
+      "archived": "Units/EarlyMedieval/Axeman/_TO BE DELETED/SourceArt/Animation-Generation.json",
+      "sha256": "e6d899af0f01f5cadb4266a2ccb7dbb9b9991cbe72c5d05bf79ca580597512d6",
+      "size": 44040
+    },
+    {
+      "original": "Units/EarlyMedieval/Axeman/SourceArt/Approved-Idle.json",
+      "archived": "Units/EarlyMedieval/Axeman/_TO BE DELETED/SourceArt/Approved-Idle.json",
+      "sha256": "47289eda1486f8c15f557b01b4e137fd6865716490ca62ade6e1a417cee8b4a5",
+      "size": 181
+    },
+    {
+      "original": "Units/EarlyMedieval/Axeman/SourceArt/Before-Animation-Actor_Review.html",
+      "archived": "Units/EarlyMedieval/Axeman/_TO BE DELETED/SourceArt/Before-Animation-Actor_Review.html",
+      "sha256": "dc884eb961f90b91c4c6409b7c2cbfc9b3d3e9ec070e291df72af07c6b3b4ef7",
+      "size": 7890
+    },
+    {
+      "original": "Units/EarlyMedieval/Axeman/SourceArt/Before-Animation-animations.json",
+      "archived": "Units/EarlyMedieval/Axeman/_TO BE DELETED/SourceArt/Before-Animation-animations.json",
+      "sha256": "7d7ec7f1c7efae419c08ef6da342b8f7c784402b9b6c25d9434ed779bc09bcad",
+      "size": 1189
+    },
+    {
+      "original": "Units/EarlyMedieval/Axeman/SourceArt/Before-Animation-Generation.json",
+      "archived": "Units/EarlyMedieval/Axeman/_TO BE DELETED/SourceArt/Before-Animation-Generation.json",
+      "sha256": "f36f3cecdbbd5b9ee565173b9f448596ac76ccfcc3ff418202ef9b2b2c809b99",
+      "size": 5602
+    },
+    {
+      "original": "Units/EarlyMedieval/Axeman/SourceArt/Before-Animation-Validation.json",
+      "archived": "Units/EarlyMedieval/Axeman/_TO BE DELETED/SourceArt/Before-Animation-Validation.json",
+      "sha256": "51ff4e166573d512ef3a7f67bc9f3605ebfbf8e06216b28d9db4e3c5bb911213",
+      "size": 1099
+    },
+    {
+      "original": "Units/EarlyMedieval/Axeman/SourceArt/Before-Charged-Arm-Motion-animations.json",
+      "archived": "Units/EarlyMedieval/Axeman/_TO BE DELETED/SourceArt/Before-Charged-Arm-Motion-animations.json",
+      "sha256": "609d6dd78b4b440aeac61bf95e27b637485875021d0ee540402cbe37979786a8",
+      "size": 17935
+    },
+    {
+      "original": "Units/EarlyMedieval/Axeman/SourceArt/Before-Charged-Arm-Motion-Other-Clips.json",
+      "archived": "Units/EarlyMedieval/Axeman/_TO BE DELETED/SourceArt/Before-Charged-Arm-Motion-Other-Clips.json",
+      "sha256": "1f9b8f31514c712e49f9176e81ea351a0b62ee979781c0c899a8a34c41b958d1",
+      "size": 16118
+    },
+    {
+      "original": "Units/EarlyMedieval/Axeman/SourceArt/Before-Charged-Head-Up-animations.json",
+      "archived": "Units/EarlyMedieval/Axeman/_TO BE DELETED/SourceArt/Before-Charged-Head-Up-animations.json",
+      "sha256": "0104481df947f8546a8b4a9c24a23eab18ee774d55309a90f687a20a6e74af36",
+      "size": 17935
+    },
+    {
+      "original": "Units/EarlyMedieval/Axeman/SourceArt/Before-Charged-Head-Up-Other-Clips.json",
+      "archived": "Units/EarlyMedieval/Axeman/_TO BE DELETED/SourceArt/Before-Charged-Head-Up-Other-Clips.json",
+      "sha256": "1f9b8f31514c712e49f9176e81ea351a0b62ee979781c0c899a8a34c41b958d1",
+      "size": 16118
+    },
+    {
+      "original": "Units/EarlyMedieval/Axeman/SourceArt/Before-Charged-Upright-animations.json",
+      "archived": "Units/EarlyMedieval/Axeman/_TO BE DELETED/SourceArt/Before-Charged-Upright-animations.json",
+      "sha256": "33551b5f13cee14b34bada31eb8ff6a85b023176b1ea1a1b4cfd547521ffbda0",
+      "size": 17927
+    },
+    {
+      "original": "Units/EarlyMedieval/Axeman/SourceArt/Before-Charged-Upright-Other-Clips.json",
+      "archived": "Units/EarlyMedieval/Axeman/_TO BE DELETED/SourceArt/Before-Charged-Upright-Other-Clips.json",
+      "sha256": "1f9b8f31514c712e49f9176e81ea351a0b62ee979781c0c899a8a34c41b958d1",
+      "size": 16118
+    },
+    {
+      "original": "Units/EarlyMedieval/Axeman/SourceArt/Before-Upright-animations.json",
+      "archived": "Units/EarlyMedieval/Axeman/_TO BE DELETED/SourceArt/Before-Upright-animations.json",
+      "sha256": "fc44c6065d9f19fbf81cf646ec5527bb5ec5977122af9a398adea1d47f5ec64f",
+      "size": 1200
+    },
+    {
+      "original": "Units/EarlyMedieval/Axeman/SourceArt/compose_animations.py",
+      "archived": "Units/EarlyMedieval/Axeman/_TO BE DELETED/SourceArt/compose_animations.py",
+      "sha256": "f22fe3048a807589d8292bc5dec00820c012f7f2f8366b930d73141145bd2604",
+      "size": 6878
+    },
+    {
+      "original": "Units/EarlyMedieval/Axeman/SourceArt/Composition.json",
+      "archived": "Units/EarlyMedieval/Axeman/_TO BE DELETED/SourceArt/Composition.json",
+      "sha256": "41b36c041c860f6de7d4417795f5bc4a7fe9a9d43e66f76f3a60aa0099c3b37c",
+      "size": 30258
+    },
+    {
+      "original": "Units/EarlyMedieval/Axeman/SourceArt/Native-Attack-v1.png",
+      "archived": "Units/EarlyMedieval/Axeman/_TO BE DELETED/SourceArt/Native-Attack-v1.png",
+      "sha256": "185e4fc29d804c493fd0346bfb911d8347d2a0ef8c26e117c9ec4bdd37cad82e",
+      "size": 2158370
+    },
+    {
+      "original": "Units/EarlyMedieval/Axeman/SourceArt/Native-Axe-Angles-v1.png",
+      "archived": "Units/EarlyMedieval/Axeman/_TO BE DELETED/SourceArt/Native-Axe-Angles-v1.png",
+      "sha256": "33b09ea452b45817d9c0ca74b49f8e1b688089a99130dca7c8e9587c4035dfeb",
+      "size": 868948
+    },
+    {
+      "original": "Units/EarlyMedieval/Axeman/SourceArt/Native-Charge-Attack-v1.png",
+      "archived": "Units/EarlyMedieval/Axeman/_TO BE DELETED/SourceArt/Native-Charge-Attack-v1.png",
+      "sha256": "946a27b52b936d922f4232b4ca230cf9f60ca6d3ea6089edf44eb67827daa98f",
+      "size": 2085284
+    },
+    {
+      "original": "Units/EarlyMedieval/Axeman/SourceArt/Native-Charge-v1.png",
+      "archived": "Units/EarlyMedieval/Axeman/_TO BE DELETED/SourceArt/Native-Charge-v1.png",
+      "sha256": "0d8ab852d53aa7b83fbeafbd255021911b036f955495e5d982d44a7e25af0645",
+      "size": 2383978
+    },
+    {
+      "original": "Units/EarlyMedieval/Axeman/SourceArt/Native-Charge-v2.png",
+      "archived": "Units/EarlyMedieval/Axeman/_TO BE DELETED/SourceArt/Native-Charge-v2.png",
+      "sha256": "0672121bd80ac837a36fc357faa8669a5e3d7e15e7a8216c26bee3f9fbf1002b",
+      "size": 2390192
+    },
+    {
+      "original": "Units/EarlyMedieval/Axeman/SourceArt/Native-Charged-Arm-Motion-Clean-v6.png",
+      "archived": "Units/EarlyMedieval/Axeman/_TO BE DELETED/SourceArt/Native-Charged-Arm-Motion-Clean-v6.png",
+      "sha256": "da88d420fa77e574fd6fb96e5b9c60e96c460f3328b03ff8ec9080dff3329498",
+      "size": 2310340
+    },
+    {
+      "original": "Units/EarlyMedieval/Axeman/SourceArt/Native-Charged-Arm-Motion-v5.png",
+      "archived": "Units/EarlyMedieval/Axeman/_TO BE DELETED/SourceArt/Native-Charged-Arm-Motion-v5.png",
+      "sha256": "66a3b0649493bec03d1ecbedd6f590730fda2c9ffdcb0b29e68eb067ad832dd3",
+      "size": 2392971
+    },
+    {
+      "original": "Units/EarlyMedieval/Axeman/SourceArt/Native-Charged-Head-Up-v4.png",
+      "archived": "Units/EarlyMedieval/Axeman/_TO BE DELETED/SourceArt/Native-Charged-Head-Up-v4.png",
+      "sha256": "ab7a21191485fcf94c0895f669576afa870da7c3972cb7473f621d3134112cce",
+      "size": 2337775
+    },
+    {
+      "original": "Units/EarlyMedieval/Axeman/SourceArt/Native-Charged-Upright-v3.png",
+      "archived": "Units/EarlyMedieval/Axeman/_TO BE DELETED/SourceArt/Native-Charged-Upright-v3.png",
+      "sha256": "55101b96bff86d696e49d2d70ef4f7959ef8707f8f2aa37f24a6c0d1d46eec24",
+      "size": 2307935
+    },
+    {
+      "original": "Units/EarlyMedieval/Axeman/SourceArt/Native-Charged-v1.png",
+      "archived": "Units/EarlyMedieval/Axeman/_TO BE DELETED/SourceArt/Native-Charged-v1.png",
+      "sha256": "5acb2df45c0a734651a0765d63e2f0e562f43f897edbfa11aa11eac1a2c082ef",
+      "size": 2213536
+    },
+    {
+      "original": "Units/EarlyMedieval/Axeman/SourceArt/Native-Charged-v2.png",
+      "archived": "Units/EarlyMedieval/Axeman/_TO BE DELETED/SourceArt/Native-Charged-v2.png",
+      "sha256": "adc204c53fbcc361bed1949dffa0350d998eaac8e0b6f8c07cfc2cc55b183f35",
+      "size": 2312139
+    },
+    {
+      "original": "Units/EarlyMedieval/Axeman/SourceArt/Native-Death-Back-v1.png",
+      "archived": "Units/EarlyMedieval/Axeman/_TO BE DELETED/SourceArt/Native-Death-Back-v1.png",
+      "sha256": "6fcbee5997c212f1003f0ff8882c4d4e1650eb2fb617efb9c19686415ae63c25",
+      "size": 2215606
+    },
+    {
+      "original": "Units/EarlyMedieval/Axeman/SourceArt/Native-Death-Back-v2.png",
+      "archived": "Units/EarlyMedieval/Axeman/_TO BE DELETED/SourceArt/Native-Death-Back-v2.png",
+      "sha256": "6199bee2140bc1f3b193ca19cf8bfec37d73d508e479a128ebead3e22e56adc9",
+      "size": 2214783
+    },
+    {
+      "original": "Units/EarlyMedieval/Axeman/SourceArt/Native-Death-Back-v3.png",
+      "archived": "Units/EarlyMedieval/Axeman/_TO BE DELETED/SourceArt/Native-Death-Back-v3.png",
+      "sha256": "9573a2f935cf07a355c356990116ddc16570b2df257d566d089022fe654afc87",
+      "size": 2223050
+    },
+    {
+      "original": "Units/EarlyMedieval/Axeman/SourceArt/Native-Death-Side-v1.png",
+      "archived": "Units/EarlyMedieval/Axeman/_TO BE DELETED/SourceArt/Native-Death-Side-v1.png",
+      "sha256": "28bfa42c70622e7e243651db8f3051f3f4f8759cc7ef3fb575759389b8e7cd63",
+      "size": 2177375
+    },
+    {
+      "original": "Units/EarlyMedieval/Axeman/SourceArt/Native-Death-Side-v2.png",
+      "archived": "Units/EarlyMedieval/Axeman/_TO BE DELETED/SourceArt/Native-Death-Side-v2.png",
+      "sha256": "b38e1c46edbc00b374eab5cc23465c13a45c09a1a0bb2e09243358c5a86ed3e0",
+      "size": 2420781
+    },
+    {
+      "original": "Units/EarlyMedieval/Axeman/SourceArt/Native-Death-Side-v3.png",
+      "archived": "Units/EarlyMedieval/Axeman/_TO BE DELETED/SourceArt/Native-Death-Side-v3.png",
+      "sha256": "eeadbbd5340e09fa6fc177804a9bc7cd2ee6d190ddbef95778ec747bb611202d",
+      "size": 2417682
+    },
+    {
+      "original": "Units/EarlyMedieval/Axeman/SourceArt/Native-Hit-v1.png",
+      "archived": "Units/EarlyMedieval/Axeman/_TO BE DELETED/SourceArt/Native-Hit-v1.png",
+      "sha256": "f3fb1335b6215528d411bde880b8b2383fe83b06c5609b9241fdc0503cb38577",
+      "size": 2219599
+    },
+    {
+      "original": "Units/EarlyMedieval/Axeman/SourceArt/Native-Idle-Animated-v1.png",
+      "archived": "Units/EarlyMedieval/Axeman/_TO BE DELETED/SourceArt/Native-Idle-Animated-v1.png",
+      "sha256": "317f34a7adc1c961324d73829a8b8c826fc421ab8f40b3b3168616c919c0119b",
+      "size": 2608545
+    },
+    {
+      "original": "Units/EarlyMedieval/Axeman/SourceArt/Native-Idle-Animated-v2.png",
+      "archived": "Units/EarlyMedieval/Axeman/_TO BE DELETED/SourceArt/Native-Idle-Animated-v2.png",
+      "sha256": "2c01d1c62031a9860ba5888bae774ad45e5929380620024e2b3ef68f2f8902e0",
+      "size": 2604920
+    },
+    {
+      "original": "Units/EarlyMedieval/Axeman/SourceArt/Native-Idle-Upright-v2.png",
+      "archived": "Units/EarlyMedieval/Axeman/_TO BE DELETED/SourceArt/Native-Idle-Upright-v2.png",
+      "sha256": "a33915cedd45c03dab8483b7c1bb5652a655fe5d98d4bcf65c1754e83e868685",
+      "size": 1166856
+    },
+    {
+      "original": "Units/EarlyMedieval/Axeman/SourceArt/Native-Idle-v1.png",
+      "archived": "Units/EarlyMedieval/Axeman/_TO BE DELETED/SourceArt/Native-Idle-v1.png",
+      "sha256": "a676dfc8947608f9f4496710b7ae0ca756c9365d5dc6db8184ea79f8670208b7",
+      "size": 1287392
+    },
+    {
+      "original": "Units/EarlyMedieval/Axeman/SourceArt/Native-Walk-v1.png",
+      "archived": "Units/EarlyMedieval/Axeman/_TO BE DELETED/SourceArt/Native-Walk-v1.png",
+      "sha256": "108d26e06cf2d05744c32c39586d641d13bfa0b4468f58b7e7fdb701c032f5ca",
+      "size": 2328925
+    },
+    {
+      "original": "Units/EarlyMedieval/Axeman/Validation.json",
+      "archived": "Units/EarlyMedieval/Axeman/_TO BE DELETED/Validation.json",
+      "sha256": "9e096d1163980fcf50b9aa5c84f9ceb61998e6688168ddcb1b9547cfd4c18286",
+      "size": 16725
+    }
+  ]
+}

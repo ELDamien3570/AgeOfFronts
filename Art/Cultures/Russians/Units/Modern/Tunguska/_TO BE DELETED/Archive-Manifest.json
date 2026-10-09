@@ -1,0 +1,222 @@
+{
+  "folder": "Units/Modern/Tunguska/_TO BE DELETED",
+  "created": "2026-10-09T03:15:53.711Z",
+  "files": [
+    {
+      "original": "Units/Modern/Tunguska/Animation-v3-Browser-Review.json",
+      "archived": "Units/Modern/Tunguska/_TO BE DELETED/Animation-v3-Browser-Review.json",
+      "sha256": "cc6e873852a717bd786734a789429c48e9a872c6824be5c864243011a184f0f5",
+      "size": 6797
+    },
+    {
+      "original": "Units/Modern/Tunguska/Animation-v3-Validation.json",
+      "archived": "Units/Modern/Tunguska/_TO BE DELETED/Animation-v3-Validation.json",
+      "sha256": "44e8c331928bfff4c82b6270e904af10602f2e7a617aa536ad72c01ef97163f4",
+      "size": 13892
+    },
+    {
+      "original": "Units/Modern/Tunguska/Generation.json",
+      "archived": "Units/Modern/Tunguska/_TO BE DELETED/Generation.json",
+      "sha256": "372e9dca3b2ff9005170b732d634e621c43aa0def99513cea8b9ad673da2d737",
+      "size": 21894
+    },
+    {
+      "original": "Units/Modern/Tunguska/Hull-Size-v4-Browser-Review.json",
+      "archived": "Units/Modern/Tunguska/_TO BE DELETED/Hull-Size-v4-Browser-Review.json",
+      "sha256": "988decb35878d711320154f4567ab92be90d99ce7b23c263e4aee9d4b32d50ad",
+      "size": 6774
+    },
+    {
+      "original": "Units/Modern/Tunguska/Idle-FirstFrame-Nadir-v2.png",
+      "archived": "Units/Modern/Tunguska/_TO BE DELETED/Idle-FirstFrame-Nadir-v2.png",
+      "sha256": "79660578b9fc622de7f9e569b2a5509b69df995c38a5d5350c8031c273935722",
+      "size": 1204453
+    },
+    {
+      "original": "Units/Modern/Tunguska/Idle-FirstFrame-v1.png",
+      "archived": "Units/Modern/Tunguska/_TO BE DELETED/Idle-FirstFrame-v1.png",
+      "sha256": "32097be12de42c0900a290376826dce7c6b9ffa3e371e2cd1e6dd28bae09fd7e",
+      "size": 1148967
+    },
+    {
+      "original": "Units/Modern/Tunguska/README.md",
+      "archived": "Units/Modern/Tunguska/_TO BE DELETED/README.md",
+      "sha256": "b3169639c02f55a4586032ea49dcb2177b6a388939e953dfb315e1df38ed0143",
+      "size": 1796
+    },
+    {
+      "original": "Units/Modern/Tunguska/Review-Guns-Size-v4.png",
+      "archived": "Units/Modern/Tunguska/_TO BE DELETED/Review-Guns-Size-v4.png",
+      "sha256": "5b84bcb1f33ccc0ac36839d547ccf610b1c4295d423d78e7019387fbaea16d03",
+      "size": 138746
+    },
+    {
+      "original": "Units/Modern/Tunguska/Review-Guns-v3.png",
+      "archived": "Units/Modern/Tunguska/_TO BE DELETED/Review-Guns-v3.png",
+      "sha256": "0e074f76b38abeef3eae079b46d3748f334ba873a228932645898ffb8b743839",
+      "size": 131162
+    },
+    {
+      "original": "Units/Modern/Tunguska/Review-Wreck-Size-v4.png",
+      "archived": "Units/Modern/Tunguska/_TO BE DELETED/Review-Wreck-Size-v4.png",
+      "sha256": "9956645d340574724b96f86f114803fb1b70ba901d5c62ae776beeec12d4b576",
+      "size": 149185
+    },
+    {
+      "original": "Units/Modern/Tunguska/Review-Wreck-v3.png",
+      "archived": "Units/Modern/Tunguska/_TO BE DELETED/Review-Wreck-v3.png",
+      "sha256": "958c0cead8419bceb5a35d1c598846c03586399a7ab86197b0a8247e9f6821e6",
+      "size": 153493
+    },
+    {
+      "original": "Units/Modern/Tunguska/SourceArt/Before-Animation-v3/Actor_Review.html",
+      "archived": "Units/Modern/Tunguska/_TO BE DELETED/SourceArt/Before-Animation-v3/Actor_Review.html",
+      "sha256": "c317b27069f006f9242a05783353c8f40015fde05f041f2bcda7b57a0f77d26b",
+      "size": 2298
+    },
+    {
+      "original": "Units/Modern/Tunguska/SourceArt/Before-Animation-v3/Generation.json",
+      "archived": "Units/Modern/Tunguska/_TO BE DELETED/SourceArt/Before-Animation-v3/Generation.json",
+      "sha256": "5e9389a2bd68e207c184e3774f2f467932719bbd4b3193219fabbaf1d847255b",
+      "size": 1753
+    },
+    {
+      "original": "Units/Modern/Tunguska/SourceArt/Before-Hull-Registration-v4/Actor_Review.html",
+      "archived": "Units/Modern/Tunguska/_TO BE DELETED/SourceArt/Before-Hull-Registration-v4/Actor_Review.html",
+      "sha256": "3e82ed8e9f56837c3b858f68934e79ec1754bd8fa9b6d308221aa359eb0b2883",
+      "size": 7147
+    },
+    {
+      "original": "Units/Modern/Tunguska/SourceArt/Before-Hull-Registration-v4/animations.json",
+      "archived": "Units/Modern/Tunguska/_TO BE DELETED/SourceArt/Before-Hull-Registration-v4/animations.json",
+      "sha256": "5ef6520e2f0a1f721feff3ebb7031d146b1d20c0cdce7fb33c5eb89d2798ab09",
+      "size": 13219
+    },
+    {
+      "original": "Units/Modern/Tunguska/SourceArt/check-animations-v3.cjs",
+      "archived": "Units/Modern/Tunguska/_TO BE DELETED/SourceArt/check-animations-v3.cjs",
+      "sha256": "955134b2f2fd7568ec37b8cf1aba4c26631778b2a515cc7e6ce7b4059b73d0b2",
+      "size": 2682
+    },
+    {
+      "original": "Units/Modern/Tunguska/SourceArt/check-hull-v4.cjs",
+      "archived": "Units/Modern/Tunguska/_TO BE DELETED/SourceArt/check-hull-v4.cjs",
+      "sha256": "628b657d572421912650cf5cbaa0cdbcb509d45c518636a463364a8856e68cea",
+      "size": 2693
+    },
+    {
+      "original": "Units/Modern/Tunguska/SourceArt/Damage-v3-Registration.json",
+      "archived": "Units/Modern/Tunguska/_TO BE DELETED/SourceArt/Damage-v3-Registration.json",
+      "sha256": "7b3d9fb6baee4fe6e9f36b6e7f5678441212059f3d4bcbbdbe5773688d4dd33f",
+      "size": 4140
+    },
+    {
+      "original": "Units/Modern/Tunguska/SourceArt/Death-v3-Generation.json",
+      "archived": "Units/Modern/Tunguska/_TO BE DELETED/SourceArt/Death-v3-Generation.json",
+      "sha256": "fefd83562b1f8a7bfed5bfd685e4ef76e051050edae5ac8a7a18377f1013c53b",
+      "size": 3414
+    },
+    {
+      "original": "Units/Modern/Tunguska/SourceArt/document-v3.py",
+      "archived": "Units/Modern/Tunguska/_TO BE DELETED/SourceArt/document-v3.py",
+      "sha256": "c04c87f895a918f6d3dfd984851b9b05c8fe91e41377ad49d0caa7e954074bc3",
+      "size": 1303
+    },
+    {
+      "original": "Units/Modern/Tunguska/SourceArt/GunFire-v3-Generation.json",
+      "archived": "Units/Modern/Tunguska/_TO BE DELETED/SourceArt/GunFire-v3-Generation.json",
+      "sha256": "02a2ca3a2662c50ca2760f2c5672790c65d1501dee05c72953082fa860b2265a",
+      "size": 4481
+    },
+    {
+      "original": "Units/Modern/Tunguska/SourceArt/Hit-v3-Generation.json",
+      "archived": "Units/Modern/Tunguska/_TO BE DELETED/SourceArt/Hit-v3-Generation.json",
+      "sha256": "6975256e34c542d76d57ae71212cbef551389093b9cc77d91222028b2577e69a",
+      "size": 1964
+    },
+    {
+      "original": "Units/Modern/Tunguska/SourceArt/Hull-Measurements-v4.json",
+      "archived": "Units/Modern/Tunguska/_TO BE DELETED/SourceArt/Hull-Measurements-v4.json",
+      "sha256": "83ea1158a6c9c2854870111f02733744ba72657ee688dce79c929e457abb462d",
+      "size": 2322
+    },
+    {
+      "original": "Units/Modern/Tunguska/SourceArt/Hull-Registration-v4.json",
+      "archived": "Units/Modern/Tunguska/_TO BE DELETED/SourceArt/Hull-Registration-v4.json",
+      "sha256": "a19c31880712f3f75265d778c96bb698837a39addb17dce1fe5ffdb0431653d7",
+      "size": 4841
+    },
+    {
+      "original": "Units/Modern/Tunguska/SourceArt/Idle-FirstFrame-Nadir-v2-Generation.json",
+      "archived": "Units/Modern/Tunguska/_TO BE DELETED/SourceArt/Idle-FirstFrame-Nadir-v2-Generation.json",
+      "sha256": "5e9389a2bd68e207c184e3774f2f467932719bbd4b3193219fabbaf1d847255b",
+      "size": 1753
+    },
+    {
+      "original": "Units/Modern/Tunguska/SourceArt/Idle-FirstFrame-v1-Generation.json",
+      "archived": "Units/Modern/Tunguska/_TO BE DELETED/SourceArt/Idle-FirstFrame-v1-Generation.json",
+      "sha256": "fc15e3049711e70d5fa8dcf77817b45e09ead92e3c41a06d0b6bda2d65d35250",
+      "size": 2210
+    },
+    {
+      "original": "Units/Modern/Tunguska/SourceArt/Idle-v3-Generation.json",
+      "archived": "Units/Modern/Tunguska/_TO BE DELETED/SourceArt/Idle-v3-Generation.json",
+      "sha256": "2e54c31f2555a54af5e15ab3461719d1ad69389c4e0e3cd9984a6bf8789176f3",
+      "size": 2577
+    },
+    {
+      "original": "Units/Modern/Tunguska/SourceArt/measure-hull-v4.py",
+      "archived": "Units/Modern/Tunguska/_TO BE DELETED/SourceArt/measure-hull-v4.py",
+      "sha256": "60d1985718e6d1c6060f4b3d6e2d4c167e7900d539cf3f8d73f8af1f61b981e6",
+      "size": 917
+    },
+    {
+      "original": "Units/Modern/Tunguska/SourceArt/MissileLaunch-v3-Generation.json",
+      "archived": "Units/Modern/Tunguska/_TO BE DELETED/SourceArt/MissileLaunch-v3-Generation.json",
+      "sha256": "dc48d60db76e41efbf60548505f9dd3616625b4bdfb69daafa41aa5ef7bea869",
+      "size": 4589
+    },
+    {
+      "original": "Units/Modern/Tunguska/SourceArt/Movement-v3-Registration.json",
+      "archived": "Units/Modern/Tunguska/_TO BE DELETED/SourceArt/Movement-v3-Registration.json",
+      "sha256": "0f643168624254da217626290200d05d669d524ff6364d5ca0731faa3c556673",
+      "size": 5005
+    },
+    {
+      "original": "Units/Modern/Tunguska/SourceArt/register-animations-v3.py",
+      "archived": "Units/Modern/Tunguska/_TO BE DELETED/SourceArt/register-animations-v3.py",
+      "sha256": "c43767cf74bf430691649adb4edea9b98cb51b9059cbad1391f9b59be49ee47d",
+      "size": 4849
+    },
+    {
+      "original": "Units/Modern/Tunguska/SourceArt/register-hull-v4.py",
+      "archived": "Units/Modern/Tunguska/_TO BE DELETED/SourceArt/register-hull-v4.py",
+      "sha256": "a4fa3cce01c2ba3249981994febb82f6a47d731d4b761857c17e85bfc3e53025",
+      "size": 2533
+    },
+    {
+      "original": "Units/Modern/Tunguska/SourceArt/Running-v3-Generation.json",
+      "archived": "Units/Modern/Tunguska/_TO BE DELETED/SourceArt/Running-v3-Generation.json",
+      "sha256": "22ce00039c39e0f85cf9cc7a16ac6b00ccb078a4fa731c4770b775c3b99a51fb",
+      "size": 2440
+    },
+    {
+      "original": "Units/Modern/Tunguska/SourceArt/Weapons-v3-Registration.json",
+      "archived": "Units/Modern/Tunguska/_TO BE DELETED/SourceArt/Weapons-v3-Registration.json",
+      "sha256": "44c8e00da3211bf4c4c2585cd987b9679c582aa1e80d174fbe6fdbee18d5bdff",
+      "size": 4024
+    },
+    {
+      "original": "Units/Modern/Tunguska/Validation-v2.json",
+      "archived": "Units/Modern/Tunguska/_TO BE DELETED/Validation-v2.json",
+      "sha256": "6fdada68afeac4c63f654de5aa5b68b0b196b50d5a9f72d9278dc2ff89e70f5e",
+      "size": 224
+    },
+    {
+      "original": "Units/Modern/Tunguska/Validation.json",
+      "archived": "Units/Modern/Tunguska/_TO BE DELETED/Validation.json",
+      "sha256": "7a41c5979bbeb8730f9aa58db1d2764174ee9598f56a69f8c38f658135bb4725",
+      "size": 181
+    }
+  ]
+}

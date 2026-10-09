@@ -1,0 +1,60 @@
+{
+  "folder": "Buildings/StoneAge/_TO BE DELETED",
+  "created": "2026-10-09T03:15:53.711Z",
+  "files": [
+    {
+      "original": "Buildings/StoneAge/Approval.json",
+      "archived": "Buildings/StoneAge/_TO BE DELETED/Approval.json",
+      "sha256": "62ad9857f829cfdc8fcfb66caf20c790bb9899f341a4b60b53934cb98ca42c95",
+      "size": 2045
+    },
+    {
+      "original": "Buildings/StoneAge/Barracks_Inspection_Review.jpg",
+      "archived": "Buildings/StoneAge/_TO BE DELETED/Barracks_Inspection_Review.jpg",
+      "sha256": "78fa4a8c883991382bcf367908190935f2e2562cbe0be458ee954ad0fee390e2",
+      "size": 46051
+    },
+    {
+      "original": "Buildings/StoneAge/Browser_Validation.json",
+      "archived": "Buildings/StoneAge/_TO BE DELETED/Browser_Validation.json",
+      "sha256": "85fd081809aa2a719faa01ae031582c58e4c2a490629d737035271bf195eb8b6",
+      "size": 1920
+    },
+    {
+      "original": "Buildings/StoneAge/Generation.json",
+      "archived": "Buildings/StoneAge/_TO BE DELETED/Generation.json",
+      "sha256": "9948a21a125e89348a646b3725e60a07a82973e1227eb8ec7ff6a83830c4c224",
+      "size": 33497
+    },
+    {
+      "original": "Buildings/StoneAge/Inspection_Review.jpg",
+      "archived": "Buildings/StoneAge/_TO BE DELETED/Inspection_Review.jpg",
+      "sha256": "2ec1ef94cdc44f681775b4373c3c78d1de1bb75ddd2171bce2630b7bd5e7ddb8",
+      "size": 78875
+    },
+    {
+      "original": "Buildings/StoneAge/Mine_Inspection_Review.jpg",
+      "archived": "Buildings/StoneAge/_TO BE DELETED/Mine_Inspection_Review.jpg",
+      "sha256": "f37c4deaa728b31535be83907f072e685f7075c6f5e3c6256d33f7156956e567",
+      "size": 57756
+    },
+    {
+      "original": "Buildings/StoneAge/README.md",
+      "archived": "Buildings/StoneAge/_TO BE DELETED/README.md",
+      "sha256": "35b4afe4e2265ffe43bea6c97a4d363e93366a618fef6b2a62081906da348a05",
+      "size": 1805
+    },
+    {
+      "original": "Buildings/StoneAge/Source_Validation.json",
+      "archived": "Buildings/StoneAge/_TO BE DELETED/Source_Validation.json",
+      "sha256": "930eca6f3a5ee7b81dd4d6bf8a1d00f55fba821a730a025f36b5eb286cae8542",
+      "size": 4152
+    },
+    {
+      "original": "Buildings/StoneAge/Stables_Inspection_Review.jpg",
+      "archived": "Buildings/StoneAge/_TO BE DELETED/Stables_Inspection_Review.jpg",
+      "sha256": "04a9c0a3c98c09e6afe231242e903a7544c49eb588ee63197d97a7e7d3a6b5e1",
+      "size": 55514
+    }
+  ]
+}

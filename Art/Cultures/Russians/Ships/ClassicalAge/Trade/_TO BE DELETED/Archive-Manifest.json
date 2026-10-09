@@ -1,0 +1,24 @@
+{
+  "folder": "Ships/ClassicalAge/Trade/_TO BE DELETED",
+  "created": "2026-10-09T03:15:53.711Z",
+  "files": [
+    {
+      "original": "Ships/ClassicalAge/Trade/Idle-Preview.webp",
+      "archived": "Ships/ClassicalAge/Trade/_TO BE DELETED/Idle-Preview.webp",
+      "sha256": "87bd6c0ccf25f0b514042d34d647e2bffa08963553488288ef3d982838204730",
+      "size": 1245332
+    },
+    {
+      "original": "Ships/ClassicalAge/Trade/Sailing-Preview.webp",
+      "archived": "Ships/ClassicalAge/Trade/_TO BE DELETED/Sailing-Preview.webp",
+      "sha256": "ad32c7c1b5e2f216a86d123acd9871697f4a4baf6c6279a83b6519e6497241f7",
+      "size": 1263938
+    },
+    {
+      "original": "Ships/ClassicalAge/Trade/Source_Transparent.png",
+      "archived": "Ships/ClassicalAge/Trade/_TO BE DELETED/Source_Transparent.png",
+      "sha256": "fb4b592c6caa8fba6885cbfb8489f3ee6da13dcaed47d84d7cf668ca99cb086a",
+      "size": 1140910
+    }
+  ]
+}

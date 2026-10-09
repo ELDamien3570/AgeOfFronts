@@ -29,7 +29,7 @@ describe("Russian runtime artwork", () => {
     const portraits = Object.entries(ARTWORK_CATALOG).filter(([id]) =>
       id.startsWith("unit-portrait-"),
     );
-    expect(portraits).toHaveLength(29);
+    expect(portraits).toHaveLength(42);
     for (const [, asset] of portraits)
       expect((asset as ArtworkAsset & { source: string }).source).toContain(
         "Russians/Units/",

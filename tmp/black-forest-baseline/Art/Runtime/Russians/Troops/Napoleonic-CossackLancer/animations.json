@@ -1,0 +1,367 @@
+{
+  "actorCount": 1,
+  "animations": [
+    {
+      "id": "idle",
+      "file": "idle.png",
+      "label": "Idle",
+      "loop": true,
+      "scale": 1.5375375375375375,
+      "durations": [
+        600,
+        600,
+        600,
+        600,
+        600,
+        600
+      ],
+      "description": "Very quiet breathing loop: horse head, saddle and rider stay nearly fixed; subtle breathing, ear flick, tiny tail change; no stepping or body sway.",
+      "frameCount": 6,
+      "sourceFrameOrder": [
+        0,
+        1,
+        2,
+        3,
+        4,
+        5
+      ],
+      "frames": [
+        {
+          "x": 0,
+          "y": 0,
+          "width": 128,
+          "height": 128,
+          "pivot": {
+            "x": 64,
+            "y": 64
+          }
+        },
+        {
+          "x": 128,
+          "y": 0,
+          "width": 128,
+          "height": 128,
+          "pivot": {
+            "x": 64,
+            "y": 64
+          }
+        },
+        {
+          "x": 256,
+          "y": 0,
+          "width": 128,
+          "height": 128,
+          "pivot": {
+            "x": 64,
+            "y": 64
+          }
+        },
+        {
+          "x": 384,
+          "y": 0,
+          "width": 128,
+          "height": 128,
+          "pivot": {
+            "x": 64,
+            "y": 64
+          }
+        },
+        {
+          "x": 512,
+          "y": 0,
+          "width": 128,
+          "height": 128,
+          "pivot": {
+            "x": 64,
+            "y": 64
+          }
+        },
+        {
+          "x": 640,
+          "y": 0,
+          "width": 128,
+          "height": 128,
+          "pivot": {
+            "x": 64,
+            "y": 64
+          }
+        }
+      ],
+      "releaseFrame": 3
+    },
+    {
+      "id": "running",
+      "file": "running.png",
+      "label": "Walk",
+      "loop": true,
+      "scale": 1.5375375375375375,
+      "durations": [
+        180,
+        180,
+        180,
+        180,
+        180,
+        180
+      ],
+      "description": "Six successive phases of natural four-beat horse walk in place. Correct hinged legs and alternating hooves. Fixed horizontal saddle location, tiny vertical bob, no sideways drift. Lance upright at rest.",
+      "frameCount": 6,
+      "sourceFrameOrder": [
+        0,
+        1,
+        2,
+        3,
+        4,
+        5
+      ],
+      "frames": [
+        {
+          "x": 0,
+          "y": 0,
+          "width": 128,
+          "height": 128,
+          "pivot": {
+            "x": 64,
+            "y": 64
+          }
+        },
+        {
+          "x": 128,
+          "y": 0,
+          "width": 128,
+          "height": 128,
+          "pivot": {
+            "x": 64,
+            "y": 64
+          }
+        },
+        {
+          "x": 256,
+          "y": 0,
+          "width": 128,
+          "height": 128,
+          "pivot": {
+            "x": 64,
+            "y": 64
+          }
+        },
+        {
+          "x": 384,
+          "y": 0,
+          "width": 128,
+          "height": 128,
+          "pivot": {
+            "x": 64,
+            "y": 64
+          }
+        },
+        {
+          "x": 512,
+          "y": 0,
+          "width": 128,
+          "height": 128,
+          "pivot": {
+            "x": 64,
+            "y": 64
+          }
+        },
+        {
+          "x": 640,
+          "y": 0,
+          "width": 128,
+          "height": 128,
+          "pivot": {
+            "x": 64,
+            "y": 64
+          }
+        }
+      ],
+      "releaseFrame": 3
+    },
+    {
+      "id": "attack",
+      "file": "attack.png",
+      "label": "Lance thrust",
+      "loop": false,
+      "scale": 1.5375375375375375,
+      "durations": [
+        150,
+        180,
+        150,
+        110,
+        180,
+        230
+      ],
+      "description": "Six poses of forceful cavalry lance charge thrust: ready; lower lance to point screen-bottom; lean forward and extend; full forward impact spearhead beyond horse shoulder toward bottom; withdraw; ready recovery. Spearhead stays at leading forward end all thrust frames. No backward spearhead, broken shaft, extra weapon or horse stabbing. Steady horizontal horse position.",
+      "frameCount": 6,
+      "sourceFrameOrder": [
+        0,
+        1,
+        2,
+        3,
+        4,
+        5
+      ],
+      "frames": [
+        {
+          "x": 0,
+          "y": 0,
+          "width": 128,
+          "height": 128,
+          "pivot": {
+            "x": 64,
+            "y": 64
+          }
+        },
+        {
+          "x": 128,
+          "y": 0,
+          "width": 128,
+          "height": 128,
+          "pivot": {
+            "x": 64,
+            "y": 64
+          }
+        },
+        {
+          "x": 256,
+          "y": 0,
+          "width": 128,
+          "height": 128,
+          "pivot": {
+            "x": 64,
+            "y": 64
+          }
+        },
+        {
+          "x": 384,
+          "y": 0,
+          "width": 128,
+          "height": 128,
+          "pivot": {
+            "x": 64,
+            "y": 64
+          }
+        },
+        {
+          "x": 512,
+          "y": 0,
+          "width": 128,
+          "height": 128,
+          "pivot": {
+            "x": 64,
+            "y": 64
+          }
+        },
+        {
+          "x": 640,
+          "y": 0,
+          "width": 128,
+          "height": 128,
+          "pivot": {
+            "x": 64,
+            "y": 64
+          }
+        }
+      ],
+      "impactFrame": 3,
+      "sourceAnimation": "original charge-attack",
+      "releaseFrame": 3
+    },
+    {
+      "id": "death",
+      "file": "death.png",
+      "label": "Death - together fall",
+      "loop": false,
+      "scale": 1.5375375375375375,
+      "durations": [
+        150,
+        180,
+        200,
+        230,
+        280,
+        650
+      ],
+      "description": "Horse and rider fall together: upright; front knees buckle; both lean screen-left; collapse onto left side; settle on ground; final corpse. True articulated fall, not spinning upright pose. Last two poses keep identical fall orientation without flipping. Whole rider, horse and lance visible.",
+      "frameCount": 6,
+      "sourceFrameOrder": [
+        0,
+        1,
+        2,
+        3,
+        4,
+        5
+      ],
+      "frames": [
+        {
+          "x": 0,
+          "y": 0,
+          "width": 128,
+          "height": 128,
+          "pivot": {
+            "x": 64,
+            "y": 64
+          }
+        },
+        {
+          "x": 128,
+          "y": 0,
+          "width": 128,
+          "height": 128,
+          "pivot": {
+            "x": 64,
+            "y": 64
+          }
+        },
+        {
+          "x": 256,
+          "y": 0,
+          "width": 128,
+          "height": 128,
+          "pivot": {
+            "x": 64,
+            "y": 64
+          }
+        },
+        {
+          "x": 384,
+          "y": 0,
+          "width": 128,
+          "height": 128,
+          "pivot": {
+            "x": 64,
+            "y": 64
+          }
+        },
+        {
+          "x": 512,
+          "y": 0,
+          "width": 128,
+          "height": 128,
+          "pivot": {
+            "x": 64,
+            "y": 64
+          }
+        },
+        {
+          "x": 640,
+          "y": 0,
+          "width": 128,
+          "height": 128,
+          "pivot": {
+            "x": 64,
+            "y": 64
+          }
+        }
+      ],
+      "releaseFrame": 3
+    }
+  ],
+  "source": "Art/Cultures/Russians/Units/Napoleonic/CossackLancer/animations.json",
+  "metadataHash": "00e196c57719560fbc427793bb1be25ca884e8bf434324f1c60b87a889cdd610",
+  "hashes": {
+    "Art/Cultures/Russians/Units/Napoleonic/CossackLancer/idle-Registered-v1.png": "6a029d5bfc9d8453cef5baba4814a9cfad598ecdb21eee71ee55935d9614f506",
+    "Art/Cultures/Russians/Units/Napoleonic/CossackLancer/walk-Registered-v1.png": "dd9437240bcdf71c165383b47a41948c2d2268324ba0791de7bb718ba1b61bb4",
+    "Art/Cultures/Russians/Units/Napoleonic/CossackLancer/charge-attack-Registered-v1.png": "83b7b7ba05715efafe1cffa932d7e7e0a417e8f5b752e2a4360f597cdd28c3f7",
+    "Art/Cultures/Russians/Units/Napoleonic/CossackLancer/death-Registered-v1.png": "6205dcdaa982f1e6bc436264d091ee6df03a063abfd1bf72e254ce46a20e15fc"
+  }
+}

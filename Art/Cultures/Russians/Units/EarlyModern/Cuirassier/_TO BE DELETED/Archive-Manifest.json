@@ -1,0 +1,258 @@
+{
+  "folder": "Units/EarlyModern/Cuirassier/_TO BE DELETED",
+  "created": "2026-10-09T03:15:53.711Z",
+  "files": [
+    {
+      "original": "Units/EarlyModern/Cuirassier/attack-Registered-v1.png",
+      "archived": "Units/EarlyModern/Cuirassier/_TO BE DELETED/attack-Registered-v1.png",
+      "sha256": "b7e9a562aa36c1c32571a2dfc611d1e201180f4f311864a554dd7b7deee3e043",
+      "size": 630760
+    },
+    {
+      "original": "Units/EarlyModern/Cuirassier/Browser-Review.json",
+      "archived": "Units/EarlyModern/Cuirassier/_TO BE DELETED/Browser-Review.json",
+      "sha256": "e2ab7cf8760c86ce903dd1eb9122eb5207508c13f5b6a3c7a21e25d1dae11a72",
+      "size": 1043
+    },
+    {
+      "original": "Units/EarlyModern/Cuirassier/charge-attack-Registered-v1.png",
+      "archived": "Units/EarlyModern/Cuirassier/_TO BE DELETED/charge-attack-Registered-v1.png",
+      "sha256": "f0f2aae24dda1a47be5d8a9420597c1abaa433b6b656328c9cb85cc465960c16",
+      "size": 674193
+    },
+    {
+      "original": "Units/EarlyModern/Cuirassier/charged-impact-Registered-v1.png",
+      "archived": "Units/EarlyModern/Cuirassier/_TO BE DELETED/charged-impact-Registered-v1.png",
+      "sha256": "8309483f8b27f4c517c74a59b1f7820872c525dd52d57e2e94ffa394a969a983",
+      "size": 728369
+    },
+    {
+      "original": "Units/EarlyModern/Cuirassier/Generation.json",
+      "archived": "Units/EarlyModern/Cuirassier/_TO BE DELETED/Generation.json",
+      "sha256": "a2cacff78558a7b3a1914dc09f210b9ccb51bfccc7e533b93c2afc69c3561cb8",
+      "size": 19392
+    },
+    {
+      "original": "Units/EarlyModern/Cuirassier/hit-Registered-v1.png",
+      "archived": "Units/EarlyModern/Cuirassier/_TO BE DELETED/hit-Registered-v1.png",
+      "sha256": "cfe30ea7a3ac44c9cfa745286945b1ce7d862f4ce38d62cdb1c0eef74062fb53",
+      "size": 737671
+    },
+    {
+      "original": "Units/EarlyModern/Cuirassier/Idle-v1.png",
+      "archived": "Units/EarlyModern/Cuirassier/_TO BE DELETED/Idle-v1.png",
+      "sha256": "fcc2f5a8c3cc4afc8696e5948cc7e10bdbba3b2f4d502445b18e214a9d93945c",
+      "size": 1712451
+    },
+    {
+      "original": "Units/EarlyModern/Cuirassier/prepare_idle.py",
+      "archived": "Units/EarlyModern/Cuirassier/_TO BE DELETED/prepare_idle.py",
+      "sha256": "faea10fcb9a5fe1d00724f5576018ecdeb09092f8d39926d5ac04a84d91a4a22",
+      "size": 4411
+    },
+    {
+      "original": "Units/EarlyModern/Cuirassier/SourceArt/Approved-Idle.json",
+      "archived": "Units/EarlyModern/Cuirassier/_TO BE DELETED/SourceArt/Approved-Idle.json",
+      "sha256": "a6e883795c10073d9630eebb722c23e08a295223fde588ada51eabe9417bec9a",
+      "size": 189
+    },
+    {
+      "original": "Units/EarlyModern/Cuirassier/SourceArt/Before-Animation-Actor_Review.html",
+      "archived": "Units/EarlyModern/Cuirassier/_TO BE DELETED/SourceArt/Before-Animation-Actor_Review.html",
+      "sha256": "ab27e570eb313129c04e40e62ca67de89c306c12338f59b36c3f1602ed240e38",
+      "size": 7249
+    },
+    {
+      "original": "Units/EarlyModern/Cuirassier/SourceArt/Before-Animation-animations.json",
+      "archived": "Units/EarlyModern/Cuirassier/_TO BE DELETED/SourceArt/Before-Animation-animations.json",
+      "sha256": "339b2533f0745ccbaab27bee00e1eb0b567205cf4382b545ce56c5646dbf6f9e",
+      "size": 1828
+    },
+    {
+      "original": "Units/EarlyModern/Cuirassier/SourceArt/Before-Animation-Browser-Review.json",
+      "archived": "Units/EarlyModern/Cuirassier/_TO BE DELETED/SourceArt/Before-Animation-Browser-Review.json",
+      "sha256": "df9c951a6f46f9e1b1a5b13c402b5d17322a90ca3a4fbac2339dbed46f6b9fda",
+      "size": 380
+    },
+    {
+      "original": "Units/EarlyModern/Cuirassier/SourceArt/Before-Animation-Validation.json",
+      "archived": "Units/EarlyModern/Cuirassier/_TO BE DELETED/SourceArt/Before-Animation-Validation.json",
+      "sha256": "fad076dd0f727860d73cece49529f7c4fde86d8f5c53a61f4514ecfc2d40cdf2",
+      "size": 380
+    },
+    {
+      "original": "Units/EarlyModern/Cuirassier/SourceArt/Before-Steady-Motions-animations.json",
+      "archived": "Units/EarlyModern/Cuirassier/_TO BE DELETED/SourceArt/Before-Steady-Motions-animations.json",
+      "sha256": "887670473a12c5957e9ac8de1f5c820811423ad924168c78bbe00786cee11de5",
+      "size": 30599
+    },
+    {
+      "original": "Units/EarlyModern/Cuirassier/SourceArt/Before-Steady-Motions-Browser-Review.json",
+      "archived": "Units/EarlyModern/Cuirassier/_TO BE DELETED/SourceArt/Before-Steady-Motions-Browser-Review.json",
+      "sha256": "7e6b5a1f11d6ec659b557724119d0d73a30254a650c2c0e38180a7053c25af6d",
+      "size": 1161
+    },
+    {
+      "original": "Units/EarlyModern/Cuirassier/SourceArt/Before-Steady-Motions-Generation.json",
+      "archived": "Units/EarlyModern/Cuirassier/_TO BE DELETED/SourceArt/Before-Steady-Motions-Generation.json",
+      "sha256": "f62e4981649786a072ef30dbd7473e3e20a27065a10cd0ba1e1d2cc6e50acd2a",
+      "size": 19160
+    },
+    {
+      "original": "Units/EarlyModern/Cuirassier/SourceArt/Before-Steady-Motions-Validation.json",
+      "archived": "Units/EarlyModern/Cuirassier/_TO BE DELETED/SourceArt/Before-Steady-Motions-Validation.json",
+      "sha256": "e36daadbd0911df452f13aaa0a68ae790f83e4a64bed15df51cee00e5dfb9a2f",
+      "size": 14854
+    },
+    {
+      "original": "Units/EarlyModern/Cuirassier/SourceArt/compose_animations.py",
+      "archived": "Units/EarlyModern/Cuirassier/_TO BE DELETED/SourceArt/compose_animations.py",
+      "sha256": "0d8f74023bfedbbc4ce9b25e506389e4fbeae018c104dae0bc47bd8ed2e1c409",
+      "size": 7526
+    },
+    {
+      "original": "Units/EarlyModern/Cuirassier/SourceArt/Composition.json",
+      "archived": "Units/EarlyModern/Cuirassier/_TO BE DELETED/SourceArt/Composition.json",
+      "sha256": "12e0b1ac6c288f48e3556d1c38a24b0f0cf64106f945b5c7f38bf619f83303db",
+      "size": 16433
+    },
+    {
+      "original": "Units/EarlyModern/Cuirassier/SourceArt/Generation-idle-v1.json",
+      "archived": "Units/EarlyModern/Cuirassier/_TO BE DELETED/SourceArt/Generation-idle-v1.json",
+      "sha256": "2b2d33e43f40dbf2d8c762d55870e12dfe70704f2c572c13d09a409231d01d3b",
+      "size": 2400
+    },
+    {
+      "original": "Units/EarlyModern/Cuirassier/SourceArt/Generation-motion-attack-v1.json",
+      "archived": "Units/EarlyModern/Cuirassier/_TO BE DELETED/SourceArt/Generation-motion-attack-v1.json",
+      "sha256": "f32511396a3b3bd0d824b76d6c396030c20a4ec5f666fa95e260d3f87f731800",
+      "size": 1776
+    },
+    {
+      "original": "Units/EarlyModern/Cuirassier/SourceArt/Generation-motion-charge-attack-v1.json",
+      "archived": "Units/EarlyModern/Cuirassier/_TO BE DELETED/SourceArt/Generation-motion-charge-attack-v1.json",
+      "sha256": "476bc95686cf27485d81fdbafa49eda83825b02cccf9c4529b42c9346807937a",
+      "size": 1879
+    },
+    {
+      "original": "Units/EarlyModern/Cuirassier/SourceArt/Generation-motion-charge-v1.json",
+      "archived": "Units/EarlyModern/Cuirassier/_TO BE DELETED/SourceArt/Generation-motion-charge-v1.json",
+      "sha256": "2e10aa46df13066ab2125a963f0b8a05624b87cb21fd8ad9b156e03d3dc1fe82",
+      "size": 1673
+    },
+    {
+      "original": "Units/EarlyModern/Cuirassier/SourceArt/Generation-motion-charged-impact-v1.json",
+      "archived": "Units/EarlyModern/Cuirassier/_TO BE DELETED/SourceArt/Generation-motion-charged-impact-v1.json",
+      "sha256": "858fefd669d6fd54e8e9ce2c7afa62cb55d113f3e45a93f1ae6f5c3c45d5931b",
+      "size": 1641
+    },
+    {
+      "original": "Units/EarlyModern/Cuirassier/SourceArt/Generation-motion-death-thrown-v1.json",
+      "archived": "Units/EarlyModern/Cuirassier/_TO BE DELETED/SourceArt/Generation-motion-death-thrown-v1.json",
+      "sha256": "dd7d4b644accf5ed5b2d3440aa79f27f17172acec86500f32ed2862bda12ad9d",
+      "size": 1719
+    },
+    {
+      "original": "Units/EarlyModern/Cuirassier/SourceArt/Generation-motion-death-v1.json",
+      "archived": "Units/EarlyModern/Cuirassier/_TO BE DELETED/SourceArt/Generation-motion-death-v1.json",
+      "sha256": "a8348ff1c62e0f09e8ece95b9635fe6c62f9d7660b1d1ea8cf2dea463ae6541e",
+      "size": 1784
+    },
+    {
+      "original": "Units/EarlyModern/Cuirassier/SourceArt/Generation-motion-hit-v1.json",
+      "archived": "Units/EarlyModern/Cuirassier/_TO BE DELETED/SourceArt/Generation-motion-hit-v1.json",
+      "sha256": "2ccee2eb6f99ae94bca0c406d8d607f011b5b2e638b867ce7d63e3aa391a5fe9",
+      "size": 1610
+    },
+    {
+      "original": "Units/EarlyModern/Cuirassier/SourceArt/Generation-motion-idle-v1.json",
+      "archived": "Units/EarlyModern/Cuirassier/_TO BE DELETED/SourceArt/Generation-motion-idle-v1.json",
+      "sha256": "6c877c7079dfa8306570f38cbf3536ee5dc90986c329bcb1e4f5ea70e36e2cd7",
+      "size": 1577
+    },
+    {
+      "original": "Units/EarlyModern/Cuirassier/SourceArt/Generation-motion-walk-v1.json",
+      "archived": "Units/EarlyModern/Cuirassier/_TO BE DELETED/SourceArt/Generation-motion-walk-v1.json",
+      "sha256": "9577e75eaae753a680e8aadae47d4255c3e7569b89f7f676040ba9ce0c714863",
+      "size": 1665
+    },
+    {
+      "original": "Units/EarlyModern/Cuirassier/SourceArt/Native-attack-v1.png",
+      "archived": "Units/EarlyModern/Cuirassier/_TO BE DELETED/SourceArt/Native-attack-v1.png",
+      "sha256": "56572b276f281d868a9e851cec189fdb36421054df6cbb89a20b81b581a4ab0f",
+      "size": 1861445
+    },
+    {
+      "original": "Units/EarlyModern/Cuirassier/SourceArt/Native-charge-attack-v1.png",
+      "archived": "Units/EarlyModern/Cuirassier/_TO BE DELETED/SourceArt/Native-charge-attack-v1.png",
+      "sha256": "bfe2b02483352abb5885f04311aa24414972ad1a4b292c35f04e3e3b09577e03",
+      "size": 1923400
+    },
+    {
+      "original": "Units/EarlyModern/Cuirassier/SourceArt/Native-charge-v1.png",
+      "archived": "Units/EarlyModern/Cuirassier/_TO BE DELETED/SourceArt/Native-charge-v1.png",
+      "sha256": "932c16c3b7391c5e315f1eab3ca96d6b2806ac4df9ec2260b38d31bb26ce8af9",
+      "size": 1907614
+    },
+    {
+      "original": "Units/EarlyModern/Cuirassier/SourceArt/Native-charged-impact-v1.png",
+      "archived": "Units/EarlyModern/Cuirassier/_TO BE DELETED/SourceArt/Native-charged-impact-v1.png",
+      "sha256": "2ac7461cbe3860ec8d5a37197a00c7b8ceca7863a29dfdbe3313ba22dfab0544",
+      "size": 1970840
+    },
+    {
+      "original": "Units/EarlyModern/Cuirassier/SourceArt/Native-death-thrown-v1.png",
+      "archived": "Units/EarlyModern/Cuirassier/_TO BE DELETED/SourceArt/Native-death-thrown-v1.png",
+      "sha256": "8bc2470dd7c4877d769ef2c9161180f5ba052fe07016ffe68dde9a212a81c4b3",
+      "size": 2255833
+    },
+    {
+      "original": "Units/EarlyModern/Cuirassier/SourceArt/Native-death-v1.png",
+      "archived": "Units/EarlyModern/Cuirassier/_TO BE DELETED/SourceArt/Native-death-v1.png",
+      "sha256": "723b2080b5d89ebd0f6caa3f3b172bb004404e1aa6956d71cc1980b574943525",
+      "size": 2282216
+    },
+    {
+      "original": "Units/EarlyModern/Cuirassier/SourceArt/Native-hit-v1.png",
+      "archived": "Units/EarlyModern/Cuirassier/_TO BE DELETED/SourceArt/Native-hit-v1.png",
+      "sha256": "d838bcb7d3c61c4673061fe8326554d78f5874c4d54c5ffcf46c86db3ce53713",
+      "size": 2002643
+    },
+    {
+      "original": "Units/EarlyModern/Cuirassier/SourceArt/Native-idle-v1.png",
+      "archived": "Units/EarlyModern/Cuirassier/_TO BE DELETED/SourceArt/Native-idle-v1.png",
+      "sha256": "1d59230f23e9b1ad183a026f18c9b90e37ed00bc6eb318b0d26c9c5dfb8ec5a0",
+      "size": 1980325
+    },
+    {
+      "original": "Units/EarlyModern/Cuirassier/SourceArt/Native-walk-v1.png",
+      "archived": "Units/EarlyModern/Cuirassier/_TO BE DELETED/SourceArt/Native-walk-v1.png",
+      "sha256": "4d999653428d25e857778e564bf68c612806f5edd1be207ab84b7f42e660c6af",
+      "size": 1925140
+    },
+    {
+      "original": "Units/EarlyModern/Cuirassier/SourceArt/register_steady_motions.py",
+      "archived": "Units/EarlyModern/Cuirassier/_TO BE DELETED/SourceArt/register_steady_motions.py",
+      "sha256": "3900465e3d5e225b491e8bef9bba3c32d3599af572567080e64ed92d9474b4d2",
+      "size": 5161
+    },
+    {
+      "original": "Units/EarlyModern/Cuirassier/SourceArt/Steady-Motions-v2.json",
+      "archived": "Units/EarlyModern/Cuirassier/_TO BE DELETED/SourceArt/Steady-Motions-v2.json",
+      "sha256": "80b03e638a3544fd0de54a5b19197317c7ec3e6a9bcbc56d7fd769782cca89ed",
+      "size": 20453
+    },
+    {
+      "original": "Units/EarlyModern/Cuirassier/Validation.json",
+      "archived": "Units/EarlyModern/Cuirassier/_TO BE DELETED/Validation.json",
+      "sha256": "b798790d6fee7db4a932a85b6cc82072341440ad0a8d47bd8f64f6185443dbe7",
+      "size": 14898
+    },
+    {
+      "original": "Units/EarlyModern/Cuirassier/walk-Registered-v1.png",
+      "archived": "Units/EarlyModern/Cuirassier/_TO BE DELETED/walk-Registered-v1.png",
+      "sha256": "3af0d5d4c36af54ca2119ffdb781baa75186f0467b9ed33c60c730c0a4d58af9",
+      "size": 703118
+    }
+  ]
+}

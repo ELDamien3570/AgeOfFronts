@@ -45,6 +45,15 @@ export function createResearchArtwork(civ: CivilizationPlan) {
           add(parent, { ...icon, direct: false });
       }
     }
+    for (const node of civ.technologies) {
+      for (const folder of node.buildingUnlocks ?? []) {
+        const url =
+          images[
+            `../../../Art/Cultures/Russians/Buildings/${node.age}/${folder}/Icon.png`
+          ];
+        if (url) add(node.id, { label: folder, direct: true, art: { url } });
+      }
+    }
     for (const building of russianBuildingUnlocks(civ)) {
       const url =
         images[

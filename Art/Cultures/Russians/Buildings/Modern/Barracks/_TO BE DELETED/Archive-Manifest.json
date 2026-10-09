@@ -1,0 +1,18 @@
+{
+  "folder": "Buildings/Modern/Barracks/_TO BE DELETED",
+  "created": "2026-10-09T03:15:53.711Z",
+  "files": [
+    {
+      "original": "Buildings/Modern/Barracks/SourceArt/Icon-v1.png",
+      "archived": "Buildings/Modern/Barracks/_TO BE DELETED/SourceArt/Icon-v1.png",
+      "sha256": "c75b54f8ec563398f8ddb4089c5ce6bf77baa8356877a8882237aeaf4a77f2d6",
+      "size": 2515689
+    },
+    {
+      "original": "Buildings/Modern/Barracks/SourceArt/Icon-v2.png",
+      "archived": "Buildings/Modern/Barracks/_TO BE DELETED/SourceArt/Icon-v2.png",
+      "sha256": "782c4f7a1f9a9a3c9f2d30d65d500a11baaa34ee49ae043fd461fe5e9e014a0c",
+      "size": 2311272
+    }
+  ]
+}

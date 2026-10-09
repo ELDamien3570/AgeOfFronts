@@ -1,0 +1,192 @@
+{
+  "folder": "Units/Modern/Bumerang/_TO BE DELETED",
+  "created": "2026-10-09T03:15:53.711Z",
+  "files": [
+    {
+      "original": "Units/Modern/Bumerang/attack-Registered-v1.png",
+      "archived": "Units/Modern/Bumerang/_TO BE DELETED/attack-Registered-v1.png",
+      "sha256": "2f79607acc3b802c626e689687ffd9e0cec14522d1301c4bbcd3a71f4b155d34",
+      "size": 635703
+    },
+    {
+      "original": "Units/Modern/Bumerang/Browser-Review.json",
+      "archived": "Units/Modern/Bumerang/_TO BE DELETED/Browser-Review.json",
+      "sha256": "ae85a8d379dd41c64f90da74ccddd60ab056688800f564ce18f3d7e45020513b",
+      "size": 255
+    },
+    {
+      "original": "Units/Modern/Bumerang/death-Registered-v1.png",
+      "archived": "Units/Modern/Bumerang/_TO BE DELETED/death-Registered-v1.png",
+      "sha256": "9c6a0591e1220dbcdb97bdd6227ae89c67ee44789e79f6720d2502ae54970cab",
+      "size": 884840
+    },
+    {
+      "original": "Units/Modern/Bumerang/Generation.json",
+      "archived": "Units/Modern/Bumerang/_TO BE DELETED/Generation.json",
+      "sha256": "da1eebfc7aa600c7fcee5e01efa3a1dd341891d3933a1ef38a8415951c1b2452",
+      "size": 8453
+    },
+    {
+      "original": "Units/Modern/Bumerang/moving-Registered-v1.png",
+      "archived": "Units/Modern/Bumerang/_TO BE DELETED/moving-Registered-v1.png",
+      "sha256": "552c5509131bc37fa9efbdfc538cc795766704a7c3b393373b1f34005dc9bbd5",
+      "size": 706204
+    },
+    {
+      "original": "Units/Modern/Bumerang/prepare_idle.py",
+      "archived": "Units/Modern/Bumerang/_TO BE DELETED/prepare_idle.py",
+      "sha256": "a81ff017fc55d30f1c135ac3348c1a4b8cab5b0ab52445a9c1b490f22030d316",
+      "size": 4557
+    },
+    {
+      "original": "Units/Modern/Bumerang/SourceArt/Approved-Idle.json",
+      "archived": "Units/Modern/Bumerang/_TO BE DELETED/SourceArt/Approved-Idle.json",
+      "sha256": "21d16239b5c1721be25e7a1c7ddc8913ce686470a5c5b52cffbf22d180d40055",
+      "size": 216
+    },
+    {
+      "original": "Units/Modern/Bumerang/SourceArt/Before-Animation-Actor_Review.html",
+      "archived": "Units/Modern/Bumerang/_TO BE DELETED/SourceArt/Before-Animation-Actor_Review.html",
+      "sha256": "0e81dc494ac38f9228a72013fbbf570651eaae09aa69cd94761e71bbeb5c907c",
+      "size": 7249
+    },
+    {
+      "original": "Units/Modern/Bumerang/SourceArt/Before-Animation-animations.json",
+      "archived": "Units/Modern/Bumerang/_TO BE DELETED/SourceArt/Before-Animation-animations.json",
+      "sha256": "c225ae6b369043f087cbe16a733934d60bf397a069dd58d28e6bcdd5c91484a7",
+      "size": 1706
+    },
+    {
+      "original": "Units/Modern/Bumerang/SourceArt/Before-Animation-Browser-Review.json",
+      "archived": "Units/Modern/Bumerang/_TO BE DELETED/SourceArt/Before-Animation-Browser-Review.json",
+      "sha256": "856b3619b099e29571d431c7e54007498e0b3145ec847c2b98d5a53fd2778255",
+      "size": 380
+    },
+    {
+      "original": "Units/Modern/Bumerang/SourceArt/Before-Animation-Generation.json",
+      "archived": "Units/Modern/Bumerang/_TO BE DELETED/SourceArt/Before-Animation-Generation.json",
+      "sha256": "76e4e08ab3bf2daaed46f6360e8acb30f7b49765023a78d4e4b532d1a4fef210",
+      "size": 2675
+    },
+    {
+      "original": "Units/Modern/Bumerang/SourceArt/Before-Animation-Validation.json",
+      "archived": "Units/Modern/Bumerang/_TO BE DELETED/SourceArt/Before-Animation-Validation.json",
+      "sha256": "595eb4836474f675ba03f069a18fe94b5da540afd74344f187da75c0cff4d95d",
+      "size": 356
+    },
+    {
+      "original": "Units/Modern/Bumerang/SourceArt/Before-Locked-v2-animations.json",
+      "archived": "Units/Modern/Bumerang/_TO BE DELETED/SourceArt/Before-Locked-v2-animations.json",
+      "sha256": "abe013c11eadb8387c6a0e30b8a7d9c693c6ea252f6cc2b28b1d5f3888b842f2",
+      "size": 9233
+    },
+    {
+      "original": "Units/Modern/Bumerang/SourceArt/compose_animations.py",
+      "archived": "Units/Modern/Bumerang/_TO BE DELETED/SourceArt/compose_animations.py",
+      "sha256": "663554182b239dd0fe01a21796d6a5139889c11a8f9322363c837a4624254492",
+      "size": 7661
+    },
+    {
+      "original": "Units/Modern/Bumerang/SourceArt/compose_locked_v2.py",
+      "archived": "Units/Modern/Bumerang/_TO BE DELETED/SourceArt/compose_locked_v2.py",
+      "sha256": "f6de2e51b57ebb74844ca178ad2ce8d8da1bdb1a049004d41737a2615c5e2155",
+      "size": 7652
+    },
+    {
+      "original": "Units/Modern/Bumerang/SourceArt/Composition-Locked-v2.json",
+      "archived": "Units/Modern/Bumerang/_TO BE DELETED/SourceArt/Composition-Locked-v2.json",
+      "sha256": "852dd7eccebca21eb265a2f09967d06888eb92e0999ce17b39cd7ad7308e7358",
+      "size": 1502
+    },
+    {
+      "original": "Units/Modern/Bumerang/SourceArt/Composition.json",
+      "archived": "Units/Modern/Bumerang/_TO BE DELETED/SourceArt/Composition.json",
+      "sha256": "5e0ff444aca84919ebfffe16ba2d5c118c0aae0603ac2dca5363a2fae4693e05",
+      "size": 80977
+    },
+    {
+      "original": "Units/Modern/Bumerang/SourceArt/Generation-death-v2.json",
+      "archived": "Units/Modern/Bumerang/_TO BE DELETED/SourceArt/Generation-death-v2.json",
+      "sha256": "9207083af20f611f41ba0e26afb9676badd29465cfce792f3eb3d8879cbd517f",
+      "size": 1577
+    },
+    {
+      "original": "Units/Modern/Bumerang/SourceArt/Generation-idle-v1.json",
+      "archived": "Units/Modern/Bumerang/_TO BE DELETED/SourceArt/Generation-idle-v1.json",
+      "sha256": "4e947c691a7ad7b4473e959e5e85f9773fdfcdee5d8311a520d37759ecaef1d4",
+      "size": 2304
+    },
+    {
+      "original": "Units/Modern/Bumerang/SourceArt/Generation-motion-attack-v1.json",
+      "archived": "Units/Modern/Bumerang/_TO BE DELETED/SourceArt/Generation-motion-attack-v1.json",
+      "sha256": "3a73d31ee7ccf28e907bcab70de6854b7d9fe78d0166b59f936737050b6e21b8",
+      "size": 1256
+    },
+    {
+      "original": "Units/Modern/Bumerang/SourceArt/Generation-motion-death-v1.json",
+      "archived": "Units/Modern/Bumerang/_TO BE DELETED/SourceArt/Generation-motion-death-v1.json",
+      "sha256": "b42fbc147dee1ddad230c458a1a7b60167584118b83315b83f23f240154caaf4",
+      "size": 1489
+    },
+    {
+      "original": "Units/Modern/Bumerang/SourceArt/Generation-motion-moving-v1.json",
+      "archived": "Units/Modern/Bumerang/_TO BE DELETED/SourceArt/Generation-motion-moving-v1.json",
+      "sha256": "c561180f2fcd2ce75c3a46705a124ca315bd59b3574e28bb6b12e98fc02f88a0",
+      "size": 1103
+    },
+    {
+      "original": "Units/Modern/Bumerang/SourceArt/Locked-Body-v2.png",
+      "archived": "Units/Modern/Bumerang/_TO BE DELETED/SourceArt/Locked-Body-v2.png",
+      "sha256": "b76d1f32071b4249b7fe95b10157c86be401175e034bc07f1d53273910c4ed65",
+      "size": 180357
+    },
+    {
+      "original": "Units/Modern/Bumerang/SourceArt/Muzzle-Flash-v2.png",
+      "archived": "Units/Modern/Bumerang/_TO BE DELETED/SourceArt/Muzzle-Flash-v2.png",
+      "sha256": "09b8d76ec5dbffb8225000faa36f3ce7de23df6a0485a5aaf3fe2a9e19b960d7",
+      "size": 1678
+    },
+    {
+      "original": "Units/Modern/Bumerang/SourceArt/Muzzle-Smoke-v2.png",
+      "archived": "Units/Modern/Bumerang/_TO BE DELETED/SourceArt/Muzzle-Smoke-v2.png",
+      "sha256": "258eeb376913af6bc08126f62a637e16b96660d6282d4bf9769d8c7e8e96f7ac",
+      "size": 1319
+    },
+    {
+      "original": "Units/Modern/Bumerang/SourceArt/Native-death-v2.png",
+      "archived": "Units/Modern/Bumerang/_TO BE DELETED/SourceArt/Native-death-v2.png",
+      "sha256": "d64257fd5cd3894da4006513947e3a31a18069efbe7739b53d1a6441b2cc8933",
+      "size": 2640728
+    },
+    {
+      "original": "Units/Modern/Bumerang/SourceArt/Native-Idle-v1.png",
+      "archived": "Units/Modern/Bumerang/_TO BE DELETED/SourceArt/Native-Idle-v1.png",
+      "sha256": "74aae24d20d59c85a572327115bd1191a5e0d160cb48e419b6581a075ccd0548",
+      "size": 1973192
+    },
+    {
+      "original": "Units/Modern/Bumerang/SourceArt/Native-Motion-attack-v1.png",
+      "archived": "Units/Modern/Bumerang/_TO BE DELETED/SourceArt/Native-Motion-attack-v1.png",
+      "sha256": "8e33be6e354dd8b3b94e2f033ca53c62ce4d305848e9eeb9bba8aed5e5a36fdb",
+      "size": 2009158
+    },
+    {
+      "original": "Units/Modern/Bumerang/SourceArt/Native-Motion-death-v1.png",
+      "archived": "Units/Modern/Bumerang/_TO BE DELETED/SourceArt/Native-Motion-death-v1.png",
+      "sha256": "7c9e94c0eed03467ad7b3a57a92ec8b39ff0e731e27ff7f5bee56e668ee776f3",
+      "size": 2495018
+    },
+    {
+      "original": "Units/Modern/Bumerang/SourceArt/Native-Motion-moving-v1.png",
+      "archived": "Units/Modern/Bumerang/_TO BE DELETED/SourceArt/Native-Motion-moving-v1.png",
+      "sha256": "1debe32bec09bedace40be3c152cd81f78fc066ac1ff15546bf0aa5e42e5a5a1",
+      "size": 2113610
+    },
+    {
+      "original": "Units/Modern/Bumerang/Validation.json",
+      "archived": "Units/Modern/Bumerang/_TO BE DELETED/Validation.json",
+      "sha256": "cb59fcf438348072368f69e56fc1be19d2b66f291660f323f0bccd9cacb3cc0c",
+      "size": 785
+    }
+  ]
+}

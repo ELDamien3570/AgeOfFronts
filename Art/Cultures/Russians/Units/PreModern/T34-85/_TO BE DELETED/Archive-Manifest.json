@@ -1,0 +1,108 @@
+{
+  "folder": "Units/PreModern/T34-85/_TO BE DELETED",
+  "created": "2026-10-09T03:15:53.711Z",
+  "files": [
+    {
+      "original": "Units/PreModern/T34-85/Browser-Review.json",
+      "archived": "Units/PreModern/T34-85/_TO BE DELETED/Browser-Review.json",
+      "sha256": "15a3c103686a0178392908457ee0014f0afbcbf2ea0a9c5cf4bf233651b192e9",
+      "size": 541
+    },
+    {
+      "original": "Units/PreModern/T34-85/death-Preview-v1.webp",
+      "archived": "Units/PreModern/T34-85/_TO BE DELETED/death-Preview-v1.webp",
+      "sha256": "ef3098da803a30cc28ac6307486fbadf86e8f030a9da4096fa0ae3fa22c7a0ef",
+      "size": 1129978
+    },
+    {
+      "original": "Units/PreModern/T34-85/Generation.json",
+      "archived": "Units/PreModern/T34-85/_TO BE DELETED/Generation.json",
+      "sha256": "06c4d32814197344e17895e9d37ca197dc7d79332deb84da8a881fa9bbfa79f6",
+      "size": 8417
+    },
+    {
+      "original": "Units/PreModern/T34-85/Idle-v1.png",
+      "archived": "Units/PreModern/T34-85/_TO BE DELETED/Idle-v1.png",
+      "sha256": "640b6c2bbdb01a4431e4c19c1ebfffdb14acd2798f83a6cf57648bf84c134420",
+      "size": 1205750
+    },
+    {
+      "original": "Units/PreModern/T34-85/moving-Preview-v1.webp",
+      "archived": "Units/PreModern/T34-85/_TO BE DELETED/moving-Preview-v1.webp",
+      "sha256": "5fd90fb8a324410bcf6554ceb0534056ac92f95b473b219e6e1aba9ff72ce1dd",
+      "size": 674242
+    },
+    {
+      "original": "Units/PreModern/T34-85/moving-shooting-Preview-v1.webp",
+      "archived": "Units/PreModern/T34-85/_TO BE DELETED/moving-shooting-Preview-v1.webp",
+      "sha256": "47a7ef13e889c0ba9312e3d5c999a77db41ecf663638c1f0c6dbf586bd7650cd",
+      "size": 704156
+    },
+    {
+      "original": "Units/PreModern/T34-85/Review-death-v1.png",
+      "archived": "Units/PreModern/T34-85/_TO BE DELETED/Review-death-v1.png",
+      "sha256": "8bfeefa3b62d86c27355927389b608d2e78ef2f6e6973d28da4cb75a05edb4de",
+      "size": 157950
+    },
+    {
+      "original": "Units/PreModern/T34-85/Review-firing-v1.png",
+      "archived": "Units/PreModern/T34-85/_TO BE DELETED/Review-firing-v1.png",
+      "sha256": "d2463d1b8628ae668f979251332faba8094f68911dddffd2f1a331c3f58dc69b",
+      "size": 146471
+    },
+    {
+      "original": "Units/PreModern/T34-85/SourceArt/Approved-Idle.json",
+      "archived": "Units/PreModern/T34-85/_TO BE DELETED/SourceArt/Approved-Idle.json",
+      "sha256": "3cf88cd73636132335b4fbe486a64462452903b3dcb587c7bfc9bcec64c08651",
+      "size": 174
+    },
+    {
+      "original": "Units/PreModern/T34-85/SourceArt/compose_animations.py",
+      "archived": "Units/PreModern/T34-85/_TO BE DELETED/SourceArt/compose_animations.py",
+      "sha256": "63caffcd7fd7a8797dddeaaa4f61241916367176e7b183d58c5830463dad8e4d",
+      "size": 8726
+    },
+    {
+      "original": "Units/PreModern/T34-85/SourceArt/Composition.json",
+      "archived": "Units/PreModern/T34-85/_TO BE DELETED/SourceArt/Composition.json",
+      "sha256": "2e6c6ffc0b6280cacab933ba5fcf089d3d428a04991408b9333332e118ff2288",
+      "size": 9147
+    },
+    {
+      "original": "Units/PreModern/T34-85/SourceArt/Generation-animations-v1.json",
+      "archived": "Units/PreModern/T34-85/_TO BE DELETED/SourceArt/Generation-animations-v1.json",
+      "sha256": "81684288795b369d1ddb5c11eee9ef46c599f01b2cdb677ea1f0bb62adc02da0",
+      "size": 5733
+    },
+    {
+      "original": "Units/PreModern/T34-85/SourceArt/Native-death-v1.png",
+      "archived": "Units/PreModern/T34-85/_TO BE DELETED/SourceArt/Native-death-v1.png",
+      "sha256": "218407ab5fcb0cfd55b0e369601dfc59c5f436652aa1907fff1b934dd76b3875",
+      "size": 2365763
+    },
+    {
+      "original": "Units/PreModern/T34-85/SourceArt/Native-moving-shooting-v1.png",
+      "archived": "Units/PreModern/T34-85/_TO BE DELETED/SourceArt/Native-moving-shooting-v1.png",
+      "sha256": "a7bccd8c4ffa2e370ccf525992af93233bca00c1b3cc0e1e548d23f477727d1e",
+      "size": 1968761
+    },
+    {
+      "original": "Units/PreModern/T34-85/SourceArt/Native-moving-v1.png",
+      "archived": "Units/PreModern/T34-85/_TO BE DELETED/SourceArt/Native-moving-v1.png",
+      "sha256": "41d6ba3502938355e4ed7b8d8913a46c4feb08f73eb4c3ecc0fe8ffed149fad2",
+      "size": 2137248
+    },
+    {
+      "original": "Units/PreModern/T34-85/SourceArt/verify_review.cjs",
+      "archived": "Units/PreModern/T34-85/_TO BE DELETED/SourceArt/verify_review.cjs",
+      "sha256": "70862628cfc73a788109d5bbe7a5c7eea3529fbfaf35a5415ee1b89ac3be915b",
+      "size": 2376
+    },
+    {
+      "original": "Units/PreModern/T34-85/Validation.json",
+      "archived": "Units/PreModern/T34-85/_TO BE DELETED/Validation.json",
+      "sha256": "b5ac4fe55d900ef5004e68a98bc62614b3f87bb8806f4718fe16f7e40df001db",
+      "size": 610
+    }
+  ]
+}

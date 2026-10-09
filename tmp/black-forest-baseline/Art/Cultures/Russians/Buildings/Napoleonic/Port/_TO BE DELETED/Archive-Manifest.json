@@ -1,0 +1,18 @@
+{
+  "folder": "Buildings/Napoleonic/Port/_TO BE DELETED",
+  "created": "2026-10-09T03:15:53.711Z",
+  "files": [
+    {
+      "original": "Buildings/Napoleonic/Port/SourceArt/Icon-v1.png",
+      "archived": "Buildings/Napoleonic/Port/_TO BE DELETED/SourceArt/Icon-v1.png",
+      "sha256": "e6deb668c2fa5445fda3b4fa7c69153eb339c3d021f030934238ee252b1bac9d",
+      "size": 2519860
+    },
+    {
+      "original": "Buildings/Napoleonic/Port/SourceArt/Icon-v2.png",
+      "archived": "Buildings/Napoleonic/Port/_TO BE DELETED/SourceArt/Icon-v2.png",
+      "sha256": "d49133e672c6835d1a8bfda6217c5a54b831cf2e0733985242c6336dfe8a1b98",
+      "size": 2382350
+    }
+  ]
+}

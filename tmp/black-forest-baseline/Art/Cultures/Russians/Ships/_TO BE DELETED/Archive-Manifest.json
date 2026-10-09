@@ -1,0 +1,234 @@
+{
+  "folder": "Ships/_TO BE DELETED",
+  "created": "2026-10-09T03:15:53.711Z",
+  "files": [
+    {
+      "original": "Ships/animate-fleet.py",
+      "archived": "Ships/_TO BE DELETED/animate-fleet.py",
+      "sha256": "9667587ddda615ee97f43db83d02dc6e4d84b9befa7ebb636effb1b0b40aa853",
+      "size": 20303
+    },
+    {
+      "original": "Ships/build-animations.py",
+      "archived": "Ships/_TO BE DELETED/build-animations.py",
+      "sha256": "65e793bbc9fd8a02310bb59ab69f926c4dee60dc88ee75e908d0f6ced5a1b745",
+      "size": 21406
+    },
+    {
+      "original": "Ships/Fleet-Generation-Requests.json",
+      "archived": "Ships/_TO BE DELETED/Fleet-Generation-Requests.json",
+      "sha256": "8383f7b9d0747e1d5f936839a930640b43af6201ebda2493adf4c95d4ef1e2f6",
+      "size": 32313
+    },
+    {
+      "original": "Ships/register-fleet-masters.py",
+      "archived": "Ships/_TO BE DELETED/register-fleet-masters.py",
+      "sha256": "1f6e109145d2237f0486f4bc581f1b5688a62b5a57a3f01060c9c6c5c5007689",
+      "size": 6917
+    },
+    {
+      "original": "Ships/Review/Attack-Effects-Review.png",
+      "archived": "Ships/_TO BE DELETED/Review/Attack-Effects-Review.png",
+      "sha256": "36cea1584af6f872b10858690a0dfd6f88c32f60b4d8f9a8552fffc6684ad372",
+      "size": 222199
+    },
+    {
+      "original": "Ships/Review/EarlyMedieval-Fleet.png",
+      "archived": "Ships/_TO BE DELETED/Review/EarlyMedieval-Fleet.png",
+      "sha256": "1e059f27597436855baa2c6636ba2863c9db80f93526dc4f19ecd99a652ad46b",
+      "size": 162734
+    },
+    {
+      "original": "Ships/Review/EarlyMedieval-Sailing-Water-Aligned.gif",
+      "archived": "Ships/_TO BE DELETED/Review/EarlyMedieval-Sailing-Water-Aligned.gif",
+      "sha256": "dfad6830447dafbf7f475f79ae0203e811c4d0fabfed4b730c7db12f3b238a6c",
+      "size": 518686
+    },
+    {
+      "original": "Ships/Review/EarlyMedieval-Sailing.gif",
+      "archived": "Ships/_TO BE DELETED/Review/EarlyMedieval-Sailing.gif",
+      "sha256": "c823ba51712472639eb0d151d3f51bca2e46f3809c84079196238bf2df5d197d",
+      "size": 523352
+    },
+    {
+      "original": "Ships/Review/EarlyMedieval-Water-Registration.png",
+      "archived": "Ships/_TO BE DELETED/Review/EarlyMedieval-Water-Registration.png",
+      "sha256": "c5245a5e5d3832836bf1a5d6755c0cb2cd0f6757d016d06b0fe28d5c8f7ace80",
+      "size": 245114
+    },
+    {
+      "original": "Ships/Review/EarlyModern-Fleet.png",
+      "archived": "Ships/_TO BE DELETED/Review/EarlyModern-Fleet.png",
+      "sha256": "4b19e17ebae44ad7e5de39b549b8a7589911a94c44c0cd3a5b3ff2c94a19a3d0",
+      "size": 131215
+    },
+    {
+      "original": "Ships/Review/EarlyModern-Sailing-Water-Aligned.gif",
+      "archived": "Ships/_TO BE DELETED/Review/EarlyModern-Sailing-Water-Aligned.gif",
+      "sha256": "7841e04cc3cd7a3d22207032af41b8057792d3f1cfa0c45fa69dfa60d4d83c32",
+      "size": 478523
+    },
+    {
+      "original": "Ships/Review/EarlyModern-Sailing.gif",
+      "archived": "Ships/_TO BE DELETED/Review/EarlyModern-Sailing.gif",
+      "sha256": "a7d378a1b2c34a54f383785313bc16213c535767a5726f202952615a7b14b61e",
+      "size": 483028
+    },
+    {
+      "original": "Ships/Review/EarlyModern-Water-Registration.png",
+      "archived": "Ships/_TO BE DELETED/Review/EarlyModern-Water-Registration.png",
+      "sha256": "548591cd29b24e3e77b05b37d1d7eafbf640ea4a001af468b0e6a07da4d09d33",
+      "size": 206013
+    },
+    {
+      "original": "Ships/Review/Fleet-Animation-Preservation-Baseline.json",
+      "archived": "Ships/_TO BE DELETED/Review/Fleet-Animation-Preservation-Baseline.json",
+      "sha256": "8905441bd865df647708790d3a8fede5dcd45ad3128bdfcca29370fbf68104aa",
+      "size": 181706
+    },
+    {
+      "original": "Ships/Review/Fleet-Animation-Validation.json",
+      "archived": "Ships/_TO BE DELETED/Review/Fleet-Animation-Validation.json",
+      "sha256": "eccaefefaaff87b47879dbb257424595576f5fab9961b48bc6739709ead4cdbf",
+      "size": 18920
+    },
+    {
+      "original": "Ships/Review/Fleet-Master-Validation.json",
+      "archived": "Ships/_TO BE DELETED/Review/Fleet-Master-Validation.json",
+      "sha256": "31720a8e551cb74d2253df4a47def9085b54a94bbc2debb516ec75e565b7643a",
+      "size": 341
+    },
+    {
+      "original": "Ships/Review/Fleet-Masters.md",
+      "archived": "Ships/_TO BE DELETED/Review/Fleet-Masters.md",
+      "sha256": "8529cff3b4879ce3de92e533832c2cc9c227296d87a305d2250bd42e99e132a7",
+      "size": 4888
+    },
+    {
+      "original": "Ships/Review/Fleet-Preservation-Baseline.json",
+      "archived": "Ships/_TO BE DELETED/Review/Fleet-Preservation-Baseline.json",
+      "sha256": "00ddea52bef0ee9f19389f638df79bd5886535e4acedea57f8c98bfbf12a5a6c",
+      "size": 161122
+    },
+    {
+      "original": "Ships/Review/LateMedieval-Fleet.png",
+      "archived": "Ships/_TO BE DELETED/Review/LateMedieval-Fleet.png",
+      "sha256": "5d2a8ff3eb2c3fa3c210e3c82499bc66685db7d206f0e15f0762f67a31f00788",
+      "size": 165980
+    },
+    {
+      "original": "Ships/Review/LateMedieval-Rowing-Review.png",
+      "archived": "Ships/_TO BE DELETED/Review/LateMedieval-Rowing-Review.png",
+      "sha256": "02d33c5d947254d8c0d852cd1ca614faf63ea5d355e7e8f6b0960f4ca39ef4ed",
+      "size": 518682
+    },
+    {
+      "original": "Ships/Review/LateMedieval-Sailing-Water-Aligned.gif",
+      "archived": "Ships/_TO BE DELETED/Review/LateMedieval-Sailing-Water-Aligned.gif",
+      "sha256": "63f827b28c5cfe74caea8630d0eb709f3ab075f260df14e7369a17c606607720",
+      "size": 587598
+    },
+    {
+      "original": "Ships/Review/LateMedieval-Sailing.gif",
+      "archived": "Ships/_TO BE DELETED/Review/LateMedieval-Sailing.gif",
+      "sha256": "41a6a7392b405e21029cba91c7ffa3bcde50d343f685209b9db858de286cd573",
+      "size": 591310
+    },
+    {
+      "original": "Ships/Review/LateMedieval-Water-Registration.png",
+      "archived": "Ships/_TO BE DELETED/Review/LateMedieval-Water-Registration.png",
+      "sha256": "be973ee1c28658afdf4a470cac035e4fe26be75573c9fd9e9f9068d8fb94ce69",
+      "size": 259568
+    },
+    {
+      "original": "Ships/Review/Modern-Fleet.png",
+      "archived": "Ships/_TO BE DELETED/Review/Modern-Fleet.png",
+      "sha256": "b1c1bff4e8713fbcad1df3d00d64ac2229423b6a2517412955bb1a1f8c10776d",
+      "size": 149199
+    },
+    {
+      "original": "Ships/Review/Modern-Sailing-Water-Aligned.gif",
+      "archived": "Ships/_TO BE DELETED/Review/Modern-Sailing-Water-Aligned.gif",
+      "sha256": "1f839bf3170da8e60ebf5cfd9ebaa64736880ef525143f53e76fec8a609444c6",
+      "size": 525962
+    },
+    {
+      "original": "Ships/Review/Modern-Sailing.gif",
+      "archived": "Ships/_TO BE DELETED/Review/Modern-Sailing.gif",
+      "sha256": "186bf666aa82ef53d33285641af6b989eef82b823d546d932a9399d82f6597a1",
+      "size": 522708
+    },
+    {
+      "original": "Ships/Review/Modern-Water-Registration.png",
+      "archived": "Ships/_TO BE DELETED/Review/Modern-Water-Registration.png",
+      "sha256": "78001b268c59ca94e0f85e079f965f9f156e42bbade240e04a46b884689a2fbf",
+      "size": 232167
+    },
+    {
+      "original": "Ships/Review/Napoleonic-Fleet.png",
+      "archived": "Ships/_TO BE DELETED/Review/Napoleonic-Fleet.png",
+      "sha256": "dd2c11bf314964df42e963cf79aec610c072092d42ab2c722f7e9b1bbf0e3e52",
+      "size": 162350
+    },
+    {
+      "original": "Ships/Review/Napoleonic-Sailing-Water-Aligned.gif",
+      "archived": "Ships/_TO BE DELETED/Review/Napoleonic-Sailing-Water-Aligned.gif",
+      "sha256": "6f062679b3df5f16ab0533583942e621e31b2b748312900e2e5306e9a1be9d12",
+      "size": 554761
+    },
+    {
+      "original": "Ships/Review/Napoleonic-Sailing.gif",
+      "archived": "Ships/_TO BE DELETED/Review/Napoleonic-Sailing.gif",
+      "sha256": "c1a408729a08ef18ee424e11fbd938ecfcddf21d55a515f19bf966e598408688",
+      "size": 558658
+    },
+    {
+      "original": "Ships/Review/Napoleonic-Water-Registration.png",
+      "archived": "Ships/_TO BE DELETED/Review/Napoleonic-Water-Registration.png",
+      "sha256": "85263c7555ea27b2980191ccff846a378418583021e15dbdfd236a4f84fe377f",
+      "size": 255174
+    },
+    {
+      "original": "Ships/Review/Oar-Registration-Guide.png",
+      "archived": "Ships/_TO BE DELETED/Review/Oar-Registration-Guide.png",
+      "sha256": "fa3d033b0f4f4c669d5d7d99920e2afdd6a06de1ff29bb4782ff996bb919096b",
+      "size": 265213
+    },
+    {
+      "original": "Ships/Review/Rowing-Pose-Review.png",
+      "archived": "Ships/_TO BE DELETED/Review/Rowing-Pose-Review.png",
+      "sha256": "806a651b06393888e6916b3ef4f2abb14cbb8b43fa982968c5aae7422c8c8ad6",
+      "size": 253350
+    },
+    {
+      "original": "Ships/Review/Tech-Tree-Fleet-Coverage.json",
+      "archived": "Ships/_TO BE DELETED/Review/Tech-Tree-Fleet-Coverage.json",
+      "sha256": "46db3279bddc7b27104207463b9c8cec962945172a6f98ef2a2b39bb3f4f19bc",
+      "size": 4776
+    },
+    {
+      "original": "Ships/Review/Water-Alignment-Contact.png",
+      "archived": "Ships/_TO BE DELETED/Review/Water-Alignment-Contact.png",
+      "sha256": "4d5eecded759004d2f342a088936ad0a2bb51a86b26ebc27e6e86bf4bc1100bb",
+      "size": 518086
+    },
+    {
+      "original": "Ships/Review/Water-Alignment-Preservation-Baseline.json",
+      "archived": "Ships/_TO BE DELETED/Review/Water-Alignment-Preservation-Baseline.json",
+      "sha256": "df4419e365c0c745d2de883f197480908305df81f7c59d97857f99c33bbbae6f",
+      "size": 227664
+    },
+    {
+      "original": "Ships/Review/Water-Alignment-Validation.json",
+      "archived": "Ships/_TO BE DELETED/Review/Water-Alignment-Validation.json",
+      "sha256": "0351ab2c03b12b33909ec75193775954c263227ff94c5766de9887da4f59370a",
+      "size": 4551
+    },
+    {
+      "original": "Ships/Review/Weapon-Registration-Guide.png",
+      "archived": "Ships/_TO BE DELETED/Review/Weapon-Registration-Guide.png",
+      "sha256": "686fce87a6bb9d1028912068bda4a31091fe06122e6623278ec9ea29bf0a3127",
+      "size": 268251
+    }
+  ]
+}

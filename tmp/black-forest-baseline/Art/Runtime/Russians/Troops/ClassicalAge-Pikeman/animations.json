@@ -78,7 +78,8 @@
             "y": 63.325
           }
         }
-      ]
+      ],
+      "releaseFrame": 3
     },
     {
       "id": "running",
@@ -157,7 +158,8 @@
             "y": 64.0
           }
         }
-      ]
+      ],
+      "releaseFrame": 3
     },
     {
       "id": "attack",
@@ -237,7 +239,8 @@
           }
         }
       ],
-      "impactFrame": 3
+      "impactFrame": 3,
+      "releaseFrame": 3
     },
     {
       "id": "death",
@@ -316,7 +319,8 @@
             "y": 64.0
           }
         }
-      ]
+      ],
+      "releaseFrame": 3
     }
   ],
   "source": "Art/Cultures/Russians/Units/ClassicalAge/Pikeman/animations.json",

@@ -78,7 +78,8 @@
             "y": 65.0
           }
         }
-      ]
+      ],
+      "releaseFrame": 3
     },
     {
       "id": "running",
@@ -157,7 +158,8 @@
             "y": 65.0
           }
         }
-      ]
+      ],
+      "releaseFrame": 3
     },
     {
       "id": "attack",
@@ -320,7 +322,8 @@
             "y": 65.0
           }
         }
-      ]
+      ],
+      "releaseFrame": 3
     }
   ],
   "source": "Art/Cultures/Russians/Units/EarlyMedieval/RusBowMan/animations.json",

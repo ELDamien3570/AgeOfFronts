@@ -1,0 +1,60 @@
+{
+  "folder": "Ships/EarlyMedieval/Transport/_TO BE DELETED",
+  "created": "2026-10-09T03:15:53.711Z",
+  "files": [
+    {
+      "original": "Ships/EarlyMedieval/Transport/Generation-Manifest.json",
+      "archived": "Ships/EarlyMedieval/Transport/_TO BE DELETED/Generation-Manifest.json",
+      "sha256": "edc4f3127b07e4f0f32915d7afa3b7fb9bef8c6b0bbb4abce2f3c4a881a42d46",
+      "size": 2652
+    },
+    {
+      "original": "Ships/EarlyMedieval/Transport/Idle-Preview.webp",
+      "archived": "Ships/EarlyMedieval/Transport/_TO BE DELETED/Idle-Preview.webp",
+      "sha256": "4549eb0cca82d57e131de3612e9249a708c9829393afdf6b52168d4e28732384",
+      "size": 761416
+    },
+    {
+      "original": "Ships/EarlyMedieval/Transport/layers/Hull-Protection.png",
+      "archived": "Ships/EarlyMedieval/Transport/_TO BE DELETED/layers/Hull-Protection.png",
+      "sha256": "65795a5b91030a2a433dae510d1edf494082a9cfa1153cd94f3797759f68f257",
+      "size": 334
+    },
+    {
+      "original": "Ships/EarlyMedieval/Transport/layers/Hull.png",
+      "archived": "Ships/EarlyMedieval/Transport/_TO BE DELETED/layers/Hull.png",
+      "sha256": "fee3d88ea6b9727f2422c8d900a29eab0baecd0ea48c190af1793c0c5c2884f8",
+      "size": 98871
+    },
+    {
+      "original": "Ships/EarlyMedieval/Transport/Review/Frame-128px.png",
+      "archived": "Ships/EarlyMedieval/Transport/_TO BE DELETED/Review/Frame-128px.png",
+      "sha256": "a81d08e28898b8c86588ce0ff5a17b6929f572cefb546eff1d95e53ce27f8d17",
+      "size": 12367
+    },
+    {
+      "original": "Ships/EarlyMedieval/Transport/Review/Frame-48px.png",
+      "archived": "Ships/EarlyMedieval/Transport/_TO BE DELETED/Review/Frame-48px.png",
+      "sha256": "223565447cf106a482fbad4201c7317294cd7716ee927b059ef20731dcbd1340",
+      "size": 2570
+    },
+    {
+      "original": "Ships/EarlyMedieval/Transport/Review/Frame-64px.png",
+      "archived": "Ships/EarlyMedieval/Transport/_TO BE DELETED/Review/Frame-64px.png",
+      "sha256": "cc7449ed998ae1c51f99ba6ce8ab9d1159b916c37b4d9c42311fd53433b74594",
+      "size": 3985
+    },
+    {
+      "original": "Ships/EarlyMedieval/Transport/Sailing-Preview.webp",
+      "archived": "Ships/EarlyMedieval/Transport/_TO BE DELETED/Sailing-Preview.webp",
+      "sha256": "67988bee3b42a6bb41c099760b2b1c81fa5f178d56491de1231d0c3aa29e2b92",
+      "size": 771038
+    },
+    {
+      "original": "Ships/EarlyMedieval/Transport/SourceArt/Transport_Russian_EarlyMedieval_Generated_v1.png",
+      "archived": "Ships/EarlyMedieval/Transport/_TO BE DELETED/SourceArt/Transport_Russian_EarlyMedieval_Generated_v1.png",
+      "sha256": "aa1642836dd2d3c2debb0a6bd4de0cb153c27aa4c34d0b0a9d3476c4d6e0d7f9",
+      "size": 1034757
+    }
+  ]
+}

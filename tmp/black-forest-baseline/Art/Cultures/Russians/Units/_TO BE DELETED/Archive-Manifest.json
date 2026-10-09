@@ -1,0 +1,18 @@
+{
+  "folder": "Units/_TO BE DELETED",
+  "created": "2026-10-09T03:15:53.711Z",
+  "files": [
+    {
+      "original": "Units/Review-Solo-StoneAge.jpg",
+      "archived": "Units/_TO BE DELETED/Review-Solo-StoneAge.jpg",
+      "sha256": "a3335231f024f0fefb9e3a880c8bb6af402f996037fad4ca5a58aea0176db575",
+      "size": 91575
+    },
+    {
+      "original": "Units/Solo-Preview-Review.json",
+      "archived": "Units/_TO BE DELETED/Solo-Preview-Review.json",
+      "sha256": "1bcb28e489f067ebb2c861d7477d8242aa9ac562b8dc6d22f5e4da0010164578",
+      "size": 25462
+    }
+  ]
+}

@@ -21,7 +21,7 @@ import type { Diplomacy } from "./Diplomacy";
 import type { DomainRoutePorts, DomainRouteTask } from "./DomainRoutePorts";
 import type { Fortifications } from "./Fortifications";
 import type { Progression } from "./Progression";
-import { cargoHandlingPercent, logisticsTier } from "./ResearchEffects";
+import { cargoHandlingPercent, logisticsTier, vesselEffects } from "./ResearchEffects";
 import { TradeReceiving } from "./TradeReceiving";
 import type { Roads } from "./Roads";
 import type { Supply } from "./Supply";
@@ -816,7 +816,7 @@ export class Trade {
         : undefined;
     return {
       value: Math.floor(
-        ((vessel?.capacity ?? LAND_TRADE_CAPACITIES[tier]) *
+        ((vessel ? vesselEffects(vessel, research).capacity! : LAND_TRADE_CAPACITIES[tier]) *
           cargoHandlingPercent(research) *
           stackCargoPercent(site.buildings.length)) /
           10000,

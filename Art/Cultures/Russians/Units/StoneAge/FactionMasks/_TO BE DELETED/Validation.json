@@ -1,0 +1,5818 @@
+{
+  "age": "StoneAge",
+  "status": "awaiting visual review; no game integration",
+  "encoding": "8-bit grayscale coverage; keep original sprite alpha",
+  "units": [
+    {
+      "unit": "Clubman",
+      "selection": "red woven cap, sleeves, tunic; retain fur, neutral trousers, skin, leather, weapons and horse",
+      "datasets": [
+        {
+          "kind": "source",
+          "clips": [
+            {
+              "id": "idle",
+              "label": "Idle",
+              "source": "../Clubman/Idle-Stylized-Clean-v8.png",
+              "sourceSha256": "250379e7dfd298564850547af6f6bb859326ed361620323b0ef32c15d708a0ad",
+              "mask": "Clubman/source/idle.fabric-mask.png",
+              "width": 1536,
+              "height": 1024,
+              "frames": [
+                {
+                  "index": 0,
+                  "x": 0,
+                  "y": 0,
+                  "width": 512,
+                  "height": 512,
+                  "pivot": {
+                    "x": 256,
+                    "y": 230
+                  }
+                },
+                {
+                  "index": 1,
+                  "x": 512,
+                  "y": 0,
+                  "width": 512,
+                  "height": 512,
+                  "pivot": {
+                    "x": 256,
+                    "y": 230
+                  }
+                },
+                {
+                  "index": 2,
+                  "x": 1024,
+                  "y": 0,
+                  "width": 512,
+                  "height": 512,
+                  "pivot": {
+                    "x": 258,
+                    "y": 228
+                  }
+                },
+                {
+                  "index": 3,
+                  "x": 0,
+                  "y": 512,
+                  "width": 512,
+                  "height": 512,
+                  "pivot": {
+                    "x": 256,
+                    "y": 217
+                  }
+                },
+                {
+                  "index": 4,
+                  "x": 512,
+                  "y": 512,
+                  "width": 512,
+                  "height": 512,
+                  "pivot": {
+                    "x": 256,
+                    "y": 218
+                  }
+                },
+                {
+                  "index": 5,
+                  "x": 1024,
+                  "y": 512,
+                  "width": 512,
+                  "height": 512,
+                  "pivot": {
+                    "x": 259,
+                    "y": 220
+                  }
+                }
+              ],
+              "durations": [
+                250,
+                250,
+                250,
+                250,
+                250,
+                250
+              ],
+              "loop": true,
+              "variants": {
+                "blue": "Clubman/source/idle.blue.preview.png",
+                "green": "Clubman/source/idle.green.preview.png",
+                "purple": "Clubman/source/idle.purple.preview.png",
+                "white": "Clubman/source/idle.white.preview.png"
+              },
+              "stats": [
+                {
+                  "selectedPixels": 20897
+                },
+                {
+                  "selectedPixels": 21029
+                },
+                {
+                  "selectedPixels": 22478
+                },
+                {
+                  "selectedPixels": 21191
+                },
+                {
+                  "selectedPixels": 21502
+                },
+                {
+                  "selectedPixels": 21321
+                }
+              ]
+            },
+            {
+              "id": "running",
+              "label": "Movement",
+              "source": "../Clubman/Running-Stylized-v9.png",
+              "sourceSha256": "36b6dd96b24ff403a9fc803b22c39148070bdae6115e4b1841a8e522c2198721",
+              "mask": "Clubman/source/running.fabric-mask.png",
+              "width": 1536,
+              "height": 1024,
+              "frames": [
+                {
+                  "index": 0,
+                  "x": 0,
+                  "y": 0,
+                  "width": 512,
+                  "height": 512,
+                  "pivot": {
+                    "x": 257,
+                    "y": 222
+                  }
+                },
+                {
+                  "index": 1,
+                  "x": 512,
+                  "y": 0,
+                  "width": 512,
+                  "height": 512,
+                  "pivot": {
+                    "x": 257,
+                    "y": 222
+                  }
+                },
+                {
+                  "index": 2,
+                  "x": 1024,
+                  "y": 0,
+                  "width": 512,
+                  "height": 512,
+                  "pivot": {
+                    "x": 261,
+                    "y": 229
+                  }
+                },
+                {
+                  "index": 3,
+                  "x": 0,
+                  "y": 512,
+                  "width": 512,
+                  "height": 512,
+                  "pivot": {
+                    "x": 257,
+                    "y": 210
+                  }
+                },
+                {
+                  "index": 4,
+                  "x": 512,
+                  "y": 512,
+                  "width": 512,
+                  "height": 512,
+                  "pivot": {
+                    "x": 258,
+                    "y": 210
+                  }
+                },
+                {
+                  "index": 5,
+                  "x": 1024,
+                  "y": 512,
+                  "width": 512,
+                  "height": 512,
+                  "pivot": {
+                    "x": 261,
+                    "y": 209
+                  }
+                }
+              ],
+              "durations": [
+                130,
+                130,
+                130,
+                130,
+                130,
+                130
+              ],
+              "loop": true,
+              "variants": {
+                "blue": "Clubman/source/running.blue.preview.png",
+                "green": "Clubman/source/running.green.preview.png",
+                "purple": "Clubman/source/running.purple.preview.png",
+                "white": "Clubman/source/running.white.preview.png"
+              },
+              "stats": [
+                {
+                  "selectedPixels": 21382
+                },
+                {
+                  "selectedPixels": 21081
+                },
+                {
+                  "selectedPixels": 20900
+                },
+                {
+                  "selectedPixels": 20363
+                },
+                {
+                  "selectedPixels": 21223
+                },
+                {
+                  "selectedPixels": 21442
+                }
+              ]
+            },
+            {
+              "id": "attack",
+              "label": "Attack",
+              "source": "../Clubman/Attack-Stylized-v12.png",
+              "sourceSha256": "190135e7e1ffb834fce66382671f2377cdb6915dcaedd618b6cb18c8bc3b39db",
+              "mask": "Clubman/source/attack.fabric-mask.png",
+              "width": 1536,
+              "height": 1024,
+              "frames": [
+                {
+                  "index": 0,
+                  "x": 0,
+                  "y": 0,
+                  "width": 512,
+                  "height": 512,
+                  "pivot": {
+                    "x": 252,
+                    "y": 250
+                  }
+                },
+                {
+                  "index": 1,
+                  "x": 512,
+                  "y": 0,
+                  "width": 512,
+                  "height": 512,
+                  "pivot": {
+                    "x": 236,
+                    "y": 260
+                  }
+                },
+                {
+                  "index": 2,
+                  "x": 1024,
+                  "y": 0,
+                  "width": 512,
+                  "height": 512,
+                  "pivot": {
+                    "x": 237,
+                    "y": 256
+                  }
+                },
+                {
+                  "index": 3,
+                  "x": 0,
+                  "y": 512,
+                  "width": 512,
+                  "height": 512,
+                  "pivot": {
+                    "x": 260,
+                    "y": 175
+                  }
+                },
+                {
+                  "index": 4,
+                  "x": 512,
+                  "y": 512,
+                  "width": 512,
+                  "height": 512,
+                  "pivot": {
+                    "x": 259,
+                    "y": 182
+                  }
+                },
+                {
+                  "index": 5,
+                  "x": 1024,
+                  "y": 512,
+                  "width": 512,
+                  "height": 512,
+                  "pivot": {
+                    "x": 252,
+                    "y": 176
+                  }
+                }
+              ],
+              "durations": [
+                150,
+                140,
+                180,
+                85,
+                150,
+                200
+              ],
+              "loop": false,
+              "variants": {
+                "blue": "Clubman/source/attack.blue.preview.png",
+                "green": "Clubman/source/attack.green.preview.png",
+                "purple": "Clubman/source/attack.purple.preview.png",
+                "white": "Clubman/source/attack.white.preview.png"
+              },
+              "stats": [
+                {
+                  "selectedPixels": 18185
+                },
+                {
+                  "selectedPixels": 15021
+                },
+                {
+                  "selectedPixels": 18597
+                },
+                {
+                  "selectedPixels": 17991
+                },
+                {
+                  "selectedPixels": 18929
+                },
+                {
+                  "selectedPixels": 19587
+                }
+              ]
+            },
+            {
+              "id": "hit",
+              "label": "Get hit",
+              "source": "../Clubman/Hit-Stylized-v11.png",
+              "sourceSha256": "6da7fac3cbe6369d0feb1059a435077a8823c08646193323100ea2eafed17371",
+              "mask": "Clubman/source/hit.fabric-mask.png",
+              "width": 1536,
+              "height": 1024,
+              "frames": [
+                {
+                  "index": 0,
+                  "x": 0,
+                  "y": 0,
+                  "width": 512,
+                  "height": 512,
+                  "pivot": {
+                    "x": 256,
+                    "y": 230
+                  }
+                },
+                {
+                  "index": 1,
+                  "x": 512,
+                  "y": 0,
+                  "width": 512,
+                  "height": 512,
+                  "pivot": {
+                    "x": 256,
+                    "y": 230
+                  }
+                },
+                {
+                  "index": 2,
+                  "x": 1024,
+                  "y": 0,
+                  "width": 512,
+                  "height": 512,
+                  "pivot": {
+                    "x": 256,
+                    "y": 230
+                  }
+                },
+                {
+                  "index": 3,
+                  "x": 0,
+                  "y": 512,
+                  "width": 512,
+                  "height": 512,
+                  "pivot": {
+                    "x": 256,
+                    "y": 230
+                  }
+                },
+                {
+                  "index": 4,
+                  "x": 512,
+                  "y": 512,
+                  "width": 512,
+                  "height": 512,
+                  "pivot": {
+                    "x": 256,
+                    "y": 230
+                  }
+                },
+                {
+                  "index": 5,
+                  "x": 1024,
+                  "y": 512,
+                  "width": 512,
+                  "height": 512,
+                  "pivot": {
+                    "x": 256,
+                    "y": 230
+                  }
+                }
+              ],
+              "durations": [
+                90,
+                60,
+                110,
+                100,
+                90,
+                120
+              ],
+              "loop": false,
+              "variants": {
+                "blue": "Clubman/source/hit.blue.preview.png",
+                "green": "Clubman/source/hit.green.preview.png",
+                "purple": "Clubman/source/hit.purple.preview.png",
+                "white": "Clubman/source/hit.white.preview.png"
+              },
+              "stats": [
+                {
+                  "selectedPixels": 20515
+                },
+                {
+                  "selectedPixels": 19024
+                },
+                {
+                  "selectedPixels": 17183
+                },
+                {
+                  "selectedPixels": 20830
+                },
+                {
+                  "selectedPixels": 21150
+                },
+                {
+                  "selectedPixels": 21210
+                }
+              ]
+            },
+            {
+              "id": "charged",
+              "label": "Get charged",
+              "source": "../Clubman/Charged-Stylized-v11.png",
+              "sourceSha256": "eccd5e355cd5d2707ebab26d19f906e711d238241186c2d12e603ce6c1637f51",
+              "mask": "Clubman/source/charged.fabric-mask.png",
+              "width": 1536,
+              "height": 1024,
+              "frames": [
+                {
+                  "index": 0,
+                  "x": 0,
+                  "y": 0,
+                  "width": 512,
+                  "height": 512,
+                  "pivot": {
+                    "x": 256,
+                    "y": 226
+                  }
+                },
+                {
+                  "index": 1,
+                  "x": 512,
+                  "y": 0,
+                  "width": 512,
+                  "height": 512,
+                  "pivot": {
+                    "x": 256,
+                    "y": 226
+                  }
+                },
+                {
+                  "index": 2,
+                  "x": 1024,
+                  "y": 0,
+                  "width": 512,
+                  "height": 512,
+                  "pivot": {
+                    "x": 256,
+                    "y": 226
+                  }
+                },
+                {
+                  "index": 3,
+                  "x": 0,
+                  "y": 512,
+                  "width": 512,
+                  "height": 512,
+                  "pivot": {
+                    "x": 256,
+                    "y": 226
+                  }
+                },
+                {
+                  "index": 4,
+                  "x": 512,
+                  "y": 512,
+                  "width": 512,
+                  "height": 512,
+                  "pivot": {
+                    "x": 256,
+                    "y": 226
+                  }
+                },
+                {
+                  "index": 5,
+                  "x": 1024,
+                  "y": 512,
+                  "width": 512,
+                  "height": 512,
+                  "pivot": {
+                    "x": 256,
+                    "y": 226
+                  }
+                }
+              ],
+              "durations": [
+                100,
+                85,
+                150,
+                180,
+                160,
+                200
+              ],
+              "loop": false,
+              "variants": {
+                "blue": "Clubman/source/charged.blue.preview.png",
+                "green": "Clubman/source/charged.green.preview.png",
+                "purple": "Clubman/source/charged.purple.preview.png",
+                "white": "Clubman/source/charged.white.preview.png"
+              },
+              "stats": [
+                {
+                  "selectedPixels": 21961
+                },
+                {
+                  "selectedPixels": 20008
+                },
+                {
+                  "selectedPixels": 17747
+                },
+                {
+                  "selectedPixels": 16913
+                },
+                {
+                  "selectedPixels": 21332
+                },
+                {
+                  "selectedPixels": 22504
+                }
+              ]
+            },
+            {
+              "id": "charge",
+              "label": "Charge",
+              "source": "../Clubman/Charge-Stylized-v10.png",
+              "sourceSha256": "c72232d2ca736e67343fcf9d1505d0e5e2811d88742f6f3ee69c8d03f10ff963",
+              "mask": "Clubman/source/charge.fabric-mask.png",
+              "width": 1536,
+              "height": 1024,
+              "frames": [
+                {
+                  "index": 0,
+                  "x": 0,
+                  "y": 0,
+                  "width": 512,
+                  "height": 512,
+                  "pivot": {
+                    "x": 264,
+                    "y": 220
+                  }
+                },
+                {
+                  "index": 1,
+                  "x": 512,
+                  "y": 0,
+                  "width": 512,
+                  "height": 512,
+                  "pivot": {
+                    "x": 252,
+                    "y": 210
+                  }
+                },
+                {
+                  "index": 2,
+                  "x": 1024,
+                  "y": 0,
+                  "width": 512,
+                  "height": 512,
+                  "pivot": {
+                    "x": 255,
+                    "y": 222
+                  }
+                },
+                {
+                  "index": 3,
+                  "x": 0,
+                  "y": 512,
+                  "width": 512,
+                  "height": 512,
+                  "pivot": {
+                    "x": 264,
+                    "y": 190
+                  }
+                },
+                {
+                  "index": 4,
+                  "x": 512,
+                  "y": 512,
+                  "width": 512,
+                  "height": 512,
+                  "pivot": {
+                    "x": 254,
+                    "y": 193
+                  }
+                },
+                {
+                  "index": 5,
+                  "x": 1024,
+                  "y": 512,
+                  "width": 512,
+                  "height": 512,
+                  "pivot": {
+                    "x": 256,
+                    "y": 188
+                  }
+                }
+              ],
+              "durations": [
+                105,
+                105,
+                105,
+                105,
+                105,
+                105
+              ],
+              "loop": true,
+              "variants": {
+                "blue": "Clubman/source/charge.blue.preview.png",
+                "green": "Clubman/source/charge.green.preview.png",
+                "purple": "Clubman/source/charge.purple.preview.png",
+                "white": "Clubman/source/charge.white.preview.png"
+              },
+              "stats": [
+                {
+                  "selectedPixels": 22256
+                },
+                {
+                  "selectedPixels": 20821
+                },
+                {
+                  "selectedPixels": 21875
+                },
+                {
+                  "selectedPixels": 21252
+                },
+                {
+                  "selectedPixels": 20129
+                },
+                {
+                  "selectedPixels": 21232
+                }
+              ]
+            },
+            {
+              "id": "death",
+              "label": "Death",
+              "source": "../Clubman/Death-Nadir-v14.png",
+              "sourceSha256": "c3e907a8a3c25c190a3cfa4f41ebb436d281a7abd9a7e73eaebffa222671128f",
+              "mask": "Clubman/source/death.fabric-mask.png",
+              "width": 1536,
+              "height": 1024,
+              "frames": [
+                {
+                  "index": 0,
+                  "x": 0,
+                  "y": 0,
+                  "width": 512,
+                  "height": 512,
+                  "pivot": {
+                    "x": 256,
+                    "y": 256
+                  }
+                },
+                {
+                  "index": 1,
+                  "x": 512,
+                  "y": 0,
+                  "width": 512,
+                  "height": 512,
+                  "pivot": {
+                    "x": 256,
+                    "y": 256
+                  }
+                },
+                {
+                  "index": 2,
+                  "x": 1024,
+                  "y": 0,
+                  "width": 512,
+                  "height": 512,
+                  "pivot": {
+                    "x": 256,
+                    "y": 256
+                  }
+                },
+                {
+                  "index": 3,
+                  "x": 0,
+                  "y": 512,
+                  "width": 512,
+                  "height": 512,
+                  "pivot": {
+                    "x": 256,
+                    "y": 256
+                  }
+                },
+                {
+                  "index": 4,
+                  "x": 512,
+                  "y": 512,
+                  "width": 512,
+                  "height": 512,
+                  "pivot": {
+                    "x": 256,
+                    "y": 256
+                  }
+                },
+                {
+                  "index": 5,
+                  "x": 1024,
+                  "y": 512,
+                  "width": 512,
+                  "height": 512,
+                  "pivot": {
+                    "x": 256,
+                    "y": 256
+                  }
+                }
+              ],
+              "durations": [
+                120,
+                140,
+                150,
+                180,
+                180,
+                300
+              ],
+              "loop": false,
+              "variants": {
+                "blue": "Clubman/source/death.blue.preview.png",
+                "green": "Clubman/source/death.green.preview.png",
+                "purple": "Clubman/source/death.purple.preview.png",
+                "white": "Clubman/source/death.white.preview.png"
+              },
+              "stats": [
+                {
+                  "selectedPixels": 18572
+                },
+                {
+                  "selectedPixels": 21921
+                },
+                {
+                  "selectedPixels": 26070
+                },
+                {
+                  "selectedPixels": 14032
+                },
+                {
+                  "selectedPixels": 13599
+                },
+                {
+                  "selectedPixels": 13980
+                }
+              ]
+            },
+            {
+              "id": "charge-attack",
+              "label": "Charge attack",
+              "source": "../Clubman/ChargeAttack-Stylized-v12.png",
+              "sourceSha256": "91ca61b51ea03353e3e47999c6e87ba096ec5f340d00c318a0e2339f4e106890",
+              "mask": "Clubman/source/charge-attack.fabric-mask.png",
+              "width": 1536,
+              "height": 1024,
+              "frames": [
+                {
+                  "index": 0,
+                  "x": 0,
+                  "y": 0,
+                  "width": 512,
+                  "height": 512,
+                  "pivot": {
+                    "x": 263,
+                    "y": 260
+                  }
+                },
+                {
+                  "index": 1,
+                  "x": 512,
+                  "y": 0,
+                  "width": 512,
+                  "height": 512,
+                  "pivot": {
+                    "x": 246,
+                    "y": 287
+                  }
+                },
+                {
+                  "index": 2,
+                  "x": 1024,
+                  "y": 0,
+                  "width": 512,
+                  "height": 512,
+                  "pivot": {
+                    "x": 263,
+                    "y": 292
+                  }
+                },
+                {
+                  "index": 3,
+                  "x": 0,
+                  "y": 512,
+                  "width": 512,
+                  "height": 512,
+                  "pivot": {
+                    "x": 270,
+                    "y": 196
+                  }
+                },
+                {
+                  "index": 4,
+                  "x": 512,
+                  "y": 512,
+                  "width": 512,
+                  "height": 512,
+                  "pivot": {
+                    "x": 267,
+                    "y": 204
+                  }
+                },
+                {
+                  "index": 5,
+                  "x": 1024,
+                  "y": 512,
+                  "width": 512,
+                  "height": 512,
+                  "pivot": {
+                    "x": 248,
+                    "y": 196
+                  }
+                }
+              ],
+              "durations": [
+                150,
+                180,
+                230,
+                85,
+                180,
+                230
+              ],
+              "loop": false,
+              "variants": {
+                "blue": "Clubman/source/charge-attack.blue.preview.png",
+                "green": "Clubman/source/charge-attack.green.preview.png",
+                "purple": "Clubman/source/charge-attack.purple.preview.png",
+                "white": "Clubman/source/charge-attack.white.preview.png"
+              },
+              "stats": [
+                {
+                  "selectedPixels": 22059
+                },
+                {
+                  "selectedPixels": 18011
+                },
+                {
+                  "selectedPixels": 17744
+                },
+                {
+                  "selectedPixels": 16426
+                },
+                {
+                  "selectedPixels": 16341
+                },
+                {
+                  "selectedPixels": 21055
+                }
+              ]
+            },
+            {
+              "id": "death-back",
+              "label": "Backward fall",
+              "source": "../Clubman/Death-Back-Nadir-v14.png",
+              "sourceSha256": "50ff7d971de49ececc6a2a92a4936019d6c8715a4abf2078536ad154331f0750",
+              "mask": "Clubman/source/death-back.fabric-mask.png",
+              "width": 1536,
+              "height": 1024,
+              "frames": [
+                {
+                  "index": 0,
+                  "x": 0,
+                  "y": 0,
+                  "width": 512,
+                  "height": 512,
+                  "pivot": {
+                    "x": 256,
+                    "y": 256
+                  }
+                },
+                {
+                  "index": 1,
+                  "x": 512,
+                  "y": 0,
+                  "width": 512,
+                  "height": 512,
+                  "pivot": {
+                    "x": 256,
+                    "y": 256
+                  }
+                },
+                {
+                  "index": 2,
+                  "x": 1024,
+                  "y": 0,
+                  "width": 512,
+                  "height": 512,
+                  "pivot": {
+                    "x": 256,
+                    "y": 256
+                  }
+                },
+                {
+                  "index": 3,
+                  "x": 0,
+                  "y": 512,
+                  "width": 512,
+                  "height": 512,
+                  "pivot": {
+                    "x": 256,
+                    "y": 256
+                  }
+                },
+                {
+                  "index": 4,
+                  "x": 512,
+                  "y": 512,
+                  "width": 512,
+                  "height": 512,
+                  "pivot": {
+                    "x": 256,
+                    "y": 256
+                  }
+                },
+                {
+                  "index": 5,
+                  "x": 1024,
+                  "y": 512,
+                  "width": 512,
+                  "height": 512,
+                  "pivot": {
+                    "x": 256,
+                    "y": 256
+                  }
+                }
+              ],
+              "durations": [
+                120,
+                150,
+                170,
+                210,
+                190,
+                300
+              ],
+              "loop": false,
+              "variants": {
+                "blue": "Clubman/source/death-back.blue.preview.png",
+                "green": "Clubman/source/death-back.green.preview.png",
+                "purple": "Clubman/source/death-back.purple.preview.png",
+                "white": "Clubman/source/death-back.white.preview.png"
+              },
+              "stats": [
+                {
+                  "selectedPixels": 18151
+                },
+                {
+                  "selectedPixels": 13881
+                },
+                {
+                  "selectedPixels": 10913
+                },
+                {
+                  "selectedPixels": 10863
+                },
+                {
+                  "selectedPixels": 10150
+                },
+                {
+                  "selectedPixels": 9854
+                }
+              ]
+            }
+          ]
+        },
+        {
+          "kind": "runtime",
+          "clips": [
+            {
+              "id": "idle",
+              "label": "Idle",
+              "source": "../../../../../Runtime/Russians/Troops/StoneAge-Clubman/idle.png",
+              "sourceSha256": "ff4ac0eebe977fbe9b624bcc4536c925c75392bba0a6b28cc5b5fbebfbbbede3",
+              "mask": "Clubman/runtime/idle.fabric-mask.png",
+              "width": 768,
+              "height": 128,
+              "frames": [
+                {
+                  "x": 0,
+                  "y": 0,
+                  "width": 128,
+                  "height": 128,
+                  "pivot": {
+                    "x": 64,
+                    "y": 57.5
+                  }
+                },
+                {
+                  "x": 128,
+                  "y": 0,
+                  "width": 128,
+                  "height": 128,
+                  "pivot": {
+                    "x": 64,
+                    "y": 57.5
+                  }
+                },
+                {
+                  "x": 256,
+                  "y": 0,
+                  "width": 128,
+                  "height": 128,
+                  "pivot": {
+                    "x": 64.5,
+                    "y": 57
+                  }
+                },
+                {
+                  "x": 384,
+                  "y": 0,
+                  "width": 128,
+                  "height": 128,
+                  "pivot": {
+                    "x": 64,
+                    "y": 54.25
+                  }
+                },
+                {
+                  "x": 512,
+                  "y": 0,
+                  "width": 128,
+                  "height": 128,
+                  "pivot": {
+                    "x": 64,
+                    "y": 54.5
+                  }
+                },
+                {
+                  "x": 640,
+                  "y": 0,
+                  "width": 128,
+                  "height": 128,
+                  "pivot": {
+                    "x": 64.75,
+                    "y": 55
+                  }
+                }
+              ],
+              "durations": [
+                250,
+                250,
+                250,
+                250,
+                250,
+                250
+              ],
+              "loop": true,
+              "variants": {
+                "blue": "Clubman/runtime/idle.blue.preview.png",
+                "green": "Clubman/runtime/idle.green.preview.png",
+                "purple": "Clubman/runtime/idle.purple.preview.png",
+                "white": "Clubman/runtime/idle.white.preview.png"
+              },
+              "stats": [
+                {
+                  "selectedPixels": 1363,
+                  "panels": [
+                    7,
+                    37,
+                    302,
+                    309,
+                    679
+                  ]
+                },
+                {
+                  "selectedPixels": 1374,
+                  "panels": [
+                    12,
+                    38,
+                    309,
+                    312,
+                    680
+                  ]
+                },
+                {
+                  "selectedPixels": 1453,
+                  "panels": [
+                    42,
+                    339,
+                    346,
+                    706
+                  ]
+                },
+                {
+                  "selectedPixels": 1367,
+                  "panels": [
+                    34,
+                    309,
+                    321,
+                    681
+                  ]
+                },
+                {
+                  "selectedPixels": 1391,
+                  "panels": [
+                    8,
+                    34,
+                    316,
+                    322,
+                    691
+                  ]
+                },
+                {
+                  "selectedPixels": 1394,
+                  "panels": [
+                    32,
+                    320,
+                    328,
+                    695
+                  ]
+                }
+              ]
+            },
+            {
+              "id": "running",
+              "label": "Movement",
+              "source": "../../../../../Runtime/Russians/Troops/StoneAge-Clubman/running.png",
+              "sourceSha256": "ec2066d7b9cf0d0ffbbaaddf8cb00f71073e49f8652318fb9a098810933df2cd",
+              "mask": "Clubman/runtime/running.fabric-mask.png",
+              "width": 768,
+              "height": 128,
+              "frames": [
+                {
+                  "x": 0,
+                  "y": 0,
+                  "width": 128,
+                  "height": 128,
+                  "pivot": {
+                    "x": 64.25,
+                    "y": 55.5
+                  }
+                },
+                {
+                  "x": 128,
+                  "y": 0,
+                  "width": 128,
+                  "height": 128,
+                  "pivot": {
+                    "x": 64.25,
+                    "y": 55.5
+                  }
+                },
+                {
+                  "x": 256,
+                  "y": 0,
+                  "width": 128,
+                  "height": 128,
+                  "pivot": {
+                    "x": 65.25,
+                    "y": 57.25
+                  }
+                },
+                {
+                  "x": 384,
+                  "y": 0,
+                  "width": 128,
+                  "height": 128,
+                  "pivot": {
+                    "x": 64.25,
+                    "y": 52.5
+                  }
+                },
+                {
+                  "x": 512,
+                  "y": 0,
+                  "width": 128,
+                  "height": 128,
+                  "pivot": {
+                    "x": 64.5,
+                    "y": 52.5
+                  }
+                },
+                {
+                  "x": 640,
+                  "y": 0,
+                  "width": 128,
+                  "height": 128,
+                  "pivot": {
+                    "x": 65.25,
+                    "y": 52.25
+                  }
+                }
+              ],
+              "durations": [
+                130,
+                130,
+                130,
+                130,
+                130,
+                130
+              ],
+              "loop": true,
+              "variants": {
+                "blue": "Clubman/runtime/running.blue.preview.png",
+                "green": "Clubman/runtime/running.green.preview.png",
+                "purple": "Clubman/runtime/running.purple.preview.png",
+                "white": "Clubman/runtime/running.white.preview.png"
+              },
+              "stats": [
+                {
+                  "selectedPixels": 1365,
+                  "panels": [
+                    45,
+                    298,
+                    324,
+                    686
+                  ]
+                },
+                {
+                  "selectedPixels": 1369,
+                  "panels": [
+                    45,
+                    297,
+                    682,
+                    328
+                  ]
+                },
+                {
+                  "selectedPixels": 1360,
+                  "panels": [
+                    51,
+                    301,
+                    310,
+                    681
+                  ]
+                },
+                {
+                  "selectedPixels": 1324,
+                  "panels": [
+                    44,
+                    331,
+                    261,
+                    675
+                  ]
+                },
+                {
+                  "selectedPixels": 1381,
+                  "panels": [
+                    50,
+                    320,
+                    323,
+                    676
+                  ]
+                },
+                {
+                  "selectedPixels": 1390,
+                  "panels": [
+                    48,
+                    297,
+                    346,
+                    686
+                  ]
+                }
+              ]
+            },
+            {
+              "id": "attack",
+              "label": "Attack",
+              "source": "../../../../../Runtime/Russians/Troops/StoneAge-Clubman/attack.png",
+              "sourceSha256": "90463b09e40a973776bc4f3683fb7bb2450f65ed8a5560387e964efb32d8d58f",
+              "mask": "Clubman/runtime/attack.fabric-mask.png",
+              "width": 768,
+              "height": 128,
+              "frames": [
+                {
+                  "x": 0,
+                  "y": 0,
+                  "width": 128,
+                  "height": 128,
+                  "pivot": {
+                    "x": 63,
+                    "y": 62.5
+                  }
+                },
+                {
+                  "x": 128,
+                  "y": 0,
+                  "width": 128,
+                  "height": 128,
+                  "pivot": {
+                    "x": 59,
+                    "y": 65
+                  }
+                },
+                {
+                  "x": 256,
+                  "y": 0,
+                  "width": 128,
+                  "height": 128,
+                  "pivot": {
+                    "x": 59.25,
+                    "y": 64
+                  }
+                },
+                {
+                  "x": 384,
+                  "y": 0,
+                  "width": 128,
+                  "height": 128,
+                  "pivot": {
+                    "x": 65,
+                    "y": 43.75
+                  }
+                },
+                {
+                  "x": 512,
+                  "y": 0,
+                  "width": 128,
+                  "height": 128,
+                  "pivot": {
+                    "x": 64.75,
+                    "y": 45.5
+                  }
+                },
+                {
+                  "x": 640,
+                  "y": 0,
+                  "width": 128,
+                  "height": 128,
+                  "pivot": {
+                    "x": 63,
+                    "y": 44
+                  }
+                }
+              ],
+              "durations": [
+                150,
+                140,
+                180,
+                85,
+                150,
+                200
+              ],
+              "loop": false,
+              "variants": {
+                "blue": "Clubman/runtime/attack.blue.preview.png",
+                "green": "Clubman/runtime/attack.green.preview.png",
+                "purple": "Clubman/runtime/attack.purple.preview.png",
+                "white": "Clubman/runtime/attack.white.preview.png"
+              },
+              "stats": [
+                {
+                  "selectedPixels": 1195,
+                  "panels": [
+                    41,
+                    267,
+                    229,
+                    650
+                  ]
+                },
+                {
+                  "selectedPixels": 992,
+                  "panels": [
+                    36,
+                    158,
+                    625,
+                    165
+                  ]
+                },
+                {
+                  "selectedPixels": 1247,
+                  "panels": [
+                    290,
+                    34,
+                    614,
+                    185,
+                    111
+                  ]
+                },
+                {
+                  "selectedPixels": 1183,
+                  "panels": [
+                    44,
+                    227,
+                    266,
+                    634
+                  ]
+                },
+                {
+                  "selectedPixels": 1241,
+                  "panels": [
+                    42,
+                    276,
+                    659,
+                    252
+                  ]
+                },
+                {
+                  "selectedPixels": 1288,
+                  "panels": [
+                    50,
+                    285,
+                    269,
+                    674
+                  ]
+                }
+              ]
+            },
+            {
+              "id": "death",
+              "label": "Death",
+              "source": "../../../../../Runtime/Russians/Troops/StoneAge-Clubman/death.png",
+              "sourceSha256": "249aee02d5365aae992afb1717b61f69a37a2574f5d71685c5f057f91ef6f936",
+              "mask": "Clubman/runtime/death.fabric-mask.png",
+              "width": 768,
+              "height": 128,
+              "frames": [
+                {
+                  "x": 0,
+                  "y": 0,
+                  "width": 128,
+                  "height": 128,
+                  "pivot": {
+                    "x": 64,
+                    "y": 64
+                  }
+                },
+                {
+                  "x": 128,
+                  "y": 0,
+                  "width": 128,
+                  "height": 128,
+                  "pivot": {
+                    "x": 64,
+                    "y": 64
+                  }
+                },
+                {
+                  "x": 256,
+                  "y": 0,
+                  "width": 128,
+                  "height": 128,
+                  "pivot": {
+                    "x": 64,
+                    "y": 64
+                  }
+                },
+                {
+                  "x": 384,
+                  "y": 0,
+                  "width": 128,
+                  "height": 128,
+                  "pivot": {
+                    "x": 64,
+                    "y": 64
+                  }
+                },
+                {
+                  "x": 512,
+                  "y": 0,
+                  "width": 128,
+                  "height": 128,
+                  "pivot": {
+                    "x": 64,
+                    "y": 64
+                  }
+                },
+                {
+                  "x": 640,
+                  "y": 0,
+                  "width": 128,
+                  "height": 128,
+                  "pivot": {
+                    "x": 64,
+                    "y": 64
+                  }
+                }
+              ],
+              "durations": [
+                120,
+                140,
+                150,
+                180,
+                180,
+                300
+              ],
+              "loop": false,
+              "variants": {
+                "blue": "Clubman/runtime/death.blue.preview.png",
+                "green": "Clubman/runtime/death.green.preview.png",
+                "purple": "Clubman/runtime/death.purple.preview.png",
+                "white": "Clubman/runtime/death.white.preview.png"
+              },
+              "stats": [
+                {
+                  "selectedPixels": 1225,
+                  "panels": [
+                    30,
+                    301,
+                    292,
+                    599
+                  ]
+                },
+                {
+                  "selectedPixels": 1462,
+                  "panels": [
+                    944,
+                    509
+                  ]
+                },
+                {
+                  "selectedPixels": 1715,
+                  "panels": [
+                    1243,
+                    462
+                  ]
+                },
+                {
+                  "selectedPixels": 959,
+                  "panels": [
+                    7,
+                    6,
+                    717,
+                    219
+                  ]
+                },
+                {
+                  "selectedPixels": 905,
+                  "panels": [
+                    690,
+                    205
+                  ]
+                },
+                {
+                  "selectedPixels": 925,
+                  "panels": [
+                    704,
+                    215
+                  ]
+                }
+              ]
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "unit": "Javelinist",
+      "selection": "red woven cap, sleeves, tunic; retain fur, neutral trousers, skin, leather, weapons and horse",
+      "datasets": [
+        {
+          "kind": "source",
+          "clips": [
+            {
+              "id": "idle",
+              "label": "Idle",
+              "source": "../Javelinist/Idle.png",
+              "sourceSha256": "f41c063a07e6b0fb77971cf96539d0f57b4947c119388900ed5b5636592ee79e",
+              "mask": "Javelinist/source/idle.fabric-mask.png",
+              "width": 1536,
+              "height": 1024,
+              "frames": [
+                {
+                  "index": 0,
+                  "x": 0,
+                  "y": 0,
+                  "width": 512,
+                  "height": 512,
+                  "pivot": {
+                    "x": 279,
+                    "y": 256
+                  }
+                },
+                {
+                  "index": 1,
+                  "x": 512,
+                  "y": 0,
+                  "width": 512,
+                  "height": 512,
+                  "pivot": {
+                    "x": 250,
+                    "y": 254
+                  }
+                },
+                {
+                  "index": 2,
+                  "x": 1024,
+                  "y": 0,
+                  "width": 512,
+                  "height": 512,
+                  "pivot": {
+                    "x": 243,
+                    "y": 252
+                  }
+                },
+                {
+                  "index": 3,
+                  "x": 0,
+                  "y": 512,
+                  "width": 512,
+                  "height": 512,
+                  "pivot": {
+                    "x": 280,
+                    "y": 247
+                  }
+                },
+                {
+                  "index": 4,
+                  "x": 512,
+                  "y": 512,
+                  "width": 512,
+                  "height": 512,
+                  "pivot": {
+                    "x": 255,
+                    "y": 247
+                  }
+                },
+                {
+                  "index": 5,
+                  "x": 1024,
+                  "y": 512,
+                  "width": 512,
+                  "height": 512,
+                  "pivot": {
+                    "x": 242,
+                    "y": 246
+                  }
+                }
+              ],
+              "durations": [
+                170,
+                170,
+                170,
+                170,
+                170,
+                170
+              ],
+              "loop": true,
+              "variants": {
+                "blue": "Javelinist/source/idle.blue.preview.png",
+                "green": "Javelinist/source/idle.green.preview.png",
+                "purple": "Javelinist/source/idle.purple.preview.png",
+                "white": "Javelinist/source/idle.white.preview.png"
+              },
+              "stats": [
+                {
+                  "selectedPixels": 25829
+                },
+                {
+                  "selectedPixels": 26258
+                },
+                {
+                  "selectedPixels": 26032
+                },
+                {
+                  "selectedPixels": 25706
+                },
+                {
+                  "selectedPixels": 25463
+                },
+                {
+                  "selectedPixels": 26511
+                }
+              ]
+            },
+            {
+              "id": "running",
+              "label": "Movement",
+              "source": "../Javelinist/Running-v2.png",
+              "sourceSha256": "291bddf0797c7b56a945ae691f6f9920b119c75b1fbe426d7a2ef84a080a30b4",
+              "mask": "Javelinist/source/running.fabric-mask.png",
+              "width": 1536,
+              "height": 1024,
+              "frames": [
+                {
+                  "index": 0,
+                  "x": 0,
+                  "y": 0,
+                  "width": 512,
+                  "height": 512,
+                  "pivot": {
+                    "x": 271,
+                    "y": 256
+                  }
+                },
+                {
+                  "index": 1,
+                  "x": 512,
+                  "y": 0,
+                  "width": 512,
+                  "height": 512,
+                  "pivot": {
+                    "x": 255,
+                    "y": 259
+                  }
+                },
+                {
+                  "index": 2,
+                  "x": 1024,
+                  "y": 0,
+                  "width": 512,
+                  "height": 512,
+                  "pivot": {
+                    "x": 252,
+                    "y": 257
+                  }
+                },
+                {
+                  "index": 3,
+                  "x": 0,
+                  "y": 512,
+                  "width": 512,
+                  "height": 512,
+                  "pivot": {
+                    "x": 272,
+                    "y": 252
+                  }
+                },
+                {
+                  "index": 4,
+                  "x": 512,
+                  "y": 512,
+                  "width": 512,
+                  "height": 512,
+                  "pivot": {
+                    "x": 256,
+                    "y": 257
+                  }
+                },
+                {
+                  "index": 5,
+                  "x": 1024,
+                  "y": 512,
+                  "width": 512,
+                  "height": 512,
+                  "pivot": {
+                    "x": 251,
+                    "y": 256
+                  }
+                }
+              ],
+              "durations": [
+                150,
+                130,
+                160,
+                150,
+                130,
+                160
+              ],
+              "loop": true,
+              "variants": {
+                "blue": "Javelinist/source/running.blue.preview.png",
+                "green": "Javelinist/source/running.green.preview.png",
+                "purple": "Javelinist/source/running.purple.preview.png",
+                "white": "Javelinist/source/running.white.preview.png"
+              },
+              "stats": [
+                {
+                  "selectedPixels": 22371
+                },
+                {
+                  "selectedPixels": 22498
+                },
+                {
+                  "selectedPixels": 23131
+                },
+                {
+                  "selectedPixels": 23086
+                },
+                {
+                  "selectedPixels": 22184
+                },
+                {
+                  "selectedPixels": 23238
+                }
+              ]
+            },
+            {
+              "id": "attack",
+              "label": "Javelin throw",
+              "source": "../Javelinist/Attack-v3.png",
+              "sourceSha256": "1e2dd5fd932b9372c1c8fd4ae16b336b9d19fbab5524f897b6de60bfdaa2382f",
+              "mask": "Javelinist/source/attack.fabric-mask.png",
+              "width": 1536,
+              "height": 1024,
+              "frames": [
+                {
+                  "index": 0,
+                  "x": 0,
+                  "y": 0,
+                  "width": 512,
+                  "height": 512,
+                  "pivot": {
+                    "x": 276,
+                    "y": 267.1
+                  }
+                },
+                {
+                  "index": 1,
+                  "x": 512,
+                  "y": 0,
+                  "width": 512,
+                  "height": 512,
+                  "pivot": {
+                    "x": 250.2,
+                    "y": 312.7
+                  }
+                },
+                {
+                  "index": 2,
+                  "x": 1024,
+                  "y": 0,
+                  "width": 512,
+                  "height": 512,
+                  "pivot": {
+                    "x": 240.3,
+                    "y": 315.4
+                  }
+                },
+                {
+                  "index": 3,
+                  "x": 0,
+                  "y": 512,
+                  "width": 512,
+                  "height": 512,
+                  "pivot": {
+                    "x": 277.7,
+                    "y": 276.1
+                  }
+                },
+                {
+                  "index": 4,
+                  "x": 512,
+                  "y": 512,
+                  "width": 512,
+                  "height": 512,
+                  "pivot": {
+                    "x": 233.1,
+                    "y": 279.6
+                  }
+                },
+                {
+                  "index": 5,
+                  "x": 1024,
+                  "y": 512,
+                  "width": 512,
+                  "height": 512,
+                  "pivot": {
+                    "x": 249.2,
+                    "y": 252.8
+                  }
+                }
+              ],
+              "durations": [
+                140,
+                180,
+                160,
+                90,
+                170,
+                240
+              ],
+              "loop": false,
+              "variants": {
+                "blue": "Javelinist/source/attack.blue.preview.png",
+                "green": "Javelinist/source/attack.green.preview.png",
+                "purple": "Javelinist/source/attack.purple.preview.png",
+                "white": "Javelinist/source/attack.white.preview.png"
+              },
+              "stats": [
+                {
+                  "selectedPixels": 18151
+                },
+                {
+                  "selectedPixels": 15394
+                },
+                {
+                  "selectedPixels": 16230
+                },
+                {
+                  "selectedPixels": 15033
+                },
+                {
+                  "selectedPixels": 13111
+                },
+                {
+                  "selectedPixels": 18563
+                }
+              ]
+            },
+            {
+              "id": "reload",
+              "label": "Reload",
+              "source": "../Javelinist/Reload-v2.png",
+              "sourceSha256": "edf880687923e29153e17461fc4142eae1195d95347811237c85e6e90a48835c",
+              "mask": "Javelinist/source/reload.fabric-mask.png",
+              "width": 1536,
+              "height": 1024,
+              "frames": [
+                {
+                  "index": 0,
+                  "x": 0,
+                  "y": 0,
+                  "width": 512,
+                  "height": 512,
+                  "pivot": {
+                    "x": 277,
+                    "y": 258.7
+                  }
+                },
+                {
+                  "index": 1,
+                  "x": 512,
+                  "y": 0,
+                  "width": 512,
+                  "height": 512,
+                  "pivot": {
+                    "x": 273.5,
+                    "y": 287.3
+                  }
+                },
+                {
+                  "index": 2,
+                  "x": 1024,
+                  "y": 0,
+                  "width": 512,
+                  "height": 512,
+                  "pivot": {
+                    "x": 243.5,
+                    "y": 296.3
+                  }
+                },
+                {
+                  "index": 3,
+                  "x": 0,
+                  "y": 512,
+                  "width": 512,
+                  "height": 512,
+                  "pivot": {
+                    "x": 289.6,
+                    "y": 257.2
+                  }
+                },
+                {
+                  "index": 4,
+                  "x": 512,
+                  "y": 512,
+                  "width": 512,
+                  "height": 512,
+                  "pivot": {
+                    "x": 270.2,
+                    "y": 260.8
+                  }
+                },
+                {
+                  "index": 5,
+                  "x": 1024,
+                  "y": 512,
+                  "width": 512,
+                  "height": 512,
+                  "pivot": {
+                    "x": 259,
+                    "y": 260.3
+                  }
+                }
+              ],
+              "durations": [
+                120,
+                180,
+                180,
+                200,
+                180,
+                220
+              ],
+              "loop": false,
+              "variants": {
+                "blue": "Javelinist/source/reload.blue.preview.png",
+                "green": "Javelinist/source/reload.green.preview.png",
+                "purple": "Javelinist/source/reload.purple.preview.png",
+                "white": "Javelinist/source/reload.white.preview.png"
+              },
+              "stats": [
+                {
+                  "selectedPixels": 19662
+                },
+                {
+                  "selectedPixels": 18313
+                },
+                {
+                  "selectedPixels": 17788
+                },
+                {
+                  "selectedPixels": 18966
+                },
+                {
+                  "selectedPixels": 18527
+                },
+                {
+                  "selectedPixels": 19047
+                }
+              ]
+            },
+            {
+              "id": "hit",
+              "label": "Get hit",
+              "source": "../Javelinist/Hit.png",
+              "sourceSha256": "614d764f39be268b7306b66fc8c10d8ccd7b68bcc5e1c40bd110c30cb78d39fe",
+              "mask": "Javelinist/source/hit.fabric-mask.png",
+              "width": 1536,
+              "height": 1024,
+              "frames": [
+                {
+                  "index": 0,
+                  "x": 0,
+                  "y": 0,
+                  "width": 512,
+                  "height": 512,
+                  "pivot": {
+                    "x": 280,
+                    "y": 256
+                  }
+                },
+                {
+                  "index": 1,
+                  "x": 512,
+                  "y": 0,
+                  "width": 512,
+                  "height": 512,
+                  "pivot": {
+                    "x": 255,
+                    "y": 248
+                  }
+                },
+                {
+                  "index": 2,
+                  "x": 1024,
+                  "y": 0,
+                  "width": 512,
+                  "height": 512,
+                  "pivot": {
+                    "x": 239,
+                    "y": 285
+                  }
+                },
+                {
+                  "index": 3,
+                  "x": 0,
+                  "y": 512,
+                  "width": 512,
+                  "height": 512,
+                  "pivot": {
+                    "x": 279,
+                    "y": 244
+                  }
+                },
+                {
+                  "index": 4,
+                  "x": 512,
+                  "y": 512,
+                  "width": 512,
+                  "height": 512,
+                  "pivot": {
+                    "x": 253,
+                    "y": 248
+                  }
+                },
+                {
+                  "index": 5,
+                  "x": 1024,
+                  "y": 512,
+                  "width": 512,
+                  "height": 512,
+                  "pivot": {
+                    "x": 250,
+                    "y": 253
+                  }
+                }
+              ],
+              "durations": [
+                90,
+                70,
+                110,
+                100,
+                90,
+                120
+              ],
+              "loop": false,
+              "variants": {
+                "blue": "Javelinist/source/hit.blue.preview.png",
+                "green": "Javelinist/source/hit.green.preview.png",
+                "purple": "Javelinist/source/hit.purple.preview.png",
+                "white": "Javelinist/source/hit.white.preview.png"
+              },
+              "stats": [
+                {
+                  "selectedPixels": 25302
+                },
+                {
+                  "selectedPixels": 26613
+                },
+                {
+                  "selectedPixels": 18785
+                },
+                {
+                  "selectedPixels": 23657
+                },
+                {
+                  "selectedPixels": 25493
+                },
+                {
+                  "selectedPixels": 25690
+                }
+              ]
+            },
+            {
+              "id": "charged",
+              "label": "Get charged",
+              "source": "../Javelinist/Charged-v2.png",
+              "sourceSha256": "5fbf8b99e68b4a93bdab9f3b52114eb435d5d8b311549e062a86e0886eaf9c21",
+              "mask": "Javelinist/source/charged.fabric-mask.png",
+              "width": 1536,
+              "height": 1024,
+              "frames": [
+                {
+                  "index": 0,
+                  "x": 0,
+                  "y": 0,
+                  "width": 512,
+                  "height": 512,
+                  "pivot": {
+                    "x": 250,
+                    "y": 266
+                  }
+                },
+                {
+                  "index": 1,
+                  "x": 512,
+                  "y": 0,
+                  "width": 512,
+                  "height": 512,
+                  "pivot": {
+                    "x": 262,
+                    "y": 287
+                  }
+                },
+                {
+                  "index": 2,
+                  "x": 1024,
+                  "y": 0,
+                  "width": 512,
+                  "height": 512,
+                  "pivot": {
+                    "x": 268,
+                    "y": 268
+                  }
+                },
+                {
+                  "index": 3,
+                  "x": 0,
+                  "y": 512,
+                  "width": 512,
+                  "height": 512,
+                  "pivot": {
+                    "x": 276,
+                    "y": 275
+                  }
+                },
+                {
+                  "index": 4,
+                  "x": 512,
+                  "y": 512,
+                  "width": 512,
+                  "height": 512,
+                  "pivot": {
+                    "x": 271,
+                    "y": 274
+                  }
+                },
+                {
+                  "index": 5,
+                  "x": 1024,
+                  "y": 512,
+                  "width": 512,
+                  "height": 512,
+                  "pivot": {
+                    "x": 258,
+                    "y": 245
+                  }
+                }
+              ],
+              "durations": [
+                100,
+                85,
+                150,
+                180,
+                160,
+                200
+              ],
+              "loop": false,
+              "variants": {
+                "blue": "Javelinist/source/charged.blue.preview.png",
+                "green": "Javelinist/source/charged.green.preview.png",
+                "purple": "Javelinist/source/charged.purple.preview.png",
+                "white": "Javelinist/source/charged.white.preview.png"
+              },
+              "stats": [
+                {
+                  "selectedPixels": 13865
+                },
+                {
+                  "selectedPixels": 11856
+                },
+                {
+                  "selectedPixels": 12369
+                },
+                {
+                  "selectedPixels": 10033
+                },
+                {
+                  "selectedPixels": 12242
+                },
+                {
+                  "selectedPixels": 13994
+                }
+              ]
+            },
+            {
+              "id": "charge",
+              "label": "Charge advance",
+              "source": "../Javelinist/Charge.png",
+              "sourceSha256": "2364d7bdea7bf243430b0a1349397a37524e92ead5dd118fa2252b8c1bbbb855",
+              "mask": "Javelinist/source/charge.fabric-mask.png",
+              "width": 1536,
+              "height": 1024,
+              "frames": [
+                {
+                  "index": 0,
+                  "x": 0,
+                  "y": 0,
+                  "width": 512,
+                  "height": 512,
+                  "pivot": {
+                    "x": 262,
+                    "y": 255
+                  }
+                },
+                {
+                  "index": 1,
+                  "x": 512,
+                  "y": 0,
+                  "width": 512,
+                  "height": 512,
+                  "pivot": {
+                    "x": 253,
+                    "y": 254
+                  }
+                },
+                {
+                  "index": 2,
+                  "x": 1024,
+                  "y": 0,
+                  "width": 512,
+                  "height": 512,
+                  "pivot": {
+                    "x": 258,
+                    "y": 253
+                  }
+                },
+                {
+                  "index": 3,
+                  "x": 0,
+                  "y": 512,
+                  "width": 512,
+                  "height": 512,
+                  "pivot": {
+                    "x": 295,
+                    "y": 248
+                  }
+                },
+                {
+                  "index": 4,
+                  "x": 512,
+                  "y": 512,
+                  "width": 512,
+                  "height": 512,
+                  "pivot": {
+                    "x": 256,
+                    "y": 245
+                  }
+                },
+                {
+                  "index": 5,
+                  "x": 1024,
+                  "y": 512,
+                  "width": 512,
+                  "height": 512,
+                  "pivot": {
+                    "x": 251,
+                    "y": 244
+                  }
+                }
+              ],
+              "durations": [
+                100,
+                80,
+                100,
+                80,
+                100,
+                80
+              ],
+              "loop": true,
+              "variants": {
+                "blue": "Javelinist/source/charge.blue.preview.png",
+                "green": "Javelinist/source/charge.green.preview.png",
+                "purple": "Javelinist/source/charge.purple.preview.png",
+                "white": "Javelinist/source/charge.white.preview.png"
+              },
+              "stats": [
+                {
+                  "selectedPixels": 18595
+                },
+                {
+                  "selectedPixels": 18396
+                },
+                {
+                  "selectedPixels": 19155
+                },
+                {
+                  "selectedPixels": 18763
+                },
+                {
+                  "selectedPixels": 19122
+                },
+                {
+                  "selectedPixels": 18950
+                }
+              ]
+            },
+            {
+              "id": "charge-attack",
+              "label": "Charge throw",
+              "source": "../Javelinist/ChargeAttack-v2.png",
+              "sourceSha256": "28b03b5459e88764deefa1f74a2ac61d14b80f182fa442c8b9a55953574d13ff",
+              "mask": "Javelinist/source/charge-attack.fabric-mask.png",
+              "width": 1536,
+              "height": 1024,
+              "frames": [
+                {
+                  "index": 0,
+                  "x": 0,
+                  "y": 0,
+                  "width": 512,
+                  "height": 512,
+                  "pivot": {
+                    "x": 269.5,
+                    "y": 282.6
+                  }
+                },
+                {
+                  "index": 1,
+                  "x": 512,
+                  "y": 0,
+                  "width": 512,
+                  "height": 512,
+                  "pivot": {
+                    "x": 239.4,
+                    "y": 297.9
+                  }
+                },
+                {
+                  "index": 2,
+                  "x": 1024,
+                  "y": 0,
+                  "width": 512,
+                  "height": 512,
+                  "pivot": {
+                    "x": 252.3,
+                    "y": 308.4
+                  }
+                },
+                {
+                  "index": 3,
+                  "x": 0,
+                  "y": 512,
+                  "width": 512,
+                  "height": 512,
+                  "pivot": {
+                    "x": 283.3,
+                    "y": 302.6
+                  }
+                },
+                {
+                  "index": 4,
+                  "x": 512,
+                  "y": 512,
+                  "width": 512,
+                  "height": 512,
+                  "pivot": {
+                    "x": 276.3,
+                    "y": 299.9
+                  }
+                },
+                {
+                  "index": 5,
+                  "x": 1024,
+                  "y": 512,
+                  "width": 512,
+                  "height": 512,
+                  "pivot": {
+                    "x": 249.2,
+                    "y": 274.2
+                  }
+                }
+              ],
+              "durations": [
+                140,
+                190,
+                200,
+                85,
+                180,
+                245
+              ],
+              "loop": false,
+              "variants": {
+                "blue": "Javelinist/source/charge-attack.blue.preview.png",
+                "green": "Javelinist/source/charge-attack.green.preview.png",
+                "purple": "Javelinist/source/charge-attack.purple.preview.png",
+                "white": "Javelinist/source/charge-attack.white.preview.png"
+              },
+              "stats": [
+                {
+                  "selectedPixels": 15604
+                },
+                {
+                  "selectedPixels": 15644
+                },
+                {
+                  "selectedPixels": 16959
+                },
+                {
+                  "selectedPixels": 13247
+                },
+                {
+                  "selectedPixels": 11891
+                },
+                {
+                  "selectedPixels": 16460
+                }
+              ]
+            },
+            {
+              "id": "death",
+              "label": "Death",
+              "source": "../Javelinist/Death.png",
+              "sourceSha256": "74632111e7dc63501bfc2d3c5f9fd48544b245a0704c7dc2b3bb10be913d2e36",
+              "mask": "Javelinist/source/death.fabric-mask.png",
+              "width": 1536,
+              "height": 1024,
+              "frames": [
+                {
+                  "index": 0,
+                  "x": 0,
+                  "y": 0,
+                  "width": 512,
+                  "height": 512,
+                  "pivot": {
+                    "x": 278,
+                    "y": 254
+                  }
+                },
+                {
+                  "index": 1,
+                  "x": 512,
+                  "y": 0,
+                  "width": 512,
+                  "height": 512,
+                  "pivot": {
+                    "x": 275,
+                    "y": 268
+                  }
+                },
+                {
+                  "index": 2,
+                  "x": 1024,
+                  "y": 0,
+                  "width": 512,
+                  "height": 512,
+                  "pivot": {
+                    "x": 290,
+                    "y": 276
+                  }
+                },
+                {
+                  "index": 3,
+                  "x": 0,
+                  "y": 512,
+                  "width": 512,
+                  "height": 512,
+                  "pivot": {
+                    "x": 269,
+                    "y": 260
+                  }
+                },
+                {
+                  "index": 4,
+                  "x": 512,
+                  "y": 512,
+                  "width": 512,
+                  "height": 512,
+                  "pivot": {
+                    "x": 276,
+                    "y": 270
+                  }
+                },
+                {
+                  "index": 5,
+                  "x": 1024,
+                  "y": 512,
+                  "width": 512,
+                  "height": 512,
+                  "pivot": {
+                    "x": 284,
+                    "y": 286
+                  }
+                }
+              ],
+              "durations": [
+                120,
+                140,
+                150,
+                180,
+                180,
+                300
+              ],
+              "loop": false,
+              "variants": {
+                "blue": "Javelinist/source/death.blue.preview.png",
+                "green": "Javelinist/source/death.green.preview.png",
+                "purple": "Javelinist/source/death.purple.preview.png",
+                "white": "Javelinist/source/death.white.preview.png"
+              },
+              "stats": [
+                {
+                  "selectedPixels": 22679
+                },
+                {
+                  "selectedPixels": 17480
+                },
+                {
+                  "selectedPixels": 16519
+                },
+                {
+                  "selectedPixels": 16116
+                },
+                {
+                  "selectedPixels": 18623
+                },
+                {
+                  "selectedPixels": 18595
+                }
+              ]
+            }
+          ]
+        },
+        {
+          "kind": "runtime",
+          "clips": [
+            {
+              "id": "idle",
+              "label": "Idle",
+              "source": "../../../../../Runtime/Russians/Troops/StoneAge-Javelinist/idle.png",
+              "sourceSha256": "f76ee41302ccebc0e8da76e990831942647a7d57d8251d8526134ab0f7a22fef",
+              "mask": "Javelinist/runtime/idle.fabric-mask.png",
+              "width": 768,
+              "height": 128,
+              "frames": [
+                {
+                  "x": 0,
+                  "y": 0,
+                  "width": 128,
+                  "height": 128,
+                  "pivot": {
+                    "x": 64,
+                    "y": 64
+                  }
+                },
+                {
+                  "x": 128,
+                  "y": 0,
+                  "width": 128,
+                  "height": 128,
+                  "pivot": {
+                    "x": 64,
+                    "y": 64
+                  }
+                },
+                {
+                  "x": 256,
+                  "y": 0,
+                  "width": 128,
+                  "height": 128,
+                  "pivot": {
+                    "x": 64,
+                    "y": 64
+                  }
+                },
+                {
+                  "x": 384,
+                  "y": 0,
+                  "width": 128,
+                  "height": 128,
+                  "pivot": {
+                    "x": 64,
+                    "y": 64
+                  }
+                },
+                {
+                  "x": 512,
+                  "y": 0,
+                  "width": 128,
+                  "height": 128,
+                  "pivot": {
+                    "x": 64,
+                    "y": 64
+                  }
+                },
+                {
+                  "x": 640,
+                  "y": 0,
+                  "width": 128,
+                  "height": 128,
+                  "pivot": {
+                    "x": 64,
+                    "y": 64
+                  }
+                }
+              ],
+              "durations": [
+                280,
+                280,
+                280,
+                280,
+                280,
+                280
+              ],
+              "loop": true,
+              "variants": {
+                "blue": "Javelinist/runtime/idle.blue.preview.png",
+                "green": "Javelinist/runtime/idle.green.preview.png",
+                "purple": "Javelinist/runtime/idle.purple.preview.png",
+                "white": "Javelinist/runtime/idle.white.preview.png"
+              },
+              "stats": [
+                {
+                  "selectedPixels": 733,
+                  "panels": [
+                    129,
+                    469,
+                    121
+                  ]
+                },
+                {
+                  "selectedPixels": 746,
+                  "panels": [
+                    516,
+                    121,
+                    100
+                  ]
+                },
+                {
+                  "selectedPixels": 744,
+                  "panels": [
+                    130,
+                    483,
+                    114
+                  ]
+                },
+                {
+                  "selectedPixels": 736,
+                  "panels": [
+                    135,
+                    470,
+                    122
+                  ]
+                },
+                {
+                  "selectedPixels": 754,
+                  "panels": [
+                    518,
+                    119,
+                    102
+                  ]
+                },
+                {
+                  "selectedPixels": 765,
+                  "panels": [
+                    506,
+                    138,
+                    110
+                  ]
+                }
+              ]
+            },
+            {
+              "id": "running",
+              "label": "Walk",
+              "source": "../../../../../Runtime/Russians/Troops/StoneAge-Javelinist/running.png",
+              "sourceSha256": "055f6dc7642acfe207ff139e5182e903e6a4108c9506adaf0713b629bf6ab2eb",
+              "mask": "Javelinist/runtime/running.fabric-mask.png",
+              "width": 768,
+              "height": 128,
+              "frames": [
+                {
+                  "x": 0,
+                  "y": 0,
+                  "width": 128,
+                  "height": 128,
+                  "pivot": {
+                    "x": 64,
+                    "y": 64
+                  }
+                },
+                {
+                  "x": 128,
+                  "y": 0,
+                  "width": 128,
+                  "height": 128,
+                  "pivot": {
+                    "x": 64,
+                    "y": 64
+                  }
+                },
+                {
+                  "x": 256,
+                  "y": 0,
+                  "width": 128,
+                  "height": 128,
+                  "pivot": {
+                    "x": 64,
+                    "y": 64
+                  }
+                },
+                {
+                  "x": 384,
+                  "y": 0,
+                  "width": 128,
+                  "height": 128,
+                  "pivot": {
+                    "x": 64,
+                    "y": 64
+                  }
+                },
+                {
+                  "x": 512,
+                  "y": 0,
+                  "width": 128,
+                  "height": 128,
+                  "pivot": {
+                    "x": 64,
+                    "y": 64
+                  }
+                },
+                {
+                  "x": 640,
+                  "y": 0,
+                  "width": 128,
+                  "height": 128,
+                  "pivot": {
+                    "x": 64,
+                    "y": 64
+                  }
+                }
+              ],
+              "durations": [
+                160,
+                160,
+                160,
+                160,
+                160,
+                160
+              ],
+              "loop": true,
+              "variants": {
+                "blue": "Javelinist/runtime/running.blue.preview.png",
+                "green": "Javelinist/runtime/running.green.preview.png",
+                "purple": "Javelinist/runtime/running.purple.preview.png",
+                "white": "Javelinist/runtime/running.white.preview.png"
+              },
+              "stats": [
+                {
+                  "selectedPixels": 786,
+                  "panels": [
+                    142,
+                    520,
+                    116
+                  ]
+                },
+                {
+                  "selectedPixels": 799,
+                  "panels": [
+                    155,
+                    522,
+                    111
+                  ]
+                },
+                {
+                  "selectedPixels": 796,
+                  "panels": [
+                    146,
+                    515,
+                    119
+                  ]
+                },
+                {
+                  "selectedPixels": 792,
+                  "panels": [
+                    527,
+                    131,
+                    119
+                  ]
+                },
+                {
+                  "selectedPixels": 777,
+                  "panels": [
+                    120,
+                    528,
+                    113
+                  ]
+                },
+                {
+                  "selectedPixels": 786,
+                  "panels": [
+                    149,
+                    525,
+                    103
+                  ]
+                }
+              ]
+            },
+            {
+              "id": "attack",
+              "label": "Overarm throw",
+              "source": "../../../../../Runtime/Russians/Troops/StoneAge-Javelinist/attack.png",
+              "sourceSha256": "c78c6a3cce8060d04c5dbb121abfbce196e768ddf59a6159bd0dfcaa45334634",
+              "mask": "Javelinist/runtime/attack.fabric-mask.png",
+              "width": 768,
+              "height": 128,
+              "frames": [
+                {
+                  "x": 0,
+                  "y": 0,
+                  "width": 128,
+                  "height": 128,
+                  "pivot": {
+                    "x": 64,
+                    "y": 64
+                  }
+                },
+                {
+                  "x": 128,
+                  "y": 0,
+                  "width": 128,
+                  "height": 128,
+                  "pivot": {
+                    "x": 64,
+                    "y": 64
+                  }
+                },
+                {
+                  "x": 256,
+                  "y": 0,
+                  "width": 128,
+                  "height": 128,
+                  "pivot": {
+                    "x": 64,
+                    "y": 64
+                  }
+                },
+                {
+                  "x": 384,
+                  "y": 0,
+                  "width": 128,
+                  "height": 128,
+                  "pivot": {
+                    "x": 64,
+                    "y": 64
+                  }
+                },
+                {
+                  "x": 512,
+                  "y": 0,
+                  "width": 128,
+                  "height": 128,
+                  "pivot": {
+                    "x": 64,
+                    "y": 64
+                  }
+                },
+                {
+                  "x": 640,
+                  "y": 0,
+                  "width": 128,
+                  "height": 128,
+                  "pivot": {
+                    "x": 64,
+                    "y": 64
+                  }
+                }
+              ],
+              "durations": [
+                140,
+                180,
+                260,
+                100,
+                180,
+                250
+              ],
+              "loop": false,
+              "variants": {
+                "blue": "Javelinist/runtime/attack.blue.preview.png",
+                "green": "Javelinist/runtime/attack.green.preview.png",
+                "purple": "Javelinist/runtime/attack.purple.preview.png",
+                "white": "Javelinist/runtime/attack.white.preview.png"
+              },
+              "stats": [
+                {
+                  "selectedPixels": 654,
+                  "panels": [
+                    446,
+                    106,
+                    93
+                  ]
+                },
+                {
+                  "selectedPixels": 667,
+                  "panels": [
+                    135,
+                    384,
+                    133
+                  ]
+                },
+                {
+                  "selectedPixels": 602,
+                  "panels": [
+                    87,
+                    388,
+                    117
+                  ]
+                },
+                {
+                  "selectedPixels": 645,
+                  "panels": [
+                    215,
+                    359,
+                    59
+                  ]
+                },
+                {
+                  "selectedPixels": 694,
+                  "panels": [
+                    235,
+                    371,
+                    72
+                  ]
+                },
+                {
+                  "selectedPixels": 665,
+                  "panels": [
+                    117,
+                    435,
+                    101
+                  ]
+                }
+              ]
+            },
+            {
+              "id": "death",
+              "label": "Death - side fall",
+              "source": "../../../../../Runtime/Russians/Troops/StoneAge-Javelinist/death.png",
+              "sourceSha256": "5f101a04599a578a13e0a7cc852cda5d462def7ccbbe4bb49bea7f8e56bf0617",
+              "mask": "Javelinist/runtime/death.fabric-mask.png",
+              "width": 768,
+              "height": 128,
+              "frames": [
+                {
+                  "x": 0,
+                  "y": 0,
+                  "width": 128,
+                  "height": 128,
+                  "pivot": {
+                    "x": 64,
+                    "y": 64
+                  }
+                },
+                {
+                  "x": 128,
+                  "y": 0,
+                  "width": 128,
+                  "height": 128,
+                  "pivot": {
+                    "x": 64,
+                    "y": 64
+                  }
+                },
+                {
+                  "x": 256,
+                  "y": 0,
+                  "width": 128,
+                  "height": 128,
+                  "pivot": {
+                    "x": 64,
+                    "y": 64
+                  }
+                },
+                {
+                  "x": 384,
+                  "y": 0,
+                  "width": 128,
+                  "height": 128,
+                  "pivot": {
+                    "x": 64,
+                    "y": 64
+                  }
+                },
+                {
+                  "x": 512,
+                  "y": 0,
+                  "width": 128,
+                  "height": 128,
+                  "pivot": {
+                    "x": 64,
+                    "y": 64
+                  }
+                },
+                {
+                  "x": 640,
+                  "y": 0,
+                  "width": 128,
+                  "height": 128,
+                  "pivot": {
+                    "x": 64,
+                    "y": 64
+                  }
+                }
+              ],
+              "durations": [
+                150,
+                170,
+                190,
+                210,
+                240,
+                400
+              ],
+              "loop": false,
+              "variants": {
+                "blue": "Javelinist/runtime/death.blue.preview.png",
+                "green": "Javelinist/runtime/death.green.preview.png",
+                "purple": "Javelinist/runtime/death.purple.preview.png",
+                "white": "Javelinist/runtime/death.white.preview.png"
+              },
+              "stats": [
+                {
+                  "selectedPixels": 722,
+                  "panels": [
+                    472,
+                    125,
+                    112
+                  ]
+                },
+                {
+                  "selectedPixels": 667,
+                  "panels": [
+                    123,
+                    443,
+                    92
+                  ]
+                },
+                {
+                  "selectedPixels": 790,
+                  "panels": [
+                    263,
+                    420,
+                    92
+                  ]
+                },
+                {
+                  "selectedPixels": 937,
+                  "panels": [
+                    300,
+                    322,
+                    305
+                  ]
+                },
+                {
+                  "selectedPixels": 930,
+                  "panels": [
+                    273,
+                    338,
+                    307
+                  ]
+                },
+                {
+                  "selectedPixels": 864,
+                  "panels": [
+                    237,
+                    316,
+                    303
+                  ]
+                }
+              ]
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "unit": "MountedSpearman",
+      "selection": "red cap, sleeves, tunic, and red saddle panel (user confirmed); retain fur, neutral trousers, skin, other leather, weapons and horse",
+      "datasets": [
+        {
+          "kind": "source",
+          "clips": [
+            {
+              "id": "idle",
+              "label": "Idle",
+              "source": "../MountedSpearman/Idle-v2.png",
+              "sourceSha256": "7aa435ceaa802e7d6b51b9b9008c8ba286058d023c52c12aa4c9f024b2a36e6d",
+              "mask": "MountedSpearman/source/idle.fabric-mask.png",
+              "width": 1536,
+              "height": 1024,
+              "frames": [
+                {
+                  "index": 0,
+                  "x": 0,
+                  "y": 0,
+                  "width": 512,
+                  "height": 512,
+                  "pivot": {
+                    "x": 270,
+                    "y": 270
+                  }
+                },
+                {
+                  "index": 1,
+                  "x": 512,
+                  "y": 0,
+                  "width": 512,
+                  "height": 512,
+                  "pivot": {
+                    "x": 258,
+                    "y": 273
+                  }
+                },
+                {
+                  "index": 2,
+                  "x": 1024,
+                  "y": 0,
+                  "width": 512,
+                  "height": 512,
+                  "pivot": {
+                    "x": 252,
+                    "y": 274
+                  }
+                },
+                {
+                  "index": 3,
+                  "x": 0,
+                  "y": 512,
+                  "width": 512,
+                  "height": 512,
+                  "pivot": {
+                    "x": 267,
+                    "y": 258
+                  }
+                },
+                {
+                  "index": 4,
+                  "x": 512,
+                  "y": 512,
+                  "width": 512,
+                  "height": 512,
+                  "pivot": {
+                    "x": 257,
+                    "y": 257
+                  }
+                },
+                {
+                  "index": 5,
+                  "x": 1024,
+                  "y": 512,
+                  "width": 512,
+                  "height": 512,
+                  "pivot": {
+                    "x": 253,
+                    "y": 258
+                  }
+                }
+              ],
+              "durations": [
+                170,
+                170,
+                170,
+                170,
+                170,
+                170
+              ],
+              "loop": true,
+              "variants": {
+                "blue": "MountedSpearman/source/idle.blue.preview.png",
+                "green": "MountedSpearman/source/idle.green.preview.png",
+                "purple": "MountedSpearman/source/idle.purple.preview.png",
+                "white": "MountedSpearman/source/idle.white.preview.png"
+              },
+              "stats": [
+                {
+                  "selectedPixels": 6055
+                },
+                {
+                  "selectedPixels": 6130
+                },
+                {
+                  "selectedPixels": 6062
+                },
+                {
+                  "selectedPixels": 6249
+                },
+                {
+                  "selectedPixels": 6511
+                },
+                {
+                  "selectedPixels": 6319
+                }
+              ]
+            },
+            {
+              "id": "running",
+              "label": "Walk",
+              "source": "../MountedSpearman/Running-v2.png",
+              "sourceSha256": "0d4ecfe88a6ee291a25573222fc5033b5089b7af9cbd59197dd60f114f7155f6",
+              "mask": "MountedSpearman/source/running.fabric-mask.png",
+              "width": 1536,
+              "height": 1024,
+              "frames": [
+                {
+                  "index": 0,
+                  "x": 0,
+                  "y": 0,
+                  "width": 512,
+                  "height": 512,
+                  "pivot": {
+                    "x": 276,
+                    "y": 256
+                  }
+                },
+                {
+                  "index": 1,
+                  "x": 512,
+                  "y": 0,
+                  "width": 512,
+                  "height": 512,
+                  "pivot": {
+                    "x": 266,
+                    "y": 257
+                  }
+                },
+                {
+                  "index": 2,
+                  "x": 1024,
+                  "y": 0,
+                  "width": 512,
+                  "height": 512,
+                  "pivot": {
+                    "x": 264,
+                    "y": 257
+                  }
+                },
+                {
+                  "index": 3,
+                  "x": 0,
+                  "y": 512,
+                  "width": 512,
+                  "height": 512,
+                  "pivot": {
+                    "x": 266,
+                    "y": 255
+                  }
+                },
+                {
+                  "index": 4,
+                  "x": 512,
+                  "y": 512,
+                  "width": 512,
+                  "height": 512,
+                  "pivot": {
+                    "x": 255,
+                    "y": 256
+                  }
+                },
+                {
+                  "index": 5,
+                  "x": 1024,
+                  "y": 512,
+                  "width": 512,
+                  "height": 512,
+                  "pivot": {
+                    "x": 261,
+                    "y": 266
+                  }
+                }
+              ],
+              "durations": [
+                150,
+                180,
+                150,
+                150,
+                180,
+                150
+              ],
+              "loop": true,
+              "variants": {
+                "blue": "MountedSpearman/source/running.blue.preview.png",
+                "green": "MountedSpearman/source/running.green.preview.png",
+                "purple": "MountedSpearman/source/running.purple.preview.png",
+                "white": "MountedSpearman/source/running.white.preview.png"
+              },
+              "stats": [
+                {
+                  "selectedPixels": 6148
+                },
+                {
+                  "selectedPixels": 6439
+                },
+                {
+                  "selectedPixels": 6136
+                },
+                {
+                  "selectedPixels": 6446
+                },
+                {
+                  "selectedPixels": 6524
+                },
+                {
+                  "selectedPixels": 6374
+                }
+              ]
+            },
+            {
+              "id": "attack",
+              "label": "Spear thrust",
+              "source": "../MountedSpearman/Attack-v2.png",
+              "sourceSha256": "77f0d476a63e7cd6119e8a4c664f20188b395563c91a2bed4af6bac8e7b15f11",
+              "mask": "MountedSpearman/source/attack.fabric-mask.png",
+              "width": 1536,
+              "height": 1024,
+              "frames": [
+                {
+                  "index": 0,
+                  "x": 0,
+                  "y": 0,
+                  "width": 512,
+                  "height": 512,
+                  "pivot": {
+                    "x": 264,
+                    "y": 260
+                  }
+                },
+                {
+                  "index": 1,
+                  "x": 512,
+                  "y": 0,
+                  "width": 512,
+                  "height": 512,
+                  "pivot": {
+                    "x": 270,
+                    "y": 260
+                  }
+                },
+                {
+                  "index": 2,
+                  "x": 1024,
+                  "y": 0,
+                  "width": 512,
+                  "height": 512,
+                  "pivot": {
+                    "x": 261,
+                    "y": 261
+                  }
+                },
+                {
+                  "index": 3,
+                  "x": 0,
+                  "y": 512,
+                  "width": 512,
+                  "height": 512,
+                  "pivot": {
+                    "x": 266,
+                    "y": 255
+                  }
+                },
+                {
+                  "index": 4,
+                  "x": 512,
+                  "y": 512,
+                  "width": 512,
+                  "height": 512,
+                  "pivot": {
+                    "x": 265,
+                    "y": 253
+                  }
+                },
+                {
+                  "index": 5,
+                  "x": 1024,
+                  "y": 512,
+                  "width": 512,
+                  "height": 512,
+                  "pivot": {
+                    "x": 259,
+                    "y": 256
+                  }
+                }
+              ],
+              "durations": [
+                140,
+                180,
+                130,
+                90,
+                160,
+                240
+              ],
+              "loop": false,
+              "variants": {
+                "blue": "MountedSpearman/source/attack.blue.preview.png",
+                "green": "MountedSpearman/source/attack.green.preview.png",
+                "purple": "MountedSpearman/source/attack.purple.preview.png",
+                "white": "MountedSpearman/source/attack.white.preview.png"
+              },
+              "stats": [
+                {
+                  "selectedPixels": 5303
+                },
+                {
+                  "selectedPixels": 5830
+                },
+                {
+                  "selectedPixels": 5109
+                },
+                {
+                  "selectedPixels": 5518
+                },
+                {
+                  "selectedPixels": 5974
+                },
+                {
+                  "selectedPixels": 5348
+                }
+              ]
+            },
+            {
+              "id": "hit",
+              "label": "Get hit",
+              "source": "../MountedSpearman/Hit-v2.png",
+              "sourceSha256": "03ed58e5a2e7214629e7f0e2d3c13561649fceef33d1b264f74c09807e48c396",
+              "mask": "MountedSpearman/source/hit.fabric-mask.png",
+              "width": 1536,
+              "height": 1024,
+              "frames": [
+                {
+                  "index": 0,
+                  "x": 0,
+                  "y": 0,
+                  "width": 512,
+                  "height": 512,
+                  "pivot": {
+                    "x": 296,
+                    "y": 294
+                  }
+                },
+                {
+                  "index": 1,
+                  "x": 512,
+                  "y": 0,
+                  "width": 512,
+                  "height": 512,
+                  "pivot": {
+                    "x": 264,
+                    "y": 279
+                  }
+                },
+                {
+                  "index": 2,
+                  "x": 1024,
+                  "y": 0,
+                  "width": 512,
+                  "height": 512,
+                  "pivot": {
+                    "x": 251,
+                    "y": 279
+                  }
+                },
+                {
+                  "index": 3,
+                  "x": 0,
+                  "y": 512,
+                  "width": 512,
+                  "height": 512,
+                  "pivot": {
+                    "x": 282,
+                    "y": 255
+                  }
+                },
+                {
+                  "index": 4,
+                  "x": 512,
+                  "y": 512,
+                  "width": 512,
+                  "height": 512,
+                  "pivot": {
+                    "x": 257,
+                    "y": 250
+                  }
+                },
+                {
+                  "index": 5,
+                  "x": 1024,
+                  "y": 512,
+                  "width": 512,
+                  "height": 512,
+                  "pivot": {
+                    "x": 241,
+                    "y": 253
+                  }
+                }
+              ],
+              "durations": [
+                90,
+                80,
+                110,
+                100,
+                100,
+                140
+              ],
+              "loop": false,
+              "variants": {
+                "blue": "MountedSpearman/source/hit.blue.preview.png",
+                "green": "MountedSpearman/source/hit.green.preview.png",
+                "purple": "MountedSpearman/source/hit.purple.preview.png",
+                "white": "MountedSpearman/source/hit.white.preview.png"
+              },
+              "stats": [
+                {
+                  "selectedPixels": 5610
+                },
+                {
+                  "selectedPixels": 6245
+                },
+                {
+                  "selectedPixels": 6079
+                },
+                {
+                  "selectedPixels": 5760
+                },
+                {
+                  "selectedPixels": 5847
+                },
+                {
+                  "selectedPixels": 5780
+                }
+              ]
+            },
+            {
+              "id": "charged",
+              "label": "Get charged",
+              "source": "../MountedSpearman/Charged.png",
+              "sourceSha256": "2581f3edc3dee3096e29d48c1d35fb32587be03d66ede961b321595ff26f3707",
+              "mask": "MountedSpearman/source/charged.fabric-mask.png",
+              "width": 1536,
+              "height": 1024,
+              "frames": [
+                {
+                  "index": 0,
+                  "x": 0,
+                  "y": 0,
+                  "width": 512,
+                  "height": 512,
+                  "pivot": {
+                    "x": 266,
+                    "y": 256
+                  }
+                },
+                {
+                  "index": 1,
+                  "x": 512,
+                  "y": 0,
+                  "width": 512,
+                  "height": 512,
+                  "pivot": {
+                    "x": 264,
+                    "y": 253
+                  }
+                },
+                {
+                  "index": 2,
+                  "x": 1024,
+                  "y": 0,
+                  "width": 512,
+                  "height": 512,
+                  "pivot": {
+                    "x": 260,
+                    "y": 255
+                  }
+                },
+                {
+                  "index": 3,
+                  "x": 0,
+                  "y": 512,
+                  "width": 512,
+                  "height": 512,
+                  "pivot": {
+                    "x": 254,
+                    "y": 260
+                  }
+                },
+                {
+                  "index": 4,
+                  "x": 512,
+                  "y": 512,
+                  "width": 512,
+                  "height": 512,
+                  "pivot": {
+                    "x": 257,
+                    "y": 253
+                  }
+                },
+                {
+                  "index": 5,
+                  "x": 1024,
+                  "y": 512,
+                  "width": 512,
+                  "height": 512,
+                  "pivot": {
+                    "x": 255,
+                    "y": 253
+                  }
+                }
+              ],
+              "durations": [
+                110,
+                90,
+                170,
+                190,
+                170,
+                230
+              ],
+              "loop": false,
+              "variants": {
+                "blue": "MountedSpearman/source/charged.blue.preview.png",
+                "green": "MountedSpearman/source/charged.green.preview.png",
+                "purple": "MountedSpearman/source/charged.purple.preview.png",
+                "white": "MountedSpearman/source/charged.white.preview.png"
+              },
+              "stats": [
+                {
+                  "selectedPixels": 7714
+                },
+                {
+                  "selectedPixels": 8510
+                },
+                {
+                  "selectedPixels": 8118
+                },
+                {
+                  "selectedPixels": 7313
+                },
+                {
+                  "selectedPixels": 7515
+                },
+                {
+                  "selectedPixels": 7605
+                }
+              ]
+            },
+            {
+              "id": "charge",
+              "label": "Gallop",
+              "source": "../MountedSpearman/Charge-v5.png",
+              "sourceSha256": "218bf8e0f6467955aaf796e301d71c7d2c0cc7bc6a1ed20524e435e8fe70e2d2",
+              "mask": "MountedSpearman/source/charge.fabric-mask.png",
+              "width": 1536,
+              "height": 1024,
+              "frames": [
+                {
+                  "index": 0,
+                  "x": 0,
+                  "y": 0,
+                  "width": 512,
+                  "height": 512,
+                  "pivot": {
+                    "x": 267,
+                    "y": 267
+                  }
+                },
+                {
+                  "index": 1,
+                  "x": 512,
+                  "y": 0,
+                  "width": 512,
+                  "height": 512,
+                  "pivot": {
+                    "x": 259,
+                    "y": 267
+                  }
+                },
+                {
+                  "index": 2,
+                  "x": 1024,
+                  "y": 0,
+                  "width": 512,
+                  "height": 512,
+                  "pivot": {
+                    "x": 259,
+                    "y": 267
+                  }
+                },
+                {
+                  "index": 3,
+                  "x": 0,
+                  "y": 512,
+                  "width": 512,
+                  "height": 512,
+                  "pivot": {
+                    "x": 267,
+                    "y": 264
+                  }
+                },
+                {
+                  "index": 4,
+                  "x": 512,
+                  "y": 512,
+                  "width": 512,
+                  "height": 512,
+                  "pivot": {
+                    "x": 259,
+                    "y": 264
+                  }
+                },
+                {
+                  "index": 5,
+                  "x": 1024,
+                  "y": 512,
+                  "width": 512,
+                  "height": 512,
+                  "pivot": {
+                    "x": 259,
+                    "y": 264
+                  }
+                }
+              ],
+              "durations": [
+                90,
+                90,
+                90,
+                90,
+                90,
+                90
+              ],
+              "loop": true,
+              "variants": {
+                "blue": "MountedSpearman/source/charge.blue.preview.png",
+                "green": "MountedSpearman/source/charge.green.preview.png",
+                "purple": "MountedSpearman/source/charge.purple.preview.png",
+                "white": "MountedSpearman/source/charge.white.preview.png"
+              },
+              "stats": [
+                {
+                  "selectedPixels": 4848
+                },
+                {
+                  "selectedPixels": 4883
+                },
+                {
+                  "selectedPixels": 4883
+                },
+                {
+                  "selectedPixels": 5091
+                },
+                {
+                  "selectedPixels": 5137
+                },
+                {
+                  "selectedPixels": 5006
+                }
+              ]
+            },
+            {
+              "id": "charge-attack",
+              "label": "Charge thrust",
+              "source": "../MountedSpearman/ChargeAttack-v2.png",
+              "sourceSha256": "6450a66684e8e3dacae8bd64efc42a8f4aa9b7a4426e915ed012d05d189b9dbc",
+              "mask": "MountedSpearman/source/charge-attack.fabric-mask.png",
+              "width": 1536,
+              "height": 1024,
+              "frames": [
+                {
+                  "index": 0,
+                  "x": 0,
+                  "y": 0,
+                  "width": 512,
+                  "height": 512,
+                  "pivot": {
+                    "x": 300,
+                    "y": 275
+                  }
+                },
+                {
+                  "index": 1,
+                  "x": 512,
+                  "y": 0,
+                  "width": 512,
+                  "height": 512,
+                  "pivot": {
+                    "x": 271,
+                    "y": 272
+                  }
+                },
+                {
+                  "index": 2,
+                  "x": 1024,
+                  "y": 0,
+                  "width": 512,
+                  "height": 512,
+                  "pivot": {
+                    "x": 258,
+                    "y": 270
+                  }
+                },
+                {
+                  "index": 3,
+                  "x": 0,
+                  "y": 512,
+                  "width": 512,
+                  "height": 512,
+                  "pivot": {
+                    "x": 297,
+                    "y": 275
+                  }
+                },
+                {
+                  "index": 4,
+                  "x": 512,
+                  "y": 512,
+                  "width": 512,
+                  "height": 512,
+                  "pivot": {
+                    "x": 267,
+                    "y": 271
+                  }
+                },
+                {
+                  "index": 5,
+                  "x": 1024,
+                  "y": 512,
+                  "width": 512,
+                  "height": 512,
+                  "pivot": {
+                    "x": 252,
+                    "y": 268
+                  }
+                }
+              ],
+              "durations": [
+                130,
+                180,
+                140,
+                100,
+                170,
+                240
+              ],
+              "loop": false,
+              "variants": {
+                "blue": "MountedSpearman/source/charge-attack.blue.preview.png",
+                "green": "MountedSpearman/source/charge-attack.green.preview.png",
+                "purple": "MountedSpearman/source/charge-attack.purple.preview.png",
+                "white": "MountedSpearman/source/charge-attack.white.preview.png"
+              },
+              "stats": [
+                {
+                  "selectedPixels": 5167
+                },
+                {
+                  "selectedPixels": 5866
+                },
+                {
+                  "selectedPixels": 4947
+                },
+                {
+                  "selectedPixels": 4831
+                },
+                {
+                  "selectedPixels": 6123
+                },
+                {
+                  "selectedPixels": 5290
+                }
+              ]
+            },
+            {
+              "id": "death",
+              "label": "Death · together",
+              "source": "../MountedSpearman/Death-Together.png",
+              "sourceSha256": "da859ab56243cca8add7d1d9517ab61de7fc05d3ac287241d68a2bea52daecd4",
+              "mask": "MountedSpearman/source/death.fabric-mask.png",
+              "width": 1536,
+              "height": 1024,
+              "frames": [
+                {
+                  "index": 0,
+                  "x": 0,
+                  "y": 0,
+                  "width": 512,
+                  "height": 512,
+                  "pivot": {
+                    "x": 240,
+                    "y": 257
+                  }
+                },
+                {
+                  "index": 1,
+                  "x": 512,
+                  "y": 0,
+                  "width": 512,
+                  "height": 512,
+                  "pivot": {
+                    "x": 269,
+                    "y": 263
+                  }
+                },
+                {
+                  "index": 2,
+                  "x": 1024,
+                  "y": 0,
+                  "width": 512,
+                  "height": 512,
+                  "pivot": {
+                    "x": 281,
+                    "y": 271
+                  }
+                },
+                {
+                  "index": 3,
+                  "x": 0,
+                  "y": 512,
+                  "width": 512,
+                  "height": 512,
+                  "pivot": {
+                    "x": 253,
+                    "y": 252
+                  }
+                },
+                {
+                  "index": 4,
+                  "x": 512,
+                  "y": 512,
+                  "width": 512,
+                  "height": 512,
+                  "pivot": {
+                    "x": 256,
+                    "y": 254
+                  }
+                },
+                {
+                  "index": 5,
+                  "x": 1024,
+                  "y": 512,
+                  "width": 512,
+                  "height": 512,
+                  "pivot": {
+                    "x": 274,
+                    "y": 255
+                  }
+                }
+              ],
+              "durations": [
+                140,
+                170,
+                210,
+                250,
+                230,
+                400
+              ],
+              "loop": false,
+              "variants": {
+                "blue": "MountedSpearman/source/death.blue.preview.png",
+                "green": "MountedSpearman/source/death.green.preview.png",
+                "purple": "MountedSpearman/source/death.purple.preview.png",
+                "white": "MountedSpearman/source/death.white.preview.png"
+              },
+              "stats": [
+                {
+                  "selectedPixels": 5791
+                },
+                {
+                  "selectedPixels": 6726
+                },
+                {
+                  "selectedPixels": 8068
+                },
+                {
+                  "selectedPixels": 7088
+                },
+                {
+                  "selectedPixels": 6842
+                },
+                {
+                  "selectedPixels": 8266
+                }
+              ]
+            },
+            {
+              "id": "death-thrown",
+              "label": "Death · thrown rider",
+              "source": "../MountedSpearman/Death-Thrown-v2.png",
+              "sourceSha256": "1d8468f68ed77caff58e007417b1e13c45e2feecedeb608ca8346c2a61021a9f",
+              "mask": "MountedSpearman/source/death-thrown.fabric-mask.png",
+              "width": 1536,
+              "height": 1024,
+              "frames": [
+                {
+                  "index": 0,
+                  "x": 0,
+                  "y": 0,
+                  "width": 512,
+                  "height": 512,
+                  "pivot": {
+                    "x": 264,
+                    "y": 265
+                  }
+                },
+                {
+                  "index": 1,
+                  "x": 512,
+                  "y": 0,
+                  "width": 512,
+                  "height": 512,
+                  "pivot": {
+                    "x": 267,
+                    "y": 268
+                  }
+                },
+                {
+                  "index": 2,
+                  "x": 1024,
+                  "y": 0,
+                  "width": 512,
+                  "height": 512,
+                  "pivot": {
+                    "x": 260,
+                    "y": 268
+                  }
+                },
+                {
+                  "index": 3,
+                  "x": 0,
+                  "y": 512,
+                  "width": 512,
+                  "height": 512,
+                  "pivot": {
+                    "x": 263,
+                    "y": 260
+                  }
+                },
+                {
+                  "index": 4,
+                  "x": 512,
+                  "y": 512,
+                  "width": 512,
+                  "height": 512,
+                  "pivot": {
+                    "x": 260,
+                    "y": 259
+                  }
+                },
+                {
+                  "index": 5,
+                  "x": 1024,
+                  "y": 512,
+                  "width": 512,
+                  "height": 512,
+                  "pivot": {
+                    "x": 260,
+                    "y": 260
+                  }
+                }
+              ],
+              "durations": [
+                140,
+                190,
+                220,
+                220,
+                240,
+                400
+              ],
+              "loop": false,
+              "variants": {
+                "blue": "MountedSpearman/source/death-thrown.blue.preview.png",
+                "green": "MountedSpearman/source/death-thrown.green.preview.png",
+                "purple": "MountedSpearman/source/death-thrown.purple.preview.png",
+                "white": "MountedSpearman/source/death-thrown.white.preview.png"
+              },
+              "stats": [
+                {
+                  "selectedPixels": 6230
+                },
+                {
+                  "selectedPixels": 7303
+                },
+                {
+                  "selectedPixels": 8346
+                },
+                {
+                  "selectedPixels": 8403
+                },
+                {
+                  "selectedPixels": 8728
+                },
+                {
+                  "selectedPixels": 8969
+                }
+              ]
+            }
+          ]
+        },
+        {
+          "kind": "runtime",
+          "clips": [
+            {
+              "id": "idle",
+              "label": "Idle",
+              "source": "../../../../../Runtime/Russians/Troops/StoneAge-MountedSpearman/idle.png",
+              "sourceSha256": "a6c6fd428a178d5fc5abe78ca572fa3158fac18e988ff1e29fd0f466864ab0c0",
+              "mask": "MountedSpearman/runtime/idle.fabric-mask.png",
+              "width": 768,
+              "height": 128,
+              "frames": [
+                {
+                  "x": 0,
+                  "y": 0,
+                  "width": 128,
+                  "height": 128,
+                  "pivot": {
+                    "x": 67.5,
+                    "y": 67.5
+                  }
+                },
+                {
+                  "x": 128,
+                  "y": 0,
+                  "width": 128,
+                  "height": 128,
+                  "pivot": {
+                    "x": 64.5,
+                    "y": 68.25
+                  }
+                },
+                {
+                  "x": 256,
+                  "y": 0,
+                  "width": 128,
+                  "height": 128,
+                  "pivot": {
+                    "x": 63,
+                    "y": 68.5
+                  }
+                },
+                {
+                  "x": 384,
+                  "y": 0,
+                  "width": 128,
+                  "height": 128,
+                  "pivot": {
+                    "x": 66.75,
+                    "y": 64.5
+                  }
+                },
+                {
+                  "x": 512,
+                  "y": 0,
+                  "width": 128,
+                  "height": 128,
+                  "pivot": {
+                    "x": 64.25,
+                    "y": 64.25
+                  }
+                },
+                {
+                  "x": 640,
+                  "y": 0,
+                  "width": 128,
+                  "height": 128,
+                  "pivot": {
+                    "x": 63.25,
+                    "y": 64.5
+                  }
+                }
+              ],
+              "durations": [
+                170,
+                170,
+                170,
+                170,
+                170,
+                170
+              ],
+              "loop": true,
+              "variants": {
+                "blue": "MountedSpearman/runtime/idle.blue.preview.png",
+                "green": "MountedSpearman/runtime/idle.green.preview.png",
+                "purple": "MountedSpearman/runtime/idle.purple.preview.png",
+                "white": "MountedSpearman/runtime/idle.white.preview.png"
+              },
+              "stats": [
+                {
+                  "selectedPixels": 418,
+                  "panels": [
+                    138,
+                    169,
+                    98
+                  ]
+                },
+                {
+                  "selectedPixels": 414,
+                  "panels": [
+                    138,
+                    122,
+                    96,
+                    48
+                  ]
+                },
+                {
+                  "selectedPixels": 417,
+                  "panels": [
+                    145,
+                    257
+                  ]
+                },
+                {
+                  "selectedPixels": 430,
+                  "panels": [
+                    140,
+                    171,
+                    56,
+                    49
+                  ]
+                },
+                {
+                  "selectedPixels": 455,
+                  "panels": [
+                    153,
+                    122,
+                    67,
+                    54,
+                    42
+                  ]
+                },
+                {
+                  "selectedPixels": 444,
+                  "panels": [
+                    141,
+                    185,
+                    62,
+                    38
+                  ]
+                }
+              ]
+            },
+            {
+              "id": "running",
+              "label": "Walk",
+              "source": "../../../../../Runtime/Russians/Troops/StoneAge-MountedSpearman/running.png",
+              "sourceSha256": "ed6a6185098359590de750fb0a860292740b4a2b599d8734d608b7fae1343af1",
+              "mask": "MountedSpearman/runtime/running.fabric-mask.png",
+              "width": 768,
+              "height": 128,
+              "frames": [
+                {
+                  "x": 0,
+                  "y": 0,
+                  "width": 128,
+                  "height": 128,
+                  "pivot": {
+                    "x": 69,
+                    "y": 64
+                  }
+                },
+                {
+                  "x": 128,
+                  "y": 0,
+                  "width": 128,
+                  "height": 128,
+                  "pivot": {
+                    "x": 66.5,
+                    "y": 64.25
+                  }
+                },
+                {
+                  "x": 256,
+                  "y": 0,
+                  "width": 128,
+                  "height": 128,
+                  "pivot": {
+                    "x": 66,
+                    "y": 64.25
+                  }
+                },
+                {
+                  "x": 384,
+                  "y": 0,
+                  "width": 128,
+                  "height": 128,
+                  "pivot": {
+                    "x": 66.5,
+                    "y": 63.75
+                  }
+                },
+                {
+                  "x": 512,
+                  "y": 0,
+                  "width": 128,
+                  "height": 128,
+                  "pivot": {
+                    "x": 63.75,
+                    "y": 64
+                  }
+                },
+                {
+                  "x": 640,
+                  "y": 0,
+                  "width": 128,
+                  "height": 128,
+                  "pivot": {
+                    "x": 65.25,
+                    "y": 66.5
+                  }
+                }
+              ],
+              "durations": [
+                150,
+                180,
+                150,
+                150,
+                180,
+                150
+              ],
+              "loop": true,
+              "variants": {
+                "blue": "MountedSpearman/runtime/running.blue.preview.png",
+                "green": "MountedSpearman/runtime/running.green.preview.png",
+                "purple": "MountedSpearman/runtime/running.purple.preview.png",
+                "white": "MountedSpearman/runtime/running.white.preview.png"
+              },
+              "stats": [
+                {
+                  "selectedPixels": 421,
+                  "panels": [
+                    143,
+                    161,
+                    65,
+                    39
+                  ]
+                },
+                {
+                  "selectedPixels": 441,
+                  "panels": [
+                    140,
+                    179,
+                    100
+                  ]
+                },
+                {
+                  "selectedPixels": 428,
+                  "panels": [
+                    140,
+                    116,
+                    150
+                  ]
+                },
+                {
+                  "selectedPixels": 443,
+                  "panels": [
+                    146,
+                    125,
+                    69,
+                    48,
+                    40
+                  ]
+                },
+                {
+                  "selectedPixels": 448,
+                  "panels": [
+                    146,
+                    180,
+                    66,
+                    40
+                  ]
+                },
+                {
+                  "selectedPixels": 437,
+                  "panels": [
+                    138,
+                    179,
+                    61,
+                    38
+                  ]
+                }
+              ]
+            },
+            {
+              "id": "attack",
+              "label": "Spear thrust",
+              "source": "../../../../../Runtime/Russians/Troops/StoneAge-MountedSpearman/attack.png",
+              "sourceSha256": "e9f90c4880361780ddb1475180482631b46bd0f7a7cb67af2bf0f03b1be5500a",
+              "mask": "MountedSpearman/runtime/attack.fabric-mask.png",
+              "width": 768,
+              "height": 128,
+              "frames": [
+                {
+                  "x": 0,
+                  "y": 0,
+                  "width": 128,
+                  "height": 128,
+                  "pivot": {
+                    "x": 66,
+                    "y": 65
+                  }
+                },
+                {
+                  "x": 128,
+                  "y": 0,
+                  "width": 128,
+                  "height": 128,
+                  "pivot": {
+                    "x": 67.5,
+                    "y": 65
+                  }
+                },
+                {
+                  "x": 256,
+                  "y": 0,
+                  "width": 128,
+                  "height": 128,
+                  "pivot": {
+                    "x": 65.25,
+                    "y": 65.25
+                  }
+                },
+                {
+                  "x": 384,
+                  "y": 0,
+                  "width": 128,
+                  "height": 128,
+                  "pivot": {
+                    "x": 66.5,
+                    "y": 63.75
+                  }
+                },
+                {
+                  "x": 512,
+                  "y": 0,
+                  "width": 128,
+                  "height": 128,
+                  "pivot": {
+                    "x": 66.25,
+                    "y": 63.25
+                  }
+                },
+                {
+                  "x": 640,
+                  "y": 0,
+                  "width": 128,
+                  "height": 128,
+                  "pivot": {
+                    "x": 64.75,
+                    "y": 64
+                  }
+                }
+              ],
+              "durations": [
+                140,
+                180,
+                130,
+                90,
+                160,
+                240
+              ],
+              "loop": false,
+              "variants": {
+                "blue": "MountedSpearman/runtime/attack.blue.preview.png",
+                "green": "MountedSpearman/runtime/attack.green.preview.png",
+                "purple": "MountedSpearman/runtime/attack.purple.preview.png",
+                "white": "MountedSpearman/runtime/attack.white.preview.png"
+              },
+              "stats": [
+                {
+                  "selectedPixels": 379,
+                  "panels": [
+                    119,
+                    208,
+                    35
+                  ]
+                },
+                {
+                  "selectedPixels": 406,
+                  "panels": [
+                    89,
+                    111,
+                    198
+                  ]
+                },
+                {
+                  "selectedPixels": 349,
+                  "panels": [
+                    110,
+                    231
+                  ]
+                },
+                {
+                  "selectedPixels": 388,
+                  "panels": [
+                    122,
+                    254
+                  ]
+                },
+                {
+                  "selectedPixels": 413,
+                  "panels": [
+                    76,
+                    110,
+                    210
+                  ]
+                },
+                {
+                  "selectedPixels": 365,
+                  "panels": [
+                    122,
+                    232
+                  ]
+                }
+              ]
+            },
+            {
+              "id": "death",
+              "label": "Death · together",
+              "source": "../../../../../Runtime/Russians/Troops/StoneAge-MountedSpearman/death.png",
+              "sourceSha256": "57e871efe23662ad6a4b25e85fb61ce23e32595c19d7b050511c80d010baaeb3",
+              "mask": "MountedSpearman/runtime/death.fabric-mask.png",
+              "width": 768,
+              "height": 128,
+              "frames": [
+                {
+                  "x": 0,
+                  "y": 0,
+                  "width": 128,
+                  "height": 128,
+                  "pivot": {
+                    "x": 60,
+                    "y": 64.25
+                  }
+                },
+                {
+                  "x": 128,
+                  "y": 0,
+                  "width": 128,
+                  "height": 128,
+                  "pivot": {
+                    "x": 67.25,
+                    "y": 65.75
+                  }
+                },
+                {
+                  "x": 256,
+                  "y": 0,
+                  "width": 128,
+                  "height": 128,
+                  "pivot": {
+                    "x": 70.25,
+                    "y": 67.75
+                  }
+                },
+                {
+                  "x": 384,
+                  "y": 0,
+                  "width": 128,
+                  "height": 128,
+                  "pivot": {
+                    "x": 63.25,
+                    "y": 63
+                  }
+                },
+                {
+                  "x": 512,
+                  "y": 0,
+                  "width": 128,
+                  "height": 128,
+                  "pivot": {
+                    "x": 64,
+                    "y": 63.5
+                  }
+                },
+                {
+                  "x": 640,
+                  "y": 0,
+                  "width": 128,
+                  "height": 128,
+                  "pivot": {
+                    "x": 68.5,
+                    "y": 63.75
+                  }
+                }
+              ],
+              "durations": [
+                140,
+                170,
+                210,
+                250,
+                230,
+                400
+              ],
+              "loop": false,
+              "variants": {
+                "blue": "MountedSpearman/runtime/death.blue.preview.png",
+                "green": "MountedSpearman/runtime/death.green.preview.png",
+                "purple": "MountedSpearman/runtime/death.purple.preview.png",
+                "white": "MountedSpearman/runtime/death.white.preview.png"
+              },
+              "stats": [
+                {
+                  "selectedPixels": 390,
+                  "panels": [
+                    161,
+                    123,
+                    98
+                  ]
+                },
+                {
+                  "selectedPixels": 450,
+                  "panels": [
+                    191,
+                    159,
+                    90
+                  ]
+                },
+                {
+                  "selectedPixels": 543,
+                  "panels": [
+                    377,
+                    156
+                  ]
+                },
+                {
+                  "selectedPixels": 468,
+                  "panels": [
+                    108,
+                    169,
+                    163,
+                    22
+                  ]
+                },
+                {
+                  "selectedPixels": 449,
+                  "panels": [
+                    169,
+                    116,
+                    161
+                  ]
+                },
+                {
+                  "selectedPixels": 550,
+                  "panels": [
+                    218,
+                    168,
+                    157
+                  ]
+                }
+              ]
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "unit": "Scout",
+      "selection": "red woven cap, sleeves, tunic; retain fur, neutral trousers, skin, leather, weapons and horse",
+      "datasets": [
+        {
+          "kind": "source",
+          "clips": [
+            {
+              "id": "idle",
+              "label": "Idle",
+              "source": "../Scout/Idle-Animated-v1.png",
+              "sourceSha256": "47b6602f0662786afac90646b435e28751b49a380ecbf9c8341236477bd35983",
+              "mask": "Scout/source/idle.fabric-mask.png",
+              "width": 1536,
+              "height": 1024,
+              "frames": [
+                {
+                  "index": 0,
+                  "sourceIndex": 0,
+                  "x": 0,
+                  "y": 0,
+                  "width": 512,
+                  "height": 512,
+                  "pivot": {
+                    "x": 254.8,
+                    "y": 254.8
+                  }
+                },
+                {
+                  "index": 1,
+                  "sourceIndex": 1,
+                  "x": 512,
+                  "y": 0,
+                  "width": 512,
+                  "height": 512,
+                  "pivot": {
+                    "x": 254.8,
+                    "y": 254.8
+                  }
+                },
+                {
+                  "index": 2,
+                  "sourceIndex": 2,
+                  "x": 1024,
+                  "y": 0,
+                  "width": 512,
+                  "height": 512,
+                  "pivot": {
+                    "x": 254.8,
+                    "y": 254.8
+                  }
+                },
+                {
+                  "index": 3,
+                  "sourceIndex": 3,
+                  "x": 0,
+                  "y": 512,
+                  "width": 512,
+                  "height": 512,
+                  "pivot": {
+                    "x": 254.8,
+                    "y": 254.8
+                  }
+                },
+                {
+                  "index": 4,
+                  "sourceIndex": 4,
+                  "x": 512,
+                  "y": 512,
+                  "width": 512,
+                  "height": 512,
+                  "pivot": {
+                    "x": 254.8,
+                    "y": 254.8
+                  }
+                },
+                {
+                  "index": 5,
+                  "sourceIndex": 5,
+                  "x": 1024,
+                  "y": 512,
+                  "width": 512,
+                  "height": 512,
+                  "pivot": {
+                    "x": 254.8,
+                    "y": 254.8
+                  }
+                }
+              ],
+              "durations": [
+                170,
+                170,
+                170,
+                170,
+                170,
+                170
+              ],
+              "loop": true,
+              "variants": {
+                "blue": "Scout/source/idle.blue.preview.png",
+                "green": "Scout/source/idle.green.preview.png",
+                "purple": "Scout/source/idle.purple.preview.png",
+                "white": "Scout/source/idle.white.preview.png"
+              },
+              "stats": [
+                {
+                  "selectedPixels": 5291
+                },
+                {
+                  "selectedPixels": 5403
+                },
+                {
+                  "selectedPixels": 5310
+                },
+                {
+                  "selectedPixels": 5336
+                },
+                {
+                  "selectedPixels": 5263
+                },
+                {
+                  "selectedPixels": 5288
+                }
+              ]
+            },
+            {
+              "id": "running",
+              "label": "Walk",
+              "source": "../Scout/Running-v1.png",
+              "sourceSha256": "19666edce66dabfd8a3e01c05ebf268114823991cf796d4b3a53142cc5a1cf33",
+              "mask": "Scout/source/running.fabric-mask.png",
+              "width": 1536,
+              "height": 1024,
+              "frames": [
+                {
+                  "index": 0,
+                  "sourceIndex": 0,
+                  "x": 0,
+                  "y": 0,
+                  "width": 512,
+                  "height": 512,
+                  "pivot": {
+                    "x": 254.8,
+                    "y": 254.8
+                  }
+                },
+                {
+                  "index": 1,
+                  "sourceIndex": 1,
+                  "x": 512,
+                  "y": 0,
+                  "width": 512,
+                  "height": 512,
+                  "pivot": {
+                    "x": 254.8,
+                    "y": 254.8
+                  }
+                },
+                {
+                  "index": 2,
+                  "sourceIndex": 2,
+                  "x": 1024,
+                  "y": 0,
+                  "width": 512,
+                  "height": 512,
+                  "pivot": {
+                    "x": 254.8,
+                    "y": 254.8
+                  }
+                },
+                {
+                  "index": 3,
+                  "sourceIndex": 3,
+                  "x": 0,
+                  "y": 512,
+                  "width": 512,
+                  "height": 512,
+                  "pivot": {
+                    "x": 254.8,
+                    "y": 254.8
+                  }
+                },
+                {
+                  "index": 4,
+                  "sourceIndex": 4,
+                  "x": 512,
+                  "y": 512,
+                  "width": 512,
+                  "height": 512,
+                  "pivot": {
+                    "x": 254.8,
+                    "y": 254.8
+                  }
+                },
+                {
+                  "index": 5,
+                  "sourceIndex": 5,
+                  "x": 1024,
+                  "y": 512,
+                  "width": 512,
+                  "height": 512,
+                  "pivot": {
+                    "x": 254.8,
+                    "y": 254.8
+                  }
+                }
+              ],
+              "durations": [
+                180,
+                180,
+                180,
+                180,
+                180,
+                180
+              ],
+              "loop": true,
+              "variants": {
+                "blue": "Scout/source/running.blue.preview.png",
+                "green": "Scout/source/running.green.preview.png",
+                "purple": "Scout/source/running.purple.preview.png",
+                "white": "Scout/source/running.white.preview.png"
+              },
+              "stats": [
+                {
+                  "selectedPixels": 4661
+                },
+                {
+                  "selectedPixels": 4575
+                },
+                {
+                  "selectedPixels": 4533
+                },
+                {
+                  "selectedPixels": 4666
+                },
+                {
+                  "selectedPixels": 4400
+                },
+                {
+                  "selectedPixels": 4309
+                }
+              ]
+            },
+            {
+              "id": "attack",
+              "label": "Club strike",
+              "source": "../Scout/Attack-v1.png",
+              "sourceSha256": "d4545df3dc222bce013893e92fb2fc1d761041fec6dd54edfba5b839b00cc088",
+              "mask": "Scout/source/attack.fabric-mask.png",
+              "width": 1536,
+              "height": 1024,
+              "frames": [
+                {
+                  "index": 0,
+                  "sourceIndex": 0,
+                  "x": 0,
+                  "y": 0,
+                  "width": 512,
+                  "height": 512,
+                  "pivot": {
+                    "x": 254.8,
+                    "y": 254.8
+                  }
+                },
+                {
+                  "index": 1,
+                  "sourceIndex": 1,
+                  "x": 512,
+                  "y": 0,
+                  "width": 512,
+                  "height": 512,
+                  "pivot": {
+                    "x": 254.8,
+                    "y": 254.8
+                  }
+                },
+                {
+                  "index": 2,
+                  "sourceIndex": 2,
+                  "x": 1024,
+                  "y": 0,
+                  "width": 512,
+                  "height": 512,
+                  "pivot": {
+                    "x": 254.8,
+                    "y": 254.8
+                  }
+                },
+                {
+                  "index": 3,
+                  "sourceIndex": 3,
+                  "x": 0,
+                  "y": 512,
+                  "width": 512,
+                  "height": 512,
+                  "pivot": {
+                    "x": 254.8,
+                    "y": 254.8
+                  }
+                },
+                {
+                  "index": 4,
+                  "sourceIndex": 4,
+                  "x": 512,
+                  "y": 512,
+                  "width": 512,
+                  "height": 512,
+                  "pivot": {
+                    "x": 254.8,
+                    "y": 254.8
+                  }
+                },
+                {
+                  "index": 5,
+                  "sourceIndex": 5,
+                  "x": 1024,
+                  "y": 512,
+                  "width": 512,
+                  "height": 512,
+                  "pivot": {
+                    "x": 254.8,
+                    "y": 254.8
+                  }
+                }
+              ],
+              "durations": [
+                130,
+                180,
+                160,
+                100,
+                180,
+                240
+              ],
+              "loop": false,
+              "variants": {
+                "blue": "Scout/source/attack.blue.preview.png",
+                "green": "Scout/source/attack.green.preview.png",
+                "purple": "Scout/source/attack.purple.preview.png",
+                "white": "Scout/source/attack.white.preview.png"
+              },
+              "stats": [
+                {
+                  "selectedPixels": 5038
+                },
+                {
+                  "selectedPixels": 5269
+                },
+                {
+                  "selectedPixels": 5092
+                },
+                {
+                  "selectedPixels": 5003
+                },
+                {
+                  "selectedPixels": 5316
+                },
+                {
+                  "selectedPixels": 5031
+                }
+              ]
+            },
+            {
+              "id": "hit",
+              "label": "Get hit",
+              "source": "../Scout/Hit-v1.png",
+              "sourceSha256": "5bf534c46342505a9d73da2f8bea35f2617154c112562101609f5cca36521cb3",
+              "mask": "Scout/source/hit.fabric-mask.png",
+              "width": 1536,
+              "height": 1024,
+              "frames": [
+                {
+                  "index": 0,
+                  "sourceIndex": 0,
+                  "x": 0,
+                  "y": 0,
+                  "width": 512,
+                  "height": 512,
+                  "pivot": {
+                    "x": 254.8,
+                    "y": 254.8
+                  }
+                },
+                {
+                  "index": 1,
+                  "sourceIndex": 1,
+                  "x": 512,
+                  "y": 0,
+                  "width": 512,
+                  "height": 512,
+                  "pivot": {
+                    "x": 254.8,
+                    "y": 254.8
+                  }
+                },
+                {
+                  "index": 2,
+                  "sourceIndex": 2,
+                  "x": 1024,
+                  "y": 0,
+                  "width": 512,
+                  "height": 512,
+                  "pivot": {
+                    "x": 254.8,
+                    "y": 254.8
+                  }
+                },
+                {
+                  "index": 3,
+                  "sourceIndex": 3,
+                  "x": 0,
+                  "y": 512,
+                  "width": 512,
+                  "height": 512,
+                  "pivot": {
+                    "x": 254.8,
+                    "y": 254.8
+                  }
+                },
+                {
+                  "index": 4,
+                  "sourceIndex": 4,
+                  "x": 512,
+                  "y": 512,
+                  "width": 512,
+                  "height": 512,
+                  "pivot": {
+                    "x": 254.8,
+                    "y": 254.8
+                  }
+                },
+                {
+                  "index": 5,
+                  "sourceIndex": 5,
+                  "x": 1024,
+                  "y": 512,
+                  "width": 512,
+                  "height": 512,
+                  "pivot": {
+                    "x": 254.8,
+                    "y": 254.8
+                  }
+                }
+              ],
+              "durations": [
+                100,
+                100,
+                130,
+                130,
+                170,
+                180
+              ],
+              "loop": false,
+              "variants": {
+                "blue": "Scout/source/hit.blue.preview.png",
+                "green": "Scout/source/hit.green.preview.png",
+                "purple": "Scout/source/hit.purple.preview.png",
+                "white": "Scout/source/hit.white.preview.png"
+              },
+              "stats": [
+                {
+                  "selectedPixels": 4795
+                },
+                {
+                  "selectedPixels": 6395
+                },
+                {
+                  "selectedPixels": 4949
+                },
+                {
+                  "selectedPixels": 3970
+                },
+                {
+                  "selectedPixels": 4752
+                },
+                {
+                  "selectedPixels": 4934
+                }
+              ]
+            },
+            {
+              "id": "charged",
+              "label": "Get charged",
+              "source": "../Scout/Charged-Impact-v1.png",
+              "sourceSha256": "8c212687f98bd63a937ff9c3c8645e30d6479f1942e811082ded45629c5bcbbc",
+              "mask": "Scout/source/charged.fabric-mask.png",
+              "width": 1536,
+              "height": 1024,
+              "frames": [
+                {
+                  "index": 0,
+                  "sourceIndex": 0,
+                  "x": 0,
+                  "y": 0,
+                  "width": 512,
+                  "height": 512,
+                  "pivot": {
+                    "x": 254.8,
+                    "y": 254.8
+                  }
+                },
+                {
+                  "index": 1,
+                  "sourceIndex": 1,
+                  "x": 512,
+                  "y": 0,
+                  "width": 512,
+                  "height": 512,
+                  "pivot": {
+                    "x": 254.8,
+                    "y": 254.8
+                  }
+                },
+                {
+                  "index": 2,
+                  "sourceIndex": 2,
+                  "x": 1024,
+                  "y": 0,
+                  "width": 512,
+                  "height": 512,
+                  "pivot": {
+                    "x": 254.8,
+                    "y": 254.8
+                  }
+                },
+                {
+                  "index": 3,
+                  "sourceIndex": 3,
+                  "x": 0,
+                  "y": 512,
+                  "width": 512,
+                  "height": 512,
+                  "pivot": {
+                    "x": 254.8,
+                    "y": 254.8
+                  }
+                },
+                {
+                  "index": 4,
+                  "sourceIndex": 4,
+                  "x": 512,
+                  "y": 512,
+                  "width": 512,
+                  "height": 512,
+                  "pivot": {
+                    "x": 254.8,
+                    "y": 254.8
+                  }
+                },
+                {
+                  "index": 5,
+                  "sourceIndex": 5,
+                  "x": 1024,
+                  "y": 512,
+                  "width": 512,
+                  "height": 512,
+                  "pivot": {
+                    "x": 254.8,
+                    "y": 254.8
+                  }
+                }
+              ],
+              "durations": [
+                130,
+                130,
+                180,
+                190,
+                180,
+                240
+              ],
+              "loop": false,
+              "variants": {
+                "blue": "Scout/source/charged.blue.preview.png",
+                "green": "Scout/source/charged.green.preview.png",
+                "purple": "Scout/source/charged.purple.preview.png",
+                "white": "Scout/source/charged.white.preview.png"
+              },
+              "stats": [
+                {
+                  "selectedPixels": 5312
+                },
+                {
+                  "selectedPixels": 5490
+                },
+                {
+                  "selectedPixels": 6612
+                },
+                {
+                  "selectedPixels": 4221
+                },
+                {
+                  "selectedPixels": 5123
+                },
+                {
+                  "selectedPixels": 5349
+                }
+              ]
+            },
+            {
+              "id": "charge",
+              "label": "Gallop / maintain charge",
+              "source": "../Scout/Charge-v1.png",
+              "sourceSha256": "f9e01c644f0f123d4c60e27694ee28f1ba9dce876e750bda0bf90fdf2beff164",
+              "mask": "Scout/source/charge.fabric-mask.png",
+              "width": 1536,
+              "height": 1024,
+              "frames": [
+                {
+                  "index": 0,
+                  "sourceIndex": 0,
+                  "x": 0,
+                  "y": 0,
+                  "width": 512,
+                  "height": 512,
+                  "pivot": {
+                    "x": 254.8,
+                    "y": 254.8
+                  }
+                },
+                {
+                  "index": 1,
+                  "sourceIndex": 1,
+                  "x": 512,
+                  "y": 0,
+                  "width": 512,
+                  "height": 512,
+                  "pivot": {
+                    "x": 254.8,
+                    "y": 254.8
+                  }
+                },
+                {
+                  "index": 2,
+                  "sourceIndex": 2,
+                  "x": 1024,
+                  "y": 0,
+                  "width": 512,
+                  "height": 512,
+                  "pivot": {
+                    "x": 254.8,
+                    "y": 254.8
+                  }
+                },
+                {
+                  "index": 3,
+                  "sourceIndex": 3,
+                  "x": 0,
+                  "y": 512,
+                  "width": 512,
+                  "height": 512,
+                  "pivot": {
+                    "x": 254.8,
+                    "y": 254.8
+                  }
+                },
+                {
+                  "index": 4,
+                  "sourceIndex": 4,
+                  "x": 512,
+                  "y": 512,
+                  "width": 512,
+                  "height": 512,
+                  "pivot": {
+                    "x": 254.8,
+                    "y": 254.8
+                  }
+                },
+                {
+                  "index": 5,
+                  "sourceIndex": 5,
+                  "x": 1024,
+                  "y": 512,
+                  "width": 512,
+                  "height": 512,
+                  "pivot": {
+                    "x": 254.8,
+                    "y": 254.8
+                  }
+                }
+              ],
+              "durations": [
+                100,
+                100,
+                100,
+                100,
+                100,
+                100
+              ],
+              "loop": true,
+              "variants": {
+                "blue": "Scout/source/charge.blue.preview.png",
+                "green": "Scout/source/charge.green.preview.png",
+                "purple": "Scout/source/charge.purple.preview.png",
+                "white": "Scout/source/charge.white.preview.png"
+              },
+              "stats": [
+                {
+                  "selectedPixels": 4328
+                },
+                {
+                  "selectedPixels": 4350
+                },
+                {
+                  "selectedPixels": 4235
+                },
+                {
+                  "selectedPixels": 4312
+                },
+                {
+                  "selectedPixels": 4317
+                },
+                {
+                  "selectedPixels": 4125
+                }
+              ]
+            },
+            {
+              "id": "charge-attack",
+              "label": "Charge attack",
+              "source": "../Scout/Charge-Attack-v1.png",
+              "sourceSha256": "5c168839ba61ec4cedfa9412d42a4fa6879ba306c41cf622a7c19778d7a0838b",
+              "mask": "Scout/source/charge-attack.fabric-mask.png",
+              "width": 1536,
+              "height": 1024,
+              "frames": [
+                {
+                  "index": 0,
+                  "sourceIndex": 0,
+                  "x": 0,
+                  "y": 0,
+                  "width": 512,
+                  "height": 512,
+                  "pivot": {
+                    "x": 254.8,
+                    "y": 254.8
+                  }
+                },
+                {
+                  "index": 1,
+                  "sourceIndex": 1,
+                  "x": 512,
+                  "y": 0,
+                  "width": 512,
+                  "height": 512,
+                  "pivot": {
+                    "x": 254.8,
+                    "y": 254.8
+                  }
+                },
+                {
+                  "index": 2,
+                  "sourceIndex": 2,
+                  "x": 1024,
+                  "y": 0,
+                  "width": 512,
+                  "height": 512,
+                  "pivot": {
+                    "x": 254.8,
+                    "y": 254.8
+                  }
+                },
+                {
+                  "index": 3,
+                  "sourceIndex": 3,
+                  "x": 0,
+                  "y": 512,
+                  "width": 512,
+                  "height": 512,
+                  "pivot": {
+                    "x": 254.8,
+                    "y": 254.8
+                  }
+                },
+                {
+                  "index": 4,
+                  "sourceIndex": 4,
+                  "x": 512,
+                  "y": 512,
+                  "width": 512,
+                  "height": 512,
+                  "pivot": {
+                    "x": 254.8,
+                    "y": 254.8
+                  }
+                },
+                {
+                  "index": 5,
+                  "sourceIndex": 5,
+                  "x": 1024,
+                  "y": 512,
+                  "width": 512,
+                  "height": 512,
+                  "pivot": {
+                    "x": 254.8,
+                    "y": 254.8
+                  }
+                }
+              ],
+              "durations": [
+                130,
+                190,
+                160,
+                100,
+                180,
+                240
+              ],
+              "loop": false,
+              "variants": {
+                "blue": "Scout/source/charge-attack.blue.preview.png",
+                "green": "Scout/source/charge-attack.green.preview.png",
+                "purple": "Scout/source/charge-attack.purple.preview.png",
+                "white": "Scout/source/charge-attack.white.preview.png"
+              },
+              "stats": [
+                {
+                  "selectedPixels": 4867
+                },
+                {
+                  "selectedPixels": 5283
+                },
+                {
+                  "selectedPixels": 5346
+                },
+                {
+                  "selectedPixels": 4364
+                },
+                {
+                  "selectedPixels": 5264
+                },
+                {
+                  "selectedPixels": 4543
+                }
+              ]
+            },
+            {
+              "id": "death",
+              "label": "Death - together fall",
+              "source": "../Scout/Death-Together-v1.png",
+              "sourceSha256": "cb0c93dfaed0162233b8c722070fc96f8c276eba1b2e38ccb92a37726444456d",
+              "mask": "Scout/source/death.fabric-mask.png",
+              "width": 1536,
+              "height": 1024,
+              "frames": [
+                {
+                  "index": 0,
+                  "sourceIndex": 0,
+                  "x": 0,
+                  "y": 0,
+                  "width": 512,
+                  "height": 512,
+                  "pivot": {
+                    "x": 254.8,
+                    "y": 254.8
+                  }
+                },
+                {
+                  "index": 1,
+                  "sourceIndex": 1,
+                  "x": 512,
+                  "y": 0,
+                  "width": 512,
+                  "height": 512,
+                  "pivot": {
+                    "x": 254.8,
+                    "y": 254.8
+                  }
+                },
+                {
+                  "index": 2,
+                  "sourceIndex": 2,
+                  "x": 1024,
+                  "y": 0,
+                  "width": 512,
+                  "height": 512,
+                  "pivot": {
+                    "x": 254.8,
+                    "y": 254.8
+                  }
+                },
+                {
+                  "index": 3,
+                  "sourceIndex": 3,
+                  "x": 0,
+                  "y": 512,
+                  "width": 512,
+                  "height": 512,
+                  "pivot": {
+                    "x": 254.8,
+                    "y": 254.8
+                  }
+                },
+                {
+                  "index": 4,
+                  "sourceIndex": 4,
+                  "x": 512,
+                  "y": 512,
+                  "width": 512,
+                  "height": 512,
+                  "pivot": {
+                    "x": 254.8,
+                    "y": 254.8
+                  }
+                },
+                {
+                  "index": 5,
+                  "sourceIndex": 5,
+                  "x": 1024,
+                  "y": 512,
+                  "width": 512,
+                  "height": 512,
+                  "pivot": {
+                    "x": 254.8,
+                    "y": 254.8
+                  }
+                }
+              ],
+              "durations": [
+                150,
+                180,
+                200,
+                220,
+                260,
+                450
+              ],
+              "loop": false,
+              "variants": {
+                "blue": "Scout/source/death.blue.preview.png",
+                "green": "Scout/source/death.green.preview.png",
+                "purple": "Scout/source/death.purple.preview.png",
+                "white": "Scout/source/death.white.preview.png"
+              },
+              "stats": [
+                {
+                  "selectedPixels": 5112
+                },
+                {
+                  "selectedPixels": 5009
+                },
+                {
+                  "selectedPixels": 4948
+                },
+                {
+                  "selectedPixels": 5044
+                },
+                {
+                  "selectedPixels": 5229
+                },
+                {
+                  "selectedPixels": 5896
+                }
+              ]
+            },
+            {
+              "id": "death-thrown",
+              "label": "Death - thrown rider",
+              "source": "../Scout/Death-Thrown-v2.png",
+              "sourceSha256": "b7b4ec498029641cb543adbc90eb8257066ebf96ec4c6f4bb0d2573ec74cca4b",
+              "mask": "Scout/source/death-thrown.fabric-mask.png",
+              "width": 1536,
+              "height": 1024,
+              "frames": [
+                {
+                  "index": 0,
+                  "sourceIndex": 0,
+                  "x": 0,
+                  "y": 0,
+                  "width": 512,
+                  "height": 512,
+                  "pivot": {
+                    "x": 254.8,
+                    "y": 254.8
+                  }
+                },
+                {
+                  "index": 1,
+                  "sourceIndex": 1,
+                  "x": 512,
+                  "y": 0,
+                  "width": 512,
+                  "height": 512,
+                  "pivot": {
+                    "x": 254.8,
+                    "y": 254.8
+                  }
+                },
+                {
+                  "index": 2,
+                  "sourceIndex": 2,
+                  "x": 1024,
+                  "y": 0,
+                  "width": 512,
+                  "height": 512,
+                  "pivot": {
+                    "x": 254.8,
+                    "y": 254.8
+                  }
+                },
+                {
+                  "index": 3,
+                  "sourceIndex": 3,
+                  "x": 0,
+                  "y": 512,
+                  "width": 512,
+                  "height": 512,
+                  "pivot": {
+                    "x": 254.8,
+                    "y": 254.8
+                  }
+                },
+                {
+                  "index": 4,
+                  "sourceIndex": 4,
+                  "x": 512,
+                  "y": 512,
+                  "width": 512,
+                  "height": 512,
+                  "pivot": {
+                    "x": 254.8,
+                    "y": 254.8
+                  }
+                },
+                {
+                  "index": 5,
+                  "sourceIndex": 5,
+                  "x": 1024,
+                  "y": 512,
+                  "width": 512,
+                  "height": 512,
+                  "pivot": {
+                    "x": 254.8,
+                    "y": 254.8
+                  }
+                }
+              ],
+              "durations": [
+                150,
+                180,
+                210,
+                230,
+                270,
+                450
+              ],
+              "loop": false,
+              "variants": {
+                "blue": "Scout/source/death-thrown.blue.preview.png",
+                "green": "Scout/source/death-thrown.green.preview.png",
+                "purple": "Scout/source/death-thrown.purple.preview.png",
+                "white": "Scout/source/death-thrown.white.preview.png"
+              },
+              "stats": [
+                {
+                  "selectedPixels": 4353
+                },
+                {
+                  "selectedPixels": 4572
+                },
+                {
+                  "selectedPixels": 4313
+                },
+                {
+                  "selectedPixels": 5026
+                },
+                {
+                  "selectedPixels": 4237
+                },
+                {
+                  "selectedPixels": 4231
+                }
+              ]
+            }
+          ]
+        }
+      ],
+      "runtimeStatus": "No runtime set exists; source-only review"
+    }
+  ],
+  "checks": [
+    "source hashes unchanged",
+    "matching source dimensions",
+    "no mask in transparent pixels",
+    "preview alpha unchanged",
+    "unmasked preview pixels byte-identical"
+  ]
+}

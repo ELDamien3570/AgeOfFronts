@@ -1,0 +1,66 @@
+{
+  "folder": "Ships/Napoleonic/Warship/_TO BE DELETED",
+  "created": "2026-10-09T03:15:53.711Z",
+  "files": [
+    {
+      "original": "Ships/Napoleonic/Warship/Attack-Preview.webp",
+      "archived": "Ships/Napoleonic/Warship/_TO BE DELETED/Attack-Preview.webp",
+      "sha256": "92be2236adfed002d64e89987c01b9291806059e2fcb02493d924f6af6cc1858",
+      "size": 803124
+    },
+    {
+      "original": "Ships/Napoleonic/Warship/Generation-Manifest.json",
+      "archived": "Ships/Napoleonic/Warship/_TO BE DELETED/Generation-Manifest.json",
+      "sha256": "2190374be77ba7431d85f2bfc8416e5942fab62711559bd3ebdeadadc4b79571",
+      "size": 3530
+    },
+    {
+      "original": "Ships/Napoleonic/Warship/Idle-Preview.webp",
+      "archived": "Ships/Napoleonic/Warship/_TO BE DELETED/Idle-Preview.webp",
+      "sha256": "71c5610dcade7aa2797a530db896677be7bd533c410163fd9f74de04b4892f98",
+      "size": 797716
+    },
+    {
+      "original": "Ships/Napoleonic/Warship/layers/Hull-Protection.png",
+      "archived": "Ships/Napoleonic/Warship/_TO BE DELETED/layers/Hull-Protection.png",
+      "sha256": "65795a5b91030a2a433dae510d1edf494082a9cfa1153cd94f3797759f68f257",
+      "size": 334
+    },
+    {
+      "original": "Ships/Napoleonic/Warship/layers/Hull.png",
+      "archived": "Ships/Napoleonic/Warship/_TO BE DELETED/layers/Hull.png",
+      "sha256": "9ed3e335221f30074224fb6a382c431734efc0f657871dd654e5d85d6bac575e",
+      "size": 101724
+    },
+    {
+      "original": "Ships/Napoleonic/Warship/Review/Frame-128px.png",
+      "archived": "Ships/Napoleonic/Warship/_TO BE DELETED/Review/Frame-128px.png",
+      "sha256": "8699b01e499ddc61063eb3c6c4466615a0fbb81183cc294449479d3f89fdf140",
+      "size": 12314
+    },
+    {
+      "original": "Ships/Napoleonic/Warship/Review/Frame-48px.png",
+      "archived": "Ships/Napoleonic/Warship/_TO BE DELETED/Review/Frame-48px.png",
+      "sha256": "a910f57856e34344096482c0399a9d32c61f9f79f5dae8fad9c4066f58defb5c",
+      "size": 2515
+    },
+    {
+      "original": "Ships/Napoleonic/Warship/Review/Frame-64px.png",
+      "archived": "Ships/Napoleonic/Warship/_TO BE DELETED/Review/Frame-64px.png",
+      "sha256": "3b65bf58d23b04641404ea94229962fb0077d12ce6b8126ffcc18de2228ad573",
+      "size": 3971
+    },
+    {
+      "original": "Ships/Napoleonic/Warship/Sailing-Preview.webp",
+      "archived": "Ships/Napoleonic/Warship/_TO BE DELETED/Sailing-Preview.webp",
+      "sha256": "986b1831a4972501a91e3f60ce7ad124d50a1ff8f9eead5ae04bf5f1fc7aef32",
+      "size": 806940
+    },
+    {
+      "original": "Ships/Napoleonic/Warship/SourceArt/Warship_Russian_Napoleonic_Generated_v1.png",
+      "archived": "Ships/Napoleonic/Warship/_TO BE DELETED/SourceArt/Warship_Russian_Napoleonic_Generated_v1.png",
+      "sha256": "26c20e8a5aae6e92b2ce693d5785497b6edd2cff796eb86a1a792cf407d0f59f",
+      "size": 1021631
+    }
+  ]
+}

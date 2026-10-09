@@ -1,7 +1,8 @@
 import footLayout from "../../../../Art/Cultures/Russians/Units/StoneAge/Clubman/Formation/formation.json";
 import rangedLayout from "../../../../Art/Cultures/Russians/Units/StoneAge/Javelinist/Formation/formation.json";
 import mountedLayout from "../../../../Art/Cultures/Russians/Units/StoneAge/MountedSpearman/Formation/formation.json";
-import { troopAssetUrl } from "./TroopAssetUrls";
+import type { Projectile } from "../../domain/Definitions";
+import { FIXED, type ArcherVolley, type Snapshot } from "../../Protocol";
 import { squadArtworkPose } from "../CombatEffectsViewModel";
 import { COLORS } from "../FactionColors";
 import {
@@ -12,12 +13,7 @@ import { FormationHeading } from "../FormationHeading";
 import { FormationSoldierMotion } from "../FormationSoldierMotion";
 import { SoldierDrawQueue } from "../SoldierDrawQueue";
 import { SoldierSelectionIndex } from "../SoldierSelectionIndex";
-import {
-  FIXED,
-  type ArcherVolley,
-  type Snapshot,
-} from "../../Protocol";
-import { actorFormationSlots } from "./TroopPacking";
+import { troopAssetUrl } from "./TroopAssetUrls";
 import { TroopChoreography } from "./TroopChoreography";
 import {
   clipFrame,
@@ -27,6 +23,7 @@ import {
   type FormationLayout,
   type ManualFormation,
 } from "./TroopFormationModel";
+import { actorFormationSlots } from "./TroopPacking";
 import { TroopRemains } from "./TroopRemains";
 import {
   javelinThrowTime,
@@ -43,7 +40,13 @@ export interface TroopActorDefinition {
   memberScale: number;
   /** Explicit runtime/source folder, independent of age labels and asset keys. */
   assetRoot?: string;
-  projectile?: "javelin" | "arrow" | "bullet";
+  projectile?: "javelin" | "arrow" | "bullet" | "shell" | "rocket";
+  vehicle?: boolean;
+  members?: number;
+  widthWorld?: number;
+  lengthWorld?: number;
+  releasePoints?: readonly { x: number; y: number }[];
+  facingOffset?: number;
 }
 export interface TroopActorOptions {
   troops: readonly TroopActorDefinition[];
@@ -91,6 +94,7 @@ export class TroopActors {
   >();
   private readonly remains = new TroopRemains();
   private readonly volleys = new TroopVolley();
+  private readonly shells = new TroopVolley();
   private readonly throwers = new Map<number, VolleyThrower[]>();
   private readonly contacts = new Map<
     number,
@@ -122,6 +126,7 @@ export class TroopActors {
     this.contacts.clear();
     this.throwers.clear();
     this.volleys.clear();
+    this.shells.clear();
     this.drawQueue.clear();
     this.selectionIndex.clear();
     this.drawnSoldiers = 0;
@@ -159,7 +164,14 @@ export class TroopActors {
     facing: number,
   ): { x: number; y: number; radius: number }[] | undefined => {
     const troop = this.byDefinitionId.get(squad.definitionId ?? "");
-    const layout = troop && (this.layouts.get(troop.name) ?? (troop.mounted ? mountedLayout : troop.ranged ? rangedLayout : footLayout));
+    const layout =
+      troop &&
+      (this.layouts.get(troop.name) ??
+        (troop.mounted
+          ? mountedLayout
+          : troop.ranged
+            ? rangedLayout
+            : footLayout));
     if (!troop || !layout) return undefined;
     const shape = resolveFormation(
       this.options?.formationForSquad?.(squad) ?? this.formation,
@@ -171,9 +183,12 @@ export class TroopActors {
       troop.mounted,
       shape,
       troop.memberScale,
+      troop,
     );
     const count = Math.ceil(
-      ((troop.mounted ? 6 : 12) * Math.max(0, squad.troops)) / 1000,
+      ((troop.members ?? (troop.mounted ? 6 : 12)) *
+        Math.max(0, squad.troops)) /
+        1000,
     );
     const members = new TroopChoreography(slots, squad.id, 0, count).soldiers(
       0,
@@ -237,6 +252,7 @@ export class TroopActors {
     }
     ctx.restore();
   };
+  private readonly vehicles: Set<string>;
   private readonly troops: readonly TroopActorDefinition[];
   private readonly byDefinitionId: ReadonlyMap<string, TroopActorDefinition>;
   constructor(
@@ -248,8 +264,12 @@ export class TroopActors {
       60,
       options?.reformInPlace,
     );
-    if (!options) throw new Error("TroopActors requires an explicit artwork catalogue");
+    if (!options)
+      throw new Error("TroopActors requires an explicit artwork catalogue");
     this.troops = options.troops;
+    this.vehicles = new Set(
+      this.troops.filter((troop) => troop.vehicle).map((troop) => troop.name),
+    );
     this.byDefinitionId = options.byDefinitionId;
   }
   clear(): void {
@@ -257,6 +277,7 @@ export class TroopActors {
     this.headings.clear();
     this.remains.clear();
     this.volleys.clear();
+    this.shells.clear();
     this.throwers.clear();
     this.contacts.clear();
     this.drawQueue.clear();
@@ -269,14 +290,22 @@ export class TroopActors {
   private readonly loading = new Map<string, Promise<void>>();
   private readonly failed = new Set<string>();
   private async loadEffects(): Promise<void> {
-    return this.effects ??= Promise.all([
-      loadSharedImage(new URL("./assets/StoneAgeJavelin-v1.png", import.meta.url).href),
-      loadSharedImage(new URL("./assets/StoneAgeBloodSplats-v1.png", import.meta.url).href),
-    ]).then(([javelin, blood]) => { this.javelin = javelin; this.blood = blood; this.ready = true; });
+    return (this.effects ??= Promise.all([
+      loadSharedImage(
+        new URL("./assets/StoneAgeJavelin-v1.png", import.meta.url).href,
+      ),
+      loadSharedImage(
+        new URL("./assets/StoneAgeBloodSplats-v1.png", import.meta.url).href,
+      ),
+    ]).then(([javelin, blood]) => {
+      this.javelin = javelin;
+      this.blood = blood;
+      this.ready = true;
+    }));
   }
   /** Fixtures may preload; normal skirmish requests only visible detailed actors. */
   async load(): Promise<void> {
-    await Promise.all(this.troops.map(troop => this.loadActor(troop)));
+    await Promise.all(this.troops.map((troop) => this.loadActor(troop)));
   }
   isLoaded(definitionId: string): boolean {
     const troop = this.byDefinitionId.get(definitionId);
@@ -288,21 +317,35 @@ export class TroopActors {
     if (pending) return pending;
     const task = (async () => {
       const { name } = troop;
-      const root = troop.assetRoot ?? `/Art/Cultures/Russians/Units/${troop.age}/${name}/`;
+      const root =
+        troop.assetRoot ?? `/Art/Cultures/Russians/Units/${troop.age}/${name}/`;
       const [manifestResponse] = await Promise.all([
-        fetch(troopAssetUrl(root + "animations.json")), this.loadEffects(),
+        fetch(troopAssetUrl(root + "animations.json")),
+        this.loadEffects(),
       ]);
       if (!manifestResponse.ok) throw new Error(`Missing ${name} assets`);
       const manifest: ActorManifest = await manifestResponse.json();
-      if (manifest.actorCount !== 1) throw new Error(`${name} must be individual soldier artwork`);
-      const layout: FormationLayout = troop.mounted ? mountedLayout : troop.ranged ? rangedLayout : footLayout;
-      const assets = await Promise.all(["idle", "running", "attack", "death"].map(async id => {
-        const clip = manifest.animations.find(clip => clip.id === id);
-        if (!clip) throw new Error(`Missing ${name} ${id}`);
-        const image = await loadSharedImage(troopAssetUrl(root + clip.file));
-        const baseScale = manifest.animations.find(c => c.id === "idle")?.scale ?? 1;
-        return { id, clip: { ...clip, scale: (clip.scale ?? 1) / baseScale }, image };
-      }));
+      if (manifest.actorCount !== 1)
+        throw new Error(`${name} must be individual soldier artwork`);
+      const layout: FormationLayout = troop.mounted
+        ? mountedLayout
+        : troop.ranged
+          ? rangedLayout
+          : footLayout;
+      const assets = await Promise.all(
+        ["idle", "running", "attack", "death"].map(async (id) => {
+          const clip = manifest.animations.find((clip) => clip.id === id);
+          if (!clip) throw new Error(`Missing ${name} ${id}`);
+          const image = await loadSharedImage(troopAssetUrl(root + clip.file));
+          const baseScale =
+            manifest.animations.find((c) => c.id === "idle")?.scale ?? 1;
+          return {
+            id,
+            clip: { ...clip, scale: (clip.scale ?? 1) / baseScale },
+            image,
+          };
+        }),
+      );
       // Publish atomically: a partially loaded unit never reaches the draw path.
       this.layouts.set(name, layout);
       for (const asset of assets) this.assets.set(`${name}:${asset.id}`, asset);
@@ -317,6 +360,7 @@ export class TroopActors {
     if (!this.detailed) return;
     this.headings.update(snapshot, now);
     this.volleys.prune(snapshot.volleys);
+    this.shells.prune(snapshot.expansion?.projectiles ?? []);
     const squads = new Map(snapshot.squads.map((s) => [s.id, s]));
     const buildings = new Map(snapshot.buildings.map((b) => [b.id, b]));
     this.contacts.clear();
@@ -384,7 +428,8 @@ export class TroopActors {
     height: number,
   ): boolean => {
     const troop = this.byDefinitionId.get(volley.definitionId ?? "");
-    if (!this.detailed || !troop?.ranged || !this.loaded.has(troop.name)) return false;
+    if (!this.detailed || !troop?.ranged || !this.loaded.has(troop.name))
+      return false;
     const clip = this.assets.get(`${troop.name}:attack`)!.clip;
     for (const flight of this.volleys.sample(
       volley,
@@ -392,6 +437,11 @@ export class TroopActors {
       this.throwers.get(volley.squadId) ?? [],
       clip,
       2 / 0.75,
+      troop.releasePoints,
+      troop.facingOffset,
+      troop.projectile !== "bullet" &&
+        troop.projectile !== "shell" &&
+        troop.projectile !== "rocket",
     )) {
       const p = project(flight.x, flight.y);
       if (p.x < -20 || p.y < -20 || p.x > width + 20 || p.y > height + 20)
@@ -418,10 +468,17 @@ export class TroopActors {
           length,
           thickness,
         );
-      } else if (troop.projectile === "bullet") {
+      } else if (
+        troop.projectile === "bullet" ||
+        troop.projectile === "shell" ||
+        troop.projectile === "rocket"
+      ) {
         ctx.strokeStyle = "#f6d786";
         ctx.lineWidth = 1;
-        ctx.beginPath(); ctx.moveTo(-3, 0); ctx.lineTo(2, 0); ctx.stroke();
+        ctx.beginPath();
+        ctx.moveTo(-3, 0);
+        ctx.lineTo(2, 0);
+        ctx.stroke();
       } else {
         ctx.strokeStyle = "#bc9866";
         ctx.lineWidth = 0.8;
@@ -445,6 +502,70 @@ export class TroopActors {
       }
       ctx.restore();
     }
+    return true;
+  };
+  /** Reconstruct cosmetic flights from visible launchers; authoritative impact
+   * timing, target, damage and replication stay on the aggregate projectile. */
+  drawProjectile = (
+    ctx: CanvasRenderingContext2D,
+    projectile: Projectile,
+    tick: number,
+    tileSize: number,
+    project: (x: number, y: number) => { x: number; y: number },
+  ): boolean => {
+    const troop = this.byDefinitionId.get(projectile.definitionId ?? "");
+    if (
+      !this.detailed ||
+      projectile.impacted ||
+      projectile.sourceKind !== "squad" ||
+      !troop ||
+      !this.loaded.has(troop.name)
+    )
+      return false;
+    const throwers = this.throwers.get(projectile.sourceId) ?? [];
+    const volley = {
+      ...projectile,
+      squadId: projectile.sourceId,
+    } as unknown as ArcherVolley;
+    const clip = this.assets.get(`${troop.name}:attack`)!.clip;
+    const flights = this.shells.sample(
+      volley,
+      tick,
+      throwers.map((soldier) => ({ ...soldier, throwing: true })),
+      clip,
+      2 / 0.75,
+      troop.releasePoints,
+      troop.facingOffset,
+      false,
+      projectile.impactTick - projectile.tick,
+    );
+    if (!flights.length) return false;
+    ctx.save();
+    for (const flight of flights) {
+      const p = project(flight.x, flight.y);
+      if (
+        p.x < -20 ||
+        p.y < -20 ||
+        p.x > ctx.canvas.clientWidth + 20 ||
+        p.y > ctx.canvas.clientHeight + 20
+      )
+        continue;
+      ctx.save();
+      ctx.translate(p.x, p.y);
+      ctx.rotate(flight.angle);
+      const length = Math.max(
+        3,
+        tileSize * (troop.projectile === "rocket" ? 0.23 : 0.12),
+      );
+      ctx.strokeStyle = troop.projectile === "rocket" ? "#ffd895" : "#efcf83";
+      ctx.lineWidth = Math.max(1, tileSize * 0.025);
+      ctx.beginPath();
+      ctx.moveTo(-length, 0);
+      ctx.lineTo(0, 0);
+      ctx.stroke();
+      ctx.restore();
+    }
+    ctx.restore();
     return true;
   };
   private captureDeath(
@@ -483,6 +604,10 @@ export class TroopActors {
       key: `${id}:${soldier.id}:${started}`,
       artwork: state.name,
       ...position,
+      angle:
+        position.angle +
+        (this.troops.find((troop) => troop.name === state.name)?.facingOffset ??
+          0),
       size: footprint * soldier.scale,
       started,
       fallDuration,
@@ -512,6 +637,7 @@ export class TroopActors {
     // The existing radius controls footprint; opacity changes independently.
     ctx.imageSmoothingEnabled = true;
     for (const { record, p } of records) {
+      if (this.vehicles.has(record.artwork)) continue;
       if (!record.bloodGrowth) continue;
       const radius = record.size * tileSize * 0.24 * record.bloodGrowth;
       const variant = Math.abs(record.seed) % 4;
@@ -573,24 +699,32 @@ export class TroopActors {
     const troop = this.byDefinitionId.get(squad.definitionId ?? "");
     if (!this.detailed || !troop) return false;
     if (!this.loaded.has(troop.name)) {
-      if (!this.failed.has(troop.name) && !this.loading.has(troop.name)) void this.loadActor(troop).catch(error => {
-        this.failed.add(troop.name);
-        console.error("Individual troop artwork unavailable", troop.name, error);
-      });
+      if (!this.failed.has(troop.name) && !this.loading.has(troop.name))
+        void this.loadActor(troop).catch((error) => {
+          this.failed.add(troop.name);
+          console.error(
+            "Individual troop artwork unavailable",
+            troop.name,
+            error,
+          );
+        });
       return false;
     }
     const name: Name = troop.name;
     const mounted = troop.mounted;
     const ranged = troop.ranged;
-    const soldierCount = troop.mounted ? 6 : 12;
+    const soldierCount = troop.members ?? (troop.mounted ? 6 : 12);
     const shape = resolveFormation(
       this.options?.formationForSquad?.(squad) ??
         (squad.playerId === this.playerId ? this.formation : "line"),
       mounted,
-      !!squad.charge && squad.charge.phase !== "recovery",
+      !troop.vehicle && !!squad.charge && squad.charge.phase !== "recovery",
     );
     const mobile = shape === "mass";
-    const laneTravel = !!this.options?.reformInPlace && squad.order.type === "move" && !squad.charge;
+    const laneTravel =
+      !!this.options?.reformInPlace &&
+      squad.order.type === "move" &&
+      !squad.charge;
     if (mobile) angle = 0;
     const now = this.clock();
     let state = this.motions.get(squad.id);
@@ -610,6 +744,7 @@ export class TroopActors {
             troop.mounted,
             shape,
             troop.memberScale,
+            troop,
           ),
           squad.id,
           now,
@@ -632,6 +767,7 @@ export class TroopActors {
           troop.mounted,
           shape,
           troop.memberScale,
+          troop,
         ),
         now,
       );
@@ -735,7 +871,7 @@ export class TroopActors {
         position.id,
         screenX,
         screenY,
-        position.angle,
+        position.angle + (troop.facingOffset ?? 0),
         size,
         image,
         frame,
@@ -763,10 +899,12 @@ export class TroopActors {
       footprint,
       mounted,
       engaged: mobile ? engagement.engaged : squad.fighting,
-      looseTravel: (mobile || laneTravel) && !engagement.engaged,
-      travelLanes: (mobile || laneTravel) && !engagement.engaged,
+      looseTravel:
+        !troop.vehicle && (mobile || laneTravel) && !engagement.engaged,
+      travelLanes:
+        !troop.vehicle && (mobile || laneTravel) && !engagement.engaged,
       planted,
-      combatFootwork: true,
+      combatFootwork: !troop.vehicle,
       reformInPlace: this.options?.reformInPlace,
     });
     const walking = this.assets.get(`${name}:running`)!.clip;
@@ -776,17 +914,20 @@ export class TroopActors {
     const throwers: VolleyThrower[] = [];
     for (const soldier of soldiers) {
       const moving = soldier.speed > 0.001 || soldier.turning;
-      const clip = moving
-        ? "running"
-        : (
-              ranged
-                ? throwTime !== undefined
-                : soldier.front &&
-                  (soldier.facingError ?? 0) < Math.PI / 6 &&
-                  pose.clip === "attack"
-            )
+      const clip =
+        ranged && throwTime !== undefined
           ? "attack"
-          : "idle";
+          : moving
+            ? "running"
+            : (
+                  ranged
+                    ? throwTime !== undefined
+                    : soldier.front &&
+                      (soldier.facingError ?? 0) < Math.PI / 6 &&
+                      pose.clip === "attack"
+                )
+              ? "attack"
+              : "idle";
       const time =
         clip === "attack"
           ? (throwTime ?? pose.elapsed * 50)

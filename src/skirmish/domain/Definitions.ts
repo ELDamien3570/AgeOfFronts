@@ -413,3 +413,8 @@ export interface MatchEvent {
   age?: Age;
   action?: "offer" | "offer-long-term" | "accept" | "reject" | "renew" | "break" | "end-long-term" | "expire" | "declare" | "withdraw";
 }
+
+/** Anti-cavalry is an infantry role, never a mounted movement family. */
+export function isCavalryTroopClass(value: UnitDefinition["troopClass"]): boolean {
+  return value === "lightCavalry" || value === "heavyCavalry" || value === "rangedCavalry";
+}

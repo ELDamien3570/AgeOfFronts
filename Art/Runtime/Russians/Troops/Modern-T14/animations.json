@@ -1,0 +1,286 @@
+{
+  "actorCount": 1,
+  "animations": [
+    {
+      "id": "idle",
+      "label": "Idle",
+      "file": "idle.png",
+      "loop": true,
+      "scale": 1,
+      "sheetSize": {
+        "width": 512,
+        "height": 512
+      },
+      "durations": [
+        1000
+      ],
+      "frameCount": 1,
+      "description": "Approved stationary idle. Hull, turret, gun and tracks remain still.",
+      "frames": [
+        {
+          "x": 0,
+          "y": 0,
+          "width": 256,
+          "height": 256,
+          "pivot": {
+            "x": 128.0,
+            "y": 128.0
+          }
+        }
+      ],
+      "sha256": "39b7ec64a734aeecf18df16ed771ba9d0c195fb3d2d76c323962ee95a6db51df",
+      "releaseFrame": 0
+    },
+    {
+      "id": "running",
+      "label": "Moving",
+      "file": "running.png",
+      "loop": true,
+      "scale": 1,
+      "durations": [
+        150,
+        150,
+        150,
+        150,
+        150,
+        150
+      ],
+      "frameCount": 6,
+      "description": "Rolling track tread phases; motion stays in place.",
+      "frames": [
+        {
+          "x": 0,
+          "y": 0,
+          "width": 256,
+          "height": 256,
+          "pivot": {
+            "x": 128.0,
+            "y": 128.0
+          }
+        },
+        {
+          "x": 256,
+          "y": 0,
+          "width": 256,
+          "height": 256,
+          "pivot": {
+            "x": 128.0,
+            "y": 128.0
+          }
+        },
+        {
+          "x": 512,
+          "y": 0,
+          "width": 256,
+          "height": 256,
+          "pivot": {
+            "x": 128.0,
+            "y": 128.0
+          }
+        },
+        {
+          "x": 768,
+          "y": 0,
+          "width": 256,
+          "height": 256,
+          "pivot": {
+            "x": 128.0,
+            "y": 128.0
+          }
+        },
+        {
+          "x": 1024,
+          "y": 0,
+          "width": 256,
+          "height": 256,
+          "pivot": {
+            "x": 128.0,
+            "y": 128.0
+          }
+        },
+        {
+          "x": 1280,
+          "y": 0,
+          "width": 256,
+          "height": 256,
+          "pivot": {
+            "x": 128.0,
+            "y": 128.0
+          }
+        }
+      ],
+      "sha256": "81d95370184db254fed6586445dab5551e3f68f7a7833bd3a570447ae53f2bbe",
+      "releaseFrame": 3
+    },
+    {
+      "id": "attack",
+      "label": "Moving and shooting",
+      "file": "attack.png",
+      "loop": true,
+      "scale": 1,
+      "durations": [
+        180,
+        100,
+        120,
+        150,
+        200,
+        250
+      ],
+      "frameCount": 6,
+      "description": "One fixed approved tank. Tread textures advance inside unchanged track outlines; one cannon flash and fading smoke are separate layers. No hull, turret or weapon resizing.",
+      "frames": [
+        {
+          "x": 0,
+          "y": 0,
+          "width": 256,
+          "height": 256,
+          "pivot": {
+            "x": 128.0,
+            "y": 128.0
+          }
+        },
+        {
+          "x": 256,
+          "y": 0,
+          "width": 256,
+          "height": 256,
+          "pivot": {
+            "x": 128.0,
+            "y": 128.0
+          }
+        },
+        {
+          "x": 512,
+          "y": 0,
+          "width": 256,
+          "height": 256,
+          "pivot": {
+            "x": 128.0,
+            "y": 128.0
+          }
+        },
+        {
+          "x": 768,
+          "y": 0,
+          "width": 256,
+          "height": 256,
+          "pivot": {
+            "x": 128.0,
+            "y": 128.0
+          }
+        },
+        {
+          "x": 1024,
+          "y": 0,
+          "width": 256,
+          "height": 256,
+          "pivot": {
+            "x": 128.0,
+            "y": 128.0
+          }
+        },
+        {
+          "x": 1280,
+          "y": 0,
+          "width": 256,
+          "height": 256,
+          "pivot": {
+            "x": 128.0,
+            "y": 128.0
+          }
+        }
+      ],
+      "sha256": "29bafbbbde9fafc7ba4f9e101dd9f5d762d43b27ec40b35dd79111313f3c9114",
+      "releaseFrame": 3
+    },
+    {
+      "id": "death",
+      "label": "Explosion / death",
+      "file": "death.png",
+      "loop": false,
+      "scale": 1,
+      "durations": [
+        120,
+        120,
+        160,
+        220,
+        350,
+        1200
+      ],
+      "frameCount": 6,
+      "description": "Ignition, explosion, smoke clearing, then a charred wreck; holds the final frame.",
+      "frames": [
+        {
+          "x": 0,
+          "y": 0,
+          "width": 256,
+          "height": 256,
+          "pivot": {
+            "x": 128.0,
+            "y": 128.0
+          }
+        },
+        {
+          "x": 256,
+          "y": 0,
+          "width": 256,
+          "height": 256,
+          "pivot": {
+            "x": 128.0,
+            "y": 128.0
+          }
+        },
+        {
+          "x": 512,
+          "y": 0,
+          "width": 256,
+          "height": 256,
+          "pivot": {
+            "x": 128.0,
+            "y": 128.0
+          }
+        },
+        {
+          "x": 768,
+          "y": 0,
+          "width": 256,
+          "height": 256,
+          "pivot": {
+            "x": 128.0,
+            "y": 128.0
+          }
+        },
+        {
+          "x": 1024,
+          "y": 0,
+          "width": 256,
+          "height": 256,
+          "pivot": {
+            "x": 128.0,
+            "y": 128.0
+          }
+        },
+        {
+          "x": 1280,
+          "y": 0,
+          "width": 256,
+          "height": 256,
+          "pivot": {
+            "x": 128.0,
+            "y": 128.0
+          }
+        }
+      ],
+      "sha256": "13b6522dcf51cfdf8cb5d6c49ce6aa456690f6434eb9a6a0d09493fcf5cdd827",
+      "releaseFrame": 3
+    }
+  ],
+  "source": "Art/Cultures/Russians/Units/Modern/T14/animations.json",
+  "metadataHash": "723be3c69827202b14ca4589d31562cd4b4b25d72d129e7044c8a5623f9d280f",
+  "hashes": {
+    "Art/Cultures/Russians/Units/Modern/T14/idle-Registered-v1.png": "39b7ec64a734aeecf18df16ed771ba9d0c195fb3d2d76c323962ee95a6db51df",
+    "Art/Cultures/Russians/Units/Modern/T14/moving-Registered-v1.png": "81d95370184db254fed6586445dab5551e3f68f7a7833bd3a570447ae53f2bbe",
+    "Art/Cultures/Russians/Units/Modern/T14/moving-shooting-Registered-v2.png": "29bafbbbde9fafc7ba4f9e101dd9f5d762d43b27ec40b35dd79111313f3c9114",
+    "Art/Cultures/Russians/Units/Modern/T14/death-Registered-v1.png": "13b6522dcf51cfdf8cb5d6c49ce6aa456690f6434eb9a6a0d09493fcf5cdd827"
+  }
+}

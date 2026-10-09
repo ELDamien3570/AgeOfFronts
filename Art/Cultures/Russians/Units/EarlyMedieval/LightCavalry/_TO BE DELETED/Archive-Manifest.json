@@ -1,0 +1,204 @@
+{
+  "folder": "Units/EarlyMedieval/LightCavalry/_TO BE DELETED",
+  "created": "2026-10-09T03:15:53.711Z",
+  "files": [
+    {
+      "original": "Units/EarlyMedieval/LightCavalry/Browser-Review.json",
+      "archived": "Units/EarlyMedieval/LightCavalry/_TO BE DELETED/Browser-Review.json",
+      "sha256": "0cc2b59624b7462dd396f6700deb2020331cad7e54f4f1cf60aa0d1c41c17ef3",
+      "size": 693
+    },
+    {
+      "original": "Units/EarlyMedieval/LightCavalry/Generation.json",
+      "archived": "Units/EarlyMedieval/LightCavalry/_TO BE DELETED/Generation.json",
+      "sha256": "8d09179effbd990b2492d5caa46fcac7d7c62f88afbe1327935bb8c83e101b24",
+      "size": 24399
+    },
+    {
+      "original": "Units/EarlyMedieval/LightCavalry/Idle-v1.png",
+      "archived": "Units/EarlyMedieval/LightCavalry/_TO BE DELETED/Idle-v1.png",
+      "sha256": "841a7758965efb897d326e6dcff65bd01ba649cfc9b84f34df264793afff15b5",
+      "size": 871084
+    },
+    {
+      "original": "Units/EarlyMedieval/LightCavalry/prepare_idle.py",
+      "archived": "Units/EarlyMedieval/LightCavalry/_TO BE DELETED/prepare_idle.py",
+      "sha256": "b0f1ed2ef1d2f76282eff2cc27c0602b96ab900d48cd1d636d0f49709f6f0fd3",
+      "size": 2747
+    },
+    {
+      "original": "Units/EarlyMedieval/LightCavalry/README.md",
+      "archived": "Units/EarlyMedieval/LightCavalry/_TO BE DELETED/README.md",
+      "sha256": "9e4c4a27f63d0655f1ef7c02976d69412a18b80fc828585f45943541783feb77",
+      "size": 736
+    },
+    {
+      "original": "Units/EarlyMedieval/LightCavalry/SourceArt/Animation-Plan.json",
+      "archived": "Units/EarlyMedieval/LightCavalry/_TO BE DELETED/SourceArt/Animation-Plan.json",
+      "sha256": "688622570aadf11d113e0d27d3017bbf3499027952a062916d7c96048afcc580",
+      "size": 1356
+    },
+    {
+      "original": "Units/EarlyMedieval/LightCavalry/SourceArt/Approved-Idle.json",
+      "archived": "Units/EarlyMedieval/LightCavalry/_TO BE DELETED/SourceArt/Approved-Idle.json",
+      "sha256": "0ed3b367bceda465de3ef6f5214806865e1ea6085e13f17af016552216634402",
+      "size": 189
+    },
+    {
+      "original": "Units/EarlyMedieval/LightCavalry/SourceArt/Before-Animation-animations.json",
+      "archived": "Units/EarlyMedieval/LightCavalry/_TO BE DELETED/SourceArt/Before-Animation-animations.json",
+      "sha256": "89464eb286ac7c0da4f1009b077735d6c8a9e64ce312ef9f948b96a87cfd5ee2",
+      "size": 1650
+    },
+    {
+      "original": "Units/EarlyMedieval/LightCavalry/SourceArt/Before-Animation-Validation.json",
+      "archived": "Units/EarlyMedieval/LightCavalry/_TO BE DELETED/SourceArt/Before-Animation-Validation.json",
+      "sha256": "705a62362fba9036a2fd5773ea476c3f36c8013439d998609836bd6cee173929",
+      "size": 358
+    },
+    {
+      "original": "Units/EarlyMedieval/LightCavalry/SourceArt/compose_animations.py",
+      "archived": "Units/EarlyMedieval/LightCavalry/_TO BE DELETED/SourceArt/compose_animations.py",
+      "sha256": "230b3f055a45b6daec7a1bcb883fa370730876e084a2b42c3675045218ae1cec",
+      "size": 8490
+    },
+    {
+      "original": "Units/EarlyMedieval/LightCavalry/SourceArt/Composition.json",
+      "archived": "Units/EarlyMedieval/LightCavalry/_TO BE DELETED/SourceArt/Composition.json",
+      "sha256": "03c879eab4ac3ed844ff09fd5d2722f85b21a9671175dc178fef43aa7de1606a",
+      "size": 20119
+    },
+    {
+      "original": "Units/EarlyMedieval/LightCavalry/SourceArt/Generation-attack-v1.json",
+      "archived": "Units/EarlyMedieval/LightCavalry/_TO BE DELETED/SourceArt/Generation-attack-v1.json",
+      "sha256": "56d20cc0665871c59a34f0ad28f50f26889acc7d5746f2e739483d3950f1d64d",
+      "size": 2289
+    },
+    {
+      "original": "Units/EarlyMedieval/LightCavalry/SourceArt/Generation-charge-attack-v1.json",
+      "archived": "Units/EarlyMedieval/LightCavalry/_TO BE DELETED/SourceArt/Generation-charge-attack-v1.json",
+      "sha256": "4d1103b3ec2fb29b305af0d953e8927f1236c331f829bb70b4e236376defd678",
+      "size": 2222
+    },
+    {
+      "original": "Units/EarlyMedieval/LightCavalry/SourceArt/Generation-charge-v1.json",
+      "archived": "Units/EarlyMedieval/LightCavalry/_TO BE DELETED/SourceArt/Generation-charge-v1.json",
+      "sha256": "6f993ae9d2d18fa5a0277b20a6c00008a6f477a4b584234aea8f52a2129500ab",
+      "size": 2025
+    },
+    {
+      "original": "Units/EarlyMedieval/LightCavalry/SourceArt/Generation-charged-v1.json",
+      "archived": "Units/EarlyMedieval/LightCavalry/_TO BE DELETED/SourceArt/Generation-charged-v1.json",
+      "sha256": "414a50aaafd0d0bab61b780cc62c23f15371543a03753c3547099795f270d270",
+      "size": 2042
+    },
+    {
+      "original": "Units/EarlyMedieval/LightCavalry/SourceArt/Generation-death-thrown-v1.json",
+      "archived": "Units/EarlyMedieval/LightCavalry/_TO BE DELETED/SourceArt/Generation-death-thrown-v1.json",
+      "sha256": "dd9d10d9351276e32f34c9b795f38d25dfdf7a9d5ede8d56969b0eec11e04030",
+      "size": 2189
+    },
+    {
+      "original": "Units/EarlyMedieval/LightCavalry/SourceArt/Generation-death-thrown-v2.json",
+      "archived": "Units/EarlyMedieval/LightCavalry/_TO BE DELETED/SourceArt/Generation-death-thrown-v2.json",
+      "sha256": "a5fb0d906f4a62e5fae05d016cb6bed473b51d20dec4f81467fe98ed38ce92e0",
+      "size": 1291
+    },
+    {
+      "original": "Units/EarlyMedieval/LightCavalry/SourceArt/Generation-death-v1.json",
+      "archived": "Units/EarlyMedieval/LightCavalry/_TO BE DELETED/SourceArt/Generation-death-v1.json",
+      "sha256": "48c91cbad350a56a87c74a6d1edd943bc440ae7c7c9d78a023ba5af24cc33d2d",
+      "size": 2217
+    },
+    {
+      "original": "Units/EarlyMedieval/LightCavalry/SourceArt/Generation-hit-v1.json",
+      "archived": "Units/EarlyMedieval/LightCavalry/_TO BE DELETED/SourceArt/Generation-hit-v1.json",
+      "sha256": "2163b22600591b9042f56ff325e54bf62eafa3025fb705442858d1957c488880",
+      "size": 2016
+    },
+    {
+      "original": "Units/EarlyMedieval/LightCavalry/SourceArt/Generation-idle-v1.json",
+      "archived": "Units/EarlyMedieval/LightCavalry/_TO BE DELETED/SourceArt/Generation-idle-v1.json",
+      "sha256": "03d48391558bc632926a2513195651794d13c7de1a4c1d6f4f95f6b84b8cfd77",
+      "size": 2037
+    },
+    {
+      "original": "Units/EarlyMedieval/LightCavalry/SourceArt/Generation-running-v1.json",
+      "archived": "Units/EarlyMedieval/LightCavalry/_TO BE DELETED/SourceArt/Generation-running-v1.json",
+      "sha256": "d12ad4e146d54d59b5964e2ae48fd748aeee838c2a53849c63e35ece6a9d242b",
+      "size": 2028
+    },
+    {
+      "original": "Units/EarlyMedieval/LightCavalry/SourceArt/Native-Attack-v1.png",
+      "archived": "Units/EarlyMedieval/LightCavalry/_TO BE DELETED/SourceArt/Native-Attack-v1.png",
+      "sha256": "abca682ecb172965a662dc7f7c3ebe5e806e42fa67c8b3fdd96ce9b556f2d4ff",
+      "size": 2014557
+    },
+    {
+      "original": "Units/EarlyMedieval/LightCavalry/SourceArt/Native-Charge-Attack-v1.png",
+      "archived": "Units/EarlyMedieval/LightCavalry/_TO BE DELETED/SourceArt/Native-Charge-Attack-v1.png",
+      "sha256": "812c4eee8f877e4c89507b09fa70319359eac97d83dbc45a11930881c1eba974",
+      "size": 1971150
+    },
+    {
+      "original": "Units/EarlyMedieval/LightCavalry/SourceArt/Native-Charge-v1.png",
+      "archived": "Units/EarlyMedieval/LightCavalry/_TO BE DELETED/SourceArt/Native-Charge-v1.png",
+      "sha256": "26915c61fbb8db0986ffabb3ce46269d24ca200051c23c467b37b48138248306",
+      "size": 2002139
+    },
+    {
+      "original": "Units/EarlyMedieval/LightCavalry/SourceArt/Native-Charged-Impact-v1.png",
+      "archived": "Units/EarlyMedieval/LightCavalry/_TO BE DELETED/SourceArt/Native-Charged-Impact-v1.png",
+      "sha256": "14fb038edae87507b66909e5c5b4cbc44467037952b494fc63eacebe30af77c3",
+      "size": 2130872
+    },
+    {
+      "original": "Units/EarlyMedieval/LightCavalry/SourceArt/Native-Death-Thrown-v1.png",
+      "archived": "Units/EarlyMedieval/LightCavalry/_TO BE DELETED/SourceArt/Native-Death-Thrown-v1.png",
+      "sha256": "29f1880139349b4f512aa24c8d71e12f22c127af168db7e12da8506010395654",
+      "size": 2141714
+    },
+    {
+      "original": "Units/EarlyMedieval/LightCavalry/SourceArt/Native-Death-Thrown-v2.png",
+      "archived": "Units/EarlyMedieval/LightCavalry/_TO BE DELETED/SourceArt/Native-Death-Thrown-v2.png",
+      "sha256": "b9df5da41eb3d169864c837e62f80867c259d92070c6ba0a2e82b511796b81ae",
+      "size": 2133311
+    },
+    {
+      "original": "Units/EarlyMedieval/LightCavalry/SourceArt/Native-Death-Together-v1.png",
+      "archived": "Units/EarlyMedieval/LightCavalry/_TO BE DELETED/SourceArt/Native-Death-Together-v1.png",
+      "sha256": "989667ac9cdc809905376aa90a717ae2f90cc79f40b1856f6d9835c73c3baf23",
+      "size": 2184791
+    },
+    {
+      "original": "Units/EarlyMedieval/LightCavalry/SourceArt/Native-Hit-v1.png",
+      "archived": "Units/EarlyMedieval/LightCavalry/_TO BE DELETED/SourceArt/Native-Hit-v1.png",
+      "sha256": "acb75aa4703c2ae8f13e24a1b1b9b834e0df700d6baa37e0cf5cefc4e68999cf",
+      "size": 2015784
+    },
+    {
+      "original": "Units/EarlyMedieval/LightCavalry/SourceArt/Native-Idle-Animated-v1.png",
+      "archived": "Units/EarlyMedieval/LightCavalry/_TO BE DELETED/SourceArt/Native-Idle-Animated-v1.png",
+      "sha256": "21650c68a3de40d22411b6d97aa1130ed7659ee4a1caec5cf37ec3836b410152",
+      "size": 2046247
+    },
+    {
+      "original": "Units/EarlyMedieval/LightCavalry/SourceArt/Native-Running-v1.png",
+      "archived": "Units/EarlyMedieval/LightCavalry/_TO BE DELETED/SourceArt/Native-Running-v1.png",
+      "sha256": "cbc2debb9994157e7d1f701d7fc728188fa791b7cbeef6bb41c35df5477fe924",
+      "size": 1949855
+    },
+    {
+      "original": "Units/EarlyMedieval/LightCavalry/SourceArt/prepare_animation_bake.py",
+      "archived": "Units/EarlyMedieval/LightCavalry/_TO BE DELETED/SourceArt/prepare_animation_bake.py",
+      "sha256": "6d0b183d28f1c6e9986ac0fa5eafcdb1a0b8e12cf269144260bf0592770e55ea",
+      "size": 2170
+    },
+    {
+      "original": "Units/EarlyMedieval/LightCavalry/Validation.json",
+      "archived": "Units/EarlyMedieval/LightCavalry/_TO BE DELETED/Validation.json",
+      "sha256": "de274afc1d8562a99777c9634ac977a2890725137f9faed9dd4cd57bd370db81",
+      "size": 31805
+    }
+  ]
+}

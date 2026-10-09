@@ -46,7 +46,7 @@ function cardFor(unit, metadata, definitions, metadataUrl) {
   }
   const clip = { image: null, card, canvas, context: canvas.getContext("2d"), position, definition,
     defaultPivot: metadata.pivot || {x:256,y:256},
-    previewFootprint: model.manifest.data.previewFootprint, failed:false, startedAt:0 };
+    previewFootprint: metadata.reviewFootprint || model.manifest.data.previewFootprint, failed:false, startedAt:0 };
   const replay = document.createElement("button"); replay.type = "button"; replay.textContent = "Replay";
   replay.addEventListener("click", () => {
     clip.startedAt = model.elapsed; model.playing = true; elements.play.textContent = "Pause";
@@ -63,6 +63,8 @@ function cardFor(unit, metadata, definitions, metadataUrl) {
     replay.setAttribute("aria-label", "Replay " + unit.label + " " + label);
     const url = new URL(selected.file, metadataUrl);
     url.searchParams.set("review", String(reviewLoad)); sheet.href = url.href;
+    sheet.textContent = selected.file.split("/").pop();
+    sheet.title = "Open selected " + label + " sheet: " + selected.file;
     if (review) {
       const reviewUrl = new URL(unit.review, model.manifest.url);
       reviewUrl.hash = selected.id; review.href = reviewUrl.href;
@@ -226,8 +228,11 @@ function render(now) {
     else if (clip.image.complete && clip.image.naturalWidth) {
       loaded++; const pivot = frame.pivot || clip.defaultPivot;
       const scale = clip.definition.scale * (clip.previewFootprint ? clip.previewFootprint / frame.width : 1);
+      const scaleX = scale * (clip.definition.scaleX || 1);
+      const scaleY = scale * (clip.definition.scaleY || 1);
+      ctx.imageSmoothingQuality = "high";
       ctx.drawImage(clip.image,frame.x,frame.y,frame.width,frame.height,
-        256-pivot.x*scale,256-pivot.y*scale,frame.width*scale,frame.height*scale);
+        256-pivot.x*scaleX,256-pivot.y*scaleY,frame.width*scaleX,frame.height*scaleY);
     }
     if (elements.pivot.checked) {
       ctx.strokeStyle="#a5dfda"; ctx.lineWidth=1; ctx.beginPath();

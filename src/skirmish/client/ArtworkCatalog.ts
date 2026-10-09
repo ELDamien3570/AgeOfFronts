@@ -1,3 +1,4 @@
+import { UNITS } from "../content/Units";
 import manifest from "../../../Art/Runtime/Ages/manifest.json";
 import russianManifest from "../../../Art/Runtime/Russians/manifest.json";
 import type { BuildingType } from "../Protocol";
@@ -24,6 +25,8 @@ for (const suffix of ["infantry", "archer", "cavalry", "siege", "field-support"]
   legacyRuntime[`napoleonic-${suffix}`] = manifest[`earlymodern-${suffix}`];
   legacyRuntime[`earlymodern-${suffix}`] = manifest[`modern-${suffix}`];
 }
+// Individual cohort actors and explicit icon fallbacks supersede baked atlases.
+for (const unit of UNITS) if (unit.troopClass) delete legacyRuntime[unit.id];
 const russianRuntime: Record<string, ArtworkAsset> = { ...russianManifest };
 export const ARTWORK_CATALOG: Readonly<Record<string, ArtworkAsset>> = {
   ...legacyRuntime,

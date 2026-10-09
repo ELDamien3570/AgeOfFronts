@@ -7,44 +7,49 @@
     {
       "id": "StoneAge",
       "label": "Stone Age",
-      "subtitle": "Single soldiers \u00b7 straight overhead view \u00b7 runtime formations"
+      "subtitle": "Current solo troops and vehicles · straight overhead view"
     },
     {
       "id": "BronzeAge",
       "label": "Bronze Age",
-      "subtitle": "Single soldiers \u00b7 straight overhead view \u00b7 runtime formations"
+      "subtitle": "Current solo troops and vehicles · straight overhead view"
     },
     {
       "id": "ClassicalAge",
       "label": "Classical Age",
-      "subtitle": "Single soldiers \u00b7 straight overhead view \u00b7 runtime formations"
+      "subtitle": "Current solo troops and vehicles · straight overhead view"
     },
     {
       "id": "EarlyMedieval",
       "label": "Early Medieval",
-      "subtitle": "Single soldiers \u00b7 straight overhead view \u00b7 runtime formations"
+      "subtitle": "Current solo troops and vehicles · straight overhead view"
     },
     {
       "id": "LateMedieval",
       "label": "Late Medieval",
-      "subtitle": "Single soldiers \u00b7 straight overhead view \u00b7 runtime formations"
+      "subtitle": "Current solo troops and vehicles · straight overhead view"
     },
     {
       "id": "EarlyModern",
-      "label": "Early Modern",
-      "subtitle": "Single soldiers \u00b7 straight overhead view \u00b7 runtime formations"
+      "label": "Napoleonic",
+      "subtitle": "Current solo troops and vehicles · straight overhead view"
+    },
+    {
+      "id": "PreModern",
+      "label": "Pre-Modern",
+      "subtitle": "Single vehicles · straight overhead view"
     },
     {
       "id": "Modern",
       "label": "Modern Age",
-      "subtitle": "Single soldiers \u00b7 straight overhead view \u00b7 runtime formations"
+      "subtitle": "Current solo troops and vehicles · straight overhead view"
     }
   ],
   "units": [
     {
       "id": "russian-stoneage-clubman",
       "age": "StoneAge",
-      "label": "Russian clubman \u00b7 single soldier",
+      "label": "Russian clubman · single soldier",
       "metadata": "StoneAge/Clubman/animations.json",
       "review": "StoneAge/Clubman/Actor_Review.html",
       "actorCount": 1
@@ -52,7 +57,7 @@
     {
       "id": "russian-stoneage-javelinist",
       "age": "StoneAge",
-      "label": "Russian javelinist \u00b7 single soldier",
+      "label": "Russian javelinist · single soldier",
       "metadata": "StoneAge/Javelinist/TopDownReview/animations.json",
       "review": "StoneAge/Javelinist/TopDownReview/Actor_Review.html",
       "actorCount": 1
@@ -69,7 +74,7 @@
     {
       "id": "russian-bronzeage-axeman",
       "age": "BronzeAge",
-      "label": "Russian bronze axeman - single soldier",
+      "label": "Russian bronze mace warrior - single soldier",
       "metadata": "BronzeAge/BronzeAxeman/animations.json",
       "review": "BronzeAge/BronzeAxeman/Actor_Review.html",
       "actorCount": 1
@@ -77,17 +82,17 @@
     {
       "id": "russian-bronzeage-spearman",
       "age": "BronzeAge",
-      "label": "Russian bronze spearman \u00b7 single soldier",
-      "metadata": "BronzeAge/BronzeSpearman/animations.json",
-      "review": "BronzeAge/BronzeSpearman/Actor_Review.html",
+      "label": "Russian bronze spearman · single soldier",
+      "metadata": "BronzeAge/BronzeSpearman/TopDownReview/animations.json",
+      "review": "BronzeAge/BronzeSpearman/TopDownReview/Actor_Review.html",
       "actorCount": 1
     },
     {
       "id": "russian-bronzeage-river-archer",
       "age": "BronzeAge",
       "label": "Russian Archers - single actor",
-      "metadata": "BronzeAge/RiverArcher/animations.json",
-      "review": "BronzeAge/RiverArcher/Actor_Review.html",
+      "metadata": "BronzeAge/RiverArcher/TopDownReview/animations.json",
+      "review": "BronzeAge/RiverArcher/TopDownReview/Actor_Review.html",
       "actorCount": 1
     },
     {
@@ -110,8 +115,8 @@
       "id": "russian-classicalage-recurve-archer",
       "age": "ClassicalAge",
       "label": "Russian Recurve Bowmen - single actor",
-      "metadata": "ClassicalAge/RecurveArcher/animations.json",
-      "review": "ClassicalAge/RecurveArcher/Actor_Review.html",
+      "metadata": "ClassicalAge/RecurveArcher/TopDownReview/animations.json",
+      "review": "ClassicalAge/RecurveArcher/TopDownReview/Actor_Review.html",
       "actorCount": 1
     },
     {
@@ -204,7 +209,7 @@
     },
     {
       "id": "russian-modern-soviet-dp28-gunner",
-      "age": "Modern",
+      "age": "PreModern",
       "label": "Russian DP-28 Crew - single actor",
       "metadata": "Modern/SovietMachineGunner/animations.json",
       "review": "Modern/SovietMachineGunner/Actor_Review.html",
@@ -259,11 +264,11 @@
       "actorCount": 1
     },
     {
-      "id": "russian-earlymedieval-cossack-rider",
-      "age": "EarlyMedieval",
-      "label": "Russian Cossack Rider - single rider",
-      "metadata": "EarlyMedieval/CossackRider/animations.json",
-      "review": "EarlyMedieval/CossackRider/Actor_Review.html",
+      "id": "russian-napoleonic-cossack-lancer",
+      "age": "EarlyModern",
+      "label": "Russian Cossack Lancer - single rider",
+      "metadata": "Napoleonic/CossackLancer/animations.json",
+      "review": "Napoleonic/CossackLancer/Actor_Review.html",
       "actorCount": 1
     },
     {
@@ -277,7 +282,7 @@
     {
       "id": "russian-latemedieval-cossack-rider",
       "age": "LateMedieval",
-      "label": "Russian Late Medieval Cossack Rider - single rider",
+      "label": "Russian Cossack Rider - single rider",
       "metadata": "LateMedieval/CossackRider/animations.json",
       "review": "LateMedieval/CossackRider/Actor_Review.html",
       "actorCount": 1
@@ -292,7 +297,7 @@
     },
     {
       "id": "russian-modern-machine-gun-truck",
-      "age": "Modern",
+      "age": "PreModern",
       "label": "Soviet Machine Gun Truck - single vehicle",
       "metadata": "Modern/MachineGunTruck/animations.json",
       "review": "Modern/MachineGunTruck/Actor_Review.html",
@@ -300,7 +305,7 @@
     },
     {
       "id": "russian-modern-tsar-tank",
-      "age": "Modern",
+      "age": "PreModern",
       "label": "Russian Tsar Tank - single vehicle",
       "metadata": "Modern/TsarTank/animations.json",
       "review": "Modern/TsarTank/Actor_Review.html",
@@ -308,7 +313,7 @@
     },
     {
       "id": "russian-modern-ptrd-rifleman",
-      "age": "Modern",
+      "age": "PreModern",
       "label": "Russian PTRD Rifleman - single soldier",
       "metadata": "Modern/PTRDRifleman/animations.json",
       "review": "Modern/PTRDRifleman/Actor_Review.html",
@@ -328,6 +333,54 @@
       "label": "Russian K-17 Bumerang - single vehicle",
       "metadata": "Modern/Bumerang/animations.json",
       "review": "Modern/Bumerang/Actor_Review.html",
+      "actorCount": 1
+    },
+    {
+      "id": "russian-earlymodern-mosin-nagant",
+      "age": "PreModern",
+      "label": "Russian Mosin-Nagant rifleman - single soldier",
+      "metadata": "EarlyModern/MosinNagant/animations.json",
+      "review": "EarlyModern/MosinNagant/Actor_Review.html",
+      "actorCount": 1
+    },
+    {
+      "id": "russian-earlymodern-rus-grenadier",
+      "age": "EarlyModern",
+      "label": "Russian Rus Grenadier - single soldier",
+      "metadata": "EarlyModern/RusGrenadier/animations.json",
+      "review": "EarlyModern/RusGrenadier/Actor_Review.html",
+      "actorCount": 1
+    },
+    {
+      "id": "russian-modern-ak47-rifleman",
+      "age": "Modern",
+      "label": "Soviet AK-47 rifleman - single soldier",
+      "metadata": "Modern/SovietAK47Rifleman/animations.json",
+      "review": "Modern/SovietAK47Rifleman/Actor_Review.html",
+      "actorCount": 1
+    },
+    {
+      "id": "russian-modern-t14",
+      "age": "Modern",
+      "label": "Russian T-14 Armata - single vehicle",
+      "metadata": "Modern/T14/animations.json",
+      "review": "Modern/T14/Actor_Review.html",
+      "actorCount": 1
+    },
+    {
+      "id": "russian-modern-tunguska",
+      "age": "Modern",
+      "label": "Russian 2K22 Tunguska - single vehicle",
+      "metadata": "Modern/Tunguska/animations.json",
+      "review": "Modern/Tunguska/Actor_Review.html",
+      "actorCount": 1
+    },
+    {
+      "id": "russian-premodern-t34-85",
+      "age": "PreModern",
+      "label": "Soviet T-34/85 - single vehicle",
+      "metadata": "PreModern/T34-85/animations.json",
+      "review": "PreModern/T34-85/Actor_Review.html",
       "actorCount": 1
     }
   ],

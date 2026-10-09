@@ -1,0 +1,24 @@
+{
+  "folder": "Buildings/BronzeAge/Archery Range/_TO BE DELETED",
+  "created": "2026-10-09T03:15:53.711Z",
+  "files": [
+    {
+      "original": "Buildings/BronzeAge/Archery Range/SourceArt/Icon-v1.png",
+      "archived": "Buildings/BronzeAge/Archery Range/_TO BE DELETED/SourceArt/Icon-v1.png",
+      "sha256": "bc6ced7e49aa700c8e6baaa89446d0e76dbb3a3fe7a20735d3d510142d85b0bf",
+      "size": 2647558
+    },
+    {
+      "original": "Buildings/BronzeAge/Archery Range/SourceArt/Icon-v2.png",
+      "archived": "Buildings/BronzeAge/Archery Range/_TO BE DELETED/SourceArt/Icon-v2.png",
+      "sha256": "dd7ee560500f936c8c16f1ae0db1094523e2c09793048f046b16a46f0ac9112a",
+      "size": 2480698
+    },
+    {
+      "original": "Buildings/BronzeAge/Archery Range/SourceArt/Icon-v3.png",
+      "archived": "Buildings/BronzeAge/Archery Range/_TO BE DELETED/SourceArt/Icon-v3.png",
+      "sha256": "29725750c43b68f6ab4973c0571c3eb80e2f31875a3e65d0de72bae4c878f528",
+      "size": 2411497
+    }
+  ]
+}

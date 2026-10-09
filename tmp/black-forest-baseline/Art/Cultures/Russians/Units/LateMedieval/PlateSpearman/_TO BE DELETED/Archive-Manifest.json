@@ -1,0 +1,282 @@
+{
+  "folder": "Units/LateMedieval/PlateSpearman/_TO BE DELETED",
+  "created": "2026-10-09T03:15:53.711Z",
+  "files": [
+    {
+      "original": "Units/LateMedieval/PlateSpearman/Attack-v1.png",
+      "archived": "Units/LateMedieval/PlateSpearman/_TO BE DELETED/Attack-v1.png",
+      "sha256": "fa895d4de8f92a181112e6896a26b1b1e0106047fb615e1434fb10f6ea79513d",
+      "size": 609433
+    },
+    {
+      "original": "Units/LateMedieval/PlateSpearman/Generation.json",
+      "archived": "Units/LateMedieval/PlateSpearman/_TO BE DELETED/Generation.json",
+      "sha256": "e2665c96e65235f6f248eb33757874acebf9399be1d8e9d4c4f904b8ee8ebd34",
+      "size": 22819
+    },
+    {
+      "original": "Units/LateMedieval/PlateSpearman/Idle-Overhead-v2.png",
+      "archived": "Units/LateMedieval/PlateSpearman/_TO BE DELETED/Idle-Overhead-v2.png",
+      "sha256": "1549fd1e864505219cc3806243fc8abf21e2d3a97ad6edcc86b099106c966aa8",
+      "size": 810633
+    },
+    {
+      "original": "Units/LateMedieval/PlateSpearman/Idle-v1.png",
+      "archived": "Units/LateMedieval/PlateSpearman/_TO BE DELETED/Idle-v1.png",
+      "sha256": "8c26557560d671e8db1077009010c708e01cac6db1ce6451f261285d3f4f5102",
+      "size": 815362
+    },
+    {
+      "original": "Units/LateMedieval/PlateSpearman/README.md",
+      "archived": "Units/LateMedieval/PlateSpearman/_TO BE DELETED/README.md",
+      "sha256": "f2db76aa786bacdaa134547c31aa55cb06516541ebc1afec4d2f7d898433b476",
+      "size": 743
+    },
+    {
+      "original": "Units/LateMedieval/PlateSpearman/Review-All-Animations-v1.jpg",
+      "archived": "Units/LateMedieval/PlateSpearman/_TO BE DELETED/Review-All-Animations-v1.jpg",
+      "sha256": "cda0be6b33f214eef6044151756bc3b916ab1e35eb68b432b184a736b58f19f0",
+      "size": 157859
+    },
+    {
+      "original": "Units/LateMedieval/PlateSpearman/Review-attack-v1.webp",
+      "archived": "Units/LateMedieval/PlateSpearman/_TO BE DELETED/Review-attack-v1.webp",
+      "sha256": "738fa90e10619fda7001e25a96fac428fa90fdaf2d97aceae6cd61cd763b4c87",
+      "size": 86698
+    },
+    {
+      "original": "Units/LateMedieval/PlateSpearman/Review-charge-attack-v1.webp",
+      "archived": "Units/LateMedieval/PlateSpearman/_TO BE DELETED/Review-charge-attack-v1.webp",
+      "sha256": "da71e2f284c3ae20082342a54fdf4d680be1a448d9245b6e0163aebf748e57b8",
+      "size": 89792
+    },
+    {
+      "original": "Units/LateMedieval/PlateSpearman/Review-charge-v1.webp",
+      "archived": "Units/LateMedieval/PlateSpearman/_TO BE DELETED/Review-charge-v1.webp",
+      "sha256": "600fd30446b8e8af54ff5f8d87e1497f63907f0f941f1dbf791bc9cda9a55c3f",
+      "size": 136580
+    },
+    {
+      "original": "Units/LateMedieval/PlateSpearman/Review-charged-v1.webp",
+      "archived": "Units/LateMedieval/PlateSpearman/_TO BE DELETED/Review-charged-v1.webp",
+      "sha256": "5db6c516a5cb9e9091fed763160bb96f20fa783f05c1231dff9e914c1db57dc7",
+      "size": 149804
+    },
+    {
+      "original": "Units/LateMedieval/PlateSpearman/Review-death-back-v1.webp",
+      "archived": "Units/LateMedieval/PlateSpearman/_TO BE DELETED/Review-death-back-v1.webp",
+      "sha256": "d41b114c349a0ba2cacf2761d0cdfed2783014240eef9b0da0b253a53c9ee979",
+      "size": 134682
+    },
+    {
+      "original": "Units/LateMedieval/PlateSpearman/Review-death-v1.webp",
+      "archived": "Units/LateMedieval/PlateSpearman/_TO BE DELETED/Review-death-v1.webp",
+      "sha256": "dfbab3b4d011b0522ec0b4b38980edcca855d9aa7fa10c7e963cd4d2a55c0065",
+      "size": 132506
+    },
+    {
+      "original": "Units/LateMedieval/PlateSpearman/Review-hit-v1.webp",
+      "archived": "Units/LateMedieval/PlateSpearman/_TO BE DELETED/Review-hit-v1.webp",
+      "sha256": "e29d3f1ca904d89f3104224150b1954f868c1ff966cfb3241393dbc1a25ebf2a",
+      "size": 150786
+    },
+    {
+      "original": "Units/LateMedieval/PlateSpearman/Review-Idle-Overhead-v2.jpg",
+      "archived": "Units/LateMedieval/PlateSpearman/_TO BE DELETED/Review-Idle-Overhead-v2.jpg",
+      "sha256": "8a521cc50c3abdc3514c7c7cd7d9804fe95c83b251e70ffc7072b8ae368c55b8",
+      "size": 22411
+    },
+    {
+      "original": "Units/LateMedieval/PlateSpearman/Review-Idle-v1.jpg",
+      "archived": "Units/LateMedieval/PlateSpearman/_TO BE DELETED/Review-Idle-v1.jpg",
+      "sha256": "00613fa641bc07dea4db1ac9841d51e108599ee8d9639ab8b386c0df1115d3d6",
+      "size": 21907
+    },
+    {
+      "original": "Units/LateMedieval/PlateSpearman/Review-idle-v1.webp",
+      "archived": "Units/LateMedieval/PlateSpearman/_TO BE DELETED/Review-idle-v1.webp",
+      "sha256": "782e82e86c583cdb83b0394fddf08cfc3fc655e5d72c9b291eb4a55f12e5d648",
+      "size": 151054
+    },
+    {
+      "original": "Units/LateMedieval/PlateSpearman/Review-running-v1.webp",
+      "archived": "Units/LateMedieval/PlateSpearman/_TO BE DELETED/Review-running-v1.webp",
+      "sha256": "c9aa92b4d6afa9493f069bb6eed502e93dd90de39673b1d8f5cc1e2c57a7e21b",
+      "size": 152002
+    },
+    {
+      "original": "Units/LateMedieval/PlateSpearman/SourceArt/Animation-Generation.json",
+      "archived": "Units/LateMedieval/PlateSpearman/_TO BE DELETED/SourceArt/Animation-Generation.json",
+      "sha256": "e97d95ed95227f7ee30ac9af37d46ab5a8b48a2585ca6048357de11eb8c7ed2a",
+      "size": 20475
+    },
+    {
+      "original": "Units/LateMedieval/PlateSpearman/SourceArt/Approved-Idle.json",
+      "archived": "Units/LateMedieval/PlateSpearman/_TO BE DELETED/SourceArt/Approved-Idle.json",
+      "sha256": "9570abf9a2729eef1f2c0d9b97fc3e576e106741950568069d3cdeca5c022792",
+      "size": 182
+    },
+    {
+      "original": "Units/LateMedieval/PlateSpearman/SourceArt/Before-Animation-Actor_Review.html",
+      "archived": "Units/LateMedieval/PlateSpearman/_TO BE DELETED/SourceArt/Before-Animation-Actor_Review.html",
+      "sha256": "fba8af09367c0ba8e4f6fd6bab40764df7d68ca8f2b7af01aa13f6c34366d05b",
+      "size": 7308
+    },
+    {
+      "original": "Units/LateMedieval/PlateSpearman/SourceArt/Before-Animation-animations.json",
+      "archived": "Units/LateMedieval/PlateSpearman/_TO BE DELETED/SourceArt/Before-Animation-animations.json",
+      "sha256": "84718b28bd38526a799dc504a5bfd29952b867ea975593bccc8ddc29d5ac8057",
+      "size": 1227
+    },
+    {
+      "original": "Units/LateMedieval/PlateSpearman/SourceArt/Before-Animation-Generation.json",
+      "archived": "Units/LateMedieval/PlateSpearman/_TO BE DELETED/SourceArt/Before-Animation-Generation.json",
+      "sha256": "aff6a9db700f253d267302c39b488653fcae250f351852b7ff2eb0ff0a48ddf5",
+      "size": 4248
+    },
+    {
+      "original": "Units/LateMedieval/PlateSpearman/SourceArt/Before-Animation-Validation.json",
+      "archived": "Units/LateMedieval/PlateSpearman/_TO BE DELETED/SourceArt/Before-Animation-Validation.json",
+      "sha256": "9e274c97beab9ccab5ac4eb1378875fa89b9c0818f3798436e0395726c3fa105",
+      "size": 273
+    },
+    {
+      "original": "Units/LateMedieval/PlateSpearman/SourceArt/Before-Approved-Attack-Alias-animations.json",
+      "archived": "Units/LateMedieval/PlateSpearman/_TO BE DELETED/SourceArt/Before-Approved-Attack-Alias-animations.json",
+      "sha256": "d9b9ef1cdcf3460117816d07c7b563607e9757eaea6f4b085dde7057c8b07f62",
+      "size": 17981
+    },
+    {
+      "original": "Units/LateMedieval/PlateSpearman/SourceArt/Before-Approved-Attack-Alias-Generation.json",
+      "archived": "Units/LateMedieval/PlateSpearman/_TO BE DELETED/SourceArt/Before-Approved-Attack-Alias-Generation.json",
+      "sha256": "f46f654b706d3ece8db5455d77e17d1f79da6e17a53498f753f5881fbe9bf561",
+      "size": 22613
+    },
+    {
+      "original": "Units/LateMedieval/PlateSpearman/SourceArt/Before-Approved-Attack-Alias-Validation.json",
+      "archived": "Units/LateMedieval/PlateSpearman/_TO BE DELETED/SourceArt/Before-Approved-Attack-Alias-Validation.json",
+      "sha256": "f66562f2911f21487c749dd1e80e0001d65a53281fc8a4ef8dd80408fec47236",
+      "size": 16587
+    },
+    {
+      "original": "Units/LateMedieval/PlateSpearman/SourceArt/Before-Overhead-v2-animations.json",
+      "archived": "Units/LateMedieval/PlateSpearman/_TO BE DELETED/SourceArt/Before-Overhead-v2-animations.json",
+      "sha256": "a5b537c631826e1393e40686d967bf8f050a9ae949597f0c1532687d53c44b61",
+      "size": 1208
+    },
+    {
+      "original": "Units/LateMedieval/PlateSpearman/SourceArt/Before-Overhead-v2-Generation.json",
+      "archived": "Units/LateMedieval/PlateSpearman/_TO BE DELETED/SourceArt/Before-Overhead-v2-Generation.json",
+      "sha256": "916d454a092f18e3e5dfa173e0e2db3811cdb218f8aa57e7f14bac9a4cd7d266",
+      "size": 2352
+    },
+    {
+      "original": "Units/LateMedieval/PlateSpearman/SourceArt/Before-Overhead-v2-Validation.json",
+      "archived": "Units/LateMedieval/PlateSpearman/_TO BE DELETED/SourceArt/Before-Overhead-v2-Validation.json",
+      "sha256": "4b4007a6adca897d145c5f9412436f5dae3f3e3b78b5902502efd8fc911de4d5",
+      "size": 345
+    },
+    {
+      "original": "Units/LateMedieval/PlateSpearman/SourceArt/Charged-Generation-v2.json",
+      "archived": "Units/LateMedieval/PlateSpearman/_TO BE DELETED/SourceArt/Charged-Generation-v2.json",
+      "sha256": "014e86359d089f7dc6141281bb7aa26e0b4c00fa535c2b9afc7bb6fc54f61aa8",
+      "size": 1366
+    },
+    {
+      "original": "Units/LateMedieval/PlateSpearman/SourceArt/compose_animations.py",
+      "archived": "Units/LateMedieval/PlateSpearman/_TO BE DELETED/SourceArt/compose_animations.py",
+      "sha256": "f355c0b5453ee48d2c5608981d59bdfd896fe16541cc55c71b0df61b50f50573",
+      "size": 6895
+    },
+    {
+      "original": "Units/LateMedieval/PlateSpearman/SourceArt/Composition.json",
+      "archived": "Units/LateMedieval/PlateSpearman/_TO BE DELETED/SourceArt/Composition.json",
+      "sha256": "98fc49c4cd6b205b74ff5e8530cf0625332841e36e796fcfccf6550b666ffa30",
+      "size": 30232
+    },
+    {
+      "original": "Units/LateMedieval/PlateSpearman/SourceArt/Native-Attack-v1.png",
+      "archived": "Units/LateMedieval/PlateSpearman/_TO BE DELETED/SourceArt/Native-Attack-v1.png",
+      "sha256": "b1a442e9e765bf280a0056568fb1a4fc160f4aa6f9c7ad6131f0e658e1bca705",
+      "size": 1681741
+    },
+    {
+      "original": "Units/LateMedieval/PlateSpearman/SourceArt/Native-Charge-Attack-v1.png",
+      "archived": "Units/LateMedieval/PlateSpearman/_TO BE DELETED/SourceArt/Native-Charge-Attack-v1.png",
+      "sha256": "1a696616d765d02100e32a1221b7091658dc89eb17103108c25d8e1f99a14ae4",
+      "size": 1747537
+    },
+    {
+      "original": "Units/LateMedieval/PlateSpearman/SourceArt/Native-Charge-v1.png",
+      "archived": "Units/LateMedieval/PlateSpearman/_TO BE DELETED/SourceArt/Native-Charge-v1.png",
+      "sha256": "ecfa71f6c83e4debc30745cdfef1ec7c5b93593ab75058e73cdbb48dd5c1dbf7",
+      "size": 2082788
+    },
+    {
+      "original": "Units/LateMedieval/PlateSpearman/SourceArt/Native-Charged-v1.png",
+      "archived": "Units/LateMedieval/PlateSpearman/_TO BE DELETED/SourceArt/Native-Charged-v1.png",
+      "sha256": "dd9d8047eda97498d900eea2220e239de06ae0068bbffea1e76b82551a615221",
+      "size": 2077833
+    },
+    {
+      "original": "Units/LateMedieval/PlateSpearman/SourceArt/Native-Charged-v2.png",
+      "archived": "Units/LateMedieval/PlateSpearman/_TO BE DELETED/SourceArt/Native-Charged-v2.png",
+      "sha256": "7b33423f92d99b48b20dddbd0320cd5106d42431253245f0b1fd58d52f9827ec",
+      "size": 2134721
+    },
+    {
+      "original": "Units/LateMedieval/PlateSpearman/SourceArt/Native-Death-Back-v1.png",
+      "archived": "Units/LateMedieval/PlateSpearman/_TO BE DELETED/SourceArt/Native-Death-Back-v1.png",
+      "sha256": "d37737f98ddc84217013ac9e5cf1ac17a2a522979ec964c2ebe689e18ddfb952",
+      "size": 2046918
+    },
+    {
+      "original": "Units/LateMedieval/PlateSpearman/SourceArt/Native-Death-Side-v1.png",
+      "archived": "Units/LateMedieval/PlateSpearman/_TO BE DELETED/SourceArt/Native-Death-Side-v1.png",
+      "sha256": "ac2e130d9235900844ef65bc9764faa7e2e051ef7b28fcc5fe112088e96d47d5",
+      "size": 2029350
+    },
+    {
+      "original": "Units/LateMedieval/PlateSpearman/SourceArt/Native-Hit-v1.png",
+      "archived": "Units/LateMedieval/PlateSpearman/_TO BE DELETED/SourceArt/Native-Hit-v1.png",
+      "sha256": "4480df368aa6c99c16ccbebb8dae21db458b6d9d83a7139312cda6d3dac041ea",
+      "size": 2072942
+    },
+    {
+      "original": "Units/LateMedieval/PlateSpearman/SourceArt/Native-Idle-Animated-v1.png",
+      "archived": "Units/LateMedieval/PlateSpearman/_TO BE DELETED/SourceArt/Native-Idle-Animated-v1.png",
+      "sha256": "09738ae2d6a030bd4161f552be534a3fb4328848e56e85225d000eaa6a03ee36",
+      "size": 2079745
+    },
+    {
+      "original": "Units/LateMedieval/PlateSpearman/SourceArt/Native-Idle-Overhead-v2.png",
+      "archived": "Units/LateMedieval/PlateSpearman/_TO BE DELETED/SourceArt/Native-Idle-Overhead-v2.png",
+      "sha256": "1549fd1e864505219cc3806243fc8abf21e2d3a97ad6edcc86b099106c966aa8",
+      "size": 810633
+    },
+    {
+      "original": "Units/LateMedieval/PlateSpearman/SourceArt/Native-Idle-v1.png",
+      "archived": "Units/LateMedieval/PlateSpearman/_TO BE DELETED/SourceArt/Native-Idle-v1.png",
+      "sha256": "8c26557560d671e8db1077009010c708e01cac6db1ce6451f261285d3f4f5102",
+      "size": 815362
+    },
+    {
+      "original": "Units/LateMedieval/PlateSpearman/SourceArt/Native-Walk-v1.png",
+      "archived": "Units/LateMedieval/PlateSpearman/_TO BE DELETED/SourceArt/Native-Walk-v1.png",
+      "sha256": "f5f446725b3fd29cfe3229f4bad9873f294c56b285adf83aaabd3a9b5599c737",
+      "size": 2080036
+    },
+    {
+      "original": "Units/LateMedieval/PlateSpearman/SourceArt/Overhead-Generation-v2.json",
+      "archived": "Units/LateMedieval/PlateSpearman/_TO BE DELETED/SourceArt/Overhead-Generation-v2.json",
+      "sha256": "e7e03a87be77530dfea87c323c76e66fcf421c1317679380b40fc2b70cbb82e0",
+      "size": 1827
+    },
+    {
+      "original": "Units/LateMedieval/PlateSpearman/Validation.json",
+      "archived": "Units/LateMedieval/PlateSpearman/_TO BE DELETED/Validation.json",
+      "sha256": "d23e357bddbae172ffc1f385beddccddaf25645ea55906340358408be7935ef0",
+      "size": 16715
+    }
+  ]
+}

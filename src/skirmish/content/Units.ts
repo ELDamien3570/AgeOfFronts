@@ -2,6 +2,7 @@ import { FIXED, TICKS_PER_SECOND, type SquadType } from "../Protocol";
 import { damageAmount } from "../domain/Combat";
 import {
   AGES,
+  isCavalryTroopClass,
   type Age,
   type AttackProfile,
   type ProductionRecipe,
@@ -231,7 +232,7 @@ for (const troop of RUSSIAN_RECRUITMENT.units) {
     factor = 1.5 ** index;
   const cls = troop.troopClass as keyof typeof classProfiles,
     stats = classProfiles[cls];
-  const mounted = cls.endsWith("Cavalry"),
+  const mounted = isCavalryTroopClass(cls),
     vehicle = mounted && index >= 6;
   const rangedAttack =
     cls === "rangedInfantry" || cls === "rangedCavalry" || index >= 6;
@@ -339,7 +340,7 @@ for (const troop of RUSSIAN_RECRUITMENT.units) {
         }
       : {}),
   };
-  if (vehicle && cls === "rangedCavalry")
+  if (vehicle && (cls === "rangedCavalry" || cls === "heavyCavalry"))
     unit.attack.projectile = {
       diameter: FIXED / 4,
       speed: FIXED * 2,

@@ -1,8 +1,4 @@
-import {
-  FIXED,
-  type ArcherVolley,
-  type Snapshot,
-} from "../../Protocol";
+import { FIXED, type ArcherVolley, type Snapshot } from "../../Protocol";
 import type { WorldSoldier } from "../FormationSoldierMotion";
 import type { ActorClip } from "./TroopFormationModel";
 
@@ -63,7 +59,7 @@ export class TroopVolley {
   clear(): void {
     this.launches.clear();
   }
-  prune(volleys: readonly ArcherVolley[]): void {
+  prune(volleys: readonly { id: number }[]): void {
     const ids = new Set(volleys.map((volley) => volley.id));
     for (const id of this.launches.keys())
       if (!ids.has(id)) this.launches.delete(id);
@@ -74,47 +70,53 @@ export class TroopVolley {
     throwers: readonly VolleyThrower[],
     clip: ActorClip,
     footprint: number,
+    releasePoints: readonly { x: number; y: number }[] = [
+      { x: 180 / 512, y: 370 / 512 },
+    ],
+    facingOffset = 0,
+    ballistic = true,
+    flightTicks = 12,
   ): FlyingJavelin[] {
-    const progress = (tick - volley.tick) / 12;
+    const progress = (tick - volley.tick) / Math.max(1, flightTicks);
     if (progress < 0 || progress >= 1) return [];
     let launches = this.launches.get(volley.id);
     if (!launches) {
-      const frame = clip.frames[clip.releaseFrame ?? 3];
+      const frame =
+        clip.frames[Math.min(clip.releaseFrame ?? 3, clip.frames.length - 1)];
       // Calibrated against Attack-v3 frame 3: the extended throwing hand.
-      const handX = 180 / 512,
-        handY = 370 / 512;
       const attacking = throwers.filter((soldier) => soldier.throwing);
-      launches = attacking.map((soldier, index) => {
-        const size = footprint * soldier.scale * (clip.scale ?? 1);
-        const localX = (handX - frame.pivot.x / frame.width) * size;
-        const localY = (handY - frame.pivot.y / frame.height) * size;
-        const x =
-          soldier.x +
-          localX * Math.cos(soldier.angle) -
-          localY * Math.sin(soldier.angle);
-        const y =
-          soldier.y +
-          localX * Math.sin(soldier.angle) +
-          localY * Math.cos(soldier.angle);
-        const bearing = Math.atan2(
-          volley.toY / FIXED - y,
-          volley.toX / FIXED - x,
-        );
-        const spread = (index - (attacking.length - 1) / 2) * 0.08;
-        return {
-          soldierId: soldier.id,
-          x,
-          y,
-          toX: volley.toX / FIXED - Math.sin(bearing) * spread,
-          toY: volley.toY / FIXED + Math.cos(bearing) * spread,
-        };
-      });
-      this.launches.set(volley.id, launches);
+      launches = attacking.flatMap((soldier, index) =>
+        releasePoints.map((point) => {
+          const size = footprint * soldier.scale * (clip.scale ?? 1);
+          const localX = (point.x - frame.pivot.x / frame.width) * size;
+          const localY = (point.y - frame.pivot.y / frame.height) * size;
+          const angle = soldier.angle + facingOffset;
+          const x =
+            soldier.x + localX * Math.cos(angle) - localY * Math.sin(angle);
+          const y =
+            soldier.y + localX * Math.sin(angle) + localY * Math.cos(angle);
+          const bearing = Math.atan2(
+            volley.toY / FIXED - y,
+            volley.toX / FIXED - x,
+          );
+          const spread = (index - (attacking.length - 1) / 2) * 0.08;
+          return {
+            soldierId: soldier.id,
+            x,
+            y,
+            toX: volley.toX / FIXED - Math.sin(bearing) * spread,
+            toY: volley.toY / FIXED + Math.cos(bearing) * spread,
+          };
+        }),
+      );
+      // A projectile may arrive before its visible shooter has decoded/drawn.
+      // Do not freeze an empty cache; retry once its actor pose is available.
+      if (launches.length) this.launches.set(volley.id, launches);
     }
     return launches.map((start) => {
       const dx = start.toX - start.x,
         dy = start.toY - start.y;
-      const lift = Math.min(0.55, Math.hypot(dx, dy) / 6);
+      const lift = ballistic ? Math.min(0.55, Math.hypot(dx, dy) / 6) : 0;
       return {
         soldierId: start.soldierId,
         x: start.x + dx * progress,

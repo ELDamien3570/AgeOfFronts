@@ -1,0 +1,18 @@
+{
+  "folder": "Buildings/EarlyModern/City/_TO BE DELETED",
+  "created": "2026-10-09T03:15:53.711Z",
+  "files": [
+    {
+      "original": "Buildings/EarlyModern/City/Generation.json",
+      "archived": "Buildings/EarlyModern/City/_TO BE DELETED/Generation.json",
+      "sha256": "da90e7583ce6be465e5849ab2ef363b8988e795dcb2ec95ee6263df40d806a07",
+      "size": 2809
+    },
+    {
+      "original": "Buildings/EarlyModern/City/SourceArt/Icon-v1.png",
+      "archived": "Buildings/EarlyModern/City/_TO BE DELETED/SourceArt/Icon-v1.png",
+      "sha256": "e542c3c0a0af099dde8bcfc44cafd91791605547290250f49de3815d9699b107",
+      "size": 2763391
+    }
+  ]
+}

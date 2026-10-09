@@ -1,0 +1,24 @@
+{
+  "folder": "Buildings/EarlyModern/Rail Terminal/_TO BE DELETED",
+  "created": "2026-10-09T03:15:53.711Z",
+  "files": [
+    {
+      "original": "Buildings/EarlyModern/Rail Terminal/Generation.json",
+      "archived": "Buildings/EarlyModern/Rail Terminal/_TO BE DELETED/Generation.json",
+      "sha256": "cca6d569f4e1f7efb727a8d3bbc42e85799d544bce4f987c23f8d6b85832f4c6",
+      "size": 4665
+    },
+    {
+      "original": "Buildings/EarlyModern/Rail Terminal/SourceArt/Icon-v1.png",
+      "archived": "Buildings/EarlyModern/Rail Terminal/_TO BE DELETED/SourceArt/Icon-v1.png",
+      "sha256": "5318ba954330ba3e65c75073da8c6fc634006d0c4e5d962488adcd51306ce199",
+      "size": 2625657
+    },
+    {
+      "original": "Buildings/EarlyModern/Rail Terminal/SourceArt/Icon-v2.png",
+      "archived": "Buildings/EarlyModern/Rail Terminal/_TO BE DELETED/SourceArt/Icon-v2.png",
+      "sha256": "a07957e0cd63b11f902633f24daf4df0b5b628f3baece050ca5908ab6004fceb",
+      "size": 2475956
+    }
+  ]
+}

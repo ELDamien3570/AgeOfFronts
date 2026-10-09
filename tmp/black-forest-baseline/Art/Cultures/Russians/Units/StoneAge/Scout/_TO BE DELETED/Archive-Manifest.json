@@ -1,0 +1,222 @@
+{
+  "folder": "Units/StoneAge/Scout/_TO BE DELETED",
+  "created": "2026-10-09T03:15:53.711Z",
+  "files": [
+    {
+      "original": "Units/StoneAge/Scout/Browser-Review.json",
+      "archived": "Units/StoneAge/Scout/_TO BE DELETED/Browser-Review.json",
+      "sha256": "415f4584f38569e43e70994ada0825f20bca999d265f7bcecd352e3d41aa14d6",
+      "size": 508
+    },
+    {
+      "original": "Units/StoneAge/Scout/Generation.json",
+      "archived": "Units/StoneAge/Scout/_TO BE DELETED/Generation.json",
+      "sha256": "8087ec53c5ec5670ff3ef0fcd7004b911b389eed6b1443904e119347bc9fa311",
+      "size": 26393
+    },
+    {
+      "original": "Units/StoneAge/Scout/Idle-v1.png",
+      "archived": "Units/StoneAge/Scout/_TO BE DELETED/Idle-v1.png",
+      "sha256": "49ba425921a3dfbaeec92a0521ebc4e8350184a4c971dca5b01c233dd98f1661",
+      "size": 790460
+    },
+    {
+      "original": "Units/StoneAge/Scout/README.md",
+      "archived": "Units/StoneAge/Scout/_TO BE DELETED/README.md",
+      "sha256": "949664d9b9328762ec5ca4673164e0f6b0455abc43e50930eaf6362ac9e61061",
+      "size": 1540
+    },
+    {
+      "original": "Units/StoneAge/Scout/Review-Animations-v1.png",
+      "archived": "Units/StoneAge/Scout/_TO BE DELETED/Review-Animations-v1.png",
+      "sha256": "a15a12752157cdff021262d8d207fbb7506cc1e08854feeccff157ccc703e0ca",
+      "size": 77046
+    },
+    {
+      "original": "Units/StoneAge/Scout/Review-Death-Thrown-v2.png",
+      "archived": "Units/StoneAge/Scout/_TO BE DELETED/Review-Death-Thrown-v2.png",
+      "sha256": "42592b2fd455e45694c170003b093b8d73b84d75caecb2381ccd4de40c9680f5",
+      "size": 80023
+    },
+    {
+      "original": "Units/StoneAge/Scout/Review-Idle-v1.png",
+      "archived": "Units/StoneAge/Scout/_TO BE DELETED/Review-Idle-v1.png",
+      "sha256": "c545b69e03507727a5c024e6ef0202b16abf1d711346df3796c2d0590afca91f",
+      "size": 71526
+    },
+    {
+      "original": "Units/StoneAge/Scout/SourceArt/Animation-Plan.json",
+      "archived": "Units/StoneAge/Scout/_TO BE DELETED/SourceArt/Animation-Plan.json",
+      "sha256": "eedbdb1f3a2f997e036fc394b4300823a57d989a6eecbe7b8cee2394d0acc574",
+      "size": 5566
+    },
+    {
+      "original": "Units/StoneAge/Scout/SourceArt/Approved-Idle.json",
+      "archived": "Units/StoneAge/Scout/_TO BE DELETED/SourceArt/Approved-Idle.json",
+      "sha256": "1ae3a474a39b67e5b82802377811da455c00628bb35d0bd98e526d17f467a755",
+      "size": 189
+    },
+    {
+      "original": "Units/StoneAge/Scout/SourceArt/Before-Animation-animations.json",
+      "archived": "Units/StoneAge/Scout/_TO BE DELETED/SourceArt/Before-Animation-animations.json",
+      "sha256": "48997f47737627bac0b62946484591c30248303509216d8a65e0d0a44bcaebc2",
+      "size": 1689
+    },
+    {
+      "original": "Units/StoneAge/Scout/SourceArt/Before-Animation-Browser-Review.json",
+      "archived": "Units/StoneAge/Scout/_TO BE DELETED/SourceArt/Before-Animation-Browser-Review.json",
+      "sha256": "c6700455abfcc5a77d82c437e851adc978c362c04a1374667d4c1517096e48ac",
+      "size": 342
+    },
+    {
+      "original": "Units/StoneAge/Scout/SourceArt/Before-Animation-Validation.json",
+      "archived": "Units/StoneAge/Scout/_TO BE DELETED/SourceArt/Before-Animation-Validation.json",
+      "sha256": "3086304d570b3cf9f2c44083f9dcccac4e5a64ac2d86f8358b293701ed0bb767",
+      "size": 523
+    },
+    {
+      "original": "Units/StoneAge/Scout/SourceArt/compose_animations.py",
+      "archived": "Units/StoneAge/Scout/_TO BE DELETED/SourceArt/compose_animations.py",
+      "sha256": "5f4d53be80c5912213271c97fd47ca4310d43b589edde75d4056f1d1cfc72ce4",
+      "size": 8119
+    },
+    {
+      "original": "Units/StoneAge/Scout/SourceArt/Composition.json",
+      "archived": "Units/StoneAge/Scout/_TO BE DELETED/SourceArt/Composition.json",
+      "sha256": "cc3f9f9bf6736197092878ab7985e9086e196b772e3fef3b13d442d406c5bec7",
+      "size": 20119
+    },
+    {
+      "original": "Units/StoneAge/Scout/SourceArt/Generation-attack-v1.json",
+      "archived": "Units/StoneAge/Scout/_TO BE DELETED/SourceArt/Generation-attack-v1.json",
+      "sha256": "f670e633989a6051d2914ac13badf60036574bf6d0ff71b1a1a5914f37489630",
+      "size": 2385
+    },
+    {
+      "original": "Units/StoneAge/Scout/SourceArt/Generation-charge-attack-v1.json",
+      "archived": "Units/StoneAge/Scout/_TO BE DELETED/SourceArt/Generation-charge-attack-v1.json",
+      "sha256": "c5c8f1f552035ec6655c9b0d2285d562afd1558c472b409b398ad7eaea6ebfa5",
+      "size": 2339
+    },
+    {
+      "original": "Units/StoneAge/Scout/SourceArt/Generation-charge-v1.json",
+      "archived": "Units/StoneAge/Scout/_TO BE DELETED/SourceArt/Generation-charge-v1.json",
+      "sha256": "40bfcfd9c158c4cc852b5b2b5dda38fa971b3fbec060ae67e162a2e3c1d2a732",
+      "size": 3039
+    },
+    {
+      "original": "Units/StoneAge/Scout/SourceArt/Generation-charged-v1.json",
+      "archived": "Units/StoneAge/Scout/_TO BE DELETED/SourceArt/Generation-charged-v1.json",
+      "sha256": "64fb3391b1bb86e641b1c4e09ef9c64e31ba7dc8fae7e878a3413fef534feb47",
+      "size": 2232
+    },
+    {
+      "original": "Units/StoneAge/Scout/SourceArt/Generation-death-thrown-v1.json",
+      "archived": "Units/StoneAge/Scout/_TO BE DELETED/SourceArt/Generation-death-thrown-v1.json",
+      "sha256": "b7c9d64cff97f29538633bb5f304cfd0c1d375e1c6f5c5f1c04e4a47f4f1f8db",
+      "size": 2557
+    },
+    {
+      "original": "Units/StoneAge/Scout/SourceArt/Generation-death-thrown-v2.json",
+      "archived": "Units/StoneAge/Scout/_TO BE DELETED/SourceArt/Generation-death-thrown-v2.json",
+      "sha256": "bd005a9289ab43b6d9fdfab18ca051ceb0f27d95dea1953f8072b07f3019894c",
+      "size": 1438
+    },
+    {
+      "original": "Units/StoneAge/Scout/SourceArt/Generation-death-v1.json",
+      "archived": "Units/StoneAge/Scout/_TO BE DELETED/SourceArt/Generation-death-v1.json",
+      "sha256": "648237cb4c7d67f257eb3e5862fb9c5c9429fb81033aa1da294daced495c85d2",
+      "size": 2440
+    },
+    {
+      "original": "Units/StoneAge/Scout/SourceArt/Generation-hit-v1.json",
+      "archived": "Units/StoneAge/Scout/_TO BE DELETED/SourceArt/Generation-hit-v1.json",
+      "sha256": "4b534dc44a5735d01425b9ae4b2c6d247501a36dc4eb49fee1b95cf080b06a4c",
+      "size": 1965
+    },
+    {
+      "original": "Units/StoneAge/Scout/SourceArt/Generation-idle-v1.json",
+      "archived": "Units/StoneAge/Scout/_TO BE DELETED/SourceArt/Generation-idle-v1.json",
+      "sha256": "d7fc480556a59d3e211c72272000314e408fb5cf21b7a4e9cff889a91d046f64",
+      "size": 2026
+    },
+    {
+      "original": "Units/StoneAge/Scout/SourceArt/Generation-running-v1.json",
+      "archived": "Units/StoneAge/Scout/_TO BE DELETED/SourceArt/Generation-running-v1.json",
+      "sha256": "5aec860319bf11cfcb8c07b7689a31e4311d729b774f89c934d1c242224f8600",
+      "size": 2517
+    },
+    {
+      "original": "Units/StoneAge/Scout/SourceArt/Native-Attack-v1.png",
+      "archived": "Units/StoneAge/Scout/_TO BE DELETED/SourceArt/Native-Attack-v1.png",
+      "sha256": "d9f6d98ee115f78efc57d124c38845ceb65891548d98a699a196c427b57d7773",
+      "size": 2012223
+    },
+    {
+      "original": "Units/StoneAge/Scout/SourceArt/Native-Charge-Attack-v1.png",
+      "archived": "Units/StoneAge/Scout/_TO BE DELETED/SourceArt/Native-Charge-Attack-v1.png",
+      "sha256": "4cc814a79f053a21c4fdc1a72c3bb9cb5f0707a388e79e9082a08c9cf6aeb551",
+      "size": 2018397
+    },
+    {
+      "original": "Units/StoneAge/Scout/SourceArt/Native-Charge-v1.png",
+      "archived": "Units/StoneAge/Scout/_TO BE DELETED/SourceArt/Native-Charge-v1.png",
+      "sha256": "db7f2bb4a58ed792dbd04d4e1d8448f8966be1b18d737da5082284c171100004",
+      "size": 1941670
+    },
+    {
+      "original": "Units/StoneAge/Scout/SourceArt/Native-Charged-Impact-v1.png",
+      "archived": "Units/StoneAge/Scout/_TO BE DELETED/SourceArt/Native-Charged-Impact-v1.png",
+      "sha256": "2217a8b55c3a616e0def4afe4f92ee4bd08af08f7c677bfc254da1790b95740f",
+      "size": 2063779
+    },
+    {
+      "original": "Units/StoneAge/Scout/SourceArt/Native-Death-Thrown-v1.png",
+      "archived": "Units/StoneAge/Scout/_TO BE DELETED/SourceArt/Native-Death-Thrown-v1.png",
+      "sha256": "a923b867aca11924a47c47a9a98b422c8e083123d972f58eb8355ec8070af378",
+      "size": 2140137
+    },
+    {
+      "original": "Units/StoneAge/Scout/SourceArt/Native-Death-Thrown-v2.png",
+      "archived": "Units/StoneAge/Scout/_TO BE DELETED/SourceArt/Native-Death-Thrown-v2.png",
+      "sha256": "3b96e181c3e4cdf26ce642f2a3328597f2a061f8678c89165fa863a14a1a41e7",
+      "size": 2164844
+    },
+    {
+      "original": "Units/StoneAge/Scout/SourceArt/Native-Death-Together-v1.png",
+      "archived": "Units/StoneAge/Scout/_TO BE DELETED/SourceArt/Native-Death-Together-v1.png",
+      "sha256": "9e228873cf4ececd1184b91cc157b629b9a069cc68f428255217c3fe2d8fd626",
+      "size": 2236525
+    },
+    {
+      "original": "Units/StoneAge/Scout/SourceArt/Native-Hit-v1.png",
+      "archived": "Units/StoneAge/Scout/_TO BE DELETED/SourceArt/Native-Hit-v1.png",
+      "sha256": "2195fa98cd8e431cf26dca419138f2d1a0cd50cf4ba85dd346e08ee954601eea",
+      "size": 2020019
+    },
+    {
+      "original": "Units/StoneAge/Scout/SourceArt/Native-Idle-Animated-v1.png",
+      "archived": "Units/StoneAge/Scout/_TO BE DELETED/SourceArt/Native-Idle-Animated-v1.png",
+      "sha256": "89192d63f89c80dca34f6cc1d5fab3c9b8b9b323763c9029687c62bf177ae072",
+      "size": 2015381
+    },
+    {
+      "original": "Units/StoneAge/Scout/SourceArt/Native-Running-v1.png",
+      "archived": "Units/StoneAge/Scout/_TO BE DELETED/SourceArt/Native-Running-v1.png",
+      "sha256": "ced3d20b32b2ffc1c40014c55d6a8a8039a519aeeca855fc4bb62781a33655b1",
+      "size": 1945303
+    },
+    {
+      "original": "Units/StoneAge/Scout/SourceArt/Previous-Cavalry-Catalog.json",
+      "archived": "Units/StoneAge/Scout/_TO BE DELETED/SourceArt/Previous-Cavalry-Catalog.json",
+      "sha256": "3c192a3cc163fe50d8b0def6d87853e9663af3203a42a51fc9c8d76a040155c4",
+      "size": 271
+    },
+    {
+      "original": "Units/StoneAge/Scout/Validation.json",
+      "archived": "Units/StoneAge/Scout/_TO BE DELETED/Validation.json",
+      "sha256": "679249294c0920e883a3f7dd78f410dcb3dbbbbffeaaad51e71ae10548cd1381",
+      "size": 31839
+    }
+  ]
+}

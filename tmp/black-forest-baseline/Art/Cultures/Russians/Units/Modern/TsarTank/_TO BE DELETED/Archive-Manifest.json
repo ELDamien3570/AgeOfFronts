@@ -1,0 +1,174 @@
+{
+  "folder": "Units/Modern/TsarTank/_TO BE DELETED",
+  "created": "2026-10-09T03:15:53.711Z",
+  "files": [
+    {
+      "original": "Units/Modern/TsarTank/Browser-Review.json",
+      "archived": "Units/Modern/TsarTank/_TO BE DELETED/Browser-Review.json",
+      "sha256": "22b8a63bf96fe4120736e4edae6938f5dc0f3d65893b6b9702104ae7122ccdab",
+      "size": 951
+    },
+    {
+      "original": "Units/Modern/TsarTank/death-Registered-v1.png",
+      "archived": "Units/Modern/TsarTank/_TO BE DELETED/death-Registered-v1.png",
+      "sha256": "05d6822f600612680c3ddae01bb09a88011bad2fac796f7d62891864370c3ed8",
+      "size": 759951
+    },
+    {
+      "original": "Units/Modern/TsarTank/Generation.json",
+      "archived": "Units/Modern/TsarTank/_TO BE DELETED/Generation.json",
+      "sha256": "9caaba67091ed3337cee7f08d53646bc9b6c5a1bd54ddf33acb2ae9576ac93b4",
+      "size": 11724
+    },
+    {
+      "original": "Units/Modern/TsarTank/prepare_idle.py",
+      "archived": "Units/Modern/TsarTank/_TO BE DELETED/prepare_idle.py",
+      "sha256": "7b6d402854b8c188ea6c8321308a7daaf3ff33846fc7ca556f48bb21aaeac312",
+      "size": 4566
+    },
+    {
+      "original": "Units/Modern/TsarTank/SourceArt/Approved-Idle.json",
+      "archived": "Units/Modern/TsarTank/_TO BE DELETED/SourceArt/Approved-Idle.json",
+      "sha256": "8de5f78d0ebf66904e8dca1f2f329e60116cb619634292e059cb872378d73f1f",
+      "size": 191
+    },
+    {
+      "original": "Units/Modern/TsarTank/SourceArt/Before-Animation-Actor_Review.html",
+      "archived": "Units/Modern/TsarTank/_TO BE DELETED/SourceArt/Before-Animation-Actor_Review.html",
+      "sha256": "f6697d4c8908977e154125c4f20ef01b36b16d9cc81e539643dffbdd73fb2289",
+      "size": 7291
+    },
+    {
+      "original": "Units/Modern/TsarTank/SourceArt/Before-Animation-animations.json",
+      "archived": "Units/Modern/TsarTank/_TO BE DELETED/SourceArt/Before-Animation-animations.json",
+      "sha256": "89b667c7b9a1b7de5d55ccc7883d6dfc64e4ffc47ed0c3794100d63ceaeb9c07",
+      "size": 1788
+    },
+    {
+      "original": "Units/Modern/TsarTank/SourceArt/Before-Animation-Browser-Review.json",
+      "archived": "Units/Modern/TsarTank/_TO BE DELETED/SourceArt/Before-Animation-Browser-Review.json",
+      "sha256": "856b3619b099e29571d431c7e54007498e0b3145ec847c2b98d5a53fd2778255",
+      "size": 380
+    },
+    {
+      "original": "Units/Modern/TsarTank/SourceArt/Before-Animation-Generation.json",
+      "archived": "Units/Modern/TsarTank/_TO BE DELETED/SourceArt/Before-Animation-Generation.json",
+      "sha256": "341b4848ff806894bd9bbd65e2c4b4fbe9afe14ca4e9e1e5e7e9d62c746b2dd6",
+      "size": 2785
+    },
+    {
+      "original": "Units/Modern/TsarTank/SourceArt/Before-Animation-Validation.json",
+      "archived": "Units/Modern/TsarTank/_TO BE DELETED/SourceArt/Before-Animation-Validation.json",
+      "sha256": "e9fc4b2b85a79246ef0db1f604f8af2ee1ce376f1e9abe6f9f1f9e69a42b432a",
+      "size": 357
+    },
+    {
+      "original": "Units/Modern/TsarTank/SourceArt/Before-Death-v2-animations.json",
+      "archived": "Units/Modern/TsarTank/_TO BE DELETED/SourceArt/Before-Death-v2-animations.json",
+      "sha256": "99eb604663e033a07d461057ad29e7929437b07485ecfd0f6430119ac8fbef78",
+      "size": 9785
+    },
+    {
+      "original": "Units/Modern/TsarTank/SourceArt/Before-Death-v2-Browser-Review.json",
+      "archived": "Units/Modern/TsarTank/_TO BE DELETED/SourceArt/Before-Death-v2-Browser-Review.json",
+      "sha256": "e0dfa48716beeda41b38c1bb0561ba78e225df9bab052c6d7a042962cc6ba2a4",
+      "size": 625
+    },
+    {
+      "original": "Units/Modern/TsarTank/SourceArt/Before-Death-v2-Validation.json",
+      "archived": "Units/Modern/TsarTank/_TO BE DELETED/SourceArt/Before-Death-v2-Validation.json",
+      "sha256": "6950914ed4e968b305b5375f9c977d902d39fa7fe6c3037a87e1da18b254fc58",
+      "size": 5238
+    },
+    {
+      "original": "Units/Modern/TsarTank/SourceArt/compose_animations.py",
+      "archived": "Units/Modern/TsarTank/_TO BE DELETED/SourceArt/compose_animations.py",
+      "sha256": "f462e43455d8711f303b23b12f45025f86837be6c3a1ea2258b25312717c9836",
+      "size": 7547
+    },
+    {
+      "original": "Units/Modern/TsarTank/SourceArt/Composition-death-v2.json",
+      "archived": "Units/Modern/TsarTank/_TO BE DELETED/SourceArt/Composition-death-v2.json",
+      "sha256": "ca452097fdd8731d743bcbed0a5cb3e56f34f7186f8a78bf0c3736a3652082fc",
+      "size": 1215
+    },
+    {
+      "original": "Units/Modern/TsarTank/SourceArt/Composition.json",
+      "archived": "Units/Modern/TsarTank/_TO BE DELETED/SourceArt/Composition.json",
+      "sha256": "5fcebfff281923d3760df19f60fbf1ab94612db7b425ad115cb89cd3980b40ea",
+      "size": 81345
+    },
+    {
+      "original": "Units/Modern/TsarTank/SourceArt/Generation-idle-v1.json",
+      "archived": "Units/Modern/TsarTank/_TO BE DELETED/SourceArt/Generation-idle-v1.json",
+      "sha256": "fd3d42c57106ebe7c9486d1b75fba11639e12d8506b2c95df212a16d812a82da",
+      "size": 2424
+    },
+    {
+      "original": "Units/Modern/TsarTank/SourceArt/Generation-motion-attack-v1.json",
+      "archived": "Units/Modern/TsarTank/_TO BE DELETED/SourceArt/Generation-motion-attack-v1.json",
+      "sha256": "596cef1481955732966500a14b3c6ccc3154a8ad106ee49d3f99de0bb54d630c",
+      "size": 1913
+    },
+    {
+      "original": "Units/Modern/TsarTank/SourceArt/Generation-motion-death-v1.json",
+      "archived": "Units/Modern/TsarTank/_TO BE DELETED/SourceArt/Generation-motion-death-v1.json",
+      "sha256": "28429b396efc79520b1f5cf5dc386cf8a075402159320b8b2d59f88186bbbe7a",
+      "size": 2043
+    },
+    {
+      "original": "Units/Modern/TsarTank/SourceArt/Generation-motion-death-v2.json",
+      "archived": "Units/Modern/TsarTank/_TO BE DELETED/SourceArt/Generation-motion-death-v2.json",
+      "sha256": "9062bad9a3b735ee0002350ec9d4b55d9e7b72dfd570263156691d6fac2d2f31",
+      "size": 2576
+    },
+    {
+      "original": "Units/Modern/TsarTank/SourceArt/Generation-motion-moving-v1.json",
+      "archived": "Units/Modern/TsarTank/_TO BE DELETED/SourceArt/Generation-motion-moving-v1.json",
+      "sha256": "3fd60fb02b66be4cae5ac04b8d735a58772797203f41a81aa45852308756e78b",
+      "size": 1810
+    },
+    {
+      "original": "Units/Modern/TsarTank/SourceArt/Native-death-v2.png",
+      "archived": "Units/Modern/TsarTank/_TO BE DELETED/SourceArt/Native-death-v2.png",
+      "sha256": "4d8f532fabffe2aa52bf7267c8e6c2d6e67d0a6a2f67fbc5258578f538d52a55",
+      "size": 2653875
+    },
+    {
+      "original": "Units/Modern/TsarTank/SourceArt/Native-Idle-v1.png",
+      "archived": "Units/Modern/TsarTank/_TO BE DELETED/SourceArt/Native-Idle-v1.png",
+      "sha256": "0024317c0cb77943296e8194b8b26904d9b9e8248521187c45b4e3a71f20c241",
+      "size": 1159470
+    },
+    {
+      "original": "Units/Modern/TsarTank/SourceArt/Native-Motion-attack-v1.png",
+      "archived": "Units/Modern/TsarTank/_TO BE DELETED/SourceArt/Native-Motion-attack-v1.png",
+      "sha256": "71320923e42a171b6cde5e9c625686af954bda8b4c49ae0948a4abbec79c8d83",
+      "size": 2174138
+    },
+    {
+      "original": "Units/Modern/TsarTank/SourceArt/Native-Motion-death-v1.png",
+      "archived": "Units/Modern/TsarTank/_TO BE DELETED/SourceArt/Native-Motion-death-v1.png",
+      "sha256": "0889661165df25d28951120e11a7931dd52cd7b998345bece4be52af68be408d",
+      "size": 2234874
+    },
+    {
+      "original": "Units/Modern/TsarTank/SourceArt/Native-Motion-moving-v1.png",
+      "archived": "Units/Modern/TsarTank/_TO BE DELETED/SourceArt/Native-Motion-moving-v1.png",
+      "sha256": "07f3a57c489a85bed0928541ffef9f57b7b1c2a1fa6fc7f5cfc7944335f98d9d",
+      "size": 2138276
+    },
+    {
+      "original": "Units/Modern/TsarTank/SourceArt/replace_catastrophic_death.py",
+      "archived": "Units/Modern/TsarTank/_TO BE DELETED/SourceArt/replace_catastrophic_death.py",
+      "sha256": "b7a3ad283e0bb6fb9eed88afd4e3bec585416674f11481eddf138e5c48fd94fc",
+      "size": 4814
+    },
+    {
+      "original": "Units/Modern/TsarTank/Validation.json",
+      "archived": "Units/Modern/TsarTank/_TO BE DELETED/Validation.json",
+      "sha256": "f50ac0c31983c8fd0f4f46da672b321b2c0a9504971cc104f0215df6040fcb85",
+      "size": 5320
+    }
+  ]
+}

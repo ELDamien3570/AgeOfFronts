@@ -1,0 +1,300 @@
+{
+  "folder": "Units/Modern/SovietMachineGunner/_TO BE DELETED",
+  "created": "2026-10-09T03:15:53.711Z",
+  "files": [
+    {
+      "original": "Units/Modern/SovietMachineGunner/attack-v1.png",
+      "archived": "Units/Modern/SovietMachineGunner/_TO BE DELETED/attack-v1.png",
+      "sha256": "ee685629d624cd2641063040a0553c9a723fe32f1a1b337ce98d5d229e8f16f1",
+      "size": 774563
+    },
+    {
+      "original": "Units/Modern/SovietMachineGunner/Browser-Review.json",
+      "archived": "Units/Modern/SovietMachineGunner/_TO BE DELETED/Browser-Review.json",
+      "sha256": "1d8740a7d1c153dd96c1ed8d87939ce86c3d020fff02929a95ba6fbef1b6c91c",
+      "size": 332
+    },
+    {
+      "original": "Units/Modern/SovietMachineGunner/charge-attack-v1.png",
+      "archived": "Units/Modern/SovietMachineGunner/_TO BE DELETED/charge-attack-v1.png",
+      "sha256": "3d155c98a0c17475daa0b438027d6fdae903ce0ff57ce432b42703a132c8ba97",
+      "size": 785116
+    },
+    {
+      "original": "Units/Modern/SovietMachineGunner/charged-v2.png",
+      "archived": "Units/Modern/SovietMachineGunner/_TO BE DELETED/charged-v2.png",
+      "sha256": "7ea4ca87c06902903f6ed93105c7d1577036bcbd5057489cacba7d2f2bc8e67e",
+      "size": 792392
+    },
+    {
+      "original": "Units/Modern/SovietMachineGunner/death-back-v1.png",
+      "archived": "Units/Modern/SovietMachineGunner/_TO BE DELETED/death-back-v1.png",
+      "sha256": "947c61d1ca9dfc327a16b67d6c19b4b05ea318013e6fed066de311ae43c077b7",
+      "size": 927593
+    },
+    {
+      "original": "Units/Modern/SovietMachineGunner/Generation.json",
+      "archived": "Units/Modern/SovietMachineGunner/_TO BE DELETED/Generation.json",
+      "sha256": "ab8d59d98e7d8f23c9359d6b607bd836229975a607c2bba5df02b2db62f6de5c",
+      "size": 34330
+    },
+    {
+      "original": "Units/Modern/SovietMachineGunner/Idle-TopDown-v2.png",
+      "archived": "Units/Modern/SovietMachineGunner/_TO BE DELETED/Idle-TopDown-v2.png",
+      "sha256": "621ec58c229d9a4df715118343e70c18e805d57429bd7a2fd1e3da4803073a2f",
+      "size": 1004226
+    },
+    {
+      "original": "Units/Modern/SovietMachineGunner/Idle-v1.png",
+      "archived": "Units/Modern/SovietMachineGunner/_TO BE DELETED/Idle-v1.png",
+      "sha256": "f5bcaa7ba5e272946a1d580f13899b9f9f4b2a8bfc68206e30b323f94fd7e23e",
+      "size": 926923
+    },
+    {
+      "original": "Units/Modern/SovietMachineGunner/README.md",
+      "archived": "Units/Modern/SovietMachineGunner/_TO BE DELETED/README.md",
+      "sha256": "f791c1e4f469ac705cc63ae51d98f7244ecf06b147da8e044aa68b6a6c310c9b",
+      "size": 1772
+    },
+    {
+      "original": "Units/Modern/SovietMachineGunner/SourceArt/Animation-Generation.json",
+      "archived": "Units/Modern/SovietMachineGunner/_TO BE DELETED/SourceArt/Animation-Generation.json",
+      "sha256": "847373785964af86b78dde7eaacb0bc6b1324e11b8edd5d3eaabb4028e516d44",
+      "size": 30551
+    },
+    {
+      "original": "Units/Modern/SovietMachineGunner/SourceArt/Approved-Idle.json",
+      "archived": "Units/Modern/SovietMachineGunner/_TO BE DELETED/SourceArt/Approved-Idle.json",
+      "sha256": "c1b9b0b8e2c1ac525eb8c8e7ebbd4a23850613f7ed2cc69a83c30dfb516e1c05",
+      "size": 167
+    },
+    {
+      "original": "Units/Modern/SovietMachineGunner/SourceArt/Back-Death-Spacing-v3.json",
+      "archived": "Units/Modern/SovietMachineGunner/_TO BE DELETED/SourceArt/Back-Death-Spacing-v3.json",
+      "sha256": "5b854907bd726448e1dec2115ba228b51b77d71340a9ce5094f1b410bb4ca53a",
+      "size": 1048
+    },
+    {
+      "original": "Units/Modern/SovietMachineGunner/SourceArt/Before-Animation-animations.json",
+      "archived": "Units/Modern/SovietMachineGunner/_TO BE DELETED/SourceArt/Before-Animation-animations.json",
+      "sha256": "d1393582bf18133f52884e9731d8dbea0f7a76c96ed3c4ef5364377ace659c8c",
+      "size": 1247
+    },
+    {
+      "original": "Units/Modern/SovietMachineGunner/SourceArt/Before-Animation-Validation.json",
+      "archived": "Units/Modern/SovietMachineGunner/_TO BE DELETED/SourceArt/Before-Animation-Validation.json",
+      "sha256": "719dffa9d45a315baf4d45eca22247dde4ed5feda9ff3a6c5aceb21024606434",
+      "size": 445
+    },
+    {
+      "original": "Units/Modern/SovietMachineGunner/SourceArt/Cell-Corrections-v2-Archive.json",
+      "archived": "Units/Modern/SovietMachineGunner/_TO BE DELETED/SourceArt/Cell-Corrections-v2-Archive.json",
+      "sha256": "27cf650a6f7151ef0ed4bc7b68e442f1ae38615d605770e68860a5dc340ded4b",
+      "size": 3370
+    },
+    {
+      "original": "Units/Modern/SovietMachineGunner/SourceArt/Cell-Corrections.json",
+      "archived": "Units/Modern/SovietMachineGunner/_TO BE DELETED/SourceArt/Cell-Corrections.json",
+      "sha256": "5b854907bd726448e1dec2115ba228b51b77d71340a9ce5094f1b410bb4ca53a",
+      "size": 1048
+    },
+    {
+      "original": "Units/Modern/SovietMachineGunner/SourceArt/compose_animations.py",
+      "archived": "Units/Modern/SovietMachineGunner/_TO BE DELETED/SourceArt/compose_animations.py",
+      "sha256": "ee73aa7f12d927a99179980758f4b843a20fc7223c82565f9b1ea4c76c4194ad",
+      "size": 6745
+    },
+    {
+      "original": "Units/Modern/SovietMachineGunner/SourceArt/Composition.json",
+      "archived": "Units/Modern/SovietMachineGunner/_TO BE DELETED/SourceArt/Composition.json",
+      "sha256": "c01a37aecc7d4804492ecceffc4f2255fcf4e4442e332b8824f6d3b7b57fc49d",
+      "size": 34366
+    },
+    {
+      "original": "Units/Modern/SovietMachineGunner/SourceArt/Final-Registration.json",
+      "archived": "Units/Modern/SovietMachineGunner/_TO BE DELETED/SourceArt/Final-Registration.json",
+      "sha256": "f15acef9ccd6c1093d2801a73a7ad7630334184fbd798503eea99144cdc54b73",
+      "size": 1314
+    },
+    {
+      "original": "Units/Modern/SovietMachineGunner/SourceArt/Native-attack-v1.png",
+      "archived": "Units/Modern/SovietMachineGunner/_TO BE DELETED/SourceArt/Native-attack-v1.png",
+      "sha256": "000421cab2b9914aed9ea7d6d33e5d32f4fd7a2a0ce99b90f854a72a67e5b797",
+      "size": 2005852
+    },
+    {
+      "original": "Units/Modern/SovietMachineGunner/SourceArt/Native-attack-v2.png",
+      "archived": "Units/Modern/SovietMachineGunner/_TO BE DELETED/SourceArt/Native-attack-v2.png",
+      "sha256": "66df44101a94ebfd2cec5f1af947d014375060c057167749eba4daaaaa1a1f2c",
+      "size": 1756233
+    },
+    {
+      "original": "Units/Modern/SovietMachineGunner/SourceArt/Native-charge-attack-v1.png",
+      "archived": "Units/Modern/SovietMachineGunner/_TO BE DELETED/SourceArt/Native-charge-attack-v1.png",
+      "sha256": "b74f1982cbe6f3145cf952625fffb84fa3da1208a35a0b3179b991d20faf0819",
+      "size": 2010303
+    },
+    {
+      "original": "Units/Modern/SovietMachineGunner/SourceArt/Native-charge-attack-v2.png",
+      "archived": "Units/Modern/SovietMachineGunner/_TO BE DELETED/SourceArt/Native-charge-attack-v2.png",
+      "sha256": "f3a40c3fb359e2bc2fb6332ac4171a049dce334dc7a18155c63037236f235e5d",
+      "size": 1709193
+    },
+    {
+      "original": "Units/Modern/SovietMachineGunner/SourceArt/Native-charge-v1.png",
+      "archived": "Units/Modern/SovietMachineGunner/_TO BE DELETED/SourceArt/Native-charge-v1.png",
+      "sha256": "042a75604e697ab998e14b4d01c4e6d5e100bdeff33997964f1fa38073d8ea2b",
+      "size": 2391404
+    },
+    {
+      "original": "Units/Modern/SovietMachineGunner/SourceArt/Native-charge-v2.png",
+      "archived": "Units/Modern/SovietMachineGunner/_TO BE DELETED/SourceArt/Native-charge-v2.png",
+      "sha256": "d65e15d26dbd081a3364cd704963d3cee29f162b8467e1bd6577370f6ca60766",
+      "size": 2060524
+    },
+    {
+      "original": "Units/Modern/SovietMachineGunner/SourceArt/Native-charged-v1.png",
+      "archived": "Units/Modern/SovietMachineGunner/_TO BE DELETED/SourceArt/Native-charged-v1.png",
+      "sha256": "de0ad2bf27b506e8841887722eb6e205819e5a875d020b38b7e6e2f5d22a4755",
+      "size": 2268693
+    },
+    {
+      "original": "Units/Modern/SovietMachineGunner/SourceArt/Native-charged-v2.png",
+      "archived": "Units/Modern/SovietMachineGunner/_TO BE DELETED/SourceArt/Native-charged-v2.png",
+      "sha256": "0c0a23cd5c3be5c2b282d9bf4273c57afcdef98b1fe21e010f4b835b5cd1e37f",
+      "size": 2035663
+    },
+    {
+      "original": "Units/Modern/SovietMachineGunner/SourceArt/Native-charged-v3.png",
+      "archived": "Units/Modern/SovietMachineGunner/_TO BE DELETED/SourceArt/Native-charged-v3.png",
+      "sha256": "66297eca244c10f28b62faa1fbcde7e84a5b719903971dd65023760dd9584433",
+      "size": 1606327
+    },
+    {
+      "original": "Units/Modern/SovietMachineGunner/SourceArt/Native-death-back-v1.png",
+      "archived": "Units/Modern/SovietMachineGunner/_TO BE DELETED/SourceArt/Native-death-back-v1.png",
+      "sha256": "6fa78fe1174b9dde9efc4520f4c6d2cebf2afa84cf9d6942bf43538273c007d1",
+      "size": 2211941
+    },
+    {
+      "original": "Units/Modern/SovietMachineGunner/SourceArt/Native-death-back-v2.png",
+      "archived": "Units/Modern/SovietMachineGunner/_TO BE DELETED/SourceArt/Native-death-back-v2.png",
+      "sha256": "40dda5fb212c8ca353e20057707d153d6424cb0ac6463ec51b7b9bdde5ce019f",
+      "size": 1975824
+    },
+    {
+      "original": "Units/Modern/SovietMachineGunner/SourceArt/Native-death-back-v3.png",
+      "archived": "Units/Modern/SovietMachineGunner/_TO BE DELETED/SourceArt/Native-death-back-v3.png",
+      "sha256": "745e7c78617f6656bd256a31f3e42f6c92ec7115294b311150ec3f3f5a66aa4f",
+      "size": 1668375
+    },
+    {
+      "original": "Units/Modern/SovietMachineGunner/SourceArt/Native-death-v1.png",
+      "archived": "Units/Modern/SovietMachineGunner/_TO BE DELETED/SourceArt/Native-death-v1.png",
+      "sha256": "082fac8379761adbcb7e40990697adf8f7c7db31821b7dff32df81522183bdb7",
+      "size": 2172198
+    },
+    {
+      "original": "Units/Modern/SovietMachineGunner/SourceArt/Native-death-v2.png",
+      "archived": "Units/Modern/SovietMachineGunner/_TO BE DELETED/SourceArt/Native-death-v2.png",
+      "sha256": "7f6228a20245a1c5d208703dc3c05009a6fbfb8b20fde31dde47ff5b1ab81727",
+      "size": 1886970
+    },
+    {
+      "original": "Units/Modern/SovietMachineGunner/SourceArt/Native-hit-v1.png",
+      "archived": "Units/Modern/SovietMachineGunner/_TO BE DELETED/SourceArt/Native-hit-v1.png",
+      "sha256": "b1a972843f1a8f4163f497b0a101171c7c88f042bbece886d5944d8662f5f0df",
+      "size": 2153937
+    },
+    {
+      "original": "Units/Modern/SovietMachineGunner/SourceArt/Native-hit-v2.png",
+      "archived": "Units/Modern/SovietMachineGunner/_TO BE DELETED/SourceArt/Native-hit-v2.png",
+      "sha256": "51c052400e1c1c1e008275a7aad8bc8e542c4ebfee20abbb5c1dada44f092d96",
+      "size": 2015903
+    },
+    {
+      "original": "Units/Modern/SovietMachineGunner/SourceArt/Native-Idle-TopDown-v2.png",
+      "archived": "Units/Modern/SovietMachineGunner/_TO BE DELETED/SourceArt/Native-Idle-TopDown-v2.png",
+      "sha256": "200e8db3567a6686ec8603cebd6bba49edb828ed7789afe70e6f35566f797bc7",
+      "size": 1054201
+    },
+    {
+      "original": "Units/Modern/SovietMachineGunner/SourceArt/Native-Idle-v1.png",
+      "archived": "Units/Modern/SovietMachineGunner/_TO BE DELETED/SourceArt/Native-Idle-v1.png",
+      "sha256": "ebf7b4517ad8e0cfb44a9c2c22fbf1a59b31e85ba04e977e0a5225a4a8e4e9e5",
+      "size": 2315438
+    },
+    {
+      "original": "Units/Modern/SovietMachineGunner/SourceArt/Native-idle-v2.png",
+      "archived": "Units/Modern/SovietMachineGunner/_TO BE DELETED/SourceArt/Native-idle-v2.png",
+      "sha256": "dc3a3e54a64b7b8994879404defcf7b37a1e2eb91fd9c89a26eb03906826a920",
+      "size": 1902425
+    },
+    {
+      "original": "Units/Modern/SovietMachineGunner/SourceArt/Native-reload-v1.png",
+      "archived": "Units/Modern/SovietMachineGunner/_TO BE DELETED/SourceArt/Native-reload-v1.png",
+      "sha256": "249b0910a848ddf101022aa94d5b5ee7161e65b29924e8173a9c1b6132a51684",
+      "size": 2249995
+    },
+    {
+      "original": "Units/Modern/SovietMachineGunner/SourceArt/Native-reload-v2.png",
+      "archived": "Units/Modern/SovietMachineGunner/_TO BE DELETED/SourceArt/Native-reload-v2.png",
+      "sha256": "1133fc9adc9f0922f96ce87157c038c000ba262053c080df1851224b0399244e",
+      "size": 1960692
+    },
+    {
+      "original": "Units/Modern/SovietMachineGunner/SourceArt/Native-running-v1.png",
+      "archived": "Units/Modern/SovietMachineGunner/_TO BE DELETED/SourceArt/Native-running-v1.png",
+      "sha256": "6c2f12966c23b29c5e3f78740871c35ec71835c0387ebbd6edd3d86e3f36c988",
+      "size": 2236702
+    },
+    {
+      "original": "Units/Modern/SovietMachineGunner/SourceArt/Native-running-v2.png",
+      "archived": "Units/Modern/SovietMachineGunner/_TO BE DELETED/SourceArt/Native-running-v2.png",
+      "sha256": "d78fbb47645230072fdd519d071495b9fa096aa58577024a7a12b254600e7842",
+      "size": 1855055
+    },
+    {
+      "original": "Units/Modern/SovietMachineGunner/SourceArt/Native-running-v3.png",
+      "archived": "Units/Modern/SovietMachineGunner/_TO BE DELETED/SourceArt/Native-running-v3.png",
+      "sha256": "95ecf645a1a33f23ad0eb53b02add401678c9df362613251a0731c848e1b74f3",
+      "size": 1949959
+    },
+    {
+      "original": "Units/Modern/SovietMachineGunner/SourceArt/prepare_idle.py",
+      "archived": "Units/Modern/SovietMachineGunner/_TO BE DELETED/SourceArt/prepare_idle.py",
+      "sha256": "4896093c5aedb3a835947a53c0e7a20405745d6e888821242d6348fe6b0855f0",
+      "size": 3595
+    },
+    {
+      "original": "Units/Modern/SovietMachineGunner/SourceArt/register_cell_corrections.py",
+      "archived": "Units/Modern/SovietMachineGunner/_TO BE DELETED/SourceArt/register_cell_corrections.py",
+      "sha256": "b9026f2bb5461511aa1b2258c53ebc53eb17824cb18cf51fb3c255fcaeaa8c69",
+      "size": 669
+    },
+    {
+      "original": "Units/Modern/SovietMachineGunner/SourceArt/register_final.py",
+      "archived": "Units/Modern/SovietMachineGunner/_TO BE DELETED/SourceArt/register_final.py",
+      "sha256": "9228d476daa35e4d0b951d317bf896c2c0d803daa3d26a1bd7a1b33d8105ac8f",
+      "size": 743
+    },
+    {
+      "original": "Units/Modern/SovietMachineGunner/SourceArt/register_topdown.py",
+      "archived": "Units/Modern/SovietMachineGunner/_TO BE DELETED/SourceArt/register_topdown.py",
+      "sha256": "cf6330cf1bddbf2226a0065427f63c5d8737aeefbde1f4d7cb4a0073bea6d1c7",
+      "size": 396
+    },
+    {
+      "original": "Units/Modern/SovietMachineGunner/SourceArt/TopDown-Correction.json",
+      "archived": "Units/Modern/SovietMachineGunner/_TO BE DELETED/SourceArt/TopDown-Correction.json",
+      "sha256": "278dc0d1c66b000e54cec08cbd7484ea3c6fef44ac1cc8b6bc1f0e5a7b79f03a",
+      "size": 1565
+    },
+    {
+      "original": "Units/Modern/SovietMachineGunner/Validation.json",
+      "archived": "Units/Modern/SovietMachineGunner/_TO BE DELETED/Validation.json",
+      "sha256": "550bd3db582c76f2c9ffe101f6d4cf3b71450a5bb84a62b47f9c242c96cdde2a",
+      "size": 30233
+    }
+  ]
+}

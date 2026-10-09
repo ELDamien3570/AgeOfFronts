@@ -1,0 +1,252 @@
+{
+  "folder": "Units/Modern/MachineGunTruck/_TO BE DELETED",
+  "created": "2026-10-09T03:15:53.711Z",
+  "files": [
+    {
+      "original": "Units/Modern/MachineGunTruck/Browser-Review.json",
+      "archived": "Units/Modern/MachineGunTruck/_TO BE DELETED/Browser-Review.json",
+      "sha256": "a979a903760adb2f953092ff3472c4588f46ca5db492370bd5d580569ee3cf2e",
+      "size": 645
+    },
+    {
+      "original": "Units/Modern/MachineGunTruck/Generation.json",
+      "archived": "Units/Modern/MachineGunTruck/_TO BE DELETED/Generation.json",
+      "sha256": "5386775acdfc1341cbedab4d421612b4bef3d26b459efc4921089e371d386d8b",
+      "size": 13022
+    },
+    {
+      "original": "Units/Modern/MachineGunTruck/Idle-v1.png",
+      "archived": "Units/Modern/MachineGunTruck/_TO BE DELETED/Idle-v1.png",
+      "sha256": "a38012ecb70b442eb788d67c55398b4820f7f8fb0b2d34572d97eeb507b343f7",
+      "size": 1982437
+    },
+    {
+      "original": "Units/Modern/MachineGunTruck/Idle-v2.png",
+      "archived": "Units/Modern/MachineGunTruck/_TO BE DELETED/Idle-v2.png",
+      "sha256": "b364466a5a84adf30a694c73bf573b90cc82e7d699ee11c8ee6ce2955dbfd022",
+      "size": 1885479
+    },
+    {
+      "original": "Units/Modern/MachineGunTruck/Idle-v3.png",
+      "archived": "Units/Modern/MachineGunTruck/_TO BE DELETED/Idle-v3.png",
+      "sha256": "3d2fe93db74d843a6f7fc4a2ecf1b978683a3addda263152443142e0ec158077",
+      "size": 1866370
+    },
+    {
+      "original": "Units/Modern/MachineGunTruck/prepare_idle.py",
+      "archived": "Units/Modern/MachineGunTruck/_TO BE DELETED/prepare_idle.py",
+      "sha256": "24855eca07bb495c07077ddde99127d1cf8b907fd75ae0bc8e15f90f9bf88c2a",
+      "size": 4715
+    },
+    {
+      "original": "Units/Modern/MachineGunTruck/SourceArt/Approved-Idle.json",
+      "archived": "Units/Modern/MachineGunTruck/_TO BE DELETED/SourceArt/Approved-Idle.json",
+      "sha256": "20655891421ab9a1228deafa83f16c487eb1bad1d83584cadea686b2a8d9fe38",
+      "size": 191
+    },
+    {
+      "original": "Units/Modern/MachineGunTruck/SourceArt/Before-Animation-Actor_Review.html",
+      "archived": "Units/Modern/MachineGunTruck/_TO BE DELETED/SourceArt/Before-Animation-Actor_Review.html",
+      "sha256": "3e3d8aad5bc1f9115ae3737c73760438dba3fe12e68ff8e90c0cbfdd8cbcd0ae",
+      "size": 7306
+    },
+    {
+      "original": "Units/Modern/MachineGunTruck/SourceArt/Before-Animation-animations.json",
+      "archived": "Units/Modern/MachineGunTruck/_TO BE DELETED/SourceArt/Before-Animation-animations.json",
+      "sha256": "36954a1308715dbedccf23007c6409a0b85dab63726edd11cde543c8ccf37df7",
+      "size": 1798
+    },
+    {
+      "original": "Units/Modern/MachineGunTruck/SourceArt/Before-Animation-Browser-Review.json",
+      "archived": "Units/Modern/MachineGunTruck/_TO BE DELETED/SourceArt/Before-Animation-Browser-Review.json",
+      "sha256": "0bb58027cf5f61029db9ebb248b20b8f24ae7e7acd3745846366ad0b6931bae1",
+      "size": 392
+    },
+    {
+      "original": "Units/Modern/MachineGunTruck/SourceArt/Before-Animation-Generation.json",
+      "archived": "Units/Modern/MachineGunTruck/_TO BE DELETED/SourceArt/Before-Animation-Generation.json",
+      "sha256": "cc5ee530481d825410213c12d8717a4c9c18e8e754b7b639adc95b35b63e3cb1",
+      "size": 6057
+    },
+    {
+      "original": "Units/Modern/MachineGunTruck/SourceArt/Before-Animation-Validation.json",
+      "archived": "Units/Modern/MachineGunTruck/_TO BE DELETED/SourceArt/Before-Animation-Validation.json",
+      "sha256": "2a21c7301c38fd63c83d40b715d43b534573d1b7bc55f819bdd2cbd77e7f7fc8",
+      "size": 368
+    },
+    {
+      "original": "Units/Modern/MachineGunTruck/SourceArt/Before-Idle-v2-Actor_Review.html",
+      "archived": "Units/Modern/MachineGunTruck/_TO BE DELETED/SourceArt/Before-Idle-v2-Actor_Review.html",
+      "sha256": "e63e2be6ffcd20353d32a1df7ba778b90225f0cc2dd2b83eb94db37a951fc23a",
+      "size": 7306
+    },
+    {
+      "original": "Units/Modern/MachineGunTruck/SourceArt/Before-Idle-v2-animations.json",
+      "archived": "Units/Modern/MachineGunTruck/_TO BE DELETED/SourceArt/Before-Idle-v2-animations.json",
+      "sha256": "d85c5fa6708cf5f7ba192b343561d2a53d375be77e66715e06f3e151aa7a0734",
+      "size": 1760
+    },
+    {
+      "original": "Units/Modern/MachineGunTruck/SourceArt/Before-Idle-v2-Browser-Review.json",
+      "archived": "Units/Modern/MachineGunTruck/_TO BE DELETED/SourceArt/Before-Idle-v2-Browser-Review.json",
+      "sha256": "856b3619b099e29571d431c7e54007498e0b3145ec847c2b98d5a53fd2778255",
+      "size": 380
+    },
+    {
+      "original": "Units/Modern/MachineGunTruck/SourceArt/Before-Idle-v2-Generation.json",
+      "archived": "Units/Modern/MachineGunTruck/_TO BE DELETED/SourceArt/Before-Idle-v2-Generation.json",
+      "sha256": "f121055afc418fb1eac9f8c4d8e0a3a2a08be876584e3358b583de6f8a54c9e7",
+      "size": 2391
+    },
+    {
+      "original": "Units/Modern/MachineGunTruck/SourceArt/Before-Idle-v2-Validation.json",
+      "archived": "Units/Modern/MachineGunTruck/_TO BE DELETED/SourceArt/Before-Idle-v2-Validation.json",
+      "sha256": "167b4334b6c8fff30b3b747aa194d76958872420adbac9ce0e95e130431daaca",
+      "size": 356
+    },
+    {
+      "original": "Units/Modern/MachineGunTruck/SourceArt/Before-Idle-v3-Actor_Review.html",
+      "archived": "Units/Modern/MachineGunTruck/_TO BE DELETED/SourceArt/Before-Idle-v3-Actor_Review.html",
+      "sha256": "bf6ab90d5c2fc3270469d90e415c1c4501c8b661d5b6acc69f33b7cf4d39eb3b",
+      "size": 7306
+    },
+    {
+      "original": "Units/Modern/MachineGunTruck/SourceArt/Before-Idle-v3-animations.json",
+      "archived": "Units/Modern/MachineGunTruck/_TO BE DELETED/SourceArt/Before-Idle-v3-animations.json",
+      "sha256": "b4e83a3bfc7d309e667a4537e2fb5d2becafb34c07d4479cad74bd01dd4d1841",
+      "size": 1798
+    },
+    {
+      "original": "Units/Modern/MachineGunTruck/SourceArt/Before-Idle-v3-Browser-Review.json",
+      "archived": "Units/Modern/MachineGunTruck/_TO BE DELETED/SourceArt/Before-Idle-v3-Browser-Review.json",
+      "sha256": "77da867f3fe6251c5ad594e49715c61a862fe602b5193367f45f869f354f316d",
+      "size": 392
+    },
+    {
+      "original": "Units/Modern/MachineGunTruck/SourceArt/Before-Idle-v3-Generation.json",
+      "archived": "Units/Modern/MachineGunTruck/_TO BE DELETED/SourceArt/Before-Idle-v3-Generation.json",
+      "sha256": "87cf84119a22efbc5cd01e034b9816112208dcfbd07bc9ebcbd79a396a02f450",
+      "size": 4003
+    },
+    {
+      "original": "Units/Modern/MachineGunTruck/SourceArt/Before-Idle-v3-Validation.json",
+      "archived": "Units/Modern/MachineGunTruck/_TO BE DELETED/SourceArt/Before-Idle-v3-Validation.json",
+      "sha256": "611666a49b35adc10f303f43a1c609d5c1c904ff5d6c51fa75d09485b6827682",
+      "size": 368
+    },
+    {
+      "original": "Units/Modern/MachineGunTruck/SourceArt/compose_animations.py",
+      "archived": "Units/Modern/MachineGunTruck/_TO BE DELETED/SourceArt/compose_animations.py",
+      "sha256": "187e18b429b9255e7135c1710d466b8855a0a37ec2563e7d9cce6bcb2ba71647",
+      "size": 7518
+    },
+    {
+      "original": "Units/Modern/MachineGunTruck/SourceArt/Composition.json",
+      "archived": "Units/Modern/MachineGunTruck/_TO BE DELETED/SourceArt/Composition.json",
+      "sha256": "6bea4094d4b9923255c47ff6216245a536ad2e5f5965619b0eb7cd444c119cf8",
+      "size": 108530
+    },
+    {
+      "original": "Units/Modern/MachineGunTruck/SourceArt/Generation-idle-v1.json",
+      "archived": "Units/Modern/MachineGunTruck/_TO BE DELETED/SourceArt/Generation-idle-v1.json",
+      "sha256": "672cb2c1d041cc6c32fe08fe3edd97cb9d9acb4b8efca7e405c4b84204b03ed7",
+      "size": 2016
+    },
+    {
+      "original": "Units/Modern/MachineGunTruck/SourceArt/Generation-idle-v2.json",
+      "archived": "Units/Modern/MachineGunTruck/_TO BE DELETED/SourceArt/Generation-idle-v2.json",
+      "sha256": "49126d3b57d841a5ae11586562f1af324ae041736f7742cb272c304af8222223",
+      "size": 1625
+    },
+    {
+      "original": "Units/Modern/MachineGunTruck/SourceArt/Generation-idle-v3.json",
+      "archived": "Units/Modern/MachineGunTruck/_TO BE DELETED/SourceArt/Generation-idle-v3.json",
+      "sha256": "de2bbc2e0f62b1caa0cbc3160078196e34066214d546d21adcf6674c7dad4e8e",
+      "size": 1998
+    },
+    {
+      "original": "Units/Modern/MachineGunTruck/SourceArt/Generation-motion-death-v1.json",
+      "archived": "Units/Modern/MachineGunTruck/_TO BE DELETED/SourceArt/Generation-motion-death-v1.json",
+      "sha256": "33089867558e2f41c6884f03d15567d958d160f73d8ca6b6018eedfa5346f2d3",
+      "size": 1870
+    },
+    {
+      "original": "Units/Modern/MachineGunTruck/SourceArt/Generation-motion-idle-v1.json",
+      "archived": "Units/Modern/MachineGunTruck/_TO BE DELETED/SourceArt/Generation-motion-idle-v1.json",
+      "sha256": "11251ddd55bc65050fb975204bcb408fe4fe5a05bae287eeb09804afd0e84063",
+      "size": 1487
+    },
+    {
+      "original": "Units/Modern/MachineGunTruck/SourceArt/Generation-motion-moving-shooting-v1.json",
+      "archived": "Units/Modern/MachineGunTruck/_TO BE DELETED/SourceArt/Generation-motion-moving-shooting-v1.json",
+      "sha256": "e27db01ad44f380a884d85788119a20323de37245f92af15ac5b619d06e133de",
+      "size": 1633
+    },
+    {
+      "original": "Units/Modern/MachineGunTruck/SourceArt/Generation-motion-moving-v1.json",
+      "archived": "Units/Modern/MachineGunTruck/_TO BE DELETED/SourceArt/Generation-motion-moving-v1.json",
+      "sha256": "bd29e38fc2cf63be5617877f618534ad30a62ea972ac5aa664ea5a341d820af5",
+      "size": 1462
+    },
+    {
+      "original": "Units/Modern/MachineGunTruck/SourceArt/Native-Idle-v1.png",
+      "archived": "Units/Modern/MachineGunTruck/_TO BE DELETED/SourceArt/Native-Idle-v1.png",
+      "sha256": "a38012ecb70b442eb788d67c55398b4820f7f8fb0b2d34572d97eeb507b343f7",
+      "size": 1982437
+    },
+    {
+      "original": "Units/Modern/MachineGunTruck/SourceArt/Native-Idle-v2.png",
+      "archived": "Units/Modern/MachineGunTruck/_TO BE DELETED/SourceArt/Native-Idle-v2.png",
+      "sha256": "b364466a5a84adf30a694c73bf573b90cc82e7d699ee11c8ee6ce2955dbfd022",
+      "size": 1885479
+    },
+    {
+      "original": "Units/Modern/MachineGunTruck/SourceArt/Native-Idle-v3.png",
+      "archived": "Units/Modern/MachineGunTruck/_TO BE DELETED/SourceArt/Native-Idle-v3.png",
+      "sha256": "3d2fe93db74d843a6f7fc4a2ecf1b978683a3addda263152443142e0ec158077",
+      "size": 1866370
+    },
+    {
+      "original": "Units/Modern/MachineGunTruck/SourceArt/Native-Motion-death-v1.png",
+      "archived": "Units/Modern/MachineGunTruck/_TO BE DELETED/SourceArt/Native-Motion-death-v1.png",
+      "sha256": "0c6546dfcc1216df5184917475eecf8dac0f06afcdebdace307f27d75997303c",
+      "size": 2580755
+    },
+    {
+      "original": "Units/Modern/MachineGunTruck/SourceArt/Native-Motion-idle-v1.png",
+      "archived": "Units/Modern/MachineGunTruck/_TO BE DELETED/SourceArt/Native-Motion-idle-v1.png",
+      "sha256": "b665fe5e40815899cf7eefb3b9d56db687f32f9b8821bae96ac1018e794c2546",
+      "size": 1973879
+    },
+    {
+      "original": "Units/Modern/MachineGunTruck/SourceArt/Native-Motion-moving-shooting-v1.png",
+      "archived": "Units/Modern/MachineGunTruck/_TO BE DELETED/SourceArt/Native-Motion-moving-shooting-v1.png",
+      "sha256": "28fcbae3d6a52a9a7dd0db0e3bc2a5cfe034f0c93de92acdb9fea8d94e9602c9",
+      "size": 2025761
+    },
+    {
+      "original": "Units/Modern/MachineGunTruck/SourceArt/Native-Motion-moving-v1.png",
+      "archived": "Units/Modern/MachineGunTruck/_TO BE DELETED/SourceArt/Native-Motion-moving-v1.png",
+      "sha256": "1293f30dc42ee00849faa5132ff0d20cb011539a1f15b9d69c41cdcb0a05fa36",
+      "size": 1938494
+    },
+    {
+      "original": "Units/Modern/MachineGunTruck/SourceArt/publish_idle_v2.py",
+      "archived": "Units/Modern/MachineGunTruck/_TO BE DELETED/SourceArt/publish_idle_v2.py",
+      "sha256": "261129fe3c41ec293b03edffe5edc6eace341102573c2416d8b76ca87a0d55c7",
+      "size": 2835
+    },
+    {
+      "original": "Units/Modern/MachineGunTruck/SourceArt/publish_idle_v3.py",
+      "archived": "Units/Modern/MachineGunTruck/_TO BE DELETED/SourceArt/publish_idle_v3.py",
+      "sha256": "6a867781fb7b663ed95ea3b60dddd11fad22bf5e30c0396e003beb6cf875efc5",
+      "size": 2837
+    },
+    {
+      "original": "Units/Modern/MachineGunTruck/Validation.json",
+      "archived": "Units/Modern/MachineGunTruck/_TO BE DELETED/Validation.json",
+      "sha256": "85c9ce53a7cce9d33e6430314f9afa329290341475e51ddc67bf3013be5729fd",
+      "size": 6687
+    }
+  ]
+}

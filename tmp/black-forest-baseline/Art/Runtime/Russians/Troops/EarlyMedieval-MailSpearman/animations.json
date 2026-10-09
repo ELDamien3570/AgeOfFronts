@@ -78,7 +78,8 @@
             "y": 69.625
           }
         }
-      ]
+      ],
+      "releaseFrame": 3
     },
     {
       "id": "running",
@@ -157,7 +158,8 @@
             "y": 59.5
           }
         }
-      ]
+      ],
+      "releaseFrame": 3
     },
     {
       "id": "attack",
@@ -245,7 +247,8 @@
       "grid": {
         "columns": 3,
         "rows": 2
-      }
+      },
+      "releaseFrame": 3
     },
     {
       "id": "death",
@@ -324,7 +327,8 @@
             "y": 64.0
           }
         }
-      ]
+      ],
+      "releaseFrame": 3
     }
   ],
   "source": "Art/Cultures/Russians/Units/EarlyMedieval/MailSpearman/animations.json",

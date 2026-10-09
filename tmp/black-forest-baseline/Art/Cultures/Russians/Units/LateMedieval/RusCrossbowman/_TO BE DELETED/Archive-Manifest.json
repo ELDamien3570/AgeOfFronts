@@ -1,0 +1,588 @@
+{
+  "folder": "Units/LateMedieval/RusCrossbowman/_TO BE DELETED",
+  "created": "2026-10-09T03:15:53.711Z",
+  "files": [
+    {
+      "original": "Units/LateMedieval/RusCrossbowman/attack-string-v5-clean.png",
+      "archived": "Units/LateMedieval/RusCrossbowman/_TO BE DELETED/attack-string-v5-clean.png",
+      "sha256": "685f1ff65593a85a48521ba3284c3a20c5ccabe1b3b08da9f82ced9b0b6ad719",
+      "size": 1052537
+    },
+    {
+      "original": "Units/LateMedieval/RusCrossbowman/attack-string-v5b.png",
+      "archived": "Units/LateMedieval/RusCrossbowman/_TO BE DELETED/attack-string-v5b.png",
+      "sha256": "0063a6ee637d078db38954e5d7d1264aded4bd1cb4b8c8276eb68ab3ff888596",
+      "size": 1407764
+    },
+    {
+      "original": "Units/LateMedieval/RusCrossbowman/attack.png",
+      "archived": "Units/LateMedieval/RusCrossbowman/_TO BE DELETED/attack.png",
+      "sha256": "5b9a06d2d4b3f495a8b445e46d5f8d4ea262d4b069872f6328be1049bc5a2a99",
+      "size": 1002371
+    },
+    {
+      "original": "Units/LateMedieval/RusCrossbowman/Browser-Review.json",
+      "archived": "Units/LateMedieval/RusCrossbowman/_TO BE DELETED/Browser-Review.json",
+      "sha256": "448d33259b899269aa1644a1b6cb8d5f81c6156056629601b5a3e6a54d2fd523",
+      "size": 556
+    },
+    {
+      "original": "Units/LateMedieval/RusCrossbowman/charge-attack-string-v5-clean.png",
+      "archived": "Units/LateMedieval/RusCrossbowman/_TO BE DELETED/charge-attack-string-v5-clean.png",
+      "sha256": "787307d24d7c187914d39c703d74688844038d2fd151680001ab45cadcb38352",
+      "size": 1039129
+    },
+    {
+      "original": "Units/LateMedieval/RusCrossbowman/charge-attack-string-v5.png",
+      "archived": "Units/LateMedieval/RusCrossbowman/_TO BE DELETED/charge-attack-string-v5.png",
+      "sha256": "b8f3789f324c45758fb25e9421815932006846fed65a7cb8c9c13a85c1b29c48",
+      "size": 1252146
+    },
+    {
+      "original": "Units/LateMedieval/RusCrossbowman/charge-attack-v2.png",
+      "archived": "Units/LateMedieval/RusCrossbowman/_TO BE DELETED/charge-attack-v2.png",
+      "sha256": "4a7b4ced000c6973e0f2854d6af73998d378ef813802a23d544f82896cbddd3d",
+      "size": 1072881
+    },
+    {
+      "original": "Units/LateMedieval/RusCrossbowman/charge.png",
+      "archived": "Units/LateMedieval/RusCrossbowman/_TO BE DELETED/charge.png",
+      "sha256": "59a09dfcd226e13f0b3ba8c8b63bca04cf4424ef4c8ae867ac60198751bdd42d",
+      "size": 973531
+    },
+    {
+      "original": "Units/LateMedieval/RusCrossbowman/charged.png",
+      "archived": "Units/LateMedieval/RusCrossbowman/_TO BE DELETED/charged.png",
+      "sha256": "4ddbfad20685a2aae1a24b0b3dde0d9e81f0a4177e2610578dc39ae264b55760",
+      "size": 1085409
+    },
+    {
+      "original": "Units/LateMedieval/RusCrossbowman/death-back.png",
+      "archived": "Units/LateMedieval/RusCrossbowman/_TO BE DELETED/death-back.png",
+      "sha256": "66c1e81a100d519bf8d3341939b67fcfaee279ec33147f0ed9abe36ccfc063ad",
+      "size": 1035913
+    },
+    {
+      "original": "Units/LateMedieval/RusCrossbowman/death.png",
+      "archived": "Units/LateMedieval/RusCrossbowman/_TO BE DELETED/death.png",
+      "sha256": "f65f5cc7b95b463c9f20542e27fe4baea2164fe4f7b1163c24bb18e188c33b26",
+      "size": 956870
+    },
+    {
+      "original": "Units/LateMedieval/RusCrossbowman/Generation.json",
+      "archived": "Units/LateMedieval/RusCrossbowman/_TO BE DELETED/Generation.json",
+      "sha256": "8b69dfa4eb73cddd5f7f819873882b3a1af13849ff9ba1087c8100053d4d46ca",
+      "size": 70576
+    },
+    {
+      "original": "Units/LateMedieval/RusCrossbowman/hit.png",
+      "archived": "Units/LateMedieval/RusCrossbowman/_TO BE DELETED/hit.png",
+      "sha256": "4d5faaaa8fa1b89f3058297d99791fba81291e5725f9ba1b44ede9296867fb38",
+      "size": 1077172
+    },
+    {
+      "original": "Units/LateMedieval/RusCrossbowman/Idle-Lowered-v3.png",
+      "archived": "Units/LateMedieval/RusCrossbowman/_TO BE DELETED/Idle-Lowered-v3.png",
+      "sha256": "d0eb77ca2f03edbd45865ef4224e94eb87a52fdc0a4a5d626acbcc9a95d3ae0f",
+      "size": 896789
+    },
+    {
+      "original": "Units/LateMedieval/RusCrossbowman/Idle-String-v4.png",
+      "archived": "Units/LateMedieval/RusCrossbowman/_TO BE DELETED/Idle-String-v4.png",
+      "sha256": "4d0993539f3307ac7a02240ae52245b19170f8a1b6ec61358fd96d8417267f4a",
+      "size": 885830
+    },
+    {
+      "original": "Units/LateMedieval/RusCrossbowman/Idle-String-v5.png",
+      "archived": "Units/LateMedieval/RusCrossbowman/_TO BE DELETED/Idle-String-v5.png",
+      "sha256": "e66aa21a1df6decd869064f77e674d8903a94b39930366d8c3f1d0d152a6ea57",
+      "size": 901852
+    },
+    {
+      "original": "Units/LateMedieval/RusCrossbowman/idle-string-v5b.png",
+      "archived": "Units/LateMedieval/RusCrossbowman/_TO BE DELETED/idle-string-v5b.png",
+      "sha256": "78cdc14573ed9e9ab600a15e8237004fb2c1e6877c4e47ccc5269963db22185c",
+      "size": 1224524
+    },
+    {
+      "original": "Units/LateMedieval/RusCrossbowman/Idle-TopDown-v2.png",
+      "archived": "Units/LateMedieval/RusCrossbowman/_TO BE DELETED/Idle-TopDown-v2.png",
+      "sha256": "1fa691fa53c371d446b7616c067aafff45828088c1351a0a654147f45c77c648",
+      "size": 916030
+    },
+    {
+      "original": "Units/LateMedieval/RusCrossbowman/Idle-v1.png",
+      "archived": "Units/LateMedieval/RusCrossbowman/_TO BE DELETED/Idle-v1.png",
+      "sha256": "2d6ae7d1f92d27936414b23275d4cc7543aaf7286dd51bd06883f886d029858c",
+      "size": 884948
+    },
+    {
+      "original": "Units/LateMedieval/RusCrossbowman/idle.png",
+      "archived": "Units/LateMedieval/RusCrossbowman/_TO BE DELETED/idle.png",
+      "sha256": "ac60c1883abe8fb428564444f9f0ae9b21e4a79bfb64424bbd99203fa63acbe5",
+      "size": 1150706
+    },
+    {
+      "original": "Units/LateMedieval/RusCrossbowman/README.md",
+      "archived": "Units/LateMedieval/RusCrossbowman/_TO BE DELETED/README.md",
+      "sha256": "12167b5c48745228d056ef76369d94bc24fa6928f75befcb01a7d739385d9eb3",
+      "size": 1938
+    },
+    {
+      "original": "Units/LateMedieval/RusCrossbowman/reload-string-v5c.png",
+      "archived": "Units/LateMedieval/RusCrossbowman/_TO BE DELETED/reload-string-v5c.png",
+      "sha256": "fbd63920d9723088e204b17162d5c23dd3edf62c2cd39bc897bb22a29d1f26bd",
+      "size": 1539393
+    },
+    {
+      "original": "Units/LateMedieval/RusCrossbowman/reload-v2.png",
+      "archived": "Units/LateMedieval/RusCrossbowman/_TO BE DELETED/reload-v2.png",
+      "sha256": "7c3b1aab5579913bae5ca19c9ab907a5474d0753acbdce996ddd97379eb09c98",
+      "size": 1247202
+    },
+    {
+      "original": "Units/LateMedieval/RusCrossbowman/running.png",
+      "archived": "Units/LateMedieval/RusCrossbowman/_TO BE DELETED/running.png",
+      "sha256": "56c51fc30de73e4256673a0f35416e355c7fff8b2de24413c054c0f272bc2429",
+      "size": 1037632
+    },
+    {
+      "original": "Units/LateMedieval/RusCrossbowman/SourceArt/Animation-Generation.json",
+      "archived": "Units/LateMedieval/RusCrossbowman/_TO BE DELETED/SourceArt/Animation-Generation.json",
+      "sha256": "8fc603c34cd5634209dc956a68f25c883131f9094de00456aa78ddce92283315",
+      "size": 19469
+    },
+    {
+      "original": "Units/LateMedieval/RusCrossbowman/SourceArt/Animation-String-v5-Generation.json",
+      "archived": "Units/LateMedieval/RusCrossbowman/_TO BE DELETED/SourceArt/Animation-String-v5-Generation.json",
+      "sha256": "cc868bb654beadfcb95c9f415cf67e053963b59162ffdbdf26067c3f10f2cf75",
+      "size": 23822
+    },
+    {
+      "original": "Units/LateMedieval/RusCrossbowman/SourceArt/apply_idle_string_correction.py",
+      "archived": "Units/LateMedieval/RusCrossbowman/_TO BE DELETED/SourceArt/apply_idle_string_correction.py",
+      "sha256": "0d9bc6dd705ee6a45b97dd46ce3201e4749e4eb6d4ce0281733999504d32a11c",
+      "size": 2431
+    },
+    {
+      "original": "Units/LateMedieval/RusCrossbowman/SourceArt/apply_motion_v6.py",
+      "archived": "Units/LateMedieval/RusCrossbowman/_TO BE DELETED/SourceArt/apply_motion_v6.py",
+      "sha256": "cbf42c34387b997de4db53af6dadc5595dec945effd6a50502bb63ea5bf4ea2f",
+      "size": 3602
+    },
+    {
+      "original": "Units/LateMedieval/RusCrossbowman/SourceArt/apply_transparency_cleanup.py",
+      "archived": "Units/LateMedieval/RusCrossbowman/_TO BE DELETED/SourceArt/apply_transparency_cleanup.py",
+      "sha256": "2366386926e679a3869bf51b3580dd7205256f7043ea290af4bcbed708996da0",
+      "size": 2402
+    },
+    {
+      "original": "Units/LateMedieval/RusCrossbowman/SourceArt/Approved-Idle.json",
+      "archived": "Units/LateMedieval/RusCrossbowman/_TO BE DELETED/SourceArt/Approved-Idle.json",
+      "sha256": "db6e68abe33c08f0fb7a5a25c9b1c56504df76624d255a4f8c095d6a97baff2d",
+      "size": 166
+    },
+    {
+      "original": "Units/LateMedieval/RusCrossbowman/SourceArt/Before-Animation-animations.json",
+      "archived": "Units/LateMedieval/RusCrossbowman/_TO BE DELETED/SourceArt/Before-Animation-animations.json",
+      "sha256": "dbc0c770230088279b36df81aca8f3f9d0a61c534d36af19a93a0fc35bd8362c",
+      "size": 1275
+    },
+    {
+      "original": "Units/LateMedieval/RusCrossbowman/SourceArt/Before-Animation-Browser-Review.json",
+      "archived": "Units/LateMedieval/RusCrossbowman/_TO BE DELETED/SourceArt/Before-Animation-Browser-Review.json",
+      "sha256": "11b483ea91b219ecbc997bc467537dfd8adc2612406dc223c1778d7dd0e01990",
+      "size": 527
+    },
+    {
+      "original": "Units/LateMedieval/RusCrossbowman/SourceArt/Before-Animation-Validation.json",
+      "archived": "Units/LateMedieval/RusCrossbowman/_TO BE DELETED/SourceArt/Before-Animation-Validation.json",
+      "sha256": "98c51efc955526ff2f2835dfe3ff72415a78b5c1a9fbb52c07ef8e975be4a43d",
+      "size": 452
+    },
+    {
+      "original": "Units/LateMedieval/RusCrossbowman/SourceArt/Before-Motion-v6-animations.json",
+      "archived": "Units/LateMedieval/RusCrossbowman/_TO BE DELETED/SourceArt/Before-Motion-v6-animations.json",
+      "sha256": "fa866330b814d03e5f645e2d509c344dc222020acf3c753f7e711ba7c6580c00",
+      "size": 18785
+    },
+    {
+      "original": "Units/LateMedieval/RusCrossbowman/SourceArt/Before-String-Correction-animations.json",
+      "archived": "Units/LateMedieval/RusCrossbowman/_TO BE DELETED/SourceArt/Before-String-Correction-animations.json",
+      "sha256": "6c021bd0818c55df00a58303d7aa689843d93dc3565e945e35d6738e237f50a6",
+      "size": 18562
+    },
+    {
+      "original": "Units/LateMedieval/RusCrossbowman/SourceArt/Before-String-v5-Animation-animations.json",
+      "archived": "Units/LateMedieval/RusCrossbowman/_TO BE DELETED/SourceArt/Before-String-v5-Animation-animations.json",
+      "sha256": "ee103a23445b844236b7cb0bc100a19c92a2775d81c0965f6d44971a34730560",
+      "size": 17571
+    },
+    {
+      "original": "Units/LateMedieval/RusCrossbowman/SourceArt/Before-String-v5-Animation-Browser-Review.json",
+      "archived": "Units/LateMedieval/RusCrossbowman/_TO BE DELETED/SourceArt/Before-String-v5-Animation-Browser-Review.json",
+      "sha256": "58488ca925103a75597a7306f53ebaef06c6daae22fee29e2ffa3ac10ad43383",
+      "size": 561
+    },
+    {
+      "original": "Units/LateMedieval/RusCrossbowman/SourceArt/Before-String-v5-Animation-Composition.json",
+      "archived": "Units/LateMedieval/RusCrossbowman/_TO BE DELETED/SourceArt/Before-String-v5-Animation-Composition.json",
+      "sha256": "ec925132a484fd04f9e31f01e9f12a1f4124b3953a11e532db5702ff5aa3da95",
+      "size": 34131
+    },
+    {
+      "original": "Units/LateMedieval/RusCrossbowman/SourceArt/Before-String-v5-Animation-Validation.json",
+      "archived": "Units/LateMedieval/RusCrossbowman/_TO BE DELETED/SourceArt/Before-String-v5-Animation-Validation.json",
+      "sha256": "6d6aff98f827b964e89bac85f345c134ca710734809bce0689e81fd635c40ac8",
+      "size": 25348
+    },
+    {
+      "original": "Units/LateMedieval/RusCrossbowman/SourceArt/compose_animations.py",
+      "archived": "Units/LateMedieval/RusCrossbowman/_TO BE DELETED/SourceArt/compose_animations.py",
+      "sha256": "2fc724cfcb149001445a8f4b2165aa86a8dd29f756f0c8372f2902e955cf7b6a",
+      "size": 6578
+    },
+    {
+      "original": "Units/LateMedieval/RusCrossbowman/SourceArt/compose_animations_before_v5.py",
+      "archived": "Units/LateMedieval/RusCrossbowman/_TO BE DELETED/SourceArt/compose_animations_before_v5.py",
+      "sha256": "85ae2851203e74e0147145763bcc15be87e801be76b0ab9466cae61f04880173",
+      "size": 6278
+    },
+    {
+      "original": "Units/LateMedieval/RusCrossbowman/SourceArt/Composition.json",
+      "archived": "Units/LateMedieval/RusCrossbowman/_TO BE DELETED/SourceArt/Composition.json",
+      "sha256": "aaefd34cf15806c22c658df9a2cda86026ee9d37960c4ad02a936f0c1460d635",
+      "size": 34942
+    },
+    {
+      "original": "Units/LateMedieval/RusCrossbowman/SourceArt/Lowered-Idle-Correction.json",
+      "archived": "Units/LateMedieval/RusCrossbowman/_TO BE DELETED/SourceArt/Lowered-Idle-Correction.json",
+      "sha256": "7a338db1bd1b4a3540705d91c74f817f90280575796b9d1930ced77f257e7750",
+      "size": 2051
+    },
+    {
+      "original": "Units/LateMedieval/RusCrossbowman/SourceArt/Motion-v6-Composition.json",
+      "archived": "Units/LateMedieval/RusCrossbowman/_TO BE DELETED/SourceArt/Motion-v6-Composition.json",
+      "sha256": "2871cc3958c7ac5f5d4896163e9238446fd08901714cdb2b72213c62035a288f",
+      "size": 5075
+    },
+    {
+      "original": "Units/LateMedieval/RusCrossbowman/SourceArt/Motion-v6-Generation.json",
+      "archived": "Units/LateMedieval/RusCrossbowman/_TO BE DELETED/SourceArt/Motion-v6-Generation.json",
+      "sha256": "a4d8cab03df0ec408fbcf98ac06fafc06fab27fc1ee0b8bf54b151c0bc309ceb",
+      "size": 4102
+    },
+    {
+      "original": "Units/LateMedieval/RusCrossbowman/SourceArt/Native-attack-motion-v6.png",
+      "archived": "Units/LateMedieval/RusCrossbowman/_TO BE DELETED/SourceArt/Native-attack-motion-v6.png",
+      "sha256": "e827e2b01fa15e3bddfe8ff99f1c36f0f62215fd9c21587499c31f26a75883c6",
+      "size": 1913293
+    },
+    {
+      "original": "Units/LateMedieval/RusCrossbowman/SourceArt/Native-attack-motion-v6b.png",
+      "archived": "Units/LateMedieval/RusCrossbowman/_TO BE DELETED/SourceArt/Native-attack-motion-v6b.png",
+      "sha256": "297dd9c39c658b19a0e315ea5df9662fe4c6ed436a132546ae8107962b993aab",
+      "size": 2020032
+    },
+    {
+      "original": "Units/LateMedieval/RusCrossbowman/SourceArt/Native-attack-string-v5-clean.png",
+      "archived": "Units/LateMedieval/RusCrossbowman/_TO BE DELETED/SourceArt/Native-attack-string-v5-clean.png",
+      "sha256": "3684050d5b91795d8278525a9b4afcd4c747e885d4ef19afecd0c3a5befe9cb6",
+      "size": 1978201
+    },
+    {
+      "original": "Units/LateMedieval/RusCrossbowman/SourceArt/Native-attack-string-v5.png",
+      "archived": "Units/LateMedieval/RusCrossbowman/_TO BE DELETED/SourceArt/Native-attack-string-v5.png",
+      "sha256": "e31d528b860296be2c2f985d2ab74671a39ad8265a8e4de3f1c677f4205ed540",
+      "size": 2370445
+    },
+    {
+      "original": "Units/LateMedieval/RusCrossbowman/SourceArt/Native-attack-string-v5b.png",
+      "archived": "Units/LateMedieval/RusCrossbowman/_TO BE DELETED/SourceArt/Native-attack-string-v5b.png",
+      "sha256": "727313c9b24025740b90658fb9595014aad456dc0066c42f8552eee2543d5834",
+      "size": 2476754
+    },
+    {
+      "original": "Units/LateMedieval/RusCrossbowman/SourceArt/Native-attack.png",
+      "archived": "Units/LateMedieval/RusCrossbowman/_TO BE DELETED/SourceArt/Native-attack.png",
+      "sha256": "46f9cc2c81c89169c70244e1c8bb8e2cf00733064ad568a363470d460723fbec",
+      "size": 2289373
+    },
+    {
+      "original": "Units/LateMedieval/RusCrossbowman/SourceArt/Native-charge-attack-string-v5-clean.png",
+      "archived": "Units/LateMedieval/RusCrossbowman/_TO BE DELETED/SourceArt/Native-charge-attack-string-v5-clean.png",
+      "sha256": "85b78cfb7408470dfcad81ca3e3c25d28badfd9b56c685d10bc8afcf781fe751",
+      "size": 1958260
+    },
+    {
+      "original": "Units/LateMedieval/RusCrossbowman/SourceArt/Native-charge-attack-string-v5.png",
+      "archived": "Units/LateMedieval/RusCrossbowman/_TO BE DELETED/SourceArt/Native-charge-attack-string-v5.png",
+      "sha256": "6634c8574612aa338441af9694fdeaceaa83c7888db2c66417b7596e717133e6",
+      "size": 2318747
+    },
+    {
+      "original": "Units/LateMedieval/RusCrossbowman/SourceArt/Native-charge-attack-v2.png",
+      "archived": "Units/LateMedieval/RusCrossbowman/_TO BE DELETED/SourceArt/Native-charge-attack-v2.png",
+      "sha256": "5fb17a0cb1b9a7c3ba1b68b0ba028fa6d17639f2e1b9aca263f55e920f16a037",
+      "size": 2379577
+    },
+    {
+      "original": "Units/LateMedieval/RusCrossbowman/SourceArt/Native-charge-attack.png",
+      "archived": "Units/LateMedieval/RusCrossbowman/_TO BE DELETED/SourceArt/Native-charge-attack.png",
+      "sha256": "6ff6e52c3e0102e843563cb87358f370d0f28c58cf5d2937606f5886816d2114",
+      "size": 2424228
+    },
+    {
+      "original": "Units/LateMedieval/RusCrossbowman/SourceArt/Native-charge-string-v5-clean.png",
+      "archived": "Units/LateMedieval/RusCrossbowman/_TO BE DELETED/SourceArt/Native-charge-string-v5-clean.png",
+      "sha256": "ff473f6e78ad5ff5fa8659d71f25e1b1447ebedba383d60d9577cd1f32bad45e",
+      "size": 1989914
+    },
+    {
+      "original": "Units/LateMedieval/RusCrossbowman/SourceArt/Native-charge-string-v5.png",
+      "archived": "Units/LateMedieval/RusCrossbowman/_TO BE DELETED/SourceArt/Native-charge-string-v5.png",
+      "sha256": "ce2a9be82dd3fe20aa319ca6f3308fb52be0d38b87f599fe75d82423b36c1150",
+      "size": 2432473
+    },
+    {
+      "original": "Units/LateMedieval/RusCrossbowman/SourceArt/Native-charge.png",
+      "archived": "Units/LateMedieval/RusCrossbowman/_TO BE DELETED/SourceArt/Native-charge.png",
+      "sha256": "7bea5e02788484bfae876bf67be80d2bd593064da89c41599e9c09bcaf88cc76",
+      "size": 2264142
+    },
+    {
+      "original": "Units/LateMedieval/RusCrossbowman/SourceArt/Native-charged-string-v5-clean.png",
+      "archived": "Units/LateMedieval/RusCrossbowman/_TO BE DELETED/SourceArt/Native-charged-string-v5-clean.png",
+      "sha256": "e081280ee9b01728c9d22440d0164ca9a804b8caf8a9a8d39bd9b5e1c17c916d",
+      "size": 1972350
+    },
+    {
+      "original": "Units/LateMedieval/RusCrossbowman/SourceArt/Native-charged-string-v5.png",
+      "archived": "Units/LateMedieval/RusCrossbowman/_TO BE DELETED/SourceArt/Native-charged-string-v5.png",
+      "sha256": "47cff5f376cdb0f1b4b1753a3b41f629ae9aa3ee66c2180d72c9c48464695147",
+      "size": 2413387
+    },
+    {
+      "original": "Units/LateMedieval/RusCrossbowman/SourceArt/Native-charged-string-v5b.png",
+      "archived": "Units/LateMedieval/RusCrossbowman/_TO BE DELETED/SourceArt/Native-charged-string-v5b.png",
+      "sha256": "0872a7d57226cf0192315af12c88f184004fc0bd3c8b9c26f172e016d1a610ff",
+      "size": 2372182
+    },
+    {
+      "original": "Units/LateMedieval/RusCrossbowman/SourceArt/Native-charged.png",
+      "archived": "Units/LateMedieval/RusCrossbowman/_TO BE DELETED/SourceArt/Native-charged.png",
+      "sha256": "097212aa86ee9f66528832b27021e878589343da30c1cc2817f8bed9e650b813",
+      "size": 2410258
+    },
+    {
+      "original": "Units/LateMedieval/RusCrossbowman/SourceArt/Native-death-back-string-v5-clean.png",
+      "archived": "Units/LateMedieval/RusCrossbowman/_TO BE DELETED/SourceArt/Native-death-back-string-v5-clean.png",
+      "sha256": "e3a0a0665f88dbd0ffa0b1839f9ad163e66f4d7cab60c86751f1929d405f0327",
+      "size": 2054605
+    },
+    {
+      "original": "Units/LateMedieval/RusCrossbowman/SourceArt/Native-death-back-string-v5.png",
+      "archived": "Units/LateMedieval/RusCrossbowman/_TO BE DELETED/SourceArt/Native-death-back-string-v5.png",
+      "sha256": "3ee88d83d42dcbe667238445978bc1774d8bd214167f50c5d55793cd4498425b",
+      "size": 2427668
+    },
+    {
+      "original": "Units/LateMedieval/RusCrossbowman/SourceArt/Native-death-back-string-v5c.png",
+      "archived": "Units/LateMedieval/RusCrossbowman/_TO BE DELETED/SourceArt/Native-death-back-string-v5c.png",
+      "sha256": "543e07b9ac72533495bbee0ddb3fe26825966c89ed5112304ce1566b4c75acd0",
+      "size": 2382221
+    },
+    {
+      "original": "Units/LateMedieval/RusCrossbowman/SourceArt/Native-death-back.png",
+      "archived": "Units/LateMedieval/RusCrossbowman/_TO BE DELETED/SourceArt/Native-death-back.png",
+      "sha256": "9d2698de074027bc23df5c575d62c1cde09d23652c24ba2dc36c6fe759c4da1d",
+      "size": 2337758
+    },
+    {
+      "original": "Units/LateMedieval/RusCrossbowman/SourceArt/Native-death-string-v5-clean.png",
+      "archived": "Units/LateMedieval/RusCrossbowman/_TO BE DELETED/SourceArt/Native-death-string-v5-clean.png",
+      "sha256": "31a713662983f12c7e584517423027707f2145980448e65bf521224503beee3f",
+      "size": 1846169
+    },
+    {
+      "original": "Units/LateMedieval/RusCrossbowman/SourceArt/Native-death-string-v5.png",
+      "archived": "Units/LateMedieval/RusCrossbowman/_TO BE DELETED/SourceArt/Native-death-string-v5.png",
+      "sha256": "52f68c491a4ecada6e9dd3ac49a972f05c85edeaa42a27da315fa0ee4ce2e7cf",
+      "size": 2236140
+    },
+    {
+      "original": "Units/LateMedieval/RusCrossbowman/SourceArt/Native-death.png",
+      "archived": "Units/LateMedieval/RusCrossbowman/_TO BE DELETED/SourceArt/Native-death.png",
+      "sha256": "a512755840bf1d7536aebffe8b1b0272212a5ad0411e49a35ce26c300a554f86",
+      "size": 2232204
+    },
+    {
+      "original": "Units/LateMedieval/RusCrossbowman/SourceArt/Native-hit-string-v5-clean.png",
+      "archived": "Units/LateMedieval/RusCrossbowman/_TO BE DELETED/SourceArt/Native-hit-string-v5-clean.png",
+      "sha256": "60bf008742a8251b3fb3df5b2337a248fd95e6feac23b1fc5cda25323d592be4",
+      "size": 2067728
+    },
+    {
+      "original": "Units/LateMedieval/RusCrossbowman/SourceArt/Native-hit-string-v5.png",
+      "archived": "Units/LateMedieval/RusCrossbowman/_TO BE DELETED/SourceArt/Native-hit-string-v5.png",
+      "sha256": "1920c39f7dcc840b5166e4cf0d91c5cea813989770d3c4237ff5ddf171d79c2c",
+      "size": 2471380
+    },
+    {
+      "original": "Units/LateMedieval/RusCrossbowman/SourceArt/Native-hit.png",
+      "archived": "Units/LateMedieval/RusCrossbowman/_TO BE DELETED/SourceArt/Native-hit.png",
+      "sha256": "85cabaa8380f49134f6481572b3a4dc67615a3854fdba1f08d055ae8b433cc73",
+      "size": 2391011
+    },
+    {
+      "original": "Units/LateMedieval/RusCrossbowman/SourceArt/Native-Idle-Lowered-v3.png",
+      "archived": "Units/LateMedieval/RusCrossbowman/_TO BE DELETED/SourceArt/Native-Idle-Lowered-v3.png",
+      "sha256": "e913e468d53d9ddb6f67616c8054be8f878572f7039c9ff2591a3f1682663fb0",
+      "size": 963845
+    },
+    {
+      "original": "Units/LateMedieval/RusCrossbowman/SourceArt/Native-idle-motion-v6.png",
+      "archived": "Units/LateMedieval/RusCrossbowman/_TO BE DELETED/SourceArt/Native-idle-motion-v6.png",
+      "sha256": "cf043b61a39f54e5126f13b577a57a1b451b2c471b800c43b2eb49d56d0bffb9",
+      "size": 2063690
+    },
+    {
+      "original": "Units/LateMedieval/RusCrossbowman/SourceArt/Native-Idle-String-Draft.png",
+      "archived": "Units/LateMedieval/RusCrossbowman/_TO BE DELETED/SourceArt/Native-Idle-String-Draft.png",
+      "sha256": "bda314ec15ef0e04b63eabd9132dceeb23a7160f55b0db0567914125dd85f20c",
+      "size": 963005
+    },
+    {
+      "original": "Units/LateMedieval/RusCrossbowman/SourceArt/Native-Idle-String-v4.png",
+      "archived": "Units/LateMedieval/RusCrossbowman/_TO BE DELETED/SourceArt/Native-Idle-String-v4.png",
+      "sha256": "389fae476b73ed6f02f2a733d4230fe8edadf93a8a11baf32b60e0ada1de5714",
+      "size": 951051
+    },
+    {
+      "original": "Units/LateMedieval/RusCrossbowman/SourceArt/Native-idle-string-v5-clean.png",
+      "archived": "Units/LateMedieval/RusCrossbowman/_TO BE DELETED/SourceArt/Native-idle-string-v5-clean.png",
+      "sha256": "391516936400accacbb9b7549d2b678859b88262adf31cfd5d08d7c2bd39c633",
+      "size": 2078618
+    },
+    {
+      "original": "Units/LateMedieval/RusCrossbowman/SourceArt/Native-Idle-String-v5.png",
+      "archived": "Units/LateMedieval/RusCrossbowman/_TO BE DELETED/SourceArt/Native-Idle-String-v5.png",
+      "sha256": "25a704442959fba3bdcfb24d4def9db1183d1b7521891e17d62588a976417846",
+      "size": 2456094
+    },
+    {
+      "original": "Units/LateMedieval/RusCrossbowman/SourceArt/Native-idle-string-v5b.png",
+      "archived": "Units/LateMedieval/RusCrossbowman/_TO BE DELETED/SourceArt/Native-idle-string-v5b.png",
+      "sha256": "ca2316b497eb67d3e735c2be00486a21e645e4cb00f8ddb15111c2497c591019",
+      "size": 2538549
+    },
+    {
+      "original": "Units/LateMedieval/RusCrossbowman/SourceArt/Native-Idle-TopDown-v2.png",
+      "archived": "Units/LateMedieval/RusCrossbowman/_TO BE DELETED/SourceArt/Native-Idle-TopDown-v2.png",
+      "sha256": "3cb3c8f37cccfef0d191c043e25cac45f13f16b98c1d36599abb93ccbf7d9403",
+      "size": 966642
+    },
+    {
+      "original": "Units/LateMedieval/RusCrossbowman/SourceArt/Native-Idle-v1.png",
+      "archived": "Units/LateMedieval/RusCrossbowman/_TO BE DELETED/SourceArt/Native-Idle-v1.png",
+      "sha256": "4ac1f371caf539a22b6d6f19c2101c36950a72fb010cc47af3430779f5b7c0aa",
+      "size": 940996
+    },
+    {
+      "original": "Units/LateMedieval/RusCrossbowman/SourceArt/Native-idle.png",
+      "archived": "Units/LateMedieval/RusCrossbowman/_TO BE DELETED/SourceArt/Native-idle.png",
+      "sha256": "25b3807c42ac365e2b6e35e532e1e489079687f51c71506d83de08f341a99a75",
+      "size": 2476383
+    },
+    {
+      "original": "Units/LateMedieval/RusCrossbowman/SourceArt/Native-reload-string-v5-clean.png",
+      "archived": "Units/LateMedieval/RusCrossbowman/_TO BE DELETED/SourceArt/Native-reload-string-v5-clean.png",
+      "sha256": "fb13ffb464ce78d55ad9817bb2d9aebc7c74e07b7ad96eb727c0799c00808e16",
+      "size": 2043917
+    },
+    {
+      "original": "Units/LateMedieval/RusCrossbowman/SourceArt/Native-reload-string-v5.png",
+      "archived": "Units/LateMedieval/RusCrossbowman/_TO BE DELETED/SourceArt/Native-reload-string-v5.png",
+      "sha256": "94f41b634adbb8c1fdfaa3c1b02afbcffd6085e8f12689cc36a5a618b5800de6",
+      "size": 2522258
+    },
+    {
+      "original": "Units/LateMedieval/RusCrossbowman/SourceArt/Native-reload-string-v5b.png",
+      "archived": "Units/LateMedieval/RusCrossbowman/_TO BE DELETED/SourceArt/Native-reload-string-v5b.png",
+      "sha256": "a3cefd47b63ef4cd7d0d9cc6d506abf4dedaf17c5ff867ba2e1514a12953e5e5",
+      "size": 2685921
+    },
+    {
+      "original": "Units/LateMedieval/RusCrossbowman/SourceArt/Native-reload-string-v5c.png",
+      "archived": "Units/LateMedieval/RusCrossbowman/_TO BE DELETED/SourceArt/Native-reload-string-v5c.png",
+      "sha256": "08e5b0dcded4951bdc57ccd3a5ad4963ac3b9f92775d9dff67278455009a0926",
+      "size": 2429042
+    },
+    {
+      "original": "Units/LateMedieval/RusCrossbowman/SourceArt/Native-reload-v2.png",
+      "archived": "Units/LateMedieval/RusCrossbowman/_TO BE DELETED/SourceArt/Native-reload-v2.png",
+      "sha256": "cf2348cf89aa866ae042fc1944131826538900615b0c540c36cddecc1d9fa9fc",
+      "size": 2565957
+    },
+    {
+      "original": "Units/LateMedieval/RusCrossbowman/SourceArt/Native-reload.png",
+      "archived": "Units/LateMedieval/RusCrossbowman/_TO BE DELETED/SourceArt/Native-reload.png",
+      "sha256": "e8d04bbc372a54ba1a6e0869ef55505f5019fd56ebef5fef318ef5ccf0a95af7",
+      "size": 2378109
+    },
+    {
+      "original": "Units/LateMedieval/RusCrossbowman/SourceArt/Native-running-string-v5-clean.png",
+      "archived": "Units/LateMedieval/RusCrossbowman/_TO BE DELETED/SourceArt/Native-running-string-v5-clean.png",
+      "sha256": "ec4b3497edc0c1367a5d3c855cf43914f0d5031c0562cafd83a14f7de3dafee0",
+      "size": 1993927
+    },
+    {
+      "original": "Units/LateMedieval/RusCrossbowman/SourceArt/Native-running-string-v5.png",
+      "archived": "Units/LateMedieval/RusCrossbowman/_TO BE DELETED/SourceArt/Native-running-string-v5.png",
+      "sha256": "f714b1ee9ec544b9c8a8836c70b4676f1a7d48473c50fbf06169ae2a0ee4f6fa",
+      "size": 2426068
+    },
+    {
+      "original": "Units/LateMedieval/RusCrossbowman/SourceArt/Native-running.png",
+      "archived": "Units/LateMedieval/RusCrossbowman/_TO BE DELETED/SourceArt/Native-running.png",
+      "sha256": "2f61cbc9cc1f8aea0460d9df78d4a3d438556cf612e7ed0c17d5753c8eb1a114",
+      "size": 2342629
+    },
+    {
+      "original": "Units/LateMedieval/RusCrossbowman/SourceArt/prepare_idle.py",
+      "archived": "Units/LateMedieval/RusCrossbowman/_TO BE DELETED/SourceArt/prepare_idle.py",
+      "sha256": "4ac89fb30b61803834fda1fc31062083df7c940006d1b0e9bce64de9d2847e12",
+      "size": 3548
+    },
+    {
+      "original": "Units/LateMedieval/RusCrossbowman/SourceArt/String-Correction.json",
+      "archived": "Units/LateMedieval/RusCrossbowman/_TO BE DELETED/SourceArt/String-Correction.json",
+      "sha256": "bb6d121324d677d08031bcf60dc720a78479de8977a19bf529501125ae4106b8",
+      "size": 5194
+    },
+    {
+      "original": "Units/LateMedieval/RusCrossbowman/SourceArt/String-Nock-v5.json",
+      "archived": "Units/LateMedieval/RusCrossbowman/_TO BE DELETED/SourceArt/String-Nock-v5.json",
+      "sha256": "83650c55871d3d9f330a33ee669b8002f7d03afa31fe2d59f146b059d8b37355",
+      "size": 1746
+    },
+    {
+      "original": "Units/LateMedieval/RusCrossbowman/SourceArt/TopDown-Correction.json",
+      "archived": "Units/LateMedieval/RusCrossbowman/_TO BE DELETED/SourceArt/TopDown-Correction.json",
+      "sha256": "68ff943feddc2aef0c68a1a59337d9f840d6e9f2ff5dff6f624dcf74de128814",
+      "size": 1778
+    },
+    {
+      "original": "Units/LateMedieval/RusCrossbowman/SourceArt/Transparency-Generation.json",
+      "archived": "Units/LateMedieval/RusCrossbowman/_TO BE DELETED/SourceArt/Transparency-Generation.json",
+      "sha256": "b2192ebf43f58d06edec8e9386c5dcf88eb907f448bb408d9a5f694f60529e1c",
+      "size": 11786
+    },
+    {
+      "original": "Units/LateMedieval/RusCrossbowman/Validation.json",
+      "archived": "Units/LateMedieval/RusCrossbowman/_TO BE DELETED/Validation.json",
+      "sha256": "2c21e5514466190b9784f934011a051ec51876bf734d0b1c0ecdd819556296e3",
+      "size": 25097
+    }
+  ]
+}

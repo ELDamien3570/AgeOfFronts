@@ -88,7 +88,8 @@
         5
       ],
       "sha256": "5c9b324646dbaa5412794f747f1362459b6f622fbfff5adb61451af3a8488c11",
-      "weapon": "Bronze mace"
+      "weapon": "Bronze mace",
+      "releaseFrame": 3
     },
     {
       "id": "running",
@@ -177,14 +178,15 @@
         5
       ],
       "sha256": "614956117ee502bc0322d013c7362226d2e9019dc7346d73c2b12e1e338f5501",
-      "weapon": "Bronze mace"
+      "weapon": "Bronze mace",
+      "releaseFrame": 3
     },
     {
       "id": "attack",
       "file": "attack.png",
       "label": "Mace swing",
       "loop": false,
-      "scale": 1.46667,
+      "scale": 1.53846,
       "durations": [
         120,
         180,
@@ -193,7 +195,7 @@
         150,
         220
       ],
-      "description": "Plant, coil the hips and shoulders, drive the mace across the front and commit to the follow-through.",
+      "description": "Use the same planted, body-driven mace swing as charge attack.",
       "frameCount": 6,
       "frames": [
         {
@@ -202,8 +204,8 @@
           "width": 128,
           "height": 128,
           "pivot": {
-            "x": 62.75,
-            "y": 61.375
+            "x": 64.875,
+            "y": 65.625
           }
         },
         {
@@ -212,8 +214,8 @@
           "width": 128,
           "height": 128,
           "pivot": {
-            "x": 61.25,
-            "y": 63.75
+            "x": 67.125,
+            "y": 69.125
           }
         },
         {
@@ -222,8 +224,8 @@
           "width": 128,
           "height": 128,
           "pivot": {
-            "x": 63.5,
-            "y": 61.125
+            "x": 70.75,
+            "y": 70.5
           }
         },
         {
@@ -233,7 +235,7 @@
           "height": 128,
           "pivot": {
             "x": 65.0,
-            "y": 54.0
+            "y": 54.3725
           }
         },
         {
@@ -242,8 +244,8 @@
           "width": 128,
           "height": 128,
           "pivot": {
-            "x": 69.9675,
-            "y": 48.625
+            "x": 76.1225,
+            "y": 56.0
           }
         },
         {
@@ -252,8 +254,8 @@
           "width": 128,
           "height": 128,
           "pivot": {
-            "x": 61.75,
-            "y": 55.625
+            "x": 59.75,
+            "y": 52.25
           }
         }
       ],
@@ -266,8 +268,9 @@
         4,
         5
       ],
-      "sha256": "12e7c1eae822cb5ee454d58781398f8d592a3843ff472ea592f999a0dcb9c009",
-      "weapon": "Bronze mace"
+      "sha256": "2edd1b0f041ac9459f25e35fc0a30b258d8e116c2bc7d8e13c8fc29b06c7d3cb",
+      "weapon": "Bronze mace",
+      "releaseFrame": 3
     },
     {
       "id": "death",
@@ -357,15 +360,16 @@
       ],
       "sha256": "3df34759aca6521f80b7923dd6a866a02814c8e41ea47fa3ad894226ec28a24e",
       "weapon": "Bronze mace",
-      "corpseFile": "Corpse-Prone-BronzeMace-v4.png"
+      "corpseFile": "Corpse-Prone-BronzeMace-v4.png",
+      "releaseFrame": 3
     }
   ],
   "source": "Art/Cultures/Russians/Units/BronzeAge/BronzeAxeman/animations.json",
-  "metadataHash": "e10656831c0a348982fefe9931f096e28180587e6f741931e351bae6b4658530",
+  "metadataHash": "0029967dbcbb5dd777edfd316690cd6bd65f089850a6de6bb8265e0f6b0e55c1",
   "hashes": {
     "Art/Cultures/Russians/Units/BronzeAge/BronzeAxeman/Idle-BronzeMace-Nadir-v3.png": "5c9b324646dbaa5412794f747f1362459b6f622fbfff5adb61451af3a8488c11",
     "Art/Cultures/Russians/Units/BronzeAge/BronzeAxeman/Running-BronzeMace-Nadir-v4.png": "614956117ee502bc0322d013c7362226d2e9019dc7346d73c2b12e1e338f5501",
-    "Art/Cultures/Russians/Units/BronzeAge/BronzeAxeman/Attack-BronzeMace-Heavy-v6.png": "12e7c1eae822cb5ee454d58781398f8d592a3843ff472ea592f999a0dcb9c009",
+    "Art/Cultures/Russians/Units/BronzeAge/BronzeAxeman/ChargeAttack-BronzeMace-Heavy-v6.png": "2edd1b0f041ac9459f25e35fc0a30b258d8e116c2bc7d8e13c8fc29b06c7d3cb",
     "Art/Cultures/Russians/Units/BronzeAge/BronzeAxeman/Death-BronzeMace-Nadir-v4.png": "3df34759aca6521f80b7923dd6a866a02814c8e41ea47fa3ad894226ec28a24e"
   }
 }

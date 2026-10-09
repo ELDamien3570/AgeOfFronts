@@ -1,0 +1,18 @@
+{
+  "folder": "Buildings/StoneAge/Port/_TO BE DELETED",
+  "created": "2026-10-09T03:15:53.711Z",
+  "files": [
+    {
+      "original": "Buildings/StoneAge/Port/SourceArt/.gitkeep",
+      "archived": "Buildings/StoneAge/Port/_TO BE DELETED/SourceArt/.gitkeep",
+      "sha256": "01ba4719c80b6fe911b091a7c05124b64eeece964e09c058ef8f9805daca546b",
+      "size": 1
+    },
+    {
+      "original": "Buildings/StoneAge/Port/SourceArt/Icon-v1.png",
+      "archived": "Buildings/StoneAge/Port/_TO BE DELETED/SourceArt/Icon-v1.png",
+      "sha256": "65927a7007e1df15d52ec4ead0040e255374de19adaf017d07e0f2f84df2c1c1",
+      "size": 1809895
+    }
+  ]
+}

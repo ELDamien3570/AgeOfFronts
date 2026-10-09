@@ -87,7 +87,8 @@
         4,
         5
       ],
-      "reviewStatus": "user-approved"
+      "reviewStatus": "user-approved",
+      "releaseFrame": 3
     },
     {
       "id": "running",
@@ -175,7 +176,8 @@
         4,
         5
       ],
-      "reviewStatus": "user-approved"
+      "reviewStatus": "user-approved",
+      "releaseFrame": 3
     },
     {
       "id": "attack",
@@ -264,7 +266,8 @@
         5
       ],
       "impactFrame": 3,
-      "reviewStatus": "pending-forward-shot-review"
+      "reviewStatus": "pending-forward-shot-review",
+      "releaseFrame": 3
     },
     {
       "id": "death",
@@ -352,7 +355,8 @@
         4,
         5
       ],
-      "reviewStatus": "user-approved"
+      "reviewStatus": "user-approved",
+      "releaseFrame": 3
     }
   ],
   "source": "Art/Cultures/Russians/Units/ClassicalAge/HorseArcher/animations.json",

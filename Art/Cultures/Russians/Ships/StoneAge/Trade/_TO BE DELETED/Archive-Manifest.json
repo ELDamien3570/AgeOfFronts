@@ -1,0 +1,36 @@
+{
+  "folder": "Ships/StoneAge/Trade/_TO BE DELETED",
+  "created": "2026-10-09T03:15:53.711Z",
+  "files": [
+    {
+      "original": "Ships/StoneAge/Trade/Idle-Preview.webp",
+      "archived": "Ships/StoneAge/Trade/_TO BE DELETED/Idle-Preview.webp",
+      "sha256": "b2a9a835e6704e4527ac9912bf9fab076fe12a47c833ba57aaccf38812c791e5",
+      "size": 1431882
+    },
+    {
+      "original": "Ships/StoneAge/Trade/Sailing-Preview.webp",
+      "archived": "Ships/StoneAge/Trade/_TO BE DELETED/Sailing-Preview.webp",
+      "sha256": "dd8370fa6ec039366ba5474cd1c9b8d9d9c1210f0ca6c2c51211c4a5fa7c18be",
+      "size": 1456574
+    },
+    {
+      "original": "Ships/StoneAge/Trade/SourceArt/.gitkeep",
+      "archived": "Ships/StoneAge/Trade/_TO BE DELETED/SourceArt/.gitkeep",
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "size": 0
+    },
+    {
+      "original": "Ships/StoneAge/Trade/SourceArt/Trade_Russian_StoneAge_v1.png",
+      "archived": "Ships/StoneAge/Trade/_TO BE DELETED/SourceArt/Trade_Russian_StoneAge_v1.png",
+      "sha256": "739ba2b5fa81d727aaad390fab287fc82910ddfeb87c682f41018ca431309ad9",
+      "size": 1183198
+    },
+    {
+      "original": "Ships/StoneAge/Trade/Source_Transparent.png",
+      "archived": "Ships/StoneAge/Trade/_TO BE DELETED/Source_Transparent.png",
+      "sha256": "bd788ca2fa8116057ec8a762b4758c7ecb30d8cc61c7e563788e5dfa529c74ab",
+      "size": 1360942
+    }
+  ]
+}

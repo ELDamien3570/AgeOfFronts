@@ -1,0 +1,48 @@
+{
+  "folder": "Traders/StoneAge/_TO BE DELETED",
+  "created": "2026-10-09T03:15:53.711Z",
+  "files": [
+    {
+      "original": "Traders/StoneAge/Animation_Validation.json",
+      "archived": "Traders/StoneAge/_TO BE DELETED/Animation_Validation.json",
+      "sha256": "a4a90a99c434417b9b82dd4ce9eac9152294be65ab68c017583c07563fd5c91c",
+      "size": 4894
+    },
+    {
+      "original": "Traders/StoneAge/Idle.webp",
+      "archived": "Traders/StoneAge/_TO BE DELETED/Idle.webp",
+      "sha256": "56c69dff0ef45a4be29b06b24633c8a82b8d43d1b9b312ccafe426cef22df3e5",
+      "size": 900314
+    },
+    {
+      "original": "Traders/StoneAge/layers/Old_Legs_Removal_Mask.png",
+      "archived": "Traders/StoneAge/_TO BE DELETED/layers/Old_Legs_Removal_Mask.png",
+      "sha256": "71865dd52cc84098f6cf782c1575cd54bb1559141b8f544e38173f5c35e941da",
+      "size": 2905
+    },
+    {
+      "original": "Traders/StoneAge/layers/Original_Painting.png",
+      "archived": "Traders/StoneAge/_TO BE DELETED/layers/Original_Painting.png",
+      "sha256": "861aa8949557e0ec52dddc6b7fc7abe74338393ce469bd83d64177f6a9db7823",
+      "size": 1049595
+    },
+    {
+      "original": "Traders/StoneAge/rig-authoring.json",
+      "archived": "Traders/StoneAge/_TO BE DELETED/rig-authoring.json",
+      "sha256": "f4fc303ffcb659f5102949ac8af9e87180b8331feedadb0c7334641cda7d00a7",
+      "size": 2192
+    },
+    {
+      "original": "Traders/StoneAge/Source_Transparent.png",
+      "archived": "Traders/StoneAge/_TO BE DELETED/Source_Transparent.png",
+      "sha256": "d16561aca42921ceca986963ed56f611b877163c7c1e6fee6a5f7a3c79668827",
+      "size": 918153
+    },
+    {
+      "original": "Traders/StoneAge/Travel.webp",
+      "archived": "Traders/StoneAge/_TO BE DELETED/Travel.webp",
+      "sha256": "a4dbe2702249f2a8c4249f974864382c8676d53ae9cbce33b731bb98c061d30b",
+      "size": 945926
+    }
+  ]
+}

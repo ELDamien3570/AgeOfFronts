@@ -1,0 +1,18 @@
+{
+  "folder": "Buildings/BronzeAge/Blacksmith/_TO BE DELETED",
+  "created": "2026-10-09T03:15:53.711Z",
+  "files": [
+    {
+      "original": "Buildings/BronzeAge/Blacksmith/SourceArt/Icon-v1.png",
+      "archived": "Buildings/BronzeAge/Blacksmith/_TO BE DELETED/SourceArt/Icon-v1.png",
+      "sha256": "e907186e2c8f2b8db877f5ed5d45a727193305abe08e718575fc2afdeeeab323",
+      "size": 2631064
+    },
+    {
+      "original": "Buildings/BronzeAge/Blacksmith/SourceArt/Icon-v2.png",
+      "archived": "Buildings/BronzeAge/Blacksmith/_TO BE DELETED/SourceArt/Icon-v2.png",
+      "sha256": "fb11f8ee8ab1ef8681c2d79116016a4a381f4438685f93c65a586a66a4831e57",
+      "size": 2926327
+    }
+  ]
+}

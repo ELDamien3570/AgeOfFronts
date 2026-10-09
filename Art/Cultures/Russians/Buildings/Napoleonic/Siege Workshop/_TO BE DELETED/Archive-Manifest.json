@@ -1,0 +1,18 @@
+{
+  "folder": "Buildings/Napoleonic/Siege Workshop/_TO BE DELETED",
+  "created": "2026-10-09T03:15:53.711Z",
+  "files": [
+    {
+      "original": "Buildings/Napoleonic/Siege Workshop/SourceArt/Icon-v1.png",
+      "archived": "Buildings/Napoleonic/Siege Workshop/_TO BE DELETED/SourceArt/Icon-v1.png",
+      "sha256": "bf48199253a3424baafd5b14dfcc3d878268d561f11ed6a4d3089569a4ed15ab",
+      "size": 2362703
+    },
+    {
+      "original": "Buildings/Napoleonic/Siege Workshop/SourceArt/Icon-v2.png",
+      "archived": "Buildings/Napoleonic/Siege Workshop/_TO BE DELETED/SourceArt/Icon-v2.png",
+      "sha256": "6b459fa1026d951e1b35f55cb03dd3097c4f44298d30aa59a59c155991bcd88f",
+      "size": 2382319
+    }
+  ]
+}

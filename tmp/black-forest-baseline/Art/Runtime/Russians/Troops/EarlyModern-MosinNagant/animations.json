@@ -1,0 +1,371 @@
+{
+  "actorCount": 1,
+  "animations": [
+    {
+      "id": "idle",
+      "label": "Idle",
+      "file": "idle.png",
+      "loop": true,
+      "scale": 0.8333333333333334,
+      "frameCount": 6,
+      "durations": [
+        250,
+        250,
+        250,
+        250,
+        250,
+        250
+      ],
+      "description": "Subtle breathing with a steady two-handed rifle grip.",
+      "frames": [
+        {
+          "x": 0,
+          "y": 0,
+          "width": 128,
+          "height": 128,
+          "pivot": {
+            "x": 49.75,
+            "y": 58.0
+          }
+        },
+        {
+          "x": 128,
+          "y": 0,
+          "width": 128,
+          "height": 128,
+          "pivot": {
+            "x": 48.25,
+            "y": 58.0
+          }
+        },
+        {
+          "x": 256,
+          "y": 0,
+          "width": 128,
+          "height": 128,
+          "pivot": {
+            "x": 46.75,
+            "y": 58.0
+          }
+        },
+        {
+          "x": 384,
+          "y": 0,
+          "width": 128,
+          "height": 128,
+          "pivot": {
+            "x": 49.25,
+            "y": 48.0
+          }
+        },
+        {
+          "x": 512,
+          "y": 0,
+          "width": 128,
+          "height": 128,
+          "pivot": {
+            "x": 48.25,
+            "y": 48.0
+          }
+        },
+        {
+          "x": 640,
+          "y": 0,
+          "width": 128,
+          "height": 128,
+          "pivot": {
+            "x": 47.75,
+            "y": 48.0
+          }
+        }
+      ],
+      "sourceFrameOrder": [
+        0,
+        1,
+        2,
+        3,
+        4,
+        5
+      ],
+      "sha256": "392798b4490204c70b7a2aeab81daa73bbea12cc3381204f7d56ddef77661f19",
+      "releaseFrame": 3
+    },
+    {
+      "id": "running",
+      "label": "Run",
+      "file": "running.png",
+      "loop": true,
+      "scale": 0.9205020920502092,
+      "frameCount": 6,
+      "durations": [
+        100,
+        100,
+        100,
+        100,
+        100,
+        100
+      ],
+      "description": "Alternating stride with the rifle held in both hands.",
+      "frames": [
+        {
+          "x": 0,
+          "y": 0,
+          "width": 128,
+          "height": 128,
+          "pivot": {
+            "x": 61.5,
+            "y": 55.0
+          }
+        },
+        {
+          "x": 128,
+          "y": 0,
+          "width": 128,
+          "height": 128,
+          "pivot": {
+            "x": 59.0,
+            "y": 56.75
+          }
+        },
+        {
+          "x": 256,
+          "y": 0,
+          "width": 128,
+          "height": 128,
+          "pivot": {
+            "x": 56.25,
+            "y": 55.75
+          }
+        },
+        {
+          "x": 384,
+          "y": 0,
+          "width": 128,
+          "height": 128,
+          "pivot": {
+            "x": 62.75,
+            "y": 52.25
+          }
+        },
+        {
+          "x": 512,
+          "y": 0,
+          "width": 128,
+          "height": 128,
+          "pivot": {
+            "x": 60.0,
+            "y": 52.75
+          }
+        },
+        {
+          "x": 640,
+          "y": 0,
+          "width": 128,
+          "height": 128,
+          "pivot": {
+            "x": 63.5,
+            "y": 53.25
+          }
+        }
+      ],
+      "sourceFrameOrder": [
+        0,
+        1,
+        2,
+        3,
+        4,
+        5
+      ],
+      "sha256": "050fd37a3ee5aefc864560f44dd64d9e5069a6d6796db07499c63314ea10ecbc",
+      "releaseFrame": 3
+    },
+    {
+      "id": "attack",
+      "label": "Fire Mosin",
+      "file": "attack.png",
+      "loop": false,
+      "scale": 0.873015873015873,
+      "frameCount": 6,
+      "durations": [
+        130,
+        160,
+        260,
+        70,
+        160,
+        220
+      ],
+      "description": "Turn the hips and shoulders into a bladed stance, shoulder the rifle and aim forward before firing.",
+      "frames": [
+        {
+          "x": 0,
+          "y": 0,
+          "width": 128,
+          "height": 128,
+          "pivot": {
+            "x": 64.75,
+            "y": 50.5
+          }
+        },
+        {
+          "x": 128,
+          "y": 0,
+          "width": 128,
+          "height": 128,
+          "pivot": {
+            "x": 64.75,
+            "y": 41.0
+          }
+        },
+        {
+          "x": 256,
+          "y": 0,
+          "width": 128,
+          "height": 128,
+          "pivot": {
+            "x": 65.75,
+            "y": 40.75
+          }
+        },
+        {
+          "x": 384,
+          "y": 0,
+          "width": 128,
+          "height": 128,
+          "pivot": {
+            "x": 66.25,
+            "y": 40.5
+          }
+        },
+        {
+          "x": 512,
+          "y": 0,
+          "width": 128,
+          "height": 128,
+          "pivot": {
+            "x": 66.75,
+            "y": 40.75
+          }
+        },
+        {
+          "x": 640,
+          "y": 0,
+          "width": 128,
+          "height": 128,
+          "pivot": {
+            "x": 66.75,
+            "y": 45.5
+          }
+        }
+      ],
+      "sourceFrameOrder": [
+        0,
+        1,
+        3,
+        2,
+        4,
+        5
+      ],
+      "sha256": "09b284764c634ab2cc364d368d423a23b19ea669ab3c5213ffecafedfecab6ef",
+      "impactFrame": 3,
+      "releaseFrame": 3
+    },
+    {
+      "id": "death",
+      "label": "Death - side fall",
+      "file": "death.png",
+      "loop": false,
+      "scale": 0.859375,
+      "frameCount": 6,
+      "durations": [
+        150,
+        170,
+        200,
+        220,
+        260,
+        400
+      ],
+      "description": "Buckle, collapse sideways and settle into a smaller prone corpse.",
+      "frames": [
+        {
+          "x": 0,
+          "y": 0,
+          "width": 128,
+          "height": 128,
+          "pivot": {
+            "x": 59.75,
+            "y": 36.5
+          }
+        },
+        {
+          "x": 128,
+          "y": 0,
+          "width": 128,
+          "height": 128,
+          "pivot": {
+            "x": 60.25,
+            "y": 41.75
+          }
+        },
+        {
+          "x": 256,
+          "y": 0,
+          "width": 128,
+          "height": 128,
+          "pivot": {
+            "x": 66.5,
+            "y": 46.25
+          }
+        },
+        {
+          "x": 384,
+          "y": 0,
+          "width": 128,
+          "height": 128,
+          "pivot": {
+            "x": 68.75,
+            "y": 56.75
+          }
+        },
+        {
+          "x": 512,
+          "y": 0,
+          "width": 128,
+          "height": 128,
+          "pivot": {
+            "x": 60.75,
+            "y": 62.25
+          }
+        },
+        {
+          "x": 640,
+          "y": 0,
+          "width": 128,
+          "height": 128,
+          "pivot": {
+            "x": 60.0,
+            "y": 61.5
+          }
+        }
+      ],
+      "sourceFrameOrder": [
+        0,
+        1,
+        2,
+        3,
+        4,
+        5
+      ],
+      "sha256": "6f019820257a9a62a95f93f013778e2076e7d2d592645c14adb6e2409fb834f5",
+      "corpseFile": "Corpse-Prone-v2.png",
+      "releaseFrame": 3
+    }
+  ],
+  "source": "Art/Cultures/Russians/Units/EarlyModern/MosinNagant/animations.json",
+  "metadataHash": "7764721ca64438315e675a4775a623256877fce471fb17386cb8eb1c10295abc",
+  "hashes": {
+    "Art/Cultures/Russians/Units/EarlyModern/MosinNagant/Idle-v2.png": "392798b4490204c70b7a2aeab81daa73bbea12cc3381204f7d56ddef77661f19",
+    "Art/Cultures/Russians/Units/EarlyModern/MosinNagant/Running-v2.png": "050fd37a3ee5aefc864560f44dd64d9e5069a6d6796db07499c63314ea10ecbc",
+    "Art/Cultures/Russians/Units/EarlyModern/MosinNagant/Attack-Aimed-v3.png": "09b284764c634ab2cc364d368d423a23b19ea669ab3c5213ffecafedfecab6ef",
+    "Art/Cultures/Russians/Units/EarlyModern/MosinNagant/Death-v2.png": "6f019820257a9a62a95f93f013778e2076e7d2d592645c14adb6e2409fb834f5"
+  }
+}

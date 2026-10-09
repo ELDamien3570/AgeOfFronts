@@ -1,0 +1,576 @@
+{
+  "folder": "Units/ClassicalAge/Pikeman/_TO BE DELETED",
+  "created": "2026-10-09T03:15:53.711Z",
+  "files": [
+    {
+      "original": "Units/ClassicalAge/Pikeman/Animation-Overview-v1.png",
+      "archived": "Units/ClassicalAge/Pikeman/_TO BE DELETED/Animation-Overview-v1.png",
+      "sha256": "a568cac6c694a7040bdf2db0924939febaf59c9914848497af5afa8b8e96eb68",
+      "size": 264083
+    },
+    {
+      "original": "Units/ClassicalAge/Pikeman/Attack-Overhand-Painterly-v5.png",
+      "archived": "Units/ClassicalAge/Pikeman/_TO BE DELETED/Attack-Overhand-Painterly-v5.png",
+      "sha256": "4eb53d9585297b4b85feb5fc870f6b4b5d306e99883663e51618caa66df83e48",
+      "size": 756224
+    },
+    {
+      "original": "Units/ClassicalAge/Pikeman/Attack-Overhand-v4.png",
+      "archived": "Units/ClassicalAge/Pikeman/_TO BE DELETED/Attack-Overhand-v4.png",
+      "sha256": "6ff08623a8afc9a21ed0823190bf86fb5bacd207b770369d10032a1ae60ee3af",
+      "size": 715831
+    },
+    {
+      "original": "Units/ClassicalAge/Pikeman/Attack-v2.png",
+      "archived": "Units/ClassicalAge/Pikeman/_TO BE DELETED/Attack-v2.png",
+      "sha256": "06b5300a479fda59d1f048e5c1f28faef29fc1cf57b72b55f97e6e07aa6a9610",
+      "size": 752954
+    },
+    {
+      "original": "Units/ClassicalAge/Pikeman/Charge-Attack-Overhand-Painterly-v4.png",
+      "archived": "Units/ClassicalAge/Pikeman/_TO BE DELETED/Charge-Attack-Overhand-Painterly-v4.png",
+      "sha256": "fff9bd8960162a11d1b52648b286725337f4536aceea50f36a659816a7d3a4e6",
+      "size": 796726
+    },
+    {
+      "original": "Units/ClassicalAge/Pikeman/Charge-Attack-Overhand-v3.png",
+      "archived": "Units/ClassicalAge/Pikeman/_TO BE DELETED/Charge-Attack-Overhand-v3.png",
+      "sha256": "59811bce66082f80554aa3f4641043f3f639c1f3abc713b1a0fa45fcd491c55c",
+      "size": 815726
+    },
+    {
+      "original": "Units/ClassicalAge/Pikeman/Charge-Attack-Rebuilt-v7.png",
+      "archived": "Units/ClassicalAge/Pikeman/_TO BE DELETED/Charge-Attack-Rebuilt-v7.png",
+      "sha256": "e384ab516ec66fb78734ca33b40ebdb05bc844fdb6d51c6c985b8b890ea2696a",
+      "size": 1412423
+    },
+    {
+      "original": "Units/ClassicalAge/Pikeman/Charge-Attack-v1.png",
+      "archived": "Units/ClassicalAge/Pikeman/_TO BE DELETED/Charge-Attack-v1.png",
+      "sha256": "87b44eb5ef2b7f2bf5adbe3d0e56cca0a5e1990447f812ea87938816cb661150",
+      "size": 679806
+    },
+    {
+      "original": "Units/ClassicalAge/Pikeman/Charge-Clean-Check-v1.png",
+      "archived": "Units/ClassicalAge/Pikeman/_TO BE DELETED/Charge-Clean-Check-v1.png",
+      "sha256": "d537af8a5c2f5adef03259fcb489ed0400a1fa19f5b4bf604fc226967755d58e",
+      "size": 186644
+    },
+    {
+      "original": "Units/ClassicalAge/Pikeman/Charge-Steady-Preview-v2.webp",
+      "archived": "Units/ClassicalAge/Pikeman/_TO BE DELETED/Charge-Steady-Preview-v2.webp",
+      "sha256": "131eb97d58eab482b140669954a538059f6208495d998bcbc33953b938bc9b05",
+      "size": 131932
+    },
+    {
+      "original": "Units/ClassicalAge/Pikeman/Charge-v1.png",
+      "archived": "Units/ClassicalAge/Pikeman/_TO BE DELETED/Charge-v1.png",
+      "sha256": "bbfee1f93b0a9a1216741b8d2d22e6d43dd99b6ea6c6b2ee80dbfb8a0cc2c15f",
+      "size": 781051
+    },
+    {
+      "original": "Units/ClassicalAge/Pikeman/Death-Side-v1.png",
+      "archived": "Units/ClassicalAge/Pikeman/_TO BE DELETED/Death-Side-v1.png",
+      "sha256": "9d78045de55e759a4b5160992a835c8ac705f1ddd9e139f7e4ebfd1cf728d3b5",
+      "size": 804910
+    },
+    {
+      "original": "Units/ClassicalAge/Pikeman/Generation.json",
+      "archived": "Units/ClassicalAge/Pikeman/_TO BE DELETED/Generation.json",
+      "sha256": "4060df34f00bf573f7531c6f466f0030975f610fe4c688f3765a99d170ff799c",
+      "size": 78272
+    },
+    {
+      "original": "Units/ClassicalAge/Pikeman/Idle-Animated-v1.png",
+      "archived": "Units/ClassicalAge/Pikeman/_TO BE DELETED/Idle-Animated-v1.png",
+      "sha256": "8f6aacf7e6966e60af2cbe755f9838a046625ebd2563baea920bc78ec340fb6c",
+      "size": 777581
+    },
+    {
+      "original": "Units/ClassicalAge/Pikeman/Idle-Smooth-Preview-v2.webp",
+      "archived": "Units/ClassicalAge/Pikeman/_TO BE DELETED/Idle-Smooth-Preview-v2.webp",
+      "sha256": "2951980da3f81225a03741fe8e56eb0fb575753d2112230ae5932a713f3afd16",
+      "size": 145364
+    },
+    {
+      "original": "Units/ClassicalAge/Pikeman/Idle-Smooth-Review-v2.png",
+      "archived": "Units/ClassicalAge/Pikeman/_TO BE DELETED/Idle-Smooth-Review-v2.png",
+      "sha256": "fde5cb6dfa287ebffa7de795b67c26f4e661099ccf3e3f8083ea0022ff9c1c9c",
+      "size": 49117
+    },
+    {
+      "original": "Units/ClassicalAge/Pikeman/Idle-v1.png",
+      "archived": "Units/ClassicalAge/Pikeman/_TO BE DELETED/Idle-v1.png",
+      "sha256": "cb8f6764bd47d72572a5e964853b82847bad2f3c265b50468a908016553f9363",
+      "size": 760531
+    },
+    {
+      "original": "Units/ClassicalAge/Pikeman/Overhand-Attack-Review-v1.png",
+      "archived": "Units/ClassicalAge/Pikeman/_TO BE DELETED/Overhand-Attack-Review-v1.png",
+      "sha256": "843c858903b36505b3a633d033a808da6d6f66bd1e82d2175407330dacf9c83d",
+      "size": 176391
+    },
+    {
+      "original": "Units/ClassicalAge/Pikeman/Painterly-Edge-Review-v1.png",
+      "archived": "Units/ClassicalAge/Pikeman/_TO BE DELETED/Painterly-Edge-Review-v1.png",
+      "sha256": "4e337a8778355a70a7dc0fb684c3f6d414ae16f2f7465885c482fecae6dc0bcc",
+      "size": 116001
+    },
+    {
+      "original": "Units/ClassicalAge/Pikeman/README.md",
+      "archived": "Units/ClassicalAge/Pikeman/_TO BE DELETED/README.md",
+      "sha256": "7136b3222caa4b67a041e352485cbb27eb268a180e75c0adae377ba1c2e0a247",
+      "size": 623
+    },
+    {
+      "original": "Units/ClassicalAge/Pikeman/Review-Verification.json",
+      "archived": "Units/ClassicalAge/Pikeman/_TO BE DELETED/Review-Verification.json",
+      "sha256": "44487ccd05998e36e938f65617d92eb8df33e3dc0ccb166dcb64d25606d812a8",
+      "size": 298
+    },
+    {
+      "original": "Units/ClassicalAge/Pikeman/SourceArt/Animation-Generation.json",
+      "archived": "Units/ClassicalAge/Pikeman/_TO BE DELETED/SourceArt/Animation-Generation.json",
+      "sha256": "7c9fbf4692672079b3ea1dd3b507dc1c4be91e764aef87fd47f82342f4f59fc2",
+      "size": 76282
+    },
+    {
+      "original": "Units/ClassicalAge/Pikeman/SourceArt/Approved-Idle.json",
+      "archived": "Units/ClassicalAge/Pikeman/_TO BE DELETED/SourceArt/Approved-Idle.json",
+      "sha256": "efca8cef91dcfa7b5c2cf8b5f32789baad4502fbfc0d1db4c5e3b3654edb281c",
+      "size": 173
+    },
+    {
+      "original": "Units/ClassicalAge/Pikeman/SourceArt/Before-Animation-Actor_Review.html",
+      "archived": "Units/ClassicalAge/Pikeman/_TO BE DELETED/SourceArt/Before-Animation-Actor_Review.html",
+      "sha256": "075611dbcd252e9795c3ef465bbd3eab122456f21d37b8b6ed0aae95d8c81d57",
+      "size": 7246
+    },
+    {
+      "original": "Units/ClassicalAge/Pikeman/SourceArt/Before-Animation-animations.json",
+      "archived": "Units/ClassicalAge/Pikeman/_TO BE DELETED/SourceArt/Before-Animation-animations.json",
+      "sha256": "b8ba8ab07e8c245f27dfc9544278081bc8d662d16e78e35e8401a1aeebe570d1",
+      "size": 1183
+    },
+    {
+      "original": "Units/ClassicalAge/Pikeman/SourceArt/Before-Animation-Generation.json",
+      "archived": "Units/ClassicalAge/Pikeman/_TO BE DELETED/SourceArt/Before-Animation-Generation.json",
+      "sha256": "a7e1bc8883c71399de4d2ed1ffa0906084e3087ebccc652df8ae6ea63a781936",
+      "size": 1996
+    },
+    {
+      "original": "Units/ClassicalAge/Pikeman/SourceArt/Before-Animation-Validation.json",
+      "archived": "Units/ClassicalAge/Pikeman/_TO BE DELETED/SourceArt/Before-Animation-Validation.json",
+      "sha256": "5140d65d35633065ee9720c34e39e92005a27354ac506bac92d4b1bff8dcab71",
+      "size": 279
+    },
+    {
+      "original": "Units/ClassicalAge/Pikeman/SourceArt/Before-Edge-Style-Animation-Generation.json",
+      "archived": "Units/ClassicalAge/Pikeman/_TO BE DELETED/SourceArt/Before-Edge-Style-Animation-Generation.json",
+      "sha256": "422b79899fda0f1686a3e25b96e9a020ac232eb702e7bceb0424c7cd260ac092",
+      "size": 37373
+    },
+    {
+      "original": "Units/ClassicalAge/Pikeman/SourceArt/Before-Edge-Style-animations.json",
+      "archived": "Units/ClassicalAge/Pikeman/_TO BE DELETED/SourceArt/Before-Edge-Style-animations.json",
+      "sha256": "fe1fb05facaef9a10624c3777c33c1d824a9666f6babf7067b0eac10af3d8858",
+      "size": 17906
+    },
+    {
+      "original": "Units/ClassicalAge/Pikeman/SourceArt/Before-Edge-Style-Generation.json",
+      "archived": "Units/ClassicalAge/Pikeman/_TO BE DELETED/SourceArt/Before-Edge-Style-Generation.json",
+      "sha256": "4f48dd028e12ad374a5701e9fd1371e7aaa05c09b511f52ee4fa59c8093066db",
+      "size": 39363
+    },
+    {
+      "original": "Units/ClassicalAge/Pikeman/SourceArt/Before-Edge-Style-Other-Clips.json",
+      "archived": "Units/ClassicalAge/Pikeman/_TO BE DELETED/SourceArt/Before-Edge-Style-Other-Clips.json",
+      "sha256": "ada65cd01e5bf3659907cefc7c1db99e11ce8dd221ecd7941fa0897df8a81091",
+      "size": 572
+    },
+    {
+      "original": "Units/ClassicalAge/Pikeman/SourceArt/Before-Edge-Style-Validation.json",
+      "archived": "Units/ClassicalAge/Pikeman/_TO BE DELETED/SourceArt/Before-Edge-Style-Validation.json",
+      "sha256": "fcaed8c4ced3998adbbc1fe17e996236b0c615e699d5b6675ec09e8dd3de46d7",
+      "size": 16520
+    },
+    {
+      "original": "Units/ClassicalAge/Pikeman/SourceArt/Before-Overhand-Animation-Generation.json",
+      "archived": "Units/ClassicalAge/Pikeman/_TO BE DELETED/SourceArt/Before-Overhand-Animation-Generation.json",
+      "sha256": "92cbe764ad7ae32414962396622b07854b72230e0c0c2aa41abb5c677040a69f",
+      "size": 25278
+    },
+    {
+      "original": "Units/ClassicalAge/Pikeman/SourceArt/Before-Overhand-animations.json",
+      "archived": "Units/ClassicalAge/Pikeman/_TO BE DELETED/SourceArt/Before-Overhand-animations.json",
+      "sha256": "249ffce61a7284758874c62b9dc406b27a2837d6aa73971ca74cd9ee9448819c",
+      "size": 17747
+    },
+    {
+      "original": "Units/ClassicalAge/Pikeman/SourceArt/Before-Overhand-compose_animations.py",
+      "archived": "Units/ClassicalAge/Pikeman/_TO BE DELETED/SourceArt/Before-Overhand-compose_animations.py",
+      "sha256": "0f765f72511ee7c7f460178bb86e823848767d1b4847b9aa5e6761e0204ca0b2",
+      "size": 6538
+    },
+    {
+      "original": "Units/ClassicalAge/Pikeman/SourceArt/Before-Overhand-Generation.json",
+      "archived": "Units/ClassicalAge/Pikeman/_TO BE DELETED/SourceArt/Before-Overhand-Generation.json",
+      "sha256": "beb62de7593c773015d57c275ed3d0c65d3b8fefe3058b45f5dac5663f952aa5",
+      "size": 27268
+    },
+    {
+      "original": "Units/ClassicalAge/Pikeman/SourceArt/Before-Overhand-Other-Clips.json",
+      "archived": "Units/ClassicalAge/Pikeman/_TO BE DELETED/SourceArt/Before-Overhand-Other-Clips.json",
+      "sha256": "ada65cd01e5bf3659907cefc7c1db99e11ce8dd221ecd7941fa0897df8a81091",
+      "size": 572
+    },
+    {
+      "original": "Units/ClassicalAge/Pikeman/SourceArt/Before-Overhand-Validation.json",
+      "archived": "Units/ClassicalAge/Pikeman/_TO BE DELETED/SourceArt/Before-Overhand-Validation.json",
+      "sha256": "12ab9e392667f8073f3649bfed040edf2dae61355d51a4447cbf7a9f78265f62",
+      "size": 16500
+    },
+    {
+      "original": "Units/ClassicalAge/Pikeman/SourceArt/Before-Smooth-Idle-Animation-Generation.json",
+      "archived": "Units/ClassicalAge/Pikeman/_TO BE DELETED/SourceArt/Before-Smooth-Idle-Animation-Generation.json",
+      "sha256": "f46d87fa084a5b2a8a123e6f6eca366065cc86e0ff684a9b737cc6f329b40fd6",
+      "size": 73067
+    },
+    {
+      "original": "Units/ClassicalAge/Pikeman/SourceArt/Before-Smooth-Idle-animations.json",
+      "archived": "Units/ClassicalAge/Pikeman/_TO BE DELETED/SourceArt/Before-Smooth-Idle-animations.json",
+      "sha256": "1212a2cbbdb8689ba4f9102f19cdf83fd016a20407a28a47e79b015cc3be9818",
+      "size": 18288
+    },
+    {
+      "original": "Units/ClassicalAge/Pikeman/SourceArt/Before-Smooth-Idle-compose_animations.py",
+      "archived": "Units/ClassicalAge/Pikeman/_TO BE DELETED/SourceArt/Before-Smooth-Idle-compose_animations.py",
+      "sha256": "9714e137df8707711cb7c40ab6b0ee504372581f9c051c89cf8104b6b1944ed8",
+      "size": 7272
+    },
+    {
+      "original": "Units/ClassicalAge/Pikeman/SourceArt/Before-Smooth-Idle-Generation.json",
+      "archived": "Units/ClassicalAge/Pikeman/_TO BE DELETED/SourceArt/Before-Smooth-Idle-Generation.json",
+      "sha256": "c778ffb9057c976b44aa3ba5b7d7a0e360af1b81085c7c9ad0a4ad8dd5d5770a",
+      "size": 75057
+    },
+    {
+      "original": "Units/ClassicalAge/Pikeman/SourceArt/Before-Smooth-Idle-Other-Clips.json",
+      "archived": "Units/ClassicalAge/Pikeman/_TO BE DELETED/SourceArt/Before-Smooth-Idle-Other-Clips.json",
+      "sha256": "e9e99539b487614b22d27acd18bab982265b1fe953803b34877e3d7b6711f331",
+      "size": 662
+    },
+    {
+      "original": "Units/ClassicalAge/Pikeman/SourceArt/Before-Smooth-Idle-Validation.json",
+      "archived": "Units/ClassicalAge/Pikeman/_TO BE DELETED/SourceArt/Before-Smooth-Idle-Validation.json",
+      "sha256": "22f440310b76cd8efc960e491d20fa83d995c6afeee753d25da123909498a95f",
+      "size": 16540
+    },
+    {
+      "original": "Units/ClassicalAge/Pikeman/SourceArt/Before-Steady-Gait-Animation-Generation.json",
+      "archived": "Units/ClassicalAge/Pikeman/_TO BE DELETED/SourceArt/Before-Steady-Gait-Animation-Generation.json",
+      "sha256": "8d7d86bc9310c1bbd34c85090e3384bdfe5d449aaad97706877e52cdc7168431",
+      "size": 66272
+    },
+    {
+      "original": "Units/ClassicalAge/Pikeman/SourceArt/Before-Steady-Gait-animations.json",
+      "archived": "Units/ClassicalAge/Pikeman/_TO BE DELETED/SourceArt/Before-Steady-Gait-animations.json",
+      "sha256": "a397a042f7192ca29966beb3e999d77c980d7269a26eaacfbe6fb0d8cc234382",
+      "size": 17981
+    },
+    {
+      "original": "Units/ClassicalAge/Pikeman/SourceArt/Before-Steady-Gait-compose_animations.py",
+      "archived": "Units/ClassicalAge/Pikeman/_TO BE DELETED/SourceArt/Before-Steady-Gait-compose_animations.py",
+      "sha256": "c29c2b0e8a88ef5550057363350044d79060de898fbd3323418e4a4be47cf9b8",
+      "size": 7077
+    },
+    {
+      "original": "Units/ClassicalAge/Pikeman/SourceArt/Before-Steady-Gait-Generation.json",
+      "archived": "Units/ClassicalAge/Pikeman/_TO BE DELETED/SourceArt/Before-Steady-Gait-Generation.json",
+      "sha256": "8eeb8b571da12e13b3163dc61fc7992891606ef9b9cc978f9cd5f3a3429eea58",
+      "size": 68262
+    },
+    {
+      "original": "Units/ClassicalAge/Pikeman/SourceArt/Before-Steady-Gait-Other-Clips.json",
+      "archived": "Units/ClassicalAge/Pikeman/_TO BE DELETED/SourceArt/Before-Steady-Gait-Other-Clips.json",
+      "sha256": "58b8c1b9df7f094f2b46fffb0f92a14e71160b17d921fe7c470cef7b444ee445",
+      "size": 578
+    },
+    {
+      "original": "Units/ClassicalAge/Pikeman/SourceArt/Before-Steady-Gait-Validation.json",
+      "archived": "Units/ClassicalAge/Pikeman/_TO BE DELETED/SourceArt/Before-Steady-Gait-Validation.json",
+      "sha256": "8fbfd8d3ed024b0a05aa23bd700451b8d7e8ee8c3f0453d6730d4ae60991f732",
+      "size": 16526
+    },
+    {
+      "original": "Units/ClassicalAge/Pikeman/SourceArt/Before-Three-Clip-Rebuild-Animation-Generation.json",
+      "archived": "Units/ClassicalAge/Pikeman/_TO BE DELETED/SourceArt/Before-Three-Clip-Rebuild-Animation-Generation.json",
+      "sha256": "d07c7443a63e7328b9c5834a4ea1ba2bf0705c002cc0062bd8d74228931b9394",
+      "size": 42159
+    },
+    {
+      "original": "Units/ClassicalAge/Pikeman/SourceArt/Before-Three-Clip-Rebuild-animations.json",
+      "archived": "Units/ClassicalAge/Pikeman/_TO BE DELETED/SourceArt/Before-Three-Clip-Rebuild-animations.json",
+      "sha256": "4a28a8b8eeab55f4e3330530d4e12845533f20b93bff83e1ca12cf98821ec308",
+      "size": 17926
+    },
+    {
+      "original": "Units/ClassicalAge/Pikeman/SourceArt/Before-Three-Clip-Rebuild-compose_animations.py",
+      "archived": "Units/ClassicalAge/Pikeman/_TO BE DELETED/SourceArt/Before-Three-Clip-Rebuild-compose_animations.py",
+      "sha256": "39089cf34e711b3bd03d7a38aee138f1b66ba1fdf91aa10b3679470ffae6b893",
+      "size": 6903
+    },
+    {
+      "original": "Units/ClassicalAge/Pikeman/SourceArt/Before-Three-Clip-Rebuild-Generation.json",
+      "archived": "Units/ClassicalAge/Pikeman/_TO BE DELETED/SourceArt/Before-Three-Clip-Rebuild-Generation.json",
+      "sha256": "7ff13912d9fdb4f630cded633df16649298547f38b865885feb4f2ba37a4460d",
+      "size": 44149
+    },
+    {
+      "original": "Units/ClassicalAge/Pikeman/SourceArt/Before-Three-Clip-Rebuild-Other-Clips.json",
+      "archived": "Units/ClassicalAge/Pikeman/_TO BE DELETED/SourceArt/Before-Three-Clip-Rebuild-Other-Clips.json",
+      "sha256": "0898a94910073e96706ea5da0d52a5d4a08df314a0ad63b1c51f6316c702b0c0",
+      "size": 492
+    },
+    {
+      "original": "Units/ClassicalAge/Pikeman/SourceArt/Before-Three-Clip-Rebuild-Validation.json",
+      "archived": "Units/ClassicalAge/Pikeman/_TO BE DELETED/SourceArt/Before-Three-Clip-Rebuild-Validation.json",
+      "sha256": "3e518cd0f276763e8386393162cf057ee4439ca09e1aef6d7cad2ebb8df44f54",
+      "size": 16538
+    },
+    {
+      "original": "Units/ClassicalAge/Pikeman/SourceArt/compose_animations.py",
+      "archived": "Units/ClassicalAge/Pikeman/_TO BE DELETED/SourceArt/compose_animations.py",
+      "sha256": "4f0d5f9264d5c54befa99e56cb4b9dcf89c0c4e41b10473420bdb08120712d1a",
+      "size": 7301
+    },
+    {
+      "original": "Units/ClassicalAge/Pikeman/SourceArt/Composition.json",
+      "archived": "Units/ClassicalAge/Pikeman/_TO BE DELETED/SourceArt/Composition.json",
+      "sha256": "cb08e958145bbf7640705f2e8b6e483fba09f96396679963d3ecf0cbff12f8e9",
+      "size": 30303
+    },
+    {
+      "original": "Units/ClassicalAge/Pikeman/SourceArt/Edge-Style-Review.json",
+      "archived": "Units/ClassicalAge/Pikeman/_TO BE DELETED/SourceArt/Edge-Style-Review.json",
+      "sha256": "044f0f699378b3448516485beae5c7e691bb9a88cbb25bd4f50ebd6a9e0b0cd0",
+      "size": 367
+    },
+    {
+      "original": "Units/ClassicalAge/Pikeman/SourceArt/Native-Attack-Overhand-Painterly-v5.png",
+      "archived": "Units/ClassicalAge/Pikeman/_TO BE DELETED/SourceArt/Native-Attack-Overhand-Painterly-v5.png",
+      "sha256": "572e984a9da5fda8344a9e919d5eb0251a8aad1b30eca4e6d494bb2bb512aac4",
+      "size": 1830595
+    },
+    {
+      "original": "Units/ClassicalAge/Pikeman/SourceArt/Native-Attack-Overhand-v3.png",
+      "archived": "Units/ClassicalAge/Pikeman/_TO BE DELETED/SourceArt/Native-Attack-Overhand-v3.png",
+      "sha256": "6558178ab6586e3100709be3c2f527c2335f20b34cb7af25f2739225bcb308c9",
+      "size": 1736500
+    },
+    {
+      "original": "Units/ClassicalAge/Pikeman/SourceArt/Native-Attack-Overhand-v4.png",
+      "archived": "Units/ClassicalAge/Pikeman/_TO BE DELETED/SourceArt/Native-Attack-Overhand-v4.png",
+      "sha256": "54a567fc34af8ed82ac42bded007b0619ab95d85b212e9495f00c716a3ec0e90",
+      "size": 1767674
+    },
+    {
+      "original": "Units/ClassicalAge/Pikeman/SourceArt/Native-Attack-Rebuilt-v6.png",
+      "archived": "Units/ClassicalAge/Pikeman/_TO BE DELETED/SourceArt/Native-Attack-Rebuilt-v6.png",
+      "sha256": "5a36b353a492c204bbb1f3b16c33d2c8c2d487fb4dc82529ffa58fa9d6c9c025",
+      "size": 1817693
+    },
+    {
+      "original": "Units/ClassicalAge/Pikeman/SourceArt/Native-Attack-Rebuilt-v7.png",
+      "archived": "Units/ClassicalAge/Pikeman/_TO BE DELETED/SourceArt/Native-Attack-Rebuilt-v7.png",
+      "sha256": "75681015b7c76cdfbc086d9d3836fe3eb5e9efa46cf9e75669ef7fdc1e158e97",
+      "size": 1848800
+    },
+    {
+      "original": "Units/ClassicalAge/Pikeman/SourceArt/Native-Attack-v1.png",
+      "archived": "Units/ClassicalAge/Pikeman/_TO BE DELETED/SourceArt/Native-Attack-v1.png",
+      "sha256": "e0aa5f3e6429626e1726712480ed4c6b570843e2e82db3486782d75a207a9e75",
+      "size": 1823171
+    },
+    {
+      "original": "Units/ClassicalAge/Pikeman/SourceArt/Native-Attack-v2.png",
+      "archived": "Units/ClassicalAge/Pikeman/_TO BE DELETED/SourceArt/Native-Attack-v2.png",
+      "sha256": "3c3e8337041822f694463206bb40dba7d571075c9f4cd0f2da6a9eaab95989d7",
+      "size": 1817469
+    },
+    {
+      "original": "Units/ClassicalAge/Pikeman/SourceArt/Native-Charge-Attack-Overhand-Painterly-v4.png",
+      "archived": "Units/ClassicalAge/Pikeman/_TO BE DELETED/SourceArt/Native-Charge-Attack-Overhand-Painterly-v4.png",
+      "sha256": "ad89a3d4ffa769e8d222a10055c493f4e471e8da2308bdf6f5b9152a76219633",
+      "size": 1861481
+    },
+    {
+      "original": "Units/ClassicalAge/Pikeman/SourceArt/Native-Charge-Attack-Overhand-v2.png",
+      "archived": "Units/ClassicalAge/Pikeman/_TO BE DELETED/SourceArt/Native-Charge-Attack-Overhand-v2.png",
+      "sha256": "5f6fa171805916719ec9003846b192e33ce8f7b81c5a1cccad9ee3caa9430f60",
+      "size": 1708377
+    },
+    {
+      "original": "Units/ClassicalAge/Pikeman/SourceArt/Native-Charge-Attack-Overhand-v3.png",
+      "archived": "Units/ClassicalAge/Pikeman/_TO BE DELETED/SourceArt/Native-Charge-Attack-Overhand-v3.png",
+      "sha256": "26ce17bd9df322b3b42ec473974e49a84182bf069f2b6fe859d9d9815ed54ad4",
+      "size": 1876925
+    },
+    {
+      "original": "Units/ClassicalAge/Pikeman/SourceArt/Native-Charge-Attack-Rebuilt-Clean-v8.png",
+      "archived": "Units/ClassicalAge/Pikeman/_TO BE DELETED/SourceArt/Native-Charge-Attack-Rebuilt-Clean-v8.png",
+      "sha256": "91bcc0ec1c7c50c3e6d40d3e825114f44479d9bd8f68c40f78ed00a40abb7651",
+      "size": 1764779
+    },
+    {
+      "original": "Units/ClassicalAge/Pikeman/SourceArt/Native-Charge-Attack-Rebuilt-v5.png",
+      "archived": "Units/ClassicalAge/Pikeman/_TO BE DELETED/SourceArt/Native-Charge-Attack-Rebuilt-v5.png",
+      "sha256": "560f6d3eec3c1264740c16bf000d604613c46ffa5939dd774dba80c7a51c3524",
+      "size": 1786887
+    },
+    {
+      "original": "Units/ClassicalAge/Pikeman/SourceArt/Native-Charge-Attack-Rebuilt-v6.png",
+      "archived": "Units/ClassicalAge/Pikeman/_TO BE DELETED/SourceArt/Native-Charge-Attack-Rebuilt-v6.png",
+      "sha256": "533f906c5f37978ad68c8e79d1b15e17616de6bbc2251dc03ca46ecca2706dec",
+      "size": 1837389
+    },
+    {
+      "original": "Units/ClassicalAge/Pikeman/SourceArt/Native-Charge-Attack-Rebuilt-v7.png",
+      "archived": "Units/ClassicalAge/Pikeman/_TO BE DELETED/SourceArt/Native-Charge-Attack-Rebuilt-v7.png",
+      "sha256": "17ff7520f313b711a3551b915e0b68497eccb8814bd3911a2065e50232f49e45",
+      "size": 2014280
+    },
+    {
+      "original": "Units/ClassicalAge/Pikeman/SourceArt/Native-Charge-Attack-v1.png",
+      "archived": "Units/ClassicalAge/Pikeman/_TO BE DELETED/SourceArt/Native-Charge-Attack-v1.png",
+      "sha256": "91a8eb0303f7fc94e15d1bae6139cad6a727a84b04e5f71684499b6b2f80b55f",
+      "size": 1726434
+    },
+    {
+      "original": "Units/ClassicalAge/Pikeman/SourceArt/Native-Charge-Steady-v2.png",
+      "archived": "Units/ClassicalAge/Pikeman/_TO BE DELETED/SourceArt/Native-Charge-Steady-v2.png",
+      "sha256": "44622df701acd47b5e953f8fac75777f34131268efc837ef806a42801877bfdd",
+      "size": 1859300
+    },
+    {
+      "original": "Units/ClassicalAge/Pikeman/SourceArt/Native-Charge-v1.png",
+      "archived": "Units/ClassicalAge/Pikeman/_TO BE DELETED/SourceArt/Native-Charge-v1.png",
+      "sha256": "272c764a9dac9d554a575ea4ac7ed0c57866ad07146115731759ba4796649749",
+      "size": 1848726
+    },
+    {
+      "original": "Units/ClassicalAge/Pikeman/SourceArt/Native-Charged-v1.png",
+      "archived": "Units/ClassicalAge/Pikeman/_TO BE DELETED/SourceArt/Native-Charged-v1.png",
+      "sha256": "1cedd2dd26e5f3d3fdbc3942cac70a30f191817e8e3e4281f6663ed8536071a5",
+      "size": 1892855
+    },
+    {
+      "original": "Units/ClassicalAge/Pikeman/SourceArt/Native-Death-Back-v1.png",
+      "archived": "Units/ClassicalAge/Pikeman/_TO BE DELETED/SourceArt/Native-Death-Back-v1.png",
+      "sha256": "3eb6af03f9f0c903385748f20629482723dc0cfa4033d6fe244168cd03468eeb",
+      "size": 1933130
+    },
+    {
+      "original": "Units/ClassicalAge/Pikeman/SourceArt/Native-Death-Side-Rebuilt-v2.png",
+      "archived": "Units/ClassicalAge/Pikeman/_TO BE DELETED/SourceArt/Native-Death-Side-Rebuilt-v2.png",
+      "sha256": "f382fd5d5ce933172cd69c4e5c4fccaf8f8e31ef2d1a1652d868ff29af2c70b6",
+      "size": 1993282
+    },
+    {
+      "original": "Units/ClassicalAge/Pikeman/SourceArt/Native-Death-Side-v1.png",
+      "archived": "Units/ClassicalAge/Pikeman/_TO BE DELETED/SourceArt/Native-Death-Side-v1.png",
+      "sha256": "9415df3a6bf066e3e56e5251b12bff160015a9d92f4c384fb4a0be49a3c1d3f0",
+      "size": 1869580
+    },
+    {
+      "original": "Units/ClassicalAge/Pikeman/SourceArt/Native-Hit-v1.png",
+      "archived": "Units/ClassicalAge/Pikeman/_TO BE DELETED/SourceArt/Native-Hit-v1.png",
+      "sha256": "f7462ed317513742c84588bf696619a261bdc620426e6c813771144087db7b28",
+      "size": 1921743
+    },
+    {
+      "original": "Units/ClassicalAge/Pikeman/SourceArt/Native-Idle-Animated-v1.png",
+      "archived": "Units/ClassicalAge/Pikeman/_TO BE DELETED/SourceArt/Native-Idle-Animated-v1.png",
+      "sha256": "85c4986d8299047b4edca14fab6f4632d3161ed2ecc7314acf610663866d76fa",
+      "size": 1847495
+    },
+    {
+      "original": "Units/ClassicalAge/Pikeman/SourceArt/Native-Idle-Smooth-v2.png",
+      "archived": "Units/ClassicalAge/Pikeman/_TO BE DELETED/SourceArt/Native-Idle-Smooth-v2.png",
+      "sha256": "ef4baa4417129e7b47be6d1df37a49f04fdd73c12af00948b04d6795f57bd1e4",
+      "size": 1933028
+    },
+    {
+      "original": "Units/ClassicalAge/Pikeman/SourceArt/Native-Walk-Steady-v2.png",
+      "archived": "Units/ClassicalAge/Pikeman/_TO BE DELETED/SourceArt/Native-Walk-Steady-v2.png",
+      "sha256": "36f86a08c70a28ff078dc850636e344b7dff9fb82838bf8dd0799ff8d6498f5d",
+      "size": 1923697
+    },
+    {
+      "original": "Units/ClassicalAge/Pikeman/SourceArt/Native-Walk-v1.png",
+      "archived": "Units/ClassicalAge/Pikeman/_TO BE DELETED/SourceArt/Native-Walk-v1.png",
+      "sha256": "fd58b37d9d21cc918a450cf79f08f8f76c5b8128250b165b6ce2aa39817fd3c8",
+      "size": 1903566
+    },
+    {
+      "original": "Units/ClassicalAge/Pikeman/SourceArt/Overhand-Review.json",
+      "archived": "Units/ClassicalAge/Pikeman/_TO BE DELETED/SourceArt/Overhand-Review.json",
+      "sha256": "46b8c42fbc4b8ab090ef287d5398e45ef6f36f663a6ea8897d3200041a722d49",
+      "size": 433
+    },
+    {
+      "original": "Units/ClassicalAge/Pikeman/SourceArt/Smooth-Idle-Review.json",
+      "archived": "Units/ClassicalAge/Pikeman/_TO BE DELETED/SourceArt/Smooth-Idle-Review.json",
+      "sha256": "99445b87606ae4529b098f6cc62a45fa17dd841c5eddf5f8c3beba0ae8f1d8c1",
+      "size": 393
+    },
+    {
+      "original": "Units/ClassicalAge/Pikeman/SourceArt/Steady-Gait-Review.json",
+      "archived": "Units/ClassicalAge/Pikeman/_TO BE DELETED/SourceArt/Steady-Gait-Review.json",
+      "sha256": "d9cf2cd0a45486960ebb4e13e674dd09b7845e2bc669bc7257d544b001444dd1",
+      "size": 818
+    },
+    {
+      "original": "Units/ClassicalAge/Pikeman/SourceArt/Three-Clip-Rebuild-Review.json",
+      "archived": "Units/ClassicalAge/Pikeman/_TO BE DELETED/SourceArt/Three-Clip-Rebuild-Review.json",
+      "sha256": "97872232083650fdf11a15f2866e1bd3cb9ff838d6857b93fa8a367534c2fb36",
+      "size": 777
+    },
+    {
+      "original": "Units/ClassicalAge/Pikeman/Steady-Gait-Review-v2.png",
+      "archived": "Units/ClassicalAge/Pikeman/_TO BE DELETED/Steady-Gait-Review-v2.png",
+      "sha256": "2dc04ad4abba2783a1d6dc429e6b9d72ea379f475c6006303ec1ed4e0b4c7b60",
+      "size": 85352
+    },
+    {
+      "original": "Units/ClassicalAge/Pikeman/Three-Clip-Rebuild-Review-v1.png",
+      "archived": "Units/ClassicalAge/Pikeman/_TO BE DELETED/Three-Clip-Rebuild-Review-v1.png",
+      "sha256": "7695bfdc4045a1a438b704e5576c349aca2695cbb1230fa397187f07f36c032a",
+      "size": 276777
+    },
+    {
+      "original": "Units/ClassicalAge/Pikeman/Three-Clip-Rebuild-Review-v2.png",
+      "archived": "Units/ClassicalAge/Pikeman/_TO BE DELETED/Three-Clip-Rebuild-Review-v2.png",
+      "sha256": "bfd362881854b86f69862caa1d0aad3b2a27f9bcebd386b889d3aef94ab2545a",
+      "size": 229736
+    },
+    {
+      "original": "Units/ClassicalAge/Pikeman/Validation.json",
+      "archived": "Units/ClassicalAge/Pikeman/_TO BE DELETED/Validation.json",
+      "sha256": "071aa2890ccfb97d56219b39e45911e60cc0f15f374d42c2c6a0003aa2cd55fe",
+      "size": 16538
+    },
+    {
+      "original": "Units/ClassicalAge/Pikeman/Walk-Steady-Preview-v2.webp",
+      "archived": "Units/ClassicalAge/Pikeman/_TO BE DELETED/Walk-Steady-Preview-v2.webp",
+      "sha256": "a7fe30128b8cea31010e4d3c6f7d614b890906eece3141b9cabf02e3a5b7e58c",
+      "size": 142914
+    },
+    {
+      "original": "Units/ClassicalAge/Pikeman/Walk-v1.png",
+      "archived": "Units/ClassicalAge/Pikeman/_TO BE DELETED/Walk-v1.png",
+      "sha256": "1d4f78b27f3b79b4d84827499334baa5cd49833a67973715f718e44984521651",
+      "size": 831126
+    }
+  ]
+}

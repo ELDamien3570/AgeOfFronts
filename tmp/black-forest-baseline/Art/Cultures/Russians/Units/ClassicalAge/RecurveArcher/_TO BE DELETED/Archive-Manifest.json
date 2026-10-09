@@ -1,0 +1,578 @@
+{
+  "folder": "Units/ClassicalAge/RecurveArcher/_TO BE DELETED",
+  "created": "2026-10-09T03:15:53.711Z",
+  "files": [
+    {
+      "original": "Units/ClassicalAge/RecurveArcher/Attack-Forward-v4.png",
+      "archived": "Units/ClassicalAge/RecurveArcher/_TO BE DELETED/Attack-Forward-v4.png",
+      "sha256": "9b39b08b4973ff875d7f9f1aae09c7bedf8f82a4d4fb752bd739c1149d5a0cf3",
+      "size": 926095
+    },
+    {
+      "original": "Units/ClassicalAge/RecurveArcher/Attack-String-v5.png",
+      "archived": "Units/ClassicalAge/RecurveArcher/_TO BE DELETED/Attack-String-v5.png",
+      "sha256": "39bbd499038873f9eec7e359dd1986b2024810910594cc8297a3890e8929dfa2",
+      "size": 956930
+    },
+    {
+      "original": "Units/ClassicalAge/RecurveArcher/Attack-v1.png",
+      "archived": "Units/ClassicalAge/RecurveArcher/_TO BE DELETED/Attack-v1.png",
+      "sha256": "24233e81e5f4441b95132e8c78b64b6edb5bfef15c0d494817558469ab247997",
+      "size": 965283
+    },
+    {
+      "original": "Units/ClassicalAge/RecurveArcher/Attack-v2.png",
+      "archived": "Units/ClassicalAge/RecurveArcher/_TO BE DELETED/Attack-v2.png",
+      "sha256": "323cb373d19996436dcf5bdea757883382cfc5c9ca26674e1d7000caab487379",
+      "size": 971366
+    },
+    {
+      "original": "Units/ClassicalAge/RecurveArcher/Browser-Review.json",
+      "archived": "Units/ClassicalAge/RecurveArcher/_TO BE DELETED/Browser-Review.json",
+      "sha256": "721411c7d39da0b91f4ccf8668c85e90de8ab86d51b2cf5c8450cba7241fe091",
+      "size": 1453
+    },
+    {
+      "original": "Units/ClassicalAge/RecurveArcher/ChargeAttack-Forward-v3.png",
+      "archived": "Units/ClassicalAge/RecurveArcher/_TO BE DELETED/ChargeAttack-Forward-v3.png",
+      "sha256": "2765071a43951b2f1ed445781b60deaa939b64c60c629b977e11d576c52a5452",
+      "size": 917241
+    },
+    {
+      "original": "Units/ClassicalAge/RecurveArcher/ChargeAttack-String-v4.png",
+      "archived": "Units/ClassicalAge/RecurveArcher/_TO BE DELETED/ChargeAttack-String-v4.png",
+      "sha256": "f5db2232f54bd979a7d4c8bd40e3c634e0186307e89e54283b9caa1592e7bda2",
+      "size": 938674
+    },
+    {
+      "original": "Units/ClassicalAge/RecurveArcher/ChargeAttack-v1.png",
+      "archived": "Units/ClassicalAge/RecurveArcher/_TO BE DELETED/ChargeAttack-v1.png",
+      "sha256": "70c81676c5c7a518af6cfb580ec6b2065f316f60307853f1d6e6b044c98a8fb6",
+      "size": 895506
+    },
+    {
+      "original": "Units/ClassicalAge/RecurveArcher/Generation.json",
+      "archived": "Units/ClassicalAge/RecurveArcher/_TO BE DELETED/Generation.json",
+      "sha256": "d392be5b462fa319e30fb0858cb43a790d6694b5c5971a3ed5e81802b8c85be8",
+      "size": 50171
+    },
+    {
+      "original": "Units/ClassicalAge/RecurveArcher/Idle-v1.png",
+      "archived": "Units/ClassicalAge/RecurveArcher/_TO BE DELETED/Idle-v1.png",
+      "sha256": "757ee24459caadbccfc9448c82cf2831967ad83b0a1703c063a866cf73e37327",
+      "size": 1227244
+    },
+    {
+      "original": "Units/ClassicalAge/RecurveArcher/README.md",
+      "archived": "Units/ClassicalAge/RecurveArcher/_TO BE DELETED/README.md",
+      "sha256": "64014794a7901da210ba0389c1845cf30026626c8c6bd1d28c86bd1d78e3d6ee",
+      "size": 1437
+    },
+    {
+      "original": "Units/ClassicalAge/RecurveArcher/Review-ChargeShot-v1.png",
+      "archived": "Units/ClassicalAge/RecurveArcher/_TO BE DELETED/Review-ChargeShot-v1.png",
+      "sha256": "9f00dd4e1bc56f2fdaf895fab38c1743161f3c7038c9a906262f41c5645b84af",
+      "size": 77321
+    },
+    {
+      "original": "Units/ClassicalAge/RecurveArcher/Review-Clean-ChargeDraw-v5.png",
+      "archived": "Units/ClassicalAge/RecurveArcher/_TO BE DELETED/Review-Clean-ChargeDraw-v5.png",
+      "sha256": "e64575a8cabbdb4cbc905fc72b68fcec63560e7710b413e96aecc47fb0307f01",
+      "size": 79136
+    },
+    {
+      "original": "Units/ClassicalAge/RecurveArcher/Review-Clean-Draw-v6.png",
+      "archived": "Units/ClassicalAge/RecurveArcher/_TO BE DELETED/Review-Clean-Draw-v6.png",
+      "sha256": "ec4596ebd60d84c6830f5b4f703f7d9cef21243aee7e96042a36cdba99883d03",
+      "size": 77823
+    },
+    {
+      "original": "Units/ClassicalAge/RecurveArcher/Review-Clean-Frame5-v6.png",
+      "archived": "Units/ClassicalAge/RecurveArcher/_TO BE DELETED/Review-Clean-Frame5-v6.png",
+      "sha256": "02a568fc8eee1dd88ba762641bfc270b1792daa6ea7e0c4e125f985364726ad4",
+      "size": 77274
+    },
+    {
+      "original": "Units/ClassicalAge/RecurveArcher/Review-DeathBack-v1.png",
+      "archived": "Units/ClassicalAge/RecurveArcher/_TO BE DELETED/Review-DeathBack-v1.png",
+      "sha256": "29c7f4e5188925836d2d55ba38b51d7a0d07b5b6ed9b71877aa3fdc36dd6fcd0",
+      "size": 76198
+    },
+    {
+      "original": "Units/ClassicalAge/RecurveArcher/Review-DeathSide-v1.png",
+      "archived": "Units/ClassicalAge/RecurveArcher/_TO BE DELETED/Review-DeathSide-v1.png",
+      "sha256": "8853eab677e9f091c770549096540382ec5b4e4b3396dba558fbf92093d2a22c",
+      "size": 76853
+    },
+    {
+      "original": "Units/ClassicalAge/RecurveArcher/Review-Forward-ChargeShot-v3.png",
+      "archived": "Units/ClassicalAge/RecurveArcher/_TO BE DELETED/Review-Forward-ChargeShot-v3.png",
+      "sha256": "692d09f44b4853eae9bf46655e508f636589f2e2afafb26b4e20ac5ed5e2faf2",
+      "size": 77505
+    },
+    {
+      "original": "Units/ClassicalAge/RecurveArcher/Review-Forward-Shot-v4.png",
+      "archived": "Units/ClassicalAge/RecurveArcher/_TO BE DELETED/Review-Forward-Shot-v4.png",
+      "sha256": "332e86559b322cec97986658ca1abe511a76f4c6c8dce58574f767607bf626dc",
+      "size": 77042
+    },
+    {
+      "original": "Units/ClassicalAge/RecurveArcher/Review-Idle-v1.png",
+      "archived": "Units/ClassicalAge/RecurveArcher/_TO BE DELETED/Review-Idle-v1.png",
+      "sha256": "649cfa9710ebbb0dfee703387d31afbe711a876a6f8a6457d2bb550e21bd6034",
+      "size": 76821
+    },
+    {
+      "original": "Units/ClassicalAge/RecurveArcher/Review-Reload-v1.png",
+      "archived": "Units/ClassicalAge/RecurveArcher/_TO BE DELETED/Review-Reload-v1.png",
+      "sha256": "7f376d4d091b526bc9d19db26926e7de981ce37aaec8f46278fb97e8ecd3104f",
+      "size": 77046
+    },
+    {
+      "original": "Units/ClassicalAge/RecurveArcher/Review-String-ChargeShot-v4.png",
+      "archived": "Units/ClassicalAge/RecurveArcher/_TO BE DELETED/Review-String-ChargeShot-v4.png",
+      "sha256": "408a8ab7d3335a3cd8ca49824dca5ae87942d5f16d2b8192f584cf125bb49c63",
+      "size": 79058
+    },
+    {
+      "original": "Units/ClassicalAge/RecurveArcher/Review-String-Shot-v5.png",
+      "archived": "Units/ClassicalAge/RecurveArcher/_TO BE DELETED/Review-String-Shot-v5.png",
+      "sha256": "43c3ad6b547970fd337c43d2e48da16e04f4acf1ca0d5f24a0ce11a09c5e2c6a",
+      "size": 77792
+    },
+    {
+      "original": "Units/ClassicalAge/RecurveArcher/SourceArt/Animation-Generation.json",
+      "archived": "Units/ClassicalAge/RecurveArcher/_TO BE DELETED/SourceArt/Animation-Generation.json",
+      "sha256": "f22abddeeb7b57dc806b39622f7ee9c5b2219cd8d3c9c006f9510b5b32740c52",
+      "size": 47685
+    },
+    {
+      "original": "Units/ClassicalAge/RecurveArcher/SourceArt/Approved-Idle.json",
+      "archived": "Units/ClassicalAge/RecurveArcher/_TO BE DELETED/SourceArt/Approved-Idle.json",
+      "sha256": "f61ac08e4efd5fb9753006aa017e56085b86944b97c9c7a815b40f582173b62c",
+      "size": 159
+    },
+    {
+      "original": "Units/ClassicalAge/RecurveArcher/SourceArt/audit_topdown_sources.py",
+      "archived": "Units/ClassicalAge/RecurveArcher/_TO BE DELETED/SourceArt/audit_topdown_sources.py",
+      "sha256": "0e1a0cedcc7f2cf26051725173cc54c90d67a737a9fc549165e5defe496380ac",
+      "size": 643
+    },
+    {
+      "original": "Units/ClassicalAge/RecurveArcher/SourceArt/Before-Animation-animations.json",
+      "archived": "Units/ClassicalAge/RecurveArcher/_TO BE DELETED/SourceArt/Before-Animation-animations.json",
+      "sha256": "98a05aa0aa20cef6c301e11447de705a67958e0ab33b7d1d58e14c0c1a2f23b1",
+      "size": 1255
+    },
+    {
+      "original": "Units/ClassicalAge/RecurveArcher/SourceArt/Before-Animation-Browser-Review.json",
+      "archived": "Units/ClassicalAge/RecurveArcher/_TO BE DELETED/SourceArt/Before-Animation-Browser-Review.json",
+      "sha256": "da8e3250c84d81e355753d657d4ba41786c663fa216ae4b350c11799a4fee289",
+      "size": 234
+    },
+    {
+      "original": "Units/ClassicalAge/RecurveArcher/SourceArt/Before-Animation-Validation.json",
+      "archived": "Units/ClassicalAge/RecurveArcher/_TO BE DELETED/SourceArt/Before-Animation-Validation.json",
+      "sha256": "03b4f1ffec780f08cbf92a6a13c3a8e7e4a10084c020595418e55a5285cbefff",
+      "size": 331
+    },
+    {
+      "original": "Units/ClassicalAge/RecurveArcher/SourceArt/Bow-Cleanup.json",
+      "archived": "Units/ClassicalAge/RecurveArcher/_TO BE DELETED/SourceArt/Bow-Cleanup.json",
+      "sha256": "3ac3e97fa3227116c46568370f6bd58a5426647e10711700ecddb339d3b281c9",
+      "size": 4713
+    },
+    {
+      "original": "Units/ClassicalAge/RecurveArcher/SourceArt/check_topdown_review.py",
+      "archived": "Units/ClassicalAge/RecurveArcher/_TO BE DELETED/SourceArt/check_topdown_review.py",
+      "sha256": "fb7324378edfd258eff592473dd0433efad716cbee672f02ada5cadfb0f61608",
+      "size": 858
+    },
+    {
+      "original": "Units/ClassicalAge/RecurveArcher/SourceArt/compose_animations.py",
+      "archived": "Units/ClassicalAge/RecurveArcher/_TO BE DELETED/SourceArt/compose_animations.py",
+      "sha256": "4ae5c3c0b30058ecb759996287bcd660514f3654ba209fd0fa6c530cb9f74757",
+      "size": 5748
+    },
+    {
+      "original": "Units/ClassicalAge/RecurveArcher/SourceArt/compose_topdown_animations.py",
+      "archived": "Units/ClassicalAge/RecurveArcher/_TO BE DELETED/SourceArt/compose_topdown_animations.py",
+      "sha256": "8b268ea43ed02c47b375127f385e0be2ce4b58f72f94b21f3f7e67f6dfdda1ec",
+      "size": 5667
+    },
+    {
+      "original": "Units/ClassicalAge/RecurveArcher/SourceArt/Composition.json",
+      "archived": "Units/ClassicalAge/RecurveArcher/_TO BE DELETED/SourceArt/Composition.json",
+      "sha256": "d4bc210746ab600dd7368fb9762bdbe99c52560e3776d05c0d6278cebec4bd83",
+      "size": 25949
+    },
+    {
+      "original": "Units/ClassicalAge/RecurveArcher/SourceArt/Forward-Correction.json",
+      "archived": "Units/ClassicalAge/RecurveArcher/_TO BE DELETED/SourceArt/Forward-Correction.json",
+      "sha256": "ed425d59d4bd6a5ef13ab4120f0f6a624aeae56cbcd5a0104bf1d78789b19b8d",
+      "size": 8873
+    },
+    {
+      "original": "Units/ClassicalAge/RecurveArcher/SourceArt/Native-Attack-Clean-v6.png",
+      "archived": "Units/ClassicalAge/RecurveArcher/_TO BE DELETED/SourceArt/Native-Attack-Clean-v6.png",
+      "sha256": "f7ce46f0142f89264c7d5b10ce1f8d17dee89e1bd3c5bf59a2aaf43425cddde0",
+      "size": 2193054
+    },
+    {
+      "original": "Units/ClassicalAge/RecurveArcher/SourceArt/Native-Attack-Forward-v3.png",
+      "archived": "Units/ClassicalAge/RecurveArcher/_TO BE DELETED/SourceArt/Native-Attack-Forward-v3.png",
+      "sha256": "4610acbc556305b4b08511f45fe4ee0559e0bba4fb5b20fca5b7339c271164a9",
+      "size": 2164290
+    },
+    {
+      "original": "Units/ClassicalAge/RecurveArcher/SourceArt/Native-Attack-Forward-v4.png",
+      "archived": "Units/ClassicalAge/RecurveArcher/_TO BE DELETED/SourceArt/Native-Attack-Forward-v4.png",
+      "sha256": "dffd5fa339309779acfbde3730cc8ee871d7b20d27d58c81599a80504ef44a6a",
+      "size": 2199573
+    },
+    {
+      "original": "Units/ClassicalAge/RecurveArcher/SourceArt/Native-Attack-String-v5.png",
+      "archived": "Units/ClassicalAge/RecurveArcher/_TO BE DELETED/SourceArt/Native-Attack-String-v5.png",
+      "sha256": "a62e68326bf4cff93758dc17112c5cfe4420d8ca50b33e75196e7398cab4eda5",
+      "size": 2219622
+    },
+    {
+      "original": "Units/ClassicalAge/RecurveArcher/SourceArt/Native-Attack-v1.png",
+      "archived": "Units/ClassicalAge/RecurveArcher/_TO BE DELETED/SourceArt/Native-Attack-v1.png",
+      "sha256": "e2a9b23f14bd7a13036de705daa8855205d29ea1a36576b3f007435a4d15ca6a",
+      "size": 2259795
+    },
+    {
+      "original": "Units/ClassicalAge/RecurveArcher/SourceArt/Native-Attack-v2.png",
+      "archived": "Units/ClassicalAge/RecurveArcher/_TO BE DELETED/SourceArt/Native-Attack-v2.png",
+      "sha256": "75659745e5e212942c312cf5e7ff57c70a8d8f25aeaa1683015d41780f79500d",
+      "size": 2253027
+    },
+    {
+      "original": "Units/ClassicalAge/RecurveArcher/SourceArt/Native-Charge-v1.png",
+      "archived": "Units/ClassicalAge/RecurveArcher/_TO BE DELETED/SourceArt/Native-Charge-v1.png",
+      "sha256": "fabe617df0cf3620c3ecfa1950b8bead4ff6cc3f6b43416b33a833cf65ea8f14",
+      "size": 2306320
+    },
+    {
+      "original": "Units/ClassicalAge/RecurveArcher/SourceArt/Native-Charge-v2.png",
+      "archived": "Units/ClassicalAge/RecurveArcher/_TO BE DELETED/SourceArt/Native-Charge-v2.png",
+      "sha256": "7a32cfa2107d571500121ebf3eca518dd9e115b5511ff50cab48630576caa2ee",
+      "size": 2326098
+    },
+    {
+      "original": "Units/ClassicalAge/RecurveArcher/SourceArt/Native-ChargeAttack-Clean-v5.png",
+      "archived": "Units/ClassicalAge/RecurveArcher/_TO BE DELETED/SourceArt/Native-ChargeAttack-Clean-v5.png",
+      "sha256": "0cacd2aea32ad92f5ba6efde8487b39c6f73a4d1e5de891dd6487ffd4208d1d2",
+      "size": 2181075
+    },
+    {
+      "original": "Units/ClassicalAge/RecurveArcher/SourceArt/Native-ChargeAttack-Forward-v2.png",
+      "archived": "Units/ClassicalAge/RecurveArcher/_TO BE DELETED/SourceArt/Native-ChargeAttack-Forward-v2.png",
+      "sha256": "568422b917f9177edb405c4555b8f0f8bbcd098da52d97228fe69ed76ee49c47",
+      "size": 2112108
+    },
+    {
+      "original": "Units/ClassicalAge/RecurveArcher/SourceArt/Native-ChargeAttack-Forward-v3.png",
+      "archived": "Units/ClassicalAge/RecurveArcher/_TO BE DELETED/SourceArt/Native-ChargeAttack-Forward-v3.png",
+      "sha256": "0a6c382a9964270f4039e173e67486e44d62ad05f1dfedc86ee9c8093ac1ecee",
+      "size": 2190957
+    },
+    {
+      "original": "Units/ClassicalAge/RecurveArcher/SourceArt/Native-ChargeAttack-String-v4.png",
+      "archived": "Units/ClassicalAge/RecurveArcher/_TO BE DELETED/SourceArt/Native-ChargeAttack-String-v4.png",
+      "sha256": "d8f81f3fbf9f330b726b4b13bf376f0a572d6de385ed1f71216677dfc261e11c",
+      "size": 2193687
+    },
+    {
+      "original": "Units/ClassicalAge/RecurveArcher/SourceArt/Native-ChargeAttack-v1.png",
+      "archived": "Units/ClassicalAge/RecurveArcher/_TO BE DELETED/SourceArt/Native-ChargeAttack-v1.png",
+      "sha256": "f4ac024861d09a892a978cbc9ed0e9cd89f22578909be64cdf057d87048fb370",
+      "size": 2182800
+    },
+    {
+      "original": "Units/ClassicalAge/RecurveArcher/SourceArt/Native-Charged-v1.png",
+      "archived": "Units/ClassicalAge/RecurveArcher/_TO BE DELETED/SourceArt/Native-Charged-v1.png",
+      "sha256": "4d5ddb6993e0d5a4ebcb9b970d1c9cd937551e096174edd5be101971f60c55eb",
+      "size": 2306626
+    },
+    {
+      "original": "Units/ClassicalAge/RecurveArcher/SourceArt/Native-Death-v1.png",
+      "archived": "Units/ClassicalAge/RecurveArcher/_TO BE DELETED/SourceArt/Native-Death-v1.png",
+      "sha256": "d55ad3662361bf98bf9695fb5ec6fb2e1679dbe5fd52b721be94a2051f9d1b81",
+      "size": 2279919
+    },
+    {
+      "original": "Units/ClassicalAge/RecurveArcher/SourceArt/Native-DeathBack-v1.png",
+      "archived": "Units/ClassicalAge/RecurveArcher/_TO BE DELETED/SourceArt/Native-DeathBack-v1.png",
+      "sha256": "f0310331d6d7812fa86403247fbf1a38b74e3f2ed6fd5e52198a0d2fe31aa1e4",
+      "size": 2107620
+    },
+    {
+      "original": "Units/ClassicalAge/RecurveArcher/SourceArt/Native-Hit-v1.png",
+      "archived": "Units/ClassicalAge/RecurveArcher/_TO BE DELETED/SourceArt/Native-Hit-v1.png",
+      "sha256": "956e6da8dbe46c6e1cc352351ecc16337c85a9d07f21eda66d926940959af060",
+      "size": 2419582
+    },
+    {
+      "original": "Units/ClassicalAge/RecurveArcher/SourceArt/Native-Idle-Animated-v1.png",
+      "archived": "Units/ClassicalAge/RecurveArcher/_TO BE DELETED/SourceArt/Native-Idle-Animated-v1.png",
+      "sha256": "02fff285badd5000a7c17d5b4b8e81b09f31fd0f9052a0a7d591b9f0c7d7d876",
+      "size": 2422258
+    },
+    {
+      "original": "Units/ClassicalAge/RecurveArcher/SourceArt/Native-Idle-TopDown-v2.png",
+      "archived": "Units/ClassicalAge/RecurveArcher/_TO BE DELETED/SourceArt/Native-Idle-TopDown-v2.png",
+      "sha256": "bec957ea5632e459f3c6dd63ef563f0726013e88b44036a2ca8e82570db2ecb9",
+      "size": 1063746
+    },
+    {
+      "original": "Units/ClassicalAge/RecurveArcher/SourceArt/Native-Idle-TopDown-v3.png",
+      "archived": "Units/ClassicalAge/RecurveArcher/_TO BE DELETED/SourceArt/Native-Idle-TopDown-v3.png",
+      "sha256": "eb61b4b1ae4dcabe722128d23dca5fdbfb39c59a54036fa49a8715bdd7709735",
+      "size": 1010850
+    },
+    {
+      "original": "Units/ClassicalAge/RecurveArcher/SourceArt/Native-Reload-v1.png",
+      "archived": "Units/ClassicalAge/RecurveArcher/_TO BE DELETED/SourceArt/Native-Reload-v1.png",
+      "sha256": "472fea92cc7272e655ee6f77b29427d176e3cb47b9f36cc6f3dbf3e0ebfbdf02",
+      "size": 2306732
+    },
+    {
+      "original": "Units/ClassicalAge/RecurveArcher/SourceArt/Native-Running-v1.png",
+      "archived": "Units/ClassicalAge/RecurveArcher/_TO BE DELETED/SourceArt/Native-Running-v1.png",
+      "sha256": "f7bdc7916ccb207258ae3a88777ea0e311fcdf979b3393953a51d30d7ed9f678",
+      "size": 2419914
+    },
+    {
+      "original": "Units/ClassicalAge/RecurveArcher/SourceArt/Native-Running-v2.png",
+      "archived": "Units/ClassicalAge/RecurveArcher/_TO BE DELETED/SourceArt/Native-Running-v2.png",
+      "sha256": "36248b19f2c102b5259cc465dc6f6719cbdfeb705448d3d2ea6f78ec184f4cbd",
+      "size": 2360477
+    },
+    {
+      "original": "Units/ClassicalAge/RecurveArcher/SourceArt/Native-TopDown-attack-v1.png",
+      "archived": "Units/ClassicalAge/RecurveArcher/_TO BE DELETED/SourceArt/Native-TopDown-attack-v1.png",
+      "sha256": "f539183932fa76985271d201904ea14609469fe652218481c70a7d6f74ca373c",
+      "size": 2110811
+    },
+    {
+      "original": "Units/ClassicalAge/RecurveArcher/SourceArt/Native-TopDown-attack-v2.png",
+      "archived": "Units/ClassicalAge/RecurveArcher/_TO BE DELETED/SourceArt/Native-TopDown-attack-v2.png",
+      "sha256": "638a7e7e0463018e96ce3d657e40288cc06ad07b0bf1d80182edb4ad6f1f50bb",
+      "size": 2082174
+    },
+    {
+      "original": "Units/ClassicalAge/RecurveArcher/SourceArt/Native-TopDown-charge-attack-v1.png",
+      "archived": "Units/ClassicalAge/RecurveArcher/_TO BE DELETED/SourceArt/Native-TopDown-charge-attack-v1.png",
+      "sha256": "170f65da0d1e8fd30c6b1661ee045496da0afb9eb7a918cbc619874098e6edb9",
+      "size": 1983069
+    },
+    {
+      "original": "Units/ClassicalAge/RecurveArcher/SourceArt/Native-TopDown-charged-v1.png",
+      "archived": "Units/ClassicalAge/RecurveArcher/_TO BE DELETED/SourceArt/Native-TopDown-charged-v1.png",
+      "sha256": "9ab31587492b4dcab2523c00386508d1d3c31f06108e466fb02019840ce006b5",
+      "size": 2221725
+    },
+    {
+      "original": "Units/ClassicalAge/RecurveArcher/SourceArt/Native-TopDown-charged-v2.png",
+      "archived": "Units/ClassicalAge/RecurveArcher/_TO BE DELETED/SourceArt/Native-TopDown-charged-v2.png",
+      "sha256": "71b5c88673fc65efcd8d8f159385f152a7a9ee8972f90ec28a8403d4670d98ab",
+      "size": 2026251
+    },
+    {
+      "original": "Units/ClassicalAge/RecurveArcher/SourceArt/Native-TopDown-death-back-v1.png",
+      "archived": "Units/ClassicalAge/RecurveArcher/_TO BE DELETED/SourceArt/Native-TopDown-death-back-v1.png",
+      "sha256": "9cc3ddca88f747ffea4ec9a9996780bbe494939c5d9aa63f14d5dfcd7b398111",
+      "size": 2083919
+    },
+    {
+      "original": "Units/ClassicalAge/RecurveArcher/SourceArt/Native-TopDown-death-v1.png",
+      "archived": "Units/ClassicalAge/RecurveArcher/_TO BE DELETED/SourceArt/Native-TopDown-death-v1.png",
+      "sha256": "11c93a6142f2e84e4900b942d4fbcd963baa7f9350e84e7843cf6acb4e797da9",
+      "size": 1999468
+    },
+    {
+      "original": "Units/ClassicalAge/RecurveArcher/SourceArt/Native-TopDown-hit-v1.png",
+      "archived": "Units/ClassicalAge/RecurveArcher/_TO BE DELETED/SourceArt/Native-TopDown-hit-v1.png",
+      "sha256": "da64ecfa01b7833ed9ee0b18c9eff483897f4671c56466e3e8cfe39ae6ebb817",
+      "size": 2202269
+    },
+    {
+      "original": "Units/ClassicalAge/RecurveArcher/SourceArt/Native-TopDown-idle-v1.png",
+      "archived": "Units/ClassicalAge/RecurveArcher/_TO BE DELETED/SourceArt/Native-TopDown-idle-v1.png",
+      "sha256": "8ca09004f6bcebeb740edc626f878627048dc851eab3ab42ea38875be5a995f7",
+      "size": 2297486
+    },
+    {
+      "original": "Units/ClassicalAge/RecurveArcher/SourceArt/Native-TopDown-reload-v1.png",
+      "archived": "Units/ClassicalAge/RecurveArcher/_TO BE DELETED/SourceArt/Native-TopDown-reload-v1.png",
+      "sha256": "6cd5e79c11a6ff3383bc7e7a0f7beab2602126879507b3ea3b9eb2150d4bafd7",
+      "size": 2201091
+    },
+    {
+      "original": "Units/ClassicalAge/RecurveArcher/SourceArt/Native-TopDown-reload-v2.png",
+      "archived": "Units/ClassicalAge/RecurveArcher/_TO BE DELETED/SourceArt/Native-TopDown-reload-v2.png",
+      "sha256": "86488a93eec6976703603dc19ebaa8a4c5fa0106853e7eb0f69c31f259930f64",
+      "size": 1974496
+    },
+    {
+      "original": "Units/ClassicalAge/RecurveArcher/SourceArt/Native-TopDown-reload-v3.png",
+      "archived": "Units/ClassicalAge/RecurveArcher/_TO BE DELETED/SourceArt/Native-TopDown-reload-v3.png",
+      "sha256": "154d9b15812ed6eb2a46e96b2f8f59a80c53bb40f57f5c7db64de94e79e15a9d",
+      "size": 1667545
+    },
+    {
+      "original": "Units/ClassicalAge/RecurveArcher/SourceArt/Native-TopDown-running-v1.png",
+      "archived": "Units/ClassicalAge/RecurveArcher/_TO BE DELETED/SourceArt/Native-TopDown-running-v1.png",
+      "sha256": "f06857cb71cfda4569ab4cc85a0d0e6daba752d110afb426dcbc27380fe96f3b",
+      "size": 2095290
+    },
+    {
+      "original": "Units/ClassicalAge/RecurveArcher/SourceArt/prepare_topdown_review.py",
+      "archived": "Units/ClassicalAge/RecurveArcher/_TO BE DELETED/SourceArt/prepare_topdown_review.py",
+      "sha256": "4a9a6ec6c145fc6c88a9be6ee77adcb9ba54ad6b30a7ef4e40fafddeebf7eace",
+      "size": 2024
+    },
+    {
+      "original": "Units/ClassicalAge/RecurveArcher/SourceArt/String-Correction.json",
+      "archived": "Units/ClassicalAge/RecurveArcher/_TO BE DELETED/SourceArt/String-Correction.json",
+      "sha256": "1e569c9b32bb141005fe13d6f6fece95c702e303537e08af27e5f824be29526f",
+      "size": 4335
+    },
+    {
+      "original": "Units/ClassicalAge/RecurveArcher/SourceArt/TopDown-Animation-Generation.json",
+      "archived": "Units/ClassicalAge/RecurveArcher/_TO BE DELETED/SourceArt/TopDown-Animation-Generation.json",
+      "sha256": "2b6cd536bc6307046ff8551167da1b0891e86aa27d33cb5675d3742f042ec6c3",
+      "size": 26933
+    },
+    {
+      "original": "Units/ClassicalAge/RecurveArcher/SourceArt/TopDown-Composition.json",
+      "archived": "Units/ClassicalAge/RecurveArcher/_TO BE DELETED/SourceArt/TopDown-Composition.json",
+      "sha256": "262ebda651c722bcfaa4a3913d6c156a4178fe73765b26e3a51c5e133ecebc3a",
+      "size": 29329
+    },
+    {
+      "original": "Units/ClassicalAge/RecurveArcher/SourceArt/TopDown-Generation-v2.json",
+      "archived": "Units/ClassicalAge/RecurveArcher/_TO BE DELETED/SourceArt/TopDown-Generation-v2.json",
+      "sha256": "52c732275dcb6baebd146659af46678ad701ecc05937b096b95198b0819d26f8",
+      "size": 1570
+    },
+    {
+      "original": "Units/ClassicalAge/RecurveArcher/SourceArt/TopDown-Generation-v3.json",
+      "archived": "Units/ClassicalAge/RecurveArcher/_TO BE DELETED/SourceArt/TopDown-Generation-v3.json",
+      "sha256": "c379f7844ef175842320405a65a57e31f9adea924f7cc2aa4f2662fbbb15e3d7",
+      "size": 1251
+    },
+    {
+      "original": "Units/ClassicalAge/RecurveArcher/Validation.json",
+      "archived": "Units/ClassicalAge/RecurveArcher/_TO BE DELETED/Validation.json",
+      "sha256": "e69f7b75fceb73a430cfeb83a2e546a90191888baad02c5fcc0dce8b50d331c7",
+      "size": 27760
+    }
+  ],
+  "restored": [
+    {
+      "from": "Units/ClassicalAge/RecurveArcher/_TO BE DELETED/TopDownReview/Actor_Review.html",
+      "to": "Units/ClassicalAge/RecurveArcher/TopDownReview/Actor_Review.html",
+      "sha256": "7d417b2743b810ad8eafcb9925f1be7c82153a6d058029df9fc90d4baccff548",
+      "reason": "User clarified that TopDownReview is the correct selection"
+    },
+    {
+      "from": "Units/ClassicalAge/RecurveArcher/_TO BE DELETED/TopDownReview/animations.json",
+      "to": "Units/ClassicalAge/RecurveArcher/TopDownReview/animations.json",
+      "sha256": "4beeb91ca6671db85033d9c7f106500722a6973efb8cc24889c02030d2adb2d1",
+      "reason": "User clarified that TopDownReview is the correct selection"
+    },
+    {
+      "from": "Units/ClassicalAge/RecurveArcher/_TO BE DELETED/TopDownReview/attack-v2.png",
+      "to": "Units/ClassicalAge/RecurveArcher/TopDownReview/attack-v2.png",
+      "sha256": "9743661c5bdfa9183c36495138d97c338dcaeca0b79e81631011b235273fdbbd",
+      "reason": "User clarified that TopDownReview is the correct selection"
+    },
+    {
+      "from": "Units/ClassicalAge/RecurveArcher/_TO BE DELETED/TopDownReview/Browser-Review.json",
+      "to": "Units/ClassicalAge/RecurveArcher/TopDownReview/Browser-Review.json",
+      "sha256": "8fc6a36d60cb5ec0a54404433d5fece48ebc36c8fe4b3706144660debbffbe9e",
+      "reason": "User clarified that TopDownReview is the correct selection"
+    },
+    {
+      "from": "Units/ClassicalAge/RecurveArcher/_TO BE DELETED/TopDownReview/charge-attack-v1.png",
+      "to": "Units/ClassicalAge/RecurveArcher/TopDownReview/charge-attack-v1.png",
+      "sha256": "23c3d9af62f31e5828b854723b3674be8e11ca5c62574845826bcbfeb0299238",
+      "reason": "User clarified that TopDownReview is the correct selection"
+    },
+    {
+      "from": "Units/ClassicalAge/RecurveArcher/_TO BE DELETED/TopDownReview/charge-v1.png",
+      "to": "Units/ClassicalAge/RecurveArcher/TopDownReview/charge-v1.png",
+      "sha256": "a2d1ecf1df20e50ffacb2e1028e607b1ca21534637b564f4aca1651edbeadf21",
+      "reason": "User clarified that TopDownReview is the correct selection"
+    },
+    {
+      "from": "Units/ClassicalAge/RecurveArcher/_TO BE DELETED/TopDownReview/charged-v2.png",
+      "to": "Units/ClassicalAge/RecurveArcher/TopDownReview/charged-v2.png",
+      "sha256": "9038de0dfe680d33e2142a4afb3ca95fd1e8e33d8ac4340a57c5ed8c48847980",
+      "reason": "User clarified that TopDownReview is the correct selection"
+    },
+    {
+      "from": "Units/ClassicalAge/RecurveArcher/_TO BE DELETED/TopDownReview/death-back-v1.png",
+      "to": "Units/ClassicalAge/RecurveArcher/TopDownReview/death-back-v1.png",
+      "sha256": "55b1da619fdc0df916518975c8a8ab829e8c20fc879e21d4b6edac2ad2fa8db8",
+      "reason": "User clarified that TopDownReview is the correct selection"
+    },
+    {
+      "from": "Units/ClassicalAge/RecurveArcher/_TO BE DELETED/TopDownReview/death-v1.png",
+      "to": "Units/ClassicalAge/RecurveArcher/TopDownReview/death-v1.png",
+      "sha256": "3948b34d5c7f886fa312bc01491c1ee82861b56ffcc1d69bf52cc93bec93978b",
+      "reason": "User clarified that TopDownReview is the correct selection"
+    },
+    {
+      "from": "Units/ClassicalAge/RecurveArcher/_TO BE DELETED/TopDownReview/Generation.json",
+      "to": "Units/ClassicalAge/RecurveArcher/TopDownReview/Generation.json",
+      "sha256": "b1a4fadf9e59df0806719bafe3a5b5b4e57813c335c52e610efd0510a34c04c4",
+      "reason": "User clarified that TopDownReview is the correct selection"
+    },
+    {
+      "from": "Units/ClassicalAge/RecurveArcher/_TO BE DELETED/TopDownReview/hit-v1.png",
+      "to": "Units/ClassicalAge/RecurveArcher/TopDownReview/hit-v1.png",
+      "sha256": "3ad2356581aaa3dca2f0cfac6d5fceebc2b9f7c9baeca74106e4b0ddee8a8b81",
+      "reason": "User clarified that TopDownReview is the correct selection"
+    },
+    {
+      "from": "Units/ClassicalAge/RecurveArcher/_TO BE DELETED/TopDownReview/Idle-TopDown-v3.png",
+      "to": "Units/ClassicalAge/RecurveArcher/TopDownReview/Idle-TopDown-v3.png",
+      "sha256": "c166244c46090a38b2775dee486854d68c8369e94b3e89d5f0783cdd8d48bb97",
+      "reason": "User clarified that TopDownReview is the correct selection"
+    },
+    {
+      "from": "Units/ClassicalAge/RecurveArcher/_TO BE DELETED/TopDownReview/idle-v1.png",
+      "to": "Units/ClassicalAge/RecurveArcher/TopDownReview/idle-v1.png",
+      "sha256": "63c4571f82ddae73c4846fb986772d3bfdc1601104b3452bd85951064e19cb53",
+      "reason": "User clarified that TopDownReview is the correct selection"
+    },
+    {
+      "from": "Units/ClassicalAge/RecurveArcher/_TO BE DELETED/TopDownReview/README.md",
+      "to": "Units/ClassicalAge/RecurveArcher/TopDownReview/README.md",
+      "sha256": "97d544f3122a435130c421c8c814248cdb9544b8b935ffc82fffef65d1b52d1a",
+      "reason": "User clarified that TopDownReview is the correct selection"
+    },
+    {
+      "from": "Units/ClassicalAge/RecurveArcher/_TO BE DELETED/TopDownReview/reload-v3.png",
+      "to": "Units/ClassicalAge/RecurveArcher/TopDownReview/reload-v3.png",
+      "sha256": "2b3e5492b6c31377a22572792e78a565e3d69f31606e0159c77a6b2a687f8daf",
+      "reason": "User clarified that TopDownReview is the correct selection"
+    },
+    {
+      "from": "Units/ClassicalAge/RecurveArcher/_TO BE DELETED/TopDownReview/running-v1.png",
+      "to": "Units/ClassicalAge/RecurveArcher/TopDownReview/running-v1.png",
+      "sha256": "a2d1ecf1df20e50ffacb2e1028e607b1ca21534637b564f4aca1651edbeadf21",
+      "reason": "User clarified that TopDownReview is the correct selection"
+    },
+    {
+      "from": "Units/ClassicalAge/RecurveArcher/_TO BE DELETED/TopDownReview/Validation.json",
+      "to": "Units/ClassicalAge/RecurveArcher/TopDownReview/Validation.json",
+      "sha256": "9489e55309520238e2fbc3afbbe11f219932978d2745e8b58bbb7cf958b9c78e",
+      "reason": "User clarified that TopDownReview is the correct selection"
+    }
+  ]
+}

@@ -1,0 +1,246 @@
+{
+  "folder": "Units/LateMedieval/CossackRider/_TO BE DELETED",
+  "created": "2026-10-09T03:15:53.711Z",
+  "files": [
+    {
+      "original": "Units/LateMedieval/CossackRider/Browser-Review.json",
+      "archived": "Units/LateMedieval/CossackRider/_TO BE DELETED/Browser-Review.json",
+      "sha256": "48c8c9d49533942994f45133de5ca0629190095e577328b0e3c9d9a0ce2b4ce5",
+      "size": 1464
+    },
+    {
+      "original": "Units/LateMedieval/CossackRider/death-Registered-v1.png",
+      "archived": "Units/LateMedieval/CossackRider/_TO BE DELETED/death-Registered-v1.png",
+      "sha256": "ff96527b2f521bd5398c21b71077f414adfc47cfbd6d3ad15cb8cd0be5f96d2c",
+      "size": 595257
+    },
+    {
+      "original": "Units/LateMedieval/CossackRider/Generation.json",
+      "archived": "Units/LateMedieval/CossackRider/_TO BE DELETED/Generation.json",
+      "sha256": "95b125a1031b84dee277e09b762dc74e9b43dbf3733ec032efb15d86d77ad2b7",
+      "size": 19502
+    },
+    {
+      "original": "Units/LateMedieval/CossackRider/Idle-v1.png",
+      "archived": "Units/LateMedieval/CossackRider/_TO BE DELETED/Idle-v1.png",
+      "sha256": "63e2bf0c9f0f5a3d8c14a996b3f5b9e2ba2696ebe96adb6ff8ca7837b1cff076",
+      "size": 1555674
+    },
+    {
+      "original": "Units/LateMedieval/CossackRider/prepare_idle.py",
+      "archived": "Units/LateMedieval/CossackRider/_TO BE DELETED/prepare_idle.py",
+      "sha256": "3957571591d0e8304ace7bcadf2b4988887f19e2e57b733d11d86f58ea752ec6",
+      "size": 4604
+    },
+    {
+      "original": "Units/LateMedieval/CossackRider/SourceArt/Approved-Idle.json",
+      "archived": "Units/LateMedieval/CossackRider/_TO BE DELETED/SourceArt/Approved-Idle.json",
+      "sha256": "5dbd7f632b51dd21749965523af615d9afad1e2fcd90c199518f6623b8b474ed",
+      "size": 192
+    },
+    {
+      "original": "Units/LateMedieval/CossackRider/SourceArt/Before-Animation-Actor_Review.html",
+      "archived": "Units/LateMedieval/CossackRider/_TO BE DELETED/SourceArt/Before-Animation-Actor_Review.html",
+      "sha256": "12100926a3da2f391f12c6ad3647203474005b7977133f9a0567df0216a620b6",
+      "size": 7294
+    },
+    {
+      "original": "Units/LateMedieval/CossackRider/SourceArt/Before-Animation-animations.json",
+      "archived": "Units/LateMedieval/CossackRider/_TO BE DELETED/SourceArt/Before-Animation-animations.json",
+      "sha256": "6bc079b695ebed7ad946918f324df51b45d75bdd27d410375ad70da6a3ab4e9b",
+      "size": 1841
+    },
+    {
+      "original": "Units/LateMedieval/CossackRider/SourceArt/Before-Animation-Browser-Review.json",
+      "archived": "Units/LateMedieval/CossackRider/_TO BE DELETED/SourceArt/Before-Animation-Browser-Review.json",
+      "sha256": "df9c951a6f46f9e1b1a5b13c402b5d17322a90ca3a4fbac2339dbed46f6b9fda",
+      "size": 380
+    },
+    {
+      "original": "Units/LateMedieval/CossackRider/SourceArt/Before-Animation-Validation.json",
+      "archived": "Units/LateMedieval/CossackRider/_TO BE DELETED/SourceArt/Before-Animation-Validation.json",
+      "sha256": "5692ab43336b1a03f28bd05283fddc8b55bff8ab3d22dbda0fe4b3c1fbbcd81c",
+      "size": 380
+    },
+    {
+      "original": "Units/LateMedieval/CossackRider/SourceArt/Before-Death-v2-animations.json",
+      "archived": "Units/LateMedieval/CossackRider/_TO BE DELETED/SourceArt/Before-Death-v2-animations.json",
+      "sha256": "322420be4955a72035faac17ecd908ae14182f099390502c4e8085f7fb4cbc70",
+      "size": 22187
+    },
+    {
+      "original": "Units/LateMedieval/CossackRider/SourceArt/Before-Death-v2-Browser-Review.json",
+      "archived": "Units/LateMedieval/CossackRider/_TO BE DELETED/SourceArt/Before-Death-v2-Browser-Review.json",
+      "sha256": "7e6b5a1f11d6ec659b557724119d0d73a30254a650c2c0e38180a7053c25af6d",
+      "size": 1161
+    },
+    {
+      "original": "Units/LateMedieval/CossackRider/SourceArt/Before-Death-v2-Validation.json",
+      "archived": "Units/LateMedieval/CossackRider/_TO BE DELETED/SourceArt/Before-Death-v2-Validation.json",
+      "sha256": "bbc06284673f0bdd9071684b8cbe6945a0340e768ecf6149ae081fc215d14689",
+      "size": 14878
+    },
+    {
+      "original": "Units/LateMedieval/CossackRider/SourceArt/compose_animations.py",
+      "archived": "Units/LateMedieval/CossackRider/_TO BE DELETED/SourceArt/compose_animations.py",
+      "sha256": "eeefe6e590da5e43f7592322a6866e5890edc239953cf51ca15d47bdd55417ef",
+      "size": 9572
+    },
+    {
+      "original": "Units/LateMedieval/CossackRider/SourceArt/Composition-death-v2.json",
+      "archived": "Units/LateMedieval/CossackRider/_TO BE DELETED/SourceArt/Composition-death-v2.json",
+      "sha256": "080672680f6f4b0a9246c16a0668d2a340c9ff4a54f2fa3dea307ca1423f024f",
+      "size": 894
+    },
+    {
+      "original": "Units/LateMedieval/CossackRider/SourceArt/Composition.json",
+      "archived": "Units/LateMedieval/CossackRider/_TO BE DELETED/SourceArt/Composition.json",
+      "sha256": "382367cae91e0f2851a245a62d3314b69056efb35745f511838e8202a7f87777",
+      "size": 245116
+    },
+    {
+      "original": "Units/LateMedieval/CossackRider/SourceArt/Generation-idle-v1.json",
+      "archived": "Units/LateMedieval/CossackRider/_TO BE DELETED/SourceArt/Generation-idle-v1.json",
+      "sha256": "7d7fa021fbeca44ad75902e893f4bc5160f49423e7aeb66322d76619ae84b459",
+      "size": 1784
+    },
+    {
+      "original": "Units/LateMedieval/CossackRider/SourceArt/Generation-motion-attack-v1.json",
+      "archived": "Units/LateMedieval/CossackRider/_TO BE DELETED/SourceArt/Generation-motion-attack-v1.json",
+      "sha256": "cc61697709bfc6b34d8b894668d6495fc9313ae61ed530dc50f691836dceb2d3",
+      "size": 1743
+    },
+    {
+      "original": "Units/LateMedieval/CossackRider/SourceArt/Generation-motion-charge-attack-v1.json",
+      "archived": "Units/LateMedieval/CossackRider/_TO BE DELETED/SourceArt/Generation-motion-charge-attack-v1.json",
+      "sha256": "4bd9ca7762ab77d31a982ef8d56221c05d0ac608b49ba3ef2506df42276004f6",
+      "size": 1825
+    },
+    {
+      "original": "Units/LateMedieval/CossackRider/SourceArt/Generation-motion-charge-v1.json",
+      "archived": "Units/LateMedieval/CossackRider/_TO BE DELETED/SourceArt/Generation-motion-charge-v1.json",
+      "sha256": "aa48fe15545a251388f48859eff34ff8eb0938e807d99a578fa7b24a0492892e",
+      "size": 1534
+    },
+    {
+      "original": "Units/LateMedieval/CossackRider/SourceArt/Generation-motion-charged-impact-v1.json",
+      "archived": "Units/LateMedieval/CossackRider/_TO BE DELETED/SourceArt/Generation-motion-charged-impact-v1.json",
+      "sha256": "f9715baf0bf2cfc8e34101312107dc8b03cafdf2c80fce11a9d569e020c456bc",
+      "size": 1549
+    },
+    {
+      "original": "Units/LateMedieval/CossackRider/SourceArt/Generation-motion-death-thrown-v1.json",
+      "archived": "Units/LateMedieval/CossackRider/_TO BE DELETED/SourceArt/Generation-motion-death-thrown-v1.json",
+      "sha256": "fca0b1c2dbeefd996af3f5c42e7b54fb458eeeb29f71f89c7cd14037848fe8c4",
+      "size": 1571
+    },
+    {
+      "original": "Units/LateMedieval/CossackRider/SourceArt/Generation-motion-death-v1.json",
+      "archived": "Units/LateMedieval/CossackRider/_TO BE DELETED/SourceArt/Generation-motion-death-v1.json",
+      "sha256": "4f197c4174761ae03f4ab3c127306724319e1b10f3233ab2d26c46f363312059",
+      "size": 1601
+    },
+    {
+      "original": "Units/LateMedieval/CossackRider/SourceArt/Generation-motion-death-v2.json",
+      "archived": "Units/LateMedieval/CossackRider/_TO BE DELETED/SourceArt/Generation-motion-death-v2.json",
+      "sha256": "b8ea47838f4b4d895454292ddd2060c76756ace2b242237bde6883a63b26da1b",
+      "size": 1837
+    },
+    {
+      "original": "Units/LateMedieval/CossackRider/SourceArt/Generation-motion-hit-v1.json",
+      "archived": "Units/LateMedieval/CossackRider/_TO BE DELETED/SourceArt/Generation-motion-hit-v1.json",
+      "sha256": "f8d24c9f6e0fcd01ad094e6eab88063c512dc1e372f916ed2bb86db13037ad2e",
+      "size": 1446
+    },
+    {
+      "original": "Units/LateMedieval/CossackRider/SourceArt/Generation-motion-idle-v1.json",
+      "archived": "Units/LateMedieval/CossackRider/_TO BE DELETED/SourceArt/Generation-motion-idle-v1.json",
+      "sha256": "69e23bc60a497120a8077fde22070e608edd8883e6b5d264eb7941371207dd2b",
+      "size": 1455
+    },
+    {
+      "original": "Units/LateMedieval/CossackRider/SourceArt/Generation-motion-walk-v1.json",
+      "archived": "Units/LateMedieval/CossackRider/_TO BE DELETED/SourceArt/Generation-motion-walk-v1.json",
+      "sha256": "5a667637a762a5d9efc8e1474e065838a5ee50be67492f3fded455b4d677cb45",
+      "size": 1520
+    },
+    {
+      "original": "Units/LateMedieval/CossackRider/SourceArt/Native-attack-v1.png",
+      "archived": "Units/LateMedieval/CossackRider/_TO BE DELETED/SourceArt/Native-attack-v1.png",
+      "sha256": "e2af7ca345d81da342ce5feefc2e45c1ba0fb930141f526fa5dce5e3f7391288",
+      "size": 1789202
+    },
+    {
+      "original": "Units/LateMedieval/CossackRider/SourceArt/Native-charge-attack-v1.png",
+      "archived": "Units/LateMedieval/CossackRider/_TO BE DELETED/SourceArt/Native-charge-attack-v1.png",
+      "sha256": "f69ca1529e9b7ac96e274a5ceebbe0b6e6d5830eda5d5674d9d31ebb4465cf62",
+      "size": 1763554
+    },
+    {
+      "original": "Units/LateMedieval/CossackRider/SourceArt/Native-charge-v1.png",
+      "archived": "Units/LateMedieval/CossackRider/_TO BE DELETED/SourceArt/Native-charge-v1.png",
+      "sha256": "bb90af2212f53d11443140d5f96ff16a443d6ed45c9a2fed2117a7b14e92d9a1",
+      "size": 1712056
+    },
+    {
+      "original": "Units/LateMedieval/CossackRider/SourceArt/Native-charged-impact-v1.png",
+      "archived": "Units/LateMedieval/CossackRider/_TO BE DELETED/SourceArt/Native-charged-impact-v1.png",
+      "sha256": "5f15108638c3ebac4dc1e9404eeb39b91d3f836ef228cd2a1165166e2c88f26f",
+      "size": 1863641
+    },
+    {
+      "original": "Units/LateMedieval/CossackRider/SourceArt/Native-death-thrown-v1.png",
+      "archived": "Units/LateMedieval/CossackRider/_TO BE DELETED/SourceArt/Native-death-thrown-v1.png",
+      "sha256": "d08fe6bc06afeb7a6f19e74f2672cce88f7a652556b8ecb5537485104fdb5f73",
+      "size": 2024181
+    },
+    {
+      "original": "Units/LateMedieval/CossackRider/SourceArt/Native-death-v1.png",
+      "archived": "Units/LateMedieval/CossackRider/_TO BE DELETED/SourceArt/Native-death-v1.png",
+      "sha256": "9fa942f175d5420ba6e7df14b51d1d3bfc61333ad5bb04943732910d939a3825",
+      "size": 2143373
+    },
+    {
+      "original": "Units/LateMedieval/CossackRider/SourceArt/Native-death-v2.png",
+      "archived": "Units/LateMedieval/CossackRider/_TO BE DELETED/SourceArt/Native-death-v2.png",
+      "sha256": "8e862562cfb0c1e5487acdd92b27363be9b54dc1a3f17b7fdfdaf3729791f0b5",
+      "size": 2123575
+    },
+    {
+      "original": "Units/LateMedieval/CossackRider/SourceArt/Native-hit-v1.png",
+      "archived": "Units/LateMedieval/CossackRider/_TO BE DELETED/SourceArt/Native-hit-v1.png",
+      "sha256": "6c96222d89eda919bc25698af9a0b308a2ffdab675417d44b8b6e03ebc0f86e8",
+      "size": 1822418
+    },
+    {
+      "original": "Units/LateMedieval/CossackRider/SourceArt/Native-idle-v1.png",
+      "archived": "Units/LateMedieval/CossackRider/_TO BE DELETED/SourceArt/Native-idle-v1.png",
+      "sha256": "6d513ed978b14bed1f750bef93347657ddaf9657d7f5c5f4d264cc15bdda26c1",
+      "size": 1820982
+    },
+    {
+      "original": "Units/LateMedieval/CossackRider/SourceArt/Native-walk-v1.png",
+      "archived": "Units/LateMedieval/CossackRider/_TO BE DELETED/SourceArt/Native-walk-v1.png",
+      "sha256": "ada08fc3bae3e0d57d11d627c4133abbf1cd6ee7cb3e1e10191adecac6922098",
+      "size": 1844475
+    },
+    {
+      "original": "Units/LateMedieval/CossackRider/SourceArt/replace_together_death.py",
+      "archived": "Units/LateMedieval/CossackRider/_TO BE DELETED/SourceArt/replace_together_death.py",
+      "sha256": "e081348c2e405384237a0c4040aa19991328dd456acfb92a9522bf2589b53523",
+      "size": 4168
+    },
+    {
+      "original": "Units/LateMedieval/CossackRider/SourceArt/User-Clothing-Reference.png",
+      "archived": "Units/LateMedieval/CossackRider/_TO BE DELETED/SourceArt/User-Clothing-Reference.png",
+      "sha256": "fcdeda3a9c2b5c0b4fd49b3df5d6ce492291a552d79fa976e71b4fdad8ef20e9",
+      "size": 657179
+    },
+    {
+      "original": "Units/LateMedieval/CossackRider/Validation.json",
+      "archived": "Units/LateMedieval/CossackRider/_TO BE DELETED/Validation.json",
+      "sha256": "9f01dcfc7b1486969c25ad28b50c9e3ad195e73992b297bcc8f362a130d183a6",
+      "size": 14953
+    }
+  ]
+}

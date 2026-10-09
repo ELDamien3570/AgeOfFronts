@@ -309,7 +309,7 @@
     },
     {
       "id": "modern-heavycavalry",
-      "name": "Armoured Personnel Carriers",
+      "name": "Tsar Tank",
       "age": "EarlyModern",
       "troopClass": "heavyCavalry",
       "technologyId": "russian-apc-production",
@@ -318,7 +318,7 @@
     },
     {
       "id": "modern-rangedcavalry",
-      "name": "Battle Tanks",
+      "name": "T-34",
       "age": "EarlyModern",
       "troopClass": "rangedCavalry",
       "technologyId": "russian-tank-production",
@@ -354,7 +354,7 @@
     },
     {
       "id": "present-day-lightcavalry",
-      "name": "Gun Trucks",
+      "name": "VPK Bumerang",
       "age": "Modern",
       "troopClass": "lightCavalry",
       "technologyId": "russian-troop-present-day-lightcavalry",
@@ -363,7 +363,7 @@
     },
     {
       "id": "present-day-heavycavalry",
-      "name": "Armoured Personnel Carriers",
+      "name": "T-14",
       "age": "Modern",
       "troopClass": "heavyCavalry",
       "technologyId": "russian-troop-present-day-heavycavalry",
@@ -372,7 +372,7 @@
     },
     {
       "id": "present-day-rangedcavalry",
-      "name": "Main Battle Tanks",
+      "name": "2K22 Tunguska",
       "age": "Modern",
       "troopClass": "rangedCavalry",
       "technologyId": "russian-troop-present-day-rangedcavalry",
@@ -387,15 +387,13 @@
       "age": "StoneAge",
       "tree": "naval",
       "slot": 2,
-      "gold": 200,
-      "ticks": 360,
-      "description": "Unlocks ports for shipbuilding and sea trade.",
       "prerequisites": [
         "stoneage-cargo-canoes"
       ],
-      "capabilities": [
-        "stoneage-shorecraft"
-      ]
+      "gold": 200,
+      "ticks": 360,
+      "capabilities": [],
+      "description": "Unlocks ports for shipbuilding and sea trade. In this draft, troop and building construction requires the separately named unlock nodes; this foundation does not grant them automatically."
     },
     {
       "id": "stoneage-cargo-canoes",
@@ -403,13 +401,11 @@
       "age": "StoneAge",
       "tree": "naval",
       "slot": 1,
+      "prerequisites": [],
       "gold": 300,
       "ticks": 400,
-      "description": "Lets squads cross water as canoe transports and unlocks automatic port-to-port trade. A transport sinks with every soldier aboard.",
-      "prerequisites": [],
-      "capabilities": [
-        "stoneage-cargo-canoes"
-      ]
+      "capabilities": [],
+      "description": "Lets squads cross water as canoe transports and unlocks automatic port-to-port trade. A transport sinks with every soldier aboard."
     },
     {
       "id": "stoneage-war-canoes",
@@ -417,15 +413,13 @@
       "age": "StoneAge",
       "tree": "naval",
       "slot": 3,
-      "gold": 300,
-      "ticks": 400,
-      "description": "Unlocks war canoes for naval combat and interception of hostile trade ships.",
       "prerequisites": [
         "stoneage-shorecraft"
       ],
-      "capabilities": [
-        "stoneage-war-canoes"
-      ]
+      "gold": 300,
+      "ticks": 400,
+      "capabilities": [],
+      "description": "Unlocks war canoes for naval combat and interception of hostile trade ships. In this draft, troop and building construction requires the separately named unlock nodes; this foundation does not grant them automatically."
     },
     {
       "id": "stoneage-coastal-navigation",
@@ -433,16 +427,13 @@
       "age": "StoneAge",
       "tree": "naval",
       "slot": 4,
-      "gold": 450,
-      "ticks": 500,
-      "description": "Improves transport hulls and sailing speed for squads afloat, and military sailing speed; warships reload faster. Trade ships are unchanged.",
       "prerequisites": [
-        "stoneage-cargo-canoes",
         "stoneage-war-canoes"
       ],
-      "capabilities": [
-        "stoneage-coastal-navigation"
-      ]
+      "gold": 450,
+      "ticks": 500,
+      "capabilities": [],
+      "description": "Improves transport hulls and sailing speed for squads afloat, and military sailing speed; warships reload faster. Trade ships are unchanged."
     },
     {
       "id": "stoneage-flint-weapons",
@@ -505,13 +496,11 @@
       "age": "StoneAge",
       "tree": "economic",
       "slot": 1,
+      "prerequisites": [],
       "gold": 0,
       "ticks": 0,
-      "description": "Unlocks cities, which grow troop reserves.",
-      "prerequisites": [],
-      "capabilities": [
-        "stoneage-settlements"
-      ]
+      "capabilities": [],
+      "description": "Unlocks cities, which grow troop reserves. In this draft, troop and building construction requires the separately named unlock nodes; this foundation does not grant them automatically."
     },
     {
       "id": "stoneage-craft-workshops",
@@ -519,15 +508,13 @@
       "age": "StoneAge",
       "tree": "economic",
       "slot": 2,
-      "gold": 300,
-      "ticks": 400,
-      "description": "Unlocks factories producing goods for land trade.",
       "prerequisites": [
         "stoneage-settlements"
       ],
-      "capabilities": [
-        "stoneage-craft-workshops"
-      ]
+      "gold": 300,
+      "ticks": 400,
+      "capabilities": [],
+      "description": "Unlocks factories producing goods for land trade. In this draft, troop and building construction requires the separately named unlock nodes; this foundation does not grant them automatically."
     },
     {
       "id": "stoneage-stone-mining",
@@ -535,32 +522,28 @@
       "age": "StoneAge",
       "tree": "economic",
       "slot": 3,
-      "gold": 300,
-      "ticks": 400,
-      "description": "Unlocks mines and stone extraction from owned deposits.",
       "prerequisites": [
         "stoneage-settlements"
       ],
-      "capabilities": [
-        "stoneage-stone-mining"
-      ]
+      "gold": 300,
+      "ticks": 400,
+      "capabilities": [],
+      "description": "Unlocks mines and stone extraction from owned deposits. In this draft, troop and building construction requires the separately named unlock nodes; this foundation does not grant them automatically."
     },
     {
       "id": "stoneage-goods-handling",
-      "name": "Goods Handling",
+      "name": "Foreign Markets",
       "age": "StoneAge",
       "tree": "economic",
       "slot": 4,
-      "gold": 450,
-      "ticks": 500,
-      "description": "Starts automatic land trade between reachable markets. Increases land and sea cargo capacity and speeds up production recipes.",
       "prerequisites": [
         "stoneage-craft-workshops",
         "stoneage-stone-mining"
       ],
-      "capabilities": [
-        "stoneage-goods-handling"
-      ]
+      "gold": 450,
+      "ticks": 500,
+      "capabilities": [],
+      "description": "Starts automatic land trade between reachable markets. Increases land and sea cargo capacity and speeds up production recipes."
     },
     {
       "id": "bronzeage-planked-hulls",
@@ -568,15 +551,13 @@
       "age": "BronzeAge",
       "tree": "naval",
       "slot": 1,
-      "gold": 4000,
-      "ticks": 400,
-      "description": "Unlocks Bronze Age ports; squads afloat use sturdier Bronze Age transport hulls. Existing ports advance automatically.",
       "prerequisites": [
         "stoneage-coastal-navigation"
       ],
-      "capabilities": [
-        "bronzeage-planked-hulls"
-      ]
+      "gold": 4000,
+      "ticks": 400,
+      "capabilities": [],
+      "description": "Unlocks Bronze Age ports; squads afloat use sturdier Bronze Age transport hulls. Existing ports advance automatically. In this draft, troop and building construction requires the separately named unlock nodes; this foundation does not grant them automatically."
     },
     {
       "id": "bronzeage-merchant-sailing",
@@ -584,15 +565,13 @@
       "age": "BronzeAge",
       "tree": "naval",
       "slot": 2,
-      "gold": 2334,
-      "ticks": 440,
-      "description": "Unlocks Bronze Age sea traders, with larger cargo holds.",
       "prerequisites": [
         "bronzeage-planked-hulls"
       ],
-      "capabilities": [
-        "bronzeage-merchant-sailing"
-      ]
+      "gold": 2334,
+      "ticks": 440,
+      "capabilities": [],
+      "description": "Unlocks Bronze Age sea traders, with larger cargo holds. In this draft, troop and building construction requires the separately named unlock nodes; this foundation does not grant them automatically."
     },
     {
       "id": "bronzeage-oared-warships",
@@ -600,15 +579,13 @@
       "age": "BronzeAge",
       "tree": "naval",
       "slot": 3,
-      "gold": 2334,
-      "ticks": 440,
-      "description": "Unlocks Bronze Age warships for naval combat and interception of hostile trade ships.",
       "prerequisites": [
         "bronzeage-planked-hulls"
       ],
-      "capabilities": [
-        "bronzeage-oared-warships"
-      ]
+      "gold": 2334,
+      "ticks": 440,
+      "capabilities": [],
+      "description": "Unlocks Bronze Age warships for naval combat and interception of hostile trade ships. In this draft, troop and building construction requires the separately named unlock nodes; this foundation does not grant them automatically."
     },
     {
       "id": "bronzeage-naval-organisation",
@@ -616,16 +593,14 @@
       "age": "BronzeAge",
       "tree": "naval",
       "slot": 4,
-      "gold": 3334,
-      "ticks": 500,
-      "description": "Improves transport hulls and sailing speed for squads afloat, and military sailing speed; warships reload faster. Trade ships are unchanged.",
       "prerequisites": [
         "bronzeage-merchant-sailing",
         "bronzeage-oared-warships"
       ],
-      "capabilities": [
-        "bronzeage-naval-organisation"
-      ]
+      "gold": 3334,
+      "ticks": 500,
+      "capabilities": [],
+      "description": "Improves transport hulls and sailing speed for squads afloat, and military sailing speed; warships reload faster. Trade ships are unchanged."
     },
     {
       "id": "bronzeage-bronze-equipment",
@@ -704,15 +679,13 @@
       "age": "BronzeAge",
       "tree": "economic",
       "slot": 1,
-      "gold": 2000,
-      "ticks": 400,
-      "description": "Unlocks copper and tin extraction, bronze smelting, and Bronze Age mines.",
       "prerequisites": [
         "stoneage-goods-handling"
       ],
-      "capabilities": [
-        "bronzeage-bronze-metallurgy"
-      ]
+      "gold": 2000,
+      "ticks": 400,
+      "capabilities": [],
+      "description": "Unlocks copper and tin extraction, bronze smelting, and Bronze Age mines. In this draft, troop and building construction requires the separately named unlock nodes; this foundation does not grant them automatically."
     },
     {
       "id": "bronzeage-urban-workshops",
@@ -720,15 +693,13 @@
       "age": "BronzeAge",
       "tree": "economic",
       "slot": 2,
-      "gold": 2334,
-      "ticks": 440,
-      "description": "Unlocks Bronze Age city and factory upgrades, increasing reserve growth and trade stock.",
       "prerequisites": [
         "bronzeage-bronze-metallurgy"
       ],
-      "capabilities": [
-        "bronzeage-urban-workshops"
-      ]
+      "gold": 2334,
+      "ticks": 440,
+      "capabilities": [],
+      "description": "Unlocks Bronze Age city and factory upgrades, increasing reserve growth and trade stock. In this draft, troop and building construction requires the separately named unlock nodes; this foundation does not grant them automatically."
     },
     {
       "id": "bronzeage-road-networks",
@@ -736,15 +707,13 @@
       "age": "BronzeAge",
       "tree": "economic",
       "slot": 3,
-      "gold": 2334,
-      "ticks": 440,
-      "description": "Increases land trader cargo capacity. Adds cosmetic dirt roads along trade routes.",
       "prerequisites": [
         "bronzeage-bronze-metallurgy"
       ],
-      "capabilities": [
-        "bronzeage-road-networks"
-      ]
+      "gold": 2334,
+      "ticks": 440,
+      "capabilities": [],
+      "description": "Increases land trader cargo capacity. Adds cosmetic dirt roads along trade routes."
     },
     {
       "id": "bronzeage-civic-administration",
@@ -752,16 +721,14 @@
       "age": "BronzeAge",
       "tree": "economic",
       "slot": 4,
-      "gold": 3334,
-      "ticks": 500,
-      "description": "Speeds up equipment and refining recipes.",
       "prerequisites": [
         "bronzeage-urban-workshops",
         "bronzeage-road-networks"
       ],
-      "capabilities": [
-        "bronzeage-civic-administration"
-      ]
+      "gold": 3334,
+      "ticks": 500,
+      "capabilities": [],
+      "description": "Speeds up equipment and refining recipes."
     },
     {
       "id": "classicalage-shipyards",
@@ -769,15 +736,13 @@
       "age": "ClassicalAge",
       "tree": "naval",
       "slot": 1,
-      "gold": 6667,
-      "ticks": 500,
-      "description": "Unlocks Classical Age ports. Existing ports advance automatically.",
       "prerequisites": [
         "bronzeage-naval-organisation"
       ],
-      "capabilities": [
-        "classicalage-shipyards"
-      ]
+      "gold": 6667,
+      "ticks": 500,
+      "capabilities": [],
+      "description": "Unlocks Classical Age ports. Existing ports advance automatically. In this draft, troop and building construction requires the separately named unlock nodes; this foundation does not grant them automatically."
     },
     {
       "id": "classicalage-transport-fleets",
@@ -785,15 +750,13 @@
       "age": "ClassicalAge",
       "tree": "naval",
       "slot": 2,
-      "gold": 4000,
-      "ticks": 560,
-      "description": "Unlocks Classical Age sea traders with larger cargo holds; squads afloat use sturdier Classical Age transport hulls.",
       "prerequisites": [
         "classicalage-shipyards"
       ],
-      "capabilities": [
-        "classicalage-transport-fleets"
-      ]
+      "gold": 4000,
+      "ticks": 560,
+      "capabilities": [],
+      "description": "Unlocks Classical Age sea traders with larger cargo holds; squads afloat use sturdier Classical Age transport hulls. In this draft, troop and building construction requires the separately named unlock nodes; this foundation does not grant them automatically."
     },
     {
       "id": "classicalage-galley-warfare",
@@ -801,15 +764,13 @@
       "age": "ClassicalAge",
       "tree": "naval",
       "slot": 3,
-      "gold": 4000,
-      "ticks": 560,
-      "description": "Unlocks Classical Age warships for naval combat and interception of hostile trade ships.",
       "prerequisites": [
         "classicalage-shipyards"
       ],
-      "capabilities": [
-        "classicalage-galley-warfare"
-      ]
+      "gold": 4000,
+      "ticks": 560,
+      "capabilities": [],
+      "description": "Unlocks Classical Age warships for naval combat and interception of hostile trade ships. In this draft, troop and building construction requires the separately named unlock nodes; this foundation does not grant them automatically."
     },
     {
       "id": "classicalage-naval-logistics",
@@ -817,16 +778,14 @@
       "age": "ClassicalAge",
       "tree": "naval",
       "slot": 4,
-      "gold": 5334,
-      "ticks": 700,
-      "description": "Improves transport hulls and sailing speed for squads afloat, and military sailing speed; warships reload faster. Trade ships are unchanged.",
       "prerequisites": [
         "classicalage-transport-fleets",
         "classicalage-galley-warfare"
       ],
-      "capabilities": [
-        "classicalage-naval-logistics"
-      ]
+      "gold": 5334,
+      "ticks": 700,
+      "capabilities": [],
+      "description": "Improves transport hulls and sailing speed for squads afloat, and military sailing speed; warships reload faster. Trade ships are unchanged."
     },
     {
       "id": "classicalage-professional-infantry",
@@ -892,15 +851,13 @@
       "age": "ClassicalAge",
       "tree": "economic",
       "slot": 1,
-      "gold": 3334,
-      "ticks": 500,
-      "description": "Unlocks iron extraction, iron smelting, and Classical mines.",
       "prerequisites": [
         "bronzeage-civic-administration"
       ],
-      "capabilities": [
-        "classicalage-ironworking"
-      ]
+      "gold": 3334,
+      "ticks": 500,
+      "capabilities": [],
+      "description": "Unlocks iron extraction, iron smelting, and Classical mines. In this draft, troop and building construction requires the separately named unlock nodes; this foundation does not grant them automatically."
     },
     {
       "id": "classicalage-urban-planning",
@@ -908,15 +865,13 @@
       "age": "ClassicalAge",
       "tree": "economic",
       "slot": 2,
-      "gold": 4000,
-      "ticks": 560,
-      "description": "Unlocks Classical city and factory upgrades and faster horse breeding.",
       "prerequisites": [
         "classicalage-ironworking"
       ],
-      "capabilities": [
-        "classicalage-urban-planning"
-      ]
+      "gold": 4000,
+      "ticks": 560,
+      "capabilities": [],
+      "description": "Unlocks Classical city and factory upgrades and faster horse breeding. In this draft, troop and building construction requires the separately named unlock nodes; this foundation does not grant them automatically."
     },
     {
       "id": "classicalage-caravan-roads",
@@ -924,15 +879,13 @@
       "age": "ClassicalAge",
       "tree": "economic",
       "slot": 3,
-      "gold": 4000,
-      "ticks": 560,
-      "description": "Increases land trader cargo capacity. Adds cosmetic gravel roads along trade routes.",
       "prerequisites": [
         "classicalage-ironworking"
       ],
-      "capabilities": [
-        "classicalage-caravan-roads"
-      ]
+      "gold": 4000,
+      "ticks": 560,
+      "capabilities": [],
+      "description": "Increases land trader cargo capacity. Adds cosmetic gravel roads along trade routes."
     },
     {
       "id": "classicalage-husbandry",
@@ -940,16 +893,14 @@
       "age": "ClassicalAge",
       "tree": "economic",
       "slot": 4,
-      "gold": 5334,
-      "ticks": 700,
-      "description": "Speeds up equipment and refining recipes.",
       "prerequisites": [
         "classicalage-urban-planning",
         "classicalage-caravan-roads"
       ],
-      "capabilities": [
-        "classicalage-husbandry"
-      ]
+      "gold": 5334,
+      "ticks": 700,
+      "capabilities": [],
+      "description": "Speeds up equipment and refining recipes."
     },
     {
       "id": "earlymedieval-framed-hulls",
@@ -957,15 +908,13 @@
       "age": "EarlyMedieval",
       "tree": "naval",
       "slot": 1,
-      "gold": 10667,
-      "ticks": 600,
-      "description": "Unlocks Early Medieval ports. Existing ports advance automatically.",
       "prerequisites": [
         "classicalage-naval-logistics"
       ],
-      "capabilities": [
-        "earlymedieval-framed-hulls"
-      ]
+      "gold": 10667,
+      "ticks": 600,
+      "capabilities": [],
+      "description": "Unlocks Early Medieval ports. Existing ports advance automatically. In this draft, troop and building construction requires the separately named unlock nodes; this foundation does not grant them automatically."
     },
     {
       "id": "earlymedieval-seafaring",
@@ -973,15 +922,13 @@
       "age": "EarlyMedieval",
       "tree": "naval",
       "slot": 2,
-      "gold": 6000,
-      "ticks": 660,
-      "description": "Unlocks Early Medieval sea traders with larger cargo holds; squads afloat use sturdier Early Medieval transport hulls.",
       "prerequisites": [
         "earlymedieval-framed-hulls"
       ],
-      "capabilities": [
-        "earlymedieval-seafaring"
-      ]
+      "gold": 6000,
+      "ticks": 660,
+      "capabilities": [],
+      "description": "Unlocks Early Medieval sea traders with larger cargo holds; squads afloat use sturdier Early Medieval transport hulls. In this draft, troop and building construction requires the separately named unlock nodes; this foundation does not grant them automatically."
     },
     {
       "id": "earlymedieval-coastal-warships",
@@ -989,15 +936,13 @@
       "age": "EarlyMedieval",
       "tree": "naval",
       "slot": 3,
-      "gold": 6000,
-      "ticks": 660,
-      "description": "Unlocks Early Medieval warships for naval combat and interception of hostile trade ships.",
       "prerequisites": [
         "earlymedieval-framed-hulls"
       ],
-      "capabilities": [
-        "earlymedieval-coastal-warships"
-      ]
+      "gold": 6000,
+      "ticks": 660,
+      "capabilities": [],
+      "description": "Unlocks Early Medieval warships for naval combat and interception of hostile trade ships. In this draft, troop and building construction requires the separately named unlock nodes; this foundation does not grant them automatically."
     },
     {
       "id": "earlymedieval-landing-logistics",
@@ -1005,16 +950,14 @@
       "age": "EarlyMedieval",
       "tree": "naval",
       "slot": 4,
-      "gold": 8667,
-      "ticks": 800,
-      "description": "Improves transport hulls and sailing speed for squads afloat, and military sailing speed; warships reload faster. Trade ships are unchanged.",
       "prerequisites": [
         "earlymedieval-seafaring",
         "earlymedieval-coastal-warships"
       ],
-      "capabilities": [
-        "earlymedieval-landing-logistics"
-      ]
+      "gold": 8667,
+      "ticks": 800,
+      "capabilities": [],
+      "description": "Improves transport hulls and sailing speed for squads afloat, and military sailing speed; warships reload faster. Trade ships are unchanged."
     },
     {
       "id": "earlymedieval-mail-equipment",
@@ -1079,15 +1022,13 @@
       "age": "EarlyMedieval",
       "tree": "economic",
       "slot": 1,
-      "gold": 5334,
-      "ticks": 600,
-      "description": "Unlocks Early Medieval city and mine upgrades.",
       "prerequisites": [
         "classicalage-husbandry"
       ],
-      "capabilities": [
-        "earlymedieval-agricultural-organisation"
-      ]
+      "gold": 5334,
+      "ticks": 600,
+      "capabilities": [],
+      "description": "Unlocks Early Medieval city and mine upgrades. In this draft, troop and building construction requires the separately named unlock nodes; this foundation does not grant them automatically."
     },
     {
       "id": "earlymedieval-craft-guilds",
@@ -1095,15 +1036,13 @@
       "age": "EarlyMedieval",
       "tree": "economic",
       "slot": 2,
-      "gold": 6000,
-      "ticks": 660,
-      "description": "Unlocks Early Medieval factory upgrades, increasing trade stock.",
       "prerequisites": [
         "earlymedieval-agricultural-organisation"
       ],
-      "capabilities": [
-        "earlymedieval-craft-guilds"
-      ]
+      "gold": 6000,
+      "ticks": 660,
+      "capabilities": [],
+      "description": "Unlocks Early Medieval factory upgrades, increasing trade stock. In this draft, troop and building construction requires the separately named unlock nodes; this foundation does not grant them automatically."
     },
     {
       "id": "earlymedieval-caravan-breeding",
@@ -1111,15 +1050,13 @@
       "age": "EarlyMedieval",
       "tree": "economic",
       "slot": 3,
-      "gold": 6000,
-      "ticks": 660,
-      "description": "Increases land trader cargo capacity and horse breeding. Upgrades cosmetic trade roads.",
       "prerequisites": [
         "earlymedieval-agricultural-organisation"
       ],
-      "capabilities": [
-        "earlymedieval-caravan-breeding"
-      ]
+      "gold": 6000,
+      "ticks": 660,
+      "capabilities": [],
+      "description": "Increases land trader cargo capacity and horse breeding. Upgrades cosmetic trade roads."
     },
     {
       "id": "earlymedieval-market-logistics",
@@ -1127,16 +1064,14 @@
       "age": "EarlyMedieval",
       "tree": "economic",
       "slot": 4,
-      "gold": 8667,
-      "ticks": 800,
-      "description": "Speeds up equipment and refining recipes.",
       "prerequisites": [
         "earlymedieval-craft-guilds",
         "earlymedieval-caravan-breeding"
       ],
-      "capabilities": [
-        "earlymedieval-market-logistics"
-      ]
+      "gold": 8667,
+      "ticks": 800,
+      "capabilities": [],
+      "description": "Speeds up equipment and refining recipes."
     },
     {
       "id": "latemedieval-sailing-hulls",
@@ -1144,15 +1079,13 @@
       "age": "LateMedieval",
       "tree": "naval",
       "slot": 1,
-      "gold": 16000,
-      "ticks": 700,
-      "description": "Unlocks Late Medieval ports. Existing ports advance automatically.",
       "prerequisites": [
         "earlymedieval-landing-logistics"
       ],
-      "capabilities": [
-        "latemedieval-sailing-hulls"
-      ]
+      "gold": 16000,
+      "ticks": 700,
+      "capabilities": [],
+      "description": "Unlocks Late Medieval ports. Existing ports advance automatically. In this draft, troop and building construction requires the separately named unlock nodes; this foundation does not grant them automatically."
     },
     {
       "id": "latemedieval-merchant-convoys",
@@ -1160,15 +1093,13 @@
       "age": "LateMedieval",
       "tree": "naval",
       "slot": 2,
-      "gold": 9334,
-      "ticks": 800,
-      "description": "Unlocks Late Medieval sea traders with larger cargo holds; squads afloat use sturdier Late Medieval transport hulls.",
       "prerequisites": [
         "latemedieval-sailing-hulls"
       ],
-      "capabilities": [
-        "latemedieval-merchant-convoys"
-      ]
+      "gold": 9334,
+      "ticks": 800,
+      "capabilities": [],
+      "description": "Unlocks Late Medieval sea traders with larger cargo holds; squads afloat use sturdier Late Medieval transport hulls. In this draft, troop and building construction requires the separately named unlock nodes; this foundation does not grant them automatically."
     },
     {
       "id": "latemedieval-naval-gunnery",
@@ -1176,15 +1107,13 @@
       "age": "LateMedieval",
       "tree": "naval",
       "slot": 3,
-      "gold": 9334,
-      "ticks": 800,
-      "description": "Unlocks Late Medieval warships for naval combat and interception of hostile trade ships.",
       "prerequisites": [
         "latemedieval-sailing-hulls"
       ],
-      "capabilities": [
-        "latemedieval-naval-gunnery"
-      ]
+      "gold": 9334,
+      "ticks": 800,
+      "capabilities": [],
+      "description": "Unlocks Late Medieval warships for naval combat and interception of hostile trade ships. In this draft, troop and building construction requires the separately named unlock nodes; this foundation does not grant them automatically."
     },
     {
       "id": "latemedieval-broadside-tactics",
@@ -1192,16 +1121,14 @@
       "age": "LateMedieval",
       "tree": "naval",
       "slot": 4,
-      "gold": 13334,
-      "ticks": 900,
-      "description": "Improves transport hulls and sailing speed for squads afloat, and military sailing speed; warships reload faster. Trade ships are unchanged.",
       "prerequisites": [
         "latemedieval-merchant-convoys",
         "latemedieval-naval-gunnery"
       ],
-      "capabilities": [
-        "latemedieval-broadside-tactics"
-      ]
+      "gold": 13334,
+      "ticks": 900,
+      "capabilities": [],
+      "description": "Improves transport hulls and sailing speed for squads afloat, and military sailing speed; warships reload faster. Trade ships are unchanged."
     },
     {
       "id": "latemedieval-steel-equipment",
@@ -1266,15 +1193,13 @@
       "age": "LateMedieval",
       "tree": "economic",
       "slot": 1,
-      "gold": 8000,
-      "ticks": 700,
-      "description": "Unlocks carbon extraction, steel production, and Late Medieval mines.",
       "prerequisites": [
         "earlymedieval-market-logistics"
       ],
-      "capabilities": [
-        "latemedieval-steelmaking"
-      ]
+      "gold": 8000,
+      "ticks": 700,
+      "capabilities": [],
+      "description": "Unlocks carbon extraction, steel production, and Late Medieval mines. In this draft, troop and building construction requires the separately named unlock nodes; this foundation does not grant them automatically."
     },
     {
       "id": "latemedieval-powder-milling",
@@ -1282,15 +1207,13 @@
       "age": "LateMedieval",
       "tree": "economic",
       "slot": 2,
-      "gold": 9334,
-      "ticks": 800,
-      "description": "Unlocks sulphur, nitrate, and gunpowder extraction from owned deposits.",
       "prerequisites": [
         "latemedieval-steelmaking"
       ],
-      "capabilities": [
-        "latemedieval-powder-milling"
-      ]
+      "gold": 9334,
+      "ticks": 800,
+      "capabilities": [],
+      "description": "Unlocks sulphur, nitrate, and gunpowder extraction from owned deposits. In this draft, troop and building construction requires the separately named unlock nodes; this foundation does not grant them automatically."
     },
     {
       "id": "latemedieval-guild-commerce",
@@ -1298,15 +1221,13 @@
       "age": "LateMedieval",
       "tree": "economic",
       "slot": 3,
-      "gold": 9334,
-      "ticks": 800,
-      "description": "Unlocks Late Medieval city and factory upgrades and larger land trader cargo holds. Upgrades cosmetic trade roads.",
       "prerequisites": [
         "latemedieval-steelmaking"
       ],
-      "capabilities": [
-        "latemedieval-guild-commerce"
-      ]
+      "gold": 9334,
+      "ticks": 800,
+      "capabilities": [],
+      "description": "Unlocks Late Medieval city and factory upgrades and larger land trader cargo holds. Upgrades cosmetic trade roads. In this draft, troop and building construction requires the separately named unlock nodes; this foundation does not grant them automatically."
     },
     {
       "id": "latemedieval-urban-administration",
@@ -1314,16 +1235,14 @@
       "age": "LateMedieval",
       "tree": "economic",
       "slot": 4,
-      "gold": 13334,
-      "ticks": 900,
-      "description": "Speeds up equipment and refining recipes.",
       "prerequisites": [
         "latemedieval-powder-milling",
         "latemedieval-guild-commerce"
       ],
-      "capabilities": [
-        "latemedieval-urban-administration"
-      ]
+      "gold": 13334,
+      "ticks": 900,
+      "capabilities": [],
+      "description": "Speeds up equipment and refining recipes."
     },
     {
       "id": "earlymodern-ocean-navigation",
@@ -1331,15 +1250,13 @@
       "age": "Napoleonic",
       "tree": "naval",
       "slot": 1,
-      "gold": 23334,
-      "ticks": 800,
-      "description": "Unlocks Early Modern ports. Existing ports advance automatically.",
       "prerequisites": [
         "latemedieval-broadside-tactics"
       ],
-      "capabilities": [
-        "earlymodern-ocean-navigation"
-      ]
+      "gold": 23334,
+      "ticks": 800,
+      "capabilities": [],
+      "description": "Unlocks Early Modern ports. Existing ports advance automatically. In this draft, troop and building construction requires the separately named unlock nodes; this foundation does not grant them automatically."
     },
     {
       "id": "earlymodern-ocean-transport",
@@ -1347,15 +1264,13 @@
       "age": "Napoleonic",
       "tree": "naval",
       "slot": 2,
-      "gold": 13334,
-      "ticks": 880,
-      "description": "Unlocks Early Modern sea traders with larger cargo holds; squads afloat use sturdier Early Modern transport hulls.",
       "prerequisites": [
         "earlymodern-ocean-navigation"
       ],
-      "capabilities": [
-        "earlymodern-ocean-transport"
-      ]
+      "gold": 13334,
+      "ticks": 880,
+      "capabilities": [],
+      "description": "Unlocks Early Modern sea traders with larger cargo holds; squads afloat use sturdier Early Modern transport hulls. In this draft, troop and building construction requires the separately named unlock nodes; this foundation does not grant them automatically."
     },
     {
       "id": "earlymodern-ships-of-the-line",
@@ -1363,15 +1278,13 @@
       "age": "Napoleonic",
       "tree": "naval",
       "slot": 3,
-      "gold": 13334,
-      "ticks": 880,
-      "description": "Unlocks Early Modern warships for naval combat and interception of hostile trade ships.",
       "prerequisites": [
         "earlymodern-ocean-navigation"
       ],
-      "capabilities": [
-        "earlymodern-ships-of-the-line"
-      ]
+      "gold": 13334,
+      "ticks": 880,
+      "capabilities": [],
+      "description": "Unlocks Early Modern warships for naval combat and interception of hostile trade ships. In this draft, troop and building construction requires the separately named unlock nodes; this foundation does not grant them automatically."
     },
     {
       "id": "earlymodern-fleet-coordination",
@@ -1379,16 +1292,14 @@
       "age": "Napoleonic",
       "tree": "naval",
       "slot": 4,
+      "prerequisites": [
+        "russian-copper-sheathing",
+        "russian-merchant-holds"
+      ],
       "gold": 18334,
       "ticks": 1000,
-      "description": "Improves transport hulls and sailing speed for squads afloat, and military sailing speed; warships reload faster. Trade ships are unchanged.",
-      "prerequisites": [
-        "earlymodern-ocean-transport",
-        "earlymodern-ships-of-the-line"
-      ],
-      "capabilities": [
-        "earlymodern-fleet-coordination"
-      ]
+      "capabilities": [],
+      "description": "Improves transport hulls and sailing speed for squads afloat, and military sailing speed; warships reload faster. Trade ships are unchanged."
     },
     {
       "id": "earlymodern-firearms",
@@ -1453,15 +1364,13 @@
       "age": "Napoleonic",
       "tree": "economic",
       "slot": 1,
-      "gold": 11667,
-      "ticks": 800,
-      "description": "Unlocks Early Modern mine upgrades for higher deposit output.",
       "prerequisites": [
         "latemedieval-urban-administration"
       ],
-      "capabilities": [
-        "earlymodern-powder-manufactories"
-      ]
+      "gold": 11667,
+      "ticks": 800,
+      "capabilities": [],
+      "description": "Unlocks Early Modern mine upgrades for higher deposit output. In this draft, troop and building construction requires the separately named unlock nodes; this foundation does not grant them automatically."
     },
     {
       "id": "earlymodern-manufactories",
@@ -1469,15 +1378,13 @@
       "age": "Napoleonic",
       "tree": "economic",
       "slot": 2,
-      "gold": 13334,
-      "ticks": 880,
-      "description": "Unlocks Early Modern city and factory upgrades, increasing reserve growth and trade stock.",
       "prerequisites": [
         "earlymodern-powder-manufactories"
       ],
-      "capabilities": [
-        "earlymodern-manufactories"
-      ]
+      "gold": 13334,
+      "ticks": 880,
+      "capabilities": [],
+      "description": "Unlocks Early Modern city and factory upgrades, increasing reserve growth and trade stock. In this draft, troop and building construction requires the separately named unlock nodes; this foundation does not grant them automatically."
     },
     {
       "id": "earlymodern-long-distance-commerce",
@@ -1485,15 +1392,13 @@
       "age": "Napoleonic",
       "tree": "economic",
       "slot": 3,
-      "gold": 13334,
-      "ticks": 880,
-      "description": "Increases land trader cargo capacity. Adds cosmetic dressed-stone roads along trade routes.",
       "prerequisites": [
         "earlymodern-powder-manufactories"
       ],
-      "capabilities": [
-        "earlymodern-long-distance-commerce"
-      ]
+      "gold": 13334,
+      "ticks": 880,
+      "capabilities": [],
+      "description": "Increases land trader cargo capacity. Adds cosmetic dressed-stone roads along trade routes."
     },
     {
       "id": "earlymodern-military-provisioning",
@@ -1501,16 +1406,14 @@
       "age": "Napoleonic",
       "tree": "economic",
       "slot": 4,
+      "prerequisites": [
+        "russian-machine-tools",
+        "russian-supply-depots"
+      ],
       "gold": 18334,
       "ticks": 1000,
-      "description": "Speeds up equipment and refining recipes and increases horse breeding.",
-      "prerequisites": [
-        "earlymodern-manufactories",
-        "earlymodern-long-distance-commerce"
-      ],
-      "capabilities": [
-        "earlymodern-military-provisioning"
-      ]
+      "capabilities": [],
+      "description": "Speeds up equipment and refining recipes and increases horse breeding."
     },
     {
       "id": "modern-powered-vessels",
@@ -1518,15 +1421,13 @@
       "age": "EarlyModern",
       "tree": "naval",
       "slot": 1,
-      "gold": 33334,
-      "ticks": 900,
-      "description": "Unlocks Modern ports. Existing ports advance automatically.",
       "prerequisites": [
         "earlymodern-fleet-coordination"
       ],
-      "capabilities": [
-        "modern-powered-vessels"
-      ]
+      "gold": 33334,
+      "ticks": 900,
+      "capabilities": [],
+      "description": "Unlocks Modern ports. Existing ports advance automatically. In this draft, troop and building construction requires the separately named unlock nodes; this foundation does not grant them automatically."
     },
     {
       "id": "modern-amphibious-transport",
@@ -1534,31 +1435,27 @@
       "age": "EarlyModern",
       "tree": "naval",
       "slot": 2,
-      "gold": 20000,
-      "ticks": 1000,
-      "description": "Unlocks Modern sea traders with larger cargo holds; squads afloat use sturdier Modern transport hulls.",
       "prerequisites": [
         "modern-powered-vessels"
       ],
-      "capabilities": [
-        "modern-amphibious-transport"
-      ]
+      "gold": 20000,
+      "ticks": 1000,
+      "capabilities": [],
+      "description": "Unlocks Modern sea traders with larger cargo holds; squads afloat use sturdier Modern transport hulls. In this draft, troop and building construction requires the separately named unlock nodes; this foundation does not grant them automatically."
     },
     {
       "id": "modern-modern-warships",
-      "name": "Modern Warships",
+      "name": "Destroyer Warfare",
       "age": "EarlyModern",
       "tree": "naval",
       "slot": 3,
-      "gold": 20000,
-      "ticks": 1000,
-      "description": "Unlocks Modern warships for naval combat and interception of hostile trade ships.",
       "prerequisites": [
         "modern-powered-vessels"
       ],
-      "capabilities": [
-        "modern-modern-warships"
-      ]
+      "gold": 20000,
+      "ticks": 1000,
+      "capabilities": [],
+      "description": "Unlock steel warships; submarine systems are separate research. In this draft, troop and building construction requires the separately named unlock nodes; this foundation does not grant them automatically."
     },
     {
       "id": "modern-fleet-operations",
@@ -1568,7 +1465,7 @@
       "slot": 4,
       "gold": 30000,
       "ticks": 1200,
-      "description": "Improves transport hulls and sailing speed for squads afloat, and military sailing speed; warships reload faster. Trade ships are unchanged.",
+      "description": "Improves transport hulls and sailing speed for squads afloat, and military sailing speed; warships reload faster. Trade ships are unchanged. Planner prerequisite migration pending: russian-diesel-submarines, russian-naval-radar.",
       "prerequisites": [
         "modern-amphibious-transport",
         "modern-modern-warships"
@@ -1643,15 +1540,13 @@
       "age": "EarlyModern",
       "tree": "economic",
       "slot": 1,
-      "gold": 16667,
-      "ticks": 900,
-      "description": "Unlocks oil wells, offshore oil rigs, oil extraction, and Modern mine upgrades.",
       "prerequisites": [
         "earlymodern-military-provisioning"
       ],
-      "capabilities": [
-        "modern-petroleum-extraction"
-      ]
+      "gold": 16667,
+      "ticks": 900,
+      "capabilities": [],
+      "description": "Unlocks oil wells, offshore oil rigs, oil extraction, and Modern mine upgrades. In this draft, troop and building construction requires the separately named unlock nodes; this foundation does not grant them automatically."
     },
     {
       "id": "modern-industrial-production",
@@ -1659,15 +1554,13 @@
       "age": "EarlyModern",
       "tree": "economic",
       "slot": 2,
-      "gold": 20000,
-      "ticks": 1000,
-      "description": "Unlocks Modern city and factory upgrades, increasing reserve growth and trade stock.",
       "prerequisites": [
         "modern-petroleum-extraction"
       ],
-      "capabilities": [
-        "modern-industrial-production"
-      ]
+      "gold": 20000,
+      "ticks": 1000,
+      "capabilities": [],
+      "description": "Unlocks Modern city and factory upgrades, increasing reserve growth and trade stock. In this draft, troop and building construction requires the separately named unlock nodes; this foundation does not grant them automatically."
     },
     {
       "id": "modern-motor-freight",
@@ -1675,15 +1568,13 @@
       "age": "EarlyModern",
       "tree": "economic",
       "slot": 3,
-      "gold": 20000,
-      "ticks": 1000,
-      "description": "Increases land trader cargo capacity. Adds cosmetic asphalt roads along trade routes.",
       "prerequisites": [
         "modern-petroleum-extraction"
       ],
-      "capabilities": [
-        "modern-motor-freight"
-      ]
+      "gold": 20000,
+      "ticks": 1000,
+      "capabilities": [],
+      "description": "Increases land trader cargo capacity. Adds cosmetic asphalt roads along trade routes."
     },
     {
       "id": "modern-integrated-logistics",
@@ -1693,7 +1584,7 @@
       "slot": 4,
       "gold": 30000,
       "ticks": 1200,
-      "description": "Speeds up equipment, refining, and payload recipes and increases horse breeding.",
+      "description": "Speeds up equipment, refining, and payload recipes and increases horse breeding. Planner prerequisite migration pending: russian-oil-refining, russian-rail-freight.",
       "prerequisites": [
         "modern-industrial-production",
         "modern-motor-freight"
@@ -2260,7 +2151,7 @@
       "name": "Grenadiers",
       "age": "Napoleonic",
       "tree": "warfare",
-      "slot": 12,
+      "slot": 14,
       "prerequisites": [
         "earlymodern-musket-and-artillery-drill",
         "russian-building-napoleonic-barracks"
@@ -2275,7 +2166,7 @@
       "name": "Barracks",
       "age": "Napoleonic",
       "tree": "warfare",
-      "slot": 7,
+      "slot": 9,
       "prerequisites": [
         "earlymodern-firearms"
       ],
@@ -2289,7 +2180,7 @@
       "name": "Pikeman",
       "age": "Napoleonic",
       "tree": "warfare",
-      "slot": 16,
+      "slot": 18,
       "prerequisites": [
         "earlymodern-firearms",
         "russian-building-napoleonic-barracks"
@@ -2304,7 +2195,7 @@
       "name": "Rus Musketeer",
       "age": "Napoleonic",
       "tree": "warfare",
-      "slot": 18,
+      "slot": 20,
       "prerequisites": [
         "earlymodern-musket-and-artillery-drill",
         "russian-building-napoleonic-archery"
@@ -2319,7 +2210,7 @@
       "name": "Archery range",
       "age": "Napoleonic",
       "tree": "warfare",
-      "slot": 5,
+      "slot": 7,
       "prerequisites": [
         "earlymodern-musket-and-artillery-drill"
       ],
@@ -2333,7 +2224,7 @@
       "name": "Cossack Lancers",
       "age": "Napoleonic",
       "tree": "warfare",
-      "slot": 17,
+      "slot": 19,
       "prerequisites": [
         "earlymodern-pistoliers",
         "russian-building-napoleonic-stables"
@@ -2348,7 +2239,7 @@
       "name": "Stables",
       "age": "Napoleonic",
       "tree": "warfare",
-      "slot": 9,
+      "slot": 11,
       "prerequisites": [
         "earlymodern-pistoliers"
       ],
@@ -2362,7 +2253,7 @@
       "name": "Cuirassiers",
       "age": "Napoleonic",
       "tree": "warfare",
-      "slot": 11,
+      "slot": 13,
       "prerequisites": [
         "earlymodern-pistoliers",
         "russian-building-napoleonic-stables"
@@ -2377,7 +2268,7 @@
       "name": "Streltsy",
       "age": "Napoleonic",
       "tree": "warfare",
-      "slot": 13,
+      "slot": 15,
       "prerequisites": [
         "earlymodern-pistoliers",
         "russian-building-napoleonic-stables"
@@ -2491,7 +2382,7 @@
     },
     {
       "id": "russian-apc-production",
-      "name": "Armoured Personnel Carriers",
+      "name": "Tsar Tank",
       "age": "EarlyModern",
       "tree": "warfare",
       "slot": 6,
@@ -2502,11 +2393,11 @@
       "gold": 40000,
       "ticks": 2000,
       "capabilities": [],
-      "description": "Unlock Armoured Personnel Carriers: heavyCavalry. Produced at Vehicle depot."
+      "description": "Unlock Tsar Tank at the Vehicle depot. Heavy-cavalry role; World War I era."
     },
     {
       "id": "russian-tank-production",
-      "name": "Battle Tanks",
+      "name": "T-34",
       "age": "EarlyModern",
       "tree": "warfare",
       "slot": 25,
@@ -2517,7 +2408,7 @@
       "gold": 45000,
       "ticks": 2000,
       "capabilities": [],
-      "description": "Unlock Battle Tanks: rangedCavalry. Produced at Vehicle depot."
+      "description": "Unlock T-34 at the Vehicle depot. Ranged-cavalry role; World War II era."
     },
     {
       "id": "russian-troop-present-day-frontline",
@@ -2665,7 +2556,7 @@
     },
     {
       "id": "russian-troop-present-day-lightcavalry",
-      "name": "Gun Trucks",
+      "name": "VPK Bumerang",
       "age": "Modern",
       "tree": "warfare",
       "slot": 21,
@@ -2676,7 +2567,7 @@
       "gold": 80000,
       "ticks": 2400,
       "capabilities": [],
-      "description": "Unlock Gun Trucks: lightCavalry. Produced at Vehicle depot."
+      "description": "Unlock VPK Bumerang: lightCavalry. Produced at Vehicle depot."
     },
     {
       "id": "russian-vehicle-electronics",
@@ -2690,7 +2581,7 @@
       "gold": 80000,
       "ticks": 2400,
       "capabilities": [],
-      "description": "Develop modern vehicle electronics. Gun Trucks, APCs and Main Battle Tanks each have their own unlock."
+      "description": "Develop modern vehicle electronics. VPK Bumerang, T-14 and 2K22 Tunguska each have their own unlock."
     },
     {
       "id": "russian-building-modern-depot",
@@ -2708,7 +2599,7 @@
     },
     {
       "id": "russian-troop-present-day-heavycavalry",
-      "name": "Armoured Personnel Carriers",
+      "name": "T-14",
       "age": "Modern",
       "tree": "warfare",
       "slot": 20,
@@ -2719,11 +2610,11 @@
       "gold": 80000,
       "ticks": 2400,
       "capabilities": [],
-      "description": "Unlock Armoured Personnel Carriers: heavyCavalry. Produced at Vehicle depot."
+      "description": "Unlock T-14: heavyCavalry. Produced at Vehicle depot."
     },
     {
       "id": "russian-troop-present-day-rangedcavalry",
-      "name": "Main Battle Tanks",
+      "name": "2K22 Tunguska",
       "age": "Modern",
       "tree": "warfare",
       "slot": 22,
@@ -2734,7 +2625,7 @@
       "gold": 80000,
       "ticks": 2400,
       "capabilities": [],
-      "description": "Unlock Main Battle Tanks: rangedCavalry. Produced at Vehicle depot."
+      "description": "Unlock 2K22 Tunguska: rangedCavalry. Produced at Vehicle depot."
     },
     {
       "id": "russian-tank-fire-control",
@@ -3413,7 +3304,7 @@
       "name": "Armory",
       "age": "Napoleonic",
       "tree": "warfare",
-      "slot": 6,
+      "slot": 8,
       "prerequisites": [
         "earlymodern-firearms"
       ],
@@ -3427,7 +3318,7 @@
       "name": "Siege workshop",
       "age": "Napoleonic",
       "tree": "warfare",
-      "slot": 8,
+      "slot": 10,
       "prerequisites": [
         "earlymodern-musket-and-artillery-drill"
       ],
@@ -3441,7 +3332,7 @@
       "name": "Tower",
       "age": "Napoleonic",
       "tree": "warfare",
-      "slot": 10,
+      "slot": 12,
       "prerequisites": [
         "earlymodern-howitzer-engineering"
       ],
@@ -3455,7 +3346,7 @@
       "name": "City",
       "age": "EarlyModern",
       "tree": "economic",
-      "slot": 5,
+      "slot": 6,
       "prerequisites": [
         "modern-industrial-production"
       ],
@@ -3465,11 +3356,39 @@
       "description": "Unlock City construction in Early Modern. Separate node for this building tier; earlier tiers remain available."
     },
     {
+      "id": "russian-machine-tools",
+      "name": "Machine Tools",
+      "age": "Napoleonic",
+      "tree": "economic",
+      "slot": 8,
+      "prerequisites": [
+        "earlymodern-manufactories"
+      ],
+      "gold": 14000,
+      "ticks": 1200,
+      "capabilities": [],
+      "description": "Improve manufacturing output."
+    },
+    {
+      "id": "russian-supply-depots",
+      "name": "Supply Depots",
+      "age": "Napoleonic",
+      "tree": "economic",
+      "slot": 9,
+      "prerequisites": [
+        "earlymodern-long-distance-commerce"
+      ],
+      "gold": 12000,
+      "ticks": 1200,
+      "capabilities": [],
+      "description": "Increase storage and supply throughput."
+    },
+    {
       "id": "russian-building-earlymodern-factory",
       "name": "Factory",
       "age": "EarlyModern",
       "tree": "economic",
-      "slot": 6,
+      "slot": 7,
       "prerequisites": [
         "modern-industrial-production"
       ],
@@ -3493,11 +3412,39 @@
       "description": "Unlock Port construction in Early Modern. Separate node for this building tier; earlier tiers remain available."
     },
     {
+      "id": "russian-copper-sheathing",
+      "name": "Copper Sheathing",
+      "age": "Napoleonic",
+      "tree": "naval",
+      "slot": 6,
+      "prerequisites": [
+        "earlymodern-ships-of-the-line"
+      ],
+      "gold": 14000,
+      "ticks": 1200,
+      "capabilities": [],
+      "description": "Improve warship speed and durability."
+    },
+    {
+      "id": "russian-merchant-holds",
+      "name": "Expanded Merchant Holds",
+      "age": "Napoleonic",
+      "tree": "naval",
+      "slot": 7,
+      "prerequisites": [
+        "earlymodern-ocean-transport"
+      ],
+      "gold": 12000,
+      "ticks": 1200,
+      "capabilities": [],
+      "description": "Increase merchant cargo capacity."
+    },
+    {
       "id": "russian-building-earlymodern-mine",
       "name": "Mine",
       "age": "EarlyModern",
       "tree": "economic",
-      "slot": 7,
+      "slot": 8,
       "prerequisites": [
         "modern-petroleum-extraction"
       ],
@@ -3553,7 +3500,7 @@
       "name": "Oil well",
       "age": "EarlyModern",
       "tree": "economic",
-      "slot": 8,
+      "slot": 9,
       "prerequisites": [
         "modern-petroleum-extraction"
       ],
@@ -3997,7 +3944,7 @@
       "name": "Early howitzer",
       "age": "Napoleonic",
       "tree": "warfare",
-      "slot": 15,
+      "slot": 17,
       "prerequisites": [
         "earlymodern-howitzer-engineering",
         "russian-building-napoleonic-siege-workshop"
@@ -4012,7 +3959,7 @@
       "name": "Field cannon",
       "age": "Napoleonic",
       "tree": "warfare",
-      "slot": 14,
+      "slot": 16,
       "prerequisites": [
         "earlymodern-musket-and-artillery-drill",
         "russian-building-napoleonic-siege-workshop"
@@ -4036,6 +3983,104 @@
       "ticks": 2000,
       "capabilities": [],
       "description": "Unlock Modern howitzer at the Siege workshop."
+    },
+    {
+      "id": "russian-bayonet-drill",
+      "name": "Bayonet Drill",
+      "age": "Napoleonic",
+      "tree": "warfare",
+      "slot": 6,
+      "prerequisites": [
+        "russian-grenadier-companies"
+      ],
+      "gold": 14000,
+      "ticks": 1200,
+      "capabilities": [],
+      "description": "Improve infantry close combat."
+    },
+    {
+      "id": "russian-volley-fire",
+      "name": "Volley Fire",
+      "age": "Napoleonic",
+      "tree": "warfare",
+      "slot": 21,
+      "prerequisites": [
+        "earlymodern-musket-and-artillery-drill"
+      ],
+      "gold": 14000,
+      "ticks": 1200,
+      "capabilities": [],
+      "description": "Improve ranged infantry fire against infantry."
+    },
+    {
+      "id": "russian-artillery-carriages",
+      "name": "Artillery Carriages",
+      "age": "Napoleonic",
+      "tree": "warfare",
+      "slot": 5,
+      "prerequisites": [
+        "earlymodern-howitzer-engineering"
+      ],
+      "gold": 18000,
+      "ticks": 1400,
+      "capabilities": [],
+      "description": "Improve artillery mobility."
+    },
+    {
+      "id": "russian-container-shipping",
+      "name": "Container Shipping",
+      "age": "EarlyModern",
+      "tree": "naval",
+      "slot": 7,
+      "prerequisites": [
+        "modern-amphibious-transport"
+      ],
+      "gold": 30000,
+      "ticks": 1800,
+      "capabilities": [],
+      "description": "Improve maritime freight capacity."
+    },
+    {
+      "id": "russian-assembly-line-upgrades",
+      "name": "Mechanised Assembly Lines",
+      "age": "EarlyModern",
+      "tree": "economic",
+      "slot": 5,
+      "prerequisites": [
+        "modern-industrial-production"
+      ],
+      "gold": 30000,
+      "ticks": 1800,
+      "capabilities": [],
+      "description": "Improve industrial output."
+    },
+    {
+      "id": "russian-transport-hulls",
+      "name": "Reinforced Transport Hulls",
+      "age": "Modern",
+      "tree": "naval",
+      "slot": 8,
+      "prerequisites": [
+        "russian-modern-transport-fleet"
+      ],
+      "gold": 95000,
+      "ticks": 3000,
+      "capabilities": [],
+      "description": "Improve transport survivability."
+    },
+    {
+      "id": "russian-maritime-cargo-systems",
+      "name": "Maritime Cargo Systems",
+      "age": "Modern",
+      "tree": "naval",
+      "slot": 7,
+      "prerequisites": [
+        "russian-modern-transport-fleet"
+      ],
+      "gold": 95000,
+      "ticks": 3000,
+      "capabilities": [],
+      "description": "Improve sea-trade loading and cargo throughput."
     }
   ]
 }

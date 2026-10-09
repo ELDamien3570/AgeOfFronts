@@ -1,0 +1,558 @@
+{
+  "folder": "Units/ClassicalAge/ShieldWarrior/_TO BE DELETED",
+  "created": "2026-10-09T03:15:53.711Z",
+  "files": [
+    {
+      "original": "Units/ClassicalAge/ShieldWarrior/Attack-v1.png",
+      "archived": "Units/ClassicalAge/ShieldWarrior/_TO BE DELETED/Attack-v1.png",
+      "sha256": "af40cc5302c26f8122b61ad688f7a3b33591d53d358dbb57c459a09e017075fb",
+      "size": 845213
+    },
+    {
+      "original": "Units/ClassicalAge/ShieldWarrior/Browser-Review.json",
+      "archived": "Units/ClassicalAge/ShieldWarrior/_TO BE DELETED/Browser-Review.json",
+      "sha256": "138fa372ef83cf0fc7a91dd2faf6eb0b82a823a21f21310267ba0a44bbdde3a1",
+      "size": 884
+    },
+    {
+      "original": "Units/ClassicalAge/ShieldWarrior/Charge-Attack-v1.png",
+      "archived": "Units/ClassicalAge/ShieldWarrior/_TO BE DELETED/Charge-Attack-v1.png",
+      "sha256": "dc903bb8adbbc7a6ce25acee24d62d30b56ac63a018b56a5cc5acf646b3a4739",
+      "size": 743433
+    },
+    {
+      "original": "Units/ClassicalAge/ShieldWarrior/Charge-v1.png",
+      "archived": "Units/ClassicalAge/ShieldWarrior/_TO BE DELETED/Charge-v1.png",
+      "sha256": "83e690cd26aa8bb16dffb213890f1063a13fa8e39b8e48667c656ca07aaf70f4",
+      "size": 937306
+    },
+    {
+      "original": "Units/ClassicalAge/ShieldWarrior/Charge-v3.png",
+      "archived": "Units/ClassicalAge/ShieldWarrior/_TO BE DELETED/Charge-v3.png",
+      "sha256": "0016088d0e93aa93c2cfc14d256ec74c0a327e6bdd252815f361568227ec7159",
+      "size": 965111
+    },
+    {
+      "original": "Units/ClassicalAge/ShieldWarrior/Charge-v4.png",
+      "archived": "Units/ClassicalAge/ShieldWarrior/_TO BE DELETED/Charge-v4.png",
+      "sha256": "aeebb2233ccb3912c4decf494ff0c7c8e7f7f43afd2d8e55426e960489a0be77",
+      "size": 969717
+    },
+    {
+      "original": "Units/ClassicalAge/ShieldWarrior/Charged-Impact-v1.png",
+      "archived": "Units/ClassicalAge/ShieldWarrior/_TO BE DELETED/Charged-Impact-v1.png",
+      "sha256": "c061f8249cf565334d9ba9584d57003a45fec7150eac20804ffc1a2fa1423d05",
+      "size": 1068772
+    },
+    {
+      "original": "Units/ClassicalAge/ShieldWarrior/Death-Back-v1.png",
+      "archived": "Units/ClassicalAge/ShieldWarrior/_TO BE DELETED/Death-Back-v1.png",
+      "sha256": "7686d6b92588470a296d32e0fcc3b6e98eb2516b351f9a246805f23d3beab112",
+      "size": 884894
+    },
+    {
+      "original": "Units/ClassicalAge/ShieldWarrior/Death-Back-v3.png",
+      "archived": "Units/ClassicalAge/ShieldWarrior/_TO BE DELETED/Death-Back-v3.png",
+      "sha256": "799b98360e4de6321449af1fa459e50195d70119146a03cef757e1b35510c4cb",
+      "size": 853186
+    },
+    {
+      "original": "Units/ClassicalAge/ShieldWarrior/Death-Side-v1.png",
+      "archived": "Units/ClassicalAge/ShieldWarrior/_TO BE DELETED/Death-Side-v1.png",
+      "sha256": "ddc02d421d7fe03b252c79d621e6940a8fb62954c8d8741a7f7522652c74ae78",
+      "size": 722837
+    },
+    {
+      "original": "Units/ClassicalAge/ShieldWarrior/Generation.json",
+      "archived": "Units/ClassicalAge/ShieldWarrior/_TO BE DELETED/Generation.json",
+      "sha256": "95007925ee7c68a5d4d3ea2c45e4f580da9a8b12f1e6ab8a79b1ff5a6a6bd295",
+      "size": 86708
+    },
+    {
+      "original": "Units/ClassicalAge/ShieldWarrior/Hit-v1.png",
+      "archived": "Units/ClassicalAge/ShieldWarrior/_TO BE DELETED/Hit-v1.png",
+      "sha256": "e89fa7ccc62af0ab92095db5a727660869b28d9e429d3b3127833ed5f7b70772",
+      "size": 975579
+    },
+    {
+      "original": "Units/ClassicalAge/ShieldWarrior/Hit-v2.png",
+      "archived": "Units/ClassicalAge/ShieldWarrior/_TO BE DELETED/Hit-v2.png",
+      "sha256": "98754003ed48fbaf4d935f9a95a44367dc8ec2b7763f08c5438a391d6fb44846",
+      "size": 1001218
+    },
+    {
+      "original": "Units/ClassicalAge/ShieldWarrior/Idle-Animated-v1.png",
+      "archived": "Units/ClassicalAge/ShieldWarrior/_TO BE DELETED/Idle-Animated-v1.png",
+      "sha256": "ce17294ed4cdb2b85b3bdb85b4290bac1f188164212098ce593c4e815b81e9e0",
+      "size": 973042
+    },
+    {
+      "original": "Units/ClassicalAge/ShieldWarrior/Idle-Axe-TopSpike-v3.png",
+      "archived": "Units/ClassicalAge/ShieldWarrior/_TO BE DELETED/Idle-Axe-TopSpike-v3.png",
+      "sha256": "9c5692367aa7a1875c2bf16909ab9922a619fba68a8b103b1901e15eda8d96dd",
+      "size": 807381
+    },
+    {
+      "original": "Units/ClassicalAge/ShieldWarrior/Idle-Axe-Upright-v2.png",
+      "archived": "Units/ClassicalAge/ShieldWarrior/_TO BE DELETED/Idle-Axe-Upright-v2.png",
+      "sha256": "1d655e5f394416a131e11a604e7b8e0cf2db5f76b6e807fffb2857f2dffa482d",
+      "size": 811709
+    },
+    {
+      "original": "Units/ClassicalAge/ShieldWarrior/Idle-v1.png",
+      "archived": "Units/ClassicalAge/ShieldWarrior/_TO BE DELETED/Idle-v1.png",
+      "sha256": "a2791a6e0bdd3004cd123e7290ea25e2e53b2bc669cda33b3fa7326a0d7c6bd2",
+      "size": 836613
+    },
+    {
+      "original": "Units/ClassicalAge/ShieldWarrior/README.md",
+      "archived": "Units/ClassicalAge/ShieldWarrior/_TO BE DELETED/README.md",
+      "sha256": "f607a9cb05b72d71e13a47dce04effa35f963b2eba43d4a53ef415535624f85e",
+      "size": 2554
+    },
+    {
+      "original": "Units/ClassicalAge/ShieldWarrior/Review-Animations-v1.png",
+      "archived": "Units/ClassicalAge/ShieldWarrior/_TO BE DELETED/Review-Animations-v1.png",
+      "sha256": "bdf2f6018b8d7869dd52e78ca0dd162769dc8827da118fa801f8293c305fa615",
+      "size": 72186
+    },
+    {
+      "original": "Units/ClassicalAge/ShieldWarrior/Review-Axe-Consistency-v1.png",
+      "archived": "Units/ClassicalAge/ShieldWarrior/_TO BE DELETED/Review-Axe-Consistency-v1.png",
+      "sha256": "14cdf7355f48aa523648344eb18c9962ea23550baf3f3c35f19d29aac5a7a2dd",
+      "size": 79938
+    },
+    {
+      "original": "Units/ClassicalAge/ShieldWarrior/Review-Idle-Axe-TopSpike-v3.png",
+      "archived": "Units/ClassicalAge/ShieldWarrior/_TO BE DELETED/Review-Idle-Axe-TopSpike-v3.png",
+      "sha256": "9ee4792b0a978820f8b782846fef385bd2aa08f152474ad8396a00ae1bd2da55",
+      "size": 66316
+    },
+    {
+      "original": "Units/ClassicalAge/ShieldWarrior/Review-Idle-Axe-Upright-v2.png",
+      "archived": "Units/ClassicalAge/ShieldWarrior/_TO BE DELETED/Review-Idle-Axe-Upright-v2.png",
+      "sha256": "16589dae2399ad4adb34776a7f36c86b77797b583a6602acb7ab215fee8f8a14",
+      "size": 66041
+    },
+    {
+      "original": "Units/ClassicalAge/ShieldWarrior/Review-Idle-v1.png",
+      "archived": "Units/ClassicalAge/ShieldWarrior/_TO BE DELETED/Review-Idle-v1.png",
+      "sha256": "2b2ef743048592e7d3819e0fff1579fdaee447b967f1139863cd2715a9713e07",
+      "size": 72269
+    },
+    {
+      "original": "Units/ClassicalAge/ShieldWarrior/Review-Shared-Attack-v1.png",
+      "archived": "Units/ClassicalAge/ShieldWarrior/_TO BE DELETED/Review-Shared-Attack-v1.png",
+      "sha256": "2cb58e4333ff20faa25677dc4b4f7cae5dbedfce7981eff936497d4eda7b69ca",
+      "size": 71490
+    },
+    {
+      "original": "Units/ClassicalAge/ShieldWarrior/Running-v1.png",
+      "archived": "Units/ClassicalAge/ShieldWarrior/_TO BE DELETED/Running-v1.png",
+      "sha256": "02ce841b27d6561533b3bef545bef65a54fd4812a8e60bc55075656d3fa20dd7",
+      "size": 998582
+    },
+    {
+      "original": "Units/ClassicalAge/ShieldWarrior/Running-v3.png",
+      "archived": "Units/ClassicalAge/ShieldWarrior/_TO BE DELETED/Running-v3.png",
+      "sha256": "0016088d0e93aa93c2cfc14d256ec74c0a327e6bdd252815f361568227ec7159",
+      "size": 965111
+    },
+    {
+      "original": "Units/ClassicalAge/ShieldWarrior/Running-v4.png",
+      "archived": "Units/ClassicalAge/ShieldWarrior/_TO BE DELETED/Running-v4.png",
+      "sha256": "aeebb2233ccb3912c4decf494ff0c7c8e7f7f43afd2d8e55426e960489a0be77",
+      "size": 969717
+    },
+    {
+      "original": "Units/ClassicalAge/ShieldWarrior/SourceArt/Animation-Generation.json",
+      "archived": "Units/ClassicalAge/ShieldWarrior/_TO BE DELETED/SourceArt/Animation-Generation.json",
+      "sha256": "9a9090e495630385541cfe22699db59b1a65802ff5716d7bcf228854682c3ad4",
+      "size": 78739
+    },
+    {
+      "original": "Units/ClassicalAge/ShieldWarrior/SourceArt/Approved-Idle.json",
+      "archived": "Units/ClassicalAge/ShieldWarrior/_TO BE DELETED/SourceArt/Approved-Idle.json",
+      "sha256": "26b19bab4dfde0bec7d9f903b3d264bc16756231aa52e6738e92b770ff4a7bf1",
+      "size": 189
+    },
+    {
+      "original": "Units/ClassicalAge/ShieldWarrior/SourceArt/Axe-Consistency-Generation.json",
+      "archived": "Units/ClassicalAge/ShieldWarrior/_TO BE DELETED/SourceArt/Axe-Consistency-Generation.json",
+      "sha256": "afa2641d3e7b3da6e9352b9ffcd685a3296bd744b202077f787dc6e930998211",
+      "size": 32175
+    },
+    {
+      "original": "Units/ClassicalAge/ShieldWarrior/SourceArt/Axe-Orientation-Record.json",
+      "archived": "Units/ClassicalAge/ShieldWarrior/_TO BE DELETED/SourceArt/Axe-Orientation-Record.json",
+      "sha256": "8e5756b0892e7f8777c2f86fded2b36a81bb8164b55c4f3b5371ff5d19ea15b8",
+      "size": 1541
+    },
+    {
+      "original": "Units/ClassicalAge/ShieldWarrior/SourceArt/Axe-Top-Spike-Record.json",
+      "archived": "Units/ClassicalAge/ShieldWarrior/_TO BE DELETED/SourceArt/Axe-Top-Spike-Record.json",
+      "sha256": "c92a1996e0613e70ddf7eefeaaeb551d439b06f434b3de801250b2ce43d14fd5",
+      "size": 1511
+    },
+    {
+      "original": "Units/ClassicalAge/ShieldWarrior/SourceArt/Back3-Axe-Correction-Input.png",
+      "archived": "Units/ClassicalAge/ShieldWarrior/_TO BE DELETED/SourceArt/Back3-Axe-Correction-Input.png",
+      "sha256": "2193bc0fe3f550b076016891dc978b751466afce12798f3c5a205e004f935e3a",
+      "size": 282247
+    },
+    {
+      "original": "Units/ClassicalAge/ShieldWarrior/SourceArt/Back3-Final-Generation.json",
+      "archived": "Units/ClassicalAge/ShieldWarrior/_TO BE DELETED/SourceArt/Back3-Final-Generation.json",
+      "sha256": "565ded7efca35cafb4e5d2059a58cadf4be73c4f43cff2909d1d4ce7ff47dec9",
+      "size": 847
+    },
+    {
+      "original": "Units/ClassicalAge/ShieldWarrior/SourceArt/Before-Animation-animations.json",
+      "archived": "Units/ClassicalAge/ShieldWarrior/_TO BE DELETED/SourceArt/Before-Animation-animations.json",
+      "sha256": "dfc1300bbd58b755c121ed52fc725b6a97f13532f6df8262dd7b1787749f6475",
+      "size": 1527
+    },
+    {
+      "original": "Units/ClassicalAge/ShieldWarrior/SourceArt/Before-Animation-Browser-Review.json",
+      "archived": "Units/ClassicalAge/ShieldWarrior/_TO BE DELETED/SourceArt/Before-Animation-Browser-Review.json",
+      "sha256": "1d7ca95ffe56c654e74df2fac3f21e27ac4fbc8a1972149329417e683898fec0",
+      "size": 491
+    },
+    {
+      "original": "Units/ClassicalAge/ShieldWarrior/SourceArt/Before-Animation-Validation.json",
+      "archived": "Units/ClassicalAge/ShieldWarrior/_TO BE DELETED/SourceArt/Before-Animation-Validation.json",
+      "sha256": "5be5ef7c731273ef7d6d4b4ee191e42316ffa73158ab030d09c38454a3ea6aef",
+      "size": 386
+    },
+    {
+      "original": "Units/ClassicalAge/ShieldWarrior/SourceArt/Before-Axe-Consistency-Animation-Generation.json",
+      "archived": "Units/ClassicalAge/ShieldWarrior/_TO BE DELETED/SourceArt/Before-Axe-Consistency-Animation-Generation.json",
+      "sha256": "53913952700f9a2318f9339700e6cad517dd9e48dd2f4540250bfe1435c9dc73",
+      "size": 42990
+    },
+    {
+      "original": "Units/ClassicalAge/ShieldWarrior/SourceArt/Before-Axe-Consistency-animations.json",
+      "archived": "Units/ClassicalAge/ShieldWarrior/_TO BE DELETED/SourceArt/Before-Axe-Consistency-animations.json",
+      "sha256": "1c924993b9d90d80eb010f8bf9cdfc4ad6a3e98d85592ce00845710c1b52b7c2",
+      "size": 18087
+    },
+    {
+      "original": "Units/ClassicalAge/ShieldWarrior/SourceArt/Before-Axe-Consistency-Browser-Review.json",
+      "archived": "Units/ClassicalAge/ShieldWarrior/_TO BE DELETED/SourceArt/Before-Axe-Consistency-Browser-Review.json",
+      "sha256": "138fa372ef83cf0fc7a91dd2faf6eb0b82a823a21f21310267ba0a44bbdde3a1",
+      "size": 884
+    },
+    {
+      "original": "Units/ClassicalAge/ShieldWarrior/SourceArt/Before-Axe-Consistency-Generation.json",
+      "archived": "Units/ClassicalAge/ShieldWarrior/_TO BE DELETED/SourceArt/Before-Axe-Consistency-Generation.json",
+      "sha256": "f546dadd3f0a344854c06137fa87d1d05feb2932c55037eb6a5de477bf56c869",
+      "size": 50959
+    },
+    {
+      "original": "Units/ClassicalAge/ShieldWarrior/SourceArt/Before-Axe-Consistency-Validation.json",
+      "archived": "Units/ClassicalAge/ShieldWarrior/_TO BE DELETED/SourceArt/Before-Axe-Consistency-Validation.json",
+      "sha256": "2be35de53b74623b1abcc6694bba35faddf379076345541084c718abfc978f98",
+      "size": 16524
+    },
+    {
+      "original": "Units/ClassicalAge/ShieldWarrior/SourceArt/Before-Axe-Orientation-animations.json",
+      "archived": "Units/ClassicalAge/ShieldWarrior/_TO BE DELETED/SourceArt/Before-Axe-Orientation-animations.json",
+      "sha256": "aa63fac90cede32f2f14709f3d753381bb86f9a6b4024000eb99c1e74f5ad485",
+      "size": 1500
+    },
+    {
+      "original": "Units/ClassicalAge/ShieldWarrior/SourceArt/Before-Axe-Orientation-Browser-Review.json",
+      "archived": "Units/ClassicalAge/ShieldWarrior/_TO BE DELETED/SourceArt/Before-Axe-Orientation-Browser-Review.json",
+      "sha256": "9d6442c74bfd26034bbc79725ae5ae2e36efeec5e9e15a5f53d285bb257edce8",
+      "size": 422
+    },
+    {
+      "original": "Units/ClassicalAge/ShieldWarrior/SourceArt/Before-Axe-Orientation-Validation.json",
+      "archived": "Units/ClassicalAge/ShieldWarrior/_TO BE DELETED/SourceArt/Before-Axe-Orientation-Validation.json",
+      "sha256": "3b66c97611ea8926bbe8020a44048c0f4c68acc27201585ec578718e9d768f4f",
+      "size": 349
+    },
+    {
+      "original": "Units/ClassicalAge/ShieldWarrior/SourceArt/Before-Axe-Top-Spike-animations.json",
+      "archived": "Units/ClassicalAge/ShieldWarrior/_TO BE DELETED/SourceArt/Before-Axe-Top-Spike-animations.json",
+      "sha256": "df77c38970738731607be33fe6348d57e34dcab62976d892611d6847b5f1d339",
+      "size": 1512
+    },
+    {
+      "original": "Units/ClassicalAge/ShieldWarrior/SourceArt/Before-Axe-Top-Spike-Browser-Review.json",
+      "archived": "Units/ClassicalAge/ShieldWarrior/_TO BE DELETED/SourceArt/Before-Axe-Top-Spike-Browser-Review.json",
+      "sha256": "b363fb0bd6b05bee84e35d17fcf1cecd4dadccd20a5ad62d30c2e10edc71d7bd",
+      "size": 491
+    },
+    {
+      "original": "Units/ClassicalAge/ShieldWarrior/SourceArt/Before-Axe-Top-Spike-Validation.json",
+      "archived": "Units/ClassicalAge/ShieldWarrior/_TO BE DELETED/SourceArt/Before-Axe-Top-Spike-Validation.json",
+      "sha256": "7bb6c0e1cbcccf9cc7d69d134b0dd2e6d24aee478bc04f7d348f698bdb738b85",
+      "size": 387
+    },
+    {
+      "original": "Units/ClassicalAge/ShieldWarrior/SourceArt/compose_animations.py",
+      "archived": "Units/ClassicalAge/ShieldWarrior/_TO BE DELETED/SourceArt/compose_animations.py",
+      "sha256": "1eeab865833077af506d8e44373ed68722bf7b117c14d55faf740be6ea6fd1cd",
+      "size": 7125
+    },
+    {
+      "original": "Units/ClassicalAge/ShieldWarrior/SourceArt/Composition.json",
+      "archived": "Units/ClassicalAge/ShieldWarrior/_TO BE DELETED/SourceArt/Composition.json",
+      "sha256": "a37df928547b4127329854a90e3a2fd0d472860f1e84a5b409c424eb16366df9",
+      "size": 27945
+    },
+    {
+      "original": "Units/ClassicalAge/ShieldWarrior/SourceArt/Draft-Idle-Camera-v1.png",
+      "archived": "Units/ClassicalAge/ShieldWarrior/_TO BE DELETED/SourceArt/Draft-Idle-Camera-v1.png",
+      "sha256": "ddab7873698308ba8cadf6d69748294893ce36524ba6d3ece24e1814baf96481",
+      "size": 1013430
+    },
+    {
+      "original": "Units/ClassicalAge/ShieldWarrior/SourceArt/Native-Attack-Axe-Consistent-v2.png",
+      "archived": "Units/ClassicalAge/ShieldWarrior/_TO BE DELETED/SourceArt/Native-Attack-Axe-Consistent-v2.png",
+      "sha256": "8ea6db00d697f82872defb95d87ac5e05ede9d8b259d5bd866687d02d4b3458c",
+      "size": 1758756
+    },
+    {
+      "original": "Units/ClassicalAge/ShieldWarrior/SourceArt/Native-Attack-Axe-Consistent-v3.png",
+      "archived": "Units/ClassicalAge/ShieldWarrior/_TO BE DELETED/SourceArt/Native-Attack-Axe-Consistent-v3.png",
+      "sha256": "98a1a973a416c5518fb7a3ef7582d10ba592019f172845db779c83fad795ef45",
+      "size": 1789174
+    },
+    {
+      "original": "Units/ClassicalAge/ShieldWarrior/SourceArt/Native-Attack-Axe-Consistent-v4.png",
+      "archived": "Units/ClassicalAge/ShieldWarrior/_TO BE DELETED/SourceArt/Native-Attack-Axe-Consistent-v4.png",
+      "sha256": "4be0d610d52f464e4457ea0c3f67c4c3e12349a99e7e0db774a45d5677baf7d4",
+      "size": 1789835
+    },
+    {
+      "original": "Units/ClassicalAge/ShieldWarrior/SourceArt/Native-Attack-v1.png",
+      "archived": "Units/ClassicalAge/ShieldWarrior/_TO BE DELETED/SourceArt/Native-Attack-v1.png",
+      "sha256": "d70060fc19d22efd0f735915d3121ae98db6c30b19d41cdb6f7b2b1a3262af17",
+      "size": 2091828
+    },
+    {
+      "original": "Units/ClassicalAge/ShieldWarrior/SourceArt/Native-Back3-Axe-Corrected-v1.png",
+      "archived": "Units/ClassicalAge/ShieldWarrior/_TO BE DELETED/SourceArt/Native-Back3-Axe-Corrected-v1.png",
+      "sha256": "969cb13916f51653c5af4c8cdee10ccf2024dcf65085714c42acfce5edcb87ad",
+      "size": 633617
+    },
+    {
+      "original": "Units/ClassicalAge/ShieldWarrior/SourceArt/Native-Back3-Axe-Corrected-v2.png",
+      "archived": "Units/ClassicalAge/ShieldWarrior/_TO BE DELETED/SourceArt/Native-Back3-Axe-Corrected-v2.png",
+      "sha256": "58b6eb7d6756d7e78aaf44c4679d3ac22f2b42346c1fe2f8f78316c6eba905f1",
+      "size": 637709
+    },
+    {
+      "original": "Units/ClassicalAge/ShieldWarrior/SourceArt/Native-Charge-Attack-v1.png",
+      "archived": "Units/ClassicalAge/ShieldWarrior/_TO BE DELETED/SourceArt/Native-Charge-Attack-v1.png",
+      "sha256": "4fd7821e5f9e69a73b3224b90d71cd71e4c489d37b977c49f3025c869a83afb0",
+      "size": 1983540
+    },
+    {
+      "original": "Units/ClassicalAge/ShieldWarrior/SourceArt/Native-Charge-v1.png",
+      "archived": "Units/ClassicalAge/ShieldWarrior/_TO BE DELETED/SourceArt/Native-Charge-v1.png",
+      "sha256": "196b6d94f0a858d88fc6af5068ca191f21118bbfcf6ed78c47a61bd0a933af77",
+      "size": 2193422
+    },
+    {
+      "original": "Units/ClassicalAge/ShieldWarrior/SourceArt/Native-Charge-v2.png",
+      "archived": "Units/ClassicalAge/ShieldWarrior/_TO BE DELETED/SourceArt/Native-Charge-v2.png",
+      "sha256": "957fbe1ae4aa7f65392e0b988b44a26cb7078adc51b56ac77846779c41efaa2e",
+      "size": 2261946
+    },
+    {
+      "original": "Units/ClassicalAge/ShieldWarrior/SourceArt/Native-Charge-v3.png",
+      "archived": "Units/ClassicalAge/ShieldWarrior/_TO BE DELETED/SourceArt/Native-Charge-v3.png",
+      "sha256": "20605c8f802ef2406ee96fd01f7d579d9f8405d5fa060a215a6902709b7fbda4",
+      "size": 2222777
+    },
+    {
+      "original": "Units/ClassicalAge/ShieldWarrior/SourceArt/Native-Charge-v4.png",
+      "archived": "Units/ClassicalAge/ShieldWarrior/_TO BE DELETED/SourceArt/Native-Charge-v4.png",
+      "sha256": "2f3f2d78882a044ee6e2f61dc31e14588ffd6e8a83cfb8eb2be52a3551d0872a",
+      "size": 2223170
+    },
+    {
+      "original": "Units/ClassicalAge/ShieldWarrior/SourceArt/Native-Charged-Axe-Consistent-v2.png",
+      "archived": "Units/ClassicalAge/ShieldWarrior/_TO BE DELETED/SourceArt/Native-Charged-Axe-Consistent-v2.png",
+      "sha256": "bb684b85eb840975f8520cf93a6a599b4a73788f700100f5f6d3fe1ca683f421",
+      "size": 1992700
+    },
+    {
+      "original": "Units/ClassicalAge/ShieldWarrior/SourceArt/Native-Charged-Axe-Consistent-v3.png",
+      "archived": "Units/ClassicalAge/ShieldWarrior/_TO BE DELETED/SourceArt/Native-Charged-Axe-Consistent-v3.png",
+      "sha256": "8eb620db6b1606fccec177bcaa3ee821a3e472485c95445ae64e79dad2e9e14c",
+      "size": 1994308
+    },
+    {
+      "original": "Units/ClassicalAge/ShieldWarrior/SourceArt/Native-Charged-Impact-v1.png",
+      "archived": "Units/ClassicalAge/ShieldWarrior/_TO BE DELETED/SourceArt/Native-Charged-Impact-v1.png",
+      "sha256": "d8f0fde6c69f9e969a19e3d441c4c63ee3147b57bb9b6829ead1d4fde096c2ad",
+      "size": 2339147
+    },
+    {
+      "original": "Units/ClassicalAge/ShieldWarrior/SourceArt/Native-Death-Back-Axe-Consistent-v4.png",
+      "archived": "Units/ClassicalAge/ShieldWarrior/_TO BE DELETED/SourceArt/Native-Death-Back-Axe-Consistent-v4.png",
+      "sha256": "4a030867a1453fdc2e1abdde1e933d4c09a14ecf3a0e6a479282ad6c91b33ad7",
+      "size": 1755714
+    },
+    {
+      "original": "Units/ClassicalAge/ShieldWarrior/SourceArt/Native-Death-Back-Axe-Consistent-v5.png",
+      "archived": "Units/ClassicalAge/ShieldWarrior/_TO BE DELETED/SourceArt/Native-Death-Back-Axe-Consistent-v5.png",
+      "sha256": "2f77774e40ed829601fdf3df64e2d269aea5326a2cc6cdb474a77b2e06909f2b",
+      "size": 2055416
+    },
+    {
+      "original": "Units/ClassicalAge/ShieldWarrior/SourceArt/Native-Death-Back-v1.png",
+      "archived": "Units/ClassicalAge/ShieldWarrior/_TO BE DELETED/SourceArt/Native-Death-Back-v1.png",
+      "sha256": "a4ab91427244e96d1664754a30709a51b31901b81a62607b8f14675ff759d35e",
+      "size": 2124629
+    },
+    {
+      "original": "Units/ClassicalAge/ShieldWarrior/SourceArt/Native-Death-Back-v2.png",
+      "archived": "Units/ClassicalAge/ShieldWarrior/_TO BE DELETED/SourceArt/Native-Death-Back-v2.png",
+      "sha256": "cda5a08c090c35489b9acf2f47b6c083ece75514abb5665aa48b8637eeceb8cb",
+      "size": 2198026
+    },
+    {
+      "original": "Units/ClassicalAge/ShieldWarrior/SourceArt/Native-Death-Back-v3.png",
+      "archived": "Units/ClassicalAge/ShieldWarrior/_TO BE DELETED/SourceArt/Native-Death-Back-v3.png",
+      "sha256": "16c56e8aabdb255118491f248f90f6835543adaf6cf80d597641c86aab4eb4ff",
+      "size": 2086025
+    },
+    {
+      "original": "Units/ClassicalAge/ShieldWarrior/SourceArt/Native-Death-Side-Axe-Consistent-v2.png",
+      "archived": "Units/ClassicalAge/ShieldWarrior/_TO BE DELETED/SourceArt/Native-Death-Side-Axe-Consistent-v2.png",
+      "sha256": "0d2904a3c47130826514b600d113d92c2a5e41ba06b28959fe9e66cd7e379a45",
+      "size": 1638261
+    },
+    {
+      "original": "Units/ClassicalAge/ShieldWarrior/SourceArt/Native-Death-Side-Axe-Consistent-v3.png",
+      "archived": "Units/ClassicalAge/ShieldWarrior/_TO BE DELETED/SourceArt/Native-Death-Side-Axe-Consistent-v3.png",
+      "sha256": "bd473fd64062e2ea3f17f49f3409d43ac7f335f1a024702a9e2a72f23016357a",
+      "size": 1914777
+    },
+    {
+      "original": "Units/ClassicalAge/ShieldWarrior/SourceArt/Native-Death-Side-v1.png",
+      "archived": "Units/ClassicalAge/ShieldWarrior/_TO BE DELETED/SourceArt/Native-Death-Side-v1.png",
+      "sha256": "b7a6ad49a87bc6ee87561558ec1a72b35bfe1b6ef8f994d0d85ee67804565f0f",
+      "size": 1933941
+    },
+    {
+      "original": "Units/ClassicalAge/ShieldWarrior/SourceArt/Native-Gait-Axe-Consistent-v5.png",
+      "archived": "Units/ClassicalAge/ShieldWarrior/_TO BE DELETED/SourceArt/Native-Gait-Axe-Consistent-v5.png",
+      "sha256": "c6f07e5a94046b6eb0ebde7247bc5c99685524fe3f49a226275104c43f7f24cd",
+      "size": 1903266
+    },
+    {
+      "original": "Units/ClassicalAge/ShieldWarrior/SourceArt/Native-Hit-Axe-Consistent-v3.png",
+      "archived": "Units/ClassicalAge/ShieldWarrior/_TO BE DELETED/SourceArt/Native-Hit-Axe-Consistent-v3.png",
+      "sha256": "063c6ae602a37a9043999b0d3a9a6ed125e6f6ee9132078453ab465c577946a5",
+      "size": 1907249
+    },
+    {
+      "original": "Units/ClassicalAge/ShieldWarrior/SourceArt/Native-Hit-v1.png",
+      "archived": "Units/ClassicalAge/ShieldWarrior/_TO BE DELETED/SourceArt/Native-Hit-v1.png",
+      "sha256": "c17c997d837fd7fe2940a9413d13a3ec23b74b1cd706177cf8341f1f7c7f8b13",
+      "size": 2252143
+    },
+    {
+      "original": "Units/ClassicalAge/ShieldWarrior/SourceArt/Native-Hit-v2.png",
+      "archived": "Units/ClassicalAge/ShieldWarrior/_TO BE DELETED/SourceArt/Native-Hit-v2.png",
+      "sha256": "8d1f1c23b3c472859d73e4453e64a62cfcc0402d2b8abc57dc379787dcf89877",
+      "size": 2251843
+    },
+    {
+      "original": "Units/ClassicalAge/ShieldWarrior/SourceArt/Native-Idle-Animated-v1.png",
+      "archived": "Units/ClassicalAge/ShieldWarrior/_TO BE DELETED/SourceArt/Native-Idle-Animated-v1.png",
+      "sha256": "dcbe96e739736d93f4ed0712480e29498cc8ab2d592bd8c7e2efbed0bac62970",
+      "size": 2229109
+    },
+    {
+      "original": "Units/ClassicalAge/ShieldWarrior/SourceArt/Native-Idle-Axe-Consistent-v2.png",
+      "archived": "Units/ClassicalAge/ShieldWarrior/_TO BE DELETED/SourceArt/Native-Idle-Axe-Consistent-v2.png",
+      "sha256": "23aa201d52cbf641081261b9d7091f93c18003fc0ae1ff5d0a68c129c3cea205",
+      "size": 1893169
+    },
+    {
+      "original": "Units/ClassicalAge/ShieldWarrior/SourceArt/Native-Idle-Axe-TopSpike-v3.png",
+      "archived": "Units/ClassicalAge/ShieldWarrior/_TO BE DELETED/SourceArt/Native-Idle-Axe-TopSpike-v3.png",
+      "sha256": "9c5692367aa7a1875c2bf16909ab9922a619fba68a8b103b1901e15eda8d96dd",
+      "size": 807381
+    },
+    {
+      "original": "Units/ClassicalAge/ShieldWarrior/SourceArt/Native-Idle-Axe-Upright-v2.png",
+      "archived": "Units/ClassicalAge/ShieldWarrior/_TO BE DELETED/SourceArt/Native-Idle-Axe-Upright-v2.png",
+      "sha256": "1d655e5f394416a131e11a604e7b8e0cf2db5f76b6e807fffb2857f2dffa482d",
+      "size": 811709
+    },
+    {
+      "original": "Units/ClassicalAge/ShieldWarrior/SourceArt/Native-Idle-TopDown-v2.png",
+      "archived": "Units/ClassicalAge/ShieldWarrior/_TO BE DELETED/SourceArt/Native-Idle-TopDown-v2.png",
+      "sha256": "a2791a6e0bdd3004cd123e7290ea25e2e53b2bc669cda33b3fa7326a0d7c6bd2",
+      "size": 836613
+    },
+    {
+      "original": "Units/ClassicalAge/ShieldWarrior/SourceArt/Native-Running-v1.png",
+      "archived": "Units/ClassicalAge/ShieldWarrior/_TO BE DELETED/SourceArt/Native-Running-v1.png",
+      "sha256": "2ab4911565a8e933c18bc8f042113517dec61f97756ebbe78059478cccc2902e",
+      "size": 2254350
+    },
+    {
+      "original": "Units/ClassicalAge/ShieldWarrior/SourceArt/Native-Running-v2.png",
+      "archived": "Units/ClassicalAge/ShieldWarrior/_TO BE DELETED/SourceArt/Native-Running-v2.png",
+      "sha256": "88ad7f062fbc1c2ade96fc9035f5d3ea33e877a8b8c922e70b37bfe2f4005338",
+      "size": 2283508
+    },
+    {
+      "original": "Units/ClassicalAge/ShieldWarrior/SourceArt/Native-Running-v3.png",
+      "archived": "Units/ClassicalAge/ShieldWarrior/_TO BE DELETED/SourceArt/Native-Running-v3.png",
+      "sha256": "20605c8f802ef2406ee96fd01f7d579d9f8405d5fa060a215a6902709b7fbda4",
+      "size": 2222777
+    },
+    {
+      "original": "Units/ClassicalAge/ShieldWarrior/SourceArt/Native-Running-v4.png",
+      "archived": "Units/ClassicalAge/ShieldWarrior/_TO BE DELETED/SourceArt/Native-Running-v4.png",
+      "sha256": "2f3f2d78882a044ee6e2f61dc31e14588ffd6e8a83cfb8eb2be52a3551d0872a",
+      "size": 2223170
+    },
+    {
+      "original": "Units/ClassicalAge/ShieldWarrior/SourceArt/Native-Side1-Axe-Corrected-v1.png",
+      "archived": "Units/ClassicalAge/ShieldWarrior/_TO BE DELETED/SourceArt/Native-Side1-Axe-Corrected-v1.png",
+      "sha256": "cbabb845c3dabee10d08a134a0c5497316ed7dbb6085007f002d85226978cee7",
+      "size": 689652
+    },
+    {
+      "original": "Units/ClassicalAge/ShieldWarrior/SourceArt/Native-Side2-Axe-Corrected-v1.png",
+      "archived": "Units/ClassicalAge/ShieldWarrior/_TO BE DELETED/SourceArt/Native-Side2-Axe-Corrected-v1.png",
+      "sha256": "9751acade739119dcf062a85ccdaa71641c380391b530bae65ef2033a662c883",
+      "size": 560888
+    },
+    {
+      "original": "Units/ClassicalAge/ShieldWarrior/SourceArt/Reference-Design.png",
+      "archived": "Units/ClassicalAge/ShieldWarrior/_TO BE DELETED/SourceArt/Reference-Design.png",
+      "sha256": "71a299a959147d1c35991ed16a3169600e39d573f48332b49bc704d151e43999",
+      "size": 540688
+    },
+    {
+      "original": "Units/ClassicalAge/ShieldWarrior/SourceArt/Side1-Axe-Correction-Input.png",
+      "archived": "Units/ClassicalAge/ShieldWarrior/_TO BE DELETED/SourceArt/Side1-Axe-Correction-Input.png",
+      "sha256": "3dadc028673762e17d1ef4bdc45eed496fc30624205003636f2b2b8d0b0dcc7e",
+      "size": 291352
+    },
+    {
+      "original": "Units/ClassicalAge/ShieldWarrior/SourceArt/Side2-Axe-Correction-Input.png",
+      "archived": "Units/ClassicalAge/ShieldWarrior/_TO BE DELETED/SourceArt/Side2-Axe-Correction-Input.png",
+      "sha256": "15e517874b4939227462ffaf2905a7b328a2d0859b344fd56427dff839cde224",
+      "size": 263710
+    },
+    {
+      "original": "Units/ClassicalAge/ShieldWarrior/Validation.json",
+      "archived": "Units/ClassicalAge/ShieldWarrior/_TO BE DELETED/Validation.json",
+      "sha256": "1da37aadaa3924e616ecc8fe54426eb859309824519bbba3b73afb8faa977f54",
+      "size": 16628
+    }
+  ]
+}

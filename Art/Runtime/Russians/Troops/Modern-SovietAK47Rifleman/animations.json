@@ -1,0 +1,341 @@
+{
+  "actorCount": 1,
+  "animations": [
+    {
+      "id": "idle",
+      "label": "Idle",
+      "file": "idle.png",
+      "sha256": "c5fbfa3dbfb0a9dda84002852a78989bd5f4b4e897fa954932fa2fd252d931f6",
+      "loop": true,
+      "scale": 1,
+      "durations": [
+        280,
+        280,
+        280,
+        280,
+        280,
+        280
+      ],
+      "description": "Six restrained breathing poses in SAME idle low ready. Both hands NEVER leave pistol grip and foregrip. Curved magazine stays attached in all six poses. No reload, no spare magazine. Tiny shoulder rise/fall only. Helmet center256,190 eachcell. Six distinct subtle breathing poses.",
+      "frameCount": 6,
+      "frames": [
+        {
+          "x": 0,
+          "y": 0,
+          "width": 128,
+          "height": 128,
+          "pivot": {
+            "x": 64.0,
+            "y": 64.0
+          }
+        },
+        {
+          "x": 128,
+          "y": 0,
+          "width": 128,
+          "height": 128,
+          "pivot": {
+            "x": 64.0,
+            "y": 64.0
+          }
+        },
+        {
+          "x": 256,
+          "y": 0,
+          "width": 128,
+          "height": 128,
+          "pivot": {
+            "x": 64.0,
+            "y": 64.0
+          }
+        },
+        {
+          "x": 384,
+          "y": 0,
+          "width": 128,
+          "height": 128,
+          "pivot": {
+            "x": 64.0,
+            "y": 64.0
+          }
+        },
+        {
+          "x": 512,
+          "y": 0,
+          "width": 128,
+          "height": 128,
+          "pivot": {
+            "x": 64.0,
+            "y": 64.0
+          }
+        },
+        {
+          "x": 640,
+          "y": 0,
+          "width": 128,
+          "height": 128,
+          "pivot": {
+            "x": 64.0,
+            "y": 64.0
+          }
+        }
+      ],
+      "releaseFrame": 3
+    },
+    {
+      "id": "running",
+      "label": "Walk",
+      "file": "running.png",
+      "sha256": "3179015600527a0f437856e1eaae0a8da0314fba7f806a155d7c35b7de46b85c",
+      "loop": true,
+      "scale": 1,
+      "durations": [
+        160,
+        160,
+        160,
+        160,
+        160,
+        160
+      ],
+      "description": "Six-frame WALK cycle in place: feet alternate left step forward/right back, contact, passing, opposite step, contact, passing. Very short boot tops only, no exposed long legs. Helmet center fixed, no lateral drift. Same gun carry handedness.",
+      "frameCount": 6,
+      "frames": [
+        {
+          "x": 0,
+          "y": 0,
+          "width": 128,
+          "height": 128,
+          "pivot": {
+            "x": 64.0,
+            "y": 64.0
+          }
+        },
+        {
+          "x": 128,
+          "y": 0,
+          "width": 128,
+          "height": 128,
+          "pivot": {
+            "x": 64.0,
+            "y": 64.0
+          }
+        },
+        {
+          "x": 256,
+          "y": 0,
+          "width": 128,
+          "height": 128,
+          "pivot": {
+            "x": 64.0,
+            "y": 64.0
+          }
+        },
+        {
+          "x": 384,
+          "y": 0,
+          "width": 128,
+          "height": 128,
+          "pivot": {
+            "x": 64.0,
+            "y": 64.0
+          }
+        },
+        {
+          "x": 512,
+          "y": 0,
+          "width": 128,
+          "height": 128,
+          "pivot": {
+            "x": 64.0,
+            "y": 64.0
+          }
+        },
+        {
+          "x": 640,
+          "y": 0,
+          "width": 128,
+          "height": 128,
+          "pivot": {
+            "x": 64.0,
+            "y": 64.0
+          }
+        }
+      ],
+      "releaseFrame": 3
+    },
+    {
+      "id": "attack",
+      "label": "Rifle fire",
+      "file": "attack.png",
+      "sha256": "ef05e4f7549709d467a34c8716ce0aa2c9103fffc88bb82dce9cd8fa17d5a97a",
+      "loop": false,
+      "scale": 1,
+      "durations": [
+        140,
+        180,
+        180,
+        150,
+        180,
+        220
+      ],
+      "description": "Six chronological rifle firing poses: 1 raise AK47 from idle, 2 place stock into right shoulder and step RIGHT foot back while chest turns slightly, 3 aim directly SCREEN DOWN barrel alongside helmet clear of face, 4 fire small muzzle flash ONLY from barrel tip with slight shoulder recoil, 5 hold aim recoil settles, 6 lower rifle toward idle. Mechanically rigid rifle, right hand on pistol grip and left under foregrip throughout, curved magazine attached.",
+      "frameCount": 6,
+      "frames": [
+        {
+          "x": 0,
+          "y": 0,
+          "width": 128,
+          "height": 128,
+          "pivot": {
+            "x": 64.0,
+            "y": 64.0
+          }
+        },
+        {
+          "x": 128,
+          "y": 0,
+          "width": 128,
+          "height": 128,
+          "pivot": {
+            "x": 64.0,
+            "y": 64.0
+          }
+        },
+        {
+          "x": 256,
+          "y": 0,
+          "width": 128,
+          "height": 128,
+          "pivot": {
+            "x": 64.0,
+            "y": 64.0
+          }
+        },
+        {
+          "x": 384,
+          "y": 0,
+          "width": 128,
+          "height": 128,
+          "pivot": {
+            "x": 64.0,
+            "y": 64.0
+          }
+        },
+        {
+          "x": 512,
+          "y": 0,
+          "width": 128,
+          "height": 128,
+          "pivot": {
+            "x": 64.0,
+            "y": 64.0
+          }
+        },
+        {
+          "x": 640,
+          "y": 0,
+          "width": 128,
+          "height": 128,
+          "pivot": {
+            "x": 64.0,
+            "y": 64.0
+          }
+        }
+      ],
+      "releaseFrame": 3,
+      "weaponState": {
+        "start": "loaded",
+        "end": "fired"
+      }
+    },
+    {
+      "id": "death",
+      "label": "Death - side fall",
+      "file": "death.png",
+      "sha256": "4d1ec75c80e75e3d05b31ca6a4d85e792ea7ff427108b1c15e893b350f2cedc7",
+      "loop": false,
+      "scale": 1.5,
+      "durations": [
+        150,
+        170,
+        190,
+        210,
+        240,
+        400
+      ],
+      "description": "Six chronological SIDE FALL: standing low ready, wounded buckle, rotate and descend sideways, side hits ground, body settles, FULL BODY prone side corpse head SCREEN RIGHT boots LEFT with rifle dropped beside body. Later frames show full horizontal human body, consistent same side orientation.",
+      "frameCount": 6,
+      "frames": [
+        {
+          "x": 0,
+          "y": 0,
+          "width": 128,
+          "height": 128,
+          "pivot": {
+            "x": 64.0,
+            "y": 64.0
+          }
+        },
+        {
+          "x": 128,
+          "y": 0,
+          "width": 128,
+          "height": 128,
+          "pivot": {
+            "x": 64.0,
+            "y": 64.0
+          }
+        },
+        {
+          "x": 256,
+          "y": 0,
+          "width": 128,
+          "height": 128,
+          "pivot": {
+            "x": 64.0,
+            "y": 64.0
+          }
+        },
+        {
+          "x": 384,
+          "y": 0,
+          "width": 128,
+          "height": 128,
+          "pivot": {
+            "x": 64.0,
+            "y": 64.0
+          }
+        },
+        {
+          "x": 512,
+          "y": 0,
+          "width": 128,
+          "height": 128,
+          "pivot": {
+            "x": 64.0,
+            "y": 64.0
+          }
+        },
+        {
+          "x": 640,
+          "y": 0,
+          "width": 128,
+          "height": 128,
+          "pivot": {
+            "x": 64.0,
+            "y": 64.0
+          }
+        }
+      ],
+      "releaseFrame": 3
+    }
+  ],
+  "source": "Art/Cultures/Russians/Units/Modern/SovietAK47Rifleman/animations.json",
+  "metadataHash": "ea9f7022f9bd48ec3b638f644731e4e4248cb0dda9951b8096acac68ed4fbb51",
+  "hashes": {
+    "Art/Cultures/Russians/Units/Modern/SovietAK47Rifleman/idle-v2.png": "c5fbfa3dbfb0a9dda84002852a78989bd5f4b4e897fa954932fa2fd252d931f6",
+    "Art/Cultures/Russians/Units/Modern/SovietAK47Rifleman/running-v1.png": "3179015600527a0f437856e1eaae0a8da0314fba7f806a155d7c35b7de46b85c",
+    "Art/Cultures/Russians/Units/Modern/SovietAK47Rifleman/attack-v1.png": "ef05e4f7549709d467a34c8716ce0aa2c9103fffc88bb82dce9cd8fa17d5a97a",
+    "Art/Cultures/Russians/Units/Modern/SovietAK47Rifleman/death-v2.png": "4d1ec75c80e75e3d05b31ca6a4d85e792ea7ff427108b1c15e893b350f2cedc7"
+  }
+}

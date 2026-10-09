@@ -22,6 +22,17 @@ export const RUSSIAN_UPGRADES = {
   "russian-tank-fire-control": "tank-attack",
   "russian-naval-missiles": "naval-attack",
   "russian-precision-manufacturing": "factory-throughput",
+  "russian-bayonet-drill": "infantry-melee",
+  "russian-volley-fire": "infantry-ranged",
+  "russian-artillery-carriages": "artillery-speed",
+  "russian-copper-sheathing": "warship-speed",
+  "russian-merchant-holds": "cargo-capacity",
+  "russian-machine-tools": "factory-throughput",
+  "russian-supply-depots": "factory-throughput",
+  "russian-container-shipping": "cargo-capacity",
+  "russian-assembly-line-upgrades": "factory-throughput",
+  "russian-transport-hulls": "transport-health",
+  "russian-maritime-cargo-systems": "cargo-capacity",
 } as const;
 const foundations = new Set([
   "russian-networked-command",

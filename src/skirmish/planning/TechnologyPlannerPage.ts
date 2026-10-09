@@ -40,7 +40,9 @@ const options = (
 let plan = readTechnologyPlan(savedPlan);
 let savedSnapshot = JSON.stringify(plan);
 let revision = "";
-let civId = plan.civilizations.some((c) => c.id === "russians-rework")
+let civId = plan.civilizations.some((c) => c.id === "russians-rus-eight-age-rework")
+  ? "russians-rus-eight-age-rework"
+  : plan.civilizations.some((c) => c.id === "russians-rework")
   ? "russians-rework"
   : "russians";
 let view: "research" | "units" | Tree = "research";

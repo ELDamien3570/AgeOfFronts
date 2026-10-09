@@ -1,0 +1,84 @@
+{
+  "folder": "Buildings/EarlyModern/Anti-Aircraft Emplacement/_TO BE DELETED",
+  "created": "2026-10-09T03:15:53.711Z",
+  "files": [
+    {
+      "original": "Buildings/EarlyModern/Anti-Aircraft Emplacement/Animations/E/Firing-Review.gif",
+      "archived": "Buildings/EarlyModern/Anti-Aircraft Emplacement/_TO BE DELETED/Animations/E/Firing-Review.gif",
+      "sha256": "dee0a3c397a9f07770220c6a0cc4c0ceaa46d4495254c0f9a76e2d39564fa3b4",
+      "size": 276858
+    },
+    {
+      "original": "Buildings/EarlyModern/Anti-Aircraft Emplacement/Animations/layers/Barrel-1-Mask.png",
+      "archived": "Buildings/EarlyModern/Anti-Aircraft Emplacement/_TO BE DELETED/Animations/layers/Barrel-1-Mask.png",
+      "sha256": "a921de1b5b2fd221baa5f25bea4e771a0563312b5ceb3ab30ffe43e33138f3d9",
+      "size": 489
+    },
+    {
+      "original": "Buildings/EarlyModern/Anti-Aircraft Emplacement/Animations/layers/Body-Mask.png",
+      "archived": "Buildings/EarlyModern/Anti-Aircraft Emplacement/_TO BE DELETED/Animations/layers/Body-Mask.png",
+      "sha256": "e8284cccc05db26ab88931c26912eb8f8b800529b3075304e6938275ba1c538d",
+      "size": 509
+    },
+    {
+      "original": "Buildings/EarlyModern/Anti-Aircraft Emplacement/Animations/layers/Original.png",
+      "archived": "Buildings/EarlyModern/Anti-Aircraft Emplacement/_TO BE DELETED/Animations/layers/Original.png",
+      "sha256": "390e78ed5439788bf8c2c587d998395319dba504b33b05c991cf7d918741f30b",
+      "size": 175196
+    },
+    {
+      "original": "Buildings/EarlyModern/Anti-Aircraft Emplacement/Animations/layers/Repair-Mask-Review.png",
+      "archived": "Buildings/EarlyModern/Anti-Aircraft Emplacement/_TO BE DELETED/Animations/layers/Repair-Mask-Review.png",
+      "sha256": "4084e878422d56aa98c3a0ee2bc19cbdf686241cb060c0d0e34b8db14c38c9f6",
+      "size": 2745
+    },
+    {
+      "original": "Buildings/EarlyModern/Anti-Aircraft Emplacement/Animations/layers/Repair-Mask.png",
+      "archived": "Buildings/EarlyModern/Anti-Aircraft Emplacement/_TO BE DELETED/Animations/layers/Repair-Mask.png",
+      "sha256": "5d7766b35a1ae8f1aec0e9e5d2688711157b5748da161fbde8fadc0fb6175168",
+      "size": 771
+    },
+    {
+      "original": "Buildings/EarlyModern/Anti-Aircraft Emplacement/Animations/N/Firing-Review.gif",
+      "archived": "Buildings/EarlyModern/Anti-Aircraft Emplacement/_TO BE DELETED/Animations/N/Firing-Review.gif",
+      "sha256": "53026247ba58c5e0a99df8786cc76e489dea11bd479e2ae32535cd318d827273",
+      "size": 280341
+    },
+    {
+      "original": "Buildings/EarlyModern/Anti-Aircraft Emplacement/Animations/S/Firing-Review.gif",
+      "archived": "Buildings/EarlyModern/Anti-Aircraft Emplacement/_TO BE DELETED/Animations/S/Firing-Review.gif",
+      "sha256": "6c7a4f5cb93c113721b5baf06009b5e031b4b6e7915b0e90b610e1319ecdde78",
+      "size": 280770
+    },
+    {
+      "original": "Buildings/EarlyModern/Anti-Aircraft Emplacement/Animations/SourceArt/Generation.json",
+      "archived": "Buildings/EarlyModern/Anti-Aircraft Emplacement/_TO BE DELETED/Animations/SourceArt/Generation.json",
+      "sha256": "9ded81a00117fe855d46b2d0ccf248d629aefba1e0e9e955a326d6bd52d9ff19",
+      "size": 2293
+    },
+    {
+      "original": "Buildings/EarlyModern/Anti-Aircraft Emplacement/Animations/SourceArt/Plate-v1.png",
+      "archived": "Buildings/EarlyModern/Anti-Aircraft Emplacement/_TO BE DELETED/Animations/SourceArt/Plate-v1.png",
+      "sha256": "95d056d66dd1dea1c94f9ed73a0ee8726f07f83650949d1083c9f83d43db0001",
+      "size": 1656103
+    },
+    {
+      "original": "Buildings/EarlyModern/Anti-Aircraft Emplacement/Animations/W/Firing-Review.gif",
+      "archived": "Buildings/EarlyModern/Anti-Aircraft Emplacement/_TO BE DELETED/Animations/W/Firing-Review.gif",
+      "sha256": "38c5cb6dec7498bdcb1fd01b3d9db94be0da9ca20a0163bfa3a67838cd84850a",
+      "size": 277914
+    },
+    {
+      "original": "Buildings/EarlyModern/Anti-Aircraft Emplacement/Generation.json",
+      "archived": "Buildings/EarlyModern/Anti-Aircraft Emplacement/_TO BE DELETED/Generation.json",
+      "sha256": "af528118280809c9e506787a7135a4bb78c550374ea5926d81c8a564175e06e0",
+      "size": 3056
+    },
+    {
+      "original": "Buildings/EarlyModern/Anti-Aircraft Emplacement/SourceArt/Icon-v1.png",
+      "archived": "Buildings/EarlyModern/Anti-Aircraft Emplacement/_TO BE DELETED/SourceArt/Icon-v1.png",
+      "sha256": "87fd3c162eaa56c658b4fe070fb3d0ee9496595ee1dce409e044130933a3cc33",
+      "size": 1763364
+    }
+  ]
+}

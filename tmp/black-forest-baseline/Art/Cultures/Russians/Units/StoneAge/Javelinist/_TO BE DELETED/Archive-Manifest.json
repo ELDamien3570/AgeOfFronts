@@ -1,0 +1,510 @@
+{
+  "folder": "Units/StoneAge/Javelinist/_TO BE DELETED",
+  "created": "2026-10-09T03:15:53.711Z",
+  "files": [
+    {
+      "original": "Units/StoneAge/Javelinist/Actor_Review.html",
+      "archived": "Units/StoneAge/Javelinist/_TO BE DELETED/Actor_Review.html",
+      "sha256": "386d569cc6bde549b25b42cf2625d030807061974a9205d5483ef91520703367",
+      "size": 7097
+    },
+    {
+      "original": "Units/StoneAge/Javelinist/animations.json",
+      "archived": "Units/StoneAge/Javelinist/_TO BE DELETED/animations.json",
+      "sha256": "7640dd4e117d411eb2fa7e70705654eb500cfbc547e83d097c98208a730760e6",
+      "size": 17426
+    },
+    {
+      "original": "Units/StoneAge/Javelinist/Attack-v3.png",
+      "archived": "Units/StoneAge/Javelinist/_TO BE DELETED/Attack-v3.png",
+      "sha256": "1e2dd5fd932b9372c1c8fd4ae16b336b9d19fbab5524f897b6de60bfdaa2382f",
+      "size": 943794
+    },
+    {
+      "original": "Units/StoneAge/Javelinist/Attack.png",
+      "archived": "Units/StoneAge/Javelinist/_TO BE DELETED/Attack.png",
+      "sha256": "77ebdcd14bb664f7493bb7c4c59e4c22fa01c2c9498046138aa87779d13270cb",
+      "size": 2026288
+    },
+    {
+      "original": "Units/StoneAge/Javelinist/Browser-Review.json",
+      "archived": "Units/StoneAge/Javelinist/_TO BE DELETED/Browser-Review.json",
+      "sha256": "0ff539db6b4a7e8093a4818ba9cb5f211c4cacc2b415d876e3297b5a8313eaa4",
+      "size": 785
+    },
+    {
+      "original": "Units/StoneAge/Javelinist/Charge.png",
+      "archived": "Units/StoneAge/Javelinist/_TO BE DELETED/Charge.png",
+      "sha256": "2364d7bdea7bf243430b0a1349397a37524e92ead5dd118fa2252b8c1bbbb855",
+      "size": 2009004
+    },
+    {
+      "original": "Units/StoneAge/Javelinist/ChargeAttack-v2.png",
+      "archived": "Units/StoneAge/Javelinist/_TO BE DELETED/ChargeAttack-v2.png",
+      "sha256": "28b03b5459e88764deefa1f74a2ac61d14b80f182fa442c8b9a55953574d13ff",
+      "size": 926896
+    },
+    {
+      "original": "Units/StoneAge/Javelinist/ChargeAttack.png",
+      "archived": "Units/StoneAge/Javelinist/_TO BE DELETED/ChargeAttack.png",
+      "sha256": "4690c8fd2fa643a26abd47d967f60fd6ebfb5c83b1732b88a68a3cb20e2ed050",
+      "size": 2035775
+    },
+    {
+      "original": "Units/StoneAge/Javelinist/Charged-v2.png",
+      "archived": "Units/StoneAge/Javelinist/_TO BE DELETED/Charged-v2.png",
+      "sha256": "5fbf8b99e68b4a93bdab9f3b52114eb435d5d8b311549e062a86e0886eaf9c21",
+      "size": 1774123
+    },
+    {
+      "original": "Units/StoneAge/Javelinist/Charged.png",
+      "archived": "Units/StoneAge/Javelinist/_TO BE DELETED/Charged.png",
+      "sha256": "eb72919aaa3da18e0c73e9bd88209aaaba51129a3325b8ba67981140c6a66d98",
+      "size": 2056658
+    },
+    {
+      "original": "Units/StoneAge/Javelinist/Death.png",
+      "archived": "Units/StoneAge/Javelinist/_TO BE DELETED/Death.png",
+      "sha256": "74632111e7dc63501bfc2d3c5f9fd48544b245a0704c7dc2b3bb10be913d2e36",
+      "size": 1987065
+    },
+    {
+      "original": "Units/StoneAge/Javelinist/Formation/animations.json",
+      "archived": "Units/StoneAge/Javelinist/_TO BE DELETED/Formation/animations.json",
+      "sha256": "9e5f19ee4d3a052cb7d806693628c9b4aa7889b882e67f8495eef1d7619170ff",
+      "size": 64712
+    },
+    {
+      "original": "Units/StoneAge/Javelinist/Formation/Attack.png",
+      "archived": "Units/StoneAge/Javelinist/_TO BE DELETED/Formation/Attack.png",
+      "sha256": "381e8d1e8a943ce01e460b876705ba6e288f94b2ee7cdea0c2f7f57bd7204ab2",
+      "size": 1134975
+    },
+    {
+      "original": "Units/StoneAge/Javelinist/Formation/Browser-Review.json",
+      "archived": "Units/StoneAge/Javelinist/_TO BE DELETED/Formation/Browser-Review.json",
+      "sha256": "fdda8b3c6415d8082a3a8ca7ef55e98b642faec1d1dc4bef6195ceae2a90125f",
+      "size": 1385
+    },
+    {
+      "original": "Units/StoneAge/Javelinist/Formation/Charge-Attack.png",
+      "archived": "Units/StoneAge/Javelinist/_TO BE DELETED/Formation/Charge-Attack.png",
+      "sha256": "4fff955b571232fecaefb8fa96c2086d3f92cf5c3837dd864f6281107e8bbabf",
+      "size": 1577464
+    },
+    {
+      "original": "Units/StoneAge/Javelinist/Formation/Charge-In.png",
+      "archived": "Units/StoneAge/Javelinist/_TO BE DELETED/Formation/Charge-In.png",
+      "sha256": "64dbebfee477175de4d1ebc406e7793e1615eeb926057df0c40f63f67adb4338",
+      "size": 3371555
+    },
+    {
+      "original": "Units/StoneAge/Javelinist/Formation/Charge-Maintain.png",
+      "archived": "Units/StoneAge/Javelinist/_TO BE DELETED/Formation/Charge-Maintain.png",
+      "sha256": "f68a96638e1d84a653cefb5b72ff6034928d3764740178a3679a4d2f32908a1b",
+      "size": 1033104
+    },
+    {
+      "original": "Units/StoneAge/Javelinist/Formation/Charge-Out.png",
+      "archived": "Units/StoneAge/Javelinist/_TO BE DELETED/Formation/Charge-Out.png",
+      "sha256": "22911cf4509abc0d3e16851a552081e4c3e9c327f1a9d1429f283c088ddd0cfe",
+      "size": 3568395
+    },
+    {
+      "original": "Units/StoneAge/Javelinist/Formation/Charged.png",
+      "archived": "Units/StoneAge/Javelinist/_TO BE DELETED/Formation/Charged.png",
+      "sha256": "9715a16da2aff814b186118712f356cdb439933c7e7b0bfb3a20f4ab46302dc3",
+      "size": 1493255
+    },
+    {
+      "original": "Units/StoneAge/Javelinist/Formation/Death-Preview.png",
+      "archived": "Units/StoneAge/Javelinist/_TO BE DELETED/Formation/Death-Preview.png",
+      "sha256": "b3191a924d657bd61527b816abaa89862dcb6ec0c8f32310e7d1fe9f3c2d4860",
+      "size": 150679
+    },
+    {
+      "original": "Units/StoneAge/Javelinist/Formation/Death.png",
+      "archived": "Units/StoneAge/Javelinist/_TO BE DELETED/Formation/Death.png",
+      "sha256": "e6178623ef860cc0eb18be1109c12ad3035f3965244d93a95bb8bab82dd4a5b7",
+      "size": 2237180
+    },
+    {
+      "original": "Units/StoneAge/Javelinist/Formation/formation.test.mjs",
+      "archived": "Units/StoneAge/Javelinist/_TO BE DELETED/Formation/formation.test.mjs",
+      "sha256": "91010382d3f4216e54e937ad6d1c37628450a981a4096cb10749aa84be484833",
+      "size": 8322
+    },
+    {
+      "original": "Units/StoneAge/Javelinist/Formation/Formation_Review.html",
+      "archived": "Units/StoneAge/Javelinist/_TO BE DELETED/Formation/Formation_Review.html",
+      "sha256": "1c0c28e6c99dfb47232ab44d3dd5d56020608a59a37df670674178bd4d7df390",
+      "size": 7647
+    },
+    {
+      "original": "Units/StoneAge/Javelinist/Formation/Hit.png",
+      "archived": "Units/StoneAge/Javelinist/_TO BE DELETED/Formation/Hit.png",
+      "sha256": "e0470d42928578e01691ee6a4f8fdea7a4f6012efafe435b778409cc7e73a944",
+      "size": 937275
+    },
+    {
+      "original": "Units/StoneAge/Javelinist/Formation/Idle.png",
+      "archived": "Units/StoneAge/Javelinist/_TO BE DELETED/Formation/Idle.png",
+      "sha256": "bcca0b20fa3290233b62c6c361848001ba8f3e7d8188ae507e675eb4e29ba070",
+      "size": 1322486
+    },
+    {
+      "original": "Units/StoneAge/Javelinist/Formation/Preview.png",
+      "archived": "Units/StoneAge/Javelinist/_TO BE DELETED/Formation/Preview.png",
+      "sha256": "c5380c4f23c42941e02fe4c394fd56370d83324c10664a0bfdbb02351ec9caaf",
+      "size": 47216
+    },
+    {
+      "original": "Units/StoneAge/Javelinist/Formation/README.md",
+      "archived": "Units/StoneAge/Javelinist/_TO BE DELETED/Formation/README.md",
+      "sha256": "3969fd6201b193e2c6e984d3b68eee593c5382a7fb32bacc8e5a04591cfda76d",
+      "size": 3021
+    },
+    {
+      "original": "Units/StoneAge/Javelinist/Formation/render-review.mjs",
+      "archived": "Units/StoneAge/Javelinist/_TO BE DELETED/Formation/render-review.mjs",
+      "sha256": "9b711f874d6a4bce3835f0fc036ecbf47231023f0a6e387c0029c9e34a37f793",
+      "size": 1329
+    },
+    {
+      "original": "Units/StoneAge/Javelinist/Formation/Running.png",
+      "archived": "Units/StoneAge/Javelinist/_TO BE DELETED/Formation/Running.png",
+      "sha256": "265ac5de68a0b35083252bd6910d4cc86bb6fe868afb5ca51517f5b921e0da47",
+      "size": 1169080
+    },
+    {
+      "original": "Units/StoneAge/Javelinist/Formation/SourceActor/animations.json",
+      "archived": "Units/StoneAge/Javelinist/_TO BE DELETED/Formation/SourceActor/animations.json",
+      "sha256": "15ff7b443e6dc62c19ee648a604771597383efaec59dad7bad53af45a4a71e1a",
+      "size": 2112
+    },
+    {
+      "original": "Units/StoneAge/Javelinist/Formation/SourceActor/Death-Back-v2.png",
+      "archived": "Units/StoneAge/Javelinist/_TO BE DELETED/Formation/SourceActor/Death-Back-v2.png",
+      "sha256": "e5fc59fe7ec812d05784623b41ea6a3e7477fd3bfef4f464ec64c22c4a360531",
+      "size": 1845167
+    },
+    {
+      "original": "Units/StoneAge/Javelinist/Formation/SourceActor/Death-Back.png",
+      "archived": "Units/StoneAge/Javelinist/_TO BE DELETED/Formation/SourceActor/Death-Back.png",
+      "sha256": "d82c9034529b19f3b0e1a792a02420e982afd78d66699c602319a630597e5da3",
+      "size": 2092568
+    },
+    {
+      "original": "Units/StoneAge/Javelinist/Formation/SourceActor/Generation.json",
+      "archived": "Units/StoneAge/Javelinist/_TO BE DELETED/Formation/SourceActor/Generation.json",
+      "sha256": "e565c4b932ff452430694498dc18becb13d9b0b2e0056c6d79e41d2b28fa95f8",
+      "size": 4418
+    },
+    {
+      "original": "Units/StoneAge/Javelinist/Formation/Validation.json",
+      "archived": "Units/StoneAge/Javelinist/_TO BE DELETED/Formation/Validation.json",
+      "sha256": "45b20454c0d6223587595afaa11d967eb2095dc696cbbbcdfb052fd4c2a83696",
+      "size": 384517
+    },
+    {
+      "original": "Units/StoneAge/Javelinist/Generation.json",
+      "archived": "Units/StoneAge/Javelinist/_TO BE DELETED/Generation.json",
+      "sha256": "ce581c486b52291296ee07a400db0fd67a14f02c7b9aa0eee326f978537a248f",
+      "size": 39746
+    },
+    {
+      "original": "Units/StoneAge/Javelinist/Hit.png",
+      "archived": "Units/StoneAge/Javelinist/_TO BE DELETED/Hit.png",
+      "sha256": "614d764f39be268b7306b66fc8c10d8ccd7b68bcc5e1c40bd110c30cb78d39fe",
+      "size": 2108263
+    },
+    {
+      "original": "Units/StoneAge/Javelinist/Idle.png",
+      "archived": "Units/StoneAge/Javelinist/_TO BE DELETED/Idle.png",
+      "sha256": "f41c063a07e6b0fb77971cf96539d0f57b4947c119388900ed5b5636592ee79e",
+      "size": 2155106
+    },
+    {
+      "original": "Units/StoneAge/Javelinist/inspect-sheets.py",
+      "archived": "Units/StoneAge/Javelinist/_TO BE DELETED/inspect-sheets.py",
+      "sha256": "3ad14a896a2477495c3361ac229008fe7bb00909708b34f7e2f82738f272507e",
+      "size": 4927
+    },
+    {
+      "original": "Units/StoneAge/Javelinist/README.md",
+      "archived": "Units/StoneAge/Javelinist/_TO BE DELETED/README.md",
+      "sha256": "fb565e777faf1857651455a358f9650438c5e736f9de234d7a4192bfb5acc49b",
+      "size": 3415
+    },
+    {
+      "original": "Units/StoneAge/Javelinist/Reload-v2.png",
+      "archived": "Units/StoneAge/Javelinist/_TO BE DELETED/Reload-v2.png",
+      "sha256": "edf880687923e29153e17461fc4142eae1195d95347811237c85e6e90a48835c",
+      "size": 1025607
+    },
+    {
+      "original": "Units/StoneAge/Javelinist/Review-ChargeThrow-v2.png",
+      "archived": "Units/StoneAge/Javelinist/_TO BE DELETED/Review-ChargeThrow-v2.png",
+      "sha256": "4174096abf21e6a2f1d87b5e70ffa513096d34ed1c651c23b7d18567b0c4ae81",
+      "size": 74059
+    },
+    {
+      "original": "Units/StoneAge/Javelinist/Review-Release-v3.png",
+      "archived": "Units/StoneAge/Javelinist/_TO BE DELETED/Review-Release-v3.png",
+      "sha256": "304fc1a98b2cd46569e583bc4c705528d3cc79ef899739306da0296d7a469987",
+      "size": 70712
+    },
+    {
+      "original": "Units/StoneAge/Javelinist/Review-Reload-v2.png",
+      "archived": "Units/StoneAge/Javelinist/_TO BE DELETED/Review-Reload-v2.png",
+      "sha256": "341732c9f83c8f57a715b9fc2ac8188e6669928f710e5eb2f73de0dcf3ac6431",
+      "size": 72622
+    },
+    {
+      "original": "Units/StoneAge/Javelinist/Review-Throw-v3.png",
+      "archived": "Units/StoneAge/Javelinist/_TO BE DELETED/Review-Throw-v3.png",
+      "sha256": "9a258422ad7bcf14f26757e23d208d324d259ef01451bcd88817541279915746",
+      "size": 72297
+    },
+    {
+      "original": "Units/StoneAge/Javelinist/Running-v2.png",
+      "archived": "Units/StoneAge/Javelinist/_TO BE DELETED/Running-v2.png",
+      "sha256": "291bddf0797c7b56a945ae691f6f9920b119c75b1fbe426d7a2ef84a080a30b4",
+      "size": 2092102
+    },
+    {
+      "original": "Units/StoneAge/Javelinist/Running.png",
+      "archived": "Units/StoneAge/Javelinist/_TO BE DELETED/Running.png",
+      "sha256": "db3c0d2ccbd96bcf902eda0db727e97f8b19e13772f3ceccd9a9af74278be5fa",
+      "size": 2077112
+    },
+    {
+      "original": "Units/StoneAge/Javelinist/SourceArt/audit_topdown_sources.py",
+      "archived": "Units/StoneAge/Javelinist/_TO BE DELETED/SourceArt/audit_topdown_sources.py",
+      "sha256": "8a6f22e54974dac81387192a082c308ef360014f833dac3e2241433fdbf7642d",
+      "size": 639
+    },
+    {
+      "original": "Units/StoneAge/Javelinist/SourceArt/Before-Throw-Reload-animations.json",
+      "archived": "Units/StoneAge/Javelinist/_TO BE DELETED/SourceArt/Before-Throw-Reload-animations.json",
+      "sha256": "562af095e061cebbed4a8a74e78613e6f526e49fc25b3a984100859de7132f33",
+      "size": 14183
+    },
+    {
+      "original": "Units/StoneAge/Javelinist/SourceArt/Before-Throw-Reload-Browser-Review.json",
+      "archived": "Units/StoneAge/Javelinist/_TO BE DELETED/SourceArt/Before-Throw-Reload-Browser-Review.json",
+      "sha256": "d80202a7f828075f3e9b5c48eef9fa94c200fee992e03e64b86f2e60dd5b651f",
+      "size": 1390
+    },
+    {
+      "original": "Units/StoneAge/Javelinist/SourceArt/Before-Throw-Reload-Validation.json",
+      "archived": "Units/StoneAge/Javelinist/_TO BE DELETED/SourceArt/Before-Throw-Reload-Validation.json",
+      "sha256": "54faad12b530af1e97b08601dbc861b355218b6d9e74fcb6744e4e0973abc4df",
+      "size": 72679
+    },
+    {
+      "original": "Units/StoneAge/Javelinist/SourceArt/check_topdown_review.py",
+      "archived": "Units/StoneAge/Javelinist/_TO BE DELETED/SourceArt/check_topdown_review.py",
+      "sha256": "e8fec6171377f010f6285a7045b4086adaee89e897c75772ba121691407e8f21",
+      "size": 835
+    },
+    {
+      "original": "Units/StoneAge/Javelinist/SourceArt/compose_throw_reload.py",
+      "archived": "Units/StoneAge/Javelinist/_TO BE DELETED/SourceArt/compose_throw_reload.py",
+      "sha256": "a98420d6a8bcbfa4a08fb50f0ed90955de20857f0cedcaaeb71b904919550766",
+      "size": 4343
+    },
+    {
+      "original": "Units/StoneAge/Javelinist/SourceArt/compose_topdown_animations.py",
+      "archived": "Units/StoneAge/Javelinist/_TO BE DELETED/SourceArt/compose_topdown_animations.py",
+      "sha256": "d4fe48c12f5107002a9719cf07e57f6a84e666a2200988ec4a01fa55c9cc473e",
+      "size": 5300
+    },
+    {
+      "original": "Units/StoneAge/Javelinist/SourceArt/Draft-Attack-v2.png",
+      "archived": "Units/StoneAge/Javelinist/_TO BE DELETED/SourceArt/Draft-Attack-v2.png",
+      "sha256": "50fa29498afaae1527f4c12f22ab4b2a1b49e8d941d78398760e8ab4ba18b90c",
+      "size": 2126990
+    },
+    {
+      "original": "Units/StoneAge/Javelinist/SourceArt/Draft-Reload-v1.png",
+      "archived": "Units/StoneAge/Javelinist/_TO BE DELETED/SourceArt/Draft-Reload-v1.png",
+      "sha256": "48f424b977d4b6c21e8f8f47bf18394df6f57d4af68daa2c2f4505baf9527df9",
+      "size": 2099775
+    },
+    {
+      "original": "Units/StoneAge/Javelinist/SourceArt/Native-Attack-v3.png",
+      "archived": "Units/StoneAge/Javelinist/_TO BE DELETED/SourceArt/Native-Attack-v3.png",
+      "sha256": "23360557a42c42659048c662da2adac4645ff31cdc5311b2ed2155d3a1ccaeb2",
+      "size": 2104030
+    },
+    {
+      "original": "Units/StoneAge/Javelinist/SourceArt/Native-ChargeAttack-v2.png",
+      "archived": "Units/StoneAge/Javelinist/_TO BE DELETED/SourceArt/Native-ChargeAttack-v2.png",
+      "sha256": "03108a6c22dbe5ab30a31ebd3fdee49278569add6eeaf2b144b87b27ca666e45",
+      "size": 2094234
+    },
+    {
+      "original": "Units/StoneAge/Javelinist/SourceArt/Native-Idle-TopDown-v2.png",
+      "archived": "Units/StoneAge/Javelinist/_TO BE DELETED/SourceArt/Native-Idle-TopDown-v2.png",
+      "sha256": "4a70aa191f66ac90c33ff8022058c56006e1a54cd6bff4786ca15e8c9a596d38",
+      "size": 1045424
+    },
+    {
+      "original": "Units/StoneAge/Javelinist/SourceArt/Native-Idle-TopDown-v3.png",
+      "archived": "Units/StoneAge/Javelinist/_TO BE DELETED/SourceArt/Native-Idle-TopDown-v3.png",
+      "sha256": "43d812f52cf31fcd58ace077b7a8ee75e2858de1d4562501a12e98c2f5043e58",
+      "size": 765319
+    },
+    {
+      "original": "Units/StoneAge/Javelinist/SourceArt/Native-Reload-v2.png",
+      "archived": "Units/StoneAge/Javelinist/_TO BE DELETED/SourceArt/Native-Reload-v2.png",
+      "sha256": "64a8b9cb49ef8715ed17db07d9ead47efd28891974bbeccbada417aa0fbe4c37",
+      "size": 2152234
+    },
+    {
+      "original": "Units/StoneAge/Javelinist/SourceArt/Native-TopDown-attack-v1.png",
+      "archived": "Units/StoneAge/Javelinist/_TO BE DELETED/SourceArt/Native-TopDown-attack-v1.png",
+      "sha256": "7be0a8727f19c412ead6c1f369df20949324319e3fff557e3a1d586c9437efaf",
+      "size": 1829376
+    },
+    {
+      "original": "Units/StoneAge/Javelinist/SourceArt/Native-TopDown-charge-attack-v1.png",
+      "archived": "Units/StoneAge/Javelinist/_TO BE DELETED/SourceArt/Native-TopDown-charge-attack-v1.png",
+      "sha256": "e7f93d86d68cd43996497a3e01c6536589f59cbf7b72aeb1197dd6d1ce5a1461",
+      "size": 1765906
+    },
+    {
+      "original": "Units/StoneAge/Javelinist/SourceArt/Native-TopDown-charged-v1.png",
+      "archived": "Units/StoneAge/Javelinist/_TO BE DELETED/SourceArt/Native-TopDown-charged-v1.png",
+      "sha256": "224c63ec254adae89599240d30175164db75164c4c2502cb9059d87429e87a8e",
+      "size": 1958246
+    },
+    {
+      "original": "Units/StoneAge/Javelinist/SourceArt/Native-TopDown-death-back-v1.png",
+      "archived": "Units/StoneAge/Javelinist/_TO BE DELETED/SourceArt/Native-TopDown-death-back-v1.png",
+      "sha256": "777c198129bfcd9393e6ae21c041e1afe59e714589f85ef1dc8f7b3669f7a054",
+      "size": 1995420
+    },
+    {
+      "original": "Units/StoneAge/Javelinist/SourceArt/Native-TopDown-death-v1.png",
+      "archived": "Units/StoneAge/Javelinist/_TO BE DELETED/SourceArt/Native-TopDown-death-v1.png",
+      "sha256": "5fb85679b484c7ae9929fb74143c48e16ae346039f1b929fdad464fa2315363e",
+      "size": 1915890
+    },
+    {
+      "original": "Units/StoneAge/Javelinist/SourceArt/Native-TopDown-death-v2.png",
+      "archived": "Units/StoneAge/Javelinist/_TO BE DELETED/SourceArt/Native-TopDown-death-v2.png",
+      "sha256": "bf5e38c8497baf590dedc904a77abe8e25f2f6cb6e5c178b5f62de2e00b90115",
+      "size": 1993283
+    },
+    {
+      "original": "Units/StoneAge/Javelinist/SourceArt/Native-TopDown-hit-v1.png",
+      "archived": "Units/StoneAge/Javelinist/_TO BE DELETED/SourceArt/Native-TopDown-hit-v1.png",
+      "sha256": "b0b5e6d2e816f2a370066b94c03e1a06a916ab9ee0e87b4ccc8cc36e6b388615",
+      "size": 1966380
+    },
+    {
+      "original": "Units/StoneAge/Javelinist/SourceArt/Native-TopDown-idle-v1.png",
+      "archived": "Units/StoneAge/Javelinist/_TO BE DELETED/SourceArt/Native-TopDown-idle-v1.png",
+      "sha256": "da080ebdb4f0f8dfea03ffd4b2c44a38e4a06cd926a4d7359823fb79d5e03c44",
+      "size": 1985633
+    },
+    {
+      "original": "Units/StoneAge/Javelinist/SourceArt/Native-TopDown-reload-v1.png",
+      "archived": "Units/StoneAge/Javelinist/_TO BE DELETED/SourceArt/Native-TopDown-reload-v1.png",
+      "sha256": "cd8460a829bb04c05f99ef3f5b785e8a364f25e1d41cd26ab1984a355169b0bb",
+      "size": 2081980
+    },
+    {
+      "original": "Units/StoneAge/Javelinist/SourceArt/Native-TopDown-reload-v2.png",
+      "archived": "Units/StoneAge/Javelinist/_TO BE DELETED/SourceArt/Native-TopDown-reload-v2.png",
+      "sha256": "56006dfa27b15097457f6790fdc0ec9a273ff828b5c3693791c1f784c83ae0ca",
+      "size": 1848296
+    },
+    {
+      "original": "Units/StoneAge/Javelinist/SourceArt/Native-TopDown-running-v1.png",
+      "archived": "Units/StoneAge/Javelinist/_TO BE DELETED/SourceArt/Native-TopDown-running-v1.png",
+      "sha256": "82774018e2e570ba65164e6a5416fccd894a174b035ecd3fba257be6fe1ed32b",
+      "size": 2012360
+    },
+    {
+      "original": "Units/StoneAge/Javelinist/SourceArt/prepare_topdown_review.py",
+      "archived": "Units/StoneAge/Javelinist/_TO BE DELETED/SourceArt/prepare_topdown_review.py",
+      "sha256": "ab620c4c09043a133272f22557402a5b4025d426541ab9c2fbd1b6a08c2a38c6",
+      "size": 2574
+    },
+    {
+      "original": "Units/StoneAge/Javelinist/SourceArt/Throw-Reload-Bake.json",
+      "archived": "Units/StoneAge/Javelinist/_TO BE DELETED/SourceArt/Throw-Reload-Bake.json",
+      "sha256": "86bc6315597ac49e5d8119b9f112258662712230546c84b7554ec823fae3c1f5",
+      "size": 8839
+    },
+    {
+      "original": "Units/StoneAge/Javelinist/SourceArt/Throw-Reload-Generation.json",
+      "archived": "Units/StoneAge/Javelinist/_TO BE DELETED/SourceArt/Throw-Reload-Generation.json",
+      "sha256": "2987657b13fcc0e882ab8dcd9200d5ce9c0d3a0d9947b2e5ec0ec1ee10fbeb0c",
+      "size": 11714
+    },
+    {
+      "original": "Units/StoneAge/Javelinist/SourceArt/TopDown-Animation-Generation.json",
+      "archived": "Units/StoneAge/Javelinist/_TO BE DELETED/SourceArt/TopDown-Animation-Generation.json",
+      "sha256": "f1e73e2d58d10f00e2b11548825e73e0d7502c63ac68019570a6b555b9c5c710",
+      "size": 18608
+    },
+    {
+      "original": "Units/StoneAge/Javelinist/SourceArt/TopDown-Composition.json",
+      "archived": "Units/StoneAge/Javelinist/_TO BE DELETED/SourceArt/TopDown-Composition.json",
+      "sha256": "801496425ee1b558f98a8f2df96e1b565e82a93cc22e86528105d47ea18c6100",
+      "size": 29336
+    },
+    {
+      "original": "Units/StoneAge/Javelinist/SourceArt/TopDown-Generation-v3.json",
+      "archived": "Units/StoneAge/Javelinist/_TO BE DELETED/SourceArt/TopDown-Generation-v3.json",
+      "sha256": "8864a99bd6b054ecd995b9ea80193d0f0237d62c8b3b85305a181c51c6023d69",
+      "size": 1517
+    },
+    {
+      "original": "Units/StoneAge/Javelinist/SourceArt/TopDown-Generation.json",
+      "archived": "Units/StoneAge/Javelinist/_TO BE DELETED/SourceArt/TopDown-Generation.json",
+      "sha256": "bd23aeb08f8af1c83575f2ce3ea0ee66d07d0ffafd8117e5ce48989e72d31c1b",
+      "size": 1421
+    },
+    {
+      "original": "Units/StoneAge/Javelinist/TopDownReview/Browser-Review.json",
+      "archived": "Units/StoneAge/Javelinist/_TO BE DELETED/TopDownReview/Browser-Review.json",
+      "sha256": "54c13ecb09b3d6eb13f30284bd03ac10193e1f06311caaa245575e216b4b85c9",
+      "size": 1368
+    },
+    {
+      "original": "Units/StoneAge/Javelinist/TopDownReview/Generation.json",
+      "archived": "Units/StoneAge/Javelinist/_TO BE DELETED/TopDownReview/Generation.json",
+      "sha256": "e52a05d28c1f59744e3627dcbc4159b55f175380497781c09793830bcebc42e4",
+      "size": 18729
+    },
+    {
+      "original": "Units/StoneAge/Javelinist/TopDownReview/Idle-TopDown-v2.png",
+      "archived": "Units/StoneAge/Javelinist/_TO BE DELETED/TopDownReview/Idle-TopDown-v2.png",
+      "sha256": "8161e1150b48f239511ef6437c209bd22b8a7783707eeb9bc5bac9839bc5467c",
+      "size": 1020846
+    },
+    {
+      "original": "Units/StoneAge/Javelinist/TopDownReview/README.md",
+      "archived": "Units/StoneAge/Javelinist/_TO BE DELETED/TopDownReview/README.md",
+      "sha256": "bba536b9922fcc96b7b71456ef9d361f4c2bc51b37c54cfaa2345d17f6d4831c",
+      "size": 998
+    },
+    {
+      "original": "Units/StoneAge/Javelinist/TopDownReview/Validation.json",
+      "archived": "Units/StoneAge/Javelinist/_TO BE DELETED/TopDownReview/Validation.json",
+      "sha256": "037125dfa8a712ca70db8dd65875771fb7ef51110261ed62e35a0eb15f7b2148",
+      "size": 20836
+    },
+    {
+      "original": "Units/StoneAge/Javelinist/Validation.json",
+      "archived": "Units/StoneAge/Javelinist/_TO BE DELETED/Validation.json",
+      "sha256": "3a25665f45b8950979aadae2af1c055933ebf4c58918c14686983e8e21f1a187",
+      "size": 84806
+    }
+  ]
+}

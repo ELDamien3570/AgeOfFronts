@@ -1,0 +1,216 @@
+{
+  "folder": "Units/Modern/RPL20Gunner/_TO BE DELETED",
+  "created": "2026-10-09T03:15:53.711Z",
+  "files": [
+    {
+      "original": "Units/Modern/RPL20Gunner/Browser-Review.json",
+      "archived": "Units/Modern/RPL20Gunner/_TO BE DELETED/Browser-Review.json",
+      "sha256": "3593b952ffbcbb4159375db8c01f5a22bc5666b0fc6c265da1ff2e78af123033",
+      "size": 1302
+    },
+    {
+      "original": "Units/Modern/RPL20Gunner/Generation.json",
+      "archived": "Units/Modern/RPL20Gunner/_TO BE DELETED/Generation.json",
+      "sha256": "805c613164583a07dfe2f2deaa69339d513d97f0bca2b589aa3c70c0698f1982",
+      "size": 28236
+    },
+    {
+      "original": "Units/Modern/RPL20Gunner/Idle-v1.png",
+      "archived": "Units/Modern/RPL20Gunner/_TO BE DELETED/Idle-v1.png",
+      "sha256": "71389ca915b31fbc1d5c8c6f22904e2d1cc040767adbe8d31c78855ae6cfd5bc",
+      "size": 1043760
+    },
+    {
+      "original": "Units/Modern/RPL20Gunner/README.md",
+      "archived": "Units/Modern/RPL20Gunner/_TO BE DELETED/README.md",
+      "sha256": "1763e18fdcc9ffa8ddf6312c2bab5a08581f57dcc7e859fb734aaff751e492a5",
+      "size": 1249
+    },
+    {
+      "original": "Units/Modern/RPL20Gunner/SourceArt/Animation-Generation-Working.json",
+      "archived": "Units/Modern/RPL20Gunner/_TO BE DELETED/SourceArt/Animation-Generation-Working.json",
+      "sha256": "757fae5abbee669766c595483f0c5c7db3879802eff7d30b704995ab60d45647",
+      "size": 23543
+    },
+    {
+      "original": "Units/Modern/RPL20Gunner/SourceArt/Animation-Generation.json",
+      "archived": "Units/Modern/RPL20Gunner/_TO BE DELETED/SourceArt/Animation-Generation.json",
+      "sha256": "2e6724583e8d40d783c232da616b41666c6fb71751e0c9940f2b493f38cb23e8",
+      "size": 25860
+    },
+    {
+      "original": "Units/Modern/RPL20Gunner/SourceArt/Approved-Idle.json",
+      "archived": "Units/Modern/RPL20Gunner/_TO BE DELETED/SourceArt/Approved-Idle.json",
+      "sha256": "121ad1d6f91301f9b4b8bfa8fe6375488a6b291f9daa21c85862e974bbe88265",
+      "size": 159
+    },
+    {
+      "original": "Units/Modern/RPL20Gunner/SourceArt/Before-Animation-animations.json",
+      "archived": "Units/Modern/RPL20Gunner/_TO BE DELETED/SourceArt/Before-Animation-animations.json",
+      "sha256": "d6d60a3f114a70f807ec68829d78fb8b6916fa9c6347bc500c19a5388fde03c5",
+      "size": 1262
+    },
+    {
+      "original": "Units/Modern/RPL20Gunner/SourceArt/Before-Animation-Validation.json",
+      "archived": "Units/Modern/RPL20Gunner/_TO BE DELETED/SourceArt/Before-Animation-Validation.json",
+      "sha256": "529ee7b11b58e57f18768b799787b4982e8459f0af16149358bb051d3d701c38",
+      "size": 437
+    },
+    {
+      "original": "Units/Modern/RPL20Gunner/SourceArt/check_review.py",
+      "archived": "Units/Modern/RPL20Gunner/_TO BE DELETED/SourceArt/check_review.py",
+      "sha256": "0d3e10d40ae1b49b482ef281d224e10c3bc23591e4896a41653a9c8cef70505c",
+      "size": 972
+    },
+    {
+      "original": "Units/Modern/RPL20Gunner/SourceArt/compose_animations.py",
+      "archived": "Units/Modern/RPL20Gunner/_TO BE DELETED/SourceArt/compose_animations.py",
+      "sha256": "22fe599d4170ddd096872379d6e1ffe5cda60a2fad562b82012df8f72a62861f",
+      "size": 6742
+    },
+    {
+      "original": "Units/Modern/RPL20Gunner/SourceArt/Composition.json",
+      "archived": "Units/Modern/RPL20Gunner/_TO BE DELETED/SourceArt/Composition.json",
+      "sha256": "da71d3db6037e73340b0b78bfd0f4be7bbb6b31ce02d4083ce12a4f268076130",
+      "size": 34359
+    },
+    {
+      "original": "Units/Modern/RPL20Gunner/SourceArt/Native-attack-v1.png",
+      "archived": "Units/Modern/RPL20Gunner/_TO BE DELETED/SourceArt/Native-attack-v1.png",
+      "sha256": "60f88b0ffcb48672917046f27f54e6e28cf423b505a7d0278bc3954b276f3c83",
+      "size": 2156928
+    },
+    {
+      "original": "Units/Modern/RPL20Gunner/SourceArt/Native-attack-v2.png",
+      "archived": "Units/Modern/RPL20Gunner/_TO BE DELETED/SourceArt/Native-attack-v2.png",
+      "sha256": "681590044be589c1a0c2bbc924693486f2f49560c960fc4c182dbc6c7242b73a",
+      "size": 1742727
+    },
+    {
+      "original": "Units/Modern/RPL20Gunner/SourceArt/Native-charge-attack-v1.png",
+      "archived": "Units/Modern/RPL20Gunner/_TO BE DELETED/SourceArt/Native-charge-attack-v1.png",
+      "sha256": "b1e7091e37b941a850ef4a8bad7591c05cc869a29e70019e1a2a4508c8bc1986",
+      "size": 2302664
+    },
+    {
+      "original": "Units/Modern/RPL20Gunner/SourceArt/Native-charge-attack-v2.png",
+      "archived": "Units/Modern/RPL20Gunner/_TO BE DELETED/SourceArt/Native-charge-attack-v2.png",
+      "sha256": "ff29bebdbc1e4b688dc2db9a8a093fb14946a6ed79bd72e810c832e3e1e548f6",
+      "size": 1825953
+    },
+    {
+      "original": "Units/Modern/RPL20Gunner/SourceArt/Native-charge-v1.png",
+      "archived": "Units/Modern/RPL20Gunner/_TO BE DELETED/SourceArt/Native-charge-v1.png",
+      "sha256": "ed1d04eae38959d90a2c8291866f4be80089cc9fea6978c9b7755cc22ced0556",
+      "size": 2244879
+    },
+    {
+      "original": "Units/Modern/RPL20Gunner/SourceArt/Native-charged-v1.png",
+      "archived": "Units/Modern/RPL20Gunner/_TO BE DELETED/SourceArt/Native-charged-v1.png",
+      "sha256": "e469b91fca09dc88c05e8454c298ba32a40bee94cef1084f886a3074a10ada51",
+      "size": 2354750
+    },
+    {
+      "original": "Units/Modern/RPL20Gunner/SourceArt/Native-charged-v2.png",
+      "archived": "Units/Modern/RPL20Gunner/_TO BE DELETED/SourceArt/Native-charged-v2.png",
+      "sha256": "096c119c72e41149b172861cc4a0e6f7112141098534ce9e7fdc227fb68485e1",
+      "size": 1883709
+    },
+    {
+      "original": "Units/Modern/RPL20Gunner/SourceArt/Native-death-back-v1.png",
+      "archived": "Units/Modern/RPL20Gunner/_TO BE DELETED/SourceArt/Native-death-back-v1.png",
+      "sha256": "fe2e1e4314c3869d993d161b6d57d0be3b315f915112b16349d7211d8eeca001",
+      "size": 1977356
+    },
+    {
+      "original": "Units/Modern/RPL20Gunner/SourceArt/Native-death-back-v2.png",
+      "archived": "Units/Modern/RPL20Gunner/_TO BE DELETED/SourceArt/Native-death-back-v2.png",
+      "sha256": "026a00494639a0c1a723ad8493e6272937d8d01d21665c857c4d7d8c791dab79",
+      "size": 1647309
+    },
+    {
+      "original": "Units/Modern/RPL20Gunner/SourceArt/Native-death-back-v3.png",
+      "archived": "Units/Modern/RPL20Gunner/_TO BE DELETED/SourceArt/Native-death-back-v3.png",
+      "sha256": "8d7e06aebed28549efe350b20aaaaa3e5257163ae8d478e230eb6088349d05fd",
+      "size": 1756013
+    },
+    {
+      "original": "Units/Modern/RPL20Gunner/SourceArt/Native-death-v1.png",
+      "archived": "Units/Modern/RPL20Gunner/_TO BE DELETED/SourceArt/Native-death-v1.png",
+      "sha256": "cba148a64ea3eba1bcc163f90d06a5eb810b40d01654fed6ae8b141e72a8c4f3",
+      "size": 2170484
+    },
+    {
+      "original": "Units/Modern/RPL20Gunner/SourceArt/Native-death-v2.png",
+      "archived": "Units/Modern/RPL20Gunner/_TO BE DELETED/SourceArt/Native-death-v2.png",
+      "sha256": "6d82d3a54ca61b1f3bb2eddfc3048e6357b7156fed6b973536a4e7aa19bd8ba2",
+      "size": 1563940
+    },
+    {
+      "original": "Units/Modern/RPL20Gunner/SourceArt/Native-hit-v1.png",
+      "archived": "Units/Modern/RPL20Gunner/_TO BE DELETED/SourceArt/Native-hit-v1.png",
+      "sha256": "ab7a4b6f4f3071face2c253e4f3a31ba9395ece74e97e9e33c8dd472343a0116",
+      "size": 2222079
+    },
+    {
+      "original": "Units/Modern/RPL20Gunner/SourceArt/Native-hit-v2.png",
+      "archived": "Units/Modern/RPL20Gunner/_TO BE DELETED/SourceArt/Native-hit-v2.png",
+      "sha256": "e0fc12f3161e1a6c96d7269bf3a7a73185d9b067221d0e4994174a33fac6eb77",
+      "size": 1773713
+    },
+    {
+      "original": "Units/Modern/RPL20Gunner/SourceArt/Native-Idle-v1.png",
+      "archived": "Units/Modern/RPL20Gunner/_TO BE DELETED/SourceArt/Native-Idle-v1.png",
+      "sha256": "ee921cd8ea63dc73de259f332b150b2625effcef26d51d0cc80a7481dc11c41c",
+      "size": 2332574
+    },
+    {
+      "original": "Units/Modern/RPL20Gunner/SourceArt/Native-idle-v2.png",
+      "archived": "Units/Modern/RPL20Gunner/_TO BE DELETED/SourceArt/Native-idle-v2.png",
+      "sha256": "f58a5c08b396688162c29b2d836519d196ee06e7a561857cffef54b6fd0d6931",
+      "size": 1821207
+    },
+    {
+      "original": "Units/Modern/RPL20Gunner/SourceArt/Native-reload-v1.png",
+      "archived": "Units/Modern/RPL20Gunner/_TO BE DELETED/SourceArt/Native-reload-v1.png",
+      "sha256": "a0b048be1592b2fee958bb5657efda2409389fcc8ed9fd2c2edfa0cf5e1f245d",
+      "size": 2522194
+    },
+    {
+      "original": "Units/Modern/RPL20Gunner/SourceArt/Native-reload-v2.png",
+      "archived": "Units/Modern/RPL20Gunner/_TO BE DELETED/SourceArt/Native-reload-v2.png",
+      "sha256": "9981643316eaf83a86732f589f4ce50b077568c1c163ab0eeb6c77873ca0214d",
+      "size": 1907163
+    },
+    {
+      "original": "Units/Modern/RPL20Gunner/SourceArt/Native-running-v1.png",
+      "archived": "Units/Modern/RPL20Gunner/_TO BE DELETED/SourceArt/Native-running-v1.png",
+      "sha256": "a833094f2f1b98a6355a6600db8f3f615d2a3a644680cfe71d4a9587ac1bf8b2",
+      "size": 2242344
+    },
+    {
+      "original": "Units/Modern/RPL20Gunner/SourceArt/Native-running-v2.png",
+      "archived": "Units/Modern/RPL20Gunner/_TO BE DELETED/SourceArt/Native-running-v2.png",
+      "sha256": "c49d71149e05011a6e5ed04c5ddedbca43fae20e6b7af912cb6f8dcffe5cc9bb",
+      "size": 1712487
+    },
+    {
+      "original": "Units/Modern/RPL20Gunner/SourceArt/prepare_idle.py",
+      "archived": "Units/Modern/RPL20Gunner/_TO BE DELETED/SourceArt/prepare_idle.py",
+      "sha256": "789d364846a6e9154bed22ad95d205ca2a3be0f11e208ca36064d826781129d5",
+      "size": 3603
+    },
+    {
+      "original": "Units/Modern/RPL20Gunner/SourceArt/register_animation_sources.py",
+      "archived": "Units/Modern/RPL20Gunner/_TO BE DELETED/SourceArt/register_animation_sources.py",
+      "sha256": "6b4d97d2903e20346ac0ea808432ec526b802e1730bd94a653d1d267cca8b8c8",
+      "size": 351
+    },
+    {
+      "original": "Units/Modern/RPL20Gunner/Validation.json",
+      "archived": "Units/Modern/RPL20Gunner/_TO BE DELETED/Validation.json",
+      "sha256": "f0a3b85cc9ed8b777adf305b435703bb00cdf818ea0721a803b0b083e42724ac",
+      "size": 30270
+    }
+  ]
+}

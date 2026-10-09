@@ -31,18 +31,23 @@ export function unitEffects(
     research.includes("russian-infantry-optics") &&
     unit.age === "Modern";
   const tank =
-    unit.tags.includes("vehicle") && unit.troopClass === "rangedCavalry";
+    unit.tags.includes("vehicle") && (unit.troopClass === "heavyCavalry" ||
+      (unit.age === "EarlyModern" && unit.troopClass === "rangedCavalry"));
   const armour = tank && research.includes("russian-tank-armour");
   const fireControl = tank && research.includes("russian-tank-fire-control");
-  if (!drill && !radio && !optics && !armour && !fireControl) return unit;
+  const bayonet = unit.age === "Napoleonic" && unit.troopClass === "frontline" && research.includes("russian-bayonet-drill");
+  const volley = unit.age === "Napoleonic" && unit.troopClass === "rangedInfantry" && research.includes("russian-volley-fire");
+  const carriages = unit.age === "Napoleonic" && (unit.role === "siege" || unit.role === "artillery") && research.includes("russian-artillery-carriages");
+  if (!drill && !radio && !optics && !armour && !fireControl && !bayonet && !volley && !carriages) return unit;
   const attackPercent =
     100 +
     (drill ? 10 : 0) +
     (radio ? 10 : 0) +
     (optics ? 10 : 0) +
-    (fireControl ? 10 : 0);
+    (fireControl ? 10 : 0) + (bayonet ? 10 : 0) + (volley ? 10 : 0);
   return {
     ...unit,
+    speedPercent: Math.round(unit.speedPercent * (carriages ? 1.15 : 1)),
     healthPercent: Math.round((unit.healthPercent ?? 100) * (armour ? 1.2 : 1)),
     meleeArmour:
       unit.armourKind === "points"
@@ -64,7 +69,7 @@ export function unitEffects(
     },
   };
 }
-const improvedVessels = new WeakMap<VesselDefinition, VesselDefinition>();
+const improvedVessels = new WeakMap<VesselDefinition, Map<string, VesselDefinition>>();
 export function vesselEffects(
   vessel: VesselDefinition,
   research: Research,
@@ -75,14 +80,24 @@ export function vesselEffects(
     research.includes("russian-naval-missiles");
   const sailing =
     vessel.age !== "Modern" && has(research, vessel.age, "naval", 4);
-  if (!missiles && !sailing) return vessel;
-  const cached = improvedVessels.get(vessel);
+  const copper = vessel.age === "Napoleonic" && vessel.kind === "warship" && research.includes("russian-copper-sheathing");
+  const hull = vessel.age === "Modern" && vessel.kind === "transport" && research.includes("russian-transport-hulls");
+  const freight = vessel.kind === "trade" && (
+    (vessel.age === "Napoleonic" && research.includes("russian-merchant-holds")) ||
+    (vessel.age === "EarlyModern" && research.includes("russian-container-shipping")) ||
+    (vessel.age === "Modern" && research.includes("russian-maritime-cargo-systems")));
+  if (!missiles && !sailing && !copper && !hull && !freight) return vessel;
+  const key = [missiles, sailing, copper, hull, freight].map(Number).join("");
+  let cache = improvedVessels.get(vessel);
+  if (!cache) { cache = new Map(); improvedVessels.set(vessel, cache); }
+  const cached = cache.get(key);
   if (cached) return cached;
   const improved = {
     ...vessel,
-    speed: Math.round(vessel.speed * (sailing ? 1.1 : 1)),
+    speed: Math.round(vessel.speed * (sailing ? 1.1 : 1) * (copper ? 1.1 : 1)),
+    health: Math.round(vessel.health * (copper ? 1.15 : 1) * (hull ? 1.2 : 1)),
     capacity: vessel.capacity
-      ? Math.ceil(vessel.capacity * (sailing ? 1.25 : 1))
+      ? Math.ceil(vessel.capacity * (sailing ? 1.25 : 1) * (freight ? 1.2 : 1))
       : 0,
     attack: vessel.attack
       ? {
@@ -96,7 +111,7 @@ export function vesselEffects(
         }
       : undefined,
   };
-  improvedVessels.set(vessel, improved);
+  cache.set(key, improved);
   return improved;
 }
 export function logisticsTier(research: Research): number {
@@ -121,7 +136,10 @@ export function throughputPercent(research: Research): number {
   let percent = 100;
   for (const [i, age] of AGES.entries())
     if (has(research, age, "economic", 4)) percent = 110 + i * 10;
-  return percent;
+  const tools = research.includes("russian-machine-tools") ? 10 : 0;
+  const depots = research.includes("russian-supply-depots") ? 5 : 0;
+  const assembly = research.includes("russian-assembly-line-upgrades") ? 15 : 0;
+  return percent + tools + depots + assembly;
 }
 export function scaledInputs(inputs: Inventory, tier = 1): Inventory {
   return Object.fromEntries(

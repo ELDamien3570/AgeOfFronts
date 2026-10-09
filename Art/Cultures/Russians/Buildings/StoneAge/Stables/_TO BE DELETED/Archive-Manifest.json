@@ -1,0 +1,24 @@
+{
+  "folder": "Buildings/StoneAge/Stables/_TO BE DELETED",
+  "created": "2026-10-09T03:15:53.711Z",
+  "files": [
+    {
+      "original": "Buildings/StoneAge/Stables/SourceArt/.gitkeep",
+      "archived": "Buildings/StoneAge/Stables/_TO BE DELETED/SourceArt/.gitkeep",
+      "sha256": "01ba4719c80b6fe911b091a7c05124b64eeece964e09c058ef8f9805daca546b",
+      "size": 1
+    },
+    {
+      "original": "Buildings/StoneAge/Stables/SourceArt/Icon-v1.png",
+      "archived": "Buildings/StoneAge/Stables/_TO BE DELETED/SourceArt/Icon-v1.png",
+      "sha256": "b91cd6d141494e41e3c50ebfff697b9de902c349018a6a14ea319c8f3fb94f1d",
+      "size": 2212763
+    },
+    {
+      "original": "Buildings/StoneAge/Stables/SourceArt/Icon-v2.png",
+      "archived": "Buildings/StoneAge/Stables/_TO BE DELETED/SourceArt/Icon-v2.png",
+      "sha256": "7e675c4565fc826ddcac1652b1e90ae3d683d4f973e90f985ce7e5bd13859009",
+      "size": 2846390
+    }
+  ]
+}

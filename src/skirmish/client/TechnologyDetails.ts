@@ -19,6 +19,7 @@ import {
 import { PRODUCTION_RECIPES } from "../content/Production";
 import { RESOURCE_TECHNOLOGIES } from "../content/Resources";
 import { UNITS, VESSELS } from "../content/Units";
+import { RUSSIAN_UPGRADES } from "../content/RussianRecruitment";
 import { attackInterval } from "../domain/Combat";
 import {
   AGE_NAMES,
@@ -174,14 +175,24 @@ export function technologyDetails(technology: Technology): string[] {
       `Melee/ranged armour bonus: ${units.map((unit) => `${unit.name} +${unitEffects(unit, [id]).meleeArmour - unit.meleeArmour} points`).join("; ")}`,
     );
   }
-  if (["russian-infantry-radios", "russian-infantry-optics", "russian-tank-armour", "russian-tank-fire-control"].includes(id)) {
+  if (id in RUSSIAN_UPGRADES) {
     for (const unit of UNITS) {
       const upgraded = unitEffects(unit, [id]);
       if (upgraded.attack.damage !== unit.attack.damage)
         lines.push(`${unit.name}: ${unit.attack.damage} -> ${upgraded.attack.damage} base attack`);
       if (upgraded.healthPercent !== unit.healthPercent)
         lines.push(`${unit.name}: +20% durability`);
+      if (upgraded.speedPercent !== unit.speedPercent)
+        lines.push(`${unit.name}: movement speed +15%`);
     }
+    for (const vessel of VESSELS) {
+      const upgraded = vesselEffects(vessel, [id]);
+      if (upgraded.capacity !== vessel.capacity) lines.push(`${vessel.name}: cargo ${vessel.capacity} → ${upgraded.capacity}`);
+      if (upgraded.health !== vessel.health) lines.push(`${vessel.name}: hull ${vessel.health} → ${upgraded.health}`);
+      if (upgraded.speed !== vessel.speed) lines.push(`${vessel.name}: sailing speed +10%`);
+    }
+    if (["russian-machine-tools", "russian-supply-depots", "russian-assembly-line-upgrades"].includes(id))
+      lines.push(`Recipe throughput bonus: +${throughputPercent([id]) - 100} percentage points`);
   }
   if (id === "russian-naval-missiles")
     lines.push("Modern warships: +15% base attack and +1 tile range");

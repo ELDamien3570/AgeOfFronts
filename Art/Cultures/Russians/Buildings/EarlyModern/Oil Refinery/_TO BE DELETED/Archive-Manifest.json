@@ -1,0 +1,30 @@
+{
+  "folder": "Buildings/EarlyModern/Oil Refinery/_TO BE DELETED",
+  "created": "2026-10-09T03:15:53.711Z",
+  "files": [
+    {
+      "original": "Buildings/EarlyModern/Oil Refinery/Generation.json",
+      "archived": "Buildings/EarlyModern/Oil Refinery/_TO BE DELETED/Generation.json",
+      "sha256": "ba1e61703576c45942047cafd7a9bf0fdeae7a4e0f38b947641fd551ccde5b8f",
+      "size": 6681
+    },
+    {
+      "original": "Buildings/EarlyModern/Oil Refinery/SourceArt/Icon-v1.png",
+      "archived": "Buildings/EarlyModern/Oil Refinery/_TO BE DELETED/SourceArt/Icon-v1.png",
+      "sha256": "8b51c3441a2973da4ea304435dccf2a7c5b54c4834ee3df7e3c9b936fd64b129",
+      "size": 2226579
+    },
+    {
+      "original": "Buildings/EarlyModern/Oil Refinery/SourceArt/Icon-v2.png",
+      "archived": "Buildings/EarlyModern/Oil Refinery/_TO BE DELETED/SourceArt/Icon-v2.png",
+      "sha256": "a329b7e304afb85520d6d7d64ed0f3b1b84bd950c4b2f097af94aa14dea97896",
+      "size": 2394635
+    },
+    {
+      "original": "Buildings/EarlyModern/Oil Refinery/SourceArt/Icon-v3.png",
+      "archived": "Buildings/EarlyModern/Oil Refinery/_TO BE DELETED/SourceArt/Icon-v3.png",
+      "sha256": "2bf91cf4ec9128fc49379e3ebe7246ac0e2d49b3d6843be773bd8d5b6abe6358",
+      "size": 2521933
+    }
+  ]
+}

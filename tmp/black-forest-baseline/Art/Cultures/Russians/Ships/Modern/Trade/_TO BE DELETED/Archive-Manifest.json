@@ -1,0 +1,60 @@
+{
+  "folder": "Ships/Modern/Trade/_TO BE DELETED",
+  "created": "2026-10-09T03:15:53.711Z",
+  "files": [
+    {
+      "original": "Ships/Modern/Trade/Generation-Manifest.json",
+      "archived": "Ships/Modern/Trade/_TO BE DELETED/Generation-Manifest.json",
+      "sha256": "ddc1c193662fb2d7548dd757db07127e0a649b312647fb7c693dd7742a71ebb1",
+      "size": 2927
+    },
+    {
+      "original": "Ships/Modern/Trade/Idle-Preview.webp",
+      "archived": "Ships/Modern/Trade/_TO BE DELETED/Idle-Preview.webp",
+      "sha256": "521f4511462cc938d278064d3ff013a38492bbb3e95380c97eba2cfdc4806b9f",
+      "size": 564760
+    },
+    {
+      "original": "Ships/Modern/Trade/layers/Hull-Protection.png",
+      "archived": "Ships/Modern/Trade/_TO BE DELETED/layers/Hull-Protection.png",
+      "sha256": "65795a5b91030a2a433dae510d1edf494082a9cfa1153cd94f3797759f68f257",
+      "size": 334
+    },
+    {
+      "original": "Ships/Modern/Trade/layers/Hull.png",
+      "archived": "Ships/Modern/Trade/_TO BE DELETED/layers/Hull.png",
+      "sha256": "66b23365ac53102a6bf8c5b6ef2397b9a0839ad9e8c0a9324a913f3799a91c08",
+      "size": 70491
+    },
+    {
+      "original": "Ships/Modern/Trade/Review/Frame-128px.png",
+      "archived": "Ships/Modern/Trade/_TO BE DELETED/Review/Frame-128px.png",
+      "sha256": "1c3e5373e75bf57ae8c38aa010b4b14850c903774c6f217bf42798ee088537cd",
+      "size": 8962
+    },
+    {
+      "original": "Ships/Modern/Trade/Review/Frame-48px.png",
+      "archived": "Ships/Modern/Trade/_TO BE DELETED/Review/Frame-48px.png",
+      "sha256": "15c198baf9359ebfbdfd309e0a5fa66ed8e841cf58e07a9c0ba46aced9f71c27",
+      "size": 1921
+    },
+    {
+      "original": "Ships/Modern/Trade/Review/Frame-64px.png",
+      "archived": "Ships/Modern/Trade/_TO BE DELETED/Review/Frame-64px.png",
+      "sha256": "6f175eb5d09b515601188464610211d5fb7de69699a3155e609a33e8a17ab621",
+      "size": 3006
+    },
+    {
+      "original": "Ships/Modern/Trade/Sailing-Preview.webp",
+      "archived": "Ships/Modern/Trade/_TO BE DELETED/Sailing-Preview.webp",
+      "sha256": "75c8bf4213039825f8d9c045e366ad080714086f3715d4ffbcc0288d785b3892",
+      "size": 575714
+    },
+    {
+      "original": "Ships/Modern/Trade/SourceArt/Trade_Russian_Modern_Generated_v1.png",
+      "archived": "Ships/Modern/Trade/_TO BE DELETED/SourceArt/Trade_Russian_Modern_Generated_v1.png",
+      "sha256": "0e4e08bf5a27e2fa23946661b58f01f2f1ce1cd79eb249dce39637946a8912d4",
+      "size": 751044
+    }
+  ]
+}

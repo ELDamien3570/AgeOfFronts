@@ -1,0 +1,306 @@
+{
+  "folder": "Units/Modern/KornetOperator/_TO BE DELETED",
+  "created": "2026-10-09T03:15:53.711Z",
+  "files": [
+    {
+      "original": "Units/Modern/KornetOperator/Attack-v3.png",
+      "archived": "Units/Modern/KornetOperator/_TO BE DELETED/Attack-v3.png",
+      "sha256": "95878938e68b36b35b2ef8d910d660b4f1af19f4463186a18c3487b225a0b955",
+      "size": 1738743
+    },
+    {
+      "original": "Units/Modern/KornetOperator/Generation.json",
+      "archived": "Units/Modern/KornetOperator/_TO BE DELETED/Generation.json",
+      "sha256": "8dc016e08da26cf89b1941d10a8e00192ea1b481644cf3d1ddebf13f1405fdce",
+      "size": 28004
+    },
+    {
+      "original": "Units/Modern/KornetOperator/Idle-Overhead-v2.png",
+      "archived": "Units/Modern/KornetOperator/_TO BE DELETED/Idle-Overhead-v2.png",
+      "sha256": "ea4ec521f212f4618c5f7c0e65758181ed0840c8d319a8c8e3dbbb5e0ecdb717",
+      "size": 755049
+    },
+    {
+      "original": "Units/Modern/KornetOperator/Idle-v1.png",
+      "archived": "Units/Modern/KornetOperator/_TO BE DELETED/Idle-v1.png",
+      "sha256": "bcbcb9907103b616c558e39a2e81f5526b45f39a9089dde3ba6182cd1d939968",
+      "size": 884156
+    },
+    {
+      "original": "Units/Modern/KornetOperator/README.md",
+      "archived": "Units/Modern/KornetOperator/_TO BE DELETED/README.md",
+      "sha256": "6297ee316cffe8a22fadc9522d4024c39c76a9e4292ea835a0c830dd86cbcff7",
+      "size": 737
+    },
+    {
+      "original": "Units/Modern/KornetOperator/Review-All-Animations-v1.jpg",
+      "archived": "Units/Modern/KornetOperator/_TO BE DELETED/Review-All-Animations-v1.jpg",
+      "sha256": "2d021349d1aa8e7b9f8e5259c50e607b74b9b5e34221e7a78f5f838bf8fadb2a",
+      "size": 323094
+    },
+    {
+      "original": "Units/Modern/KornetOperator/Review-attack-v1.webp",
+      "archived": "Units/Modern/KornetOperator/_TO BE DELETED/Review-attack-v1.webp",
+      "sha256": "20438b28324d7591218fc386bd3dac1df5d1b0c445662d90bce5f6261dbd3e8d",
+      "size": 118804
+    },
+    {
+      "original": "Units/Modern/KornetOperator/Review-charged-v1.webp",
+      "archived": "Units/Modern/KornetOperator/_TO BE DELETED/Review-charged-v1.webp",
+      "sha256": "e21922e3dfb6507c0e94b0e76a04bcacddea10c851c0f0238c5067faf427a9f1",
+      "size": 117306
+    },
+    {
+      "original": "Units/Modern/KornetOperator/Review-death-back-v1.webp",
+      "archived": "Units/Modern/KornetOperator/_TO BE DELETED/Review-death-back-v1.webp",
+      "sha256": "0b4787e26afd939f07854780b143fc8085122cb3f3f3bab4132bccb52e9090f4",
+      "size": 120552
+    },
+    {
+      "original": "Units/Modern/KornetOperator/Review-death-v1.webp",
+      "archived": "Units/Modern/KornetOperator/_TO BE DELETED/Review-death-v1.webp",
+      "sha256": "20102768c459fd1921fbc0ec283cf477dd1540dab2cb54ce5f583db0a95b3173",
+      "size": 115496
+    },
+    {
+      "original": "Units/Modern/KornetOperator/Review-deploy-v1.webp",
+      "archived": "Units/Modern/KornetOperator/_TO BE DELETED/Review-deploy-v1.webp",
+      "sha256": "32407affa153b944bdd66d555d84d7424d18ab047fcf44213dc6023990326021",
+      "size": 98702
+    },
+    {
+      "original": "Units/Modern/KornetOperator/Review-hit-v1.webp",
+      "archived": "Units/Modern/KornetOperator/_TO BE DELETED/Review-hit-v1.webp",
+      "sha256": "dc6d6854cdbe65f85773e8720d7502e0910467e0e08d0b7d4786c0d5a1269ef0",
+      "size": 110314
+    },
+    {
+      "original": "Units/Modern/KornetOperator/Review-Idle-v1.jpg",
+      "archived": "Units/Modern/KornetOperator/_TO BE DELETED/Review-Idle-v1.jpg",
+      "sha256": "625690eac55847ef866923d1eda66fb2b6f2cb0b81ecda67516707667e2f4605",
+      "size": 31903
+    },
+    {
+      "original": "Units/Modern/KornetOperator/Review-idle-v1.webp",
+      "archived": "Units/Modern/KornetOperator/_TO BE DELETED/Review-idle-v1.webp",
+      "sha256": "faea5111c96bca77306057b5199235bd1649a56e2e9c2728b9fb076c89a1052b",
+      "size": 121410
+    },
+    {
+      "original": "Units/Modern/KornetOperator/Review-reload-v1.webp",
+      "archived": "Units/Modern/KornetOperator/_TO BE DELETED/Review-reload-v1.webp",
+      "sha256": "4809999301ea9745e7bbc34f6b9eef5ddcebff9612a8d57528ec93d41bbbb589",
+      "size": 113370
+    },
+    {
+      "original": "Units/Modern/KornetOperator/Review-running-v1.webp",
+      "archived": "Units/Modern/KornetOperator/_TO BE DELETED/Review-running-v1.webp",
+      "sha256": "80e2967cc124cb8549d0b71a3a494c42f9b996d5d079dc5cc8bcfe05255ba82f",
+      "size": 126984
+    },
+    {
+      "original": "Units/Modern/KornetOperator/Review-undeploy-v1.webp",
+      "archived": "Units/Modern/KornetOperator/_TO BE DELETED/Review-undeploy-v1.webp",
+      "sha256": "2180f996d78f2e6c62ed67c76114bb452c4d03c7aa33e2af8e5350f7689db87f",
+      "size": 102456
+    },
+    {
+      "original": "Units/Modern/KornetOperator/SourceArt/Animation-Generation-Selected.json",
+      "archived": "Units/Modern/KornetOperator/_TO BE DELETED/SourceArt/Animation-Generation-Selected.json",
+      "sha256": "bace695d624cde70a38102bcfb470204cafb71f4743da4f669bdb2d27a848a6c",
+      "size": 23189
+    },
+    {
+      "original": "Units/Modern/KornetOperator/SourceArt/Animation-Generation.json",
+      "archived": "Units/Modern/KornetOperator/_TO BE DELETED/SourceArt/Animation-Generation.json",
+      "sha256": "f78a63ca50b6a0bd1688071dd6a2623ff530c15a80b788dc6a27bbf4674e57e5",
+      "size": 24187
+    },
+    {
+      "original": "Units/Modern/KornetOperator/SourceArt/Approved-Idle.json",
+      "archived": "Units/Modern/KornetOperator/_TO BE DELETED/SourceArt/Approved-Idle.json",
+      "sha256": "1e6828f48382babaea853af6d190c93458b1466431f0aec7500ed1a7904393ae",
+      "size": 182
+    },
+    {
+      "original": "Units/Modern/KornetOperator/SourceArt/Before-Animation-Actor_Review.html",
+      "archived": "Units/Modern/KornetOperator/_TO BE DELETED/SourceArt/Before-Animation-Actor_Review.html",
+      "sha256": "b98269d4320abe2d5c90d388dda1df0b1e46bce22f2e3972fade6ac70fffd91e",
+      "size": 7259
+    },
+    {
+      "original": "Units/Modern/KornetOperator/SourceArt/Before-Animation-animations.json",
+      "archived": "Units/Modern/KornetOperator/_TO BE DELETED/SourceArt/Before-Animation-animations.json",
+      "sha256": "48ce22d1ad2674186972397c4848028b21b65fb5cc94eb3b58b09b1075d6ed9f",
+      "size": 1237
+    },
+    {
+      "original": "Units/Modern/KornetOperator/SourceArt/Before-Animation-Generation.json",
+      "archived": "Units/Modern/KornetOperator/_TO BE DELETED/SourceArt/Before-Animation-Generation.json",
+      "sha256": "c97c1124168ae6a44d81bb4f9cce587ab5736178f676e4ef2dd417213464b1ff",
+      "size": 3737
+    },
+    {
+      "original": "Units/Modern/KornetOperator/SourceArt/Before-Animation-README.md",
+      "archived": "Units/Modern/KornetOperator/_TO BE DELETED/SourceArt/Before-Animation-README.md",
+      "sha256": "c0a1165f83d20ff2db7157fe2b785708ef9a16f0b5248dda010a9e015f8f48c3",
+      "size": 648
+    },
+    {
+      "original": "Units/Modern/KornetOperator/SourceArt/Before-Animation-Validation.json",
+      "archived": "Units/Modern/KornetOperator/_TO BE DELETED/SourceArt/Before-Animation-Validation.json",
+      "sha256": "8b7610dc09ec2054de1b79ae07de067314bbdde61f1248a03ea8fa7e9c21a7c7",
+      "size": 299
+    },
+    {
+      "original": "Units/Modern/KornetOperator/SourceArt/Before-Overhead-v2-Actor_Review.html",
+      "archived": "Units/Modern/KornetOperator/_TO BE DELETED/SourceArt/Before-Overhead-v2-Actor_Review.html",
+      "sha256": "394949df1da2d2f0829dcac5ab350537e8927d9dee9eb17cd6bbd2d02a1824e9",
+      "size": 7250
+    },
+    {
+      "original": "Units/Modern/KornetOperator/SourceArt/Before-Overhead-v2-animations.json",
+      "archived": "Units/Modern/KornetOperator/_TO BE DELETED/SourceArt/Before-Overhead-v2-animations.json",
+      "sha256": "b5b63683ee6d27d35e2afc1f8deef19e9c8165b0b0923a5619f945effd8c4055",
+      "size": 1235
+    },
+    {
+      "original": "Units/Modern/KornetOperator/SourceArt/Before-Overhead-v2-Generation.json",
+      "archived": "Units/Modern/KornetOperator/_TO BE DELETED/SourceArt/Before-Overhead-v2-Generation.json",
+      "sha256": "050f0a7b66b2bee6f70b4b237beb9e5422ce69e4a422cabd24d3374b395a78a8",
+      "size": 2178
+    },
+    {
+      "original": "Units/Modern/KornetOperator/SourceArt/Before-Overhead-v2-Validation.json",
+      "archived": "Units/Modern/KornetOperator/_TO BE DELETED/SourceArt/Before-Overhead-v2-Validation.json",
+      "sha256": "b534486fd0fb441851f9dee2cbea0e2e85c652f72880663d88b69328920d2b80",
+      "size": 394
+    },
+    {
+      "original": "Units/Modern/KornetOperator/SourceArt/compose_animations.py",
+      "archived": "Units/Modern/KornetOperator/_TO BE DELETED/SourceArt/compose_animations.py",
+      "sha256": "7e6e44d24d51bf9847401825342e33c1378ddf260c6eb5258cb630ffa9e9ee1c",
+      "size": 7993
+    },
+    {
+      "original": "Units/Modern/KornetOperator/SourceArt/Composition.json",
+      "archived": "Units/Modern/KornetOperator/_TO BE DELETED/SourceArt/Composition.json",
+      "sha256": "83fdbcb223cd7f4cb845e97bbf71433b1e4735fb58b7ad91d8f862f616814ff2",
+      "size": 30239
+    },
+    {
+      "original": "Units/Modern/KornetOperator/SourceArt/Firing-Transparency-v4.json",
+      "archived": "Units/Modern/KornetOperator/_TO BE DELETED/SourceArt/Firing-Transparency-v4.json",
+      "sha256": "117b016af467e7ae69da8c0ec7baf2e9c007b52f685ab83cb74b7c0c14e41da2",
+      "size": 845
+    },
+    {
+      "original": "Units/Modern/KornetOperator/SourceArt/Generation-Input.json",
+      "archived": "Units/Modern/KornetOperator/_TO BE DELETED/SourceArt/Generation-Input.json",
+      "sha256": "4b1e2fc17390a3c39138af7aebcec5e80bb445363d898e47351ed30dd4f29ffb",
+      "size": 2169
+    },
+    {
+      "original": "Units/Modern/KornetOperator/SourceArt/Native-Attack-v1.png",
+      "archived": "Units/Modern/KornetOperator/_TO BE DELETED/SourceArt/Native-Attack-v1.png",
+      "sha256": "8e6ecf7c22ef94b839099377edd9db519a6ed6eb2b28fcf9c0a2fdc94aed52bd",
+      "size": 2043938
+    },
+    {
+      "original": "Units/Modern/KornetOperator/SourceArt/Native-Attack-v2.png",
+      "archived": "Units/Modern/KornetOperator/_TO BE DELETED/SourceArt/Native-Attack-v2.png",
+      "sha256": "ad1fe9fbd89794c90abe9e280aa04eeedb8fec6ed5a6e49de1d822663cdbcc26",
+      "size": 2116423
+    },
+    {
+      "original": "Units/Modern/KornetOperator/SourceArt/Native-Attack-v3.png",
+      "archived": "Units/Modern/KornetOperator/_TO BE DELETED/SourceArt/Native-Attack-v3.png",
+      "sha256": "fa19301ee83573d1fc09625686fdeb0ed48981782789ea94b71b9f03e27a0fdc",
+      "size": 2347862
+    },
+    {
+      "original": "Units/Modern/KornetOperator/SourceArt/Native-Attack-v4.png",
+      "archived": "Units/Modern/KornetOperator/_TO BE DELETED/SourceArt/Native-Attack-v4.png",
+      "sha256": "b2ba8cacb704b7622bb724969afa654d4fd7ab4dd8746247697c1476615ccacd",
+      "size": 2091626
+    },
+    {
+      "original": "Units/Modern/KornetOperator/SourceArt/Native-Charged-v1.png",
+      "archived": "Units/Modern/KornetOperator/_TO BE DELETED/SourceArt/Native-Charged-v1.png",
+      "sha256": "547e8d53b94eabee087ac915fa7e5012eb040b8d413734592d168d49de731e44",
+      "size": 2163118
+    },
+    {
+      "original": "Units/Modern/KornetOperator/SourceArt/Native-Death-Back-v1.png",
+      "archived": "Units/Modern/KornetOperator/_TO BE DELETED/SourceArt/Native-Death-Back-v1.png",
+      "sha256": "bb4ee6e1fef46ffd4d284bf16e47ab5316ca77197dc8ee8955d4cf2515987411",
+      "size": 2245871
+    },
+    {
+      "original": "Units/Modern/KornetOperator/SourceArt/Native-Death-Side-v1.png",
+      "archived": "Units/Modern/KornetOperator/_TO BE DELETED/SourceArt/Native-Death-Side-v1.png",
+      "sha256": "687d20ef4f9c0639304af8ddd9ff08743d80848a0aeae9c291772c04ec3fe577",
+      "size": 2165560
+    },
+    {
+      "original": "Units/Modern/KornetOperator/SourceArt/Native-Deploy-v1.png",
+      "archived": "Units/Modern/KornetOperator/_TO BE DELETED/SourceArt/Native-Deploy-v1.png",
+      "sha256": "99ff51bfdf90906aef7f6eaaf8badfb8c26ebc29c18422eaf727568474024335",
+      "size": 2065503
+    },
+    {
+      "original": "Units/Modern/KornetOperator/SourceArt/Native-Hit-v1.png",
+      "archived": "Units/Modern/KornetOperator/_TO BE DELETED/SourceArt/Native-Hit-v1.png",
+      "sha256": "6afb2005fa775349333f75f87acff506f6520039a90a18f18286b2f9eec7ff9a",
+      "size": 2110717
+    },
+    {
+      "original": "Units/Modern/KornetOperator/SourceArt/Native-Idle-Animated-v1.png",
+      "archived": "Units/Modern/KornetOperator/_TO BE DELETED/SourceArt/Native-Idle-Animated-v1.png",
+      "sha256": "858c6a24792b854418e0e5a4b72c21071cd8d5c9133ec5e5864d1bbad1191979",
+      "size": 2197502
+    },
+    {
+      "original": "Units/Modern/KornetOperator/SourceArt/Native-Idle-Overhead-v2.png",
+      "archived": "Units/Modern/KornetOperator/_TO BE DELETED/SourceArt/Native-Idle-Overhead-v2.png",
+      "sha256": "ea4ec521f212f4618c5f7c0e65758181ed0840c8d319a8c8e3dbbb5e0ecdb717",
+      "size": 755049
+    },
+    {
+      "original": "Units/Modern/KornetOperator/SourceArt/Native-Idle-v1.png",
+      "archived": "Units/Modern/KornetOperator/_TO BE DELETED/SourceArt/Native-Idle-v1.png",
+      "sha256": "bcbcb9907103b616c558e39a2e81f5526b45f39a9089dde3ba6182cd1d939968",
+      "size": 884156
+    },
+    {
+      "original": "Units/Modern/KornetOperator/SourceArt/Native-Reload-v1.png",
+      "archived": "Units/Modern/KornetOperator/_TO BE DELETED/SourceArt/Native-Reload-v1.png",
+      "sha256": "986f49bf173efa3f762b6d21e0d35a10805c183d9e1732d575cb174eaaff0bf6",
+      "size": 2113769
+    },
+    {
+      "original": "Units/Modern/KornetOperator/SourceArt/Native-Walk-v1.png",
+      "archived": "Units/Modern/KornetOperator/_TO BE DELETED/SourceArt/Native-Walk-v1.png",
+      "sha256": "7480d6ae4e250fa8ebb8f89623142f5d8c8e6e6d73a8f7ccbf95158dc864a88a",
+      "size": 2305032
+    },
+    {
+      "original": "Units/Modern/KornetOperator/SourceArt/Native-Walk-v2.png",
+      "archived": "Units/Modern/KornetOperator/_TO BE DELETED/SourceArt/Native-Walk-v2.png",
+      "sha256": "e05f9a72f9a703851444d7dc34a021545920422b54fbf9dd2db78245188ab456",
+      "size": 2271497
+    },
+    {
+      "original": "Units/Modern/KornetOperator/SourceArt/Overhead-Generation-v2.json",
+      "archived": "Units/Modern/KornetOperator/_TO BE DELETED/SourceArt/Overhead-Generation-v2.json",
+      "sha256": "2465ff004ef0383e11dc08d058f31cc7eece6b9fd31a381733610eb593ad5df7",
+      "size": 1513
+    },
+    {
+      "original": "Units/Modern/KornetOperator/Validation.json",
+      "archived": "Units/Modern/KornetOperator/_TO BE DELETED/Validation.json",
+      "sha256": "f41e15cdfe720ab75f3f4ad1019bb42545bdd9b2781bfa62caeb826ac717557a",
+      "size": 16908
+    }
+  ]
+}
