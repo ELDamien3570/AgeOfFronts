@@ -1,6 +1,6 @@
 {
   "schemaVersion": 1,
-  "status": "recommended-for-user-review",
+  "status": "user-approved-gallery-selections",
   "gallery": "../../../Soldier Icons/StoneAge_Animation_Preview.html?civ=russians",
   "selectionBasis": "User-directed rule: use the complete TopDownReview set wherever the asset folder has one. Else use its current complete authored set. Exceptions require explicit review; filenames or outdated catalog entries do not override this rule.",
   "visualReview": "TopDownReview selections follow the user-confirmed rule and approved camera-master records. Current-set representative poses reviewed; complete sheet/frame validation recorded separately. Browser interaction remains blocked by sandbox initialization.",
@@ -2613,5 +2613,6 @@
       "from": "Art/Runtime/Russians/Troops/EarlyMedieval-CossackRider",
       "to": "Art/Runtime/Russians/Troops/Napoleonic-CossackLancer"
     }
-  ]
+  ],
+  "deletionReport": "ArtDeletion-Report.json"
 }

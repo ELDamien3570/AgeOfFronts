@@ -68,8 +68,7 @@
       "label": "Russian Scout - single rider",
       "metadata": "StoneAge/Scout/animations.json",
       "review": "StoneAge/Scout/Actor_Review.html",
-      "actorCount": 1,
-      "preservedPreviousReview": "StoneAge/MountedSpearman/Actor_Review.html"
+      "actorCount": 1
     },
     {
       "id": "russian-bronzeage-axeman",
