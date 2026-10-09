@@ -1,3 +1,4 @@
+import { FLIGHT_RULES } from "./FlightOperations";
 import { buildingFootprint } from "../BuildingFootprint";
 import type { BuildingType } from "../Protocol";
 import { AGE_SQUAD_CAPS, AI_WARSHIP_CAP, TRIBE_WARSHIP_CAP, TRIBE_PROMOTION_PERCENT, TRIBE_SQUAD_CAP, TRIBE_SQUADS_PER_AGE, TRIBE_TRADER_CAP, TRIBE_TRADERS_PER_AGE } from "../FactionRules";
@@ -102,7 +103,8 @@ export const CONTENT_HASH = hash({
     attack: PROMOTION_ATTACK,
     maxArmour: MAX_ARMOUR,
   },
-  combatRevision: 4,
+  combatRevision: 5,
+  flights:FLIGHT_RULES,
   nuclearLand:{reserveLossPerCell:NUCLEAR_RESERVE_LOSS_PER_CELL,troopLossPerCell:FALLOUT_TROOP_LOSS_PER_CELL},
   shoreTransportRevision: 1,
   navalAutonomyRevision: 3,

@@ -1,5 +1,5 @@
 import type { ProductionRecipe } from "../domain/Definitions";
-import { technologyAt } from "./Technology";
+import { technologyAt, canonicalTechnologyId, packageTechnology } from "./Technology";
 import { RECIPES } from "./Units";
 
 export const REFINING: ProductionRecipe[] = [
@@ -44,4 +44,6 @@ export const REFINING: ProductionRecipe[] = [
     ticks: (2400 + i * 600) / 2,
   })),
 ];
+REFINING.push({id:"make-atomic",name:"Atomic bomb",technologyId:packageTechnology("EarlyModern","nuclear-weapons"),building:"nuclear-facility",inputs:{steel:200,gunpowder:150,oil:100},outputs:{"payload:atomic":1},ticks:1200});
+for(const recipe of [...REFINING,...RECIPES]) recipe.technologyId=canonicalTechnologyId(recipe.technologyId);
 export const PRODUCTION_RECIPES = [...REFINING, ...RECIPES];

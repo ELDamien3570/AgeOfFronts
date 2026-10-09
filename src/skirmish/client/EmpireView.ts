@@ -40,7 +40,7 @@ export interface EmpireActions {
   build(type: BuildingType, age?: Age): void;
   notify(text: string): void;
   focusedRef(): string | null;
-  target(action: (x: number, y: number, gesture?: {shift:boolean; buildingId?:number}) => void, hint: string): void;
+  target(action: (x: number, y: number, gesture?: {shift:boolean; buildingId?:number}) => void, hint: string, preview?: (x:number,y:number)=>string): void;
 }
 
 export class EmpireView {
@@ -214,7 +214,7 @@ export class EmpireView {
       this.render(true);
     }
   }
-  sortie(shift = false): void { this.dock.sortie(shift); }
+  sortie(shift = false, mission:import("../content/FlightOperations").AirMission="bombing"): void { this.dock.sortie(shift,mission); }
 
   close(): boolean {
     if (!this.panel) return false;

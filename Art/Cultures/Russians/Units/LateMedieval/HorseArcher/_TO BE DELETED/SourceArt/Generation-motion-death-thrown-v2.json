@@ -1,9 +1,0 @@
-{
-  "id": "death-thrown",
-  "file": "Death-Thrown-v2.png",
-  "prompt": "Fix a duplication error in this six-frame mounted archer death sprite sheet. There must be ONLY ONE rider per frame. Frame1 upright rider on horse. Frame2 rider starting to fall off saddle. Frame3 rider fully thrown to right side; horse saddle now EMPTY. Frames4,5,6 the same one fallen armored rider lies to right of the collapsing horse, whose saddle is EMPTY. Remove the erroneous extra seated rider still on horse in frames3,4,5,6: remove that duplicate helmet, torso, arms, red coat and human boots and reveal the actual empty brown leather saddle, horse back, black mane and steel horse barding underneath. Preserve the separate falling/fallen rider to the right, exact steel helmet armor bow and russet cloth. Keep horse, pose directions, camera, layout, smooth painted finish and color unchanged. Six frames on transparent RGBA1536x1024, 3x2 grid512 cells. No glow/shadow.",
-  "generatedSource": "C:\\Users\\Damien\\.codex\\generated_images\\01a11641-9e1b-7c81-be76-c9edd53ef182\\exec-bee5abe2-b7c9-4d03-93bf-49f9b7356b38.png",
-  "references": [
-    "C:\\Users\\Damien\\.codex\\generated_images\\01a11641-9e1b-7c81-be76-c9edd53ef182\\exec-da4d99f6-28b3-47b0-a747-812a6e9b120c.png"
-  ]
-}

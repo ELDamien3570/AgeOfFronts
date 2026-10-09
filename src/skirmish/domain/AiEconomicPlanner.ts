@@ -293,17 +293,21 @@ export function economicCandidates(
   }
   // Finish the two cheapest remaining trees, with personality as a stable tie
   // breaker. Completed trees count toward the two; no need to finish a third.
-  const raceTrees = [...TREES].sort((a, b) => {
-    const remaining = (tree: typeof a) => TECHNOLOGIES.filter(t => t.age === state.age && t.tree === tree && !state.completed.includes(t.id))
-      .reduce((sum, t) => sum + researchTerms(t, speed).gold, 0);
-    return remaining(a) - remaining(b) || personality.researchOrder.indexOf(a) - personality.researchOrder.indexOf(b);
-  }).slice(0, 2);
+  const outstanding=(trees:readonly import("./Definitions").Tree[]):Set<string>=> {
+    const work=new Set<string>();
+    const visit=(id:string)=>{if(state.completed.includes(id)||work.has(id))return;work.add(id);TECHNOLOGIES.find(t=>t.id===id)!.prerequisites.forEach(visit);};
+    TECHNOLOGIES.filter(t=>t.age===state.age&&trees.includes(t.tree)).forEach(t=>visit(t.id));
+    return work;
+  };
+  const pairs=TREES.flatMap((a,i)=>TREES.slice(i+1).map(b=>({trees:[a,b] as import("./Definitions").Tree[],work:outstanding([a,b])})))
+    .sort((a,b)=>[...a.work].reduce((n,id)=>n+researchTerms(TECHNOLOGIES.find(t=>t.id===id)!,speed).gold,0)-[...b.work].reduce((n,id)=>n+researchTerms(TECHNOLOGIES.find(t=>t.id===id)!,speed).gold,0) || a.trees.reduce((n,t)=>n+personality.researchOrder.indexOf(t),0)-b.trees.reduce((n,t)=>n+personality.researchOrder.indexOf(t),0));
+  const raceTrees=pairs[0].trees, raceWork=pairs[0].work;
   for (const tree of personality.researchOrder) {
     const eligible = TECHNOLOGIES.filter(t => t.tree === tree && !researchRejection(state, Number.MAX_SAFE_INTEGER, t.id, speed))
       .map(technology => ({technology,utility:researchUtility(technology,snapshot,demand,opportunity)}))
       .sort((a,b) => b.utility.benefit-a.utility.benefit || a.technology.slot-b.technology.slot);
-    const racing = !!opportunity.progressionRace && raceTrees.includes(tree) && state.age !== "Modern" && state.age !== maximumAge;
-    const best = racing ? eligible.sort((a,b) => a.technology.slot-b.technology.slot)[0] : eligible.find(row=>row.utility.benefit>0);
+    const racing = !!opportunity.progressionRace && eligible.some(row=>raceWork.has(row.technology.id)) && state.age !== "Modern" && state.age !== maximumAge;
+    const best = racing ? eligible.filter(row=>raceWork.has(row.technology.id)).sort((a,b) => a.technology.slot-b.technology.slot)[0] : eligible.find(row=>row.utility.benefit>0);
     if (!best) continue;
     const {technology,utility} = best;
     const survival = snapshot.threatTroops > snapshot.readyTroops && technology.tree !== "warfare" ? 0 : utility.benefit;

@@ -2287,7 +2287,7 @@ export class Renderer {
       aircraftCtx.fillStyle = "#fff";
       aircraftCtx.textAlign = "center";
       aircraftCtx.fillText(
-        aircraft.definitionId === "fighter" ? "F" : "B",
+        aircraft.definitionId === "fighter" ? "F" : aircraft.definitionId === "drone" ? "D" : "B",
         p.x,
         p.y + pose.size / 2 + 8,
       );

@@ -5,7 +5,7 @@ import {
   type Age,
   type ProductionRecipe,
 } from "../domain/Definitions";
-import { technologyAt } from "./Technology";
+import { packageTechnology } from "./Technology";
 
 export type EquipmentKind = "troop" | "siege" | "vehicle";
 export const equipmentItem = (age: Age, kind: EquipmentKind = "troop") =>
@@ -36,11 +36,7 @@ for (const [index, age] of AGES.entries()) {
     EQUIPMENT_RECIPES.push({
       id: `make-${age.toLowerCase()}-${kind === "troop" ? "equipment" : `${kind}-equipment`}`,
       name,
-      technologyId: technologyAt(
-        age,
-        "warfare",
-        kind === "troop" ? 1 : index < 2 ? 4 : 2,
-      ).id,
+      technologyId: packageTechnology(age,kind === "troop" ? "barracks-equipment" : kind === "vehicle" ? "mobile" : "siege"),
       building:
         kind === "siege"
           ? "siege-workshop"

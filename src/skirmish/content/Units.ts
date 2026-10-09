@@ -16,7 +16,7 @@ import {
   type EquipmentKind,
 } from "./Equipment";
 import { RUSSIAN_RECRUITMENT } from "./RussianRecruitment";
-import { TECHNOLOGY, technologyAt } from "./Technology";
+import { TECHNOLOGY, technologyAt, canonicalTechnologyId, packageTechnology } from "./Technology";
 const ground: readonly TargetTag[] = [
   "infantry",
   "ranged",
@@ -113,11 +113,7 @@ for (const [index, age] of AGES.entries()) {
       age,
       line: "archer",
       role: field ? "artillery" : "siege",
-      technologyId: technologyAt(
-        age,
-        "warfare",
-        field && index > 1 ? 2 : index >= 6 ? 2 : 4,
-      ).id,
+      technologyId: packageTechnology(age,"siege"),
       building: "siege-workshop",
       tags: ["siege"],
       speedPercent: contact ? 25 : 55,
@@ -149,7 +145,7 @@ for (const [role, name, targets] of [
     line: "cavalry",
     role,
     technologyId:
-      role === "launcher" ? "russian-mirv-systems" : "modern-combined-arms",
+      role === "launcher" ? packageTechnology("Modern","mirvs-drones") : packageTechnology("EarlyModern","fortifications"),
     building: "depot",
     tags: ["vehicle"],
     speedPercent: 90,
@@ -349,6 +345,7 @@ for (const troop of RUSSIAN_RECRUITMENT.units) {
   addEquipment(unit, index, vehicle ? "vehicle" : "troop");
   UNITS.push(unit);
 }
+for (const unit of UNITS) unit.technologyId = canonicalTechnologyId(unit.technologyId);
 UNITS.sort(
   (a, b) =>
     AGES.indexOf(a.age) - AGES.indexOf(b.age) ||
@@ -382,10 +379,7 @@ for (const [index, age] of AGES.entries())
       name: `${age === "StoneAge" ? "Canoe" : age === "Modern" ? "Powered" : age.replace(/Age$/, "")} ${kind === "trade" ? "merchant vessel" : kind}`,
       age,
       kind,
-      technologyId:
-        age === "StoneAge" && kind !== "warship"
-          ? "stoneage-cargo-canoes"
-          : technologyAt(age, "naval", actualSlot).id,
+      technologyId: packageTechnology(age,age === "StoneAge" ? kind === "transport" ? "cargo-canoes" : "port-sea-trade" : kind === "warship" ? "warships" : kind === "trade" ? "sea-traders" : "ports"),
       cost: {
         gold: (kind === "warship" ? 700 : 300) * (index + 1),
       },
@@ -443,4 +437,8 @@ for (const [index, age] of AGES.entries())
         : {}),
     });
   }
+for(const age of ["EarlyModern","Modern"] as const) {
+ const ship=VESSELS.find(v=>v.age===age&&v.kind==="warship")!;
+ VESSELS.push({...ship,id:`${age.toLowerCase()}-submarine`,name:age==="Modern"?"Nuclear submarine":"Diesel submarine",technologyId:packageTechnology(age,"submarines"),cost:{gold:(ship.cost.gold??0)*1.25}});
+}
 export const VESSEL = new Map(VESSELS.map((v) => [v.id, v]));

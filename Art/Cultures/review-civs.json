@@ -16,7 +16,7 @@
     {
       "id": "russians",
       "label": "Russians",
-      "soldiers": "Russians/Units/manifest.json",
+      "soldiers": "Russians/Troops.json",
       "siege": "Russians/Siege/manifest.json",
       "buildings": "Russians/Buildings/manifest.json",
       "buildingsResources": {

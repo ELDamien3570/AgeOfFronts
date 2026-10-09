@@ -1,6 +1,6 @@
 import { readFileSync } from "node:fs";
 import { describe, expect, it } from "vitest";
-import footLayout from "../../Art/Cultures/Russians/Units/StoneAge/Clubman/Formation/formation.json";
+import footLayout from "../../Art/Cultures/Russians/FormationLayouts/Clubman.json";
 import { ARTWORK_CATALOG } from "../../src/skirmish/client/ArtworkCatalog";
 import { RUSSIAN_TROOP_ACTORS } from "../../src/skirmish/client/troops/RussianTroopCatalogue";
 import type {

@@ -1,9 +1,0 @@
-# Russian Late Medieval Rus Crossbowman
-
-Ten six-frame solo motions rebuilt from the approved Idle-String-v5.png: idle, walk, shot, reload, hit, charge impact, running charge, advancing shot, side death and back death. Cocked strings meet the rear catch behind the bolt nock. Both attacks share the inspected firing and empty recovery poses. Reload begins empty, spans the string, latches the catch, loads a new bolt, then returns to low carry. Release marker: frame index 3; runtime owns projectiles, ammunition and timing.
-
-SourceArt/Animation-String-v5-Generation.json records built-in ImageGen prompts, selected native sources and superseded drafts. SourceArt/Composition.json records every whole-cell source, scale and root. compose_animations.py reproduces all ten sheets without pixel painting. Approved idle and earlier animation sheets remain preserved. Validation.json confirms 60 distinct clip frames, transparent guards, registered preview bounds and unchanged approved idle.
-
-The local inspection server serves all ten new sheets and metadata. Native sheets and baked reload were visually inspected. Browser automation cannot start because the Windows sandbox session fails; rendered playback and game-size artistic approval remain pending. No runtime integration or publication.
-Final attack and reload sheets use ImageGen background extraction. SourceArt/Transparency-Generation.json records extraction prompts and source paths. apply_transparency_cleanup.py registers whole cells at 496 px with eight-pixel transparent padding; it applies no alpha filtering or pixel repainting.
-Motion v6: idle uses slower breathing and fixed lateral helmet registration. Both shot clips use the same newly painted rigid whole-crossbow final recovery pose. SourceArt/Motion-v6-Generation.json records built-in ImageGen prompts; Motion-v6-Composition.json records whole-pose registration. Seven other animation sheets remain unchanged.

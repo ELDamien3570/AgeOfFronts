@@ -87,9 +87,9 @@ export const commandSchema = z.discriminatedUnion("type", [
     buildingId: id,
     buildingIds: z.array(id).min(1).max(10_000).optional(),
     autoRecruit: z.boolean().optional(),
-    definitionId: z.enum(["fighter", "bomber"]),
+    definitionId: z.enum(["fighter", "bomber", "drone"]),
   }),
-  command("sortie", { aircraftIds: ids, ...point }),
+  command("sortie", { mission:z.enum(["bombing","patrol","atomic","drone"]).optional(), aircraftIds: ids, ...point }),
   command("launch", {
     launcherId: id,
     payload: z.enum(["icbm", "hydrogen", "mirv"]),

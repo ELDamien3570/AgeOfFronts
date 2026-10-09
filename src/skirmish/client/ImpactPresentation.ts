@@ -16,7 +16,7 @@ function impactArtwork(p: Projectile): string {
   if (p.kind === "warhead") return "impact-mirv";
   if (p.kind === "icbm")
     return p.definitionId === "hydrogen" ? "impact-hydrogen" : "impact-icbm";
-  if (p.kind === "bomb") return "impact-bomb";
+  if (p.kind === "bomb") return p.definitionId === "atomic" ? "impact-hydrogen" : "impact-bomb";
   return p.sourceKind === "ship" ? "impact-naval" : "impact-shell";
 }
 /** Cosmetic persistence survives removal of the already-resolved domain event. */

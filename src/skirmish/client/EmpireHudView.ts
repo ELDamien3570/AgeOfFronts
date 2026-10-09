@@ -1,3 +1,4 @@
+import { flightPercent, missionKind, FLIGHT_RULES, type AirMission } from "../content/FlightOperations";
 import type { BuildingType, ShipType, SquadType } from "../Protocol";
 import { BUILDING_RULES } from "../Rules";
 import { AGE_NAMES, AGES, type Age } from "../domain/Definitions";
@@ -73,15 +74,19 @@ export class EmpireHudView {
   private lastEvent = 0;
   private readonly log: HTMLElement;
   private readonly tip: HTMLElement;
-  sortie(shift = false): void {
+  sortie(shift = false, mission:AirMission="bombing"): void {
     if (!this.vm) return;
     this.actions.target((x,y,gesture) => {
       if (!this.vm) return;
       const command = sortieCommand(this.vm.state, this.playerId, x, y, shift || gesture?.shift,
-        this.vm.selection.selectedAircraft);
+        this.vm.selection.selectedAircraft,mission);
       if (command) this.actions.command(command);
-      else this.actions.notify("No ready bombers at an operational airfield");
-    }, "Click a bombing target · Shift-click launches up to 5 · Escape cancels");
+      else this.actions.notify("No ready aircraft of this mission type can reach that target");
+    }, `${mission === "patrol" ? "Dispatch fighters" : mission === "atomic" ? "A-Bomb Run" : mission === "drone" ? "Drone Strike" : "Bombing Run"} · Click a target · Shift launches up to 5 · Escape cancels`, (x,y)=>{
+      const candidates=(this.vm?.expansion.aircraft??[]).filter(a=>a.playerId===this.playerId && a.state==="ready" && a.definitionId===missionKind(mission) && (!this.vm?.selection.selectedAircraft?.size || this.vm?.selection.selectedAircraft?.has(a.id)));
+      const values=candidates.map(a=>flightPercent(a,x,y)).sort((a,b)=>a-b).slice(0,shift?5:1);
+      return values.length ? `Travel: ${Math.ceil(Math.max(...values))}% flight time` : "No ready aircraft";
+    });
   }
   constructor(
     private root: HTMLElement,
@@ -149,7 +154,7 @@ export class EmpireHudView {
       const action = button.dataset.dockAction!;
       const count = action === "support" || action === "aircraft"
         ? (this.actions.recruitmentBatch?.(event.shiftKey) ?? recruitmentBatch(event.shiftKey, false)) : 1;
-      if (action === "sortie") this.sortie(event.shiftKey);
+      if (["sortie","dispatch","atomic-run","drone-strike"].includes(action!)) this.sortie(event.shiftKey,action==="dispatch"?"patrol":action==="atomic-run"?"atomic":action==="drone-strike"?"drone":"bombing");
       else for (let i = 0; i < count; i++) this.dispatch(action, button.dataset.value);
     });
     root.addEventListener("pointerover", (event) =>
@@ -355,28 +360,31 @@ export class EmpireHudView {
         );
       })
       .join("");
-    const ready = sortieCommand(vm.state, this.playerId, 0, 0, false, vm.selection.selectedAircraft);
+    const ready = vm.expansion.aircraft.some(a=>a.playerId===this.playerId&&a.definitionId==="bomber"&&a.state==="ready");
     const aviation =
-      (["fighter", "bomber"] as const)
+      (["fighter", "bomber", "drone"] as const)
         .map((kind) => {
           const q = vm.aircraft(kind);
           return this.button(
-            kind === "fighter" ? "Fighter" : "Bomber",
+            kind === "fighter" ? "Fighter" : kind === "drone" ? "Drone" : "Bomber",
             "aircraft",
             kind,
             q.reason,
-            "5,000 gold · 1,000 reserves · 1 airframe · 20 oil\nResearch: Military Aviation\nBuilding: completed Military airstrip with a free slot\n1,000 HP · 60s fuel · 6 per airfield / 32 per faction",
+            `${FLIGHT_RULES[kind].gold.toLocaleString()} gold · ${FLIGHT_RULES[kind].preModernSeconds}s flight time (${FLIGHT_RULES[kind].modernSeconds}s Modern) · 6 per launch site / 32 per faction` ,
             kind,
           );
         })
         .join("") +
       this.button(
-        "Sortie",
+        "Bombing Run",
         "sortie",
         "",
         ready ? null : "No ready aircraft at an operational airfield",
-        "One ready plane from the nearest airfield. Shift-click Sortie or its target for up to five. Shortcut: P.",
+        "One ready bomber from the nearest airfield. Shift-click Sortie or its target for up to five. Shortcut: P.",
       ) +
+      this.button("Dispatch","dispatch","",vm.expansion.aircraft.some(a=>a.playerId===this.playerId&&a.definitionId==="fighter"&&a.state==="ready")?null:"No ready fighters","Patrol and engage hostile aircraft. Shortcut: I.") +
+      this.button("A-Bomb Run","atomic-run","",vm.has("rus-earlymodern-nuclear-weapons") && (vm.inventory["payload:atomic"]??0)>0 ? null:"Needs Nuclear Weapons research and an atomic bomb","One atomic bomb per bomber. Shortcut: O.") +
+      this.button("Drone Strike","drone-strike","",vm.expansion.aircraft.some(a=>a.playerId===this.playerId&&a.definitionId==="drone"&&a.state==="ready")?null:"No ready drones","Single-use drone strike; bypasses defence. Shortcut: U.") +
       (["icbm", "hydrogen", "mirv"] as const)
         .map((payload) => {
           const q = vm.launcher(payload);
@@ -483,8 +491,8 @@ export class EmpireHudView {
           definitionId: kind,
         });
     }
-    if (action === "sortie") {
-      this.sortie();
+    if (["sortie","dispatch","atomic-run","drone-strike"].includes(action)) {
+      this.sortie(false,action==="dispatch"?"patrol":action==="atomic-run"?"atomic":action==="drone-strike"?"drone":"bombing");
     }
     if (action === "launch") {
       const payload = value as "icbm" | "hydrogen" | "mirv",

@@ -1,7 +1,0 @@
-{
-  "id": "idle-alpha-v8",
-  "file": "Idle-Stylized-Clean-v8.png",
-  "mode": "builtin-imagegen",
-  "prompt": "Use case: background-extraction. Remove ALL colored background haze/halo from this exact sixframe spritesheet. Current sheet has broad semitransparent RED AND BROWN background glow surrounding everycharacter. This is a transparency defect. Make every backgroundpixel outside the actual character silhouette and club EXACTRGBA(0,0,0,0), including gaps between limbs and weapon. No redrim, no brownmatte, no fog, no semiopaquegradient, no casts shadows or ground. Preserve all six original characterposes, exactcharacter positions, scale, cap/clothingcolors, stylizedpaintedrendering and exact3x2celllayout1536x1024. Preserve the dark drawn outlines. Only 1pixel natural edgeantialiasing permitted, no softglow. Important: do not remove red clothing itself; remove the redcolor outside the outlinedcharacter. Crisp clean transparent cutout suitableforrenderingovergreen/white/blackbackground without anycoloredhalo. Do not redraw/repose or reframe figures. Output trueRGBA transparentPNG exact1536x1024.",
-  "reference": "Idle-Stylized-v7.png"
-}

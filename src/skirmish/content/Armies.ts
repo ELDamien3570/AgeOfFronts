@@ -1,6 +1,6 @@
-import { technologyAt } from "./Technology";
+import { technologyAt, canonicalTechnologyId } from "./Technology";
 
-export const ARMY_TECHNOLOGY = "bronzeage-armies";
+export const ARMY_TECHNOLOGY = canonicalTechnologyId("bronzeage-armies");
 export const ARMY_CAPS = Object.freeze([
   { technologyId: ARMY_TECHNOLOGY, capacity: 20 },
   { technologyId: technologyAt("ClassicalAge", "warfare", 1).id, capacity: 25 },

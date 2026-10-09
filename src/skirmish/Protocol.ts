@@ -122,10 +122,11 @@ export type Command =
       buildingId: number;
       buildingIds?: number[];
       autoRecruit?: boolean;
-      definitionId: "fighter" | "bomber";
+      definitionId: "fighter" | "bomber" | "drone";
     }
   | {
       type: "sortie";
+      mission?: "bombing" | "patrol" | "atomic" | "drone";
       playerId: number;
       aircraftIds: number[];
       x: number;
@@ -291,7 +292,9 @@ export type BuildingType =
   | "trench"
   | "missile-silo"
   | "mirv-launcher"
-  | "missile-defence";
+  | "missile-defence"
+  | "nuclear-facility"
+  | "drone-facility";
 /** Squads cross water themselves (see Afloat); every fleet vessel is a warship. */
 export type ShipType = "warship";
 
@@ -323,6 +326,7 @@ export interface Ship {
   readonly fighting: boolean;
   readonly definitionId?: string;
   readonly nextAttackTick?: number;
+  readonly airDefenseTick?: number;
   readonly xp?: number;
   readonly planningPaused?: boolean;
   readonly refit?: Readonly<RefitJob> | null;
@@ -471,6 +475,7 @@ export interface SnapshotPacket {
     deploymentTicks?: number;
     lastAttackTick?: number;
     nextAttackTick?: number;
+  airDefenseTick?: number;
     planningPaused?: boolean;
     movementStatus?: MovementStatus;
     refit?: RefitJob | null;

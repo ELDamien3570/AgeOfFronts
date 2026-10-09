@@ -5,7 +5,7 @@ import { AiProductionDependencies } from "./AiProductionDependencies";
 import { AGES, type Inventory, type UnitDefinition } from "./Definitions";
 import { unitRefitCost } from "./Refitting";
 import { buildingTechnology, buildingCost } from "../content/Buildings";
-import { technologyAt } from "../content/Technology";
+import { technologyAt, packageTechnology } from "../content/Technology";
 import { militaryPosture } from "./AiMilitaryPosture";
 
 export interface AiDemandPreparation {equipment:Inventory;units:Partial<Record<UnitDefinition["role"],number>>;quote:import("./AiProductionDependencies").AiDependencyQuote;availabilityDeferred:boolean;}
@@ -118,9 +118,9 @@ export function militaryDemand(
     // Stock a small ready salvo through the same dependency/material planner.
     // Aviation and strategic weapons have independent capacity from land squads.
     for(const [type,payload] of [["missile-silo","hydrogen"],["mirv-launcher","mirv"]] as const)
-      if(snapshot.buildings.some(b=>b.type===type) && snapshot.research.includes(technologyAt("Modern","warfare",4).id))
+      if(snapshot.buildings.some(b=>b.type===type) && snapshot.research.includes(packageTechnology("Modern",type==="mirv-launcher"?"mirvs-drones":"missile-infrastructure")))
         result.equipment[`payload:${payload}`]=2;
-    if(snapshot.buildings.some(b=>b.type==="missile-silo") && snapshot.research.includes(technologyAt("Modern","warfare",4).id))
+    if(snapshot.buildings.some(b=>b.type==="missile-silo") && snapshot.research.includes(packageTechnology("Modern","missile-infrastructure")))
       result.equipment["payload:icbm"]=1;
     const oilUsers=snapshot.buildings.filter(b=>["depot","arms-factory","airstrip","missile-silo","mirv-launcher"].includes(b.type)).length;
     if(oilUsers)result.equipment.oil=Math.max(40,oilUsers*20);

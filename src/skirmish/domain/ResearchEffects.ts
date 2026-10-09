@@ -1,5 +1,5 @@
 import { FIXED } from "../Protocol";
-import { technologyAt } from "../content/Technology";
+import { technologyAt, packageTechnology } from "../content/Technology";
 import {
   AGES,
   type Inventory,
@@ -19,7 +19,7 @@ export function unitEffects(
   unit: UnitDefinition,
   research: Research,
 ): UnitDefinition {
-  const drill = unit.age !== "Modern" && has(research, unit.age, "warfare", 4);
+  const drill = false; // Age equipment statistics are authored on the unlocked unit.
   const infantry =
     unit.tags.includes("infantry") || unit.troopClass === "rangedInfantry";
   const radio =
@@ -77,9 +77,8 @@ export function vesselEffects(
   const missiles =
     vessel.age === "Modern" &&
     vessel.kind === "warship" &&
-    research.includes("russian-naval-missiles");
-  const sailing =
-    vessel.age !== "Modern" && has(research, vessel.age, "naval", 4);
+    research.includes(packageTechnology("Modern","naval-missiles-air-defence"));
+  const sailing = research.includes(packageTechnology(vessel.age,vessel.age === "StoneAge" ? "coastal-navigation" : "ship-improvements"));
   const copper = vessel.age === "Napoleonic" && vessel.kind === "warship" && research.includes("russian-copper-sheathing");
   const hull = vessel.age === "Modern" && vessel.kind === "transport" && research.includes("russian-transport-hulls");
   const freight = vessel.kind === "trade" && (
@@ -95,7 +94,7 @@ export function vesselEffects(
   const improved = {
     ...vessel,
     speed: Math.round(vessel.speed * (sailing ? 1.1 : 1) * (copper ? 1.1 : 1)),
-    health: Math.round(vessel.health * (copper ? 1.15 : 1) * (hull ? 1.2 : 1)),
+    health: Math.round(vessel.health * (sailing && vessel.age !== "StoneAge" ? 1.1 : 1) * (copper ? 1.15 : 1) * (hull ? 1.2 : 1)),
     capacity: vessel.capacity
       ? Math.ceil(vessel.capacity * (sailing ? 1.25 : 1) * (freight ? 1.2 : 1))
       : 0,
@@ -117,29 +116,21 @@ export function vesselEffects(
 export function logisticsTier(research: Research): number {
   let tier = 0;
   for (const [i, age] of AGES.entries())
-    if (has(research, age, "economic", i === 0 ? 2 : 3)) tier = i;
+    if (research.includes(packageTechnology(age,"roads"))) tier = i;
   return tier;
 }
 export function cargoHandlingPercent(research: Research): number {
-  return research.includes(technologyAt("StoneAge", "economic", 4).id)
+  return research.includes(packageTechnology("StoneAge","land-traders"))
     ? 125
     : 100;
 }
-export function breedingPerSecond(research: Research): number {
-  if (has(research, "EarlyModern", "economic", 4)) return 6;
-  if (has(research, "Napoleonic", "economic", 4)) return 5;
-  if (has(research, "EarlyMedieval", "economic", 3)) return 4;
-  if (has(research, "ClassicalAge", "economic", 2)) return 2;
-  return 0;
+export function breedingPerSecond(research:Research):number {
+ let tier=-1;for(const [i,age] of AGES.entries())if(research.includes(packageTechnology(age,"land-traders")))tier=i;
+ return tier<0?0:Math.min(6,tier+1);
 }
-export function throughputPercent(research: Research): number {
-  let percent = 100;
-  for (const [i, age] of AGES.entries())
-    if (has(research, age, "economic", 4)) percent = 110 + i * 10;
-  const tools = research.includes("russian-machine-tools") ? 10 : 0;
-  const depots = research.includes("russian-supply-depots") ? 5 : 0;
-  const assembly = research.includes("russian-assembly-line-upgrades") ? 15 : 0;
-  return percent + tools + depots + assembly;
+export function throughputPercent(research:Research):number {
+ let percent=100;for(const [i,age] of AGES.entries())if(research.includes(packageTechnology(age,"factories-mines")))percent=110+i*10;
+ return percent;
 }
 export function scaledInputs(inputs: Inventory, tier = 1): Inventory {
   return Object.fromEntries(

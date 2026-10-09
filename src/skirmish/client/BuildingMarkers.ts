@@ -12,7 +12,7 @@ interface MarkerRect {
 
 // Exhaustive presentation mapping: adding a BuildingType requires its marker.
 export const BUILDING_MARKER_FRAMES: Record<BuildingType, MarkerRect> =
-  manifest.frames;
+  {...manifest.frames, "nuclear-facility":manifest.frames["arms-factory"], "drone-facility":manifest.frames.airstrip};
 const ATLAS_URL = new URL(
   "../../../Art/Building Markers/Building_Markers_Atlas.png",
   import.meta.url,

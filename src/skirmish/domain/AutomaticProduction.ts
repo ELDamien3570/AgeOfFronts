@@ -33,6 +33,7 @@ export const automaticProducer = (building: Building) =>
     "blacksmith",
     "armory",
     "arms-factory",
+    "nuclear-facility",
     "siege-workshop",
     "depot",
   ].includes(building.type);

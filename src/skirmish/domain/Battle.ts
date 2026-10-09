@@ -255,6 +255,7 @@ export class Battle {
     warheads = 0,
     definitionId?: string,
     targetBuildingId?: number,
+    targetAircraftId?: number,
   ): boolean {
     if (!this.canFire(kind === "mirv" ? warheads : 0)) return false;
     if (kind === "mirv") this.reservedWarheads += warheads;
@@ -265,6 +266,7 @@ export class Battle {
       sourceKind: source.domain ?? "squad",
       attackScale: source.attackScale,
       definitionId,
+      ...(targetAircraftId === undefined ? {} : {targetAircraftId}),
       ...(targetBuildingId === undefined ? {} : {targetBuildingId}),
       originTile: source.originTile,
       fromX: source.x,
@@ -470,7 +472,7 @@ export class Battle {
         const target = aircraft
           .filter(
             (a) =>
-              a.health > 0 &&
+              a.health > 0 && a.definitionId !== "drone" && a.state !== "ready" &&
               this.diplomacy.hostile(squad.playerId, a.playerId) &&
               this.distance(squad, a) <= profile.range ** 2,
           )
@@ -670,7 +672,7 @@ export class Battle {
       hit *= 2;
     this.structuralHit(target, squad.playerId, squad.id, hit);
   }
-  advanceProjectiles(): void {
+  advanceProjectiles(aircraft:readonly Aircraft[]=[]): void {
     // Retained impact visuals still expire below, but no collision/cover query
     // consumes these indexes when every projectile has already impacted.
     if (this.projectiles.some(p => !p.impacted && !p.interception)) this.rebuild("projectiles");
@@ -727,6 +729,18 @@ export class Battle {
           p.y = p.interception.toY;
           p.damage = 0;
           continue;
+      }
+      if(p.targetAircraftId !== undefined) {
+        const target=aircraft.find(a=>a.id===p.targetAircraftId && a.health>0 && a.definitionId!=="drone" && a.state!=="ready");
+        if(target) {p.toX=target.x;p.toY=target.y;}
+        if(tick>=p.impactTick) {
+          p.impacted=true;p.impactAt=tick;
+          if(target) {
+            const health=target.health;target.health=Math.max(0,health-p.damage);
+            if(target.health===0) {const loss=new DamageLedger();loss.add(target.id,p.playerId,health);this.world.recordMilitaryLosses([target],loss);}
+          }
+        }
+        continue;
       }
       if (p.kind === "mirv" && progress >= 0.5) {
         this.reservedWarheads = Math.max(0,this.reservedWarheads-p.warheads);
@@ -1007,7 +1021,7 @@ export class Battle {
       const blastVictim = (owner:number) => indiscriminate || this.diplomacy.hostile(owner,p.playerId);
       if (indiscriminate)
         this.world.destroyTradersInBlast?.(p.playerId,p.x,p.y,radius);
-      if (p.kind === "icbm" || p.kind === "warhead") {
+      if (p.kind === "icbm" || p.kind === "warhead" || p.definitionId === "atomic") {
         // Nuclear effects are per victim, independent of conventional armour,
         // shared damage budgets, or the ordinary 64-target splash envelope.
         const inside = (s: {playerId:number;x:number;y:number}) => this.distance(s,p)<=radius**2;

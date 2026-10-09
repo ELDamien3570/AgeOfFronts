@@ -1,7 +1,0 @@
-{
-  "file": "Idle-FirstFrame-BronzeMace-v2.png",
-  "mode": "builtin-imagegen",
-  "prompt": "Use case: precise-object-edit. Change ONLY weapon in this single overheadwarrioridleframe. Replace bronzeAXE completely with BRONZEMACE in hisRIGHT hand SCREENLEFT. Keep same woodenhandlelength/direction diagonaldownleft, samehandgrip/wristposition. Maceheadcompact solidrounded BRONZE strikinghead withfourbluntlowribs/lobes, warmgoldenbrownmetal matcheshelmet/pauldrons, clearlymaceNOTaxe/hammer/sickle/flail. Noaxe cuttingblade orsocketremaining, nochain/spikes. Headmountedcenteredontipofwoodenshaft, roughlysameweaponfootprintorsmaller, stylizedpaintedbroadcolorplanes simplebronzehighlights. PreserveEVERYTHINGelse: exactstrict90degreeverticalorthographiccamera, circularhelmetcrown, pauldronscreamfurcollarredbrownleathertop, plantedboottoetips, leftwoodshield screenrightforeshortened, samebodyproportionspositionposecolorslightingandcanvas. ONEidleframe only, noanimations. Wholecharacter/weapon/shieldintactgenerouspadding. ActualalphaZEROoutsideoutlinedfigure/gear, no fringe/haze/coloredbackdropglowgroundshadowtext.",
-  "reference": "Idle-FirstFrame-Nadir-v1.png",
-  "scope": "Single idle frame weapon revision for review"
-}

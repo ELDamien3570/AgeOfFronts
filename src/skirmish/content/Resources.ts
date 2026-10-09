@@ -1,9 +1,9 @@
 import { AGES, type Age, type Resource } from "../domain/Definitions";
-import { TECHNOLOGY } from "./Technology";
+import { TECHNOLOGY, canonicalTechnologyId } from "./Technology";
 
 // Discovery follows the age of the resource's extraction/refining technology.
 // Discovery does not grant that technology or authorize production.
-export const RESOURCE_TECHNOLOGIES: Readonly<Record<Resource, string>> = {
+const legacyResources: Readonly<Record<Resource, string>> = {
   horses: "stoneage-horsemanship",
   stone: "stoneage-stone-mining",
   copper: "bronzeage-bronze-metallurgy",
@@ -18,6 +18,8 @@ export const RESOURCE_TECHNOLOGIES: Readonly<Record<Resource, string>> = {
   gunpowder: "latemedieval-powder-milling",
   oil: "modern-petroleum-extraction",
 };
+
+export const RESOURCE_TECHNOLOGIES = Object.fromEntries(Object.entries(legacyResources).map(([r,id])=>[r,canonicalTechnologyId(id)])) as Record<Resource,string>;
 
 export function resourceTechnology(resource: Resource) {
   const technology = TECHNOLOGY.get(RESOURCE_TECHNOLOGIES[resource]);

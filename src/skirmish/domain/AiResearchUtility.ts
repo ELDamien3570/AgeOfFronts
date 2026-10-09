@@ -158,7 +158,7 @@ export function researchUtility(
   }
   if (
     snapshot.age === "Modern" &&
-    ["airstrip", "missile-silo", "mirv-launcher"].some(
+    ["airstrip", "nuclear-facility", "drone-facility", "missile-silo", "mirv-launcher"].some(
       (type) =>
         buildingTechnology(
           type as Parameters<typeof buildingTechnology>[0],

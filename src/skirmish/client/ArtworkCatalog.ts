@@ -31,6 +31,7 @@ const russianRuntime: Record<string, ArtworkAsset> = { ...russianManifest };
 export const ARTWORK_CATALOG: Readonly<Record<string, ArtworkAsset>> = {
   ...legacyRuntime,
   ...russianRuntime,
+  "building-earlymodern-nuclear-facility":russianRuntime["building-earlymodern-nuclear-weapons-facility"],
   // The approved ram substitution remains until an authored Russian ram is ready.
   "stoneage-siege": manifest["bronzeage-siege"],
 };

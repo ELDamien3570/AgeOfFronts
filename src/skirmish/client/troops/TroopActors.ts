@@ -1,6 +1,6 @@
-import footLayout from "../../../../Art/Cultures/Russians/Units/StoneAge/Clubman/Formation/formation.json";
-import rangedLayout from "../../../../Art/Cultures/Russians/Units/StoneAge/Javelinist/Formation/formation.json";
-import mountedLayout from "../../../../Art/Cultures/Russians/Units/StoneAge/MountedSpearman/Formation/formation.json";
+import footLayout from "../../../../Art/Cultures/Russians/FormationLayouts/Clubman.json";
+import rangedLayout from "../../../../Art/Cultures/Russians/FormationLayouts/Javelinist.json";
+import mountedLayout from "../../../../Art/Cultures/Russians/FormationLayouts/MountedSpearman.json";
 import type { Projectile } from "../../domain/Definitions";
 import { FIXED, type ArcherVolley, type Snapshot } from "../../Protocol";
 import { squadArtworkPose } from "../CombatEffectsViewModel";

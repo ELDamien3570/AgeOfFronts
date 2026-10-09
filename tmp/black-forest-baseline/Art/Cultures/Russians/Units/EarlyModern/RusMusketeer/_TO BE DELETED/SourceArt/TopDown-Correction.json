@@ -1,9 +1,0 @@
-{
-  "file": "Idle-TopDown-v2.png",
-  "nativeFile": "Native-Idle-TopDown-v2.png",
-  "prompt": "Precise camera correction for this same solo Rus musketeer idle sprite. Raise camera to TRUE VERTICAL 90 DEGREE OVERHEAD orthographic, looking directly down from above head. Major visible camera change: broad round crown of red cap seen from above, shoulders seen on their top surfaces, face hidden under cap except tiny beard edge, chest and long red caftan severely foreshortened, belt powder tubes only glimpsed below shoulder line, short visible boot tips below body. Do not simply tilt head down; reproject whole body and weapon to overhead. Preserve exact character identity, deep red caftan goldloops, dark fur cap brim, brown wooden powder-charge belt, leatherpouch, brownboots and long early matchlock musket. Musket held low in same two-handed diagonal carry pointing screenbottom-right, straight ironbarrel continuouswoodstock, butt outside torso, complete muzzle and ramrod visible. Preserve painted game style and crisp readable silhouette. Single complete centered actor on transparent square background, allweaponparts inside ample10percentmargin. No ground, haze, shadow, text or grid. Facing screenbottom, directly overhead not isometric or frontal.",
-  "reference": "C:/Users/Damien/Documents/GitHub/AgeOfFronts/AgeOfFronts/Art/Cultures/Russians/Units/EarlyModern/RusMusketeer/SourceArt/Native-Idle-v1.png",
-  "generatedSource": "C:/Users/Damien/.codex/generated_images/01a1166c-83ee-7ae0-be97-78c470de8962/exec-72d61ef3-76e8-4f3a-805f-c9d5a0e29461.png",
-  "tool": "built-in-imagegen",
-  "status": "pending-user-review"
-}

@@ -1,5 +1,5 @@
 import { describe, expect, it, vi } from "vitest";
-import layout from "../../Art/Cultures/Russians/Units/StoneAge/Clubman/Formation/formation.json";
+import layout from "../../Art/Cultures/Russians/FormationLayouts/Clubman.json";
 import { GameMapImpl } from "../../src/core/game/GameMap";
 import { FormationSoldierMotion } from "../../src/skirmish/client/FormationSoldierMotion";
 import { SoldierDrawQueue } from "../../src/skirmish/client/SoldierDrawQueue";

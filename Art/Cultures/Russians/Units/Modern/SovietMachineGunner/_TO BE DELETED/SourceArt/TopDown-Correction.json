@@ -1,8 +1,0 @@
-{
-  "file": "Idle-TopDown-v2.png",
-  "nativeFile": "Native-Idle-TopDown-v2.png",
-  "prompt": "Use case: precise-object-edit. Change ONLY the camera projection of this Soviet DP-28 gunner idle to genuinely straight down overhead orthographic, camera vertically above skull at90degrees to ground. Current image shows too much front chest and long boots. New view should show helmet CROWN centered over shoulders, broad shoulder TOP surfaces, upper back visible behind helmet; NO face/nose visible beneath helmet, chest/belt strongly foreshortened and mostly concealed beneath head/shoulders, legs drastically foreshortened with only boot tops near body. Standing upright, NOT bent over. Preserve exact khaki Soviet uniform, olive steelhelmet, leatherbelt/canvaspouch, same DP-28 geometry and recognizable flat circular ribbed panmagazine on TOP of receiver. Weapon held low diagonally across front in same two-handed grips; stockscreenleft, muzzle screenbottomright. From overhead panmagazine should read as horizontal circular disc. Same clean detailed gameart silhouette. ONE complete idle actor and one gun centered with ampleclear margin. Actual transparent RGBA squarePNG, no floor/shadow/backdrop/text. No animation yet.",
-  "reference": "C:/Users/Damien/Documents/GitHub/AgeOfFronts/AgeOfFronts/Art/Cultures/Russians/Units/Modern/SovietMachineGunner/SourceArt/Native-Idle-v1.png",
-  "generatedSource": "C:/Users/Damien/.codex/generated_images/01a1166c-83ee-7ae0-be97-78c470de8962/exec-456e811a-5f55-40dd-97a2-567dd8db45c8.png",
-  "tool": "built-in-imagegen"
-}

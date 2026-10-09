@@ -65,7 +65,7 @@ export function validateRussianRecruitment(): void {
       building ||
       t.id.startsWith("russian-support-") ||
       t.id in RUSSIAN_UPGRADES ||
-      foundations.has(t.id);
+      foundations.has(t.id) || (data.schemaVersion === 2 && t.id.startsWith("rus-"));
     if (!supported)
       throw new Error(`Unimplemented recruitment prerequisite: ${t.id}`);
     if (

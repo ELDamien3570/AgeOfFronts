@@ -1,9 +1,0 @@
-{
-  "tool": "built-in-imagegen",
-  "generatedSource": "C:/Users/Damien/.codex/generated_images/01a1166c-83ee-7ae0-be97-78c470de8962/exec-62fa1170-7a96-430d-99fe-f88112eda4c7.png",
-  "prompt": "Edit this single Russian ClassicalAge Recurve Archer idle sprite. Change WHOLE BODY CAMERA to directly vertical overhead 90degree orthographic top-down plan view, substantially steeper than reference. Round crown of early hammered iron pointed helmet dominates centered between broad ironpauldrons/creamfurcollar. Shoulder mass and helmet hide nearly all frontchest armor, belt and thighs; only little boot top tips visible underneath. No frontal armor wall or face. Foreshorten arms seen above; soldier stands upright notcrouched, facesSCREENBOTTOM. Preserve earlyiron helmet/pauldrons/wristguards and segmentediron cuirass over redbrownleather, creamfurcollar, pale linen trousers darkbrownboots, backquiver. One recurve bow with clear recurved ivoryhorn tips, wooden limbs leatherwrappedgrip and ONE naturalfiberstring connectedtips. Bow heldlow in LEFT hand SCREENRIGHT; loose straight irontipped arrow inRIGHT hand SCREENLEFT separatefrombowstring. Stringbehindarms and clearofhands, never drawn across arm skin. Wholebody andentirebowarrow centered transparent square generous80pxmargins. Same detailed handpainted strategy sprite aesthetic. Exactly ONE idle actor, no sheet/backdrop/shadowfloor/text.",
-  "reference": "Idle-v1.png",
-  "nativeFile": "Native-Idle-TopDown-v2.png",
-  "status": "superseded-draft",
-  "reason": "Still showed too much frontal chest armor."
-}

@@ -39,7 +39,7 @@ export function squadArtworkPose(
 }
 export function weaponVisual(id?: string): WeaponVisual {
   if (
-    id === "modern-anti-air" ||
+    id === "modern-anti-air" || id === "naval-air-defence" ||
     ["mirv", "icbm", "hydrogen", "mirv-warhead"].includes(id ?? "")
   )
     return "rocket";

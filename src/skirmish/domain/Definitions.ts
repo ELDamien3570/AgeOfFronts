@@ -192,7 +192,7 @@ export interface RecruitmentJob {
   playerId: number;
   buildingId: number;
   category: "land" | "ship" | "aircraft";
-  kind: SquadType | ShipType | "fighter" | "bomber";
+  kind: SquadType | ShipType | "fighter" | "bomber" | "drone";
   definitionId?: string;
   cost: Cost;
   totalTicks: number;
@@ -314,6 +314,7 @@ export interface Projectile {
   kind: "shell" | "bomb" | "icbm" | "mirv" | "warhead";
   warheads: number;
   targetBuildingId?: number;
+  targetAircraftId?: number;
   impacted: boolean;
   impactAt?: number;
   interception?: { defenseId: number; playerId: number; tick: number; impactTick: number; fromX: number; fromY: number; toX: number; toY: number };
@@ -321,13 +322,15 @@ export interface Projectile {
 export interface Aircraft {
   id: number;
   playerId: number;
-  definitionId: "fighter" | "bomber";
+  definitionId: "fighter" | "bomber" | "drone";
   airfieldId: number;
   x: number;
   y: number;
   health: number;
   target: { x: number; y: number } | null;
-  state: "ready" | "outbound" | "returning";
+  state: "ready" | "outbound" | "patrolling" | "returning";
+  mission?: "bombing" | "patrol" | "atomic" | "drone";
+  age?: Age;
   reloadTick: number;
   fuelTicks: number;
 }

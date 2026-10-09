@@ -1,7 +1,0 @@
-{
-  "userRequest": "Original charge attack becomes normal attack; original normal lance thrust becomes charge attack.",
-  "method": "Swap complete clip source and timing metadata; preserve semantic attack ids and all sprite images.",
-  "normalAttackFile": "charge-attack-Registered-v1.png",
-  "chargeAttackFile": "attack-Registered-v1.png",
-  "runtimeIntegration": false
-}

@@ -1,7 +1,0 @@
-{
-  "mode": "built-in imagegen",
-  "generatedSource": "C:/Users/Damien/.codex/generated_images/01a1186d-7d91-7dc0-a690-45cbb2bfcb44/exec-75386bcb-f268-44a2-beb7-b63c36822ae8.png",
-  "editTarget": "SourceArt/Hit-BronzeMace-Nadir-v4-Before-Cleanup.png",
-  "transparentBackground": true,
-  "prompt": "Use case: precise-object-edit. Edit this transparent six-frame overhead bronze mace warrior hit reaction atlas. Preserve the six chronological poses, overhead camera, identity, clothing, weapons, stylizedpainted finish and all articulated details. Correct only atlas isolation and unwanted effects. Output1536x1024 true transparent PNG in3columns2rows512x512cells. Each character MUST be fully isolated inside its cell with at least32pixels of transparent guard onallfour sides. Uniformly reduce character sizes byabout10percent ALL SIX frames together and recenter helmet crowns percell x256,y245. No croppingofshield,mace,boots,arms. Cellcenters global256,768,1280 and rowcenters256,768. Do notmove partsindependently or drawnewposes. Keep aconstanthelmetdome diameterabout100px. Delete every white comic impact ray/mark outside theshield in second frame (topmiddle) and eliminate all effects. No detachedmarks, glow, haze, backgroundwash, castgroundshadows. Preserve native transparency. Strictverticalorthographicnadir overhead topofhelmet andshoulders,nofaceview. Same bronze roundedmace in right hand screenleft andwood roundbronzerimshieldleft screenright. Nogrid,text,watermark."
-}

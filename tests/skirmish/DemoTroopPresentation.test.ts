@@ -14,7 +14,7 @@ import {
 const layout = (name: string): FormationLayout =>
   JSON.parse(
     readFileSync(
-      `Art/Cultures/Russians/Units/StoneAge/${name}/Formation/formation.json`,
+      `Art/Cultures/Russians/FormationLayouts/${name}.json`,
       "utf8",
     ),
   );

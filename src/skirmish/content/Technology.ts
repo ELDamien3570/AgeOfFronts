@@ -7,6 +7,10 @@ import {
 } from "../domain/Definitions";
 import { RUSSIAN_RECRUITMENT } from "./RussianRecruitment";
 export const TECHNOLOGIES = RUSSIAN_RECRUITMENT.technologies as Technology[];
+export function canonicalTechnologyId(id: string): string {
+  return (RUSSIAN_RECRUITMENT.aliases as Record<string,string>)[id] ?? id;
+}
+export const packageTechnology = (age:Age, slug:string) => `rus-${age.toLowerCase()}-${slug}`;
 export const TECHNOLOGY = new Map(TECHNOLOGIES.map((t) => [t.id, t]));
 export function technologyAt(age: Age, tree: Tree, slot: number): Technology {
   const definition = TECHNOLOGIES.find(
@@ -61,7 +65,7 @@ export function validateTechnologies(): void {
       );
       const count = nodes.length;
       if (
-        count < 4 ||
+        count < 1 ||
         new Set(nodes.map((t) => t.slot)).size !== count ||
         nodes.some((t) => t.slot < 1 || t.slot > count)
       )

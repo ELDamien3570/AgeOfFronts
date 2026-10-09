@@ -139,7 +139,7 @@ describe("AI progression scoring", () => {
     snapshot.threatTroops = snapshot.readyTroops;
     expect(choices().some(c => c.kind === "advance")).toBe(true);
     snapshot.threatTroops = 0;
-    state.completed = state.completed.filter(id => !id.startsWith("bronzeage-"));
+    state.completed = state.completed.filter(id => !TECHNOLOGIES.some(t=>t.id===id&&t.age==="BronzeAge"));
     expect(choices().some(c => c.kind === "advance")).toBe(false);
   });
   it("ages up despite an inconclusive bounded equipment query", () => {

@@ -1,3 +1,0 @@
-# Russian Late Medieval Plate Spearman
-
-Nine solo animation clips, six frames each: idle, walk, overhand spear thrust, get hit, get charged, charge running, charge attack, side death and backward death. Approved Idle-Overhead-v2.png and native ImageGen sources preserved. Full prompts in Generation.json and SourceArt/Animation-Generation.json. Editable whole-pose packing tracks in SourceArt/Composition.json; regenerate with SourceArt/compose_animations.py. No painted or alpha-filtered corrections. Animation artwork approved by user. Normal attack and charge attack share the approved Charge-Attack-v1.png frames and timing; the rejected Attack-v1.png is retained as an earlier attempt. Runtime formations and gameplay remain separate.

@@ -1,5 +1,5 @@
 import { describe, expect, it, vi } from "vitest";
-import footLayout from "../../Art/Cultures/Russians/Units/StoneAge/Clubman/Formation/formation.json";
+import footLayout from "../../Art/Cultures/Russians/FormationLayouts/Clubman.json";
 import type { ArcherVolley, Snapshot } from "../../src/skirmish/Protocol";
 import { FormationHeading } from "../../src/skirmish/client/FormationHeading";
 import { SoldierDrawQueue } from "../../src/skirmish/client/SoldierDrawQueue";

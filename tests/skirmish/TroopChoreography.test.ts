@@ -1,5 +1,5 @@
 import { describe, expect, it } from "vitest";
-import layout from "../../Art/Cultures/Russians/Units/StoneAge/Clubman/Formation/formation.json";
+import layout from "../../Art/Cultures/Russians/FormationLayouts/Clubman.json";
 import { TroopChoreography } from "./browser/TroopChoreography";
 import {
   formationSlots,

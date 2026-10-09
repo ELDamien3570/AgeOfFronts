@@ -1,3 +1,5 @@
+import { aircraftTechnology, FLIGHT_RULES } from "../content/FlightOperations";
+import { canonicalTechnologyId } from "../content/Technology";
 import { availableGold } from "../domain/Gold";
 import { quoteLandRefits, quoteShipRefits } from "../domain/RefitQuote";
 import type { BuildingType, ShipType, Snapshot, SquadType } from "../Protocol";
@@ -90,7 +92,7 @@ export class EmpireViewModel {
     };
   }
   has(id: string): boolean {
-    return this.progression.completed.includes(id);
+    return this.progression.completed.includes(canonicalTechnologyId(id));
   }
   nodes(age: Age) {
     return TECHNOLOGIES.filter((t) => t.age === age).map((t) => ({
@@ -442,7 +444,7 @@ export class EmpireViewModel {
       ((Math.floor(tile / this.state.width) + 0.5) * 256 - p.y) ** 2
     );
   }
-  aircraft(kind: "fighter" | "bomber") {
+  aircraft(kind: "fighter" | "bomber" | "drone") {
     const workloads = new Map<number, number>();
     for (const job of this.expansion.recruitment ?? [])
       workloads.set(
@@ -454,7 +456,7 @@ export class EmpireViewModel {
         (b) =>
           b.playerId === this.playerId &&
           !b.remainingTicks &&
-          b.type === "airstrip" &&
+          b.type === (kind === "drone" ? "drone-facility" : "airstrip") &&
           (!this.selection.selectedBuildings?.size ||
             this.selection.selectedBuildings.has(b.id)) &&
           this.state.owners[b.tile] === this.playerId &&
@@ -478,9 +480,9 @@ export class EmpireViewModel {
           a.id - b.id,
       )[0];
     const cost = {
-      gold: 5000,
+      gold: FLIGHT_RULES[kind].gold,
     };
-    const reason = !this.has(kind === "fighter" ? "russian-fighter-squadrons" : "russian-bomber-squadrons")
+    const reason = !this.has(aircraftTechnology(kind,building?.age ?? (kind === "drone" ? "Modern" : "EarlyModern")))
       ? `Research ${kind === "fighter" ? "Fighter Squadrons" : "Bomber Squadrons"}`
       : !building
         ? "Needs an airstrip with a free slot"

@@ -4,6 +4,7 @@ import { RUSSIAN_RECRUITMENT } from "../content/RussianRecruitment";
 import { DEFAULT_CULTURE } from "../content/Catalog";
 import {
   ADVANCES,
+  canonicalTechnologyId,
   TECHNOLOGIES,
   TECHNOLOGY,
   treeWorkload,
@@ -36,7 +37,7 @@ export function startingProgression(
 ): ProgressionState {
   const age = startingGameplayAge(startingAge);
   const ageIndex = AGES.indexOf(age);
-  const completed = new Set<string>(DEFAULT_CULTURE.startingTechnologies);
+  const completed = new Set<string>(DEFAULT_CULTURE.startingTechnologies.map(canonicalTechnologyId));
   for (const t of TECHNOLOGIES) {
     if (startingAge === "PostModern" || AGES.indexOf(t.age) < ageIndex) {
       completed.add(t.id);
@@ -48,13 +49,12 @@ export function startingProgression(
     const t = TECHNOLOGY.get(id);
     if (!t) throw new Error(`Missing starting prerequisite ${id}`);
     t.prerequisites.forEach(grant);
-    completed.add(id);
+    completed.add(canonicalTechnologyId(id));
   };
   // Presets open with their authored infantry and an eligible city. Other
   // current-era classes still require their individual research.
   grant(RUSSIAN_RECRUITMENT.units.find(u => u.age === age && u.troopClass === "frontline")!.technologyId);
-  const city = `russian-building-${age.toLowerCase()}-city`;
-  if (TECHNOLOGY.has(city)) grant(city);
+  // The scenario supplies its opening city; expansion cities require the authored economic chain.
 
   return {
     cultureId: DEFAULT_CULTURE.id,
@@ -151,7 +151,7 @@ export class Progression {
     // Transfer achievements, never another faction's in-progress jobs.
   }
   has(playerId: number, technologyId: string): boolean {
-    return this.states[playerId]?.completed.includes(technologyId) ?? false;
+    return this.states[playerId]?.completed.includes(canonicalTechnologyId(technologyId)) ?? false;
   }
   research(player: Player, id: string): string | null {
     const state = this.states[player.id];

@@ -25,6 +25,8 @@ const FOOTPRINTS: Record<
   "siege-workshop": MILITARY,
   "arms-factory": MILITARY,
   airstrip: MILITARY,
+  "nuclear-facility": MILITARY,
+  "drone-facility": MILITARY,
   factory: MILITARY,
   port: MILITARY,
   mine: SMALL,

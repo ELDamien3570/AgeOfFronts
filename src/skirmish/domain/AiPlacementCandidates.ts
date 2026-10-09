@@ -109,6 +109,8 @@ export class AiPlacementCandidates {
       "oil-well",
       "oil-rig",
       "airstrip",
+      "nuclear-facility",
+      "drone-facility",
       "missile-defence",
       "missile-silo",
       "mirv-launcher",
@@ -193,7 +195,7 @@ export class AiPlacementCandidates {
       if (posture.wealthy && Math.min(12,support.get(type)??0)>count) objective=Math.max(objective,9000);
       if (posture.wealthy && type==="city" && missing>0 && snapshot.reserveIncome+(snapshot.liquid.reserves??0)/300<missing*1000/300 && count<12)
         objective=Math.max(objective,9000+Math.min(4000,Math.ceil((missing*1000/300-snapshot.reserveIncome)/cityReserveIncome(snapshot.age))*500));
-      if (type === "airstrip" && snapshot.age === "Modern" && count < 2)
+      if (["airstrip","nuclear-facility","drone-facility"].includes(type) && ["EarlyModern","Modern"].includes(snapshot.age) && count < 2)
         objective=Math.max(objective,8000);
       if (["missile-silo","mirv-launcher"].includes(type) && snapshot.age === "Modern" && count < 2)
         objective=Math.max(objective,7000);

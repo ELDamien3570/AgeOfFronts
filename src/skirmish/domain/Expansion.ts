@@ -1,3 +1,5 @@
+import { SpatialGrid } from "../SpatialGrid";
+import { flightTicks, flightSpeed, flightReachable, aircraftTechnology, missionKind, FLIGHT_RULES } from "../content/FlightOperations";
 import { shoreTransportDefinition } from "../content/ShoreTransport";
 import { buildingGroundBounds } from "../BuildingFootprint";
 import { availableGold, paidCost } from "./Gold";
@@ -157,6 +159,8 @@ export class Expansion {
   readonly relations: PairRelations;
   private readonly towerSites:TowerSiteIndex;
   readonly aircraft: Aircraft[] = [];
+  private airTargets?: SpatialGrid<Aircraft>;
+  private readonly nearbyAircraft: Aircraft[]=[];
   readonly winners: number[] = [];
   readonly events: MatchEvent[] = [];
   private nextEvent = 1;
@@ -530,6 +534,7 @@ export class Expansion {
         command.buildingIds,
       );
     if (command.type === "sortie") {
+      const mission = command.mission ?? "bombing";
       const selected = [...new Set(command.aircraftIds)].map((id) =>
         this.aircraft.find((a) => a.id === id),
       );
@@ -539,17 +544,25 @@ export class Expansion {
           (a) => {
             const field = a && world.building(a.airfieldId);
             return !a || a.health <= 0 || a.playerId !== player.id || a.state !== "ready" ||
-              !field || field.playerId !== player.id || field.type !== "airstrip" ||
+              a.definitionId !== missionKind(mission) || !flightReachable(a,command.x,command.y) ||
+              !field || field.playerId !== player.id || field.type !== (a.definitionId === "drone" ? "drone-facility" : "airstrip") ||
               field.remainingTicks > 0 || (field.health ?? 1) <= 0;
           },
         ) ||
         !this.validPosition(command.x, command.y)
       )
         return "Select ready owned aircraft and a valid destination";
+      if(mission === "atomic") {
+        if(!this.progression.has(player.id,"rus-earlymodern-nuclear-weapons")) return "Research Nuclear Weapons first";
+        const stock=this.supply.inventories[player.id];
+        if((stock["payload:atomic"]??0)<selected.length) return "Needs one atomic bomb per bomber";
+        stock["payload:atomic"]-=selected.length;
+      }
       for (const a of selected as Aircraft[]) {
+        a.mission=mission;
         a.target = { x: command.x, y: command.y };
         a.state = "outbound";
-        a.fuelTicks = AIRCRAFT_RULES.fuelTicks;
+        // Flight budget was filled at recruitment/landing; orders cannot refill it.
       }
       return null;
     }
@@ -789,14 +802,15 @@ export class Expansion {
   private recruitAircraft(
     player: Player,
     id: number,
-    kind: "fighter" | "bomber",
+    kind: "fighter" | "bomber" | "drone",
     automatic = false,
     buildingIds?: readonly number[],
   ): string | null {
+    const producerType = kind === "drone" ? "drone-facility" : "airstrip";
     let field = this.world.buildings.find(
       (b) =>
         b.id === id &&
-        b.type === "airstrip" &&
+        b.type === producerType &&
         b.playerId === player.id &&
         !b.remainingTicks &&
         this.world.owners[b.tile] === player.id && (b.health ?? 1) > 0,
@@ -804,13 +818,13 @@ export class Expansion {
     const anchorTile = field?.tile ?? player.base;
     if (automatic || buildingIds) field = this.world.recruitment.chooseProducer(this.world.buildings.filter(b => b.playerId === player.id
       && (!buildingIds || buildingIds.includes(b.id))
-      && this.world.owners[b.tile] === player.id && b.type === "airstrip" && !b.remainingTicks && (b.health ?? 1) > 0
+      && this.world.owners[b.tile] === player.id && b.type === producerType && !b.remainingTicks && (b.health ?? 1) > 0
       && this.aircraft.filter(a => a.airfieldId === b.id).length + this.world.recruitment.count(player.id, "aircraft", b.id) < AIRCRAFT_RULES.airfieldCapacity),
       tile => this.world.map.euclideanDistSquared(tile, anchorTile));
     if (
       !field ||
-      !["fighter", "bomber"].includes(kind) ||
-      !this.progression.has(player.id, kind === "fighter" ? "russian-fighter-squadrons" : "russian-bomber-squadrons")
+      !["fighter", "bomber", "drone"].includes(kind) ||
+      !this.progression.has(player.id, aircraftTechnology(kind,field?.age ?? "EarlyModern"))
     )
       return "Needs researched aviation and a completed owned airstrip";
     if (
@@ -819,7 +833,7 @@ export class Expansion {
     )
       return "Airfield or aircraft capacity reached";
     const cost = {
-        gold: AIRCRAFT_RULES.gold,
+        gold: FLIGHT_RULES[kind].gold,
       },
       rejection = costRejection(
         player,
@@ -838,14 +852,15 @@ export class Expansion {
     this.aircraft.push({
       id: this.world.allocateId(),
       playerId: job.playerId,
-      definitionId: job.kind as "fighter" | "bomber",
+      definitionId: job.kind as Aircraft["definitionId"],
+      age: field.age,
       airfieldId: job.buildingId,
       ...this.battle.position(field),
       health: AIRCRAFT_RULES.health,
       target: null,
       state: "ready",
       reloadTick: 0,
-      fuelTicks: AIRCRAFT_RULES.fuelTicks,
+      fuelTicks: flightTicks(job.kind as Aircraft["definitionId"],field.age ?? "EarlyModern"),
     });
     return true;
   }
@@ -1026,7 +1041,7 @@ export class Expansion {
             : 0 });
     this.advanceAircraft();
     this.trade.step();
-    this.battle.advanceProjectiles();
+    this.battle.advanceProjectiles(this.aircraft);
     this.trade.removeRetired();
     for (let i = this.world.buildings.length - 1; i >= 0; i--)
       if ((this.world.buildings[i].health ?? 1) <= 0)
@@ -1040,6 +1055,18 @@ export class Expansion {
         this.aircraft.splice(i, 1);
   }
   private advanceAircraft(): void {
+    const targets=this.airTargets??=new SpatialGrid<Aircraft>(this.world.map.width()*FIXED,this.world.map.height()*FIXED,8*FIXED,a=>a.playerId);
+    targets.rebuild(this.aircraft.filter(a=>a.health>0&&a.state!=="ready"&&a.definitionId!=="drone"));
+    // Naval rockets use an independent AA reload and the ordinary authoritative projectile lifecycle.
+    for(const ship of this.world.ships) {
+      if(ship.health<=0 || ship.kind!=="warship" || !this.progression.has(ship.playerId,"rus-modern-naval-missiles-air-defence") || this.world.tick<(ship.airDefenseTick??0))continue;
+      targets.query(ship.x,ship.y,12*FIXED,this.nearbyAircraft);
+      const target=this.nearbyAircraft.filter(a=>a.health>0&&this.diplomacy.hostile(ship.playerId,a.playerId)).sort((a,b)=>(a.x-ship.x)**2+(a.y-ship.y)**2-((b.x-ship.x)**2+(b.y-ship.y)**2)||a.id-b.id)[0];
+      if(!target)continue;
+      if(this.battle.fire({...ship,domain:"ship"},target,{...BOMBER_ATTACK,damage:200,targets:["aircraft"],projectile:{diameter:FIXED/5,speed:2*FIXED,blastRadius:0}},200,"shell",10,0,"naval-air-defence",undefined,target.id)) {
+        this.world.updateShip(ship.id,{airDefenseTick:this.world.tick+40});
+      }
+    }
     for (const a of this.aircraft) {
       if (a.health <= 0) continue;
       const base = this.world.buildings.find(
@@ -1053,13 +1080,14 @@ export class Expansion {
         continue;
       }
       if (a.definitionId === "fighter" && a.state !== "ready") {
-        const enemy = this.aircraft
+        targets.query(a.x,a.y,8*FIXED,this.nearbyAircraft);
+        const enemy = this.nearbyAircraft
           .filter(
             (t) =>
-              this.diplomacy.hostile(a.playerId, t.playerId) &&
+              t.id !== a.id && t.health > 0 && t.state !== "ready" && t.definitionId !== "drone" && this.diplomacy.hostile(a.playerId, t.playerId) &&
               (t.x - a.x) ** 2 + (t.y - a.y) ** 2 < (8 * FIXED) ** 2,
           )
-          .sort((b, c) => b.id - c.id)[0];
+          .sort((b, c) => Number(c.definitionId === "bomber") - Number(b.definitionId === "bomber") || b.id - c.id)[0];
         if (enemy && this.world.tick >= a.reloadTick) {
           if (enemy.health <= 0) continue;
           const health = enemy.health;
@@ -1072,19 +1100,27 @@ export class Expansion {
           a.reloadTick = this.world.tick + 40;
         }
       }
+      if(a.state === "ready") {a.fuelTicks=flightTicks(a.definitionId,this.progression.has(a.playerId,"rus-modern-airfields") ? "Modern" : a.age??base.age??"EarlyModern");continue;}
       if (!a.target) continue;
+      if(a.state !== "returning") {if(a.fuelTicks<=0)a.state="returning";else a.fuelTicks--;}
+      if(a.state === "patrolling") {
+        // Deterministic diamond orbit around the dispatch point, never beyond the flight budget.
+        const phase=Math.floor(this.world.tick / 40 + a.id) % 4;
+        const offsets=[[2,0],[0,2],[-2,0],[0,-2]];
+        const dx=a.target.x + offsets[phase][0]*FIXED-a.x,dy=a.target.y+offsets[phase][1]*FIXED-a.y;
+        const d=Math.hypot(dx,dy),speed=flightSpeed(a.definitionId);
+        if(d>0){a.x+=Math.round(dx*Math.min(1,speed/d));a.y+=Math.round(dy*Math.min(1,speed/d));}
+        continue;
+      }
+      const speed=flightSpeed(a.definitionId);
       const goal =
           a.state === "returning" ? this.battle.position(base) : a.target,
         dx = goal.x - a.x,
         dy = goal.y - a.y,
         distance = Math.hypot(dx, dy);
-      if (--a.fuelTicks <= 0) {
-        a.health = 0;
-        continue;
-      }
-      if (distance > AIRCRAFT_RULES.speed) {
-        a.x += Math.round((dx * AIRCRAFT_RULES.speed) / distance);
-        a.y += Math.round((dy * AIRCRAFT_RULES.speed) / distance);
+      if (distance > speed) {
+        a.x += Math.round((dx * speed) / distance);
+        a.y += Math.round((dy * speed) / distance);
         continue;
       }
       a.x = goal.x;
@@ -1092,19 +1128,21 @@ export class Expansion {
       if (a.state === "returning") {
         a.state = "ready";
         a.target = null;
-        a.fuelTicks = AIRCRAFT_RULES.fuelTicks;
+        a.fuelTicks=flightTicks(a.definitionId,this.progression.states[a.playerId].completed.includes("rus-modern-airfields")?"Modern":a.age??base.age??"EarlyModern");
       } else {
-        if (a.definitionId === "bomber")
+        if(a.definitionId === "fighter") {a.state="patrolling";continue;}
+        if (a.definitionId === "bomber" || a.definitionId === "drone")
           this.battle.fire(
             { ...a, domain: "aircraft" },
             a.target,
-            BOMBER_ATTACK,
-            BOMBER_ATTACK.damage,
+            a.mission === "atomic" ? {...BOMBER_ATTACK,damage:24000,projectile:{...BOMBER_ATTACK.projectile!,blastRadius:16*FIXED}} : a.definitionId === "drone" ? {...BOMBER_ATTACK,damage:10000,projectile:{...BOMBER_ATTACK.projectile!,blastRadius:3*FIXED}} : BOMBER_ATTACK,
+            a.mission === "atomic" ? 24000 : a.definitionId === "drone" ? 10000 : BOMBER_ATTACK.damage,
             "bomb",
             20,
             0,
-            "bomb",
+            a.mission === "atomic" ? "atomic" : "bomb",
           );
+        if(a.definitionId === "drone") {a.health=0;continue;}
         a.state = "returning";
       }
     }
@@ -1173,6 +1211,8 @@ export class Expansion {
         "oil-well",
         "oil-rig",
         "airstrip",
+        "nuclear-facility",
+        "drone-facility",
         "missile-defence",
         "missile-silo",
         "mirv-launcher",
@@ -1525,8 +1565,8 @@ export class Expansion {
       (this.diplomacy.declaredWar(player.id,id) || this.operations.offensiveTarget(player.id)===id);
     const enemies=this.world.squads.filter(s=>s.troops>0 && s.embarkedOn===null && atWar(s.playerId));
     const plannedAircraft = new Map<string, number>();
-    for (const base of own.filter((b) => b.type === "airstrip"))
-      for (const definitionId of ["fighter", "bomber"] as const)
+    for (const base of own.filter((b) => b.type === "airstrip" || b.type === "drone-facility"))
+      for (const definitionId of (base.type === "drone-facility" ? ["drone"] : ["fighter","bomber"]) as Aircraft["definitionId"][])
         if (
           this.aircraft.filter(
             (a) => a.playerId === player.id && a.definitionId === definitionId,
@@ -1549,20 +1589,19 @@ export class Expansion {
         (a) => a.playerId === player.id && a.state === "ready",
       );
       const airTargets=[...enemies.slice(0,16),...structures.slice(0,16).map(b=>this.battle.position(b))];
+      const incoming=this.aircraft.filter(a=>a.health>0 && a.state!=="ready" && a.definitionId!=="drone" && atWar(a.playerId)).slice(0,16);
+      const friendly=[...this.world.squads.filter(s=>s.troops>0&&!atWar(s.playerId)),...own.map(b=>this.battle.position(b))];
+      // At most 32 candidates per ready aircraft, once per existing staggered strategic pass.
       for(const aircraft of ready) {
-        const base=this.world.building(aircraft.airfieldId);
-        if(!base)continue;
-        const home=this.battle.position(base);
-        const target=airTargets.find(t=>Math.hypot(t.x-aircraft.x,t.y-aircraft.y)+Math.hypot(t.x-home.x,t.y-home.y)
-          <=(aircraft.fuelTicks-20)*AIRCRAFT_RULES.speed);
+        const targets=aircraft.definitionId === "fighter" ? [...incoming,...airTargets].slice(0,32) : aircraft.definitionId === "drone" ? [...structures.filter(b=>b.type==="missile-defence").slice(0,16).map(b=>this.battle.position(b)),...airTargets].slice(0,32) : airTargets;
+        let target=targets.find(t=>flightReachable(aircraft,t.x,t.y));
         if(!target)continue;
-        this.world.applyCommand({
-          type: "sortie",
-          playerId: player.id,
-          aircraftIds: [aircraft.id],
-          x: target.x,
-          y: target.y,
-        });
+        let mission:import("../content/FlightOperations").AirMission=aircraft.definitionId==="fighter"?"patrol":aircraft.definitionId==="drone"?"drone":"bombing";
+        if(aircraft.definitionId==="bomber" && this.progression.has(player.id,"rus-earlymodern-nuclear-weapons") && (stock["payload:atomic"]??0)>0) {
+          const atomic=targets.find(t=>flightReachable(aircraft,t.x,t.y)&&!friendly.some(s=>(s.x-t.x)**2+(s.y-t.y)**2<=(16*FIXED)**2));
+          if(atomic){target=atomic;mission="atomic";}
+        }
+        this.world.applyCommand({type:"sortie",mission,playerId:player.id,aircraftIds:[aircraft.id],x:target.x,y:target.y});
       }
       const launchers=[...own.filter(b=>["missile-silo","mirv-launcher"].includes(b.type)),
         ...squads.filter(s=>this.unit(s).role==="launcher")];

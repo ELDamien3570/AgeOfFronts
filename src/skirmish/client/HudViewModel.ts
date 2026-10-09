@@ -43,7 +43,8 @@ export type HudKind =
   | ShipType
   | "fighter"
   | Resource
-  | "bomber";
+  | "bomber"
+  | "drone";
 export interface HudStat {
   label: string;
   value: string;
@@ -875,12 +876,12 @@ export class HudViewModel {
         category: "aircraft",
         playerId: a.playerId,
         count: 1,
-        title: `${a.definitionId === "fighter" ? "Fighter" : "Bomber"} #${a.id}`,
+        title: `${a.definitionId === "fighter" ? "Fighter" : a.definitionId === "drone" ? "Drone" : "Bomber"} #${a.id}`,
         subtitle: "1 aircraft selected",
         status: a.state,
         meter: { label: "Aircraft health", value: a.health, max: 1000 },
         stats: [
-          stat("Fuel", `${Math.ceil(a.fuelTicks / 20)}s`),
+          stat("Flight time", a.state === "returning" ? "Returning · free flight" : `${Math.ceil(a.fuelTicks / 20)}s`),
           stat("Airfield", `#${a.airfieldId}`),
           stat(
             "Role",
@@ -888,10 +889,10 @@ export class HudViewModel {
               ? "Air-to-air · 200 damage / 2s · 8 cells"
               : "Ground bomb · 2,500 base + 2,000 structure bonus",
           ),
-          stat("Orders", "Right click or Sortie · automatic return"),
+          stat("Orders", "I patrol · P bombing · O atomic · U drones"),
         ],
         description:
-          "Ready aircraft take sortie orders. Flights use finite fuel and return to their own airfield.",
+          "Mission time covers travel and patrol; returning costs no flight time. Drones are consumed on impact and cannot be intercepted.",
       }));
     const deposit =
       selection.selectedDeposit === null ||

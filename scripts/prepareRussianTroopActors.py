@@ -13,8 +13,8 @@ SOURCE = ROOT / "Art/Cultures/Russians/Units"
 OUT = ROOT / "Art/Runtime/Russians/Troops"
 OUT.mkdir(parents=True, exist_ok=True)
 bindings = json.loads((ROOT / "src/skirmish/content/RussianTroopArtwork.json").read_text(encoding="utf-8"))
-review = json.loads((SOURCE / "manifest.json").read_text(encoding="utf-8"))
-metadata = {entry["metadata"].split("/animations.json")[0].split("/TopDownReview")[0]: entry["metadata"] for entry in review["units"]}
+review = json.loads((SOURCE.parent / "Troops.json").read_text(encoding="utf-8"))
+metadata = {entry["metadata"].removeprefix("Units/").split("/animations.json")[0].split("/TopDownReview")[0]: entry["metadata"].removeprefix("Units/") for entry in review["units"]}
 # Preserve the audited Clubman body span and existing demo registration. New
 # artwork uses a fixed class baseline until its own body-span audit is approved.
 widths = {"StoneAge/Clubman": 340, "StoneAge/Javelinist": 330,

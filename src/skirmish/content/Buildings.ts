@@ -1,3 +1,4 @@
+import { RUSSIAN_RECRUITMENT } from "./RussianRecruitment";
 import type { BuildingType } from "../Protocol";
 import { BUILDING_RULES } from "../Rules";
 import { AGES, type Age, type Cost } from "../domain/Definitions";
@@ -11,7 +12,7 @@ export const DEFENSIVE_BUILDINGS: readonly BuildingType[] = [
 /** Production/defence tiers follow researched military or naval technology.
  * Economic infrastructure retains its distinct paid upgrades. */
 export const AUTOMATIC_TIER_BUILDINGS: readonly BuildingType[] = [
-  "port", "barracks", "archery", "stables", "tower", "blacksmith",
+  "city", "factory", "mine", "nuclear-facility", "drone-facility", "port", "barracks", "archery", "stables", "tower", "blacksmith",
   "armory", "arms-factory", "siege-workshop", "depot", "airstrip", "gun-nest",
   "trench", "missile-silo", "mirv-launcher", "missile-defence",
 ];
@@ -24,66 +25,10 @@ export function buildingFoundationTechnology(
   type: BuildingType,
   age: Age,
 ): string | null {
-  const index = AGES.indexOf(age);
-  if (
-    (type === "blacksmith" && (index < 1 || index > 4)) ||
-    (type === "armory" && index !== 5) ||
-    ([
-      "depot",
-      "arms-factory",
-      "airstrip",
-      "oil-well",
-      "oil-rig",
-      "gun-nest",
-      "trench",
-      "missile-silo",
-      "mirv-launcher",
-      "missile-defence",
-    ].includes(type) &&
-      index < 6)
-  )
-    return null;
-  if (type === "port") return age === "StoneAge" ? "stoneage-shorecraft" : technologyAt(age, "naval", 1).id;
-  if (type === "city")
-    return technologyAt(
-      age,
-      "economic",
-      index === 0 ? 1 : index === 3 ? 1 : index === 4 ? 3 : 2,
-    ).id;
-  if (type === "factory")
-    return technologyAt(age, "economic", index === 0 ? 2 : index === 4 ? 3 : 2)
-      .id;
-  if (type === "mine")
-    return technologyAt(age, "economic", index === 0 ? 3 : 1).id;
-  if (type === "oil-well" || type === "oil-rig")
-    return technologyAt(age, "economic", 1).id;
-  if (
-    type === "barracks" ||
-    type === "blacksmith" ||
-    type === "armory" ||
-    type === "arms-factory"
-  )
-    return technologyAt(age, "warfare", 1).id;
-  if (
-    type === "archery" ||
-    type === "depot" ||
-    type === "gun-nest" ||
-    type === "trench" ||
-    type === "missile-defence"
-  )
-    return technologyAt(age, "warfare", 2).id;
-  if (type === "stables")
-    return index >= 6 ? null : technologyAt(age, "warfare", 3).id;
-  if (type === "airstrip") return technologyAt(age, "warfare", 3).id;
-  if (type === "siege-workshop")
-    return technologyAt(age, "warfare", index > 1 ? 2 : 4).id;
-  if (type === "tower")
-    return index >= 6 ? null : technologyAt(age, "warfare", 4).id;
-  return technologyAt(age, "warfare", 4).id;
+  return (RUSSIAN_RECRUITMENT.buildings as Record<string,string>)[`${age}:${type}`] ?? null;
 }
 export function buildingTechnology(type: BuildingType, age: Age): string | null {
-  const explicit = `russian-building-${age.toLowerCase()}-${type}`;
-  return TECHNOLOGY.has(explicit) ? explicit : buildingFoundationTechnology(type, age);
+  return buildingFoundationTechnology(type,age);
 }
 export function buildingCostMultiplier(existingCount = 0): number {
   return Math.min(4, 1 + Math.max(0, existingCount) * 0.3);

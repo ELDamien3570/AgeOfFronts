@@ -222,7 +222,7 @@ async function loadActors(): Promise<void> {
   // Explicit actor manifests select revised sheets; never use Formation/ artwork.
   for (const name of NAMES) {
     const root = `/Art/Cultures/Russians/Units/StoneAge/${name}/`;
-    const layoutResponse = await fetch(`${root}Formation/formation.json`);
+    const layoutResponse = await fetch(`/Art/Cultures/Russians/FormationLayouts/${name}.json`);
     if (!layoutResponse.ok)
       throw new Error(`Missing ${name} authored formation layout`);
     layouts.set(name, await layoutResponse.json());
