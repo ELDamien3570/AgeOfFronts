@@ -21,6 +21,7 @@ export function buildTerrainDrainage(
   size: number,
   land: ArrayLike<number>,
   heights: Float32Array,
+  options: { boundaryOutlets?: boolean } = {},
 ): TerrainDrainage {
   const count = size * size;
   if (land.length !== count || heights.length !== count)
@@ -56,7 +57,9 @@ export function buildTerrainDrainage(
     neighbours(tile, (next) => {
       if (!land[next] && (outlet < 0 || next < outlet)) outlet = next;
     });
-    if (outlet < 0) continue;
+    const edgeOutlet = options.boundaryOutlets &&
+      (tile < size || tile >= count - size || tile % size === 0 || tile % size === size - 1);
+    if (outlet < 0 && !edgeOutlet) continue;
     surface[tile] = heights[tile];
     costs[tile] = 0;
     downstream[tile] = outlet;

@@ -51,6 +51,7 @@ export class TerrainDecorations {
   private readonly blocked: Uint32Array;
   private padding = 0;
   private sites = new Map<number, BuildingType>();
+  private roads = new Set<number>();
   constructor(
     private readonly map: GameMap,
     environment: TerrainEnvironment,
@@ -213,6 +214,36 @@ export class TerrainDecorations {
     for (const accent of this.near(bounds))
       if (!this.blocked[accent.id] && overlaps(accent.imageBounds, bounds))
         yield accent;
+  }
+  // Clears accents whose crown core sits on a road cell. Edge crowns may still
+  // overhang the road shoulder, like trees lining a forest track.
+  updateRoads(tiles: ReadonlySet<number>): TerrainBounds[] {
+    const dirty: TerrainBounds[] = [];
+    const change = (tile: number, delta: number) => {
+      const x = this.map.x(tile),
+        y = this.map.y(tile),
+        cell = { left: x, top: y, right: x + 1, bottom: y + 1 };
+      for (const placed of this.near(cell)) {
+        const { left, top, right, bottom } = placed.bounds,
+          insetX = (right - left) / 4,
+          insetY = (bottom - top) / 4,
+          core = {
+            left: left + insetX,
+            top: top + insetY,
+            right: right - insetX,
+            bottom: bottom - insetY,
+          };
+        if (!overlaps(core, cell)) continue;
+        const wasVisible = this.blocked[placed.id] === 0;
+        this.blocked[placed.id] += delta;
+        if (wasVisible !== (this.blocked[placed.id] === 0))
+          dirty.push(placed.imageBounds);
+      }
+    };
+    for (const tile of tiles) if (!this.roads.has(tile)) change(tile, 1);
+    for (const tile of this.roads) if (!tiles.has(tile)) change(tile, -1);
+    this.roads = new Set(tiles);
+    return dirty;
   }
   updateBuildings(
     buildings: readonly Pick<Building, "tile" | "type">[],

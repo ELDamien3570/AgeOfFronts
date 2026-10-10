@@ -102,10 +102,10 @@ export class EmpireHudView {
     troopsHeader.append(troopsHeading);
     troopsHeader.insertAdjacentHTML(
       "beforeend",
-      `<div class="dock-tier"><select id="recruit-tier" aria-label="Recruitment tier"><option value="">Best available</option>${AGES.map((age, i) => `<option value="${age}">${AGE_NAMES[i]}</option>`).join("")}</select><label><input id="auto-tier" type="checkbox" checked>Auto tier</label></div>`,
+      `<div class="dock-tier"><select id="recruit-tier" aria-label="Recruitment tier"><option value="">Best available</option>${AGES.map((age, i) => `<option value="${age}">${AGE_NAMES[i]}</option>`).join("")}</select><input id="auto-tier" type="checkbox" checked title="Auto tier" aria-label="Auto tier"></div>`,
     );
     for (const [after, section, label] of [
-      ["economy", "production", "Production Buildings"],
+      ["economy", "production", "Production"],
       ["military", "defense", "Defense Buildings"],
     ]) root.querySelector(`.command-category.${after}`)!.insertAdjacentHTML(
       "afterend", `<div class="command-category ${section}"><h3>${label}</h3><div class="category-actions"></div></div>`,
@@ -362,43 +362,80 @@ export class EmpireHudView {
       })
       .join("");
     const ready = vm.expansion.aircraft.some(a=>a.playerId===this.playerId&&a.definitionId==="bomber"&&a.state==="ready");
-    const aviation =
-      (["fighter", "bomber", "drone"] as const)
-        .map((kind) => {
-          const q = vm.aircraft(kind);
-          return this.button(
-            kind === "fighter" ? "Fighter" : kind === "drone" ? "Drone" : "Bomber",
-            "aircraft",
-            kind,
-            q.reason,
-            `${FLIGHT_RULES[kind].gold.toLocaleString()} gold · ${FLIGHT_RULES[kind].preModernSeconds}s flight time (${FLIGHT_RULES[kind].modernSeconds}s Modern) · 6 per launch site / 32 per faction` ,
-            aircraftArtworkId(kind, q.building?.age ?? vm.progression.age),
-          );
-        })
-        .join("") +
-      this.button(
-        "Bombing Run",
-        "sortie",
-        "",
-        ready ? null : "No ready aircraft at an operational airfield",
-        "One ready bomber from the nearest airfield. Shift-click Sortie or its target for up to five. Shortcut: P.",
-      ) +
-      this.button("Dispatch","dispatch","",vm.expansion.aircraft.some(a=>a.playerId===this.playerId&&a.definitionId==="fighter"&&a.state==="ready")?null:"No ready fighters","Patrol and engage hostile aircraft. Shortcut: I.") +
-      this.button("A-Bomb Run","atomic-run","",vm.has("rus-earlymodern-nuclear-weapons") && (vm.inventory["payload:atomic"]??0)>0 ? null:"Needs Nuclear Weapons research and an atomic bomb","One atomic bomb per bomber. Shortcut: O.") +
-      this.button("Drone Strike","drone-strike","",vm.expansion.aircraft.some(a=>a.playerId===this.playerId&&a.definitionId==="drone"&&a.state==="ready")?null:"No ready drones","Single-use drone strike; bypasses defence. Shortcut: U.") +
-      (["icbm", "hydrogen", "mirv"] as const)
-        .map((payload) => {
-          const q = vm.launcher(payload);
-          return this.button(
-            payload === "hydrogen" ? "H-bomb" : payload.toUpperCase(),
-            "launch",
-            payload,
-            q.reason,
-            `10,000 gold · 1 ${payload.toUpperCase()} payload\nResearch: Strategic Weapons\nLauncher: ${payload === "mirv" ? "MIRV launch complex or deployed mobile launcher" : "Missile silo"}\n36s flight · 60s launcher reload${payload === "mirv" ? " · 8 warheads · Right-click a building to focus all eight" : ""}`,
-            payload,
-          );
-        })
-        .join("");
+    const fighter = vm.aircraft("fighter");
+    const bomber = vm.aircraft("bomber");
+    const drone = vm.aircraft("drone");
+    const icbm = vm.launcher("icbm");
+    const hbomb = vm.launcher("hydrogen");
+    const mirv = vm.launcher("mirv");
+
+    const btnAtomic = this.button("A-Bomb Run","atomic-run","",vm.has("rus-earlymodern-nuclear-weapons") && (vm.inventory["payload:atomic"]??0)>0 ? null:"Needs Nuclear Weapons research and an atomic bomb","One atomic bomb per bomber. Shortcut: O.");
+    const btnFighter = this.button(
+      "Fighter",
+      "aircraft",
+      "fighter",
+      fighter.reason,
+      `${FLIGHT_RULES.fighter.gold.toLocaleString()} gold · ${FLIGHT_RULES.fighter.preModernSeconds}s flight time (${FLIGHT_RULES.fighter.modernSeconds}s Modern) · 6 per launch site / 32 per faction`,
+      aircraftArtworkId("fighter", fighter.building?.age ?? vm.progression.age),
+    );
+    const btnDispatch = this.button("Dispatch","dispatch","",vm.expansion.aircraft.some(a=>a.playerId===this.playerId&&a.definitionId==="fighter"&&a.state==="ready")?null:"No ready fighters","Patrol and engage hostile aircraft. Shortcut: I.");
+    const btnBomber = this.button(
+      "Bomber",
+      "aircraft",
+      "bomber",
+      bomber.reason,
+      `${FLIGHT_RULES.bomber.gold.toLocaleString()} gold · ${FLIGHT_RULES.bomber.preModernSeconds}s flight time (${FLIGHT_RULES.bomber.modernSeconds}s Modern) · 6 per launch site / 32 per faction`,
+      aircraftArtworkId("bomber", bomber.building?.age ?? vm.progression.age),
+    );
+    const btnBombingRun = this.button(
+      "Bombing Run",
+      "sortie",
+      "",
+      ready ? null : "No ready aircraft at an operational airfield",
+      "One ready bomber from the nearest airfield. Shift-click Sortie or its target for up to five. Shortcut: P.",
+    );
+    const btnDrone = this.button(
+      "Drone",
+      "aircraft",
+      "drone",
+      drone.reason,
+      `${FLIGHT_RULES.drone.gold.toLocaleString()} gold · ${FLIGHT_RULES.drone.preModernSeconds}s flight time (${FLIGHT_RULES.drone.modernSeconds}s Modern) · 6 per launch site / 32 per faction`,
+      aircraftArtworkId("drone", drone.building?.age ?? vm.progression.age),
+    );
+    const btnDroneStrike = this.button("Drone Strike","drone-strike","",vm.expansion.aircraft.some(a=>a.playerId===this.playerId&&a.definitionId==="drone"&&a.state==="ready")?null:"No ready drones","Single-use drone strike; bypasses defence. Shortcut: U.");
+    const btnIcbm = this.button(
+      "ICBM",
+      "launch",
+      "icbm",
+      icbm.reason,
+      `10,000 gold · 1 ICBM payload\nResearch: Strategic Weapons\nLauncher: Missile silo\n36s flight · 60s launcher reload`,
+      "icbm",
+    );
+    const btnMirv = this.button(
+      "MIRV",
+      "launch",
+      "mirv",
+      mirv.reason,
+      `10,000 gold · 1 MIRV payload\nResearch: Strategic Weapons\nLauncher: MIRV launch complex or deployed mobile launcher\n36s flight · 60s launcher reload · 8 warheads · Right-click a building to focus all eight`,
+      "mirv",
+    );
+    const btnHbomb = this.button(
+      "H-bomb",
+      "launch",
+      "hydrogen",
+      hbomb.reason,
+      `10,000 gold · 1 HYDROGEN payload\nResearch: Strategic Weapons\nLauncher: Missile silo\n36s flight · 60s launcher reload`,
+      "hydrogen",
+    );
+
+    // Grid flow is 2 rows by column:
+    // Col 1: Warship (in HTML) | btnAtomic
+    // Col 2: btnFighter        | btnDispatch
+    // Col 3: btnBomber         | btnBombingRun
+    // Col 4: btnDrone          | btnDroneStrike
+    // Col 5: btnIcbm           | btnMirv
+    // Col 6: btnHbomb          | (empty)
+    const aviation = btnAtomic + btnFighter + btnDispatch + btnBomber + btnBombingRun + btnDrone + btnDroneStrike + btnIcbm + btnMirv + btnHbomb;
     const values = {
       economy: buildings("economy"),
       production: buildings("production"),

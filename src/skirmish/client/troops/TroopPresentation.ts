@@ -42,15 +42,6 @@ export function installTroopPresentation(
   renderer.squadArtworkViewRadius = actors.viewRadius;
   renderer.squadLabelPose = actors.labelPose;
 
-  const panel = document.createElement("div");
-  panel.className = "troop-formation-controls";
-  panel.hidden = true;
-  panel.setAttribute("aria-label", "Selected squad visual formation");
-  panel.innerHTML = `<span>Formation</span> <button data-shape="mass">Mass</button> <button data-shape="line">Line</button> <button data-shape="shield-wall">Shield wall</button> <button data-shape="square">Square</button>`;
-  const style = document.createElement("style");
-  style.textContent = `.troop-formation-controls{position:fixed;left:50%;transform:translateX(-50%);top:158px;z-index:65;background:#10212bee;padding:8px;border:1px solid #5e7464;border-radius:6px;color:#eaf0ec;font:12px system-ui}.troop-formation-controls[hidden]{display:none}.troop-formation-controls button{margin-left:4px;padding:5px 7px}.troop-formation-controls button[aria-pressed=true]{outline:2px solid #c4ff36}`;
-  document.head.append(style);
-  document.querySelector("#app")!.append(panel);
   function selected() {
     return (
       latest?.squads.filter(
@@ -62,7 +53,7 @@ export function installTroopPresentation(
       ) ?? []
     );
   }
-  panel.addEventListener("click", (event) => {
+  document.addEventListener("click", (event) => {
     const button = (event.target as HTMLElement).closest<HTMLButtonElement>(
       "button[data-shape]",
     );
@@ -82,7 +73,6 @@ export function installTroopPresentation(
       latest = undefined;
       time = 0;
       previousFrame = undefined;
-      panel.hidden = true;
     },
     update(snapshot) {
       latest = snapshot;
@@ -111,18 +101,18 @@ export function installTroopPresentation(
       if (now < nextControls) return;
       nextControls = now + 150;
       const squads = selected();
-      panel.hidden = !squads.length;
-      for (const button of panel.querySelectorAll<HTMLButtonElement>(
+      for (const button of document.querySelectorAll<HTMLButtonElement>(
         "button[data-shape]",
       )) {
         const shape = button.dataset.shape as ManualFormation;
         button.disabled =
-          squads.every((squad) => {
+          !squads.length ||
+          (squads.every((squad) => {
             const art = RUSSIAN_TROOP_ACTORS.get(squad.definitionId ?? "")!;
             return art.mounted || art.vehicle;
           }) &&
           shape !== "mass" &&
-          shape !== "line";
+          shape !== "line");
         button.setAttribute(
           "aria-pressed",
           String(

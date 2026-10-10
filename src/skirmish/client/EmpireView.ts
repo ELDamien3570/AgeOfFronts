@@ -30,7 +30,7 @@ const escape = (s: string) =>
 const fmt = (n: number) => Math.floor(n).toLocaleString("en-US");
 
 export function empireMarkup(): string {
-  return `<div id="resource-strip" class="resource-strip" aria-label="Empire resources"><div id="treasury"></div><div id="strategic-stocks"></div><span id="clock" aria-label="Game time">0:00</span><button id="technology-toggle">Technology <kbd>Y</kbd></button><button id="supplies-toggle">Supplies <kbd>L</kbd></button><button id="empire-age" type="button" aria-controls="match-topbar" aria-expanded="true" title="Show or hide the top bar">Stone Age</button></div>`;
+  return `<div id="resource-strip" class="resource-strip" aria-label="Empire resources"><div id="treasury"></div><div id="strategic-stocks"></div><span id="clock" aria-label="Game time">0:00</span><button id="roster-toggle" aria-expanded="false">Factions</button><button id="technology-toggle">Technology <kbd>Y</kbd></button><button id="supplies-toggle">Supplies <kbd>L</kbd></button><button id="empire-age" type="button" aria-controls="match-topbar" aria-expanded="true" title="Show or hide the top bar">Stone Age</button></div>`;
 }
 
 export interface EmpireActions {
@@ -98,12 +98,14 @@ export class EmpireView {
       `<section id="empire-panel" class="empire-panel hud-surface" aria-label="Empire management" hidden><header><h2 id="empire-panel-title"></h2><button id="empire-close" aria-label="Close empire panel">×</button></header><div id="empire-content"></div><div id="empire-panel-footer"></div></section>`,
     );
 
-    root
-      .querySelector(".selection-card")!
-      .insertAdjacentHTML(
-        "beforeend",
-        `<div id="refit-actions" class="refit-actions" hidden></div>`,
-      );
+    if (!root.querySelector("#refit-actions")) {
+      root
+        .querySelector(".selection-card")!
+        .insertAdjacentHTML(
+          "afterbegin",
+          `<div id="refit-actions" class="refit-actions" hidden></div>`,
+        );
+    }
 
     for (const [button, panel] of [
       ["technology-toggle", "technology"],
@@ -117,16 +119,7 @@ export class EmpireView {
       .querySelector("#empire-close")!
       .addEventListener("click", () => this.close());
 
-    root
-      .querySelector(".dock-utility")!
-      .insertAdjacentHTML(
-        "beforeend",
-        `<button id="infrastructure-toggle">Build & support</button>`,
-      );
 
-    root
-      .querySelector("#infrastructure-toggle")!
-      .addEventListener("click", () => this.toggle("supplies"));
 
     const gold = root.querySelector("#gold")!.closest(".resource")!,
       reserves = root.querySelector("#reserves")!.closest(".resource")!;
@@ -164,9 +157,8 @@ export class EmpireView {
 
     for (const id of ["controls-toggle", "roster-toggle"])
       root
-        .querySelector(`#${id}`)!
-        .addEventListener("click", () => this.close());
-    root.querySelector("#infrastructure-toggle")!.textContent = "Production";
+        .querySelector(`#${id}`)
+        ?.addEventListener("click", () => this.close());
     root.querySelector("#supplies-toggle")!.innerHTML =
       "Production <kbd>L</kbd>";
     this.dock = new EmpireHudView(root, actions, this, (id) =>
@@ -276,7 +268,8 @@ export class EmpireView {
         `${refit.reason}:${refit.target?.id}:${refit.eligibleCount}:${refit.totalCount}:${refit.cost?.gold}:${JSON.stringify(refit.cost?.items)}:${refit.selected.map((s) => s.id).join()}`
     ) {
       actions.dataset.key = `${refit.reason}:${refit.target?.id}:${refit.eligibleCount}:${refit.totalCount}:${refit.cost?.gold}:${JSON.stringify(refit.cost?.items)}:${refit.selected.map((s) => s.id).join()}`;
-      actions.innerHTML = `<button ${refit.reason || !refit.target ? "disabled" : ""}>Upgrade ${refit.affordable.length}/${refit.totalCount} <kbd>Ctrl U</kbd></button><small>${escape(refit.reason ?? `${refit.target!.name} · ${fmt(refit.cost!.gold ?? 0)} gold · ${refit.affordable.length} of ${refit.eligibleCount} eligible · 10 sec · promotion resets`)}</small>`;
+      const detail = escape(refit.reason ?? `${refit.target!.name} · ${fmt(refit.cost!.gold ?? 0)} gold · ${refit.affordable.length} of ${refit.eligibleCount} eligible · 10 sec · promotion resets`);
+      actions.innerHTML = `<button ${refit.reason || !refit.target ? "disabled" : ""}>Upgrade ${refit.affordable.length}/${refit.totalCount} <kbd>Ctrl U</kbd></button><small class="refit-popup">${detail}</small>`;
     }
 
     if (this.panel && performance.now() - this.lastRender > 500)

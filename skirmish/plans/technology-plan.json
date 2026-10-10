@@ -9382,10 +9382,9 @@
           "order": 1,
           "name": "Stone Age Infantry",
           "prerequisites": [],
-          "description": "Upgrade barracks and equipment production; unlock Clubmen and their equipment recipes.",
+          "description": "Upgrade barracks and unlock Clubmen. Stone Age troops require no manufactured equipment.",
           "buildingUnlocks": [
-            "Barracks",
-            "Blacksmith"
+            "Barracks"
           ],
           "kind": "unlock",
           "notes": "Playable first pass. Costs and research durations follow the base-culture age pattern; the eighth age extrapolates its final tier by 25%. Balance remains tunable.",

@@ -20,6 +20,13 @@ src/assets/
 .codex/
 data/multiplayer.sqlite*
 outputs/multiplayer-review/
+# Local review/evidence output and frozen baseline snapshots (regenerable)
+outputs/migration-review/
+outputs/black-forest-review/
+tmp/formation-baseline/
+tmp/formation-baseline.zip
+tmp/black-forest-baseline/
+tmp/russian-art-build/
 .antigravity/
 
 # Debug / Log Outputs

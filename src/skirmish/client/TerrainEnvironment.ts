@@ -28,7 +28,14 @@ export class TerrainEnvironment {
   heightAt(tile: number) {
     return this.profile.heightAt(tile);
   }
+  // Road tiles read as cleared ground in the view only. Trade roads are
+  // cosmetic, so authoritative cover (movement, tooltips) stays unchanged.
+  private roads: ReadonlySet<number> = new Set();
+  setRoads(tiles: ReadonlySet<number>): void {
+    this.roads = tiles;
+  }
   coverAt(tile: number) {
+    if (this.roads.has(tile)) return 0;
     return forestOf(this.map)?.coverAt(tile) ?? 0;
   }
   colorAt(tile: number): readonly number[] {

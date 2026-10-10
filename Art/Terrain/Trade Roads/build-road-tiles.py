@@ -100,15 +100,28 @@ def blend(base, color, amount):
     return base * (1-amount[..., None]) + np.asarray(color) * amount[..., None]
 
 
-def paint(mask, age, grass, material):
+SHOULDER = np.array([112, 105, 67], dtype=np.float64)
+SHOULDER_WIDTH = 10.0
+
+
+def clear_ground():
+    # Fully transparent cells keep the shoulder RGB, so filtering and edge
+    # collars never pull a foreign colour into the road's soft margin.
+    pixels = np.zeros((SIZE, SIZE, 4))
+    pixels[..., :3] = SHOULDER
+    return pixels
+
+
+def paint(mask, age, material):
+    # Roads are cutouts: the map's own terrain shows through everywhere the
+    # road and its worn shoulder do not cover, so no biome is baked in.
     signed, center_distance = road_geometry(mask)
     # Narrow irregularity for earthen shoulders; no camera-dependent noise.
     irregularity = np.sin(X*.17+np.sin(Y*.10))*np.cos(Y*.14+X*.035)
     if age in ['BronzeAge', 'ClassicalAge']:
         signed = signed + irregularity * (1.3 if age == 'BronzeAge' else .8)
-    result = grass.copy()
-    shoulder = np.clip((7.5-signed)/7.5, 0, 1)
-    result = blend(result, [112, 105, 67], shoulder*.56)
+    result = np.broadcast_to(SHOULDER, (SIZE, SIZE, 3)).copy()
+    shoulder = np.clip((SHOULDER_WIDTH-signed)/SHOULDER_WIDTH, 0, 1)
     coverage = np.clip(.5-signed, 0, 1)
     result = blend(result, material, coverage)
     if age in ['EarlyMedieval', 'LateMedieval', 'EarlyModern']:
@@ -130,19 +143,20 @@ def paint(mask, age, grass, material):
             direction = {1: C-Y, 2: X-C, 4: Y-C, 8: C-X}[mask]
             center_line *= np.clip((direction-12)/14,0,1)
         result = blend(result, [230, 194, 84], center_line*.95)
-    return result
+    alpha = np.maximum(coverage, shoulder**1.5*.6)*255
+    return np.dstack([result, alpha])
 
 
-def finish_edges(pixels, mask, grass, north_south, east_west):
+def finish_edges(pixels, mask, clear, north_south, east_west):
     # All tiles share a fixed connector collar. This also makes filtering near
     # cell borders independent of the bend/junction in the tile interior.
     band = 8
     for index in range(band):
         amount = (1-index/band)**2
-        targets = [north_south[index] if mask & 1 else grass[index],
-                   north_south[-1-index] if mask & 4 else grass[-1-index],
-                   east_west[:,index] if mask & 8 else grass[:,index],
-                   east_west[:,-1-index] if mask & 2 else grass[:,-1-index]]
+        targets = [north_south[index] if mask & 1 else clear[index],
+                   north_south[-1-index] if mask & 4 else clear[-1-index],
+                   east_west[:,index] if mask & 8 else clear[:,index],
+                   east_west[:,-1-index] if mask & 2 else clear[:,-1-index]]
         pixels[index] = pixels[index]*(1-amount)+targets[0]*amount
         pixels[-1-index] = pixels[-1-index]*(1-amount)+targets[1]*amount
         pixels[:,index] = pixels[:,index]*(1-amount)+targets[2]*amount
@@ -150,13 +164,13 @@ def finish_edges(pixels, mask, grass, north_south, east_west):
     pixels = np.clip(np.rint(pixels),0,255).astype(np.uint8)
     ns = np.clip(np.rint(north_south),0,255).astype(np.uint8)
     ew = np.clip(np.rint(east_west),0,255).astype(np.uint8)
-    ground = grass.astype(np.uint8)
+    ground = np.clip(np.rint(clear),0,255).astype(np.uint8)
     # Symmetric terminal profile and periodic texture give exact opposing RGB.
     pixels[0] = ns[0] if mask & 1 else ground[0]
     pixels[-1] = ns[0] if mask & 4 else ground[0]
     pixels[:,0] = ew[:,0] if mask & 8 else ground[:,0]
     pixels[:,-1] = ew[:,0] if mask & 2 else ground[:,0]
-    return Image.fromarray(pixels).convert('RGBA')
+    return Image.fromarray(pixels, 'RGBA')
 
 
 def sample_layout():
@@ -180,8 +194,10 @@ def render_layout(tiles, ground, layout, cell_size):
     canvas = Image.new('RGBA',(len(layout[0])*cell_size,len(layout)*cell_size))
     for y,row in enumerate(layout):
         for x,mask in enumerate(row):
-            tile = ground if mask is None else tiles[mask]
-            canvas.paste(tile.resize((cell_size,cell_size),Image.Resampling.LANCZOS),(x*cell_size,y*cell_size))
+            cell = ground.resize((cell_size,cell_size),Image.Resampling.LANCZOS)
+            if mask is not None:
+                cell = Image.alpha_composite(cell, tiles[mask].resize((cell_size,cell_size),Image.Resampling.LANCZOS))
+            canvas.paste(cell,(x*cell_size,y*cell_size))
     return canvas
 
 
@@ -194,11 +210,11 @@ def main():
     for age,label,surface in zip(AGES,LABELS,SURFACES):
         folder = ROOT/age; (folder/'tiles').mkdir(parents=True,exist_ok=True)
         material = periodic_material(age)
-        ns = paint(5,age,grass,material); ew = paint(10,age,grass,material)
+        clear = clear_ground(); ns = paint(5,age,material); ew = paint(10,age,material)
         tiles = {}; atlas = Image.new('RGBA',(SIZE*4,SIZE*4)); padded = Image.new('RGBA',((SIZE+4)*4,(SIZE+4)*4))
         definitions = []
         for mask,name in enumerate(NAMES):
-            tile = finish_edges(paint(mask,age,grass,material),mask,grass,ns,ew)
+            tile = finish_edges(paint(mask,age,material),mask,clear,ns,ew)
             tiles[mask] = tile; file = f'tiles/{mask:02d}-{name}.png'; tile.save(folder/file,optimize=True)
             x,y = mask%4*SIZE,mask//4*SIZE; atlas.paste(tile,(x,y))
             # Two-pixel extrusion supports sprite-atlas bilinear sampling.
@@ -208,10 +224,10 @@ def main():
         atlas.save(folder/'Road_Atlas.png',optimize=True); padded.save(folder/'Road_Atlas_Padded.png',optimize=True)
         review = render_layout(tiles,ground,layout,40); review.save(folder/'Route_Example.png')
         reviews.append(review)
-        metadata = {'schemaVersion':1,'age':age,'ageLabel':label,'surface':surface,'tileSize':SIZE,'worldFootprintCells':1,'opaqueGround':True,'connectionBits':BITS,'roadWidthPixels':round(HALF_WIDTH*2,2),'atlas':'Road_Atlas.png','atlasSize':[1024,1024],'paddedAtlas':'Road_Atlas_Padded.png','paddedAtlasSize':[1040,1040],'extrusionPixels':2,'tiles':definitions,'generatedSource':f'generated/{age}.png','sourceSha256':sha(ROOT/'generated'/f'{age}.png'),'rotationPolicy':'Use authored mask entries; do not rotate painted materials at runtime.','integrationStatus':'art library and preview; not connected to game renderer'}
+        metadata = {'schemaVersion':1,'age':age,'ageLabel':label,'surface':surface,'tileSize':SIZE,'worldFootprintCells':1,'opaqueGround':False,'connectionBits':BITS,'roadWidthPixels':round(HALF_WIDTH*2,2),'atlas':'Road_Atlas.png','atlasSize':[1024,1024],'paddedAtlas':'Road_Atlas_Padded.png','paddedAtlasSize':[1040,1040],'extrusionPixels':2,'tiles':definitions,'generatedSource':f'generated/{age}.png','sourceSha256':sha(ROOT/'generated'/f'{age}.png'),'rotationPolicy':'Use authored mask entries; do not rotate painted materials at runtime.','integrationStatus':'drawn by src/skirmish/client/RoadLayer.ts over the live terrain'}
         write_json(folder/'tiles.json',metadata)
         entries.append({'age':age,'ageLabel':label,'surface':surface,'metadata':f'{age}/tiles.json','atlas':f'{age}/Road_Atlas.png','paddedAtlas':f'{age}/Road_Atlas_Padded.png','example':f'{age}/Route_Example.png'})
-        print(f'{age}: 16 opaque connected tiles + atlases',flush=True)
+        print(f'{age}: 16 transparent-ground connected tiles + atlases',flush=True)
     manifest = {'schemaVersion':1,'ageCount':6,'tilesPerAge':16,'roadTileCount':96,'tileSize':SIZE,'worldFootprintCells':1,'connectionBits':BITS,'ground':'Ground.png','groundSourceSha256':sha(ROOT/'generated'/'Ground.png'),'connectionDirections':'cardinal only, as requested','ages':entries,'preview':'Road_Tile_Preview.html','status':'artwork-only; renderer and trade-route simulation integration unverified'}
     write_json(ROOT/'Road_Tile_Manifest.json',manifest)
     contact = Image.new('RGB',(1080,640),(22,32,25)); draw = ImageDraw.Draw(contact)

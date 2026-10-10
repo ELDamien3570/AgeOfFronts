@@ -147,4 +147,35 @@ describe("Earth terrain presentation", () => {
       ),
     ).toBe(true);
   });
+
+  it("clears accents whose core sits on a road and restores them when the road goes", () => {
+    const { field, map } = fixture(),
+      all = Array.from(field.visible(bounds)),
+      placed = all[0],
+      road = map.ref(Math.floor(placed.x), Math.floor(placed.y)),
+      tiles = new Set([road]);
+    const dirty = field.updateRoads(tiles);
+    expect(dirty).toContainEqual(placed.imageBounds);
+    const visible = Array.from(field.visible(bounds));
+    expect(visible.some((accent) => accent.id === placed.id)).toBe(false);
+    // A one-cell road removes only nearby accents, not the surrounding ground.
+    expect(all.length - visible.length).toBeLessThanOrEqual(2);
+    expect(field.updateRoads(new Set(tiles))).toEqual([]);
+    // Shared clearing with a building keeps the accent hidden until both go.
+    field.updateBuildings([{ tile: road, type: "city" }]);
+    field.updateRoads(new Set());
+    expect(
+      Array.from(field.visible(bounds)).some((a) => a.id === placed.id),
+    ).toBe(false);
+    field.updateBuildings([]);
+    expect(Array.from(field.visible(bounds))).toEqual(all);
+  });
+
+  it("reads road cells as cleared cover in the view only", () => {
+    const { map } = fixture(),
+      environment = new TerrainEnvironment(map),
+      tile = map.ref(10, 10);
+    environment.setRoads(new Set([tile]));
+    expect(environment.coverAt(tile)).toBe(0);
+  });
 });

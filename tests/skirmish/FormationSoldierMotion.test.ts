@@ -329,6 +329,48 @@ describe("individual formation motion", () => {
       Math.hypot(turned[0].x - turned[1].x, turned[0].y - turned[1].y),
     ).toBeLessThan(0.8);
   });
+  it("faces carried travel instead of sliding sideways, then restores rank facing", () => {
+    for (const looseTravel of [false, true]) {
+      const motion = new FormationSoldierMotion(2);
+      const options = {
+        ...ordinary,
+        combatFootwork: true,
+        carrierRelative: true,
+        looseTravel,
+      };
+      // Rank faces down (+y) while the squad is carried along +x.
+      let result = motion.sample(0, { x: 0, y: 0 }, 0, slots, options);
+      for (let now = 50; now <= 2000; now += 50)
+        result = motion.sample(now, { x: now / 1000, y: 0 }, 0, slots, options);
+      for (const soldier of result)
+        expect(turn(soldier.angle, -Math.PI / 2)).toBeLessThan(0.05);
+      for (let now = 2050; now <= 5000; now += 50)
+        result = motion.sample(now, { x: 2, y: 0 }, 0, slots, options);
+      if (!looseTravel)
+        for (const soldier of result)
+          expect(turn(soldier.angle, 0)).toBeLessThan(0.05);
+    }
+  });
+  it("keeps rank facing through a slight strafe", () => {
+    const motion = new FormationSoldierMotion(2);
+    const options = {
+      ...ordinary,
+      combatFootwork: true,
+      carrierRelative: true,
+    };
+    let result = motion.sample(0, { x: 0, y: 0 }, 0, slots, options);
+    // Marching down (+y) with a 5 degree sideways component.
+    for (let now = 50; now <= 2000; now += 50)
+      result = motion.sample(
+        now,
+        { x: Math.sin(Math.PI / 36) * (now / 1000), y: now / 1000 },
+        0,
+        slots,
+        options,
+      );
+    for (const soldier of result)
+      expect(turn(soldier.angle, 0)).toBeLessThan(1e-6);
+  });
   it("allows different lag while accelerating, then settles and stops the walking phase", () => {
     const motion = new FormationSoldierMotion(3);
     let result = motion.sample(0, { x: 0, y: 0 }, 0, slots, ordinary);

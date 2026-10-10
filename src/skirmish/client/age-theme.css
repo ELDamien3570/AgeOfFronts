@@ -61,7 +61,7 @@
   color: var(--research-age-light);
   border-color: var(--research-age-edge);
 }
-#app[data-ui-age] :is(.topbar, .resource-strip, footer) {
+#app[data-ui-age] :is(.topbar, .resource-strip) {
   background: var(--frame-paint);
   border: 0 solid transparent;
   border-bottom-width: var(--age-border);
@@ -71,8 +71,9 @@
   border-top-width: 2px;
 }
 #app[data-ui-age] footer {
-  border-bottom: 0;
-  border-top: 2px solid var(--age-edge);
+  background: transparent;
+  border: none;
+  box-shadow: none;
 }
 #app[data-ui-age] .resource-strip {
   position: relative;
@@ -274,7 +275,7 @@
 #app[data-ui-age] .empire-panel > header {
   flex-shrink: 0;
 }
-#app[data-ui-age] .army-list {
+#app[data-ui-age] :is(.army-list, .isolated-control-groups) {
   --age-border: 2px;
 }
 #app[data-ui-age] .empire-panel.diplomacy-drawer {

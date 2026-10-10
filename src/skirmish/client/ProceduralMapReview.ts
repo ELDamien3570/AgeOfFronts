@@ -1,4 +1,5 @@
 import type { BlackForestMap } from "../BlackForestMap";
+import { TerrainType } from "../../core/game/Game";
 import type { Deposit } from "../domain/Definitions";
 import { generateDeposits } from "../domain/DepositGeneration";
 import type { MigrationMap } from "../MigrationMap";
@@ -151,13 +152,16 @@ async function generate() {
     const topography = document.querySelector("#topography");
     if (topography) {
       let peak = 0,
-        mountains = 0;
+        mountains = 0, hills = 0;
       for (let tile = 0; tile < next.terrain.length; tile++)
         if (next.map.isLand(tile)) {
           peak = Math.max(peak, next.elevation!.values[tile]);
           mountains += Number(next.map.isImpassable(tile));
+          hills += Number(next.map.terrainType(tile) === TerrainType.Highland);
         }
-      topography.textContent = `${Math.round(peak)} m peak · ${Math.round((mountains / land) * 1000) / 10}% mountains`;
+      topography.textContent = "ponds" in next
+        ? `${Math.round(peak)} m peak · ${Math.round((hills / land) * 1000) / 10}% wooded hills`
+        : `${Math.round(peak)} m peak · ${Math.round((mountains / land) * 1000) / 10}% mountains`;
     }
     const regions = document.querySelector("#landform-count");
     if (regions && "landforms" in next.layout)
@@ -356,8 +360,8 @@ function frame(now: number) {
     }
     dirty = false;
     ground.draw(ctx, scale, offsetX, offsetY, width, height);
-    if (showHeights && "mainlands" in loaded.layout) {
-      heightView ??= migrationHeightView(loaded as MigrationMap);
+    if (showHeights) {
+      heightView ??= migrationHeightView(loaded, "ponds" in loaded);
       ctx.imageSmoothingEnabled = true;
       ctx.drawImage(
         heightView,

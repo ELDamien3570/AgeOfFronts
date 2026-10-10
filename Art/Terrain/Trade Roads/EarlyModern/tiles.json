@@ -5,7 +5,7 @@
   "surface": "Dressed stone paving",
   "tileSize": 256,
   "worldFootprintCells": 1,
-  "opaqueGround": true,
+  "opaqueGround": false,
   "connectionBits": {
     "N": 1,
     "E": 2,
@@ -364,5 +364,5 @@
   "generatedSource": "generated/EarlyModern.png",
   "sourceSha256": "80e53962eb4e260258c1c5ad3b8f78638f209635201b374bc86c0ac8e54f7b21",
   "rotationPolicy": "Use authored mask entries; do not rotate painted materials at runtime.",
-  "integrationStatus": "art library and preview; not connected to game renderer"
+  "integrationStatus": "drawn by src/skirmish/client/RoadLayer.ts over the live terrain"
 }

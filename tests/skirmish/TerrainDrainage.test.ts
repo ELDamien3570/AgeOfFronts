@@ -2,6 +2,20 @@ import { describe, expect, it } from "vitest";
 import { buildTerrainDrainage } from "../../src/skirmish/TerrainDrainage";
 
 describe("terrain drainage", () => {
+  it("drains dry inland terrain through explicit map-edge outlets without adding water", () => {
+    const size = 30, land = new Uint8Array(size * size).fill(1), heights = new Float32Array(size * size);
+    for (let tile = 0; tile < heights.length; tile++) heights[tile] = 200 + Math.sin(tile % size) * 30;
+    const original = heights.slice();
+    expect(() => buildTerrainDrainage(size, land, heights)).toThrow(/outlet/);
+    const result = buildTerrainDrainage(size, land, heights, { boundaryOutlets: true });
+    expect(result.order.length).toBe(land.length); expect(heights).toEqual(original);
+    for (let tile = 0; tile < heights.length; tile++) {
+      let next = tile, steps = 0;
+      while (result.downstream[next] >= 0) { next = result.downstream[next]; expect(++steps).toBeLessThan(land.length); }
+      expect(next < size || next >= land.length - size || next % size === 0 || next % size === size - 1).toBe(true);
+    }
+    expect(land.every(v => v === 1)).toBe(true);
+  });
   it("drains a closed depression to the sea with no uphill steps or cycles", () => {
     const size = 11,
       land = new Uint8Array(size * size),

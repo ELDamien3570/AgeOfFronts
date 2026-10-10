@@ -20,6 +20,7 @@ import {
   distanceSquared,
   pointTile,
   squadRadius,
+  squadSeparation,
   standable,
   tilePoint,
   traversable,
@@ -93,6 +94,8 @@ interface March {
   phaseTick: number;
   retreating: boolean;
 }
+/** Longest retarget, in cells, a member may take without corridor admission. */
+const DIRECT_STEP = 3;
 const active = (s: Squad) => s.troops > 0 && s.embarkedOn === null && !s.refit;
 const attackOrder = (
   o: ArmyOrder,
@@ -635,7 +638,40 @@ export class Armies {
     }
     if (!march.columnIds.length) march.columnIds = sorted.map((s) => s.id);
     const center = pointTile(this.world.map, this.onRoute(march, march.cursor));
+    // The column advances every tick. Waiting for a deferred formation search
+    // on open ground stalls the whole march, so legal ideals are used as-is.
+    if (this.world.domainRoutes && this.legalSlots(army, center, sorted, ideals)) {
+      this.slotPlanning.delete(army.id);
+      return ideals;
+    }
     return this.planSlots(army,center,sorted,ideals);
+  }
+  /** The same per-slot legality FormationPlanning applies to a candidate. */
+  private legalSlots(army: Army, center: number, members: Squad[], ideals: Map<number, WorldPoint>): boolean {
+    const paths = this.world.squadPaths(army.playerId);
+    return members.every((s) => {
+      const point = ideals.get(s.id)!, tile = pointTile(this.world.map, point);
+      return standable(this.world.map, point, squadRadius(s.kind), paths.amphibious) &&
+        !this.world.armyBlocked(tile, army.playerId) &&
+        paths.connected(center, tile) &&
+        this.world.nearbyArmyEnemies(point, 2 * FIXED, army.playerId)
+          .every((other) => distanceSquared(point, other) >= squadSeparation(s, other) ** 2);
+    });
+  }
+  /** A short, straight, unobstructed step needs no admitted corridor. */
+  private directMove(army: Army, march: March, s: Squad, slot: WorldPoint): boolean {
+    const paths = this.world.squadPaths(army.playerId), tile = pointTile(this.world.map, slot);
+    if (
+      distanceSquared(s, slot) > (DIRECT_STEP * FIXED) ** 2 ||
+      this.world.armyBlocked(tile, army.playerId) ||
+      !traversable(this.world.map, s, slot, squadRadius(s.kind), paths.amphibious)
+    )
+      return false;
+    this.world.cancelArmyRoute(`army:${army.id}:${s.id}`);
+    march.pending.delete(s.id);
+    this.world.setArmyMove(s, slot, tile === pointTile(this.world.map, s) ? [] : [tile]);
+    march.planned.set(s.id, slot);
+    return true;
   }
   private deploy(
     army: Army,
@@ -753,8 +789,20 @@ export class Armies {
     if(slots===undefined)return false;
     if(this.cohorts && slots){
       if([...this.cohortArmies.values()].some(link=>link.armyId===army.id))return false;
-      const needs=members.some(s=>distanceSquared(s,slots.get(s.id)!)>(FIXED/5)**2 &&
-        (!march.planned.has(s.id) || distanceSquared(march.planned.get(s.id)!,slots.get(s.id)!)>(FIXED/3)**2));
+      // Marching slots creep forward every tick. Retarget short steps directly,
+      // as the synchronous path does; only distant or obstructed members need
+      // a transactional cohort admission (which pauses the march meanwhile).
+      let needs=false;
+      for(const s of members){
+        const slot=slots.get(s.id)!,planned=march.planned.get(s.id);
+        if(distanceSquared(s,slot)<=(FIXED/5)**2)continue;
+        if(planned && distanceSquared(planned,slot)<=(FIXED/3)**2){
+          if(s.order.type==="move" && pointTile(this.world.map,planned)===pointTile(this.world.map,slot))
+            this.world.updateSquad(s.id,{order:{...s.order,x:slot.x,y:slot.y}});
+          continue;
+        }
+        if(!this.directMove(army,march,s,slot))needs=true;
+      }
       if(needs){
         const id=this.cohorts.start(army.playerId,members,pointTile(this.world.map,slots.values().next().value!),slots);
         if(id!==undefined)this.cohortArmies.set(id,{armyId:army.id,revision:army.revision});

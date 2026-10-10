@@ -948,7 +948,8 @@ export class TroopActors {
     const soldiers = state.walkers.sample(now, worldPosition, angle, slots, {
       footprint,
       mounted,
-      engaged: mobile ? engagement.engaged : squad.fighting,
+      // A move order out of contact is travel: walk it rather than strafe it.
+      engaged: mobile ? engagement.engaged : intent.active,
       looseTravel:
         !troop.vehicle && (mobile || laneTravel) && !engagement.engaged,
       travelLanes:

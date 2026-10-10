@@ -11,6 +11,8 @@ export interface ElevationData {
   seaLevel: number;
   /** Presentation-only relief gain; never changes heights or movement. */
   reliefScale?: number;
+  /** Opt-in shading above dense canopy; independent of terrain mechanics. */
+  canopyRelief?: boolean;
 }
 
 export class ElevationField {
@@ -19,6 +21,7 @@ export class ElevationField {
   readonly maximum: number;
   readonly seaLevel: number;
   readonly reliefScale?: number;
+  readonly canopyRelief?: boolean;
   constructor(size: number, data: ElevationData) {
     if (
       !(data.values instanceof Float32Array) ||
@@ -29,7 +32,8 @@ export class ElevationField {
       !Number.isFinite(data.seaLevel) ||
       data.seaLevel < data.minimum ||
       data.seaLevel > data.maximum ||
-      (data.reliefScale !== undefined && (!Number.isFinite(data.reliefScale) || data.reliefScale <= 0 || data.reliefScale > 10))
+      (data.reliefScale !== undefined && (!Number.isFinite(data.reliefScale) || data.reliefScale <= 0 || data.reliefScale > 10)) ||
+      (data.canopyRelief !== undefined && typeof data.canopyRelief !== "boolean")
     )
       throw new Error("Invalid elevation field");
     for (const value of data.values)
@@ -44,6 +48,7 @@ export class ElevationField {
     this.maximum = data.maximum;
     this.seaLevel = data.seaLevel;
     this.reliefScale = data.reliefScale;
+    this.canopyRelief = data.canopyRelief;
   }
   heightAt(tile: number): number {
     return this.values[tile];

@@ -34,6 +34,12 @@ export class ArmyView {
     this.card.setAttribute("aria-label", "Army details");
     this.card.hidden = true;
     root.querySelector(".battlefield")!.append(this.strip, this.card);
+    new ResizeObserver(() =>
+      root.style.setProperty(
+        "--army-list-height",
+        `${this.strip.hidden ? 0 : this.strip.offsetHeight}px`,
+      ),
+    ).observe(this.strip);
     this.strip.addEventListener("click", (e) => {
       const b = (e.target as HTMLElement).closest<HTMLButtonElement>("button");
       if (!b || !this.vm) return;

@@ -79,6 +79,7 @@ import { PresentationClock, squadSpriteSize } from "./UnitAnimation";
 import { UnitArtwork } from "./UnitArtwork";
 import { UnitPresentation, visibleInViewport } from "./UnitPresentation";
 import { WallArtwork, type WallFrame } from "./WallArtwork";
+import { TrenchArtwork } from "./TrenchArtwork";
 import { WallPresentation } from "./WallPresentation";
 export { COLORS } from "./FactionColors";
 
@@ -117,6 +118,7 @@ export class Renderer {
   private readonly eraArtwork = new EraArtwork();
   private roads?: RoadLayer;
   private readonly wallArtwork = new WallArtwork();
+  private readonly trenchArtwork = new TrenchArtwork();
   private readonly walls = new WallPresentation();
   private readonly trenches = new WallPresentation("trench");
   private readonly promotionArtwork = new PromotionArtwork();
@@ -387,7 +389,14 @@ export class Renderer {
     this.tradePayouts.update(snapshot.expansion?.tradeReceipts??[],this.playerId,performance.now());
     this.cacheTerritoryText(snapshot);
     this.buildingSelection.reconcile(snapshot.buildings, this.playerId);
-    this.roads!.update(snapshot);
+    if (this.roads!.update(snapshot)) {
+      // Roads clear the trees and forest-darkened ground beneath them.
+      const cleared = this.ground!.updateRoads(this.roads!.tiles);
+      if (cleared.length && this.groundSource && this.groundColors)
+        this.groundLayer.updateColors(
+          rebakeGroundColors(this.groundSource, this.groundColors, cleared),
+        );
+    }
     this.walls.update(snapshot);
     this.trenches.update(snapshot);
     this.impacts.update(snapshot.expansion?.projectiles ?? [], snapshot.tick);
@@ -1195,22 +1204,14 @@ export class Renderer {
     }
       ctx.restore();
       ctx.save();
-    ctx.lineCap = "round";
-    ctx.lineJoin = "round";
     for (const trench of this.trenches.tiles) {
-      const p = this.screen(this.map.x(trench.tile)+0.5, this.map.y(trench.tile)+0.5);
-      if (!visibleInViewport(p,this.scale,this.width,this.height)) continue;
+      const p = this.screen(this.map.x(trench.tile) + 0.5, this.map.y(trench.tile) + 0.5);
+      if (!visibleInViewport(p, this.scale, this.width, this.height)) continue;
+      const frame = this.trenchArtwork.frame(trench.mask);
+      if (!frame) continue;
+      ctx.imageSmoothingEnabled = true;
       ctx.globalAlpha = trench.constructing ? 0.55 : 1;
-      for (const [width,color] of [[0.46,"#ad9270"],[0.28,"#302b25"]] as const) {
-        ctx.strokeStyle = color; ctx.lineWidth = this.scale*width;
-        ctx.beginPath();
-        for (const [bit,dx,dy] of [[1,0,-0.5],[2,0.5,0],[4,0,0.5],[8,-0.5,0]]) {
-          if (!(trench.mask & bit)) continue;
-          const end = this.screen(this.map.x(trench.tile)+0.5+dx,this.map.y(trench.tile)+0.5+dy);
-          ctx.moveTo(p.x,p.y); ctx.lineTo(end.x,end.y);
-        }
-        ctx.stroke();
-      }
+      this.drawWallFrame(frame, trench.tile);
     }
       ctx.restore();
 

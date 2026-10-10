@@ -31,6 +31,35 @@ const building = (
 });
 
 describe("research-linked military infrastructure", () => {
+  it("unlocks blacksmith construction with the first Bronze Age warfare research", () => {
+    const cells = new Uint8Array(48 * 48).fill(133);
+    const match = new Skirmish(new GameMapImpl(48, 48, cells, cells.length), {
+      seed: 42,
+      aiCount: 1,
+      tribes: false,
+      runAi: false,
+      ruleset: "ages-v1",
+    });
+    const e = match.expansion!, player = match.players[0];
+    const state = e.progression.states[player.id];
+    expect(buildingTechnology("blacksmith", "StoneAge")).toBeNull();
+    expect(e.buildRejection(player, "blacksmith", 0, "StoneAge"))
+      .toBe("Research this building's technology first");
+
+    state.age = "BronzeAge";
+    const t = technologyAt("BronzeAge", "warfare", 1);
+    expect(buildingTechnology("blacksmith", "BronzeAge")).toBe(t.id);
+    expect(e.buildRejection(player, "blacksmith", 0, "BronzeAge"))
+      .toBe("Research this building's technology first");
+    state.completed.push(...t.prerequisites);
+    player.gold = t.gold;
+    expect(match.applyCommand({ type: "research", playerId: player.id, technologyId: t.id }))
+      .toBeNull();
+    state.research.warfare!.remainingTicks = 1;
+    e.beforeStep();
+    expect(e.buildRejection(player, "blacksmith", 0, "BronzeAge"))
+      .not.toBe("Research this building's technology first");
+  });
   it.each(AGES.slice(1))("uses every building's own unlock in %s", (age) => {
     for (const type of MILITARY_BUILDINGS) {
       const technology = buildingTechnology(type, age);

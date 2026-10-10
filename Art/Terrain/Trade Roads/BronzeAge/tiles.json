@@ -5,7 +5,7 @@
   "surface": "Packed dirt",
   "tileSize": 256,
   "worldFootprintCells": 1,
-  "opaqueGround": true,
+  "opaqueGround": false,
   "connectionBits": {
     "N": 1,
     "E": 2,
@@ -364,5 +364,5 @@
   "generatedSource": "generated/BronzeAge.png",
   "sourceSha256": "dcd3c868684cb37f1e38052fb78c3d84c444f7f18f7be41746f46b7d31eaad09",
   "rotationPolicy": "Use authored mask entries; do not rotate painted materials at runtime.",
-  "integrationStatus": "art library and preview; not connected to game renderer"
+  "integrationStatus": "drawn by src/skirmish/client/RoadLayer.ts over the live terrain"
 }

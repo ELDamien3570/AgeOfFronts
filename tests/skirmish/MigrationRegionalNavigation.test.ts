@@ -69,6 +69,7 @@ it("regional generation remains canonical and deterministic", async () => {
   expect(a.layout.landforms).toEqual(b.layout.landforms);
 });
 it("keeps the supported small-map boundary rosters viable", () => {
+  const maps = Array.from({ length: 12 }, (_, seed) => generateMigration(250, seed).map);
   for (const [regular, tribes] of [
     [20, 27],
     [24, 20],
@@ -77,7 +78,7 @@ it("keeps the supported small-map boundary rosters viable", () => {
     [34, 3],
   ])
     for (let seed = 0; seed < 12; seed++) {
-      const map = generateMigration(250, seed).map,
+      const map = maps[seed],
         starts = new SpawnSelection(map, {
           seed,
           aiCount: regular - 20,

@@ -243,8 +243,10 @@ export function createRusPackagedRework(
       "barracks-equipment",
       `${label} Infantry & Equipment`,
       previousWarfare ? [previousWarfare] : [],
-      `Unlock/upgrade barracks and ${equipment.toLowerCase()} together, including this tier's equipment-production recipes and barracks troop recipes: ${names(id, ["frontline", "antiCavalry"])}. These recipes require no individual follow-up unlocks.`,
-      ["Barracks", equipment],
+      index
+        ? `Unlock/upgrade barracks and ${equipment.toLowerCase()} together, including this tier's equipment-production recipes and barracks troop recipes: ${names(id, ["frontline", "antiCavalry"])}. These recipes require no individual follow-up unlocks.`
+        : `Unlock/upgrade barracks and their troop recipes: ${names(id, ["frontline", "antiCavalry"])}. Stone Age troops require no manufactured equipment.`,
+      index ? ["Barracks", equipment] : ["Barracks"],
     );
     const ranged = add(
       id,

@@ -34,8 +34,8 @@ def main():
             cropped = atlas.crop((rect['x'],rect['y'],rect['x']+size,rect['y']+size))
             packed = padded.crop((prect['x']-2,prect['y']-2,prect['x']+size+2,prect['y']+size+2))
             flags = {direction: bool(mask&bit) for direction,bit in bits.items()}
-            observed = {direction: float(np.abs(edge(pixels,direction)[size//2,:3].astype(float)-edge(ground,direction)[size//2,:3]).mean())>8 for direction in bits}
-            contract = {'mask':mask,'file':definition['file'],'dimensionsCorrect':image.size==(size,size),'opaqueRGBA':image.mode=='RGBA' and image.getchannel('A').getextrema()==(255,255),'metadataConnectionsCorrect':set(definition['connections'])=={direction for direction,value in flags.items() if value},'exitsCorrect':observed==flags,'atlasMatchesTile':np.array_equal(np.asarray(cropped),pixels),'extrusionCorrect':np.array_equal(np.asarray(packed),np.pad(pixels,((2,2),(2,2),(0,0)),mode='edge'))}
+            observed = {direction: int(edge(pixels,direction)[size//2,3])>128 for direction in bits}
+            contract = {'mask':mask,'file':definition['file'],'dimensionsCorrect':image.size==(size,size),'transparentGround':image.mode=='RGBA' and all(int(pixels[y,x,3])==0 for y,x in [(0,0),(0,-1),(-1,0),(-1,-1)]) and int(image.getchannel('A').getextrema()[1])==255,'metadataConnectionsCorrect':set(definition['connections'])=={direction for direction,value in flags.items() if value},'exitsCorrect':observed==flags,'atlasMatchesTile':np.array_equal(np.asarray(cropped),pixels),'extrusionCorrect':np.array_equal(np.asarray(packed),np.pad(pixels,((2,2),(2,2),(0,0)),mode='edge'))}
             contract['passed'] = all(value for key,value in contract.items() if key not in ['mask','file'])
             tile_checks.append(contract)
         pair_count = 0; failures = []
@@ -54,7 +54,7 @@ def main():
         draw.text((col+8,28),age['surface'],fill=(178,194,173),font=font)
         for test_size,y in [(24,62),(32,111),(64,172),(128,270)]:
             # A 90-degree bend exposes both the material and its ground margin.
-            example = Image.fromarray(tiles[3]).resize((test_size,test_size),Image.Resampling.LANCZOS)
+            example = Image.alpha_composite(Image.fromarray(ground).resize((test_size,test_size),Image.Resampling.LANCZOS),Image.fromarray(tiles[3]).resize((test_size,test_size),Image.Resampling.LANCZOS))
             small.paste(example.convert('RGB'),(col+(190-test_size)//2,y)); draw.text((col+8,y),str(test_size),fill=(178,194,173),font=font)
     ground_preserved = sha(ROOT/'generated'/'Ground.png')==manifest['groundSourceSha256']
     passed = len(reports)==6 and sum(r['tileCount'] for r in reports)==96 and ground_preserved and all(r['passed'] for r in reports)

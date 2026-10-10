@@ -185,7 +185,11 @@ export function bakeTerrainFields(input: FieldInputs): Uint8Array {
       surface[i] = Math.max(seaLevel, heights[i]);
       depth[i] = land[i] ? 0 : Math.max(0, seaLevel - heights[i]);
     }
-    const smooth = blurField(surface, w, h, SMOOTH_RADIUS),
+    // Generated detail already has a coherent full-resolution surface. A light
+    // lighting-only filter retains gullies; legacy DEM maps keep their bake.
+    const smooth = elevation.reliefScale === undefined
+      ? blurField(surface, w, h, SMOOTH_RADIUS)
+      : blurField(surface, w, h, 1, 1),
       deep = blurField(depth, w, h, SMOOTH_RADIUS);
     const at = (x: number, y: number) =>
       smooth[

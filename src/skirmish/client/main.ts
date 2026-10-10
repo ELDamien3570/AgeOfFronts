@@ -117,7 +117,7 @@ document.querySelector<HTMLDivElement>("#app")!.innerHTML = `
 
       .join(
         "",
-      )}</select></label><label>Map size<select id="world-size"><option value="250">250 cells · longest edge</option><option value="500" selected>500 cells · longest edge</option><option value="1000">1000 cells · longest edge</option></select></label><label>Starting age<select id="starting-age">${STARTING_AGES.map(a => `<option value="${a}" ${a === "StoneAge" ? "selected" : ""}>${startingAgeName(a)}</option>`).join("")}</select></label><label>Victory<select id="victory-mode"><option value="solo">Solo conquest</option><option value="allied">Allied conquest</option></select></label><label title="New skirmishes divide all research and age-advancement costs and times by this setting, for every faction.">Tech speed<select id="technology-speed" aria-label="Technology speed"><option value="1">1×</option><option value="2">2×</option><option value="3">3×</option></select></label><label><input type="checkbox" id="infinite-gold" />Infinite Gold for Players</label><button id="restart" class="primary">New skirmish</button></div>
+      )}</select></label><label>Map size<select id="world-size"><option value="250">250 cells · longest edge</option><option value="500" selected>500 cells · longest edge</option><option value="1000">1000 cells · longest edge</option></select></label><label>Starting age<select id="starting-age">${STARTING_AGES.map(a => `<option value="${a}" ${a === "StoneAge" ? "selected" : ""}>${startingAgeName(a)}</option>`).join("")}</select></label><label>Victory<select id="victory-mode"><option value="solo">Solo conquest</option><option value="allied">Allied conquest</option></select></label><label title="New skirmishes divide all research and age-advancement costs and times by this setting, for every faction.">Tech speed<select id="technology-speed" aria-label="Technology speed"><option value="1">1×</option><option value="2">2×</option><option value="3">3×</option></select></label><label><input type="checkbox" id="infinite-gold" />Infinite Gold for Players</label><button id="restart" class="primary">New skirmish</button><button id="controls-toggle" type="button" aria-expanded="false">Controls</button></div>
 
     <div class="time-controls"><button id="wasd-mode" type="button" aria-pressed="false" title="WASD pans the map; Shift for building/single recruitment shortcuts, Space for five recruits.">WASD</button><select id="speed" aria-label="Game speed"><option value="1">1× speed</option><option value="2">2× speed</option><option value="4">4× speed</option></select><button id="pause" aria-label="Pause game">Pause</button></div>
 
@@ -127,6 +127,14 @@ document.querySelector<HTMLDivElement>("#app")!.innerHTML = `
 
   <div id="toast" role="status" class="toast" hidden></div>
   <main class="battlefield" aria-label="Battlefield">
+
+    <div id="isolated-control-groups" class="isolated-control-groups hud-surface" aria-label="Control groups">
+      <div class="control-groups">
+        <span>Groups</span>
+        ${[1, 2, 3, 4, 5, 6, 7, 8, 9, 0].map((d) => `<button id="group-${d}" aria-label="Control group ${d}"><b>${d}</b><small>0</small></button>`).join("")}
+      </div>
+      <span class="group-help">Shift adds · Ctrl replaces</span>
+    </div>
 
     <canvas id="battlefield" aria-label="Map with selectable troop squads" tabindex="0"></canvas>
     <div id="spawn-selection" class="spawn-selection" role="status" aria-live="polite" hidden><strong>Choose your starting camp</strong><p id="spawn-hint"></p></div>
@@ -144,9 +152,6 @@ document.querySelector<HTMLDivElement>("#app")!.innerHTML = `
     ${hudMarkup()}
 
   </main>
-
-  <footer><span>© OpenFront and Contributors · Modified Age of Fronts prototype</span><a id="corresponding-source" href="/age-of-fronts-source.zip" download>Corresponding source</a><span id="map-attribution">OpenFront maps · CC BY-SA 4.0</span></footer>
-
 `;
 
 // Render builds link to their exact public revision; local builds retain the ZIP.
@@ -154,9 +159,11 @@ const sourceUrl = import.meta.env.VITE_SKIRMISH_SOURCE_URL;
 if (sourceUrl) {
   const sourceLink = document.querySelector<HTMLAnchorElement>(
     "#corresponding-source",
-  )!;
-  sourceLink.href = sourceUrl;
-  sourceLink.removeAttribute("download");
+  );
+  if (sourceLink) {
+    sourceLink.href = sourceUrl;
+    sourceLink.removeAttribute("download");
+  }
 }
 
 const element = <T extends HTMLElement>(id: string) =>
@@ -468,20 +475,21 @@ async function start(): Promise<void> {
 
     element("hover-terrain").textContent = "";
 
-    const attribution = element("map-attribution");
+    const attribution = document.getElementById("map-attribution");
 
-    attribution.replaceChildren();
+    if (attribution) {
+      attribution.replaceChildren();
 
-    if (loaded.attribution) {
-      const link = document.createElement("a");
+      if (loaded.attribution) {
+        const link = document.createElement("a");
 
-      link.href = loaded.attribution.url;
+        link.href = loaded.attribution.url;
 
-      link.textContent = loaded.attribution.label;
+        link.textContent = loaded.attribution.label;
 
-      attribution.append(link);
-    } else attribution.textContent = isProceduralMap(mapId) ? "Procedural terrain · AgeOfFronts" : "OpenFront maps · CC BY-SA 4.0";
-
+        attribution.append(link);
+      } else attribution.textContent = isProceduralMap(mapId) ? "Procedural terrain · AgeOfFronts" : "OpenFront maps · CC BY-SA 4.0";
+    }
 
     renderer.setMap(loaded.map, loaded.geography, loaded.environment);
 
@@ -929,25 +937,41 @@ function updateSelection(): void {
   const selected =
     snapshot?.squads.filter((s) => renderer.selected.has(s.id)) ?? [];
 
-  element("selected").textContent = selected.length
-    ? `${selected.length} squad${selected.length > 1 ? "s" : ""} · ${format(selected.reduce((sum, s) => sum + s.troops, 0))} troops`
-    : renderer.selectedShips.size
-      ? `${renderer.selectedShips.size} ships selected`
-      : vm?.building
-        ? `${renderer.selectedBuildings.size || 1} building${renderer.selectedBuildings.size > 1 ? "s" : ""} selected`
-        : vm?.inspectedSquad
-          ? "Inspecting enemy squad"
-          : "No squads selected";
+  const hasUnitsSelected = selected.length > 0 || renderer.selectedShips.size > 0;
+  const ordersPanel = document.getElementById("selection-orders-panel");
+  if (ordersPanel) {
+    ordersPanel.hidden = !hasUnitsSelected;
+  }
 
-  element("selected-orders").textContent = selected.length
-    ? `Right click to move or attack. Shift queues orders. ${Math.max(...selected.map((s) => s.queuedOrders.length))} queued.`
-    : renderer.selectedShips.size
-      ? "Right click water to sail. Shift queues waypoints."
-      : vm?.building
-        ? "Recruit into the shortest compatible selected queue. Shift-click adds buildings; double-click selects visible buildings of this type. Press R to repair."
-        : vm?.inspectedSquad
-          ? "Enemy details are read only. Select your troops to issue orders."
-          : "Click your units or drag a selection box.";
+  const selectedEl = document.getElementById("selected");
+  if (selectedEl) {
+    selectedEl.textContent = selected.length
+      ? `${selected.length} squad${selected.length > 1 ? "s" : ""} · ${format(selected.reduce((sum, s) => sum + s.troops, 0))} troops`
+      : renderer.selectedShips.size
+        ? `${renderer.selectedShips.size} ships selected`
+        : vm?.building
+          ? `${renderer.selectedBuildings.size || 1} building${renderer.selectedBuildings.size > 1 ? "s" : ""} selected`
+          : vm?.inspectedSquad
+            ? "Inspecting enemy squad"
+            : "No squads selected";
+  }
+
+  const selectedOrdersEl = document.getElementById("selected-orders");
+  if (selectedOrdersEl) {
+    selectedOrdersEl.textContent = selected.length
+      ? `Right click to move or attack. Shift queues orders. ${Math.max(...selected.map((s) => s.queuedOrders.length))} queued.`
+      : renderer.selectedShips.size
+        ? "Right click water to sail. Shift queues waypoints."
+        : vm?.building
+          ? "Recruit into the shortest compatible selected queue. Shift-click adds buildings; double-click selects visible buildings of this type. Press R to repair."
+          : vm?.inspectedSquad
+            ? "Enemy details are read only. Select your troops to issue orders."
+            : "Click your units or drag a selection box.";
+
+    if (selected.some((s) => s.order.type === "replenish"))
+      selectedOrdersEl.textContent +=
+        " Replenishing: remains stopped until full, Hold, or a new order.";
+  }
 
   element<HTMLButtonElement>("hold").disabled =
     selected.length === 0 && renderer.selectedShips.size === 0;
@@ -958,10 +982,6 @@ function updateSelection(): void {
   if (replenishLabel) {
     replenishLabel.textContent = (vm?.selectedBuildings.length ?? 0) > 0 ? "Repair" : "Replenish";
   }
-
-  if (selected.some((s) => s.order.type === "replenish"))
-    element("selected-orders").textContent +=
-      " Replenishing: remains stopped until full, Hold, or a new order.";
 
   const ships =
     snapshot?.ships.filter((s) => renderer.selectedShips.has(s.id)) ?? [];

@@ -53,10 +53,14 @@ export class RoadLayer {
     this.cache.clear();
     this.pixels = 0;
   }
-  update(snapshot: Snapshot): void {
+  /** Road cells of the current revision; a new set on each road change. */
+  tiles: ReadonlySet<number> = new Set();
+  /** Returns true when the road cells changed. */
+  update(snapshot: Snapshot): boolean {
     const dirty = new Set<number>();
     const revision = snapshot.expansion?.roadRevision ?? 0;
-    if (revision !== this.revision) {
+    const changed = revision !== this.revision;
+    if (changed) {
       const next = new Map<number, RoadTile>();
       const packed = snapshot.expansion?.roads;
       for (let i = 0; packed && i < packed.length; i += 3) {
@@ -85,6 +89,7 @@ export class RoadLayer {
         if (!chunk) this.chunks.set(key, (chunk = []));
         chunk.push(road);
       }
+      this.tiles = new Set(this.roads.keys());
       this.revision = revision;
     }
     const occupied = new Set<number>();
@@ -118,6 +123,7 @@ export class RoadLayer {
         this.pixels -= chunk.canvas.width * chunk.canvas.height;
         this.cache.delete(key);
       }
+    return changed;
   }
 
   private chunk(key: number, detail: number): RoadChunk | undefined {

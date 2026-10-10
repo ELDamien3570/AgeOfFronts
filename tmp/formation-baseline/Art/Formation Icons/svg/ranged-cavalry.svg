@@ -1,7 +1,0 @@
-<svg xmlns="http://www.w3.org/2000/svg" width="512" height="512" viewBox="0 0 512 512" shape-rendering="geometricPrecision"><title>Ranged cavalry formation marker</title><g id="faction-field" fill="#ffffff"><path d="M32 144H240L256 128L272 144H480V368H32Z"/></g>
-    <path id="facing" d="M246 150L256 138L266 150Z" fill="#000000"/>
-    <g id="unit-symbol" fill="#000000"><g transform="translate(-35 12) scale(.83 .94)"><path d="M108 354C124 321 147 285 162 253L128 264Q145 230 176 215L148 217Q175 188 216 177H250L270 152L279 183L303 159L299 206L350 262Q364 277 361 293Q358 310 342 312L329 311L302 287Q287 278 278 263Q272 297 291 328L316 354Z"/><ellipse cx="308" cy="238" rx="8" ry="6" transform="rotate(30 308 238)" fill="#ffffff"/></g><g transform="translate(231 10) scale(.52 .96)"><g fill="none" stroke="#000000" stroke-linecap="round" stroke-linejoin="round">
-  <path d="M223 164Q426 256 223 348" stroke-width="24"/>
-  <path d="M223 164V348" stroke-width="12"/>
-  <path d="M129 256H390" stroke-width="20"/>
-  </g><path d="M416 256L369 224V288Z"/><path d="M156 256L126 230H104L134 256L104 282H126Z"/></g></g></svg>

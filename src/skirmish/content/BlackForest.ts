@@ -1,7 +1,7 @@
 /** Editable theme recipe. Layout and appearance share no camera or match state. */
 export const BLACK_FOREST_THEME = Object.freeze({
   id: "black-forest",
-  revision: 3,
+  revision: 4,
   name: "Black Forest",
   clearingSpacing: 82,
   clearingRadiusRatio: 0.28,
@@ -17,4 +17,19 @@ export const BLACK_FOREST_THEME = Object.freeze({
   maximumForestCover: 255,
   forestEdgeWidth: 6,
   pondCoverage: [0, 0.5, 0.9] as const,
+  hillMinimumHeight: 280,
+  hillMinimumSlope: 10,
+  topography: {
+    counts: { range: [3, 6], massif: [1, 3], plateau: [0, 1], basin: [2, 4], plain: [2, 4] },
+    heights: { range: [220, 580], massif: [180, 450], plateau: [180, 350], basin: [0, 0], plain: [0, 0] },
+    widths: { range: [0.025, 0.05], massif: [0.07, 0.16], plateau: [0.07, 0.13], basin: [0.07, 0.16], plain: [0.07, 0.16] },
+    maximumHeight: 950, rangeLength: [0.18, 0.4], rangeBend: 0.45,
+    coastalBlend: [0.006, 0.02], focusBounds: [0.15, 0.15, 0.85, 0.85], focusFraction: 0.3,
+  } as const,
+  formation: {
+    resolution: 250, erosionPasses: 3, streamPower: 18, spurHeight: 0.15,
+    boundaryOutlets: true,
+    detail: { strength: 0.9, drainagePasses: 2, incision: 140 },
+  },
+  thermalErosion: { iterations: 2, talus: 80, rate: 0.04 },
 });

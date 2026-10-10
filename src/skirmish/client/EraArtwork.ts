@@ -1,4 +1,4 @@
-import { ARTWORK_CATALOG } from "./ArtworkCatalog";
+import { ARTWORK_CATALOG, type ArtworkAsset } from "./ArtworkCatalog";
 import type { ArtworkFrame } from "./UnitArtwork";
 const catalog = ARTWORK_CATALOG;
 const urls = import.meta.glob<string>("../../../Art/Runtime/Ages/*.png", {
@@ -14,41 +14,44 @@ const russianUrls = import.meta.glob<string>(
     import: "default",
   },
 );
-const url = (file: string) =>
+const url = (file: string, root?: ArtworkAsset["runtimeRoot"]) =>
+  root === "Ages" ? urls[`../../../Art/Runtime/Ages/${file}`] :
+  root === "Russians" ? russianUrls[`../../../Art/Runtime/Russians/${file}`] :
   russianUrls[`../../../Art/Runtime/Russians/${file}`] ??
   urls[`../../../Art/Runtime/Ages/${file}`];
 export function eraPortrait(id: string): string | undefined {
   const asset = catalog[id];
   const file = asset?.poster ?? asset?.file;
-  return file ? url(file) : undefined;
+  return file ? url(file, asset.runtimeRoot) : undefined;
 }
 // Shared, lazy image storage. Tactical zoom never downloads full source sheets.
 export class EraArtwork {
   private readonly images = new Map<string, HTMLImageElement>();
   private readonly requested = new Set<string>();
-  private load(file: string): HTMLImageElement | undefined {
-    if (!this.requested.has(file)) {
-      this.requested.add(file);
+  private load(file: string, root?: ArtworkAsset["runtimeRoot"]): HTMLImageElement | undefined {
+    const key = `${root ?? "auto"}:${file}`;
+    if (!this.requested.has(key)) {
+      this.requested.add(key);
       const image = new Image();
       image.decoding = "async";
-      image.onload = () => this.images.set(file, image);
-      const source = url(file);
+      image.onload = () => this.images.set(key, image);
+      const source = url(file, root);
       if (source) image.src = source;
     }
-    return this.images.get(file);
+    return this.images.get(key);
   }
   preload(id: string, clip: string): void {
     const asset = catalog[id];
     const animation = asset?.clips?.[clip];
-    if (animation) this.load(animation.file);
-    if (asset?.poster) this.load(asset.poster);
+    if (animation) this.load(animation.file, asset.runtimeRoot);
+    if (asset?.poster) this.load(asset.poster, asset.runtimeRoot);
   }
 
   get(id: string, clip = "idle", elapsedTicks = 0): ArtworkFrame | undefined {
     const asset = catalog[id];
     if (!asset) return;
     if (asset.file) {
-      const image = this.load(asset.file);
+      const image = this.load(asset.file, asset.runtimeRoot);
       return image
         ? {
             source: image,
@@ -75,11 +78,11 @@ export class EraArtwork {
         : clip;
     const animation = asset.clips?.[actual] ?? asset.clips?.idle;
     if (!animation) return;
-    const image = this.load(animation.file);
+    const image = this.load(animation.file, asset.runtimeRoot);
     if (!image) {
       // A failed or loading animation must not permanently force formation-only
       // rendering when the same unit has a valid authored portrait.
-      const poster = asset.poster && this.load(asset.poster);
+      const poster = asset.poster && this.load(asset.poster, asset.runtimeRoot);
       return poster
         ? {
             source: poster,

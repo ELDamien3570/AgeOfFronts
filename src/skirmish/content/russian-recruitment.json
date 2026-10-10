@@ -521,7 +521,7 @@
       "capabilities": [
         "barracks-equipment"
       ],
-      "description": "Upgrade barracks and equipment production; unlock Clubmen and their equipment recipes."
+      "description": "Upgrade barracks and unlock Clubmen. Stone Age troops require no manufactured equipment."
     },
     {
       "id": "rus-stoneage-ranged",
@@ -2312,7 +2312,6 @@
     "StoneAge:mine": "rus-stoneage-factories-mines",
     "StoneAge:tower": "rus-stoneage-fortifications",
     "StoneAge:barracks": "rus-stoneage-barracks-equipment",
-    "StoneAge:blacksmith": "rus-stoneage-barracks-equipment",
     "StoneAge:archery": "rus-stoneage-ranged",
     "StoneAge:stables": "rus-stoneage-mobile",
     "StoneAge:siege-workshop": "rus-stoneage-siege",
@@ -2407,7 +2406,6 @@
     "russian-building-stoneage-mine": "rus-stoneage-factories-mines",
     "russian-building-stoneage-tower": "rus-stoneage-fortifications",
     "russian-building-stoneage-barracks": "rus-stoneage-barracks-equipment",
-    "russian-building-stoneage-blacksmith": "rus-stoneage-barracks-equipment",
     "russian-building-stoneage-archery": "rus-stoneage-ranged",
     "russian-building-stoneage-stables": "rus-stoneage-mobile",
     "russian-building-stoneage-siege-workshop": "rus-stoneage-siege",

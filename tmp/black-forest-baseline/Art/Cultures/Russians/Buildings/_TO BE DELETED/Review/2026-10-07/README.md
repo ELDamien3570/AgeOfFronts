@@ -1,7 +1,0 @@
-# Russian building camera review — 2026-10-07
-
-Seven requested icons were corrected to straight overhead views using built-in image_gen: Stone Age Mine and Siege Workshop; Bronze Age Mine, Siege Workshop and Blacksmith; Classical Age Mine and Siege Workshop. New selected masters are draft pending visual approval. All previous masters remain in their SourceArt folders; previous approval records are retained here.
-
-Camera-Corrections.json contains final prompts, source references and selected files. Generation-Jobs.json and each age's Generation.json preserve all generation attempts and exact prompts. Source-Validation.json proves seven requested selected-image changes, 69 other selected images unchanged, 214 previous images retained and 70 base comparison images unchanged. Browser-Validation.json records a separate local headless Edge check of the seven cards, all preview sizes, comparisons, filters, age ordering and the empty WWII age. Screenshots show the rendered inspector.
-
-EarlyModern artwork moved to Napoleonic with identical image bytes. New EarlyModern is empty and reserved for WWII buildings. This is an art-only inspection taxonomy change; gameplay ages are unchanged. Older dated validation reports and screenshots remain historical records. In those records, the former Buildings/EarlyModern paths now resolve to Buildings/Napoleonic; they do not refer to the new empty WWII age.

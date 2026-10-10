@@ -160,13 +160,12 @@ describe("Migration layout", () => {
     expect(components.size).toBe(1);
     expect(loaded.layout.mainlands.length).toBeLessThanOrEqual(3);
   }, 30_000);
-  it("adds small islands with size and varies river-cut mainland patterns", () => {
-    const patterns = new Set<string>();
-    for (let seed = 0; seed < 6; seed++) {
+  it.each([0, 1, 2, 3, 4, 5])(
+    "adds small islands with size and preserves mainland patterns for seed %i",
+    (seed) => {
       const small = generateMigration(250, seed),
         medium = generateMigration(500, seed),
         large = generateMigration(1000, seed);
-      patterns.add(large.layout.mainlandPattern);
       expect(medium.layout.islands.length).toBeGreaterThan(
         small.layout.islands.length,
       );
@@ -193,9 +192,18 @@ describe("Migration layout", () => {
       for (let tile = 0; tile < large.terrain.length; tile++)
         if (large.map.isWater(tile)) seaComponents.add(sea.component[tile]);
       expect(seaComponents.size).toBe(1);
-    }
+    },
+    30_000,
+  );
+  it("varies between single and split mainland patterns", () => {
+    const patterns = new Set(
+      Array.from(
+        { length: 6 },
+        (_, seed) => generateMigration(250, seed).layout.mainlandPattern,
+      ),
+    );
     expect(patterns).toEqual(new Set(["single", "split"]));
-  }, 30_000);
+  });
   it("fits the existing maximum faction roster on the medium layout", () => {
     for (const seed of [0, 3, 42]) {
       const loaded = generateMigration(500, seed),
@@ -212,6 +220,12 @@ describe("Migration layout", () => {
     }
   }, 30_000);
   it("guards overcrowded small-map lobbies and fits representative boundary rosters", () => {
+    // SpawnSelection reads the immutable map. Reuse each seeded geography
+    // across roster variants rather than regenerating identical terrain five times.
+    const maps = Array.from(
+      { length: 12 },
+      (_, seed) => generateMigration(250, seed).map,
+    );
     const settings = {
       ...defaultLobbySettings("migration", 250),
       slots: 20,
@@ -237,7 +251,7 @@ describe("Migration layout", () => {
         }),
       ).not.toThrow();
       for (let seed = 0; seed < 12; seed++) {
-        const bases = new SpawnSelection(generateMigration(250, seed).map, {
+        const bases = new SpawnSelection(maps[seed], {
           seed,
           aiCount: regular - 20,
           tribes: true,

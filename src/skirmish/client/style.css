@@ -18,11 +18,11 @@ body {
 #app {
   height: 100dvh;
   display: grid;
-  grid-template-rows: auto auto minmax(0, 1fr) auto;
+  grid-template-rows: auto auto minmax(0, 1fr);
   overflow: hidden;
 }
 #app:has(> .topbar[hidden]) {
-  grid-template-rows: auto minmax(0, 1fr) auto;
+  grid-template-rows: auto minmax(0, 1fr);
 }
 button,
 select {
@@ -455,8 +455,11 @@ kbd {
   display: flex;
   align-items: center;
   justify-content: space-between;
-  gap: 4px;
+  gap: 6px;
   margin-bottom: 12px;
+}
+#selection-card:has(#refit-actions:not([hidden])) .selection-heading {
+  padding-right: 95px;
 }
 .eyebrow {
   font-size: 9px;
@@ -581,22 +584,80 @@ kbd {
   line-height: 1.6;
   margin: 10px 0 0;
 }
-.selection-orders {
+.selection-orders-grid {
   flex-shrink: 0;
+  display: grid;
+  grid-template-columns: repeat(3, 1fr);
+  gap: 5px;
+  margin-top: 12px;
+  padding-top: 8px;
   border-top: 1px solid var(--line);
-  margin-top: 14px;
-  padding-top: 10px;
+}
+.selection-orders-grid[hidden] {
+  display: none;
+}
+.order-btn {
+  position: relative;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  height: 38px;
+  padding: 3px 2px;
+  background: #11222ce0;
+  border: 1px solid #4a6675;
+  border-radius: 4px;
+  cursor: pointer;
+  color: #e5ece9;
+  transition:
+    background 0.12s,
+    border-color 0.12s,
+    color 0.12s;
+  box-sizing: border-box;
+}
+.order-btn:hover:not(:disabled) {
+  background: #1c3545;
+  border-color: #7da5b7;
+  color: #fff;
+}
+.order-btn:active:not(:disabled),
+.order-btn[aria-pressed="true"] {
+  background: #153835;
+  border-color: var(--teal);
+  color: #aff5e6;
+  box-shadow: inset 0 0 0 1px var(--teal);
+}
+.order-btn:disabled {
+  opacity: 0.35;
+  cursor: default;
+}
+.order-btn .order-icon {
+  width: 18px;
+  height: 13px;
+  display: block;
+  flex-shrink: 0;
+  fill: currentColor;
+  stroke: none;
+  margin-bottom: 2px;
+}
+.order-btn .order-label {
   font-size: 10px;
-}
-.selection-orders strong {
-  color: #cbdeda;
   font-weight: 600;
+  line-height: 1;
+  letter-spacing: 0.02em;
+  white-space: nowrap;
 }
-.selection-orders p {
-  color: #8faab5;
-  margin: 6px 0 0;
-  line-height: 1.6;
-  font-size: 9px;
+.order-btn > kbd {
+  position: absolute;
+  top: 2px;
+  right: 2px;
+  font-size: 8px;
+  line-height: 1;
+  padding: 1px 3px;
+  background: #08151ce6;
+  border: 1px solid #637f8d4d;
+  border-radius: 2px;
+  color: #9cb5bd;
 }
 .naval-orders {
   flex-shrink: 0;
@@ -916,12 +977,13 @@ kbd {
   display: none !important;
 }
 footer {
-  border-top: 1px solid var(--line);
-  min-height: 23px;
+  border-top: none;
+  background: transparent;
+  min-height: 14px;
   display: flex;
   align-items: center;
   gap: 20px;
-  padding: 5px 16px;
+  padding: 1px 16px;
   font-size: 8px;
   color: #6a8e9a;
 }
@@ -1347,15 +1409,69 @@ footer span:last-child {
   padding: 4px 0;
 }
 .refit-actions {
-  flex-shrink: 0;
-  padding: 10px;
-  border-top: 1px solid var(--line);
-  font-size: 11px;
+  position: absolute;
+  top: 9px;
+  right: 10px;
+  z-index: 6;
+  margin: 0;
+  padding: 0;
+  border: none;
+  background: none;
 }
-.refit-actions small {
+.refit-actions button {
+  padding: 3px 7px;
+  font-size: 10px;
+  font-weight: 600;
+  line-height: 1.2;
+  white-space: nowrap;
+  display: inline-flex;
+  align-items: center;
+  gap: 4px;
+  border: 1px solid #455d6b;
+  border-radius: 4px;
+  background: #182a35;
+  color: #dce7e5;
+  cursor: pointer;
+  transition:
+    background 0.12s,
+    border-color 0.12s;
+}
+.refit-actions button:not(:disabled) {
+  border-color: #3b746c;
+  background: #143532;
+  color: #bbf3e7;
+}
+.refit-actions button:not(:disabled):hover {
+  border-color: var(--teal);
+  background: #1c4b46;
+}
+.refit-actions button:disabled {
+  opacity: 0.45;
+  cursor: default;
+}
+.refit-actions .refit-popup {
+  display: none;
+  position: absolute;
+  top: calc(100% + 4px);
+  right: 0;
+  width: max-content;
+  max-width: 230px;
+  padding: 5px 8px;
+  font-size: 10px;
+  line-height: 1.35;
+  color: #d8ece8;
+  background: #10212bee;
+  backdrop-filter: blur(4px);
+  border: 1px solid #4a6c78;
+  border-radius: 4px;
+  box-shadow: 0 4px 14px #000a;
+  pointer-events: none;
+  white-space: normal;
+  z-index: 20;
+}
+.refit-actions:hover .refit-popup,
+.refit-actions:focus-within .refit-popup {
   display: block;
-  margin-top: 5px;
-  color: #c0cfcf;
 }
 @media (max-width: 800px) {
   .resource-strip {
@@ -1396,10 +1512,11 @@ footer span:last-child {
   max-width: 100%;
 }
 
-/* Compact command dock: each category owns its horizontal scroll area. */
+/* Command dock: larger building sections stacked in 2-row grids. */
 .command-dock {
-  bottom: 3px;
-  width: min(1080px, calc(100% - 16px));
+  bottom: 0px;
+  width: fit-content;
+  max-width: calc(100% - 16px);
   padding: 0 8px;
 }
 .resource-row {
@@ -1414,54 +1531,54 @@ footer span:last-child {
   font-size: 8px;
 }
 .command-row {
-  gap: 7px;
-  padding: 5px 0;
+  gap: 0;
+  padding: 3px 0 0;
 }
 .command-category {
-  flex: 1 1 155px;
+  flex: 0 0 auto;
   min-width: 0;
-  padding-right: 7px;
+  padding: 0 8px;
+  border-right: 1px solid var(--line);
+  box-sizing: content-box;
 }
-.command-category.ships {
-  flex: 0 0 112px;
+.command-category:first-child {
+  padding-left: 0;
+}
+.command-category:last-child,
+.command-category.ships,
+.command-category.aviation {
+  border-right: 0;
+  padding-right: 0;
 }
 .command-category.orders {
-  flex: 0 0 104px;
+  flex: 0 0 auto;
 }
 .command-category.orders .category-actions {
   display: grid;
-  grid-template-columns: repeat(2, 44px);
+  grid-template-rows: repeat(2, 52px);
+  grid-auto-flow: column;
+  grid-auto-columns: 46px;
   gap: 4px;
-  overflow-x: hidden;
-}
-.command-category.orders .hud-action {
-  width: 44px;
-  height: 38px;
-}
-.command-category.orders .command-symbol {
-  display: none;
-}
-.command-category.orders .action-name {
-  bottom: 2px;
-  font-size: 7px;
-}
-.command-category.orders .hud-action > kbd {
-  top: 1px;
-  font-size: 7px;
+  overflow-x: auto;
 }
 .command-category.troops {
-  flex-basis: 200px;
+  flex-basis: auto;
 }
 .command-category h3 {
-  height: 22px;
-  margin-bottom: 3px;
+  height: 20px;
+  margin-bottom: 2px;
   font-size: 8px;
 }
 .category-actions {
+  display: grid;
+  grid-template-rows: repeat(2, 52px);
+  grid-auto-flow: column;
+  grid-auto-columns: 46px;
+  gap: 4px;
   overflow-x: auto;
   overflow-y: hidden;
   max-width: 100%;
-  padding-bottom: 3px;
+  padding-bottom: 0px;
   scrollbar-width: thin;
   scrollbar-color: #50717d #142a34;
 }
@@ -1469,6 +1586,8 @@ footer span:last-child {
   display: contents;
 }
 .action-slot {
+  width: 46px;
+  height: 52px;
   flex: 0 0 auto;
 }
 .hud-action {
@@ -1533,10 +1652,10 @@ footer span:last-child {
 .troops-heading {
   display: flex;
   align-items: center;
-  flex-wrap: wrap;
-  gap: 10px;
-  min-height: 22px;
-  margin-bottom: 3px;
+  flex-wrap: nowrap;
+  gap: 5px;
+  min-height: 20px;
+  margin-bottom: 2px;
 }
 .troops-heading h3 {
   flex: 0 0 auto;
@@ -1544,28 +1663,27 @@ footer span:last-child {
   margin: 0;
 }
 .dock-tier {
-  display: flex;
-  gap: 6px;
+  display: inline-flex;
+  gap: 4px;
   align-items: center;
+  flex-shrink: 1;
+  min-width: 0;
 }
 .dock-tier select {
-  width: 78px;
-  padding: 2px;
-  font-size: 9px;
-  height: 22px;
-}
-.dock-tier label {
+  max-width: 82px;
+  width: auto;
+  flex-shrink: 1;
+  padding: 1px 2px;
   font-size: 8px;
-  display: flex;
-  gap: 2px;
-  align-items: center;
-  white-space: nowrap;
+  height: 18px;
 }
-.dock-tier input {
-  width: 11px;
-  height: 11px;
+.dock-tier input[type="checkbox"] {
+  width: 12px;
+  height: 12px;
   margin: 0;
   accent-color: #8fd6b5;
+  cursor: pointer;
+  flex-shrink: 0;
 }
 .empire-panel {
   width: min(580px, calc(100% - 24px));
@@ -1896,10 +2014,12 @@ footer span:last-child {
 }
 .match-feed {
   position: absolute;
-  right: 8px;
-  bottom: 6px;
+  right: 0px;
+  bottom: 0px;
   width: var(--match-feed-width);
-  border-radius: 5px;
+  border-radius: 5px 0 0 0;
+  border-right: 0 !important;
+  border-bottom: 0 !important;
   z-index: 3;
   font-size: 10px;
 }
@@ -1992,14 +2112,16 @@ footer span:last-child {
 .army-list {
   position: absolute;
   z-index: 8;
-  top: 50px;
-  left: 14px;
+  top: 31px;
+  left: 0px;
   max-width: min(700px, calc(100% - 28px));
   display: flex;
   align-items: center;
   flex-wrap: wrap;
   gap: 5px;
-  padding: 5px 7px;
+  padding: 4px 7px;
+  border-radius: 0 0 4px 0;
+  border-left: 0 !important;
   font-size: 10px;
 }
 .army-list [data-list] {
@@ -2051,11 +2173,58 @@ footer span:last-child {
   display: none;
 }
 
+/* Control groups isolated in the top-left tight against top HUD and left screen */
+.isolated-control-groups {
+  position: absolute;
+  top: 0px;
+  left: 0px;
+  z-index: 10;
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  padding: 3px 8px;
+  border-radius: 0 0 4px 0;
+  border-left: 0 !important;
+  border-top: 0 !important;
+  box-shadow: 0 4px 12px #0008;
+}
+.isolated-control-groups .control-groups {
+  display: flex;
+  align-items: center;
+  gap: 4px;
+}
+.isolated-control-groups .control-groups > span {
+  color: #9ab5bd;
+  font-size: 9px;
+  margin-right: 3px;
+}
+.isolated-control-groups .control-groups button {
+  display: flex;
+  align-items: center;
+  gap: 5px;
+  padding: 3px 6px;
+  min-width: 33px;
+  height: 23px;
+  font-size: 10px;
+  background: #132631;
+  border-color: #6b879746;
+}
+.isolated-control-groups .control-groups small {
+  color: #849da8;
+  font-size: 8px;
+}
+.isolated-control-groups .group-help {
+  font-size: 9px;
+  color: #93aab2;
+  margin-left: 4px;
+}
+
+
 /* The map summary shares the terrain key; training occupies the opposite corner. */
 .map-context { position: absolute; top: 14px; right: 18px; max-width: 55%; display: flex; flex-direction: column; align-items: flex-end; gap: 6px; pointer-events: none; }
 .map-context .map-badge { position: static; padding: 0; border: 0; background: none; box-shadow: none; font-size: 9px; text-shadow: 0 1px 2px #000, 0 0 4px #000; }
 .map-context .terrain-legend { position: static; justify-content: flex-end; }
-.recruitment-feed { position: absolute; top: 14px; left: 16px; display: flex; flex-wrap: wrap; gap: 6px; max-width: min(420px, 42%); }
+.recruitment-feed { position: absolute; top: calc(36px + var(--army-list-height, 0px)); left: 14px; display: flex; flex-wrap: wrap; gap: 6px; max-width: min(420px, 42%); }
 .recruitment-feed[hidden] { display: none; }
 .recruitment-cell { cursor: pointer; user-select: none; position: relative; width: 44px; height: 46px; border: 1px solid #a8c7c56b; border-radius: 3px; background: #101b24a8; overflow: hidden; }
 .recruitment-cell .hud-art { position: absolute; inset: 3px 3px 7px; width: 36px; height: 36px; object-fit: contain; }
@@ -2063,7 +2232,6 @@ footer span:last-child {
 .recruitment-count { position: absolute; right: 3px; bottom: 7px; color: #fff; font-size: 11px; font-weight: 700; text-shadow: 0 1px 2px #000, 1px 0 2px #000, -1px 0 2px #000; }
 .recruitment-progress { position: absolute; bottom: 2px; left: 2px; right: 2px; height: 3px; background: #101720; }
 .recruitment-progress i { display: block; height: 100%; background: #87d4b2; transition: width .15s linear; }
-.army-list { top: calc(50px + var(--recruitment-feed-height, 0px)); }
 
 /* Keep match totals readable when the compact HUD wraps on narrow windows. */
 .resource-row .match-metric {
@@ -2074,16 +2242,17 @@ footer span:last-child {
   flex-wrap: wrap;
 }
 
-/* Four compact research cards; open right-side drawers take presentation priority. */
+/* Tech node alerts: aligned with edge of screen, 75% width, taller with room for wrapping */
 .research-opportunities {
   position: absolute;
   top: 54px;
-  right: 8px;
-  width: min(285px, calc(100% - 16px));
-  max-height: min(450px, calc(100% - 240px));
+  right: 0px;
+  width: min(214px, calc(100% - 16px));
+  max-height: min(540px, calc(100% - 240px));
   display: grid;
   align-content: start;
   gap: 6px;
+  padding-right: 2px;
   overflow-y: auto;
   overscroll-behavior: contain;
   scrollbar-width: thin;
@@ -2094,18 +2263,21 @@ footer span:last-child {
   display: none;
 }
 .research-opportunity {
-  padding: 5px 7px;
+  padding: 6px 6px;
   min-width: 0;
+  min-height: 84px;
+  display: flex;
+  flex-direction: column;
 }
 #app[data-ui-age] .battlefield .research-opportunity {
-  border-width: 3px;
+  border-width: 2px;
 }
 .research-opportunity header {
   display: flex;
   flex-direction: row;
   justify-content: space-between;
   align-items: flex-start;
-  gap: 8px;
+  gap: 6px;
 }
 .research-opportunity .research-title-group {
   display: flex;
@@ -2119,62 +2291,53 @@ footer span:last-child {
   align-items: center;
   align-self: flex-start;
   text-transform: uppercase;
-  font-size: 8px;
+  font-size: 7px;
   line-height: 1;
-  letter-spacing: .08em;
+  letter-spacing: .06em;
   font-weight: 700;
-  padding: 1px 4px;
+  padding: 1px 3px;
   border-radius: 3px;
   border: 1px solid currentColor;
 }
 .research-opportunity header b {
-  font-size: 12px;
-  line-height: 15px;
-  overflow-wrap: anywhere;
+  font-size: 11px;
+  line-height: 13px;
+  overflow-wrap: break-word;
+  white-space: normal;
 }
 .research-description {
-  display: grid;
-  grid-template-rows: minmax(46px, 0fr);
+  display: block;
   opacity: 1;
-  transition: grid-template-rows 240ms ease, opacity 180ms ease;
+  margin-top: 3px;
 }
 .research-description > div {
   min-height: 0;
-  overflow: hidden;
-}
-.research-opportunity:is(:hover, :focus-within) .research-description {
-  grid-template-rows: minmax(46px, 1fr);
-  opacity: 1;
 }
 .research-opportunity p {
-  display: -webkit-box;
-  -webkit-box-orient: vertical;
-  -webkit-line-clamp: 2;
-  overflow: hidden;
-  font-size: 11px;
-  line-height: 16px;
-  margin: 6px 0 8px;
-  overflow-wrap: anywhere;
-}
-.research-opportunity:is(:hover, :focus-within) p {
-  -webkit-line-clamp: unset;
+  display: block;
+  font-size: 9.5px;
+  line-height: 13px;
+  margin: 3px 0 2px;
+  overflow-wrap: break-word;
+  white-space: normal;
+  color: #a4bebe;
 }
 @media (prefers-reduced-motion: reduce) {
   .research-description { transition: none; }
 }
 
-/* Research button positioned in the top right of the alert header */
+/* Compact research button in the top right of alert header */
 #app .research-opportunity button {
   width: auto;
-  min-width: 76px;
+  min-width: 74px;
   flex-shrink: 0;
   align-self: flex-start;
-  min-height: 26px;
-  padding: 3px 6px;
-  font-size: 10px;
+  min-height: 22px;
+  padding: 2px 6px;
+  font-size: 9px;
   line-height: 1.15;
   border-width: 1px;
-  border-radius: 4px;
+  border-radius: 3px;
   white-space: nowrap;
   text-align: center;
   cursor: pointer;
@@ -2183,10 +2346,11 @@ footer span:last-child {
 .research-opportunity button span {
   display: block;
   font-weight: 700;
+  font-size: 9px;
 }
 .research-opportunity button small {
   display: block;
-  font-size: 9px;
+  font-size: 8px;
   opacity: 0.95;
 }
 
@@ -2249,28 +2413,28 @@ footer span:last-child {
 }
 
 
-/* Room for the full era label and the reorganized building categories. */
-#app .dock-tier select {
-  width: 136px;
-  min-width: 136px;
-  flex-shrink: 0;
-  padding: 2px 4px;
-}
+/* Reorganized building categories. */
 .command-category h3 {
   overflow-wrap: normal;
   white-space: normal;
 }
 .action-slot[hidden] { display: none; }
-@media (min-width: 1100px) {
-  .command-row {
-    display: grid;
-    grid-template-columns: repeat(4, minmax(70px, 1fr)) minmax(246px, 1.7fr) minmax(112px, 1fr) 104px;
-  }
+
+.command-category.economy .category-actions { width: 146px; }
+.command-category.production .category-actions { width: 96px; }
+.command-category.military .category-actions { width: 246px; }
+.command-category.defense .category-actions { width: 146px; }
+.command-category.troops .category-actions { width: 246px; }
+.command-category.aviation .category-actions,
+.command-category.ships .category-actions { width: 216px; }
+
+.command-row {
+  display: flex;
+  gap: 0;
+  overflow-x: auto;
 }
-@media (max-width: 1099px) {
-  .command-row { overflow-x: auto; }
-  .command-category { flex: 0 0 145px; }
-  .command-category.troops { flex-basis: 246px; }
+.command-category {
+  flex: 0 0 auto;
 }
 .spawn-selection {
   position: absolute;

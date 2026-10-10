@@ -1,8 +1,0 @@
-<svg xmlns="http://www.w3.org/2000/svg" width="512" height="512" viewBox="0 0 512 512" shape-rendering="geometricPrecision"><title>Transport ship formation marker</title><g id="faction-field" fill="#ffffff"><path d="M144 32H240L256 16L272 32H368V480H144Z"/></g>
-      <path id="facing" d="M246 38L256 26L266 38Z" fill="#000000"/>
-      <g id="unit-symbol" fill="#000000"><path d="M256 78Q336 148 334 250L322 365Q313 420 256 450Q199 420 190 365L178 250Q176 148 256 78Z"/>
-    <path d="M256 122Q304 166 304 242L295 361Q289 396 256 419Q223 396 217 361L208 242Q208 166 256 122Z" fill="#ffffff"/>
-    <g fill="none" stroke="#000000" stroke-width="10" stroke-linejoin="miter">
-      <path d="M226 188H286V248H226ZM226 283H286V343H226Z"/>
-      <path d="M229 191L283 245M283 191L229 245M229 286L283 340M283 286L229 340"/>
-    </g></g></svg>

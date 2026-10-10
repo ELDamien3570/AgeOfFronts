@@ -1,3 +1,0 @@
-<svg xmlns="http://www.w3.org/2000/svg" width="512" height="512" viewBox="0 0 512 512" shape-rendering="geometricPrecision"><title>Melee formation marker</title><g id="faction-field" fill="#ffffff"><path d="M32 144H240L256 128L272 144H480V368H32Z"/></g>
-    <path id="facing" d="M246 150L256 138L266 150Z" fill="#000000"/>
-    <g id="unit-symbol" fill="#000000"><g transform="translate(256 248) scale(1.28)"><g transform="rotate(-45)"><path d="M0-92L18-65V31H42V49H14V81H22V97H-22V81H-14V49H-42V31H-18V-65Z"/></g><g transform="rotate(45)" stroke="#ffffff" stroke-width="7" paint-order="stroke fill"><path d="M0-92L18-65V31H42V49H14V81H22V97H-22V81H-14V49H-42V31H-18V-65Z"/></g></g></g></svg>

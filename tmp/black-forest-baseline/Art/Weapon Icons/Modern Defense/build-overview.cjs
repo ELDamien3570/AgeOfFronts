@@ -1,4 +1,0 @@
-// Contact sheet only: deterministic resizing and byte-copy sprite packing.
-const fs=require('node:fs/promises'),path=require('node:path');
-const sharp=require(process.env.AGE_OF_FRONTS_SHARP||'sharp');
-(async()=>{const root=__dirname,m=JSON.parse(await fs.readFile(path.join(root,'Defense-Manifest.json'),'utf8')),S=627,width=4*S,height=S,pixels=Buffer.alloc(width*height*4),keys=['MIRVLaunchComplex','TrackedTwinCannon','WheeledSAM','InterceptorHumvee'];for(let i=0;i<keys.length;i++){const a=m.assets.find(x=>x.key===keys[i]),raw=await sharp(path.join(root,a.directory,'Icon.png')).ensureAlpha().resize(S,S).raw().toBuffer();for(let y=0;y<S;y++)raw.copy(pixels,(y*width+i*S)*4,y*S*4,(y+1)*S*4);}await sharp(pixels,{raw:{width,height,channels:4}}).png().toFile(path.join(root,'Defense-Overview.png'));console.log('Created Defense-Overview.png');})().catch(e=>{console.error(e);process.exitCode=1;});

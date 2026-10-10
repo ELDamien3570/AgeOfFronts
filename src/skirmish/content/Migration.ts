@@ -1,7 +1,7 @@
 /** Layout only: normal player placement and resource rules remain available. */
 export const MIGRATION_THEME = Object.freeze({
   id: "migration",
-  revision: 7,
+  revision: 8,
   name: "Migration",
   minimumIslands: 6,
   maximumIslands: 9,
@@ -31,7 +31,7 @@ export const MIGRATION_THEME = Object.freeze({
   riverIncision: 75,
   valleyBankWidth: 4,
   mountainMinimumHeight: 1600,
-  mountainMinimumSlope: 38,
+  mountainMinimumSlope: 135,
   mountainMinimumShoreDistance: 6,
   topography: {
     counts: {
@@ -62,7 +62,10 @@ export const MIGRATION_THEME = Object.freeze({
     focusBounds: [0.28, 0.28, 0.72, 0.72],
     focusFraction: 0.5,
   } as const,
-  thermalErosion: { iterations: 8, talus: 55, rate: 0.1 },
-  formation: { resolution: 250, erosionPasses: 4, streamPower: 38, spurHeight: 0.28 },
+  thermalErosion: { iterations: 2, talus: 100, rate: 0.035 },
+  formation: {
+    resolution: 250, erosionPasses: 4, streamPower: 38, spurHeight: 0.28,
+    detail: { strength: 1.25, drainagePasses: 2, incision: 240 },
+  },
   sea: { shelfWidthRatio: 0.035, maximumDepth: 4200 },
 });

@@ -10,6 +10,8 @@ import type { LoadedMap } from "./Protocol";
 import { resourceTerrainData } from "./ResourceTerrain";
 import { addResourceGeography } from "./ResourceGeography";
 import { terrainNoise } from "./TerrainNoise";
+import { blackForestTopography } from "./BlackForestTopography";
+import type { Landform } from "./RegionalTopography";
 
 export type BlackForestPondMode = "dry" | "half" | "near-all";
 export interface ForestPond {
@@ -22,6 +24,7 @@ export interface ForestPond {
 export interface BlackForestMap extends LoadedMap {
   ponds: readonly ForestPond[];
   layout: BlackForestLayout;
+  landforms: readonly Landform[];
   generation: {
     theme: "black-forest";
     revision: number;
@@ -30,12 +33,12 @@ export interface BlackForestMap extends LoadedMap {
   };
 }
 
-/** Dense woods remain traversable: the existing cover field owns movement costs. */
+/** Wooded hills remain traversable; terrain class and cover own movement costs. */
 export function generateBlackForest(size = 500, seed = 0): BlackForestMap {
   const layout = blackForestLayout(size, seed),
     count = size * size,
     terrain = new Uint8Array(count).fill(133),
-    heights = new Float32Array(count),
+    { heights, landforms } = blackForestTopography(size, seed),
     cover = new Uint8Array(count),
     moisture = new Uint8Array(count),
     vegetation = new Uint8Array(count),
@@ -69,8 +72,6 @@ export function generateBlackForest(size = 500, seed = 0): BlackForestMap {
       families[tile] = edge > 0.2 ? woodland : meadow;
       moisture[tile] = Math.round(150 + edge * 65);
       vegetation[tile] = Math.round(100 + edge * 140);
-      heights[tile] =
-        100 + noise * 180 + terrainNoise(x + nx, y + ny, 71) * 100;
     }
   // Water coverage has its own random stream, independent of shape sampling.
   const waterRandom = new PseudoRandom(seed ^ 0x62bd1739),
@@ -169,7 +170,19 @@ export function generateBlackForest(size = 500, seed = 0): BlackForestMap {
     }
     ponds.push(pond);
   }
-  const elevation = { values: heights, minimum: 0, maximum: 500, seaLevel: 0 },
+  // Only forested slopes become highland. Open glades and route centres keep
+  // the established fast-ground behavior; neither mountains nor blocked land exist.
+  for (let y = 0; y < size; y++) for (let x = 0; x < size; x++) {
+    const tile = y * size + x;
+    if (terrain[tile] === 1 || cover[tile] < 100) continue;
+    const slope = Math.hypot(
+      heights[y * size + Math.min(size - 1, x + 1)] - heights[y * size + Math.max(0, x - 1)],
+      heights[Math.min(size - 1, y + 1) * size + x] - heights[Math.max(0, y - 1) * size + x],
+    ) * size / 1000;
+    if (heights[tile] > BLACK_FOREST_THEME.hillMinimumHeight && slope > BLACK_FOREST_THEME.hillMinimumSlope)
+      terrain[tile] = 143;
+  }
+  const elevation = { values: heights, minimum: 0, maximum: 1200, seaLevel: 0, reliefScale: 5 * size / 1000, canopyRelief: true },
     forest = { cover },
     environmentData = { moisture, vegetation, aridity, families },
     bare = createSkirmishMap(size, size, terrain, elevation, forest),
@@ -187,6 +200,7 @@ export function generateBlackForest(size = 500, seed = 0): BlackForestMap {
     environment,
     resourceTerrain: resources,
     layout,
+    landforms,
     ponds,
     generation: {
       theme: "black-forest",

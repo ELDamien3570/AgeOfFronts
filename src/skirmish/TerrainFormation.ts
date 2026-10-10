@@ -2,16 +2,21 @@ import { PseudoRandom } from "../core/PseudoRandom";
 import type { Landform } from "./RegionalTopography";
 import { buildTerrainDrainage } from "./TerrainDrainage";
 import { terrainNoise } from "./TerrainNoise";
+import { dissectTerrain, type TerrainDissectionRecipe } from "./TerrainDissection";
 
 export interface TerrainFormationRecipe {
   resolution: number;
   erosionPasses: number;
   streamPower: number;
   spurHeight: number;
+  detail?: TerrainDissectionRecipe;
+  /** Inland themes may drain beyond the frame without inventing water tiles. */
+  boundaryOutlets?: boolean;
 }
 
 /** Regional ridge branches followed by bounded stream-power incision. Work is
- * bounded by a reference grid; changing raster size does not change valley scale.
+ * Regional planning is bounded by a reference grid. Optional final dissection
+ * runs at selected resolution, preserving fine ridge and tributary structure.
  * The authored shoreline is immutable. This is a landscape model, not a sediment
  * transport simulator: eroded material is exported, rather than deposited.
  */
@@ -156,7 +161,7 @@ export function formTerrain(
         : original[at];
     }
   for (let pass = 0; pass < recipe.erosionPasses; pass++) {
-    const drainage = buildTerrainDrainage(grid, mask, surface),
+    const drainage = buildTerrainDrainage(grid, mask, surface, { boundaryOutlets: recipe.boundaryOutlets }),
       before = surface.slice();
     // Downstream cells are resolved before upstream cells: an implicit slope
     // solve is stable even where accumulated runoff is large.
@@ -201,4 +206,5 @@ export function formTerrain(
         ),
       );
     }
+  if (recipe.detail) dissectTerrain(size, land, heights, shore, features, seed, { ...recipe.detail, boundaryOutlets: recipe.boundaryOutlets });
 }

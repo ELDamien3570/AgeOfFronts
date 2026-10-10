@@ -42,8 +42,7 @@ describe("authored Black Forest", () => {
     }, 30_000);
   }
 
-  it("preserves dense woodland, buildable clearings, water-free passage centres, and traversability", () => {
-    for (const seed of [0, 1, 42, 104729, 0x7fffffff]) {
+  it.each([0, 1, 42, 104729, 0x7fffffff])("seed %i preserves dense woodland, buildable clearings, water-free passages and traversability", (seed) => {
       const loaded = generateBlackForest(250, seed),
         topology = new PathTopology(loaded.map, "land"),
         cover = loaded.forest!.cover;
@@ -80,8 +79,7 @@ describe("authored Black Forest", () => {
       const forest = cover.findIndex((value) => value > 230);
       expect(terrainSpeed(loaded.map, forest)).toBeLessThanOrEqual(36);
       expect(loaded.environment!.familyAt(forest)).toBe("boreal-conifer");
-    }
-  });
+  }, 15000);
 
   it("can place the full 64-faction roster without dropping seats", () => {
     for (const seed of [1, 3, 42, 2026]) {
@@ -146,18 +144,16 @@ describe("authored Black Forest", () => {
           families: new Uint8Array(250 * 250).fill(255),
         }),
     ).toThrow("authored map biomes");
-    expect(BLACK_FOREST_THEME.revision).toBe(3);
+    expect(BLACK_FOREST_THEME.revision).toBe(4);
   });
 
-  it("varies pond coverage by seed and keeps ponds inside openings away from routes", () => {
-    const modes = new Set<string>();
-    const samples = [
+  const pondSamples = [
       ...Array.from({ length: 24 }, (_, seed) => ({ size: 250, seed })),
       ...[500, 1000].flatMap((size) =>
         [0, 1, 3].map((seed) => ({ size, seed })),
       ),
     ];
-    for (const { size, seed } of samples) {
+  it.each(pondSamples)("size $size seed $seed keeps pond coverage inside openings away from routes", ({ size, seed }) => {
       const loaded = generateBlackForest(size, seed),
         fraction =
           loaded.generation.pondMode === "dry"
@@ -165,7 +161,6 @@ describe("authored Black Forest", () => {
             : loaded.generation.pondMode === "half"
               ? 0.5
               : 0.9;
-      modes.add(loaded.generation.pondMode);
       expect(loaded.ponds.length).toBe(
         Math.round(loaded.layout.clearings.length * fraction),
       );
@@ -189,7 +184,9 @@ describe("authored Black Forest", () => {
       expect(loaded.terrain.filter((value) => value === 1).length).toBe(
         loaded.ponds.reduce((sum, pond) => sum + pond.tiles.length, 0),
       );
-    }
-    expect([...modes].sort()).toEqual(["dry", "half", "near-all"]);
   }, 30_000);
+  it("varies between all three pond coverage patterns", () => {
+    const modes = new Set([0, 1, 3, 42].map(seed => generateBlackForest(250, seed).generation.pondMode));
+    expect([...modes].sort()).toEqual(["dry", "half", "near-all"]);
+  }, 15000);
 });

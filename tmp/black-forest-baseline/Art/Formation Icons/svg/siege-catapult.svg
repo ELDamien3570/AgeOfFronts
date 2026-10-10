@@ -1,9 +1,0 @@
-<svg xmlns="http://www.w3.org/2000/svg" width="512" height="512" viewBox="0 0 512 512" shape-rendering="geometricPrecision"><title>Siege / catapult formation marker</title><g id="faction-field" fill="#ffffff"><circle cx="256" cy="256" r="208"/><path d="M237 51L256 32L275 51Z"/></g>
-      <path id="facing" d="M241 59L256 41L271 59Z" fill="#000000"/>
-      <g id="unit-symbol" fill="#000000"><g fill="none" stroke="#000000" stroke-width="24" stroke-linecap="round" stroke-linejoin="round">
-    <path d="M171 328L234 238L334 328ZM234 238V328M155 338H357"/>
-    </g><path d="M184 317L359 161" fill="none" stroke="#000000" stroke-width="26" stroke-linecap="round"/>
-    <circle cx="234" cy="272" r="25"/><circle cx="234" cy="272" r="8" fill="#ffffff"/>
-    <circle cx="155" cy="350" r="40"/><circle cx="357" cy="350" r="40"/>
-    <circle cx="155" cy="350" r="13" fill="#ffffff"/><circle cx="357" cy="350" r="13" fill="#ffffff"/>
-    <g transform="rotate(-30 370 152)"><ellipse cx="370" cy="152" rx="42" ry="25"/><ellipse cx="370" cy="144" rx="31" ry="7" fill="#ffffff"/></g></g></svg>

@@ -99,9 +99,12 @@ export class FormationSoldierMotion {
     } else if (dt) {
       if (options.carrierRelative) {
         for (const member of this.members.values()) {
-          member.x += anchorDX; member.y += anchorDY;
-          member.targetX += anchorDX; member.targetY += anchorDY;
-          member.goalX += anchorDX; member.goalY += anchorDY;
+          member.x += anchorDX;
+          member.y += anchorDY;
+          member.targetX += anchorDX;
+          member.targetY += anchorDY;
+          member.goalX += anchorDX;
+          member.goalY += anchorDY;
         }
       }
       const follow =
@@ -358,12 +361,17 @@ export class FormationSoldierMotion {
               desiredVY *= limit / requested;
             }
           }
-          if (
+          // A translating squad's members face its travel, so pivot toward that.
+          const squadTravelling = leaderSpeed > 0.12;
+          const pivotFacing = squadTravelling
+            ? Math.atan2(this.leaderVY, this.leaderVX) - Math.PI / 2
+            : facing;
+          const pivoting =
             options.reformInPlace &&
             !options.looseTravel &&
             !options.engaged &&
-            Math.abs(angleDelta(member.angle, facing)) > Math.PI / 12
-          ) {
+            Math.abs(angleDelta(member.angle, pivotFacing)) > Math.PI / 12;
+          if (pivoting) {
             // Brake and pivot before following the newly assigned travel slot.
             // The squad uses the same capacity envelope; no backward launch.
             desiredVX = desiredVY = 0;
@@ -476,18 +484,34 @@ export class FormationSoldierMotion {
           member.x += stepX;
           member.y += stepY;
           member.gaitDistance += Math.hypot(stepX, stepY);
-          const speed = Math.hypot(member.vx, member.vy);
+          // Carrier-relative velocity is local reshaping only; the body's actual
+          // world motion also includes the carried squad translation.
+          const worldVX =
+            member.vx + (options.carrierRelative ? this.leaderVX : 0);
+          const worldVY =
+            member.vy + (options.carrierRelative ? this.leaderVY : 0);
+          const worldSpeed = Math.hypot(worldVX, worldVY);
+          const travelFacing = Math.atan2(worldVY, worldVX) - Math.PI / 2;
+          // Walk where the body goes. A slight strafe keeps rank facing, so
+          // small collision nudges do not wobble a marching line.
+          const walking =
+            worldSpeed >= 0.12 &&
+            Math.abs(angleDelta(facing, travelFacing)) > Math.PI / 18;
           // Combat permits small backward/sideways steps while facing the enemy.
           const desiredFacing =
             options.looseTravel && !options.engaged
-              ? speed > 0.08
-                ? Math.atan2(member.vy, member.vx) - Math.PI / 2
-                : options.carrierRelative && leaderSpeed > 0.08 ? Math.atan2(this.leaderVY, this.leaderVX) - Math.PI / 2 : member.angle
+              ? worldSpeed > 0.08
+                ? travelFacing
+                : member.angle
               : stepping && !backstepping
                 ? stepFacing
-                : options.engaged || options.reformInPlace || speed < 0.12
-                  ? facing
-                  : Math.atan2(member.vy, member.vx) - Math.PI / 2;
+                : pivoting
+                  ? pivotFacing
+                  : options.engaged ||
+                      (options.reformInPlace && !squadTravelling) ||
+                      !walking
+                    ? facing
+                    : travelFacing;
           const turnRate =
             ((options.combatFootwork
               ? (options.reformInPlace && !options.engaged
@@ -549,8 +573,12 @@ export class FormationSoldierMotion {
       }
       if (dt)
         member.lastSpeed =
-          Math.hypot(member.x - startX + (options.carrierRelative ? anchorDX : 0), member.y - startY + (options.carrierRelative ? anchorDY : 0)) / dt;
-      if (dt && options.carrierRelative) member.gaitDistance += Math.hypot(anchorDX, anchorDY);
+          Math.hypot(
+            member.x - startX + (options.carrierRelative ? anchorDX : 0),
+            member.y - startY + (options.carrierRelative ? anchorDY : 0),
+          ) / dt;
+      if (dt && options.carrierRelative)
+        member.gaitDistance += Math.hypot(anchorDX, anchorDY);
       else if (resumed) member.lastSpeed = 0;
       result.push({
         ...slot,

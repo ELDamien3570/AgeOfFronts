@@ -153,6 +153,7 @@ export class PaintedTerrain {
   private pixels = 0;
   private decorationsOnly = false;
   private canopyScratch?: HTMLCanvasElement;
+  private roadTiles: ReadonlySet<number> = new Set();
   constructor(
     private readonly map: GameMap,
     geography?: MapGeography,
@@ -221,6 +222,29 @@ export class PaintedTerrain {
         bottom: this.map.y(tile) + 1,
       });
     for (const bounds of this.decorations.updateBuildings(buildings))
+      this.invalidate(bounds);
+    return changed;
+  }
+  // Returns road tiles whose view cover changed so a GL ground can re-bake.
+  updateRoads(tiles: ReadonlySet<number>): readonly number[] {
+    const toggled = [
+      ...[...tiles].filter((tile) => !this.roadTiles.has(tile)),
+      ...[...this.roadTiles].filter((tile) => !tiles.has(tile)),
+    ];
+    const previous = toggled.map((tile) => this.environment.coverAt(tile));
+    this.environment.setRoads(tiles);
+    this.roadTiles = tiles;
+    const changed = toggled.filter(
+      (tile, i) => this.environment.coverAt(tile) !== previous[i],
+    );
+    for (const tile of changed)
+      this.invalidate({
+        left: this.map.x(tile),
+        top: this.map.y(tile),
+        right: this.map.x(tile) + 1,
+        bottom: this.map.y(tile) + 1,
+      });
+    for (const bounds of this.decorations.updateRoads(tiles))
       this.invalidate(bounds);
     return changed;
   }
@@ -353,6 +377,19 @@ export class PaintedTerrain {
       }
       if (distant) ctx.restore();
       ctx.globalAlpha = 1;
+      // Opt-in inland forest lighting is baked with the chunk, never per frame.
+      // Read effective cover so construction clearing also clears canopy shade.
+      if (elevationOf(this.map)?.canopyRelief && this.relief) {
+        for (let yy = 0; yy < height; yy++) for (let xx = 0; xx < width; xx++) {
+          const tile = this.map.ref(x + xx, y + yy),
+            cover = this.environment.coverAt(tile), shade = this.relief[tile];
+          if (cover < 0.15 || !shade || !this.map.isLand(tile)) continue;
+          ctx.fillStyle = shade < 0 ? "#000" : "#fff";
+          ctx.globalAlpha = Math.min(0.24, Math.abs(shade) / 120) * cover;
+          ctx.fillRect(xx, yy, 1, 1);
+        }
+        ctx.globalAlpha = 1;
+      }
       // Restrained strokes give water a painted surface at tactical zoom.
       // The GL ground's water shader replaces them.
       ctx.strokeStyle = "#b3dbe520";

@@ -22,10 +22,11 @@ const make = (
   count = 20,
   full = false,
   data = new Uint8Array(96 * 64).fill(133),
+  deferredPlanning = false,
 ) => {
   const match = new Skirmish(
     new GameMapImpl(96, 64, data, data.filter((v) => v & 128).length),
-    { seed: 47, aiCount: 1, tribes: false, runAi: false, ruleset: "ages-v1" },
+    { seed: 47, aiCount: 1, tribes: false, runAi: false, ruleset: "ages-v1", deferredPlanning },
   );
   const e = match.expansion!;
   const own = match.squads.find((s) => s.playerId === 1)!;
@@ -347,6 +348,43 @@ describe("persistent armies and Bronze tree", () => {
         armyId: 1,
         order: { type: "move", tile: m.map.ref(65, 30) },
       }),
+    ).toBeNull();
+    const own = m.squads.filter((s) => s.playerId === 1);
+    for (let t = 0; t < 1800; t++) {
+      m.step();
+      expect(own.every((s) => m.map.isLand(m.tileOf(s)))).toBe(true);
+    }
+    expect(m.expansion!.armies.armies[0].state).toBe("holding");
+    expect(own.every((s) => s.x > 50 * FIXED)).toBe(true);
+  });
+  it("marches at squad pace with deferred planning instead of stalling on each slot replan", () => {
+    const arrival = (army: boolean) => {
+      const m = make(6, false, undefined, true);
+      if (army) expect(create(m)).toBeNull();
+      expect(
+        m.applyCommand({ type: "order", playerId: 1, squadIds: ids(m), order: { type: "move", tile: m.map.ref(70, 31) }, append: false }),
+      ).toBeNull();
+      for (let t = 1; t <= 1200; t++) {
+        m.step();
+        const own = m.squads.filter((s) => s.playerId === 1);
+        if ((!army || m.expansion!.armies.armies[0].state === "holding") && own.every((s) => s.order.type === "hold" && s.x > 65 * FIXED))
+          return t;
+      }
+      return Infinity;
+    };
+    const squads = arrival(false), army = arrival(true);
+    expect(squads).toBeLessThan(Infinity);
+    // The column waits for its rear and deploys, but never crawls.
+    expect(army).toBeLessThan(squads * 1.6);
+  });
+  it("crosses a narrow land bridge with deferred planning", () => {
+    const data = new Uint8Array(96 * 64).fill(133);
+    for (let y = 0; y < 64; y++)
+      for (let x = 38; x < 43; x++) if (y < 39 || y > 41) data[y * 96 + x] = 0;
+    const m = make(8, false, data, true);
+    create(m);
+    expect(
+      m.applyCommand({ type: "army-order", playerId: 1, armyId: 1, order: { type: "move", tile: m.map.ref(65, 30) } }),
     ).toBeNull();
     const own = m.squads.filter((s) => s.playerId === 1);
     for (let t = 0; t < 1800; t++) {

@@ -14,6 +14,7 @@ export interface ArtworkClip {
   groundBounds?: { x: number; y: number; width: number; height: number };
 }
 export interface ArtworkAsset {
+  runtimeRoot?: "Ages" | "Russians";
   groundBounds?: { x: number; y: number; width: number; height: number };
   file?: string;
   poster?: string;
@@ -36,6 +37,9 @@ for(const age of ["earlymodern","modern"]) {
 export const ARTWORK_CATALOG: Readonly<Record<string, ArtworkAsset>> = {
   ...legacyRuntime,
   ...russianRuntime,
+  // Keep the original terrain-kit trenches alongside the newer Russian nests.
+  "building-earlymodern-trench": { ...manifest["building-modern-trench"], runtimeRoot: "Ages" },
+  "building-modern-trench": { ...manifest["building-modern-trench"], runtimeRoot: "Ages" },
   "building-earlymodern-nuclear-facility":russianRuntime["building-earlymodern-nuclear-weapons-facility"],
   // The approved ram substitution remains until an authored Russian ram is ready.
   "stoneage-siege": manifest["bronzeage-siege"],

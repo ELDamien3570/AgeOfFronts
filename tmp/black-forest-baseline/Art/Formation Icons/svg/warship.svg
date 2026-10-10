@@ -1,8 +1,0 @@
-<svg xmlns="http://www.w3.org/2000/svg" width="512" height="512" viewBox="0 0 512 512" shape-rendering="geometricPrecision"><title>Warship formation marker</title><g id="faction-field" fill="#ffffff"><path d="M144 32H240L256 16L272 32H368V480H144Z"/></g>
-      <path id="facing" d="M246 38L256 26L266 38Z" fill="#000000"/>
-      <g id="unit-symbol" fill="#000000"><path d="M256 58L272 112H240Z"/>
-    <g fill="none" stroke="#000000" stroke-width="18" stroke-linecap="square">
-      <path d="M207 178L172 207M305 178L340 207M207 258L172 287M305 258L340 287M207 338L172 367M305 338L340 367"/>
-    </g><path d="M256 86Q323 156 320 250L312 366Q302 415 256 444Q210 415 200 366L192 250Q189 156 256 86Z"/>
-    <path d="M256 126Q280 176 280 246L276 367Q270 392 256 408Q242 392 236 367L232 246Q232 176 256 126Z" fill="#ffffff"/>
-    <g stroke="#000000" stroke-width="18"><path d="M231 196H281M232 266H280M235 336H277"/></g></g></svg>

@@ -12,6 +12,7 @@ export async function mapIdentity(map: RuntimeMap): Promise<string> {
               maximum: map.elevation.maximum,
               seaLevel: map.elevation.seaLevel,
               ...(map.elevation.reliefScale === undefined ? {} : { reliefScale: map.elevation.reliefScale }),
+              ...(map.elevation.canopyRelief === undefined ? {} : { canopyRelief: map.elevation.canopyRelief }),
             }
           : null,
         forest: !!map.forest,

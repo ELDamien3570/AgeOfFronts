@@ -5,7 +5,7 @@
   "surface": "Cobblestones",
   "tileSize": 256,
   "worldFootprintCells": 1,
-  "opaqueGround": true,
+  "opaqueGround": false,
   "connectionBits": {
     "N": 1,
     "E": 2,
@@ -364,5 +364,5 @@
   "generatedSource": "generated/LateMedieval.png",
   "sourceSha256": "6620e00027417d0c2d87ad98edeba5d4bd5ddb8a31dace521cff193089bac5cd",
   "rotationPolicy": "Use authored mask entries; do not rotate painted materials at runtime.",
-  "integrationStatus": "art library and preview; not connected to game renderer"
+  "integrationStatus": "drawn by src/skirmish/client/RoadLayer.ts over the live terrain"
 }

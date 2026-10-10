@@ -102,21 +102,72 @@ export function hudMarkup(): string {
   return `
     <aside id="selection-card" class="selection-card hud-surface" aria-label="Selection details" hidden>
       <div class="selection-heading"><span class="eyebrow" id="selection-label">SELECTION</span><button id="selection-back" class="text-button" hidden>Back to selection</button><button id="delete-ship" type="button" title="Remove this warship without a refund" hidden>Delete warship</button></div>
+      <div id="refit-actions" class="refit-actions" hidden></div>
       <div id="selection-detail">
         <div class="unit-heading"><div id="selection-portrait" class="unit-portrait"></div><div><h2 id="selection-title"></h2><p id="selection-subtitle"></p><span id="selection-status" class="status-chip"></span></div></div><div id="selection-promotion" class="promotion-progress" hidden></div>
         <div id="selection-meter"><div class="meter-label"><span id="meter-name"></span><b id="meter-value"></b></div><div id="selection-health" class="health-track" role="progressbar"><i></i></div></div>
         <div id="selection-trade-meters" hidden></div><dl id="selection-stats" class="stat-list"></dl><p id="selection-description" class="card-description"></p>
       </div>
       <div id="selection-mixed" hidden><h2 id="mixed-title"></h2><p class="card-description">Hover for stats. Click to inspect while keeping your army selected.</p><div id="selection-cells" class="selection-cells"></div></div>
-      <div class="selection-orders"><strong id="selected"></strong><p id="selected-orders"></p></div>
+      <div id="selection-orders-panel" class="selection-orders-grid" hidden>
+        <button type="button" class="order-btn" data-shape="mass" title="Mass formation">
+          <svg class="order-icon" viewBox="0 0 20 14" aria-hidden="true">
+            <circle cx="5" cy="4" r="1.8" />
+            <circle cx="10" cy="3.5" r="1.8" />
+            <circle cx="15" cy="4.5" r="1.8" />
+            <circle cx="7" cy="10" r="1.8" />
+            <circle cx="13" cy="9.5" r="1.8" />
+          </svg>
+          <span class="order-label">Mass</span>
+        </button>
+        <button type="button" class="order-btn" data-shape="line" title="Line formation">
+          <svg class="order-icon" viewBox="0 0 20 14" aria-hidden="true">
+            <circle cx="3" cy="6" r="1.8" />
+            <circle cx="7.7" cy="6" r="1.8" />
+            <circle cx="12.3" cy="6" r="1.8" />
+            <circle cx="17" cy="6" r="1.8" />
+            <rect x="2" y="10.5" width="16" height="1.5" rx="0.75" />
+          </svg>
+          <span class="order-label">Line</span>
+        </button>
+        <button type="button" class="order-btn" data-shape="shield-wall" title="Close formation">
+          <svg class="order-icon" viewBox="0 0 20 14" aria-hidden="true">
+            <path d="M3.5 2.5h3.5v5c0 2-1.75 3.5-1.75 3.5S3.5 9.5 3.5 7.5v-5z" opacity="0.85" />
+            <path d="M8.25 2.5h3.5v5c0 2-1.75 3.5-1.75 3.5S8.25 9.5 8.25 7.5v-5z" />
+            <path d="M13 2.5h3.5v5c0 2-1.75 3.5-1.75 3.5S13 9.5 13 7.5v-5z" opacity="0.85" />
+          </svg>
+          <span class="order-label">Close</span>
+        </button>
+        <button type="button" class="order-btn" data-shape="square" title="Square formation">
+          <svg class="order-icon" viewBox="0 0 20 14" aria-hidden="true">
+            <rect x="4" y="1.5" width="12" height="11" rx="1.5" fill="none" stroke="currentColor" stroke-width="2" />
+            <circle cx="10" cy="7" r="1.2" />
+          </svg>
+          <span class="order-label">Square</span>
+        </button>
+        <button type="button" class="order-btn" id="hold" title="Hold position (T)" data-hud-tip="hold">
+          <svg class="order-icon" viewBox="0 0 20 14" aria-hidden="true">
+            <rect x="5.5" y="2.5" width="9" height="9" rx="1.5" />
+          </svg>
+          <span class="order-label">Hold</span>
+          <kbd>T</kbd>
+        </button>
+        <button type="button" class="order-btn" id="replenish" title="Replenish troops or repair (R)" data-hud-tip="replenish">
+          <svg class="order-icon" viewBox="0 0 20 14" aria-hidden="true">
+            <path d="M10 2v10M5 7h10" stroke="currentColor" stroke-width="2.6" stroke-linecap="round" fill="none" />
+          </svg>
+          <span class="order-label action-name">Replenish</span>
+          <kbd>R</kbd>
+        </button>
+      </div>
+      <span id="selected" hidden></span><span id="selected-orders" hidden></span>
       <div id="naval-orders" class="naval-orders" hidden><span id="ship-selection"></span></div>
       <button id="delete-building" type="button" hidden>Delete building</button>
     </aside>
     <dialog id="delete-building-dialog" class="building-delete-dialog" aria-labelledby="delete-building-title"><button type="button" id="delete-building-close" aria-label="Close deletion confirmation">×</button><h2 id="delete-building-title">Are you sure?</h2><p id="delete-building-message"></p><p>This removes one building. There is no building refund.</p><div><button type="button" id="delete-building-cancel" autofocus>Cancel</button><button type="button" id="delete-building-confirm">Confirm Delete</button></div></dialog>
     <section class="command-dock hud-surface" aria-label="Resources and commands">
       <div class="resource-row"><div class="resource gold-resource"><span class="resource-symbol" aria-hidden="true">◈</span><span>Gold<strong id="gold">—</strong></span></div><div class="resource"><span>Troops in field<strong id="troop-total">—</strong></span></div><div class="resource"><span>Reserve troops<strong id="reserves">—</strong></span></div><div class="resource small-resource"><span>Squads<strong id="squad-count">—</strong></span></div><div class="resource small-resource"><span>Land<strong id="land">—</strong></span></div><div class="resource small-resource match-metric" title="Individual enemy soldiers killed, including troops aboard sunk transports."><span>Kills<strong id="kills">—</strong></span></div><div class="resource small-resource match-metric" title="Cumulative individual soldier casualties, including troops aboard sunk transports. Ship damage is excluded."><span>Deaths<strong id="losses">—</strong></span></div><div class="resource small-resource match-metric" title="Base gold value of enemy cargo captured this match; excludes delivery bonuses. Each capture counts, including recaptures."><span>Trade captured<strong id="trade-captured">—</strong></span></div><div class="resource small-resource match-metric" title="Base gold value of your cargo captured by enemies or discarded this match. Delivered and returned cargo are excluded."><span>Trade lost<strong id="trade-lost">—</strong></span></div><button type="button" class="dock-age" aria-controls="hud-command-sections" aria-expanded="true" aria-pressed="false">STONE AGE</button></div>
-      <div id="hud-command-sections" class="command-row"><div class="command-category economy"><h3>Economy</h3><div class="category-actions">${buildings(true)}</div></div><div class="command-category military"><h3>Military buildings</h3><div class="category-actions">${buildings(false)}</div></div><div class="command-category troops"><h3>Troops</h3><div class="category-actions">${LAND_RECRUITMENT.map((a) => action(`recruit-${a.kind}`, a.label, a.key, a.kind)).join("")}</div></div><div class="command-category ships"><h3>Ships</h3><div class="category-actions">${NAVAL_RECRUITMENT.map((a) => action(a.kind, SHIP_RULES[a.kind].name, a.key, a.kind)).join("")}</div></div><div class="command-category orders"><h3>Orders</h3><div class="category-actions">${action("replenish", "Replenish", "R", undefined, "+")}${action("hold", "Hold", "T", undefined, "■")}${action("all", "Select all", "Ctrl A", undefined, "▦")}</div></div></div>
-      <div class="dock-utility"><div class="control-groups"><span>Groups</span>${[1, 2, 3, 4, 5, 6, 7, 8, 9, 0].map((d) => `<button id="group-${d}" aria-label="Control group ${d}"><b>${d}</b><small>0</small></button>`).join("")}</div><span class="group-help">Shift adds · Ctrl replaces</span><button id="controls-toggle" aria-expanded="false">Controls <span>?</span></button><button id="roster-toggle" aria-expanded="false">Factions</button></div>
+      <div id="hud-command-sections" class="command-row"><div class="command-category economy"><h3>Economy</h3><div class="category-actions">${buildings(true)}</div></div><div class="command-category military"><h3>Military buildings</h3><div class="category-actions">${buildings(false)}</div></div><div class="command-category troops"><h3>Troops</h3><div class="category-actions">${LAND_RECRUITMENT.map((a) => action(`recruit-${a.kind}`, a.label, a.key, a.kind)).join("")}</div></div><div class="command-category ships"><h3>Ships</h3><div class="category-actions">${NAVAL_RECRUITMENT.map((a) => action(a.kind, SHIP_RULES[a.kind].name, a.key, a.kind)).join("")}</div></div><button id="all" class="hud-action" aria-label="Select all" hidden tabindex="-1"><kbd>Ctrl A</kbd></button></div>
     </section>
     <section id="controls-popover" class="hud-popover hud-surface" aria-label="Game controls" hidden><div class="popover-heading"><h2>Battlefield controls</h2><button data-close="controls-popover" aria-label="Close controls">×</button></div><dl class="stat-list"><dt>Left click / drag</dt><dd>Select units</dd><dt>Shift + select</dt><dd>Add units</dd><dt>Double click</dt><dd>Select visible units of type</dd><dt>Right click</dt><dd>Move / attack / board</dd><dt>Shift + right click</dt><dd>Queue waypoints</dd><dt>1–0</dt><dd>Recall control group</dd><dt>Shift + 1–0</dt><dd>Add to control group</dd><dt>Ctrl + 1–0</dt><dd>Replace / clear group</dd><dt>Wheel / middle drag</dt><dd>Zoom / pan</dd><dt>Shift + recruit</dt><dd>Queue five (normal mode)</dd><dt>Space + recruit</dt><dd>Queue five (WASD mode)</dd><dt>Pause button</dt><dd>Pause / resume</dd><dt>Home</dt><dd>Fit battlefield</dd><dt>Escape</dt><dd>Cancel placement / inspection</dd></dl><p class="card-description">Recruit and construction keys are shown on every command button. R replenishes eligible squads or repairs selected buildings; T holds units; Ctrl A selects all land squads. I dispatches fighters to patrol; P targets conventional bombing; O targets an A-Bomb Run; U targets drones. Shift-click launches up to five. Mission targeting shows travel as a percentage of flight time; returning is free.</p><a href="/age-of-fronts-source.zip" download>Download corresponding source</a></section>
     <section id="roster-popover" class="hud-popover hud-surface" aria-label="Factions" hidden><div class="popover-heading"><h2>Factions & territory</h2><button data-close="roster-popover" aria-label="Close factions">×</button></div><div id="roster"></div></section>
@@ -221,25 +272,27 @@ export class HudView {
       ["controls-toggle", "controls-popover"],
       ["roster-toggle", "roster-popover"],
     ]) {
-      this.el(toggle).addEventListener("click", () => {
+      const button = this.root.querySelector<HTMLElement>(`#${toggle}`);
+      if (!button) continue;
+      button.addEventListener("click", () => {
         const panel = this.el(popover);
         for (const other of ["controls-popover", "roster-popover"])
           if (other !== popover) this.el(other).hidden = true;
-        this.el(
-          toggle === "controls-toggle" ? "roster-toggle" : "controls-toggle",
-        ).setAttribute("aria-expanded", "false");
+        this.root.querySelector<HTMLElement>(
+          toggle === "controls-toggle" ? "#roster-toggle" : "#controls-toggle",
+        )?.setAttribute("aria-expanded", "false");
         panel.hidden = !panel.hidden;
-        this.el(toggle).setAttribute("aria-expanded", String(!panel.hidden));
+        button.setAttribute("aria-expanded", String(!panel.hidden));
       });
     }
     root.querySelectorAll<HTMLElement>("[data-close]").forEach((button) =>
       button.addEventListener("click", () => {
         this.el(button.dataset.close!).hidden = true;
-        this.el(
+        this.root.querySelector<HTMLElement>(
           button.dataset.close === "controls-popover"
-            ? "controls-toggle"
-            : "roster-toggle",
-        ).setAttribute("aria-expanded", "false");
+            ? "#controls-toggle"
+            : "#roster-toggle",
+        )?.setAttribute("aria-expanded", "false");
       }),
     );
     const show = (event: Event) => {
@@ -328,7 +381,7 @@ export class HudView {
     for (const panel of ["controls-popover", "roster-popover"])
       this.el(panel).hidden = true;
     for (const toggle of ["controls-toggle", "roster-toggle"])
-      this.el(toggle).setAttribute("aria-expanded", "false");
+      this.root.querySelector(`#${toggle}`)?.setAttribute("aria-expanded", "false");
   }
   update(vm: HudViewModel) {
     this.playerId = vm.playerId;

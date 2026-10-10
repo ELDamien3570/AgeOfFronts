@@ -11,7 +11,17 @@ const escape = (value: string) =>
         c
       ]!,
   );
-const format = (value: number) => value.toLocaleString("en-US");
+const formatGold = (value: number): string => {
+  if (value >= 1_000_000) {
+    const m = value / 1_000_000;
+    return `${m >= 10 || Number.isInteger(m) ? Math.round(m) : m.toFixed(1)}M G`;
+  }
+  if (value >= 10_000) {
+    const k = value / 1_000;
+    return `${k >= 100 || Number.isInteger(k) ? Math.round(k) : k.toFixed(1)}K G`;
+  }
+  return `${value.toLocaleString("en-US")}g`;
+};
 
 /** Passive research shortcuts; the authority still validates every command. */
 export class ResearchOpportunitiesView {
@@ -89,7 +99,7 @@ export class ResearchOpportunitiesView {
         const label = ageUp
           ? `Advance to ${card.name}`
           : `Research ${card.name}`;
-        return `<article class="research-opportunity hud-surface research-tree-${escape(card.tree)}${ageUp ? " research-age-up" : ""}" data-tree="${escape(card.tree)}"${ageUp ? ` data-target-age="${card.targetAge}"` : ""} aria-label="${escape(card.name)}" tabindex="0"><header><div class="research-title-group"><small class="branch-label">${escape(treeLabel)}</small><b>${escape(card.name)}</b></div><button data-quick-research="${escape(card.id)}" aria-label="${escape(label)}"><span>${action}</span><small class="cost-label">${format(card.gold)}g · ${card.seconds}s</small></button></header><div class="research-description"><div><p>${escape(card.description)}</p></div></div></article>`;
+        return `<article class="research-opportunity hud-surface research-tree-${escape(card.tree)}${ageUp ? " research-age-up" : ""}" data-tree="${escape(card.tree)}"${ageUp ? ` data-target-age="${card.targetAge}"` : ""} aria-label="${escape(card.name)}" tabindex="0"><header><div class="research-title-group"><small class="branch-label">${escape(treeLabel)}</small><b>${escape(card.name)}</b></div><button data-quick-research="${escape(card.id)}" aria-label="${escape(label)}"><span>${action}</span><small class="cost-label">${formatGold(card.gold)} · ${card.seconds}s</small></button></header><div class="research-description"><div><p>${escape(card.description)}</p></div></div></article>`;
       })
       .join("");
     for (const card of cards) {
